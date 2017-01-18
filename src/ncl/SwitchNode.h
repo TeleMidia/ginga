@@ -35,65 +35,64 @@ using namespace ::ginga::ncl;
 #include "DescriptorSwitch.h"
 #include "SwitchContent.h"
 
-
 GINGA_NCL_BEGIN
 
-	class SwitchNode : public CompositeNode {
-		private:
-			Node* defaultNode;
-			vector<Rule*> ruleList;
+class SwitchNode : public CompositeNode
+{
+private:
+  Node *defaultNode;
+  vector<Rule *> ruleList;
 
-		public:
-			SwitchNode(string id);
-			virtual ~SwitchNode();
-			bool addNode(unsigned int index, Node* node, Rule* rule);
-			bool addNode(Node* node, Rule* rule);
+public:
+  SwitchNode (string id);
+  virtual ~SwitchNode ();
+  bool addNode (unsigned int index, Node *node, Rule *rule);
+  bool addNode (Node *node, Rule *rule);
 
-			//virtual from CompositeNode
-			bool addNode(Node* node);
+  // virtual from CompositeNode
+  bool addNode (Node *node);
 
-			bool addSwitchPortMap(SwitchPort* switchPort,
-				    Node* node, InterfacePoint* interfacePoint);
+  bool addSwitchPortMap (SwitchPort *switchPort, Node *node,
+                         InterfacePoint *interfacePoint);
 
-			//virtual from CompositeNode
-			bool addPort(Port* port);
+  // virtual from CompositeNode
+  bool addPort (Port *port);
 
-			//virtual from CompositeNode
-			bool addPort(int index, Port* port);
+  // virtual from CompositeNode
+  bool addPort (int index, Port *port);
 
-			void exchangeNodesAndRules(
-				    unsigned int index1, unsigned int index2);
+  void exchangeNodesAndRules (unsigned int index1, unsigned int index2);
 
-			Node* getDefaultNode();
+  Node *getDefaultNode ();
 
-			//virtual from CompositeNode
-			InterfacePoint *getMapInterface(Port *port);
+  // virtual from CompositeNode
+  InterfacePoint *getMapInterface (Port *port);
 
-			//virtual from CompositeNode
-			Node* getNode(string nodeId);
+  // virtual from CompositeNode
+  Node *getNode (string nodeId);
 
-			Node* getNode(unsigned int index);
-			Node* getNode(Rule* rule);
-			unsigned int getNumRules();
-			Rule* getRule(unsigned int index);
-			unsigned int indexOfRule(Rule* rule);
+  Node *getNode (unsigned int index);
+  Node *getNode (Rule *rule);
+  unsigned int getNumRules ();
+  Rule *getRule (unsigned int index);
+  unsigned int indexOfRule (Rule *rule);
 
-			//virtual from CompositeNode
-			bool recursivelyContainsNode(Node* node);
+  // virtual from CompositeNode
+  bool recursivelyContainsNode (Node *node);
 
-			//virtual from CompositeNode
-			bool recursivelyContainsNode(string nodeId);
+  // virtual from CompositeNode
+  bool recursivelyContainsNode (string nodeId);
 
-			//virtual from CompositeNode
-			Node* recursivelyGetNode(string nodeId);
+  // virtual from CompositeNode
+  Node *recursivelyGetNode (string nodeId);
 
-			//virtual from CompositeNode
-			bool removeNode(Node* node);
+  // virtual from CompositeNode
+  bool removeNode (Node *node);
 
-			bool removeNode(unsigned int index);
-			bool removeRule(Rule* rule);
-			void setDefaultNode(Node* node);
-	};
+  bool removeNode (unsigned int index);
+  bool removeRule (Rule *rule);
+  void setDefaultNode (Node *node);
+};
 
 GINGA_NCL_END
 

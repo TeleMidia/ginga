@@ -23,47 +23,47 @@ using namespace ::ginga::util;
 
 #include "DsmccBinding.h"
 
-
 GINGA_DATAPROC_BEGIN
 
-	class DsmccObject {
-		protected:
-			unsigned int carouselId;
-			unsigned int moduleId;
-			unsigned int key;
-			string kind;
-			string name;
+class DsmccObject
+{
+protected:
+  unsigned int carouselId;
+  unsigned int moduleId;
+  unsigned int key;
+  string kind;
+  string name;
 
-			//bindings (srg and dir only)
-			vector<DsmccBinding*> bindings;
+  // bindings (srg and dir only)
+  vector<DsmccBinding *> bindings;
 
-			//data (fil only)
-			char* data;
-			unsigned int dataSize;
+  // data (fil only)
+  char *data;
+  unsigned int dataSize;
 
-		public:
-			DsmccObject();
+public:
+  DsmccObject ();
 
-			virtual ~DsmccObject();
+  virtual ~DsmccObject ();
 
-			void setCarouselId(unsigned int objectCarouselId);
-			void setModuleId(unsigned int objectModuleId);
-			void setKey(unsigned int objectKey);
-			void setKind(string objectKind);
-			void addBinding(DsmccBinding* binding);
-			void setData(char* data);
-			void setDataSize(unsigned int size);
+  void setCarouselId (unsigned int objectCarouselId);
+  void setModuleId (unsigned int objectModuleId);
+  void setKey (unsigned int objectKey);
+  void setKind (string objectKind);
+  void addBinding (DsmccBinding *binding);
+  void setData (char *data);
+  void setDataSize (unsigned int size);
 
-			string getObjectId();
-			unsigned int getCarouselId();
-			unsigned int getModuleId();
-			unsigned int getKey();
-			string getKind();
-			vector<DsmccBinding*>* getBindings();
-			char* getData();
-			unsigned int getDataSize();
-			void print();
-	};
+  string getObjectId ();
+  unsigned int getCarouselId ();
+  unsigned int getModuleId ();
+  unsigned int getKey ();
+  string getKind ();
+  vector<DsmccBinding *> *getBindings ();
+  char *getData ();
+  unsigned int getDataSize ();
+  void print ();
+};
 
 GINGA_DATAPROC_END
 

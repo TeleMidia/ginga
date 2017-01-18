@@ -18,17 +18,19 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef OBJECTCREATIONFORBIDDENEXCEPTION_H_
 #define OBJECTCREATIONFORBIDDENEXCEPTION_H_
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_BEGIN
 
-  class ObjectCreationForbiddenException : public exception {
-	virtual const char* what() const throw() {
-		string exceptionDescription;
-		exceptionDescription = "br::pucrio::telemidia::ginga::ncl::";
-		exceptionDescription += "conversor::ObjectCreationForbiddenException";
-		return exceptionDescription.c_str();
-	}
-  };
+class ObjectCreationForbiddenException : public exception
+{
+  virtual const char *
+  what () const throw ()
+  {
+    string exceptionDescription;
+    exceptionDescription = "br::pucrio::telemidia::ginga::ncl::";
+    exceptionDescription += "conversor::ObjectCreationForbiddenException";
+    return exceptionDescription.c_str ();
+  }
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_END
 #endif /*OBJECTCREATIONFORBIDDENEXCEPTION_H_*/

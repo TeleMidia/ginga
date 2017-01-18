@@ -21,71 +21,75 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MULTIDEVICE_BEGIN
 
-	BaseDeviceService::BaseDeviceService() : DeviceService() {
-		serviceClass = DeviceDomain::CT_BASE;
-	}
+BaseDeviceService::BaseDeviceService () : DeviceService ()
+{
+  serviceClass = DeviceDomain::CT_BASE;
+}
 
-	BaseDeviceService::~BaseDeviceService() {
+BaseDeviceService::~BaseDeviceService () {}
 
-	}
+void
+BaseDeviceService::newDeviceConnected (unsigned int devAddr)
+{
+  RemoteDevice *dev;
+  int newDevClass, w, h;
+  set<IRemoteDeviceListener *>::iterator i;
 
-	void BaseDeviceService::newDeviceConnected(unsigned int devAddr) {
-		RemoteDevice* dev;
-		int newDevClass, w, h;
-		set<IRemoteDeviceListener*>::iterator i;
+  dev = getDevice (devAddr);
+  if (dev != NULL)
+    {
+      dev->getDeviceResolution (&w, &h);
+      newDevClass = dev->getDeviceClass ();
 
-		dev = getDevice(devAddr);
-		if (dev != NULL) {
-			dev->getDeviceResolution(&w, &h);
-			newDevClass = dev->getDeviceClass();
+      Thread::mutexLock (&lMutex);
+      i = listeners->begin ();
+      while (i != listeners->end ())
+        {
+          (*i)->newDeviceConnected (newDevClass, w, h);
+          ++i;
+        }
+      Thread::mutexUnlock (&lMutex);
+    }
+}
 
-			Thread::mutexLock(&lMutex);
-			i = listeners->begin();
-			while (i != listeners->end()) {
-				(*i)->newDeviceConnected(newDevClass, w, h);
-				++i;
-			}
-			Thread::mutexUnlock(&lMutex);
-		}
-	}
+bool
+BaseDeviceService::receiveEvent (unsigned int devAddr, int eventType,
+                                 char *stream, int streamSize)
+{
 
-	bool BaseDeviceService::receiveEvent(
-			unsigned int devAddr,
-			int eventType,
-			char* stream,
-			int streamSize) {
+  string strStream = "";
+  RemoteDevice *dev;
+  int devClass;
+  set<IRemoteDeviceListener *>::iterator it;
+  bool hasLists;
 
-		string strStream = "";
-		RemoteDevice* dev;
-		int devClass;
-		set<IRemoteDeviceListener*>::iterator it;
-		bool hasLists;
+  dev = getDevice (devAddr);
 
-		dev = getDevice(devAddr);
+  Thread::mutexLock (&lMutex);
+  hasLists = !listeners->empty ();
+  Thread::mutexUnlock (&lMutex);
 
-		Thread::mutexLock(&lMutex);
-		hasLists = !listeners->empty();
-		Thread::mutexUnlock(&lMutex);
+  if (dev != NULL && hasLists)
+    {
+      strStream.append (stream, streamSize);
 
-		if (dev != NULL && hasLists) {
-			strStream.append(stream, streamSize);
+      /*clog << "BaseDeviceService::receiveEvent '" << strStream << "'";
+      clog << endl;*/
+      devClass = dev->getDeviceClass ();
 
-			/*clog << "BaseDeviceService::receiveEvent '" << strStream << "'";
-			clog << endl;*/
-			devClass = dev->getDeviceClass();
+      Thread::mutexLock (&lMutex);
+      it = listeners->begin ();
+      while (it != listeners->end ())
+        {
+          (*it)->receiveRemoteEvent (devClass, eventType, strStream);
+          ++it;
+        }
+      Thread::mutexUnlock (&lMutex);
 
-			Thread::mutexLock(&lMutex);
-			it = listeners->begin();
-			while (it != listeners->end()) {
-				(*it)->receiveRemoteEvent(devClass, eventType, strStream);
-				++it;
-			}
-			Thread::mutexUnlock(&lMutex);
+      return true;
+    }
 
-			return true;
-		}
-
-		return false;
-	}
+  return false;
+}
 
 GINGA_MULTIDEVICE_END

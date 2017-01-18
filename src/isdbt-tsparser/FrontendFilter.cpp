@@ -20,64 +20,87 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TSPARSER_BEGIN
 
-	FrontendFilter::FrontendFilter(ITSFilter* f) {
-		pid          = -1;
-		tid          = -1;
-		tidExt       = -1;
-		feDescriptor = -1;
-		filter       = f;
-	}
+FrontendFilter::FrontendFilter (ITSFilter *f)
+{
+  pid = -1;
+  tid = -1;
+  tidExt = -1;
+  feDescriptor = -1;
+  filter = f;
+}
 
-	FrontendFilter::~FrontendFilter() {
-		filter = 0;
-	}
+FrontendFilter::~FrontendFilter () { filter = 0; }
 
-	void FrontendFilter::setPid(int pid) {
-		this->pid = pid;
-	}
+void
+FrontendFilter::setPid (int pid)
+{
+  this->pid = pid;
+}
 
-	int FrontendFilter::getPid() {
-		return pid;
-	}
+int
+FrontendFilter::getPid ()
+{
+  return pid;
+}
 
-	void FrontendFilter::setTid(int tid) {
-		this->tid = tid;
-	}
+void
+FrontendFilter::setTid (int tid)
+{
+  this->tid = tid;
+}
 
-	int FrontendFilter::getTid() {
-		return tid;
-	}
+int
+FrontendFilter::getTid ()
+{
+  return tid;
+}
 
-	void FrontendFilter::setTidExt(int tidExt) {
-		this->tidExt = tidExt;
-	}
+void
+FrontendFilter::setTidExt (int tidExt)
+{
+  this->tidExt = tidExt;
+}
 
-	int FrontendFilter::getTidExt() {
-		return tidExt;
-	}
+int
+FrontendFilter::getTidExt ()
+{
+  return tidExt;
+}
 
-	void FrontendFilter::setDescriptor(int feDescripor) {
-		this->feDescriptor = feDescripor;
-	}
+void
+FrontendFilter::setDescriptor (int feDescripor)
+{
+  this->feDescriptor = feDescripor;
+}
 
-	int FrontendFilter::getDescriptor() {
-		return feDescriptor;
-	}
+int
+FrontendFilter::getDescriptor ()
+{
+  return feDescriptor;
+}
 
-	void FrontendFilter::receivePes(char* pes, int pesLen) {
-		if (filter != 0) {
-			filter->receivePes(pes, pesLen, this);
-		}
-	}
+void
+FrontendFilter::receivePes (char *pes, int pesLen)
+{
+  if (filter != 0)
+    {
+      filter->receivePes (pes, pesLen, this);
+    }
+}
 
-	void FrontendFilter::receiveSection(char* section, int secLen) {
-		if (filter != 0) {
-			filter->receiveSection(section, secLen, this);
-		}
-	}
+void
+FrontendFilter::receiveSection (char *section, int secLen)
+{
+  if (filter != 0)
+    {
+      filter->receiveSection (section, secLen, this);
+    }
+}
 
-	ITSFilter* FrontendFilter::getTSFilter() {
-		return filter;
-	}
+ITSFilter *
+FrontendFilter::getTSFilter ()
+{
+  return filter;
+}
 
 GINGA_TSPARSER_END

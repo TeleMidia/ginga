@@ -30,34 +30,31 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include "LinkTriggerListener.h"
 #include "FormatterLink.h"
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-  class FormatterCausalLink : public FormatterLink,
-	    public LinkTriggerListener,
-	    public LinkActionProgressionListener {
+class FormatterCausalLink : public FormatterLink,
+                            public LinkTriggerListener,
+                            public LinkActionProgressionListener
+{
 
-	private:
-		LinkTriggerCondition* condition;
-		LinkAction* action;
+private:
+  LinkTriggerCondition *condition;
+  LinkAction *action;
 
-	public:
-		FormatterCausalLink(
-			    LinkTriggerCondition* condition,
-			    LinkAction* action,
-			    Link* ncmLink,
-				void* parentObject);
+public:
+  FormatterCausalLink (LinkTriggerCondition *condition, LinkAction *action,
+                       Link *ncmLink, void *parentObject);
 
-	    virtual ~FormatterCausalLink();
+  virtual ~FormatterCausalLink ();
 
-	    LinkAction* getAction();
-	    LinkTriggerCondition* getTriggerCondition();
-	    void conditionSatisfied(void *condition);
-	    virtual vector<FormatterEvent*>* getEvents();
-	    void evaluationStarted();
-		void evaluationEnded();
-		void actionProcessed(bool start);
-  };
+  LinkAction *getAction ();
+  LinkTriggerCondition *getTriggerCondition ();
+  void conditionSatisfied (void *condition);
+  virtual vector<FormatterEvent *> *getEvents ();
+  void evaluationStarted ();
+  void evaluationEnded ();
+  void actionProcessed (bool start);
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_FORMATTERCAUSALLINK_H_

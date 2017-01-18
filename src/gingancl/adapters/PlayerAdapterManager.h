@@ -44,73 +44,70 @@ using namespace ::ginga::player;
 #include "FormatterPlayerAdapter.h"
 #include "IPlayerAdapter.h"
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 
-  class PlayerAdapterManager : public Thread {
-	private:
-		map<string, IPlayerAdapter*> objectPlayers;
-		map<string, IPlayerAdapter*> deletePlayers;
-		map<IPlayerAdapter*, string> playerNames;
-		map<string, string> mimeDefaultTable;
-		map<string, string> playerTable;
-		IPlayerListener* editingCommandListener;
-		IPlayerAdapter* epgFactoryAdapter;
-		bool running;
-		ITimeBaseProvider* timeBaseProvider;
-		NclPlayerData* nclPlayerData;
-		pthread_mutex_t mutexPlayer;
+class PlayerAdapterManager : public Thread
+{
+private:
+  map<string, IPlayerAdapter *> objectPlayers;
+  map<string, IPlayerAdapter *> deletePlayers;
+  map<IPlayerAdapter *, string> playerNames;
+  map<string, string> mimeDefaultTable;
+  map<string, string> playerTable;
+  IPlayerListener *editingCommandListener;
+  IPlayerAdapter *epgFactoryAdapter;
+  bool running;
+  ITimeBaseProvider *timeBaseProvider;
+  NclPlayerData *nclPlayerData;
+  pthread_mutex_t mutexPlayer;
 
-		string getPlayerClass(
-			    CascadingDescriptor* descriptor, NodeEntity* dataObject);
+  string getPlayerClass (CascadingDescriptor *descriptor,
+                         NodeEntity *dataObject);
 
-	public:
-		PlayerAdapterManager(NclPlayerData* nclPlayerData);
-		virtual ~PlayerAdapterManager();
+public:
+  PlayerAdapterManager (NclPlayerData *nclPlayerData);
+  virtual ~PlayerAdapterManager ();
 
-		bool hasPlayer(IPlayerAdapter* player);
+  bool hasPlayer (IPlayerAdapter *player);
 
-		NclPlayerData* getNclPlayerData();
-		void setTimeBaseProvider(ITimeBaseProvider* timeBaseProvider);
-		ITimeBaseProvider* getTimeBaseProvider();
-		
-		void setVisible(
-				string objectId,
-				string visible,
-				AttributionEvent* event);
+  NclPlayerData *getNclPlayerData ();
+  void setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider);
+  ITimeBaseProvider *getTimeBaseProvider ();
 
-		bool removePlayer(void* object);
+  void setVisible (string objectId, string visible, AttributionEvent *event);
 
-	private:
-		bool removePlayer(string objectId);
-		void clear();
+  bool removePlayer (void *object);
 
-	public:
-		void setNclEditListener(IPlayerListener* listener);
+private:
+  bool removePlayer (string objectId);
+  void clear ();
 
-	private:
-		void readConfigFiles();
-		FormatterPlayerAdapter* initializePlayer(ExecutionObject* object);
+public:
+  void setNclEditListener (IPlayerListener *listener);
 
-	public:
-		void* getObjectPlayer(void* execObj);
+private:
+  void readConfigFiles ();
+  FormatterPlayerAdapter *initializePlayer (ExecutionObject *object);
 
-	private:
-		string getMimeTypeFromSchema(string url);
+public:
+  void *getObjectPlayer (void *execObj);
 
-	public:
-		static bool isEmbeddedApp(NodeEntity* dataObject);
+private:
+  string getMimeTypeFromSchema (string url);
 
-	private:
-		static bool isEmbeddedAppMediaType(string mediaType);
+public:
+  static bool isEmbeddedApp (NodeEntity *dataObject);
 
-	public:
-		void timeShift(string direction);
+private:
+  static bool isEmbeddedAppMediaType (string mediaType);
 
-	protected:
-		void clearDeletePlayers();
-		void run();
-  };
+public:
+  void timeShift (string direction);
+
+protected:
+  void clearDeletePlayers ();
+  void run ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_END
 #endif //_PLAYERADAPTERMANAGER_H_

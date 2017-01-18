@@ -28,178 +28,172 @@ using namespace ::ginga::util;
 typedef uint32_t Uint32;
 typedef Uint32 SDL_WindowID;
 
-
 GINGA_MB_BEGIN
 
-  class SDLWindow {
-  public:
-    static const short DDT_LINE = 0;
-    static const short DDT_RECT = 1;
-    static const short DDT_FILL_RECT = 2;
+class SDLWindow
+{
+public:
+  static const short DDT_LINE = 0;
+  static const short DDT_RECT = 1;
+  static const short DDT_FILL_RECT = 2;
 
-  private:
-    SDL_Texture* texture;
-    SDL_Surface* curSur;
+private:
+  SDL_Texture *texture;
+  SDL_Surface *curSur;
 
-    GingaSurfaceID winISur;
+  GingaSurfaceID winISur;
 
-    bool textureUpdate;
-    bool textureOwner;
+  bool textureUpdate;
+  bool textureOwner;
 
-    int borderWidth;
-    Color* bgColor;
-    Color* borderColor;
-    Color* winColor;
-    Color* colorKey;
+  int borderWidth;
+  Color *bgColor;
+  Color *borderColor;
+  Color *winColor;
+  Color *colorKey;
 
-    GingaScreenID myScreen;
-    GingaWindowID windowId;
+  GingaScreenID myScreen;
+  GingaWindowID windowId;
 
-    SDL_Rect rect;
+  SDL_Rect rect;
 
-    float z;
-    int transparencyValue;
-    bool visible;
-    bool ghost;
+  float z;
+  int transparencyValue;
+  bool visible;
+  bool ghost;
 
-    SDLSurface* childSurface;
-    bool fit;
-    bool stretch;
-    int caps;
+  SDLSurface *childSurface;
+  bool fit;
+  bool stretch;
+  int caps;
 
-    set<SDLWindow*> mirrors;
-    SDLWindow* mirrorSrc;
+  set<SDLWindow *> mirrors;
+  SDLWindow *mirrorSrc;
 
-    pthread_mutex_t mutex;    //external mutex
-    pthread_mutex_t mutexC;   //childs mutex
-    pthread_mutex_t texMutex; //texture mutex
-    pthread_mutex_t surMutex; //underlying surface mutex
+  pthread_mutex_t mutex; // external mutex
+  pthread_mutex_t mutexC; // childs mutex
+  pthread_mutex_t texMutex; // texture mutex
+  pthread_mutex_t surMutex; // underlying surface mutex
 
-    bool isWaiting;
-    pthread_mutex_t rMutex; //render mutex
-    pthread_mutex_t cMutex; //condition mutex
-    pthread_cond_t cond;
+  bool isWaiting;
+  pthread_mutex_t rMutex; // render mutex
+  pthread_mutex_t cMutex; // condition mutex
+  pthread_cond_t cond;
 
-  public:
-    SDLWindow(
-              GingaWindowID underlyingWindowID,
-              GingaWindowID parentWindowID,
-              GingaScreenID screenId,
-              int x, int y, int width, int height,
-              float z);
+public:
+  SDLWindow (GingaWindowID underlyingWindowID, GingaWindowID parentWindowID,
+             GingaScreenID screenId, int x, int y, int width, int height,
+             float z);
 
-    virtual ~SDLWindow();
+  virtual ~SDLWindow ();
 
-  private:
-    void initialize(
-                    GingaWindowID underlyingWindowID,
-                    GingaWindowID parentWindowID,
-                    GingaScreenID screenId,
-                    int x, int y, int width, int height,
-                    float z);
+private:
+  void initialize (GingaWindowID underlyingWindowID,
+                   GingaWindowID parentWindowID, GingaScreenID screenId, int x,
+                   int y, int width, int height, float z);
 
-    void releaseWinISur();
-    void releaseBGColor();
-    void releaseWinColor();
-    void releaseColorKey();
-    void releaseBorderColor();
+  void releaseWinISur ();
+  void releaseBGColor ();
+  void releaseWinColor ();
+  void releaseColorKey ();
+  void releaseBorderColor ();
 
-  public:
-    void addMirror(SDLWindow* window);
-    bool removeMirror(SDLWindow* window);
-    void setMirrorSrc(SDLWindow* mirrorSrc);
-    SDLWindow* getMirrorSrc();
+public:
+  void addMirror (SDLWindow *window);
+  bool removeMirror (SDLWindow *window);
+  void setMirrorSrc (SDLWindow *mirrorSrc);
+  SDLWindow *getMirrorSrc ();
 
-    void setBgColor(int r, int g, int b, int alpha);
-    Color* getBgColor();
-    void setColorKey(int r, int g, int b);
-    Color* getColorKey();
-    void setWindowColor(int r, int g, int b, int alpha);
-    Color* getWindowColor();
-    void setBorder(int r, int g, int b, int alpha=255, int bWidth=0);
-    void getBorder(int* r, int* g, int* b, int* alpha, int* bWidth);
+  void setBgColor (int r, int g, int b, int alpha);
+  Color *getBgColor ();
+  void setColorKey (int r, int g, int b);
+  Color *getColorKey ();
+  void setWindowColor (int r, int g, int b, int alpha);
+  Color *getWindowColor ();
+  void setBorder (int r, int g, int b, int alpha = 255, int bWidth = 0);
+  void getBorder (int *r, int *g, int *b, int *alpha, int *bWidth);
 
-    GingaScreenID getScreen();
-    void revertContent();
-    void setChildSurface(SDLSurface* iSur);
-    int getCap(string cap);
-    void setCaps(int caps);
-    void addCaps(int capability);
-    int getCaps();
+  GingaScreenID getScreen ();
+  void revertContent ();
+  void setChildSurface (SDLSurface *iSur);
+  int getCap (string cap);
+  void setCaps (int caps);
+  void addCaps (int capability);
+  int getCaps ();
 
-    void draw();
-    void setBounds(int x, int y, int width, int height);
-    void moveTo(int x, int y);
-    void resize(int width, int height);
-    void raiseToTop();
-    void lowerToBottom();
-    void setCurrentTransparency(int alpha);
-    int getTransparencyValue();
-    GingaWindowID getId();
-    void show();
-    void hide();
+  void draw ();
+  void setBounds (int x, int y, int width, int height);
+  void moveTo (int x, int y);
+  void resize (int width, int height);
+  void raiseToTop ();
+  void lowerToBottom ();
+  void setCurrentTransparency (int alpha);
+  int getTransparencyValue ();
+  GingaWindowID getId ();
+  void show ();
+  void hide ();
 
-    int getX();
-    int getY();
-    int getW();
-    int getH();
-    float getZ();
+  int getX ();
+  int getY ();
+  int getW ();
+  int getH ();
+  float getZ ();
 
-    void setX(int x);
-    void setY(int y);
-    void setW(int w);
-    void setH(int h);
-    void setZ(float z);
+  void setX (int x);
+  void setY (int y);
+  void setW (int w);
+  void setH (int h);
+  void setZ (float z);
 
-    bool isGhostWindow();
-    void setGhostWindow(bool ghost);
-    bool isVisible();
-    void validate();
+  bool isGhostWindow ();
+  void setGhostWindow (bool ghost);
+  bool isVisible ();
+  void validate ();
 
-  private:
-    void unprotectedValidate();
+private:
+  void unprotectedValidate ();
 
-  public:
-    vector<DrawData*>* createDrawDataList();
-    void setStretch(bool stretchTo);
-    bool getStretch();
-    void setFit(bool fitTo);
-    bool getFit();
-    void clearContent();
-    void setRenderedSurface(SDL_Surface* uSur);
-    void* getContent();
-    void setTexture(SDL_Texture* texture);
-    SDL_Texture* getTexture(SDL_Renderer* renderer);
-    bool isTextureOwner(SDL_Texture* texture);
+public:
+  vector<DrawData *> *createDrawDataList ();
+  void setStretch (bool stretchTo);
+  bool getStretch ();
+  void setFit (bool fitTo);
+  bool getFit ();
+  void clearContent ();
+  void setRenderedSurface (SDL_Surface *uSur);
+  void *getContent ();
+  void setTexture (SDL_Texture *texture);
+  SDL_Texture *getTexture (SDL_Renderer *renderer);
+  bool isTextureOwner (SDL_Texture *texture);
 
-  private:
-    bool isMine(SDLSurface* surface);
+private:
+  bool isMine (SDLSurface *surface);
 
-  public:
-    void renderImgFile(string serializedImageUrl);
-    void renderFrom(SDLSurface* s);
+public:
+  void renderImgFile (string serializedImageUrl);
+  void renderFrom (SDLSurface *s);
 
-    void blit(SDLWindow* src);
-    void stretchBlit(SDLWindow* src);
-    string getDumpFileUri(int quality, int dumpW, int dumpH);
+  void blit (SDLWindow *src);
+  void stretchBlit (SDLWindow *src);
+  string getDumpFileUri (int quality, int dumpW, int dumpH);
 
-    void lock();
-    void unlock();
+  void lock ();
+  void unlock ();
 
-    void lockChilds();
-    void unlockChilds();
+  void lockChilds ();
+  void unlockChilds ();
 
-    bool rendered();
+  bool rendered ();
 
-  private:
-    void waitRenderer();
+private:
+  void waitRenderer ();
 
-    void lockTexture();
-    void unlockTexture();
+  void lockTexture ();
+  void unlockTexture ();
 
-    void lockSurface();
-    void unlockSurface();
-  };
+  void lockSurface ();
+  void unlockSurface ();
+};
 
 GINGA_MB_END
 

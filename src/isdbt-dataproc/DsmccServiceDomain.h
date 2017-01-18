@@ -32,52 +32,51 @@ using namespace ::ginga::system;
 #include "DsmccBiop.h"
 #include "IDsmccServiceDomainListener.h"
 
-
 GINGA_DATAPROC_BEGIN
 
-	class DsmccServiceDomain : public Thread {
-		private:
-			bool mountingServiceDomain;
-			bool hasServiceGateway;
-			DsmccIor* serviceGatewayIor;
+class DsmccServiceDomain : public Thread
+{
+private:
+  bool mountingServiceDomain;
+  bool hasServiceGateway;
+  DsmccIor *serviceGatewayIor;
 
-			unsigned int carouselId;
+  unsigned int carouselId;
 
-			//mapping moduleId in module
-			map<unsigned int, DsmccModule*> info;
-			unsigned short blockSize;
+  // mapping moduleId in module
+  map<unsigned int, DsmccModule *> info;
+  unsigned short blockSize;
 
-			DsmccObjectProcessor* processor;
-			string mountPoint;
-			IDsmccServiceDomainListener* sdl;
-			bool mounted;
+  DsmccObjectProcessor *processor;
+  string mountPoint;
+  IDsmccServiceDomainListener *sdl;
+  bool mounted;
 
-			pthread_mutex_t stlMutex;
+  pthread_mutex_t stlMutex;
 
-		public:
-			DsmccServiceDomain(
-					DsmccDownloadServerInitiate* dsi, DsmccDownloadInfoIndication* dii,
-					unsigned short pid);
+public:
+  DsmccServiceDomain (DsmccDownloadServerInitiate *dsi,
+                      DsmccDownloadInfoIndication *dii, unsigned short pid);
 
-			virtual ~DsmccServiceDomain();
+  virtual ~DsmccServiceDomain ();
 
-			void setServiceDomainListener(IDsmccServiceDomainListener* sdl);
-			void setObjectsListeners(set<IDsmccObjectListener*>* l);
-			int receiveDDB(DsmccDownloadDataBlock* ddb);
-			DsmccModule* getModuleById(unsigned int id);
-			map<unsigned int, DsmccModule*>* getInfo();
-			unsigned short getBlockSize();
+  void setServiceDomainListener (IDsmccServiceDomainListener *sdl);
+  void setObjectsListeners (set<IDsmccObjectListener *> *l);
+  int receiveDDB (DsmccDownloadDataBlock *ddb);
+  DsmccModule *getModuleById (unsigned int id);
+  map<unsigned int, DsmccModule *> *getInfo ();
+  unsigned short getBlockSize ();
 
-			bool isMounted();
+  bool isMounted ();
 
-		private:
-			DsmccModule* getModule(int position);
-			void eraseModule(DsmccModule* module);
-			bool hasModules();
+private:
+  DsmccModule *getModule (int position);
+  void eraseModule (DsmccModule *module);
+  bool hasModules ();
 
-		protected:
-			virtual void run();
-	};
+protected:
+  virtual void run ();
+};
 
 GINGA_DATAPROC_END
 

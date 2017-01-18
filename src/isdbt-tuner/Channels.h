@@ -18,34 +18,34 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef Channels_H_
 #define Channels_H_
 
-
 GINGA_TUNER_BEGIN
 
-class Channels {
-	private:
-		map<long, string> *channelList;
-		map<long, unsigned char> *virtualChannelList;
-		long defaultFreq;
+class Channels
+{
+private:
+  map<long, string> *channelList;
+  map<long, unsigned char> *virtualChannelList;
+  long defaultFreq;
 
-	public:
-		Channels();
-		~Channels();
+public:
+  Channels ();
+  ~Channels ();
 
-		void insertFreq(string name, long freq, unsigned char virtualChannel);
-		void removeFreq(long freq);
-		string getName(long freq);
-		long getFreqByName(string name);
-		unsigned char getVirtualChannel(long freq);
-		long getPreviousFreq(long currentFreq);
-		long getNextFreq(long currentFreq);
-		void cleanList();
-		int loadFromFile(string filename);
-		int saveToFile(string filename);
-		int getListSize();
-		void setDefaultFreq(long freq);
-		long getDefaultFreq();
-		map<long, string>* getChannelsListName();
-		map<long, unsigned char>* getVirtualChannelsList();
+  void insertFreq (string name, long freq, unsigned char virtualChannel);
+  void removeFreq (long freq);
+  string getName (long freq);
+  long getFreqByName (string name);
+  unsigned char getVirtualChannel (long freq);
+  long getPreviousFreq (long currentFreq);
+  long getNextFreq (long currentFreq);
+  void cleanList ();
+  int loadFromFile (string filename);
+  int saveToFile (string filename);
+  int getListSize ();
+  void setDefaultFreq (long freq);
+  long getDefaultFreq ();
+  map<long, string> *getChannelsListName ();
+  map<long, unsigned char> *getVirtualChannelsList ();
 };
 
 GINGA_TUNER_END

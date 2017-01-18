@@ -24,39 +24,39 @@ using namespace ::ginga::tsparser;
 
 #include "IServiceInfo.h"
 
-
 GINGA_TSPARSER_BEGIN
 
-    class ServiceInfo : public IServiceInfo {
-		protected:
-			unsigned short serviceId;
-			bool eitScheduleFlag;
-			bool eitPresentFollowingFlag;
-			unsigned char runningStatus;
-			unsigned char freeCAMode;
-			unsigned short descriptorsLoopLength;
-			vector<IMpegDescriptor*>* descriptors;
-		public:
-			static const unsigned char LOGO_TRANSMISSION = 0xCF;
-			static const unsigned char SERVICE = 0x48;
+class ServiceInfo : public IServiceInfo
+{
+protected:
+  unsigned short serviceId;
+  bool eitScheduleFlag;
+  bool eitPresentFollowingFlag;
+  unsigned char runningStatus;
+  unsigned char freeCAMode;
+  unsigned short descriptorsLoopLength;
+  vector<IMpegDescriptor *> *descriptors;
 
-		public:
-			ServiceInfo();
-			~ServiceInfo();
-			size_t getSize();
-			unsigned short getServiceId();
-			bool getEitScheduleFlag();
-			bool getEitPresentFollowingFlag();
-			unsigned char getRunningStatus();
-			string getRunningStatusDescription();
-			unsigned char getFreeCAMode();
-			unsigned short getDescriptorsLoopLength();
-			void insertDescriptor(IMpegDescriptor* info);
-			vector<IMpegDescriptor*>* getDescriptors();
-			void print();
-			size_t process (char* data, size_t pos);
+public:
+  static const unsigned char LOGO_TRANSMISSION = 0xCF;
+  static const unsigned char SERVICE = 0x48;
 
-	};
+public:
+  ServiceInfo ();
+  ~ServiceInfo ();
+  size_t getSize ();
+  unsigned short getServiceId ();
+  bool getEitScheduleFlag ();
+  bool getEitPresentFollowingFlag ();
+  unsigned char getRunningStatus ();
+  string getRunningStatusDescription ();
+  unsigned char getFreeCAMode ();
+  unsigned short getDescriptorsLoopLength ();
+  void insertDescriptor (IMpegDescriptor *info);
+  vector<IMpegDescriptor *> *getDescriptors ();
+  void print ();
+  size_t process (char *data, size_t pos);
+};
 
 GINGA_TSPARSER_END
 

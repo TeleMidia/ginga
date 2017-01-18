@@ -22,26 +22,27 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	class IntervalAnchor : public ContentAnchor {
-		protected:
-			double begin;
-			double end;
-			string strBegin;
-			string strEnd;
+class IntervalAnchor : public ContentAnchor
+{
+protected:
+  double begin;
+  double end;
+  string strBegin;
+  string strEnd;
 
-		public:
-			static const double OBJECT_DURATION;
+public:
+  static const double OBJECT_DURATION;
 
-			IntervalAnchor(string id, double begin, double end);
-			void setStrValues(string begin, string end);
-			string getStrBegin();
-			string getStrEnd();
-			double getBegin();
-			double getEnd();
-			void setBegin(double b);
-			void setEnd(double e);
-			static bool isObjectDuration(double value);
-	};
+  IntervalAnchor (string id, double begin, double end);
+  void setStrValues (string begin, string end);
+  string getStrBegin ();
+  string getStrEnd ();
+  double getBegin ();
+  double getEnd ();
+  void setBegin (double b);
+  void setEnd (double e);
+  static bool isObjectDuration (double value);
+};
 
 GINGA_NCL_END
 

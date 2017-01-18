@@ -20,46 +20,53 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCLCONV_BEGIN
 
-	NclMetainformationConverter::NclMetainformationConverter(
-		    DocumentParser *documentParser) : NclMetainformationParser(
-		    	   documentParser) {
+NclMetainformationConverter::NclMetainformationConverter (
+    DocumentParser *documentParser)
+    : NclMetainformationParser (documentParser)
+{
+}
 
+void *
+NclMetainformationConverter::createMeta (DOMElement *parentElement,
+                                         void *objGrandParent)
+{
 
-	}
+  string name, content;
+  Meta *meta;
 
-	void* NclMetainformationConverter::createMeta(
-		    DOMElement* parentElement, void* objGrandParent) {
+  if (parentElement->hasAttribute (XMLString::transcode ("name")))
+    {
+      name = XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("name")));
+    }
+  else
+    {
+      return NULL;
+    }
 
-		string name, content;
-		Meta* meta;
+  if (parentElement->hasAttribute (XMLString::transcode ("content")))
+    {
+      content = XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("content")));
+    }
+  else
+    {
+      return NULL;
+    }
 
-		if (parentElement->hasAttribute(XMLString::transcode("name"))) {
-			name = XMLString::transcode(parentElement->getAttribute(
-				    XMLString::transcode("name")));
+  meta = new Meta (name, (void *)content.c_str ());
+  return (void *)meta;
+}
 
-		} else {
-			return NULL;
-		}
+void *
+NclMetainformationConverter::createMetadata (DOMElement *parentElement,
+                                             void *objGrandParent)
+{
 
-		if (parentElement->hasAttribute(XMLString::transcode("content"))) {
-			content = XMLString::transcode(parentElement->getAttribute(
-				    XMLString::transcode("content")));
+  Metadata *metadata;
 
-		} else {
-			return NULL;
-		}
-
-		meta = new Meta(name, (void*)content.c_str());
-		return (void*)meta;
-	}
-
-	void* NclMetainformationConverter::createMetadata(
-		    DOMElement* parentElement, void* objGrandParent) {
-
-		Metadata* metadata;
-
-		metadata = new Metadata();
-		return (void*)metadata;
-	}
+  metadata = new Metadata ();
+  return (void *)metadata;
+}
 
 GINGA_NCLCONV_END

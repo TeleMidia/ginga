@@ -27,119 +27,144 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
 
-	AttributionEvent::AttributionEvent(
-			string id,
-			void* executionObject,
-	        PropertyAnchor* anchor,
-	        PresentationContext* presContext) :
-					FormatterEvent(id, executionObject) {
+AttributionEvent::AttributionEvent (string id, void *executionObject,
+                                    PropertyAnchor *anchor,
+                                    PresentationContext *presContext)
+    : FormatterEvent (id, executionObject)
+{
 
-		Entity* entity;
-		NodeEntity* dataObject;
+  Entity *entity;
+  NodeEntity *dataObject;
 
-		typeSet.insert("AttributionEvent");
+  typeSet.insert ("AttributionEvent");
 
-		this->anchor          = anchor;
-		this->valueMaintainer = NULL;
-		this->settingNode     = false;
-		this->presContext     = presContext;
+  this->anchor = anchor;
+  this->valueMaintainer = NULL;
+  this->settingNode = false;
+  this->presContext = presContext;
 
-		dataObject = (NodeEntity*)(((ExecutionObject*)executionObject)->
-				getDataObject());
+  dataObject
+      = (NodeEntity *)(((ExecutionObject *)executionObject)->getDataObject ());
 
-		if (dataObject->instanceOf("ContentNode") &&
-			    ((ContentNode*)dataObject)->isSettingNode()) {
+  if (dataObject->instanceOf ("ContentNode")
+      && ((ContentNode *)dataObject)->isSettingNode ())
+    {
 
-			settingNode = true;
-		}
+      settingNode = true;
+    }
 
-		if (dataObject->instanceOf("ReferNode")) {
-			if (((ReferNode*)dataObject)->getInstanceType() == "instSame") {
-				entity = ((ReferNode*)dataObject)->getDataEntity();
-				if (entity->instanceOf("ContentNode") &&
-						((ContentNode*)entity)->isSettingNode()) {
+  if (dataObject->instanceOf ("ReferNode"))
+    {
+      if (((ReferNode *)dataObject)->getInstanceType () == "instSame")
+        {
+          entity = ((ReferNode *)dataObject)->getDataEntity ();
+          if (entity->instanceOf ("ContentNode")
+              && ((ContentNode *)entity)->isSettingNode ())
+            {
 
-					settingNode = true;
-				}
-			}
-		}
-	}
+              settingNode = true;
+            }
+        }
+    }
+}
 
-	AttributionEvent::~AttributionEvent() {
-		removeInstance(this);
+AttributionEvent::~AttributionEvent ()
+{
+  removeInstance (this);
 
-		assessments.clear();
-	}
+  assessments.clear ();
+}
 
-	PropertyAnchor* AttributionEvent::getAnchor() {
-		return anchor;
-	}
+PropertyAnchor *
+AttributionEvent::getAnchor ()
+{
+  return anchor;
+}
 
-	string AttributionEvent::getCurrentValue() {
-		string propName;
-		string maintainerValue = "";
+string
+AttributionEvent::getCurrentValue ()
+{
+  string propName;
+  string maintainerValue = "";
 
-		if (settingNode) {
-			propName = anchor->getPropertyName();
-			if (propName != "") {
-				maintainerValue = presContext->getPropertyValue(propName);
-			}
+  if (settingNode)
+    {
+      propName = anchor->getPropertyName ();
+      if (propName != "")
+        {
+          maintainerValue = presContext->getPropertyValue (propName);
+        }
+    }
+  else
+    {
+      if (valueMaintainer != NULL)
+        {
+          maintainerValue = valueMaintainer->getPropertyValue (this);
+        }
 
-		} else {
-			if (valueMaintainer != NULL) {
-				maintainerValue = valueMaintainer->getPropertyValue(this);
-			}
+      if (maintainerValue == "")
+        {
+          maintainerValue = anchor->getPropertyValue ();
+        }
+    }
 
-			if (maintainerValue == "") {
-				maintainerValue = anchor->getPropertyValue();
-			}
-		}
+  return maintainerValue;
+}
 
-		return maintainerValue;
-	}
+bool
+AttributionEvent::setValue (string newValue)
+{
+  /*		if ((value == "" && newValue != "") ||
+                              (newValue == "" && value != "") ||
+                              (newValue != "" && value != "" && (newValue !=
+     value))) {
 
-	bool AttributionEvent::setValue(string newValue) {
-/*		if ((value == "" && newValue != "") ||
-			    (newValue == "" && value != "") ||
-			    (newValue != "" && value != "" && (newValue != value))) {
+                          value = newValue;
+                          return true;
+                  }
 
-			value = newValue;
-			return true;
-		}
+                  return false;*/
 
-		return false;*/
+  if (anchor->getPropertyValue () != newValue)
+    {
+      anchor->setPropertyValue (newValue);
+      return true;
+    }
+  return false;
+}
 
-		if (anchor->getPropertyValue() != newValue) {
-			anchor->setPropertyValue(newValue);
-			return true;
-		}
-		return false;
-	}
+void
+AttributionEvent::setValueMaintainer (
+    IAttributeValueMaintainer *valueMaintainer)
+{
 
-	void AttributionEvent::setValueMaintainer(
-		    IAttributeValueMaintainer* valueMaintainer) {
+  this->valueMaintainer = valueMaintainer;
+}
 
-		this->valueMaintainer = valueMaintainer;
-	}
+IAttributeValueMaintainer *
+AttributionEvent::getValueMaintainer ()
+{
+  return this->valueMaintainer;
+}
 
-	IAttributeValueMaintainer* AttributionEvent::getValueMaintainer() {
-		return this->valueMaintainer;
-	}
+void
+AttributionEvent::setImplicitRefAssessmentEvent (string roleId,
+                                                 FormatterEvent *event)
+{
 
-	void AttributionEvent::setImplicitRefAssessmentEvent(
-			string roleId, FormatterEvent* event) {
+  assessments[roleId] = event;
+}
 
-		assessments[roleId] = event;
-	}
+FormatterEvent *
+AttributionEvent::getImplicitRefAssessmentEvent (string roleId)
+{
 
-	FormatterEvent* AttributionEvent::getImplicitRefAssessmentEvent(
-			string roleId) {
+  if (assessments.count (roleId) == 0)
+    {
+      return NULL;
+    }
 
-		if (assessments.count(roleId) == 0) {
-			return NULL;
-		}
-
-		return assessments[roleId];
-	}
+  return assessments[roleId];
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END

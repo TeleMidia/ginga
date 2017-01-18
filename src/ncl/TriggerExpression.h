@@ -25,20 +25,23 @@ using namespace ::ginga::util;
 
 GINGA_NCL_BEGIN
 
-	class TriggerExpression : public ConditionExpression {
-		private:
-			string delay;
+class TriggerExpression : public ConditionExpression
+{
+private:
+  string delay;
 
-		public:
-			TriggerExpression();
-			virtual ~TriggerExpression(){};
-			string getDelay();
-			void setDelay(string delay);
-			virtual bool instanceOf(string type) {
-				return ConditionExpression::instanceOf(type);
-			}
-	};
+public:
+  TriggerExpression ();
+  virtual ~TriggerExpression (){};
+  string getDelay ();
+  void setDelay (string delay);
+  virtual bool
+  instanceOf (string type)
+  {
+    return ConditionExpression::instanceOf (type);
+  }
+};
 
 GINGA_NCL_END
 
-#endif //TRIGGEREXPRESSION_H_
+#endif // TRIGGEREXPRESSION_H_

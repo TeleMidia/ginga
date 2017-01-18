@@ -91,160 +91,146 @@ using namespace ::br::pucrio::telemidia::ginga::ncl;
 
 #include "ObjectCreationForbiddenException.h"
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_BEGIN
 
-  class FormatterConverter : public IEventListener {
-	private:
-		int depthLevel;
-		static int dummyCount;
-		map<string, ExecutionObject*> executionObjects;
-		set<FormatterEvent*> listening;
-		set<ExecutionObject*> settingObjects;
-		void* linkCompiler; //FormatterLinkConverter*
-		FormatterScheduler* scheduler;
-		ILinkActionListener* actionListener;
-		RuleAdapter* ruleAdapter;
-		pthread_mutex_t objectsMutex;
-		pthread_mutex_t lMutex;
-		bool handling;
+class FormatterConverter : public IEventListener
+{
+private:
+  int depthLevel;
+  static int dummyCount;
+  map<string, ExecutionObject *> executionObjects;
+  set<FormatterEvent *> listening;
+  set<ExecutionObject *> settingObjects;
+  void *linkCompiler; // FormatterLinkConverter*
+  FormatterScheduler *scheduler;
+  ILinkActionListener *actionListener;
+  RuleAdapter *ruleAdapter;
+  pthread_mutex_t objectsMutex;
+  pthread_mutex_t lMutex;
+  bool handling;
 
-	public:
-		FormatterConverter(RuleAdapter* ruleAdapter);
-		virtual ~FormatterConverter();
+public:
+  FormatterConverter (RuleAdapter *ruleAdapter);
+  virtual ~FormatterConverter ();
 
-		void executionObjectReleased(string objectId);
-		set<ExecutionObject*>* getRunningObjects();
-		void setHandlingStatus(bool hanling);
-		ExecutionObject* getObjectFromNodeId(string id);
+  void executionObjectReleased (string objectId);
+  set<ExecutionObject *> *getRunningObjects ();
+  void setHandlingStatus (bool hanling);
+  ExecutionObject *getObjectFromNodeId (string id);
 
-		void setScheduler(void* scheduler);
-		void setLinkActionListener(ILinkActionListener* actionListener);
+  void setScheduler (void *scheduler);
+  void setLinkActionListener (ILinkActionListener *actionListener);
 
-		void setDepthLevel(int level);
-		int getDepthLevel();
-		void checkGradSameInstance(
-				set<ReferNode*>* gradSame, ExecutionObject* object);
+  void setDepthLevel (int level);
+  int getDepthLevel ();
+  void checkGradSameInstance (set<ReferNode *> *gradSame,
+                              ExecutionObject *object);
 
-		CompositeExecutionObject* addSameInstance(
-			    ExecutionObject* executionObject,
-			    ReferNode* referNode);
+  CompositeExecutionObject *addSameInstance (ExecutionObject *executionObject,
+                                             ReferNode *referNode);
 
-	private:
-		void addExecutionObject(
-			    ExecutionObject* executionObject,
-			    CompositeExecutionObject* parentObject,
-			    int depthLevel);
+private:
+  void addExecutionObject (ExecutionObject *executionObject,
+                           CompositeExecutionObject *parentObject,
+                           int depthLevel);
 
-	public:
-		void compileExecutionObjectLinks(
-			    ExecutionObject* executionObject, int depthLevel);
+public:
+  void compileExecutionObjectLinks (ExecutionObject *executionObject,
+                                    int depthLevel);
 
-		ExecutionObject* getExecutionObjectFromPerspective(
-			    NodeNesting* perspective,
-			    GenericDescriptor* descriptor,
-			    int depthLevel) throw(ObjectCreationForbiddenException*);
+  ExecutionObject *getExecutionObjectFromPerspective (
+      NodeNesting *perspective, GenericDescriptor *descriptor,
+      int depthLevel) throw (ObjectCreationForbiddenException *);
 
-	private:
-		void checkMirror(ExecutionObject* object, int depthLevel);
+private:
+  void checkMirror (ExecutionObject *object, int depthLevel);
 
-	public:
-		set<ExecutionObject*>* getSettingNodeObjects();
+public:
+  set<ExecutionObject *> *getSettingNodeObjects ();
 
-	private:
-		CompositeExecutionObject* getParentExecutionObject(
-			    NodeNesting* perspective,
-			    int depthLevel) throw(ObjectCreationForbiddenException*);
+private:
+  CompositeExecutionObject *getParentExecutionObject (
+      NodeNesting *perspective,
+      int depthLevel) throw (ObjectCreationForbiddenException *);
 
-	public:
-		FormatterEvent* getEvent(
-			    ExecutionObject* executionObject,
-			    InterfacePoint* interfacePoint,
-			    int ncmEventType,
-			    string key);
+public:
+  FormatterEvent *getEvent (ExecutionObject *executionObject,
+                            InterfacePoint *interfacePoint, int ncmEventType,
+                            string key);
 
-	private:
-		void createMultichannelObject(
-		    CompositeExecutionObject* compositeObject, int depthLevel);
+private:
+  void createMultichannelObject (CompositeExecutionObject *compositeObject,
+                                 int depthLevel);
 
-		ExecutionObject* createExecutionObject(
-			    string id,
-			    NodeNesting* perspective,
-			    CascadingDescriptor* descriptor,
-			    int depthLevel);
+  ExecutionObject *createExecutionObject (string id, NodeNesting *perspective,
+                                          CascadingDescriptor *descriptor,
+                                          int depthLevel);
 
-		static bool hasDescriptorPropName(string name);
+  static bool hasDescriptorPropName (string name);
 
-		static Descriptor* createDummyDescriptor(Node* node);
-		static CascadingDescriptor* createDummyCascadingDescriptor(
-				Node* node);
+  static Descriptor *createDummyDescriptor (Node *node);
+  static CascadingDescriptor *createDummyCascadingDescriptor (Node *node);
 
-		static CascadingDescriptor* checkCascadingDescriptor(Node* node);
-		static CascadingDescriptor* checkContextCascadingDescriptor(
-				NodeNesting* nodePerspective,
-				CascadingDescriptor* cascadingDescriptor,
-				Node* ncmNode);
+  static CascadingDescriptor *checkCascadingDescriptor (Node *node);
+  static CascadingDescriptor *
+  checkContextCascadingDescriptor (NodeNesting *nodePerspective,
+                                   CascadingDescriptor *cascadingDescriptor,
+                                   Node *ncmNode);
 
-	public:
-		static CascadingDescriptor* getCascadingDescriptor(
-			    NodeNesting* nodePerspective,
-			    GenericDescriptor* descriptor);
+public:
+  static CascadingDescriptor *
+  getCascadingDescriptor (NodeNesting *nodePerspective,
+                          GenericDescriptor *descriptor);
 
-	private:
-		void processLink(
-				Link* ncmLink,
-				Node* dataObject,
-				ExecutionObject* executionObject,
-			    CompositeExecutionObject* parentObject);
+private:
+  void processLink (Link *ncmLink, Node *dataObject,
+                    ExecutionObject *executionObject,
+                    CompositeExecutionObject *parentObject);
 
-	public:
-		void compileExecutionObjectLinks(
-			    ExecutionObject* executionObject,
-			    Node* dataObject,
-			    CompositeExecutionObject* parentObject,
-			    int depthLevel);
+public:
+  void compileExecutionObjectLinks (ExecutionObject *executionObject,
+                                    Node *dataObject,
+                                    CompositeExecutionObject *parentObject,
+                                    int depthLevel);
 
-	private:
-		void setActionListener(LinkAction* action);
+private:
+  void setActionListener (LinkAction *action);
 
-	public:
-		ExecutionObject* processExecutionObjectSwitch(
-			    ExecutionObjectSwitch* switchObject);
+public:
+  ExecutionObject *
+  processExecutionObjectSwitch (ExecutionObjectSwitch *switchObject);
 
-	private:
-		void resolveSwitchEvents(
-			    ExecutionObjectSwitch* switchObject, int depthLevel);
+private:
+  void resolveSwitchEvents (ExecutionObjectSwitch *switchObject,
+                            int depthLevel);
 
-		FormatterEvent* insertNode(
-			    NodeNesting* perspective,
-			    InterfacePoint* interfacePoint,
-			    GenericDescriptor* descriptor);
+  FormatterEvent *insertNode (NodeNesting *perspective,
+                              InterfacePoint *interfacePoint,
+                              GenericDescriptor *descriptor);
 
-	public:
-		FormatterEvent* insertContext(
-			    NodeNesting* contextPerspective, Port* port);
+public:
+  FormatterEvent *insertContext (NodeNesting *contextPerspective, Port *port);
 
-		bool removeExecutionObject(
-			    ExecutionObject* executionObject, ReferNode* referNode);
+  bool removeExecutionObject (ExecutionObject *executionObject,
+                              ReferNode *referNode);
 
-		bool removeExecutionObject(ExecutionObject* executionObject);
+  bool removeExecutionObject (ExecutionObject *executionObject);
 
-	private:
-		bool ntsRemoveExecutionObject(ExecutionObject* executionObject);
+private:
+  bool ntsRemoveExecutionObject (ExecutionObject *executionObject);
 
-	public:
-		ExecutionObject* hasExecutionObject(
-			    Node* node, GenericDescriptor* descriptor);
+public:
+  ExecutionObject *hasExecutionObject (Node *node,
+                                       GenericDescriptor *descriptor);
 
-		FormatterCausalLink* addCausalLink(
-			    ContextNode* context, CausalLink* link);
+  FormatterCausalLink *addCausalLink (ContextNode *context, CausalLink *link);
 
-		void eventStateChanged(
-			    void* someEvent, short transition, short previousState);
+  void eventStateChanged (void *someEvent, short transition,
+                          short previousState);
 
-		short getPriorityType();
-		void reset();
-  };
+  short getPriorityType ();
+  void reset ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_END
 #endif /*FORMATTERCONVERTER_H_*/

@@ -27,41 +27,41 @@ using namespace ::ginga::system;
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
-
 GINGA_MULTIDEVICE_BEGIN
 
-  class BroadcastSocketService : public ISocketService {
-	private:
-		static const int port           = 41000;
-		unsigned int interfaceIP;
-		string broadcastIPAddr;
-		string localIPAddr;
+class BroadcastSocketService : public ISocketService
+{
+private:
+  static const int port = 41000;
+  unsigned int interfaceIP;
+  string broadcastIPAddr;
+  string localIPAddr;
 
-		UDPSocket* udpSocket;
+  UDPSocket *udpSocket;
 
-		pthread_mutex_t mutexBuffer;
-		vector<struct frame*>* outputBuffer;
+  pthread_mutex_t mutexBuffer;
+  vector<struct frame *> *outputBuffer;
 
-	public:
-		BroadcastSocketService();
-		virtual ~BroadcastSocketService();
+public:
+  BroadcastSocketService ();
+  virtual ~BroadcastSocketService ();
 
-	private:
-		bool buildDomainAddress();
-		unsigned int discoverBroadcastAddress();
+private:
+  bool buildDomainAddress ();
+  unsigned int discoverBroadcastAddress ();
 
-	public:
-		unsigned int getInterfaceIPAddress();
-		int getServicePort();
-		void dataRequest(char* data, int taskSize, bool repeat=true);
+public:
+  unsigned int getInterfaceIPAddress ();
+  int getServicePort ();
+  void dataRequest (char *data, int taskSize, bool repeat = true);
 
-	private:
-		bool sendData(struct frame* f);
+private:
+  bool sendData (struct frame *f);
 
-	public:
-		bool checkOutputBuffer();
-		bool checkInputBuffer(char* data, int* size);
-  };
+public:
+  bool checkOutputBuffer ();
+  bool checkInputBuffer (char *data, int *size);
+};
 
 GINGA_MULTIDEVICE_END
 

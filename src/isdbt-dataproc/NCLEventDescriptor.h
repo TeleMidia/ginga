@@ -18,21 +18,21 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _EventDescriptor_H_
 #define _EventDescriptor_H_
 
-
 GINGA_DATAPROC_BEGIN
 
-	class NCLEventDescriptor {
-		public:
-			static string getEventId(string event);
-			static uint64_t getEventNPT(string event);
-			static string getCommandTag(string event);
-			static int getSequenceNumber(string event);
-			static bool getFinalFlag(string event);
-			static string getPrivateDataPayload(string event);
-			static bool checkFCS(string event);
+class NCLEventDescriptor
+{
+public:
+  static string getEventId (string event);
+  static uint64_t getEventNPT (string event);
+  static string getCommandTag (string event);
+  static int getSequenceNumber (string event);
+  static bool getFinalFlag (string event);
+  static string getPrivateDataPayload (string event);
+  static bool checkFCS (string event);
 
-			static string extractMarks(string eventParam);
-	};
+  static string extractMarks (string eventParam);
+};
 
 GINGA_DATAPROC_END
 

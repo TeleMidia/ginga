@@ -33,27 +33,27 @@ class DeviceDomain
 {
 public:
   // CT: Class types.
-  static const int CT_BASE              = 0;
-  static const int CT_PASSIVE           = 1;
-  static const int CT_ACTIVE            = 2;
+  static const int CT_BASE = 0;
+  static const int CT_PASSIVE = 1;
+  static const int CT_ACTIVE = 2;
 
   // FT: Frame types.
   static const int FT_CONNECTIONREQUEST = 0;
-  static const int FT_ANSWERTOREQUEST   = 1;
-  static const int FT_KEEPALIVE         = 2;
-  static const int FT_MEDIACONTENT      = 3;
-  static const int FT_SELECTIONEVENT    = 4;
-  static const int FT_ATTRIBUTIONEVENT  = 5;
+  static const int FT_ANSWERTOREQUEST = 1;
+  static const int FT_KEEPALIVE = 2;
+  static const int FT_MEDIACONTENT = 3;
+  static const int FT_SELECTIONEVENT = 4;
+  static const int FT_ATTRIBUTIONEVENT = 5;
   static const int FT_PRESENTATIONEVENT = 6;
 
 protected:
   static char headerStream[HEADER_SIZE];
-  static char* mdFrame;
+  static char *mdFrame;
   static unsigned int myIP;
   static bool taskIndicationFlag;
-  DeviceService* deviceService;
-  ISocketService* broadcastService;
-  void* res;
+  DeviceService *deviceService;
+  ISocketService *broadcastService;
+  void *res;
   unsigned int sourceIp;
   int bytesRecv;
   int deviceClass;
@@ -73,56 +73,56 @@ protected:
   string base_device_ncl_path;
 
 public:
-  DeviceDomain(bool useMulticast, int srvPort);
-  virtual ~DeviceDomain();
-  bool isConnected();
+  DeviceDomain (bool useMulticast, int srvPort);
+  virtual ~DeviceDomain ();
+  bool isConnected ();
 
 protected:
-  void clearHeader();
-  bool broadcastTaskRequest(char* data, int taskSize);
-  virtual bool taskRequest(int destDevClass, char* data, int taskSize)=0;
-  virtual bool passiveTaskRequest(char* data, int taskSize)=0;
-  virtual bool activeTaskRequest(char* data, int taskSize)=0;
-  char* taskReceive();
-  void parseTaskHeader();
-  void printTaskHeader();
-  bool addDevice(int reqDeviceClass, int width, int height, int srvPort);
+  void clearHeader ();
+  bool broadcastTaskRequest (char *data, int taskSize);
+  virtual bool taskRequest (int destDevClass, char *data, int taskSize) = 0;
+  virtual bool passiveTaskRequest (char *data, int taskSize) = 0;
+  virtual bool activeTaskRequest (char *data, int taskSize) = 0;
+  char *taskReceive ();
+  void parseTaskHeader ();
+  void printTaskHeader ();
+  bool addDevice (int reqDeviceClass, int width, int height, int srvPort);
 
 public:
-  void postConnectionRequestTask();
+  void postConnectionRequestTask ();
 
 protected:
-  virtual void postConnectionRequestTask(int width, int height)=0;
-  virtual void receiveConnectionRequest(char* task)=0;
-  virtual void postAnswerTask(int reqDeviceClass, int answer)=0;
-  virtual void receiveAnswerTask(char* answerTask)=0;
+  virtual void postConnectionRequestTask (int width, int height) = 0;
+  virtual void receiveConnectionRequest (char *task) = 0;
+  virtual void postAnswerTask (int reqDeviceClass, int answer) = 0;
+  virtual void receiveAnswerTask (char *answerTask) = 0;
 
 public:
-  virtual bool postMediaContentTask(int destDevClass, string url)=0;
+  virtual bool postMediaContentTask (int destDevClass, string url) = 0;
 
 protected:
-  virtual bool receiveMediaContentTask(char* task)=0;
+  virtual bool receiveMediaContentTask (char *task) = 0;
 
 public:
-  void postEventTask(int destDevClass, int frameType, char* payload,
-                     int payloadSize);
+  void postEventTask (int destDevClass, int frameType, char *payload,
+                      int payloadSize);
 
 protected:
-  virtual bool receiveEventTask(char* task)=0;
+  virtual bool receiveEventTask (char *task) = 0;
 
 public:
-  virtual void setDeviceInfo(int width, int height,
-                             string base_device_ncl_path);
-  int getDeviceClass();
+  virtual void setDeviceInfo (int width, int height,
+                              string base_device_ncl_path);
+  int getDeviceClass ();
 
 protected:
-  virtual bool runControlTask()=0;
-  virtual bool runDataTask()=0;
+  virtual bool runControlTask () = 0;
+  virtual bool runDataTask () = 0;
 
 public:
-  virtual void checkDomainTasks();
-  virtual void addDeviceListener(IRemoteDeviceListener* listener);
-  virtual void removeDeviceListener(IRemoteDeviceListener* listener);
+  virtual void checkDomainTasks ();
+  virtual void addDeviceListener (IRemoteDeviceListener *listener);
+  virtual void removeDeviceListener (IRemoteDeviceListener *listener);
 };
 
 GINGA_MULTIDEVICE_END

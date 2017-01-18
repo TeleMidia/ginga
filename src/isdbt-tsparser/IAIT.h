@@ -23,19 +23,19 @@ using namespace ::ginga::tsparser;
 
 #include "IApplication.h"
 
-
 GINGA_TSPARSER_BEGIN
 
-	class IAIT {
-		public:
-			virtual ~IAIT(){};
-			virtual string getSectionName()=0;
-			virtual void setSectionName(string secName)=0;
-			virtual void setApplicationType(unsigned int type)=0;
-			virtual void process(void* payload, unsigned int payloadSize)=0;
-			virtual vector<IMpegDescriptor*>* copyDescriptors()=0;
-			virtual vector<IApplication*>* copyApplications()=0;
-	};
+class IAIT
+{
+public:
+  virtual ~IAIT (){};
+  virtual string getSectionName () = 0;
+  virtual void setSectionName (string secName) = 0;
+  virtual void setApplicationType (unsigned int type) = 0;
+  virtual void process (void *payload, unsigned int payloadSize) = 0;
+  virtual vector<IMpegDescriptor *> *copyDescriptors () = 0;
+  virtual vector<IApplication *> *copyApplications () = 0;
+};
 
 GINGA_TSPARSER_END
 

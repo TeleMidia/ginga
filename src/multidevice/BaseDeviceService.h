@@ -23,28 +23,26 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "DeviceDomain.h"
 #include "DeviceService.h"
 
-
 GINGA_MULTIDEVICE_BEGIN
 
-  class BaseDeviceService : public DeviceService {
-	public:
-		BaseDeviceService();
-		virtual ~BaseDeviceService();
+class BaseDeviceService : public DeviceService
+{
+public:
+  BaseDeviceService ();
+  virtual ~BaseDeviceService ();
 
-		virtual void newDeviceConnected(unsigned int devAddr);
-		virtual void connectedToBaseDevice(unsigned int domainAddr){};
+  virtual void newDeviceConnected (unsigned int devAddr);
+  virtual void connectedToBaseDevice (unsigned int domainAddr){};
 
-		virtual bool receiveEvent(
-				unsigned int devAddr,
-				int eventType,
-				char* stream,
-				int streamSize);
+  virtual bool receiveEvent (unsigned int devAddr, int eventType, char *stream,
+                             int streamSize);
 
-		virtual bool receiveMediaContent(
-				unsigned int devAddr,
-				char* stream,
-				int streamSize){return false;};
+  virtual bool
+  receiveMediaContent (unsigned int devAddr, char *stream, int streamSize)
+  {
+    return false;
   };
+};
 
 GINGA_MULTIDEVICE_END
 

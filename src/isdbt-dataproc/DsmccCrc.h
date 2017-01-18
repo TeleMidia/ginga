@@ -21,24 +21,20 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
 
-
 GINGA_DATAPROC_BEGIN
 
+class Crc32
+{
+private:
+protected:
+  unsigned int dsmcc_crc_tab[0x100];
 
-class Crc32 {
-	private:
+public:
+  Crc32 ();
+  ~Crc32 ();
 
-	protected:
-		unsigned int dsmcc_crc_tab[0x100];
-
-	public:
-		Crc32();
-		~Crc32();
-
-		unsigned int crc (char *data, unsigned int len);
-
+  unsigned int crc (char *data, unsigned int len);
 };
-
 
 GINGA_DATAPROC_END
 

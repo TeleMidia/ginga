@@ -20,109 +20,137 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	LinkCompoundStatement::LinkCompoundStatement(short op) : LinkStatement() {
-		statements = new vector<LinkStatement*>;
-		this->op = op;
-		typeSet.insert("LinkCompoundStatement");
-	}
+LinkCompoundStatement::LinkCompoundStatement (short op) : LinkStatement ()
+{
+  statements = new vector<LinkStatement *>;
+  this->op = op;
+  typeSet.insert ("LinkCompoundStatement");
+}
 
-	LinkCompoundStatement::~LinkCompoundStatement() {
-		vector<LinkStatement*>::iterator i;
-		LinkStatement* statement;
+LinkCompoundStatement::~LinkCompoundStatement ()
+{
+  vector<LinkStatement *>::iterator i;
+  LinkStatement *statement;
 
-		if (statements != NULL) {
-			for (i = statements->begin(); i != statements->end(); ++i) {
-				statement = (LinkStatement*)(*i);
-				delete statement;
-				statement = NULL;
-			}
+  if (statements != NULL)
+    {
+      for (i = statements->begin (); i != statements->end (); ++i)
+        {
+          statement = (LinkStatement *)(*i);
+          delete statement;
+          statement = NULL;
+        }
 
-			statements->clear();
-			delete statements;
-			statements = NULL;
-		}
-	}
+      statements->clear ();
+      delete statements;
+      statements = NULL;
+    }
+}
 
-	short LinkCompoundStatement::getOperator() {
-		return op;
-	}
+short
+LinkCompoundStatement::getOperator ()
+{
+  return op;
+}
 
-	void LinkCompoundStatement::addStatement(LinkStatement* statement) {
-		statements->push_back(statement);
-	}
+void
+LinkCompoundStatement::addStatement (LinkStatement *statement)
+{
+  statements->push_back (statement);
+}
 
-	vector<LinkStatement*>* LinkCompoundStatement::getStatements() {
-		if (statements->begin() == statements->end())
-			return NULL;
+vector<LinkStatement *> *
+LinkCompoundStatement::getStatements ()
+{
+  if (statements->begin () == statements->end ())
+    return NULL;
 
-		return statements;
-	}
+  return statements;
+}
 
-	bool LinkCompoundStatement::isNegated() {
-		return negated;
-	}
+bool
+LinkCompoundStatement::isNegated ()
+{
+  return negated;
+}
 
-	void LinkCompoundStatement::setNegated(bool neg) {
-		negated = neg;
-	}
+void
+LinkCompoundStatement::setNegated (bool neg)
+{
+  negated = neg;
+}
 
-	bool LinkCompoundStatement::returnEvaluationResult(bool result) {
-		return (negated ^ result);
-	}
+bool
+LinkCompoundStatement::returnEvaluationResult (bool result)
+{
+  return (negated ^ result);
+}
 
-	vector<FormatterEvent*>* LinkCompoundStatement::getEvents() {
-		if (statements->empty())
-			return NULL;
+vector<FormatterEvent *> *
+LinkCompoundStatement::getEvents ()
+{
+  if (statements->empty ())
+    return NULL;
 
-		vector<FormatterEvent*>* events = new vector<FormatterEvent*>;
-		vector<FormatterEvent*>* statementEvents;
-		vector<FormatterEvent*>::iterator j;
-		vector<LinkStatement*>::iterator i;
-		LinkStatement* statement;
+  vector<FormatterEvent *> *events = new vector<FormatterEvent *>;
+  vector<FormatterEvent *> *statementEvents;
+  vector<FormatterEvent *>::iterator j;
+  vector<LinkStatement *>::iterator i;
+  LinkStatement *statement;
 
-		for (i = statements->begin(); i != statements->end(); i++) {
-			statement = (LinkStatement*)(*i);
-			statementEvents = statement->getEvents();
-			if (statementEvents != NULL) {
-				for (j = statementEvents->begin();
-					    j != statementEvents->end(); j++) {
+  for (i = statements->begin (); i != statements->end (); i++)
+    {
+      statement = (LinkStatement *)(*i);
+      statementEvents = statement->getEvents ();
+      if (statementEvents != NULL)
+        {
+          for (j = statementEvents->begin (); j != statementEvents->end ();
+               j++)
+            {
 
-					events->push_back(*j);
-				}
-				delete statementEvents;
-				statementEvents = NULL;
-			}
-		}
+              events->push_back (*j);
+            }
+          delete statementEvents;
+          statementEvents = NULL;
+        }
+    }
 
-		if (events->begin() == events->end()) {
-			delete events;
-			return NULL;
-		}
+  if (events->begin () == events->end ())
+    {
+      delete events;
+      return NULL;
+    }
 
-		return events;
-	}
+  return events;
+}
 
-	bool LinkCompoundStatement::evaluate() {
-		int i, size;
-		LinkStatement *childStatement;
+bool
+LinkCompoundStatement::evaluate ()
+{
+  int i, size;
+  LinkStatement *childStatement;
 
-		size = statements->size();
-		if (op == CompoundStatement::OP_OR) {
-			for (i = 0; i < size; i++) {
-				childStatement = (LinkStatement*)(*statements)[i];
-				if (childStatement->evaluate())
-					return returnEvaluationResult(true);
-			}
-			return returnEvaluationResult(false);
-
-		} else {
-			for (i = 0; i < size; i++) {
-				childStatement = (LinkStatement*)(*statements)[i];
-				if (!childStatement->evaluate())
-					return returnEvaluationResult(false);
-			}
-			return returnEvaluationResult(true);
-		}
-	}
+  size = statements->size ();
+  if (op == CompoundStatement::OP_OR)
+    {
+      for (i = 0; i < size; i++)
+        {
+          childStatement = (LinkStatement *)(*statements)[i];
+          if (childStatement->evaluate ())
+            return returnEvaluationResult (true);
+        }
+      return returnEvaluationResult (false);
+    }
+  else
+    {
+      for (i = 0; i < size; i++)
+        {
+          childStatement = (LinkStatement *)(*statements)[i];
+          if (!childStatement->evaluate ())
+            return returnEvaluationResult (false);
+        }
+      return returnEvaluationResult (true);
+    }
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END

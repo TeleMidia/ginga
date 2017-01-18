@@ -36,30 +36,30 @@ using namespace ::ginga::nclconv;
 
 #include "NclImportConverter.h"
 
-
 XERCES_CPP_NAMESPACE_USE
 
 GINGA_NCLCONV_BEGIN
 
-  class NclLayoutConverter : public NclLayoutParser {
-	private:
-		DeviceLayout* deviceLayout;
+class NclLayoutConverter : public NclLayoutParser
+{
+private:
+  DeviceLayout *deviceLayout;
 
-	public:
-		NclLayoutConverter(
-				DocumentParser *documentParser, DeviceLayout* deviceLayout);
+public:
+  NclLayoutConverter (DocumentParser *documentParser,
+                      DeviceLayout *deviceLayout);
 
-		void addImportBaseToRegionBase(void *parentObject, void *childObject);
-		void addRegionToRegion(void *parentObject, void *childObject);
-		void addRegionToRegionBase(void *parentObject, void *childObject);
-		void *createRegionBase(DOMElement *parentElement, void *objGrandParent);
-		void *createRegion(DOMElement *parentElement, void *objGrandParent);
+  void addImportBaseToRegionBase (void *parentObject, void *childObject);
+  void addRegionToRegion (void *parentObject, void *childObject);
+  void addRegionToRegionBase (void *parentObject, void *childObject);
+  void *createRegionBase (DOMElement *parentElement, void *objGrandParent);
+  void *createRegion (DOMElement *parentElement, void *objGrandParent);
 
-	private:
-		float getPercentualValue(string value);
-		int getPixelValue(string value);
-		bool isPercentualValue(string value);
-  };
+private:
+  float getPercentualValue (string value);
+  int getPixelValue (string value);
+  bool isPercentualValue (string value);
+};
 
 GINGA_NCLCONV_END
 

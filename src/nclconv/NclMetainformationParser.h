@@ -24,24 +24,24 @@ using namespace ::ginga::nclconv;
 
 XERCES_CPP_NAMESPACE_USE
 
-
 GINGA_NCLCONV_BEGIN
 
-	class NclMetainformationParser : public ModuleParser {
-		public:
-			NclMetainformationParser(DocumentParser *documentParser);
-			void *parseMeta(DOMElement *parentElement, void *objGrandParent);
+class NclMetainformationParser : public ModuleParser
+{
+public:
+  NclMetainformationParser (DocumentParser *documentParser);
+  void *parseMeta (DOMElement *parentElement, void *objGrandParent);
 
-			virtual void* createMeta(
-				    DOMElement *parentElement, void *objGrandParent)=0;
+  virtual void *createMeta (DOMElement *parentElement, void *objGrandParent)
+      = 0;
 
-			void *parseMetadata(
-				    DOMElement *parentElement, void *objGrandParent);
+  void *parseMetadata (DOMElement *parentElement, void *objGrandParent);
 
-			virtual void* createMetadata(
-				    DOMElement *parentElement, void *objGrandParent)=0;
-	};
+  virtual void *createMetadata (DOMElement *parentElement,
+                                void *objGrandParent)
+      = 0;
+};
 
 GINGA_NCLCONV_END
 
-#endif //NCLMETAINFORMATIONPARSER_H_
+#endif // NCLMETAINFORMATIONPARSER_H_

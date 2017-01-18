@@ -20,14 +20,17 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	void* Metadata::getRDFTree() {
-		// TODO Auto-generated method stub
-		return NULL;
-	}
+void *
+Metadata::getRDFTree ()
+{
+  // TODO Auto-generated method stub
+  return NULL;
+}
 
-	void Metadata::setRDFTree(void* tree) {
-		// TODO Auto-generated method stub
-
-	}
+void
+Metadata::setRDFTree (void *tree)
+{
+  // TODO Auto-generated method stub
+}
 
 GINGA_NCL_END

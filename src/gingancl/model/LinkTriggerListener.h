@@ -20,16 +20,17 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	class LinkTriggerListener {
-		public:
-			static const short CONDITION_SATISFIED = 0;
-			static const short EVALUATION_STARTED = 1;
-			static const short EVALUATION_ENDED = 2;
-			virtual ~LinkTriggerListener() {};
-			virtual void conditionSatisfied(void* condition)=0;
-			virtual void evaluationStarted()=0;
-			virtual void evaluationEnded()=0;
-	};
+class LinkTriggerListener
+{
+public:
+  static const short CONDITION_SATISFIED = 0;
+  static const short EVALUATION_STARTED = 1;
+  static const short EVALUATION_ENDED = 2;
+  virtual ~LinkTriggerListener (){};
+  virtual void conditionSatisfied (void *condition) = 0;
+  virtual void evaluationStarted () = 0;
+  virtual void evaluationEnded () = 0;
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_LINKTRIGGERLISTENER_H_

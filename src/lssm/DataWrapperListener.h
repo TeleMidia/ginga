@@ -40,39 +40,40 @@ class DataWrapperListener : public IDsmccStreamEventListener,
 {
 
 private:
-  PresentationEngineManager* pem;
+  PresentationEngineManager *pem;
   string documentUri;
   bool autoMount;
   map<string, string> ncls;
   set<string> present;
   string docToStart;
-  IAIT* ait;
+  IAIT *ait;
 
 public:
-  DataWrapperListener(PresentationEngineManager* pem);
-  virtual ~DataWrapperListener();
-  void autoMountOC(bool autoMountIt);
+  DataWrapperListener (PresentationEngineManager *pem);
+  virtual ~DataWrapperListener ();
+  void autoMountOC (bool autoMountIt);
 
 private:
-  static void writeAITCommand(const string &appName,
-                              const string &appUri, IApplication* app);
-  bool startApp(const string &appName, IApplication* app);
-  bool appIsPresent(const string &appName, IApplication* app);
-  bool processAIT();
+  static void writeAITCommand (const string &appName, const string &appUri,
+                               IApplication *app);
+  bool startApp (const string &appName, IApplication *app);
+  bool appIsPresent (const string &appName, IApplication *app);
+  bool processAIT ();
 
 public:
-  bool applicationInfoMounted(IAIT* ait);
-  void objectMounted(string ior, string clientUri, string name);
-  void receiveStreamEvent(DsmccStreamEvent* event);
+  bool applicationInfoMounted (IAIT *ait);
+  void objectMounted (string ior, string clientUri, string name);
+  void receiveStreamEvent (DsmccStreamEvent *event);
 
 private:
-  void addNCLInfo(string name, string path);
+  void addNCLInfo (string name, string path);
 
 public:
-  void serviceDomainMounted (string mountPoint, map<string, string>* names,
-                             map<string, string>* paths);
+  void serviceDomainMounted (string mountPoint, map<string, string> *names,
+                             map<string, string> *paths);
+
 private:
-  void run();
+  void run ();
 };
 
 GINGA_LSSM_END

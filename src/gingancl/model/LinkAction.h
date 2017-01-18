@@ -32,49 +32,49 @@ using namespace ::ginga::system;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	class LinkAction : public Thread {
-		protected:
-			set<string> typeSet;
-			void* satisfiedCondition;
+class LinkAction : public Thread
+{
+protected:
+  set<string> typeSet;
+  void *satisfiedCondition;
 
-		private:
-			double delay;
-			pthread_mutex_t plMutex;
-			vector<LinkActionProgressionListener*>* progressionListeners;
+private:
+  double delay;
+  pthread_mutex_t plMutex;
+  vector<LinkActionProgressionListener *> *progressionListeners;
 
-		public:
-			LinkAction();
-			LinkAction(double delay);
+public:
+  LinkAction ();
+  LinkAction (double delay);
 
-		private:
-			void initLinkAction(double delay);
+private:
+  void initLinkAction (double delay);
 
-		public:
-			virtual ~LinkAction();
-			bool instanceOf(string s);
-			double getWaitDelay();
-			void setWaitDelay(double delay);
-			bool hasDelay();
+public:
+  virtual ~LinkAction ();
+  bool instanceOf (string s);
+  double getWaitDelay ();
+  void setWaitDelay (double delay);
+  bool hasDelay ();
 
-			void addActionProgressionListener(
-				    LinkActionProgressionListener* listener);
+  void addActionProgressionListener (LinkActionProgressionListener *listener);
 
-			void removeActionProgressionListener(
-				    LinkActionProgressionListener* listener);
+  void
+  removeActionProgressionListener (LinkActionProgressionListener *listener);
 
-			void notifyProgressionListeners(bool start);
-			virtual vector<FormatterEvent*>* getEvents()=0;
-			virtual vector<LinkAction*>* getImplicitRefRoleActions()=0;
+  void notifyProgressionListeners (bool start);
+  virtual vector<FormatterEvent *> *getEvents () = 0;
+  virtual vector<LinkAction *> *getImplicitRefRoleActions () = 0;
 
-			void setSatisfiedCondition(void* satisfiedCondition);
-			void run(void* satisfiedCondition);
+  void setSatisfiedCondition (void *satisfiedCondition);
+  void run (void *satisfiedCondition);
 
-		protected:
-			virtual void run();
+protected:
+  virtual void run ();
 
-		private:
-			bool tryLock();
-	};
+private:
+  bool tryLock ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_LINKACTION_H_

@@ -57,124 +57,118 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include "IPlayerAdapter.h"
 #include "NominalEventMonitor.h"
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 
-	class FormatterPlayerAdapter : public IPlayerAdapter,
-			public IPlayerListener, public IAttributeValueMaintainer,
-			public IInputEventListener {
+class FormatterPlayerAdapter : public IPlayerAdapter,
+                               public IPlayerListener,
+                               public IAttributeValueMaintainer,
+                               public IInputEventListener
+{
 
-		protected:
-			static LocalScreenManager* dm;
-			static double eventTS;
-			InputManager* im;
+protected:
+  static LocalScreenManager *dm;
+  static double eventTS;
+  InputManager *im;
 
-			void* manager;
-			NominalEventMonitor* anchorMonitor;
-			set<string> typeSet;
-			ExecutionObject* object;
-			IPlayer* player;
-			IPlayer* mirrorSrc;
-			string playerCompName;
-			string mrl;
-			int objectDevice;
-			GingaScreenID myScreen;
+  void *manager;
+  NominalEventMonitor *anchorMonitor;
+  set<string> typeSet;
+  ExecutionObject *object;
+  IPlayer *player;
+  IPlayer *mirrorSrc;
+  string playerCompName;
+  string mrl;
+  int objectDevice;
+  GingaScreenID myScreen;
 
-		private:
-			double outTransDur;
-			double outTransTime;
-			bool isLocked;
-			pthread_mutex_t objectMutex;
+private:
+  double outTransDur;
+  double outTransTime;
+  bool isLocked;
+  pthread_mutex_t objectMutex;
 
-		public:
-			FormatterPlayerAdapter();
-			virtual ~FormatterPlayerAdapter();
+public:
+  FormatterPlayerAdapter ();
+  virtual ~FormatterPlayerAdapter ();
 
-			virtual void setAdapterManager(void* manager);
+  virtual void setAdapterManager (void *manager);
 
-			bool instanceOf(string s);
-			virtual void setNclEditListener(IPlayerListener* listener){};
-			void setOutputWindow(GingaWindowID windowId);
+  bool instanceOf (string s);
+  virtual void setNclEditListener (IPlayerListener *listener){};
+  void setOutputWindow (GingaWindowID windowId);
 
-		protected:
-			virtual void rebase();
-			virtual void createPlayer();
+protected:
+  virtual void rebase ();
+  virtual void createPlayer ();
 
-		public:
-			int getObjectDevice();
-			virtual bool hasPrepared();
-			bool setKeyHandler(bool isHandler);
+public:
+  int getObjectDevice ();
+  virtual bool hasPrepared ();
+  bool setKeyHandler (bool isHandler);
 
-		protected:
-			double prepareProperties(ExecutionObject* obj);
-			void updatePlayerProperties(ExecutionObject* obj);
+protected:
+  double prepareProperties (ExecutionObject *obj);
+  void updatePlayerProperties (ExecutionObject *obj);
 
-		public:
-			virtual bool prepare(
-					ExecutionObject* object, FormatterEvent* mainEvent);
+public:
+  virtual bool prepare (ExecutionObject *object, FormatterEvent *mainEvent);
 
-		protected:
-			void prepare();
-			virtual void prepareScope(double offset=-1);
+protected:
+  void prepare ();
+  virtual void prepareScope (double offset = -1);
 
-		private:
-			double getOutTransDur();
+private:
+  double getOutTransDur ();
 
-		public:
-			double getOutTransTime();
-			void checkAnchorMonitor();
+public:
+  double getOutTransTime ();
+  void checkAnchorMonitor ();
 
-			static void printAction(
-					string action,
-					ExecutionObject* object);
+  static void printAction (string action, ExecutionObject *object);
 
-			static void printAction(string command);
+  static void printAction (string command);
 
-		public:
-			virtual bool start();
-			virtual bool stop();
-			virtual bool pause();
-			virtual bool resume();
-			virtual bool abort();
-			virtual void naturalEnd();
+public:
+  virtual bool start ();
+  virtual bool stop ();
+  virtual bool pause ();
+  virtual bool resume ();
+  virtual bool abort ();
+  virtual void naturalEnd ();
 
-		private:
-			bool checkRepeat(PresentationEvent* mainEvent);
+private:
+  bool checkRepeat (PresentationEvent *mainEvent);
 
-		public:
-			virtual bool unprepare();
-			virtual bool setPropertyValue(
-				    AttributionEvent* event, string value);
+public:
+  virtual bool unprepare ();
+  virtual bool setPropertyValue (AttributionEvent *event, string value);
 
-			void setPropertyValue(string name, string value);
+  void setPropertyValue (string name, string value);
 
-			string getPropertyValue(void* event);
-			virtual string getPropertyValue(string name);
+  string getPropertyValue (void *event);
+  virtual string getPropertyValue (string name);
 
-			double getObjectExpectedDuration();
-			void updateObjectExpectedDuration();
-			double getMediaTime();
-			IPlayer* getPlayer();
-			void setTimeBasePlayer(FormatterPlayerAdapter* timeBasePlayer);
-			virtual void updateStatus(
-					short code,
-					string parameter="",
-					short type=10,
-					string value="");
+  double getObjectExpectedDuration ();
+  void updateObjectExpectedDuration ();
+  double getMediaTime ();
+  IPlayer *getPlayer ();
+  void setTimeBasePlayer (FormatterPlayerAdapter *timeBasePlayer);
+  virtual void updateStatus (short code, string parameter = "",
+                             short type = 10, string value = "");
 
-			bool userEventReceived(SDLInputEvent* ev);
+  bool userEventReceived (SDLInputEvent *ev);
 
-		private:
-			void setVisible(bool visible);
+private:
+  void setVisible (bool visible);
 
-		protected:
-			bool lockObject();
-			bool unlockObject();
+protected:
+  bool lockObject ();
+  bool unlockObject ();
 
-		public:
-			virtual void flip(){};
-			virtual void timeShift(string direction);
-	};
+public:
+  virtual void flip (){};
+  virtual void timeShift (string direction);
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_END
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;

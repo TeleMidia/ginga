@@ -20,8 +20,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	SwitchContent::SwitchContent():Content("application/x-nodeswitch", -1) {
-		typeSet.insert("SwitchContent");
-	}
+SwitchContent::SwitchContent () : Content ("application/x-nodeswitch", -1)
+{
+  typeSet.insert ("SwitchContent");
+}
 
 GINGA_NCL_END

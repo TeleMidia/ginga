@@ -20,86 +20,103 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	LinkAssessmentStatement::LinkAssessmentStatement(
-		    short comparator,
-		    LinkAttributeAssessment* mainAssessment,
-		    LinkAssessment* otherAssessment) : LinkStatement() {
+LinkAssessmentStatement::LinkAssessmentStatement (
+    short comparator, LinkAttributeAssessment *mainAssessment,
+    LinkAssessment *otherAssessment)
+    : LinkStatement ()
+{
 
-		this->comparator = comparator;
-		this->mainAssessment = mainAssessment;
-		this->otherAssessment = otherAssessment;
-		typeSet.insert("LinkAssessmentStatement");
-	}
+  this->comparator = comparator;
+  this->mainAssessment = mainAssessment;
+  this->otherAssessment = otherAssessment;
+  typeSet.insert ("LinkAssessmentStatement");
+}
 
-	LinkAssessmentStatement::~LinkAssessmentStatement() {
-		if (mainAssessment != NULL) {
-			delete mainAssessment;
-			mainAssessment = NULL;
-		}
+LinkAssessmentStatement::~LinkAssessmentStatement ()
+{
+  if (mainAssessment != NULL)
+    {
+      delete mainAssessment;
+      mainAssessment = NULL;
+    }
 
-		if (otherAssessment != NULL) {
-			delete otherAssessment;
-			otherAssessment = NULL;
-		}
-	}
+  if (otherAssessment != NULL)
+    {
+      delete otherAssessment;
+      otherAssessment = NULL;
+    }
+}
 
-	vector<FormatterEvent*> *LinkAssessmentStatement::getEvents() {
-		vector<FormatterEvent*> *events;
+vector<FormatterEvent *> *
+LinkAssessmentStatement::getEvents ()
+{
+  vector<FormatterEvent *> *events;
 
-		events = new vector<FormatterEvent*>;
-		events->push_back(((LinkAttributeAssessment*)mainAssessment)->
-			    getEvent());
+  events = new vector<FormatterEvent *>;
+  events->push_back (((LinkAttributeAssessment *)mainAssessment)->getEvent ());
 
-		if (otherAssessment->instanceOf("LinkAttributeAssessment")) {
-			events->push_back(((LinkAttributeAssessment*)otherAssessment)->
-				    getEvent());
-		}
-		return events;
-	}
+  if (otherAssessment->instanceOf ("LinkAttributeAssessment"))
+    {
+      events->push_back (
+          ((LinkAttributeAssessment *)otherAssessment)->getEvent ());
+    }
+  return events;
+}
 
-	short LinkAssessmentStatement::getComparator() {
-		return comparator;
-	}
+short
+LinkAssessmentStatement::getComparator ()
+{
+  return comparator;
+}
 
-	void LinkAssessmentStatement::setComparator(short comp) {
-		comparator = comp;
-	}
+void
+LinkAssessmentStatement::setComparator (short comp)
+{
+  comparator = comp;
+}
 
-	LinkAssessment *LinkAssessmentStatement::getMainAssessment() {
-		return mainAssessment;
-	}
+LinkAssessment *
+LinkAssessmentStatement::getMainAssessment ()
+{
+  return mainAssessment;
+}
 
-	void
-	LinkAssessmentStatement::setMainAssessment(LinkAssessment *assessment) {
-		mainAssessment = assessment;
-	}
+void
+LinkAssessmentStatement::setMainAssessment (LinkAssessment *assessment)
+{
+  mainAssessment = assessment;
+}
 
-	LinkAssessment* LinkAssessmentStatement::getOtherAssessment() {
-		return otherAssessment;
-	}
+LinkAssessment *
+LinkAssessmentStatement::getOtherAssessment ()
+{
+  return otherAssessment;
+}
 
-	void
-	LinkAssessmentStatement::setOtherAssessment(LinkAssessment* assessment) {
-		otherAssessment = assessment;
-	}
+void
+LinkAssessmentStatement::setOtherAssessment (LinkAssessment *assessment)
+{
+  otherAssessment = assessment;
+}
 
-	bool LinkAssessmentStatement::evaluate() {
-		if (mainAssessment == NULL || otherAssessment == NULL) {
-			return false;
-		}
+bool
+LinkAssessmentStatement::evaluate ()
+{
+  if (mainAssessment == NULL || otherAssessment == NULL)
+    {
+      return false;
+    }
 
-		clog << "LinkAssessmentStatement::evaluate() ";
-		clog << "mainAssessment(" << mainAssessment << ") = '";
-		clog << mainAssessment->getValue() << "' ";
-		clog << "otherAssessment(" << otherAssessment << ") = '";
-		clog << otherAssessment->getValue() << "' comparator = '";
-		clog << comparator << "'";
-		clog << endl;
+  clog << "LinkAssessmentStatement::evaluate() ";
+  clog << "mainAssessment(" << mainAssessment << ") = '";
+  clog << mainAssessment->getValue () << "' ";
+  clog << "otherAssessment(" << otherAssessment << ") = '";
+  clog << otherAssessment->getValue () << "' comparator = '";
+  clog << comparator << "'";
+  clog << endl;
 
-		return Comparator::evaluate(
-			    mainAssessment->getValue(),
-			    otherAssessment->getValue(),
-			    comparator);
-	}
+  return Comparator::evaluate (mainAssessment->getValue (),
+                               otherAssessment->getValue (), comparator);
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END

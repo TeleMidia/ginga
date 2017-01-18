@@ -20,47 +20,63 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_DATAPROC_BEGIN
 
-	DsmccIor::DsmccIor() {
+DsmccIor::DsmccIor () {}
 
-	}
+void
+DsmccIor::setTypeId (string typeId)
+{
+  this->typeId = typeId;
+}
 
-	void DsmccIor::setTypeId(string typeId) {
-		this->typeId = typeId;
-	}
+string
+DsmccIor::getTypeId ()
+{
+  return typeId;
+}
 
-	string DsmccIor::getTypeId() {
-		return typeId;
-	}
+void
+DsmccIor::setCarouselId (unsigned int carouselId)
+{
+  this->carouselId = carouselId;
+}
 
-	void DsmccIor::setCarouselId(unsigned int carouselId) {
-		this->carouselId = carouselId;
-	}
+unsigned int
+DsmccIor::getCarouselId ()
+{
+  return carouselId;
+}
 
-	unsigned int DsmccIor::getCarouselId() {
-		return carouselId;
-	}
+void
+DsmccIor::setModuleId (unsigned int moduleId)
+{
+  this->moduleId = moduleId;
+}
 
-	void DsmccIor::setModuleId(unsigned int moduleId) {
-		this->moduleId = moduleId;
-	}
+unsigned int
+DsmccIor::getModuleId ()
+{
+  return moduleId;
+}
 
-	unsigned int DsmccIor::getModuleId() {
-		return moduleId;
-	}
+void
+DsmccIor::setObjectKey (unsigned int objectKey)
+{
+  this->objectKey = objectKey;
+}
 
-	void DsmccIor::setObjectKey(unsigned int objectKey) {
-		this->objectKey = objectKey;
-	}
+unsigned int
+DsmccIor::getObjectKey ()
+{
+  return objectKey;
+}
 
-	unsigned int DsmccIor::getObjectKey() {
-		return objectKey;
-	}
-
-	void DsmccIor::print() {
-		clog << "IOR" << endl;
-		clog << "typeId = " << typeId.c_str() << endl;
-		clog << "carouselId = " << carouselId << endl;
-		clog << "moduleId = " << moduleId << endl;
-	}
+void
+DsmccIor::print ()
+{
+  clog << "IOR" << endl;
+  clog << "typeId = " << typeId.c_str () << endl;
+  clog << "carouselId = " << carouselId << endl;
+  clog << "moduleId = " << moduleId << endl;
+}
 
 GINGA_DATAPROC_END

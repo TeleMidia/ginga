@@ -29,65 +29,65 @@ using namespace ::ginga::ncl;
 #include "Node.h"
 using namespace ::ginga::ncl;
 
-
 GINGA_NCL_BEGIN
 
-	class CompositeNode : public NodeEntity {
-		protected:
-			vector<Node*> nodes;
-			vector<Port*> portList;
+class CompositeNode : public NodeEntity
+{
+protected:
+  vector<Node *> nodes;
+  vector<Port *> portList;
 
-		public:
-			CompositeNode(string id);
-			virtual ~CompositeNode();
-			bool addAnchor(int index, Anchor *anchor);
-			bool addAnchor(Anchor *anchor);
+public:
+  CompositeNode (string id);
+  virtual ~CompositeNode ();
+  bool addAnchor (int index, Anchor *anchor);
+  bool addAnchor (Anchor *anchor);
 
-			//virtual to all
-			virtual bool addNode(Node* node)=0;
+  // virtual to all
+  virtual bool addNode (Node *node) = 0;
 
-			//virtual to SwitchNode
-			virtual bool addPort(unsigned int index, Port* port);
+  // virtual to SwitchNode
+  virtual bool addPort (unsigned int index, Port *port);
 
-			//virtual to SwitchNode
-			virtual bool addPort(Port* port);
+  // virtual to SwitchNode
+  virtual bool addPort (Port *port);
 
-			void clearPorts();
-			unsigned int getNumPorts();
-			Port* getPort(string portId);
-			Port* getPort(unsigned int index);
-			vector<Port*>* getPorts();
-			unsigned int indexOfPort(Port* port);
-			bool removePort(Port* port);
+  void clearPorts ();
+  unsigned int getNumPorts ();
+  Port *getPort (string portId);
+  Port *getPort (unsigned int index);
+  vector<Port *> *getPorts ();
+  unsigned int indexOfPort (Port *port);
+  bool removePort (Port *port);
 
-			//virtual to SwitchNode
-			virtual InterfacePoint* getMapInterface(Port* port);
+  // virtual to SwitchNode
+  virtual InterfacePoint *getMapInterface (Port *port);
 
-			//virtual to SwitchNode
-			virtual Node* getNode(string nodeId);
+  // virtual to SwitchNode
+  virtual Node *getNode (string nodeId);
 
-			vector<Node*> *getNodes();
-			unsigned int getNumNodes();
+  vector<Node *> *getNodes ();
+  unsigned int getNumNodes ();
 
-			//virtual to SwitchNode
-			virtual bool recursivelyContainsNode(string nodeId);
+  // virtual to SwitchNode
+  virtual bool recursivelyContainsNode (string nodeId);
 
-			//virtual to SwitchNode
-			virtual bool recursivelyContainsNode(Node* node);
+  // virtual to SwitchNode
+  virtual bool recursivelyContainsNode (Node *node);
 
-			//virtual to SwitchNode
-			virtual Node* recursivelyGetNode(string nodeId);
+  // virtual to SwitchNode
+  virtual Node *recursivelyGetNode (string nodeId);
 
-			//virtual to SwitchNode
-			virtual bool removeNode(Node* node);
+  // virtual to SwitchNode
+  virtual bool removeNode (Node *node);
 
-			//virtual to ContextNode
-			virtual GenericDescriptor *getNodeDescriptor(Node *node);
+  // virtual to ContextNode
+  virtual GenericDescriptor *getNodeDescriptor (Node *node);
 
-			//virtual to ContextNode
-			virtual bool setNodeDescriptor(
-				    string nodeId, GenericDescriptor *descriptor);
-	};
+  // virtual to ContextNode
+  virtual bool setNodeDescriptor (string nodeId,
+                                  GenericDescriptor *descriptor);
+};
 
 GINGA_NCL_END
 

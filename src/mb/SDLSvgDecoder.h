@@ -26,16 +26,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
+class SDLSvgDecoder
+{
+public:
+  string filePath;
+  SDLSvgDecoder (string filename);
+  ~SDLSvgDecoder ();
+  SDL_Surface *decode (int width, int height);
 
-      class SDLSvgDecoder {
-	public:
-	        string filePath;
-		SDLSvgDecoder(string filename);
-		~SDLSvgDecoder();
-		SDL_Surface *decode(int width, int height);
-	private:
-
-      };
+private:
+};
 
 GINGA_MB_END
 

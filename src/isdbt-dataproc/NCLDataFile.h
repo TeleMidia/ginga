@@ -22,28 +22,29 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_DATAPROC_BEGIN
 
-	class NCLDataFile : public INCLDataFile {
-		private:
-			int structureId;
-			string componentTag;
-			string uri;
-			double size;
+class NCLDataFile : public INCLDataFile
+{
+private:
+  int structureId;
+  string componentTag;
+  string uri;
+  double size;
 
-		public:
-			NCLDataFile(int id);
-			virtual ~NCLDataFile();
+public:
+  NCLDataFile (int id);
+  virtual ~NCLDataFile ();
 
-			int getId();
+  int getId ();
 
-			void setComponentTag(string componentTag);
-			string getCopmonentTag();
+  void setComponentTag (string componentTag);
+  string getCopmonentTag ();
 
-			void setUri(string uri);
-			string getUri();
+  void setUri (string uri);
+  string getUri ();
 
-			void setSize(double size);
-			double getSize();
-	};
+  void setSize (double size);
+  double getSize ();
+};
 
 GINGA_DATAPROC_END
 

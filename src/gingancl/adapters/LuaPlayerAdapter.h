@@ -26,18 +26,19 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_LUA_BEGIN
 
-  class LuaPlayerAdapter : public ApplicationPlayerAdapter {
-	public:
-		LuaPlayerAdapter();
-		virtual ~LuaPlayerAdapter(){};
+class LuaPlayerAdapter : public ApplicationPlayerAdapter
+{
+public:
+  LuaPlayerAdapter ();
+  virtual ~LuaPlayerAdapter (){};
 
-	protected:
-		void createPlayer();
+protected:
+  void createPlayer ();
 
-	public:
-		bool setAndLockCurrentEvent(FormatterEvent* event);
-		void unlockCurrentEvent(FormatterEvent* event);
-  };
+public:
+  bool setAndLockCurrentEvent (FormatterEvent *event);
+  void unlockCurrentEvent (FormatterEvent *event);
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_LUA_END
 #endif /* LUAPLAYERADAPTER_H_ */

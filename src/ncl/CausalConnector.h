@@ -30,41 +30,39 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SimpleCondition.h"
 #include "Role.h"
 
-
 GINGA_NCL_BEGIN
 
-	class CausalConnector : public Connector {
-		private:
-			ConditionExpression* conditionExpression;
-			Action* actionExpression;
+class CausalConnector : public Connector
+{
+private:
+  ConditionExpression *conditionExpression;
+  Action *actionExpression;
 
-		public:
-			CausalConnector(string id);
-			CausalConnector(
-				    string id, ConditionExpression *condition, Action *action);
+public:
+  CausalConnector (string id);
+  CausalConnector (string id, ConditionExpression *condition, Action *action);
 
-			virtual ~CausalConnector();
+  virtual ~CausalConnector ();
 
-		private:
-			void releaseAction();
-			void releaseCondition();
+private:
+  void releaseAction ();
+  void releaseCondition ();
 
-		public:
-			Action *getAction();
-			ConditionExpression *getConditionExpression();
-			void setAction(Action *newAction);
-			void setConditionExpression(
-				    ConditionExpression *newConditionExpression);
+public:
+  Action *getAction ();
+  ConditionExpression *getConditionExpression ();
+  void setAction (Action *newAction);
+  void setConditionExpression (ConditionExpression *newConditionExpression);
 
-		private:
-			void getConditionRoles(
-				    ConditionExpression *condition, vector<Role*>* roles);
+private:
+  void getConditionRoles (ConditionExpression *condition,
+                          vector<Role *> *roles);
 
-			void getActionRoles(Action *action, vector<Role*>* roles);
+  void getActionRoles (Action *action, vector<Role *> *roles);
 
-		public:
-			vector<Role*>* getRoles();
-	};
+public:
+  vector<Role *> *getRoles ();
+};
 
 GINGA_NCL_END
 

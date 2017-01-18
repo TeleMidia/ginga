@@ -20,41 +20,46 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_DATAPROC_BEGIN
 
+Crc32::Crc32 ()
+{
+  unsigned int i = 0;
+  unsigned int j = 0;
+  unsigned int c = 0;
 
-Crc32::Crc32() {
-	unsigned int i = 0;
-	unsigned int j = 0;
-	unsigned int c = 0;
+  for (i = 0; i < 0x100; i++)
+    {
+      c = (i << 24);
 
-	for (i = 0; i < 0x100; i++)	{
-		c = (i << 24);
+      for (j = 0; j < 8; j++)
+        {
+          if (c & 0x80000000)
+            {
+              c = (c << 1) ^ 0x04C11DB7;
+            }
+          else
+            {
+              c = (c << 1);
+            }
+        }
 
-		for (j = 0; j < 8; j++)	{
-			if (c & 0x80000000)	{
-				c = (c << 1) ^ 0x04C11DB7;
-			} else {
-				c = (c << 1);
-			}
-		}
-
-		dsmcc_crc_tab[i] = c;
-	}
+      dsmcc_crc_tab[i] = c;
+    }
 }
 
-Crc32::~Crc32() {
+Crc32::~Crc32 () {}
 
+unsigned int
+Crc32::crc (char *data, unsigned int len)
+{
+  unsigned int i = 0;
+  unsigned int crc = 0xFFFFFFFF;
+
+  for (i = 0; i < len; i++)
+    {
+      crc = (crc << 8) ^ dsmcc_crc_tab[((crc >> 24) ^ data[i]) & 0xFF];
+    }
+
+  return crc;
 }
-
-unsigned int Crc32::crc (char *data, unsigned int len) {
-	unsigned int i   = 0;
-	unsigned int crc = 0xFFFFFFFF;
-
-	for (i = 0; i < len; i++) {
-		crc = (crc << 8) ^ dsmcc_crc_tab[((crc >> 24) ^ data[i]) & 0xFF];
-	}
-
-	return crc;
-}
-
 
 GINGA_DATAPROC_END

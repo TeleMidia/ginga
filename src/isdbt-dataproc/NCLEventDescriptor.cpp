@@ -23,79 +23,97 @@ using namespace ::ginga::util;
 
 GINGA_DATAPROC_BEGIN
 
-	string NCLEventDescriptor::getEventId(string event) {
-		return event.substr(0, 2);
-	}
+string
+NCLEventDescriptor::getEventId (string event)
+{
+  return event.substr (0, 2);
+}
 
-	uint64_t NCLEventDescriptor::getEventNPT(string event) {
-		uint64_t nptRef = 0;
-		char* strNpt;
+uint64_t
+NCLEventDescriptor::getEventNPT (string event)
+{
+  uint64_t nptRef = 0;
+  char *strNpt;
 
-		strNpt = (char*)(event.substr(5, 5).c_str());
+  strNpt = (char *)(event.substr (5, 5).c_str ());
 
-		nptRef = (strNpt[0] & 0x01);
-		nptRef = nptRef << 8;
-		nptRef = nptRef | (strNpt[1] & 0xFF);
-		nptRef = nptRef << 8;
-		nptRef = nptRef | (strNpt[2] & 0xFF);
-		nptRef = nptRef << 8;
-		nptRef = nptRef | (strNpt[3] & 0xFF);
-		nptRef = nptRef << 8;
-		nptRef = nptRef | (strNpt[4] & 0xFF);
+  nptRef = (strNpt[0] & 0x01);
+  nptRef = nptRef << 8;
+  nptRef = nptRef | (strNpt[1] & 0xFF);
+  nptRef = nptRef << 8;
+  nptRef = nptRef | (strNpt[2] & 0xFF);
+  nptRef = nptRef << 8;
+  nptRef = nptRef | (strNpt[3] & 0xFF);
+  nptRef = nptRef << 8;
+  nptRef = nptRef | (strNpt[4] & 0xFF);
 
-		return nptRef;
-	}
+  return nptRef;
+}
 
-	string NCLEventDescriptor::getCommandTag(string event) {
-		string cmdTag = "0x" + itos(event[11] & 0xFF);
+string
+NCLEventDescriptor::getCommandTag (string event)
+{
+  string cmdTag = "0x" + itos (event[11] & 0xFF);
 
-		return cmdTag;
-	}
+  return cmdTag;
+}
 
-	int NCLEventDescriptor::getSequenceNumber(string event) {
-		char* strSeq;
+int
+NCLEventDescriptor::getSequenceNumber (string event)
+{
+  char *strSeq;
 
-		strSeq = (char*)(event.substr(12, 1).c_str());
-		return strSeq[0] & 0xFE;
-	}
+  strSeq = (char *)(event.substr (12, 1).c_str ());
+  return strSeq[0] & 0xFE;
+}
 
-	bool NCLEventDescriptor::getFinalFlag(string event) {
-		char* strFF;
+bool
+NCLEventDescriptor::getFinalFlag (string event)
+{
+  char *strFF;
 
-		strFF = (char*)(event.substr(12, 1).c_str());
-		return strFF[0] & 0x01;
-	}
+  strFF = (char *)(event.substr (12, 1).c_str ());
+  return strFF[0] & 0x01;
+}
 
-	string NCLEventDescriptor::getPrivateDataPayload(string event) {
-		unsigned int privateDataLength;
+string
+NCLEventDescriptor::getPrivateDataPayload (string event)
+{
+  unsigned int privateDataLength;
 
-		privateDataLength = event[10] & 0xFF;
-		if (privateDataLength + 11 != event.length()) {
-			clog << "NCLEventDescriptor::getPrivateDataPayload Warning! ";
-			clog << "invalid private data length(" << privateDataLength;
-			clog << ") for event length(" << event.length() << ")";
-			clog << endl;
-		}
-		return event.substr(13, privateDataLength - 3);
-	}
+  privateDataLength = event[10] & 0xFF;
+  if (privateDataLength + 11 != event.length ())
+    {
+      clog << "NCLEventDescriptor::getPrivateDataPayload Warning! ";
+      clog << "invalid private data length(" << privateDataLength;
+      clog << ") for event length(" << event.length () << ")";
+      clog << endl;
+    }
+  return event.substr (13, privateDataLength - 3);
+}
 
-	bool NCLEventDescriptor::checkFCS(string event) {
-		//TODO: check FCS
-		return true;
-	}
+bool
+NCLEventDescriptor::checkFCS (string event)
+{
+  // TODO: check FCS
+  return true;
+}
 
-	string NCLEventDescriptor::extractMarks(string eventParam) {
-		string noMarks = trim(eventParam);
+string
+NCLEventDescriptor::extractMarks (string eventParam)
+{
+  string noMarks = trim (eventParam);
 
-		if (eventParam.find("\"") != std::string::npos) {
-			noMarks = eventParam.substr(
-					eventParam.find_first_of("\"") + 1,
-					eventParam.length() - (eventParam.find_first_of("\"") + 1));
+  if (eventParam.find ("\"") != std::string::npos)
+    {
+      noMarks = eventParam.substr (
+          eventParam.find_first_of ("\"") + 1,
+          eventParam.length () - (eventParam.find_first_of ("\"") + 1));
 
-			noMarks = noMarks.substr(0, noMarks.find_last_of("\""));
-		}
+      noMarks = noMarks.substr (0, noMarks.find_last_of ("\""));
+    }
 
-		return noMarks;
-	}
+  return noMarks;
+}
 
 GINGA_DATAPROC_END

@@ -22,160 +22,180 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MULTIDEVICE_BEGIN
 
-	ActiveDeviceDomain::ActiveDeviceDomain(bool useMulticast, int srvPort) : DeviceDomain(useMulticast, srvPort) {
-		clog << "ActiveDeviceDomain::ActiveDeviceDomain()" <<endl;
-		deviceClass   = CT_ACTIVE;
-		deviceService = NULL;
-	}
+ActiveDeviceDomain::ActiveDeviceDomain (bool useMulticast, int srvPort)
+    : DeviceDomain (useMulticast, srvPort)
+{
+  clog << "ActiveDeviceDomain::ActiveDeviceDomain()" << endl;
+  deviceClass = CT_ACTIVE;
+  deviceService = NULL;
+}
 
-	ActiveDeviceDomain::~ActiveDeviceDomain() {
+ActiveDeviceDomain::~ActiveDeviceDomain () {}
 
-	}
+void
+ActiveDeviceDomain::postConnectionRequestTask (int w, int h)
+{
 
-	void ActiveDeviceDomain::postConnectionRequestTask(int w, int h) {
+  char *task;
+  int connReqPayloadSize = 7;
+  int taskSize;
 
-		char* task;
-		int connReqPayloadSize = 7;
-		int taskSize;
+  // TODO: offer configuration parameters during requests connection to
+  // CT_ACTIVE devs
 
-		//TODO: offer configuration parameters during requests connection to CT_ACTIVE devs
+  // clog << "ActiveDeviceDomain::postConnectionRequestTask";
+  // clog << " myIP = " << myIP << endl;
+  // clog << endl;
 
-		//clog << "ActiveDeviceDomain::postConnectionRequestTask";
-		//clog << " myIP = " << myIP << endl;
-		//clog << endl;
+  // prepare frame
+  task = mountFrame (myIP, CT_BASE, FT_CONNECTIONREQUEST, connReqPayloadSize);
 
-		//prepare frame
-		task = mountFrame(
-				myIP, CT_BASE, FT_CONNECTIONREQUEST, connReqPayloadSize);
+  task[HEADER_SIZE] = deviceClass;
 
-		task[HEADER_SIZE] = deviceClass;
+  task[HEADER_SIZE + 1] = w & 0xFF;
+  task[HEADER_SIZE + 2] = (w & 0xFF00) >> 8;
 
-		task[HEADER_SIZE + 1] = w & 0xFF;
-		task[HEADER_SIZE + 2] = (w & 0xFF00) >> 8;
+  task[HEADER_SIZE + 3] = h & 0xFF;
+  task[HEADER_SIZE + 4] = (h & 0xFF00) >> 8;
 
-		task[HEADER_SIZE + 3] = h & 0xFF;
-		task[HEADER_SIZE + 4] = (h & 0xFF00) >> 8;
+  task[HEADER_SIZE + 5] = servicePort & 0xFF;
+  task[HEADER_SIZE + 6] = (servicePort & 0xFF00) >> 8;
 
-		task[HEADER_SIZE + 5] = servicePort & 0xFF;
-		task[HEADER_SIZE + 6] = (servicePort & 0xFF00) >> 8;
+  taskSize = HEADER_SIZE + connReqPayloadSize;
+  broadcastTaskRequest (task, taskSize);
+}
 
-		taskSize = HEADER_SIZE + connReqPayloadSize;
-		broadcastTaskRequest(task, taskSize);
-	}
+void
+ActiveDeviceDomain::receiveAnswerTask (char *task)
+{
+  /*unsigned int taskIP;
 
-	void ActiveDeviceDomain::receiveAnswerTask(char* task) {
-		/*unsigned int taskIP;
+  taskIP = getUIntFromStream(task);
+  if (taskIP != myIP) {
+          return; //this is'nt a warning
+  }
 
-		taskIP = getUIntFromStream(task);
-		if (taskIP != myIP) {
-			return; //this is'nt a warning
-		}
+  deviceService->connectedToBaseDevice(sourceIp);*/
 
-		deviceService->connectedToBaseDevice(sourceIp);*/
+  if (connected)
+    {
+      clog << "ActiveDeviceDomain::receiveAnswerTask Warning! ";
+      clog << "received an answer task in connected state" << endl;
+    }
 
-		if (connected) {
-			clog << "ActiveDeviceDomain::receiveAnswerTask Warning! ";
-			clog << "received an answer task in connected state" << endl;
-		}
+  // TODO: check if central domain IP + port received in task is correct
+  clog << "ActiveDeviceDomain::receiveAnswerTask Connected with ";
+  clog << "base multi-device domain" << endl;
+  connected = true;
+}
 
-		//TODO: check if central domain IP + port received in task is correct
-		clog << "ActiveDeviceDomain::receiveAnswerTask Connected with ";
-		clog << "base multi-device domain" << endl;
-		connected = true;
-	}
+bool
+ActiveDeviceDomain::receiveMediaContentTask (char *task)
+{
+  clog << "ActiveDeviceDomain::receiveMediaContentTask" << endl;
 
-	bool ActiveDeviceDomain::receiveMediaContentTask(char* task) {
-		clog << "ActiveDeviceDomain::receiveMediaContentTask" << endl;
+  /*return deviceService->receiveMediaContent(
+                  sourceIp, task, this->frameSize);*/
 
-		/*return deviceService->receiveMediaContent(
-				sourceIp, task, this->frameSize);*/
+  return false;
+}
 
-		return false;
-	}
+bool
+ActiveDeviceDomain::runControlTask ()
+{
+  char *task;
 
-	bool ActiveDeviceDomain::runControlTask() {
-		char* task;
+  if (taskIndicationFlag)
+    {
+      task = taskReceive ();
+      if (task == NULL)
+        {
+          taskIndicationFlag = false;
+          clog << "ActiveDeviceDomain::runControlTask Warning! ";
+          clog << "received a NULL task" << endl;
+          return false;
+        }
 
-		if (taskIndicationFlag) {
-			task = taskReceive();
-			if (task == NULL) {
-				taskIndicationFlag = false;
-				clog << "ActiveDeviceDomain::runControlTask Warning! ";
-				clog << "received a NULL task" << endl;
-				return false;
-			}
+      if (myIP == sourceIp)
+        {
+          /*
+          clog << "ActiveDeviceDomain::runControlTask got my own task ";
+          clog << "(size = '" << frameSize << "')" << endl;*/
 
-			if (myIP == sourceIp) {
-				/*
-				clog << "ActiveDeviceDomain::runControlTask got my own task ";
-				clog << "(size = '" << frameSize << "')" << endl;*/
+          delete[] task;
+          taskIndicationFlag = false;
+          return false;
+        }
 
-				delete[] task;
-				taskIndicationFlag = false;
-				return false;
-			}
+      if (destClass != deviceClass)
+        {
+          clog << "ActiveDeviceDomain::runControlTask Task isn't for me!";
+          clog << endl;
 
-			if (destClass != deviceClass) {
-				clog << "ActiveDeviceDomain::runControlTask Task isn't for me!";
-				clog << endl;
+          delete[] task;
+          taskIndicationFlag = false;
+          return false;
+        }
 
-				delete[] task;
-				taskIndicationFlag = false;
-				return false;
-			}
+      if (frameSize + HEADER_SIZE != bytesRecv)
+        {
+          delete[] task;
+          taskIndicationFlag = false;
+          clog << "ActiveDeviceDomain::runControlTask Warning! ";
+          clog << "received a wrong size frame '" << frameSize;
+          clog << "' bytes received '" << bytesRecv << "'" << endl;
+          return false;
+        }
+      // clog << "ActiveDeviceDomain::runControlTask frame type '";
+      // clog << frameType << "'" << endl;
 
-			if (frameSize + HEADER_SIZE != bytesRecv) {
-				delete[] task;
-				taskIndicationFlag = false;
-				clog << "ActiveDeviceDomain::runControlTask Warning! ";
-				clog << "received a wrong size frame '" << frameSize;
-				clog << "' bytes received '" << bytesRecv << "'" << endl;
-				return false;
-			}
-			//clog << "ActiveDeviceDomain::runControlTask frame type '";
-			//clog << frameType << "'" << endl;
+      switch (frameType)
+        {
+        case FT_ANSWERTOREQUEST:
+          if (frameSize != 11)
+            {
+              clog << "ActiveDeviceDomain::runControlTask Warning!";
+              clog << "received an answer to connection request with";
+              clog << " wrong size: '" << frameSize << "'" << endl;
+              delete[] task;
+              taskIndicationFlag = false;
+              return false;
+            }
+          else
+            {
+              receiveAnswerTask (task);
+            }
+          break;
 
-			switch (frameType) {
-				case FT_ANSWERTOREQUEST:
-					if (frameSize != 11) {
-						clog << "ActiveDeviceDomain::runControlTask Warning!";
-						clog << "received an answer to connection request with";
-						clog << " wrong size: '" << frameSize << "'" << endl;
-						delete[] task;
-						taskIndicationFlag = false;
-						return false;
+        case FT_KEEPALIVE:
+          clog << "ActiveDeviceDomain::runControlTask KEEPALIVE";
+          clog << endl;
+          break;
 
-					} else {
-						receiveAnswerTask(task);
-					}
-					break;
+        default:
+          clog << "ActiveDeviceDomain::runControlTask WHAT? FT '";
+          clog << frameType << "'" << endl;
+          delete[] task;
+          taskIndicationFlag = false;
+          return false;
+        }
 
-				case FT_KEEPALIVE:
-					clog << "ActiveDeviceDomain::runControlTask KEEPALIVE";
-					clog << endl;
-					break;
+      delete[] task;
+    }
+  else
+    {
+      clog << "ActiveDeviceDomain::runControlTask Warning! ";
+      clog << "task indication flag is false" << endl;
+    }
 
-				default:
-					clog << "ActiveDeviceDomain::runControlTask WHAT? FT '";
-					clog << frameType << "'" << endl;
-					delete[] task;
-					taskIndicationFlag = false;
-					return false;
-			}
+  taskIndicationFlag = false;
+  return true;
+}
 
-			delete[] task;
-
-		} else {
-			clog << "ActiveDeviceDomain::runControlTask Warning! ";
-			clog << "task indication flag is false" << endl;
-		}
-
-		taskIndicationFlag = false;
-		return true;
-	}
-
-	void ActiveDeviceDomain::checkDomainTasks() {
-		DeviceDomain::checkDomainTasks();
-	}
+void
+ActiveDeviceDomain::checkDomainTasks ()
+{
+  DeviceDomain::checkDomainTasks ();
+}
 
 GINGA_MULTIDEVICE_END

@@ -20,106 +20,127 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	Connector::Connector(string id) : Entity(id) {
-		parameters = new map<string, Parameter*>;
+Connector::Connector (string id) : Entity (id)
+{
+  parameters = new map<string, Parameter *>;
 
-		typeSet.insert("Connector");
-	}
+  typeSet.insert ("Connector");
+}
 
-	Connector::~Connector() {
-		map<string, Parameter*>::iterator i;
+Connector::~Connector ()
+{
+  map<string, Parameter *>::iterator i;
 
-		if (parameters != NULL) {
-			i = parameters->begin();
-			while (i != parameters->end()) {
-				delete i->second;
-				++i;
-			}
-			delete parameters;
-			parameters = NULL;
-		}
-	}
+  if (parameters != NULL)
+    {
+      i = parameters->begin ();
+      while (i != parameters->end ())
+        {
+          delete i->second;
+          ++i;
+        }
+      delete parameters;
+      parameters = NULL;
+    }
+}
 
-	int Connector::getNumRoles() {
-		int numOfRoles;
+int
+Connector::getNumRoles ()
+{
+  int numOfRoles;
 
-		vector<Role*>* childRoles;
-		childRoles = getRoles();
-		numOfRoles = childRoles->size();
-		delete childRoles;
+  vector<Role *> *childRoles;
+  childRoles = getRoles ();
+  numOfRoles = childRoles->size ();
+  delete childRoles;
 
-		return numOfRoles;
-	}
+  return numOfRoles;
+}
 
-	Role* Connector::getRole(string roleId) {
-		Role* wRole;
-		vector<Role*> *roles = getRoles();
-		if (roles == NULL) {
-			return NULL;
-		}
+Role *
+Connector::getRole (string roleId)
+{
+  Role *wRole;
+  vector<Role *> *roles = getRoles ();
+  if (roles == NULL)
+    {
+      return NULL;
+    }
 
-		vector<Role*>::iterator i;
-		for (i=roles->begin(); i != roles->end(); ++i) {
-			wRole = *i;
-			if (wRole->getLabel() == roleId) {
-				delete roles;
-				return wRole;
-			}
-		}
-		delete roles;
-		return NULL;
-	}
+  vector<Role *>::iterator i;
+  for (i = roles->begin (); i != roles->end (); ++i)
+    {
+      wRole = *i;
+      if (wRole->getLabel () == roleId)
+        {
+          delete roles;
+          return wRole;
+        }
+    }
+  delete roles;
+  return NULL;
+}
 
-	void Connector::addParameter(Parameter* parameter) {
-		if (parameter == NULL)
-			return;
+void
+Connector::addParameter (Parameter *parameter)
+{
+  if (parameter == NULL)
+    return;
 
-		map<string, Parameter*>::iterator i;
-		for (i=parameters->begin(); i!=parameters->end(); ++i)
-			if (i->first == parameter->getName())
-				return;
+  map<string, Parameter *>::iterator i;
+  for (i = parameters->begin (); i != parameters->end (); ++i)
+    if (i->first == parameter->getName ())
+      return;
 
-		(*parameters)[parameter->getName()] = parameter;
-	}
+  (*parameters)[parameter->getName ()] = parameter;
+}
 
-	vector<Parameter*>* Connector::getParameters() {
-		if (parameters->empty())
-			return NULL;
+vector<Parameter *> *
+Connector::getParameters ()
+{
+  if (parameters->empty ())
+    return NULL;
 
-		vector<Parameter*>* params;
-		params = new vector<Parameter*>;
-		map<string, Parameter*>::iterator i;
-		for (i=parameters->begin(); i!=parameters->end(); ++i)
-			params->push_back(i->second);
+  vector<Parameter *> *params;
+  params = new vector<Parameter *>;
+  map<string, Parameter *>::iterator i;
+  for (i = parameters->begin (); i != parameters->end (); ++i)
+    params->push_back (i->second);
 
-		return params;
-	}
+  return params;
+}
 
-	Parameter* Connector::getParameter(string name) {
-		if (parameters->empty())
-			return NULL;
+Parameter *
+Connector::getParameter (string name)
+{
+  if (parameters->empty ())
+    return NULL;
 
-		map<string, Parameter*>::iterator i;
-		for (i=parameters->begin(); i!=parameters->end(); ++i)
-			if (i->first == name)
-				return (Parameter*)(i->second);
+  map<string, Parameter *>::iterator i;
+  for (i = parameters->begin (); i != parameters->end (); ++i)
+    if (i->first == name)
+      return (Parameter *)(i->second);
 
-		return NULL;
-	}
+  return NULL;
+}
 
-	bool Connector::removeParameter(string name) {
-		if (parameters->empty())
-			return false;
+bool
+Connector::removeParameter (string name)
+{
+  if (parameters->empty ())
+    return false;
 
-		map<string, Parameter*>::iterator i;
-		for (i=parameters->begin(); i!=parameters->end(); ++i) {
-			if (i->first == name) {
-				parameters->erase(i);
-				return true;
-			}
-		}
+  map<string, Parameter *>::iterator i;
+  for (i = parameters->begin (); i != parameters->end (); ++i)
+    {
+      if (i->first == name)
+        {
+          parameters->erase (i);
+          return true;
+        }
+    }
 
-		return false;
-	}
+  return false;
+}
 
 GINGA_NCL_END

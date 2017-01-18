@@ -24,43 +24,41 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SystemCompat.h"
 using namespace ::ginga::system;
 
-
 GINGA_SYSTEM_BEGIN
 
-	class Stc {
-		protected:
-			uint64_t stc;
-			struct timeval clockRef;
+class Stc
+{
+protected:
+  uint64_t stc;
+  struct timeval clockRef;
 
-			uint64_t reference;
+  uint64_t reference;
 
-			virtual void refreshStcSample();
+  virtual void refreshStcSample ();
 
-		public:
-			Stc();
-			virtual ~Stc();
+public:
+  Stc ();
+  virtual ~Stc ();
 
-			static int timevalSubtract(
-					struct timeval *result,
-					struct timeval *x,
-					struct timeval *y);
+  static int timevalSubtract (struct timeval *result, struct timeval *x,
+                              struct timeval *y);
 
-			static uint64_t baseExtToStc(uint64_t base, uint64_t ext);
-			static uint64_t stcToBase(uint64_t stc);
-			static uint64_t stcToExt(uint64_t stc);
-			static double stcToSecond(uint64_t stc);
-			static double baseToSecond(uint64_t base);
-			static uint64_t secondToStc(double seconds);
-			static uint64_t secondToBase(double seconds);
+  static uint64_t baseExtToStc (uint64_t base, uint64_t ext);
+  static uint64_t stcToBase (uint64_t stc);
+  static uint64_t stcToExt (uint64_t stc);
+  static double stcToSecond (uint64_t stc);
+  static double baseToSecond (uint64_t base);
+  static uint64_t secondToStc (double seconds);
+  static uint64_t secondToBase (double seconds);
 
-			uint64_t getReference();
-			void setReference(uint64_t pcr);
-			void setReference(uint64_t base, uint64_t ext);
-			uint64_t getStc();
-			uint64_t getStcBase();
-			uint64_t getStcExt();
-			double getBaseToSecond();
-	};
+  uint64_t getReference ();
+  void setReference (uint64_t pcr);
+  void setReference (uint64_t base, uint64_t ext);
+  uint64_t getStc ();
+  uint64_t getStcBase ();
+  uint64_t getStcExt ();
+  double getBaseToSecond ();
+};
 
 GINGA_SYSTEM_END
 

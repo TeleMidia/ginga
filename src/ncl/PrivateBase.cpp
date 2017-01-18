@@ -20,69 +20,84 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	PrivateBase::PrivateBase(string uid) :
-		    CompositeNode(uid) {
+PrivateBase::PrivateBase (string uid) : CompositeNode (uid)
+{
 
-		typeSet.insert("PrivateBase");
-	}
+  typeSet.insert ("PrivateBase");
+}
 
-	PrivateBase::~PrivateBase() {
-		vector<Node*>::iterator i;
-		Node* node;
+PrivateBase::~PrivateBase ()
+{
+  vector<Node *>::iterator i;
+  Node *node;
 
-		i = nodes.begin();
-		while (i != nodes.end()) {
-			node = *i;
-			if (node != this && node->getParentComposition() == this) {
-				delete node;
-				node = NULL;
-			}
-			++i;
-		}
-		nodes.clear();
-	}
+  i = nodes.begin ();
+  while (i != nodes.end ())
+    {
+      node = *i;
+      if (node != this && node->getParentComposition () == this)
+        {
+          delete node;
+          node = NULL;
+        }
+      ++i;
+    }
+  nodes.clear ();
+}
 
-	bool PrivateBase::addNode(Node* node) {
-		if (node == NULL || this->getNode(node->getId()) != NULL) {
-			return false;
-		}
+bool
+PrivateBase::addNode (Node *node)
+{
+  if (node == NULL || this->getNode (node->getId ()) != NULL)
+    {
+      return false;
+    }
 
-		nodes.push_back(node);
-		node->setParentComposition(this);
-		return true;
-	}
+  nodes.push_back (node);
+  node->setParentComposition (this);
+  return true;
+}
 
-	bool PrivateBase::removeAllNodeOccurrences(string nodeUID) {
-		Node* node;
+bool
+PrivateBase::removeAllNodeOccurrences (string nodeUID)
+{
+  Node *node;
 
-		node = getNode(nodeUID);
-		return removeAllNodeOccurrences(node);
-	}
+  node = getNode (nodeUID);
+  return removeAllNodeOccurrences (node);
+}
 
-	bool PrivateBase::removeAllNodeOccurrences(Node* node) {
-		if (node == NULL)
-			return false;
+bool
+PrivateBase::removeAllNodeOccurrences (Node *node)
+{
+  if (node == NULL)
+    return false;
 
-		vector<Node*>::iterator iterNode;
-		vector<Node*>::iterator i;
+  vector<Node *>::iterator iterNode;
+  vector<Node *>::iterator i;
 
-		iterNode = nodes.begin();
-		while (iterNode != nodes.end()) {
-			if ((*(*iterNode)).getId() == node->getId()) {
-				i = nodes.erase(iterNode);
-				if (i == nodes.end()) {
-					if ((*iterNode)->instanceOf("ContextNode")) {
-						((ContextNode*)(*iterNode))->removeNode(node);
-					}
-					return true;
-				}
-			}
-			if ((*iterNode)->instanceOf("ContextNode")) {
-				((ContextNode*)(*iterNode))->removeNode(node);
-			}
-			++iterNode;
-		}
-		return true;
-	}
+  iterNode = nodes.begin ();
+  while (iterNode != nodes.end ())
+    {
+      if ((*(*iterNode)).getId () == node->getId ())
+        {
+          i = nodes.erase (iterNode);
+          if (i == nodes.end ())
+            {
+              if ((*iterNode)->instanceOf ("ContextNode"))
+                {
+                  ((ContextNode *)(*iterNode))->removeNode (node);
+                }
+              return true;
+            }
+        }
+      if ((*iterNode)->instanceOf ("ContextNode"))
+        {
+          ((ContextNode *)(*iterNode))->removeNode (node);
+        }
+      ++iterNode;
+    }
+  return true;
+}
 
 GINGA_NCL_END

@@ -20,24 +20,27 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_BEGIN
 
-	BeginEventTransition::BeginEventTransition(
-		    double time,
-		    PresentationEvent* event) : EventTransition(time, event) {
+BeginEventTransition::BeginEventTransition (double time,
+                                            PresentationEvent *event)
+    : EventTransition (time, event)
+{
 
-		typeSet.insert("BeginEventTransition");
-		endTransition = NULL;
-	}
+  typeSet.insert ("BeginEventTransition");
+  endTransition = NULL;
+}
 
-	BeginEventTransition::~BeginEventTransition() {
+BeginEventTransition::~BeginEventTransition () {}
 
-	}
+EndEventTransition *
+BeginEventTransition::getEndTransition ()
+{
+  return endTransition;
+}
 
-	EndEventTransition* BeginEventTransition::getEndTransition() {
-		return endTransition;
-	}
-
-	void BeginEventTransition::setEndTransition(EndEventTransition* entry) {
-		endTransition = entry;
-	}
+void
+BeginEventTransition::setEndTransition (EndEventTransition *entry)
+{
+  endTransition = entry;
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_END

@@ -38,18 +38,18 @@ using namespace ::ginga::ncl;
 #include "FormatterPlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TEXT_BEGIN
 
-	class SubtitlePlayerAdapter : public FormatterPlayerAdapter {
-		public:
-			SubtitlePlayerAdapter();
+class SubtitlePlayerAdapter : public FormatterPlayerAdapter
+{
+public:
+  SubtitlePlayerAdapter ();
 
-			virtual ~SubtitlePlayerAdapter(){};
+  virtual ~SubtitlePlayerAdapter (){};
 
-		protected:
-			void createPlayer();
-	};
+protected:
+  void createPlayer ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TEXT_END
 #endif /*SUBTITLEPLAYERADAPTER_H_*/

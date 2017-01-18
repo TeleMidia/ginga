@@ -24,36 +24,36 @@ using namespace ::ginga::nclconv;
 
 XERCES_CPP_NAMESPACE_USE
 
-
 GINGA_NCLCONV_BEGIN
 
-  class NclLinkingParser : public ModuleParser {
-	public:
-		NclLinkingParser(DocumentParser *documentParser);
-		void *parseBind(DOMElement *parentElement, void *objGrandParent);
-		virtual void *createBind(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+class NclLinkingParser : public ModuleParser
+{
+public:
+  NclLinkingParser (DocumentParser *documentParser);
+  void *parseBind (DOMElement *parentElement, void *objGrandParent);
+  virtual void *createBind (DOMElement *parentElement, void *objGrandParent)
+      = 0;
 
-		virtual void addBindParamToBind(
-			    void *parentObject, void *childObject)=0;
+  virtual void addBindParamToBind (void *parentObject, void *childObject) = 0;
 
-		void *parseLinkParam(DOMElement *parentElement, void *objGrandParent);
-		virtual void *createLinkParam(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  void *parseLinkParam (DOMElement *parentElement, void *objGrandParent);
+  virtual void *createLinkParam (DOMElement *parentElement,
+                                 void *objGrandParent)
+      = 0;
 
-		void *parseBindParam(DOMElement *parentElement, void *objGrandParent);
-		virtual void *createBindParam(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  void *parseBindParam (DOMElement *parentElement, void *objGrandParent);
+  virtual void *createBindParam (DOMElement *parentElement,
+                                 void *objGrandParent)
+      = 0;
 
-		void *parseLink(DOMElement *parentElement, void *objGrandParent);
-		virtual void *createLink(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  void *parseLink (DOMElement *parentElement, void *objGrandParent);
+  virtual void *createLink (DOMElement *parentElement, void *objGrandParent)
+      = 0;
 
-		virtual void addLinkParamToLink(
-			    void *parentObject, void *childObject)=0;
+  virtual void addLinkParamToLink (void *parentObject, void *childObject) = 0;
 
-		virtual void addBindToLink(void *parentObject, void *childObject)=0;
-  };
+  virtual void addBindToLink (void *parentObject, void *childObject) = 0;
+};
 
 GINGA_NCLCONV_END
 

@@ -22,10 +22,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	class RelativeTimeIntervalAnchor : public IntervalAnchor {
-		public:
-			RelativeTimeIntervalAnchor(string id, double begin, double end);
-	};
+class RelativeTimeIntervalAnchor : public IntervalAnchor
+{
+public:
+  RelativeTimeIntervalAnchor (string id, double begin, double end);
+};
 
 GINGA_NCL_END
 

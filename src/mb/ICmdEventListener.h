@@ -18,14 +18,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef ICMDEVENTLISTENER_H_
 #define ICMDEVENTLISTENER_H_
 
-
 GINGA_MB_BEGIN
 
-	class ICmdEventListener {
-		public:
-			virtual ~ICmdEventListener(){};
-			virtual bool cmdEventReceived(string command, string args)=0;
-	};
+class ICmdEventListener
+{
+public:
+  virtual ~ICmdEventListener (){};
+  virtual bool cmdEventReceived (string command, string args) = 0;
+};
 
 GINGA_MB_END
 

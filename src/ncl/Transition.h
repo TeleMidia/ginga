@@ -26,78 +26,79 @@ using namespace ::ginga::ncl;
 
 GINGA_NCL_BEGIN
 
-	class Transition : public Entity {
-		public:
-			static const int TYPE_BARWIPE = 0;
-			static const int TYPE_IRISWIPE = 1;
-			static const int TYPE_CLOCKWIPE = 2;
-			static const int TYPE_SNAKEWIPE = 3;
-			static const int TYPE_FADE = 4;
+class Transition : public Entity
+{
+public:
+  static const int TYPE_BARWIPE = 0;
+  static const int TYPE_IRISWIPE = 1;
+  static const int TYPE_CLOCKWIPE = 2;
+  static const int TYPE_SNAKEWIPE = 3;
+  static const int TYPE_FADE = 4;
 
-			static const int SUBTYPE_BARWIPE_LEFTTORIGHT = 0;
-			static const int SUBTYPE_BARWIPE_TOPTOBOTTOM = 1;
+  static const int SUBTYPE_BARWIPE_LEFTTORIGHT = 0;
+  static const int SUBTYPE_BARWIPE_TOPTOBOTTOM = 1;
 
-			static const int SUBTYPE_IRISWIPE_RECTANGLE = 20;
-			static const int SUBTYPE_IRISWIPE_DIAMOND = 21;
+  static const int SUBTYPE_IRISWIPE_RECTANGLE = 20;
+  static const int SUBTYPE_IRISWIPE_DIAMOND = 21;
 
-			static const int SUBTYPE_CLOCKWIPE_CLOCKWISETWELVE = 40;
-			static const int SUBTYPE_CLOCKWIPE_CLOCKWISETHREE = 41;
-			static const int SUBTYPE_CLOCKWIPE_CLOCKWISESIX = 42;
-			static const int SUBTYPE_CLOCKWIPE_CLOCKWISENINE = 43;
+  static const int SUBTYPE_CLOCKWIPE_CLOCKWISETWELVE = 40;
+  static const int SUBTYPE_CLOCKWIPE_CLOCKWISETHREE = 41;
+  static const int SUBTYPE_CLOCKWIPE_CLOCKWISESIX = 42;
+  static const int SUBTYPE_CLOCKWIPE_CLOCKWISENINE = 43;
 
-			static const int SUBTYPE_SNAKEWIPE_TOPLEFTHORIZONTAL = 60;
-			static const int SUBTYPE_SNAKEWIPE_TOPLEFTVERTICAL = 61;
-			static const int SUBTYPE_SNAKEWIPE_TOPLEFTDIAGONAL = 62;
-			static const int SUBTYPE_SNAKEWIPE_TOPRIGHTDIAGONAL = 63;
-			static const int SUBTYPE_SNAKEWIPE_BOTTOMRIGHTDIAGONAL = 64;
-			static const int SUBTYPE_SNAKEWIPE_BOTTOMLEFTDIAGONAL = 65;
+  static const int SUBTYPE_SNAKEWIPE_TOPLEFTHORIZONTAL = 60;
+  static const int SUBTYPE_SNAKEWIPE_TOPLEFTVERTICAL = 61;
+  static const int SUBTYPE_SNAKEWIPE_TOPLEFTDIAGONAL = 62;
+  static const int SUBTYPE_SNAKEWIPE_TOPRIGHTDIAGONAL = 63;
+  static const int SUBTYPE_SNAKEWIPE_BOTTOMRIGHTDIAGONAL = 64;
+  static const int SUBTYPE_SNAKEWIPE_BOTTOMLEFTDIAGONAL = 65;
 
-			static const int SUBTYPE_FADE_CROSSFADE = 80;
-			static const int SUBTYPE_FADE_FADETOCOLOR = 81;
-			static const int SUBTYPE_FADE_FADEFROMCOLOR = 82;
+  static const int SUBTYPE_FADE_CROSSFADE = 80;
+  static const int SUBTYPE_FADE_FADETOCOLOR = 81;
+  static const int SUBTYPE_FADE_FADEFROMCOLOR = 82;
 
-			static const short DIRECTION_FORWARD = 0;
-			static const short DIRECTION_REVERSE = 1;
+  static const short DIRECTION_FORWARD = 0;
+  static const short DIRECTION_REVERSE = 1;
 
-		private:
-			int type;
-			int subtype;
-			double dur;
-			double startProgress;
-			double endProgress;
-			short direction;
-			Color* fadeColor;
-			int horzRepeat;
-			int vertRepeat;
-			Color* borderColor;
-			int borderWidth;
+private:
+  int type;
+  int subtype;
+  double dur;
+  double startProgress;
+  double endProgress;
+  short direction;
+  Color *fadeColor;
+  int horzRepeat;
+  int vertRepeat;
+  Color *borderColor;
+  int borderWidth;
 
-		public:
-			Transition(string id, int type);
-			virtual ~Transition();
-			Color* getBorderColor();
-			int getBorderWidth();
-			short getDirection();
-			double getDur();
-			double getEndProgress();
-			Color* getFadeColor();
-			int getHorzRepeat();
-			double getStartProgress();
-			int getSubtype();
-			int getType();
-			int getVertRepeat();
-			void setBorderColor(Color* color);
-			void setBorderWidth(int width);
-			void setDirection(short dir);
-			void setDur(double dur);
-			void setEndProgress(double ep);
-			void setFadeColor(Color* color);
-			void setHorzRepeat(int num);
-			void setStartProgress(double sp);
-			void setSubtype(int subtype);
-			void setType(int type);
-			void setVertRepeat(int num);
-	};
+public:
+  Transition (string id, int type);
+  virtual ~Transition ();
+  Color *getBorderColor ();
+  int getBorderWidth ();
+  short getDirection ();
+  double getDur ();
+  double getEndProgress ();
+  Color *getFadeColor ();
+  int getHorzRepeat ();
+  double getStartProgress ();
+  int getSubtype ();
+  int getType ();
+  int getVertRepeat ();
+  void setBorderColor (Color *color);
+  void setBorderWidth (int width);
+  void setDirection (short dir);
+  void setDur (double dur);
+  void setEndProgress (double ep);
+  void setFadeColor (Color *color);
+  void setHorzRepeat (int num);
+  void setStartProgress (double sp);
+  void setSubtype (int subtype);
+  void setType (int type);
+  void setVertRepeat (int num);
+};
 
 GINGA_NCL_END
 

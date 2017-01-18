@@ -27,230 +27,262 @@ using namespace ::ginga::system;
 
 GINGA_MULTIDEVICE_BEGIN
 
+ContextManager *RemoteEventService::contextManager = NULL;
+RemoteEventService *RemoteEventService::_instance = NULL;
 
-	ContextManager* RemoteEventService::contextManager = NULL;
-	RemoteEventService* RemoteEventService::_instance = NULL;
+RemoteEventService::RemoteEventService ()
+{
+  RemoteEventService::contextManager = ContextManager::getInstance ();
+  clog << "RemoteEventService::new RemoteEventService()" << endl;
 
-	RemoteEventService::RemoteEventService() {
-		RemoteEventService::contextManager = ContextManager::getInstance();
-		clog << "RemoteEventService::new RemoteEventService()" << endl;
+  groups.clear ();
+  Thread::mutexInit (&groupsMutex, false);
+}
 
-		groups.clear();
-		Thread::mutexInit(&groupsMutex, false);
-	}
-	
-	void RemoteEventService::setBaseDeviceNCLPath(string base_device_ncl_path){
-		this->base_device_ncl_path = base_device_ncl_path;
-	}
+void
+RemoteEventService::setBaseDeviceNCLPath (string base_device_ncl_path)
+{
+  this->base_device_ncl_path = base_device_ncl_path;
+}
 
-	RemoteEventService::~RemoteEventService() {
-		map<int, TcpSocketService*>::iterator i;
+RemoteEventService::~RemoteEventService ()
+{
+  map<int, TcpSocketService *>::iterator i;
 
-		Thread::mutexLock(&groupsMutex);
-		i = groups.begin();
-		while (i != groups.end()) {
-			delete i->second;
-			++i;
-		}
-		groups.clear();
+  Thread::mutexLock (&groupsMutex);
+  i = groups.begin ();
+  while (i != groups.end ())
+    {
+      delete i->second;
+      ++i;
+    }
+  groups.clear ();
 
-		Thread::mutexUnlock(&groupsMutex);
-		Thread::mutexDestroy(&groupsMutex);
-	}
+  Thread::mutexUnlock (&groupsMutex);
+  Thread::mutexDestroy (&groupsMutex);
+}
 
-	RemoteEventService* RemoteEventService::getInstance() {
-		if (_instance == NULL) {
-			_instance = new RemoteEventService();
-		}
-		return _instance;
-	}
+RemoteEventService *
+RemoteEventService::getInstance ()
+{
+  if (_instance == NULL)
+    {
+      _instance = new RemoteEventService ();
+    }
+  return _instance;
+}
 
-	void RemoteEventService::addDeviceClass(unsigned int id) {
-		Thread::mutexLock(&groupsMutex);
-		if (groups.count(id) == 0) {
-			groups[id] = new TcpSocketService(
-							RemoteEventService::DEFAULT_PORT,
-							this);
-		} else {
-			clog << "RemoteEventService::addDeviceClass Warning! Trying to ";
-			clog << "add the same device class '" << id << "' twice!" << endl;
-		}
-		Thread::mutexUnlock(&groupsMutex);
-	}
+void
+RemoteEventService::addDeviceClass (unsigned int id)
+{
+  Thread::mutexLock (&groupsMutex);
+  if (groups.count (id) == 0)
+    {
+      groups[id]
+          = new TcpSocketService (RemoteEventService::DEFAULT_PORT, this);
+    }
+  else
+    {
+      clog << "RemoteEventService::addDeviceClass Warning! Trying to ";
+      clog << "add the same device class '" << id << "' twice!" << endl;
+    }
+  Thread::mutexUnlock (&groupsMutex);
+}
 
-	void RemoteEventService::addDevice(
-			unsigned int device_class, unsigned int device_id,
-			char* addr, int srvPort, bool isLocalConnection) {
+void
+RemoteEventService::addDevice (unsigned int device_class,
+                               unsigned int device_id, char *addr, int srvPort,
+                               bool isLocalConnection)
+{
 
-		map<int, TcpSocketService*>::iterator i;
-		TcpSocketService* tss;
+  map<int, TcpSocketService *>::iterator i;
+  TcpSocketService *tss;
 
-		Thread::mutexLock(&groupsMutex);
-		i = groups.find(device_class);
-		if (i == groups.end()) {
-			Thread::mutexUnlock(&groupsMutex);
-			return;
-		}
+  Thread::mutexLock (&groupsMutex);
+  i = groups.find (device_class);
+  if (i == groups.end ())
+    {
+      Thread::mutexUnlock (&groupsMutex);
+      return;
+    }
 
-		tss = i->second;
-		tss->addConnection(device_id, addr, srvPort, isLocalConnection);
-		clog << "RemoteEventService :: TcpSocketService->addConnection";
-		clog << "device_id=" << device_id << endl;
+  tss = i->second;
+  tss->addConnection (device_id, addr, srvPort, isLocalConnection);
+  clog << "RemoteEventService :: TcpSocketService->addConnection";
+  clog << "device_id=" << device_id << endl;
 
-		Thread::mutexUnlock(&groupsMutex);
-	}
+  Thread::mutexUnlock (&groupsMutex);
+}
 
-	void RemoteEventService::addDocument(
-			unsigned int device_class, char* name, char* body) {
+void
+RemoteEventService::addDocument (unsigned int device_class, char *name,
+                                 char *body)
+{
 
-		TcpSocketService* tss;
+  TcpSocketService *tss;
 
-		Thread::mutexLock(&groupsMutex);
-		if (groups.count(device_class) == 0) {
-			Thread::mutexUnlock(&groupsMutex);
-			return;
-		}
+  Thread::mutexLock (&groupsMutex);
+  if (groups.count (device_class) == 0)
+    {
+      Thread::mutexUnlock (&groupsMutex);
+      return;
+    }
 
-		tss = groups[device_class];
-		tss->postTcpCommand((char*)"ADD", 0, name, body);
-		Thread::mutexUnlock(&groupsMutex);
-		//ADD without start will be used by prefetch mechanisms
-	}
+  tss = groups[device_class];
+  tss->postTcpCommand ((char *)"ADD", 0, name, body);
+  Thread::mutexUnlock (&groupsMutex);
+  // ADD without start will be used by prefetch mechanisms
+}
 
-	void RemoteEventService::startDocument(
-			unsigned int device_class, char* name) {
+void
+RemoteEventService::startDocument (unsigned int device_class, char *name)
+{
 
-		TcpSocketService* tss;
+  TcpSocketService *tss;
 
+  string str_name = string (name);
 
-        string str_name = string(name);
+  Thread::mutexLock (&groupsMutex);
+  if (groups.count (device_class) == 0)
+    {
+      Thread::mutexUnlock (&groupsMutex);
+      return;
+    }
 
-		Thread::mutexLock(&groupsMutex);
-		if (groups.count(device_class) == 0) {
-			Thread::mutexUnlock(&groupsMutex);
-			return;
-		}
+  tss = groups[device_class];
 
-		tss = groups[device_class];
+  clog << "RemoteEventService::startDocument " << name << endl;
 
-		clog << "RemoteEventService::startDocument " << name << endl;
-       
-        size_t pos_fname = str_name.find_last_of("/\\");
-		string doc_name;
-		
-		if (pos_fname != std::string::npos) {
-			doc_name = string(str_name.substr(pos_fname + 1));
-		} else {
-			doc_name = str_name;
-		}
-       
-        string str_path = string(str_name.substr(0,pos_fname));
+  size_t pos_fname = str_name.find_last_of ("/\\");
+  string doc_name;
 
-        int pos_fdir = str_path.find_last_of("/\\");
+  if (pos_fname != std::string::npos)
+    {
+      doc_name = string (str_name.substr (pos_fname + 1));
+    }
+  else
+    {
+      doc_name = str_name;
+    }
 
-        string last_dir_name = string(str_path.substr(pos_fdir+1));
+  string str_path = string (str_name.substr (0, pos_fname));
 
-        string doc_rel_path = doc_name;
+  int pos_fdir = str_path.find_last_of ("/\\");
 
-		string zipDumpStr = string (g_get_tmp_dir ()) + "/basetmp.zip";
+  string last_dir_name = string (str_path.substr (pos_fdir + 1));
 
-		string dir_app = SystemCompat::getPath(base_device_ncl_path) + SystemCompat::getIUriD() +
-				SystemCompat::getPath(SystemCompat::updatePath(string(name)));
+  string doc_rel_path = doc_name;
 
+  string zipDumpStr = string (g_get_tmp_dir ()) + "/basetmp.zip";
 
-		clog << "RemoteEventService::startDocument dir app="<<dir_app<<endl;
-		//clog << "RemoteEventService::tmp dir="<<string(zip_dump)<<endl;
+  string dir_app
+      = SystemCompat::getPath (base_device_ncl_path)
+        + SystemCompat::getIUriD ()
+        + SystemCompat::getPath (SystemCompat::updatePath (string (name)));
 
-		SystemCompat::zip_directory(zipDumpStr, dir_app, SystemCompat::getIUriD());
-		clog << "RemoteEventService::startDocument zip_directory all done!" << endl;
+  clog << "RemoteEventService::startDocument dir app=" << dir_app << endl;
+  // clog << "RemoteEventService::tmp dir="<<string(zip_dump)<<endl;
 
-		string zip_base64 = getBase64FromFile(zipDumpStr);
-		clog << "RemoteEventService::startDocument getBase64 all done!" << endl;
-		remove(zipDumpStr.c_str());
-		//TODO: prefetch. add w/o start
+  SystemCompat::zip_directory (zipDumpStr, dir_app, SystemCompat::getIUriD ());
+  clog << "RemoteEventService::startDocument zip_directory all done!" << endl;
 
-		if (zip_base64 != "") {
-			clog << "RemoteEventService::zipb64.len = ";
-			clog << zip_base64.length() << endl;
+  string zip_base64 = getBase64FromFile (zipDumpStr);
+  clog << "RemoteEventService::startDocument getBase64 all done!" << endl;
+  remove (zipDumpStr.c_str ());
+  // TODO: prefetch. add w/o start
 
-	//		tss->postTcpCommand((char*)"ADD", 0, name, (char*)zip_base64.c_str());
-	//		clog << "RemoteEventService:: ADD name="<<name<<endl;
+  if (zip_base64 != "")
+    {
+      clog << "RemoteEventService::zipb64.len = ";
+      clog << zip_base64.length () << endl;
 
-	//		tss->postTcpCommand((char*)"START", 0, name, (char*)"");
-	//
-			tss->postTcpCommand((char*)"START", 0,(char*) doc_rel_path.c_str(), (char*)zip_base64.c_str());
-		
-			clog << "RemoteEventService:: START name=" << doc_rel_path << endl;
-		}
+      //		tss->postTcpCommand((char*)"ADD", 0, name,
+      //(char*)zip_base64.c_str());
+      //		clog << "RemoteEventService:: ADD name="<<name<<endl;
 
-		Thread::mutexUnlock(&groupsMutex);
-	}
+      //		tss->postTcpCommand((char*)"START", 0, name,
+      //(char*)"");
+      //
+      tss->postTcpCommand ((char *)"START", 0, (char *)doc_rel_path.c_str (),
+                           (char *)zip_base64.c_str ());
 
-	void RemoteEventService::stopDocument(
-			unsigned int device_class, char* name) {
+      clog << "RemoteEventService:: START name=" << doc_rel_path << endl;
+    }
 
-		TcpSocketService* tss;
+  Thread::mutexUnlock (&groupsMutex);
+}
 
-		Thread::mutexLock(&groupsMutex);
-		if (groups.count(device_class) == 0) {
-			Thread::mutexUnlock(&groupsMutex);
-			return;
-		}
+void
+RemoteEventService::stopDocument (unsigned int device_class, char *name)
+{
 
-		tss = groups[device_class];
-		clog << "RemoteEventService::stopDocument "<< name << endl;
-		tss->postTcpCommand((char*)"STOP", 0, name, (char*)"");
-		Thread::mutexUnlock(&groupsMutex);
-	}
+  TcpSocketService *tss;
 
-	/***/
+  Thread::mutexLock (&groupsMutex);
+  if (groups.count (device_class) == 0)
+    {
+      Thread::mutexUnlock (&groupsMutex);
+      return;
+    }
 
-	bool RemoteEventService::newDeviceConnected(int newDevClass, int w, int h) {
-		return false;
-	}
+  tss = groups[device_class];
+  clog << "RemoteEventService::stopDocument " << name << endl;
+  tss->postTcpCommand ((char *)"STOP", 0, name, (char *)"");
+  Thread::mutexUnlock (&groupsMutex);
+}
 
-	void RemoteEventService::connectedToBaseDevice(unsigned int domainAddr) {
+/***/
 
-	}
+bool
+RemoteEventService::newDeviceConnected (int newDevClass, int w, int h)
+{
+  return false;
+}
 
-	bool RemoteEventService::receiveRemoteContent(
-			int remoteDevClass,
-			string contentUri) {
-		return false;
-	}
+void
+RemoteEventService::connectedToBaseDevice (unsigned int domainAddr)
+{
+}
 
-	bool RemoteEventService::receiveRemoteContent(
-			int remoteDevClass,
-			char *stream, int streamSize) {
-		return false;
-	}
+bool
+RemoteEventService::receiveRemoteContent (int remoteDevClass,
+                                          string contentUri)
+{
+  return false;
+}
 
-	bool RemoteEventService::receiveRemoteContentInfo(
-			string contentId, string contentUri) {
-		return false;
-	}
+bool
+RemoteEventService::receiveRemoteContent (int remoteDevClass, char *stream,
+                                          int streamSize)
+{
+  return false;
+}
 
+bool
+RemoteEventService::receiveRemoteContentInfo (string contentId,
+                                              string contentUri)
+{
+  return false;
+}
 
-	bool RemoteEventService::receiveRemoteEvent(
-						int remoteDevClass,
-						int eventType,
-						string eventContent) {
+bool
+RemoteEventService::receiveRemoteEvent (int remoteDevClass, int eventType,
+                                        string eventContent)
+{
 
-		if (eventType == 5) {
-			//clog << "RemoteEventService::receiveRemoteEvent ATTR";
-			//clog << eventContent << endl;
+  if (eventType == 5)
+    {
+      // clog << "RemoteEventService::receiveRemoteEvent ATTR";
+      // clog << eventContent << endl;
 
-			string name, value;
-			size_t pos;
-			pos = eventContent.find("=");
-			name = eventContent.substr(0,pos-1);
-			value = eventContent.substr(pos+2);
-			RemoteEventService::contextManager->setGlobalVar(name,value);
-
-		}
-		return true;
-	}
-
-
+      string name, value;
+      size_t pos;
+      pos = eventContent.find ("=");
+      name = eventContent.substr (0, pos - 1);
+      value = eventContent.substr (pos + 2);
+      RemoteEventService::contextManager->setGlobalVar (name, value);
+    }
+  return true;
+}
 
 GINGA_MULTIDEVICE_END

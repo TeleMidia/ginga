@@ -17,127 +17,132 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 
-
 #include "TcpSocketService.h"
 
 GINGA_MULTIDEVICE_BEGIN
 
-TcpSocketService::TcpSocketService(unsigned int p, IRemoteDeviceListener* r) {
+TcpSocketService::TcpSocketService (unsigned int p, IRemoteDeviceListener *r)
+{
   res = r;
   port = p;
 
   connection_counter = 0;
 
-  connections = new map<unsigned int, TCPClientConnection*>;
-  Thread::mutexInit(&connMutex, false);
+  connections = new map<unsigned int, TCPClientConnection *>;
+  Thread::mutexInit (&connMutex, false);
 }
 
-                TcpSocketService::~TcpSocketService() {
-                  Thread::mutexLock(&connMutex);
-                  if (connections != NULL) {
-                    delete connections;
-                    connections = NULL;
-                  }
-                  Thread::mutexUnlock(&connMutex);
-                  Thread::mutexDestroy(&connMutex);
-                }
+TcpSocketService::~TcpSocketService ()
+{
+  Thread::mutexLock (&connMutex);
+  if (connections != NULL)
+    {
+      delete connections;
+      connections = NULL;
+    }
+  Thread::mutexUnlock (&connMutex);
+  Thread::mutexDestroy (&connMutex);
+}
 
-void TcpSocketService::addConnection(unsigned int deviceId,
-                                     char* addr,
-                                     int srvPort,
-                                     bool isLocalConnection) {
-  char* portStr;
-  TCPClientConnection* tcpcc;
-  //unsigned int newDevId;
+void
+TcpSocketService::addConnection (unsigned int deviceId, char *addr,
+                                 int srvPort, bool isLocalConnection)
+{
+  char *portStr;
+  TCPClientConnection *tcpcc;
+  // unsigned int newDevId;
 
   portStr = g_strdup_printf ("%d", srvPort);
 
-  Thread::mutexLock(&connMutex);
-  if (connections != NULL && connections->count(deviceId) == 0) {
+  Thread::mutexLock (&connMutex);
+  if (connections != NULL && connections->count (deviceId) == 0)
+    {
 
-    //	if (connections != NULL) {
-    //(*connections)[deviceId] = new TCPClientConnection(addr, portStr);
-    connection_counter++;
-    tcpcc = new TCPClientConnection(
-                                    deviceId,
-                                    connection_counter,
-                                    addr,
-                                    portStr,
-                                    (IRemoteDeviceListener*)res);
+      //	if (connections != NULL) {
+      //(*connections)[deviceId] = new TCPClientConnection(addr, portStr);
+      connection_counter++;
+      tcpcc = new TCPClientConnection (deviceId, connection_counter, addr,
+                                       portStr, (IRemoteDeviceListener *)res);
 
-    (*connections)[deviceId] = tcpcc;
+      (*connections)[deviceId] = tcpcc;
 
-    tcpcc->startThread();
+      tcpcc->startThread ();
+    }
+  else if (connections != NULL)
+    {
+      clog << "TcpSocketService::warning - connection already registered";
+      clog << endl;
 
-  } else if (connections != NULL) {
-    clog << "TcpSocketService::warning - connection already registered";
-    clog << endl;
+      //		if (!isLocalConnection) {
+      //			//TODO: maintain index when connection is
+      //created again for the same device
+      //			//TODO: defining a getIndex method for the
+      //TCPClientConn class
+      //			//configurable: stick (based on address+port),
+      //slot (like videogames)
+      //			//and continuous (index in not regained, keeps
+      //increasing)
+      //
+      //			connection_counter++;
+      //			clog << "TcpSocketService::warning - not a
+      //local connection,";
+      //			clog << " removing and adding it again (";
+      //			clog << deviceId << ")" << endl;
+      //
+      //			this->removeConnection(deviceId);
+      //			tcpcc = new TCPClientConnection(
+      //							deviceId,
+      //							connection_counter,
+      //							addr,
+      //							portStr,
+      //							(IRemoteDeviceListener*)
+      //res);
+      //
+      //			(*connections)[deviceId] = tcpcc;
+      //			tcpcc->startThread();
+      //		}
+      // newDevId = (--connections->end())->first + 1;
+      //(*connections)[newDevId] = new TCPClientConnection(addr, portStr);
+    }
 
-    //		if (!isLocalConnection) {
-    //			//TODO: maintain index when connection is created again for the same device
-    //			//TODO: defining a getIndex method for the TCPClientConn class
-    //			//configurable: stick (based on address+port), slot (like videogames)
-    //			//and continuous (index in not regained, keeps increasing)
-    //
-    //			connection_counter++;
-    //			clog << "TcpSocketService::warning - not a local connection,";
-    //			clog << " removing and adding it again (";
-    //			clog << deviceId << ")" << endl;
-    //
-    //			this->removeConnection(deviceId);
-    //			tcpcc = new TCPClientConnection(
-    //							deviceId,
-    //							connection_counter,
-    //							addr,
-    //							portStr,
-    //							(IRemoteDeviceListener*) res);
-    //
-    //			(*connections)[deviceId] = tcpcc;
-    //			tcpcc->startThread();
-    //		}
-    //newDevId = (--connections->end())->first + 1;
-    //(*connections)[newDevId] = new TCPClientConnection(addr, portStr);
-  }
-
-  Thread::mutexUnlock(&connMutex);
+  Thread::mutexUnlock (&connMutex);
 
   clog << "TcpSocketService::addConnection all done" << endl;
 }
 
-void TcpSocketService::removeConnection(unsigned int deviceId) {
+void
+TcpSocketService::removeConnection (unsigned int deviceId)
+{
   TCPClientConnection *con = (*connections)[deviceId];
-  con->release();
+  con->release ();
   delete con;
   (*connections)[deviceId] = NULL;
 }
-//TODO: create postTcpCommand with deviceId arg
+// TODO: create postTcpCommand with deviceId arg
 
-void TcpSocketService::postTcpCommand(
-                                      char* command,
-                                      int npt,
-                                      char* payloadDesc,
-                                      char* payload) {
+void
+TcpSocketService::postTcpCommand (char *command, int npt, char *payloadDesc,
+                                  char *payload)
+{
 
-  map<unsigned int, TCPClientConnection*>::iterator i;
-  char* com;
-  com = g_strdup_printf ("%d %s %s %d\n",
-                         npt,
-                         command,
-                         payloadDesc,
-                         (int)strlen(payload));
+  map<unsigned int, TCPClientConnection *>::iterator i;
+  char *com;
+  com = g_strdup_printf ("%d %s %s %d\n", npt, command, payloadDesc,
+                         (int)strlen (payload));
 
   string s_com;
-  s_com = string(com) + "\n" + string(payload);
+  s_com = string (com) + "\n" + string (payload);
 
-  Thread::mutexLock(&connMutex);
-  i = connections->begin();
+  Thread::mutexLock (&connMutex);
+  i = connections->begin ();
 
-  while (i != connections->end()) {
-    i->second->post((char *)s_com.c_str());
-    ++i;
-  }
+  while (i != connections->end ())
+    {
+      i->second->post ((char *)s_com.c_str ());
+      ++i;
+    }
 
-  Thread::mutexUnlock(&connMutex);
+  Thread::mutexUnlock (&connMutex);
 }
 
 GINGA_MULTIDEVICE_END

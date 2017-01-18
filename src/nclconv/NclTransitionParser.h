@@ -24,41 +24,43 @@ using namespace ::ginga::nclconv;
 
 XERCES_CPP_NAMESPACE_USE
 
-
 #include "NclImportParser.h"
 
 GINGA_NCLCONV_BEGIN
 
-	class NclTransitionParser : public ModuleParser {
-		private:
-			NclImportParser *importParser;
-			void *presentationControlParser;
+class NclTransitionParser : public ModuleParser
+{
+private:
+  NclImportParser *importParser;
+  void *presentationControlParser;
 
-		public:
-			NclTransitionParser(DocumentParser *documentParser);
+public:
+  NclTransitionParser (DocumentParser *documentParser);
 
-			void *parseTransitionBase(
-				    DOMElement *parentElement, void *objGrandParent);
+  void *parseTransitionBase (DOMElement *parentElement, void *objGrandParent);
 
-			virtual void* createTransitionBase(
-				    DOMElement *parentElement, void *objGrandParent)=0;
+  virtual void *createTransitionBase (DOMElement *parentElement,
+                                      void *objGrandParent)
+      = 0;
 
-			virtual void addImportBaseToTransitionBase(
-				    void *parentObject, void *childObject)=0;
+  virtual void addImportBaseToTransitionBase (void *parentObject,
+                                              void *childObject)
+      = 0;
 
-			virtual void addTransitionToTransitionBase(
-				    void *parentObject, void *childObject)=0;
+  virtual void addTransitionToTransitionBase (void *parentObject,
+                                              void *childObject)
+      = 0;
 
-			void* parseTransition(
-				    DOMElement *parentElement, void *objGrandParent);
+  void *parseTransition (DOMElement *parentElement, void *objGrandParent);
 
-			virtual void* createTransition(
-				    DOMElement *parentElement, void *objGrandParent)=0;
+  virtual void *createTransition (DOMElement *parentElement,
+                                  void *objGrandParent)
+      = 0;
 
-			NclImportParser *getImportParser();
-			void setImportParser(NclImportParser *importParser);
-	};
+  NclImportParser *getImportParser ();
+  void setImportParser (NclImportParser *importParser);
+};
 
 GINGA_NCLCONV_END
 
-#endif //NCLTRANSITIONPARSER_H_
+#endif // NCLTRANSITIONPARSER_H_

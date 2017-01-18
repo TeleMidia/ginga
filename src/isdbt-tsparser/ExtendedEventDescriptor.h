@@ -21,49 +21,47 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "isdbt-tsparser/IMpegDescriptor.h"
 using namespace ::ginga::tsparser;
 
-
 #include "isdbt-tsparser/IExtendedEventDescriptor.h"
 
 /*
 struct Item {
-	unsigned char itemDescriptionLength;
-	char* itemDescriptionChar;
-	unsigned char itemLength;
-	char* itemChar;
+        unsigned char itemDescriptionLength;
+        char* itemDescriptionChar;
+        unsigned char itemLength;
+        char* itemChar;
 };
 */
 
 GINGA_TSPARSER_BEGIN
 
+class ExtendedEventDescriptor : public IExtendedEventDescriptor
+{
+protected:
+  vector<Item *> *items;
+  // unsigned char descriptorTag;
+  unsigned char descriptorNumber;
+  unsigned char lastDescriptorNumber;
+  char languageCode[3];
+  unsigned char lengthOfItems;
+  unsigned char textLength;
+  char *textChar; // extendedDescription field on EPG table
 
-	class ExtendedEventDescriptor : public IExtendedEventDescriptor  {
-		protected:
-			vector<Item*>* items;
-			//unsigned char descriptorTag;
-			unsigned char descriptorNumber;
-			unsigned char lastDescriptorNumber;
-			char languageCode[3];
-			unsigned char lengthOfItems;
-			unsigned char textLength;
-			char* textChar; //extendedDescription field on EPG table
-
-		public:
-			ExtendedEventDescriptor();
-			~ExtendedEventDescriptor();
-			unsigned char getDescriptorTag();
-			unsigned int getDescriptorLength();
-			unsigned int getDescriptorNumber();
-			unsigned int getLastDescriptorNumber ();
-			string getLanguageCode();
-			unsigned int getTextLength();
-			string getTextChar();
-			vector<Item*>* getItems();
-			string getItemDescriptionChar(struct Item* item);
-			string getItemChar(struct Item* item);
-			void print();
-			size_t process(char* data, size_t pos);
-
-	};
+public:
+  ExtendedEventDescriptor ();
+  ~ExtendedEventDescriptor ();
+  unsigned char getDescriptorTag ();
+  unsigned int getDescriptorLength ();
+  unsigned int getDescriptorNumber ();
+  unsigned int getLastDescriptorNumber ();
+  string getLanguageCode ();
+  unsigned int getTextLength ();
+  string getTextChar ();
+  vector<Item *> *getItems ();
+  string getItemDescriptionChar (struct Item *item);
+  string getItemChar (struct Item *item);
+  void print ();
+  size_t process (char *data, size_t pos);
+};
 
 GINGA_TSPARSER_END
 

@@ -34,19 +34,19 @@ private:
   bool isTimeNodeType;
 
 public:
-  ContentNode(string uid, Content* someContent);
-  ContentNode(string uid, Content* content, string type);
-  virtual ~ContentNode(){};
+  ContentNode (string uid, Content *someContent);
+  ContentNode (string uid, Content *content, string type);
+  virtual ~ContentNode (){};
 
 private:
-  void initialize(string type);
+  void initialize (string type);
 
 public:
-  bool isSettingNode();
-  bool isTimeNode();
-  string getTypeValue();
-  string getNodeType();
-  void setNodeType(string type);
+  bool isSettingNode ();
+  bool isTimeNode ();
+  string getTypeValue ();
+  string getNodeType ();
+  void setNodeType (string type);
 };
 
 GINGA_NCL_END

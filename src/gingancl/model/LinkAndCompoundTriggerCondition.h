@@ -24,23 +24,22 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "LinkTriggerListener.h"
 #include "LinkCompoundTriggerCondition.h"
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	class LinkAndCompoundTriggerCondition :
-		    public LinkCompoundTriggerCondition {
+class LinkAndCompoundTriggerCondition : public LinkCompoundTriggerCondition
+{
 
-		private:
-			vector<LinkCondition*> unsatisfiedConditions;
-			vector<LinkCondition*> statements;
+private:
+  vector<LinkCondition *> unsatisfiedConditions;
+  vector<LinkCondition *> statements;
 
-		public:
-			LinkAndCompoundTriggerCondition();
-			virtual ~LinkAndCompoundTriggerCondition();
-			void addCondition(LinkCondition* condition);
-			void conditionSatisfied(void* condition); //LinkTriggerCondition
-			vector<FormatterEvent*>* getEvents();
-	};
+public:
+  LinkAndCompoundTriggerCondition ();
+  virtual ~LinkAndCompoundTriggerCondition ();
+  void addCondition (LinkCondition *condition);
+  void conditionSatisfied (void *condition); // LinkTriggerCondition
+  vector<FormatterEvent *> *getEvents ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif /*LINKANDCOMPOUNDTRIGGERCONDITION_H_*/

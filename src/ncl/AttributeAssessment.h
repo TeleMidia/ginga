@@ -29,28 +29,31 @@ using namespace ::ginga::util;
 
 GINGA_NCL_BEGIN
 
-	class AttributeAssessment : public Assessment, public Role {
-		private:
-			short attributeType;
-			string key;
-			string offset;
+class AttributeAssessment : public Assessment, public Role
+{
+private:
+  short attributeType;
+  string key;
+  string offset;
 
-		public:
-			AttributeAssessment(string role);
-			virtual ~AttributeAssessment() {};
-			void setMaxCon(int max);
-			void setMinCon(int min);
-			short getAttributeType();
-			void setAttributeType(short attribute);
-			string getKey();
-			void setKey(string key);
-			string getOffset();
-			void setOffset(string offset);
-			string toString();
-			bool instanceOf(string type) {
-				return Assessment::instanceOf(type);
-			}
-	};
+public:
+  AttributeAssessment (string role);
+  virtual ~AttributeAssessment (){};
+  void setMaxCon (int max);
+  void setMinCon (int min);
+  short getAttributeType ();
+  void setAttributeType (short attribute);
+  string getKey ();
+  void setKey (string key);
+  string getOffset ();
+  void setOffset (string offset);
+  string toString ();
+  bool
+  instanceOf (string type)
+  {
+    return Assessment::instanceOf (type);
+  }
+};
 
 GINGA_NCL_END
 

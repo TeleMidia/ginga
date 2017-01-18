@@ -26,33 +26,33 @@ GINGA_IC_BEGIN
 class InteractiveChannelManager
 {
 private:
-  set<CurlInteractiveChannel*>* ics;
-  map<string, CurlInteractiveChannel*>* urisIcs;
-  static InteractiveChannelManager* _instance;
-  InteractiveChannelManager();
+  set<CurlInteractiveChannel *> *ics;
+  map<string, CurlInteractiveChannel *> *urisIcs;
+  static InteractiveChannelManager *_instance;
+  InteractiveChannelManager ();
 
 public:
-  ~InteractiveChannelManager();
-  bool hasInteractiveChannel();
-  static InteractiveChannelManager* getInstance();
+  ~InteractiveChannelManager ();
+  bool hasInteractiveChannel ();
+  static InteractiveChannelManager *getInstance ();
 
 private:
-  set<CurlInteractiveChannel*>* getInteractiveChannels();
+  set<CurlInteractiveChannel *> *getInteractiveChannels ();
 
 public:
-  CurlInteractiveChannel* createInteractiveChannel(string remoteUri);
-  void releaseInteractiveChannel(CurlInteractiveChannel* ic);
-  CurlInteractiveChannel* getInteractiveChannel(string remoteUri);
-  void clearInteractiveChannelManager();
+  CurlInteractiveChannel *createInteractiveChannel (string remoteUri);
+  void releaseInteractiveChannel (CurlInteractiveChannel *ic);
+  CurlInteractiveChannel *getInteractiveChannel (string remoteUri);
+  void clearInteractiveChannelManager ();
 
 private:
-  void releaseInteractiveChannels();
+  void releaseInteractiveChannels ();
 
 public:
-  void performPendingUrls();
+  void performPendingUrls ();
 
 private:
-  static void* asyncPerform(void* thiz);
+  static void *asyncPerform (void *thiz);
 };
 
 GINGA_IC_END

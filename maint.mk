@@ -11,6 +11,11 @@ etags:
 	find . -type f \( -name '*.cpp' -or -name '*.h' \) -print\
 	  | etags - --declarations
 
+.PHONY: indent
+indent:
+	@clang-format37 -i -style=GNU\
+	  $(filter-out src/ginga.h, $(shell git ls-files '*.h' '*.cpp'))
+
 .PHONY: list-missing-config-h
 list-missing-config-h:
 	@for src in `find . -name '*.cpp'`; do\

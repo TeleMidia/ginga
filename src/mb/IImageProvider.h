@@ -20,17 +20,17 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "IDiscreteMediaProvider.h"
 
-
 GINGA_MB_BEGIN
 
-	class IImageProvider : public IDiscreteMediaProvider {
-		public:
-			virtual ~IImageProvider(){};
+class IImageProvider : public IDiscreteMediaProvider
+{
+public:
+  virtual ~IImageProvider (){};
 
-			virtual string getLoadSymbol()=0;
-			virtual void playOver(GingaSurfaceID surface)=0;
-			virtual bool releaseAll()=0;
-	};
+  virtual string getLoadSymbol () = 0;
+  virtual void playOver (GingaSurfaceID surface) = 0;
+  virtual bool releaseAll () = 0;
+};
 
 GINGA_MB_END
 

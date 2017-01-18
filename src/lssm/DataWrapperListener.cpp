@@ -47,295 +47,337 @@ using namespace ::ginga::util;
 
 GINGA_LSSM_BEGIN
 
-	DataWrapperListener::DataWrapperListener(
-			PresentationEngineManager* pem) {
+DataWrapperListener::DataWrapperListener (PresentationEngineManager *pem)
+{
 
-		this->ait         = NULL;
-		this->pem         = pem;
-		this->documentUri = "";
-		this->autoMount   = false;
-		this->docToStart  = "";
-	}
+  this->ait = NULL;
+  this->pem = pem;
+  this->documentUri = "";
+  this->autoMount = false;
+  this->docToStart = "";
+}
 
-	DataWrapperListener::~DataWrapperListener() {
-		this->pem = NULL;
-		this->ait = NULL;
-	}
+DataWrapperListener::~DataWrapperListener ()
+{
+  this->pem = NULL;
+  this->ait = NULL;
+}
 
-	void DataWrapperListener::autoMountOC(bool autoMountIt) {
-		this->autoMount = autoMountIt;
-	}
+void
+DataWrapperListener::autoMountOC (bool autoMountIt)
+{
+  this->autoMount = autoMountIt;
+}
 
-	void DataWrapperListener::writeAITCommand(const string &appName, const string &appUri, IApplication* app) {
-		//cmd::0::ait::${APP_ID}::${CONTROL_CODE}::${$BASE_URI}::{$INITIAL_ENTITY}::${URI}::${PROFILE}::${TRANSPORT_ID}
-		cout << "cmd::0::ait::";
-		cout << app->getId() << "::";
-		cout << "0x" << hex << app->getControlCode() << "::";
-		cout << app->getBaseDirectory() << "::";
-		cout << app->getInitialClass() << "::";
-		cout << appUri << "::";
-		cout << "0x" << hex << app->getProfile() << "::";
-		cout << "0x" << hex << app->getTransportProtocolId() << endl;
-	}
+void
+DataWrapperListener::writeAITCommand (const string &appName,
+                                      const string &appUri, IApplication *app)
+{
+  // cmd::0::ait::${APP_ID}::${CONTROL_CODE}::${$BASE_URI}::{$INITIAL_ENTITY}::${URI}::${PROFILE}::${TRANSPORT_ID}
+  cout << "cmd::0::ait::";
+  cout << app->getId () << "::";
+  cout << "0x" << hex << app->getControlCode () << "::";
+  cout << app->getBaseDirectory () << "::";
+  cout << app->getInitialClass () << "::";
+  cout << appUri << "::";
+  cout << "0x" << hex << app->getProfile () << "::";
+  cout << "0x" << hex << app->getTransportProtocolId () << endl;
+}
 
-	bool DataWrapperListener::startApp(const string &appName, IApplication* app) {
-		map<string, string>::iterator i;
-		string appUri;
+bool
+DataWrapperListener::startApp (const string &appName, IApplication *app)
+{
+  map<string, string>::iterator i;
+  string appUri;
 
-		i = ncls.find(appName);
+  i = ncls.find (appName);
 
-		//TODO: we should be able to avoid names conflict (two or more OC)
-		if (i != ncls.end()) {
-			appUri = i->second;
+  // TODO: we should be able to avoid names conflict (two or more OC)
+  if (i != ncls.end ())
+    {
+      appUri = i->second;
 
-			assert(fileExists(appUri));
+      assert (fileExists (appUri));
 
-			clog << "DataWrapperListener::startApp '";
-			clog << appUri << "'" << endl;
-			docToStart = appUri;
-			Thread::startThread();
-			return true;
+      clog << "DataWrapperListener::startApp '";
+      clog << appUri << "'" << endl;
+      docToStart = appUri;
+      Thread::startThread ();
+      return true;
+    }
+  else
+    {
+      clog << "DataWrapperListener::processAIT '";
+      clog << appName << "' still not available." << endl;
+    }
 
-		} else {
-			clog << "DataWrapperListener::processAIT '";
-			clog << appName << "' still not available." << endl;
-		}
+  return false;
+}
 
-		return false;
-	}
+bool
+DataWrapperListener::appIsPresent (const string &appName, IApplication *app)
+{
+  map<string, string>::iterator i;
+  string appUri;
 
-	bool DataWrapperListener::appIsPresent(const string &appName, IApplication* app) {
-		map<string, string>::iterator i;
-		string appUri;
+  i = ncls.find (appName);
 
-		i = ncls.find(appName);
+  // TODO: we should be able to avoid names conflict (two or more OC)
+  if (i != ncls.end ())
+    {
+      appUri = i->second;
 
-		//TODO: we should be able to avoid names conflict (two or more OC)
-		if (i != ncls.end()) {
-			appUri = i->second;
+      assert (fileExists (appUri));
 
-			assert(fileExists(appUri));
+      clog << "DataWrapperListener::appIsPresent '";
+      clog << appUri << "'" << endl;
+      present.insert (appUri);
+      writeAITCommand (appName, appUri, app);
+      return true;
+    }
+  else
+    {
+      clog << "DataWrapperListener::processAIT '";
+      clog << appName << "' still not available." << endl;
+    }
 
-			clog << "DataWrapperListener::appIsPresent '";
-			clog << appUri << "'" << endl;
-			present.insert(appUri);
-			writeAITCommand(appName, appUri, app);
-			return true;
+  return false;
+}
 
-		} else {
-			clog << "DataWrapperListener::processAIT '";
-			clog << appName << "' still not available." << endl;
-		}
+bool
+DataWrapperListener::processAIT ()
+{
+  vector<IApplication *> *apps;
+  vector<IApplication *>::iterator i;
+  IApplication *app;
+  string nclName, baseDir;
+  bool foundApp = false;
 
-		return false;
-	}
+  assert (ait != NULL);
 
-	bool DataWrapperListener::processAIT() {
-		vector<IApplication*>* apps;
-		vector<IApplication*>::iterator i;
-		IApplication* app;
-		string nclName, baseDir;
-		bool foundApp = false;
+  cout << "cmd::0::ait::clear" << endl;
+  present.clear ();
 
-		assert(ait != NULL);
+  apps = ait->copyApplications ();
+  i = apps->begin ();
+  while (i != apps->end ())
+    {
+      app = (*i);
 
-		cout << "cmd::0::ait::clear" << endl;
-		present.clear();
+      nclName = app->getInitialClass ();
 
-		apps = ait->copyApplications();
-		i = apps->begin();
-		while (i != apps->end()) {
-			app = (*i);
+      clog << endl << "DataWrapperListener::processAIT " << endl;
+      clog << "Application '" << nclName << "'" << endl;
+      clog << "Target profle: 0x" << hex << app->getProfile () << endl;
+      clog << "Transport protocol: 0x" << hex << app->getTransportProtocolId ()
+           << endl;
 
-			nclName = app->getInitialClass();
+      unsigned char controlCode = (*i)->getControlCode ();
+      switch (controlCode)
+        {
+        case IApplication::CC_AUTOSTART:
+          clog << nclName << " AUTOSTART." << endl;
 
-			clog << endl << "DataWrapperListener::processAIT " << endl;
-			clog << "Application '" << nclName << "'" << endl;
-			clog << "Target profle: 0x" << hex << app->getProfile() << endl;
-			clog << "Transport protocol: 0x" << hex << app->getTransportProtocolId() << endl;
+          foundApp |= startApp (nclName, app);
+          break;
 
-			unsigned char controlCode = (*i)->getControlCode();
-			switch (controlCode) {
-				case IApplication::CC_AUTOSTART:
-					clog << nclName << " AUTOSTART." << endl;
+        case IApplication::CC_PRESENT:
+          clog << nclName << " PRESENT." << endl;
 
-					foundApp |= startApp(nclName, app);
-					break;
+          // TODO: do not start. it should just notify AppCatUI
+          foundApp |= appIsPresent (nclName, app);
+          break;
 
-				case IApplication::CC_PRESENT:
-					clog << nclName << " PRESENT." << endl;
+        case IApplication::CC_DESTROY:
+          clog << nclName << " DESTROY." << endl;
+          writeAITCommand (nclName, "", app);
+          break;
 
-					//TODO: do not start. it should just notify AppCatUI
-					foundApp |= appIsPresent(nclName, app);
-					break;
+        case IApplication::CC_KILL:
+          clog << nclName << " KILL." << endl;
+          writeAITCommand (nclName, "", app);
+          break;
 
-				case IApplication::CC_DESTROY:
-					clog << nclName << " DESTROY." << endl;
-					writeAITCommand(nclName, "", app);
-					break;
+        case IApplication::CC_PREFETCH:
+          clog << nclName << " PREFETCH." << endl;
+          writeAITCommand (nclName, "", app);
+          break;
 
-				case IApplication::CC_KILL:
-					clog << nclName << " KILL." << endl;
-					writeAITCommand(nclName, "", app);
-					break;
+        case IApplication::CC_REMOTE:
+          clog << nclName << " REMOTE." << endl;
+          writeAITCommand (nclName, "", app);
+          break;
 
-				case IApplication::CC_PREFETCH:
-					clog << nclName << " PREFETCH." << endl;
-					writeAITCommand(nclName, "", app);
-					break;
+        case IApplication::CC_UNBOUND:
+          clog << nclName << " UNBOUND." << endl;
+          writeAITCommand (nclName, "", app);
+          break;
 
-				case IApplication::CC_REMOTE:
-					clog << nclName << " REMOTE." << endl;
-					writeAITCommand(nclName, "", app);
-					break;
+        case IApplication::CC_STORE:
+          clog << nclName << " STORE." << endl;
+          writeAITCommand (nclName, "", app);
+          break;
 
-				case IApplication::CC_UNBOUND:
-					clog << nclName << " UNBOUND." << endl;
-					writeAITCommand(nclName, "", app);
-					break;
+        case IApplication::CC_STORED_AUTOSTART:
+          clog << nclName << " STORED_AUTOSTART." << endl;
+          writeAITCommand (nclName, "", app);
+          break;
 
-				case IApplication::CC_STORE:
-					clog << nclName << " STORE." << endl;
-					writeAITCommand(nclName, "", app);
-					break;
+        case IApplication::CC_STORED_PRESENT:
+          clog << nclName << " STORED_PRESENT." << endl;
+          writeAITCommand (nclName, "", app);
+          break;
 
-				case IApplication::CC_STORED_AUTOSTART:
-					clog << nclName << " STORED_AUTOSTART." << endl;
-					writeAITCommand(nclName, "", app);
-					break;
+        case IApplication::CC_STORED_REMOVE:
+          clog << nclName << " STORED_REMOVE." << endl;
+          writeAITCommand (nclName, "", app);
+          break;
 
-				case IApplication::CC_STORED_PRESENT:
-					clog << nclName << " STORED_PRESENT." << endl;
-					writeAITCommand(nclName, "", app);
-					break;
+        default:
+          clog << nclName << " unknown control code." << endl;
+          break;
+        }
 
-				case IApplication::CC_STORED_REMOVE:
-					clog << nclName << " STORED_REMOVE." << endl;
-					writeAITCommand(nclName, "", app);
-					break;
+      ++i;
+    }
+  delete apps;
 
-				default:
-					clog << nclName << " unknown control code." << endl;
-					break;
-			}
+  return foundApp;
+}
 
-			++i;
-		}
-		delete apps;
+bool
+DataWrapperListener::applicationInfoMounted (IAIT *ait)
+{
+  if (ait != this->ait)
+    {
+      this->ait = ait;
+    }
 
-		return foundApp;
-	}
+  return processAIT ();
+}
 
-	bool DataWrapperListener::applicationInfoMounted(IAIT* ait) {
-		if (ait != this->ait) {
-			this->ait = ait;
-		}
+void
+DataWrapperListener::objectMounted (string ior, string clientUri, string name)
+{
 
-		return processAIT();
-	}
+  GingaLocatorFactory *glf = NULL;
 
-	void DataWrapperListener::objectMounted(
-			string ior, string clientUri, string name) {
+  glf = GingaLocatorFactory::getInstance ();
 
-		GingaLocatorFactory* glf = NULL;
+  clog << "DataWrapperListener::objectMounted ior '" << ior;
+  clog << "', uri '" << clientUri << "' and name '" << name;
+  clog << "'" << endl;
+  if (glf != NULL)
+    {
+      glf->addClientLocation (ior, clientUri, name);
+    }
 
-		glf = GingaLocatorFactory::getInstance();
+  addNCLInfo (name, clientUri);
 
-		clog << "DataWrapperListener::objectMounted ior '" << ior;
-		clog << "', uri '" << clientUri << "' and name '" << name;
-		clog << "'" << endl;
-		if (glf != NULL) {
-			glf->addClientLocation(ior, clientUri, name);
-		}
+  if (name.find (".ncl") != std::string::npos && documentUri == "")
+    {
+      documentUri = SystemCompat::updatePath (
+          clientUri + SystemCompat::getIUriD () + name);
+    }
+}
 
-		addNCLInfo(name, clientUri);
+void
+DataWrapperListener::receiveStreamEvent (DsmccStreamEvent *event)
+{
+  string eventType;
+  string eventData;
 
-		if (name.find(".ncl") != std::string::npos && documentUri == "") {
-			documentUri = SystemCompat::updatePath(clientUri + SystemCompat::getIUriD() + name);
-		}
-	}
+  eventType = event->getEventName ();
+  eventData.assign (event->getData (), event->getDescriptorLength ());
 
-	void DataWrapperListener::receiveStreamEvent(DsmccStreamEvent* event) {
-		string eventType;
-		string eventData;
+  clog << "DsmccWrapper::receiveStreamEvent ";
+  clog << "eventId = '" << (eventData[0] & 0xFF) << (eventData[1] & 0xFF);
+  clog << "' commandTag = '" << (eventData[11] & 0xFF);
+  clog << "' eventType = '" << eventType;
+  clog << "' and payload = '" << eventData;
+  clog << "'" << endl;
 
-		eventType = event->getEventName();
-		eventData.assign(event->getData(), event->getDescriptorLength());
+  if (eventType == "gingaEditingCommands")
+    {
+      if (pem != NULL)
+        {
+          pem->editingCommand (eventData);
+        }
+    }
+  else
+    {
+      // TODO: fix eventName stuffs
+      if (pem != NULL)
+        {
+          pem->editingCommand (eventData);
+        }
+    }
+}
 
-		clog << "DsmccWrapper::receiveStreamEvent ";
-		clog << "eventId = '" << (eventData[0] & 0xFF) << (eventData[1] & 0xFF);
-		clog << "' commandTag = '" << (eventData[11] & 0xFF);
-		clog << "' eventType = '" << eventType;
-		clog << "' and payload = '" << eventData;
-		clog << "'" << endl;
+void
+DataWrapperListener::addNCLInfo (string name, string path)
+{
 
-		if (eventType == "gingaEditingCommands") {
-			if (pem != NULL) {
-				pem->editingCommand(eventData);
-			}
+  if (name.find (".ncl") != std::string::npos)
+    {
+      ncls[name] = SystemCompat::updatePath (path + "/" + name);
+    }
+}
 
-		} else {
-			//TODO: fix eventName stuffs
-			if (pem != NULL) {
-				pem->editingCommand(eventData);
-			}
-		}
-	}
+void
+DataWrapperListener::serviceDomainMounted (string mountPoint,
+                                           map<string, string> *names,
+                                           map<string, string> *paths)
+{
 
-	void DataWrapperListener::addNCLInfo(
-			string name, string path) {
+  map<string, string>::iterator i;
+  string nclName, baseDir;
 
-		if (name.find(".ncl") != std::string::npos) {
-			ncls[name] = SystemCompat::updatePath(path + "/" + name);
-		}
-	}
+  if (processAIT ())
+    {
+      return;
+    }
 
-	void DataWrapperListener::serviceDomainMounted(
-			string mountPoint,
-			map<string, string>* names,
-			map<string, string>* paths) {
+  if (!autoMount)
+    {
+      clog << "DataWrapperListener::serviceDomainMounted waiting ";
+      clog << "ncl editing commands";
+      clog << endl;
+      return;
+    }
 
-		map<string, string>::iterator i;
-		string nclName, baseDir;
+  i = names->begin ();
+  while (i != names->end ())
+    {
+      if (i->second.find ("main.ncl") != std::string::npos)
+        {
+          nclName = i->second;
+          i = paths->find (i->first);
+          if (i != paths->end ())
+            {
+              clog << "DataWrapperListener::serviceDomainMounted call ";
+              clog << "start presentation '";
+              clog << i->second + nclName;
+              clog << "'" << endl;
+              pem->startPresentation (i->second + nclName, "");
+              return;
+            }
+        }
+      ++i;
+    }
 
-		if (processAIT()) {
-			return;
-		}
+  clog << "DataWrapperListener::serviceDomainMounted Warning! Can't ";
+  clog << "find ncl document inside service domain" << endl;
+}
 
-		if (!autoMount) {
-			clog << "DataWrapperListener::serviceDomainMounted waiting ";
-			clog << "ncl editing commands";
-			clog << endl;
-			return;
-		}
+void
+DataWrapperListener::run ()
+{
+  assert (docToStart != "");
 
-		i = names->begin();
-		while (i != names->end()) {
-			if (i->second.find("main.ncl") != std::string::npos) {
-				nclName = i->second;
-				i = paths->find(i->first);
-				if (i != paths->end()) {
-					clog << "DataWrapperListener::serviceDomainMounted call ";
-					clog << "start presentation '";
-					clog << i->second + nclName;
-					clog << "'" << endl;
-					pem->startPresentation(i->second + nclName, "");
-					return;
-				}
-			}
-			++i;
-		}
-
-		clog << "DataWrapperListener::serviceDomainMounted Warning! Can't ";
-		clog << "find ncl document inside service domain" << endl;
-	}
-
-	void DataWrapperListener::run() {
-		assert(docToStart != "");
-
-		clog << "DataWrapperListener::run starting presentation ";
-		clog << "for '" << docToStart << "'" << endl;
-		pem->startPresentation(docToStart, "");
-	}
+  clog << "DataWrapperListener::run starting presentation ";
+  clog << "for '" << docToStart << "'" << endl;
+  pem->startPresentation (docToStart, "");
+}
 
 GINGA_LSSM_END

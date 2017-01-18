@@ -22,12 +22,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	class SpatialAnchor : public ContentAnchor {
-		public:
-			SpatialAnchor(string id) : ContentAnchor(id) {
-				typeSet.insert("SpatialAnchor");
-			}
-	};
+class SpatialAnchor : public ContentAnchor
+{
+public:
+  SpatialAnchor (string id) : ContentAnchor (id)
+  {
+    typeSet.insert ("SpatialAnchor");
+  }
+};
 
 GINGA_NCL_END
 

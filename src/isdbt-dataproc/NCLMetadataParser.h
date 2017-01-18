@@ -23,29 +23,27 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-
 GINGA_DATAPROC_BEGIN
 
-	class NCLMetadataParser {
-		public:
-			static INCLMetadata* parse(string xmlDocument);
-			static INCLMetadata* parse(char* xmlStream, int streamSize);
+class NCLMetadataParser
+{
+public:
+  static INCLMetadata *parse (string xmlDocument);
+  static INCLMetadata *parse (char *xmlStream, int streamSize);
 
-		private:
-			static void startElementHandler(
-					void* data,
-					const XML_Char* element, const XML_Char** attrs);
+private:
+  static void startElementHandler (void *data, const XML_Char *element,
+                                   const XML_Char **attrs);
 
-			static void parseMetadata(void* data, const XML_Char** attrs);
-			static void parseBaseData(void* data, const XML_Char** attrs);
-			static void parseRoot(void* data, const XML_Char** attrs);
-			static void parseData(void* data, const XML_Char** attrs);
+  static void parseMetadata (void *data, const XML_Char **attrs);
+  static void parseBaseData (void *data, const XML_Char **attrs);
+  static void parseRoot (void *data, const XML_Char **attrs);
+  static void parseData (void *data, const XML_Char **attrs);
 
-			static INCLDataFile* createObject(
-					void* data, const XML_Char** attrs);
+  static INCLDataFile *createObject (void *data, const XML_Char **attrs);
 
-			static void stopElementHandler(void* data, const XML_Char* element);
-	};
+  static void stopElementHandler (void *data, const XML_Char *element);
+};
 
 GINGA_DATAPROC_END
 

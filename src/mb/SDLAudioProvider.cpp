@@ -26,129 +26,173 @@ extern "C" {
 
 GINGA_MB_BEGIN
 
-	SDLAudioProvider::SDLAudioProvider(
-			GingaScreenID screenId, const char* mrl){
+SDLAudioProvider::SDLAudioProvider (GingaScreenID screenId, const char *mrl)
+{
 
-		type = AudioProvider;
+  type = AudioProvider;
 
-		myScreen   = screenId;
-		this->mrl  = "";
-		decoder    = new SDL2ffmpeg(mrl);
+  myScreen = screenId;
+  this->mrl = "";
+  decoder = new SDL2ffmpeg (mrl);
 
-		this->mrl.assign(mrl);
-	}
+  this->mrl.assign (mrl);
+}
 
-	SDLAudioProvider::~SDLAudioProvider() {
-		if (decoder != NULL) {
-			decoder->stop();
+SDLAudioProvider::~SDLAudioProvider ()
+{
+  if (decoder != NULL)
+    {
+      decoder->stop ();
 
-			delete decoder;
-			decoder = NULL;
-		}
-	}
+      delete decoder;
+      decoder = NULL;
+    }
+}
 
-	void SDLAudioProvider::setLoadSymbol(string symbol) {
-		this->symbol = symbol;
-	}
+void
+SDLAudioProvider::setLoadSymbol (string symbol)
+{
+  this->symbol = symbol;
+}
 
-	string SDLAudioProvider::getLoadSymbol() {
-		return this->symbol;
-	}
+string
+SDLAudioProvider::getLoadSymbol ()
+{
+  return this->symbol;
+}
 
-	void* SDLAudioProvider::getProviderContent() {
-		return NULL;
-	}
+void *
+SDLAudioProvider::getProviderContent ()
+{
+  return NULL;
+}
 
-	double SDLAudioProvider::getTotalMediaTime() {
-		if (decoder != NULL) {
-			return decoder->getDuration() / 1000;
-		}
+double
+SDLAudioProvider::getTotalMediaTime ()
+{
+  if (decoder != NULL)
+    {
+      return decoder->getDuration () / 1000;
+    }
 
-		return 0;
-	}
+  return 0;
+}
 
-	int64_t SDLAudioProvider::getVPts() {
-		int64_t vpts = 0;
+int64_t
+SDLAudioProvider::getVPts ()
+{
+  int64_t vpts = 0;
 
-		if (decoder != NULL) {
-			vpts = (uint64_t)(decoder->getPosition() * 90000);
-		}
+  if (decoder != NULL)
+    {
+      vpts = (uint64_t) (decoder->getPosition () * 90000);
+    }
 
-		return vpts;
-	}
+  return vpts;
+}
 
-	double SDLAudioProvider::getMediaTime() {
-		if (decoder != NULL) {
-			return (double)decoder->getPosition();
-		}
+double
+SDLAudioProvider::getMediaTime ()
+{
+  if (decoder != NULL)
+    {
+      return (double)decoder->getPosition ();
+    }
 
-		return 0;
-	}
+  return 0;
+}
 
-	void SDLAudioProvider::setMediaTime(double pos) {
-		if (decoder != NULL) {
-			decoder->seek(((int64_t)pos) * 1000000);
-		}
-	}
+void
+SDLAudioProvider::setMediaTime (double pos)
+{
+  if (decoder != NULL)
+    {
+      decoder->seek (((int64_t)pos) * 1000000);
+    }
+}
 
-	void SDLAudioProvider::playOver(GingaSurfaceID surface) {
+void
+SDLAudioProvider::playOver (GingaSurfaceID surface)
+{
 
-		clog << "SDLAudioProvider::playOver" << endl;
-		SDLDeviceScreen::addCMPToRendererList(this);
-		if (decoder != NULL) {
-			decoder->play();
-		}
-	}
+  clog << "SDLAudioProvider::playOver" << endl;
+  SDLDeviceScreen::addCMPToRendererList (this);
+  if (decoder != NULL)
+    {
+      decoder->play ();
+    }
+}
 
-	void SDLAudioProvider::pause() {
-		if (decoder != NULL) {
-			decoder->pause();
-		}
-	}
+void
+SDLAudioProvider::pause ()
+{
+  if (decoder != NULL)
+    {
+      decoder->pause ();
+    }
+}
 
-	void SDLAudioProvider::resume(GingaSurfaceID surface) {
-		if (decoder != NULL) {
-			decoder->resume();
-		}
-	}
+void
+SDLAudioProvider::resume (GingaSurfaceID surface)
+{
+  if (decoder != NULL)
+    {
+      decoder->resume ();
+    }
+}
 
-	void SDLAudioProvider::stop() {
-		SDLDeviceScreen::removeCMPToRendererList(this);
-		if (decoder != NULL) {
-			decoder->stop();
-		}
-	}
+void
+SDLAudioProvider::stop ()
+{
+  SDLDeviceScreen::removeCMPToRendererList (this);
+  if (decoder != NULL)
+    {
+      decoder->stop ();
+    }
+}
 
-	void SDLAudioProvider::setSoundLevel(float level) {
-		if (decoder != NULL) {
-			decoder->setSoundLevel(level);
-		}
-	}
+void
+SDLAudioProvider::setSoundLevel (float level)
+{
+  if (decoder != NULL)
+    {
+      decoder->setSoundLevel (level);
+    }
+}
 
-	float SDLAudioProvider::getSoundLevel() {
-		float soundLevel = 0.0;
+float
+SDLAudioProvider::getSoundLevel ()
+{
+  float soundLevel = 0.0;
 
-		if (decoder != NULL) {
-			soundLevel = decoder->getSoundLevel();
-		}
+  if (decoder != NULL)
+    {
+      soundLevel = decoder->getSoundLevel ();
+    }
 
-		return soundLevel;
-	}
+  return soundLevel;
+}
 
-	bool SDLAudioProvider::releaseAll() {
-		return false;
-	}
+bool
+SDLAudioProvider::releaseAll ()
+{
+  return false;
+}
 
-	void SDLAudioProvider::getOriginalResolution(int* width, int* height) {
+void
+SDLAudioProvider::getOriginalResolution (int *width, int *height)
+{
+}
 
-	}
+void
+SDLAudioProvider::refreshDR (void *data)
+{
+  double rt;
 
-	void SDLAudioProvider::refreshDR(void* data) {
-		double rt;
-
-		if (decoder != NULL) {
-			SDL2ffmpeg::video_refresh(decoder, &rt);
-		}
-	}
+  if (decoder != NULL)
+    {
+      SDL2ffmpeg::video_refresh (decoder, &rt);
+    }
+}
 
 GINGA_MB_END

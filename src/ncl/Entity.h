@@ -25,30 +25,30 @@ GINGA_NCL_BEGIN
 class Entity
 {
 protected:
-  set<string> typeSet; //type information
+  set<string> typeSet; // type information
 
 private:
-  static set<Entity*> instances;
+  static set<Entity *> instances;
   static pthread_mutex_t iMutex;
   static bool initMutex;
 
   string id; // id=comparable unique entity Id
 
 public:
-  Entity(string someId);
-  virtual ~Entity();
+  Entity (string someId);
+  virtual ~Entity ();
 
-  static bool hasInstance(Entity* instance, bool eraseFromList);
-  void printHierarchy();
-  bool instanceOf(string s);
-  int compareTo(Entity* otherEntity);
-  string getId();
-  int hashCode();
+  static bool hasInstance (Entity *instance, bool eraseFromList);
+  void printHierarchy ();
+  bool instanceOf (string s);
+  int compareTo (Entity *otherEntity);
+  string getId ();
+  int hashCode ();
 
-  virtual void setId(string someId);
+  virtual void setId (string someId);
 
-  virtual string toString();
-  virtual Entity *getDataEntity();
+  virtual string toString ();
+  virtual Entity *getDataEntity ();
 };
 
 GINGA_NCL_END

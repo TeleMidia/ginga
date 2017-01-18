@@ -32,7 +32,6 @@ using namespace ::ginga::nclconv;
 #include "NclTransitionParser.h"
 using namespace ::ginga::nclconv;
 
-
 #include "util/functions.h"
 #include "util/Color.h"
 using namespace ::ginga::util;
@@ -41,21 +40,18 @@ XERCES_CPP_NAMESPACE_USE
 
 GINGA_NCLCONV_BEGIN
 
-  class NclTransitionConverter : public NclTransitionParser {
-  	public:
-		NclTransitionConverter(DocumentParser *documentParser);
-		void addTransitionToTransitionBase(
-			    void* parentObject, void* childObject);
+class NclTransitionConverter : public NclTransitionParser
+{
+public:
+  NclTransitionConverter (DocumentParser *documentParser);
+  void addTransitionToTransitionBase (void *parentObject, void *childObject);
 
-		void* createTransitionBase(
-			    DOMElement* parentElement, void* objGrandParent);
+  void *createTransitionBase (DOMElement *parentElement, void *objGrandParent);
 
-		void* createTransition(
-			    DOMElement *parentElement, void *objGrandParent);
+  void *createTransition (DOMElement *parentElement, void *objGrandParent);
 
-		void addImportBaseToTransitionBase(
-			    void* parentObject, void* childObject);
-  };
+  void addImportBaseToTransitionBase (void *parentObject, void *childObject);
+};
 
 GINGA_NCLCONV_END
 

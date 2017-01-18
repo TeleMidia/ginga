@@ -30,39 +30,39 @@ using namespace ::ginga::player;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_FOCUS_BEGIN
 
-	static LocalScreenManager* dm = ScreenManagerFactory::getInstance();
+static LocalScreenManager *dm = ScreenManagerFactory::getInstance ();
 
-	GingaSurfaceID FocusSourceManager::getFocusSourceComponent(
-			GingaScreenID screenId, string src) {
+GingaSurfaceID
+FocusSourceManager::getFocusSourceComponent (GingaScreenID screenId,
+                                             string src)
+{
 
-		string::size_type index;
-		string extension;
-		GingaSurfaceID s;
+  string::size_type index;
+  string extension;
+  GingaSurfaceID s;
 
-		if (src != "") {
-			index = src.find_last_of('.');
-			if (index != std::string::npos) {
-				index++;
-				extension = src.substr(index, src.length() - index);
+  if (src != "")
+    {
+      index = src.find_last_of ('.');
+      if (index != std::string::npos)
+        {
+          index++;
+          extension = src.substr (index, src.length () - index);
 
-				if (extension == "png" ||
-					    extension == "gif" ||
-					    extension == "jpg" ||
-					    extension == "jpeg" ||
-					    extension == "bmp" ||
-                                            extension == "bpg" ||
-                                            extension == "svg" ||
-                                            extension == "svgz" ||
-                                            extension == "webp" ) {
+          if (extension == "png" || extension == "gif" || extension == "jpg"
+              || extension == "jpeg" || extension == "bmp"
+              || extension == "bpg" || extension == "svg"
+              || extension == "svgz" || extension == "webp")
+            {
 
-					s = dm->createRenderedSurfaceFromImageFile(
-							screenId, src.c_str());
+              s = dm->createRenderedSurfaceFromImageFile (screenId,
+                                                          src.c_str ());
 
-					return s;
-				}
-			}
-		}
-		return 0;
-	}
+              return s;
+            }
+        }
+    }
+  return 0;
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_FOCUS_END

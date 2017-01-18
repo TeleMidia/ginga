@@ -28,38 +28,38 @@ using namespace ::ginga::system;
 #include "DsmccObject.h"
 #include "IDsmccObjectListener.h"
 
-
 GINGA_DATAPROC_BEGIN
 
-	class DsmccObjectProcessor {
-		private:
-			//mapping object location to known name
-			map<string, string> objectNames;
+class DsmccObjectProcessor
+{
+private:
+  // mapping object location to known name
+  map<string, string> objectNames;
 
-			//mapping object location to known path
-			map<string, string> objectPaths;
+  // mapping object location to known path
+  map<string, string> objectPaths;
 
-			//mapping object location in DsmccObject
-			map<string, DsmccObject*> objects;
+  // mapping object location in DsmccObject
+  map<string, DsmccObject *> objects;
 
-			set<IDsmccObjectListener*> listeners;
+  set<IDsmccObjectListener *> listeners;
 
-			unsigned short pid;
+  unsigned short pid;
 
-		public:
-			DsmccObjectProcessor(unsigned short pid);
-			virtual ~DsmccObjectProcessor();
+public:
+  DsmccObjectProcessor (unsigned short pid);
+  virtual ~DsmccObjectProcessor ();
 
-			void setObjectsListeners(set<IDsmccObjectListener*>* l);
-			void pushObject(DsmccObject* object);
-			bool hasObjects();
-			map<string, string>* getSDNames();
-			map<string, string>* getSDPaths();
+  void setObjectsListeners (set<IDsmccObjectListener *> *l);
+  void pushObject (DsmccObject *object);
+  bool hasObjects ();
+  map<string, string> *getSDNames ();
+  map<string, string> *getSDPaths ();
 
-		private:
-			bool mountObject(DsmccObject* object);
-			void notifyObjectListeners(DsmccObject* obj);
-	};
+private:
+  bool mountObject (DsmccObject *object);
+  void notifyObjectListeners (DsmccObject *obj);
+};
 
 GINGA_DATAPROC_END
 

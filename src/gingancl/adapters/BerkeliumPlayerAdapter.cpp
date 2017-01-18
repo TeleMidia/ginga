@@ -22,109 +22,120 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_XHTML_BEGIN
 
-	BerkeliumPlayerAdapter::BerkeliumPlayerAdapter() :
-			FormatterPlayerAdapter() {
+BerkeliumPlayerAdapter::BerkeliumPlayerAdapter () : FormatterPlayerAdapter ()
+{
+}
 
-	}
+void
+BerkeliumPlayerAdapter::rebase ()
+{
+  clog << "BerkeliumPlayerAdapter::rebase" << endl;
 
-	void BerkeliumPlayerAdapter::rebase() {
-		clog << "BerkeliumPlayerAdapter::rebase" << endl;
+  player->reset ();
+  updateProperties ();
+  player->rebase ();
+}
 
-		player->reset();
-		updateProperties();
-		player->rebase();
-	}
+void
+BerkeliumPlayerAdapter::updateProperties ()
+{
+  LayoutRegion *ncmRegion;
+  CascadingDescriptor *descriptor;
+  int w, h, x, y;
+  string value, strW, strH, strX, strY;
 
-	void BerkeliumPlayerAdapter::updateProperties() {
-		LayoutRegion* ncmRegion;
-		CascadingDescriptor* descriptor;
-		int w, h, x, y;
-		string value, strW, strH, strX, strY;
+  x = 1;
+  y = 1;
+  w = 1;
+  h = 1;
 
-		x = 1;
-		y = 1;
-		w = 1;
-		h = 1;
+  descriptor = object->getDescriptor ();
+  if (descriptor == NULL)
+    {
+      return;
+    }
 
-		descriptor = object->getDescriptor();
-		if (descriptor == NULL) {
-			return;
-		}
+  ncmRegion = descriptor->getRegion ();
+  if (ncmRegion != NULL)
+    {
+      x = (int)(ncmRegion->getAbsoluteLeft ());
+      y = (int)(ncmRegion->getAbsoluteTop ());
+      w = (int)(ncmRegion->getWidthInPixels ());
+      h = (int)(ncmRegion->getHeightInPixels ());
+    }
 
-		ncmRegion = descriptor->getRegion();
-		if (ncmRegion != NULL) {
-			x = (int)(ncmRegion->getAbsoluteLeft());
-			y = (int)(ncmRegion->getAbsoluteTop());
-			w = (int)(ncmRegion->getWidthInPixels());
-			h = (int)(ncmRegion->getHeightInPixels());
-		}
+  strX = itos (x);
+  strY = itos (y);
+  strW = itos (w);
+  strH = itos (h);
+  value = strX + "," + strY + "," + strW + "," + strH;
 
-		strX = itos(x);
-		strY = itos(y);
-		strW = itos(w);
-		strH = itos(h);
-		value = strX + "," + strY + "," + strW + "," + strH;
+  clog << "BerkeliumPlayerAdapter::updateProperties bounds = '";
+  clog << value << "'" << endl;
 
-		clog << "BerkeliumPlayerAdapter::updateProperties bounds = '";
-		clog << value << "'" << endl;
+  player->setPropertyValue ("bounds", value);
+}
 
-		player->setPropertyValue("bounds", value);
-	}
+void
+BerkeliumPlayerAdapter::createPlayer ()
+{
+  if (mrl != "")
+    {
 
-	void BerkeliumPlayerAdapter::createPlayer() {
-		if (mrl != "") {
+      if (mrl.substr (0, 1) == SystemCompat::getIUriD ())
+        {
+          mrl = SystemCompat::updatePath (mrl);
+        }
 
-			if (mrl.substr(0, 1) == SystemCompat::getIUriD()) {
-				mrl = SystemCompat::updatePath(mrl);
-			}
+      player = new BerkeliumPlayer (myScreen, mrl.c_str ());
 
-			player = new BerkeliumPlayer(myScreen, mrl.c_str());
+      updateProperties ();
+    }
 
-			updateProperties();
-		}
+  FormatterPlayerAdapter::createPlayer ();
+}
 
-		FormatterPlayerAdapter::createPlayer();
-	}
+bool
+BerkeliumPlayerAdapter::setPropertyValue (AttributionEvent *event,
+                                          string value)
+{
 
-	bool BerkeliumPlayerAdapter::setPropertyValue(
-		    AttributionEvent* event, string value) {
+  string propName;
+  propName = (event->getAnchor ())->getPropertyName ();
+  if (propName == "size" || propName == "bounds" || propName == "top"
+      || propName == "left" || propName == "bottom" || propName == "right"
+      || propName == "width" || propName == "height")
+    {
 
-		string propName;
-		propName = (event->getAnchor())->getPropertyName();
-		if (propName == "size" || propName == "bounds" || propName == "top" ||
-			    propName == "left" || propName == "bottom" ||
-			    propName == "right" || propName == "width" ||
-			    propName == "height") {
+      if (player != NULL)
+        {
+          LayoutRegion *ncmRegion;
+          CascadingDescriptor *descriptor;
+          int x, y, w, h;
+          string bVal, strW, strH, strX, strY;
 
-			if (player != NULL) {
-				LayoutRegion* ncmRegion;
-				CascadingDescriptor* descriptor;
-				int x, y, w, h;
-				string bVal, strW, strH, strX, strY;
+          descriptor = object->getDescriptor ();
+          ncmRegion = descriptor->getRegion ();
 
-				descriptor = object->getDescriptor();
-				ncmRegion  = descriptor->getRegion();
+          x = (int)(ncmRegion->getAbsoluteLeft ());
+          y = (int)(ncmRegion->getAbsoluteTop ());
+          w = (int)(ncmRegion->getWidthInPixels ());
+          h = (int)(ncmRegion->getHeightInPixels ());
 
-				x = (int)(ncmRegion->getAbsoluteLeft());
-				y = (int)(ncmRegion->getAbsoluteTop());
-				w = (int)(ncmRegion->getWidthInPixels());
-				h = (int)(ncmRegion->getHeightInPixels());
+          strX = itos (x);
+          strY = itos (y);
+          strW = itos (w);
+          strH = itos (h);
+          bVal = strX + "," + strY + "," + strW + "," + strH;
 
-				strX = itos(x);
-				strY = itos(y);
-				strW = itos(w);
-				strH = itos(h);
-				bVal = strX + "," + strY + "," + strW + "," + strH;
+          clog << "BerkeliumPlayerAdapter::setPropertyValue bounds = '";
+          clog << bVal << "'" << endl;
 
-				clog << "BerkeliumPlayerAdapter::setPropertyValue bounds = '";
-				clog << bVal << "'" << endl;
+          player->setPropertyValue ("bounds", bVal);
+        }
+    }
 
-				player->setPropertyValue("bounds", bVal);
-			}
-		}
-
-		return FormatterPlayerAdapter::setPropertyValue(
-				event, value);
-	}
+  return FormatterPlayerAdapter::setPropertyValue (event, value);
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_XHTML_END

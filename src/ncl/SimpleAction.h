@@ -29,48 +29,50 @@ using namespace ::ginga::ncl;
 #include "EventUtil.h"
 #include "Role.h"
 
-
 GINGA_NCL_BEGIN
 
-	class SimpleAction : public Action, public Role {
-		private:
-			short actionType;
-			short qualifier;
-			string repeat;
-			string repeatDelay;
-			string value;
-			Animation* animation;
+class SimpleAction : public Action, public Role
+{
+private:
+  short actionType;
+  short qualifier;
+  string repeat;
+  string repeatDelay;
+  string value;
+  Animation *animation;
 
-		public:
-			static const short ACT_START = 1;
-			static const short ACT_PAUSE = 2;
-			static const short ACT_RESUME = 3;
-			static const short ACT_STOP = 4;
-			static const short ACT_ABORT = 5;
-			static const short ACT_SET = 6;
+public:
+  static const short ACT_START = 1;
+  static const short ACT_PAUSE = 2;
+  static const short ACT_RESUME = 3;
+  static const short ACT_STOP = 4;
+  static const short ACT_ABORT = 5;
+  static const short ACT_SET = 6;
 
-			SimpleAction(string role);
-			virtual ~SimpleAction();
+  SimpleAction (string role);
+  virtual ~SimpleAction ();
 
-			void setLabel(string id);
+  void setLabel (string id);
 
-			short getQualifier();
-			void setQualifier(short qualifier);
-			string getRepeat();
-			string getRepeatDelay();
-			void setRepeatDelay(string time);
-			void setRepeat(string newRepetitions);
-			short getActionType();
-			void setActionType(short action);
-			string getValue();
-			void setValue(string value);
-			Animation* getAnimation();
-			void setAnimation(Animation* animation);
+  short getQualifier ();
+  void setQualifier (short qualifier);
+  string getRepeat ();
+  string getRepeatDelay ();
+  void setRepeatDelay (string time);
+  void setRepeat (string newRepetitions);
+  short getActionType ();
+  void setActionType (short action);
+  string getValue ();
+  void setValue (string value);
+  Animation *getAnimation ();
+  void setAnimation (Animation *animation);
 
-			bool instanceOf(string type) {
-				return Action::instanceOf(type);
-			}
-	};
+  bool
+  instanceOf (string type)
+  {
+    return Action::instanceOf (type);
+  }
+};
 
 GINGA_NCL_END
 

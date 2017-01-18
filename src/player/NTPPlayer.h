@@ -23,41 +23,40 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "player/UDPClient.h"
 #include "player/NTPDatagram.h"
 
-
-
 #define TRY_NUM 4
-#define TIMEOUT 2500 //milliseconds
+#define TIMEOUT 2500 // milliseconds
 #define NTP_PORT_NUM 123
 #define NTP_CLIENT 3
 
 GINGA_PLAYER_BEGIN
 
-	class NTPPlayer : public Player {
-		private:
-			string host;
-			int port;
-			timeb utcTime;
-			timeb currentTime;
-			double diff;
-			char text[20];
+class NTPPlayer : public Player
+{
+private:
+  string host;
+  int port;
+  timeb utcTime;
+  timeb currentTime;
+  double diff;
+  char text[20];
 
-			void diffNtpLocal();
+  void diffNtpLocal ();
 
-		public:
-			NTPPlayer(GingaScreenID screenId, string mrl);
-			~NTPPlayer();
+public:
+  NTPPlayer (GingaScreenID screenId, string mrl);
+  ~NTPPlayer ();
 
-			bool updateTime();
-			time_t getTime(unsigned short* milliseconds = NULL);
-			string getTimeString();
-			double elapsedTime(string& oldNclTime);
+  bool updateTime ();
+  time_t getTime (unsigned short *milliseconds = NULL);
+  string getTimeString ();
+  double elapsedTime (string &oldNclTime);
 
-			static double diffTime(timeb a, timeb b);
-			static timeb* tm2timeb(struct tm* time, unsigned short milliseconds);
-			static unsigned short ntpFrac2ms(alt_u32 value);
-			static short localTimezone();
-			static void addTime(timeb* a, double seconds);
-	};
+  static double diffTime (timeb a, timeb b);
+  static timeb *tm2timeb (struct tm *time, unsigned short milliseconds);
+  static unsigned short ntpFrac2ms (alt_u32 value);
+  static short localTimezone ();
+  static void addTime (timeb *a, double seconds);
+};
 
 GINGA_PLAYER_END
 

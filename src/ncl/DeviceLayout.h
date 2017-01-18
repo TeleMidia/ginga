@@ -18,83 +18,96 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef DEVICELAYOUT_H_
 #define DEVICELAYOUT_H_
 
-
 GINGA_NCL_BEGIN
 
-	class DeviceProperty {
-		private:
-			int left;
-			int top;
-			int width;
-			int height;
+class DeviceProperty
+{
+private:
+  int left;
+  int top;
+  int width;
+  int height;
 
-		public:
-			DeviceProperty() {
-				initialize(0, 0, 0, 0);
-			}
+public:
+  DeviceProperty () { initialize (0, 0, 0, 0); }
 
-			DeviceProperty(int x, int y, int w, int h) {
-				initialize(x, y, w, h);
-			}
+  DeviceProperty (int x, int y, int w, int h) { initialize (x, y, w, h); }
 
-			virtual ~DeviceProperty() {
+  virtual ~DeviceProperty () {}
 
-			}
+private:
+  void
+  initialize (int x, int y, int w, int h)
+  {
+    this->left = x;
+    this->top = y;
+    this->width = w;
+    this->height = h;
+  }
 
-		private:
-			void initialize(int x, int y, int w, int h) {
-				this->left   = x;
-				this->top    = y;
-				this->width  = w;
-				this->height = h;
-			}
+public:
+  void
+  setDeviceLeft (int left)
+  {
+    this->left = left;
+  }
 
-		public:
-			void setDeviceLeft(int left) {
-				this->left = left;
-			}
+  int
+  getDeviceLeft ()
+  {
+    return this->left;
+  }
 
-			int getDeviceLeft() {
-				return this->left;
-			}
+  void
+  setDeviceTop (int top)
+  {
+    this->top = top;
+  }
 
-			void setDeviceTop(int top) {
-				this->top = top;
-			}
+  int
+  getDeviceTop ()
+  {
+    return this->top;
+  }
 
-			int getDeviceTop() {
-				return this->top;
-			}
+  void
+  setDeviceWidth (int width)
+  {
+    this->width = width;
+  }
 
-			void setDeviceWidth(int width) {
-				this->width = width;
-			}
+  int
+  getDeviceWidth ()
+  {
+    return this->width;
+  }
 
-			int getDeviceWidth() {
-				return this->width;
-			}
+  void
+  setDeviceHeight (int height)
+  {
+    this->height = height;
+  }
 
-			void setDeviceHeight(int height) {
-				this->height = height;
-			}
+  int
+  getDeviceHeight ()
+  {
+    return this->height;
+  }
+};
 
-			int getDeviceHeight() {
-				return this->height;
-			}
-	};
+class DeviceLayout
+{
+private:
+  map<string, DeviceProperty *> *devices;
+  string layoutName;
 
-	class DeviceLayout {
-		private:
-			map<string, DeviceProperty*>* devices;
-			string layoutName;
-
-		public:
-			DeviceLayout(string layoutName);
-			virtual ~DeviceLayout();
-			string getLayoutName();
-			void addDevice(string name, int x, int y, int width, int height);
-			DeviceProperty* getDeviceProperty(string name);
-	};
+public:
+  DeviceLayout (string layoutName);
+  virtual ~DeviceLayout ();
+  string getLayoutName ();
+  void addDevice (string name, int x, int y, int width, int height);
+  DeviceProperty *getDeviceProperty (string name);
+};
 
 GINGA_NCL_END
 

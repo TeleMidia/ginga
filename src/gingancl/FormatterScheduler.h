@@ -86,136 +86,120 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::multidevice;
 #include "AnimationController.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::animation;
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 
-	class FormatterScheduler :
-			public ILinkActionListener,
-			public IEventListener,
-			public IContextListener {
+class FormatterScheduler : public ILinkActionListener,
+                           public IEventListener,
+                           public IContextListener
+{
 
-		private:
-			RuleAdapter* ruleAdapter;
-			PlayerAdapterManager* playerManager;
-			PresentationContext* presContext;
-			FormatterMultiDevice* multiDevPres;
-			FormatterFocusManager* focusManager;
+private:
+  RuleAdapter *ruleAdapter;
+  PlayerAdapterManager *playerManager;
+  PresentationContext *presContext;
+  FormatterMultiDevice *multiDevPres;
+  FormatterFocusManager *focusManager;
 
-			void* compiler; //FormatterConverter*
-			vector<IFormatterSchedulerListener*> schedulerListeners;
-			vector<FormatterEvent*> documentEvents;
-			map<FormatterEvent*, bool> documentStatus;
-			set<void*> actions;
+  void *compiler; // FormatterConverter*
+  vector<IFormatterSchedulerListener *> schedulerListeners;
+  vector<FormatterEvent *> documentEvents;
+  map<FormatterEvent *, bool> documentStatus;
+  set<void *> actions;
 
-			bool running;
+  bool running;
 
-			set<string> typeSet;
-			pthread_mutex_t mutexD;
-			pthread_mutex_t mutexActions;
+  set<string> typeSet;
+  pthread_mutex_t mutexD;
+  pthread_mutex_t mutexActions;
 
-			set<FormatterEvent*> listening;
-			pthread_mutex_t lMutex;
+  set<FormatterEvent *> listening;
+  pthread_mutex_t lMutex;
 
-		public:
-			FormatterScheduler(
-				    PlayerAdapterManager* playerManager,
-				    RuleAdapter* ruleAdapter,
-				    FormatterMultiDevice* multiDevice,
-				    void* compiler); //FormatterConverter
+public:
+  FormatterScheduler (PlayerAdapterManager *playerManager,
+                      RuleAdapter *ruleAdapter,
+                      FormatterMultiDevice *multiDevice,
+                      void *compiler); // FormatterConverter
 
-			virtual ~FormatterScheduler();
+  virtual ~FormatterScheduler ();
 
-			void addAction(void* action);
-			void removeAction(void* action);
+  void addAction (void *action);
+  void removeAction (void *action);
 
-			bool setKeyHandler(bool isHandler);
-			FormatterFocusManager* getFocusManager();
-			void* getFormatterLayout(void* descriptor, void* object);
+  bool setKeyHandler (bool isHandler);
+  FormatterFocusManager *getFocusManager ();
+  void *getFormatterLayout (void *descriptor, void *object);
 
-		private:
-			bool isDocumentRunning(FormatterEvent* event);
+private:
+  bool isDocumentRunning (FormatterEvent *event);
 
-			void setTimeBaseObject(
-				    ExecutionObject* object,
-				    FormatterPlayerAdapter* objectPlayer, string nodeId);
+  void setTimeBaseObject (ExecutionObject *object,
+                          FormatterPlayerAdapter *objectPlayer, string nodeId);
 
-			static void printAction(
-					string action,
-					LinkCondition* condition,
-					LinkSimpleAction* linkAction);
+  static void printAction (string action, LinkCondition *condition,
+                           LinkSimpleAction *linkAction);
 
-		public:
-			void scheduleAction(void* condition, void* action);
+public:
+  void scheduleAction (void *condition, void *action);
 
-		private:
-			void runAction(LinkCondition* condition, LinkSimpleAction* action);
+private:
+  void runAction (LinkCondition *condition, LinkSimpleAction *action);
 
-			void runAction(
-					FormatterEvent* event,
-					LinkCondition* condition,
-					LinkSimpleAction* action);
+  void runAction (FormatterEvent *event, LinkCondition *condition,
+                  LinkSimpleAction *action);
 
-			void runActionOverProperty(
-					FormatterEvent* event,
-					LinkSimpleAction* action);
+  void runActionOverProperty (FormatterEvent *event, LinkSimpleAction *action);
 
-			void runActionOverApplicationObject(
-					ApplicationExecutionObject* executionObject,
-					FormatterEvent* event,
-					FormatterPlayerAdapter* player,
-					LinkSimpleAction* action);
+  void runActionOverApplicationObject (
+      ApplicationExecutionObject *executionObject, FormatterEvent *event,
+      FormatterPlayerAdapter *player, LinkSimpleAction *action);
 
-			void runActionOverComposition(
-				    CompositeExecutionObject* compositeObject,
-				    LinkSimpleAction* action);
+  void runActionOverComposition (CompositeExecutionObject *compositeObject,
+                                 LinkSimpleAction *action);
 
-			void runActionOverSwitch(
-				    ExecutionObjectSwitch* switchObject,
-				    SwitchEvent* event,
-				    LinkSimpleAction* action);
+  void runActionOverSwitch (ExecutionObjectSwitch *switchObject,
+                            SwitchEvent *event, LinkSimpleAction *action);
 
-			void runSwitchEvent(
-				    ExecutionObjectSwitch* switchObject,
-				    SwitchEvent* switchEvent,
-				    ExecutionObject* selectedObject,
-				    LinkSimpleAction* action);
+  void runSwitchEvent (ExecutionObjectSwitch *switchObject,
+                       SwitchEvent *switchEvent,
+                       ExecutionObject *selectedObject,
+                       LinkSimpleAction *action);
 
-			string solveImplicitRefAssessment(
-					string propValue, AttributionEvent* event);
+  string solveImplicitRefAssessment (string propValue,
+                                     AttributionEvent *event);
 
-		public:
-			void startEvent(FormatterEvent* event);
-			void stopEvent(FormatterEvent* event);
-			void pauseEvent(FormatterEvent* event);
-			void resumeEvent(FormatterEvent* event);
+public:
+  void startEvent (FormatterEvent *event);
+  void stopEvent (FormatterEvent *event);
+  void pauseEvent (FormatterEvent *event);
+  void resumeEvent (FormatterEvent *event);
 
-		private:
-			void initializeDefaultSettings();
-			void initializeDocumentSettings(Node* node);
+private:
+  void initializeDefaultSettings ();
+  void initializeDocumentSettings (Node *node);
 
-		public:
-			void startDocument(
-				    FormatterEvent* documentEvent,
-				    vector<FormatterEvent*>* entryEvents);
+public:
+  void startDocument (FormatterEvent *documentEvent,
+                      vector<FormatterEvent *> *entryEvents);
 
-		private:
-			void removeDocument(FormatterEvent* documentEvent);
+private:
+  void removeDocument (FormatterEvent *documentEvent);
 
-		public:
-			void stopDocument(FormatterEvent* documentEvent);
-			void pauseDocument(FormatterEvent* documentEvent);
-			void resumeDocument(FormatterEvent* documentEvent);
-			void stopAllDocuments();
-			void pauseAllDocuments();
-			void resumeAllDocuments();
-			void eventStateChanged(
-				    void* someEvent, short transition, short previousState);
+public:
+  void stopDocument (FormatterEvent *documentEvent);
+  void pauseDocument (FormatterEvent *documentEvent);
+  void resumeDocument (FormatterEvent *documentEvent);
+  void stopAllDocuments ();
+  void pauseAllDocuments ();
+  void resumeAllDocuments ();
+  void eventStateChanged (void *someEvent, short transition,
+                          short previousState);
 
-			short getPriorityType();
-			void addSchedulerListener(IFormatterSchedulerListener* listener);
-			void removeSchedulerListener(IFormatterSchedulerListener* listener);
-			void receiveGlobalAttribution(string propertyName, string value);
-	};
+  short getPriorityType ();
+  void addSchedulerListener (IFormatterSchedulerListener *listener);
+  void removeSchedulerListener (IFormatterSchedulerListener *listener);
+  void receiveGlobalAttribution (string propertyName, string value);
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_END
 #endif //_FORMATTERSCHEDULER_H_

@@ -26,61 +26,61 @@ using namespace ::ginga::system;
 #include "ic/InteractiveChannelManager.h"
 using namespace ::ginga::ic;
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_PREFETCH_BEGIN
 
-	class PrefetchManager : public IInteractiveChannelListener {
+class PrefetchManager : public IInteractiveChannelListener
+{
 
-		private:
-			map<string, string>* localToRemoteUris;
-			map<string, string>* urisToLocalRoots;
-			set<string>* scheduledRemoteUris;
-			set<string>* scheduledLocalUris;
-			InteractiveChannelManager* icm;
-			string prefetchRoot;
-			bool synch;
+private:
+  map<string, string> *localToRemoteUris;
+  map<string, string> *urisToLocalRoots;
+  set<string> *scheduledRemoteUris;
+  set<string> *scheduledLocalUris;
+  InteractiveChannelManager *icm;
+  string prefetchRoot;
+  bool synch;
 
-			int kbytes;
-			int filesDown;
-			int filesSched;
+  int kbytes;
+  int filesDown;
+  int filesSched;
 
-			PrefetchManager();
-			~PrefetchManager();
-			static PrefetchManager* _instance;
+  PrefetchManager ();
+  ~PrefetchManager ();
+  static PrefetchManager *_instance;
 
-		public:
-			static PrefetchManager* getInstance();
+public:
+  static PrefetchManager *getInstance ();
 
-		private:
-			void createDirectory(string newDir);
+private:
+  void createDirectory (string newDir);
 
-		public:
-			void release();
-			void releaseContents();
-			string createDocumentPrefetcher(string remoteDocUri);
-			string createSourcePrefetcher(string localDocUri, string srcUri);
-			bool hasIChannel();
-			bool hasRemoteLocation(string localUri);
-			string getRemoteLocation(string localUri);
-			string getLocalRoot(string remoteUri);
+public:
+  void release ();
+  void releaseContents ();
+  string createDocumentPrefetcher (string remoteDocUri);
+  string createSourcePrefetcher (string localDocUri, string srcUri);
+  bool hasIChannel ();
+  bool hasRemoteLocation (string localUri);
+  string getRemoteLocation (string localUri);
+  string getLocalRoot (string remoteUri);
 
-		private:
-			void getContent(string remoteUri, string localUri);
+private:
+  void getContent (string remoteUri, string localUri);
 
-		public:
-			void setSynchPrefetch(bool synch);
+public:
+  void setSynchPrefetch (bool synch);
 
-		private:
-			void scheduleContent(string remoteUri, string localUri);
-			void receiveCode(long respCode){};
-			void receiveDataStream(char* buffer, int size){};
-			void receiveDataPipe(FILE* fd, int size);
-			void downloadCompleted(const char* localUri){};
+private:
+  void scheduleContent (string remoteUri, string localUri);
+  void receiveCode (long respCode){};
+  void receiveDataStream (char *buffer, int size){};
+  void receiveDataPipe (FILE *fd, int size);
+  void downloadCompleted (const char *localUri){};
 
-		public:
-			void getScheduledContent(string clientUri);
-			void getScheduledContents();
-	};
+public:
+  void getScheduledContent (string clientUri);
+  void getScheduledContents ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_PREFETCH_END
 #endif /*PrefetchManager_H_*/

@@ -38,830 +38,941 @@ using namespace ::ginga::ncl;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
 
-	LocalScreenManager* FormatterMultiDevice::dm   = NULL;
+LocalScreenManager *FormatterMultiDevice::dm = NULL;
 #if WITH_MULTIDEVICE
-	RemoteDeviceManager* FormatterMultiDevice::rdm = NULL;
+RemoteDeviceManager *FormatterMultiDevice::rdm = NULL;
 #else
-	void* FormatterMultiDevice::rdm = NULL;
+void *FormatterMultiDevice::rdm = NULL;
 #endif
 
-	FormatterMultiDevice::FormatterMultiDevice(
-			GingaScreenID screenId,
-			DeviceLayout* deviceLayout,
-			int x, int y, int w, int h, bool useMulticast, int srvPort) {
+FormatterMultiDevice::FormatterMultiDevice (GingaScreenID screenId,
+                                            DeviceLayout *deviceLayout, int x,
+                                            int y, int w, int h,
+                                            bool useMulticast, int srvPort)
+{
 
-		this->xOffset          = x;
-		this->yOffset          = y;
-		this->defaultWidth     = w;
-		this->defaultHeight    = h;
-		this->deviceClass      = -1;
-		this->hasRemoteDevices = false;
-		this->deviceLayout     = deviceLayout;
-		this->activeBaseUri    = "";
-		this->activeUris       = NULL;
-		this->bitMapScreen     = 0;
-		this->serialized       = 0;
-		this->presContext      = NULL;
-		this->focusManager     = NULL;
-		this->parent           = NULL;
-		this->myScreen         = screenId;
-		this->enableMulticast  = useMulticast;
+  this->xOffset = x;
+  this->yOffset = y;
+  this->defaultWidth = w;
+  this->defaultHeight = h;
+  this->deviceClass = -1;
+  this->hasRemoteDevices = false;
+  this->deviceLayout = deviceLayout;
+  this->activeBaseUri = "";
+  this->activeUris = NULL;
+  this->bitMapScreen = 0;
+  this->serialized = 0;
+  this->presContext = NULL;
+  this->focusManager = NULL;
+  this->parent = NULL;
+  this->myScreen = screenId;
+  this->enableMulticast = useMulticast;
 
-		if (dm == NULL) {
-			dm = ScreenManagerFactory::getInstance();
-		}
+  if (dm == NULL)
+    {
+      dm = ScreenManagerFactory::getInstance ();
+    }
 
-		LocalScreenManager::addIEListenerInstance(this);
+  LocalScreenManager::addIEListenerInstance (this);
 
-		if (defaultWidth == 0) {
-			defaultWidth = dm->getDeviceWidth(myScreen);
-		}
+  if (defaultWidth == 0)
+    {
+      defaultWidth = dm->getDeviceWidth (myScreen);
+    }
 
-		if (defaultHeight == 0) {
-			defaultHeight = dm->getDeviceHeight(myScreen);
-		}
+  if (defaultHeight == 0)
+    {
+      defaultHeight = dm->getDeviceHeight (myScreen);
+    }
 
-		im = dm->getInputManager(myScreen);
+  im = dm->getInputManager (myScreen);
 
-		im->setAxisValues(
-				(int)(dm->getDeviceWidth(myScreen) / 2),
-				(int)(dm->getDeviceHeight(myScreen) / 2), 0);
+  im->setAxisValues ((int)(dm->getDeviceWidth (myScreen) / 2),
+                     (int)(dm->getDeviceHeight (myScreen) / 2), 0);
 
-		printScreen = dm->createWindow(
-				myScreen, 0, 0, defaultWidth, defaultHeight, -1.0);
+  printScreen
+      = dm->createWindow (myScreen, 0, 0, defaultWidth, defaultHeight, -1.0);
 
-		int caps = dm->getWindowCap (myScreen, printScreen, "ALPHACHANNEL");
-		dm->setWindowCaps (myScreen, printScreen, caps);
-		dm->drawWindow (myScreen, printScreen);
+  int caps = dm->getWindowCap (myScreen, printScreen, "ALPHACHANNEL");
+  dm->setWindowCaps (myScreen, printScreen, caps);
+  dm->drawWindow (myScreen, printScreen);
 
-		Thread::mutexInit(&mutex, false);
-		Thread::mutexInit(&lMutex, false);
-	}
+  Thread::mutexInit (&mutex, false);
+  Thread::mutexInit (&lMutex, false);
+}
 
-	FormatterMultiDevice::~FormatterMultiDevice() {
-		set<IPlayer*>::iterator i;
-		LocalScreenManager::removeIEListenerInstance(this);
+FormatterMultiDevice::~FormatterMultiDevice ()
+{
+  set<IPlayer *>::iterator i;
+  LocalScreenManager::removeIEListenerInstance (this);
 
-		presContext = NULL;
+  presContext = NULL;
 
-		clog << "FormatterMultiDevice::~FormatterMultiDevice ";
-		clog << "checking listening list";
-		clog << endl;
+  clog << "FormatterMultiDevice::~FormatterMultiDevice ";
+  clog << "checking listening list";
+  clog << endl;
 
-		if (!listening.empty()) {
-			Thread::mutexLock(&lMutex);
-/*			i = listening.begin();
-			while (i != listening.end()) {
-				(*i)->removeListener(this);
-				++i;
-			}*/
-			listening.clear();
-			Thread::mutexUnlock(&lMutex);
-		}
+  if (!listening.empty ())
+    {
+      Thread::mutexLock (&lMutex);
+      /*			i = listening.begin();
+                              while (i != listening.end()) {
+                                      (*i)->removeListener(this);
+                                      ++i;
+                              }*/
+      listening.clear ();
+      Thread::mutexUnlock (&lMutex);
+    }
 
-		clog << "FormatterMultiDevice::~FormatterMultiDevice ";
-		clog << "destroying mutexes";
-		clog << endl;
+  clog << "FormatterMultiDevice::~FormatterMultiDevice ";
+  clog << "destroying mutexes";
+  clog << endl;
 
-		Thread::mutexDestroy(&mutex);
-		Thread::mutexDestroy(&lMutex);
+  Thread::mutexDestroy (&mutex);
+  Thread::mutexDestroy (&lMutex);
 
-		/*if (im != NULL) {
-			clog << "FormatterMultiDevice::~FormatterMultiDevice ";
-			clog << "stop listening events";
-			clog << endl;
-			im->removeInputEventListener(this);
-		}*/
+  /*if (im != NULL) {
+          clog << "FormatterMultiDevice::~FormatterMultiDevice ";
+          clog << "stop listening events";
+          clog << endl;
+          im->removeInputEventListener(this);
+  }*/
 
-		clog << "FormatterMultiDevice::~FormatterMultiDevice ";
-		clog << "all done";
-		clog << endl;
-	}
+  clog << "FormatterMultiDevice::~FormatterMultiDevice ";
+  clog << "all done";
+  clog << endl;
+}
 
-	void FormatterMultiDevice::printGingaWindows() {
-		string fileUri = "";
-		GingaWindowID iWin;
-		FormatterLayout* formatterLayout;
+void
+FormatterMultiDevice::printGingaWindows ()
+{
+  string fileUri = "";
+  GingaWindowID iWin;
+  FormatterLayout *formatterLayout;
 
-		vector<GingaWindowID> sortedIds;
-		map<int, FormatterLayout*>::iterator i;
-		vector<GingaWindowID>::iterator j;
+  vector<GingaWindowID> sortedIds;
+  map<int, FormatterLayout *>::iterator i;
+  vector<GingaWindowID>::iterator j;
 
-		int quality = 100;
-		int dumpW   = defaultWidth;
-		int dumpH   = defaultHeight;
+  int quality = 100;
+  int dumpW = defaultWidth;
+  int dumpH = defaultHeight;
 
-		cout << "FormatterMultiDevice::printGingaWindows(" << this << ") ";
-		cout << "layout manager has '" << layoutManager.size();
-		cout << "' layouts" << endl;
+  cout << "FormatterMultiDevice::printGingaWindows(" << this << ") ";
+  cout << "layout manager has '" << layoutManager.size ();
+  cout << "' layouts" << endl;
 
-		cout << "Serialized window Id = '";
-		cout << (unsigned long)serialized;
-		cout << "'" << endl;
+  cout << "Serialized window Id = '";
+  cout << (unsigned long)serialized;
+  cout << "'" << endl;
 
-		dm->getWindowDumpFileUri(myScreen, serialized, quality, dumpW, dumpH);
+  dm->getWindowDumpFileUri (myScreen, serialized, quality, dumpW, dumpH);
 
-		cout << "BitMapScreen window Id = '";
-		if (bitMapScreen != 0) {
-			cout << (unsigned long)bitMapScreen << "'";
-			dm->getWindowDumpFileUri(myScreen, bitMapScreen, quality, dumpW, dumpH);
+  cout << "BitMapScreen window Id = '";
+  if (bitMapScreen != 0)
+    {
+      cout << (unsigned long)bitMapScreen << "'";
+      dm->getWindowDumpFileUri (myScreen, bitMapScreen, quality, dumpW, dumpH);
+    }
+  else
+    {
+      cout << "NULL'";
+    }
+  cout << endl;
 
-		} else {
-			cout << "NULL'";
-		}
-		cout << endl;
+  i = layoutManager.begin ();
+  while (i != layoutManager.end ())
+    {
+      formatterLayout = i->second;
 
-		i = layoutManager.begin();
-		while (i != layoutManager.end()) {
-			formatterLayout = i->second;
+      cout << "device '" << i->first << "' ";
 
-			cout << "device '" << i->first << "' ";
+      formatterLayout->getSortedIds (&sortedIds);
+      if (!sortedIds.empty ())
+        {
+          if (i->first == 1)
+            {
+              quality = 45;
+              dumpW = 480 / 1.8;
+              dumpH = 320 / 1.8;
+            }
 
-			formatterLayout->getSortedIds(&sortedIds);
-			if (!sortedIds.empty()) {
-				if (i->first == 1) {
-					quality = 45;
-					dumpW   = 480 / 1.8;
-					dumpH   = 320 / 1.8;
-				}
+          cout << "has the following : ";
+          j = sortedIds.begin ();
+          while (j != sortedIds.end ())
+            {
+              iWin = (*j);
 
-				cout << "has the following : ";
-				j = sortedIds.begin();
-				while (j != sortedIds.end()) {
-					iWin = (*j);
+              if (iWin != 0)
+                {
+                  dm->getWindowDumpFileUri (myScreen, iWin, quality, dumpW,
+                                            dumpH);
+                }
 
-					if (iWin != 0) {
-						dm->getWindowDumpFileUri(myScreen, iWin, quality, dumpW, dumpH);
-					}
+              cout << "'" << (unsigned long)(*j) << "' ";
+              ++j;
+            }
+          cout << endl;
+        }
+      else
+        {
+          cout << "is empty " << endl;
+        }
 
-					cout << "'" << (unsigned long)(*j) << "' ";
-					++j;
-				}
-				cout << endl;
+      sortedIds.clear ();
+      ++i;
+    }
 
-			} else {
-				cout << "is empty " << endl;
-			}
+  cout << "FormatterMultiDevice::printGingaWindows all done";
+  cout << endl;
+}
 
-			sortedIds.clear();
-			++i;
-		}
+void
+FormatterMultiDevice::listenPlayer (IPlayer *player)
+{
+  Thread::mutexLock (&lMutex);
+  listening.insert (player);
+  player->addListener (this);
+  Thread::mutexUnlock (&lMutex);
+}
 
-		cout << "FormatterMultiDevice::printGingaWindows all done";
-		cout << endl;
-	}
+void
+FormatterMultiDevice::stopListenPlayer (IPlayer *player)
+{
+  set<IPlayer *>::iterator i;
 
-	void FormatterMultiDevice::listenPlayer(IPlayer* player) {
-		Thread::mutexLock(&lMutex);
-		listening.insert(player);
-		player->addListener(this);
-		Thread::mutexUnlock(&lMutex);
-	}
+  Thread::mutexLock (&lMutex);
+  i = listening.find (player);
+  if (i != listening.end ())
+    {
+      listening.erase (i);
+      player->removeListener (this);
+    }
+  Thread::mutexUnlock (&lMutex);
+}
 
-	void FormatterMultiDevice::stopListenPlayer(IPlayer* player) {
-		set<IPlayer*>::iterator i;
+void
+FormatterMultiDevice::setParent (FormatterMultiDevice *parent)
+{
+  this->parent = (FormatterMultiDevice *)parent;
+}
 
-		Thread::mutexLock(&lMutex);
-		i = listening.find(player);
-		if (i != listening.end()) {
-			listening.erase(i);
-			player->removeListener(this);
-		}
-		Thread::mutexUnlock(&lMutex);
-	}
+void
+FormatterMultiDevice::setPresentationContex (PresentationContext *presContext)
+{
 
-	void FormatterMultiDevice::setParent(FormatterMultiDevice* parent) {
-		this->parent = (FormatterMultiDevice*)parent;
-	}
+  this->presContext = presContext;
+}
 
-	void FormatterMultiDevice::setPresentationContex(
-			PresentationContext* presContext) {
+void
+FormatterMultiDevice::setFocusManager (void *focusManager)
+{
 
-		this->presContext = presContext;
-	}
+  this->focusManager = focusManager;
+}
 
-	void FormatterMultiDevice::setFocusManager(
-			void* focusManager) {
+void
+FormatterMultiDevice::setBackgroundImage (string uri)
+{
+  dm->setBackgroundImage (myScreen, uri);
+}
 
-		this->focusManager = focusManager;
-	}
+void *
+FormatterMultiDevice::getMainLayout ()
+{
+  return mainLayout;
+}
 
-	void FormatterMultiDevice::setBackgroundImage(string uri) {
-		dm->setBackgroundImage(myScreen, uri);
-	}
+void *
+FormatterMultiDevice::getFormatterLayout (int devClass)
+{
+  map<int, FormatterLayout *>::iterator i;
 
-	void* FormatterMultiDevice::getMainLayout() {
-		return mainLayout;
-	}
+  i = layoutManager.find (devClass);
+  if (i != layoutManager.end ())
+    {
+      return i->second;
+    }
 
-	void* FormatterMultiDevice::getFormatterLayout(int devClass) {
-		map<int, FormatterLayout*>::iterator i;
+  return NULL;
+}
 
-		i = layoutManager.find(devClass);
-		if (i != layoutManager.end()) {
-			return i->second;
-		}
+string
+FormatterMultiDevice::getScreenShot ()
+{
+  return serializeScreen (deviceClass, printScreen);
+}
 
-		return NULL;
-	}
+string
+FormatterMultiDevice::serializeScreen (int devClass, GingaWindowID mapWindow)
+{
 
-	string FormatterMultiDevice::getScreenShot() {
-		return serializeScreen(deviceClass, printScreen);
-	}
+  string fileUri = "";
+  FormatterLayout *formatterLayout;
+  vector<GingaWindowID> sortedIds;
+  map<int, FormatterLayout *>::iterator i;
+  int quality = 100;
+  int dumpW = defaultWidth;
+  int dumpH = defaultHeight;
 
-	string FormatterMultiDevice::serializeScreen(
-			int devClass, GingaWindowID mapWindow) {
+  i = layoutManager.find (devClass);
+  if (i != layoutManager.end ())
+    {
+      formatterLayout = i->second;
+      dm->clearWindowContent (myScreen, mapWindow);
+      formatterLayout->getSortedIds (&sortedIds);
+      if (!sortedIds.empty ())
+        {
+          if (!dm->mergeIds (myScreen, mapWindow, &sortedIds))
+            {
+              return "";
+            }
 
-		string fileUri = "";
-		FormatterLayout* formatterLayout;
-		vector<GingaWindowID> sortedIds;
-		map<int, FormatterLayout*>::iterator i;
-		int quality = 100;
-		int dumpW = defaultWidth;
-		int dumpH = defaultHeight;
+          if (devClass == 1)
+            {
+              quality = 45;
+              dumpW = 480 / 1.8;
+              dumpH = 320 / 1.8;
+            }
+        }
+      fileUri = dm->getWindowDumpFileUri (myScreen, mapWindow, quality, dumpW,
+                                          dumpH);
 
-		i = layoutManager.find(devClass);
-		if (i != layoutManager.end()) {
-			formatterLayout = i->second;
-			dm->clearWindowContent(myScreen, mapWindow);
-			formatterLayout->getSortedIds(&sortedIds);
-			if (!sortedIds.empty()) {
-				if (!dm->mergeIds(myScreen, mapWindow, &sortedIds)) {
-					return "";
-				}
+      clog << "FormatterMultiDevice::serializeScreen fileURI = '";
+      clog << fileUri << "' sortedIds size = '" << sortedIds.size ();
+      clog << endl;
+    }
 
-				if (devClass == 1) {
-					quality = 45;
-					dumpW   = 480 / 1.8;
-					dumpH   = 320 / 1.8;
-				}
-			}
-			fileUri = dm->getWindowDumpFileUri (myScreen, mapWindow,
-			                                    quality, dumpW, dumpH);
+  return fileUri;
+}
 
-			clog << "FormatterMultiDevice::serializeScreen fileURI = '";
-			clog << fileUri << "' sortedIds size = '" << sortedIds.size();
-			clog << endl;
-		}
+void
+FormatterMultiDevice::postMediaContent (int destDevClass)
+{
+  string fileUri;
+  GingaWindowID bmpScr = 0;
+  vector<GingaWindowID> wins;
 
-		return fileUri;
-	}
+  /*clog << "FormatterMultiDevice::postMediaContent to class '";
+  clog << destDevClass << "'";
+  clog << endl;*/
 
-	void FormatterMultiDevice::postMediaContent(int destDevClass) {
-		string fileUri;
-		GingaWindowID bmpScr = 0;
-		vector<GingaWindowID> wins;
+  Thread::mutexLock (&mutex);
+  if (destDevClass == DeviceDomain::CT_PASSIVE)
+    {
+      if (parent != NULL)
+        {
+          bmpScr = parent->bitMapScreen;
+        }
+      else
+        {
+          bmpScr = bitMapScreen;
+        }
 
-		/*clog << "FormatterMultiDevice::postMediaContent to class '";
-		clog << destDevClass << "'";
-		clog << endl;*/
-
-		Thread::mutexLock(&mutex);
-		if (destDevClass == DeviceDomain::CT_PASSIVE) {
-			if (parent != NULL) {
-				bmpScr = parent->bitMapScreen;
-
-			} else {
-				bmpScr = bitMapScreen;
-			}
-
-			fileUri = serializeScreen(destDevClass, serialized);
-			if (fileUri != "" && fileExists(fileUri)) {
+      fileUri = serializeScreen (destDevClass, serialized);
+      if (fileUri != "" && fileExists (fileUri))
+        {
 #if WITH_MULTIDEVICE
-				rdm->postMediaContent(destDevClass, fileUri);
+          rdm->postMediaContent (destDevClass, fileUri);
 
-				clog << "FormatterMultiDevice::postMediaContent(";
-				clog << this << ")";
-				clog << " serialized window id = '";
-				clog << (unsigned long)serialized;
+          clog << "FormatterMultiDevice::postMediaContent(";
+          clog << this << ")";
+          clog << " serialized window id = '";
+          clog << (unsigned long)serialized;
 
-#endif //WITH_MULTIDEVICE
+#endif // WITH_MULTIDEVICE
 
-				if (bmpScr != 0) {
-					wins.push_back(serialized);
-					dm->mergeIds(myScreen, bmpScr, &wins);
+          if (bmpScr != 0)
+            {
+              wins.push_back (serialized);
+              dm->mergeIds (myScreen, bmpScr, &wins);
 
-					dm->showWindow (myScreen, bmpScr);
+              dm->showWindow (myScreen, bmpScr);
 
-					clog << "' bmpScr = '";
-					clog << (unsigned long)bmpScr;
+              clog << "' bmpScr = '";
+              clog << (unsigned long)bmpScr;
 
-					/*bmpScr->clearContent();
-					bmpScr->stretchBlit(serialized);
-					bmpScr->show();
-					bmpScr->validate();*/
+              /*bmpScr->clearContent();
+              bmpScr->stretchBlit(serialized);
+              bmpScr->show();
+              bmpScr->validate();*/
 
-					//renderFromUri(bitMapScreen, fileUri);
-				}
+              // renderFromUri(bitMapScreen, fileUri);
+            }
 
-				clog << "'" << endl;
-			}
+          clog << "'" << endl;
+        }
+    }
+  else if (destDevClass == DeviceDomain::CT_ACTIVE)
+    {
+      if (!activeUris->empty ())
+        {
+        }
+    }
+  Thread::mutexUnlock (&mutex);
+}
 
-		} else if (destDevClass == DeviceDomain::CT_ACTIVE) {
-			if (!activeUris->empty()) {
+FormatterLayout *
+FormatterMultiDevice::getFormatterLayout (CascadingDescriptor *descriptor,
+                                          ExecutionObject *object)
+{
 
-			}
-		}
-		Thread::mutexUnlock(&mutex);
-	}
+  map<int, FormatterLayout *>::iterator i;
+  FormatterLayout *layout;
+  LayoutRegion *region;
+  int devClass;
 
-	FormatterLayout* FormatterMultiDevice::getFormatterLayout(
-			CascadingDescriptor* descriptor, ExecutionObject* object) {
+  /*clog << "FormatterMultiDevice::getFormatterLayout for '";
+  clog << object->getId() << "' formatterMultiDevice class = '";
+  clog << this->deviceClass << "'" << endl;*/
 
-		map<int, FormatterLayout*>::iterator i;
-		FormatterLayout* layout;
-		LayoutRegion* region;
-		int devClass;
+  region = descriptor->getRegion ();
+  if (region == NULL)
+    {
+      if (layoutManager.count (this->deviceClass) != 0)
+        {
+          region = descriptor->getRegion (layoutManager[this->deviceClass],
+                                          object);
+        }
 
-		/*clog << "FormatterMultiDevice::getFormatterLayout for '";
-		clog << object->getId() << "' formatterMultiDevice class = '";
-		clog << this->deviceClass << "'" << endl;*/
+      if (region == NULL)
+        {
+          clog << "FormatterMultiDevice::getFormatterLayout ";
+          clog << "region is NULL";
+          clog << endl;
+          return NULL;
+        }
+    }
 
-		region = descriptor->getRegion();
-		if (region == NULL) {
-			if (layoutManager.count(this->deviceClass) != 0) {
-				region = descriptor->getRegion(
-						layoutManager[this->deviceClass], object);
-			}
+  devClass = region->getDeviceClass ();
+  i = layoutManager.find (devClass);
 
-			if (region == NULL) {
-				clog << "FormatterMultiDevice::getFormatterLayout ";
-				clog << "region is NULL";
-				clog << endl;
-				return NULL;
-			}
-		}
+  if (i == layoutManager.end ())
+    {
+      if (devClass == DeviceDomain::CT_PASSIVE)
+        {
+          layout = new FormatterLayout (myScreen, 0, 0, DV_QVGA_WIDTH,
+                                        DV_QVGA_HEIGHT);
 
-		devClass = region->getDeviceClass();
-		i = layoutManager.find(devClass);
+          layoutManager[devClass] = layout;
+          return layout;
+        }
 
-		if (i == layoutManager.end()) {
-			if (devClass == DeviceDomain::CT_PASSIVE) {
-				layout = new FormatterLayout(
-						myScreen, 0, 0, DV_QVGA_WIDTH, DV_QVGA_HEIGHT);
+      /*clog << "FormatterMultiDevice::getFormatterLayout NOT FOUND for ";
+      clog << "class '" << devClass << "'" << endl;*/
+      return NULL;
+    }
+  else
+    {
+      /*clog << "FormatterMultiDevice::getFormatterLayout FOUND class '";
+      clog << devClass << "' in LAYOUTMANAGER" << endl;*/
+      return i->second;
+    }
+}
 
-				layoutManager[devClass] = layout;
-				return layout;
-			}
+GingaWindowID
+FormatterMultiDevice::prepareFormatterRegion (ExecutionObject *executionObject,
+                                              GingaSurfaceID renderedSurface)
+{
 
-			/*clog << "FormatterMultiDevice::getFormatterLayout NOT FOUND for ";
-			clog << "class '" << devClass << "'" << endl;*/
-			return NULL;
+  FormatterLayout *layout;
+  CascadingDescriptor *descriptor;
+  string regionId, plan = "";
+  GingaWindowID windowId = 0;
 
-		} else {
-			/*clog << "FormatterMultiDevice::getFormatterLayout FOUND class '";
-			clog << devClass << "' in LAYOUTMANAGER" << endl;*/
-			return i->second;
-		}
-	}
+  map<int, FormatterLayout *>::iterator i;
+  LayoutRegion *bitMapRegion;
+  LayoutRegion *ncmRegion;
 
-	GingaWindowID FormatterMultiDevice::prepareFormatterRegion(
-			ExecutionObject* executionObject, GingaSurfaceID renderedSurface) {
+  descriptor = executionObject->getDescriptor ();
+  if (descriptor != NULL)
+    {
+      layout = getFormatterLayout (descriptor, executionObject);
+      if (layout != NULL)
+        {
+          if (descriptor->getFormatterRegion () != NULL)
+            {
+              plan = descriptor->getFormatterRegion ()->getPlan ();
+            }
 
-		FormatterLayout* layout;
-		CascadingDescriptor* descriptor;
-		string regionId, plan = "";
-		GingaWindowID windowId = 0;
+          windowId = layout->prepareFormatterRegion (executionObject,
+                                                     renderedSurface, plan);
 
-		map<int, FormatterLayout*>::iterator i;
-		LayoutRegion* bitMapRegion;
-		LayoutRegion* ncmRegion;
+          if (bitMapScreen != 0)
+            {
+              /*clog << endl;
+              clog << "FormatterMultiDevice::prepareFormatterRegion ";
+              clog << "bitMapScreen != NULL" << endl;*/
+              return windowId;
+            }
 
-		descriptor = executionObject->getDescriptor();
-		if (descriptor != NULL) {
-			layout = getFormatterLayout(descriptor, executionObject);
-			if (layout != NULL) {
-				if (descriptor->getFormatterRegion() != NULL) {
-					plan = descriptor->getFormatterRegion()->getPlan();
-				}
+          regionId = layout->getBitMapRegionId ();
+          /*clog << endl;
+          clog << "FormatterMultiDevice::prepareFormatterRegion map '";
+          clog << regionId << "'" << endl;*/
 
-				windowId = layout->prepareFormatterRegion(
-						executionObject, renderedSurface, plan);
+          if (regionId == "")
+            {
+              return windowId;
+            }
 
-				if (bitMapScreen != 0) {
-					/*clog << endl;
-					clog << "FormatterMultiDevice::prepareFormatterRegion ";
-					clog << "bitMapScreen != NULL" << endl;*/
-					return windowId;
-				}
+          i = layoutManager.find (1);
+          if (i == layoutManager.end ())
+            {
+              /*clog << endl;
+              clog << "FormatterMultiDevice::prepareFormatterRegion ";
+              clog << "CANT FIND devClass '" << deviceClass << "'";
+              clog << endl;*/
+              return windowId;
+            }
 
-				regionId = layout->getBitMapRegionId();
-				/*clog << endl;
-				clog << "FormatterMultiDevice::prepareFormatterRegion map '";
-				clog << regionId << "'" << endl;*/
+          layout = i->second;
 
-				if (regionId == "") {
-					return windowId;
-				}
+          ncmRegion = layout->getDeviceRegion ();
 
-				i = layoutManager.find(1);
-				if (i == layoutManager.end()) {
-					/*clog << endl;
-					clog << "FormatterMultiDevice::prepareFormatterRegion ";
-					clog << "CANT FIND devClass '" << deviceClass << "'";
-					clog << endl;*/
-					return windowId;
-				}
+          bitMapRegion = ncmRegion->getOutputMapRegion ();
+          if (bitMapRegion == NULL)
+            {
+              clog << endl;
+              clog << "FormatterMultiDevice::prepareFormatterRegion(";
+              clog << this << ") ";
+              clog << "CANT FIND bitMapRegion";
+              clog << " for id '" << regionId << "' devClass = '";
+              clog << deviceClass << "'" << endl;
+              clog << endl;
+              return windowId;
+            }
 
-				layout = i->second;
+          bitMapScreen
+              = dm->createWindow (myScreen, bitMapRegion->getAbsoluteLeft (),
+                                  bitMapRegion->getAbsoluteTop (),
+                                  bitMapRegion->getWidthInPixels (),
+                                  bitMapRegion->getHeightInPixels (),
+                                  bitMapRegion->getZIndexValue ());
 
-				ncmRegion = layout->getDeviceRegion();
+          clog << endl << endl;
+          clog << "FormatterMultiDevice::prepareFormatterRegion(";
+          clog << this << ") ";
+          clog << "BITMAPREGION '";
+          clog << regionId << "' left = '";
+          clog << bitMapRegion->getLeftInPixels ();
+          clog << "' top = '" << bitMapRegion->getTopInPixels ();
+          clog << "' width = '" << bitMapRegion->getWidthInPixels ();
+          clog << "' height = '" << bitMapRegion->getHeightInPixels ();
+          clog << "' zIndex = '" << bitMapRegion->getZIndexValue ();
+          clog << endl << endl;
 
-				bitMapRegion = ncmRegion->getOutputMapRegion();
-				if (bitMapRegion == NULL) {
-					clog << endl;
-					clog << "FormatterMultiDevice::prepareFormatterRegion(";
-					clog << this << ") ";
-					clog << "CANT FIND bitMapRegion";
-					clog << " for id '" << regionId << "' devClass = '";
-					clog << deviceClass << "'" << endl;
-					clog << endl;
-					return windowId;
-				}
+          int caps = dm->getWindowCap (myScreen, bitMapScreen, "ALPHACHANNEL");
+          dm->setWindowCaps (myScreen, bitMapScreen, caps);
+          dm->drawWindow (myScreen, bitMapScreen);
+        }
+    }
 
-				bitMapScreen = dm->createWindow(
-						myScreen,
-						bitMapRegion->getAbsoluteLeft(),
-						bitMapRegion->getAbsoluteTop(),
-						bitMapRegion->getWidthInPixels(),
-						bitMapRegion->getHeightInPixels(),
-						bitMapRegion->getZIndexValue());
+  return windowId;
+}
 
-				clog << endl << endl;
-				clog << "FormatterMultiDevice::prepareFormatterRegion(";
-				clog << this << ") ";
-				clog << "BITMAPREGION '";
-				clog << regionId << "' left = '";
-				clog << bitMapRegion->getLeftInPixels();
-				clog << "' top = '" << bitMapRegion->getTopInPixels();
-				clog << "' width = '" << bitMapRegion->getWidthInPixels();
-				clog << "' height = '" << bitMapRegion->getHeightInPixels();
-				clog << "' zIndex = '" << bitMapRegion->getZIndexValue();
-				clog << endl << endl;
+void
+FormatterMultiDevice::showObject (ExecutionObject *executionObject)
+{
+  FormatterLayout *layout;
+  CascadingDescriptor *descriptor;
+  FormatterRegion *fRegion;
+  LayoutRegion *region;
+  int devClass;
+  string fileUri;
+  string url;
+  string relativePath;
+  string tempRelPath;
+  string value;
+  Content *content;
 
-				int caps = dm->getWindowCap (myScreen, bitMapScreen, "ALPHACHANNEL");
-				dm->setWindowCaps (myScreen, bitMapScreen, caps);
-				dm->drawWindow (myScreen, bitMapScreen);
-			}
-		}
+  /*INCLSectionProcessor* nsp = NULL;
+  vector<StreamData*>* streams;*/
 
-		return windowId;
-	}
+  descriptor = executionObject->getDescriptor ();
+  if (descriptor != NULL)
+    {
+      region = descriptor->getRegion ();
+      layout = getFormatterLayout (descriptor, executionObject);
+      if (region != NULL && layout != NULL)
+        {
+          devClass = region->getDeviceClass ();
 
-	void FormatterMultiDevice::showObject(ExecutionObject* executionObject) {
-		FormatterLayout* layout;
-		CascadingDescriptor* descriptor;
-		FormatterRegion* fRegion;
-		LayoutRegion* region;
-		int devClass;
-		string fileUri;
-		string url;
-		string relativePath;
-		string tempRelPath;
-		string value;
-		Content* content;
+          clog << "FormatterMultiDevice::showObject '";
+          clog << executionObject->getId () << "' class '";
+          clog << devClass << "'" << endl;
 
-		/*INCLSectionProcessor* nsp = NULL;
-		vector<StreamData*>* streams;*/
+          fRegion = descriptor->getFormatterRegion ();
+          if (devClass != DeviceDomain::CT_BASE)
+            {
+              clog << "FormatterMultiDevice::showObject as base" << endl;
 
-		descriptor = executionObject->getDescriptor();
-		if (descriptor != NULL) {
-			region = descriptor->getRegion();
-			layout = getFormatterLayout(descriptor, executionObject);
-			if (region != NULL && layout != NULL) {
-				devClass = region->getDeviceClass();
+              if (fRegion != NULL)
+                {
+                  fRegion->setGhostRegion (true);
+                }
+            }
 
-				clog << "FormatterMultiDevice::showObject '";
-				clog << executionObject->getId() << "' class '";
-				clog << devClass << "'" << endl;
+          if (devClass != DeviceDomain::CT_ACTIVE)
+            {
+              layout->showObject (executionObject);
+            }
 
-				fRegion = descriptor->getFormatterRegion();
-				if (devClass != DeviceDomain::CT_BASE) {
-					clog << "FormatterMultiDevice::showObject as base" << endl;
+          if (hasRemoteDevices)
+            {
+              if (devClass == DeviceDomain::CT_PASSIVE)
+                {
+                  postMediaContent (devClass);
+                }
+              else if (devClass == DeviceDomain::CT_ACTIVE)
+                {
+                  // clog << "activeBaseUri: "<<activeBaseUri<<endl;
+                  // clog << "activeUris: "<<activeUris<<endl;
 
-					if (fRegion != NULL) {
-						fRegion->setGhostRegion(true);
-					}
-				}
+                  content = ((NodeEntity *)(executionObject->getDataObject ()
+                                                ->getDataEntity ()))
+                                ->getContent ();
 
-				if (devClass != DeviceDomain::CT_ACTIVE) {
-					layout->showObject(executionObject);
-				}
+                  tempRelPath = "";
 
-				if (hasRemoteDevices) {
-					if (devClass == DeviceDomain::CT_PASSIVE) {
-						postMediaContent(devClass);
+                  if (content != NULL
+                      && content->instanceOf ("ReferenceContent"))
+                    {
 
-					} else if (devClass == DeviceDomain::CT_ACTIVE) {
-						//clog << "activeBaseUri: "<<activeBaseUri<<endl;
-						//clog << "activeUris: "<<activeUris<<endl;
+                      url = ((ReferenceContent *)content)
+                                ->getCompleteReferenceUrl ();
 
-						content = ((NodeEntity*)(
-								executionObject->getDataObject()->
-										getDataEntity()))->getContent();
+                      clog << "FormatterMultiDevice::showObject ";
+                      clog << "executionObject.url = '" << url;
+                      clog << "'" << endl;
 
-						tempRelPath = "";
+                      clog << "FormatterMultiDevice::showObject ";
+                      clog << "executionObject.activeBaseUri = '";
+                      clog << activeBaseUri << "'" << endl;
 
-						if (content != NULL && content->instanceOf(
-								"ReferenceContent")) {
+                      size_t pos
+                          = url.find_last_of (SystemCompat::getIUriD ());
 
-							url = ((ReferenceContent*)content)->
-									getCompleteReferenceUrl();
+                      if (pos != string::npos)
+                        tempRelPath
+                            = url.substr (activeBaseUri.size (),
+                                          url.size () - activeBaseUri.size ());
+                      else
+                        tempRelPath = url;
 
-							clog << "FormatterMultiDevice::showObject ";
-							clog << "executionObject.url = '" << url;
-							clog << "'" << endl;
+                      // relativePath =
+                      // SystemCompat::convertRelativePath(tempRelPath);
 
-							clog << "FormatterMultiDevice::showObject ";
-							clog << "executionObject.activeBaseUri = '";
-							clog << activeBaseUri << "'" << endl;
-
-							size_t pos = url.find_last_of(SystemCompat::getIUriD());
-
-							if(pos != string::npos)
-								tempRelPath = url.substr(
-												activeBaseUri.size(),
-												url.size()-activeBaseUri.size());
-							else
-								tempRelPath = url;
-
-							//relativePath = SystemCompat::convertRelativePath(tempRelPath);
-
-							/*
-							size_t pos = url.find_last_of(SystemCompat::getIUriD());
-							if(pos != string::npos)
-								relativePath = url.substr( pos + 1, url.size() - pos - 1 );
-							else
-								relativePath = url;
-							*/
-							clog << "FormatterMultiDevice::showObject ";
-							clog << "executionObject.RP = '";
-							clog << tempRelPath << "'" << endl;
-						}
+                      /*
+                      size_t pos = url.find_last_of(SystemCompat::getIUriD());
+                      if(pos != string::npos)
+                              relativePath = url.substr( pos + 1, url.size() -
+                      pos - 1 );
+                      else
+                              relativePath = url;
+                      */
+                      clog << "FormatterMultiDevice::showObject ";
+                      clog << "executionObject.RP = '";
+                      clog << tempRelPath << "'" << endl;
+                    }
 #if WITH_MULTIDEVICE
-						rdm->postEvent(devClass,
-								DeviceDomain::FT_PRESENTATIONEVENT,
-								(char*)("start::" + tempRelPath).c_str(),
-								("start::" + tempRelPath).size());
+                  rdm->postEvent (devClass, DeviceDomain::FT_PRESENTATIONEVENT,
+                                  (char *)("start::" + tempRelPath).c_str (),
+                                  ("start::" + tempRelPath).size ());
 
-						/**streams = nsp->createNCLSections(
-								"0x01.0x01",
-								executionObject->getId(),
-								activeBaseUri,
-								activeUris,
-								NULL);
+/**streams = nsp->createNCLSections(
+                "0x01.0x01",
+                executionObject->getId(),
+                activeBaseUri,
+                activeUris,
+                NULL);
 
-						rdm->postNclMetadata(devClass, streams);
+rdm->postNclMetadata(devClass, streams);
 
-						fileUri = "start::" + executionObject->getId();*
-						rdm->postEvent(
-								devClass,
-								DeviceDomain::FT_PRESENTATIONEVENT,
-								(char*)(fileUri.c_str()),
-								fileUri.length());*/
-#endif //WITH_MULTIDEVICE
-					}
-				}
-			}
-		}
-	}
+fileUri = "start::" + executionObject->getId();*
+rdm->postEvent(
+                devClass,
+                DeviceDomain::FT_PRESENTATIONEVENT,
+                (char*)(fileUri.c_str()),
+                fileUri.length());*/
+#endif // WITH_MULTIDEVICE
+                }
+            }
+        }
+    }
+}
 
-	void FormatterMultiDevice::hideObject(ExecutionObject* executionObject) {
-		FormatterLayout* layout;
-		CascadingDescriptor* descriptor;
-		LayoutRegion* region;
-		int devClass;
-		string fileUri;
+void
+FormatterMultiDevice::hideObject (ExecutionObject *executionObject)
+{
+  FormatterLayout *layout;
+  CascadingDescriptor *descriptor;
+  LayoutRegion *region;
+  int devClass;
+  string fileUri;
 
-		clog << "FormatterMultiDevice::hideObject '";
-		clog << executionObject->getId() << "'" << endl;
+  clog << "FormatterMultiDevice::hideObject '";
+  clog << executionObject->getId () << "'" << endl;
 
-		descriptor = executionObject->getDescriptor();
-		if (descriptor != NULL) {
-			region = descriptor->getRegion();
-			layout = getFormatterLayout(descriptor, executionObject);
-			if (region != NULL && layout != NULL) {
-				devClass = region->getDeviceClass();
-				if (devClass != DeviceDomain::CT_ACTIVE) {
-					/*clog << "FormatterMultiDevice::hideObject '";
-					clog << executionObject->getId() << "' class '";
-					clog << devClass << "'" << endl;*/
+  descriptor = executionObject->getDescriptor ();
+  if (descriptor != NULL)
+    {
+      region = descriptor->getRegion ();
+      layout = getFormatterLayout (descriptor, executionObject);
+      if (region != NULL && layout != NULL)
+        {
+          devClass = region->getDeviceClass ();
+          if (devClass != DeviceDomain::CT_ACTIVE)
+            {
+              /*clog << "FormatterMultiDevice::hideObject '";
+              clog << executionObject->getId() << "' class '";
+              clog << devClass << "'" << endl;*/
 
-					layout->hideObject(executionObject);
-				}
+              layout->hideObject (executionObject);
+            }
 
-				if (hasRemoteDevices) {
-					if (devClass == DeviceDomain::CT_PASSIVE) {
-						postMediaContent(devClass);
+          if (hasRemoteDevices)
+            {
+              if (devClass == DeviceDomain::CT_PASSIVE)
+                {
+                  postMediaContent (devClass);
+                }
+              else if (devClass == DeviceDomain::CT_ACTIVE)
+                {
+                  Content *content;
+                  string relativePath = "";
+                  string url;
 
-					} else if (devClass == DeviceDomain::CT_ACTIVE) {
-						Content* content;
-						string relativePath = "";
-						string url;
+                  content = ((NodeEntity *)(executionObject->getDataObject ()
+                                                ->getDataEntity ()))
+                                ->getContent ();
 
-						content = ((NodeEntity*)(
-								executionObject->getDataObject()->
-										getDataEntity()))->getContent();
+                  if (content != NULL
+                      && content->instanceOf ("ReferenceContent"))
+                    {
 
-						if (content != NULL && content->instanceOf(
-								"ReferenceContent")) {
+                      url = ((ReferenceContent *)content)
+                                ->getCompleteReferenceUrl ();
 
-							url = ((ReferenceContent*)content)->
-									getCompleteReferenceUrl();
+                      /*clog << "FormatterMultiDevice::hideObject";
+                      clog << " executionObject.url = '" << url << "'";
+                      clog << " activeBaseUri = '" << activeBaseUri;
+                      clog << "'";
+                      clog << endl;*/
 
-							/*clog << "FormatterMultiDevice::hideObject";
-							clog << " executionObject.url = '" << url << "'";
-							clog << " activeBaseUri = '" << activeBaseUri;
-							clog << "'";
-							clog << endl;*/
+                      relativePath
+                          = url.substr (activeBaseUri.size () + 1,
+                                        url.size () - activeBaseUri.size ());
 
-							relativePath = url.substr(
-									activeBaseUri.size()+1,
-									url.size() - activeBaseUri.size());
+                      /*clog << "FormatterMultiDevice::hideObject";
+                      clog << " executionObject.RP = '" << relativePath;
+                      clog << "'" << endl;*/
+                    }
 
-							/*clog << "FormatterMultiDevice::hideObject";
-							clog << " executionObject.RP = '" << relativePath;
-							clog << "'" << endl;*/
-						}
-
-						/*clog << "FormatterMultiDevice::hideObject";
-						clog << " POSTING STOP EVENT";
-						clog << endl;*/
+/*clog << "FormatterMultiDevice::hideObject";
+clog << " POSTING STOP EVENT";
+clog << endl;*/
 #if WITH_MULTIDEVICE
-						rdm->postEvent(
-								devClass,
-								DeviceDomain::FT_PRESENTATIONEVENT,
-								(char*)("stop::" + relativePath).c_str(),
-								("stop::" + relativePath).size());
-#endif //WITH_MULTIDEVICE
-					}
-				}
-			}
-		}
-	}
+                  rdm->postEvent (devClass, DeviceDomain::FT_PRESENTATIONEVENT,
+                                  (char *)("stop::" + relativePath).c_str (),
+                                  ("stop::" + relativePath).size ());
+#endif // WITH_MULTIDEVICE
+                }
+            }
+        }
+    }
+}
 
-	void FormatterMultiDevice::renderFromUri(GingaWindowID win, string uri) {
-		GingaSurfaceID s;
-		s = dm->createRenderedSurfaceFromImageFile(myScreen, uri.c_str());
-		dm->setWindowColorKey (myScreen, win, 0, 0, 0);
-		dm->clearWindowContent (myScreen, win);
-		dm->renderWindowFrom(myScreen, win, s);
-		dm->showWindow (myScreen, win);
-		dm->validateWindow (myScreen, win);
-		dm->deleteSurface(s);
-	}
+void
+FormatterMultiDevice::renderFromUri (GingaWindowID win, string uri)
+{
+  GingaSurfaceID s;
+  s = dm->createRenderedSurfaceFromImageFile (myScreen, uri.c_str ());
+  dm->setWindowColorKey (myScreen, win, 0, 0, 0);
+  dm->clearWindowContent (myScreen, win);
+  dm->renderWindowFrom (myScreen, win, s);
+  dm->showWindow (myScreen, win);
+  dm->validateWindow (myScreen, win);
+  dm->deleteSurface (s);
+}
 
-	void FormatterMultiDevice::tapObject(int devClass, int x, int y) {
-		FormatterLayout* layout;
-		ExecutionObject* object;
+void
+FormatterMultiDevice::tapObject (int devClass, int x, int y)
+{
+  FormatterLayout *layout;
+  ExecutionObject *object;
 
-		if (layoutManager.count(devClass) != 0) {
-			layout = layoutManager[devClass];
+  if (layoutManager.count (devClass) != 0)
+    {
+      layout = layoutManager[devClass];
 
-			object = layout->getObject(x, y);
-			if (focusManager != NULL && object != NULL) {
-				clog << "FormatterMultiDevice::tapObject '";
-				clog << object->getId() << "'" << endl;
-				((FormatterFocusManager *)focusManager)->tapObject((void*)object);
-			} else {
-				clog << "FormatterMultiDevice::tapObject can't ";
-				clog << "find object at '" << x << "' and '";
-				clog << y << "' coords" << endl;
-			}
+      object = layout->getObject (x, y);
+      if (focusManager != NULL && object != NULL)
+        {
+          clog << "FormatterMultiDevice::tapObject '";
+          clog << object->getId () << "'" << endl;
+          ((FormatterFocusManager *)focusManager)->tapObject ((void *)object);
+        }
+      else
+        {
+          clog << "FormatterMultiDevice::tapObject can't ";
+          clog << "find object at '" << x << "' and '";
+          clog << y << "' coords" << endl;
+        }
+    }
+  else
+    {
+      clog << "FormatterMultiDevice::tapObject can't find layout of '";
+      clog << devClass << "' device class" << endl;
+    }
+}
 
-		} else {
-			clog << "FormatterMultiDevice::tapObject can't find layout of '";
-			clog << devClass << "' device class" << endl;
-		}
-	}
+bool
+FormatterMultiDevice::newDeviceConnected (int newDevClass, int w, int h)
+{
 
-	bool FormatterMultiDevice::newDeviceConnected(
-			int newDevClass,
-			int w,
-			int h) {
+  bool isNewClass = false;
+  /*INCLSectionProcessor* nsp = NULL;
+  vector<StreamData*>* streams;*/
 
-		bool isNewClass = false;
-		/*INCLSectionProcessor* nsp = NULL;
-		vector<StreamData*>* streams;*/
+  clog << "FormatterMultiDevice::newDeviceConnected class '";
+  clog << newDevClass << "', w = '" << w << "', h = '" << h << "'";
+  clog << endl;
 
-		clog << "FormatterMultiDevice::newDeviceConnected class '";
-		clog << newDevClass << "', w = '" << w << "', h = '" << h << "'";
-		clog << endl;
+  if (presContext != NULL)
+    {
+      presContext->incPropertyValue (SYSTEM_DEVNUMBER + "("
+                                     + itos (newDevClass) + ")");
+    }
 
-		if (presContext != NULL) {
-			presContext->incPropertyValue(
-					SYSTEM_DEVNUMBER + "(" + itos(newDevClass) + ")");
-		}
+  if (!hasRemoteDevices)
+    {
+      hasRemoteDevices = true;
+    }
 
-		if (!hasRemoteDevices) {
-			hasRemoteDevices = true;
-		}
+  if (layoutManager.count (newDevClass) == 0)
+    {
+      layoutManager[newDevClass] = new FormatterLayout (myScreen, 0, 0, w, h);
 
-		if (layoutManager.count(newDevClass) == 0) {
-			layoutManager[newDevClass] = new FormatterLayout(
-					myScreen, 0, 0, w, h);
+      isNewClass = true;
+    }
 
-			isNewClass = true;
-		}
+  if (newDevClass == DeviceDomain::CT_ACTIVE)
+    {
+      clog << "FormatterMulDevice::newDeviceConnected class = ";
+      clog << DeviceDomain::CT_ACTIVE << endl;
 
-		if (newDevClass == DeviceDomain::CT_ACTIVE) {
-			clog << "FormatterMulDevice::newDeviceConnected class = ";
-			clog << DeviceDomain::CT_ACTIVE << endl;
+      /*streams = nsp->createNCLSections(
+                      "0x01.0x01",
+                      "nclApp",
+                      activeBaseUri,
+                      activeUris,
+                      NULL);
 
-			/*streams = nsp->createNCLSections(
-					"0x01.0x01",
-					"nclApp",
-					activeBaseUri,
-					activeUris,
-					NULL);
+      rdm->postNclMetadata(newDevClass, streams);*/
+    }
+  else
+    {
+      postMediaContent (newDevClass);
+    }
 
-			rdm->postNclMetadata(newDevClass, streams);*/
+  return isNewClass;
+}
 
-		} else {
-			postMediaContent(newDevClass);
-		}
+bool
+FormatterMultiDevice::receiveRemoteEvent (int remoteDevClass, int eventType,
+                                          string eventContent)
+{
 
-		return isNewClass;
-	}
+  vector<string> *params;
+  int eventCode;
 
-	bool FormatterMultiDevice::receiveRemoteEvent(
-			int remoteDevClass,
-			int eventType,
-			string eventContent) {
+  /*clog << "FormatterActiveDevice::receiveRemoteEvent from class '";
+  clog << remoteDevClass << "', eventType '" << eventType << "', ";
+  clog << "eventContent = '" << eventContent << "'" << endl;*/
 
-		vector<string>* params;
-		int eventCode;
+  if (remoteDevClass == DeviceDomain::CT_PASSIVE
+      && eventType == DeviceDomain::FT_SELECTIONEVENT)
+    {
 
-		/*clog << "FormatterActiveDevice::receiveRemoteEvent from class '";
-		clog << remoteDevClass << "', eventType '" << eventType << "', ";
-		clog << "eventContent = '" << eventContent << "'" << endl;*/
+      if (eventContent.find (",") != std::string::npos)
+        {
+          params = split (eventContent, ",");
+          if (params != NULL)
+            {
+              if (params->size () == 3)
+                {
+                  string strCode, strX, strY;
+                  strCode = (*params)[0];
+                  eventCode = CodeMap::getInstance ()->getCode (strCode);
+                  if (eventCode == CodeMap::KEY_TAP)
+                    {
+                      strX = (*params)[1];
+                      strY = (*params)[2];
 
-		if (remoteDevClass == DeviceDomain::CT_PASSIVE &&
-				eventType == DeviceDomain::FT_SELECTIONEVENT) {
+                      tapObject (DeviceDomain::CT_PASSIVE,
+                                 (int)::ginga::util::stof (strX),
+                                 (int)::ginga::util::stof (strY));
+                    }
+                  else if (eventCode != CodeMap::KEY_NULL)
+                    {
+                      im->postInputEvent (eventCode);
+                    }
+                }
+              delete params;
+            }
+        }
+      else
+        {
+          eventCode = CodeMap::getInstance ()->getCode (eventContent);
+          if (eventCode != CodeMap::KEY_NULL)
+            {
+              im->postInputEvent (eventCode);
+            }
+        }
+    }
 
-			if (eventContent.find(",") != std::string::npos) {
-				params = split(eventContent, ",");
-				if (params != NULL) {
-					if (params->size() == 3) {
-						string strCode, strX, strY;
-						strCode = (*params)[0];
-						eventCode = CodeMap::getInstance()->getCode(strCode);
-						if (eventCode == CodeMap::KEY_TAP) {
-							strX    = (*params)[1];
-							strY    = (*params)[2];
+  return true;
+}
 
-							tapObject(
-									DeviceDomain::CT_PASSIVE,
-									(int)::ginga::util::stof(strX),
-									(int)::ginga::util::stof(strY));
+void
+FormatterMultiDevice::addActiveUris (string baseUri, vector<string> *uris)
+{
 
-						} else if (eventCode != CodeMap::KEY_NULL) {
-							im->postInputEvent(eventCode);
-						}
-					}
-					delete params;
-				}
+  if (activeUris != NULL)
+    {
+      delete activeUris;
+    }
 
-			} else {
-				eventCode = CodeMap::getInstance()->getCode(eventContent);
-				if (eventCode != CodeMap::KEY_NULL) {
-					im->postInputEvent(eventCode);
-				}
-			}
-		}
+  activeUris = uris;
+  activeBaseUri = baseUri;
+  clog << "FormatterMultiDevice::addActiveUris activeBaseUri=" << baseUri
+       << endl;
+}
 
-		return true;
-	}
+void
+FormatterMultiDevice::updatePassiveDevices ()
+{
+  postMediaContent (DeviceDomain::CT_PASSIVE);
+}
 
-	void FormatterMultiDevice::addActiveUris(
-			string baseUri, vector<string>* uris) {
+void
+FormatterMultiDevice::updateStatus (short code, string parameter, short type,
+                                    string value)
+{
 
-		if (activeUris != NULL) {
-			delete activeUris;
-		}
+  switch (code)
+    {
+    case IPlayer::PL_NOTIFY_UPDATECONTENT:
+      if (type == IPlayer::TYPE_PASSIVEDEVICE)
+        {
+          FormatterMultiDevice::updatePassiveDevices ();
+        }
+      break;
 
-		activeUris    = uris;
-		activeBaseUri = baseUri;
-		clog << "FormatterMultiDevice::addActiveUris activeBaseUri="<<baseUri<<endl;
-	}
-
-	void FormatterMultiDevice::updatePassiveDevices() {
-		postMediaContent(DeviceDomain::CT_PASSIVE);
-	}
-
-	void FormatterMultiDevice::updateStatus(
-			short code, string parameter, short type, string value) {
-
-		switch(code) {
-			case IPlayer::PL_NOTIFY_UPDATECONTENT:
-				if (type == IPlayer::TYPE_PASSIVEDEVICE) {
-					FormatterMultiDevice::updatePassiveDevices();
-				}
-				break;
-
-			default:
-				break;
-		}
-	}
+    default:
+      break;
+    }
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_END

@@ -21,57 +21,59 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MULTIDEVICE_BEGIN
 
-	ActiveDeviceService::ActiveDeviceService() : BaseDeviceService() {
-		serviceClass = DeviceDomain::CT_ACTIVE;
-	}
+ActiveDeviceService::ActiveDeviceService () : BaseDeviceService ()
+{
+  serviceClass = DeviceDomain::CT_ACTIVE;
+}
 
-	ActiveDeviceService::~ActiveDeviceService() {
+ActiveDeviceService::~ActiveDeviceService () {}
 
-	}
+void
+ActiveDeviceService::connectedToBaseDevice (unsigned int domainAddr)
+{
+  set<IRemoteDeviceListener *>::iterator i;
 
-	void ActiveDeviceService::connectedToBaseDevice(unsigned int domainAddr) {
-		set<IRemoteDeviceListener*>::iterator i;
+  addDevice (domainAddr, DeviceDomain::CT_BASE, 0, 0);
 
-		addDevice(domainAddr, DeviceDomain::CT_BASE, 0, 0);
+  Thread::mutexLock (&lMutex);
+  i = listeners->begin ();
+  while (i != listeners->end ())
+    {
+      (*i)->connectedToBaseDevice (domainAddr);
+      ++i;
+    }
+  Thread::mutexUnlock (&lMutex);
+}
 
-		Thread::mutexLock(&lMutex);
-		i = listeners->begin();
-		while (i != listeners->end()) {
-			(*i)->connectedToBaseDevice(domainAddr);
-			++i;
-		}
-		Thread::mutexUnlock(&lMutex);
-	}
+bool
+ActiveDeviceService::receiveMediaContent (unsigned int devAddr, char *stream,
+                                          int streamSize)
+{
 
-	bool ActiveDeviceService::receiveMediaContent(
-			unsigned int devAddr,
-			char* stream,
-			int streamSize) {
+  int remoteDevClass;
+  RemoteDevice *dev;
+  string uri;
+  set<IRemoteDeviceListener *>::iterator i;
+  // INCLSectionProcessor* nsp = NULL;
+  bool hasLists;
 
-		int remoteDevClass;
-		RemoteDevice* dev;
-		string uri;
-		set<IRemoteDeviceListener*>::iterator i;
-		//INCLSectionProcessor* nsp = NULL;
-		bool hasLists;
+  // clog << "ActiveDeviceService::receiveMediaContent" << endl;
 
-		//clog << "ActiveDeviceService::receiveMediaContent" << endl;
+  dev = getDevice (devAddr);
+  Thread::mutexLock (&lMutex);
+  hasLists = !listeners->empty ();
+  Thread::mutexUnlock (&lMutex);
 
-		dev = getDevice(devAddr);
-		Thread::mutexLock(&lMutex);
-		hasLists = !listeners->empty();
-		Thread::mutexUnlock(&lMutex);
+  if (dev != NULL && hasLists)
+    {
+      remoteDevClass = dev->getDeviceClass ();
+    }
 
-		if (dev != NULL && hasLists) {
-			remoteDevClass = dev->getDeviceClass();
+  clog << "ActiveDeviceService::receiveMediaContent Warning! ";
+  clog << " can't find device '" << dev << "' or no listeners found";
+  clog << endl;
 
-		}
-
-		clog << "ActiveDeviceService::receiveMediaContent Warning! ";
-		clog << " can't find device '" << dev << "' or no listeners found";
-		clog << endl;
-
-		return false;
-	}
+  return false;
+}
 
 GINGA_MULTIDEVICE_END

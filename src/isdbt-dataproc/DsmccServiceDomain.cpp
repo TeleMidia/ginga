@@ -18,258 +18,311 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "DsmccServiceDomain.h"
 
-
 GINGA_DATAPROC_BEGIN
 
-	DsmccServiceDomain::DsmccServiceDomain(
-		    DsmccDownloadServerInitiate* dsi,
-		    DsmccDownloadInfoIndication* dii, unsigned short pid) : Thread() {
+DsmccServiceDomain::DsmccServiceDomain (DsmccDownloadServerInitiate *dsi,
+                                        DsmccDownloadInfoIndication *dii,
+                                        unsigned short pid)
+    : Thread ()
+{
 
-		Thread::mutexInit(&stlMutex, true);
+  Thread::mutexInit (&stlMutex, true);
 
-		this->serviceGatewayIor = dsi->getServiceGatewayIor();
-		this->carouselId        = dii->getDonwloadId();
-		blockSize = dii->getBlockSize();
+  this->serviceGatewayIor = dsi->getServiceGatewayIor ();
+  this->carouselId = dii->getDonwloadId ();
+  blockSize = dii->getBlockSize ();
 
-		dii->getInfo(&this->info);
+  dii->getInfo (&this->info);
 
-		mounted                 = false;
-		hasServiceGateway       = false;
-		mountingServiceDomain   = true;
+  mounted = false;
+  hasServiceGateway = false;
+  mountingServiceDomain = true;
 
-		mountPoint = string (g_get_tmp_dir ()) + "/ginga" + SystemCompat::getIUriD() +
-					 "carousel" + SystemCompat::getIUriD() +
-					 itos(pid) + "." + itos(carouselId) +
-					 SystemCompat::getIUriD();
+  mountPoint = string (g_get_tmp_dir ()) + "/ginga" + SystemCompat::getIUriD ()
+               + "carousel" + SystemCompat::getIUriD () + itos (pid) + "."
+               + itos (carouselId) + SystemCompat::getIUriD ();
 
-		remove(mountPoint.c_str());
+  remove (mountPoint.c_str ());
 
-		g_mkdir (mountPoint.c_str(), 0777);
+  g_mkdir (mountPoint.c_str (), 0777);
 
-		processor = new DsmccObjectProcessor(pid);
-		sdl       = NULL;
+  processor = new DsmccObjectProcessor (pid);
+  sdl = NULL;
 
-		startThread();
-	}
+  startThread ();
+}
 
-	DsmccServiceDomain::~DsmccServiceDomain() {
-		map<unsigned int, DsmccModule*>::iterator i;
-		set<DsmccModule*>::iterator j;
+DsmccServiceDomain::~DsmccServiceDomain ()
+{
+  map<unsigned int, DsmccModule *>::iterator i;
+  set<DsmccModule *>::iterator j;
 
-		Thread::mutexLock(&stlMutex);
+  Thread::mutexLock (&stlMutex);
 
-		if (processor != NULL) {
-			delete processor;
-			processor = NULL;
-		}
+  if (processor != NULL)
+    {
+      delete processor;
+      processor = NULL;
+    }
 
-		//modules are deleted in DII destructor
-		info.clear();
+  // modules are deleted in DII destructor
+  info.clear ();
 
-		Thread::mutexUnlock(&stlMutex);
-		Thread::mutexDestroy(&stlMutex);
-	}
+  Thread::mutexUnlock (&stlMutex);
+  Thread::mutexDestroy (&stlMutex);
+}
 
-	void DsmccServiceDomain::setServiceDomainListener(IDsmccServiceDomainListener* sdl) {
-		this->sdl = sdl;
-	}
+void
+DsmccServiceDomain::setServiceDomainListener (IDsmccServiceDomainListener *sdl)
+{
+  this->sdl = sdl;
+}
 
-	void DsmccServiceDomain::setObjectsListeners(set<IDsmccObjectListener*>* l) {
-		processor->setObjectsListeners(l);
-	}
+void
+DsmccServiceDomain::setObjectsListeners (set<IDsmccObjectListener *> *l)
+{
+  processor->setObjectsListeners (l);
+}
 
-	int DsmccServiceDomain::receiveDDB(DsmccDownloadDataBlock* ddb) {
-		if (ddb->processDataBlock(&info) < 0) {
-			clog << "DsmccServiceDomain::receiveDDB - error." << endl;
-			return -1;
-		}
-		return 0;
-	}
+int
+DsmccServiceDomain::receiveDDB (DsmccDownloadDataBlock *ddb)
+{
+  if (ddb->processDataBlock (&info) < 0)
+    {
+      clog << "DsmccServiceDomain::receiveDDB - error." << endl;
+      return -1;
+    }
+  return 0;
+}
 
-	DsmccModule* DsmccServiceDomain::getModuleById(unsigned int id) {
-		DsmccModule* mod = NULL;
+DsmccModule *
+DsmccServiceDomain::getModuleById (unsigned int id)
+{
+  DsmccModule *mod = NULL;
 
-		Thread::mutexLock(&stlMutex);
-		if (info.count(id) != 0) {
-			mod = info[id];
-		}
-		Thread::mutexUnlock(&stlMutex);
+  Thread::mutexLock (&stlMutex);
+  if (info.count (id) != 0)
+    {
+      mod = info[id];
+    }
+  Thread::mutexUnlock (&stlMutex);
 
-		return mod;
-	}
+  return mod;
+}
 
-	bool DsmccServiceDomain::isMounted() {
-		return mounted;
-	}
+bool
+DsmccServiceDomain::isMounted ()
+{
+  return mounted;
+}
 
-	DsmccModule* DsmccServiceDomain::getModule(int pos) {
-		DsmccModule* module = NULL;
-		int i;
-		map<unsigned int, DsmccModule*>::iterator j;
+DsmccModule *
+DsmccServiceDomain::getModule (int pos)
+{
+  DsmccModule *module = NULL;
+  int i;
+  map<unsigned int, DsmccModule *>::iterator j;
 
-		Thread::mutexLock(&stlMutex);
+  Thread::mutexLock (&stlMutex);
 
-		j = info.begin();
-		for (i = 0; i < pos; i++) {
-			j++;
+  j = info.begin ();
+  for (i = 0; i < pos; i++)
+    {
+      j++;
 
-			if (j == info.end()) {
-				Thread::mutexUnlock(&stlMutex);
-				return NULL;
-			}
-		}
+      if (j == info.end ())
+        {
+          Thread::mutexUnlock (&stlMutex);
+          return NULL;
+        }
+    }
 
-		module = j->second;
+  module = j->second;
 
-		Thread::mutexUnlock(&stlMutex);
+  Thread::mutexUnlock (&stlMutex);
 
-		return module;
-	}
+  return module;
+}
 
-	map<unsigned int, DsmccModule*>* DsmccServiceDomain::getInfo() {
-		return &info;
-	}
+map<unsigned int, DsmccModule *> *
+DsmccServiceDomain::getInfo ()
+{
+  return &info;
+}
 
-	void DsmccServiceDomain::eraseModule(DsmccModule* module) {
-		map<unsigned int, DsmccModule*>::iterator i;
+void
+DsmccServiceDomain::eraseModule (DsmccModule *module)
+{
+  map<unsigned int, DsmccModule *>::iterator i;
 
-		Thread::mutexLock(&stlMutex);
+  Thread::mutexLock (&stlMutex);
 
-		i = info.begin();
-		while (i != info.end()) {
-			if (i->second == module) {
-				info.erase(i);
-				if (remove(module->getModuleFileName().c_str()) == -1) {
-					clog << errno << endl;
-				}
-				Thread::mutexUnlock(&stlMutex);
-				return;
-			}
-			++i;
-		}
+  i = info.begin ();
+  while (i != info.end ())
+    {
+      if (i->second == module)
+        {
+          info.erase (i);
+          if (remove (module->getModuleFileName ().c_str ()) == -1)
+            {
+              clog << errno << endl;
+            }
+          Thread::mutexUnlock (&stlMutex);
+          return;
+        }
+      ++i;
+    }
 
-		Thread::mutexUnlock(&stlMutex);
-	}
+  Thread::mutexUnlock (&stlMutex);
+}
 
-	bool DsmccServiceDomain::hasModules() {
+bool
+DsmccServiceDomain::hasModules ()
+{
 
-		Thread::mutexLock(&stlMutex);
+  Thread::mutexLock (&stlMutex);
 
-		if (info.empty()) {
-			if (!processor->hasObjects()) {
-				mountingServiceDomain = false;
-			}
+  if (info.empty ())
+    {
+      if (!processor->hasObjects ())
+        {
+          mountingServiceDomain = false;
+        }
 
-			Thread::mutexUnlock(&stlMutex);
-			return false;
-		}
+      Thread::mutexUnlock (&stlMutex);
+      return false;
+    }
 
-		map<unsigned int, DsmccModule*>::iterator i;
-		for (i=info.begin(); i!=info.end(); ++i) {
-			if ((i->second)->isConsolidated()) {
-				Thread::mutexUnlock(&stlMutex);
-				return true;
-			}
-		}
+  map<unsigned int, DsmccModule *>::iterator i;
+  for (i = info.begin (); i != info.end (); ++i)
+    {
+      if ((i->second)->isConsolidated ())
+        {
+          Thread::mutexUnlock (&stlMutex);
+          return true;
+        }
+    }
 
-		Thread::mutexUnlock(&stlMutex);
+  Thread::mutexUnlock (&stlMutex);
 
-		return false;
-	}
+  return false;
+}
 
-	unsigned short DsmccServiceDomain::getBlockSize() {
-		return blockSize;
-	}
+unsigned short
+DsmccServiceDomain::getBlockSize ()
+{
+  return blockSize;
+}
 
-	void DsmccServiceDomain::run() {
-		DsmccModule* module = NULL;
-		DsmccBiop* biop;
-		map<unsigned int, DsmccModule*>::iterator i;
-		unsigned int modId;
-		int j = 0;
+void
+DsmccServiceDomain::run ()
+{
+  DsmccModule *module = NULL;
+  DsmccBiop *biop;
+  map<unsigned int, DsmccModule *>::iterator i;
+  unsigned int modId;
+  int j = 0;
 
-		while (mountingServiceDomain) {
-			if (hasModules()) {
-				if (!hasServiceGateway) {
-					modId = serviceGatewayIor->getModuleId();
+  while (mountingServiceDomain)
+    {
+      if (hasModules ())
+        {
+          if (!hasServiceGateway)
+            {
+              modId = serviceGatewayIor->getModuleId ();
 
-					Thread::mutexLock(&stlMutex);
-					if (info.count(modId) == 0) {
-						Thread::mutexUnlock(&stlMutex);
-						break;
+              Thread::mutexLock (&stlMutex);
+              if (info.count (modId) == 0)
+                {
+                  Thread::mutexUnlock (&stlMutex);
+                  break;
+                }
+              else
+                {
+                  module = info[modId];
+                }
 
-					} else {
-						module = info[modId];
-					}
+              while (!module->isConsolidated ())
+                {
+                  g_usleep (1000);
+                }
+              clog << endl;
 
-					while (!module->isConsolidated()) {
-						g_usleep(1000);
-					}
-					clog << endl;
+              try
+                {
+                  biop = new DsmccBiop (module, processor);
+                }
+              catch (...)
+                {
+                  clog << "DsmccServiceDomain::run - error: BIOP - SRG not "
+                          "processed."
+                       << endl;
+                  return;
+                }
 
-					try {
-						biop = new DsmccBiop(module, processor);
+              biop->processServiceGateway (serviceGatewayIor->getObjectKey ());
 
-					} catch (...) {
-						clog << "DsmccServiceDomain::run - error: BIOP - SRG not processed." << endl;
-						return;
-					}
+              hasServiceGateway = true;
 
-					biop->processServiceGateway(
-							serviceGatewayIor->getObjectKey());
+              biop->process ();
+              delete biop;
+              biop = NULL;
 
-					hasServiceGateway = true;
+              Thread::mutexUnlock (&stlMutex);
 
-					biop->process();
-					delete biop;
-					biop = NULL;
+              j = 0;
+              continue;
+            }
+          else
+            {
+              module = getModule (j);
+              if (module == NULL)
+                {
+                  j = 0;
+                  continue;
+                }
 
-					Thread::mutexUnlock(&stlMutex);
+              if (module->isConsolidated ())
+                {
+                  try
+                    {
+                      biop = new DsmccBiop (module, processor);
+                    }
+                  catch (...)
+                    {
+                      clog << "DsmccServiceDomain::run BIOP->process (init "
+                              "error)"
+                           << endl;
+                      return;
+                    }
 
-					j = 0;
-					continue;
+                  biop->process ();
 
-				} else {
-					module = getModule(j);
-					if (module == NULL) {
-						j = 0;
-						continue;
-					}
+                  eraseModule (module);
 
-					if (module->isConsolidated()) {
-						try {
-							biop = new DsmccBiop(module, processor);
-						} catch (...) {
-							clog << "DsmccServiceDomain::run BIOP->process (init error)" << endl;
-							return;
-						}
-
-						biop->process();
-
-						eraseModule(module);
-
-						delete biop;
-						biop = NULL;
-
-					} else {
-						g_usleep(1000);
-						j++;
-					}
-				}
-
-			} else {
-				g_usleep(1000);
-			}
-		}
-		mounted = true;
-		clog << "DsmccServiceDomain::run ";
-		clog << "CAROUSEL " << carouselId << " MOUNTED!" << endl;
-		if (sdl != NULL) {
-			sdl->serviceDomainMounted(
-					mountPoint,
-					processor->getSDNames(),
-					processor->getSDPaths());
-		}
-	}
+                  delete biop;
+                  biop = NULL;
+                }
+              else
+                {
+                  g_usleep (1000);
+                  j++;
+                }
+            }
+        }
+      else
+        {
+          g_usleep (1000);
+        }
+    }
+  mounted = true;
+  clog << "DsmccServiceDomain::run ";
+  clog << "CAROUSEL " << carouselId << " MOUNTED!" << endl;
+  if (sdl != NULL)
+    {
+      sdl->serviceDomainMounted (mountPoint, processor->getSDNames (),
+                                 processor->getSDPaths ());
+    }
+}
 
 GINGA_DATAPROC_END

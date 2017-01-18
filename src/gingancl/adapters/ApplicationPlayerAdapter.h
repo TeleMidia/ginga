@@ -29,95 +29,88 @@ using namespace ::ginga::player;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_BEGIN
 
+typedef struct
+{
+  short code;
+  string param;
+  short type;
+  string value;
+} ApplicationStatus;
 
-	typedef struct {
-		short code;
-		string param;
-		short type;
-		string value;
-	} ApplicationStatus;
+class ApplicationPlayerAdapter : public FormatterPlayerAdapter, public Thread
+{
 
-	class ApplicationPlayerAdapter :
-			public FormatterPlayerAdapter, public Thread {
+private:
+  IPlayerListener *editingCommandListener;
+  pthread_mutex_t eventMutex;
+  pthread_mutex_t eventsMutex;
+  bool running;
 
-		private:
-			IPlayerListener* editingCommandListener;
-			pthread_mutex_t eventMutex;
-			pthread_mutex_t eventsMutex;
-			bool running;
+protected:
+  vector<ApplicationStatus *> notes;
+  map<string, FormatterEvent *> preparedEvents;
+  FormatterEvent *currentEvent;
 
-		protected:
-			vector<ApplicationStatus*> notes;
-			map<string, FormatterEvent*> preparedEvents;
-			FormatterEvent* currentEvent;
+public:
+  ApplicationPlayerAdapter ();
+  virtual ~ApplicationPlayerAdapter ();
 
-		public:
-			ApplicationPlayerAdapter();
-			virtual ~ApplicationPlayerAdapter();
+  void setNclEditListener (IPlayerListener *listener);
 
-			void setNclEditListener(IPlayerListener* listener);
+protected:
+  void checkPlayerSurface (ExecutionObject *obj);
+  virtual void createPlayer ();
 
-		protected:
-			void checkPlayerSurface(ExecutionObject* obj);
-			virtual void createPlayer();
+  virtual bool hasPrepared ();
+  virtual bool prepare (ExecutionObject *object, FormatterEvent *mainEvent);
 
-			virtual bool hasPrepared();
-			virtual bool prepare(
-					ExecutionObject* object, FormatterEvent* mainEvent);
+private:
+  void prepare (FormatterEvent *event);
 
-		private:
-			void prepare(FormatterEvent* event);
+public:
+  virtual bool start ();
+  virtual bool stop ();
+  virtual bool pause ();
+  virtual bool resume ();
+  virtual bool abort ();
 
-		public:
-			virtual bool start();
-			virtual bool stop();
-			virtual bool pause();
-			virtual bool resume();
-			virtual bool abort();
+private:
+  virtual bool unprepare ();
 
-		private:
-			virtual bool unprepare();
+public:
+  virtual void naturalEnd ();
+  virtual void updateStatus (short code, string parameter = "",
+                             short type = 10, string value = "");
 
-		public:
-			virtual void naturalEnd();
-			virtual void updateStatus(
-					short code,
-					string parameter="",
-					short type=10,
-					string value="");
+private:
+  void notificationHandler (short code, string parameter, short type,
+                            string value);
 
-		private:
-			void notificationHandler(
-					short code,
-					string parameter,
-					short type,
-					string value);
+  void run ();
 
-			void run();
+public:
+  virtual bool setAndLockCurrentEvent (FormatterEvent *event) = 0;
+  virtual void unlockCurrentEvent (FormatterEvent *event) = 0;
 
-		public:
-			virtual bool setAndLockCurrentEvent(FormatterEvent* event)=0;
-			virtual void unlockCurrentEvent(FormatterEvent* event)=0;
+private:
+  bool checkEvent (FormatterEvent *event, short type);
 
-		private:
-			bool checkEvent(FormatterEvent* event, short type);
+protected:
+  bool startEvent (string anchorId, short type, string value);
+  bool stopEvent (string anchorId, short type, string value);
+  bool abortEvent (string anchorId, short type);
+  bool pauseEvent (string anchorId, short type);
+  bool resumeEvent (string anchorId, short type);
 
-		protected:
-			bool startEvent(string anchorId, short type, string value);
-			bool stopEvent(string anchorId, short type, string value);
-			bool abortEvent(string anchorId, short type);
-			bool pauseEvent(string anchorId, short type);
-			bool resumeEvent(string anchorId, short type);
+  void lockEvent ();
+  void unlockEvent ();
 
-			void lockEvent();
-			void unlockEvent();
+  void lockPreparedEvents ();
+  void unlockPreparedEvents ();
 
-			void lockPreparedEvents();
-			void unlockPreparedEvents();
-
-		public:
-			virtual void flip(){};
-	};
+public:
+  virtual void flip (){};
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_END
 #endif //_ApplicationPlayerAdapter_H_

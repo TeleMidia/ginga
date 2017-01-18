@@ -20,31 +20,36 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
 
-	SelectionEvent::SelectionEvent(string id, void* executionObject,
-			    ContentAnchor* anchor) :
-			    AnchorEvent(id, executionObject, anchor) {
+SelectionEvent::SelectionEvent (string id, void *executionObject,
+                                ContentAnchor *anchor)
+    : AnchorEvent (id, executionObject, anchor)
+{
 
-		selectionCode = CodeMap::KEY_NULL;
-		typeSet.insert("SelectionEvent");
-	}
+  selectionCode = CodeMap::KEY_NULL;
+  typeSet.insert ("SelectionEvent");
+}
 
-	SelectionEvent::~SelectionEvent() {
-		removeInstance(this);
-	}
+SelectionEvent::~SelectionEvent () { removeInstance (this); }
 
-	int SelectionEvent::getSelectionCode() {
-		return selectionCode;
-	}
+int
+SelectionEvent::getSelectionCode ()
+{
+  return selectionCode;
+}
 
-	bool SelectionEvent::start() {
-		if (AnchorEvent::start())
-			return AnchorEvent::stop();
-		else
-			return false;
-	}
+bool
+SelectionEvent::start ()
+{
+  if (AnchorEvent::start ())
+    return AnchorEvent::stop ();
+  else
+    return false;
+}
 
-	void SelectionEvent::setSelectionCode(string codeStr) {
-		selectionCode = CodeMap::getInstance()->getCode(codeStr);
-	}
+void
+SelectionEvent::setSelectionCode (string codeStr)
+{
+  selectionCode = CodeMap::getInstance ()->getCode (codeStr);
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END

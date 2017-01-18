@@ -23,33 +23,33 @@ using namespace br::pucrio::telemidia::ncl::time::flexibility;
 
 #include "FlexibleTimeMeasurement.h"
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_TIME_BEGIN
 
-	class CostFunctionDuration : public FlexibleTimeMeasurement {
-		protected:
-			TemporalFlexibilityFunction* costFunction;
+class CostFunctionDuration : public FlexibleTimeMeasurement
+{
+protected:
+  TemporalFlexibilityFunction *costFunction;
 
-		public:
-			CostFunctionDuration(double expectedValue, double minValue,
-			  double maxValue, TemporalFlexibilityFunction* function);
+public:
+  CostFunctionDuration (double expectedValue, double minValue, double maxValue,
+                        TemporalFlexibilityFunction *function);
 
-			CostFunctionDuration(double expectedValue,
-			  TemporalFlexibilityFunction* function);
+  CostFunctionDuration (double expectedValue,
+                        TemporalFlexibilityFunction *function);
 
-			virtual ~CostFunctionDuration(){};
-			TemporalFlexibilityFunction* getCostFunction();
-			void setCostFunction(TemporalFlexibilityFunction* function);
+  virtual ~CostFunctionDuration (){};
+  TemporalFlexibilityFunction *getCostFunction ();
+  void setCostFunction (TemporalFlexibilityFunction *function);
 
-		protected:
-			void overwrite(CostFunctionDuration* dur);
+protected:
+  void overwrite (CostFunctionDuration *dur);
 
-		private:
-			void updateDurationInterval();
+private:
+  void updateDurationInterval ();
 
-		public:
-			virtual double getCostValue(double value);
-	};
+public:
+  virtual double getCostValue (double value);
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_TIME_END
 #endif //_COSTFUNCTIONDURATION_H_

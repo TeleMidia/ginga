@@ -25,13 +25,13 @@ GINGA_NCL_BEGIN
 class Parameter
 {
 public:
-  Parameter(string n, string v);
-  virtual ~Parameter() {};
-  bool instanceOf(string s);
-  string getName();
-  string getValue();
-  void setName(string n);
-  void setValue(string v);
+  Parameter (string n, string v);
+  virtual ~Parameter (){};
+  bool instanceOf (string s);
+  string getName ();
+  string getValue ();
+  void setName (string n);
+  void setValue (string v);
 
 protected:
   string name;

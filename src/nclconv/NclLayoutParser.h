@@ -24,35 +24,38 @@ using namespace ::ginga::nclconv;
 
 XERCES_CPP_NAMESPACE_USE
 
-
 #include "NclImportParser.h"
 
 GINGA_NCLCONV_BEGIN
 
-  class NclLayoutParser : public ModuleParser {
-	private:
-		//Ref Classes
-		NclImportParser *importParser;
-	public:
-		NclLayoutParser(DocumentParser *documentParser);
-		void *parseRegion(DOMElement *parentElement, void *objGrandParent);
-		virtual void *createRegion(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+class NclLayoutParser : public ModuleParser
+{
+private:
+  // Ref Classes
+  NclImportParser *importParser;
 
-		virtual void addRegionToRegion(void *parentObject, void *childObject)=0;
-		void *parseRegionBase(DOMElement *parentElement, void *objGrandParent);
-		virtual void  *createRegionBase(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+public:
+  NclLayoutParser (DocumentParser *documentParser);
+  void *parseRegion (DOMElement *parentElement, void *objGrandParent);
+  virtual void *createRegion (DOMElement *parentElement, void *objGrandParent)
+      = 0;
 
-		virtual void addImportBaseToRegionBase(
-			    void *parentObject, void *childObject)=0;
+  virtual void addRegionToRegion (void *parentObject, void *childObject) = 0;
+  void *parseRegionBase (DOMElement *parentElement, void *objGrandParent);
+  virtual void *createRegionBase (DOMElement *parentElement,
+                                  void *objGrandParent)
+      = 0;
 
-		virtual void addRegionToRegionBase(
-			    void *parentObject, void *childObject)=0;
+  virtual void addImportBaseToRegionBase (void *parentObject,
+                                          void *childObject)
+      = 0;
 
-		NclImportParser *getImportParser();
-		void setImportParser(NclImportParser *importParser);
-  };
+  virtual void addRegionToRegionBase (void *parentObject, void *childObject)
+      = 0;
+
+  NclImportParser *getImportParser ();
+  void setImportParser (NclImportParser *importParser);
+};
 
 GINGA_NCLCONV_END
 

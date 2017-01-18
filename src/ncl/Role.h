@@ -30,22 +30,23 @@ protected:
   int maxCon, minCon;
 
 public:
-  Role();
-  virtual ~Role();
+  Role ();
+  virtual ~Role ();
 
-  static const int UNBOUNDED = 2^30;
+  static const int UNBOUNDED = 2 ^ 30;
 
-  virtual short getEventType();
-  virtual string getLabel();
-  virtual void setEventType(short type);
-  virtual void setLabel(string id);
+  virtual short getEventType ();
+  virtual string getLabel ();
+  virtual void setEventType (short type);
+  virtual void setLabel (string id);
 
-  virtual int getMinCon();
-  virtual int getMaxCon();
+  virtual int getMinCon ();
+  virtual int getMaxCon ();
 
-  virtual void setMinCon(int minCon);
-  virtual void setMaxCon(int maxCon);
-  virtual bool instanceOf(string type)
+  virtual void setMinCon (int minCon);
+  virtual void setMaxCon (int maxCon);
+  virtual bool
+  instanceOf (string type)
   {
     return type == "Role";
   };

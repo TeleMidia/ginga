@@ -36,46 +36,46 @@ using namespace ::ginga::ncl;
 #include "Port.h"
 using namespace ::ginga::ncl;
 
-
 GINGA_NCL_BEGIN
 
-    class Bind {
-		private:
-			Node* node;
-			InterfacePoint* interfacePoint;
-			GenericDescriptor* descriptor;
-			Role* role;
-			bool embed;
+class Bind
+{
+private:
+  Node *node;
+  InterfacePoint *interfacePoint;
+  GenericDescriptor *descriptor;
+  Role *role;
+  bool embed;
 
-		protected:
-			map<string, Parameter*>* parameters;
-			set<string> typeSet;
+protected:
+  map<string, Parameter *> *parameters;
+  set<string> typeSet;
 
-		public:
-			Bind(Node* node, InterfacePoint* interfPt,
-				    GenericDescriptor* desc, Role* role);
+public:
+  Bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
+        Role *role);
 
-			virtual ~Bind();
-			bool instanceOf(string s);
-			GenericDescriptor* getDescriptor();
-			InterfacePoint* getInterfacePoint();
-			Node* getNode();
-			Role* getRole();
-			void setInterfacePoint(InterfacePoint* interfPt);
-			void setNode(Node* node);
-			void setRole(Role* role);
-			void setDescriptor(GenericDescriptor* desc);
-			Parameter *setParameterValue(
-				    string propertyLabel, Parameter *propertyValue);
+  virtual ~Bind ();
+  bool instanceOf (string s);
+  GenericDescriptor *getDescriptor ();
+  InterfacePoint *getInterfacePoint ();
+  Node *getNode ();
+  Role *getRole ();
+  void setInterfacePoint (InterfacePoint *interfPt);
+  void setNode (Node *node);
+  void setRole (Role *role);
+  void setDescriptor (GenericDescriptor *desc);
+  Parameter *setParameterValue (string propertyLabel,
+                                Parameter *propertyValue);
 
-			string toString();
-			void addParameter(Parameter* parameter);
-			vector<Parameter*>* getParameters();
-			Parameter* getParameter(string name);
-			bool removeParameter(Parameter *parameter);
-			vector<Node*>* getNodeNesting();
-			InterfacePoint* getEndPointInterface();
-    };
+  string toString ();
+  void addParameter (Parameter *parameter);
+  vector<Parameter *> *getParameters ();
+  Parameter *getParameter (string name);
+  bool removeParameter (Parameter *parameter);
+  vector<Node *> *getNodeNesting ();
+  InterfacePoint *getEndPointInterface ();
+};
 
 GINGA_NCL_END
 

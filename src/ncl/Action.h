@@ -18,29 +18,35 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _ACTION_H_
 #define _ACTION_H_
 
-
 #include "Role.h"
 
 GINGA_NCL_BEGIN
 
-	class Action {
-		protected:
-			set<string> typeSet;
+class Action
+{
+protected:
+  set<string> typeSet;
 
-		private:
-			string delay;
+private:
+  string delay;
 
-		public:
-			Action();
-			Action(string newDelay);
-			virtual ~Action(){};
-			string getDelay();
-			void setDelay(string dur);
-			virtual string toString(){return "";};
-			virtual bool instanceOf(string type) {
-				return typeSet.count(type);
-			}
-	};
+public:
+  Action ();
+  Action (string newDelay);
+  virtual ~Action (){};
+  string getDelay ();
+  void setDelay (string dur);
+  virtual string
+  toString ()
+  {
+    return "";
+  };
+  virtual bool
+  instanceOf (string type)
+  {
+    return typeSet.count (type);
+  }
+};
 
 GINGA_NCL_END
 

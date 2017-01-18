@@ -20,37 +20,37 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "DsmccIor.h"
 
-
 GINGA_DATAPROC_BEGIN
 
-	class DsmccBinding {
-		private:
-			string id;
-			string kind;
-			unsigned int type;
-			DsmccIor* ior;
-			string objectInfo;
+class DsmccBinding
+{
+private:
+  string id;
+  string kind;
+  unsigned int type;
+  DsmccIor *ior;
+  string objectInfo;
 
-		public:
-			DsmccBinding();
-			virtual ~DsmccBinding();
+public:
+  DsmccBinding ();
+  virtual ~DsmccBinding ();
 
-		private:
-			void releaseIor();
+private:
+  void releaseIor ();
 
-		public:
-			void setId(string id);
-			string getId();
-			void setKind(string kind);
-			string getKind();
-			void setType(unsigned int type);
-			unsigned int getType();
-			void setIor(DsmccIor* ior);
-			DsmccIor* getIor();
-			void setObjectInfo(string objectInfo);
-			string getObjectInfo();
-			void print();
-	};
+public:
+  void setId (string id);
+  string getId ();
+  void setKind (string kind);
+  string getKind ();
+  void setType (unsigned int type);
+  unsigned int getType ();
+  void setIor (DsmccIor *ior);
+  DsmccIor *getIor ();
+  void setObjectInfo (string objectInfo);
+  string getObjectInfo ();
+  void print ();
+};
 
 GINGA_DATAPROC_END
 

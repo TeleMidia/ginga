@@ -21,157 +21,203 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	NodeEntity::NodeEntity(string uid, Content* someContent) : Node(uid) {
-		descriptor = NULL;
-		anchorList.push_back(new LambdaAnchor(uid));
-		this->content = someContent;
-		typeSet.insert("NodeEntity");
-	}
+NodeEntity::NodeEntity (string uid, Content *someContent) : Node (uid)
+{
+  descriptor = NULL;
+  anchorList.push_back (new LambdaAnchor (uid));
+  this->content = someContent;
+  typeSet.insert ("NodeEntity");
+}
 
-	NodeEntity::~NodeEntity() {
-		vector<Anchor*>::iterator i;
-		set<ReferNode*>::iterator j;
-		Anchor* anchor;
+NodeEntity::~NodeEntity ()
+{
+  vector<Anchor *>::iterator i;
+  set<ReferNode *>::iterator j;
+  Anchor *anchor;
 
-		if (descriptor != NULL) {
-			//descriptor is deleted in descriptor base
-			descriptor = NULL;
-		}
+  if (descriptor != NULL)
+    {
+      // descriptor is deleted in descriptor base
+      descriptor = NULL;
+    }
 
-		if (content != NULL) {
-			delete content;
-			content = NULL;
-		}
+  if (content != NULL)
+    {
+      delete content;
+      content = NULL;
+    }
 
-		for (j = instSameInstances.begin();
-				j != instSameInstances.end(); ++j) {
+  for (j = instSameInstances.begin (); j != instSameInstances.end (); ++j)
+    {
 
-			if ((Node*)(*j) != (Node*)this && Entity::hasInstance((*j), true)) {
-				delete (*j);
-			}
-		}
-		instSameInstances.clear();
+      if ((Node *)(*j) != (Node *)this && Entity::hasInstance ((*j), true))
+        {
+          delete (*j);
+        }
+    }
+  instSameInstances.clear ();
 
-		for (j = gradSameInstances.begin();
-				j != gradSameInstances.end(); ++j) {
+  for (j = gradSameInstances.begin (); j != gradSameInstances.end (); ++j)
+    {
 
-			delete (*j);
-		}
-		gradSameInstances.clear();
+      delete (*j);
+    }
+  gradSameInstances.clear ();
 
-		i = anchorList.begin();
-		while (i != anchorList.end()) {
-			anchor = (*i);
-			if (Entity::hasInstance(anchor, true)) {
-				delete (*i);
-			}
-			++i;
-		}
-		anchorList.clear();
-	}
+  i = anchorList.begin ();
+  while (i != anchorList.end ())
+    {
+      anchor = (*i);
+      if (Entity::hasInstance (anchor, true))
+        {
+          delete (*i);
+        }
+      ++i;
+    }
+  anchorList.clear ();
+}
 
-	bool NodeEntity::addAnchor(int index, Anchor* anchor) {
-		if (index == 0) {
-			return false;
-		}
-		return Node::addAnchor(index, anchor);
-	}
+bool
+NodeEntity::addAnchor (int index, Anchor *anchor)
+{
+  if (index == 0)
+    {
+      return false;
+    }
+  return Node::addAnchor (index, anchor);
+}
 
-	LambdaAnchor* NodeEntity::getLambdaAnchor() {
-		LambdaAnchor* lambda;
-		lambda = static_cast<LambdaAnchor*>(*(anchorList.begin()));
-		return lambda;
-	}
+LambdaAnchor *
+NodeEntity::getLambdaAnchor ()
+{
+  LambdaAnchor *lambda;
+  lambda = static_cast<LambdaAnchor *> (*(anchorList.begin ()));
+  return lambda;
+}
 
-	void NodeEntity::setId(string id) {
-		LambdaAnchor* anchor;
+void
+NodeEntity::setId (string id)
+{
+  LambdaAnchor *anchor;
 
-		Entity::setId(id);
-		anchor = getLambdaAnchor();
-		anchor->setId(id);
-	}
+  Entity::setId (id);
+  anchor = getLambdaAnchor ();
+  anchor->setId (id);
+}
 
-	bool NodeEntity::removeAnchor(int index) {
-		if (index == 0) {
-			return false;
-		}
-		return Node::removeAnchor(index);
-	}
+bool
+NodeEntity::removeAnchor (int index)
+{
+  if (index == 0)
+    {
+      return false;
+    }
+  return Node::removeAnchor (index);
+}
 
-	GenericDescriptor* NodeEntity::getDescriptor() {
-	   return descriptor;
-	}
+GenericDescriptor *
+NodeEntity::getDescriptor ()
+{
+  return descriptor;
+}
 
-	void NodeEntity::setDescriptor(GenericDescriptor* someDescriptor) {
-		descriptor = someDescriptor;
-	}
+void
+NodeEntity::setDescriptor (GenericDescriptor *someDescriptor)
+{
+  descriptor = someDescriptor;
+}
 
-	Content* NodeEntity::getContent() {
-		return content;
-	}
+Content *
+NodeEntity::getContent ()
+{
+  return content;
+}
 
-	void NodeEntity::setContent(Content* someContent) {
-		content = someContent;
-	}
+void
+NodeEntity::setContent (Content *someContent)
+{
+  content = someContent;
+}
 
-	bool NodeEntity::addAnchor(Anchor *anchor) {
-		return Node::addAnchor(anchor);
-	}
+bool
+NodeEntity::addAnchor (Anchor *anchor)
+{
+  return Node::addAnchor (anchor);
+}
 
-	bool NodeEntity::removeAnchor(Anchor *anchor) {
-		return Node::removeAnchor(anchor);
-	}
+bool
+NodeEntity::removeAnchor (Anchor *anchor)
+{
+  return Node::removeAnchor (anchor);
+}
 
-	set<ReferNode*>* NodeEntity::getInstSameInstances() {
-		if (instSameInstances.empty()) {
-			return NULL;
-		}
+set<ReferNode *> *
+NodeEntity::getInstSameInstances ()
+{
+  if (instSameInstances.empty ())
+    {
+      return NULL;
+    }
 
-		return &instSameInstances;
-	}
+  return &instSameInstances;
+}
 
-	set<ReferNode*>* NodeEntity::getGradSameInstances() {
-		if (gradSameInstances.empty()) {
-			return NULL;
-		}
+set<ReferNode *> *
+NodeEntity::getGradSameInstances ()
+{
+  if (gradSameInstances.empty ())
+    {
+      return NULL;
+    }
 
-		return &gradSameInstances;
-	}
+  return &gradSameInstances;
+}
 
-	bool NodeEntity::addSameInstance(ReferNode* node) {
-		if (node->getInstanceType() == "instSame") {
-			if (instSameInstances.count(node) != 0) {
-				return false;
-			}
+bool
+NodeEntity::addSameInstance (ReferNode *node)
+{
+  if (node->getInstanceType () == "instSame")
+    {
+      if (instSameInstances.count (node) != 0)
+        {
+          return false;
+        }
 
-			instSameInstances.insert(node);
+      instSameInstances.insert (node);
+    }
+  else if (node->getInstanceType () == "gradSame")
+    {
+      if (gradSameInstances.count (node) != 0)
+        {
+          return false;
+        }
 
-		} else if (node->getInstanceType() == "gradSame") {
-			if (gradSameInstances.count(node) != 0) {
-				return false;
-			}
+      gradSameInstances.insert (node);
+    }
+  else
+    {
+      return false;
+    }
 
-			gradSameInstances.insert(node);
+  return true;
+}
 
-		} else {
-			return false;
-		}
+void
+NodeEntity::removeSameInstance (ReferNode *node)
+{
+  set<ReferNode *>::iterator i;
 
-		return true;
-	}
+  i = gradSameInstances.find (node);
+  if (i != gradSameInstances.end ())
+    {
+      gradSameInstances.erase (i);
+    }
 
-	void NodeEntity::removeSameInstance(ReferNode* node) {
-		set<ReferNode*>::iterator i;
-
-		i = gradSameInstances.find(node);
-		if (i != gradSameInstances.end()) {
-			gradSameInstances.erase(i);
-		}
-
-		i = instSameInstances.find(node);
-		if (i != instSameInstances.end()) {
-			instSameInstances.erase(i);
-		}
-	}
+  i = instSameInstances.find (node);
+  if (i != instSameInstances.end ())
+    {
+      instSameInstances.erase (i);
+    }
+}
 
 GINGA_NCL_END

@@ -22,35 +22,34 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_SYSTEM_BEGIN
 
-	class ITimeBaseProvider {
-		public:
-			virtual ~ITimeBaseProvider(){};
+class ITimeBaseProvider
+{
+public:
+  virtual ~ITimeBaseProvider (){};
 
-			virtual void setNptPrinter(bool nptPrinter)=0;
+  virtual void setNptPrinter (bool nptPrinter) = 0;
 
-			virtual bool addLoopListener(
-					unsigned char timeBaseId,
-					ITimeBaseListener* ltn)=0;
+  virtual bool addLoopListener (unsigned char timeBaseId,
+                                ITimeBaseListener *ltn)
+      = 0;
 
-			virtual bool removeLoopListener(
-					unsigned char cid,
-					ITimeBaseListener* ltn)=0;
+  virtual bool removeLoopListener (unsigned char cid, ITimeBaseListener *ltn)
+      = 0;
 
-			virtual bool addTimeListener(
-					unsigned char timeBaseId,
-					double timeBaseValue,
-					ITimeBaseListener* ltn)=0;
+  virtual bool addTimeListener (unsigned char timeBaseId, double timeBaseValue,
+                                ITimeBaseListener *ltn)
+      = 0;
 
-			virtual bool removeTimeListener(
-					unsigned char timeBaseId,
-					ITimeBaseListener* ltn)=0;
+  virtual bool removeTimeListener (unsigned char timeBaseId,
+                                   ITimeBaseListener *ltn)
+      = 0;
 
-			virtual bool addIdListener(ITimeBaseListener* ltn)=0;
-			virtual bool removeIdListener(ITimeBaseListener* ltn)=0;
+  virtual bool addIdListener (ITimeBaseListener *ltn) = 0;
+  virtual bool removeIdListener (ITimeBaseListener *ltn) = 0;
 
-			virtual unsigned char getOccurringTimeBaseId()=0;
-			virtual double getCurrentTimeValue(unsigned char timeBaseId)=0;
-	};
+  virtual unsigned char getOccurringTimeBaseId () = 0;
+  virtual double getCurrentTimeValue (unsigned char timeBaseId) = 0;
+};
 
 GINGA_SYSTEM_END
 

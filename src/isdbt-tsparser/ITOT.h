@@ -21,20 +21,20 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "IMpegDescriptor.h"
 using namespace ::ginga::tsparser;
 
-
-
 GINGA_TSPARSER_BEGIN
 
-	class ITOT {
-		public:
-			static const unsigned char DT_LOCAL_TIME_OFFSET = 0x58;
-		public:
-			virtual ~ITOT(){};
-			virtual struct tm getUTC3TimeTm()=0;
-			virtual void process(void* payload, unsigned int payloadSize)=0;
-			virtual void print()=0;
-			virtual vector<IMpegDescriptor*>* getDescriptors()=0;
-	};
+class ITOT
+{
+public:
+  static const unsigned char DT_LOCAL_TIME_OFFSET = 0x58;
+
+public:
+  virtual ~ITOT (){};
+  virtual struct tm getUTC3TimeTm () = 0;
+  virtual void process (void *payload, unsigned int payloadSize) = 0;
+  virtual void print () = 0;
+  virtual vector<IMpegDescriptor *> *getDescriptors () = 0;
+};
 
 GINGA_TSPARSER_END
 

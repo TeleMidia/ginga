@@ -23,14 +23,15 @@ using namespace ::ginga::ncl;
 
 GINGA_NCLCONV_BEGIN
 
-  class ReferredNode : public Entity {
-	private:
-		void* referElement;
+class ReferredNode : public Entity
+{
+private:
+  void *referElement;
 
-	public:
-		ReferredNode(string id, void* element);
-		void* getReferElement();
-  };
+public:
+  ReferredNode (string id, void *element);
+  void *getReferElement ();
+};
 
 GINGA_NCLCONV_END
 

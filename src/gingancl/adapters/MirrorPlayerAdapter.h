@@ -29,20 +29,20 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 #include "gingancl/model/SelectionEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_MIRROR_BEGIN
 
-	class MirrorPlayerAdapter : public FormatterPlayerAdapter {
-		private:
-			string mirrorSrcId;
+class MirrorPlayerAdapter : public FormatterPlayerAdapter
+{
+private:
+  string mirrorSrcId;
 
-		public:
-			MirrorPlayerAdapter();
-			virtual ~MirrorPlayerAdapter();
+public:
+  MirrorPlayerAdapter ();
+  virtual ~MirrorPlayerAdapter ();
 
-		protected:
-			void createPlayer();
-   };
+protected:
+  void createPlayer ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_MIRROR_END
 #endif /*MIRRORPLAYERADAPTER_H_*/

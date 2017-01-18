@@ -20,26 +20,35 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	TextAnchor::TextAnchor(string id, string t, long p) : Anchor(id) {
-		position = p;
-		text = t;
-		typeSet.insert("TextAnchor");
-	}
+TextAnchor::TextAnchor (string id, string t, long p) : Anchor (id)
+{
+  position = p;
+  text = t;
+  typeSet.insert ("TextAnchor");
+}
 
-	long TextAnchor::getPosition() {
-		return position;
-	}
+long
+TextAnchor::getPosition ()
+{
+  return position;
+}
 
-	string TextAnchor::getText() {
-		return text;
-	}
+string
+TextAnchor::getText ()
+{
+  return text;
+}
 
-	void TextAnchor::setPosition(long p) {
-		position = p;
-	}
+void
+TextAnchor::setPosition (long p)
+{
+  position = p;
+}
 
-	void TextAnchor::setText(string t) {
-		text = t;
-	}
+void
+TextAnchor::setText (string t)
+{
+  text = t;
+}
 
 GINGA_NCL_END

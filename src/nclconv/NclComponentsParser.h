@@ -24,7 +24,6 @@ using namespace ::ginga::nclconv;
 
 XERCES_CPP_NAMESPACE_USE
 
-
 #include "NclPresentationSpecificationParser.h"
 #include "NclLinkingParser.h"
 #include "NclInterfacesParser.h"
@@ -32,59 +31,55 @@ XERCES_CPP_NAMESPACE_USE
 
 GINGA_NCLCONV_BEGIN
 
-  class NclComponentsParser : public ModuleParser {
-	//Ref Classes
-	private:
-		NclPresentationSpecificationParser *presentationSpecificationParser;
-		NclLinkingParser *linkingParser;
-		NclInterfacesParser *interfacesParser;
-		NclPresentationControlParser *presentationControlParser;
+class NclComponentsParser : public ModuleParser
+{
+  // Ref Classes
+private:
+  NclPresentationSpecificationParser *presentationSpecificationParser;
+  NclLinkingParser *linkingParser;
+  NclInterfacesParser *interfacesParser;
+  NclPresentationControlParser *presentationControlParser;
 
-	public:
-		NclComponentsParser(DocumentParser *documentParser);
+public:
+  NclComponentsParser (DocumentParser *documentParser);
 
-		void *parseMedia(DOMElement *parentElement, void *objGrandParent);
-		virtual void* createMedia(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  void *parseMedia (DOMElement *parentElement, void *objGrandParent);
+  virtual void *createMedia (DOMElement *parentElement, void *objGrandParent)
+      = 0;
 
-		virtual void addAreaToMedia(void *parentObject, void *childObject)=0;
-		virtual void addPropertyToMedia(
-			    void *parentObject, void *childObject)=0;
+  virtual void addAreaToMedia (void *parentObject, void *childObject) = 0;
+  virtual void addPropertyToMedia (void *parentObject, void *childObject) = 0;
 
-		void *parseContext(DOMElement *parentElement, void *objGrandParent);
-		virtual void *posCompileContext(
-			    DOMElement *parentElement, void *parentObject);
+  void *parseContext (DOMElement *parentElement, void *objGrandParent);
+  virtual void *posCompileContext (DOMElement *parentElement,
+                                   void *parentObject);
 
-		virtual void *createContext(
-			    DOMElement *parentElement, void * objGrandParent)=0;
+  virtual void *createContext (DOMElement *parentElement, void *objGrandParent)
+      = 0;
 
-		virtual void addPortToContext(void * parentObject, void *childObject)=0;
-		virtual void addPropertyToContext(
-			    void *parentObject, void *childObject)=0;
+  virtual void addPortToContext (void *parentObject, void *childObject) = 0;
+  virtual void addPropertyToContext (void *parentObject, void *childObject)
+      = 0;
 
-		virtual void addMediaToContext(void *parentObject, void *childObject)=0;
-		virtual void addContextToContext(
-			    void *parentObject, void *childObject)=0;
+  virtual void addMediaToContext (void *parentObject, void *childObject) = 0;
+  virtual void addContextToContext (void *parentObject, void *childObject) = 0;
 
-		virtual void addLinkToContext(void *parentObject, void *childObject)=0;
-		virtual void addSwitchToContext(
-			    void *parentObject, void *childObject)=0;
+  virtual void addLinkToContext (void *parentObject, void *childObject) = 0;
+  virtual void addSwitchToContext (void *parentObject, void *childObject) = 0;
 
-		NclPresentationSpecificationParser*
-			    getPresentationSpecificationParser();
+  NclPresentationSpecificationParser *getPresentationSpecificationParser ();
 
-		void setPresentationSpecificationParser(
-			    NclPresentationSpecificationParser*
-			    	    presentationSpecificationParser);
+  void setPresentationSpecificationParser (
+      NclPresentationSpecificationParser *presentationSpecificationParser);
 
-		NclLinkingParser *getLinkingParser();
-		void setLinkingParser(NclLinkingParser *linkingParser);
-		NclInterfacesParser *getInterfacesParser();
-		void setInterfacesParser(NclInterfacesParser *interfacesParser);
-		NclPresentationControlParser *getPresentationControlParser();
-		void setPresentationControlParser(
-			    NclPresentationControlParser *presentationControlParser);
-  };
+  NclLinkingParser *getLinkingParser ();
+  void setLinkingParser (NclLinkingParser *linkingParser);
+  NclInterfacesParser *getInterfacesParser ();
+  void setInterfacesParser (NclInterfacesParser *interfacesParser);
+  NclPresentationControlParser *getPresentationControlParser ();
+  void setPresentationControlParser (
+      NclPresentationControlParser *presentationControlParser);
+};
 
 GINGA_NCLCONV_END
 

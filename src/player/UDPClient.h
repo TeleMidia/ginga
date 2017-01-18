@@ -19,40 +19,38 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define UDPCLIENT_H_
 
 #if defined _MSC_VER || defined __CYGWIN__
-# include <winsock2.h>
-# include <ws2tcpip.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #else
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <sys/ioctl.h>
-# include <arpa/inet.h>
-# include <netdb.h>
-# include <net/if.h>
-# include <netdb.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <sys/ioctl.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <net/if.h>
+#include <netdb.h>
 #endif
 
-class UDPClient {
+class UDPClient
+{
 
 protected:
-
 #if defined _MSC_VER || defined __CYGWIN__
-	SOCKET sd;
+  SOCKET sd;
 #else
-	int sd;
+  int sd;
 #endif
-	struct sockaddr_in myaddr, remaddr;
+  struct sockaddr_in myaddr, remaddr;
 
 public:
-	UDPClient();
-	~UDPClient();
+  UDPClient ();
+  ~UDPClient ();
 
-	bool connectSocket(string host, int port);
-	int send(char* buff, unsigned int size);
-	int receive(char** buff);
-	void closeSocket();
-	int dataAvailable(int timeout);
-
+  bool connectSocket (string host, int port);
+  int send (char *buff, unsigned int size);
+  int receive (char **buff);
+  void closeSocket ();
+  int dataAvailable (int timeout);
 };
-
 
 #endif /* UDPCLIENT_H_ */

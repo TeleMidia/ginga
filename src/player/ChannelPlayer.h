@@ -23,47 +23,44 @@ using namespace ::ginga::mb;
 
 #include "Player.h"
 
-
 GINGA_PLAYER_BEGIN
 
-   class ChannelPlayer : public Player, public IPlayerListener {
-  	protected:
-  		map<string, IPlayer*>* objectMap;
-		IPlayer* selectedPlayer;
-		bool hasParent;
+class ChannelPlayer : public Player, public IPlayerListener
+{
+protected:
+  map<string, IPlayer *> *objectMap;
+  IPlayer *selectedPlayer;
+  bool hasParent;
 
-	public:
-		ChannelPlayer(GingaScreenID screenId);
-		virtual ~ChannelPlayer();
-		IPlayer* getSelectedPlayer();
-		void setPlayerMap(map<string, IPlayer*>* objs);
-		map<string, IPlayer*>* getPlayerMap();
-		IPlayer* getPlayer(string objectId);
-		void select(IPlayer* selObject);
-		double getMediaTime();
+public:
+  ChannelPlayer (GingaScreenID screenId);
+  virtual ~ChannelPlayer ();
+  IPlayer *getSelectedPlayer ();
+  void setPlayerMap (map<string, IPlayer *> *objs);
+  map<string, IPlayer *> *getPlayerMap ();
+  IPlayer *getPlayer (string objectId);
+  void select (IPlayer *selObject);
+  double getMediaTime ();
 
-	private:
-		void setSurfacesParent(GingaWindowID parent);
+private:
+  void setSurfacesParent (GingaWindowID parent);
 
-	protected:
-		GingaSurfaceID getSurface();
+protected:
+  GingaSurfaceID getSurface ();
 
-	public:
-		bool play();
-		void pause();
-		void resume();
-		void stop();
+public:
+  bool play ();
+  void pause ();
+  void resume ();
+  void stop ();
 
-		virtual void setPropertyValue(string name, string value);
+  virtual void setPropertyValue (string name, string value);
 
-		void updateStatus(
-				short code,
-				string parameter="",
-				short type=TYPE_PRESENTATION,
-				string value="");
+  void updateStatus (short code, string parameter = "",
+                     short type = TYPE_PRESENTATION, string value = "");
 
-		virtual void timeShift(string direction){};
-   };
+  virtual void timeShift (string direction){};
+};
 
 GINGA_PLAYER_END
 

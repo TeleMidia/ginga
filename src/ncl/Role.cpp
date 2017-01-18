@@ -20,45 +20,60 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	Role::Role() {
-		this->minCon = 1;
-		this->maxCon = 1;
-	}
+Role::Role ()
+{
+  this->minCon = 1;
+  this->maxCon = 1;
+}
 
-	Role::~Role() {
+Role::~Role () {}
 
-	}
+short
+Role::getEventType ()
+{
+  return eventType;
+}
 
-	short Role::getEventType() {
-		return eventType;
-	}
+string
+Role::getLabel ()
+{
+  return label;
+}
 
-	string Role::getLabel() {
-		return label;
-	}
+void
+Role::setEventType (short type)
+{
+  eventType = type;
+}
 
-	void Role::setEventType(short type) {
-		eventType = type;
-	}
+void
+Role::setLabel (string id)
+{
+  label = id;
+}
 
-	void Role::setLabel(string id) {
-		label = id;
-	}
+int
+Role::getMinCon ()
+{
+  return minCon;
+}
 
-	int Role::getMinCon() {
-		return minCon;
-	}
+int
+Role::getMaxCon ()
+{
+  return maxCon;
+}
 
-	int Role::getMaxCon() {
-		return maxCon;
-	}
+void
+Role::setMinCon (int minCon)
+{
+  this->minCon = minCon;
+}
 
-	void Role::setMinCon(int minCon) {
-		this->minCon = minCon;
-	}
-
-	void Role::setMaxCon(int maxCon) {
-		this->maxCon = maxCon;
-	}
+void
+Role::setMaxCon (int maxCon)
+{
+  this->maxCon = maxCon;
+}
 
 GINGA_NCL_END

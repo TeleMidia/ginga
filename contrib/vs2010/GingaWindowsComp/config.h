@@ -27,5 +27,4 @@
 
 #define HAVE_DSMCC 1
 
-
 #endif

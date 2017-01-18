@@ -22,14 +22,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	class LinkStatement : public LinkCondition {
-		public:
-			LinkStatement() : LinkCondition() {
-				typeSet.insert("LinkStatement");
-			};
-			virtual ~LinkStatement(){};
-			virtual bool evaluate()=0;
-	};
+class LinkStatement : public LinkCondition
+{
+public:
+  LinkStatement () : LinkCondition () { typeSet.insert ("LinkStatement"); };
+  virtual ~LinkStatement (){};
+  virtual bool evaluate () = 0;
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_LINKSTATEMENT_H_

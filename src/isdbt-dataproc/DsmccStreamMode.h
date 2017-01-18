@@ -20,30 +20,26 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "DsmccMpegDescriptor.h"
 
-
 GINGA_DATAPROC_BEGIN
 
+class DsmccStreamMode : public DsmccMpegDescriptor
+{
+private:
+protected:
+  unsigned char streamMode;
 
-class DsmccStreamMode : public DsmccMpegDescriptor {
-	private:
+  int process ();
+  int updateStream ();
 
-	protected:
-		unsigned char streamMode;
+  unsigned int calculateDescriptorSize ();
 
-		int process();
-		int updateStream();
+public:
+  DsmccStreamMode ();
+  ~DsmccStreamMode ();
 
-		unsigned int calculateDescriptorSize();
-
-	public:
-		DsmccStreamMode();
-		~DsmccStreamMode();
-
-		unsigned char getStreamMode();
-		void setStreamMode(unsigned char mode);
-
+  unsigned char getStreamMode ();
+  void setStreamMode (unsigned char mode);
 };
-
 
 GINGA_DATAPROC_END
 

@@ -29,13 +29,13 @@ private:
   map<string, string> mimeDefaultTable;
   static string absUrl;
   pthread_mutex_t mutex;
-  ContentTypeManager();
+  ContentTypeManager ();
 
 public:
-  static ContentTypeManager *getInstance();
-  void setMimeFile(string mimeFile);
-  void readMimeDefinitions();
-  string getMimeType(string fileExtension);
+  static ContentTypeManager *getInstance ();
+  void setMimeFile (string mimeFile);
+  void readMimeDefinitions ();
+  string getMimeType (string fileExtension);
 };
 
 GINGA_NCL_END

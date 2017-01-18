@@ -23,131 +23,155 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
-	static LocalScreenManager* dm = ScreenManagerFactory::getInstance();
-	ShowButton::ShowButton(GingaScreenID screenId) : Thread() {
-		myScreen       = screenId;
-		status         = NONE;
-		previousStatus = NONE;
-		win            = 0;
-		running        = false;
-	}
+static LocalScreenManager *dm = ScreenManagerFactory::getInstance ();
+ShowButton::ShowButton (GingaScreenID screenId) : Thread ()
+{
+  myScreen = screenId;
+  status = NONE;
+  previousStatus = NONE;
+  win = 0;
+  running = false;
+}
 
-	ShowButton::~ShowButton() {
-		isDeleting = true;
+ShowButton::~ShowButton ()
+{
+  isDeleting = true;
 
-		while (running) {
-			g_usleep(50000);
-		}
-	}
+  while (running)
+    {
+      g_usleep (50000);
+    }
+}
 
-	void ShowButton::initializeWindow() {
-		int x = 0, y, w, h;
+void
+ShowButton::initializeWindow ()
+{
+  int x = 0, y, w, h;
 
-		if (dm != NULL) {
-			x = (int)(dm->getDeviceWidth(myScreen) - 70);
-		}
+  if (dm != NULL)
+    {
+      x = (int)(dm->getDeviceWidth (myScreen) - 70);
+    }
 
-		y = 10;
-		w = 60;
-		h = 60;
+  y = 10;
+  w = 60;
+  h = 60;
 
-		if (dm != NULL) {
-			win = dm->createWindow(myScreen, x, y, w, h, 4.0);
-		}
-		int caps = dm->getWindowCap (myScreen, win, "ALPHACHANNEL");
-		dm->setWindowCaps (myScreen, win, caps);
-		dm->drawWindow (myScreen, win);
-	}
+  if (dm != NULL)
+    {
+      win = dm->createWindow (myScreen, x, y, w, h, 4.0);
+    }
+  int caps = dm->getWindowCap (myScreen, win, "ALPHACHANNEL");
+  dm->setWindowCaps (myScreen, win, caps);
+  dm->drawWindow (myScreen, win);
+}
 
-	void ShowButton::stop() {
-		//lock();
-		previousStatus = status;
-		status = STOP;
-		//Thread::start();
-		//unlock();
-		run();
-	}
+void
+ShowButton::stop ()
+{
+  // lock();
+  previousStatus = status;
+  status = STOP;
+  // Thread::start();
+  // unlock();
+  run ();
+}
 
-	void ShowButton::pause() {
-		//lock();
-		previousStatus = status;
-		if (status != PAUSE) {
-			status = PAUSE;
+void
+ShowButton::pause ()
+{
+  // lock();
+  previousStatus = status;
+  if (status != PAUSE)
+    {
+      status = PAUSE;
+    }
+  else
+    {
+      status = PLAY;
+    }
 
-		} else {
-			status = PLAY;
-		}
+  run ();
+  // Thread::start();
+  // unlock();
+}
 
-		run();
-		//Thread::start();
-		//unlock();
-	}
+void
+ShowButton::resume ()
+{
+  pause ();
+}
 
-	void ShowButton::resume() {
-		pause();
-	}
+void
+ShowButton::release ()
+{
+  lock ();
+  if (win != 0)
+    {
+      dm->hideWindow (myScreen, win);
+      dm->deleteWindow (myScreen, win);
+      win = 0;
+    }
+  unlock ();
+}
 
-	void ShowButton::release() {
-		lock();
-		if (win != 0) {
-			dm->hideWindow (myScreen, win);
-			dm->deleteWindow(myScreen, win);
-			win = 0;
-		}
-		unlock();
-	}
+void
+ShowButton::render (string mrl)
+{
+  GingaSurfaceID surface;
 
-	void ShowButton::render(string mrl) {
-		GingaSurfaceID surface;
+  surface = dm->createRenderedSurfaceFromImageFile (myScreen, mrl.c_str ());
 
-		surface = dm->createRenderedSurfaceFromImageFile(myScreen, mrl.c_str());
+  lock ();
+  if (win == 0)
+    {
+      initializeWindow ();
+    }
 
-		lock();
-		if (win == 0) {
-			initializeWindow();
-		}
+  if (dm->setSurfaceParentWindow (myScreen, surface, win))
+    {
+      dm->renderWindowFrom (myScreen, win, surface);
+    }
+  dm->showWindow (myScreen, win);
+  dm->raiseWindowToTop (myScreen, win);
+  unlock ();
+}
 
-		if ( dm->setSurfaceParentWindow(myScreen, surface, win)) {
-			dm->renderWindowFrom(myScreen, win, surface);
-		}
-		dm->showWindow (myScreen, win);
-		dm->raiseWindowToTop (myScreen, win);
-		unlock();
-	}
+void
+ShowButton::run ()
+{
+  running = true;
+  if (isDeleting)
+    goto done;
 
-  void ShowButton::run ()
-  {
-    running = true;
-    if (isDeleting)
-      goto done;
-
-    switch (status)
-      {
-      case PAUSE:
-        render (string (GINGA_BUTTON_DATADIR) + "pauseButton.png");
-        break;
-      case STOP:
-        if (previousStatus == PAUSE) {
+  switch (status)
+    {
+    case PAUSE:
+      render (string (GINGA_BUTTON_DATADIR) + "pauseButton.png");
+      break;
+    case STOP:
+      if (previousStatus == PAUSE)
+        {
           release ();
         }
-        render (string (GINGA_BUTTON_DATADIR) + "stopButton.png");
-        g_usleep(1000000);
-        release ();
-        break;
-      case PLAY:
-        if (previousStatus == PAUSE) {
+      render (string (GINGA_BUTTON_DATADIR) + "stopButton.png");
+      g_usleep (1000000);
+      release ();
+      break;
+    case PLAY:
+      if (previousStatus == PAUSE)
+        {
           release ();
         }
-        render (string (GINGA_BUTTON_DATADIR) + "playButton.png");
-        g_usleep(1000000);
-        release();
-        break;
-      default:
-        break;
-      }
-  done:
-    running = false;
-  }
-
+      render (string (GINGA_BUTTON_DATADIR) + "playButton.png");
+      g_usleep (1000000);
+      release ();
+      break;
+    default:
+      break;
+    }
+done:
+  running = false;
+}
 
 GINGA_PLAYER_END

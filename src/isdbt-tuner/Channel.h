@@ -31,16 +31,16 @@ private:
   bool isFullSegment;
 
 public:
-  Channel();
-  ~Channel();
-  short getId();
-  void setId(short id);
-  string getName();
-  void setName(string name);
-  unsigned int getFrequency();
-  void setFrequency(unsigned int freq);
-  bool isFullSeg();
-  void setSegment(bool isFullSeg);
+  Channel ();
+  ~Channel ();
+  short getId ();
+  void setId (short id);
+  string getName ();
+  void setName (string name);
+  unsigned int getFrequency ();
+  void setFrequency (unsigned int freq);
+  bool isFullSeg ();
+  void setSegment (bool isFullSeg);
 };
 
 GINGA_TUNER_END

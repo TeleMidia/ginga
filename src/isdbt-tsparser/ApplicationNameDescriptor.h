@@ -18,32 +18,31 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef APPLICATIONNAMEDESCRIPTOR_H_
 #define APPLICATIONNAMEDESCRIPTOR_H_
 
-
-
 #include "IMpegDescriptor.h"
 using namespace ::ginga::tsparser;
 
 GINGA_TSPARSER_BEGIN
 
+struct AppName
+{
+  char languageCode[3];
+  unsigned char applicationNameLength;
+  char *applicationNameChar;
+};
 
-	struct AppName {
-		char languageCode[3];
-		unsigned char applicationNameLength;
-		char* applicationNameChar;
-	};
+class ApplicationNameDescriptor : public IMpegDescriptor
+{
+private:
+  vector<struct AppName *> appNames;
 
-	class ApplicationNameDescriptor : public IMpegDescriptor {
-		private:
-			vector<struct AppName*> appNames;
-
-		public:
-			ApplicationNameDescriptor();
-			virtual ~ApplicationNameDescriptor();
-			unsigned char getDescriptorTag();
-			unsigned int getDescriptorLength();
-			size_t process(char* data, size_t pos);
-			void print();
-		};
+public:
+  ApplicationNameDescriptor ();
+  virtual ~ApplicationNameDescriptor ();
+  unsigned char getDescriptorTag ();
+  unsigned int getDescriptorLength ();
+  size_t process (char *data, size_t pos);
+  void print ();
+};
 
 GINGA_TSPARSER_END
 

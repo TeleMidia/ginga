@@ -38,19 +38,19 @@ private:
   double repetitionInterval;
 
 public:
-  PresentationEvent(string id,void* executionObject,ContentAnchor* anchor);
-  virtual ~PresentationEvent();
-  bool stop();
-  double getDuration();
-  double getRepetitionInterval();
-  long getRepetitions();
-  void setDuration(double dur);
-  void setEnd(double e);
-  void setRepetitionSettings(long repetitions, double repetitionInterval);
-  double getBegin();
-  double getEnd();
-  void incrementOccurrences();
-  static bool isUndefinedInstant(double value);
+  PresentationEvent (string id, void *executionObject, ContentAnchor *anchor);
+  virtual ~PresentationEvent ();
+  bool stop ();
+  double getDuration ();
+  double getRepetitionInterval ();
+  long getRepetitions ();
+  void setDuration (double dur);
+  void setEnd (double e);
+  void setRepetitionSettings (long repetitions, double repetitionInterval);
+  double getBegin ();
+  double getEnd ();
+  void incrementOccurrences ();
+  static bool isUndefinedInstant (double value);
 };
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END

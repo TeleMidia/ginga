@@ -25,28 +25,28 @@ using namespace ::ginga::util;
 #include "AttributeAssessment.h"
 #include "Statement.h"
 
-
 GINGA_NCL_BEGIN
 
-	class AssessmentStatement : public Statement {
-		private:
-			short comparator;
-			AttributeAssessment *mainAssessment;
-			Assessment *otherAssessment;
+class AssessmentStatement : public Statement
+{
+private:
+  short comparator;
+  AttributeAssessment *mainAssessment;
+  Assessment *otherAssessment;
 
-		public:
-			AssessmentStatement(short comp);
-			virtual ~AssessmentStatement();
-			AttributeAssessment *getMainAssessment();
-			void setMainAssessment(AttributeAssessment *assessment);
-			Assessment *getOtherAssessment();
-			void setOtherAssessment(Assessment *assessment);
-			short getComparator();
-			void setComparator(short comp);
-			vector<Role*> *getRoles();
+public:
+  AssessmentStatement (short comp);
+  virtual ~AssessmentStatement ();
+  AttributeAssessment *getMainAssessment ();
+  void setMainAssessment (AttributeAssessment *assessment);
+  Assessment *getOtherAssessment ();
+  void setOtherAssessment (Assessment *assessment);
+  short getComparator ();
+  void setComparator (short comp);
+  vector<Role *> *getRoles ();
 
-			string toString();
-	};
+  string toString ();
+};
 
 GINGA_NCL_END
 

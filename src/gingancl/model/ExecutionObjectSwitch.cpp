@@ -20,61 +20,72 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_BEGIN
 
-	ExecutionObjectSwitch::ExecutionObjectSwitch(
-		    string id,
-		    Node* switchNode,
-		    bool handling,
-		    ILinkActionListener* seListener) : CompositeExecutionObject(
-		    		id, switchNode, handling, seListener) {
+ExecutionObjectSwitch::ExecutionObjectSwitch (string id, Node *switchNode,
+                                              bool handling,
+                                              ILinkActionListener *seListener)
+    : CompositeExecutionObject (id, switchNode, handling, seListener)
+{
 
-		selectedObject = NULL;
-		typeSet.insert("ExecutionObjectSwitch");
-	}
+  selectedObject = NULL;
+  typeSet.insert ("ExecutionObjectSwitch");
+}
 
-	ExecutionObject* ExecutionObjectSwitch::getSelectedObject() {
-		return selectedObject;
-	}
+ExecutionObject *
+ExecutionObjectSwitch::getSelectedObject ()
+{
+  return selectedObject;
+}
 
-	void ExecutionObjectSwitch::select(ExecutionObject* executionObject) {
-		vector<FormatterEvent*>* eventsVector;
-		vector<FormatterEvent*>::iterator i;
-		SwitchEvent* switchEvent;
+void
+ExecutionObjectSwitch::select (ExecutionObject *executionObject)
+{
+  vector<FormatterEvent *> *eventsVector;
+  vector<FormatterEvent *>::iterator i;
+  SwitchEvent *switchEvent;
 
-		if (executionObject != NULL &&
-				containsExecutionObject(executionObject->getId())) {
+  if (executionObject != NULL
+      && containsExecutionObject (executionObject->getId ()))
+    {
 
-			clog << "ExecutionObjectSwitch::select '";
-			clog << executionObject->getId() << "'" << endl;
+      clog << "ExecutionObjectSwitch::select '";
+      clog << executionObject->getId () << "'" << endl;
 
-			selectedObject = executionObject;
+      selectedObject = executionObject;
+    }
+  else
+    {
+      selectedObject = NULL;
+      eventsVector = getEvents ();
+      if (eventsVector != NULL)
+        {
+          i = eventsVector->begin ();
+          while (i != eventsVector->end ())
+            {
+              switchEvent = (SwitchEvent *)(*i);
+              switchEvent->setMappedEvent (NULL);
+              ++i;
+            }
+          delete eventsVector;
+          eventsVector = NULL;
+        }
+    }
+}
 
-		} else {
-			selectedObject = NULL;
-			eventsVector = getEvents();
-			if (eventsVector != NULL) {
-				i = eventsVector->begin();
-				while (i != eventsVector->end()) {
-					switchEvent = (SwitchEvent*)(*i);
-					switchEvent->setMappedEvent(NULL);
-					++i;
-				}
-				delete eventsVector;
-				eventsVector = NULL;
-			}
-		}
-	}
+bool
+ExecutionObjectSwitch::addEvent (FormatterEvent *event)
+{
+  if (event->instanceOf ("PresentationEvent")
+      && (((PresentationEvent *)event)->getAnchor ())
+             ->instanceOf ("LambdaAnchor"))
+    {
 
-	bool ExecutionObjectSwitch::addEvent(FormatterEvent* event) {
-		if (event->instanceOf("PresentationEvent") &&
-				(((PresentationEvent*)event)->getAnchor())->
-					    instanceOf("LambdaAnchor")) {
-
-			ExecutionObject::wholeContent = (PresentationEvent*)event;
-			return true;
-
-		} else {
-			return ExecutionObject::addEvent(event);
-		}
-	}
+      ExecutionObject::wholeContent = (PresentationEvent *)event;
+      return true;
+    }
+  else
+    {
+      return ExecutionObject::addEvent (event);
+    }
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_END

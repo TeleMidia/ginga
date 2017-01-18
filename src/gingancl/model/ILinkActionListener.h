@@ -20,14 +20,15 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	class ILinkActionListener {
-		public:
-			virtual ~ILinkActionListener(){};
+class ILinkActionListener
+{
+public:
+  virtual ~ILinkActionListener (){};
 
-			virtual void scheduleAction(void* condition, void* action)=0;
-			virtual void addAction(void* action)=0;
-			virtual void removeAction(void* action)=0;
-	};
+  virtual void scheduleAction (void *condition, void *action) = 0;
+  virtual void addAction (void *action) = 0;
+  virtual void removeAction (void *action) = 0;
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_ILINKACTIONLISTENER_H_

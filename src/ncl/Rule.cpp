@@ -20,8 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	Rule::Rule(string someId) : Entity(someId) {
-		typeSet.insert("Rule");
-	}
+Rule::Rule (string someId) : Entity (someId) { typeSet.insert ("Rule"); }
 
 GINGA_NCL_END

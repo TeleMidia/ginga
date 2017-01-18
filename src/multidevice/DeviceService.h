@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _DeviceService_H_
 #define _DeviceService_H_
 
-
 #include "util/functions.h"
 using namespace ::ginga::util;
 
@@ -28,50 +27,44 @@ using namespace ::ginga::system;
 #include "RemoteDevice.h"
 #include "IRemoteDeviceListener.h"
 
-
 GINGA_MULTIDEVICE_BEGIN
 
-  class DeviceService {
-	protected:
-		set<IRemoteDeviceListener*>* listeners;
-		map<unsigned int, RemoteDevice*>* devices;
-		int serviceClass;
-		pthread_mutex_t lMutex;
-		pthread_mutex_t dMutex;
+class DeviceService
+{
+protected:
+  set<IRemoteDeviceListener *> *listeners;
+  map<unsigned int, RemoteDevice *> *devices;
+  int serviceClass;
+  pthread_mutex_t lMutex;
+  pthread_mutex_t dMutex;
 
-	public:
-		DeviceService();
-		virtual ~DeviceService();
+public:
+  DeviceService ();
+  virtual ~DeviceService ();
 
-	protected:
-		RemoteDevice* getDevice(unsigned int devAddr);
+protected:
+  RemoteDevice *getDevice (unsigned int devAddr);
 
-	public:
-		void addListener(IRemoteDeviceListener* listener);
-		void removeListener(IRemoteDeviceListener* listener);
+public:
+  void addListener (IRemoteDeviceListener *listener);
+  void removeListener (IRemoteDeviceListener *listener);
 
-		bool addDevice(
-				unsigned int deviceAddress,
-				int newDevClass,
-				int width,
-				int height);
+  bool addDevice (unsigned int deviceAddress, int newDevClass, int width,
+                  int height);
 
-		bool hasDevices();
+  bool hasDevices ();
 
-		virtual void newDeviceConnected(unsigned int devAddr)=0;
-		virtual void connectedToBaseDevice(unsigned int domainAddr)=0;
+  virtual void newDeviceConnected (unsigned int devAddr) = 0;
+  virtual void connectedToBaseDevice (unsigned int domainAddr) = 0;
 
-		virtual bool receiveEvent(
-				unsigned int devAddr,
-				int eventType,
-				char* stream,
-				int streamSize)=0;
+  virtual bool receiveEvent (unsigned int devAddr, int eventType, char *stream,
+                             int streamSize)
+      = 0;
 
-		virtual bool receiveMediaContent(
-				unsigned int devAddr,
-				char* stream,
-				int streamSize)=0;
-  };
+  virtual bool receiveMediaContent (unsigned int devAddr, char *stream,
+                                    int streamSize)
+      = 0;
+};
 
 GINGA_MULTIDEVICE_END
 

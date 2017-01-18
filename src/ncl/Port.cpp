@@ -21,76 +21,92 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	Port::Port(
-			string id,
-			Node* someNode,
-			InterfacePoint* someInterfacePoint) : InterfacePoint(id) {
+Port::Port (string id, Node *someNode, InterfacePoint *someInterfacePoint)
+    : InterfacePoint (id)
+{
 
-		node           = someNode;
-		interfacePoint = someInterfacePoint;
+  node = someNode;
+  interfacePoint = someInterfacePoint;
 
-		typeSet.insert("Port");
-	}
+  typeSet.insert ("Port");
+}
 
-	Port::~Port() {
+Port::~Port () {}
 
-	}
+InterfacePoint *
+Port::getInterfacePoint ()
+{
+  return interfacePoint;
+}
 
-	InterfacePoint* Port::getInterfacePoint() {
-		return interfacePoint;
-	}
+Node *
+Port::getNode ()
+{
+  return node;
+}
 
-	Node* Port::getNode() {
-		return node;
-	}
+Node *
+Port::getEndNode ()
+{
+  if (interfacePoint->instanceOf ("Anchor"))
+    return node;
+  else
+    return ((Port *)(interfacePoint))->getEndNode ();
+}
 
-	Node* Port::getEndNode() {
-		if (interfacePoint->instanceOf("Anchor"))
-			return node;
-	    else
-			return ((Port*)(interfacePoint))->getEndNode();
-	}
+InterfacePoint *
+Port::getEndInterfacePoint ()
+{
+  // Polimorfismo
+  if (interfacePoint->instanceOf ("Anchor"))
+    {
+      return interfacePoint;
+    }
+  else
+    {
+      return ((Port *)interfacePoint)->getEndInterfacePoint ();
+    }
+}
 
-	InterfacePoint* Port::getEndInterfacePoint() {
-		//Polimorfismo
-		if (interfacePoint->instanceOf("Anchor")) {
-			return interfacePoint;
-		} else {
-			return ((Port*)interfacePoint)->getEndInterfacePoint();
-		}
-	}
+vector<Node *> *
+Port::getMapNodeNesting ()
+{
+  vector<Node *> *nodeSequence;
+  vector<Node *> *nodeList;
 
-	vector<Node*>* Port::getMapNodeNesting() {
-		vector<Node*>* nodeSequence;
-		vector<Node*>* nodeList;
+  nodeSequence = new vector<Node *>;
+  nodeSequence->push_back (node);
+  if (interfacePoint->instanceOf ("Anchor")
+      || interfacePoint->instanceOf ("SwitchPort"))
+    {
 
-		nodeSequence = new vector<Node*>;
-		nodeSequence->push_back(node);
-		if (interfacePoint->instanceOf("Anchor") ||
-			    interfacePoint->instanceOf("SwitchPort")) {
+      return nodeSequence;
+    }
+  else
+    { // Port
+      nodeList = ((Port *)interfacePoint)->getMapNodeNesting ();
 
-			return nodeSequence;
+      vector<Node *>::iterator it;
+      for (it = nodeList->begin (); it != nodeList->end (); ++it)
+        {
+          nodeSequence->push_back (*it);
+        }
 
-		} else { //Port
-			nodeList = ((Port*)interfacePoint)->
-				    getMapNodeNesting();
+      delete nodeList;
+      return nodeSequence;
+    }
+}
 
-			vector<Node*>::iterator it;
-			for (it = nodeList->begin(); it != nodeList->end(); ++it) {
-				nodeSequence->push_back( *it );
-			}
+void
+Port::setInterfacePoint (InterfacePoint *someInterfacePoint)
+{
+  interfacePoint = someInterfacePoint;
+}
 
-			delete nodeList;
-			return nodeSequence;
-		}
-	}
-
-	void Port::setInterfacePoint(InterfacePoint* someInterfacePoint) {
-		interfacePoint = someInterfacePoint;
-	}
-
-	void Port::setNode(Node* someNode) {
-		node = someNode;
-	}
+void
+Port::setNode (Node *someNode)
+{
+  node = someNode;
+}
 
 GINGA_NCL_END

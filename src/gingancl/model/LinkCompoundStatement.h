@@ -26,31 +26,31 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include "ncl/CompoundStatement.h"
 using namespace ::ginga::ncl;
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	class LinkCompoundStatement : public LinkStatement {
-		protected:
-			vector<LinkStatement*>* statements;
-			bool negated;
-			short op;
+class LinkCompoundStatement : public LinkStatement
+{
+protected:
+  vector<LinkStatement *> *statements;
+  bool negated;
+  short op;
 
-		public:
-			LinkCompoundStatement(short op);
-			virtual ~LinkCompoundStatement();
-			short getOperator();
-			void addStatement(LinkStatement* statement);
-			vector<LinkStatement*>* getStatements();
-			bool isNegated();
-			void setNegated(bool neg);
+public:
+  LinkCompoundStatement (short op);
+  virtual ~LinkCompoundStatement ();
+  short getOperator ();
+  void addStatement (LinkStatement *statement);
+  vector<LinkStatement *> *getStatements ();
+  bool isNegated ();
+  void setNegated (bool neg);
 
-		protected:
-			bool returnEvaluationResult(bool result);
+protected:
+  bool returnEvaluationResult (bool result);
 
-		public:
-			virtual vector<FormatterEvent*>* getEvents();
-			virtual bool evaluate();
-	};
+public:
+  virtual vector<FormatterEvent *> *getEvents ();
+  virtual bool evaluate ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_LINKCOMPOUNDSTATEMENT_H_

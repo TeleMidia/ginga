@@ -28,29 +28,28 @@ using namespace ::ginga::system;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 
-	class IPlayerAdapter {
-		public:
-			virtual ~IPlayerAdapter(){};
+class IPlayerAdapter
+{
+public:
+  virtual ~IPlayerAdapter (){};
 
-			virtual void setAdapterManager(void* manager)=0;
+  virtual void setAdapterManager (void *manager) = 0;
 
-		public:
-			virtual bool instanceOf(string s)=0;
+public:
+  virtual bool instanceOf (string s) = 0;
 
-		protected:
-			virtual void createPlayer()=0;
+protected:
+  virtual void createPlayer () = 0;
 
-		public:
-			virtual IPlayer* getPlayer()=0;
+public:
+  virtual IPlayer *getPlayer () = 0;
 
-			virtual double getOutTransTime()=0;
+  virtual double getOutTransTime () = 0;
 
-			virtual bool setPropertyValue(
-			    AttributionEvent* event, string value)=0;
+  virtual bool setPropertyValue (AttributionEvent *event, string value) = 0;
 
-			virtual string getPropertyValue(string name)=0;
-
-	};
+  virtual string getPropertyValue (string name) = 0;
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_END
 #endif /*IPlayerAdapter_H_*/

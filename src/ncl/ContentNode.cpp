@@ -23,101 +23,124 @@ using namespace ::ginga::util;
 
 GINGA_NCL_BEGIN
 
-	ContentNode::ContentNode(string uid, Content* someContent)
-		    : NodeEntity(uid, someContent) {
+ContentNode::ContentNode (string uid, Content *someContent)
+    : NodeEntity (uid, someContent)
+{
 
-		initialize("");
-	}
+  initialize ("");
+}
 
-	ContentNode::ContentNode(string uid, Content* someContent, string type)
-		    : NodeEntity(uid, someContent) {
+ContentNode::ContentNode (string uid, Content *someContent, string type)
+    : NodeEntity (uid, someContent)
+{
 
-		initialize(type);
-	}
+  initialize (type);
+}
 
-	void ContentNode::initialize(string type) {
-		typeSet.insert("ContentNode");
-		typeSet.insert("DocumentNode");
+void
+ContentNode::initialize (string type)
+{
+  typeSet.insert ("ContentNode");
+  typeSet.insert ("DocumentNode");
 
-		this->type = type;
+  this->type = type;
 
-		// must set to false before a new isSettingNode call
-		isSettingNodeType = false;
-		isSettingNodeType = isSettingNode();
+  // must set to false before a new isSettingNode call
+  isSettingNodeType = false;
+  isSettingNodeType = isSettingNode ();
 
-		// must set to false before a new isTimeNode call
-		isTimeNodeType = false;
-		isTimeNodeType = isTimeNode();
-	}
+  // must set to false before a new isTimeNode call
+  isTimeNodeType = false;
+  isTimeNodeType = isTimeNode ();
+}
 
-	bool ContentNode::isSettingNode() {
-		string upNodeType;
-		string nodeType = getNodeType();
+bool
+ContentNode::isSettingNode ()
+{
+  string upNodeType;
+  string nodeType = getNodeType ();
 
-		if (isSettingNodeType) {
-			return true;
-		}
+  if (isSettingNodeType)
+    {
+      return true;
+    }
 
-		if (nodeType == "") {
-			return false;
-		}
+  if (nodeType == "")
+    {
+      return false;
+    }
 
-		//W3C (and RFC2045) type value isn't sensitive
-		upNodeType = upperCase(nodeType);
-		if (upNodeType == "APPLICATION/X-GINGA-SETTINGS" ||
-				upNodeType == "APPLICATION/X-NCL-SETTINGS") {
+  // W3C (and RFC2045) type value isn't sensitive
+  upNodeType = upperCase (nodeType);
+  if (upNodeType == "APPLICATION/X-GINGA-SETTINGS"
+      || upNodeType == "APPLICATION/X-NCL-SETTINGS")
+    {
 
-			return true;
-		}
+      return true;
+    }
 
-		return false;
-	}
+  return false;
+}
 
-	bool ContentNode::isTimeNode() {
-		string upNodeType;
-		string nodeType = getNodeType();
+bool
+ContentNode::isTimeNode ()
+{
+  string upNodeType;
+  string nodeType = getNodeType ();
 
-		if (isTimeNodeType) {
-			return true;
-		}
+  if (isTimeNodeType)
+    {
+      return true;
+    }
 
-		if (nodeType == "") {
-			return false;
-		}
+  if (nodeType == "")
+    {
+      return false;
+    }
 
-		//W3C (and RFC2045) type value isn't sensitive
-		upNodeType = upperCase(nodeType);
-		if (upNodeType == "APPLICATION/X-GINGA-TIME" ||
-				upNodeType == "APPLICATION/X-NCL-TIME") {
+  // W3C (and RFC2045) type value isn't sensitive
+  upNodeType = upperCase (nodeType);
+  if (upNodeType == "APPLICATION/X-GINGA-TIME"
+      || upNodeType == "APPLICATION/X-NCL-TIME")
+    {
 
-			return true;
-		}
+      return true;
+    }
 
-		return false;
-	}
+  return false;
+}
 
-	string ContentNode::getTypeValue() {
-		return type;
-	}
+string
+ContentNode::getTypeValue ()
+{
+  return type;
+}
 
-	string ContentNode::getNodeType() {
-		if (type != "") {
-			return type;
+string
+ContentNode::getNodeType ()
+{
+  if (type != "")
+    {
+      return type;
+    }
+  else if (content != NULL)
+    {
+      return content->getType ();
+    }
+  else
+    {
+      return "";
+    }
+}
 
-		} else if (content != NULL) {
-			return content->getType();
+void
+ContentNode::setNodeType (string type)
+{
+  this->type = type;
 
-		} else {
-			return "";
-		}
-	}
-
-	void ContentNode::setNodeType(string type) {
-		this->type        = type;
-
-		// must set to false before a new isSettingNode call
-		isSettingNodeType = false;
-		isSettingNodeType = isSettingNode();
-	}
+  // must set to false before a new isSettingNode call
+  isSettingNodeType = false;
+  isSettingNodeType = isSettingNode ();
+}
 
 GINGA_NCL_END

@@ -24,23 +24,23 @@ using namespace ::ginga::ncl;
 #include "InterfacePoint.h"
 #include "Port.h"
 
-
 GINGA_NCL_BEGIN
 
-	class SwitchPort : public Port {
-		private:
-			vector<Port*>* portList;
+class SwitchPort : public Port
+{
+private:
+  vector<Port *> *portList;
 
-		public:
-			SwitchPort(string id, void *switchNode);
-			virtual ~SwitchPort();
-			bool addPort(Port* port);
-			bool containsMap(Node* node);
-			vector<Port*>* getPorts();
-			bool removePort(Port* port);
-			Node* getEndNode();
-			InterfacePoint* getEndInterfacePoint();
-	};
+public:
+  SwitchPort (string id, void *switchNode);
+  virtual ~SwitchPort ();
+  bool addPort (Port *port);
+  bool containsMap (Node *node);
+  vector<Port *> *getPorts ();
+  bool removePort (Port *port);
+  Node *getEndNode ();
+  InterfacePoint *getEndInterfacePoint ();
+};
 
 GINGA_NCL_END
 

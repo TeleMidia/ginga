@@ -20,48 +20,63 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TUNER_BEGIN
 
-	Channel::Channel() {
-		id            = 0;
-		name          = "";
-		frequency     = 0;
-		isFullSegment = false;
-	}
+Channel::Channel ()
+{
+  id = 0;
+  name = "";
+  frequency = 0;
+  isFullSegment = false;
+}
 
-	Channel::~Channel() {
+Channel::~Channel () {}
 
-	}
+short
+Channel::getId ()
+{
+  return id;
+}
 
-	short Channel::getId() {
-		return id;
-	}
+void
+Channel::setId (short id)
+{
+  this->id = id;
+}
 
-	void Channel::setId(short id) {
-		this->id = id;
-	}
+string
+Channel::getName ()
+{
+  return name;
+}
 
-	string Channel::getName() {
-		return name;
-	}
+void
+Channel::setName (string name)
+{
+  this->name = name;
+}
 
-	void Channel::setName(string name) {
-		this->name = name;
-	}
+unsigned int
+Channel::getFrequency ()
+{
+  return frequency;
+}
 
-	unsigned int Channel::getFrequency() {
-		return frequency;
-	}
+void
+Channel::setFrequency (unsigned int freq)
+{
+  clog << "Channel::setFrequency '" << freq << "'" << endl;
+  frequency = freq;
+}
 
-	void Channel::setFrequency(unsigned int freq) {
-		clog << "Channel::setFrequency '" << freq << "'" << endl;
-		frequency = freq;
-	}
+bool
+Channel::isFullSeg ()
+{
+  return isFullSegment;
+}
 
-	bool Channel::isFullSeg() {
-		return isFullSegment;
-	}
-
-	void Channel::setSegment(bool isFullSeg) {
-		isFullSegment = isFullSeg;
-	}
+void
+Channel::setSegment (bool isFullSeg)
+{
+  isFullSegment = isFullSeg;
+}
 
 GINGA_TUNER_END

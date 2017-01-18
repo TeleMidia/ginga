@@ -26,19 +26,31 @@ class IMediaProvider
 {
 public:
   enum IMediaProviderType
-    {
-      AudioProvider,
-      FontProvider,
-      ImageProvider,
-      VideoProvider,
-    };
+  {
+    AudioProvider,
+    FontProvider,
+    ImageProvider,
+    VideoProvider,
+  };
 
-  virtual ~IMediaProvider(){};
-  virtual string getLoadSymbol()=0;
-  virtual void playOver(GingaSurfaceID surface) = 0;
-  IMediaProviderType getType () const { return type; }
-  GingaProviderID getId () const { return id; }
-  void setId (const GingaProviderID& id) {this->id = id; }
+  virtual ~IMediaProvider (){};
+  virtual string getLoadSymbol () = 0;
+  virtual void playOver (GingaSurfaceID surface) = 0;
+  IMediaProviderType
+  getType () const
+  {
+    return type;
+  }
+  GingaProviderID
+  getId () const
+  {
+    return id;
+  }
+  void
+  setId (const GingaProviderID &id)
+  {
+    this->id = id;
+  }
 
 protected:
   GingaProviderID id;

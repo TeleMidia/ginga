@@ -24,7 +24,6 @@ using namespace ::ginga::nclconv;
 
 XERCES_CPP_NAMESPACE_USE
 
-
 #include "NclTransitionParser.h"
 #include "NclPresentationSpecificationParser.h"
 #include "NclComponentsParser.h"
@@ -38,124 +37,107 @@ XERCES_CPP_NAMESPACE_USE
 
 GINGA_NCLCONV_BEGIN
 
-  class NclStructureParser : public ModuleParser {
-	protected:
-		NclTransitionParser* transitionParser;
-		NclPresentationSpecificationParser*
-			   presentationSpecificationParser;
+class NclStructureParser : public ModuleParser
+{
+protected:
+  NclTransitionParser *transitionParser;
+  NclPresentationSpecificationParser *presentationSpecificationParser;
 
-		NclComponentsParser *componentsParser;
-		NclLinkingParser *linkingParser;
-		NclLayoutParser *layoutParser;
-		NclInterfacesParser *interfacesParser;
-		NclPresentationControlParser *presentationControlParser;
-		NclConnectorsParser *connectorsParser;
-		NclImportParser *importParser;
-		NclMetainformationParser* metainformationParser;
+  NclComponentsParser *componentsParser;
+  NclLinkingParser *linkingParser;
+  NclLayoutParser *layoutParser;
+  NclInterfacesParser *interfacesParser;
+  NclPresentationControlParser *presentationControlParser;
+  NclConnectorsParser *connectorsParser;
+  NclImportParser *importParser;
+  NclMetainformationParser *metainformationParser;
 
-	public:
-		NclStructureParser(DocumentParser *documentParser);
+public:
+  NclStructureParser (DocumentParser *documentParser);
 
-		virtual void* parseBody(DOMElement *parentElement,
-			   void *objGrandParent);
+  virtual void *parseBody (DOMElement *parentElement, void *objGrandParent);
 
-		virtual void* posCompileBody(
-			    DOMElement *parentElement, void *parentObject);
+  virtual void *posCompileBody (DOMElement *parentElement, void *parentObject);
 
-		virtual void* createBody(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  virtual void *createBody (DOMElement *parentElement, void *objGrandParent)
+      = 0;
 
-		virtual void addPropertyToBody(
-			    void *parentObject, void *childObject)=0;
+  virtual void addPropertyToBody (void *parentObject, void *childObject) = 0;
 
-		virtual void addPortToBody(
-			    void *parentObject, void *childObject)=0;
+  virtual void addPortToBody (void *parentObject, void *childObject) = 0;
 
-		virtual void addMediaToBody(
-			    void *parentObject, void *childObject)=0;
+  virtual void addMediaToBody (void *parentObject, void *childObject) = 0;
 
-		virtual void addContextToBody(
-			    void *parentObject, void *childObject)=0;
+  virtual void addContextToBody (void *parentObject, void *childObject) = 0;
 
-		virtual void addSwitchToBody(
-			    void *parentObject, void *childObject)=0;
+  virtual void addSwitchToBody (void *parentObject, void *childObject) = 0;
 
-		virtual void addLinkToBody(
-			    void *parentObject, void *childObject)=0;
+  virtual void addLinkToBody (void *parentObject, void *childObject) = 0;
 
-		virtual void* parseHead(
-			    DOMElement *parentElement, void *objGrandParent);
+  virtual void *parseHead (DOMElement *parentElement, void *objGrandParent);
 
-		virtual void* createHead(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  virtual void *createHead (DOMElement *parentElement, void *objGrandParent)
+      = 0;
 
-		virtual void addRegionBaseToHead(
-			    void *parentObject, void *childObject)=0;
+  virtual void addRegionBaseToHead (void *parentObject, void *childObject) = 0;
 
-		virtual void addDescriptorBaseToHead(
-			    void *parentObject, void *childObject)=0;
+  virtual void addDescriptorBaseToHead (void *parentObject, void *childObject)
+      = 0;
 
-		virtual void addTransitionBaseToHead(
-			    void* parentObject, void* childObject)=0;
+  virtual void addTransitionBaseToHead (void *parentObject, void *childObject)
+      = 0;
 
-		virtual void addRuleBaseToHead(
-			    void *parentObject, void *childObject)=0;
+  virtual void addRuleBaseToHead (void *parentObject, void *childObject) = 0;
 
-		virtual void addConnectorBaseToHead(
-			    void *parentObject, void *childObject)=0;
+  virtual void addConnectorBaseToHead (void *parentObject, void *childObject)
+      = 0;
 
-		virtual void addImportedDocumentBaseToHead(
-			   void *parentObject, void *childObject)=0;
+  virtual void addImportedDocumentBaseToHead (void *parentObject,
+                                              void *childObject)
+      = 0;
 
-		virtual void addMetaToHead(
-			   void *parentObject, void *childObject)=0;
+  virtual void addMetaToHead (void *parentObject, void *childObject) = 0;
 
-		virtual void addMetadataToHead(
-			   void *parentObject, void *childObject)=0;
+  virtual void addMetadataToHead (void *parentObject, void *childObject) = 0;
 
-		virtual void* parseNcl(
-			   DOMElement *parentElement, void *objGrandParent);
+  virtual void *parseNcl (DOMElement *parentElement, void *objGrandParent);
 
-		virtual void* createNcl(
-			   DOMElement *parentElement, void *objGrandParent)=0;
+  virtual void *createNcl (DOMElement *parentElement, void *objGrandParent)
+      = 0;
 
-		virtual void addHeadToNcl(
-			   void *parentObject, void *childObject)=0;
+  virtual void addHeadToNcl (void *parentObject, void *childObject) = 0;
 
-		virtual void addBodyToNcl(
-			   void *parentObject, void *childObject)=0;
+  virtual void addBodyToNcl (void *parentObject, void *childObject) = 0;
 
-		NclTransitionParser* getTransitionParser();
-		void setTransitionParser(NclTransitionParser* transitionParser);
+  NclTransitionParser *getTransitionParser ();
+  void setTransitionParser (NclTransitionParser *transitionParser);
 
-		NclPresentationSpecificationParser*
-			   getPresentationSpecificationParser();
+  NclPresentationSpecificationParser *getPresentationSpecificationParser ();
 
-		void setPresentationSpecificationParser(
-			   NclPresentationSpecificationParser*
-			   	   presentationSpecificationParser);
+  void setPresentationSpecificationParser (
+      NclPresentationSpecificationParser *presentationSpecificationParser);
 
-		NclComponentsParser* getComponentsParser();
-		void setComponentsParser(NclComponentsParser *componentsParser);
-		NclLinkingParser* getLinkingParser();
-		void setLinkingParser(NclLinkingParser *linkingParser);
-		NclLayoutParser* getLayoutParser();
-		void setLayoutParser(NclLayoutParser *layoutParser);
-		NclMetainformationParser* getMetainformationParser();
-		NclInterfacesParser* getInterfacesParser();
-		void setInterfacesParser(NclInterfacesParser *interfacesParser);
-		NclPresentationControlParser* getPresentationControlParser();
+  NclComponentsParser *getComponentsParser ();
+  void setComponentsParser (NclComponentsParser *componentsParser);
+  NclLinkingParser *getLinkingParser ();
+  void setLinkingParser (NclLinkingParser *linkingParser);
+  NclLayoutParser *getLayoutParser ();
+  void setLayoutParser (NclLayoutParser *layoutParser);
+  NclMetainformationParser *getMetainformationParser ();
+  NclInterfacesParser *getInterfacesParser ();
+  void setInterfacesParser (NclInterfacesParser *interfacesParser);
+  NclPresentationControlParser *getPresentationControlParser ();
 
-		void setPresentationControlParser(
-			   NclPresentationControlParser *presentationControlParser);
+  void setPresentationControlParser (
+      NclPresentationControlParser *presentationControlParser);
 
-		NclConnectorsParser* getConnectorsParser();
-		void setConnectorsParser(NclConnectorsParser *connectorsParser);
-		NclImportParser* getImportParser();
-		void setImportParser(NclImportParser *importParser);
-		void setMetainformationParser(
-			    NclMetainformationParser* metainformationParser);
-	};
+  NclConnectorsParser *getConnectorsParser ();
+  void setConnectorsParser (NclConnectorsParser *connectorsParser);
+  NclImportParser *getImportParser ();
+  void setImportParser (NclImportParser *importParser);
+  void
+  setMetainformationParser (NclMetainformationParser *metainformationParser);
+};
 
 GINGA_NCLCONV_END
 

@@ -22,43 +22,43 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TSPARSER_BEGIN
 
-	class AudioComponentDescriptor : public IMpegDescriptor {
-		protected:
-			unsigned char streamContent;
-			unsigned char componentType;
-			unsigned char componentTag;
-			unsigned char streamType;
-			unsigned char simulcastGroupTag;
-			bool ESMultiLingualFlag;
-			bool mainComponentFlag;
-			unsigned char qualityIndicator;
-			unsigned char samplingRate;
-			char languageCode[3];//static: always used
-			char* languageCode2;//dinamic: not always used, when used length is 3.
-			unsigned char textLength;//not sent in TS, so it is calculated
-			char* textChar;
+class AudioComponentDescriptor : public IMpegDescriptor
+{
+protected:
+  unsigned char streamContent;
+  unsigned char componentType;
+  unsigned char componentTag;
+  unsigned char streamType;
+  unsigned char simulcastGroupTag;
+  bool ESMultiLingualFlag;
+  bool mainComponentFlag;
+  unsigned char qualityIndicator;
+  unsigned char samplingRate;
+  char languageCode[3]; // static: always used
+  char *languageCode2; // dinamic: not always used, when used length is 3.
+  unsigned char textLength; // not sent in TS, so it is calculated
+  char *textChar;
 
-		public:
-			AudioComponentDescriptor();
-			~AudioComponentDescriptor();
-			unsigned char getDescriptorTag();
-			unsigned char getStreamContent();
-			unsigned char getComponentTag();
-			unsigned char getComponentType();
-			unsigned char getStreamType();
-			unsigned char getSimulcastGroupTag();
-			bool getESMultiLingualFlag();
-			bool getMainComponentFlag();
-			unsigned char getQualityIndicator();
-			unsigned char getSamplingRate();
-			string getLanguageCode();
-			string getLanguageCode2();
-			string getTextChar();
-			void print();
-			unsigned int getDescriptorLength();
-			size_t process (char* data, size_t pos);
-	};
-
+public:
+  AudioComponentDescriptor ();
+  ~AudioComponentDescriptor ();
+  unsigned char getDescriptorTag ();
+  unsigned char getStreamContent ();
+  unsigned char getComponentTag ();
+  unsigned char getComponentType ();
+  unsigned char getStreamType ();
+  unsigned char getSimulcastGroupTag ();
+  bool getESMultiLingualFlag ();
+  bool getMainComponentFlag ();
+  unsigned char getQualityIndicator ();
+  unsigned char getSamplingRate ();
+  string getLanguageCode ();
+  string getLanguageCode2 ();
+  string getTextChar ();
+  void print ();
+  unsigned int getDescriptorLength ();
+  size_t process (char *data, size_t pos);
+};
 
 GINGA_TSPARSER_END
 

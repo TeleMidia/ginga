@@ -24,112 +24,116 @@ using namespace ::ginga::system;
 #include "IPlayer.h"
 #include "IPlayerListener.h"
 
-typedef struct {
-	string baseId;
-	string playerId;
-	int devClass;
-	GingaScreenID screenId;
-	int x;
-	int y;
-	int w;
-	int h;
-	bool enableGfx;
-	string parentDocId;
-	string nodeId;
-	string docId;
-	float transparency;
-	void* focusManager;
-	void* privateBaseManager;
-    bool enableMulticast;
-	::ginga::player::IPlayerListener* editListener;
+typedef struct
+{
+  string baseId;
+  string playerId;
+  int devClass;
+  GingaScreenID screenId;
+  int x;
+  int y;
+  int w;
+  int h;
+  bool enableGfx;
+  string parentDocId;
+  string nodeId;
+  string docId;
+  float transparency;
+  void *focusManager;
+  void *privateBaseManager;
+  bool enableMulticast;
+  ::ginga::player::IPlayerListener *editListener;
 } NclPlayerData;
 
 GINGA_PLAYER_BEGIN
 
-	class INCLPlayer : public IPlayer {
-		public:
-			static const int DEEPEST_LEVEL = -1;
+class INCLPlayer : public IPlayer
+{
+public:
+  static const int DEEPEST_LEVEL = -1;
 
-			virtual ~INCLPlayer(){};
+  virtual ~INCLPlayer (){};
 
-			virtual void setMirrorSrc(IPlayer* mirrorSrc)=0;
-			virtual void printGingaWindows()=0;
-			virtual set<string>* createPortIdList()=0;
-			virtual short getMappedInterfaceType(string portId)=0;
+  virtual void setMirrorSrc (IPlayer *mirrorSrc) = 0;
+  virtual void printGingaWindows () = 0;
+  virtual set<string> *createPortIdList () = 0;
+  virtual short getMappedInterfaceType (string portId) = 0;
 
-			virtual void setMrl(string mrl, bool visible=true)=0;
-			virtual void reset()=0;
-			virtual void rebase()=0;
-			virtual void setTimeBaseProvider(
-					ITimeBaseProvider* timeBaseProvider)=0;
+  virtual void setMrl (string mrl, bool visible = true) = 0;
+  virtual void reset () = 0;
+  virtual void rebase () = 0;
+  virtual void setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider) = 0;
 
-			virtual void setBackgroundImage(string uri)=0;
-			virtual void setParentLayout(void* layout)=0;
-			virtual string getScreenShot()=0;
-			virtual void* setCurrentDocument(string fName)=0;
-			virtual void setDepthLevel(int level)=0;
-			virtual int getDepthLevel()=0;
-			virtual bool editingCommand(
-					string commandTag, string editingCommand)=0;
+  virtual void setBackgroundImage (string uri) = 0;
+  virtual void setParentLayout (void *layout) = 0;
+  virtual string getScreenShot () = 0;
+  virtual void *setCurrentDocument (string fName) = 0;
+  virtual void setDepthLevel (int level) = 0;
+  virtual int getDepthLevel () = 0;
+  virtual bool editingCommand (string commandTag, string editingCommand) = 0;
 
-			virtual void setNotifyContentUpdate(bool notify)=0;
-			virtual void addListener(IPlayerListener* listener)=0;
-			virtual void removeListener(IPlayerListener* listener)=0;
-			virtual void notifyPlayerListeners(
-					short code, string paremeter, short type, string value)=0;
+  virtual void setNotifyContentUpdate (bool notify) = 0;
+  virtual void addListener (IPlayerListener *listener) = 0;
+  virtual void removeListener (IPlayerListener *listener) = 0;
+  virtual void notifyPlayerListeners (short code, string paremeter, short type,
+                                      string value)
+      = 0;
 
-			virtual void setSurface(GingaSurfaceID surface)=0;
-			virtual GingaSurfaceID getSurface()=0;
-			virtual int64_t getVPts(){return 0;};
-			virtual double getMediaTime()=0;
-			virtual double getTotalMediaTime()=0;
-			virtual void setMediaTime(double newTime)=0;
-			virtual bool setKeyHandler(bool isHandler)=0;
-			virtual void setScope(
-					string scope,
-					short type,
-					double begin=-1, double end=-1, double outTransDur=-1)=0;
+  virtual void setSurface (GingaSurfaceID surface) = 0;
+  virtual GingaSurfaceID getSurface () = 0;
+  virtual int64_t
+  getVPts ()
+  {
+    return 0;
+  };
+  virtual double getMediaTime () = 0;
+  virtual double getTotalMediaTime () = 0;
+  virtual void setMediaTime (double newTime) = 0;
+  virtual bool setKeyHandler (bool isHandler) = 0;
+  virtual void setScope (string scope, short type, double begin = -1,
+                         double end = -1, double outTransDur = -1)
+      = 0;
 
-			virtual bool play()=0;
-			virtual void stop()=0;
-			virtual void abort()=0;
-			virtual void pause()=0;
-			virtual void resume()=0;
+  virtual bool play () = 0;
+  virtual void stop () = 0;
+  virtual void abort () = 0;
+  virtual void pause () = 0;
+  virtual void resume () = 0;
 
-			virtual string getPropertyValue(string name)=0;
-			virtual void setPropertyValue(string name, string value)=0;
+  virtual string getPropertyValue (string name) = 0;
+  virtual void setPropertyValue (string name, string value) = 0;
 
-			virtual void setReferenceTimePlayer(IPlayer* player)=0;
-			virtual void addTimeReferPlayer(IPlayer* referPlayer)=0;
-			virtual void removeTimeReferPlayer(IPlayer* referPlayer)=0;
-			virtual void notifyReferPlayers(int transition)=0;
-			virtual void timebaseObjectTransitionCallback(int transition)=0;
-			virtual void setTimeBasePlayer(IPlayer* timeBasePlayer)=0;
-			virtual bool hasPresented()=0;
-			virtual void setPresented(bool presented)=0;
-			virtual bool isVisible()=0;
-			virtual void setVisible(bool visible)=0;
-			virtual bool immediatelyStart()=0;
-			virtual void setImmediatelyStart(bool immediatelyStartVal)=0;
-			virtual void forceNaturalEnd(bool forceIt)=0;
-			virtual bool isForcedNaturalEnd()=0;
-			virtual bool setOutWindow(GingaWindowID windowId)=0;
+  virtual void setReferenceTimePlayer (IPlayer *player) = 0;
+  virtual void addTimeReferPlayer (IPlayer *referPlayer) = 0;
+  virtual void removeTimeReferPlayer (IPlayer *referPlayer) = 0;
+  virtual void notifyReferPlayers (int transition) = 0;
+  virtual void timebaseObjectTransitionCallback (int transition) = 0;
+  virtual void setTimeBasePlayer (IPlayer *timeBasePlayer) = 0;
+  virtual bool hasPresented () = 0;
+  virtual void setPresented (bool presented) = 0;
+  virtual bool isVisible () = 0;
+  virtual void setVisible (bool visible) = 0;
+  virtual bool immediatelyStart () = 0;
+  virtual void setImmediatelyStart (bool immediatelyStartVal) = 0;
+  virtual void forceNaturalEnd (bool forceIt) = 0;
+  virtual bool isForcedNaturalEnd () = 0;
+  virtual bool setOutWindow (GingaWindowID windowId) = 0;
 
-			/*Exclusive for ChannelPlayer*/
-			virtual IPlayer* getSelectedPlayer()=0;
-			virtual void setPlayerMap(map<string, IPlayer*>* objs)=0;
-			virtual map<string, IPlayer*>* getPlayerMap()=0;
-			virtual IPlayer* getPlayer(string objectId)=0;
-			virtual void select(IPlayer* selObject)=0;
+  /*Exclusive for ChannelPlayer*/
+  virtual IPlayer *getSelectedPlayer () = 0;
+  virtual void setPlayerMap (map<string, IPlayer *> *objs) = 0;
+  virtual map<string, IPlayer *> *getPlayerMap () = 0;
+  virtual IPlayer *getPlayer (string objectId) = 0;
+  virtual void select (IPlayer *selObject) = 0;
 
-			/*Exclusive for Application Players*/
-			virtual void setCurrentScope(string scopeId)=0;
-			virtual void flip()=0;
+  /*Exclusive for Application Players*/
+  virtual void setCurrentScope (string scopeId) = 0;
+  virtual void flip () = 0;
 
-			virtual string getDepUris(vector<string>* uris, int targetDev=0)=0;
+  virtual string getDepUris (vector<string> *uris, int targetDev = 0) = 0;
 
-			virtual void timeShift(string direction)=0;
-	};
+  virtual void timeShift (string direction) = 0;
+};
 
 GINGA_PLAYER_END
 

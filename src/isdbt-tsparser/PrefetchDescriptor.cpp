@@ -20,63 +20,75 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TSPARSER_BEGIN
 
+PrefetchDescriptor::PrefetchDescriptor ()
+{
+  descriptorLength = 0;
+  descriptorTag = 0;
+  prefetchs = new vector<struct Prefetch *>;
+  transportLabel = 0;
+}
 
-	PrefetchDescriptor::PrefetchDescriptor() {
-		descriptorLength = 0;
-		descriptorTag    = 0;
-		prefetchs        = new vector<struct Prefetch*>;
-		transportLabel   = 0;
-	}
+PrefetchDescriptor::~PrefetchDescriptor ()
+{
+  if (prefetchs != NULL)
+    {
+      vector<struct Prefetch *>::iterator i;
+      for (i = prefetchs->begin (); i != prefetchs->end (); ++i)
+        {
+          if ((*i)->labelChar != NULL)
+            {
+              delete (*i)->labelChar;
+              (*i)->labelChar = NULL;
+            }
+          delete (*i);
+          (*i) = NULL;
+        }
+      delete prefetchs;
+      prefetchs = NULL;
+    }
+}
 
-	PrefetchDescriptor::~PrefetchDescriptor() {
-		if (prefetchs != NULL) {
-			vector<struct Prefetch*>::iterator i;
-			for (i = prefetchs->begin(); i != prefetchs->end(); ++i) {
-				if ((*i)->labelChar != NULL) {
-					delete (*i)->labelChar;
-					(*i)->labelChar = NULL;
-				}
-				delete (*i);
-				(*i) = NULL;
-			}
-			delete prefetchs;
-			prefetchs = NULL;
-		}
-	}
+unsigned int
+PrefetchDescriptor::getDescriptorLength ()
+{
+  return descriptorLength;
+}
 
-	unsigned int PrefetchDescriptor::getDescriptorLength() {
-		return descriptorLength;
-	}
+unsigned char
+PrefetchDescriptor::getDescriptorTag ()
+{
+  return descriptorTag;
+}
 
-	unsigned char PrefetchDescriptor::getDescriptorTag() {
-		return descriptorTag;
-	}
+void
+PrefetchDescriptor::print ()
+{
+}
 
-	void PrefetchDescriptor::print () {
+size_t
+PrefetchDescriptor::process (char *data, size_t pos)
+{
+  struct Prefetch *prefetch;
 
-	}
+  descriptorTag = data[pos];
+  descriptorLength = data[pos + 1];
+  pos += 2;
 
-	size_t PrefetchDescriptor::process (char*data, size_t pos) {
-		struct Prefetch* prefetch;
+  transportLabel = data[pos];
 
-		descriptorTag = data[pos];
-		descriptorLength =  data[pos+1];
-		pos += 2 ;
+  for (int i = 0; i < descriptorLength - 1; i++)
+    {
+      pos++;
 
-		transportLabel = data[pos];
+      prefetch = new struct Prefetch;
+      prefetch->lambelLength = data[pos];
+      memcpy (prefetch->labelChar, data + pos + 1, prefetch->lambelLength);
+      pos += prefetch->lambelLength;
+      prefetch->prefecthPriority = data[pos];
 
-		for (int i = 0; i < descriptorLength - 1; i++) {
-			pos ++;
-
-			prefetch = new struct Prefetch;
-			prefetch->lambelLength = data[pos];
-			memcpy(prefetch->labelChar, data+pos+1, prefetch->lambelLength);
-			pos += prefetch->lambelLength;
-			prefetch->prefecthPriority = data[pos];
-
-			prefetchs->push_back(prefetch);
-		}
-		return pos;
-	}
+      prefetchs->push_back (prefetch);
+    }
+  return pos;
+}
 
 GINGA_TSPARSER_END

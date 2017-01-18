@@ -23,81 +23,111 @@ using namespace ::ginga::util;
 
 GINGA_NCL_BEGIN
 
-	FocusDecoration::FocusDecoration() {
-		focusBorderTransparency = NaN();
-		focusSrc                = "";
-		focusBorderWidth        = -3;
-		focusBorderColor        = NULL;
+FocusDecoration::FocusDecoration ()
+{
+  focusBorderTransparency = NaN ();
+  focusSrc = "";
+  focusBorderWidth = -3;
+  focusBorderColor = NULL;
 
-		selBorderColor          = NULL;
-		focusSelSrc             = "";
-	}
+  selBorderColor = NULL;
+  focusSelSrc = "";
+}
 
-	FocusDecoration::~FocusDecoration() {
-		if (focusBorderColor != NULL) {
-			delete focusBorderColor;
-			focusBorderColor = NULL;
-		}
+FocusDecoration::~FocusDecoration ()
+{
+  if (focusBorderColor != NULL)
+    {
+      delete focusBorderColor;
+      focusBorderColor = NULL;
+    }
 
-		if (selBorderColor != NULL) {
-			delete selBorderColor;
-			selBorderColor = NULL;
-		}
-	}
+  if (selBorderColor != NULL)
+    {
+      delete selBorderColor;
+      selBorderColor = NULL;
+    }
+}
 
-	Color* FocusDecoration::getFocusBorderColor() {
-		return focusBorderColor;
-	}
+Color *
+FocusDecoration::getFocusBorderColor ()
+{
+  return focusBorderColor;
+}
 
-	double FocusDecoration::getFocusBorderTransparency() {
-		return focusBorderTransparency;
-	}
+double
+FocusDecoration::getFocusBorderTransparency ()
+{
+  return focusBorderTransparency;
+}
 
-	string FocusDecoration::getFocusSelSrc() {
-		return focusSelSrc;
-	}
+string
+FocusDecoration::getFocusSelSrc ()
+{
+  return focusSelSrc;
+}
 
-	string FocusDecoration::getFocusSrc() {
-		return focusSrc;
-	}
+string
+FocusDecoration::getFocusSrc ()
+{
+  return focusSrc;
+}
 
-	int FocusDecoration::getFocusBorderWidth() {
-		return focusBorderWidth;
-	}
+int
+FocusDecoration::getFocusBorderWidth ()
+{
+  return focusBorderWidth;
+}
 
-	Color* FocusDecoration::getSelBorderColor() {
-		return selBorderColor;
-	}
+Color *
+FocusDecoration::getSelBorderColor ()
+{
+  return selBorderColor;
+}
 
-	void FocusDecoration::setFocusBorderColor(Color* color) {
-		focusBorderColor = color;
-	}
+void
+FocusDecoration::setFocusBorderColor (Color *color)
+{
+  focusBorderColor = color;
+}
 
-	void FocusDecoration::setFocusBorderTransparency(double alfa) {
-		if (alfa < 0) {
-			alfa = 0;
+void
+FocusDecoration::setFocusBorderTransparency (double alfa)
+{
+  if (alfa < 0)
+    {
+      alfa = 0;
+    }
+  else if (alfa > 1)
+    {
+      alfa = 1;
+    }
 
-		} else if (alfa > 1) {
-			alfa = 1;
-		}
+  focusBorderTransparency = alfa;
+}
 
-		focusBorderTransparency = alfa;
-	}
+void
+FocusDecoration::setFocusBorderWidth (int width)
+{
+  focusBorderWidth = width;
+}
 
-	void FocusDecoration::setFocusBorderWidth(int width) {
-		focusBorderWidth = width;
-	}
+void
+FocusDecoration::setFocusSelSrc (string src)
+{
+  focusSelSrc = src;
+}
 
-	void FocusDecoration::setFocusSelSrc(string src) {
-		focusSelSrc = src;
-	}
+void
+FocusDecoration::setFocusSrc (string src)
+{
+  focusSrc = src;
+}
 
-	void FocusDecoration::setFocusSrc(string src) {
-		focusSrc = src;
-	}
-
-	void FocusDecoration::setSelBorderColor(Color* color) {
-		selBorderColor = color;
-	}
+void
+FocusDecoration::setSelBorderColor (Color *color)
+{
+  selBorderColor = color;
+}
 
 GINGA_NCL_END

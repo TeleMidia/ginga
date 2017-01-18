@@ -20,50 +20,64 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	LinkRepeatAction::LinkRepeatAction(
-			FormatterEvent* event, short actionType) :
-		    	    LinkSimpleAction(event, actionType) {
+LinkRepeatAction::LinkRepeatAction (FormatterEvent *event, short actionType)
+    : LinkSimpleAction (event, actionType)
+{
 
-		this->repetitions        = 0;
-		this->repetitionInterval = 0;
+  this->repetitions = 0;
+  this->repetitionInterval = 0;
 
-		typeSet.insert("LinkRepeatAction");
-	}
+  typeSet.insert ("LinkRepeatAction");
+}
 
-	LinkRepeatAction::~LinkRepeatAction() {
-		isDeleting = true;
+LinkRepeatAction::~LinkRepeatAction ()
+{
+  isDeleting = true;
 
-		//clog << "LinkRepeatAction::~LinkRepeatAction" << endl;
-	}
+  // clog << "LinkRepeatAction::~LinkRepeatAction" << endl;
+}
 
-	long LinkRepeatAction::getRepetitions() {
-		return repetitions;
-	}
+long
+LinkRepeatAction::getRepetitions ()
+{
+  return repetitions;
+}
 
-	double LinkRepeatAction::getRepetitionInterval() {
-		return repetitionInterval;
-	}
+double
+LinkRepeatAction::getRepetitionInterval ()
+{
+  return repetitionInterval;
+}
 
-	void LinkRepeatAction::setRepetitions(long repetitions) {
-		this->repetitions = repetitions;
-	}
+void
+LinkRepeatAction::setRepetitions (long repetitions)
+{
+  this->repetitions = repetitions;
+}
 
-	void LinkRepeatAction::setRepetitionInterval(double delay) {
-		this->repetitionInterval = delay;
-	}
+void
+LinkRepeatAction::setRepetitionInterval (double delay)
+{
+  this->repetitionInterval = delay;
+}
 
-	void LinkRepeatAction::run() {
-		if (LinkSimpleAction::event != NULL) {
-			if (LinkSimpleAction::event->instanceOf("PresentationEvent")) {
-				((PresentationEvent*)event)->setRepetitionSettings(
-					    repetitions, repetitionInterval);
-			}
+void
+LinkRepeatAction::run ()
+{
+  if (LinkSimpleAction::event != NULL)
+    {
+      if (LinkSimpleAction::event->instanceOf ("PresentationEvent"))
+        {
+          ((PresentationEvent *)event)
+              ->setRepetitionSettings (repetitions, repetitionInterval);
+        }
+    }
+  else
+    {
+      clog << "LinkRepeatAction::run Warning! event == NULL" << endl;
+    }
 
-		} else {
-			clog << "LinkRepeatAction::run Warning! event == NULL" << endl;
-		}
-
-		LinkSimpleAction::run();
-	}
+  LinkSimpleAction::run ();
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END

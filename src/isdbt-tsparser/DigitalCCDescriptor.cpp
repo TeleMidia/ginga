@@ -20,118 +20,137 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TSPARSER_BEGIN
 
-	DigitalCCDescriptor::DigitalCCDescriptor() {
-		descriptorTag               = 0xC1;
-		descriptorLength            = 0;
-		components                  = NULL;
-		maximumBitrateFlag          = false;
-		componentControlFlag        = false;
-		copyControlType             = 0;
-		digitalRecordingControlData = 0;
-		maximumBitRate              = 0;
-	}
+DigitalCCDescriptor::DigitalCCDescriptor ()
+{
+  descriptorTag = 0xC1;
+  descriptorLength = 0;
+  components = NULL;
+  maximumBitrateFlag = false;
+  componentControlFlag = false;
+  copyControlType = 0;
+  digitalRecordingControlData = 0;
+  maximumBitRate = 0;
+}
 
-	DigitalCCDescriptor::~DigitalCCDescriptor() {
-		if(components != NULL){
-			vector<Component*>::iterator i;
-			for (i = components->begin(); i!= components->end(); ++i){
-				if ((*i)!= NULL){
-					delete (*i);
-				}
-			}
-			delete components;
-			components = NULL;
-		}
-	}
-	unsigned char DigitalCCDescriptor::getDescriptorTag(){
-		return descriptorTag;
-	}
-	unsigned int DigitalCCDescriptor::getDescriptorLength(){
-		return (unsigned int)descriptorLength;
-	}
-	void DigitalCCDescriptor::print() {
-		clog << "DigitalCCDescriptor::print printing..." << endl;
-		if(components->size()> 0){
-			vector<Component*>::iterator i;
-			for (i = components->begin(); i!= components->end(); ++i) {
-				clog << " -Component:";
-				clog << " componentTag = " << (unsigned int)(*i)->componentTag;
-				clog << " -copyControlType = ";
-				clog << (unsigned int) (*i)->copyControlType ;
-				if ((*i)->maximumBitrateFlag == true) {
-					clog << " -maximumBitRate = ";
-					clog << (unsigned int)((*i)->maximumBitrate) << endl;
-				}
-				else {
-					clog << endl;
-				}
+DigitalCCDescriptor::~DigitalCCDescriptor ()
+{
+  if (components != NULL)
+    {
+      vector<Component *>::iterator i;
+      for (i = components->begin (); i != components->end (); ++i)
+        {
+          if ((*i) != NULL)
+            {
+              delete (*i);
+            }
+        }
+      delete components;
+      components = NULL;
+    }
+}
+unsigned char
+DigitalCCDescriptor::getDescriptorTag ()
+{
+  return descriptorTag;
+}
+unsigned int
+DigitalCCDescriptor::getDescriptorLength ()
+{
+  return (unsigned int)descriptorLength;
+}
+void
+DigitalCCDescriptor::print ()
+{
+  clog << "DigitalCCDescriptor::print printing..." << endl;
+  if (components->size () > 0)
+    {
+      vector<Component *>::iterator i;
+      for (i = components->begin (); i != components->end (); ++i)
+        {
+          clog << " -Component:";
+          clog << " componentTag = " << (unsigned int)(*i)->componentTag;
+          clog << " -copyControlType = ";
+          clog << (unsigned int)(*i)->copyControlType;
+          if ((*i)->maximumBitrateFlag == true)
+            {
+              clog << " -maximumBitRate = ";
+              clog << (unsigned int)((*i)->maximumBitrate) << endl;
+            }
+          else
+            {
+              clog << endl;
+            }
+        }
+    }
+}
+size_t
+DigitalCCDescriptor::process (char *data, size_t pos)
+{
+  size_t remainingBytes = 0;
+  struct Component *component;
 
-			}
-		}
-	}
-	size_t DigitalCCDescriptor::process(char* data, size_t pos){
-		size_t remainingBytes = 0;
-		struct Component* component;
+  // clog << "DigitalCCDescriptor::process with pos = " << pos;
+  descriptorLength = data[pos + 1];
+  // clog << " and length = " << (descriptorLength & 0xFF)<< endl;
+  pos += 2;
 
-		//clog << "DigitalCCDescriptor::process with pos = " << pos;
-		descriptorLength = data[pos+1];
-		//clog << " and length = " << (descriptorLength & 0xFF)<< endl;
-		pos += 2;
+  digitalRecordingControlData = ((data[pos] & 0xC0) >> 6); // 2 bits
+  maximumBitrateFlag = ((data[pos] & 0x20) >> 5); // 1 bit
+  componentControlFlag = ((data[pos] & 0x10) >> 4); // 1 bit
+  // clog << "DCCD componentControlFlag = " << (componentControlFlag & 0xFF) <<
+  // endl;
+  copyControlType = ((data[pos] & 0x0C) >> 2); // 2 bits
 
-		digitalRecordingControlData = ((data[pos] & 0xC0) >> 6); //2 bits
-		maximumBitrateFlag =  ((data[pos] & 0x20 ) >> 5) ;//1 bit
-		componentControlFlag = ((data[pos] & 0x10) >> 4 ); //1 bit
-		//clog << "DCCD componentControlFlag = " << (componentControlFlag & 0xFF) << endl;
-		copyControlType = ((data[pos] & 0x0C) >> 2);//2 bits
+  if (copyControlType != 00)
+    {
+      APSControlData = (data[pos] & 0x03); // 2 bits
+    }
+  // clog << "DigitalCCD debug third byte = " << (data[pos] & 0xFF) << endl;
+  pos++;
 
-		if(copyControlType != 00){
-			APSControlData = (data[pos] & 0x03); //2 bits
-		}
-		//clog << "DigitalCCD debug third byte = " << (data[pos] & 0xFF) << endl;
-		pos++;
+  if (maximumBitrateFlag == 1)
+    {
+      maximumBitRate = data[pos];
+      // clog << "DCCD maximumBitRate = " << maximumBitRate << endl;
+      pos++;
+    }
+  if (componentControlFlag == 1)
+    {
+      componentControlLength = data[pos];
+      remainingBytes = componentControlLength;
 
-		if(maximumBitrateFlag == 1){
-			maximumBitRate = data[pos];
-			//clog << "DCCD maximumBitRate = " << maximumBitRate << endl;
-			pos++;
-		}
-		if(componentControlFlag == 1){
-			componentControlLength = data[pos];
-			remainingBytes = componentControlLength;
+      components = new vector<Component *>;
+      while (remainingBytes > 0)
+        {
 
-			components = new vector<Component*>;
-			while(remainingBytes > 0){
+          pos++;
 
-				pos++;
+          component = new struct Component;
+          component->componentTag = data[pos];
+          pos++;
 
-				component = new struct Component;
-				component->componentTag = data[pos];
-				pos++;
+          remainingBytes -= 2; // 2 bytes read
 
-				remainingBytes -= 2; //2 bytes read
+          component->digitalRecordingControlData = ((data[pos] & 0xC0) >> 6);
 
-				component->digitalRecordingControlData =
-						((data[pos] & 0xC0)>> 6);
+          component->maximumBitrateFlag = ((data[pos] & 0x20) >> 5);
+          component->copyControlType = ((data[pos] & 0x0C) >> 2);
 
-				component->maximumBitrateFlag = ((data[pos] & 0x20 ) >> 5);
-				component->copyControlType = ((data[pos] & 0x0C) >> 2);
+          if (component->copyControlType != 00)
+            {
+              component->APSControlData = (data[pos] & 0x03); // 2 bits
+            }
 
-
-				if(component->copyControlType != 00){
-					component->APSControlData = (data[pos] & 0x03); //2 bits
-				}
-
-				if(maximumBitrateFlag == 1){
-					pos++;
-					remainingBytes--;
-					component->maximumBitrate = data[pos];
-
-				}
-				components->push_back(component);
-			}
-		}
-		return pos;
-	}
-
+          if (maximumBitrateFlag == 1)
+            {
+              pos++;
+              remainingBytes--;
+              component->maximumBitrate = data[pos];
+            }
+          components->push_back (component);
+        }
+    }
+  return pos;
+}
 
 GINGA_TSPARSER_END

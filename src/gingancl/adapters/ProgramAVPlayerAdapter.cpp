@@ -21,116 +21,135 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_TV_BEGIN
 
-	ProgramAVPlayerAdapter::ProgramAVPlayerAdapter() : FormatterPlayerAdapter() {
-		typeSet.insert("ProgramAVPlayerAdapter");
-		lastValue = "";
-	}
+ProgramAVPlayerAdapter::ProgramAVPlayerAdapter () : FormatterPlayerAdapter ()
+{
+  typeSet.insert ("ProgramAVPlayerAdapter");
+  lastValue = "";
+}
 
-	ProgramAVPlayerAdapter* ProgramAVPlayerAdapter::_instance = 0;
+ProgramAVPlayerAdapter *ProgramAVPlayerAdapter::_instance = 0;
 
-	ProgramAVPlayerAdapter* ProgramAVPlayerAdapter::getInstance() {
-		if (ProgramAVPlayerAdapter::_instance == NULL) {
-			ProgramAVPlayerAdapter::_instance = new ProgramAVPlayerAdapter();
-		}
+ProgramAVPlayerAdapter *
+ProgramAVPlayerAdapter::getInstance ()
+{
+  if (ProgramAVPlayerAdapter::_instance == NULL)
+    {
+      ProgramAVPlayerAdapter::_instance = new ProgramAVPlayerAdapter ();
+    }
 
-		return ProgramAVPlayerAdapter::_instance;
-	}
+  return ProgramAVPlayerAdapter::_instance;
+}
 
-	bool ProgramAVPlayerAdapter::hasPrepared() {
-		return object != NULL;
-	}
+bool
+ProgramAVPlayerAdapter::hasPrepared ()
+{
+  return object != NULL;
+}
 
-	bool ProgramAVPlayerAdapter::start() {
-		return FormatterPlayerAdapter::start();
-	}
-	
-	bool ProgramAVPlayerAdapter::stop() {
-		player->setPropertyValue("bounds", "");     // full screen
+bool
+ProgramAVPlayerAdapter::start ()
+{
+  return FormatterPlayerAdapter::start ();
+}
 
-		//TODO: create a map to handle each default value (before AIT app start cmd)
-		player->setPropertyValue("soundLevel", "1.0"); // full sound
+bool
+ProgramAVPlayerAdapter::stop ()
+{
+  player->setPropertyValue ("bounds", ""); // full screen
 
-		return FormatterPlayerAdapter::stop();
-	}
+  // TODO: create a map to handle each default value (before AIT app start cmd)
+  player->setPropertyValue ("soundLevel", "1.0"); // full sound
 
-	bool ProgramAVPlayerAdapter::resume() {
-		updateAVBounds();
-		return FormatterPlayerAdapter::resume();
-	}
+  return FormatterPlayerAdapter::stop ();
+}
 
-	void ProgramAVPlayerAdapter::createPlayer() {
-		CascadingDescriptor* descriptor;
-		string soundLevel;
+bool
+ProgramAVPlayerAdapter::resume ()
+{
+  updateAVBounds ();
+  return FormatterPlayerAdapter::resume ();
+}
 
-		player = ProgramAV::getInstance(myScreen);
+void
+ProgramAVPlayerAdapter::createPlayer ()
+{
+  CascadingDescriptor *descriptor;
+  string soundLevel;
 
-		FormatterPlayerAdapter::createPlayer();
-		updateAVBounds();
-	}
+  player = ProgramAV::getInstance (myScreen);
 
-	bool ProgramAVPlayerAdapter::setPropertyValue(
-		    AttributionEvent* event, string value) {
+  FormatterPlayerAdapter::createPlayer ();
+  updateAVBounds ();
+}
 
-		string propName;
-		bool attribution;
+bool
+ProgramAVPlayerAdapter::setPropertyValue (AttributionEvent *event,
+                                          string value)
+{
 
-		attribution = FormatterPlayerAdapter::setPropertyValue(
-				event, value);
+  string propName;
+  bool attribution;
 
-		propName = event->getAnchor()->getPropertyName();
-		clog << "ProgramAVPlayerAdapter::setPropertyValue '";
-		clog << propName << "' ";
-		clog << value << "'" << endl;
+  attribution = FormatterPlayerAdapter::setPropertyValue (event, value);
 
-		if (propName == "size" || propName == "location" ||
-				propName == "bounds" ||
-				propName == "top" || propName == "left" ||
-				propName == "bottom" || propName == "right" ||
-				propName == "width" || propName == "height") {
+  propName = event->getAnchor ()->getPropertyName ();
+  clog << "ProgramAVPlayerAdapter::setPropertyValue '";
+  clog << propName << "' ";
+  clog << value << "'" << endl;
 
-			updateAVBounds();
+  if (propName == "size" || propName == "location" || propName == "bounds"
+      || propName == "top" || propName == "left" || propName == "bottom"
+      || propName == "right" || propName == "width" || propName == "height")
+    {
 
-		} else if (propName == "standby") {
-			if (value == "true") {
-				player->setPropertyValue("bounds", ""); // fullscreen
-				lastValue = player->getPropertyValue("soundLevel");
-				player->setPropertyValue("soundLevel", ""); // audio
+      updateAVBounds ();
+    }
+  else if (propName == "standby")
+    {
+      if (value == "true")
+        {
+          player->setPropertyValue ("bounds", ""); // fullscreen
+          lastValue = player->getPropertyValue ("soundLevel");
+          player->setPropertyValue ("soundLevel", ""); // audio
+        }
+      else
+        {
+          updateAVBounds ();
+          player->setPropertyValue ("soundLevel", lastValue); // audio
+        }
+    }
+  else
+    {
+      player->setPropertyValue (propName, value);
+    }
 
-			} else {
-				updateAVBounds();
-				player->setPropertyValue("soundLevel", lastValue); // audio
-			}
+  return attribution;
+}
 
-		} else {
-			player->setPropertyValue(propName, value);
-		}
+void
+ProgramAVPlayerAdapter::updateAVBounds ()
+{
+  CascadingDescriptor *descriptor;
+  FormatterRegion *region;
+  LayoutRegion *ncmRegion;
 
-		return attribution;
-	}
+  if (object != NULL && object->getDescriptor () != NULL)
+    {
+      descriptor = object->getDescriptor ();
+      region = descriptor->getFormatterRegion ();
+      ncmRegion = region->getLayoutRegion ();
 
-	void ProgramAVPlayerAdapter::updateAVBounds() {
-		CascadingDescriptor* descriptor;
-		FormatterRegion* region;
-		LayoutRegion* ncmRegion;
-
-		if (object != NULL && object->getDescriptor() != NULL) {
-			descriptor = object->getDescriptor();
-			region     = descriptor->getFormatterRegion();
-			ncmRegion  = region->getLayoutRegion();
-
-			player->setPropertyValue(
-					"bounds",
-					itos(ncmRegion->getAbsoluteLeft()) + "," +
-					itos(ncmRegion->getAbsoluteTop()) + "," +
-					itos(ncmRegion->getWidthInPixels()) + "," +
-					itos(ncmRegion->getHeightInPixels()));
-
-
-
-		} else {
-			clog << "ProgramAVPlayerAdapter::updateAVBounds Warning!";
-			clog << "NULL object or descriptor" << endl;
-		}
-	}
+      player->setPropertyValue (
+          "bounds", itos (ncmRegion->getAbsoluteLeft ()) + ","
+                        + itos (ncmRegion->getAbsoluteTop ()) + ","
+                        + itos (ncmRegion->getWidthInPixels ()) + ","
+                        + itos (ncmRegion->getHeightInPixels ()));
+    }
+  else
+    {
+      clog << "ProgramAVPlayerAdapter::updateAVBounds Warning!";
+      clog << "NULL object or descriptor" << endl;
+    }
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_TV_END

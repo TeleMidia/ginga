@@ -20,66 +20,74 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TSPARSER_BEGIN
 
-	ApplicationNameDescriptor::ApplicationNameDescriptor() {
-		descriptorLength = 0;
-		descriptorTag    = 0x01;
-	}
+ApplicationNameDescriptor::ApplicationNameDescriptor ()
+{
+  descriptorLength = 0;
+  descriptorTag = 0x01;
+}
 
-	ApplicationNameDescriptor::~ApplicationNameDescriptor() {
-		vector<struct AppName*>::iterator i;
+ApplicationNameDescriptor::~ApplicationNameDescriptor ()
+{
+  vector<struct AppName *>::iterator i;
 
-		i = appNames.begin();
-		while (i != appNames.end()) {
-			delete (*i)->applicationNameChar;
-			delete (*i);
-			++i;
-		}
-		appNames.clear();
-	}
+  i = appNames.begin ();
+  while (i != appNames.end ())
+    {
+      delete (*i)->applicationNameChar;
+      delete (*i);
+      ++i;
+    }
+  appNames.clear ();
+}
 
-	unsigned char ApplicationNameDescriptor::getDescriptorTag() {
-		return descriptorTag;
-	}
+unsigned char
+ApplicationNameDescriptor::getDescriptorTag ()
+{
+  return descriptorTag;
+}
 
-	unsigned int ApplicationNameDescriptor::getDescriptorLength() {
-		return descriptorLength;
-	}
+unsigned int
+ApplicationNameDescriptor::getDescriptorLength ()
+{
+  return descriptorLength;
+}
 
-	void ApplicationNameDescriptor::print() {
+void
+ApplicationNameDescriptor::print ()
+{
+}
 
-	}
+size_t
+ApplicationNameDescriptor::process (char *data, size_t pos)
+{
+  unsigned char remainingBytes;
+  struct AppName *appName;
 
-	size_t ApplicationNameDescriptor::process(char* data, size_t pos) {
-		unsigned char remainingBytes;
-		struct AppName* appName;
+  descriptorTag = data[pos];
+  descriptorLength = data[pos + 1];
+  pos++;
 
-		descriptorTag    = data[pos];
-		descriptorLength = data[pos+1];
-		pos++;
+  remainingBytes = descriptorLength;
+  while (remainingBytes > 0)
+    {
+      appName = new struct AppName;
+      pos++;
 
-		remainingBytes = descriptorLength;
-		while (remainingBytes > 0) {
-			appName = new struct AppName;
-			pos++;
+      memcpy (appName->languageCode, data + pos, 3);
+      pos += 3;
 
-			memcpy(appName->languageCode, data + pos, 3);
-			pos+= 3;
+      appName->applicationNameLength = data[pos];
+      appName->applicationNameChar = new char[appName->applicationNameLength];
 
-			appName->applicationNameLength = data[pos];
-			appName->applicationNameChar =
-					new char[appName->applicationNameLength];
+      memcpy (appName->applicationNameChar, data + pos + 1,
+              appName->applicationNameLength);
 
-			memcpy(
-					appName->applicationNameChar,
-					data + pos + 1,
-					appName->applicationNameLength);
+      pos += appName->applicationNameLength;
+      remainingBytes -= (appName->applicationNameLength + 4);
+      appNames.push_back (appName);
+    }
 
-			pos+= appName->applicationNameLength;
-			remainingBytes-= (appName->applicationNameLength + 4);
-			appNames.push_back(appName);
-		}
-
-		return pos;
-	}
+  return pos;
+}
 
 GINGA_TSPARSER_END

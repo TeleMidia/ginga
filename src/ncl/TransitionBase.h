@@ -21,30 +21,30 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Base.h"
 using namespace ::ginga::ncl;
 
-
 #include "Transition.h"
 
 GINGA_NCL_BEGIN
 
-   	class TransitionBase : public Base {
-		private:
-			vector<Transition*>* transitionSet;
+class TransitionBase : public Base
+{
+private:
+  vector<Transition *> *transitionSet;
 
-		public:
-			TransitionBase(string id);
-			virtual ~TransitionBase();
-			bool addTransition(Transition* transition);
-			bool addBase(Base* base, string alias, string location);
-			void clear();
+public:
+  TransitionBase (string id);
+  virtual ~TransitionBase ();
+  bool addTransition (Transition *transition);
+  bool addBase (Base *base, string alias, string location);
+  void clear ();
 
-		private:
-			Transition* getTransitionLocally(string transitionId);
+private:
+  Transition *getTransitionLocally (string transitionId);
 
-		public:
-			Transition* getTransition(string transitionId);
-			vector<Transition*>* getTransitions();
-			bool removeTransition(Transition* transition);
-   	};
+public:
+  Transition *getTransition (string transitionId);
+  vector<Transition *> *getTransitions ();
+  bool removeTransition (Transition *transition);
+};
 
 GINGA_NCL_END
 

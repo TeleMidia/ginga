@@ -18,32 +18,29 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef TCPSOCKETSERVICE_H_
 #define TCPSOCKETSERVICE_H_
 
-
 #include "IRemoteDeviceListener.h"
 #include "TcpClientConnection.h"
 
 GINGA_MULTIDEVICE_BEGIN
 
-	class TcpSocketService {
-		private:
-			map<unsigned int, TCPClientConnection*>* connections;
-			unsigned int port;
-			int connection_counter;
-			pthread_mutex_t connMutex;
-			IRemoteDeviceListener* res;
+class TcpSocketService
+{
+private:
+  map<unsigned int, TCPClientConnection *> *connections;
+  unsigned int port;
+  int connection_counter;
+  pthread_mutex_t connMutex;
+  IRemoteDeviceListener *res;
 
-		public:
-			TcpSocketService(unsigned int p, IRemoteDeviceListener* r);
-			virtual ~TcpSocketService();
-			void addConnection(unsigned int deviceId, char* addr, int srvPort, bool isLocalConnection);
-			void removeConnection(unsigned int deviceId);
-			void postTcpCommand(
-					char* command,
-					int npt,
-					char* payloadDesc,
-					char* payload);
-	};
-
+public:
+  TcpSocketService (unsigned int p, IRemoteDeviceListener *r);
+  virtual ~TcpSocketService ();
+  void addConnection (unsigned int deviceId, char *addr, int srvPort,
+                      bool isLocalConnection);
+  void removeConnection (unsigned int deviceId);
+  void postTcpCommand (char *command, int npt, char *payloadDesc,
+                       char *payload);
+};
 
 GINGA_MULTIDEVICE_END
 

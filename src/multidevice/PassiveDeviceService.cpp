@@ -19,92 +19,100 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "PassiveDeviceService.h"
 #include "DeviceDomain.h"
 
-
-
 GINGA_MULTIDEVICE_BEGIN
 
-	PassiveDeviceService::PassiveDeviceService() : DeviceService() {
-		serviceClass = DeviceDomain::CT_PASSIVE;
-	}
+PassiveDeviceService::PassiveDeviceService () : DeviceService ()
+{
+  serviceClass = DeviceDomain::CT_PASSIVE;
+}
 
-	PassiveDeviceService::~PassiveDeviceService() {
+PassiveDeviceService::~PassiveDeviceService () {}
 
-	}
+void
+PassiveDeviceService::connectedToBaseDevice (unsigned int domainAddr)
+{
+  set<IRemoteDeviceListener *>::iterator i;
 
-	void PassiveDeviceService::connectedToBaseDevice(unsigned int domainAddr) {
-		set<IRemoteDeviceListener*>::iterator i;
+  addDevice (domainAddr, DeviceDomain::CT_BASE, 0, 0);
 
-		addDevice(domainAddr, DeviceDomain::CT_BASE, 0, 0);
+  Thread::mutexLock (&lMutex);
+  i = listeners->begin ();
+  while (i != listeners->end ())
+    {
+      (*i)->connectedToBaseDevice (domainAddr);
+      ++i;
+    }
+  clog << "PassiveDeviceService::connectedToBaseDevice(" << domainAddr << ") "
+       << endl;
+  Thread::mutexUnlock (&lMutex);
+}
 
-		Thread::mutexLock(&lMutex);
-		i = listeners->begin();
-		while (i != listeners->end()) {
-			(*i)->connectedToBaseDevice(domainAddr);
-			++i;
-		}
-		clog << "PassiveDeviceService::connectedToBaseDevice("<<domainAddr<<") "<<endl;
-		Thread::mutexUnlock(&lMutex);
-	}
+bool
+PassiveDeviceService::receiveMediaContent (unsigned int devAddr, char *stream,
+                                           int streamSize)
+{
 
-	bool PassiveDeviceService::receiveMediaContent(
-			unsigned int devAddr,
-			char* stream,
-			int streamSize) {
+  int remoteDevClass, bytesWrite;
+  FILE *fd;
+  RemoteDevice *dev;
+  string uri;
+  set<IRemoteDeviceListener *>::iterator i;
+  bool hasLists;
 
-		int remoteDevClass, bytesWrite;
-		FILE* fd;
-		RemoteDevice* dev;
-		string uri;
-		set<IRemoteDeviceListener*>::iterator i;
-		bool hasLists;
+  clog << "PassiveDeviceService::receiveMediaContent" << endl;
 
-		clog << "PassiveDeviceService::receiveMediaContent" << endl;
+  dev = getDevice (devAddr);
+  Thread::mutexLock (&lMutex);
+  hasLists = !listeners->empty ();
+  Thread::mutexUnlock (&lMutex);
 
-		dev = getDevice(devAddr);
-		Thread::mutexLock(&lMutex);
-		hasLists = !listeners->empty();
-		Thread::mutexUnlock(&lMutex);
+  if (dev != NULL && hasLists)
+    {
+      remoteDevClass = dev->getDeviceClass ();
 
-		if (dev != NULL && hasLists) {
-			remoteDevClass = dev->getDeviceClass();
+      uri = string (g_get_tmp_dir ()) + "/render.jpg";
+      remove ((char *)(uri.c_str ()));
+      fd = fopen (uri.c_str (), "w+b");
 
-				uri = string (g_get_tmp_dir ()) + "/render.jpg";
-				remove((char*)(uri.c_str()));
-				fd = fopen(uri.c_str(), "w+b");
-
-				if (fd != NULL) {
-					bytesWrite = fwrite(stream, 1, streamSize, fd);
-					fclose(fd);
-					if (bytesWrite == streamSize) {
-						Thread::mutexLock(&lMutex);
-						i = listeners->begin();
-						while (i != listeners->end()) {
-							(*i)->receiveRemoteContent(remoteDevClass, uri);
-							++i;
-						}
-						Thread::mutexUnlock(&lMutex);
-						return true;
-
-					} else {
-						clog << "PassiveDeviceService::receiveMediaContent ";
-						clog << "Warning! can't write '" << streamSize << "'";
-						clog << " in file '" << uri << "' (" << bytesWrite;
-						clog << " bytes wrote";
-						clog << endl;
-					}
-
-				} else {
-					clog << "PassiveDeviceService::receiveMediaContent Warning! ";
-					clog << " can't create file '" << uri << "'";
-					clog << endl;
-				}
-
-		} else {
-			clog << "PassiveDeviceService::receiveMediaContent Warning! ";
-			clog << " can't find device '" << dev << "' or no listeners found";
-			clog << endl;
-		}
-		return false;
-	}
+      if (fd != NULL)
+        {
+          bytesWrite = fwrite (stream, 1, streamSize, fd);
+          fclose (fd);
+          if (bytesWrite == streamSize)
+            {
+              Thread::mutexLock (&lMutex);
+              i = listeners->begin ();
+              while (i != listeners->end ())
+                {
+                  (*i)->receiveRemoteContent (remoteDevClass, uri);
+                  ++i;
+                }
+              Thread::mutexUnlock (&lMutex);
+              return true;
+            }
+          else
+            {
+              clog << "PassiveDeviceService::receiveMediaContent ";
+              clog << "Warning! can't write '" << streamSize << "'";
+              clog << " in file '" << uri << "' (" << bytesWrite;
+              clog << " bytes wrote";
+              clog << endl;
+            }
+        }
+      else
+        {
+          clog << "PassiveDeviceService::receiveMediaContent Warning! ";
+          clog << " can't create file '" << uri << "'";
+          clog << endl;
+        }
+    }
+  else
+    {
+      clog << "PassiveDeviceService::receiveMediaContent Warning! ";
+      clog << " can't find device '" << dev << "' or no listeners found";
+      clog << endl;
+    }
+  return false;
+}
 
 GINGA_MULTIDEVICE_END

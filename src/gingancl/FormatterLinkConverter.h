@@ -79,106 +79,83 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 #include "FormatterConverter.h"
 #include "ObjectCreationForbiddenException.h"
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_BEGIN
 
-  class FormatterLinkConverter {
-	private:
-		FormatterConverter* compiler;
+class FormatterLinkConverter
+{
+private:
+  FormatterConverter *compiler;
 
-	public:
-		FormatterLinkConverter(FormatterConverter* compiler);
-		~FormatterLinkConverter();
+public:
+  FormatterLinkConverter (FormatterConverter *compiler);
+  ~FormatterLinkConverter ();
 
-		FormatterCausalLink* createCausalLink(
-			    CausalLink* ncmLink,
-			    CompositeExecutionObject* parentObject,
-			    int depthLevel);
+  FormatterCausalLink *
+  createCausalLink (CausalLink *ncmLink,
+                    CompositeExecutionObject *parentObject, int depthLevel);
 
-	private:
-		void setImplicitRefAssessment(
-				string roleId, CausalLink* ncmLink, FormatterEvent* event);
+private:
+  void setImplicitRefAssessment (string roleId, CausalLink *ncmLink,
+                                 FormatterEvent *event);
 
-		LinkAction* createAction(
-			    Action* actionExpression,
-			    CausalLink* ncmLink,
-			    CompositeExecutionObject* parentObject,
-			    int depthLevel);
+  LinkAction *createAction (Action *actionExpression, CausalLink *ncmLink,
+                            CompositeExecutionObject *parentObject,
+                            int depthLevel);
 
-		LinkCondition* createCondition(
-			    ConditionExpression* ncmExpression,
-			    CausalLink* ncmLink,
-			    CompositeExecutionObject* parentObject,
-			    int depthLevel);
+  LinkCondition *createCondition (ConditionExpression *ncmExpression,
+                                  CausalLink *ncmLink,
+                                  CompositeExecutionObject *parentObject,
+                                  int depthLevel);
 
-		LinkCompoundTriggerCondition* createCompoundTriggerCondition(
-			    short op,
-			    double delay,
-			    vector<ConditionExpression*>* ncmChildConditions,
-			    CausalLink* ncmLink,
-			    CompositeExecutionObject* parentObject,
-			    int depthLevel);
+  LinkCompoundTriggerCondition *createCompoundTriggerCondition (
+      short op, double delay,
+      vector<ConditionExpression *> *ncmChildConditions, CausalLink *ncmLink,
+      CompositeExecutionObject *parentObject, int depthLevel);
 
-		LinkCondition* createCondition(
-			    TriggerExpression* triggerExpression,
-			    CausalLink* ncmLink,
-			    CompositeExecutionObject* parentObject,
-			    int depthLevel);
+  LinkCondition *createCondition (TriggerExpression *triggerExpression,
+                                  CausalLink *ncmLink,
+                                  CompositeExecutionObject *parentObject,
+                                  int depthLevel);
 
-		LinkAssessmentStatement* createAssessmentStatement(
-			    AssessmentStatement* assessmentStatement,
-			    Bind* bind,
-			    Link* ncmLink,
-			    CompositeExecutionObject* parentObject,
-			    int depthLevel);
+  LinkAssessmentStatement *createAssessmentStatement (
+      AssessmentStatement *assessmentStatement, Bind *bind, Link *ncmLink,
+      CompositeExecutionObject *parentObject, int depthLevel);
 
-		LinkStatement* createStatement(
-			    Statement* statementExpression,
-			    Link* ncmLink,
-			    CompositeExecutionObject* parentObject,
-			    int depthLevel);
+  LinkStatement *createStatement (Statement *statementExpression,
+                                  Link *ncmLink,
+                                  CompositeExecutionObject *parentObject,
+                                  int depthLevel);
 
-		LinkAttributeAssessment* createAttributeAssessment(
-			    AttributeAssessment* attributeAssessment,
-			    Bind* bind,
-			    Link* ncmLink,
-			    CompositeExecutionObject* parentObject,
-			    int depthLevel);
+  LinkAttributeAssessment *createAttributeAssessment (
+      AttributeAssessment *attributeAssessment, Bind *bind, Link *ncmLink,
+      CompositeExecutionObject *parentObject, int depthLevel);
 
-		LinkSimpleAction* createSimpleAction(
-			    SimpleAction* sae,
-			    Bind* bind,
-			    Link* ncmLink,
-			    CompositeExecutionObject* parentObject,
-			    int depthLevel);
+  LinkSimpleAction *createSimpleAction (SimpleAction *sae, Bind *bind,
+                                        Link *ncmLink,
+                                        CompositeExecutionObject *parentObject,
+                                        int depthLevel);
 
-		LinkCompoundAction* createCompoundAction(
-			    short op,
-			    double delay,
-			    vector<Action*>* ncmChildActions,
-			    CausalLink* ncmLink,
-			    CompositeExecutionObject* parentObject,
-			    int depthLevel);
+  LinkCompoundAction *
+  createCompoundAction (short op, double delay,
+                        vector<Action *> *ncmChildActions, CausalLink *ncmLink,
+                        CompositeExecutionObject *parentObject,
+                        int depthLevel);
 
-		LinkTriggerCondition* createSimpleCondition(
-			    SimpleCondition* condition,
-			    Bind* bind,
-			    Link* ncmLink,
-			    CompositeExecutionObject* parentObject,
-			    int depthLevel);
+  LinkTriggerCondition *
+  createSimpleCondition (SimpleCondition *condition, Bind *bind, Link *ncmLink,
+                         CompositeExecutionObject *parentObject,
+                         int depthLevel);
 
-		FormatterEvent* createEvent(
-			    Bind* bind,
-			    Link* ncmLink,
-			    CompositeExecutionObject* parentObject,
-			    int depthLevel);
+  FormatterEvent *createEvent (Bind *bind, Link *ncmLink,
+                               CompositeExecutionObject *parentObject,
+                               int depthLevel);
 
-		double getDelayParameter(
-			    Link* ncmLink, Parameter* connParam, Bind* ncmBind);
+  double getDelayParameter (Link *ncmLink, Parameter *connParam,
+                            Bind *ncmBind);
 
-		string getBindKey(Link* ncmLink, Bind* ncmBind);
-		double compileDelay(Link* ncmLink, string delayObject, Bind* bind);
-  };
+  string getBindKey (Link *ncmLink, Bind *ncmBind);
+  double compileDelay (Link *ncmLink, string delayObject, Bind *bind);
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_EMCONVERTER_END
 #endif /*FORMATTERLINKCONVERTER_H_*/

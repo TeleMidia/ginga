@@ -21,212 +21,270 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	Node::Node(string id) : Entity(id) {
-		typeSet.insert("Node");
-		parentNode = NULL;
-	}
+Node::Node (string id) : Entity (id)
+{
+  typeSet.insert ("Node");
+  parentNode = NULL;
+}
 
-	Node::~Node() {
-		vector<Anchor*>::iterator i;
-		vector<PropertyAnchor*>::iterator j;
+Node::~Node ()
+{
+  vector<Anchor *>::iterator i;
+  vector<PropertyAnchor *>::iterator j;
 
-		parentNode = NULL;
+  parentNode = NULL;
 
-		i = anchorList.begin();
-		while (i != anchorList.end()) {
-			delete *i;
-			++i;
-		}
+  i = anchorList.begin ();
+  while (i != anchorList.end ())
+    {
+      delete *i;
+      ++i;
+    }
 
-		anchorList.clear();
+  anchorList.clear ();
 
-		//properties are inside anchorList as well.
-		originalPAnchors.clear();
-	}
+  // properties are inside anchorList as well.
+  originalPAnchors.clear ();
+}
 
-	bool Node::hasProperty(string propName) {
-		vector<PropertyAnchor*>::iterator i;
+bool
+Node::hasProperty (string propName)
+{
+  vector<PropertyAnchor *>::iterator i;
 
-		i = originalPAnchors.begin();
-		while (i != originalPAnchors.end()) {
-			if ((*i)->getPropertyName() == propName) {
-				return true;
-			}
+  i = originalPAnchors.begin ();
+  while (i != originalPAnchors.end ())
+    {
+      if ((*i)->getPropertyName () == propName)
+        {
+          return true;
+        }
 
-			++i;
-		}
+      ++i;
+    }
 
-		return false;
-	}
+  return false;
+}
 
-	void Node::copyProperties(Node* node) {
-		vector<PropertyAnchor*>* props;
-		vector<PropertyAnchor*>::iterator i;
-		PropertyAnchor* prop;
-		PropertyAnchor* cProp;
+void
+Node::copyProperties (Node *node)
+{
+  vector<PropertyAnchor *> *props;
+  vector<PropertyAnchor *>::iterator i;
+  PropertyAnchor *prop;
+  PropertyAnchor *cProp;
 
-		props = node->getOriginalPropertyAnchors();
+  props = node->getOriginalPropertyAnchors ();
 
-		i = props->begin();
-		while (i != props->end()) {
-			prop = *i;
+  i = props->begin ();
+  while (i != props->end ())
+    {
+      prop = *i;
 
-			if (!hasProperty(prop->getPropertyName())) {
-				cProp = new PropertyAnchor(prop->getPropertyName());
-				cProp->setId(prop->getId());
-				cProp->setPropertyName(prop->getPropertyName());
-				cProp->setPropertyValue(prop->getPropertyValue());
+      if (!hasProperty (prop->getPropertyName ()))
+        {
+          cProp = new PropertyAnchor (prop->getPropertyName ());
+          cProp->setId (prop->getId ());
+          cProp->setPropertyName (prop->getPropertyName ());
+          cProp->setPropertyValue (prop->getPropertyValue ());
 
-				originalPAnchors.push_back(cProp);
-				anchorList.push_back(cProp);
-			}
+          originalPAnchors.push_back (cProp);
+          anchorList.push_back (cProp);
+        }
 
-			++i;
-		}
-	}
+      ++i;
+    }
+}
 
-	void* Node::getParentComposition() {
-		return parentNode;
-	}
+void *
+Node::getParentComposition ()
+{
+  return parentNode;
+}
 
-	vector<Node*>* Node::getPerspective() {
-		vector<Node*> *perspective;
+vector<Node *> *
+Node::getPerspective ()
+{
+  vector<Node *> *perspective;
 
-		if (parentNode == NULL) {
-			perspective = new vector<Node*>;
+  if (parentNode == NULL)
+    {
+      perspective = new vector<Node *>;
+    }
+  else
+    {
+      perspective = ((CompositeNode *)parentNode)->getPerspective ();
+    }
+  perspective->push_back ((Node *)this);
+  return perspective;
+}
 
-		} else {
-			perspective = ((CompositeNode*)parentNode)->getPerspective();
-		}
-		perspective->push_back((Node*)this);
-		return perspective;
-	}
+void
+Node::setParentComposition (void *composition)
+{
+  if (composition == NULL
+      || ((CompositeNode *)composition)->getNode (getId ()) != NULL)
+    {
 
-	void Node::setParentComposition(void* composition) {
-		if (composition == NULL ||
-			    ((CompositeNode*)composition)->getNode(getId()) != NULL) {
+      this->parentNode = (CompositeNode *)composition;
+    }
+}
 
-			this->parentNode = (CompositeNode*)composition;
-		}
-	}
+bool
+Node::addAnchor (int index, Anchor *anchor)
+{
+  int lSize = (int)anchorList.size ();
 
-	bool Node::addAnchor(int index, Anchor *anchor) {
-		int lSize = (int)anchorList.size();
+  // anchor position must be in the correct range and anchor must exist
+  if ((index < 0 || index > lSize) || anchor == NULL)
+    {
+      return false;
+    }
 
-		// anchor position must be in the correct range and anchor must exist
-		if ((index < 0 || index > lSize) || anchor == NULL) {
-			return false;
-		}
+  // anchor id must be unique - conflicts with referredNode anchor ids
+  // can only be solved at runtime, since anchors can be inserted after
+  if (getAnchor (anchor->getId ()) != NULL)
+    {
+      return false;
+    }
 
-		// anchor id must be unique - conflicts with referredNode anchor ids
-		// can only be solved at runtime, since anchors can be inserted after
-		if (getAnchor(anchor->getId()) != NULL) {
-			return false;
-		}
+  if (index == lSize)
+    {
+      anchorList.push_back (anchor);
+    }
+  else
+    {
+      anchorList.insert (anchorList.begin () + index, anchor);
+    }
 
-		if (index == lSize) {
-			anchorList.push_back(anchor);
+  if (anchor->instanceOf ("PropertyAnchor"))
+    {
+      originalPAnchors.push_back (((PropertyAnchor *)anchor)->clone ());
+    }
 
-		} else {
-			anchorList.insert(anchorList.begin() + index, anchor);
-		}
+  return true;
+}
 
-		if (anchor->instanceOf("PropertyAnchor")) {
-			originalPAnchors.push_back(((PropertyAnchor*)anchor)->clone());
-		}
+bool
+Node::addAnchor (Anchor *anchor)
+{
+  return Node::addAnchor (anchorList.size (), anchor);
+}
 
-		return true;
-	}
+Anchor *
+Node::getAnchor (string anchorId)
+{
+  vector<Anchor *>::iterator i;
+  Anchor *anchor;
 
-	bool Node::addAnchor(Anchor* anchor) {
-		return Node::addAnchor(anchorList.size(), anchor);
-	}
+  i = anchorList.begin ();
+  while (i != anchorList.end ())
+    {
+      anchor = *i;
+      if (anchor == NULL)
+        {
+          return NULL;
+        }
+      else if (anchor->getId () != "" && anchor->getId () == anchorId)
+        {
+          return anchor;
+        }
+      ++i;
+    }
+  return NULL;
+}
 
-	Anchor* Node::getAnchor(string anchorId) {
-		vector<Anchor*>::iterator i;
-		Anchor* anchor;
+Anchor *
+Node::getAnchor (int index)
+{
+  int lSize = (int)anchorList.size ();
 
-		i = anchorList.begin();
-		while (i != anchorList.end()) {
-			anchor = *i;
-			if (anchor == NULL) {
-				return NULL;
+  if (index < 0 || index > lSize - 1)
+    {
+      return NULL;
+    }
+  else
+    {
+      return (Anchor *)anchorList[index];
+    }
+}
 
-			} else if (anchor->getId() != "" && anchor->getId() == anchorId) {
-				return anchor;
-			}
-			++i;
-		}
-		return NULL;
-	}
+vector<Anchor *> *
+Node::getAnchors ()
+{
+  return &anchorList;
+}
 
-	Anchor* Node::getAnchor(int index) {
-		int lSize = (int)anchorList.size();
+vector<PropertyAnchor *> *
+Node::getOriginalPropertyAnchors ()
+{
+  return &originalPAnchors;
+}
 
-		if (index < 0 || index > lSize - 1) {
-			return NULL;
+PropertyAnchor *
+Node::getPropertyAnchor (string propertyName)
+{
+  vector<Anchor *>::iterator i;
+  PropertyAnchor *property;
 
-		} else {
-			return (Anchor*)anchorList[index];
-		}
-	}
+  i = anchorList.begin ();
+  while (i != anchorList.end ())
+    {
+      if ((*i)->instanceOf ("PropertyAnchor"))
+        {
+          property = (PropertyAnchor *)(*i);
+          if (property->getPropertyName () == propertyName)
+            {
+              return property;
+            }
+        }
+      ++i;
+    }
 
-	vector<Anchor*>* Node::getAnchors() {
-		return &anchorList;
-	}
+  return NULL;
+}
 
-	vector<PropertyAnchor*>* Node::getOriginalPropertyAnchors() {
-		return &originalPAnchors;
-	}
+int
+Node::getNumAnchors ()
+{
+  return anchorList.size ();
+}
 
-	PropertyAnchor* Node::getPropertyAnchor(string propertyName) {
-		vector<Anchor*>::iterator i;
-		PropertyAnchor* property;
+int
+Node::indexOfAnchor (Anchor *anchor)
+{
+  vector<Anchor *>::iterator i;
+  int n;
+  n = 0;
 
-		i = anchorList.begin();
-		while (i != anchorList.end()) {
-			if ((*i)->instanceOf("PropertyAnchor")) {
-				property = (PropertyAnchor*)(*i);
-				if (property->getPropertyName() == propertyName) {
-					return property;
-				}
-			}
-			++i;
-		}
+  for (i = anchorList.begin (); i != anchorList.end (); ++i)
+    {
+      if (*i == anchor)
+        {
+          return n;
+        }
+      n++;
+    }
 
-		return NULL;
-	}
+  return anchorList.size () + 10;
+}
 
-	int Node::getNumAnchors() {
-		return anchorList.size();
-	}
+bool
+Node::removeAnchor (int index)
+{
+  if (index < 0 || index >= (int)anchorList.size ())
+    {
+      return false;
+    }
 
-	int Node::indexOfAnchor(Anchor *anchor) {
-		vector<Anchor*>::iterator i;
-		int n;
-		n = 0;
+  anchorList.erase (anchorList.begin () + index);
+  return true;
+}
 
-		for (i = anchorList.begin(); i != anchorList.end(); ++i) {
-			if (*i == anchor) {
-				return n;
-			}
-			n++;
-		}
-
-		return anchorList.size() + 10;
-	}
-
-	bool Node::removeAnchor(int index) {
-		if (index < 0 || index >= (int)anchorList.size()) {
-			return false;
-		}
-
-		anchorList.erase(anchorList.begin() + index);
-		return true;
-	}
-
-	bool Node::removeAnchor(Anchor *anchor) {
-		return removeAnchor(indexOfAnchor(anchor));
-	}
+bool
+Node::removeAnchor (Anchor *anchor)
+{
+  return removeAnchor (indexOfAnchor (anchor));
+}
 
 GINGA_NCL_END

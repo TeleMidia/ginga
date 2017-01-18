@@ -20,17 +20,22 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	ValueAssessment::ValueAssessment(string value) : Assessment() {
-		this->value = value;
-		typeSet.insert("ValueAssessment");
-	}
+ValueAssessment::ValueAssessment (string value) : Assessment ()
+{
+  this->value = value;
+  typeSet.insert ("ValueAssessment");
+}
 
-	string ValueAssessment::getValue() {
-		return value;
-	}
+string
+ValueAssessment::getValue ()
+{
+  return value;
+}
 
-	void ValueAssessment::setValue(string newValue) {
-		value = newValue;
-	}
+void
+ValueAssessment::setValue (string newValue)
+{
+  value = newValue;
+}
 
 GINGA_NCL_END

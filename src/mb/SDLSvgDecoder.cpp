@@ -19,76 +19,72 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "SDLSvgDecoder.h"
 
-
 GINGA_MB_BEGIN
 
-   
-    SDLSvgDecoder::SDLSvgDecoder(string filename) {
+SDLSvgDecoder::SDLSvgDecoder (string filename) { filePath.assign (filename); }
 
-        filePath.assign(filename);
-       
-    }
+SDLSvgDecoder::~SDLSvgDecoder () {}
 
-    SDLSvgDecoder::~SDLSvgDecoder() {
+SDL_Surface *
+SDLSvgDecoder::decode (int width, int height)
+{
+  RsvgHandle *h;
+  RsvgDimensionData dim;
+  GError *e = NULL;
+  cairo_surface_t *cairoSurface;
+  cairo_t *cairoState;
 
-    }
+  /* RSVG initiation */
+  h = rsvg_handle_new_from_file (filePath.c_str (), &e);
 
-    SDL_Surface *SDLSvgDecoder::decode(int width, int height) {
-        RsvgHandle* h;
-        RsvgDimensionData dim;
-        GError* e = NULL;
-        cairo_surface_t *cairoSurface;
-        cairo_t *cairoState;
+  rsvg_handle_get_dimensions (h, &dim);
 
-        /* RSVG initiation */
-        h = rsvg_handle_new_from_file(filePath.c_str(), &e);
+  // precisamos ver o quanto vamos escalar... Usando 1920x1080 como pior
+  // caso...
+  // Ver:
+  // http://www.svgopen.org/2009/presentations/62-Rendering_SVG_graphics_with_libSDL_a_crossplatform_multimedia_library/index.pdf
+  double scale = (dim.width > dim.height) ? (double)1920 / dim.width
+                                          : (double)1080 / dim.height;
 
-        rsvg_handle_get_dimensions (h, &dim);
+  int x = floor (dim.width * scale) + 1;
+  int y = floor (dim.height * scale) + 1;
+  int stride = x * 4; // ARGB
 
-        // precisamos ver o quanto vamos escalar... Usando 1920x1080 como pior caso...
-        // Ver: http://www.svgopen.org/2009/presentations/62-Rendering_SVG_graphics_with_libSDL_a_crossplatform_multimedia_library/index.pdf
-        double scale = (dim.width > dim.height)? (double) 1920 / dim.width : (double) 1080 / dim.height;
+  /* Cairo Initiation */
+  uint8_t *image = (uint8_t *)malloc (stride * y); // ARGB uses 4 bytes / pixel
 
-        int x = floor(dim.width * scale) + 1;
-        int y = floor(dim.height * scale) + 1;
-        int stride = x * 4; // ARGB
+  // here the correct would be...
+  cairoSurface = cairo_image_surface_create_for_data (
+      image, CAIRO_FORMAT_ARGB32, x, y, stride);
+  cairoState = cairo_create (cairoSurface);
 
-        /* Cairo Initiation */
-        uint8_t *image = (uint8_t *) malloc (stride * y); // ARGB uses 4 bytes / pixel
+  cairo_scale (cairoState, scale, scale);
 
-        // here the correct would be...
-        cairoSurface = cairo_image_surface_create_for_data (image, CAIRO_FORMAT_ARGB32, x, y, stride);
-        cairoState = cairo_create (cairoSurface);
+  rsvg_handle_render_cairo (h, cairoState);
 
-        cairo_scale(cairoState, scale, scale);
-
-        rsvg_handle_render_cairo (h, cairoState);
-
-
-        // Use the following line for debug purposes
+// Use the following line for debug purposes
 //        cairo_surface_write_to_png (cairoSurface, "/tmp/out.png");
 
-        // Match ARGB32 format masks
+// Match ARGB32 format masks
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-        Uint32 rmask = 0x0000ff00;
-        Uint32 gmask = 0x00ff0000;
-        Uint32 bmask = 0xff000000;
-        Uint32 amask = 0x000000ff;
+  Uint32 rmask = 0x0000ff00;
+  Uint32 gmask = 0x00ff0000;
+  Uint32 bmask = 0xff000000;
+  Uint32 amask = 0x000000ff;
 #else
-        Uint32 rmask = 0x00ff0000;
-        Uint32 gmask = 0x0000ff00;
-        Uint32 bmask = 0x000000ff;
-        Uint32 amask = 0xff000000;
+  Uint32 rmask = 0x00ff0000;
+  Uint32 gmask = 0x0000ff00;
+  Uint32 bmask = 0x000000ff;
+  Uint32 amask = 0xff000000;
 #endif
 
-        SDL_Surface *sdlSurface = SDL_CreateRGBSurfaceFrom ( (void *) image, x, y, 32, stride, rmask, gmask, bmask, amask);
+  SDL_Surface *sdlSurface = SDL_CreateRGBSurfaceFrom (
+      (void *)image, x, y, 32, stride, rmask, gmask, bmask, amask);
 
-        cairo_surface_destroy (cairoSurface);
-        cairo_destroy (cairoState);
+  cairo_surface_destroy (cairoSurface);
+  cairo_destroy (cairoState);
 
-        return sdlSurface;
-    }
-
-
+  return sdlSurface;
+}
 
 GINGA_MB_END

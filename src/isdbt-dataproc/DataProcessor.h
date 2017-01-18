@@ -55,88 +55,87 @@ using namespace ::ginga::dataproc;
 #include "IEPGListener.h"
 using namespace ::ginga::dataproc;
 
-
 #include "IDsmccStreamEventListener.h"
 
 #include "DsmccNPTProcessor.h"
 using namespace ::ginga::dataproc;
 
-
-struct notifyData {
-	IDsmccStreamEventListener* listener;
-	DsmccStreamEvent* se;
+struct notifyData
+{
+  IDsmccStreamEventListener *listener;
+  DsmccStreamEvent *se;
 };
 
 GINGA_DATAPROC_BEGIN
 
-	class DataProcessor : public IFilterListener, public ITunerListener,
-				public IDsmccServiceDomainListener, public Thread {
+class DataProcessor : public IFilterListener,
+                      public ITunerListener,
+                      public IDsmccServiceDomainListener,
+                      public Thread
+{
 
-		private:
-			EPGProcessor* epgProcessor;
-			FilterManager* filterManager;
-			map<unsigned int, DsmccMessageProcessor*> processors;
-			map<string, set<IDsmccStreamEventListener*>*> eventListeners;
-			set<IDsmccObjectListener*> objectListeners;
-			IDsmccServiceDomainListener* sdl;
-			set<unsigned int> processedIds;
-			DsmccNPTProcessor* nptProcessor;
-			vector<ITransportSection*> sections;
-			IDemuxer* demux;
-			IAIT* ait;
-			bool running;
-			bool removeOCFilter;
-			bool nptPrinter;
+private:
+  EPGProcessor *epgProcessor;
+  FilterManager *filterManager;
+  map<unsigned int, DsmccMessageProcessor *> processors;
+  map<string, set<IDsmccStreamEventListener *> *> eventListeners;
+  set<IDsmccObjectListener *> objectListeners;
+  IDsmccServiceDomainListener *sdl;
+  set<unsigned int> processedIds;
+  DsmccNPTProcessor *nptProcessor;
+  vector<ITransportSection *> sections;
+  IDemuxer *demux;
+  IAIT *ait;
+  bool running;
+  bool removeOCFilter;
+  bool nptPrinter;
 
-		public:
-			DataProcessor();
+public:
+  DataProcessor ();
 
-		private:
-			virtual ~DataProcessor();
+private:
+  virtual ~DataProcessor ();
 
-		public:
-			void deleteAIT();
-			void setNptPrinter(bool nptPrinter);
+public:
+  void deleteAIT ();
+  void setNptPrinter (bool nptPrinter);
 
-			bool applicationInfoMounted(IAIT* ait);
-			void serviceDomainMounted(
-					string mountPoint,
-					map<string, string>* names,
-					map<string, string>* paths);
+  bool applicationInfoMounted (IAIT *ait);
+  void serviceDomainMounted (string mountPoint, map<string, string> *names,
+                             map<string, string> *paths);
 
-			void setDemuxer(IDemuxer* demux);
-			void removeOCFilterAfterMount(bool removeIt);
+  void setDemuxer (IDemuxer *demux);
+  void removeOCFilterAfterMount (bool removeIt);
 
-			void setSTCProvider(ISTCProvider* stcProvider);
-			ITimeBaseProvider* getNPTProvider();
+  void setSTCProvider (ISTCProvider *stcProvider);
+  ITimeBaseProvider *getNPTProvider ();
 
-			void createStreamTypeSectionFilter(short streamType);
-			void createPidSectionFilter(int pid);
+  void createStreamTypeSectionFilter (short streamType);
+  void createPidSectionFilter (int pid);
 
-			void addSEListener(
-					string eventType, IDsmccStreamEventListener* listener);
+  void addSEListener (string eventType, IDsmccStreamEventListener *listener);
 
-			void removeSEListener(
-					string eventType, IDsmccStreamEventListener* listener);
+  void removeSEListener (string eventType,
+                         IDsmccStreamEventListener *listener);
 
-			void setServiceDomainListener(IDsmccServiceDomainListener* listener);
-			void addObjectListener(IDsmccObjectListener* listener);
-			void removeObjectListener(IDsmccObjectListener* listener);
+  void setServiceDomainListener (IDsmccServiceDomainListener *listener);
+  void addObjectListener (IDsmccObjectListener *listener);
+  void removeObjectListener (IDsmccObjectListener *listener);
 
-		private:
-			void notifySEListeners(DsmccStreamEvent* se);
-			static void* notifySEListener(void* data);
-			void notifyEitListeners(set<IEventInfo*>* events);
+private:
+  void notifySEListeners (DsmccStreamEvent *se);
+  static void *notifySEListener (void *data);
+  void notifyEitListeners (set<IEventInfo *> *events);
 
-		public:
-			void receiveData(char* buff, unsigned int size){};
-			void receiveSection(ITransportSection* section);
-			void updateChannelStatus(short newStatus, Channel* channel);
-			bool isReady();
+public:
+  void receiveData (char *buff, unsigned int size){};
+  void receiveSection (ITransportSection *section);
+  void updateChannelStatus (short newStatus, Channel *channel);
+  bool isReady ();
 
-		private:
-			void run();
-	};
+private:
+  void run ();
+};
 
 GINGA_DATAPROC_END
 

@@ -27,29 +27,29 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include "ILinkActionListener.h"
 #include "LinkAction.h"
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	class LinkSimpleAction : public LinkAction {
-		protected:
-			FormatterEvent* event;
-			short actionType;
+class LinkSimpleAction : public LinkAction
+{
+protected:
+  FormatterEvent *event;
+  short actionType;
 
-		private:
-			ILinkActionListener* listener;
+private:
+  ILinkActionListener *listener;
 
-		protected:
-			virtual void run();
+protected:
+  virtual void run ();
 
-		public:
-			LinkSimpleAction(FormatterEvent* event, short type);
-			virtual ~LinkSimpleAction();
-			FormatterEvent* getEvent();
-			short getType();
-			void setSimpleActionListener(ILinkActionListener* listener);
-			virtual vector<FormatterEvent*>* getEvents();
-			virtual vector<LinkAction*>* getImplicitRefRoleActions();
-	};
+public:
+  LinkSimpleAction (FormatterEvent *event, short type);
+  virtual ~LinkSimpleAction ();
+  FormatterEvent *getEvent ();
+  short getType ();
+  void setSimpleActionListener (ILinkActionListener *listener);
+  virtual vector<FormatterEvent *> *getEvents ();
+  virtual vector<LinkAction *> *getImplicitRefRoleActions ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_LINKSIMPLEACTION_H_

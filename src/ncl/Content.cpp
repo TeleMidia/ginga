@@ -20,48 +20,59 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	Content::Content(string someType, long someSize) {
-		type = someType;
-		size = someSize;
-		typeSet.insert("Content");
-	}
+Content::Content (string someType, long someSize)
+{
+  type = someType;
+  size = someSize;
+  typeSet.insert ("Content");
+}
 
-	Content::Content() {
-		type = "";
-		size = -1;
-		typeSet.insert("Content");
-	}
+Content::Content ()
+{
+  type = "";
+  size = -1;
+  typeSet.insert ("Content");
+}
 
-	Content::~Content() {
+Content::~Content () {}
 
-	}
+bool
+Content::instanceOf (string s)
+{
+  /*clog << "Content instanceOf for " << s << " with the following set:" <<
+  endl;
+  for(set<string>::iterator it = typeSet.begin(); it!=typeSet.end(); it++) {
+          clog << "[" << *it << "] ";
+  }
+  clog << ((typeSet.find(s) != typeSet.end()) ? "true" : "false") << endl;*/
+  if (typeSet.empty ())
+    return false;
+  else
+    return (typeSet.find (s) != typeSet.end ());
+}
 
-	bool Content::instanceOf(string s) {
-		/*clog << "Content instanceOf for " << s << " with the following set:" << endl;
-		for(set<string>::iterator it = typeSet.begin(); it!=typeSet.end(); it++) {
-			clog << "[" << *it << "] ";
-		}
-		clog << ((typeSet.find(s) != typeSet.end()) ? "true" : "false") << endl;*/
-		if(typeSet.empty())
-			return false;
-		else
-			return (typeSet.find(s) != typeSet.end());
-	}
+long
+Content::getSize ()
+{
+  return size;
+}
 
-	long Content::getSize() {
-		return size;
-	}
+string
+Content::getType ()
+{
+  return type;
+}
 
-	string Content::getType() {
-		return type;
-	}
+void
+Content::setSize (long someSize)
+{
+  size = someSize;
+}
 
-	void Content::setSize(long someSize) {
-		size = someSize;
-	}
-
-	void Content::setType(string someType) {
-		type = someType;
-	}
+void
+Content::setType (string someType)
+{
+  type = someType;
+}
 
 GINGA_NCL_END

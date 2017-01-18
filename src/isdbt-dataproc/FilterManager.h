@@ -25,37 +25,36 @@ using namespace ::ginga::tsparser;
 #include "DsmccModule.h"
 using namespace ::ginga::dataproc;
 
-
 GINGA_DATAPROC_BEGIN
 
-	class FilterManager {
-		private:
-			map<short, SectionFilter*> streamTypeFilters;
-			map<int, SectionFilter*> pidFilters;
-			set<string> processedSections;
-			map<string, map<unsigned int, ITransportSection*>*> sections;
-			map<unsigned int, DsmccModule*>* info;
-			bool reading;
-			unsigned short blockSize;
-			pthread_mutex_t filterMutex;
+class FilterManager
+{
+private:
+  map<short, SectionFilter *> streamTypeFilters;
+  map<int, SectionFilter *> pidFilters;
+  set<string> processedSections;
+  map<string, map<unsigned int, ITransportSection *> *> sections;
+  map<unsigned int, DsmccModule *> *info;
+  bool reading;
+  unsigned short blockSize;
+  pthread_mutex_t filterMutex;
 
-		public:
-			FilterManager();
-			virtual ~FilterManager();
-			ITSFilter* createStreamTypeSectionFilter(
-					short streamType,
-					IDemuxer* demux, IFilterListener* listener);
+public:
+  FilterManager ();
+  virtual ~FilterManager ();
+  ITSFilter *createStreamTypeSectionFilter (short streamType, IDemuxer *demux,
+                                            IFilterListener *listener);
 
-			ITSFilter* createPidSectionFilter(
-					int pid, IDemuxer* demux, IFilterListener* listener);
+  ITSFilter *createPidSectionFilter (int pid, IDemuxer *demux,
+                                     IFilterListener *listener);
 
-			void destroyFilter(IDemuxer* demux, short streamType);
-			void destroyFilter(IDemuxer* demux, ITSFilter* filter);
-			bool processSection(ITransportSection* section);
-			void addProcessedSection(string sectionName);
-			void setInfo(map<unsigned int, DsmccModule*>* info);
-			void setBlockSize(unsigned short size);
-	};
+  void destroyFilter (IDemuxer *demux, short streamType);
+  void destroyFilter (IDemuxer *demux, ITSFilter *filter);
+  bool processSection (ITransportSection *section);
+  void addProcessedSection (string sectionName);
+  void setInfo (map<unsigned int, DsmccModule *> *info);
+  void setBlockSize (unsigned short size);
+};
 
 GINGA_DATAPROC_END
 

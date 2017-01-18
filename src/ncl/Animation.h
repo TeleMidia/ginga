@@ -29,11 +29,11 @@ private:
   string by;
 
 public:
-  Animation();
-  void setDuration(string dur);
-  string getDuration();
-  void setBy(string by);
-  string getBy();
+  Animation ();
+  void setDuration (string dur);
+  string getDuration ();
+  void setBy (string by);
+  string getBy ();
 };
 
 GINGA_NCL_END

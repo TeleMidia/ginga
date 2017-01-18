@@ -36,120 +36,118 @@ using namespace ::ginga::tsparser;
 #include "ITSFilter.h"
 #include "IDemuxer.h"
 
-
-
 GINGA_TSPARSER_BEGIN
 
-	class Demuxer : public IDemuxer {
-		private:
-			Pat* pat;
-			Pmt* newPmt;
-			map<unsigned int, Pmt*> pmts;
-			map<unsigned int, ITSFilter*> pidFilters;
-			map<short, ITSFilter*> stFilters;
-			set<IFrontendFilter*> feFilters;
-			set<IFrontendFilter*> feFiltersToSetup;
-			static vector<Pat*> pats;
-			static unsigned int sectionPid; //debug only
-			static set<unsigned int> knownSectionPids;
-			Tuner* tuner;
+class Demuxer : public IDemuxer
+{
+private:
+  Pat *pat;
+  Pmt *newPmt;
+  map<unsigned int, Pmt *> pmts;
+  map<unsigned int, ITSFilter *> pidFilters;
+  map<short, ITSFilter *> stFilters;
+  set<IFrontendFilter *> feFilters;
+  set<IFrontendFilter *> feFiltersToSetup;
+  static vector<Pat *> pats;
+  static unsigned int sectionPid; // debug only
+  static set<unsigned int> knownSectionPids;
+  Tuner *tuner;
 
-			short debugDest;
-			unsigned int debugPacketCounter;
+  short debugDest;
+  unsigned int debugPacketCounter;
 
-			pthread_mutex_t flagLockUntilSignal;
-			pthread_cond_t flagCondSignal;
+  pthread_mutex_t flagLockUntilSignal;
+  pthread_cond_t flagCondSignal;
 
-			static pthread_mutex_t stlMutex;
+  static pthread_mutex_t stlMutex;
 
-			unsigned char packetSize;
-			bool nptPrinter;
-			int nptPid;
+  unsigned char packetSize;
+  bool nptPrinter;
+  int nptPid;
 
-			string outPipeUri;
-			PipeDescriptor outPipeD;
-			bool outPipeCreated;
+  string outPipeUri;
+  PipeDescriptor outPipeD;
+  bool outPipeCreated;
 
-			list<Buffer*> demuxMe;
+  list<Buffer *> demuxMe;
 
-		public:
-			//defs
-			static const short NB_PID_MAX = 0x1FFF; //8191
-			static const short ERR_CONDITION_SATISFIED = 5;
+public:
+  // defs
+  static const short NB_PID_MAX = 0x1FFF; // 8191
+  static const short ERR_CONDITION_SATISFIED = 5;
 
-		public:
-			Demuxer(Tuner* tuner);
-			virtual ~Demuxer();
+public:
+  Demuxer (Tuner *tuner);
+  virtual ~Demuxer ();
 
-			string createTSUri(string tsOutputUri);
-			bool hasStreamType(short streamType);
-			void printPat();
-			void setNptPrinter(bool nptPrinter);
+  string createTSUri (string tsOutputUri);
+  bool hasStreamType (short streamType);
+  void printPat ();
+  void setNptPrinter (bool nptPrinter);
 
-		private:
-			void createPSI();
-			void clearPSI();
-			void initMaps();
-			void clearMaps();
-			void resetDemuxer();
-			void setDestination(short streamType); //debug purpose only
-			void removeFilter(IFrontendFilter* filter);
-			void setupUnsolvedFilters();
-			bool setupFilter(IFrontendFilter* filter);
-			void demux(ITSPacket* packet);
-			static void* createNullDemuxer(void* ptr);
+private:
+  void createPSI ();
+  void clearPSI ();
+  void initMaps ();
+  void clearMaps ();
+  void resetDemuxer ();
+  void setDestination (short streamType); // debug purpose only
+  void removeFilter (IFrontendFilter *filter);
+  void setupUnsolvedFilters ();
+  bool setupFilter (IFrontendFilter *filter);
+  void demux (ITSPacket *packet);
+  static void *createNullDemuxer (void *ptr);
 
-		public:
-			map<unsigned int, Pmt*>* getProgramsInfo();
-			unsigned int getTSId();
-			Pat* getPat();
-			int getDefaultMainVideoPid();
-			int getDefaultMainAudioPid();
-			int getDefaultMainCarouselPid();
-			void removeFilter(ITSFilter* tsFilter);
-			void addFilter(ITSFilter* tsFilter, int pid, int tid);
-			void addFilter(IFrontendFilter* filter);
+public:
+  map<unsigned int, Pmt *> *getProgramsInfo ();
+  unsigned int getTSId ();
+  Pat *getPat ();
+  int getDefaultMainVideoPid ();
+  int getDefaultMainAudioPid ();
+  int getDefaultMainCarouselPid ();
+  void removeFilter (ITSFilter *tsFilter);
+  void addFilter (ITSFilter *tsFilter, int pid, int tid);
+  void addFilter (IFrontendFilter *filter);
 
-		private:
-			void attachFilter(IFrontendFilter* filter);
-			void createPatFilter(NetworkInterface* ni);
-			void createPmtFilter(NetworkInterface* ni);
+private:
+  void attachFilter (IFrontendFilter *filter);
+  void createPatFilter (NetworkInterface *ni);
+  void createPmtFilter (NetworkInterface *ni);
 
-		public:
-			void receiveSection(
-					char* section, int secLen, IFrontendFilter* filter);
+public:
+  void receiveSection (char *section, int secLen, IFrontendFilter *filter);
 
-			void addPidFilter(unsigned int pid, ITSFilter* filter);
-			void addSectionFilter(unsigned int tid, ITSFilter* filter);
-			void addStreamTypeFilter(short streamType, ITSFilter* filter);
+  void addPidFilter (unsigned int pid, ITSFilter *filter);
+  void addSectionFilter (unsigned int tid, ITSFilter *filter);
+  void addStreamTypeFilter (short streamType, ITSFilter *filter);
 
-		private:
-			void receiveData(char* buff, unsigned int size);
+private:
+  void receiveData (char *buff, unsigned int size);
 
-		public:
-			void processDemuxData();
+public:
+  void processDemuxData ();
 
-		private:
-			void processDemuxData(char* buff, unsigned int size);
+private:
+  void processDemuxData (char *buff, unsigned int size);
 
-			void updateChannelStatus(short newStatus, Channel* channel);
+  void updateChannelStatus (short newStatus, Channel *channel);
 
-		public:
-			static void addPat(Pat* pat);
-			static bool isSectionStream(unsigned int pid);
-			static void setSectionPid(unsigned int pid); //debug only
+public:
+  static void addPat (Pat *pat);
+  static bool isSectionStream (unsigned int pid);
+  static void setSectionPid (unsigned int pid); // debug only
 
-		private:
-			unsigned int hunt(char* buff, unsigned int size);
+private:
+  unsigned int hunt (char *buff, unsigned int size);
 
-		public:
-			short getCaps();
-			bool isReady();
+public:
+  short getCaps ();
+  bool isReady ();
 
-		private:
-			void dataArrived();
-			bool waitData();
-	 };
+private:
+  void dataArrived ();
+  bool waitData ();
+};
 
 GINGA_TSPARSER_END
 

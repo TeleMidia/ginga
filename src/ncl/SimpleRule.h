@@ -23,28 +23,27 @@ using namespace ::ginga::util;
 
 #include "Rule.h"
 
-
 GINGA_NCL_BEGIN
 
-	class SimpleRule : public Rule {
-		private:
-			string attribute;
-			short ruleOperator;
-			string value;
+class SimpleRule : public Rule
+{
+private:
+  string attribute;
+  short ruleOperator;
+  string value;
 
-		public:
-			SimpleRule(string id, string attr, short op,
-				    string val);
+public:
+  SimpleRule (string id, string attr, short op, string val);
 
-			virtual ~SimpleRule(){};
-			string getAttribute();
-			short getOperator();
-			string getValue();
-			void setOperator(short newOp);
-			void setValue(string newValue);
-			string toString();
-			void setAttribute(string someAttribute);
-	};
+  virtual ~SimpleRule (){};
+  string getAttribute ();
+  short getOperator ();
+  string getValue ();
+  void setOperator (short newOp);
+  void setValue (string newValue);
+  string toString ();
+  void setAttribute (string someAttribute);
+};
 
 GINGA_NCL_END
 

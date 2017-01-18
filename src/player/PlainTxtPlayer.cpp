@@ -22,327 +22,385 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
-	PlainTxtPlayer::PlainTxtPlayer(GingaScreenID screenId, string mrl) :
-			TextPlayer(screenId) {
+PlainTxtPlayer::PlainTxtPlayer (GingaScreenID screenId, string mrl)
+    : TextPlayer (screenId)
+{
 
-		Thread::mutexInit(&mutex, false);
-		content = "";
-	}
+  Thread::mutexInit (&mutex, false);
+  content = "";
+}
 
-	PlainTxtPlayer::~PlainTxtPlayer() {
-		Thread::mutexLock(&mutex);
-		if (dm->hasSurface(myScreen, surface)) {
-			/*
-			 * the surface could never be a child of window
-			 * (it gets the widget surface)
-			 */
-			dm->setSurfaceParentWindow(myScreen, surface, 0);
-		}
-		Thread::mutexUnlock(&mutex);
-		Thread::mutexDestroy(&mutex);
-   	}
+PlainTxtPlayer::~PlainTxtPlayer ()
+{
+  Thread::mutexLock (&mutex);
+  if (dm->hasSurface (myScreen, surface))
+    {
+      /*
+       * the surface could never be a child of window
+       * (it gets the widget surface)
+       */
+      dm->setSurfaceParentWindow (myScreen, surface, 0);
+    }
+  Thread::mutexUnlock (&mutex);
+  Thread::mutexDestroy (&mutex);
+}
 
-	void PlainTxtPlayer::setFile(string mrl) {
-		if (mrl == "" || !fileExists(mrl)) {
-			clog << "PlainTxtPlayer::setFile Warning! File not found: '";
-			clog << mrl << "'" << endl;
-			return;
-		}
+void
+PlainTxtPlayer::setFile (string mrl)
+{
+  if (mrl == "" || !fileExists (mrl))
+    {
+      clog << "PlainTxtPlayer::setFile Warning! File not found: '";
+      clog << mrl << "'" << endl;
+      return;
+    }
 
-		if (mrl.length() > 4) {
-			string fileType;
+  if (mrl.length () > 4)
+    {
+      string fileType;
 
-			this->mrl = mrl;
-			fileType = this->mrl.substr(this->mrl.length() - 4, 4);
-			if (fileType != ".txt") {
-				clog << "PlainTxtPlayer::loadFile Warning! Unknown file ";
-				clog << "type for: '" << this->mrl << "'" << endl;
-			}
+      this->mrl = mrl;
+      fileType = this->mrl.substr (this->mrl.length () - 4, 4);
+      if (fileType != ".txt")
+        {
+          clog << "PlainTxtPlayer::loadFile Warning! Unknown file ";
+          clog << "type for: '" << this->mrl << "'" << endl;
+        }
+    }
+  else
+    {
+      clog << "PlainTxtPlayer::loadFile Warning! Unknown extension ";
+      clog << "type for: '" << mrl << "'" << endl;
+    }
+}
 
-		} else {
-			clog << "PlainTxtPlayer::loadFile Warning! Unknown extension ";
-			clog << "type for: '" << mrl << "'" << endl;
-		}
-	}
+void
+PlainTxtPlayer::loadTxt ()
+{
+  ifstream fis;
+  string line, aux;
+  int surfaceW, surfaceH;
 
-	void PlainTxtPlayer::loadTxt() {
-		ifstream fis;
-		string line, aux;
-		int surfaceW, surfaceH;
+  //		if (surface != NULL) {
+  //			surface->clearSurface();
+  //		}
 
-//		if (surface != NULL) {
-//			surface->clearSurface();
-//		}
+  Thread::mutexLock (&mutex);
+  fis.open ((this->mrl).c_str (), ifstream::in);
+  if (!fis.is_open () && (mrl != "" || content == ""))
+    {
+      clog << "PlainTxtPlayer::loadFile Warning! can't open input ";
+      clog << "file: '" << this->mrl << "'" << endl;
+      Thread::mutexUnlock (&mutex);
+      return;
+    }
 
-		Thread::mutexLock(&mutex);
-		fis.open((this->mrl).c_str(), ifstream::in);
-		if (!fis.is_open() && (mrl != "" || content == "")) {
-			clog << "PlainTxtPlayer::loadFile Warning! can't open input ";
-			clog << "file: '" << this->mrl << "'" << endl;
-			Thread::mutexUnlock(&mutex);
-			return;
-		}
+  if (fontColor == NULL)
+    {
+      fontColor = new Color (255, 255, 255, 255);
+    }
 
-		if (fontColor == NULL) {
-			fontColor = new Color(255, 255, 255, 255);
-		}
+  if (surface != 0 && dm->getSurfaceParentWindow (surface) != 0)
+    {
+      if (bgColor != NULL)
+        {
+          // this->surface->setCaps(0);
+          dm->clearSurfaceContent (surface);
+          dm->setWindowBgColor (myScreen, dm->getSurfaceParentWindow (surface),
+                                bgColor->getR (), bgColor->getG (),
+                                bgColor->getB (), bgColor->getAlpha ());
+        }
+      else
+        {
+          GingaWindowID parentWindow = dm->getSurfaceParentWindow (surface);
+          dm->clearWindowContent (myScreen, parentWindow);
+        }
+    }
 
-		if (surface != 0 && dm->getSurfaceParentWindow(surface) != 0) {
-			if (bgColor != NULL) {
-				//this->surface->setCaps(0);
-				dm->clearSurfaceContent(surface);
-				dm->setWindowBgColor(myScreen, dm->getSurfaceParentWindow(surface),
-														bgColor->getR(),
-														bgColor->getG(),
-														bgColor->getB(),
-														bgColor->getAlpha());
+  this->currentLine = 0;
+  this->currentColumn = 0;
 
-			} else {
-				GingaWindowID parentWindow = dm->getSurfaceParentWindow(surface);
-				dm->clearWindowContent(myScreen, parentWindow);
-			}
-		}
+  if (mrl != "" && content == "")
+    {
+      dm->getSurfaceSize (surface, &surfaceW, &surfaceH);
+      while (!fis.eof () && fis.good ()
+             && (currentLine + fontHeight) < surfaceH)
+        {
 
-		this->currentLine = 0;
-		this->currentColumn = 0;
+          getline (fis, line);
+          if (line != "")
+            {
+              if (!drawTextLn (line, currentAlign))
+                {
+                  break;
+                }
+            }
+        }
+    }
+  else if (content != "")
+    {
+      drawTextLn (content, currentAlign);
+    }
 
-		if (mrl != "" && content == "") {
-			dm->getSurfaceSize(surface, &surfaceW, &surfaceH);
-			while (!fis.eof() && fis.good() &&
-					(currentLine + fontHeight) < surfaceH) {
+  if (surface != 0 && dm->getSurfaceParentWindow (surface) != 0)
+    {
+      GingaWindowID parentWin = dm->getSurfaceParentWindow (surface);
+      dm->validateWindow (myScreen, parentWin);
+    }
 
-				getline(fis, line);
-				if (line != "") {
-					if (!drawTextLn(line, currentAlign)) {
-						break;
-					}
-				}
-			}
+  fis.close ();
+  Thread::mutexUnlock (&mutex);
+}
 
-		} else if (content != "") {
-			drawTextLn(content, currentAlign);
-		}
+bool
+PlainTxtPlayer::play ()
+{
+  if (surface != 0)
+    {
+      clog << "PlainTxtPlayer::play ok" << endl;
+      loadTxt ();
+      return Player::play ();
+    }
+  else
+    {
+      clog << "PlainTxtPlayer::play warning" << endl;
+      return false;
+    }
+}
 
-		if (surface != 0 && dm->getSurfaceParentWindow (surface) != 0) {
-			GingaWindowID parentWin = dm->getSurfaceParentWindow(surface);
-			dm->validateWindow(myScreen, parentWin);
-		}
+void
+PlainTxtPlayer::stop ()
+{
+  Player::stop ();
+}
 
-		fis.close();
-		Thread::mutexUnlock(&mutex);
-	}
+void
+PlainTxtPlayer::setContent (string content)
+{
+  Thread::mutexLock (&mutex);
 
-	bool PlainTxtPlayer::play() {
-		if (surface != 0) {
-			clog << "PlainTxtPlayer::play ok" << endl;
-			loadTxt();
-			return Player::play();
+  GingaWindowID parentWindow = dm->getSurfaceParentWindow (surface);
+  if (surface != 0 && parentWindow != 0)
+    {
+      //			surface->clearSurface();
 
-		} else {
-			clog << "PlainTxtPlayer::play warning" << endl;
-			return false;
-		}
-	}
+      if (bgColor != NULL)
+        {
+          // this->surface->setCaps(0);
+          dm->clearSurfaceContent (surface);
+          dm->setWindowBgColor (myScreen, parentWindow, bgColor->getR (),
+                                bgColor->getG (), bgColor->getB (),
+                                bgColor->getAlpha ());
+        }
+      else
+        {
+          dm->clearWindowContent (myScreen, parentWindow);
+        }
+    }
 
-	void PlainTxtPlayer::stop() {
-		Player::stop();
-	}
+  this->currentLine = 0;
+  this->currentColumn = 0;
+  this->content = content;
 
-	void PlainTxtPlayer::setContent(string content) {
-		Thread::mutexLock(&mutex);
+  if (content != "")
+    {
+      drawTextLn (this->content, currentAlign);
+      mrl = "";
+    }
 
-		GingaWindowID parentWindow = dm->getSurfaceParentWindow(surface);
-		if (surface != 0 &&  parentWindow != 0) {
-//			surface->clearSurface();
+  if (surface != 0 && parentWindow != 0)
+    {
+      dm->validateWindow (myScreen, parentWindow);
+    }
 
-			if (bgColor != NULL) {
-				//this->surface->setCaps(0);
-				dm->clearSurfaceContent(surface);
-				dm->setWindowBgColor (myScreen, parentWindow,
-															bgColor->getR(),
-															bgColor->getG(),
-															bgColor->getB(),
-															bgColor->getAlpha());
+  Thread::mutexUnlock (&mutex);
+}
 
-			} else {
-				dm->clearWindowContent(myScreen, parentWindow);
-			}
-		}
+void
+PlainTxtPlayer::setTextAlign (string align)
+{
+  if (align == "left")
+    {
+      currentAlign = IFontProvider::FP_TA_LEFT;
+    }
+  else if (align == "right")
+    {
+      currentAlign = IFontProvider::FP_TA_RIGHT;
+    }
+  else if (align == "center")
+    {
+      currentAlign = IFontProvider::FP_TA_CENTER;
+    }
+}
 
-		this->currentLine = 0;
-		this->currentColumn = 0;
-		this->content = content;
+void
+PlainTxtPlayer::setPropertyValue (string name, string value)
+{
+  Thread::mutexLock (&mutex);
 
-		if (content != "") {
-			drawTextLn(this->content, currentAlign);
-			mrl = "";
-		}
+  vector<string> *params;
+  bool refresh = true;
 
-		if (surface != 0 && parentWindow != 0) {
-			dm->validateWindow(myScreen, parentWindow);
-		}
+  /*
+  clog << "PlainTxtPlayer::setPropertyValue name = '" << name.c_str();
+  clog << "' value = '" << value.c_str() << "'" << endl;
+  */
 
-		Thread::mutexUnlock(&mutex);
-	}
+  if (value == "")
+    {
+      Thread::mutexUnlock (&mutex);
+      return;
+    }
 
-	void PlainTxtPlayer::setTextAlign(string align) {
-		if (align == "left") {
-			currentAlign = IFontProvider::FP_TA_LEFT;
+  if (surface == 0)
+    {
+      refresh = false;
+    }
 
-		} else if (align == "right") {
-			currentAlign = IFontProvider::FP_TA_RIGHT;
+  if (name == "fontColor")
+    {
+      if (fontColor != NULL)
+        {
+          delete fontColor;
+          fontColor = NULL;
+        }
 
-		} else if (align == "center") {
-			currentAlign = IFontProvider::FP_TA_CENTER;
-		}
-	}
+      fontColor = new Color (value);
+    }
+  else if (name == "fontSize" && isNumeric ((void *)(value.c_str ())))
+    {
 
-	void PlainTxtPlayer::setPropertyValue(string name, string value) {
-		Thread::mutexLock(&mutex);
+      setFontSize ((int)(::ginga::util::stof (value)));
+    }
+  else if (name == "fontUri")
+    {
+      setFont (value);
+    }
+  else if (name == "textAlign")
+    {
+      setTextAlign (value);
+    }
+  else if (name == "fontStyle")
+    {
+      string styleName = "text-align";
+      size_t pos = value.find (styleName);
+      string strAlign = "";
+      if (pos != std::string::npos)
+        {
+          strAlign = value.substr (pos + styleName.length () + 1);
+          setTextAlign (strAlign);
+        }
+    }
+  else if ((name == "x-bgColor" || name == "bgColor"))
+    {
+      if (surface != 0)
+        {
+          if (bgColor != NULL)
+            {
+              delete bgColor;
+              bgColor = NULL;
+            }
 
-		vector<string>* params;
-		bool refresh = true;
+          bgColor = new Color (value);
 
-		/*
-		clog << "PlainTxtPlayer::setPropertyValue name = '" << name.c_str();
-		clog << "' value = '" << value.c_str() << "'" << endl;
-		*/
+          GingaWindowID parentWindow = dm->getSurfaceParentWindow (surface);
+          if (parentWindow != 0)
+            {
+              // this->surface->setCaps(0);
+              dm->clearSurfaceContent (surface);
+              dm->setWindowBgColor (myScreen, parentWindow, bgColor->getR (),
+                                    bgColor->getG (), bgColor->getB (),
+                                    bgColor->getAlpha ());
+            }
+        }
+    }
+  else if (name == "x-rgbBgColor" || name == "rgbBgColor")
+    {
+      params = split (value, ",");
+      if (params->size () == 3)
+        {
+          if (surface != 0)
+            {
+              if (bgColor != NULL)
+                {
+                  delete bgColor;
+                  bgColor = NULL;
+                }
 
-		if (value == "") {
-			Thread::mutexUnlock(&mutex);
-			return;
-		}
+              bgColor = new Color ((int)::ginga::util::stof ((*params)[0]),
+                                   (int)::ginga::util::stof ((*params)[1]),
+                                   (int)::ginga::util::stof ((*params)[2]));
 
-		if (surface == 0) {
-			refresh = false;
-		}
+              GingaWindowID parentWindow
+                  = dm->getSurfaceParentWindow (surface);
+              if (parentWindow != 0)
+                {
+                  // this->surface->setCaps(0);
+                  dm->clearSurfaceContent (surface);
+                  dm->setWindowBgColor (myScreen, parentWindow,
+                                        bgColor->getR (), bgColor->getG (),
+                                        bgColor->getB (),
+                                        bgColor->getAlpha ());
+                }
+            }
+        }
+      else
+        {
+          refresh = false;
+        }
 
-		if (name == "fontColor") {
-			if (fontColor != NULL) {
-				delete fontColor;
-				fontColor = NULL;
-			}
+      delete params;
+      params = NULL;
+    }
+  else if (name == "x-rgbFontColor" || name == "rgbFontColor")
+    {
+      params = split (value, ",");
+      if (params->size () == 3)
+        {
+          if (fontColor != NULL)
+            {
+              delete fontColor;
+              fontColor = NULL;
+            }
 
-			fontColor = new Color(value);
+          fontColor = new Color ((int)::ginga::util::stof ((*params)[0]),
+                                 (int)::ginga::util::stof ((*params)[1]),
+                                 (int)::ginga::util::stof ((*params)[2]));
+        }
+      else
+        {
+          refresh = false;
+        }
 
-		} else if (name == "fontSize" && isNumeric((void*)(value.c_str()))) {
+      delete params;
+      params = NULL;
+    }
+  else if (name == "x-content")
+    {
+      Thread::mutexUnlock (&mutex);
+      setContent (value);
+      Thread::mutexLock (&mutex);
+      refresh = false;
+    }
+  else if (name == "x-setFile")
+    {
+      setFile (value);
+      refresh = false;
+    }
 
-			setFontSize((int)(::ginga::util::stof(value)));
+  Player::setPropertyValue (name, value);
+  Thread::mutexUnlock (&mutex);
 
-		} else if (name == "fontUri") {
-			setFont(value);
-
-		} else if (name == "textAlign") {
-			setTextAlign(value);
-
-		} else if (name == "fontStyle") {
-			string styleName = "text-align";
-			size_t pos = value.find(styleName);
-			string strAlign = "";
-			if (pos != std::string::npos) {
-				strAlign = value.substr(pos + styleName.length() + 1);
-				setTextAlign(strAlign);
-			}
-
-		} else if ((name == "x-bgColor" || name == "bgColor")) {
-			if (surface != 0) {
-				if (bgColor != NULL) {
-					delete bgColor;
-					bgColor = NULL;
-				}
-
-				bgColor = new Color(value);
-
-				GingaWindowID parentWindow = dm->getSurfaceParentWindow(surface);
-				if (parentWindow != 0) {
-					//this->surface->setCaps(0);
-					dm->clearSurfaceContent(surface);
-					dm->setWindowBgColor(myScreen, parentWindow,
-															bgColor->getR(),
-															bgColor->getG(),
-															bgColor->getB(),
-															bgColor->getAlpha());
-				}
-			}
-
-		} else if (name == "x-rgbBgColor" || name == "rgbBgColor") {
-			params = split(value, ",");
-			if (params->size() == 3) {
-				if (surface != 0) {
-					if (bgColor != NULL) {
-						delete bgColor;
-						bgColor = NULL;
-					}
-
-					bgColor = new Color(
-							(int)::ginga::util::stof((*params)[0]),
-							(int)::ginga::util::stof((*params)[1]),
-							(int)::ginga::util::stof((*params)[2]));
-
-					GingaWindowID parentWindow = dm->getSurfaceParentWindow(surface);
-					if (parentWindow != 0) {
-						//this->surface->setCaps(0);
-						dm->clearSurfaceContent(surface);
-						dm->setWindowBgColor(myScreen, parentWindow,
-																bgColor->getR(),
-																bgColor->getG(),
-																bgColor->getB(),
-																bgColor->getAlpha());
-					}
-				}
-
-			} else {
-				refresh = false;
-			}
-
-			delete params;
-			params = NULL;
-
-		} else if (name == "x-rgbFontColor" || name == "rgbFontColor") {
-			params = split(value, ",");
-			if (params->size() == 3) {
-				if (fontColor != NULL) {
-					delete fontColor;
-					fontColor = NULL;
-				}
-
-				fontColor = new Color(
-						(int)::ginga::util::stof((*params)[0]),
-						(int)::ginga::util::stof((*params)[1]),
-						(int)::ginga::util::stof((*params)[2]));
-
-			} else {
-				refresh = false;
-			}
-
-			delete params;
-			params = NULL;
-
-		} else if (name == "x-content") {
-			Thread::mutexUnlock(&mutex);
-			setContent(value);
-			Thread::mutexLock(&mutex);
-			refresh = false;
-
-		} else if (name == "x-setFile") {
-			setFile(value);
-			refresh = false;
-		}
-
-		Player::setPropertyValue(name, value);
-		Thread::mutexUnlock(&mutex);
-
-		// refreshing changes
-		if (refresh) {
-			loadTxt();
-			if (notifyContentUpdate) {
-				notifyPlayerListeners(
-						PL_NOTIFY_UPDATECONTENT,
-						"",
-						TYPE_PASSIVEDEVICE,
-						"");
-			}
-		}
-	}
+  // refreshing changes
+  if (refresh)
+    {
+      loadTxt ();
+      if (notifyContentUpdate)
+        {
+          notifyPlayerListeners (PL_NOTIFY_UPDATECONTENT, "",
+                                 TYPE_PASSIVEDEVICE, "");
+        }
+    }
+}
 
 GINGA_PLAYER_END

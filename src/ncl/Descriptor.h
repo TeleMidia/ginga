@@ -37,67 +37,67 @@ using namespace ::ginga::ncl;
 
 #include "GenericDescriptor.h"
 
-
 GINGA_NCL_BEGIN
 
-	class Descriptor : public GenericDescriptor {
-		public:
-			static const short FIT_FILL = 0;
-			static const short FIT_HIDDEN = 1;
-			static const short FIT_MEET = 2;
-			static const short FIT_MEETBEST = 3;
-			static const short FIT_SLICE = 4;
+class Descriptor : public GenericDescriptor
+{
+public:
+  static const short FIT_FILL = 0;
+  static const short FIT_HIDDEN = 1;
+  static const short FIT_MEET = 2;
+  static const short FIT_MEETBEST = 3;
+  static const short FIT_SLICE = 4;
 
-			static const short SCROLL_NONE = 0;
-			static const short SCROLL_HORIZONTAL = 1;
-			static const short SCROLL_VERTICAL = 2;
-			static const short SCROLL_BOTH = 3;
-			static const short SCROLL_AUTOMATIC = 4;
+  static const short SCROLL_NONE = 0;
+  static const short SCROLL_HORIZONTAL = 1;
+  static const short SCROLL_VERTICAL = 2;
+  static const short SCROLL_BOTH = 3;
+  static const short SCROLL_AUTOMATIC = 4;
 
-		protected:
-			double explicitDuration;
-			string presentationTool;
-			bool freeze;
-			long repetitions;
-			LayoutRegion* region;
-			map<string, Parameter*> parameters;
+protected:
+  double explicitDuration;
+  string presentationTool;
+  bool freeze;
+  long repetitions;
+  LayoutRegion *region;
+  map<string, Parameter *> parameters;
 
-			KeyNavigation* keyNavigation;
-			FocusDecoration* focusDecoration;
-			vector<Transition*> inputTransitions;
-			vector<Transition*> outputTransitions;
+  KeyNavigation *keyNavigation;
+  FocusDecoration *focusDecoration;
+  vector<Transition *> inputTransitions;
+  vector<Transition *> outputTransitions;
 
-		public:
-			Descriptor(string id);
-			virtual ~Descriptor();
-			double getExplicitDuration();
-			string getPlayerName();
+public:
+  Descriptor (string id);
+  virtual ~Descriptor ();
+  double getExplicitDuration ();
+  string getPlayerName ();
 
-			LayoutRegion* getRegion();
-			long getRepetitions();
-			bool isFreeze();
-			void setFreeze(bool freeze);
-			void setExplicitDuration(double d);
-			void setPlayerName(string name);
-			void setRegion(LayoutRegion* region);
-			void setRepetitions(long r);
-			void addParameter(Parameter *parameter);
-			vector<Parameter*> *getParameters();
-			Parameter *getParameter(string paramName);
-			void removeParameter(Parameter *parameter);
-			KeyNavigation* getKeyNavigation();
-			void setKeyNavigation(KeyNavigation* keyNav);
-			FocusDecoration* getFocusDecoration();
-			void setFocusDecoration(FocusDecoration* focusDec);
-			vector<Transition*>* getInputTransitions();
-			bool addInputTransition(Transition* transition, int pos);
-			void removeInputTransition(Transition* transition);
-			void removeAllInputTransitions();
-			vector<Transition*>* getOutputTransitions();
-			bool addOutputTransition(Transition* transition, int pos);
-			void removeOutputTransition(Transition* transition);
-			void removeAllOutputTransitions();
-	};
+  LayoutRegion *getRegion ();
+  long getRepetitions ();
+  bool isFreeze ();
+  void setFreeze (bool freeze);
+  void setExplicitDuration (double d);
+  void setPlayerName (string name);
+  void setRegion (LayoutRegion *region);
+  void setRepetitions (long r);
+  void addParameter (Parameter *parameter);
+  vector<Parameter *> *getParameters ();
+  Parameter *getParameter (string paramName);
+  void removeParameter (Parameter *parameter);
+  KeyNavigation *getKeyNavigation ();
+  void setKeyNavigation (KeyNavigation *keyNav);
+  FocusDecoration *getFocusDecoration ();
+  void setFocusDecoration (FocusDecoration *focusDec);
+  vector<Transition *> *getInputTransitions ();
+  bool addInputTransition (Transition *transition, int pos);
+  void removeInputTransition (Transition *transition);
+  void removeAllInputTransitions ();
+  vector<Transition *> *getOutputTransitions ();
+  bool addOutputTransition (Transition *transition, int pos);
+  void removeOutputTransition (Transition *transition);
+  void removeAllOutputTransitions ();
+};
 
 GINGA_NCL_END
 

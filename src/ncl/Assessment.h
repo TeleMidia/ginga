@@ -28,18 +28,17 @@ protected:
   set<string> typeSet;
 
 public:
-  Assessment()
-  {
-    typeSet.insert("Assessment");
-  };
+  Assessment () { typeSet.insert ("Assessment"); };
 
-  virtual ~Assessment()
-  {
-    typeSet.clear();
-  };
+  virtual ~Assessment () { typeSet.clear (); };
 
-  virtual string toString(){ return ""; };
-  virtual bool instanceOf(string type)
+  virtual string
+  toString ()
+  {
+    return "";
+  };
+  virtual bool
+  instanceOf (string type)
   {
     return typeSet.count (type);
   }

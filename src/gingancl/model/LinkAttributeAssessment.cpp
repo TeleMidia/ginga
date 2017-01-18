@@ -20,89 +20,110 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	LinkAttributeAssessment::LinkAttributeAssessment(
-		    FormatterEvent* ev, short attrType) : LinkAssessment() {
+LinkAttributeAssessment::LinkAttributeAssessment (FormatterEvent *ev,
+                                                  short attrType)
+    : LinkAssessment ()
+{
 
-		event = ev;
-		attributeType = attrType;
-		offset = "";
-		typeSet.insert("LinkAttributeAssessment");
-	}
+  event = ev;
+  attributeType = attrType;
+  offset = "";
+  typeSet.insert ("LinkAttributeAssessment");
+}
 
-	FormatterEvent *LinkAttributeAssessment::getEvent() {
-		return event;
-	}
+FormatterEvent *
+LinkAttributeAssessment::getEvent ()
+{
+  return event;
+}
 
-	void LinkAttributeAssessment::setOffset(string offset) {
-		this->offset = offset;
-	}
+void
+LinkAttributeAssessment::setOffset (string offset)
+{
+  this->offset = offset;
+}
 
-	string LinkAttributeAssessment::getOffset() {
-		return offset;
-	}
+string
+LinkAttributeAssessment::getOffset ()
+{
+  return offset;
+}
 
-	void LinkAttributeAssessment::setEvent(FormatterEvent *ev) {
-		event = ev;
-	}
+void
+LinkAttributeAssessment::setEvent (FormatterEvent *ev)
+{
+  event = ev;
+}
 
-	short LinkAttributeAssessment::getAttributeType() {
-		return attributeType;
-	}
+short
+LinkAttributeAssessment::getAttributeType ()
+{
+  return attributeType;
+}
 
-	void LinkAttributeAssessment::setAttributeType(short attrType) {
-		attributeType = attrType;
-	}
+void
+LinkAttributeAssessment::setAttributeType (short attrType)
+{
+  attributeType = attrType;
+}
 
-	string LinkAttributeAssessment::getValue() {
-		string value = "";
+string
+LinkAttributeAssessment::getValue ()
+{
+  string value = "";
 
-		switch (attributeType) {
-			case EventUtil::ATT_NODE_PROPERTY:
-				if (event->instanceOf("AttributionEvent")) {
-					value = getAssessmentWithOffset(
-							((AttributionEvent*)event)->getCurrentValue());
-				}
-				break;
+  switch (attributeType)
+    {
+    case EventUtil::ATT_NODE_PROPERTY:
+      if (event->instanceOf ("AttributionEvent"))
+        {
+          value = getAssessmentWithOffset (
+              ((AttributionEvent *)event)->getCurrentValue ());
+        }
+      break;
 
-			case EventUtil::ATT_STATE:
-				value = FormatterEvent::getStateName(event->getCurrentState());
-				break;
+    case EventUtil::ATT_STATE:
+      value = FormatterEvent::getStateName (event->getCurrentState ());
+      break;
 
-			case EventUtil::ATT_OCCURRENCES:
-				value = getAssessmentWithOffset(itos(event->getOccurrences()));
-				break;
+    case EventUtil::ATT_OCCURRENCES:
+      value = getAssessmentWithOffset (itos (event->getOccurrences ()));
+      break;
 
-			case EventUtil::ATT_REPETITIONS:
-				if (event->instanceOf("PresentationEvent")) {
-					value = getAssessmentWithOffset(itos(
-						    ((PresentationEvent*)event)->getRepetitions()));
-				}
-				break;
-		}
+    case EventUtil::ATT_REPETITIONS:
+      if (event->instanceOf ("PresentationEvent"))
+        {
+          value = getAssessmentWithOffset (
+              itos (((PresentationEvent *)event)->getRepetitions ()));
+        }
+      break;
+    }
 
-		return value;
-	}
+  return value;
+}
 
-	string LinkAttributeAssessment::getAssessmentWithOffset(
-		    string assessmentValue) {
+string
+LinkAttributeAssessment::getAssessmentWithOffset (string assessmentValue)
+{
 
-		if (offset != "" && isNumeric((void*)(assessmentValue.c_str()))) {
-			return itos(::ginga::util::stof(
-				    assessmentValue) + ::ginga::util::stof(offset));
-		}
+  if (offset != "" && isNumeric ((void *)(assessmentValue.c_str ())))
+    {
+      return itos (::ginga::util::stof (assessmentValue)
+                   + ::ginga::util::stof (offset));
+    }
 
-		return assessmentValue;
-		/*
-		if (!(assessmentValue->instanceof Double) || offset == null ||
-			    !(offset instanceof Double)) {
+  return assessmentValue;
+  /*
+  if (!(assessmentValue->instanceof Double) || offset == null ||
+              !(offset instanceof Double)) {
 
-			return assessmentValue;
-		}
-		else {
-			return new Double(((Double)assessmentValue).doubleValue() +
-				    ((Double)offset).doubleValue());
-		}
-		*/
-	}
+          return assessmentValue;
+  }
+  else {
+          return new Double(((Double)assessmentValue).doubleValue() +
+                      ((Double)offset).doubleValue());
+  }
+  */
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END

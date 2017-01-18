@@ -21,64 +21,61 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SystemCompat.h"
 using namespace ::ginga::system;
 
-
 GINGA_SYSTEM_BEGIN
 
+class Thread
+{
+protected:
+  bool isDeleting;
 
-  class Thread {
-  protected:
-    bool isDeleting;
+  pthread_mutex_t threadMutex;
 
-    pthread_mutex_t threadMutex;
+  bool isThreadSleeping;
+  pthread_mutex_t threadFlagMutex;
 
-    bool isThreadSleeping;
-    pthread_mutex_t threadFlagMutex;
+  bool isWaiting;
+  pthread_mutex_t threadFlagMutexLockUntilSignal;
+  pthread_cond_t threadFlagCVLockUntilSignal;
 
-    bool isWaiting;
-    pthread_mutex_t threadFlagMutexLockUntilSignal;
-    pthread_cond_t threadFlagCVLockUntilSignal;
+private:
+  pthread_mutex_t threadIdMutex;
 
-  private:
-    pthread_mutex_t threadIdMutex;
+  pthread_attr_t tattr;
 
-    pthread_attr_t tattr;
+protected:
+  virtual void run () = 0;
 
-  protected:
-    virtual void run()=0;
+private:
+  pthread_t threadId_;
+  static void *function (void *ptr);
 
-  private:
-    pthread_t threadId_;
-    static void* function(void* ptr);
+public:
+  Thread ();
+  virtual ~Thread ();
+  virtual void startThread ();
+  bool sleep (long int seconds);
+  bool mSleep (long int milliseconds);
+  void lock ();
+  void unlock ();
+  void waitForUnlockCondition ();
+  bool unlockConditionSatisfied ();
 
-  public:
-    Thread();
-    virtual ~Thread();
-    virtual void startThread();
-    bool sleep(long int seconds);
-    bool mSleep(long int milliseconds);
-    void lock();
-    void unlock();
-    void waitForUnlockCondition();
-    bool unlockConditionSatisfied();
+  /* Mutex functions*/
+  static void mutexInit (pthread_mutex_t *mutex, bool recursive = false);
+  static void mutexDestroy (pthread_mutex_t *mutex);
+  static void mutexLock (pthread_mutex_t *mutex);
+  static void mutexUnlock (pthread_mutex_t *mutex);
 
-    /* Mutex functions*/
-    static void mutexInit(pthread_mutex_t* mutex, bool recursive=false);
-    static void mutexDestroy(pthread_mutex_t* mutex);
-    static void mutexLock(pthread_mutex_t* mutex);
-    static void mutexUnlock(pthread_mutex_t* mutex);
+  /* Cond functions */
+  static void condInit (pthread_cond_t *cond, const pthread_condattr_t *attr);
 
-    /* Cond functions */
-    static void condInit(
-                         pthread_cond_t* cond, const pthread_condattr_t * attr);
+  static void condDestroy (pthread_cond_t *cond);
+  static void condWait (pthread_cond_t *cond, pthread_mutex_t *mutex);
+  static void condSignal (pthread_cond_t *cond);
 
-    static void condDestroy(pthread_cond_t* cond);
-    static void condWait(pthread_cond_t* cond, pthread_mutex_t* mutex);
-    static void condSignal(pthread_cond_t* cond);
-
-    /* Create functions */
-    static void startNewThread(void* (*funcion) (void*), void* ptr);
-
-  };
+  /* Create functions */
+  static void startNewThread (void *(*funcion) (void *), void *ptr);
+};
 
 GINGA_SYSTEM_END
 

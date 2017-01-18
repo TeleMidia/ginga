@@ -29,20 +29,20 @@ using namespace ::ginga::ncl;
 
 #include "AnchorEvent.h"
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
 
-  class SelectionEvent : public AnchorEvent {
-	private:
-		int selectionCode;
+class SelectionEvent : public AnchorEvent
+{
+private:
+  int selectionCode;
 
-	public:
-		SelectionEvent(string id, void* executionObject, ContentAnchor* anchor);
-		virtual ~SelectionEvent();
-		bool start();
-		int getSelectionCode();
-		void setSelectionCode(string codeStr);
-  };
+public:
+  SelectionEvent (string id, void *executionObject, ContentAnchor *anchor);
+  virtual ~SelectionEvent ();
+  bool start ();
+  int getSelectionCode ();
+  void setSelectionCode (string codeStr);
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END
 #endif //_SELECTIONEVENT_H_

@@ -24,24 +24,24 @@ using namespace ::ginga::system;
 #include "DsmccModule.h"
 #include "DsmccMessageHeader.h"
 
-
 GINGA_DATAPROC_BEGIN
 
-	class DsmccDownloadDataBlock {
-		private:
-			unsigned int moduleId;
-			unsigned int moduleVersion;
-			DsmccMessageHeader* header;
+class DsmccDownloadDataBlock
+{
+private:
+  unsigned int moduleId;
+  unsigned int moduleVersion;
+  DsmccMessageHeader *header;
 
-		public:
-			DsmccDownloadDataBlock(DsmccMessageHeader* message);
-			virtual ~DsmccDownloadDataBlock();
+public:
+  DsmccDownloadDataBlock (DsmccMessageHeader *message);
+  virtual ~DsmccDownloadDataBlock ();
 
-			int processDataBlock(map<unsigned int, DsmccModule*>* mods);
-			unsigned int getModuleId();
-			unsigned int getModuleVersion();
-			void print();
-	};
+  int processDataBlock (map<unsigned int, DsmccModule *> *mods);
+  unsigned int getModuleId ();
+  unsigned int getModuleVersion ();
+  void print ();
+};
 
 GINGA_DATAPROC_END
 

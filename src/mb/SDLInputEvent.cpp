@@ -23,252 +23,302 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
+const string SDLInputEvent::ET_WAKEUP = "GINGA_WAKEUP";
+const string SDLInputEvent::ET_INPUTEVENT = "GINGA_INPUTEVENT";
+const string SDLInputEvent::ET_USEREVENT = "GINGA_USEREVENT";
 
-	const string SDLInputEvent::ET_WAKEUP     = "GINGA_WAKEUP";
-	const string SDLInputEvent::ET_INPUTEVENT = "GINGA_INPUTEVENT";
-	const string SDLInputEvent::ET_USEREVENT  = "GINGA_USEREVENT";
+SDLInputEvent::SDLInputEvent (SDL_Event event)
+{
+  this->event = event;
 
-	SDLInputEvent::SDLInputEvent(SDL_Event event) {
-		this->event = event;
+  x = 0;
+  y = 0;
+  capsOn = false;
+  shiftOn = false;
+}
 
-		x       = 0;
-		y       = 0;
-		capsOn  = false;
-		shiftOn = false;
-	}
+SDLInputEvent::SDLInputEvent (const int keyCode)
+{
+  event.type = SDL_KEYDOWN;
+  event.key.type = SDL_KEYDOWN;
+  event.key.state = SDL_PRESSED;
+  event.key.repeat = 0;
+  event.key.keysym.sym = keyCode;
 
-	SDLInputEvent::SDLInputEvent(const int keyCode) {
-		event.type           = SDL_KEYDOWN;
-		event.key.type       = SDL_KEYDOWN;
-		event.key.state      = SDL_PRESSED;
-		event.key.repeat     = 0;
-		event.key.keysym.sym = keyCode;
+  x = 0;
+  y = 0;
+}
 
-		x = 0;
-		y = 0;
-	}
+SDLInputEvent::SDLInputEvent (int type, void *data)
+{
+  event.type = SDL_USEREVENT;
+  event.user.code = type;
+  event.user.data1 = (void *)(ET_USEREVENT.c_str ());
+  event.user.data2 = data;
 
-	SDLInputEvent::SDLInputEvent(int type, void* data) {
-		event.type       = SDL_USEREVENT;
-		event.user.code  = type;
-		event.user.data1 = (void*)(ET_USEREVENT.c_str());
-		event.user.data2 = data;
+  x = 0;
+  y = 0;
+}
 
-		x = 0;
-		y = 0;
-	}
+SDLInputEvent::~SDLInputEvent () {}
 
-	SDLInputEvent::~SDLInputEvent() {
+void
+SDLInputEvent::setModifiers (bool capsOn, bool shiftOn)
+{
+  this->capsOn = capsOn;
+  this->shiftOn = shiftOn;
+}
 
-	}
+void
+SDLInputEvent::clearContent ()
+{
+}
 
-	void SDLInputEvent::setModifiers(bool capsOn, bool shiftOn) {
-		this->capsOn  = capsOn;
-		this->shiftOn = shiftOn;
-	}
+void *
+SDLInputEvent::getContent ()
+{
+  return &event;
+}
 
-	void SDLInputEvent::clearContent() {
+void
+SDLInputEvent::setKeyCode (GingaScreenID screenId, const int keyCode)
+{
+  int sdlCode;
 
-	}
+  sdlCode = ScreenManagerFactory::getInstance ()->fromGingaToMB (screenId,
+                                                                 keyCode);
 
-	void* SDLInputEvent::getContent() {
-		return &event;
-	}
+  if (event.type == SDL_USEREVENT)
+    {
+      event.user.code = sdlCode;
+    }
+  else if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
+    {
+      event.key.keysym.sym = sdlCode;
+    }
+}
 
-	void SDLInputEvent::setKeyCode(GingaScreenID screenId, const int keyCode) {
-		int sdlCode;
+const int
+SDLInputEvent::getKeyCode (GingaScreenID screenId)
+{
+  int gingaValue;
+  int sdlValue;
 
-		sdlCode = ScreenManagerFactory::getInstance()->fromGingaToMB(
-				screenId, keyCode);
+  if (event.type == SDL_FINGERUP || event.type == SDL_MOUSEBUTTONUP)
+    {
 
-		if (event.type == SDL_USEREVENT) {
-			event.user.code = sdlCode;
+      return CodeMap::KEY_TAP;
+    }
 
-		} else if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
-			event.key.keysym.sym = sdlCode;
-		}
-	}
+  if (event.type == SDL_USEREVENT)
+    {
+      clog << "SDLInputEvent::getKeyCode user event" << endl;
+      sdlValue = event.user.code;
+    }
+  else if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
+    {
+      sdlValue = event.key.keysym.sym;
+      clog << "SDLInputEvent::getKeyCode key pressed event sdlValue = '";
+      clog << sdlValue << "'" << endl;
+    }
+  else
+    {
+      clog << "SDLInputEvent::getKeyCode unknown event type.";
+      clog << "Returning KEY_NULL" << endl;
+      return CodeMap::KEY_NULL;
+      ;
+    }
 
-	const int SDLInputEvent::getKeyCode(GingaScreenID screenId) {
-		int gingaValue;
-		int sdlValue;
+  gingaValue = ScreenManagerFactory::getInstance ()->fromMBToGinga (screenId,
+                                                                    sdlValue);
 
-		if (event.type == SDL_FINGERUP ||
-				event.type == SDL_MOUSEBUTTONUP) {
+  if (gingaValue >= CodeMap::KEY_SMALL_A && gingaValue <= CodeMap::KEY_SMALL_Z
+      && ((capsOn && !shiftOn) || (!capsOn && shiftOn)))
+    {
 
-			return CodeMap::KEY_TAP;
-		}
+      gingaValue = ScreenManagerFactory::getInstance ()->fromMBToGinga (
+          screenId, sdlValue + 5000);
+    }
 
-		if (event.type == SDL_USEREVENT) {
-			clog << "SDLInputEvent::getKeyCode user event" << endl;
-			sdlValue = event.user.code;
+  // Mapping between keyboard and remote control
+  if (gingaValue == CodeMap::KEY_F1)
+    {
+      gingaValue = CodeMap::KEY_RED;
+    }
+  else if (gingaValue == CodeMap::KEY_F2)
+    {
+      gingaValue = CodeMap::KEY_GREEN;
+    }
+  else if (gingaValue == CodeMap::KEY_F3)
+    {
+      gingaValue = CodeMap::KEY_YELLOW;
+    }
+  else if (gingaValue == CodeMap::KEY_F4)
+    {
+      gingaValue = CodeMap::KEY_BLUE;
+    }
+  else if (gingaValue == CodeMap::KEY_F5)
+    {
+      gingaValue = CodeMap::KEY_MENU;
+    }
+  else if (gingaValue == CodeMap::KEY_F6)
+    {
+      gingaValue = CodeMap::KEY_INFO;
+    }
+  else if (gingaValue == CodeMap::KEY_F7)
+    {
+      gingaValue = CodeMap::KEY_EPG;
+    }
+  else if (gingaValue == CodeMap::KEY_PLUS_SIGN)
+    {
+      gingaValue = CodeMap::KEY_VOLUME_UP;
+    }
+  else if (gingaValue == CodeMap::KEY_MINUS_SIGN)
+    {
+      gingaValue = CodeMap::KEY_VOLUME_DOWN;
+    }
+  else if (gingaValue == CodeMap::KEY_PAGE_UP)
+    {
+      gingaValue = CodeMap::KEY_CHANNEL_UP;
+    }
+  else if (gingaValue == CodeMap::KEY_PAGE_DOWN)
+    {
+      gingaValue = CodeMap::KEY_CHANNEL_DOWN;
+    }
+  else if (gingaValue == CodeMap::KEY_BACKSPACE)
+    {
+      gingaValue = CodeMap::KEY_BACK;
+    }
+  else if (gingaValue == CodeMap::KEY_ESCAPE)
+    {
+      gingaValue = CodeMap::KEY_EXIT;
+    }
 
-		} else if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
-			sdlValue = event.key.keysym.sym;
-			clog << "SDLInputEvent::getKeyCode key pressed event sdlValue = '";
-			clog << sdlValue << "'" << endl;
+  return gingaValue;
+}
 
-		} else {
-			clog << "SDLInputEvent::getKeyCode unknown event type.";
-			clog << "Returning KEY_NULL" << endl;
-			return CodeMap::KEY_NULL;;
-		}
+void *
+SDLInputEvent::getApplicationData ()
+{
+  if (isApplicationType ())
+    {
+      return event.user.data2;
+    }
 
-		gingaValue = ScreenManagerFactory::getInstance()->fromMBToGinga(
-				screenId, sdlValue);
+  return NULL;
+}
 
-		if (gingaValue >= CodeMap::KEY_SMALL_A &&
-				gingaValue <= CodeMap::KEY_SMALL_Z &&
-				((capsOn && !shiftOn) || (!capsOn && shiftOn))) {
+unsigned int
+SDLInputEvent::getType ()
+{
+  unsigned int result = CodeMap::KEY_NULL;
 
-			gingaValue = ScreenManagerFactory::getInstance()->fromMBToGinga(
-					screenId, sdlValue + 5000);
-		}
+  if (event.type == SDL_USEREVENT)
+    {
+      result = event.user.code;
+    }
+  else
+    {
+      result = event.type;
+    }
 
-		//Mapping between keyboard and remote control
-		if (gingaValue == CodeMap::KEY_F1) {
-			gingaValue = CodeMap::KEY_RED;
+  return result;
+}
 
-		} else if (gingaValue == CodeMap::KEY_F2) {
-			gingaValue = CodeMap::KEY_GREEN;
+bool
+SDLInputEvent::isButtonPressType ()
+{
+  if (event.type == SDL_FINGERUP || event.type == SDL_MOUSEBUTTONUP
+      || event.type == SDL_FINGERDOWN || event.type == SDL_MOUSEBUTTONDOWN)
+    {
 
-		} else if (gingaValue == CodeMap::KEY_F3) {
-			gingaValue = CodeMap::KEY_YELLOW;
+      return true;
+    }
 
-		} else if (gingaValue == CodeMap::KEY_F4) {
-			gingaValue = CodeMap::KEY_BLUE;
+  return false;
+}
 
-		} else if (gingaValue == CodeMap::KEY_F5) {
-			gingaValue = CodeMap::KEY_MENU;
+bool
+SDLInputEvent::isMotionType ()
+{
+  if (event.type == SDL_MOUSEMOTION || event.type == SDL_FINGERMOTION)
+    {
 
-		} else if (gingaValue == CodeMap::KEY_F6) {
-			gingaValue = CodeMap::KEY_INFO;
+      return true;
+    }
+  return false;
+}
 
-		} else if (gingaValue == CodeMap::KEY_F7) {
-			gingaValue = CodeMap::KEY_EPG;
+bool
+SDLInputEvent::isPressedType ()
+{
+  if (event.type == SDL_KEYDOWN)
+    {
+      return true;
+    }
+  return false;
+}
 
-		} else if (gingaValue == CodeMap::KEY_PLUS_SIGN) {
-			gingaValue = CodeMap::KEY_VOLUME_UP;
+bool
+SDLInputEvent::isKeyType ()
+{
+  if (event.type == SDL_KEYUP || event.type == SDL_KEYDOWN)
+    {
+      return true;
+    }
+  return false;
+}
 
-		} else if (gingaValue == CodeMap::KEY_MINUS_SIGN) {
-			gingaValue = CodeMap::KEY_VOLUME_DOWN;
+bool
+SDLInputEvent::isApplicationType ()
+{
+  if (event.type == SDL_USEREVENT && event.user.data1 != NULL
+      && event.user.data2 != NULL)
+    {
 
-		} else if (gingaValue == CodeMap::KEY_PAGE_UP) {
-			gingaValue = CodeMap::KEY_CHANNEL_UP;
+      if (strcmp ((char *)(event.user.data1), ET_USEREVENT.c_str ()) == 0)
+        {
 
-		} else if (gingaValue == CodeMap::KEY_PAGE_DOWN) {
-			gingaValue = CodeMap::KEY_CHANNEL_DOWN;
+          return true;
+        }
+    }
 
-		} else if (gingaValue == CodeMap::KEY_BACKSPACE) {
-			gingaValue = CodeMap::KEY_BACK;
+  return false;
+}
 
-		} else if (gingaValue == CodeMap::KEY_ESCAPE) {
-			gingaValue = CodeMap::KEY_EXIT;
-		}
+void
+SDLInputEvent::setAxisValue (int x, int y, int z)
+{
+  this->x = x;
+  this->y = y;
+}
 
-		return gingaValue;
-	}
+void
+SDLInputEvent::getAxisValue (int *x, int *y, int *z)
+{
+  *x = 0;
+  *y = 0;
 
-	void* SDLInputEvent::getApplicationData() {
-		if (isApplicationType()) {
-			return event.user.data2;
-		}
+  switch (event.type)
+    {
+    case SDL_MOUSEMOTION:
+      *x = event.motion.x;
+      *y = event.motion.y;
+      break;
 
-		return NULL;
-	}
+    case SDL_MOUSEBUTTONUP:
+    case SDL_MOUSEBUTTONDOWN:
+      *x = event.button.x;
+      *y = event.button.y;
+      break;
 
-	unsigned int SDLInputEvent::getType() {
-		unsigned int result = CodeMap::KEY_NULL;
-
-		if (event.type == SDL_USEREVENT) {
-			result = event.user.code;
-
-		} else {
-			result = event.type;
-		}
-
-		return result;
-	}
-
-	bool SDLInputEvent::isButtonPressType() {
-		if (event.type == SDL_FINGERUP ||
-				event.type == SDL_MOUSEBUTTONUP ||
-				event.type == SDL_FINGERDOWN ||
-				event.type == SDL_MOUSEBUTTONDOWN) {
-
-			return true;
-		}
-
-		return false;
-	}
-
-	bool SDLInputEvent::isMotionType() {
-		if (event.type == SDL_MOUSEMOTION ||
-				event.type == SDL_FINGERMOTION) {
-
-			return true;
-		}
-		return false;
-	}
-
-	bool SDLInputEvent::isPressedType() {
-		if (event.type == SDL_KEYDOWN) {
-			return true;
-		}
-		return false;
-	}
-
-	bool SDLInputEvent::isKeyType() {
-		if (event.type == SDL_KEYUP || event.type == SDL_KEYDOWN) {
-			return true;
-		}
-		return false;
-	}
-
-	bool SDLInputEvent::isApplicationType() {
-		if (event.type == SDL_USEREVENT &&
-				event.user.data1 != NULL &&
-				event.user.data2 != NULL) {
-
-			if (strcmp(
-					(char*)(event.user.data1),
-					ET_USEREVENT.c_str()) == 0) {
-
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	void SDLInputEvent::setAxisValue(int x, int y, int z) {
-		this->x = x;
-		this->y = y;
-	}
-
-	void SDLInputEvent::getAxisValue(int* x, int* y, int* z) {
-		*x = 0;
-		*y = 0;
-
-		switch (event.type) {
-			case SDL_MOUSEMOTION:
-				*x = event.motion.x;
-				*y = event.motion.y;
-				break;
-
-			case SDL_MOUSEBUTTONUP:
-			case SDL_MOUSEBUTTONDOWN:
-				*x = event.button.x;
-				*y = event.button.y;
-				break;
-
-			case SDL_FINGERUP:
-			case SDL_FINGERDOWN:
-			case SDL_FINGERMOTION:
-				*x = event.tfinger.x;
-				*y = event.tfinger.y;
-				break;
-		}
-	}
+    case SDL_FINGERUP:
+    case SDL_FINGERDOWN:
+    case SDL_FINGERMOTION:
+      *x = event.tfinger.x;
+      *y = event.tfinger.y;
+      break;
+    }
+}
 
 GINGA_MB_END

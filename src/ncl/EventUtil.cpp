@@ -20,146 +20,181 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	short EventUtil::getTypeCode(string typeName) {
-		if (typeName == "presentation") {
-			return EventUtil::EVT_PRESENTATION;
+short
+EventUtil::getTypeCode (string typeName)
+{
+  if (typeName == "presentation")
+    {
+      return EventUtil::EVT_PRESENTATION;
+    }
+  else if (typeName == "selection")
+    {
+      return EventUtil::EVT_SELECTION;
+    }
+  else if (typeName == "attribution")
+    {
+      return EventUtil::EVT_ATTRIBUTION;
+    }
+  else if (typeName == "composition")
+    {
+      return EventUtil::EVT_COMPOSITION;
+    }
 
-		} else if (typeName == "selection") {
-			return EventUtil::EVT_SELECTION;
+  return EventUtil::EVT_PRESENTATION;
+}
 
-		} else if (typeName == "attribution") {
-			return EventUtil::EVT_ATTRIBUTION;
+string
+EventUtil::getTypeName (short type)
+{
+  switch (type)
+    {
+    case EventUtil::EVT_PRESENTATION:
+      return "presentation";
 
-		} else if(typeName == "composition") {
-			return EventUtil::EVT_COMPOSITION;
-		}
+    case EventUtil::EVT_SELECTION:
+      return "selection";
 
-		return EventUtil::EVT_PRESENTATION;
-	}
+    case EventUtil::EVT_ATTRIBUTION:
+      return "attribution";
 
-	string EventUtil::getTypeName(short type) {
-		switch (type) {
-			case EventUtil::EVT_PRESENTATION:
-				return "presentation";
+    case EventUtil::EVT_COMPOSITION:
+      return "composition";
 
-			case EventUtil::EVT_SELECTION:
-				return "selection";
+    default:
+      return "";
+    }
+}
 
-			case EventUtil::EVT_ATTRIBUTION:
-				return "attribution";
+short
+EventUtil::getStateCode (string stateName)
+{
+  if (stateName == "occurring")
+    {
+      return EventUtil::ST_OCCURRING;
+    }
+  else if (stateName == "paused")
+    {
+      return EventUtil::ST_PAUSED;
+    }
 
-			case EventUtil::EVT_COMPOSITION:
-				return "composition";
+  // "sleeping"
+  return EventUtil::ST_SLEEPING;
+}
 
-			default:
-				return "";
-		}
-	}
+string
+EventUtil::getStateName (short state)
+{
+  switch (state)
+    {
+    case EventUtil::ST_OCCURRING:
+      return "occurring";
 
-	short EventUtil::getStateCode(string stateName) {
-		if (stateName == "occurring") {
-			return EventUtil::ST_OCCURRING;
+    case EventUtil::ST_PAUSED:
+      return "paused";
 
-		} else if (stateName == "paused") {
-			return EventUtil::ST_PAUSED;
-		}
+    case EventUtil::ST_SLEEPING:
+      return "sleeping";
 
-		// "sleeping"
-		return EventUtil::ST_SLEEPING;
-	}
+    default:
+      return "";
+    }
+}
 
-	string EventUtil::getStateName(short state) {
-		switch (state) {
-			case EventUtil::ST_OCCURRING:
-				return "occurring";
+string
+EventUtil::getTransitionName (short transition)
+{
+  switch (transition)
+    {
+    case EventUtil::TR_STARTS:
+      return "starts";
 
-			case EventUtil::ST_PAUSED:
-				return "paused";
+    case EventUtil::TR_STOPS:
+      return "stops";
 
-			case EventUtil::ST_SLEEPING:
-				return "sleeping";
+    case EventUtil::TR_PAUSES:
+      return "pauses";
 
-			default:
-				return "";
-		}
-	}
+    case EventUtil::TR_RESUMES:
+      return "resumes";
 
-	string EventUtil::getTransitionName(short transition) {
-		switch (transition) {
-			case EventUtil::TR_STARTS:
-				return "starts";
+    case EventUtil::TR_ABORTS:
+      return "aborts";
 
-			case EventUtil::TR_STOPS:
-				return "stops";
+    default:
+      return "";
+    }
+}
 
-			case EventUtil::TR_PAUSES:
-				return "pauses";
+short
+EventUtil::getTransitionCode (string transition)
+{
+  if (transition == "starts")
+    {
+      return EventUtil::TR_STARTS;
+    }
+  else if (transition == "stops")
+    {
+      return EventUtil::TR_STOPS;
+    }
+  else if (transition == "pauses")
+    {
+      return EventUtil::TR_PAUSES;
+    }
+  else if (transition == "resumes")
+    {
+      return EventUtil::TR_RESUMES;
+    }
+  else if (transition == "aborts")
+    {
+      return EventUtil::TR_ABORTS;
+    }
 
-			case EventUtil::TR_RESUMES:
-				return "resumes";
+  return -1;
+}
 
-			case EventUtil::TR_ABORTS:
-				return "aborts";
+short
+EventUtil::getAttributeTypeCode (string attTypeName)
+{
+  if (attTypeName == "occurrences")
+    {
+      return EventUtil::ATT_OCCURRENCES;
+    }
+  else if (attTypeName == "nodeProperty")
+    {
+      return EventUtil::ATT_NODE_PROPERTY;
+    }
+  else if (attTypeName == "repetitions")
+    {
+      return EventUtil::ATT_REPETITIONS;
+    }
+  else if (attTypeName == "state")
+    {
+      return EventUtil::ATT_STATE;
+    }
 
-			default:
-				return "";
-		}
-	}
+  return -1;
+}
 
-	short EventUtil::getTransitionCode(string transition) {
-		if (transition == "starts") {
-			return EventUtil::TR_STARTS;
+string
+EventUtil::getAttributeTypeName (short type)
+{
+  switch (type)
+    {
+    case EventUtil::ATT_OCCURRENCES:
+      return "occurrences";
 
-		} else if (transition == "stops") {
-			return EventUtil::TR_STOPS;
+    case EventUtil::ATT_NODE_PROPERTY:
+      return "nodeProperty";
 
-		} else if (transition == "pauses") {
-			return EventUtil::TR_PAUSES;
+    case EventUtil::ATT_REPETITIONS:
+      return "repetitions";
 
-		} else if (transition == "resumes") {
-			return EventUtil::TR_RESUMES;
+    case EventUtil::ATT_STATE:
+      return "state";
 
-		} else if (transition == "aborts") {
-			return EventUtil::TR_ABORTS;
-		}
-
-		return -1;
-	}
-
-	short EventUtil::getAttributeTypeCode(string attTypeName) {
-		if (attTypeName == "occurrences") {
-			return EventUtil::ATT_OCCURRENCES;
-
-		} else if (attTypeName == "nodeProperty") {
-			return EventUtil::ATT_NODE_PROPERTY;
-
-		} else if (attTypeName == "repetitions") {
-			return EventUtil::ATT_REPETITIONS;
-
-		} else if (attTypeName == "state") {
-				return EventUtil::ATT_STATE;
-		}
-
-		return -1;
-	}
-
-	string EventUtil::getAttributeTypeName(short type) {
-		switch(type) {
-			case EventUtil::ATT_OCCURRENCES:
-				return "occurrences";
-
-			case EventUtil::ATT_NODE_PROPERTY:
-				return "nodeProperty";
-
-			case EventUtil::ATT_REPETITIONS:
-				return "repetitions";
-
-			case EventUtil::ATT_STATE:
-				return "state";
-
-			default:
-				return "nodeProperty";
-		}
-	}
+    default:
+      return "nodeProperty";
+    }
+}
 
 GINGA_NCL_END

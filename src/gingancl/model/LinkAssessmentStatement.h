@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _LINKASSESSMENTSTATEMENT_H_
 #define _LINKASSESSMENTSTATEMENT_H_
 
-
 #include "FormatterEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
@@ -31,29 +30,30 @@ using namespace ::ginga::ncl;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	class LinkAssessmentStatement : public LinkStatement {
-		protected:
-			short comparator;
-			LinkAssessment* otherAssessment;
+class LinkAssessmentStatement : public LinkStatement
+{
+protected:
+  short comparator;
+  LinkAssessment *otherAssessment;
 
-		private:
-			LinkAssessment *mainAssessment;
+private:
+  LinkAssessment *mainAssessment;
 
-		public:
-			LinkAssessmentStatement(short comparator,
-				    LinkAttributeAssessment *mainAssessment,
-				    LinkAssessment *otherAssessment);
+public:
+  LinkAssessmentStatement (short comparator,
+                           LinkAttributeAssessment *mainAssessment,
+                           LinkAssessment *otherAssessment);
 
-			virtual ~LinkAssessmentStatement();
-			vector<FormatterEvent*> *getEvents();
-			short getComparator();
-			void setComparator(short comp);
-			LinkAssessment *getMainAssessment();
-			void setMainAssessment(LinkAssessment *assessment);
-			LinkAssessment* getOtherAssessment();
-			void setOtherAssessment(LinkAssessment* assessment);
-			virtual bool evaluate();
-	};
+  virtual ~LinkAssessmentStatement ();
+  vector<FormatterEvent *> *getEvents ();
+  short getComparator ();
+  void setComparator (short comp);
+  LinkAssessment *getMainAssessment ();
+  void setMainAssessment (LinkAssessment *assessment);
+  LinkAssessment *getOtherAssessment ();
+  void setOtherAssessment (LinkAssessment *assessment);
+  virtual bool evaluate ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_LINKASSESSMENTSTATEMENT_H_

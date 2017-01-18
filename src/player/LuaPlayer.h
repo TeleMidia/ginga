@@ -32,47 +32,46 @@ GINGA_PLAYER_BEGIN
 class LuaPlayer : public Player, public IInputEventListener
 {
 private:
+  ncluaw_t *nw;          // the NCLua state
+  bool hasExecuted;      // true if script was executed
+  bool isKeyHandler;     // true if player has the focus
+  string scope;          // the label of the active anchor
+  pthread_mutex_t mutex; // sync access to player
+  InputManager *im;
 
-     ncluaw_t *nw;              // the NCLua state
-     bool hasExecuted;          // true if script was executed
-     bool isKeyHandler;         // true if player has the focus
-     string scope;              // the label of the active anchor
-     pthread_mutex_t mutex;     // sync access to player
-     InputManager *im;
-
-     // Update thread.
-     static list <LuaPlayer *> *nw_update_list;
-     static pthread_mutex_t nw_update_mutex;
-     static pthread_t nw_update_tid;
-     static void *nw_update_thread (void *data);
-     static void nw_update_insert (LuaPlayer *player);
-
-public:
-     static void nw_update_remove (LuaPlayer *player);
+  // Update thread.
+  static list<LuaPlayer *> *nw_update_list;
+  static pthread_mutex_t nw_update_mutex;
+  static pthread_t nw_update_tid;
+  static void *nw_update_thread (void *data);
+  static void nw_update_insert (LuaPlayer *player);
 
 public:
-     LuaPlayer (GingaScreenID screenId, string mrl);
-     virtual ~LuaPlayer (void);
+  static void nw_update_remove (LuaPlayer *player);
 
-     // TODO: Make private.
-     void lock (void);
-     void unlock (void);
-     bool doPlay  (void);
-     void doStop (void);
+public:
+  LuaPlayer (GingaScreenID screenId, string mrl);
+  virtual ~LuaPlayer (void);
 
-     // Player interface.
-     void abort (void);
-     void pause (void);
-     bool play (void);
-     void resume (void);
-     void stop (void);
-     virtual bool hasPresented (void);
-     void setCurrentScope (string scopeId);
-     bool setKeyHandler (bool isHandler);
-     virtual void setPropertyValue (string name, string value);
+  // TODO: Make private.
+  void lock (void);
+  void unlock (void);
+  bool doPlay (void);
+  void doStop (void);
 
-     // Input event callback.
-     bool userEventReceived (SDLInputEvent * evt);
+  // Player interface.
+  void abort (void);
+  void pause (void);
+  bool play (void);
+  void resume (void);
+  void stop (void);
+  virtual bool hasPresented (void);
+  void setCurrentScope (string scopeId);
+  bool setKeyHandler (bool isHandler);
+  virtual void setPropertyValue (string name, string value);
+
+  // Input event callback.
+  bool userEventReceived (SDLInputEvent *evt);
 };
 
 GINGA_PLAYER_END

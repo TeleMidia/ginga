@@ -21,30 +21,30 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "IMpegDescriptor.h"
 using namespace ::ginga::tsparser;
 
-
 GINGA_TSPARSER_BEGIN
 
-    class IServiceInfo {
+class IServiceInfo
+{
 
-		public:
-			static const unsigned char DT_SERVICE           = 0x48;
-			static const unsigned char DT_LOGO_TRANSMISSION = 0xCF;
+public:
+  static const unsigned char DT_SERVICE = 0x48;
+  static const unsigned char DT_LOGO_TRANSMISSION = 0xCF;
 
-		public:
-			virtual ~IServiceInfo(){};
-			virtual size_t getSize()=0;
-			virtual unsigned short getServiceId()=0;
-			virtual bool getEitScheduleFlag()=0;
-			virtual bool getEitPresentFollowingFlag()=0;
-			virtual unsigned char getRunningStatus()=0;
-			virtual string getRunningStatusDescription()=0;
-			virtual unsigned char getFreeCAMode()=0;
-			virtual unsigned short getDescriptorsLoopLength()=0;
-			virtual void insertDescriptor(IMpegDescriptor* descriptor)=0;
-			virtual vector<IMpegDescriptor*>* getDescriptors()=0;
-			virtual size_t process (char* data, size_t pos)=0;
-			virtual void print()=0;
-	};
+public:
+  virtual ~IServiceInfo (){};
+  virtual size_t getSize () = 0;
+  virtual unsigned short getServiceId () = 0;
+  virtual bool getEitScheduleFlag () = 0;
+  virtual bool getEitPresentFollowingFlag () = 0;
+  virtual unsigned char getRunningStatus () = 0;
+  virtual string getRunningStatusDescription () = 0;
+  virtual unsigned char getFreeCAMode () = 0;
+  virtual unsigned short getDescriptorsLoopLength () = 0;
+  virtual void insertDescriptor (IMpegDescriptor *descriptor) = 0;
+  virtual vector<IMpegDescriptor *> *getDescriptors () = 0;
+  virtual size_t process (char *data, size_t pos) = 0;
+  virtual void print () = 0;
+};
 
 GINGA_TSPARSER_END
 

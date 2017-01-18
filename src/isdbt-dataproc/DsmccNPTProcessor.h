@@ -35,94 +35,94 @@ using namespace ::ginga::tuner;
 #include "DsmccNPTReference.h"
 #include "DsmccTimeBaseClock.h"
 
-
 GINGA_DATAPROC_BEGIN
 
+class DsmccNPTProcessor : public Thread, public ITimeBaseProvider
+{
 
-class DsmccNPTProcessor : public Thread, public ITimeBaseProvider {
-	
-	struct TimeControl {
-		double time;
-		bool notified;
-	};
+  struct TimeControl
+  {
+    double time;
+    bool notified;
+  };
 
-	private:
-		static const unsigned short MAX_NPT_VALUE       = 47721;
-		static const char INVALID_CID		   = -1;
-		static const short NPT_ST_OCCURRING    = 0;
-		static const short NPT_ST_PAUSED       = 1;
+private:
+  static const unsigned short MAX_NPT_VALUE = 47721;
+  static const char INVALID_CID = -1;
+  static const short NPT_ST_OCCURRING = 0;
+  static const short NPT_ST_PAUSED = 1;
 
-		ISTCProvider* stcProvider;
-		bool running;
-		bool loopControlMin;
-		bool loopControlMax;
-		unsigned char currentCid;
-		unsigned char occurringTimeBaseId;
+  ISTCProvider *stcProvider;
+  bool running;
+  bool loopControlMin;
+  bool loopControlMax;
+  unsigned char currentCid;
+  unsigned char occurringTimeBaseId;
 
-		pthread_mutex_t loopMutex;
-		pthread_mutex_t schedMutex;
-		pthread_mutex_t lifeMutex;
+  pthread_mutex_t loopMutex;
+  pthread_mutex_t schedMutex;
+  pthread_mutex_t lifeMutex;
 
-		map<unsigned char, DsmccNPTReference*> scheduledNpts;
-		map<unsigned char, DsmccTimeBaseClock*> timeBaseClock;
-		map<unsigned char, Stc*> timeBaseLife;
-		map<unsigned char, set<ITimeBaseProvider*>*> loopListeners;
-		map<unsigned char, map<TimeControl*, set<ITimeBaseProvider*>*>*> timeListeners;
-		set<ITimeBaseProvider*> cidListeners;
-		bool reScheduleIt;
-		uint64_t firstStc;
-		bool isFirstStc;
-		bool nptPrinter;
-		map<char,DsmccNPTReference*> lastNptList;
+  map<unsigned char, DsmccNPTReference *> scheduledNpts;
+  map<unsigned char, DsmccTimeBaseClock *> timeBaseClock;
+  map<unsigned char, Stc *> timeBaseLife;
+  map<unsigned char, set<ITimeBaseProvider *> *> loopListeners;
+  map<unsigned char, map<TimeControl *, set<ITimeBaseProvider *> *> *>
+      timeListeners;
+  set<ITimeBaseProvider *> cidListeners;
+  bool reScheduleIt;
+  uint64_t firstStc;
+  bool isFirstStc;
+  bool nptPrinter;
+  map<char, DsmccNPTReference *> lastNptList;
 
-	public:
-		DsmccNPTProcessor(ISTCProvider* stcProvider);
-		virtual ~DsmccNPTProcessor();
+public:
+  DsmccNPTProcessor (ISTCProvider *stcProvider);
+  virtual ~DsmccNPTProcessor ();
 
-		void setNptPrinter(bool nptPrinter);
+  void setNptPrinter (bool nptPrinter);
 
-	private:
-		uint64_t getSTCValue();
-		void clearUnusedTimebase();
-		void clearTables();
-		void detectLoop();
+private:
+  uint64_t getSTCValue ();
+  void clearUnusedTimebase ();
+  void clearTables ();
+  void detectLoop ();
 
-	public:
-		bool addLoopListener(unsigned char cid, ITimeBaseListener* ltn);
-		bool removeLoopListener(unsigned char cid, ITimeBaseListener* ltn);
+public:
+  bool addLoopListener (unsigned char cid, ITimeBaseListener *ltn);
+  bool removeLoopListener (unsigned char cid, ITimeBaseListener *ltn);
 
-		bool addTimeListener(
-				unsigned char cid, double nptValue, ITimeBaseListener* ltn);
+  bool addTimeListener (unsigned char cid, double nptValue,
+                        ITimeBaseListener *ltn);
 
-		bool removeTimeListener(unsigned char cid, ITimeBaseListener* ltn);
+  bool removeTimeListener (unsigned char cid, ITimeBaseListener *ltn);
 
-		bool addIdListener(ITimeBaseListener* ltn);
-		bool removeIdListener(ITimeBaseListener* ltn);
+  bool addIdListener (ITimeBaseListener *ltn);
+  bool removeIdListener (ITimeBaseListener *ltn);
 
-		unsigned char getOccurringTimeBaseId();
+  unsigned char getOccurringTimeBaseId ();
 
-	private:
-		unsigned char getCurrentTimeBaseId();
-		void notifyLoopToTimeListeners();
-		void notifyTimeListeners(unsigned char cid, double nptValue);
-		void notifyNaturalEndListeners(unsigned char cid, double nptValue);
-		void notifyIdListeners(unsigned char oldCid, unsigned char newCid);
-		DsmccTimeBaseClock* getTimeBaseClock(unsigned char cid);
-		int updateTimeBase(DsmccTimeBaseClock* clk, DsmccNPTReference* npt);
-		DsmccTimeBaseClock* getCurrentTimebase();
-		double getCurrentTimeValue(unsigned char timeBaseId);
+private:
+  unsigned char getCurrentTimeBaseId ();
+  void notifyLoopToTimeListeners ();
+  void notifyTimeListeners (unsigned char cid, double nptValue);
+  void notifyNaturalEndListeners (unsigned char cid, double nptValue);
+  void notifyIdListeners (unsigned char oldCid, unsigned char newCid);
+  DsmccTimeBaseClock *getTimeBaseClock (unsigned char cid);
+  int updateTimeBase (DsmccTimeBaseClock *clk, DsmccNPTReference *npt);
+  DsmccTimeBaseClock *getCurrentTimebase ();
+  double getCurrentTimeValue (unsigned char timeBaseId);
 
-	public:
-		int decodeDescriptors(vector<DsmccMpegDescriptor*>* list);
-		double getNPTValue(unsigned char contentId);
+public:
+  int decodeDescriptors (vector<DsmccMpegDescriptor *> *list);
+  double getNPTValue (unsigned char contentId);
 
-	private:
-		char getNextNptValue(char cid, double *nextNptValue, double* sleepTime);
+private:
+  char getNextNptValue (char cid, double *nextNptValue, double *sleepTime);
 
-		bool processNptValues();
-		void run();
+  bool processNptValues ();
+  void run ();
 };
-
 
 GINGA_DATAPROC_END
 

@@ -21,161 +21,185 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "isdbt-tsparser/Pat.h"
 using namespace ::ginga::tsparser;
 
-
 GINGA_TSPARSER_BEGIN
 
-	PipeFilter::PipeFilter(unsigned int pid) : Thread() {
-		this->pid             = pid;
-		this->dataReceived    = false;
-		this->packetsReceived = 0;
-		debugBytesWritten     = 0;
+PipeFilter::PipeFilter (unsigned int pid) : Thread ()
+{
+  this->pid = pid;
+  this->dataReceived = false;
+  this->packetsReceived = 0;
+  debugBytesWritten = 0;
 
-		this->srcIsAPipe      = false;
-		this->srcUri          = "";
-		this->dstUri          = "";
-		this->dstPipeCreated  = false;
+  this->srcIsAPipe = false;
+  this->srcUri = "";
+  this->dstUri = "";
+  this->dstPipeCreated = false;
 
-		this->running         = false;
+  this->running = false;
 
-		this->pids.clear();
-		clog << "PipeFilter::PipeFilter all done" << endl;
-	}
+  this->pids.clear ();
+  clog << "PipeFilter::PipeFilter all done" << endl;
+}
 
-	PipeFilter::~PipeFilter() {
-		pids.clear();
-	}
+PipeFilter::~PipeFilter () { pids.clear (); }
 
-	void PipeFilter::addPid(int pid) {
-		clog << "PipeFilter::addPid '" << pid << "'" << endl;
-		pids[pid] = 0;
-	}
+void
+PipeFilter::addPid (int pid)
+{
+  clog << "PipeFilter::addPid '" << pid << "'" << endl;
+  pids[pid] = 0;
+}
 
-	bool PipeFilter::hasData() {
-		return dataReceived;
-	}
+bool
+PipeFilter::hasData ()
+{
+  return dataReceived;
+}
 
-	void PipeFilter::receiveTSPacket(ITSPacket* pack) {
-		int ppid;
-		int contCounter;
-		int bytesWritten = 0;
-		char* packData;
+void
+PipeFilter::receiveTSPacket (ITSPacket *pack)
+{
+  int ppid;
+  int contCounter;
+  int bytesWritten = 0;
+  char *packData;
 
-		//memset(packData, 0, ITSPacket::TS_PACKET_SIZE);
-		ppid = pack->getPid();
+  // memset(packData, 0, ITSPacket::TS_PACKET_SIZE);
+  ppid = pack->getPid ();
 
-		if (!pids.empty()) {
-			if (pids.count(ppid) == 0) {
-				return;
-			}
+  if (!pids.empty ())
+    {
+      if (pids.count (ppid) == 0)
+        {
+          return;
+        }
 
-			contCounter = pids[ppid];
-			pack->setContinuityCounter(contCounter);
-			if (pack->getAdaptationFieldControl() != 2 &&
-					pack->getAdaptationFieldControl() != 0) {
+      contCounter = pids[ppid];
+      pack->setContinuityCounter (contCounter);
+      if (pack->getAdaptationFieldControl () != 2
+          && pack->getAdaptationFieldControl () != 0)
+        {
 
-				if (contCounter == 15) {
-					contCounter = -1;
-				}
-				pids[ppid] = contCounter + 1;
-			}
-		}
+          if (contCounter == 15)
+            {
+              contCounter = -1;
+            }
+          pids[ppid] = contCounter + 1;
+        }
+    }
 
-		pack->getPacketData(&packData);
+  pack->getPacketData (&packData);
 
-		dataReceived = true;
+  dataReceived = true;
 
-		if (!dstPipeCreated) {
-			if (!running && dstUri != "") {
-				Thread::startThread();
-			}
+  if (!dstPipeCreated)
+    {
+      if (!running && dstUri != "")
+        {
+          Thread::startThread ();
+        }
 
-			while (!dstPipeCreated) {
-				g_usleep(10000);
-			}
-		}
+      while (!dstPipeCreated)
+        {
+          g_usleep (10000);
+        }
+    }
 
-		bytesWritten = SystemCompat::writePipe(
-				dstPd, packData, ITSPacket::TS_PACKET_SIZE);
+  bytesWritten
+      = SystemCompat::writePipe (dstPd, packData, ITSPacket::TS_PACKET_SIZE);
 
-		assert(bytesWritten == ITSPacket::TS_PACKET_SIZE);
-	}
+  assert (bytesWritten == ITSPacket::TS_PACKET_SIZE);
+}
 
-	void PipeFilter::receiveSection(
-			char* buf, int len, IFrontendFilter* filter) {
+void
+PipeFilter::receiveSection (char *buf, int len, IFrontendFilter *filter)
+{
+}
 
-	}
+void
+PipeFilter::receivePes (char *buf, int len, IFrontendFilter *filter)
+{
+}
 
-	void PipeFilter::receivePes(char* buf, int len, IFrontendFilter* filter) {
+void
+PipeFilter::setSourceUri (string srcUri, bool isPipe)
+{
+  this->srcUri = srcUri;
+  this->srcIsAPipe = isPipe;
+}
 
-	}
+string
+PipeFilter::setDestinationUri (string dstUri)
+{
+  this->dstUri = SystemCompat::checkPipeName (dstUri);
 
-	void PipeFilter::setSourceUri(string srcUri, bool isPipe) {
-		this->srcUri     = srcUri;
-		this->srcIsAPipe = isPipe;
-	}
+  if (!running)
+    {
+      Thread::startThread ();
+    }
 
-	string PipeFilter::setDestinationUri(string dstUri) {
-		this->dstUri = SystemCompat::checkPipeName(dstUri);
+  return this->dstUri;
+}
 
-		if (!running) {
-			Thread::startThread();
-		}
+void
+PipeFilter::run ()
+{
+  FILE *fd;
+  int rval;
+  int buffSize = 188 * 1024;
+  char *buff = new char[buffSize];
+  string cmd;
 
-		return this->dstUri;
-	}
+  running = true;
+  clog << "PipeFilter::run(" << this << ")" << endl;
 
-	void PipeFilter::run() {
-		FILE* fd;
-		int rval;
-		int buffSize = 188 * 1024;
-		char* buff = new char[buffSize];
-		string cmd;
+  if (!SystemCompat::createPipe (dstUri, &dstPd))
+    {
+      clog << "PipeFilter::run(" << this << ")";
+      clog << " can't create '" << dstUri;
+      clog << "'" << endl;
 
-		running = true;
-		clog << "PipeFilter::run(" << this << ")" << endl;
+      running = false;
+      delete[] buff;
+      return;
+    }
 
-		if (!SystemCompat::createPipe(dstUri, &dstPd)) {
-			clog << "PipeFilter::run(" << this << ")";
-			clog << " can't create '" << dstUri;
-			clog << "'" << endl;
+  dstPipeCreated = true;
 
-			running = false;
-			delete[] buff;
-			return;
-		}
+  clog << "PipeFilter::run(" << this << ") pipe '";
+  clog << dstUri << "' created" << endl;
 
-		dstPipeCreated  = true;
+  if (srcIsAPipe)
+    {
+      clog << "PipeFilter::run(" << this << ") reader" << endl;
 
-		clog << "PipeFilter::run(" << this << ") pipe '";
-		clog << dstUri << "' created" << endl;
+      if (!SystemCompat::openPipe (srcUri, &srcPd))
+        {
+          clog << "PipeFilter::run(" << this << ")";
+          clog << " can't open '" << srcUri;
+          clog << "'" << endl;
 
-		if (srcIsAPipe) {
-			clog << "PipeFilter::run(" << this << ") reader" << endl;
+          delete[] buff;
+          return;
+        }
 
-			if (!SystemCompat::openPipe(srcUri, &srcPd)) {
-				clog << "PipeFilter::run(" << this << ")";
-				clog << " can't open '" << srcUri;
-				clog << "'" << endl;
+      clog << "PipeFilter::run(" << this << ") '" << srcUri;
+      clog << "' OPENED" << endl;
 
-				delete[] buff;
-				return;
-			}
+      while (srcIsAPipe)
+        {
+          rval = SystemCompat::readPipe (srcPd, buff, buffSize);
+          if (rval > 0)
+            {
+              SystemCompat::writePipe (dstPd, buff, rval);
+            }
+        }
 
-			clog << "PipeFilter::run(" << this << ") '" << srcUri;
-			clog << "' OPENED" << endl;
+      clog << "PipeFilter::run(" << this << ") reader all done!" << endl;
+    }
 
-			while (srcIsAPipe) {
-				rval = SystemCompat::readPipe(srcPd, buff, buffSize);
-				if (rval > 0) {
-					SystemCompat::writePipe(dstPd, buff, rval);
-				}
-			}
-
-			clog << "PipeFilter::run(" << this << ") reader all done!" << endl;
-		}
-
-		running = false;
-		delete[] buff;
-	}
+  running = false;
+  delete[] buff;
+}
 
 GINGA_TSPARSER_END

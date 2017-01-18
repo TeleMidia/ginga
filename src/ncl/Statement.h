@@ -20,27 +20,27 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ConditionExpression.h"
 
-
 GINGA_NCL_BEGIN
 
-	class Statement : public ConditionExpression {
-		public:
-			Statement() : ConditionExpression() {
-				typeSet.insert("Statement");
-			};
+class Statement : public ConditionExpression
+{
+public:
+  Statement () : ConditionExpression () { typeSet.insert ("Statement"); };
 
-			virtual ~Statement() {
-				typeSet.clear();
-			};
+  virtual ~Statement () { typeSet.clear (); };
 
-			virtual string toString(){
-				return "";
-			};
+  virtual string
+  toString ()
+  {
+    return "";
+  };
 
-			virtual bool instanceOf(string type) {
-				return ConditionExpression::instanceOf(type);
-			};
-	};
+  virtual bool
+  instanceOf (string type)
+  {
+    return ConditionExpression::instanceOf (type);
+  };
+};
 
 GINGA_NCL_END
 

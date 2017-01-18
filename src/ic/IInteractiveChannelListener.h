@@ -25,11 +25,11 @@ GINGA_IC_BEGIN
 class IInteractiveChannelListener
 {
 public:
-  virtual ~IInteractiveChannelListener(){};
-  virtual void receiveCode(long respCode)=0;
-  virtual void receiveDataStream(char* buffer, int size)=0;
-  virtual void receiveDataPipe(FILE* fd, int size)=0;
-  virtual void downloadCompleted(const char* localUri)=0;
+  virtual ~IInteractiveChannelListener (){};
+  virtual void receiveCode (long respCode) = 0;
+  virtual void receiveDataStream (char *buffer, int size) = 0;
+  virtual void receiveDataPipe (FILE *fd, int size) = 0;
+  virtual void downloadCompleted (const char *localUri) = 0;
 };
 
 GINGA_IC_END

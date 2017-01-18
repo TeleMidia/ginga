@@ -32,61 +32,77 @@ using namespace ::ginga::system;
 
 #include "AVPlayer.h"
 
-
 GINGA_PLAYER_BEGIN
 
-	class TextPlayer : public Player {
-		protected:
-			int fontHeight;
-			int currentLine;
-			int currentColumn;
-			int tabSize;
-			int fontSize;
-			Color* fontColor;
-			Color* bgColor;
-			string fontUri;
-			short currentAlign;
-			GingaProviderID font;
+class TextPlayer : public Player
+{
+protected:
+  int fontHeight;
+  int currentLine;
+  int currentColumn;
+  int tabSize;
+  int fontSize;
+  Color *fontColor;
+  Color *bgColor;
+  string fontUri;
+  short currentAlign;
+  GingaProviderID font;
 
-		public:
-			TextPlayer(GingaScreenID screenId);
-			virtual ~TextPlayer();
+public:
+  TextPlayer (GingaScreenID screenId);
+  virtual ~TextPlayer ();
 
-		private:
-			void initializePlayer(GingaScreenID screenId);
+private:
+  void initializePlayer (GingaScreenID screenId);
 
-		public:
-			static int write(
-					GingaScreenID screenId,
-					GingaSurfaceID s,
-					string text,
-					short textAlign,
-					string fontUri = "",
-					int fontSize = 12, Color* fontColor = NULL);
+public:
+  static int write (GingaScreenID screenId, GingaSurfaceID s, string text,
+                    short textAlign, string fontUri = "", int fontSize = 12,
+                    Color *fontColor = NULL);
 
-			virtual bool play(){return Player::play();};
-			virtual void stop(){Player::stop();};
-			virtual void abort(){Player::abort();};
-			virtual void pause(){Player::pause();};
-			virtual void resume(){Player::resume();};
+  virtual bool
+  play ()
+  {
+    return Player::play ();
+  };
+  virtual void
+  stop ()
+  {
+    Player::stop ();
+  };
+  virtual void
+  abort ()
+  {
+    Player::abort ();
+  };
+  virtual void
+  pause ()
+  {
+    Player::pause ();
+  };
+  virtual void
+  resume ()
+  {
+    Player::resume ();
+  };
 
-			bool setFont(string someUri);
-			void setFontSize(int size);
-			int getFontSize();
-			int getFontHeight();
-			void setBgColor(int red, int green, int blue, int alpha=255);
-			void setColor(int red, int green, int blue, int alpha=255);
-			void setTabSize(int size);
-			int getTabSize();
-			void drawText(string text, short align);
-			bool drawTextLn(string text, short align);
-			void tab();
-			bool breakLine();
-			int getCurrentColumn();
-			int getCurrentLine();
+  bool setFont (string someUri);
+  void setFontSize (int size);
+  int getFontSize ();
+  int getFontHeight ();
+  void setBgColor (int red, int green, int blue, int alpha = 255);
+  void setColor (int red, int green, int blue, int alpha = 255);
+  void setTabSize (int size);
+  int getTabSize ();
+  void drawText (string text, short align);
+  bool drawTextLn (string text, short align);
+  void tab ();
+  bool breakLine ();
+  int getCurrentColumn ();
+  int getCurrentLine ();
 
-			virtual void setPropertyValue(string name, string value);
-	};
+  virtual void setPropertyValue (string name, string value);
+};
 
 GINGA_PLAYER_END
 

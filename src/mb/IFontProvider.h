@@ -22,31 +22,31 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-	class IFontProvider : public IDiscreteMediaProvider {
-		public:
-			static const short FP_AUTO_WORDWRAP = -10;
+class IFontProvider : public IDiscreteMediaProvider
+{
+public:
+  static const short FP_AUTO_WORDWRAP = -10;
 
-			static const short FP_TA_LEFT   = 0x01;
-			static const short FP_TA_CENTER = 0x02;
-			static const short FP_TA_RIGHT  = 0x04;
+  static const short FP_TA_LEFT = 0x01;
+  static const short FP_TA_CENTER = 0x02;
+  static const short FP_TA_RIGHT = 0x04;
 
-			virtual ~IFontProvider(){};
+  virtual ~IFontProvider (){};
 
-			virtual string getLoadSymbol()=0;
+  virtual string getLoadSymbol () = 0;
 
-			virtual void* getFontProviderContent()=0;
+  virtual void *getFontProviderContent () = 0;
 
-			virtual void getStringExtents(const char* text, int* w, int* h)=0;
-			virtual int getStringWidth(const char* text, int textLength=0)=0;
-			virtual int getHeight()=0;
+  virtual void getStringExtents (const char *text, int *w, int *h) = 0;
+  virtual int getStringWidth (const char *text, int textLength = 0) = 0;
+  virtual int getHeight () = 0;
 
-			virtual void playOver(GingaSurfaceID surface)=0;
+  virtual void playOver (GingaSurfaceID surface) = 0;
 
-			virtual void playOver(
-					GingaSurfaceID surface,
-					const char* text,
-					int x, int y, short align)=0;
-	};
+  virtual void playOver (GingaSurfaceID surface, const char *text, int x,
+                         int y, short align)
+      = 0;
+};
 
 GINGA_MB_END
 

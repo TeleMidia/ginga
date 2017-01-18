@@ -34,21 +34,20 @@ XERCES_CPP_NAMESPACE_USE;
 
 GINGA_NCLCONV_BEGIN
 
-  class NclImportConverter : public NclImportParser {
-	public:
-		NclImportConverter(DocumentParser *documentParser);
-		void addImportNCLToImportedDocumentBase(
-			    void *parentObject, void *childObject);
+class NclImportConverter : public NclImportParser
+{
+public:
+  NclImportConverter (DocumentParser *documentParser);
+  void addImportNCLToImportedDocumentBase (void *parentObject,
+                                           void *childObject);
 
-		void *createImportBase(
-			    DOMElement *parentElement, void *objGrandParent);
+  void *createImportBase (DOMElement *parentElement, void *objGrandParent);
 
-		void *createImportNCL(
-			    DOMElement *parentElement, void *objGrandParent);
+  void *createImportNCL (DOMElement *parentElement, void *objGrandParent);
 
-		void *createImportedDocumentBase(
-			    DOMElement *parentElement, void *objGrandParent);
-  };
+  void *createImportedDocumentBase (DOMElement *parentElement,
+                                    void *objGrandParent);
+};
 
 GINGA_NCLCONV_END
 

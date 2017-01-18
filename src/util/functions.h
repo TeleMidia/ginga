@@ -21,49 +21,48 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 
 #ifndef PATH_MAX
-# define PATH_MAX 512
+#define PATH_MAX 512
 #endif
 
 GINGA_UTIL_BEGIN
 
-string ultostr(unsigned long int value);
-double strUTCToSec(string utcValue);
-string cvtPercentual(string value, bool* isPercentual);
-void initTimeStamp();
-void printTimeStamp();
-string intToStrHexa(int value);
-int strHexaToInt(string value);
-string upperCase(string s);
-string lowerCase(string s);
-bool isNumeric(void* value);
-string itos(double i);
-float stof(string s);
-float itof(int i);
-vector<string>* split(string str, string token, string pos_delimiter = "");
-string trim(string str);
-float getPercentualValue(string value);
-bool isPercentualValue(string value);
-bool fileExists(string filename);
-bool isDirectory(const char* path);
-double NaN();
-double infinity();
-bool isNaN(double value);
-bool isInfinity(double value);
-double getCurrentTimeMillis();
+string ultostr (unsigned long int value);
+double strUTCToSec (string utcValue);
+string cvtPercentual (string value, bool *isPercentual);
+void initTimeStamp ();
+void printTimeStamp ();
+string intToStrHexa (int value);
+int strHexaToInt (string value);
+string upperCase (string s);
+string lowerCase (string s);
+bool isNumeric (void *value);
+string itos (double i);
+float stof (string s);
+float itof (int i);
+vector<string> *split (string str, string token, string pos_delimiter = "");
+string trim (string str);
+float getPercentualValue (string value);
+bool isPercentualValue (string value);
+bool fileExists (string filename);
+bool isDirectory (const char *path);
+double NaN ();
+double infinity ();
+bool isNaN (double value);
+bool isInfinity (double value);
+double getCurrentTimeMillis ();
 
-double getNextStepValue(
-			double currentStepValue,
-			double value,
-			int factor,
-			double time, double initTime, double dur, int stepSize);
+double getNextStepValue (double currentStepValue, double value, int factor,
+                         double time, double initTime, double dur,
+                         int stepSize);
 
-bool readPPMFile(char *fn, int &X, int &Y, unsigned char* &result);
-bool readBMPFile(char *fn, int &X, int &Y, unsigned char* &result);
+bool readPPMFile (char *fn, int &X, int &Y, unsigned char *&result);
+bool readBMPFile (char *fn, int &X, int &Y, unsigned char *&result);
 
-bool ppmToJpeg(char *ppmfile, char *jpegfile, int quality);
-bool bmpToJpeg(char *bmpfile, char *jpegfile, int quality);
+bool ppmToJpeg (char *ppmfile, char *jpegfile, int quality);
+bool bmpToJpeg (char *bmpfile, char *jpegfile, int quality);
 
-void str_replace_all(string &str, const string &find_what, const string &replace_with);
+void str_replace_all (string &str, const string &find_what,
+                      const string &replace_with);
 
 GINGA_UTIL_END
 

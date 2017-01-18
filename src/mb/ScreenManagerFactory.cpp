@@ -20,21 +20,24 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 using namespace ::ginga::mb;
 
-LocalScreenManager* ScreenManagerFactory::_instance = NULL;
+LocalScreenManager *ScreenManagerFactory::_instance = NULL;
 
-LocalScreenManager* ScreenManagerFactory::getInstance(bool forceLocal)
+LocalScreenManager *
+ScreenManagerFactory::getInstance (bool forceLocal)
 {
-	if (ScreenManagerFactory::_instance == NULL)
-	{
-		ScreenManagerFactory::_instance = new LocalScreenManager();
-	}
-	return ScreenManagerFactory::_instance;
+  if (ScreenManagerFactory::_instance == NULL)
+    {
+      ScreenManagerFactory::_instance = new LocalScreenManager ();
+    }
+  return ScreenManagerFactory::_instance;
 }
 
-void ScreenManagerFactory::releaseInstance() {
-	if (ScreenManagerFactory::_instance != NULL) {
-		delete ScreenManagerFactory::_instance;
-		ScreenManagerFactory::_instance = NULL;
-	}
-
+void
+ScreenManagerFactory::releaseInstance ()
+{
+  if (ScreenManagerFactory::_instance != NULL)
+    {
+      delete ScreenManagerFactory::_instance;
+      ScreenManagerFactory::_instance = NULL;
+    }
 }

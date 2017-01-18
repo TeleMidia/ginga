@@ -21,27 +21,28 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TTS_BEGIN
 
-	SsmlPlayerAdapter::SsmlPlayerAdapter() :
-				FormatterPlayerAdapter() {
+SsmlPlayerAdapter::SsmlPlayerAdapter () : FormatterPlayerAdapter ()
+{
 
-          		typeSet.insert("SsmlPlayerAdapter");
-	}
+  typeSet.insert ("SsmlPlayerAdapter");
+}
 
-	void SsmlPlayerAdapter::createPlayer() {
-		clog << "SsmlPlayerAdapter::createPlayer '" << mrl << "'" << endl;
+void
+SsmlPlayerAdapter::createPlayer ()
+{
+  clog << "SsmlPlayerAdapter::createPlayer '" << mrl << "'" << endl;
 
-		string paramValue;
-		CascadingDescriptor* descriptor;
+  string paramValue;
+  CascadingDescriptor *descriptor;
 
-		bool hasVisual = false;
+  bool hasVisual = false;
 
-		player = new SsmlPlayer(myScreen, mrl.c_str());
+  player = new SsmlPlayer (myScreen, mrl.c_str ());
 
-                clog << "SsmlPlayerAdapter::createPlayer '";
-		clog << mrl << "' ALL DONE" << endl;
+  clog << "SsmlPlayerAdapter::createPlayer '";
+  clog << mrl << "' ALL DONE" << endl;
 
-
-		FormatterPlayerAdapter::createPlayer();
-	}
+  FormatterPlayerAdapter::createPlayer ();
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TTS_END

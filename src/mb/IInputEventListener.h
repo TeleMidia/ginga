@@ -22,11 +22,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-	class IInputEventListener {
-		public:
-			virtual ~IInputEventListener(){};
-			virtual bool userEventReceived(SDLInputEvent* ev)=0;
-	};
+class IInputEventListener
+{
+public:
+  virtual ~IInputEventListener (){};
+  virtual bool userEventReceived (SDLInputEvent *ev) = 0;
+};
 
 GINGA_MB_END
 

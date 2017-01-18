@@ -21,22 +21,22 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Content.h"
 #include "ContentTypeManager.h"
 
-
 GINGA_NCL_BEGIN
 
-	class ReferenceContent : public Content {
-		protected:
-			string reference;
-			//string url;
-		public:
-			ReferenceContent();
-			ReferenceContent(string ref);
-			virtual ~ReferenceContent(){};
-			string getReference();
-			string getCompleteReferenceUrl();
-			void setReference(string ref);
-			string getType();
-	};
+class ReferenceContent : public Content
+{
+protected:
+  string reference;
+  // string url;
+public:
+  ReferenceContent ();
+  ReferenceContent (string ref);
+  virtual ~ReferenceContent (){};
+  string getReference ();
+  string getCompleteReferenceUrl ();
+  void setReference (string ref);
+  string getType ();
+};
 
 GINGA_NCL_END
 

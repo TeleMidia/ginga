@@ -20,43 +20,48 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TSPARSER_BEGIN
 
+StreamIdentifierDescriptor::StreamIdentifierDescriptor ()
+{
+  descriptorTag = 0x52;
+  descriptorLength = 0;
+  componentTag = 0;
+}
 
-	StreamIdentifierDescriptor::StreamIdentifierDescriptor() {
-		descriptorTag    = 0x52;
-		descriptorLength = 0;
-		componentTag     = 0;
+StreamIdentifierDescriptor::~StreamIdentifierDescriptor () {}
 
-	}
+unsigned char
+StreamIdentifierDescriptor::getDescriptorTag ()
+{
+  return descriptorTag;
+}
 
-	StreamIdentifierDescriptor::~StreamIdentifierDescriptor() {
+unsigned int
+StreamIdentifierDescriptor::getDescriptorLength ()
+{
+  return descriptorLength;
+}
 
-	}
+unsigned char
+StreamIdentifierDescriptor::getComponentTag ()
+{
+  return componentTag;
+}
 
-	unsigned char StreamIdentifierDescriptor::getDescriptorTag() {
-		return descriptorTag;
-	}
+void
+StreamIdentifierDescriptor::print ()
+{
+  clog << "StreamIdentifierDescriptor::print ctag = " << (componentTag & 0xFF)
+       << endl;
+}
 
-	unsigned int StreamIdentifierDescriptor::getDescriptorLength() {
-		return descriptorLength;
-	}
+size_t
+StreamIdentifierDescriptor::process (char *data, size_t pos)
+{
+  descriptorLength = data[pos + 1];
+  pos += 2;
+  componentTag = data[pos];
 
-	unsigned char StreamIdentifierDescriptor::getComponentTag() {
-		return componentTag;
-	}
-
-	void StreamIdentifierDescriptor::print() {
-		clog << "StreamIdentifierDescriptor::print ctag = " <<
-			(componentTag & 0xFF) << endl;
-	}
-
-	size_t StreamIdentifierDescriptor::process(char* data, size_t pos) {
-		descriptorLength =  data[pos+1];
-		pos += 2;
-		componentTag = data[pos];
-
-		return pos;
-	}
-
-
+  return pos;
+}
 
 GINGA_TSPARSER_END

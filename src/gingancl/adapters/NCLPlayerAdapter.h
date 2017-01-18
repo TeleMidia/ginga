@@ -23,19 +23,20 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_NCL_BEGIN
 
-  class NCLPlayerAdapter : public ApplicationPlayerAdapter {
-	public:
-		NCLPlayerAdapter();
-		virtual ~NCLPlayerAdapter(){};
+class NCLPlayerAdapter : public ApplicationPlayerAdapter
+{
+public:
+  NCLPlayerAdapter ();
+  virtual ~NCLPlayerAdapter (){};
 
-	protected:
-		void createPlayer();
+protected:
+  void createPlayer ();
 
-	public:
-		bool setAndLockCurrentEvent(FormatterEvent* event);
-		void unlockCurrentEvent(FormatterEvent* event);
-		void flip();
-  };
+public:
+  bool setAndLockCurrentEvent (FormatterEvent *event);
+  void unlockCurrentEvent (FormatterEvent *event);
+  void flip ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_NCL_END
 #endif /* NCLPLAYERADAPTER_H_ */

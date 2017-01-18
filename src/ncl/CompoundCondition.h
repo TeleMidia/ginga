@@ -28,36 +28,36 @@ using namespace ::ginga::util;
 #include "SimpleCondition.h"
 #include "Role.h"
 
-
 GINGA_NCL_BEGIN
 
-	class CompoundCondition : public TriggerExpression {
-		public:
-			static const short OP_AND = 0;
-			static const short OP_OR = 1;
+class CompoundCondition : public TriggerExpression
+{
+public:
+  static const short OP_AND = 0;
+  static const short OP_OR = 1;
 
-		private:
-			vector<ConditionExpression*>* expressions;
-			short myOperator;
+private:
+  vector<ConditionExpression *> *expressions;
+  short myOperator;
 
-		public:
-			CompoundCondition();
-			CompoundCondition(
-				    ConditionExpression* c1,
-				    ConditionExpression* c2,
-				    short op);
+public:
+  CompoundCondition ();
+  CompoundCondition (ConditionExpression *c1, ConditionExpression *c2,
+                     short op);
 
-			virtual ~CompoundCondition();
-			void setOperator(short op);
-			short getOperator();
-			vector<ConditionExpression*>* getConditions();
-			void addConditionExpression(ConditionExpression* condition);
-			void removeConditionExpression(ConditionExpression* condition);
-			vector<Role*> *getRoles();
-			bool instanceOf(string type) {
-				return TriggerExpression::instanceOf(type);
-			}
-	};
+  virtual ~CompoundCondition ();
+  void setOperator (short op);
+  short getOperator ();
+  vector<ConditionExpression *> *getConditions ();
+  void addConditionExpression (ConditionExpression *condition);
+  void removeConditionExpression (ConditionExpression *condition);
+  vector<Role *> *getRoles ();
+  bool
+  instanceOf (string type)
+  {
+    return TriggerExpression::instanceOf (type);
+  }
+};
 
 GINGA_NCL_END
 

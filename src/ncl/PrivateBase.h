@@ -24,18 +24,18 @@ using namespace ::ginga::ncl;
 #include "NodeEntity.h"
 #include "ContextNode.h"
 
-
 GINGA_NCL_BEGIN
 
-	class PrivateBase : public CompositeNode {
-		public:
-			PrivateBase(string uid);
-			virtual ~PrivateBase();
+class PrivateBase : public CompositeNode
+{
+public:
+  PrivateBase (string uid);
+  virtual ~PrivateBase ();
 
-			bool addNode(Node* node);
-			bool removeAllNodeOccurrences(string nodeUID);
-			bool removeAllNodeOccurrences(Node* node);
-	};
+  bool addNode (Node *node);
+  bool removeAllNodeOccurrences (string nodeUID);
+  bool removeAllNodeOccurrences (Node *node);
+};
 
 GINGA_NCL_END
 

@@ -34,50 +34,53 @@ using namespace ::ginga::ncl;
 
 #include "IDocumentConverter.h"
 
-
 XERCES_CPP_NAMESPACE_USE
 
 GINGA_NCLCONV_BEGIN
 
-  class NclDocumentConverter : public IDocumentConverter,
-		  public NclDocumentParser {
+class NclDocumentConverter : public IDocumentConverter,
+                             public NclDocumentParser
+{
 
-	private:
-		IPrivateBaseContext* privateBaseContext;
-		bool ownManager;
+private:
+  IPrivateBaseContext *privateBaseContext;
+  bool ownManager;
 
-		bool parseEntityVar;
-		void* parentObject;
+  bool parseEntityVar;
+  void *parentObject;
 
-	public:
-		NclDocumentConverter();
-		virtual ~NclDocumentConverter();
+public:
+  NclDocumentConverter ();
+  virtual ~NclDocumentConverter ();
 
-		void setConverterInfo(
-				IPrivateBaseContext* pbc, DeviceLayout* deviceLayout);
-	protected:
-		void checkManager();
-		virtual void initialize();
-		virtual void* parseRootElement(DOMElement *rootElement);
+  void setConverterInfo (IPrivateBaseContext *pbc, DeviceLayout *deviceLayout);
 
-	public:
-		string getAttribute(void* element, string attribute);
-		Node *getNode(string id);
-		bool removeNode(Node *node);
-		IPrivateBaseContext* getPrivateBaseContext();
-		NclDocument* importDocument(string* docLocation);
-		void* parseEntity(string entityLocation,
-			    NclDocument* document,
-			    void* parent);
+protected:
+  void checkManager ();
+  virtual void initialize ();
+  virtual void *parseRootElement (DOMElement *rootElement);
 
-		void* getObject(string tableName, string key) {
-			return DocumentParser::getObject(tableName, key);
-		}
+public:
+  string getAttribute (void *element, string attribute);
+  Node *getNode (string id);
+  bool removeNode (Node *node);
+  IPrivateBaseContext *getPrivateBaseContext ();
+  NclDocument *importDocument (string *docLocation);
+  void *parseEntity (string entityLocation, NclDocument *document,
+                     void *parent);
 
-		void* parse(string uri, string iUriD, string fUriD) {
-			return DocumentParser::parse(uri, iUriD, fUriD);
-		}
-  };
+  void *
+  getObject (string tableName, string key)
+  {
+    return DocumentParser::getObject (tableName, key);
+  }
+
+  void *
+  parse (string uri, string iUriD, string fUriD)
+  {
+    return DocumentParser::parse (uri, iUriD, fUriD);
+  }
+};
 
 GINGA_NCLCONV_END
 

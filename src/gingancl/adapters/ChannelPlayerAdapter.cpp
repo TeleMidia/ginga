@@ -22,138 +22,157 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_BEGIN
 
-  	ChannelPlayerAdapter::ChannelPlayerAdapter() : FormatterPlayerAdapter() {
-		//clog << "ChannelPlayerAdapter::ChannelPlayerAdapter" << endl;
-	    typeSet.insert("ChannelPlayerAdapter");
-	}
+ChannelPlayerAdapter::ChannelPlayerAdapter () : FormatterPlayerAdapter ()
+{
+  // clog << "ChannelPlayerAdapter::ChannelPlayerAdapter" << endl;
+  typeSet.insert ("ChannelPlayerAdapter");
+}
 
-	void ChannelPlayerAdapter::createPlayer() {
-		IPlayer* childPlayer = NULL;
-		CompositeExecutionObject* cpExObj;
-		ExecutionObject* childObj;
-		map<string, ExecutionObject*>* objects;
-		map<string, ExecutionObject*>::iterator i;
-		map<string, IPlayer*>* objectMap;
-		Content* content;
-		string mrlPlayer;
-		string selectedObject = "";
+void
+ChannelPlayerAdapter::createPlayer ()
+{
+  IPlayer *childPlayer = NULL;
+  CompositeExecutionObject *cpExObj;
+  ExecutionObject *childObj;
+  map<string, ExecutionObject *> *objects;
+  map<string, ExecutionObject *>::iterator i;
+  map<string, IPlayer *> *objectMap;
+  Content *content;
+  string mrlPlayer;
+  string selectedObject = "";
 
-		cpExObj   = (CompositeExecutionObject*)object;
-		objectMap = new map<string, IPlayer*>;
-		objects   = cpExObj->getExecutionObjects();
+  cpExObj = (CompositeExecutionObject *)object;
+  objectMap = new map<string, IPlayer *>;
+  objects = cpExObj->getExecutionObjects ();
 
-		if (objects != NULL && cpExObj->getDescriptor() != NULL) {
-			i = objects->begin();
-			while (i != objects->end()) {
-				childObj = i->second;
-				if (childObj != NULL && childObj->getDataObject() != NULL &&
-						childObj->getDataObject()->getDataEntity() != NULL &&
-						((NodeEntity*)(childObj->getDataObject()->
-							getDataEntity()))->getContent() != NULL) {
+  if (objects != NULL && cpExObj->getDescriptor () != NULL)
+    {
+      i = objects->begin ();
+      while (i != objects->end ())
+        {
+          childObj = i->second;
+          if (childObj != NULL && childObj->getDataObject () != NULL
+              && childObj->getDataObject ()->getDataEntity () != NULL
+              && ((NodeEntity *)(childObj->getDataObject ()->getDataEntity ()))
+                         ->getContent ()
+                     != NULL)
+            {
 
-					content = ((NodeEntity*)(childObj->getDataObject()->
-						    getDataEntity()))->getContent();
+              content = ((NodeEntity *)(childObj->getDataObject ()
+                                            ->getDataEntity ()))
+                            ->getContent ();
 
-					if (content->instanceOf("ReferenceContent")) {
-						mrlPlayer = ((ReferenceContent*)content)->
-							    getCompleteReferenceUrl();
+              if (content->instanceOf ("ReferenceContent"))
+                {
+                  mrlPlayer = ((ReferenceContent *)content)
+                                  ->getCompleteReferenceUrl ();
 
-						childPlayer = new AVPlayer(
-								myScreen, mrlPlayer.c_str());
+                  childPlayer = new AVPlayer (myScreen, mrlPlayer.c_str ());
 
-						if (childPlayer != NULL) {
-							(*objectMap)[childObj->
-						             getDataObject()->getId()] = childPlayer;
-						}
-					}
-				}
-				++i;
-			}
+                  if (childPlayer != NULL)
+                    {
+                      (*objectMap)[childObj->getDataObject ()->getId ()]
+                          = childPlayer;
+                    }
+                }
+            }
+          ++i;
+        }
 
-			clog << "ChannelPlayerAdapter::createPlayer objMap->size = ";
-			clog << objectMap->size() << endl;
-			selectedObject = cpExObj->getDescriptor()->
-				    getParameterValue("selectedObject");
-		}
+      clog << "ChannelPlayerAdapter::createPlayer objMap->size = ";
+      clog << objectMap->size () << endl;
+      selectedObject
+          = cpExObj->getDescriptor ()->getParameterValue ("selectedObject");
+    }
 
-		if (objects != NULL) {
-			delete objects;
-			objects = NULL;
-		}
+  if (objects != NULL)
+    {
+      delete objects;
+      objects = NULL;
+    }
 
-		player = new ChannelPlayer(myScreen);
+  player = new ChannelPlayer (myScreen);
 
-		if (player != NULL) {
-			player->setPlayerMap(objectMap);
-			if (selectedObject != "") {
-				clog << "ChannelPlayerAdapter::createPlayer selecting '";
-				clog << selectedObject << "'" << endl;
+  if (player != NULL)
+    {
+      player->setPlayerMap (objectMap);
+      if (selectedObject != "")
+        {
+          clog << "ChannelPlayerAdapter::createPlayer selecting '";
+          clog << selectedObject << "'" << endl;
 
-				childPlayer = player->getPlayer(selectedObject);
-				player->select(childPlayer);
-			}
-		}
+          childPlayer = player->getPlayer (selectedObject);
+          player->select (childPlayer);
+        }
+    }
 
+  FormatterPlayerAdapter::createPlayer ();
+}
 
-		FormatterPlayerAdapter::createPlayer();
-	}
+bool
+ChannelPlayerAdapter::setPropertyValue (AttributionEvent *event, string value)
+{
 
-	bool ChannelPlayerAdapter::setPropertyValue(
-		    AttributionEvent* event, string value) {
+  if (value == "")
+    {
+      event->stop ();
+      return false;
+    }
 
-		if (value == "") {
-			event->stop();
-	  		return false;
-	  	}
+  CascadingDescriptor *descriptor;
+  string propName = "";
+  string paramValue = "FALSE";
 
-		CascadingDescriptor* descriptor;
-		string propName = "";
-		string paramValue = "FALSE";
+  descriptor = object->getDescriptor ();
+  propName = event->getAnchor ()->getPropertyName ();
+  if (propName == "selectedObject")
+    {
+      IPlayer *oldPlayer = NULL;
+      IPlayer *newPlayer = NULL;
+      double oldPlayerMediaTime = 0;
 
-		descriptor = object->getDescriptor();
-		propName = event->getAnchor()->getPropertyName();
-		if (propName == "selectedObject") {
-			IPlayer* oldPlayer = NULL;
-			IPlayer* newPlayer = NULL;
-			double oldPlayerMediaTime = 0;
+      oldPlayer = player->getSelectedPlayer ();
+      if (oldPlayer == NULL)
+        {
+          clog << "ChannelPlayerAdapter::setPropertyValue Warning!";
+          clog << " cant find oldPlayer to new '" << value << "'";
+          clog << endl;
+          event->stop ();
+          return false;
+        }
 
-			oldPlayer = player->getSelectedPlayer();
-			if (oldPlayer == NULL) {
-				clog << "ChannelPlayerAdapter::setPropertyValue Warning!";
-				clog << " cant find oldPlayer to new '" << value << "'";
-				clog << endl;
-				event->stop();
-				return false;
-			}
+      newPlayer = player->getPlayer (value);
+      if (newPlayer == NULL)
+        {
+          clog << "ChannelPlayerAdapter::setPropertyValue Warning!";
+          clog << " cant find newPlayer for '" << value << "'";
+          clog << ". Did you selected the same option twice?" << endl;
+          event->stop ();
+          return false;
+        }
 
-			newPlayer = player->getPlayer(value);
-			if (newPlayer == NULL) {
-				clog << "ChannelPlayerAdapter::setPropertyValue Warning!";
-				clog << " cant find newPlayer for '" << value << "'";
-				clog << ". Did you selected the same option twice?" << endl;
-				event->stop();
-				return false;
-			}
+      if (descriptor->getParameterValue ("x-entryInstant") == "begin")
+        {
+          newPlayer->setMediaTime (0);
+        }
+      else
+        {
+          oldPlayerMediaTime = oldPlayer->getMediaTime () + 0.3;
+          newPlayer->setMediaTime (oldPlayerMediaTime);
+        }
 
-			if (descriptor->getParameterValue("x-entryInstant") == "begin") {
-				newPlayer->setMediaTime(0);
+      oldPlayer->stop ();
+      newPlayer->play ();
 
-			} else {
-				oldPlayerMediaTime = oldPlayer->getMediaTime() + 0.3;
-				newPlayer->setMediaTime(oldPlayerMediaTime);
-			}
-
-			oldPlayer->stop();
-			newPlayer->play();
-
-			player->select(newPlayer);
-			//oldPlayer->stop();
-			event->stop();
-			return true;
-
-		} else {
-			return FormatterPlayerAdapter::setPropertyValue(event, value);
-		}
-	}
+      player->select (newPlayer);
+      // oldPlayer->stop();
+      event->stop ();
+      return true;
+    }
+  else
+    {
+      return FormatterPlayerAdapter::setPropertyValue (event, value);
+    }
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_END

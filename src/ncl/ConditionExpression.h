@@ -18,30 +18,32 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _CONDITIONEXPRESSION_H_
 #define _CONDITIONEXPRESSION_H_
 
-
 #include "Role.h"
 
 GINGA_NCL_BEGIN
 
-	class ConditionExpression {
-		protected:
-			set<string> typeSet;
+class ConditionExpression
+{
+protected:
+  set<string> typeSet;
 
-		public:
-			ConditionExpression() {
-				typeSet.insert("ConditionExpression");
-			};
+public:
+  ConditionExpression () { typeSet.insert ("ConditionExpression"); };
 
-			virtual ~ConditionExpression() {
-				typeSet.clear();
-			};
+  virtual ~ConditionExpression () { typeSet.clear (); };
 
-			virtual bool instanceOf(string type) {
-				return typeSet.count(type);
-			}
+  virtual bool
+  instanceOf (string type)
+  {
+    return typeSet.count (type);
+  }
 
-			virtual string toString(){return "";};
-	};
+  virtual string
+  toString ()
+  {
+    return "";
+  };
+};
 
 GINGA_NCL_END
 

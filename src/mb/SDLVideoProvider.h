@@ -23,60 +23,60 @@ using namespace ::ginga::mb;
 
 #include "SDLAudioProvider.h"
 
-
 GINGA_MB_BEGIN
 
-	class SDLVideoProvider : public SDLAudioProvider {
-		private:
-			int wRes;
-			int hRes;
+class SDLVideoProvider : public SDLAudioProvider
+{
+private:
+  int wRes;
+  int hRes;
 
-			SDLWindow* win;
-			SDL_Texture* tex;
+  SDLWindow *win;
+  SDL_Texture *tex;
 
-			bool hasTex;
+  bool hasTex;
 
-		public:
-			SDLVideoProvider(GingaScreenID screenId, const char* mrl);
+public:
+  SDLVideoProvider (GingaScreenID screenId, const char *mrl);
 
-			virtual ~SDLVideoProvider();
+  virtual ~SDLVideoProvider ();
 
-			void setLoadSymbol(string symbol);
-			string getLoadSymbol();
+  void setLoadSymbol (string symbol);
+  string getLoadSymbol ();
 
-			bool getHasVisual();
+  bool getHasVisual ();
 
-			void* getProviderContent();
-			void setProviderContent(void* texture);
+  void *getProviderContent ();
+  void setProviderContent (void *texture);
 
-			virtual void setAVPid(int aPid, int vPid){};
-			void feedBuffers();
+  virtual void setAVPid (int aPid, int vPid){};
+  void feedBuffers ();
 
-		private:
-			void getVideoSurfaceDescription(void* dsc);
+private:
+  void getVideoSurfaceDescription (void *dsc);
 
-		public:
-			bool checkVideoResizeEvent(GingaSurfaceID frame);
+public:
+  bool checkVideoResizeEvent (GingaSurfaceID frame);
 
-			void getOriginalResolution(int* width, int* height);
-			double getTotalMediaTime();
-			virtual int64_t getVPts();
-			double getMediaTime();
-			void setMediaTime(double pos);
+  void getOriginalResolution (int *width, int *height);
+  double getTotalMediaTime ();
+  virtual int64_t getVPts ();
+  double getMediaTime ();
+  void setMediaTime (double pos);
 
-			void playOver(GingaSurfaceID surface);
+  void playOver (GingaSurfaceID surface);
 
-			void resume(GingaSurfaceID surface);
-			void pause();
-			void stop();
-			void setSoundLevel(float level);
-			bool releaseAll();
+  void resume (GingaSurfaceID surface);
+  void pause ();
+  void stop ();
+  void setSoundLevel (float level);
+  bool releaseAll ();
 
-			void refreshDR(void* data);
+  void refreshDR (void *data);
 
-		private:
-			bool textureCreated();
-	};
+private:
+  bool textureCreated ();
+};
 
 GINGA_MB_END
 

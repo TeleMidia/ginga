@@ -25,8 +25,8 @@ GINGA_NCL_BEGIN
 class Metadata
 {
 public:
-  void* getRDFTree();
-  void setRDFTree(void* tree);
+  void *getRDFTree ();
+  void setRDFTree (void *tree);
 };
 
 GINGA_NCL_END

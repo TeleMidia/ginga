@@ -28,8 +28,8 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_FOCUS_BEGIN
 class FocusSourceManager
 {
 public:
-  static GingaSurfaceID getFocusSourceComponent
-  (GingaScreenID screenId, string src);
+  static GingaSurfaceID getFocusSourceComponent (GingaScreenID screenId,
+                                                 string src);
 };
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_FOCUS_END

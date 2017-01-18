@@ -18,56 +18,63 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclImportConverter.h"
 
-
 GINGA_NCLCONV_BEGIN
 
-    NclImportConverter::NclImportConverter(
-    	    DocumentParser *documentParser) : NclImportParser(
-    	    	    documentParser) {
+NclImportConverter::NclImportConverter (DocumentParser *documentParser)
+    : NclImportParser (documentParser)
+{
+}
 
+void
+NclImportConverter::addImportNCLToImportedDocumentBase (void *parentObject,
+                                                        void *childObject)
+{
 
-	}
+  string docAlias, docLocation;
+  NclDocumentConverter *compiler;
+  NclDocument *thisDocument, *importedDocument;
 
-	void NclImportConverter::addImportNCLToImportedDocumentBase(
-		    void *parentObject, void *childObject) {
+  // apanha o alias e a localizacao do documento
+  docAlias = XMLString::transcode (
+      ((DOMElement *)childObject)
+          ->getAttribute (XMLString::transcode ("alias")));
 
-		string docAlias, docLocation;
-		NclDocumentConverter *compiler;
-		NclDocument *thisDocument, *importedDocument;
+  docLocation = XMLString::transcode (
+      ((DOMElement *)childObject)
+          ->getAttribute (XMLString::transcode ("documentURI")));
 
-		// apanha o alias e a localizacao do documento
-		docAlias = XMLString::transcode(((DOMElement*)childObject)->
-			    getAttribute(XMLString::transcode("alias")));
+  compiler = (NclDocumentConverter *)getDocumentParser ();
+  importedDocument = compiler->importDocument (&docLocation);
+  if (importedDocument != NULL)
+    {
+      thisDocument = (NclDocument *)getDocumentParser ()->getObject (
+          "return", "document");
 
-		docLocation = XMLString::transcode(((DOMElement*)childObject)->
-			    getAttribute(XMLString::transcode("documentURI")));
+      thisDocument->addDocument (importedDocument, docAlias, docLocation);
+    }
+}
 
-		compiler = (NclDocumentConverter*)getDocumentParser();
-		importedDocument = compiler->importDocument(&docLocation);
-		if (importedDocument != NULL) {
-			thisDocument = (NclDocument*)getDocumentParser()->
-				    getObject("return", "document");
+void *
+NclImportConverter::createImportBase (DOMElement *parentElement,
+                                      void *objGrandParent)
+{
 
-			thisDocument->addDocument(
-				    importedDocument, docAlias, docLocation);
-		}
-	}
+  return parentElement;
+}
 
-	void *NclImportConverter::createImportBase(
-		    DOMElement *parentElement, void *objGrandParent) {
+void *
+NclImportConverter::createImportNCL (DOMElement *parentElement,
+                                     void *objGrandParent)
+{
 
-		return parentElement;
-	}
+  return parentElement;
+}
+void *
+NclImportConverter::createImportedDocumentBase (DOMElement *parentElement,
+                                                void *objGrandParent)
+{
 
-	void *NclImportConverter::createImportNCL(
-		    DOMElement *parentElement, void *objGrandParent) {
-
-		return parentElement;
-	}
-	void *NclImportConverter::createImportedDocumentBase(
-		    DOMElement *parentElement, void *objGrandParent) {
-
-		return parentElement;
-	}
+  return parentElement;
+}
 
 GINGA_NCLCONV_END

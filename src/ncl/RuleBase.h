@@ -23,33 +23,30 @@ using namespace ::ginga::ncl;
 
 #include "Rule.h"
 
-
 GINGA_NCL_BEGIN
 
-	class RuleBase : public Base {
-		private:
-			vector<Rule*>* ruleSet;
+class RuleBase : public Base
+{
+private:
+  vector<Rule *> *ruleSet;
 
-		public:
-			RuleBase(string id);
-			virtual ~RuleBase();
+public:
+  RuleBase (string id);
+  virtual ~RuleBase ();
 
-			bool addRule(Rule* rule);
-			bool addBase(
-				    Base* base,
-				    string alias,
-				    string location);
+  bool addRule (Rule *rule);
+  bool addBase (Base *base, string alias, string location);
 
-			void clear();
+  void clear ();
 
-		private:
-			Rule* getRuleLocally(string ruleId);
+private:
+  Rule *getRuleLocally (string ruleId);
 
-		public:
-			Rule* getRule(string ruleId);
-			vector<Rule*>* getRules();
-			bool removeRule(Rule* rule);
-	};
+public:
+  Rule *getRule (string ruleId);
+  vector<Rule *> *getRules ();
+  bool removeRule (Rule *rule);
+};
 
 GINGA_NCL_END
 

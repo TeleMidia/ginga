@@ -26,16 +26,15 @@ class LinkAssessment
 {
 protected:
   set<string> typeSet;
+
 public:
-  LinkAssessment()
+  LinkAssessment () { typeSet.insert ("LinkAssessment"); }
+  virtual ~LinkAssessment () {}
+  virtual string getValue () = 0;
+  bool
+  instanceOf (string type)
   {
-    typeSet.insert("LinkAssessment");
-  }
-  virtual ~LinkAssessment() {}
-  virtual string getValue()=0;
-  bool instanceOf(string type)
-  {
-    return typeSet.count(type);
+    return typeSet.count (type);
   }
 };
 

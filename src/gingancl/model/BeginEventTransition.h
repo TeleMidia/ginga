@@ -26,16 +26,17 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_BEGIN
 
-  class BeginEventTransition : public EventTransition {
-	private:
-		EndEventTransition* endTransition;
+class BeginEventTransition : public EventTransition
+{
+private:
+  EndEventTransition *endTransition;
 
-	public:
-		BeginEventTransition(double time, PresentationEvent* event);
-		virtual ~BeginEventTransition();
-		EndEventTransition* getEndTransition();
-		void setEndTransition(EndEventTransition* entry);
-  };
+public:
+  BeginEventTransition (double time, PresentationEvent *event);
+  virtual ~BeginEventTransition ();
+  EndEventTransition *getEndTransition ();
+  void setEndTransition (EndEventTransition *entry);
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_END
 #endif /*BEGINEVENTTRANSITION_H_*/

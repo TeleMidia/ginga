@@ -22,35 +22,35 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_CTXMGMT_BEGIN
 
-class SystemInfo {
+class SystemInfo
+{
 private:
   float clockSpeed;
-  map<string, string>* sysTable;
+  map<string, string> *sysTable;
 
 public:
-  SystemInfo();
-  ~SystemInfo();
+  SystemInfo ();
+  ~SystemInfo ();
 
 private:
-  void initializeClockSpeed();
-  string getValue(string attribute);
-  void printSysTable();
+  void initializeClockSpeed ();
+  string getValue (string attribute);
+  void printSysTable ();
 
 public:
-  void setSystemTable(map<string, string>* sysTable);
-  string getSystemLanguage();
-  string getCaptionLanguage();
-  string getSubtitleLanguage();
-  float getReturnBitRate();
-  void getScreenSize(GingaScreenID screenId, int* width, int* height);
-  void getScreenGraphicSize(GingaScreenID screenId, int* width,
-                            int* height);
-  string getAudioType();
-  float getCPUClock();
-  float getMemorySize();
-  string getJavaConfiguration();
-  string getJavaProfile();
-  string getLuaVersion();
+  void setSystemTable (map<string, string> *sysTable);
+  string getSystemLanguage ();
+  string getCaptionLanguage ();
+  string getSubtitleLanguage ();
+  float getReturnBitRate ();
+  void getScreenSize (GingaScreenID screenId, int *width, int *height);
+  void getScreenGraphicSize (GingaScreenID screenId, int *width, int *height);
+  string getAudioType ();
+  float getCPUClock ();
+  float getMemorySize ();
+  string getJavaConfiguration ();
+  string getJavaProfile ();
+  string getLuaVersion ();
 };
 
 GINGA_CTXMGMT_END

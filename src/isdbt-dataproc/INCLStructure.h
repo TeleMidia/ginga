@@ -28,9 +28,9 @@ public:
   static const int ST_METADATA = 0x01;
   static const int ST_DATAFILE = 0x02;
   static const int ST_EVENTMAP = 0x03;
-  virtual ~INCLStructure(){};
-  virtual int getType()=0;
-  virtual int getId()=0;
+  virtual ~INCLStructure (){};
+  virtual int getType () = 0;
+  virtual int getId () = 0;
 };
 
 GINGA_DATAPROC_END

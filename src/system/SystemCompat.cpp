@@ -18,965 +18,1104 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "SystemCompat.h"
 #if WITH_MULTIDEVICE
-# include <zip.h>
+#include <zip.h>
 #endif
 
 GINGA_SYSTEM_BEGIN
 
-
 #if WITH_MULTIDEVICE
-	bool getZipError(zip* file, string* strError) {
-		bool hasError = false;
-		int zipErr, sysErr;
-		char buff[2048];
+bool
+getZipError (zip *file, string *strError)
+{
+  bool hasError = false;
+  int zipErr, sysErr;
+  char buff[2048];
 
-		zip_error_get(file, &zipErr, &sysErr);
-		if (zipErr != 0) {
-			zip_error_to_str(buff, 2048, zipErr, sysErr);
-			strError->assign(buff, strlen(buff));
-			hasError = true;
-		}
+  zip_error_get (file, &zipErr, &sysErr);
+  if (zipErr != 0)
+    {
+      zip_error_to_str (buff, 2048, zipErr, sysErr);
+      strError->assign (buff, strlen (buff));
+      hasError = true;
+    }
 
-		return hasError;
-	}
+  return hasError;
+}
 
-	static void printZipError(string function, string strError) {
-		clog << function << " Warning! libzip error: '";
-		clog << strError << "'" << endl;
-	}
+static void
+printZipError (string function, string strError)
+{
+  clog << function << " Warning! libzip error: '";
+  clog << strError << "'" << endl;
+}
 
-	int zipwalker(void* zipfile, string initdir, string dirpath, string iUriD) {
-		DIR           *d;
-		struct dirent *dir;
-		FILE *fp;
-		string relpath;
-		string fullpath;
-		struct zip* file;
-		int len_dirpath;
-		int len_initdir;
-		int ret = 0;
-		string strDirName;
-		string strError;
-		bool hasError;
+int
+zipwalker (void *zipfile, string initdir, string dirpath, string iUriD)
+{
+  DIR *d;
+  struct dirent *dir;
+  FILE *fp;
+  string relpath;
+  string fullpath;
+  struct zip *file;
+  int len_dirpath;
+  int len_initdir;
+  int ret = 0;
+  string strDirName;
+  string strError;
+  bool hasError;
 
-		d = opendir(initdir.c_str());
-		if (d == NULL) {
-			return -1;
-		}
+  d = opendir (initdir.c_str ());
+  if (d == NULL)
+    {
+      return -1;
+    }
 
-		file = (struct zip*)zipfile;
-		len_dirpath = dirpath.length();
-		len_initdir = initdir.length();
+  file = (struct zip *)zipfile;
+  len_dirpath = dirpath.length ();
+  len_initdir = initdir.length ();
 
-		while ((dir = readdir(d))) {
+  while ((dir = readdir (d)))
+    {
 
-			if (strcmp(dir->d_name, ".") == 0 ||
-					strcmp(dir->d_name, "..") == 0) {
+      if (strcmp (dir->d_name, ".") == 0 || strcmp (dir->d_name, "..") == 0)
+        {
 
-				continue;
-			}
+          continue;
+        }
 
-			strDirName.assign(dir->d_name, strlen(dir->d_name));
-			fullpath = initdir + iUriD + strDirName;
-			if (fullpath.length() > len_dirpath) {
-				// Uses "/" as separator because is the default zip funcion separator.
-				relpath = SystemCompat::updatePath(fullpath.substr(len_dirpath + 1), "/");
-			} else {
-				continue;
-			}
+      strDirName.assign (dir->d_name, strlen (dir->d_name));
+      fullpath = initdir + iUriD + strDirName;
+      if (fullpath.length () > len_dirpath)
+        {
+          // Uses "/" as separator because is the default zip funcion
+          // separator.
+          relpath = SystemCompat::updatePath (
+              fullpath.substr (len_dirpath + 1), "/");
+        }
+      else
+        {
+          continue;
+        }
 
-			if (isDirectory(fullpath.c_str())) {
-				// \fixme We should not use that!
-				chdir(fullpath.c_str());
+      if (isDirectory (fullpath.c_str ()))
+        {
+          // \fixme We should not use that!
+          chdir (fullpath.c_str ());
 
-				clog << "Directory ( " << relpath << " ) " << endl;
-				if (zip_dir_add(file, relpath.c_str(), ZIP_FL_ENC_GUESS) < 0) {
-					getZipError(file, &strError);
-					printZipError("zipwalker", strError);
-					ret = -1;
-					break;
-				}
+          clog << "Directory ( " << relpath << " ) " << endl;
+          if (zip_dir_add (file, relpath.c_str (), ZIP_FL_ENC_GUESS) < 0)
+            {
+              getZipError (file, &strError);
+              printZipError ("zipwalker", strError);
+              ret = -1;
+              break;
+            }
 
-				if (zipwalker(file, fullpath, dirpath, iUriD) < 0) {
-					getZipError(file, &strError);
-					printZipError("zipwalker", strError);
-					ret = -1;
-					break;
-				}
+          if (zipwalker (file, fullpath, dirpath, iUriD) < 0)
+            {
+              getZipError (file, &strError);
+              printZipError ("zipwalker", strError);
+              ret = -1;
+              break;
+            }
 
-				// \fixme We should not use that!
-				clog << "Returning to dir '" << initdir << "'" << endl;
-				chdir(initdir.c_str());
+          // \fixme We should not use that!
+          clog << "Returning to dir '" << initdir << "'" << endl;
+          chdir (initdir.c_str ());
+        }
+      else
+        {
 
-			} else {
+          clog << ":: full uri: " << fullpath << endl;
+          clog << ":: init dir: " << initdir << endl;
+          clog << ":: file name: " << string (dir->d_name) << endl;
+          clog << ":: relpath ( " << relpath << " ) " << endl;
 
-				clog << ":: full uri: " << fullpath << endl;
-				clog << ":: init dir: " << initdir << endl;
-				clog << ":: file name: " << string(dir->d_name) << endl;
-				clog << ":: relpath ( " << relpath << " ) " << endl;
+          fp = fopen (fullpath.c_str (), "rb");
+          if (fp == NULL)
+            {
+              clog << ":: can't open " << string (relpath) << endl;
+            }
+          else
+            {
+              struct zip_source *s;
 
-				fp = fopen(fullpath.c_str(), "rb");
-				if (fp == NULL) {
-					clog << ":: can't open "<< string(relpath) << endl;
+              s = zip_source_filep (file, fp, 0, -1);
+              if (s == NULL)
+                {
+                  clog << ":: error [" << string (relpath)
+                       << "]: " << string (zip_strerror (file)) << endl;
+                  ret = -1;
+                  break;
+                }
 
-				} else {
-					struct zip_source *s;
+              if (zip_add (file, relpath.c_str (), s) == -1)
+                {
+                  zip_source_free (s);
+                  clog << ":: error [" << string (relpath)
+                       << "]: " << string (zip_strerror (file)) << endl;
+                  ret = -1;
+                  break;
+                }
+            }
+        }
+    }
 
-					s = zip_source_filep(file, fp, 0, -1);
-					if (s == NULL) {
-						clog << ":: error [" << string(relpath) << "]: " << string(zip_strerror(file)) << endl;
-						ret = -1;
-						break;
-					}
-
-					if (zip_add(file, relpath.c_str(), s) == -1) {
-						zip_source_free(s);
-						clog << ":: error [" << string(relpath) << "]: " << string(zip_strerror(file)) << endl;
-						ret = -1;
-						break;
-					}
-				}
-			}
-		}
-
-		clog << "zipwalker closing dir" << endl;
-		closedir(d);
-		clog << "zipwalker all done!" << endl;
-		return ret;
-	}
+  clog << "zipwalker closing dir" << endl;
+  closedir (d);
+  clog << "zipwalker all done!" << endl;
+  return ret;
+}
 #endif
 
-	string SystemCompat::filesPref        = "";
-	string SystemCompat::ctxFilesPref     = "";
-	string SystemCompat::installPref      = "";
-	string SystemCompat::userCurrentPath  = "";
-	string SystemCompat::gingaCurrentPath = "";
-	string SystemCompat::pathD            = "";
-	string SystemCompat::iUriD            = "";
-	string SystemCompat::fUriD            = "";
-	string SystemCompat::gingaPrefix      = "";
-	bool SystemCompat::initialized        = false;
-	void* SystemCompat::cmInstance        = NULL;
+string SystemCompat::filesPref = "";
+string SystemCompat::ctxFilesPref = "";
+string SystemCompat::installPref = "";
+string SystemCompat::userCurrentPath = "";
+string SystemCompat::gingaCurrentPath = "";
+string SystemCompat::pathD = "";
+string SystemCompat::iUriD = "";
+string SystemCompat::fUriD = "";
+string SystemCompat::gingaPrefix = "";
+bool SystemCompat::initialized = false;
+void *SystemCompat::cmInstance = NULL;
 
-	void SystemCompat::checkValues() {
-		if (!initialized) {
-			initialized = true;
-			initializeGingaPath();
-			initializeGingaPrefix();
-			initializeUserCurrentPath();
-			initializeGingaConfigFile();
-		}
-	}
+void
+SystemCompat::checkValues ()
+{
+  if (!initialized)
+    {
+      initialized = true;
+      initializeGingaPath ();
+      initializeGingaPrefix ();
+      initializeUserCurrentPath ();
+      initializeGingaConfigFile ();
+    }
+}
 
-	void SystemCompat::initializeGingaPrefix() {
-		SystemCompat::gingaPrefix = "";
-	}
+void
+SystemCompat::initializeGingaPrefix ()
+{
+  SystemCompat::gingaPrefix = "";
+}
 
-	void SystemCompat::initializeGingaConfigFile() {
-		ifstream fis;
-		string line, key, partial, value;
+void
+SystemCompat::initializeGingaConfigFile ()
+{
+  ifstream fis;
+  string line, key, partial, value;
 
 #if defined(_MSC_VER)
-		filesPref = gingaCurrentPath + "files\\";
-		installPref = gingaCurrentPath;
+  filesPref = gingaCurrentPath + "files\\";
+  installPref = gingaCurrentPath;
 
-		pathD = ";";
-		iUriD = "\\";
-		fUriD = "/";
+  pathD = ";";
+  iUriD = "\\";
+  fUriD = "/";
 
-		return;
+  return;
 #else
-		string gingaini = "";
+  string gingaini = "";
 
-		fis.open(gingaini.c_str(), ifstream::in);
+  fis.open (gingaini.c_str (), ifstream::in);
 
-		if (!fis.is_open()) {
-			clog << "SystemCompat::initializeGingaConfigFile ";
-			clog << "Warning! Can't open input file: '" << gingaini;
-			clog << "' loading default configuration!" << endl;
+  if (!fis.is_open ())
+    {
+      clog << "SystemCompat::initializeGingaConfigFile ";
+      clog << "Warning! Can't open input file: '" << gingaini;
+      clog << "' loading default configuration!" << endl;
 
-			gingaCurrentPath = gingaPrefix + iUriD + "bin" + iUriD;
-			installPref      = gingaPrefix;
-			filesPref        = gingaPrefix + iUriD + "etc" +
-					 iUriD + "ginga" + iUriD + "files" + iUriD;
+      gingaCurrentPath = gingaPrefix + iUriD + "bin" + iUriD;
+      installPref = gingaPrefix;
+      filesPref = gingaPrefix + iUriD + "etc" + iUriD + "ginga" + iUriD
+                  + "files" + iUriD;
 
-			return;
-		}
+      return;
+    }
 
-		value = "";
+  value = "";
 
-		while (fis.good()) {
-			getline(fis, line);
-			if (line.find("#") == std::string::npos &&
-					(line.find("=") != std::string::npos || value != "")) {
+  while (fis.good ())
+    {
+      getline (fis, line);
+      if (line.find ("#") == std::string::npos
+          && (line.find ("=") != std::string::npos || value != ""))
+        {
 
-				if (value == "") {
-					key     = line.substr(0, line.find_last_of("="));
-					partial = line.substr(
-							(line.find_first_of("=") + 1),
-							line.length() - (line.find_first_of("=") + 1));
+          if (value == "")
+            {
+              key = line.substr (0, line.find_last_of ("="));
+              partial = line.substr ((line.find_first_of ("=") + 1),
+                                     line.length ()
+                                         - (line.find_first_of ("=") + 1));
+            }
+          else
+            {
+              partial = line;
+            }
 
-				} else {
-					partial = line;
-				}
+          value = value + partial;
 
-				value = value + partial;
+          if (value.substr (value.length () - 1, 1) == "\"")
+            {
+              if (key == "system.internal.delimiter")
+                {
+                  iUriD = value.substr (1, value.length () - 2);
+                }
+              else if (key == "system.foreign.delimiter")
+                {
+                  fUriD = value.substr (1, value.length () - 2);
+                }
+              else if (key == "system.files.prefix")
+                {
+                  filesPref = value.substr (1, value.length () - 2);
+                }
+              else if (key == "system.install.prefix")
+                {
+                  installPref = value.substr (1, value.length () - 2);
+                }
 
-				if (value.substr(value.length() - 1, 1) == "\"") {
-					if (key == "system.internal.delimiter") {
-						iUriD       = value.substr(1, value.length() - 2);
+              value = "";
+            }
+          else
+            {
+              value = value + " ";
+            }
+        }
 
-					} else if (key == "system.foreign.delimiter") {
-						fUriD       = value.substr(1, value.length() - 2);
+      clog << "SystemCompat::initializeGingaConfigFile " << endl;
+      clog << "line    = '" << line << "'" << endl;
+      clog << "key     = '" << key << "'" << endl;
+      clog << "partial = '" << partial << "'" << endl;
+      clog << "value   = '" << value << "'" << endl;
+    }
 
-					} else if (key == "system.files.prefix") {
-						filesPref   = value.substr(1, value.length() - 2);
-
-					} else if (key == "system.install.prefix") {
-						installPref = value.substr(1, value.length() - 2);
-					}
-
-					value = "";
-
-				} else {
-					value = value + " ";
-				}
-			}
-
-			clog << "SystemCompat::initializeGingaConfigFile " << endl;
-			clog << "line    = '" << line << "'" << endl;
-			clog << "key     = '" << key << "'" << endl;
-			clog << "partial = '" << partial << "'" << endl;
-			clog << "value   = '" << value << "'" << endl;
-		}
-
-		fis.close();
+  fis.close ();
 #endif
-	}
+}
 
-	void SystemCompat::initializeGingaPath() {
-		string path, currentPath;
-		string gingaBinary = "ginga";
+void
+SystemCompat::initializeGingaPath ()
+{
+  string path, currentPath;
+  string gingaBinary = "ginga";
 
 #ifndef _MSC_VER
-		pathD            = ";";
-		iUriD            = "/";
-		fUriD            = "\\";
+  pathD = ";";
+  iUriD = "/";
+  fUriD = "\\";
 #else
-		pathD            = ":";
-		iUriD            = "\\";
-		fUriD            = "/";
-		gingaBinary = "ginga.exe";
+  pathD = ":";
+  iUriD = "\\";
+  fUriD = "/";
+  gingaBinary = "ginga.exe";
 #endif
 
-		path = getenv("PATH");
-		if (path.find(";") != std::string::npos) {
-			pathD = ";";
-			iUriD = "\\";
-			fUriD = "/";
-
-		} else if (path.find(":") != std::string::npos) {
-			pathD = ":";
-			iUriD = "/";
-			fUriD = "\\";
-		}
+  path = getenv ("PATH");
+  if (path.find (";") != std::string::npos)
+    {
+      pathD = ";";
+      iUriD = "\\";
+      fUriD = "/";
+    }
+  else if (path.find (":") != std::string::npos)
+    {
+      pathD = ":";
+      iUriD = "/";
+      fUriD = "\\";
+    }
 
 #if defined(_MSC_VER)
-		// Get the current executable path
-		HMODULE hModule = GetModuleHandleW(NULL);
-		WCHAR wexepath[300];
-		GetModuleFileNameW(hModule, wexepath, 300);
+  // Get the current executable path
+  HMODULE hModule = GetModuleHandleW (NULL);
+  WCHAR wexepath[300];
+  GetModuleFileNameW (hModule, wexepath, 300);
 
-		char DefChar = ' ';
-		char exepath[300];
-		WideCharToMultiByte(CP_ACP, 0, wexepath,-1, exepath, 260, &DefChar, NULL);
+  char DefChar = ' ';
+  char exepath[300];
+  WideCharToMultiByte (CP_ACP, 0, wexepath, -1, exepath, 260, &DefChar, NULL);
 
-		currentPath = exepath;
+  currentPath = exepath;
 
-		gingaCurrentPath = currentPath.substr( 0,
-						   currentPath.find_last_of(iUriD)+1);
+  gingaCurrentPath
+      = currentPath.substr (0, currentPath.find_last_of (iUriD) + 1);
 
 #else
-		vector<string>* params;
-		vector<string>::iterator i;
+  vector<string> *params;
+  vector<string>::iterator i;
 
-		params = split(path, pathD);
-		if (params != NULL) {
-			i = params->begin();
-			while (i != params->end()) {
-				currentPath = (*i) + iUriD + gingaBinary;
+  params = split (path, pathD);
+  if (params != NULL)
+    {
+      i = params->begin ();
+      while (i != params->end ())
+        {
+          currentPath = (*i) + iUriD + gingaBinary;
 
-				if (access(currentPath.c_str(), (int)X_OK) == 0) {
-					gingaCurrentPath = (*i);
+          if (access (currentPath.c_str (), (int)X_OK) == 0)
+            {
+              gingaCurrentPath = (*i);
 
-					clog << "SystemCompat::initializeGingaPath found ";
-					clog << "ginga binary file inside '" << gingaCurrentPath;
-					clog << "'";
-					clog << endl;
-					if (gingaCurrentPath.find_last_of(iUriD) !=
-							gingaCurrentPath.length() - 1) {
+              clog << "SystemCompat::initializeGingaPath found ";
+              clog << "ginga binary file inside '" << gingaCurrentPath;
+              clog << "'";
+              clog << endl;
+              if (gingaCurrentPath.find_last_of (iUriD)
+                  != gingaCurrentPath.length () - 1)
+                {
 
-						gingaCurrentPath = gingaCurrentPath + iUriD;
-					}
+                  gingaCurrentPath = gingaCurrentPath + iUriD;
+                }
 
-					break;
-				}
-				++i;
-			}
-			delete params;
-		}
+              break;
+            }
+          ++i;
+        }
+      delete params;
+    }
 #endif //_MSC_VER
-	}
+}
 
-	void SystemCompat::initializeUserCurrentPath() {
-		char path[PATH_MAX] = "";
-		getcwd(path, PATH_MAX);
+void
+SystemCompat::initializeUserCurrentPath ()
+{
+  char path[PATH_MAX] = "";
+  getcwd (path, PATH_MAX);
 
-		userCurrentPath.assign(path, strlen(path));
+  userCurrentPath.assign (path, strlen (path));
 
-		if (userCurrentPath.find_last_of(iUriD) !=
-				userCurrentPath.length() - 1) {
+  if (userCurrentPath.find_last_of (iUriD) != userCurrentPath.length () - 1)
+    {
 
-			userCurrentPath = userCurrentPath + iUriD;
-		}
-	}
+      userCurrentPath = userCurrentPath + iUriD;
+    }
+}
 
-	string SystemCompat::getGingaPrefix() {
-		return SystemCompat::gingaPrefix;
-	}
+string
+SystemCompat::getGingaPrefix ()
+{
+  return SystemCompat::gingaPrefix;
+}
 
-	string SystemCompat::updatePath(string dir) {
-		return updatePath(dir, iUriD);
-	}
+string
+SystemCompat::updatePath (string dir)
+{
+  return updatePath (dir, iUriD);
+}
 
-	int SystemCompat::zip_directory(
-			const string &zipfile_path,
-			const string &directory_path,
-			const string &iUriD) {
+int
+SystemCompat::zip_directory (const string &zipfile_path,
+                             const string &directory_path, const string &iUriD)
+{
 
 #if WITH_MULTIDEVICE
-		struct zip* zipFile;
-		int error_open;
-		string dir_name;
-		string partial_path;
-		int pos;
-		string strError;
-		string functionStr;
-		size_t strPos;
+  struct zip *zipFile;
+  int error_open;
+  string dir_name;
+  string partial_path;
+  int pos;
+  string strError;
+  string functionStr;
+  size_t strPos;
 
-		clog << "functions::zip_directory " << endl;
-		clog << "zipfile_path = " << zipfile_path << endl;
-		clog << "directory_path = " << directory_path << endl;
+  clog << "functions::zip_directory " << endl;
+  clog << "zipfile_path = " << zipfile_path << endl;
+  clog << "directory_path = " << directory_path << endl;
 
-		error_open = 0;
+  error_open = 0;
 
-		if ((zipFile=zip_open(zipfile_path.c_str(), ZIP_CREATE, &error_open)) == NULL) {
-			getZipError(zipFile, &strError);
-			printZipError("zip_directory - zip_walker", strError);
-			return 1;
-		}
+  if ((zipFile = zip_open (zipfile_path.c_str (), ZIP_CREATE, &error_open))
+      == NULL)
+    {
+      getZipError (zipFile, &strError);
+      printZipError ("zip_directory - zip_walker", strError);
+      return 1;
+    }
 
-		if (zipFile != NULL && error_open == 0) {
-			strPos = directory_path.find_last_of(iUriD);
-			if (strPos == std::string::npos) {
-				dir_name = directory_path;
+  if (zipFile != NULL && error_open == 0)
+    {
+      strPos = directory_path.find_last_of (iUriD);
+      if (strPos == std::string::npos)
+        {
+          dir_name = directory_path;
+        }
+      else
+        {
+          dir_name = directory_path.substr (strPos + 1);
+        }
 
-			} else {
-				dir_name = directory_path.substr(strPos + 1);
-			}
+      partial_path = directory_path;
 
-			partial_path = directory_path;
+      // This make no sense. I am always adding an empty directory!
+      /* if (zip_dir_add(zipFile, dir_name.c_str(), ZIP_FL_ENC_GUESS) < 0) {
+              getZipError(zipFile, &strError);
+              printZipError("zip_directory - zip_dir_add ", strError);
+              zip_discard(zipFile);
+              return - 1;
+      } */
 
-			// This make no sense. I am always adding an empty directory!
-			/* if (zip_dir_add(zipFile, dir_name.c_str(), ZIP_FL_ENC_GUESS) < 0) {
-				getZipError(zipFile, &strError);
-				printZipError("zip_directory - zip_dir_add ", strError);
-				zip_discard(zipFile);
-				return - 1;
-			} */
+      // \fixme This should not be recursive! So, there would not
+      // be a possibility of stack overflow.
+      if (zipwalker (zipFile, directory_path, partial_path, iUriD) < 0)
+        {
+          getZipError (zipFile, &strError);
+          printZipError ("zip_directory - zip_walker", strError);
+          zip_discard (zipFile);
+          return -1;
+        }
 
-			// \fixme This should not be recursive! So, there would not
-			// be a possibility of stack overflow.
-			if (zipwalker(zipFile, directory_path, partial_path, iUriD) < 0) {
-				getZipError(zipFile, &strError);
-				printZipError("zip_directory - zip_walker", strError);
-				zip_discard(zipFile);
-				return - 1;
-			}
+      /* if (getZipError(zipFile, &strError)) {
+              printZipError("zip_directory - can't close zip file: ",
+      strError);
+              return -1;
+      } */
 
-			/* if (getZipError(zipFile, &strError)) {
-				printZipError("zip_directory - can't close zip file: ", strError);
-				return -1;
-			} */
-
-			if (zip_close(zipFile) == -1) {
-				clog << "functions::zip_directory Warning! can't close zip archive '";
-				clog << zipfile_path << endl;
-				return -1;
-			}
-
-		} else {
-			clog << "functions::zip_directory Warning! Can't open '";
-			clog << zipfile_path << "': error code = " << error_open;
-			clog << endl;
-			return -1;
-		}
+      if (zip_close (zipFile) == -1)
+        {
+          clog
+              << "functions::zip_directory Warning! can't close zip archive '";
+          clog << zipfile_path << endl;
+          return -1;
+        }
+    }
+  else
+    {
+      clog << "functions::zip_directory Warning! Can't open '";
+      clog << zipfile_path << "': error code = " << error_open;
+      clog << endl;
+      return -1;
+    }
 
 #endif
-		clog << "functions::zip_directory all done" << endl;
-		return 0;
-	}
+  clog << "functions::zip_directory all done" << endl;
+  return 0;
+}
 
-
-	int SystemCompat::unzip_file(const char *zipname, const char *filedir) {
+int
+SystemCompat::unzip_file (const char *zipname, const char *filedir)
+{
 #if WITH_MULTIDEVICE
-		struct zip *zipf;
-		struct zip_file *inf;
-		char cur_dir[2000];
-		char buf[1024];
-		int len = 0;
-		int k;
-		int errorp;
-		FILE *ofp;
-		int i;
-		const char *cur_file_name;
-		int name_len;
+  struct zip *zipf;
+  struct zip_file *inf;
+  char cur_dir[2000];
+  char buf[1024];
+  int len = 0;
+  int k;
+  int errorp;
+  FILE *ofp;
+  int i;
+  const char *cur_file_name;
+  int name_len;
 
-		//open our zip file
-		zipf = zip_open(zipname, 0, &errorp);
+  // open our zip file
+  zipf = zip_open (zipname, 0, &errorp);
 
-		//skado if doesnt exist
-		if (!zipf) {
-			return 0;
-		}
+  // skado if doesnt exist
+  if (!zipf)
+    {
+      return 0;
+    }
 
-//		chdir(filedir);
-		//save our current dir so we can return to it
-		getcwd(cur_dir, 2000);
+  //		chdir(filedir);
+  // save our current dir so we can return to it
+  getcwd (cur_dir, 2000);
 
-		//printf (":: cur dir: %s\n",cur_dir); //cout
+  // printf (":: cur dir: %s\n",cur_dir); //cout
 
-		clog << ":: current dir: " << cur_dir << endl;
+  clog << ":: current dir: " << cur_dir << endl;
 
-		//change to the dir we want to extract to
-		chdir(filedir);
-		clog << ":: extract to dir: " << filedir << endl;
+  // change to the dir we want to extract to
+  chdir (filedir);
+  clog << ":: extract to dir: " << filedir << endl;
 
-		for(k = 0; (inf = zip_fopen_index(zipf, k, 0)); k++) {
+  for (k = 0; (inf = zip_fopen_index (zipf, k, 0)); k++)
+    {
 
-			cur_file_name = zip_get_name(zipf, k, 0);
+      cur_file_name = zip_get_name (zipf, k, 0);
 
-			if ((k == 0)&&(cur_file_name == NULL)) {
-				continue;
-			}
+      if ((k == 0) && (cur_file_name == NULL))
+        {
+          continue;
+        }
 
-			name_len = strlen(cur_file_name);
+      name_len = strlen (cur_file_name);
 
-			//open the file for writting
-			char *filename = (char*)malloc((name_len+3)*sizeof(char));
-			filename[0] = '.';
-			//filename[1] = '/';
+      // open the file for writting
+      char *filename = (char *)malloc ((name_len + 3) * sizeof (char));
+      filename[0] = '.';
+// filename[1] = '/';
 #ifdef _MSC_VER
-			filename[1] = '\\';
+      filename[1] = '\\';
 
 #else
-			filename[1] = '/';
+      filename[1] = '/';
 #endif
-			filename[2] = '\0';
+      filename[2] = '\0';
 
-			strcat(filename, cur_file_name);
-			if (cur_file_name[name_len-1] == '/') {
-				//printf(":: creating dir: %s\n",filename);
-				clog << ":: creating dir: " << filename << endl;
+      strcat (filename, cur_file_name);
+      if (cur_file_name[name_len - 1] == '/')
+        {
+          // printf(":: creating dir: %s\n",filename);
+          clog << ":: creating dir: " << filename << endl;
 
 #ifdef _MSC_VER
-				_mkdir(filename);
+          _mkdir (filename);
 #else
-				mkdir(filename, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+          mkdir (filename, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 #endif
+        }
+      else
+        {
+          // printf(":: inflating %s",filename);//cout
+          clog << ":: inflating file " << filename << endl;
 
-			} else {
-				//printf(":: inflating %s",filename);//cout
-				clog << ":: inflating file " << filename << endl;
+          ofp = fopen (filename, "wb");
+          if (!ofp)
+            {
+              continue;
+            }
 
-				ofp = fopen(filename, "wb");
-				if (!ofp) {
-					continue;
-				}
+          while ((len = zip_fread (inf, buf, 1024)))
+            {
+              fwrite (buf, sizeof (char), len, ofp);
 
-				while((len = zip_fread(inf,buf,1024))) {
-					fwrite(buf,sizeof(char),len,ofp);
-
-					/* for (i=0; i < len; i++) {
-						fprintf(ofp, "%c", buf[i]);
-					} */
-
-				}
-//				printf(" [done] \n");
-				//close the files
-				zip_fclose(inf);
-				fclose(ofp);
-			}
-			//printf(" [done]\n");//cout
-			clog << " [done]" << endl;
-			free(filename);
-		}
-		//go back to our original dir
-		chdir(cur_dir);
+              /* for (i=0; i < len; i++) {
+                      fprintf(ofp, "%c", buf[i]);
+              } */
+            }
+          //				printf(" [done] \n");
+          // close the files
+          zip_fclose (inf);
+          fclose (ofp);
+        }
+      // printf(" [done]\n");//cout
+      clog << " [done]" << endl;
+      free (filename);
+    }
+  // go back to our original dir
+  chdir (cur_dir);
 #endif
-		return 1;
-	}
+  return 1;
+}
 
-	string SystemCompat::updatePath(string dir, string separator) {
-		bool found = false;
-		string temp, newDir;
-		vector<string>* params;
-		vector<string>::iterator it;
-		string::size_type pos;
+string
+SystemCompat::updatePath (string dir, string separator)
+{
+  bool found = false;
+  string temp, newDir;
+  vector<string> *params;
+  vector<string>::iterator it;
+  string::size_type pos;
 
-		checkValues();
+  checkValues ();
 
-		if (dir.find("<") != std::string::npos ||
-				checkUriPrefix(dir)) {
+  if (dir.find ("<") != std::string::npos || checkUriPrefix (dir))
+    {
 
-			return dir;
-		}
+      return dir;
+    }
 
-		while (true) {
-			pos = dir.find_first_of(fUriD);
-			if (pos == std::string::npos) {
-				break;
-			}
-			dir.replace(pos, 1, iUriD);
-		}
+  while (true)
+    {
+      pos = dir.find_first_of (fUriD);
+      if (pos == std::string::npos)
+        {
+          break;
+        }
+      dir.replace (pos, 1, iUriD);
+    }
 
-		if (dir.find("..") == std::string::npos) {
-			return dir;
-		}
+  if (dir.find ("..") == std::string::npos)
+    {
+      return dir;
+    }
 
-		params = split(dir, iUriD);
-		newDir = "";
-		it = params->begin();
-		while (it != params->end()) {
-			if ((it + 1) != params->end()) {
-				temp = *(it + 1);
-				if (temp != ".." || found) {
+  params = split (dir, iUriD);
+  newDir = "";
+  it = params->begin ();
+  while (it != params->end ())
+    {
+      if ((it + 1) != params->end ())
+        {
+          temp = *(it + 1);
+          if (temp != ".." || found)
+            {
 #ifdef _MSC_VER
-					if (newDir == "") {
-						newDir = (*it); //Drive letter:
-
-					} else {
-						newDir = newDir + separator + (*it);
-					}
+              if (newDir == "")
+                {
+                  newDir = (*it); // Drive letter:
+                }
+              else
+                {
+                  newDir = newDir + separator + (*it);
+                }
 #else
-					newDir = newDir + separator + (*it);
+              newDir = newDir + separator + (*it);
 #endif //_MSC_VER
+            }
+          else
+            {
+              ++it;
+              found = true;
+            }
+        }
+      else if ((*it) != ".")
+        {
+          newDir = newDir + separator + (*it);
+        }
+      ++it;
+    }
+  delete params;
 
-				} else {
-					++it;
-					found = true;
-				}
+  if (found)
+    {
+      return SystemCompat::updatePath (newDir);
+    }
+  else
+    {
+      return newDir;
+    }
+}
 
-			} else if ((*it) != ".") {
-				newDir = newDir + separator + (*it);
+bool
+SystemCompat::isXmlStr (string location)
+{
+  if (location.find ("<") != std::string::npos
+      || location.find ("?xml") != std::string::npos
+      || location.find ("|") != std::string::npos)
+    {
 
-			}
-			++it;
-		}
-		delete params;
+      return true;
+    }
 
-		if (found) {
-			return SystemCompat::updatePath(newDir);
+  return false;
+}
 
-		} else {
-			return newDir;
-		}
-	}
+bool
+SystemCompat::checkUriPrefix (string uri)
+{
+  string::size_type len;
 
-	bool SystemCompat::isXmlStr(string location) {
-		if (location.find("<") != std::string::npos ||
-				location.find("?xml") != std::string::npos ||
-				location.find("|") != std::string::npos) {
+  len = uri.length ();
+  if ((len >= 10 && uri.substr (0, 10) == "x-sbtvdts:")
+      || (len >= 9 && uri.substr (0, 9) == "sbtvd-ts:")
+      || (len >= 7 && uri.substr (0, 7) == "http://")
+      || (len >= 6 && uri.substr (0, 6) == "ftp://")
+      || (len >= 7 && uri.substr (0, 7) == "file://")
+      || (len >= 6 && uri.substr (0, 6) == "tcp://")
+      || (len >= 6 && uri.substr (0, 6) == "udp://")
+      || (len >= 6 && uri.substr (0, 6) == "rtp://")
+      || (len >= 13 && uri.substr (0, 13) == "ncl-mirror://")
+      || (len >= 7 && uri.substr (0, 7) == "rtsp://"))
+    {
 
-			return true;
-		}
+      return true;
+    }
 
-		return false;
-	}
+  return false;
+}
 
-	bool SystemCompat::checkUriPrefix(string uri) {
-		string::size_type len;
+bool
+SystemCompat::isAbsolutePath (string path)
+{
+  string::size_type i, len;
 
-		len = uri.length();
-		if ((len >= 10 && uri.substr(0,10) == "x-sbtvdts:")        ||
-				(len >= 9 && uri.substr(0,9) == "sbtvd-ts:")       ||
-				(len >= 7 && uri.substr(0,7) == "http://")         ||
-				(len >= 6 && uri.substr(0,6) == "ftp://")          ||
-				(len >= 7 && uri.substr(0,7) == "file://")         ||
-				(len >= 6 && uri.substr(0,6) == "tcp://")          ||
-				(len >= 6 && uri.substr(0,6) == "udp://")          ||
-				(len >= 6 && uri.substr(0,6) == "rtp://")          ||
-				(len >= 13 && uri.substr(0,13) == "ncl-mirror://") ||
-				(len >= 7 && uri.substr(0,7) == "rtsp://")) {
+  checkValues ();
 
-			return true;
-		}
+  if (isXmlStr (path))
+    {
+      return true;
+    }
 
-		return false;
-	}
+  len = path.length ();
+  if (checkUriPrefix (path))
+    {
+      return true;
+    }
 
-	bool SystemCompat::isAbsolutePath(string path) {
-		string::size_type i, len;
+  i = path.find_first_of (fUriD);
+  while (i != string::npos)
+    {
+      path.replace (i, 1, iUriD);
+      i = path.find_first_of (fUriD);
+    }
 
-		checkValues();
+  if ((len >= 1 && path.substr (0, 1) == iUriD)
+      || (len >= 2 && path.substr (1, 2) == ":" + iUriD))
+    {
 
-		if (isXmlStr(path)) {
-			return true;
-		}
+      return true;
+    }
 
-		len = path.length();
-		if (checkUriPrefix(path)) {
-			return true;
-		}
+  return false;
+}
 
-		i = path.find_first_of(fUriD);
-		while (i != string::npos) {
-			path.replace(i, 1, iUriD);
-			i = path.find_first_of(fUriD);
-		}
+string
+SystemCompat::getIUriD ()
+{
+  checkValues ();
+  return iUriD;
+}
 
-		if ((len >= 1 && path.substr(0,1) == iUriD) ||
-				(len >= 2 && path.substr(1,2) == ":" + iUriD)) {
+string
+SystemCompat::getFUriD ()
+{
+  checkValues ();
+  return fUriD;
+}
 
-			return true;
-		}
+string
+SystemCompat::getPath (string filename)
+{
+  string path;
+  string::size_type i;
 
-		return false;
-	}
+  i = filename.find_last_of (iUriD);
+  if (i != string::npos)
+    {
+      path = filename.substr (0, i);
+    }
+  else
+    {
+      path = "";
+    }
 
-	string SystemCompat::getIUriD() {
-		checkValues();
-		return iUriD;
-	}
+  return path;
+}
 
-	string SystemCompat::getFUriD() {
-		checkValues();
-		return fUriD;
-	}
+string
+SystemCompat::convertRelativePath (string relPath)
+{
 
-	string SystemCompat::getPath(string filename) {
-		string path;
-		string::size_type i;
-
-		i = filename.find_last_of(iUriD);
-		if (i != string::npos) {
-			path = filename.substr(0, i);
-
-		} else {
-			path = "";
-		}
-
-		return path;
-	}
-
-	string SystemCompat::convertRelativePath(string relPath) {
-
-		string _str;
-		_str = relPath;
+  string _str;
+  _str = relPath;
 
 #ifdef _MSC_VER
-		_str.replace( relPath.begin(), relPath.end(), '/', '\\');
+  _str.replace (relPath.begin (), relPath.end (), '/', '\\');
 #endif
-		return _str;
-	}
+  return _str;
+}
 
-	string SystemCompat::getGingaBinPath() {
-		checkValues();
+string
+SystemCompat::getGingaBinPath ()
+{
+  checkValues ();
 
-		return gingaCurrentPath;
-	}
+  return gingaCurrentPath;
+}
 
-	string SystemCompat::getUserCurrentPath() {
-		checkValues();
+string
+SystemCompat::getUserCurrentPath ()
+{
+  checkValues ();
 
-		return userCurrentPath;
-	}
+  return userCurrentPath;
+}
 
-	void SystemCompat::setGingaContextPrefix(string newBaseDir) {
-		ctxFilesPref = newBaseDir;
-	}
+void
+SystemCompat::setGingaContextPrefix (string newBaseDir)
+{
+  ctxFilesPref = newBaseDir;
+}
 
-	string SystemCompat::getGingaContextPrefix() {
-		if (ctxFilesPref == "") {
-			checkValues();
-			ctxFilesPref = filesPref + iUriD + "contextmanager" + iUriD;
-		}
+string
+SystemCompat::getGingaContextPrefix ()
+{
+  if (ctxFilesPref == "")
+    {
+      checkValues ();
+      ctxFilesPref = filesPref + iUriD + "contextmanager" + iUriD;
+    }
 
-		return updatePath(ctxFilesPref);
-	}
+  return updatePath (ctxFilesPref);
+}
 
-	string SystemCompat::appendGingaFilesPrefix(string relUrl) {
-		string absuri;
+string
+SystemCompat::appendGingaFilesPrefix (string relUrl)
+{
+  string absuri;
 
-		checkValues();
-		absuri = updatePath(filesPref + iUriD + relUrl);
-		return absuri;
-	}
+  checkValues ();
+  absuri = updatePath (filesPref + iUriD + relUrl);
+  return absuri;
+}
 
-	string SystemCompat::appendGingaInstallPrefix(string relUrl) {
-		string absuri;
-		checkValues();
-		absuri = updatePath(installPref + iUriD + relUrl);
-		return absuri;
-	}
+string
+SystemCompat::appendGingaInstallPrefix (string relUrl)
+{
+  string absuri;
+  checkValues ();
+  absuri = updatePath (installPref + iUriD + relUrl);
+  return absuri;
+}
 
 #if defined(_MSC_VER)
- #define DELTA_EPOCH_IN_MICROSECS  11644473600000000Ui64
+#define DELTA_EPOCH_IN_MICROSECS 11644473600000000Ui64
 #else
- #define DELTA_EPOCH_IN_MICROSECS  11644473600000000ULL
+#define DELTA_EPOCH_IN_MICROSECS 11644473600000000ULL
 #endif
 
-	int SystemCompat::getUserClock(struct timeval* usrClk) {
-		int rval = 0;
+int
+SystemCompat::getUserClock (struct timeval *usrClk)
+{
+  int rval = 0;
 
 #if defined(_MSC_VER)
-		double temp;
+  double temp;
 
-		temp            = clock() / CLOCKS_PER_SEC;
-		usrClk->tv_sec  = (long) temp;
-		usrClk->tv_usec = 1000000*(temp - usrClk->tv_sec);
+  temp = clock () / CLOCKS_PER_SEC;
+  usrClk->tv_sec = (long)temp;
+  usrClk->tv_usec = 1000000 * (temp - usrClk->tv_sec);
 #else
-		struct rusage usage;
+  struct rusage usage;
 
-		if (getrusage(RUSAGE_SELF, &usage) != 0) {
-			clog << "SystemCompat::getUserClock getrusage error." << endl;
-			rval = -1;
-
-		} else {
-			usrClk->tv_sec  = usage.ru_utime.tv_sec;
-			usrClk->tv_usec = usage.ru_utime.tv_usec;
-		}
+  if (getrusage (RUSAGE_SELF, &usage) != 0)
+    {
+      clog << "SystemCompat::getUserClock getrusage error." << endl;
+      rval = -1;
+    }
+  else
+    {
+      usrClk->tv_sec = usage.ru_utime.tv_sec;
+      usrClk->tv_usec = usage.ru_utime.tv_usec;
+    }
 #endif
-		return rval;
-	}
+  return rval;
+}
 
-	static std::ofstream logOutput;
+static std::ofstream logOutput;
 
-	void SystemCompat::setLogTo(short logType, string sufix) {
-		string logUri = "";
+void
+SystemCompat::setLogTo (short logType, string sufix)
+{
+  string logUri = "";
 
-		switch (logType) {
-			case LOG_NULL:
-				if (logOutput) {
-					logOutput.close();
-				}
+  switch (logType)
+    {
+    case LOG_NULL:
+      if (logOutput)
+        {
+          logOutput.close ();
+        }
 
-				logOutput.open("/dev/null");
-				if (logOutput) {
-					clog.rdbuf(logOutput.rdbuf());
-				}
-				break;
+      logOutput.open ("/dev/null");
+      if (logOutput)
+        {
+          clog.rdbuf (logOutput.rdbuf ());
+        }
+      break;
 
-			case LOG_STDO:
-				if (logOutput) {
-					logOutput.close();
-				}
+    case LOG_STDO:
+      if (logOutput)
+        {
+          logOutput.close ();
+        }
 
-				logOutput.open("/dev/stdout");
-				if (logOutput) {
-					clog.rdbuf(logOutput.rdbuf());
-				}
-				break;
+      logOutput.open ("/dev/stdout");
+      if (logOutput)
+        {
+          clog.rdbuf (logOutput.rdbuf ());
+        }
+      break;
 
-			case LOG_FILE:
-				logUri = string (g_get_tmp_dir ()) + "/" + iUriD + "ginga";
-				g_mkdir(logUri.c_str(), 0755);
-				logUri = logUri + iUriD + "logFile" + sufix + ".txt";
-				if (logOutput) {
-					logOutput.close();
-				}
+    case LOG_FILE:
+      logUri = string (g_get_tmp_dir ()) + "/" + iUriD + "ginga";
+      g_mkdir (logUri.c_str (), 0755);
+      logUri = logUri + iUriD + "logFile" + sufix + ".txt";
+      if (logOutput)
+        {
+          logOutput.close ();
+        }
 
-				logOutput.open(logUri.c_str());
-				if (logOutput) {
-					clog.rdbuf(logOutput.rdbuf());
-				}
-				break;
+      logOutput.open (logUri.c_str ());
+      if (logOutput)
+        {
+          clog.rdbuf (logOutput.rdbuf ());
+        }
+      break;
 
-			default:
-				break;
-		}
-	}
+    default:
+      break;
+    }
+}
 
-	string SystemCompat::checkPipeName(string pipeName) {
-		string newPipeName = pipeName;
+string
+SystemCompat::checkPipeName (string pipeName)
+{
+  string newPipeName = pipeName;
 
-		assert(pipeName != "");
+  assert (pipeName != "");
 
 #if defined(_MSC_VER)
-		if (pipeName.find("\\\\.\\pipe\\") == std::string::npos) {
-			newPipeName = "\\\\.\\pipe\\" + pipeName;
-		}
+  if (pipeName.find ("\\\\.\\pipe\\") == std::string::npos)
+    {
+      newPipeName = "\\\\.\\pipe\\" + pipeName;
+    }
 #else
-		string tempDir = string (g_get_tmp_dir ()) + "/";
+  string tempDir = string (g_get_tmp_dir ()) + "/";
 
-		if (pipeName.length() < tempDir.length() ||
-				pipeName.substr(0, tempDir.length()) != tempDir) {
+  if (pipeName.length () < tempDir.length ()
+      || pipeName.substr (0, tempDir.length ()) != tempDir)
+    {
 
-			newPipeName = tempDir + pipeName;
-		}
+      newPipeName = tempDir + pipeName;
+    }
 #endif
 
-		return newPipeName;
-	}
+  return newPipeName;
+}
 
-	void SystemCompat::checkPipeDescriptor(PipeDescriptor pd) {
+void
+SystemCompat::checkPipeDescriptor (PipeDescriptor pd)
+{
 #if defined(_MSC_VER)
-		assert(pd > 0);
+  assert (pd > 0);
 #else
-		assert(pd >= 0);
+  assert (pd >= 0);
 #endif
-	}
+}
 
-	bool SystemCompat::createPipe(string pipeName, PipeDescriptor* pd) {
-		pipeName = checkPipeName(pipeName);
-
-#if defined(_MSC_VER)
-		*pd = CreateNamedPipe(
-				pipeName.c_str(),
-				PIPE_ACCESS_OUTBOUND, // 1-way pipe
-				PIPE_TYPE_BYTE, // send data as a byte stream
-				1, // only allow 1 instance of this pipe
-				0, // no outbound buffer
-				0, // no inbound buffer
-				0, // use default wait time
-				NULL); // use default security attributes);
-
-		if (*pd == NULL || *pd == INVALID_HANDLE_VALUE) {
-			clog << "SystemCompat::createPipe Warning! Failed to create '";
-			clog << pipeName << "' pipe instance.";
-			clog << endl;
-			// TODO: look up error code: GetLastError()
-			return false;
-		}
-
-		// This call blocks until a client process connects to the pipe
-		BOOL result = ConnectNamedPipe(*pd, NULL);
-		if (!result) {
-			clog << "SystemCompat::createPipe Warning! Failed to make ";
-			clog << "connection on " << pipeName << endl;
-			// TODO: look up error code: GetLastError()
-			CloseHandle(*pd); // close the pipe
-			return false;
-		}
-#else
-		mkfifo(pipeName.c_str(), 0666);
-
-		*pd = open(pipeName.c_str(), O_WRONLY);
-		if (*pd == -1) {
-			clog << "SystemCompat::createPipe Warning! Failed to make ";
-			clog << "connection on " << pipeName << endl;
-
-			return false;
-		}
-#endif
-		return true;
-	}
-
-	bool SystemCompat::openPipe(string pipeName, PipeDescriptor* pd) {
-		pipeName = checkPipeName(pipeName);
+bool
+SystemCompat::createPipe (string pipeName, PipeDescriptor *pd)
+{
+  pipeName = checkPipeName (pipeName);
 
 #if defined(_MSC_VER)
-		*pd = CreateFile(
-				pipeName.c_str(),
-				GENERIC_READ,
-				FILE_SHARE_READ | FILE_SHARE_WRITE,
-				NULL,
-				OPEN_EXISTING,
-				FILE_ATTRIBUTE_NORMAL,
-				NULL);
+  *pd = CreateNamedPipe (pipeName.c_str (),
+                         PIPE_ACCESS_OUTBOUND, // 1-way pipe
+                         PIPE_TYPE_BYTE,       // send data as a byte stream
+                         1,     // only allow 1 instance of this pipe
+                         0,     // no outbound buffer
+                         0,     // no inbound buffer
+                         0,     // use default wait time
+                         NULL); // use default security attributes);
 
-		if (*pd == INVALID_HANDLE_VALUE) {
-			clog << "SystemCompat::openPipe Failed to open '";
-			clog << pipeName << "'" << endl;
-			// TODO: look up error code: GetLastError()
-			return false;
-		}
+  if (*pd == NULL || *pd == INVALID_HANDLE_VALUE)
+    {
+      clog << "SystemCompat::createPipe Warning! Failed to create '";
+      clog << pipeName << "' pipe instance.";
+      clog << endl;
+      // TODO: look up error code: GetLastError()
+      return false;
+    }
+
+  // This call blocks until a client process connects to the pipe
+  BOOL result = ConnectNamedPipe (*pd, NULL);
+  if (!result)
+    {
+      clog << "SystemCompat::createPipe Warning! Failed to make ";
+      clog << "connection on " << pipeName << endl;
+      // TODO: look up error code: GetLastError()
+      CloseHandle (*pd); // close the pipe
+      return false;
+    }
 #else
-		*pd = open(pipeName.c_str(), O_RDONLY);
-		if (*pd < 0) {
-			clog << "SystemCompat::openPipe Warning! ";
-			clog << "Can't open '" << pipeName;
-			clog << "'" << endl;
-			perror("SystemCompat::openPipe can't open pipe");
-			return false;
-		}
-#endif
-		return true;
-	}
+  mkfifo (pipeName.c_str (), 0666);
 
-	void SystemCompat::closePipe(PipeDescriptor pd) {
-		checkPipeDescriptor(pd);
+  *pd = open (pipeName.c_str (), O_WRONLY);
+  if (*pd == -1)
+    {
+      clog << "SystemCompat::createPipe Warning! Failed to make ";
+      clog << "connection on " << pipeName << endl;
+
+      return false;
+    }
+#endif
+  return true;
+}
+
+bool
+SystemCompat::openPipe (string pipeName, PipeDescriptor *pd)
+{
+  pipeName = checkPipeName (pipeName);
 
 #if defined(_MSC_VER)
-		CloseHandle(pd);
+  *pd = CreateFile (pipeName.c_str (), GENERIC_READ,
+                    FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING,
+                    FILE_ATTRIBUTE_NORMAL, NULL);
+
+  if (*pd == INVALID_HANDLE_VALUE)
+    {
+      clog << "SystemCompat::openPipe Failed to open '";
+      clog << pipeName << "'" << endl;
+      // TODO: look up error code: GetLastError()
+      return false;
+    }
 #else
-		close(pd);
+  *pd = open (pipeName.c_str (), O_RDONLY);
+  if (*pd < 0)
+    {
+      clog << "SystemCompat::openPipe Warning! ";
+      clog << "Can't open '" << pipeName;
+      clog << "'" << endl;
+      perror ("SystemCompat::openPipe can't open pipe");
+      return false;
+    }
 #endif
+  return true;
+}
 
-		clog << "SystemCompat::closePipe '";
-		clog << pd << "'" << endl;
-	}
-
-	int SystemCompat::readPipe(PipeDescriptor pd, char* buffer, int buffSize) {
-		int bytesRead = 0;
-
-		checkPipeDescriptor(pd);
+void
+SystemCompat::closePipe (PipeDescriptor pd)
+{
+  checkPipeDescriptor (pd);
 
 #if defined(_MSC_VER)
-		DWORD bRead = 0;
-		BOOL result = ReadFile(
-				pd,
-				buffer,
-				buffSize,
-				&bRead,
-				NULL);
-
-		bytesRead = (int)bRead;
+  CloseHandle (pd);
 #else
-		bytesRead = read(pd, buffer, buffSize);
+  close (pd);
 #endif
 
-		return bytesRead;
-	}
+  clog << "SystemCompat::closePipe '";
+  clog << pd << "'" << endl;
+}
 
-	int SystemCompat::writePipe(PipeDescriptor pd, char* data, int dataSize) {
-		int bytesWritten = 0;
+int
+SystemCompat::readPipe (PipeDescriptor pd, char *buffer, int buffSize)
+{
+  int bytesRead = 0;
 
-		assert(pd > 0);
+  checkPipeDescriptor (pd);
 
 #if defined(_MSC_VER)
-		// This call blocks until a client process reads all the data
-		DWORD bWritten = 0;
-		BOOL result = WriteFile(
-				pd,
-				data,
-				dataSize,
-				&bWritten,
-				NULL); // not using overlapped IO
+  DWORD bRead = 0;
+  BOOL result = ReadFile (pd, buffer, buffSize, &bRead, NULL);
 
-		if (!result) {
-			clog << "SystemCompat::writePipe error: '";
-			clog << GetLastError() << "' pd = " << pd << endl;
-		}
-		bytesWritten = (int)bWritten;
-
-		assert(bytesWritten == dataSize);
+  bytesRead = (int)bRead;
 #else
-		bytesWritten = write(pd, (void*)data, dataSize);
+  bytesRead = read (pd, buffer, buffSize);
 #endif
 
-		return bytesWritten;
-	}
+  return bytesRead;
+}
 
+int
+SystemCompat::writePipe (PipeDescriptor pd, char *data, int dataSize)
+{
+  int bytesWritten = 0;
+
+  assert (pd > 0);
+
+#if defined(_MSC_VER)
+  // This call blocks until a client process reads all the data
+  DWORD bWritten = 0;
+  BOOL result = WriteFile (pd, data, dataSize, &bWritten,
+                           NULL); // not using overlapped IO
+
+  if (!result)
+    {
+      clog << "SystemCompat::writePipe error: '";
+      clog << GetLastError () << "' pd = " << pd << endl;
+    }
+  bytesWritten = (int)bWritten;
+
+  assert (bytesWritten == dataSize);
+#else
+  bytesWritten = write (pd, (void *)data, dataSize);
+#endif
+
+  return bytesWritten;
+}
 
 GINGA_SYSTEM_END

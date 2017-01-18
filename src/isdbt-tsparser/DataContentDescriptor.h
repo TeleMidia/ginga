@@ -22,30 +22,31 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TSPARSER_BEGIN
 
-	class DataContentDescriptor : public IMpegDescriptor{
-		protected:
-			unsigned short dataComponentId;
-			unsigned char entryComponent;
-			unsigned char selectorLength;
-			char* selectorByte;
-			unsigned char numOfComponentRef;
-			char* componentRef;
-			char languageCode[3];//epg metadata
-			unsigned char textLength;
-			char* textChar; //epg metadata
+class DataContentDescriptor : public IMpegDescriptor
+{
+protected:
+  unsigned short dataComponentId;
+  unsigned char entryComponent;
+  unsigned char selectorLength;
+  char *selectorByte;
+  unsigned char numOfComponentRef;
+  char *componentRef;
+  char languageCode[3]; // epg metadata
+  unsigned char textLength;
+  char *textChar; // epg metadata
 
-		public:
-			DataContentDescriptor();
-			~DataContentDescriptor();
-			unsigned char getDescriptorTag();
-			unsigned int getDescriptorLength();
-			string getLanguageCode();
-			string getTextChar();
-			unsigned int getTextLength();
-			unsigned int getSelectorLength();
-			void print();
-			size_t process (char*data, size_t pos);
-	};
+public:
+  DataContentDescriptor ();
+  ~DataContentDescriptor ();
+  unsigned char getDescriptorTag ();
+  unsigned int getDescriptorLength ();
+  string getLanguageCode ();
+  string getTextChar ();
+  unsigned int getTextLength ();
+  unsigned int getSelectorLength ();
+  void print ();
+  size_t process (char *data, size_t pos);
+};
 
 GINGA_TSPARSER_END
 

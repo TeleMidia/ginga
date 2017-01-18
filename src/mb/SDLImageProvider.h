@@ -20,33 +20,36 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "IImageProvider.h"
 
-
 #include "SDL_image.h"
-
 
 GINGA_MB_BEGIN
 
-	class SDLImageProvider : public IImageProvider {
-		private:
-			static bool mutexInit;
-			static bool initialized;
-			static short imageRefs;
+class SDLImageProvider : public IImageProvider
+{
+private:
+  static bool mutexInit;
+  static bool initialized;
+  static short imageRefs;
 
-			static pthread_mutex_t pMutex;
+  static pthread_mutex_t pMutex;
 
-			GingaScreenID myScreen;
-			string imgUri;
+  GingaScreenID myScreen;
+  string imgUri;
 
-		public:
-			SDLImageProvider(GingaScreenID screenId, const char* mrl);
-			virtual ~SDLImageProvider();
+public:
+  SDLImageProvider (GingaScreenID screenId, const char *mrl);
+  virtual ~SDLImageProvider ();
 
-			string getLoadSymbol() {return "SDLImageProvider";};
+  string
+  getLoadSymbol ()
+  {
+    return "SDLImageProvider";
+  };
 
-			void playOver(GingaSurfaceID surface);
+  void playOver (GingaSurfaceID surface);
 
-			bool releaseAll();
-	};
+  bool releaseAll ();
+};
 
 GINGA_MB_END
 

@@ -25,39 +25,38 @@ using namespace ::ginga::util;
 #include "AssessmentStatement.h"
 #include "Role.h"
 
-
 GINGA_NCL_BEGIN
 
-	class CompoundStatement : public Statement {
-		public:
-			static const short OP_AND = 0;
-			static const short OP_OR = 1;
+class CompoundStatement : public Statement
+{
+public:
+  static const short OP_AND = 0;
+  static const short OP_OR = 1;
 
-		protected:
-			vector<Statement*>* statements;
-			short myOperator;
-			bool negated;
+protected:
+  vector<Statement *> *statements;
+  short myOperator;
+  bool negated;
 
-		public:
-			CompoundStatement();
-			CompoundStatement(
-				    Statement* p1,
-				    Statement* p2,
-				    short op);
+public:
+  CompoundStatement ();
+  CompoundStatement (Statement *p1, Statement *p2, short op);
 
-			virtual ~CompoundStatement();
-			void setOperator(short op);
-			short getOperator();
-			vector<Statement*>* getStatements();
-			void addStatement(Statement* statement);
-			void removeStatement(Statement* statement);
-			void setNegated(bool newNegated);
-			bool isNegated();
-			vector<Role*> *getRoles();
-			bool instanceOf(string type) {
-				return Statement::instanceOf(type);
-			}
-	};
+  virtual ~CompoundStatement ();
+  void setOperator (short op);
+  short getOperator ();
+  vector<Statement *> *getStatements ();
+  void addStatement (Statement *statement);
+  void removeStatement (Statement *statement);
+  void setNegated (bool newNegated);
+  bool isNegated ();
+  vector<Role *> *getRoles ();
+  bool
+  instanceOf (string type)
+  {
+    return Statement::instanceOf (type);
+  }
+};
 
 GINGA_NCL_END
 

@@ -22,15 +22,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MULTIDEVICE_BEGIN
 
-  class ISocketService {
-	public:
-		virtual ~ISocketService(){};
-		virtual unsigned int getInterfaceIPAddress()=0;
-		virtual int getServicePort()=0;
-		virtual void dataRequest(char* data, int taskSize, bool repeat=true)=0;
-		virtual bool checkOutputBuffer()=0;
-		virtual bool checkInputBuffer(char* data, int* size)=0;
-  };
+class ISocketService
+{
+public:
+  virtual ~ISocketService (){};
+  virtual unsigned int getInterfaceIPAddress () = 0;
+  virtual int getServicePort () = 0;
+  virtual void dataRequest (char *data, int taskSize, bool repeat = true) = 0;
+  virtual bool checkOutputBuffer () = 0;
+  virtual bool checkInputBuffer (char *data, int *size) = 0;
+};
 
 GINGA_MULTIDEVICE_END
 

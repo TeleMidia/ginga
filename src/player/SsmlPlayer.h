@@ -34,34 +34,30 @@ using namespace ::ginga::system;
 
 #include "Player.h"
 
-
-
 GINGA_PLAYER_BEGIN
 
-	class SsmlPlayer :
-	    public Thread,
-	    public Player {
-		private:
-			string content;
+class SsmlPlayer : public Thread, public Player
+{
+private:
+  string content;
 
-		public:
-			SsmlPlayer(GingaScreenID screenId, string mrl);
-			virtual ~SsmlPlayer();
+public:
+  SsmlPlayer (GingaScreenID screenId, string mrl);
+  virtual ~SsmlPlayer ();
 
-		protected:
-			void setFile(string mrl);
+protected:
+  void setFile (string mrl);
 
-		private:
-			void loadSsml();
+private:
+  void loadSsml ();
 
-		public:
-			void run();
-			bool play();
-			void stop();
-			void resume();
-			virtual void setPropertyValue(string name, string value);
-
-	};
+public:
+  void run ();
+  bool play ();
+  void stop ();
+  void resume ();
+  virtual void setPropertyValue (string name, string value);
+};
 
 GINGA_PLAYER_END
 

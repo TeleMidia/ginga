@@ -20,22 +20,21 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
 
-	AnchorEvent::AnchorEvent(
-			    string id,
-			    void* executionObject,
-			    ContentAnchor* anchor) :
-				    FormatterEvent(id, executionObject) {
+AnchorEvent::AnchorEvent (string id, void *executionObject,
+                          ContentAnchor *anchor)
+    : FormatterEvent (id, executionObject)
+{
 
-		this->anchor = anchor;
-		typeSet.insert("AnchorEvent");
-	}
+  this->anchor = anchor;
+  typeSet.insert ("AnchorEvent");
+}
 
-	AnchorEvent::~AnchorEvent() {
-		removeInstance(this);
-	}
+AnchorEvent::~AnchorEvent () { removeInstance (this); }
 
-	ContentAnchor* AnchorEvent::getAnchor() {
-		return anchor;
-	}
+ContentAnchor *
+AnchorEvent::getAnchor ()
+{
+  return anchor;
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END

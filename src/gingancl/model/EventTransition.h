@@ -21,32 +21,32 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "PresentationEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_BEGIN
 
-  class EventTransition {
-	protected:
-		set<string> typeSet;
+class EventTransition
+{
+protected:
+  set<string> typeSet;
 
-	private:
-		PresentationEvent* event;
-		double time;
+private:
+  PresentationEvent *event;
+  double time;
 
-	public:
-		EventTransition(double time, PresentationEvent* event);
-		virtual ~EventTransition();
+public:
+  EventTransition (double time, PresentationEvent *event);
+  virtual ~EventTransition ();
 
-		int compareTo(EventTransition* object);
+  int compareTo (EventTransition *object);
 
-	private:
-		int compareType(EventTransition* otherEntry);
+private:
+  int compareType (EventTransition *otherEntry);
 
-	public:
-		bool equals(EventTransition* object);
-		PresentationEvent* getEvent();
-		double getTime();
-		bool instanceOf(string s);
-  };
+public:
+  bool equals (EventTransition *object);
+  PresentationEvent *getEvent ();
+  double getTime ();
+  bool instanceOf (string s);
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_END
 #endif /*EVENTTRANSITION_H_*/

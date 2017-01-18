@@ -47,7 +47,6 @@ using namespace ::ginga::ncl;
 #include "ncl/NclDocument.h"
 using namespace ::ginga::ncl;
 
-
 #include "DocumentParser.h"
 #include "ModuleParser.h"
 using namespace ::ginga::nclconv;
@@ -64,47 +63,48 @@ XERCES_CPP_NAMESPACE_USE
 
 GINGA_NCLCONV_BEGIN
 
-  class NclComponentsConverter : public NclComponentsParser {
-	/*tabela com a lista dos elementos q devem ser compilados ao fim do
-	 * processamento da composicao, ja' que referenciam outros elementos
-	 * TODO deve ser feito o mesmo para linkBase, mas como esse elemento costuma
-	 * vir ao final da composicao, foi ignorado pelo momento
-	 * para reaproveitar:
-	 * 1) copiar e inicializar as vars. abaixo
-	 * 2) criar addbinddescriptor...2 para representar o add original
-	 * 3) criar addcompositeinterface...2 para representar o add original
-	 * 4) copiar o addbinddescriptor... addcompositeinterface...
-	 *    posCreateCompositionContentGroup e posCompileCompositionContentGroup
-	 *
-	 * 5)chamar o posCreateCompositionContentGroup do createcomposition
-	 * 6) chamar o posCreateCompositionContentGroup na criacao do body
-	 * 7) chamar o posCompileCompositionContentGroup no poscompile do body
-	 * 8) criar createBindDescriptorGroup2 e fazer o antigo retornar o elemento
-	 * 9) criar createCompositeInterfaceElementGroup2 e fazer o antigo retornar
-	 *    o elemento
-	 */
+class NclComponentsConverter : public NclComponentsParser
+{
+  /*tabela com a lista dos elementos q devem ser compilados ao fim do
+   * processamento da composicao, ja' que referenciam outros elementos
+   * TODO deve ser feito o mesmo para linkBase, mas como esse elemento costuma
+   * vir ao final da composicao, foi ignorado pelo momento
+   * para reaproveitar:
+   * 1) copiar e inicializar as vars. abaixo
+   * 2) criar addbinddescriptor...2 para representar o add original
+   * 3) criar addcompositeinterface...2 para representar o add original
+   * 4) copiar o addbinddescriptor... addcompositeinterface...
+   *    posCreateCompositionContentGroup e posCompileCompositionContentGroup
+   *
+   * 5)chamar o posCreateCompositionContentGroup do createcomposition
+   * 6) chamar o posCreateCompositionContentGroup na criacao do body
+   * 7) chamar o posCompileCompositionContentGroup no poscompile do body
+   * 8) criar createBindDescriptorGroup2 e fazer o antigo retornar o elemento
+   * 9) criar createCompositeInterfaceElementGroup2 e fazer o antigo retornar
+   *    o elemento
+   */
 
-	public:
-		NclComponentsConverter(DocumentParser *documentParser);
-		void addPortToContext(void *parentObject, void *childObject);
-		void addPropertyToContext(void *parentObject, void *childObject);
-		void addContextToContext(void *parentObject, void *childObject);
-		void addMediaToContext(void *parentObject, void *childObject);
-		void addLinkToContext(void *parentObject, void *childObject);
+public:
+  NclComponentsConverter (DocumentParser *documentParser);
+  void addPortToContext (void *parentObject, void *childObject);
+  void addPropertyToContext (void *parentObject, void *childObject);
+  void addContextToContext (void *parentObject, void *childObject);
+  void addMediaToContext (void *parentObject, void *childObject);
+  void addLinkToContext (void *parentObject, void *childObject);
 
-	private:
-		void addNodeToContext(ContextNode *contextNode, NodeEntity *node);
-		void addAnchorToMedia(ContentNode *contentNode, Anchor *anchor);
+private:
+  void addNodeToContext (ContextNode *contextNode, NodeEntity *node);
+  void addAnchorToMedia (ContentNode *contentNode, Anchor *anchor);
 
-	public:
-		void addAreaToMedia(void *parentObject, void *childObject);
-		void addPropertyToMedia(void *parentObject, void *childObject);
-		void addSwitchToContext(void *parentObject, void *childObject);
-		void *createContext(DOMElement *parentElement, void *objGrandParent);
-		void *posCompileContext(DOMElement *parentElement, void *parentObject);
-		void *createMedia(DOMElement *parentElement, void *objGrandParent);
-  };
+public:
+  void addAreaToMedia (void *parentObject, void *childObject);
+  void addPropertyToMedia (void *parentObject, void *childObject);
+  void addSwitchToContext (void *parentObject, void *childObject);
+  void *createContext (DOMElement *parentElement, void *objGrandParent);
+  void *posCompileContext (DOMElement *parentElement, void *parentObject);
+  void *createMedia (DOMElement *parentElement, void *objGrandParent);
+};
 
 GINGA_NCLCONV_END
 
-#endif //NclComponentsConverter
+#endif // NclComponentsConverter

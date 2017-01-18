@@ -23,42 +23,40 @@ using namespace ::ginga::system;
 
 GINGA_DATAPROC_BEGIN
 
+class DsmccTimeBaseClock : public Stc
+{
 
-class DsmccTimeBaseClock : public Stc {
+private:
+protected:
+  unsigned char contentId;
+  short numerator;
+  unsigned short denominator;
+  bool endpointAvailable;
+  uint64_t startNpt;
+  uint64_t stopNpt;
 
-	private:
+  void refreshStcSample ();
 
-	protected:
-		unsigned char contentId;
-		short numerator;
-		unsigned short denominator;
-		bool endpointAvailable;
-		uint64_t startNpt;
-		uint64_t stopNpt;
+public:
+  DsmccTimeBaseClock ();
+  ~DsmccTimeBaseClock ();
 
-		void refreshStcSample();
+  static int64_t convertToNpt (int64_t base, short numerator,
+                               unsigned short denominator);
 
-	public:
-		DsmccTimeBaseClock();
-		~DsmccTimeBaseClock();
-
-		static int64_t convertToNpt(int64_t base,
-				short numerator, unsigned short denominator);
-
-		unsigned char getContentId();
-		void setContentId(unsigned char id);
-		short getScaleNumerator();
-		unsigned short getScaleDenominator();
-		uint64_t getStartNpt();
-		uint64_t getStopNpt();
-		bool getEndpointAvailable();
-		void setScaleNumerator(short num);
-		void setScaleDenominator(unsigned short den);
-		void setStartNpt(uint64_t start);
-		void setStopNpt(uint64_t stop);
-		void setEndpointAvailable(bool epa);
+  unsigned char getContentId ();
+  void setContentId (unsigned char id);
+  short getScaleNumerator ();
+  unsigned short getScaleDenominator ();
+  uint64_t getStartNpt ();
+  uint64_t getStopNpt ();
+  bool getEndpointAvailable ();
+  void setScaleNumerator (short num);
+  void setScaleDenominator (unsigned short den);
+  void setStartNpt (uint64_t start);
+  void setStopNpt (uint64_t stop);
+  void setEndpointAvailable (bool epa);
 };
-
 
 GINGA_DATAPROC_END
 

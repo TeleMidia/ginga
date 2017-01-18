@@ -20,188 +20,227 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCLCONV_BEGIN
 
-	NclDocumentParser::NclDocumentParser() : DocumentParser() {
-		this->deviceLayout                    = NULL;
-		this->presentationSpecificationParser = NULL;
-		this->structureParser                 = NULL;
-		this->componentsParser                = NULL;
-		this->connectorsParser                = NULL;
-		this->linkingParser                   = NULL;
-		this->interfacesParser                = NULL;
-		this->layoutParser                    = NULL;
-		this->presentationControlParser       = NULL;
-		this->importParser                    = NULL;
-		this->metainformationParser           = NULL;
-		this->transitionParser                = NULL;
-	}
+NclDocumentParser::NclDocumentParser () : DocumentParser ()
+{
+  this->deviceLayout = NULL;
+  this->presentationSpecificationParser = NULL;
+  this->structureParser = NULL;
+  this->componentsParser = NULL;
+  this->connectorsParser = NULL;
+  this->linkingParser = NULL;
+  this->interfacesParser = NULL;
+  this->layoutParser = NULL;
+  this->presentationControlParser = NULL;
+  this->importParser = NULL;
+  this->metainformationParser = NULL;
+  this->transitionParser = NULL;
+}
 
-	NclDocumentParser::~NclDocumentParser() {
+NclDocumentParser::~NclDocumentParser () {}
 
-	}
+void
+NclDocumentParser::setDeviceLayout (DeviceLayout *deviceLayout)
+{
+  this->deviceLayout = deviceLayout;
+}
 
-	void NclDocumentParser::setDeviceLayout(DeviceLayout* deviceLayout) {
-		this->deviceLayout = deviceLayout;
-	}
+void
+NclDocumentParser::setDependencies ()
+{
+  getConnectorsParser ()->setImportParser (importParser);
+  getPresentationControlParser ()->setPresentationSpecificationParser (
+      presentationSpecificationParser);
 
-	void NclDocumentParser::setDependencies() {
-		getConnectorsParser()->setImportParser(importParser);
-		getPresentationControlParser()->setPresentationSpecificationParser(
-			    presentationSpecificationParser);
+  getPresentationControlParser ()->setComponentsParser (componentsParser);
+  getPresentationControlParser ()->setInterfacesParser (interfacesParser);
+  getPresentationControlParser ()->setImportParser (importParser);
+  getComponentsParser ()->setPresentationSpecificationParser (
+      presentationSpecificationParser);
 
-		getPresentationControlParser()->setComponentsParser(componentsParser);
-		getPresentationControlParser()->setInterfacesParser(interfacesParser);
-		getPresentationControlParser()->setImportParser(importParser);
-		getComponentsParser()->setPresentationSpecificationParser(
-			    presentationSpecificationParser);
+  getComponentsParser ()->setLinkingParser (linkingParser);
+  getComponentsParser ()->setInterfacesParser (interfacesParser);
+  getComponentsParser ()->setPresentationControlParser (
+      presentationControlParser);
 
-		getComponentsParser()->setLinkingParser(linkingParser);
-		getComponentsParser()->setInterfacesParser(interfacesParser);
-		getComponentsParser()->setPresentationControlParser(
-			    presentationControlParser);
+  getStructureParser ()->setPresentationSpecificationParser (
+      presentationSpecificationParser);
 
-		getStructureParser()->setPresentationSpecificationParser(
-			    presentationSpecificationParser);
+  getStructureParser ()->setComponentsParser (componentsParser);
+  getStructureParser ()->setLinkingParser (linkingParser);
+  getStructureParser ()->setLayoutParser (layoutParser);
+  getStructureParser ()->setInterfacesParser (interfacesParser);
+  getStructureParser ()->setPresentationControlParser (
+      presentationControlParser);
 
-		getStructureParser()->setComponentsParser(componentsParser);
-		getStructureParser()->setLinkingParser(linkingParser);
-		getStructureParser()->setLayoutParser(layoutParser);
-		getStructureParser()->setInterfacesParser(interfacesParser);
-		getStructureParser()->setPresentationControlParser(
-			    presentationControlParser);
+  getStructureParser ()->setConnectorsParser (connectorsParser);
+  getStructureParser ()->setImportParser (importParser);
+  getStructureParser ()->setTransitionParser (transitionParser);
+  getStructureParser ()->setMetainformationParser (metainformationParser);
+  getPresentationSpecificationParser ()->setImportParser (importParser);
+  getPresentationSpecificationParser ()->setPresentationControlParser (
+      presentationControlParser);
 
-		getStructureParser()->setConnectorsParser(connectorsParser);
-		getStructureParser()->setImportParser(importParser);
-		getStructureParser()->setTransitionParser(transitionParser);
-		getStructureParser()->setMetainformationParser(metainformationParser);
-		getPresentationSpecificationParser()->setImportParser(importParser);
-		getPresentationSpecificationParser()->setPresentationControlParser(
-			    presentationControlParser);
+  getLayoutParser ()->setImportParser (importParser);
+  getTransitionParser ()->setImportParser (importParser);
+}
 
-		getLayoutParser()->setImportParser(importParser);
-		getTransitionParser()->setImportParser(importParser);
-	}
+NclTransitionParser *
+NclDocumentParser::getTransitionParser ()
+{
+  return transitionParser;
+}
 
-	NclTransitionParser* NclDocumentParser::getTransitionParser() {
-		return transitionParser;
-	}
+NclConnectorsParser *
+NclDocumentParser::getConnectorsParser ()
+{
+  return connectorsParser;
+}
 
-	NclConnectorsParser *NclDocumentParser::getConnectorsParser() {
-		return connectorsParser;
-	}
+void
+NclDocumentParser::setConnectorsParser (NclConnectorsParser *connectorsParser)
+{
 
-	void NclDocumentParser::setConnectorsParser(
-		    NclConnectorsParser *connectorsParser) {
+  this->connectorsParser = connectorsParser;
+}
 
-		this->connectorsParser = connectorsParser;
-	}
+NclImportParser *
+NclDocumentParser::getImportParser ()
+{
+  return importParser;
+}
 
-	NclImportParser *NclDocumentParser::getImportParser() {
-		return importParser;
-	}
+void
+NclDocumentParser::setBaseReuseParser (NclImportParser *importParser)
+{
 
-	void NclDocumentParser::setBaseReuseParser(
-		    NclImportParser *importParser) {
+  this->importParser = importParser;
+}
 
-		this->importParser = importParser;
-	}
+NclPresentationControlParser *
+NclDocumentParser::getPresentationControlParser ()
+{
 
-	NclPresentationControlParser*
-		    NclDocumentParser::getPresentationControlParser() {
+  return presentationControlParser;
+}
 
-		return presentationControlParser;
-	}
+void
+NclDocumentParser::setPresentationControlParser (
+    NclPresentationControlParser *presentationControlParser)
+{
 
-	void NclDocumentParser::setPresentationControlParser(
-		    NclPresentationControlParser *presentationControlParser) {
+  this->presentationControlParser = presentationControlParser;
+}
 
-		this->presentationControlParser = presentationControlParser;
-	}
+NclComponentsParser *
+NclDocumentParser::getComponentsParser ()
+{
+  return componentsParser;
+}
 
-	NclComponentsParser *NclDocumentParser::getComponentsParser() {
-		return componentsParser;
-	}
+void
+NclDocumentParser::setComponentsParser (NclComponentsParser *componentsParser)
+{
 
-	void NclDocumentParser::setComponentsParser(
-		    NclComponentsParser *componentsParser) {
+  this->componentsParser = componentsParser;
+}
 
-		this->componentsParser = componentsParser;
-	}
+NclStructureParser *
+NclDocumentParser::getStructureParser ()
+{
+  return structureParser;
+}
 
-	NclStructureParser *NclDocumentParser::getStructureParser() {
-		return structureParser;
-	}
+void
+NclDocumentParser::setStructureParser (NclStructureParser *structureParser)
+{
 
-	void NclDocumentParser::setStructureParser(
-		    NclStructureParser *structureParser) {
+  this->structureParser = structureParser;
+}
 
-		this->structureParser = structureParser;
-	}
+NclPresentationSpecificationParser *
+NclDocumentParser::getPresentationSpecificationParser ()
+{
 
-	NclPresentationSpecificationParser*
-		    NclDocumentParser::getPresentationSpecificationParser() {
+  return presentationSpecificationParser;
+}
 
-		return presentationSpecificationParser;
-	}
+void
+NclDocumentParser::setPresentationSpecificationParser (
+    NclPresentationSpecificationParser *presentationSpecificationParser)
+{
 
-	void NclDocumentParser::setPresentationSpecificationParser(
-		    NclPresentationSpecificationParser*
-		    	    presentationSpecificationParser) {
+  this->presentationSpecificationParser = presentationSpecificationParser;
+}
 
-		this->presentationSpecificationParser = presentationSpecificationParser;
-	}
+NclLayoutParser *
+NclDocumentParser::getLayoutParser ()
+{
+  return layoutParser;
+}
 
-	NclLayoutParser *NclDocumentParser::getLayoutParser() {
-		return layoutParser;
-	}
+void
+NclDocumentParser::setLayoutParser (NclLayoutParser *layoutParser)
+{
+  this->layoutParser = layoutParser;
+}
 
-	void NclDocumentParser::setLayoutParser(NclLayoutParser *layoutParser) {
-		this->layoutParser = layoutParser;
-	}
+NclInterfacesParser *
+NclDocumentParser::getInterfacesParser ()
+{
+  return interfacesParser;
+}
 
-	NclInterfacesParser *NclDocumentParser::getInterfacesParser() {
-		return interfacesParser;
-	}
+void
+NclDocumentParser::setInterfacesParser (NclInterfacesParser *interfacesParser)
+{
 
-	void NclDocumentParser::setInterfacesParser(
-		    NclInterfacesParser *interfacesParser) {
+  this->interfacesParser = interfacesParser;
+}
 
-		this->interfacesParser = interfacesParser;
-	}
+NclMetainformationParser *
+NclDocumentParser::getMetainformationParser ()
+{
 
-	NclMetainformationParser*
-		    NclDocumentParser::getMetainformationParser() {
+  return metainformationParser;
+}
 
-		return metainformationParser;
-	}
+void
+NclDocumentParser::setMetainformationParser (
+    NclMetainformationParser *metainformationParser)
+{
 
-	void NclDocumentParser::setMetainformationParser(
-		    NclMetainformationParser* metainformationParser) {
+  this->metainformationParser = metainformationParser;
+}
 
-		this->metainformationParser = metainformationParser;
-	}
+NclLinkingParser *
+NclDocumentParser::getLinkingParser ()
+{
+  return linkingParser;
+}
 
-	NclLinkingParser* NclDocumentParser::getLinkingParser() {
-		return linkingParser;
-	}
+void
+NclDocumentParser::setLinkingParser (NclLinkingParser *linkingParser)
+{
 
-	void NclDocumentParser::setLinkingParser(
-		    NclLinkingParser *linkingParser) {
+  this->linkingParser = linkingParser;
+}
 
-		this->linkingParser = linkingParser;
-	}
-
-	void* NclDocumentParser::parseRootElement(DOMElement* rootElement) {
-		string tagName;
-		tagName = XMLString::transcode(rootElement->getTagName());
-		if (tagName == "ncl") {
-			return getStructureParser()->parseNcl(rootElement, NULL);
-
-		} else {
-			clog << "NclDocumentParser::parseRootElement Warning!";
-			clog << " Trying to parse a non NCL document. rootElement";
-			clog << "->getTagName = '" << tagName.c_str() << "'" << endl;
-			return NULL;
-		}
-	}
+void *
+NclDocumentParser::parseRootElement (DOMElement *rootElement)
+{
+  string tagName;
+  tagName = XMLString::transcode (rootElement->getTagName ());
+  if (tagName == "ncl")
+    {
+      return getStructureParser ()->parseNcl (rootElement, NULL);
+    }
+  else
+    {
+      clog << "NclDocumentParser::parseRootElement Warning!";
+      clog << " Trying to parse a non NCL document. rootElement";
+      clog << "->getTagName = '" << tagName.c_str () << "'" << endl;
+      return NULL;
+    }
+}
 
 GINGA_NCLCONV_END

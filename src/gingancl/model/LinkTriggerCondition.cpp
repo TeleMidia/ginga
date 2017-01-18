@@ -20,156 +20,186 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
+pthread_mutex_t LinkTriggerCondition::sMutex;
+vector<ConditionStatus *> LinkTriggerCondition::notes;
 
-	pthread_mutex_t LinkTriggerCondition::sMutex;
-	vector<ConditionStatus*> LinkTriggerCondition::notes;
+bool LinkTriggerCondition::initialized = false;
+bool LinkTriggerCondition::running = false;
 
-	bool LinkTriggerCondition::initialized = false;
-	bool LinkTriggerCondition::running     = false;
+LinkTriggerCondition::LinkTriggerCondition () : LinkCondition (), Thread ()
+{
+  listener = NULL;
+  delay = 0.0;
 
-	LinkTriggerCondition::LinkTriggerCondition() : LinkCondition(), Thread() {
-		listener = NULL;
-		delay    = 0.0;
+  if (!initialized)
+    {
+      initialized = true;
+      Thread::mutexInit (&sMutex, false);
+    }
 
-		if (!initialized) {
-			initialized = true;
-			Thread::mutexInit(&sMutex, false);
-		}
+  typeSet.insert ("LinkTriggerCondition");
+}
 
-		typeSet.insert("LinkTriggerCondition");
-	}
+LinkTriggerCondition::~LinkTriggerCondition ()
+{
+  isDeleting = true;
 
-	LinkTriggerCondition::~LinkTriggerCondition() {
-		isDeleting = true;
+  Thread::mutexLock (&sMutex);
+  listener = NULL;
+  Thread::mutexUnlock (&sMutex);
+}
 
-		Thread::mutexLock(&sMutex);
-		listener = NULL;
-		Thread::mutexUnlock(&sMutex);
-	}
+void
+LinkTriggerCondition::setTriggerListener (LinkTriggerListener *listener)
+{
 
-	void LinkTriggerCondition::setTriggerListener(
-		    LinkTriggerListener* listener) {
+  this->listener = listener;
+}
 
-		this->listener = listener;
-	}
+LinkTriggerListener *
+LinkTriggerCondition::getTriggerListener ()
+{
+  return listener;
+}
 
-	LinkTriggerListener* LinkTriggerCondition::getTriggerListener() {
-		return listener;
-	}
+double
+LinkTriggerCondition::getDelay ()
+{
+  return delay;
+}
 
-	double LinkTriggerCondition::getDelay() {
-		return delay;
-	}
+void
+LinkTriggerCondition::setDelay (double delay)
+{
+  if (delay < 0)
+    {
+      this->delay = 0;
+    }
+  else
+    {
+      this->delay = delay;
+    }
+}
 
-	void LinkTriggerCondition::setDelay(double delay) {
-		if (delay < 0) {
-			this->delay = 0;
+void
+LinkTriggerCondition::conditionSatisfied (void *condition)
+{
+  if (delay > 0)
+    {
+      Thread::startThread ();
+    }
+  else
+    {
+      notifyConditionObservers (LinkTriggerListener::CONDITION_SATISFIED);
+    }
+}
 
-		} else {
-			this->delay = delay;
-		}
-	}
+void
+LinkTriggerCondition::notifyConditionObservers (short status)
+{
+  pthread_attr_t t_attr;
+  pthread_t t_id;
+  ConditionStatus *data;
 
-	void LinkTriggerCondition::conditionSatisfied(void *condition) {
-		if (delay > 0) {
-			Thread::startThread();
+  Thread::mutexLock (&sMutex);
 
-		} else {
-			notifyConditionObservers(LinkTriggerListener::CONDITION_SATISFIED);
-		}
-	}
+  if (!running)
+    {
+      running = true;
+      pthread_attr_init (&t_attr);
+      pthread_attr_setdetachstate (&t_attr, PTHREAD_CREATE_DETACHED);
+      pthread_attr_setscope (&t_attr, PTHREAD_SCOPE_SYSTEM);
 
-	void LinkTriggerCondition::notifyConditionObservers(short status) {
-		pthread_attr_t t_attr;
-		pthread_t t_id;
-		ConditionStatus* data;
+      if (isDeleting)
+        {
+          Thread::mutexUnlock (&sMutex);
+          return;
+        }
 
-		Thread::mutexLock(&sMutex);
+      pthread_create (&t_id, &t_attr, notificationThread, this);
+      pthread_detach (t_id);
+    }
 
-		if (!running) {
-			running = true;
-			pthread_attr_init(&t_attr);
-			pthread_attr_setdetachstate(&t_attr,PTHREAD_CREATE_DETACHED);
-			pthread_attr_setscope(&t_attr, PTHREAD_SCOPE_SYSTEM);
+  data = new ConditionStatus;
+  data->listener = listener;
+  data->status = status;
+  data->condition = this;
 
-			if (isDeleting) {
-				Thread::mutexUnlock(&sMutex);
-				return;
-			}
+  notes.push_back (data);
 
-			pthread_create(&t_id, &t_attr, notificationThread, this);
-			pthread_detach(t_id);
-		}
+  Thread::mutexUnlock (&sMutex);
+}
 
-		data = new ConditionStatus;
-		data->listener  = listener;
-		data->status    = status;
-		data->condition = this;
+void *
+LinkTriggerCondition::notificationThread (void *ptr)
+{
+  ConditionStatus *data;
+  LinkTriggerListener *listener;
+  LinkCondition *condition;
+  short status;
 
-		notes.push_back(data);
+  while (running)
+    {
+      listener = NULL;
 
-		Thread::mutexUnlock(&sMutex);
-	}
+      Thread::mutexLock (&sMutex);
+      if (!notes.empty ())
+        {
+          data = *notes.begin ();
+          notes.erase (notes.begin ());
 
-	void* LinkTriggerCondition::notificationThread(void* ptr) {
-		ConditionStatus* data;
-		LinkTriggerListener* listener;
-		LinkCondition* condition;
-		short status;
+          listener = data->listener;
+          status = data->status;
+          condition = data->condition;
 
-		while (running) {
-			listener = NULL;
+          if (((LinkTriggerCondition *)condition)->isDeleting)
+            {
+              delete data;
+              Thread::mutexUnlock (&sMutex);
+              continue;
+            }
+        }
+      Thread::mutexUnlock (&sMutex);
 
-			Thread::mutexLock(&sMutex);
-			if (!notes.empty()) {
-				data = *notes.begin();
-				notes.erase(notes.begin());
+      if (listener != NULL)
+        {
+          switch (status)
+            {
+            case LinkTriggerListener::CONDITION_SATISFIED:
+              listener->conditionSatisfied ((void *)condition);
+              break;
 
-				listener  = data->listener;
-				status    = data->status;
-				condition = data->condition;
+            case LinkTriggerListener::EVALUATION_STARTED:
+              listener->evaluationStarted ();
+              break;
 
-				if (((LinkTriggerCondition*)condition)->isDeleting) {
-					delete data;
-					Thread::mutexUnlock(&sMutex);
-					continue;
-				}
-			}
-			Thread::mutexUnlock(&sMutex);
+            case LinkTriggerListener::EVALUATION_ENDED:
+              listener->evaluationEnded ();
+              break;
+            }
 
-			if (listener != NULL) {
-				switch (status) {
-					case LinkTriggerListener::CONDITION_SATISFIED:
-						listener->conditionSatisfied((void*)condition);
-						break;
+          delete data;
+        }
 
-					case LinkTriggerListener::EVALUATION_STARTED:
-						listener->evaluationStarted();
-						break;
+      Thread::mutexLock (&sMutex);
+      if (notes.empty ())
+        {
+          running = false;
+        }
+      Thread::mutexUnlock (&sMutex);
+    }
 
-					case LinkTriggerListener::EVALUATION_ENDED:
-						listener->evaluationEnded();
-						break;
-				}
+  return NULL;
+}
 
-				delete data;
-			}
-
-			Thread::mutexLock(&sMutex);
-			if (notes.empty()) {
-				running = false;
-			}
-			Thread::mutexUnlock(&sMutex);
-		}
-
-		return NULL;
-	}
-
-	void LinkTriggerCondition::run() {
-		if (delay > 0) {
-			g_usleep((long)(delay * 1000));
-		}
-		notifyConditionObservers(LinkTriggerListener::CONDITION_SATISFIED);
-	}
+void
+LinkTriggerCondition::run ()
+{
+  if (delay > 0)
+    {
+      g_usleep ((long)(delay * 1000));
+    }
+  notifyConditionObservers (LinkTriggerListener::CONDITION_SATISFIED);
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END

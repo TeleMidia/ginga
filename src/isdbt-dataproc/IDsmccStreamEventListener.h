@@ -22,11 +22,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_DATAPROC_BEGIN
 
-	class IDsmccStreamEventListener {
-		public:
-			virtual ~IDsmccStreamEventListener(){};
-			virtual void receiveStreamEvent(DsmccStreamEvent* event)=0;
-	};
+class IDsmccStreamEventListener
+{
+public:
+  virtual ~IDsmccStreamEventListener (){};
+  virtual void receiveStreamEvent (DsmccStreamEvent *event) = 0;
+};
 
 GINGA_DATAPROC_END
 

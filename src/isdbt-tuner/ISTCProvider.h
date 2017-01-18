@@ -28,8 +28,8 @@ static const int ST_27MHz = 0x02;
 class ISTCProvider
 {
 public:
-  virtual ~ISTCProvider(){};
-  virtual bool getSTCValue(guint64 *stc, int *valueType)=0;
+  virtual ~ISTCProvider (){};
+  virtual bool getSTCValue (guint64 *stc, int *valueType) = 0;
 };
 
 GINGA_TUNER_END

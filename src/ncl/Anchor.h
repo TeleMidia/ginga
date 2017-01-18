@@ -22,10 +22,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	class Anchor : public InterfacePoint {
-		public:
-			Anchor(string id);
-	};
+class Anchor : public InterfacePoint
+{
+public:
+  Anchor (string id);
+};
 
 GINGA_NCL_END
 

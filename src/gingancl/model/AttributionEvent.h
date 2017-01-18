@@ -27,37 +27,33 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 #include "FormatterEvent.h"
 #include "IAttributeValueMaintainer.h"
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
 
-	class AttributionEvent : public FormatterEvent {
-		private:
-			bool settingNode;
+class AttributionEvent : public FormatterEvent
+{
+private:
+  bool settingNode;
 
-		protected:
-			PropertyAnchor* anchor;
-			IAttributeValueMaintainer* valueMaintainer;
-			map<string, FormatterEvent*> assessments;
-			PresentationContext* presContext;
+protected:
+  PropertyAnchor *anchor;
+  IAttributeValueMaintainer *valueMaintainer;
+  map<string, FormatterEvent *> assessments;
+  PresentationContext *presContext;
 
-		public:
-			AttributionEvent(
-				    string id,
-				    void* executionObject,
-				    PropertyAnchor* anchor,
-				    PresentationContext* presContext);
+public:
+  AttributionEvent (string id, void *executionObject, PropertyAnchor *anchor,
+                    PresentationContext *presContext);
 
-			virtual ~AttributionEvent();
-			PropertyAnchor* getAnchor();
-			string getCurrentValue();
-			bool setValue(string newValue);
-			void setValueMaintainer(IAttributeValueMaintainer* valueMaintainer);
-			IAttributeValueMaintainer* getValueMaintainer();
-			void setImplicitRefAssessmentEvent(
-					string roleId, FormatterEvent* event);
+  virtual ~AttributionEvent ();
+  PropertyAnchor *getAnchor ();
+  string getCurrentValue ();
+  bool setValue (string newValue);
+  void setValueMaintainer (IAttributeValueMaintainer *valueMaintainer);
+  IAttributeValueMaintainer *getValueMaintainer ();
+  void setImplicitRefAssessmentEvent (string roleId, FormatterEvent *event);
 
-			FormatterEvent* getImplicitRefAssessmentEvent(string roleId);
-	};
+  FormatterEvent *getImplicitRefAssessmentEvent (string roleId);
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END
 #endif //_ATTRIBUTEEVENT_H_

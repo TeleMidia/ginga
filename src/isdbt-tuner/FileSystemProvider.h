@@ -23,41 +23,41 @@ using namespace ::ginga::system;
 
 #include "IDataProvider.h"
 
-
 GINGA_TUNER_BEGIN
 
-	class FileSystemProvider : public IDataProvider {
-		protected:
-			string fileName;
-			FILE* fileDescriptor;
-			short capabilities;
-			ITProviderListener* listener;
+class FileSystemProvider : public IDataProvider
+{
+protected:
+  string fileName;
+  FILE *fileDescriptor;
+  short capabilities;
+  ITProviderListener *listener;
 
-			bool checkPossiblePacket(char *buff, const int &pos);
-			int nextPacket(char *buff);
-			int synchBuffer(char *buff, int diff);
+  bool checkPossiblePacket (char *buff, const int &pos);
+  int nextPacket (char *buff);
+  int synchBuffer (char *buff, int diff);
 
-		public:
-			FileSystemProvider(string fileName);
-			virtual ~FileSystemProvider();
+public:
+  FileSystemProvider (string fileName);
+  virtual ~FileSystemProvider ();
 
-			void setListener(ITProviderListener* listener);
-			void attachFilter(IFrontendFilter* filter){};
-			void removeFilter(IFrontendFilter* filter){};
+  void setListener (ITProviderListener *listener);
+  void attachFilter (IFrontendFilter *filter){};
+  void removeFilter (IFrontendFilter *filter){};
 
-			short getCaps();
-			bool tune();
+  short getCaps ();
+  bool tune ();
 
-			Channel* getCurrentChannel();
-			bool getSTCValue(uint64_t* stc, int* valueType);
-			bool changeChannel(int factor);
-			bool setChannel(string channelValue);
-			int createPesFilter(int pid, int pesType, bool compositeFiler);
-			string getPesFilterOutput();
-			void close();
+  Channel *getCurrentChannel ();
+  bool getSTCValue (uint64_t *stc, int *valueType);
+  bool changeChannel (int factor);
+  bool setChannel (string channelValue);
+  int createPesFilter (int pid, int pesType, bool compositeFiler);
+  string getPesFilterOutput ();
+  void close ();
 
-			char* receiveData(int* len);
-	};
+  char *receiveData (int *len);
+};
 
 GINGA_TUNER_END
 

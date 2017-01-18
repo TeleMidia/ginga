@@ -23,27 +23,26 @@ using namespace ::ginga::ncl;
 
 #include "InterfacePoint.h"
 
-
 GINGA_NCL_BEGIN
 
-	class Port : public InterfacePoint {
-		protected:
-			Node* node;
-			InterfacePoint* interfacePoint;
+class Port : public InterfacePoint
+{
+protected:
+  Node *node;
+  InterfacePoint *interfacePoint;
 
-		public:
-			Port(string id, Node* someNode,
-				    InterfacePoint* someInterfacePoint);
+public:
+  Port (string id, Node *someNode, InterfacePoint *someInterfacePoint);
 
-			virtual ~Port();
-			InterfacePoint* getInterfacePoint();
-			Node* getNode();
-			virtual Node* getEndNode();
-			virtual InterfacePoint* getEndInterfacePoint();
-			vector<Node*>* getMapNodeNesting();
-			void setInterfacePoint(InterfacePoint* someInterfacePoint);
-			void setNode(Node* someNode);
-	};
+  virtual ~Port ();
+  InterfacePoint *getInterfacePoint ();
+  Node *getNode ();
+  virtual Node *getEndNode ();
+  virtual InterfacePoint *getEndInterfacePoint ();
+  vector<Node *> *getMapNodeNesting ();
+  void setInterfacePoint (InterfacePoint *someInterfacePoint);
+  void setNode (Node *someNode);
+};
 
 GINGA_NCL_END
 

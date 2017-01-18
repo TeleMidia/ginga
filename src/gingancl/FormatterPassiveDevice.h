@@ -22,41 +22,42 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
 
-	class FormatterPassiveDevice : public FormatterMultiDevice {
-		public:
-			FormatterPassiveDevice(
-					GingaScreenID screenId,
-					DeviceLayout* deviceLayout,
-					int x, int y, int w, int h, bool useMulticast, int srvPort);
+class FormatterPassiveDevice : public FormatterMultiDevice
+{
+public:
+  FormatterPassiveDevice (GingaScreenID screenId, DeviceLayout *deviceLayout,
+                          int x, int y, int w, int h, bool useMulticast,
+                          int srvPort);
 
-			virtual ~FormatterPassiveDevice();
+  virtual ~FormatterPassiveDevice ();
 
-		protected:
-			void postMediaContent(int destDevClass){};
-			bool newDeviceConnected(int newDevClass, int w, int h) {
-				return false;
-			};
+protected:
+  void postMediaContent (int destDevClass){};
+  bool
+  newDeviceConnected (int newDevClass, int w, int h)
+  {
+    return false;
+  };
 
-			void connectedToBaseDevice(unsigned int domainAddr);
+  void connectedToBaseDevice (unsigned int domainAddr);
 
-			bool receiveRemoteEvent(
-					int remoteDevClass,
-					int eventType,
-					string eventContent) {
+  bool
+  receiveRemoteEvent (int remoteDevClass, int eventType, string eventContent)
+  {
 
-				return false;
-			};
+    return false;
+  };
 
-			bool receiveRemoteContent(
-					int remoteDevClass,
-					char *stream, int streamSize) {
+  bool
+  receiveRemoteContent (int remoteDevClass, char *stream, int streamSize)
+  {
 
-				return false;
-			};
+    return false;
+  };
 
-			bool receiveRemoteContent(int remoteDevClass, string contentUri);
-			bool userEventReceived(SDLInputEvent* ev);
-	};
+  bool receiveRemoteContent (int remoteDevClass, string contentUri);
+  bool userEventReceived (SDLInputEvent *ev);
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_END
 #endif /* _FormatterPassiveDevice_H_ */

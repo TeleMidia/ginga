@@ -20,69 +20,90 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_DATAPROC_BEGIN
 
-	DsmccBinding::DsmccBinding() {
-		ior = NULL;
-	}
+DsmccBinding::DsmccBinding () { ior = NULL; }
 
-	DsmccBinding::~DsmccBinding() {
-		releaseIor();
-	}
+DsmccBinding::~DsmccBinding () { releaseIor (); }
 
-	void DsmccBinding::releaseIor() {
-		if (ior != NULL) {
-			delete ior;
-			ior = NULL;
-		}
-	}
+void
+DsmccBinding::releaseIor ()
+{
+  if (ior != NULL)
+    {
+      delete ior;
+      ior = NULL;
+    }
+}
 
-	void DsmccBinding::setId(string id) {
-		this->id = id;
-	}
+void
+DsmccBinding::setId (string id)
+{
+  this->id = id;
+}
 
-	string DsmccBinding::getId() {
-		return id;
-	}
+string
+DsmccBinding::getId ()
+{
+  return id;
+}
 
-	void DsmccBinding::setKind(string kind) {
-		this->kind = kind;
-	}
+void
+DsmccBinding::setKind (string kind)
+{
+  this->kind = kind;
+}
 
-	string DsmccBinding::getKind() {
-		return kind;
-	}
+string
+DsmccBinding::getKind ()
+{
+  return kind;
+}
 
-	void DsmccBinding::setType(unsigned int type) {
-		this->type = type;
-	}
+void
+DsmccBinding::setType (unsigned int type)
+{
+  this->type = type;
+}
 
-	unsigned int DsmccBinding::getType() {
-		return type;
-	}
+unsigned int
+DsmccBinding::getType ()
+{
+  return type;
+}
 
-	void DsmccBinding::setIor(DsmccIor* ior) {
-		releaseIor();
+void
+DsmccBinding::setIor (DsmccIor *ior)
+{
+  releaseIor ();
 
-		this->ior = ior;
-	}
+  this->ior = ior;
+}
 
-	DsmccIor* DsmccBinding::getIor() {
-		return ior;
-	}
+DsmccIor *
+DsmccBinding::getIor ()
+{
+  return ior;
+}
 
-	void DsmccBinding::setObjectInfo(string objectInfo) {
-		this->objectInfo = objectInfo;
-	}
+void
+DsmccBinding::setObjectInfo (string objectInfo)
+{
+  this->objectInfo = objectInfo;
+}
 
-	string DsmccBinding::getObjectInfo() {
-		return this->objectInfo;
-	}
+string
+DsmccBinding::getObjectInfo ()
+{
+  return this->objectInfo;
+}
 
-	void DsmccBinding::print() {
-		clog << "BINDING" << endl;
-		clog << "id = " << id.c_str() << endl;
-		clog << "kind = " << kind.c_str() << endl;
-		clog << "type = " << type << endl;
-		clog << " info = " << objectInfo.c_str() << endl;
-	}
+void
+DsmccBinding::print ()
+{
+  clog << "BINDING" << endl;
+  clog << "id = " << id.c_str () << endl;
+  clog << "kind = " << kind.c_str () << endl;
+  clog << "type = " << type << endl;
+  clog << " info = " << objectInfo.c_str () << endl;
+}
 
 GINGA_DATAPROC_END

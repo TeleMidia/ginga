@@ -21,24 +21,24 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/Link.h"
 using namespace ::ginga::ncl;
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-  class FormatterLink {
-	protected:
-		Link* ncmLink;
-		bool suspend;
-		void* parentObject; //CompositeExecutionObject
-		set<string> typeSet;
+class FormatterLink
+{
+protected:
+  Link *ncmLink;
+  bool suspend;
+  void *parentObject; // CompositeExecutionObject
+  set<string> typeSet;
 
-	public:
-		FormatterLink(Link* ncmLink, void* parentObject);
-		virtual ~FormatterLink();
+public:
+  FormatterLink (Link *ncmLink, void *parentObject);
+  virtual ~FormatterLink ();
 
-		void suspendLinkEvaluation(bool suspend);
-		Link* getNcmLink();
-		bool instanceOf(string s);
-  };
+  void suspendLinkEvaluation (bool suspend);
+  Link *getNcmLink ();
+  bool instanceOf (string s);
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_FORMATTERLINK_H_

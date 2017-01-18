@@ -24,57 +24,62 @@ using namespace ::ginga::nclconv;
 
 XERCES_CPP_NAMESPACE_USE
 
-
 #include "NclImportParser.h"
 
 GINGA_NCLCONV_BEGIN
 
-  class NclPresentationSpecificationParser : public ModuleParser {
-	private:
-		NclImportParser *importParser;
-		void *presentationControlParser;
+class NclPresentationSpecificationParser : public ModuleParser
+{
+private:
+  NclImportParser *importParser;
+  void *presentationControlParser;
 
-	public:
-		NclPresentationSpecificationParser(DocumentParser *documentParser);
-		void *parseDescriptor(DOMElement *parentElement, void *objGrandParent);
-		virtual void *createDescriptor(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+public:
+  NclPresentationSpecificationParser (DocumentParser *documentParser);
+  void *parseDescriptor (DOMElement *parentElement, void *objGrandParent);
+  virtual void *createDescriptor (DOMElement *parentElement,
+                                  void *objGrandParent)
+      = 0;
 
-		virtual void addDescriptorParamToDescriptor(
-			    void *parentObject, void *childObject)=0;
+  virtual void addDescriptorParamToDescriptor (void *parentObject,
+                                               void *childObject)
+      = 0;
 
-		void *parseDescriptorBase(
-			    DOMElement *parentElement, void *objGrandParent);
+  void *parseDescriptorBase (DOMElement *parentElement, void *objGrandParent);
 
-		virtual void *createDescriptorBase(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  virtual void *createDescriptorBase (DOMElement *parentElement,
+                                      void *objGrandParent)
+      = 0;
 
-		virtual void addImportBaseToDescriptorBase(
-			    void *parentObject, void *childObject)=0;
+  virtual void addImportBaseToDescriptorBase (void *parentObject,
+                                              void *childObject)
+      = 0;
 
-		virtual void addDescriptorSwitchToDescriptorBase(
-			    void *parentObject, void *childObject)=0;
+  virtual void addDescriptorSwitchToDescriptorBase (void *parentObject,
+                                                    void *childObject)
+      = 0;
 
-		virtual void addDescriptorToDescriptorBase(
-			    void *parentObject, void *childObject)=0;
+  virtual void addDescriptorToDescriptorBase (void *parentObject,
+                                              void *childObject)
+      = 0;
 
-		void *parseDescriptorBind(
-			    DOMElement *parentElement, void *objGrandParent);
+  void *parseDescriptorBind (DOMElement *parentElement, void *objGrandParent);
 
-		virtual void *createDescriptorBind(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  virtual void *createDescriptorBind (DOMElement *parentElement,
+                                      void *objGrandParent)
+      = 0;
 
-		void *parseDescriptorParam(
-			    DOMElement *parentElement, void *objGrandParent);
+  void *parseDescriptorParam (DOMElement *parentElement, void *objGrandParent);
 
-		virtual void *createDescriptorParam(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  virtual void *createDescriptorParam (DOMElement *parentElement,
+                                       void *objGrandParent)
+      = 0;
 
-		NclImportParser *getImportParser();
-		void setImportParser(NclImportParser *importParser);
-		void *getPresentationControlParser();
-		void setPresentationControlParser(void *presentationControlParser);
-  };
+  NclImportParser *getImportParser ();
+  void setImportParser (NclImportParser *importParser);
+  void *getPresentationControlParser ();
+  void setPresentationControlParser (void *presentationControlParser);
+};
 
 GINGA_NCLCONV_END
 

@@ -20,225 +20,270 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCLCONV_BEGIN
 
-	NclComponentsParser::NclComponentsParser(
-		    DocumentParser *documentParser) : ModuleParser(documentParser) {
+NclComponentsParser::NclComponentsParser (DocumentParser *documentParser)
+    : ModuleParser (documentParser)
+{
+}
 
-	}
+void *
+NclComponentsParser::parseMedia (DOMElement *parentElement,
+                                 void *objGrandParent)
+{
 
-	void *NclComponentsParser::parseMedia(
-		    DOMElement *parentElement, void *objGrandParent) {
+  clog << "parseMedia" << endl;
+  void *parentObject;
+  DOMNodeList *elementNodeList;
+  int i, size;
+  DOMNode *node;
+  DOMElement *element;
+  string elementTagName;
+  void *elementObject = NULL;
 
-		clog << "parseMedia" << endl;
-		void *parentObject;
-		DOMNodeList *elementNodeList;
-		int i, size;
-		DOMNode *node;
-		DOMElement *element;
-		string elementTagName;
-		void *elementObject = NULL;
+  parentObject = createMedia (parentElement, objGrandParent);
+  if (parentObject == NULL)
+    {
+      return NULL;
+    }
 
-		parentObject = createMedia(parentElement, objGrandParent);
-		if (parentObject == NULL) {
-			return NULL;
-		}
+  elementNodeList = parentElement->getChildNodes ();
+  size = elementNodeList->getLength ();
 
-		elementNodeList = parentElement->getChildNodes();
-		size = elementNodeList->getLength();
+  for (i = 0; i < size; i++)
+    {
+      node = elementNodeList->item (i);
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+        {
+          element = (DOMElement *)node;
+          elementTagName = XMLString::transcode (element->getTagName ());
 
-		for (i = 0; i < size; i++) {
-			node = elementNodeList->item(i);
-			if(node->getNodeType()==DOMNode::ELEMENT_NODE){
-				element = (DOMElement*)node;
-				elementTagName = XMLString::transcode(
-					    element->getTagName());
+          if (XMLString::compareIString (elementTagName.c_str (), "area") == 0)
+            {
 
-				if (XMLString::compareIString(
-					    elementTagName.c_str(), "area") == 0) {
+              elementObject
+                  = getInterfacesParser ()->parseArea (element, parentObject);
 
-					elementObject = getInterfacesParser()->parseArea(
-						    element, parentObject);
+              if (elementObject != NULL)
+                {
+                  addAreaToMedia (parentObject, elementObject);
+                }
+            }
+          else if (XMLString::compareIString (elementTagName.c_str (),
+                                              "property")
+                   == 0)
+            {
 
-					if (elementObject != NULL) {
-						addAreaToMedia(parentObject, elementObject);
-					}
+              elementObject = getInterfacesParser ()->parseProperty (
+                  element, parentObject);
 
-				} else if (XMLString::compareIString(
-					    elementTagName.c_str(), "property") == 0) {
+              if (elementObject != NULL)
+                {
+                  addPropertyToMedia (parentObject, elementObject);
+                }
+            }
+        }
+    }
 
-					elementObject = getInterfacesParser()->parseProperty(
-						    element, parentObject);
+  return parentObject;
+}
 
-					if (elementObject != NULL) {
-						addPropertyToMedia(parentObject, elementObject);
-					}
-				}
-			}
-		}
+void *
+NclComponentsParser::parseContext (DOMElement *parentElement,
+                                   void *objGrandParent)
+{
 
-		return parentObject;
-	}
+  void *parentObject;
+  DOMNodeList *elementNodeList;
+  int i, size;
+  DOMNode *node;
+  DOMElement *element;
+  string elementTagName;
+  void *elementObject = NULL;
 
-	void *NclComponentsParser::parseContext(
-		    DOMElement *parentElement, void *objGrandParent) {
+  parentObject = createContext (parentElement, objGrandParent);
+  if (parentObject == NULL)
+    {
+      return NULL;
+    }
 
-		void *parentObject;
-		DOMNodeList *elementNodeList;
-		int i, size;
-		DOMNode *node;
-		DOMElement *element;
-		string elementTagName;
-		void *elementObject = NULL;
+  elementNodeList = parentElement->getChildNodes ();
+  size = elementNodeList->getLength ();
 
-		parentObject = createContext(parentElement, objGrandParent);
-		if (parentObject == NULL) {
-			return NULL;
-		}
+  for (i = 0; i < size; i++)
+    {
+      node = elementNodeList->item (i);
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+        {
+          element = (DOMElement *)node;
+          elementTagName = XMLString::transcode (element->getTagName ());
+          if (XMLString::compareIString (elementTagName.c_str (), "media")
+              == 0)
+            {
 
-		elementNodeList = parentElement->getChildNodes();
-		size = elementNodeList->getLength();
+              elementObject = parseMedia (element, parentObject);
+              if (elementObject != NULL)
+                {
+                  addMediaToContext (parentObject, elementObject);
+                }
+            }
+          else if (XMLString::compareIString (elementTagName.c_str (),
+                                              "context")
+                   == 0)
+            {
 
-		for (i = 0; i < size; i++) {
-			node = elementNodeList->item(i);
-			if(node->getNodeType()==DOMNode::ELEMENT_NODE) {
-				element = (DOMElement*)node;
-				elementTagName = XMLString::transcode(element->getTagName());
-				if (XMLString::compareIString(
-					    elementTagName.c_str(), "media") == 0) {
+              elementObject = parseContext (element, parentObject);
+              if (elementObject != NULL)
+                {
+                  addContextToContext (parentObject, elementObject);
+                }
+            }
+          else if (XMLString::compareIString (elementTagName.c_str (),
+                                              "switch")
+                   == 0)
+            {
 
-					elementObject = parseMedia(element, parentObject);
-					if (elementObject != NULL) {
-						addMediaToContext(parentObject, elementObject);
-					}
+              elementObject = getPresentationControlParser ()->parseSwitch (
+                  element, parentObject);
 
-				} else if (XMLString::compareIString(
-					    elementTagName.c_str(), "context") == 0) {
+              if (elementObject != NULL)
+                {
+                  addSwitchToContext (parentObject, elementObject);
+                }
+            }
+        }
+    }
 
-					elementObject = parseContext(element, parentObject);
-					if (elementObject != NULL) {
-						addContextToContext(parentObject, elementObject);
-					}
-				} else if (XMLString::compareIString(
-					    elementTagName.c_str(), "switch") == 0) {
+  for (i = 0; i < size; i++)
+    {
+      node = elementNodeList->item (i);
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE
+          && XMLString::compareIString (((DOMElement *)node)->getTagName (),
+                                        XMLString::transcode ("property"))
+                 == 0)
+        {
 
-					elementObject = getPresentationControlParser()->
-						    parseSwitch(element, parentObject);
+          elementObject = getInterfacesParser ()->parseProperty (
+              (DOMElement *)node, parentObject);
 
-					if (elementObject != NULL) {
-						addSwitchToContext(parentObject, elementObject);
-					}
-				}
-			}
-		}
+          if (elementObject != NULL)
+            {
+              addPropertyToContext (parentObject, elementObject);
+            }
+        }
+    }
 
-		for (i = 0; i < size; i++) {
-			node = elementNodeList->item(i);
-			if (node->getNodeType()==DOMNode::ELEMENT_NODE &&
-				    XMLString::compareIString(
-				    	    ((DOMElement*)node)->getTagName(),
-				    	    XMLString::transcode("property")) == 0) {
+  return parentObject;
+}
 
-				elementObject = getInterfacesParser()->
-					    parseProperty((DOMElement*)node, parentObject);
+void *
+NclComponentsParser::posCompileContext (DOMElement *parentElement,
+                                        void *parentObject)
+{
 
-				if (elementObject != NULL) {
-					addPropertyToContext(parentObject, elementObject);
-				}
-			}
-		}
+  clog << "posCompileContext" << endl;
+  DOMNodeList *elementNodeList;
+  int i, size;
+  DOMNode *node;
+  void *elementObject;
 
-		return parentObject;
-	}
+  elementNodeList = parentElement->getChildNodes ();
+  size = elementNodeList->getLength ();
 
-	void *NclComponentsParser::posCompileContext(
-		    DOMElement *parentElement, void *parentObject) {
+  for (i = 0; i < size; i++)
+    {
+      node = elementNodeList->item (i);
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE
+          && XMLString::compareIString (((DOMElement *)node)->getTagName (),
+                                        XMLString::transcode ("link"))
+                 == 0)
+        {
 
-		clog << "posCompileContext" << endl;
-		DOMNodeList *elementNodeList;
-		int i, size;
-		DOMNode *node;
-		void *elementObject;
+          elementObject = getLinkingParser ()->parseLink ((DOMElement *)node,
+                                                          parentObject);
 
-		elementNodeList = parentElement->getChildNodes();
-		size = elementNodeList->getLength();
+          if (elementObject != NULL)
+            {
+              addLinkToContext (parentObject, elementObject);
+            }
+        }
+    }
 
-		for (i = 0; i < size; i++) {
-			node = elementNodeList->item(i);
-			if (node->getNodeType()==DOMNode::ELEMENT_NODE &&
-				    XMLString::compareIString(
-				    	    ((DOMElement*)node)->getTagName(),
-				    	    XMLString::transcode("link")) == 0){
+  for (i = 0; i < size; i++)
+    {
+      node = elementNodeList->item (i);
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE
+          && XMLString::compareIString (((DOMElement *)node)->getTagName (),
+                                        XMLString::transcode ("port"))
+                 == 0)
+        {
 
-				elementObject = getLinkingParser()->parseLink(
-					    (DOMElement*)node, parentObject);
+          elementObject = getInterfacesParser ()->parsePort (
+              (DOMElement *)node, parentObject);
 
-				if (elementObject != NULL) {
-					addLinkToContext(parentObject, elementObject);
-				}
-			}
-		}
+          if (elementObject != NULL)
+            {
+              addPortToContext (parentObject, elementObject);
+            }
+        }
+    }
 
-		for (i = 0; i < size; i++) {
-			node = elementNodeList->item(i);
-			if (node->getNodeType()==DOMNode::ELEMENT_NODE &&
-				    XMLString::compareIString(
-				    	    ((DOMElement*)node)->getTagName(),
-				    	    XMLString::transcode("port")) == 0) {
+  return parentObject;
+}
 
-				elementObject = getInterfacesParser()->parsePort(
-					    (DOMElement*)node, parentObject);
+NclPresentationSpecificationParser *
+NclComponentsParser::getPresentationSpecificationParser ()
+{
 
-				if (elementObject != NULL) {
-					addPortToContext(parentObject, elementObject);
-				}
-			}
-		}
+  return presentationSpecificationParser;
+}
 
-		return parentObject;
-	}
+void
+NclComponentsParser::setPresentationSpecificationParser (
+    NclPresentationSpecificationParser *presentationSpecificationParser)
+{
 
-	NclPresentationSpecificationParser*
-		    NclComponentsParser::getPresentationSpecificationParser() {
+  this->presentationSpecificationParser = presentationSpecificationParser;
+}
 
-		return presentationSpecificationParser;
-	}
+NclLinkingParser *
+NclComponentsParser::getLinkingParser ()
+{
+  return linkingParser;
+}
 
-	void NclComponentsParser::setPresentationSpecificationParser(
-		    NclPresentationSpecificationParser*
-		    	    presentationSpecificationParser) {
+void
+NclComponentsParser::setLinkingParser (NclLinkingParser *linkingParser)
+{
 
-		this->presentationSpecificationParser = presentationSpecificationParser;
-	}
+  this->linkingParser = linkingParser;
+}
 
-	NclLinkingParser *NclComponentsParser::getLinkingParser() {
-		return linkingParser;
-	}
+NclInterfacesParser *
+NclComponentsParser::getInterfacesParser ()
+{
+  return interfacesParser;
+}
 
-	void NclComponentsParser::setLinkingParser(
-		    NclLinkingParser *linkingParser) {
+void
+NclComponentsParser::setInterfacesParser (
+    NclInterfacesParser *interfacesParser)
+{
 
-		this->linkingParser = linkingParser;
-	}
+  this->interfacesParser = interfacesParser;
+}
 
-	NclInterfacesParser *NclComponentsParser::getInterfacesParser() {
-		return interfacesParser;
-	}
+NclPresentationControlParser *
+NclComponentsParser::getPresentationControlParser ()
+{
 
-	void NclComponentsParser::setInterfacesParser(
-		    NclInterfacesParser *interfacesParser) {
+  return presentationControlParser;
+}
 
-		this->interfacesParser = interfacesParser;
-	}
+void
+NclComponentsParser::setPresentationControlParser (
+    NclPresentationControlParser *presentationControlParser)
+{
 
-	NclPresentationControlParser*
-		    NclComponentsParser::getPresentationControlParser() {
-
-		return presentationControlParser;
-	}
-
-	void NclComponentsParser::setPresentationControlParser(
-		    NclPresentationControlParser* presentationControlParser) {
-
-		this->presentationControlParser = presentationControlParser;
-	}
+  this->presentationControlParser = presentationControlParser;
+}
 
 GINGA_NCLCONV_END

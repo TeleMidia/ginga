@@ -21,21 +21,19 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TIME_BEGIN
 
-	TimePlayerAdapter::TimePlayerAdapter() : FormatterPlayerAdapter() {
-		
-	}
+TimePlayerAdapter::TimePlayerAdapter () : FormatterPlayerAdapter () {}
 
-	TimePlayerAdapter::~TimePlayerAdapter() {
-		player = NULL;
-	}
+TimePlayerAdapter::~TimePlayerAdapter () { player = NULL; }
 
-	void TimePlayerAdapter::createPlayer() {
-		player = new NTPPlayer(myScreen, mrl.c_str());
+void
+TimePlayerAdapter::createPlayer ()
+{
+  player = new NTPPlayer (myScreen, mrl.c_str ());
 
-		FormatterPlayerAdapter::createPlayer();
+  FormatterPlayerAdapter::createPlayer ();
 
-		clog << "TimePlayerAdapter::createPlayer '";
-		clog << mrl << "' ALL DONE" << endl;
-	}
+  clog << "TimePlayerAdapter::createPlayer '";
+  clog << mrl << "' ALL DONE" << endl;
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TIME_END

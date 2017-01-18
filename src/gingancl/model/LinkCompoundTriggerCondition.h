@@ -26,26 +26,25 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include "LinkTriggerCondition.h"
 #include "LinkTriggerListener.h"
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	class LinkCompoundTriggerCondition :
-			public LinkTriggerCondition,
-			public LinkTriggerListener {
+class LinkCompoundTriggerCondition : public LinkTriggerCondition,
+                                     public LinkTriggerListener
+{
 
-		protected:
-			vector<LinkCondition*> conditions;
+protected:
+  vector<LinkCondition *> conditions;
 
-		public:
-			LinkCompoundTriggerCondition();
-			virtual ~LinkCompoundTriggerCondition();
-			virtual void addCondition(LinkCondition* condition);
-			virtual void conditionSatisfied(void *condition);
-			virtual vector<FormatterEvent*>* getEvents();
+public:
+  LinkCompoundTriggerCondition ();
+  virtual ~LinkCompoundTriggerCondition ();
+  virtual void addCondition (LinkCondition *condition);
+  virtual void conditionSatisfied (void *condition);
+  virtual vector<FormatterEvent *> *getEvents ();
 
-			void evaluationStarted();
-			void evaluationEnded();
-	};
+  void evaluationStarted ();
+  void evaluationEnded ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_LINKCOMPOUNDTRIGGERCONDITION_H_

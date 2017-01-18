@@ -18,15 +18,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IOBJECTLISTENER_H_
 #define IOBJECTLISTENER_H_
 
-
 GINGA_DATAPROC_BEGIN
 
-	class IDsmccObjectListener {
-		public:
-			virtual ~IDsmccObjectListener(){};
-			virtual void objectMounted(
-					string ior, string clientUri, string name)=0;
-	};
+class IDsmccObjectListener
+{
+public:
+  virtual ~IDsmccObjectListener (){};
+  virtual void objectMounted (string ior, string clientUri, string name) = 0;
+};
 
 GINGA_DATAPROC_END
 

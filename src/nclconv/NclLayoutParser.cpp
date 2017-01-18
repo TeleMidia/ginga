@@ -20,106 +20,127 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCLCONV_BEGIN
 
-	NclLayoutParser::NclLayoutParser(
-		    DocumentParser *documentParser) : ModuleParser(documentParser) {
+NclLayoutParser::NclLayoutParser (DocumentParser *documentParser)
+    : ModuleParser (documentParser)
+{
+}
 
+void *
+NclLayoutParser::parseRegion (DOMElement *parentElement, void *objGrandParent)
+{
 
-	}
+  clog << "parseRegion" << endl;
+  void *parentObject;
+  DOMNodeList *elementNodeList;
+  DOMElement *element;
+  DOMNode *node;
+  string elementTagName;
+  void *elementObject;
 
-	void *NclLayoutParser::parseRegion(
-		    DOMElement *parentElement, void *objGrandParent) {
+  parentObject = createRegion (parentElement, objGrandParent);
+  if (parentObject == NULL)
+    {
+      return NULL;
+    }
 
-		clog << "parseRegion" << endl;
-		void *parentObject;
-		DOMNodeList *elementNodeList;
-		DOMElement *element;
-		DOMNode *node;
-		string elementTagName;
-		void *elementObject;
+  elementNodeList = parentElement->getChildNodes ();
+  for (int i = 0; i < (int)elementNodeList->getLength (); i++)
+    {
+      node = elementNodeList->item (i);
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+        {
+          element = (DOMElement *)node;
+          elementTagName = XMLString::transcode (element->getTagName ());
+          clog << ">>" << elementTagName.c_str () << ": ";
+          clog << XMLString::transcode (
+              element->getAttribute (XMLString::transcode ("id")));
 
-		parentObject = createRegion(parentElement, objGrandParent);
-		if (parentObject == NULL) {
-			return NULL;
-		}
+          if (XMLString::compareIString (elementTagName.c_str (), "region")
+              == 0)
+            {
 
-		elementNodeList = parentElement->getChildNodes();
-		for (int i = 0; i < (int)elementNodeList->getLength(); i++) {
-			node = elementNodeList->item(i);
-			if (node->getNodeType()==DOMNode::ELEMENT_NODE) {
-				element = (DOMElement*)node;
-				elementTagName = XMLString::transcode(element->getTagName());
-				clog << ">>" << elementTagName.c_str() << ": ";
-				clog << XMLString::transcode(element->getAttribute(XMLString::transcode("id")));
+              elementObject = parseRegion (element, parentObject);
+              if (elementObject != NULL)
+                {
+                  addRegionToRegion (parentObject, elementObject);
+                }
+            }
+        }
+    }
 
-				if (XMLString::compareIString(
-					    elementTagName.c_str(), "region") == 0) {
+  return parentObject;
+}
 
-					elementObject = parseRegion(element, parentObject);
-					if (elementObject != NULL) {
-						addRegionToRegion(parentObject, elementObject);
-					}
-				}
-			}
-		}
+void *
+NclLayoutParser::parseRegionBase (DOMElement *parentElement,
+                                  void *objGrandParent)
+{
 
-		return parentObject;
-	}
+  clog << "parseRegionBase" << endl;
+  void *parentObject;
+  DOMNodeList *elementNodeList;
+  DOMElement *element;
+  DOMNode *node;
+  string elementTagName;
+  void *elementObject;
 
-	void *NclLayoutParser::parseRegionBase(
-		    DOMElement *parentElement, void *objGrandParent) {
+  parentObject = createRegionBase (parentElement, objGrandParent);
+  if (parentObject == NULL)
+    {
+      return NULL;
+    }
 
-		clog << "parseRegionBase" << endl;
-		void *parentObject;
-		DOMNodeList *elementNodeList;
-		DOMElement *element;
-		DOMNode *node;
-		string elementTagName;
-		void *elementObject;
+  elementNodeList = parentElement->getChildNodes ();
+  for (int i = 0; i < (int)elementNodeList->getLength (); i++)
+    {
+      node = elementNodeList->item (i);
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+        {
+          element = (DOMElement *)node;
+          elementTagName = XMLString::transcode (element->getTagName ());
+          clog << ">>" << elementTagName.c_str () << ": ";
+          clog << XMLString::transcode (
+              element->getAttribute (XMLString::transcode ("id")));
 
-		parentObject = createRegionBase(parentElement, objGrandParent);
-		if (parentObject == NULL) {
-			return NULL;
-		}
+          if (XMLString::compareIString (elementTagName.c_str (), "importBase")
+              == 0)
+            {
 
-		elementNodeList = parentElement->getChildNodes();
-		for (int i = 0; i < (int)elementNodeList->getLength(); i++) {
-			node = elementNodeList->item(i);
-			if(node->getNodeType()==DOMNode::ELEMENT_NODE){
-				element = (DOMElement*)node;
-				elementTagName = XMLString::transcode( element->getTagName() );
-				clog << ">>" << elementTagName.c_str() << ": ";
-				clog << XMLString::transcode(element->getAttribute(XMLString::transcode("id")));
+              elementObject = getImportParser ()->parseImportBase (
+                  element, parentObject);
 
-				if (XMLString::compareIString(
-					    elementTagName.c_str(), "importBase") == 0) {
+              if (elementObject != NULL)
+                {
+                  addImportBaseToRegionBase (parentObject, elementObject);
+                }
+            }
+          else if (XMLString::compareIString (elementTagName.c_str (),
+                                              "region")
+                   == 0)
+            {
 
-					elementObject = getImportParser()->parseImportBase(
-						    element, parentObject);
+              elementObject = parseRegion (element, parentObject);
+              if (elementObject != NULL)
+                {
+                  addRegionToRegionBase (parentObject, elementObject);
+                }
+            }
+        }
+    }
 
-					if (elementObject != NULL) {
-						addImportBaseToRegionBase(parentObject, elementObject);
-					}
+  return parentObject;
+}
 
-				} else if (XMLString::compareIString(
-					    elementTagName.c_str(), "region") == 0) {
+NclImportParser *
+NclLayoutParser::getImportParser ()
+{
+  return importParser;
+}
 
-					elementObject = parseRegion(element, parentObject);
-					if (elementObject != NULL) {
-						addRegionToRegionBase(parentObject, elementObject);
-					}
-				}
-			}
-		}
-
-		return parentObject;
-	}
-
-	NclImportParser *NclLayoutParser::getImportParser() {
-		return importParser;
-	}
-
-	void NclLayoutParser::setImportParser(NclImportParser *importParser) {
-		this->importParser = importParser;
-	}
+void
+NclLayoutParser::setImportParser (NclImportParser *importParser)
+{
+  this->importParser = importParser;
+}
 
 GINGA_NCLCONV_END

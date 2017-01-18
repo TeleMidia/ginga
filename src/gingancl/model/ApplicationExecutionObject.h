@@ -23,61 +23,53 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
 
-  class ApplicationExecutionObject : public ExecutionObject {
-    private:
-    	map<string, FormatterEvent*> preparedEvents;
-    	FormatterEvent* currentEvent;
-    	pthread_mutex_t eventsMutex;
+class ApplicationExecutionObject : public ExecutionObject
+{
+private:
+  map<string, FormatterEvent *> preparedEvents;
+  FormatterEvent *currentEvent;
+  pthread_mutex_t eventsMutex;
 
-	public:
-		ApplicationExecutionObject(
-				string id,
-				Node* node,
-				bool handling,
-				ILinkActionListener* seListener);
+public:
+  ApplicationExecutionObject (string id, Node *node, bool handling,
+                              ILinkActionListener *seListener);
 
-		ApplicationExecutionObject(
-				string id,
-				Node* node,
-				GenericDescriptor* descriptor,
-				bool handling,
-				ILinkActionListener* seListener);
+  ApplicationExecutionObject (string id, Node *node,
+                              GenericDescriptor *descriptor, bool handling,
+                              ILinkActionListener *seListener);
 
-		ApplicationExecutionObject(
-				string id,
-				Node* node,
-				CascadingDescriptor* descriptor,
-				bool handling,
-				ILinkActionListener* seListener);
+  ApplicationExecutionObject (string id, Node *node,
+                              CascadingDescriptor *descriptor, bool handling,
+                              ILinkActionListener *seListener);
 
-		virtual ~ApplicationExecutionObject();
+  virtual ~ApplicationExecutionObject ();
 
-	private:
-		void initializeApplicationObject();
+private:
+  void initializeApplicationObject ();
 
-	public:
-		bool isSleeping();
-		bool isPaused();
-		FormatterEvent* getCurrentEvent();
-		bool hasPreparedEvent(FormatterEvent* event);
-		void setCurrentEvent(FormatterEvent* event);
-		bool prepare(FormatterEvent* event, double offsetTime);
-		bool start();
-		EventTransition* getNextTransition();
-		bool stop();
-		bool abort();
-		bool pause();
-		bool resume();
-		bool unprepare();
+public:
+  bool isSleeping ();
+  bool isPaused ();
+  FormatterEvent *getCurrentEvent ();
+  bool hasPreparedEvent (FormatterEvent *event);
+  void setCurrentEvent (FormatterEvent *event);
+  bool prepare (FormatterEvent *event, double offsetTime);
+  bool start ();
+  EventTransition *getNextTransition ();
+  bool stop ();
+  bool abort ();
+  bool pause ();
+  bool resume ();
+  bool unprepare ();
 
-	private:
-		void unprepareEvents();
-		void removeEventListeners();
-		void removeParentObject(Node* parentNode, void* parentObject);
-		void removeParentListenersFromEvent(FormatterEvent* event);
-		void lockEvents();
-		void unlockEvents();
-  };
+private:
+  void unprepareEvents ();
+  void removeEventListeners ();
+  void removeParentObject (Node *parentNode, void *parentObject);
+  void removeParentListenersFromEvent (FormatterEvent *event);
+  void lockEvents ();
+  void unlockEvents ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_END
 #endif //_APPLICATIONEXECUTIONOBJECT_H_

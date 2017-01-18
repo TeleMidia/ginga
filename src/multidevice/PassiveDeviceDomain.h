@@ -24,30 +24,43 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MULTIDEVICE_BEGIN
 
-  class PassiveDeviceDomain : public DeviceDomain {
-	private:
-		ISocketService* passiveSocket;
+class PassiveDeviceDomain : public DeviceDomain
+{
+private:
+  ISocketService *passiveSocket;
 
-	public:
-		PassiveDeviceDomain(bool useMulticast, int srvPort);
-		virtual ~PassiveDeviceDomain();
+public:
+  PassiveDeviceDomain (bool useMulticast, int srvPort);
+  virtual ~PassiveDeviceDomain ();
 
-	protected:
-		bool taskRequest(int destDevClass, char* data, int taskSize);
-		bool passiveTaskRequest(char* data, int taskSize);
-		bool activeTaskRequest(char* data, int taskSize){return false;};
-		void postConnectionRequestTask(int width, int height);
-		void receiveConnectionRequest(char* task){};
-		void postAnswerTask(int reqDeviceClass, int answer){};
-		void receiveAnswerTask(char* answerTask);
-		bool postMediaContentTask(int destDevClass, string url){return false;};
-		bool receiveMediaContentTask(char* task);
-		bool receiveEventTask(char* task){return false;};
-		void setDeviceInfo(int width, int height, string base_device_ncl_path);
-		bool runControlTask();
-		bool runDataTask();
-		void checkDomainTasks();
+protected:
+  bool taskRequest (int destDevClass, char *data, int taskSize);
+  bool passiveTaskRequest (char *data, int taskSize);
+  bool
+  activeTaskRequest (char *data, int taskSize)
+  {
+    return false;
   };
+  void postConnectionRequestTask (int width, int height);
+  void receiveConnectionRequest (char *task){};
+  void postAnswerTask (int reqDeviceClass, int answer){};
+  void receiveAnswerTask (char *answerTask);
+  bool
+  postMediaContentTask (int destDevClass, string url)
+  {
+    return false;
+  };
+  bool receiveMediaContentTask (char *task);
+  bool
+  receiveEventTask (char *task)
+  {
+    return false;
+  };
+  void setDeviceInfo (int width, int height, string base_device_ncl_path);
+  bool runControlTask ();
+  bool runDataTask ();
+  void checkDomainTasks ();
+};
 
 GINGA_MULTIDEVICE_END
 

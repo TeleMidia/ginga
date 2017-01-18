@@ -22,13 +22,15 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	class InterfacePoint : public Entity {
-		public:
-			InterfacePoint(string someId) : Entity(someId) {
-				typeSet.insert("InterfacePoint");
-			};
-			virtual ~InterfacePoint(){};
-	};
+class InterfacePoint : public Entity
+{
+public:
+  InterfacePoint (string someId) : Entity (someId)
+  {
+    typeSet.insert ("InterfacePoint");
+  };
+  virtual ~InterfacePoint (){};
+};
 
 GINGA_NCL_END
 

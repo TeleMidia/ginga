@@ -18,85 +18,83 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef BIOP_H_
 #define BIOP_H_
 
-
 #include "util/functions.h"
 using namespace ::ginga::util;
 
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
-
 #include "DsmccObjectProcessor.h"
 #include "DsmccModule.h"
 
-
 GINGA_DATAPROC_BEGIN
 
-	class DsmccBiop {
-		private:
-			//DsmccBiop Attributes
-			DsmccModule* module;
-			unsigned int idx;
-			unsigned int currentSize;
-			FILE* moduleFd;
-			bool isValidHdr;
-			bool hasMoreBiopMessage;
-			char* data;
+class DsmccBiop
+{
+private:
+  // DsmccBiop Attributes
+  DsmccModule *module;
+  unsigned int idx;
+  unsigned int currentSize;
+  FILE *moduleFd;
+  bool isValidHdr;
+  bool hasMoreBiopMessage;
+  char *data;
 
-			// MessageHeader
-			unsigned int messageSize;
+  // MessageHeader
+  unsigned int messageSize;
 
-			// MessageSubHeader
-			unsigned int objectKey;
-			string objectKind;
-			string objectInfo;
+  // MessageSubHeader
+  unsigned int objectKey;
+  string objectKind;
+  string objectInfo;
 
-			// MessageBody
-			map<string, DsmccObject*> objects;
+  // MessageBody
+  map<string, DsmccObject *> objects;
 
-			DsmccObjectProcessor* processor;
+  DsmccObjectProcessor *processor;
 
-			pthread_mutex_t dataMutex;
+  pthread_mutex_t dataMutex;
 
-		public:
-			DsmccBiop(DsmccModule* module, DsmccObjectProcessor* processor);
-			virtual ~DsmccBiop();
+public:
+  DsmccBiop (DsmccModule *module, DsmccObjectProcessor *processor);
+  virtual ~DsmccBiop ();
 
-		private:
-			void closeModule();
-			void createData(unsigned int dataSize);
-			void releaseData();
+private:
+  void closeModule ();
+  void createData (unsigned int dataSize);
+  void releaseData ();
 
-			string getStringFromData(unsigned int offset, unsigned int len);
+  string getStringFromData (unsigned int offset, unsigned int len);
 
-			string getObjectKind();
-			string getObjectInfo();
+  string getObjectKind ();
+  string getObjectInfo ();
 
-			void abortProcess(string warningText);
-			bool processServiceContext();
-			bool processMessageHeader();
-			int processMessageSubHeader();
-			int skipObject();
+  void abortProcess (string warningText);
+  bool processServiceContext ();
+  bool processMessageHeader ();
+  int processMessageSubHeader ();
+  int skipObject ();
 
-		public:
-			int processServiceGateway(unsigned int srgObjectKey);
+public:
+  int processServiceGateway (unsigned int srgObjectKey);
 
-		private:
-			DsmccBinding* processBinding();
-			void processIor(DsmccBinding* binding);
+private:
+  DsmccBinding *processBinding ();
+  void processIor (DsmccBinding *binding);
 
-			void processDirectory();
-			void processFile();
+  void processDirectory ();
+  void processFile ();
 
-		public:
-			void print();
+public:
+  void print ();
 
-		private:
-			void processObject();
+private:
+  void processObject ();
 
-		public:
-			int process();
-	};
+public:
+  int process ();
+};
 
 GINGA_DATAPROC_END
 

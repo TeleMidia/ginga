@@ -21,78 +21,72 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 extern "C" {
 }
 
-
 GINGA_MB_BEGIN
 
-   
-    SDLBpgDecoder::SDLBpgDecoder(string filename) {
+SDLBpgDecoder::SDLBpgDecoder (string filename) { filePath.assign (filename); }
 
-        filePath.assign(filename);
-       
-    }
+SDLBpgDecoder::~SDLBpgDecoder () {}
 
-    SDLBpgDecoder::~SDLBpgDecoder() {
+SDL_Surface *
+SDLBpgDecoder::decode ()
+{
+  BPGDecoderContext *s;
+  BPGImageInfo bi_s, *bi = &bi_s;
+  uint8_t *buf;
+  int len, y;
+  SDL_Surface *img;
+  uint32_t rmask, gmask, bmask, amask;
+  int i;
 
-    }
+  FILE *f = fopen (filePath.c_str (), "r");
+  fseek (f, 0, SEEK_END);
+  len = ftell (f);
+  fseek (f, 0, SEEK_SET);
+  if (len < 0)
+    return NULL;
+  buf = (uint8_t *)malloc (len);
+  if (!buf)
+    return NULL;
+  if (fread (buf, 1, len, f) != len)
+    return NULL;
 
-    SDL_Surface *SDLBpgDecoder::decode() {
-        BPGDecoderContext *s;
-        BPGImageInfo bi_s, *bi = &bi_s;
-        uint8_t *buf;
-        int len, y;
-        SDL_Surface *img;
-        uint32_t rmask, gmask, bmask, amask;
-        int i;
+  fclose (f);
 
-        FILE *f = fopen(filePath.c_str(), "r");
-        fseek(f, 0, SEEK_END);
-        len = ftell(f);
-        fseek(f, 0, SEEK_SET);
-        if (len < 0)
-            return NULL;
-        buf = (uint8_t *) malloc(len);
-        if (!buf)
-            return NULL;
-        if (fread(buf, 1, len, f) != len)
-            return NULL;
+  s = bpg_decoder_open ();
+  if (bpg_decoder_decode (s, buf, len) < 0)
+    return NULL;
 
-        fclose(f);
-   
-        s = bpg_decoder_open();
-        if (bpg_decoder_decode(s, buf, len) < 0)
-            return NULL;
-       
-        bpg_decoder_get_info(s, bi);
-       
+  bpg_decoder_get_info (s, bi);
+
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-        rmask = 0xff000000;
-        gmask = 0x00ff0000;
-        bmask = 0x0000ff00;
-        amask = 0x000000ff;
+  rmask = 0xff000000;
+  gmask = 0x00ff0000;
+  bmask = 0x0000ff00;
+  amask = 0x000000ff;
 #else
-        rmask = 0x000000ff;
-        gmask = 0x0000ff00;
-        bmask = 0x00ff0000;
-        amask = 0xff000000;
+  rmask = 0x000000ff;
+  gmask = 0x0000ff00;
+  bmask = 0x00ff0000;
+  amask = 0xff000000;
 #endif
-       
-        if (bpg_decoder_start(s, BPG_OUTPUT_FORMAT_RGBA32) < 0)
-            return NULL;
-       
 
-        img = SDL_CreateRGBSurface(0, bi->width, bi->height, 32,
-                                   rmask, gmask, bmask, amask);
-        if (!img)
-            return NULL;
-       
-        SDL_LockSurface(img);
-        for(y = 0; y < bi->height; y++) {
-            bpg_decoder_get_line(s, (uint8_t *)img->pixels + y * img->pitch);
-        }
-        SDL_UnlockSurface(img);
-       
-        bpg_decoder_close(s);
-        return img;
+  if (bpg_decoder_start (s, BPG_OUTPUT_FORMAT_RGBA32) < 0)
+    return NULL;
+
+  img = SDL_CreateRGBSurface (0, bi->width, bi->height, 32, rmask, gmask,
+                              bmask, amask);
+  if (!img)
+    return NULL;
+
+  SDL_LockSurface (img);
+  for (y = 0; y < bi->height; y++)
+    {
+      bpg_decoder_get_line (s, (uint8_t *)img->pixels + y * img->pitch);
     }
+  SDL_UnlockSurface (img);
+
+  bpg_decoder_close (s);
+  return img;
+}
 
 GINGA_MB_END

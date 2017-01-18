@@ -23,206 +23,243 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_DATAPROC_BEGIN
 
-typedef struct {
-	INCLMetadata* metadata;
-	bool isParsing;
+typedef struct
+{
+  INCLMetadata *metadata;
+  bool isParsing;
 } MetadataAndParser;
 
+INCLMetadata *
+NCLMetadataParser::parse (string xmlDocument)
+{
+  FILE *fd;
+  int bytes = 1;
+  int fileSize;
 
-	INCLMetadata* NCLMetadataParser::parse(string xmlDocument) {
-		FILE* fd;
-		int bytes = 1;
-		int fileSize;
+  fd = fopen (xmlDocument.c_str (), "rb");
+  if (fd < 0)
+    {
+      clog << "NCLMetadataParser::parse: can't open file:" << xmlDocument;
+      clog << endl;
+      return NULL;
+    }
 
-		fd = fopen(xmlDocument.c_str(), "rb");
-		if (fd < 0) {
-			clog << "NCLMetadataParser::parse: can't open file:" << xmlDocument;
-			clog << endl;
-			return NULL;
-		}
+  fseek (fd, 0L, SEEK_END);
+  fileSize = ftell (fd);
+  fclose (fd);
 
-		fseek(fd, 0L, SEEK_END);
-		fileSize = ftell(fd);
-		fclose(fd);
+  if (fileSize <= 0)
+    {
+      clog << "NCLMetadataParser::parse: file '" << xmlDocument;
+      clog << "' is empty" << endl;
+      return NULL;
+    }
 
-		if (fileSize <= 0) {
-			clog << "NCLMetadataParser::parse: file '" << xmlDocument;
-			clog << "' is empty" << endl;
-			return NULL;
-		}
+  fd = fopen (xmlDocument.c_str (), "rb");
+  if (fd == NULL)
+    {
+      clog << "NCLMetadataParser::parse2: can't open file:" << xmlDocument;
+      clog << endl;
+      return NULL;
+    }
 
-		fd = fopen(xmlDocument.c_str(), "rb");
-		if (fd == NULL) {
-			clog << "NCLMetadataParser::parse2: can't open file:" << xmlDocument;
-			clog << endl;
-			return NULL;
-		}
+  char *content = new char[fileSize];
+  bytes = fread (content, 1, fileSize, fd);
+  if (bytes != fileSize)
+    {
+      clog << "NCLMetadataParser::parse3: can't read '" << bytes;
+      clog << "' bytes from '" << xmlDocument << "'";
+      clog << endl;
+      return NULL;
+    }
 
-		char* content = new char[fileSize];
-		bytes = fread(content, 1, fileSize, fd);
-		if (bytes != fileSize) {
-			clog << "NCLMetadataParser::parse3: can't read '" << bytes;
-			clog << "' bytes from '" << xmlDocument << "'";
-			clog << endl;
-			return NULL;
-		}
+  fclose (fd);
 
-		fclose(fd);
+  return parse (content, fileSize);
+}
 
-		return parse(content, fileSize);
-	}
+INCLMetadata *
+NCLMetadataParser::parse (char *xmlStream, int streamSize)
+{
+  MetadataAndParser *mp;
+  INCLMetadata *metadata;
 
-	INCLMetadata* NCLMetadataParser::parse(char* xmlStream, int streamSize) {
-		MetadataAndParser* mp;
-		INCLMetadata* metadata;
+  XML_Parser parser = XML_ParserCreate (NULL);
 
-		XML_Parser parser = XML_ParserCreate(NULL);
+  mp = new MetadataAndParser ();
+  mp->metadata = NULL;
+  mp->isParsing = true;
 
-		mp            = new MetadataAndParser();
-		mp->metadata  = NULL;
-		mp->isParsing = true;
+  XML_SetUserData (parser, mp);
+  XML_SetElementHandler (parser, NCLMetadataParser::startElementHandler,
+                         NCLMetadataParser::stopElementHandler);
 
-		XML_SetUserData(parser, mp);
-		XML_SetElementHandler(
-				parser,
-				NCLMetadataParser::startElementHandler,
-				NCLMetadataParser::stopElementHandler);
+  if (XML_Parse (parser, xmlStream, streamSize, true) == XML_STATUS_ERROR)
+    {
 
-		if (XML_Parse(parser, xmlStream, streamSize, true) ==
-				XML_STATUS_ERROR) {
+      clog << "NCLMetadataParser::parse() error '";
+      clog << XML_ErrorString (XML_GetErrorCode (parser));
+      clog << "' at line '" << XML_GetCurrentLineNumber (parser);
+      clog << "'" << endl;
+      delete mp;
+      XML_ParserFree (parser);
+      return NULL;
+    }
 
-			clog << "NCLMetadataParser::parse() error '";
-			clog << XML_ErrorString(XML_GetErrorCode(parser));
-			clog << "' at line '" << XML_GetCurrentLineNumber(parser);
-			clog << "'" << endl;
-			delete mp;
-			XML_ParserFree(parser);
-			return NULL;
-		}
+  if (mp->isParsing)
+    {
+      clog << "NCLMetadataParser::parse4 Warning! underflow";
+      clog << " XML parser ";
+      clog << endl;
+    }
 
-		if (mp->isParsing) {
-			clog << "NCLMetadataParser::parse4 Warning! underflow";
-			clog << " XML parser ";
-			clog << endl;
-		}
+  metadata = mp->metadata;
+  delete mp;
+  XML_ParserFree (parser);
 
-		metadata = mp->metadata;
-		delete mp;
-		XML_ParserFree(parser);
+  return metadata;
+}
 
-		return metadata;
-	}
+void
+NCLMetadataParser::startElementHandler (void *data, const XML_Char *element,
+                                        const XML_Char **attrs)
+{
 
-	void NCLMetadataParser::startElementHandler(
-			void* data, const XML_Char* element, const XML_Char** attrs) {
+  INCLMetadata *nm = ((MetadataAndParser *)data)->metadata;
+  bool isValid = (nm != NULL);
+  clog << "NCLMetadataParser::startElementHandler element '";
+  clog << element << "'" << endl;
 
-		INCLMetadata* nm = ((MetadataAndParser*)data)->metadata;
-		bool isValid = (nm != NULL);
-		clog << "NCLMetadataParser::startElementHandler element '";
-		clog << element << "'" << endl;
+  if (strcmp (element, "metadata") == 0)
+    {
+      parseMetadata (data, attrs);
+    }
+  else if (strcmp (element, "baseData") == 0 && isValid)
+    {
+      parseBaseData (data, attrs);
+    }
+  else if (strcmp (element, "pushedRoot") == 0 && isValid)
+    {
+      parseRoot (data, attrs);
+    }
+  else if (strcmp (element, "pushedData") == 0 && isValid)
+    {
+      parseData (data, attrs);
+    }
+}
 
-		if (strcmp(element, "metadata") == 0) {
-			parseMetadata(data, attrs);
+void
+NCLMetadataParser::parseMetadata (void *data, const XML_Char **attrs)
+{
+  string name = "";
+  double size = 0;
 
-		} else if (strcmp(element, "baseData") == 0 && isValid) {
-			parseBaseData(data, attrs);
+  for (int i = 0; i < 4; i = i + 2)
+    {
+      if (strcmp (attrs[i], "name") == 0)
+        {
+          name = attrs[i + 1];
+        }
+      else if (strcmp (attrs[i], "size") == 0)
+        {
+          size = ::ginga::util::stof ((string)attrs[i + 1]);
+        }
+    }
 
-		} else if (strcmp(element, "pushedRoot") == 0 && isValid) {
-			parseRoot(data, attrs);
+  if (name != "" && size > 0)
+    {
+      ((MetadataAndParser *)data)->metadata = new NCLMetadata (name);
+      ((MetadataAndParser *)data)->metadata->setTargetTotalLength (size);
+    }
+}
 
-		} else if (strcmp(element, "pushedData") == 0 && isValid) {
-			parseData(data, attrs);
-		}
-	}
+void
+NCLMetadataParser::parseBaseData (void *data, const XML_Char **attrs)
+{
+  INCLMetadata *nm = ((MetadataAndParser *)data)->metadata;
+  string uri = "";
 
-	void NCLMetadataParser::parseMetadata(void* data, const XML_Char** attrs) {
-		string name = "";
-		double size = 0;
+  for (int i = 0; i < 2; i = i + 2)
+    {
+      if (strcmp (attrs[i], "uri") == 0)
+        {
+          uri = attrs[i + 1];
+        }
+    }
 
-		for (int i = 0; i < 4; i = i + 2) {
-			if (strcmp(attrs[i], "name") == 0) {
-				name = attrs[i + 1];
+  if (uri != "")
+    {
+      nm->setBaseUri (uri);
+    }
+}
 
-			} else if (strcmp(attrs[i], "size") == 0) {
-				size = ::ginga::util::stof((string)attrs[i + 1]);
-			}
-		}
+void
+NCLMetadataParser::parseRoot (void *data, const XML_Char **attrs)
+{
+  INCLMetadata *nm = ((MetadataAndParser *)data)->metadata;
+  INCLDataFile *pushedRoot = createObject (data, attrs);
 
-		if (name != "" && size > 0) {
-			((MetadataAndParser*)data)->metadata = new NCLMetadata(name);
-			((MetadataAndParser*)data)->metadata->setTargetTotalLength(size);
-		}
-	}
+  nm->setRootObject (pushedRoot);
+}
 
-	void NCLMetadataParser::parseBaseData(void* data, const XML_Char** attrs) {
-		INCLMetadata* nm = ((MetadataAndParser*)data)->metadata;
-		string uri = "";
+void
+NCLMetadataParser::parseData (void *data, const XML_Char **attrs)
+{
+  INCLMetadata *nm = ((MetadataAndParser *)data)->metadata;
+  INCLDataFile *pushedData = createObject (data, attrs);
 
-		for (int i = 0; i < 2; i = i + 2) {
-			if (strcmp(attrs[i], "uri") == 0) {
-				uri = attrs[i + 1];
-			}
-		}
+  nm->addDataFile (pushedData);
+}
 
-		if (uri != "") {
-			nm->setBaseUri(uri);
-		}
-	}
+INCLDataFile *
+NCLMetadataParser::createObject (void *data, const XML_Char **attrs)
+{
 
-	void NCLMetadataParser::parseRoot(void* data, const XML_Char** attrs) {
-		INCLMetadata* nm = ((MetadataAndParser*)data)->metadata;
-		INCLDataFile* pushedRoot = createObject(data, attrs);
+  INCLDataFile *dataObject = NULL;
+  int structureId = -1;
+  double size = 0;
+  string componentTag = "";
+  string uri = "";
 
-		nm->setRootObject(pushedRoot);
-	}
+  for (int i = 0; i < 8; i = i + 2)
+    {
+      if (strcmp (attrs[i], "structureId") == 0)
+        {
+          structureId = ::ginga::util::stof ((string)attrs[i + 1]);
+        }
+      else if (strcmp (attrs[i], "size") == 0)
+        {
+          size = ::ginga::util::stof ((string)attrs[i + 1]);
+        }
+      else if (strcmp (attrs[i], "component_tag") == 0)
+        {
+          componentTag = attrs[i + 1];
+        }
+      else if (strcmp (attrs[i], "uri") == 0)
+        {
+          uri = attrs[i + 1];
+        }
+    }
 
-	void NCLMetadataParser::parseData(void* data, const XML_Char** attrs) {
-		INCLMetadata* nm = ((MetadataAndParser*)data)->metadata;
-		INCLDataFile* pushedData = createObject(data, attrs);
+  if (structureId != -1 && size != 0 && componentTag != "" && uri != "")
+    {
+      dataObject = new NCLDataFile (structureId);
+      dataObject->setComponentTag (componentTag);
+      dataObject->setUri (uri);
+      dataObject->setSize (size);
+    }
 
-		nm->addDataFile(pushedData);
-	}
+  return dataObject;
+}
 
-	INCLDataFile* NCLMetadataParser::createObject(
-			void* data, const XML_Char** attrs) {
+void
+NCLMetadataParser::stopElementHandler (void *data, const XML_Char *element)
+{
 
-		INCLDataFile* dataObject = NULL;
-		int structureId     = -1;
-		double size         = 0;
-		string componentTag = "";
-		string uri          = "";
-
-		for (int i = 0; i < 8; i = i + 2) {
-			if (strcmp(attrs[i], "structureId") == 0) {
-				structureId = ::ginga::util::stof((string)attrs[i + 1]);
-
-			} else if (strcmp(attrs[i], "size") == 0) {
-				size = ::ginga::util::stof((string)attrs[i + 1]);
-
-			} else if (strcmp(attrs[i], "component_tag") == 0) {
-				componentTag = attrs[i + 1];
-
-			} else if (strcmp(attrs[i], "uri") == 0) {
-				uri = attrs[i + 1];
-			}
-		}
-
-		if (structureId != -1 && size != 0 && componentTag != "" && uri != "") {
-			dataObject = new NCLDataFile(structureId);
-			dataObject->setComponentTag(componentTag);
-			dataObject->setUri(uri);
-			dataObject->setSize(size);
-		}
-
-		return dataObject;
-	}
-
-	void NCLMetadataParser::stopElementHandler(
-			void* data, const XML_Char* element) {
-
-		if (strcmp(element, "metadata") == 0) {
-			((MetadataAndParser*)data)->isParsing = false;
-		}
-	}
+  if (strcmp (element, "metadata") == 0)
+    {
+      ((MetadataAndParser *)data)->isParsing = false;
+    }
+}
 
 GINGA_DATAPROC_END

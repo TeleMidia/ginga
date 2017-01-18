@@ -26,16 +26,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
+class SDLBpgDecoder
+{
+public:
+  string filePath;
+  SDLBpgDecoder (string filename);
+  ~SDLBpgDecoder ();
+  SDL_Surface *decode ();
 
-      class SDLBpgDecoder {
-	public:
-	        string filePath;
-		SDLBpgDecoder(string filename);
-		~SDLBpgDecoder();
-		SDL_Surface *decode();
-	private:
-
-      };
+private:
+};
 
 GINGA_MB_END
 

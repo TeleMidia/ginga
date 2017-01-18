@@ -39,217 +39,207 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::mb;
 
 #include "FocusSourceManager.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation::focus;
-
+using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation::
+    focus;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_BEGIN
 
-  class FormatterRegion {
-	private:
-		void* layoutManager; //FormatterLayout
-		void* descriptor; //CascadingDescriptor
+class FormatterRegion
+{
+private:
+  void *layoutManager; // FormatterLayout
+  void *descriptor; // CascadingDescriptor
 
-		string objectId;
-		LayoutRegion* ncmRegion;
-		LayoutRegion* originalRegion;
-		bool externHandler;
-		GingaWindowID outputDisplay;
+  string objectId;
+  LayoutRegion *ncmRegion;
+  LayoutRegion *originalRegion;
+  bool externHandler;
+  GingaWindowID outputDisplay;
 
-		GingaSurfaceID renderedSurface;
+  GingaSurfaceID renderedSurface;
 
-		bool imVisible;
+  bool imVisible;
 
-		short focusState;
-		Color* focusBorderColor;
-		int focusBorderWidth;
-		string focusComponentSrc;
-		Color* selBorderColor;
-		string selComponentSrc;
-		int selBorderWidth;
+  short focusState;
+  Color *focusBorderColor;
+  int focusBorderWidth;
+  string focusComponentSrc;
+  Color *selBorderColor;
+  string selComponentSrc;
+  int selBorderWidth;
 
-		int zIndex;
+  int zIndex;
 
-		Color* bgColor;
-		float transparency;
-		short fit;
-		short scroll;
-		Color* chromaKey;
-		string transitionIn;
-		string transitionOut;
-		bool abortTransitionIn;
-		bool abortTransitionOut;
-		pthread_mutex_t mutex;
-		pthread_mutex_t mutexT;
-		pthread_mutex_t mutexFI;
+  Color *bgColor;
+  float transparency;
+  short fit;
+  short scroll;
+  Color *chromaKey;
+  string transitionIn;
+  string transitionOut;
+  bool abortTransitionIn;
+  bool abortTransitionOut;
+  pthread_mutex_t mutex;
+  pthread_mutex_t mutexT;
+  pthread_mutex_t mutexFI;
 
-		string focusIndex;
-		string moveUp;
-		string moveDown;
-		string moveLeft;
-		string moveRight;
+  string focusIndex;
+  string moveUp;
+  string moveDown;
+  string moveLeft;
+  string moveRight;
 
-		string plan;
+  string plan;
 
-	public:
-		static const short UNSELECTED = 0;
-		static const short FOCUSED = 1;
-		static const short SELECTED = 2;
+public:
+  static const short UNSELECTED = 0;
+  static const short FOCUSED = 1;
+  static const short SELECTED = 2;
 
-		FormatterRegion(
-			    string objectId, void* descriptor, void* layoutManager);
+  FormatterRegion (string objectId, void *descriptor, void *layoutManager);
 
-		virtual ~FormatterRegion();
+  virtual ~FormatterRegion ();
 
-	private:
-		void initializeNCMRegion();
+private:
+  void initializeNCMRegion ();
 
-	public:
-		void setRenderedSurface(GingaSurfaceID iSur);
+public:
+  void setRenderedSurface (GingaSurfaceID iSur);
 
-		void setZIndex(int zIndex);
-		int getZIndex();
+  void setZIndex (int zIndex);
+  int getZIndex ();
 
-		void setPlan(string plan);
-		string getPlan();
+  void setPlan (string plan);
+  string getPlan ();
 
-		void setFocusIndex(string focusIndex);
-		string getFocusIndex();
+  void setFocusIndex (string focusIndex);
+  string getFocusIndex ();
 
-		void setMoveUp(string moveUp);
-		string getMoveUp();
+  void setMoveUp (string moveUp);
+  string getMoveUp ();
 
-		void setMoveDown(string moveDown);
-		string getMoveDown();
+  void setMoveDown (string moveDown);
+  string getMoveDown ();
 
-		void setMoveLeft(string moveLeft);
-		string getMoveLeft();
+  void setMoveLeft (string moveLeft);
+  string getMoveLeft ();
 
-		void setMoveRight(string moveRight);
-		string getMoveRight();
+  void setMoveRight (string moveRight);
+  string getMoveRight ();
 
-		void setFocusBorderColor(Color* focusBorderColor);
-		Color* getFocusBorderColor();
+  void setFocusBorderColor (Color *focusBorderColor);
+  Color *getFocusBorderColor ();
 
-		void setFocusBorderWidth(int focusBorderWidth);
-		int getFocusBorderWidth();
+  void setFocusBorderWidth (int focusBorderWidth);
+  int getFocusBorderWidth ();
 
-		void setFocusComponentSrc(string focusComponentSrc);
-		string getFocusComponentSrc();
+  void setFocusComponentSrc (string focusComponentSrc);
+  string getFocusComponentSrc ();
 
-		void setSelBorderColor(Color* selBorderColor);
-		Color* getSelBorderColor();
+  void setSelBorderColor (Color *selBorderColor);
+  Color *getSelBorderColor ();
 
-		void setSelBorderWidth(int selBorderWidth);
-		int getSelBorderWidth();
+  void setSelBorderWidth (int selBorderWidth);
+  int getSelBorderWidth ();
 
-		void setSelComponentSrc(string selComponentSrc);
-		string getSelComponentSrc();
+  void setSelComponentSrc (string selComponentSrc);
+  string getSelComponentSrc ();
 
-		void setFocusInfo(
-			    Color* focusBorderColor,
-			    int focusBorderWidth,
-			    string focusComponentSrc,
-			    Color* selBorderColor,
-			    int selBorderWidth,
-			    string selComponentSrc);
+  void setFocusInfo (Color *focusBorderColor, int focusBorderWidth,
+                     string focusComponentSrc, Color *selBorderColor,
+                     int selBorderWidth, string selComponentSrc);
 
-		void* getLayoutManager();
-		GingaWindowID getOutputId();
+  void *getLayoutManager ();
+  GingaWindowID getOutputId ();
 
-	private:
-		void meetComponent(
-			    int width,
-			    int height,
-			    int prefWidth,
-			    int prefHeight,
-			    GingaSurfaceID component);
+private:
+  void meetComponent (int width, int height, int prefWidth, int prefHeight,
+                      GingaSurfaceID component);
 
-		void sliceComponent(
-			    int width,
-			    int height,
-			    int prefWidth,
-			    int prefHeight,
-			    GingaSurfaceID component);
+  void sliceComponent (int width, int height, int prefWidth, int prefHeight,
+                       GingaSurfaceID component);
 
-		void updateCurrentComponentSize();
+  void updateCurrentComponentSize ();
 
-	public:
-		void updateRegionBounds();
+public:
+  void updateRegionBounds ();
 
-	private:
-		void sizeRegion();
+private:
+  void sizeRegion ();
 
-	public:
-		bool intersects(int x, int y);
-		LayoutRegion* getLayoutRegion();
-		LayoutRegion* getOriginalRegion();
+public:
+  bool intersects (int x, int y);
+  LayoutRegion *getLayoutRegion ();
+  LayoutRegion *getOriginalRegion ();
 
-		GingaWindowID prepareOutputDisplay(
-				GingaSurfaceID renderedSurface, float cvtIndex);
+  GingaWindowID prepareOutputDisplay (GingaSurfaceID renderedSurface,
+                                      float cvtIndex);
 
-		void showContent();
-		void hideContent();
+  void showContent ();
+  void hideContent ();
 
-		void performOutTrans();
-		double getOutTransDur();
+  void performOutTrans ();
+  double getOutTransDur ();
 
-		void setRegionVisibility(bool visible);
+  void setRegionVisibility (bool visible);
 
-	private:
-		void disposeOutputDisplay();
+private:
+  void disposeOutputDisplay ();
 
-	public:
-		void toFront();
+public:
+  void toFront ();
 
-	private:
-		void bringChildrenToFront(LayoutRegion* parentRegion);
-		void traverseFormatterRegions(
-				LayoutRegion *region, LayoutRegion* baseRegion);
+private:
+  void bringChildrenToFront (LayoutRegion *parentRegion);
+  void traverseFormatterRegions (LayoutRegion *region,
+                                 LayoutRegion *baseRegion);
 
-		void bringHideWindowToFront(
-				LayoutRegion* baseRegion, LayoutRegion* hideRegion);
+  void bringHideWindowToFront (LayoutRegion *baseRegion,
+                               LayoutRegion *hideRegion);
 
-		void bringSiblingToFront(FormatterRegion *region);
+  void bringSiblingToFront (FormatterRegion *region);
 
-	public:
-		void setGhostRegion(bool ghost);
-		bool isVisible();
-		short getFocusState();
-		bool setSelection(bool selOn);
-		void setFocus(bool focusOn);
-		void unselect();
+public:
+  void setGhostRegion (bool ghost);
+  bool isVisible ();
+  short getFocusState ();
+  bool setSelection (bool selOn);
+  void setFocus (bool focusOn);
+  void unselect ();
 
-		Color* getBackgroundColor();
+  Color *getBackgroundColor ();
 
-		float getTransparency();
-		void setTransparency(string strTrans);
-		void setTransparency(float transparency);
-		void setBackgroundColor(string color);
-		void setBackgroundColor(Color *color);
-		void setChromaKey(string value);
-		void setRgbChromaKey(string value);
-		void setFit(string value);
-		void setFit(short value);
-		void setScroll(string value);
-		void setScroll(short value);
+  float getTransparency ();
+  void setTransparency (string strTrans);
+  void setTransparency (float transparency);
+  void setBackgroundColor (string color);
+  void setBackgroundColor (Color *color);
+  void setChromaKey (string value);
+  void setRgbChromaKey (string value);
+  void setFit (string value);
+  void setFit (short value);
+  void setScroll (string value);
+  void setScroll (short value);
 
-	private:
-		void barWipe(Transition* transition, bool isShowEffect);
-		static void* barWipeT(void* ptr);
-		void fade(Transition* transition, bool isShowEffect);
-		static void* fadeT(void* ptr);
-		void lock();
-		void unlock();
-		void lockTransition();
-		void unlockTransition();
-		void lockFocusInfo();
-		void unlockFocusInfo();
-  };
+private:
+  void barWipe (Transition *transition, bool isShowEffect);
+  static void *barWipeT (void *ptr);
+  void fade (Transition *transition, bool isShowEffect);
+  static void *fadeT (void *ptr);
+  void lock ();
+  void unlock ();
+  void lockTransition ();
+  void unlockTransition ();
+  void lockFocusInfo ();
+  void unlockFocusInfo ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_PRESENTATION_END
-typedef struct {
-	::br::pucrio::telemidia::ginga::ncl::model::presentation::FormatterRegion* fr;
-	Transition* t;
+typedef struct
+{
+  ::br::pucrio::telemidia::ginga::ncl::model::presentation::FormatterRegion
+      *fr;
+  Transition *t;
 } TransInfo;
 
 #endif /*FORMATTERREGION_H_*/

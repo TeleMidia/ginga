@@ -23,145 +23,173 @@ using namespace ::ginga::ic;
 
 GINGA_PLAYER_BEGIN
 
-	ImagePlayer::ImagePlayer(GingaScreenID screenId, string mrl) :
-			Player(screenId, mrl) {
+ImagePlayer::ImagePlayer (GingaScreenID screenId, string mrl)
+    : Player (screenId, mrl)
+{
 
-		GingaLocatorFactory* glf = NULL;
-		string path, name, clientPath, newMrl;
-		bool resolved = false;
+  GingaLocatorFactory *glf = NULL;
+  string path, name, clientPath, newMrl;
+  bool resolved = false;
 
-		if (mrl.substr(0, 7) == "http://" ||
-				mrl.substr(0, 8) == "https://") {
+  if (mrl.substr (0, 7) == "http://" || mrl.substr (0, 8) == "https://")
+    {
 
-			InteractiveChannelManager* icm;
+      InteractiveChannelManager *icm;
 
-			icm = InteractiveChannelManager::getInstance();
-			CurlInteractiveChannel* ic = icm->createInteractiveChannel(mrl);
-			newMrl = itos((long int)this);
-			ic->setSourceTarget(newMrl);
-			ic->reserveUrl(mrl, NULL, "GingaNCL/0.13.6");
-			ic->performUrl();
+      icm = InteractiveChannelManager::getInstance ();
+      CurlInteractiveChannel *ic = icm->createInteractiveChannel (mrl);
+      newMrl = itos ((long int)this);
+      ic->setSourceTarget (newMrl);
+      ic->reserveUrl (mrl, NULL, "GingaNCL/0.13.6");
+      ic->performUrl ();
 
-			icm->releaseInteractiveChannel(ic);
+      icm->releaseInteractiveChannel (ic);
 
-			mrl = newMrl;
-		}
+      mrl = newMrl;
+    }
 
-		if (fileExists(mrl)) {
-			provider = dm->createImageProvider(myScreen, mrl.c_str());
+  if (fileExists (mrl))
+    {
+      provider = dm->createImageProvider (myScreen, mrl.c_str ());
+    }
+  else
+    {
+      if (!SystemCompat::isAbsolutePath (mrl))
+        {
+          newMrl = SystemCompat::getUserCurrentPath () + mrl;
+          if (fileExists (newMrl))
+            {
+              resolved = true;
+              mrl = newMrl;
+              newMrl = "";
+            }
+        }
 
-		} else {
-			if (!SystemCompat::isAbsolutePath(mrl)) {
-				newMrl = SystemCompat::getUserCurrentPath() + mrl;
-				if (fileExists(newMrl)) {
-					resolved = true;
-					mrl = newMrl;
-					newMrl = "";
-				}
-			}
+      if (!resolved)
+        {
+          if (mrl.find (SystemCompat::getIUriD ()) != std::string::npos)
+            {
+              path = mrl.substr (0,
+                                 mrl.find_last_of (SystemCompat::getIUriD ()));
+              name = mrl.substr (
+                  mrl.find_last_of (SystemCompat::getIUriD ()) + 1,
+                  mrl.length ()
+                      - mrl.find_last_of (SystemCompat::getIUriD ()));
+            }
+          else if (mrl.find (SystemCompat::getFUriD ()) != std::string::npos)
+            {
 
-			if (!resolved) {
-				if (mrl.find(SystemCompat::getIUriD()) != std::string::npos) {
-					path = mrl.substr(0, mrl.find_last_of(SystemCompat::getIUriD()));
-					name = mrl.substr(
-							mrl.find_last_of(SystemCompat::getIUriD()) + 1,
-							mrl.length() - mrl.find_last_of(SystemCompat::getIUriD()));
+              path = mrl.substr (0,
+                                 mrl.find_last_of (SystemCompat::getFUriD ()));
 
-				} else if (mrl.find(SystemCompat::getFUriD()) !=
-						std::string::npos) {
+              name = mrl.substr (
+                  mrl.find_last_of (SystemCompat::getFUriD ()) + 1,
+                  mrl.length ()
+                      - mrl.find_last_of (SystemCompat::getFUriD ()));
+            }
 
-					path = mrl.substr(0, mrl.find_last_of(
-							SystemCompat::getFUriD()));
+          glf = GingaLocatorFactory::getInstance ();
 
-					name = mrl.substr(
-							mrl.find_last_of(SystemCompat::getFUriD()) + 1,
-							mrl.length() - mrl.find_last_of(
-									SystemCompat::getFUriD()));
-				}
+          if (glf != NULL)
+            {
+              clog << "ImagePlayer trying to find '" << mrl << "'";
+              clog << endl;
+              clientPath = glf->getLocation (path);
+              newMrl = clientPath + name;
+              clog << "ImagePlayer found newMrl = '" << newMrl;
+              clog << "'" << endl;
 
-				glf = GingaLocatorFactory::getInstance();
+              if (fileExists (newMrl))
+                {
+                  provider
+                      = dm->createImageProvider (myScreen, newMrl.c_str ());
+                }
+              else
+                {
+                  provider = 0;
+                  clog << "ImagePlayer::ImagePlayer Warning! File ";
+                  clog << " Not Found: '" << newMrl.c_str ();
+                  clog << "'" << endl;
+                }
+            }
+          else
+            {
+              provider = 0;
+              clog << "ImagePlayer::ImagePlayer Warning! ";
+              clog << "GLF Component NOT";
+              clog << " Found!" << endl;
+            }
+        }
+    }
 
-				if (glf != NULL) {
-					clog << "ImagePlayer trying to find '" << mrl << "'";
-					clog << endl;
-					clientPath = glf->getLocation(path);
-					newMrl = clientPath + name;
-					clog << "ImagePlayer found newMrl = '" << newMrl;
-					clog << "'" << endl;
+  if (provider != 0)
+    {
+      surface = prepareSurface (provider, mrl);
+    }
+}
 
-					if (fileExists(newMrl)) {
-						provider = dm->createImageProvider(
-								myScreen, newMrl.c_str());
+ImagePlayer::~ImagePlayer ()
+{
+  if (provider != 0)
+    {
+      dm->releaseImageProvider (myScreen, provider);
+    }
+}
 
-					} else {
-						provider = 0;
-						clog << "ImagePlayer::ImagePlayer Warning! File ";
-						clog << " Not Found: '" << newMrl.c_str();
-						clog << "'" << endl;
-					}
+bool
+ImagePlayer::play ()
+{
+  if (provider == 0)
+    {
 
-				} else {
-					provider = 0;
-					clog << "ImagePlayer::ImagePlayer Warning! ";
-					clog << "GLF Component NOT";
-					clog << " Found!" << endl;
-				}
-			}
-		}
+      return false;
+    }
 
-		if (provider != 0) {
-			surface = prepareSurface(provider, mrl);
-		}
-	}
+  dm->playProviderOver (provider, surface);
+  return Player::play ();
+}
 
-	ImagePlayer::~ImagePlayer() {
-		if (provider != 0) {
-			dm->releaseImageProvider(myScreen, provider);
-		}
-	}
+void
+ImagePlayer::stop ()
+{
+  Player::stop ();
+}
 
-	bool ImagePlayer::play() {
-		if (provider == 0) {
+void
+ImagePlayer::resume ()
+{
+  ImagePlayer::play ();
+}
 
-			return false;
-		}
+void
+ImagePlayer::setPropertyValue (string name, string value)
+{
+  // TODO: set brightness, rotate...
+  // refresh changes
+  GingaWindowID win;
 
-		dm->playProviderOver(provider, surface);
-		return Player::play();
-	}
+  if (surface != 0)
+    {
+      win = dm->getSurfaceParentWindow (surface);
+      if (win != 0)
+        {
+          dm->renderWindowFrom (myScreen, win, surface);
+        }
+    }
 
-	void ImagePlayer::stop() {
-		Player::stop();
-	}
+  Player::setPropertyValue (name, value);
+}
 
-	void ImagePlayer::resume() {
-		ImagePlayer::play();
-	}
+GingaSurfaceID
+ImagePlayer::prepareSurface (GingaProviderID provider, string mrl)
+{
 
-	void ImagePlayer::setPropertyValue(string name, string value) {
-		//TODO: set brightness, rotate...
-		//refresh changes
-		GingaWindowID win;
+  GingaSurfaceID renderedSurface = 0;
 
-		if (surface != 0) {
-			win = dm->getSurfaceParentWindow(surface);
-			if (win != 0) {
-				dm->renderWindowFrom(myScreen, win, surface);
-			}
-		}
+  renderedSurface = dm->createSurfaceFrom (myScreen, 0);
+  dm->playProviderOver (provider, renderedSurface);
 
-		Player::setPropertyValue(name, value);
-	}
-
-	GingaSurfaceID ImagePlayer::prepareSurface(
-			GingaProviderID provider, string mrl) {
-
-		GingaSurfaceID renderedSurface = 0;
-
-		renderedSurface = dm->createSurfaceFrom(myScreen, 0);
-		dm->playProviderOver(provider, renderedSurface);
-
-		return renderedSurface;
-	}
+  return renderedSurface;
+}
 
 GINGA_PLAYER_END

@@ -20,25 +20,30 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	LinkValueAssessment::LinkValueAssessment(string value) : LinkAssessment() {
-		this->value = value;
-		typeSet.insert("LinkValueAssessment");
-	}
+LinkValueAssessment::LinkValueAssessment (string value) : LinkAssessment ()
+{
+  this->value = value;
+  typeSet.insert ("LinkValueAssessment");
+}
 
-	LinkValueAssessment::~LinkValueAssessment() {
+LinkValueAssessment::~LinkValueAssessment () {}
 
-	}
+string
+LinkValueAssessment::getComparableValue ()
+{
+  return value;
+}
 
-	string LinkValueAssessment::getComparableValue() {
-		return value;
-	}
+void
+LinkValueAssessment::setComparableValue (string value)
+{
+  this->value = value;
+}
 
-	void LinkValueAssessment::setComparableValue(string value) {
-		this->value = value;
-	}
-
-	string LinkValueAssessment::getValue() {
-		return value;
-	}
+string
+LinkValueAssessment::getValue ()
+{
+  return value;
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END

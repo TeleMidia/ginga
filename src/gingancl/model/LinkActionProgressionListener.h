@@ -20,11 +20,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	class LinkActionProgressionListener {
-		public:
-			virtual ~LinkActionProgressionListener(){};
-			virtual void actionProcessed(bool start)=0;
-	};
+class LinkActionProgressionListener
+{
+public:
+  virtual ~LinkActionProgressionListener (){};
+  virtual void actionProcessed (bool start) = 0;
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_LINKACTIONPROGRESSIONLISTENER_H_

@@ -30,34 +30,35 @@ using namespace ::ginga::ncl;
 
 GINGA_NCL_BEGIN
 
-	class NodeEntity : public Node {
-		protected:
-			GenericDescriptor* descriptor;
-			Content* content;
+class NodeEntity : public Node
+{
+protected:
+  GenericDescriptor *descriptor;
+  Content *content;
 
-		private:
-			set<ReferNode*> instSameInstances;
-			set<ReferNode*> gradSameInstances;
+private:
+  set<ReferNode *> instSameInstances;
+  set<ReferNode *> gradSameInstances;
 
-		public:
-			NodeEntity(string uid, Content* someContent);
-			virtual ~NodeEntity();
+public:
+  NodeEntity (string uid, Content *someContent);
+  virtual ~NodeEntity ();
 
-			LambdaAnchor* getLambdaAnchor();
-			GenericDescriptor* getDescriptor();
-			void setDescriptor(GenericDescriptor* someDescriptor);
-			Content* getContent();
-			void setContent(Content* content);
-			bool addAnchor(Anchor *anchor);
-			bool addAnchor(int index, Anchor* anchor);
-			void setId(string id);
-			bool removeAnchor(int index);
-			bool removeAnchor(Anchor *anchor);
-			set<ReferNode*>* getInstSameInstances();
-			set<ReferNode*>* getGradSameInstances();
-			bool addSameInstance(ReferNode* node);
-			void removeSameInstance(ReferNode* node);
-	};
+  LambdaAnchor *getLambdaAnchor ();
+  GenericDescriptor *getDescriptor ();
+  void setDescriptor (GenericDescriptor *someDescriptor);
+  Content *getContent ();
+  void setContent (Content *content);
+  bool addAnchor (Anchor *anchor);
+  bool addAnchor (int index, Anchor *anchor);
+  void setId (string id);
+  bool removeAnchor (int index);
+  bool removeAnchor (Anchor *anchor);
+  set<ReferNode *> *getInstSameInstances ();
+  set<ReferNode *> *getGradSameInstances ();
+  bool addSameInstance (ReferNode *node);
+  void removeSameInstance (ReferNode *node);
+};
 
 GINGA_NCL_END
 

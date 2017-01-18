@@ -37,10 +37,12 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::mirror;
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::av;
 
 #include "LuaPlayerAdapter.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::application::lua;
+using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::application::
+    lua;
 
 #include "NCLPlayerAdapter.h"
-using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::application::ncl;
+using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::application::
+    ncl;
 
 #include "ChannelPlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::av;
@@ -53,637 +55,753 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::av::tv;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 
-	PlayerAdapterManager::PlayerAdapterManager(NclPlayerData* data) : Thread() {
-		nclPlayerData = data;
-
-		editingCommandListener = NULL;
-		epgFactoryAdapter      = NULL;
-		timeBaseProvider       = NULL;
-
-		Thread::mutexInit(&mutexPlayer, false);
-
-		readConfigFiles();
-
-		running = true;
-		startThread();
-	}
-
-	PlayerAdapterManager::~PlayerAdapterManager() {
-		isDeleting = true;
-		running    = false;
-		unlockConditionSatisfied();
-
-		clear();
-		clearDeletePlayers();
-
-		Thread::mutexLock(&mutexPlayer);
-		Thread::mutexUnlock(&mutexPlayer);
-		Thread::mutexDestroy(&mutexPlayer);
-
-		clog << "PlayerAdapterManager::~PlayerAdapterManager all done" << endl;
-	}
-
-	bool PlayerAdapterManager::hasPlayer(IPlayerAdapter* player) {
-		bool hasInstance = false;
-
-		Thread::mutexLock(&mutexPlayer);
-		if (playerNames.find(player) != playerNames.end()) {
-			hasInstance = true;
-		}
-		Thread::mutexUnlock(&mutexPlayer);
-
-		return hasInstance;
-	}
-
-	NclPlayerData* PlayerAdapterManager::getNclPlayerData() {
-		return nclPlayerData;
-	}
-
-	void PlayerAdapterManager::setTimeBaseProvider(
-			ITimeBaseProvider* timeBaseProvider) {
-
-		this->timeBaseProvider = timeBaseProvider;
-	}
-
-	ITimeBaseProvider* PlayerAdapterManager::getTimeBaseProvider() {
-		return timeBaseProvider;
-	}
-
-	void PlayerAdapterManager::setVisible(
-			string objectId,
-			string visible,
-			AttributionEvent* event) {
-
-		map<string, IPlayerAdapter*>::iterator i;
-		FormatterPlayerAdapter* player;
-
-		Thread::mutexLock(&mutexPlayer);
-		i = objectPlayers.find(objectId);
-		if (i != objectPlayers.end()) {
-			player = (FormatterPlayerAdapter*)(i->second);
-			player->setPropertyValue(event, visible);
-			event->stop();
-		}
-		Thread::mutexUnlock(&mutexPlayer);
-	}
-
-	bool PlayerAdapterManager::removePlayer(void* exObject) {
-		ExecutionObject* object;
-		bool removed = false;
-		string objId;
-
-		object = (ExecutionObject*)exObject;
-		Thread::mutexLock(&mutexPlayer);
-		if (ExecutionObject::hasInstance(object, false)) {
-			objId   = object->getId();
-			removed = removePlayer(objId);
-		}
-		Thread::mutexUnlock(&mutexPlayer);
-
-		return removed;
-	}
-
-	bool PlayerAdapterManager::removePlayer(string objectId) {
-		map<string, IPlayerAdapter*>::iterator i;
-		FormatterPlayerAdapter* player;
-
-		i = objectPlayers.find(objectId);
-		if (i != objectPlayers.end()) {
-			player = (FormatterPlayerAdapter*)(i->second);
-			if (!player->instanceOf("ProgramAVPlayerAdapter")) {
-				deletePlayers[objectId] = player;
-			}
-			objectPlayers.erase(i);
-			unlockConditionSatisfied();
-			return true;
-		}
-
-		return false;
-	}
-
-	void PlayerAdapterManager::clear() {
-		map<string, IPlayerAdapter*>::iterator i;
-
-		Thread::mutexLock(&mutexPlayer);
-		i = objectPlayers.begin();
-		while (i != objectPlayers.end()) {
-			if (removePlayer(i->first)) {
-				i = objectPlayers.begin();
-			} else {
-				++i;
-			}
-		}
-		objectPlayers.clear();
-		Thread::mutexUnlock(&mutexPlayer);
-	}
-
-	void PlayerAdapterManager::setNclEditListener(IPlayerListener* listener) {
-		this->editingCommandListener = listener;
-	}
-
-	string PlayerAdapterManager::getPlayerClass(
-		    CascadingDescriptor* descriptor, NodeEntity* dataObject) {
-
-		string symName   = "";
-		string toolName  = "";
-		string pToolName = "";
-		string mime      = "";
-		string upMime    = "";
-		string nodeType  = "";
-		string url       = "";
-
-		std::string::size_type pos;
-		Content* content;
-
-		if (descriptor != NULL) {
-			toolName = descriptor->getPlayerName();
-		}
-
-		if (dataObject->instanceOf("ContentNode")) {
-			mime = ((ContentNode*)dataObject)->getNodeType();
-			if (mime == "" && toolName == "") {
-				content = dataObject->getContent();
-				if (content != NULL &&
-						content->instanceOf("ReferenceContent")) {
-
-					url = ((ReferenceContent*)(content))->
-						    getCompleteReferenceUrl();
-
-					mime = getMimeTypeFromSchema(url);
-
-				} else {
-					clog << "PlayerAdapterManager::getPlayerClass can't ";
-					clog << "define MIME type. Content is NULL or not an ";
-					clog << "instance of ReferenceContent";
-					clog << endl;
-				}
-
-				if (mime == "") {
-					clog << "PlayerAdapterManager::getPlayerClass can't ";
-					clog << "define MIME type. Creating a time player for ";
-					clog << "URL '" << url << "'";
-					clog << endl;
-					return "";
-				}
-			}
-
-			if (((ContentNode*)dataObject)->isSettingNode()) {
-				return "SETTING_NODE";
-                        }
-
-			// } else if (((ContentNode*)dataObject)->isTimeNode()) {
-			// 	return "TimePlayerAdapter";
-			// }
-		}
-
-		if (toolName == "") {
-			/*
-			 *  there is no player defined!
-			 *  lets choose a player based on the node content type
-			 */
-			upMime = upperCase(mime);
-			if (mimeDefaultTable.count(upMime) != 0) {
-				toolName = mimeDefaultTable[upMime];
-			}
-
-			clog << "PlayerAdapterManager::getPlayerClass is ";
-			clog << "finding a suitable player" << endl;
-
-			if (toolName != "") {
-				/*
-				 *  returning player considering the defined priority order
-				 *     for instance: first::second::third ...
-				 */
-				pToolName = "";
-				while (toolName != "") {
-					if (toolName.find("::") != std::string::npos) {
-						pos       = toolName.find_first_of("::");
-						pToolName = toolName.substr(0, pos);
-						toolName  = toolName.substr(
-								pos + 2, toolName.length() - pos);
-
-					} else if (toolName == pToolName) {
-						toolName  = "";
-						pToolName = "";
-
-					} else {
-						pToolName = toolName;
-					}
-
-					break;
-				}
-				return pToolName;
-			}
-
-		} else {
-			if (playerTable.count(toolName)) {
-				return playerTable[toolName];
-			}
-		}
-
-		toolName = "";
-		return toolName;
-	}
-
-	void PlayerAdapterManager::readConfigFiles() {
-		ifstream fisMime;
-		ifstream fisCtrl;
-		string line, key, value;
-
-		string mimeUri;
-		string ctrlUri;
-
-		mimeUri = string (GINGA_FORMATTER_DATADIR) + "mimedefs.ini";
-		ctrlUri = string (GINGA_FORMATTER_DATADIR) + "ctrldefs.ini";
-
-		fisMime.open(mimeUri.c_str(), ifstream::in);
-
-		if (!fisMime.is_open()) {
-			clog << "PlayerAdapterManager::readConfigFiles Warning! Can't open '";
-			clog << mimeUri << "'" << endl;
-			return;
-		}
-
-		mimeDefaultTable.clear();
-		while (fisMime.good()) {
-			fisMime >> line;
-			if (line.substr(0, 1) != "#") {
-				key = upperCase(line.substr(0, line.find_last_of("=")));
-				value = line.substr(
-						(line.find_first_of("=") + 1),
-						line.length() - (line.find_first_of("=") + 1));
-
-				mimeDefaultTable[key] = value;
-			}
-		}
-
-		fisMime.close();
-
-		fisCtrl.open(ctrlUri.c_str());
-		if (!fisCtrl.is_open()) {
-			// clog << "PlayerAdapterManager::readConfigFiles Warning! Can't open '";
-			// clog << fisCtrl << "'" << endl;
-			return;
-		}
-
-		playerTable.clear();
-		while (fisCtrl.good()) {
-			fisCtrl >> line;
-			if (line.substr(0, 1) != "#") {
-				key = line.substr(0, line.find_last_of("="));
-				value = line.substr(
-						(line.find_first_of("=") + 1),
-						line.length() - (line.find_first_of("=") + 1));
-
-				playerTable[key] = value;
-			}
-		}
-
-		fisCtrl.close();
-	}
-
-	FormatterPlayerAdapter* PlayerAdapterManager::initializePlayer(
-		    ExecutionObject* object) {
-
-		CascadingDescriptor* descriptor;
-		NodeEntity* dataObject;
-		string playerClassName, objId;
-		IPlayerAdapter* player = NULL;
-		vector<string>* args;
-		void* compObject;
-		string param = "";
-
-		if (object == NULL) {
-			return NULL;
-		}
-
-		objId = object->getId();
-		descriptor = object->getDescriptor();
-		dataObject = (NodeEntity*)(object->getDataObject()->getDataEntity());
-
-		// checking if is a main AV reference
-		Content* content;
-		string url = "";
-
-		playerClassName = "";
-		content = dataObject->getContent();
-		if (content != NULL) {
-			if (content->instanceOf("ReferenceContent")) {
-				url = ((ReferenceContent*)(content))->
-					    getCompleteReferenceUrl();
-
-				if (url.length() > 9 && url.substr(0,9) == "sbtvd-ts:") {
-					playerClassName = "ProgramAVPlayerAdapter";
-
-				} else if (url.length() > 13 && url.substr(0,13) == "ncl-mirror://") {
-					playerClassName = "MirrorPlayerAdapter";
-				}
-			}
-		}
-
-		if (playerClassName == "") {
-			playerClassName = getPlayerClass(descriptor, dataObject);
-		}
-
-		if (playerClassName == "SETTING_NODE") {
-			return NULL;
-		}
-
-		if (playerClassName == "") {
-			clog << "PlayerAdapterManager::initializePlayer creating ";
-			clog << "LOCAL TIME player" << endl;
-			player = new FormatterPlayerAdapter();
-			player->setAdapterManager(this);
-			objectPlayers[objId] = player;
-			return (FormatterPlayerAdapter*)player;
-		}
-
-		args = split(playerClassName, ",");
-		if (args->size() < 1) {
-			delete args;
-			return NULL;
-
-		} else if (args->size() == 1) {
-			args->push_back("");
-		}
-
-		playerClassName = (*args)[0];
-
-		if (playerClassName == "SubtitlePlayerAdapter") {
-			player = new SubtitlePlayerAdapter();
-
-		} else if (playerClassName == "PlainTxtPlayerAdapter") {
-			player = new PlainTxtPlayerAdapter();
-
-		}
+PlayerAdapterManager::PlayerAdapterManager (NclPlayerData *data) : Thread ()
+{
+  nclPlayerData = data;
+
+  editingCommandListener = NULL;
+  epgFactoryAdapter = NULL;
+  timeBaseProvider = NULL;
+
+  Thread::mutexInit (&mutexPlayer, false);
+
+  readConfigFiles ();
+
+  running = true;
+  startThread ();
+}
+
+PlayerAdapterManager::~PlayerAdapterManager ()
+{
+  isDeleting = true;
+  running = false;
+  unlockConditionSatisfied ();
+
+  clear ();
+  clearDeletePlayers ();
+
+  Thread::mutexLock (&mutexPlayer);
+  Thread::mutexUnlock (&mutexPlayer);
+  Thread::mutexDestroy (&mutexPlayer);
+
+  clog << "PlayerAdapterManager::~PlayerAdapterManager all done" << endl;
+}
+
+bool
+PlayerAdapterManager::hasPlayer (IPlayerAdapter *player)
+{
+  bool hasInstance = false;
+
+  Thread::mutexLock (&mutexPlayer);
+  if (playerNames.find (player) != playerNames.end ())
+    {
+      hasInstance = true;
+    }
+  Thread::mutexUnlock (&mutexPlayer);
+
+  return hasInstance;
+}
+
+NclPlayerData *
+PlayerAdapterManager::getNclPlayerData ()
+{
+  return nclPlayerData;
+}
+
+void
+PlayerAdapterManager::setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider)
+{
+
+  this->timeBaseProvider = timeBaseProvider;
+}
+
+ITimeBaseProvider *
+PlayerAdapterManager::getTimeBaseProvider ()
+{
+  return timeBaseProvider;
+}
+
+void
+PlayerAdapterManager::setVisible (string objectId, string visible,
+                                  AttributionEvent *event)
+{
+
+  map<string, IPlayerAdapter *>::iterator i;
+  FormatterPlayerAdapter *player;
+
+  Thread::mutexLock (&mutexPlayer);
+  i = objectPlayers.find (objectId);
+  if (i != objectPlayers.end ())
+    {
+      player = (FormatterPlayerAdapter *)(i->second);
+      player->setPropertyValue (event, visible);
+      event->stop ();
+    }
+  Thread::mutexUnlock (&mutexPlayer);
+}
+
+bool
+PlayerAdapterManager::removePlayer (void *exObject)
+{
+  ExecutionObject *object;
+  bool removed = false;
+  string objId;
+
+  object = (ExecutionObject *)exObject;
+  Thread::mutexLock (&mutexPlayer);
+  if (ExecutionObject::hasInstance (object, false))
+    {
+      objId = object->getId ();
+      removed = removePlayer (objId);
+    }
+  Thread::mutexUnlock (&mutexPlayer);
+
+  return removed;
+}
+
+bool
+PlayerAdapterManager::removePlayer (string objectId)
+{
+  map<string, IPlayerAdapter *>::iterator i;
+  FormatterPlayerAdapter *player;
+
+  i = objectPlayers.find (objectId);
+  if (i != objectPlayers.end ())
+    {
+      player = (FormatterPlayerAdapter *)(i->second);
+      if (!player->instanceOf ("ProgramAVPlayerAdapter"))
+        {
+          deletePlayers[objectId] = player;
+        }
+      objectPlayers.erase (i);
+      unlockConditionSatisfied ();
+      return true;
+    }
+
+  return false;
+}
+
+void
+PlayerAdapterManager::clear ()
+{
+  map<string, IPlayerAdapter *>::iterator i;
+
+  Thread::mutexLock (&mutexPlayer);
+  i = objectPlayers.begin ();
+  while (i != objectPlayers.end ())
+    {
+      if (removePlayer (i->first))
+        {
+          i = objectPlayers.begin ();
+        }
+      else
+        {
+          ++i;
+        }
+    }
+  objectPlayers.clear ();
+  Thread::mutexUnlock (&mutexPlayer);
+}
+
+void
+PlayerAdapterManager::setNclEditListener (IPlayerListener *listener)
+{
+  this->editingCommandListener = listener;
+}
+
+string
+PlayerAdapterManager::getPlayerClass (CascadingDescriptor *descriptor,
+                                      NodeEntity *dataObject)
+{
+
+  string symName = "";
+  string toolName = "";
+  string pToolName = "";
+  string mime = "";
+  string upMime = "";
+  string nodeType = "";
+  string url = "";
+
+  std::string::size_type pos;
+  Content *content;
+
+  if (descriptor != NULL)
+    {
+      toolName = descriptor->getPlayerName ();
+    }
+
+  if (dataObject->instanceOf ("ContentNode"))
+    {
+      mime = ((ContentNode *)dataObject)->getNodeType ();
+      if (mime == "" && toolName == "")
+        {
+          content = dataObject->getContent ();
+          if (content != NULL && content->instanceOf ("ReferenceContent"))
+            {
+
+              url = ((ReferenceContent *)(content))
+                        ->getCompleteReferenceUrl ();
+
+              mime = getMimeTypeFromSchema (url);
+            }
+          else
+            {
+              clog << "PlayerAdapterManager::getPlayerClass can't ";
+              clog << "define MIME type. Content is NULL or not an ";
+              clog << "instance of ReferenceContent";
+              clog << endl;
+            }
+
+          if (mime == "")
+            {
+              clog << "PlayerAdapterManager::getPlayerClass can't ";
+              clog << "define MIME type. Creating a time player for ";
+              clog << "URL '" << url << "'";
+              clog << endl;
+              return "";
+            }
+        }
+
+      if (((ContentNode *)dataObject)->isSettingNode ())
+        {
+          return "SETTING_NODE";
+        }
+
+      // } else if (((ContentNode*)dataObject)->isTimeNode()) {
+      // 	return "TimePlayerAdapter";
+      // }
+    }
+
+  if (toolName == "")
+    {
+      /*
+       *  there is no player defined!
+       *  lets choose a player based on the node content type
+       */
+      upMime = upperCase (mime);
+      if (mimeDefaultTable.count (upMime) != 0)
+        {
+          toolName = mimeDefaultTable[upMime];
+        }
+
+      clog << "PlayerAdapterManager::getPlayerClass is ";
+      clog << "finding a suitable player" << endl;
+
+      if (toolName != "")
+        {
+          /*
+           *  returning player considering the defined priority order
+           *     for instance: first::second::third ...
+           */
+          pToolName = "";
+          while (toolName != "")
+            {
+              if (toolName.find ("::") != std::string::npos)
+                {
+                  pos = toolName.find_first_of ("::");
+                  pToolName = toolName.substr (0, pos);
+                  toolName
+                      = toolName.substr (pos + 2, toolName.length () - pos);
+                }
+              else if (toolName == pToolName)
+                {
+                  toolName = "";
+                  pToolName = "";
+                }
+              else
+                {
+                  pToolName = toolName;
+                }
+
+              break;
+            }
+          return pToolName;
+        }
+    }
+  else
+    {
+      if (playerTable.count (toolName))
+        {
+          return playerTable[toolName];
+        }
+    }
+
+  toolName = "";
+  return toolName;
+}
+
+void
+PlayerAdapterManager::readConfigFiles ()
+{
+  ifstream fisMime;
+  ifstream fisCtrl;
+  string line, key, value;
+
+  string mimeUri;
+  string ctrlUri;
+
+  mimeUri = string (GINGA_FORMATTER_DATADIR) + "mimedefs.ini";
+  ctrlUri = string (GINGA_FORMATTER_DATADIR) + "ctrldefs.ini";
+
+  fisMime.open (mimeUri.c_str (), ifstream::in);
+
+  if (!fisMime.is_open ())
+    {
+      clog << "PlayerAdapterManager::readConfigFiles Warning! Can't open '";
+      clog << mimeUri << "'" << endl;
+      return;
+    }
+
+  mimeDefaultTable.clear ();
+  while (fisMime.good ())
+    {
+      fisMime >> line;
+      if (line.substr (0, 1) != "#")
+        {
+          key = upperCase (line.substr (0, line.find_last_of ("=")));
+          value
+              = line.substr ((line.find_first_of ("=") + 1),
+                             line.length () - (line.find_first_of ("=") + 1));
+
+          mimeDefaultTable[key] = value;
+        }
+    }
+
+  fisMime.close ();
+
+  fisCtrl.open (ctrlUri.c_str ());
+  if (!fisCtrl.is_open ())
+    {
+      // clog << "PlayerAdapterManager::readConfigFiles Warning! Can't open '";
+      // clog << fisCtrl << "'" << endl;
+      return;
+    }
+
+  playerTable.clear ();
+  while (fisCtrl.good ())
+    {
+      fisCtrl >> line;
+      if (line.substr (0, 1) != "#")
+        {
+          key = line.substr (0, line.find_last_of ("="));
+          value
+              = line.substr ((line.find_first_of ("=") + 1),
+                             line.length () - (line.find_first_of ("=") + 1));
+
+          playerTable[key] = value;
+        }
+    }
+
+  fisCtrl.close ();
+}
+
+FormatterPlayerAdapter *
+PlayerAdapterManager::initializePlayer (ExecutionObject *object)
+{
+
+  CascadingDescriptor *descriptor;
+  NodeEntity *dataObject;
+  string playerClassName, objId;
+  IPlayerAdapter *player = NULL;
+  vector<string> *args;
+  void *compObject;
+  string param = "";
+
+  if (object == NULL)
+    {
+      return NULL;
+    }
+
+  objId = object->getId ();
+  descriptor = object->getDescriptor ();
+  dataObject = (NodeEntity *)(object->getDataObject ()->getDataEntity ());
+
+  // checking if is a main AV reference
+  Content *content;
+  string url = "";
+
+  playerClassName = "";
+  content = dataObject->getContent ();
+  if (content != NULL)
+    {
+      if (content->instanceOf ("ReferenceContent"))
+        {
+          url = ((ReferenceContent *)(content))->getCompleteReferenceUrl ();
+
+          if (url.length () > 9 && url.substr (0, 9) == "sbtvd-ts:")
+            {
+              playerClassName = "ProgramAVPlayerAdapter";
+            }
+          else if (url.length () > 13 && url.substr (0, 13) == "ncl-mirror://")
+            {
+              playerClassName = "MirrorPlayerAdapter";
+            }
+        }
+    }
+
+  if (playerClassName == "")
+    {
+      playerClassName = getPlayerClass (descriptor, dataObject);
+    }
+
+  if (playerClassName == "SETTING_NODE")
+    {
+      return NULL;
+    }
+
+  if (playerClassName == "")
+    {
+      clog << "PlayerAdapterManager::initializePlayer creating ";
+      clog << "LOCAL TIME player" << endl;
+      player = new FormatterPlayerAdapter ();
+      player->setAdapterManager (this);
+      objectPlayers[objId] = player;
+      return (FormatterPlayerAdapter *)player;
+    }
+
+  args = split (playerClassName, ",");
+  if (args->size () < 1)
+    {
+      delete args;
+      return NULL;
+    }
+  else if (args->size () == 1)
+    {
+      args->push_back ("");
+    }
+
+  playerClassName = (*args)[0];
+
+  if (playerClassName == "SubtitlePlayerAdapter")
+    {
+      player = new SubtitlePlayerAdapter ();
+    }
+  else if (playerClassName == "PlainTxtPlayerAdapter")
+    {
+      player = new PlainTxtPlayerAdapter ();
+    }
 #if WITH_ESPEAK
-                else if (playerClassName == "SsmlPlayerAdapter") {
-			player = new SsmlPlayerAdapter();
-		}
+  else if (playerClassName == "SsmlPlayerAdapter")
+    {
+      player = new SsmlPlayerAdapter ();
+    }
 #endif
 #if WITH_BERKELIUM
-                else if (playerClassName == "BerkeliumPlayerAdapter") {
-			player = new BerkeliumPlayerAdapter();
-		}
+  else if (playerClassName == "BerkeliumPlayerAdapter")
+    {
+      player = new BerkeliumPlayerAdapter ();
+    }
 #endif
-                else if (playerClassName == "ImagePlayerAdapter") {
-			player = new ImagePlayerAdapter();
+  else if (playerClassName == "ImagePlayerAdapter")
+    {
+      player = new ImagePlayerAdapter ();
+    }
+  else if (playerClassName == "MirrorPlayerAdapter")
+    {
+      player = new MirrorPlayerAdapter ();
+    }
+  else if (playerClassName == "AVPlayerAdapter")
+    {
+      player = new AVPlayerAdapter ();
+    }
+  else if (playerClassName == "LuaPlayerAdapter")
+    {
+      player = new LuaPlayerAdapter ();
+    }
+  else if (playerClassName == "NCLPlayerAdapter")
+    {
+      player = new NCLPlayerAdapter ();
+    }
+  else if (playerClassName == "ChannelPlayerAdapter")
+    {
+      player = new ChannelPlayerAdapter ();
+    }
+  else if (playerClassName == "ProgramAVPlayerAdapter")
+    {
+      player = ProgramAVPlayerAdapter::getInstance ();
 
-		} else if (playerClassName == "MirrorPlayerAdapter") {
-			player = new MirrorPlayerAdapter();
+      // } else if (playerClassName == "TimePlayerAdapter") {
+      // 	player = new TimePlayerAdapter();
+    }
+  else if (playerClassName != "SETTING_NODE")
+    {
+      clog << "PlayerAdapterManager::initializePlayer is creating a ";
+      clog << "new time player for '" << objId << "'";
+      clog << " playerClassName is '" << playerClassName;
+      clog << "'" << endl;
+      player = new FormatterPlayerAdapter ();
+    }
+  else
+    {
+      clog << "PlayerAdapterManager::initializePlayer is returning a ";
+      clog << "NULL player for '" << objId << "'" << endl;
+      delete args;
+      return NULL;
+    }
 
-		} else if (playerClassName == "AVPlayerAdapter") {
-			player = new AVPlayerAdapter();
+  player->setAdapterManager (this);
 
-		} else if (playerClassName == "LuaPlayerAdapter") {
-			player = new LuaPlayerAdapter();
-		} else if (playerClassName == "NCLPlayerAdapter") {
-			player = new NCLPlayerAdapter();
+  param = (*args)[1];
+  if (param == "epg")
+    {
+      epgFactoryAdapter = player;
+    }
 
-		} else if (playerClassName == "ChannelPlayerAdapter") {
-			player = new ChannelPlayerAdapter();
+  if (param == "epg" || param == "nclEdit")
+    {
+      ((FormatterPlayerAdapter *)player)
+          ->setNclEditListener (editingCommandListener);
+    }
 
-		} else if (playerClassName == "ProgramAVPlayerAdapter") {
-			player = ProgramAVPlayerAdapter::getInstance();
+  delete args;
 
-		// } else if (playerClassName == "TimePlayerAdapter") {
-		// 	player = new TimePlayerAdapter();
+  objectPlayers[objId] = player;
+  playerNames[player] = playerClassName;
 
-		} else if (playerClassName != "SETTING_NODE") {
-			clog << "PlayerAdapterManager::initializePlayer is creating a ";
-			clog << "new time player for '" << objId << "'";
-			clog << " playerClassName is '" << playerClassName;
-			clog << "'" << endl;
-			player = new FormatterPlayerAdapter();
+  clog << "PlayerAdapterManager::initializePlayer creating '";
+  clog << playerClassName << "' param = '" << param << "'";
+  clog << endl;
 
-		} else {
-			clog << "PlayerAdapterManager::initializePlayer is returning a ";
-			clog << "NULL player for '" << objId << "'" << endl;
-			delete args;
-			return NULL;
-		}
+  return (FormatterPlayerAdapter *)player;
+}
 
-		player->setAdapterManager(this);
+void *
+PlayerAdapterManager::getObjectPlayer (void *eObj)
+{
+  map<string, IPlayerAdapter *>::iterator i;
+  FormatterPlayerAdapter *player;
+  string objId;
+  ExecutionObject *execObj = (ExecutionObject *)eObj;
 
-		param = (*args)[1];
-		if (param == "epg") {
-			epgFactoryAdapter = player;
-		}
+  Thread::mutexLock (&mutexPlayer);
+  objId = execObj->getId ();
+  i = objectPlayers.find (objId);
+  if (i == objectPlayers.end ())
+    {
+      i = deletePlayers.find (objId);
+      if (i == deletePlayers.end ())
+        {
+          player = initializePlayer (execObj);
+        }
+      else
+        {
+          player = (FormatterPlayerAdapter *)(i->second);
+          deletePlayers.erase (i);
+          objectPlayers[objId] = player;
+        }
+    }
+  else
+    {
+      player = (FormatterPlayerAdapter *)(i->second);
+    }
+  Thread::mutexUnlock (&mutexPlayer);
 
-		if (param == "epg" || param == "nclEdit") {
-			((FormatterPlayerAdapter*)player)->setNclEditListener(
-					editingCommandListener);
-		}
+  return player;
+}
 
-		delete args;
+string
+PlayerAdapterManager::getMimeTypeFromSchema (string url)
+{
+  string mime = "";
 
-		objectPlayers[objId] = player;
-		playerNames[player]  = playerClassName;
+  if ((url.length () > 8 && url.substr (0, 8) == "https://")
+      || (url.length () > 7 && url.substr (0, 7) == "http://")
+      || (url.length () > 4 && url.substr (0, 4) == "www."))
+    {
 
-		clog << "PlayerAdapterManager::initializePlayer creating '";
-		clog << playerClassName << "' param = '" << param << "'";
-		clog << endl;
+      clog << "PlayerAdapterManager::getMimeTypeFromSchema is ";
+      clog << "considering HTML MIME." << endl;
 
-		return (FormatterPlayerAdapter*)player;
-	}
+      mime = ContentTypeManager::getInstance ()->getMimeType ("html");
+    }
+  else if ((url.length () > 6 && url.substr (0, 6) == "rtp://")
+           || (url.length () > 7 && url.substr (0, 7) == "rtsp://"))
+    {
 
-	void* PlayerAdapterManager::getObjectPlayer(void* eObj) {
-		map<string, IPlayerAdapter*>::iterator i;
-		FormatterPlayerAdapter* player;
-		string objId;
-		ExecutionObject* execObj = (ExecutionObject*)eObj;
+      mime = ContentTypeManager::getInstance ()->getMimeType ("mpg");
+    }
 
-		Thread::mutexLock(&mutexPlayer);
-		objId = execObj->getId();
-		i = objectPlayers.find(objId);
-		if (i == objectPlayers.end()) {
-			i = deletePlayers.find(objId);
-			if (i == deletePlayers.end()) {
-				player = initializePlayer(execObj);
-			} else {
-				player = (FormatterPlayerAdapter*)(i->second);
-				deletePlayers.erase(i);
-				objectPlayers[objId] = player;
-			}
+  return mime;
+}
 
-		} else {
-			player = (FormatterPlayerAdapter*)(i->second);
-		}
-		Thread::mutexUnlock(&mutexPlayer);
+bool
+PlayerAdapterManager::isEmbeddedApp (NodeEntity *dataObject)
+{
+  string mediaType = "";
+  string url = "";
+  string::size_type pos;
+  Descriptor *descriptor;
+  Content *content;
 
-		return player;
-	}
+  // first, descriptor
+  descriptor = (Descriptor *)(dataObject->getDescriptor ());
+  if (descriptor != NULL && !descriptor->instanceOf ("DescriptorSwitch"))
+    {
+      mediaType = descriptor->getPlayerName ();
+      if (mediaType == "LuaPlayerAdapter"
+          || mediaType == "BerkeliumPlayerAdapter"
+          || mediaType == "NCLPlayerAdapter")
+        {
 
-	string PlayerAdapterManager::getMimeTypeFromSchema(string url) {
-		string mime = "";
+          return true;
+        }
+    }
 
-		if ((url.length() > 8 && url.substr(0, 8) == "https://") ||
-				(url.length() > 7 && url.substr(0, 7) == "http://") ||
-				(url.length() > 4 && url.substr(0, 4) == "www.")) {
+  // second, media type
+  if (dataObject->instanceOf ("ContentNode"))
+    {
+      mediaType = ((ContentNode *)dataObject)->getNodeType ();
+      if (mediaType != "")
+        {
+          return isEmbeddedAppMediaType (mediaType);
+        }
+    }
 
-			clog << "PlayerAdapterManager::getMimeTypeFromSchema is ";
-			clog << "considering HTML MIME." << endl;
+  // finally, content file extension
+  content = dataObject->getContent ();
+  if (content != NULL)
+    {
+      if (content->instanceOf ("ReferenceContent"))
+        {
+          url = ((ReferenceContent *)(content))->getCompleteReferenceUrl ();
 
-			mime = ContentTypeManager::getInstance()->getMimeType("html");
+          if (url != "")
+            {
+              pos = url.find_last_of (".");
+              if (pos != std::string::npos)
+                {
+                  pos++;
+                  mediaType = ContentTypeManager::getInstance ()->getMimeType (
+                      url.substr (pos, url.length () - pos));
 
-		} else if ((url.length() > 6 && url.substr(0, 6) == "rtp://") ||
-				(url.length() > 7 && url.substr(0, 7) == "rtsp://")) {
+                  return isEmbeddedAppMediaType (mediaType);
+                }
+            }
+        }
+    }
 
-			mime = ContentTypeManager::getInstance()->getMimeType("mpg");
-		}
+  return false;
+}
 
-		return mime;
-	}
+bool
+PlayerAdapterManager::isEmbeddedAppMediaType (string mediaType)
+{
+  string upMediaType = upperCase (mediaType);
 
-	bool PlayerAdapterManager::isEmbeddedApp(NodeEntity* dataObject) {
-		string mediaType = "";
-		string url = "";
-		string::size_type pos;
-		Descriptor* descriptor;
-		Content* content;
+  if (upMediaType == "APPLICATION/X-GINGA-NCLUA"
+      || upMediaType == "APPLICATION/X-GINGA-NCLET"
+      || upMediaType == "APPLICATION/X-GINGA-NCL"
+      || upMediaType == "APPLICATION/X-NCL-NCL"
+      || upMediaType == "APPLICATION/X-NCL-NCLUA")
+    {
 
-		//first, descriptor
-		descriptor = (Descriptor*)(dataObject->getDescriptor());
-		if (descriptor != NULL && !descriptor->instanceOf("DescriptorSwitch")) {
-			mediaType = descriptor->getPlayerName();
-			if (mediaType == "LuaPlayerAdapter" ||
-					mediaType == "BerkeliumPlayerAdapter" ||
-					mediaType == "NCLPlayerAdapter") {
+      return true;
+    }
 
-				return true;
-			}
-		}
+  return false;
+}
 
-		//second, media type
-		if (dataObject->instanceOf("ContentNode")) {
-			mediaType = ((ContentNode*)dataObject)->getNodeType();
-			if (mediaType != "") {
-				return isEmbeddedAppMediaType(mediaType);
-			}
-		}
+void
+PlayerAdapterManager::timeShift (string direction)
+{
+  map<string, IPlayerAdapter *>::iterator i;
+  FormatterPlayerAdapter *player;
 
-		//finally, content file extension
-		content = dataObject->getContent();
-		if (content != NULL) {
-			if (content->instanceOf("ReferenceContent")) {
-				url = ((ReferenceContent*)(content))->
-					    getCompleteReferenceUrl();
+  Thread::mutexLock (&mutexPlayer);
+  i = objectPlayers.begin ();
+  while (i != objectPlayers.end ())
+    {
+      player = (FormatterPlayerAdapter *)(i->second);
+      player->timeShift (direction);
+      ++i;
+    }
+  Thread::mutexUnlock (&mutexPlayer);
+}
 
-				if (url != "") {
-					pos = url.find_last_of(".");
-					if (pos != std::string::npos) {
-						pos++;
-						mediaType = ContentTypeManager::getInstance()->
-								getMimeType(url.substr(
-										pos, url.length() - pos));
+void
+PlayerAdapterManager::clearDeletePlayers ()
+{
+  map<string, IPlayerAdapter *> dPlayers;
 
-						return isEmbeddedAppMediaType(mediaType);
-					}
-				}
-			}
-		}
+  map<string, IPlayerAdapter *>::iterator i;
+  map<IPlayerAdapter *, string>::iterator j;
+  IPlayerAdapter *player;
+  string playerClassName = "";
 
-		return false;
-	}
+  Thread::mutexLock (&mutexPlayer);
+  i = deletePlayers.begin ();
+  while (i != deletePlayers.end ())
+    {
+      player = i->second;
 
-	bool PlayerAdapterManager::isEmbeddedAppMediaType(string mediaType) {
-		string upMediaType = upperCase(mediaType);
+      j = playerNames.find (player);
+      if (j != playerNames.end ())
+        {
+          playerClassName = j->second;
+          playerNames.erase (j);
+        }
 
-		if (upMediaType == "APPLICATION/X-GINGA-NCLUA" ||
-				upMediaType == "APPLICATION/X-GINGA-NCLET" ||
-				upMediaType == "APPLICATION/X-GINGA-NCL" ||
-				upMediaType == "APPLICATION/X-NCL-NCL" ||
-				upMediaType == "APPLICATION/X-NCL-NCLUA") {
+      if (((FormatterPlayerAdapter *)player)->getObjectDevice () == 0)
+        {
+          dPlayers[playerClassName] = player;
+        }
 
-			return true;
-		}
+      ++i;
+    }
+  deletePlayers.clear ();
+  Thread::mutexUnlock (&mutexPlayer);
 
-		return false;
-	}
+  i = dPlayers.begin ();
+  while (i != dPlayers.end ())
+    {
+      player = i->second;
+      playerClassName = i->first;
 
-	void PlayerAdapterManager::timeShift(string direction) {
-		map<string, IPlayerAdapter*>::iterator i;
-		FormatterPlayerAdapter* player;
+      delete player;
 
-		Thread::mutexLock(&mutexPlayer);
-		i = objectPlayers.begin();
-		while (i != objectPlayers.end()) {
-			player = (FormatterPlayerAdapter*)(i->second);
-			player->timeShift(direction);
-			++i;
-		}
-		Thread::mutexUnlock(&mutexPlayer);
-	}
+      ++i;
+    }
+}
 
-	void PlayerAdapterManager::clearDeletePlayers() {
-		map<string, IPlayerAdapter*> dPlayers;
+void
+PlayerAdapterManager::run ()
+{
+  set<IPlayerAdapter *>::iterator i;
 
-		map<string, IPlayerAdapter*>::iterator i;
-		map<IPlayerAdapter*, string>::iterator j;
-		IPlayerAdapter* player;
-		string playerClassName = "";
+  while (running)
+    {
+      if (!isDeleting)
+        {
+          Thread::mutexLock (&mutexPlayer);
+          if (deletePlayers.empty ())
+            {
+              Thread::mutexUnlock (&mutexPlayer);
+              waitForUnlockCondition ();
+            }
+          else
+            {
+              Thread::mutexUnlock (&mutexPlayer);
+            }
+        }
 
-		Thread::mutexLock(&mutexPlayer);
-		i = deletePlayers.begin();
-		while (i != deletePlayers.end()) {
-			player = i->second;
+      if (!running)
+        {
+          return;
+        }
 
-			j = playerNames.find(player);
-			if (j != playerNames.end()) {
-				playerClassName = j->second;
-				playerNames.erase(j);
-			}
+      if (isDeleting)
+        {
+          break;
+        }
 
-			if (((FormatterPlayerAdapter*)player)->getObjectDevice() == 0) {
-				dPlayers[playerClassName] = player;
-			}
+      Thread::mSleep (1000);
+      if (running)
+        {
+          clearDeletePlayers ();
+        }
+    }
 
-			++i;
-		}
-		deletePlayers.clear();
-		Thread::mutexUnlock(&mutexPlayer);
-
-		i = dPlayers.begin();
-		while (i != dPlayers.end()) {
-			player = i->second;
-			playerClassName = i->first;
-
-			delete player;
-
-			++i;
-		}
-	}
-
-	void PlayerAdapterManager::run() {
-		set<IPlayerAdapter*>::iterator i;
-
-		while(running) {
-			if (!isDeleting) {
-				Thread::mutexLock(&mutexPlayer);
-				if (deletePlayers.empty()) {
-					Thread::mutexUnlock(&mutexPlayer);
-					waitForUnlockCondition();
-
-				} else {
-					Thread::mutexUnlock(&mutexPlayer);
-				}
-			}
-
-			if (!running) {
-				return;
-			}
-
-			if (isDeleting) {
-				break;
-			}
-
-			Thread::mSleep(1000);
-			if (running) {
-				clearDeletePlayers();
-			}
-		}
-
-		clog << "PlayerAdapterManager::run all done" << endl;
-	}
+  clog << "PlayerAdapterManager::run all done" << endl;
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_END

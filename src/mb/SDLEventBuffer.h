@@ -36,18 +36,18 @@ private:
   pthread_mutex_t condMutex;
 
 public:
-  SDLEventBuffer(GingaScreenID screen);
-  virtual ~SDLEventBuffer();
-  static bool checkEvent(Uint32 winId, SDL_Event event);
-  void feed(SDL_Event event, bool capsOn, bool shiftOn);
-  void postInputEvent(SDLInputEvent* event);
-  void waitEvent();
-  SDLInputEvent* getNextEvent();
-  void* getContent();
+  SDLEventBuffer (GingaScreenID screen);
+  virtual ~SDLEventBuffer ();
+  static bool checkEvent (Uint32 winId, SDL_Event event);
+  void feed (SDL_Event event, bool capsOn, bool shiftOn);
+  void postInputEvent (SDLInputEvent *event);
+  void waitEvent ();
+  SDLInputEvent *getNextEvent ();
+  void *getContent ();
 
 private:
-  void waitForEvent();
-  bool eventArrived();
+  void waitForEvent ();
+  bool eventArrived ();
 };
 
 GINGA_MB_END

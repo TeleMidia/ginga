@@ -20,51 +20,46 @@
 #ifndef DOMTreeErrorReporter_H
 #define DOMTreeErrorReporter_H
 
-
 XERCES_CPP_NAMESPACE_USE
 
-class DOMTreeErrorReporter : public ErrorHandler{
+class DOMTreeErrorReporter : public ErrorHandler
+{
 public:
-    // -----------------------------------------------------------------------
-    //  Constructors and Destructor
-    // -----------------------------------------------------------------------
-    DOMTreeErrorReporter() :
-       fSawErrors(false)
-    {
-    }
+  // -----------------------------------------------------------------------
+  //  Constructors and Destructor
+  // -----------------------------------------------------------------------
+  DOMTreeErrorReporter () : fSawErrors (false) {}
 
-    ~DOMTreeErrorReporter()
-    {
-    }
+  ~DOMTreeErrorReporter () {}
 
+  // -----------------------------------------------------------------------
+  //  Implementation of the error handler interface
+  // -----------------------------------------------------------------------
+  void warning (const SAXParseException &toCatch);
+  void error (const SAXParseException &toCatch);
+  void fatalError (const SAXParseException &toCatch);
+  void resetErrors ();
 
-    // -----------------------------------------------------------------------
-    //  Implementation of the error handler interface
-    // -----------------------------------------------------------------------
-    void warning(const SAXParseException& toCatch);
-    void error(const SAXParseException& toCatch);
-    void fatalError(const SAXParseException& toCatch);
-    void resetErrors();
+  // -----------------------------------------------------------------------
+  //  Getter methods
+  // -----------------------------------------------------------------------
+  bool getSawErrors () const;
 
-    // -----------------------------------------------------------------------
-    //  Getter methods
-    // -----------------------------------------------------------------------
-    bool getSawErrors() const;
-
-    // -----------------------------------------------------------------------
-    //  Private data members
-    //
-    //  fSawErrors
-    //      This is set if we get any errors, and is queryable via a getter
-    //      method. Its used by the main code to suppress output if there are
-    //      errors.
-    // -----------------------------------------------------------------------
-    bool    fSawErrors;
+  // -----------------------------------------------------------------------
+  //  Private data members
+  //
+  //  fSawErrors
+  //      This is set if we get any errors, and is queryable via a getter
+  //      method. Its used by the main code to suppress output if there are
+  //      errors.
+  // -----------------------------------------------------------------------
+  bool fSawErrors;
 };
 
-inline bool DOMTreeErrorReporter::getSawErrors() const
+inline bool
+DOMTreeErrorReporter::getSawErrors () const
 {
-    return fSawErrors;
+  return fSawErrors;
 }
 
 // ---------------------------------------------------------------------------
@@ -73,45 +68,42 @@ inline bool DOMTreeErrorReporter::getSawErrors() const
 // ---------------------------------------------------------------------------
 class StrX
 {
-public :
-    // -----------------------------------------------------------------------
-    //  Constructors and Destructor
-    // -----------------------------------------------------------------------
-    StrX(const XMLCh* const toTranscode)
-    {
-        // Call the private transcoding method
-        fLocalForm = XMLString::transcode(toTranscode);
-    }
+public:
+  // -----------------------------------------------------------------------
+  //  Constructors and Destructor
+  // -----------------------------------------------------------------------
+  StrX (const XMLCh *const toTranscode)
+  {
+    // Call the private transcoding method
+    fLocalForm = XMLString::transcode (toTranscode);
+  }
 
-    ~StrX()
-    {
-        XMLString::release(&fLocalForm);
-    }
+  ~StrX () { XMLString::release (&fLocalForm); }
 
+  // -----------------------------------------------------------------------
+  //  Getter methods
+  // -----------------------------------------------------------------------
+  const char *
+  localForm () const
+  {
+    return fLocalForm;
+  }
 
-    // -----------------------------------------------------------------------
-    //  Getter methods
-    // -----------------------------------------------------------------------
-    const char* localForm() const
-    {
-        return fLocalForm;
-    }
-
-private :
-    // -----------------------------------------------------------------------
-    //  Private data members
-    //
-    //  fLocalForm
-    //      This is the local code page form of the string.
-    // -----------------------------------------------------------------------
-    char*   fLocalForm;
+private:
+  // -----------------------------------------------------------------------
+  //  Private data members
+  //
+  //  fLocalForm
+  //      This is the local code page form of the string.
+  // -----------------------------------------------------------------------
+  char *fLocalForm;
 };
 
-inline XERCES_STD_QUALIFIER ostream& operator<<(XERCES_STD_QUALIFIER ostream& target, const StrX& toDump)
+inline XERCES_STD_QUALIFIER ostream &
+operator<<(XERCES_STD_QUALIFIER ostream &target, const StrX &toDump)
 {
-    target << toDump.localForm();
-    return target;
+  target << toDump.localForm ();
+  return target;
 }
 
-#endif //DOMTreeErrorReporter_H
-
+#endif // DOMTreeErrorReporter_H

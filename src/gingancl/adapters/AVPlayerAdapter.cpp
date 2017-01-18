@@ -19,35 +19,36 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AVPlayerAdapter.h"
 #include "player/AVPlayer.h"
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_BEGIN
 
-	AVPlayerAdapter::AVPlayerAdapter() : FormatterPlayerAdapter() {
-		typeSet.insert("AVPlayerAdapter");
-	}
+AVPlayerAdapter::AVPlayerAdapter () : FormatterPlayerAdapter ()
+{
+  typeSet.insert ("AVPlayerAdapter");
+}
 
-	void AVPlayerAdapter::createPlayer() {
-		CascadingDescriptor* descriptor;
-		string soundLevel;
+void
+AVPlayerAdapter::createPlayer ()
+{
+  CascadingDescriptor *descriptor;
+  string soundLevel;
 
-		clog << "AVPlayerAdapter::createPlayer for '" << mrl << "'" << endl;
+  clog << "AVPlayerAdapter::createPlayer for '" << mrl << "'" << endl;
 
-		if (mrl != "") {
-			player = new AVPlayer(myScreen, mrl.c_str());
-		}
+  if (mrl != "")
+    {
+      player = new AVPlayer (myScreen, mrl.c_str ());
+    }
 
-		FormatterPlayerAdapter::createPlayer();
+  FormatterPlayerAdapter::createPlayer ();
 
-		clog << "AVPlayerAdapter::createPlayer for '" << mrl << "'" << endl;
-	}
+  clog << "AVPlayerAdapter::createPlayer for '" << mrl << "'" << endl;
+}
 
-	bool AVPlayerAdapter::setPropertyValue(
-		    AttributionEvent* event,
-		    string value) {
+bool
+AVPlayerAdapter::setPropertyValue (AttributionEvent *event, string value)
+{
 
-		return FormatterPlayerAdapter::setPropertyValue(
-				event, value);
-
-	}
+  return FormatterPlayerAdapter::setPropertyValue (event, value);
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_END

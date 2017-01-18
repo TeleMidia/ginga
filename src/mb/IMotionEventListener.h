@@ -20,11 +20,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-	class IMotionEventListener {
-		public:
-			virtual ~IMotionEventListener(){};
-			virtual bool motionEventReceived(int x, int y, int z)=0;
-	};
+class IMotionEventListener
+{
+public:
+  virtual ~IMotionEventListener (){};
+  virtual bool motionEventReceived (int x, int y, int z) = 0;
+};
 
 GINGA_MB_END
 

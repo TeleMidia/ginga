@@ -20,102 +20,114 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TSPARSER_BEGIN
 
+LocalTimeOffsetDescriptor::LocalTimeOffsetDescriptor ()
+{
+  descriptorTag = 0x58;
+  descriptorLength = 0;
+  countryRegionId = 0;
+  localTimeOffset = 0;
+  localTimeOffsetPolarity = 0;
+  nextTimeOffset = 0;
+  memset (countryCode, 0, 3);
+  memset (timeOfChange, 0, 5);
+}
 
-	LocalTimeOffsetDescriptor::LocalTimeOffsetDescriptor() {
-		descriptorTag           = 0x58;
-		descriptorLength        = 0;
-		countryRegionId         = 0;
-		localTimeOffset         = 0;
-		localTimeOffsetPolarity = 0;
-		nextTimeOffset          = 0;
-		memset(countryCode, 0 , 3);
-		memset(timeOfChange, 0, 5);
+LocalTimeOffsetDescriptor::~LocalTimeOffsetDescriptor () {}
 
-	}
+unsigned char
+LocalTimeOffsetDescriptor::getDescriptorTag ()
+{
+  return descriptorTag;
+}
 
-	LocalTimeOffsetDescriptor::~LocalTimeOffsetDescriptor() {
+unsigned int
+LocalTimeOffsetDescriptor::getDescriptorLength ()
+{
+  return (unsigned int)descriptorLength;
+}
 
-	}
+string
+LocalTimeOffsetDescriptor::getCountryCode ()
+{
+  string str;
+  str.assign (countryCode, 3);
 
-	unsigned char LocalTimeOffsetDescriptor::getDescriptorTag() {
-		return descriptorTag;
-	}
+  return str;
+}
 
-	unsigned int LocalTimeOffsetDescriptor::getDescriptorLength() {
-		return (unsigned int)descriptorLength;
-	}
+unsigned char
+LocalTimeOffsetDescriptor::getCountryRegionId ()
+{
+  return countryRegionId;
+}
 
-	string LocalTimeOffsetDescriptor::getCountryCode() {
-		string str;
-		str.assign(countryCode, 3);
+unsigned char
+LocalTimeOffsetDescriptor::getLocalTimeOffsetPolarity ()
+{
+  return localTimeOffsetPolarity;
+}
 
-		return str;
-	}
+unsigned short
+LocalTimeOffsetDescriptor::getLocalTimeOffset ()
+{
+  return localTimeOffset;
+}
 
-	unsigned char LocalTimeOffsetDescriptor::getCountryRegionId() {
-		return countryRegionId;
-	}
+string
+LocalTimeOffsetDescriptor::getTimeOfChange ()
+{
+  string str;
+  str.assign (timeOfChange, 5);
 
-	unsigned char LocalTimeOffsetDescriptor::getLocalTimeOffsetPolarity() {
-		return localTimeOffsetPolarity;
-	}
+  return str;
+}
 
-	unsigned short LocalTimeOffsetDescriptor::getLocalTimeOffset(){
-		return localTimeOffset;
-	}
+unsigned short
+LocalTimeOffsetDescriptor::getNextTimeOffset ()
+{
+  return nextTimeOffset;
+}
+void
+LocalTimeOffsetDescriptor::print ()
+{
+  clog << "LocalTimeOffsetDescriptor::print printing..." << endl;
+  clog << "CountryCode: " << getCountryCode () << endl;
+  clog << "CountryRegionId: " << (countryRegionId & 0xFF) << endl;
+  clog << "LocalTimeOffsetPolarity: " << (localTimeOffsetPolarity & 0xFF);
+  clog << endl;
+  clog << "LocalTimeOffSet:" << (localTimeOffset & 0xFF) << endl;
+  clog << "TimeOfChange: " << getTimeOfChange () << endl;
+  clog << "NextTimeOffset: " << getNextTimeOffset () << endl;
+}
 
-	string LocalTimeOffsetDescriptor::getTimeOfChange() {
-		string str;
-		str.assign(timeOfChange, 5);
+size_t
+LocalTimeOffsetDescriptor::process (char *data, size_t pos)
+{
 
-		return str;
-	}
+  clog << " LocalTimeOffsetDescriptor::process" << endl;
+  descriptorLength = data[pos + 1];
+  pos += 2;
 
-	unsigned short LocalTimeOffsetDescriptor::getNextTimeOffset() {
-		return nextTimeOffset;
-	}
-	void LocalTimeOffsetDescriptor::print() {
-		clog << "LocalTimeOffsetDescriptor::print printing..."      << endl;
-		clog << "CountryCode: "             << getCountryCode()     << endl;
-		clog << "CountryRegionId: "         << (countryRegionId & 0xFF) << endl;
-		clog << "LocalTimeOffsetPolarity: " << (localTimeOffsetPolarity & 0xFF);
-		clog << endl;
-		clog << "LocalTimeOffSet:"          << (localTimeOffset & 0xFF) << endl;
-		clog << "TimeOfChange: "            << getTimeOfChange()    << endl;
-		clog << "NextTimeOffset: "          << getNextTimeOffset()  << endl;
-	}
+  memcpy (countryCode, data + pos, 3);
+  pos += 3;
 
-	size_t LocalTimeOffsetDescriptor::process(char* data, size_t pos) {
+  countryRegionId = ((data[pos] & 0xFC) >> 2);
+  localTimeOffsetPolarity = data[pos] & 0x01;
+  pos++;
 
-		clog << " LocalTimeOffsetDescriptor::process" << endl;
-		descriptorLength = data[pos+1];
-		pos += 2;
+  localTimeOffset
+      = ((((data[pos] & 0xFF) << 8) & 0xFF00) | (data[pos + 1] & 0xFF));
+  pos += 2;
 
-		memcpy(countryCode, data+pos, 3);
-		pos += 3;
+  memcpy (timeOfChange, data + pos, 5);
+  pos += 5;
 
-		countryRegionId = ((data[pos] & 0xFC) >> 2);
-		localTimeOffsetPolarity = data[pos] & 0x01;
-		pos ++;
+  nextTimeOffset
+      = ((((data[pos] & 0xFF) << 8) & 0xFF00) | (data[pos + 1] & 0xFF));
 
-		localTimeOffset = ((((data[pos] & 0xFF) << 8) & 0xFF00)|
-				(data[pos+1] & 0xFF));
-		pos += 2;
+  pos++;
 
-		memcpy(timeOfChange, data+pos, 5);
-		pos += 5;
-
-		nextTimeOffset = ((((data[pos] & 0xFF) << 8) & 0xFF00)|
-				(data[pos+1] & 0xFF));
-
-		pos ++;
-
-		return pos;
-
-	}
-
-
-
-
+  return pos;
+}
 
 GINGA_TSPARSER_END

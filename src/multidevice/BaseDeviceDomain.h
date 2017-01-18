@@ -30,57 +30,62 @@ using namespace ::ginga::system;
 
 #include "DeviceDomain.h"
 
-
 GINGA_MULTIDEVICE_BEGIN
 
-
-typedef struct {
-	char* data;
-	int size;
-	double timestamp;
+typedef struct
+{
+  char *data;
+  int size;
+  double timestamp;
 } RemoteTask;
 
-  class BaseDeviceDomain : public DeviceDomain {
-	protected:
-	  ISocketService* passiveSocket;
+class BaseDeviceDomain : public DeviceDomain
+{
+protected:
+  ISocketService *passiveSocket;
 
-	  pthread_mutex_t pMutex;
-	  vector<RemoteTask*> passiveTasks;
-	  RemoteTask lastMediaContentTask;
-	  bool hasNewPassiveTask;
-	  int timerCount;
-	  double passiveTimestamp;
+  pthread_mutex_t pMutex;
+  vector<RemoteTask *> passiveTasks;
+  RemoteTask lastMediaContentTask;
+  bool hasNewPassiveTask;
+  int timerCount;
+  double passiveTimestamp;
 
-	public:
-		BaseDeviceDomain(bool useMulticast, int srvPort);
-		virtual ~BaseDeviceDomain();
+public:
+  BaseDeviceDomain (bool useMulticast, int srvPort);
+  virtual ~BaseDeviceDomain ();
 
-	protected:
-		virtual bool taskRequest(int destDevClass, char* data, int taskSize);
-		virtual bool passiveTaskRequest(char* data, int taskSize);
-		virtual bool activeTaskRequest(char* data, int taskSize);
+protected:
+  virtual bool taskRequest (int destDevClass, char *data, int taskSize);
+  virtual bool passiveTaskRequest (char *data, int taskSize);
+  virtual bool activeTaskRequest (char *data, int taskSize);
 
-		virtual void postConnectionRequestTask(int width, int height){};
-		virtual void receiveConnectionRequest(char* task);
-		virtual void postAnswerTask(int reqDeviceClass, int answer);
-		virtual void receiveAnswerTask(char* answerTask){};
+  virtual void postConnectionRequestTask (int width, int height){};
+  virtual void receiveConnectionRequest (char *task);
+  virtual void postAnswerTask (int reqDeviceClass, int answer);
+  virtual void receiveAnswerTask (char *answerTask){};
 
-	public:
-		virtual bool postMediaContentTask(int destDevClass, string url);
+public:
+  virtual bool postMediaContentTask (int destDevClass, string url);
 
-	protected:
-		virtual bool receiveMediaContentTask(char* task){return false;};
-		virtual bool receiveEventTask(char* task);
-
-	public:
-		virtual void setDeviceInfo( int width, int height, string base_device_ncl_path);
-
-	protected:
-		virtual bool runControlTask();
-		virtual bool runDataTask();
-		virtual void checkPassiveTasks();
-		virtual void checkDomainTasks();
+protected:
+  virtual bool
+  receiveMediaContentTask (char *task)
+  {
+    return false;
   };
+  virtual bool receiveEventTask (char *task);
+
+public:
+  virtual void setDeviceInfo (int width, int height,
+                              string base_device_ncl_path);
+
+protected:
+  virtual bool runControlTask ();
+  virtual bool runDataTask ();
+  virtual void checkPassiveTasks ();
+  virtual void checkDomainTasks ();
+};
 
 GINGA_MULTIDEVICE_END
 

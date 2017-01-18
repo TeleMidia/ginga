@@ -26,32 +26,34 @@ using namespace ::ginga::system;
 
 GINGA_MULTIDEVICE_BEGIN
 
-  class RemoteDeviceManager : public Thread {
-	private:
-		bool connecting;
-		bool running;
-		bool released;
-		DeviceDomain* domainService;
-		static RemoteDeviceManager* _instance;
+class RemoteDeviceManager : public Thread
+{
+private:
+  bool connecting;
+  bool running;
+  bool released;
+  DeviceDomain *domainService;
+  static RemoteDeviceManager *_instance;
 
-		RemoteDeviceManager();
-		~RemoteDeviceManager();
+  RemoteDeviceManager ();
+  ~RemoteDeviceManager ();
 
-	public:
-		void release();
-		static RemoteDeviceManager* getInstance();
+public:
+  void release ();
+  static RemoteDeviceManager *getInstance ();
 
-		void setDeviceDomain(DeviceDomain* domain);
-		void setDeviceInfo(int deviceClass, int width, int height, string base_device_ncl_path);
-		int getDeviceClass();
-		void addListener(IRemoteDeviceListener* listener);
-		void removeListener(IRemoteDeviceListener* listener);
-		void postEvent(int devClass, int eventType, char* event, int eventSize);
-		bool postMediaContent(int destDevClass, string url);
+  void setDeviceDomain (DeviceDomain *domain);
+  void setDeviceInfo (int deviceClass, int width, int height,
+                      string base_device_ncl_path);
+  int getDeviceClass ();
+  void addListener (IRemoteDeviceListener *listener);
+  void removeListener (IRemoteDeviceListener *listener);
+  void postEvent (int devClass, int eventType, char *event, int eventSize);
+  bool postMediaContent (int destDevClass, string url);
 
-	private:
-		void run();
-  };
+private:
+  void run ();
+};
 
 GINGA_MULTIDEVICE_END
 

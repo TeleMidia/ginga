@@ -20,193 +20,247 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	set<Base*> Base::baseInstances;
-	pthread_mutex_t Base::biMutex;
-	bool Base::initMutex = false;
+set<Base *> Base::baseInstances;
+pthread_mutex_t Base::biMutex;
+bool Base::initMutex = false;
 
-	Base::Base(string id) {
-		this->id = id;
+Base::Base (string id)
+{
+  this->id = id;
 
-		typeSet.insert("Base");
+  typeSet.insert ("Base");
 
-		if (!initMutex) {
-			initMutex = true;
-			pthread_mutex_init(&biMutex, NULL);
-		}
+  if (!initMutex)
+    {
+      initMutex = true;
+      pthread_mutex_init (&biMutex, NULL);
+    }
 
-		pthread_mutex_lock(&biMutex);
-		baseInstances.insert(this);
-		pthread_mutex_unlock(&biMutex);
-	}
+  pthread_mutex_lock (&biMutex);
+  baseInstances.insert (this);
+  pthread_mutex_unlock (&biMutex);
+}
 
-	Base::~Base() {
-		vector<Base*>::iterator i;
-		set<Base*>::iterator j;
-		Base* childBase;
+Base::~Base ()
+{
+  vector<Base *>::iterator i;
+  set<Base *>::iterator j;
+  Base *childBase;
 
-		pthread_mutex_lock(&biMutex);
-		j = baseInstances.find(this);
-		if (j != baseInstances.end()) {
-			baseInstances.erase(j);
-		}
-		pthread_mutex_unlock(&biMutex);
+  pthread_mutex_lock (&biMutex);
+  j = baseInstances.find (this);
+  if (j != baseInstances.end ())
+    {
+      baseInstances.erase (j);
+    }
+  pthread_mutex_unlock (&biMutex);
 
-		i = baseSet.begin();
-		while (i != baseSet.end()) {
-			childBase = *i;
-			if (hasInstance(childBase, true)) {
-				delete childBase;
-			}
-			baseSet.erase(i);
-			i = baseSet.begin();
-		}
-	}
+  i = baseSet.begin ();
+  while (i != baseSet.end ())
+    {
+      childBase = *i;
+      if (hasInstance (childBase, true))
+        {
+          delete childBase;
+        }
+      baseSet.erase (i);
+      i = baseSet.begin ();
+    }
+}
 
-	bool Base::hasInstance(Base* instance, bool eraseFromList) {
-		set<Base*>::iterator i;
-		bool hasBase = false;
+bool
+Base::hasInstance (Base *instance, bool eraseFromList)
+{
+  set<Base *>::iterator i;
+  bool hasBase = false;
 
-		if (!initMutex) {
-			return false;
-		}
+  if (!initMutex)
+    {
+      return false;
+    }
 
-		pthread_mutex_lock(&biMutex);
-		i = baseInstances.find(instance);
-		if (i != baseInstances.end()) {
-			if (eraseFromList) {
-				baseInstances.erase(i);
-			}
-			hasBase = true;
-		}
-		pthread_mutex_unlock(&biMutex);
+  pthread_mutex_lock (&biMutex);
+  i = baseInstances.find (instance);
+  if (i != baseInstances.end ())
+    {
+      if (eraseFromList)
+        {
+          baseInstances.erase (i);
+        }
+      hasBase = true;
+    }
+  pthread_mutex_unlock (&biMutex);
 
-		return hasBase;
-	}
+  return hasBase;
+}
 
-	bool Base::addBase(Base* base, string alias, string location) {
-		if (base == NULL || location == "") {
-			return false;
-		}
+bool
+Base::addBase (Base *base, string alias, string location)
+{
+  if (base == NULL || location == "")
+    {
+      return false;
+    }
 
-		vector<Base*>::iterator i;
-		for (i = baseSet.begin(); i != baseSet.end(); ++i) {
-			if (*i == base) {
-				return false;
-			}
-		}
+  vector<Base *>::iterator i;
+  for (i = baseSet.begin (); i != baseSet.end (); ++i)
+    {
+      if (*i == base)
+        {
+          return false;
+        }
+    }
 
-		baseSet.push_back(base);
+  baseSet.push_back (base);
 
-		if (alias != "") {
-    		baseAliases[alias] = base;
-    	}
+  if (alias != "")
+    {
+      baseAliases[alias] = base;
+    }
 
-		baseLocations[location] = base;
-		return true;
-	}
+  baseLocations[location] = base;
+  return true;
+}
 
-	void Base::clear() {
-		baseSet.clear();
-		baseAliases.clear();
-		baseLocations.clear();
-	}
+void
+Base::clear ()
+{
+  baseSet.clear ();
+  baseAliases.clear ();
+  baseLocations.clear ();
+}
 
-	Base* Base::getBase(string baseId) {
-		vector<Base*>::iterator i;
-		for (i = baseSet.begin(); i != baseSet.end(); ++i) {
-			if ((*i)->getId() == baseId) {
-				return *i;
-			}
-		}
-		return NULL;
-	}
+Base *
+Base::getBase (string baseId)
+{
+  vector<Base *>::iterator i;
+  for (i = baseSet.begin (); i != baseSet.end (); ++i)
+    {
+      if ((*i)->getId () == baseId)
+        {
+          return *i;
+        }
+    }
+  return NULL;
+}
 
-	string Base::getBaseAlias(Base* base) {
-		map<string, Base*>::iterator i;
-		for (i=baseAliases.begin(); i!=baseAliases.end(); ++i) {
-			if (i->second == base) {
-				return i->first;
-			}
-		}
-		return "";
-	}
+string
+Base::getBaseAlias (Base *base)
+{
+  map<string, Base *>::iterator i;
+  for (i = baseAliases.begin (); i != baseAliases.end (); ++i)
+    {
+      if (i->second == base)
+        {
+          return i->first;
+        }
+    }
+  return "";
+}
 
-	string Base::getBaseLocation(Base* base) {
-		map<string, Base*>::iterator i;
-		for (i=baseLocations.begin(); i!=baseLocations.end(); ++i) {
-			if (i->second == base) {
-				return i->first;
-			}
-		}
-		return "";
-	}
+string
+Base::getBaseLocation (Base *base)
+{
+  map<string, Base *>::iterator i;
+  for (i = baseLocations.begin (); i != baseLocations.end (); ++i)
+    {
+      if (i->second == base)
+        {
+          return i->first;
+        }
+    }
+  return "";
+}
 
-	vector<Base*>* Base::getBases() {
-		if (baseSet.empty()) {
-			return NULL;
-		}
+vector<Base *> *
+Base::getBases ()
+{
+  if (baseSet.empty ())
+    {
+      return NULL;
+    }
 
-		return new vector<Base*>(baseSet);
-	}
+  return new vector<Base *> (baseSet);
+}
 
-	bool Base::removeBase(Base* base) {
-		string alias, location;
+bool
+Base::removeBase (Base *base)
+{
+  string alias, location;
 
-		alias = getBaseAlias(base);
-		location = getBaseLocation(base);
+  alias = getBaseAlias (base);
+  location = getBaseLocation (base);
 
-		vector<Base*>::iterator i;
-		for (i=baseSet.begin(); i!=baseSet.end(); ++i) {
-			if (*i == base) {
-				baseSet.erase(i);
-				if (alias != "") {
-					baseAliases.erase(alias);
-				}
-				baseLocations.erase(location);
-				return true;
-			}
-		}
-		return false;
-	}
+  vector<Base *>::iterator i;
+  for (i = baseSet.begin (); i != baseSet.end (); ++i)
+    {
+      if (*i == base)
+        {
+          baseSet.erase (i);
+          if (alias != "")
+            {
+              baseAliases.erase (alias);
+            }
+          baseLocations.erase (location);
+          return true;
+        }
+    }
+  return false;
+}
 
-	void Base::setBaseAlias(Base* base, string alias) {
-		string oldAlias;
-		oldAlias = getBaseAlias(base);
+void
+Base::setBaseAlias (Base *base, string alias)
+{
+  string oldAlias;
+  oldAlias = getBaseAlias (base);
 
-		if (oldAlias != "") {
-			baseAliases.erase(oldAlias);
-		}
+  if (oldAlias != "")
+    {
+      baseAliases.erase (oldAlias);
+    }
 
-		if (alias != "") {
-			baseAliases[alias] = base;
-		}
-	}
+  if (alias != "")
+    {
+      baseAliases[alias] = base;
+    }
+}
 
-	void Base::setBaseLocation(Base* base, string location) {
-		string oldLocation;
+void
+Base::setBaseLocation (Base *base, string location)
+{
+  string oldLocation;
 
-		oldLocation = getBaseLocation(base);
-		if (oldLocation == "")
-			return;
+  oldLocation = getBaseLocation (base);
+  if (oldLocation == "")
+    return;
 
-		baseLocations.erase(oldLocation);
-		baseLocations[location] = base;
-	}
+  baseLocations.erase (oldLocation);
+  baseLocations[location] = base;
+}
 
-	string Base::getId() {
-		return id;
-	}
+string
+Base::getId ()
+{
+  return id;
+}
 
-	void Base::setId(string id) {
-		this->id = id;
-	}
+void
+Base::setId (string id)
+{
+  this->id = id;
+}
 
-	bool Base::instanceOf(string s) {
-		if (!typeSet.empty()) {
-			return (typeSet.find(s) != typeSet.end());
-		} else {
-			return false;
-		}
-	}
+bool
+Base::instanceOf (string s)
+{
+  if (!typeSet.empty ())
+    {
+      return (typeSet.find (s) != typeSet.end ());
+    }
+  else
+    {
+      return false;
+    }
+}
 
 GINGA_NCL_END

@@ -21,22 +21,20 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "IMpegDescriptor.h"
 using namespace ::ginga::tsparser;
 
-
 GINGA_TSPARSER_BEGIN
 
+typedef struct
+{
+  char countryCode[3];
+  unsigned char age;
+  unsigned char contentDescription;
+} Parental;
 
-	typedef struct{
-		char countryCode[3];
-		unsigned char age;
-		unsigned char contentDescription;
-	} Parental;
-
-	class IParentalRatingDescriptor : public IMpegDescriptor {
-		public:
-			vector<Parental*>* getCountryRatings();
-
-	};
-
+class IParentalRatingDescriptor : public IMpegDescriptor
+{
+public:
+  vector<Parental *> *getCountryRatings ();
+};
 
 GINGA_TSPARSER_END
 

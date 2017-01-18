@@ -20,13 +20,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	class LinkListener {
-		public:
-			virtual ~LinkListener(){};
-			virtual void linkEvaluationStarted(FormatterCausalLink* link)=0;
-			virtual void linkEvaluationFinished(
-				    FormatterCausalLink* link, bool start)=0;
-	};
+class LinkListener
+{
+public:
+  virtual ~LinkListener (){};
+  virtual void linkEvaluationStarted (FormatterCausalLink *link) = 0;
+  virtual void linkEvaluationFinished (FormatterCausalLink *link, bool start)
+      = 0;
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_LINKLISTENER_H_

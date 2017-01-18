@@ -22,46 +22,47 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-	class SDLInputEvent {
-		public:
-			static const string ET_WAKEUP;
-			static const string ET_INPUTEVENT;
-			static const string ET_USEREVENT;
+class SDLInputEvent
+{
+public:
+  static const string ET_WAKEUP;
+  static const string ET_INPUTEVENT;
+  static const string ET_USEREVENT;
 
-		private:
-			SDL_Event event;
-			int x;
-			int y;
+private:
+  SDL_Event event;
+  int x;
+  int y;
 
-			bool capsOn;
-			bool shiftOn;
+  bool capsOn;
+  bool shiftOn;
 
-		public:
-			SDLInputEvent(SDL_Event event);
-			SDLInputEvent(const int keyCode);
-			SDLInputEvent(int type, void* data);
+public:
+  SDLInputEvent (SDL_Event event);
+  SDLInputEvent (const int keyCode);
+  SDLInputEvent (int type, void *data);
 
-			virtual ~SDLInputEvent();
+  virtual ~SDLInputEvent ();
 
-			void setModifiers(bool capsOn, bool shiftOn);
+  void setModifiers (bool capsOn, bool shiftOn);
 
-			void clearContent();
-			void setKeyCode(GingaScreenID screenId, const int keyCode);
-			const int getKeyCode(GingaScreenID screenId);
+  void clearContent ();
+  void setKeyCode (GingaScreenID screenId, const int keyCode);
+  const int getKeyCode (GingaScreenID screenId);
 
-			unsigned int getType();
-			void* getApplicationData();
+  unsigned int getType ();
+  void *getApplicationData ();
 
-			bool isButtonPressType();
-			bool isMotionType();
-			bool isPressedType();
-			bool isKeyType();
-			bool isApplicationType();
+  bool isButtonPressType ();
+  bool isMotionType ();
+  bool isPressedType ();
+  bool isKeyType ();
+  bool isApplicationType ();
 
-			void setAxisValue(int x, int y, int z);
-			void getAxisValue(int* x, int* y, int* z);
-			void* getContent();
-	};
+  void setAxisValue (int x, int y, int z);
+  void getAxisValue (int *x, int *y, int *z);
+  void *getContent ();
+};
 
 GINGA_MB_END
 

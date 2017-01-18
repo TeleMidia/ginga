@@ -23,24 +23,22 @@ using namespace ::ginga::util;
 
 GINGA_LSSM_BEGIN
 
-StcWrapper::StcWrapper(IPlayer* realStcProvider)
+StcWrapper::StcWrapper (IPlayer *realStcProvider)
 {
   this->realStcProvider = realStcProvider;
 }
 
-StcWrapper::~StcWrapper()
-{
-  this->realStcProvider = NULL;
-}
+StcWrapper::~StcWrapper () { this->realStcProvider = NULL; }
 
-bool StcWrapper::getSTCValue(uint64_t* stc, int* valueType)
+bool
+StcWrapper::getSTCValue (uint64_t *stc, int *valueType)
 {
   if (realStcProvider == NULL)
     {
       *stc = 0;
       return false;
     }
-  *stc = realStcProvider->getVPts();
+  *stc = realStcProvider->getVPts ();
   *valueType = ST_90KHz;
   return true;
 }

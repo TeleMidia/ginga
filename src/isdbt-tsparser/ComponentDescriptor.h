@@ -18,32 +18,30 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef COMPONENTDESCRIPTOR_H_
 #define COMPONENTDESCRIPTOR_H_
 
-
-
 #include "IMpegDescriptor.h"
 using namespace ::ginga::tsparser;
 
 GINGA_TSPARSER_BEGIN
 
-	class ComponentDescriptor : public IMpegDescriptor {
-		protected:
-			unsigned char streamContent;
-			unsigned char componentType;
-			unsigned char componentTag;
-			unsigned char languageCode[3];
-			unsigned char textLength;
-			char* textChar;
-		public:
-			ComponentDescriptor();
-			~ComponentDescriptor();
-			unsigned char getDescriptorTag();
-			unsigned int getDescriptorLength();
-			string getTextChar();
-			void print ();
-			size_t process (char* data, size_t pos);
+class ComponentDescriptor : public IMpegDescriptor
+{
+protected:
+  unsigned char streamContent;
+  unsigned char componentType;
+  unsigned char componentTag;
+  unsigned char languageCode[3];
+  unsigned char textLength;
+  char *textChar;
 
-	};
-
+public:
+  ComponentDescriptor ();
+  ~ComponentDescriptor ();
+  unsigned char getDescriptorTag ();
+  unsigned int getDescriptorLength ();
+  string getTextChar ();
+  void print ();
+  size_t process (char *data, size_t pos);
+};
 
 GINGA_TSPARSER_END
 

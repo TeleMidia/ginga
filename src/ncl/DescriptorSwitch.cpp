@@ -23,289 +23,357 @@ using namespace ::ginga::util;
 
 GINGA_NCL_BEGIN
 
-	bool DescriptorSwitch::initMutex = false;
-	set<DescriptorSwitch*> DescriptorSwitch::objects;
-	pthread_mutex_t DescriptorSwitch::_objMutex;
+bool DescriptorSwitch::initMutex = false;
+set<DescriptorSwitch *> DescriptorSwitch::objects;
+pthread_mutex_t DescriptorSwitch::_objMutex;
 
-	void DescriptorSwitch::addInstance(DescriptorSwitch* object) {
-		pthread_mutex_lock(&_objMutex);
-		objects.insert(object);
-		pthread_mutex_unlock(&_objMutex);
-	}
+void
+DescriptorSwitch::addInstance (DescriptorSwitch *object)
+{
+  pthread_mutex_lock (&_objMutex);
+  objects.insert (object);
+  pthread_mutex_unlock (&_objMutex);
+}
 
-	bool DescriptorSwitch::removeInstance(DescriptorSwitch* object) {
-		set<DescriptorSwitch*>::iterator i;
-		bool removed = false;
+bool
+DescriptorSwitch::removeInstance (DescriptorSwitch *object)
+{
+  set<DescriptorSwitch *>::iterator i;
+  bool removed = false;
 
-		pthread_mutex_lock(&_objMutex);
-		i = objects.find(object);
-		if (i != objects.end()) {
-			objects.erase(i);
-			removed = true;
-		}
-		pthread_mutex_unlock(&_objMutex);
+  pthread_mutex_lock (&_objMutex);
+  i = objects.find (object);
+  if (i != objects.end ())
+    {
+      objects.erase (i);
+      removed = true;
+    }
+  pthread_mutex_unlock (&_objMutex);
 
-		return removed;
-	}
+  return removed;
+}
 
-	bool DescriptorSwitch::hasInstance(
-			DescriptorSwitch* object, bool eraseFromList) {
+bool
+DescriptorSwitch::hasInstance (DescriptorSwitch *object, bool eraseFromList)
+{
 
-		set<DescriptorSwitch*>::iterator i;
-		bool hasDSwitch = false;
+  set<DescriptorSwitch *>::iterator i;
+  bool hasDSwitch = false;
 
-		if (!initMutex) {
-			return false;
-		}
+  if (!initMutex)
+    {
+      return false;
+    }
 
-		pthread_mutex_lock(&_objMutex);
-		i = objects.find(object);
-		if (i != objects.end()) {
-			if (eraseFromList) {
-				objects.erase(i);
-			}
-			hasDSwitch = true;
-		}
-		pthread_mutex_unlock(&_objMutex);
+  pthread_mutex_lock (&_objMutex);
+  i = objects.find (object);
+  if (i != objects.end ())
+    {
+      if (eraseFromList)
+        {
+          objects.erase (i);
+        }
+      hasDSwitch = true;
+    }
+  pthread_mutex_unlock (&_objMutex);
 
-		return hasDSwitch;
-	}
+  return hasDSwitch;
+}
 
-	DescriptorSwitch::DescriptorSwitch(string id):
-		    GenericDescriptor(id) {
+DescriptorSwitch::DescriptorSwitch (string id) : GenericDescriptor (id)
+{
 
-		if (!initMutex) {
-			initMutex = true;
-			pthread_mutex_init(&DescriptorSwitch::_objMutex, NULL);
-		}
-		descriptorList     = new vector<GenericDescriptor*>;
-		ruleList           = new vector<Rule*>;
-		defaultDescriptor  = NULL;
-		selectedDescriptor = NULL;
+  if (!initMutex)
+    {
+      initMutex = true;
+      pthread_mutex_init (&DescriptorSwitch::_objMutex, NULL);
+    }
+  descriptorList = new vector<GenericDescriptor *>;
+  ruleList = new vector<Rule *>;
+  defaultDescriptor = NULL;
+  selectedDescriptor = NULL;
 
-		addInstance(this);
+  addInstance (this);
 
-		typeSet.insert("DescriptorSwitch");
-	}
+  typeSet.insert ("DescriptorSwitch");
+}
 
-	DescriptorSwitch::~DescriptorSwitch() {
-		vector<GenericDescriptor*>::iterator i;
-		vector<Rule*>::iterator j;
+DescriptorSwitch::~DescriptorSwitch ()
+{
+  vector<GenericDescriptor *>::iterator i;
+  vector<Rule *>::iterator j;
 
-		removeInstance(this);
+  removeInstance (this);
 
-		if (descriptorList != NULL) {
-			i = descriptorList->begin();
-			while (i != descriptorList->end()) {
-				delete *i;
-				++i;
-			}
+  if (descriptorList != NULL)
+    {
+      i = descriptorList->begin ();
+      while (i != descriptorList->end ())
+        {
+          delete *i;
+          ++i;
+        }
 
-			delete descriptorList;
-			descriptorList = NULL;
-		}
+      delete descriptorList;
+      descriptorList = NULL;
+    }
 
-		if (ruleList != NULL) {
-			delete ruleList;
-			ruleList = NULL;
-		}
-	}
+  if (ruleList != NULL)
+    {
+      delete ruleList;
+      ruleList = NULL;
+    }
+}
 
-	bool DescriptorSwitch::addDescriptor(
-		    unsigned int index, GenericDescriptor* descriptor, Rule* rule) {
+bool
+DescriptorSwitch::addDescriptor (unsigned int index,
+                                 GenericDescriptor *descriptor, Rule *rule)
+{
 
-		if (index > descriptorList->size() ||
-			    getDescriptor(descriptor->getId()) != NULL ) {
+  if (index > descriptorList->size ()
+      || getDescriptor (descriptor->getId ()) != NULL)
+    {
 
-			return false;
-		}
+      return false;
+    }
 
-		vector<Rule*>::iterator it;
-		for (it = ruleList->begin(); it != ruleList->end(); it++) {
-			if( *it == rule ) return false;
-		}
+  vector<Rule *>::iterator it;
+  for (it = ruleList->begin (); it != ruleList->end (); it++)
+    {
+      if (*it == rule)
+        return false;
+    }
 
-		if (index == descriptorList->size()) {
-			descriptorList->push_back(descriptor);
-			ruleList->push_back(rule);
+  if (index == descriptorList->size ())
+    {
+      descriptorList->push_back (descriptor);
+      ruleList->push_back (rule);
+    }
+  else
+    {
+      descriptorList->insert (descriptorList->begin () + index, descriptor);
+      ruleList->insert (ruleList->begin () + index, rule);
+    }
+  return true;
+}
 
-		} else {
-			descriptorList->insert(descriptorList->begin() + index, descriptor);
-			ruleList->insert(ruleList->begin() + index, rule);
-		}
-		return true;
-	}
+bool
+DescriptorSwitch::addDescriptor (GenericDescriptor *descriptor, Rule *rule)
+{
 
-	bool DescriptorSwitch::addDescriptor(
-		    GenericDescriptor* descriptor, Rule* rule) {
+  return addDescriptor (descriptorList->size (), descriptor, rule);
+}
 
-		return addDescriptor(descriptorList->size(), descriptor, rule);
-	}
+bool
+DescriptorSwitch::containsRule (Rule *rule)
+{
+  vector<Rule *>::iterator iterRule;
+  for (iterRule = ruleList->begin (); iterRule != ruleList->end (); ++iterRule)
+    {
 
-	bool DescriptorSwitch::containsRule(Rule* rule) {
-		vector<Rule*>::iterator iterRule;
-		for (iterRule = ruleList->begin();
-			    iterRule != ruleList->end(); ++iterRule) {
+      if ((*iterRule)->getId () == rule->getId ())
+        {
+          return true;
+        }
+    }
+  return false;
+}
 
-			if ((*iterRule)->getId() == rule->getId()) {
-				return true;
-			}
-		}
-		return false;
-	}
+void
+DescriptorSwitch::exchangeDescriptorsAndRules (unsigned int index1,
+                                               unsigned int index2)
+{
 
-	void DescriptorSwitch::exchangeDescriptorsAndRules(
-		    unsigned int index1, unsigned int index2) {
+  if (index1 >= descriptorList->size () || index2 >= descriptorList->size ())
+    {
+      return;
+    }
 
-		if (index1 >= descriptorList->size() ||
-			    index2 >= descriptorList->size()) {
-			return;
-		}
+  GenericDescriptor *auxDesc;
+  auxDesc = static_cast<GenericDescriptor *> ((*descriptorList)[index1]);
+  Rule *auxRule = static_cast<Rule *> ((*ruleList)[index1]);
+  (*descriptorList)[index1] = (*descriptorList)[index2];
+  (*descriptorList)[index2] = auxDesc;
+  (*ruleList)[index1] = (*ruleList)[index2];
+  (*ruleList)[index2] = auxRule;
+}
 
-		GenericDescriptor* auxDesc;
-		auxDesc = static_cast<GenericDescriptor*>((*descriptorList)[index1]);
-		Rule* auxRule = static_cast<Rule*>((*ruleList)[index1]);
-		(*descriptorList)[index1] = (*descriptorList)[index2];
-		(*descriptorList)[index2] = auxDesc;
-		(*ruleList)[index1] = (*ruleList)[index2];
-		(*ruleList)[index2] = auxRule;
-	}
+int
+DescriptorSwitch::indexOfRule (Rule *rule)
+{
+  int i = 0;
+  vector<Rule *>::iterator it;
+  for (it = ruleList->begin (); it != ruleList->end (); it++)
+    {
+      if (*it == rule)
+        return i;
+      i++;
+    }
+  return ruleList->size () + 1;
+}
 
-	int DescriptorSwitch::indexOfRule(Rule *rule) {
-		int i=0;
-		vector<Rule*>::iterator it;
-		for (it=ruleList->begin(); it!=ruleList->end(); it++) {
-			if(*it==rule) return i;
-			i++;
-		}
-		return ruleList->size()+1;
-	}
+GenericDescriptor *
+DescriptorSwitch::getDefaultDescriptor ()
+{
+  return defaultDescriptor;
+}
 
-	GenericDescriptor* DescriptorSwitch::getDefaultDescriptor() {
-		return defaultDescriptor;
-	}
+unsigned int
+DescriptorSwitch::indexOfDescriptor (GenericDescriptor *descriptor)
+{
 
-	unsigned int DescriptorSwitch::indexOfDescriptor(
-		    GenericDescriptor* descriptor) {
+  unsigned int i = 0;
+  vector<GenericDescriptor *>::iterator iterDescr;
 
-		unsigned int i = 0;
-		vector<GenericDescriptor*>::iterator iterDescr;
+  for (iterDescr = descriptorList->begin ();
+       iterDescr != descriptorList->end (); ++iterDescr)
+    {
 
-		for (iterDescr = descriptorList->begin();
-			    iterDescr != descriptorList->end(); ++iterDescr) {
+      if ((*(*iterDescr)).getId () == descriptor->getId ())
+        return i;
+      i++;
+    }
+  return (descriptorList->size () + 1);
+}
 
-			if ((*(*iterDescr)).getId() == descriptor->getId())
-				return i;
-			i++;
-		}
-		return (descriptorList->size() + 1);
-	}
+GenericDescriptor *
+DescriptorSwitch::getDescriptor (unsigned int index)
+{
+  if (index >= descriptorList->size ())
+    return NULL;
 
-	GenericDescriptor* DescriptorSwitch::getDescriptor(unsigned int index) {
-		if (index >= descriptorList->size())
-			return NULL;
+  return static_cast<GenericDescriptor *> ((*descriptorList)[index]);
+}
 
-		return static_cast<GenericDescriptor*>((*descriptorList)[index]);
-	}
+GenericDescriptor *
+DescriptorSwitch::getDescriptor (string descriptorId)
+{
+  int i, size;
+  GenericDescriptor *descriptor;
 
-	GenericDescriptor* DescriptorSwitch::getDescriptor(string descriptorId) {
-		int i, size;
-		GenericDescriptor *descriptor;
+  if (defaultDescriptor != NULL)
+    {
+      if (defaultDescriptor->getId () == descriptorId)
+        {
+          return defaultDescriptor;
+        }
+    }
 
-		if (defaultDescriptor != NULL) {
-			if (defaultDescriptor->getId() == descriptorId) {
-				return defaultDescriptor;
-			}
-		}
+  size = descriptorList->size ();
+  for (i = 0; i < size; i++)
+    {
+      descriptor = (*descriptorList)[i];
+      if (descriptor->getId () == descriptorId)
+        {
+          return descriptor;
+        }
+    }
 
-		size = descriptorList->size();
-		for (i = 0; i < size; i++) {
-			descriptor = (*descriptorList)[i];
-			if (descriptor->getId() == descriptorId) {
-				return descriptor;
-			}
-		}
+  return NULL;
+}
 
-		return NULL;
-	}
+GenericDescriptor *
+DescriptorSwitch::getDescriptor (Rule *rule)
+{
+  unsigned int index;
 
-	GenericDescriptor* DescriptorSwitch::getDescriptor(Rule* rule) {
-		unsigned int index;
+  index = indexOfRule (rule);
+  if (index > ruleList->size ())
+    return NULL;
 
-		index = indexOfRule(rule);
-		if (index > ruleList->size())
-			return NULL;
+  return static_cast<GenericDescriptor *> ((*descriptorList)[index]);
+}
 
-		return static_cast<GenericDescriptor*>((*descriptorList)[index]);
-	}
+Rule *
+DescriptorSwitch::getRule (unsigned int index)
+{
+  if (index >= ruleList->size ())
+    return NULL;
 
-	Rule* DescriptorSwitch::getRule(unsigned int index) {
-		if (index >= ruleList->size())
-			return NULL;
+  return static_cast<Rule *> ((*ruleList)[index]);
+}
 
-		return static_cast<Rule*>((*ruleList)[index]);
-	}
+unsigned int
+DescriptorSwitch::getNumDescriptors ()
+{
+  return descriptorList->size ();
+}
 
-	unsigned int DescriptorSwitch::getNumDescriptors() {
-		return descriptorList->size();
-	}
+unsigned int
+DescriptorSwitch::getNumRules ()
+{
+  return ruleList->size ();
+}
 
-	unsigned int DescriptorSwitch::getNumRules() {
-		return ruleList->size();
-	}
+bool
+DescriptorSwitch::removeDescriptor (unsigned int index)
+{
+  if (index >= descriptorList->size ())
+    return false;
 
-	bool DescriptorSwitch::removeDescriptor(unsigned int index) {
-		if (index >= descriptorList->size())
-			return false;
+  vector<GenericDescriptor *>::iterator iterDescr;
+  iterDescr = descriptorList->begin ();
+  iterDescr = iterDescr + index;
+  descriptorList->erase (iterDescr);
+  return true;
+}
 
-		vector<GenericDescriptor*>::iterator iterDescr;
-		iterDescr = descriptorList->begin();
-		iterDescr = iterDescr + index;
-		descriptorList->erase(iterDescr);
-		return true;
-	}
+bool
+DescriptorSwitch::removeDescriptor (GenericDescriptor *descriptor)
+{
+  return removeDescriptor (indexOfDescriptor (descriptor));
+}
 
-	bool DescriptorSwitch::removeDescriptor(GenericDescriptor* descriptor) {
-		return removeDescriptor(indexOfDescriptor(descriptor));
-	}
+bool
+DescriptorSwitch::removeRule (Rule *rule)
+{
+  int index;
 
-	bool DescriptorSwitch::removeRule(Rule *rule) {
-		int index;
+  index = indexOfRule (rule);
+  if (index < 0 || index > (int)ruleList->size ())
+    return false;
 
-		index = indexOfRule(rule);
-		if (index < 0 || index>(int)ruleList->size())
-			return false;
+  descriptorList->erase (descriptorList->begin () + index);
+  ruleList->erase (ruleList->begin () + index);
+  return true;
+}
 
-		descriptorList->erase(descriptorList->begin() + index);
-		ruleList->erase(ruleList->begin() + index);
-		return true;
-	}
+void
+DescriptorSwitch::setDefaultDescriptor (GenericDescriptor *descriptor)
+{
+  defaultDescriptor = descriptor;
+}
 
-	void DescriptorSwitch::setDefaultDescriptor(GenericDescriptor* descriptor) {
-		defaultDescriptor = descriptor;
-	}
+void
+DescriptorSwitch::select (GenericDescriptor *descriptor)
+{
+  vector<GenericDescriptor *>::iterator i;
 
-	void DescriptorSwitch::select(GenericDescriptor* descriptor) {
-		vector<GenericDescriptor*>::iterator i;
+  i = descriptorList->begin ();
+  while (i != descriptorList->end ())
+    {
+      if (*i == descriptor)
+        {
+          selectedDescriptor = descriptor;
+          break;
+        }
+      ++i;
+    }
+}
 
-		i = descriptorList->begin();
-		while (i != descriptorList->end()) {
-			if (*i == descriptor) {
-				selectedDescriptor = descriptor;
-				break;
-			}
-			++i;
-		}
-	}
+void
+DescriptorSwitch::selectDefault ()
+{
+  if (defaultDescriptor != NULL)
+    {
+      selectedDescriptor = defaultDescriptor;
+    }
+}
 
-	void DescriptorSwitch::selectDefault() {
-		if (defaultDescriptor != NULL) {
-			selectedDescriptor = defaultDescriptor;
-		}
-	}
-
-	GenericDescriptor* DescriptorSwitch::getSelectedDescriptor() {
-		return selectedDescriptor;
-	}
+GenericDescriptor *
+DescriptorSwitch::getSelectedDescriptor ()
+{
+  return selectedDescriptor;
+}
 
 GINGA_NCL_END

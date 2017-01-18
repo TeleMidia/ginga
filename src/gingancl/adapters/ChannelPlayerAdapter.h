@@ -37,18 +37,18 @@ using namespace ::ginga::ncl;
 #include "FormatterPlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_BEGIN
 
-  	class ChannelPlayerAdapter : public FormatterPlayerAdapter {
-		public:
-			ChannelPlayerAdapter();
-			virtual ~ChannelPlayerAdapter(){};
+class ChannelPlayerAdapter : public FormatterPlayerAdapter
+{
+public:
+  ChannelPlayerAdapter ();
+  virtual ~ChannelPlayerAdapter (){};
 
-		protected:
-			void createPlayer();
-			bool setPropertyValue(AttributionEvent* event, string value);
-	};
+protected:
+  void createPlayer ();
+  bool setPropertyValue (AttributionEvent *event, string value);
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_END
 #endif /*CHANNELPLAYERADAPTER_H_*/

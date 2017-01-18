@@ -27,34 +27,33 @@ using namespace ::ginga::system;
 #include "Thread.h"
 using namespace ::ginga::system;
 
-
-
 GINGA_SYSTEM_BEGIN
 
-	class GingaLocatorFactory {
-		private:
-			static GingaLocatorFactory* _instance;
-			map<string, string>* iorClients;
-			map<string, string>* iorProviders;
-			map<string, string>* iorNames;
+class GingaLocatorFactory
+{
+private:
+  static GingaLocatorFactory *_instance;
+  map<string, string> *iorClients;
+  map<string, string> *iorProviders;
+  map<string, string> *iorNames;
 
-			bool isWaiting;
-			pthread_mutex_t flagMutexSignal;
-			pthread_cond_t flagCondSignal;
+  bool isWaiting;
+  pthread_mutex_t flagMutexSignal;
+  pthread_cond_t flagCondSignal;
 
-			GingaLocatorFactory();
-			~GingaLocatorFactory();
+  GingaLocatorFactory ();
+  ~GingaLocatorFactory ();
 
-		public:
-			void release();
-			static GingaLocatorFactory* getInstance();
-			void createLocator(string providerUri, string ior);
-			string getLocation(string ior);
-			string getName(string ior);
-			void addClientLocation(string ior, string clientUri, string name);
-			void waitNewLocatorCondition();
-			bool newLocatorConditionSatisfied();
-	};
+public:
+  void release ();
+  static GingaLocatorFactory *getInstance ();
+  void createLocator (string providerUri, string ior);
+  string getLocation (string ior);
+  string getName (string ior);
+  void addClientLocation (string ior, string clientUri, string name);
+  void waitNewLocatorCondition ();
+  bool newLocatorConditionSatisfied ();
+};
 
 GINGA_SYSTEM_END
 

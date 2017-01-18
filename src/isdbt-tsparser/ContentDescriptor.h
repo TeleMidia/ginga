@@ -21,37 +21,38 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "IMpegDescriptor.h"
 using namespace ::ginga::tsparser;
 
-
-
-struct Content {
-	unsigned char contentNibbleLevel1;
-	unsigned char contentNibbleLevel2;
-	unsigned char userNibble1;
-	unsigned char userNibble2;
+struct Content
+{
+  unsigned char contentNibbleLevel1;
+  unsigned char contentNibbleLevel2;
+  unsigned char userNibble1;
+  unsigned char userNibble2;
 };
 
 GINGA_TSPARSER_BEGIN
 
-	class ContentDescriptor : public IMpegDescriptor {
-		protected:
-			//unsigned char contentNibbleLevel1;
-			//unsigned char contentNibbleLevel2;
-			//unsigned char userNibble1;
-			//unsigned char userNibble2;
-			vector<Content*>* contents;
-		public:
-			ContentDescriptor();
-			virtual ~ContentDescriptor();
-			unsigned char getDescriptorTag();
-			unsigned int getDescriptorLength();
-			unsigned short getContentNibble1(struct Content* content);
-			unsigned short getContentNibble2(struct Content* content);
-			unsigned short getUserNibble1(struct Content* content);
-			unsigned short getUserNibble2(struct Content* content);
-			vector<Content*>* getContents();
-			void print();
-			size_t process (char* data, size_t pos);
-	};
+class ContentDescriptor : public IMpegDescriptor
+{
+protected:
+  // unsigned char contentNibbleLevel1;
+  // unsigned char contentNibbleLevel2;
+  // unsigned char userNibble1;
+  // unsigned char userNibble2;
+  vector<Content *> *contents;
+
+public:
+  ContentDescriptor ();
+  virtual ~ContentDescriptor ();
+  unsigned char getDescriptorTag ();
+  unsigned int getDescriptorLength ();
+  unsigned short getContentNibble1 (struct Content *content);
+  unsigned short getContentNibble2 (struct Content *content);
+  unsigned short getUserNibble1 (struct Content *content);
+  unsigned short getUserNibble2 (struct Content *content);
+  vector<Content *> *getContents ();
+  void print ();
+  size_t process (char *data, size_t pos);
+};
 
 GINGA_TSPARSER_END
 

@@ -34,25 +34,25 @@ using namespace ::ginga::system;
 
 #include "Player.h"
 
-
 GINGA_PLAYER_BEGIN
 
-	class ImagePlayer : public Player {
-		private:
-			GingaProviderID provider;
+class ImagePlayer : public Player
+{
+private:
+  GingaProviderID provider;
 
-		public:
-			ImagePlayer(GingaScreenID screenId, string mrl);
-			virtual ~ImagePlayer();
-			bool play();
-			void stop();
-			void resume();
+public:
+  ImagePlayer (GingaScreenID screenId, string mrl);
+  virtual ~ImagePlayer ();
+  bool play ();
+  void stop ();
+  void resume ();
 
-			virtual void setPropertyValue(string name, string value);
+  virtual void setPropertyValue (string name, string value);
 
-		private:
-			GingaSurfaceID prepareSurface(GingaProviderID provider, string mrl);
-	};
+private:
+  GingaSurfaceID prepareSurface (GingaProviderID provider, string mrl);
+};
 
 GINGA_PLAYER_END
 

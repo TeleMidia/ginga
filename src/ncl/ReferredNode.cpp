@@ -20,13 +20,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCLCONV_BEGIN
 
-	ReferredNode::ReferredNode(string id, void* element) : Entity(id) {
-		referElement = element;
-		typeSet.insert("ReferredNode");
-	}
+ReferredNode::ReferredNode (string id, void *element) : Entity (id)
+{
+  referElement = element;
+  typeSet.insert ("ReferredNode");
+}
 
-	void* ReferredNode::getReferElement() {
-		return referElement;
-	}
+void *
+ReferredNode::getReferElement ()
+{
+  return referElement;
+}
 
 GINGA_NCLCONV_END

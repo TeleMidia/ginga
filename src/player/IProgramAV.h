@@ -22,15 +22,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
-	class IProgramAV {
-		public:
-			virtual ~IProgramAV(){};
-			virtual void release()=0;
-			virtual void setAVPid(int programPid, int aPid, int vPid)=0;
-			virtual IPlayer* getPlayer(int pid)=0;
-			virtual void setPlayer(int pid, IPlayer*)=0;
-			virtual void setPropertyValue(string pName, string pValue)=0;
-	};
+class IProgramAV
+{
+public:
+  virtual ~IProgramAV (){};
+  virtual void release () = 0;
+  virtual void setAVPid (int programPid, int aPid, int vPid) = 0;
+  virtual IPlayer *getPlayer (int pid) = 0;
+  virtual void setPlayer (int pid, IPlayer *) = 0;
+  virtual void setPropertyValue (string pName, string pValue) = 0;
+};
 
 GINGA_PLAYER_END
 

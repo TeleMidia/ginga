@@ -22,23 +22,23 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TUNER_BEGIN
 
-	//tuner status
-	static const short TS_LOOP_DETECTED          = 0x01;
-	static const short TS_SWITCHING_CHANNEL      = 0x02;
-	static const short TS_NEW_CHANNEL_TUNED      = 0x03;
-	static const short TS_NEW_SERVICE_TUNED      = 0x04;
-	static const short TS_SWITCHING_INTERFACE    = 0x05;
-	static const short TS_NEW_INTERFACE_SELECTED = 0x06;
-	static const short TS_TUNER_POWEROFF         = 0x07;
+// tuner status
+static const short TS_LOOP_DETECTED = 0x01;
+static const short TS_SWITCHING_CHANNEL = 0x02;
+static const short TS_NEW_CHANNEL_TUNED = 0x03;
+static const short TS_NEW_SERVICE_TUNED = 0x04;
+static const short TS_SWITCHING_INTERFACE = 0x05;
+static const short TS_NEW_INTERFACE_SELECTED = 0x06;
+static const short TS_TUNER_POWEROFF = 0x07;
 
-	class ITunerListener {
-		public:
-			virtual ~ITunerListener(){};
-			virtual void receiveData(char* buff, unsigned int size)=0;
-			virtual void updateChannelStatus(
-					short newStatus, Channel* channel)=0;
-			virtual bool isReady()=0;
-	};
+class ITunerListener
+{
+public:
+  virtual ~ITunerListener (){};
+  virtual void receiveData (char *buff, unsigned int size) = 0;
+  virtual void updateChannelStatus (short newStatus, Channel *channel) = 0;
+  virtual bool isReady () = 0;
+};
 
 GINGA_TUNER_END
 

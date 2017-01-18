@@ -26,37 +26,37 @@ class EventUtil
 {
 public:
   // Event types.
-  static const short EVT_SELECTION    = 0;
+  static const short EVT_SELECTION = 0;
   static const short EVT_PRESENTATION = 1;
-  static const short EVT_ATTRIBUTION  = 2;
-  static const short EVT_COMPOSITION  = 4;
+  static const short EVT_ATTRIBUTION = 2;
+  static const short EVT_COMPOSITION = 4;
 
   // Event state transitions.
-  static const short TR_STARTS  = 0;
-  static const short TR_STOPS   = 1;
-  static const short TR_PAUSES  = 2;
+  static const short TR_STARTS = 0;
+  static const short TR_STOPS = 1;
+  static const short TR_PAUSES = 2;
   static const short TR_RESUMES = 3;
-  static const short TR_ABORTS  = 4;
+  static const short TR_ABORTS = 4;
 
   // Event states.
-  static const short ST_SLEEPING  = 0;
+  static const short ST_SLEEPING = 0;
   static const short ST_OCCURRING = 1;
-  static const short ST_PAUSED    = 2;
+  static const short ST_PAUSED = 2;
 
   // Attribute types.
-  static const short ATT_OCCURRENCES   = 0;
-  static const short ATT_REPETITIONS  = 1;
-  static const short ATT_STATE         = 2;
+  static const short ATT_OCCURRENCES = 0;
+  static const short ATT_REPETITIONS = 1;
+  static const short ATT_STATE = 2;
   static const short ATT_NODE_PROPERTY = 3;
 
-  static short getTypeCode(string typeName);
-  static string getTypeName(short type);
-  static short getStateCode(string stateName);
-  static string getStateName(short state);
-  static string getTransitionName(short transition);
-  static short getTransitionCode(string transition);
-  static short getAttributeTypeCode(string attTypeName);
-  static string getAttributeTypeName(short type);
+  static short getTypeCode (string typeName);
+  static string getTypeName (short type);
+  static short getStateCode (string stateName);
+  static string getStateName (short state);
+  static string getTransitionName (short transition);
+  static short getTransitionCode (string transition);
+  static short getAttributeTypeCode (string attTypeName);
+  static string getAttributeTypeName (short type);
 };
 
 GINGA_NCL_END

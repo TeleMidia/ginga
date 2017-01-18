@@ -20,14 +20,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TUNER_BEGIN
 
+static const short PST_LOOP = 0x01;
 
-	static const short PST_LOOP = 0x01;
-
-	class ITProviderListener {
-		public:
-			virtual ~ITProviderListener(){};
-			virtual void receiveSignal(short signalCode)=0;
-	};
+class ITProviderListener
+{
+public:
+  virtual ~ITProviderListener (){};
+  virtual void receiveSignal (short signalCode) = 0;
+};
 
 GINGA_TUNER_END
 

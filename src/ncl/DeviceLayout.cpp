@@ -20,52 +20,64 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	DeviceLayout::DeviceLayout(string layoutName) {
-		devices          = new map<string, DeviceProperty*>;
-		this->layoutName = layoutName;
-	}
+DeviceLayout::DeviceLayout (string layoutName)
+{
+  devices = new map<string, DeviceProperty *>;
+  this->layoutName = layoutName;
+}
 
-	DeviceLayout::~DeviceLayout() {
-		map<string, DeviceProperty*>::iterator i;
+DeviceLayout::~DeviceLayout ()
+{
+  map<string, DeviceProperty *>::iterator i;
 
-		i = devices->begin();
-		while (i != devices->end()) {
-			delete i->second;
-			++i;
-		}
-		delete devices;
-	}
+  i = devices->begin ();
+  while (i != devices->end ())
+    {
+      delete i->second;
+      ++i;
+    }
+  delete devices;
+}
 
-	string DeviceLayout::getLayoutName() {
-		return layoutName;
-	}
+string
+DeviceLayout::getLayoutName ()
+{
+  return layoutName;
+}
 
-	void DeviceLayout::addDevice(
-			string name, int x, int y, int width, int height) {
+void
+DeviceLayout::addDevice (string name, int x, int y, int width, int height)
+{
 
-		DeviceProperty* device;
+  DeviceProperty *device;
 
-		if (devices->count(name) == 0) {
-			device = new DeviceProperty(x, y, width, height);
-			(*devices)[name] = device;
+  if (devices->count (name) == 0)
+    {
+      device = new DeviceProperty (x, y, width, height);
+      (*devices)[name] = device;
+    }
+  else
+    {
+      device = (*devices)[name];
 
-		} else {
-			device = (*devices)[name];
+      device->setDeviceLeft (x);
+      device->setDeviceTop (y);
+      device->setDeviceWidth (width);
+      device->setDeviceHeight (height);
+    }
+}
 
-			device->setDeviceLeft(x);
-			device->setDeviceTop(y);
-			device->setDeviceWidth(width);
-			device->setDeviceHeight(height);
-		}
-	}
-
-	DeviceProperty* DeviceLayout::getDeviceProperty(string name) {
-		if (devices->count(name) != 0) {
-			return (*devices)[name];
-
-		} else {
-			return NULL;
-		}
-	}
+DeviceProperty *
+DeviceLayout::getDeviceProperty (string name)
+{
+  if (devices->count (name) != 0)
+    {
+      return (*devices)[name];
+    }
+  else
+    {
+      return NULL;
+    }
+}
 
 GINGA_NCL_END

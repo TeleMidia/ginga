@@ -34,12 +34,11 @@ public:
   static const int STR_MODE_TAG = 0x03;
   static const int STR_EVENT_TAG = 0x04;
 
-  virtual ~IMpegDescriptor(){};
-  virtual unsigned char getDescriptorTag()=0;
-  virtual unsigned int getDescriptorLength()=0;
-  virtual size_t process (char* data, size_t pos)=0;
-  virtual void print()=0;
-
+  virtual ~IMpegDescriptor (){};
+  virtual unsigned char getDescriptorTag () = 0;
+  virtual unsigned int getDescriptorLength () = 0;
+  virtual size_t process (char *data, size_t pos) = 0;
+  virtual void print () = 0;
 };
 
 GINGA_TSPARSER_END

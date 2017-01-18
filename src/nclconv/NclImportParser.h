@@ -24,30 +24,34 @@ using namespace ::ginga::nclconv;
 
 XERCES_CPP_NAMESPACE_USE
 
-
 GINGA_NCLCONV_BEGIN
 
-  class NclImportParser : public ModuleParser {
-	public:
-		NclImportParser(DocumentParser *documentParser);
+class NclImportParser : public ModuleParser
+{
+public:
+  NclImportParser (DocumentParser *documentParser);
 
-		void *parseImportedDocumentBase(
-			    DOMElement *parentElement, void *objGrandParent);
+  void *parseImportedDocumentBase (DOMElement *parentElement,
+                                   void *objGrandParent);
 
-		virtual void *createImportedDocumentBase(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  virtual void *createImportedDocumentBase (DOMElement *parentElement,
+                                            void *objGrandParent)
+      = 0;
 
-		void *parseImportNCL(DOMElement *parentElement, void *objGrandParent);
-		virtual void *createImportNCL(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  void *parseImportNCL (DOMElement *parentElement, void *objGrandParent);
+  virtual void *createImportNCL (DOMElement *parentElement,
+                                 void *objGrandParent)
+      = 0;
 
-		virtual void addImportNCLToImportedDocumentBase(
-			    void *parentObject, void *childObject)=0;
+  virtual void addImportNCLToImportedDocumentBase (void *parentObject,
+                                                   void *childObject)
+      = 0;
 
-		void *parseImportBase(DOMElement *parentElement, void *objGrandParent);
-		virtual void *createImportBase(
-			    DOMElement *parentElement, void *objGrandParent)=0;
-  };
+  void *parseImportBase (DOMElement *parentElement, void *objGrandParent);
+  virtual void *createImportBase (DOMElement *parentElement,
+                                  void *objGrandParent)
+      = 0;
+};
 
 GINGA_NCLCONV_END
 

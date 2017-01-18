@@ -21,27 +21,27 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "IMpegDescriptor.h"
 using namespace ::ginga::tsparser;
 
-
 GINGA_TSPARSER_BEGIN
 
-    class ILogoTransmissionDescriptor : public IMpegDescriptor {
-		public:
-			virtual ~ILogoTransmissionDescriptor(){};
-			virtual void setDescriptorLength(unsigned short length)=0;
-			virtual unsigned char getDescriptorLength()=0;
-			virtual void setType(unsigned char type)=0;
-			virtual unsigned char getType()=0;
-			virtual void setLogoId(unsigned short id)=0;
-			virtual unsigned short getLogoId()=0;
-			virtual void setLogoVersion(unsigned short version)=0;
-			virtual unsigned short getLogoVersion()=0;
-			virtual void setDownloadDataId(unsigned short id)=0;
-			virtual unsigned short getDownloadDataId()=0;
-			virtual void setName(string name)=0;
-			virtual string getName()=0;
-			virtual unsigned char getNameLength()=0;
-			virtual unsigned char getDescriptorTag()=0;
-    };
+class ILogoTransmissionDescriptor : public IMpegDescriptor
+{
+public:
+  virtual ~ILogoTransmissionDescriptor (){};
+  virtual void setDescriptorLength (unsigned short length) = 0;
+  virtual unsigned char getDescriptorLength () = 0;
+  virtual void setType (unsigned char type) = 0;
+  virtual unsigned char getType () = 0;
+  virtual void setLogoId (unsigned short id) = 0;
+  virtual unsigned short getLogoId () = 0;
+  virtual void setLogoVersion (unsigned short version) = 0;
+  virtual unsigned short getLogoVersion () = 0;
+  virtual void setDownloadDataId (unsigned short id) = 0;
+  virtual unsigned short getDownloadDataId () = 0;
+  virtual void setName (string name) = 0;
+  virtual string getName () = 0;
+  virtual unsigned char getNameLength () = 0;
+  virtual unsigned char getDescriptorTag () = 0;
+};
 
 GINGA_TSPARSER_END
 

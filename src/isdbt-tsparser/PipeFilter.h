@@ -29,43 +29,43 @@ using namespace ::ginga::system;
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
 
-
 GINGA_TSPARSER_BEGIN
 
-	class PipeFilter : public ITSFilter, Thread {
-		private:
-			unsigned int pid;
-			bool dataReceived;
-			bool running;
-			unsigned int packetsReceived;
-			unsigned long debugBytesWritten;
-			map<int, int> pids;
+class PipeFilter : public ITSFilter, Thread
+{
+private:
+  unsigned int pid;
+  bool dataReceived;
+  bool running;
+  unsigned int packetsReceived;
+  unsigned long debugBytesWritten;
+  map<int, int> pids;
 
-			bool srcIsAPipe;
-			bool dstPipeCreated;
-			string srcUri;
-			string dstUri;
+  bool srcIsAPipe;
+  bool dstPipeCreated;
+  string srcUri;
+  string dstUri;
 
-			PipeDescriptor srcPd;
-			PipeDescriptor dstPd;
+  PipeDescriptor srcPd;
+  PipeDescriptor dstPd;
 
-		public:
-			PipeFilter(unsigned int pid);
-			virtual ~PipeFilter();
+public:
+  PipeFilter (unsigned int pid);
+  virtual ~PipeFilter ();
 
-			void addPid(int pid);
-			bool hasData();
+  void addPid (int pid);
+  bool hasData ();
 
-			void receiveTSPacket(ITSPacket* pack);
-			void receiveSection(char* buf, int len, IFrontendFilter* filter);
-			void receivePes(char* buf, int len, IFrontendFilter* filter);
+  void receiveTSPacket (ITSPacket *pack);
+  void receiveSection (char *buf, int len, IFrontendFilter *filter);
+  void receivePes (char *buf, int len, IFrontendFilter *filter);
 
-			void setSourceUri(string srcUri, bool isPipe);
-			string setDestinationUri(string dstUri);
+  void setSourceUri (string srcUri, bool isPipe);
+  string setDestinationUri (string dstUri);
 
-		private:
-			void run();
-	};
+private:
+  void run ();
+};
 
 GINGA_TSPARSER_END
 

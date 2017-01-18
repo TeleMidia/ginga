@@ -23,37 +23,36 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "isdbt-tsparser/IMpegDescriptor.h"
 using namespace ::ginga::tsparser;
 
-
-
 GINGA_TSPARSER_BEGIN
 
-    class LogoTransmissionDescriptor : public IMpegDescriptor {
-		protected:
-			unsigned char logoType;
-			unsigned short logoId;
-			unsigned short logoVersion;
-			unsigned short downloadDataId;
-			string logoName;
+class LogoTransmissionDescriptor : public IMpegDescriptor
+{
+protected:
+  unsigned char logoType;
+  unsigned short logoId;
+  unsigned short logoVersion;
+  unsigned short downloadDataId;
+  string logoName;
 
-		public:
-			LogoTransmissionDescriptor();
-			~LogoTransmissionDescriptor();
-			unsigned int getDescriptorLength();
-			void setType(unsigned char type);
-			unsigned char getType();
-			void setLogoId(unsigned short id);
-			unsigned short getLogoId();
-			void setLogoVersion(unsigned short version);
-			unsigned short getLogoVersion();
-			void setDownloadDataId(unsigned short id);
-			unsigned short getDownloadDataId();
-			void setName(string name);
-			string getName();
-			unsigned int getNameLength();
-			unsigned char getDescriptorTag();
-			void print();
-			size_t process (char* data, size_t pos);
-    };
+public:
+  LogoTransmissionDescriptor ();
+  ~LogoTransmissionDescriptor ();
+  unsigned int getDescriptorLength ();
+  void setType (unsigned char type);
+  unsigned char getType ();
+  void setLogoId (unsigned short id);
+  unsigned short getLogoId ();
+  void setLogoVersion (unsigned short version);
+  unsigned short getLogoVersion ();
+  void setDownloadDataId (unsigned short id);
+  unsigned short getDownloadDataId ();
+  void setName (string name);
+  string getName ();
+  unsigned int getNameLength ();
+  unsigned char getDescriptorTag ();
+  void print ();
+  size_t process (char *data, size_t pos);
+};
 
 GINGA_TSPARSER_END
 

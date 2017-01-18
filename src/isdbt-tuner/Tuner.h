@@ -33,7 +33,7 @@ using namespace ::ginga::mb;
 #include "Tuner.h"
 
 #ifndef BUFFSIZE
-# define BUFFSIZE 9588
+#define BUFFSIZE 9588
 #endif
 
 #include "ITunerListener.h"
@@ -41,7 +41,7 @@ using namespace ::ginga::mb;
 
 typedef struct
 {
-  char* buff;
+  char *buff;
   unsigned int size;
 } Buffer;
 
@@ -52,58 +52,57 @@ typedef struct
 
 GINGA_TUNER_BEGIN
 
-	class Tuner : public IInputEventListener, public ITProviderListener, public Thread {
-		private:
-			bool receiving;
-			ITunerListener* listener;
-			ITunerListener* loopListener;
-			map<int, NetworkInterface*> interfaces;
-			int currentInterface;
-			bool firstTune;
-			string currentSpec;
-			GingaScreenID screenId;
+class Tuner : public IInputEventListener,
+              public ITProviderListener,
+              public Thread
+{
+private:
+  bool receiving;
+  ITunerListener *listener;
+  ITunerListener *loopListener;
+  map<int, NetworkInterface *> interfaces;
+  int currentInterface;
+  bool firstTune;
+  string currentSpec;
+  GingaScreenID screenId;
 
-		public:
-			Tuner(
-					GingaScreenID screenId,
-					string network = "",
-					string protocol = "",
-					string address = "");
+public:
+  Tuner (GingaScreenID screenId, string network = "", string protocol = "",
+         string address = "");
 
-			virtual ~Tuner();
+  virtual ~Tuner ();
 
-			void setLoopListener(ITunerListener* loopListener);
-			bool userEventReceived(SDLInputEvent* ev);
+  void setLoopListener (ITunerListener *loopListener);
+  bool userEventReceived (SDLInputEvent *ev);
 
-		private:
-			void clearInterfaces();
-			void receiveSignal(short signalCode);
-			void initializeInterface(string niSpec);
-			void initializeInterfaces();
-			void createInterface(
-					string network, string protocol, string address);
+private:
+  void clearInterfaces ();
+  void receiveSignal (short signalCode);
+  void initializeInterface (string niSpec);
+  void initializeInterfaces ();
+  void createInterface (string network, string protocol, string address);
 
-			bool listenInterface(NetworkInterface* nInterface);
-			void receiveInterface(NetworkInterface* nInterface);
+  bool listenInterface (NetworkInterface *nInterface);
+  void receiveInterface (NetworkInterface *nInterface);
 
-		public:
-			void setSpec(string ni, string ch);
-			void tune();
-			NetworkInterface* getCurrentInterface();
-			void channelUp();
-			void channelDown();
-			void changeChannel(int factor);
-			bool hasSignal();
+public:
+  void setSpec (string ni, string ch);
+  void tune ();
+  NetworkInterface *getCurrentInterface ();
+  void channelUp ();
+  void channelDown ();
+  void changeChannel (int factor);
+  bool hasSignal ();
 
-		public:
-			void setTunerListener(ITunerListener* listener);
+public:
+  void setTunerListener (ITunerListener *listener);
 
-		private:
-			void notifyData(char* buff, unsigned int val);
-			void notifyStatus(short newStatus, Channel* channel);
-			void waitForListeners();
-			virtual void run();
-	};
+private:
+  void notifyData (char *buff, unsigned int val);
+  void notifyStatus (short newStatus, Channel *channel);
+  void waitForListeners ();
+  virtual void run ();
+};
 
 GINGA_TUNER_END
 

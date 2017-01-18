@@ -22,28 +22,29 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
-	class PlainTxtPlayer : public TextPlayer {
-		private:
-			pthread_mutex_t mutex;
-			string content;
+class PlainTxtPlayer : public TextPlayer
+{
+private:
+  pthread_mutex_t mutex;
+  string content;
 
-		public:
-			PlainTxtPlayer(GingaScreenID screenId, string mrl);
-			virtual ~PlainTxtPlayer();
+public:
+  PlainTxtPlayer (GingaScreenID screenId, string mrl);
+  virtual ~PlainTxtPlayer ();
 
-		protected:
-			void setFile(string mrl);
+protected:
+  void setFile (string mrl);
 
-		private:
-			void loadTxt();
-			void setContent(string content);
-			void setTextAlign(string align);
+private:
+  void loadTxt ();
+  void setContent (string content);
+  void setTextAlign (string align);
 
-		public:
-			bool play();
-			void stop();
-			virtual void setPropertyValue(string name, string value);
-	};
+public:
+  bool play ();
+  void stop ();
+  virtual void setPropertyValue (string name, string value);
+};
 
 GINGA_PLAYER_END
 

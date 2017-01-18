@@ -23,12 +23,12 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 
-	class IFormatterSchedulerListener {
-		public:
-			virtual ~IFormatterSchedulerListener(){};
-			virtual void presentationCompleted(
-				    FormatterEvent* documentEvent)=0;
-	};
+class IFormatterSchedulerListener
+{
+public:
+  virtual ~IFormatterSchedulerListener (){};
+  virtual void presentationCompleted (FormatterEvent *documentEvent) = 0;
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_END
 #endif /*IFORMATTERSCHEDULERLISTENER_H_*/

@@ -20,48 +20,56 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TSPARSER_BEGIN
 
-	ContentAvailabilityDescriptor::ContentAvailabilityDescriptor() {
-		descriptorTag        = 0xDE;
-		descriptorLength     = 0;
-		retentionMode        = 0;
-		retentionState       = 0;
-		imageConstraintToken = 0;
-		encriptionMode       = 0;
+ContentAvailabilityDescriptor::ContentAvailabilityDescriptor ()
+{
+  descriptorTag = 0xDE;
+  descriptorLength = 0;
+  retentionMode = 0;
+  retentionState = 0;
+  imageConstraintToken = 0;
+  encriptionMode = 0;
+}
 
-	}
+ContentAvailabilityDescriptor::~ContentAvailabilityDescriptor () {}
+unsigned char
+ContentAvailabilityDescriptor::getDescriptorTag ()
+{
+  return descriptorTag;
+}
+unsigned int
+ContentAvailabilityDescriptor::getDescriptorLength ()
+{
+  return (unsigned int)descriptorLength;
+}
+void
+ContentAvailabilityDescriptor::print ()
+{
+  clog << "ContentAvailabilityDescriptor::print printing..." << endl;
+}
+size_t
+ContentAvailabilityDescriptor::process (char *data, size_t pos)
+{
+  // clog << "ContentAvailabiltyDescriptor::process with pos = " << pos;
 
-	ContentAvailabilityDescriptor::~ContentAvailabilityDescriptor() {
-	}
-	unsigned char ContentAvailabilityDescriptor::getDescriptorTag(){
-		return descriptorTag;
-	}
-	unsigned int ContentAvailabilityDescriptor::getDescriptorLength(){
-		return (unsigned int)descriptorLength;
-	}
-	void ContentAvailabilityDescriptor::print() {
-		clog << "ContentAvailabilityDescriptor::print printing..." << endl;
-	}
-	size_t ContentAvailabilityDescriptor::process(char* data, size_t pos){
-		//clog << "ContentAvailabiltyDescriptor::process with pos = " << pos;
+  descriptorLength = data[pos + 1];
+  // clog << " and length = " << (unsigned int)descriptorLength << endl;
+  pos += 2;
 
-		descriptorLength = data[pos+1];
-		//clog << " and length = " << (unsigned int)descriptorLength << endl;
-		pos += 2;
+  // 2 bits reserved for future use
+  // clog << "CA debug = " << (data[pos] & 0xFF) << endl;
+  imageConstraintToken = ((data[pos] & 0x20) >> 5); // 1 bit
+  // clog << " CA ImageConstraingToken = " << (int)imageConstraintToken <<
+  // endl;
+  retentionMode = ((data[pos] & 0x10) >> 4); // 1 bit
+  // clog << "CA retentionMode = " << (int)retentionMode << endl;
+  retentionState = ((data[pos] & 0x0E) >> 1); // 3 bits
+  // clog << "CA retentionState = " << (int)retentionState << endl;
+  encriptionMode = (data[pos] & 0x01); // 1 bit
+  // clog << "CA encriptionMode = " << (int)encriptionMode << endl;
+  pos++;
 
-		//2 bits reserved for future use
-		//clog << "CA debug = " << (data[pos] & 0xFF) << endl;
-		imageConstraintToken = ((data[pos] & 0x20) >> 5); //1 bit
-		//clog << " CA ImageConstraingToken = " << (int)imageConstraintToken << endl;
-		retentionMode = ((data[pos] & 0x10) >> 4); //1 bit
-		//clog << "CA retentionMode = " << (int)retentionMode << endl;
-		retentionState = ((data[pos] & 0x0E) >> 1);//3 bits
-		//clog << "CA retentionState = " << (int)retentionState << endl;
-		encriptionMode = (data[pos] & 0x01); // 1 bit
-		//clog << "CA encriptionMode = " << (int)encriptionMode << endl;
-		pos ++;
-
-		pos += descriptorLength - 2; //jumping reserved future use
-		return pos;
-	}
+  pos += descriptorLength - 2; // jumping reserved future use
+  return pos;
+}
 
 GINGA_TSPARSER_END

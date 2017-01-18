@@ -34,25 +34,22 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::switches;
 #include "PresentationEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_BEGIN
 
-  class ExecutionObjectSwitch : public CompositeExecutionObject {
-	protected:
-		ExecutionObject* selectedObject;
+class ExecutionObjectSwitch : public CompositeExecutionObject
+{
+protected:
+  ExecutionObject *selectedObject;
 
-	public:
-		ExecutionObjectSwitch(
-				string id,
-				Node* switchNode,
-				bool handling,
-				ILinkActionListener* seListener);
+public:
+  ExecutionObjectSwitch (string id, Node *switchNode, bool handling,
+                         ILinkActionListener *seListener);
 
-		virtual ~ExecutionObjectSwitch(){};
-		ExecutionObject* getSelectedObject();
-		void select(ExecutionObject* executionObject);
-		bool addEvent(FormatterEvent* event);
-  };
+  virtual ~ExecutionObjectSwitch (){};
+  ExecutionObject *getSelectedObject ();
+  void select (ExecutionObject *executionObject);
+  bool addEvent (FormatterEvent *event);
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_END
 #endif //_EXECUTIONOBJECTSWITCH_H_

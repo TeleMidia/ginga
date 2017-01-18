@@ -18,15 +18,15 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IATTRIBUTEVALUEMAINTAINER_H_
 #define IATTRIBUTEVALUEMAINTAINER_H_
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
 
-  class IAttributeValueMaintainer {
-	public:
-		virtual ~IAttributeValueMaintainer(){};
-		virtual string getPropertyValue(void* attributeEvent)=0;
-		virtual void setPropertyValue(string name, string value)=0;
-  };
+class IAttributeValueMaintainer
+{
+public:
+  virtual ~IAttributeValueMaintainer (){};
+  virtual string getPropertyValue (void *attributeEvent) = 0;
+  virtual void setPropertyValue (string name, string value) = 0;
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END
 #endif /*IATTRIBUTEVALUEMAINTAINER_H_*/

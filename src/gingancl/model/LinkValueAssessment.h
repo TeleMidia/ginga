@@ -20,20 +20,20 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "LinkAssessment.h"
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	class LinkValueAssessment : public LinkAssessment {
-		protected:
-			string value;
+class LinkValueAssessment : public LinkAssessment
+{
+protected:
+  string value;
 
-		public:
-			LinkValueAssessment(string value);
-			virtual ~LinkValueAssessment();
-			string getComparableValue();
-			void setComparableValue(string value);
-			string getValue();
-	};
+public:
+  LinkValueAssessment (string value);
+  virtual ~LinkValueAssessment ();
+  string getComparableValue ();
+  void setComparableValue (string value);
+  string getValue ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif /*LINKVALUEASSESSMENT_H_*/
