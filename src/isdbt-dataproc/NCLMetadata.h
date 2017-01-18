@@ -20,10 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "INCLMetadata.h"
 
-#include "system/SystemCompat.h"
-using namespace ::ginga::system;
-
-
 GINGA_DATAPROC_BEGIN
 
 	class NCLMetadata : public INCLMetadata {

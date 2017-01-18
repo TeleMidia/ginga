@@ -18,6 +18,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NCLMetadata.h"
 
+#include "system/SystemCompat.h"
+using namespace ::ginga::system;
+
 #include "util/functions.h"
 using namespace ::ginga::util;
 
