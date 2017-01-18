@@ -39,7 +39,7 @@ GINGA_NCLCONV_BEGIN
 
 	}
 
-	void NclDocumentParser::setDeviceLayout(IDeviceLayout* deviceLayout) {
+	void NclDocumentParser::setDeviceLayout(DeviceLayout* deviceLayout) {
 		this->deviceLayout = deviceLayout;
 	}
 

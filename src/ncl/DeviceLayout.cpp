@@ -21,12 +21,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NCL_BEGIN
 
 	DeviceLayout::DeviceLayout(string layoutName) {
-		devices          = new map<string, IDeviceProperty*>;
+		devices          = new map<string, DeviceProperty*>;
 		this->layoutName = layoutName;
 	}
 
 	DeviceLayout::~DeviceLayout() {
-		map<string, IDeviceProperty*>::iterator i;
+		map<string, DeviceProperty*>::iterator i;
 
 		i = devices->begin();
 		while (i != devices->end()) {
@@ -43,7 +43,7 @@ GINGA_NCL_BEGIN
 	void DeviceLayout::addDevice(
 			string name, int x, int y, int width, int height) {
 
-		IDeviceProperty* device;
+		DeviceProperty* device;
 
 		if (devices->count(name) == 0) {
 			device = new DeviceProperty(x, y, width, height);
@@ -59,7 +59,7 @@ GINGA_NCL_BEGIN
 		}
 	}
 
-	IDeviceProperty* DeviceLayout::getDeviceProperty(string name) {
+	DeviceProperty* DeviceLayout::getDeviceProperty(string name) {
 		if (devices->count(name) != 0) {
 			return (*devices)[name];
 

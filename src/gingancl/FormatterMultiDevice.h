@@ -68,7 +68,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
 
 #include "adaptation/ContextBase.h"
 
-#include "ncl/IDeviceLayout.h"
+#include "ncl/DeviceLayout.h"
 using namespace ::ginga::ncl;
 
 #include "player/IPlayer.h"
@@ -101,7 +101,7 @@ protected:
   static void* rdm;
 #endif
 
-  IDeviceLayout* deviceLayout;
+  DeviceLayout* deviceLayout;
   map<int, FormatterLayout*> layoutManager;
   vector<string>* activeUris;
   string activeBaseUri;
@@ -126,7 +126,7 @@ protected:
   static const int DV_QVGA_HEIGHT = 320;
 
 public:
-  FormatterMultiDevice(GingaScreenID screenId, IDeviceLayout* deviceLayout,
+  FormatterMultiDevice(GingaScreenID screenId, DeviceLayout* deviceLayout,
                        int x, int y, int w, int h, bool useMulticast,
                        int srvPort);
   virtual ~FormatterMultiDevice();

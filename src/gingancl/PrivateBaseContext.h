@@ -39,7 +39,7 @@ using namespace ::ginga::ncl;
 #include "ncl/ConnectorBase.h"
 using namespace ::ginga::ncl;
 
-#include "ncl/IDeviceLayout.h"
+#include "ncl/DeviceLayout.h"
 #include "ncl/LayoutRegion.h"
 #include "ncl/RegionBase.h"
 using namespace ::ginga::ncl;
@@ -78,8 +78,8 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 		map<string, NclDocument*> baseDocuments;
 		map<string, NclDocument*> visibleDocuments;
 		map<string, EmbeddedNclData*> embeddedDocuments;
-		map<NclDocument*, IDeviceLayout*> layouts;
-		set<IDeviceLayout*> layoutsGB; //layouts garbage collector
+		map<NclDocument*, DeviceLayout*> layouts;
+		set<DeviceLayout*> layoutsGB; //layouts garbage collector
 		PrivateBase* privateBase;
 
 	public:
@@ -90,19 +90,19 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 
 	private:
 		NclDocument* compileDocument(
-				string location, IDeviceLayout* deviceLayout);
+				string location, DeviceLayout* deviceLayout);
 
 	public:
 		NclDocument* addDocument(
-				string location, IDeviceLayout* deviceLayout);
+				string location, DeviceLayout* deviceLayout);
 
 		NclDocument* embedDocument(
 				string docId,
 				string nodeId,
 				string location,
-				IDeviceLayout* deviceLayout);
+				DeviceLayout* deviceLayout);
 
-		void* addVisibleDocument(string location, IDeviceLayout* deviceLayout);
+		void* addVisibleDocument(string location, DeviceLayout* deviceLayout);
 		NclDocument* getVisibleDocument(string docId);
 
 	private:

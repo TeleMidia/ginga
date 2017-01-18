@@ -70,11 +70,11 @@ GINGA_NCLCONV_BEGIN
 		: public NclPresentationSpecificationParser {
 
 	private:
-		IDeviceLayout* deviceLayout;
+		DeviceLayout* deviceLayout;
 
 	public:
 		NclPresentationSpecConverter(
-				DocumentParser *documentParser, IDeviceLayout* deviceLayout);
+				DocumentParser *documentParser, DeviceLayout* deviceLayout);
 
 		void addDescriptorToDescriptorBase(
 			    void *parentObject, void *childObject);

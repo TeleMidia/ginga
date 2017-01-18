@@ -36,10 +36,10 @@ GINGA_NCL_BEGIN
 			string outputMapRegionId;
 			map<string, LayoutRegion*> regions;
 			LayoutRegion* deviceRegion;
-			IDeviceLayout* deviceLayout;
+			DeviceLayout* deviceLayout;
 
 		public:
-			RegionBase(string id, IDeviceLayout* deviceLayout);
+			RegionBase(string id, DeviceLayout* deviceLayout);
 			virtual ~RegionBase();
 
 		private:

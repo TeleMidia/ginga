@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NCLCONV_BEGIN
 
 	NclLayoutConverter::NclLayoutConverter(
-		     DocumentParser *documentParser, IDeviceLayout* deviceLayout) :
+		     DocumentParser *documentParser, DeviceLayout* deviceLayout) :
 		    	 NclLayoutParser(documentParser) {
 
 		this->deviceLayout = deviceLayout;

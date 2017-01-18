@@ -36,7 +36,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 	PrivateBaseContext::~PrivateBaseContext() {
 		map<string, NclDocument*>::iterator i;
 		map<string, EmbeddedNclData*>::iterator j;
-		set<IDeviceLayout*>::iterator k;
+		set<DeviceLayout*>::iterator k;
 
 		NclDocument* doc;
 
@@ -97,7 +97,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 	}
 
 	NclDocument* PrivateBaseContext::compileDocument(
-			string location, IDeviceLayout* deviceLayout) {
+			string location, DeviceLayout* deviceLayout) {
 
 		IDocumentConverter* compiler = NULL;
 		NclDocument* document = NULL;
@@ -137,7 +137,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 	}
 
 	NclDocument* PrivateBaseContext::addDocument(
-			string location, IDeviceLayout* deviceLayout) {
+			string location, DeviceLayout* deviceLayout) {
 
 		NclDocument* newDocument;
 		NclDocument* document;
@@ -200,7 +200,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 			string docId,
 			string nodeId,
 			string location,
-			IDeviceLayout* deviceLayout) {
+			DeviceLayout* deviceLayout) {
 
 		map<string, EmbeddedNclData*>::iterator i;
 		EmbeddedNclData* data;
@@ -249,7 +249,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 	}
 
 	void* PrivateBaseContext::addVisibleDocument(
-			string location, IDeviceLayout* deviceLayout) {
+			string location, DeviceLayout* deviceLayout) {
 
 		NclDocument* newDocument;
 		string id;
@@ -483,7 +483,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 		IDocumentConverter* compiler;
 		string entityUrl;
 		void* entity;
-		IDeviceLayout* deviceLayout;
+		DeviceLayout* deviceLayout;
 
 		if (SystemCompat::isAbsolutePath(location)) {
 			entityUrl = location;
@@ -1067,7 +1067,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 		string location, alias;
 		NclDocument* importedDocument;
 		Base* base = NULL;
-		IDeviceLayout* deviceLayout;
+		DeviceLayout* deviceLayout;
 
 		document = getBaseDocument(documentId);
 		if (document == NULL) {
@@ -1220,7 +1220,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 		void* importElement;
 		string location, alias;
 		NclDocument* importedDocument = NULL;
-		IDeviceLayout* deviceLayout;
+		DeviceLayout* deviceLayout;
 
 		document = getBaseDocument(documentId);
 		if (document == NULL) {

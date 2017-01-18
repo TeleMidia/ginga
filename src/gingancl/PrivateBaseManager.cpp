@@ -61,7 +61,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 	}
 
 	NclDocument* PrivateBaseManager::addDocument(
-			string id, string location, IDeviceLayout* deviceLayout) {
+			string id, string location, DeviceLayout* deviceLayout) {
 
 		PrivateBaseContext* privateBaseContext;
 		NclDocument* document = NULL;
@@ -79,7 +79,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 			string docId,
 			string nodeId,
 			string location,
-			IDeviceLayout* deviceLayout) {
+			DeviceLayout* deviceLayout) {
 
 		PrivateBaseContext* privateBaseContext;
 
@@ -93,7 +93,7 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 	}
 
 	void* PrivateBaseManager::addVisibleDocument(
-			string id, string location, IDeviceLayout* deviceLayout) {
+			string id, string location, DeviceLayout* deviceLayout) {
 
 		PrivateBaseContext* privateBaseContext;
 
