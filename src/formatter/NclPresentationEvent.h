@@ -39,7 +39,7 @@ private:
 
 public:
   NclPresentationEvent (string id, void *executionObject,
-                     ContentAnchor *anchor);
+                        ContentAnchor *anchor);
   virtual ~NclPresentationEvent ();
   bool stop ();
   double getDuration ();

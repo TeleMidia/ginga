@@ -31,12 +31,10 @@ using namespace ::ginga::ncl;
 #include "INclEventListener.h"
 #include "NclFormatterEvent.h"
 #include "NclPresentationEvent.h"
-using namespace ::ginga::formatter;
 
 #include "NclFormatterCausalLink.h"
 #include "NclFormatterLink.h"
 #include "NclLinkListener.h"
-using namespace ::ginga::formatter;
 
 #include "NclNodeNesting.h"
 #include "NclCascadingDescriptor.h"
@@ -45,9 +43,9 @@ using namespace ::ginga::formatter;
 GINGA_FORMATTER_BEGIN
 
 class NclCompositeExecutionObject : public NclExecutionObject,
-                                 public NclLinkListener,
-                                 public INclEventListener,
-                                 public Thread
+                                    public NclLinkListener,
+                                    public INclEventListener,
+                                    public Thread
 {
 
 private:
@@ -70,17 +68,19 @@ private:
 
 public:
   NclCompositeExecutionObject (string id, Node *dataObject, bool handling,
-                            INclLinkActionListener *seListener);
+                               INclLinkActionListener *seListener);
 
   NclCompositeExecutionObject (string id, Node *dataObject,
-                            NclCascadingDescriptor *descriptor, bool handling,
-                            INclLinkActionListener *seListener);
+                               NclCascadingDescriptor *descriptor,
+                               bool handling,
+                               INclLinkActionListener *seListener);
 
   virtual ~NclCompositeExecutionObject ();
 
 protected:
-  void initializeCompositeExecutionObject (string id, Node *dataObject,
-                                           NclCascadingDescriptor *descriptor);
+  void
+  initializeCompositeExecutionObject (string id, Node *dataObject,
+                                      NclCascadingDescriptor *descriptor);
 
 public:
   NclCompositeExecutionObject *getParentFromDataObject (Node *dataObject);
@@ -125,4 +125,5 @@ private:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_COMPOSITEEXECUTIONOBJECT_H_

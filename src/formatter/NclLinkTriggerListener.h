@@ -33,4 +33,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_LINKTRIGGERLISTENER_H_

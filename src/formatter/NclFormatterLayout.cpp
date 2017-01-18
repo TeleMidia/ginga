@@ -20,8 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclFormatterLayout::NclFormatterLayout (GingaScreenID screenId, int x, int y,
-                                  int w, int h)
+NclFormatterLayout::NclFormatterLayout (GingaScreenID screenId, int x,
+                                        int y, int w, int h)
 {
 
   myScreen = screenId;
@@ -299,8 +299,8 @@ NclFormatterLayout::getSortedIds (vector<GingaWindowID> *sortedIds)
 
 GingaWindowID
 NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object,
-                                         GingaSurfaceID renderedSurface,
-                                         string plan)
+                                            GingaSurfaceID renderedSurface,
+                                            string plan)
 {
 
   NclCascadingDescriptor *descriptor;
@@ -384,8 +384,9 @@ NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object,
 
 float
 NclFormatterLayout::refreshZIndex (NclFormatterRegion *region,
-                                string layoutRegionId, int zIndex,
-                                string plan, GingaSurfaceID renderedSurface)
+                                   string layoutRegionId, int zIndex,
+                                   string plan,
+                                   GingaSurfaceID renderedSurface)
 {
 
   NclExecutionObject *object;
@@ -400,7 +401,8 @@ NclFormatterLayout::refreshZIndex (NclFormatterRegion *region,
 }
 
 void
-NclFormatterLayout::sortRegion (string regionId, float cvtIndex, string plan)
+NclFormatterLayout::sortRegion (string regionId, float cvtIndex,
+                                string plan)
 {
 
   vector<string>::iterator i;
@@ -494,10 +496,10 @@ NclFormatterLayout::hideObject (NclExecutionObject *object)
 
 GingaWindowID
 NclFormatterLayout::addRegionOnMaps (NclExecutionObject *object,
-                                  NclFormatterRegion *region,
-                                  GingaSurfaceID renderedSurface,
-                                  string layoutRegionId, int zIndex,
-                                  string plan, float *cvtZIndex)
+                                     NclFormatterRegion *region,
+                                     GingaSurfaceID renderedSurface,
+                                     string layoutRegionId, int zIndex,
+                                     string plan, float *cvtZIndex)
 {
 
   float convertedZIndex;

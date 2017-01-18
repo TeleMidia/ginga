@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NCLPLAYERADAPTER_H_
 
 #include "AdapterApplicationPlayer.h"
-using namespace ::ginga::formatter;
 
 GINGA_FORMATTER_BEGIN
 
@@ -39,4 +38,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif /* NCLPLAYERADAPTER_H_ */

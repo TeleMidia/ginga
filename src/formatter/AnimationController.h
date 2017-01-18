@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _ANIMATIONCONTROLLER_H_
 
 #include "NclAttributionEvent.h"
-using namespace ::ginga::formatter;
 
 #include "ncl/Animation.h"
 using namespace ::ginga::ncl;
@@ -29,10 +28,8 @@ using namespace ::ginga::system;
 
 #include "AdapterFormatterPlayer.h"
 #include "AdapterPlayerManager.h"
-using namespace ::ginga::formatter;
 
 #include "NclExecutionObject.h"
-using namespace ::ginga::formatter;
 
 GINGA_FORMATTER_BEGIN
 
@@ -41,7 +38,7 @@ class AnimationController : public Thread
 private:
   AdapterPlayerManager *pManager;
   AdapterFormatterPlayer *player; // useful if media is playing
-  NclExecutionObject *execObj;       // useful if the object isn't playing
+  NclExecutionObject *execObj;    // useful if the object isn't playing
   // or it's a Ginga Settings Node.
 
   NclAttributionEvent *event; // attribution event
@@ -142,4 +139,5 @@ private:
 };
 
 GINGA_FORMATTER_END
+
 #endif // _ANIMATIONCONTROLLER_H_

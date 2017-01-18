@@ -29,7 +29,6 @@ using namespace ::ginga::system;
 
 #include "Pmt.h"
 #include "Pat.h"
-using namespace ::ginga::tsparser;
 
 #include "FrontendFilter.h"
 #include "TSPacket.h"

@@ -32,16 +32,17 @@ private:
 
 public:
   NclApplicationExecutionObject (string id, Node *node, bool handling,
-                              INclLinkActionListener *seListener);
+                                 INclLinkActionListener *seListener);
 
   NclApplicationExecutionObject (string id, Node *node,
-                              GenericDescriptor *descriptor, bool handling,
-                              INclLinkActionListener *seListener);
+                                 GenericDescriptor *descriptor,
+                                 bool handling,
+                                 INclLinkActionListener *seListener);
 
   NclApplicationExecutionObject (string id, Node *node,
-                              NclCascadingDescriptor *descriptor,
-                              bool handling,
-                              INclLinkActionListener *seListener);
+                                 NclCascadingDescriptor *descriptor,
+                                 bool handling,
+                                 INclLinkActionListener *seListener);
 
   virtual ~NclApplicationExecutionObject ();
 
@@ -73,4 +74,5 @@ private:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_APPLICATIONEXECUTIONOBJECT_H_

@@ -52,7 +52,6 @@ using namespace ::ginga::ncl;
 
 #include "NclExecutionObjectSwitch.h"
 #include "NclSwitchEvent.h"
-using namespace ::ginga::formatter;
 
 #include "NclAttributionEvent.h"
 #include "NclPresentationEvent.h"
@@ -60,7 +59,6 @@ using namespace ::ginga::formatter;
 #include "INclEventListener.h"
 #include "NclFormatterEvent.h"
 #include "NclPresentationEvent.h"
-using namespace ::ginga::formatter;
 
 #include "NclFormatterCausalLink.h"
 #include "NclFormatterLink.h"
@@ -68,26 +66,20 @@ using namespace ::ginga::formatter;
 #include "NclLinkCompoundAction.h"
 #include "NclLinkSimpleAction.h"
 #include "INclLinkActionListener.h"
-using namespace ::ginga::formatter;
 
 #include "NclCascadingDescriptor.h"
 #include "NclFormatterLayout.h"
-using namespace ::ginga::formatter;
 
 #include "NclCompositeExecutionObject.h"
 #include "NclApplicationExecutionObject.h"
 #include "NclExecutionObject.h"
 #include "NclNodeNesting.h"
-using namespace ::ginga::formatter;
 
 #include "RuleAdapter.h"
-using namespace ::ginga::formatter;
 
 #include "AdapterPlayerManager.h"
-using namespace ::ginga::formatter;
 
 #include "FormatterScheduler.h"
-using namespace ::ginga::formatter;
 
 #include "ObjectCreationForbiddenException.h"
 
@@ -127,7 +119,8 @@ public:
                               NclExecutionObject *object);
 
   NclCompositeExecutionObject *
-  addSameInstance (NclExecutionObject *executionObject, ReferNode *referNode);
+  addSameInstance (NclExecutionObject *executionObject,
+                   ReferNode *referNode);
 
 private:
   void addExecutionObject (NclExecutionObject *executionObject,
@@ -155,28 +148,29 @@ private:
 
 public:
   NclFormatterEvent *getEvent (NclExecutionObject *executionObject,
-                            InterfacePoint *interfacePoint,
-                            int ncmEventType, string key);
+                               InterfacePoint *interfacePoint,
+                               int ncmEventType, string key);
 
 private:
-  void createMultichannelObject (NclCompositeExecutionObject *compositeObject,
-                                 int depthLevel);
+  void
+  createMultichannelObject (NclCompositeExecutionObject *compositeObject,
+                            int depthLevel);
 
-  NclExecutionObject *createExecutionObject (string id,
-                                          NclNodeNesting *perspective,
-                                          NclCascadingDescriptor *descriptor,
-                                          int depthLevel);
+  NclExecutionObject *
+  createExecutionObject (string id, NclNodeNesting *perspective,
+                         NclCascadingDescriptor *descriptor,
+                         int depthLevel);
 
   static bool hasDescriptorPropName (string name);
 
   static Descriptor *createDummyDescriptor (Node *node);
-  static NclCascadingDescriptor *createDummyCascadingDescriptor (Node *node);
+  static NclCascadingDescriptor *
+  createDummyCascadingDescriptor (Node *node);
 
   static NclCascadingDescriptor *checkCascadingDescriptor (Node *node);
-  static NclCascadingDescriptor *
-  checkContextCascadingDescriptor (NclNodeNesting *nodePerspective,
-                                   NclCascadingDescriptor *cascadingDescriptor,
-                                   Node *ncmNode);
+  static NclCascadingDescriptor *checkContextCascadingDescriptor (
+      NclNodeNesting *nodePerspective,
+      NclCascadingDescriptor *cascadingDescriptor, Node *ncmNode);
 
 public:
   static NclCascadingDescriptor *
@@ -189,10 +183,9 @@ private:
                     NclCompositeExecutionObject *parentObject);
 
 public:
-  void compileExecutionObjectLinks (NclExecutionObject *executionObject,
-                                    Node *dataObject,
-                                    NclCompositeExecutionObject *parentObject,
-                                    int depthLevel);
+  void compileExecutionObjectLinks (
+      NclExecutionObject *executionObject, Node *dataObject,
+      NclCompositeExecutionObject *parentObject, int depthLevel);
 
 private:
   void setActionListener (NclLinkAction *action);
@@ -206,12 +199,12 @@ private:
                             int depthLevel);
 
   NclFormatterEvent *insertNode (NclNodeNesting *perspective,
-                              InterfacePoint *interfacePoint,
-                              GenericDescriptor *descriptor);
+                                 InterfacePoint *interfacePoint,
+                                 GenericDescriptor *descriptor);
 
 public:
   NclFormatterEvent *insertContext (NclNodeNesting *contextPerspective,
-                                 Port *port);
+                                    Port *port);
 
   bool removeExecutionObject (NclExecutionObject *executionObject,
                               ReferNode *referNode);
@@ -223,10 +216,10 @@ private:
 
 public:
   NclExecutionObject *hasExecutionObject (Node *node,
-                                       GenericDescriptor *descriptor);
+                                          GenericDescriptor *descriptor);
 
   NclFormatterCausalLink *addCausalLink (ContextNode *context,
-                                      CausalLink *link);
+                                         CausalLink *link);
 
   void eventStateChanged (void *someEvent, short transition,
                           short previousState);
@@ -236,4 +229,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif /*FORMATTERCONVERTER_H_*/

@@ -300,14 +300,16 @@ public:
                                      SDLWindow *iWin, float z);
 
   //			static void updateWindowState(
-  //					GingaScreenID screenId, SDLWindow* win,
-  //short
+  //					GingaScreenID screenId, SDLWindow*
+  //win,
+  // short
   // status);
 
 private:
   //			static void updateWindowList(
-  //					vector<SDLWindow*>* windows, SDLWindow* win,
-  //short
+  //					vector<SDLWindow*>* windows, SDLWindow*
+  //win,
+  // short
   // status);
 
   static void removeFromWindowList (vector<SDLWindow *> *windows,

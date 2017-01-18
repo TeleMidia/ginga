@@ -45,14 +45,12 @@ using namespace ::ginga::ncl;
 #include "ncl/EventUtil.h"
 using namespace ::ginga::ncl;
 
-#include "formatter/NclCompositeExecutionObject.h"
-#include "formatter/NclExecutionObject.h"
-using namespace ::ginga::formatter;
+#include "NclCompositeExecutionObject.h"
+#include "NclExecutionObject.h"
 
-#include "formatter/NclAttributionEvent.h"
-#include "formatter/NclFormatterEvent.h"
-#include "formatter/NclPresentationEvent.h"
-using namespace ::ginga::formatter;
+#include "NclAttributionEvent.h"
+#include "NclFormatterEvent.h"
+#include "NclPresentationEvent.h"
 
 #include "IAdapterPlayer.h"
 #include "NominalEventMonitor.h"
@@ -111,7 +109,8 @@ protected:
   void updatePlayerProperties (NclExecutionObject *obj);
 
 public:
-  virtual bool prepare (NclExecutionObject *object, NclFormatterEvent *mainEvent);
+  virtual bool prepare (NclExecutionObject *object,
+                        NclFormatterEvent *mainEvent);
 
 protected:
   void prepare ();
@@ -171,6 +170,5 @@ public:
 };
 
 GINGA_FORMATTER_END
-using namespace ::ginga::formatter;
 
 #endif //_FORMATTERPLAYER_H_

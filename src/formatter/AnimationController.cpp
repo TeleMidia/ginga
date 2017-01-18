@@ -70,8 +70,8 @@ void
 AnimationController::startAnimation (NclExecutionObject *execObj,
                                      AdapterPlayerManager *pManager,
                                      AdapterFormatterPlayer *player,
-                                     NclAttributionEvent *event, string value,
-                                     Animation *anim)
+                                     NclAttributionEvent *event,
+                                     string value, Animation *anim)
 {
 
   AnimationController *animControl = new AnimationController (

@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include "lssm/CommonCoreManager.h"
+#include "CommonCoreManager.h"
 
 #if WITH_ISDBT
 #include "isdbt-tuner/Tuner.h"
@@ -49,7 +49,7 @@ using namespace ::ginga::dataproc;
 #include "isdbt-dataproc/IDsmccObjectListener.h"
 using namespace ::ginga::dataproc;
 
-#include "lssm/DataWrapperListener.h"
+#include "DataWrapperListener.h"
 #endif // WITH_ISDBT
 
 #include "mb/LocalScreenManager.h"
@@ -61,7 +61,7 @@ using namespace ::ginga::mb;
 #include "player/IProgramAV.h"
 using namespace ::ginga::player;
 
-#include "lssm/StcWrapper.h"
+#include "StcWrapper.h"
 
 #include "pthread.h"
 

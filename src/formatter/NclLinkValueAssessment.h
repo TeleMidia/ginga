@@ -36,4 +36,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif /*LINKVALUEASSESSMENT_H_*/

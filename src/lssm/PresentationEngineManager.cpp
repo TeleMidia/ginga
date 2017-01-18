@@ -51,7 +51,7 @@ using namespace ::ginga::mb;
 #include "isdbt-dataproc/NCLEventDescriptor.h"
 using namespace ::ginga::dataproc;
 
-#include "lssm/DataWrapperListener.h"
+#include "DataWrapperListener.h"
 #endif
 
 #include "util/functions.h"

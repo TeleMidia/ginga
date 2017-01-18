@@ -34,7 +34,6 @@ using namespace ::ginga::player;
 using namespace ::ginga::system;
 
 #include "PrivateBaseManager.h"
-using namespace ::ginga::formatter;
 
 GINGA_FORMATTER_BEGIN
 

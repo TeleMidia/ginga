@@ -20,8 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclLinkAttributeAssessment::NclLinkAttributeAssessment (NclFormatterEvent *ev,
-                                                  short attrType)
+NclLinkAttributeAssessment::NclLinkAttributeAssessment (
+    NclFormatterEvent *ev, short attrType)
     : NclLinkAssessment ()
 {
 

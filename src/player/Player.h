@@ -15,15 +15,11 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef PLAYER_H_
-#define PLAYER_H_
+#ifndef PLAYER_H
+#define PLAYER_H
 
 #include "system/GingaLocatorFactory.h"
-using namespace ::ginga::system;
-
 #include "system/SystemCompat.h"
-using namespace ::ginga::system;
-
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
@@ -225,10 +221,6 @@ public:
   virtual void timeShift (string direction){};
 };
 
-GINGA_PLAYER_END
-
-using namespace ::ginga::player;
-
 struct notify
 {
   IPlayerListener *listener;
@@ -237,4 +229,6 @@ struct notify
   short type;
 };
 
-#endif /*PLAYER_H_*/
+GINGA_PLAYER_END
+
+#endif /* PLAYER_H */

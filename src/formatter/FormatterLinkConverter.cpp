@@ -111,8 +111,8 @@ FormatterLinkConverter::createCausalLink (
 
   // create formatter causal link
   formatterLink = new NclFormatterCausalLink (
-      (NclLinkTriggerCondition *)formatterCondition, formatterAction, ncmLink,
-      (NclCompositeExecutionObject *)parentObject);
+      (NclLinkTriggerCondition *)formatterCondition, formatterAction,
+      ncmLink, (NclCompositeExecutionObject *)parentObject);
 
   //&got
   if (formatterCondition->instanceOf ("NclLinkCompoundTriggerCondition"))
@@ -409,7 +409,8 @@ FormatterLinkConverter::createCondition (
                 }
               else
                 {
-                  compoundCondition = new NclLinkCompoundTriggerCondition ();
+                  compoundCondition
+                      = new NclLinkCompoundTriggerCondition ();
                 }
 
               for (i = 0; i < size; i++)
@@ -510,9 +511,9 @@ FormatterLinkConverter::createAssessmentStatement (
               aa, NULL, ncmLink, parentObject, depthLevel);
         }
     }
-  statement
-      = new NclLinkAssessmentStatement (assessmentStatement->getComparator (),
-                                     mainAssessment, otherAssessment);
+  statement = new NclLinkAssessmentStatement (
+      assessmentStatement->getComparator (), mainAssessment,
+      otherAssessment);
 
   return statement;
 }
@@ -567,7 +568,8 @@ FormatterLinkConverter::createStatement (
     { // CompoundStatement
       cs = (CompoundStatement *)statementExpression;
       statement = new NclLinkCompoundStatement (cs->getOperator ());
-      ((NclLinkCompoundStatement *)statement)->setNegated (cs->isNegated ());
+      ((NclLinkCompoundStatement *)statement)
+          ->setNegated (cs->isNegated ());
       statements = cs->getStatements ();
       if (statements != NULL)
         {
@@ -730,7 +732,8 @@ FormatterLinkConverter::createSimpleAction (
                 }
             }
 
-          action = new NclLinkAssignmentAction (event, actionType, paramValue);
+          action
+              = new NclLinkAssignmentAction (event, actionType, paramValue);
 
           // animation
           animation = sae->getAnimation ();
@@ -923,9 +926,9 @@ FormatterLinkConverter::createSimpleCondition (
 }
 
 NclFormatterEvent *
-FormatterLinkConverter::createEvent (Bind *bind, Link *ncmLink,
-                                     NclCompositeExecutionObject *parentObject,
-                                     int depthLevel)
+FormatterLinkConverter::createEvent (
+    Bind *bind, Link *ncmLink, NclCompositeExecutionObject *parentObject,
+    int depthLevel)
 {
 
   NclNodeNesting *endPointNodeSequence;

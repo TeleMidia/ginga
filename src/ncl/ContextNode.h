@@ -19,11 +19,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _CONTEXTNODE_H_
 
 #include "GenericDescriptor.h"
-using namespace ::ginga::ncl;
 
 #include "Link.h"
 #include "LinkComposition.h"
-using namespace ::ginga::ncl;
 
 #include "NodeEntity.h"
 #include "CompositeNode.h"

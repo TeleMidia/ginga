@@ -27,10 +27,8 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::ncl;
 
 #include "DocumentParser.h"
-using namespace ::ginga::nclconv;
 
 #include "NclTransitionParser.h"
-using namespace ::ginga::nclconv;
 
 #include "util/functions.h"
 #include "util/Color.h"

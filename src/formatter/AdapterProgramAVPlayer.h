@@ -18,14 +18,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PROGRAMAVPLAYERADAPTER_H_
 #define PROGRAMAVPLAYERADAPTER_H_
 
-#include "formatter/NclExecutionObject.h"
-using namespace ::ginga::formatter;
+#include "NclExecutionObject.h"
 
-#include "formatter/NclAttributionEvent.h"
-#include "formatter/NclFormatterEvent.h"
-#include "formatter/NclPresentationEvent.h"
-#include "formatter/NclSelectionEvent.h"
-using namespace ::ginga::formatter;
+#include "NclAttributionEvent.h"
+#include "NclFormatterEvent.h"
+#include "NclPresentationEvent.h"
+#include "NclSelectionEvent.h"
 
 #include "ncl/Content.h"
 #include "ncl/ReferenceContent.h"
@@ -35,7 +33,6 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::player;
 
 #include "AdapterFormatterPlayer.h"
-using namespace ::ginga::formatter;
 
 GINGA_FORMATTER_BEGIN
 
@@ -66,4 +63,5 @@ private:
 };
 
 GINGA_FORMATTER_END
+
 #endif /*PROGRAMAVPLAYERADAPTER_H_*/

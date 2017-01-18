@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::util;
 
 #include "NclCascadingDescriptor.h"
-using namespace ::ginga::formatter;
 
 #include "NclFormatterRegion.h"
 #include "NclFormatterLayout.h"
@@ -33,7 +32,7 @@ GINGA_FORMATTER_BEGIN
 
 static LocalScreenManager *dm = ScreenManagerFactory::getInstance ();
 NclFormatterRegion::NclFormatterRegion (string objectId, void *descriptor,
-                                  void *layoutManager)
+                                        void *layoutManager)
 {
 
   this->layoutManager = layoutManager;
@@ -118,7 +117,8 @@ NclFormatterRegion::NclFormatterRegion (string objectId, void *descriptor,
 
   this->setFit (value);
 
-  value = ((NclCascadingDescriptor *)descriptor)->getParameterValue ("scroll");
+  value = ((NclCascadingDescriptor *)descriptor)
+              ->getParameterValue ("scroll");
 
   this->setScroll (value);
 
@@ -462,7 +462,8 @@ NclFormatterRegion::getFocusBorderColor ()
     }
   else if (descriptor != NULL)
     {
-      bColor = ((NclCascadingDescriptor *)descriptor)->getFocusBorderColor ();
+      bColor
+          = ((NclCascadingDescriptor *)descriptor)->getFocusBorderColor ();
     }
   unlockFocusInfo ();
 
@@ -601,10 +602,10 @@ NclFormatterRegion::getSelComponentSrc ()
 
 void
 NclFormatterRegion::setFocusInfo (Color *focusBorderColor,
-                               int focusBorderWidth,
-                               string focusComponentSrc,
-                               Color *selBorderColor, int selBorderWidth,
-                               string selComponentSrc)
+                                  int focusBorderWidth,
+                                  string focusComponentSrc,
+                                  Color *selBorderColor, int selBorderWidth,
+                                  string selComponentSrc)
 {
 
   setFocusBorderColor (focusBorderColor);
@@ -636,7 +637,7 @@ NclFormatterRegion::getOutputId ()
 
 void
 NclFormatterRegion::meetComponent (int width, int height, int prefWidth,
-                                int prefHeight, GingaSurfaceID component)
+                                   int prefHeight, GingaSurfaceID component)
 {
 
   int finalH, finalW;
@@ -661,7 +662,8 @@ NclFormatterRegion::meetComponent (int width, int height, int prefWidth,
 
 void
 NclFormatterRegion::sliceComponent (int width, int height, int prefWidth,
-                                 int prefHeight, GingaSurfaceID component)
+                                    int prefHeight,
+                                    GingaSurfaceID component)
 {
 
   int finalH, finalW;
@@ -828,8 +830,8 @@ NclFormatterRegion::sizeRegion ()
   if (outputDisplay != 0)
     {
       dm->setWindowBounds (
-          ((NclFormatterLayout *)layoutManager)->getScreenID (), outputDisplay,
-          left, top, width, height);
+          ((NclFormatterLayout *)layoutManager)->getScreenID (),
+          outputDisplay, left, top, width, height);
     }
   unlock ();
 }
@@ -859,7 +861,7 @@ NclFormatterRegion::getOriginalRegion ()
 
 GingaWindowID
 NclFormatterRegion::prepareOutputDisplay (GingaSurfaceID renderedSurface,
-                                       float cvtIndex)
+                                          float cvtIndex)
 {
 
   GingaWindowID windowId = 0;
@@ -1105,8 +1107,8 @@ NclFormatterRegion::showContent ()
                   t->t = transition;
 
                   // show with barwipe transition type
-                  pthread_create (&threadId_, 0, NclFormatterRegion::barWipeT,
-                                  (void *)t);
+                  pthread_create (&threadId_, 0,
+                                  NclFormatterRegion::barWipeT, (void *)t);
 
                   pthread_detach (threadId_);
                   unlockTransition ();
@@ -1375,7 +1377,7 @@ NclFormatterRegion::bringChildrenToFront (LayoutRegion *parentRegion)
 
 void
 NclFormatterRegion::traverseFormatterRegions (LayoutRegion *region,
-                                           LayoutRegion *baseRegion)
+                                              LayoutRegion *baseRegion)
 {
 
   LayoutRegion *auxRegion;
@@ -1411,7 +1413,8 @@ NclFormatterRegion::traverseFormatterRegions (LayoutRegion *region,
               clog << " Warning! formRegion == NULL" << endl;
             }
 
-          // clog << "NclFormatterRegion::traverseFormatterRegion toFront = ";
+          // clog << "NclFormatterRegion::traverseFormatterRegion toFront =
+          // ";
           // clog << "'" << formRegion->getLayoutRegion()->getId();
           // clog << "'" << endl;
 
@@ -1428,7 +1431,7 @@ NclFormatterRegion::traverseFormatterRegions (LayoutRegion *region,
 
 void
 NclFormatterRegion::bringHideWindowToFront (LayoutRegion *baseRegion,
-                                         LayoutRegion *hideRegion)
+                                            LayoutRegion *hideRegion)
 {
 
   vector<LayoutRegion *> *regions;
@@ -1693,7 +1696,8 @@ NclFormatterRegion::unselect ()
           outputDisplay->clear();
   }*/
 
-  /*		clog << "NclFormatterRegion::unselect(" << this << ")" << endl;
+  /*		clog << "NclFormatterRegion::unselect(" << this << ")" <<
+     endl;
                   lock();
                   if (outputDisplay == NULL) {
                           unlock();

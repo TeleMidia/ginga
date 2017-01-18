@@ -22,7 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::ncl;
 
 #include "NclFormatterEvent.h"
-using namespace ::ginga::formatter;
 
 #include "NclLinkAction.h"
 #include "NclLinkSimpleAction.h"
@@ -32,7 +31,7 @@ using namespace ::ginga::formatter;
 GINGA_FORMATTER_BEGIN
 
 class NclLinkCompoundAction : public NclLinkAction,
-                           public NclLinkActionProgressionListener
+                              public NclLinkActionProgressionListener
 {
 
 protected:
@@ -66,4 +65,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_LINKCOMPOUNDACTION_H_

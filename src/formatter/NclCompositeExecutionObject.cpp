@@ -292,8 +292,9 @@ NclCompositeExecutionObject::recursivellyGetExecutionObjects ()
       (*objects)[i->first] = childObject;
       if (childObject->instanceOf ("NclCompositeExecutionObject"))
         {
-          grandChildrenObjects = ((NclCompositeExecutionObject *)childObject)
-                                     ->recursivellyGetExecutionObjects ();
+          grandChildrenObjects
+              = ((NclCompositeExecutionObject *)childObject)
+                    ->recursivellyGetExecutionObjects ();
 
           j = grandChildrenObjects->begin ();
           while (j != grandChildrenObjects->end ())
@@ -426,7 +427,8 @@ NclCompositeExecutionObject::removeNcmLink (Link *ncmLink)
 
   contains = false;
 
-  clog << "NclCompositeExecutionObject::removeNcmLink(" << ncmLink->getId ();
+  clog << "NclCompositeExecutionObject::removeNcmLink("
+       << ncmLink->getId ();
   clog << "'" << endl;
 
   lockSTL ();
@@ -556,8 +558,8 @@ NclCompositeExecutionObject::unsetParentsAsListeners ()
 
 void
 NclCompositeExecutionObject::eventStateChanged (void *changedEvent,
-                                             short transition,
-                                             short previousState)
+                                                short transition,
+                                                short previousState)
 {
 
   NclFormatterEvent *event;
@@ -695,7 +697,8 @@ NclCompositeExecutionObject::getPriorityType ()
 }
 
 void
-NclCompositeExecutionObject::linkEvaluationStarted (NclFormatterCausalLink *link)
+NclCompositeExecutionObject::linkEvaluationStarted (
+    NclFormatterCausalLink *link)
 {
 
   int linkNumber = 0;
@@ -714,8 +717,8 @@ NclCompositeExecutionObject::linkEvaluationStarted (NclFormatterCausalLink *link
 }
 
 void
-NclCompositeExecutionObject::linkEvaluationFinished (NclFormatterCausalLink *link,
-                                                  bool start)
+NclCompositeExecutionObject::linkEvaluationFinished (
+    NclFormatterCausalLink *link, bool start)
 {
 
   int linkNumber;
@@ -777,7 +780,7 @@ NclCompositeExecutionObject::linkEvaluationFinished (NclFormatterCausalLink *lin
 
 bool
 NclCompositeExecutionObject::setPropertyValue (NclAttributionEvent *event,
-                                            string value)
+                                               string value)
 {
 
   if (event->getAnchor ()->getPropertyName () == "visible")

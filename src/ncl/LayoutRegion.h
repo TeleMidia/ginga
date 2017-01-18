@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _LAYOUTREGION_H_
 
 #include "Entity.h"
-using namespace ::ginga::ncl;
 
 #include "util/functions.h"
 #include "util/Color.h"

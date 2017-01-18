@@ -117,4 +117,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif /*FORMATTERDEVICEREGION_H_*/

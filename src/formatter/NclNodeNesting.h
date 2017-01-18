@@ -65,4 +65,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif /*NODENESTING_H_*/

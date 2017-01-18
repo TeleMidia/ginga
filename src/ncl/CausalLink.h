@@ -19,16 +19,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _CAUSALLINK_H_
 
 #include "Node.h"
-using namespace ::ginga::ncl;
 
 #include "GenericDescriptor.h"
-using namespace ::ginga::ncl;
 
 #include "Connector.h"
 #include "AttributeAssessment.h"
 #include "SimpleAction.h"
 #include "SimpleCondition.h"
-using namespace ::ginga::ncl;
 
 #include "Bind.h"
 #include "Link.h"

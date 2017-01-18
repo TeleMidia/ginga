@@ -19,34 +19,24 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AdapterPlayerManager.h"
 
 #include "AdapterSubtitlePlayer.h"
-using namespace ::ginga::formatter;
 
 #include "AdapterPlainTxtPlayer.h"
-using namespace ::ginga::formatter;
 
 #include "AdapterSsmlPlayer.h"
-using namespace ::ginga::formatter;
 
 #include "AdapterImagePlayer.h"
-using namespace ::ginga::formatter;
 
 #include "AdapterMirrorPlayer.h"
-using namespace ::ginga::formatter;
 
 #include "AdapterAVPlayer.h"
-using namespace ::ginga::formatter;
 
 #include "AdapterLuaPlayer.h"
-using namespace ::ginga::formatter;
 
 #include "AdapterNCLPlayer.h"
-using namespace ::ginga::formatter;
 
 #include "AdapterChannelPlayer.h"
-using namespace ::ginga::formatter;
 
 #include "AdapterProgramAVPlayer.h"
-using namespace ::ginga::formatter;
 
 // #include "AdapterTimePlayer.h"
 // using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::time;

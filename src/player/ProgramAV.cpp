@@ -16,8 +16,8 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include "player/ProgramAV.h"
-#include "player/AVPlayer.h"
+#include "ProgramAV.h"
+#include "AVPlayer.h"
 
 #include "util/functions.h"
 using namespace ::ginga::util;

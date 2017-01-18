@@ -335,10 +335,11 @@ AdapterApplicationPlayer::prepare (NclFormatterEvent *event)
           intervalAnchor
               = (IntervalAnchor *)(((NclAnchorEvent *)event)->getAnchor ());
 
-          player->setScope (((NclAnchorEvent *)event)->getAnchor ()->getId (),
-                            IPlayer::TYPE_PRESENTATION,
-                            (intervalAnchor->getBegin () / 1000),
-                            (intervalAnchor->getEnd () / 1000));
+          player->setScope (
+              ((NclAnchorEvent *)event)->getAnchor ()->getId (),
+              IPlayer::TYPE_PRESENTATION,
+              (intervalAnchor->getBegin () / 1000),
+              (intervalAnchor->getEnd () / 1000));
         }
       else if (((((NclAnchorEvent *)event)->getAnchor ()))
                    ->instanceOf ("LabeledAnchor"))
@@ -1001,13 +1002,15 @@ AdapterApplicationPlayer::startEvent (string anchorId, short type,
 
                   /*if (hasPrepared()) {
                           setPropertyValue(
-                                          (NclAttributionEvent*)event, value);
+                                          (NclAttributionEvent*)event,
+                  value);
 
                           player->setPropertyValue(anchorId, value);
 
                   } else {
                           object->setPropertyValue(
-                                          (NclAttributionEvent*)event, value);
+                                          (NclAttributionEvent*)event,
+                  value);
                   }*/
                 }
             }
@@ -1076,13 +1079,15 @@ AdapterApplicationPlayer::stopEvent (string anchorId, short type,
 
                   /*if (hasPrepared()) {
                           setPropertyValue(
-                                          (NclAttributionEvent*)event, value);
+                                          (NclAttributionEvent*)event,
+                  value);
 
                           player->setPropertyValue(anchorId, value);
 
                   } else {
                           object->setPropertyValue(
-                                          (NclAttributionEvent*)event, value);
+                                          (NclAttributionEvent*)event,
+                  value);
                   }*/
                   return true;
                 }
@@ -1140,13 +1145,15 @@ AdapterApplicationPlayer::abortEvent (string anchorId, short type)
 
                   /*if (hasPrepared()) {
                           setPropertyValue(
-                                          (NclAttributionEvent*)event, value);
+                                          (NclAttributionEvent*)event,
+                  value);
 
                           player->setPropertyValue(anchorId, value);
 
                   } else {
                           object->setPropertyValue(
-                                          (NclAttributionEvent*)event, value);
+                                          (NclAttributionEvent*)event,
+                  value);
                   }*/
                   return true;
                 }

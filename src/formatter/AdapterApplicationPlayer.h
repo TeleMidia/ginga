@@ -18,11 +18,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _APPLICATIONPLAYERADAPTER_H_
 #define _APPLICATIONPLAYERADAPTER_H_
 
-#include "formatter/NclApplicationExecutionObject.h"
-using namespace ::ginga::formatter;
+#include "NclApplicationExecutionObject.h"
 
 #include "AdapterFormatterPlayer.h"
-using namespace ::ginga::formatter;
 
 #include "player/IPlayerListener.h"
 using namespace ::ginga::player;
@@ -63,7 +61,8 @@ protected:
   virtual void createPlayer ();
 
   virtual bool hasPrepared ();
-  virtual bool prepare (NclExecutionObject *object, NclFormatterEvent *mainEvent);
+  virtual bool prepare (NclExecutionObject *object,
+                        NclFormatterEvent *mainEvent);
 
 private:
   void prepare (NclFormatterEvent *event);
@@ -114,4 +113,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_AdapterApplicationPlayer_H_

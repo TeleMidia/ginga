@@ -19,13 +19,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclFormatterCausalLink.h"
 
 #include "NclCompositeExecutionObject.h"
-using namespace ::ginga::formatter;
 
 GINGA_FORMATTER_BEGIN
 
-NclFormatterCausalLink::NclFormatterCausalLink (NclLinkTriggerCondition *condition,
-                                          NclLinkAction *action, Link *ncmLink,
-                                          void *parentObject)
+NclFormatterCausalLink::NclFormatterCausalLink (
+    NclLinkTriggerCondition *condition, NclLinkAction *action,
+    Link *ncmLink, void *parentObject)
     : NclFormatterLink (ncmLink, parentObject)
 {
 
@@ -123,7 +122,8 @@ NclFormatterCausalLink::evaluationStarted ()
   /*clog << endl;
   clog << "NclFormatterCausalLink::evaluationStarted(" << ncmLink->getId();
   clog << ")" << endl << endl;*/
-  ((NclCompositeExecutionObject *)parentObject)->linkEvaluationStarted (this);
+  ((NclCompositeExecutionObject *)parentObject)
+      ->linkEvaluationStarted (this);
 }
 
 void

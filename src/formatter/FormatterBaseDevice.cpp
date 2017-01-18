@@ -22,8 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "multidev/ActiveDeviceDomain.h"
 #include "multidev/PassiveDeviceDomain.h"
 #include "multidev/BaseDeviceDomain.h"
-#include "formatter/FormatterMediator.h"
-using namespace ::ginga::formatter;
+#include "FormatterMediator.h"
 
 #include "mb/CodeMap.h"
 

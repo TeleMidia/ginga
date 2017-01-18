@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define IEXTENDEDEVENTDESCRIPTOR_H_
 
 #include "IMpegDescriptor.h"
-using namespace ::ginga::tsparser;
 
 struct Item
 {

@@ -34,7 +34,7 @@ static LocalScreenManager *dm = ScreenManagerFactory::getInstance ();
 
 GingaSurfaceID
 NclFocusSourceManager::getFocusSourceComponent (GingaScreenID screenId,
-                                             string src)
+                                                string src)
 {
 
   string::size_type index;

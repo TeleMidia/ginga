@@ -23,10 +23,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::ncl;
 
 #include "DocumentParser.h"
-using namespace ::ginga::nclconv;
 
 #include "NclMetainformationParser.h"
-using namespace ::ginga::nclconv;
 
 XERCES_CPP_NAMESPACE_USE
 

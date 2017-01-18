@@ -24,12 +24,10 @@ using namespace ::ginga::util;
 #include "ContextNode.h"
 #include "CompositeNode.h"
 #include "NodeEntity.h"
-using namespace ::ginga::ncl;
 
 #include "Port.h"
 #include "InterfacePoint.h"
 #include "SwitchPort.h"
-using namespace ::ginga::ncl;
 
 #include "Rule.h"
 #include "DescriptorSwitch.h"

@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define SDLVIDEOPROVIDER_H_
 
 #include "IContinuousMediaProvider.h"
-using namespace ::ginga::mb;
 
 #include "SDLAudioProvider.h"
 

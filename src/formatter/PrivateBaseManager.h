@@ -157,4 +157,5 @@ private:
 };
 
 GINGA_FORMATTER_END
+
 #endif /*PrivateBaseManager_H_*/

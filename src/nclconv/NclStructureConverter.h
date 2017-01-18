@@ -34,10 +34,8 @@ using namespace ::ginga::ncl;
 
 #include "DocumentParser.h"
 #include "ModuleParser.h"
-using namespace ::ginga::nclconv;
 
 #include "NclStructureParser.h"
-using namespace ::ginga::nclconv;
 
 #include "NclPresentationSpecConverter.h"
 #include "NclComponentsConverter.h"

@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NclLinkTransitionTriggerCondition.h"
 #include "NclExecutionObject.h"
-using namespace ::ginga::formatter;
 
 GINGA_FORMATTER_BEGIN
 
@@ -67,8 +66,8 @@ NclLinkTransitionTriggerCondition::getBind ()
 
 void
 NclLinkTransitionTriggerCondition::eventStateChanged (void *someEvent,
-                                                   short transition,
-                                                   short previousState)
+                                                      short transition,
+                                                      short previousState)
 {
 
   if (this->transition == transition)

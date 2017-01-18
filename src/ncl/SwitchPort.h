@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _SWITCHPORT_H_
 
 #include "Node.h"
-using namespace ::ginga::ncl;
 
 #include "InterfacePoint.h"
 #include "Port.h"

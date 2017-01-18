@@ -26,7 +26,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-class NclLinkAndCompoundTriggerCondition : public NclLinkCompoundTriggerCondition
+class NclLinkAndCompoundTriggerCondition
+    : public NclLinkCompoundTriggerCondition
 {
 
 private:
@@ -42,4 +43,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif /*LINKANDCOMPOUNDTRIGGERCONDITION_H_*/

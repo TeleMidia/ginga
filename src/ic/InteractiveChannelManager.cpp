@@ -16,8 +16,8 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include "ic/InteractiveChannelManager.h"
-#include "ic/CurlInteractiveChannel.h"
+#include "InteractiveChannelManager.h"
+#include "CurlInteractiveChannel.h"
 
 GINGA_IC_BEGIN
 

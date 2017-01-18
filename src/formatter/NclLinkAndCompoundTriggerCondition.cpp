@@ -51,7 +51,8 @@ NclLinkAndCompoundTriggerCondition::~NclLinkAndCompoundTriggerCondition ()
 }
 
 void
-NclLinkAndCompoundTriggerCondition::addCondition (NclLinkCondition *condition)
+NclLinkAndCompoundTriggerCondition::addCondition (
+    NclLinkCondition *condition)
 {
 
   if (condition == NULL)

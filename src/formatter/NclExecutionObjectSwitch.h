@@ -25,14 +25,11 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::ncl;
 
 #include "NclCompositeExecutionObject.h"
-using namespace ::ginga::formatter;
 
 #include "NclSwitchEvent.h"
-using namespace ::ginga::formatter;
 
 #include "NclFormatterEvent.h"
 #include "NclPresentationEvent.h"
-using namespace ::ginga::formatter;
 
 GINGA_FORMATTER_BEGIN
 
@@ -43,7 +40,7 @@ protected:
 
 public:
   NclExecutionObjectSwitch (string id, Node *switchNode, bool handling,
-                         INclLinkActionListener *seListener);
+                            INclLinkActionListener *seListener);
 
   virtual ~NclExecutionObjectSwitch (){};
   NclExecutionObject *getSelectedObject ();
@@ -52,4 +49,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_EXECUTIONOBJECTSWITCH_H_

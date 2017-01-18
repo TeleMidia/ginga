@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _LINKCOMPOUNDTRIGGERCONDITION_H_
 
 #include "NclFormatterEvent.h"
-using namespace ::ginga::formatter;
 
 #include "NclLinkCondition.h"
 #include "NclLinkTriggerListener.h"
@@ -29,7 +28,7 @@ using namespace ::ginga::formatter;
 GINGA_FORMATTER_BEGIN
 
 class NclLinkCompoundTriggerCondition : public NclLinkTriggerCondition,
-                                     public NclLinkTriggerListener
+                                        public NclLinkTriggerListener
 {
 
 protected:
@@ -47,4 +46,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_LINKCOMPOUNDTRIGGERCONDITION_H_

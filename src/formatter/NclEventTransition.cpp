@@ -20,7 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclEventTransition::NclEventTransition (double time, NclPresentationEvent *event)
+NclEventTransition::NclEventTransition (double time,
+                                        NclPresentationEvent *event)
 {
   typeSet.insert ("NclEventTransition");
   this->time = time;

@@ -19,10 +19,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define TSPACKET_
 
 #include "Pat.h"
-using namespace ::ginga::tsparser;
 
 #include "ITSPacket.h"
-#include "isdbt-tsparser/TSAdaptationField.h"
+#include "TSAdaptationField.h"
 
 GINGA_TSPARSER_BEGIN
 

@@ -80,25 +80,19 @@ using namespace ::ginga::ncl;
 #include "NclCompositeExecutionObject.h"
 #include "NclExecutionObject.h"
 #include "NclNodeNesting.h"
-using namespace ::ginga::formatter;
 
 #include "NclFormatterEvent.h"
 #include "NclAttributionEvent.h"
-using namespace ::ginga::formatter;
 
 #include "INclLinkActionListener.h"
 #include "NclLinkAssignmentAction.h"
-using namespace ::ginga::formatter;
 
 #include "RuleAdapter.h"
-using namespace ::ginga::formatter;
 
 #include "ObjectCreationForbiddenException.h"
 #include "FormatterConverter.h"
-using namespace ::ginga::formatter;
 
 #include "PrefetchManager.h"
-using namespace ::ginga::formatter;
 
 #include "FormatterScheduler.h"
 #include "PrivateBaseManager.h"
@@ -195,7 +189,7 @@ private:
                                    string interfaceId);
 
   vector<NclFormatterEvent *> *processDocument (string documentId,
-                                             string interfaceId);
+                                                string interfaceId);
 
   void initializeSettingNodes (Node *node);
 
@@ -219,7 +213,7 @@ private:
   string solveRemoteSourceUri (string docLocation, string src);
 
   NclFormatterEvent *getEntryEvent (string interfaceId,
-                                 vector<NclFormatterEvent *> *events);
+                                    vector<NclFormatterEvent *> *events);
 
   bool startDocument (string documentId, string interfaceId);
   bool stopDocument (string documentId);
@@ -402,4 +396,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_FormatterMediator_H_

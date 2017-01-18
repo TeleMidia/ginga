@@ -76,8 +76,9 @@ AdapterLuaPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
     }
   else if (event->instanceOf ("NclAttributionEvent"))
     {
-      interfaceId
-          = ((NclAttributionEvent *)event)->getAnchor ()->getPropertyName ();
+      interfaceId = ((NclAttributionEvent *)event)
+                        ->getAnchor ()
+                        ->getPropertyName ();
 
       player->setScope (interfaceId, IPlayer::TYPE_ATTRIBUTION);
 

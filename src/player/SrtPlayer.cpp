@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include "player/SrtPlayer.h"
+#include "SrtPlayer.h"
 
 #include "util/Color.h"
 using namespace ::ginga::util;
@@ -474,10 +474,12 @@ SrtPlayer::run ()
 
           mediaTime = (float)(player->getMediaTime ());
           sleepTime = (int)(((show - mediaTime) * 1000000) - 70000);
-          //				clog << "show = '" << show << "' mediaTime = '"
+          //				clog << "show = '" << show << "' mediaTime =
+          //'"
           //<<
           // mediaTime;
-          //				clog << "' sleepTime = '" << sleepTime << "'"
+          //				clog << "' sleepTime = '" << sleepTime <<
+          //"'"
           //<<
           // endl;
           if (sleepTime > 0)

@@ -39,7 +39,6 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::mb;
 
 #include "NclFocusSourceManager.h"
-using namespace ::ginga::formatter;
 
 GINGA_FORMATTER_BEGIN
 
@@ -95,7 +94,8 @@ public:
   static const short FOCUSED = 1;
   static const short SELECTED = 2;
 
-  NclFormatterRegion (string objectId, void *descriptor, void *layoutManager);
+  NclFormatterRegion (string objectId, void *descriptor,
+                      void *layoutManager);
 
   virtual ~NclFormatterRegion ();
 

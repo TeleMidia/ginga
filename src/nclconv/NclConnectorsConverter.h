@@ -49,10 +49,8 @@ using namespace ::ginga::util;
 using namespace ::ginga::ncl;
 
 #include "DocumentParser.h"
-using namespace ::ginga::nclconv;
 
 #include "NclConnectorsParser.h"
-using namespace ::ginga::nclconv;
 
 XERCES_CPP_NAMESPACE_USE;
 

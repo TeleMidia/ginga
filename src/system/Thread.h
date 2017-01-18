@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define __THREAD_H__
 
 #include "SystemCompat.h"
-using namespace ::ginga::system;
 
 GINGA_SYSTEM_BEGIN
 

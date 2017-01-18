@@ -19,10 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define TOT_H_
 
 #include "IMpegDescriptor.h"
-using namespace ::ginga::tsparser;
 
 #include "LocalTimeOffsetDescriptor.h"
-using namespace ::ginga::tsparser;
 
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;

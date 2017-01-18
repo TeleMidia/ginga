@@ -18,10 +18,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NTPPLAYER_H_
 #define NTPPLAYER_H_
 
-#include "player/Player.h"
+#include "Player.h"
 
-#include "player/UDPClient.h"
-#include "player/NTPDatagram.h"
+#include "UDPClient.h"
+#include "NTPDatagram.h"
 
 #define TRY_NUM 4
 #define TIMEOUT 2500 // milliseconds

@@ -37,4 +37,5 @@ public:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_IEVENTLISTENER_H_

@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include "formatter/FormatterMediator.h"
+#include "FormatterMediator.h"
 
 #include "mb/LocalScreenManager.h"
 #include "system/GingaLocatorFactory.h"
@@ -24,7 +24,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterBaseDevice.h"
 
 #include "PresentationContext.h"
-using namespace ::ginga::formatter;
 
 #include "system/GingaLocatorFactory.h"
 using namespace ::ginga::system;
@@ -888,8 +887,8 @@ FormatterMediator::processDocument (string documentId, string interfaceId)
       return NULL;
     }
 
-  contextPerspective
-      = new NclNodeNesting (privateBaseManager->getPrivateBase (data->baseId));
+  contextPerspective = new NclNodeNesting (
+      privateBaseManager->getPrivateBase (data->baseId));
 
   contextPerspective->insertAnchorNode (context);
 
@@ -1055,18 +1054,19 @@ FormatterMediator::compileDocument (string documentId)
         }
 
       event = (*entryEvents)[0];
-      executionObject = (NclExecutionObject *)(event->getExecutionObject ());
-      parentObject = (NclCompositeExecutionObject *)(executionObject
-                                                      ->getParentObject ());
+      executionObject
+          = (NclExecutionObject *)(event->getExecutionObject ());
+      parentObject
+          = (NclCompositeExecutionObject *)(executionObject
+                                                ->getParentObject ());
 
       if (parentObject != NULL)
         {
           while (parentObject->getParentObject () != NULL)
             {
               executionObject = parentObject;
-              parentObject
-                  = (NclCompositeExecutionObject *)(parentObject
-                                                     ->getParentObject ());
+              parentObject = (NclCompositeExecutionObject
+                                  *)(parentObject->getParentObject ());
             }
 
           documentEvent
@@ -1524,7 +1524,8 @@ FormatterMediator::stopDocument (string documentId)
   documentEvent = documentEvents[documentId];
 
   AdapterFormatterPlayer::printAction (
-      "stopApp", (NclExecutionObject *)documentEvent->getExecutionObject ());
+      "stopApp",
+      (NclExecutionObject *)documentEvent->getExecutionObject ());
 
   scheduler->stopDocument (documentEvent);
 
@@ -3113,7 +3114,8 @@ FormatterMediator::addLink (string documentId, string compositeId,
                   clog << "FormatterMediator::addLink event '";
                   clog << (*i)->getId () << "'" << endl;
 
-                  object = (NclExecutionObject *)(*i)->getExecutionObject ();
+                  object
+                      = (NclExecutionObject *)(*i)->getExecutionObject ();
                   if (object == NULL)
                     {
                       clog << "FormatterMediator::addLink Warning! ";
@@ -3260,7 +3262,7 @@ FormatterMediator::setPropertyValue (string documentId, string nodeId,
     }
 
   setAction = new NclLinkAssignmentAction ((NclAttributionEvent *)event,
-                                        SimpleAction::ACT_START, value);
+                                           SimpleAction::ACT_START, value);
 
   ((INclLinkActionListener *)scheduler)->scheduleAction (NULL, setAction);
   return true;
@@ -3531,13 +3533,15 @@ FormatterMediator::setPropertyValue (string name, string value)
           ((NclAttributionEvent *)portEvent)->setValue (value);
           portEvent->stop ();
 
-          if (value != ((NclAttributionEvent *)portEvent)->getCurrentValue ())
+          if (value
+              != ((NclAttributionEvent *)portEvent)->getCurrentValue ())
             {
 
               clog << "FormatterMediator::setPropertyValue Warning! ";
               clog << "Attributed value = '" << value << "'";
               clog << "BUT current value = '";
-              clog << ((NclAttributionEvent *)portEvent)->getCurrentValue ();
+              clog
+                  << ((NclAttributionEvent *)portEvent)->getCurrentValue ();
               clog << "'";
               clog << endl;
             }
@@ -3637,7 +3641,7 @@ FormatterMediator::setVisible (bool visible)
           property = new PropertyAnchor ("visible");
           property->setPropertyValue (strVisible);
           event = new NclAttributionEvent ("visible", object, property,
-                                        presContext);
+                                           presContext);
 
           fakeEvent = true;
         }

@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _SWITCHCONTENT_H_
 
 #include "Content.h"
-using namespace ::ginga::ncl;
 
 GINGA_NCL_BEGIN
 

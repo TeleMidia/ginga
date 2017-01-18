@@ -201,7 +201,7 @@ RemoteEventService::startDocument (unsigned int device_class, char *name)
       //		tss->postTcpCommand((char*)"ADD", 0, name,
       //(char*)zip_base64.c_str());
       //		clog << "RemoteEventService:: ADD
-      //name="<<name<<endl;
+      // name="<<name<<endl;
 
       //		tss->postTcpCommand((char*)"START", 0, name,
       //(char*)"");

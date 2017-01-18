@@ -24,7 +24,6 @@ using namespace ::ginga::ncl;
 #include "NclAttributionEvent.h"
 #include "NclFormatterEvent.h"
 #include "NclPresentationEvent.h"
-using namespace ::ginga::formatter;
 
 #include "NclLinkAssessment.h"
 
@@ -53,4 +52,5 @@ private:
 };
 
 GINGA_FORMATTER_END
+
 #endif /*LINKATTRIBUTEASSESSMENT_H_*/

@@ -20,21 +20,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Entity.h"
 #include "Parameter.h"
-using namespace ::ginga::ncl;
 
 #include "GenericDescriptor.h"
-using namespace ::ginga::ncl;
 
 #include "NodeEntity.h"
-using namespace ::ginga::ncl;
 
 #include "Connector.h"
 #include "Role.h"
-using namespace ::ginga::ncl;
 
 #include "InterfacePoint.h"
 #include "SwitchPort.h"
-using namespace ::ginga::ncl;
 
 #include "Bind.h"
 

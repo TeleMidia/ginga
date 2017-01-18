@@ -130,7 +130,8 @@ RuleAdapter::getPresentationContext ()
 }
 
 void
-RuleAdapter::adapt (NclCompositeExecutionObject *compositeObject, bool force)
+RuleAdapter::adapt (NclCompositeExecutionObject *compositeObject,
+                    bool force)
 {
 
   NclExecutionObject *object;
@@ -150,8 +151,8 @@ RuleAdapter::adapt (NclCompositeExecutionObject *compositeObject, bool force)
                   (NclExecutionObjectSwitch *)object);
 
               adapt ((NclExecutionObjectSwitch *)object, force);
-              object
-                  = ((NclExecutionObjectSwitch *)object)->getSelectedObject ();
+              object = ((NclExecutionObjectSwitch *)object)
+                           ->getSelectedObject ();
             }
 
           adaptDescriptor (object);
@@ -263,7 +264,8 @@ RuleAdapter::initializeRuleObjectRelation (
 }
 
 void
-RuleAdapter::adapt (NclExecutionObjectSwitch *objectAlternatives, bool force)
+RuleAdapter::adapt (NclExecutionObjectSwitch *objectAlternatives,
+                    bool force)
 {
 
   /*

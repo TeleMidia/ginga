@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Entity.h"
 #include "Parameter.h"
-using namespace ::ginga::ncl;
 
 #include "Role.h"
 

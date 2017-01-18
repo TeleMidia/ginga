@@ -22,7 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::util;
 
 #include "Entity.h"
-using namespace ::ginga::ncl;
 
 GINGA_NCL_BEGIN
 

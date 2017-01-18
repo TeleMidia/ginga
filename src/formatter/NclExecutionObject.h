@@ -55,21 +55,17 @@ using namespace ::ginga::ncl;
 #include "NclPresentationEvent.h"
 #include "NclSelectionEvent.h"
 #include "NclAttributionEvent.h"
-using namespace ::ginga::formatter;
 
 #include "NclBeginEventTransition.h"
 #include "NclEndEventTransition.h"
 #include "NclEventTransition.h"
 #include "NclEventTransitionManager.h"
-using namespace ::ginga::formatter;
 
 #include "NclCascadingDescriptor.h"
 #include "NclFormatterRegion.h"
-using namespace ::ginga::formatter;
 
 #include "NclLinkSimpleAction.h"
 #include "INclLinkActionListener.h"
-using namespace ::ginga::formatter;
 
 #include "NclNodeNesting.h"
 
@@ -128,13 +124,14 @@ protected:
 
 public:
   NclExecutionObject (string id, Node *node, bool handling,
-                   INclLinkActionListener *seListener);
+                      INclLinkActionListener *seListener);
 
   NclExecutionObject (string id, Node *node, GenericDescriptor *descriptor,
-                   bool handling, INclLinkActionListener *seListener);
+                      bool handling, INclLinkActionListener *seListener);
 
-  NclExecutionObject (string id, Node *node, NclCascadingDescriptor *descriptor,
-                   bool handling, INclLinkActionListener *seListener);
+  NclExecutionObject (string id, Node *node,
+                      NclCascadingDescriptor *descriptor, bool handling,
+                      INclLinkActionListener *seListener);
 
   virtual ~NclExecutionObject ();
 
@@ -241,4 +238,5 @@ private:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_EXECUTIONOBJECT_H_

@@ -19,10 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define PMT_H_
 
 #include "TransportSection.h"
-using namespace ::ginga::tsparser;
 
 #include "StreamIdentifierDescriptor.h"
-using namespace ::ginga::tsparser;
 
 #include "util/functions.h"
 using namespace ::ginga::util;

@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define SSMLPLAYERADAPTER_H_
 
 #include "AdapterFormatterPlayer.h"
-using namespace ::ginga::formatter;
 
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
@@ -37,4 +36,5 @@ protected:
 };
 
 GINGA_FORMATTER_END
+
 #endif /*SSMLPLAYERADAPTER_H_*/

@@ -67,4 +67,5 @@ private:
 };
 
 GINGA_FORMATTER_END
+
 #endif //_LINKTRIGGERCONDITION_H_

@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define TRANSITIONBASE_H_
 
 #include "Base.h"
-using namespace ::ginga::ncl;
 
 #include "Transition.h"
 

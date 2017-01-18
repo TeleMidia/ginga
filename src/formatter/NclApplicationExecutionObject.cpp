@@ -21,7 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 NclApplicationExecutionObject::NclApplicationExecutionObject (
-    string id, Node *node, bool handling, INclLinkActionListener *seListener)
+    string id, Node *node, bool handling,
+    INclLinkActionListener *seListener)
     : NclExecutionObject (id, node, handling, seListener)
 {
 
@@ -38,8 +39,8 @@ NclApplicationExecutionObject::NclApplicationExecutionObject (
 }
 
 NclApplicationExecutionObject::NclApplicationExecutionObject (
-    string id, Node *node, NclCascadingDescriptor *descriptor, bool handling,
-    INclLinkActionListener *seListener)
+    string id, Node *node, NclCascadingDescriptor *descriptor,
+    bool handling, INclLinkActionListener *seListener)
     : NclExecutionObject (id, node, descriptor, handling, seListener)
 {
 
@@ -186,7 +187,7 @@ NclApplicationExecutionObject::setCurrentEvent (NclFormatterEvent *event)
 
 bool
 NclApplicationExecutionObject::prepare (NclFormatterEvent *event,
-                                     double offsetTime)
+                                        double offsetTime)
 {
 
   int size;
@@ -229,7 +230,8 @@ NclApplicationExecutionObject::prepare (NclFormatterEvent *event,
             {
               // register parent as a mainEvent listener
               event->addEventListener (
-                  (INclEventListener *)(NclCompositeExecutionObject *)i->second);
+                  (INclEventListener *)(NclCompositeExecutionObject *)
+                      i->second);
 
               ++i;
             }
@@ -377,7 +379,8 @@ NclApplicationExecutionObject::stop ()
           && wholeContent->getCurrentState () != EventUtil::ST_SLEEPING)
         {
 
-          clog << "NclApplicationExecutionObject::stop WHOLECONTENT" << endl;
+          clog << "NclApplicationExecutionObject::stop WHOLECONTENT"
+               << endl;
           wholeContent->stop ();
         }
       return false;
@@ -454,7 +457,8 @@ NclApplicationExecutionObject::abort ()
 
                       isLabeled = true;
 
-                      clog << "NclApplicationExecutionObject::abort event '";
+                      clog
+                          << "NclApplicationExecutionObject::abort event '";
                       clog << contentAnchor->getId () << "'" << endl;
                       ev->abort ();
                     }
@@ -615,7 +619,8 @@ NclApplicationExecutionObject::unprepare ()
   map<Node *, void *>::iterator i;
   map<string, NclFormatterEvent *>::iterator j;
 
-  // clog << "NclApplicationExecutionObject::unprepare(" << id << ")" << endl;
+  // clog << "NclApplicationExecutionObject::unprepare(" << id << ")" <<
+  // endl;
 
   lockEvents ();
   if (currentEvent == NULL
@@ -700,7 +705,7 @@ NclApplicationExecutionObject::removeEventListeners ()
 
 void
 NclApplicationExecutionObject::removeParentObject (Node *parentNode,
-                                                void *parentObject)
+                                                   void *parentObject)
 {
 
   map<Node *, void *>::iterator i;

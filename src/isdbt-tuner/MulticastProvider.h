@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/PracticalSocket.h"
 using namespace ::ginga::system;
 
-#include "isdbt-tuner/IDataProvider.h"
+#include "IDataProvider.h"
 
 GINGA_TUNER_BEGIN
 

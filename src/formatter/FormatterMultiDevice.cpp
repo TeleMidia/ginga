@@ -25,7 +25,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #endif
 
 #include "FormatterMediator.h"
-using namespace ::ginga::formatter;
 
 #include "mb/ScreenManagerFactory.h"
 #include "mb/LocalScreenManager.h"
@@ -416,8 +415,8 @@ FormatterMultiDevice::postMediaContent (int destDevClass)
 }
 
 NclFormatterLayout *
-FormatterMultiDevice::getFormatterLayout (NclCascadingDescriptor *descriptor,
-                                          NclExecutionObject *object)
+FormatterMultiDevice::getFormatterLayout (
+    NclCascadingDescriptor *descriptor, NclExecutionObject *object)
 {
 
   map<int, NclFormatterLayout *>::iterator i;
@@ -455,7 +454,7 @@ FormatterMultiDevice::getFormatterLayout (NclCascadingDescriptor *descriptor,
       if (devClass == DeviceDomain::CT_PASSIVE)
         {
           layout = new NclFormatterLayout (myScreen, 0, 0, DV_QVGA_WIDTH,
-                                        DV_QVGA_HEIGHT);
+                                           DV_QVGA_HEIGHT);
 
           layoutManager[devClass] = layout;
           return layout;

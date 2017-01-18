@@ -18,8 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef ISERVICEDESCRIPTOR_H_
 #define ISERVICEDESCRIPTOR_H_
 
-#include "isdbt-tsparser/IMpegDescriptor.h"
-using namespace ::ginga::tsparser;
+#include "IMpegDescriptor.h"
 
 GINGA_TSPARSER_BEGIN
 

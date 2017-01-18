@@ -66,15 +66,12 @@ using namespace ::ginga::ncl;
 #include "NclLinkStatement.h"
 #include "NclLinkTriggerCondition.h"
 #include "NclLinkTransitionTriggerCondition.h"
-using namespace ::ginga::formatter;
 
 #include "NclFormatterEvent.h"
-using namespace ::ginga::formatter;
 
 #include "NclCompositeExecutionObject.h"
 #include "NclExecutionObject.h"
 #include "NclNodeNesting.h"
-using namespace ::ginga::formatter;
 
 #include "FormatterConverter.h"
 #include "ObjectCreationForbiddenException.h"
@@ -92,20 +89,22 @@ public:
 
   NclFormatterCausalLink *
   createCausalLink (CausalLink *ncmLink,
-                    NclCompositeExecutionObject *parentObject, int depthLevel);
+                    NclCompositeExecutionObject *parentObject,
+                    int depthLevel);
 
 private:
   void setImplicitRefAssessment (string roleId, CausalLink *ncmLink,
                                  NclFormatterEvent *event);
 
-  NclLinkAction *createAction (Action *actionExpression, CausalLink *ncmLink,
-                            NclCompositeExecutionObject *parentObject,
-                            int depthLevel);
+  NclLinkAction *createAction (Action *actionExpression,
+                               CausalLink *ncmLink,
+                               NclCompositeExecutionObject *parentObject,
+                               int depthLevel);
 
-  NclLinkCondition *createCondition (ConditionExpression *ncmExpression,
-                                  CausalLink *ncmLink,
-                                  NclCompositeExecutionObject *parentObject,
-                                  int depthLevel);
+  NclLinkCondition *
+  createCondition (ConditionExpression *ncmExpression, CausalLink *ncmLink,
+                   NclCompositeExecutionObject *parentObject,
+                   int depthLevel);
 
   NclLinkCompoundTriggerCondition *createCompoundTriggerCondition (
       short op, double delay,
@@ -113,19 +112,18 @@ private:
       CausalLink *ncmLink, NclCompositeExecutionObject *parentObject,
       int depthLevel);
 
-  NclLinkCondition *createCondition (TriggerExpression *triggerExpression,
-                                  CausalLink *ncmLink,
-                                  NclCompositeExecutionObject *parentObject,
-                                  int depthLevel);
+  NclLinkCondition *createCondition (
+      TriggerExpression *triggerExpression, CausalLink *ncmLink,
+      NclCompositeExecutionObject *parentObject, int depthLevel);
 
   NclLinkAssessmentStatement *createAssessmentStatement (
       AssessmentStatement *assessmentStatement, Bind *bind, Link *ncmLink,
       NclCompositeExecutionObject *parentObject, int depthLevel);
 
-  NclLinkStatement *createStatement (Statement *statementExpression,
-                                  Link *ncmLink,
-                                  NclCompositeExecutionObject *parentObject,
-                                  int depthLevel);
+  NclLinkStatement *
+  createStatement (Statement *statementExpression, Link *ncmLink,
+                   NclCompositeExecutionObject *parentObject,
+                   int depthLevel);
 
   NclLinkAttributeAssessment *createAttributeAssessment (
       AttributeAssessment *attributeAssessment, Bind *bind, Link *ncmLink,
@@ -146,8 +144,8 @@ private:
       NclCompositeExecutionObject *parentObject, int depthLevel);
 
   NclFormatterEvent *createEvent (Bind *bind, Link *ncmLink,
-                               NclCompositeExecutionObject *parentObject,
-                               int depthLevel);
+                                  NclCompositeExecutionObject *parentObject,
+                                  int depthLevel);
 
   double getDelayParameter (Link *ncmLink, Parameter *connParam,
                             Bind *ncmBind);
@@ -157,4 +155,5 @@ private:
 };
 
 GINGA_FORMATTER_END
+
 #endif /*FORMATTERLINKCONVERTER_H_*/

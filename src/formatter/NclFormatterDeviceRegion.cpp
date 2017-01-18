@@ -20,7 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclFormatterDeviceRegion::NclFormatterDeviceRegion (string id) : LayoutRegion (id)
+NclFormatterDeviceRegion::NclFormatterDeviceRegion (string id)
+    : LayoutRegion (id)
 {
 
   this->id = id;

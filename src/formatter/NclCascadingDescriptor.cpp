@@ -24,7 +24,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::ncl;
 
 #include "NclExecutionObject.h"
-using namespace ::ginga::formatter;
 
 GINGA_FORMATTER_BEGIN
 
@@ -42,7 +41,8 @@ NclCascadingDescriptor::NclCascadingDescriptor (
     }
 }
 
-NclCascadingDescriptor::NclCascadingDescriptor (NclCascadingDescriptor *descriptor)
+NclCascadingDescriptor::NclCascadingDescriptor (
+    NclCascadingDescriptor *descriptor)
 {
   int i, size;
 
@@ -52,8 +52,9 @@ NclCascadingDescriptor::NclCascadingDescriptor (NclCascadingDescriptor *descript
       size = ((NclCascadingDescriptor *)descriptor)->descriptors.size ();
       for (i = 0; i < size; i++)
         {
-          cascade ((GenericDescriptor *)(((NclCascadingDescriptor *)descriptor)
-                                             ->descriptors[i]));
+          cascade (
+              (GenericDescriptor *)(((NclCascadingDescriptor *)descriptor)
+                                        ->descriptors[i]));
         }
 
       size = ((NclCascadingDescriptor *)descriptor)
@@ -61,8 +62,9 @@ NclCascadingDescriptor::NclCascadingDescriptor (NclCascadingDescriptor *descript
 
       for (i = 0; i < size; i++)
         {
-          cascade ((GenericDescriptor *)(((NclCascadingDescriptor *)descriptor)
-                                             ->unsolvedDescriptors[i]));
+          cascade (
+              (GenericDescriptor *)(((NclCascadingDescriptor *)descriptor)
+                                        ->unsolvedDescriptors[i]));
         }
     }
 }
@@ -423,7 +425,7 @@ NclCascadingDescriptor::getFormatterRegion ()
 
 void
 NclCascadingDescriptor::updateRegion (void *formatterLayout, string name,
-                                   string value)
+                                      string value)
 {
 
   vector<string> *params;
@@ -539,7 +541,7 @@ NclCascadingDescriptor::updateRegion (void *formatterLayout, string name,
 
 void
 NclCascadingDescriptor::createDummyRegion (void *formatterLayout,
-                                        void *executionObject)
+                                           void *executionObject)
 {
 
   NclExecutionObject *object;

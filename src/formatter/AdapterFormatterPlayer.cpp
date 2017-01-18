@@ -20,10 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AdapterPlayerManager.h"
 
 #include "AdapterApplicationPlayer.h"
-using namespace ::ginga::formatter;
 
-#include "formatter/NclLinkTransitionTriggerCondition.h"
-using namespace ::ginga::formatter;
+#include "NclLinkTransitionTriggerCondition.h"
 
 #include "mb/ScreenManagerFactory.h"
 using namespace ::ginga::mb;
@@ -1389,7 +1387,8 @@ AdapterFormatterPlayer::checkAnchorMonitor ()
 }
 
 void
-AdapterFormatterPlayer::printAction (string action, NclExecutionObject *object)
+AdapterFormatterPlayer::printAction (string action,
+                                     NclExecutionObject *object)
 {
 
   NclFormatterEvent *event;

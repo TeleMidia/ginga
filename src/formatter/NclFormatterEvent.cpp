@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclPresentationEvent.h"
 
 #include "NclCompositeExecutionObject.h"
-using namespace ::ginga::formatter;
 
 GINGA_FORMATTER_BEGIN
 

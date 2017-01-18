@@ -279,7 +279,8 @@ NclLinkCompoundAction::run ()
   Thread::mutexLock (&mutexActions);
   if (actions.empty ())
     {
-      clog << "NclLinkCompoundAction::run there is no action to run" << endl;
+      clog << "NclLinkCompoundAction::run there is no action to run"
+           << endl;
       Thread::mutexUnlock (&mutexActions);
       return;
     }

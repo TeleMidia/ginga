@@ -30,27 +30,20 @@ using namespace ::ginga::mb;
 
 #include "NclCascadingDescriptor.h"
 #include "NclExecutionObject.h"
-using namespace ::ginga::formatter;
 
 #include "NclSelectionEvent.h"
-using namespace ::ginga::formatter;
 
 #include "INclLinkActionListener.h"
 #include "NclLinkSimpleAction.h"
-using namespace ::ginga::formatter;
 
 #include "NclFormatterRegion.h"
-using namespace ::ginga::formatter;
 
 #include "PresentationContext.h"
-using namespace ::ginga::formatter;
 
 #include "AdapterFormatterPlayer.h"
 #include "AdapterPlayerManager.h"
-using namespace ::ginga::formatter;
 
 #include "FormatterMultiDevice.h"
-using namespace ::ginga::formatter;
 
 #include "mb/IMotionEventListener.h"
 

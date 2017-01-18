@@ -61,4 +61,5 @@ protected:
 };
 
 GINGA_FORMATTER_END
+
 #endif /* _FormatterPassiveDevice_H_ */

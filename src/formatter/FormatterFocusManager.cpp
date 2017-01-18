@@ -28,13 +28,10 @@ using namespace ::ginga::multidev;
 #endif
 
 #include "FormatterConverter.h"
-using namespace ::ginga::formatter;
 
 #include "NclFormatterLayout.h"
-using namespace ::ginga::formatter;
 
-#include "formatter/FormatterScheduler.h"
-using namespace ::ginga::formatter;
+#include "FormatterScheduler.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -46,8 +43,8 @@ static LocalScreenManager *dm = ScreenManagerFactory::getInstance ();
 
 FormatterFocusManager::FormatterFocusManager (
     AdapterPlayerManager *playerManager, PresentationContext *presContext,
-    FormatterMultiDevice *multiDevice, INclLinkActionListener *settingActions,
-    void *converter)
+    FormatterMultiDevice *multiDevice,
+    INclLinkActionListener *settingActions, void *converter)
 {
 
   string strValue;
@@ -1424,7 +1421,8 @@ FormatterFocusManager::motionEventReceived (int x, int y, int z)
 
   if (isHandler)
     {
-      formatterLayout = (NclFormatterLayout *)(multiDevice->getMainLayout ());
+      formatterLayout
+          = (NclFormatterLayout *)(multiDevice->getMainLayout ());
       if (formatterLayout != NULL)
         {
           if ((x < xOffset || x > xOffset + width) || y < yOffset

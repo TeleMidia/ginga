@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 NclSelectionEvent::NclSelectionEvent (string id, void *executionObject,
-                                ContentAnchor *anchor)
+                                      ContentAnchor *anchor)
     : NclAnchorEvent (id, executionObject, anchor)
 {
 

@@ -9,7 +9,6 @@
 #define HIPERLINKDESCRIPTOR_H_
 
 #include "IMpegDescriptor.h"
-using namespace ::ginga::tsparser;
 
 GINGA_TSPARSER_BEGIN
 
