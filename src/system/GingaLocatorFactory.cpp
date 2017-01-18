@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "GingaLocatorFactory.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_FS_BEGIN
+GINGA_SYSTEM_BEGIN
 
 	GingaLocatorFactory* GingaLocatorFactory::_instance = 0;
 
@@ -268,4 +268,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_FS_BEGIN
 		return false;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_FS_END
+GINGA_SYSTEM_END

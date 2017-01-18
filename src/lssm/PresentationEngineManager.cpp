@@ -63,7 +63,7 @@ using namespace ::ginga::util;
 using namespace ::ginga::mb;
 
 #include "system/GingaLocatorFactory.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
+using namespace ::ginga::system;
 
 GINGA_LSSM_BEGIN
 

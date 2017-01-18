@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define SUBTITLEPLAYERADAPTER_H_
 
 #include "system/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+using namespace ::ginga::system;
 
 #include "gingancl/model/ExecutionObject.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;

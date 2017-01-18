@@ -124,7 +124,7 @@ typedef unsigned int GingaProviderID;
 #define NS_END7 }}}}}}}
 #define NS_END8 }}}}}}}}
 
-#define GINGA_BEGIN             NS_BEGIN (ginga)
+#define GINGA_BEGIN             NS_BEGIN  (ginga)
 #define GINGA_END               NS_END
 #define GINGA_CTXMGMT_BEGIN     NS_BEGIN2 (ginga, ctxmgmt)
 #define GINGA_CTXMGMT_END       NS_END2
@@ -142,6 +142,8 @@ typedef unsigned int GingaProviderID;
 #define GINGA_NCLCONV_END       NS_END2
 #define GINGA_PLAYER_BEGIN      NS_BEGIN2 (ginga, player)
 #define GINGA_PLAYER_END        NS_END2
+#define GINGA_SYSTEM_BEGIN      NS_BEGIN2 (ginga, system)
+#define GINGA_SYSTEM_END        NS_END2
 #define GINGA_UTIL_BEGIN        NS_BEGIN2 (ginga, util)
 #define GINGA_UTIL_END          NS_END2
 
@@ -174,30 +176,6 @@ typedef unsigned int GingaProviderID;
   NS_BEGIN7 (br, pucrio, telemidia, ginga, core, dataprocessing, ncl)
 
 #define BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_END\
-  NS_END7
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_COMPAT_BEGIN\
-  NS_BEGIN7 (br, pucrio, telemidia, ginga, core, system, compat)
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_COMPAT_END\
-  NS_END7
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_FS_BEGIN\
-  NS_BEGIN7 (br, pucrio, telemidia, ginga, core, system, fs)
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_FS_END\
-  NS_END7
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_THREAD_BEGIN\
-  NS_BEGIN7 (br, pucrio, telemidia, ginga, core, system, thread)
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_THREAD_END\
-  NS_END7
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_TIME_BEGIN\
-  NS_BEGIN7 (br, pucrio, telemidia, ginga, core, system, time)
-
-#define BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_TIME_END\
   NS_END7
 
 #define BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN\

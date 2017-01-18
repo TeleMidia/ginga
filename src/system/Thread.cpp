@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "Thread.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_THREAD_BEGIN
+GINGA_SYSTEM_BEGIN
 
 
   Thread::Thread ()
@@ -194,4 +194,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_THREAD_BEGIN
   }
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_THREAD_END
+GINGA_SYSTEM_END

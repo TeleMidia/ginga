@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_TIME_BEGIN
+GINGA_SYSTEM_BEGIN
 
 class ITimeBaseListener
 {
@@ -39,6 +39,6 @@ public:
   virtual void loopDetected()=0;
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_TIME_END
+GINGA_SYSTEM_END
 
 #endif /* I_TIME_BASE_LISTENER_H */

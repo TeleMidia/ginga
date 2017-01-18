@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ITimeBaseListener.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_TIME_BEGIN
+GINGA_SYSTEM_BEGIN
 
 	class ITimeBaseProvider {
 		public:
@@ -52,5 +52,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_TIME_BEGIN
 			virtual double getCurrentTimeValue(unsigned char timeBaseId)=0;
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_TIME_END
+GINGA_SYSTEM_END
 #endif /*ITimeBaseProvider_H_*/

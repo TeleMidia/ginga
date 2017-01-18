@@ -52,7 +52,7 @@ static bool initialized = false;
 
 // SocketException Code
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_COMPAT_BEGIN
+GINGA_SYSTEM_BEGIN
 
 
 SocketException::SocketException(const string &message, bool inclSysMsg)
@@ -610,4 +610,4 @@ void UDPSocket::setNonBlocking(bool nonblock) {
 
 }
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_COMPAT_END
+GINGA_SYSTEM_END

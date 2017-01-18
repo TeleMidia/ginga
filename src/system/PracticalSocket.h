@@ -22,7 +22,7 @@
 
 #include "ginga.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_COMPAT_BEGIN
+GINGA_SYSTEM_BEGIN
 
 /**
  *   Signals a problem with the execution of a socket call.
@@ -377,6 +377,6 @@ private:
   int BLOCKING_MODE;
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_COMPAT_END
+GINGA_SYSTEM_END
 
 #endif /* PRACTICAL_SOCKET_H */

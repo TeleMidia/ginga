@@ -19,13 +19,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define PRESENTATION_ENGINE_MANAGER_H
 
 #include "system/ITimeBaseProvider.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::time;
+using namespace ::ginga::system;
 
 #include "player/INCLPlayer.h"
 using namespace ::ginga::player;
 
 #include "system/Thread.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+using namespace ::ginga::system;
 
 #include "mb/InputManager.h"
 #include "mb/LocalScreenManager.h"

@@ -25,10 +25,10 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include "LinkActionProgressionListener.h"
 
 #include "system/Thread.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+using namespace ::ginga::system;
 
 #include "system/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+using namespace ::ginga::system;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 

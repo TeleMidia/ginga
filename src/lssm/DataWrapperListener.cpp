@@ -19,10 +19,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "DataWrapperListener.h"
 
 #include "system/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+using namespace ::ginga::system;
 
 #include "system/GingaLocatorFactory.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
+using namespace ::ginga::system;
 
 #include "player/INCLPlayer.h"
 using namespace ::ginga::player;
@@ -37,10 +37,10 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
 using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
 
 #include "system/ITimeBaseProvider.h"
-using namespace br::pucrio::telemidia::ginga::core::system::time;
+using namespace ::ginga::system;
 
 #include "system/GingaLocatorFactory.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::fs;
+using namespace ::ginga::system;
 
 #include "util/functions.h"
 using namespace ::ginga::util;

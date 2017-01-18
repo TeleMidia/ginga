@@ -25,7 +25,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 using namespace ::ginga::ncl;
 
 #include "system/Thread.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+using namespace ::ginga::system;
 
 #include "adapters/FormatterPlayerAdapter.h"
 #include "adapters/PlayerAdapterManager.h"

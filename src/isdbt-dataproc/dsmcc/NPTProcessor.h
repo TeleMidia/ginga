@@ -19,13 +19,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NPTPROCESSOR_H_
 
 #include "system/Thread.h"
-using namespace br::pucrio::telemidia::ginga::core::system::thread;
+using namespace ::ginga::system;
 
 #include "system/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+using namespace ::ginga::system;
 
 #include "system/ITimeBaseProvider.h"
-using namespace br::pucrio::telemidia::ginga::core::system::time;
+using namespace ::ginga::system;
 
 #include "isdbt-tuner/ISTCProvider.h"
 using namespace br::pucrio::telemidia::ginga::core::tuning;

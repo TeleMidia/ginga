@@ -35,7 +35,7 @@ using namespace ::ginga::multidevice;
 #endif
 
 #include "system/Thread.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+using namespace ::ginga::system;
 
 #include "ContextBase.h"
 

@@ -94,12 +94,6 @@ extern "C" {
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-#include <iostream>
-#include <string>
-using namespace std;
-
-#include <stdint.h>
-
 #ifndef INT64_C
 #define INT64_C(c) (c ## LL)
 #endif //INT64_C
@@ -147,7 +141,7 @@ typedef int PipeDescriptor;
 #define R_OK 4
 #endif
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_COMPAT_BEGIN
+GINGA_SYSTEM_BEGIN
 
 	class SystemCompat {
 		private:
@@ -247,5 +241,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_COMPAT_BEGIN
 			static int unzip_file(const char *zipname, const char *filedir);
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_COMPAT_END
+GINGA_SYSTEM_END
 #endif /*SystemCompat_H_*/

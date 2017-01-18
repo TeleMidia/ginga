@@ -102,7 +102,7 @@ extern "C" {
 }
 
 #include "system/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+using namespace ::ginga::system;
 
 #include "IDataProvider.h"
 #include "Channel.h"

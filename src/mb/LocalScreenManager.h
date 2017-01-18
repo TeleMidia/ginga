@@ -33,7 +33,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLEventBuffer.h"
 
 #include "system/Thread.h"
-using namespace br::pucrio::telemidia::ginga::core::system::thread;
+using namespace ::ginga::system;
 
 GINGA_MB_BEGIN
 

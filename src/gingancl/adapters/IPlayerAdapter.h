@@ -24,7 +24,7 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include "player/IPlayer.h"
 using namespace ::ginga::player;
 
-using namespace ::br::pucrio::telemidia::ginga::core::system;
+using namespace ::ginga::system;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "Stc.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_TIME_BEGIN
+GINGA_SYSTEM_BEGIN
 
 	Stc::Stc() {
 		reference        = 0;
@@ -141,4 +141,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_TIME_BEGIN
 		return baseToSecond(getStcBase());
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_SYSTEM_TIME_END
+GINGA_SYSTEM_END

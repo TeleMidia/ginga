@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _INCLPlayer_H_
 
 #include "system/ITimeBaseProvider.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::time;
+using namespace ::ginga::system;
 
 #include "IPlayer.h"
 #include "IPlayerListener.h"

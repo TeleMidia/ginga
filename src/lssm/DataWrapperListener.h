@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "PresentationEngineManager.h"
 
 #include "system/Thread.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+using namespace ::ginga::system;
 
 #include "isdbt-dataproc/dsmcc/IStreamEventListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing;

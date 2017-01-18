@@ -22,10 +22,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::util;
 
 #include "system/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+using namespace ::ginga::system;
 
 #include "system/Thread.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+using namespace ::ginga::system;
 
 #include "ncl/NodeEntity.h"
 #include "ncl/ContentNode.h"
@@ -36,7 +36,7 @@ using namespace ::ginga::ncl;
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
 #include "system/ITimeBaseProvider.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::time;
+using namespace ::ginga::system;
 
 #include "player/INCLPlayer.h"
 using namespace ::ginga::player;

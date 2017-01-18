@@ -38,7 +38,7 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::ncl;
 
 #include "system/SystemCompat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
+using namespace ::ginga::system;
 
 #include "ncl/Rule.h"
 using namespace ::ginga::ncl;

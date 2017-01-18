@@ -33,7 +33,7 @@ using namespace ::ginga::mb;
 using namespace ::br::pucrio::telemidia::ginga::ncl;
 
 #include "system/Thread.h"
-using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
+using namespace ::ginga::system;
 
 #include "ncl/DeviceLayout.h"
 using namespace ::ginga::ncl;
