@@ -29,184 +29,212 @@ using namespace ::ginga::mb;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_NCL_BEGIN
 
-	NCLPlayerAdapter::NCLPlayerAdapter() : ApplicationPlayerAdapter()  {
-		typeSet.insert("NCLPlayerAdapter");
-	}
+NCLPlayerAdapter::NCLPlayerAdapter () : ApplicationPlayerAdapter ()
+{
+  typeSet.insert ("NCLPlayerAdapter");
+}
 
-	void NCLPlayerAdapter::createPlayer() {
-		FormatterRegion* region = NULL;
-		LayoutRegion* ncmRegion;
-		CascadingDescriptor* descriptor = NULL;
-		string value;
-		bool isPercent;
-		GingaSurfaceID s;
-		NclPlayerData* childData, *playerData;
-		PropertyAnchor* property;
+void
+NCLPlayerAdapter::createPlayer ()
+{
+  FormatterRegion *region = NULL;
+  LayoutRegion *ncmRegion;
+  CascadingDescriptor *descriptor = NULL;
+  string value;
+  bool isPercent;
+  GingaSurfaceID s;
+  NclPlayerData *childData, *playerData;
+  PropertyAnchor *property;
 
-		if (getObjectDevice() == 2) {
-			clog << "NCLPlayerAdapter::createPlayer ";
-			clog << " remote handler" << endl;
-			return;
-		}
+  if (getObjectDevice () == 2)
+    {
+      clog << "NCLPlayerAdapter::createPlayer ";
+      clog << " remote handler" << endl;
+      return;
+    }
 
-		player = NULL;
-		if (fileExists(mrl)) {
-			playerCompName                = "Formatter";
-			playerData                    = ((PlayerAdapterManager*)manager)->getNclPlayerData();
+  player = NULL;
+  if (fileExists (mrl))
+    {
+      playerCompName = "Formatter";
+      playerData = ((PlayerAdapterManager *)manager)->getNclPlayerData ();
 
-			childData                     = new NclPlayerData;
-			childData->screenId           = myScreen;
-			childData->x                  = 0;
-			childData->y                  = 0;
-			childData->w                  = 0;
-			childData->h                  = 0;
-			childData->devClass           = playerData->devClass;
-			childData->transparency       = playerData->transparency;
-			childData->baseId             = playerData->baseId;
-			childData->privateBaseManager = playerData->privateBaseManager;
-			childData->playerId           = object->getId();
-			childData->enableGfx          = false;
-			childData->parentDocId        = playerData->docId;
-			childData->nodeId             = ((NodeEntity*)(
-					object->getDataObject()->getDataEntity()))->getId();
+      childData = new NclPlayerData;
+      childData->screenId = myScreen;
+      childData->x = 0;
+      childData->y = 0;
+      childData->w = 0;
+      childData->h = 0;
+      childData->devClass = playerData->devClass;
+      childData->transparency = playerData->transparency;
+      childData->baseId = playerData->baseId;
+      childData->privateBaseManager = playerData->privateBaseManager;
+      childData->playerId = object->getId ();
+      childData->enableGfx = false;
+      childData->parentDocId = playerData->docId;
+      childData->nodeId
+          = ((NodeEntity *)(object->getDataObject ()->getDataEntity ()))
+                ->getId ();
 
-			childData->docId              = "";
-			childData->focusManager       = playerData->focusManager;
-			childData->editListener       = playerData->editListener;
+      childData->docId = "";
+      childData->focusManager = playerData->focusManager;
+      childData->editListener = playerData->editListener;
 
-			descriptor = object->getDescriptor();
-			if (descriptor != NULL) {
-				region = descriptor->getFormatterRegion();
-			}
+      descriptor = object->getDescriptor ();
+      if (descriptor != NULL)
+        {
+          region = descriptor->getFormatterRegion ();
+        }
 
-			if (region != NULL) {
-				ncmRegion           = region->getLayoutRegion();
-				childData->x        = (int)(ncmRegion->getAbsoluteLeft());
-				childData->y        = (int)(ncmRegion->getAbsoluteTop());
-				childData->w        = (int)(ncmRegion->getWidthInPixels());
-				childData->h        = (int)(ncmRegion->getHeightInPixels());
-				childData->devClass = ncmRegion->getDeviceClass();
+      if (region != NULL)
+        {
+          ncmRegion = region->getLayoutRegion ();
+          childData->x = (int)(ncmRegion->getAbsoluteLeft ());
+          childData->y = (int)(ncmRegion->getAbsoluteTop ());
+          childData->w = (int)(ncmRegion->getWidthInPixels ());
+          childData->h = (int)(ncmRegion->getHeightInPixels ());
+          childData->devClass = ncmRegion->getDeviceClass ();
 
-				property = object->getNCMProperty("transparency");
-				if (property != NULL) {
-					value = property->getPropertyValue();
+          property = object->getNCMProperty ("transparency");
+          if (property != NULL)
+            {
+              value = property->getPropertyValue ();
+            }
+          else
+            {
+              value = descriptor->getParameterValue ("transparency");
+            }
 
-				} else {
-					value = descriptor->getParameterValue("transparency");
-				}
+          if (value != "")
+            {
+              float transpValue;
+              float parentOpacity = (1 - playerData->transparency);
 
-				if (value != "") {
-					float transpValue;
-					float parentOpacity = (1 - playerData->transparency);
+              value = cvtPercentual (value, &isPercent);
+              transpValue = ::ginga::util::stof (value);
+              if (isPercent)
+                {
+                  transpValue = transpValue / 100;
+                }
 
-					value = cvtPercentual(value, &isPercent);
-					transpValue = ::ginga::util::stof(value);
-					if (isPercent) {
-						transpValue = transpValue / 100;
-					}
+              transpValue
+                  = (1 - (parentOpacity - (parentOpacity * transpValue)));
 
-					transpValue = (1 - (parentOpacity -
-							(parentOpacity * transpValue)));
+              childData->transparency = transpValue;
+            }
+        }
 
-					childData->transparency = transpValue;
-				}
-			}
+      LocalScreenManager *dm;
 
-			LocalScreenManager* dm;
+      dm = ScreenManagerFactory::getInstance ();
+      player = (INCLPlayer *)(new FormatterMediator (childData));
 
-			dm = ScreenManagerFactory::getInstance();
-			player = (INCLPlayer*)(new FormatterMediator(childData));
+      s = dm->createSurface (myScreen);
+      int cap = dm->getSurfaceCap (s, "ALPHACHANNEL");
+      dm->setSurfaceCaps (s, cap);
 
-			s = dm->createSurface(myScreen);
-			int cap = dm->getSurfaceCap(s, "ALPHACHANNEL");
-			dm->setSurfaceCaps(s, cap);
+      ((INCLPlayer *)player)->setSurface (s);
+      if (((INCLPlayer *)player)->setCurrentDocument (mrl) == NULL)
+        {
+          clog << "NCLPlayerAdapter::createPlayer Warning! ";
+          clog << "can't set '" << mrl << "' as document";
+          clog << endl;
+        }
 
-			((INCLPlayer*)player)->setSurface(s);
-			if (((INCLPlayer*)player)->setCurrentDocument(mrl) == NULL) {
-				clog << "NCLPlayerAdapter::createPlayer Warning! ";
-				clog << "can't set '" << mrl << "' as document";
-				clog << endl;
-			}
+      if (region != NULL)
+        {
+          ((INCLPlayer *)player)
+              ->setParentLayout (region->getLayoutManager ());
+        }
+    }
+  else
+    {
+      clog << "NCLPlayerAdapter::createPlayer Warning! ";
+      clog << "file not found: '" << mrl << "'" << endl;
+    }
 
-			if (region != NULL) {
-				((INCLPlayer*)player)->setParentLayout(
-						region->getLayoutManager());
-			}
+  ApplicationPlayerAdapter::createPlayer ();
+}
 
-		} else {
-			clog << "NCLPlayerAdapter::createPlayer Warning! ";
-			clog << "file not found: '" << mrl << "'" << endl;
-		}
+bool
+NCLPlayerAdapter::setAndLockCurrentEvent (FormatterEvent *event)
+{
+  string interfaceId;
 
-		ApplicationPlayerAdapter::createPlayer();
-	}
+  lockEvent ();
+  if (preparedEvents.count (event->getId ()) != 0
+      && !event->instanceOf ("SelectionEvent")
+      && event->instanceOf ("AnchorEvent"))
+    {
 
-	bool NCLPlayerAdapter::setAndLockCurrentEvent(FormatterEvent* event) {
-		string interfaceId;
+      interfaceId = ((AnchorEvent *)event)->getAnchor ()->getId ();
 
-		lockEvent();
-		if (preparedEvents.count(event->getId()) != 0 &&
-				!event->instanceOf("SelectionEvent") &&
-				event->instanceOf("AnchorEvent")) {
+      if ((((AnchorEvent *)event)->getAnchor ())->instanceOf ("LabeledAnchor"))
+        {
 
-			interfaceId = ((AnchorEvent*)event)->getAnchor()->getId();
+          interfaceId = ((LabeledAnchor *)((AnchorEvent *)event)->getAnchor ())
+                            ->getLabel ();
+        }
+      else if ((((AnchorEvent *)event)->getAnchor ())
+                   ->instanceOf ("LambdaAnchor"))
+        {
 
-			if ((((AnchorEvent*)event)->getAnchor())->instanceOf(
-					"LabeledAnchor")) {
+          interfaceId = "";
+        }
 
-				interfaceId = ((LabeledAnchor*)((AnchorEvent*)event)->
-						getAnchor())->getLabel();
+      currentEvent = event;
+      ((ApplicationExecutionObject *)object)->setCurrentEvent (currentEvent);
 
-			} else if ((((AnchorEvent*)event)->getAnchor())->instanceOf(
-					"LambdaAnchor")) {
+      if (player != NULL)
+        {
+          player->setCurrentScope (interfaceId);
+        }
+    }
+  else if (event->instanceOf ("AttributionEvent"))
+    {
+      interfaceId
+          = ((AttributionEvent *)event)->getAnchor ()->getPropertyName ();
 
-				interfaceId = "";
-			}
+      if (player != NULL)
+        {
+          player->setScope (interfaceId, IPlayer::TYPE_ATTRIBUTION);
+        }
 
-			currentEvent = event;
-			((ApplicationExecutionObject*)object)->setCurrentEvent(
-					currentEvent);
+      currentEvent = event;
+      ((ApplicationExecutionObject *)object)->setCurrentEvent (currentEvent);
 
-			if (player != NULL) {
-				player->setCurrentScope(interfaceId);
-			}
+      if (player != NULL)
+        {
+          player->setCurrentScope (interfaceId);
+        }
+    }
+  else
+    {
+      unlockEvent ();
+      return false;
+    }
 
-		} else if (event->instanceOf("AttributionEvent")) {
-			interfaceId = ((AttributionEvent*)
-					event)->getAnchor()->getPropertyName();
+  return true;
+}
 
-			if (player != NULL) {
-				player->setScope(interfaceId, IPlayer::TYPE_ATTRIBUTION);
-			}
+void
+NCLPlayerAdapter::unlockCurrentEvent (FormatterEvent *event)
+{
+  if (event != currentEvent)
+    {
+      clog << "NCLPlayerAdapter::unlockCurrentEvent ";
+      clog << "Handling events warning!" << endl;
+    }
+  unlockEvent ();
+}
 
-			currentEvent = event;
-			((ApplicationExecutionObject*)object)->setCurrentEvent(
-					currentEvent);
-
-			if (player != NULL) {
-				player->setCurrentScope(interfaceId);
-			}
-
-		} else {
-			unlockEvent();
-			return false;
-		}
-
-		return true;
-	}
-
-	void NCLPlayerAdapter::unlockCurrentEvent(FormatterEvent* event) {
-		if (event != currentEvent) {
-			clog << "NCLPlayerAdapter::unlockCurrentEvent ";
-			clog << "Handling events warning!" << endl;
-		}
-		unlockEvent();
-	}
-
-	void NCLPlayerAdapter::flip() {
-		if (player != NULL) {
-			player->flip();
-		}
-	}
+void
+NCLPlayerAdapter::flip ()
+{
+  if (player != NULL)
+    {
+      player->flip ();
+    }
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_NCL_END

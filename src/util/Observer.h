@@ -25,8 +25,8 @@ GINGA_UTIL_BEGIN
 class Observer
 {
 public:
-  virtual ~Observer(){};
-  virtual void update (void *observable, void *object)=0;
+  virtual ~Observer (){};
+  virtual void update (void *observable, void *object) = 0;
 };
 
 GINGA_UTIL_END

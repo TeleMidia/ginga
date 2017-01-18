@@ -73,186 +73,172 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
 
 #include "NodeNesting.h"
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
 
-  class ExecutionObject {
-	protected:
-		string id;
-		Node* dataObject;
-		CascadingDescriptor* descriptor;
-		double offsetTime;
-		double startTime;
-		PresentationEvent* wholeContent;
+class ExecutionObject
+{
+protected:
+  string id;
+  Node *dataObject;
+  CascadingDescriptor *descriptor;
+  double offsetTime;
+  double startTime;
+  PresentationEvent *wholeContent;
 
-		set<string> typeSet;
-		pthread_mutex_t mutex;
-		pthread_mutex_t mutexEvent;
-		pthread_mutex_t mutexParentTable;
+  set<string> typeSet;
+  pthread_mutex_t mutex;
+  pthread_mutex_t mutexEvent;
+  pthread_mutex_t mutexParentTable;
 
-		ILinkActionListener* seListener;
+  ILinkActionListener *seListener;
 
-		bool isLocked;
-		bool deleting;
-		bool isHandler;
-		bool isHandling;
+  bool isLocked;
+  bool deleting;
+  bool isHandler;
+  bool isHandling;
 
-	private:
-		map<Node*, Node*> nodeParentTable;
+private:
+  map<Node *, Node *> nodeParentTable;
 
-	protected:
-		map<Node*, void*> parentTable; //CompositionExecutionObject
-		bool visible;
+protected:
+  map<Node *, void *> parentTable; // CompositionExecutionObject
+  bool visible;
 
-	private:
-		bool isItCompiled;
+private:
+  bool isItCompiled;
 
-	protected:
-		map<string, FormatterEvent*> events;
-		vector<PresentationEvent*> presEvents;
-		set<SelectionEvent*> selectionEvents;
-		vector<FormatterEvent*> otherEvents;
-		int pauseCount;
-		FormatterEvent* mainEvent;
-		EventTransitionManager* transMan;
-		ExecutionObject* mirrorSrc;
+protected:
+  map<string, FormatterEvent *> events;
+  vector<PresentationEvent *> presEvents;
+  set<SelectionEvent *> selectionEvents;
+  vector<FormatterEvent *> otherEvents;
+  int pauseCount;
+  FormatterEvent *mainEvent;
+  EventTransitionManager *transMan;
+  ExecutionObject *mirrorSrc;
 
-	private:
-		static set<ExecutionObject*> objects;
-		static bool initMutex;
-		static pthread_mutex_t _objMutex;
+private:
+  static set<ExecutionObject *> objects;
+  static bool initMutex;
+  static pthread_mutex_t _objMutex;
 
-	protected:
-		static void addInstance(ExecutionObject* object);
-		static bool removeInstance(ExecutionObject* object);
+protected:
+  static void addInstance (ExecutionObject *object);
+  static bool removeInstance (ExecutionObject *object);
 
-	public:
-		ExecutionObject(
-				string id,
-				Node* node,
-				bool handling,
-				ILinkActionListener* seListener);
+public:
+  ExecutionObject (string id, Node *node, bool handling,
+                   ILinkActionListener *seListener);
 
-		ExecutionObject(
-				string id,
-				Node* node,
-				GenericDescriptor* descriptor,
-				bool handling,
-				ILinkActionListener* seListener);
+  ExecutionObject (string id, Node *node, GenericDescriptor *descriptor,
+                   bool handling, ILinkActionListener *seListener);
 
-		ExecutionObject(
-				string id,
-				Node* node,
-				CascadingDescriptor* descriptor,
-				bool handling,
-				ILinkActionListener* seListener);
+  ExecutionObject (string id, Node *node, CascadingDescriptor *descriptor,
+                   bool handling, ILinkActionListener *seListener);
 
-		virtual ~ExecutionObject();
+  virtual ~ExecutionObject ();
 
-		static bool hasInstance(ExecutionObject* object, bool eraseFromList);
+  static bool hasInstance (ExecutionObject *object, bool eraseFromList);
 
-	private:
-		void initializeExecutionObject(
-			    string id,
-			    Node* node,
-			    CascadingDescriptor* descriptor,
-			    bool handling,
-			    ILinkActionListener* seListener);
+private:
+  void initializeExecutionObject (string id, Node *node,
+                                  CascadingDescriptor *descriptor,
+                                  bool handling,
+                                  ILinkActionListener *seListener);
 
-	protected:
-		void destroyEvents();
-		virtual void unsetParentsAsListeners();
-		virtual void removeParentListenersFromEvent(FormatterEvent* event);
+protected:
+  void destroyEvents ();
+  virtual void unsetParentsAsListeners ();
+  virtual void removeParentListenersFromEvent (FormatterEvent *event);
 
-	public:
-		virtual bool isSleeping();
-		virtual bool isPaused();
-		bool instanceOf(string s);
-		int compareToUsingId(ExecutionObject* object);
-		Node* getDataObject();
-		CascadingDescriptor* getDescriptor();
-		string getId();
+public:
+  virtual bool isSleeping ();
+  virtual bool isPaused ();
+  bool instanceOf (string s);
+  int compareToUsingId (ExecutionObject *object);
+  Node *getDataObject ();
+  CascadingDescriptor *getDescriptor ();
+  string getId ();
 
-		ExecutionObject* getMirrorSrc();
-		void setMirrorSrc(ExecutionObject* mirrorSrc);
+  ExecutionObject *getMirrorSrc ();
+  void setMirrorSrc (ExecutionObject *mirrorSrc);
 
-		void* getParentObject(); //CompositeExecutionObject
-		void* getParentObject(Node* node); //CompositeExecutionObject
-		void addParentObject(void* parentObject, Node* parentNode);
-		void addParentObject(Node* node, void* parentObject, Node* parentNode);
-		virtual void removeParentObject(Node* parentNode, void* parentObject);
+  void *getParentObject (); // CompositeExecutionObject
+  void *getParentObject (Node *node); // CompositeExecutionObject
+  void addParentObject (void *parentObject, Node *parentNode);
+  void addParentObject (Node *node, void *parentObject, Node *parentNode);
+  virtual void removeParentObject (Node *parentNode, void *parentObject);
 
-		void setDescriptor(CascadingDescriptor* cascadingDescriptor);
-		void setDescriptor(GenericDescriptor* descriptor);
-		string toString();
-		virtual bool addEvent(FormatterEvent* event);
-		void addPresentationEvent(PresentationEvent* event);
-		int compareTo(ExecutionObject* object);
-		int compareToUsingStartTime(ExecutionObject* object);
-		bool containsEvent(FormatterEvent* event);
-		FormatterEvent* getEventFromAnchorId(string anchorId);
+  void setDescriptor (CascadingDescriptor *cascadingDescriptor);
+  void setDescriptor (GenericDescriptor *descriptor);
+  string toString ();
+  virtual bool addEvent (FormatterEvent *event);
+  void addPresentationEvent (PresentationEvent *event);
+  int compareTo (ExecutionObject *object);
+  int compareToUsingStartTime (ExecutionObject *object);
+  bool containsEvent (FormatterEvent *event);
+  FormatterEvent *getEventFromAnchorId (string anchorId);
 
-	public:
-		FormatterEvent* getEvent(string id);
-		vector<FormatterEvent*>* getEvents();
-		bool hasSampleEvents();
-		set<AnchorEvent*>* getSampleEvents();
-		double getExpectedStartTime();
-		PresentationEvent* getWholeContentPresentationEvent();
-		void setStartTime(double t);
-		void updateEventDurations();
-		void updateEventDuration(PresentationEvent* event);
-		bool removeEvent(FormatterEvent* event);
-		bool isCompiled();
-		void setCompiled(bool status);
-		void removeNode(Node* node);
-		vector<Node*>* getNodes();
-		vector<Anchor*>* getNCMAnchors();
-		PropertyAnchor* getNCMProperty(string propertyName);
-		NodeNesting* getNodePerspective();
-		NodeNesting* getNodePerspective(Node* node);
-		vector<ExecutionObject*>* getObjectPerspective();
-		vector<ExecutionObject*>* getObjectPerspective(Node* node);
-		vector<Node*>* getParentNodes();
-		FormatterEvent* getMainEvent();
-		virtual bool prepare(FormatterEvent* event, double offsetTime);
-		virtual bool start();
+public:
+  FormatterEvent *getEvent (string id);
+  vector<FormatterEvent *> *getEvents ();
+  bool hasSampleEvents ();
+  set<AnchorEvent *> *getSampleEvents ();
+  double getExpectedStartTime ();
+  PresentationEvent *getWholeContentPresentationEvent ();
+  void setStartTime (double t);
+  void updateEventDurations ();
+  void updateEventDuration (PresentationEvent *event);
+  bool removeEvent (FormatterEvent *event);
+  bool isCompiled ();
+  void setCompiled (bool status);
+  void removeNode (Node *node);
+  vector<Node *> *getNodes ();
+  vector<Anchor *> *getNCMAnchors ();
+  PropertyAnchor *getNCMProperty (string propertyName);
+  NodeNesting *getNodePerspective ();
+  NodeNesting *getNodePerspective (Node *node);
+  vector<ExecutionObject *> *getObjectPerspective ();
+  vector<ExecutionObject *> *getObjectPerspective (Node *node);
+  vector<Node *> *getParentNodes ();
+  FormatterEvent *getMainEvent ();
+  virtual bool prepare (FormatterEvent *event, double offsetTime);
+  virtual bool start ();
 
-		void timeBaseNaturalEnd(int64_t timeValue, short int transType);
-		void updateTransitionTable(
-				double value, IPlayer* player, short int transType);
+  void timeBaseNaturalEnd (int64_t timeValue, short int transType);
+  void updateTransitionTable (double value, IPlayer *player,
+                              short int transType);
 
-		void resetTransitionEvents(short int transType);
-		void prepareTransitionEvents(short int transType, double startTime);
-		set<double>* getTransitionsValues(short int transType);
-		virtual EventTransition* getNextTransition();
-		virtual bool stop();
-		virtual bool abort();
-		virtual bool pause();
-		virtual bool resume();
-		virtual bool setPropertyValue(
-				AttributionEvent* event, string value);
+  void resetTransitionEvents (short int transType);
+  void prepareTransitionEvents (short int transType, double startTime);
+  set<double> *getTransitionsValues (short int transType);
+  virtual EventTransition *getNextTransition ();
+  virtual bool stop ();
+  virtual bool abort ();
+  virtual bool pause ();
+  virtual bool resume ();
+  virtual bool setPropertyValue (AttributionEvent *event, string value);
 
-		virtual string getPropertyValue(string propName);
+  virtual string getPropertyValue (string propName);
 
-		virtual bool unprepare();
+  virtual bool unprepare ();
 
-		void setHandling(bool isHandling);
-		void setHandler(bool isHandler);
-		bool selectionEvent(int keyCode, double currentTime);
-		set<int>* getInputEvents();
+  void setHandling (bool isHandling);
+  void setHandler (bool isHandler);
+  bool selectionEvent (int keyCode, double currentTime);
+  set<int> *getInputEvents ();
 
-	protected:
-		bool lock();
-		bool unlock();
+protected:
+  bool lock ();
+  bool unlock ();
 
-	private:
-		void lockEvents();
-		void unlockEvents();
+private:
+  void lockEvents ();
+  void unlockEvents ();
 
-		void lockParentTable();
-		void unlockParentTable();
-  };
+  void lockParentTable ();
+  void unlockParentTable ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_END
 #endif //_EXECUTIONOBJECT_H_

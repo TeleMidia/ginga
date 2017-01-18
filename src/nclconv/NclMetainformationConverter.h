@@ -28,21 +28,19 @@ using namespace ::ginga::nclconv;
 #include "NclMetainformationParser.h"
 using namespace ::ginga::nclconv;
 
-
 XERCES_CPP_NAMESPACE_USE
 
 GINGA_NCLCONV_BEGIN
 
-   class NclMetainformationConverter : public NclMetainformationParser {
-  	public:
-		NclMetainformationConverter(DocumentParser* documentParser);
-		void* createMeta(
-			    DOMElement* parentElement, void* objGrandParent);
+class NclMetainformationConverter : public NclMetainformationParser
+{
+public:
+  NclMetainformationConverter (DocumentParser *documentParser);
+  void *createMeta (DOMElement *parentElement, void *objGrandParent);
 
-		void* createMetadata(
-			    DOMElement *parentElement, void *objGrandParent);
-	};
+  void *createMetadata (DOMElement *parentElement, void *objGrandParent);
+};
 
 GINGA_NCLCONV_END
 
-#endif //NclMetainformationConverter_H
+#endif // NclMetainformationConverter_H

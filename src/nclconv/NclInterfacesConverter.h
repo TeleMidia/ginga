@@ -47,27 +47,27 @@ using namespace ::ginga::nclconv;
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-
 XERCES_CPP_NAMESPACE_USE
 
 GINGA_NCLCONV_BEGIN
 
-  class NclInterfacesConverter : public NclInterfacesParser {
-	public:
-		NclInterfacesConverter(DocumentParser *documentParser);
-		void *createPort(DOMElement *parentElement, void *objGrandParent);
+class NclInterfacesConverter : public NclInterfacesParser
+{
+public:
+  NclInterfacesConverter (DocumentParser *documentParser);
+  void *createPort (DOMElement *parentElement, void *objGrandParent);
 
-	private:
-		SpatialAnchor *createSpatialAnchor(DOMElement *areaElement);
-		IntervalAnchor *createTemporalAnchor(DOMElement *areaElement);
+private:
+  SpatialAnchor *createSpatialAnchor (DOMElement *areaElement);
+  IntervalAnchor *createTemporalAnchor (DOMElement *areaElement);
 
-	public:
-		void *createProperty(DOMElement *parentElement, void *objGrandParent);
-		void *createArea(DOMElement *parentElement, void *objGrandParent);
-		void *createMapping(DOMElement *parentElement, void *objGrandParent);
-		void *createSwitchPort(DOMElement *parentElement, void *objGrandParent);
-		void addMappingToSwitchPort(void *parentObject, void *childObject);
-  };
+public:
+  void *createProperty (DOMElement *parentElement, void *objGrandParent);
+  void *createArea (DOMElement *parentElement, void *objGrandParent);
+  void *createMapping (DOMElement *parentElement, void *objGrandParent);
+  void *createSwitchPort (DOMElement *parentElement, void *objGrandParent);
+  void addMappingToSwitchPort (void *parentObject, void *childObject);
+};
 
 GINGA_NCLCONV_END
 

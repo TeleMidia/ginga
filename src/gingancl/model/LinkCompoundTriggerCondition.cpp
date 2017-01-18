@@ -20,101 +20,122 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	LinkCompoundTriggerCondition::LinkCompoundTriggerCondition() :
-		    LinkTriggerCondition() {
+LinkCompoundTriggerCondition::LinkCompoundTriggerCondition ()
+    : LinkTriggerCondition ()
+{
 
-		typeSet.insert("LinkCompoundTriggerCondition");
-	}
+  typeSet.insert ("LinkCompoundTriggerCondition");
+}
 
-	LinkCompoundTriggerCondition::~LinkCompoundTriggerCondition() {
-		vector<LinkCondition*>::iterator i;
-		LinkCondition* condition;
+LinkCompoundTriggerCondition::~LinkCompoundTriggerCondition ()
+{
+  vector<LinkCondition *>::iterator i;
+  LinkCondition *condition;
 
-		isDeleting = true;
-		for (i = conditions.begin(); i != conditions.end(); ++i) {
-			condition = (LinkCondition*)(*i);
-			if (condition != NULL) {
-				delete condition;
-				condition = NULL;
-			}
-		}
+  isDeleting = true;
+  for (i = conditions.begin (); i != conditions.end (); ++i)
+    {
+      condition = (LinkCondition *)(*i);
+      if (condition != NULL)
+        {
+          delete condition;
+          condition = NULL;
+        }
+    }
 
-		conditions.clear();
-	}
+  conditions.clear ();
+}
 
-	void LinkCompoundTriggerCondition::addCondition(LinkCondition* condition) {
-		if (condition == NULL) {
-			return;
-		}
+void
+LinkCompoundTriggerCondition::addCondition (LinkCondition *condition)
+{
+  if (condition == NULL)
+    {
+      return;
+    }
 
-		conditions.push_back(condition);
-		if (condition->instanceOf("LinkTriggerCondition")) {
-			((LinkTriggerCondition*)condition)->setTriggerListener(this);
-		}
-	}
+  conditions.push_back (condition);
+  if (condition->instanceOf ("LinkTriggerCondition"))
+    {
+      ((LinkTriggerCondition *)condition)->setTriggerListener (this);
+    }
+}
 
-	vector<FormatterEvent*>* LinkCompoundTriggerCondition::getEvents() {
-		vector<FormatterEvent*>* condEvents;
-		vector<FormatterEvent*>* events;
-		vector<LinkCondition*>::iterator i;
-		vector<FormatterEvent*>::iterator j;
-		LinkCondition* condition;
+vector<FormatterEvent *> *
+LinkCompoundTriggerCondition::getEvents ()
+{
+  vector<FormatterEvent *> *condEvents;
+  vector<FormatterEvent *> *events;
+  vector<LinkCondition *>::iterator i;
+  vector<FormatterEvent *>::iterator j;
+  LinkCondition *condition;
 
-		if (conditions.empty()) {
-			return NULL;
-		}
+  if (conditions.empty ())
+    {
+      return NULL;
+    }
 
-		events = new vector<FormatterEvent*>;
+  events = new vector<FormatterEvent *>;
 
-		for (i = conditions.begin(); i != conditions.end(); ++i) {
-			condition = (LinkCondition*)(*i);
-			condEvents = condition->getEvents();
-			if (condEvents != NULL) {
-				for (j = condEvents->begin(); j != condEvents->end(); ++j) {
-					events->push_back(*j);
-				}
-				delete condEvents;
-				condEvents = NULL;
-			}
-		}
+  for (i = conditions.begin (); i != conditions.end (); ++i)
+    {
+      condition = (LinkCondition *)(*i);
+      condEvents = condition->getEvents ();
+      if (condEvents != NULL)
+        {
+          for (j = condEvents->begin (); j != condEvents->end (); ++j)
+            {
+              events->push_back (*j);
+            }
+          delete condEvents;
+          condEvents = NULL;
+        }
+    }
 
-		if (events->begin() == events->end()) {
-			delete events;
-			return NULL;
-		}
+  if (events->begin () == events->end ())
+    {
+      delete events;
+      return NULL;
+    }
 
-		return events;
-	}
+  return events;
+}
 
-	void LinkCompoundTriggerCondition::conditionSatisfied(void *condition) {
-		/*int i, size;
-		LinkCondition *childCondition;
+void
+LinkCompoundTriggerCondition::conditionSatisfied (void *condition)
+{
+  /*int i, size;
+  LinkCondition *childCondition;
 
-		size = conditions.size();
-		for (i = 0; i < size; i++) {
-			childCondition = (LinkCondition*)(*conditions)[i];
-			if (childCondition != (LinkCondition*)condition &&
-				    childCondition->instanceOf("LinkStatement")) {
+  size = conditions.size();
+  for (i = 0; i < size; i++) {
+          childCondition = (LinkCondition*)(*conditions)[i];
+          if (childCondition != (LinkCondition*)condition &&
+                      childCondition->instanceOf("LinkStatement")) {
 
-				if (op == CompoundCondition::OP_OR) {
-					break;
-				}
-				else {
-					if (!((LinkStatement*)childCondition)->evaluate()) {
-						return;
-					}
-				}
-			}
-		}*/
-		LinkTriggerCondition::conditionSatisfied(condition);
-	}
+                  if (op == CompoundCondition::OP_OR) {
+                          break;
+                  }
+                  else {
+                          if (!((LinkStatement*)childCondition)->evaluate()) {
+                                  return;
+                          }
+                  }
+          }
+  }*/
+  LinkTriggerCondition::conditionSatisfied (condition);
+}
 
-	void LinkCompoundTriggerCondition::evaluationStarted() {
-		notifyConditionObservers(LinkTriggerListener::EVALUATION_STARTED);
-	}
+void
+LinkCompoundTriggerCondition::evaluationStarted ()
+{
+  notifyConditionObservers (LinkTriggerListener::EVALUATION_STARTED);
+}
 
-	void LinkCompoundTriggerCondition::evaluationEnded() {
-		notifyConditionObservers(LinkTriggerListener::EVALUATION_ENDED);
-	}
+void
+LinkCompoundTriggerCondition::evaluationEnded ()
+{
+  notifyConditionObservers (LinkTriggerListener::EVALUATION_ENDED);
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END

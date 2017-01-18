@@ -26,490 +26,547 @@ using namespace ::ginga::util;
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
 
-
 GINGA_MULTIDEVICE_BEGIN
 
-	BaseDeviceDomain::BaseDeviceDomain(bool useMulticast, int srvPort) : DeviceDomain(useMulticast, srvPort) {
-		timerCount    = 0;
+BaseDeviceDomain::BaseDeviceDomain (bool useMulticast, int srvPort)
+    : DeviceDomain (useMulticast, srvPort)
+{
+  timerCount = 0;
 
-		Thread::mutexInit(&pMutex, false);
-		hasNewPassiveTask = false;
-		passiveTimestamp  = 0;
-		lastMediaContentTask.size = 0;
+  Thread::mutexInit (&pMutex, false);
+  hasNewPassiveTask = false;
+  passiveTimestamp = 0;
+  lastMediaContentTask.size = 0;
 
-		deviceClass   = CT_BASE;
-		deviceService = new BaseDeviceService();
+  deviceClass = CT_BASE;
+  deviceService = new BaseDeviceService ();
 
-		if (useMulticast) {
-			passiveSocket = new MulticastSocketService(
-							(char*)(PASSIVE_MCAST_ADDR.c_str()),
-							BROADCAST_PORT + CT_PASSIVE);
-		}
-		else {
-			passiveSocket = new BroadcastDualSocketService(
-							BASE_WRITE_BCAST_PORT, SECO_WRITE_BCAST_PORT);
-		}
-			/*
-		passiveMulticast  = new MulticastSocketService(
-				(char*)(PASSIVE_MCAST_ADDR.c_str()),
-				BROADCAST_PORT + CT_PASSIVE);
-				*/
-	}
+  if (useMulticast)
+    {
+      passiveSocket = new MulticastSocketService (
+          (char *)(PASSIVE_MCAST_ADDR.c_str ()), BROADCAST_PORT + CT_PASSIVE);
+    }
+  else
+    {
+      passiveSocket = new BroadcastDualSocketService (BASE_WRITE_BCAST_PORT,
+                                                      SECO_WRITE_BCAST_PORT);
+    }
+  /*
+passiveMulticast  = new MulticastSocketService(
+          (char*)(PASSIVE_MCAST_ADDR.c_str()),
+          BROADCAST_PORT + CT_PASSIVE);
+          */
+}
 
-	BaseDeviceDomain::~BaseDeviceDomain() {
-		Thread::mutexDestroy(&pMutex);
-	}
+BaseDeviceDomain::~BaseDeviceDomain () { Thread::mutexDestroy (&pMutex); }
 
-	bool BaseDeviceDomain::taskRequest(
-			int destDevClass,
-			char* data,
-			int taskSize) {
+bool
+BaseDeviceDomain::taskRequest (int destDevClass, char *data, int taskSize)
+{
 
-		RemoteTask* task;
+  RemoteTask *task;
 
-		switch (destDevClass) {
-			case CT_PASSIVE:
-				task = new RemoteTask;
-				task->data = data;
-				task->size = taskSize;
-				task->timestamp = getCurrentTimeMillis();
-				//hasNewPassiveTask = true;
-				Thread::mutexLock(&pMutex);
-				passiveTasks.push_back(task);
-				//hasNewPassiveTask = false;
-				Thread::mutexUnlock(&pMutex);
-				return true;
+  switch (destDevClass)
+    {
+    case CT_PASSIVE:
+      task = new RemoteTask;
+      task->data = data;
+      task->size = taskSize;
+      task->timestamp = getCurrentTimeMillis ();
+      // hasNewPassiveTask = true;
+      Thread::mutexLock (&pMutex);
+      passiveTasks.push_back (task);
+      // hasNewPassiveTask = false;
+      Thread::mutexUnlock (&pMutex);
+      return true;
 
-			case CT_ACTIVE:
-				return activeTaskRequest(data, taskSize);
+    case CT_ACTIVE:
+      return activeTaskRequest (data, taskSize);
 
-			default:
-				return false;
-		}
-	}
+    default:
+      return false;
+    }
+}
 
-	bool BaseDeviceDomain::passiveTaskRequest(char* data, int taskSize) {
-		bool repeat = true;
+bool
+BaseDeviceDomain::passiveTaskRequest (char *data, int taskSize)
+{
+  bool repeat = true;
 
-		if (!passiveTasks.empty() || hasNewPassiveTask) {
-			//repeat = false;
-		}
+  if (!passiveTasks.empty () || hasNewPassiveTask)
+    {
+      // repeat = false;
+    }
 
-		passiveSocket->dataRequest(data, taskSize, repeat);
-		return true;
-	}
+  passiveSocket->dataRequest (data, taskSize, repeat);
+  return true;
+}
 
-	bool BaseDeviceDomain::activeTaskRequest(char* data, int taskSize) {
-		/*clog << "BaseDeviceDomain::activeTaskRequest ";
-		clog << endl;*/
+bool
+BaseDeviceDomain::activeTaskRequest (char *data, int taskSize)
+{
+  /*clog << "BaseDeviceDomain::activeTaskRequest ";
+  clog << endl;*/
 
-		return true;
-	}
+  return true;
+}
 
-	void BaseDeviceDomain::receiveConnectionRequest(char* task) {
-		int reqDevClass, width, height, srvPort;
-		clog << "BaseDeviceDomain::receiveConnectionRequest " << endl;
+void
+BaseDeviceDomain::receiveConnectionRequest (char *task)
+{
+  int reqDevClass, width, height, srvPort;
+  clog << "BaseDeviceDomain::receiveConnectionRequest " << endl;
 
-		reqDevClass = (int)(unsigned char)task[0];
-		width = ((((unsigned char)task[1]) & 0xFF) |
-				((((unsigned char)task[2]) << 8) & 0xFF00));
+  reqDevClass = (int)(unsigned char)task[0];
+  width = ((((unsigned char)task[1]) & 0xFF)
+           | ((((unsigned char)task[2]) << 8) & 0xFF00));
 
-		height = ((((unsigned char)task[3]) & 0xFF) |
-				((((unsigned char)task[4]) << 8) & 0xFF00));
+  height = ((((unsigned char)task[3]) & 0xFF)
+            | ((((unsigned char)task[4]) << 8) & 0xFF00));
 
-		srvPort = ((((unsigned char)task[5]) & 0xFF) |
-				((((unsigned char)task[6]) << 8) & 0xFF00));
+  srvPort = ((((unsigned char)task[5]) & 0xFF)
+             | ((((unsigned char)task[6]) << 8) & 0xFF00));
 
-		if (addDevice(reqDevClass, width, height, srvPort)) {
-			schedDevClass = reqDevClass;
-			schedulePost  = FT_ANSWERTOREQUEST;
+  if (addDevice (reqDevClass, width, height, srvPort))
+    {
+      schedDevClass = reqDevClass;
+      schedulePost = FT_ANSWERTOREQUEST;
+    }
+  else
+    {
+      clog << "BaseDeviceDomain::receiveConnectionRequest can't add ";
+      clog << "device" << endl;
+    }
+}
 
-		} else {
-			clog << "BaseDeviceDomain::receiveConnectionRequest can't add ";
-			clog << "device" << endl;
-		}
-	}
+void
+BaseDeviceDomain::postAnswerTask (int reqDeviceClass, int answer)
+{
 
-	void BaseDeviceDomain::postAnswerTask(
-			int reqDeviceClass, int answer) {
+  int taskSize, pos, broadcastPort;
+  int answerPayloadSize = 11;
+  char *task;
+  char *streamSourceIP;
 
-		int taskSize, pos, broadcastPort;
-		int answerPayloadSize = 11;
-		char* task;
-		char* streamSourceIP;
+  clog << "BaseDeviceDomain::postAnswerTask answer '";
+  clog << answer << "' for device '";
+  clog << sourceIp << "', which means '" << getStrIP (sourceIp);
+  clog << "', of class '" << reqDeviceClass << endl;
 
-		clog << "BaseDeviceDomain::postAnswerTask answer '";
-		clog << answer << "' for device '";
-		clog << sourceIp << "', which means '" << getStrIP(sourceIp);
-		clog << "', of class '" << reqDeviceClass << endl;
+  // prepare frame
+  task = mountFrame (myIP, reqDeviceClass, FT_ANSWERTOREQUEST,
+                     answerPayloadSize);
 
-		//prepare frame
-		task = mountFrame(
-				myIP, reqDeviceClass, FT_ANSWERTOREQUEST, answerPayloadSize);
+  // fill prepared frame with answer payload
+  pos = HEADER_SIZE;
 
-		//fill prepared frame with answer payload
-		pos = HEADER_SIZE;
+  streamSourceIP = getStreamFromUInt (sourceIp);
+  memcpy (task + pos, streamSourceIP, 4);
+  delete[] streamSourceIP;
 
-		streamSourceIP = getStreamFromUInt(sourceIp);
-		memcpy(task + pos, streamSourceIP, 4);
-		delete[] streamSourceIP;
+  pos = pos + 4;
+  task[pos] = answer;
 
-		pos = pos + 4;
-		task[pos] = answer;
+  pos++;
+  memcpy (task + pos, task, 4);
 
-		pos++;
-		memcpy(task + pos, task, 4);
+  broadcastPort = broadcastService->getServicePort ();
+  pos = pos + 4;
+  task[pos] = broadcastPort & 0xFF;
+  task[pos + 1] = (broadcastPort & 0xFF00) >> 8;
 
-		broadcastPort = broadcastService->getServicePort();
-		pos = pos + 4;
-		task[pos] = broadcastPort & 0xFF;
-		task[pos+1] = (broadcastPort & 0xFF00) >> 8;
-
-		taskSize = HEADER_SIZE + answerPayloadSize;
-		clog << "BaseDeviceDomain::answer with taskSize="<<taskSize<<endl;
-		broadcastTaskRequest(task, taskSize);
-		clog << "BaseDeviceDomain::called broadcastTaskRequest()"<<endl;
-
-	}
+  taskSize = HEADER_SIZE + answerPayloadSize;
+  clog << "BaseDeviceDomain::answer with taskSize=" << taskSize << endl;
+  broadcastTaskRequest (task, taskSize);
+  clog << "BaseDeviceDomain::called broadcastTaskRequest()" << endl;
+}
 /*
-	void BaseDeviceDomain::postNclMetadata(
-			int devClass, vector<StreamData*>* streams) {
+        void BaseDeviceDomain::postNclMetadata(
+                        int devClass, vector<StreamData*>* streams) {
 
-		char* task;
-		StreamData* streamData;
-		vector<StreamData*>::iterator i;
+                char* task;
+                StreamData* streamData;
+                vector<StreamData*>::iterator i;
 
-		if (devClass != DeviceDomain::CT_BASE &&
-				devClass != DeviceDomain::CT_ACTIVE) {
+                if (devClass != DeviceDomain::CT_BASE &&
+                                devClass != DeviceDomain::CT_ACTIVE) {
 
-			return;
-		}
+                        return;
+                }
 
-		i = streams->begin();
-		while (i != streams->end()) {
-			streamData = *i;
+                i = streams->begin();
+                while (i != streams->end()) {
+                        streamData = *i;
 
-			//prepare frame
-			task = mountFrame(
-					myIP, devClass, FT_MEDIACONTENT, streamData->size);
+                        //prepare frame
+                        task = mountFrame(
+                                        myIP, devClass, FT_MEDIACONTENT,
+   streamData->size);
 
-			memcpy(task + HEADER_SIZE, streamData->stream, streamData->size);
-			taskRequest(devClass, task, streamData->size + HEADER_SIZE);
+                        memcpy(task + HEADER_SIZE, streamData->stream,
+   streamData->size);
+                        taskRequest(devClass, task, streamData->size +
+   HEADER_SIZE);
 
-			delete streamData;
-			streams->erase(i);
-			i = streams->begin();
-		}
-	}*/
+                        delete streamData;
+                        streams->erase(i);
+                        i = streams->begin();
+                }
+        }*/
 
-	bool BaseDeviceDomain::postMediaContentTask(
-			int destDevClass,
-			string url) {
+bool
+BaseDeviceDomain::postMediaContentTask (int destDevClass, string url)
+{
 
-		FILE* fd;
-		int fileSize, bytesRead, tSize;
-		char* task;
+  FILE *fd;
+  int fileSize, bytesRead, tSize;
+  char *task;
 
-		clog << "BaseDeviceDomain::postMediaContentTask file '";
-		clog << url << "' to devices of class '" << destDevClass << "'";
-		clog << endl;
+  clog << "BaseDeviceDomain::postMediaContentTask file '";
+  clog << url << "' to devices of class '" << destDevClass << "'";
+  clog << endl;
 
-		if (destDevClass == 0) {
-			return false;
-		}
+  if (destDevClass == 0)
+    {
+      return false;
+    }
 
-		if (!deviceService->hasDevices()) {
-			clog << "BaseDeviceDomain::postMediaContentTask no devs found!";
-			clog << endl;
-			return false;
-		}
+  if (!deviceService->hasDevices ())
+    {
+      clog << "BaseDeviceDomain::postMediaContentTask no devs found!";
+      clog << endl;
+      return false;
+    }
 
-		fd = fopen(url.c_str(), "rb");
-		if (fd != NULL) {
-			fseek(fd, 0L, SEEK_END);
-			fileSize = ftell(fd);
-			if (fileSize > 0) {
-				fclose(fd);
+  fd = fopen (url.c_str (), "rb");
+  if (fd != NULL)
+    {
+      fseek (fd, 0L, SEEK_END);
+      fileSize = ftell (fd);
+      if (fileSize > 0)
+        {
+          fclose (fd);
 
-				if (fileSize > MAX_FRAME_SIZE) {
-					//TODO: frame segmentation support
-					clog << "BaseDeviceDomain::postMediaContentTask ";
-					clog << "Warning! Can't post a frame that the ";
-					clog << "network doesn't support (" << fileSize;
-					clog << ")" << endl;
-					return false;
-				}
+          if (fileSize > MAX_FRAME_SIZE)
+            {
+              // TODO: frame segmentation support
+              clog << "BaseDeviceDomain::postMediaContentTask ";
+              clog << "Warning! Can't post a frame that the ";
+              clog << "network doesn't support (" << fileSize;
+              clog << ")" << endl;
+              return false;
+            }
 
-				fd = fopen(url.c_str(), "rb");
-				if (fd < 0) {
-					clog << "BaseDeviceDomain::postMediaContentTask ";
-					clog << "Warning! Can't re-open file '" << url;
-					clog << "'" << endl;
-					return false;
-				}
+          fd = fopen (url.c_str (), "rb");
+          if (fd < 0)
+            {
+              clog << "BaseDeviceDomain::postMediaContentTask ";
+              clog << "Warning! Can't re-open file '" << url;
+              clog << "'" << endl;
+              return false;
+            }
 
-				if (destDevClass == DeviceDomain::CT_PASSIVE) {
-					//prepare frame
-					task = mountFrame(
-							myIP, destDevClass, FT_MEDIACONTENT, fileSize);
+          if (destDevClass == DeviceDomain::CT_PASSIVE)
+            {
+              // prepare frame
+              task
+                  = mountFrame (myIP, destDevClass, FT_MEDIACONTENT, fileSize);
 
-					bytesRead = fread(task + HEADER_SIZE, 1, fileSize, fd);
-					if (bytesRead == fileSize) {
-						tSize = fileSize + HEADER_SIZE;
-						if (lastMediaContentTask.size != 0) {
-							delete[] lastMediaContentTask.data;
-						}
-						lastMediaContentTask.data = new char[tSize];
-						lastMediaContentTask.size = tSize;
-						memcpy(lastMediaContentTask.data, task, tSize);
+              bytesRead = fread (task + HEADER_SIZE, 1, fileSize, fd);
+              if (bytesRead == fileSize)
+                {
+                  tSize = fileSize + HEADER_SIZE;
+                  if (lastMediaContentTask.size != 0)
+                    {
+                      delete[] lastMediaContentTask.data;
+                    }
+                  lastMediaContentTask.data = new char[tSize];
+                  lastMediaContentTask.size = tSize;
+                  memcpy (lastMediaContentTask.data, task, tSize);
 
-						taskRequest(destDevClass, task, tSize);
+                  taskRequest (destDevClass, task, tSize);
+                }
+              else
+                {
+                  clog << "BaseDeviceDomain::";
+                  clog << "postMediaContentTask ";
+                  clog << "Warning! Can't read '" << fileSize;
+                  clog << "' bytes from file '" << url << "' (";
+                  clog << bytesRead << " bytes read)" << endl;
+                  delete[] task;
+                }
+            }
+        }
+      else
+        {
+          clog << "BaseDeviceDomain::postMediaContentTask ";
+          clog << "Warning! Can't seek file '" << url << "'" << endl;
+        }
 
-						} else {
-						clog << "BaseDeviceDomain::";
-						clog << "postMediaContentTask ";
-						clog << "Warning! Can't read '" << fileSize;
-						clog << "' bytes from file '" << url << "' (";
-						clog << bytesRead << " bytes read)" << endl;
-						delete[] task;
-					}
-				}
+      fclose (fd);
+    }
+  else
+    {
+      clog << "BaseDeviceDomain::postMediaContentTask ";
+      clog << "Warning! Can't open file '" << url << "'" << endl;
+    }
 
-			} else {
-				clog << "BaseDeviceDomain::postMediaContentTask ";
-				clog << "Warning! Can't seek file '" << url << "'" << endl;
-			}
+  return true;
+}
 
-			fclose(fd);
+bool
+BaseDeviceDomain::receiveEventTask (char *task)
+{
+  clog << "BaseDeviceDomain::receiveEventTask destClass '";
+  clog << destClass << "'" << endl;
+  return deviceService->receiveEvent (sourceIp, frameType, task,
+                                      this->frameSize);
+}
 
-		} else {
-			clog << "BaseDeviceDomain::postMediaContentTask ";
-			clog << "Warning! Can't open file '" << url << "'" << endl;
-		}
+void
+BaseDeviceDomain::setDeviceInfo (int width, int height,
+                                 string base_device_ncl_path)
+{
+  DeviceDomain::setDeviceInfo (width, height, base_device_ncl_path);
+  connected = true;
+}
 
-		return true;
-	}
+bool
+BaseDeviceDomain::runControlTask ()
+{
+  char *task = NULL;
 
-	bool BaseDeviceDomain::receiveEventTask(char* task) {
-		clog << "BaseDeviceDomain::receiveEventTask destClass '";
-		clog << destClass << "'" << endl;
-		return deviceService->receiveEvent(
-				sourceIp, frameType, task, this->frameSize);
-	}
+  // clog << "BaseDeviceDomain::runControlTask :: " << endl;
 
-	void BaseDeviceDomain::setDeviceInfo(int width, int height, string base_device_ncl_path) {
-		DeviceDomain::setDeviceInfo(width, height,base_device_ncl_path);
-		connected = true;
-	}
+  if (taskIndicationFlag)
+    {
+      task = taskReceive ();
+      if (task == NULL)
+        {
+          taskIndicationFlag = false;
+          return false;
+        }
+      /*
+                              if (myIP == sourceIp) {
+                                      clog << "DeviceDomain::runControlTask got
+         my own task ";
+                                      clog << "(size = '" << frameSize << "')"
+         << endl;
 
-	bool BaseDeviceDomain::runControlTask() {
-		char* task = NULL;
+                                      delete[] task;
+                                      task = NULL;
+                                      taskIndicationFlag = false;
+                                      return false;
+                              }
+      */
+      if (destClass != deviceClass)
+        {
+          clog << "DeviceDomain::runControlTask Task isn't for me!";
+          clog << endl;
 
-		//clog << "BaseDeviceDomain::runControlTask :: " << endl;
+          delete[] task;
+          task = NULL;
+          taskIndicationFlag = false;
+          return false;
+        }
 
-		if (taskIndicationFlag) {
-			task = taskReceive();
-			if (task == NULL) {
-				taskIndicationFlag = false;
-				return false;
-			}
-/*
-			if (myIP == sourceIp) {
-				clog << "DeviceDomain::runControlTask got my own task ";
-				clog << "(size = '" << frameSize << "')" << endl;
+      if (frameSize + HEADER_SIZE != bytesRecv)
+        {
+          delete[] task;
+          task = NULL;
+          taskIndicationFlag = false;
+          clog << "DeviceDomain::runControlTask Warning! Invalid task ";
+          clog << "size '" << frameSize + HEADER_SIZE << "' (received '";
+          clog << bytesRecv << "'" << endl;
+          return false;
+        }
 
-				delete[] task;
-				task = NULL;
-				taskIndicationFlag = false;
-				return false;
-			}
-*/
-			if (destClass != deviceClass) {
-				clog << "DeviceDomain::runControlTask Task isn't for me!";
-				clog << endl;
+      clog << "BaseDeviceDomain::runControlTask frame type '";
+      clog << frameType << "'" << endl;
 
-				delete[] task;
-				task = NULL;
-				taskIndicationFlag = false;
-				return false;
-			}
+      switch (frameType)
+        {
+        case FT_CONNECTIONREQUEST:
+          // TODO: fix passive connection request - use 7 bytes as well (add
+          // port field)
+          if ((frameSize != 5) && (frameSize != 7))
+            {
+              clog << "25BaseDeviceDomain::runControlTask Warning!";
+              clog << "received a connection request frame with";
+              clog << " wrong size: '" << frameSize << "'" << endl;
+            }
+          else
+            {
+              clog << "calling receiveConnectionRequest" << endl;
+              receiveConnectionRequest (task);
+            }
+          break;
 
-			if (frameSize + HEADER_SIZE != bytesRecv) {
-				delete[] task;
-				task = NULL;
-				taskIndicationFlag = false;
-				clog << "DeviceDomain::runControlTask Warning! Invalid task ";
-				clog << "size '" << frameSize + HEADER_SIZE << "' (received '";
-				clog << bytesRecv << "'" << endl;
-				return false;
-			}
+        case FT_KEEPALIVE:
+          clog << "BaseDeviceDomain::runControlTask KEEPALIVE";
+          clog << endl;
+          break;
 
-			clog << "BaseDeviceDomain::runControlTask frame type '";
-			clog << frameType << "'" << endl;
+        // what?
+        default:
+          clog << "DeviceDomain::runControlTask frame type ";
+          clog << "WHAT?" << endl;
+          delete[] task;
+          task = NULL;
+          taskIndicationFlag = false;
+          return false;
+        }
 
-			switch (frameType) {
-				case FT_CONNECTIONREQUEST:
-					//TODO: fix passive connection request - use 7 bytes as well (add port field)
-					if ((frameSize != 5)&&(frameSize != 7)) {
-						clog << "25BaseDeviceDomain::runControlTask Warning!";
-						clog << "received a connection request frame with";
-						clog << " wrong size: '" << frameSize << "'" << endl;
+      delete[] task;
+      task = NULL;
+    }
+  else
+    {
+      clog << "DeviceDomain::runControlTask Warning! Trying to control";
+      clog << "a non indicated task." << endl;
+    }
 
-					} else {
-						clog << "calling receiveConnectionRequest" << endl;
-						receiveConnectionRequest(task);
-					}
-					break;
+  taskIndicationFlag = false;
+  return true;
+}
 
-				case FT_KEEPALIVE:
-					clog << "BaseDeviceDomain::runControlTask KEEPALIVE";
-					clog << endl;
-					break;
+bool
+BaseDeviceDomain::runDataTask ()
+{
+  char *task;
 
-				//what?
-				default:
-					clog << "DeviceDomain::runControlTask frame type ";
-					clog << "WHAT?" << endl;
-					delete[] task;
-					task = NULL;
-					taskIndicationFlag = false;
-					return false;
-			}
+  task = taskReceive ();
+  if (task == NULL)
+    {
+      return false;
+    }
+  /*
+                  if (myIP == sourceIp) {
+                          clog << "BaseDeviceDomain::runDataTask receiving my
+     own task";
+                          clog << endl;
 
-			delete[] task;
-			task = NULL;
+                          delete[] task;
+                          return false;
+                  }
+  */
+  if (destClass != deviceClass)
+    {
+      clog << "BaseDeviceDomain::runDataTask";
+      clog << " should never reach here (receiving wrong destination";
+      clog << " class '" << destClass << "')";
+      clog << endl;
 
-		} else {
-			clog << "DeviceDomain::runControlTask Warning! Trying to control";
-			clog << "a non indicated task." << endl;
-		}
+      delete[] task;
+      return false;
+    }
 
-		taskIndicationFlag = false;
-		return true;
-	}
+  if (frameSize + HEADER_SIZE != bytesRecv)
+    {
+      delete[] task;
+      clog << "BaseDeviceDomain::runDataTask Warning! wrong ";
+      clog << "frameSize '" << bytesRecv << "'" << endl;
+      return false;
+    }
 
-	bool BaseDeviceDomain::runDataTask() {
-		char* task;
+  switch (frameType)
+    {
+    case FT_SELECTIONEVENT:
+    case FT_ATTRIBUTIONEVENT:
+    case FT_PRESENTATIONEVENT:
+      receiveEventTask (task);
+      break;
 
-		task = taskReceive();
-		if (task == NULL) {
-			return false;
-		}
-/*
-		if (myIP == sourceIp) {
-			clog << "BaseDeviceDomain::runDataTask receiving my own task";
-			clog << endl;
+    // what?
+    default:
+      clog << "BaseDeviceDomain::runDataTask frame type ";
+      clog << "WHAT?" << endl;
+      delete[] task;
+      return false;
+    }
 
-			delete[] task;
-			return false;
-		}
-*/
-		if (destClass != deviceClass) {
-			clog << "BaseDeviceDomain::runDataTask";
-			clog << " should never reach here (receiving wrong destination";
-			clog << " class '" << destClass << "')";
-			clog << endl;
+  delete[] task;
+  return true;
+}
 
-			delete[] task;
-			return false;
-		}
+void
+BaseDeviceDomain::checkPassiveTasks ()
+{
+  vector<RemoteTask *>::iterator i;
+  RemoteTask *remoteTask;
+  char *data;
+  int taskSize;
 
-		if (frameSize + HEADER_SIZE != bytesRecv) {
-			delete[] task;
-			clog << "BaseDeviceDomain::runDataTask Warning! wrong ";
-			clog << "frameSize '" << bytesRecv << "'" << endl;
-			return false;
-		}
+  Thread::mutexLock (&pMutex);
+  i = passiveTasks.begin ();
+  if (i != passiveTasks.end ())
+    {
+      remoteTask = *i;
+      data = remoteTask->data;
+      taskSize = remoteTask->size;
+      passiveTasks.erase (i);
 
-		switch (frameType) {
-			case FT_SELECTIONEVENT:
-			case FT_ATTRIBUTIONEVENT:
-			case FT_PRESENTATIONEVENT:
-				receiveEventTask(task);
-				break;
+      if (((remoteTask->timestamp - passiveTimestamp) > (1000 / PASSIVE_FPS))
+          || passiveTimestamp == 0)
+        {
 
-			//what?
-			default:
-				clog << "BaseDeviceDomain::runDataTask frame type ";
-				clog << "WHAT?" << endl;
-				delete[] task;
-				return false;
-		}
+          passiveTimestamp = getCurrentTimeMillis ();
+          passiveTaskRequest (data, taskSize);
+        }
+      else
+        {
+          // clog << "CONTIGUOUS FRAME" << endl;
+          /*if (passiveTasks.size() > 1) {
+                  clog << "DISCARDING FRAME" << endl;
+                  delete[] data;
 
-		delete[] task;
-		return true;
-	}
+          } else {*/
+          passiveTimestamp = getCurrentTimeMillis ();
+          passiveTaskRequest (data, taskSize);
+          //}
+        }
 
-	void BaseDeviceDomain::checkPassiveTasks() {
-		vector<RemoteTask*>::iterator i;
-		RemoteTask* remoteTask;
-		char* data;
-		int taskSize;
+      delete remoteTask;
+    }
+  Thread::mutexUnlock (&pMutex);
+}
 
-		Thread::mutexLock(&pMutex);
-		i = passiveTasks.begin();
-		if (i != passiveTasks.end()) {
-			remoteTask = *i;
-			data = remoteTask->data;
-			taskSize = remoteTask->size;
-			passiveTasks.erase(i);
+void
+BaseDeviceDomain::checkDomainTasks ()
+{
+  char *data;
 
-			if (((remoteTask->timestamp - passiveTimestamp) >
-					(1000 / PASSIVE_FPS)) || passiveTimestamp == 0) {
+  DeviceDomain::checkDomainTasks ();
+  if (newAnswerPosted)
+    {
+      newAnswerPosted = false;
+      deviceService->newDeviceConnected (sourceIp);
+    }
 
-				passiveTimestamp = getCurrentTimeMillis();
-				passiveTaskRequest(data, taskSize);
+  if (passiveSocket->checkInputBuffer (mdFrame, &bytesRecv))
+    {
+      runDataTask ();
+    }
 
-			} else {
-				//clog << "CONTIGUOUS FRAME" << endl;
-				/*if (passiveTasks.size() > 1) {
-					clog << "DISCARDING FRAME" << endl;
-					delete[] data;
+  checkPassiveTasks ();
+  if (!passiveSocket->checkOutputBuffer ())
+    {
+      if (lastMediaContentTask.size != 0)
+        {
+          timerCount++;
+          if (timerCount > 5)
+            {
+              data = new char[lastMediaContentTask.size];
+              memcpy (data, lastMediaContentTask.data,
+                      lastMediaContentTask.size);
 
-				} else {*/
-					passiveTimestamp = getCurrentTimeMillis();
-					passiveTaskRequest(data, taskSize);
-				//}
-			}
+              taskRequest (DeviceDomain::CT_PASSIVE, data,
+                           lastMediaContentTask.size);
 
-			delete remoteTask;
-		}
-		Thread::mutexUnlock(&pMutex);
-	}
-
-	void BaseDeviceDomain::checkDomainTasks() {
-		char* data;
-
-		DeviceDomain::checkDomainTasks();
-		if (newAnswerPosted) {
-			newAnswerPosted = false;
-			deviceService->newDeviceConnected(sourceIp);
-		}
-
-		if (passiveSocket->checkInputBuffer(mdFrame, &bytesRecv)) {
- 			runDataTask();
-		}
-
-		checkPassiveTasks();
-		if (!passiveSocket->checkOutputBuffer()) {
-			if (lastMediaContentTask.size != 0) {
-				timerCount++;
-				if (timerCount > 5) {
-					data = new char[lastMediaContentTask.size];
-					memcpy(
-							data,
-							lastMediaContentTask.data,
-							lastMediaContentTask.size);
-
-					taskRequest(
-							DeviceDomain::CT_PASSIVE,
-							data,
-							lastMediaContentTask.size);
-
-					timerCount = 0;
-				}
-			}
-		}
-	}
+              timerCount = 0;
+            }
+        }
+    }
+}
 
 GINGA_MULTIDEVICE_END

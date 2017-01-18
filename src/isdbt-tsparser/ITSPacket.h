@@ -20,28 +20,29 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TSPARSER_BEGIN
 
-	class ITSPacket {
-	public:
-		static const unsigned char TS_PACKET_SIZE = 188;
-		static const unsigned char TS_PAYLOAD_SIZE = TS_PACKET_SIZE - 4;
-		static const unsigned char TS_PACKET_SYNC_BYTE = 0x47;
-		virtual ~ITSPacket(){};
-		virtual bool isConstructionFailed()=0;
-		virtual unsigned short getPid()=0;
-		virtual char getPacketData(char **dataStream)=0;
-		virtual void getPayload(char streamData[TS_PAYLOAD_SIZE])=0;
-		virtual unsigned char getPayloadSize()=0;
-		virtual void getPayload2(char streamData[TS_PAYLOAD_SIZE])=0;
-		virtual unsigned char getPayloadSize2()=0;
-		virtual bool getStartIndicator()=0;
-		virtual unsigned char getPointerField()=0;
-		virtual unsigned char getAdaptationFieldControl()=0;
-		virtual unsigned char getContinuityCounter()=0;
-		virtual void setContinuityCounter(unsigned int counter)=0;
-		virtual void print()=0;
-		virtual void setPacketCount(unsigned int count)=0;
-		virtual unsigned int getPacketCount()=0;
-	};
+class ITSPacket
+{
+public:
+  static const unsigned char TS_PACKET_SIZE = 188;
+  static const unsigned char TS_PAYLOAD_SIZE = TS_PACKET_SIZE - 4;
+  static const unsigned char TS_PACKET_SYNC_BYTE = 0x47;
+  virtual ~ITSPacket (){};
+  virtual bool isConstructionFailed () = 0;
+  virtual unsigned short getPid () = 0;
+  virtual char getPacketData (char **dataStream) = 0;
+  virtual void getPayload (char streamData[TS_PAYLOAD_SIZE]) = 0;
+  virtual unsigned char getPayloadSize () = 0;
+  virtual void getPayload2 (char streamData[TS_PAYLOAD_SIZE]) = 0;
+  virtual unsigned char getPayloadSize2 () = 0;
+  virtual bool getStartIndicator () = 0;
+  virtual unsigned char getPointerField () = 0;
+  virtual unsigned char getAdaptationFieldControl () = 0;
+  virtual unsigned char getContinuityCounter () = 0;
+  virtual void setContinuityCounter (unsigned int counter) = 0;
+  virtual void print () = 0;
+  virtual void setPacketCount (unsigned int count) = 0;
+  virtual unsigned int getPacketCount () = 0;
+};
 
 GINGA_TSPARSER_END
 

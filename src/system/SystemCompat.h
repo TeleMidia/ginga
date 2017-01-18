@@ -38,56 +38,56 @@ extern "C" {
 #define snprintf sprintf_s
 #endif
 
-	#include <sys/timeb.h>
-	#include <sys/types.h>
-	#include <time.h>
-	#include <direct.h>
-	#include <io.h>
-	#include <windows.h>
-	#include <winbase.h>
-	#include <winsock2.h>
-  #ifdef WINSTRUCTS
-	#include <Ws2tcpip.h>
-  #endif
-	#pragma comment(lib,"ws2_32.lib")
+#include <sys/timeb.h>
+#include <sys/types.h>
+#include <time.h>
+#include <direct.h>
+#include <io.h>
+#include <windows.h>
+#include <winbase.h>
+#include <winsock2.h>
+#ifdef WINSTRUCTS
+#include <Ws2tcpip.h>
+#endif
+#pragma comment(lib, "ws2_32.lib")
 
 #else
-  #if HAVE_SYS_SYSINFO_H
-	#include <sys/sysinfo.h>
-  #endif
+#if HAVE_SYS_SYSINFO_H
+#include <sys/sysinfo.h>
+#endif
 
-  #if (defined HAVE_SYS_SOCKET_H || defined HAVE_IF_H)
-    #ifdef STDC_HEADERS
-	#include <stdlib.h>
-	#include <stddef.h>
-    #else
-      #ifdef HAVE_STDLIB_H
-	#include <stdlib.h>
-      #endif
-    #endif
-  #endif
+#if (defined HAVE_SYS_SOCKET_H || defined HAVE_IF_H)
+#ifdef STDC_HEADERS
+#include <stdlib.h>
+#include <stddef.h>
+#else
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
+#endif
+#endif
 
-	#include <sys/param.h>
-	#include <unistd.h>
-	#include <sys/resource.h>
-	#include <signal.h>
-	#include <sys/utsname.h>
+#include <sys/param.h>
+#include <unistd.h>
+#include <sys/resource.h>
+#include <signal.h>
+#include <sys/utsname.h>
 
-	#include <sys/types.h>
-	#include <sys/stat.h>
-	#include <sys/ioctl.h>
-	#include <sys/time.h>
-	#include <netinet/in.h>
-	#include <arpa/inet.h>
-	#include <netdb.h>
-	#include <net/if.h>
-  #ifdef HAVE_SYS_SOCKET_H
-	#include <sys/socket.h>
-  #endif
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/ioctl.h>
+#include <sys/time.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <net/if.h>
+#ifdef HAVE_SYS_SOCKET_H
+#include <sys/socket.h>
+#endif
 
-  #ifdef HAVE_IF_H
-	#include <net/if.h>
-  #endif
+#ifdef HAVE_IF_H
+#include <net/if.h>
+#endif
 #endif
 }
 
@@ -95,12 +95,12 @@ extern "C" {
 using namespace ::ginga::util;
 
 #ifndef INT64_C
-#define INT64_C(c) (c ## LL)
-#endif //INT64_C
+#define INT64_C(c) (c##LL)
+#endif // INT64_C
 
 #ifndef UINT64_C
-#define UINT64_C(c) (c ## ULL)
-#endif //UINT64_C
+#define UINT64_C(c) (c##ULL)
+#endif // UINT64_C
 
 #ifndef __INT64_C
 #define __INT64_C int64_t
@@ -113,8 +113,8 @@ using namespace ::ginga::util;
 #if defined(_MSC_VER) && !defined(__MINGW32__)
 struct timezone
 {
- int  tz_minuteswest; /* minutes W of Greenwich */
- int  tz_dsttime;     /* type of dst correction */
+  int tz_minuteswest; /* minutes W of Greenwich */
+  int tz_dsttime;     /* type of dst correction */
 };
 
 typedef HANDLE PipeDescriptor;
@@ -143,103 +143,106 @@ typedef int PipeDescriptor;
 
 GINGA_SYSTEM_BEGIN
 
-	class SystemCompat {
-		private:
-			static string filesPref;
-			static string ctxFilesPref;
-			static string installPref;
-			static string userCurrentPath;
-			static string gingaCurrentPath;
-			static string pathD;
-			static string iUriD;
-			static string fUriD;
-			static string gingaPrefix;
-			static bool initialized;
-			static void* cmInstance;
+class SystemCompat
+{
+private:
+  static string filesPref;
+  static string ctxFilesPref;
+  static string installPref;
+  static string userCurrentPath;
+  static string gingaCurrentPath;
+  static string pathD;
+  static string iUriD;
+  static string fUriD;
+  static string gingaPrefix;
+  static bool initialized;
+  static void *cmInstance;
 
-			static void checkValues();
-			static void initializeGingaPrefix();
-			static void initializeGingaPath();
-			static void initializeUserCurrentPath();
-			static void initializeGingaConfigFile();
+  static void checkValues ();
+  static void initializeGingaPrefix ();
+  static void initializeGingaPath ();
+  static void initializeUserCurrentPath ();
+  static void initializeGingaConfigFile ();
 
-		public:
-			/********
-			 * URIs *
-			 ********/
-			static string getGingaPrefix();
-            static string updatePath(string dir);
-            static string updatePath(string dir, string separator);
-            static bool isXmlStr(string location);
-			static bool checkUriPrefix(string uri);
-			static bool isAbsolutePath(string path);
+public:
+  /********
+   * URIs *
+   ********/
+  static string getGingaPrefix ();
+  static string updatePath (string dir);
+  static string updatePath (string dir, string separator);
+  static bool isXmlStr (string location);
+  static bool checkUriPrefix (string uri);
+  static bool isAbsolutePath (string path);
 
-			static string getIUriD();
-			static string getFUriD();
+  static string getIUriD ();
+  static string getFUriD ();
 
-			static string getPath(string filename);
-			static string convertRelativePath(string relPath);
+  static string getPath (string filename);
+  static string convertRelativePath (string relPath);
 
-			static string getGingaBinPath();
-			static string getUserCurrentPath();
+  static string getGingaBinPath ();
+  static string getUserCurrentPath ();
 
-			/*
-			 * defines a new base directory to ginga context files
-			 * use it carefully
-			 */
-			static void setGingaContextPrefix(string newBaseDir);
+  /*
+   * defines a new base directory to ginga context files
+   * use it carefully
+   */
+  static void setGingaContextPrefix (string newBaseDir);
 
-			/*
-			 * get base directory to ginga context files
-			 */
-			static string getGingaContextPrefix();
+  /*
+   * get base directory to ginga context files
+   */
+  static string getGingaContextPrefix ();
 
-			/*
-			 * updates the URL with specific system delimiter
-			 * and append with ginga config files prefix
-			 */
-			static string appendGingaFilesPrefix(string relUrl);
+  /*
+   * updates the URL with specific system delimiter
+   * and append with ginga config files prefix
+   */
+  static string appendGingaFilesPrefix (string relUrl);
 
-			/*
-			 * updates the URL with specific system delimiter
-			 * and append with ginga config install prefix
-			 */
-			static string appendGingaInstallPrefix(string relUrl);
+  /*
+   * updates the URL with specific system delimiter
+   * and append with ginga config install prefix
+   */
+  static string appendGingaInstallPrefix (string relUrl);
 
-			/**********************
-			 * Specific Functions *
-			 **********************/
-			static const short LOG_NULL = 0;
-			static const short LOG_STDO = 1;
-			static const short LOG_FILE = 2;
-			static void setLogTo(short logType, string sufix="");
+  /**********************
+   * Specific Functions *
+   **********************/
+  static const short LOG_NULL = 0;
+  static const short LOG_STDO = 1;
+  static const short LOG_FILE = 2;
+  static void setLogTo (short logType, string sufix = "");
 
-			/******************
-			 * Time functions *
-			 ******************/
-			static int getUserClock(struct timeval* usrClk);
+  /******************
+   * Time functions *
+   ******************/
+  static int getUserClock (struct timeval *usrClk);
 
-			/******************
-			 * Pipe Functions *
-			 ******************/
-			static string checkPipeName(string pipeName);
+  /******************
+   * Pipe Functions *
+   ******************/
+  static string checkPipeName (string pipeName);
 
-		private:
-			static void checkPipeDescriptor(PipeDescriptor pd);
+private:
+  static void checkPipeDescriptor (PipeDescriptor pd);
 
-		public:
-			static bool createPipe(string pipeName, PipeDescriptor* pd);
-			static bool openPipe(string pipeName, PipeDescriptor* pd);
-			static void closePipe(PipeDescriptor pd);
-			static int readPipe(PipeDescriptor pd, char* buffer, int buffSize);
-			static int writePipe(PipeDescriptor pd, char* data, int dataSize);
+public:
+  static bool createPipe (string pipeName, PipeDescriptor *pd);
+  static bool openPipe (string pipeName, PipeDescriptor *pd);
+  static void closePipe (PipeDescriptor pd);
+  static int readPipe (PipeDescriptor pd, char *buffer, int buffSize);
+  static int writePipe (PipeDescriptor pd, char *data, int dataSize);
 
-			/*****************
-			 * Zip Functions *
-			 *****************/
-			static int zip_directory(const string &zipfile_path, const string &directory_path, const string &iUriD); // REFACTORING
-			static int unzip_file(const char *zipname, const char *filedir);
-	};
+  /*****************
+   * Zip Functions *
+   *****************/
+  static int zip_directory (const string &zipfile_path,
+                            const string &directory_path,
+                            const string &iUriD); // REFACTORING
+  static int unzip_file (const char *zipname, const char *filedir);
+};
 
 GINGA_SYSTEM_END
 

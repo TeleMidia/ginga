@@ -20,61 +20,70 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCLCONV_BEGIN
 
-	NclImportParser::NclImportParser(
-		    DocumentParser *documentParser) : ModuleParser(documentParser) {
+NclImportParser::NclImportParser (DocumentParser *documentParser)
+    : ModuleParser (documentParser)
+{
+}
 
+void *
+NclImportParser::parseImportedDocumentBase (DOMElement *parentElement,
+                                            void *objGrandParent)
+{
 
-	}
+  void *parentObject;
+  DOMNodeList *elementNodeList;
+  DOMElement *element;
+  DOMNode *node;
+  string elementTagName;
+  void *elementObject;
 
-	void *NclImportParser::parseImportedDocumentBase(
-		    DOMElement *parentElement, void *objGrandParent) {
+  // pre-compile attributes
+  parentObject = createImportedDocumentBase (parentElement, objGrandParent);
 
-		void *parentObject;
-		DOMNodeList *elementNodeList;
-		DOMElement *element;
-		DOMNode *node;
-		string elementTagName;
-		void *elementObject;
+  if (parentObject == NULL)
+    {
+      return NULL;
+    }
 
-		//pre-compile attributes
-		parentObject = createImportedDocumentBase(
-			    parentElement, objGrandParent);
+  elementNodeList = parentElement->getChildNodes ();
+  for (int i = 0; i < (int)elementNodeList->getLength (); i++)
+    {
+      node = elementNodeList->item (i);
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+        {
+          element = (DOMElement *)node;
+          elementTagName = XMLString::transcode (element->getTagName ());
+          if (XMLString::compareIString (elementTagName.c_str (), "importNCL")
+              == 0)
+            {
 
-		if (parentObject == NULL) {
-			return NULL;
-		}
+              elementObject = parseImportNCL (element, parentObject);
+              if (elementObject != NULL)
+                {
+                  addImportNCLToImportedDocumentBase (parentObject,
+                                                      elementObject);
+                }
+            }
+        }
+    }
 
-		elementNodeList = parentElement->getChildNodes();
-		for (int i = 0; i < (int)elementNodeList->getLength(); i++) {
-			node = elementNodeList->item(i);
-			if(node->getNodeType()==DOMNode::ELEMENT_NODE){
-				element = (DOMElement*)node;
-				elementTagName = XMLString::transcode( element->getTagName() );
-				if (XMLString::compareIString(
-					     elementTagName.c_str(), "importNCL") == 0) {
+  return parentObject;
+}
 
-					elementObject = parseImportNCL(element, parentObject);
-					if (elementObject != NULL) {
-						addImportNCLToImportedDocumentBase(
-							    parentObject, elementObject);
-					}
-				}
-			}
-		}
+void *
+NclImportParser::parseImportNCL (DOMElement *parentElement,
+                                 void *objGrandParent)
+{
 
-		return parentObject;
-	}
+  return createImportNCL (parentElement, objGrandParent);
+}
 
-	void *NclImportParser::parseImportNCL(
-		    DOMElement *parentElement, void *objGrandParent) {
+void *
+NclImportParser::parseImportBase (DOMElement *parentElement,
+                                  void *objGrandParent)
+{
 
-		return createImportNCL(parentElement, objGrandParent);
-	}
-
-	void *NclImportParser::parseImportBase(
-		    DOMElement *parentElement, void *objGrandParent) {
-
-		return createImportBase(parentElement, objGrandParent);
-	}
+  return createImportBase (parentElement, objGrandParent);
+}
 
 GINGA_NCLCONV_END

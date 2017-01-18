@@ -25,31 +25,33 @@ using namespace ::ginga::util;
 #include "TriggerExpression.h"
 #include "Role.h"
 
-
 GINGA_NCL_BEGIN
 
-	class SimpleCondition : public TriggerExpression, public Role {
-		private:
-			string key;
-			short transition;
-			short qualifier;
+class SimpleCondition : public TriggerExpression, public Role
+{
+private:
+  string key;
+  short transition;
+  short qualifier;
 
-		public:
-			static const short NO_QUALIFIER = -1;
-			SimpleCondition(string role);
-			virtual ~SimpleCondition(){};
+public:
+  static const short NO_QUALIFIER = -1;
+  SimpleCondition (string role);
+  virtual ~SimpleCondition (){};
 
-			void setLabel(string id);
-			string getKey();
-			void setKey(string key);
-			short getTransition();
-			void setTransition(short transition);
-			short getQualifier();
-			void setQualifier(short qualifier);
-			bool instanceOf(string type) {
-				return TriggerExpression::instanceOf(type);
-			}
-	};
+  void setLabel (string id);
+  string getKey ();
+  void setKey (string key);
+  short getTransition ();
+  void setTransition (short transition);
+  short getQualifier ();
+  void setQualifier (short qualifier);
+  bool
+  instanceOf (string type)
+  {
+    return TriggerExpression::instanceOf (type);
+  }
+};
 
 GINGA_NCL_END
 

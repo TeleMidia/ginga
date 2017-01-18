@@ -23,11 +23,12 @@ using namespace ::ginga::ncl;
 
 GINGA_NCL_BEGIN
 
-	class Rule : public Entity {
-		public:
-			Rule(string id);
-			virtual ~Rule(){};
-	};
+class Rule : public Entity
+{
+public:
+  Rule (string id);
+  virtual ~Rule (){};
+};
 
 GINGA_NCL_END
 

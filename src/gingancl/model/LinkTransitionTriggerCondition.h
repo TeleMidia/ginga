@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _LINKTRANSITIONTRIGGERCONDITION_H_
 #define _LINKTRANSITIONTRIGGERCONDITION_H_
 
-
 #include "ncl/Bind.h"
 using namespace ::ginga::ncl;
 
@@ -31,30 +30,31 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-  class LinkTransitionTriggerCondition : public LinkTriggerCondition,
-  	    public IEventListener {
+class LinkTransitionTriggerCondition : public LinkTriggerCondition,
+                                       public IEventListener
+{
 
-	protected:
-		FormatterEvent* event;
-		short transition;
-		Bind* bind;
+protected:
+  FormatterEvent *event;
+  short transition;
+  Bind *bind;
 
-	public:
-		LinkTransitionTriggerCondition(
-				FormatterEvent* event, short transition, Bind* bind);
+public:
+  LinkTransitionTriggerCondition (FormatterEvent *event, short transition,
+                                  Bind *bind);
 
-		virtual ~LinkTransitionTriggerCondition();
+  virtual ~LinkTransitionTriggerCondition ();
 
-		Bind* getBind();
+  Bind *getBind ();
 
-		virtual void eventStateChanged(
-			    void* event, short transition, short previousState);
+  virtual void eventStateChanged (void *event, short transition,
+                                  short previousState);
 
-		short getPriorityType();
-		FormatterEvent* getEvent();
-		short getTransition();
-		virtual vector<FormatterEvent*>* getEvents();
-  };
+  short getPriorityType ();
+  FormatterEvent *getEvent ();
+  short getTransition ();
+  virtual vector<FormatterEvent *> *getEvents ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_LINKTRANSITIONTRIGGERCONDITION_H_

@@ -20,30 +20,41 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	Parameter::Parameter(string n, string v) {
-		name = n;
-		value = v;
-		typeSet.insert("Parameter");
-	}
-	
-	bool Parameter::instanceOf(string s) {
-		return typeSet.count(s)==1;
-	}
+Parameter::Parameter (string n, string v)
+{
+  name = n;
+  value = v;
+  typeSet.insert ("Parameter");
+}
 
-	string Parameter::getName() {
-		return name;
-	}
-	
-	string Parameter::getValue() {
-		return value;
-	}
- 
-	void Parameter::setName(string n) {
-		name = n;
-	}
-	
-	void Parameter::setValue(string v) {
-		value = v;
-	}
+bool
+Parameter::instanceOf (string s)
+{
+  return typeSet.count (s) == 1;
+}
+
+string
+Parameter::getName ()
+{
+  return name;
+}
+
+string
+Parameter::getValue ()
+{
+  return value;
+}
+
+void
+Parameter::setName (string n)
+{
+  name = n;
+}
+
+void
+Parameter::setValue (string v)
+{
+  value = v;
+}
 
 GINGA_NCL_END

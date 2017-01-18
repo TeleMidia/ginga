@@ -18,24 +18,23 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef XMLPARSING_H
 #define XMLPARSING_H
 
-
 XERCES_CPP_NAMESPACE_USE
 
 #include "DOMTreeErrorReporter.h"
 #include "stdlib.h"
 
-
 // boilerplate DOM loading example.
 
-//singleton pattern
-class XMLParsing {
-      private:
-         XMLParsing();
-         static XMLParsing *myInstance;
-      public:
-         static DOMNode *parse(string src);
-         ~XMLParsing();
-        
+// singleton pattern
+class XMLParsing
+{
+private:
+  XMLParsing ();
+  static XMLParsing *myInstance;
+
+public:
+  static DOMNode *parse (string src);
+  ~XMLParsing ();
 };
 
 #endif

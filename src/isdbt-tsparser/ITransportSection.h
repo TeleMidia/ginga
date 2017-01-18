@@ -25,26 +25,26 @@ GINGA_TSPARSER_BEGIN
 class ITransportSection
 {
 public:
-  virtual ~ITransportSection(){};
-  virtual void setESId(unsigned int id)=0;
-  virtual unsigned int getESId()=0;
-  virtual void addData(char* bytes, unsigned int size)=0;
-  virtual string getSectionName()=0;
-  virtual unsigned int getTableId()=0;
-  virtual bool getSectionSyntaxIndicator()=0;
-  virtual unsigned int getSectionLength()=0;
-  virtual unsigned int getCurrentSize()=0;
-  virtual unsigned int getExtensionId()=0;
-  virtual unsigned int getVersionNumber()=0;
-  virtual bool getCurrentNextIndicator()=0;
-  virtual unsigned int getSectionNumber()=0;
-  virtual unsigned int getLastSectionNumber()=0;
-  virtual void* getPayload()=0;
-  virtual unsigned int getPayload(char** buffer)=0;
-  virtual unsigned int getPayloadSize()=0;
-  virtual bool isConsolidated()=0;
-  virtual bool isConstructionFailed()=0;
-  virtual void print()=0;
+  virtual ~ITransportSection (){};
+  virtual void setESId (unsigned int id) = 0;
+  virtual unsigned int getESId () = 0;
+  virtual void addData (char *bytes, unsigned int size) = 0;
+  virtual string getSectionName () = 0;
+  virtual unsigned int getTableId () = 0;
+  virtual bool getSectionSyntaxIndicator () = 0;
+  virtual unsigned int getSectionLength () = 0;
+  virtual unsigned int getCurrentSize () = 0;
+  virtual unsigned int getExtensionId () = 0;
+  virtual unsigned int getVersionNumber () = 0;
+  virtual bool getCurrentNextIndicator () = 0;
+  virtual unsigned int getSectionNumber () = 0;
+  virtual unsigned int getLastSectionNumber () = 0;
+  virtual void *getPayload () = 0;
+  virtual unsigned int getPayload (char **buffer) = 0;
+  virtual unsigned int getPayloadSize () = 0;
+  virtual bool isConsolidated () = 0;
+  virtual bool isConstructionFailed () = 0;
+  virtual void print () = 0;
 };
 
 GINGA_TSPARSER_END

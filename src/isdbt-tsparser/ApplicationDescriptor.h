@@ -18,45 +18,44 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef APPLICATIONDESCRIPTOR_H_
 #define APPLICATIONDESCRIPTOR_H_
 
-
 #include "IMpegDescriptor.h"
 using namespace ::ginga::tsparser;
 
 GINGA_TSPARSER_BEGIN
 
+struct Profile
+{
+  unsigned short applicationProfile;
+  unsigned char versionMajor;
+  unsigned char versionMinor;
+  unsigned char versionMicro;
+};
 
-	struct Profile {
-		unsigned short applicationProfile;
-		unsigned char versionMajor;
-		unsigned char versionMinor;
-		unsigned char versionMicro;
-	};
+class ApplicationDescriptor : public IMpegDescriptor
+{
+private:
+  unsigned char applicationProfilesLength;
+  vector<Profile *> *profiles;
+  bool serviceBoundFlag;
+  unsigned char visibility;
+  unsigned char applicationPriority;
+  char *transportProtocolLabels;
+  unsigned char transportProtocolLabelsLength;
 
-	class ApplicationDescriptor : public IMpegDescriptor{
-		private:
-			unsigned char applicationProfilesLength;
-			vector<Profile*>* profiles;
-			bool serviceBoundFlag;
-			unsigned char visibility;
-			unsigned char applicationPriority;
-			char* transportProtocolLabels;
-			unsigned char transportProtocolLabelsLength;
+public:
+  ApplicationDescriptor ();
+  virtual ~ApplicationDescriptor ();
 
-		public:
-			ApplicationDescriptor();
-			virtual ~ApplicationDescriptor();
-
-			unsigned char getDescriptorTag();
-			unsigned int getDescriptorLength();
-			size_t process(char* data, size_t pos);
-			void print();
-			unsigned char getApplicationPriority();
-			unsigned char getVisibility();
-			unsigned char getTransportProtocolLabelsLength();
-			char* getTransportProtocolLabels();
-			vector<struct Profile*>* getProfiles();
-	};
-
+  unsigned char getDescriptorTag ();
+  unsigned int getDescriptorLength ();
+  size_t process (char *data, size_t pos);
+  void print ();
+  unsigned char getApplicationPriority ();
+  unsigned char getVisibility ();
+  unsigned char getTransportProtocolLabelsLength ();
+  char *getTransportProtocolLabels ();
+  vector<struct Profile *> *getProfiles ();
+};
 
 GINGA_TSPARSER_END
 

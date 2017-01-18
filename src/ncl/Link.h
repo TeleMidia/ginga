@@ -38,55 +38,55 @@ using namespace ::ginga::ncl;
 
 #include "Bind.h"
 
-
 GINGA_NCL_BEGIN
 
-	class LinkComposition;
-	class Link : public Entity {
-		protected:
-			Connector *connector;
-			map<string, vector<Bind*>*> *roleBinds;
-			vector<Bind*> *binds;
-			map<string, Parameter*> *parameters;
+class LinkComposition;
+class Link : public Entity
+{
+protected:
+  Connector *connector;
+  map<string, vector<Bind *> *> *roleBinds;
+  vector<Bind *> *binds;
+  map<string, Parameter *> *parameters;
 
-		private:
-			LinkComposition* composition;
+private:
+  LinkComposition *composition;
 
-		public:
-			Link(string id, Connector *connector);
-			virtual ~Link();
-			Bind* bind(Node *node, InterfacePoint *interfPt,
-				    GenericDescriptor *desc, string roleId);
+public:
+  Link (string id, Connector *connector);
+  virtual ~Link ();
+  Bind *bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
+              string roleId);
 
-			Bind* bind(Node *node, InterfacePoint *interfPt,
-				    GenericDescriptor *desc, Role *role);
+  Bind *bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
+              Role *role);
 
-			bool isConsistent();
-			Bind* getBind(Node *node, InterfacePoint *interfPt,
-				    GenericDescriptor *desc, Role *role);
+  bool isConsistent ();
+  Bind *getBind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
+                 Role *role);
 
-			vector<Bind*> *getBinds();
-			Connector *getConnector();
-			void setParentComposition(LinkComposition* composition);
-			LinkComposition* getParentComposition();
-			unsigned int getNumBinds();
-			unsigned int getNumRoleBinds(Role *role);
-			vector<Bind*> *getRoleBinds(Role *role);
-			bool isMultiPoint();
-			string toString();
-			void setConnector(Connector *connector);
-			bool unBind(Bind *bind);
-			void addParameter(Parameter *parameter);
-			vector<Parameter*> *getParameters();
-			Parameter *getParameter(string name);
-			void removeParameter(Parameter *parameter);
-			void updateConnector(Connector *newConnector);
-			bool containsNode(Node *node, GenericDescriptor *descriptor);
+  vector<Bind *> *getBinds ();
+  Connector *getConnector ();
+  void setParentComposition (LinkComposition *composition);
+  LinkComposition *getParentComposition ();
+  unsigned int getNumBinds ();
+  unsigned int getNumRoleBinds (Role *role);
+  vector<Bind *> *getRoleBinds (Role *role);
+  bool isMultiPoint ();
+  string toString ();
+  void setConnector (Connector *connector);
+  bool unBind (Bind *bind);
+  void addParameter (Parameter *parameter);
+  vector<Parameter *> *getParameters ();
+  Parameter *getParameter (string name);
+  void removeParameter (Parameter *parameter);
+  void updateConnector (Connector *newConnector);
+  bool containsNode (Node *node, GenericDescriptor *descriptor);
 
-		protected:
-			bool containsNode(Node *node, GenericDescriptor *descriptor,
-				    vector<Bind*> *binds);
-	};
+protected:
+  bool containsNode (Node *node, GenericDescriptor *descriptor,
+                     vector<Bind *> *binds);
+};
 
 GINGA_NCL_END
 

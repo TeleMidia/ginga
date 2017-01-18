@@ -26,53 +26,51 @@ using namespace ginga::util;
 #include "ISTCProvider.h"
 #include "Channel.h"
 
-
 GINGA_TUNER_BEGIN
 
-	class NetworkInterface : public ISTCProvider {
-		private:
-			int id;    //NetworkInterface number
-			string name;  //eth, isdb-t, dvb-c, ...
-			string protocol; //none, rtp, ip, udp, ...
-			string address;  //frequency, ip+sock, ...
-			IDataProvider* provider;
-			bool tuned;
+class NetworkInterface : public ISTCProvider
+{
+private:
+  int id; // NetworkInterface number
+  string name; // eth, isdb-t, dvb-c, ...
+  string protocol; // none, rtp, ip, udp, ...
+  string address; // frequency, ip+sock, ...
+  IDataProvider *provider;
+  bool tuned;
 
-		public:
-			NetworkInterface(
-					int networkId,
-					string name, string protocol, string addr);
+public:
+  NetworkInterface (int networkId, string name, string protocol, string addr);
 
-			virtual ~NetworkInterface();
+  virtual ~NetworkInterface ();
 
-			short getCaps();
-			int getId();
-			string getName();
-			string getProtocol();
-			string getAddress();
+  short getCaps ();
+  int getId ();
+  string getName ();
+  string getProtocol ();
+  string getAddress ();
 
-			void attachFilter(IFrontendFilter* filter);
-			void removeFilter(IFrontendFilter* filter);
+  void attachFilter (IFrontendFilter *filter);
+  void removeFilter (IFrontendFilter *filter);
 
-			void setDataProvider(IDataProvider* provider);
+  void setDataProvider (IDataProvider *provider);
 
-		private:
-			virtual bool createProvider();
+private:
+  virtual bool createProvider ();
 
-		public:
-			bool hasSignal();
-			IDataProvider* tune();
-			bool changeChannel(int factor);
-			bool setChannel(string channelValue);
-			bool getSTCValue(uint64_t* stc, int* valueType);
-			Channel* getCurrentChannel();
-			int createPesFilter(int pid, int pesType, bool compositeFiler);
-			string getPesFilterOutput();
+public:
+  bool hasSignal ();
+  IDataProvider *tune ();
+  bool changeChannel (int factor);
+  bool setChannel (string channelValue);
+  bool getSTCValue (uint64_t *stc, int *valueType);
+  Channel *getCurrentChannel ();
+  int createPesFilter (int pid, int pesType, bool compositeFiler);
+  string getPesFilterOutput ();
 
-			char* receiveData(int* len);
+  char *receiveData (int *len);
 
-			void close();
-	};
+  void close ();
+};
 
 GINGA_TUNER_END
 

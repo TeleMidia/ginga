@@ -37,33 +37,33 @@ using namespace ::ginga::player;
 #include "FormatterPlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_TV_BEGIN
 
-	class ProgramAVPlayerAdapter : public FormatterPlayerAdapter {
-		private:
-			string lastValue;
+class ProgramAVPlayerAdapter : public FormatterPlayerAdapter
+{
+private:
+  string lastValue;
 
-		protected:
-			ProgramAVPlayerAdapter();
-			virtual ~ProgramAVPlayerAdapter(){};
-			static ProgramAVPlayerAdapter* _instance;
+protected:
+  ProgramAVPlayerAdapter ();
+  virtual ~ProgramAVPlayerAdapter (){};
+  static ProgramAVPlayerAdapter *_instance;
 
-		public:
-			static ProgramAVPlayerAdapter* getInstance();
+public:
+  static ProgramAVPlayerAdapter *getInstance ();
 
-			virtual bool hasPrepared();
-			virtual bool start();
-			virtual bool stop();
-			virtual bool resume();
+  virtual bool hasPrepared ();
+  virtual bool start ();
+  virtual bool stop ();
+  virtual bool resume ();
 
-		protected:
-			void createPlayer();
-			bool setPropertyValue(AttributionEvent* event, string value);
+protected:
+  void createPlayer ();
+  bool setPropertyValue (AttributionEvent *event, string value);
 
-		private:
-			void updateAVBounds();
-	};
+private:
+  void updateAVBounds ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_AV_TV_END
 #endif /*PROGRAMAVPLAYERADAPTER_H_*/

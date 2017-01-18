@@ -23,25 +23,24 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
 #include "LinkRepeatAction.h"
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	class LinkAssignmentAction : public LinkRepeatAction {
-		private:
-			string value;
-			Animation* animation;
+class LinkAssignmentAction : public LinkRepeatAction
+{
+private:
+  string value;
+  Animation *animation;
 
-		public:
-			LinkAssignmentAction(
-					FormatterEvent* event, short actionType, string value);
+public:
+  LinkAssignmentAction (FormatterEvent *event, short actionType, string value);
 
-			virtual ~LinkAssignmentAction();
+  virtual ~LinkAssignmentAction ();
 
-			string getValue();
-			void setValue(string value);
-			Animation* getAnimation();
-			void setAnimation(Animation* animation);
-	};
+  string getValue ();
+  void setValue (string value);
+  Animation *getAnimation ();
+  void setAnimation (Animation *animation);
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif /*LINKASSIGNMENTACTION_H_*/

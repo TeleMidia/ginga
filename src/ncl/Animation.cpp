@@ -20,25 +20,34 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	Animation::Animation() {
-		this->duration = "";
-		this->by = "";
-	}
+Animation::Animation ()
+{
+  this->duration = "";
+  this->by = "";
+}
 
-	void Animation::setDuration(string dur) {
-		duration = dur;
-	}
+void
+Animation::setDuration (string dur)
+{
+  duration = dur;
+}
 
-	string Animation::getDuration() {
-		return duration;
-	}
+string
+Animation::getDuration ()
+{
+  return duration;
+}
 
-	void Animation::setBy(string by) {
-		this->by = by;
-	}
+void
+Animation::setBy (string by)
+{
+  this->by = by;
+}
 
-	string Animation::getBy() {
-		return by;
-	}
+string
+Animation::getBy ()
+{
+  return by;
+}
 
 GINGA_NCL_END

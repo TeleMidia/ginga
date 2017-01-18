@@ -26,56 +26,62 @@ GINGA_UTIL_BEGIN
 class Observable
 {
 private:
-  set<Observer*> observers;
+  set<Observer *> observers;
   pthread_mutex_t vM;
 
 public:
-  virtual ~Observable()
+  virtual ~Observable ()
   {
-    pthread_mutex_lock(&vM);
-    observers.clear();
-    pthread_mutex_unlock(&vM);
-    pthread_mutex_destroy(&vM);
+    pthread_mutex_lock (&vM);
+    observers.clear ();
+    pthread_mutex_unlock (&vM);
+    pthread_mutex_destroy (&vM);
   };
 
 protected:
-  void createObserversVector()
+  void
+  createObserversVector ()
   {
-    pthread_mutex_init(&vM, NULL);
-    observers.clear();
+    pthread_mutex_init (&vM, NULL);
+    observers.clear ();
   };
 
 public:
-  void addObserver(Observer* object)
+  void
+  addObserver (Observer *object)
   {
-    pthread_mutex_lock(&vM);
-    observers.insert(object);
-    pthread_mutex_unlock(&vM);
+    pthread_mutex_lock (&vM);
+    observers.insert (object);
+    pthread_mutex_unlock (&vM);
   };
 
-  void removeObserver(Observer* object)
+  void
+  removeObserver (Observer *object)
   {
-    set<Observer*>::iterator i;
+    set<Observer *>::iterator i;
 
-    pthread_mutex_lock(&vM);
-    i = observers.find(object);
-    if (i != observers.end()) {
-      observers.erase(i);
-    }
-    pthread_mutex_unlock(&vM);
+    pthread_mutex_lock (&vM);
+    i = observers.find (object);
+    if (i != observers.end ())
+      {
+        observers.erase (i);
+      }
+    pthread_mutex_unlock (&vM);
   };
 
-  virtual void notifyObservers(void* object)
+  virtual void
+  notifyObservers (void *object)
   {
-    set<Observer*>::iterator i;
+    set<Observer *>::iterator i;
 
-    pthread_mutex_lock(&vM);
-    i = observers.begin();
-    while (i != observers.end()) {
-      (*i)->update(this, object);
-      ++i;
-    }
-    pthread_mutex_unlock(&vM);
+    pthread_mutex_lock (&vM);
+    i = observers.begin ();
+    while (i != observers.end ())
+      {
+        (*i)->update (this, object);
+        ++i;
+      }
+    pthread_mutex_unlock (&vM);
   };
 };
 

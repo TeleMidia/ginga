@@ -20,22 +20,22 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Anchor.h"
 
-
 GINGA_NCL_BEGIN
 
-	class ContentAnchor : public Anchor {
-		public:
-			//interval anchor types
-			static const short CAT_NONE;
-			static const short CAT_ALL;
-			static const short CAT_TIME;
-			static const short CAT_SAMPLES;
-			static const short CAT_FRAMES;
-			static const short CAT_NPT;
+class ContentAnchor : public Anchor
+{
+public:
+  // interval anchor types
+  static const short CAT_NONE;
+  static const short CAT_ALL;
+  static const short CAT_TIME;
+  static const short CAT_SAMPLES;
+  static const short CAT_FRAMES;
+  static const short CAT_NPT;
 
-			ContentAnchor(string id);
-			virtual ~ContentAnchor(){};
-	};
+  ContentAnchor (string id);
+  virtual ~ContentAnchor (){};
+};
 
 GINGA_NCL_END
 

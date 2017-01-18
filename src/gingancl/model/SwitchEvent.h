@@ -25,35 +25,32 @@ using namespace ::ginga::ncl;
 #include "IEventListener.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_BEGIN
 
-	class SwitchEvent : public FormatterEvent, public IEventListener {
-		private:
-			InterfacePoint* interfacePoint;
-			string key;
-			FormatterEvent* mappedEvent;
+class SwitchEvent : public FormatterEvent, public IEventListener
+{
+private:
+  InterfacePoint *interfacePoint;
+  string key;
+  FormatterEvent *mappedEvent;
 
-		public:
-			SwitchEvent(
-				    string id,
-				    void* executionObjectSwitch, //ExecutionObjectSwitch
-				    InterfacePoint* interfacePoint,
-				    int eventType,
-				    string key);
+public:
+  SwitchEvent (string id,
+               void *executionObjectSwitch, // ExecutionObjectSwitch
+               InterfacePoint *interfacePoint, int eventType, string key);
 
-			virtual ~SwitchEvent();
+  virtual ~SwitchEvent ();
 
-			InterfacePoint* getInterfacePoint();
-			short getEventType();
-			string getKey();
-			void setMappedEvent(FormatterEvent* event);
-			FormatterEvent* getMappedEvent();
-			virtual void eventStateChanged(
-				    void* event, short transition, short previousState);
+  InterfacePoint *getInterfacePoint ();
+  short getEventType ();
+  string getKey ();
+  void setMappedEvent (FormatterEvent *event);
+  FormatterEvent *getMappedEvent ();
+  virtual void eventStateChanged (void *event, short transition,
+                                  short previousState);
 
-			short getPriorityType();
-	};
+  short getPriorityType ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_END
 #endif //_SWITCHEVENT_H_

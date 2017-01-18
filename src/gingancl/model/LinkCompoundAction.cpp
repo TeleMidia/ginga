@@ -18,290 +18,341 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "LinkCompoundAction.h"
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	LinkCompoundAction::LinkCompoundAction(short op) : LinkAction() {
-		this->op = op;
-		hasStart = false;
-		runing   = false;
-		listener = NULL;
+LinkCompoundAction::LinkCompoundAction (short op) : LinkAction ()
+{
+  this->op = op;
+  hasStart = false;
+  runing = false;
+  listener = NULL;
 
-		Thread::mutexInit(&mutexActions, true);
-		typeSet.insert("LinkCompoundAction");
-	}
+  Thread::mutexInit (&mutexActions, true);
+  typeSet.insert ("LinkCompoundAction");
+}
 
-	LinkCompoundAction::~LinkCompoundAction() {
-		vector<LinkAction*>::iterator i;
-		LinkAction* action;
+LinkCompoundAction::~LinkCompoundAction ()
+{
+  vector<LinkAction *>::iterator i;
+  LinkAction *action;
 
-		isDeleting = true;
+  isDeleting = true;
 
-		//clog << "LinkCompoundAction::~LinkCompoundAction" << endl;
-		Thread::mutexLock(&mutexActions);
-		i = actions.begin();
-		while (i != actions.end()) {
-			action = (LinkAction*)(*i);
+  // clog << "LinkCompoundAction::~LinkCompoundAction" << endl;
+  Thread::mutexLock (&mutexActions);
+  i = actions.begin ();
+  while (i != actions.end ())
+    {
+      action = (LinkAction *)(*i);
 
-			actions.erase(i);
-			i = actions.begin();
+      actions.erase (i);
+      i = actions.begin ();
 
-			action->removeActionProgressionListener(this);
-			delete action;
-			action = NULL;
-		}
+      action->removeActionProgressionListener (this);
+      delete action;
+      action = NULL;
+    }
 
-		actions.clear();
-		Thread::mutexUnlock(&mutexActions);
-		Thread::mutexDestroy(&mutexActions);
-	}
+  actions.clear ();
+  Thread::mutexUnlock (&mutexActions);
+  Thread::mutexDestroy (&mutexActions);
+}
 
-	short LinkCompoundAction::getOperator() {
-		return op;
-	}
+short
+LinkCompoundAction::getOperator ()
+{
+  return op;
+}
 
-	void LinkCompoundAction::addAction(LinkAction* action) {
-		vector<LinkAction*>::iterator i;
+void
+LinkCompoundAction::addAction (LinkAction *action)
+{
+  vector<LinkAction *>::iterator i;
 
-		if (runing) {
-			clog << "LinkCompoundAction::addAction ";
-			clog << "Warning! Can't add action: status = running" << endl;
-			return;
-		}
+  if (runing)
+    {
+      clog << "LinkCompoundAction::addAction ";
+      clog << "Warning! Can't add action: status = running" << endl;
+      return;
+    }
 
-		action->addActionProgressionListener(this);
-		Thread::mutexLock(&mutexActions);
-		i = actions.begin();
-		while (i != actions.end()) {
-			if (*i == action) {
-				clog << "LinkCompoundAction::addAction Warning!";
-				clog << " Trying to add same action twice";
-				clog << endl;
-				Thread::mutexUnlock(&mutexActions);
-				return;
-			}
-			++i;
-		}
-		actions.push_back(action);
-		Thread::mutexUnlock(&mutexActions);
-	}
+  action->addActionProgressionListener (this);
+  Thread::mutexLock (&mutexActions);
+  i = actions.begin ();
+  while (i != actions.end ())
+    {
+      if (*i == action)
+        {
+          clog << "LinkCompoundAction::addAction Warning!";
+          clog << " Trying to add same action twice";
+          clog << endl;
+          Thread::mutexUnlock (&mutexActions);
+          return;
+        }
+      ++i;
+    }
+  actions.push_back (action);
+  Thread::mutexUnlock (&mutexActions);
+}
 
-	vector<LinkAction*>* LinkCompoundAction::getActions() {
-		vector<LinkAction*>* acts;
+vector<LinkAction *> *
+LinkCompoundAction::getActions ()
+{
+  vector<LinkAction *> *acts;
 
-		if (runing) {
-			return NULL;
-		}
+  if (runing)
+    {
+      return NULL;
+    }
 
-		Thread::mutexLock(&mutexActions);
-		if (actions.empty()) {
-			Thread::mutexUnlock(&mutexActions);
-			return NULL;
-		}
+  Thread::mutexLock (&mutexActions);
+  if (actions.empty ())
+    {
+      Thread::mutexUnlock (&mutexActions);
+      return NULL;
+    }
 
-		acts = new vector<LinkAction*>(actions);
-		Thread::mutexUnlock(&mutexActions);
-		return acts;
-	}
+  acts = new vector<LinkAction *> (actions);
+  Thread::mutexUnlock (&mutexActions);
+  return acts;
+}
 
-	void LinkCompoundAction::getSimpleActions(
-			vector<LinkSimpleAction*>* simpleActions) {
+void
+LinkCompoundAction::getSimpleActions (
+    vector<LinkSimpleAction *> *simpleActions)
+{
 
-		vector<LinkAction*>::iterator i;
-		LinkAction* currentAction;
+  vector<LinkAction *>::iterator i;
+  LinkAction *currentAction;
 
-		Thread::mutexLock(&mutexActions);
-		if (actions.empty()) {
-			Thread::mutexUnlock(&mutexActions);
-			return;
-		}
+  Thread::mutexLock (&mutexActions);
+  if (actions.empty ())
+    {
+      Thread::mutexUnlock (&mutexActions);
+      return;
+    }
 
-		i = actions.begin();
-		while (i != actions.end()) {
-			currentAction = (*i);
+  i = actions.begin ();
+  while (i != actions.end ())
+    {
+      currentAction = (*i);
 
-			if (currentAction->instanceOf("LinkCompoundAction")) {
-				((LinkCompoundAction*)currentAction)->getSimpleActions(
-						simpleActions);
+      if (currentAction->instanceOf ("LinkCompoundAction"))
+        {
+          ((LinkCompoundAction *)currentAction)
+              ->getSimpleActions (simpleActions);
+        }
+      else if (currentAction->instanceOf ("LinkSimpleAction"))
+        {
+          simpleActions->push_back ((LinkSimpleAction *)currentAction);
+        }
 
-			} else if (currentAction->instanceOf("LinkSimpleAction")) {
-				simpleActions->push_back((LinkSimpleAction*)currentAction);
-			}
+      ++i;
+    }
 
-			++i;
-		}
+  Thread::mutexUnlock (&mutexActions);
+}
 
-		Thread::mutexUnlock(&mutexActions);
-	}
+void
+LinkCompoundAction::setCompoundActionListener (ILinkActionListener *listener)
+{
 
-	void LinkCompoundAction::setCompoundActionListener(
-		    ILinkActionListener* listener) {
+  this->listener = listener;
+}
 
-		this->listener = listener;
-	}
+vector<FormatterEvent *> *
+LinkCompoundAction::getEvents ()
+{
+  vector<LinkAction *> *acts;
+  vector<LinkAction *>::iterator i;
+  LinkAction *action;
+  vector<FormatterEvent *> *events;
+  vector<FormatterEvent *> *actionEvents;
+  vector<FormatterEvent *>::iterator j;
 
-	vector<FormatterEvent*>* LinkCompoundAction::getEvents() {
-		vector<LinkAction*>* acts;
-		vector<LinkAction*>::iterator i;
-		LinkAction* action;
-		vector<FormatterEvent*>* events;
-		vector<FormatterEvent*>* actionEvents;
-		vector<FormatterEvent*>::iterator j;
+  if (runing)
+    {
+      return NULL;
+    }
 
-		if (runing) {
-			return NULL;
-		}
+  Thread::mutexLock (&mutexActions);
+  if (actions.empty ())
+    {
+      Thread::mutexUnlock (&mutexActions);
+      return NULL;
+    }
 
-		Thread::mutexLock(&mutexActions);
-		if (actions.empty()) {
-			Thread::mutexUnlock(&mutexActions);
-			return NULL;
-		}
+  acts = new vector<LinkAction *> (actions);
+  Thread::mutexUnlock (&mutexActions);
 
-		acts = new vector<LinkAction*>(actions);
-		Thread::mutexUnlock(&mutexActions);
+  events = new vector<FormatterEvent *>;
 
-		events = new vector<FormatterEvent*>;
+  for (i = acts->begin (); i != acts->end (); ++i)
+    {
+      action = (LinkAction *)(*i);
+      actionEvents = action->getEvents ();
+      if (actionEvents != NULL)
+        {
+          for (j = actionEvents->begin (); j != actionEvents->end (); ++j)
+            {
+              events->push_back (*j);
+            }
+          delete actionEvents;
+          actionEvents = NULL;
+        }
+    }
 
-		for (i = acts->begin(); i != acts->end(); ++i) {
-			action = (LinkAction*)(*i);
-			actionEvents = action->getEvents();
-			if (actionEvents != NULL) {
-				for (j = actionEvents->begin(); j != actionEvents->end(); ++j) {
-					events->push_back(*j);
-				}
-				delete actionEvents;
-				actionEvents = NULL;
-			}
-		}
+  delete acts;
+  if (events->empty ())
+    {
+      delete events;
+      return NULL;
+    }
 
-		delete acts;
-		if (events->empty()) {
-			delete events;
-			return NULL;
-		}
+  return events;
+}
 
-		return events;
-	}
+vector<LinkAction *> *
+LinkCompoundAction::getImplicitRefRoleActions ()
+{
+  vector<LinkAction *> *acts;
+  vector<LinkAction *>::iterator i;
+  vector<LinkAction *> *assignmentActs;
+  vector<LinkAction *> *refActs;
+  vector<LinkAction *>::iterator j;
 
-	vector<LinkAction*>* LinkCompoundAction::getImplicitRefRoleActions() {
-		vector<LinkAction*>* acts;
-		vector<LinkAction*>::iterator i;
-		vector<LinkAction*>* assignmentActs;
-		vector<LinkAction*>* refActs;
-		vector<LinkAction*>::iterator j;
+  if (runing)
+    {
+      return NULL;
+    }
 
-		if (runing) {
-			return NULL;
-		}
+  Thread::mutexLock (&mutexActions);
+  if (actions.empty ())
+    {
+      Thread::mutexUnlock (&mutexActions);
+      return NULL;
+    }
 
-		Thread::mutexLock(&mutexActions);
-		if (actions.empty()) {
-			Thread::mutexUnlock(&mutexActions);
-			return NULL;
-		}
+  acts = new vector<LinkAction *> (actions);
+  Thread::mutexUnlock (&mutexActions);
 
-		acts = new vector<LinkAction*>(actions);
-		Thread::mutexUnlock(&mutexActions);
+  refActs = new vector<LinkAction *>;
 
-		refActs = new vector<LinkAction*>;
+  for (i = acts->begin (); i != acts->end (); ++i)
+    {
+      assignmentActs = (*i)->getImplicitRefRoleActions ();
+      if (assignmentActs != NULL)
+        {
+          for (j = assignmentActs->begin (); j != assignmentActs->end (); ++j)
+            {
 
-		for (i = acts->begin(); i != acts->end(); ++i) {
-			assignmentActs = (*i)->getImplicitRefRoleActions();
-			if (assignmentActs != NULL) {
-				for (j = assignmentActs->begin();
-						j != assignmentActs->end(); ++j) {
+              refActs->push_back (*j);
+            }
+          delete assignmentActs;
+          assignmentActs = NULL;
+        }
+    }
 
-					refActs->push_back(*j);
-				}
-				delete assignmentActs;
-				assignmentActs = NULL;
-			}
-		}
+  delete acts;
+  if (refActs->empty ())
+    {
+      delete refActs;
+      return NULL;
+    }
 
-		delete acts;
-		if (refActs->empty()) {
-			delete refActs;
-			return NULL;
-		}
+  return refActs;
+}
 
-		return refActs;
-	}
+void
+LinkCompoundAction::run ()
+{
+  int i, size;
+  LinkAction *action = NULL;
+  vector<LinkSimpleAction *> simpleActions;
 
-	void LinkCompoundAction::run() {
-		int i, size;
-		LinkAction* action = NULL;
-		vector<LinkSimpleAction*> simpleActions;
+  runing = true;
 
-		runing = true;
+  LinkAction::run ();
 
-		LinkAction::run();
+  Thread::mutexLock (&mutexActions);
+  if (actions.empty ())
+    {
+      clog << "LinkCompoundAction::run there is no action to run" << endl;
+      Thread::mutexUnlock (&mutexActions);
+      return;
+    }
+  size = actions.size ();
+  clog << "LinkCompoundAction::run '" << size << "' actions" << endl;
+  Thread::mutexUnlock (&mutexActions);
 
-		Thread::mutexLock(&mutexActions);
-		if (actions.empty()) {
-			clog << "LinkCompoundAction::run there is no action to run" << endl;
-			Thread::mutexUnlock(&mutexActions);
-			return;
-		}
-		size = actions.size();
-		clog << "LinkCompoundAction::run '" << size << "' actions" << endl;
-		Thread::mutexUnlock(&mutexActions);
+  pendingActions = size;
+  hasStart = false;
 
-		pendingActions = size;
-		hasStart       = false;
+  if (op == CompoundAction::OP_PAR)
+    {
+      for (i = 0; i < size; i++)
+        {
+          try
+            {
+              Thread::mutexLock (&mutexActions);
+              if (actions.empty ())
+                {
+                  Thread::mutexUnlock (&mutexActions);
+                  return;
+                }
 
-		if (op == CompoundAction::OP_PAR) {
-			for (i = 0; i < size; i++) {
-				try {
-					Thread::mutexLock(&mutexActions);
-					if (actions.empty()) {
-						Thread::mutexUnlock(&mutexActions);
-						return;
-					}
+              action = (LinkAction *)(actions.at (i));
+              action->setSatisfiedCondition (satisfiedCondition);
+              Thread::mutexUnlock (&mutexActions);
+              action->startThread ();
+            }
+          catch (std::out_of_range &e)
+            {
+              clog << "LinkCompoundAction::run catch PAR out of range: ";
+              clog << e.what ();
+              clog << endl;
+              Thread::mutexUnlock (&mutexActions);
+              continue;
+            }
+        }
+    }
+  else
+    {
+      for (i = 0; i < size; i++)
+        {
+          try
+            {
+              Thread::mutexLock (&mutexActions);
+              if (actions.empty ())
+                {
+                  Thread::mutexUnlock (&mutexActions);
+                  return;
+                }
+              action = (LinkAction *)(actions.at (i));
+              Thread::mutexUnlock (&mutexActions);
+              action->run (satisfiedCondition);
+            }
+          catch (std::out_of_range &e)
+            {
+              clog << "LinkCompoundAction::run catch SEQ out of range: ";
+              clog << e.what ();
+              clog << endl;
+              Thread::mutexUnlock (&mutexActions);
+              continue;
+            }
+        }
+    }
+}
 
-					action = (LinkAction*)(actions.at(i));
-					action->setSatisfiedCondition(satisfiedCondition);
-					Thread::mutexUnlock(&mutexActions);
-					action->startThread();
-
-				} catch (std::out_of_range& e) {
-					clog << "LinkCompoundAction::run catch PAR out of range: ";
-					clog << e.what();
-					clog << endl;
-					Thread::mutexUnlock(&mutexActions);
-					continue;
-				}
-			}
-
-		} else {
-			for (i = 0; i < size; i++) {
-				try {
-					Thread::mutexLock(&mutexActions);
-					if (actions.empty()) {
-						Thread::mutexUnlock(&mutexActions);
-						return;
-					}
-					action = (LinkAction*)(actions.at(i));
-					Thread::mutexUnlock(&mutexActions);
-					action->run(satisfiedCondition);
-
-				} catch (std::out_of_range& e) {
-					clog << "LinkCompoundAction::run catch SEQ out of range: ";
-					clog << e.what();
-					clog << endl;
-					Thread::mutexUnlock(&mutexActions);
-					continue;
-				}
-			}
-		}
-	}
-
-	void LinkCompoundAction::actionProcessed(bool start) {
-		pendingActions--;
-		hasStart = (hasStart || start);
-		if (pendingActions == 0) {
-			notifyProgressionListeners(hasStart);
-		}
-	}
+void
+LinkCompoundAction::actionProcessed (bool start)
+{
+  pendingActions--;
+  hasStart = (hasStart || start);
+  if (pendingActions == 0)
+    {
+      notifyProgressionListeners (hasStart);
+    }
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END

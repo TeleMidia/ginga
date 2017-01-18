@@ -25,49 +25,54 @@ GINGA_CTXMGMT_BEGIN
 
 GingaUser::GingaUser (int userId, string userName, string passwd)
 {
-  this->userId       = userId;
-  this->userName     = userName;
-  this->userPasswd   = passwd;
+  this->userId = userId;
+  this->userName = userName;
+  this->userPasswd = passwd;
   this->userLocation = "";
-  this->userAge      = 0;
-  this->userGenre    = 'm';
+  this->userAge = 0;
+  this->userGenre = 'm';
 }
 
-GingaUser::~GingaUser ()
-{
-}
+GingaUser::~GingaUser () {}
 
-int GingaUser::getUserId ()
+int
+GingaUser::getUserId ()
 {
   return userId;
 }
 
-string GingaUser::getUserName ()
+string
+GingaUser::getUserName ()
 {
   return userName;
 }
 
-int GingaUser::getUserAge ()
+int
+GingaUser::getUserAge ()
 {
   return userAge;
 }
 
-string GingaUser::getUserLocation ()
+string
+GingaUser::getUserLocation ()
 {
   return userLocation;
 }
 
-char GingaUser::getUserGenre ()
+char
+GingaUser::getUserGenre ()
 {
   return userGenre;
 }
 
-bool GingaUser::isValidPassword (string passwd)
+bool
+GingaUser::isValidPassword (string passwd)
 {
   return passwd == userPasswd;
 }
 
-bool GingaUser::setPassword (string oldPasswd, string newPasswd)
+bool
+GingaUser::setPassword (string oldPasswd, string newPasswd)
 {
   if (oldPasswd != userPasswd)
     return false;
@@ -75,35 +80,40 @@ bool GingaUser::setPassword (string oldPasswd, string newPasswd)
   return true;
 }
 
-void GingaUser::setUserName (string passwd, string userName)
+void
+GingaUser::setUserName (string passwd, string userName)
 {
   if (passwd != userPasswd)
     return;
   this->userName = userName;
 }
 
-void GingaUser::setUserAge (string passwd, int userAge)
+void
+GingaUser::setUserAge (string passwd, int userAge)
 {
   if (passwd != userPasswd)
     return;
   this->userAge = userAge;
 }
 
-void GingaUser::setUserLocation (string passwd, string userLocation)
+void
+GingaUser::setUserLocation (string passwd, string userLocation)
 {
   if (passwd != userPasswd)
     return;
   this->userLocation = userLocation;
 }
 
-void GingaUser::setUserGenre (string passwd, char userGenre)
+void
+GingaUser::setUserGenre (string passwd, char userGenre)
 {
   if (passwd != userPasswd)
     return;
   this->userGenre = userGenre;
 }
 
-void GingaUser::saveTo (FILE* fd)
+void
+GingaUser::saveTo (FILE *fd)
 {
   string genre;
 
@@ -121,7 +131,8 @@ void GingaUser::saveTo (FILE* fd)
   saveString (fd, genre);
 }
 
-void GingaUser::saveString (FILE* fd, string bytesToSave)
+void
+GingaUser::saveString (FILE *fd, string bytesToSave)
 {
   fwrite (bytesToSave.c_str (), 1, bytesToSave.length (), fd);
   fwrite (" ", 1, 1, fd);

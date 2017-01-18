@@ -34,33 +34,34 @@ using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
-  class ShowButton : public Thread {
-		private:
-			short status;
-			static const short NONE = 0;
-			static const short PLAY = 1;
-			static const short PAUSE = 2;
-			static const short STOP = 3;
+class ShowButton : public Thread
+{
+private:
+  short status;
+  static const short NONE = 0;
+  static const short PLAY = 1;
+  static const short PAUSE = 2;
+  static const short STOP = 3;
 
-			GingaScreenID myScreen;
-			short previousStatus;
-			GingaWindowID win;
-			bool running;
+  GingaScreenID myScreen;
+  short previousStatus;
+  GingaWindowID win;
+  bool running;
 
-		public:
-			ShowButton(GingaScreenID screenId);
-			virtual ~ShowButton();
+public:
+  ShowButton (GingaScreenID screenId);
+  virtual ~ShowButton ();
 
-			void initializeWindow();
-			void stop();
-			void pause();
-			void resume();
+  void initializeWindow ();
+  void stop ();
+  void pause ();
+  void resume ();
 
-		private:
-			void release();
-			void render(string mrl);
-			void run();
-	};
+private:
+  void release ();
+  void render (string mrl);
+  void run ();
+};
 
 GINGA_PLAYER_END
 

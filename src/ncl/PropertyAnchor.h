@@ -30,13 +30,13 @@ private:
   string value;
 
 public:
-  PropertyAnchor(string attName);
-  virtual ~PropertyAnchor(){};
-  string getPropertyName();
-  void setPropertyName(string name);
-  string getPropertyValue();
-  void setPropertyValue(string value);
-  PropertyAnchor* clone();
+  PropertyAnchor (string attName);
+  virtual ~PropertyAnchor (){};
+  string getPropertyName ();
+  void setPropertyName (string name);
+  string getPropertyValue ();
+  void setPropertyValue (string value);
+  PropertyAnchor *clone ();
 };
 
 GINGA_NCL_END

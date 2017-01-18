@@ -30,7 +30,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLWindow.h"
 #include "SDLSurface.h"
 
-
 #include "util/functions.h"
 using namespace ::ginga::util;
 
@@ -38,336 +37,314 @@ using namespace ::ginga::util;
 
 #include "SDL.h"
 
-
-
 #ifndef GINGA_PIXEL_FMT
 #define GINGA_PIXEL_FMT SDL_PIXELFORMAT_RGB24
 #endif
 
 GINGA_MB_BEGIN
 
-
-typedef struct {
-	IMediaProvider* iDec;
-	SDL_Surface* uSur;
-	SDL_Texture* uTex;
+typedef struct
+{
+  IMediaProvider *iDec;
+  SDL_Surface *uSur;
+  SDL_Texture *uTex;
 } ReleaseContainer;
 
-	class SDLDeviceScreen {
-		public:
-			static const unsigned int DSA_UNKNOWN;
-			static const unsigned int DSA_4x3;
-			static const unsigned int DSA_16x9;
-
-		private:
-			/* SDL Pending Tasks*/
-			static const short SPT_NONE          = 0;
-			static const short SPT_INIT          = 1;
-			static const short SPT_CLEAR         = 2;
-			static const short SPT_RELEASE       = 3;
-
-		public:
-			/* SDL Underlying Window Tasks*/
-			static const short SUW_SHOW          = 0;
-			static const short SUW_HIDE          = 1;
-			static const short SUW_RAISETOTOP    = 2;
-			static const short SUW_LOWERTOBOTTOM = 3;
-
-			static const short SDS_FPS           = 35;
-			static const int uSleepTime          = (int)(1000000/SDS_FPS);
-
-		private:
-			static bool hasRenderer;
-			static bool mutexInit;
-			static map<SDLDeviceScreen*, short> sdlScreens;
-
-			string aSystem;
-			string mbMode;
-			string mbSubSystem;
-			unsigned int aspect;
-			unsigned int hSize;
-			unsigned int vSize;
-			int hRes;
-			int wRes;
-
-			GingaWindowID winIdRefCounter;
-			map<GingaWindowID, SDLWindow*> windowRefs;
-			set<SDLWindow*> windowPool;
-			set<SDLSurface*> surfacePool;
-			set<IContinuousMediaProvider*> cmpPool;
-			set<IDiscreteMediaProvider*> dmpPool;
-
-			GingaScreenID id;
-			UnderlyingWindowID uParentId;
-			UnderlyingWindowID uEmbedId;
-			bool uEmbedFocused;
-			bool mustGainFocus;
-
-			InputManager* im;
-			bool useStdin;
-
-			bool waitingCreator;
-			pthread_mutex_t condMutex;
-			pthread_cond_t cond;
-
-			SDLWindow* backgroundLayer;
-			bool fullScreen;
-			SDL_Window* screen;
-			Uint32 sdlId;
-			SDL_Renderer* renderer;
-
-			static bool hasERC; //external renderer controller
-
-			static map<int, int> gingaToSDLCodeMap;
-			static map<int, int> sdlToGingaCodeMap;
-			static map<string, int> sdlStrToSdlCode;
-
-			static set<SDL_Surface*> uSurPool;
-			static set<SDL_Texture*> uTexPool;
-			static vector<ReleaseContainer*> releaseList;
-			static map<GingaScreenID, map<float, set<SDLWindow*>*>*> renderMap;
-			static set<IContinuousMediaProvider*> cmpRenderList;
-
-			static pthread_mutex_t sdlMutex; //mutex for SDL structures
-			static pthread_mutex_t sieMutex; //mutex for SDL input event Map
-			static pthread_mutex_t renMutex; //mutex for C++ STL SDL Render Map
-			static pthread_mutex_t scrMutex; //mutex for C++ STL SDL Screens
-			static pthread_mutex_t recMutex; //mutex for C++ STL release structures
-			static pthread_mutex_t winMutex; //mutex for C++ STL Window
-			static pthread_mutex_t surMutex; //mutex for C++ STL Surface
-			static pthread_mutex_t proMutex; //mutex for C++ STL Providers
-			static pthread_mutex_t cstMutex; //mutex for the others C++ STL structures
+class SDLDeviceScreen
+{
+public:
+  static const unsigned int DSA_UNKNOWN;
+  static const unsigned int DSA_4x3;
+  static const unsigned int DSA_16x9;
+
+private:
+  /* SDL Pending Tasks*/
+  static const short SPT_NONE = 0;
+  static const short SPT_INIT = 1;
+  static const short SPT_CLEAR = 2;
+  static const short SPT_RELEASE = 3;
+
+public:
+  /* SDL Underlying Window Tasks*/
+  static const short SUW_SHOW = 0;
+  static const short SUW_HIDE = 1;
+  static const short SUW_RAISETOTOP = 2;
+  static const short SUW_LOWERTOBOTTOM = 3;
+
+  static const short SDS_FPS = 35;
+  static const int uSleepTime = (int)(1000000 / SDS_FPS);
+
+private:
+  static bool hasRenderer;
+  static bool mutexInit;
+  static map<SDLDeviceScreen *, short> sdlScreens;
+
+  string aSystem;
+  string mbMode;
+  string mbSubSystem;
+  unsigned int aspect;
+  unsigned int hSize;
+  unsigned int vSize;
+  int hRes;
+  int wRes;
+
+  GingaWindowID winIdRefCounter;
+  map<GingaWindowID, SDLWindow *> windowRefs;
+  set<SDLWindow *> windowPool;
+  set<SDLSurface *> surfacePool;
+  set<IContinuousMediaProvider *> cmpPool;
+  set<IDiscreteMediaProvider *> dmpPool;
+
+  GingaScreenID id;
+  UnderlyingWindowID uParentId;
+  UnderlyingWindowID uEmbedId;
+  bool uEmbedFocused;
+  bool mustGainFocus;
+
+  InputManager *im;
+  bool useStdin;
+
+  bool waitingCreator;
+  pthread_mutex_t condMutex;
+  pthread_cond_t cond;
+
+  SDLWindow *backgroundLayer;
+  bool fullScreen;
+  SDL_Window *screen;
+  Uint32 sdlId;
+  SDL_Renderer *renderer;
+
+  static bool hasERC; // external renderer controller
+
+  static map<int, int> gingaToSDLCodeMap;
+  static map<int, int> sdlToGingaCodeMap;
+  static map<string, int> sdlStrToSdlCode;
+
+  static set<SDL_Surface *> uSurPool;
+  static set<SDL_Texture *> uTexPool;
+  static vector<ReleaseContainer *> releaseList;
+  static map<GingaScreenID, map<float, set<SDLWindow *> *> *> renderMap;
+  static set<IContinuousMediaProvider *> cmpRenderList;
 
-		public:
-			SDLDeviceScreen(
-					int numArgs, char** args,
-					GingaScreenID myId, UnderlyingWindowID embedId,
-					bool externalRenderer);
+  static pthread_mutex_t sdlMutex; // mutex for SDL structures
+  static pthread_mutex_t sieMutex; // mutex for SDL input event Map
+  static pthread_mutex_t renMutex; // mutex for C++ STL SDL Render Map
+  static pthread_mutex_t scrMutex; // mutex for C++ STL SDL Screens
+  static pthread_mutex_t recMutex; // mutex for C++ STL release structures
+  static pthread_mutex_t winMutex; // mutex for C++ STL Window
+  static pthread_mutex_t surMutex; // mutex for C++ STL Surface
+  static pthread_mutex_t proMutex; // mutex for C++ STL Providers
+  static pthread_mutex_t cstMutex; // mutex for the others C++ STL structures
 
-			virtual ~SDLDeviceScreen();
+public:
+  SDLDeviceScreen (int numArgs, char **args, GingaScreenID myId,
+                   UnderlyingWindowID embedId, bool externalRenderer);
 
-		private:
-			static void checkMutexInit();
+  virtual ~SDLDeviceScreen ();
 
-		public:
-			static void lockSDL();
-			static void unlockSDL();
+private:
+  static void checkMutexInit ();
 
-			static void updateRenderMap(
-					GingaScreenID screenId, SDLWindow* window,
-					float oldZIndex, float newZIndex);
+public:
+  static void lockSDL ();
+  static void unlockSDL ();
 
-			void releaseScreen();
+  static void updateRenderMap (GingaScreenID screenId, SDLWindow *window,
+                               float oldZIndex, float newZIndex);
 
-			void releaseMB();
+  void releaseScreen ();
 
-			void clearWidgetPools();
+  void releaseMB ();
 
-			string getScreenName();
+  void clearWidgetPools ();
 
-		private:
-			void setEmbedFromParent(string parentCoords);
+  string getScreenName ();
 
-		public:
-			void setBackgroundImage(string uri);
+private:
+  void setEmbedFromParent (string parentCoords);
 
-			unsigned int getWidthResolution();
-			void setWidthResolution(unsigned int wRes);
-			unsigned int getHeightResolution();
-			void setHeightResolution(unsigned int hRes);
+public:
+  void setBackgroundImage (string uri);
 
-			void setColorKey(int r, int g, int b);
+  unsigned int getWidthResolution ();
+  void setWidthResolution (unsigned int wRes);
+  unsigned int getHeightResolution ();
+  void setHeightResolution (unsigned int hRes);
 
-			SDLWindow* getIWindowFromId(GingaWindowID winId);
-			bool mergeIds(GingaWindowID destId, vector<GingaWindowID>* srcIds);
-			void blitScreen(SDLSurface* destination);
-			void blitScreen(string fileUri);
+  void setColorKey (int r, int g, int b);
 
-		private:
-			void blitScreen(SDL_Surface* destination);
-			void setInitScreenFlag();
+  SDLWindow *getIWindowFromId (GingaWindowID winId);
+  bool mergeIds (GingaWindowID destId, vector<GingaWindowID> *srcIds);
+  void blitScreen (SDLSurface *destination);
+  void blitScreen (string fileUri);
 
-		public:
-			void refreshScreen();
+private:
+  void blitScreen (SDL_Surface *destination);
+  void setInitScreenFlag ();
 
+public:
+  void refreshScreen ();
 
-			/* interfacing output */
+  /* interfacing output */
 
-			SDLWindow* createWindow(int x, int y, int w, int h, float z);
+  SDLWindow *createWindow (int x, int y, int w, int h, float z);
 
-			UnderlyingWindowID createUnderlyingSubWindow(
-					int x, int y, int w, int h, float z);
+  UnderlyingWindowID createUnderlyingSubWindow (int x, int y, int w, int h,
+                                                float z);
 
-		private:
-			UnderlyingWindowID createUnderlyingSubWindow(
-					UnderlyingWindowID parent,
-					string spec,
-					int x, int y, int w, int h, float z);
+private:
+  UnderlyingWindowID createUnderlyingSubWindow (UnderlyingWindowID parent,
+                                                string spec, int x, int y,
+                                                int w, int h, float z);
 
-		public:
-			UnderlyingWindowID getScreenUnderlyingWindow();
+public:
+  UnderlyingWindowID getScreenUnderlyingWindow ();
 
-			bool hasWindow(SDLWindow* win);
-			void releaseWindow(SDLWindow* win);
+  bool hasWindow (SDLWindow *win);
+  void releaseWindow (SDLWindow *win);
 
-			SDLSurface* createSurface();
-			SDLSurface* createSurface(int w, int h);
-			SDLSurface* createSurfaceFrom(void* underlyingSurface);
-			bool hasSurface(SDLSurface* sur);
-			bool releaseSurface(SDLSurface* sur);
+  SDLSurface *createSurface ();
+  SDLSurface *createSurface (int w, int h);
+  SDLSurface *createSurfaceFrom (void *underlyingSurface);
+  bool hasSurface (SDLSurface *sur);
+  bool releaseSurface (SDLSurface *sur);
 
+  /* interfacing content */
 
-			/* interfacing content */
+  IContinuousMediaProvider *createContinuousMediaProvider (const char *mrl,
+                                                           bool isRemote);
 
-			IContinuousMediaProvider* createContinuousMediaProvider(
-					const char* mrl, bool isRemote);
+  void releaseContinuousMediaProvider (IContinuousMediaProvider *provider);
 
-			void releaseContinuousMediaProvider(
-					IContinuousMediaProvider* provider);
+  IFontProvider *createFontProvider (const char *mrl, int fontSize);
 
-			IFontProvider* createFontProvider(
-					const char* mrl, int fontSize);
+  void releaseFontProvider (IFontProvider *provider);
 
-			void releaseFontProvider(IFontProvider* provider);
+  IImageProvider *createImageProvider (const char *mrl);
+  void releaseImageProvider (IImageProvider *provider);
 
-			IImageProvider* createImageProvider(const char* mrl);
-			void releaseImageProvider(IImageProvider* provider);
+  SDLSurface *createRenderedSurfaceFromImageFile (const char *mrl);
 
-			SDLSurface* createRenderedSurfaceFromImageFile(const char* mrl);
+  static void addCMPToRendererList (IContinuousMediaProvider *cmp);
+  static void removeCMPToRendererList (IContinuousMediaProvider *cmp);
 
-			static void addCMPToRendererList(IContinuousMediaProvider* cmp);
-			static void removeCMPToRendererList(IContinuousMediaProvider* cmp);
+  static void createReleaseContainer (SDL_Surface *uSur, SDL_Texture *uTex,
+                                      IMediaProvider *iDec);
 
-			static void createReleaseContainer(
-					SDL_Surface* uSur,
-					SDL_Texture* uTex,
-					IMediaProvider* iDec);
+private:
+  static void checkSDLInit ();
+  static void notifyQuit ();
+  static void sdlQuit ();
 
-		private:
-			static void checkSDLInit();
-			static void notifyQuit();
-			static void sdlQuit();
+  static void checkWindowFocus (SDLDeviceScreen *s, SDL_Event *event);
+  static bool notifyEvent (SDLDeviceScreen *screen, SDL_Event *event,
+                           bool capsOn, bool shiftOn);
 
-			static void checkWindowFocus(SDLDeviceScreen* s, SDL_Event* event);
-			static bool notifyEvent(
-					SDLDeviceScreen* screen,
-					SDL_Event* event,
-					bool capsOn,
-					bool shiftOn);
+  static void *checkStdin (void *ptr);
+  static void processCmd (SDLDeviceScreen *s, string cmd, string type,
+                          string args);
 
-			static void* checkStdin(void* ptr);
-			static void processCmd(
-					SDLDeviceScreen* s,
-					string cmd,
-					string type,
-					string args);
+  static bool checkEvents ();
+  static void *rendererT (void *ptr);
 
-			static bool checkEvents();
-			static void* rendererT(void* ptr);
+  static void refreshRC (SDLDeviceScreen *screen);
+  static int refreshCMP (SDLDeviceScreen *screen);
+  static void refreshWin (SDLDeviceScreen *screen);
 
-			static void refreshRC(SDLDeviceScreen* screen);
-			static int refreshCMP(SDLDeviceScreen* screen);
-			static void refreshWin(SDLDeviceScreen* screen);
+  static void initEmbed (SDLDeviceScreen *s, UnderlyingWindowID uWin);
+  static void forceInputFocus (SDLDeviceScreen *screen,
+                               UnderlyingWindowID uWin);
 
-			static void initEmbed(SDLDeviceScreen* s, UnderlyingWindowID uWin);
-			static void forceInputFocus(
-					SDLDeviceScreen* screen, UnderlyingWindowID uWin);
+  static void initScreen (SDLDeviceScreen *screen);
+  static void clearScreen (SDLDeviceScreen *screen);
+  static void releaseScreen (SDLDeviceScreen *screen);
 
-			static void initScreen(SDLDeviceScreen* screen);
-			static void clearScreen(SDLDeviceScreen* screen);
-			static void releaseScreen(SDLDeviceScreen* screen);
+  static void releaseAll ();
 
-			static void releaseAll();
+  static void initCMP (SDLDeviceScreen *screen, IContinuousMediaProvider *cmp);
 
-			static void initCMP(
-					SDLDeviceScreen* screen, IContinuousMediaProvider* cmp);
+  static bool blitFromWindow (SDLWindow *iWin, SDL_Surface *dest);
 
-			static bool blitFromWindow(SDLWindow* iWin, SDL_Surface* dest);
+public:
+  /* interfacing input */
 
-		public:
+  InputManager *getInputManager ();
 
-			/* interfacing input */
+  SDLEventBuffer *createEventBuffer ();
 
-			InputManager* getInputManager();
+  SDLInputEvent *createInputEvent (void *event, const int symbol);
+  SDLInputEvent *createApplicationEvent (int type, void *data);
 
-			SDLEventBuffer* createEventBuffer();
+  int fromMBToGinga (int keyCode);
+  int fromGingaToMB (int keyCode);
 
-			SDLInputEvent* createInputEvent(void* event, const int symbol);
-			SDLInputEvent* createApplicationEvent(int type, void* data);
+  /* interfacing underlying multimedia system */
 
-			int fromMBToGinga(int keyCode);
-			int fromGingaToMB(int keyCode);
+  void *getGfxRoot ();
 
+  /* SDL MB internal use*/
+private:
+  /* input */
+  static int convertEventCodeStrToInt (string strEvent);
+  static void initCodeMaps ();
+  static bool checkEventFocus (SDLDeviceScreen *s);
 
-			/* interfacing underlying multimedia system */
+public:
+  /* output */
+  static void renderMapInsertWindow (GingaScreenID screenId, SDLWindow *iWin,
+                                     float z);
 
-			void* getGfxRoot();
+  static void renderMapRemoveWindow (GingaScreenID screenId, SDLWindow *iWin,
+                                     float z);
 
+  //			static void updateWindowState(
+  //					GingaScreenID screenId, SDLWindow* win, short
+  //status);
 
-			/* SDL MB internal use*/
-		private:
-			/* input */
-			static int convertEventCodeStrToInt(string strEvent);
-			static void initCodeMaps();
-			static bool checkEventFocus(SDLDeviceScreen* s);
+private:
+  //			static void updateWindowList(
+  //					vector<SDLWindow*>* windows, SDLWindow* win, short
+  //status);
 
-		public:
-			/* output */
-			static void renderMapInsertWindow(
-					GingaScreenID screenId, SDLWindow* iWin, float z);
+  static void removeFromWindowList (vector<SDLWindow *> *windows,
+                                    SDLWindow *win);
 
-			static void renderMapRemoveWindow(
-					GingaScreenID screenId, SDLWindow* iWin, float z);
+public:
+  static SDL_Window *getUnderlyingWindow (GingaWindowID winId);
 
-//			static void updateWindowState(
-//					GingaScreenID screenId, SDLWindow* win, short status);
+private:
+  static bool drawSDLWindow (SDL_Renderer *renderer, SDL_Texture *texture,
+                             SDLWindow *iWin);
 
-		private:
-//			static void updateWindowList(
-//					vector<SDLWindow*>* windows, SDLWindow* win, short status);
+  static void insertWindowFromRenderList (SDLWindow *win,
+                                          vector<SDLWindow *> *windows);
 
-			static void removeFromWindowList(
-					vector<SDLWindow*>* windows, SDLWindow* win);
+  static void removeWindowFromRenderList (SDLWindow *win,
+                                          vector<SDLWindow *> *windows);
 
-		public:
-			static SDL_Window* getUnderlyingWindow(GingaWindowID winId);
+public:
+  /* CAUTION: call this method only from main SDL thread */
+  static SDL_Texture *createTextureFromSurface (SDL_Renderer *renderer,
+                                                SDL_Surface *surface);
 
-		private:
-			static bool drawSDLWindow(
-					SDL_Renderer* renderer,
-					SDL_Texture* texture,
-					SDLWindow* iWin);
+private:
+  static SDL_Texture *createTexture (SDL_Renderer *renderer, int w, int h);
 
-			static void insertWindowFromRenderList(
-					SDLWindow* win, vector<SDLWindow*>* windows);
+public:
+  static bool hasTexture (SDL_Texture *uTex);
+  static void releaseTexture (SDL_Texture *uTex);
 
-			static void removeWindowFromRenderList(
-					SDLWindow* win, vector<SDLWindow*>* windows);
+  static void addUnderlyingSurface (SDL_Surface *uSur);
+  static SDL_Surface *createUnderlyingSurface (int width, int height);
 
-		public:
-			/* CAUTION: call this method only from main SDL thread */
-			static SDL_Texture* createTextureFromSurface(
-					SDL_Renderer* renderer, SDL_Surface* surface);
+  static SDL_Surface *
+  createUnderlyingSurfaceFromTexture (SDL_Texture *texture);
 
-		private:
-			static SDL_Texture* createTexture(
-					SDL_Renderer* renderer, int w, int h);
+  static bool hasUnderlyingSurface (SDL_Surface *uSur);
 
-		public:
-			static bool hasTexture(SDL_Texture* uTex);
-			static void releaseTexture(SDL_Texture* uTex);
-
-			static void addUnderlyingSurface(SDL_Surface* uSur);
-			static SDL_Surface* createUnderlyingSurface(int width, int height);
-
-			static SDL_Surface* createUnderlyingSurfaceFromTexture(
-					SDL_Texture* texture);
-
-			static bool hasUnderlyingSurface(SDL_Surface* uSur);
-
-		private:
-			static void releaseUnderlyingSurface(SDL_Surface* uSur);
-	};
+private:
+  static void releaseUnderlyingSurface (SDL_Surface *uSur);
+};
 
 GINGA_MB_END
 

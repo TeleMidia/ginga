@@ -20,119 +20,143 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TSPARSER_BEGIN
 
-	ParentalRatingDescriptor::ParentalRatingDescriptor() {
-		descriptorTag = 0x55;
-		descriptorLength = 0;
-		countryRatings = NULL;
-	}
+ParentalRatingDescriptor::ParentalRatingDescriptor ()
+{
+  descriptorTag = 0x55;
+  descriptorLength = 0;
+  countryRatings = NULL;
+}
 
-	ParentalRatingDescriptor::~ParentalRatingDescriptor() {
-		vector<Parental*>::iterator i;
+ParentalRatingDescriptor::~ParentalRatingDescriptor ()
+{
+  vector<Parental *>::iterator i;
 
-		if (countryRatings != NULL) {
-			for (i = countryRatings->begin(); i!= countryRatings->end(); ++i) {
-				if ((*i) != NULL) {
-					delete (*i);
-				}
-			}
-			delete countryRatings;
-			countryRatings = NULL;
-		}
-	}
+  if (countryRatings != NULL)
+    {
+      for (i = countryRatings->begin (); i != countryRatings->end (); ++i)
+        {
+          if ((*i) != NULL)
+            {
+              delete (*i);
+            }
+        }
+      delete countryRatings;
+      countryRatings = NULL;
+    }
+}
 
-	unsigned int ParentalRatingDescriptor::getDescriptorLength() {
-		return (unsigned int)descriptorLength;
-	}
+unsigned int
+ParentalRatingDescriptor::getDescriptorLength ()
+{
+  return (unsigned int)descriptorLength;
+}
 
-	unsigned char ParentalRatingDescriptor::getDescriptorTag() {
-		return descriptorTag;
-	}
+unsigned char
+ParentalRatingDescriptor::getDescriptorTag ()
+{
+  return descriptorTag;
+}
 
-	string ParentalRatingDescriptor::getCountryCode(Parental* parental) {
-		string str;
+string
+ParentalRatingDescriptor::getCountryCode (Parental *parental)
+{
+  string str;
 
-		str.append(parental->countryCode, 3);
-		return str;
-	}
+  str.append (parental->countryCode, 3);
+  return str;
+}
 
-	/*
-	 * Recomended age according with binary:
-	 * 0000: reserved
-	 * 0001: L
-	 * 0010: 10
-	 * 0011: 12
-	 * 0100: 14
-	 * 0101: 16
-	 * 0110: 18
-	 */
-	unsigned int ParentalRatingDescriptor::getAge(Parental* parental) {
-		return (unsigned int)parental->age;
-	}
+/*
+ * Recomended age according with binary:
+ * 0000: reserved
+ * 0001: L
+ * 0010: 10
+ * 0011: 12
+ * 0100: 14
+ * 0101: 16
+ * 0110: 18
+ */
+unsigned int
+ParentalRatingDescriptor::getAge (Parental *parental)
+{
+  return (unsigned int)parental->age;
+}
 
-	unsigned int ParentalRatingDescriptor::getContentDescription(
-			Parental* parental) {
+unsigned int
+ParentalRatingDescriptor::getContentDescription (Parental *parental)
+{
 
-		return (unsigned int)parental->contentDescription;
-	}
+  return (unsigned int)parental->contentDescription;
+}
 
-	vector<Parental*>* ParentalRatingDescriptor::getCountryRatings() {
-		return countryRatings;
-	}
+vector<Parental *> *
+ParentalRatingDescriptor::getCountryRatings ()
+{
+  return countryRatings;
+}
 
-	void ParentalRatingDescriptor::print() {
-		clog << "ParentalRatingDescriptor::print printing..." << endl;
-		clog << " -descriptorLength = " << getDescriptorLength() << endl;
+void
+ParentalRatingDescriptor::print ()
+{
+  clog << "ParentalRatingDescriptor::print printing..." << endl;
+  clog << " -descriptorLength = " << getDescriptorLength () << endl;
 
-		if (countryRatings != NULL){
-			vector<Parental*>::iterator i;
-			Parental* parental;
+  if (countryRatings != NULL)
+    {
+      vector<Parental *>::iterator i;
+      Parental *parental;
 
-			for(i = countryRatings->begin(); i != countryRatings->end();++i){
-				parental = ((Parental*)(*i));
+      for (i = countryRatings->begin (); i != countryRatings->end (); ++i)
+        {
+          parental = ((Parental *)(*i));
 
-				/*clog << " -country = "     << getCountryCode(parental);
-				clog << " -age = "         << getAge(parental);
-				clog << " -description = ";
-				clog << getContentDescription(parental);
-				clog << endl;*/
-			}
-		}
-	}
+          /*clog << " -country = "     << getCountryCode(parental);
+          clog << " -age = "         << getAge(parental);
+          clog << " -description = ";
+          clog << getContentDescription(parental);
+          clog << endl;*/
+        }
+    }
+}
 
-	size_t ParentalRatingDescriptor::process (char* data, size_t pos){
-		size_t remainingBytes;
-		Parental* parental;
+size_t
+ParentalRatingDescriptor::process (char *data, size_t pos)
+{
+  size_t remainingBytes;
+  Parental *parental;
 
-		//clog << "ParentalRatingDescriptor::process with pos =  " << pos ;
-		descriptorLength = data[pos+1];
-		//clog << " and descriptorLenght = " << (descriptorLength & 0xFF) <<endl;
+  // clog << "ParentalRatingDescriptor::process with pos =  " << pos ;
+  descriptorLength = data[pos + 1];
+  // clog << " and descriptorLenght = " << (descriptorLength & 0xFF) <<endl;
 
-		pos ++;
-		if (descriptorLength > 0) {
-			countryRatings = new vector<Parental*>;
-			remainingBytes = descriptorLength;
-		}
+  pos++;
+  if (descriptorLength > 0)
+    {
+      countryRatings = new vector<Parental *>;
+      remainingBytes = descriptorLength;
+    }
 
-		while (remainingBytes){
-			pos++;
+  while (remainingBytes)
+    {
+      pos++;
 
-			parental = new Parental;
-			//memset(parental->countryCode, 0 , 3);
-			memcpy(parental->countryCode, data+pos, 3);
+      parental = new Parental;
+      // memset(parental->countryCode, 0 , 3);
+      memcpy (parental->countryCode, data + pos, 3);
 
-			pos+=3;
-			parental->contentDescription = ((data[pos] & 0xF0) >> 4);
-			parental->age = (data[pos] & 0x0F);
+      pos += 3;
+      parental->contentDescription = ((data[pos] & 0xF0) >> 4);
+      parental->age = (data[pos] & 0x0F);
 
-			//clog << "contentDescription = ";
-			//clog << (parental->contentDescription & 0xFF);
-			//clog << " and age = " << (parental->age & 0XFF) << endl;
+      // clog << "contentDescription = ";
+      // clog << (parental->contentDescription & 0xFF);
+      // clog << " and age = " << (parental->age & 0XFF) << endl;
 
-			countryRatings->push_back(parental);
-			remainingBytes = remainingBytes - 4 ;
-		}
+      countryRatings->push_back (parental);
+      remainingBytes = remainingBytes - 4;
+    }
 
-		return pos;
-	}
+  return pos;
+}
 
 GINGA_TSPARSER_END

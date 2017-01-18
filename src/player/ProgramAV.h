@@ -21,44 +21,44 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Player.h"
 #include "IProgramAV.h"
 
-
 GINGA_PLAYER_BEGIN
 
-	class ProgramAV : public Player {
-		private:
-			static ProgramAV* _instance;
-			map<int, IPlayer*> players;
-			map<int, string> playerBounds;
-			map<string, int> namePids;
-			IPlayer* currentPlayer;
-			int currentPid;
-			string fullScreenBounds;
+class ProgramAV : public Player
+{
+private:
+  static ProgramAV *_instance;
+  map<int, IPlayer *> players;
+  map<int, string> playerBounds;
+  map<string, int> namePids;
+  IPlayer *currentPlayer;
+  int currentPid;
+  string fullScreenBounds;
 
-			ProgramAV(GingaScreenID screenId);
-			virtual ~ProgramAV();
+  ProgramAV (GingaScreenID screenId);
+  virtual ~ProgramAV ();
 
-		public:
-			static ProgramAV* getInstance(GingaScreenID screenId);
-			void release();
-			int64_t getVPts();
-			GingaSurfaceID getSurface();
+public:
+  static ProgramAV *getInstance (GingaScreenID screenId);
+  void release ();
+  int64_t getVPts ();
+  GingaSurfaceID getSurface ();
 
-		private:
-			void addPidName(string name, int pid);
-			int getPidByName(string name);
-			void forcePids(string pValue);
-			void setAVPid(string name, int aPid, int vPid);
-			string getNameFromMrl(string mrl);
-			void showPlayer(string mrl);
-			void hidePlayer(string mrl);
-			void createPlayer(string mrl);
-			void setPlayer(int pid, IPlayer*);
-			IPlayer* getPlayer(string mrl);
-			IPlayer* getPlayer(int pid);
+private:
+  void addPidName (string name, int pid);
+  int getPidByName (string name);
+  void forcePids (string pValue);
+  void setAVPid (string name, int aPid, int vPid);
+  string getNameFromMrl (string mrl);
+  void showPlayer (string mrl);
+  void hidePlayer (string mrl);
+  void createPlayer (string mrl);
+  void setPlayer (int pid, IPlayer *);
+  IPlayer *getPlayer (string mrl);
+  IPlayer *getPlayer (int pid);
 
-			string getPropertyValue(string pName);
-			void setPropertyValue(string pName, string pValue);
-	};
+  string getPropertyValue (string pName);
+  void setPropertyValue (string pName, string pValue);
+};
 
 GINGA_PLAYER_END
 

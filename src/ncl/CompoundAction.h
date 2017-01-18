@@ -21,37 +21,38 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Action.h"
 #include "SimpleAction.h"
 
-
 GINGA_NCL_BEGIN
 
-	class CompoundAction : public Action {
-		public:
-			static const short OP_PAR = 0;
-			static const short OP_SEQ = 1;
-			static const short OP_EXCL = 2;
+class CompoundAction : public Action
+{
+public:
+  static const short OP_PAR = 0;
+  static const short OP_SEQ = 1;
+  static const short OP_EXCL = 2;
 
-		protected:
-			vector<Action*>* actions;
-			short myOperator;
+protected:
+  vector<Action *> *actions;
+  short myOperator;
 
-		public:
-			CompoundAction();
-			CompoundAction(
-				    Action* a1, Action* a2, short op);
+public:
+  CompoundAction ();
+  CompoundAction (Action *a1, Action *a2, short op);
 
-			virtual ~CompoundAction();
+  virtual ~CompoundAction ();
 
-			void setOperator(short op);
-			short getOperator();
-			vector<Action*>* getActions();
-			void addAction(Action* action);
-			void removeAction(Action* action);
-			vector<Role*> *getRoles();
-			string toString();
-			bool instanceOf(string type) {
-				return Action::instanceOf(type);
-			}
-	};
+  void setOperator (short op);
+  short getOperator ();
+  vector<Action *> *getActions ();
+  void addAction (Action *action);
+  void removeAction (Action *action);
+  vector<Role *> *getRoles ();
+  string toString ();
+  bool
+  instanceOf (string type)
+  {
+    return Action::instanceOf (type);
+  }
+};
 
 GINGA_NCL_END
 

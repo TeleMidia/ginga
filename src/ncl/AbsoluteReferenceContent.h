@@ -20,14 +20,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ReferenceContent.h"
 
-
 GINGA_NCL_BEGIN
 
-	class AbsoluteReferenceContent : public ReferenceContent {
-		public:
-			AbsoluteReferenceContent(string ref);
-			virtual ~AbsoluteReferenceContent(){};
-	};
+class AbsoluteReferenceContent : public ReferenceContent
+{
+public:
+  AbsoluteReferenceContent (string ref);
+  virtual ~AbsoluteReferenceContent (){};
+};
 
 GINGA_NCL_END
 

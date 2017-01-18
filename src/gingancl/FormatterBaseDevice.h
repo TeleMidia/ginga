@@ -26,26 +26,27 @@ BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
 class FormatterBaseDevice : public FormatterMultiDevice
 {
 public:
-  FormatterBaseDevice(GingaScreenID screenId, DeviceLayout* deviceLayout,
-                      string playerId, int x, int y, int w, int h,
-                      bool useMulticast, int srvPort);
-  virtual ~FormatterBaseDevice();
+  FormatterBaseDevice (GingaScreenID screenId, DeviceLayout *deviceLayout,
+                       string playerId, int x, int y, int w, int h,
+                       bool useMulticast, int srvPort);
+  virtual ~FormatterBaseDevice ();
 
 protected:
-  bool newDeviceConnected(int newDevClass, int w, int h);
-  void connectedToBaseDevice(unsigned int domainAddr){};
-  bool receiveRemoteEvent(int remoteDevClass,int eventType,
-                          string eventContent);
-  bool receiveRemoteContent(int remoteDevClass, char *stream,
-                            int streamSize)
+  bool newDeviceConnected (int newDevClass, int w, int h);
+  void connectedToBaseDevice (unsigned int domainAddr){};
+  bool receiveRemoteEvent (int remoteDevClass, int eventType,
+                           string eventContent);
+  bool
+  receiveRemoteContent (int remoteDevClass, char *stream, int streamSize)
   {
     return false;
   };
-  bool receiveRemoteContent(int remoteDevClass, string contentUri)
+  bool
+  receiveRemoteContent (int remoteDevClass, string contentUri)
   {
     return false;
   };
-  bool userEventReceived(SDLInputEvent* ev);
+  bool userEventReceived (SDLInputEvent *ev);
 };
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_END

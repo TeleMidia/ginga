@@ -22,75 +22,93 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	LinkTransitionTriggerCondition::LinkTransitionTriggerCondition(
-		    FormatterEvent* event,
-		    short transition,
-			Bind* bind) : LinkTriggerCondition() {
+LinkTransitionTriggerCondition::LinkTransitionTriggerCondition (
+    FormatterEvent *event, short transition, Bind *bind)
+    : LinkTriggerCondition ()
+{
 
-		typeSet.insert("LinkTransitionTriggerCondition");
+  typeSet.insert ("LinkTransitionTriggerCondition");
 
-		this->bind       = bind;
-		this->event      = NULL;
-		this->transition = transition;
+  this->bind = bind;
+  this->event = NULL;
+  this->transition = transition;
 
-		if (FormatterEvent::hasInstance(event, false)) {
-			this->event = event;
-			this->event->addEventListener(this);
+  if (FormatterEvent::hasInstance (event, false))
+    {
+      this->event = event;
+      this->event->addEventListener (this);
+    }
+  else
+    {
+      clog << "LinkTransitionTriggerCondition::";
+      clog << "LinkTransitionTriggerCondition Warning! ";
+      clog << "creating a link with NULL event" << endl;
+    }
+}
 
-		} else {
-			clog << "LinkTransitionTriggerCondition::";
-			clog << "LinkTransitionTriggerCondition Warning! ";
-			clog << "creating a link with NULL event" << endl;
-		}
-	}
+LinkTransitionTriggerCondition::~LinkTransitionTriggerCondition ()
+{
+  isDeleting = true;
+  listener = NULL;
+  bind = NULL;
 
-	LinkTransitionTriggerCondition::~LinkTransitionTriggerCondition() {
-		isDeleting = true;
-		listener   = NULL;
-		bind       = NULL;
+  if (FormatterEvent::hasInstance (event, false))
+    {
+      event->removeEventListener (this);
+      event = NULL;
+    }
+}
 
-		if (FormatterEvent::hasInstance(event, false)) {
-			event->removeEventListener(this);
-			event = NULL;
-		}
-	}
+Bind *
+LinkTransitionTriggerCondition::getBind ()
+{
+  return bind;
+}
 
-	Bind* LinkTransitionTriggerCondition::getBind() {
-		return bind;
-	}
+void
+LinkTransitionTriggerCondition::eventStateChanged (void *someEvent,
+                                                   short transition,
+                                                   short previousState)
+{
 
-	void LinkTransitionTriggerCondition::eventStateChanged(
-		    void* someEvent, short transition, short previousState) {
+  if (this->transition == transition)
+    {
+      notifyConditionObservers (LinkTriggerListener::EVALUATION_STARTED);
 
-		if (this->transition == transition) {
-			notifyConditionObservers(
-				    LinkTriggerListener::EVALUATION_STARTED);
+      LinkTriggerCondition::conditionSatisfied (this);
+    }
+}
 
-			LinkTriggerCondition::conditionSatisfied(this);
-		}
-	}
+short
+LinkTransitionTriggerCondition::getPriorityType ()
+{
+  return IEventListener::PT_LINK;
+}
 
-	short LinkTransitionTriggerCondition::getPriorityType() {
-		return IEventListener::PT_LINK;
-	}
+FormatterEvent *
+LinkTransitionTriggerCondition::getEvent ()
+{
+  return event;
+}
 
-	FormatterEvent* LinkTransitionTriggerCondition::getEvent() {
-		return event;
-	}
+short
+LinkTransitionTriggerCondition::getTransition ()
+{
+  return transition;
+}
 
-	short LinkTransitionTriggerCondition::getTransition() {
-		return transition;
-	}
+vector<FormatterEvent *> *
+LinkTransitionTriggerCondition::getEvents ()
+{
+  if (!FormatterEvent::hasInstance (event, false))
+    {
+      return NULL;
+    }
 
-	vector<FormatterEvent*>* LinkTransitionTriggerCondition::getEvents() {
-		if (!FormatterEvent::hasInstance(event, false)) {
-			return NULL;
-		}
+  vector<FormatterEvent *> *events = new vector<FormatterEvent *>;
 
-		vector<FormatterEvent*>* events = new vector<FormatterEvent*>;
-
-		events->push_back(event);
-		return events;
-	}
+  events->push_back (event);
+  return events;
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END

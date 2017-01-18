@@ -21,9 +21,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "isdbt-tsparser/IEventInfo.h"
 using namespace ::ginga::tsparser;
 
-
 /*
- * A Lua Node can register himself to handle EPG events (class='si', type='epg').
+ * A Lua Node can register himself to handle EPG events (class='si',
+ * type='epg').
  * Doing this, his associated Lua Player becames an IEPGListener. The standard
  * defines 3 main types that a Lua Node can request EPG events.
  *
@@ -36,47 +36,51 @@ using namespace ::ginga::tsparser;
  * That request has to be stored associated with her N IEPGListeners.
  */
 
-struct Request {
-	string stage;
-	/* 3 possible values: current, next or schedule*/
+struct Request
+{
+  string stage;
+  /* 3 possible values: current, next or schedule*/
 
-	unsigned short eventId;
-	/* only if stage==next, requesting the next event of the event with this
-	 *  eventId. If is not specified, the request is for the next event of the
-	 *  current event*/
+  unsigned short eventId;
+  /* only if stage==next, requesting the next event of the event with this
+   *  eventId. If is not specified, the request is for the next event of the
+   *  current event*/
 
-	string startTime;
-	string endTime;
-	/* only if stage==schedule, requesting events with startTime and endTime in
-	* the range specified by this startTime and this endTime*/
+  string startTime;
+  string endTime;
+  /* only if stage==schedule, requesting events with startTime and endTime in
+  * the range specified by this startTime and this endTime*/
 
-	vector<string> fields;
-	/*requesting specified metadata fields for each event. If is not specified
-	 * the request is for all possible metadada fields*/
+  vector<string> fields;
+  /*requesting specified metadata fields for each event. If is not specified
+   * the request is for all possible metadada fields*/
 };
 
-struct SIField {
-	string str;
-	map<string, struct SIField> table;
+struct SIField
+{
+  string str;
+  map<string, struct SIField> table;
 };
 
 GINGA_DATAPROC_BEGIN
 
-	class IEPGListener {
+class IEPGListener
+{
 
-		public:
-			static const unsigned char SI_LISTENER     = 1;
-			static const unsigned char EPG_LISTENER    = 2;
-			static const unsigned char MOSAIC_LISTENER = 3;
-			static const unsigned char TIME_LISTENER   = 4;
+public:
+  static const unsigned char SI_LISTENER = 1;
+  static const unsigned char EPG_LISTENER = 2;
+  static const unsigned char MOSAIC_LISTENER = 3;
+  static const unsigned char TIME_LISTENER = 4;
 
-		public:
-			virtual ~IEPGListener(){};
-			virtual void pushSIEvent(
-					map<string, struct SIField> event, unsigned char type)=0;
+public:
+  virtual ~IEPGListener (){};
+  virtual void pushSIEvent (map<string, struct SIField> event,
+                            unsigned char type)
+      = 0;
 
-			virtual void addAsSIListener(unsigned char type)=0;
-	};
+  virtual void addAsSIListener (unsigned char type) = 0;
+};
 
 GINGA_DATAPROC_END
 

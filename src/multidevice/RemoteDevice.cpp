@@ -20,33 +20,40 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MULTIDEVICE_BEGIN
 
-	RemoteDevice::RemoteDevice(unsigned int address, int deviceClass) {
-		this->address = address;
-		this->deviceClass = deviceClass;
-		width  = 0;
-		height = 0;
-	}
+RemoteDevice::RemoteDevice (unsigned int address, int deviceClass)
+{
+  this->address = address;
+  this->deviceClass = deviceClass;
+  width = 0;
+  height = 0;
+}
 
-	RemoteDevice::~RemoteDevice() {
+RemoteDevice::~RemoteDevice () {}
 
-	}
+unsigned int
+RemoteDevice::getDeviceAddress ()
+{
+  return address;
+}
 
-	unsigned int RemoteDevice::getDeviceAddress() {
-		return address;
-	}
+int
+RemoteDevice::getDeviceClass ()
+{
+  return deviceClass;
+}
 
-	int RemoteDevice::getDeviceClass() {
-		return deviceClass;
-	}
+void
+RemoteDevice::setDeviceResolution (int width, int height)
+{
+  this->width = width;
+  this->height = height;
+}
 
-	void RemoteDevice::setDeviceResolution(int width, int height) {
-		this->width = width;
-		this->height = height;
-	}
-
-	void RemoteDevice::getDeviceResolution(int* width, int* height) {
-		*width = this->width;
-		*height = this->height;
-	}
+void
+RemoteDevice::getDeviceResolution (int *width, int *height)
+{
+  *width = this->width;
+  *height = this->height;
+}
 
 GINGA_MULTIDEVICE_END

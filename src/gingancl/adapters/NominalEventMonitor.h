@@ -44,56 +44,55 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
 #include "IPlayerAdapter.h"
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 
-   class NominalEventMonitor : public Thread, public ITimeBaseListener {
-	private:
-		double sleepTime;
-		double expectedSleepTime;
-		ExecutionObject* executionObject;
-		IPlayerAdapter* adapter;
-		int timeBaseId;
-		ITimeBaseProvider* timeBaseProvider;
+class NominalEventMonitor : public Thread, public ITimeBaseListener
+{
+private:
+  double sleepTime;
+  double expectedSleepTime;
+  ExecutionObject *executionObject;
+  IPlayerAdapter *adapter;
+  int timeBaseId;
+  ITimeBaseProvider *timeBaseProvider;
 
-		static const double DEFAULT_SLEEP_TIME;
-		static const double DEFAULT_ERROR;
+  static const double DEFAULT_SLEEP_TIME;
+  static const double DEFAULT_ERROR;
 
-		bool running;
-		bool paused;
-		bool stopped;
+  bool running;
+  bool paused;
+  bool stopped;
 
-	public:
-		NominalEventMonitor(ExecutionObject* obj, IPlayerAdapter* player);
-		virtual ~NominalEventMonitor();
+public:
+  NominalEventMonitor (ExecutionObject *obj, IPlayerAdapter *player);
+  virtual ~NominalEventMonitor ();
 
-	private:
-		void unregisterFromTimeBase();
+private:
+  void unregisterFromTimeBase ();
 
-   public:
-		void setTimeBaseProvider(ITimeBaseProvider* timeBaseProvider);
+public:
+  void setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider);
 
-	private:
-		void prepareNptTransitionsEvents();
+private:
+  void prepareNptTransitionsEvents ();
 
-	public:
-		void updateTimeBaseId(
-				unsigned char oldContentId,
-				unsigned char newContentId);
+public:
+  void updateTimeBaseId (unsigned char oldContentId,
+                         unsigned char newContentId);
 
-		void valueReached(unsigned char timeBaseId, double timeValue);
+  void valueReached (unsigned char timeBaseId, double timeValue);
 
-		void timeBaseNaturalEnd(unsigned char contentId, double timeValue);
+  void timeBaseNaturalEnd (unsigned char contentId, double timeValue);
 
-		void loopDetected();
+  void loopDetected ();
 
-		void startMonitor();
-		void pauseMonitor();
-		void resumeMonitor();
-		void stopMonitor();
+  void startMonitor ();
+  void pauseMonitor ();
+  void resumeMonitor ();
+  void stopMonitor ();
 
-		virtual void run();
-   };
+  virtual void run ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_END
 #endif /*NOMINALEVENTMONITOR_H_*/

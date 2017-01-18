@@ -22,22 +22,24 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/IPrivateBaseContext.h"
 using namespace ::ginga::ncl;
 
-
 GINGA_NCLCONV_BEGIN
 
-  class IDocumentConverter {
-	public:
-		virtual ~IDocumentConverter(){};
+class IDocumentConverter
+{
+public:
+  virtual ~IDocumentConverter (){};
 
-		virtual void setConverterInfo(
-				IPrivateBaseContext* pbc, DeviceLayout* deviceLayout)=0;
-		virtual string getAttribute(void* element, string attribute)=0;
-		virtual void* getObject(string tableName, string key)=0;
-		virtual void* parse(string uri, string iUriD, string fUriD)=0;
-		virtual void* parseEntity(
-				string entityLocation, NclDocument* document, void* parent)=0;
-  };
+  virtual void setConverterInfo (IPrivateBaseContext *pbc,
+                                 DeviceLayout *deviceLayout)
+      = 0;
+  virtual string getAttribute (void *element, string attribute) = 0;
+  virtual void *getObject (string tableName, string key) = 0;
+  virtual void *parse (string uri, string iUriD, string fUriD) = 0;
+  virtual void *parseEntity (string entityLocation, NclDocument *document,
+                             void *parent)
+      = 0;
+};
 
 GINGA_NCLCONV_END
 
-#endif //IDocumentConverter_H
+#endif // IDocumentConverter_H

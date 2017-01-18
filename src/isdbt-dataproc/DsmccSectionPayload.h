@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef DSMCCSectionPayload_H_
 #define DSMCCSectionPayload_H_
 
-
 #include "DsmccCrc.h"
 #include "DsmccMpegDescriptor.h"
 
@@ -26,47 +25,45 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "DsmccNPTEndpoint.h"
 #include "DsmccStreamMode.h"
 
-
 GINGA_DATAPROC_BEGIN
 
+class DsmccSectionPayload
+{
+protected:
+  unsigned short privateDataLength;
+  char *privateDataByte;
 
-class DsmccSectionPayload {
-	protected:
-		unsigned short privateDataLength;
-		char* privateDataByte;
+  vector<DsmccMpegDescriptor *> *dsmccDescritorList;
+  unsigned int checksum;
 
-		vector<DsmccMpegDescriptor*>* dsmccDescritorList;
-		unsigned int checksum;
+  char *payload;
+  unsigned int payloadSize;
 
-		char* payload;
-		unsigned int payloadSize;
+  int processSectionPayload ();
+  int updateStream ();
+  int calculateSectionSize ();
 
-		int processSectionPayload();
-		int updateStream();
-		int calculateSectionSize();
+  void clearDsmccDescritor ();
+  void deleteDescriptor (DsmccMpegDescriptor *desc);
 
-		void clearDsmccDescritor();
-		void deleteDescriptor(DsmccMpegDescriptor* desc);
+  /*
+   * if (tableId == 3D) {
+   *     tableIdExtension = dataEventId & eventMsgGroupId
+   * }
+   */
+public:
+  DsmccSectionPayload (char *data, unsigned int length);
+  virtual ~DsmccSectionPayload ();
 
-		/*
-		 * if (tableId == 3D) {
-		 *     tableIdExtension = dataEventId & eventMsgGroupId
-		 * }
-		 */
-	public:
-		DsmccSectionPayload(char* data, unsigned int length);
-		virtual ~DsmccSectionPayload();
+  vector<DsmccMpegDescriptor *> *getDsmccDescritorList ();
+  unsigned int getChecksum ();
+  void setChecksum (unsigned int cs);
+  int getPrivateDataByte (char **dataStream);
+  int setPrivateDataByte (char *data, unsigned short length);
 
-		vector<DsmccMpegDescriptor*>* getDsmccDescritorList();
-		unsigned int getChecksum();
-		void setChecksum(unsigned int cs);
-		int getPrivateDataByte(char** dataStream);
-		int setPrivateDataByte(char* data, unsigned short length);
-
-		void addDsmccDescriptor(DsmccMpegDescriptor* d);
-		void removeDsmccDescriptor(unsigned char descriptorTag);
+  void addDsmccDescriptor (DsmccMpegDescriptor *d);
+  void removeDsmccDescriptor (unsigned char descriptorTag);
 };
-
 
 GINGA_DATAPROC_END
 

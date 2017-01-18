@@ -22,48 +22,56 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "SDL2ffmpeg.h"
 
-
 GINGA_MB_BEGIN
 
-	class SDLAudioProvider : public IContinuousMediaProvider {
-		protected:
-			GingaScreenID myScreen;
-			string symbol;
-			string mrl;
+class SDLAudioProvider : public IContinuousMediaProvider
+{
+protected:
+  GingaScreenID myScreen;
+  string symbol;
+  string mrl;
 
-			SDL2ffmpeg* decoder;
+  SDL2ffmpeg *decoder;
 
-		public:
-			SDLAudioProvider(GingaScreenID screenId, const char* mrl);
-			virtual ~SDLAudioProvider();
+public:
+  SDLAudioProvider (GingaScreenID screenId, const char *mrl);
+  virtual ~SDLAudioProvider ();
 
-			virtual void setLoadSymbol(string symbol);
-			virtual string getLoadSymbol();
+  virtual void setLoadSymbol (string symbol);
+  virtual string getLoadSymbol ();
 
-			virtual bool getHasVisual(){return false;};
+  virtual bool
+  getHasVisual ()
+  {
+    return false;
+  };
 
-			virtual void setAVPid(int aPid, int vPid){};
-			virtual void feedBuffers(){};
-			void* getProviderContent();
-			virtual void setProviderContent(void* content){};
-			virtual bool checkVideoResizeEvent(GingaSurfaceID frame){return false;};
-			double getTotalMediaTime();
-			float getSoundLevel();
-			virtual int64_t getVPts();
-			double getMediaTime();
-			void setMediaTime(double pos);
+  virtual void setAVPid (int aPid, int vPid){};
+  virtual void feedBuffers (){};
+  void *getProviderContent ();
+  virtual void setProviderContent (void *content){};
+  virtual bool
+  checkVideoResizeEvent (GingaSurfaceID frame)
+  {
+    return false;
+  };
+  double getTotalMediaTime ();
+  float getSoundLevel ();
+  virtual int64_t getVPts ();
+  double getMediaTime ();
+  void setMediaTime (double pos);
 
-		public:
-			void playOver(GingaSurfaceID surface);
-			void resume(GingaSurfaceID surface);
-			void pause();
-			void stop();
-			void setSoundLevel(float level);
-			bool releaseAll();
-			void getOriginalResolution(int* width, int* height);
+public:
+  void playOver (GingaSurfaceID surface);
+  void resume (GingaSurfaceID surface);
+  void pause ();
+  void stop ();
+  void setSoundLevel (float level);
+  bool releaseAll ();
+  void getOriginalResolution (int *width, int *height);
 
-			virtual void refreshDR(void* data);
-	};
+  virtual void refreshDR (void *data);
+};
 
 GINGA_MB_END
 

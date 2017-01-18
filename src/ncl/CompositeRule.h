@@ -20,32 +20,32 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Rule.h"
 
-
 GINGA_NCL_BEGIN
 
-	class CompositeRule : public Rule {
-		private:
-			vector<Rule*>* rules;
-			short ruleOperator;
-			string opStr;
+class CompositeRule : public Rule
+{
+private:
+  vector<Rule *> *rules;
+  short ruleOperator;
+  string opStr;
 
-		public:
-			static const short OP_AND = 0;
-			static const short OP_OR  = 1;
+public:
+  static const short OP_AND = 0;
+  static const short OP_OR = 1;
 
-			CompositeRule(string id, short someOperator);
-			CompositeRule(string id, Rule* firstRule,
-				    Rule* secondRule, short someOperator);
+  CompositeRule (string id, short someOperator);
+  CompositeRule (string id, Rule *firstRule, Rule *secondRule,
+                 short someOperator);
 
-			virtual ~CompositeRule();
-			bool addRule(Rule* rule);
-			vector<Rule*>* getRules();
-			unsigned int getNumRules();
-			short getOperator();
-			bool removeRule(Rule* rule);
-			string toString();
-			void setOperator(short op);
-	};		
+  virtual ~CompositeRule ();
+  bool addRule (Rule *rule);
+  vector<Rule *> *getRules ();
+  unsigned int getNumRules ();
+  short getOperator ();
+  bool removeRule (Rule *rule);
+  string toString ();
+  void setOperator (short op);
+};
 
 GINGA_NCL_END
 

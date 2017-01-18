@@ -25,16 +25,19 @@ GINGA_MULTIDEVICE_BEGIN
 class IRemoteDeviceListener
 {
 public:
-  virtual ~IRemoteDeviceListener(){};
-  virtual bool newDeviceConnected(int newDevClass, int w, int h)=0;
-  virtual void connectedToBaseDevice(unsigned int domainAddr)=0;
-  virtual bool receiveRemoteEvent(int remoteDevClass,int eventType,
-                                  string eventContent)=0;
-  virtual bool receiveRemoteContent(int remoteDevClass,string contentUri)=0;
-  virtual bool receiveRemoteContent(int remoteDevClass,char *stream,
-                                    int streamSize)=0;
-  virtual bool receiveRemoteContentInfo(string contentId,
-                                        string contentUri)=0;
+  virtual ~IRemoteDeviceListener (){};
+  virtual bool newDeviceConnected (int newDevClass, int w, int h) = 0;
+  virtual void connectedToBaseDevice (unsigned int domainAddr) = 0;
+  virtual bool receiveRemoteEvent (int remoteDevClass, int eventType,
+                                   string eventContent)
+      = 0;
+  virtual bool receiveRemoteContent (int remoteDevClass, string contentUri)
+      = 0;
+  virtual bool receiveRemoteContent (int remoteDevClass, char *stream,
+                                     int streamSize)
+      = 0;
+  virtual bool receiveRemoteContentInfo (string contentId, string contentUri)
+      = 0;
 };
 
 GINGA_MULTIDEVICE_END

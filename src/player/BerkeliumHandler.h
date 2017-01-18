@@ -35,141 +35,120 @@ using namespace ::ginga::system;
 #include "berkelium/WindowDelegate.hpp"
 #include "berkelium/Context.hpp"
 
-
 using namespace Berkelium;
 
 GINGA_PLAYER_BEGIN
 
-  class BerkeliumHandler :
-	  public WindowDelegate,
-	  public IInputEventListener,
-	  public IMotionEventListener {
+class BerkeliumHandler : public WindowDelegate,
+                         public IInputEventListener,
+                         public IMotionEventListener
+{
 
-	private:
-		static map<int, int> fromGingaToBklm;
-		std::string mURL;
-		LocalScreenManager* dm;
-		GingaScreenID myScreen;
-		InputManager* im;
-		GingaSurfaceID surface;
-		int xOffset, yOffset;
-		int x, y;
-		int w, h;
-		Context* context;
-		std::auto_ptr<Window> bWindow;
-		bool isValid;
-		bool mouseClick;
-		bool mouseMoved;
-		bool textEvent;
-		int keyCode;
-		static int callCount;
-		bool needs_full_refresh;
-		unsigned char* scroll_buffer;
+private:
+  static map<int, int> fromGingaToBklm;
+  std::string mURL;
+  LocalScreenManager *dm;
+  GingaScreenID myScreen;
+  InputManager *im;
+  GingaSurfaceID surface;
+  int xOffset, yOffset;
+  int x, y;
+  int w, h;
+  Context *context;
+  std::auto_ptr<Window> bWindow;
+  bool isValid;
+  bool mouseClick;
+  bool mouseMoved;
+  bool textEvent;
+  int keyCode;
+  static int callCount;
+  bool needs_full_refresh;
+  unsigned char *scroll_buffer;
 
-		pthread_mutex_t sMutex; //surface mutex
+  pthread_mutex_t sMutex; // surface mutex
 
-	public:
-		BerkeliumHandler(
-				GingaScreenID myScreen, int x, int y, int w, int h);
+public:
+  BerkeliumHandler (GingaScreenID myScreen, int x, int y, int w, int h);
 
-		virtual ~BerkeliumHandler();
+  virtual ~BerkeliumHandler ();
 
-	private:
-		void initInputMap();
+private:
+  void initInputMap ();
 
-		void registerIE();
-		void unregisterIE();
+  void registerIE ();
+  void unregisterIE ();
 
-	public:
-		void stop();
-		void setKeyHandler(bool handler);
+public:
+  void stop ();
+  void setKeyHandler (bool handler);
 
-		void setContext(Context* context);
-		void setWindow(std::auto_ptr<Window> window);
-		void getSize(int* w, int* h);
-		void setBounds(int x, int y, int w, int h);
-		void setUrl(string url);
-		string getUrl();
-		GingaSurfaceID getSurface();
+  void setContext (Context *context);
+  void setWindow (std::auto_ptr<Window> window);
+  void getSize (int *w, int *h);
+  void setBounds (int x, int y, int w, int h);
+  void setUrl (string url);
+  string getUrl ();
+  GingaSurfaceID getSurface ();
 
-		void updateEvents();
+  void updateEvents ();
 
-		bool userEventReceived(SDLInputEvent* ev);
-		bool motionEventReceived(int x, int y, int z);
+  bool userEventReceived (SDLInputEvent *ev);
+  bool motionEventReceived (int x, int y, int z);
 
-		virtual void onAddressBarChanged(Window *win, URLString newURL);
-		virtual void onStartLoading(Window *win, URLString newURL);
-		void onLoadingStateChanged(Window *win, bool isLoading);
-		virtual void onLoad(Window *win);
-		virtual void onLoadError(Window *win, WideString error);
-		virtual void onResponsive(Window *win);
-		virtual void onUnresponsive(Window *win);
+  virtual void onAddressBarChanged (Window *win, URLString newURL);
+  virtual void onStartLoading (Window *win, URLString newURL);
+  void onLoadingStateChanged (Window *win, bool isLoading);
+  virtual void onLoad (Window *win);
+  virtual void onLoadError (Window *win, WideString error);
+  virtual void onResponsive (Window *win);
+  virtual void onUnresponsive (Window *win);
 
-	private:
-		bool mapOnPaintToTexture(
-				Berkelium::Window *wini,
-				const unsigned char* bitmap_in, const Berkelium::Rect& bitmap_rect,
-				size_t num_copy_rects, const Berkelium::Rect *copy_rects,
-				int dx, int dy,
-				const Berkelium::Rect& scroll_rect,
-				unsigned int dest_texture_width,
-				unsigned int dest_texture_height,
-				bool ignore_partial,
-				unsigned char* scroll_buffer);
+private:
+  bool mapOnPaintToTexture (Berkelium::Window *wini,
+                            const unsigned char *bitmap_in,
+                            const Berkelium::Rect &bitmap_rect,
+                            size_t num_copy_rects,
+                            const Berkelium::Rect *copy_rects, int dx, int dy,
+                            const Berkelium::Rect &scroll_rect,
+                            unsigned int dest_texture_width,
+                            unsigned int dest_texture_height,
+                            bool ignore_partial, unsigned char *scroll_buffer);
 
-		GingaSurfaceID createRenderedSurface(string fileName);
+  GingaSurfaceID createRenderedSurface (string fileName);
 
-		string createFile(
-				const unsigned char *sourceBuffer,
-				int width, int height);
+  string createFile (const unsigned char *sourceBuffer, int width, int height);
 
-	public:
-		virtual void onPaint(
-				Window *wini,
-				const unsigned char *bitmap_in,
-				const Rect &bitmap_rect,
-				size_t num_copy_rects,
-				const Rect *copy_rects,
-				int dx,
-				int dy,
-				const Rect &scroll_rect);
+public:
+  virtual void onPaint (Window *wini, const unsigned char *bitmap_in,
+                        const Rect &bitmap_rect, size_t num_copy_rects,
+                        const Rect *copy_rects, int dx, int dy,
+                        const Rect &scroll_rect);
 
-		virtual void onCrashed(Window *win);
-		virtual void onCreatedWindow(
-				Window *win, Window *newWindow, const Rect &initialRect);
-		virtual void onExternalHost(
-				Window *win,
-				WideString message,
-				URLString origin,
-				URLString target);
+  virtual void onCrashed (Window *win);
+  virtual void onCreatedWindow (Window *win, Window *newWindow,
+                                const Rect &initialRect);
+  virtual void onExternalHost (Window *win, WideString message,
+                               URLString origin, URLString target);
 
-		virtual void onPaintPluginTexture(
-				Window *win,
-				void* sourceGLTexture,
-				const std::vector<Rect> srcRects,
-				const Rect &destRect);
+  virtual void onPaintPluginTexture (Window *win, void *sourceGLTexture,
+                                     const std::vector<Rect> srcRects,
+                                     const Rect &destRect);
 
-		virtual void onWidgetCreated(
-				Window *win, Widget *newWidget, int zIndex);
+  virtual void onWidgetCreated (Window *win, Widget *newWidget, int zIndex);
 
-		virtual void onWidgetDestroyed(Window *win, Widget *newWidget);
+  virtual void onWidgetDestroyed (Window *win, Widget *newWidget);
 
-		virtual void onWidgetResize(
-				Window *win, Widget *wid, int newWidth, int newHeight);
+  virtual void onWidgetResize (Window *win, Widget *wid, int newWidth,
+                               int newHeight);
 
-		virtual void onWidgetMove(Window *win, Widget *wid, int newX, int newY);
+  virtual void onWidgetMove (Window *win, Widget *wid, int newX, int newY);
 
-		virtual void onWidgetPaint(
-				Window *win,
-				Widget *wid,
-				const unsigned char *sourceBuffer,
-				const Rect &rect,
-				size_t num_copy_rects,
-				const Rect *copy_rects,
-				int dx,
-				int dy,
-				const Rect &scrollRect);
-  };
+  virtual void onWidgetPaint (Window *win, Widget *wid,
+                              const unsigned char *sourceBuffer,
+                              const Rect &rect, size_t num_copy_rects,
+                              const Rect *copy_rects, int dx, int dy,
+                              const Rect &scrollRect);
+};
 
 GINGA_PLAYER_END
 

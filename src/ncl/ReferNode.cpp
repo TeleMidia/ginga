@@ -23,94 +23,117 @@ using namespace ::ginga::ncl;
 
 GINGA_NCL_BEGIN
 
-	ReferNode::ReferNode(string id) : Node(id) {
-		typeSet.insert("ReferNode");
-		typeSet.insert("DocumentNode");
-		typeSet.insert("ReferEntity");
-		instanceType = "new";
-		referredNode = NULL;
-		instDesc     = NULL;
-	}
+ReferNode::ReferNode (string id) : Node (id)
+{
+  typeSet.insert ("ReferNode");
+  typeSet.insert ("DocumentNode");
+  typeSet.insert ("ReferEntity");
+  instanceType = "new";
+  referredNode = NULL;
+  instDesc = NULL;
+}
 
-	ReferNode::ReferNode(string id, Entity *entity) : Node(id) {
-		typeSet.insert("ReferNode");
-		typeSet.insert("DocumentNode");
-		typeSet.insert("ReferEntity");
-		instanceType = "new";
-		instDesc     = NULL;
+ReferNode::ReferNode (string id, Entity *entity) : Node (id)
+{
+  typeSet.insert ("ReferNode");
+  typeSet.insert ("DocumentNode");
+  typeSet.insert ("ReferEntity");
+  instanceType = "new";
+  instDesc = NULL;
 
-		setReferredEntity(entity);
-	}
+  setReferredEntity (entity);
+}
 
-	GenericDescriptor* ReferNode::getInstanceDescriptor() {
-		GenericDescriptor* desc = NULL;
+GenericDescriptor *
+ReferNode::getInstanceDescriptor ()
+{
+  GenericDescriptor *desc = NULL;
 
-		if (instanceType == "new") {
-			desc = instDesc;
-		}
+  if (instanceType == "new")
+    {
+      desc = instDesc;
+    }
 
-		return desc;
-	}
+  return desc;
+}
 
-	void ReferNode::setInstanceDescriptor(GenericDescriptor* descriptor) {
-		if (instanceType == "new") {
-			instDesc = descriptor;
-		}
-	}
+void
+ReferNode::setInstanceDescriptor (GenericDescriptor *descriptor)
+{
+  if (instanceType == "new")
+    {
+      instDesc = descriptor;
+    }
+}
 
-	string ReferNode::getInstanceType() {
-		return instanceType;
-	}
+string
+ReferNode::getInstanceType ()
+{
+  return instanceType;
+}
 
-	void ReferNode::setInstanceType(string instance) {
-		if (instance != this->instanceType) {
-			//if it was new
-			if (this->instanceType == "new") {
-				this->instanceType = instance;
-				if (referredNode != NULL &&
-					    referredNode->instanceOf("NodeEntity")) {
+void
+ReferNode::setInstanceType (string instance)
+{
+  if (instance != this->instanceType)
+    {
+      // if it was new
+      if (this->instanceType == "new")
+        {
+          this->instanceType = instance;
+          if (referredNode != NULL && referredNode->instanceOf ("NodeEntity"))
+            {
 
-					((NodeEntity*)referredNode)->addSameInstance(this);
-				}
+              ((NodeEntity *)referredNode)->addSameInstance (this);
+            }
+        }
+      else
+        {
+          this->instanceType = instance;
+          if (referredNode != NULL && referredNode->instanceOf ("NodeEntity"))
+            {
 
-			} else {
-				this->instanceType = instance;
-				if (referredNode != NULL &&
-					    referredNode->instanceOf("NodeEntity")) {
+              if (instance == "new")
+                {
+                  ((NodeEntity *)referredNode)->removeSameInstance (this);
+                }
+            }
+        }
+    }
+}
 
-					if (instance == "new") {
-						((NodeEntity*)referredNode)->removeSameInstance(this);
-					}
-				}
-			}
-		}
-	}
+Entity *
+ReferNode::getReferredEntity ()
+{
+  return referredNode;
+}
 
-	Entity* ReferNode::getReferredEntity() {
-		return referredNode;
-	}
+void
+ReferNode::setReferredEntity (Entity *entity)
+{
+  if (referredNode != entity)
+    {
+      if (referredNode != NULL && referredNode->instanceOf ("NodeEntity"))
+        {
 
-	void ReferNode::setReferredEntity(Entity *entity) {
-		if (referredNode != entity) {
-			if (referredNode != NULL &&
-				    referredNode->instanceOf("NodeEntity")) {
+          ((NodeEntity *)referredNode)->removeSameInstance (this);
+        }
 
-				((NodeEntity*)referredNode)->removeSameInstance(this);
-			}
+      referredNode = entity;
 
-			referredNode = entity;
+      if (referredNode != NULL && referredNode->instanceOf ("NodeEntity")
+          && instanceType != "new")
+        {
 
-			if (referredNode != NULL &&
-				    referredNode->instanceOf("NodeEntity") &&
-					instanceType != "new") {
+          ((NodeEntity *)referredNode)->addSameInstance (this);
+        }
+    }
+}
 
-				((NodeEntity*)referredNode)->addSameInstance(this);
-			}
-		}
-	}
-
-	Entity* ReferNode::getDataEntity() {
-		return referredNode;
-	}
+Entity *
+ReferNode::getDataEntity ()
+{
+  return referredNode;
+}
 
 GINGA_NCL_END

@@ -24,288 +24,366 @@ using namespace ::ginga::util;
 
 GINGA_PLAYER_BEGIN
 
-	ProgramAV::ProgramAV(GingaScreenID screenId) : Player(screenId, "") {
-		currentPid       = -1;
-		currentPlayer    = NULL;
-		fullScreenBounds = "";
-	}
+ProgramAV::ProgramAV (GingaScreenID screenId) : Player (screenId, "")
+{
+  currentPid = -1;
+  currentPlayer = NULL;
+  fullScreenBounds = "";
+}
 
-	ProgramAV::~ProgramAV() {
-		map<int, IPlayer*>::iterator i;
+ProgramAV::~ProgramAV ()
+{
+  map<int, IPlayer *>::iterator i;
 
-		i = players.begin();
-		while (i != players.end()) {
-			i->second->stop();
-			if (i->second == currentPlayer) {
-				currentPlayer = NULL;
-			}
-			delete i->second;
-			++i;
-		}
+  i = players.begin ();
+  while (i != players.end ())
+    {
+      i->second->stop ();
+      if (i->second == currentPlayer)
+        {
+          currentPlayer = NULL;
+        }
+      delete i->second;
+      ++i;
+    }
 
-		players.clear();
-		namePids.clear();
-		playerBounds.clear();
+  players.clear ();
+  namePids.clear ();
+  playerBounds.clear ();
 
-		if (currentPlayer != NULL) {
-			delete currentPlayer;
-			currentPlayer = NULL;
-		}
-	}
+  if (currentPlayer != NULL)
+    {
+      delete currentPlayer;
+      currentPlayer = NULL;
+    }
+}
 
-	ProgramAV* ProgramAV::_instance = 0;
+ProgramAV *ProgramAV::_instance = 0;
 
-	ProgramAV* ProgramAV::getInstance(GingaScreenID screenId) {
-		if (ProgramAV::_instance == NULL) {
-			ProgramAV::_instance = new ProgramAV(screenId);
-		}
-		return ProgramAV::_instance;
-	}
+ProgramAV *
+ProgramAV::getInstance (GingaScreenID screenId)
+{
+  if (ProgramAV::_instance == NULL)
+    {
+      ProgramAV::_instance = new ProgramAV (screenId);
+    }
+  return ProgramAV::_instance;
+}
 
-	void ProgramAV::release() {
-		if (currentPlayer != NULL) {
-			currentPlayer->stop();
-		}
+void
+ProgramAV::release ()
+{
+  if (currentPlayer != NULL)
+    {
+      currentPlayer->stop ();
+    }
 
-		if (_instance != NULL) {
-			delete _instance;
-			_instance = NULL;
-		}
-	}
+  if (_instance != NULL)
+    {
+      delete _instance;
+      _instance = NULL;
+    }
+}
 
-	int64_t ProgramAV::getVPts() {
-		if (currentPlayer != NULL) {
-			return currentPlayer->getVPts();
-		}
+int64_t
+ProgramAV::getVPts ()
+{
+  if (currentPlayer != NULL)
+    {
+      return currentPlayer->getVPts ();
+    }
 
-		return 0;
-	}
+  return 0;
+}
 
-	GingaSurfaceID ProgramAV::getSurface() {
-		GingaSurfaceID pSur = 0;
+GingaSurfaceID
+ProgramAV::getSurface ()
+{
+  GingaSurfaceID pSur = 0;
 
-		if (currentPlayer != NULL) {
-			pSur = currentPlayer->getSurface();
-			if (pSur != 0) {
-				dm->setExternalHandler(pSur, true);
-			}
-		}
+  if (currentPlayer != NULL)
+    {
+      pSur = currentPlayer->getSurface ();
+      if (pSur != 0)
+        {
+          dm->setExternalHandler (pSur, true);
+        }
+    }
 
-		return pSur;
-	}
+  return pSur;
+}
 
-	void ProgramAV::addPidName(string name, int pid) {
-		clog << "ProgramAV::addPidName '" << name << "' = '" << pid;
-		clog << "'" << endl;
-		namePids[name] = pid;
-	}
+void
+ProgramAV::addPidName (string name, int pid)
+{
+  clog << "ProgramAV::addPidName '" << name << "' = '" << pid;
+  clog << "'" << endl;
+  namePids[name] = pid;
+}
 
-	int ProgramAV::getPidByName(string name) {
-		map<string, int>::iterator i;
+int
+ProgramAV::getPidByName (string name)
+{
+  map<string, int>::iterator i;
 
-		i = namePids.find(name);
-		if (i != namePids.end()) {
-			return i->second;
-		}
+  i = namePids.find (name);
+  if (i != namePids.end ())
+    {
+      return i->second;
+    }
 
-		return -1;
-	}
+  return -1;
+}
 
-	void ProgramAV::forcePids(string pValue) {
-		vector<string>* vals;
-		string name;
+void
+ProgramAV::forcePids (string pValue)
+{
+  vector<string> *vals;
+  string name;
 
-		vals = split(pValue, ",");
-		if (vals->size() == 3) {
-			name = getNameFromMrl((*vals)[0]);
-			setAVPid(name, ::ginga::util::stof((*vals)[1]), ::ginga::util::stof((*vals)[2]));
-		}
+  vals = split (pValue, ",");
+  if (vals->size () == 3)
+    {
+      name = getNameFromMrl ((*vals)[0]);
+      setAVPid (name, ::ginga::util::stof ((*vals)[1]),
+                ::ginga::util::stof ((*vals)[2]));
+    }
 
-		delete vals;
-	}
+  delete vals;
+}
 
-	void ProgramAV::setAVPid(string name, int aPid, int vPid) {
-		IPlayer* p;
-		int pid;
+void
+ProgramAV::setAVPid (string name, int aPid, int vPid)
+{
+  IPlayer *p;
+  int pid;
 
-		pid = getPidByName(name);
-		if (pid < 0) {
-			return;
-		}
+  pid = getPidByName (name);
+  if (pid < 0)
+    {
+      return;
+    }
 
-		p = getPlayer(pid);
-		if (p != NULL) {
-			clog << "ProgramAV::setAVPid";
-			clog << " aPid = '" << aPid << "'";
-			clog << " vPid = '" << vPid << "'";
-			clog << endl;
+  p = getPlayer (pid);
+  if (p != NULL)
+    {
+      clog << "ProgramAV::setAVPid";
+      clog << " aPid = '" << aPid << "'";
+      clog << " vPid = '" << vPid << "'";
+      clog << endl;
 
-			((AVPlayer*)p)->setAVPid(aPid, vPid);
+      ((AVPlayer *)p)->setAVPid (aPid, vPid);
+    }
+  else
+    {
+      clog << "ProgramAV::setAVPid Warning! Can't find name '";
+      clog << name << "' to set '" << aPid << "' and '" << vPid << "'";
+      clog << endl;
+    }
+}
 
-		} else {
-			clog << "ProgramAV::setAVPid Warning! Can't find name '";
-			clog << name << "' to set '" << aPid << "' and '" << vPid << "'";
-			clog << endl;
-		}
-	}
+string
+ProgramAV::getNameFromMrl (string mrl)
+{
+  if (mrl.substr (0, 11) == "sbtvd-ts://")
+    {
+      if (mrl.find ("dtv_channel.ts") != std::string::npos)
+        {
+          return "0";
+        }
+      return mrl.substr (11, mrl.length () - 11);
+    }
 
-	string ProgramAV::getNameFromMrl(string mrl) {
-		if (mrl.substr(0, 11) == "sbtvd-ts://") {
-			if (mrl.find("dtv_channel.ts") != std::string::npos) {
-				return "0";
-			}
-			return mrl.substr(11, mrl.length() - 11);
-		}
+  return mrl;
+}
 
-		return mrl;
-	}
+void
+ProgramAV::showPlayer (string mrl)
+{
+  IPlayer *player;
 
-	void ProgramAV::showPlayer(string mrl) {
-		IPlayer* player;
+  player = getPlayer (mrl);
+  if (player != NULL)
+    {
+      player->setPropertyValue ("show", "0xFF");
+    }
+}
 
-		player = getPlayer(mrl);
-		if (player != NULL) {
-			player->setPropertyValue("show", "0xFF");
-		}
-	}
+void
+ProgramAV::hidePlayer (string mrl)
+{
+  IPlayer *player;
 
-	void ProgramAV::hidePlayer(string mrl) {
-		IPlayer* player;
+  player = getPlayer (mrl);
+  if (player != NULL)
+    {
+      player->setPropertyValue ("hide", "0x00");
+    }
+}
 
-		player = getPlayer(mrl);
-		if (player != NULL) {
-			player->setPropertyValue("hide", "0x00");
-		}
-	}
+void
+ProgramAV::createPlayer (string mrl)
+{
+  string name;
+  int pid;
 
-	void ProgramAV::createPlayer(string mrl) {
-		string name;
-		int pid;
+  name = getNameFromMrl (mrl);
+  if (isNumeric ((void *)(name.c_str ())))
+    {
+      pid = ::ginga::util::stof (name);
+    }
+  else
+    {
+      pid = getPidByName (name);
+    }
 
-		name = getNameFromMrl(mrl);
-		if (isNumeric((void*)(name.c_str()))) {
-			pid = ::ginga::util::stof(name);
+  if (pid < 0)
+    {
+      clog << "ProgramAV::createPlayer Warning! Can't create player '";
+      clog << mrl << "' with name '" << name << "': pid '" << pid;
+      clog << "' not found!" << endl;
+      return;
+    }
 
-		} else {
-			pid = getPidByName(name);
-		}
+  currentPid = pid;
+  currentPlayer = new AVPlayer (myScreen, mrl.c_str ());
 
-		if (pid < 0) {
-			clog << "ProgramAV::createPlayer Warning! Can't create player '";
-			clog << mrl << "' with name '" << name << "': pid '" << pid;
-			clog << "' not found!" << endl;
-			return;
-		}
+  if (fullScreenBounds != "")
+    {
+      playerBounds[pid] = fullScreenBounds;
+      currentPlayer->setPropertyValue ("createWindow", fullScreenBounds);
+      fullScreenBounds = "";
+    }
 
-		currentPid = pid;
-		currentPlayer = new AVPlayer(myScreen, mrl.c_str());
+  setPlayer (pid, currentPlayer);
 
-		if (fullScreenBounds != "") {
-			playerBounds[pid] = fullScreenBounds;
-			currentPlayer->setPropertyValue("createWindow", fullScreenBounds);
-			fullScreenBounds = "";
-		}
+  clog << "ProgramAV::createPlayer for '" << mrl << "' all done" << endl;
+}
 
-		setPlayer(pid, currentPlayer);
+void
+ProgramAV::setPlayer (int pid, IPlayer *player)
+{
+  map<int, IPlayer *>::iterator i;
+  IPlayer *ePlayer;
 
-		clog << "ProgramAV::createPlayer for '" << mrl << "' all done" << endl;
-	}
+  i = players.find (pid);
+  if (i == players.end ())
+    {
+      players[pid] = player;
+    }
+  else
+    {
+      ePlayer = players[pid];
+      players[pid] = player;
+      delete ePlayer;
+      ePlayer = NULL;
+    }
+}
 
-	void ProgramAV::setPlayer(int pid, IPlayer* player) {
-		map<int, IPlayer*>::iterator i;
-		IPlayer* ePlayer;
+IPlayer *
+ProgramAV::getPlayer (string mrl)
+{
+  string name;
+  int pid;
 
-		i = players.find(pid);
-		if (i == players.end()) {
-			players[pid] = player;
+  name = getNameFromMrl (mrl);
+  if (isNumeric ((void *)(name.c_str ())))
+    {
+      pid = ::ginga::util::stof (name);
+    }
+  else
+    {
+      pid = getPidByName (name);
+    }
 
-		} else {
-			ePlayer = players[pid];
-			players[pid] = player;
-			delete ePlayer;
-			ePlayer = NULL;
-		}
-	}
+  return getPlayer (pid);
+}
 
-	IPlayer* ProgramAV::getPlayer(string mrl) {
-		string name;
-		int pid;
+IPlayer *
+ProgramAV::getPlayer (int pid)
+{
+  map<int, IPlayer *>::iterator i;
 
-		name = getNameFromMrl(mrl);
-		if (isNumeric((void*)(name.c_str()))) {
-			pid = ::ginga::util::stof(name);
+  i = players.find (pid);
+  if (i != players.end ())
+    {
+      return i->second;
+    }
 
-		} else {
-			pid = getPidByName(name);
-		}
+  return NULL;
+}
 
-		return getPlayer(pid);
-	}
+string
+ProgramAV::getPropertyValue (string name)
+{
+  string value = "";
 
-	IPlayer* ProgramAV::getPlayer(int pid) {
-		map<int, IPlayer*>::iterator i;
+  if (currentPlayer != NULL)
+    {
+      value = currentPlayer->getPropertyValue (name);
+    }
 
-		i = players.find(pid);
-		if (i != players.end()) {
-			return i->second;
-		}
+  if (value == "")
+    {
+      value = Player::getPropertyValue (name);
+    }
 
-		return NULL;
-	}
+  return value;
+}
 
-	string ProgramAV::getPropertyValue(string name) {
-		string value = "";
+void
+ProgramAV::setPropertyValue (string pName, string pValue)
+{
+  clog << "ProgramAV::setPropertyValue '" << pName << "' = '";
+  clog << pValue << "'" << endl;
 
-		if (currentPlayer != NULL) {
-			value = currentPlayer->getPropertyValue(name);
-		}
-
-		if (value == "") {
-			value = Player::getPropertyValue(name);
-		}
-
-		return value;
-	}
-
-	void ProgramAV::setPropertyValue(string pName, string pValue) {
-		clog << "ProgramAV::setPropertyValue '" << pName << "' = '";
-		clog << pValue << "'" << endl;
-
-		if (pName.substr(0, 11) == "sbtvd-ts://") {
-			addPidName(getNameFromMrl(pName), ::ginga::util::stof(pValue));
-
-		} else if (pName == "createPlayer") {
-			createPlayer(pValue);
-
-		} else if (pName == "showPlayer") {
-			showPlayer(pValue);
-
-		} else if (pName == "hidePlayer") {
-			hidePlayer(pValue);
-
-		} else if (pName == "setBoundaries") {
-			fullScreenBounds = pValue;
-
-		} else if (pName == "forcePids") {
-			forcePids(pValue);
-
-		} else if (currentPlayer != NULL) {
-			if (pName == "bounds") {
-				if (pValue == "") {
-					if (playerBounds.count(currentPid) != 0) {
-						currentPlayer->setPropertyValue(
-								pName, playerBounds[currentPid]);
-					}
-
-				} else {
-					currentPlayer->setPropertyValue(pName, pValue);
-				}
-
-			} else {
-				currentPlayer->setPropertyValue(pName, pValue);
-				Player::setPropertyValue(pName, pValue);
-			}
-		}
-	}
+  if (pName.substr (0, 11) == "sbtvd-ts://")
+    {
+      addPidName (getNameFromMrl (pName), ::ginga::util::stof (pValue));
+    }
+  else if (pName == "createPlayer")
+    {
+      createPlayer (pValue);
+    }
+  else if (pName == "showPlayer")
+    {
+      showPlayer (pValue);
+    }
+  else if (pName == "hidePlayer")
+    {
+      hidePlayer (pValue);
+    }
+  else if (pName == "setBoundaries")
+    {
+      fullScreenBounds = pValue;
+    }
+  else if (pName == "forcePids")
+    {
+      forcePids (pValue);
+    }
+  else if (currentPlayer != NULL)
+    {
+      if (pName == "bounds")
+        {
+          if (pValue == "")
+            {
+              if (playerBounds.count (currentPid) != 0)
+                {
+                  currentPlayer->setPropertyValue (pName,
+                                                   playerBounds[currentPid]);
+                }
+            }
+          else
+            {
+              currentPlayer->setPropertyValue (pName, pValue);
+            }
+        }
+      else
+        {
+          currentPlayer->setPropertyValue (pName, pValue);
+          Player::setPropertyValue (pName, pValue);
+        }
+    }
+}
 
 GINGA_PLAYER_END

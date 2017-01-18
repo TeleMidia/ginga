@@ -24,17 +24,17 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TTS_BEGIN
 
-   class SsmlPlayerAdapter : public FormatterPlayerAdapter {
-	public:
-		SsmlPlayerAdapter();
-		virtual ~SsmlPlayerAdapter(){};
+class SsmlPlayerAdapter : public FormatterPlayerAdapter
+{
+public:
+  SsmlPlayerAdapter ();
+  virtual ~SsmlPlayerAdapter (){};
 
-	protected:
-		void createPlayer();
-   };
+protected:
+  void createPlayer ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TTS_END
 #endif /*SSMLPLAYERADAPTER_H_*/

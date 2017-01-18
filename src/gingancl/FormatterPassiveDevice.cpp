@@ -29,100 +29,108 @@ using namespace ::br::pucrio::telemidia::ginga::ncl;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
 
-	FormatterPassiveDevice::FormatterPassiveDevice(
-			GingaScreenID screenId,
-			DeviceLayout* deviceLayout,
-			int x, int y, int w, int h, bool useMulticast, int srvPort) : FormatterMultiDevice(
-					screenId, deviceLayout, x, y, w, h, useMulticast, srvPort) {
+FormatterPassiveDevice::FormatterPassiveDevice (GingaScreenID screenId,
+                                                DeviceLayout *deviceLayout,
+                                                int x, int y, int w, int h,
+                                                bool useMulticast, int srvPort)
+    : FormatterMultiDevice (screenId, deviceLayout, x, y, w, h, useMulticast,
+                            srvPort)
+{
 
-		deviceClass = DeviceDomain::CT_PASSIVE;
-		serialized = dm->createWindow(
-				myScreen, x, y, defaultWidth, defaultHeight, -1.0);
+  deviceClass = DeviceDomain::CT_PASSIVE;
+  serialized
+      = dm->createWindow (myScreen, x, y, defaultWidth, defaultHeight, -1.0);
 
-		int cap = dm->getWindowCap (myScreen, serialized, "ALPHACHANNEL");
-		dm->setWindowCaps (myScreen, serialized, cap);
-		dm->drawWindow (myScreen, serialized);
+  int cap = dm->getWindowCap (myScreen, serialized, "ALPHACHANNEL");
+  dm->setWindowCaps (myScreen, serialized, cap);
+  dm->drawWindow (myScreen, serialized);
 
-		if (rdm == NULL) {
-			rdm = RemoteDeviceManager::getInstance();
-			((RemoteDeviceManager*)rdm)->setDeviceDomain(
-					new PassiveDeviceDomain(useMulticast, srvPort));
-		}
+  if (rdm == NULL)
+    {
+      rdm = RemoteDeviceManager::getInstance ();
+      ((RemoteDeviceManager *)rdm)
+          ->setDeviceDomain (new PassiveDeviceDomain (useMulticast, srvPort));
+    }
 
-		rdm->setDeviceInfo(deviceClass, w, h, "");
-		rdm->addListener(this);
+  rdm->setDeviceInfo (deviceClass, w, h, "");
+  rdm->addListener (this);
 
-		im->addInputEventListener(this, NULL);
+  im->addInputEventListener (this, NULL);
 
-		mainLayout = new FormatterLayout(myScreen, x, y, w, h);
-		layoutManager[deviceClass] = mainLayout;
-	}
+  mainLayout = new FormatterLayout (myScreen, x, y, w, h);
+  layoutManager[deviceClass] = mainLayout;
+}
 
-	FormatterPassiveDevice::~FormatterPassiveDevice() {
+FormatterPassiveDevice::~FormatterPassiveDevice () {}
 
-	}
+void
+FormatterPassiveDevice::connectedToBaseDevice (unsigned int domainAddr)
+{
+  /*clog << "FormatterPassiveDevice::connectedToDomainService '";
+  clog << domainAddr << "'" << endl;*/
 
-	void FormatterPassiveDevice::connectedToBaseDevice(unsigned int domainAddr) {
-		/*clog << "FormatterPassiveDevice::connectedToDomainService '";
-		clog << domainAddr << "'" << endl;*/
+  hasRemoteDevices = true;
+}
 
-		hasRemoteDevices = true;
-	}
+bool
+FormatterPassiveDevice::receiveRemoteContent (int remoteDevClass,
+                                              string contentUri)
+{
 
-	bool FormatterPassiveDevice::receiveRemoteContent(
-			int remoteDevClass,
-			string contentUri) {
+  /*clog << "FormatterPassiveDevice::receiveRemoteContent from class '";
+  clog << remoteDevClass << "' and contentUri '" << contentUri << "'";
+  clog << endl;*/
 
-		/*clog << "FormatterPassiveDevice::receiveRemoteContent from class '";
-		clog << remoteDevClass << "' and contentUri '" << contentUri << "'";
-		clog << endl;*/
+  renderFromUri (serialized, contentUri);
+  return true;
+}
 
-		renderFromUri(serialized, contentUri);
-		return true;
-	}
+bool
+FormatterPassiveDevice::userEventReceived (SDLInputEvent *ev)
+{
+  string mnemonicCode;
+  int currentX;
+  int currentY;
+  int code;
 
-	bool FormatterPassiveDevice::userEventReceived(SDLInputEvent* ev) {
-		string mnemonicCode;
-		int currentX;
-		int currentY;
-		int code;
+  clog << "FormatterPassiveDevice::userEventReceived" << endl;
 
-		clog << "FormatterPassiveDevice::userEventReceived" << endl;
+  code = ev->getKeyCode (myScreen);
+  if (code == CodeMap::KEY_F11 || code == CodeMap::KEY_F10)
+    {
+      std::abort ();
+    }
+  else if (code == CodeMap::KEY_QUIT)
+    {
+      this->im = NULL;
+      return true;
+    }
 
-		code = ev->getKeyCode(myScreen);
-		if (code == CodeMap::KEY_F11 || code == CodeMap::KEY_F10) {
-			std::abort();
+  if (!hasRemoteDevices)
+    {
+      clog << "FormatterPassiveDevice::userEventReceived !hasRemoteDevices"
+           << endl;
+      return false;
+    }
 
-		} else if (code == CodeMap::KEY_QUIT) {
-			this->im = NULL;
-			return true;
-		}
+  mnemonicCode = CodeMap::getInstance ()->getValue (code);
 
-		if (!hasRemoteDevices) {
-			clog << "FormatterPassiveDevice::userEventReceived !hasRemoteDevices" << endl;
-			return false;
-		}
+  if (ev->isButtonPressType ())
+    {
+      ev->getAxisValue (&currentX, &currentY, NULL);
 
-		mnemonicCode = CodeMap::getInstance()->getValue(code);
+      mnemonicCode = (mnemonicCode + "," + itos (currentX - xOffset) + ","
+                      + itos (currentY - yOffset));
+    }
 
-		if (ev->isButtonPressType()) {
-			ev->getAxisValue(&currentX, &currentY, NULL);
+  clog << "FormatterPassiveDevice::userEventReceived posting '";
+  clog << mnemonicCode << "'" << endl;
 
-			mnemonicCode = (mnemonicCode + "," +
-					itos(currentX - xOffset) + "," +
-					itos(currentY - yOffset));
-		}
+  rdm->postEvent (DeviceDomain::CT_BASE, DeviceDomain::FT_SELECTIONEVENT,
+                  (char *)(mnemonicCode.c_str ()),
+                  (int)(mnemonicCode.length ()));
 
-		clog << "FormatterPassiveDevice::userEventReceived posting '";
-		clog << mnemonicCode << "'" << endl;
-
-		rdm->postEvent(
-				DeviceDomain::CT_BASE,
-				DeviceDomain::FT_SELECTIONEVENT,
-				(char*)(mnemonicCode.c_str()),
-				(int)(mnemonicCode.length()));
-
-		return false;
-	}
+  return false;
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_END

@@ -25,7 +25,7 @@ GINGA_DATAPROC_BEGIN
 class DsmccMessageHeader
 {
 private:
-  //origin es is
+  // origin es is
   unsigned int pid;
   string fileName;
 
@@ -70,16 +70,16 @@ private:
   unsigned int messageLength;
 
 public:
-  DsmccMessageHeader();
-  int readMessageFromFile(string fileName, unsigned int pid);
-  unsigned int getESId();
-  string getFileName();
-  unsigned int getDsmccType();
-  unsigned int getMessageId();
-  unsigned int getTrasnsactionId();
-  unsigned int getAdaptationLength();
-  unsigned int getMessageLength();
-  void print();
+  DsmccMessageHeader ();
+  int readMessageFromFile (string fileName, unsigned int pid);
+  unsigned int getESId ();
+  string getFileName ();
+  unsigned int getDsmccType ();
+  unsigned int getMessageId ();
+  unsigned int getTrasnsactionId ();
+  unsigned int getAdaptationLength ();
+  unsigned int getMessageLength ();
+  void print ();
 };
 
 GINGA_DATAPROC_END

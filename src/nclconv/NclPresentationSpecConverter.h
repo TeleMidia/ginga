@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NclPresentationSpecConverter_H
 #define NclPresentationSpecConverter_H
 
-
 #include "util/Color.h"
 
 #include "ncl/Parameter.h"
@@ -62,41 +61,35 @@ XERCES_CPP_NAMESPACE_USE
 
 GINGA_NCLCONV_BEGIN
 
-  class NclPresentationSpecConverter
-		: public NclPresentationSpecificationParser {
+class NclPresentationSpecConverter : public NclPresentationSpecificationParser
+{
 
-	private:
-		DeviceLayout* deviceLayout;
+private:
+  DeviceLayout *deviceLayout;
 
-	public:
-		NclPresentationSpecConverter(
-				DocumentParser *documentParser, DeviceLayout* deviceLayout);
+public:
+  NclPresentationSpecConverter (DocumentParser *documentParser,
+                                DeviceLayout *deviceLayout);
 
-		void addDescriptorToDescriptorBase(
-			    void *parentObject, void *childObject);
+  void addDescriptorToDescriptorBase (void *parentObject, void *childObject);
 
-		void addDescriptorSwitchToDescriptorBase(
-			    void *parentObject, void *childObject);
+  void addDescriptorSwitchToDescriptorBase (void *parentObject,
+                                            void *childObject);
 
-		void addDescriptorParamToDescriptor(
-			    void *parentObject, void *childObject);
+  void addDescriptorParamToDescriptor (void *parentObject, void *childObject);
 
-		void addImportBaseToDescriptorBase(
-			    void *parentObject, void *childObject);
+  void addImportBaseToDescriptorBase (void *parentObject, void *childObject);
 
-		void *createDescriptorParam(
-			    DOMElement *parentElement, void *objGrandParent);
+  void *createDescriptorParam (DOMElement *parentElement,
+                               void *objGrandParent);
 
-		void *createDescriptorBind(
-			    DOMElement *parentElement, void *objGrandParent);
+  void *createDescriptorBind (DOMElement *parentElement, void *objGrandParent);
 
-		void *createDescriptorBase(
-			    DOMElement *parentElement, void *objGrandParent);
+  void *createDescriptorBase (DOMElement *parentElement, void *objGrandParent);
 
-		void *createDescriptor(
-			    DOMElement *parentElement, void *objGrandParent);
-  };
+  void *createDescriptor (DOMElement *parentElement, void *objGrandParent);
+};
 
 GINGA_NCLCONV_END
 
-#endif //NclPresentationSpecConverter_H
+#endif // NclPresentationSpecConverter_H

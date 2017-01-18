@@ -30,58 +30,63 @@ using namespace ::ginga::system;
 #include "isdbt-tsparser/IFilterListener.h"
 using namespace ::ginga::tsparser;
 
-
 GINGA_DATAPROC_BEGIN
 
-	struct SectionHandler {
-		// Last section's packet continuityCounter.
-		int lastContinuityCounter;
-		char sectionHeader[8];
-		unsigned int headerSize;
-		int recvPack;
-		ITransportSection* section;
-	};
+struct SectionHandler
+{
+  // Last section's packet continuityCounter.
+  int lastContinuityCounter;
+  char sectionHeader[8];
+  unsigned int headerSize;
+  int recvPack;
+  ITransportSection *section;
+};
 
-	class SectionFilter : public ITSFilter {
-		private:
-			map<unsigned int, SectionHandler*> sectionPidSelector;
+class SectionFilter : public ITSFilter
+{
+private:
+  map<unsigned int, SectionHandler *> sectionPidSelector;
 
-			IFilterListener* listener;
-			set<string> processedSections;
+  IFilterListener *listener;
+  set<string> processedSections;
 
-			int lastPid;
-			map<int, ITransportSection*> hFilteredSections;
-			pthread_mutex_t stlMutex;
+  int lastPid;
+  map<int, ITransportSection *> hFilteredSections;
+  pthread_mutex_t stlMutex;
 
-		public:
-			SectionFilter();
-			virtual ~SectionFilter();
+public:
+  SectionFilter ();
+  virtual ~SectionFilter ();
 
-			void addPid(int pid){};
+  void addPid (int pid){};
 
-		private:
-			string setDestinationUri(string dstUri){return dstUri;};
-			void setSourceUri(string srcUri, bool isPipe){};
+private:
+  string
+  setDestinationUri (string dstUri)
+  {
+    return dstUri;
+  };
+  void setSourceUri (string srcUri, bool isPipe){};
 
-			void resetHandler(SectionHandler* handler);
-			void ignore(unsigned int pid);
-			SectionHandler* getSectionHandler(unsigned int pid);
-			void process(ITransportSection* section, unsigned int pid);
-			void verifyAndAddData(ITSPacket* pack, bool lastPacket);
-			bool verifyAndCreateSection(ITSPacket* pack);
-			bool setSectionParameters(ITSPacket* pack);
+  void resetHandler (SectionHandler *handler);
+  void ignore (unsigned int pid);
+  SectionHandler *getSectionHandler (unsigned int pid);
+  void process (ITransportSection *section, unsigned int pid);
+  void verifyAndAddData (ITSPacket *pack, bool lastPacket);
+  bool verifyAndCreateSection (ITSPacket *pack);
+  bool setSectionParameters (ITSPacket *pack);
 
-		public:
-			void setListener(IFilterListener* listener);
-			bool checkProcessedSections(string sectionName);
-			void addProcessedSection(string sectionName);
-			void removeProcessedSection(string sectionName);
-			void clearProcessedSections();
-			bool checkSectionVersion(ITransportSection* section);
-			void receiveTSPacket(ITSPacket* pack);
-			void receiveSection(char* buf, int len, IFrontendFilter* filter);
-			void receivePes(char* buf, int len, IFrontendFilter* filter);
-	};
+public:
+  void setListener (IFilterListener *listener);
+  bool checkProcessedSections (string sectionName);
+  void addProcessedSection (string sectionName);
+  void removeProcessedSection (string sectionName);
+  void clearProcessedSections ();
+  bool checkSectionVersion (ITransportSection *section);
+  void receiveTSPacket (ITSPacket *pack);
+  void receiveSection (char *buf, int len, IFrontendFilter *filter);
+  void receivePes (char *buf, int len, IFrontendFilter *filter);
+};
 
 GINGA_DATAPROC_END
 

@@ -29,25 +29,25 @@ class ApplicationLocationDescriptor : public IMpegDescriptor
 {
 private:
   unsigned char baseDirectoryLength;
-  char* baseDirectoryByte;
+  char *baseDirectoryByte;
   unsigned char classPathExtensionLength;
-  char* classPathExtensionByte;
+  char *classPathExtensionByte;
   unsigned char initialClassLentgh;
-  char* initialClassByte;
+  char *initialClassByte;
 
 public:
-  ApplicationLocationDescriptor();
-  virtual ~ApplicationLocationDescriptor();
-  unsigned char getDescriptorTag();
-  unsigned int getDescriptorLength();
-  size_t process(char* data, size_t pos);
-  void print();
-  unsigned int getBaseDirectoryLength();
-  string getBaseDirectory();
-  unsigned int getClassPathExtensionLength();
-  string getClassPathExtension();
-  unsigned int getInitialClassLength();
-  string getInitialClass();
+  ApplicationLocationDescriptor ();
+  virtual ~ApplicationLocationDescriptor ();
+  unsigned char getDescriptorTag ();
+  unsigned int getDescriptorLength ();
+  size_t process (char *data, size_t pos);
+  void print ();
+  unsigned int getBaseDirectoryLength ();
+  string getBaseDirectory ();
+  unsigned int getClassPathExtensionLength ();
+  string getClassPathExtension ();
+  unsigned int getInitialClassLength ();
+  string getInitialClass ();
 };
 
 GINGA_TSPARSER_END

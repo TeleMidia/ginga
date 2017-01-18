@@ -20,46 +20,61 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	SimpleRule::SimpleRule(string id, string attr, short op, string val)
-		    : Rule(id) {
+SimpleRule::SimpleRule (string id, string attr, short op, string val)
+    : Rule (id)
+{
 
-		attribute = attr;
-		setOperator(op);
-		value = val;
-		typeSet.insert("SimpleRule");
-	}
+  attribute = attr;
+  setOperator (op);
+  value = val;
+  typeSet.insert ("SimpleRule");
+}
 
-	string SimpleRule::getAttribute() {
-		return attribute;
-	}
+string
+SimpleRule::getAttribute ()
+{
+  return attribute;
+}
 
-	short SimpleRule::getOperator() {
-		return ruleOperator;
-	}
+short
+SimpleRule::getOperator ()
+{
+  return ruleOperator;
+}
 
-	string SimpleRule::getValue() {
-		return value;
-	}
+string
+SimpleRule::getValue ()
+{
+  return value;
+}
 
-	void SimpleRule::setOperator(short newOp) {
-		if (newOp < 0 || newOp > 5)
-			newOp = 0;
+void
+SimpleRule::setOperator (short newOp)
+{
+  if (newOp < 0 || newOp > 5)
+    newOp = 0;
 
-		ruleOperator = newOp;
-	}
+  ruleOperator = newOp;
+}
 
-	void SimpleRule::setValue(string newValue) {
-		value = newValue;
-	}
+void
+SimpleRule::setValue (string newValue)
+{
+  value = newValue;
+}
 
-	string SimpleRule::toString() {
-		ostringstream os;
-		os << ruleOperator;
-		return attribute + " " + os.str() + " " + value;
-	}
+string
+SimpleRule::toString ()
+{
+  ostringstream os;
+  os << ruleOperator;
+  return attribute + " " + os.str () + " " + value;
+}
 
-	void SimpleRule::setAttribute(string someAttribute) {
-		attribute = someAttribute;
-	}
+void
+SimpleRule::setAttribute (string someAttribute)
+{
+  attribute = someAttribute;
+}
 
 GINGA_NCL_END

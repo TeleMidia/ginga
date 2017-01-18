@@ -29,17 +29,17 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 #include "gingancl/model/SelectionEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_IMAGE_BEGIN
 
-	class ImagePlayerAdapter : public FormatterPlayerAdapter {
-		public:
-			ImagePlayerAdapter();
-			virtual ~ImagePlayerAdapter(){};
+class ImagePlayerAdapter : public FormatterPlayerAdapter
+{
+public:
+  ImagePlayerAdapter ();
+  virtual ~ImagePlayerAdapter (){};
 
-		protected:
-			void createPlayer();
-   };
+protected:
+  void createPlayer ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_IMAGE_END
 #endif /*IMAGEPLAYERADAPTER_H_*/

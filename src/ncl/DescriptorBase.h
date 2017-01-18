@@ -23,33 +23,30 @@ using namespace ::ginga::ncl;
 
 #include "GenericDescriptor.h"
 
-
 GINGA_NCL_BEGIN
 
-	class DescriptorBase : public Base {
-		private:
-			vector<GenericDescriptor*>* descriptorSet;
+class DescriptorBase : public Base
+{
+private:
+  vector<GenericDescriptor *> *descriptorSet;
 
-		public:
-			DescriptorBase(string id);
-			virtual ~DescriptorBase();
+public:
+  DescriptorBase (string id);
+  virtual ~DescriptorBase ();
 
-			bool addDescriptor(GenericDescriptor* descriptor);
-			bool addBase(
-				    Base* base,
-				    string alias,
-				    string location);
+  bool addDescriptor (GenericDescriptor *descriptor);
+  bool addBase (Base *base, string alias, string location);
 
-			void clear();
+  void clear ();
 
-		private:
-			GenericDescriptor* getDescriptorLocally(string descriptorId);
+private:
+  GenericDescriptor *getDescriptorLocally (string descriptorId);
 
-		public:
-			GenericDescriptor* getDescriptor(string descriptorId);
-			vector<GenericDescriptor*>* getDescriptors();
-			bool removeDescriptor(GenericDescriptor* descriptor);
-	};
+public:
+  GenericDescriptor *getDescriptor (string descriptorId);
+  vector<GenericDescriptor *> *getDescriptors ();
+  bool removeDescriptor (GenericDescriptor *descriptor);
+};
 
 GINGA_NCL_END
 

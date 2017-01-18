@@ -24,36 +24,38 @@ using namespace ::ginga::nclconv;
 
 XERCES_CPP_NAMESPACE_USE
 
-
 GINGA_NCLCONV_BEGIN
 
-  class NclInterfacesParser : public ModuleParser {
-	public:
-		NclInterfacesParser(DocumentParser *documentParser);
-		void *parseSwitchPort(DOMElement *parentElement, void *objGrandParent);
-		virtual void *createSwitchPort(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+class NclInterfacesParser : public ModuleParser
+{
+public:
+  NclInterfacesParser (DocumentParser *documentParser);
+  void *parseSwitchPort (DOMElement *parentElement, void *objGrandParent);
+  virtual void *createSwitchPort (DOMElement *parentElement,
+                                  void *objGrandParent)
+      = 0;
 
-		virtual void addMappingToSwitchPort(
-			    void *parentObject, void *childObject)=0;
+  virtual void addMappingToSwitchPort (void *parentObject, void *childObject)
+      = 0;
 
-		virtual void *createArea(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  virtual void *createArea (DOMElement *parentElement, void *objGrandParent)
+      = 0;
 
-		virtual void *createProperty(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  virtual void *createProperty (DOMElement *parentElement,
+                                void *objGrandParent)
+      = 0;
 
-		virtual void *createPort(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  virtual void *createPort (DOMElement *parentElement, void *objGrandParent)
+      = 0;
 
-		void *parseMapping(DOMElement *parentElement, void *objGrandParent);
-		virtual void *createMapping(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  void *parseMapping (DOMElement *parentElement, void *objGrandParent);
+  virtual void *createMapping (DOMElement *parentElement, void *objGrandParent)
+      = 0;
 
-		void *parseArea(DOMElement *parentElement, void *objGrandParent);
-		void *parseProperty(DOMElement *parentElement, void *objGrandParent);
-		void *parsePort(DOMElement *parentElement, void *objGrandParent);
-  };
+  void *parseArea (DOMElement *parentElement, void *objGrandParent);
+  void *parseProperty (DOMElement *parentElement, void *objGrandParent);
+  void *parsePort (DOMElement *parentElement, void *objGrandParent);
+};
 
 GINGA_NCLCONV_END
 

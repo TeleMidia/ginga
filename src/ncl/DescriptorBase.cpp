@@ -20,102 +20,131 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	DescriptorBase::DescriptorBase(string id) : Base(id) {
-		descriptorSet = new vector<GenericDescriptor*>;
-		typeSet.insert("DescriptorBase");
-	}
+DescriptorBase::DescriptorBase (string id) : Base (id)
+{
+  descriptorSet = new vector<GenericDescriptor *>;
+  typeSet.insert ("DescriptorBase");
+}
 
-	DescriptorBase::~DescriptorBase() {
-		vector<GenericDescriptor*>::iterator i;
+DescriptorBase::~DescriptorBase ()
+{
+  vector<GenericDescriptor *>::iterator i;
 
-		if (descriptorSet != NULL) {
-			i = descriptorSet->begin();
-			while (i != descriptorSet->end()) {
-				delete *i;
-				++i;
-			}
-			delete descriptorSet;
-			descriptorSet = NULL;
-		}
-	}
+  if (descriptorSet != NULL)
+    {
+      i = descriptorSet->begin ();
+      while (i != descriptorSet->end ())
+        {
+          delete *i;
+          ++i;
+        }
+      delete descriptorSet;
+      descriptorSet = NULL;
+    }
+}
 
-	bool DescriptorBase::addDescriptor(GenericDescriptor* descriptor) {
-		if (descriptor == NULL)
-			return false;
+bool
+DescriptorBase::addDescriptor (GenericDescriptor *descriptor)
+{
+  if (descriptor == NULL)
+    return false;
 
-		vector<GenericDescriptor*>::iterator i;
-		for (i=descriptorSet->begin(); i!= descriptorSet->end(); ++i) {
-			if (*i == descriptor) {
-				return false;
-			}
-		}
-		descriptorSet->push_back(descriptor);
-		return true;
-	}
+  vector<GenericDescriptor *>::iterator i;
+  for (i = descriptorSet->begin (); i != descriptorSet->end (); ++i)
+    {
+      if (*i == descriptor)
+        {
+          return false;
+        }
+    }
+  descriptorSet->push_back (descriptor);
+  return true;
+}
 
-	bool DescriptorBase::addBase(Base* base, string alias, string location){
-		if (base->instanceOf("DescriptorBase")) {
-			return Base::addBase(base, alias, location);
-		}
-		return false;
-	}
+bool
+DescriptorBase::addBase (Base *base, string alias, string location)
+{
+  if (base->instanceOf ("DescriptorBase"))
+    {
+      return Base::addBase (base, alias, location);
+    }
+  return false;
+}
 
-	void DescriptorBase::clear() {
-		descriptorSet->clear();
-		Base::clear();
-	}
+void
+DescriptorBase::clear ()
+{
+  descriptorSet->clear ();
+  Base::clear ();
+}
 
-	GenericDescriptor* DescriptorBase::getDescriptorLocally(string descriptorId) {
-		vector<GenericDescriptor*>::iterator descriptors;
+GenericDescriptor *
+DescriptorBase::getDescriptorLocally (string descriptorId)
+{
+  vector<GenericDescriptor *>::iterator descriptors;
 
-		descriptors = descriptorSet->begin();
-		while (descriptors != descriptorSet->end()) {
-			if ((*descriptors)->getId() == descriptorId) {
-				return (*descriptors);
-			}
-			++descriptors;
-		}
-		return NULL;
-	}
+  descriptors = descriptorSet->begin ();
+  while (descriptors != descriptorSet->end ())
+    {
+      if ((*descriptors)->getId () == descriptorId)
+        {
+          return (*descriptors);
+        }
+      ++descriptors;
+    }
+  return NULL;
+}
 
-	GenericDescriptor* DescriptorBase::getDescriptor(string descriptorId) {
-		string::size_type index;
-		string prefix, suffix;
-		DescriptorBase* base;
+GenericDescriptor *
+DescriptorBase::getDescriptor (string descriptorId)
+{
+  string::size_type index;
+  string prefix, suffix;
+  DescriptorBase *base;
 
-		index = descriptorId.find_first_of("#");
-		if (index == string::npos) {
-			return getDescriptorLocally(descriptorId);
-		}
-		prefix = descriptorId.substr(0, index);
-		index++;
-		suffix = descriptorId.substr(index, descriptorId.length() - index);
-		if (baseAliases.find(prefix) != baseAliases.end()) {
-			base = (DescriptorBase*)(baseAliases[prefix]);
-			return base->getDescriptor(suffix);
+  index = descriptorId.find_first_of ("#");
+  if (index == string::npos)
+    {
+      return getDescriptorLocally (descriptorId);
+    }
+  prefix = descriptorId.substr (0, index);
+  index++;
+  suffix = descriptorId.substr (index, descriptorId.length () - index);
+  if (baseAliases.find (prefix) != baseAliases.end ())
+    {
+      base = (DescriptorBase *)(baseAliases[prefix]);
+      return base->getDescriptor (suffix);
+    }
+  else if (baseLocations.find (prefix) != baseLocations.end ())
+    {
+      base = (DescriptorBase *)(baseLocations[prefix]);
+      return base->getDescriptor (suffix);
+    }
+  else
+    {
+      return NULL;
+    }
+}
 
-		} else if (baseLocations.find(prefix) != baseLocations.end()) {
-			base = (DescriptorBase*)(baseLocations[prefix]);
-			return base->getDescriptor(suffix);
+vector<GenericDescriptor *> *
+DescriptorBase::getDescriptors ()
+{
+  return descriptorSet;
+}
 
-		} else {
-			return NULL;
-		}
-	}
-
-	vector<GenericDescriptor*>* DescriptorBase::getDescriptors() {
-		return descriptorSet;
-	}
-
-	bool DescriptorBase::removeDescriptor(GenericDescriptor* descriptor) {
-		vector<GenericDescriptor*>::iterator i;
-		for (i=descriptorSet->begin(); i!=descriptorSet->end(); ++i) {
-			if (*i == descriptor) {
-				descriptorSet->erase(i);
-				return true;
-			}
-		}
-		return false;
-	}
+bool
+DescriptorBase::removeDescriptor (GenericDescriptor *descriptor)
+{
+  vector<GenericDescriptor *>::iterator i;
+  for (i = descriptorSet->begin (); i != descriptorSet->end (); ++i)
+    {
+      if (*i == descriptor)
+        {
+          descriptorSet->erase (i);
+          return true;
+        }
+    }
+  return false;
+}
 
 GINGA_NCL_END

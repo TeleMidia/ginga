@@ -25,123 +25,121 @@ using namespace ::ginga::util;
 
 GINGA_MB_BEGIN
 
+typedef struct DrawData
+{
+  int coord1;
+  int coord2;
+  int coord3;
+  int coord4;
+  short dataType;
+  int r;
+  int g;
+  int b;
+  int a;
+} DrawData;
 
-  typedef struct DrawData {
-    int coord1;
-    int coord2;
-    int coord3;
-    int coord4;
-    short dataType;
-    int r;
-    int g;
-    int b;
-    int a;
-  } DrawData;
+class SDLSurface
+{
+private:
+  static GingaSurfaceID refIdCounter;
+  GingaSurfaceID myId;
+  GingaScreenID myScreen;
+  SDL_Surface *sur;
+  SDL_Surface *pending;
+  void *parent;
+  bool hasExtHandler;
+  Color *chromaColor;
+  Color *borderColor;
+  Color *bgColor;
+  Color *surfaceColor;
+  IFontProvider *iFont;
+  int caps;
+  bool isDeleting;
 
-  class SDLSurface {
-  private:
-    static GingaSurfaceID refIdCounter;
-    GingaSurfaceID myId;
-    GingaScreenID myScreen;
-    SDL_Surface* sur;
-    SDL_Surface* pending;
-    void* parent;
-    bool hasExtHandler;
-    Color* chromaColor;
-    Color* borderColor;
-    Color* bgColor;
-    Color* surfaceColor;
-    IFontProvider* iFont;
-    int caps;
-    bool isDeleting;
+  vector<DrawData *> drawData;
+  pthread_mutex_t ddMutex;
 
-    vector<DrawData*> drawData;
-    pthread_mutex_t ddMutex;
+  pthread_mutex_t sMutex;
+  pthread_mutex_t pMutex;
 
-    pthread_mutex_t sMutex;
-    pthread_mutex_t pMutex;
+public:
+  SDLSurface (GingaScreenID screenId);
+  SDLSurface (GingaScreenID screenId, void *underlyingSurface);
 
-  public:
-    SDLSurface(GingaScreenID screenId);
-    SDLSurface(GingaScreenID screenId, void* underlyingSurface);
+  virtual ~SDLSurface ();
 
-    virtual ~SDLSurface();
+  GingaSurfaceID getId () const;
+  void setId (const GingaSurfaceID &surId);
 
-    GingaSurfaceID getId () const;
-    void setId (const GingaSurfaceID &surId);
+private:
+  void releasePendingSurface ();
+  bool createPendingSurface ();
+  void checkPendingSurface ();
+  void fill ();
+  void releaseChromaColor ();
+  void releaseBgColor ();
+  void releaseBorderColor ();
+  void releaseSurfaceColor ();
 
-  private:
-    void releasePendingSurface();
-    bool createPendingSurface();
-    void checkPendingSurface();
-    void fill();
-    void releaseChromaColor();
-    void releaseBgColor();
-    void releaseBorderColor();
-    void releaseSurfaceColor();
+  void releaseFont ();
+  void releaseDrawData ();
 
-    void releaseFont();
-    void releaseDrawData();
+  void initialize (const GingaScreenID &screenId, const GingaSurfaceID &id);
 
-    void initialize(const GingaScreenID &screenId, const GingaSurfaceID &id);
+public:
+  void takeOwnership ();
 
-  public:
-    void takeOwnership();
+  SDL_Surface *getPendingSurface ();
 
-    SDL_Surface* getPendingSurface();
+  void setExternalHandler (bool extHandler);
+  bool hasExternalHandler ();
 
-    void setExternalHandler(bool extHandler);
-    bool hasExternalHandler();
+  void addCaps (int caps);
+  void setCaps (int caps);
+  int getCap (string cap);
+  int getCaps ();
+  bool setParentWindow (void *parentWindow);
+  void *getParentWindow ();
+  void *getSurfaceContent ();
+  void setSurfaceContent (void *surface);
+  void clearContent ();
+  void clearSurface ();
 
-    void addCaps(int caps);
-    void setCaps(int caps);
-    int getCap(string cap);
-    int getCaps();
-    bool setParentWindow(void* parentWindow);
-    void* getParentWindow();
-    void* getSurfaceContent();
-    void setSurfaceContent(void* surface);
-    void clearContent();
-    void clearSurface();
+  vector<DrawData *> *createDrawDataList ();
 
-    vector<DrawData*>* createDrawDataList();
+private:
+  void pushDrawData (int c1, int c2, int c3, int c4, short type);
 
-  private:
-    void pushDrawData(int c1, int c2, int c3, int c4, short type);
+public:
+  void drawLine (int x1, int y1, int x2, int y2);
+  void drawRectangle (int x, int y, int w, int h);
+  void fillRectangle (int x, int y, int w, int h);
+  void drawString (int x, int y, const char *txt);
+  void setChromaColor (int r, int g, int b, int alpha);
+  Color *getChromaColor ();
+  void setBorderColor (int r, int g, int b, int alpha);
+  Color *getBorderColor ();
+  void setBgColor (int r, int g, int b, int alpha);
+  Color *getBgColor ();
+  void setColor (int r, int g, int b, int alpha);
+  Color *getColor ();
+  void setSurfaceFont (void *font);
+  void getStringExtents (const char *text, int *w, int *h);
+  void flip ();
+  void scale (double x, double y);
 
-  public:
-    void drawLine(int x1, int y1, int x2, int y2);
-    void drawRectangle(int x, int y, int w, int h);
-    void fillRectangle(int x, int y, int w, int h);
-    void drawString(int x, int y, const char* txt);
-    void setChromaColor(int r, int g, int b, int alpha);
-    Color* getChromaColor();
-    void setBorderColor(int r, int g, int b, int alpha);
-    Color* getBorderColor();
-    void setBgColor(int r, int g, int b, int alpha);
-    Color* getBgColor();
-    void setColor(int r, int g, int b, int alpha);
-    Color* getColor();
-    void setSurfaceFont(void* font);
-    void getStringExtents(const char* text, int* w, int* h);
-    void flip();
-    void scale(double x, double y);
+private:
+  void initContentSurface ();
+  SDL_Surface *createSurface ();
 
-  private:
-    void initContentSurface();
-    SDL_Surface* createSurface();
+public:
+  void blit (int x, int y, SDLSurface *src = NULL, int srcX = -1,
+             int srcY = -1, int srcW = -1, int srcH = -1);
 
-  public:
-    void blit(
-              int x,
-              int y,
-              SDLSurface* src=NULL,
-              int srcX=-1, int srcY=-1, int srcW=-1, int srcH=-1);
-
-    void setClip(int x, int y, int w, int h);
-    void getSize(int* width, int* height);
-    string getDumpFileUri();
-  };
+  void setClip (int x, int y, int w, int h);
+  void getSize (int *width, int *height);
+  string getDumpFileUri ();
+};
 
 GINGA_MB_END
 

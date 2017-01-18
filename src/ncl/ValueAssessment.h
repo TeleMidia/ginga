@@ -18,23 +18,25 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef VALUEASSESSMENT_H_
 #define VALUEASSESSMENT_H_
 
-
 #include "Assessment.h"
 
 GINGA_NCL_BEGIN
 
-	class ValueAssessment : public Assessment {
-		private:
-			string value;
+class ValueAssessment : public Assessment
+{
+private:
+  string value;
 
-		public:
-			ValueAssessment(string value);
-			string getValue();
-			void setValue(string newValue);
-			bool instanceOf(string type) {
-				return Assessment::instanceOf(type);
-			}
-	};
+public:
+  ValueAssessment (string value);
+  string getValue ();
+  void setValue (string newValue);
+  bool
+  instanceOf (string type)
+  {
+    return Assessment::instanceOf (type);
+  }
+};
 
 GINGA_NCL_END
 

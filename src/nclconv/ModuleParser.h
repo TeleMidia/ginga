@@ -22,24 +22,28 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCLCONV_BEGIN
 
-	class ModuleParser {
-		protected:
-			DocumentParser *documentParser;
-		
-		public :
-			ModuleParser(DocumentParser *paramdocumentCompiler) {
-				documentParser = paramdocumentCompiler;
-			}
-		
-			virtual ~ModuleParser() {}
-		
-			/**
-			 * @return Returns the documentParser.
-			 */
-			DocumentParser *getDocumentParser() {
-				return documentParser;
-			}
-	};
+class ModuleParser
+{
+protected:
+  DocumentParser *documentParser;
+
+public:
+  ModuleParser (DocumentParser *paramdocumentCompiler)
+  {
+    documentParser = paramdocumentCompiler;
+  }
+
+  virtual ~ModuleParser () {}
+
+  /**
+   * @return Returns the documentParser.
+   */
+  DocumentParser *
+  getDocumentParser ()
+  {
+    return documentParser;
+  }
+};
 
 GINGA_NCLCONV_END
 

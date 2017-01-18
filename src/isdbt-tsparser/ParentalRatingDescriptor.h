@@ -18,29 +18,27 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PARENTALRATINGDESCRIPTOR_H_
 #define PARENTALRATINGDESCRIPTOR_H_
 
-
-
 #include "IParentalRatingDescriptor.h"
-
-
 
 GINGA_TSPARSER_BEGIN
 
-	class ParentalRatingDescriptor : public IParentalRatingDescriptor {
-		protected:
-			vector<Parental*>* countryRatings;
-		public:
-			ParentalRatingDescriptor();
-			~ParentalRatingDescriptor();
-			unsigned char getDescriptorTag();
-			unsigned int getDescriptorLength();
-			unsigned int getContentDescription(Parental* parental);
-			unsigned int getAge(Parental* parental);
-			vector<Parental*>* getCountryRatings();
-			string getCountryCode(Parental* parental);
-			void print();
-			size_t process (char* data, size_t pos);
-	};
+class ParentalRatingDescriptor : public IParentalRatingDescriptor
+{
+protected:
+  vector<Parental *> *countryRatings;
+
+public:
+  ParentalRatingDescriptor ();
+  ~ParentalRatingDescriptor ();
+  unsigned char getDescriptorTag ();
+  unsigned int getDescriptorLength ();
+  unsigned int getContentDescription (Parental *parental);
+  unsigned int getAge (Parental *parental);
+  vector<Parental *> *getCountryRatings ();
+  string getCountryCode (Parental *parental);
+  void print ();
+  size_t process (char *data, size_t pos);
+};
 
 GINGA_TSPARSER_END
 

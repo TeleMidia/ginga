@@ -27,52 +27,53 @@ using namespace ::ginga::system;
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
-
-
 GINGA_MULTIDEVICE_BEGIN
 
-  class MulticastSocketService : public ISocketService {
-	private:
-		unsigned int port;
+class MulticastSocketService : public ISocketService
+{
+private:
+  unsigned int port;
 
-		char* groupAddress;
+  char *groupAddress;
 
-		unsigned int interfaceIP;
+  unsigned int interfaceIP;
 
-		int msdR, msdW;  // msd = multicast socket descriptor
-		//sockaddr_in mss; // mss = multicast socket struct
+  int msdR, msdW; // msd = multicast socket descriptor
+  // sockaddr_in mss; // mss = multicast socket struct
 
-		UDPSocket* readSocket;
-		UDPSocket* writeSocket;
+  UDPSocket *readSocket;
+  UDPSocket *writeSocket;
 
-		pthread_mutex_t mutexBuffer;
-		vector<struct frame*>* outputBuffer;
+  pthread_mutex_t mutexBuffer;
+  vector<struct frame *> *outputBuffer;
 
-	public:
-		MulticastSocketService(
-					char* groupAddr,
-					unsigned int portNumber);
-		~MulticastSocketService();
+public:
+  MulticastSocketService (char *groupAddr, unsigned int portNumber);
+  ~MulticastSocketService ();
 
-	private:
-		int createMulticastGroup();
-		bool createSocket();
-		bool addToGroup();
-		bool setSocketOptions();
-		bool tryToBind();
+private:
+  int createMulticastGroup ();
+  bool createSocket ();
+  bool addToGroup ();
+  bool setSocketOptions ();
+  bool tryToBind ();
 
-	public:
-		unsigned int getInterfaceIPAddress(){return 0;};
-		int getServicePort();
-		void dataRequest(char* data, int taskSize, bool repeat=true);
-
-	private:
-		bool sendData(struct frame* f);
-
-	public:
-		bool checkOutputBuffer();
-		bool checkInputBuffer(char* data, int* size);
+public:
+  unsigned int
+  getInterfaceIPAddress ()
+  {
+    return 0;
   };
+  int getServicePort ();
+  void dataRequest (char *data, int taskSize, bool repeat = true);
+
+private:
+  bool sendData (struct frame *f);
+
+public:
+  bool checkOutputBuffer ();
+  bool checkInputBuffer (char *data, int *size);
+};
 
 GINGA_MULTIDEVICE_END
 

@@ -38,69 +38,67 @@ using namespace ::ginga::ncl;
 
 XERCES_CPP_NAMESPACE_USE
 
-
 GINGA_NCLCONV_BEGIN
 
-   class NclDocumentParser : public DocumentParser {
-	protected:
-		NclConnectorsParser *connectorsParser;
-		NclImportParser *importParser;
-		NclTransitionParser* transitionParser;
-		NclPresentationControlParser *presentationControlParser;
-		NclComponentsParser *componentsParser;
-		NclStructureParser *structureParser;
-		NclPresentationSpecificationParser *presentationSpecificationParser;
-		NclLayoutParser *layoutParser;
-		NclInterfacesParser *interfacesParser;
-		NclLinkingParser *linkingParser;
-		NclMetainformationParser* metainformationParser;
-		DeviceLayout* deviceLayout;
+class NclDocumentParser : public DocumentParser
+{
+protected:
+  NclConnectorsParser *connectorsParser;
+  NclImportParser *importParser;
+  NclTransitionParser *transitionParser;
+  NclPresentationControlParser *presentationControlParser;
+  NclComponentsParser *componentsParser;
+  NclStructureParser *structureParser;
+  NclPresentationSpecificationParser *presentationSpecificationParser;
+  NclLayoutParser *layoutParser;
+  NclInterfacesParser *interfacesParser;
+  NclLinkingParser *linkingParser;
+  NclMetainformationParser *metainformationParser;
+  DeviceLayout *deviceLayout;
 
-	public:
-		NclDocumentParser();
-		virtual ~NclDocumentParser();
+public:
+  NclDocumentParser ();
+  virtual ~NclDocumentParser ();
 
-		void setDeviceLayout(DeviceLayout* deviceLayout);
+  void setDeviceLayout (DeviceLayout *deviceLayout);
 
-	protected:
-		void setDependencies();
+protected:
+  void setDependencies ();
 
-	public:
-		NclTransitionParser* getTransitionParser();
-		NclConnectorsParser *getConnectorsParser();
-		void setConnectorsParser(NclConnectorsParser *connectorsParser);
-		NclImportParser *getImportParser();
-		void setBaseReuseParser(NclImportParser *importParser);
-		NclPresentationControlParser *getPresentationControlParser();
-		void setPresentationControlParser(
-			    NclPresentationControlParser *presentationControlParser);
+public:
+  NclTransitionParser *getTransitionParser ();
+  NclConnectorsParser *getConnectorsParser ();
+  void setConnectorsParser (NclConnectorsParser *connectorsParser);
+  NclImportParser *getImportParser ();
+  void setBaseReuseParser (NclImportParser *importParser);
+  NclPresentationControlParser *getPresentationControlParser ();
+  void setPresentationControlParser (
+      NclPresentationControlParser *presentationControlParser);
 
-		NclComponentsParser *getComponentsParser();
-		void setComponentsParser(NclComponentsParser *componentsParser);
-		NclStructureParser *getStructureParser();
-		void setStructureParser(NclStructureParser *structureParser);
-		NclPresentationSpecificationParser*
-			    getPresentationSpecificationParser();
+  NclComponentsParser *getComponentsParser ();
+  void setComponentsParser (NclComponentsParser *componentsParser);
+  NclStructureParser *getStructureParser ();
+  void setStructureParser (NclStructureParser *structureParser);
+  NclPresentationSpecificationParser *getPresentationSpecificationParser ();
 
-		void setPresentationSpecificationParser(
-			    NclPresentationSpecificationParser*
-			    	    presentationSpecificationParser);
+  void setPresentationSpecificationParser (
+      NclPresentationSpecificationParser *presentationSpecificationParser);
 
-		NclLayoutParser *getLayoutParser();
-		void setLayoutParser(NclLayoutParser *layoutParser);
-		NclInterfacesParser *getInterfacesParser();
-		void setInterfacesParser(NclInterfacesParser *interfacesParser);
-		NclMetainformationParser* getMetainformationParser();
-		void setMetainformationParser(
-			     NclMetainformationParser* metainformationParser);
+  NclLayoutParser *getLayoutParser ();
+  void setLayoutParser (NclLayoutParser *layoutParser);
+  NclInterfacesParser *getInterfacesParser ();
+  void setInterfacesParser (NclInterfacesParser *interfacesParser);
+  NclMetainformationParser *getMetainformationParser ();
+  void
+  setMetainformationParser (NclMetainformationParser *metainformationParser);
 
-		NclLinkingParser *getLinkingParser();
-		void setLinkingParser(NclLinkingParser *linkingParser);
+  NclLinkingParser *getLinkingParser ();
+  void setLinkingParser (NclLinkingParser *linkingParser);
 
-	protected:
-		virtual void* parseRootElement(DOMElement *rootElement);
-		virtual void initialize()=0;
-   };
+protected:
+  virtual void *parseRootElement (DOMElement *rootElement);
+  virtual void initialize () = 0;
+};
 
 GINGA_NCLCONV_END
 

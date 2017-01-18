@@ -31,12 +31,12 @@ private:
   int height;
 
 public:
-  RemoteDevice(unsigned int address, int deviceClass);
-  ~RemoteDevice();
-  unsigned int getDeviceAddress();
-  int getDeviceClass();
-  void setDeviceResolution(int width, int height);
-  void getDeviceResolution(int* width, int* height);
+  RemoteDevice (unsigned int address, int deviceClass);
+  ~RemoteDevice ();
+  unsigned int getDeviceAddress ();
+  int getDeviceClass ();
+  void setDeviceResolution (int width, int height);
+  void getDeviceResolution (int *width, int *height);
 };
 
 GINGA_MULTIDEVICE_END

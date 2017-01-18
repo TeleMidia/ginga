@@ -20,56 +20,75 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TSPARSER_BEGIN
 
-	PesFilter::PesFilter(ITSFilter* f) {
-		pid          = -1;
-		tid          = -1;
-		tidExt       = -1;
-		feDescriptor = -1;
-		filter       = f;
-	}
+PesFilter::PesFilter (ITSFilter *f)
+{
+  pid = -1;
+  tid = -1;
+  tidExt = -1;
+  feDescriptor = -1;
+  filter = f;
+}
 
-	PesFilter::~PesFilter() {
+PesFilter::~PesFilter () {}
 
-	}
+void
+PesFilter::setPid (int pid)
+{
+  this->pid = pid;
+}
 
-	void PesFilter::setPid(int pid) {
-		this->pid = pid;
-	}
+int
+PesFilter::getPid ()
+{
+  return pid;
+}
 
-	int PesFilter::getPid() {
-		return pid;
-	}
+void
+PesFilter::setTid (int tid)
+{
+  this->tid = tid;
+}
 
-	void PesFilter::setTid(int tid) {
-		this->tid = tid;
-	}
+int
+PesFilter::getTid ()
+{
+  return tid;
+}
 
-	int PesFilter::getTid() {
-		return tid;
-	}
+void
+PesFilter::setTidExt (int tidExt)
+{
+  this->tidExt = tidExt;
+}
 
-	void PesFilter::setTidExt(int tidExt) {
-		this->tidExt = tidExt;
-	}
+int
+PesFilter::getTidExt ()
+{
+  return tidExt;
+}
 
-	int PesFilter::getTidExt() {
-		return tidExt;
-	}
+void
+PesFilter::setDescriptor (int feDescripor)
+{
+  this->feDescriptor = feDescripor;
+}
 
-	void PesFilter::setDescriptor(int feDescripor) {
-		this->feDescriptor = feDescripor;
-	}
+int
+PesFilter::getDescriptor ()
+{
+  return feDescriptor;
+}
 
-	int PesFilter::getDescriptor() {
-		return feDescriptor;
-	}
+void
+PesFilter::receivePes (char *pes, int pesLen)
+{
+  filter->receivePes (pes, pesLen, this);
+}
 
-	void PesFilter::receivePes(char* pes, int pesLen) {
-		filter->receivePes(pes, pesLen, this);
-	}
-
-	void PesFilter::receiveSection(char* section, int secLen) {
-		receivePes(section, secLen);
-	}
+void
+PesFilter::receiveSection (char *section, int secLen)
+{
+  receivePes (section, secLen);
+}
 
 GINGA_TSPARSER_END

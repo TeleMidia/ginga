@@ -20,88 +20,120 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_DATAPROC_BEGIN
 
-	DsmccObject::DsmccObject() {
+DsmccObject::DsmccObject () {}
 
-	}
+DsmccObject::~DsmccObject ()
+{
+  vector<DsmccBinding *>::iterator i;
 
-	DsmccObject::~DsmccObject() {
-		vector<DsmccBinding*>::iterator i;
+  i = bindings.begin ();
+  while (i != bindings.end ())
+    {
+      delete (*i);
 
-		i = bindings.begin();
-		while (i != bindings.end()) {
-			delete (*i);
+      ++i;
+    }
+}
 
-			++i;
-		}
-	}
+void
+DsmccObject::setCarouselId (unsigned int objectCarouselId)
+{
+  carouselId = objectCarouselId;
+}
 
-	void DsmccObject::setCarouselId(unsigned int objectCarouselId) {
-		carouselId = objectCarouselId;
-	}
+void
+DsmccObject::setModuleId (unsigned int objectModuleId)
+{
+  moduleId = objectModuleId;
+}
 
-	void DsmccObject::setModuleId(unsigned int objectModuleId) {
-		moduleId = objectModuleId;
-	}
+void
+DsmccObject::setKey (unsigned int objectKey)
+{
+  key = objectKey;
+}
 
-	void DsmccObject::setKey(unsigned int objectKey) {
-		key = objectKey;
-	}
+void
+DsmccObject::setKind (string objectKind)
+{
+  kind = objectKind;
+}
 
-	void DsmccObject::setKind(string objectKind) {
-		kind = objectKind;
-	}
+void
+DsmccObject::addBinding (DsmccBinding *binding)
+{
+  bindings.push_back (binding);
+}
 
-	void DsmccObject::addBinding(DsmccBinding* binding) {
-		bindings.push_back(binding);
-	}
+void
+DsmccObject::setData (char *fileData)
+{
+  data = fileData;
+}
 
-	void DsmccObject::setData(char* fileData) {
-		data = fileData;
-	}
+void
+DsmccObject::setDataSize (unsigned int size)
+{
+  dataSize = size;
+}
 
-	void DsmccObject::setDataSize(unsigned int size) {
-		dataSize = size;
-	}
+string
+DsmccObject::getObjectId ()
+{
+  return itos (carouselId) + itos (moduleId) + itos (key);
+}
 
-	string DsmccObject::getObjectId() {
-		return itos(carouselId) + itos(moduleId) + itos(key);
-	}
+unsigned int
+DsmccObject::getCarouselId ()
+{
+  return carouselId;
+}
 
-	unsigned int DsmccObject::getCarouselId() {
-		return carouselId;
-	}
+unsigned int
+DsmccObject::getModuleId ()
+{
+  return moduleId;
+}
 
-	unsigned int DsmccObject::getModuleId() {
-		return moduleId;
-	}
+unsigned int
+DsmccObject::getKey ()
+{
+  return key;
+}
 
-	unsigned int DsmccObject::getKey() {
-		return key;
-	}
+string
+DsmccObject::getKind ()
+{
+  return kind;
+}
 
-	string DsmccObject::getKind() {
-		return kind;
-	}
+vector<DsmccBinding *> *
+DsmccObject::getBindings ()
+{
+  return &bindings;
+}
 
-	vector<DsmccBinding*>* DsmccObject::getBindings() {
-		return &bindings;
-	}
+char *
+DsmccObject::getData ()
+{
+  return data;
+}
 
-	char* DsmccObject::getData() {
-		return data;
-	}
+unsigned int
+DsmccObject::getDataSize ()
+{
+  return dataSize;
+}
 
-	unsigned int DsmccObject::getDataSize() {
-		return dataSize;
-	}
-
-	void DsmccObject::print() {
-		clog << "DsmccObject" << endl;
-		clog << "carouselId = " << carouselId << endl;
-		clog << "moduleId = " << moduleId << endl;
-		clog << "key = " << key << endl;
-		clog << "kind = " << kind << endl;
-		clog << "name = " << name << endl;
-	}
+void
+DsmccObject::print ()
+{
+  clog << "DsmccObject" << endl;
+  clog << "carouselId = " << carouselId << endl;
+  clog << "moduleId = " << moduleId << endl;
+  clog << "key = " << key << endl;
+  clog << "kind = " << kind << endl;
+  clog << "name = " << name << endl;
+}
 
 GINGA_DATAPROC_END

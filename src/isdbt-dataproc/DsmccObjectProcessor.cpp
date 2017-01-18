@@ -20,196 +20,232 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_DATAPROC_BEGIN
 
-	DsmccObjectProcessor::DsmccObjectProcessor(unsigned short pid) {
-		this->pid = pid;
-	}
+DsmccObjectProcessor::DsmccObjectProcessor (unsigned short pid)
+{
+  this->pid = pid;
+}
 
-	DsmccObjectProcessor::~DsmccObjectProcessor() {
-		map<string, DsmccObject*>::iterator i;
+DsmccObjectProcessor::~DsmccObjectProcessor ()
+{
+  map<string, DsmccObject *>::iterator i;
 
-		i = objects.begin();
-		while (i != objects.end()) {
-			delete i->second;
-			++i;
-		}
+  i = objects.begin ();
+  while (i != objects.end ())
+    {
+      delete i->second;
+      ++i;
+    }
 
-		objects.clear();
+  objects.clear ();
 
-		objectNames.clear();
-		objectPaths.clear();
-		listeners.clear();
-	}
+  objectNames.clear ();
+  objectPaths.clear ();
+  listeners.clear ();
+}
 
-	void DsmccObjectProcessor::setObjectsListeners(set<IDsmccObjectListener*>* l) {
-		listeners.clear();
-		listeners.insert(l->begin(), l->end());
-	}
+void
+DsmccObjectProcessor::setObjectsListeners (set<IDsmccObjectListener *> *l)
+{
+  listeners.clear ();
+  listeners.insert (l->begin (), l->end ());
+}
 
-	void DsmccObjectProcessor::pushObject(DsmccObject* object) {
-		map<string, DsmccObject*>::iterator i;
+void
+DsmccObjectProcessor::pushObject (DsmccObject *object)
+{
+  map<string, DsmccObject *>::iterator i;
 
-		objects[object->getObjectId()] = object;
+  objects[object->getObjectId ()] = object;
 
-		i = objects.begin();
-		while (i != objects.end()) {
-			object = i->second;
+  i = objects.begin ();
+  while (i != objects.end ())
+    {
+      object = i->second;
 
-			if (mountObject(object)) {
-				notifyObjectListeners(object);
+      if (mountObject (object))
+        {
+          notifyObjectListeners (object);
 
-				objects.erase(i);
-				i = objects.begin();
+          objects.erase (i);
+          i = objects.begin ();
 
-				delete object;
-				object = NULL;
+          delete object;
+          object = NULL;
+        }
+      else
+        {
+          ++i;
+        }
+    }
+}
 
-			} else {
-				++i;
-			}
-		}
-	}
+bool
+DsmccObjectProcessor::hasObjects ()
+{
+  if (objects.empty ())
+    {
+      return false;
+    }
 
-	bool DsmccObjectProcessor::hasObjects() {
-		if (objects.empty()) {
-			return false;
-		}
+  return true;
+}
 
-		return true;
-	}
+map<string, string> *
+DsmccObjectProcessor::getSDNames ()
+{
+  return &objectNames;
+}
 
-	map<string, string>* DsmccObjectProcessor::getSDNames() {
-		return &objectNames;
-	}
+map<string, string> *
+DsmccObjectProcessor::getSDPaths ()
+{
+  return &objectPaths;
+}
 
-	map<string, string>* DsmccObjectProcessor::getSDPaths() {
-		return &objectPaths;
-	}
+bool
+DsmccObjectProcessor::mountObject (DsmccObject *object)
+{
+  vector<DsmccBinding *> *bindings;
+  vector<DsmccBinding *>::iterator i;
+  string objectId, path, strToken;
+  FILE *fd;
+  char *data;
+  char token[6];
+  unsigned int j, size;
 
-	bool DsmccObjectProcessor::mountObject(DsmccObject* object) {
-		vector<DsmccBinding*>* bindings;
-		vector<DsmccBinding*>::iterator i;
-		string objectId, path, strToken;
-		FILE* fd;
-		char* data;
-		char token[6];
-		unsigned int j, size;
+  if (object->getKind () == "srg"
+      || object->getKind () == "DSM::ServiceGateway")
+    {
 
-		if (object->getKind() == "srg" ||
-			    object->getKind() == "DSM::ServiceGateway") {
+      bindings = object->getBindings ();
+      for (i = bindings->begin (); i != bindings->end (); ++i)
+        {
+          objectId = itos ((*i)->getIor ()->getCarouselId ())
+                     + itos ((*i)->getIor ()->getModuleId ())
+                     + itos ((*i)->getIor ()->getObjectKey ());
 
-			bindings = object->getBindings();
-			for (i = bindings->begin(); i != bindings->end(); ++i) {
-				objectId = itos((*i)->getIor()->getCarouselId()) +
-					    itos((*i)->getIor()->getModuleId()) +
-					    itos((*i)->getIor()->getObjectKey());
+          objectNames[objectId] = (*i)->getId ();
+          objectPaths[objectId] = string (g_get_tmp_dir ()) + "/ginga"
+                                  + SystemCompat::getIUriD () + "carousel"
+                                  + SystemCompat::getIUriD () + itos (pid)
+                                  + "." + itos (object->getCarouselId ())
+                                  + SystemCompat::getIUriD ();
+        }
 
-				objectNames[objectId] = (*i)->getId();
-				objectPaths[objectId] = string (g_get_tmp_dir ()) + "/ginga" +
-										SystemCompat::getIUriD() + "carousel" +
-										SystemCompat::getIUriD() + itos(pid) + "." +
-										itos(object->getCarouselId()) +
-										SystemCompat::getIUriD();
-			}
+      return true;
+    }
+  else if (object->getKind () == "dir"
+           || object->getKind () == "DSM::Directory")
+    {
 
-			return true;
+      if (objectPaths.count (object->getObjectId ()) == 0)
+        {
+          /*clog << "DsmccObjectProcessor::mountObject Warning!";
+          clog << "cant find object id '" << object->getObjectId();
+          clog << endl;*/
+          return false;
+        }
+      else
+        {
+          path = (objectPaths.find (object->getObjectId ()))->second
+                 + (objectNames.find (object->getObjectId ()))->second
+                 + SystemCompat::getIUriD ();
 
-		} else if (object->getKind() == "dir" ||
-			    object->getKind() == "DSM::Directory") {
+          g_mkdir (path.c_str (), 0777);
+        }
 
-			if (objectPaths.count(object->getObjectId()) == 0) {
-				/*clog << "DsmccObjectProcessor::mountObject Warning!";
-				clog << "cant find object id '" << object->getObjectId();
-				clog << endl;*/
-				return false;
+      bindings = object->getBindings ();
+      for (i = bindings->begin (); i != bindings->end (); ++i)
+        {
+          objectId = itos ((*i)->getIor ()->getCarouselId ())
+                     + itos ((*i)->getIor ()->getModuleId ())
+                     + itos ((*i)->getIor ()->getObjectKey ());
 
-			} else {
-				path = (objectPaths.find(object->getObjectId()))->second +
-					    (objectNames.find(object->getObjectId()))->second +
-					    SystemCompat::getIUriD();
+          objectNames[objectId] = (*i)->getId ();
+          objectPaths[objectId] = path;
+        }
+      return true;
+    }
+  else if (object->getKind () == "fil" || object->getKind () == "DSM::File")
+    {
 
-				g_mkdir (path.c_str(), 0777);
-			}
+      if (objectPaths.count (object->getObjectId ()) == 0)
+        {
+          clog << "DsmccObjectProcessor::mountObject Warning! ";
+          clog << "cant find object id '" << object->getObjectId ();
+          clog << "" << endl;
+          return false;
+        }
+      else
+        {
+          path = (objectPaths.find (object->getObjectId ()))->second
+                 + (objectNames.find (object->getObjectId ()))->second;
 
-			bindings = object->getBindings();
-			for (i = bindings->begin(); i != bindings->end(); ++i) {
-				objectId = itos((*i)->getIor()->getCarouselId()) +
-					    itos((*i)->getIor()->getModuleId()) +
-					    itos((*i)->getIor()->getObjectKey());
+          fd = fopen (path.c_str (), "w+b");
+          size = object->getDataSize ();
+          if (fd > 0)
+            {
+              // TODO: correct BUG in content provider
+              if (path.find (".ncl") != std::string::npos)
+                {
+                  data = object->getData ();
+                  j = 0;
+                  while (j < size)
+                    {
+                      memcpy ((void *)&(token[0]), (void *)&(data[j]), 6);
+                      strToken = (string) (char *)token;
+                      if (strToken.find ("</ncl>") != std::string::npos)
+                        {
+                          size = j + 6;
+                          break;
+                        }
+                      j++;
+                    }
+                }
 
-				objectNames[objectId] = (*i)->getId();
-				objectPaths[objectId] = path;
-			}
-			return true;
+              fwrite ((void *)(object->getData ()), 1, size, fd);
+              fclose (fd);
+            }
+          else
+            {
+              clog << "Warning! Cannot mount ";
+              clog << path.c_str () << endl;
+              return false;
+            }
+        }
+      return true;
+    }
 
-		} else if (object->getKind() == "fil" ||
-			    object->getKind() == "DSM::File") {
+  clog << "DsmccObjectProcessor::mountObject Warning! unrecognized type";
+  clog << endl;
+  return false;
+}
 
-			if (objectPaths.count(object->getObjectId()) == 0) {
-				clog << "DsmccObjectProcessor::mountObject Warning! ";
-				clog << "cant find object id '" << object->getObjectId();
-				clog << "" << endl;
-				return false;
+void
+DsmccObjectProcessor::notifyObjectListeners (DsmccObject *obj)
+{
+  set<IDsmccObjectListener *>::iterator i;
+  string clientUri = "";
+  string name = "";
+  string objectId;
 
-			} else {
-				path = (objectPaths.find(object->getObjectId()))->second +
-					    (objectNames.find(object->getObjectId()))->second;
+  objectId = obj->getObjectId ();
+  if (objectPaths.count (objectId) != 0)
+    {
+      clientUri = objectPaths[objectId];
+    }
 
-				fd = fopen(path.c_str(), "w+b");
-				size = object->getDataSize();
-				if (fd > 0) {
-					//TODO: correct BUG in content provider
-					if (path.find(".ncl") != std::string::npos) {
-						data = object->getData();
-						j = 0;
-						while (j < size) {
-							memcpy((void*)&(token[0]), (void*)&(data[j]), 6);
-							strToken = (string)(char*)token;
-							if (strToken.find("</ncl>") != std::string::npos) {
-								size = j + 6;
-								break;
-							}
-							j++;
-						}
-					}
+  if (objectNames.count (objectId) != 0)
+    {
+      name = objectNames[objectId];
+    }
 
-					fwrite((void*)(object->getData()), 1, size, fd);
-					fclose(fd);
-
-				} else {
-					clog << "Warning! Cannot mount ";
-					clog << path.c_str() << endl;
-					return false;
-				}
-			}
-			return true;
-		}
-
-		clog << "DsmccObjectProcessor::mountObject Warning! unrecognized type";
-		clog << endl;
-		return false;
-	}
-
-
-	void DsmccObjectProcessor::notifyObjectListeners(DsmccObject* obj) {
-		set<IDsmccObjectListener*>::iterator i;
-		string clientUri = "";
-		string name = "";
-		string objectId;
-
-		objectId = obj->getObjectId();
-		if (objectPaths.count(objectId) != 0) {
-			clientUri = objectPaths[objectId];
-		}
-
-		if (objectNames.count(objectId) != 0) {
-			name = objectNames[objectId];
-		}
-
-		i = listeners.begin();
-		while (i != listeners.end()) {
-			(*i)->objectMounted(objectId, clientUri, name);
-			++i;
-		}
-	}
+  i = listeners.begin ();
+  while (i != listeners.end ())
+    {
+      (*i)->objectMounted (objectId, clientUri, name);
+      ++i;
+    }
+}
 
 GINGA_DATAPROC_END

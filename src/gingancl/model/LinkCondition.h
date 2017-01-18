@@ -18,33 +18,35 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _LINKCONDITION_H_
 #define _LINKCONDITION_H_
 
-
 #include "FormatterEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	class LinkCondition {
-		protected:
-			set<string>typeSet;
+class LinkCondition
+{
+protected:
+  set<string> typeSet;
 
-		public:
-			LinkCondition() {
-				typeSet.insert("LinkCondition");
-			};
+public:
+  LinkCondition () { typeSet.insert ("LinkCondition"); };
 
-			virtual ~LinkCondition(){};
+  virtual ~LinkCondition (){};
 
-			bool instanceOf(string s) {
-				if (!typeSet.empty()) {
-					return (typeSet.find(s) != typeSet.end());
-
-				} else {
-					return false;
-				}
-			};
-			virtual vector<FormatterEvent*>* getEvents()=0;
-	};
+  bool
+  instanceOf (string s)
+  {
+    if (!typeSet.empty ())
+      {
+        return (typeSet.find (s) != typeSet.end ());
+      }
+    else
+      {
+        return false;
+      }
+  };
+  virtual vector<FormatterEvent *> *getEvents () = 0;
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_LINKCONDITION_H_

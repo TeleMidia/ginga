@@ -21,40 +21,48 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "INCLDataFile.h"
 #include "INCLStructure.h"
 
-
 GINGA_DATAPROC_BEGIN
 
-
-typedef struct {
-	char* stream;
-	int size;
+typedef struct
+{
+  char *stream;
+  int size;
 } StreamData;
 
-	class INCLMetadata : public INCLStructure {
-		public:
-			virtual ~INCLMetadata(){};
+class INCLMetadata : public INCLStructure
+{
+public:
+  virtual ~INCLMetadata (){};
 
-			int getType(){return ST_METADATA;};
-			int getId(){return 0;};
+  int
+  getType ()
+  {
+    return ST_METADATA;
+  };
+  int
+  getId ()
+  {
+    return 0;
+  };
 
-			virtual string getRootUri()=0;
-			virtual string getName()=0;
-			virtual double getTotalLength()=0;
-			virtual void setTargetTotalLength(double targetSize)=0;
-			virtual bool isConsolidated()=0;
+  virtual string getRootUri () = 0;
+  virtual string getName () = 0;
+  virtual double getTotalLength () = 0;
+  virtual void setTargetTotalLength (double targetSize) = 0;
+  virtual bool isConsolidated () = 0;
 
-			virtual void setBaseUri(string uri)=0;
-			virtual string getBaseUri()=0;
+  virtual void setBaseUri (string uri) = 0;
+  virtual string getBaseUri () = 0;
 
-			virtual void setRootObject(INCLDataFile* rootObject)=0;
-			virtual INCLDataFile* getRootObject()=0;
+  virtual void setRootObject (INCLDataFile *rootObject) = 0;
+  virtual INCLDataFile *getRootObject () = 0;
 
-			virtual void addDataFile(INCLDataFile* dataObject)=0;
-			virtual INCLDataFile* getDataFile(int structureId)=0;
-			virtual map<int, INCLDataFile*>* getDataFiles()=0;
+  virtual void addDataFile (INCLDataFile *dataObject) = 0;
+  virtual INCLDataFile *getDataFile (int structureId) = 0;
+  virtual map<int, INCLDataFile *> *getDataFiles () = 0;
 
-			virtual vector<StreamData*>* createNCLSections()=0;
-	};
+  virtual vector<StreamData *> *createNCLSections () = 0;
+};
 
 GINGA_DATAPROC_END
 

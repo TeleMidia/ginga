@@ -20,52 +20,73 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	KeyNavigation::KeyNavigation() {
-		focusIndex = "";
-		moveUp = "";
-		moveDown = "";
-		moveLeft = "";
-		moveRight = "";
-	}
+KeyNavigation::KeyNavigation ()
+{
+  focusIndex = "";
+  moveUp = "";
+  moveDown = "";
+  moveLeft = "";
+  moveRight = "";
+}
 
-	string KeyNavigation::getFocusIndex() {
-		return focusIndex;
-	}
+string
+KeyNavigation::getFocusIndex ()
+{
+  return focusIndex;
+}
 
-	void KeyNavigation::setFocusIndex(string index) {
-		focusIndex = index;
-	}
+void
+KeyNavigation::setFocusIndex (string index)
+{
+  focusIndex = index;
+}
 
-	string KeyNavigation::getMoveUp() {
-		return moveUp;
-	}
+string
+KeyNavigation::getMoveUp ()
+{
+  return moveUp;
+}
 
-	void KeyNavigation::setMoveUp(string index) {
-		moveUp = index;
-	}
+void
+KeyNavigation::setMoveUp (string index)
+{
+  moveUp = index;
+}
 
-	string KeyNavigation::getMoveDown() {
-		return moveDown;
-	}
+string
+KeyNavigation::getMoveDown ()
+{
+  return moveDown;
+}
 
-	void KeyNavigation::setMoveDown(string index) {
-		moveDown = index;
-	}
+void
+KeyNavigation::setMoveDown (string index)
+{
+  moveDown = index;
+}
 
-	string KeyNavigation::getMoveRight() {
-		return moveRight;
-	}
+string
+KeyNavigation::getMoveRight ()
+{
+  return moveRight;
+}
 
-	void KeyNavigation::setMoveRight(string index) {
-		moveRight = index;
-	}
+void
+KeyNavigation::setMoveRight (string index)
+{
+  moveRight = index;
+}
 
-	string KeyNavigation::getMoveLeft() {
-		return moveLeft;
-	}
+string
+KeyNavigation::getMoveLeft ()
+{
+  return moveLeft;
+}
 
-	void KeyNavigation::setMoveLeft(string index) {
-		moveLeft = index;
-	}
+void
+KeyNavigation::setMoveLeft (string index)
+{
+  moveLeft = index;
+}
 
 GINGA_NCL_END

@@ -20,280 +20,325 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCLCONV_BEGIN
 
-	NclLinkingConverter::NclLinkingConverter(
-		    DocumentParser *documentParser,
-		    NclConnectorsConverter *connCompiler) :
-		    	    NclLinkingParser(documentParser) {
+NclLinkingConverter::NclLinkingConverter (DocumentParser *documentParser,
+                                          NclConnectorsConverter *connCompiler)
+    : NclLinkingParser (documentParser)
+{
+}
 
+void
+NclLinkingConverter::addBindToLink (void *parentObject, void *childObject)
+{
 
-	}
+  // nothing to do, since to be created the bind needs to be associated
+  // with
+  // its link
+}
 
-	void NclLinkingConverter::addBindToLink(
-		    void *parentObject, void *childObject) {
+void
+NclLinkingConverter::addBindParamToBind (void *parentObject, void *childObject)
+{
 
-		// nothing to do, since to be created the bind needs to be associated
-		// with
-		// its link
-	}
+  ((Bind *)parentObject)->addParameter ((Parameter *)childObject);
+}
 
-	void NclLinkingConverter::addBindParamToBind(
-		    void *parentObject, void *childObject) {
+void
+NclLinkingConverter::addLinkParamToLink (void *parentObject, void *childObject)
+{
 
-		((Bind*) parentObject)->addParameter((Parameter*) childObject);
-	}
+  ((Link *)parentObject)->addParameter ((Parameter *)childObject);
+}
 
-	void NclLinkingConverter::addLinkParamToLink(
-		    void *parentObject, void *childObject) {
+void *
+NclLinkingConverter::createBind (DOMElement *parentElement,
+                                 void *objGrandParent)
+{
 
-		((Link*) parentObject)->addParameter((Parameter*) childObject);
-	}
+  string component, roleId, interfaceId;
+  Role *role;
+  Node *anchorNode;
+  NodeEntity *anchorNodeEntity;
+  InterfacePoint *interfacePoint = NULL;
+  NclDocument *document;
+  GenericDescriptor *descriptor;
+  set<ReferNode *> *sInsts;
+  set<ReferNode *>::iterator i;
 
-	void *NclLinkingConverter::createBind(
-		    DOMElement *parentElement, void *objGrandParent) {
+  role = connector->getRole (XMLString::transcode (
+      parentElement->getAttribute (XMLString::transcode ("role"))));
 
-		string component, roleId, interfaceId;
-		Role* role;
-		Node* anchorNode;
-		NodeEntity* anchorNodeEntity;
-		InterfacePoint* interfacePoint = NULL;
-		NclDocument* document;
-		GenericDescriptor* descriptor;
-		set<ReferNode*>* sInsts;
-		set<ReferNode*>::iterator i;
+  component = XMLString::transcode (
+      parentElement->getAttribute (XMLString::transcode ("component")));
 
-		role = connector->getRole(XMLString::transcode(
-			    parentElement->getAttribute(XMLString::transcode("role"))));
+  if (composite->getId () == component)
+    {
+      anchorNode = (Node *)composite;
+    }
+  else
+    {
+      anchorNode = (Node *)(composite->getNode (component));
+    }
 
-		component = XMLString::transcode(parentElement->getAttribute(
-				XMLString::transcode("component")));
+  if (anchorNode == NULL)
+    {
+      clog << "NclLinkingConverter::createBind Warning!";
+      clog << " anchorNode == NULL for component '" << component;
+      clog << "', return NULL" << endl;
+      return NULL;
+    }
 
-		if (composite->getId() == component) {
-			anchorNode = (Node*)composite;
+  anchorNodeEntity = (NodeEntity *)(anchorNode->getDataEntity ());
 
-		} else {
-			anchorNode = (Node*)(composite->getNode(component));
-		}
+  if (parentElement->hasAttribute (XMLString::transcode ("interface")))
+    {
+      interfaceId = XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("interface")));
 
-		if (anchorNode == NULL) {
-			clog << "NclLinkingConverter::createBind Warning!";
-			clog << " anchorNode == NULL for component '" << component;
-			clog << "', return NULL" << endl;
-			return NULL;
-		}
+      if (anchorNodeEntity == NULL)
+        {
+          interfacePoint = NULL;
+        }
+      else
+        {
+          if (anchorNode->instanceOf ("ReferNode")
+              && ((ReferNode *)anchorNode)->getInstanceType () == "new")
+            {
 
-		anchorNodeEntity = (NodeEntity*)(anchorNode->getDataEntity());
+              interfacePoint = anchorNode->getAnchor (interfaceId);
+            }
+          else
+            {
+              interfacePoint = anchorNodeEntity->getAnchor (interfaceId);
+            }
+        }
 
-		if (parentElement->hasAttribute(XMLString::transcode("interface"))) {
-			interfaceId = XMLString::transcode(parentElement->getAttribute(
-					XMLString::transcode("interface")));
+      if (interfacePoint == NULL)
+        {
+          if (anchorNodeEntity != NULL
+              && anchorNodeEntity->instanceOf ("CompositeNode"))
+            {
 
-			if (anchorNodeEntity == NULL) {
-				interfacePoint = NULL;
+              interfacePoint
+                  = ((CompositeNode *)anchorNodeEntity)->getPort (interfaceId);
+            }
+          else
+            {
+              interfacePoint = anchorNode->getAnchor (interfaceId);
 
-			} else {
-				if (anchorNode->instanceOf("ReferNode") &&
-						((ReferNode*)anchorNode)->getInstanceType() == "new") {
-			
-					interfacePoint = anchorNode->getAnchor(interfaceId);
+              if (interfacePoint == NULL)
+                {
+                  sInsts = anchorNodeEntity->getInstSameInstances ();
+                  if (sInsts != NULL)
+                    {
+                      i = sInsts->begin ();
+                      while (i != sInsts->end ())
+                        {
+                          interfacePoint = (*i)->getAnchor (interfaceId);
+                          if (interfacePoint != NULL)
+                            {
+                              break;
+                            }
+                          ++i;
+                        }
+                    }
+                }
+            }
+        }
+    }
+  else if (anchorNodeEntity != NULL)
+    {
+      if (anchorNode->instanceOf ("ReferNode")
+          && ((ReferNode *)anchorNode)->getInstanceType () == "new")
+        {
 
-				} else {
-					interfacePoint = anchorNodeEntity->getAnchor(interfaceId);
-				}
-			}
+          interfacePoint = anchorNode->getAnchor (0);
+          if (interfacePoint == NULL)
+            {
+              interfacePoint = new LambdaAnchor (anchorNode->getId ());
+              anchorNode->addAnchor (0, (Anchor *)interfacePoint);
+            }
+        }
+      else if (anchorNodeEntity->instanceOf ("Node"))
+        {
+          // se nao houver interface, faz bind para a ancora lambda
+          interfacePoint = anchorNodeEntity->getAnchor (0);
+        }
+      else
+        {
+          clog << "NclLinkingConverter::createBind Warning!";
+          clog << " can't find interfaces for entity '";
+          clog << anchorNodeEntity->getId () << "'";
+          clog << endl;
+        }
+    }
+  else
+    {
+      // se nao houver interface, faz bind para a ancora lambda
+      interfacePoint = anchorNode->getAnchor (0);
+    }
 
-			if (interfacePoint == NULL) {
-				if (anchorNodeEntity != NULL &&
-						anchorNodeEntity->instanceOf("CompositeNode")) {
+  // atribui o bind ao elo (link)
+  if (parentElement->hasAttribute (XMLString::transcode ("descriptor")))
+    {
+      document = (NclDocument *)getDocumentParser ()->getObject ("return",
+                                                                 "document");
 
-					interfacePoint = ((CompositeNode*)anchorNodeEntity)->
-							getPort(interfaceId);
+      descriptor = document->getDescriptor (XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("descriptor"))));
+    }
+  else
+    {
+      descriptor = NULL;
+    }
 
-				} else {
-					interfacePoint = anchorNode->getAnchor(interfaceId);
+  if (role == NULL)
+    {
+      // &got
+      if (parentElement->hasAttribute (XMLString::transcode ("role")))
+        {
+          ConditionExpression *condition;
+          CompoundCondition *compoundCondition;
+          AssessmentStatement *statement;
+          AttributeAssessment *assessment;
+          ValueAssessment *otherAssessment;
 
-					if (interfacePoint == NULL) {
-						sInsts = anchorNodeEntity->getInstSameInstances();
-						if (sInsts != NULL) {
-							i = sInsts->begin();
-							while (i != sInsts->end()) {
-								interfacePoint = (*i)->getAnchor(interfaceId);
-								if (interfacePoint != NULL) {
-									break;
-								}
-								++i;
-							}
-						}
-					}
-				}
-			}
+          roleId = XMLString::transcode (
+              parentElement->getAttribute (XMLString::transcode ("role")));
 
-		} else if (anchorNodeEntity != NULL) {
-			if (anchorNode->instanceOf("ReferNode") &&
-					((ReferNode*)anchorNode)->getInstanceType() == "new") {
-			
-				interfacePoint = anchorNode->getAnchor(0);
-				if (interfacePoint == NULL) {
-					interfacePoint = new LambdaAnchor(anchorNode->getId());
-					anchorNode->addAnchor(0, (Anchor*)interfacePoint);
-				}
+          clog << "NclLinkingConverter::createBind FOUND GOT '";
+          clog << roleId << "'" << endl;
+          assessment = new AttributeAssessment (roleId);
+          assessment->setEventType (EventUtil::EVT_ATTRIBUTION);
+          assessment->setAttributeType (EventUtil::ATT_NODE_PROPERTY);
+          assessment->setMinCon (0);
+          assessment->setMaxCon (Role::UNBOUNDED);
 
-			} else if (anchorNodeEntity->instanceOf("Node")) {
-				// se nao houver interface, faz bind para a ancora lambda
-				interfacePoint = anchorNodeEntity->getAnchor(0);
+          otherAssessment = new ValueAssessment (roleId);
 
-			} else {
-				clog << "NclLinkingConverter::createBind Warning!";
-				clog << " can't find interfaces for entity '";
-				clog << anchorNodeEntity->getId() << "'";
-				clog << endl;
-			}
+          statement = new AssessmentStatement (Comparator::CMP_NE);
+          statement->setMainAssessment (assessment);
+          statement->setOtherAssessment (otherAssessment);
 
-		} else {
-			// se nao houver interface, faz bind para a ancora lambda
-			interfacePoint = anchorNode->getAnchor(0);
-		}
+          condition
+              = ((CausalConnector *)connector)->getConditionExpression ();
 
-		// atribui o bind ao elo (link)
-		if (parentElement->hasAttribute(XMLString::transcode("descriptor"))) {
-			document = (NclDocument*) getDocumentParser()->getObject(
-				    "return", "document");
+          if (condition->instanceOf ("CompoundCondition"))
+            {
+              ((CompoundCondition *)condition)
+                  ->addConditionExpression (statement);
+            }
+          else
+            {
+              compoundCondition = new CompoundCondition (
+                  condition, statement, CompoundCondition::OP_OR);
 
-			descriptor = document->getDescriptor(XMLString::transcode(
-				     parentElement->getAttribute(XMLString::transcode(
-				     	    "descriptor"))));
-		} else {
-			descriptor = NULL;
-		}
+              ((CausalConnector *)connector)
+                  ->setConditionExpression (
+                      (ConditionExpression *)compoundCondition);
+            }
+          role = (Role *)assessment;
+        }
+      else
+        {
+          clog << "NclLinkingConverter::createBind Warning!";
+          clog << " can't find any role ";
+          clog << endl;
+          return NULL;
+        }
+    }
 
-		if (role == NULL) {
-			// &got
-			if (parentElement->hasAttribute(XMLString::transcode("role"))) {
-				ConditionExpression* condition;
-				CompoundCondition* compoundCondition;
-				AssessmentStatement* statement;
-				AttributeAssessment* assessment;
-				ValueAssessment* otherAssessment;
+  return ((Link *)objGrandParent)
+      ->bind (anchorNode, interfacePoint, descriptor, role->getLabel ());
+}
 
-				roleId = XMLString::transcode(parentElement->getAttribute(
-						XMLString::transcode("role")));
+void *
+NclLinkingConverter::createLink (DOMElement *parentElement,
+                                 void *objGrandParent)
+{
 
-				clog << "NclLinkingConverter::createBind FOUND GOT '";
-				clog << roleId << "'" << endl;
-				assessment = new AttributeAssessment(roleId);
-				assessment->setEventType(EventUtil::EVT_ATTRIBUTION);
-				assessment->setAttributeType(EventUtil::ATT_NODE_PROPERTY);
-				assessment->setMinCon(0);
-				assessment->setMaxCon(Role::UNBOUNDED);
+  NclDocument *document;
+  Link *link;
+  string connectorId;
 
-				otherAssessment = new ValueAssessment(roleId);
+  // obtendo o conector do link
+  document
+      = (NclDocument *)getDocumentParser ()->getObject ("return", "document");
 
-				statement = new AssessmentStatement(Comparator::CMP_NE);
-				statement->setMainAssessment(assessment);
-				statement->setOtherAssessment(otherAssessment);
+  connectorId = XMLString::transcode (
+      parentElement->getAttribute (XMLString::transcode ("xconnector")));
 
-				condition = ((CausalConnector*)
-						connector)->getConditionExpression();
+  connector = document->getConnector (connectorId);
 
-				if (condition->instanceOf("CompoundCondition")) {
-					((CompoundCondition*)condition)->addConditionExpression(
-							statement);
+  if (connector == NULL)
+    {
+      // connector not found
+      clog << "NclLinkingConverter::createLink Warning!";
+      clog << " can't find connector '" << connectorId << "'";
+      clog << endl;
+      return NULL;
+    }
 
-				} else {
-					compoundCondition = new CompoundCondition(
-							condition, statement, CompoundCondition::OP_OR);
+  // criando o link
+  if (connector->instanceOf ("CausalConnector"))
+    {
+      link = new CausalLink (getId (parentElement), connector);
+    }
+  else
+    {
+      link = NULL;
+    }
 
-					((CausalConnector*)connector)->setConditionExpression(
-							(ConditionExpression*)compoundCondition);
-				}
-				role = (Role*)assessment;
+  composite = (CompositeNode *)objGrandParent;
+  return link;
+}
 
-			} else {
-				clog << "NclLinkingConverter::createBind Warning!";
-				clog << " can't find any role ";
-				clog << endl;
-				return NULL;
-			}
-		}
+void *
+NclLinkingConverter::createBindParam (DOMElement *parentElement,
+                                      void *objGrandParent)
+{
 
-		return ((Link*) objGrandParent)->bind(
-			    anchorNode, interfacePoint, descriptor, role->getLabel());
-	}
+  Parameter *parameter;
+  parameter = new Parameter (
+      XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("name"))),
 
-	void *NclLinkingConverter::createLink(
-		    DOMElement *parentElement, void *objGrandParent) {
+      XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("value"))));
 
-		NclDocument *document;
-		Link *link;
-		string connectorId;
+  return parameter;
+}
 
-		// obtendo o conector do link
-		document = (NclDocument*) getDocumentParser()->getObject(
-			    "return", "document");
+void *
+NclLinkingConverter::createLinkParam (DOMElement *parentElement,
+                                      void *objGrandParent)
+{
 
-		connectorId = XMLString::transcode(parentElement->getAttribute(
-				XMLString::transcode("xconnector")));
+  Parameter *parameter;
+  parameter = new Parameter (
+      XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("name"))),
 
-		connector = document->getConnector(connectorId);
+      XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("value"))));
 
-		if (connector == NULL) {
-			// connector not found
-			clog << "NclLinkingConverter::createLink Warning!";
-			clog << " can't find connector '" << connectorId << "'";
-			clog << endl;
-			return NULL;
-		}
+  return parameter;
+}
 
-		// criando o link
-		if (connector->instanceOf("CausalConnector")) {
-			link = new CausalLink(getId(parentElement), connector);
-
-		} else {
-			link = NULL;
-		}
-
-		composite = (CompositeNode*) objGrandParent;
-		return link;
-	}
-
-	void *NclLinkingConverter::createBindParam(
-		    DOMElement *parentElement, void *objGrandParent) {
-
-		Parameter *parameter;
-		parameter = new Parameter(
-			    XMLString::transcode(parentElement->getAttribute(
-			    	    XMLString::transcode("name"))),
-
-			    XMLString::transcode(parentElement->getAttribute(
-			    	    XMLString::transcode("value"))));
-
-		return parameter;
-	}
-
-	void *NclLinkingConverter::createLinkParam(
-		    DOMElement *parentElement, void *objGrandParent) {
-
-		Parameter *parameter;
-		parameter = new Parameter(
-			    XMLString::transcode(parentElement->getAttribute(
-			    	     XMLString::transcode("name"))),
-
-			    XMLString::transcode(parentElement->getAttribute(
-			    	     XMLString::transcode("value"))));
-
-		return parameter;
-	}
-
-	string NclLinkingConverter::getId(DOMElement *element) {
-		string strRet = "";
-		if (element->hasAttribute(XMLString::transcode("id"))) {
-			strRet = XMLString::transcode(element->getAttribute(
-				    XMLString::transcode("id")));
-		} else {
-			strRet = "";//"NclLinkingConverterId" + idCount++;
-		}
-		clog << strRet.c_str() << endl;
-		return strRet;
-
-	}
+string
+NclLinkingConverter::getId (DOMElement *element)
+{
+  string strRet = "";
+  if (element->hasAttribute (XMLString::transcode ("id")))
+    {
+      strRet = XMLString::transcode (
+          element->getAttribute (XMLString::transcode ("id")));
+    }
+  else
+    {
+      strRet = ""; //"NclLinkingConverterId" + idCount++;
+    }
+  clog << strRet.c_str () << endl;
+  return strRet;
+}
 
 GINGA_NCLCONV_END

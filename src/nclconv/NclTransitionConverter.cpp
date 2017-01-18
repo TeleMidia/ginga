@@ -21,179 +21,206 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCLCONV_BEGIN
 
-	NclTransitionConverter::NclTransitionConverter(
-		    DocumentParser *documentParser) : NclTransitionParser(
-		    	   documentParser) {
-	}
+NclTransitionConverter::NclTransitionConverter (DocumentParser *documentParser)
+    : NclTransitionParser (documentParser)
+{
+}
 
-	void NclTransitionConverter::addTransitionToTransitionBase(
-		    void* parentObject, void* childObject) {
+void
+NclTransitionConverter::addTransitionToTransitionBase (void *parentObject,
+                                                       void *childObject)
+{
 
-		((TransitionBase*)parentObject)->
-			    addTransition((Transition*)childObject);
-	}
+  ((TransitionBase *)parentObject)->addTransition ((Transition *)childObject);
+}
 
-	void* NclTransitionConverter::createTransitionBase(
-		    DOMElement* parentElement, void* objGrandParent) {
+void *
+NclTransitionConverter::createTransitionBase (DOMElement *parentElement,
+                                              void *objGrandParent)
+{
 
-		return new TransitionBase(XMLString::transcode(
-			    parentElement->getAttribute(XMLString::transcode("id"))));
-	}
+  return new TransitionBase (XMLString::transcode (
+      parentElement->getAttribute (XMLString::transcode ("id"))));
+}
 
-	void* NclTransitionConverter::createTransition(
-		    DOMElement *parentElement, void *objGrandParent) {
+void *
+NclTransitionConverter::createTransition (DOMElement *parentElement,
+                                          void *objGrandParent)
+{
 
-		Transition* transition;
-		string id, attValue;
-		int type, subtype;
-		short direction;
-		double dur;
-		Color* color;
+  Transition *transition;
+  string id, attValue;
+  int type, subtype;
+  short direction;
+  double dur;
+  Color *color;
 
-		if (!parentElement->hasAttribute(
-			     XMLString::transcode("id"))) {
+  if (!parentElement->hasAttribute (XMLString::transcode ("id")))
+    {
 
-			return NULL;
-		}
+      return NULL;
+    }
 
-		id = XMLString::transcode(parentElement->getAttribute(
-			     XMLString::transcode("id")));
+  id = XMLString::transcode (
+      parentElement->getAttribute (XMLString::transcode ("id")));
 
-		if (parentElement->hasAttribute(XMLString::transcode("type"))) {
-			attValue = XMLString::transcode(parentElement->
-				    getAttribute(XMLString::transcode("type")));
+  if (parentElement->hasAttribute (XMLString::transcode ("type")))
+    {
+      attValue = XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("type")));
 
-			type = TransitionUtil::getTypeCode(attValue);
-			if (type < 0) {
-				return NULL;
-			}
+      type = TransitionUtil::getTypeCode (attValue);
+      if (type < 0)
+        {
+          return NULL;
+        }
+    }
+  else
+    {
+      // type must be defined
+      clog << "NclTransitionConverter::createTransition warning!";
+      clog << " transition type must be defined" << endl;
+      return NULL;
+    }
 
-		} else {
-			// type must be defined
-			clog << "NclTransitionConverter::createTransition warning!";
-			clog << " transition type must be defined" << endl;
-			return NULL;
-		}
+  transition = new Transition (id, type);
 
-		transition = new Transition(id, type);
+  if (parentElement->hasAttribute (XMLString::transcode ("subtype")))
+    {
+      attValue = XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("subtype")));
 
-		if (parentElement->hasAttribute(XMLString::transcode("subtype"))) {
-			attValue = XMLString::transcode(parentElement->
-				    getAttribute(XMLString::transcode("subtype")));
+      subtype = TransitionUtil::getSubtypeCode (type, attValue);
+      if (subtype >= 0)
+        {
+          transition->setSubtype (subtype);
+        }
+    }
 
-			subtype = TransitionUtil::getSubtypeCode(type, attValue);
-			if (subtype >= 0) {
-				transition->setSubtype(subtype);
-			}
-		}
+  if (parentElement->hasAttribute (XMLString::transcode ("dur")))
+    {
+      attValue = XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("dur")));
 
-		if (parentElement->hasAttribute(XMLString::transcode("dur"))) {
-			attValue = XMLString::transcode(parentElement->
-				    getAttribute(XMLString::transcode("dur")));
+      dur = ::ginga::util::stof (attValue.substr (0, attValue.length () - 1));
+      transition->setDur (dur * 1000);
+    }
 
-			dur = ::ginga::util::stof(attValue.substr(0, attValue.length() - 1));
-			transition->setDur(dur * 1000);
-		}
+  if (parentElement->hasAttribute (XMLString::transcode ("startProgress")))
+    {
 
-		if (parentElement->hasAttribute(
-			    XMLString::transcode("startProgress"))) {
+      attValue = XMLString::transcode (parentElement->getAttribute (
+          XMLString::transcode ("startProgress")));
 
-			attValue = XMLString::transcode(parentElement->
-				    getAttribute(XMLString::transcode("startProgress")));
+      transition->setStartProgress (::ginga::util::stof (attValue));
+    }
 
-			transition->setStartProgress(::ginga::util::stof(attValue));
-		}
+  if (parentElement->hasAttribute (XMLString::transcode ("endProgress")))
+    {
+      attValue = XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("endProgress")));
 
-		if (parentElement->hasAttribute(XMLString::transcode("endProgress"))) {
-			attValue = XMLString::transcode(parentElement->
-				    getAttribute(XMLString::transcode("endProgress")));
+      transition->setEndProgress (::ginga::util::stof (attValue));
+    }
 
-			transition->setEndProgress(::ginga::util::stof(attValue));
-		}
+  if (parentElement->hasAttribute (XMLString::transcode ("direction")))
+    {
+      attValue = XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("direction")));
 
-		if (parentElement->hasAttribute(XMLString::transcode("direction"))) {
-			attValue = XMLString::transcode(parentElement->
-				    getAttribute(XMLString::transcode("direction")));
+      direction = TransitionUtil::getDirectionCode (attValue);
+      if (direction >= 0)
+        {
+          transition->setDirection (direction);
+        }
+    }
 
-			direction = TransitionUtil::getDirectionCode(attValue);
-			if (direction >= 0) {
-				transition->setDirection(direction);
-			}
-		}
+  if (parentElement->hasAttribute (XMLString::transcode ("fadeColor")))
+    {
+      color = new Color (XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("fadeColor"))));
 
-		if (parentElement->hasAttribute(XMLString::transcode("fadeColor"))) {
-			color = new Color(XMLString::transcode(parentElement->
-				    getAttribute(XMLString::transcode("fadeColor"))));
+      transition->setFadeColor (color);
+    }
 
-			transition->setFadeColor(color);
-		}
+  if (parentElement->hasAttribute (XMLString::transcode ("horzRepeat")))
+    {
+      attValue = XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("horzRepeat")));
 
-		if (parentElement->hasAttribute(XMLString::transcode("horzRepeat"))) {
-			attValue = XMLString::transcode(parentElement->
-				    getAttribute(XMLString::transcode("horzRepeat")));
+      transition->setHorzRepeat ((int)::ginga::util::stof (attValue));
+    }
 
-			transition->setHorzRepeat((int)::ginga::util::stof(attValue));
-		}
+  if (parentElement->hasAttribute (XMLString::transcode ("vertRepeat")))
+    {
+      attValue = XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("vertRepeat")));
 
-		if (parentElement->hasAttribute(XMLString::transcode("vertRepeat"))) {
-			attValue = XMLString::transcode(parentElement->
-				    getAttribute(XMLString::transcode("vertRepeat")));
+      transition->setVertRepeat ((int)::ginga::util::stof (attValue));
+    }
 
-			transition->setVertRepeat((int)::ginga::util::stof(attValue));
-		}
+  if (parentElement->hasAttribute (XMLString::transcode ("borderWidth")))
+    {
+      attValue = XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("borderWidth")));
 
-		if (parentElement->hasAttribute(XMLString::transcode("borderWidth"))) {
-			attValue = XMLString::transcode(parentElement->
-				    getAttribute(XMLString::transcode("borderWidth")));
+      transition->setBorderWidth ((int)::ginga::util::stof (attValue));
+    }
 
-			transition->setBorderWidth((int)::ginga::util::stof(attValue));
-		}
+  if (parentElement->hasAttribute (XMLString::transcode ("borderColor")))
+    {
+      color = new Color (XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("borderColor"))));
 
-		if (parentElement->hasAttribute(XMLString::transcode("borderColor"))) {
-			color = new Color(XMLString::transcode(parentElement->
-				    getAttribute(XMLString::transcode("borderColor"))));
+      transition->setBorderColor (color);
+    }
 
-			transition->setBorderColor(color);
-		}
+  return transition;
+}
 
-		return transition;
-	}
+void
+NclTransitionConverter::addImportBaseToTransitionBase (void *parentObject,
+                                                       void *childObject)
+{
 
-	void NclTransitionConverter::addImportBaseToTransitionBase(
-		    void* parentObject, void* childObject) {
+  string baseAlias, baseLocation;
+  NclDocumentConverter *compiler;
+  NclDocument *importedDocument;
+  TransitionBase *createdBase;
 
-		string baseAlias, baseLocation;
-		NclDocumentConverter* compiler;
-		NclDocument* importedDocument;
-		TransitionBase* createdBase;
+  // get the external base alias and location
+  baseAlias = XMLString::transcode (
+      ((DOMElement *)childObject)
+          ->getAttribute (XMLString::transcode ("alias")));
 
-		// get the external base alias and location
-		baseAlias = XMLString::transcode(((DOMElement*)childObject)->
-			    getAttribute(XMLString::transcode("alias")));
+  baseLocation = XMLString::transcode (
+      ((DOMElement *)childObject)
+          ->getAttribute (XMLString::transcode ("documentURI")));
 
-		baseLocation = XMLString::transcode(((DOMElement*)childObject)->
-			    getAttribute(XMLString::transcode("documentURI")));
+  compiler = (NclDocumentConverter *)getDocumentParser ();
+  importedDocument = compiler->importDocument (&baseLocation);
+  if (importedDocument == NULL)
+    {
+      return;
+    }
 
-		compiler = (NclDocumentConverter*)getDocumentParser();
-		importedDocument = compiler->importDocument(&baseLocation);
-		if (importedDocument == NULL) {
-			return;
-		}
+  createdBase = importedDocument->getTransitionBase ();
+  if (createdBase == NULL)
+    {
+      return;
+    }
 
-		createdBase = importedDocument->getTransitionBase();
-		if (createdBase == NULL) {
-			return;
-		}
-
-		// insert the imported base into the document region base
-		try {
-			((TransitionBase*)parentObject)->addBase(
-				    createdBase, baseAlias, baseLocation);
-
-		} catch (std::exception* exc) {
-			clog << "NclTransitionConverter::addImportBaseToTransitionBase";
-			clog << "Warning! exception '" << exc->what() << "'" << endl;
-		}
-	}
+  // insert the imported base into the document region base
+  try
+    {
+      ((TransitionBase *)parentObject)
+          ->addBase (createdBase, baseAlias, baseLocation);
+    }
+  catch (std::exception *exc)
+    {
+      clog << "NclTransitionConverter::addImportBaseToTransitionBase";
+      clog << "Warning! exception '" << exc->what () << "'" << endl;
+    }
+}
 
 GINGA_NCLCONV_END

@@ -20,43 +20,56 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_DATAPROC_BEGIN
 
-	NCLDataFile::NCLDataFile(int id) {
-		this->structureId  = id;
-		this->componentTag = "";
-		this->size         = 0;
-		this->uri          = "";
-	}
+NCLDataFile::NCLDataFile (int id)
+{
+  this->structureId = id;
+  this->componentTag = "";
+  this->size = 0;
+  this->uri = "";
+}
 
-	NCLDataFile::~NCLDataFile() {
+NCLDataFile::~NCLDataFile () {}
 
-	}
+int
+NCLDataFile::getId ()
+{
+  return this->structureId;
+}
 
-	int NCLDataFile::getId() {
-		return this->structureId;
-	}
+void
+NCLDataFile::setComponentTag (string componentTag)
+{
+  this->componentTag = componentTag;
+}
 
-	void NCLDataFile::setComponentTag(string componentTag) {
-		this->componentTag = componentTag;
-	}
+string
+NCLDataFile::getCopmonentTag ()
+{
+  return this->componentTag;
+}
 
-	string NCLDataFile::getCopmonentTag() {
-		return this->componentTag;
-	}
+void
+NCLDataFile::setUri (string uri)
+{
+  this->uri = uri;
+}
 
-	void NCLDataFile::setUri(string uri) {
-		this->uri = uri;
-	}
+string
+NCLDataFile::getUri ()
+{
+  return this->uri;
+}
 
-	string NCLDataFile::getUri() {
-		return this->uri;
-	}
+void
+NCLDataFile::setSize (double size)
+{
+  this->size = size;
+}
 
-	void NCLDataFile::setSize(double size) {
-		this->size = size;
-	}
-
-	double NCLDataFile::getSize() {
-		return this->size;
-	}
+double
+NCLDataFile::getSize ()
+{
+  return this->size;
+}
 
 GINGA_DATAPROC_END

@@ -22,14 +22,15 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-	class IDiscreteMediaProvider : public IMediaProvider {
-		public:
-			virtual ~IDiscreteMediaProvider(){};
+class IDiscreteMediaProvider : public IMediaProvider
+{
+public:
+  virtual ~IDiscreteMediaProvider (){};
 
-			virtual string getLoadSymbol()=0;
+  virtual string getLoadSymbol () = 0;
 
-			virtual void playOver(GingaSurfaceID surface) = 0;
-	};
+  virtual void playOver (GingaSurfaceID surface) = 0;
+};
 
 GINGA_MB_END
 

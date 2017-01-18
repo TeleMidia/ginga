@@ -25,32 +25,34 @@ using namespace ::ginga::ncl;
 
 GINGA_NCL_BEGIN
 
-	class TextAnchor : public Anchor {
-		protected:
-			/**
-			* The text of this region.
-			*/
-			string text;
+class TextAnchor : public Anchor
+{
+protected:
+  /**
+  * The text of this region.
+  */
+  string text;
 
-			/**
-			* The position of the text of this region.
-			*/
-			long position;
-		public:
-			/**
-			* Class constructor.
-			*
-			* @param t region text.
-			* @param p region position.
-			* @param s true if the text of this region is case sensitive
-			* and false otherwise.
-			*/
-			TextAnchor(string id, string t, long p);
-			long getPosition();
-			string getText();
-			void setPosition(long p);
-			void setText(string t);
-	};
+  /**
+  * The position of the text of this region.
+  */
+  long position;
+
+public:
+  /**
+  * Class constructor.
+  *
+  * @param t region text.
+  * @param p region position.
+  * @param s true if the text of this region is case sensitive
+  * and false otherwise.
+  */
+  TextAnchor (string id, string t, long p);
+  long getPosition ();
+  string getText ();
+  void setPosition (long p);
+  void setText (string t);
+};
 
 GINGA_NCL_END
 

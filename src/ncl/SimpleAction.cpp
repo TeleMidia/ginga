@@ -20,102 +20,136 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	SimpleAction::SimpleAction(string role) :
-		    Action(), Role() {
+SimpleAction::SimpleAction (string role) : Action (), Role ()
+{
 
-		SimpleAction::setLabel(role);
-		qualifier = CompoundAction::OP_PAR;
-		repeat = "0";
-		repeatDelay = "0";
-		value = "";
-		animation = NULL;
-		typeSet.insert("SimpleAction");
-		typeSet.insert("Role");
-	}
+  SimpleAction::setLabel (role);
+  qualifier = CompoundAction::OP_PAR;
+  repeat = "0";
+  repeatDelay = "0";
+  value = "";
+  animation = NULL;
+  typeSet.insert ("SimpleAction");
+  typeSet.insert ("Role");
+}
 
-	SimpleAction::~SimpleAction() {
-		if (animation != NULL) {
-			delete animation;
-			animation = NULL;
-		}
-	}
+SimpleAction::~SimpleAction ()
+{
+  if (animation != NULL)
+    {
+      delete animation;
+      animation = NULL;
+    }
+}
 
-	void SimpleAction::setLabel(string id) {
-		label = id;
-		string upLabel = upperCase(label);
+void
+SimpleAction::setLabel (string id)
+{
+  label = id;
+  string upLabel = upperCase (label);
 
-		if (upLabel == upperCase("start")) {
-			actionType = ACT_START;
-			eventType = EventUtil::EVT_PRESENTATION;
+  if (upLabel == upperCase ("start"))
+    {
+      actionType = ACT_START;
+      eventType = EventUtil::EVT_PRESENTATION;
+    }
+  else if (upLabel == upperCase ("stop"))
+    {
+      actionType = ACT_STOP;
+      eventType = EventUtil::EVT_PRESENTATION;
+    }
+  else if (upLabel == upperCase ("set"))
+    {
+      actionType = ACT_START;
+      eventType = EventUtil::EVT_ATTRIBUTION;
+    }
+  else if (upLabel == upperCase ("abort"))
+    {
+      actionType = ACT_ABORT;
+      eventType = EventUtil::EVT_PRESENTATION;
+    }
+  else if (upLabel == upperCase ("pause"))
+    {
+      actionType = ACT_PAUSE;
+      eventType = EventUtil::EVT_PRESENTATION;
+    }
+  else if (upLabel == upperCase ("resume"))
+    {
+      actionType = ACT_RESUME;
+      eventType = EventUtil::EVT_PRESENTATION;
+    }
+}
 
-		} else if (upLabel == upperCase("stop")) {
-			actionType = ACT_STOP;
-			eventType = EventUtil::EVT_PRESENTATION;
+short
+SimpleAction::getQualifier ()
+{
+  return qualifier;
+}
 
-		} else if (upLabel == upperCase("set")) {
-			actionType = ACT_START;
-			eventType = EventUtil::EVT_ATTRIBUTION;
+void
+SimpleAction::setQualifier (short qualifier)
+{
+  this->qualifier = qualifier;
+}
 
-		} else if (upLabel == upperCase("abort")) {
-			actionType = ACT_ABORT;
-			eventType = EventUtil::EVT_PRESENTATION;
+string
+SimpleAction::getRepeat ()
+{
+  return repeat;
+}
 
-		} else if (upLabel == upperCase("pause")) {
-			actionType = ACT_PAUSE;
-			eventType = EventUtil::EVT_PRESENTATION;
+string
+SimpleAction::getRepeatDelay ()
+{
+  return repeatDelay;
+}
 
-		} else if (upLabel == upperCase("resume")) {
-			actionType = ACT_RESUME;
-			eventType = EventUtil::EVT_PRESENTATION;
-		}
-	}
+void
+SimpleAction::setRepeatDelay (string time)
+{
+  repeatDelay = time;
+}
 
-	short SimpleAction::getQualifier() {
-		return qualifier;
-	}
+void
+SimpleAction::setRepeat (string newRepetitions)
+{
+  repeat = newRepetitions;
+}
 
-	void SimpleAction::setQualifier(short qualifier) {
-		this->qualifier = qualifier;
-	}
+short
+SimpleAction::getActionType ()
+{
+  return actionType;
+}
 
-	string SimpleAction::getRepeat() {
-		return repeat;
-	}
+void
+SimpleAction::setActionType (short action)
+{
+  actionType = action;
+}
 
-	string SimpleAction::getRepeatDelay() {
-		return repeatDelay;
-	}
+string
+SimpleAction::getValue ()
+{
+  return value;
+}
 
-	void SimpleAction::setRepeatDelay(string time) {
-		repeatDelay = time;
-	}
+void
+SimpleAction::setValue (string value)
+{
+  this->value = value;
+}
 
-	void SimpleAction::setRepeat(string newRepetitions) {
-		repeat = newRepetitions;
-	}
+Animation *
+SimpleAction::getAnimation ()
+{
+  return animation;
+}
 
-	short SimpleAction::getActionType() {
-		return actionType;
-	}
-
-	void SimpleAction::setActionType(short action) {
-		actionType = action;
-	}
-
-	string SimpleAction::getValue() {
-		return value;
-	}
-
-	void SimpleAction::setValue(string value) {
-		this->value = value;
-	}
-
-	Animation* SimpleAction::getAnimation() {
-		return animation;
-	}
-
-	void SimpleAction::setAnimation(Animation* animation) {
-		this->animation = animation;
-	}
+void
+SimpleAction::setAnimation (Animation *animation)
+{
+  this->animation = animation;
+}
 
 GINGA_NCL_END

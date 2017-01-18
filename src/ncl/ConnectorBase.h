@@ -23,35 +23,32 @@ using namespace ::ginga::ncl;
 
 #include "Connector.h"
 
-
 GINGA_NCL_BEGIN
 
-	class ConnectorBase : public Base {
-		private:
-			set<Connector*> connectorSet;
+class ConnectorBase : public Base
+{
+private:
+  set<Connector *> connectorSet;
 
-		public:
-			ConnectorBase(string id);
-			virtual ~ConnectorBase();
+public:
+  ConnectorBase (string id);
+  virtual ~ConnectorBase ();
 
-			bool addConnector(Connector* connector);
-			bool addBase(
-				    Base* base,
-				    string alias,
-				    string location);
+  bool addConnector (Connector *connector);
+  bool addBase (Base *base, string alias, string location);
 
-			void clear();
-			bool containsConnector(string connectorId);
-			bool containsConnector(Connector* connector);
+  void clear ();
+  bool containsConnector (string connectorId);
+  bool containsConnector (Connector *connector);
 
-		private:
-			Connector* getConnectorLocally(string connectorId);
+private:
+  Connector *getConnectorLocally (string connectorId);
 
-		public:
-			Connector* getConnector(string connectorId);
-			bool removeConnector(string connectorId);
-			bool removeConnector(Connector* connector);
-	};
+public:
+  Connector *getConnector (string connectorId);
+  bool removeConnector (string connectorId);
+  bool removeConnector (Connector *connector);
+};
 
 GINGA_NCL_END
 

@@ -20,40 +20,38 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "IMpegDescriptor.h"
 
-
 GINGA_TSPARSER_BEGIN
 
-
-struct Component{
-	unsigned char componentTag;
-	unsigned char digitalRecordingControlData;
-	bool maximumBitrateFlag;
-	unsigned char copyControlType;
-	unsigned char APSControlData;
-	unsigned char maximumBitrate;
+struct Component
+{
+  unsigned char componentTag;
+  unsigned char digitalRecordingControlData;
+  bool maximumBitrateFlag;
+  unsigned char copyControlType;
+  unsigned char APSControlData;
+  unsigned char maximumBitrate;
 };
-	class DigitalCCDescriptor : public IMpegDescriptor {
-		protected:
-			unsigned char digitalRecordingControlData;
-			bool maximumBitrateFlag;
-			bool componentControlFlag;
-			unsigned char copyControlType;
-			unsigned char APSControlData;
-			//unsigned char reservedFutureUse;
-			unsigned char maximumBitRate;
-			unsigned char componentControlLength;
-			vector<Component*>* components;
+class DigitalCCDescriptor : public IMpegDescriptor
+{
+protected:
+  unsigned char digitalRecordingControlData;
+  bool maximumBitrateFlag;
+  bool componentControlFlag;
+  unsigned char copyControlType;
+  unsigned char APSControlData;
+  // unsigned char reservedFutureUse;
+  unsigned char maximumBitRate;
+  unsigned char componentControlLength;
+  vector<Component *> *components;
 
-		public:
-			DigitalCCDescriptor();
-			~DigitalCCDescriptor();
-			unsigned int getDescriptorLength();
-			unsigned char getDescriptorTag();
-			void print();
-			size_t process(char* data, size_t pos);
-
-	};
-
+public:
+  DigitalCCDescriptor ();
+  ~DigitalCCDescriptor ();
+  unsigned int getDescriptorLength ();
+  unsigned char getDescriptorTag ();
+  void print ();
+  size_t process (char *data, size_t pos);
+};
 
 GINGA_TSPARSER_END
 

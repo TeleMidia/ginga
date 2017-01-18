@@ -21,39 +21,49 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TUNER_BEGIN
 
-	MulticastProvider::MulticastProvider(string groupAddr, int port) {
-		clog << "UDP MulticastProvider address '" << groupAddr << ":";
-		clog << port << "'" << endl;
+MulticastProvider::MulticastProvider (string groupAddr, int port)
+{
+  clog << "UDP MulticastProvider address '" << groupAddr << ":";
+  clog << port << "'" << endl;
 
-		this->addr         = groupAddr;
-		this->portNumber   = port;
-		this->capabilities = DPC_CAN_FETCHDATA | DPC_CAN_CTLSTREAM;
-	}
+  this->addr = groupAddr;
+  this->portNumber = port;
+  this->capabilities = DPC_CAN_FETCHDATA | DPC_CAN_CTLSTREAM;
+}
 
-	MulticastProvider::~MulticastProvider() {
-		if (udpSocket) {
-			delete udpSocket;
-		}
-	}
-	
-	int MulticastProvider::callServer() {
-		try {
-			udpSocket = new UDPSocket((unsigned short) portNumber);
-			udpSocket->joinGroup(addr);
+MulticastProvider::~MulticastProvider ()
+{
+  if (udpSocket)
+    {
+      delete udpSocket;
+    }
+}
 
-			return 1;
-		} catch (...) {
-			udpSocket = NULL;
-			return 0;
-		}
-	}
+int
+MulticastProvider::callServer ()
+{
+  try
+    {
+      udpSocket = new UDPSocket ((unsigned short)portNumber);
+      udpSocket->joinGroup (addr);
 
-	char* MulticastProvider::receiveData(int* len) {
-		char* buff = new char[BUFFSIZE];
-		*len = udpSocket->recvFrom(
-				buff, BUFFSIZE, addr, (unsigned short&) portNumber);
+      return 1;
+    }
+  catch (...)
+    {
+      udpSocket = NULL;
+      return 0;
+    }
+}
 
-		return buff;
-	}
+char *
+MulticastProvider::receiveData (int *len)
+{
+  char *buff = new char[BUFFSIZE];
+  *len = udpSocket->recvFrom (buff, BUFFSIZE, addr,
+                              (unsigned short &)portNumber);
+
+  return buff;
+}
 
 GINGA_TUNER_END

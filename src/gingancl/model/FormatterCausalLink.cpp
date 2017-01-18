@@ -23,109 +23,132 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	FormatterCausalLink::FormatterCausalLink(
-		    LinkTriggerCondition* condition,
-		    LinkAction* action,
-		    Link* ncmLink,
-			void* parentObject) :
-				FormatterLink(ncmLink, parentObject) {
+FormatterCausalLink::FormatterCausalLink (LinkTriggerCondition *condition,
+                                          LinkAction *action, Link *ncmLink,
+                                          void *parentObject)
+    : FormatterLink (ncmLink, parentObject)
+{
 
-		typeSet.insert("FormatterCausalLink");
-		this->condition = condition;
-		this->action = action;
+  typeSet.insert ("FormatterCausalLink");
+  this->condition = condition;
+  this->action = action;
 
-		if (this->condition != NULL) {
-			this->condition->setTriggerListener(this);
-		}
-
-		if (this->action != NULL) {
-			this->action->addActionProgressionListener(this);
-		}
-	}
-
-	FormatterCausalLink::~FormatterCausalLink() {
-		if (condition != NULL) {
-			delete condition;
-			condition = NULL;
-		}
-
-		if (action != NULL) {
-			delete action;
-			action = NULL;
-		}
-	}
-
-    LinkAction* FormatterCausalLink::getAction() {
-    	return action;
+  if (this->condition != NULL)
+    {
+      this->condition->setTriggerListener (this);
     }
 
-    LinkTriggerCondition* FormatterCausalLink::getTriggerCondition() {
-    	return condition;
+  if (this->action != NULL)
+    {
+      this->action->addActionProgressionListener (this);
+    }
+}
+
+FormatterCausalLink::~FormatterCausalLink ()
+{
+  if (condition != NULL)
+    {
+      delete condition;
+      condition = NULL;
     }
 
-    void FormatterCausalLink::conditionSatisfied(void* condition) {
-    	if (!suspend) {
-    		action->run(condition);
-    	}
+  if (action != NULL)
+    {
+      delete action;
+      action = NULL;
+    }
+}
+
+LinkAction *
+FormatterCausalLink::getAction ()
+{
+  return action;
+}
+
+LinkTriggerCondition *
+FormatterCausalLink::getTriggerCondition ()
+{
+  return condition;
+}
+
+void
+FormatterCausalLink::conditionSatisfied (void *condition)
+{
+  if (!suspend)
+    {
+      action->run (condition);
+    }
+}
+
+vector<FormatterEvent *> *
+FormatterCausalLink::getEvents ()
+{
+  vector<FormatterEvent *> *events;
+  vector<FormatterEvent *> *actEvents;
+  vector<FormatterEvent *>::iterator i;
+
+  events = condition->getEvents ();
+  actEvents = action->getEvents ();
+
+  if (actEvents == NULL)
+    {
+      return events;
     }
 
-    vector<FormatterEvent*>* FormatterCausalLink::getEvents() {
-    	vector<FormatterEvent*>* events;
-    	vector<FormatterEvent*>* actEvents;
-    	vector<FormatterEvent*>::iterator i;
-
-    	events = condition->getEvents();
-		actEvents = action->getEvents();
-
-		if (actEvents == NULL) {
-			return events;
-		}
-
-    	if (events == NULL) {
-    		return actEvents;
-    	}
-
-		for (i = actEvents->begin(); i != actEvents->end(); ++i) {
-			events->push_back(*i);
-		}
-
-		delete actEvents;
-		actEvents = NULL;
-
-		if (events->empty()) {
-			delete events;
-			return NULL;
-		}
-
-		return events;
+  if (events == NULL)
+    {
+      return actEvents;
     }
 
-    void FormatterCausalLink::evaluationStarted() {
-		/*clog << endl;
-		clog << "FormatterCausalLink::evaluationStarted(" << ncmLink->getId();
-		clog << ")" << endl << endl;*/
-		((CompositeExecutionObject*)parentObject)->linkEvaluationStarted(this);
-	}
+  for (i = actEvents->begin (); i != actEvents->end (); ++i)
+    {
+      events->push_back (*i);
+    }
 
-	void FormatterCausalLink::evaluationEnded() {
-		/*clog << endl;
-		clog << "FormatterCausalLink::evaluationEnded(" << ncmLink->getId();
-		clog << ")" << endl << endl;*/
-		((CompositeExecutionObject*)parentObject)->
-			    linkEvaluationFinished(this, false);
-	}
+  delete actEvents;
+  actEvents = NULL;
 
-	void FormatterCausalLink::actionProcessed(bool start) {
-		/*clog << endl;
-		clog << "FormatterCausalLink::actionProcessed(";
-		if (!start) {
-			clog << "start:" << ncmLink->getId();
-		} else {
-			clog << "nostart:" << ncmLink->getId();
-		}
-		clog << ")" << endl << endl;*/
-		((CompositeExecutionObject*)parentObject)->
-			    linkEvaluationFinished(this, start);
-	}
+  if (events->empty ())
+    {
+      delete events;
+      return NULL;
+    }
+
+  return events;
+}
+
+void
+FormatterCausalLink::evaluationStarted ()
+{
+  /*clog << endl;
+  clog << "FormatterCausalLink::evaluationStarted(" << ncmLink->getId();
+  clog << ")" << endl << endl;*/
+  ((CompositeExecutionObject *)parentObject)->linkEvaluationStarted (this);
+}
+
+void
+FormatterCausalLink::evaluationEnded ()
+{
+  /*clog << endl;
+  clog << "FormatterCausalLink::evaluationEnded(" << ncmLink->getId();
+  clog << ")" << endl << endl;*/
+  ((CompositeExecutionObject *)parentObject)
+      ->linkEvaluationFinished (this, false);
+}
+
+void
+FormatterCausalLink::actionProcessed (bool start)
+{
+  /*clog << endl;
+  clog << "FormatterCausalLink::actionProcessed(";
+  if (!start) {
+          clog << "start:" << ncmLink->getId();
+  } else {
+          clog << "nostart:" << ncmLink->getId();
+  }
+  clog << ")" << endl << endl;*/
+  ((CompositeExecutionObject *)parentObject)
+      ->linkEvaluationFinished (this, start);
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END

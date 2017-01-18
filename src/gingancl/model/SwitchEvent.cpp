@@ -20,63 +20,80 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_BEGIN
 
-	SwitchEvent::SwitchEvent(
-		    string id,
-		    void* executionObjectSwitch,
-		    InterfacePoint* interfacePoint,
-		    int eventType,
-		    string key) : FormatterEvent(id, executionObjectSwitch) {
+SwitchEvent::SwitchEvent (string id, void *executionObjectSwitch,
+                          InterfacePoint *interfacePoint, int eventType,
+                          string key)
+    : FormatterEvent (id, executionObjectSwitch)
+{
 
-		this->interfacePoint = interfacePoint;
-		this->eventType      = eventType;
-		this->key            = key;
-		this->mappedEvent    = NULL;
+  this->interfacePoint = interfacePoint;
+  this->eventType = eventType;
+  this->key = key;
+  this->mappedEvent = NULL;
 
-		typeSet.insert("SwitchEvent");
-	}
+  typeSet.insert ("SwitchEvent");
+}
 
-	SwitchEvent::~SwitchEvent() {
-		if (FormatterEvent::hasInstance(mappedEvent, false)) {
-			mappedEvent->removeEventListener(this);
-			mappedEvent = NULL;
-		}
-	}
+SwitchEvent::~SwitchEvent ()
+{
+  if (FormatterEvent::hasInstance (mappedEvent, false))
+    {
+      mappedEvent->removeEventListener (this);
+      mappedEvent = NULL;
+    }
+}
 
-	InterfacePoint* SwitchEvent::getInterfacePoint() {
-		return interfacePoint;
-	}
+InterfacePoint *
+SwitchEvent::getInterfacePoint ()
+{
+  return interfacePoint;
+}
 
-	short SwitchEvent::getEventType() {
-		return eventType;
-	}
+short
+SwitchEvent::getEventType ()
+{
+  return eventType;
+}
 
-	string SwitchEvent::getKey() {
-		return key;
-	}
+string
+SwitchEvent::getKey ()
+{
+  return key;
+}
 
-	void SwitchEvent::setMappedEvent(FormatterEvent* event) {
-		if (mappedEvent != NULL) {
-			mappedEvent->removeEventListener(this);
-		}
+void
+SwitchEvent::setMappedEvent (FormatterEvent *event)
+{
+  if (mappedEvent != NULL)
+    {
+      mappedEvent->removeEventListener (this);
+    }
 
-		mappedEvent = event;
-		if (mappedEvent != NULL) {
-			mappedEvent->addEventListener(this);
-		}
-	}
+  mappedEvent = event;
+  if (mappedEvent != NULL)
+    {
+      mappedEvent->addEventListener (this);
+    }
+}
 
-	FormatterEvent* SwitchEvent::getMappedEvent() {
-		return mappedEvent;
-	}
+FormatterEvent *
+SwitchEvent::getMappedEvent ()
+{
+  return mappedEvent;
+}
 
-	void SwitchEvent::eventStateChanged(
-		    void* someEvent, short transition, short previousState) {
+void
+SwitchEvent::eventStateChanged (void *someEvent, short transition,
+                                short previousState)
+{
 
-		changeState(getNewState(transition), transition);
-	}
+  changeState (getNewState (transition), transition);
+}
 
-	short SwitchEvent::getPriorityType() {
-		return IEventListener::PT_LINK;
-	}
+short
+SwitchEvent::getPriorityType ()
+{
+  return IEventListener::PT_LINK;
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_SWITCHES_END

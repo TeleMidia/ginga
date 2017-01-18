@@ -23,97 +23,119 @@ using namespace ::ginga::util;
 
 #include "Descriptor.h"
 
-
 GINGA_NCL_BEGIN
 
-  class DescriptorUtil {
-	public:
-		static short getFitCode(string fitName) {
-			if (upperCase(fitName) == upperCase("fill")) {
-  				return Descriptor::FIT_FILL;
+class DescriptorUtil
+{
+public:
+  static short
+  getFitCode (string fitName)
+  {
+    if (upperCase (fitName) == upperCase ("fill"))
+      {
+        return Descriptor::FIT_FILL;
+      }
+    else if (upperCase (fitName) == upperCase ("hidden"))
+      {
+        return Descriptor::FIT_HIDDEN;
+      }
+    else if (upperCase (fitName) == upperCase ("meet"))
+      {
+        return Descriptor::FIT_MEET;
+      }
+    else if (upperCase (fitName) == upperCase ("meetBest"))
+      {
+        return Descriptor::FIT_MEETBEST;
+      }
+    else if (upperCase (fitName) == upperCase ("slice"))
+      {
+        return Descriptor::FIT_SLICE;
+      }
+    else
+      {
+        return -1;
+      }
+  }
 
-  			} else if (upperCase(fitName) == upperCase("hidden")) {
-		  		return Descriptor::FIT_HIDDEN;
+  static string
+  getFitName (short fit)
+  {
+    switch (fit)
+      {
+      case Descriptor::FIT_FILL:
+        return "fill";
 
-		  	} else if (upperCase(fitName) == upperCase("meet")) {
-		  		return Descriptor::FIT_MEET;
+      case Descriptor::FIT_HIDDEN:
+        return "hidden";
 
-		  	} else if (upperCase(fitName) == upperCase("meetBest")) {
-		  		return Descriptor::FIT_MEETBEST;
+      case Descriptor::FIT_MEET:
+        return "meet";
 
-		  	} else if (upperCase(fitName) == upperCase("slice")) {
-		  		return Descriptor::FIT_SLICE;
+      case Descriptor::FIT_MEETBEST:
+        return "meetBest";
 
-		  	} else {
-		  		return -1;
-		  	}
-		}
+      case Descriptor::FIT_SLICE:
+        return "slice";
 
-		static string getFitName(short fit) {
-			switch (fit) {
-				case Descriptor::FIT_FILL:
-					return "fill";
+      default:
+        return "";
+      }
+  }
 
-				case Descriptor::FIT_HIDDEN:
-					return "hidden";
+  static short
+  getScrollCode (string scrollName)
+  {
+    if (upperCase (scrollName) == upperCase ("none"))
+      {
+        return Descriptor::SCROLL_NONE;
+      }
+    else if (upperCase (scrollName) == upperCase ("horizontal"))
+      {
+        return Descriptor::SCROLL_HORIZONTAL;
+      }
+    else if (upperCase (scrollName) == upperCase ("vertical"))
+      {
+        return Descriptor::SCROLL_VERTICAL;
+      }
+    else if (upperCase (scrollName) == upperCase ("both"))
+      {
+        return Descriptor::SCROLL_BOTH;
+      }
+    else if (upperCase (scrollName) == upperCase ("automatic"))
+      {
+        return Descriptor::SCROLL_AUTOMATIC;
+      }
+    else
+      {
+        return -1;
+      }
+  }
 
-				case Descriptor::FIT_MEET:
-					return "meet";
+  static string
+  getScrollName (short scroll)
+  {
+    switch (scroll)
+      {
+      case Descriptor::SCROLL_NONE:
+        return "none";
 
-				case Descriptor::FIT_MEETBEST:
-					return "meetBest";
+      case Descriptor::SCROLL_HORIZONTAL:
+        return "horizontal";
 
-				case Descriptor::FIT_SLICE:
-					return "slice";
+      case Descriptor::SCROLL_VERTICAL:
+        return "vertical";
 
-				default:
-					return "";
-			}
-		}
+      case Descriptor::SCROLL_BOTH:
+        return "both";
 
-		static short getScrollCode(string scrollName) {
-			if (upperCase(scrollName) == upperCase("none")) {
-		  		return Descriptor::SCROLL_NONE;
+      case Descriptor::SCROLL_AUTOMATIC:
+        return "automatic";
 
-		  	} else if (upperCase(scrollName) == upperCase("horizontal")) {
-		  		return Descriptor::SCROLL_HORIZONTAL;
-
-		  	} else if (upperCase(scrollName) == upperCase("vertical")) {
-		  		return Descriptor::SCROLL_VERTICAL;
-
-		  	} else if (upperCase(scrollName) == upperCase("both")) {
-		  		return Descriptor::SCROLL_BOTH;
-
-		  	} else if (upperCase(scrollName) == upperCase("automatic")) {
-		  		return Descriptor::SCROLL_AUTOMATIC;
-
-		  	} else {
-		  		return -1;
-		  	}
-		}
-
-		static string getScrollName(short scroll) {
-			switch (scroll) {
-				case Descriptor::SCROLL_NONE:
-					return "none";
-
-				case Descriptor::SCROLL_HORIZONTAL:
-					return "horizontal";
-
-				case Descriptor::SCROLL_VERTICAL:
-					return "vertical";
-
-				case Descriptor::SCROLL_BOTH:
-					return "both";
-
-				case Descriptor::SCROLL_AUTOMATIC:
-					return "automatic";
-
-				default:
-					return "";
-			}
-		}
-  };
+      default:
+        return "";
+      }
+  }
+};
 
 GINGA_NCL_END
 

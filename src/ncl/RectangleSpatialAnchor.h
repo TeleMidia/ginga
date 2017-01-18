@@ -25,23 +25,24 @@ using namespace ::ginga::ncl;
 
 GINGA_NCL_BEGIN
 
-	class RectangleSpatialAnchor : public SpatialAnchor {
-		private :
-			long left;
-			long top;
-			long width;
-			long height;
+class RectangleSpatialAnchor : public SpatialAnchor
+{
+private:
+  long left;
+  long top;
+  long width;
+  long height;
 
-		public:
-			RectangleSpatialAnchor(
-				    string id, long left, long top, long width, long height);
+public:
+  RectangleSpatialAnchor (string id, long left, long top, long width,
+                          long height);
 
-			long getLeft();
-			long getTop();
-			long getWidth();
-			long getHeight();
-			void setArea(long left, long top, long width, long height);
-	};
+  long getLeft ();
+  long getTop ();
+  long getWidth ();
+  long getHeight ();
+  void setArea (long left, long top, long width, long height);
+};
 
 GINGA_NCL_END
 

@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef LABELED_ANCHOR_H_
 #define LABELED_ANCHOR_H_
 
-
 #include "Entity.h"
 using namespace ::ginga::ncl;
 
@@ -26,16 +25,17 @@ using namespace ::ginga::ncl;
 
 GINGA_NCL_BEGIN
 
-	class LabeledAnchor : public Anchor {
-		private:
-			string label;
+class LabeledAnchor : public Anchor
+{
+private:
+  string label;
 
-		public:
-			LabeledAnchor(string id, string label);
-			string getLabel();
-			void setLabel(string label);
-	};
+public:
+  LabeledAnchor (string id, string label);
+  string getLabel ();
+  void setLabel (string label);
+};
 
 GINGA_NCL_END
 
-#endif //LABELED_ANCHOR_H_
+#endif // LABELED_ANCHOR_H_

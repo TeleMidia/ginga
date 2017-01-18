@@ -18,15 +18,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IPLAYERLISTENER_H_
 #define IPLAYERLISTENER_H_
 
-
 GINGA_PLAYER_BEGIN
 
-	class IPlayerListener {
-		public:
-			virtual ~IPlayerListener(){};
-			virtual void updateStatus(
-					short code, string parameter, short type, string value)=0;
-	};
+class IPlayerListener
+{
+public:
+  virtual ~IPlayerListener (){};
+  virtual void updateStatus (short code, string parameter, short type,
+                             string value)
+      = 0;
+};
 
 GINGA_PLAYER_END
 

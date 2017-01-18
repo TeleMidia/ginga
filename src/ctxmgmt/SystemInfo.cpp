@@ -30,123 +30,138 @@ using namespace ::ginga::system;
 
 GINGA_CTXMGMT_BEGIN
 
-SystemInfo::SystemInfo()
+SystemInfo::SystemInfo ()
 {
-  initializeClockSpeed();
+  initializeClockSpeed ();
   sysTable = NULL;
 }
 
-SystemInfo::~SystemInfo()
-{
-}
+SystemInfo::~SystemInfo () {}
 
-void SystemInfo::initializeClockSpeed()
+void
+SystemInfo::initializeClockSpeed ()
 {
   string line = "";
   clockSpeed = 0;
 }
 
-string SystemInfo::getValue (string attribute)
+string
+SystemInfo::getValue (string attribute)
 {
   map<string, string>::iterator i;
 
   if (sysTable == NULL)
     goto fail;
 
-  i = sysTable->find(attribute);
-  if (i != sysTable->end())
+  i = sysTable->find (attribute);
+  if (i != sysTable->end ())
     return i->second;
 
- fail:
+fail:
   return "";
 }
 
-void SystemInfo::printSysTable()
+void
+SystemInfo::printSysTable ()
 {
   map<string, string>::iterator i;
   clog << "SystemInfo::printSysTable " << endl;
-  i = sysTable->begin();
-  while (i != sysTable->end())
+  i = sysTable->begin ();
+  while (i != sysTable->end ())
     {
       clog << "'" << i->first << "' = '" << i->second << "'" << endl;
       ++i;
     }
 }
 
-void SystemInfo::setSystemTable (map<string, string> *sysTable)
+void
+SystemInfo::setSystemTable (map<string, string> *sysTable)
 {
   if (this->sysTable != NULL)
     delete this->sysTable;
   this->sysTable = sysTable;
 }
 
-string SystemInfo::getSystemLanguage ()
+string
+SystemInfo::getSystemLanguage ()
 {
   string value = getValue ("system.language");
   return (value != "") ? value : "por";
 }
 
-string SystemInfo::getCaptionLanguage () {
+string
+SystemInfo::getCaptionLanguage ()
+{
   string value = getValue ("system.caption");
   return (value != "") ? value : "por";
 }
 
-string SystemInfo::getSubtitleLanguage ()
+string
+SystemInfo::getSubtitleLanguage ()
 {
   string value = getValue ("system.subtitle");
   return (value != "") ? value : "por";
 }
 
-float SystemInfo::getReturnBitRate ()
+float
+SystemInfo::getReturnBitRate ()
 {
   string value = getValue ("system.returnBitRate");
   return (value != "") ? ::ginga::util::stof (value) : 0.;
 }
 
-void SystemInfo::getScreenSize (GingaScreenID screenId,
-                                int *width, int *height)
+void
+SystemInfo::getScreenSize (GingaScreenID screenId, int *width, int *height)
 {
   LocalScreenManager *dm = ScreenManagerFactory::getInstance ();
   *width = dm->getDeviceWidth (screenId);
   *height = dm->getDeviceHeight (screenId);
 }
 
-void SystemInfo::getScreenGraphicSize (GingaScreenID screenId,
-                                       int *width, int *height)
+void
+SystemInfo::getScreenGraphicSize (GingaScreenID screenId, int *width,
+                                  int *height)
 {
   LocalScreenManager *dm = ScreenManagerFactory::getInstance ();
   *width = dm->getDeviceWidth (screenId);
   *height = dm->getDeviceHeight (screenId);
 }
 
-string SystemInfo::getAudioType ()
+string
+SystemInfo::getAudioType ()
 {
   string value = getValue ("system.audioType");
   return (value != "") ? value : "stereo";
 }
 
-float SystemInfo::getCPUClock ()
+float
+SystemInfo::getCPUClock ()
 {
   return clockSpeed;
 }
 
-float SystemInfo::getMemorySize ()
+float
+SystemInfo::getMemorySize ()
 {
   return 0;
 }
 
-string SystemInfo::getJavaConfiguration ()
+string
+SystemInfo::getJavaConfiguration ()
 {
   string value = getValue ("system.javaConfiguration");
   return (value != "") ? value : "0";
 }
 
-string SystemInfo::getJavaProfile () {
+string
+SystemInfo::getJavaProfile ()
+{
   string value = getValue ("system.javaProfile");
   return (value != "") ? value : "0";
 }
 
-string SystemInfo::getLuaVersion ()
+string
+SystemInfo::getLuaVersion ()
 {
   return string ("5.1");
 }

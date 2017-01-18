@@ -22,26 +22,26 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MULTIDEVICE_BEGIN
 
-  class PassiveDeviceService : public DeviceService {
-	private:
-	public:
-		PassiveDeviceService();
-		~PassiveDeviceService();
+class PassiveDeviceService : public DeviceService
+{
+private:
+public:
+  PassiveDeviceService ();
+  ~PassiveDeviceService ();
 
-		void newDeviceConnected(unsigned int devAddr){};
-		void connectedToBaseDevice(unsigned int domainAddr);
+  void newDeviceConnected (unsigned int devAddr){};
+  void connectedToBaseDevice (unsigned int domainAddr);
 
-		bool receiveEvent(
-				unsigned int devAddr,
-				int eventType,
-				char* stream,
-				int streamSize){return false;};
-
-		bool receiveMediaContent(
-				unsigned int devAddr,
-				char* stream,
-				int streamSize);
+  bool
+  receiveEvent (unsigned int devAddr, int eventType, char *stream,
+                int streamSize)
+  {
+    return false;
   };
+
+  bool receiveMediaContent (unsigned int devAddr, char *stream,
+                            int streamSize);
+};
 
 GINGA_MULTIDEVICE_END
 

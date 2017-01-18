@@ -20,34 +20,45 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	PropertyAnchor::PropertyAnchor(string attName) : Anchor(attName) {
-		typeSet.insert("PropertyAnchor");
-		value = "";
-	}
+PropertyAnchor::PropertyAnchor (string attName) : Anchor (attName)
+{
+  typeSet.insert ("PropertyAnchor");
+  value = "";
+}
 
-	string PropertyAnchor::getPropertyName() {
-		return Anchor::getId();
-	}
+string
+PropertyAnchor::getPropertyName ()
+{
+  return Anchor::getId ();
+}
 
-	void PropertyAnchor::setPropertyName(string name) {
-		Anchor::setId(name);
-	}
+void
+PropertyAnchor::setPropertyName (string name)
+{
+  Anchor::setId (name);
+}
 
-	string PropertyAnchor::getPropertyValue() {
-		return value;
-	}
+string
+PropertyAnchor::getPropertyValue ()
+{
+  return value;
+}
 
-	void PropertyAnchor::setPropertyValue(string value) {
-		this->value = value;
-	}
+void
+PropertyAnchor::setPropertyValue (string value)
+{
+  this->value = value;
+}
 
-	PropertyAnchor* PropertyAnchor::clone() {
-		PropertyAnchor* pAnchor;
+PropertyAnchor *
+PropertyAnchor::clone ()
+{
+  PropertyAnchor *pAnchor;
 
-		pAnchor = new PropertyAnchor(Entity::getId());
-		pAnchor->setPropertyValue(value);
+  pAnchor = new PropertyAnchor (Entity::getId ());
+  pAnchor->setPropertyValue (value);
 
-		return pAnchor;
-	}
+  return pAnchor;
+}
 
 GINGA_NCL_END

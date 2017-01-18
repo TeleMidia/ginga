@@ -34,16 +34,16 @@ private:
   unsigned int objectKey;
 
 public:
-  DsmccIor();
-  void setTypeId(string typeId);
-  string getTypeId();
-  void setCarouselId(unsigned int carouselId);
-  unsigned int getCarouselId();
-  void setModuleId(unsigned int moduleId);
-  unsigned int getModuleId();
-  void setObjectKey(unsigned int objectKey);
-  unsigned int getObjectKey();
-  void print();
+  DsmccIor ();
+  void setTypeId (string typeId);
+  string getTypeId ();
+  void setCarouselId (unsigned int carouselId);
+  unsigned int getCarouselId ();
+  void setModuleId (unsigned int moduleId);
+  unsigned int getModuleId ();
+  void setObjectKey (unsigned int objectKey);
+  unsigned int getObjectKey ();
+  void print ();
 };
 
 GINGA_DATAPROC_END

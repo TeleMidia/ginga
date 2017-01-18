@@ -20,69 +20,86 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TSPARSER_BEGIN
 
-	TransportProtocolDescriptor::TransportProtocolDescriptor() {
-		protocolId = 0;
-		transportProtocolLabel = 0;
-		selectorByte = NULL;
-		selectorByteLength = 0;
-		descriptorLength = 0;
-		descriptorTag = 0x02;
-	}
+TransportProtocolDescriptor::TransportProtocolDescriptor ()
+{
+  protocolId = 0;
+  transportProtocolLabel = 0;
+  selectorByte = NULL;
+  selectorByteLength = 0;
+  descriptorLength = 0;
+  descriptorTag = 0x02;
+}
 
-	TransportProtocolDescriptor::~TransportProtocolDescriptor() {
-		if (selectorByte != NULL) {
-			delete selectorByte;
-		}
-	}
+TransportProtocolDescriptor::~TransportProtocolDescriptor ()
+{
+  if (selectorByte != NULL)
+    {
+      delete selectorByte;
+    }
+}
 
-	unsigned int TransportProtocolDescriptor::getDescriptorLength() {
-		return descriptorLength;
-	}
+unsigned int
+TransportProtocolDescriptor::getDescriptorLength ()
+{
+  return descriptorLength;
+}
 
-	unsigned char TransportProtocolDescriptor::getDescriptorTag() {
-		return descriptorTag;
-	}
+unsigned char
+TransportProtocolDescriptor::getDescriptorTag ()
+{
+  return descriptorTag;
+}
 
-	unsigned int TransportProtocolDescriptor::getSelectorByteLength() {
-		return selectorByteLength;
-	}
+unsigned int
+TransportProtocolDescriptor::getSelectorByteLength ()
+{
+  return selectorByteLength;
+}
 
-	char* TransportProtocolDescriptor::getSelectorByte() {
-		return selectorByte;
-	}
+char *
+TransportProtocolDescriptor::getSelectorByte ()
+{
+  return selectorByte;
+}
 
-	unsigned char TransportProtocolDescriptor::getTransportProtocolLabel() {
-		return transportProtocolLabel;
-	}
+unsigned char
+TransportProtocolDescriptor::getTransportProtocolLabel ()
+{
+  return transportProtocolLabel;
+}
 
-	unsigned short TransportProtocolDescriptor::getProtocolId() {
-		return protocolId;
-	}
+unsigned short
+TransportProtocolDescriptor::getProtocolId ()
+{
+  return protocolId;
+}
 
-	void TransportProtocolDescriptor::print() {
-		clog << "TransportProtocolDescriptor::print" << endl;
-	}
+void
+TransportProtocolDescriptor::print ()
+{
+  clog << "TransportProtocolDescriptor::print" << endl;
+}
 
+size_t
+TransportProtocolDescriptor::process (char *data, size_t pos)
+{
+  descriptorLength = data[pos + 1];
+  pos += 2;
 
-	size_t TransportProtocolDescriptor::process(char* data, size_t pos) {
-		descriptorLength = data[pos+1];
-		pos += 2;
+  protocolId = ((((data[pos] & 0xFF) << 8) & 0xFF00) | (data[pos + 1] & 0xFF));
+  pos += 2;
 
-		protocolId = ((((data[pos] & 0xFF ) << 8) & 0xFF00) |
-				(data[pos+1] & 0xFF));
-		pos += 2;
+  transportProtocolLabel = data[pos];
+  // pos ++;
 
-		transportProtocolLabel =  data[pos];
-		//pos ++;
+  selectorByteLength = descriptorLength - 3;
+  selectorByte = new char[selectorByteLength];
 
-		selectorByteLength = descriptorLength - 3;
-		selectorByte = new char[selectorByteLength];
+  memcpy (selectorByte, data + pos + 1, selectorByteLength);
 
-		memcpy(selectorByte, data+pos+1, selectorByteLength);
+  pos += selectorByteLength;
 
-		pos += selectorByteLength;
-
-		return pos;
-	}
+  return pos;
+}
 
 GINGA_TSPARSER_END

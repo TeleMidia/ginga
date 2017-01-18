@@ -23,19 +23,20 @@ using namespace ::ginga::tsparser;
 
 GINGA_TSPARSER_BEGIN
 
-	class StreamIdentifierDescriptor : public IMpegDescriptor {
-		protected:
-			unsigned char componentTag;
-		public:
-			StreamIdentifierDescriptor();
-			virtual ~StreamIdentifierDescriptor();
-			unsigned char getDescriptorTag();
-			unsigned int getDescriptorLength();
-			unsigned char getComponentTag();
-			void print();
-			size_t process(char* data, size_t pos);
-	};
+class StreamIdentifierDescriptor : public IMpegDescriptor
+{
+protected:
+  unsigned char componentTag;
 
+public:
+  StreamIdentifierDescriptor ();
+  virtual ~StreamIdentifierDescriptor ();
+  unsigned char getDescriptorTag ();
+  unsigned int getDescriptorLength ();
+  unsigned char getComponentTag ();
+  void print ();
+  size_t process (char *data, size_t pos);
+};
 
 GINGA_TSPARSER_END
 

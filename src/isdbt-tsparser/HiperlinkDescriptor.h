@@ -13,22 +13,22 @@ using namespace ::ginga::tsparser;
 
 GINGA_TSPARSER_BEGIN
 
-	class HiperlinkDescriptor : public IMpegDescriptor{
-		protected:
-			unsigned char hyperLinkageType;
-			unsigned char linkDestinationType;
-			unsigned char selectorLength;
-			char* selectorByte;
+class HiperlinkDescriptor : public IMpegDescriptor
+{
+protected:
+  unsigned char hyperLinkageType;
+  unsigned char linkDestinationType;
+  unsigned char selectorLength;
+  char *selectorByte;
 
-		public:
-			HiperlinkDescriptor();
-			virtual ~HiperlinkDescriptor();
-			unsigned char getDescriptorTag();
-			unsigned int getDescriptorLength();
-			void print();
-			size_t process(char* data, size_t pos);
-	};
-
+public:
+  HiperlinkDescriptor ();
+  virtual ~HiperlinkDescriptor ();
+  unsigned char getDescriptorTag ();
+  unsigned int getDescriptorLength ();
+  void print ();
+  size_t process (char *data, size_t pos);
+};
 
 GINGA_TSPARSER_END
 

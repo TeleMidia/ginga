@@ -23,40 +23,50 @@ using namespace ::ginga::ncl;
 
 GINGA_NCL_BEGIN
 
-	RectangleSpatialAnchor::RectangleSpatialAnchor(
-		    string id, long left, long top, long width, long height)
-				    : SpatialAnchor(id) {
+RectangleSpatialAnchor::RectangleSpatialAnchor (string id, long left, long top,
+                                                long width, long height)
+    : SpatialAnchor (id)
+{
 
-		this->left = left;
-		this->top = top;
-		this->width = width;
-		this->height = height;
-		typeSet.insert("RectangleSpatialAnchor");
-	}
+  this->left = left;
+  this->top = top;
+  this->width = width;
+  this->height = height;
+  typeSet.insert ("RectangleSpatialAnchor");
+}
 
-	long RectangleSpatialAnchor::getLeft() {
-		return left;
-	}
+long
+RectangleSpatialAnchor::getLeft ()
+{
+  return left;
+}
 
-	long RectangleSpatialAnchor::getTop() {
-		return top;
-	}
+long
+RectangleSpatialAnchor::getTop ()
+{
+  return top;
+}
 
-	long RectangleSpatialAnchor::getWidth() {
-		return width;
-	}
+long
+RectangleSpatialAnchor::getWidth ()
+{
+  return width;
+}
 
-	long RectangleSpatialAnchor::getHeight() {
-		return height;
-	}
+long
+RectangleSpatialAnchor::getHeight ()
+{
+  return height;
+}
 
-	void RectangleSpatialAnchor::setArea(
-		    long left, long top, long width, long height) {
+void
+RectangleSpatialAnchor::setArea (long left, long top, long width, long height)
+{
 
-		this->left = left;
-		this->top = top;
-		this->width = width;
-		this->height = height;
-	}
+  this->left = left;
+  this->top = top;
+  this->width = width;
+  this->height = height;
+}
 
 GINGA_NCL_END

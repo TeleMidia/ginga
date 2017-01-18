@@ -33,102 +33,101 @@ using namespace ::ginga::system;
 #include "IInputEventListener.h"
 #include "IMotionEventListener.h"
 
-
-
-typedef struct lockedLitenerAction {
-	::ginga::mb::IInputEventListener* l;
-	bool isAdd;
-	set<int>* events;
+typedef struct lockedLitenerAction
+{
+  ::ginga::mb::IInputEventListener *l;
+  bool isAdd;
+  set<int> *events;
 } LockedAction;
 
 GINGA_MB_BEGIN
 
-	class InputManager : public Thread {
-		protected:
-			map<IInputEventListener*, set<int>*> eventListeners;
-			vector<LockedAction*> actionsToInpListeners;
-			set<IInputEventListener*> applicationListeners;
-			vector<LockedAction*> actionsToAppListeners;
+class InputManager : public Thread
+{
+protected:
+  map<IInputEventListener *, set<int> *> eventListeners;
+  vector<LockedAction *> actionsToInpListeners;
+  set<IInputEventListener *> applicationListeners;
+  vector<LockedAction *> actionsToAppListeners;
 
-			set<IMotionEventListener*> motionListeners;
+  set<IMotionEventListener *> motionListeners;
 
-			ICmdEventListener* cmdListener;
+  ICmdEventListener *cmdListener;
 
-			pthread_mutex_t mlMutex;
+  pthread_mutex_t mlMutex;
 
-			bool running;
-			bool notifying;
-			bool notifyingApp;
-			SDLEventBuffer* eventBuffer;
-			double lastEventTime;
-			double imperativeIntervalTime;
-			double declarativeIntervalTime;
-			GingaScreenID myScreen;
+  bool running;
+  bool notifying;
+  bool notifyingApp;
+  SDLEventBuffer *eventBuffer;
+  double lastEventTime;
+  double imperativeIntervalTime;
+  double declarativeIntervalTime;
+  GingaScreenID myScreen;
 
-			int currentXAxis;
-			int currentYAxis;
-			int currentZAxis;
-			int maxX;
-			int maxY;
+  int currentXAxis;
+  int currentYAxis;
+  int currentZAxis;
+  int maxX;
+  int maxY;
 
-			pthread_mutex_t actAppMutex;
-			pthread_mutex_t actInpMutex;
+  pthread_mutex_t actAppMutex;
+  pthread_mutex_t actInpMutex;
 
-			pthread_mutex_t appMutex;
+  pthread_mutex_t appMutex;
 
-		public:
-			InputManager(GingaScreenID screenId);
-			~InputManager();
+public:
+  InputManager (GingaScreenID screenId);
+  ~InputManager ();
 
-		protected:
-			void initializeInputIntervalTime();
+protected:
+  void initializeInputIntervalTime ();
 
-			void release();
+  void release ();
 
-		public:
-			void addMotionEventListener(IMotionEventListener* listener);
-			void removeMotionEventListener(IMotionEventListener* listener);
+public:
+  void addMotionEventListener (IMotionEventListener *listener);
+  void removeMotionEventListener (IMotionEventListener *listener);
 
-		protected:
-			virtual void notifyMotionListeners(int x, int y, int z);
+protected:
+  virtual void notifyMotionListeners (int x, int y, int z);
 
-		public:
-			void addInputEventListener(
-					IInputEventListener* listener, set<int>* events=NULL);
+public:
+  void addInputEventListener (IInputEventListener *listener,
+                              set<int> *events = NULL);
 
-			void removeInputEventListener(IInputEventListener* listener);
+  void removeInputEventListener (IInputEventListener *listener);
 
-		public:
-			void setCommandEventListener(ICmdEventListener* listener);
+public:
+  void setCommandEventListener (ICmdEventListener *listener);
 
-		protected:
-			void performInputLockedActions();
-			void performApplicationLockedActions();
-			virtual bool dispatchEvent(SDLInputEvent* keyEvent);
-			virtual bool dispatchApplicationEvent(SDLInputEvent* keyEvent);
+protected:
+  void performInputLockedActions ();
+  void performApplicationLockedActions ();
+  virtual bool dispatchEvent (SDLInputEvent *keyEvent);
+  virtual bool dispatchApplicationEvent (SDLInputEvent *keyEvent);
 
-		public:
-			void addApplicationInputEventListener(IInputEventListener* listener);
-			void removeApplicationInputEventListener(
-					IInputEventListener* listener);
+public:
+  void addApplicationInputEventListener (IInputEventListener *listener);
+  void removeApplicationInputEventListener (IInputEventListener *listener);
 
-			void postInputEvent(SDLInputEvent* event);
-			void postInputEvent(int keyCode);
-			void postCommand(string cmd, string args);
+  void postInputEvent (SDLInputEvent *event);
+  void postInputEvent (int keyCode);
+  void postCommand (string cmd, string args);
 
-			void setAxisValues(int x, int y, int z);
-			void setAxisBoundaries(int x, int y, int z);
-			int getCurrentXAxisValue();
-			int getCurrentYAxisValue();
+  void setAxisValues (int x, int y, int z);
+  void setAxisBoundaries (int x, int y, int z);
+  int getCurrentXAxisValue ();
+  int getCurrentYAxisValue ();
 
-			SDLEventBuffer* getEventBuffer();
+  SDLEventBuffer *getEventBuffer ();
 
-		protected:
-			virtual void run();
-			void handleInputEvent (
-				SDLInputEvent *inputEvent, int& pLastCode, int& lastCode,
-				double& pTimeStamp, double& timeStamp, int& mouseX, int& mouseY);
-	};
+protected:
+  virtual void run ();
+  void handleInputEvent (SDLInputEvent *inputEvent, int &pLastCode,
+                         int &lastCode, double &pTimeStamp, double &timeStamp,
+                         int &mouseX, int &mouseY);
+};
 
 GINGA_MB_END
 

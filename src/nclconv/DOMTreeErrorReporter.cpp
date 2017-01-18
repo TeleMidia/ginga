@@ -17,35 +17,39 @@
 #include "config.h"
 #include "DOMTreeErrorReporter.h"
 
-
-void DOMTreeErrorReporter::warning(const SAXParseException&)
+void
+DOMTreeErrorReporter::warning (const SAXParseException &)
 {
-    //
-    // Ignore all warnings.
-    //
+  //
+  // Ignore all warnings.
+  //
 }
 
-void DOMTreeErrorReporter::error(const SAXParseException& toCatch)
+void
+DOMTreeErrorReporter::error (const SAXParseException &toCatch)
 {
-    fSawErrors = true;
-    XERCES_STD_QUALIFIER cerr << "Error at file \"" << StrX(toCatch.getSystemId())
-		 << "\", line " << toCatch.getLineNumber()
-		 << ", column " << toCatch.getColumnNumber()
-         << "\n   Message: " << StrX(toCatch.getMessage()) << XERCES_STD_QUALIFIER endl;
+  fSawErrors = true;
+  XERCES_STD_QUALIFIER cerr
+      << "Error at file \"" << StrX (toCatch.getSystemId ()) << "\", line "
+      << toCatch.getLineNumber () << ", column " << toCatch.getColumnNumber ()
+      << "\n   Message: " << StrX (toCatch.getMessage ())
+      << XERCES_STD_QUALIFIER endl;
 }
 
-void DOMTreeErrorReporter::fatalError(const SAXParseException& toCatch)
+void
+DOMTreeErrorReporter::fatalError (const SAXParseException &toCatch)
 {
-    fSawErrors = true;
-    XERCES_STD_QUALIFIER cerr << "Fatal Error at file \"" << StrX(toCatch.getSystemId())
-		 << "\", line " << toCatch.getLineNumber()
-		 << ", column " << toCatch.getColumnNumber()
-         << "\n   Message: " << StrX(toCatch.getMessage()) << XERCES_STD_QUALIFIER endl;
+  fSawErrors = true;
+  XERCES_STD_QUALIFIER cerr << "Fatal Error at file \""
+                            << StrX (toCatch.getSystemId ()) << "\", line "
+                            << toCatch.getLineNumber () << ", column "
+                            << toCatch.getColumnNumber ()
+                            << "\n   Message: " << StrX (toCatch.getMessage ())
+                            << XERCES_STD_QUALIFIER endl;
 }
 
-void DOMTreeErrorReporter::resetErrors()
+void
+DOMTreeErrorReporter::resetErrors ()
 {
-    fSawErrors = false;
+  fSawErrors = false;
 }
-
-

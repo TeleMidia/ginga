@@ -20,8 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	Anchor::Anchor(string id) : InterfacePoint(id) {
-		typeSet.insert("Anchor");
-	}
+Anchor::Anchor (string id) : InterfacePoint (id) { typeSet.insert ("Anchor"); }
 
 GINGA_NCL_END

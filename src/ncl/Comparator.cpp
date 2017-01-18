@@ -20,169 +20,184 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	bool Comparator::evaluate(
-		    string first,
-		    string second,
-		    short comparator) { //2 object -> comparable
+bool
+Comparator::evaluate (string first, string second, short comparator)
+{ // 2 object -> comparable
 
-		if (first == "" || second == "") {
-			return false;
-		}
+  if (first == "" || second == "")
+    {
+      return false;
+    }
 
-		int ret;
-		ret = first.compare(second);
-		switch (comparator) {
-			case CMP_EQ:
-				if (ret == 0)
-					return true;
-				else
-					return false;
+  int ret;
+  ret = first.compare (second);
+  switch (comparator)
+    {
+    case CMP_EQ:
+      if (ret == 0)
+        return true;
+      else
+        return false;
 
-			case CMP_NE:
-				if (ret == 0)
-					return false;
-				else
-					return true;
+    case CMP_NE:
+      if (ret == 0)
+        return false;
+      else
+        return true;
 
-			case CMP_LT:
-				if (ret < 0)
-					return true;
-				else
-					return false;
+    case CMP_LT:
+      if (ret < 0)
+        return true;
+      else
+        return false;
 
-			case CMP_LTE:
-				if (ret <= 0)
-					return true;
-				else
-					return false;
+    case CMP_LTE:
+      if (ret <= 0)
+        return true;
+      else
+        return false;
 
-			case CMP_GT:
-				if (ret > 0)
-					return true;
-				else
-					return false;
+    case CMP_GT:
+      if (ret > 0)
+        return true;
+      else
+        return false;
 
-			case CMP_GTE:
-				if (ret >= 0)
-					return true;
-				else
-					return false;
+    case CMP_GTE:
+      if (ret >= 0)
+        return true;
+      else
+        return false;
 
-			default:
-				return false;
-		}
-	}
+    default:
+      return false;
+    }
+}
 
-	bool Comparator::evaluate(
-		    float first,
-		    float second,
-		    short comparator) { //2 object -> comparable
+bool
+Comparator::evaluate (float first, float second, short comparator)
+{ // 2 object -> comparable
 
-		int ret;
-		if (first == second)
-			ret = 0;
-		else if (first < second)
-			ret = -1;
-		else
-			ret = 1;
+  int ret;
+  if (first == second)
+    ret = 0;
+  else if (first < second)
+    ret = -1;
+  else
+    ret = 1;
 
-		switch (comparator) {
-			case CMP_EQ:
-				if (ret == 0)
-					return true;
-				else
-					return false;
+  switch (comparator)
+    {
+    case CMP_EQ:
+      if (ret == 0)
+        return true;
+      else
+        return false;
 
-			case CMP_NE:
-				if (ret == 0)
-					return false;
-				else
-					return true;
+    case CMP_NE:
+      if (ret == 0)
+        return false;
+      else
+        return true;
 
-			case CMP_LT:
-				if (ret < 0)
-					return true;
-				else
-					return false;
+    case CMP_LT:
+      if (ret < 0)
+        return true;
+      else
+        return false;
 
-			case CMP_LTE:
-				if (ret <= 0)
-					return true;
-				else
-					return false;
+    case CMP_LTE:
+      if (ret <= 0)
+        return true;
+      else
+        return false;
 
-			case CMP_GT:
-				if (ret > 0)
-					return true;
-				else
-					return false;
+    case CMP_GT:
+      if (ret > 0)
+        return true;
+      else
+        return false;
 
-			case CMP_GTE:
-				if (ret >= 0)
-					return true;
-				else
-					return false;
+    case CMP_GTE:
+      if (ret >= 0)
+        return true;
+      else
+        return false;
 
-			default:
-				return false;
-		}
-	}
+    default:
+      return false;
+    }
+}
 
-	string Comparator::toString(short comparator) {
+string
+Comparator::toString (short comparator)
+{
 
-		switch (comparator) {
-			case Comparator::CMP_EQ:
-				return "eq";
+  switch (comparator)
+    {
+    case Comparator::CMP_EQ:
+      return "eq";
 
-			case Comparator::CMP_NE:
-				return "ne";
+    case Comparator::CMP_NE:
+      return "ne";
 
-			case Comparator::CMP_GT:
-				return "gt";
+    case Comparator::CMP_GT:
+      return "gt";
 
-			case Comparator::CMP_GTE:
-				return "gte";
+    case Comparator::CMP_GTE:
+      return "gte";
 
-			case Comparator::CMP_LT:
-				return "lt";
+    case Comparator::CMP_LT:
+      return "lt";
 
-			case Comparator::CMP_LTE:
-				return "lte";
+    case Comparator::CMP_LTE:
+      return "lte";
 
-			default :
-				return "eq";
-		}
-	}
+    default:
+      return "eq";
+    }
+}
 
-	short Comparator::fromString(string comp) {
-		string comparator = comp;
-		for(unsigned i =0; i<comparator.length(); i++) {
-			if(comparator[i]>='A' && comparator[i]<='Z') {
-				comparator[i] = comparator[i] - 'A' + 'a';
-			}
-		}
+short
+Comparator::fromString (string comp)
+{
+  string comparator = comp;
+  for (unsigned i = 0; i < comparator.length (); i++)
+    {
+      if (comparator[i] >= 'A' && comparator[i] <= 'Z')
+        {
+          comparator[i] = comparator[i] - 'A' + 'a';
+        }
+    }
 
-		if (comparator=="eq") {
-  			return Comparator::CMP_EQ;
-		}
-  		else if (comparator=="ne") {
-  			return Comparator::CMP_NE;
-	  	}
-	  	else if (comparator=="gt") {
-	  		return Comparator::CMP_GT;
-	  	}
-	  	else if (comparator=="lt") {
-	  		return Comparator::CMP_LT;
-	  	}
-	  	else if (comparator=="gte") {
-	  		return Comparator::CMP_GTE;
-	  	}
-	  	else if (comparator=="lte") {
-	  		return Comparator::CMP_LTE;
-	  	}
-	  	else {
-	  		return Comparator::CMP_EQ;
-	  	}
-	}
+  if (comparator == "eq")
+    {
+      return Comparator::CMP_EQ;
+    }
+  else if (comparator == "ne")
+    {
+      return Comparator::CMP_NE;
+    }
+  else if (comparator == "gt")
+    {
+      return Comparator::CMP_GT;
+    }
+  else if (comparator == "lt")
+    {
+      return Comparator::CMP_LT;
+    }
+  else if (comparator == "gte")
+    {
+      return Comparator::CMP_GTE;
+    }
+  else if (comparator == "lte")
+    {
+      return Comparator::CMP_LTE;
+    }
+  else
+    {
+      return Comparator::CMP_EQ;
+    }
+}
 
 GINGA_NCL_END

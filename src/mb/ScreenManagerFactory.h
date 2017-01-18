@@ -22,14 +22,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-
-class ScreenManagerFactory {
+class ScreenManagerFactory
+{
 public:
-	static LocalScreenManager* getInstance(bool forceLocal = false);
+  static LocalScreenManager *getInstance (bool forceLocal = false);
 
-	static void releaseInstance ();
+  static void releaseInstance ();
 
-	static LocalScreenManager* _instance;
+  static LocalScreenManager *_instance;
 };
 
 GINGA_MB_END

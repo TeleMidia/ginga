@@ -20,42 +20,50 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_DATAPROC_BEGIN
 
-DsmccStreamMode::DsmccStreamMode() : DsmccMpegDescriptor(0x03) {
-	streamMode = 0;
-	descriptorLength = 2;
+DsmccStreamMode::DsmccStreamMode () : DsmccMpegDescriptor (0x03)
+{
+  streamMode = 0;
+  descriptorLength = 2;
 }
 
-DsmccStreamMode::~DsmccStreamMode() {
+DsmccStreamMode::~DsmccStreamMode () {}
 
+int
+DsmccStreamMode::process ()
+{
+  int pos = DsmccMpegDescriptor::process ();
+  streamMode = stream[pos++] & 0xFF;
+  return 0;
 }
 
-int DsmccStreamMode::process() {
-	int pos = DsmccMpegDescriptor::process();
-	streamMode = stream[pos++] & 0xFF;
-	return 0;
+int
+DsmccStreamMode::updateStream ()
+{
+  int pos = DsmccMpegDescriptor::updateStream ();
+
+  stream[pos++] = streamMode & 0xFF;
+  stream[pos++] = 0xFF;
+
+  return pos;
 }
 
-int DsmccStreamMode::updateStream() {
-	int pos = DsmccMpegDescriptor::updateStream();
-
-	stream[pos++] = streamMode & 0xFF;
-	stream[pos++] = 0xFF;
-
-	return pos;
+unsigned int
+DsmccStreamMode::calculateDescriptorSize ()
+{
+  int pos = DsmccMpegDescriptor::calculateDescriptorSize ();
+  return pos + 2;
 }
 
-unsigned int DsmccStreamMode::calculateDescriptorSize() {
-	int pos = DsmccMpegDescriptor::calculateDescriptorSize();
-	return pos + 2;
+unsigned char
+DsmccStreamMode::getStreamMode ()
+{
+  return streamMode;
 }
 
-unsigned char DsmccStreamMode::getStreamMode() {
-	return streamMode;
+void
+DsmccStreamMode::setStreamMode (unsigned char mode)
+{
+  streamMode = mode;
 }
-
-void DsmccStreamMode::setStreamMode(unsigned char mode) {
-	streamMode = mode;
-}
-
 
 GINGA_DATAPROC_END

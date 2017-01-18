@@ -35,189 +35,206 @@ using namespace ::ginga::mb;
 
 #include "IPlayer.h"
 
-
 #ifndef HAVE_CLOCKTIME
 #define HAVE_CLOCKTIME 1
 #endif
 
-
 GINGA_PLAYER_BEGIN
 
-	typedef struct LockedPlayerLitenerAction {
-		::ginga::player::IPlayerListener* l;
-		bool isAdd;
-	} LockedPlayerListener;
+typedef struct LockedPlayerLitenerAction
+{
+  ::ginga::player::IPlayerListener *l;
+  bool isAdd;
+} LockedPlayerListener;
 
-	typedef struct PendingNotification {
-		short code;
-		string parameter;
-		short type;
-		string value;
+typedef struct PendingNotification
+{
+  short code;
+  string parameter;
+  short type;
+  string value;
 
-		set<IPlayerListener*>* clone;
-	} PendingNotification;
-	class Player : public IPlayer {
-		private:
-			pthread_mutex_t listM;
-			pthread_mutex_t lockedListM;
-			pthread_mutex_t referM;
-			pthread_mutex_t pnMutex;
+  set<IPlayerListener *> *clone;
+} PendingNotification;
+class Player : public IPlayer
+{
+private:
+  pthread_mutex_t listM;
+  pthread_mutex_t lockedListM;
+  pthread_mutex_t referM;
+  pthread_mutex_t pnMutex;
 
-			bool notifying;
+  bool notifying;
 
-			map<string, string> properties;
-			set<IPlayerListener*> listeners;
-			vector<LockedPlayerListener*> lockedListeners;
-			vector<PendingNotification*> pendingNotifications;
+  map<string, string> properties;
+  set<IPlayerListener *> listeners;
+  vector<LockedPlayerListener *> lockedListeners;
+  vector<PendingNotification *> pendingNotifications;
 
-		protected:
-			GingaScreenID myScreen;
-			short status;
-			static const short NONE = 0;
-			static const short PLAY = 1;
-			static const short PAUSE = 2;
-			static const short STOP = 3;
+protected:
+  GingaScreenID myScreen;
+  short status;
+  static const short NONE = 0;
+  static const short PLAY = 1;
+  static const short PAUSE = 2;
+  static const short STOP = 3;
 
-			string mrl;
-			static LocalScreenManager* dm;
-			GingaSurfaceID surface;
-			GingaWindowID outputWindow;
-			double initTime, elapsedTime, elapsedPause, pauseTime;
-			set<IPlayer*> referredPlayers;
-			IPlayer* timeBasePlayer;
-			bool presented;
-			bool visible;
-			bool immediatelyStartVar;
-			bool forcedNaturalEnd;
-			bool notifyContentUpdate;
-			string scope;
-			short scopeType;
-			double scopeInitTime;
-			double scopeEndTime;
-			double outTransTime;
-			IPlayer* mirrorSrc;
-			set<IPlayer*> mirrors;
+  string mrl;
+  static LocalScreenManager *dm;
+  GingaSurfaceID surface;
+  GingaWindowID outputWindow;
+  double initTime, elapsedTime, elapsedPause, pauseTime;
+  set<IPlayer *> referredPlayers;
+  IPlayer *timeBasePlayer;
+  bool presented;
+  bool visible;
+  bool immediatelyStartVar;
+  bool forcedNaturalEnd;
+  bool notifyContentUpdate;
+  string scope;
+  short scopeType;
+  double scopeInitTime;
+  double scopeEndTime;
+  double outTransTime;
+  IPlayer *mirrorSrc;
+  set<IPlayer *> mirrors;
 
-		public:
-			Player(GingaScreenID screenId, string mrl);
-			virtual ~Player();
+public:
+  Player (GingaScreenID screenId, string mrl);
+  virtual ~Player ();
 
-			inline GingaScreenID getScreenID () const { return myScreen; }
-			void setMirrorSrc(IPlayer* mirrorSrc);
+  inline GingaScreenID
+  getScreenID () const
+  {
+    return myScreen;
+  }
+  void setMirrorSrc (IPlayer *mirrorSrc);
 
-		private:
-			void addMirror(IPlayer* mirror);
-			bool removeMirror(IPlayer* mirror);
+private:
+  void addMirror (IPlayer *mirror);
+  bool removeMirror (IPlayer *mirror);
 
-		public:
-			virtual void flip(){};
-			virtual void setMrl(string mrl, bool visible=true);
-			virtual void reset(){};
-			virtual void rebase(){};
-			virtual void setNotifyContentUpdate(bool notify);
-			virtual void addListener(IPlayerListener* listener);
-			void removeListener(IPlayerListener* listener);
+public:
+  virtual void flip (){};
+  virtual void setMrl (string mrl, bool visible = true);
+  virtual void reset (){};
+  virtual void rebase (){};
+  virtual void setNotifyContentUpdate (bool notify);
+  virtual void addListener (IPlayerListener *listener);
+  void removeListener (IPlayerListener *listener);
 
-		private:
-			void performLockedListenersRequest();
+private:
+  void performLockedListenersRequest ();
 
-		public:
-			void notifyPlayerListeners(
-					short code,
-					string parameter="",
-					short type=TYPE_PRESENTATION,
-					string value="");
+public:
+  void notifyPlayerListeners (short code, string parameter = "",
+                              short type = TYPE_PRESENTATION,
+                              string value = "");
 
-		private:
-			static void* detachedNotifier(void* ptr);
-			static void ntsNotifyPlayerListeners(
-					set<IPlayerListener*>* list,
-					short code, string parameter, short type, string value);
+private:
+  static void *detachedNotifier (void *ptr);
+  static void ntsNotifyPlayerListeners (set<IPlayerListener *> *list,
+                                        short code, string parameter,
+                                        short type, string value);
 
-		public:
-			virtual void setSurface(GingaSurfaceID surface);
-			virtual GingaSurfaceID getSurface();
+public:
+  virtual void setSurface (GingaSurfaceID surface);
+  virtual GingaSurfaceID getSurface ();
 
-			virtual void setMediaTime(double newTime);
-			virtual int64_t getVPts() {
-				clog << "Player::getVPts return 0" << endl;
-				return 0;
-			};
+  virtual void setMediaTime (double newTime);
+  virtual int64_t
+  getVPts ()
+  {
+    clog << "Player::getVPts return 0" << endl;
+    return 0;
+  };
 
 #if HAVE_CLOCKTIME
-			double getMediaTime();
+  double getMediaTime ();
 #else
-			virtual double getMediaTime();
+  virtual double getMediaTime ();
 #endif
 
-			virtual double getTotalMediaTime();
+  virtual double getTotalMediaTime ();
 
-			virtual bool setKeyHandler(bool isHandler);
-			virtual void setScope(
-					string scope,
-					short type=TYPE_PRESENTATION,
-					double begin=-1, double end=-1, double outTransDur=-1);
+  virtual bool setKeyHandler (bool isHandler);
+  virtual void setScope (string scope, short type = TYPE_PRESENTATION,
+                         double begin = -1, double end = -1,
+                         double outTransDur = -1);
 
-		private:
-			void mirrorIt(Player* mirrorSrc, Player* mirror);
-			void checkMirrors();
+private:
+  void mirrorIt (Player *mirrorSrc, Player *mirror);
+  void checkMirrors ();
 
-		public:
-			virtual bool play();
-			virtual void stop();
-			virtual void abort();
-			virtual void pause();
-			virtual void resume();
-			virtual string getPropertyValue(string name);
-			virtual void setPropertyValue(string name, string value);
+public:
+  virtual bool play ();
+  virtual void stop ();
+  virtual void abort ();
+  virtual void pause ();
+  virtual void resume ();
+  virtual string getPropertyValue (string name);
+  virtual void setPropertyValue (string name, string value);
 
-			virtual void setReferenceTimePlayer(IPlayer* player){};
+  virtual void setReferenceTimePlayer (IPlayer *player){};
 
-			void addTimeReferPlayer(IPlayer* referPlayer);
-			void removeTimeReferPlayer(IPlayer* referPlayer);
-			void notifyReferPlayers(int transition);
-			void timebaseObjectTransitionCallback(int transition);
-			void setTimeBasePlayer(IPlayer* timeBasePlayer);
-			virtual bool hasPresented();
-			void setPresented(bool presented);
-			bool isVisible();
-			void setVisible(bool visible);
-			bool immediatelyStart();
-			void setImmediatelyStart(bool immediatelyStartVal);
+  void addTimeReferPlayer (IPlayer *referPlayer);
+  void removeTimeReferPlayer (IPlayer *referPlayer);
+  void notifyReferPlayers (int transition);
+  void timebaseObjectTransitionCallback (int transition);
+  void setTimeBasePlayer (IPlayer *timeBasePlayer);
+  virtual bool hasPresented ();
+  void setPresented (bool presented);
+  bool isVisible ();
+  void setVisible (bool visible);
+  bool immediatelyStart ();
+  void setImmediatelyStart (bool immediatelyStartVal);
 
-		protected:
-			void checkScopeTime();
+protected:
+  void checkScopeTime ();
 
-		private:
-			static void* scopeTimeHandler(void* ptr);
+private:
+  static void *scopeTimeHandler (void *ptr);
 
-		public:
-			void forceNaturalEnd(bool forceIt);
-			bool isForcedNaturalEnd();
-			virtual bool setOutWindow(GingaWindowID windowId);
+public:
+  void forceNaturalEnd (bool forceIt);
+  bool isForcedNaturalEnd ();
+  virtual bool setOutWindow (GingaWindowID windowId);
 
-			/*Exclusive for ChannelPlayer*/
-			virtual IPlayer* getSelectedPlayer(){return NULL;};
-			virtual void setPlayerMap(map<string, IPlayer*>* objs){};
-			virtual map<string, IPlayer*>* getPlayerMap(){return NULL;};
-			virtual IPlayer* getPlayer(string objectId){return NULL;};
-			virtual void select(IPlayer* selObject){};
+  /*Exclusive for ChannelPlayer*/
+  virtual IPlayer *
+  getSelectedPlayer ()
+  {
+    return NULL;
+  };
+  virtual void setPlayerMap (map<string, IPlayer *> *objs){};
+  virtual map<string, IPlayer *> *
+  getPlayerMap ()
+  {
+    return NULL;
+  };
+  virtual IPlayer *
+  getPlayer (string objectId)
+  {
+    return NULL;
+  };
+  virtual void select (IPlayer *selObject){};
 
-			/*Exclusive for Application Players*/
-			virtual void setCurrentScope(string scopeId){};
+  /*Exclusive for Application Players*/
+  virtual void setCurrentScope (string scopeId){};
 
-			virtual void timeShift(string direction){};
-	};
+  virtual void timeShift (string direction){};
+};
 
 GINGA_PLAYER_END
 
 using namespace ::ginga::player;
 
-struct notify {
-	IPlayerListener* listener;
-	short code;
-	string param;
-	short type;
+struct notify
+{
+  IPlayerListener *listener;
+  short code;
+  string param;
+  short type;
 };
 
 #endif /*PLAYER_H_*/

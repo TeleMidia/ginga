@@ -42,94 +42,86 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
 #include "CascadingDescriptor.h"
 #include "ExecutionObject.h"
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
 
-	class CompositeExecutionObject :
-			public ExecutionObject, public LinkListener, public IEventListener,
-			public Thread {
+class CompositeExecutionObject : public ExecutionObject,
+                                 public LinkListener,
+                                 public IEventListener,
+                                 public Thread
+{
 
-		private:
-			static const short mSleepTime = 800;
-			set<FormatterLink*> links;
-			set<Link*> uncompiledLinks;
+private:
+  static const short mSleepTime = 800;
+  set<FormatterLink *> links;
+  set<Link *> uncompiledLinks;
 
-			set<FormatterEvent*> runningEvents; // child events occurring
-			set<FormatterEvent*> pausedEvents;  // child events paused
-			short lastTransition;
+  set<FormatterEvent *> runningEvents; // child events occurring
+  set<FormatterEvent *> pausedEvents;  // child events paused
+  short lastTransition;
 
-			map<FormatterLink*, int> pendingLinks;
-			bool running;
+  map<FormatterLink *, int> pendingLinks;
+  bool running;
 
-			map<string, ExecutionObject*> execObjList;
+  map<string, ExecutionObject *> execObjList;
 
-			pthread_mutex_t compositeMutex;
-			pthread_mutex_t parentMutex;
-			pthread_mutex_t stlMutex;
+  pthread_mutex_t compositeMutex;
+  pthread_mutex_t parentMutex;
+  pthread_mutex_t stlMutex;
 
-		public:
-			CompositeExecutionObject(
-					string id,
-					Node *dataObject,
-					bool handling,
-					ILinkActionListener* seListener);
+public:
+  CompositeExecutionObject (string id, Node *dataObject, bool handling,
+                            ILinkActionListener *seListener);
 
-			CompositeExecutionObject(
-					string id,
-					Node *dataObject,
-					CascadingDescriptor *descriptor,
-					bool handling,
-					ILinkActionListener* seListener);
+  CompositeExecutionObject (string id, Node *dataObject,
+                            CascadingDescriptor *descriptor, bool handling,
+                            ILinkActionListener *seListener);
 
-			virtual ~CompositeExecutionObject();
+  virtual ~CompositeExecutionObject ();
 
-		protected:
-			void initializeCompositeExecutionObject(
-					string id,
-					Node *dataObject,
-					CascadingDescriptor *descriptor);
+protected:
+  void initializeCompositeExecutionObject (string id, Node *dataObject,
+                                           CascadingDescriptor *descriptor);
 
-		public:
-			CompositeExecutionObject* getParentFromDataObject(Node* dataObject);
-			void suspendLinkEvaluation(bool suspend);
-			bool addExecutionObject(ExecutionObject *execObj);
-			bool containsExecutionObject(string execObjId);
-			ExecutionObject* getExecutionObject(string execObjId);
-			map<string, ExecutionObject*>* getExecutionObjects();
-			map<string, ExecutionObject*>* recursivellyGetExecutionObjects();
-			int getNumExecutionObjects();
-			bool removeExecutionObject(ExecutionObject* execObj);
-			set<Link*>* getUncompiledLinks();
-			bool containsUncompiledLink(Link* dataLink);
-			void removeLinkUncompiled(Link* ncmLink);
-			void setLinkCompiled(FormatterLink *formatterLink);
-			void addNcmLink(Link *ncmLink);
-			void removeNcmLink(Link *ncmLink);
-			void setAllLinksAsUncompiled(bool isRecursive);
-			void setParentsAsListeners();
-			void unsetParentsAsListeners();
-			void eventStateChanged(
-					void* event, short transition, short previousState);
+public:
+  CompositeExecutionObject *getParentFromDataObject (Node *dataObject);
+  void suspendLinkEvaluation (bool suspend);
+  bool addExecutionObject (ExecutionObject *execObj);
+  bool containsExecutionObject (string execObjId);
+  ExecutionObject *getExecutionObject (string execObjId);
+  map<string, ExecutionObject *> *getExecutionObjects ();
+  map<string, ExecutionObject *> *recursivellyGetExecutionObjects ();
+  int getNumExecutionObjects ();
+  bool removeExecutionObject (ExecutionObject *execObj);
+  set<Link *> *getUncompiledLinks ();
+  bool containsUncompiledLink (Link *dataLink);
+  void removeLinkUncompiled (Link *ncmLink);
+  void setLinkCompiled (FormatterLink *formatterLink);
+  void addNcmLink (Link *ncmLink);
+  void removeNcmLink (Link *ncmLink);
+  void setAllLinksAsUncompiled (bool isRecursive);
+  void setParentsAsListeners ();
+  void unsetParentsAsListeners ();
+  void eventStateChanged (void *event, short transition, short previousState);
 
-			short getPriorityType();
+  short getPriorityType ();
 
-			void linkEvaluationStarted(FormatterCausalLink *link);
-			void linkEvaluationFinished(FormatterCausalLink *link, bool start);
+  void linkEvaluationStarted (FormatterCausalLink *link);
+  void linkEvaluationFinished (FormatterCausalLink *link, bool start);
 
-			bool setPropertyValue(AttributionEvent* event, string value);
+  bool setPropertyValue (AttributionEvent *event, string value);
 
-		private:
-			void checkLinkConditions();
-			void run();
-			void listRunningObjects();
-			void listPendingLinks();
+private:
+  void checkLinkConditions ();
+  void run ();
+  void listRunningObjects ();
+  void listPendingLinks ();
 
-			void lockComposite();
-			void unlockComposite();
+  void lockComposite ();
+  void unlockComposite ();
 
-			void lockSTL();
-			void unlockSTL();
-	};
+  void lockSTL ();
+  void unlockSTL ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_END
 #endif //_COMPOSITEEXECUTIONOBJECT_H_

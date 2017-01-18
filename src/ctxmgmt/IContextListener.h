@@ -25,9 +25,9 @@ GINGA_CTXMGMT_BEGIN
 class IContextListener
 {
 public:
-  virtual ~IContextListener(){};
-  virtual void receiveGlobalAttribution(string propertyName,
-                                        string value)=0;
+  virtual ~IContextListener (){};
+  virtual void receiveGlobalAttribution (string propertyName, string value)
+      = 0;
 };
 
 GINGA_CTXMGMT_END

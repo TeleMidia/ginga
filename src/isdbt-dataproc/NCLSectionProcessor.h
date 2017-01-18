@@ -23,45 +23,43 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
 
-
 GINGA_DATAPROC_BEGIN
 
-	class NCLSectionProcessor : public INCLSectionProcessor {
-		private:
-			INCLMetadata* metadata;
-			vector<StreamData*>* dataToProcess;
+class NCLSectionProcessor : public INCLSectionProcessor
+{
+private:
+  INCLMetadata *metadata;
+  vector<StreamData *> *dataToProcess;
 
-		public:
-			NCLSectionProcessor();
-			~NCLSectionProcessor();
+public:
+  NCLSectionProcessor ();
+  ~NCLSectionProcessor ();
 
-			string getRootUri();
+  string getRootUri ();
 
-		private:
-			void clear();
-			void clearMetadata();
-			void clearDataToProcess();
+private:
+  void clear ();
+  void clearMetadata ();
+  void clearDataToProcess ();
 
-			void createDirectory(string newDir);
-			void addDataToProcess(char* stream, int streamSize);
-			void processDataFile(char* stream, int streamSize);
+  void createDirectory (string newDir);
+  void addDataToProcess (char *stream, int streamSize);
+  void processDataFile (char *stream, int streamSize);
 
-		public:
-			//receiving stream
-			void process(char* stream, int streamSize);
-			void mount();
-			bool isConsolidated();
+public:
+  // receiving stream
+  void process (char *stream, int streamSize);
+  void mount ();
+  bool isConsolidated ();
 
-			INCLMetadata* getMetadata();
+  INCLMetadata *getMetadata ();
 
-			//creating stream
-			vector<StreamData*>* createNCLSections(
-					string componentTag,
-					string name,
-					string baseUri,
-					vector<string>* files,
-					map<int, string>* eventMap);
-	};
+  // creating stream
+  vector<StreamData *> *createNCLSections (string componentTag, string name,
+                                           string baseUri,
+                                           vector<string> *files,
+                                           map<int, string> *eventMap);
+};
 
 GINGA_DATAPROC_END
 

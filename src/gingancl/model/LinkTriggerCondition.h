@@ -26,44 +26,45 @@ using namespace ::ginga::system;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
+typedef struct
+{
+  LinkTriggerListener *listener;
+  short status;
+  LinkCondition *condition;
+} ConditionStatus;
 
-	typedef struct {
-		LinkTriggerListener* listener;
-		short status;
-		LinkCondition* condition;
-	} ConditionStatus;
+class LinkTriggerCondition : public LinkCondition, public Thread
+{
+protected:
+  LinkTriggerListener *listener;
+  double delay;
 
-	class LinkTriggerCondition : public LinkCondition, public Thread {
-		protected:
-			LinkTriggerListener* listener;
-			double delay;
+  static pthread_mutex_t sMutex;
+  static bool initialized;
+  static bool running;
+  static vector<ConditionStatus *> notes;
 
-			static pthread_mutex_t sMutex;
-			static bool initialized;
-			static bool running;
-			static vector<ConditionStatus*> notes;
+public:
+  LinkTriggerCondition ();
+  virtual ~LinkTriggerCondition ();
 
-		public:
-			LinkTriggerCondition();
-			virtual ~LinkTriggerCondition();
+  virtual vector<FormatterEvent *> *getEvents () = 0;
 
-			virtual vector<FormatterEvent*>* getEvents()=0;
+protected:
+  virtual void notifyConditionObservers (short satus);
 
-		protected:
-			virtual void notifyConditionObservers(short satus);
+public:
+  void setTriggerListener (LinkTriggerListener *listener);
+  LinkTriggerListener *getTriggerListener ();
+  double getDelay ();
+  void setDelay (double delay);
+  virtual void conditionSatisfied (void *condition);
 
-		public:
-			void setTriggerListener(LinkTriggerListener* listener);
-			LinkTriggerListener* getTriggerListener();
-			double getDelay();
-			void setDelay(double delay);
-			virtual void conditionSatisfied(void *condition);
+private:
+  static void *notificationThread (void *ptr);
 
-		private:
-			static void* notificationThread(void* ptr);
-
-			void run();
-	};
+  void run ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_LINKTRIGGERCONDITION_H_

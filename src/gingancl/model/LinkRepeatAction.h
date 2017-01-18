@@ -24,24 +24,24 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	class LinkRepeatAction : public LinkSimpleAction {
-		private:
-			long repetitions;
-			double repetitionInterval;
+class LinkRepeatAction : public LinkSimpleAction
+{
+private:
+  long repetitions;
+  double repetitionInterval;
 
-			virtual void run();
+  virtual void run ();
 
-		public:
-			LinkRepeatAction(FormatterEvent* event, short actionType);
-			virtual ~LinkRepeatAction();
-			long getRepetitions();
-			double getRepetitionInterval();
-			void setRepetitions(long repetitions);
-			void setRepetitionInterval(double delay);
-	};
+public:
+  LinkRepeatAction (FormatterEvent *event, short actionType);
+  virtual ~LinkRepeatAction ();
+  long getRepetitions ();
+  double getRepetitionInterval ();
+  void setRepetitions (long repetitions);
+  void setRepetitionInterval (double delay);
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_LINKREPEATACTION_H_

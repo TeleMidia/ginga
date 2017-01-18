@@ -29,41 +29,41 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 #include "ILinkActionListener.h"
 #include "LinkActionProgressionListener.h"
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	class LinkCompoundAction : public LinkAction,
-		    public LinkActionProgressionListener {
+class LinkCompoundAction : public LinkAction,
+                           public LinkActionProgressionListener
+{
 
-		protected:
-			vector<LinkAction*> actions;
-			short op;
+protected:
+  vector<LinkAction *> actions;
+  short op;
 
-		private:
-			pthread_mutex_t mutexActions;
-			int pendingActions;
-			bool hasStart;
-			bool runing;
+private:
+  pthread_mutex_t mutexActions;
+  int pendingActions;
+  bool hasStart;
+  bool runing;
 
-			ILinkActionListener* listener;
+  ILinkActionListener *listener;
 
-			virtual void run();
+  virtual void run ();
 
-		public:
-			LinkCompoundAction(short op);
-			virtual ~LinkCompoundAction();
+public:
+  LinkCompoundAction (short op);
+  virtual ~LinkCompoundAction ();
 
-			short getOperator();
-			void addAction(LinkAction* action);
+  short getOperator ();
+  void addAction (LinkAction *action);
 
-			vector<LinkAction*>* getActions();
-			void getSimpleActions(vector<LinkSimpleAction*>* simpleActions);
-			void setCompoundActionListener(ILinkActionListener* listener);
+  vector<LinkAction *> *getActions ();
+  void getSimpleActions (vector<LinkSimpleAction *> *simpleActions);
+  void setCompoundActionListener (ILinkActionListener *listener);
 
-			virtual vector<FormatterEvent*>* getEvents();
-			void actionProcessed(bool start);
-			virtual vector<LinkAction*>* getImplicitRefRoleActions();
-	};
+  virtual vector<FormatterEvent *> *getEvents ();
+  void actionProcessed (bool start);
+  virtual vector<LinkAction *> *getImplicitRefRoleActions ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif //_LINKCOMPOUNDACTION_H_

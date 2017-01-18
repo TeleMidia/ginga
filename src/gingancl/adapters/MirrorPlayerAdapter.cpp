@@ -21,53 +21,55 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_MIRROR_BEGIN
 
-	MirrorPlayerAdapter::MirrorPlayerAdapter() : FormatterPlayerAdapter() {
-		
-	}
+MirrorPlayerAdapter::MirrorPlayerAdapter () : FormatterPlayerAdapter () {}
 
-	MirrorPlayerAdapter::~MirrorPlayerAdapter() {
-		player = NULL;
-	}
+MirrorPlayerAdapter::~MirrorPlayerAdapter () { player = NULL; }
 
-	void MirrorPlayerAdapter::createPlayer() {
-		FormatterRegion* fRegion;
-		CascadingDescriptor* descriptor;
-		LayoutRegion* ncmRegion = NULL;
-		GingaSurfaceID mirrorSur;
+void
+MirrorPlayerAdapter::createPlayer ()
+{
+  FormatterRegion *fRegion;
+  CascadingDescriptor *descriptor;
+  LayoutRegion *ncmRegion = NULL;
+  GingaSurfaceID mirrorSur;
 
-		clog << "MirrorPlayerAdapter::createPlayer '" << mrl << "'" << endl;
+  clog << "MirrorPlayerAdapter::createPlayer '" << mrl << "'" << endl;
 
-		string prefix = "ncl-mirror://";
-		FormatterPlayerAdapter* sourceAdapter = NULL;
-		ExecutionObject* execObjSrc;
-		size_t pos;
+  string prefix = "ncl-mirror://";
+  FormatterPlayerAdapter *sourceAdapter = NULL;
+  ExecutionObject *execObjSrc;
+  size_t pos;
 
-		FormatterPlayerAdapter::createPlayer();
+  FormatterPlayerAdapter::createPlayer ();
 
-		pos = mrl.find(prefix);
-		assert(pos != std::string::npos);
-		if (object != NULL && object->getMirrorSrc() != NULL && player != NULL) {
-			execObjSrc = object->getMirrorSrc();
-			sourceAdapter = (FormatterPlayerAdapter*)((PlayerAdapterManager*)manager)->getObjectPlayer(execObjSrc);
-			mirrorSrc = sourceAdapter->getPlayer();
+  pos = mrl.find (prefix);
+  assert (pos != std::string::npos);
+  if (object != NULL && object->getMirrorSrc () != NULL && player != NULL)
+    {
+      execObjSrc = object->getMirrorSrc ();
+      sourceAdapter
+          = (FormatterPlayerAdapter *)((PlayerAdapterManager *)manager)
+                ->getObjectPlayer (execObjSrc);
+      mirrorSrc = sourceAdapter->getPlayer ();
 
-			descriptor = object->getDescriptor();
-			if (descriptor != NULL) {
-				fRegion = descriptor->getFormatterRegion();
-				if (fRegion != NULL) {
-					ncmRegion = fRegion->getLayoutRegion();
-					mirrorSur = dm->createSurface(
-							myScreen,
-							ncmRegion->getWidthInPixels(),
-							ncmRegion->getHeightInPixels());
+      descriptor = object->getDescriptor ();
+      if (descriptor != NULL)
+        {
+          fRegion = descriptor->getFormatterRegion ();
+          if (fRegion != NULL)
+            {
+              ncmRegion = fRegion->getLayoutRegion ();
+              mirrorSur = dm->createSurface (myScreen,
+                                             ncmRegion->getWidthInPixels (),
+                                             ncmRegion->getHeightInPixels ());
 
-					player->setSurface(mirrorSur);
-				}
-			}
-		}
+              player->setSurface (mirrorSur);
+            }
+        }
+    }
 
-		clog << "MirrorPlayerAdapter::createPlayer '";
-		clog << mrl << "' ALL DONE" << endl;
-	}
+  clog << "MirrorPlayerAdapter::createPlayer '";
+  clog << mrl << "' ALL DONE" << endl;
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_MIRROR_END

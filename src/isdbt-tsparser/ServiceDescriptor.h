@@ -22,27 +22,27 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TSPARSER_BEGIN
 
-	class ServiceDescriptor : public IServiceDescriptor {
-		protected:
-			unsigned char serviceType;
-			unsigned char serviceProviderNameLength;
-			char* serviceProviderNameChar;
-			unsigned char serviceNameLength;
-			char* serviceNameChar;
+class ServiceDescriptor : public IServiceDescriptor
+{
+protected:
+  unsigned char serviceType;
+  unsigned char serviceProviderNameLength;
+  char *serviceProviderNameChar;
+  unsigned char serviceNameLength;
+  char *serviceNameChar;
 
-		public:
-			ServiceDescriptor();
-			virtual ~ServiceDescriptor();
-			unsigned int getDescriptorLength();
-			unsigned char getDescriptorTag();
-			unsigned int getServiceProviderNameLength();
-			unsigned int getServiceNameLength();
-			string getServiceProviderNameChar();
-			string getServiceNameChar();
-			void print();
-			size_t process (char* data, size_t pos);
-	};
-
+public:
+  ServiceDescriptor ();
+  virtual ~ServiceDescriptor ();
+  unsigned int getDescriptorLength ();
+  unsigned char getDescriptorTag ();
+  unsigned int getServiceProviderNameLength ();
+  unsigned int getServiceNameLength ();
+  string getServiceProviderNameChar ();
+  string getServiceNameChar ();
+  void print ();
+  size_t process (char *data, size_t pos);
+};
 
 GINGA_TSPARSER_END
 

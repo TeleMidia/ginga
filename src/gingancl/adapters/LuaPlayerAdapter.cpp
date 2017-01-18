@@ -21,85 +21,95 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_LUA_BEGIN
 
-	LuaPlayerAdapter::LuaPlayerAdapter() : ApplicationPlayerAdapter()  {
+LuaPlayerAdapter::LuaPlayerAdapter () : ApplicationPlayerAdapter () {}
 
-	}
+void
+LuaPlayerAdapter::createPlayer ()
+{
+  if (fileExists (mrl))
+    {
+      player = new LuaPlayer (myScreen, mrl.c_str ());
+    }
+  else
+    {
+      player = NULL;
+      clog << "LuaPlayerAdapter::createPlayer Warning! ";
+      clog << "file not found: '" << mrl.c_str () << "'" << endl;
+    }
 
-	void LuaPlayerAdapter::createPlayer() {
-		if (fileExists(mrl)) {
-			player = new LuaPlayer(myScreen, mrl.c_str());
+  ApplicationPlayerAdapter::createPlayer ();
+}
 
-		} else {
-			player = NULL;
-			clog << "LuaPlayerAdapter::createPlayer Warning! ";
-			clog << "file not found: '" << mrl.c_str() << "'" << endl;
-		}
+bool
+LuaPlayerAdapter::setAndLockCurrentEvent (FormatterEvent *event)
+{
+  string interfaceId;
 
-		ApplicationPlayerAdapter::createPlayer();
-	}
+  lockEvent ();
+  if (preparedEvents.count (event->getId ()) != 0
+      && !event->instanceOf ("SelectionEvent")
+      && event->instanceOf ("AnchorEvent"))
+    {
 
-	bool LuaPlayerAdapter::setAndLockCurrentEvent(FormatterEvent* event) {
-		string interfaceId;
+      interfaceId = ((AnchorEvent *)event)->getAnchor ()->getId ();
 
-		lockEvent();
-		if (preparedEvents.count(event->getId()) != 0 &&
-				!event->instanceOf("SelectionEvent") &&
-				event->instanceOf("AnchorEvent")) {
+      if ((((AnchorEvent *)event)->getAnchor ())->instanceOf ("LabeledAnchor"))
+        {
 
-			interfaceId = ((AnchorEvent*)event)->getAnchor()->getId();
+          interfaceId = ((LabeledAnchor *)((AnchorEvent *)event)->getAnchor ())
+                            ->getLabel ();
+        }
+      else if ((((AnchorEvent *)event)->getAnchor ())
+                   ->instanceOf ("LambdaAnchor"))
+        {
 
-			if ((((AnchorEvent*)event)->getAnchor())->instanceOf(
-					"LabeledAnchor")) {
+          interfaceId = "";
+        }
 
-				interfaceId = ((LabeledAnchor*)((AnchorEvent*)event)->
-						getAnchor())->getLabel();
+      currentEvent = event;
+      ((ApplicationExecutionObject *)object)->setCurrentEvent (currentEvent);
 
-			} else if ((((AnchorEvent*)event)->getAnchor())->instanceOf(
-					"LambdaAnchor")) {
+      player->setCurrentScope (interfaceId);
+    }
+  else if (event->instanceOf ("AttributionEvent"))
+    {
+      interfaceId
+          = ((AttributionEvent *)event)->getAnchor ()->getPropertyName ();
 
-				interfaceId = "";
-			}
+      player->setScope (interfaceId, IPlayer::TYPE_ATTRIBUTION);
 
-			currentEvent = event;
-			((ApplicationExecutionObject*)object)->setCurrentEvent(
-					currentEvent);
+      currentEvent = event;
+      ((ApplicationExecutionObject *)object)->setCurrentEvent (currentEvent);
 
-			player->setCurrentScope(interfaceId);
+      player->setCurrentScope (interfaceId);
+    }
+  else
+    {
+      clog << "LuaPlayerAdapter::setAndLockCurrentEvent Warning! ";
+      clog << "event '" << event->getId () << "' isn't prepared" << endl;
 
-		} else if (event->instanceOf("AttributionEvent")) {
-			interfaceId = ((AttributionEvent*)
-					event)->getAnchor()->getPropertyName();
+      unlockEvent ();
+      return false;
+    }
 
-			player->setScope(interfaceId, IPlayer::TYPE_ATTRIBUTION);
+  return true;
+}
 
-			currentEvent = event;
-			((ApplicationExecutionObject*)object)->setCurrentEvent(
-					currentEvent);
-
-			player->setCurrentScope(interfaceId);
-
-		} else {
-			clog << "LuaPlayerAdapter::setAndLockCurrentEvent Warning! ";
-			clog << "event '" << event->getId() << "' isn't prepared" << endl;
-
-			unlockEvent();
-			return false;
-		}
-
-		return true;
-	}
-
-	void LuaPlayerAdapter::unlockCurrentEvent(FormatterEvent* event) {
-		if (event != currentEvent) {
-			clog << "LuaPlayerAdapter::unlockCurrentEvent ";
-			clog << "Handling events Warning: currentEvent = '";
-			if (currentEvent != NULL) {
-				clog << currentEvent->getId();
-			}
-			clog << "' event requested to unlock = '" << event->getId();
-			clog << "'" << endl;
-		}
-		unlockEvent();
-	}
+void
+LuaPlayerAdapter::unlockCurrentEvent (FormatterEvent *event)
+{
+  if (event != currentEvent)
+    {
+      clog << "LuaPlayerAdapter::unlockCurrentEvent ";
+      clog << "Handling events Warning: currentEvent = '";
+      if (currentEvent != NULL)
+        {
+          clog << currentEvent->getId ();
+        }
+      clog << "' event requested to unlock = '" << event->getId ();
+      clog << "'" << endl;
+    }
+  unlockEvent ();
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_LUA_END

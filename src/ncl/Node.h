@@ -24,40 +24,41 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	class Node : public Entity {
-		private:
-			void* parentNode;
+class Node : public Entity
+{
+private:
+  void *parentNode;
 
-		protected:
-			vector<Anchor*> anchorList;
-			vector<PropertyAnchor*> originalPAnchors;
+protected:
+  vector<Anchor *> anchorList;
+  vector<PropertyAnchor *> originalPAnchors;
 
-		public:
-			Node(string id);
-			virtual ~Node();
+public:
+  Node (string id);
+  virtual ~Node ();
 
-		private:
-			bool hasProperty(string propName);
+private:
+  bool hasProperty (string propName);
 
-		public:
-			void copyProperties(Node* node);
-			void setParentComposition(void* composition);
-			void* getParentComposition();
-	  		vector<Node*>* getPerspective();
-	  		virtual bool addAnchor(Anchor *anchor);
-			virtual bool addAnchor(int index, Anchor *anchor);
-			Anchor* getAnchor(string anchorId);
-			Anchor* getAnchor(int index);
+public:
+  void copyProperties (Node *node);
+  void setParentComposition (void *composition);
+  void *getParentComposition ();
+  vector<Node *> *getPerspective ();
+  virtual bool addAnchor (Anchor *anchor);
+  virtual bool addAnchor (int index, Anchor *anchor);
+  Anchor *getAnchor (string anchorId);
+  Anchor *getAnchor (int index);
 
-			vector<Anchor*>* getAnchors();
-			vector<PropertyAnchor*>* getOriginalPropertyAnchors();
+  vector<Anchor *> *getAnchors ();
+  vector<PropertyAnchor *> *getOriginalPropertyAnchors ();
 
-			PropertyAnchor* getPropertyAnchor(string propertyName);
-			int getNumAnchors();
-			int indexOfAnchor(Anchor *anchor);
-			virtual bool removeAnchor(int index);
-			virtual bool removeAnchor(Anchor *anchor);
-	};
+  PropertyAnchor *getPropertyAnchor (string propertyName);
+  int getNumAnchors ();
+  int indexOfAnchor (Anchor *anchor);
+  virtual bool removeAnchor (int index);
+  virtual bool removeAnchor (Anchor *anchor);
+};
 
 GINGA_NCL_END
 

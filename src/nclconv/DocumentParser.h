@@ -32,46 +32,46 @@ protected:
   string iUriD;
   string fUriD;
   DOMDocument *documentTree;
-  map<string, void*>* genericTable;
+  map<string, void *> *genericTable;
 
 public:
-  DocumentParser();
-  virtual ~DocumentParser();
+  DocumentParser ();
+  virtual ~DocumentParser ();
 
 protected:
-  virtual void initialize()=0;
+  virtual void initialize () = 0;
 
 public:
-  void* parse(string uri, string iUriD, string fUriD);
-  void* parse(DOMElement* rootElement, string uri);
+  void *parse (string uri, string iUriD, string fUriD);
+  void *parse (DOMElement *rootElement, string uri);
 
 protected:
-  virtual void setDependencies();
-  virtual void* parseRootElement(DOMElement *rootElement)=0;
+  virtual void setDependencies ();
+  virtual void *parseRootElement (DOMElement *rootElement) = 0;
 
 private:
-  void initializeUserCurrentPath();
-  string absoluteFile(string basePath, string filename);
-  string getPath(string filename);
+  void initializeUserCurrentPath ();
+  string absoluteFile (string basePath, string filename);
+  string getPath (string filename);
 
 public:
-  string getIUriD();
-  string getFUriD();
-  string getUserCurrentPath();
-  bool checkUriPrefix(string uri);
-  bool isAbsolutePath(string path);
-  bool isXmlStr(string location);
+  string getIUriD ();
+  string getFUriD ();
+  string getUserCurrentPath ();
+  bool checkUriPrefix (string uri);
+  bool isAbsolutePath (string path);
+  bool isXmlStr (string location);
 
-  string getAbsolutePath(string path);
-  string getDocumentUri();
-  string getDocumentPath();
-  void setDocumentPath(string path);
-  DOMDocument *getDocumentTree();
-  void addObject(string tableName, string key, void* value);
-  void* getObject(string tableName, string key);
-  void removeObject(string tableName, string key);
-  void addObjectGrouped(string tableName, string key, void* value);
-  bool importDocument(DocumentParser* parser, string docLocation);
+  string getAbsolutePath (string path);
+  string getDocumentUri ();
+  string getDocumentPath ();
+  void setDocumentPath (string path);
+  DOMDocument *getDocumentTree ();
+  void addObject (string tableName, string key, void *value);
+  void *getObject (string tableName, string key);
+  void removeObject (string tableName, string key);
+  void addObjectGrouped (string tableName, string key, void *value);
+  bool importDocument (DocumentParser *parser, string docLocation);
 };
 
 GINGA_NCLCONV_END

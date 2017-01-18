@@ -20,24 +20,28 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCLCONV_BEGIN
 
-	NclMetainformationParser::NclMetainformationParser(
-		   DocumentParser* documentParser) : ModuleParser(documentParser) {
+NclMetainformationParser::NclMetainformationParser (
+    DocumentParser *documentParser)
+    : ModuleParser (documentParser)
+{
+}
 
+void *
+NclMetainformationParser::parseMeta (DOMElement *parentElement,
+                                     void *objGrandParent)
+{
 
-	}
+  clog << "parseMeta" << endl;
+  return createMeta (parentElement, objGrandParent);
+}
 
-	void* NclMetainformationParser::parseMeta(
-		    DOMElement* parentElement, void* objGrandParent) {
+void *
+NclMetainformationParser::parseMetadata (DOMElement *parentElement,
+                                         void *objGrandParent)
+{
 
-		clog << "parseMeta" << endl;
-		return createMeta(parentElement, objGrandParent);
-	}
-
-	void* NclMetainformationParser::parseMetadata(
-		    DOMElement* parentElement, void* objGrandParent) {
-
-		clog << "parseMetadata" << endl;
-		return createMetadata(parentElement, objGrandParent);
-	}
+  clog << "parseMetadata" << endl;
+  return createMetadata (parentElement, objGrandParent);
+}
 
 GINGA_NCLCONV_END

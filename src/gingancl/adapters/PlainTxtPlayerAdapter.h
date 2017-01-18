@@ -24,17 +24,17 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TEXT_BEGIN
 
-   class PlainTxtPlayerAdapter : public FormatterPlayerAdapter {
-	public:
-		PlainTxtPlayerAdapter();
-		virtual ~PlainTxtPlayerAdapter(){};
+class PlainTxtPlayerAdapter : public FormatterPlayerAdapter
+{
+public:
+  PlainTxtPlayerAdapter ();
+  virtual ~PlainTxtPlayerAdapter (){};
 
-	protected:
-		void createPlayer();
-   };
+protected:
+  void createPlayer ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TEXT_END
 #endif /*TXTPLAINPLAYERADAPTER_H_*/

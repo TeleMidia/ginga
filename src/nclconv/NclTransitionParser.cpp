@@ -20,75 +20,87 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCLCONV_BEGIN
 
-	NclTransitionParser::NclTransitionParser(
-		   DocumentParser* documentParser) : ModuleParser(documentParser) {
+NclTransitionParser::NclTransitionParser (DocumentParser *documentParser)
+    : ModuleParser (documentParser)
+{
+}
 
+void *
+NclTransitionParser::parseTransitionBase (DOMElement *parentElement,
+                                          void *objGrandParent)
+{
 
-	}
+  clog << "parseTransitionBase" << endl;
+  void *parentObject;
+  DOMNodeList *elementNodeList;
+  DOMElement *element;
+  DOMNode *node;
+  string elementTagName;
+  void *elementObject;
 
-	void* NclTransitionParser::parseTransitionBase(
-		    DOMElement* parentElement, void* objGrandParent) {
+  parentObject = createTransitionBase (parentElement, objGrandParent);
+  if (parentObject == NULL)
+    {
+      return NULL;
+    }
 
-		clog << "parseTransitionBase" << endl;
-		void *parentObject;
-		DOMNodeList *elementNodeList;
-		DOMElement *element;
-		DOMNode *node;
-		string elementTagName;
-		void *elementObject;
+  elementNodeList = parentElement->getChildNodes ();
+  for (int i = 0; i < (int)elementNodeList->getLength (); i++)
+    {
+      node = elementNodeList->item (i);
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+        {
+          element = (DOMElement *)node;
+          elementTagName = XMLString::transcode (element->getTagName ());
 
-		parentObject = createTransitionBase(parentElement, objGrandParent);
-		if (parentObject == NULL) {
-			return NULL;
-		}
+          if (XMLString::compareIString (elementTagName.c_str (), "importBase")
+              == 0)
+            {
 
-		elementNodeList = parentElement->getChildNodes();
-		for (int i = 0; i < (int)elementNodeList->getLength(); i++) {
-			node = elementNodeList->item(i);
-			if (node->getNodeType()==DOMNode::ELEMENT_NODE) {
-				element = (DOMElement*)node;
-				elementTagName = XMLString::transcode(element->getTagName());
+              elementObject = getImportParser ()->parseImportBase (
+                  element, parentObject);
 
-				if (XMLString::compareIString(
-					    elementTagName.c_str(), "importBase") == 0) {
+              if (elementObject != NULL)
+                {
+                  addImportBaseToTransitionBase (parentObject, elementObject);
+                }
+            }
+          else if (XMLString::compareIString (elementTagName.c_str (),
+                                              "transition")
+                   == 0)
+            {
 
-					elementObject = getImportParser()->parseImportBase(
-						    element, parentObject);
+              elementObject = parseTransition (element, parentObject);
+              if (elementObject != NULL)
+                {
+                  addTransitionToTransitionBase (parentObject, elementObject);
+                }
+            }
+        }
+    }
 
-					if (elementObject != NULL) {
-						addImportBaseToTransitionBase(
-							    parentObject, elementObject);
-					}
+  return parentObject;
+}
 
-				} else if (XMLString::compareIString(
-					    elementTagName.c_str(), "transition") == 0) {
+void *
+NclTransitionParser::parseTransition (DOMElement *parentElement,
+                                      void *objGrandParent)
+{
 
-					elementObject = parseTransition(element, parentObject);
-					if (elementObject != NULL) {
-						addTransitionToTransitionBase(
-							    parentObject, elementObject);
-					}
-				}
-			}
-		}
+  return createTransition (parentElement, objGrandParent);
+}
 
-		return parentObject;
-	}
+NclImportParser *
+NclTransitionParser::getImportParser ()
+{
+  return importParser;
+}
 
-	void *NclTransitionParser::parseTransition(
-		    DOMElement *parentElement, void *objGrandParent) {
+void
+NclTransitionParser::setImportParser (NclImportParser *importParser)
+{
 
-		return createTransition(parentElement, objGrandParent);
-	}
-
-	NclImportParser *NclTransitionParser::getImportParser() {
-		return importParser;
-	}
-
-	void NclTransitionParser::setImportParser(
-		    NclImportParser *importParser) {
-
-		this->importParser = importParser;
-	}
+  this->importParser = importParser;
+}
 
 GINGA_NCLCONV_END

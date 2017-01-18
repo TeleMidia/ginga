@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FileSystemProvider.h"
 #include "NetworkProvider.h"
 #ifdef _MSC_VER
-# include "BDAProvider.h"
+#include "BDAProvider.h"
 #endif
 
 #if WITH_LINUXDVB
@@ -30,189 +30,245 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TUNER_BEGIN
 
-	NetworkInterface::NetworkInterface(
-			int id, string name, string protocol, string addr) {
+NetworkInterface::NetworkInterface (int id, string name, string protocol,
+                                    string addr)
+{
 
-		this->provider = NULL;
-		this->id       = id;
-		this->name     = name;
-		this->protocol = protocol;
-		this->address  = addr;
-		this->tuned    = false;
-	}
+  this->provider = NULL;
+  this->id = id;
+  this->name = name;
+  this->protocol = protocol;
+  this->address = addr;
+  this->tuned = false;
+}
 
-	NetworkInterface::~NetworkInterface() {
-		close();
-	}
+NetworkInterface::~NetworkInterface () { close (); }
 
-	short NetworkInterface::getCaps() {
-		if (provider != NULL) {
-			return provider->getCaps();
+short
+NetworkInterface::getCaps ()
+{
+  if (provider != NULL)
+    {
+      return provider->getCaps ();
+    }
+  else
+    {
+      clog << "NetworkInterface::getCaps return 0 (NULL provider)";
+      clog << endl;
+    }
 
-		} else {
-			clog << "NetworkInterface::getCaps return 0 (NULL provider)";
-			clog << endl;
-		}
+  return 0;
+}
 
-		return 0;
-	}
+int
+NetworkInterface::getId ()
+{
+  return id;
+}
 
-	int NetworkInterface::getId() {
-		return id;
-	}
+string
+NetworkInterface::getName ()
+{
+  return name;
+}
 
-	string NetworkInterface::getName() {
-		return name;
-	}
+string
+NetworkInterface::getProtocol ()
+{
+  return protocol;
+}
 
-	string NetworkInterface::getProtocol() {
-		return protocol;
-	}
+string
+NetworkInterface::getAddress ()
+{
+  return address;
+}
 
-	string NetworkInterface::getAddress() {
-		return address;
-	}
+void
+NetworkInterface::attachFilter (IFrontendFilter *filter)
+{
+  if (provider == NULL)
+    {
+      return;
+    }
 
-	void NetworkInterface::attachFilter(IFrontendFilter* filter) {
-		if (provider == NULL) {
-			return;
-		}
+  provider->attachFilter (filter);
+}
 
-		provider->attachFilter(filter);
-	}
+void
+NetworkInterface::removeFilter (IFrontendFilter *filter)
+{
+  if (provider == NULL)
+    {
+      return;
+    }
 
-	void NetworkInterface::removeFilter(IFrontendFilter* filter) {
-		if (provider == NULL) {
-			return;
-		}
+  provider->removeFilter (filter);
+}
 
-		provider->removeFilter(filter);
-	}
+void
+NetworkInterface::setDataProvider (IDataProvider *provider)
+{
+  this->provider = provider;
+}
 
-	void NetworkInterface::setDataProvider(IDataProvider* provider) {
-		this->provider = provider;
-	}
+bool
+NetworkInterface::createProvider ()
+{
+  string ip, portNumber;
 
-	bool NetworkInterface::createProvider() {
-		string ip, portNumber;
+  close ();
 
-		close();
+  if (name == "ip")
+    {
+      ip = address.substr (0, address.find (":"));
+      portNumber = address.substr (address.find (":") + 1, address.length ());
 
-		if (name == "ip") {
-			ip = address.substr(0, address.find(":"));
-			portNumber = address.substr(
-					address.find(":") + 1, address.length());
+      provider = new NetworkProvider (
+          ip, (int)::ginga::util::stof (portNumber), protocol);
+      return true;
+    }
+  else if (name == "file")
+    {
+      provider = new FileSystemProvider (address);
+      return true;
+    }
+  else if (name == "sbtvd" && protocol == "terrestrial")
+    {
+      long freq;
 
-			provider = new NetworkProvider(ip, (int)::ginga::util::stof(portNumber), protocol);
-			return true;
-
-		} else if (name == "file") {
-			provider = new FileSystemProvider(address);
-			return true;
-
-		} else if (name == "sbtvd" && protocol == "terrestrial") {
-			long freq;
-
-			if (address == "scan") {
-				freq = -1;
-
-			} else if (address == "current") {
-				freq = 0;
-
-			} else {
-				freq = (long)::ginga::util::stof(address);
-				if (freq < 1)
-					return false;
-			}
+      if (address == "scan")
+        {
+          freq = -1;
+        }
+      else if (address == "current")
+        {
+          freq = 0;
+        }
+      else
+        {
+          freq = (long)::ginga::util::stof (address);
+          if (freq < 1)
+            return false;
+        }
 #if _MSC_VER
-			provider = new BDAProvider(freq);
+      provider = new BDAProvider (freq);
 #elif WITH_LINUXDVB
-			provider = new ISDBTProvider(freq);
+      provider = new ISDBTProvider (freq);
 #endif
 
-			return true;
-		}
+      return true;
+    }
 
-		return false;
-	}
+  return false;
+}
 
-	bool NetworkInterface::hasSignal() {
-		return tuned;
-	}
+bool
+NetworkInterface::hasSignal ()
+{
+  return tuned;
+}
 
-	IDataProvider* NetworkInterface::tune() {
-		if (provider == NULL) {
-			if (createProvider()) {
-				tuned = provider->tune();
-			}
+IDataProvider *
+NetworkInterface::tune ()
+{
+  if (provider == NULL)
+    {
+      if (createProvider ())
+        {
+          tuned = provider->tune ();
+        }
+    }
+  else
+    {
+      tuned = provider->tune ();
+    }
 
-		} else {
-			tuned = provider->tune();
-		}
+  if (tuned)
+    {
+      return provider;
+    }
 
-		if (tuned) {
-			return provider;
-		}
+  return NULL;
+}
 
-		return NULL;
-	}
+bool
+NetworkInterface::changeChannel (int factor)
+{
+  if (provider != NULL)
+    {
+      return provider->changeChannel (factor);
+    }
 
-	bool NetworkInterface::changeChannel(int factor) {
-		if (provider != NULL) {
-			return provider->changeChannel(factor);
-		}
+  return false;
+}
 
-		return false;
-	}
+bool
+NetworkInterface::setChannel (string channelValue)
+{
+  if (provider != NULL)
+    {
+      return provider->setChannel (channelValue);
+    }
 
-	bool NetworkInterface::setChannel(string channelValue) {
-		if (provider != NULL) {
-			return provider->setChannel(channelValue);
-		}
+  return false;
+}
 
-		return false;
-	}
+bool
+NetworkInterface::getSTCValue (uint64_t *stc, int *valueType)
+{
+  if (provider != NULL)
+    {
+      return provider->getSTCValue (stc, valueType);
+    }
 
-	bool NetworkInterface::getSTCValue(uint64_t* stc, int* valueType) {
-		if (provider != NULL) {
-			return provider->getSTCValue(stc, valueType);
-		}
+  return false;
+}
 
-		return false;
-	}
+int
+NetworkInterface::createPesFilter (int pid, int pesType, bool compositeFiler)
+{
 
-	int NetworkInterface::createPesFilter(
-			int pid, int pesType, bool compositeFiler) {
+  if (provider != NULL)
+    {
+      return provider->createPesFilter (pid, pesType, compositeFiler);
+    }
 
-		if (provider != NULL) {
-			return provider->createPesFilter(pid, pesType, compositeFiler);
-		}
+  return -1;
+}
 
-		return -1;
-	}
+string
+NetworkInterface::getPesFilterOutput ()
+{
+  if (provider == NULL)
+    {
+      return "";
+    }
 
-	string NetworkInterface::getPesFilterOutput() {
-		if (provider == NULL) {
-			return "";
-		}
+  return provider->getPesFilterOutput ();
+}
 
-		return provider->getPesFilterOutput();
-	}
+Channel *
+NetworkInterface::getCurrentChannel ()
+{
+  return provider->getCurrentChannel ();
+}
 
-	Channel* NetworkInterface::getCurrentChannel() {
-		return provider->getCurrentChannel();
-	}
+char *
+NetworkInterface::receiveData (int *len)
+{
+  return provider->receiveData (len);
+}
 
-	char* NetworkInterface::receiveData(int* len) {
-		return provider->receiveData(len);
-	}
-
-	void NetworkInterface::close() {
-		if (provider != NULL) {
-			provider->close();
-			delete provider;
-			provider = NULL;
-		}
-	}
+void
+NetworkInterface::close ()
+{
+  if (provider != NULL)
+    {
+      provider->close ();
+      delete provider;
+      provider = NULL;
+    }
+}
 
 GINGA_TUNER_END

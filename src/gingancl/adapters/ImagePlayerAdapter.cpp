@@ -21,19 +21,19 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_IMAGE_BEGIN
 
-	ImagePlayerAdapter::ImagePlayerAdapter() : FormatterPlayerAdapter() {
+ImagePlayerAdapter::ImagePlayerAdapter () : FormatterPlayerAdapter () {}
 
-	}
+void
+ImagePlayerAdapter::createPlayer ()
+{
+  clog << "ImagePlayerAdapter::createPlayer '" << mrl << "'" << endl;
 
-	void ImagePlayerAdapter::createPlayer() {
-		clog << "ImagePlayerAdapter::createPlayer '" << mrl << "'" << endl;
+  player = new ImagePlayer (myScreen, mrl.c_str ());
 
-		player = new ImagePlayer(myScreen, mrl.c_str());
+  clog << "ImagePlayerAdapter::createPlayer '";
+  clog << mrl << "' ALL DONE" << endl;
 
-		clog << "ImagePlayerAdapter::createPlayer '";
-		clog << mrl << "' ALL DONE" << endl;
-
-		FormatterPlayerAdapter::createPlayer();
-	}
+  FormatterPlayerAdapter::createPlayer ();
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_IMAGE_END

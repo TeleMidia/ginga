@@ -33,21 +33,21 @@ private:
   char userGenre;
 
 public:
-  GingaUser(int userId, string userName, string passwd);
-  ~GingaUser();
-  int getUserId();
-  string getUserName();
-  int getUserAge();
-  string getUserLocation();
-  char getUserGenre();
-  bool isValidPassword(string passwd);
-  bool setPassword(string oldPasswd, string newPasswd);
-  void setUserName(string passwd, string userName);
-  void setUserAge(string passwd, int userAge);
-  void setUserLocation(string passwd, string userLocation);
-  void setUserGenre(string passwd, char userGenre);
-  void saveTo(FILE* fd);
-  static void saveString(FILE* fd, string bytesToSave);
+  GingaUser (int userId, string userName, string passwd);
+  ~GingaUser ();
+  int getUserId ();
+  string getUserName ();
+  int getUserAge ();
+  string getUserLocation ();
+  char getUserGenre ();
+  bool isValidPassword (string passwd);
+  bool setPassword (string oldPasswd, string newPasswd);
+  void setUserName (string passwd, string userName);
+  void setUserAge (string passwd, int userAge);
+  void setUserLocation (string passwd, string userLocation);
+  void setUserGenre (string passwd, char userGenre);
+  void saveTo (FILE *fd);
+  static void saveString (FILE *fd, string bytesToSave);
 };
 
 GINGA_CTXMGMT_END

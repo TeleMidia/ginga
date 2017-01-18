@@ -23,46 +23,44 @@ using namespace ::ginga::system;
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-
 GINGA_DATAPROC_BEGIN
 
-	class DsmccModule {
-		private:
-			//id of es module origin
-			unsigned int pid;
-			FILE* moduleFd;
-			unsigned int carouselId;
-			unsigned int id;
-			unsigned int size;
-			unsigned int version;
-			unsigned int infoLength;
-			unsigned int currentDownloadSize;
-			bool overflowNotification;
-			set<unsigned int> blocks;
+class DsmccModule
+{
+private:
+  // id of es module origin
+  unsigned int pid;
+  FILE *moduleFd;
+  unsigned int carouselId;
+  unsigned int id;
+  unsigned int size;
+  unsigned int version;
+  unsigned int infoLength;
+  unsigned int currentDownloadSize;
+  bool overflowNotification;
+  set<unsigned int> blocks;
 
-		public:
-			DsmccModule(unsigned int moduleId);
-			void setESId(unsigned int pid);
-			unsigned int getESId();
-			void openFile();
-			void setCarouselId(unsigned int id);
-			void setSize(unsigned int size);
-			void setVersion(unsigned int version);
-			void setInfoLength(unsigned int length);
-			bool isConsolidated();
-			unsigned int getId();
-			unsigned int getCarouselId();
-			unsigned int getSize();
-			unsigned int getVersion();
-			unsigned int getInfoLength();
-			string getModuleFileName();
-			void pushDownloadData(
-					unsigned int blockNumber,
-					void* data,
-					unsigned int dataSize);
+public:
+  DsmccModule (unsigned int moduleId);
+  void setESId (unsigned int pid);
+  unsigned int getESId ();
+  void openFile ();
+  void setCarouselId (unsigned int id);
+  void setSize (unsigned int size);
+  void setVersion (unsigned int version);
+  void setInfoLength (unsigned int length);
+  bool isConsolidated ();
+  unsigned int getId ();
+  unsigned int getCarouselId ();
+  unsigned int getSize ();
+  unsigned int getVersion ();
+  unsigned int getInfoLength ();
+  string getModuleFileName ();
+  void pushDownloadData (unsigned int blockNumber, void *data,
+                         unsigned int dataSize);
 
-			void print();
-	};
+  void print ();
+};
 
 GINGA_DATAPROC_END
 

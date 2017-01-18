@@ -25,9 +25,8 @@ GINGA_MB_BEGIN
 class SDLConvert
 {
 public:
-  static int convertSurfaceToJPEG(const char *dest_filename,
-                                  SDL_Surface *surf,
-                                  int quality);
+  static int convertSurfaceToJPEG (const char *dest_filename,
+                                   SDL_Surface *surf, int quality);
 };
 
 GINGA_MB_END

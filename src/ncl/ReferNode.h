@@ -24,26 +24,27 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	class ReferNode : public Node {
-		private:
-			string instanceType;
-			Entity* referredNode;
-			GenericDescriptor* instDesc;
+class ReferNode : public Node
+{
+private:
+  string instanceType;
+  Entity *referredNode;
+  GenericDescriptor *instDesc;
 
-		public:
-			ReferNode(string id);
-			ReferNode(string id, Entity* entity);
+public:
+  ReferNode (string id);
+  ReferNode (string id, Entity *entity);
 
-			GenericDescriptor* getInstanceDescriptor();
-			void setInstanceDescriptor(GenericDescriptor* descriptor);
+  GenericDescriptor *getInstanceDescriptor ();
+  void setInstanceDescriptor (GenericDescriptor *descriptor);
 
-			string getInstanceType();
-			void setInstanceType(string instance);
+  string getInstanceType ();
+  void setInstanceType (string instance);
 
-			Entity* getReferredEntity();
-			void setReferredEntity(Entity* entity);
-			Entity* getDataEntity();
-	};
+  Entity *getReferredEntity ();
+  void setReferredEntity (Entity *entity);
+  Entity *getDataEntity ();
+};
 
 GINGA_NCL_END
 

@@ -20,35 +20,35 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "IMpegDescriptor.h"
 
-
 GINGA_TSPARSER_BEGIN
 
-	class SeriesDescriptor : public IMpegDescriptor {
-		protected:
-			unsigned short seriesId;
-			unsigned char repeatLabel;
-			unsigned char programPattern;
-			bool expireDateValidFlag;
-			unsigned char expireDate[2];
-			unsigned short episodeNumber;
-			unsigned short lastEpisodeNumber;
-			unsigned char seriesNameLength;
-			char* seriesNameChar;
+class SeriesDescriptor : public IMpegDescriptor
+{
+protected:
+  unsigned short seriesId;
+  unsigned char repeatLabel;
+  unsigned char programPattern;
+  bool expireDateValidFlag;
+  unsigned char expireDate[2];
+  unsigned short episodeNumber;
+  unsigned short lastEpisodeNumber;
+  unsigned char seriesNameLength;
+  char *seriesNameChar;
 
-		public:
-			SeriesDescriptor();
-			virtual ~SeriesDescriptor();
-			unsigned char getDescriptorTag();
-			unsigned int getDescriptorLength();
-			size_t process (char * data, size_t pos);
-			unsigned short getSeriesId();
-			unsigned char getRepeatLabel();
-			unsigned char getProgramPattern();
-			unsigned short getEpisodeNumber();
-			unsigned short getLastEpisodeNumber();
-			string getSeriesNameChar();
-			void print();
-		};
+public:
+  SeriesDescriptor ();
+  virtual ~SeriesDescriptor ();
+  unsigned char getDescriptorTag ();
+  unsigned int getDescriptorLength ();
+  size_t process (char *data, size_t pos);
+  unsigned short getSeriesId ();
+  unsigned char getRepeatLabel ();
+  unsigned char getProgramPattern ();
+  unsigned short getEpisodeNumber ();
+  unsigned short getLastEpisodeNumber ();
+  string getSeriesNameChar ();
+  void print ();
+};
 
 GINGA_TSPARSER_END
 

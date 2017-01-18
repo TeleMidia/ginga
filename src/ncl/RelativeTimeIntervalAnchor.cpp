@@ -20,12 +20,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	RelativeTimeIntervalAnchor::RelativeTimeIntervalAnchor(
-		    string id,
-		    double begin,
-		    double end) : IntervalAnchor(id, begin, end) {
+RelativeTimeIntervalAnchor::RelativeTimeIntervalAnchor (string id,
+                                                        double begin,
+                                                        double end)
+    : IntervalAnchor (id, begin, end)
+{
 
-		typeSet.insert("RelativeTimeIntervalAnchor");
-	}
+  typeSet.insert ("RelativeTimeIntervalAnchor");
+}
 
 GINGA_NCL_END

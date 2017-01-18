@@ -24,27 +24,28 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_DATAPROC_BEGIN
 
-	class DsmccDownloadServerInitiate {
-		private:
-			DsmccMessageHeader* header;
-			DsmccIor* srgIor;
-			char* data;
-			unsigned int objectKey;
+class DsmccDownloadServerInitiate
+{
+private:
+  DsmccMessageHeader *header;
+  DsmccIor *srgIor;
+  char *data;
+  unsigned int objectKey;
 
-			// Payload offset.
-			unsigned int idx;
+  // Payload offset.
+  unsigned int idx;
 
-		public:
-			DsmccDownloadServerInitiate();
-			virtual ~DsmccDownloadServerInitiate();
+public:
+  DsmccDownloadServerInitiate ();
+  virtual ~DsmccDownloadServerInitiate ();
 
-			int processMessage(DsmccMessageHeader* message);
+  int processMessage (DsmccMessageHeader *message);
 
-			DsmccIor* getServiceGatewayIor();
+  DsmccIor *getServiceGatewayIor ();
 
-		private:
-			int processIor();
-	};
+private:
+  int processIor ();
+};
 
 GINGA_DATAPROC_END
 

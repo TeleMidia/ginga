@@ -28,7 +28,7 @@ private:
   int r, g, b, alpha;
 
 protected:
-  void setColorToI(string color);
+  void setColorToI (string color);
 
 public:
   static const int white = 0xFFFFFF;
@@ -77,18 +77,18 @@ public:
   static const string saqua;
   static const string steal;
 
-  static int colortoi(string color);
-  Color();
-  Color(int r, int g, int b, int alpha=255);
-  Color(string color, int alpha=255);
-  void setColor(string color);
-  void setColor(int red, int green, int blue);
-  int getR();
-  int getG();
-  int getB();
-  int getAlpha();
-  uint32_t getRGBA();
-  uint32_t getARGB();
+  static int colortoi (string color);
+  Color ();
+  Color (int r, int g, int b, int alpha = 255);
+  Color (string color, int alpha = 255);
+  void setColor (string color);
+  void setColor (int red, int green, int blue);
+  int getR ();
+  int getG ();
+  int getB ();
+  int getAlpha ();
+  uint32_t getRGBA ();
+  uint32_t getARGB ();
 };
 
 GINGA_UTIL_END

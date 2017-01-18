@@ -20,119 +20,147 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	CausalConnector::CausalConnector(string id) : Connector(id) {
-		conditionExpression = NULL;
-		actionExpression    = NULL;
+CausalConnector::CausalConnector (string id) : Connector (id)
+{
+  conditionExpression = NULL;
+  actionExpression = NULL;
 
-		typeSet.insert("CausalConnector");
-	}
+  typeSet.insert ("CausalConnector");
+}
 
-	CausalConnector::CausalConnector(
-		    string id,
-		    ConditionExpression *condition,
-		    Action *action) : Connector(id) {
+CausalConnector::CausalConnector (string id, ConditionExpression *condition,
+                                  Action *action)
+    : Connector (id)
+{
 
-		conditionExpression = (TriggerExpression*)condition;
-		actionExpression    = (Action*)action;
+  conditionExpression = (TriggerExpression *)condition;
+  actionExpression = (Action *)action;
 
-		typeSet.insert("CausalConnector");
-	}
+  typeSet.insert ("CausalConnector");
+}
 
-	CausalConnector::~CausalConnector() {
-		releaseAction();
-		releaseCondition();
-	}
+CausalConnector::~CausalConnector ()
+{
+  releaseAction ();
+  releaseCondition ();
+}
 
-	void CausalConnector::releaseAction() {
-		if (actionExpression != NULL) {
-			delete actionExpression;
-			actionExpression = NULL;
-		}
-	}
+void
+CausalConnector::releaseAction ()
+{
+  if (actionExpression != NULL)
+    {
+      delete actionExpression;
+      actionExpression = NULL;
+    }
+}
 
-	void CausalConnector::releaseCondition() {
-		if (conditionExpression != NULL) {
-			//delete conditionExpression;
-			//conditionExpression = NULL;
-		}
-	}
+void
+CausalConnector::releaseCondition ()
+{
+  if (conditionExpression != NULL)
+    {
+      // delete conditionExpression;
+      // conditionExpression = NULL;
+    }
+}
 
-	Action* CausalConnector::getAction() {
-		return actionExpression;
-	}
+Action *
+CausalConnector::getAction ()
+{
+  return actionExpression;
+}
 
-	ConditionExpression *CausalConnector::getConditionExpression() {
-		return conditionExpression;
-	}
+ConditionExpression *
+CausalConnector::getConditionExpression ()
+{
+  return conditionExpression;
+}
 
-	void CausalConnector::setAction(Action *newAction) {
-		releaseAction();
-		actionExpression = newAction;
-	}
+void
+CausalConnector::setAction (Action *newAction)
+{
+  releaseAction ();
+  actionExpression = newAction;
+}
 
-	void CausalConnector::setConditionExpression(
-		    ConditionExpression *newConditionExpression) {
+void
+CausalConnector::setConditionExpression (
+    ConditionExpression *newConditionExpression)
+{
 
-		releaseCondition();
-		conditionExpression = newConditionExpression;
-	}
+  releaseCondition ();
+  conditionExpression = newConditionExpression;
+}
 
-	void CausalConnector::getConditionRoles(
-		    ConditionExpression *condition, vector<Role*> *roles) {
+void
+CausalConnector::getConditionRoles (ConditionExpression *condition,
+                                    vector<Role *> *roles)
+{
 
-		vector<Role*> *childRoles;
+  vector<Role *> *childRoles;
 
-		if (conditionExpression->instanceOf("SimpleCondition")) {
-			roles->push_back((SimpleCondition*)condition);
+  if (conditionExpression->instanceOf ("SimpleCondition"))
+    {
+      roles->push_back ((SimpleCondition *)condition);
+    }
+  else
+    {
+      if (conditionExpression->instanceOf ("AssessmentStatement"))
+        {
+          childRoles = ((AssessmentStatement *)condition)->getRoles ();
+        }
+      else if (conditionExpression->instanceOf ("CompoundCondition"))
+        {
 
-		} else {
-			if (conditionExpression->instanceOf("AssessmentStatement")) {
-				childRoles = ((AssessmentStatement*)condition)->getRoles();
+          childRoles = ((CompoundCondition *)condition)->getRoles ();
+        }
+      else
+        {
+          childRoles = ((CompoundStatement *)condition)->getRoles ();
+        }
 
-			} else if (conditionExpression->instanceOf(
-				    "CompoundCondition")) {
+      vector<Role *>::iterator it;
+      for (it = childRoles->begin (); it != childRoles->end (); ++it)
+        {
+          roles->push_back (*it);
+        }
 
-				childRoles = ((CompoundCondition*)condition)->
-					    getRoles();
+      delete childRoles;
+    }
+}
 
-			} else {
-				childRoles = ((CompoundStatement*)condition)->getRoles();
-			}
+void
+CausalConnector::getActionRoles (Action *action, vector<Role *> *roles)
+{
 
-			vector<Role*>::iterator it;
-			for (it = childRoles->begin(); it != childRoles->end(); ++it) {
-				roles->push_back(*it);
-			}
+  vector<Role *> *childRoles;
 
-			delete childRoles;
-		}
-	}
+  if (actionExpression->instanceOf ("SimpleAction"))
+    {
+      roles->push_back ((SimpleAction *)action);
+    }
+  else
+    {
+      childRoles = ((CompoundAction *)action)->getRoles ();
+      vector<Role *>::iterator it;
+      for (it = childRoles->begin (); it != childRoles->end (); ++it)
+        {
+          roles->push_back (*it);
+        }
 
-	void CausalConnector::getActionRoles(
-		    Action *action, vector<Role*> *roles) {
+      delete childRoles;
+    }
+}
 
-		vector<Role*>* childRoles;
-
-		if (actionExpression->instanceOf("SimpleAction")) {
-			roles->push_back((SimpleAction*)action);
-
-		} else {
-			childRoles = ((CompoundAction*)action)->getRoles();
-			vector<Role*>::iterator it;
-			for (it = childRoles->begin(); it != childRoles->end(); ++it) {
-				roles->push_back( *it );
-			}
-
-			delete childRoles;
-		}
-	}
-
-	vector<Role*> *CausalConnector::getRoles() {
-		vector<Role*> *roles;
-		roles = new vector<Role*>;
-		getConditionRoles(conditionExpression, roles);
-		getActionRoles(actionExpression, roles);
-		return roles;
-	}
+vector<Role *> *
+CausalConnector::getRoles ()
+{
+  vector<Role *> *roles;
+  roles = new vector<Role *>;
+  getConditionRoles (conditionExpression, roles);
+  getActionRoles (actionExpression, roles);
+  return roles;
+}
 
 GINGA_NCL_END

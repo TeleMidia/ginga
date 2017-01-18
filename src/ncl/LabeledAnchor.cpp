@@ -20,17 +20,22 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	LabeledAnchor::LabeledAnchor(string id, string label) : Anchor(id) {
-		this->label = label;
-		typeSet.insert("LabeledAnchor");
-	}
+LabeledAnchor::LabeledAnchor (string id, string label) : Anchor (id)
+{
+  this->label = label;
+  typeSet.insert ("LabeledAnchor");
+}
 
-	string LabeledAnchor::getLabel() {
-		return label;
-	}
+string
+LabeledAnchor::getLabel ()
+{
+  return label;
+}
 
-	void LabeledAnchor::setLabel(string label) {
-		this->label = label;
-	}
+void
+LabeledAnchor::setLabel (string label)
+{
+  this->label = label;
+}
 
 GINGA_NCL_END

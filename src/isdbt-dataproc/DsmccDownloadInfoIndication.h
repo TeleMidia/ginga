@@ -21,33 +21,33 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "DsmccModule.h"
 #include "DsmccMessageHeader.h"
 
-
 GINGA_DATAPROC_BEGIN
 
-	class DsmccDownloadInfoIndication {
-		private:
-			unsigned int downloadId;
-			unsigned int blockSize;
-			unsigned int numberOfModules;
+class DsmccDownloadInfoIndication
+{
+private:
+  unsigned int downloadId;
+  unsigned int blockSize;
+  unsigned int numberOfModules;
 
-			//moduleId to module
-			map<unsigned int, DsmccModule*> modules;
+  // moduleId to module
+  map<unsigned int, DsmccModule *> modules;
 
-			DsmccMessageHeader* header;
+  DsmccMessageHeader *header;
 
-		public:
-			DsmccDownloadInfoIndication();
-			virtual ~DsmccDownloadInfoIndication();
+public:
+  DsmccDownloadInfoIndication ();
+  virtual ~DsmccDownloadInfoIndication ();
 
-			int processMessage(DsmccMessageHeader* message);
+  int processMessage (DsmccMessageHeader *message);
 
-			unsigned int getDonwloadId();
-			unsigned int getBlockSize();
-			unsigned int getNumberOfModules();
-			void getInfo(map<unsigned int, DsmccModule*>* ocInfo);
+  unsigned int getDonwloadId ();
+  unsigned int getBlockSize ();
+  unsigned int getNumberOfModules ();
+  void getInfo (map<unsigned int, DsmccModule *> *ocInfo);
 
-			void print();
-	};
+  void print ();
+};
 
 GINGA_DATAPROC_END
 

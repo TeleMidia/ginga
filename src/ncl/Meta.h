@@ -26,14 +26,14 @@ class Meta
 {
 private:
   string name;
-  void* content;
+  void *content;
 
 public:
-  Meta(string name, void* content);
-  void* getContent();
-  string getName();
-  void setContent(void* content);
-  void setName(string name);
+  Meta (string name, void *content);
+  void *getContent ();
+  string getName ();
+  void setContent (void *content);
+  void setName (string name);
 };
 
 GINGA_NCL_END

@@ -20,56 +20,75 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TSPARSER_BEGIN
 
-	PSIFilter::PSIFilter(IDemuxer* dm) {
-		pid          = -1;
-		tid          = -1;
-		tidExt       = -1;
-		feDescriptor = -1;
-		demuxer      = dm;
-	}
+PSIFilter::PSIFilter (IDemuxer *dm)
+{
+  pid = -1;
+  tid = -1;
+  tidExt = -1;
+  feDescriptor = -1;
+  demuxer = dm;
+}
 
-	PSIFilter::~PSIFilter() {
+PSIFilter::~PSIFilter () {}
 
-	}
+void
+PSIFilter::setPid (int pid)
+{
+  this->pid = pid;
+}
 
-	void PSIFilter::setPid(int pid) {
-		this->pid = pid;
-	}
+int
+PSIFilter::getPid ()
+{
+  return pid;
+}
 
-	int PSIFilter::getPid() {
-		return pid;
-	}
+void
+PSIFilter::setTid (int tid)
+{
+  this->tid = tid;
+}
 
-	void PSIFilter::setTid(int tid) {
-		this->tid = tid;
-	}
+int
+PSIFilter::getTid ()
+{
+  return tid;
+}
 
-	int PSIFilter::getTid() {
-		return tid;
-	}
+void
+PSIFilter::setTidExt (int tidExt)
+{
+  this->tidExt = tidExt;
+}
 
-	void PSIFilter::setTidExt(int tidExt) {
-		this->tidExt = tidExt;
-	}
+int
+PSIFilter::getTidExt ()
+{
+  return tidExt;
+}
 
-	int PSIFilter::getTidExt() {
-		return tidExt;
-	}
+void
+PSIFilter::setDescriptor (int feDescripor)
+{
+  this->feDescriptor = feDescripor;
+}
 
-	void PSIFilter::setDescriptor(int feDescripor) {
-		this->feDescriptor = feDescripor;
-	}
+int
+PSIFilter::getDescriptor ()
+{
+  return feDescriptor;
+}
 
-	int PSIFilter::getDescriptor() {
-		return feDescriptor;
-	}
+void
+PSIFilter::receivePes (char *pes, int pesLen)
+{
+  // filter->receivePes(pes, pesLen);
+}
 
-	void PSIFilter::receivePes(char* pes, int pesLen) {
-		//filter->receivePes(pes, pesLen);
-	}
-
-	void PSIFilter::receiveSection(char* section, int secLen) {
-		demuxer->receiveSection(section, secLen, this);
-	}
+void
+PSIFilter::receiveSection (char *section, int secLen)
+{
+  demuxer->receiveSection (section, secLen, this);
+}
 
 GINGA_TSPARSER_END

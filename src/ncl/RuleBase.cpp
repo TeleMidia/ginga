@@ -20,103 +20,131 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	RuleBase::RuleBase(string id) : Base(id) {
-		ruleSet = new vector<Rule*>;
-		typeSet.insert("RuleBase");
-	}
+RuleBase::RuleBase (string id) : Base (id)
+{
+  ruleSet = new vector<Rule *>;
+  typeSet.insert ("RuleBase");
+}
 
-	RuleBase::~RuleBase() {
-		vector<Rule*>::iterator i;
+RuleBase::~RuleBase ()
+{
+  vector<Rule *>::iterator i;
 
-		if (ruleSet != NULL) {
-			i = ruleSet->begin();
-			while (i != ruleSet->end()) {
-				delete *i;
-				++i;
-			}
+  if (ruleSet != NULL)
+    {
+      i = ruleSet->begin ();
+      while (i != ruleSet->end ())
+        {
+          delete *i;
+          ++i;
+        }
 
-			delete ruleSet;
-			ruleSet = NULL;
-		}
-	}
+      delete ruleSet;
+      ruleSet = NULL;
+    }
+}
 
-	bool RuleBase::addRule(Rule* rule) {
-		if (rule == NULL)
-			return false;
+bool
+RuleBase::addRule (Rule *rule)
+{
+  if (rule == NULL)
+    return false;
 
-		vector<Rule*>::iterator i;
-		for (i=ruleSet->begin(); i!=ruleSet->end(); ++i) {
-			if (*i == rule)
-				return false;
-		}
+  vector<Rule *>::iterator i;
+  for (i = ruleSet->begin (); i != ruleSet->end (); ++i)
+    {
+      if (*i == rule)
+        return false;
+    }
 
-		ruleSet->push_back(rule);
-		return true;
-	}
+  ruleSet->push_back (rule);
+  return true;
+}
 
-	bool RuleBase::addBase(Base* base, string alias, string location){
-		if (base->instanceOf("RuleBase")) {
-			return Base::addBase(base, alias, location);
-		}
-		return false;
-	}
+bool
+RuleBase::addBase (Base *base, string alias, string location)
+{
+  if (base->instanceOf ("RuleBase"))
+    {
+      return Base::addBase (base, alias, location);
+    }
+  return false;
+}
 
-	void RuleBase::clear() {
-		ruleSet->clear();
-		Base::clear();
-	}
+void
+RuleBase::clear ()
+{
+  ruleSet->clear ();
+  Base::clear ();
+}
 
-	Rule* RuleBase::getRuleLocally(string ruleId) {
-		vector<Rule*>::iterator rules;
+Rule *
+RuleBase::getRuleLocally (string ruleId)
+{
+  vector<Rule *>::iterator rules;
 
-		rules = ruleSet->begin();
-		while (rules != ruleSet->end()) {
-			if ((*rules)->getId() == ruleId) {
-				return (*rules);
-			}
-			++rules;
-		}
-		return NULL;
-	}
+  rules = ruleSet->begin ();
+  while (rules != ruleSet->end ())
+    {
+      if ((*rules)->getId () == ruleId)
+        {
+          return (*rules);
+        }
+      ++rules;
+    }
+  return NULL;
+}
 
-	Rule* RuleBase::getRule(string ruleId) {
-		string::size_type index;
-		string prefix, suffix;
-		RuleBase* base;
+Rule *
+RuleBase::getRule (string ruleId)
+{
+  string::size_type index;
+  string prefix, suffix;
+  RuleBase *base;
 
-		index = ruleId.find_first_of("#");
-		if (index == string::npos) {
-			return getRuleLocally(ruleId);
-		}
-		prefix = ruleId.substr(0, index);
-		index++;
-		suffix = ruleId.substr(index, ruleId.length() - index);
-		if (baseAliases.find(prefix) != baseAliases.end()) {
-			base = (RuleBase*)(baseAliases[prefix]);
-			return base->getRule(suffix);
+  index = ruleId.find_first_of ("#");
+  if (index == string::npos)
+    {
+      return getRuleLocally (ruleId);
+    }
+  prefix = ruleId.substr (0, index);
+  index++;
+  suffix = ruleId.substr (index, ruleId.length () - index);
+  if (baseAliases.find (prefix) != baseAliases.end ())
+    {
+      base = (RuleBase *)(baseAliases[prefix]);
+      return base->getRule (suffix);
+    }
+  else if (baseLocations.find (prefix) != baseLocations.end ())
+    {
+      base = (RuleBase *)(baseLocations[prefix]);
+      return base->getRule (suffix);
+    }
+  else
+    {
+      return NULL;
+    }
+}
 
-		} else if (baseLocations.find(prefix) != baseLocations.end()) {
-			base = (RuleBase*)(baseLocations[prefix]);
-			return base->getRule(suffix);
+vector<Rule *> *
+RuleBase::getRules ()
+{
+  return ruleSet;
+}
 
-		} else {
-			return NULL;
-		}
-	}
-
-	vector<Rule*>* RuleBase::getRules() {
-		return ruleSet;
-	}
-
-	bool RuleBase::removeRule(Rule* rule) {
-		vector<Rule*>::iterator i;
-		for (i=ruleSet->begin(); i!=ruleSet->end(); ++i) {
-			if (*i == rule) {
-				ruleSet->erase(i);
-				return true;
-			}
-		}
-		return false;
-	}
+bool
+RuleBase::removeRule (Rule *rule)
+{
+  vector<Rule *>::iterator i;
+  for (i = ruleSet->begin (); i != ruleSet->end (); ++i)
+    {
+      if (*i == rule)
+        {
+          ruleSet->erase (i);
+          return true;
+        }
+    }
+  return false;
+}
 
 GINGA_NCL_END

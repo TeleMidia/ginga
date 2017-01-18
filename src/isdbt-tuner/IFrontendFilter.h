@@ -25,17 +25,17 @@ GINGA_TUNER_BEGIN
 class IFrontendFilter
 {
 public:
-  virtual ~IFrontendFilter(){};
-  virtual void setPid(int pid)=0;
-  virtual int getPid()=0;
-  virtual void setTid(int tid)=0;
-  virtual int getTid()=0;
-  virtual void setTidExt(int tidExt)=0;
-  virtual int getTidExt()=0;
-  virtual void setDescriptor(int feDescripor)=0;
-  virtual int getDescriptor()=0;
-  virtual void receivePes(char* pes, int pesLen)=0;
-  virtual void receiveSection(char* section, int secLen)=0;
+  virtual ~IFrontendFilter (){};
+  virtual void setPid (int pid) = 0;
+  virtual int getPid () = 0;
+  virtual void setTid (int tid) = 0;
+  virtual int getTid () = 0;
+  virtual void setTidExt (int tidExt) = 0;
+  virtual int getTidExt () = 0;
+  virtual void setDescriptor (int feDescripor) = 0;
+  virtual int getDescriptor () = 0;
+  virtual void receivePes (char *pes, int pesLen) = 0;
+  virtual void receiveSection (char *section, int secLen) = 0;
 };
 
 GINGA_TUNER_END

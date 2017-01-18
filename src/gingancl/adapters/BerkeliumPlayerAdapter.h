@@ -30,23 +30,22 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 #include "mb/LocalScreenManager.h"
 using namespace ::ginga::mb;
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_XHTML_BEGIN
 
-	class BerkeliumPlayerAdapter : public FormatterPlayerAdapter {
-		public:
-			BerkeliumPlayerAdapter();
-			virtual ~BerkeliumPlayerAdapter(){};
+class BerkeliumPlayerAdapter : public FormatterPlayerAdapter
+{
+public:
+  BerkeliumPlayerAdapter ();
+  virtual ~BerkeliumPlayerAdapter (){};
 
-		protected:
-			void rebase();
-			void updateProperties();
-			void createPlayer();
+protected:
+  void rebase ();
+  void updateProperties ();
+  void createPlayer ();
 
-		public:
-			bool setPropertyValue(
-				    AttributionEvent* event, string value);
-	};
+public:
+  bool setPropertyValue (AttributionEvent *event, string value);
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_APPLICATION_XHTML_END
 #endif /*BerkeliumPlayerAdapter_H_*/

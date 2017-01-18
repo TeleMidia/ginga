@@ -23,13 +23,13 @@ using namespace ::ginga::tsparser;
 
 GINGA_TSPARSER_BEGIN
 
-	class IServiceDescriptor : public IMpegDescriptor{
-		public:
-			~IServiceDescriptor(){};
-			virtual string getServiceProviderNameChar()=0;
-			virtual string getServiceNameChar()=0;
-
-	};
+class IServiceDescriptor : public IMpegDescriptor
+{
+public:
+  ~IServiceDescriptor (){};
+  virtual string getServiceProviderNameChar () = 0;
+  virtual string getServiceNameChar () = 0;
+};
 
 GINGA_TSPARSER_END
 

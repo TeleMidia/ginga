@@ -23,11 +23,12 @@ using namespace ::ginga::ncl;
 
 GINGA_NCL_BEGIN
 
-	class SwitchContent : public Content {
-		public:
-			SwitchContent();
-			virtual ~SwitchContent(){};
-	};
+class SwitchContent : public Content
+{
+public:
+  SwitchContent ();
+  virtual ~SwitchContent (){};
+};
 
 GINGA_NCL_END
 

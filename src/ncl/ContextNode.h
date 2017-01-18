@@ -28,39 +28,39 @@ using namespace ::ginga::ncl;
 #include "NodeEntity.h"
 #include "CompositeNode.h"
 
-
 GINGA_NCL_BEGIN
 
-	class ContextNode : public CompositeNode, public LinkComposition {
-		protected:
-			map<string, GenericDescriptor*> descriptorCollection;
+class ContextNode : public CompositeNode, public LinkComposition
+{
+protected:
+  map<string, GenericDescriptor *> descriptorCollection;
 
-		private:
-			set<Link*> linkSet;
+private:
+  set<Link *> linkSet;
 
-		public:
-			ContextNode(string id);
-			virtual ~ContextNode();
+public:
+  ContextNode (string id);
+  virtual ~ContextNode ();
 
-			bool instanceOf(string className) {
-				return Entity::instanceOf(className);
-			};
+  bool
+  instanceOf (string className)
+  {
+    return Entity::instanceOf (className);
+  };
 
-			bool addLink(Link* link);
-			bool addNode(Node* node);
+  bool addLink (Link *link);
+  bool addNode (Node *node);
 
-			void clearLinks();
-			bool containsLink(Link* link);
-			virtual set<Link*>* getLinks();
-			Link* getLink(string linkId);
-			GenericDescriptor* getNodeDescriptor(Node *node);
-			int getNumLinks();
-			bool removeLink(string linkId);
-			bool removeLink(Link* link);
-			bool setNodeDescriptor(
-				    string nodeId,
-				    GenericDescriptor* descriptor);
-	};
+  void clearLinks ();
+  bool containsLink (Link *link);
+  virtual set<Link *> *getLinks ();
+  Link *getLink (string linkId);
+  GenericDescriptor *getNodeDescriptor (Node *node);
+  int getNumLinks ();
+  bool removeLink (string linkId);
+  bool removeLink (Link *link);
+  bool setNodeDescriptor (string nodeId, GenericDescriptor *descriptor);
+};
 
 GINGA_NCL_END
 

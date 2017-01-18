@@ -20,10 +20,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	LambdaAnchor::LambdaAnchor(string id) : RelativeTimeIntervalAnchor(
-		    id, 0, IntervalAnchor::OBJECT_DURATION) {
+LambdaAnchor::LambdaAnchor (string id)
+    : RelativeTimeIntervalAnchor (id, 0, IntervalAnchor::OBJECT_DURATION)
+{
 
-		typeSet.insert("LambdaAnchor");
-	}
+  typeSet.insert ("LambdaAnchor");
+}
 
 GINGA_NCL_END

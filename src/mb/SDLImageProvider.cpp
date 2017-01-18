@@ -36,118 +36,131 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
+bool SDLImageProvider::mutexInit = false;
+bool SDLImageProvider::initialized = false;
+short SDLImageProvider::imageRefs = 0;
+pthread_mutex_t SDLImageProvider::pMutex;
 
-	bool SDLImageProvider::mutexInit   = false;
-	bool SDLImageProvider::initialized = false;
-	short SDLImageProvider::imageRefs  = 0;
-	pthread_mutex_t SDLImageProvider::pMutex;
+SDLImageProvider::SDLImageProvider (GingaScreenID screenId, const char *mrl)
+{
 
-	SDLImageProvider::SDLImageProvider(
-			GingaScreenID screenId, const char* mrl) {
+  type = ImageProvider;
 
-		type = ImageProvider;
+  if (!mutexInit)
+    {
+      mutexInit = true;
+      Thread::mutexInit (&pMutex, true);
+    }
 
-		if (!mutexInit) {
-			mutexInit = true;
-			Thread::mutexInit(&pMutex, true);
-		}
+  // Thread::mutexLock(&pMutex);
+  // imageRefs++;
 
-		//Thread::mutexLock(&pMutex);
-		//imageRefs++;
+  imgUri = "";
+  myScreen = screenId;
 
-		imgUri   = "";
-		myScreen = screenId;
+  imgUri.assign (mrl);
 
-		imgUri.assign(mrl);
+  // Thread::mutexUnlock(&pMutex);
+}
 
-		//Thread::mutexUnlock(&pMutex);
-	}
+SDLImageProvider::~SDLImageProvider ()
+{
+  // Thread::mutexLock(&pMutex);
+  // imageRefs--;
 
-	SDLImageProvider::~SDLImageProvider() {
-		//Thread::mutexLock(&pMutex);
-		//imageRefs--;
+  // if (imageRefs == 0) {
+  // FIXME: Find a better way to do this!
+  // IMG_Quit();
+  // initialized = false;
+  //}
 
-		//if (imageRefs == 0) {
-			// FIXME: Find a better way to do this!
-			// IMG_Quit();
-			// initialized = false;
-		//}
+  // Thread::mutexUnlock(&pMutex);
+}
 
-		//Thread::mutexUnlock(&pMutex);
-	}
+void
+SDLImageProvider::playOver (GingaSurfaceID surface)
+{
+  SDL_Surface *renderedSurface;
+  SDLWindow *parent;
 
-	void SDLImageProvider::playOver(GingaSurfaceID surface) {
-		SDL_Surface* renderedSurface;
-		SDLWindow* parent;
+  Thread::mutexLock (&pMutex);
 
-		Thread::mutexLock(&pMutex);
+  if (!initialized)
+    {
+      initialized = true;
+      if (IMG_Init (0) < 0)
+        {
+          clog << "SDLFontProvider::playOver ";
+          clog << "Couldn't initialize IMG: " << SDL_GetError ();
+          clog << endl;
+        }
+    }
 
-		if (!initialized) {
-			initialized = true;
-			if (IMG_Init(0) < 0) {
-				clog << "SDLFontProvider::playOver ";
-				clog << "Couldn't initialize IMG: " << SDL_GetError();
-				clog << endl;
-			}
-		}
-
-		if (surface != 0 && ScreenManagerFactory::getInstance()->hasSurface(
-				myScreen, surface)) {
+  if (surface != 0
+      && ScreenManagerFactory::getInstance ()->hasSurface (myScreen, surface))
+    {
 
 #if WITH_LIBRSVG
-                    if( imgUri.substr(imgUri.find_last_of(".") + 1) == "svg" ||
-                        imgUri.substr(imgUri.find_last_of(".") + 1) == "svgz")
-                    {
-                        int w = 0, h = 0;
-                        // We need the region dimensions for SVG. How to do it?
+      if (imgUri.substr (imgUri.find_last_of (".") + 1) == "svg"
+          || imgUri.substr (imgUri.find_last_of (".") + 1) == "svgz")
+        {
+          int w = 0, h = 0;
+          // We need the region dimensions for SVG. How to do it?
 
-                        SDLSvgDecoder *svgdec = new SDLSvgDecoder(imgUri);
-                        SDLDeviceScreen::lockSDL();
-                        renderedSurface = svgdec->decode(w, h);
-			SDLDeviceScreen::unlockSDL();
-                        delete svgdec;
-                    } else
+          SDLSvgDecoder *svgdec = new SDLSvgDecoder (imgUri);
+          SDLDeviceScreen::lockSDL ();
+          renderedSurface = svgdec->decode (w, h);
+          SDLDeviceScreen::unlockSDL ();
+          delete svgdec;
+        }
+      else
 #endif
 #if WITH_LIBBPG
-                    if ( imgUri.substr(imgUri.find_last_of(".") + 1) == "bpg")
-                    {
-                        SDLBpgDecoder *bpgdec = new SDLBpgDecoder(imgUri);
-                        SDLDeviceScreen::lockSDL();
-                        renderedSurface = bpgdec->decode();
-			SDLDeviceScreen::unlockSDL();
-                    } else
+          if (imgUri.substr (imgUri.find_last_of (".") + 1) == "bpg")
+        {
+          SDLBpgDecoder *bpgdec = new SDLBpgDecoder (imgUri);
+          SDLDeviceScreen::lockSDL ();
+          renderedSurface = bpgdec->decode ();
+          SDLDeviceScreen::unlockSDL ();
+        }
+      else
 #endif
-                    {
-                        SDLDeviceScreen::lockSDL();
-			renderedSurface = IMG_Load(imgUri.c_str());
-			SDLDeviceScreen::unlockSDL();
-                    }
+        {
+          SDLDeviceScreen::lockSDL ();
+          renderedSurface = IMG_Load (imgUri.c_str ());
+          SDLDeviceScreen::unlockSDL ();
+        }
 
-			if (renderedSurface != NULL) {
-				SDLDeviceScreen::addUnderlyingSurface(renderedSurface);
-				GingaWindowID parentId = ScreenManagerFactory::getInstance()->
-						getSurfaceParentWindow(surface);
-				parent = (SDLWindow*)ScreenManagerFactory::getInstance()->
-						getIWindowFromId(myScreen, parentId);
+      if (renderedSurface != NULL)
+        {
+          SDLDeviceScreen::addUnderlyingSurface (renderedSurface);
+          GingaWindowID parentId
+              = ScreenManagerFactory::getInstance ()->getSurfaceParentWindow (
+                  surface);
+          parent = (SDLWindow *)ScreenManagerFactory::getInstance ()
+                       ->getIWindowFromId (myScreen, parentId);
 
-				if (parent != NULL) {
-					parent->setRenderedSurface(renderedSurface);
-				}
-				ScreenManagerFactory::getInstance()->setSurfaceContent(
-						surface, (void*)renderedSurface);
+          if (parent != NULL)
+            {
+              parent->setRenderedSurface (renderedSurface);
+            }
+          ScreenManagerFactory::getInstance ()->setSurfaceContent (
+              surface, (void *)renderedSurface);
+        }
+    }
+  else
+    {
+      clog << "SDLImageProvider::playOver Warning! NULL content";
+      clog << endl;
+    }
 
-                        }
+  Thread::mutexUnlock (&pMutex);
+}
 
-		} else {
-			clog << "SDLImageProvider::playOver Warning! NULL content";
-			clog << endl;
-		}
-
-		Thread::mutexUnlock(&pMutex);
-	}
-
-	bool SDLImageProvider::releaseAll() {
-		return false;
-	}
+bool
+SDLImageProvider::releaseAll ()
+{
+  return false;
+}
 
 GINGA_MB_END

@@ -29,33 +29,30 @@ using namespace ::ginga::system;
 
 #include "ITOT.h"
 
-
-
-
 GINGA_TSPARSER_BEGIN
 
+class TOT : public ITOT
+{
+protected:
+  unsigned char UTC3Time[5];
+  struct tm time;
+  unsigned short descriptorsLoopLength;
+  vector<IMpegDescriptor *> *descriptors;
 
-	class TOT : public ITOT {
-		protected:
-			unsigned char UTC3Time[5];
-			struct tm time;
-			unsigned short descriptorsLoopLength;
-			vector<IMpegDescriptor*>* descriptors;
-		public:
-			TOT();
-			~TOT();
-			string getUTC3TimeStr();
-			struct tm getUTC3TimeTm();
-			vector<IMpegDescriptor*>* getDescriptors();
-			void print();
-			void process(void* payloadBytes, unsigned int payloadSize);
+public:
+  TOT ();
+  ~TOT ();
+  string getUTC3TimeStr ();
+  struct tm getUTC3TimeTm ();
+  vector<IMpegDescriptor *> *getDescriptors ();
+  void print ();
+  void process (void *payloadBytes, unsigned int payloadSize);
 
-		private:
-			void calculateTime();
-			struct tm convertMJDtoUTC(unsigned int mjd);
-			int convertBCDtoDecimal(int bcd);
-
-	};
+private:
+  void calculateTime ();
+  struct tm convertMJDtoUTC (unsigned int mjd);
+  int convertBCDtoDecimal (int bcd);
+};
 
 GINGA_TSPARSER_END
 

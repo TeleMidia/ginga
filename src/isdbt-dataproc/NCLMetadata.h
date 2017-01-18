@@ -22,70 +22,68 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_DATAPROC_BEGIN
 
-	class NCLMetadata : public INCLMetadata {
-		private:
-			ofstream* mdFile;
-			string name;
-			double totalLength;
-			double targetTotalLen;
-			string baseUri;
-			string mdUri;
-			INCLDataFile* rootObject;
-			map<int, INCLDataFile*>* dataFiles;
+class NCLMetadata : public INCLMetadata
+{
+private:
+  ofstream *mdFile;
+  string name;
+  double totalLength;
+  double targetTotalLen;
+  string baseUri;
+  string mdUri;
+  INCLDataFile *rootObject;
+  map<int, INCLDataFile *> *dataFiles;
 
-		public:
-			NCLMetadata(string name);
-			virtual ~NCLMetadata();
+public:
+  NCLMetadata (string name);
+  virtual ~NCLMetadata ();
 
-			string getRootUri();
-			string getName();
-			double getTotalLength();
-			void setTargetTotalLength(double targetSize);
-			bool isConsolidated();
+  string getRootUri ();
+  string getName ();
+  double getTotalLength ();
+  void setTargetTotalLength (double targetSize);
+  bool isConsolidated ();
 
-			void setBaseUri(string uri);
-			string getBaseUri();
+  void setBaseUri (string uri);
+  string getBaseUri ();
 
-			void setRootObject(INCLDataFile* rootObject);
-			INCLDataFile* getRootObject();
+  void setRootObject (INCLDataFile *rootObject);
+  INCLDataFile *getRootObject ();
 
-			void addDataFile(INCLDataFile* dataObject);
-			INCLDataFile* getDataFile(int structureId);
-			map<int, INCLDataFile*>* getDataFiles();
+  void addDataFile (INCLDataFile *dataObject);
+  INCLDataFile *getDataFile (int structureId);
+  map<int, INCLDataFile *> *getDataFiles ();
 
-		private:
-			bool updateTotalLength(INCLDataFile* dataFile);
+private:
+  bool updateTotalLength (INCLDataFile *dataFile);
 
-		public:
-			vector<StreamData*>* createNCLSections();
+public:
+  vector<StreamData *> *createNCLSections ();
 
-		private:
-			bool createMetadataFile();
-			void closeMetadataFile();
+private:
+  bool createMetadataFile ();
+  void closeMetadataFile ();
 
-			void openMetadataElement();
-			void closeMetadataElement();
+  void openMetadataElement ();
+  void closeMetadataElement ();
 
-			void openBaseDataElement();
-			void closeBaseDataElement();
+  void openBaseDataElement ();
+  void closeBaseDataElement ();
 
-			void writeRootElement(
-					string sId, string uri, string size, string componentTag);
+  void writeRootElement (string sId, string uri, string size,
+                         string componentTag);
 
-			void writeDataElement(
-					string sId, string uri, string size, string componentTag);
+  void writeDataElement (string sId, string uri, string size,
+                         string componentTag);
 
-			void copyContent(string uri, char* stream, int fileSize);
+  void copyContent (string uri, char *stream, int fileSize);
 
-			StreamData* createStreamData(
-					int structId,
-					int structType,
-					string uri,
-					int fileSize);
+  StreamData *createStreamData (int structId, int structType, string uri,
+                                int fileSize);
 
-		public:
-			static int getFileSize(string uri);
-	};
+public:
+  static int getFileSize (string uri);
+};
 
 GINGA_DATAPROC_END
 

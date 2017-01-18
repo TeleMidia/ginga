@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef REGIONBASE_H_
 #define REGIONBASE_H_
 
-
 #include "Base.h"
 
 #include "LayoutRegion.h"
@@ -26,43 +25,41 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	class RegionBase : public Base {
-		private:
-			string device;
-			int deviceClass;
-			string outputMapRegionId;
-			map<string, LayoutRegion*> regions;
-			LayoutRegion* deviceRegion;
-			DeviceLayout* deviceLayout;
+class RegionBase : public Base
+{
+private:
+  string device;
+  int deviceClass;
+  string outputMapRegionId;
+  map<string, LayoutRegion *> regions;
+  LayoutRegion *deviceRegion;
+  DeviceLayout *deviceLayout;
 
-		public:
-			RegionBase(string id, DeviceLayout* deviceLayout);
-			virtual ~RegionBase();
+public:
+  RegionBase (string id, DeviceLayout *deviceLayout);
+  virtual ~RegionBase ();
 
-		private:
-			void createDeviceRegion();
+private:
+  void createDeviceRegion ();
 
-		public:
-			bool addRegion(LayoutRegion* region);
-			virtual bool addBase(
-				    Base* base,
-				    string alias,
-				    string location);
+public:
+  bool addRegion (LayoutRegion *region);
+  virtual bool addBase (Base *base, string alias, string location);
 
-		private:
-			LayoutRegion* getRegionLocally(string regionId);
+private:
+  LayoutRegion *getRegionLocally (string regionId);
 
-		public:
-			string getOutputMapRegionId();
-			void setOutputMapRegion(LayoutRegion* outputMapRegion);
-			LayoutRegion* getRegion(string regionId);
-			vector<LayoutRegion*>* getRegions();
-			bool removeRegion(LayoutRegion* region);
-			string getDevice();
-			void setDevice(string device, string regionId);
-			int getDeviceClass();
-			void clear();
-	};
+public:
+  string getOutputMapRegionId ();
+  void setOutputMapRegion (LayoutRegion *outputMapRegion);
+  LayoutRegion *getRegion (string regionId);
+  vector<LayoutRegion *> *getRegions ();
+  bool removeRegion (LayoutRegion *region);
+  string getDevice ();
+  void setDevice (string device, string regionId);
+  int getDeviceClass ();
+  void clear ();
+};
 
 GINGA_NCL_END
 

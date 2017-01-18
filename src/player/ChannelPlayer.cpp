@@ -18,171 +18,218 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "player/ChannelPlayer.h"
 
-
 GINGA_PLAYER_BEGIN
 
-	ChannelPlayer::ChannelPlayer(GingaScreenID screenId) : Player(screenId, "") {
-		this->objectMap = NULL;
-		this->selectedPlayer = NULL;
-		this->hasParent = false;
-	}
+ChannelPlayer::ChannelPlayer (GingaScreenID screenId) : Player (screenId, "")
+{
+  this->objectMap = NULL;
+  this->selectedPlayer = NULL;
+  this->hasParent = false;
+}
 
-	ChannelPlayer::~ChannelPlayer() {
-		map<string, IPlayer*>::iterator players;
-		IPlayer* objectPlayer;
+ChannelPlayer::~ChannelPlayer ()
+{
+  map<string, IPlayer *>::iterator players;
+  IPlayer *objectPlayer;
 
-		if (objectMap != NULL) {
-			players = objectMap->begin();
-			while (players != objectMap->end()) {
-				objectPlayer = players->second;
-				delete objectPlayer;
-				objectPlayer = NULL;
-				++players;
-			}
+  if (objectMap != NULL)
+    {
+      players = objectMap->begin ();
+      while (players != objectMap->end ())
+        {
+          objectPlayer = players->second;
+          delete objectPlayer;
+          objectPlayer = NULL;
+          ++players;
+        }
 
-			objectMap->clear();
-			delete objectMap;
-			objectMap = NULL;
-		}
-	}
+      objectMap->clear ();
+      delete objectMap;
+      objectMap = NULL;
+    }
+}
 
-	void ChannelPlayer::setPlayerMap(map<string, IPlayer*>* objs) {
-		objectMap = objs;
-	}
+void
+ChannelPlayer::setPlayerMap (map<string, IPlayer *> *objs)
+{
+  objectMap = objs;
+}
 
-	IPlayer* ChannelPlayer::getSelectedPlayer() {
-		if (selectedPlayer == NULL) {
-			clog << "ChannelPlayer::getSelectedPlayerAdd == NULL";
-			clog << endl;
-			return NULL;
-		}
-		return selectedPlayer;
-	}
+IPlayer *
+ChannelPlayer::getSelectedPlayer ()
+{
+  if (selectedPlayer == NULL)
+    {
+      clog << "ChannelPlayer::getSelectedPlayerAdd == NULL";
+      clog << endl;
+      return NULL;
+    }
+  return selectedPlayer;
+}
 
-	map<string, IPlayer*>* ChannelPlayer::getPlayerMap() {
-		if (objectMap == NULL || objectMap->empty()) {
-			return NULL;
-		}
+map<string, IPlayer *> *
+ChannelPlayer::getPlayerMap ()
+{
+  if (objectMap == NULL || objectMap->empty ())
+    {
+      return NULL;
+    }
 
-		return objectMap;
-	}
+  return objectMap;
+}
 
-	IPlayer* ChannelPlayer::getPlayer(string objectId) {
-		IPlayer* newSelected;
+IPlayer *
+ChannelPlayer::getPlayer (string objectId)
+{
+  IPlayer *newSelected;
 
-		if (objectMap->count(objectId) != 0) {
-			newSelected = (*objectMap)[objectId];
-			if (newSelected != NULL && newSelected != selectedPlayer) {
-				return newSelected;
-			}
-		}
+  if (objectMap->count (objectId) != 0)
+    {
+      newSelected = (*objectMap)[objectId];
+      if (newSelected != NULL && newSelected != selectedPlayer)
+        {
+          return newSelected;
+        }
+    }
 
-		return NULL;
-	}
+  return NULL;
+}
 
-	void ChannelPlayer::select(IPlayer* selObject) {
-		if (selectedPlayer != NULL) {
-			selectedPlayer->removeListener(this);
-		}
+void
+ChannelPlayer::select (IPlayer *selObject)
+{
+  if (selectedPlayer != NULL)
+    {
+      selectedPlayer->removeListener (this);
+    }
 
-		this->selectedPlayer = selObject;
-		if (selectedPlayer != NULL) {
-			selectedPlayer->addListener(this);
-		}
-	}
+  this->selectedPlayer = selObject;
+  if (selectedPlayer != NULL)
+    {
+      selectedPlayer->addListener (this);
+    }
+}
 
-	double ChannelPlayer::getMediaTime() {
-		return selectedPlayer->getMediaTime();
-	}
+double
+ChannelPlayer::getMediaTime ()
+{
+  return selectedPlayer->getMediaTime ();
+}
 
-	void ChannelPlayer::setSurfacesParent(GingaWindowID parent) {
-		map<string, IPlayer*>::iterator players;
-		IPlayer* avPlayer;
-		GingaSurfaceID s = 0;
+void
+ChannelPlayer::setSurfacesParent (GingaWindowID parent)
+{
+  map<string, IPlayer *>::iterator players;
+  IPlayer *avPlayer;
+  GingaSurfaceID s = 0;
 
-		players = objectMap->begin();
-		while (players != objectMap->end()) {
-			avPlayer = players->second;
-			s = ((Player*)avPlayer)->getSurface();
-			if (s != 0 && dm->getSurfaceParentWindow(s) != parent) {
-				dm->setSurfaceParentWindow(myScreen, s, parent);
-			}
-			++players;
-		}
-		hasParent = true;
-	}
+  players = objectMap->begin ();
+  while (players != objectMap->end ())
+    {
+      avPlayer = players->second;
+      s = ((Player *)avPlayer)->getSurface ();
+      if (s != 0 && dm->getSurfaceParentWindow (s) != parent)
+        {
+          dm->setSurfaceParentWindow (myScreen, s, parent);
+        }
+      ++players;
+    }
+  hasParent = true;
+}
 
-	GingaSurfaceID ChannelPlayer::getSurface() {
-		if (selectedPlayer != NULL) {
-			return ((Player*)selectedPlayer)->getSurface();
-		}
-		return 0;
-	}
+GingaSurfaceID
+ChannelPlayer::getSurface ()
+{
+  if (selectedPlayer != NULL)
+    {
+      return ((Player *)selectedPlayer)->getSurface ();
+    }
+  return 0;
+}
 
-	bool ChannelPlayer::play() {
-		GingaSurfaceID s;
+bool
+ChannelPlayer::play ()
+{
+  GingaSurfaceID s;
 
-		if (selectedPlayer != NULL) {
-			s = ((Player*)selectedPlayer)->getSurface();
-			if (!hasParent && s != 0 && dm->getSurfaceParentWindow(s) != 0) {
-				GingaWindowID parentWindow = dm->getSurfaceParentWindow(s);
-				setSurfacesParent(parentWindow);
-			}
-			selectedPlayer->play();
-		}
+  if (selectedPlayer != NULL)
+    {
+      s = ((Player *)selectedPlayer)->getSurface ();
+      if (!hasParent && s != 0 && dm->getSurfaceParentWindow (s) != 0)
+        {
+          GingaWindowID parentWindow = dm->getSurfaceParentWindow (s);
+          setSurfacesParent (parentWindow);
+        }
+      selectedPlayer->play ();
+    }
 
-		return Player::play();
-	}
+  return Player::play ();
+}
 
-	void ChannelPlayer::pause() {
-		if (selectedPlayer != NULL) {
-			selectedPlayer->pause();
-		}
-		Player::pause();
-	}
+void
+ChannelPlayer::pause ()
+{
+  if (selectedPlayer != NULL)
+    {
+      selectedPlayer->pause ();
+    }
+  Player::pause ();
+}
 
-	void ChannelPlayer::resume() {
-		if (selectedPlayer != NULL) {
-			selectedPlayer->resume();
-		}
-		Player::resume();
-	}
+void
+ChannelPlayer::resume ()
+{
+  if (selectedPlayer != NULL)
+    {
+      selectedPlayer->resume ();
+    }
+  Player::resume ();
+}
 
-	void ChannelPlayer::stop() {
-		IPlayer* objectPlayer;
-		map<string, IPlayer*>::iterator players;
+void
+ChannelPlayer::stop ()
+{
+  IPlayer *objectPlayer;
+  map<string, IPlayer *>::iterator players;
 
-		players = objectMap->begin();
-		while (players != objectMap->end()) {
-			objectPlayer = players->second;
-			objectPlayer->stop();
-			++players;
-		}
-		hasParent = false;
-		Player::stop();
-	}
+  players = objectMap->begin ();
+  while (players != objectMap->end ())
+    {
+      objectPlayer = players->second;
+      objectPlayer->stop ();
+      ++players;
+    }
+  hasParent = false;
+  Player::stop ();
+}
 
-	void ChannelPlayer::updateStatus(
-			short code, string parameter, short type, string value) {
+void
+ChannelPlayer::updateStatus (short code, string parameter, short type,
+                             string value)
+{
 
-		notifyPlayerListeners(code, parameter, type, value);
-	}
+  notifyPlayerListeners (code, parameter, type, value);
+}
 
-	void ChannelPlayer::setPropertyValue(string name, string value) {
-		IPlayer* objectPlayer;
-		map<string, IPlayer*>::iterator players;
+void
+ChannelPlayer::setPropertyValue (string name, string value)
+{
+  IPlayer *objectPlayer;
+  map<string, IPlayer *>::iterator players;
 
-		//TODO: set brightness, ...
-		if (name == "soundLevel") {
-			players = objectMap->begin();
-			while (players != objectMap->end()) {
-				objectPlayer = players->second;
-				objectPlayer->setPropertyValue(name, value);
-				++players;
-			}
-		}
+  // TODO: set brightness, ...
+  if (name == "soundLevel")
+    {
+      players = objectMap->begin ();
+      while (players != objectMap->end ())
+        {
+          objectPlayer = players->second;
+          objectPlayer->setPropertyValue (name, value);
+          ++players;
+        }
+    }
 
-		Player::setPropertyValue(name, value);
-	}
+  Player::setPropertyValue (name, value);
+}
 
 GINGA_PLAYER_END

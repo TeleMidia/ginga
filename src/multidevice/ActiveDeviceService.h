@@ -22,18 +22,17 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MULTIDEVICE_BEGIN
 
-  class ActiveDeviceService : public BaseDeviceService {
-	public:
-		ActiveDeviceService();
-		virtual ~ActiveDeviceService();
+class ActiveDeviceService : public BaseDeviceService
+{
+public:
+  ActiveDeviceService ();
+  virtual ~ActiveDeviceService ();
 
-		void connectedToBaseDevice(unsigned int domainAddr);
+  void connectedToBaseDevice (unsigned int domainAddr);
 
-		bool receiveMediaContent(
-				unsigned int devAddr,
-				char* stream,
-				int streamSize);
-  };
+  bool receiveMediaContent (unsigned int devAddr, char *stream,
+                            int streamSize);
+};
 
 GINGA_MULTIDEVICE_END
 

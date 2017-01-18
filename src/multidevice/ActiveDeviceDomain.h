@@ -22,46 +22,59 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MULTIDEVICE_BEGIN
 
-  class ActiveDeviceDomain : public DeviceDomain {
-	public:
-		ActiveDeviceDomain(bool useMulticast, int srvPort);
-		virtual ~ActiveDeviceDomain();
+class ActiveDeviceDomain : public DeviceDomain
+{
+public:
+  ActiveDeviceDomain (bool useMulticast, int srvPort);
+  virtual ~ActiveDeviceDomain ();
 
-	protected:
-		bool taskRequest(int destDevClass, char* data, int taskSize) {
-			return false;
-		};
-
-		bool passiveTaskRequest(char* data, int taskSize) {
-			return false;
-		};
-
-		bool activeTaskRequest(char* data, int taskSize) {
-			return false;
-		};
-
-		void postConnectionRequestTask(int width, int height);
-		void receiveConnectionRequest(char* task) {};
-		void postAnswerTask(int reqDeviceClass, int answer) {};
-		void receiveAnswerTask(char* answerTask);
-		bool postMediaContentTask(int destDevClass, string url) {
-			return false;
-		};
-
-		bool receiveMediaContentTask(char* task);
-
-		bool receiveEventTask(char* task) {
-			return false;
-		};
-
-		bool runControlTask();
-
-		bool runDataTask() {
-			return false;
-		};
-
-		void checkDomainTasks();
+protected:
+  bool
+  taskRequest (int destDevClass, char *data, int taskSize)
+  {
+    return false;
   };
+
+  bool
+  passiveTaskRequest (char *data, int taskSize)
+  {
+    return false;
+  };
+
+  bool
+  activeTaskRequest (char *data, int taskSize)
+  {
+    return false;
+  };
+
+  void postConnectionRequestTask (int width, int height);
+  void receiveConnectionRequest (char *task){};
+  void postAnswerTask (int reqDeviceClass, int answer){};
+  void receiveAnswerTask (char *answerTask);
+  bool
+  postMediaContentTask (int destDevClass, string url)
+  {
+    return false;
+  };
+
+  bool receiveMediaContentTask (char *task);
+
+  bool
+  receiveEventTask (char *task)
+  {
+    return false;
+  };
+
+  bool runControlTask ();
+
+  bool
+  runDataTask ()
+  {
+    return false;
+  };
+
+  void checkDomainTasks ();
+};
 
 GINGA_MULTIDEVICE_END
 

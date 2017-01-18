@@ -20,65 +20,82 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_DATAPROC_BEGIN
 
-	DsmccStreamEvent::DsmccStreamEvent(
-			void* descriptorData, unsigned int descriptorSize) {
+DsmccStreamEvent::DsmccStreamEvent (void *descriptorData,
+                                    unsigned int descriptorSize)
+{
 
-		memset(data, 0, sizeof(data));
-		memcpy((void*)&(data[0]), descriptorData, descriptorSize);
+  memset (data, 0, sizeof (data));
+  memcpy ((void *)&(data[0]), descriptorData, descriptorSize);
 
-		this->descriptorTag = (data[0] & 0xFF);
-		this->descriptorLength = (data[1] & 0xFF);
-		this->eventId = ((data[2] & 0xFF) << 8) | (data[3] & 0xFF);
+  this->descriptorTag = (data[0] & 0xFF);
+  this->descriptorLength = (data[1] & 0xFF);
+  this->eventId = ((data[2] & 0xFF) << 8) | (data[3] & 0xFF);
 
-		//4,5,6,7* reserved
-		this->timeReference = (((uint64_t)(data[7] & 0x01)) << 32) |
-				((data[8] & 0xFF) << 24) | ((data[9] & 0xFF) << 16) |
-				((data[10] & 0xFF) << 8) | (data[11] & 0xFF);
-	}
+  // 4,5,6,7* reserved
+  this->timeReference = (((uint64_t) (data[7] & 0x01)) << 32)
+                        | ((data[8] & 0xFF) << 24) | ((data[9] & 0xFF) << 16)
+                        | ((data[10] & 0xFF) << 8) | (data[11] & 0xFF);
+}
 
-	DsmccStreamEvent::~DsmccStreamEvent() {
+DsmccStreamEvent::~DsmccStreamEvent () {}
 
-	}
+unsigned int
+DsmccStreamEvent::getDescriptorTag ()
+{
+  return descriptorTag;
+}
 
-	unsigned int DsmccStreamEvent::getDescriptorTag() {
-		return descriptorTag;
-	}
+unsigned int
+DsmccStreamEvent::getDescriptorLength ()
+{
+  return descriptorLength;
+}
 
-	unsigned int DsmccStreamEvent::getDescriptorLength() {
-		return descriptorLength;
-	}
+unsigned int
+DsmccStreamEvent::getId ()
+{
+  return eventId;
+}
 
-	unsigned int DsmccStreamEvent::getId() {
-		return eventId;
-	}
+long double
+DsmccStreamEvent::getTimeReference ()
+{
+  return timeReference;
+}
 
-	long double DsmccStreamEvent::getTimeReference() {
-		return timeReference;
-	}
+char *
+DsmccStreamEvent::getData ()
+{
+  return data + 2;
+}
 
-	char* DsmccStreamEvent::getData() {
-		return data + 2;
-	}
+void *
+DsmccStreamEvent::getEventData ()
+{
+  return (void *)&(data[12]);
+}
 
-	void* DsmccStreamEvent::getEventData() {
-		return (void*)&(data[12]);
-	}
+void
+DsmccStreamEvent::setEventName (string name)
+{
+  this->eventName = name;
+}
 
-	void DsmccStreamEvent::setEventName(string name) {
-		this->eventName = name;
-	}
+string
+DsmccStreamEvent::getEventName ()
+{
+  return eventName;
+}
 
-	string DsmccStreamEvent::getEventName() {
-		return eventName;
-	}
-
-	void DsmccStreamEvent::print() {
-		clog << "descriptorTag: " << descriptorTag << endl;
-		clog << "descriptorLength: " << descriptorLength << endl;
-		clog << "eventId: " << eventId << endl;
-		clog << "eventNPT: " << timeReference << endl;
-		clog << "eventName: " << eventName << endl;
-		clog << "privateData: " << (string)(char*)getEventData() << endl;
-	}
+void
+DsmccStreamEvent::print ()
+{
+  clog << "descriptorTag: " << descriptorTag << endl;
+  clog << "descriptorLength: " << descriptorLength << endl;
+  clog << "eventId: " << eventId << endl;
+  clog << "eventNPT: " << timeReference << endl;
+  clog << "eventName: " << eventName << endl;
+  clog << "privateData: " << (string) (char *)getEventData () << endl;
+}
 
 GINGA_DATAPROC_END

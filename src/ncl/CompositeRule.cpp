@@ -20,111 +20,132 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	CompositeRule::CompositeRule(string id, short someOperator) : Rule(id) {
-		rules = new vector<Rule*>;
-		setOperator(someOperator);
-		typeSet.insert("CompositeRule");
-	}
+CompositeRule::CompositeRule (string id, short someOperator) : Rule (id)
+{
+  rules = new vector<Rule *>;
+  setOperator (someOperator);
+  typeSet.insert ("CompositeRule");
+}
 
-	CompositeRule::CompositeRule(
-		    string id,
-		    Rule* firstRule,
-		    Rule* secondRule,
-		    short someOperator) : Rule(id) {
+CompositeRule::CompositeRule (string id, Rule *firstRule, Rule *secondRule,
+                              short someOperator)
+    : Rule (id)
+{
 
-		rules = new vector<Rule*>;
-		setOperator(someOperator);
-		rules->push_back(firstRule);
-		rules->push_back(secondRule);
-		typeSet.insert("CompositeRule");
-	}
+  rules = new vector<Rule *>;
+  setOperator (someOperator);
+  rules->push_back (firstRule);
+  rules->push_back (secondRule);
+  typeSet.insert ("CompositeRule");
+}
 
-	CompositeRule::~CompositeRule() {
-		vector<Rule*>::iterator i;
+CompositeRule::~CompositeRule ()
+{
+  vector<Rule *>::iterator i;
 
-		if (rules != NULL) {
-			i = rules->begin();
-			while (i != rules->begin()) {
-				delete *i;
-				++i;
-			}
+  if (rules != NULL)
+    {
+      i = rules->begin ();
+      while (i != rules->begin ())
+        {
+          delete *i;
+          ++i;
+        }
 
-			delete rules;
-			rules = NULL;
-		}
-	}
+      delete rules;
+      rules = NULL;
+    }
+}
 
-	bool CompositeRule::addRule(Rule* rule) {
-		rules->push_back(rule);
-		return true;
-	}
+bool
+CompositeRule::addRule (Rule *rule)
+{
+  rules->push_back (rule);
+  return true;
+}
 
-	vector<Rule*>* CompositeRule::getRules() {
-		if (rules->begin() == rules->end())
-			return NULL;
+vector<Rule *> *
+CompositeRule::getRules ()
+{
+  if (rules->begin () == rules->end ())
+    return NULL;
 
-		return rules;
-	}
+  return rules;
+}
 
-	unsigned int CompositeRule::getNumRules() {
-		return rules->size();
-	}
+unsigned int
+CompositeRule::getNumRules ()
+{
+  return rules->size ();
+}
 
-	short CompositeRule::getOperator() {
-		return ruleOperator;
-	}
+short
+CompositeRule::getOperator ()
+{
+  return ruleOperator;
+}
 
-	bool CompositeRule::removeRule(Rule* rule) {
-		vector<Rule*>::iterator iterRule;
+bool
+CompositeRule::removeRule (Rule *rule)
+{
+  vector<Rule *>::iterator iterRule;
 
-		iterRule = rules->begin();
-		while (iterRule != rules->end()) {
-			if ((*(*iterRule)).getId() == rule->getId()) {
-				rules->erase(iterRule);
-				return true;
-			}
-			++iterRule;
-		}
-		return false;
-	}
+  iterRule = rules->begin ();
+  while (iterRule != rules->end ())
+    {
+      if ((*(*iterRule)).getId () == rule->getId ())
+        {
+          rules->erase (iterRule);
+          return true;
+        }
+      ++iterRule;
+    }
+  return false;
+}
 
-	string CompositeRule::toString() {
-		string result;
-		vector<Rule*>::iterator ruleIterator;
-		Rule* rule;
+string
+CompositeRule::toString ()
+{
+  string result;
+  vector<Rule *>::iterator ruleIterator;
+  Rule *rule;
 
-		result = "(";
+  result = "(";
 
-		for (ruleIterator = rules->begin(); ruleIterator != rules->end();
-			    ++ruleIterator) {
+  for (ruleIterator = rules->begin (); ruleIterator != rules->end ();
+       ++ruleIterator)
+    {
 
-			rule = (Rule*)(*ruleIterator);
-			result = result + (rule->getId()) + " " + opStr + " ";
-		}
+      rule = (Rule *)(*ruleIterator);
+      result = result + (rule->getId ()) + " " + opStr + " ";
+    }
 
-		if ( (result.length() - opStr.length() - 2) > 0)
-			result = result.substr(0, result.length() - opStr.length() - 2);
+  if ((result.length () - opStr.length () - 2) > 0)
+    result = result.substr (0, result.length () - opStr.length () - 2);
 
-		return result + ")";
-	}
+  return result + ")";
+}
 
-	void CompositeRule::setOperator(short op) {
-		switch (op) {
-			case OP_OR:
-				ruleOperator = OP_OR;
-				opStr = "OR";
-				break;
+void
+CompositeRule::setOperator (short op)
+{
+  switch (op)
+    {
+    case OP_OR:
+      ruleOperator = OP_OR;
+      opStr = "OR";
+      break;
 
-			case OP_AND:
-				ruleOperator = OP_AND;
-				opStr = "AND";
-				break;
+    case OP_AND:
+      ruleOperator = OP_AND;
+      opStr = "AND";
+      break;
 
-			default:
-				ruleOperator = OP_AND;
-				opStr = "AND";
-				break;
-		}
-	}
+    default:
+      ruleOperator = OP_AND;
+      opStr = "AND";
+      break;
+    }
+}
 
 GINGA_NCL_END

@@ -20,38 +20,49 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	LinkAssignmentAction::LinkAssignmentAction(
-			FormatterEvent* event, short actionType, string value) :
-					LinkRepeatAction(event, actionType) {
+LinkAssignmentAction::LinkAssignmentAction (FormatterEvent *event,
+                                            short actionType, string value)
+    : LinkRepeatAction (event, actionType)
+{
 
-		this->value     = value;
-		this->animation = NULL;
-		typeSet.insert("LinkAssignmentAction");
-	}
+  this->value = value;
+  this->animation = NULL;
+  typeSet.insert ("LinkAssignmentAction");
+}
 
-	LinkAssignmentAction::~LinkAssignmentAction() {
-		isDeleting = true;
+LinkAssignmentAction::~LinkAssignmentAction ()
+{
+  isDeleting = true;
 
-		if (animation != NULL) {
-			delete animation;
-			animation = NULL;
-		}
-	}
+  if (animation != NULL)
+    {
+      delete animation;
+      animation = NULL;
+    }
+}
 
-	string LinkAssignmentAction::getValue() {
-		return value;
-	}
+string
+LinkAssignmentAction::getValue ()
+{
+  return value;
+}
 
-	void LinkAssignmentAction::setValue(string value) {
-		this->value = value;
-	}
+void
+LinkAssignmentAction::setValue (string value)
+{
+  this->value = value;
+}
 
-	Animation* LinkAssignmentAction::getAnimation() {
-		return animation;
-	}
+Animation *
+LinkAssignmentAction::getAnimation ()
+{
+  return animation;
+}
 
-	void LinkAssignmentAction::setAnimation(Animation* animation) {
-		this->animation = animation;
-	}
+void
+LinkAssignmentAction::setAnimation (Animation *animation)
+{
+  this->animation = animation;
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END

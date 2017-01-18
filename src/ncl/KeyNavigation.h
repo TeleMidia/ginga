@@ -32,17 +32,17 @@ private:
   string moveRight;
 
 public:
-  KeyNavigation();
-  string getFocusIndex();
-  void setFocusIndex(string index);
-  string getMoveUp();
-  void setMoveUp(string index);
-  string getMoveDown();
-  void setMoveDown(string index);
-  string getMoveRight();
-  void setMoveRight(string index);
-  string getMoveLeft();
-  void setMoveLeft(string index);
+  KeyNavigation ();
+  string getFocusIndex ();
+  void setFocusIndex (string index);
+  string getMoveUp ();
+  void setMoveUp (string index);
+  string getMoveDown ();
+  void setMoveDown (string index);
+  string getMoveRight ();
+  void setMoveRight (string index);
+  string getMoveLeft ();
+  void setMoveLeft (string index);
 };
 
 GINGA_NCL_END

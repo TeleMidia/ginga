@@ -20,53 +20,71 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	AttributeAssessment::AttributeAssessment(string role) :
-		    Assessment(), Role() {
+AttributeAssessment::AttributeAssessment (string role) : Assessment (), Role ()
+{
 
-		Role::setLabel(role);
-		eventType = EventUtil::EVT_ATTRIBUTION;
-		attributeType = EventUtil::ATT_NODE_PROPERTY;
-		key = "";
-		offset = "";
-		maxCon = 1;
-		typeSet.insert("AttributeAssessment");
-		typeSet.insert("Role");
-	}
+  Role::setLabel (role);
+  eventType = EventUtil::EVT_ATTRIBUTION;
+  attributeType = EventUtil::ATT_NODE_PROPERTY;
+  key = "";
+  offset = "";
+  maxCon = 1;
+  typeSet.insert ("AttributeAssessment");
+  typeSet.insert ("Role");
+}
 
-	void AttributeAssessment::setMaxCon(int max) {
-		maxCon = max;
-	}
+void
+AttributeAssessment::setMaxCon (int max)
+{
+  maxCon = max;
+}
 
-	void AttributeAssessment::setMinCon(int min) {
-		minCon = min;
-	}
+void
+AttributeAssessment::setMinCon (int min)
+{
+  minCon = min;
+}
 
-	short AttributeAssessment::getAttributeType() {
-		return attributeType;
-	}
+short
+AttributeAssessment::getAttributeType ()
+{
+  return attributeType;
+}
 
-	void AttributeAssessment::setAttributeType(short attribute) {
-		attributeType = attribute;
-	}
+void
+AttributeAssessment::setAttributeType (short attribute)
+{
+  attributeType = attribute;
+}
 
-	string AttributeAssessment::getKey() {
-		return key;
-	}
+string
+AttributeAssessment::getKey ()
+{
+  return key;
+}
 
-	void AttributeAssessment::setKey(string key) {
-		this->key = key;
-	}
+void
+AttributeAssessment::setKey (string key)
+{
+  this->key = key;
+}
 
-	string AttributeAssessment::getOffset() {
-		return offset;
-	}
+string
+AttributeAssessment::getOffset ()
+{
+  return offset;
+}
 
-	void AttributeAssessment::setOffset(string offset) {
-		this->offset = offset;
-	}
+void
+AttributeAssessment::setOffset (string offset)
+{
+  this->offset = offset;
+}
 
-	string AttributeAssessment::toString() {
-		return itos(attributeType);
-	}
+string
+AttributeAssessment::toString ()
+{
+  return itos (attributeType);
+}
 
 GINGA_NCL_END

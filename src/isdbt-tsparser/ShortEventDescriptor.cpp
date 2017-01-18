@@ -20,115 +20,141 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TSPARSER_BEGIN
 
-	ShortEventDescriptor::ShortEventDescriptor() {
-		descriptorTag    = 0x4D;
-		descriptorLength = 0;
-		eventNameLength  = 0;
-		eventNameChar    = NULL;
-		textLength       = 0;
-		textChar         = NULL;
+ShortEventDescriptor::ShortEventDescriptor ()
+{
+  descriptorTag = 0x4D;
+  descriptorLength = 0;
+  eventNameLength = 0;
+  eventNameChar = NULL;
+  textLength = 0;
+  textChar = NULL;
+}
 
-	}
+ShortEventDescriptor::~ShortEventDescriptor ()
+{
+  if (eventNameChar != NULL)
+    {
+      delete eventNameChar;
+      eventNameChar = NULL;
+    }
+  if (textChar != NULL)
+    {
+      delete textChar;
+      textChar = NULL;
+    }
+}
 
-	ShortEventDescriptor::~ShortEventDescriptor() {
-		if (eventNameChar != NULL) {
-			delete eventNameChar;
-			eventNameChar = NULL;
-		}
-		if (textChar != NULL) {
-			delete textChar;
-			textChar = NULL;
-		}
-	}
+unsigned char
+ShortEventDescriptor::getDescriptorTag ()
+{
+  return descriptorTag;
+}
 
-	unsigned char ShortEventDescriptor::getDescriptorTag() {
-		return descriptorTag;
-	}
+unsigned int
+ShortEventDescriptor::getDescriptorLength ()
+{
+  return (unsigned int)descriptorLength;
+}
 
-	unsigned int ShortEventDescriptor::getDescriptorLength() {
-		return (unsigned int)descriptorLength;
-	}
+unsigned int
+ShortEventDescriptor::getEventNameLength ()
+{
+  return (unsigned int)eventNameLength;
+}
 
-	unsigned int ShortEventDescriptor::getEventNameLength() {
-		return (unsigned int)eventNameLength;
-	}
+unsigned int
+ShortEventDescriptor::getTextLength ()
+{
+  return (unsigned int)textLength;
+}
 
-	unsigned int ShortEventDescriptor::getTextLength() {
-		return (unsigned int)textLength;
-	}
+string
+ShortEventDescriptor::getLanguageCode ()
+{
+  string str;
 
-	string ShortEventDescriptor::getLanguageCode() {
-		string str;
+  str.append (languageCode, 3);
+  return str;
+}
 
-		str.append(languageCode, 3);
-		return str;
-	}
+string
+ShortEventDescriptor::getEventName ()
+{
+  string str;
 
-	string ShortEventDescriptor::getEventName() {
-		string str;
+  if (eventNameChar == NULL)
+    {
+      return "";
+    }
+  str.append (eventNameChar, eventNameLength);
+  return str;
+}
 
-		if(eventNameChar == NULL){
-			return "";
-		}
-		str.append(eventNameChar, eventNameLength);
-		return str;
-	}
+string
+ShortEventDescriptor::getTextChar ()
+{
+  string str;
 
-	string ShortEventDescriptor::getTextChar() {
-		string str;
+  if (textChar == NULL)
+    {
+      return "";
+    }
+  str.append (textChar, textLength);
+  return textChar;
+}
 
-		if(textChar == NULL){
-			return "";
-		}
-		str.append(textChar, textLength);
-		return textChar;
-	}
+void
+ShortEventDescriptor::print ()
+{
+  clog << "ShortEventDescriptor::print printing...." << endl;
+  clog << " -languageCode: " << getLanguageCode () << endl;
+  clog << " -eventNameChar: " << getEventName () << endl;
+  clog << " -textChar: " << getTextChar () << endl;
+}
 
-	void ShortEventDescriptor::print() {
-		clog << "ShortEventDescriptor::print printing...." << endl;
-		clog << " -languageCode: "  << getLanguageCode()   << endl;
-		clog << " -eventNameChar: " << getEventName()      << endl;
-		clog << " -textChar: "      << getTextChar()       << endl;
- 	}
+size_t
+ShortEventDescriptor::process (char *data, size_t pos)
+{
+  // clog << "ShortEventDescriptor::process with pos = " << pos << endl;
 
-	size_t ShortEventDescriptor::process(char* data, size_t pos) {
-		//clog << "ShortEventDescriptor::process with pos = " << pos << endl;
+  descriptorLength = data[pos + 1];
+  pos += 2;
 
-		descriptorLength = data[pos+1];
-		pos += 2;
+  memcpy (languageCode, data + pos, 3);
+  pos += 3;
 
-		memcpy(languageCode, data+pos, 3);
-		pos += 3;
+  eventNameLength = data[pos];
 
-		eventNameLength = data[pos];
+  if (eventNameLength > 0)
+    {
+      eventNameChar = new char[eventNameLength];
 
-		if (eventNameLength > 0) {
-			eventNameChar = new char[eventNameLength];
+      if (eventNameChar == NULL)
+        {
+          clog << "ShortEvent::process error allocating memory" << endl;
+          return -1;
+        }
+      memset (eventNameChar, 0, eventNameLength);
+      memcpy (eventNameChar, data + pos + 1, eventNameLength);
+    }
+  pos += eventNameLength + 1;
 
-			if (eventNameChar == NULL) {
-				clog << "ShortEvent::process error allocating memory" << endl;
-				return -1;
-			}
-			memset(eventNameChar, 0, eventNameLength);
-			memcpy(eventNameChar, data+pos+1, eventNameLength);
-		}
-		pos += eventNameLength + 1;
+  textLength = data[pos];
+  if (textLength)
+    {
 
-		textLength = data[pos];
-		if (textLength) {
+      textChar = new char[textLength];
+      if (textChar == NULL)
+        {
+          // clog << "ShortEvent::process error allocating memory" << endl;
+          return -1;
+        }
+      memset (textChar, 0, textLength);
+      memcpy (textChar, data + pos + 1, textLength);
+    }
+  pos += textLength;
 
-			textChar = new char[textLength];
-			if (textChar == NULL) {
-				//clog << "ShortEvent::process error allocating memory" << endl;
-				return -1;
-			}
-			memset(textChar, 0, textLength);
-			memcpy(textChar, data+pos+1, textLength);
-
-		}
-		pos += textLength;
-
-		return pos;
-	}
+  return pos;
+}
 
 GINGA_TSPARSER_END

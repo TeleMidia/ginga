@@ -37,422 +37,383 @@ using namespace ::ginga::system;
 
 GINGA_MB_BEGIN
 
-	class LocalScreenManager {
-		public:
-			/* Ginga defining its Multimedia Backend System Types (GMBST)    */
-										     /* System Description  String   */
-			static const short GMBST_DFLT;   /* Default system:      dflt    */
-			static const short GMBST_DFB;    /* DirectFB:            dfb     */
-			static const short GMBST_DX;     /* DirectX:             dx      */
-			static const short GMBST_SDL;    /* SDL:                 sdl     */
-			static const short GMBST_TERM;   /* Teminal:             term    */
+class LocalScreenManager
+{
+public:
+  /* Ginga defining its Multimedia Backend System Types (GMBST)    */
+  /* System Description  String   */
+  static const short GMBST_DFLT; /* Default system:      dflt    */
+  static const short GMBST_DFB;  /* DirectFB:            dfb     */
+  static const short GMBST_DX;   /* DirectX:             dx      */
+  static const short GMBST_SDL;  /* SDL:                 sdl     */
+  static const short GMBST_TERM; /* Teminal:             term    */
 
-			/* Ginga defining its Multimedia Backend SubSystem Types (GMBSST)*/
-											 /* System Description  String   */
-			static const short GMBSST_DFLT;  /* Default subsystem:  dflt     */
-			static const short GMBSST_FBDEV; /* Frame buffer:       fbdev    */
-			static const short GMBSST_X11;   /* X11:                x11      */
-			static const short GMBSST_HWND;  /* MS-W Window Handle: hwnd     */
-			static const short GMBSST_SDL;   /* SDL:                sdl      */
-			static const short GMBSST_COCOA; /* COCOA:              cocoa    */
+  /* Ginga defining its Multimedia Backend SubSystem Types (GMBSST)*/
+  /* System Description  String   */
+  static const short GMBSST_DFLT;  /* Default subsystem:  dflt     */
+  static const short GMBSST_FBDEV; /* Frame buffer:       fbdev    */
+  static const short GMBSST_X11;   /* X11:                x11      */
+  static const short GMBSST_HWND;  /* MS-W Window Handle: hwnd     */
+  static const short GMBSST_SDL;   /* SDL:                sdl      */
+  static const short GMBSST_COCOA; /* COCOA:              cocoa    */
 
-			LocalScreenManager();
+  LocalScreenManager ();
 
-		protected:
-			map<GingaScreenID, SDLDeviceScreen*> screens;
+protected:
+  map<GingaScreenID, SDLDeviceScreen *> screens;
 
-			pthread_mutex_t mapMutex;
-			pthread_mutex_t genMutex;
+  pthread_mutex_t mapMutex;
+  pthread_mutex_t genMutex;
 
-			map<GingaSurfaceID, SDLSurface*> surMap;
-			pthread_mutex_t surMapMutex;
+  map<GingaSurfaceID, SDLSurface *> surMap;
+  pthread_mutex_t surMapMutex;
 
-			map<GingaProviderID, IMediaProvider*> provMap;
-			pthread_mutex_t provMapMutex;
+  map<GingaProviderID, IMediaProvider *> provMap;
+  pthread_mutex_t provMapMutex;
 
-			static set<IInputEventListener*> iListeners;
-			static pthread_mutex_t ilMutex;
+  static set<IInputEventListener *> iListeners;
+  static pthread_mutex_t ilMutex;
 
-			static set<IMotionEventListener*> mListeners;
-			static pthread_mutex_t mlMutex;
+  static set<IMotionEventListener *> mListeners;
+  static pthread_mutex_t mlMutex;
 
-			static bool initMutex;
+  static bool initMutex;
 
-			vector<short> sortSys;
-			map<string, short> sysNames;
-			pthread_mutex_t sysMutex;
+  vector<short> sortSys;
+  map<string, short> sysNames;
+  pthread_mutex_t sysMutex;
 
-			bool running;
+  bool running;
 
-			bool isWaiting;
-			pthread_cond_t wsSignal;
-			pthread_mutex_t wsMutex;
-			GingaScreenID waitingRefreshScreen;
+  bool isWaiting;
+  pthread_cond_t wsSignal;
+  pthread_mutex_t wsMutex;
+  GingaScreenID waitingRefreshScreen;
 
-			static void checkInitMutex();
+  static void checkInitMutex ();
 
-		public:
-			virtual ~LocalScreenManager();
+public:
+  virtual ~LocalScreenManager ();
 
+  void releaseHandler ();
 
-			void releaseHandler();
+  static void addIEListenerInstance (IInputEventListener *listener);
 
-			static void addIEListenerInstance(
-					IInputEventListener* listener);
+  static void removeIEListenerInstance (IInputEventListener *listener);
 
-			static void removeIEListenerInstance(
-					IInputEventListener* listener);
+  static bool hasIEListenerInstance (IInputEventListener *listener,
+                                     bool removeInstance = false);
 
-			static bool hasIEListenerInstance(
-					IInputEventListener* listener, bool removeInstance=false);
+  static void addMEListenerInstance (IMotionEventListener *listener);
 
-			static void addMEListenerInstance(
-					IMotionEventListener* listener);
+  static void removeMEListenerInstance (IMotionEventListener *listener);
 
-			static void removeMEListenerInstance(
-					IMotionEventListener* listener);
+  static bool hasMEListenerInstance (IMotionEventListener *listener,
+                                     bool removeInstance = false);
 
-			static bool hasMEListenerInstance(
-					IMotionEventListener* listener, bool removeInstance=false);
+  void setBackgroundImage (GingaScreenID screenId, string uri);
 
-			void setBackgroundImage(GingaScreenID screenId, string uri);
+  int getDeviceWidth (GingaScreenID screenId);
 
-			int getDeviceWidth(GingaScreenID screenId);
+  int getDeviceHeight (GingaScreenID screenId);
 
-			int getDeviceHeight(GingaScreenID screenId);
+  void *getGfxRoot (GingaScreenID screenId);
 
-			void* getGfxRoot(GingaScreenID screenId);
+  void releaseScreen (GingaScreenID screenId);
+  void releaseMB (GingaScreenID screenId);
+  void clearWidgetPools (GingaScreenID screenId);
 
-			void releaseScreen(GingaScreenID screenId);
-			void releaseMB(GingaScreenID screenId);
-			void clearWidgetPools(GingaScreenID screenId);
+  GingaScreenID createScreen (int argc, char **args);
 
-			GingaScreenID createScreen(int argc, char** args);
+protected:
+  GingaScreenID createScreen (string vSystem, string vSubSystem, string vMode,
+                              string vParent, string vEmbed, string aSystem,
+                              bool externalRenderer, bool useStdin);
 
-		protected:
-			GingaScreenID createScreen(
-					string vSystem,
-					string vSubSystem,
-					string vMode,
-					string vParent,
-					string vEmbed,
-					string aSystem,
-					bool externalRenderer,
-					bool useStdin);
+public:
+  string getScreenName (GingaScreenID screenId);
+  UnderlyingWindowID getScreenUnderlyingWindow (GingaScreenID screenId);
 
-		public:
-			string getScreenName(GingaScreenID screenId);
-			UnderlyingWindowID getScreenUnderlyingWindow(GingaScreenID screenId);
+protected:
+  short getMBSystemType (string mbSystemName);
 
-		protected:
-			short getMBSystemType(string mbSystemName);
+  bool isAvailable (short mbSysType);
+  void lockSysNames ();
+  void unlockSysNames ();
 
-			bool isAvailable(short mbSysType);
-			void lockSysNames();
-			void unlockSysNames();
+  GingaSurfaceID provIdRefCounter;
 
-			GingaSurfaceID provIdRefCounter;
+  virtual bool
+  isLocal ()
+  {
+    return true;
+  }
 
-      virtual bool isLocal () { return true; }
+public:
+  IMediaProvider *getIMediaProviderFromId (const GingaProviderID &provId);
+  SDLSurface *getISurfaceFromId (const GingaSurfaceID &surfaceId);
 
-		public:
-			IMediaProvider* getIMediaProviderFromId (const GingaProviderID& provId);
-			SDLSurface* getISurfaceFromId(const GingaSurfaceID &surfaceId);
+  SDLWindow *getIWindowFromId (GingaScreenID screenId, GingaWindowID winId);
 
-			SDLWindow* getIWindowFromId(
-					GingaScreenID screenId, GingaWindowID winId);
+  bool mergeIds (GingaScreenID screenId, GingaWindowID destId,
+                 vector<GingaWindowID> *srcIds);
 
-			bool mergeIds(
-					GingaScreenID screenId,
-					GingaWindowID destId,
-					vector<GingaWindowID>* srcIds);
+  void blitScreen (GingaScreenID screenId, SDLSurface *destination);
+  void blitScreen (GingaScreenID screenId, string fileUri);
+  void refreshScreen (GingaScreenID screenId);
 
-			void blitScreen(GingaScreenID screenId, SDLSurface* destination);
-			void blitScreen(GingaScreenID screenId, string fileUri);
-			void refreshScreen(GingaScreenID screenId);
+  /* Interfacing output */
+  GingaWindowID createWindow (GingaScreenID screenId, int x, int y, int w,
+                              int h, float z);
 
+  UnderlyingWindowID createUnderlyingSubWindow (GingaScreenID screenId, int x,
+                                                int y, int w, int h, float z);
 
-			/* Interfacing output */
-			GingaWindowID createWindow(
-					GingaScreenID screenId,
-					int x, int y,
-					int w, int h,
-					float z);
+  bool hasWindow (GingaScreenID screenId, GingaWindowID window);
 
-			UnderlyingWindowID createUnderlyingSubWindow(
-					GingaScreenID screenId,
-					int x, int y,
-					int w, int h,
-					float z);
-
-			bool hasWindow(GingaScreenID screenId, GingaWindowID window);
-
-			void releaseWindow(GingaScreenID screenId, SDLWindow* window);
+  void releaseWindow (GingaScreenID screenId, SDLWindow *window);
 
-			void registerSurface (SDLSurface*);
-
-			GingaSurfaceID createSurface(GingaScreenID screenId);
+  void registerSurface (SDLSurface *);
 
-			GingaSurfaceID createSurface(GingaScreenID screenId, int w, int h);
+  GingaSurfaceID createSurface (GingaScreenID screenId);
 
-			GingaSurfaceID createSurfaceFrom(
-					GingaScreenID screenId, GingaSurfaceID underlyingSurface);
+  GingaSurfaceID createSurface (GingaScreenID screenId, int w, int h);
 
-			bool hasSurface(
-					const GingaScreenID &screenId, const GingaSurfaceID &surId);
-			bool releaseSurface(GingaScreenID screenId, SDLSurface* surface);
+  GingaSurfaceID createSurfaceFrom (GingaScreenID screenId,
+                                    GingaSurfaceID underlyingSurface);
 
-			void lowerWindowToBottom (
-					const GingaScreenID &screenId, const GingaWindowID &winId);
+  bool hasSurface (const GingaScreenID &screenId, const GingaSurfaceID &surId);
+  bool releaseSurface (GingaScreenID screenId, SDLSurface *surface);
 
-			/* Interfacing content */
-			GingaProviderID createContinuousMediaProvider(
-					GingaScreenID screenId,
-					const char* mrl,
-					bool isRemote);
+  void lowerWindowToBottom (const GingaScreenID &screenId,
+                            const GingaWindowID &winId);
 
-			void releaseContinuousMediaProvider(
-					GingaScreenID screenId,
-					GingaProviderID provider);
+  /* Interfacing content */
+  GingaProviderID createContinuousMediaProvider (GingaScreenID screenId,
+                                                 const char *mrl,
+                                                 bool isRemote);
 
-			GingaProviderID createFontProvider(
-					GingaScreenID screenId,
-					const char* mrl,
-					int fontSize);
-
-			void releaseFontProvider(
-					GingaScreenID screenId, GingaProviderID provider);
-
-			GingaProviderID createImageProvider(
-					GingaScreenID screenId, const char* mrl);
+  void releaseContinuousMediaProvider (GingaScreenID screenId,
+                                       GingaProviderID provider);
 
-			void releaseImageProvider(
-					GingaScreenID screenId, GingaProviderID provider);
+  GingaProviderID createFontProvider (GingaScreenID screenId, const char *mrl,
+                                      int fontSize);
 
-			GingaSurfaceID createRenderedSurfaceFromImageFile(
-					GingaScreenID screenId, const char* mrl);
+  void releaseFontProvider (GingaScreenID screenId, GingaProviderID provider);
 
+  GingaProviderID createImageProvider (GingaScreenID screenId,
+                                       const char *mrl);
 
-			/* interfacing input */
-		public:
-			InputManager* getInputManager(GingaScreenID screenId);
-			SDLEventBuffer* createEventBuffer(GingaScreenID screenId);
-			SDLInputEvent* createInputEvent(
-					GingaScreenID screenId, void* event, const int symbol);
+  void releaseImageProvider (GingaScreenID screenId, GingaProviderID provider);
 
-			SDLInputEvent* createApplicationEvent(
-					GingaScreenID screenId, int type, void* data);
+  GingaSurfaceID createRenderedSurfaceFromImageFile (GingaScreenID screenId,
+                                                     const char *mrl);
 
-			int fromMBToGinga(GingaScreenID screenId, int keyCode);
-			int fromGingaToMB(GingaScreenID screenId, int keyCode);
+  /* interfacing input */
+public:
+  InputManager *getInputManager (GingaScreenID screenId);
+  SDLEventBuffer *createEventBuffer (GingaScreenID screenId);
+  SDLInputEvent *createInputEvent (GingaScreenID screenId, void *event,
+                                   const int symbol);
 
-			/* Methods created to isolate gingacc-mb */
-			//windows
-			void addWindowCaps (const GingaScreenID &screenId,
-			                    const GingaWindowID &winId, int caps);
-			void setWindowCaps (const GingaScreenID &screenId,
-			                    const GingaWindowID &winId, int caps);
-			int getWindowCap (const GingaScreenID &screenId,
-			                  const GingaWindowID &winId, const string &capName);
+  SDLInputEvent *createApplicationEvent (GingaScreenID screenId, int type,
+                                         void *data);
 
-			void drawWindow (const GingaScreenID &screenId,
-			                 const GingaWindowID &winId);
-			void setWindowBounds (
-					const GingaScreenID &screenId, const GingaWindowID &winId, int x,
-					int y, int w, int h);
-			void showWindow (const GingaScreenID &screenId,
-			                 const GingaWindowID &winId);
-			void hideWindow (const GingaScreenID &screenId,
-			                 const GingaWindowID &winId);
-			void raiseWindowToTop (const GingaScreenID &screenId,
-			                       const GingaWindowID &winId);
-			void renderWindowFrom (
-					const GingaScreenID &screenId, const GingaWindowID &winId,
-					const GingaSurfaceID &surId);
+  int fromMBToGinga (GingaScreenID screenId, int keyCode);
+  int fromGingaToMB (GingaScreenID screenId, int keyCode);
 
-			void setWindowBgColor (
-					const GingaScreenID &screenId, const GingaWindowID &winId, int r,
-					int g, int b, int alpha);
+  /* Methods created to isolate gingacc-mb */
+  // windows
+  void addWindowCaps (const GingaScreenID &screenId,
+                      const GingaWindowID &winId, int caps);
+  void setWindowCaps (const GingaScreenID &screenId,
+                      const GingaWindowID &winId, int caps);
+  int getWindowCap (const GingaScreenID &screenId, const GingaWindowID &winId,
+                    const string &capName);
 
-			void setWindowBorder (
-					const GingaScreenID &screenId, const GingaWindowID &winId, int r,
-					int g, int b, int alpha, int width);
+  void drawWindow (const GingaScreenID &screenId, const GingaWindowID &winId);
+  void setWindowBounds (const GingaScreenID &screenId,
+                        const GingaWindowID &winId, int x, int y, int w,
+                        int h);
+  void showWindow (const GingaScreenID &screenId, const GingaWindowID &winId);
+  void hideWindow (const GingaScreenID &screenId, const GingaWindowID &winId);
+  void raiseWindowToTop (const GingaScreenID &screenId,
+                         const GingaWindowID &winId);
+  void renderWindowFrom (const GingaScreenID &screenId,
+                         const GingaWindowID &winId,
+                         const GingaSurfaceID &surId);
 
-			void setWindowCurrentTransparency (
-					const GingaScreenID &screenId, const GingaWindowID &winId,
-					int transparency);
-			void setWindowColorKey (
-					const GingaScreenID &screenId, const GingaWindowID &winId, int r,
-					int g, int b);
+  void setWindowBgColor (const GingaScreenID &screenId,
+                         const GingaWindowID &winId, int r, int g, int b,
+                         int alpha);
 
-			void setWindowX(
-					const GingaScreenID &screenId, const GingaWindowID &winId, int x);
+  void setWindowBorder (const GingaScreenID &screenId,
+                        const GingaWindowID &winId, int r, int g, int b,
+                        int alpha, int width);
 
-			void setWindowY(
-					const GingaScreenID &screenId, const GingaWindowID &winId, int y);
+  void setWindowCurrentTransparency (const GingaScreenID &screenId,
+                                     const GingaWindowID &winId,
+                                     int transparency);
+  void setWindowColorKey (const GingaScreenID &screenId,
+                          const GingaWindowID &winId, int r, int g, int b);
 
-			void setWindowW(
-					const GingaScreenID &screenId, const GingaWindowID &winId, int w);
+  void setWindowX (const GingaScreenID &screenId, const GingaWindowID &winId,
+                   int x);
 
-			void setWindowH(
-					const GingaScreenID &screenId, const GingaWindowID &winId, int h);
+  void setWindowY (const GingaScreenID &screenId, const GingaWindowID &winId,
+                   int y);
 
-			void setWindowZ(
-					const GingaScreenID &screenId, const GingaWindowID &winId, float z);
+  void setWindowW (const GingaScreenID &screenId, const GingaWindowID &winId,
+                   int w);
 
-			void disposeWindow (const GingaScreenID &screenId,
-			                    const GingaWindowID &winId);
+  void setWindowH (const GingaScreenID &screenId, const GingaWindowID &winId,
+                   int h);
 
-			void setGhostWindow(const GingaScreenID &screenId,
-			                    const GingaWindowID &winId, bool ghost);
+  void setWindowZ (const GingaScreenID &screenId, const GingaWindowID &winId,
+                   float z);
 
-			void validateWindow (const GingaScreenID &screenId,
-			                     const GingaWindowID &winId);
+  void disposeWindow (const GingaScreenID &screenId,
+                      const GingaWindowID &winId);
 
-			int getWindowX (const GingaScreenID &screenId,
-			                const GingaWindowID &winId);
-			int getWindowY (const GingaScreenID &screenId,
-			                const GingaWindowID &winId);
-			int getWindowW (const GingaScreenID &screenId,
-			                const GingaWindowID &winId);
-			int getWindowH (const GingaScreenID &screenId,
-			                const GingaWindowID &winId);
-			float getWindowZ (const GingaScreenID &screenId,
-			                  const GingaWindowID &winId);
+  void setGhostWindow (const GingaScreenID &screenId,
+                       const GingaWindowID &winId, bool ghost);
 
-			int getWindowTransparencyValue(const GingaScreenID &screenId,
-			                               const GingaWindowID &winId);
+  void validateWindow (const GingaScreenID &screenId,
+                       const GingaWindowID &winId);
 
-			void resizeWindow(
-					const GingaScreenID &screenId, const GingaWindowID &winId, int width,
-					int height);
+  int getWindowX (const GingaScreenID &screenId, const GingaWindowID &winId);
+  int getWindowY (const GingaScreenID &screenId, const GingaWindowID &winId);
+  int getWindowW (const GingaScreenID &screenId, const GingaWindowID &winId);
+  int getWindowH (const GingaScreenID &screenId, const GingaWindowID &winId);
+  float getWindowZ (const GingaScreenID &screenId, const GingaWindowID &winId);
 
-			string getWindowDumpFileUri (
-					const GingaScreenID &screenId, const GingaWindowID &winId,
-					int quality, int dumpW, int dumpH);
+  int getWindowTransparencyValue (const GingaScreenID &screenId,
+                                  const GingaWindowID &winId);
 
-			void clearWindowContent (const GingaScreenID &screenId,
-			                         const GingaWindowID &winId);
+  void resizeWindow (const GingaScreenID &screenId, const GingaWindowID &winId,
+                     int width, int height);
 
-			void revertWindowContent(
-								const GingaScreenID &screenId, const GingaWindowID &winId);
+  string getWindowDumpFileUri (const GingaScreenID &screenId,
+                               const GingaWindowID &winId, int quality,
+                               int dumpW, int dumpH);
 
-			void deleteWindow(
-								const GingaScreenID &screenId, const GingaWindowID &winId);
+  void clearWindowContent (const GingaScreenID &screenId,
+                           const GingaWindowID &winId);
 
-			void moveWindowTo(
-								const GingaScreenID &screenId, const GingaWindowID &winId,
-								int x, int y);
+  void revertWindowContent (const GingaScreenID &screenId,
+                            const GingaWindowID &winId);
 
-			void setWindowMirrorSrc (
-					const GingaScreenID &screenId, const GingaWindowID &winId,
-					const GingaWindowID &mirrorSrc);
+  void deleteWindow (const GingaScreenID &screenId,
+                     const GingaWindowID &winId);
 
-			//surfaces
-			void* getSurfaceContent(const GingaSurfaceID &surId);
+  void moveWindowTo (const GingaScreenID &screenId, const GingaWindowID &winId,
+                     int x, int y);
 
-			GingaWindowID getSurfaceParentWindow(const GingaSurfaceID& surId);
+  void setWindowMirrorSrc (const GingaScreenID &screenId,
+                           const GingaWindowID &winId,
+                           const GingaWindowID &mirrorSrc);
 
-			void deleteSurface (const GingaSurfaceID &surId);
+  // surfaces
+  void *getSurfaceContent (const GingaSurfaceID &surId);
 
-			bool setSurfaceParentWindow (
-					const GingaScreenID &screenId,  const GingaSurfaceID &surId,
-					const GingaWindowID &winId);
+  GingaWindowID getSurfaceParentWindow (const GingaSurfaceID &surId);
 
-			void clearSurfaceContent (const GingaSurfaceID &surId);
+  void deleteSurface (const GingaSurfaceID &surId);
 
-			void getSurfaceSize(const GingaSurfaceID &surId, int* width, int* height);
+  bool setSurfaceParentWindow (const GingaScreenID &screenId,
+                               const GingaSurfaceID &surId,
+                               const GingaWindowID &winId);
 
-			void addSurfaceCaps(const GingaSurfaceID &surId, const int caps);
-			void setSurfaceCaps (const GingaSurfaceID &surId, const int caps);
-			int getSurfaceCap(const GingaSurfaceID &surId, const string &cap);
-			int getSurfaceCaps(const GingaSurfaceID &surId);
+  void clearSurfaceContent (const GingaSurfaceID &surId);
 
-			void setSurfaceBgColor(
-					const GingaSurfaceID &surId, int r, int g, int b, int alpha);
+  void getSurfaceSize (const GingaSurfaceID &surId, int *width, int *height);
 
-			void setSurfaceFont(const GingaSurfaceID &surId, GingaSurfaceID font);
+  void addSurfaceCaps (const GingaSurfaceID &surId, const int caps);
+  void setSurfaceCaps (const GingaSurfaceID &surId, const int caps);
+  int getSurfaceCap (const GingaSurfaceID &surId, const string &cap);
+  int getSurfaceCaps (const GingaSurfaceID &surId);
 
-			void setColor(const GingaSurfaceID &surId, int r, int g, int b,int alpha);
+  void setSurfaceBgColor (const GingaSurfaceID &surId, int r, int g, int b,
+                          int alpha);
 
-			void setExternalHandler(const GingaSurfaceID &surId, bool extHandler);
+  void setSurfaceFont (const GingaSurfaceID &surId, GingaSurfaceID font);
 
-			void blitSurface (
-					const GingaSurfaceID &surId,int x, int y, GingaSurfaceID src=0,
-					int srcX=-1, int srcY=-1, int srcW=-1, int srcH=-1);
+  void setColor (const GingaSurfaceID &surId, int r, int g, int b, int alpha);
 
-			void flipSurface (const GingaSurfaceID &surId);
+  void setExternalHandler (const GingaSurfaceID &surId, bool extHandler);
 
-			void setSurfaceContent(const GingaSurfaceID &surId, void* surface);
+  void blitSurface (const GingaSurfaceID &surId, int x, int y,
+                    GingaSurfaceID src = 0, int srcX = -1, int srcY = -1,
+                    int srcW = -1, int srcH = -1);
 
-			Color* getSurfaceColor(const GingaSurfaceID &surId);
+  void flipSurface (const GingaSurfaceID &surId);
 
-			bool hasSurfaceExternalHandler(const GingaSurfaceID &surId);
+  void setSurfaceContent (const GingaSurfaceID &surId, void *surface);
 
-			void setSurfaceColor(
-								const GingaSurfaceID &surId, int r, int g, int b, int alpha);
+  Color *getSurfaceColor (const GingaSurfaceID &surId);
 
-			//providers
-			void setProviderSoundLevel (
-								const GingaProviderID &provId, float level);
+  bool hasSurfaceExternalHandler (const GingaSurfaceID &surId);
 
-			void getProviderOriginalResolution(
-								const GingaProviderID &provId, int* width, int* height);
+  void setSurfaceColor (const GingaSurfaceID &surId, int r, int g, int b,
+                        int alpha);
 
-			double getProviderTotalMediaTime(const GingaProviderID &provId);
+  // providers
+  void setProviderSoundLevel (const GingaProviderID &provId, float level);
 
-			double getProviderSoundLevel(const GingaProviderID &provId);
+  void getProviderOriginalResolution (const GingaProviderID &provId,
+                                      int *width, int *height);
 
-			int64_t getProviderVPts(const GingaProviderID &provId);
+  double getProviderTotalMediaTime (const GingaProviderID &provId);
 
-			void setProviderMediaTime( const GingaProviderID &provId, double pos);
+  double getProviderSoundLevel (const GingaProviderID &provId);
 
-			double getProviderMediaTime(const GingaProviderID &provId);
+  int64_t getProviderVPts (const GingaProviderID &provId);
 
-			void pauseProvider (const GingaProviderID &provId);
+  void setProviderMediaTime (const GingaProviderID &provId, double pos);
 
-			void stopProvider (const GingaProviderID &provId);
+  double getProviderMediaTime (const GingaProviderID &provId);
 
-			void resumeProvider (
-					const GingaProviderID &provId, GingaSurfaceID surface);
+  void pauseProvider (const GingaProviderID &provId);
 
-			void setProviderAVPid(const GingaProviderID &provId, int aPid, int vPid);
+  void stopProvider (const GingaProviderID &provId);
 
-			void feedProviderBuffers(const GingaProviderID &provId);
+  void resumeProvider (const GingaProviderID &provId, GingaSurfaceID surface);
 
-			bool checkProviderVideoResizeEvent(
-								const GingaProviderID &provId, const GingaSurfaceID &frame);
+  void setProviderAVPid (const GingaProviderID &provId, int aPid, int vPid);
 
-			int getProviderStringWidth(
-					const GingaProviderID &provId, const char* text, int textLength=0);
+  void feedProviderBuffers (const GingaProviderID &provId);
 
-			void playProviderOver(
-					const GingaProviderID &provId, const GingaSurfaceID &surface);
+  bool checkProviderVideoResizeEvent (const GingaProviderID &provId,
+                                      const GingaSurfaceID &frame);
 
-			void playProviderOver(
-					const GingaProviderID &provId, const GingaSurfaceID &surface,
-					const char* text, int x, int y, short align);
+  int getProviderStringWidth (const GingaProviderID &provId, const char *text,
+                              int textLength = 0);
 
-			int getProviderHeight(const GingaProviderID &provId);
+  void playProviderOver (const GingaProviderID &provId,
+                         const GingaSurfaceID &surface);
 
-			/* and finally some protected stuff */
-		protected:
-			void addScreen(
-					GingaScreenID screenId, SDLDeviceScreen* screen);
+  void playProviderOver (const GingaProviderID &provId,
+                         const GingaSurfaceID &surface, const char *text,
+                         int x, int y, short align);
 
-			short getNumOfScreens();
+  int getProviderHeight (const GingaProviderID &provId);
 
-			bool getScreen(
-					GingaScreenID screenId, SDLDeviceScreen** screen);
+  /* and finally some protected stuff */
+protected:
+  void addScreen (GingaScreenID screenId, SDLDeviceScreen *screen);
 
-			bool removeScreen(GingaScreenID screenId);
+  short getNumOfScreens ();
 
-			void lockScreenMap();
-			void unlockScreenMap();
+  bool getScreen (GingaScreenID screenId, SDLDeviceScreen **screen);
 
-			void lock();
-			void unlock();
-	};
+  bool removeScreen (GingaScreenID screenId);
+
+  void lockScreenMap ();
+  void unlockScreenMap ();
+
+  void lock ();
+  void unlock ();
+};
 
 GINGA_MB_END
 

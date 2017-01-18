@@ -28,55 +28,51 @@ using namespace ::ginga::ncl;
 
 GINGA_NCL_BEGIN
 
-	class DescriptorSwitch : public GenericDescriptor {
-		private:
-			vector<GenericDescriptor*>* descriptorList;
-			vector<Rule*>* ruleList;
-			GenericDescriptor* defaultDescriptor;
-			GenericDescriptor* selectedDescriptor;
+class DescriptorSwitch : public GenericDescriptor
+{
+private:
+  vector<GenericDescriptor *> *descriptorList;
+  vector<Rule *> *ruleList;
+  GenericDescriptor *defaultDescriptor;
+  GenericDescriptor *selectedDescriptor;
 
-			static set<DescriptorSwitch*> objects;
-			static bool initMutex;
-			static pthread_mutex_t _objMutex;
+  static set<DescriptorSwitch *> objects;
+  static bool initMutex;
+  static pthread_mutex_t _objMutex;
 
-			static void addInstance(DescriptorSwitch* object);
-			static bool removeInstance(DescriptorSwitch* object);
+  static void addInstance (DescriptorSwitch *object);
+  static bool removeInstance (DescriptorSwitch *object);
 
-		public:
-			DescriptorSwitch(string id);
-			virtual ~DescriptorSwitch();
+public:
+  DescriptorSwitch (string id);
+  virtual ~DescriptorSwitch ();
 
-			static bool hasInstance(
-					DescriptorSwitch* object, bool eraseFromList);
+  static bool hasInstance (DescriptorSwitch *object, bool eraseFromList);
 
-			bool addDescriptor(
-				    unsigned int index,
-				    GenericDescriptor* descriptor,
-				    Rule* rule);
+  bool addDescriptor (unsigned int index, GenericDescriptor *descriptor,
+                      Rule *rule);
 
-			bool addDescriptor(GenericDescriptor* descriptor, Rule* rule);
-			bool containsRule(Rule* rule);
-			void exchangeDescriptorsAndRules(
-				    unsigned int index1,
-				    unsigned int index2);
+  bool addDescriptor (GenericDescriptor *descriptor, Rule *rule);
+  bool containsRule (Rule *rule);
+  void exchangeDescriptorsAndRules (unsigned int index1, unsigned int index2);
 
-			int indexOfRule(Rule *rule);
-			GenericDescriptor* getDefaultDescriptor();
-			unsigned int indexOfDescriptor(GenericDescriptor* descriptor);
-			GenericDescriptor* getDescriptor(unsigned int index);
-			GenericDescriptor* getDescriptor(string descriptorId);
-			GenericDescriptor* getDescriptor(Rule* rule);
-			Rule* getRule(unsigned int index);
-			unsigned int getNumDescriptors();
-			unsigned int getNumRules();
-			bool removeDescriptor(unsigned int index);
-			bool removeDescriptor(GenericDescriptor* descriptor);
-			bool removeRule(Rule *rule);
-			void setDefaultDescriptor(GenericDescriptor* descriptor);
-			void select(GenericDescriptor* descriptor);
-			void selectDefault();
-			GenericDescriptor* getSelectedDescriptor();
-	};
+  int indexOfRule (Rule *rule);
+  GenericDescriptor *getDefaultDescriptor ();
+  unsigned int indexOfDescriptor (GenericDescriptor *descriptor);
+  GenericDescriptor *getDescriptor (unsigned int index);
+  GenericDescriptor *getDescriptor (string descriptorId);
+  GenericDescriptor *getDescriptor (Rule *rule);
+  Rule *getRule (unsigned int index);
+  unsigned int getNumDescriptors ();
+  unsigned int getNumRules ();
+  bool removeDescriptor (unsigned int index);
+  bool removeDescriptor (GenericDescriptor *descriptor);
+  bool removeRule (Rule *rule);
+  void setDefaultDescriptor (GenericDescriptor *descriptor);
+  void select (GenericDescriptor *descriptor);
+  void selectDefault ();
+  GenericDescriptor *getSelectedDescriptor ();
+};
 
 GINGA_NCL_END
 

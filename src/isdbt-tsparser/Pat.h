@@ -21,75 +21,77 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Pmt.h"
 #include "TransportSection.h"
 
-
-struct UnpPmtTime {
-		unsigned int pid;
-		double time;
+struct UnpPmtTime
+{
+  unsigned int pid;
+  double time;
 };
 
 GINGA_TSPARSER_BEGIN
 
-	class Pat : public TransportSection {
-		private:
-			static int defaultProgramNumber;
-			static int defaultProgramPid;
+class Pat : public TransportSection
+{
+private:
+  static int defaultProgramNumber;
+  static int defaultProgramPid;
 
-		protected:
-			unsigned int currentPid;
-			unsigned int currentCarouselId;
-			unsigned int carouselComponentTag;
-			unsigned int tsPid;
+protected:
+  unsigned int currentPid;
+  unsigned int currentCarouselId;
+  unsigned int carouselComponentTag;
+  unsigned int tsPid;
 
-			//Program association table (pmt pid x program number)
-			// if i->first == 0 i->second = networkPid
-			map<unsigned int, unsigned int> pat;
+  // Program association table (pmt pid x program number)
+  // if i->first == 0 i->second = networkPid
+  map<unsigned int, unsigned int> pat;
 
-			set<UnpPmtTime*> unprocessedPmts;
+  set<UnpPmtTime *> unprocessedPmts;
 
-			//PMT Pid TO PMT
-			map<unsigned int, Pmt*> programs;
+  // PMT Pid TO PMT
+  map<unsigned int, Pmt *> programs;
 
-			char* stream;
+  char *stream;
 
-		public:
-			Pat();
-			virtual ~Pat();
+public:
+  Pat ();
+  virtual ~Pat ();
 
-			bool hasStreamType(short streamType);
-			int getPidByStreamType(short streamType);
-			unsigned int getNextPid();
-			unsigned int getNextCarouselId();
-			unsigned int getCarouselComponentTag();
-			bool hasProgramNumber(unsigned int programNumber);
-			bool hasPid(unsigned int pid);
-			Pmt* getPmtByProgramNumber(unsigned int programNumber);
-			unsigned int getTSId();
-			void setTSId(unsigned int newTSId);
-			unsigned int getNumOfPrograms();
-			void addProgram(unsigned int pid, unsigned int programNumber);
-			void addPmt(Pmt* program);
-			void replacePmt(unsigned int pid, Pmt* newPmt);
-			unsigned int getFirstProgramNumber();
-			unsigned int getProgramNumberByPid(unsigned int pid);
-			short getStreamType(unsigned int pid);
-			bool isSectionType(unsigned int pid);
+  bool hasStreamType (short streamType);
+  int getPidByStreamType (short streamType);
+  unsigned int getNextPid ();
+  unsigned int getNextCarouselId ();
+  unsigned int getCarouselComponentTag ();
+  bool hasProgramNumber (unsigned int programNumber);
+  bool hasPid (unsigned int pid);
+  Pmt *getPmtByProgramNumber (unsigned int programNumber);
+  unsigned int getTSId ();
+  void setTSId (unsigned int newTSId);
+  unsigned int getNumOfPrograms ();
+  void addProgram (unsigned int pid, unsigned int programNumber);
+  void addPmt (Pmt *program);
+  void replacePmt (unsigned int pid, Pmt *newPmt);
+  unsigned int getFirstProgramNumber ();
+  unsigned int getProgramNumberByPid (unsigned int pid);
+  short getStreamType (unsigned int pid);
+  bool isSectionType (unsigned int pid);
 
-			static void resetPayload(char* payload, int size);
+  static void resetPayload (char *payload, int size);
 
-			bool processSectionPayload();
-			bool hasUnprocessedPmt();
-			set<UnpPmtTime*>* getUnprocessedPmtPids();
-			map<unsigned int, Pmt*>* getProgramsInfo();
-			void checkConsistency();
-			unsigned int getDefaultProgramPid();
-			unsigned int getDefaultMainVideoPid();
-			unsigned int getDefaultMainAudioPid();
-			unsigned int getDefaultMainCarouselPid();
+  bool processSectionPayload ();
+  bool hasUnprocessedPmt ();
+  set<UnpPmtTime *> *getUnprocessedPmtPids ();
+  map<unsigned int, Pmt *> *getProgramsInfo ();
+  void checkConsistency ();
+  unsigned int getDefaultProgramPid ();
+  unsigned int getDefaultMainVideoPid ();
+  unsigned int getDefaultMainAudioPid ();
+  unsigned int getDefaultMainCarouselPid ();
 
-			unsigned short createPatStreamByProgramPid(unsigned short pid, char** dataStream);
+  unsigned short createPatStreamByProgramPid (unsigned short pid,
+                                              char **dataStream);
 
-			void print();
-	 };
+  void print ();
+};
 
 GINGA_TSPARSER_END
 

@@ -29,158 +29,161 @@ bool isRunning;
 bool terminateSpeak;
 
 // Callback method which delivers the synthetized audio samples and the events.
-static int SynthCallback(short *wav, int numsamples, espeak_EVENT *events)
+static int
+SynthCallback (short *wav, int numsamples, espeak_EVENT *events)
 {
-    if (terminateSpeak == true)
-        return 1;
+  if (terminateSpeak == true)
+    return 1;
 
-    return 0;
+  return 0;
 }
-
 
 GINGA_PLAYER_BEGIN
 
+SsmlPlayer::SsmlPlayer (GingaScreenID screenId, string mrl)
+    : Thread (), Player (screenId, mrl)
+{
+}
 
-    SsmlPlayer::SsmlPlayer(GingaScreenID screenId, string mrl) :
-        Thread(), Player(screenId, mrl) {
+SsmlPlayer::~SsmlPlayer () {}
 
+void
+SsmlPlayer::setFile (string mrl)
+{
+  clog << "SsmlPlayer::setFile!! " << endl;
+
+  if (mrl == "" || !fileExists (mrl))
+    {
+      clog << "SsmlPlayer::setFile Warning! File not found: '";
+      clog << mrl << "'" << endl;
+      return;
     }
 
-    SsmlPlayer::~SsmlPlayer() {
+  if (mrl.length () > 5)
+    {
+      string fileType;
 
-    }
-
-    void SsmlPlayer::setFile(string mrl) {
-        clog << "SsmlPlayer::setFile!! " << endl;
-
-        if (mrl == "" || !fileExists(mrl)) {
-            clog << "SsmlPlayer::setFile Warning! File not found: '";
-            clog << mrl << "'" << endl;
-            return;
-        }
-
-        if (mrl.length() > 5) {
-            string fileType;
-
-            this->mrl = mrl;
-            fileType = this->mrl.substr(this->mrl.length() - 5, 5);
-            if (fileType != ".ssml") {
-                clog << "SsmlPlayer::loadFile Warning! Unknown file ";
-                clog << "type for: '" << this->mrl << "'" << endl;
-            }
-
-        } else {
-            clog << "SsmlPlayer::loadFile Warning! Unknown extension ";
-            clog << "type for: '" << mrl << "'" << endl;
+      this->mrl = mrl;
+      fileType = this->mrl.substr (this->mrl.length () - 5, 5);
+      if (fileType != ".ssml")
+        {
+          clog << "SsmlPlayer::loadFile Warning! Unknown file ";
+          clog << "type for: '" << this->mrl << "'" << endl;
         }
     }
+  else
+    {
+      clog << "SsmlPlayer::loadFile Warning! Unknown extension ";
+      clog << "type for: '" << mrl << "'" << endl;
+    }
+}
 
-    // This method is the most important one. It sets up the audio synthesizer, the
-    // output audio device, reads the input SSML file and calls the apropriate
-    // methods to perform the audio synthesis and playback.
-    void SsmlPlayer::loadSsml() {
-        espeak_AUDIO_OUTPUT outType = AUDIO_OUTPUT_SYNCH_PLAYBACK;
-        espeak_POSITION_TYPE pType = POS_CHARACTER;
-        espeak_VOICE voiceType;
-        espeak_ERROR errType = EE_OK;
-        int sampleRate = 0;
-        clog << "SsmlPlayer::loadSsml!! " << endl;
+// This method is the most important one. It sets up the audio synthesizer, the
+// output audio device, reads the input SSML file and calls the apropriate
+// methods to perform the audio synthesis and playback.
+void
+SsmlPlayer::loadSsml ()
+{
+  espeak_AUDIO_OUTPUT outType = AUDIO_OUTPUT_SYNCH_PLAYBACK;
+  espeak_POSITION_TYPE pType = POS_CHARACTER;
+  espeak_VOICE voiceType;
+  espeak_ERROR errType = EE_OK;
+  int sampleRate = 0;
+  clog << "SsmlPlayer::loadSsml!! " << endl;
 
-        voiceType.name = NULL;
-        // TODO: Hardcoded to Brazilian Portuguese
-        voiceType.languages = "pt-br";
-        voiceType.gender = 0;
-        voiceType.age = 0;
-        voiceType.variant = 0;
+  voiceType.name = NULL;
+  // TODO: Hardcoded to Brazilian Portuguese
+  voiceType.languages = "pt-br";
+  voiceType.gender = 0;
+  voiceType.age = 0;
+  voiceType.variant = 0;
 
-        ifstream fis;
+  ifstream fis;
 
-        fis.open((this->mrl).c_str(), ifstream::in);
+  fis.open ((this->mrl).c_str (), ifstream::in);
 
-        if (!fis.is_open() && (mrl != "" || content == "")) {
-            clog << "SsmlPlayer::loadFile Warning! can't open input ";
-            clog << "file: '" << this->mrl << "'" << endl;
-            return;
-        }
-
-        if (isRunning == true) {
-            terminateSpeak = true;
-            while (isRunning == true)
-                sleep (1);
-        }
-
-        sampleRate = espeak_Initialize(outType, MAX_READ, NULL, 0);
-        isRunning = true;
-
-        errType = espeak_SetVoiceByProperties(&voiceType);
-
-        espeak_SetSynthCallback(SynthCallback);
-
-        string line;
-        do {
-
-            if (terminateSpeak == true)
-                break;
-
-            getline (fis, line);
-            errType = espeak_Synth(line.c_str(),
-                     line.length(),
-                     0,
-                     pType,
-                     0,
-                     espeakSSML,
-                     NULL,
-                     NULL);
-
-        } while (!fis.eof());
-
-        fis.close();
-
-        espeak_Synchronize();
-        espeak_Terminate();
-
-        if (terminateSpeak == false)
-            notifyPlayerListeners(PL_NOTIFY_STOP, "");
-
-        terminateSpeak = false;
-        isRunning = false;
-
-
+  if (!fis.is_open () && (mrl != "" || content == ""))
+    {
+      clog << "SsmlPlayer::loadFile Warning! can't open input ";
+      clog << "file: '" << this->mrl << "'" << endl;
+      return;
     }
 
-    bool SsmlPlayer::play() {
-        clog << "SsmlPlayer::play ok" << endl;
-
-        bool ret = Player::play();
-        Thread::startThread();
-
-        return ret;
-
+  if (isRunning == true)
+    {
+      terminateSpeak = true;
+      while (isRunning == true)
+        sleep (1);
     }
 
-    void SsmlPlayer::stop() {
-        clog << "SsmlPlayer::stop ok" << endl;
+  sampleRate = espeak_Initialize (outType, MAX_READ, NULL, 0);
+  isRunning = true;
 
-        Player::stop();
+  errType = espeak_SetVoiceByProperties (&voiceType);
+
+  espeak_SetSynthCallback (SynthCallback);
+
+  string line;
+  do
+    {
+
+      if (terminateSpeak == true)
+        break;
+
+      getline (fis, line);
+      errType = espeak_Synth (line.c_str (), line.length (), 0, pType, 0,
+                              espeakSSML, NULL, NULL);
     }
+  while (!fis.eof ());
 
+  fis.close ();
 
-    void SsmlPlayer::resume() {
-        SsmlPlayer::play();
-    }
+  espeak_Synchronize ();
+  espeak_Terminate ();
 
+  if (terminateSpeak == false)
+    notifyPlayerListeners (PL_NOTIFY_STOP, "");
 
-    void SsmlPlayer::setPropertyValue(string name, string value) {
-        Player::setPropertyValue(name, value);
+  terminateSpeak = false;
+  isRunning = false;
+}
 
-    }
+bool
+SsmlPlayer::play ()
+{
+  clog << "SsmlPlayer::play ok" << endl;
 
-    void SsmlPlayer::run() {
-        clog << "SsmlPlayer::run thread created!" << endl;
-        loadSsml();
+  bool ret = Player::play ();
+  Thread::startThread ();
 
-    }
+  return ret;
+}
 
+void
+SsmlPlayer::stop ()
+{
+  clog << "SsmlPlayer::stop ok" << endl;
 
+  Player::stop ();
+}
+
+void
+SsmlPlayer::resume ()
+{
+  SsmlPlayer::play ();
+}
+
+void
+SsmlPlayer::setPropertyValue (string name, string value)
+{
+  Player::setPropertyValue (name, value);
+}
+
+void
+SsmlPlayer::run ()
+{
+  clog << "SsmlPlayer::run thread created!" << endl;
+  loadSsml ();
+}
 
 GINGA_PLAYER_END

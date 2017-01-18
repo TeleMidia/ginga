@@ -22,11 +22,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TSPARSER_BEGIN
 
-	class IFilterListener {
-		public:
-			virtual ~IFilterListener(){};
-			virtual void receiveSection(ITransportSection* event)=0;
-	};
+class IFilterListener
+{
+public:
+  virtual ~IFilterListener (){};
+  virtual void receiveSection (ITransportSection *event) = 0;
+};
 
 GINGA_TSPARSER_END
 

@@ -25,207 +25,133 @@ using namespace ::ginga::system;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 
-  class PrivateBaseManager {
-	private:
-		map<string, PrivateBaseContext*> privateBases;
-		pthread_mutex_t mutexTable;
+class PrivateBaseManager
+{
+private:
+  map<string, PrivateBaseContext *> privateBases;
+  pthread_mutex_t mutexTable;
 
-	public:
-		PrivateBaseManager();
-		virtual ~PrivateBaseManager();
+public:
+  PrivateBaseManager ();
+  virtual ~PrivateBaseManager ();
 
-		void createPrivateBase(string id);
-		void releasePrivateBases();
+  void createPrivateBase (string id);
+  void releasePrivateBases ();
 
-		NclDocument* addDocument(
-				string id, string location, DeviceLayout* deviceLayout);
+  NclDocument *addDocument (string id, string location,
+                            DeviceLayout *deviceLayout);
 
-		NclDocument* embedDocument(
-				string id,
-				string docId,
-				string nodeId,
-				string location,
-				DeviceLayout* deviceLayout);
+  NclDocument *embedDocument (string id, string docId, string nodeId,
+                              string location, DeviceLayout *deviceLayout);
 
-		void* addVisibleDocument(
-				string id, string location, DeviceLayout* deviceLayout);
+  void *addVisibleDocument (string id, string location,
+                            DeviceLayout *deviceLayout);
 
-		string getDocumentLocation(string id, string docId);
-		string getEmbeddedDocumentLocation(
-				string baseId, string parentDocId, string nodeId);
+  string getDocumentLocation (string id, string docId);
+  string getEmbeddedDocumentLocation (string baseId, string parentDocId,
+                                      string nodeId);
 
-		NclDocument* getDocument(string id, string docId);
-		NclDocument* getEmbeddedDocument(
-				string baseId, string parendDocId, string nodeId);
+  NclDocument *getDocument (string id, string docId);
+  NclDocument *getEmbeddedDocument (string baseId, string parendDocId,
+                                    string nodeId);
 
-		vector<NclDocument*>* getDocuments(string id);
-		NclDocument* removeDocument(string id, string docId);
-		NclDocument* removeEmbeddedDocument(
-				string baseId, string parentDocId, string nodeId);
+  vector<NclDocument *> *getDocuments (string id);
+  NclDocument *removeDocument (string id, string docId);
+  NclDocument *removeEmbeddedDocument (string baseId, string parentDocId,
+                                       string nodeId);
 
-		LayoutRegion* addRegion(
-				string id,
-				string documentId,
-				string regionBaseId,
-				string regionId,
-				string xmlRegion);
+  LayoutRegion *addRegion (string id, string documentId, string regionBaseId,
+                           string regionId, string xmlRegion);
 
-		LayoutRegion* removeRegion(
-				string id,
-				string documentId,
-				string regionBaseId,
-				string regionId);
+  LayoutRegion *removeRegion (string id, string documentId,
+                              string regionBaseId, string regionId);
 
-		RegionBase* addRegionBase(
-				string id,
-				string documentId,
-				string xmlRegionBase);
+  RegionBase *addRegionBase (string id, string documentId,
+                             string xmlRegionBase);
 
-		RegionBase* removeRegionBase(
-				string id,
-				string documentId,
-				string regionBaseId);
+  RegionBase *removeRegionBase (string id, string documentId,
+                                string regionBaseId);
 
-		Rule* addRule(
-				string id,
-				string documentId,
-				string xmlRule);
+  Rule *addRule (string id, string documentId, string xmlRule);
 
-		Rule* removeRule(
-				string id,
-				string documentId,
-				string ruleId);
+  Rule *removeRule (string id, string documentId, string ruleId);
 
-		RuleBase* addRuleBase(
-				string id,
-				string documentId,
-				string xmlRuleBase);
+  RuleBase *addRuleBase (string id, string documentId, string xmlRuleBase);
 
-		RuleBase* removeRuleBase(
-				string id,
-				string documentId,
-				string ruleBaseId);
+  RuleBase *removeRuleBase (string id, string documentId, string ruleBaseId);
 
-		Transition* addTransition(
-				string id,
-				string documentId,
-				string xmlTransition);
+  Transition *addTransition (string id, string documentId,
+                             string xmlTransition);
 
-		Transition* removeTransition(
-				string id,
-				string documentId,
-				string transitionId);
+  Transition *removeTransition (string id, string documentId,
+                                string transitionId);
 
-		TransitionBase* addTransitionBase(
-				string id,
-				string documentId,
-			    string xmlTransitionBase);
+  TransitionBase *addTransitionBase (string id, string documentId,
+                                     string xmlTransitionBase);
 
-		TransitionBase* removeTransitionBase(
-				string id,
-				string documentId,
-				string transitionBaseId);
+  TransitionBase *removeTransitionBase (string id, string documentId,
+                                        string transitionBaseId);
 
-		Connector* addConnector(
-				string id,
-				string documentId,
-				string xmlConnector);
+  Connector *addConnector (string id, string documentId, string xmlConnector);
 
-		Connector* removeConnector(
-				string id,
-				string documentId,
-				string connectorId);
+  Connector *removeConnector (string id, string documentId,
+                              string connectorId);
 
-		ConnectorBase* addConnectorBase(
-				string id,
-				string documentId,
-				string xmlConnectorBase);
+  ConnectorBase *addConnectorBase (string id, string documentId,
+                                   string xmlConnectorBase);
 
-		ConnectorBase* removeConnectorBase(
-				string id,
-				string documentId,
-				string connectorBaseId);
+  ConnectorBase *removeConnectorBase (string id, string documentId,
+                                      string connectorBaseId);
 
-		GenericDescriptor* addDescriptor(
-				string id,
-				string documentId,
-				string xmlDescriptor);
+  GenericDescriptor *addDescriptor (string id, string documentId,
+                                    string xmlDescriptor);
 
-		GenericDescriptor* removeDescriptor(
-				string id,
-				string documentId,
-				string descriptorId);
+  GenericDescriptor *removeDescriptor (string id, string documentId,
+                                       string descriptorId);
 
-		DescriptorBase* addDescriptorBase(
-				string id,
-				string documentId,
-				string xmlDescriptorBase);
+  DescriptorBase *addDescriptorBase (string id, string documentId,
+                                     string xmlDescriptorBase);
 
-		DescriptorBase* removeDescriptorBase(
-				string id,
-				string documentId,
-				string descriptorBaseId);
+  DescriptorBase *removeDescriptorBase (string id, string documentId,
+                                        string descriptorBaseId);
 
-		Base* addImportBase(
-				string id,
-				string documentId,
-				string docBaseId,
-				string xmlImportBase);
+  Base *addImportBase (string id, string documentId, string docBaseId,
+                       string xmlImportBase);
 
-		Base* removeImportBase(
-				string id,
-				string documentId,
-				string docBaseId,
-				string documentURI);
+  Base *removeImportBase (string id, string documentId, string docBaseId,
+                          string documentURI);
 
-		NclDocument* addImportedDocumentBase(
-				string id,
-				string documentId,
-				string xmlImportedDocumentBase);
+  NclDocument *addImportedDocumentBase (string id, string documentId,
+                                        string xmlImportedDocumentBase);
 
-		NclDocument* removeImportedDocumentBase(
-				string id,
-				string documentId,
-				string importedDocumentBaseId);
+  NclDocument *removeImportedDocumentBase (string id, string documentId,
+                                           string importedDocumentBaseId);
 
-		NclDocument* addImportNCL(
-				string id,
-				string documentId,
-				string xmlImportNCL);
+  NclDocument *addImportNCL (string id, string documentId,
+                             string xmlImportNCL);
 
-		NclDocument* removeImportNCL(
-				string id,
-				string documentId,
-				string documentURI);
+  NclDocument *removeImportNCL (string id, string documentId,
+                                string documentURI);
 
-		Node* addNode(
-				string id,
-				string documentId,
-				string compositeId,
-				string xmlNode);
+  Node *addNode (string id, string documentId, string compositeId,
+                 string xmlNode);
 
-		InterfacePoint* addInterface(
-				string id,
-				string documentId,
-				string nodeId,
-				string xmlInterface);
+  InterfacePoint *addInterface (string id, string documentId, string nodeId,
+                                string xmlInterface);
 
-		Link* addLink(
-				string id,
-				string documentId,
-				string compositeId,
-				string xmlLink);
+  Link *addLink (string id, string documentId, string compositeId,
+                 string xmlLink);
 
-	private:
-		PrivateBaseContext* getPrivateBaseContext(string id);
+private:
+  PrivateBaseContext *getPrivateBaseContext (string id);
 
-	public:
-		PrivateBase* getPrivateBase(string id);
+public:
+  PrivateBase *getPrivateBase (string id);
 
-	private:
-		void lockTable();
-		void unlockTable();
-  };
+private:
+  void lockTable ();
+  void unlockTable ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_END
 #endif /*PrivateBaseManager_H_*/

@@ -20,102 +20,133 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_BEGIN
 
-	EventTransition::EventTransition(double time, PresentationEvent* event) {
-		typeSet.insert("EventTransition");
-		this->time  = time;
-		this->event = event;
-	}
+EventTransition::EventTransition (double time, PresentationEvent *event)
+{
+  typeSet.insert ("EventTransition");
+  this->time = time;
+  this->event = event;
+}
 
-	EventTransition::~EventTransition() {
+EventTransition::~EventTransition () {}
 
-	}
+int
+EventTransition::compareTo (EventTransition *object)
+{
+  EventTransition *otherEntry;
 
-	int EventTransition::compareTo(EventTransition* object) {
-		EventTransition* otherEntry;
+  if (object->instanceOf ("EventTransition"))
+    {
+      otherEntry = (EventTransition *)object;
 
-		if (object->instanceOf("EventTransition")) {
-			otherEntry = (EventTransition*)object;
+      if (otherEntry->time < 0 && time >= 0)
+        {
+          return -1;
+        }
+      else if (time < 0 && otherEntry->time >= 0)
+        {
+          return 1;
+        }
+      else if (time < 0 && otherEntry->time < 0)
+        {
+          return compareType (otherEntry);
+        }
+      else if (time < otherEntry->time)
+        {
+          return -1;
+        }
+      else if (time > otherEntry->time)
+        {
+          return 1;
+        }
+      else
+        {
+          return compareType (otherEntry);
+        }
+    }
+  else
+    {
+      return -1;
+    }
+  return -1;
+}
 
-			if (otherEntry->time < 0 && time >= 0) {
-				return -1;
+bool
+EventTransition::instanceOf (string s)
+{
+  if (typeSet.empty ())
+    {
+      return false;
+    }
+  else
+    {
+      return (typeSet.find (s) != typeSet.end ());
+    }
+}
 
-			} else if (time < 0 && otherEntry->time >= 0) {
-				return 1;
+int
+EventTransition::compareType (EventTransition *otherEntry)
+{
+  if (this->instanceOf ("BeginEventTransition"))
+    {
+      if (otherEntry->instanceOf ("EndEventTransition"))
+        {
+          return -1;
+        }
+      else if (event == otherEntry->event)
+        {
+          return 0;
 
-			} else if (time < 0 && otherEntry->time < 0) {
-				return compareType(otherEntry);
+          /*} else if (event.hashCode() < other_entry.event.hashCode()) {
+              return -1;*/
+        }
+      else
+        {
+          return 1;
+        }
+    }
+  else
+    {
+      if (otherEntry->instanceOf ("BeginEventTransition"))
+        {
+          return 1;
+        }
+      else if (event == otherEntry->event)
+        {
+          return 0;
 
-			} else if (time < otherEntry->time) {
-				return -1;
+          /*} else if (event.hashCode() < other_entry.event.hashCode()) {
+                  return -1;*/
+        }
+      else
+        {
+          return 1;
+        }
+    }
+}
 
-			} else if (time > otherEntry->time) {
-				return 1;
+bool
+EventTransition::equals (EventTransition *object)
+{
+  switch (compareTo (object))
+    {
+    case 0:
+      return true;
 
-			} else {
-				return compareType(otherEntry);
-			}
+    default:
+      return false;
+    }
+}
 
-		} else {
-			return -1;
-		}
-		return -1;
-	}
+PresentationEvent *
+EventTransition::getEvent ()
+{
+  return event;
+}
 
-	bool EventTransition::instanceOf(string s) {
-		if(typeSet.empty()) {
-			return false;
-		} else {
-			return (typeSet.find(s) != typeSet.end());
-		}
-	}
-
-	int EventTransition::compareType(EventTransition* otherEntry) {
-		if (this->instanceOf("BeginEventTransition")) {
-			if (otherEntry->instanceOf("EndEventTransition")) {
-				return -1;
-
-			} else if (event == otherEntry->event) {
-				return 0;
-
-			/*} else if (event.hashCode() < other_entry.event.hashCode()) {
-			    return -1;*/
-
-			} else {
-			    return 1;
-			}
-
-		} else {
-			if (otherEntry->instanceOf("BeginEventTransition")) {
-				return 1;
-
-			} else if (event == otherEntry->event) {
-				return 0;
-
-			/*} else if (event.hashCode() < other_entry.event.hashCode()) {
-				return -1;*/
-
-			} else {
-				return 1;
-			}
-		}
-	}
-
-	bool EventTransition::equals(EventTransition* object) {
-		switch (compareTo(object)) {
-			case 0:
-				return true;
-
-			default:
-				return false;
-		}
-	}
-
-	PresentationEvent* EventTransition::getEvent() {
-		return event;
-	}
-
-	double EventTransition::getTime() {
-		return time;
-	}
+double
+EventTransition::getTime ()
+{
+  return time;
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_TRANSITION_END

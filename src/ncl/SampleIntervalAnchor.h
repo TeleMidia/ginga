@@ -22,16 +22,17 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	class SampleIntervalAnchor : public IntervalAnchor {
-		private:
-			short firstSyntax;
-			short lastSyntax;
+class SampleIntervalAnchor : public IntervalAnchor
+{
+private:
+  short firstSyntax;
+  short lastSyntax;
 
-		public:
-			SampleIntervalAnchor(string id, double first, double last);
-			void setValueSyntax(short firstSyntax, short lastSyntax);
-			void getValueSyntax(short* firstSyntax, short* lastSyntax);
-	};
+public:
+  SampleIntervalAnchor (string id, double first, double last);
+  void setValueSyntax (short firstSyntax, short lastSyntax);
+  void getValueSyntax (short *firstSyntax, short *lastSyntax);
+};
 
 GINGA_NCL_END
 

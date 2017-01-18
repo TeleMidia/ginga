@@ -18,22 +18,23 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _IEVENTLISTENER_H_
 #define _IEVENTLISTENER_H_
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
 
-	class IEventListener {
-		public:
-			//PRIORITY TYPE FOR NOTIFICATIONS
-			static const short PT_CORE   = 0;
-			static const short PT_LINK   = 1;
-			static const short PT_OBJECT = 2;
+class IEventListener
+{
+public:
+  // PRIORITY TYPE FOR NOTIFICATIONS
+  static const short PT_CORE = 0;
+  static const short PT_LINK = 1;
+  static const short PT_OBJECT = 2;
 
-			virtual ~IEventListener(){};
-			virtual void eventStateChanged(
-				     void* event, short transition, short previousState)=0;
+  virtual ~IEventListener (){};
+  virtual void eventStateChanged (void *event, short transition,
+                                  short previousState)
+      = 0;
 
-			virtual short getPriorityType()=0;
-	};
+  virtual short getPriorityType () = 0;
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END
 #endif //_IEVENTLISTENER_H_

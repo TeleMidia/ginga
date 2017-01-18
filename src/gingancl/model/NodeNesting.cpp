@@ -20,224 +20,280 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_BEGIN
 
-	NodeNesting::NodeNesting() {
-		initialize();
-	}
+NodeNesting::NodeNesting () { initialize (); }
 
-	NodeNesting::NodeNesting(Node *node) {
-		initialize();
-		insertAnchorNode(node);
-	}
+NodeNesting::NodeNesting (Node *node)
+{
+  initialize ();
+  insertAnchorNode (node);
+}
 
-	NodeNesting::NodeNesting(NodeNesting *seq) {
-		initialize();
-		append(seq);
-	}
+NodeNesting::NodeNesting (NodeNesting *seq)
+{
+  initialize ();
+  append (seq);
+}
 
-	NodeNesting::NodeNesting(vector<Node*> *seq) {
-		initialize();
-		append(seq);
-	}
+NodeNesting::NodeNesting (vector<Node *> *seq)
+{
+  initialize ();
+  append (seq);
+}
 
-	NodeNesting::~NodeNesting() {
-		Thread::mutexLock(&mutexNodes);
-		if (nodes != NULL) {
-			delete nodes;
-			nodes = NULL;
-		}
-		Thread::mutexUnlock(&mutexNodes);
-		Thread::mutexDestroy(&mutexNodes);
-	}
+NodeNesting::~NodeNesting ()
+{
+  Thread::mutexLock (&mutexNodes);
+  if (nodes != NULL)
+    {
+      delete nodes;
+      nodes = NULL;
+    }
+  Thread::mutexUnlock (&mutexNodes);
+  Thread::mutexDestroy (&mutexNodes);
+}
 
-	void NodeNesting::initialize() {
-		string type = "NodeNesting";
-		this->nodes = new vector<Node*>;
-		id = "";
-		typeSet.insert(type);
-		Thread::mutexInit(&mutexNodes, false);
-	}
+void
+NodeNesting::initialize ()
+{
+  string type = "NodeNesting";
+  this->nodes = new vector<Node *>;
+  id = "";
+  typeSet.insert (type);
+  Thread::mutexInit (&mutexNodes, false);
+}
 
-	bool NodeNesting::instanceOf(string s) {
-		if (!typeSet.empty()) {
-			return ( typeSet.find(s) != typeSet.end() );
-		} else {
-			return false;
-		}
-	}
+bool
+NodeNesting::instanceOf (string s)
+{
+  if (!typeSet.empty ())
+    {
+      return (typeSet.find (s) != typeSet.end ());
+    }
+  else
+    {
+      return false;
+    }
+}
 
-	void NodeNesting::append(NodeNesting* otherSeq) {
-		int i, size;
-		Node* node;
+void
+NodeNesting::append (NodeNesting *otherSeq)
+{
+  int i, size;
+  Node *node;
 
-		size = otherSeq->getNumNodes();
-		for (i = 0; i < size; i++) {
-			node = otherSeq->getNode(i);
-			insertAnchorNode(node);
-		}
-	}
+  size = otherSeq->getNumNodes ();
+  for (i = 0; i < size; i++)
+    {
+      node = otherSeq->getNode (i);
+      insertAnchorNode (node);
+    }
+}
 
-	void NodeNesting::append(vector<Node*>* otherSeq) {
-		vector<Node*>::iterator i;
+void
+NodeNesting::append (vector<Node *> *otherSeq)
+{
+  vector<Node *>::iterator i;
 
-		for (i = otherSeq->begin(); i != otherSeq->end(); ++i) {
-			insertAnchorNode(*i);
-		}
-	}
+  for (i = otherSeq->begin (); i != otherSeq->end (); ++i)
+    {
+      insertAnchorNode (*i);
+    }
+}
 
-	Node* NodeNesting::getAnchorNode() {
-		Node* node;
+Node *
+NodeNesting::getAnchorNode ()
+{
+  Node *node;
 
-		Thread::mutexLock(&mutexNodes);
-		if (nodes == NULL || nodes->empty()) {
-			Thread::mutexUnlock(&mutexNodes);
-			return NULL;
+  Thread::mutexLock (&mutexNodes);
+  if (nodes == NULL || nodes->empty ())
+    {
+      Thread::mutexUnlock (&mutexNodes);
+      return NULL;
+    }
+  else if (nodes->size () == 1)
+    {
+      node = *(nodes->begin ());
+      Thread::mutexUnlock (&mutexNodes);
+      return node;
+    }
+  else
+    {
+      node = *(nodes->end () - 1);
+      Thread::mutexUnlock (&mutexNodes);
+      return node;
+    }
+}
 
-		} else if (nodes->size() == 1) {
-			node = *(nodes->begin());
-			Thread::mutexUnlock(&mutexNodes);
-			return node;
+Node *
+NodeNesting::getHeadNode ()
+{
+  Node *node;
 
-		} else {
-			node = *(nodes->end()-1);
-			Thread::mutexUnlock(&mutexNodes);
-			return node;
-		}
-	}
+  Thread::mutexLock (&mutexNodes);
+  if (nodes == NULL || nodes->empty ())
+    {
+      Thread::mutexUnlock (&mutexNodes);
+      return NULL;
+    }
+  else
+    {
+      node = *(nodes->begin ());
+      Thread::mutexUnlock (&mutexNodes);
+      return node;
+    }
+}
 
-	Node* NodeNesting::getHeadNode() {
-		Node* node;
+Node *
+NodeNesting::getNode (int index)
+{
+  Node *node;
+  vector<Node *>::iterator i;
 
-		Thread::mutexLock(&mutexNodes);
-		if (nodes == NULL || nodes->empty()) {
-			Thread::mutexUnlock(&mutexNodes);
-			return NULL;
+  Thread::mutexLock (&mutexNodes);
 
-		} else {
-			node = *(nodes->begin());
-			Thread::mutexUnlock(&mutexNodes);
-			return node;
-		}
-	}
+  if (nodes == NULL || nodes->empty () || index < 0
+      || index >= (int)(nodes->size ()))
+    {
 
-	Node* NodeNesting::getNode(int index) {
-		Node* node;
-		vector<Node*>::iterator i;
+      Thread::mutexUnlock (&mutexNodes);
+      return NULL;
+    }
 
-		Thread::mutexLock(&mutexNodes);
+  i = nodes->begin () + index;
+  node = *i;
+  Thread::mutexUnlock (&mutexNodes);
 
-		if (nodes == NULL ||
-			    nodes->empty() ||
-			    index < 0 ||
-			    index >= (int)(nodes->size())) {
+  return node;
+}
 
-			Thread::mutexUnlock(&mutexNodes);
-			return NULL;
-		}
+int
+NodeNesting::getNumNodes ()
+{
+  int s;
 
-		i = nodes->begin() + index;
-		node = *i;
-		Thread::mutexUnlock(&mutexNodes);
+  Thread::mutexLock (&mutexNodes);
+  if (nodes == NULL)
+    {
+      s = 0;
+    }
+  else
+    {
+      s = nodes->size ();
+    }
+  Thread::mutexUnlock (&mutexNodes);
+  return s;
+}
 
-		return node;
-	}
+void
+NodeNesting::insertAnchorNode (Node *node)
+{
+  string nodeId;
 
-	int NodeNesting::getNumNodes() {
-		int s;
+  Thread::mutexLock (&mutexNodes);
+  if (nodes == NULL)
+    {
+      Thread::mutexUnlock (&mutexNodes);
+      return;
+    }
 
-		Thread::mutexLock(&mutexNodes);
-		if (nodes == NULL) {
-			s = 0;
-		} else {
-			s = nodes->size();
-		}
-		Thread::mutexUnlock(&mutexNodes);
-		return s;
-	}
+  nodeId = node->getId ();
+  if (nodes->size () > 0)
+    {
+      id = id + SystemCompat::getIUriD () + nodeId;
+    }
+  else
+    {
+      id = nodeId;
+    }
 
-	void NodeNesting::insertAnchorNode(Node* node) {
-		string nodeId;
+  nodes->push_back (node);
+  Thread::mutexUnlock (&mutexNodes);
+}
 
-		Thread::mutexLock(&mutexNodes);
-		if (nodes == NULL) {
-			Thread::mutexUnlock(&mutexNodes);
-			return;
-		}
+void
+NodeNesting::insertHeadNode (Node *node)
+{
+  Thread::mutexLock (&mutexNodes);
+  if (nodes == NULL)
+    {
+      Thread::mutexUnlock (&mutexNodes);
+      return;
+    }
 
-		nodeId = node->getId();
-		if (nodes->size() > 0) {
-			id = id + SystemCompat::getIUriD() + nodeId;
+  if (nodes->size () > 0)
+    {
+      id = node->getId () + SystemCompat::getIUriD () + id;
+    }
+  else
+    {
+      id = node->getId ();
+    }
+  nodes->insert (nodes->begin (), node);
 
-		} else {
-			id = nodeId;
-		}
+  Thread::mutexUnlock (&mutexNodes);
+}
 
-		nodes->push_back(node);
-		Thread::mutexUnlock(&mutexNodes);
-	}
+bool
+NodeNesting::removeAnchorNode ()
+{
+  Thread::mutexLock (&mutexNodes);
 
-	void NodeNesting::insertHeadNode(Node* node) {
-		Thread::mutexLock(&mutexNodes);
-		if (nodes == NULL) {
-			Thread::mutexUnlock(&mutexNodes);
-			return;
-		}
+  if (nodes == NULL || nodes->empty ())
+    {
+      Thread::mutexUnlock (&mutexNodes);
+      return false;
+    }
 
-		if (nodes->size() > 0) {
-			id = node->getId() + SystemCompat::getIUriD() + id;
-		} else {
-			id = node->getId();
-		}
-		nodes->insert(nodes->begin(), node);
+  nodes->erase (nodes->end () - 1);
+  Thread::mutexUnlock (&mutexNodes);
 
-		Thread::mutexUnlock(&mutexNodes);
-	}
+  if (id.find (SystemCompat::getIUriD ()) != std::string::npos)
+    {
+      id = id.substr (0, id.find_last_of (SystemCompat::getIUriD ()));
+    }
 
-	bool NodeNesting::removeAnchorNode() {
-		Thread::mutexLock(&mutexNodes);
+  return true;
+}
 
-		if (nodes == NULL || nodes->empty()) {
-			Thread::mutexUnlock(&mutexNodes);
-			return false;
-		}
+bool
+NodeNesting::removeHeadNode ()
+{
+  Thread::mutexLock (&mutexNodes);
 
-		nodes->erase(nodes->end() - 1);
-		Thread::mutexUnlock(&mutexNodes);
+  if (nodes == NULL || nodes->empty ())
+    {
+      Thread::mutexUnlock (&mutexNodes);
+      return false;
+    }
 
-		if (id.find(SystemCompat::getIUriD()) != std::string::npos) {
-			id = id.substr(0, id.find_last_of(SystemCompat::getIUriD()));
-		}
+  nodes->erase (nodes->begin ());
+  Thread::mutexUnlock (&mutexNodes);
 
-		return true;
-	}
+  if (id.find (SystemCompat::getIUriD ()) != std::string::npos)
+    {
+      id = id.substr (0, id.find_last_of (SystemCompat::getIUriD ()));
+    }
 
-	bool NodeNesting::removeHeadNode() {
-		Thread::mutexLock(&mutexNodes);
+  return true;
+}
 
-		if (nodes == NULL || nodes->empty()) {
-			Thread::mutexUnlock(&mutexNodes);
-			return false;
-		}
+string
+NodeNesting::getId ()
+{
+  return id;
+}
 
-		nodes->erase(nodes->begin());
-		Thread::mutexUnlock(&mutexNodes);
+NodeNesting *
+NodeNesting::copy ()
+{
+  return new NodeNesting (this);
+}
 
-		if (id.find(SystemCompat::getIUriD()) != std::string::npos) {
-			id = id.substr(0, id.find_last_of(SystemCompat::getIUriD()));
-		}
-
-		return true;
-	}
-
-	string NodeNesting::getId() {
-		return id;
-	}
-
-	NodeNesting *NodeNesting::copy() {
-		return new NodeNesting(this);
-	}
-
-	string NodeNesting::toString() {
-		return id;
-	}
+string
+NodeNesting::toString ()
+{
+  return id;
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_COMPONENTS_END

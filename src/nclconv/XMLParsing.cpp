@@ -18,111 +18,128 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "XMLParsing.h"
 
-XMLParsing * XMLParsing::myInstance = NULL;
+XMLParsing *XMLParsing::myInstance = NULL;
 
-XMLParsing::XMLParsing() {
-	// initialize the XML library.
-	XMLPlatformUtils::Initialize();
+XMLParsing::XMLParsing ()
+{
+  // initialize the XML library.
+  XMLPlatformUtils::Initialize ();
 }
 
-XMLParsing::~XMLParsing() {
-	// terminate the XML library.
-	XMLPlatformUtils::Terminate();
+XMLParsing::~XMLParsing ()
+{
+  // terminate the XML library.
+  XMLPlatformUtils::Terminate ();
 }
 
-DOMNode *XMLParsing::parse(string src) {
-	bool bFailed = false;
+DOMNode *
+XMLParsing::parse (string src)
+{
+  bool bFailed = false;
 
-	if (myInstance==NULL) {
-		myInstance = new XMLParsing();
-	}
+  if (myInstance == NULL)
+    {
+      myInstance = new XMLParsing ();
+    }
 
-	// create new parser instance.
-	XercesDOMParser *parser = new XercesDOMParser();
-	if (!parser) {
-		return NULL;
+  // create new parser instance.
+  XercesDOMParser *parser = new XercesDOMParser ();
+  if (!parser)
+    {
+      return NULL;
+    }
+  else
+    {
+      parser->setValidationScheme (XercesDOMParser::Val_Auto);
+      parser->setDoNamespaces (false);
+      parser->setDoSchema (false);
 
-	} else {
-		parser->setValidationScheme(XercesDOMParser::Val_Auto);
-		parser->setDoNamespaces(false);
-		parser->setDoSchema(false);
+      // skip this if you haven't written your own error
+      // reporter class.
+      DOMTreeErrorReporter *errReporter = new DOMTreeErrorReporter ();
+      parser->setErrorHandler (errReporter);
+      parser->setCreateEntityReferenceNodes (false);
 
-		// skip this if you haven't written your own error
-		// reporter class.
-		DOMTreeErrorReporter *errReporter = new DOMTreeErrorReporter();
-		parser->setErrorHandler(errReporter);
-		parser->setCreateEntityReferenceNodes(false);
+      // parser->setToCreateXMLDeclTypeNode(true);
+      try
+        {
+          // checking if source is xml or uri
+          if (src.find ("<") != std::string::npos)
+            {
+              MemBufInputSource xmlSource (
+                  (XMLByte *)(src.c_str ()), src.length (),
+                  XMLString::transcode ("xmlContent"));
 
-		//parser->setToCreateXMLDeclTypeNode(true);
-		try {
-			//checking if source is xml or uri
-			if (src.find("<") != std::string::npos) {
-				MemBufInputSource xmlSource(
-						(XMLByte*)(src.c_str()),
-						src.length(),
-						XMLString::transcode("xmlContent"));
+              parser->parse (xmlSource);
+            }
+          else
+            {
+              LocalFileInputSource source (
+                  XMLString::transcode (src.c_str ()));
 
-				parser->parse(xmlSource);
+              parser->parse (source);
+            }
 
-			} else {
-				LocalFileInputSource source(
-						XMLString::transcode(src.c_str()));
+          bFailed = parser->getErrorCount () != 0;
+          if (bFailed)
+            {
+              std::cerr << "Parsing " << src << std::endl;
+              std::cerr << " error count: ";
+              std::cerr << parser->getErrorCount () << std::endl;
+            }
+        }
+      catch (const DOMException &e)
+        {
+          std::cerr << "DOM Exception parsing ";
+          std::cerr << src;
+          std::cerr << " reports: ";
 
-				parser->parse(source);
-			}
+          // was message provided?
+          if (e.msg)
+            {
+              // yes: display it as ascii.
+              char *strMsg = XMLString::transcode (e.msg);
+              std::cerr << strMsg << std::endl;
+              XMLString::release (&strMsg);
+            }
+          else
+            {
+              // no: just display the error code.
+              std::cerr << e.code << std::endl;
+            }
 
-			bFailed = parser->getErrorCount() != 0;
-			if (bFailed) {
-				std::cerr << "Parsing " << src <<std::endl;
-				std::cerr << " error count: ";
-				std::cerr << parser->getErrorCount() << std::endl;
-			}
+          bFailed = true;
+        }
+      catch (const XMLException &e)
+        {
+          std::cerr << "XML Exception parsing ";
+          std::cerr << src;
+          std::cerr << " reports: ";
+          std::cerr << e.getMessage () << std::endl;
+          bFailed = true;
+        }
+      catch (const SAXException &e)
+        {
+          std::cerr << "SAX Exception parsing ";
+          std::cerr << src;
+          std::cerr << " reports: ";
+          std::cerr << e.getMessage () << std::endl;
+          bFailed = true;
+        }
+      catch (...)
+        {
+          std::cerr << "An exception parsing ";
+          std::cerr << src << std::endl;
+          bFailed = true;
+        }
 
-		} catch (const DOMException& e) {
-			std::cerr << "DOM Exception parsing ";
-			std::cerr << src;
-			std::cerr << " reports: ";
-
-			// was message provided?
-			if (e.msg) {
-				// yes: display it as ascii.
-				char *strMsg = XMLString::transcode(e.msg);
-				std::cerr << strMsg << std::endl;
-				XMLString::release(&strMsg);
-
-			} else {
-				// no: just display the error code.
-				std::cerr << e.code << std::endl;
-			}
-
-			bFailed = true;
-
-		} catch (const XMLException& e) {
-			std::cerr << "XML Exception parsing ";
-			std::cerr << src;
-			std::cerr << " reports: ";
-			std::cerr << e.getMessage() << std::endl;
-			bFailed = true;
-
-		} catch (const SAXException& e) {
-			std::cerr << "SAX Exception parsing ";
-			std::cerr << src;
-			std::cerr << " reports: ";
-			std::cerr << e.getMessage() << std::endl;
-			bFailed = true;
-
-		} catch (...) {
-			std::cerr << "An exception parsing ";
-			std::cerr << src << std::endl;
-			bFailed = true;
-		}
-
-		// did the input document parse okay?
-		if (!bFailed) {
-			DOMNode *pDoc = parser->getDocument();
-			// insert code to do something with the DOM document here.
-			return pDoc;
-		}
-		return NULL;
-	}
+      // did the input document parse okay?
+      if (!bFailed)
+        {
+          DOMNode *pDoc = parser->getDocument ();
+          // insert code to do something with the DOM document here.
+          return pDoc;
+        }
+      return NULL;
+    }
 }

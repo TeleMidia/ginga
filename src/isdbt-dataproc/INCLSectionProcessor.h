@@ -20,29 +20,27 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "INCLMetadata.h"
 
-
 GINGA_DATAPROC_BEGIN
 
-	class INCLSectionProcessor {
-		public:
-			virtual ~INCLSectionProcessor(){};
+class INCLSectionProcessor
+{
+public:
+  virtual ~INCLSectionProcessor (){};
 
-			virtual string getRootUri()=0;
+  virtual string getRootUri () = 0;
 
-			//receiving stream
-			virtual void process(char* stream, int streamSize)=0;
-			virtual void mount()=0;
-			virtual bool isConsolidated()=0;
-			virtual INCLMetadata* getMetadata()=0;
+  // receiving stream
+  virtual void process (char *stream, int streamSize) = 0;
+  virtual void mount () = 0;
+  virtual bool isConsolidated () = 0;
+  virtual INCLMetadata *getMetadata () = 0;
 
-			//creating stream
-			virtual vector<StreamData*>* createNCLSections(
-					string componentTag,
-					string name,
-					string baseUri,
-					vector<string>* files,
-					map<int, string>* eventMap)=0;
-	};
+  // creating stream
+  virtual vector<StreamData *> *
+  createNCLSections (string componentTag, string name, string baseUri,
+                     vector<string> *files, map<int, string> *eventMap)
+      = 0;
+};
 
 GINGA_DATAPROC_END
 

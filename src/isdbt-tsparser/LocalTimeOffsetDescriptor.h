@@ -21,35 +21,32 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "IMpegDescriptor.h"
 using namespace ::ginga::tsparser;
 
-
-
 GINGA_TSPARSER_BEGIN
 
+class LocalTimeOffsetDescriptor : public IMpegDescriptor
+{
+protected:
+  char countryCode[3];
+  unsigned char countryRegionId;
+  unsigned char localTimeOffsetPolarity;
+  unsigned short localTimeOffset;
+  char timeOfChange[5];
+  unsigned short nextTimeOffset;
 
-	class LocalTimeOffsetDescriptor : public IMpegDescriptor {
-		protected:
-			char countryCode[3];
-			unsigned char countryRegionId;
-			unsigned char localTimeOffsetPolarity;
-			unsigned short localTimeOffset;
-			char timeOfChange[5];
-			unsigned short nextTimeOffset;
-		public:
-			LocalTimeOffsetDescriptor();
-			~LocalTimeOffsetDescriptor();
-			unsigned char getDescriptorTag();
-			unsigned int getDescriptorLength();
-			string getCountryCode();
-			unsigned char getCountryRegionId();
-			unsigned char getLocalTimeOffsetPolarity();
-			unsigned short getLocalTimeOffset();
-			string getTimeOfChange();
-			unsigned short getNextTimeOffset();
-			void print();
-			size_t process (char* data, size_t pos);
-
-	};
-
+public:
+  LocalTimeOffsetDescriptor ();
+  ~LocalTimeOffsetDescriptor ();
+  unsigned char getDescriptorTag ();
+  unsigned int getDescriptorLength ();
+  string getCountryCode ();
+  unsigned char getCountryRegionId ();
+  unsigned char getLocalTimeOffsetPolarity ();
+  unsigned short getLocalTimeOffset ();
+  string getTimeOfChange ();
+  unsigned short getNextTimeOffset ();
+  void print ();
+  size_t process (char *data, size_t pos);
+};
 
 GINGA_TSPARSER_END
 

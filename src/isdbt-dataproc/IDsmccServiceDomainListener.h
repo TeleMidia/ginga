@@ -21,19 +21,19 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "isdbt-tsparser/IAIT.h"
 using namespace ::ginga::tsparser;
 
-
 GINGA_DATAPROC_BEGIN
 
-	class IDsmccServiceDomainListener {
-		public:
-			virtual ~IDsmccServiceDomainListener(){};
-			virtual bool applicationInfoMounted(IAIT* ait)=0;
+class IDsmccServiceDomainListener
+{
+public:
+  virtual ~IDsmccServiceDomainListener (){};
+  virtual bool applicationInfoMounted (IAIT *ait) = 0;
 
-			virtual void serviceDomainMounted(
-					string mountPoint,
-					map<string, string>* names,
-					map<string, string>* paths)=0;
-	};
+  virtual void serviceDomainMounted (string mountPoint,
+                                     map<string, string> *names,
+                                     map<string, string> *paths)
+      = 0;
+};
 
 GINGA_DATAPROC_END
 

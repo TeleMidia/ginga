@@ -164,15 +164,15 @@ private:
   map<string, int> keyMap;
   map<int, string> valueMap;
 
-  static CodeMap* _instance;
-  CodeMap();
+  static CodeMap *_instance;
+  CodeMap ();
 
 public:
-  static CodeMap* getInstance();
+  static CodeMap *getInstance ();
 
-  int getCode(string codeStr);
-  string getValue(int value);
-  map<string, int>* cloneKeyMap();
+  int getCode (string codeStr);
+  string getValue (int value);
+  map<string, int> *cloneKeyMap ();
 };
 
 GINGA_MB_END

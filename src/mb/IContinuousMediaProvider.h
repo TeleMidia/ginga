@@ -23,34 +23,34 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "IProviderListener.h"
 #include "IMediaProvider.h"
 
-
 GINGA_MB_BEGIN
 
-	class IContinuousMediaProvider : public IMediaProvider {
-		public:
-			virtual ~IContinuousMediaProvider(){};
-			virtual bool getHasVisual()=0;
-			virtual void setLoadSymbol(string symbol)=0;
-			virtual string getLoadSymbol()=0;
-			virtual void setAVPid(int aPid, int vPid)=0;
-			virtual void feedBuffers()=0;
-			virtual bool checkVideoResizeEvent(GingaSurfaceID frame)=0;
-			virtual double getTotalMediaTime()=0;
-			virtual int64_t getVPts()=0;
-			virtual double getMediaTime()=0;
-			virtual void setMediaTime(double pos)=0;
-			virtual void playOver(GingaSurfaceID surface)=0;
-			virtual void resume(GingaSurfaceID surface)=0;
-			virtual void pause()=0;
-			virtual void stop()=0;
-			virtual void setSoundLevel(float level)=0;
-			virtual float getSoundLevel()=0;
-			virtual void setProviderContent(void* content)=0;
-			virtual void* getProviderContent()=0;
-			virtual void getOriginalResolution(int* width, int* height)=0;
-			virtual bool releaseAll()=0;
-			virtual void refreshDR(void* data)=0;
-	};
+class IContinuousMediaProvider : public IMediaProvider
+{
+public:
+  virtual ~IContinuousMediaProvider (){};
+  virtual bool getHasVisual () = 0;
+  virtual void setLoadSymbol (string symbol) = 0;
+  virtual string getLoadSymbol () = 0;
+  virtual void setAVPid (int aPid, int vPid) = 0;
+  virtual void feedBuffers () = 0;
+  virtual bool checkVideoResizeEvent (GingaSurfaceID frame) = 0;
+  virtual double getTotalMediaTime () = 0;
+  virtual int64_t getVPts () = 0;
+  virtual double getMediaTime () = 0;
+  virtual void setMediaTime (double pos) = 0;
+  virtual void playOver (GingaSurfaceID surface) = 0;
+  virtual void resume (GingaSurfaceID surface) = 0;
+  virtual void pause () = 0;
+  virtual void stop () = 0;
+  virtual void setSoundLevel (float level) = 0;
+  virtual float getSoundLevel () = 0;
+  virtual void setProviderContent (void *content) = 0;
+  virtual void *getProviderContent () = 0;
+  virtual void getOriginalResolution (int *width, int *height) = 0;
+  virtual bool releaseAll () = 0;
+  virtual void refreshDR (void *data) = 0;
+};
 
 GINGA_MB_END
 

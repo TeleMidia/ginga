@@ -29,20 +29,20 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 #include "gingancl/model/SelectionEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TIME_BEGIN
 
-	class TimePlayerAdapter : public FormatterPlayerAdapter {
-		private:
-			string TimeSrcId;
+class TimePlayerAdapter : public FormatterPlayerAdapter
+{
+private:
+  string TimeSrcId;
 
-		public:
-			TimePlayerAdapter();
-			virtual ~TimePlayerAdapter();
+public:
+  TimePlayerAdapter ();
+  virtual ~TimePlayerAdapter ();
 
-		protected:
-			void createPlayer();
-   };
+protected:
+  void createPlayer ();
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TIME_END
 #endif /*TIMEPLAYERADAPTER_H_*/

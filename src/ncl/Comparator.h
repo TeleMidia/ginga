@@ -31,10 +31,10 @@ public:
   static const short CMP_LTE = 3;
   static const short CMP_GT = 4;
   static const short CMP_GTE = 5;
-  static bool evaluate(string first, string second, short comparator);
-  static bool evaluate(float first, float second, short comparator);
-  static string toString(short comparator);
-  static short fromString(string comp);
+  static bool evaluate (string first, string second, short comparator);
+  static bool evaluate (float first, float second, short comparator);
+  static string toString (short comparator);
+  static short fromString (string comp);
 };
 
 GINGA_NCL_END

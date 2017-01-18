@@ -30,29 +30,28 @@ using namespace ::ginga::tsparser;
 
 #include "IAIT.h"
 
-
 GINGA_TSPARSER_BEGIN
 
-	class AIT : public IAIT {
-		private:
-			unsigned int applicationType;
-			unsigned short commonDescriptorsLength;
-			vector<IMpegDescriptor*> descriptors;
-			unsigned short applicationLoopLength;
-			vector<IApplication*> applications;
-			string secName;
+class AIT : public IAIT
+{
+private:
+  unsigned int applicationType;
+  unsigned short commonDescriptorsLength;
+  vector<IMpegDescriptor *> descriptors;
+  unsigned short applicationLoopLength;
+  vector<IApplication *> applications;
+  string secName;
 
-		public:
-			AIT();
-			~AIT();
-			string getSectionName();
-			void setSectionName(string secName);
-			void setApplicationType(unsigned int type);
-			void process(void* payloadBytes, unsigned int payloadSize);
-			vector<IMpegDescriptor*>* copyDescriptors();
-			vector<IApplication*>* copyApplications();
-	};
-
+public:
+  AIT ();
+  ~AIT ();
+  string getSectionName ();
+  void setSectionName (string secName);
+  void setApplicationType (unsigned int type);
+  void process (void *payloadBytes, unsigned int payloadSize);
+  vector<IMpegDescriptor *> *copyDescriptors ();
+  vector<IApplication *> *copyApplications ();
+};
 
 GINGA_TSPARSER_END
 

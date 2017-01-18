@@ -23,65 +23,77 @@ using namespace ::ginga::util;
 
 GINGA_NCL_BEGIN
 
-	ContentTypeManager *ContentTypeManager::_instance = NULL;
-	string ContentTypeManager::absUrl                 = "";
+ContentTypeManager *ContentTypeManager::_instance = NULL;
+string ContentTypeManager::absUrl = "";
 
-	ContentTypeManager::ContentTypeManager() {
-		pthread_mutex_init(&mutex, NULL);
-	}
+ContentTypeManager::ContentTypeManager ()
+{
+  pthread_mutex_init (&mutex, NULL);
+}
 
-	ContentTypeManager *ContentTypeManager::getInstance() {
-		if (_instance == NULL) {
-			_instance = new ContentTypeManager();
-		}
-		return _instance;
-	}
+ContentTypeManager *
+ContentTypeManager::getInstance ()
+{
+  if (_instance == NULL)
+    {
+      _instance = new ContentTypeManager ();
+    }
+  return _instance;
+}
 
-	void ContentTypeManager::setMimeFile(string mimeFile) {
-		if (mimeFile != absUrl) {
-			absUrl = mimeFile;
-			readMimeDefinitions();
-		}
-	}
+void
+ContentTypeManager::setMimeFile (string mimeFile)
+{
+  if (mimeFile != absUrl)
+    {
+      absUrl = mimeFile;
+      readMimeDefinitions ();
+    }
+}
 
-	void ContentTypeManager::readMimeDefinitions() {
-		ifstream fisMime;
-		string line, key, value;
+void
+ContentTypeManager::readMimeDefinitions ()
+{
+  ifstream fisMime;
+  string line, key, value;
 
-		fisMime.open(absUrl.c_str(), ifstream::in);
+  fisMime.open (absUrl.c_str (), ifstream::in);
 
-		if (!fisMime.is_open()) {
-			clog << "ContentTypeAdapterManager::readMimeDefinitions ";
-			clog << "Warning! Can't open input file: '" << absUrl;
-			clog << "'" << endl;
-			return;
-		}
+  if (!fisMime.is_open ())
+    {
+      clog << "ContentTypeAdapterManager::readMimeDefinitions ";
+      clog << "Warning! Can't open input file: '" << absUrl;
+      clog << "'" << endl;
+      return;
+    }
 
-		while (fisMime.good()) {
-			fisMime >> line;
-			key = line.substr(0, line.find_last_of("="));
-			value = line.substr(
-				    (line.find_first_of("=") + 1),
-				    line.length() - (line.find_first_of("=") + 1));
+  while (fisMime.good ())
+    {
+      fisMime >> line;
+      key = line.substr (0, line.find_last_of ("="));
+      value = line.substr ((line.find_first_of ("=") + 1),
+                           line.length () - (line.find_first_of ("=") + 1));
 
-			mimeDefaultTable[key] = value;
-		}
+      mimeDefaultTable[key] = value;
+    }
 
-		fisMime.close();
-	}
+  fisMime.close ();
+}
 
-	string ContentTypeManager::getMimeType(string fileExtension) {
-		string mType = "";
+string
+ContentTypeManager::getMimeType (string fileExtension)
+{
+  string mType = "";
 
-		pthread_mutex_lock(&mutex);
-		if (fileExtension != "" &&
-				mimeDefaultTable.count(fileExtension) != 0) {
+  pthread_mutex_lock (&mutex);
+  if (fileExtension != "" && mimeDefaultTable.count (fileExtension) != 0)
+    {
 
-			mType = mimeDefaultTable[fileExtension];
-		}
-		pthread_mutex_unlock(&mutex);
+      mType = mimeDefaultTable[fileExtension];
+    }
+  pthread_mutex_unlock (&mutex);
 
-		return mType;
-	}
+  return mType;
+}
 
 GINGA_NCL_END

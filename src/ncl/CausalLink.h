@@ -33,19 +33,18 @@ using namespace ::ginga::ncl;
 #include "Bind.h"
 #include "Link.h"
 
-
 GINGA_NCL_BEGIN
 
-	class CausalLink : public Link {
-		public:
-			CausalLink(string uid, Connector *connector);
-			virtual ~CausalLink(){};
-			bool containsSourceNode(Node *node,
-				     GenericDescriptor *descriptor);
+class CausalLink : public Link
+{
+public:
+  CausalLink (string uid, Connector *connector);
+  virtual ~CausalLink (){};
+  bool containsSourceNode (Node *node, GenericDescriptor *descriptor);
 
-			vector<Bind*> *getActionBinds();
-			vector<Bind*> *getConditionBinds();
-	};
+  vector<Bind *> *getActionBinds ();
+  vector<Bind *> *getConditionBinds ();
+};
 
 GINGA_NCL_END
 

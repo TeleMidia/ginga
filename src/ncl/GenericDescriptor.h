@@ -23,13 +23,15 @@ using namespace ::ginga::ncl;
 
 GINGA_NCL_BEGIN
 
-	class GenericDescriptor : public Entity {
-		public:
-			GenericDescriptor(string someId) : Entity(someId) {
-				typeSet.insert("GenericDescriptor");
-			};
-			virtual ~GenericDescriptor(){};
-	};
+class GenericDescriptor : public Entity
+{
+public:
+  GenericDescriptor (string someId) : Entity (someId)
+  {
+    typeSet.insert ("GenericDescriptor");
+  };
+  virtual ~GenericDescriptor (){};
+};
 
 GINGA_NCL_END
 

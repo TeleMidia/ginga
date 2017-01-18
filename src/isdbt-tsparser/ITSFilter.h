@@ -23,25 +23,24 @@ using namespace ::ginga::tuner;
 
 #include "ITSPacket.h"
 
-
 GINGA_TSPARSER_BEGIN
 
-	class ITSFilter {
-		public:
-			virtual ~ITSFilter(){};
+class ITSFilter
+{
+public:
+  virtual ~ITSFilter (){};
 
-			virtual void addPid(int pid)=0;
-			virtual void receiveTSPacket(ITSPacket* pack)=0;
+  virtual void addPid (int pid) = 0;
+  virtual void receiveTSPacket (ITSPacket *pack) = 0;
 
-			virtual void receiveSection(
-					char* buf, int len, IFrontendFilter* filter)=0;
+  virtual void receiveSection (char *buf, int len, IFrontendFilter *filter)
+      = 0;
 
-			virtual void receivePes(
-					char* buf, int len, IFrontendFilter* filter)=0;
+  virtual void receivePes (char *buf, int len, IFrontendFilter *filter) = 0;
 
-			virtual string setDestinationUri(string dstUri)=0;
-			virtual void setSourceUri(string srcUri, bool isPipe)=0;
-	};
+  virtual string setDestinationUri (string dstUri) = 0;
+  virtual void setSourceUri (string srcUri, bool isPipe) = 0;
+};
 
 GINGA_TSPARSER_END
 

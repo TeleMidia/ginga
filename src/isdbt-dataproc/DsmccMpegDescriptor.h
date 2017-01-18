@@ -30,28 +30,30 @@ public:
 protected:
   unsigned char descriptorTag;
   unsigned char descriptorLength;
-  char* stream;
+  char *stream;
   unsigned short currentSize;
-  virtual int process();
-  virtual int updateStream();
-  virtual unsigned int calculateDescriptorSize();
+  virtual int process ();
+  virtual int updateStream ();
+  virtual unsigned int calculateDescriptorSize ();
 
 public:
-  DsmccMpegDescriptor();
-  DsmccMpegDescriptor(unsigned char tag);
-  virtual ~DsmccMpegDescriptor();
-  char addData(char* data, unsigned short length);
-  unsigned char isConsolidated();
-  unsigned char getDescriptorTag();
-  unsigned char getDescriptorLength();
-  int getStreamSize();
-  int getStream(char** dataStream);
-  void setDescriptorTag(unsigned char tag);
-  static DsmccMpegDescriptor* getDescriptor(vector<DsmccMpegDescriptor*>* descriptors,
-                                       unsigned char Tag);
-  static vector<DsmccMpegDescriptor*>* getDescriptors
-  (vector<DsmccMpegDescriptor*>* descriptors, unsigned char Tag);
-  static int getDescriptorsLength(vector<DsmccMpegDescriptor*>* descriptors);
+  DsmccMpegDescriptor ();
+  DsmccMpegDescriptor (unsigned char tag);
+  virtual ~DsmccMpegDescriptor ();
+  char addData (char *data, unsigned short length);
+  unsigned char isConsolidated ();
+  unsigned char getDescriptorTag ();
+  unsigned char getDescriptorLength ();
+  int getStreamSize ();
+  int getStream (char **dataStream);
+  void setDescriptorTag (unsigned char tag);
+  static DsmccMpegDescriptor *
+  getDescriptor (vector<DsmccMpegDescriptor *> *descriptors,
+                 unsigned char Tag);
+  static vector<DsmccMpegDescriptor *> *
+  getDescriptors (vector<DsmccMpegDescriptor *> *descriptors,
+                  unsigned char Tag);
+  static int getDescriptorsLength (vector<DsmccMpegDescriptor *> *descriptors);
 };
 
 GINGA_DATAPROC_END

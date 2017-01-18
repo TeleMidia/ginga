@@ -23,25 +23,30 @@ using namespace ::ginga::ncl;
 
 #include "FormatterEvent.h"
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
 
-  class AnchorEvent : public FormatterEvent {
-	protected:
-		ContentAnchor* anchor;
+class AnchorEvent : public FormatterEvent
+{
+protected:
+  ContentAnchor *anchor;
 
-	public:
-		AnchorEvent(
-		    string id,
-		    void* executionObject,
-		    ContentAnchor* anchor);
+public:
+  AnchorEvent (string id, void *executionObject, ContentAnchor *anchor);
 
-		virtual ~AnchorEvent();
+  virtual ~AnchorEvent ();
 
-		ContentAnchor* getAnchor();
-		virtual bool start() {return FormatterEvent::start();};
-		virtual bool stop() {return FormatterEvent::stop();};
+  ContentAnchor *getAnchor ();
+  virtual bool
+  start ()
+  {
+    return FormatterEvent::start ();
   };
+  virtual bool
+  stop ()
+  {
+    return FormatterEvent::stop ();
+  };
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_END
 #endif //_ANCHOREVENT_H_

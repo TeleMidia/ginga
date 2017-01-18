@@ -26,41 +26,41 @@ GINGA_IC_BEGIN
 class CurlInteractiveChannel
 {
 private:
-  FILE* fd;
-  char* buffer;
+  FILE *fd;
+  char *buffer;
   short type;
   float rate;
   string localUri;
   string defaultServer;
   string uri;
   string userAgent;
-  static CURL* curl;
+  static CURL *curl;
   static pthread_mutex_t mutex;
   static bool mutexInit;
-  IInteractiveChannelListener* listener;
+  IInteractiveChannelListener *listener;
 
 public:
-  CurlInteractiveChannel();
-  ~CurlInteractiveChannel();
-  bool hasConnection();
-  void setSourceTarget(string url);
-  void setTarget(FILE* fd);
-  void setTarget(char* buffer);
-  short getType();
-  float getRate();
-  void setListener(IInteractiveChannelListener* listener);
-  bool reserveUrl(string uri, IInteractiveChannelListener* listener=NULL,
-                  string userAgent="");
+  CurlInteractiveChannel ();
+  ~CurlInteractiveChannel ();
+  bool hasConnection ();
+  void setSourceTarget (string url);
+  void setTarget (FILE *fd);
+  void setTarget (char *buffer);
+  short getType ();
+  float getRate ();
+  void setListener (IInteractiveChannelListener *listener);
+  bool reserveUrl (string uri, IInteractiveChannelListener *listener = NULL,
+                   string userAgent = "");
 
-  bool performUrl();
-  bool releaseUrl();
+  bool performUrl ();
+  bool releaseUrl ();
 
 private:
-  static size_t writeCallBack(void* ptr, size_t size,
-                              size_t nmemb, void* stream);
-  bool positiveResponse(long* respCode);
-  FILE* getLocalFileDescriptor();
-  IInteractiveChannelListener* getListener();
+  static size_t writeCallBack (void *ptr, size_t size, size_t nmemb,
+                               void *stream);
+  bool positiveResponse (long *respCode);
+  FILE *getLocalFileDescriptor ();
+  IInteractiveChannelListener *getListener ();
 };
 
 GINGA_IC_END

@@ -12,7 +12,8 @@
    freely, subject to the following restrictions:
 
    1. The origin of this source code must not be misrepresented; you must not
-      claim that you wrote the original source code. If you use this source code
+      claim that you wrote the original source code. If you use this source
+   code
       in a product, an acknowledgment in the product documentation would be
       appreciated but is not required.
 
@@ -32,10 +33,10 @@
 
 GINGA_UTIL_BEGIN
 
-string base64_encode(unsigned char const* , unsigned int len);
-string base64_decode(std::string const& s);
-string getBase64FromFile(string file_path);
-int writeFileFromBase64(string payload, char * file_path);
+string base64_encode (unsigned char const *, unsigned int len);
+string base64_decode (std::string const &s);
+string getBase64FromFile (string file_path);
+int writeFileFromBase64 (string payload, char *file_path);
 
 GINGA_UTIL_END
 

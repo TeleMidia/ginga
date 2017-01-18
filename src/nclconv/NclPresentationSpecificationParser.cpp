@@ -21,151 +21,183 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCLCONV_BEGIN
 
-	NclPresentationSpecificationParser::NclPresentationSpecificationParser(
-		    DocumentParser *documentParser) : ModuleParser(documentParser) {
+NclPresentationSpecificationParser::NclPresentationSpecificationParser (
+    DocumentParser *documentParser)
+    : ModuleParser (documentParser)
+{
+}
 
+void *
+NclPresentationSpecificationParser::parseDescriptor (DOMElement *parentElement,
+                                                     void *objGrandParent)
+{
 
-	}
+  clog << "parseDescriptor" << endl;
+  void *parentObject;
+  DOMNodeList *elementNodeList;
+  DOMElement *element;
+  DOMNode *node;
+  string elementTagName;
+  void *elementObject;
 
-	void *NclPresentationSpecificationParser::parseDescriptor(
-		    DOMElement *parentElement, void *objGrandParent) {
+  parentObject = createDescriptor (parentElement, objGrandParent);
+  if (parentObject == NULL)
+    {
+      return NULL;
+    }
 
-		clog << "parseDescriptor" << endl;
-		void *parentObject;
-		DOMNodeList *elementNodeList;
-		DOMElement *element;
-		DOMNode *node;
-		string elementTagName;
-		void *elementObject;
+  elementNodeList = parentElement->getChildNodes ();
+  for (int i = 0; i < (int)elementNodeList->getLength (); i++)
+    {
+      node = elementNodeList->item (i);
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+        {
+          element = (DOMElement *)node;
+          elementTagName = XMLString::transcode (element->getTagName ());
+          clog << ">>" << elementTagName.c_str () << ": ";
+          clog << XMLString::transcode (
+                      element->getAttribute (XMLString::transcode ("id")))
+               << endl;
 
-		parentObject = createDescriptor(parentElement, objGrandParent);
-		if (parentObject == NULL) {
-			return NULL;
-		}
+          if (XMLString::compareIString (elementTagName.c_str (),
+                                         "descriptorParam")
+              == 0)
+            {
 
-		elementNodeList = parentElement->getChildNodes();
-		for (int i = 0; i < (int)elementNodeList->getLength(); i++) {
-			node = elementNodeList->item(i);
-			if (node->getNodeType()==DOMNode::ELEMENT_NODE) {
-				element = (DOMElement*)node;
-				elementTagName = XMLString::transcode(element->getTagName());
-				clog << ">>" << elementTagName.c_str() << ": ";
-				clog << XMLString::transcode(element->getAttribute(
-						XMLString::transcode("id"))) << endl;
+              elementObject = parseDescriptorParam (element, parentObject);
 
-				if (XMLString::compareIString(elementTagName.c_str(),
-					    "descriptorParam") == 0) {
+              if (elementObject != NULL)
+                {
+                  addDescriptorParamToDescriptor (parentObject, elementObject);
+                }
+            }
+        }
+    }
 
-					elementObject = parseDescriptorParam(
-						    element, parentObject);
+  return parentObject;
+}
 
-					if (elementObject != NULL) {
-						addDescriptorParamToDescriptor(
-							    parentObject, elementObject);
-					}
-				}
-			}
-		}
+void *
+NclPresentationSpecificationParser::parseDescriptorBase (
+    DOMElement *parentElement, void *objGrandParent)
+{
 
-		return parentObject;
-	}
+  clog << "parseDescriptorBase" << endl;
+  void *parentObject;
+  DOMNodeList *elementNodeList;
+  DOMElement *element;
+  DOMNode *node;
+  string elementTagName;
+  void *elementObject;
 
-	void *NclPresentationSpecificationParser::parseDescriptorBase(
-		    DOMElement *parentElement, void *objGrandParent) {
+  parentObject = createDescriptorBase (parentElement, objGrandParent);
+  if (parentObject == NULL)
+    {
+      return NULL;
+    }
 
-		clog << "parseDescriptorBase" << endl;
-		void *parentObject;
-		DOMNodeList *elementNodeList;
-		DOMElement *element;
-		DOMNode *node;
-		string elementTagName;
-		void *elementObject;
+  elementNodeList = parentElement->getChildNodes ();
+  for (int i = 0; i < (int)elementNodeList->getLength (); i++)
+    {
+      node = elementNodeList->item (i);
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+        {
+          element = (DOMElement *)node;
+          elementTagName = XMLString::transcode (element->getTagName ());
+          clog << ">>" << elementTagName.c_str () << ": ";
+          clog << XMLString::transcode (
+                      element->getAttribute (XMLString::transcode ("id")))
+               << endl;
 
-		parentObject = createDescriptorBase(parentElement, objGrandParent);
-		if (parentObject == NULL) {
-			return NULL;
-		}
+          if (XMLString::compareIString (elementTagName.c_str (), "importBase")
+              == 0)
+            {
 
-		elementNodeList = parentElement->getChildNodes();
-		for (int i = 0; i < (int)elementNodeList->getLength(); i++) {
-			node = elementNodeList->item(i);
-			if (node->getNodeType()==DOMNode::ELEMENT_NODE) {
-				element = (DOMElement*)node;
-				elementTagName = XMLString::transcode(element->getTagName());
-				clog << ">>" << elementTagName.c_str() << ": ";
-				clog << XMLString::transcode(element->getAttribute(XMLString::transcode("id"))) << endl;
+              elementObject = getImportParser ()->parseImportBase (
+                  element, parentObject);
 
-				if (XMLString::compareIString(elementTagName.c_str(),
-					    "importBase") == 0) {
+              if (elementObject != NULL)
+                {
+                  addImportBaseToDescriptorBase (parentObject, elementObject);
+                }
+            }
+          else if (XMLString::compareIString (elementTagName.c_str (),
+                                              "descriptorSwitch")
+                   == 0)
+            {
 
-					elementObject = getImportParser()->parseImportBase(
-						    element, parentObject);
+              elementObject
+                  = ((NclPresentationControlParser *)
+                         getPresentationControlParser ())
+                        ->parseDescriptorSwitch (element, parentObject);
 
-					if (elementObject != NULL) {
-						addImportBaseToDescriptorBase(
-							   parentObject, elementObject);
-					}
+              if (elementObject != NULL)
+                {
+                  addDescriptorSwitchToDescriptorBase (parentObject,
+                                                       elementObject);
+                }
+            }
+          else if (XMLString::compareIString (elementTagName.c_str (),
+                                              "descriptor")
+                   == 0)
+            {
 
-				} else if (XMLString::compareIString(
-					    elementTagName.c_str(), "descriptorSwitch") == 0) {
+              elementObject = parseDescriptor (element, parentObject);
+              if (elementObject != NULL)
+                {
+                  addDescriptorToDescriptorBase (parentObject, elementObject);
+                }
+            }
+        }
+    }
 
-					elementObject = ((NclPresentationControlParser*)
-						     getPresentationControlParser())->
-						     	    parseDescriptorSwitch(
-						     	    	    element, parentObject);
+  return parentObject;
+}
 
-					if (elementObject != NULL) {
-						addDescriptorSwitchToDescriptorBase(
-							    parentObject, elementObject);
-					}
+void *
+NclPresentationSpecificationParser::parseDescriptorBind (
+    DOMElement *parentElement, void *objGrandParent)
+{
 
-				} else if (XMLString::compareIString(
-					    elementTagName.c_str(), "descriptor") == 0) {
+  clog << "parseDescriptorBind" << endl;
+  return createDescriptorBind (parentElement, objGrandParent);
+}
 
-					elementObject = parseDescriptor(element, parentObject);
-					if (elementObject != NULL) {
-						addDescriptorToDescriptorBase(
-							    parentObject, elementObject);
-					}
-				}
-			}
-		}
+void *
+NclPresentationSpecificationParser::parseDescriptorParam (
+    DOMElement *parentElement, void *objGrandParent)
+{
 
-		return parentObject;
-	}
+  clog << "parseDescriptorParam" << endl;
+  return createDescriptorParam (parentElement, objGrandParent);
+}
 
-	void *NclPresentationSpecificationParser::parseDescriptorBind(
-		    DOMElement *parentElement, void *objGrandParent) {
+NclImportParser *
+NclPresentationSpecificationParser::getImportParser ()
+{
+  return importParser;
+}
 
-		clog << "parseDescriptorBind" << endl;
-		return createDescriptorBind(parentElement, objGrandParent);
-	}
+void
+NclPresentationSpecificationParser::setImportParser (
+    NclImportParser *importParser)
+{
 
-	void *NclPresentationSpecificationParser::parseDescriptorParam(
-		    DOMElement *parentElement, void *objGrandParent) {
+  this->importParser = importParser;
+}
 
-		clog << "parseDescriptorParam" << endl;
-		return createDescriptorParam(parentElement, objGrandParent);
-	}
+void *
+NclPresentationSpecificationParser::getPresentationControlParser ()
+{
+  return presentationControlParser;
+}
 
-	NclImportParser *NclPresentationSpecificationParser::getImportParser() {
-		return importParser;
-	}
+void
+NclPresentationSpecificationParser::setPresentationControlParser (
+    void *presentationControlParser)
+{
 
-	void NclPresentationSpecificationParser::setImportParser(
-		    NclImportParser *importParser) {
-
-		this->importParser = importParser;
-	}
-
-	void *NclPresentationSpecificationParser::getPresentationControlParser() {
-		return presentationControlParser;
-	}
-
-	void NclPresentationSpecificationParser::setPresentationControlParser(
-		    void *presentationControlParser) {
-
-		this->presentationControlParser = presentationControlParser;
-	}
+  this->presentationControlParser = presentationControlParser;
+}
 
 GINGA_NCLCONV_END

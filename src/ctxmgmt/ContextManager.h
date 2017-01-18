@@ -29,52 +29,52 @@ GINGA_CTXMGMT_BEGIN
 class ContextManager
 {
 private:
-  map<int, GingaUser*> users;
-  map<int, map<string, string>*> contexts;
-  set<IContextListener*> ctxListeners;
+  map<int, GingaUser *> users;
+  map<int, map<string, string> *> contexts;
+  set<IContextListener *> ctxListeners;
   string usersUri, contextsUri;
   int curUserId;
-  SystemInfo* systemInfo;
-  static ContextManager* _instance;
-  ContextManager();
+  SystemInfo *systemInfo;
+  static ContextManager *_instance;
+  ContextManager ();
 
   pthread_mutex_t groupsMutex;
 
 public:
-  ~ContextManager();
-  static ContextManager* getInstance();
+  ~ContextManager ();
+  static ContextManager *getInstance ();
 
 private:
-  void initializeUsers();
-  void initializeContexts();
+  void initializeUsers ();
+  void initializeContexts ();
 
 public:
-  void addContextVar(int userId, string varName, string varValue);
-  void addUser(GingaUser* newUser);
-  void saveUsersAccounts();
-  void saveUsersProfiles();
-  void addContextListener(IContextListener* listener);
-  void removeContextListener(IContextListener* listener);
-  void setGlobalVar(string varName, string varValue);
+  void addContextVar (int userId, string varName, string varValue);
+  void addUser (GingaUser *newUser);
+  void saveUsersAccounts ();
+  void saveUsersProfiles ();
+  void addContextListener (IContextListener *listener);
+  void removeContextListener (IContextListener *listener);
+  void setGlobalVar (string varName, string varValue);
 
 private:
-  void saveProfile(FILE* fd, int userId, map<string, string>* profile);
+  void saveProfile (FILE *fd, int userId, map<string, string> *profile);
 
 public:
-  void setCurrentUserId(int userId);
-  int getCurrentUserId();
-  GingaUser* getUser(int userId);
+  void setCurrentUserId (int userId);
+  int getCurrentUserId ();
+  GingaUser *getUser (int userId);
 
 private:
-  map<string,string>* getUserMap(int userId);
+  map<string, string> *getUserMap (int userId);
 
 public:
-  map<string,string>* getUserProfile(int userId);
-  map<string, string>* getUsersNames();
-  SystemInfo* getSystemInfo();
+  map<string, string> *getUserProfile (int userId);
+  map<string, string> *getUsersNames ();
+  SystemInfo *getSystemInfo ();
 
 private:
-  void listUsersNicks();
+  void listUsersNicks ();
 };
 
 GINGA_CTXMGMT_END

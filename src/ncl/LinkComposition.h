@@ -20,20 +20,20 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Link.h"
 
-
 GINGA_NCL_BEGIN
 
-	class LinkComposition {
-		public:
-			virtual ~LinkComposition(){};
-			virtual bool instanceOf(string className)=0;
-			virtual bool addLink(Link* link)=0;
-			virtual void clearLinks()=0;
-			virtual bool containsLink(Link* link)=0;
-			virtual set<Link*>* getLinks()=0;
-			virtual int getNumLinks()=0;
-			virtual bool removeLink(Link* link)=0;
-	};
+class LinkComposition
+{
+public:
+  virtual ~LinkComposition (){};
+  virtual bool instanceOf (string className) = 0;
+  virtual bool addLink (Link *link) = 0;
+  virtual void clearLinks () = 0;
+  virtual bool containsLink (Link *link) = 0;
+  virtual set<Link *> *getLinks () = 0;
+  virtual int getNumLinks () = 0;
+  virtual bool removeLink (Link *link) = 0;
+};
 
 GINGA_NCL_END
 

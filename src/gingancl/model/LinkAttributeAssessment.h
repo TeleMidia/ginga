@@ -28,31 +28,29 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
 #include "LinkAssessment.h"
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	class LinkAttributeAssessment : public LinkAssessment {
-		private:
-			FormatterEvent *event;
-			short attributeType;
-			string offset;
+class LinkAttributeAssessment : public LinkAssessment
+{
+private:
+  FormatterEvent *event;
+  short attributeType;
+  string offset;
 
-		public:
-			LinkAttributeAssessment(
-				    FormatterEvent* ev,
-				    short attrType);
+public:
+  LinkAttributeAssessment (FormatterEvent *ev, short attrType);
 
-			FormatterEvent *getEvent();
-			void setOffset(string offset);
-			string getOffset();
-			void setEvent(FormatterEvent *ev);
-			short getAttributeType();
-			void setAttributeType(short attrType);
-			string getValue();
+  FormatterEvent *getEvent ();
+  void setOffset (string offset);
+  string getOffset ();
+  void setEvent (FormatterEvent *ev);
+  short getAttributeType ();
+  void setAttributeType (short attrType);
+  string getValue ();
 
-		private:
-			string getAssessmentWithOffset(string assessmentValue);
-	};
+private:
+  string getAssessmentWithOffset (string assessmentValue);
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END
 #endif /*LINKATTRIBUTEASSESSMENT_H_*/

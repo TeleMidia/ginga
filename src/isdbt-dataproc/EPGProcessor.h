@@ -31,63 +31,63 @@ using namespace ::ginga::tsparser;
 
 #include "IEPGListener.h"
 
-
 GINGA_DATAPROC_BEGIN
 
-	class EPGProcessor {
-		private:
-			set<string>* processedSections;
-			bool presentMapReady;
-			bool scheduleMapReady;
-			bool serviceMapReady;
-			bool timeMapReady;
+class EPGProcessor
+{
+private:
+  set<string> *processedSections;
+  bool presentMapReady;
+  bool scheduleMapReady;
+  bool serviceMapReady;
+  bool timeMapReady;
 
-		protected:
-			//TODO: link service id from sdt to eit and cdt
-			static EPGProcessor* _instance;
-			IServiceInfo* service;
-			map<unsigned int, IEventInfo*>* eventPresent;
-			map<unsigned int, IEventInfo*>* eventSchedule;
-			ITOT* tot;
-			set<string>* cdt;
-			int files;
-			set<IEPGListener*>* epgListeners;
-			set<IEPGListener*>* serviceListeners;
-			set<IEPGListener*>* timeListeners;
-			void* dataProcessor;
+protected:
+  // TODO: link service id from sdt to eit and cdt
+  static EPGProcessor *_instance;
+  IServiceInfo *service;
+  map<unsigned int, IEventInfo *> *eventPresent;
+  map<unsigned int, IEventInfo *> *eventSchedule;
+  ITOT *tot;
+  set<string> *cdt;
+  int files;
+  set<IEPGListener *> *epgListeners;
+  set<IEPGListener *> *serviceListeners;
+  set<IEPGListener *> *timeListeners;
+  void *dataProcessor;
 
-		private:
-			virtual ~EPGProcessor();
+private:
+  virtual ~EPGProcessor ();
 
-		public:
-			static EPGProcessor* getInstance();
-			void release();
-			void setDataProcessor(void* dataProcessor);
-			void decodeSdt(string fileName);
-			void decodeSdtSection(ITransportSection* section);
-			set<IEventInfo*>* decodeEit(string fileName);
-			void decodeTot(ITransportSection* section);
-			void decodeCdt(string fileName);
-			void decodeEitSection(ITransportSection* section);
-			void addEPGListener(IEPGListener* listener, string request, unsigned char type);
-			map<string, struct SIField> createMap();
-			void removeEPGListener(IEPGListener * listener);
+public:
+  static EPGProcessor *getInstance ();
+  void release ();
+  void setDataProcessor (void *dataProcessor);
+  void decodeSdt (string fileName);
+  void decodeSdtSection (ITransportSection *section);
+  set<IEventInfo *> *decodeEit (string fileName);
+  void decodeTot (ITransportSection *section);
+  void decodeCdt (string fileName);
+  void decodeEitSection (ITransportSection *section);
+  void addEPGListener (IEPGListener *listener, string request,
+                       unsigned char type);
+  map<string, struct SIField> createMap ();
+  void removeEPGListener (IEPGListener *listener);
 
-			//void generatePresentMap();
+  // void generatePresentMap();
 
-		private:
-			EPGProcessor();
-			struct SIField* handleFieldStr(string str);
-			int savePNG(char* data, int pngSize);
-			void generateEitMap(map<unsigned int, IEventInfo*>* actualMap);
-			void generateSdtMap(IServiceInfo* si);
-			void generateTotMap(ITOT* tot);
-			void addProcessedSection(ITransportSection* section);
-			void callMapGenerator(unsigned int tableId);
-			bool checkProcessedSections(ITransportSection* section);
-			void printFieldMap(map<string, struct SIField>* fieldMap);
-
-	};
+private:
+  EPGProcessor ();
+  struct SIField *handleFieldStr (string str);
+  int savePNG (char *data, int pngSize);
+  void generateEitMap (map<unsigned int, IEventInfo *> *actualMap);
+  void generateSdtMap (IServiceInfo *si);
+  void generateTotMap (ITOT *tot);
+  void addProcessedSection (ITransportSection *section);
+  void callMapGenerator (unsigned int tableId);
+  bool checkProcessedSections (ITransportSection *section);
+  void printFieldMap (map<string, struct SIField> *fieldMap);
+};
 
 GINGA_DATAPROC_END
 

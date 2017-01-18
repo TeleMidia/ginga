@@ -32,37 +32,37 @@ using namespace ::ginga::tsparser;
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
-
 GINGA_TSPARSER_BEGIN
 
+typedef struct
+{
+  unsigned int organizationId;
+  unsigned short applicationId;
+} ApplicationIdentifier;
 
-	typedef struct {
-		unsigned int organizationId;
-		unsigned short applicationId;
-	} ApplicationIdentifier;
+class Application : public IApplication
+{
+private:
+  ApplicationIdentifier applicationId;
+  unsigned short applicationControlCode;
+  unsigned short appDescriptorsLoopLength;
+  vector<IMpegDescriptor *> descriptors;
+  unsigned short applicationLength;
+  pthread_mutex_t stlMutex;
 
-	class Application : public IApplication {
-		private:
-			ApplicationIdentifier applicationId;
-			unsigned short applicationControlCode;
-			unsigned short appDescriptorsLoopLength;
-			vector<IMpegDescriptor*> descriptors;
-			unsigned short applicationLength;
-			pthread_mutex_t stlMutex;
+public:
+  Application ();
+  virtual ~Application ();
 
-		public:
-			Application();
-			virtual ~Application();
-
-			string getBaseDirectory();
-			string getInitialClass();
-			string getId();
-			unsigned short getControlCode();
-			unsigned short getLength();
-			unsigned short getProfile(int profileNumber=0);
-			unsigned short getTransportProtocolId();
-			size_t process(char* data, size_t pos);
-		};
+  string getBaseDirectory ();
+  string getInitialClass ();
+  string getId ();
+  unsigned short getControlCode ();
+  unsigned short getLength ();
+  unsigned short getProfile (int profileNumber = 0);
+  unsigned short getTransportProtocolId ();
+  size_t process (char *data, size_t pos);
+};
 
 GINGA_TSPARSER_END
 

@@ -27,50 +27,50 @@ using namespace ::ginga::tsparser;
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-
 GINGA_TSPARSER_BEGIN
 
-	class Pmt : public TransportSection {
-		protected:
-			map<unsigned int, short> streams;
-			map<short, string> streamTypeNames;
-			map<unsigned short, unsigned char> componentTags; //<pid,ctag>
+class Pmt : public TransportSection
+{
+protected:
+  map<unsigned int, short> streams;
+  map<short, string> streamTypeNames;
+  map<unsigned short, unsigned char> componentTags; //<pid,ctag>
 
-			unsigned int pid;
-			unsigned int programNumber;
-			unsigned int pcrPid;
-			bool processed;
+  unsigned int pid;
+  unsigned int programNumber;
+  unsigned int pcrPid;
+  bool processed;
 
-		public:
-			Pmt(unsigned int pid, unsigned int programNumber);
-			virtual ~Pmt();
+public:
+  Pmt (unsigned int pid, unsigned int programNumber);
+  virtual ~Pmt ();
 
-			bool hasStreamType(short streamType);
-			int getPidByStreamType(short streamType);
-			void addElementaryStream(unsigned int pid, short esType);
-			//void addAITInfo(unsigned int pid, AITInfo* info);
-			unsigned int getPid();
-			void setPid(unsigned int pid);
-			vector<unsigned int>* copyPidsByTid(unsigned int tid);
-			unsigned int getProgramNumber();
-			void setProgramNumber(unsigned int programNumber);
-			bool hasPid(unsigned int somePid);
-			string getStreamType(unsigned int somePid);
-			bool isSectionType(unsigned int pid);
-			short getStreamTypeValue(unsigned int somePid);
-			string getStreamTypeName(short streamType);
-			bool processSectionPayload();
-			bool hasProcessed();
-			map<unsigned int, short>* getStreamsInformation();
-			map<unsigned short, unsigned char>* getComponentTags();
-			unsigned int getPCRPid();
-			unsigned int getDefaultMainVideoPid();
-			unsigned int getDefaultMainAudioPid();
-			unsigned int getDefaultMainCarouselPid();
-			int getTaggedVideoPid(unsigned char idx);
-			int getTaggedAudioPid(unsigned char idx);
-			void print();
-	 };
+  bool hasStreamType (short streamType);
+  int getPidByStreamType (short streamType);
+  void addElementaryStream (unsigned int pid, short esType);
+  // void addAITInfo(unsigned int pid, AITInfo* info);
+  unsigned int getPid ();
+  void setPid (unsigned int pid);
+  vector<unsigned int> *copyPidsByTid (unsigned int tid);
+  unsigned int getProgramNumber ();
+  void setProgramNumber (unsigned int programNumber);
+  bool hasPid (unsigned int somePid);
+  string getStreamType (unsigned int somePid);
+  bool isSectionType (unsigned int pid);
+  short getStreamTypeValue (unsigned int somePid);
+  string getStreamTypeName (short streamType);
+  bool processSectionPayload ();
+  bool hasProcessed ();
+  map<unsigned int, short> *getStreamsInformation ();
+  map<unsigned short, unsigned char> *getComponentTags ();
+  unsigned int getPCRPid ();
+  unsigned int getDefaultMainVideoPid ();
+  unsigned int getDefaultMainAudioPid ();
+  unsigned int getDefaultMainCarouselPid ();
+  int getTaggedVideoPid (unsigned char idx);
+  int getTaggedAudioPid (unsigned char idx);
+  void print ();
+};
 
 GINGA_TSPARSER_END
 

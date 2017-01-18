@@ -27,51 +27,50 @@ using namespace ::ginga::system;
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
-
-
 GINGA_MULTIDEVICE_BEGIN
 
-  class BroadcastDualSocketService : public ISocketService {
-	private:
+class BroadcastDualSocketService : public ISocketService
+{
+private:
+  string broadcastIPAddr;
+  unsigned int interfaceIP;
 
-	    string broadcastIPAddr;
-		unsigned int interfaceIP;
+  unsigned int broadcastReadPort;
+  unsigned int broadcastWritePort;
 
-	    unsigned int broadcastReadPort;
-		unsigned int broadcastWritePort;
+  UDPSocket *readSocket;
+  UDPSocket *writeSocket;
 
+  pthread_mutex_t mutexBuffer;
+  vector<struct frame *> *outputBuffer;
 
-		UDPSocket* readSocket;
-		UDPSocket* writeSocket;
+public:
+  BroadcastDualSocketService (unsigned int readPort, unsigned int writePort);
 
+  ~BroadcastDualSocketService ();
 
-		pthread_mutex_t mutexBuffer;
-		vector<struct frame*>* outputBuffer;
+private:
+  bool createSocket ();
+  bool addToGroup ();
+  bool setSocketOptions ();
+  bool tryToBind ();
 
-	public:
-		BroadcastDualSocketService(
-				unsigned int readPort, unsigned int writePort);
-
-		~BroadcastDualSocketService();
-
-	private:
-		bool createSocket();
-		bool addToGroup();
-		bool setSocketOptions();
-		bool tryToBind();
-
-	public:
-		unsigned int getInterfaceIPAddress(){return 0;};
-		int getServicePort();
-		void dataRequest(char* data, int taskSize, bool repeat=true);
-
-	private:
-		bool sendData(struct frame* f);
-
-	public:
-		bool checkOutputBuffer();
-		bool checkInputBuffer(char* data, int* size);
+public:
+  unsigned int
+  getInterfaceIPAddress ()
+  {
+    return 0;
   };
+  int getServicePort ();
+  void dataRequest (char *data, int taskSize, bool repeat = true);
+
+private:
+  bool sendData (struct frame *f);
+
+public:
+  bool checkOutputBuffer ();
+  bool checkInputBuffer (char *data, int *size);
+};
 
 GINGA_MULTIDEVICE_END
 

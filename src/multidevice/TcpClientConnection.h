@@ -22,7 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/PracticalSocket.h"
 using namespace ::ginga::system;
 
-
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
@@ -30,31 +29,29 @@ using namespace ::ginga::system;
 
 GINGA_MULTIDEVICE_BEGIN
 
-	class TCPClientConnection : public Thread  {
-		private:
-			TCPSocket* tcpSocket;
-			int sockfd;
-			int counter;
-			char* srv_hostname;
-			char* portno;
-			struct sockaddr_in server_addr;
-			struct hostent *server;
-			IRemoteDeviceListener *resrv;
-			void run();
-			bool running;
-			unsigned int deviceId;
-			unsigned int orderId;
+class TCPClientConnection : public Thread
+{
+private:
+  TCPSocket *tcpSocket;
+  int sockfd;
+  int counter;
+  char *srv_hostname;
+  char *portno;
+  struct sockaddr_in server_addr;
+  struct hostent *server;
+  IRemoteDeviceListener *resrv;
+  void run ();
+  bool running;
+  unsigned int deviceId;
+  unsigned int orderId;
 
-		public:
-			TCPClientConnection(unsigned int devid,
-						unsigned int index,
-					    char* hostname,
-					    char* port_str,
-					    IRemoteDeviceListener* srv);
-			virtual ~TCPClientConnection();
-			bool post(char* str);
-			void release();
-	};
+public:
+  TCPClientConnection (unsigned int devid, unsigned int index, char *hostname,
+                       char *port_str, IRemoteDeviceListener *srv);
+  virtual ~TCPClientConnection ();
+  bool post (char *str);
+  void release ();
+};
 
 GINGA_MULTIDEVICE_END
 

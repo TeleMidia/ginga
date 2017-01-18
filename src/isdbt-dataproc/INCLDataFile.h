@@ -20,21 +20,25 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "INCLStructure.h"
 
-
 GINGA_DATAPROC_BEGIN
 
-	class INCLDataFile : public INCLStructure {
-		public:
-			virtual ~INCLDataFile(){};
-			int getType(){return ST_DATAFILE;};
-			virtual int getId()=0;
-			virtual void setComponentTag(string componentTag)=0;
-			virtual string getCopmonentTag()=0;
-			virtual void setUri(string uri)=0;
-			virtual string getUri()=0;
-			virtual void setSize(double size)=0;
-			virtual double getSize()=0;
-	};
+class INCLDataFile : public INCLStructure
+{
+public:
+  virtual ~INCLDataFile (){};
+  int
+  getType ()
+  {
+    return ST_DATAFILE;
+  };
+  virtual int getId () = 0;
+  virtual void setComponentTag (string componentTag) = 0;
+  virtual string getCopmonentTag () = 0;
+  virtual void setUri (string uri) = 0;
+  virtual string getUri () = 0;
+  virtual void setSize (double size) = 0;
+  virtual double getSize () = 0;
+};
 
 GINGA_DATAPROC_END
 

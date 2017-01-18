@@ -20,39 +20,48 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_BEGIN
 
-	FormatterLink::FormatterLink(
-		    Link* ncmLink,
-		    void* parentObject) {
+FormatterLink::FormatterLink (Link *ncmLink, void *parentObject)
+{
 
-		typeSet.insert("FormatterLink");
+  typeSet.insert ("FormatterLink");
 
-		this->parentObject = parentObject; //CompositeExecutionObject
-		this->ncmLink      = ncmLink;
-		this->suspend      = false;
-	}
+  this->parentObject = parentObject; // CompositeExecutionObject
+  this->ncmLink = ncmLink;
+  this->suspend = false;
+}
 
-	FormatterLink::~FormatterLink() {
-		parentObject = NULL;
-		if (ncmLink != NULL) {
-			ncmLink = NULL;
-		}
-	}
+FormatterLink::~FormatterLink ()
+{
+  parentObject = NULL;
+  if (ncmLink != NULL)
+    {
+      ncmLink = NULL;
+    }
+}
 
-	void FormatterLink::suspendLinkEvaluation(bool suspend) {
-		this->suspend = suspend;
-	}
+void
+FormatterLink::suspendLinkEvaluation (bool suspend)
+{
+  this->suspend = suspend;
+}
 
-	Link* FormatterLink::getNcmLink() {
-		return ncmLink;
-	}
+Link *
+FormatterLink::getNcmLink ()
+{
+  return ncmLink;
+}
 
-	bool FormatterLink::instanceOf(string s) {
-		if (typeSet.empty()) {
-			return false;
-
-		} else {
-			return (typeSet.find(s) != typeSet.end());
-		}
-	}
+bool
+FormatterLink::instanceOf (string s)
+{
+  if (typeSet.empty ())
+    {
+      return false;
+    }
+  else
+    {
+      return (typeSet.find (s) != typeSet.end ());
+    }
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_LINK_END

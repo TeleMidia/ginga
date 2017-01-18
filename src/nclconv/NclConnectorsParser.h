@@ -28,134 +28,156 @@ XERCES_CPP_NAMESPACE_USE
 
 GINGA_NCLCONV_BEGIN
 
-   class NclConnectorsParser : public ModuleParser {
-	//Ref Classes
-	private:
-		NclImportParser *importParser;
+class NclConnectorsParser : public ModuleParser
+{
+  // Ref Classes
+private:
+  NclImportParser *importParser;
 
-	public:
-		NclConnectorsParser(DocumentParser *documentParser);
+public:
+  NclConnectorsParser (DocumentParser *documentParser);
 
-		void *parseSimpleCondition(
-			    DOMElement *parentElement, void *objGrandParent);
+  void *parseSimpleCondition (DOMElement *parentElement, void *objGrandParent);
 
-		virtual void *createSimpleCondition(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  virtual void *createSimpleCondition (DOMElement *parentElement,
+                                       void *objGrandParent)
+      = 0;
 
-		void *parseCompoundCondition(
-			    DOMElement *parentElement, void *objGrandParent);
+  void *parseCompoundCondition (DOMElement *parentElement,
+                                void *objGrandParent);
 
-		virtual void *createCompoundCondition(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  virtual void *createCompoundCondition (DOMElement *parentElement,
+                                         void *objGrandParent)
+      = 0;
 
-		virtual void addSimpleConditionToCompoundCondition(
-			    void *parentObject, void *childObject)=0;
+  virtual void addSimpleConditionToCompoundCondition (void *parentObject,
+                                                      void *childObject)
+      = 0;
 
-		virtual void addCompoundConditionToCompoundCondition(
-			    void *parentObject, void *childObject)=0;
+  virtual void addCompoundConditionToCompoundCondition (void *parentObject,
+                                                        void *childObject)
+      = 0;
 
-		virtual void addAssessmentStatementToCompoundCondition(
-			    void *parentObject, void *childObject)=0;
+  virtual void addAssessmentStatementToCompoundCondition (void *parentObject,
+                                                          void *childObject)
+      = 0;
 
-		virtual void addCompoundStatementToCompoundCondition(
-			    void *parentObject, void *childObject)=0;
+  virtual void addCompoundStatementToCompoundCondition (void *parentObject,
+                                                        void *childObject)
+      = 0;
 
-		void *parseAssessmentStatement(
-			    DOMElement *parentElement, void *objGrandParent);
+  void *parseAssessmentStatement (DOMElement *parentElement,
+                                  void *objGrandParent);
 
-		virtual void *createAssessmentStatement(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  virtual void *createAssessmentStatement (DOMElement *parentElement,
+                                           void *objGrandParent)
+      = 0;
 
-		virtual void addAttributeAssessmentToAssessmentStatement(
-			    void *parentObject, void *childObject)=0;
+  virtual void addAttributeAssessmentToAssessmentStatement (void *parentObject,
+                                                            void *childObject)
+      = 0;
 
-		virtual void addValueAssessmentToAssessmentStatement(
-			    void *parentObject, void *childObject)=0;
+  virtual void addValueAssessmentToAssessmentStatement (void *parentObject,
+                                                        void *childObject)
+      = 0;
 
-		void *parseAttributeAssessment(
-			    DOMElement *parentElement, void *objGrandParent);
+  void *parseAttributeAssessment (DOMElement *parentElement,
+                                  void *objGrandParent);
 
-		virtual void *createAttributeAssessment(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  virtual void *createAttributeAssessment (DOMElement *parentElement,
+                                           void *objGrandParent)
+      = 0;
 
-		void *parseValueAssessment(
-			    DOMElement *parentElement, void *objGrandParent);
+  void *parseValueAssessment (DOMElement *parentElement, void *objGrandParent);
 
-		virtual void *createValueAssessment(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  virtual void *createValueAssessment (DOMElement *parentElement,
+                                       void *objGrandParent)
+      = 0;
 
-		void *parseCompoundStatement(
-			    DOMElement *parentElement, void *objGrandParent);
+  void *parseCompoundStatement (DOMElement *parentElement,
+                                void *objGrandParent);
 
-		virtual void *createCompoundStatement(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  virtual void *createCompoundStatement (DOMElement *parentElement,
+                                         void *objGrandParent)
+      = 0;
 
-		virtual void addAssessmentStatementToCompoundStatement(
-			    void *parentObject, void *childObject)=0;
+  virtual void addAssessmentStatementToCompoundStatement (void *parentObject,
+                                                          void *childObject)
+      = 0;
 
-		virtual void addCompoundStatementToCompoundStatement(
-			    void *parentObject, void *childObject)=0;
+  virtual void addCompoundStatementToCompoundStatement (void *parentObject,
+                                                        void *childObject)
+      = 0;
 
-		void *parseSimpleAction(
-			    DOMElement *parentElement, void *objGrandParent);
+  void *parseSimpleAction (DOMElement *parentElement, void *objGrandParent);
 
-		virtual void *createSimpleAction(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  virtual void *createSimpleAction (DOMElement *parentElement,
+                                    void *objGrandParent)
+      = 0;
 
-		void *parseCompoundAction(
-			    DOMElement *parentElement, void *objGrandParent);
+  void *parseCompoundAction (DOMElement *parentElement, void *objGrandParent);
 
-		virtual void *createCompoundAction(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  virtual void *createCompoundAction (DOMElement *parentElement,
+                                      void *objGrandParent)
+      = 0;
 
-		virtual void addSimpleActionToCompoundAction(
-			    void *parentObject, void *childObject)=0;
+  virtual void addSimpleActionToCompoundAction (void *parentObject,
+                                                void *childObject)
+      = 0;
 
-		virtual void addCompoundActionToCompoundAction(
-			    void *parentObject, void *childObject)=0;
+  virtual void addCompoundActionToCompoundAction (void *parentObject,
+                                                  void *childObject)
+      = 0;
 
-		void *parseConnectorParam(
-			    DOMElement *parentElement, void *objGrandParent);
+  void *parseConnectorParam (DOMElement *parentElement, void *objGrandParent);
 
-		virtual void *createConnectorParam(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  virtual void *createConnectorParam (DOMElement *parentElement,
+                                      void *objGrandParent)
+      = 0;
 
-		void *parseCausalConnector(
-			    DOMElement *parentElement, void *objGrandParent);
+  void *parseCausalConnector (DOMElement *parentElement, void *objGrandParent);
 
-		virtual void *createCausalConnector(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  virtual void *createCausalConnector (DOMElement *parentElement,
+                                       void *objGrandParent)
+      = 0;
 
-		virtual void addSimpleConditionToCausalConnector(
-			    void *parentObject, void *childObject)=0;
+  virtual void addSimpleConditionToCausalConnector (void *parentObject,
+                                                    void *childObject)
+      = 0;
 
-		virtual void addCompoundConditionToCausalConnector(
-			    void *parentObject, void *childObject)=0;
+  virtual void addCompoundConditionToCausalConnector (void *parentObject,
+                                                      void *childObject)
+      = 0;
 
-		virtual void addSimpleActionToCausalConnector(
-			    void *parentObject, void *childObject)=0;
+  virtual void addSimpleActionToCausalConnector (void *parentObject,
+                                                 void *childObject)
+      = 0;
 
-		virtual void addCompoundActionToCausalConnector(
-			    void *parentObject, void *childObject)=0;
+  virtual void addCompoundActionToCausalConnector (void *parentObject,
+                                                   void *childObject)
+      = 0;
 
-		virtual void addConnectorParamToCausalConnector(
-			    void *parentObject, void *childObject)=0;
+  virtual void addConnectorParamToCausalConnector (void *parentObject,
+                                                   void *childObject)
+      = 0;
 
-		void *parseConnectorBase(
-			    DOMElement *parentElement, void *objGrandParent);
+  void *parseConnectorBase (DOMElement *parentElement, void *objGrandParent);
 
-		virtual void *createConnectorBase(
-			    DOMElement *parentElement, void *objGrandParent)=0;
+  virtual void *createConnectorBase (DOMElement *parentElement,
+                                     void *objGrandParent)
+      = 0;
 
-		virtual void addImportBaseToConnectorBase(
-			    void *parentObject, void *childObject)=0;
+  virtual void addImportBaseToConnectorBase (void *parentObject,
+                                             void *childObject)
+      = 0;
 
-		virtual void addCausalConnectorToConnectorBase(
-			    void *parentObject, void *childObject)=0;
+  virtual void addCausalConnectorToConnectorBase (void *parentObject,
+                                                  void *childObject)
+      = 0;
 
-		NclImportParser *getImportParser();
-		void setImportParser(NclImportParser *importParser);
-   };
+  NclImportParser *getImportParser ();
+  void setImportParser (NclImportParser *importParser);
+};
 
 GINGA_NCLCONV_END
 

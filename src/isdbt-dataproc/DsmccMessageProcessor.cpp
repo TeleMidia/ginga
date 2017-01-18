@@ -19,153 +19,186 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "DsmccMessageProcessor.h"
 
 #ifndef DII_MESSAGE
-# define DII_MESSAGE 0x1002
-# define DDB_MESSAGE 0x1003
-# define DSI_MESSAGE 0x1006
-# define MSG_HEADER_LEN 0xC
+#define DII_MESSAGE 0x1002
+#define DDB_MESSAGE 0x1003
+#define DSI_MESSAGE 0x1006
+#define MSG_HEADER_LEN 0xC
 #endif
 
 GINGA_DATAPROC_BEGIN
 
-	DsmccMessageProcessor::DsmccMessageProcessor(unsigned short pid) {
-		sd = NULL;
-		dii = NULL;
-		dsi = NULL;
-		this->pid = pid;
-		Thread::mutexInit(&msgMutex, true);
-	}
+DsmccMessageProcessor::DsmccMessageProcessor (unsigned short pid)
+{
+  sd = NULL;
+  dii = NULL;
+  dsi = NULL;
+  this->pid = pid;
+  Thread::mutexInit (&msgMutex, true);
+}
 
-	DsmccMessageProcessor::~DsmccMessageProcessor() {
-		if (sd != NULL) {
-			delete sd;
-			sd = NULL;
-		}
+DsmccMessageProcessor::~DsmccMessageProcessor ()
+{
+  if (sd != NULL)
+    {
+      delete sd;
+      sd = NULL;
+    }
 
-		if (dii != NULL) {
-			delete dii;
-			dii = NULL;
-		}
+  if (dii != NULL)
+    {
+      delete dii;
+      dii = NULL;
+    }
 
-		if (dsi != NULL) {
-			delete dsi;
-			dsi = NULL;
-		}
+  if (dsi != NULL)
+    {
+      delete dsi;
+      dsi = NULL;
+    }
 
-		Thread::mutexLock(&msgMutex);
-		vector<DsmccMessageHeader*>::iterator it;
-		it = msgs.begin();
-		while (it != msgs.end()) {
-			delete *it;
-			++it;
-		}
-		Thread::mutexUnlock(&msgMutex);
-		Thread::mutexDestroy(&msgMutex);
-	}
+  Thread::mutexLock (&msgMutex);
+  vector<DsmccMessageHeader *>::iterator it;
+  it = msgs.begin ();
+  while (it != msgs.end ())
+    {
+      delete *it;
+      ++it;
+    }
+  Thread::mutexUnlock (&msgMutex);
+  Thread::mutexDestroy (&msgMutex);
+}
 
-	DsmccServiceDomain* DsmccMessageProcessor::pushMessage(DsmccMessageHeader* message) {
-		unsigned int messageId;
+DsmccServiceDomain *
+DsmccMessageProcessor::pushMessage (DsmccMessageHeader *message)
+{
+  unsigned int messageId;
 
-		if (message == NULL) {
-			clog << "DsmccMessageProcessor::pushMessage " << endl;
-			clog << "Warning! Try to push NULL message" << endl;
+  if (message == NULL)
+    {
+      clog << "DsmccMessageProcessor::pushMessage " << endl;
+      clog << "Warning! Try to push NULL message" << endl;
+    }
+  else
+    {
+      messageId = message->getMessageId ();
+      if (messageId == DSI_MESSAGE)
+        {
+          return processDSIMessage (message);
+        }
+      else if (messageId == DII_MESSAGE)
+        {
+          return processDIIMessage (message);
+        }
+      else if (messageId == DDB_MESSAGE)
+        {
+          Thread::mutexLock (&msgMutex);
+          msgs.push_back (message);
+          Thread::mutexUnlock (&msgMutex);
+        }
+    }
 
-		} else {
-			messageId = message->getMessageId();
-			if (messageId == DSI_MESSAGE) {
-				return processDSIMessage(message);
+  processDDBMessages ();
+  return NULL;
+}
 
-			} else if (messageId == DII_MESSAGE) {
-				return processDIIMessage(message);
+DsmccServiceDomain *
+DsmccMessageProcessor::processDSIMessage (DsmccMessageHeader *message)
+{
 
-			} else if (messageId == DDB_MESSAGE) {
-				Thread::mutexLock(&msgMutex);
-				msgs.push_back(message);
-				Thread::mutexUnlock(&msgMutex);
-			}
-		}
+  if (dsi == NULL)
+    {
+      clog << "Message Processor dsi done!" << endl;
+      dsi = new DsmccDownloadServerInitiate ();
+      if (dsi->processMessage (message) < 0)
+        {
+          delete dsi;
+          dsi = NULL;
+          return NULL;
+        }
+      if (dii != NULL && sd == NULL)
+        {
+          clog << "Creating SD" << endl;
+          sd = new DsmccServiceDomain (dsi, dii, pid);
+          return sd;
+        }
+    }
+  else
+    {
+      // TODO: received another DSI (is it an OC update)
+    }
+  return NULL;
+}
 
-		processDDBMessages();
-		return NULL;
-	}
+DsmccServiceDomain *
+DsmccMessageProcessor::processDIIMessage (DsmccMessageHeader *message)
+{
 
-	DsmccServiceDomain* DsmccMessageProcessor::processDSIMessage(
-			DsmccMessageHeader* message) {
+  if (dii == NULL)
+    {
+      dii = new DsmccDownloadInfoIndication ();
+      if (dii->processMessage (message) < 0)
+        {
+          delete dii;
+          dii = NULL;
+          return NULL;
+        }
+      /*
+       * TODO: start process all DII file?
+       * or has every DII file less then 4066
+       * bytes?
+       */
+      clog << "Message Processor dii done!" << endl;
+      if (dsi != NULL && sd == NULL)
+        {
+          clog << "Creating SD" << endl;
+          sd = new DsmccServiceDomain (dsi, dii, pid);
 
-		if (dsi == NULL) {
-			clog << "Message Processor dsi done!" << endl;
-			dsi = new DsmccDownloadServerInitiate();
-			if (dsi->processMessage(message) < 0) {
-				delete dsi;
-				dsi = NULL;
-				return NULL;
-			}
-			if (dii != NULL && sd == NULL) {
-				clog << "Creating SD" << endl;
-				sd = new DsmccServiceDomain(dsi, dii, pid);
-				return sd;
-			}
+          return sd;
+        }
+    }
+  else
+    {
+      // TODO: received another DII (is it an OC update)
+    }
+  return NULL;
+}
 
-		} else {
-			//TODO: received another DSI (is it an OC update)
-		}
-		return NULL;
-	}
+void
+DsmccMessageProcessor::processDDBMessages ()
+{
+  DsmccMessageHeader *msg;
+  DsmccDownloadDataBlock *ddb;
 
-	DsmccServiceDomain* DsmccMessageProcessor::processDIIMessage(
-			DsmccMessageHeader* message) {
+  if (sd != NULL)
+    {
+      Thread::mutexLock (&msgMutex);
+      while (!msgs.empty ())
+        {
+          msg = *(msgs.begin ());
+          ddb = new DsmccDownloadDataBlock (msg);
+          if (sd->receiveDDB (ddb) < 0)
+            {
+              clog << "DsmccMessageProcessor::processDDBMessages - error"
+                   << endl;
+            }
+          delete ddb;
 
-		if (dii == NULL) {
-			dii = new DsmccDownloadInfoIndication();
-			if (dii->processMessage(message) < 0) {
-				delete dii;
-				dii = NULL;
-				return NULL;
-			}
-			/*
-			 * TODO: start process all DII file?
-			 * or has every DII file less then 4066
-			 * bytes?
-			 */
-			clog << "Message Processor dii done!" << endl;
-			if (dsi != NULL && sd == NULL) {
-				clog << "Creating SD" << endl;
-				sd = new DsmccServiceDomain(dsi, dii, pid);
+          msgs.erase (msgs.begin ());
+        }
+      Thread::mutexUnlock (&msgMutex);
+    }
+}
 
-				return sd;
-			}
+DsmccServiceDomain *
+DsmccMessageProcessor::getServiceDomain ()
+{
+  return sd;
+}
 
-		} else {
-			//TODO: received another DII (is it an OC update)
-		}
-		return NULL;
-	}
-
-	void DsmccMessageProcessor::processDDBMessages() {
-		DsmccMessageHeader* msg;
-		DsmccDownloadDataBlock* ddb;
-
-		if (sd != NULL) {
-			Thread::mutexLock(&msgMutex);
-			while (!msgs.empty()) {
-				msg = *(msgs.begin());
-				ddb = new DsmccDownloadDataBlock(msg);
-				if (sd->receiveDDB(ddb) < 0) {
-					clog << "DsmccMessageProcessor::processDDBMessages - error" << endl;
-				}
-				delete ddb;
-
-				msgs.erase(msgs.begin());
-			}
-			Thread::mutexUnlock(&msgMutex);
-		}
-	}
-
-	DsmccServiceDomain* DsmccMessageProcessor::getServiceDomain() {
-		return sd;
-	}
-
-	void DsmccMessageProcessor::checkTasks() {
-		processDDBMessages();
-	}
+void
+DsmccMessageProcessor::checkTasks ()
+{
+  processDDBMessages ();
+}
 
 GINGA_DATAPROC_END

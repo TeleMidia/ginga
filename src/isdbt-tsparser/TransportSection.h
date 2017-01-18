@@ -30,84 +30,84 @@ using namespace ::ginga::util;
 #define ARRAY_SIZE(a) (sizeof (a) / sizeof ((a)[0]))
 #endif
 
-
 GINGA_TSPARSER_BEGIN
 
-	class TransportSection : public ITransportSection {
-		private:
-			// Original TS packet id.
-			unsigned int pid;
+class TransportSection : public ITransportSection
+{
+private:
+  // Original TS packet id.
+  unsigned int pid;
 
-		protected:
-			// ISO/IEC 13818-1 TS SECTION HEADER
-			unsigned int tableId;
-			bool sectionSyntaxIndicator;
+protected:
+  // ISO/IEC 13818-1 TS SECTION HEADER
+  unsigned int tableId;
+  bool sectionSyntaxIndicator;
 
-			/*
-			 * Number of bytes of the section, starting immediately following
-			 * the sectionLength field, and including CRC32. Thus, 9 bytes
-			 * of overhead.
-			 */
-			unsigned int sectionLength;
+  /*
+   * Number of bytes of the section, starting immediately following
+   * the sectionLength field, and including CRC32. Thus, 9 bytes
+   * of overhead.
+   */
+  unsigned int sectionLength;
 
-			/*
-			 * Transport_stream_id for PAT
-			 * program_number for PMT
-			 * table_id_extension for DSM_CC Section
-			 */
-			unsigned int idExtention;
+  /*
+   * Transport_stream_id for PAT
+   * program_number for PMT
+   * table_id_extension for DSM_CC Section
+   */
+  unsigned int idExtention;
 
-			unsigned int versionNumber;
-			bool currentNextIndicator;
-			unsigned int sectionNumber;
-			unsigned int lastSectionNumber;
+  unsigned int versionNumber;
+  bool currentNextIndicator;
+  unsigned int sectionNumber;
+  unsigned int lastSectionNumber;
 
-			// Section data.
-			char section[4096];
+  // Section data.
+  char section[4096];
 
-			unsigned int currentSize;
+  unsigned int currentSize;
 
-			string sectionName;
+  string sectionName;
 
-		public:
-			TransportSection();
-			TransportSection(char* sectionBytes, unsigned int size);
+public:
+  TransportSection ();
+  TransportSection (char *sectionBytes, unsigned int size);
 
-			virtual ~TransportSection();
+  virtual ~TransportSection ();
 
-		private:
-			void initialize();
+private:
+  void initialize ();
 
-		public:
-			void setESId(unsigned int id);
-			unsigned int getESId();
-			void addData(char* bytes, unsigned int size);
+public:
+  void setESId (unsigned int id);
+  unsigned int getESId ();
+  void addData (char *bytes, unsigned int size);
 
-		private:
-			void setSectionName();
-			bool create(char *sectionBytes, unsigned int size);
-			bool constructionFailed;
+private:
+  void setSectionName ();
+  bool create (char *sectionBytes, unsigned int size);
+  bool constructionFailed;
 
-		public:
-			string getSectionName();
-			unsigned int getTableId();
-			bool getSectionSyntaxIndicator();
-			unsigned int getSectionLength();
-			unsigned int getCurrentSize();
-			unsigned int getExtensionId();
-			unsigned int getVersionNumber();
-			bool getCurrentNextIndicator();
-			unsigned int getSectionNumber();
-			unsigned int getLastSectionNumber();
-			void* getPayload();
-			unsigned int getPayload(char** buffer);
-			unsigned int getPayloadSize();
-			bool isConsolidated();
-			bool isConstructionFailed();
-			char* getSection();
-			static unsigned int crc32(char *data, unsigned int len);
-			void print();
-	};
+public:
+  string getSectionName ();
+  unsigned int getTableId ();
+  bool getSectionSyntaxIndicator ();
+  unsigned int getSectionLength ();
+  unsigned int getCurrentSize ();
+  unsigned int getExtensionId ();
+  unsigned int getVersionNumber ();
+  bool getCurrentNextIndicator ();
+  unsigned int getSectionNumber ();
+  unsigned int getLastSectionNumber ();
+  void *getPayload ();
+  unsigned int getPayload (char **buffer);
+  unsigned int getPayloadSize ();
+  bool isConsolidated ();
+  bool isConstructionFailed ();
+  char *getSection ();
+  static unsigned int crc32 (char *data, unsigned int len);
+  void print ();
+};
 
 GINGA_TSPARSER_END
 

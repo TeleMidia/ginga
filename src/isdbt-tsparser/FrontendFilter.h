@@ -25,35 +25,36 @@ using namespace ::ginga::tuner;
 
 GINGA_TSPARSER_BEGIN
 
-	class FrontendFilter : public IFrontendFilter {
-		private:
-			int pid;
-			int tid;
-			int tidExt;
-			int feDescriptor;
-			ITSFilter* filter;
+class FrontendFilter : public IFrontendFilter
+{
+private:
+  int pid;
+  int tid;
+  int tidExt;
+  int feDescriptor;
+  ITSFilter *filter;
 
-		public:
-			FrontendFilter(ITSFilter* filter);
-			virtual ~FrontendFilter();
+public:
+  FrontendFilter (ITSFilter *filter);
+  virtual ~FrontendFilter ();
 
-			void setPid(int pid);
-			int getPid();
+  void setPid (int pid);
+  int getPid ();
 
-			void setTid(int tid);
-			int getTid();
+  void setTid (int tid);
+  int getTid ();
 
-			void setTidExt(int tidExt);
-			int getTidExt();
+  void setTidExt (int tidExt);
+  int getTidExt ();
 
-			void setDescriptor(int feDescripor);
-			int getDescriptor();
+  void setDescriptor (int feDescripor);
+  int getDescriptor ();
 
-			void receivePes(char* pes, int pesLen);
-			void receiveSection(char* section, int secLen);
+  void receivePes (char *pes, int pesLen);
+  void receiveSection (char *section, int secLen);
 
-			ITSFilter* getTSFilter();
-	};
+  ITSFilter *getTSFilter ();
+};
 
 GINGA_TSPARSER_END
 

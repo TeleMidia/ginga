@@ -25,33 +25,33 @@ GINGA_NCL_BEGIN
 class Base
 {
 private:
-  static set<Base*> baseInstances;
+  static set<Base *> baseInstances;
   static pthread_mutex_t biMutex;
   static bool initMutex;
 
 protected:
   string id;
-  vector<Base*> baseSet;
-  map<string, Base*> baseAliases;
-  map<string, Base*> baseLocations;
+  vector<Base *> baseSet;
+  map<string, Base *> baseAliases;
+  map<string, Base *> baseLocations;
   set<string> typeSet;
 
 public:
-  Base(string id);
-  virtual ~Base();
-  static bool hasInstance(Base* base, bool eraseFromList);
-  virtual bool addBase(Base* base, string alias, string location);
-  virtual void clear();
-  Base* getBase(string baseId);
-  string getBaseAlias(Base* base);
-  string getBaseLocation(Base* base);
-  vector<Base*>* getBases();
-  bool removeBase(Base* base);
-  void setBaseAlias(Base* base, string alias);
-  void setBaseLocation(Base* base, string location);
-  string getId();
-  void setId(string id);
-  bool instanceOf(string s);
+  Base (string id);
+  virtual ~Base ();
+  static bool hasInstance (Base *base, bool eraseFromList);
+  virtual bool addBase (Base *base, string alias, string location);
+  virtual void clear ();
+  Base *getBase (string baseId);
+  string getBaseAlias (Base *base);
+  string getBaseLocation (Base *base);
+  vector<Base *> *getBases ();
+  bool removeBase (Base *base);
+  void setBaseAlias (Base *base, string alias);
+  void setBaseLocation (Base *base, string location);
+  string getId ();
+  void setId (string id);
+  bool instanceOf (string s);
 };
 
 GINGA_NCL_END

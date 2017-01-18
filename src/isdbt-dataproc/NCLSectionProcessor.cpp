@@ -24,270 +24,312 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "util/functions.h"
 
-
-
 GINGA_DATAPROC_BEGIN
 
-	NCLSectionProcessor::NCLSectionProcessor() {
-		dataToProcess = NULL;
-		metadata      = NULL;
-	}
+NCLSectionProcessor::NCLSectionProcessor ()
+{
+  dataToProcess = NULL;
+  metadata = NULL;
+}
 
-	NCLSectionProcessor::~NCLSectionProcessor() {
-		clear();
-	}
+NCLSectionProcessor::~NCLSectionProcessor () { clear (); }
 
-	string NCLSectionProcessor::getRootUri() {
-		string rootUri = "";
+string
+NCLSectionProcessor::getRootUri ()
+{
+  string rootUri = "";
 
-		if (metadata != NULL) {
-			rootUri = metadata->getRootUri();
-		}
+  if (metadata != NULL)
+    {
+      rootUri = metadata->getRootUri ();
+    }
 
-		return rootUri;
-	}
+  return rootUri;
+}
 
-	void NCLSectionProcessor::clear() {
-		clearMetadata();
-		clearDataToProcess();
-	}
+void
+NCLSectionProcessor::clear ()
+{
+  clearMetadata ();
+  clearDataToProcess ();
+}
 
-	void NCLSectionProcessor::clearMetadata() {
-		if (metadata != NULL) {
-			delete metadata;
-			metadata = NULL;
-		}
-	}
+void
+NCLSectionProcessor::clearMetadata ()
+{
+  if (metadata != NULL)
+    {
+      delete metadata;
+      metadata = NULL;
+    }
+}
 
-	void NCLSectionProcessor::clearDataToProcess() {
-		vector<StreamData*>::iterator i;
-		StreamData* sd;
+void
+NCLSectionProcessor::clearDataToProcess ()
+{
+  vector<StreamData *>::iterator i;
+  StreamData *sd;
 
-		if (dataToProcess != NULL) {
-			i = dataToProcess->begin();
-			while (i != dataToProcess->end()) {
-				sd = *i;
-				delete[] sd->stream;
-				delete sd;
-				++i;
-			}
+  if (dataToProcess != NULL)
+    {
+      i = dataToProcess->begin ();
+      while (i != dataToProcess->end ())
+        {
+          sd = *i;
+          delete[] sd->stream;
+          delete sd;
+          ++i;
+        }
 
-			delete dataToProcess;
-			dataToProcess = NULL;
-		}
-	}
+      delete dataToProcess;
+      dataToProcess = NULL;
+    }
+}
 
-	void NCLSectionProcessor::createDirectory(string newDir) {
-		vector<string>* dirs;
-		vector<string>::iterator i;
-		string dir = "";
+void
+NCLSectionProcessor::createDirectory (string newDir)
+{
+  vector<string> *dirs;
+  vector<string>::iterator i;
+  string dir = "";
 
-		dirs = split(newDir, SystemCompat::getIUriD());
-		if (dirs == NULL) {
-			return;
-		}
+  dirs = split (newDir, SystemCompat::getIUriD ());
+  if (dirs == NULL)
+    {
+      return;
+    }
 
-		i = dirs->begin();
-		while (i != dirs->end()) {
-			dir = dir + SystemCompat::getIUriD() + *i;
-			g_mkdir (dir.c_str(), 0777);
-			//clog << "PrefetchManager::createDirectory '";
-			//clog << dir << "'" << endl;
-			++i;
-		}
+  i = dirs->begin ();
+  while (i != dirs->end ())
+    {
+      dir = dir + SystemCompat::getIUriD () + *i;
+      g_mkdir (dir.c_str (), 0777);
+      // clog << "PrefetchManager::createDirectory '";
+      // clog << dir << "'" << endl;
+      ++i;
+    }
 
-		delete dirs;
-	}
+  delete dirs;
+}
 
-	void NCLSectionProcessor::addDataToProcess(char* stream, int streamSize) {
-		StreamData* sd;
+void
+NCLSectionProcessor::addDataToProcess (char *stream, int streamSize)
+{
+  StreamData *sd;
 
-		if (dataToProcess == NULL) {
-			dataToProcess = new vector<StreamData*>;
-		}
+  if (dataToProcess == NULL)
+    {
+      dataToProcess = new vector<StreamData *>;
+    }
 
-		sd         = new StreamData;
-		sd->stream = stream;
-		sd->size   = streamSize;
-		dataToProcess->push_back(sd);
-	}
+  sd = new StreamData;
+  sd->stream = stream;
+  sd->size = streamSize;
+  dataToProcess->push_back (sd);
+}
 
-	void NCLSectionProcessor::processDataFile(char* stream, int streamSize) {
-		int structId, bw;
-		FILE* fd;
-		INCLDataFile* df;
-		string fileUri;
-		string baseUri;
+void
+NCLSectionProcessor::processDataFile (char *stream, int streamSize)
+{
+  int structId, bw;
+  FILE *fd;
+  INCLDataFile *df;
+  string fileUri;
+  string baseUri;
 
-		structId = (((unsigned char)stream[1]) & 0xFF);
-		df       = metadata->getDataFile(structId);
-		fileUri  = df->getUri();
-		if (!SystemCompat::isAbsolutePath(fileUri)) {
-			baseUri = metadata->getBaseUri();
-			fileUri = baseUri + SystemCompat::getIUriD() + fileUri;
-		}
+  structId = (((unsigned char)stream[1]) & 0xFF);
+  df = metadata->getDataFile (structId);
+  fileUri = df->getUri ();
+  if (!SystemCompat::isAbsolutePath (fileUri))
+    {
+      baseUri = metadata->getBaseUri ();
+      fileUri = baseUri + SystemCompat::getIUriD () + fileUri;
+    }
 
-		fileUri = SystemCompat::updatePath(fileUri);
-		createDirectory(fileUri.substr(0, fileUri.find_last_of(SystemCompat::getIUriD())));
+  fileUri = SystemCompat::updatePath (fileUri);
+  createDirectory (
+      fileUri.substr (0, fileUri.find_last_of (SystemCompat::getIUriD ())));
 
-		clog << "NCLSectionProcessor::processDataFile '" << fileUri;
-		clog << "'" << endl;
+  clog << "NCLSectionProcessor::processDataFile '" << fileUri;
+  clog << "'" << endl;
 
-		remove((char*)(fileUri.c_str()));
-		fd = fopen(fileUri.c_str(), "w+b");
-		if (fd != NULL) {
-			bw = fwrite(stream + 2, 1, df->getSize(), fd);
-			fclose(fd);
+  remove ((char *)(fileUri.c_str ()));
+  fd = fopen (fileUri.c_str (), "w+b");
+  if (fd != NULL)
+    {
+      bw = fwrite (stream + 2, 1, df->getSize (), fd);
+      fclose (fd);
+    }
+  else
+    {
+      clog << "NCLSectionProcessor::processDataFile Warning! ";
+      clog << " can't create file '" << fileUri << "'";
+      clog << endl;
+    }
+  delete[] stream;
+}
 
-		} else {
-			clog << "NCLSectionProcessor::processDataFile Warning! ";
-			clog << " can't create file '" << fileUri << "'";
-			clog << endl;
-		}
-		delete[] stream;
-	}
+void
+NCLSectionProcessor::process (char *stream, int streamSize)
+{
+  int structType = (((unsigned char)stream[0]) & 0xFF);
 
-	void NCLSectionProcessor::process(char* stream, int streamSize) {
-		int structType = (((unsigned char)stream[0]) & 0xFF);
+  switch (structType)
+    {
+    case INCLStructure::ST_METADATA:
+      clearMetadata ();
+      metadata = NCLMetadataParser::parse (stream + 2, streamSize - 2);
+      break;
 
-		switch (structType) {
-			case INCLStructure::ST_METADATA:
-				clearMetadata();
-				metadata = NCLMetadataParser::parse(stream + 2, streamSize - 2);
-				break;
+    case INCLStructure::ST_DATAFILE:
+      if (metadata == NULL)
+        {
+          addDataToProcess (stream, streamSize);
+        }
+      else
+        {
+          processDataFile (stream, streamSize);
+        }
+      break;
 
-			case INCLStructure::ST_DATAFILE:
-				if (metadata == NULL) {
-					addDataToProcess(stream, streamSize);
+    case INCLStructure::ST_EVENTMAP:
+      // TODO: EVENT-MAP
+      break;
 
-				} else {
-					processDataFile(stream, streamSize);
-				}
-				break;
+    default:
+      clog << "NCLSectionProcessor::process Warning! Unrecognized";
+      clog << " structure type: '" << structType << "'";
+      clog << endl;
+      break;
+    }
+}
 
-			case INCLStructure::ST_EVENTMAP:
-				//TODO: EVENT-MAP
-				break;
+void
+NCLSectionProcessor::mount ()
+{
+  StreamData *streamData;
+  vector<StreamData *>::iterator i;
 
-			default:
-				clog << "NCLSectionProcessor::process Warning! Unrecognized";
-				clog << " structure type: '" << structType << "'";
-				clog << endl;
-				break;
-		}
-	}
+  if (metadata == NULL)
+    {
+      clog << "NCLSectionProcessor::mount Warning! can't mount:";
+      clog << " metadata(" << metadata << ")" << endl;
+    }
+  else if (dataToProcess != NULL)
+    {
+      i = dataToProcess->begin ();
+      while (i != dataToProcess->end ())
+        {
+          streamData = *i;
+          processDataFile (streamData->stream, streamData->size);
+          delete streamData;
+          ++i;
+        }
+      dataToProcess->clear ();
+      delete dataToProcess;
+      dataToProcess = NULL;
+    }
+}
 
-	void NCLSectionProcessor::mount() {
-		StreamData* streamData;
-		vector<StreamData*>::iterator i;
+bool
+NCLSectionProcessor::isConsolidated ()
+{
+  if (metadata == NULL)
+    {
+      return false;
+    }
 
-		if (metadata == NULL) {
-			clog << "NCLSectionProcessor::mount Warning! can't mount:";
-			clog << " metadata(" << metadata << ")" << endl;
+  return metadata->isConsolidated ();
+}
 
-		} else if (dataToProcess != NULL) {
-			i = dataToProcess->begin();
-			while (i != dataToProcess->end()) {
-				streamData = *i;
-				processDataFile(streamData->stream, streamData->size);
-				delete streamData;
-				++i;
-			}
-			dataToProcess->clear();
-			delete dataToProcess;
-			dataToProcess = NULL;
-		}
-	}
+INCLMetadata *
+NCLSectionProcessor::getMetadata ()
+{
+  return metadata;
+}
 
-	bool NCLSectionProcessor::isConsolidated() {
-		if (metadata == NULL) {
-			return false;
-		}
+// creating stream
+vector<StreamData *> *
+NCLSectionProcessor::createNCLSections (string componentTag, string name,
+                                        string baseUri, vector<string> *files,
+                                        map<int, string> *eventMap)
+{
 
-		return metadata->isConsolidated();
-	}
+  vector<StreamData *> *streams;
+  vector<string>::iterator i;
 
-	INCLMetadata* NCLSectionProcessor::getMetadata() {
-		return metadata;
-	}
+  int baseUriLen, fileUriLen;
+  int fileSize;
+  int structureId = 0;
+  string fileUri;
+  INCLDataFile *dataFile;
 
-	//creating stream
-	vector<StreamData*>* NCLSectionProcessor::createNCLSections(
-			string componentTag,
-			string name,
-			string baseUri,
-			vector<string>* files,
-			map<int, string>* eventMap) {
+  clear ();
+  metadata = new NCLMetadata (name);
+  metadata->setBaseUri (baseUri);
 
-		vector<StreamData*>* streams;
-		vector<string>::iterator i;
+  baseUriLen = baseUri.length ();
 
-		int baseUriLen, fileUriLen;
-		int fileSize;
-		int structureId = 0;
-		string fileUri;
-		INCLDataFile* dataFile;
+  i = files->begin ();
+  while (i != files->end ())
+    {
+      fileUri = *i;
 
-		clear();
-		metadata = new NCLMetadata(name);
-		metadata->setBaseUri(baseUri);
+      fileUriLen = fileUri.length ();
+      if (fileUriLen > baseUriLen && fileUri.substr (0, baseUriLen) == baseUri)
+        {
 
-		baseUriLen = baseUri.length();
+          fileUri = fileUri.substr (baseUriLen, fileUriLen - baseUriLen);
+        }
 
-		i = files->begin();
-		while (i != files->end()) {
-			fileUri = *i;
+      structureId++;
 
-			fileUriLen = fileUri.length();
-			if (fileUriLen > baseUriLen &&
-					fileUri.substr(0, baseUriLen) == baseUri) {
+      if (SystemCompat::isAbsolutePath (fileUri))
+        {
+          fileSize = NCLMetadata::getFileSize (fileUri);
+        }
+      else
+        {
+          fileSize = NCLMetadata::getFileSize (SystemCompat::updatePath (
+              baseUri + SystemCompat::getIUriD () + fileUri));
+        }
+      clog << "NCLSectionProcessor::createNCLSections file '";
+      clog << fileUri << "' has '" << fileSize << "' bytes (base";
+      clog << " uri is '" << baseUri << "'" << endl;
 
-				fileUri = fileUri.substr(
-						baseUriLen, fileUriLen - baseUriLen);
-			}
+      if (fileSize > 0)
+        {
+          dataFile = new NCLDataFile (structureId);
+          dataFile->setComponentTag (componentTag);
+          dataFile->setSize (fileSize);
+          dataFile->setUri (fileUri);
 
-			structureId++;
+          if (fileUri.length () > 4
+              && fileUri.substr (fileUri.length () - 4, 4) == ".ncl")
+            {
 
-			if (SystemCompat::isAbsolutePath(fileUri)) {
-				fileSize = NCLMetadata::getFileSize(fileUri);
+              metadata->setRootObject (dataFile);
+            }
+          else
+            {
+              metadata->addDataFile (dataFile);
+            }
+        }
+      else
+        {
+          clog << "NCLSectionProcessor::prepareFilesToNCLSections ";
+          clog << "Warning! Can't include file: '" << fileUri;
+          clog << "'" << endl;
+        }
 
-			} else {
-				fileSize = NCLMetadata::getFileSize(
-						SystemCompat::updatePath(baseUri + SystemCompat::getIUriD() + fileUri));
-			}
-			clog << "NCLSectionProcessor::createNCLSections file '";
-			clog << fileUri << "' has '" << fileSize << "' bytes (base";
-			clog << " uri is '" << baseUri << "'" << endl;
+      ++i;
+    }
 
-			if (fileSize > 0) {
-				dataFile = new NCLDataFile(structureId);
-				dataFile->setComponentTag(componentTag);
-				dataFile->setSize(fileSize);
-				dataFile->setUri(fileUri);
+  streams = metadata->createNCLSections ();
+  clear ();
 
-				if (fileUri.length() > 4 &&
-						fileUri.substr(fileUri.length() - 4, 4) == ".ncl") {
-
-					metadata->setRootObject(dataFile);
-
-				} else {
-					metadata->addDataFile(dataFile);
-				}
-
-			} else {
-				clog << "NCLSectionProcessor::prepareFilesToNCLSections ";
-				clog << "Warning! Can't include file: '" << fileUri;
-				clog << "'" << endl;
-			}
-
-			++i;
-		}
-
-		streams = metadata->createNCLSections();
-		clear();
-
-		//TODO: map-event stream
-		return streams;
-	}
+  // TODO: map-event stream
+  return streams;
+}
 
 GINGA_DATAPROC_END

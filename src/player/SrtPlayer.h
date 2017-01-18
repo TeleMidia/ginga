@@ -25,44 +25,45 @@ using namespace ::ginga::system;
 
 GINGA_PLAYER_BEGIN
 
-	class SrtPlayer : public TextPlayer, public Thread {
-		protected:
-			map<float, float>* textEvents;
-			vector<string>* textLines;
-			IPlayer* player; //time reference player
-			bool isPlaying;
-			bool controlParentVisibility;
-			bool running;
+class SrtPlayer : public TextPlayer, public Thread
+{
+protected:
+  map<float, float> *textEvents;
+  vector<string> *textLines;
+  IPlayer *player; // time reference player
+  bool isPlaying;
+  bool controlParentVisibility;
+  bool running;
 
-		public:
-			SrtPlayer(GingaScreenID screenId, string mrl);
-			virtual ~SrtPlayer();
-			void loadFile(string url);
+public:
+  SrtPlayer (GingaScreenID screenId, string mrl);
+  virtual ~SrtPlayer ();
+  void loadFile (string url);
 
-		protected:
-			void loadSrt();
-			float strTimeToFloat(string time);
-			void printSrt();
+protected:
+  void loadSrt ();
+  float strTimeToFloat (string time);
+  void printSrt ();
 
-		public:
-			void setParentVisibilityControl(bool control);
-			void setReferenceTimePlayer(IPlayer* player);
-			double getMediaTotalTime();
-			double getMediaTime();
+public:
+  void setParentVisibilityControl (bool control);
+  void setReferenceTimePlayer (IPlayer *player);
+  double getMediaTotalTime ();
+  double getMediaTime ();
 
-			bool play();
-			void stop();
-			void pause();
-			void resume();
+  bool play ();
+  void stop ();
+  void pause ();
+  void resume ();
 
-			virtual void setPropertyValue(string name, string value);
+  virtual void setPropertyValue (string name, string value);
 
-			void busy();
-			bool isPlayingSrt();
+  void busy ();
+  bool isPlayingSrt ();
 
-		protected:
-			void run();
-	};
+protected:
+  void run ();
+};
 
 GINGA_PLAYER_END
 

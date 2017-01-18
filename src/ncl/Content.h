@@ -30,14 +30,14 @@ protected:
   set<string> typeSet;
 
 public:
-  Content(string someType, long someSize);
-  Content();
-  virtual ~Content();
-  bool instanceOf(string s);
-  virtual long getSize(void);
-  virtual string getType(void);
-  virtual void setSize(long someSize);
-  virtual void setType(string someType);
+  Content (string someType, long someSize);
+  Content ();
+  virtual ~Content ();
+  bool instanceOf (string s);
+  virtual long getSize (void);
+  virtual string getType (void);
+  virtual void setSize (long someSize);
+  virtual void setType (string someType);
 };
 
 GINGA_NCL_END

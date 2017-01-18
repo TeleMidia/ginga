@@ -20,28 +20,30 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	SampleIntervalAnchor::SampleIntervalAnchor(
-			string id,
-			double begin,
-			double end) : IntervalAnchor(id, begin, end) {
+SampleIntervalAnchor::SampleIntervalAnchor (string id, double begin,
+                                            double end)
+    : IntervalAnchor (id, begin, end)
+{
 
-		typeSet.insert("SampleIntervalAnchor");
-		this->firstSyntax = 0;
-		this->lastSyntax  = 0;
-	}
+  typeSet.insert ("SampleIntervalAnchor");
+  this->firstSyntax = 0;
+  this->lastSyntax = 0;
+}
 
-	void SampleIntervalAnchor::setValueSyntax(
-			short firstSyntax, short lastSyntax) {
+void
+SampleIntervalAnchor::setValueSyntax (short firstSyntax, short lastSyntax)
+{
 
-		this->firstSyntax = firstSyntax;
-		this->lastSyntax  = lastSyntax;
-	}
+  this->firstSyntax = firstSyntax;
+  this->lastSyntax = lastSyntax;
+}
 
-	void SampleIntervalAnchor::getValueSyntax(
-			short* firstSyntax, short* lastSyntax) {
+void
+SampleIntervalAnchor::getValueSyntax (short *firstSyntax, short *lastSyntax)
+{
 
-		*firstSyntax = this->firstSyntax;
-		*lastSyntax = this->lastSyntax;
-	}
+  *firstSyntax = this->firstSyntax;
+  *lastSyntax = this->lastSyntax;
+}
 
 GINGA_NCL_END

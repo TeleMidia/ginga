@@ -21,70 +21,70 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Player.h"
 #include "BerkeliumHandler.h"
 
-
-
 GINGA_PLAYER_BEGIN
 
-	class BBrowserFactory {
-		private:
-			bool running;
+class BBrowserFactory
+{
+private:
+  bool running;
 
-			/* Browser Pending Tasks*/
-			static const short BPT_INIT          = 0;
-			static const short BPT_UPDATE        = 1;
-			static const short BPT_STOP          = 2;
-			static const short BPT_RELEASE       = 3;
-			static const short BPT_NONE          = 4;
+  /* Browser Pending Tasks*/
+  static const short BPT_INIT = 0;
+  static const short BPT_UPDATE = 1;
+  static const short BPT_STOP = 2;
+  static const short BPT_RELEASE = 3;
+  static const short BPT_NONE = 4;
 
-			map<BerkeliumHandler*, short> bMap;
-			pthread_mutex_t smutex;
+  map<BerkeliumHandler *, short> bMap;
+  pthread_mutex_t smutex;
 
-		public:
-			BBrowserFactory();
-			virtual ~BBrowserFactory();
+public:
+  BBrowserFactory ();
+  virtual ~BBrowserFactory ();
 
-			void start();
-			void stop();
-			bool isRunning();
-			bool hasBrowser();
-			bool hasRunningBrowser();
-			void createBrowser(BerkeliumHandler* bInfo);
-			void stopBrowser(BerkeliumHandler* bInfo);
-			void destroyBrowser(BerkeliumHandler* bInfo);
+  void start ();
+  void stop ();
+  bool isRunning ();
+  bool hasBrowser ();
+  bool hasRunningBrowser ();
+  void createBrowser (BerkeliumHandler *bInfo);
+  void stopBrowser (BerkeliumHandler *bInfo);
+  void destroyBrowser (BerkeliumHandler *bInfo);
 
-		private:
-			void initBrowser(BerkeliumHandler* bInfo);
-			void updateMap();
+private:
+  void initBrowser (BerkeliumHandler *bInfo);
+  void updateMap ();
 
-			void lockSet();
-			void unlockSet();
-	};
+  void lockSet ();
+  void unlockSet ();
+};
 
-	class BerkeliumPlayer : public Player {
-		private:
-			static BBrowserFactory berkeliumFactory;
-			static bool mainLoopDone;
-			BerkeliumHandler* bInfo;
+class BerkeliumPlayer : public Player
+{
+private:
+  static BBrowserFactory berkeliumFactory;
+  static bool mainLoopDone;
+  BerkeliumHandler *bInfo;
 
-		public:
-			BerkeliumPlayer(GingaScreenID myScreen, string mrl);
-			virtual ~BerkeliumPlayer();
+public:
+  BerkeliumPlayer (GingaScreenID myScreen, string mrl);
+  virtual ~BerkeliumPlayer ();
 
-			GingaSurfaceID getSurface();
-			void setNotifyContentUpdate(bool notify);
+  GingaSurfaceID getSurface ();
+  void setNotifyContentUpdate (bool notify);
 
-			bool play();
-			void stop();
-			bool setOutWindow(GingaWindowID windowId);
-			void setBounds(int x, int y, int w, int h);
+  bool play ();
+  void stop ();
+  bool setOutWindow (GingaWindowID windowId);
+  void setBounds (int x, int y, int w, int h);
 
-			void setPropertyValue(string name, string value);
+  void setPropertyValue (string name, string value);
 
-			bool setKeyHandler(bool isHandler);
+  bool setKeyHandler (bool isHandler);
 
-		private:
-			static void* mainLoop(void* ptr);
-	};
+private:
+  static void *mainLoop (void *ptr);
+};
 
 GINGA_PLAYER_END
 

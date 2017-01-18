@@ -24,24 +24,24 @@ using namespace ::ginga::ncl;
 
 #include "Role.h"
 
-
 GINGA_NCL_BEGIN
 
-	class Connector : public Entity {
-		private:
-			map<string, Parameter*>* parameters;
+class Connector : public Entity
+{
+private:
+  map<string, Parameter *> *parameters;
 
-		public:
-			Connector(string id);
-			virtual ~Connector();
-			int getNumRoles();
-			Role* getRole(string roleId);
-			virtual vector<Role*>* getRoles()=0;
-			void addParameter(Parameter* parameter);
-			vector<Parameter*>* getParameters();
-			Parameter* getParameter(string name);
-			bool removeParameter(string name);
-	};
+public:
+  Connector (string id);
+  virtual ~Connector ();
+  int getNumRoles ();
+  Role *getRole (string roleId);
+  virtual vector<Role *> *getRoles () = 0;
+  void addParameter (Parameter *parameter);
+  vector<Parameter *> *getParameters ();
+  Parameter *getParameter (string name);
+  bool removeParameter (string name);
+};
 
 GINGA_NCL_END
 

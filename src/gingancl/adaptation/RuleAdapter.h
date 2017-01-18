@@ -39,7 +39,6 @@ using namespace ::ginga::ncl;
 #include "ncl/Comparator.h"
 using namespace ::ginga::ncl;
 
-
 #include "ncl/Node.h"
 using namespace ::ginga::ncl;
 
@@ -49,47 +48,42 @@ using namespace ::ginga::ncl;
 
 #include "PresentationContext.h"
 
-
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_BEGIN
 
-	class RuleAdapter : public Observer {
-		private:
-			PresentationContext* presContext;
-			map<string, vector<Rule*>*>* ruleListenMap;
-			map<Rule*, vector<ExecutionObjectSwitch*>*>* entityListenMap;
-			map<Rule*, vector<DescriptorSwitch*>*>* descListenMap;
+class RuleAdapter : public Observer
+{
+private:
+  PresentationContext *presContext;
+  map<string, vector<Rule *> *> *ruleListenMap;
+  map<Rule *, vector<ExecutionObjectSwitch *> *> *entityListenMap;
+  map<Rule *, vector<DescriptorSwitch *> *> *descListenMap;
 
-		public:
-			RuleAdapter(PresentationContext* presContext);
-			virtual ~RuleAdapter();
+public:
+  RuleAdapter (PresentationContext *presContext);
+  virtual ~RuleAdapter ();
 
-			void reset();
+  void reset ();
 
-			PresentationContext* getPresentationContext();
+  PresentationContext *getPresentationContext ();
 
-			void adapt(CompositeExecutionObject* compositeObject, bool force);
-			void initializeAttributeRuleRelation(
-				    Rule* topRule,
-				    Rule* rule);
+  void adapt (CompositeExecutionObject *compositeObject, bool force);
+  void initializeAttributeRuleRelation (Rule *topRule, Rule *rule);
 
-			void initializeRuleObjectRelation(
-				    ExecutionObjectSwitch* object);
+  void initializeRuleObjectRelation (ExecutionObjectSwitch *object);
 
-			void adapt(
-			    ExecutionObjectSwitch* objectAlternatives,
-			    bool force);
+  void adapt (ExecutionObjectSwitch *objectAlternatives, bool force);
 
-			bool adaptDescriptor(ExecutionObject* executionObject);
-			Node* adaptSwitch(SwitchNode* switchNode);
-			bool evaluateRule(Rule* rule);
+  bool adaptDescriptor (ExecutionObject *executionObject);
+  Node *adaptSwitch (SwitchNode *switchNode);
+  bool evaluateRule (Rule *rule);
 
-		private:
-			bool evaluateCompositeRule(CompositeRule* rule);
-			bool evaluateSimpleRule(SimpleRule* rule);
+private:
+  bool evaluateCompositeRule (CompositeRule *rule);
+  bool evaluateSimpleRule (SimpleRule *rule);
 
-		public:
-			virtual void update(void* arg0, void* arg1);
-	};
+public:
+  virtual void update (void *arg0, void *arg1);
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_END
 #endif //_RULEADAPTER_H_

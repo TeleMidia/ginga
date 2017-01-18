@@ -21,21 +21,21 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-
 #include "Transition.h"
 
 GINGA_NCL_BEGIN
 
-	class TransitionUtil {
-		public:
-			static int getTypeCode(string type);
-			static string getTypeName(int type);
-			static int getSubtypeCode(int type, string subtype);
-			static string getSubtypeName(int type, int subtype);
-			static short getDirectionCode(string direction);
-			static string getDirectionName(short direction);
-			static int getDefaultSubtype(int type);
-	};
+class TransitionUtil
+{
+public:
+  static int getTypeCode (string type);
+  static string getTypeName (int type);
+  static int getSubtypeCode (int type, string subtype);
+  static string getSubtypeName (int type, int subtype);
+  static short getDirectionCode (string direction);
+  static string getDirectionName (short direction);
+  static int getDefaultSubtype (int type);
+};
 
 GINGA_NCL_END
 

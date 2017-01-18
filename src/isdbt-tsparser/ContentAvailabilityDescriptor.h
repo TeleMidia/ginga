@@ -22,22 +22,22 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TSPARSER_BEGIN
 
+class ContentAvailabilityDescriptor : public IMpegDescriptor
+{
+protected:
+  unsigned char imageConstraintToken;
+  unsigned char retentionMode;
+  unsigned char retentionState;
+  unsigned char encriptionMode;
 
-	class ContentAvailabilityDescriptor : public IMpegDescriptor{
-		protected:
-			unsigned char imageConstraintToken;
-			unsigned char retentionMode;
-			unsigned char retentionState;
-			unsigned char encriptionMode;
-		public:
-			ContentAvailabilityDescriptor();
-			~ContentAvailabilityDescriptor();
-			unsigned char getDescriptorTag();
-			unsigned int getDescriptorLength();
-			void print();
-			size_t process (char* data, size_t pos);
-	};
-
+public:
+  ContentAvailabilityDescriptor ();
+  ~ContentAvailabilityDescriptor ();
+  unsigned char getDescriptorTag ();
+  unsigned int getDescriptorLength ();
+  void print ();
+  size_t process (char *data, size_t pos);
+};
 
 GINGA_TSPARSER_END
 

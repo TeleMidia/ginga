@@ -22,14 +22,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TSPARSER_BEGIN
 
-	class IShortEventDescriptor : public IMpegDescriptor{
-		public:
-			virtual ~IShortEventDescriptor(){};
-			virtual string getLanguageCode()=0;
-			virtual string getEventName()=0;
-			virtual string getTextChar()=0;
-
-	};
+class IShortEventDescriptor : public IMpegDescriptor
+{
+public:
+  virtual ~IShortEventDescriptor (){};
+  virtual string getLanguageCode () = 0;
+  virtual string getEventName () = 0;
+  virtual string getTextChar () = 0;
+};
 
 GINGA_TSPARSER_END
 

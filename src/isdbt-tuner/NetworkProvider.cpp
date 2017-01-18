@@ -21,45 +21,58 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TUNER_BEGIN
 
-	NetworkProvider::NetworkProvider(string address, int port, string protocol) {
-		clog << "UDP MulticastProvider address '" << address << ":";
-		clog << port << "'" << endl;
+NetworkProvider::NetworkProvider (string address, int port, string protocol)
+{
+  clog << "UDP MulticastProvider address '" << address << ":";
+  clog << port << "'" << endl;
 
-		this->addr         = address;
-		this->portNumber   = port;
-		this->capabilities = DPC_CAN_FETCHDATA | DPC_CAN_CTLSTREAM;
-		this->protocol	   = protocol;
-		this->udpSocket    = NULL;
-	}
+  this->addr = address;
+  this->portNumber = port;
+  this->capabilities = DPC_CAN_FETCHDATA | DPC_CAN_CTLSTREAM;
+  this->protocol = protocol;
+  this->udpSocket = NULL;
+}
 
-	NetworkProvider::~NetworkProvider() {
-		if (udpSocket) {
-			delete udpSocket;
-		}
-	}
+NetworkProvider::~NetworkProvider ()
+{
+  if (udpSocket)
+    {
+      delete udpSocket;
+    }
+}
 
-	int NetworkProvider::callServer() {
-		try {
-			if (protocol == "udp_multicast") {
-				udpSocket = new UDPSocket((unsigned short) portNumber);
-				udpSocket->joinGroup(addr);
-			} else if (protocol == "udp_unicast") {
-				udpSocket = new UDPSocket(addr, (unsigned short) portNumber);
-			}
+int
+NetworkProvider::callServer ()
+{
+  try
+    {
+      if (protocol == "udp_multicast")
+        {
+          udpSocket = new UDPSocket ((unsigned short)portNumber);
+          udpSocket->joinGroup (addr);
+        }
+      else if (protocol == "udp_unicast")
+        {
+          udpSocket = new UDPSocket (addr, (unsigned short)portNumber);
+        }
 
-			return 1;
-		} catch (...) {
-			udpSocket = NULL;
-			return 0;
-		}
-	}
+      return 1;
+    }
+  catch (...)
+    {
+      udpSocket = NULL;
+      return 0;
+    }
+}
 
-	char* NetworkProvider::receiveData(int* len) {
-		char* buff = new char[BUFFSIZE];
-		*len = udpSocket->recvFrom(
-				buff, BUFFSIZE, addr, (unsigned short&) portNumber);
+char *
+NetworkProvider::receiveData (int *len)
+{
+  char *buff = new char[BUFFSIZE];
+  *len = udpSocket->recvFrom (buff, BUFFSIZE, addr,
+                              (unsigned short &)portNumber);
 
-		return buff;
-	}
+  return buff;
+}
 
 GINGA_TUNER_END

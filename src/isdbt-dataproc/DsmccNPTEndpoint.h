@@ -20,33 +20,29 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "DsmccMpegDescriptor.h"
 
-
 GINGA_DATAPROC_BEGIN
 
+class DsmccNPTEndpoint : public DsmccMpegDescriptor
+{
+private:
+protected:
+  uint64_t startNPT;
+  uint64_t stopNPT;
 
-class DsmccNPTEndpoint : public DsmccMpegDescriptor {
-	private:
+  virtual int process ();
+  int updateStream ();
 
-	protected:
-		uint64_t startNPT;
-		uint64_t stopNPT;
+  unsigned int calculateDescriptorSize ();
 
-		virtual int process();
-		int updateStream();
+public:
+  DsmccNPTEndpoint ();
+  ~DsmccNPTEndpoint ();
 
-		unsigned int calculateDescriptorSize();
-
-	public:
-		DsmccNPTEndpoint();
-		~DsmccNPTEndpoint();
-
-		uint64_t getStartNPT();
-		uint64_t getStopNPT();
-		void setStartNPT(uint64_t npt);
-		void setStopNPT(uint64_t npt);
-
+  uint64_t getStartNPT ();
+  uint64_t getStopNPT ();
+  void setStartNPT (uint64_t npt);
+  void setStopNPT (uint64_t npt);
 };
-
 
 GINGA_DATAPROC_END
 

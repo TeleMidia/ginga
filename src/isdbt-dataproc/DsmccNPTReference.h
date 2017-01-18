@@ -20,46 +20,42 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "DsmccMpegDescriptor.h"
 
-
 GINGA_DATAPROC_BEGIN
 
+class DsmccNPTReference : public DsmccMpegDescriptor
+{
+private:
+protected:
+  char postDiscontinuityIndicator;
+  unsigned char contentId;
+  uint64_t stcRef;
+  uint64_t nptRef;
+  short scaleNumerator;
+  unsigned short scaleDenominator;
 
-class DsmccNPTReference : public DsmccMpegDescriptor {
-	private:
+  virtual int process ();
+  int updateStream ();
 
-	protected:
-		char postDiscontinuityIndicator;
-		unsigned char contentId;
-		uint64_t stcRef;
-		uint64_t nptRef;
-		short scaleNumerator;
-		unsigned short scaleDenominator;
+  unsigned int calculateDescriptorSize ();
 
-		virtual int process();
-		int updateStream();
+public:
+  DsmccNPTReference ();
+  ~DsmccNPTReference ();
 
-		unsigned int calculateDescriptorSize();
+  char getPostDiscontinuityIndicator ();
+  unsigned char getContentId ();
+  uint64_t getStcRef ();
+  uint64_t getNptRef ();
+  short getScaleNumerator ();
+  unsigned short getScaleDenominator ();
 
-	public:
-		DsmccNPTReference();
-		~DsmccNPTReference();
-
-		char getPostDiscontinuityIndicator();
-		unsigned char getContentId();
-		uint64_t getStcRef();
-		uint64_t getNptRef();
-		short getScaleNumerator();
-		unsigned short getScaleDenominator();
-
-		void setPostDiscontinuityIndicator(char indicator);
-		void setContentId(unsigned char id);
-		void setStcRef(uint64_t stc);
-		void setNptRef(uint64_t npt);
-		void setScaleNumerator(short numerator);
-		void setScaleDenominator(unsigned short denominator);
-
+  void setPostDiscontinuityIndicator (char indicator);
+  void setContentId (unsigned char id);
+  void setStcRef (uint64_t stc);
+  void setNptRef (uint64_t npt);
+  void setScaleNumerator (short numerator);
+  void setScaleDenominator (unsigned short denominator);
 };
-
 
 GINGA_DATAPROC_END
 

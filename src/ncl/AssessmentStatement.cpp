@@ -20,68 +20,87 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-	AssessmentStatement::AssessmentStatement(short comp) :
-		    Statement() {
+AssessmentStatement::AssessmentStatement (short comp) : Statement ()
+{
 
-		comparator      = comp;
-		mainAssessment  = NULL;
-		otherAssessment = NULL;
-		typeSet.insert("AssessmentStatement");
-	}
+  comparator = comp;
+  mainAssessment = NULL;
+  otherAssessment = NULL;
+  typeSet.insert ("AssessmentStatement");
+}
 
-	AssessmentStatement::~AssessmentStatement() {
-		if (mainAssessment != NULL) {
-			delete mainAssessment;
-			mainAssessment = NULL;
-		}
+AssessmentStatement::~AssessmentStatement ()
+{
+  if (mainAssessment != NULL)
+    {
+      delete mainAssessment;
+      mainAssessment = NULL;
+    }
 
-		if (otherAssessment != NULL) {
-			delete otherAssessment;
-			otherAssessment = NULL;
-		}
-	}
+  if (otherAssessment != NULL)
+    {
+      delete otherAssessment;
+      otherAssessment = NULL;
+    }
+}
 
-	AttributeAssessment *AssessmentStatement::getMainAssessment() {
-		return mainAssessment;
-	}
+AttributeAssessment *
+AssessmentStatement::getMainAssessment ()
+{
+  return mainAssessment;
+}
 
-	void AssessmentStatement::setMainAssessment(
-		    AttributeAssessment *assessment) {
+void
+AssessmentStatement::setMainAssessment (AttributeAssessment *assessment)
+{
 
-		this->mainAssessment = assessment;
-	}
+  this->mainAssessment = assessment;
+}
 
-	Assessment *AssessmentStatement::getOtherAssessment() {
-		return otherAssessment;
-	}
+Assessment *
+AssessmentStatement::getOtherAssessment ()
+{
+  return otherAssessment;
+}
 
-	void AssessmentStatement::setOtherAssessment(Assessment *assessment) {
-		this->otherAssessment = assessment;
-	}
+void
+AssessmentStatement::setOtherAssessment (Assessment *assessment)
+{
+  this->otherAssessment = assessment;
+}
 
-	short AssessmentStatement::getComparator() {
-		return comparator;
-	}
+short
+AssessmentStatement::getComparator ()
+{
+  return comparator;
+}
 
-	void AssessmentStatement::setComparator(short comp) {
-		comparator = comp;
-	}
+void
+AssessmentStatement::setComparator (short comp)
+{
+  comparator = comp;
+}
 
-	vector<Role*> *AssessmentStatement::getRoles() {
-		vector<Role*> *roles;
+vector<Role *> *
+AssessmentStatement::getRoles ()
+{
+  vector<Role *> *roles;
 
-		roles = new vector<Role*>;
-		roles->push_back(mainAssessment);
-		if (otherAssessment->instanceOf("AttributeAssessment")) {
-			roles->push_back((AttributeAssessment*)otherAssessment);
-		}
-		return roles;
-	}
+  roles = new vector<Role *>;
+  roles->push_back (mainAssessment);
+  if (otherAssessment->instanceOf ("AttributeAssessment"))
+    {
+      roles->push_back ((AttributeAssessment *)otherAssessment);
+    }
+  return roles;
+}
 
-	string AssessmentStatement::toString() {
-		return "Role = " + getMainAssessment()->toString() +
-			"\n" + "Comparator = " + itos(getComparator()) +
-			"\n" + " " + getOtherAssessment()->toString();
-	}
+string
+AssessmentStatement::toString ()
+{
+  return "Role = " + getMainAssessment ()->toString () + "\n" + "Comparator = "
+         + itos (getComparator ()) + "\n" + " "
+         + getOtherAssessment ()->toString ();
+}
 
 GINGA_NCL_END

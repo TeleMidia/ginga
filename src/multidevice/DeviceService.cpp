@@ -18,108 +18,123 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "DeviceService.h"
 
-
 GINGA_MULTIDEVICE_BEGIN
 
-	DeviceService::DeviceService() {
-		devices      = new map<unsigned int, RemoteDevice*>;
-		listeners    = new set<IRemoteDeviceListener*>;
+DeviceService::DeviceService ()
+{
+  devices = new map<unsigned int, RemoteDevice *>;
+  listeners = new set<IRemoteDeviceListener *>;
 
-		Thread::mutexInit(&lMutex, false);
-		Thread::mutexInit(&dMutex, false);
-		serviceClass = -1;
-	}
+  Thread::mutexInit (&lMutex, false);
+  Thread::mutexInit (&dMutex, false);
+  serviceClass = -1;
+}
 
-	DeviceService::~DeviceService() {
-		Thread::mutexLock(&dMutex);
-		if (devices != NULL) {
-			delete devices;
-			devices = NULL;
-		}
-		Thread::mutexUnlock(&dMutex);
-		Thread::mutexDestroy(&dMutex);
+DeviceService::~DeviceService ()
+{
+  Thread::mutexLock (&dMutex);
+  if (devices != NULL)
+    {
+      delete devices;
+      devices = NULL;
+    }
+  Thread::mutexUnlock (&dMutex);
+  Thread::mutexDestroy (&dMutex);
 
-		Thread::mutexLock(&lMutex);
-		if (listeners != NULL) {
-			delete listeners;
-			listeners = NULL;
-		}
-		Thread::mutexUnlock(&lMutex);
-		Thread::mutexDestroy(&lMutex);
-	}
+  Thread::mutexLock (&lMutex);
+  if (listeners != NULL)
+    {
+      delete listeners;
+      listeners = NULL;
+    }
+  Thread::mutexUnlock (&lMutex);
+  Thread::mutexDestroy (&lMutex);
+}
 
-	RemoteDevice* DeviceService::getDevice(unsigned int devAddr) {
-		map<unsigned int, RemoteDevice*>::iterator i;
-		RemoteDevice* remoteDev;
+RemoteDevice *
+DeviceService::getDevice (unsigned int devAddr)
+{
+  map<unsigned int, RemoteDevice *>::iterator i;
+  RemoteDevice *remoteDev;
 
-		Thread::mutexLock(&dMutex);
-		i = devices->find(devAddr);
-		if (i != devices->end()) {
-			remoteDev = i->second;
-			Thread::mutexUnlock(&dMutex);
-			return remoteDev;
-		}
+  Thread::mutexLock (&dMutex);
+  i = devices->find (devAddr);
+  if (i != devices->end ())
+    {
+      remoteDev = i->second;
+      Thread::mutexUnlock (&dMutex);
+      return remoteDev;
+    }
 
-		Thread::mutexUnlock(&dMutex);
-		return NULL;
-	}
+  Thread::mutexUnlock (&dMutex);
+  return NULL;
+}
 
-	void DeviceService::addListener(IRemoteDeviceListener* listener) {
-		Thread::mutexLock(&lMutex);
-		listeners->insert(listener);
-		Thread::mutexUnlock(&lMutex);
-	}
+void
+DeviceService::addListener (IRemoteDeviceListener *listener)
+{
+  Thread::mutexLock (&lMutex);
+  listeners->insert (listener);
+  Thread::mutexUnlock (&lMutex);
+}
 
-	void DeviceService::removeListener(IRemoteDeviceListener* listener) {
-		set<IRemoteDeviceListener*>::iterator i;
+void
+DeviceService::removeListener (IRemoteDeviceListener *listener)
+{
+  set<IRemoteDeviceListener *>::iterator i;
 
-		Thread::mutexLock(&lMutex);
-		i = listeners->find(listener);
-		if (i != listeners->end()) {
-			listeners->erase(i);
-		}
-		Thread::mutexUnlock(&lMutex);
-	}
+  Thread::mutexLock (&lMutex);
+  i = listeners->find (listener);
+  if (i != listeners->end ())
+    {
+      listeners->erase (i);
+    }
+  Thread::mutexUnlock (&lMutex);
+}
 
-	bool DeviceService::addDevice(
-			unsigned int deviceAddress,
-			int newDevClass,
-			int width,
-			int height) {
+bool
+DeviceService::addDevice (unsigned int deviceAddress, int newDevClass,
+                          int width, int height)
+{
 
-		int w, h;
-		RemoteDevice* device = getDevice(deviceAddress);
+  int w, h;
+  RemoteDevice *device = getDevice (deviceAddress);
 
-		if (device == NULL) {
-			clog << "DeviceService::addDevice() new RemoteDevice() " << endl;
-			device = new RemoteDevice(deviceAddress, newDevClass);
-			device->setDeviceResolution(width, height);
+  if (device == NULL)
+    {
+      clog << "DeviceService::addDevice() new RemoteDevice() " << endl;
+      device = new RemoteDevice (deviceAddress, newDevClass);
+      device->setDeviceResolution (width, height);
 
-			Thread::mutexLock(&dMutex);
-			(*devices)[deviceAddress] = device;
-			Thread::mutexUnlock(&dMutex);
+      Thread::mutexLock (&dMutex);
+      (*devices)[deviceAddress] = device;
+      Thread::mutexUnlock (&dMutex);
+    }
+  else
+    {
+      device->getDeviceResolution (&w, &h);
+      if (device->getDeviceClass () != newDevClass || w != width
+          || h != height)
+        {
 
-		} else {
-			device->getDeviceResolution(&w, &h);
-			if (device->getDeviceClass() != newDevClass ||
-					w != width || h != height) {
+          return false;
+        }
+    }
 
-				return false;
-			}
-		}
+  // clog << "DeviceService::addDevice '" << deviceAddress << "'" << endl;
+  return true;
+}
 
-		//clog << "DeviceService::addDevice '" << deviceAddress << "'" << endl;
-		return true;
-	}
+bool
+DeviceService::hasDevices ()
+{
+  bool hasDev;
 
-	bool DeviceService::hasDevices() {
-		bool hasDev;
+  Thread::mutexLock (&dMutex);
+  hasDev = !devices->empty ();
+  Thread::mutexUnlock (&dMutex);
 
-		Thread::mutexLock(&dMutex);
-		hasDev = !devices->empty();
-		Thread::mutexUnlock(&dMutex);
-
-		return hasDev;
-	}
+  return hasDev;
+}
 
 GINGA_MULTIDEVICE_END

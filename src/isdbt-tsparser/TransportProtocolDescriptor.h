@@ -21,29 +21,28 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "IMpegDescriptor.h"
 using namespace ::ginga::tsparser;
 
-
 GINGA_TSPARSER_BEGIN
 
-	class TransportProtocolDescriptor : public IMpegDescriptor {
-		private:
-			unsigned short protocolId;
-			unsigned char transportProtocolLabel;
-			unsigned char selectorByteLength;
-			char* selectorByte;
+class TransportProtocolDescriptor : public IMpegDescriptor
+{
+private:
+  unsigned short protocolId;
+  unsigned char transportProtocolLabel;
+  unsigned char selectorByteLength;
+  char *selectorByte;
 
-		public:
-			TransportProtocolDescriptor();
-			virtual ~TransportProtocolDescriptor();
-			unsigned char getDescriptorTag();
-			unsigned int getDescriptorLength();
-			size_t process(char* data, size_t pos);
-			void print();
-			unsigned int getSelectorByteLength();
-			unsigned short getProtocolId();
-			unsigned char getTransportProtocolLabel();
-			char* getSelectorByte();
-	};
-
+public:
+  TransportProtocolDescriptor ();
+  virtual ~TransportProtocolDescriptor ();
+  unsigned char getDescriptorTag ();
+  unsigned int getDescriptorLength ();
+  size_t process (char *data, size_t pos);
+  void print ();
+  unsigned int getSelectorByteLength ();
+  unsigned short getProtocolId ();
+  unsigned char getTransportProtocolLabel ();
+  char *getSelectorByte ();
+};
 
 GINGA_TSPARSER_END
 

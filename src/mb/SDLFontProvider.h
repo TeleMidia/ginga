@@ -26,75 +26,74 @@ using namespace ::ginga::system;
 #include "IFontProvider.h"
 #include "SDLSurface.h"
 
-
 #include "SDL_ttf.h"
-
 
 GINGA_MB_BEGIN
 
-	class SDLFontProvider : public IFontProvider {
-		private:
-			GingaScreenID myScreen;
-			string dfltFont;
-			string fontUri;
-			int height;
-			TTF_Font* font;
-			SDLSurface* content;
-			string plainText;
-			int coordX;
-			int coordY;
-			short align;
-			bool fontInit;
+class SDLFontProvider : public IFontProvider
+{
+private:
+  GingaScreenID myScreen;
+  string dfltFont;
+  string fontUri;
+  int height;
+  TTF_Font *font;
+  SDLSurface *content;
+  string plainText;
+  int coordX;
+  int coordY;
+  short align;
+  bool fontInit;
 
-			static map<string, TTF_Font*> fonts;
-			static pthread_mutex_t ntsMutex;
-			static bool initNTSMutex;
+  static map<string, TTF_Font *> fonts;
+  static pthread_mutex_t ntsMutex;
+  static bool initNTSMutex;
 
-			static bool initialized;
-			static short fontRefs;
+  static bool initialized;
+  static short fontRefs;
 
-		public:
-			static const short A_LEFT;
-			static const short A_CENTER;
-			static const short A_RIGHT;
+public:
+  static const short A_LEFT;
+  static const short A_CENTER;
+  static const short A_RIGHT;
 
-			static const short A_TOP;
-			static const short A_TOP_CENTER;
-			static const short A_TOP_LEFT;
-			static const short A_TOP_RIGHT;
+  static const short A_TOP;
+  static const short A_TOP_CENTER;
+  static const short A_TOP_LEFT;
+  static const short A_TOP_RIGHT;
 
-			static const short A_BOTTOM;
-			static const short A_BOTTOM_CENTER;
-			static const short A_BOTTOM_LEFT;
-			static const short A_BOTTOM_RIGHT;
+  static const short A_BOTTOM;
+  static const short A_BOTTOM_CENTER;
+  static const short A_BOTTOM_LEFT;
+  static const short A_BOTTOM_RIGHT;
 
-			SDLFontProvider(
-					GingaScreenID screenId,
-					const char* fontUri,
-					int heightInPixel);
+  SDLFontProvider (GingaScreenID screenId, const char *fontUri,
+                   int heightInPixel);
 
-			virtual ~SDLFontProvider();
+  virtual ~SDLFontProvider ();
 
-		private:
-			void releaseFonts();
-			bool initializeFont();
-			bool createFont();
+private:
+  void releaseFonts ();
+  bool initializeFont ();
+  bool createFont ();
 
-		public:
-			string getLoadSymbol() {return "SDLFontProvider";};
-			void* getFontProviderContent();
+public:
+  string
+  getLoadSymbol ()
+  {
+    return "SDLFontProvider";
+  };
+  void *getFontProviderContent ();
 
-			void getStringExtents(const char* text, int* w, int* h);
-			int getStringWidth(const char* text, int textLength=0);
-			int getHeight();
-			void playOver(
-					GingaSurfaceID surface,
-					const char* text,
-					int x, int y, short align);
+  void getStringExtents (const char *text, int *w, int *h);
+  int getStringWidth (const char *text, int textLength = 0);
+  int getHeight ();
+  void playOver (GingaSurfaceID surface, const char *text, int x, int y,
+                 short align);
 
-		private:
-			void playOver(GingaSurfaceID surface);
-	};
+private:
+  void playOver (GingaSurfaceID surface);
+};
 
 GINGA_MB_END
 

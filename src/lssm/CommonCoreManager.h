@@ -26,37 +26,37 @@ GINGA_LSSM_BEGIN
 class CommonCoreManager
 {
 private:
-  void* tuner;
+  void *tuner;
   GingaWindowID tuningWindow;
-  void* demuxer;
-  void* dataProcessor;
-  void* nptProvider;
-  void* ccUser;
+  void *demuxer;
+  void *dataProcessor;
+  void *nptProvider;
+  void *ccUser;
   double ocDelay;
   bool hasOCSupport;
   bool nptPrinter;
   GingaScreenID myScreen;
-  PresentationEngineManager* pem;
+  PresentationEngineManager *pem;
 
 public:
-  CommonCoreManager();
-  ~CommonCoreManager();
-  void addPEM(PresentationEngineManager* pem, GingaScreenID screenId);
-  void enableNPTPrinter(bool enableNPTPrinter);
-  void setOCDelay(double ocDelay);
-  void setInteractivityInfo(bool hasOCSupport);
-  void removeOCFilterAfterMount(bool removeIt);
-  void setTunerSpec(string tunerSpec);
+  CommonCoreManager ();
+  ~CommonCoreManager ();
+  void addPEM (PresentationEngineManager *pem, GingaScreenID screenId);
+  void enableNPTPrinter (bool enableNPTPrinter);
+  void setOCDelay (double ocDelay);
+  void setInteractivityInfo (bool hasOCSupport);
+  void removeOCFilterAfterMount (bool removeIt);
+  void setTunerSpec (string tunerSpec);
 
 private:
-  void showTunningWindow(GingaScreenID screenId, int x, int y,
-                         int w, int h);
-  void releaseTunningWindow();
-  IPlayer* createMainAVPlayer(string dstUri, GingaScreenID screenId,
-                              int x, int y, int w, int h);
+  void showTunningWindow (GingaScreenID screenId, int x, int y, int w, int h);
+  void releaseTunningWindow ();
+  IPlayer *createMainAVPlayer (string dstUri, GingaScreenID screenId, int x,
+                               int y, int w, int h);
+
 public:
-  void tune();
-  void startPresentation();
+  void tune ();
+  void startPresentation ();
 };
 
 GINGA_LSSM_END

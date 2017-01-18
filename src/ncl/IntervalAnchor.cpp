@@ -23,72 +23,94 @@ using namespace ::ginga::util;
 
 GINGA_NCL_BEGIN
 
-	//if the representation changes, update isObjectDuration method
-	const double IntervalAnchor::OBJECT_DURATION = infinity();
+// if the representation changes, update isObjectDuration method
+const double IntervalAnchor::OBJECT_DURATION = infinity ();
 
-	IntervalAnchor::IntervalAnchor(string id, double begin, double end)
-		    : ContentAnchor(id) {
+IntervalAnchor::IntervalAnchor (string id, double begin, double end)
+    : ContentAnchor (id)
+{
 
-		typeSet.insert("IntervalAnchor");
-		this->begin = 0;
-		setEnd(end);
-		setBegin(begin);
-	}
+  typeSet.insert ("IntervalAnchor");
+  this->begin = 0;
+  setEnd (end);
+  setBegin (begin);
+}
 
-	void IntervalAnchor::setStrValues(string begin, string end) {
-		this->strBegin = begin;
-		this->strEnd   = end;
-	}
+void
+IntervalAnchor::setStrValues (string begin, string end)
+{
+  this->strBegin = begin;
+  this->strEnd = end;
+}
 
-	string IntervalAnchor::getStrBegin() {
-		return this->strBegin;
-	}
+string
+IntervalAnchor::getStrBegin ()
+{
+  return this->strBegin;
+}
 
-	string IntervalAnchor::getStrEnd() {
-		return this->strEnd;
-	}
+string
+IntervalAnchor::getStrEnd ()
+{
+  return this->strEnd;
+}
 
-	double IntervalAnchor::getBegin() {
-		return begin;
-	}
+double
+IntervalAnchor::getBegin ()
+{
+  return begin;
+}
 
-	double IntervalAnchor::getEnd() {
-		return end;
-	}
+double
+IntervalAnchor::getEnd ()
+{
+  return end;
+}
 
-	void IntervalAnchor::setBegin(double b) {
-		bool isBDur = isObjectDuration(b);
-		bool isEDur = isObjectDuration(end);
+void
+IntervalAnchor::setBegin (double b)
+{
+  bool isBDur = isObjectDuration (b);
+  bool isEDur = isObjectDuration (end);
 
-		if (b < 0 && !isBDur) {
-			begin = 0;
+  if (b < 0 && !isBDur)
+    {
+      begin = 0;
+    }
+  else if ((!isBDur && !isEDur && b > end) || (isBDur && !isEDur))
+    {
 
-		} else if ((!isBDur && !isEDur && b > end) ||
-				(isBDur && !isEDur)) {
+      begin = end;
+    }
+  else
+    {
+      begin = b;
+    }
+}
 
-			begin = end;
+void
+IntervalAnchor::setEnd (double e)
+{
+  bool isEDur = isObjectDuration (e);
 
-		} else {
-			begin = b;
-		}
-	}
+  if (e < 0 && !isEDur)
+    {
+      end = IntervalAnchor::OBJECT_DURATION;
+    }
+  else if ((!isEDur && !isObjectDuration (begin) && e < begin))
+    {
+      end = begin;
+    }
+  else
+    {
+      end = e;
+    }
+}
 
-	void IntervalAnchor::setEnd(double e) {
-		bool isEDur = isObjectDuration(e);
-
-		if (e < 0 && !isEDur) {
-			end = IntervalAnchor::OBJECT_DURATION;
-
-		} else if ((!isEDur && !isObjectDuration(begin) && e < begin)) {
-			end = begin;
-
-		} else {
-			end = e;
-		}
-	}
-
-	bool IntervalAnchor::isObjectDuration(double value) {
-		return isInfinity(value);
-	}
+bool
+IntervalAnchor::isObjectDuration (double value)
+{
+  return isInfinity (value);
+}
 
 GINGA_NCL_END

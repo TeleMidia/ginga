@@ -20,69 +20,79 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_TIME_BEGIN
 
-	CostFunctionDuration::CostFunctionDuration(
-		    double expectedValue,
-		    double minValue,
-		    double maxValue,
-		    TemporalFlexibilityFunction* function) : FlexibleTimeMeasurement(
-		    	    expectedValue,
-		    	    minValue,
-		    	    maxValue) {
+CostFunctionDuration::CostFunctionDuration (
+    double expectedValue, double minValue, double maxValue,
+    TemporalFlexibilityFunction *function)
+    : FlexibleTimeMeasurement (expectedValue, minValue, maxValue)
+{
 
-	    this->costFunction = function;
+  this->costFunction = function;
+}
+
+CostFunctionDuration::CostFunctionDuration (
+    double expectedValue, TemporalFlexibilityFunction *function)
+    : FlexibleTimeMeasurement (expectedValue, expectedValue, expectedValue)
+{
+
+  this->costFunction = function;
+  updateDurationInterval ();
+}
+
+TemporalFlexibilityFunction *
+CostFunctionDuration::getCostFunction ()
+{
+  return costFunction;
+}
+
+void
+CostFunctionDuration::setCostFunction (TemporalFlexibilityFunction *function)
+{
+
+  costFunction = function;
+  updateDurationInterval ();
+}
+
+void
+CostFunctionDuration::overwrite (CostFunctionDuration *dur)
+{
+  FlexibleTimeMeasurement::overwrite (dur);
+  costFunction = dur->getCostFunction ();
+}
+
+void
+CostFunctionDuration::updateDurationInterval ()
+{
+  if (!isNaN (expectedValue))
+    {
+      if (costFunction->getShrinkingFactor () > 0
+          && costFunction->getShrinkingFactor () <= 1)
+        {
+
+          minimumValue = (long)((1 - costFunction->getShrinkingFactor ())
+                                * expectedValue);
+        }
+
+      if (costFunction->getStretchingFactor () >= 0)
+        {
+          maximumValue = (long)((1 + costFunction->getStretchingFactor ())
+                                * expectedValue);
+        }
+      else
+        {
+          maximumValue = infinity ();
+        }
     }
-
-	CostFunctionDuration::CostFunctionDuration(double expectedValue,
-		    TemporalFlexibilityFunction* function) : FlexibleTimeMeasurement(
-		    	    expectedValue,
-		    	    expectedValue,
-		    	    expectedValue) {
-
-	    this->costFunction = function;
-		updateDurationInterval();
+  else
+    {
+      minimumValue = NaN ();
+      maximumValue = NaN ();
     }
+}
 
-	TemporalFlexibilityFunction* CostFunctionDuration::getCostFunction() {
-		return costFunction;
-	}
-
-	void CostFunctionDuration::setCostFunction(
-		    TemporalFlexibilityFunction* function) {
-
-		costFunction = function;
-		updateDurationInterval();
-	}
-
-	void CostFunctionDuration::overwrite(CostFunctionDuration* dur) {
-		FlexibleTimeMeasurement::overwrite(dur);
-		costFunction = dur->getCostFunction();
-	}
-
-	void CostFunctionDuration::updateDurationInterval() {
-		if (!isNaN(expectedValue)) {
-			if (costFunction->getShrinkingFactor() > 0
-				    && costFunction->getShrinkingFactor() <= 1) {
-
-				minimumValue = (long)((1 - costFunction->
-					    getShrinkingFactor()) * expectedValue);
-			}
-
-			if (costFunction->getStretchingFactor() >= 0) {
-				maximumValue = (long)((1 + costFunction->
-					    getStretchingFactor()) * expectedValue);
-
-			} else {
-				maximumValue = infinity();
-			}
-
-		} else {
-			minimumValue = NaN();
-			maximumValue = NaN();
-		}
-	}
-
-	double CostFunctionDuration::getCostValue(double value) {
-		return value;
-	}
+double
+CostFunctionDuration::getCostValue (double value)
+{
+  return value;
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_TIME_END

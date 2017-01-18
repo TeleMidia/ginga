@@ -37,95 +37,91 @@ using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
-	class AVPlayer :
-			public Thread,
-			public Player,
-			public IProviderListener {
+class AVPlayer : public Thread, public Player, public IProviderListener
+{
 
-		private:
-			pthread_mutex_t pMutex; //provider mutex
-			pthread_mutex_t tMutex; //AV player thread mutex
+private:
+  pthread_mutex_t pMutex; // provider mutex
+  pthread_mutex_t tMutex; // AV player thread mutex
 
-		protected:
-			bool running;
-			bool buffered;
-			float soundLevel;
+protected:
+  bool running;
+  bool buffered;
+  float soundLevel;
 
-		private:
-			string pSym;
-			GingaProviderID provider;
-			bool hasResized;
-			bool mainAV;
-			bool isRemote;
-			bool hasData;
-			GingaWindowID win;
+private:
+  string pSym;
+  GingaProviderID provider;
+  bool hasResized;
+  bool mainAV;
+  bool isRemote;
+  bool hasData;
+  GingaWindowID win;
 
-		public:
-			AVPlayer(GingaScreenID screenId, string mrl);
-			virtual ~AVPlayer();
-			GingaSurfaceID getSurface();
+public:
+  AVPlayer (GingaScreenID screenId, string mrl);
+  virtual ~AVPlayer ();
+  GingaSurfaceID getSurface ();
 
-		private:
-			void createProvider();
-			static GingaProviderID createProviderT(void* ptr);
+private:
+  void createProvider ();
+  static GingaProviderID createProviderT (void *ptr);
 
-		public:
-			void finished();
-			double getEndTime();
+public:
+  void finished ();
+  double getEndTime ();
 
-		private:
-			void solveRemoteMrl();
+private:
+  void solveRemoteMrl ();
 
-		public:
-			static void initializeAudio(int numArgs, char* args[]);
-			static void releaseAudio();
+public:
+  static void initializeAudio (int numArgs, char *args[]);
+  static void releaseAudio ();
 
-		private:
-			void setSoundLevel(float level);
-			GingaSurfaceID createFrame();
+private:
+  void setSoundLevel (float level);
+  GingaSurfaceID createFrame ();
 
-		public:
-			void getOriginalResolution(int* width, int* height);
-			double getTotalMediaTime();
-			int64_t getVPts();
-			void timeShift(string direction);
+public:
+  void getOriginalResolution (int *width, int *height);
+  double getTotalMediaTime ();
+  int64_t getVPts ();
+  void timeShift (string direction);
 
-		private:
-			double getCurrentMediaTime();
+private:
+  double getCurrentMediaTime ();
 
-		public:
-			double getMediaTime();
-			void setMediaTime(double pos);
-			void setStopTime(double pos);
-			double getStopTime();
-			void setScope(
-					string scope,
-					short type=TYPE_PRESENTATION,
-					double begin=-1, double end=-1, double outTransDur=-1);
+public:
+  double getMediaTime ();
+  void setMediaTime (double pos);
+  void setStopTime (double pos);
+  double getStopTime ();
+  void setScope (string scope, short type = TYPE_PRESENTATION,
+                 double begin = -1, double end = -1, double outTransDur = -1);
 
-			bool play();
-			void pause();
-			void stop();
-			void resume();
+  bool play ();
+  void pause ();
+  void stop ();
+  void resume ();
 
-			virtual string getPropertyValue(string name);
-			virtual void setPropertyValue(string name, string value);
+  virtual string getPropertyValue (string name);
+  virtual void setPropertyValue (string name, string value);
 
-			void addListener(IPlayerListener* listener);
-			void release();
-			void setMrl(const char* mrl);
-			string getMrl();
-			bool isPlaying();
-			bool isRunning();
+  void addListener (IPlayerListener *listener);
+  void release ();
+  void setMrl (const char *mrl);
+  string getMrl ();
+  bool isPlaying ();
+  bool isRunning ();
 
-			void setAVPid(int aPid, int vPid);
+  void setAVPid (int aPid, int vPid);
 
-			bool setOutWindow(GingaWindowID windowId);
+  bool setOutWindow (GingaWindowID windowId);
 
-		private:
-			bool checkVideoResizeEvent();
-			void run();
-	};
+private:
+  bool checkVideoResizeEvent ();
+  void run ();
+};
 
 GINGA_PLAYER_END
 

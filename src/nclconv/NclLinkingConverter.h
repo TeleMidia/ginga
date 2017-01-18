@@ -50,33 +50,32 @@ using namespace ::ginga::nclconv;
 
 #include "NclConnectorsConverter.h"
 
-
 XERCES_CPP_NAMESPACE_USE
 
 GINGA_NCLCONV_BEGIN
 
-  class NclLinkingConverter : public NclLinkingParser {
-	private:
-		Connector *connector;
-		CompositeNode *composite;
+class NclLinkingConverter : public NclLinkingParser
+{
+private:
+  Connector *connector;
+  CompositeNode *composite;
 
-	public:
-		NclLinkingConverter(
-			    DocumentParser *documentParser,
-			    NclConnectorsConverter *connCompiler);
+public:
+  NclLinkingConverter (DocumentParser *documentParser,
+                       NclConnectorsConverter *connCompiler);
 
-		void addBindToLink(void *parentObject, void *childObject);
-		void addBindParamToBind(void *parentObject, void *childObject);
-		void addLinkParamToLink(void *parentObject, void *childObject);
-		void *createBind(DOMElement *parentElement, void *objGrandParent);
-		void *createLink(DOMElement *parentElement, void *objGrandParent);
-		void *createBindParam(DOMElement *parentElement, void *objGrandParent);
-		void *createLinkParam(DOMElement *parentElement, void *objGrandParent);
+  void addBindToLink (void *parentObject, void *childObject);
+  void addBindParamToBind (void *parentObject, void *childObject);
+  void addLinkParamToLink (void *parentObject, void *childObject);
+  void *createBind (DOMElement *parentElement, void *objGrandParent);
+  void *createLink (DOMElement *parentElement, void *objGrandParent);
+  void *createBindParam (DOMElement *parentElement, void *objGrandParent);
+  void *createLinkParam (DOMElement *parentElement, void *objGrandParent);
 
-	private:
-		string getId(DOMElement *element);
-  };
+private:
+  string getId (DOMElement *element);
+};
 
 GINGA_NCLCONV_END
 
-#endif //NclLinkingConverter_H
+#endif // NclLinkingConverter_H

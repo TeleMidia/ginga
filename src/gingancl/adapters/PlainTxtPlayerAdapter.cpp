@@ -21,56 +21,65 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TEXT_BEGIN
 
-	PlainTxtPlayerAdapter::PlainTxtPlayerAdapter() : FormatterPlayerAdapter() {
+PlainTxtPlayerAdapter::PlainTxtPlayerAdapter () : FormatterPlayerAdapter () {}
 
-	}
+void
+PlainTxtPlayerAdapter::createPlayer ()
+{
+  string paramValue;
+  CascadingDescriptor *descriptor;
 
-	void PlainTxtPlayerAdapter::createPlayer() {
-		string paramValue;
-		CascadingDescriptor* descriptor;
+  if (fileExists (mrl))
+    {
+      player = new PlainTxtPlayer (myScreen, mrl.c_str ());
+    }
+  else
+    {
+      return;
+    }
 
-		if (fileExists(mrl)) {
-			player = new PlainTxtPlayer(myScreen, mrl.c_str());
-		} else {
-			return;
-		}
+  player->setPropertyValue ("x-setFile", mrl);
+  descriptor = object->getDescriptor ();
+  if (descriptor != NULL)
+    {
+      paramValue = trim (descriptor->getParameterValue ("fontUri"));
+      if (paramValue == "")
+        {
+          paramValue = string (GINGA_FONT_DATADIR) + "vera.ttf";
+        }
+      player->setPropertyValue ("fontUri", paramValue);
 
-		player->setPropertyValue("x-setFile", mrl);
-		descriptor = object->getDescriptor();
-		if (descriptor != NULL) {
-			paramValue = trim(descriptor->getParameterValue("fontUri"));
-			if (paramValue == "") {
-				paramValue = string (GINGA_FONT_DATADIR) + "vera.ttf";
-			}
-			player->setPropertyValue("fontUri", paramValue);
+      paramValue = trim (descriptor->getParameterValue ("fontSize"));
+      if (paramValue == "")
+        {
+          paramValue = "10";
+        }
+      player->setPropertyValue ("fontSize", paramValue);
 
-			paramValue = trim(descriptor->getParameterValue("fontSize"));
-			if (paramValue == "") {
-				paramValue = "10";
-			}
-			player->setPropertyValue("fontSize", paramValue);
+      paramValue = trim (descriptor->getParameterValue ("x-rgbBgColor"));
+      if (paramValue != "")
+        {
+          player->setPropertyValue ("x-rgbBgColor", paramValue);
+        }
 
-			paramValue = trim(descriptor->getParameterValue("x-rgbBgColor"));
-			if (paramValue != "") {
-				player->setPropertyValue("x-rgbBgColor", paramValue);
-			}
+      paramValue = trim (descriptor->getParameterValue ("fontColor"));
+      if (paramValue == "")
+        {
+          paramValue = trim (descriptor->getParameterValue ("x-rgbFontColor"));
 
-			paramValue = trim(descriptor->getParameterValue("fontColor"));
-			if (paramValue == "") {
-				paramValue = trim(
-						descriptor->getParameterValue("x-rgbFontColor"));
+          if (paramValue == "")
+            {
+              paramValue = "255,255,255";
+            }
+          player->setPropertyValue ("x-rgbFontColor", paramValue);
+        }
+      else
+        {
+          player->setPropertyValue ("fontColor", paramValue);
+        }
+    }
 
-				if (paramValue == "") {
-					paramValue = "255,255,255";
-				}
-				player->setPropertyValue("x-rgbFontColor", paramValue);
-
-			} else {
-				player->setPropertyValue("fontColor", paramValue);
-			}
-		}
-
-		FormatterPlayerAdapter::createPlayer();
-	}
+  FormatterPlayerAdapter::createPlayer ();
+}
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_TEXT_END

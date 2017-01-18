@@ -20,12 +20,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-	class IProviderListener {
-		public:
-			virtual ~IProviderListener(){};
-			virtual void finished()=0;
-			virtual double getEndTime()=0;
-	};
+class IProviderListener
+{
+public:
+  virtual ~IProviderListener (){};
+  virtual void finished () = 0;
+  virtual double getEndTime () = 0;
+};
 
 GINGA_MB_END
 

@@ -30,33 +30,33 @@ using namespace ::ginga::tsparser;
 #include "DsmccDownloadInfoIndication.h"
 #include "DsmccDownloadDataBlock.h"
 
-
 GINGA_DATAPROC_BEGIN
 
-	class DsmccMessageProcessor {
-		private:
-			DsmccServiceDomain* sd;
-			DsmccDownloadServerInitiate* dsi;
-			DsmccDownloadInfoIndication* dii;
-			vector<DsmccMessageHeader*> msgs;
-			pthread_mutex_t msgMutex;
-			unsigned short pid;
+class DsmccMessageProcessor
+{
+private:
+  DsmccServiceDomain *sd;
+  DsmccDownloadServerInitiate *dsi;
+  DsmccDownloadInfoIndication *dii;
+  vector<DsmccMessageHeader *> msgs;
+  pthread_mutex_t msgMutex;
+  unsigned short pid;
 
-		public:
-			DsmccMessageProcessor(unsigned short pid);
-			virtual ~DsmccMessageProcessor();
+public:
+  DsmccMessageProcessor (unsigned short pid);
+  virtual ~DsmccMessageProcessor ();
 
-			DsmccServiceDomain* pushMessage(DsmccMessageHeader* hdr);
+  DsmccServiceDomain *pushMessage (DsmccMessageHeader *hdr);
 
-		private:
-			DsmccServiceDomain* processDSIMessage(DsmccMessageHeader* message);
-			DsmccServiceDomain* processDIIMessage(DsmccMessageHeader* message);
-			void processDDBMessages();
+private:
+  DsmccServiceDomain *processDSIMessage (DsmccMessageHeader *message);
+  DsmccServiceDomain *processDIIMessage (DsmccMessageHeader *message);
+  void processDDBMessages ();
 
-		public:
-			DsmccServiceDomain* getServiceDomain();
-			void checkTasks();
-	};
+public:
+  DsmccServiceDomain *getServiceDomain ();
+  void checkTasks ();
+};
 
 GINGA_DATAPROC_END
 

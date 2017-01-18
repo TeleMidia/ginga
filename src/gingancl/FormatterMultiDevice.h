@@ -33,12 +33,12 @@ using namespace ::ginga::multidevice;
 class DeviceDomain
 {
 public:
-  //CT: class types
+  // CT: class types
   static const int CT_BASE = 0;
   static const int CT_PASSIVE = 1;
   static const int CT_ACTIVE = 2;
 
-  //FT: frame types
+  // FT: frame types
   static const int FT_CONNECTIONREQUEST = 0;
   static const int FT_ANSWERTOREQUEST = 1;
   static const int FT_KEEPALIVE = 2;
@@ -47,7 +47,7 @@ public:
   static const int FT_ATTRIBUTIONEVENT = 5;
   static const int FT_PRESENTATIONEVENT = 6;
 };
-#endif //WITH_MULTIDEVICE
+#endif // WITH_MULTIDEVICE
 
 #include "ncl/LayoutRegion.h"
 using namespace ::ginga::ncl;
@@ -81,31 +81,30 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
 
 #if WITH_MULTIDEVICE
-class FormatterMultiDevice :
-  public IPlayerListener,
-  public IInputEventListener,
-  public IRemoteDeviceListener {
+class FormatterMultiDevice : public IPlayerListener,
+                             public IInputEventListener,
+                             public IRemoteDeviceListener
+{
 #else
-class FormatterMultiDevice :
-  public IPlayerListener,
-  public IInputEventListener {
+class FormatterMultiDevice : public IPlayerListener, public IInputEventListener
+{
 #endif
 protected:
-  static LocalScreenManager* dm;
-  InputManager* im;
+  static LocalScreenManager *dm;
+  InputManager *im;
   pthread_mutex_t mutex;
 
 #if WITH_MULTIDEVICE
-  static RemoteDeviceManager* rdm;
+  static RemoteDeviceManager *rdm;
 #else
-  static void* rdm;
+  static void *rdm;
 #endif
 
-  DeviceLayout* deviceLayout;
-  map<int, FormatterLayout*> layoutManager;
-  vector<string>* activeUris;
+  DeviceLayout *deviceLayout;
+  map<int, FormatterLayout *> layoutManager;
+  vector<string> *activeUris;
   string activeBaseUri;
-  FormatterLayout* mainLayout;
+  FormatterLayout *mainLayout;
   GingaWindowID serialized;
   GingaWindowID printScreen;
   GingaWindowID bitMapScreen;
@@ -116,72 +115,73 @@ protected:
   int deviceClass;
   bool hasRemoteDevices;
   bool enableMulticast;
-  PresentationContext* presContext;
-  void* focusManager;
-  FormatterMultiDevice* parent;
+  PresentationContext *presContext;
+  void *focusManager;
+  FormatterMultiDevice *parent;
   GingaScreenID myScreen;
-  set<IPlayer*> listening;
+  set<IPlayer *> listening;
   pthread_mutex_t lMutex;
   static const int DV_QVGA_WIDTH = 480;
   static const int DV_QVGA_HEIGHT = 320;
 
 public:
-  FormatterMultiDevice(GingaScreenID screenId, DeviceLayout* deviceLayout,
-                       int x, int y, int w, int h, bool useMulticast,
-                       int srvPort);
-  virtual ~FormatterMultiDevice();
-  void printGingaWindows();
-  void listenPlayer(IPlayer* player);
-  void stopListenPlayer(IPlayer* player);
-  void setParent(FormatterMultiDevice* parent);
-  void setPresentationContex(PresentationContext* presContext);
-  void setFocusManager(void* focusManager);
-  void setBackgroundImage(string uri);
-  void* getMainLayout();
-  void* getFormatterLayout(int devClass);
-  string getScreenShot();
-  string serializeScreen(int devClass, GingaWindowID mapWindow);
+  FormatterMultiDevice (GingaScreenID screenId, DeviceLayout *deviceLayout,
+                        int x, int y, int w, int h, bool useMulticast,
+                        int srvPort);
+  virtual ~FormatterMultiDevice ();
+  void printGingaWindows ();
+  void listenPlayer (IPlayer *player);
+  void stopListenPlayer (IPlayer *player);
+  void setParent (FormatterMultiDevice *parent);
+  void setPresentationContex (PresentationContext *presContext);
+  void setFocusManager (void *focusManager);
+  void setBackgroundImage (string uri);
+  void *getMainLayout ();
+  void *getFormatterLayout (int devClass);
+  string getScreenShot ();
+  string serializeScreen (int devClass, GingaWindowID mapWindow);
 
 protected:
-  virtual void postMediaContent(int destDevClass);
+  virtual void postMediaContent (int destDevClass);
 
 public:
-  FormatterLayout* getFormatterLayout(CascadingDescriptor* descriptor,
-                                      ExecutionObject* object);
-  GingaWindowID prepareFormatterRegion(ExecutionObject* object,
-                                       GingaSurfaceID renderedSurface);
-  void showObject(ExecutionObject* executionObject);
-  void hideObject(ExecutionObject* executionObject);
+  FormatterLayout *getFormatterLayout (CascadingDescriptor *descriptor,
+                                       ExecutionObject *object);
+  GingaWindowID prepareFormatterRegion (ExecutionObject *object,
+                                        GingaSurfaceID renderedSurface);
+  void showObject (ExecutionObject *executionObject);
+  void hideObject (ExecutionObject *executionObject);
 
 protected:
-  virtual bool newDeviceConnected(int newDevClass, int w, int h);
-  virtual void connectedToBaseDevice(unsigned int domainAddr)=0;
-  virtual bool receiveRemoteEvent(int remoteDevClass,int eventType,
-                                  string eventContent);
-  virtual bool receiveRemoteContent(int remoteDevClass,
-                                    char *stream, int streamSize)
+  virtual bool newDeviceConnected (int newDevClass, int w, int h);
+  virtual void connectedToBaseDevice (unsigned int domainAddr) = 0;
+  virtual bool receiveRemoteEvent (int remoteDevClass, int eventType,
+                                   string eventContent);
+  virtual bool
+  receiveRemoteContent (int remoteDevClass, char *stream, int streamSize)
   {
     return false;
   };
-  virtual bool receiveRemoteContentInfo(string contentId,
-                                        string contentUri)
+  virtual bool
+  receiveRemoteContentInfo (string contentId, string contentUri)
   {
     return false;
   };
-  void renderFromUri(GingaWindowID win, string uri);
-  void tapObject(int devClass, int x, int y);
-  virtual bool receiveRemoteContent(int remoteDevClass,string contentUri)
+  void renderFromUri (GingaWindowID win, string uri);
+  void tapObject (int devClass, int x, int y);
+  virtual bool
+  receiveRemoteContent (int remoteDevClass, string contentUri)
   {
     return false;
   };
 
 public:
-  void addActiveUris(string baseUri, vector<string>* uris);
+  void addActiveUris (string baseUri, vector<string> *uris);
   virtual void updatePassiveDevices ();
 
 protected:
-  void updateStatus(short code, string parameter, short type, string value);
-  virtual bool userEventReceived(SDLInputEvent* ev)=0;
+  void updateStatus (short code, string parameter, short type, string value);
+  virtual bool userEventReceived (SDLInputEvent *ev) = 0;
 };
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_END

@@ -21,27 +21,27 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "IMpegDescriptor.h"
 using namespace ::ginga::tsparser;
 
-
-struct Item {
-	unsigned char itemDescriptionLength;
-	char* itemDescriptionChar;
-	unsigned char itemLength;
-	char* itemChar;
+struct Item
+{
+  unsigned char itemDescriptionLength;
+  char *itemDescriptionChar;
+  unsigned char itemLength;
+  char *itemChar;
 };
 
 GINGA_TSPARSER_BEGIN
 
-	class IExtendedEventDescriptor : public IMpegDescriptor {
-		public:
-			~IExtendedEventDescriptor(){};
-			virtual string getLanguageCode()=0;
-			virtual string getTextChar()=0;
+class IExtendedEventDescriptor : public IMpegDescriptor
+{
+public:
+  ~IExtendedEventDescriptor (){};
+  virtual string getLanguageCode () = 0;
+  virtual string getTextChar () = 0;
 
-			virtual vector<Item*>* getItems()=0;
-			virtual string getItemDescriptionChar(struct Item* item)=0;
-			virtual string getItemChar(struct Item* item)=0;
-
-	};
+  virtual vector<Item *> *getItems () = 0;
+  virtual string getItemDescriptionChar (struct Item *item) = 0;
+  virtual string getItemChar (struct Item *item) = 0;
+};
 
 GINGA_TSPARSER_END
 

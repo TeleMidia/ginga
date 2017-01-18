@@ -30,7 +30,7 @@ using namespace ::ginga::ctxmgmt;
 #include "config.h"
 
 #if WITH_MULTIDEVICE
-# include "multidevice/DeviceDomain.h"
+#include "multidevice/DeviceDomain.h"
 using namespace ::ginga::multidevice;
 #endif
 
@@ -47,51 +47,50 @@ using namespace ::ginga::ctxmgmt;
 using namespace ::ginga::multidevice;
 #endif
 
-
 #include "math.h"
-
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_BEGIN
 
-	class PresentationContext : public Observable, public IContextListener {
+class PresentationContext : public Observable, public IContextListener
+{
 
-		private:
-			GingaScreenID myScreen;
-			map<string, string> contextTable;
-			static ContextManager* contextManager;
-			IContextListener* globalVarListener;
-			pthread_mutex_t attrMutex;
+private:
+  GingaScreenID myScreen;
+  map<string, string> contextTable;
+  static ContextManager *contextManager;
+  IContextListener *globalVarListener;
+  pthread_mutex_t attrMutex;
 
 #if WITH_MULTIDEVICE
-			IRemoteDeviceListener* devListener;
+  IRemoteDeviceListener *devListener;
 #else
-			void* devListener;
-#endif //WITH_MULTIDEVICE
+  void *devListener;
+#endif // WITH_MULTIDEVICE
 
-		public:
-			PresentationContext(GingaScreenID screenId);
-			virtual ~PresentationContext();
+public:
+  PresentationContext (GingaScreenID screenId);
+  virtual ~PresentationContext ();
 
-			void setPropertyValue(string propertyName, string value);
-			void incPropertyValue(string propertyName);
-			void decPropertyValue(string propertyName);
-			set<string>* getPropertyNames();
-			string getPropertyValue(string attributeId);
+  void setPropertyValue (string propertyName, string value);
+  void incPropertyValue (string propertyName);
+  void decPropertyValue (string propertyName);
+  set<string> *getPropertyNames ();
+  string getPropertyValue (string attributeId);
 
-		private:
-			void initializeUserContext();
-			void initializeUserInfo(int currentUserId);
-			void initializeSystemValues();
+private:
+  void initializeUserContext ();
+  void initializeUserInfo (int currentUserId);
+  void initializeSystemValues ();
 
-		public:
-			void save();
-			void setGlobalVarListener(IContextListener* listener);
-			void receiveGlobalAttribution(string propertyName, string value);
+public:
+  void save ();
+  void setGlobalVarListener (IContextListener *listener);
+  void receiveGlobalAttribution (string propertyName, string value);
 
 #if WITH_MULTIDEVICE
-			void setRemoteDeviceListener(IRemoteDeviceListener* rdl);
-#endif //WITH_MULTIDEVICE
-	};
+  void setRemoteDeviceListener (IRemoteDeviceListener *rdl);
+#endif // WITH_MULTIDEVICE
+};
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTATION_CONTEXT_END
 #endif //_PRESENTATIONCONTEXT_H_

@@ -18,49 +18,48 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IDATAPROVIDER_H_
 #define IDATAPROVIDER_H_
 
-
 #include "Channel.h"
 #include "IProviderListener.h"
 #include "IFrontendFilter.h"
 
 GINGA_TUNER_BEGIN
 
-	//data provider capabilities
-	static const short DPC_CAN_FETCHDATA = 0x01;
-	static const short DPC_CAN_DEMUXBYHW = 0x02;
-	static const short DPC_CAN_FILTERPID = 0x04;
-	static const short DPC_CAN_FILTERTID = 0x08;
-	static const short DPC_CAN_DECODESTC = 0x10;
-	static const short DPC_CAN_CTLSTREAM = 0x20;
+// data provider capabilities
+static const short DPC_CAN_FETCHDATA = 0x01;
+static const short DPC_CAN_DEMUXBYHW = 0x02;
+static const short DPC_CAN_FILTERPID = 0x04;
+static const short DPC_CAN_FILTERTID = 0x08;
+static const short DPC_CAN_DECODESTC = 0x10;
+static const short DPC_CAN_CTLSTREAM = 0x20;
 
-	// pes filter types
-	static const int PFT_DEFAULTTS = 0x01;
-	static const int PFT_PCR       = 0x02;
-	static const int PFT_VIDEO     = 0x03;
-	static const int PFT_AUDIO     = 0x04;
-	static const int PFT_OTHER     = 0x05;
+// pes filter types
+static const int PFT_DEFAULTTS = 0x01;
+static const int PFT_PCR = 0x02;
+static const int PFT_VIDEO = 0x03;
+static const int PFT_AUDIO = 0x04;
+static const int PFT_OTHER = 0x05;
 
-	class IDataProvider {
-		public:
-			virtual ~IDataProvider(){};
-			virtual short getCaps()=0;
-			virtual void setListener(ITProviderListener* listener)=0;
-			virtual void attachFilter(IFrontendFilter* filter)=0;
-			virtual void removeFilter(IFrontendFilter* filter)=0;
+class IDataProvider
+{
+public:
+  virtual ~IDataProvider (){};
+  virtual short getCaps () = 0;
+  virtual void setListener (ITProviderListener *listener) = 0;
+  virtual void attachFilter (IFrontendFilter *filter) = 0;
+  virtual void removeFilter (IFrontendFilter *filter) = 0;
 
-			virtual char* receiveData(int* len)=0;
+  virtual char *receiveData (int *len) = 0;
 
-			virtual bool tune()=0;
-			virtual Channel* getCurrentChannel()=0;
-			virtual bool getSTCValue(uint64_t* stc, int* valueType)=0;
-			virtual bool changeChannel(int factor)=0;
-			virtual bool setChannel(string channelValue)=0;
-			virtual int createPesFilter(
-					int pid, int pesType, bool compositeFiler)=0;
+  virtual bool tune () = 0;
+  virtual Channel *getCurrentChannel () = 0;
+  virtual bool getSTCValue (uint64_t *stc, int *valueType) = 0;
+  virtual bool changeChannel (int factor) = 0;
+  virtual bool setChannel (string channelValue) = 0;
+  virtual int createPesFilter (int pid, int pesType, bool compositeFiler) = 0;
 
-			virtual string getPesFilterOutput()=0;
-			virtual void close()=0;
-	};
+  virtual string getPesFilterOutput () = 0;
+  virtual void close () = 0;
+};
 
 GINGA_TUNER_END
 
