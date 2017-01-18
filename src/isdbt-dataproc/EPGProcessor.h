@@ -24,10 +24,10 @@ using namespace ::ginga::util;
 #include "isdbt-tsparser/IServiceInfo.h"
 #include "isdbt-tsparser/IEventInfo.h"
 #include "isdbt-tsparser/ITOT.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
+using namespace ::ginga::tsparser;
 
 #include "isdbt-tsparser/ITransportSection.h"
-using namespace br::pucrio::telemidia::ginga::core::tsparser;
+using namespace ::ginga::tsparser;
 
 #include "IEPGListener.h"
 

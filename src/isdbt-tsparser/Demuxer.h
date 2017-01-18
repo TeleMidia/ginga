@@ -29,7 +29,7 @@ using namespace ::ginga::system;
 
 #include "Pmt.h"
 #include "Pat.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
+using namespace ::ginga::tsparser;
 
 #include "FrontendFilter.h"
 #include "TSPacket.h"
@@ -38,7 +38,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
 
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+GINGA_TSPARSER_BEGIN
 
 	class Demuxer : public IDemuxer {
 		private:
@@ -151,5 +151,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
 			bool waitData();
 	 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
+GINGA_TSPARSER_END
 #endif /*DEMUXER_H_*/

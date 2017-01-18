@@ -16,12 +16,9 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include "isdbt-tsparser/AudioComponentDescriptor.h"
+#include "AudioComponentDescriptor.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
-
-namespace si{
-namespace descriptors{
+GINGA_TSPARSER_BEGIN
 
 	AudioComponentDescriptor::AudioComponentDescriptor() {
 		descriptorTag      = 0xC4;
@@ -198,7 +195,6 @@ namespace descriptors{
 		pos += textLength;
 		return pos;
 	}
-}
-}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
+
+GINGA_TSPARSER_END

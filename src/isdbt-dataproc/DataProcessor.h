@@ -19,10 +19,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define DATAPROCESSOR_H_
 
 #include "isdbt-tsparser/IMpegDescriptor.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
+using namespace ::ginga::tsparser;
 
 #include "isdbt-tsparser/IAIT.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si;
+using namespace ::ginga::tsparser;
 
 #include "dsmcc/ServiceDomain.h"
 #include "dsmcc/IServiceDomainListener.h"
@@ -43,7 +43,7 @@ using namespace ::ginga::tuner;
 
 #include "isdbt-tsparser/IDemuxer.h"
 #include "isdbt-tsparser/IFilterListener.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
+using namespace ::ginga::tsparser;
 
 #include "dsmcc/IStreamEventListener.h"
 using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing;

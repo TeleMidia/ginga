@@ -24,7 +24,7 @@ using namespace ::ginga::tuner;
 
 #include "ITSFilter.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+GINGA_TSPARSER_BEGIN
 
 	// specific packet ids
 	static const short PAT_PID  = 0x0000;
@@ -142,5 +142,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
 		virtual bool isReady()=0;
 	 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
+GINGA_TSPARSER_END
 #endif /*IDEMUXER_H_*/

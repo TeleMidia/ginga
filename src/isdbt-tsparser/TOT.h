@@ -19,10 +19,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define TOT_H_
 
 #include "IMpegDescriptor.h"
-using namespace br::pucrio::telemidia::ginga::core::tsparser;
+using namespace ::ginga::tsparser;
 
 #include "LocalTimeOffsetDescriptor.h"
-using namespace br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
+using namespace ::ginga::tsparser;
 
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
@@ -32,7 +32,7 @@ using namespace ::ginga::system;
 
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
+GINGA_TSPARSER_BEGIN
 
 
 	class TOT : public ITOT {
@@ -57,5 +57,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
 
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END
+GINGA_TSPARSER_END
 #endif /* TOT_H_ */

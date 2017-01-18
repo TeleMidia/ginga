@@ -20,12 +20,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ServiceDescriptor.h"
 #include "LogoTransmissionDescriptor.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
+using namespace ::ginga::tsparser;
 
 #include "IServiceInfo.h"
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
+GINGA_TSPARSER_BEGIN
 
     class ServiceInfo : public IServiceInfo {
 		protected:
@@ -58,5 +58,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
 
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END
+GINGA_TSPARSER_END
 #endif /*SERVICEINFO_H_*/

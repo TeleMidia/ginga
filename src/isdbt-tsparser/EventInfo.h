@@ -36,17 +36,17 @@ using namespace ::ginga::system;
 #include "SeriesDescriptor.h"
 #include "ParentalRatingDescriptor.h"
 #include "ContentAvailabilityDescriptor.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
+using namespace ::ginga::tsparser;
 
 #include "IMpegDescriptor.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
+using namespace ::ginga::tsparser;
 
 
 //#include <time.h>
 //#include <vector>
 //#include <map>
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
+GINGA_TSPARSER_BEGIN
 
     class EventInfo : public IEventInfo {
 		protected:
@@ -116,5 +116,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
 
 		};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END
+GINGA_TSPARSER_END
 #endif /*EVENTINFO_H_*/

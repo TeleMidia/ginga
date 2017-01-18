@@ -31,7 +31,7 @@ using namespace ::ginga::util;
 #endif
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+GINGA_TSPARSER_BEGIN
 
 	class TransportSection : public ITransportSection {
 		private:
@@ -109,5 +109,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
 			void print();
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
+GINGA_TSPARSER_END
 #endif /*TRANSPORTSECTION_H_*/

@@ -19,11 +19,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define ITOT_H_
 
 #include "IMpegDescriptor.h"
-using namespace br::pucrio::telemidia::ginga::core::tsparser;
+using namespace ::ginga::tsparser;
 
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
+GINGA_TSPARSER_BEGIN
 
 	class ITOT {
 		public:
@@ -36,5 +36,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_BEGIN
 			virtual vector<IMpegDescriptor*>* getDescriptors()=0;
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_SI_END
+GINGA_TSPARSER_END
 #endif /* ITOT_H_ */

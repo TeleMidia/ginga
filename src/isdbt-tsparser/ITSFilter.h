@@ -24,7 +24,7 @@ using namespace ::ginga::tuner;
 #include "ITSPacket.h"
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+GINGA_TSPARSER_BEGIN
 
 	class ITSFilter {
 		public:
@@ -43,5 +43,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
 			virtual void setSourceUri(string srcUri, bool isPipe)=0;
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
+GINGA_TSPARSER_END
 #endif /*ITSFILTER_H_*/

@@ -23,7 +23,7 @@ using namespace ::ginga::tuner;
 
 #include "ITSFilter.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+GINGA_TSPARSER_BEGIN
 
 	class FrontendFilter : public IFrontendFilter {
 		private:
@@ -55,5 +55,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
 			ITSFilter* getTSFilter();
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
+GINGA_TSPARSER_END
 #endif /*FrontendFilter_H_*/

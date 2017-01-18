@@ -31,10 +31,10 @@ using namespace ::ginga::player;
 using namespace ::ginga::tuner;
 
 #include "isdbt-tsparser/IEventInfo.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser;
+using namespace ::ginga::tsparser;
 
 #include "isdbt-tsparser/IShortEventDescriptor.h"
-using namespace ::br::pucrio::telemidia::ginga::core::tsparser::si::descriptors;
+using namespace ::ginga::tsparser;
 
 #include "system/ITimeBaseProvider.h"
 using namespace ::ginga::system;

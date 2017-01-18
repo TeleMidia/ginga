@@ -17,10 +17,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "isdbt-tsparser/ContentDescriptor.h"
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+GINGA_TSPARSER_BEGIN
 
-namespace si{
-namespace descriptors{
 //TODO: get methods?
 	ContentDescriptor::ContentDescriptor() {
 		descriptorTag       = 0x54;
@@ -123,7 +121,6 @@ namespace descriptors{
 		}
 		return pos;
 	}
-}
-}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
+
+GINGA_TSPARSER_END

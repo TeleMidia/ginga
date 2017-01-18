@@ -16,13 +16,11 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
-#include "isdbt-tsparser/SeriesDescriptor.h"
+#include "SeriesDescriptor.h"
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+GINGA_TSPARSER_BEGIN
 
-namespace si{
-namespace descriptors{
 	SeriesDescriptor::SeriesDescriptor() {
 		descriptorTag       = 0xD5;
 		descriptorLength    = 0;
@@ -165,7 +163,5 @@ namespace descriptors{
 		}
 		return pos;
 	}
-}
-}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
+GINGA_TSPARSER_END

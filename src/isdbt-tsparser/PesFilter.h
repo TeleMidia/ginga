@@ -24,7 +24,7 @@ using namespace ::ginga::tuner;
 #include "IDemuxer.h"
 #include "ITSFilter.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
+GINGA_TSPARSER_BEGIN
 
 	class PesFilter : public IFrontendFilter {
 		private:
@@ -53,5 +53,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_BEGIN
 			void receiveSection(char* section, int secLen);
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_TSPARSER_END
+GINGA_TSPARSER_END
 #endif /*PesFilter_H_*/
