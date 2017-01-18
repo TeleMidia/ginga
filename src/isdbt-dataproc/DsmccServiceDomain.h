@@ -33,7 +33,7 @@ using namespace ::ginga::system;
 #include "IDsmccServiceDomainListener.h"
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
+GINGA_DATAPROC_BEGIN
 
 	class DsmccServiceDomain : public Thread {
 		private:
@@ -79,5 +79,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
 			virtual void run();
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_END
+GINGA_DATAPROC_END
 #endif /*SERVICEDOMAIN_H_*/

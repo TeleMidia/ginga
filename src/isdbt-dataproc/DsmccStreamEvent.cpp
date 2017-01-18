@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "DsmccStreamEvent.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
+GINGA_DATAPROC_BEGIN
 
 	DsmccStreamEvent::DsmccStreamEvent(
 			void* descriptorData, unsigned int descriptorSize) {
@@ -81,4 +81,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 		clog << "privateData: " << (string)(char*)getEventData() << endl;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_END
+GINGA_DATAPROC_END

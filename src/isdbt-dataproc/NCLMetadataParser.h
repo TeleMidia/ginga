@@ -26,7 +26,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::util;
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
+GINGA_DATAPROC_BEGIN
 
 	class NCLMetadataParser {
 		public:
@@ -49,5 +49,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
 			static void stopElementHandler(void* data, const XML_Char* element);
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_END
+GINGA_DATAPROC_END
 #endif //_NCLMetadataParser_H_

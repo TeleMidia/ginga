@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_BEGIN
+GINGA_DATAPROC_BEGIN
 
 class DsmccMpegDescriptor
 {
@@ -54,6 +54,6 @@ public:
   static int getDescriptorsLength(vector<DsmccMpegDescriptor*>* descriptors);
 };
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_END
+GINGA_DATAPROC_END
 
 #endif /* MPEG_DESCRIPTOR_H */

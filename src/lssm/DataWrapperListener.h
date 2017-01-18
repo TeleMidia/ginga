@@ -25,11 +25,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::system;
 
 #include "isdbt-dataproc/IDsmccStreamEventListener.h"
-using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing;
+using namespace ::ginga::dataproc;
 
 #include "isdbt-dataproc/IDsmccServiceDomainListener.h"
 #include "isdbt-dataproc/IDsmccObjectListener.h"
-using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
+using namespace ::ginga::dataproc;
 
 GINGA_LSSM_BEGIN
 

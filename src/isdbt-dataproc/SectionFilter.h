@@ -31,7 +31,7 @@ using namespace ::ginga::system;
 using namespace ::ginga::tsparser;
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
+GINGA_DATAPROC_BEGIN
 
 	struct SectionHandler {
 		// Last section's packet continuityCounter.
@@ -83,5 +83,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_BEGIN
 			void receivePes(char* buf, int len, IFrontendFilter* filter);
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_END
+GINGA_DATAPROC_END
 #endif /*SECTIONFILTER_H_*/

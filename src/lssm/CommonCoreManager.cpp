@@ -44,10 +44,10 @@ using namespace ::ginga::tuner;
 using namespace ::ginga::tsparser;
 
 #include "isdbt-dataproc/DataProcessor.h"
-using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing;
+using namespace ::ginga::dataproc;
 
 #include "isdbt-dataproc/IDsmccObjectListener.h"
-using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::carousel;
+using namespace ::ginga::dataproc;
 
 #include "lssm/DataWrapperListener.h"
 #endif // WITH_ISDBT

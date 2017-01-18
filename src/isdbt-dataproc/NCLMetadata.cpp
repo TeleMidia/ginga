@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::util;
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
+GINGA_DATAPROC_BEGIN
 
 	NCLMetadata::NCLMetadata(string name) {
 		this->name           = name;
@@ -313,4 +313,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
 		return bytes;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_END
+GINGA_DATAPROC_END

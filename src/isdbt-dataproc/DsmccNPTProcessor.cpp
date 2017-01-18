@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "DsmccNPTProcessor.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_BEGIN
+GINGA_DATAPROC_BEGIN
 
 DsmccNPTProcessor::DsmccNPTProcessor(ISTCProvider* stcProvider) : Thread() {
 
@@ -1072,4 +1072,4 @@ void DsmccNPTProcessor::run() {
 }
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_DSMCC_NPT_END
+GINGA_DATAPROC_END

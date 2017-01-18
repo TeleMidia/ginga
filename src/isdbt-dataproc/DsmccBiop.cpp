@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "DsmccBiop.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
+GINGA_DATAPROC_BEGIN
 
 	DsmccBiop::DsmccBiop(DsmccModule* module, DsmccObjectProcessor* processor) {
 		Thread::mutexInit(&dataMutex, false);
@@ -685,4 +685,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
 		return 1;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_END
+GINGA_DATAPROC_END

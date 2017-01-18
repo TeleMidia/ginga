@@ -21,7 +21,7 @@ using namespace ::ginga::util;
 
 #include "NCLEventDescriptor.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
+GINGA_DATAPROC_BEGIN
 
 	string NCLEventDescriptor::getEventId(string event) {
 		return event.substr(0, 2);
@@ -98,4 +98,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
 		return noMarks;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_END
+GINGA_DATAPROC_END

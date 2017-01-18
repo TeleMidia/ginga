@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "DsmccObject.h"
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
+GINGA_DATAPROC_BEGIN
 
 	DsmccObject::DsmccObject() {
 
@@ -104,4 +104,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
 		clog << "name = " << name << endl;
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_END
+GINGA_DATAPROC_END

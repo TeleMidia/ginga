@@ -25,7 +25,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 # define MSG_HEADER_LEN 0xC
 #endif
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
+GINGA_DATAPROC_BEGIN
 
 	DsmccMessageProcessor::DsmccMessageProcessor(unsigned short pid) {
 		sd = NULL;
@@ -168,4 +168,4 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_BEGIN
 		processDDBMessages();
 	}
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_CAROUSEL_END
+GINGA_DATAPROC_END

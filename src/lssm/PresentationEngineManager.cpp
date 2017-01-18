@@ -49,7 +49,7 @@ using namespace ::ginga::mb;
 
 #if WITH_ISDBT
 #include "isdbt-dataproc/NCLEventDescriptor.h"
-using namespace ::br::pucrio::telemidia::ginga::core::dataprocessing::ncl;
+using namespace ::ginga::dataproc;
 
 #include "lssm/DataWrapperListener.h"
 #endif

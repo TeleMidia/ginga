@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "INCLStructure.h"
 
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
+GINGA_DATAPROC_BEGIN
 
 	class INCLDataFile : public INCLStructure {
 		public:
@@ -36,5 +36,5 @@ BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_BEGIN
 			virtual double getSize()=0;
 	};
 
-BR_PUCRIO_TELEMIDIA_GINGA_CORE_DATAPROCESSING_NCL_END
+GINGA_DATAPROC_END
 #endif //_IDataFile_H_
