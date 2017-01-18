@@ -18,8 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NclDocumentConverter_H
 #define NclDocumentConverter_H
 
-#include "ncl/components/Node.h"
-using namespace ::br::pucrio::telemidia::ncl::components;
+#include "ncl/Node.h"
+using namespace ::ginga::ncl;
 
 #include "DocumentParser.h"
 #include "ModuleParser.h"
@@ -30,7 +30,7 @@ using namespace ::ginga::nclconv;
 
 #include "ncl/NclDocument.h"
 #include "ncl/IPrivateBaseContext.h"
-using namespace ::br::pucrio::telemidia::ncl;
+using namespace ::ginga::ncl;
 
 #include "IDocumentConverter.h"
 

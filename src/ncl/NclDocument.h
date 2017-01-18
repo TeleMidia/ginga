@@ -18,38 +18,34 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NCLDOCUMENT_H_
 #define NCLDOCUMENT_H_
 
-extern "C" {
-	#include <assert.h>
-}
+#include "Rule.h"
+#include "RuleBase.h"
+using namespace ::ginga::ncl;
 
-#include "switches/Rule.h"
-#include "switches/RuleBase.h"
-using namespace ::br::pucrio::telemidia::ncl::switches;
+#include "ContextNode.h"
+#include "Node.h"
+#include "NodeEntity.h"
+using namespace ::ginga::ncl;
 
-#include "components/ContextNode.h"
-#include "components/Node.h"
-#include "components/NodeEntity.h"
-using namespace ::br::pucrio::telemidia::ncl::components;
+#include "Connector.h"
+#include "ConnectorBase.h"
+using namespace ::ginga::ncl;
 
-#include "connectors/Connector.h"
-#include "connectors/ConnectorBase.h"
-using namespace ::br::pucrio::telemidia::ncl::connectors;
+#include "GenericDescriptor.h"
+#include "DescriptorBase.h"
+using namespace ::ginga::ncl;
 
-#include "descriptor/GenericDescriptor.h"
-#include "descriptor/DescriptorBase.h"
-using namespace ::br::pucrio::telemidia::ncl::descriptor;
+#include "LayoutRegion.h"
+#include "RegionBase.h"
+using namespace ::ginga::ncl;
 
-#include "layout/LayoutRegion.h"
-#include "layout/RegionBase.h"
-using namespace ::br::pucrio::telemidia::ncl::layout;
+#include "Transition.h"
+#include "TransitionBase.h"
+using namespace ::ginga::ncl;
 
-#include "transition/Transition.h"
-#include "transition/TransitionBase.h"
-using namespace ::br::pucrio::telemidia::ncl::transition;
-
-#include "metainformation/Meta.h"
-#include "metainformation/Metadata.h"
-using namespace ::br::pucrio::telemidia::ncl::metainformation;
+#include "Meta.h"
+#include "Metadata.h"
+using namespace ::ginga::ncl;
 
 #include "Base.h"
 
@@ -58,7 +54,7 @@ using namespace ::br::pucrio::telemidia::ncl::metainformation;
 #include <vector>
 using namespace std;
 
-BR_PUCRIO_TELEMIDIA_NCL_BEGIN
+GINGA_NCL_BEGIN
 
   class NclDocument {
 	private:
@@ -140,5 +136,5 @@ BR_PUCRIO_TELEMIDIA_NCL_BEGIN
 		void removeAllMetadata();
   };
 
-BR_PUCRIO_TELEMIDIA_NCL_END
+GINGA_NCL_END
 #endif /*NCLDOCUMENT_H_*/

@@ -18,11 +18,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _EXECUTIONOBJECTSWITCH_H_
 #define _EXECUTIONOBJECTSWITCH_H_
 
-#include "ncl/components/Node.h"
-using namespace ::br::pucrio::telemidia::ncl::components;
+#include "ncl/Node.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/interfaces/LambdaAnchor.h"
-using namespace ::br::pucrio::telemidia::ncl::interfaces;
+#include "ncl/LambdaAnchor.h"
+using namespace ::ginga::ncl;
 
 #include "CompositeExecutionObject.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;

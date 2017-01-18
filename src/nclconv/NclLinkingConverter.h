@@ -19,27 +19,27 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NclLinkingConverter_H
 
 #include "ncl/Parameter.h"
-using namespace ::br::pucrio::telemidia::ncl;
+using namespace ::ginga::ncl;
 
-#include "ncl/descriptor/GenericDescriptor.h"
-using namespace ::br::pucrio::telemidia::ncl::descriptor;
+#include "ncl/GenericDescriptor.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/connectors/CausalConnector.h"
-#include "ncl/connectors/Connector.h"
-#include "ncl/connectors/Role.h"
-using namespace ::br::pucrio::telemidia::ncl::connectors;
+#include "ncl/CausalConnector.h"
+#include "ncl/Connector.h"
+#include "ncl/Role.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/components/CompositeNode.h"
-#include "ncl/components/NodeEntity.h"
-using namespace ::br::pucrio::telemidia::ncl::components;
+#include "ncl/CompositeNode.h"
+#include "ncl/NodeEntity.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/link/CausalLink.h"
-#include "ncl/link/Bind.h"
-#include "ncl/link/Link.h"
-using namespace ::br::pucrio::telemidia::ncl::link;
+#include "ncl/CausalLink.h"
+#include "ncl/Bind.h"
+#include "ncl/Link.h"
+using namespace ::ginga::ncl;
 
 #include "ncl/NclDocument.h"
-using namespace ::br::pucrio::telemidia::ncl;
+using namespace ::ginga::ncl;
 
 #include "DocumentParser.h"
 #include "ModuleParser.h"

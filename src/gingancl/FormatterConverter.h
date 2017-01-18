@@ -18,37 +18,37 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTERCONVERTER_H_
 #define FORMATTERCONVERTER_H_
 
-#include "ncl/switches/SwitchNode.h"
-using namespace ::br::pucrio::telemidia::ncl::switches;
+#include "ncl/SwitchNode.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/interfaces/PropertyAnchor.h"
-#include "ncl/interfaces/ContentAnchor.h"
-#include "ncl/interfaces/LambdaAnchor.h"
-#include "ncl/interfaces/SwitchPort.h"
-#include "ncl/interfaces/Port.h"
-#include "ncl/interfaces/InterfacePoint.h"
-using namespace ::br::pucrio::telemidia::ncl::interfaces;
+#include "ncl/PropertyAnchor.h"
+#include "ncl/ContentAnchor.h"
+#include "ncl/LambdaAnchor.h"
+#include "ncl/SwitchPort.h"
+#include "ncl/Port.h"
+#include "ncl/InterfacePoint.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/components/CompositeNode.h"
-#include "ncl/components/ContextNode.h"
-#include "ncl/components/ContentNode.h"
-#include "ncl/components/Node.h"
-#include "ncl/components/NodeEntity.h"
-using namespace ::br::pucrio::telemidia::ncl::components;
+#include "ncl/CompositeNode.h"
+#include "ncl/ContextNode.h"
+#include "ncl/ContentNode.h"
+#include "ncl/Node.h"
+#include "ncl/NodeEntity.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/connectors/EventUtil.h"
-using namespace ::br::pucrio::telemidia::ncl::connectors;
+#include "ncl/EventUtil.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/descriptor/GenericDescriptor.h"
-using namespace ::br::pucrio::telemidia::ncl::descriptor;
+#include "ncl/GenericDescriptor.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/link/Bind.h"
-#include "ncl/link/CausalLink.h"
-#include "ncl/link/Link.h"
-using namespace ::br::pucrio::telemidia::ncl::link;
+#include "ncl/Bind.h"
+#include "ncl/CausalLink.h"
+#include "ncl/Link.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/reuse/ReferNode.h"
-using namespace ::br::pucrio::telemidia::ncl::reuse;
+#include "ncl/ReferNode.h"
+using namespace ::ginga::ncl;
 
 #include "model/ExecutionObjectSwitch.h"
 #include "model/SwitchEvent.h"

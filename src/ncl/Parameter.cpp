@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/Parameter.h"
 
-BR_PUCRIO_TELEMIDIA_NCL_BEGIN
+GINGA_NCL_BEGIN
 
 	Parameter::Parameter(string n, string v) {
 		name = n;
@@ -46,4 +46,4 @@ BR_PUCRIO_TELEMIDIA_NCL_BEGIN
 		value = v;
 	}
 
-BR_PUCRIO_TELEMIDIA_NCL_END
+GINGA_NCL_END

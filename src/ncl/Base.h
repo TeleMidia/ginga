@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-BR_PUCRIO_TELEMIDIA_NCL_BEGIN
+GINGA_NCL_BEGIN
 
 class Base
 {
@@ -54,6 +54,6 @@ public:
   bool instanceOf(string s);
 };
 
-BR_PUCRIO_TELEMIDIA_NCL_END
+GINGA_NCL_END
 
 #endif /* BASE_H */

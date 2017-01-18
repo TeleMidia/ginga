@@ -119,6 +119,8 @@ typedef unsigned int GingaProviderID;
 #define GINGA_MB_END            NS_END2
 #define GINGA_MULTIDEVICE_BEGIN NS_BEGIN2 (ginga, multidevice)
 #define GINGA_MULTIDEVICE_END   NS_END2
+#define GINGA_NCL_BEGIN         NS_BEGIN2 (ginga, ncl)
+#define GINGA_NCL_END           NS_END2
 #define GINGA_NCLCONV_BEGIN     NS_BEGIN2 (ginga, nclconv)
 #define GINGA_NCLCONV_END       NS_END2
 #define GINGA_PLAYER_BEGIN      NS_BEGIN2 (ginga, player)
@@ -366,89 +368,5 @@ typedef unsigned int GingaProviderID;
 
 #define BR_PUCRIO_TELEMIDIA_GINGA_NCL_PREFETCH_END\
   NS_END6
-
-#define BR_PUCRIO_TELEMIDIA_NCL_ANIMATION_BEGIN\
-  NS_BEGIN5 (br, pucrio, telemidia, ncl, animation)
-
-#define BR_PUCRIO_TELEMIDIA_NCL_ANIMATION_END\
-  NS_END5
-
-#define BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_BEGIN\
-  NS_BEGIN5 (br, pucrio, telemidia, ncl, components)
-
-#define BR_PUCRIO_TELEMIDIA_NCL_COMPONENTS_END\
-  NS_END5
-
-#define BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_BEGIN\
-  NS_BEGIN5 (br, pucrio, telemidia, ncl, connectors)
-
-#define BR_PUCRIO_TELEMIDIA_NCL_CONNECTORS_END\
-  NS_END5
-
-#define BR_PUCRIO_TELEMIDIA_NCL_DESCRIPTOR_BEGIN\
-  NS_BEGIN5 (br, pucrio, telemidia, ncl, descriptor)
-
-#define BR_PUCRIO_TELEMIDIA_NCL_DESCRIPTOR_END\
-  NS_END5
-
-#define BR_PUCRIO_TELEMIDIA_NCL_BEGIN\
-  NS_BEGIN4 (br, pucrio, telemidia, ncl)
-
-#define BR_PUCRIO_TELEMIDIA_NCL_END\
-  NS_END4
-
-#define BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_BEGIN\
-  NS_BEGIN5 (br, pucrio, telemidia, ncl, interfaces)
-
-#define BR_PUCRIO_TELEMIDIA_NCL_INTERFACES_END\
-  NS_END5
-
-#define BR_PUCRIO_TELEMIDIA_NCL_LAYOUT_BEGIN\
-  NS_BEGIN5 (br, pucrio, telemidia, ncl, layout)
-
-#define BR_PUCRIO_TELEMIDIA_NCL_LAYOUT_END\
-  NS_END5
-
-#define BR_PUCRIO_TELEMIDIA_NCL_LINK_BEGIN\
-  NS_BEGIN5 (br, pucrio, telemidia, ncl, link)
-
-#define BR_PUCRIO_TELEMIDIA_NCL_LINK_END\
-  NS_END5
-
-#define BR_PUCRIO_TELEMIDIA_NCL_METAINFORMATION_BEGIN\
-  NS_BEGIN5 (br, pucrio, telemidia, ncl, metainformation)
-
-#define BR_PUCRIO_TELEMIDIA_NCL_METAINFORMATION_END\
-  NS_END5
-
-#define BR_PUCRIO_TELEMIDIA_NCL_NAVIGATION_BEGIN\
-  NS_BEGIN5 (br, pucrio, telemidia, ncl, navigation)
-
-#define BR_PUCRIO_TELEMIDIA_NCL_NAVIGATION_END\
-  NS_END5
-
-#define BR_PUCRIO_TELEMIDIA_NCL_REUSE_BEGIN\
-  NS_BEGIN5 (br, pucrio, telemidia, ncl, reuse)
-
-#define BR_PUCRIO_TELEMIDIA_NCL_REUSE_END\
-  NS_END5
-
-#define BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_BEGIN\
-  NS_BEGIN5 (br, pucrio, telemidia, ncl, switches)
-
-#define BR_PUCRIO_TELEMIDIA_NCL_SWITCHES_END\
-  NS_END5
-
-#define BR_PUCRIO_TELEMIDIA_NCL_TRANSITION_BEGIN\
-  NS_BEGIN5 (br, pucrio, telemidia, ncl, transition)
-
-#define BR_PUCRIO_TELEMIDIA_NCL_TRANSITION_END\
-  NS_END5
-
-#define BR_PUCRIO_TELEMIDIA_NCL_UTIL_BEGIN\
-  NS_BEGIN5 (br, pucrio, telemidia, ncl, util)
-
-#define BR_PUCRIO_TELEMIDIA_NCL_UTIL_END\
-  NS_END5
 
 #endif /* GINGA_H */

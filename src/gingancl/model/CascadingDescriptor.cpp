@@ -19,9 +19,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "CascadingDescriptor.h"
 #include "FormatterLayout.h"
 
-#include "ncl/components/ContentNode.h"
-#include "ncl/components/NodeEntity.h"
-using namespace ::br::pucrio::telemidia::ncl::components;
+#include "ncl/ContentNode.h"
+#include "ncl/NodeEntity.h"
+using namespace ::ginga::ncl;
 
 #include "ExecutionObject.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;

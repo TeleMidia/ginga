@@ -18,36 +18,36 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTERLINKCONVERTER_H_
 #define FORMATTERLINKCONVERTER_H_
 
-#include "ncl/connectors/Action.h"
-#include "ncl/connectors/AssessmentStatement.h"
-#include "ncl/connectors/CausalConnector.h"
-#include "ncl/connectors/ValueAssessment.h"
-#include "ncl/connectors/CompoundAction.h"
-#include "ncl/connectors/CompoundStatement.h"
-#include "ncl/connectors/CompoundCondition.h"
-#include "ncl/connectors/ConditionExpression.h"
-#include "ncl/connectors/AttributeAssessment.h"
-#include "ncl/connectors/Role.h"
-#include "ncl/connectors/SimpleAction.h"
-#include "ncl/connectors/SimpleCondition.h"
-#include "ncl/connectors/Statement.h"
-#include "ncl/connectors/TriggerExpression.h"
-#include "ncl/connectors/EventUtil.h"
-using namespace ::br::pucrio::telemidia::ncl::connectors;
+#include "ncl/Action.h"
+#include "ncl/AssessmentStatement.h"
+#include "ncl/CausalConnector.h"
+#include "ncl/ValueAssessment.h"
+#include "ncl/CompoundAction.h"
+#include "ncl/CompoundStatement.h"
+#include "ncl/CompoundCondition.h"
+#include "ncl/ConditionExpression.h"
+#include "ncl/AttributeAssessment.h"
+#include "ncl/Role.h"
+#include "ncl/SimpleAction.h"
+#include "ncl/SimpleCondition.h"
+#include "ncl/Statement.h"
+#include "ncl/TriggerExpression.h"
+#include "ncl/EventUtil.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/link/Bind.h"
-#include "ncl/link/CausalLink.h"
-#include "ncl/link/Link.h"
-using namespace ::br::pucrio::telemidia::ncl::link;
+#include "ncl/Bind.h"
+#include "ncl/CausalLink.h"
+#include "ncl/Link.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/components/Node.h"
-using namespace ::br::pucrio::telemidia::ncl::components;
+#include "ncl/Node.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/interfaces/InterfacePoint.h"
-using namespace ::br::pucrio::telemidia::ncl::interfaces;
+#include "ncl/InterfacePoint.h"
+using namespace ::ginga::ncl;
 
 #include "ncl/Parameter.h"
-using namespace ::br::pucrio::telemidia::ncl;
+using namespace ::ginga::ncl;
 
 #include "model/FormatterCausalLink.h"
 #include "model/LinkAction.h"

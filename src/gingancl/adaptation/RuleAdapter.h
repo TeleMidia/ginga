@@ -26,22 +26,22 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 #include "gingancl/model/ExecutionObjectSwitch.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::switches;
 
-#include "ncl/descriptor/GenericDescriptor.h"
-using namespace ::br::pucrio::telemidia::ncl::descriptor;
+#include "ncl/GenericDescriptor.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/switches/DescriptorSwitch.h"
-#include "ncl/switches/CompositeRule.h"
-#include "ncl/switches/Rule.h"
-#include "ncl/switches/SimpleRule.h"
-#include "ncl/switches/SwitchNode.h"
-using namespace ::br::pucrio::telemidia::ncl::switches;
+#include "ncl/DescriptorSwitch.h"
+#include "ncl/CompositeRule.h"
+#include "ncl/Rule.h"
+#include "ncl/SimpleRule.h"
+#include "ncl/SwitchNode.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/util/Comparator.h"
-using namespace ::br::pucrio::telemidia::ncl::util;
+#include "ncl/Comparator.h"
+using namespace ::ginga::ncl;
 
 
-#include "ncl/components/Node.h"
-using namespace ::br::pucrio::telemidia::ncl::components;
+#include "ncl/Node.h"
+using namespace ::ginga::ncl;
 
 #include "util/Observer.h"
 

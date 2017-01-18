@@ -30,10 +30,10 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 #include "gingancl/model/SelectionEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
-#include "ncl/components/NodeEntity.h"
-#include "ncl/components/Content.h"
-#include "ncl/components/ReferenceContent.h"
-using namespace ::br::pucrio::telemidia::ncl::components;
+#include "ncl/NodeEntity.h"
+#include "ncl/Content.h"
+#include "ncl/ReferenceContent.h"
+using namespace ::ginga::ncl;
 
 #include "FormatterPlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;

@@ -33,8 +33,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl;
 #include "mb/CodeMap.h"
 using namespace ::ginga::mb;
 
-#include "ncl/layout/DeviceLayout.h"
-using namespace ::br::pucrio::telemidia::ncl::layout;
+#include "ncl/DeviceLayout.h"
+using namespace ::ginga::ncl;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
 

@@ -20,17 +20,17 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ncl/NclDocument.h"
 #include "ncl/NclDocument.h"
-using namespace ::br::pucrio::telemidia::ncl;
+using namespace ::ginga::ncl;
 
-#include "ncl/transition/TransitionBase.h"
-using namespace ::br::pucrio::telemidia::ncl::transition;
+#include "ncl/TransitionBase.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/metainformation/Meta.h"
-#include "ncl/metainformation/Metadata.h"
-using namespace ::br::pucrio::telemidia::ncl::metainformation;
+#include "ncl/Meta.h"
+#include "ncl/Metadata.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/components/ContextNode.h"
-using namespace ::br::pucrio::telemidia::ncl::components;
+#include "ncl/ContextNode.h"
+using namespace ::ginga::ncl;
 
 #include "DocumentParser.h"
 #include "ModuleParser.h"

@@ -58,25 +58,25 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::application;
 #include "adapters/PlayerAdapterManager.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;
 
-#include "ncl/connectors/SimpleAction.h"
-#include "ncl/connectors/EventUtil.h"
-using namespace ::br::pucrio::telemidia::ncl::connectors;
+#include "ncl/SimpleAction.h"
+#include "ncl/EventUtil.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/components/CompositeNode.h"
-#include "ncl/components/ContentNode.h"
-#include "ncl/components/Node.h"
-#include "ncl/components/NodeEntity.h"
-using namespace ::br::pucrio::telemidia::ncl::components;
+#include "ncl/CompositeNode.h"
+#include "ncl/ContentNode.h"
+#include "ncl/Node.h"
+#include "ncl/NodeEntity.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/interfaces/Port.h"
-#include "ncl/interfaces/Anchor.h"
-#include "ncl/interfaces/ContentAnchor.h"
-#include "ncl/interfaces/PropertyAnchor.h"
-#include "ncl/interfaces/SwitchPort.h"
-using namespace ::br::pucrio::telemidia::ncl::interfaces;
+#include "ncl/Port.h"
+#include "ncl/Anchor.h"
+#include "ncl/ContentAnchor.h"
+#include "ncl/PropertyAnchor.h"
+#include "ncl/SwitchPort.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/reuse/ReferNode.h"
-using namespace ::br::pucrio::telemidia::ncl::reuse;
+#include "ncl/ReferNode.h"
+using namespace ::ginga::ncl;
 
 #include "FormatterFocusManager.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::focus;

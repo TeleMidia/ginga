@@ -28,12 +28,12 @@ using namespace ::br::pucrio::telemidia::ginga::core::tuning;
 #include "player/IProgramAV.h"
 #include "player/IApplicationPlayer.h"
 
-#include "ncl/layout/LayoutRegion.h"
-using namespace ::br::pucrio::telemidia::ncl::layout;
+#include "ncl/LayoutRegion.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/components/ContentTypeManager.h"
+#include "ncl/ContentTypeManager.h"
 #include "ncl/NclDocument.h"
-using namespace ::br::pucrio::telemidia::ncl;
+using namespace ::ginga::ncl;
 
 #include "system/GingaLocatorFactory.h"
 

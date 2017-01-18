@@ -22,15 +22,15 @@ extern "C" {
 #include <assert.h>
 }
 
-#include "ncl/components/Node.h"
-#include "ncl/components/ContextNode.h"
-using namespace ::br::pucrio::telemidia::ncl::components;
+#include "ncl/Node.h"
+#include "ncl/ContextNode.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/connectors/EventUtil.h"
-using namespace ::br::pucrio::telemidia::ncl::connectors;
+#include "ncl/EventUtil.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/link/Link.h"
-using namespace ::br::pucrio::telemidia::ncl::link;
+#include "ncl/Link.h"
+using namespace ::ginga::ncl;
 
 #include "IEventListener.h"
 #include "FormatterEvent.h"

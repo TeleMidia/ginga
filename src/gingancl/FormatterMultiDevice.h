@@ -49,13 +49,13 @@ public:
 };
 #endif //WITH_MULTIDEVICE
 
-#include "ncl/layout/LayoutRegion.h"
-using namespace ::br::pucrio::telemidia::ncl::layout;
+#include "ncl/LayoutRegion.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/components/Content.h"
-#include "ncl/components/NodeEntity.h"
-#include "ncl/components/ReferenceContent.h"
-using namespace ::br::pucrio::telemidia::ncl::components;
+#include "ncl/Content.h"
+#include "ncl/NodeEntity.h"
+#include "ncl/ReferenceContent.h"
+using namespace ::ginga::ncl;
 
 #include "model/CascadingDescriptor.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
@@ -68,8 +68,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;
 
 #include "adaptation/ContextBase.h"
 
-#include "ncl/layout/IDeviceLayout.h"
-using namespace ::br::pucrio::telemidia::ncl::layout;
+#include "ncl/IDeviceLayout.h"
+using namespace ::ginga::ncl;
 
 #include "player/IPlayer.h"
 #include "player/IPlayerListener.h"

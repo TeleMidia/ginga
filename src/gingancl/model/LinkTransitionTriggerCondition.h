@@ -21,8 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <vector>
 using namespace std;
 
-#include "ncl/link/Bind.h"
-using namespace ::br::pucrio::telemidia::ncl::link;
+#include "ncl/Bind.h"
+using namespace ::ginga::ncl;
 
 #include "FormatterEvent.h"
 #include "IEventListener.h"

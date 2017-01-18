@@ -18,8 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _ATTRIBUTEEVENT_H_
 #define _ATTRIBUTEEVENT_H_
 
-#include "ncl/interfaces/PropertyAnchor.h"
-using namespace ::br::pucrio::telemidia::ncl::interfaces;
+#include "ncl/PropertyAnchor.h"
+using namespace ::ginga::ncl;
 
 #include "gingancl/adaptation/PresentationContext.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adaptation::context;

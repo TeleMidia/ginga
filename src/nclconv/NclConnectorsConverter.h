@@ -21,32 +21,32 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 
 #include "ncl/Parameter.h"
-using namespace ::br::pucrio::telemidia::ncl;
+using namespace ::ginga::ncl;
 
-#include "ncl/animation/Animation.h"
-using namespace ::br::pucrio::telemidia::ncl::animation;
+#include "ncl/Animation.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/connectors/EventUtil.h"
-#include "ncl/connectors/ValueAssessment.h"
-#include "ncl/connectors/CompoundAction.h"
-#include "ncl/connectors/CompoundCondition.h"
-#include "ncl/connectors/CompoundStatement.h"
-#include "ncl/connectors/CausalConnector.h"
-#include "ncl/connectors/AttributeAssessment.h"
-#include "ncl/connectors/AssessmentStatement.h"
-#include "ncl/connectors/SimpleAction.h"
-#include "ncl/connectors/SimpleCondition.h"
-#include "ncl/connectors/ConnectorBase.h"
-using namespace ::br::pucrio::telemidia::ncl::connectors;
+#include "ncl/EventUtil.h"
+#include "ncl/ValueAssessment.h"
+#include "ncl/CompoundAction.h"
+#include "ncl/CompoundCondition.h"
+#include "ncl/CompoundStatement.h"
+#include "ncl/CausalConnector.h"
+#include "ncl/AttributeAssessment.h"
+#include "ncl/AssessmentStatement.h"
+#include "ncl/SimpleAction.h"
+#include "ncl/SimpleCondition.h"
+#include "ncl/ConnectorBase.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/util/Comparator.h"
-using namespace ::br::pucrio::telemidia::ncl::util;
+#include "ncl/Comparator.h"
+using namespace ::ginga::ncl;
 
 #include "util/functions.h"
 using namespace ::ginga::util;
 
 #include "ncl/NclDocument.h"
-using namespace ::br::pucrio::telemidia::ncl;
+using namespace ::ginga::ncl;
 
 #include "DocumentParser.h"
 using namespace ::ginga::nclconv;

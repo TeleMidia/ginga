@@ -21,11 +21,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/CodeMap.h"
 using namespace ::ginga::mb;
 
-#include "ncl/interfaces/ContentAnchor.h"
-using namespace ::br::pucrio::telemidia::ncl::interfaces;
+#include "ncl/ContentAnchor.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/connectors/EventUtil.h"
-using namespace ::br::pucrio::telemidia::ncl::connectors;
+#include "ncl/EventUtil.h"
+using namespace ::ginga::ncl;
 
 #include "AnchorEvent.h"
 

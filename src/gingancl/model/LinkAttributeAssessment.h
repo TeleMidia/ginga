@@ -18,8 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef LINKATTRIBUTEASSESSMENT_H_
 #define LINKATTRIBUTEASSESSMENT_H_
 
-#include "ncl/connectors/EventUtil.h"
-using namespace ::br::pucrio::telemidia::ncl::connectors;
+#include "ncl/EventUtil.h"
+using namespace ::ginga::ncl;
 
 #include "AttributionEvent.h"
 #include "FormatterEvent.h"

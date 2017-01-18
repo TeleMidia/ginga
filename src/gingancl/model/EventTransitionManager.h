@@ -21,12 +21,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include "ncl/interfaces/RelativeTimeIntervalAnchor.h"
-#include "ncl/interfaces/SampleIntervalAnchor.h"
-using namespace ::br::pucrio::telemidia::ncl::interfaces;
+#include "ncl/RelativeTimeIntervalAnchor.h"
+#include "ncl/SampleIntervalAnchor.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/connectors/EventUtil.h"
-using namespace ::br::pucrio::telemidia::ncl::connectors;
+#include "ncl/EventUtil.h"
+using namespace ::ginga::ncl;
 
 #include "player/IPlayer.h"
 using namespace ::ginga::player;

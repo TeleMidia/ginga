@@ -27,9 +27,9 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 #include "gingancl/model/SelectionEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
-#include "ncl/components/Content.h"
-#include "ncl/components/ReferenceContent.h"
-using namespace ::br::pucrio::telemidia::ncl::components;
+#include "ncl/Content.h"
+#include "ncl/ReferenceContent.h"
+using namespace ::ginga::ncl;
 
 #include "player/IProgramAV.h"
 using namespace ::ginga::player;

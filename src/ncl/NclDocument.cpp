@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/NclDocument.h"
 
-BR_PUCRIO_TELEMIDIA_NCL_BEGIN
+GINGA_NCL_BEGIN
 
 	NclDocument::NclDocument(string id, string docLocation) {
 		this->id            = id;
@@ -594,4 +594,4 @@ BR_PUCRIO_TELEMIDIA_NCL_BEGIN
 		metadataList.clear();
 	}
 
-BR_PUCRIO_TELEMIDIA_NCL_END
+GINGA_NCL_END

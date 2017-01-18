@@ -19,12 +19,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NclTransitionConverter_H
 
 #include "ncl/NclDocument.h"
-using namespace ::br::pucrio::telemidia::ncl;
+using namespace ::ginga::ncl;
 
-#include "ncl/transition/Transition.h"
-#include "ncl/transition/TransitionBase.h"
-#include "ncl/transition/TransitionUtil.h"
-using namespace ::br::pucrio::telemidia::ncl::transition;
+#include "ncl/Transition.h"
+#include "ncl/TransitionBase.h"
+#include "ncl/TransitionUtil.h"
+using namespace ::ginga::ncl;
 
 #include "DocumentParser.h"
 using namespace ::ginga::nclconv;
