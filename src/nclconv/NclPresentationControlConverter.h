@@ -18,29 +18,29 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NclPresentationControlConverter_H
 #define NclPresentationControlConverter_H
 
-#include "ncl/reuse/ReferNode.h"
-#include "ncl/reuse/ReferredNode.h"
-using namespace ::br::pucrio::telemidia::ncl::reuse;
+#include "ncl/ReferNode.h"
+#include "ncl/ReferredNode.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/descriptor/Descriptor.h"
-using namespace ::br::pucrio::telemidia::ncl::descriptor;
+#include "ncl/Descriptor.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/switches/DescriptorSwitch.h"
-#include "ncl/switches/SwitchNode.h"
-#include "ncl/switches/CompositeRule.h"
-#include "ncl/switches/SimpleRule.h"
-#include "ncl/switches/Rule.h"
-#include "ncl/switches/RuleBase.h"
-using namespace ::br::pucrio::telemidia::ncl::switches;
+#include "ncl/DescriptorSwitch.h"
+#include "ncl/SwitchNode.h"
+#include "ncl/CompositeRule.h"
+#include "ncl/SimpleRule.h"
+#include "ncl/Rule.h"
+#include "ncl/RuleBase.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/interfaces/Port.h"
-using namespace ::br::pucrio::telemidia::ncl::interfaces;
+#include "ncl/Port.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/util/Comparator.h"
-using namespace ::br::pucrio::telemidia::ncl::util;
+#include "ncl/Comparator.h"
+using namespace ::ginga::ncl;
 
 #include "ncl/NclDocument.h"
-using namespace ::br::pucrio::telemidia::ncl;
+using namespace ::ginga::ncl;
 
 #include <map>
 #include <string>

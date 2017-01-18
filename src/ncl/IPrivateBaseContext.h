@@ -18,13 +18,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IPrivateBaseContext_H_
 #define IPrivateBaseContext_H_
 
-#include "layout/IDeviceLayout.h"
-using namespace ::br::pucrio::telemidia::ncl::layout;
+#include "IDeviceLayout.h"
+using namespace ::ginga::ncl;
 
 #include <string>
 using namespace std;
 
-BR_PUCRIO_TELEMIDIA_NCL_BEGIN
+GINGA_NCL_BEGIN
 
   class IPrivateBaseContext {
 	public:
@@ -34,5 +34,5 @@ BR_PUCRIO_TELEMIDIA_NCL_BEGIN
 				string location, IDeviceLayout* deviceLayout)=0;
   };
 
-BR_PUCRIO_TELEMIDIA_NCL_END
+GINGA_NCL_END
 #endif /*IPrivateBaseContext_H_*/

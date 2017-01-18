@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/Base.h"
 
-BR_PUCRIO_TELEMIDIA_NCL_BEGIN
+GINGA_NCL_BEGIN
 
 	set<Base*> Base::baseInstances;
 	pthread_mutex_t Base::biMutex;
@@ -209,4 +209,4 @@ BR_PUCRIO_TELEMIDIA_NCL_BEGIN
 		}
 	}
 
-BR_PUCRIO_TELEMIDIA_NCL_END
+GINGA_NCL_END

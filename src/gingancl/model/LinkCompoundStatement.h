@@ -23,8 +23,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
-#include "ncl/connectors/CompoundStatement.h"
-using namespace ::br::pucrio::telemidia::ncl::connectors;
+#include "ncl/CompoundStatement.h"
+using namespace ::ginga::ncl;
 
 #include <vector>
 using namespace std;

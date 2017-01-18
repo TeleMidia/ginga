@@ -18,9 +18,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NclMetainformationConverter_H
 #define NclMetainformationConverter_H
 
-#include "ncl/metainformation/Meta.h"
-#include "ncl/metainformation/Metadata.h"
-using namespace ::br::pucrio::telemidia::ncl::metainformation;
+#include "ncl/Meta.h"
+#include "ncl/Metadata.h"
+using namespace ::ginga::ncl;
 
 #include "DocumentParser.h"
 using namespace ::ginga::nclconv;

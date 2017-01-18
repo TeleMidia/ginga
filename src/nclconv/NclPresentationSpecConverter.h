@@ -25,31 +25,31 @@ using namespace std;
 #include "util/Color.h"
 
 #include "ncl/Parameter.h"
-using namespace ::br::pucrio::telemidia::ncl;
+using namespace ::ginga::ncl;
 
-#include "ncl/descriptor/GenericDescriptor.h"
-#include "ncl/descriptor/Descriptor.h"
-#include "ncl/descriptor/DescriptorBase.h"
-using namespace ::br::pucrio::telemidia::ncl::descriptor;
+#include "ncl/GenericDescriptor.h"
+#include "ncl/Descriptor.h"
+#include "ncl/DescriptorBase.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/switches/Rule.h"
-#include "ncl/switches/RuleBase.h"
-using namespace ::br::pucrio::telemidia::ncl::switches;
+#include "ncl/Rule.h"
+#include "ncl/RuleBase.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/layout/LayoutRegion.h"
-#include "ncl/layout/RegionBase.h"
-using namespace ::br::pucrio::telemidia::ncl::layout;
+#include "ncl/LayoutRegion.h"
+#include "ncl/RegionBase.h"
+using namespace ::ginga::ncl;
 
 #include "ncl/NclDocument.h"
-using namespace ::br::pucrio::telemidia::ncl;
+using namespace ::ginga::ncl;
 
-#include "ncl/navigation/FocusDecoration.h"
-#include "ncl/navigation/KeyNavigation.h"
-using namespace ::br::pucrio::telemidia::ncl::navigation;
+#include "ncl/FocusDecoration.h"
+#include "ncl/KeyNavigation.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/transition/Transition.h"
-#include "ncl/transition/TransitionBase.h"
-using namespace ::br::pucrio::telemidia::ncl::transition;
+#include "ncl/Transition.h"
+#include "ncl/TransitionBase.h"
+using namespace ::ginga::ncl;
 
 #include "DocumentParser.h"
 #include "ModuleParser.h"

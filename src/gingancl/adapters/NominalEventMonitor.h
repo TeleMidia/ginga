@@ -28,10 +28,10 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::time;
 #include "player/IPlayer.h"
 using namespace ::ginga::player;
 
-#include "ncl/interfaces/ContentAnchor.h"
-#include "ncl/interfaces/LambdaAnchor.h"
-#include "ncl/interfaces/IntervalAnchor.h"
-using namespace ::br::pucrio::telemidia::ncl::interfaces;
+#include "ncl/ContentAnchor.h"
+#include "ncl/LambdaAnchor.h"
+#include "ncl/IntervalAnchor.h"
+using namespace ::ginga::ncl;
 
 #include "gingancl/model/PresentationEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;

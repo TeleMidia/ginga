@@ -18,47 +18,47 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PrivateBaseContext_H_
 #define PrivateBaseContext_H_
 
-#include "ncl/components/PrivateBase.h"
-#include "ncl/components/ContextNode.h"
-#include "ncl/components/Node.h"
-#include "ncl/components/ReferenceContent.h"
-using namespace ::br::pucrio::telemidia::ncl::components;
+#include "ncl/PrivateBase.h"
+#include "ncl/ContextNode.h"
+#include "ncl/Node.h"
+#include "ncl/ReferenceContent.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/switches/Rule.h"
-#include "ncl/switches/SwitchNode.h"
-#include "ncl/switches/RuleBase.h"
-using namespace ::br::pucrio::telemidia::ncl::switches;
+#include "ncl/Rule.h"
+#include "ncl/SwitchNode.h"
+#include "ncl/RuleBase.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/interfaces/SwitchPort.h"
-#include "ncl/interfaces/Anchor.h"
-#include "ncl/interfaces/InterfacePoint.h"
-#include "ncl/interfaces/Port.h"
-using namespace ::br::pucrio::telemidia::ncl::interfaces;
+#include "ncl/SwitchPort.h"
+#include "ncl/Anchor.h"
+#include "ncl/InterfacePoint.h"
+#include "ncl/Port.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/connectors/Connector.h"
-#include "ncl/connectors/ConnectorBase.h"
-using namespace ::br::pucrio::telemidia::ncl::connectors;
+#include "ncl/Connector.h"
+#include "ncl/ConnectorBase.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/layout/IDeviceLayout.h"
-#include "ncl/layout/LayoutRegion.h"
-#include "ncl/layout/RegionBase.h"
-using namespace ::br::pucrio::telemidia::ncl::layout;
+#include "ncl/IDeviceLayout.h"
+#include "ncl/LayoutRegion.h"
+#include "ncl/RegionBase.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/descriptor/GenericDescriptor.h"
-#include "ncl/descriptor/DescriptorBase.h"
-using namespace ::br::pucrio::telemidia::ncl::descriptor;
+#include "ncl/GenericDescriptor.h"
+#include "ncl/DescriptorBase.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/link/Link.h"
-using namespace ::br::pucrio::telemidia::ncl::link;
+#include "ncl/Link.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/transition/Transition.h"
-#include "ncl/transition/TransitionBase.h"
-using namespace ::br::pucrio::telemidia::ncl::transition;
+#include "ncl/Transition.h"
+#include "ncl/TransitionBase.h"
+using namespace ::ginga::ncl;
 
 #include "ncl/Base.h"
 #include "ncl/NclDocument.h"
 #include "ncl/IPrivateBaseContext.h"
-using namespace ::br::pucrio::telemidia::ncl;
+using namespace ::ginga::ncl;
 
 #include <map>
 #include <vector>

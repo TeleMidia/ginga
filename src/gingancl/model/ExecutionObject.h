@@ -30,26 +30,26 @@ using namespace ::ginga::mb;
 #include "player/IPlayer.h"
 using namespace ::ginga::player;
 
-#include "ncl/animation/Animation.h"
-using namespace ::br::pucrio::telemidia::ncl::animation;
+#include "ncl/Animation.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/descriptor/GenericDescriptor.h"
-using namespace ::br::pucrio::telemidia::ncl::descriptor;
+#include "ncl/GenericDescriptor.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/components/ReferenceContent.h"
-using namespace ::br::pucrio::telemidia::ncl::components;
+#include "ncl/ReferenceContent.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/interfaces/LabeledAnchor.h"
-#include "ncl/interfaces/LambdaAnchor.h"
-#include "ncl/interfaces/IntervalAnchor.h"
-#include "ncl/interfaces/PropertyAnchor.h"
-using namespace ::br::pucrio::telemidia::ncl::interfaces;
+#include "ncl/LabeledAnchor.h"
+#include "ncl/LambdaAnchor.h"
+#include "ncl/IntervalAnchor.h"
+#include "ncl/PropertyAnchor.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/layout/LayoutRegion.h"
-using namespace ::br::pucrio::telemidia::ncl::layout;
+#include "ncl/LayoutRegion.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/connectors/EventUtil.h"
-using namespace ::br::pucrio::telemidia::ncl::connectors;
+#include "ncl/EventUtil.h"
+using namespace ::ginga::ncl;
 
 #include "FormatterEvent.h"
 #include "PresentationEvent.h"

@@ -21,8 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "model/AttributionEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
-#include "ncl/animation/Animation.h"
-using namespace ::br::pucrio::telemidia::ncl::animation;
+#include "ncl/Animation.h"
+using namespace ::ginga::ncl;
 
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;

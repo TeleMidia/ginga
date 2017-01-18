@@ -18,8 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _SWITCHEVENT_H_
 #define _SWITCHEVENT_H_
 
-#include "ncl/interfaces/InterfacePoint.h"
-using namespace ::br::pucrio::telemidia::ncl::interfaces;
+#include "ncl/InterfacePoint.h"
+using namespace ::ginga::ncl;
 
 #include "FormatterEvent.h"
 #include "IEventListener.h"

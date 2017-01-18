@@ -18,8 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _ANCHOREVENT_H_
 #define _ANCHOREVENT_H_
 
-#include "ncl/interfaces/ContentAnchor.h"
-using namespace ::br::pucrio::telemidia::ncl::interfaces;
+#include "ncl/ContentAnchor.h"
+using namespace ::ginga::ncl;
 
 #include "FormatterEvent.h"
 

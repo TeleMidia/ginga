@@ -25,8 +25,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::link;
 #include "FormatterMultiDevice.h"
 #include "gingancl/FormatterScheduler.h"
 
-#include "ncl/connectors/EventUtil.h"
-using namespace ::br::pucrio::telemidia::ncl::connectors;
+#include "ncl/EventUtil.h"
+using namespace ::ginga::ncl;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_BEGIN
 

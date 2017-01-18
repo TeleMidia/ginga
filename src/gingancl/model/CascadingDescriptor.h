@@ -22,24 +22,24 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/Color.h"
 
 #include "ncl/Parameter.h"
-using namespace ::br::pucrio::telemidia::ncl;
+using namespace ::ginga::ncl;
 
-#include "ncl/descriptor/Descriptor.h"
-#include "ncl/descriptor/GenericDescriptor.h"
-using namespace ::br::pucrio::telemidia::ncl::descriptor;
+#include "ncl/Descriptor.h"
+#include "ncl/GenericDescriptor.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/layout/LayoutRegion.h"
-using namespace ::br::pucrio::telemidia::ncl::layout;
+#include "ncl/LayoutRegion.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/switches/DescriptorSwitch.h"
-using namespace ::br::pucrio::telemidia::ncl::switches;
+#include "ncl/DescriptorSwitch.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/navigation/FocusDecoration.h"
-#include "ncl/navigation/KeyNavigation.h"
-using namespace ::br::pucrio::telemidia::ncl::navigation;
+#include "ncl/FocusDecoration.h"
+#include "ncl/KeyNavigation.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/transition/Transition.h"
-using namespace ::br::pucrio::telemidia::ncl::transition;
+#include "ncl/Transition.h"
+using namespace ::ginga::ncl;
 
 #include "FormatterRegion.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::presentation;

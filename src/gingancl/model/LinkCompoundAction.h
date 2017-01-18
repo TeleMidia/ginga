@@ -18,8 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _LINKCOMPOUNDACTION_H_
 #define _LINKCOMPOUNDACTION_H_
 
-#include "ncl/connectors/CompoundAction.h"
-using namespace ::br::pucrio::telemidia::ncl::connectors;
+#include "ncl/CompoundAction.h"
+using namespace ::ginga::ncl;
 
 #include "FormatterEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;

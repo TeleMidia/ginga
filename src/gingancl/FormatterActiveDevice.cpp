@@ -35,8 +35,8 @@ using namespace ::br::pucrio::telemidia::ginga::ncl;
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include "ncl/layout/DeviceLayout.h"
-using namespace ::br::pucrio::telemidia::ncl::layout;
+#include "ncl/DeviceLayout.h"
+using namespace ::ginga::ncl;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MULTIDEVICE_BEGIN
 

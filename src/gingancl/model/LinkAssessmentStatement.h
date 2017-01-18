@@ -25,8 +25,8 @@ using namespace std;
 #include "FormatterEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
-#include "ncl/util/Comparator.h"
-using namespace ::br::pucrio::telemidia::ncl::util;
+#include "ncl/Comparator.h"
+using namespace ::ginga::ncl;
 
 #include "LinkStatement.h"
 #include "LinkAssessment.h"

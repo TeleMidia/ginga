@@ -23,59 +23,59 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "player/Player.h"
 using namespace ::ginga::player;
 
-#include "ncl/components/ContextNode.h"
-#include "ncl/components/CompositeNode.h"
-#include "ncl/components/ContentNode.h"
-#include "ncl/components/Node.h"
-#include "ncl/components/NodeEntity.h"
-using namespace ::br::pucrio::telemidia::ncl::components;
+#include "ncl/ContextNode.h"
+#include "ncl/CompositeNode.h"
+#include "ncl/ContentNode.h"
+#include "ncl/Node.h"
+#include "ncl/NodeEntity.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/interfaces/Anchor.h"
-#include "ncl/interfaces/PropertyAnchor.h"
-#include "ncl/interfaces/Port.h"
-#include "ncl/interfaces/SwitchPort.h"
-#include "ncl/interfaces/InterfacePoint.h"
-using namespace ::br::pucrio::telemidia::ncl::interfaces;
+#include "ncl/Anchor.h"
+#include "ncl/PropertyAnchor.h"
+#include "ncl/Port.h"
+#include "ncl/SwitchPort.h"
+#include "ncl/InterfacePoint.h"
+using namespace ::ginga::ncl;
 
 #include "system/SystemCompat.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 
-#include "ncl/switches/Rule.h"
-using namespace ::br::pucrio::telemidia::ncl::switches;
+#include "ncl/Rule.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/descriptor/GenericDescriptor.h"
-using namespace ::br::pucrio::telemidia::ncl::descriptor;
+#include "ncl/GenericDescriptor.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/link/Bind.h"
-#include "ncl/link/CausalLink.h"
-#include "ncl/link/Link.h"
-using namespace ::br::pucrio::telemidia::ncl::link;
+#include "ncl/Bind.h"
+#include "ncl/CausalLink.h"
+#include "ncl/Link.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/connectors/EventUtil.h"
-#include "ncl/connectors/SimpleAction.h"
-#include "ncl/connectors/Connector.h"
-using namespace ::br::pucrio::telemidia::ncl::connectors;
+#include "ncl/EventUtil.h"
+#include "ncl/SimpleAction.h"
+#include "ncl/Connector.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/layout/LayoutRegion.h"
-using namespace ::br::pucrio::telemidia::ncl::layout;
+#include "ncl/LayoutRegion.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/reuse/ReferNode.h"
-using namespace ::br::pucrio::telemidia::ncl::reuse;
+#include "ncl/ReferNode.h"
+using namespace ::ginga::ncl;
 
 #include "util/functions.h"
 using namespace ::ginga::util;
 
 #include "ncl/Base.h"
 #include "ncl/NclDocument.h"
-#include "ncl/connectors/ConnectorBase.h"
-#include "ncl/descriptor/DescriptorBase.h"
-#include "ncl/layout/RegionBase.h"
-#include "ncl/switches/RuleBase.h"
-using namespace ::br::pucrio::telemidia::ncl;
+#include "ncl/ConnectorBase.h"
+#include "ncl/DescriptorBase.h"
+#include "ncl/RegionBase.h"
+#include "ncl/RuleBase.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/transition/Transition.h"
-#include "ncl/transition/TransitionBase.h"
-using namespace ::br::pucrio::telemidia::ncl::transition;
+#include "ncl/Transition.h"
+#include "ncl/TransitionBase.h"
+using namespace ::ginga::ncl;
 
 #include "model/CompositeExecutionObject.h"
 #include "model/ExecutionObject.h"

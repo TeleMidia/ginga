@@ -22,7 +22,7 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "util/functions.h"
 using namespace ::br::pucrio::telemidia;
 
-#include "ncl/layout/DeviceLayout.h"
+#include "ncl/DeviceLayout.h"
 #include "mb/LocalScreenManager.h"
 #include "mb/ScreenManagerFactory.h"
 #if WITH_MULTIDEVICE
@@ -36,8 +36,8 @@ using namespace ::br::pucrio::telemidia;
 
 using namespace ::ginga::mb;
 
-#include "ncl/layout/IDeviceLayout.h"
-using namespace ::br::pucrio::telemidia::ncl::layout;
+#include "ncl/IDeviceLayout.h"
+using namespace ::ginga::ncl;
 
 #include "mb/LocalScreenManager.h"
 using namespace ::ginga::mb;

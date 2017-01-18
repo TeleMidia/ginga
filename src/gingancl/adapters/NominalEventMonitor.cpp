@@ -18,8 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "NominalEventMonitor.h"
 
-#include "ncl/interfaces/SampleIntervalAnchor.h"
-using namespace ::br::pucrio::telemidia::ncl::interfaces;
+#include "ncl/SampleIntervalAnchor.h"
+using namespace ::ginga::ncl;
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_ADAPTERS_BEGIN
 

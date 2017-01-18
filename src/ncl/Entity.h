@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-BR_PUCRIO_TELEMIDIA_NCL_BEGIN
+GINGA_NCL_BEGIN
 
 class Entity
 {
@@ -51,6 +51,6 @@ public:
   virtual Entity *getDataEntity();
 };
 
-BR_PUCRIO_TELEMIDIA_NCL_END
+GINGA_NCL_END
 
 #endif /* ENTITY_H */

@@ -18,34 +18,34 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NclComponentsConverter_H
 #define NclComponentsConverter_H
 
-#include "ncl/reuse/ReferNode.h"
-#include "ncl/reuse/ReferredNode.h"
-using namespace ::br::pucrio::telemidia::ncl::reuse;
+#include "ncl/ReferNode.h"
+#include "ncl/ReferredNode.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/switches/SwitchNode.h"
-using namespace ::br::pucrio::telemidia::ncl::switches;
+#include "ncl/SwitchNode.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/descriptor/GenericDescriptor.h"
-using namespace ::br::pucrio::telemidia::ncl::descriptor;
+#include "ncl/GenericDescriptor.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/interfaces/Anchor.h"
-#include "ncl/interfaces/Port.h"
-using namespace ::br::pucrio::telemidia::ncl::interfaces;
+#include "ncl/Anchor.h"
+#include "ncl/Port.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/components/NodeEntity.h"
-#include "ncl/components/ContextNode.h"
-#include "ncl/components/ContentNode.h"
-#include "ncl/components/AbsoluteReferenceContent.h"
-using namespace ::br::pucrio::telemidia::ncl::components;
+#include "ncl/NodeEntity.h"
+#include "ncl/ContextNode.h"
+#include "ncl/ContentNode.h"
+#include "ncl/AbsoluteReferenceContent.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/link/Link.h"
-using namespace ::br::pucrio::telemidia::ncl::link;
+#include "ncl/Link.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/connectors/Role.h"
-using namespace ::br::pucrio::telemidia::ncl::connectors;
+#include "ncl/Role.h"
+using namespace ::ginga::ncl;
 
 #include "ncl/NclDocument.h"
-using namespace ::br::pucrio::telemidia::ncl;
+using namespace ::ginga::ncl;
 
 #include <map>
 #include <vector>

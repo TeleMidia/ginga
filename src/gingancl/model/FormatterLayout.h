@@ -21,8 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/SDLSurface.h"
 using namespace ::ginga::mb;
 
-#include "ncl/layout/LayoutRegion.h"
-using namespace ::br::pucrio::telemidia::ncl::layout;
+#include "ncl/LayoutRegion.h"
+using namespace ::ginga::ncl;
 
 #include "CascadingDescriptor.h"
 #include "ExecutionObject.h"

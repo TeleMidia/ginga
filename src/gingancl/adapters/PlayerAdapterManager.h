@@ -27,9 +27,9 @@ using namespace ::br::pucrio::telemidia::ginga::core::system::compat;
 #include "system/Thread.h"
 using namespace ::br::pucrio::telemidia::ginga::core::system::thread;
 
-#include "ncl/components/NodeEntity.h"
-#include "ncl/components/ContentNode.h"
-using namespace ::br::pucrio::telemidia::ncl::components;
+#include "ncl/NodeEntity.h"
+#include "ncl/ContentNode.h"
+using namespace ::ginga::ncl;
 
 #include "gingancl/model/CascadingDescriptor.h"
 #include "gingancl/model/ExecutionObject.h"

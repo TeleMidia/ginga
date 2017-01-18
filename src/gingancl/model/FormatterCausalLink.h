@@ -18,8 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _FORMATTERCAUSALLINK_H_
 #define _FORMATTERCAUSALLINK_H_
 
-#include "ncl/link/Link.h"
-using namespace ::br::pucrio::telemidia::ncl::link;
+#include "ncl/Link.h"
+using namespace ::ginga::ncl;
 
 #include "FormatterEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;

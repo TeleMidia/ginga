@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "config.h"
 #include "ncl/Entity.h"
 
-BR_PUCRIO_TELEMIDIA_NCL_BEGIN
+GINGA_NCL_BEGIN
 
 	set<Entity*> Entity::instances;
 	pthread_mutex_t Entity::iMutex;
@@ -151,4 +151,4 @@ BR_PUCRIO_TELEMIDIA_NCL_BEGIN
 		return this;
 	}
 
-BR_PUCRIO_TELEMIDIA_NCL_END
+GINGA_NCL_END

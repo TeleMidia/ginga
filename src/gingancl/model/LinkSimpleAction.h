@@ -18,8 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _LINKSIMPLEACTION_H_
 #define _LINKSIMPLEACTION_H_
 
-#include "ncl/connectors/SimpleAction.h"
-using namespace ::br::pucrio::telemidia::ncl::connectors;
+#include "ncl/SimpleAction.h"
+using namespace ::ginga::ncl;
 
 #include "FormatterEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;

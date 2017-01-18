@@ -26,13 +26,13 @@ using namespace ::br::pucrio::telemidia::ginga::ncl::model::components;
 #include "gingancl/model/PresentationEvent.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::model::event;
 
-#include "ncl/components/Content.h"
-#include "ncl/components/NodeEntity.h"
-#include "ncl/components/ReferenceContent.h"
-using namespace ::br::pucrio::telemidia::ncl::components;
+#include "ncl/Content.h"
+#include "ncl/NodeEntity.h"
+#include "ncl/ReferenceContent.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/transition/Transition.h"
-using namespace ::br::pucrio::telemidia::ncl::transition;
+#include "ncl/Transition.h"
+using namespace ::ginga::ncl;
 
 #include "FormatterPlayerAdapter.h"
 using namespace ::br::pucrio::telemidia::ginga::ncl::adapters;

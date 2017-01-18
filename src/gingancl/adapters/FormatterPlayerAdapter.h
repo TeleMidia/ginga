@@ -32,18 +32,18 @@ using namespace ::ginga::mb;
 #include "player/IPlayer.h"
 using namespace ::ginga::player;
 
-#include "ncl/components/Content.h"
-#include "ncl/components/ContentNode.h"
-#include "ncl/components/NodeEntity.h"
-#include "ncl/components/ReferenceContent.h"
-using namespace ::br::pucrio::telemidia::ncl::components;
+#include "ncl/Content.h"
+#include "ncl/ContentNode.h"
+#include "ncl/NodeEntity.h"
+#include "ncl/ReferenceContent.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/interfaces/LambdaAnchor.h"
-#include "ncl/interfaces/IntervalAnchor.h"
-using namespace ::br::pucrio::telemidia::ncl::interfaces;
+#include "ncl/LambdaAnchor.h"
+#include "ncl/IntervalAnchor.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/connectors/EventUtil.h"
-using namespace ::br::pucrio::telemidia::ncl::connectors;
+#include "ncl/EventUtil.h"
+using namespace ::ginga::ncl;
 
 #include "gingancl/model/CompositeExecutionObject.h"
 #include "gingancl/model/ExecutionObject.h"

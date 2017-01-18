@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "config.h"
 #include "PresentationEvent.h"
-#include "ncl/interfaces/IntervalAnchor.h"
+#include "ncl/IntervalAnchor.h"
 
 BR_PUCRIO_TELEMIDIA_GINGA_NCL_MODEL_EVENT_BEGIN
 

@@ -34,7 +34,7 @@ using namespace ::ginga::nclconv;
 #include "NclMetainformationParser.h"
 
 #include "ncl/NclDocument.h"
-using namespace ::br::pucrio::telemidia::ncl;
+using namespace ::ginga::ncl;
 
 #include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE

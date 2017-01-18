@@ -22,16 +22,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-#include "ncl/layout/LayoutRegion.h"
-using namespace ::br::pucrio::telemidia::ncl::layout;
+#include "ncl/LayoutRegion.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/descriptor/Descriptor.h"
-#include "ncl/descriptor/DescriptorUtil.h"
-using namespace ::br::pucrio::telemidia::ncl::descriptor;
+#include "ncl/Descriptor.h"
+#include "ncl/DescriptorUtil.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/transition/Transition.h"
-#include "ncl/transition/TransitionUtil.h"
-using namespace ::br::pucrio::telemidia::ncl::transition;
+#include "ncl/Transition.h"
+#include "ncl/TransitionUtil.h"
+using namespace ::ginga::ncl;
 
 #include "mb/InputManager.h"
 #include "mb/LocalScreenManager.h"

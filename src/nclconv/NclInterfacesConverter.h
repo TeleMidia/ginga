@@ -18,25 +18,25 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NclInterfacesConverter_H
 #define NclInterfacesConverter_H
 
-#include "ncl/switches/SwitchNode.h"
-using namespace ::br::pucrio::telemidia::ncl::switches;
+#include "ncl/SwitchNode.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/interfaces/Anchor.h"
-#include "ncl/interfaces/PropertyAnchor.h"
-#include "ncl/interfaces/IntervalAnchor.h"
-#include "ncl/interfaces/LabeledAnchor.h"
-#include "ncl/interfaces/RectangleSpatialAnchor.h"
-#include "ncl/interfaces/RelativeTimeIntervalAnchor.h"
-#include "ncl/interfaces/SampleIntervalAnchor.h"
-#include "ncl/interfaces/SpatialAnchor.h"
-#include "ncl/interfaces/TextAnchor.h"
-#include "ncl/interfaces/SwitchPort.h"
-#include "ncl/interfaces/Port.h"
-using namespace ::br::pucrio::telemidia::ncl::interfaces;
+#include "ncl/Anchor.h"
+#include "ncl/PropertyAnchor.h"
+#include "ncl/IntervalAnchor.h"
+#include "ncl/LabeledAnchor.h"
+#include "ncl/RectangleSpatialAnchor.h"
+#include "ncl/RelativeTimeIntervalAnchor.h"
+#include "ncl/SampleIntervalAnchor.h"
+#include "ncl/SpatialAnchor.h"
+#include "ncl/TextAnchor.h"
+#include "ncl/SwitchPort.h"
+#include "ncl/Port.h"
+using namespace ::ginga::ncl;
 
-#include "ncl/components/CompositeNode.h"
-#include "ncl/components/NodeEntity.h"
-using namespace ::br::pucrio::telemidia::ncl::components;
+#include "ncl/CompositeNode.h"
+#include "ncl/NodeEntity.h"
+using namespace ::ginga::ncl;
 
 #include "DocumentParser.h"
 using namespace ::ginga::nclconv;
