@@ -32,6 +32,7 @@ GINGA_BEGIN_DECLS
 #include <assert.h>
 #include <errno.h>
 #include <math.h>
+#include <setjmp.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -45,6 +46,7 @@ GINGA_BEGIN_DECLS
 #include <SDL_bits.h>
 
 #if WITH_MULTIDEVICE
+# include <jerror.h>
 # include <jpeglib.h>
 #endif
 
