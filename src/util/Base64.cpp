@@ -29,7 +29,7 @@
 
 */
 
-#include "config.h"
+#include "ginga.h"
 #include "Base64.h"
 
 GINGA_UTIL_BEGIN

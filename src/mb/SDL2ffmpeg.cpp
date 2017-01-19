@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /* Extracted from the SDL_ffmpeg library and ffplay.  */
 
-#include "config.h"
+#include "ginga.h"
 #include "SDL2ffmpeg.h"
 
 #ifndef AV_LOG_SKIP_REPEATED
