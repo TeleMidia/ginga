@@ -28,9 +28,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_BEGIN_DECLS
 
-#if HAVE_CONFIG_H
-# include "config.h"
-#endif
+#include <config.h>
 
 // C library.
 #include <assert.h>

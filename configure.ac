@@ -1,3 +1,21 @@
+# configure.ac -- Configure template for Ginga.
+# Copyright (C) 2006-2017 PUC-Rio/Laboratorio TeleMidia
+#
+# This file is part of Ginga (Ginga-NCL).
+#
+# Ginga is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# Ginga is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+# License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Ginga.  If not, see <http://www.gnu.org/licenses/>.
+
 AC_PREREQ([2.62])
 AC_INIT([Ginga],
  [0.13.6],
@@ -17,10 +35,10 @@ AM_PROG_AR
 LT_PREREQ([2.2])
 LT_INIT([win32-dll])
 
-dnl Ginga version.
+# Ginga version.
 AC_DEFINE_UNQUOTED([VERSION], ["$PACKAGE_VERSION"], [Ginga version.])
 
-dnl Data directories.
+# Data directories.
 AC_SUBST([buttondir], ['${pkgdatadir}'/img/button])
 AC_SUBST([contextmanagerdir], ['${pkgdatadir}'/contextmanager])
 AC_SUBST([fontdir], ['${pkgdatadir}'/font])
@@ -29,7 +47,7 @@ AC_SUBST([formattermddir], ['${pkgdatadir}'/md])
 AC_SUBST([mbdir], ['${pkgdatadir}'/mb/config])
 AC_SUBST([tunerdir], ['${pkgdatadir}'/tuner])
 
-dnl Required dependencies version.
+# Required dependencies version.
 m4_define([avcodec_required_version],    [55.39.101])
 m4_define([avfilter_required_version],   [3.90.100])
 m4_define([avformat_required_version],   [55.19.104])
@@ -57,7 +75,7 @@ AC_SUBST([SWRESAMPLE_REQUIRED_VERSION],  swresample_required_version)
 AC_SUBST([SWSCALE_REQUIRED_VERSION],     swscale_required_version)
 AC_SUBST([XERCESC_REQUIRED_VERSION],     xercesc_required_version)
 
-dnl Optional dependencies version.
+# Optional dependencies version.
 m4_define([cairo_required_version],      [1.10.2])
 m4_define([expat_required_version],      [2.1])
 m4_define([libbpg_required_version],     [0.9.5])
@@ -69,23 +87,50 @@ AC_SUBST([LIBBPG_REQUIRED_VERSION],      libbpg_required_version)
 AC_SUBST([LIBRSVG_REQUIRED_VERSION],     librsvg_required_version)
 AC_SUBST([LIBZIP_REQUIRED_VERSION],      libzip_required_version)
 
-dnl Compiler and tool checks.
+# Compiler and tool checks.
 AC_PROG_CXX
 AC_LANG_CPLUSPLUS
 AU_PROG_PKG_CONFIG
 
-dnl Configure options.
+# Configure options.
+AU_ARG_ENABLE_COVERAGE
 AU_ARG_ENABLE_DEBUG
+AU_ARG_ENABLE_VALGRIND
+
+nw=
+nw="$nw -Wbad-function-cast"             # invalid in C++
+nw="$nw -Wdesignated-init"               # invalid in C++
+nw="$nw -Wdiscarded-array-qualifiers"    # invalid in C++
+nw="$nw -Wdiscarded-qualifiers"          # invalid in C++
+nw="$nw -Wimplicit"                      # invalid in C++
+nw="$nw -Wimplicit-function-declaration" # invalid in C++
+nw="$nw -Wimplicit-int"                  # invalid in C++
+nw="$nw -Wincompatible-pointer-types"    # invalid in C++
+nw="$nw -Wint-conversion"                # invalid in C++
+nw="$nw -Wjump-misses-init"              # invalid in C++
+nw="$nw -Wmissing-parameter-type"        # invalid in C++
+nw="$nw -Wmissing-prototypes"            # invalid in C++
+nw="$nw -Wnested-externs"                # invalid in C++
+nw="$nw -Wold-style-declaration"         # invalid in C++
+nw="$nw -Wold-style-definition"          # invalid in C++
+nw="$nw -Woverride-init"                 # invalid in C++
+nw="$nw -Wpointer-sign"                  # invalid in C++
+nw="$nw -Wpointer-to-int-cast"           # invalid in C++
+nw="$nw -Wstrict-prototypes"             # invalid in C++
+nw="$nw -Wc++-compat"                    # invalid in C++
+nw="$nw -Wdeclaration-after-statement"   # invalid in C++
+AU_ARG_ENABLE_WARNINGS([$nw])
+
 AU_ARG_ENABLE([nclua-trace], [trace NCLua calls], [no])
 AS_IF([test "$enable_nclua_trace" = yes],
  [AC_DEFINE([LUAPLAYER_ENABLE_TRACE], [1],
   [Define to 1 to trace NCLua calls.])])
 
-dnl Headers.
+# Headers.
 AC_CHECK_HEADER([sys/socket.h])
 AC_CHECK_HEADER([net/if.h])
 
-dnl Required dependencies.
+# Required dependencies.
 AU_CHECK_PKG([CURL],
  [libcurl >= curl_required_version])
 
@@ -126,7 +171,7 @@ AU_CHECK_PKG([SDL2TTF],
 AU_CHECK_PKG([XERCESC],
  [xerces-c >= xercesc_required_version])
 
-dnl Optional dependencies.
+# Optional dependencies.
 AU_CHECK_OPTIONAL_PKG([isdbt], [build isdbt support], [],
  [ISDBT], [expat >= expat_required_version])
 
@@ -138,17 +183,17 @@ AU_CHECK_OPTIONAL_PKG([libbpg], [build with libbpg BPG support], [],
 
 AU_CHECK_OPTIONAL_PKG([librsvg], [build with LibRsvg SVG support], [],
  [LIBRSVG],
- [librsvg-2.0 >= librsvg_required_version[]dnl
+ [librsvg-2.0 >= librsvg_required_version[]#
   cairo >= cairo_required_version
 ])
 
-dnl Optional dependencies that do not use pkg-config.
-dnl   $1: name;
-dnl   $2: description;
-dnl   $3: prefix;
-dnl   $4: requires message;
-dnl   $5: check (must set "with_optional_$1" to yes if successful)
-dnl
+# Optional dependencies that do not use pkg-config.
+#   $1: name;
+#   $2: description;
+#   $3: prefix;
+#   $4: requires message;
+#   $5: check (must set "with_optional_$1" to yes if successful)
+#
 AC_DEFUN([_MY_CHECK_OPTIONAL],[dnl
 AU_ARG_WITH([$1], [$2])
 with_optional_$1=no
@@ -185,7 +230,7 @@ _MY_CHECK_OPTIONAL([linuxdvb], [build linuxdvb support],
  [AC_CHECK_HEADER([linux/dvb/frontend.h],
   [with_optional_linuxdvb=yes])])
 
-dnl Epilogue.
+# Epilogue.
 AC_CONFIG_FILES([
 Makefile
 data/Makefile
@@ -195,12 +240,13 @@ src/Makefile
 AC_OUTPUT
 AC_MSG_NOTICE([summary of main build options:
   version:            ${VERSION}
-  host type:          ${host}
+  host:               ${host}
   install prefix:     ${prefix}
   compiler:           ${CXX}
-  cppflags:           ${CPPFLAGS}
   cxxflags:           ${CXXFLAGS}
   ldflags:            ${LDFLAGS}
+  warning flags:      ${WERROR_CFLAGS} ${WARN_CFLAGS}
+  valgrind:           ${VALGRIND}
 
   with berkelium:     ${with_berkelium_result}
   with espeak:        ${with_espeak_result}

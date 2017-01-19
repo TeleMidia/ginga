@@ -109,9 +109,14 @@ AS_IF([test "$enable_debug" = yes],
        [au_cv_prog_compiler_ggdb3],
        [-ggdb3 -c conftest.$ac_ext], [],
        [CFLAGS="$CFLAGS -ggdb3"],
-       [CFLAGS="$CFLAGS -g"])])],
+       [CFLAGS="$CFLAGS -g"])])
+   AS_CASE([" $CXXFLAGS "],
+    [*[[\ \	]]-O*],
+      [CXXFLAGS=`echo $CXXFLAGS | $SED 's/-O[[^ ]]* / /;s/-O[[^ ]]*$//'`])],
    [AS_CASE([" $CFLAGS "], [*[[\ \	]]-g*], [:],
-     [CFLAGS="$CFLAGS -g"])])])])
+     [CFLAGS="$CFLAGS -g"])
+    AS_CASE([" $CXXFLAGS "], [*[[\ \	]]-g*], [:],
+     [CXXFLAGS="$CXXFLAGS -g"])])])])
 
 # AU_ARG_ENABLE_VALGRIND
 # ----------------------
@@ -375,8 +380,7 @@ AS_IF([test "$au_check_optional_pkg_$4" = yes],
   AC_DEFINE([WITH_$4], [1], [Define to 1 if you have ]$5[.])],
  [AS_IF([test "][$][AS_TR_SH([with_$1])][" = check],
    [AS_TR_SH([with_$1_result])='no	(requires: $5)'],
-   [AS_TR_SH([with_$1_result])='no'])
-  AC_DEFINE([WITH_$4], [0], [Define to 1 if you have ]$5[.])])
+   [AS_TR_SH([with_$1_result])='no'])])
 AM_CONDITIONAL([WITH_]m4_toupper(AS_TR_SH([$1])),
  [test "$au_check_optional_pkg_$4" = yes])
 AM_CONDITIONAL([WITH_$4],

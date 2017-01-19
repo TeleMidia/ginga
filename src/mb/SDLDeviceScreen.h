@@ -298,22 +298,9 @@ public:
   static void renderMapRemoveWindow (GingaScreenID screenId,
                                      SDLWindow *iWin, float z);
 
-  //			static void updateWindowState(
-  //					GingaScreenID screenId, SDLWindow*
-  //win,
-  // short
-  // status);
-
 private:
-  //			static void updateWindowList(
-  //					vector<SDLWindow*>* windows, SDLWindow*
-  //win,
-  // short
-  // status);
-
   static void removeFromWindowList (vector<SDLWindow *> *windows,
                                     SDLWindow *win);
-
 public:
   static SDL_Window *getUnderlyingWindow (GingaWindowID winId);
 
