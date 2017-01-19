@@ -258,7 +258,7 @@ void
 NclFormatterRegion::setZIndex (int zIndex)
 {
   string layoutId;
-  float cvtZIndex;
+  double cvtZIndex;
 
   this->zIndex = zIndex;
 
@@ -859,7 +859,7 @@ NclFormatterRegion::getOriginalRegion ()
 
 GingaWindowID
 NclFormatterRegion::prepareOutputDisplay (GingaSurfaceID renderedSurface,
-                                          float cvtIndex)
+                                          double cvtIndex)
 {
 
   GingaWindowID windowId = 0;
@@ -2146,7 +2146,7 @@ NclFormatterRegion::unlockFocusInfo ()
 void
 NclFormatterRegion::setTransparency (string strTrans)
 {
-  float trans;
+  double trans;
   if (strTrans == "")
     {
       trans = 0.0;
@@ -2159,14 +2159,14 @@ NclFormatterRegion::setTransparency (string strTrans)
   setTransparency (trans);
 }
 
-float
+double
 NclFormatterRegion::getTransparency ()
 {
   return this->transparency;
 }
 
 void
-NclFormatterRegion::setTransparency (float transparency)
+NclFormatterRegion::setTransparency (double transparency)
 {
   lock ();
   if (transparency < 0.0)

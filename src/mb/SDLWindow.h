@@ -57,7 +57,7 @@ private:
 
   SDL_Rect rect;
 
-  float z;
+  double z;
   int transparencyValue;
   bool visible;
   bool ghost;
@@ -83,14 +83,14 @@ private:
 public:
   SDLWindow (GingaWindowID underlyingWindowID, GingaWindowID parentWindowID,
              GingaScreenID screenId, int x, int y, int width, int height,
-             float z);
+             double z);
 
   virtual ~SDLWindow ();
 
 private:
   void initialize (GingaWindowID underlyingWindowID,
                    GingaWindowID parentWindowID, GingaScreenID screenId,
-                   int x, int y, int width, int height, float z);
+                   int x, int y, int width, int height, double z);
 
   void releaseWinISur ();
   void releaseBGColor ();
@@ -137,13 +137,13 @@ public:
   int getY ();
   int getW ();
   int getH ();
-  float getZ ();
+  double getZ ();
 
   void setX (int x);
   void setY (int y);
   void setW (int w);
   void setH (int h);
-  void setZ (float z);
+  void setZ (double z);
 
   bool isGhostWindow ();
   void setGhostWindow (bool ghost);

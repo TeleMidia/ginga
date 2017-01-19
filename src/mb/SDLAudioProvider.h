@@ -56,7 +56,7 @@ public:
     return false;
   };
   double getTotalMediaTime ();
-  float getSoundLevel ();
+  double getSoundLevel ();
   virtual int64_t getVPts ();
   double getMediaTime ();
   void setMediaTime (double pos);
@@ -66,7 +66,7 @@ public:
   void resume (GingaSurfaceID surface);
   void pause ();
   void stop ();
-  void setSoundLevel (float level);
+  void setSoundLevel (double level);
   bool releaseAll ();
   void getOriginalResolution (int *width, int *height);
 

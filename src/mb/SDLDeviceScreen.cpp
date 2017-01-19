@@ -43,7 +43,7 @@ map<string, int> SDLDeviceScreen::sdlStrToSdlCode;
 set<SDL_Texture *> SDLDeviceScreen::uTexPool;
 set<SDL_Surface *> SDLDeviceScreen::uSurPool;
 vector<ReleaseContainer *> SDLDeviceScreen::releaseList;
-map<GingaScreenID, map<float, set<SDLWindow *> *> *>
+map<GingaScreenID, map<double, set<SDLWindow *> *> *>
     SDLDeviceScreen::renderMap;
 set<IContinuousMediaProvider *> SDLDeviceScreen::cmpRenderList;
 
@@ -177,8 +177,8 @@ SDLDeviceScreen::SDLDeviceScreen (int argc, char **args, GingaScreenID myId,
 SDLDeviceScreen::~SDLDeviceScreen ()
 {
   map<SDLDeviceScreen *, short>::iterator i;
-  map<GingaScreenID, map<float, set<SDLWindow *> *> *>::iterator j;
-  map<float, set<SDLWindow *> *>::iterator k;
+  map<GingaScreenID, map<double, set<SDLWindow *> *> *>::iterator j;
+  map<double, set<SDLWindow *> *>::iterator k;
 
   useStdin = false;
 
@@ -268,7 +268,7 @@ SDLDeviceScreen::unlockSDL ()
 
 void
 SDLDeviceScreen::updateRenderMap (GingaScreenID screenId, SDLWindow *window,
-                                  float oldZIndex, float newZIndex)
+                                  double oldZIndex, double newZIndex)
 {
 
   checkMutexInit ();
@@ -576,8 +576,8 @@ SDLDeviceScreen::blitScreen (string fileUri)
 void
 SDLDeviceScreen::blitScreen (SDL_Surface *dest)
 {
-  map<GingaScreenID, map<float, set<SDLWindow *> *> *>::iterator i;
-  map<float, set<SDLWindow *> *>::iterator j;
+  map<GingaScreenID, map<double, set<SDLWindow *> *> *>::iterator i;
+  map<double, set<SDLWindow *> *>::iterator j;
   set<SDLWindow *>::iterator k;
 
   Thread::mutexLock (&renMutex);
@@ -619,7 +619,7 @@ SDLDeviceScreen::refreshScreen ()
 /* interfacing output */
 
 SDLWindow *
-SDLDeviceScreen::createWindow (int x, int y, int w, int h, float z)
+SDLDeviceScreen::createWindow (int x, int y, int w, int h, double z)
 {
 
   SDLWindow *iWin;
@@ -642,7 +642,7 @@ SDLDeviceScreen::createWindow (int x, int y, int w, int h, float z)
 
 UnderlyingWindowID
 SDLDeviceScreen::createUnderlyingSubWindow (int x, int y, int w, int h,
-                                            float z)
+                                            double z)
 {
 
   UnderlyingWindowID uWin = NULL;
@@ -681,7 +681,7 @@ MyWndProc (HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 UnderlyingWindowID
 SDLDeviceScreen::createUnderlyingSubWindow (UnderlyingWindowID parent,
                                             string spec, int x, int y,
-                                            int w, int h, float z)
+                                            int w, int h, double z)
 {
 
   UnderlyingWindowID uWin = NULL;
@@ -1822,8 +1822,8 @@ SDLDeviceScreen::refreshWin (SDLDeviceScreen *s)
   SDLWindow *mirrorSrc;
   bool ownTex = false;
 
-  map<GingaScreenID, map<float, set<SDLWindow *> *> *>::iterator i;
-  map<float, set<SDLWindow *> *>::iterator j;
+  map<GingaScreenID, map<double, set<SDLWindow *> *> *>::iterator i;
+  map<double, set<SDLWindow *> *>::iterator j;
   set<SDLWindow *>::iterator k;
 
   Thread::mutexLock (&renMutex);
@@ -2851,13 +2851,13 @@ SDLDeviceScreen::checkEventFocus (SDLDeviceScreen *s)
 /* output */
 void
 SDLDeviceScreen::renderMapInsertWindow (GingaScreenID screenId,
-                                        SDLWindow *iWin, float z)
+                                        SDLWindow *iWin, double z)
 {
 
-  map<GingaScreenID, map<float, set<SDLWindow *> *> *>::iterator i;
-  map<float, set<SDLWindow *> *>::iterator j;
+  map<GingaScreenID, map<double, set<SDLWindow *> *> *>::iterator i;
+  map<double, set<SDLWindow *> *>::iterator j;
 
-  map<float, set<SDLWindow *> *> *sortedMap;
+  map<double, set<SDLWindow *> *> *sortedMap;
   set<SDLWindow *> *windows;
 
   checkMutexInit ();
@@ -2870,7 +2870,7 @@ SDLDeviceScreen::renderMapInsertWindow (GingaScreenID screenId,
     }
   else
     {
-      sortedMap = new map<float, set<SDLWindow *> *>;
+      sortedMap = new map<double, set<SDLWindow *> *>;
       renderMap[screenId] = sortedMap;
     }
 
@@ -2891,14 +2891,14 @@ SDLDeviceScreen::renderMapInsertWindow (GingaScreenID screenId,
 
 void
 SDLDeviceScreen::renderMapRemoveWindow (GingaScreenID screenId,
-                                        SDLWindow *iWin, float z)
+                                        SDLWindow *iWin, double z)
 {
 
-  map<GingaScreenID, map<float, set<SDLWindow *> *> *>::iterator i;
-  map<float, set<SDLWindow *> *>::iterator j;
+  map<GingaScreenID, map<double, set<SDLWindow *> *> *>::iterator i;
+  map<double, set<SDLWindow *> *>::iterator j;
   set<SDLWindow *>::iterator k;
 
-  map<float, set<SDLWindow *> *> *sortedMap;
+  map<double, set<SDLWindow *> *> *sortedMap;
   set<SDLWindow *> *windows;
 
   checkMutexInit ();

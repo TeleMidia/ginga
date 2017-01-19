@@ -29,7 +29,7 @@ private:
   FILE *fd;
   char *buffer;
   short type;
-  float rate;
+  double rate;
   string localUri;
   string defaultServer;
   string uri;
@@ -46,7 +46,7 @@ public:
   void setSourceTarget (string url);
   void setTarget (FILE *fd);
   short getType ();
-  float getRate ();
+  double getRate ();
   void setListener (IInteractiveChannelListener *listener);
   bool reserveUrl (string uri, IInteractiveChannelListener *listener = NULL,
                    string userAgent = "");

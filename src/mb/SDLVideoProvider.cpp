@@ -188,7 +188,7 @@ SDLVideoProvider::stop ()
 }
 
 void
-SDLVideoProvider::setSoundLevel (float level)
+SDLVideoProvider::setSoundLevel (double level)
 {
   SDLAudioProvider::setSoundLevel (level);
 }

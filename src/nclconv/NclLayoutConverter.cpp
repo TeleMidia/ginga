@@ -131,7 +131,7 @@ NclLayoutConverter::createRegion (DOMElement *parentElement,
 
   LayoutRegion *ncmRegion;
   string attribute;
-  float percentValue;
+  double percentValue;
 
   attribute = XMLString::transcode (
       parentElement->getAttribute (XMLString::transcode ("id")));
@@ -314,15 +314,15 @@ NclLayoutConverter::createRegion (DOMElement *parentElement,
   return ncmRegion;
 }
 
-float
+double
 NclLayoutConverter::getPercentualValue (string value)
 {
   string actualValue;
-  float floatValue;
+  double floatValue;
 
   // retirar o caracter percentual da string
   actualValue = value.substr (0, value.length () - 1);
-  // converter para float
+  // converter para double
   floatValue = ::ginga::util::stof (actualValue);
 
   // se menor que zero, retornar zero

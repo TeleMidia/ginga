@@ -132,11 +132,11 @@ public:
 
   // Interfacing output.
   GingaWindowID createWindow (GingaScreenID screenId, int x, int y, int w,
-                              int h, float z);
+                              int h, double z);
 
   UnderlyingWindowID createUnderlyingSubWindow (GingaScreenID screenId,
                                                 int x, int y, int w, int h,
-                                                float z);
+                                                double z);
 
   bool hasWindow (GingaScreenID screenId, GingaWindowID window);
 
@@ -243,7 +243,7 @@ public:
                    const GingaWindowID &winId, int h);
 
   void setWindowZ (const GingaScreenID &screenId,
-                   const GingaWindowID &winId, float z);
+                   const GingaWindowID &winId, double z);
 
   void disposeWindow (const GingaScreenID &screenId,
                       const GingaWindowID &winId);
@@ -262,7 +262,7 @@ public:
                   const GingaWindowID &winId);
   int getWindowH (const GingaScreenID &screenId,
                   const GingaWindowID &winId);
-  float getWindowZ (const GingaScreenID &screenId,
+  double getWindowZ (const GingaScreenID &screenId,
                     const GingaWindowID &winId);
 
   int getWindowTransparencyValue (const GingaScreenID &screenId,
@@ -338,7 +338,7 @@ public:
                         int alpha);
 
   // providers
-  void setProviderSoundLevel (const GingaProviderID &provId, float level);
+  void setProviderSoundLevel (const GingaProviderID &provId, double level);
 
   void getProviderOriginalResolution (const GingaProviderID &provId,
                                       int *width, int *height);

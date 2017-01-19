@@ -69,7 +69,7 @@ private:
   int zIndex;
 
   Color *bgColor;
-  float transparency;
+  double transparency;
   short fit;
   short scroll;
   Color *chromaKey;
@@ -172,7 +172,7 @@ public:
   LayoutRegion *getOriginalRegion ();
 
   GingaWindowID prepareOutputDisplay (GingaSurfaceID renderedSurface,
-                                      float cvtIndex);
+                                      double cvtIndex);
 
   void showContent ();
   void hideContent ();
@@ -208,9 +208,9 @@ public:
 
   Color *getBackgroundColor ();
 
-  float getTransparency ();
+  double getTransparency ();
   void setTransparency (string strTrans);
-  void setTransparency (float transparency);
+  void setTransparency (double transparency);
   void setBackgroundColor (string color);
   void setBackgroundColor (Color *color);
   void setChromaKey (string value);

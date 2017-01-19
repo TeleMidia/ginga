@@ -68,7 +68,7 @@ public:
   void resume (GingaSurfaceID surface);
   void pause ();
   void stop ();
-  void setSoundLevel (float level);
+  void setSoundLevel (double level);
   bool releaseAll ();
 
   void refreshDR (void *data);

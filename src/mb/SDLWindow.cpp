@@ -30,7 +30,7 @@ GINGA_MB_BEGIN
 
 SDLWindow::SDLWindow (GingaWindowID windowID, GingaWindowID parentWindowID,
                       GingaScreenID screenId, int x, int y, int width,
-                      int height, float z)
+                      int height, double z)
 {
 
   initialize (windowID, parentWindowID, screenId, x, y, width, height, z);
@@ -96,7 +96,7 @@ SDLWindow::~SDLWindow ()
 void
 SDLWindow::initialize (GingaWindowID windowID, GingaWindowID parentWindowID,
                        GingaScreenID screenId, int x, int y, int w, int h,
-                       float z)
+                       double z)
 {
 
   this->windowId = windowID;
@@ -502,7 +502,7 @@ SDLWindow::getH ()
   return this->rect.h;
 }
 
-float
+double
 SDLWindow::getZ ()
 {
   return z;
@@ -533,9 +533,9 @@ SDLWindow::setH (int h)
 }
 
 void
-SDLWindow::setZ (float z)
+SDLWindow::setZ (double z)
 {
-  float oldZ = this->z;
+  double oldZ = this->z;
 
   this->z = z;
 

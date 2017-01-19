@@ -28,7 +28,7 @@ GINGA_PLAYER_BEGIN
 class SrtPlayer : public TextPlayer, public Thread
 {
 protected:
-  map<float, float> *textEvents;
+  map<double, double> *textEvents;
   vector<string> *textLines;
   IPlayer *player; // time reference player
   bool isPlaying;
@@ -42,7 +42,7 @@ public:
 
 protected:
   void loadSrt ();
-  float strTimeToFloat (string time);
+  double strTimeToFloat (string time);
   void printSrt ();
 
 public:

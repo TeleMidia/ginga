@@ -114,7 +114,7 @@ SrtPlayer::loadSrt ()
       delete textEvents;
       textEvents = NULL;
     }
-  textEvents = new map<float, float>;
+  textEvents = new map<double, double>;
 
   if (textLines != NULL)
     {
@@ -189,7 +189,7 @@ SrtPlayer::loadSrt ()
   fisSub.close ();
 }
 
-float
+double
 SrtPlayer::strTimeToFloat (string time)
 {
   if (time == "" || time.find (":") == std::string::npos)
@@ -197,7 +197,7 @@ SrtPlayer::strTimeToFloat (string time)
       return 0;
     }
 
-  float hours, minutes, seconds, milliseconds;
+  double hours, minutes, seconds, milliseconds;
 
   hours = ::ginga::util::stof (time.substr (0, time.find_first_of (":")));
   time = time.substr (time.find_first_of (":") + 1, time.length ());
@@ -207,7 +207,7 @@ SrtPlayer::strTimeToFloat (string time)
   time = time.substr (time.find_first_of (",") + 1, time.length ());
   milliseconds = ::ginga::util::stof (time);
 
-  return (float)((hours * 3600) + (minutes * 60) + (seconds)
+  return (double)((hours * 3600) + (minutes * 60) + (seconds)
                  + (milliseconds / 1000));
 }
 
@@ -220,7 +220,7 @@ SrtPlayer::printSrt ()
       return;
     }
 
-  map<float, float>::iterator i;
+  map<double, double>::iterator i;
   vector<string>::iterator j;
 
   j = textLines->begin ();
@@ -253,7 +253,7 @@ SrtPlayer::getMediaTotalTime ()
 {
   if (player != NULL && textEvents != NULL && !textEvents->empty ())
     {
-      map<float, float>::iterator i;
+      map<double, double>::iterator i;
       i = textEvents->end ();
       --i;
       return (double)i->second;
@@ -411,16 +411,16 @@ SrtPlayer::run ()
 
   if (player != NULL && parent != 0)
     {
-      float mediaTime, hide, show;
+      double mediaTime, hide, show;
       int sleepTime;
-      map<float, float> *events;
-      map<float, float>::iterator i, j;
+      map<double, double> *events;
+      map<double, double>::iterator i, j;
 
       vector<string> *text;
       vector<string>::iterator k;
       string line;
 
-      events = new map<float, float> (*textEvents);
+      events = new map<double, double> (*textEvents);
       text = new vector<string> (*textLines);
 
       mediaTime = 0;
@@ -437,7 +437,7 @@ SrtPlayer::run ()
 
           while (i->first < mediaTime)
             {
-              mediaTime = (float)(player->getMediaTime ());
+              mediaTime = (double)(player->getMediaTime ());
               events->erase (i);
               text->erase (k);
               if (events->empty () || text->empty ())
@@ -472,7 +472,7 @@ SrtPlayer::run ()
               break;
             }
 
-          mediaTime = (float)(player->getMediaTime ());
+          mediaTime = (double)(player->getMediaTime ());
           sleepTime = (int)(((show - mediaTime) * 1000000) - 70000);
           //				clog << "show = '" << show << "' mediaTime =
           //'"
@@ -547,7 +547,7 @@ SrtPlayer::run ()
                                      TYPE_PASSIVEDEVICE, "");
             }
 
-          mediaTime = (float)(player->getMediaTime ());
+          mediaTime = (double)(player->getMediaTime ());
           sleepTime = (int)(((hide - mediaTime) * 1000000) - 100000);
           if (sleepTime > 0)
             {

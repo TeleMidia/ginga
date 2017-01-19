@@ -75,7 +75,7 @@ Comparator::evaluate (string first, string second, short comparator)
 }
 
 bool
-Comparator::evaluate (float first, float second, short comparator)
+Comparator::evaluate (double first, double second, short comparator)
 { // 2 object -> comparable
 
   int ret;
