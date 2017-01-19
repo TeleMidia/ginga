@@ -1,0 +1,55 @@
+# Makefile.am.coverage -- Generates code coverage report.
+# Copyright (C) 2013-2016 Free Software Foundation, Inc.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+LCOV_DIR= coverage
+LCOV_INFO= coverage.info
+COVERAGE_EXCLUDE=
+
+lcov_capture_options= --capture --quiet --directory $(top_builddir)\
+  --output-file $(LCOV_INFO) --test-name '$(PACKAGE_NAME)_PERF'\
+  --no-checksum --compat-libtool --ignore-errors source
+
+lcov_remove_options= --quiet --output-file $(LCOV_INFO)\
+  --remove $(LCOV_INFO) $(COVERAGE_EXCLUDE)
+
+lcov_genhtml_options= --title '$(PACKAGE_NAME) Code Coverage' --quiet\
+  --prefix $(top_builddir) --output-directory $(LCOV_DIR) --legend\
+  --frames --show-details $(LCOV_INFO) --ignore-errors source
+
+.PHONY: coverage coverage-clean
+
+if ENABLE_COVERAGE
+coverage: all
+	@$(LCOV) --zerocounters --quiet --directory $(top_builddir)
+	-$(MAKE) $(AM_MAKEFLAGS) -k check
+	@$(LCOV) $(lcov_capture_options)
+	@$(LCOV) $(lcov_remove_options)
+	@LANG=C $(GENHTML) $(lcov_genhtml_options)
+	@echo 'REPORT: file://$(abs_top_builddir)/$(LCOV_DIR)/index.html'
+
+clean-local: coverage-clean
+coverage-clean:
+	-rm -rf $(LCOV_DIR) $(LCOV_INFO)
+
+else
+coverage coverage-clean:
+	@echo You need to configure $(PACKAGE_NAME) with support for gcov enabled.
+	@echo E.g., ./configure --enable-debug --enable-coverage
+endif
+
+# Local Variables:
+# mode: makefile
+# End:

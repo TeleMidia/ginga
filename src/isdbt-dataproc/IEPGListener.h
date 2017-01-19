@@ -31,7 +31,7 @@ using namespace ::ginga::tsparser;
  * 1) stage='current', fields={field_1, field_2,...field_j}
  * 2) stage='next', eventId=<number>, fields={field_1, field_2,...field_j}
  * 3) stage='schedule', startTime=<date>, endTime=<date>, fields={field_1,
- * 		field_2,...field_j}
+ *    field_2,...field_j}
  *
  * The struct Request was create to model a lua node request for EPG events.
  * That request has to be stored associated with her N IEPGListeners.

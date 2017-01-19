@@ -1,9 +1,9 @@
-# Makefile.am.common -- Common declarations.
+# Makefile.am.valgrind -- Generate Valgrind suppressions.
 # Copyright (C) 2013-2016 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
+# the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
@@ -14,9 +14,22 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-CLEANFILES= *.core *.gcda *.gcno vgcore.*
-DISTCLEANFILES=
-MAINTAINERCLEANFILES= Makefile.in
+VALGRIND_OPTIONS=
+
+if ENABLE_VALGRIND
+_VALGRIND= $(VALGRIND) $(VALGRIND_OPTIONS)
+
+if HAVE_M4
+noinst_SCRIPTS+= $(builddir)/suppfile
+CLEANFILES+= $(builddir)/suppfile
+VALGRIND_OPTIONS+= --suppressions=$(builddir)/suppfile
+$(builddir)/suppfile: $(srcdir)/suppfile.m4
+	$(AM_V_GEN)$(M4) $(srcdir)/suppfile.m4 > $@
+endif
+
+else
+_VALGRIND=
+endif
 
 # Local Variables:
 # mode: makefile

@@ -1,3 +1,21 @@
+# Makefile.am -- Template for generating Makefile via Automake.
+# Copyright (C) 2006-2017 PUC-Rio/Laboratorio TeleMidia
+#
+# This file is part of Ginga (Ginga-NCL).
+#
+# Ginga is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# Ginga is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+# License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Ginga.  If not, see <http://www.gnu.org/licenses/>.
+
 include $(top_srcdir)/build-aux/Makefile.am.common
 
 AM_CPPFLAGS=\
@@ -13,30 +31,32 @@ AM_CPPFLAGS=\
   $(NULL)
 
 AM_CXXFLAGS=\
- $(CURL_CFLAGS)\
- $(FFMPEG_CFLAGS)\
- $(GLIB_CFLAGS)\
- $(JPEG_CFLAGS)\
- $(NCLUA_CFLAGS)\
- $(PTHREAD_CFLAGS)\
- $(SDL2IMAGE_CFLAGS)\
- $(SDL2TTF_CFLAGS)\
- $(SDL2_CFLAGS)\
- $(XERCESC_CFLAGS)\
- $(NULL)
+  $(WERROR_CFLAGS)\
+  $(WARN_CFLAGS)\
+  $(CURL_CFLAGS)\
+  $(FFMPEG_CFLAGS)\
+  $(GLIB_CFLAGS)\
+  $(JPEG_CFLAGS)\
+  $(NCLUA_CFLAGS)\
+  $(PTHREAD_CFLAGS)\
+  $(SDL2IMAGE_CFLAGS)\
+  $(SDL2TTF_CFLAGS)\
+  $(SDL2_CFLAGS)\
+  $(XERCESC_CFLAGS)\
+  $(NULL)
 
 AM_LDFLAGS= -R $(libdir) -rpath $(libdir)\
- $(CURL_LIBS)\
- $(FFMPEG_LIBS)\
- $(GLIB_LIBS)\
- $(JPEG_LIBS)\
- $(NCLUA_LIBS)\
- $(PTHREAD_LIBS)\
- $(SDL2IMAGE_LIBS)\
- $(SDL2TTF_LIBS)\
- $(SDL2_LIBS)\
- $(XERCESC_LIBS)\
- $(NULL)
+  $(CURL_LIBS)\
+  $(FFMPEG_LIBS)\
+  $(GLIB_LIBS)\
+  $(JPEG_LIBS)\
+  $(NCLUA_LIBS)\
+  $(PTHREAD_LIBS)\
+  $(SDL2IMAGE_LIBS)\
+  $(SDL2TTF_LIBS)\
+  $(SDL2_LIBS)\
+  $(XERCESC_LIBS)\
+  $(NULL)
 
 bin_PROGRAMS= ginga
 ginga_SOURCES= $(src) main.cpp
