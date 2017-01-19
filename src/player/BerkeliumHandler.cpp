@@ -34,11 +34,11 @@ BerkeliumHandler::BerkeliumHandler (GingaScreenID myScreen, int x, int y,
   DisplayManager::addIEListenerInstance (this);
   DisplayManager::addMEListenerInstance (this);
 
-  im = G_DisplayManager->getInputManager (myScreen);
+  im = Ginga_Display->getInputManager (myScreen);
 
   this->myScreen = myScreen;
 
-  surface = G_DisplayManager->createSurface (myScreen, w, h);
+  surface = Ginga_Display->createSurface (myScreen, w, h);
   xOffset = x;
   yOffset = y;
   this->w = w;
@@ -49,7 +49,7 @@ BerkeliumHandler::BerkeliumHandler (GingaScreenID myScreen, int x, int y,
   keyCode = -1;
   isValid = false;
 
-  G_DisplayManager->setSurfaceCaps (surface, 0);
+  Ginga_Display->setSurfaceCaps (surface, 0);
 
   if (fromGingaToBklm.empty ())
     {
@@ -548,20 +548,20 @@ BerkeliumHandler::mapOnPaintToTexture (
       strFile
           = createFile (bitmap_in, dest_texture_width, dest_texture_height);
 
-      s = G_DisplayManager->createRenderedSurfaceFromImageFile (myScreen,
+      s = Ginga_Display->createRenderedSurfaceFromImageFile (myScreen,
                                                   strFile.c_str ());
       remove (strFile.c_str ());
 
-      G_DisplayManager->blitSurface (surface, 0, 0, s);
-      sWin = G_DisplayManager->getSurfaceParentWindow (surface);
+      Ginga_Display->blitSurface (surface, 0, 0, s);
+      sWin = Ginga_Display->getSurfaceParentWindow (surface);
       if (sWin != 0)
         {
-          G_DisplayManager->validateWindow (myScreen, sWin);
+          Ginga_Display->validateWindow (myScreen, sWin);
         }
 
       ignore_partial = false;
 
-      G_DisplayManager->deleteSurface (s);
+      Ginga_Display->deleteSurface (s);
 
       Thread::mutexUnlock (&sMutex);
       return true;
@@ -598,24 +598,24 @@ BerkeliumHandler::mapOnPaintToTexture (
 
           if (dx > 0)
             {
-              G_DisplayManager->clearSurfaceContent (surface);
-              G_DisplayManager->blitSurface (surface, dx, 0, surface, 0, 0, wid, hig);
+              Ginga_Display->clearSurfaceContent (surface);
+              Ginga_Display->blitSurface (surface, dx, 0, surface, 0, 0, wid, hig);
             }
           else if (dy > 0)
             {
-              G_DisplayManager->clearSurfaceContent (surface);
-              G_DisplayManager->blitSurface (surface, 0, dy, surface, 0, 0, wid, hig);
+              Ginga_Display->clearSurfaceContent (surface);
+              Ginga_Display->blitSurface (surface, 0, dy, surface, 0, 0, wid, hig);
             }
           else
             {
-              G_DisplayManager->clearSurfaceContent (surface);
-              G_DisplayManager->blitSurface (surface, 0, 0, surface, left, top, wid, hig);
+              Ginga_Display->clearSurfaceContent (surface);
+              Ginga_Display->blitSurface (surface, 0, 0, surface, left, top, wid, hig);
             }
 
-          sWin = G_DisplayManager->getSurfaceParentWindow (surface);
+          sWin = Ginga_Display->getSurfaceParentWindow (surface);
           if (sWin != 0)
             {
-              G_DisplayManager->validateWindow (myScreen, sWin);
+              Ginga_Display->validateWindow (myScreen, sWin);
             }
         }
     }
@@ -643,7 +643,7 @@ BerkeliumHandler::mapOnPaintToTexture (
       // is marked as dirty but not from scrolled data.
       strFile = createFile ((const unsigned char *)tmp_buffer, wid, hig);
 
-      s = G_DisplayManager->createRenderedSurfaceFromImageFile (myScreen,
+      s = Ginga_Display->createRenderedSurfaceFromImageFile (myScreen,
                                                   strFile.c_str ());
       remove (strFile.c_str ());
 
@@ -651,14 +651,14 @@ BerkeliumHandler::mapOnPaintToTexture (
       left = copy_rects[i].left ();
       top = copy_rects[i].top ();
 
-      G_DisplayManager->blitSurface (surface, left, top, s, 0, 0, wid, hig);
-      sWin = G_DisplayManager->getSurfaceParentWindow (surface);
+      Ginga_Display->blitSurface (surface, left, top, s, 0, 0, wid, hig);
+      sWin = Ginga_Display->getSurfaceParentWindow (surface);
       if (sWin != 0)
         {
-          G_DisplayManager->validateWindow (myScreen, sWin);
+          Ginga_Display->validateWindow (myScreen, sWin);
         }
 
-      G_DisplayManager->deleteSurface (s);
+      Ginga_Display->deleteSurface (s);
     }
 
   Thread::mutexUnlock (&sMutex);

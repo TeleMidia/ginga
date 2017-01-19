@@ -97,7 +97,7 @@ SDLImageProvider::playOver (GingaSurfaceID surface)
     }
 
   if (surface != 0
-      && G_DisplayManager->hasSurface (myScreen, surface))
+      && Ginga_Display->hasSurface (myScreen, surface))
     {
 
 #if WITH_LIBRSVG
@@ -134,16 +134,16 @@ SDLImageProvider::playOver (GingaSurfaceID surface)
       if (renderedSurface != NULL)
         {
           SDLDeviceScreen::addUnderlyingSurface (renderedSurface);
-          GingaWindowID parentId = G_DisplayManager
+          GingaWindowID parentId = Ginga_Display
                                        ->getSurfaceParentWindow (surface);
-          parent = (SDLWindow *)G_DisplayManager
+          parent = (SDLWindow *)Ginga_Display
                        ->getIWindowFromId (myScreen, parentId);
 
           if (parent != NULL)
             {
               parent->setRenderedSurface (renderedSurface);
             }
-          G_DisplayManager->setSurfaceContent (
+          Ginga_Display->setSurfaceContent (
               surface, (void *)renderedSurface);
         }
     }

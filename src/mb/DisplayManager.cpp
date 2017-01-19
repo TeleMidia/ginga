@@ -24,7 +24,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_MB_BEGIN
 
 // Global display manager; initialized in by main().
-DisplayManager *_G_DisplayManager = NULL;
+DisplayManager *_Ginga_Display = NULL;
 
 set<IInputEventListener *> DisplayManager::iListeners;
 pthread_mutex_t DisplayManager::ilMutex;

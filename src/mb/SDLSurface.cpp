@@ -45,7 +45,7 @@ SDLSurface::~SDLSurface ()
   Thread::mutexLock (&pMutex);
 
   SDLWindow *w = (SDLWindow *)parent;
-  G_DisplayManager->releaseSurface (myScreen, this);
+  Ginga_Display->releaseSurface (myScreen, this);
 
   releaseChromaColor ();
   releaseBorderColor ();
@@ -54,7 +54,7 @@ SDLSurface::~SDLSurface ()
   releaseFont ();
 
   if (w != NULL
-      && G_DisplayManager->hasWindow (myScreen,
+      && Ginga_Display->hasWindow (myScreen,
                                                           w->getId ()))
     {
 
@@ -228,7 +228,7 @@ SDLSurface::releaseFont ()
 {
   if (iFont != NULL)
     {
-      G_DisplayManager->releaseFontProvider (
+      Ginga_Display->releaseFontProvider (
           myScreen, iFont->getId ());
       iFont = NULL;
     }
@@ -699,7 +699,7 @@ SDLSurface::createSurface ()
   if (win == NULL)
     return NULL;
 
-  if (G_DisplayManager->hasWindow (myScreen,
+  if (Ginga_Display->hasWindow (myScreen,
                                                        win->getId ()))
     {
       w = win->getW ();

@@ -295,7 +295,7 @@ SDLFontProvider::playOver (GingaSurfaceID surface)
 
   Thread::mutexLock (&ntsMutex);
   this->content
-      = G_DisplayManager->getISurfaceFromId (surface);
+      = Ginga_Display->getISurfaceFromId (surface);
 
   if (font == NULL)
     {
@@ -309,7 +309,7 @@ SDLFontProvider::playOver (GingaSurfaceID surface)
         }
     }
 
-  if (G_DisplayManager->hasSurface (myScreen,
+  if (Ginga_Display->hasSurface (myScreen,
                                                         content->getId ()))
     {
 

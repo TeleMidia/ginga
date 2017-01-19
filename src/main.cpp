@@ -1,4 +1,4 @@
-/* Copyright (C) 2007-2017 PUC-Rio/Laboratorio TeleMidia
+/* Copyright (C) 2006-2017 PUC-Rio/Laboratorio TeleMidia
 
 This file is part of Ginga (Ginga-NCL).
 
@@ -489,9 +489,9 @@ main (int argc, char *argv[])
   clog << "NCLFILE = '" << nclFile.c_str () << "'";
   clog << endl;
 
-  _G_DisplayManager = new DisplayManager ();
+  _Ginga_Display = new DisplayManager ();
 
-  screenId = _G_DisplayManager->createScreen (argc, argv);
+  screenId = Ginga_Display->createScreen (argc, argv);
   if (screenId < 0)
     {
       clog << "ginga main() Warning! Can't create Ginga screen";

@@ -59,7 +59,7 @@ AdapterMirrorPlayer::createPlayer ()
           if (fRegion != NULL)
             {
               ncmRegion = fRegion->getLayoutRegion ();
-              mirrorSur = G_DisplayManager->createSurface (
+              mirrorSur = Ginga_Display->createSurface (
                   myScreen, ncmRegion->getWidthInPixels (),
                   ncmRegion->getHeightInPixels ());
 

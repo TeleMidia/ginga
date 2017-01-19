@@ -48,7 +48,7 @@ FormatterFocusManager::FormatterFocusManager (
   DisplayManager::addMEListenerInstance (this);
 
   myScreen = playerManager->getNclPlayerData ()->screenId;
-  im = G_DisplayManager->getInputManager (myScreen);
+  im = Ginga_Display->getInputManager (myScreen);
   focusTable = new map<string, set<NclExecutionObject *> *>;
   currentFocus = "";
   objectToSelect = "";
