@@ -15,7 +15,7 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "config.h"
+#include "ginga.h"
 
 #include "lssm/CommonCoreManager.h"
 #include "lssm/PresentationEngineManager.h"
@@ -52,15 +52,6 @@ printHelp ()
   cout << "    --set-interfaceId         Set the interface that the ";
   cout << "document presentation" << endl;
   cout << "                                shall be started." << endl;
-  cout
-      << "-i, --insert-delay <value>    Insert a delay before application ";
-  cout << "processing." << endl;
-  cout << "-i, --insert-oc-delay <value> Insert a delay before tune main "
-          "A/V";
-  cout << " (to" << endl;
-  cout
-      << "                              exclusively process OC elementary ";
-  cout << "streams)." << endl;
   cout << "-v, --version                 Display version." << endl;
   cout << "    --enable-log [mode]       Enable log mode:" << endl;
   cout << "                                Turn on verbosity, gather all";
@@ -223,7 +214,7 @@ main (int argc, char *argv[])
 #endif
   GingaScreenID screenId;
 
-  string nclFile = "", param = "", bgUri = "", cmdFile = "", tSpec = "";
+  string file = "", param = "", bgUri = "", cmdFile = "", tSpec = "";
   string interfaceId = "";
 
   int i, devClass = 0;
@@ -264,9 +255,9 @@ main (int argc, char *argv[])
         }
       else if ((strcmp (argv[i], "--ncl") == 0) && ((i + 1) < argc))
         {
-          nclFile.assign (argv[i + 1], strlen (argv[i + 1]));
-          clog << "argv = '" << argv[i + 1] << "' nclFile = '";
-          clog << nclFile << "'" << endl;
+          file.assign (argv[i + 1], strlen (argv[i + 1]));
+          clog << "argv = '" << argv[i + 1] << "' file = '";
+          clog << file << "'" << endl;
         }
       else if ((strcmp (argv[i], "--enable-log") == 0) && ((i + 1) < argc))
         {
@@ -374,27 +365,6 @@ main (int argc, char *argv[])
               deviceSrvPort = ::ginga::util::stof (argv[i + 1]);
             }
         }
-      else if (((strcmp (argv[i], "-i") == 0)
-                || (strcmp (argv[i], "--insert-delay") == 0))
-               && ((i + 1) < argc))
-        {
-
-          if (isNumeric (argv[i + 1]))
-            {
-              param = argv[i + 1];
-              delayTime = ::ginga::util::stof (param);
-            }
-        }
-      else if (strcmp (argv[i], "--insert-oc-delay") == 0
-               && ((i + 1) < argc))
-        {
-
-          if (isNumeric (argv[i + 1]))
-            {
-              param = argv[i + 1];
-              ocDelay = ::ginga::util::stof (param);
-            }
-        }
       else if (strcmp (argv[i], "--enable-automount") == 0)
         {
           autoMount = true;
@@ -465,29 +435,20 @@ main (int argc, char *argv[])
       SystemCompat::setLogTo (logDest, "_active");
     }
 
-  if (delayTime > 0)
-    {
-      g_usleep (delayTime);
-    }
 
   initTimeStamp ();
-  if (nclFile != "")
+  if (file != "")
     {
-      nclFile = SystemCompat::updatePath (updateFileUri (nclFile));
+      file = SystemCompat::updatePath (updateFileUri (file));
 
-      if (argc > 1 && nclFile.substr (0, 1) != SystemCompat::getIUriD ()
-          && nclFile.substr (1, 2) != ":" + SystemCompat::getIUriD ())
+      if (argc > 1 && file.substr (0, 1) != SystemCompat::getIUriD ()
+          && file.substr (1, 2) != ":" + SystemCompat::getIUriD ())
         {
 
           clog << "ginga main() remote NCLFILE" << endl;
           isRemoteDoc = true;
         }
     }
-
-  clog << "ginga main()";
-  clog << "COMMAND = '" << argv[0] << "' ";
-  clog << "NCLFILE = '" << nclFile.c_str () << "'";
-  clog << endl;
 
   _Ginga_Display = new DisplayManager ();
 
@@ -526,7 +487,7 @@ main (int argc, char *argv[])
     }
   else
     {
-      if (nclFile == "")
+      if (file == "")
         {
           enableGfx = false;
         }
@@ -559,7 +520,7 @@ main (int argc, char *argv[])
       pem->setDisableFKeys (disableFKeys);
       pem->setDebugWindow (debugWindow);
       pem->setInteractivityInfo (hasInteract);
-      if (nclFile == "")
+      if (file == "")
         {
           pem->setIsLocalNcl (false, NULL);
           pem->autoMountOC (autoMount);
@@ -580,13 +541,13 @@ main (int argc, char *argv[])
               ccm->tune ();
             }
         }
-      else if (fileExists (nclFile) || isRemoteDoc)
+      else if (fileExists (file) || isRemoteDoc)
         {
-          clog << "ginga main() NCLFILE = " << nclFile.c_str () << endl;
+          clog << "ginga main() NCLFILE = " << file.c_str () << endl;
           pem->setIsLocalNcl (forceQuit, NULL);
-          if (pem->openNclFile (nclFile))
+          if (pem->openNclFile (file))
             {
-              pem->startPresentation (nclFile, interfaceId);
+              pem->startPresentation (file, interfaceId);
               pem->waitUnlockCondition ();
             }
         }
@@ -610,9 +571,6 @@ main (int argc, char *argv[])
         }
     }
 
-  clog << "Ginga v" << VERSION << " all done!" << endl;
-  cout << "Ginga v" << VERSION << " all done!" << endl;
-  g_usleep (500000);
 
   return 0;
 }

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef SDLDEVICESCREEN_H_
 #define SDLDEVICESCREEN_H_
 
-#include "config.h"
+#include "ginga.h"
 
 #include "InputManager.h"
 #include "SDLEventBuffer.h"

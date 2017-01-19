@@ -27,7 +27,7 @@ using namespace ::ginga::util;
 #include "ctxmgmt/SystemInfo.h"
 using namespace ::ginga::ctxmgmt;
 
-#include "config.h"
+#include "ginga.h"
 
 #if WITH_MULTIDEVICE
 #include "multidev/DeviceDomain.h"

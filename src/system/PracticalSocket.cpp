@@ -18,7 +18,7 @@
  * USA
  */
 
-#include "config.h"
+#include "ginga.h"
 #include "PracticalSocket.h"
 
 std::string

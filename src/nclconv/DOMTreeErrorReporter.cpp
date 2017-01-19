@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "config.h"
+#include "ginga.h"
 #include "DOMTreeErrorReporter.h"
 
 void

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PrefecthManager_H_
 #define PrefecthManager_H_
 
-#include "config.h"
+#include "ginga.h"
 
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
