@@ -42,6 +42,24 @@ using namespace ::ginga::util;
 using namespace ::ginga::multidev;
 #endif
 
+#define usage_error(fmt, ...) _error (TRUE, fmt, ## __VA_ARGS__)
+#define print_error(fmt, ...) _error (FALSE, fmt, ## __VA_ARGS__)
+
+static void
+_error (gboolean try_help, const gchar *format, ...)
+{
+  va_list args;
+  const gchar *me = g_get_application_name ();
+
+  g_fprintf (stderr, "%s: ", me);
+  va_start (args, format);
+  g_vfprintf (stderr, format, args);
+  va_end (args);
+  g_fprintf (stderr, "\n");
+  if (try_help)
+    g_fprintf (stderr, "Try '%s --help' for more information.\n", me);
+}
+
 void
 printHelp ()
 {
@@ -124,58 +142,6 @@ printHelp ()
   cout << "                                 --set-tuner ip:224.0.0.1:1234"
        << endl;
   cout << "                                             (...)" << endl;
-  cout
-      << "    --disable-unload          Disable unload components. Useful ";
-  cout << "for debug. " << endl;
-  cout << "    --vsystem <vsystem>       Specifies the video backend to "
-          "use.";
-  cout << endl;
-  cout << "                              The default is to use DirectFB "
-          "(dfb";
-  cout << ") for Linux " << endl;
-  cout << "                              and SDL (sdl) for other OS but "
-          "you ";
-  cout << "can also " << endl;
-  cout << "                              run Ginga on Linux with SDL.";
-  cout << endl;
-  cout << "    --vsubsystem <vsubsystem> Specifies the graphics system to "
-          "be";
-  cout << " used by the " << endl;
-  cout
-      << "                              multimedia backend. For instance: ";
-  cout << endl;
-  cout << "                                 --vsystem dfb --vsubsystem "
-          "fbdev";
-  cout << endl;
-  cout << "                                 --vsystem dfb --vsubsystem x11";
-  cout << endl;
-  cout << "                                 --vsystem dfb --vsubsystem sdl";
-  cout << endl;
-  cout << "                                 --vsystem sdl --vsubsystem x11";
-  cout << endl;
-  cout << "                                 --vsystem sdl --vsubsystem "
-          "cocoa";
-  cout << endl;
-  cout << "                                             (...)" << endl;
-  cout << "    --asystem <asystem>       Specifies the audio backend to "
-          "use.";
-  cout << endl;
-  cout
-      << "                              The default is to use xine (xine) ";
-  cout << "for Linux " << endl;
-  cout << "                              and SDL (sdlffmpeg) for other OS ";
-  cout << "but you can also " << endl;
-  cout << "                              run sdlffmpeg on Linux.";
-  cout << endl;
-  cout << "                              For instance:" << endl;
-  cout << "                              With dfb vsystem" << endl;
-  cout
-      << "                                 --asystem fusionsound (default)";
-  cout << endl;
-  cout << "                                 --asystem xine";
-  cout << endl;
-  cout << "                              With sdl vsystem" << endl;
-  cout << "                                 --asystem sdlffmpeg (default)";
   cout << endl;
   cout << "    --vmode <width>x<height>  Specifies the Video Window size.";
   cout << endl;
@@ -185,35 +151,15 @@ printHelp ()
   cout << endl;
   cout << "    --poll-stdin              Poll for events using stdin.";
   cout << endl;
-  cout << "    --enable-debug-window     Prints ginga windows hierarchy "
-          "and ";
-  cout << "dump their media contents.";
-  cout << endl;
   cout << "    --disable-demuxer         Disables Ginga demuxer.";
   cout << endl;
   cout << endl << endl << endl;
 }
 
-string
-updateFileUri (string file)
-{
-  if (!SystemCompat::isAbsolutePath (file))
-    {
-      return SystemCompat::getUserCurrentPath () + file;
-    }
-  return file;
-}
-
 int
 main (int argc, char *argv[])
 {
-  CommonCoreManager *ccm = NULL;
   PresentationEngineManager *pem = NULL;
-#if WITH_MULTIDEVICE
-  FormatterMultiDevice *fmd = NULL;
-#endif
-  GingaScreenID screenId;
-
   string file = "", param = "", bgUri = "", cmdFile = "", tSpec = "";
   string interfaceId = "";
 
@@ -233,7 +179,6 @@ main (int argc, char *argv[])
   bool exitOnEnd = false;
   bool disableFKeys = false;
   bool useMulticast = true;
-  bool debugWindow = false;
   bool nptPrinter = false;
   short logDest = SystemCompat::LOG_NULL;
 
@@ -416,161 +361,50 @@ main (int argc, char *argv[])
         {
           disableFKeys = true;
         }
-      else if (strcmp (argv[i], "--enable-debug-window") == 0)
-        {
-          debugWindow = true;
-        }
     }
 
-  if (devClass == 0)
-    {
-      SystemCompat::setLogTo (logDest, "_base");
-    }
-  else if (devClass == 1)
-    {
-      SystemCompat::setLogTo (logDest, "_passive");
-    }
-  else if (devClass == 2)
-    {
-      SystemCompat::setLogTo (logDest, "_active");
-    }
+
+  // TODO: Add support to multi-devices (old --devClass option).
+  // TODO: Add support to remote NCL files.
+  // TODO: Add ISDBT tuning support.
 
 
-  initTimeStamp ();
-  if (file != "")
-    {
-      file = SystemCompat::updatePath (updateFileUri (file));
+  GingaScreenID screen;
+  int xoffset, yoffset, width, height;
 
-      if (argc > 1 && file.substr (0, 1) != SystemCompat::getIUriD ()
-          && file.substr (1, 2) != ":" + SystemCompat::getIUriD ())
-        {
-
-          clog << "ginga main() remote NCLFILE" << endl;
-          isRemoteDoc = true;
-        }
-    }
+  g_set_prgname ("ginga");
+  g_assert (file != "");
 
   _Ginga_Display = new DisplayManager ();
+  screen = Ginga_Display->createScreen (argc, argv);
 
-  screenId = Ginga_Display->createScreen (argc, argv);
-  if (screenId < 0)
+  xoffset = 0;
+  yoffset = 0;
+  width = 800;
+  height = 600;
+  pem = new PresentationEngineManager (0, xoffset, yoffset, width, height,
+                                       true, false, screen);
+  g_assert_nonnull (pem);
+  pem->setEmbedApp (false);
+  pem->setExitOnEnd (false);
+  pem->setDisableFKeys (false);
+  pem->setInteractivityInfo (true);
+  pem->setIsLocalNcl (false, NULL);
+  if (!pem->openNclFile (file))
     {
-      clog << "ginga main() Warning! Can't create Ginga screen";
-      clog << endl;
-      exit (-1);
+      print_error ("cannot open NCL file: %s", file.c_str ());
+      //
+      // FIXME: The next instruction causes the process to freeze.
+      // delete pem;
+      //
+      exit (EXIT_FAILURE);
     }
 
-  if (devClass == 1)
-    {
-#if WITH_MULTIDEVICE
-      fmd = new FormatterPassiveDevice (screenId, NULL, xOffset, yOffset, w,
-                                        h, useMulticast, deviceSrvPort);
-      if (bgUri != "")
-        {
-          fmd->setBackgroundImage (bgUri);
-        }
-      while (true)
-        g_usleep (1000000); // getchar();
-#endif
-    }
-  else if (devClass == 2)
-    {
-#if WITH_MULTIDEVICE
-      fmd = new FormatterActiveDevice (screenId, NULL, xOffset, yOffset, w,
-                                       h, useMulticast, deviceSrvPort);
-      if (bgUri != "")
-        {
-          fmd->setBackgroundImage (bgUri);
-        }
-#endif
-      getchar ();
-    }
-  else
-    {
-      if (file == "")
-        {
-          enableGfx = false;
-        }
-      pem = new PresentationEngineManager (devClass, xOffset, yOffset, w, h,
-                                           enableGfx, useMulticast,
-                                           screenId);
-      if (pem == NULL)
-        {
-          clog << "ginga main() Warning! Can't create Presentation Engine";
-          clog << endl;
-          return -2;
-        }
-      pem->setEmbedApp (false);
-
-      if (bgUri != "")
-        {
-          clog << endl << endl;
-          clog << "main '" << bgUri << "'" << endl;
-          clog << endl << endl;
-          pem->setBackgroundImage (bgUri);
-        }
-
-      if (cmdFile != "")
-        {
-          cmdFile = updateFileUri (cmdFile);
-          pem->setCmdFile (cmdFile);
-        }
-
-      pem->setExitOnEnd (exitOnEnd);
-      pem->setDisableFKeys (disableFKeys);
-      pem->setDebugWindow (debugWindow);
-      pem->setInteractivityInfo (hasInteract);
-      if (file == "")
-        {
-          pem->setIsLocalNcl (false, NULL);
-          pem->autoMountOC (autoMount);
-
-          ccm = new CommonCoreManager ();
-          ccm->addPEM (pem, screenId);
-          ccm->enableNPTPrinter (nptPrinter);
-          ccm->setInteractivityInfo (hasOCSupport);
-          ccm->removeOCFilterAfterMount (removeOCFilter);
-          ccm->setOCDelay (ocDelay);
-          ccm->setTunerSpec (tSpec);
-          if (tSpec.find ("scan") == std::string::npos)
-            {
-              ccm->startPresentation ();
-            }
-          else
-            {
-              ccm->tune ();
-            }
-        }
-      else if (fileExists (file) || isRemoteDoc)
-        {
-          clog << "ginga main() NCLFILE = " << file.c_str () << endl;
-          pem->setIsLocalNcl (forceQuit, NULL);
-          if (pem->openNclFile (file))
-            {
-              pem->startPresentation (file, interfaceId);
-              pem->waitUnlockCondition ();
-            }
-        }
-      else
-        {
-          clog << "ginga main() nothing to do..." << endl;
-        }
-
-      if (pem != NULL)
-        {
-          clog << "ginga main() calling delete pem" << endl;
-          delete pem;
-          clog << "ginga main() delete pem all done" << endl;
-        }
-
-      if (ccm != NULL)
-        {
-          clog << "ginga main() calling delete ccm" << endl;
-          delete ccm;
-          clog << "ginga main() calling delete ccm all done" << endl;
-        }
-    }
-
-
-  return 0;
+  pem->startPresentation (file, "");
+  pem->waitUnlockCondition ();
+  //
+  // FIXME: The next instruction causes the process to freeze.
+  // delete pem;
+  //
+  exit (EXIT_SUCCESS);
 }

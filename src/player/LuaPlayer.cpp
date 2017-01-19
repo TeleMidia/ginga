@@ -28,7 +28,6 @@ GINGA_PLAYER_BEGIN
 
 #define ASSERT_NOT_REACHED (assert (!"reached"), ::abort ())
 #define nelementsof(x) (sizeof (x) / sizeof (x[0]))
-#define streq(a, b) ((*(a) == *(b)) && strcmp (a, b) == 0)
 
 #ifdef _MSC_VER
 #define snprintf _snprintf

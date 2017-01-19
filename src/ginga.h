@@ -150,4 +150,6 @@ typedef unsigned int GingaProviderID;
              "global variable %s is null", G_STRINGIFY (G)),    \
       ((Type) NULL)))
 
+#define streq(a,b) (g_strcmp0 ((a),(b)) == 0)
+
 #endif /* GINGA_H */

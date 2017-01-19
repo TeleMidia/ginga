@@ -76,7 +76,6 @@ SDLDeviceScreen::SDLDeviceScreen (int argc, char **args, GingaScreenID myId,
   pthread_attr_setdetachstate (&tattr, PTHREAD_CREATE_DETACHED);
   pthread_attr_setscope (&tattr, PTHREAD_SCOPE_SYSTEM);
 
-  aSystem = "";
   aspect = DSA_UNKNOWN;
   hSize = 0;
   vSize = 0;
@@ -121,31 +120,15 @@ SDLDeviceScreen::SDLDeviceScreen (int argc, char **args, GingaScreenID myId,
               fullScreen = true;
             }
         }
-      else if ((strcmp (args[i], "audio") == 0) && ((i + 1) < argc))
-        {
-          aSystem.assign (args[i + 1]);
-        }
       else if ((strcmp (args[i], "poll-stdin") == 0))
         {
           useStdin = true;
         }
     }
 
-  if (aSystem != "" && aSystem != "sdlffmpeg")
-    {
-      clog << "SDLDeviceScreen::SDLDeviceScreen Warning! Audio ";
-      clog << "system not supported: '" << aSystem << "'! Using ";
-      clog << "SDL2_ffmpeg instead." << endl;
-    }
-  aSystem = "SDLAudioProvider";
 #ifdef _MSC_VER
   putenv ("SDL_AUDIODRIVER=DirectSound");
 #endif
-  if (mbSubSystem == "dfb")
-    {
-      mbSubSystem = "directfb";
-    }
-
   if (uEmbedId == NULL)
     {
       setEmbedFromParent (parentCoords);

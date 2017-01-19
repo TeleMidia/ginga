@@ -118,7 +118,6 @@ PresentationEngineManager::PresentationEngineManager (
   this->dsmccListener = new DataWrapperListener (this);
 #endif
 
-  this->debugWindow = false;
   this->exitOnEnd = false;
   this->disableFKeys = false;
 
@@ -167,14 +166,6 @@ PresentationEngineManager::~PresentationEngineManager ()
 
   clog << "PresentationEngineManager::~PresentationEngineManager";
   clog << " all done" << endl;
-}
-
-void
-PresentationEngineManager::setDebugWindow (bool debugWindow)
-{
-  clog << "PresentationEngineManager::setDebugWindow '";
-  clog << debugWindow << "'" << endl;
-  this->debugWindow = debugWindow;
 }
 
 void
@@ -524,11 +515,6 @@ PresentationEngineManager::registerKeys ()
   keys->insert (CodeMap::KEY_CHANNEL_DOWN);
 #endif
 
-  if (debugWindow)
-    {
-      keys->insert (CodeMap::KEY_SMALL_W);
-    }
-
   if (!commands.empty ())
     {
       keys->insert (CodeMap::KEY_PLUS_SIGN);
@@ -683,7 +669,6 @@ bool
 PresentationEngineManager::openNclFile (string fname)
 {
   INCLPlayer *formatter;
-  double time = getCurrentTimeMillis ();
 
   lock ();
   if (formatters.find (fname) != formatters.end ())
@@ -694,11 +679,6 @@ PresentationEngineManager::openNclFile (string fname)
       unlock ();
       return false;
     }
-
-  time = getCurrentTimeMillis () - time;
-  clog << "PresentationEngineManager::openNclFile";
-  clog << " document process time: " << time;
-  clog << endl;
 
   formatter = createNclPlayer (itos (currentPrivateBaseId), fname);
   unlock ();
@@ -1294,7 +1274,6 @@ PresentationEngineManager::eventReceived (void *ptr)
 
       p->sb->stop ();
       g_usleep (500000);
-      printTimeStamp ();
 
       p->setIsLocalNcl (true, NULL);
       p->stopAllPresentations ();

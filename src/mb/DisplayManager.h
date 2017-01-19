@@ -106,9 +106,8 @@ public:
   GingaScreenID createScreen (int argc, char **args);
 
 protected:
-  GingaScreenID createScreen (string vSystem, string vSubSystem,
-                              string vMode, string vParent, string vEmbed,
-                              string aSystem, bool externalRenderer,
+  GingaScreenID createScreen (string vMode, string vParent, string vEmbed,
+                              bool externalRenderer,
                               bool useStdin);
 
 public:

@@ -29,8 +29,6 @@ GINGA_UTIL_BEGIN
 string ultostr (unsigned long int value);
 double strUTCToSec (string utcValue);
 string cvtPercentual (string value, bool *isPercentual);
-void initTimeStamp ();
-void printTimeStamp ();
 string intToStrHexa (int value);
 int strHexaToInt (string value);
 string upperCase (string s);
