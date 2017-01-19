@@ -49,13 +49,10 @@ extern "C" {
 #ifdef WINSTRUCTS
 #include <Ws2tcpip.h>
 #endif
-#pragma comment(lib, "ws2_32.lib")
-
 #else
-#if HAVE_SYS_SYSINFO_H
-#include <sys/sysinfo.h>
-#endif
-
+// #if HAVE_SYS_SYSINFO_H
+// #include <sys/sysinfo.h>
+// #endif
 #if (defined HAVE_SYS_SOCKET_H || defined HAVE_IF_H)
 #ifdef STDC_HEADERS
 #include <stdlib.h>

@@ -74,11 +74,11 @@ SystemInfo::printSysTable ()
 }
 
 void
-SystemInfo::setSystemTable (map<string, string> *sysTable)
+SystemInfo::setSystemTable (map<string, string> *t)
 {
   if (this->sysTable != NULL)
     delete this->sysTable;
-  this->sysTable = sysTable;
+  this->sysTable = t;
 }
 
 string

@@ -47,9 +47,9 @@ public:
     return id;
   }
   void
-  setId (const GingaProviderID &id)
+  setId (const GingaProviderID &_id)
   {
-    this->id = id;
+    this->id = _id;
   }
 
 protected:

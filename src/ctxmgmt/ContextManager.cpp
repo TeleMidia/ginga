@@ -101,7 +101,7 @@ ContextManager::initializeUsers ()
           if (line == "=")
             {
               fis >> line;
-              curUserId = ::ginga::util::stof (line);
+              curUserId = ::std::stoi (line);
             }
           else
             {
@@ -247,7 +247,7 @@ ContextManager::initializeContexts ()
           if (line == "=")
             {
               fis >> line;
-              curUserId = ::ginga::util::stof (line);
+              curUserId = std::stoi (line);
             }
         }
 
@@ -335,11 +335,8 @@ ContextManager::saveUsersAccounts ()
 
   remove (usersUri.c_str ());
   fd = fopen (usersUri.c_str (), "w+b");
-
-  if (fd <= 0)
-    {
-      return;
-    }
+  if (fd == 0)
+    return;
 
   GingaUser::saveString (fd, ":: =");
   GingaUser::saveString (fd, itos (curUserId));
@@ -364,11 +361,8 @@ ContextManager::saveUsersProfiles ()
 
   remove (contextsUri.c_str ());
   fd = fopen (contextsUri.c_str (), "w+b");
-
-  if (fd <= 0)
-    {
-      return;
-    }
+  if (fd == NULL)
+    return;
 
   GingaUser::saveString (fd, ":: =");
   GingaUser::saveString (fd, itos (curUserId));

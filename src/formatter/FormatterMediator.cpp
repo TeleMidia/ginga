@@ -2856,8 +2856,6 @@ FormatterMediator::removeNode (string documentId, string compositeId,
     }
 
   compositeNode->removeNode (node);
-
-  // TODO: is it here?
   setIt = nodeInterfaces->begin ();
   while (setIt != nodeInterfaces->end ())
     {

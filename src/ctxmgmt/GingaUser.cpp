@@ -23,10 +23,10 @@ using namespace ::ginga::util;
 
 GINGA_CTXMGMT_BEGIN
 
-GingaUser::GingaUser (int userId, string userName, string passwd)
+GingaUser::GingaUser (int id, string name, string passwd)
 {
-  this->userId = userId;
-  this->userName = userName;
+  this->userId = id;
+  this->userName = name;
   this->userPasswd = passwd;
   this->userLocation = "";
   this->userAge = 0;
@@ -81,35 +81,35 @@ GingaUser::setPassword (string oldPasswd, string newPasswd)
 }
 
 void
-GingaUser::setUserName (string passwd, string userName)
+GingaUser::setUserName (string passwd, string name)
 {
   if (passwd != userPasswd)
     return;
-  this->userName = userName;
+  this->userName = name;
 }
 
 void
-GingaUser::setUserAge (string passwd, int userAge)
+GingaUser::setUserAge (string passwd, int age)
 {
   if (passwd != userPasswd)
     return;
-  this->userAge = userAge;
+  this->userAge = age;
 }
 
 void
-GingaUser::setUserLocation (string passwd, string userLocation)
+GingaUser::setUserLocation (string passwd, string location)
 {
   if (passwd != userPasswd)
     return;
-  this->userLocation = userLocation;
+  this->userLocation = location;
 }
 
 void
-GingaUser::setUserGenre (string passwd, char userGenre)
+GingaUser::setUserGenre (string passwd, char genre)
 {
   if (passwd != userPasswd)
     return;
-  this->userGenre = userGenre;
+  this->userGenre = genre;
 }
 
 void
