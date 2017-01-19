@@ -139,7 +139,7 @@ SDLVideoProvider::playOver (GingaSurfaceID surface)
   SDLWindow *parent;
 
   SDLDeviceScreen::addCMPToRendererList (this);
-  parentId = G_DisplayManager->getSurfaceParentWindow (
+  parentId = Ginga_Display->getSurfaceParentWindow (
       surface);
 
   if (parentId == 0)
@@ -148,13 +148,13 @@ SDLVideoProvider::playOver (GingaSurfaceID surface)
       return;
     }
 
-  parent = (SDLWindow *)(G_DisplayManager
+  parent = (SDLWindow *)(Ginga_Display
                              ->getIWindowFromId (myScreen, parentId));
 
   clog << "SDLVideoProvider::playOver parent(" << parent << ")" << endl;
-  if (G_DisplayManager->hasWindow (myScreen, parentId))
+  if (Ginga_Display->hasWindow (myScreen, parentId))
     {
-      win = (SDLWindow *)G_DisplayManager
+      win = (SDLWindow *)Ginga_Display
                 ->getIWindowFromId (myScreen, parentId);
       if (hasTex)
         {

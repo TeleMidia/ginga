@@ -121,8 +121,8 @@ InputManager::release ()
       runDone = (maxX == 0 && maxY == 0);
     }
 
-  mbKeyCode = G_DisplayManager->fromGingaToMB (myScreen, CodeMap::KEY_QUIT);
-  ie = G_DisplayManager->createInputEvent (myScreen, NULL, mbKeyCode);
+  mbKeyCode = Ginga_Display->fromGingaToMB (myScreen, CodeMap::KEY_QUIT);
+  ie = Ginga_Display->createInputEvent (myScreen, NULL, mbKeyCode);
 
   if (wasRunning)
     {
@@ -638,8 +638,8 @@ InputManager::postInputEvent (int keyCode)
   SDLInputEvent *ie;
   int mbKeyCode;
 
-  mbKeyCode = G_DisplayManager->fromGingaToMB (myScreen, keyCode);
-  ie = G_DisplayManager->createInputEvent (myScreen, NULL, mbKeyCode);
+  mbKeyCode = Ginga_Display->fromGingaToMB (myScreen, keyCode);
+  ie = Ginga_Display->createInputEvent (myScreen, NULL, mbKeyCode);
   postInputEvent (ie);
 }
 
@@ -684,7 +684,7 @@ InputManager::getEventBuffer ()
 {
   if (eventBuffer == NULL)
     {
-      eventBuffer= G_DisplayManager->createEventBuffer (myScreen);
+      eventBuffer= Ginga_Display->createEventBuffer (myScreen);
       if (!running)
         {
           running = true;

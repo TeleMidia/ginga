@@ -78,16 +78,16 @@ Player::~Player ()
     }
   mirrors.clear ();
 
-  if (G_DisplayManager->hasWindow (myScreen, outputWindow))
+  if (Ginga_Display->hasWindow (myScreen, outputWindow))
     {
-      G_DisplayManager->revertWindowContent (myScreen, outputWindow);
-      G_DisplayManager->deleteWindow (myScreen, outputWindow);
+      Ginga_Display->revertWindowContent (myScreen, outputWindow);
+      Ginga_Display->deleteWindow (myScreen, outputWindow);
       outputWindow = 0;
     }
 
-  if (G_DisplayManager->hasSurface (myScreen, surface))
+  if (Ginga_Display->hasSurface (myScreen, surface))
     {
-      G_DisplayManager->deleteSurface (surface);
+      Ginga_Display->deleteSurface (surface);
       surface = 0;
     }
 
@@ -369,7 +369,7 @@ Player::setSurface (GingaSurfaceID surface)
 {
   if (this->surface != 0)
     {
-      G_DisplayManager->deleteSurface (surface);
+      Ginga_Display->deleteSurface (surface);
       this->surface = 0;
     }
   this->surface = surface;
@@ -450,11 +450,11 @@ Player::mirrorIt (Player *mirrorSrc, Player *mirror)
       iSur = mirror->getSurface ();
       if (iSrcSur != 0 && iSur != 0)
         {
-          iSrcWin = G_DisplayManager->getSurfaceParentWindow (iSrcSur);
-          iWin = G_DisplayManager->getSurfaceParentWindow (iSur);
+          iSrcWin = Ginga_Display->getSurfaceParentWindow (iSrcSur);
+          iWin = Ginga_Display->getSurfaceParentWindow (iSur);
           if (iSrcWin != 0 && iWin != 0)
             {
-              G_DisplayManager->setWindowMirrorSrc (myScreen, iWin, iSrcWin);
+              Ginga_Display->setWindowMirrorSrc (myScreen, iWin, iSrcWin);
             }
         }
     }
@@ -546,7 +546,7 @@ Player::setPropertyValue (string name, string value)
           params = split (value, ",");
           if (params->size () == 4)
             {
-              G_DisplayManager->setWindowBounds (myScreen, outputWindow,
+              Ginga_Display->setWindowBounds (myScreen, outputWindow,
                                    ::ginga::util::stof ((*params)[0]),
                                    ::ginga::util::stof ((*params)[1]),
                                    ::ginga::util::stof ((*params)[2]),
@@ -559,7 +559,7 @@ Player::setPropertyValue (string name, string value)
           params = split (value, ",");
           if (params->size () == 2)
             {
-              G_DisplayManager->moveWindowTo (myScreen, outputWindow,
+              Ginga_Display->moveWindowTo (myScreen, outputWindow,
                                 ::ginga::util::stof ((*params)[0]),
                                 ::ginga::util::stof ((*params)[1]));
             }
@@ -570,7 +570,7 @@ Player::setPropertyValue (string name, string value)
           params = split (value, ",");
           if (params->size () == 2)
             {
-              G_DisplayManager->resizeWindow (myScreen, outputWindow,
+              Ginga_Display->resizeWindow (myScreen, outputWindow,
                                 ::ginga::util::stof ((*params)[0]),
                                 ::ginga::util::stof ((*params)[1]));
             }
@@ -578,27 +578,27 @@ Player::setPropertyValue (string name, string value)
         }
       else if (name == "left")
         {
-          G_DisplayManager->setWindowX (myScreen, outputWindow,
+          Ginga_Display->setWindowX (myScreen, outputWindow,
                           ::ginga::util::stof (value));
         }
       else if (name == "top")
         {
-          G_DisplayManager->setWindowY (myScreen, outputWindow,
+          Ginga_Display->setWindowY (myScreen, outputWindow,
                           ::ginga::util::stof (value));
         }
       else if (name == "width")
         {
-          G_DisplayManager->setWindowW (myScreen, outputWindow,
+          Ginga_Display->setWindowW (myScreen, outputWindow,
                           ::ginga::util::stof (value));
         }
       else if (name == "height")
         {
-          G_DisplayManager->setWindowH (myScreen, outputWindow,
+          Ginga_Display->setWindowH (myScreen, outputWindow,
                           ::ginga::util::stof (value));
         }
       else if (name == "transparency")
         {
-          G_DisplayManager->setWindowCurrentTransparency (myScreen, outputWindow,
+          Ginga_Display->setWindowCurrentTransparency (myScreen, outputWindow,
                                             ::ginga::util::stof (value));
         }
     }
@@ -778,9 +778,9 @@ Player::isForcedNaturalEnd ()
 bool
 Player::setOutWindow (GingaWindowID windowId)
 {
-  if (surface != 0 && G_DisplayManager->getSurfaceParentWindow (surface) == 0)
+  if (surface != 0 && Ginga_Display->getSurfaceParentWindow (surface) == 0)
     {
-      G_DisplayManager->setSurfaceParentWindow (myScreen, surface, windowId);
+      Ginga_Display->setSurfaceParentWindow (myScreen, surface, windowId);
     }
   return true;
 }

@@ -50,7 +50,7 @@ ImagePlayer::ImagePlayer (GingaScreenID screenId, string mrl)
 
   if (fileExists (mrl))
     {
-      provider = G_DisplayManager->createImageProvider (myScreen, mrl.c_str ());
+      provider = Ginga_Display->createImageProvider (myScreen, mrl.c_str ());
     }
   else
     {
@@ -103,7 +103,7 @@ ImagePlayer::ImagePlayer (GingaScreenID screenId, string mrl)
               if (fileExists (newMrl))
                 {
                   provider
-                      = G_DisplayManager->createImageProvider (myScreen, newMrl.c_str ());
+                      = Ginga_Display->createImageProvider (myScreen, newMrl.c_str ());
                 }
               else
                 {
@@ -133,7 +133,7 @@ ImagePlayer::~ImagePlayer ()
 {
   if (provider != 0)
     {
-      G_DisplayManager->releaseImageProvider (myScreen, provider);
+      Ginga_Display->releaseImageProvider (myScreen, provider);
     }
 }
 
@@ -146,7 +146,7 @@ ImagePlayer::play ()
       return false;
     }
 
-  G_DisplayManager->playProviderOver (provider, surface);
+  Ginga_Display->playProviderOver (provider, surface);
   return Player::play ();
 }
 
@@ -169,10 +169,10 @@ ImagePlayer::setPropertyValue (string name, string value)
 
   if (surface != 0)
     {
-      win = G_DisplayManager->getSurfaceParentWindow (surface);
+      win = Ginga_Display->getSurfaceParentWindow (surface);
       if (win != 0)
         {
-          G_DisplayManager->renderWindowFrom (myScreen, win, surface);
+          Ginga_Display->renderWindowFrom (myScreen, win, surface);
         }
     }
 
@@ -185,8 +185,8 @@ ImagePlayer::prepareSurface (GingaProviderID provider, string mrl)
 
   GingaSurfaceID renderedSurface = 0;
 
-  renderedSurface = G_DisplayManager->createSurfaceFrom (myScreen, 0);
-  G_DisplayManager->playProviderOver (provider, renderedSurface);
+  renderedSurface = Ginga_Display->createSurfaceFrom (myScreen, 0);
+  Ginga_Display->playProviderOver (provider, renderedSurface);
 
   return renderedSurface;
 }

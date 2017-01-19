@@ -47,16 +47,16 @@ ShowButton::initializeWindow ()
 {
   int x = 0, y, w, h;
 
-  x = (int)(G_DisplayManager->getDeviceWidth (myScreen) - 70);
+  x = (int)(Ginga_Display->getDeviceWidth (myScreen) - 70);
   y = 10;
   w = 60;
   h = 60;
 
-  win = G_DisplayManager->createWindow (myScreen, x, y, w, h, 4.0);
+  win = Ginga_Display->createWindow (myScreen, x, y, w, h, 4.0);
 
-  int caps = G_DisplayManager->getWindowCap (myScreen, win, "ALPHACHANNEL");
-  G_DisplayManager->setWindowCaps (myScreen, win, caps);
-  G_DisplayManager->drawWindow (myScreen, win);
+  int caps = Ginga_Display->getWindowCap (myScreen, win, "ALPHACHANNEL");
+  Ginga_Display->setWindowCaps (myScreen, win, caps);
+  Ginga_Display->drawWindow (myScreen, win);
 }
 
 void
@@ -101,8 +101,8 @@ ShowButton::release ()
   lock ();
   if (win != 0)
     {
-      G_DisplayManager->hideWindow (myScreen, win);
-      G_DisplayManager->deleteWindow (myScreen, win);
+      Ginga_Display->hideWindow (myScreen, win);
+      Ginga_Display->deleteWindow (myScreen, win);
       win = 0;
     }
   unlock ();
@@ -113,7 +113,7 @@ ShowButton::render (string mrl)
 {
   GingaSurfaceID surface;
 
-  surface = G_DisplayManager->createRenderedSurfaceFromImageFile (myScreen, mrl.c_str ());
+  surface = Ginga_Display->createRenderedSurfaceFromImageFile (myScreen, mrl.c_str ());
 
   lock ();
   if (win == 0)
@@ -121,12 +121,12 @@ ShowButton::render (string mrl)
       initializeWindow ();
     }
 
-  if (G_DisplayManager->setSurfaceParentWindow (myScreen, surface, win))
+  if (Ginga_Display->setSurfaceParentWindow (myScreen, surface, win))
     {
-      G_DisplayManager->renderWindowFrom (myScreen, win, surface);
+      Ginga_Display->renderWindowFrom (myScreen, win, surface);
     }
-  G_DisplayManager->showWindow (myScreen, win);
-  G_DisplayManager->raiseWindowToTop (myScreen, win);
+  Ginga_Display->showWindow (myScreen, win);
+  Ginga_Display->raiseWindowToTop (myScreen, win);
   unlock ();
 }
 

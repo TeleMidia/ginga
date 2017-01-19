@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef DISPLAY_MANAGER_H
 #define DISPLAY_MANAGER_H
 
+#include "ginga.h"
+
 #include "SDLDeviceScreen.h"
 #include "InputManager.h"
 
@@ -395,11 +397,9 @@ protected:
 };
 
 // Global screen manager.
-extern DisplayManager *_G_DisplayManager;
-#define G_DisplayManager                                                \
-  ((::ginga::mb::_G_DisplayManager)                                     \
-   ? ::ginga::mb::_G_DisplayManager                                     \
-   : ((G_DEBUG_HERE (), ::std::abort ()), (DisplayManager *) NULL))
+extern DisplayManager *_Ginga_Display;
+#define Ginga_Display\
+ GINGA_ASSERT_GLOBAL_NONNULL (_Ginga_Display, DisplayManager *)
 
 GINGA_MB_END
 

@@ -1149,7 +1149,7 @@ SDLDeviceScreen::createRenderedSurfaceFromImageFile (const char *mrl)
       if (provider != NULL)
         {
           iSur = createSurfaceFrom (NULL);
-          G_DisplayManager->registerSurface (iSur);
+          Ginga_Display->registerSurface (iSur);
           provider->playOver (iSur->getId ());
 
           releaseImageProvider (provider);

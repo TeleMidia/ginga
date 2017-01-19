@@ -36,7 +36,7 @@ Tuner::Tuner (GingaScreenID screenId, string network, string protocol,
   currentSpec = "";
   this->screenId = screenId;
 
-  G_DisplayManager->getInputManager (screenId)->addInputEventListener (this, NULL);
+  Ginga_Display->getInputManager (screenId)->addInputEventListener (this, NULL);
 
   interfaces.clear ();
 
@@ -56,7 +56,7 @@ Tuner::~Tuner ()
 {
   clog << "Tuner::~Tuner" << endl;
 
-  G_DisplayManager->getInputManager (screenId)->removeInputEventListener (this);
+  Ginga_Display->getInputManager (screenId)->removeInputEventListener (this);
   listener = NULL;
   loopListener = NULL;
 

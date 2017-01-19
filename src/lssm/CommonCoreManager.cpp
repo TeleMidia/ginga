@@ -177,20 +177,20 @@ CommonCoreManager::showTunningWindow (GingaScreenID screenId, int x, int y,
   tunerImg = string (GINGA_TUNER_DATADIR) + "tuning.png";
   if (fileExists (tunerImg))
     {
-      tuningWindow = G_DisplayManager->createWindow (screenId, x, y, w, h, -10.0);
+      tuningWindow = Ginga_Display->createWindow (screenId, x, y, w, h, -10.0);
 
-      s = G_DisplayManager->createRenderedSurfaceFromImageFile (screenId,
+      s = Ginga_Display->createRenderedSurfaceFromImageFile (screenId,
                                                   tunerImg.c_str ());
 
-      int cap = G_DisplayManager->getWindowCap (myScreen, tuningWindow, "ALPHACHANNEL");
-      G_DisplayManager->setWindowCaps (myScreen, tuningWindow, cap);
+      int cap = Ginga_Display->getWindowCap (myScreen, tuningWindow, "ALPHACHANNEL");
+      Ginga_Display->setWindowCaps (myScreen, tuningWindow, cap);
 
-      G_DisplayManager->drawWindow (myScreen, tuningWindow);
-      G_DisplayManager->showWindow (myScreen, tuningWindow);
-      G_DisplayManager->renderWindowFrom (myScreen, tuningWindow, s);
-      G_DisplayManager->lowerWindowToBottom (myScreen, tuningWindow);
+      Ginga_Display->drawWindow (myScreen, tuningWindow);
+      Ginga_Display->showWindow (myScreen, tuningWindow);
+      Ginga_Display->renderWindowFrom (myScreen, tuningWindow, s);
+      Ginga_Display->lowerWindowToBottom (myScreen, tuningWindow);
 
-      G_DisplayManager->deleteSurface (s);
+      Ginga_Display->deleteSurface (s);
       s = 0;
     }
 }
@@ -200,10 +200,10 @@ CommonCoreManager::releaseTunningWindow ()
 {
   if (tuningWindow != 0)
     {
-      G_DisplayManager->clearWindowContent (myScreen, tuningWindow);
-      G_DisplayManager->hideWindow (myScreen, tuningWindow);
+      Ginga_Display->clearWindowContent (myScreen, tuningWindow);
+      Ginga_Display->hideWindow (myScreen, tuningWindow);
 
-      G_DisplayManager->deleteWindow (myScreen, tuningWindow);
+      Ginga_Display->deleteWindow (myScreen, tuningWindow);
       tuningWindow = 0;
     }
 }

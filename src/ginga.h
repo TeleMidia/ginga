@@ -1,4 +1,4 @@
-/* Copyright (C) 2007-2017 PUC-Rio/Laboratorio TeleMidia
+/* Copyright (C) 2006-2017 PUC-Rio/Laboratorio TeleMidia
 
 This file is part of Ginga (Ginga-NCL).
 
@@ -19,8 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define GINGA_H
 
 #ifdef  __cplusplus
-# define GINGA_BEGIN_DECLS extern "C" { /* } */
-# define GINGA_END_DECLS           /* { */ }
+# define GINGA_BEGIN_DECLS extern "C" {/*}*/
+# define GINGA_END_DECLS            /*{*/}
 #else
 # define GINGA_BEGIN_DECLS
 # define GINGA_END_DECLS
@@ -103,8 +103,8 @@ using namespace std;
 XERCES_CPP_NAMESPACE_USE
 
 // Namespaces.
-#define _GINGA_NS_BEGIN(t)      namespace t { /* } */
-#define _GINGA_NS_END                    /* { */ }
+#define _GINGA_NS_BEGIN(t)      namespace t {/*}*/
+#define _GINGA_NS_END                     /*{*/}
 #define _GINGA_BEGIN(t)       _GINGA_NS_BEGIN (ginga) _GINGA_NS_BEGIN (t)
 #define _GINGA_END            _GINGA_NS_END _GINGA_NS_END
 #define GINGA_CTXMGMT_BEGIN   _GINGA_BEGIN (ctxmgmt)
@@ -142,5 +142,12 @@ typedef unsigned long GingaWindowID;
 typedef short GingaScreenID;
 typedef unsigned int GingaSurfaceID;
 typedef unsigned int GingaProviderID;
+
+// Macros.
+#define GINGA_ASSERT_GLOBAL_NONNULL(G, Type)                    \
+  ((G != NULL) ? (G)                                            \
+   : (g_log (G_LOG_DOMAIN, G_LOG_LEVEL_CRITICAL,                \
+             "global variable %s is null", G_STRINGIFY (G)),    \
+      ((Type) NULL)))
 
 #endif /* GINGA_H */

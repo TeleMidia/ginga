@@ -104,7 +104,7 @@ AdapterApplicationPlayer::checkPlayerSurface (NclExecutionObject *obj)
                       h = ncmRegion->getHeightInPixels ();
                       if (w > 0 && h > 0)
                         {
-                          wrapper = G_DisplayManager->createSurface (myScreen, w, h);
+                          wrapper = Ginga_Display->createSurface (myScreen, w, h);
                           player->setSurface (wrapper);
                         }
                     }

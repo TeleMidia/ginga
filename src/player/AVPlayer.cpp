@@ -77,14 +77,14 @@ AVPlayer::~AVPlayer ()
   Thread::mutexLock (&tMutex);
   if (surface != 0 && mainAV)
     {
-      G_DisplayManager->setSurfaceParentWindow (myScreen, surface, 0);
+      Ginga_Display->setSurfaceParentWindow (myScreen, surface, 0);
     }
 
   if (mainAV)
     {
       if (win != 0)
         {
-          G_DisplayManager->disposeWindow (myScreen, win);
+          Ginga_Display->disposeWindow (myScreen, win);
           win = 0;
         }
     }
@@ -132,7 +132,7 @@ AVPlayer::createProvider (void)
 
   if (provider == 0 && (fileExists (mrl) || isRemote))
     {
-      provider = G_DisplayManager->createContinuousMediaProvider (myScreen, mrl.c_str (),
+      provider = Ginga_Display->createContinuousMediaProvider (myScreen, mrl.c_str (),
                                                     isRemote);
 
       surface = createFrame ();
@@ -182,7 +182,7 @@ AVPlayer::setSoundLevel (float level)
   this->soundLevel = level;
   if (provider != 0)
     {
-      G_DisplayManager->setProviderSoundLevel (provider, soundLevel);
+      Ginga_Display->setProviderSoundLevel (provider, soundLevel);
     }
   // unlock();
 }
@@ -199,15 +199,15 @@ AVPlayer::createFrame ()
       clog << endl;
       if (mainAV)
         {
-          G_DisplayManager->setSurfaceParentWindow (myScreen, surface, 0);
+          Ginga_Display->setSurfaceParentWindow (myScreen, surface, 0);
         }
-      G_DisplayManager->deleteSurface (surface);
+      Ginga_Display->deleteSurface (surface);
     }
 
-  surface = G_DisplayManager->createSurface (myScreen);
+  surface = Ginga_Display->createSurface (myScreen);
   if (win != 0 && mainAV)
     {
-      G_DisplayManager->setSurfaceParentWindow (myScreen, surface, win);
+      Ginga_Display->setSurfaceParentWindow (myScreen, surface, win);
     }
 
   Thread::mutexUnlock (&tMutex);
@@ -220,7 +220,7 @@ AVPlayer::getOriginalResolution (int *width, int *height)
 {
   if (provider != 0)
     {
-      G_DisplayManager->getProviderOriginalResolution (provider, height, width);
+      Ginga_Display->getProviderOriginalResolution (provider, height, width);
     }
 }
 
@@ -229,7 +229,7 @@ AVPlayer::getTotalMediaTime ()
 {
   if (provider != 0)
     {
-      return G_DisplayManager->getProviderTotalMediaTime (provider);
+      return Ginga_Display->getProviderTotalMediaTime (provider);
     }
   return 0;
 }
@@ -242,7 +242,7 @@ AVPlayer::getVPts ()
       return 0;
     }
 
-  return G_DisplayManager->getProviderVPts (provider);
+  return Ginga_Display->getProviderVPts (provider);
 }
 
 void
@@ -252,13 +252,13 @@ AVPlayer::timeShift (string direction)
     {
       if (direction == "forward")
         {
-          G_DisplayManager->setProviderMediaTime (
-              provider, G_DisplayManager->getProviderMediaTime (provider) + 10);
+          Ginga_Display->setProviderMediaTime (
+              provider, Ginga_Display->getProviderMediaTime (provider) + 10);
         }
       else if (direction == "backward")
         {
-          G_DisplayManager->setProviderMediaTime (
-              provider, G_DisplayManager->getProviderMediaTime (provider) - 10);
+          Ginga_Display->setProviderMediaTime (
+              provider, Ginga_Display->getProviderMediaTime (provider) - 10);
         }
     }
 }
@@ -274,7 +274,7 @@ AVPlayer::getCurrentMediaTime ()
       return -1;
     }
 
-  return G_DisplayManager->getProviderMediaTime (provider);
+  return Ginga_Display->getProviderMediaTime (provider);
 }
 
 double
@@ -289,14 +289,14 @@ AVPlayer::setMediaTime (double pos)
   if (status == PLAY)
     {
       status = PAUSE;
-      G_DisplayManager->setProviderMediaTime (provider, pos);
+      Ginga_Display->setProviderMediaTime (provider, pos);
       status = PLAY;
       running = true;
       Thread::startThread ();
     }
   else if (provider != 0)
     {
-      G_DisplayManager->setProviderMediaTime (provider, pos);
+      Ginga_Display->setProviderMediaTime (provider, pos);
     }
 }
 
@@ -354,7 +354,7 @@ AVPlayer::play ()
 
   Player::play ();
   clog << "AVPlayer::play() calling provider play over" << endl;
-  G_DisplayManager->playProviderOver (provider, surface);
+  Ginga_Display->playProviderOver (provider, surface);
 
   if (!running)
     {
@@ -377,9 +377,9 @@ AVPlayer::pause ()
 
   if (outputWindow != 0)
     {
-      G_DisplayManager->validateWindow (myScreen, outputWindow);
+      Ginga_Display->validateWindow (myScreen, outputWindow);
     }
-  G_DisplayManager->pauseProvider (provider);
+  Ginga_Display->pauseProvider (provider);
 
   clog << "AVPlayer::pause(" << mrl << ") all done!" << endl;
 }
@@ -397,7 +397,7 @@ AVPlayer::stop ()
 
   if (previousStatus != STOP)
     {
-      G_DisplayManager->stopProvider (provider);
+      Ginga_Display->stopProvider (provider);
     }
 
   clog << "AVPlayer::stop(" << mrl << ") all done!" << endl;
@@ -409,7 +409,7 @@ AVPlayer::resume ()
   setSoundLevel (soundLevel);
 
   Player::play ();
-  G_DisplayManager->resumeProvider (provider, surface);
+  Ginga_Display->resumeProvider (provider, surface);
 
   if (!running)
     {
@@ -423,7 +423,7 @@ AVPlayer::getPropertyValue (string name)
 {
   if (name == "soundLevel")
     {
-      return itos (G_DisplayManager->getProviderSoundLevel (provider));
+      return itos (Ginga_Display->getProviderSoundLevel (provider));
     }
 
   return Player::getPropertyValue (name);
@@ -460,16 +460,16 @@ AVPlayer::setPropertyValue (string name, string value)
           vals = split (value, ",");
           if (vals->size () == 4)
             {
-              win = G_DisplayManager->createWindow (
+              win = Ginga_Display->createWindow (
                   myScreen, ::ginga::util::stof ((*vals)[0]),
                   ::ginga::util::stof ((*vals)[1]),
                   ::ginga::util::stof ((*vals)[2]),
                   ::ginga::util::stof ((*vals)[3]), 1.0);
 
-              int caps = G_DisplayManager->getWindowCap (myScreen, win, "NOSTRUCTURE")
-                         | G_DisplayManager->getWindowCap (myScreen, win, "DOUBLEBUFFER");
-              G_DisplayManager->setWindowCaps (myScreen, win, caps);
-              G_DisplayManager->drawWindow (myScreen, win);
+              int caps = Ginga_Display->getWindowCap (myScreen, win, "NOSTRUCTURE")
+                         | Ginga_Display->getWindowCap (myScreen, win, "DOUBLEBUFFER");
+              Ginga_Display->setWindowCaps (myScreen, win, caps);
+              Ginga_Display->drawWindow (myScreen, win);
             }
 
           delete vals;
@@ -484,7 +484,7 @@ AVPlayer::setPropertyValue (string name, string value)
           vals = split (value, ",");
           if (vals->size () == 4)
             {
-              G_DisplayManager->setWindowBounds (myScreen, win,
+              Ginga_Display->setWindowBounds (myScreen, win,
                                    ::ginga::util::stof ((*vals)[0]),
                                    ::ginga::util::stof ((*vals)[1]),
                                    ::ginga::util::stof ((*vals)[2]),
@@ -494,11 +494,11 @@ AVPlayer::setPropertyValue (string name, string value)
         }
       else if (name == "show" && win != 0)
         {
-          G_DisplayManager->showWindow (myScreen, win);
+          Ginga_Display->showWindow (myScreen, win);
         }
       else if (name == "hide" && win != 0)
         {
-          G_DisplayManager->hideWindow (myScreen, win);
+          Ginga_Display->hideWindow (myScreen, win);
         }
     }
 
@@ -514,7 +514,7 @@ AVPlayer::addListener (IPlayerListener *listener)
 void
 AVPlayer::release ()
 {
-  G_DisplayManager->releaseContinuousMediaProvider (myScreen, provider);
+  Ginga_Display->releaseContinuousMediaProvider (myScreen, provider);
   provider = 0;
 }
 
@@ -577,7 +577,7 @@ AVPlayer::setAVPid (int aPid, int vPid)
     {
       g_usleep (150000);
     }
-  G_DisplayManager->setProviderAVPid (provider, aPid, vPid);
+  Ginga_Display->setProviderAVPid (provider, aPid, vPid);
 }
 
 bool
@@ -593,17 +593,17 @@ AVPlayer::checkVideoResizeEvent ()
 
   if (mainAV)
     {
-      G_DisplayManager->feedProviderBuffers (provider);
+      Ginga_Display->feedProviderBuffers (provider);
     }
   else
     {
       g_usleep (150000);
     }
-  hasEvent = G_DisplayManager->checkProviderVideoResizeEvent (provider, surface);
+  hasEvent = Ginga_Display->checkProviderVideoResizeEvent (provider, surface);
   setSoundLevel (this->soundLevel);
   if (hasEvent)
     {
-      G_DisplayManager->playProviderOver (provider, surface);
+      Ginga_Display->playProviderOver (provider, surface);
     }
 
   return hasEvent;
@@ -626,16 +626,16 @@ AVPlayer::run ()
     {
       running = true;
 
-      this->provider = G_DisplayManager->createContinuousMediaProvider (
+      this->provider = Ginga_Display->createContinuousMediaProvider (
           myScreen, mrl.c_str (), true);
 
       this->surface = createFrame ();
 
-      if (this->win != 0 && G_DisplayManager->getSurfaceParentWindow (surface) == 0)
+      if (this->win != 0 && Ginga_Display->getSurfaceParentWindow (surface) == 0)
         {
-          G_DisplayManager->setSurfaceParentWindow (myScreen, surface, win);
+          Ginga_Display->setSurfaceParentWindow (myScreen, surface, win);
         }
-      G_DisplayManager->playProviderOver (provider, surface);
+      Ginga_Display->playProviderOver (provider, surface);
       checkVideoResizeEvent ();
       buffered = true;
 
@@ -786,7 +786,7 @@ AVPlayer::run ()
 
       if (provider != 0)
         {
-          G_DisplayManager->stopProvider (provider);
+          Ginga_Display->stopProvider (provider);
         }
 
       clog << "AVPlayer::run(" << mrl << ") NOTIFY STOP" << endl;
