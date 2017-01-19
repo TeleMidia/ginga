@@ -45,7 +45,6 @@ public:
   bool hasConnection ();
   void setSourceTarget (string url);
   void setTarget (FILE *fd);
-  void setTarget (char *buffer);
   short getType ();
   float getRate ();
   void setListener (IInteractiveChannelListener *listener);

@@ -99,6 +99,8 @@ AU_ARG_ENABLE_VALGRIND
 
 nw=
 nw="$nw -Wbad-function-cast"             # invalid in C++
+nw="$nw -Wc++-compat"                    # invalid in C++
+nw="$nw -Wdeclaration-after-statement"   # invalid in C++
 nw="$nw -Wdesignated-init"               # invalid in C++
 nw="$nw -Wdiscarded-array-qualifiers"    # invalid in C++
 nw="$nw -Wdiscarded-qualifiers"          # invalid in C++
@@ -117,8 +119,7 @@ nw="$nw -Woverride-init"                 # invalid in C++
 nw="$nw -Wpointer-sign"                  # invalid in C++
 nw="$nw -Wpointer-to-int-cast"           # invalid in C++
 nw="$nw -Wstrict-prototypes"             # invalid in C++
-nw="$nw -Wc++-compat"                    # invalid in C++
-nw="$nw -Wdeclaration-after-statement"   # invalid in C++
+nw="$nw -Wsystem-headers"                # Suppress system headers warnings
 AU_ARG_ENABLE_WARNINGS([$nw])
 
 AU_ARG_ENABLE([nclua-trace], [trace NCLua calls], [no])

@@ -48,7 +48,7 @@ public:
 
   void clearContent ();
   void setKeyCode (GingaScreenID screenId, const int keyCode);
-  const int getKeyCode (GingaScreenID screenId);
+  int getKeyCode (GingaScreenID screenId);
 
   unsigned int getType ();
   void *getApplicationData ();

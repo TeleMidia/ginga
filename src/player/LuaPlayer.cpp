@@ -265,7 +265,6 @@ LuaPlayer::nw_update_thread (void *data)
                   break;
 
                 case Player::TYPE_SELECTION:
-                  // TODO: not implemented.
                   break;
 
                 default:

@@ -124,12 +124,6 @@ CurlInteractiveChannel::setTarget (FILE *fd)
   this->fd = fd;
 }
 
-void
-CurlInteractiveChannel::setTarget (char *buffer)
-{
-  // TODO: buffer handler
-}
-
 short
 CurlInteractiveChannel::getType ()
 {

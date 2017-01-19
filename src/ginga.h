@@ -39,15 +39,42 @@ GINGA_BEGIN_DECLS
 #include <stdlib.h>
 
 // External C libraries.
-#include <pthread.h>
-#include <curl/curl.h>
 #include <glib.h>
 #include <glib/gstdio.h>
+
+#if G_GNUC_CHECK_VERSION(4,2)
+# define _GCC_PRAGMA(x) _Pragma (G_STRINGIFY (x))
+# define GINGA_PRAGMA_DIAG(x) _GCC_PRAGMA (GCC diagnostic x)
+#elif defined (__clang__)
+# define _CLANG_PRAGMA(x) _Pragma (G_STRINGIFY (x))
+# define GINGA_PRAGMA_DIAG(x) _CLANG_PRAGMA (clang diagnostic x)
+#else
+# define GINGA_PRAGMA_DIAG(x)
+#endif
+
+#if G_GNUC_CHECK_VERSION(4,6) || defined (__clang__)
+# define GINGA_PRAGMA_DIAG_PUSH()    GINGA_PRAGMA_DIAG (push)
+# define GINGA_PRAGMA_DIAG_POP()     GINGA_PRAGMA_DIAG (pop)
+#else
+# define GINGA_PRAGMA_DIAG_PUSH()
+# define GINGA_PRAGMA_DIAG_POP()
+#endif
+#define GINGA_PRAGMA_DIAG_IGNORE(x)\
+  GINGA_PRAGMA_DIAG (ignored G_STRINGIFY (x))
+#define GINGA_PRAGMA_DIAG_WARNING(x)\
+  GINGA_PRAGMA_DIAG (warning G_STRINGIFY (x))
+
+#include <pthread.h>
+#include <curl/curl.h>
 #include <ncluaw.h>
+
+GINGA_PRAGMA_DIAG_PUSH ()
+GINGA_PRAGMA_DIAG_IGNORE (-Wswitch-default)
 #include <SDL.h>
 #include <SDL_bits.h>
 #include <SDL_endian.h>
 #include <SDL_syswm.h>
+GINGA_PRAGMA_DIAG_POP ()
 
 #if WITH_ESPEAK
 # include <espeak/speak_lib.h>

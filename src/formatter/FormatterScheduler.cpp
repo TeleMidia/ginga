@@ -2020,7 +2020,6 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
       switch (transition)
         {
         case EventUtil::TR_STARTS:
-          // TODO: if (isDocumentRunning(event)) {
           object = (NclExecutionObject *)(event->getExecutionObject ());
 
           player

@@ -98,7 +98,7 @@ SDLInputEvent::setKeyCode (GingaScreenID screenId, const int keyCode)
     }
 }
 
-const int
+int
 SDLInputEvent::getKeyCode (GingaScreenID screenId)
 {
   int gingaValue;
