@@ -341,8 +341,8 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
   string name, value;
   NclFormatterRegion *fRegion = NULL;
   Node *ncmNode;
-  float transpValue = -1;
-  float parentOpacity = -1;
+  double transpValue = -1;
+  double parentOpacity = -1;
   bool isPercentual;
   double explicitDur = -1;
 
@@ -1791,7 +1791,7 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
           if (propName == "transparency")
             {
               bool isPercentual;
-              float transpValue, parentOpacity;
+              double transpValue, parentOpacity;
               NclFormatterRegion *fRegion;
               NclCascadingDescriptor *descriptor;
 

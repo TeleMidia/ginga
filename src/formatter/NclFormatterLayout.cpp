@@ -313,7 +313,7 @@ NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object,
   vector<LayoutRegion *>::iterator i;
 
   int devClass, zIndex;
-  float cvtZIndex;
+  double cvtZIndex;
   GingaWindowID windowId = 0;
 
   if (object == NULL || object->getDescriptor () == NULL
@@ -382,7 +382,7 @@ NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object,
   return windowId;
 }
 
-float
+double
 NclFormatterLayout::refreshZIndex (NclFormatterRegion *region,
                                    string layoutRegionId, int zIndex,
                                    string plan,
@@ -390,7 +390,7 @@ NclFormatterLayout::refreshZIndex (NclFormatterRegion *region,
 {
 
   NclExecutionObject *object;
-  float cvtZIndex;
+  double cvtZIndex;
 
   object = removeFormatterRegionFromMaps (layoutRegionId, region);
 
@@ -401,12 +401,12 @@ NclFormatterLayout::refreshZIndex (NclFormatterRegion *region,
 }
 
 void
-NclFormatterLayout::sortRegion (string regionId, float cvtIndex,
+NclFormatterLayout::sortRegion (string regionId, double cvtIndex,
                                 string plan)
 {
 
   vector<string>::iterator i;
-  map<string, float>::iterator j;
+  map<string, double>::iterator j;
 
   i = sortedRegions.begin ();
   while (i != sortedRegions.end ())
@@ -425,10 +425,10 @@ NclFormatterLayout::sortRegion (string regionId, float cvtIndex,
   sortedRegions.insert (i, regionId);
 }
 
-float
+double
 NclFormatterLayout::convertZIndex (int zIndex, string plan)
 {
-  float planPower = 2.0;
+  double planPower = 2.0;
 
   if (plan == "background")
     {
@@ -444,7 +444,7 @@ NclFormatterLayout::convertZIndex (int zIndex, string plan)
       zIndex = 256;
     }
 
-  return (planPower + ((float)zIndex / 1000));
+  return (planPower + ((double)zIndex / 1000));
 }
 
 void
@@ -499,10 +499,10 @@ NclFormatterLayout::addRegionOnMaps (NclExecutionObject *object,
                                      NclFormatterRegion *region,
                                      GingaSurfaceID renderedSurface,
                                      string layoutRegionId, int zIndex,
-                                     string plan, float *cvtZIndex)
+                                     string plan, double *cvtZIndex)
 {
 
-  float convertedZIndex;
+  double convertedZIndex;
   set<NclFormatterRegion *> *formRegions;
   GingaWindowID windowId;
 
@@ -545,7 +545,7 @@ NclFormatterLayout::removeFormatterRegionFromMaps (
   set<NclFormatterRegion *>::iterator i;
   map<string, set<NclFormatterRegion *> *>::iterator j;
   map<NclFormatterRegion *, NclExecutionObject *>::iterator k;
-  map<string, float>::iterator l;
+  map<string, double>::iterator l;
   vector<string>::iterator m;
 
   NclExecutionObject *myObject = NULL;

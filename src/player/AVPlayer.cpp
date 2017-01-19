@@ -175,7 +175,7 @@ AVPlayer::releaseAudio ()
 }
 
 void
-AVPlayer::setSoundLevel (float level)
+AVPlayer::setSoundLevel (double level)
 {
   // clog << "AVPlayer::setSoundLevel()" << endl;
   // lock()();
@@ -432,7 +432,7 @@ AVPlayer::getPropertyValue (string name)
 void
 AVPlayer::setPropertyValue (string name, string value)
 {
-  float fValue = 1.0;
+  double fValue = 1.0;
   vector<string> *vals;
 
   /*clog << "AVPlayer::setPropertyValue '" << name << "' ";

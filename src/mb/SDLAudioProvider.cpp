@@ -152,7 +152,7 @@ SDLAudioProvider::stop ()
 }
 
 void
-SDLAudioProvider::setSoundLevel (float level)
+SDLAudioProvider::setSoundLevel (double level)
 {
   if (decoder != NULL)
     {
@@ -160,10 +160,10 @@ SDLAudioProvider::setSoundLevel (float level)
     }
 }
 
-float
+double
 SDLAudioProvider::getSoundLevel ()
 {
-  float soundLevel = 0.0;
+  double soundLevel = 0.0;
 
   if (decoder != NULL)
     {

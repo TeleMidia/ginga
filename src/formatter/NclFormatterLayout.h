@@ -42,7 +42,7 @@ private:
   map<string, NclFormatterLayout *> flChilds;
   LayoutRegion *deviceRegion;
   vector<string> sortedRegions;
-  map<string, float> regionZIndex;
+  map<string, double> regionZIndex;
   map<string, set<NclFormatterRegion *> *> regionMap;
   map<NclFormatterRegion *, NclExecutionObject *> objectMap;
   pthread_mutex_t mutex;
@@ -74,13 +74,13 @@ public:
                                         GingaSurfaceID renderedSurface,
                                         string plan);
 
-  float refreshZIndex (NclFormatterRegion *region, string layoutRegionId,
+  double refreshZIndex (NclFormatterRegion *region, string layoutRegionId,
                        int zIndex, string plan,
                        GingaSurfaceID renderedSurface);
 
 private:
-  void sortRegion (string regionId, float cvtIndex, string plan);
-  float convertZIndex (int zIndex, string plan);
+  void sortRegion (string regionId, double cvtIndex, string plan);
+  double convertZIndex (int zIndex, string plan);
 
 public:
   void showObject (NclExecutionObject *object);
@@ -91,7 +91,7 @@ private:
                                  NclFormatterRegion *region,
                                  GingaSurfaceID renderedSurface,
                                  string layoutRegionId, int zIndex,
-                                 string plan, float *cvtZIndex);
+                                 string plan, double *cvtZIndex);
 
   NclExecutionObject *
   removeFormatterRegionFromMaps (string layoutRegionId,

@@ -130,7 +130,7 @@ CurlInteractiveChannel::getType ()
   return type;
 }
 
-float
+double
 CurlInteractiveChannel::getRate ()
 {
   return rate;

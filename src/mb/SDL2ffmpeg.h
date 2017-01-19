@@ -377,7 +377,7 @@ private:
   SDL_AudioSpec wantedSpec;
   static SDL_AudioSpec spec;
   SDL_AudioCVT acvt;
-  float soundLevel;
+  double soundLevel;
   SDL_Texture *texture;
   SwsContext *ctx;
 
@@ -422,8 +422,8 @@ public:
 
   bool hasPicture ();
 
-  float getSoundLevel ();
-  void setSoundLevel (float level);
+  double getSoundLevel ();
+  void setSoundLevel (double level);
 
   bool getAudioSpec (SDL_AudioSpec *spec, int sample_rate,
                      uint8_t channels);

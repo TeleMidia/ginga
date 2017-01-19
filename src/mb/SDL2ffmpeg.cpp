@@ -554,14 +554,14 @@ SDL2ffmpeg::hasPicture ()
   return hasPic;
 }
 
-float
+double
 SDL2ffmpeg::getSoundLevel ()
 {
   return soundLevel / SDL_MIX_MAXVOLUME;
 }
 
 void
-SDL2ffmpeg::setSoundLevel (float level)
+SDL2ffmpeg::setSoundLevel (double level)
 {
   if (level >= 1.0 || level < 0.0)
     {

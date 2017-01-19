@@ -54,7 +54,7 @@ public:
   void *createRegion (DOMElement *parentElement, void *objGrandParent);
 
 private:
-  float getPercentualValue (string value);
+  double getPercentualValue (string value);
   int getPixelValue (string value);
   bool isPercentualValue (string value);
 };

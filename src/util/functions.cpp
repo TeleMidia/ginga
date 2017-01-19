@@ -39,7 +39,7 @@ typedef struct dirent DIRENT;
 #define IS_REGULAR(st_mode) (((st_mode)&S_IFMT) == S_IFREG)
 #define lstat stat
 #include <windows.h>
-#include <float.h>
+#include <double.h>
 #endif
 
 GINGA_UTIL_BEGIN
@@ -228,17 +228,17 @@ itos (double i)
   return os.str ();
 }
 
-float
+double
 stof (string s)
 {
-  float f = 0.0f;
+  double f = 0.0f;
   stringstream ss;
   ss << s;
   ss >> f;
   return f;
 }
 
-float
+double
 itof (int i)
 {
   string s = itos (i);
@@ -360,15 +360,15 @@ trim (string str)
   return strR;
 }
 
-float
+double
 getPercentualValue (string value)
 {
   string actualValue;
-  float floatValue;
+  double floatValue;
 
   // retirar o caracter percentual da string
   actualValue = value.substr (0, (value.length () - 1));
-  // converter para float
+  // converter para double
   floatValue = ::ginga::util::stof (actualValue);
 
   // se menor que zero, retornar zero

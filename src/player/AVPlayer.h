@@ -47,7 +47,7 @@ private:
 protected:
   bool running;
   bool buffered;
-  float soundLevel;
+  double soundLevel;
 
 private:
   string pSym;
@@ -79,7 +79,7 @@ public:
   static void releaseAudio ();
 
 private:
-  void setSoundLevel (float level);
+  void setSoundLevel (double level);
   GingaSurfaceID createFrame ();
 
 public:

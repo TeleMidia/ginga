@@ -38,7 +38,7 @@ typedef struct
   string parentDocId;
   string nodeId;
   string docId;
-  float transparency;
+  double transparency;
   void *focusManager;
   void *privateBaseManager;
   bool enableMulticast;

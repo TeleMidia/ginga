@@ -25,7 +25,7 @@ GINGA_CTXMGMT_BEGIN
 class SystemInfo
 {
 private:
-  float clockSpeed;
+  double clockSpeed;
   map<string, string> *sysTable;
 
 public:
@@ -42,13 +42,13 @@ public:
   string getSystemLanguage ();
   string getCaptionLanguage ();
   string getSubtitleLanguage ();
-  float getReturnBitRate ();
+  double getReturnBitRate ();
   void getScreenSize (GingaScreenID screenId, int *width, int *height);
   void getScreenGraphicSize (GingaScreenID screenId, int *width,
                              int *height);
   string getAudioType ();
-  float getCPUClock ();
-  float getMemorySize ();
+  double getCPUClock ();
+  double getMemorySize ();
   string getJavaConfiguration ();
   string getJavaProfile ();
   string getLuaVersion ();

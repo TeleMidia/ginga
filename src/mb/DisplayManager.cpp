@@ -523,7 +523,7 @@ DisplayManager::refreshScreen (GingaScreenID screenId)
 
 GingaWindowID
 DisplayManager::createWindow (GingaScreenID screenId, int x, int y,
-                                  int w, int h, float z)
+                                  int w, int h, double z)
 {
 
   SDLDeviceScreen *screen;
@@ -545,7 +545,7 @@ DisplayManager::createWindow (GingaScreenID screenId, int x, int y,
 UnderlyingWindowID
 DisplayManager::createUnderlyingSubWindow (GingaScreenID screenId,
                                                int x, int y, int w, int h,
-                                               float z)
+                                               double z)
 {
 
   SDLDeviceScreen *screen;
@@ -1153,7 +1153,7 @@ DisplayManager::setWindowH (const GingaScreenID &screenId,
 
 void
 DisplayManager::setWindowZ (const GingaScreenID &screenId,
-                                const GingaWindowID &winId, float z)
+                                const GingaWindowID &winId, double z)
 {
   SDLWindow *win = NULL;
   win = getIWindowFromId (screenId, winId);
@@ -1243,11 +1243,11 @@ DisplayManager::getWindowH (const GingaScreenID &screenId,
   return reply;
 }
 
-float
+double
 DisplayManager::getWindowZ (const GingaScreenID &screenId,
                                 const GingaWindowID &winId)
 {
-  float reply = 0.0;
+  double reply = 0.0;
   SDLWindow *win = NULL;
   win = getIWindowFromId (screenId, winId);
   if (win != NULL)
@@ -1646,7 +1646,7 @@ DisplayManager::getISurfaceFromId (const GingaSurfaceID &surId)
 
 void
 DisplayManager::setProviderSoundLevel (const GingaProviderID &provId,
-                                           float level)
+                                           double level)
 {
   IContinuousMediaProvider *provider = NULL;
   IMediaProvider *iProvider = getIMediaProviderFromId (provId);

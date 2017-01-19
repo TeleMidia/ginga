@@ -102,7 +102,7 @@ SystemInfo::getSubtitleLanguage ()
   return (value != "") ? value : "por";
 }
 
-float
+double
 SystemInfo::getReturnBitRate ()
 {
   string value = getValue ("system.returnBitRate");
@@ -131,13 +131,13 @@ SystemInfo::getAudioType ()
   return (value != "") ? value : "stereo";
 }
 
-float
+double
 SystemInfo::getCPUClock ()
 {
   return clockSpeed;
 }
 
-float
+double
 SystemInfo::getMemorySize ()
 {
   return 0;
