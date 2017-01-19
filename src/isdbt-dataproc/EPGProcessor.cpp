@@ -304,7 +304,6 @@ EPGProcessor::callMapGenerator (unsigned tableId)
           clog << "EPGProcessor::callMapGenerator scheduleMap";
           cout << " ready to move" << endl;
           scheduleMapReady = true;
-          printTimeStamp ();
           if (epgListeners != NULL)
             {
               // TODO: handle schedule TableIDs properly.
@@ -498,7 +497,6 @@ EPGProcessor::decodeEitSection (ITransportSection *section)
         }
       else if (tableId >= 0x50 && tableId <= 0x5F)
         {
-          printTimeStamp ();
           if (scheduleMapReady)
             {
               clog << "EPGProcessor::decodeEitSection cleaning sched map";

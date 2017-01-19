@@ -83,14 +83,12 @@ private:
   static DisplayManager *dm;
   InputManager *im;
   ShowButton *sb;
-  bool debugWindow;
 
 public:
   PresentationEngineManager (int devClass, int xOffset, int yOffset,
                              int width, int height, bool disableGfx,
                              bool useMulticast, GingaScreenID screenId);
   virtual ~PresentationEngineManager ();
-  void setDebugWindow (bool debugWindow);
   void setExitOnEnd (bool exitOnEnd);
   void setDisableFKeys (bool disableFKeys);
   set<string> *createPortIdList (string nclFile);

@@ -79,7 +79,6 @@ private:
   static bool mutexInit;
   static map<SDLDeviceScreen *, short> sdlScreens;
 
-  string aSystem;
   string mbMode;
   string mbSubSystem;
   unsigned int aspect;

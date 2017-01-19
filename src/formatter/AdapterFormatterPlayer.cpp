@@ -2002,7 +2002,6 @@ AdapterFormatterPlayer::updateStatus (short code, string parameter,
                   clog << "AdapterFormatterPlayer::updateStatus ";
                   clog << "process recovered";
                   clog << endl;
-                  printTimeStamp ();
                 }
             }
         }

@@ -310,9 +310,8 @@ DisplayManager::createScreen (int argc, char **args)
   int i;
   bool externalRenderer = false;
   bool useStdin = false;
-  string vSystem = "", vSubSystem = "", vMode = "";
+  string vMode = "";
   string vParent = "", vEmbed = "";
-  string aSystem = "";
   GingaScreenID newScreen;
 
   clog << "DisplayManager::createScreen argv[";
@@ -321,16 +320,7 @@ DisplayManager::createScreen (int argc, char **args)
   lock ();
   for (i = 0; i < argc; i++)
     {
-      if ((strcmp (args[i], "--vsystem") == 0) && ((i + 1) < argc))
-        {
-          vSystem.assign (args[i + 1]);
-        }
-      else if ((strcmp (args[i], "--vsubsystem") == 0) && ((i + 1) < argc))
-        {
-
-          vSubSystem.assign (args[i + 1]);
-        }
-      else if ((strcmp (args[i], "--vmode") == 0) && ((i + 1) < argc))
+      if ((strcmp (args[i], "--vmode") == 0) && ((i + 1) < argc))
         {
           vMode.assign (args[i + 1]);
         }
@@ -345,10 +335,6 @@ DisplayManager::createScreen (int argc, char **args)
 
           vEmbed.assign (args[i + 1]);
         }
-      else if ((strcmp (args[i], "--asystem") == 0) && ((i + 1) < argc))
-        {
-          aSystem.assign (args[i + 1]);
-        }
       else if (strcmp (args[i], "--external-renderer") == 0)
         {
           externalRenderer = true;
@@ -362,8 +348,8 @@ DisplayManager::createScreen (int argc, char **args)
       clog << i << "] = '" << args[i] << "'" << endl;
     }
 
-  newScreen = createScreen (vSystem, vSubSystem, vMode, vParent, vEmbed,
-                            aSystem, externalRenderer, useStdin);
+  newScreen = createScreen (vMode, vParent, vEmbed,
+                            externalRenderer, useStdin);
 
   unlock ();
 
@@ -371,9 +357,8 @@ DisplayManager::createScreen (int argc, char **args)
 }
 
 GingaScreenID
-DisplayManager::createScreen (string vSystem, string vSubSystem,
-                                  string vMode, string vParent,
-                                  string vEmbed, string aSystem,
+DisplayManager::createScreen (string vMode, string vParent,
+                                  string vEmbed,
                                   bool externalRenderer, bool useStdin)
 {
 

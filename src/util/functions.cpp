@@ -45,7 +45,6 @@ typedef struct dirent DIRENT;
 GINGA_UTIL_BEGIN
 
 string userCurrentPath;
-static double timeStamp;
 
 string
 ultostr (unsigned long int value)
@@ -140,18 +139,6 @@ cvtPercentual (string value, bool *isPercentual)
   return newValue;
 }
 
-void
-initTimeStamp ()
-{
-  timeStamp = getCurrentTimeMillis ();
-}
-
-void
-printTimeStamp ()
-{
-  double printTS = getCurrentTimeMillis () - timeStamp;
-  clog << "TimeStamp: " << (printTS / 1000) << endl;
-}
 
 int
 strHexaToInt (string value)
@@ -519,8 +506,6 @@ isInfinity (double value)
       return true;
     }
 
-  /*clog << "isInfinity Warning! Value = '" << value << "', ";
-  clog << "sval = " << sval << endl;*/
   return false;
 }
 
