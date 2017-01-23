@@ -56,7 +56,6 @@ bool
 BaseDeviceService::receiveEvent (unsigned int devAddr, int eventType,
                                  char *stream, int streamSize)
 {
-
   string strStream = "";
   RemoteDevice *dev;
   int devClass;

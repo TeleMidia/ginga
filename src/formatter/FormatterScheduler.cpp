@@ -33,7 +33,6 @@ FormatterScheduler::FormatterScheduler (AdapterPlayerManager *playerManager,
                                         FormatterMultiDevice *multiDevice,
                                         void *compiler)
 {
-
   this->playerManager = playerManager;
   this->ruleAdapter = ruleAdapter;
   this->presContext = ruleAdapter->getPresentationContext ();
@@ -146,7 +145,6 @@ FormatterScheduler::getFocusManager ()
 void *
 FormatterScheduler::getFormatterLayout (void *descriptor, void *object)
 {
-
   return ((FormatterMultiDevice *)multiDevPres)
       ->getFormatterLayout ((NclCascadingDescriptor *)descriptor,
                             (NclExecutionObject *)object);
@@ -203,7 +201,6 @@ FormatterScheduler::setTimeBaseObject (NclExecutionObject *object,
                                        AdapterFormatterPlayer *objectPlayer,
                                        string nodeId)
 {
-
   NclExecutionObject *documentObject;
   NclExecutionObject *parentObject;
   NclExecutionObject *timeBaseObject;
@@ -255,7 +252,6 @@ FormatterScheduler::setTimeBaseObject (NclExecutionObject *object,
   if (compositeNode == NULL
       || !(compositeNode->instanceOf ("CompositeNode")))
     {
-
       return;
     }
 
@@ -264,7 +260,6 @@ FormatterScheduler::setTimeBaseObject (NclExecutionObject *object,
 
   if (timeBaseNode == NULL || !(timeBaseNode->instanceOf ("ContentNode")))
     {
-
       return;
     }
 
@@ -308,7 +303,6 @@ void
 FormatterScheduler::printAction (string action, NclLinkCondition *condition,
                                  NclLinkSimpleAction *linkAction)
 {
-
   NclExecutionObject *cndObject;
   NclExecutionObject *object;
   NclFormatterEvent *cndEvent;
@@ -333,7 +327,6 @@ FormatterScheduler::printAction (string action, NclLinkCondition *condition,
   if (condition != NULL
       && condition->instanceOf ("NclLinkTransitionTriggerCondition"))
     {
-
       cndEvent
           = ((NclLinkTransitionTriggerCondition *)condition)->getEvent ();
       bind = ((NclLinkTransitionTriggerCondition *)condition)->getBind ();
@@ -389,7 +382,6 @@ void
 FormatterScheduler::runAction (NclLinkCondition *condition,
                                NclLinkSimpleAction *action)
 {
-
   NclFormatterEvent *event = action->getEvent ();
 
   assert (event != NULL);
@@ -409,7 +401,6 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
                                NclLinkCondition *condition,
                                NclLinkSimpleAction *action)
 {
-
   NclExecutionObject *executionObject;
   NclCascadingDescriptor *descriptor;
   AdapterFormatterPlayer *player;
@@ -457,7 +448,6 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
   if (executionObject->instanceOf ("NclExecutionObjectSwitch")
       && event->instanceOf ("NclSwitchEvent"))
     {
-
       runActionOverSwitch ((NclExecutionObjectSwitch *)executionObject,
                            (NclSwitchEvent *)event, action);
     }
@@ -466,7 +456,6 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
                || executionObject->getDescriptor ()->getPlayerName ()
                       == ""))
     {
-
       clog << "FormatterScheduler::runAction event '";
       clog << event->getId () << "' for '";
       clog << executionObject->getId () << "' OVER COMPOSITION with ";
@@ -500,7 +489,6 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
       if (executionObject->instanceOf ("NclApplicationExecutionObject")
           && !event->instanceOf ("NclAttributionEvent"))
         {
-
           clog << "FormatterScheduler::runAction event '";
           clog << event->getId () << "' for '";
           clog << executionObject->getId ();
@@ -532,7 +520,6 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
               if (!player->prepare (executionObject,
                                     (NclPresentationEvent *)event))
                 {
-
                   return;
                 }
 
@@ -545,7 +532,6 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
               if (executionObject != NULL
                   && executionObject->getDescriptor () != NULL)
                 {
-
                   // look for a reference time base player
                   attValue = executionObject->getDescriptor ()
                                  ->getParameterValue ("x-timeBaseObject");
@@ -649,7 +635,6 @@ void
 FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
                                            NclLinkSimpleAction *action)
 {
-
   short actionType;
   string propName, propValue;
 
@@ -666,7 +651,6 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
       && ((ContentNode *)dataObject)->isSettingNode ()
       && action->instanceOf ("NclLinkAssignmentAction"))
     {
-
       propName = ((NclAttributionEvent *)event)
                      ->getAnchor ()
                      ->getPropertyName ();
@@ -702,7 +686,6 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
     }
   else
     {
-
       if (action->instanceOf ("NclLinkAssignmentAction"))
         {
           anim = ((NclLinkAssignmentAction *)action)->getAnimation ();
@@ -811,7 +794,6 @@ FormatterScheduler::runActionOverApplicationObject (
     NclFormatterEvent *event, AdapterFormatterPlayer *player,
     NclLinkSimpleAction *action)
 {
-
   NclCascadingDescriptor *descriptor;
   IPlayer *playerContent;
 
@@ -833,7 +815,6 @@ FormatterScheduler::runActionOverApplicationObject (
         {
           if (ruleAdapter->adaptDescriptor (executionObject))
             {
-
               descriptor = executionObject->getDescriptor ();
               if (descriptor != NULL)
                 {
@@ -983,7 +964,6 @@ FormatterScheduler::runActionOverComposition (
     NclCompositeExecutionObject *compositeObject,
     NclLinkSimpleAction *action)
 {
-
   CompositeNode *compositeNode;
   Port *port;
   NclNodeNesting *compositionPerspective;
@@ -1013,7 +993,6 @@ FormatterScheduler::runActionOverComposition (
   if (action->getType () == SimpleAction::ACT_START
       || action->getType () == SimpleAction::ACT_SET)
     {
-
       event = action->getEvent ();
       if (event != NULL)
         {
@@ -1168,7 +1147,6 @@ FormatterScheduler::runActionOverComposition (
                       && port->getEndInterfacePoint ()->instanceOf (
                              "ContentAnchor"))
                     {
-
                       childEvent
                           = (NclPresentationEvent
                                  *)(((FormatterConverter *)compiler)
@@ -1241,10 +1219,8 @@ FormatterScheduler::runActionOverComposition (
           && (action->getType () == SimpleAction::ACT_STOP
               || action->getType () == SimpleAction::ACT_ABORT))
         {
-
           if (compositeObject->getWholeContentPresentationEvent () == event)
             {
-
               compositeObject->suspendLinkEvaluation (true);
             }
         }
@@ -1352,7 +1328,6 @@ FormatterScheduler::runActionOverSwitch (
     NclExecutionObjectSwitch *switchObject, NclSwitchEvent *event,
     NclLinkSimpleAction *action)
 {
-
   NclExecutionObject *selectedObject;
   NclFormatterEvent *selectedEvent;
 
@@ -1383,7 +1358,6 @@ FormatterScheduler::runActionOverSwitch (
   if (action->getType () == SimpleAction::ACT_STOP
       || action->getType () == SimpleAction::ACT_ABORT)
     {
-
       switchObject->select (NULL);
     }
 }
@@ -1394,7 +1368,6 @@ FormatterScheduler::runSwitchEvent (NclExecutionObjectSwitch *switchObject,
                                     NclExecutionObject *selectedObject,
                                     NclLinkSimpleAction *action)
 {
-
   NclFormatterEvent *selectedEvent;
   SwitchPort *switchPort;
   vector<Port *> *mappings;
@@ -1461,7 +1434,6 @@ string
 FormatterScheduler::solveImplicitRefAssessment (string propValue,
                                                 NclAttributionEvent *event)
 {
-
   NclFormatterEvent *refEvent;
   NclExecutionObject *refObject;
   string auxVal = "", roleId = "";
@@ -1638,7 +1610,6 @@ void
 FormatterScheduler::startDocument (NclFormatterEvent *documentEvent,
                                    vector<NclFormatterEvent *> *entryEvents)
 {
-
   NclExecutionObject *object;
   vector<NclFormatterEvent *>::iterator it;
   int docEvents = 0;
@@ -1909,7 +1880,6 @@ void
 FormatterScheduler::eventStateChanged (void *someEvent, short transition,
                                        arg_unused (short previousState))
 {
-
   NclExecutionObject *object;
   AdapterFormatterPlayer *player;
   vector<IFormatterSchedulerListener *>::iterator i;
@@ -2038,7 +2008,6 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
               {
                 if (!((NclApplicationExecutionObject *)object)->isSleeping ())
                   {
-
                     hideObj = false;
                   }
               }
@@ -2057,7 +2026,6 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
                 if (player != NULL && player->getPlayer () != NULL
                     && player->getObjectDevice () == 0)
                   {
-
                     player->flip ();
 
                     multiDevPres->stopListenPlayer (player->getPlayer ());
@@ -2081,13 +2049,11 @@ void
 FormatterScheduler::addSchedulerListener (
     IFormatterSchedulerListener *listener)
 {
-
   bool contains;
   contains = false;
   vector<IFormatterSchedulerListener *>::iterator i;
   for (i = schedulerListeners.begin (); i != schedulerListeners.end (); ++i)
     {
-
       if (*i == listener)
         {
           contains = true;
@@ -2105,11 +2071,9 @@ void
 FormatterScheduler::removeSchedulerListener (
     IFormatterSchedulerListener *listener)
 {
-
   vector<IFormatterSchedulerListener *>::iterator i;
   for (i = schedulerListeners.begin (); i != schedulerListeners.end (); ++i)
     {
-
       if (*i == listener)
         {
           schedulerListeners.erase (i);
@@ -2122,7 +2086,6 @@ void
 FormatterScheduler::receiveGlobalAttribution (string propertyName,
                                               string value)
 {
-
   set<NclExecutionObject *> *objs;
   set<NclExecutionObject *>::iterator i;
 

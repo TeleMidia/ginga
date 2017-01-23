@@ -53,7 +53,6 @@ DsmccBiop::DsmccBiop (DsmccModule *module, DsmccObjectProcessor *processor)
 
 DsmccBiop::~DsmccBiop ()
 {
-
   Thread::mutexLock (&dataMutex);
   releaseData ();
   closeModule ();
@@ -154,7 +153,6 @@ DsmccBiop::processMessageHeader ()
   if ((data[i] & 0xFF) != 0x42 || (data[i + 1] & 0xFF) != 0x49
       || (data[i + 2] & 0xFF) != 0x4F || (data[i + 3] & 0xFF) != 0x50)
     {
-
       abortProcess ("DsmccBiop::processMessageHeader "
                     "magic Field is not 'BIOP' in file: "
                     + module->getModuleFileName ());
@@ -571,7 +569,6 @@ DsmccBiop::processIor (DsmccBinding *binding)
           if (((data[idx] & 0xFF) != 0x01)
               || ((data[idx + 1] & 0xFF) != 0x00))
             {
-
               clog << "BIOP Warning: Obj version, never reach here!!!";
               clog << endl;
 

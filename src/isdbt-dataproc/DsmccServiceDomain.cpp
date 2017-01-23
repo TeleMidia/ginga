@@ -27,7 +27,6 @@ DsmccServiceDomain::DsmccServiceDomain (DsmccDownloadServerInitiate *dsi,
                                         unsigned short pid)
     : Thread ()
 {
-
   Thread::mutexInit (&stlMutex, true);
 
   this->serviceGatewayIor = dsi->getServiceGatewayIor ();
@@ -183,7 +182,6 @@ DsmccServiceDomain::eraseModule (DsmccModule *module)
 bool
 DsmccServiceDomain::hasModules ()
 {
-
   Thread::mutexLock (&stlMutex);
 
   if (info.empty ())

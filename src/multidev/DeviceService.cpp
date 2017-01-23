@@ -96,7 +96,6 @@ bool
 DeviceService::addDevice (unsigned int deviceAddress, int newDevClass,
                           int width, int height)
 {
-
   int w, h;
   RemoteDevice *device = getDevice (deviceAddress);
 
@@ -116,7 +115,6 @@ DeviceService::addDevice (unsigned int deviceAddress, int newDevClass,
       if (device->getDeviceClass () != newDevClass || w != width
           || h != height)
         {
-
           return false;
         }
     }

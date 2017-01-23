@@ -76,13 +76,11 @@ bool
 NclDocument::addDocument (NclDocument *document, string alias,
                           string location)
 {
-
   assert (document != NULL);
 
   if (documentAliases.find (alias) != documentAliases.end ()
       || documentLocations.find (location) != documentLocations.end ())
     {
-
       return false;
     }
 
@@ -387,7 +385,6 @@ NclDocument::getNode (string nodeId)
 
     } /* else if (documentLocations.find(prefix) !=
                      documentLocations.end()) {
-
              document = documentLocations[prefix];
              return document->getNode(suffix);
      }*/
@@ -422,7 +419,6 @@ NclDocument::getRegion (string regionId)
 LayoutRegion *
 NclDocument::getRegion (string regionId, RegionBase *regionBase)
 {
-
   LayoutRegion *region;
   vector<NclDocument *>::iterator i;
 
@@ -576,7 +572,6 @@ NclDocument::setBody (ContextNode *node)
 void
 NclDocument::setDocumentLocation (NclDocument *document, string location)
 {
-
   string oldLocation;
 
   oldLocation = getDocumentLocation (document);
@@ -618,7 +613,6 @@ NclDocument::addRegionBase (RegionBase *regionBase)
   if (regionBases.find (0) != regionBases.end ()
       && regionBases.find (1) != regionBases.end ())
     {
-
       RegionBase *baseRegionBase = regionBases[0];
       RegionBase *passiveRegionBase = regionBases[1];
       LayoutRegion *outputMapRegion;

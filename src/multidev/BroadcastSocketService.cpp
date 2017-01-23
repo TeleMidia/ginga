@@ -141,7 +141,6 @@ BroadcastSocketService::getServicePort ()
 void
 BroadcastSocketService::dataRequest (char *data, int taskSize, bool repeat)
 {
-
   struct frame *f;
   pthread_mutex_lock (&mutexBuffer);
   f = new struct frame;
@@ -155,7 +154,6 @@ BroadcastSocketService::dataRequest (char *data, int taskSize, bool repeat)
 bool
 BroadcastSocketService::sendData (struct frame *f)
 {
-
   char *data;
   int taskSize, i;
 
@@ -223,7 +221,6 @@ BroadcastSocketService::checkInputBuffer (char *data, int *size)
 
   if (udpSocket == NULL)
     {
-
       return false;
     }
 

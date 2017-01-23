@@ -81,7 +81,6 @@ class FormatterScheduler : public INclLinkActionListener,
                            public INclEventListener,
                            public IContextListener
 {
-
 private:
   RuleAdapter *ruleAdapter;
   AdapterPlayerManager *playerManager;

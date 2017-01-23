@@ -35,7 +35,6 @@ FormatterPassiveDevice::FormatterPassiveDevice (GingaScreenID screenId,
     : FormatterMultiDevice (screenId, deviceLayout, x, y, w, h,
                             useMulticast, srvPort)
 {
-
   deviceClass = DeviceDomain::CT_PASSIVE;
   serialized = Ginga_Display->createWindow (myScreen, x, y, defaultWidth,
                                  defaultHeight, -1.0);

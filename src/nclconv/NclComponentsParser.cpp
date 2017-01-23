@@ -29,7 +29,6 @@ void *
 NclComponentsParser::parseMedia (DOMElement *parentElement,
                                  void *objGrandParent)
 {
-
   clog << "parseMedia" << endl;
   void *parentObject;
   DOMNodeList *elementNodeList;
@@ -59,7 +58,6 @@ NclComponentsParser::parseMedia (DOMElement *parentElement,
           if (XMLString::compareIString (elementTagName.c_str (), "area")
               == 0)
             {
-
               elementObject = getInterfacesParser ()->parseArea (
                   element, parentObject);
 
@@ -72,7 +70,6 @@ NclComponentsParser::parseMedia (DOMElement *parentElement,
                                               "property")
                    == 0)
             {
-
               elementObject = getInterfacesParser ()->parseProperty (
                   element, parentObject);
 
@@ -91,7 +88,6 @@ void *
 NclComponentsParser::parseContext (DOMElement *parentElement,
                                    void *objGrandParent)
 {
-
   void *parentObject;
   DOMNodeList *elementNodeList;
   int i, size;
@@ -119,7 +115,6 @@ NclComponentsParser::parseContext (DOMElement *parentElement,
           if (XMLString::compareIString (elementTagName.c_str (), "media")
               == 0)
             {
-
               elementObject = parseMedia (element, parentObject);
               if (elementObject != NULL)
                 {
@@ -130,7 +125,6 @@ NclComponentsParser::parseContext (DOMElement *parentElement,
                                               "context")
                    == 0)
             {
-
               elementObject = parseContext (element, parentObject);
               if (elementObject != NULL)
                 {
@@ -141,7 +135,6 @@ NclComponentsParser::parseContext (DOMElement *parentElement,
                                               "switch")
                    == 0)
             {
-
               elementObject = getPresentationControlParser ()->parseSwitch (
                   element, parentObject);
 
@@ -161,7 +154,6 @@ NclComponentsParser::parseContext (DOMElement *parentElement,
                                         XMLString::transcode ("property"))
                  == 0)
         {
-
           elementObject = getInterfacesParser ()->parseProperty (
               (DOMElement *)node, parentObject);
 
@@ -179,7 +171,6 @@ void *
 NclComponentsParser::posCompileContext (DOMElement *parentElement,
                                         void *parentObject)
 {
-
   clog << "posCompileContext" << endl;
   DOMNodeList *elementNodeList;
   int i, size;
@@ -197,7 +188,6 @@ NclComponentsParser::posCompileContext (DOMElement *parentElement,
                                         XMLString::transcode ("link"))
                  == 0)
         {
-
           elementObject = getLinkingParser ()->parseLink (
               (DOMElement *)node, parentObject);
 
@@ -216,7 +206,6 @@ NclComponentsParser::posCompileContext (DOMElement *parentElement,
                                         XMLString::transcode ("port"))
                  == 0)
         {
-
           elementObject = getInterfacesParser ()->parsePort (
               (DOMElement *)node, parentObject);
 
@@ -233,7 +222,6 @@ NclComponentsParser::posCompileContext (DOMElement *parentElement,
 NclPresentationSpecificationParser *
 NclComponentsParser::getPresentationSpecificationParser ()
 {
-
   return presentationSpecificationParser;
 }
 
@@ -241,7 +229,6 @@ void
 NclComponentsParser::setPresentationSpecificationParser (
     NclPresentationSpecificationParser *presentationSpecificationParser)
 {
-
   this->presentationSpecificationParser = presentationSpecificationParser;
 }
 
@@ -254,7 +241,6 @@ NclComponentsParser::getLinkingParser ()
 void
 NclComponentsParser::setLinkingParser (NclLinkingParser *linkingParser)
 {
-
   this->linkingParser = linkingParser;
 }
 
@@ -268,14 +254,12 @@ void
 NclComponentsParser::setInterfacesParser (
     NclInterfacesParser *interfacesParser)
 {
-
   this->interfacesParser = interfacesParser;
 }
 
 NclPresentationControlParser *
 NclComponentsParser::getPresentationControlParser ()
 {
-
   return presentationControlParser;
 }
 
@@ -283,7 +267,6 @@ void
 NclComponentsParser::setPresentationControlParser (
     NclPresentationControlParser *presentationControlParser)
 {
-
   this->presentationControlParser = presentationControlParser;
 }
 

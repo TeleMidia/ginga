@@ -28,10 +28,8 @@ protected:
   set<string> typeSet;
 
 public:
-  NclLinkCondition () { typeSet.insert ("NclLinkCondition"); };
-
+  NclLinkCondition () {typeSet.insert ("NclLinkCondition"); };
   virtual ~NclLinkCondition (){};
-
   bool
   instanceOf (string s)
   {

@@ -123,7 +123,6 @@ DigitalCCDescriptor::process (char *data, size_t pos)
       components = new vector<Component *>;
       while (remainingBytes > 0)
         {
-
           pos++;
 
           component = new struct Component;

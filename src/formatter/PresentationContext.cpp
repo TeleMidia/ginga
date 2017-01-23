@@ -56,7 +56,6 @@ PresentationContext::~PresentationContext ()
 void
 PresentationContext::setPropertyValue (string property, string value)
 {
-
   string oldValue = "";
   map<string, string>::iterator i;
 
@@ -64,7 +63,6 @@ PresentationContext::setPropertyValue (string property, string value)
   if ((property.length () >= 7 && property.substr (0, 7) == "system.")
       || (property.length () >= 5 && property.substr (0, 5) == "user."))
     {
-
       Thread::mutexUnlock (&attrMutex);
       return;
     }
@@ -305,7 +303,6 @@ void
 PresentationContext::receiveGlobalAttribution (string propertyName,
                                                string value)
 {
-
   if (globalVarListener != NULL)
     {
       globalVarListener->receiveGlobalAttribution (propertyName, value);

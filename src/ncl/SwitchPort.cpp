@@ -23,7 +23,6 @@ GINGA_NCL_BEGIN
 SwitchPort::SwitchPort (string id, void *switchNode)
     : Port (id, (Node *)switchNode, NULL)
 {
-
   portList = new vector<Port *>;
   typeSet.insert ("SwitchPort");
 }

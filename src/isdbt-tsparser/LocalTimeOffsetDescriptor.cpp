@@ -105,7 +105,6 @@ LocalTimeOffsetDescriptor::print ()
 size_t
 LocalTimeOffsetDescriptor::process (char *data, size_t pos)
 {
-
   clog << " LocalTimeOffsetDescriptor::process" << endl;
   descriptorLength = data[pos + 1];
   pos += 2;

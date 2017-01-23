@@ -181,7 +181,6 @@ ISDBTProvider::scanChannels ()
   // Let's assume just UHF channels for now
   for (int channel_counter = 14; channel_counter <= 69; channel_counter++)
     {
-
       clog << "Channel = " << channel_counter << " Frequency = "
            << (unsigned long long)tv_channels_list[channel_counter] << " "
            << endl;
@@ -260,7 +259,6 @@ ISDBTProvider::scanChannels ()
       // retry 2 times...
       for (i = 0; (i < 2) && (has_signal_lock == 0); i++)
         {
-
           if (ioctl (feFd, FE_READ_STATUS, &feStatus) == -1)
             {
               cout << "cmd::1::tuner::Unable to tune." << endl;
@@ -509,7 +507,6 @@ ISDBTProvider::tune ()
     }
   else
     {
-
       close ();
       return false;
     }
@@ -592,7 +589,6 @@ ISDBTProvider::setChannel (string channelValue)
 int
 ISDBTProvider::createPesFilter (int pid, int pesType, bool compositeFiler)
 {
-
   if (frontend != NULL)
     {
       return frontend->createPesFilter (pid, pesType, compositeFiler);

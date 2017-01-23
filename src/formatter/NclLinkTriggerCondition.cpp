@@ -54,7 +54,6 @@ void
 NclLinkTriggerCondition::setTriggerListener (
     NclLinkTriggerListener *listener)
 {
-
   this->listener = listener;
 }
 

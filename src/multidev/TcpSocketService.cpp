@@ -58,7 +58,6 @@ TcpSocketService::addConnection (unsigned int deviceId, char *addr,
   Thread::mutexLock (&connMutex);
   if (connections != NULL && connections->count (deviceId) == 0)
     {
-
       //	if (connections != NULL) {
       //(*connections)[deviceId] = new TCPClientConnection(addr, portStr);
       connection_counter++;
@@ -128,7 +127,6 @@ void
 TcpSocketService::postTcpCommand (char *command, int npt, char *payloadDesc,
                                   char *payload)
 {
-
   map<unsigned int, TCPClientConnection *>::iterator i;
   char *com;
   com = g_strdup_printf ("%d %s %s %d\n", npt, command, payloadDesc,

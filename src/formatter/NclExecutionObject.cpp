@@ -58,7 +58,6 @@ bool
 NclExecutionObject::hasInstance (NclExecutionObject *object,
                                  bool eraseFromList)
 {
-
   set<NclExecutionObject *>::iterator i;
   bool hasObject;
 
@@ -87,7 +86,6 @@ NclExecutionObject::NclExecutionObject (string id, Node *node,
                                         bool handling,
                                         INclLinkActionListener *seListener)
 {
-
   initializeExecutionObject (id, node, NULL, handling, seListener);
 }
 
@@ -96,7 +94,6 @@ NclExecutionObject::NclExecutionObject (string id, Node *node,
                                         bool handling,
                                         INclLinkActionListener *seListener)
 {
-
   initializeExecutionObject (id, node,
                              new NclCascadingDescriptor (descriptor),
                              handling, seListener);
@@ -107,7 +104,6 @@ NclExecutionObject::NclExecutionObject (string id, Node *node,
                                         bool handling,
                                         INclLinkActionListener *seListener)
 {
-
   initializeExecutionObject (id, node, descriptor, handling, seListener);
 }
 
@@ -169,7 +165,6 @@ NclExecutionObject::initializeExecutionObject (
     string id, Node *node, NclCascadingDescriptor *descriptor,
     bool handling, INclLinkActionListener *seListener)
 {
-
   typeSet.insert ("NclExecutionObject");
 
   if (!initMutex)
@@ -252,7 +247,6 @@ void
 NclExecutionObject::removeParentListenersFromEvent (
     NclFormatterEvent *event)
 {
-
   map<Node *, void *>::iterator i;
   NclCompositeExecutionObject *parentObject;
 
@@ -285,7 +279,6 @@ NclExecutionObject::isSleeping ()
   if (mainEvent == NULL
       || mainEvent->getCurrentState () == EventUtil::ST_SLEEPING)
     {
-
       return true;
     }
 
@@ -298,7 +291,6 @@ NclExecutionObject::isPaused ()
   if (mainEvent != NULL
       && mainEvent->getCurrentState () == EventUtil::ST_PAUSED)
     {
-
       return true;
     }
 
@@ -381,7 +373,6 @@ NclExecutionObject::getParentObject (Node *node)
 void
 NclExecutionObject::addParentObject (void *parentObject, Node *parentNode)
 {
-
   addParentObject (dataObject, parentObject, parentNode);
 }
 
@@ -389,7 +380,6 @@ void
 NclExecutionObject::addParentObject (Node *node, void *parentObject,
                                      Node *parentNode)
 {
-
   lockParentTable ();
   nodeParentTable[node] = parentNode;
   parentTable[parentNode] = parentObject;
@@ -400,7 +390,6 @@ void
 NclExecutionObject::removeParentObject (Node *parentNode,
                                         void *parentObject)
 {
-
   map<Node *, void *>::iterator i;
 
   lockParentTable ();
@@ -421,7 +410,6 @@ void
 NclExecutionObject::setDescriptor (
     NclCascadingDescriptor *cascadingDescriptor)
 {
-
   this->descriptor = cascadingDescriptor;
 }
 
@@ -796,7 +784,6 @@ NclExecutionObject::updateEventDuration (NclPresentationEvent *event)
           if (!isNaN (descriptor->getExplicitDuration ())
               && event == wholeContent)
             {
-
               duration = descriptor->getExplicitDuration ();
             }
           else if (event->getDuration () > 0)
@@ -871,7 +858,6 @@ NclExecutionObject::removeEvent (NclFormatterEvent *event)
     {
       for (k = otherEvents.begin (); k != otherEvents.end (); ++k)
         {
-
           if (*k == event)
             {
               otherEvents.erase (k);
@@ -1016,7 +1002,6 @@ NclExecutionObject::getNodePerspective (Node *node)
       i = parentTable.find (parentNode);
       if (i != parentTable.end ())
         {
-
           parentObject = (NclCompositeExecutionObject *)(i->second);
 
           perspective = parentObject->getNodePerspective (parentNode);
@@ -1041,7 +1026,6 @@ NclExecutionObject::getObjectPerspective ()
 vector<NclExecutionObject *> *
 NclExecutionObject::getObjectPerspective (Node *node)
 {
-
   Node *parentNode;
   vector<NclExecutionObject *> *perspective = NULL;
   NclCompositeExecutionObject *parentObject;
@@ -1130,7 +1114,6 @@ NclExecutionObject::prepare (NclFormatterEvent *event, double offsetTime)
   if (event == NULL || !containsEvent (event)
       || event->getCurrentState () != EventUtil::ST_SLEEPING)
     {
-
       // clog << "NclExecutionObject::prepare(" << id << ") ret FALSE" <<
       // endl;
       return false;
@@ -1139,7 +1122,6 @@ NclExecutionObject::prepare (NclFormatterEvent *event, double offsetTime)
   if (mainEvent != NULL
       && mainEvent->getCurrentState () != EventUtil::ST_SLEEPING)
     {
-
       return false;
     }
 
@@ -1156,7 +1138,6 @@ NclExecutionObject::prepare (NclFormatterEvent *event, double offsetTime)
       if (contentAnchor != NULL
           && contentAnchor->instanceOf ("LabeledAnchor"))
         {
-
           lockParentTable ();
           i = parentTable.begin ();
           while (i != parentTable.end ())
@@ -1239,7 +1220,6 @@ NclExecutionObject::start ()
   if (mainEvent != NULL
       && mainEvent->getCurrentState () != EventUtil::ST_SLEEPING)
     {
-
       return true;
     }
 
@@ -1254,7 +1234,6 @@ NclExecutionObject::start ()
       if (contentAnchor != NULL
           && contentAnchor->instanceOf ("LabeledAnchor"))
         {
-
           transMan->start (offsetTime);
           mainEvent->start ();
           return true;
@@ -1269,7 +1248,6 @@ void
 NclExecutionObject::timeBaseNaturalEnd (int64_t timeValue,
                                         short int transType)
 {
-
   transMan->timeBaseNaturalEnd (timeValue, mainEvent, transType);
 }
 
@@ -1277,7 +1255,6 @@ void
 NclExecutionObject::updateTransitionTable (double value, IPlayer *player,
                                            short int transType)
 {
-
   transMan->updateTransitionTable (value, player, mainEvent, transType);
 }
 
@@ -1291,7 +1268,6 @@ void
 NclExecutionObject::prepareTransitionEvents (short int transType,
                                              double startTime)
 {
-
   transMan->prepare (mainEvent == wholeContent, startTime, transType);
 }
 
@@ -1336,7 +1312,6 @@ NclExecutionObject::stop ()
       if (contentAnchor != NULL
           && contentAnchor->instanceOf ("LabeledAnchor"))
         {
-
           /*clog << "NclExecutionObject::stop for '" << id << "'";
           clog << " call mainEvent '" << mainEvent->getId();
           clog << "' stop" << endl;*/
@@ -1372,7 +1347,6 @@ NclExecutionObject::abort ()
       if (contentAnchor != NULL
           && contentAnchor->instanceOf ("LabeledAnchor"))
         {
-
           mainEvent->abort ();
         }
     }
@@ -1467,7 +1441,6 @@ bool
 NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
                                       string value)
 {
-
   string propName;
 
   NclFormatterRegion *region = NULL;
@@ -1686,7 +1659,6 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
 string
 NclExecutionObject::getPropertyValue (string param)
 {
-
   NclFormatterRegion *region = NULL;
   LayoutRegion *ncmRegion = NULL;
   string value = "";
@@ -1773,7 +1745,6 @@ NclExecutionObject::unprepare ()
   if (mainEvent == NULL
       || mainEvent->getCurrentState () != EventUtil::ST_SLEEPING)
     {
-
       unlock ();
       clog << "NclExecutionObject::unprepare(" << id << ") unlocked";
       clog << " ret FALSE" << endl;
@@ -1852,13 +1823,11 @@ NclExecutionObject::selectionEvent (int keyCode, double currentTime)
         {
           if (selectionEvent->getAnchor ()->instanceOf ("LambdaAnchor"))
             {
-
               selectedEvents->insert (selectionEvent);
             }
           else if (selectionEvent->getAnchor ()->instanceOf (
                        "IntervalAnchor"))
             {
-
               intervalAnchor
                   = (IntervalAnchor *)(selectionEvent->getAnchor ());
 
@@ -1875,7 +1844,6 @@ NclExecutionObject::selectionEvent (int keyCode, double currentTime)
               if (intervalBegin <= currentTime
                   && intervalEnd >= currentTime)
                 {
-
                   selectedEvents->insert (selectionEvent);
                 }
             }
@@ -1902,7 +1870,6 @@ NclExecutionObject::selectionEvent (int keyCode, double currentTime)
                   if (expectedEvent->getCurrentState ()
                       == EventUtil::ST_OCCURRING)
                     {
-
                       selectedEvents->insert (selectionEvent);
                     }
                   else

@@ -79,10 +79,11 @@ public:
 
   static int colortoi (string color);
   Color ();
-  Color (guint8 r, guint8 g, guint8 b, guint8 alpha = (guint8) 0xff);
-  Color (string color, guint8 alpha = (guint8) 0xff);
+  Color (guint8 r, guint8 g, guint8 b, guint8 alpha = 0xff);
+  Color (string color, guint8 alpha = 0xff);
   void setColor (string color);
-  void setColor (guint8 red, guint8 green, guint8 blue, guint8 alpha = (guint8) 0xff);
+  void setColor (guint8 red, guint8 green, guint8 blue,
+                 guint8 alpha = 0xff);
   guint8 getR ();
   guint8 getG ();
   guint8 getB ();

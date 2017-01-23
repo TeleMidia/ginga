@@ -27,7 +27,6 @@ GINGA_FORMATTER_BEGIN
 
 class PrefetchManager : public IInteractiveChannelListener
 {
-
 private:
   map<string, string> *localToRemoteUris;
   map<string, string> *urisToLocalRoots;
@@ -70,7 +69,8 @@ public:
 private:
   void scheduleContent (string remoteUri, string localUri);
   void receiveCode (arg_unused (long respCode)){};
-  void receiveDataStream (arg_unused (char *buffer), arg_unused (int size)){};
+  void receiveDataStream (arg_unused (char *buffer),
+                          arg_unused (int size)){};
   void receiveDataPipe (FILE *fd, int size);
   void downloadCompleted (arg_unused (const char *localUri)){};
 

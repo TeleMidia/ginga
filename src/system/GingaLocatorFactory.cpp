@@ -136,14 +136,12 @@ GingaLocatorFactory::createLocator (string providerUri, string ior)
   while (providerUri.substr (providerUri.length () - 1, 1)
          == SystemCompat::getIUriD ())
     {
-
       providerUri = providerUri.substr (0, providerUri.length () - 1);
     }
 
   while (providerUri.substr (providerUri.length () - 1, 1)
          == SystemCompat::getFUriD ())
     {
-
       providerUri = providerUri.substr (0, providerUri.length () - 1);
     }
 
@@ -188,14 +186,12 @@ GingaLocatorFactory::getLocation (string providerUri)
   while (providerUri.substr (providerUri.length () - 1, 1)
          == SystemCompat::getIUriD ())
     {
-
       providerUri = providerUri.substr (0, providerUri.length () - 1);
     }
 
   while (providerUri.substr (providerUri.length () - 1, 1)
          == SystemCompat::getFUriD ())
     {
-
       providerUri = providerUri.substr (0, providerUri.length () - 1);
     }
 
@@ -263,7 +259,6 @@ void
 GingaLocatorFactory::addClientLocation (string ior, string clientUri,
                                         string name)
 {
-
   vector<string> *args;
   vector<string>::iterator i;
   string arg, newIor;

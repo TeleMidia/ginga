@@ -25,7 +25,6 @@ GINGA_MB_BEGIN
 
 SDLAudioProvider::SDLAudioProvider (GingaScreenID screenId, const char *mrl)
 {
-
   type = AudioProvider;
 
   myScreen = screenId;

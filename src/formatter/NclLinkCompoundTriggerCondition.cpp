@@ -23,7 +23,6 @@ GINGA_FORMATTER_BEGIN
 NclLinkCompoundTriggerCondition::NclLinkCompoundTriggerCondition ()
     : NclLinkTriggerCondition ()
 {
-
   typeSet.insert ("NclLinkCompoundTriggerCondition");
 }
 
@@ -112,7 +111,6 @@ NclLinkCompoundTriggerCondition::conditionSatisfied (void *condition)
           childCondition = (NclLinkCondition*)(*conditions)[i];
           if (childCondition != (NclLinkCondition*)condition &&
                       childCondition->instanceOf("NclLinkStatement")) {
-
                   if (op == CompoundCondition::OP_OR) {
                           break;
                   }

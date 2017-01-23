@@ -640,7 +640,6 @@ LayoutRegion::setBottom (double newBottom, bool isPercentual)
       if ((getTopInPixels () + getHeightInPixels ())
           > parent->getHeightInPixels ())
         {
-
           // since the region will stay outside the parent edges, the
           // bottom is set to the maximum value allowed
           if (isPercentual)
@@ -716,7 +715,6 @@ LayoutRegion::setHeight (double newHeight, bool isPercentual)
       if ((getTopInPixels () + getHeightInPixels ())
           > parent->getHeightInPixels ())
         {
-
           // since the region will stay outside the parent edges, the
           // top is set to the maximum value allowed
           if (isPercentual)
@@ -782,7 +780,6 @@ LayoutRegion::setLeft (double newLeft, bool isPercentual)
       if ((getLeftInPixels () + getWidthInPixels ())
           > parent->getWidthInPixels ())
         {
-
           // since the region will stay outside the parent edges, the
           // left is set to the maximum value allowed
           if (isPercentual)
@@ -850,7 +847,6 @@ LayoutRegion::setRight (double newRight, bool isPercentual)
       if ((getLeftInPixels () + getWidthInPixels ())
           > parent->getWidthInPixels ())
         {
-
           // since the region will stay outside the parent edges, the
           // right is set to the maximum value allowed
           if (isPercentual)
@@ -926,7 +922,6 @@ LayoutRegion::setTop (double newTop, bool isPercentual)
       if (((double)(getTopInPixels ()) + (double)(getHeightInPixels ()))
           > (double)(parent->getHeightInPixels ()))
         {
-
           // since the region will stay outside the parent edges, the
           // top is set to the maximum value allowed
           if (isPercentual)
@@ -993,7 +988,6 @@ LayoutRegion::setWidth (double newWidth, bool isPercentual)
       if ((getLeftInPixels () + getWidthInPixels ())
           > parent->getWidthInPixels ())
         {
-
           // since the region will stay outside the parent edges, the
           // top is set to the maximum value allowed
           if (isPercentual)
@@ -1058,7 +1052,6 @@ LayoutRegion::validateTarget ()
       if ((getTopInPixels () + getHeightInPixels ())
           > deviceLayout->getHeightInPixels ())
         {
-
           // since the region will stay outside the device edges, the
           // bottom is set to the minimum value allowed
           height = (deviceLayout->getHeightInPixels () - getTopInPixels ());
@@ -1075,7 +1068,6 @@ LayoutRegion::validateTarget ()
       if ((getLeftInPixels () + getWidthInPixels ())
           > deviceLayout->getWidthInPixels ())
         {
-
           // since the region will stay outside the parent edges, the
           // left is set to the maximum value allowed
           width = (deviceLayout->getWidthInPixels ()
@@ -1127,7 +1119,6 @@ LayoutRegion::getRegionsSortedByZIndex ()
 vector<LayoutRegion *> *
 LayoutRegion::getRegionsOverRegion (LayoutRegion *region)
 {
-
   vector<LayoutRegion *> *allRegions;
   vector<LayoutRegion *>::iterator i;
   vector<LayoutRegion *> *frontRegions;
@@ -1218,7 +1209,6 @@ LayoutRegion::setParent (LayoutRegion *parent)
     {
       if (parent->getOutputMapRegion () == NULL && outputMapRegion != NULL)
         {
-
           parent->setOutputMapRegion (outputMapRegion);
         }
 
@@ -1267,7 +1257,6 @@ LayoutRegion::getTopInPixels ()
     }
   else if ((!isNaN (height)) && (!isNaN (bottom)))
     {
-
       // top is based on height and bottom
       if (isHeightPercentual () && parent != NULL)
         {
@@ -1314,7 +1303,6 @@ LayoutRegion::getBottomInPixels ()
 
   if (!isNaN (height) && !isNaN (top))
     {
-
       // bottom is based on height and top, independent
       // of bottom definition
       if (isTopPercentual () && parent != NULL)
@@ -1365,7 +1353,6 @@ LayoutRegion::getRightInPixels ()
 
   if (!isNaN (width) && !isNaN (left))
     {
-
       // right is based on width and left, independent of right
       // definition
       if (isLeftPercentual () && parent != NULL)

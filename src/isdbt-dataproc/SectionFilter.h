@@ -65,7 +65,8 @@ private:
   {
     return dstUri;
   };
-  void setSourceUri (arg_unused (string srcUri), arg_unused (bool isPipe)){};
+  void setSourceUri (arg_unused (string srcUri),
+                     arg_unused (bool isPipe)){};
   void resetHandler (SectionHandler *handler);
   void ignore (unsigned int pid);
   SectionHandler *getSectionHandler (unsigned int pid);

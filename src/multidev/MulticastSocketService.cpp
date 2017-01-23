@@ -25,7 +25,6 @@ GINGA_MULTIDEV_BEGIN
 MulticastSocketService::MulticastSocketService (char *groupAddr,
                                                 unsigned int portNumber)
 {
-
   outputBuffer = new vector<struct frame *>;
   port = portNumber;
   groupAddress = groupAddr;
@@ -175,7 +174,6 @@ MulticastSocketService::getServicePort ()
 void
 MulticastSocketService::dataRequest (char *data, int taskSize, bool repeat)
 {
-
   struct frame *f;
 
   Thread::mutexLock (&mutexBuffer);
@@ -250,7 +248,6 @@ MulticastSocketService::checkOutputBuffer ()
 bool
 MulticastSocketService::checkInputBuffer (char *data, int *size)
 {
-
   int res, recvFrom;
   string null_string;
   unsigned short null_short;

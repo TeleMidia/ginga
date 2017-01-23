@@ -96,7 +96,6 @@ RemoteEventService::addDevice (unsigned int device_class,
                                unsigned int device_id, char *addr,
                                int srvPort, bool isLocalConnection)
 {
-
   map<int, TcpSocketService *>::iterator i;
   TcpSocketService *tss;
 
@@ -120,7 +119,6 @@ void
 RemoteEventService::addDocument (unsigned int device_class, char *name,
                                  char *body)
 {
-
   TcpSocketService *tss;
 
   Thread::mutexLock (&groupsMutex);
@@ -138,7 +136,6 @@ RemoteEventService::addDocument (unsigned int device_class, char *name,
 void
 RemoteEventService::startDocument (unsigned int device_class, char *name)
 {
-
   TcpSocketService *tss;
 
   string str_name = string (name);
@@ -211,7 +208,6 @@ RemoteEventService::startDocument (unsigned int device_class, char *name)
 void
 RemoteEventService::stopDocument (unsigned int device_class, char *name)
 {
-
   TcpSocketService *tss;
 
   Thread::mutexLock (&groupsMutex);

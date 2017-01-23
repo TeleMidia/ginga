@@ -241,7 +241,6 @@ void
 Player::notifyPlayerListeners (short code, string parameter, short type,
                                string value)
 {
-
   PendingNotification *pn;
   vector<PendingNotification *>::iterator i;
 
@@ -348,7 +347,6 @@ Player::ntsNotifyPlayerListeners (set<IPlayerListener *> *list, short code,
                                   string parameter, short type,
                                   string value)
 {
-
   set<IPlayerListener *>::iterator i;
 
   i = list->begin ();
@@ -424,7 +422,6 @@ void
 Player::setScope (string scope, short type, double initTime, double endTime,
                   double outTransDur)
 {
-
   clog << "Player::setScope '" << scope << "'" << endl;
   this->scope = scope;
   this->scopeType = type;

@@ -27,7 +27,6 @@ RectangleSpatialAnchor::RectangleSpatialAnchor (string id, long left,
                                                 long height)
     : SpatialAnchor (id)
 {
-
   this->left = left;
   this->top = top;
   this->width = width;
@@ -63,7 +62,6 @@ void
 RectangleSpatialAnchor::setArea (long left, long top, long width,
                                  long height)
 {
-
   this->left = left;
   this->top = top;
   this->width = width;

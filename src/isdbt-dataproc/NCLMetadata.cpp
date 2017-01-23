@@ -167,7 +167,6 @@ NCLMetadata::updateTotalLength (INCLDataFile *dataFile)
 {
   if (rootObject != dataFile && dataFiles->count (dataFile->getId ()) == 0)
     {
-
       totalLength = totalLength + dataFile->getSize ();
       return true;
     }
@@ -295,7 +294,6 @@ void
 NCLMetadata::writeRootElement (string sId, string uri, string size,
                                string componentTag)
 {
-
   *mdFile << "    <pushedRoot structureId=\"" << sId << "\" uri=\"";
   *mdFile << uri << "\" size=\"" << size << "\" component_tag=\"";
   *mdFile << componentTag << "\"/>" << endl;
@@ -305,7 +303,6 @@ void
 NCLMetadata::writeDataElement (string sId, string uri, string size,
                                string componentTag)
 {
-
   *mdFile << "    <pushedData structureId=\"" << sId << "\" uri=\"";
   *mdFile << uri << "\" size=\"" << size << "\" component_tag=\"";
   *mdFile << componentTag << "\"/>" << endl;
@@ -351,7 +348,6 @@ StreamData *
 NCLMetadata::createStreamData (int structId, int structType, string uri,
                                int fileSize)
 {
-
   StreamData *streamData;
   char *stream = new char[fileSize + 2];
 

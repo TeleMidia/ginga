@@ -33,7 +33,6 @@ GINGA_TUNER_BEGIN
 NetworkInterface::NetworkInterface (int id, string name, string protocol,
                                     string addr)
 {
-
   this->provider = NULL;
   this->id = id;
   this->name = name;
@@ -230,7 +229,6 @@ int
 NetworkInterface::createPesFilter (int pid, int pesType,
                                    bool compositeFiler)
 {
-
   if (provider != NULL)
     {
       return provider->createPesFilter (pid, pesType, compositeFiler);

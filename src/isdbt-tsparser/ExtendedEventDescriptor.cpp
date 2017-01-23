@@ -188,7 +188,6 @@ ExtendedEventDescriptor::process (char *data, size_t pos)
   items = new vector<Item *>;
   while (remainingBytesItems)
     {
-
       item = new struct Item;
 
       item->itemDescriptionLength = data[pos];
@@ -197,7 +196,6 @@ ExtendedEventDescriptor::process (char *data, size_t pos)
       // 0xFF);
       if (item->itemDescriptionLength != 0)
         {
-
           item->itemDescriptionChar = new char[item->itemDescriptionLength];
 
           memset (item->itemDescriptionChar, 0,

@@ -23,7 +23,6 @@ GINGA_FORMATTER_BEGIN
 NclFormatterDeviceRegion::NclFormatterDeviceRegion (string id)
     : LayoutRegion (id)
 {
-
   this->id = id;
   sortedRegions = new vector<LayoutRegion *>;
 
@@ -427,7 +426,6 @@ NclFormatterDeviceRegion::getRegionsSortedByZIndex ()
                   if (i == sortedRegions->end() ||
                                   zIndexValue <= (auxRegion)->
                               getZIndexValue()) {
-
                           break;
                   }
                   ++i;
@@ -448,7 +446,6 @@ NclFormatterDeviceRegion::getRegionsSortedByZIndex ()
 vector<LayoutRegion *> *
 NclFormatterDeviceRegion::getRegionsOverRegion (LayoutRegion *region)
 {
-
   vector<LayoutRegion *> *frontRegions;
   vector<LayoutRegion *>::iterator it;
   LayoutRegion *childRegion;
@@ -464,7 +461,6 @@ NclFormatterDeviceRegion::getRegionsOverRegion (LayoutRegion *region)
       childZIndex = childRegion->getZIndexValue ();
       if (childZIndex > regionZIndex && region->intersects (childRegion))
         {
-
           frontRegions->insert (frontRegions->begin (), childRegion);
         }
     }

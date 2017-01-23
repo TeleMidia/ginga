@@ -24,7 +24,6 @@ NclAnchorEvent::NclAnchorEvent (string id, void *executionObject,
                                 ContentAnchor *anchor)
     : NclFormatterEvent (id, executionObject)
 {
-
   this->anchor = anchor;
   typeSet.insert ("NclAnchorEvent");
 }

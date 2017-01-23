@@ -27,7 +27,6 @@ Tuner::Tuner (GingaScreenID screenId, string network, string protocol,
               string address)
     : Thread ()
 {
-
   receiving = false;
   currentInterface = -1;
   firstTune = true;
@@ -138,7 +137,6 @@ Tuner::initializeInterface (string niSpec)
 
   if (niSpec.length () > 3 && niSpec.substr (0, 1) != "#")
     {
-
       if (niSpec.substr (0, 5) == "file:")
         {
           createInterface ("file", "local",
@@ -164,12 +162,10 @@ Tuner::initializeInterface (string niSpec)
 
       if (fo >= 224 && fo <= 239)
         {
-
           createInterface ("ip", "udp_multicast", niSpec);
         }
       else if ((fo >= 001 && fo <= 223) || (fo >= 240 && fo <= 254))
         {
-
           createInterface ("ip", "udp_unicast", niSpec);
         }
       else if (niSpec.substr (0, 6) == "isdbt:")
@@ -194,7 +190,6 @@ Tuner::initializeInterface (string niSpec)
     }
   else if (niSpec.substr (0, 1) != "#")
     {
-
       clog << "Tuner::initializeInterface can't initialize";
       clog << niSpec << "': invalid specification" << endl;
     }
@@ -232,7 +227,6 @@ Tuner::initializeInterfaces ()
 void
 Tuner::createInterface (string network, string protocol, string address)
 {
-
   currentInterface++;
   NetworkInterface *newInterface
       = new NetworkInterface (currentInterface, network, protocol, address);
@@ -487,7 +481,6 @@ Tuner::run ()
   if (tuned && nInterface != NULL
       && !(nInterface->getCaps () & DPC_CAN_DEMUXBYHW))
     {
-
       clog << "Tuner::run() call receive" << endl;
 
       waitForListeners ();

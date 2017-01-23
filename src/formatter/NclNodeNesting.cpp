@@ -155,7 +155,6 @@ NclNodeNesting::getNode (int index)
   if (nodes == NULL || nodes->empty () || index < 0
       || index >= (int)(nodes->size ()))
     {
-
       Thread::mutexUnlock (&mutexNodes);
       return NULL;
     }

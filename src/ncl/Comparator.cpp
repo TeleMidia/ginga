@@ -132,7 +132,6 @@ Comparator::evaluate (double first, double second, short comparator)
 string
 Comparator::toString (short comparator)
 {
-
   switch (comparator)
     {
     case Comparator::CMP_EQ:

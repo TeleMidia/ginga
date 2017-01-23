@@ -22,7 +22,6 @@ GINGA_NCL_BEGIN
 
 AssessmentStatement::AssessmentStatement (short comp) : Statement ()
 {
-
   comparator = comp;
   mainAssessment = NULL;
   otherAssessment = NULL;
@@ -53,7 +52,6 @@ AssessmentStatement::getMainAssessment ()
 void
 AssessmentStatement::setMainAssessment (AttributeAssessment *assessment)
 {
-
   this->mainAssessment = assessment;
 }
 

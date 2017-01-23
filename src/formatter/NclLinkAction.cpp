@@ -73,7 +73,6 @@ NclLinkAction::getWaitDelay ()
 void
 NclLinkAction::setSatisfiedCondition (void *satisfiedCondition)
 {
-
   this->satisfiedCondition = satisfiedCondition;
 }
 
@@ -115,7 +114,6 @@ void
 NclLinkAction::addActionProgressionListener (
     NclLinkActionProgressionListener *listener)
 {
-
   vector<NclLinkActionProgressionListener *>::iterator i;
 
   if (tryLock ())
@@ -145,7 +143,6 @@ void
 NclLinkAction::removeActionProgressionListener (
     NclLinkActionProgressionListener *listener)
 {
-
   vector<NclLinkActionProgressionListener *>::iterator i;
 
   if (tryLock ())
@@ -155,7 +152,6 @@ NclLinkAction::removeActionProgressionListener (
           for (i = progressionListeners->begin ();
                i != progressionListeners->end (); ++i)
             {
-
               if (*i == listener)
                 {
                   progressionListeners->erase (i);

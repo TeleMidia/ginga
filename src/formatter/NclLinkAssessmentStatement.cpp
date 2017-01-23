@@ -25,7 +25,6 @@ NclLinkAssessmentStatement::NclLinkAssessmentStatement (
     NclLinkAssessment *otherAssessment)
     : NclLinkStatement ()
 {
-
   this->comparator = comparator;
   this->mainAssessment = mainAssessment;
   this->otherAssessment = otherAssessment;

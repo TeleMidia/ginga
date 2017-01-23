@@ -47,7 +47,6 @@ class NclCompositeExecutionObject : public NclExecutionObject,
                                     public INclEventListener,
                                     public Thread
 {
-
 private:
   static const short mSleepTime = 800;
   set<NclFormatterLink *> links;

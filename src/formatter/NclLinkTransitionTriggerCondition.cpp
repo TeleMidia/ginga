@@ -25,7 +25,6 @@ NclLinkTransitionTriggerCondition::NclLinkTransitionTriggerCondition (
     NclFormatterEvent *event, short transition, Bind *bind)
     : NclLinkTriggerCondition ()
 {
-
   typeSet.insert ("NclLinkTransitionTriggerCondition");
 
   this->bind = bind;
@@ -69,7 +68,6 @@ NclLinkTransitionTriggerCondition::eventStateChanged (arg_unused (void *someEven
                                                       short transition,
                                                       arg_unused (short previousState))
 {
-
   if (this->transition == transition)
     {
       notifyConditionObservers (NclLinkTriggerListener::EVALUATION_STARTED);

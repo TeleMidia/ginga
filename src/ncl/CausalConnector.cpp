@@ -32,7 +32,6 @@ CausalConnector::CausalConnector (string id, ConditionExpression *condition,
                                   Action *action)
     : Connector (id)
 {
-
   conditionExpression = (TriggerExpression *)condition;
   actionExpression = (Action *)action;
 
@@ -88,7 +87,6 @@ void
 CausalConnector::setConditionExpression (
     ConditionExpression *newConditionExpression)
 {
-
   releaseCondition ();
   conditionExpression = newConditionExpression;
 }
@@ -97,7 +95,6 @@ void
 CausalConnector::getConditionRoles (ConditionExpression *condition,
                                     vector<Role *> *roles)
 {
-
   vector<Role *> *childRoles;
 
   if (conditionExpression->instanceOf ("SimpleCondition"))
@@ -112,7 +109,6 @@ CausalConnector::getConditionRoles (ConditionExpression *condition,
         }
       else if (conditionExpression->instanceOf ("CompoundCondition"))
         {
-
           childRoles = ((CompoundCondition *)condition)->getRoles ();
         }
       else
@@ -133,7 +129,6 @@ CausalConnector::getConditionRoles (ConditionExpression *condition,
 void
 CausalConnector::getActionRoles (Action *action, vector<Role *> *roles)
 {
-
   vector<Role *> *childRoles;
 
   if (actionExpression->instanceOf ("SimpleAction"))

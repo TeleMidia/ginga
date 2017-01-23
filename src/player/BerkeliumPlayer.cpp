@@ -138,7 +138,6 @@ BBrowserFactory::initBrowser (BerkeliumHandler *bInfo)
 
   if (mrl.find ("file://") == std::string::npos && fileExists (mrl))
     {
-
       mrl = "file://" + mrl;
     }
 

@@ -25,7 +25,6 @@ NclApplicationExecutionObject::NclApplicationExecutionObject (
     INclLinkActionListener *seListener)
     : NclExecutionObject (id, node, handling, seListener)
 {
-
   initializeApplicationObject ();
 }
 
@@ -34,7 +33,6 @@ NclApplicationExecutionObject::NclApplicationExecutionObject (
     INclLinkActionListener *seListener)
     : NclExecutionObject (id, node, descriptor, handling, seListener)
 {
-
   initializeApplicationObject ();
 }
 
@@ -43,7 +41,6 @@ NclApplicationExecutionObject::NclApplicationExecutionObject (
     bool handling, INclLinkActionListener *seListener)
     : NclExecutionObject (id, node, descriptor, handling, seListener)
 {
-
   initializeApplicationObject ();
 }
 
@@ -188,7 +185,6 @@ bool
 NclApplicationExecutionObject::prepare (NclFormatterEvent *event,
                                         double offsetTime)
 {
-
   int size;
   map<Node *, void *>::iterator i;
   double startTime = 0;
@@ -223,7 +219,6 @@ NclApplicationExecutionObject::prepare (NclFormatterEvent *event,
       if (contentAnchor != NULL
           && contentAnchor->instanceOf ("LabeledAnchor"))
         {
-
           i = parentTable.begin ();
           while (i != parentTable.end ())
             {
@@ -302,7 +297,6 @@ NclApplicationExecutionObject::start ()
   if (currentEvent == NULL
       || preparedEvents.count (currentEvent->getId ()) == 0)
     {
-
       clog << "NclApplicationExecutionObject::start nothing to do!" << endl;
       unlockEvents ();
       return false;
@@ -329,7 +323,6 @@ NclApplicationExecutionObject::start ()
       if (contentAnchor != NULL
           && (contentAnchor->instanceOf ("LabeledAnchor")))
         {
-
           transMan->start (offsetTime);
           currentEvent->start ();
 
@@ -358,7 +351,6 @@ NclApplicationExecutionObject::getNextTransition ()
       || currentEvent->getCurrentState () == EventUtil::ST_SLEEPING
       || !currentEvent->instanceOf ("NclPresentationEvent"))
     {
-
       return NULL;
     }
 
@@ -377,7 +369,6 @@ NclApplicationExecutionObject::stop ()
       if (wholeContent != NULL
           && wholeContent->getCurrentState () != EventUtil::ST_SLEEPING)
         {
-
           clog << "NclApplicationExecutionObject::stop WHOLECONTENT"
                << endl;
           wholeContent->stop ();
@@ -391,7 +382,6 @@ NclApplicationExecutionObject::stop ()
       if (contentAnchor != NULL
           && contentAnchor->instanceOf ("LabeledAnchor"))
         {
-
           isLabeled = true;
 
           clog << "NclApplicationExecutionObject::stop stopping event '";
@@ -431,7 +421,6 @@ NclApplicationExecutionObject::abort ()
       if (wholeContent != NULL
           && wholeContent->getCurrentState () != EventUtil::ST_SLEEPING)
         {
-
           wholeContent->abort ();
         }
       return false;
@@ -453,7 +442,6 @@ NclApplicationExecutionObject::abort ()
                   if (contentAnchor != NULL
                       && contentAnchor->instanceOf ("LabeledAnchor"))
                     {
-
                       isLabeled = true;
 
                       clog
@@ -489,7 +477,6 @@ NclApplicationExecutionObject::abort ()
           if (contentAnchor != NULL
               && contentAnchor->instanceOf ("LabeledAnchor"))
             {
-
               isLabeled = true;
 
               clog << "NclApplicationExecutionObject::abort event '";
@@ -524,7 +511,6 @@ NclApplicationExecutionObject::pause ()
       || currentEvent->getCurrentState () != EventUtil::ST_OCCURRING
       || preparedEvents.count (currentEvent->getId ()) == 0)
     {
-
       unlockEvents ();
       return false;
     }
@@ -626,7 +612,6 @@ NclApplicationExecutionObject::unprepare ()
       || currentEvent->getCurrentState () != EventUtil::ST_SLEEPING
       || preparedEvents.count (currentEvent->getId ()) == 0)
     {
-
       unlockEvents ();
       return false;
     }
@@ -638,7 +623,6 @@ NclApplicationExecutionObject::unprepare ()
              ->getAnchor ()
              ->instanceOf ("LambdaAnchor"))
     {
-
       unprepareEvents ();
     }
 
@@ -706,7 +690,6 @@ void
 NclApplicationExecutionObject::removeParentObject (Node *parentNode,
                                                    void *parentObject)
 {
-
   map<Node *, void *>::iterator i;
   map<string, NclFormatterEvent *>::iterator j;
 
@@ -734,7 +717,6 @@ void
 NclApplicationExecutionObject::removeParentListenersFromEvent (
     NclFormatterEvent *event)
 {
-
   map<Node *, void *>::iterator i;
   NclCompositeExecutionObject *parentObject;
 

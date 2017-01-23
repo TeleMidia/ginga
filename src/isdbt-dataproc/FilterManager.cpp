@@ -80,7 +80,6 @@ FilterManager::createStreamTypeSectionFilter (short streamType,
                                               IDemuxer *demux,
                                               IFilterListener *listener)
 {
-
   SectionFilter *sf = NULL;
   int tId;
 
@@ -95,7 +94,6 @@ FilterManager::createStreamTypeSectionFilter (short streamType,
           && (demux->getCaps () & DPC_CAN_FILTERPID)
           && (demux->getCaps () & DPC_CAN_FILTERTID))
         {
-
           tId = IDemuxer::getTableIdFromStreamType (streamType);
           if (tId >= 0)
             {
@@ -117,7 +115,6 @@ ITSFilter *
 FilterManager::createPidSectionFilter (int pid, IDemuxer *demux,
                                        IFilterListener *listener)
 {
-
   SectionFilter *sf = NULL;
 
   Thread::mutexLock (&filterMutex);
@@ -132,7 +129,6 @@ FilterManager::createPidSectionFilter (int pid, IDemuxer *demux,
           && (demux->getCaps () & DPC_CAN_FILTERPID)
           && (demux->getCaps () & DPC_CAN_FILTERTID))
         {
-
           demux->addFilter (sf, pid, -1);
         }
       else
@@ -224,7 +220,6 @@ FilterManager::processSection (ITransportSection *section)
 
   if (section->getPayloadSize () <= 0 || section->getPayloadSize () > 4096)
     {
-
       clog << "FilterManager::processSection ";
       clog << "Warning! Wrong payloadSize" << endl;
       delete section;
@@ -244,7 +239,6 @@ FilterManager::processSection (ITransportSection *section)
     }
   else if (!isDirectory (deconst (char *, sectionDir.c_str ())))
     {
-
       clog << "FilterManager::processSection ";
       clog << "Warning! Wrong section name: ";
       clog << sectionName.c_str () << endl;

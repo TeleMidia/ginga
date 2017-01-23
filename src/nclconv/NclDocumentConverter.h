@@ -39,7 +39,6 @@ GINGA_NCLCONV_BEGIN
 class NclDocumentConverter : public IDocumentConverter,
                              public NclDocumentParser
 {
-
 private:
   IPrivateBaseContext *privateBaseContext;
   bool ownManager;

@@ -24,7 +24,6 @@ GINGA_TSPARSER_BEGIN
 
 class IServiceInfo
 {
-
 public:
   static const unsigned char DT_SERVICE = 0x48;
   static const unsigned char DT_LOGO_TRANSMISSION = 0xCF;

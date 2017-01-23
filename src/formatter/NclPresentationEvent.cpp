@@ -30,7 +30,6 @@ NclPresentationEvent::NclPresentationEvent (string id,
                                             ContentAnchor *anchor)
     : NclAnchorEvent (id, executionObject, anchor)
 {
-
   typeSet.insert ("NclPresentationEvent");
 
   numPresentations = 1;
@@ -115,7 +114,6 @@ void
 NclPresentationEvent::setRepetitionSettings (long repetitions,
                                              double repetitionInterval)
 {
-
   if (repetitions >= 0)
     {
       this->numPresentations = repetitions + 1;

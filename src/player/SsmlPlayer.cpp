@@ -115,7 +115,6 @@ SsmlPlayer::loadSsml ()
   string line;
   do
     {
-
       if (terminateSpeak == true)
         break;
 

@@ -46,7 +46,6 @@ AdapterAVPlayer::createPlayer ()
 bool
 AdapterAVPlayer::setPropertyValue (NclAttributionEvent *event, string value)
 {
-
   return AdapterFormatterPlayer::setPropertyValue (event, value);
 }
 

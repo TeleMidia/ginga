@@ -31,7 +31,6 @@ void
 NclTransitionConverter::addTransitionToTransitionBase (void *parentObject,
                                                        void *childObject)
 {
-
   ((TransitionBase *)parentObject)
       ->addTransition ((Transition *)childObject);
 }
@@ -40,7 +39,6 @@ void *
 NclTransitionConverter::createTransitionBase (DOMElement *parentElement,
                                               arg_unused (void *objGrandParent))
 {
-
   return new TransitionBase (XMLString::transcode (
       parentElement->getAttribute (XMLString::transcode ("id"))));
 }
@@ -49,7 +47,6 @@ void *
 NclTransitionConverter::createTransition (DOMElement *parentElement,
                                           arg_unused (void *objGrandParent))
 {
-
   Transition *transition;
   string id, attValue;
   int type, subtype;
@@ -59,7 +56,6 @@ NclTransitionConverter::createTransition (DOMElement *parentElement,
 
   if (!parentElement->hasAttribute (XMLString::transcode ("id")))
     {
-
       return NULL;
     }
 
@@ -111,7 +107,6 @@ NclTransitionConverter::createTransition (DOMElement *parentElement,
 
   if (parentElement->hasAttribute (XMLString::transcode ("startProgress")))
     {
-
       attValue = XMLString::transcode (parentElement->getAttribute (
           XMLString::transcode ("startProgress")));
 
@@ -185,7 +180,6 @@ void
 NclTransitionConverter::addImportBaseToTransitionBase (void *parentObject,
                                                        void *childObject)
 {
-
   string baseAlias, baseLocation;
   NclDocumentConverter *compiler;
   NclDocument *importedDocument;

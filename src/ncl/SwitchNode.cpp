@@ -116,13 +116,11 @@ bool
 SwitchNode::addSwitchPortMap (SwitchPort *switchPort, Node *node,
                               InterfacePoint *interfacePoint)
 {
-
   Port *port;
 
   if (getNode (node->getId ()) == NULL
       || getPort (switchPort->getId ()) == NULL)
     {
-
       return false;
     }
 
@@ -150,7 +148,6 @@ SwitchNode::addPort (int index, Port *port)
 void
 SwitchNode::exchangeNodesAndRules (unsigned int index1, unsigned int index2)
 {
-
   Node *auxNode;
   Rule *auxRule;
 
@@ -290,7 +287,6 @@ SwitchNode::recursivelyGetNode (string nodeId)
   if (wanted == NULL && defaultNode != NULL
       && defaultNode->instanceOf ("CompositeNode"))
     {
-
       wanted = ((CompositeNode *)defaultNode)->recursivelyGetNode (nodeId);
     }
 

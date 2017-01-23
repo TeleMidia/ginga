@@ -35,7 +35,6 @@ TSPacket::TSPacket (char *packetData)
 TSPacket::TSPacket (bool sectionType, char *payload,
                     unsigned char payloadSize)
 {
-
   tsaf = NULL;
   stream = new char[TS_PACKET_SIZE];
   streamUpdated = false;
@@ -375,7 +374,6 @@ TSPacket::updateStream ()
       else if ((!isSectionType)
                || (isSectionType && (!payloadUnitStartIndicator)))
         {
-
           if (adaptationFieldControl == PAYLOAD_ONLY)
             {
               // payload only

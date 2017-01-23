@@ -25,7 +25,6 @@ NclCompositeExecutionObject::NclCompositeExecutionObject (
     INclLinkActionListener *seListener)
     : NclExecutionObject (id, dataObject, handling, seListener)
 {
-
   initializeCompositeExecutionObject (id, dataObject, NULL);
 }
 
@@ -34,7 +33,6 @@ NclCompositeExecutionObject::NclCompositeExecutionObject (
     bool handling, INclLinkActionListener *seListener)
     : NclExecutionObject (id, dataObject, descriptor, handling, seListener)
 {
-
   initializeCompositeExecutionObject (id, dataObject, descriptor);
 }
 
@@ -98,7 +96,6 @@ void
 NclCompositeExecutionObject::initializeCompositeExecutionObject (
     arg_unused (string id), Node *dataObject, arg_unused (NclCascadingDescriptor *descriptor))
 {
-
   ContextNode *compositeNode;
   set<Link *> *compositionLinks;
   set<Link *>::iterator i;
@@ -136,7 +133,6 @@ NclCompositeExecutionObject::initializeCompositeExecutionObject (
 NclCompositeExecutionObject *
 NclCompositeExecutionObject::getParentFromDataObject (Node *dataObject)
 {
-
   NclExecutionObject *object;
   Node *parentDataObject;
   map<string, NclExecutionObject *>::iterator i;
@@ -246,7 +242,6 @@ NclCompositeExecutionObject::getExecutionObject (string id)
 map<string, NclExecutionObject *> *
 NclCompositeExecutionObject::getExecutionObjects ()
 {
-
   map<string, NclExecutionObject *> *objs;
 
   lockComposite ();
@@ -276,7 +271,6 @@ NclCompositeExecutionObject::getNumExecutionObjects ()
 map<string, NclExecutionObject *> *
 NclCompositeExecutionObject::recursivellyGetExecutionObjects ()
 {
-
   map<string, NclExecutionObject *> *objects;
   NclExecutionObject *childObject;
   map<string, NclExecutionObject *> *grandChildrenObjects;
@@ -561,7 +555,6 @@ NclCompositeExecutionObject::eventStateChanged (void *changedEvent,
                                                 short transition,
                                                 short previousState)
 {
-
   NclFormatterEvent *event;
   set<NclFormatterEvent *>::iterator i;
 
@@ -569,7 +562,6 @@ NclCompositeExecutionObject::eventStateChanged (void *changedEvent,
   if (!(event->instanceOf ("NclPresentationEvent"))
       || !NclFormatterEvent::hasInstance (event, false))
     {
-
       return;
     }
 
@@ -607,7 +599,6 @@ NclCompositeExecutionObject::eventStateChanged (void *changedEvent,
       if (runningEvents.empty () && pausedEvents.empty ()
           && pendingLinks.empty ())
         {
-
           wholeContent->abort ();
           unsetParentsAsListeners ();
         }
@@ -643,7 +634,6 @@ NclCompositeExecutionObject::eventStateChanged (void *changedEvent,
           if (runningEvents.size () < 2 && pausedEvents.empty ()
               && !pendingLinks.empty ())
             {
-
               listPendingLinks ();
             }
 
@@ -651,7 +641,6 @@ NclCompositeExecutionObject::eventStateChanged (void *changedEvent,
           if (runningEvents.empty () && pausedEvents.empty ()
               && pendingLinks.empty ())
             {
-
               checkLinkConditions ();
             }
         }
@@ -700,7 +689,6 @@ void
 NclCompositeExecutionObject::linkEvaluationStarted (
     NclFormatterCausalLink *link)
 {
-
   int linkNumber = 0;
   NclFormatterLink *evalLink;
 
@@ -720,7 +708,6 @@ void
 NclCompositeExecutionObject::linkEvaluationFinished (
     NclFormatterCausalLink *link, bool start)
 {
-
   int linkNumber;
   NclFormatterLink *finishedLink;
   map<NclFormatterLink *, int>::iterator i;
@@ -742,7 +729,6 @@ NclCompositeExecutionObject::linkEvaluationFinished (
           if (runningEvents.empty () && pausedEvents.empty ()
               && pendingLinks.empty ())
             {
-
               if (lastTransition == EventUtil::TR_STOPS)
                 {
                   checkLinkConditions ();
@@ -782,7 +768,6 @@ bool
 NclCompositeExecutionObject::setPropertyValue (NclAttributionEvent *event,
                                                string value)
 {
-
   if (event->getAnchor ()->getPropertyName () == "visible")
     {
       if (value == "true")
@@ -817,7 +802,6 @@ NclCompositeExecutionObject::run ()
       if (deleting || (runningEvents.empty () && pausedEvents.empty ()
                        && pendingLinks.empty ()))
         {
-
           clog << "NclCompositeExecutionObject::run ";
           clog << "I (" << id << ") am ending because of STOP of";
           clog << " the last running event (no pending links nor ";

@@ -208,7 +208,6 @@ void
 ChannelPlayer::updateStatus (short code, string parameter, short type,
                              string value)
 {
-
   notifyPlayerListeners (code, parameter, type, value);
 }
 

@@ -25,7 +25,6 @@ NclSwitchEvent::NclSwitchEvent (string id, void *executionObjectSwitch,
                                 int eventType, string key)
     : NclFormatterEvent (id, executionObjectSwitch)
 {
-
   this->interfacePoint = interfacePoint;
   this->eventType = (short) eventType;
   this->key = key;
@@ -86,7 +85,6 @@ void
 NclSwitchEvent::eventStateChanged (arg_unused (void *someEvent), short transition,
                                    arg_unused (short previousState))
 {
-
   changeState (getNewState (transition), transition);
 }
 

@@ -73,7 +73,6 @@ CompositeNode::addPort (unsigned int index, Port *port)
       || NodeEntity::getAnchor (port->getId ()) != NULL
       || getPort (port->getId ()) != NULL)
     {
-
       /*clog << "CompositeNode::addPort Warning! Can't add port '";
       clog << port->getId() << "' inside '" << getId() << "'" << endl;*/
       return false;

@@ -78,7 +78,6 @@ PipeFilter::receiveTSPacket (ITSPacket *pack)
       if (pack->getAdaptationFieldControl () != 2
           && pack->getAdaptationFieldControl () != 0)
         {
-
           if (contCounter == 15)
             {
               contCounter = -1;

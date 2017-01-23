@@ -29,7 +29,6 @@ NclLinkingConverter::NclLinkingConverter (
 void
 NclLinkingConverter::addBindToLink (arg_unused (void *parentObject), arg_unused (void *childObject))
 {
-
   // nothing to do, since to be created the bind needs to be associated
   // with
   // its link
@@ -39,7 +38,6 @@ void
 NclLinkingConverter::addBindParamToBind (void *parentObject,
                                          void *childObject)
 {
-
   ((Bind *)parentObject)->addParameter ((Parameter *)childObject);
 }
 
@@ -47,7 +45,6 @@ void
 NclLinkingConverter::addLinkParamToLink (void *parentObject,
                                          void *childObject)
 {
-
   ((Link *)parentObject)->addParameter ((Parameter *)childObject);
 }
 
@@ -55,7 +52,6 @@ void *
 NclLinkingConverter::createBind (DOMElement *parentElement,
                                  void *objGrandParent)
 {
-
   string component, roleId, interfaceId;
   Role *role;
   Node *anchorNode;
@@ -105,7 +101,6 @@ NclLinkingConverter::createBind (DOMElement *parentElement,
           if (anchorNode->instanceOf ("ReferNode")
               && ((ReferNode *)anchorNode)->getInstanceType () == "new")
             {
-
               interfacePoint = anchorNode->getAnchor (interfaceId);
             }
           else
@@ -119,7 +114,6 @@ NclLinkingConverter::createBind (DOMElement *parentElement,
           if (anchorNodeEntity != NULL
               && anchorNodeEntity->instanceOf ("CompositeNode"))
             {
-
               interfacePoint = ((CompositeNode *)anchorNodeEntity)
                                    ->getPort (interfaceId);
             }
@@ -152,7 +146,6 @@ NclLinkingConverter::createBind (DOMElement *parentElement,
       if (anchorNode->instanceOf ("ReferNode")
           && ((ReferNode *)anchorNode)->getInstanceType () == "new")
         {
-
           interfacePoint = anchorNode->getAnchor (0);
           if (interfacePoint == NULL)
             {
@@ -258,7 +251,6 @@ void *
 NclLinkingConverter::createLink (DOMElement *parentElement,
                                  void *objGrandParent)
 {
-
   NclDocument *document;
   Link *link;
   string connectorId;
@@ -299,7 +291,6 @@ void *
 NclLinkingConverter::createBindParam (DOMElement *parentElement,
                                       arg_unused (void *objGrandParent))
 {
-
   Parameter *parameter;
   parameter = new Parameter (
       XMLString::transcode (
@@ -315,7 +306,6 @@ void *
 NclLinkingConverter::createLinkParam (DOMElement *parentElement,
                                       arg_unused (void *objGrandParent))
 {
-
   Parameter *parameter;
   parameter = new Parameter (
       XMLString::transcode (

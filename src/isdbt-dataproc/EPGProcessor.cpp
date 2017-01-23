@@ -159,7 +159,6 @@ void
 EPGProcessor::addEPGListener (IEPGListener *listener, arg_unused (string request),
                               unsigned char type)
 {
-
   // TODO: handle request properly.
   clog << "EPGProcessor::addEPGListener with type:" << type << endl;
 
@@ -366,7 +365,6 @@ EPGProcessor::checkProcessedSections (ITransportSection *section)
 
   if (processedSections->count (newSectionName) > 0)
     {
-
       tableId = section->getTableId ();
       clog << "EPGProcessor::checkSection section exists:!";
       clog << endl;
@@ -521,7 +519,6 @@ EPGProcessor::generateSdtMap (IServiceInfo *si)
       for (j = serviceListeners->begin (); j != serviceListeners->end ();
            ++j)
         {
-
           (*j)->pushSIEvent (data, IEPGListener::SI_LISTENER);
         }
     }
@@ -576,7 +573,6 @@ EPGProcessor::generateTotMap (ITOT *tot)
 void
 EPGProcessor::generateEitMap (map<unsigned int, IEventInfo *> *actualMap)
 {
-
   map<string, struct SIField> responseMap, data;
   IEventInfo *ei;
   map<unsigned int, IEventInfo *>::iterator i;
@@ -594,7 +590,6 @@ EPGProcessor::generateEitMap (map<unsigned int, IEventInfo *> *actualMap)
       ei = i->second;
       if (ei != NULL)
         {
-
           field.str = itos (ei->getEventId ());
           (responseMap)["id"] = field;
 

@@ -123,7 +123,6 @@ class FormatterMediator : public INCLPlayer,
                           public Player,
                           public IFormatterSchedulerListener
 {
-
 private:
   EntryEventListener *entryEventListener;
   NclPlayerData *data;

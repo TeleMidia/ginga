@@ -23,7 +23,6 @@ GINGA_NCL_BEGIN
 Bind::Bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
             Role *role)
 {
-
   this->node = node;
   this->interfacePoint = interfPt;
   this->descriptor = desc;
@@ -110,7 +109,6 @@ Bind::setDescriptor (GenericDescriptor *desc)
 Parameter *
 Bind::setParameterValue (string propertyLabel, Parameter *propertyValue)
 {
-
   return (*parameters)[propertyLabel] = propertyValue;
 }
 
@@ -196,7 +194,6 @@ Bind::getNodeNesting ()
       if (interfacePoint->instanceOf ("Port")
           && !(interfacePoint->instanceOf ("SwitchPort")))
         {
-
           nodeSequence = ((Port *)interfacePoint)->getMapNodeNesting ();
 
           if (nodeSequence != NULL)
@@ -204,7 +201,6 @@ Bind::getNodeNesting ()
               for (i = nodeSequence->begin (); i != nodeSequence->end ();
                    ++i)
                 {
-
                   nodeNesting->push_back (*i);
                 }
             }
@@ -227,7 +223,6 @@ Bind::getEndPointInterface ()
   if (nodeEntity->instanceOf ("CompositeNode")
       && interfacePoint->instanceOf ("Port"))
     {
-
       compositeNode = (CompositeNode *)nodeEntity;
       port = (Port *)interfacePoint;
       return compositeNode->getMapInterface (port);

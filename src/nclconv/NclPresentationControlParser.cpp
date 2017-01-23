@@ -31,7 +31,6 @@ void *
 NclPresentationControlParser::parseBindRule (DOMElement *parentElement,
                                              void *objGrandParent)
 {
-
   clog << "parseBindRule" << endl;
   return createBindRule (parentElement, objGrandParent);
 }
@@ -40,7 +39,6 @@ void *
 NclPresentationControlParser::parseRuleBase (DOMElement *parentElement,
                                              void *objGrandParent)
 {
-
   clog << "parseRuleBase" << endl;
   void *parentObject;
   DOMNodeList *elementNodeList;
@@ -72,7 +70,6 @@ NclPresentationControlParser::parseRuleBase (DOMElement *parentElement,
                                          "importBase")
               == 0)
             {
-
               elementObject = getImportParser ()->parseImportBase (
                   element, parentObject);
 
@@ -85,7 +82,6 @@ NclPresentationControlParser::parseRuleBase (DOMElement *parentElement,
                                               "rule")
                    == 0)
             {
-
               elementObject = parseRule (element, parentObject);
               if (elementObject != NULL)
                 {
@@ -96,7 +92,6 @@ NclPresentationControlParser::parseRuleBase (DOMElement *parentElement,
                                               "compositeRule")
                    == 0)
             {
-
               elementObject = parseCompositeRule (element, parentObject);
               if (elementObject != NULL)
                 {
@@ -113,7 +108,6 @@ void *
 NclPresentationControlParser::parseRule (DOMElement *parentElement,
                                          void *objGrandParent)
 {
-
   clog << "parseRule" << endl;
   return createRule (parentElement, objGrandParent);
 }
@@ -122,7 +116,6 @@ void *
 NclPresentationControlParser::parseSwitch (DOMElement *parentElement,
                                            void *objGrandParent)
 {
-
   void *parentObject;
   DOMNodeList *elementNodeList;
   int i, size;
@@ -154,7 +147,6 @@ NclPresentationControlParser::parseSwitch (DOMElement *parentElement,
           if (XMLString::compareIString (elementTagName.c_str (), "media")
               == 0)
             {
-
               elementObject
                   = ((NclComponentsParser *)getComponentsParser ())
                         ->parseMedia (element, parentObject);
@@ -168,7 +160,6 @@ NclPresentationControlParser::parseSwitch (DOMElement *parentElement,
                                               "context")
                    == 0)
             {
-
               elementObject
                   = ((NclComponentsParser *)getComponentsParser ())
                         ->parseContext (element, parentObject);
@@ -182,7 +173,6 @@ NclPresentationControlParser::parseSwitch (DOMElement *parentElement,
                                               "switch")
                    == 0)
             {
-
               elementObject = parseSwitch (element, parentObject);
               if (elementObject != NULL)
                 {
@@ -203,7 +193,6 @@ NclPresentationControlParser::parseSwitch (DOMElement *parentElement,
                                          "bindRule")
               == 0)
             {
-
               elementObject
                   = parseBindRule ((DOMElement *)node, parentObject);
 
@@ -216,7 +205,6 @@ NclPresentationControlParser::parseSwitch (DOMElement *parentElement,
                                               "defaultComponent")
                    == 0)
             {
-
               elementObject = parseDefaultComponent ((DOMElement *)node,
                                                      parentObject);
 
@@ -237,7 +225,6 @@ void *
 NclPresentationControlParser::posCompileSwitch (DOMElement *parentElement,
                                                 void *parentObject)
 {
-
   clog << "posCompileSwitch" << endl;
   DOMNodeList *elementNodeList;
   int i, size;
@@ -255,7 +242,6 @@ NclPresentationControlParser::posCompileSwitch (DOMElement *parentElement,
                                         XMLString::transcode ("switchPort"))
                  == 0)
         {
-
           elementObject = getInterfacesParser ()->parseSwitchPort (
               (DOMElement *)node, parentObject);
 
@@ -273,7 +259,6 @@ void *
 NclPresentationControlParser::parseDefaultComponent (
     DOMElement *parentElement, void *objGrandParent)
 {
-
   clog << "parseDefaultComponent" << endl;
   return createDefaultComponent (parentElement, objGrandParent);
 }
@@ -282,7 +267,6 @@ void *
 NclPresentationControlParser::parseDefaultDescriptor (
     DOMElement *parentElement, void *objGrandParent)
 {
-
   clog << "parseDefaultDescriptor" << endl;
   return createDefaultDescriptor (parentElement, objGrandParent);
 }
@@ -291,7 +275,6 @@ void *
 NclPresentationControlParser::parseCompositeRule (DOMElement *parentElement,
                                                   void *objGrandParent)
 {
-
   clog << "parseCompositeRule" << endl;
   void *parentObject;
   DOMNodeList *elementNodeList;
@@ -322,7 +305,6 @@ NclPresentationControlParser::parseCompositeRule (DOMElement *parentElement,
           if (XMLString::compareIString (elementTagName.c_str (), "rule")
               == 0)
             {
-
               elementObject = parseRule (element, parentObject);
               if (elementObject != NULL)
                 {
@@ -333,7 +315,6 @@ NclPresentationControlParser::parseCompositeRule (DOMElement *parentElement,
                                               "compositeRule")
                    == 0)
             {
-
               elementObject = parseCompositeRule (element, parentObject);
               if (elementObject != NULL)
                 {
@@ -351,7 +332,6 @@ void *
 NclPresentationControlParser::parseDescriptorSwitch (
     DOMElement *parentElement, void *objGrandParent)
 {
-
   clog << "parseDescriptorSwitch" << endl;
   void *parentObject;
   DOMNodeList *elementNodeList;
@@ -378,7 +358,6 @@ NclPresentationControlParser::parseDescriptorSwitch (
                                         XMLString::transcode ("descriptor"))
                  == 0)
         {
-
           elementObject
               = getPresentationSpecificationParser ()->parseDescriptor (
                   (DOMElement *)node, parentObject);
@@ -401,7 +380,6 @@ NclPresentationControlParser::parseDescriptorSwitch (
                                          "bindRule")
               == 0)
             {
-
               elementObject
                   = parseBindRule ((DOMElement *)node, parentObject);
 
@@ -415,7 +393,6 @@ NclPresentationControlParser::parseDescriptorSwitch (
                                               "defaultDescriptor")
                    == 0)
             {
-
               elementObject = parseDefaultDescriptor ((DOMElement *)node,
                                                       parentObject);
 
@@ -434,7 +411,6 @@ NclPresentationControlParser::parseDescriptorSwitch (
 NclPresentationSpecificationParser *
 NclPresentationControlParser::getPresentationSpecificationParser ()
 {
-
   return presentationSpecificationParser;
 }
 
@@ -442,7 +418,6 @@ void
 NclPresentationControlParser::setPresentationSpecificationParser (
     NclPresentationSpecificationParser *presentationSpecificationParser)
 {
-
   this->presentationSpecificationParser = presentationSpecificationParser;
 }
 
@@ -455,7 +430,6 @@ NclPresentationControlParser::getComponentsParser ()
 void
 NclPresentationControlParser::setComponentsParser (void *componentsParser)
 {
-
   this->componentsParser = componentsParser;
 }
 
@@ -469,7 +443,6 @@ void
 NclPresentationControlParser::setInterfacesParser (
     NclInterfacesParser *interfacesParser)
 {
-
   this->interfacesParser = interfacesParser;
 }
 
@@ -483,7 +456,6 @@ void
 NclPresentationControlParser::setImportParser (
     NclImportParser *importParser)
 {
-
   this->importParser = importParser;
 }
 

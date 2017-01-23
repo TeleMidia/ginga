@@ -100,7 +100,6 @@ void
 NclDocumentParser::setConnectorsParser (
     NclConnectorsParser *connectorsParser)
 {
-
   this->connectorsParser = connectorsParser;
 }
 
@@ -113,14 +112,12 @@ NclDocumentParser::getImportParser ()
 void
 NclDocumentParser::setBaseReuseParser (NclImportParser *importParser)
 {
-
   this->importParser = importParser;
 }
 
 NclPresentationControlParser *
 NclDocumentParser::getPresentationControlParser ()
 {
-
   return presentationControlParser;
 }
 
@@ -128,7 +125,6 @@ void
 NclDocumentParser::setPresentationControlParser (
     NclPresentationControlParser *presentationControlParser)
 {
-
   this->presentationControlParser = presentationControlParser;
 }
 
@@ -142,7 +138,6 @@ void
 NclDocumentParser::setComponentsParser (
     NclComponentsParser *componentsParser)
 {
-
   this->componentsParser = componentsParser;
 }
 
@@ -155,14 +150,12 @@ NclDocumentParser::getStructureParser ()
 void
 NclDocumentParser::setStructureParser (NclStructureParser *structureParser)
 {
-
   this->structureParser = structureParser;
 }
 
 NclPresentationSpecificationParser *
 NclDocumentParser::getPresentationSpecificationParser ()
 {
-
   return presentationSpecificationParser;
 }
 
@@ -170,7 +163,6 @@ void
 NclDocumentParser::setPresentationSpecificationParser (
     NclPresentationSpecificationParser *presentationSpecificationParser)
 {
-
   this->presentationSpecificationParser = presentationSpecificationParser;
 }
 
@@ -196,14 +188,12 @@ void
 NclDocumentParser::setInterfacesParser (
     NclInterfacesParser *interfacesParser)
 {
-
   this->interfacesParser = interfacesParser;
 }
 
 NclMetainformationParser *
 NclDocumentParser::getMetainformationParser ()
 {
-
   return metainformationParser;
 }
 
@@ -211,7 +201,6 @@ void
 NclDocumentParser::setMetainformationParser (
     NclMetainformationParser *metainformationParser)
 {
-
   this->metainformationParser = metainformationParser;
 }
 
@@ -224,7 +213,6 @@ NclDocumentParser::getLinkingParser ()
 void
 NclDocumentParser::setLinkingParser (NclLinkingParser *linkingParser)
 {
-
   this->linkingParser = linkingParser;
 }
 

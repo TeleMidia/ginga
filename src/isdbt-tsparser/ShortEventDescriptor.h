@@ -26,7 +26,6 @@ GINGA_TSPARSER_BEGIN
 
 class ShortEventDescriptor : public IShortEventDescriptor
 {
-
 protected:
   char languageCode[3];
   unsigned char eventNameLength;

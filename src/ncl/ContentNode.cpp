@@ -26,14 +26,12 @@ GINGA_NCL_BEGIN
 ContentNode::ContentNode (string uid, Content *someContent)
     : NodeEntity (uid, someContent)
 {
-
   initialize ("");
 }
 
 ContentNode::ContentNode (string uid, Content *someContent, string type)
     : NodeEntity (uid, someContent)
 {
-
   initialize (type);
 }
 

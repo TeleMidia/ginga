@@ -30,7 +30,6 @@ int BerkeliumHandler::callCount = 0;
 BerkeliumHandler::BerkeliumHandler (GingaScreenID myScreen, int x, int y,
                                     int w, int h)
 {
-
   DisplayManager::addIEListenerInstance (this);
   DisplayManager::addMEListenerInstance (this);
 
@@ -523,7 +522,6 @@ BerkeliumHandler::mapOnPaintToTexture (
     unsigned int dest_texture_height, bool ignore_partial,
     unsigned char *scroll_buffer)
 {
-
   string strFile;
   GingaWindowID sWin;
   GingaSurfaceID s;
@@ -540,7 +538,6 @@ BerkeliumHandler::mapOnPaintToTexture (
           || bitmap_rect.right () != dest_texture_width
           || bitmap_rect.bottom () != dest_texture_height)
         {
-
           Thread::mutexUnlock (&sMutex);
           return false;
         }
@@ -669,7 +666,6 @@ string
 BerkeliumHandler::createFile (const unsigned char *sourceBuffer, int width,
                               int height)
 {
-
   string str;
   FILE *outfile;
   {
@@ -712,7 +708,6 @@ BerkeliumHandler::onPaint (Window *wini, const unsigned char *sourceBuffer,
                            size_t numCopyRects, const Rect *copyRects,
                            int dx, int dy, const Rect &scrollRect)
 {
-
   bool updated = mapOnPaintToTexture (
       wini, sourceBuffer, sourceBufferRect, numCopyRects, copyRects, dx, dy,
       scrollRect, w, h, needs_full_refresh, scroll_buffer);
@@ -735,7 +730,6 @@ void
 BerkeliumHandler::onCreatedWindow (Window *win, Window *newWindow,
                                    const Rect &initialRect)
 {
-
   clog << "BerkeliumHandler::onCreatedWindow from source ";
   clog << mURL << endl;
   // newWindow->setDelegate(new BerkeliumHandler);
@@ -745,7 +739,6 @@ void
 BerkeliumHandler::onExternalHost (Window *win, WideString message,
                                   URLString origin, URLString target)
 {
-
   clog << "BerkeliumHandler::onChromeSend at URL ";
   clog << mURL << " from " << origin;
   clog << " to " << target << ": ";
@@ -757,7 +750,6 @@ BerkeliumHandler::onPaintPluginTexture (Window *win, void *sourceGLTexture,
                                         const std::vector<Rect> srcRects,
                                         const Rect &destRect)
 {
-
   clog << "BerkeliumHandler::onPaintPluginTexture from source ";
   clog << mURL << endl;
 }
@@ -766,7 +758,6 @@ void
 BerkeliumHandler::onWidgetCreated (Window *win, Widget *newWidget,
                                    int zIndex)
 {
-
   clog << "BerkeliumHandler::onWidgetCreated from source " << mURL;
   clog << endl;
 }
@@ -782,7 +773,6 @@ void
 BerkeliumHandler::onWidgetResize (Window *win, Widget *wid, int newWidth,
                                   int newHeight)
 {
-
   clog << "BerkeliumHandler::onWidgetResize from source " << mURL << endl;
 }
 
@@ -790,7 +780,6 @@ void
 BerkeliumHandler::onWidgetMove (Window *win, Widget *wid, int newX,
                                 int newY)
 {
-
   clog << "BerkeliumHandler::onWidgetMove from source " << mURL << endl;
 }
 
@@ -801,7 +790,6 @@ BerkeliumHandler::onWidgetPaint (Window *win, Widget *wid,
                                  const Rect *copy_rects, int dx, int dy,
                                  const Rect &scrollRect)
 {
-
   clog << "BerkeliumHandler::onWidgetPaint from source " << mURL << endl;
 }
 

@@ -121,7 +121,6 @@ void
 NclLinkCompoundAction::getSimpleActions (
     vector<NclLinkSimpleAction *> *simpleActions)
 {
-
   vector<NclLinkAction *>::iterator i;
   NclLinkAction *currentAction;
 
@@ -157,7 +156,6 @@ void
 NclLinkCompoundAction::setCompoundActionListener (
     INclLinkActionListener *listener)
 {
-
   this->listener = listener;
 }
 
@@ -247,7 +245,6 @@ NclLinkCompoundAction::getImplicitRefRoleActions ()
           for (j = assignmentActs->begin (); j != assignmentActs->end ();
                ++j)
             {
-
               refActs->push_back (*j);
             }
           delete assignmentActs;

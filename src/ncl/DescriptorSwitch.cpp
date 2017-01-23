@@ -56,7 +56,6 @@ DescriptorSwitch::removeInstance (DescriptorSwitch *object)
 bool
 DescriptorSwitch::hasInstance (DescriptorSwitch *object, bool eraseFromList)
 {
-
   set<DescriptorSwitch *>::iterator i;
   bool hasDSwitch = false;
 
@@ -82,7 +81,6 @@ DescriptorSwitch::hasInstance (DescriptorSwitch *object, bool eraseFromList)
 
 DescriptorSwitch::DescriptorSwitch (string id) : GenericDescriptor (id)
 {
-
   if (!initMutex)
     {
       initMutex = true;
@@ -129,11 +127,9 @@ bool
 DescriptorSwitch::addDescriptor (unsigned int index,
                                  GenericDescriptor *descriptor, Rule *rule)
 {
-
   if (index > descriptorList->size ()
       || getDescriptor (descriptor->getId ()) != NULL)
     {
-
       return false;
     }
 
@@ -160,7 +156,6 @@ DescriptorSwitch::addDescriptor (unsigned int index,
 bool
 DescriptorSwitch::addDescriptor (GenericDescriptor *descriptor, Rule *rule)
 {
-
   return addDescriptor ((int) descriptorList->size (), descriptor, rule);
 }
 
@@ -171,7 +166,6 @@ DescriptorSwitch::containsRule (Rule *rule)
   for (iterRule = ruleList->begin (); iterRule != ruleList->end ();
        ++iterRule)
     {
-
       if ((*iterRule)->getId () == rule->getId ())
         {
           return true;
@@ -184,7 +178,6 @@ void
 DescriptorSwitch::exchangeDescriptorsAndRules (unsigned int index1,
                                                unsigned int index2)
 {
-
   if (index1 >= descriptorList->size ()
       || index2 >= descriptorList->size ())
     {
@@ -223,14 +216,12 @@ DescriptorSwitch::getDefaultDescriptor ()
 unsigned int
 DescriptorSwitch::indexOfDescriptor (GenericDescriptor *descriptor)
 {
-
   unsigned int i = 0;
   vector<GenericDescriptor *>::iterator iterDescr;
 
   for (iterDescr = descriptorList->begin ();
        iterDescr != descriptorList->end (); ++iterDescr)
     {
-
       if ((*(*iterDescr)).getId () == descriptor->getId ())
         return i;
       i++;

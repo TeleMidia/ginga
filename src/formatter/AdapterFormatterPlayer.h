@@ -62,7 +62,6 @@ class AdapterFormatterPlayer : public IAdapterPlayer,
                                public INclAttributeValueMaintainer,
                                public IInputEventListener
 {
-
 protected:
   static DisplayManager *dm;
   static double eventTS;
@@ -92,7 +91,8 @@ public:
   virtual void setAdapterManager (void *manager);
 
   bool instanceOf (string s);
-  virtual void setNclEditListener (arg_unused (IPlayerListener *listener)){};
+  virtual void
+  setNclEditListener (arg_unused (IPlayerListener *listener)){};
   void setOutputWindow (GingaWindowID windowId);
 
 protected:

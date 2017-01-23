@@ -75,8 +75,8 @@ public:
                                         string plan);
 
   double refreshZIndex (NclFormatterRegion *region, string layoutRegionId,
-                       int zIndex, string plan,
-                       GingaSurfaceID renderedSurface);
+                        int zIndex, string plan,
+                        GingaSurfaceID renderedSurface);
 
 private:
   void sortRegion (string regionId, double cvtIndex, string plan);

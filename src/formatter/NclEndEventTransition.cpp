@@ -26,7 +26,6 @@ NclEndEventTransition::NclEndEventTransition (double time,
                                               void *transition)
     : NclEventTransition (time, event)
 {
-
   typeSet.insert ("NclEndEventTransition");
   beginTransition = transition;
   ((NclBeginEventTransition *)beginTransition)->setEndTransition (this);

@@ -39,7 +39,6 @@ TSAdaptationField::TSAdaptationField (uint64_t pcr)
 TSAdaptationField::TSAdaptationField (uint64_t pcrBase,
                                       uint64_t pcrExtension)
 {
-
   init ();
 
   this->pcrFlag = 1;
@@ -50,7 +49,6 @@ TSAdaptationField::TSAdaptationField (uint64_t pcrBase,
 TSAdaptationField::TSAdaptationField (
     char adapField[MAX_ADAPTATION_FIELD_SIZE])
 {
-
   privateDataStream = NULL;
   streamUpdated = true;
   fixedSize = true;

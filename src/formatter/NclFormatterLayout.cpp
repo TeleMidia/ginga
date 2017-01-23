@@ -23,7 +23,6 @@ GINGA_FORMATTER_BEGIN
 NclFormatterLayout::NclFormatterLayout (GingaScreenID screenId, int x,
                                         int y, int w, int h)
 {
-
   myScreen = screenId;
   deviceRegion = NULL;
 
@@ -183,7 +182,6 @@ NclFormatterLayout::getObject (int x, int y)
                       if (currentRegion->getZIndex ()
                           > region->getZIndex ())
                         {
-
                           region = currentRegion;
                           object = k->second;
                         }
@@ -302,7 +300,6 @@ NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object,
                                             GingaSurfaceID renderedSurface,
                                             string plan)
 {
-
   NclCascadingDescriptor *descriptor;
   NclFormatterRegion *region;
 
@@ -319,7 +316,6 @@ NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object,
   if (object == NULL || object->getDescriptor () == NULL
       || object->getDescriptor ()->getFormatterRegion () == NULL)
     {
-
       clog << "NclFormatterLayout::prepareFormatterRegion returns -1";
       clog << endl;
       return windowId;
@@ -388,7 +384,6 @@ NclFormatterLayout::refreshZIndex (NclFormatterRegion *region,
                                    string plan,
                                    GingaSurfaceID renderedSurface)
 {
-
   NclExecutionObject *object;
   double cvtZIndex;
 
@@ -455,7 +450,6 @@ NclFormatterLayout::showObject (NclExecutionObject *object)
   if (object == NULL || object->getDescriptor () == NULL
       || object->getDescriptor ()->getFormatterRegion () == NULL)
     {
-
       return;
     }
 
@@ -500,7 +494,6 @@ NclFormatterLayout::addRegionOnMaps (NclExecutionObject *object,
                                      string layoutRegionId, int zIndex,
                                      string plan, double *cvtZIndex)
 {
-
   double convertedZIndex;
   set<NclFormatterRegion *> *formRegions;
   GingaWindowID windowId;
@@ -539,7 +532,6 @@ NclExecutionObject *
 NclFormatterLayout::removeFormatterRegionFromMaps (
     string layoutRegionId, NclFormatterRegion *formatterRegion)
 {
-
   set<NclFormatterRegion *> *formRegions;
   set<NclFormatterRegion *>::iterator i;
   map<string, set<NclFormatterRegion *> *>::iterator j;
@@ -602,7 +594,6 @@ NclFormatterLayout::removeFormatterRegionFromMaps (
 set<NclFormatterRegion *> *
 NclFormatterLayout::getFormatterRegionsFromNcmRegion (string regionId)
 {
-
   set<NclFormatterRegion *> *regions;
 
   lock ();

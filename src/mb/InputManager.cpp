@@ -81,7 +81,6 @@ InputManager::initializeInputIntervalTime ()
         }
       else if (strVar == "declarative.inputIntervalTime" && fis.good ())
         {
-
           fis >> strVar;
           if (strVar == "=" && fis.good ())
             {
@@ -201,7 +200,6 @@ InputManager::addMotionEventListener (IMotionEventListener *listener)
 void
 InputManager::removeMotionEventListener (IMotionEventListener *listener)
 {
-
   set<IMotionEventListener *>::iterator i;
 
   assert (listener != NULL);
@@ -218,7 +216,6 @@ InputManager::removeMotionEventListener (IMotionEventListener *listener)
 void
 InputManager::notifyMotionListeners (int x, int y, int z)
 {
-
   set<IMotionEventListener *>::iterator i;
 
   Thread::mutexLock (&mlMutex);
@@ -235,7 +232,6 @@ void
 InputManager::addInputEventListener (IInputEventListener *listener,
                                      set<int> *evs)
 {
-
   LockedAction *action;
   set<int> *iEvs;
   map<IInputEventListener *, set<int> *>::iterator i;
@@ -280,7 +276,6 @@ InputManager::addInputEventListener (IInputEventListener *listener,
 void
 InputManager::removeInputEventListener (IInputEventListener *listener)
 {
-
   LockedAction *action;
   map<IInputEventListener *, set<int> *>::iterator i;
 
@@ -544,7 +539,6 @@ void
 InputManager::addApplicationInputEventListener (
     IInputEventListener *listener)
 {
-
   LockedAction *action;
 
   assert (listener != NULL);
@@ -578,7 +572,6 @@ void
 InputManager::removeApplicationInputEventListener (
     IInputEventListener *listener)
 {
-
   LockedAction *action;
   set<IInputEventListener *>::iterator i;
 
@@ -616,7 +609,6 @@ InputManager::removeApplicationInputEventListener (
 void
 InputManager::setCommandEventListener (ICmdEventListener *listener)
 {
-
   this->cmdListener = listener;
 }
 
@@ -787,7 +779,6 @@ InputManager::handleInputEvent (SDLInputEvent *inputEvent, arg_unused (int &pLas
   if (!inputEvent->isApplicationType ()
       && inputEvent->getKeyCode (myScreen) == CodeMap::KEY_NULL)
     {
-
       return;
     }
 
@@ -805,7 +796,6 @@ InputManager::handleInputEvent (SDLInputEvent *inputEvent, arg_unused (int &pLas
   if (inputEvent->isPressedType ()
       && ((getCurrentTimeMillis () - timeStamp) >= declarativeIntervalTime))
     {
-
       lastCode = inputEvent->getKeyCode (myScreen);
       timeStamp = getCurrentTimeMillis ();
 
@@ -820,7 +810,6 @@ InputManager::handleInputEvent (SDLInputEvent *inputEvent, arg_unused (int &pLas
 
   if (inputEvent->isKeyType () || inputEvent->isApplicationType ())
     {
-
       clog << "InputManager::run key or application" << endl;
 
       dispatchApplicationEvent (inputEvent);

@@ -28,7 +28,6 @@ GINGA_MB_BEGIN
 SDLVideoProvider::SDLVideoProvider (GingaScreenID screenId, const char *mrl)
     : SDLAudioProvider (screenId, mrl)
 {
-
   type = VideoProvider;
 
   myScreen = screenId;
@@ -134,7 +133,6 @@ SDLVideoProvider::setMediaTime (double pos)
 void
 SDLVideoProvider::playOver (GingaSurfaceID surface)
 {
-
   GingaWindowID parentId;
   SDLWindow *parent;
 

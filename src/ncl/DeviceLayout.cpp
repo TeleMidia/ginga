@@ -48,7 +48,6 @@ DeviceLayout::getLayoutName ()
 void
 DeviceLayout::addDevice (string name, int x, int y, int width, int height)
 {
-
   DeviceProperty *device;
 
   if (devices->count (name) == 0)

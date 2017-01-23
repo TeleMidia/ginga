@@ -156,19 +156,23 @@ protected:
   virtual bool receiveRemoteEvent (int remoteDevClass, int eventType,
                                    string eventContent);
   virtual bool
-  receiveRemoteContent (arg_unused (int remoteDevClass), arg_unused (char *stream), arg_unused (int streamSize))
+  receiveRemoteContent (arg_unused (int remoteDevClass),
+                        arg_unused (char *stream),
+                        arg_unused (int streamSize))
   {
     return false;
   };
   virtual bool
-  receiveRemoteContentInfo (arg_unused (string contentId), arg_unused (string contentUri))
+  receiveRemoteContentInfo (arg_unused (string contentId),
+                            arg_unused (string contentUri))
   {
     return false;
   };
   void renderFromUri (GingaWindowID win, string uri);
   void tapObject (int devClass, int x, int y);
   virtual bool
-  receiveRemoteContent (arg_unused (int remoteDevClass), arg_unused (string contentUri))
+  receiveRemoteContent (arg_unused (int remoteDevClass),
+                        arg_unused (string contentUri))
   {
     return false;
   };

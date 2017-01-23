@@ -24,7 +24,6 @@ GINGA_DATAPROC_BEGIN
 
 DsmccNPTProcessor::DsmccNPTProcessor (ISTCProvider *stcProvider) : Thread ()
 {
-
   this->stcProvider = stcProvider;
   this->isFirstStc = true;
   this->running = true;
@@ -176,7 +175,6 @@ DsmccNPTProcessor::clearUnusedTimebase ()
           if ((clk->getEndpointAvailable ())
               && (clk->getStcBase () >= clk->getStopNpt ()))
             {
-
               notifyNaturalEndListeners (
                   clk->getContentId (),
                   Stc::baseToSecond (clk->getStopNpt ()));
@@ -309,7 +307,6 @@ bool
 DsmccNPTProcessor::addTimeListener (unsigned char cid, double nptValue,
                                     ITimeBaseListener *ltn)
 {
-
   map<unsigned char,
       map<TimeControl *, set<ITimeBaseProvider *> *> *>::iterator i;
   map<TimeControl *, set<ITimeBaseProvider *> *>::iterator j;
@@ -370,7 +367,6 @@ bool
 DsmccNPTProcessor::removeTimeListener (unsigned char cid,
                                        ITimeBaseListener *ltn)
 {
-
   map<unsigned char,
       map<TimeControl *, set<ITimeBaseProvider *> *> *>::iterator i;
   map<TimeControl *, set<ITimeBaseProvider *> *>::iterator j;
@@ -587,7 +583,6 @@ void
 DsmccNPTProcessor::notifyIdListeners (unsigned char oldCid,
                                       unsigned char newCid)
 {
-
   set<ITimeBaseProvider *>::iterator i;
 
   i = cidListeners.begin ();
@@ -907,7 +902,6 @@ DsmccNPTProcessor::decodeDescriptors (vector<DsmccMpegDescriptor *> *list)
                       != npt->getScaleDenominator ())
                   || (clk->getContentId () != npt->getContentId ()))
                 {
-
                   // It's a future change
                   newNpt = new DsmccNPTReference ();
                   nptLen = npt->getStream (&stream);
@@ -1025,7 +1019,6 @@ char
 DsmccNPTProcessor::getNextNptValue (char cid, double *nextNptValue,
                                     double *sleepTime)
 {
-
   map<unsigned char, DsmccNPTReference *>::iterator it;
   map<unsigned char,
       map<TimeControl *, set<ITimeBaseProvider *> *> *>::iterator i;
@@ -1116,7 +1109,6 @@ DsmccNPTProcessor::getNextNptValue (char cid, double *nextNptValue,
           if (l->second->getScaleNumerator ()
               && l->second->getEndpointAvailable ())
             {
-
               r = Stc::baseToSecond (l->second->getStopNpt ())
                   - l->second->getBaseToSecond ();
 

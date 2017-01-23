@@ -74,7 +74,6 @@ isValidRecvFrame (int recvFrom, int myIP, char *frame)
       /*if ((frameId == 0 && receivedControlFrameId > 110) ||
                       (frameId > receivedControlFrameId) ||
                       (receivedControlFrameId == 120)) {
-
       receivedControlFrameId = frameId;*/
       return true;
       //}
@@ -94,7 +93,6 @@ isValidRecvFrame (int recvFrom, int myIP, char *frame)
       /*if ((frameId == 0 && receivedDataFrameId > 110) ||
                       (frameId > receivedDataFrameId) ||
                       (receivedDataFrameId == 120)) {
-
       receivedDataFrameId = frameId;*/
       return true;
       //}
@@ -161,7 +159,6 @@ char *
 mountFrame (int sourceIp, int destDevClass, int mountFrameType,
             unsigned int payloadSize)
 {
-
   char *fourBytesStream;
   char *frame = NULL;
 

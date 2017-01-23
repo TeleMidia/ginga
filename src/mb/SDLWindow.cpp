@@ -32,7 +32,6 @@ SDLWindow::SDLWindow (GingaWindowID windowID, GingaWindowID parentWindowID,
                       GingaScreenID screenId, int x, int y, int width,
                       int height, double z)
 {
-
   initialize (windowID, parentWindowID, screenId, x, y, width, height, z);
 }
 
@@ -98,7 +97,6 @@ SDLWindow::initialize (GingaWindowID windowID, arg_unused (GingaWindowID parentW
                        GingaScreenID screenId, int x, int y, int w, int h,
                        double z)
 {
-
   this->windowId = windowID;
 
   this->texture = NULL;
@@ -286,7 +284,6 @@ SDLWindow::setBorder (guint8 r, guint8 g, guint8 b, guint8 alpha, int bWidth)
 void
 SDLWindow::getBorder (guint8 *r, guint8 *g, guint8 *b, guint8 *alpha, int *bWidth)
 {
-
   if (borderColor != NULL)
     {
       *r = borderColor->getR ();
@@ -570,7 +567,6 @@ SDLWindow::createDrawDataList ()
       && Ginga_Display->hasSurface (
              myScreen, childSurface->getId ()))
     {
-
       dd = ((SDLSurface *)childSurface)->createDrawDataList ();
     }
   unlockChilds ();
@@ -612,7 +608,6 @@ SDLWindow::clearContent ()
                         SDL_MapRGBA (curSur->format, 0, 0, 0, 0))
           < 0)
         {
-
           clog << "SDLWindow::clearContent SDL error: '";
           clog << SDL_GetError () << "'" << endl;
         }

@@ -26,7 +26,6 @@ AnimationController::AnimationController (NclExecutionObject *execObj,
                                           NclAttributionEvent *event,
                                           string value, Animation *anim)
 {
-
   this->execObj = execObj;
   this->pManager = pManager;
   this->player = player;
@@ -73,7 +72,6 @@ AnimationController::startAnimation (NclExecutionObject *execObj,
                                      NclAttributionEvent *event,
                                      string value, Animation *anim)
 {
-
   AnimationController *animControl = new AnimationController (
       execObj, pManager, player, event, value, anim);
 
@@ -158,13 +156,11 @@ AnimationController::animeStep ()
       if (player == NULL || !pManager->hasPlayer (player)
           || player->setPropertyValue (event, paramValue))
         {
-
           return true;
         }
     }
   else
     {
-
       for (i = 0; i < nextValues->size (); i++)
         {
           if (i)
@@ -214,7 +210,6 @@ AnimationController::loadInitValues ()
 
       if (descriptor == NULL || descriptor->getFormatterRegion () == NULL)
         {
-
           clog << "AnimationController::loadTargetValues : load target";
           clog << " could not be performed. Descriptor or ";
           clog << "formatterRegion is NULL." << endl;
@@ -260,7 +255,6 @@ AnimationController::loadTargetValues ()
 
       if (descriptor == NULL || descriptor->getFormatterRegion () == NULL)
         {
-
           clog << "AnimationController::loadTargetValues : load target";
           clog << " could not be performed. Descriptor or ";
           clog << "formatterRegion is NULL." << endl;
@@ -321,7 +315,6 @@ AnimationController::ungroupProperty ()
 
   if (this->propName == "size")
     {
-
       if (this->params->size () == 2)
         {
           this->propertySingleNames.push_back ("width");
@@ -337,7 +330,6 @@ AnimationController::ungroupProperty ()
     }
   else if (this->propName == "location")
     {
-
       if (this->params->size () == 2)
         {
           this->propertySingleNames.push_back ("left");
@@ -353,7 +345,6 @@ AnimationController::ungroupProperty ()
     }
   else if (this->propName == "bounds")
     {
-
       if (this->params->size () == 4)
         {
           this->propertySingleNames.push_back ("left");

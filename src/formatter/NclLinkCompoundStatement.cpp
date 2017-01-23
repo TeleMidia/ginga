@@ -108,7 +108,6 @@ NclLinkCompoundStatement::getEvents ()
           for (j = statementEvents->begin (); j != statementEvents->end ();
                j++)
             {
-
               events->push_back (*j);
             }
           delete statementEvents;

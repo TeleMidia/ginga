@@ -512,7 +512,6 @@ UDPSocket::getBroadcastAddress () throw (SocketException)
       if (validInterface && netInterface->ifr_addr.sa_family == AF_INET
           && (netInterface->ifr_flags & IFF_BROADCAST))
         {
-
           //			result = ioctl(sockDesc, SIOCGIFBRDADDR,
           //(char
           //*)
@@ -573,7 +572,6 @@ UDPSocket::getLocalIPAddress () throw (SocketException)
       clog << endl;*/
       if (pAddress->sin_family == AF_INET)
         {
-
           //			return (unsigned int)
           // pAddress->sin_addr.S_un.S_addr;
           /*
@@ -611,7 +609,6 @@ UDPSocket::getLocalIPAddress () throw (SocketException)
       if (validInterface && netInterface->ifr_addr.sa_family == AF_INET
           && (netInterface->ifr_flags & IFF_BROADCAST))
         {
-
           result = ioctl (sockDesc, SIOCGIFADDR, netInterface);
           if (result >= 0)
             {

@@ -91,7 +91,6 @@ TextPlayer::write (GingaScreenID screenId, GingaSurfaceID s, string text,
                    short textAlign, string fontUri, int fontSize,
                    Color *fontColor)
 {
-
   if (fontSize < 1 || s == 0 || text == "")
     {
       return 0;

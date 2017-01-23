@@ -79,7 +79,7 @@ public:
     fLocalForm = XMLString::transcode (toTranscode);
   }
 
-  ~StrX () { XMLString::release (&fLocalForm); }
+  ~StrX () {XMLString::release (&fLocalForm); }
 
   // -----------------------------------------------------------------------
   //  Getter methods

@@ -78,7 +78,8 @@ public:
   }
 
   virtual int
-  createPesFilter (arg_unused (int pid), arg_unused (int pesType), arg_unused (bool compositeFiler))
+  createPesFilter (arg_unused (int pid), arg_unused (int pesType),
+                   arg_unused (bool compositeFiler))
   {
     return -1;
   }

@@ -139,7 +139,6 @@ CurlInteractiveChannel::getRate ()
 void
 CurlInteractiveChannel::setListener (IInteractiveChannelListener *listener)
 {
-
   this->listener = listener;
 }
 
@@ -148,7 +147,6 @@ CurlInteractiveChannel::reserveUrl (string uri,
                                     IInteractiveChannelListener *listener,
                                     string userAgent)
 {
-
   clog << "RESERVE '" << uri << "'" << endl;
   this->uri = uri;
   this->listener = listener;
@@ -202,7 +200,6 @@ CurlInteractiveChannel::performUrl ()
         }
       else
         {
-
           clog << "CurlInteractiveChannel::performUrl '" << uri << "'";
           clog << " done, notifying listeners" << endl;
 
@@ -251,7 +248,6 @@ size_t
 CurlInteractiveChannel::writeCallBack (void *ptr, size_t size, size_t nmemb,
                                        void *stream)
 {
-
   size_t w;
   FILE *fd;
   CurlInteractiveChannel *channel;

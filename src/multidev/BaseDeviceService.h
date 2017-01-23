@@ -31,11 +31,14 @@ public:
   BaseDeviceService ();
   virtual ~BaseDeviceService ();
   virtual void newDeviceConnected (unsigned int devAddr);
-  virtual void connectedToBaseDevice (arg_unused (unsigned int domainAddr)){};
+  virtual void
+  connectedToBaseDevice (arg_unused (unsigned int domainAddr)){};
   virtual bool receiveEvent (unsigned int devAddr, int eventType,
                              char *stream, int streamSize);
   virtual bool
-  receiveMediaContent (arg_unused (unsigned int devAddr), arg_unused (char *stream), arg_unused (int streamSize))
+  receiveMediaContent (arg_unused (unsigned int devAddr),
+                       arg_unused (char *stream),
+                       arg_unused (int streamSize))
   {
     return false;
   };

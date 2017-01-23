@@ -30,7 +30,6 @@ NominalEventMonitor::NominalEventMonitor (NclExecutionObject *object,
                                           IAdapterPlayer *player)
     : Thread ()
 {
-
   this->running = false;
   this->adapter = player;
   this->executionObject = object;
@@ -71,7 +70,6 @@ void
 NominalEventMonitor::setTimeBaseProvider (
     ITimeBaseProvider *timeBaseProvider)
 {
-
   if (timeBaseProvider == NULL)
     {
       clog << "NominalEventMonitor::setTimeBaseProvider ";
@@ -156,7 +154,6 @@ void
 NominalEventMonitor::updateTimeBaseId (unsigned char oldContentId,
                                        unsigned char newContentId)
 {
-
   NclAttributionEvent *event;
 
   // checking if is an NPT loop
@@ -193,7 +190,6 @@ void
 NominalEventMonitor::timeBaseNaturalEnd (unsigned char contentId,
                                          double timeValue)
 {
-
   if (contentId == timeBaseId)
     {
       clog << "NominalEventMonitor::timeBaseNaturalEnd ";
@@ -219,7 +215,6 @@ void
 NominalEventMonitor::valueReached (unsigned char timeBaseId,
                                    double timeValue)
 {
-
   if (this->timeBaseId != timeBaseId)
     {
       clog << "NominalEventMonitor::valueReached ";
@@ -430,7 +425,6 @@ NominalEventMonitor::run ()
   if (!stopped && adapter != NULL && !isDeleting
       && !adapter->instanceOf ("ProgramAVPlayerAdapter"))
     {
-
       clog << "NominalEventMonitor::run calling force natural end for '";
       clog << executionObject->getId () << "'" << endl;
 

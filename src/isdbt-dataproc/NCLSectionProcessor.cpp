@@ -257,7 +257,6 @@ NCLSectionProcessor::createNCLSections (string componentTag, string name,
                                         vector<string> *files,
                                         arg_unused (map<int, string> *eventMap))
 {
-
   vector<StreamData *> *streams;
   vector<string>::iterator i;
 
@@ -282,7 +281,6 @@ NCLSectionProcessor::createNCLSections (string componentTag, string name,
       if (fileUriLen > baseUriLen
           && fileUri.substr (0, baseUriLen) == baseUri)
         {
-
           fileUri = fileUri.substr (baseUriLen, fileUriLen - baseUriLen);
         }
 
@@ -311,7 +309,6 @@ NCLSectionProcessor::createNCLSections (string componentTag, string name,
           if (fileUri.length () > 4
               && fileUri.substr (fileUri.length () - 4, 4) == ".ncl")
             {
-
               metadata->setRootObject (dataFile);
             }
           else

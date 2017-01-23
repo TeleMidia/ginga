@@ -46,7 +46,6 @@ short SDLFontProvider::fontRefs = 0;
 SDLFontProvider::SDLFontProvider (GingaScreenID screenId,
                                   const char *fontUri, int heightInPixel)
 {
-
   type = FontProvider;
 
   if (!initNTSMutex)
@@ -253,7 +252,6 @@ void
 SDLFontProvider::playOver (GingaSurfaceID surface, const char *text, int x,
                            int y, short align)
 {
-
   size_t textLength;
   Thread::mutexLock (&ntsMutex);
 
@@ -312,7 +310,6 @@ SDLFontProvider::playOver (GingaSurfaceID surface)
   if (Ginga_Display->hasSurface (myScreen,
                                                         content->getId ()))
     {
-
       parent = (SDLWindow *)(content->getParentWindow ());
 
       if (parent == NULL)
@@ -390,7 +387,6 @@ SDLFontProvider::playOver (GingaSurfaceID surface)
                                                           1,
                                                           *((Uint8*)renderedSurface->pixels))
              < 0) {
-
                                                   clog <<
              "SDLFontProvider::playOver SDL error: '";
                                                   clog << SDL_GetError() <<

@@ -23,7 +23,6 @@ GINGA_FORMATTER_BEGIN
 NclLinkAndCompoundTriggerCondition::NclLinkAndCompoundTriggerCondition ()
     : NclLinkCompoundTriggerCondition ()
 {
-
   typeSet.insert ("NclLinkAndCompoundTriggerCondition");
 }
 
@@ -54,7 +53,6 @@ void
 NclLinkAndCompoundTriggerCondition::addCondition (
     NclLinkCondition *condition)
 {
-
   if (condition == NULL)
     {
       return;
@@ -82,7 +80,6 @@ NclLinkAndCompoundTriggerCondition::addCondition (
 void
 NclLinkAndCompoundTriggerCondition::conditionSatisfied (void *condition)
 {
-
   vector<NclLinkCondition *>::iterator i;
   i = unsatisfiedConditions.begin ();
   while (i != unsatisfiedConditions.end ())
@@ -150,7 +147,6 @@ NclLinkAndCompoundTriggerCondition::getEvents ()
             {
               for (j = eventsToAdd->begin (); j != eventsToAdd->end (); ++j)
                 {
-
                   events->push_back (*j);
                 }
               delete eventsToAdd;

@@ -22,7 +22,6 @@ GINGA_FORMATTER_BEGIN
 
 NclFormatterLink::NclFormatterLink (Link *ncmLink, void *parentObject)
 {
-
   typeSet.insert ("NclFormatterLink");
 
   this->parentObject = parentObject; // NclCompositeExecutionObject

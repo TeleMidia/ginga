@@ -32,7 +32,6 @@ int NclCascadingDescriptor::dummyCount = 0;
 NclCascadingDescriptor::NclCascadingDescriptor (
     GenericDescriptor *firstDescriptor)
 {
-
   initializeCascadingDescriptor ();
 
   if (firstDescriptor != NULL)
@@ -102,7 +101,6 @@ NclCascadingDescriptor::~NclCascadingDescriptor ()
     {
       if (DescriptorSwitch::hasInstance ((DescriptorSwitch *)*i, false))
         {
-
           ds = dynamic_cast<DescriptorSwitch *> (*i);
           if (ds != NULL)
             {
@@ -227,7 +225,6 @@ NclCascadingDescriptor::cascadeDescriptor (Descriptor *descriptor)
 
       if (!(isNaN (focusDecoration->getFocusBorderTransparency ())))
         {
-
           focusBorderTransparency
               = focusDecoration->getFocusBorderTransparency ();
         }
@@ -288,7 +285,6 @@ NclCascadingDescriptor::cascadeDescriptor (Descriptor *descriptor)
 bool
 NclCascadingDescriptor::isLastDescriptor (GenericDescriptor *descriptor)
 {
-
   if ((descriptors.size () > 0)
       && (descriptor->getId ()
           == ((GenericDescriptor *)descriptors[descriptors.size () - 1])
@@ -323,7 +319,6 @@ NclCascadingDescriptor::cascade (GenericDescriptor *descriptor)
   if (preferredDescriptor->instanceOf ("Descriptor")
       && unsolvedDescriptors.empty ())
     {
-
       cascadeDescriptor ((Descriptor *)preferredDescriptor);
     }
   else
@@ -408,7 +403,6 @@ NclCascadingDescriptor::getRegion ()
 LayoutRegion *
 NclCascadingDescriptor::getRegion (void *formatterLayout, void *object)
 {
-
   if (region == NULL)
     {
       createDummyRegion (formatterLayout, object);
@@ -427,7 +421,6 @@ void
 NclCascadingDescriptor::updateRegion (void *formatterLayout, string name,
                                       string value)
 {
-
   vector<string> *params;
   bool isPercentual;
 
@@ -543,7 +536,6 @@ void
 NclCascadingDescriptor::createDummyRegion (void *formatterLayout,
                                            void *executionObject)
 {
-
   NclExecutionObject *object;
   string name, value;
   map<string, string>::iterator i;
@@ -571,7 +563,6 @@ NclCascadingDescriptor::createDummyRegion (void *formatterLayout,
           || (dataObject->instanceOf ("ReferNode")
               && ((ReferNode *)dataObject)->getInstanceType () == "new")))
     {
-
       anchors = ((ContentNode *)dataObject)->getAnchors ();
       if (anchors != NULL)
         {

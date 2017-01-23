@@ -58,7 +58,6 @@ ConnectorBase::addBase (Base *base, string alias, string location)
 {
   if (Base::hasInstance (base, false) && base->instanceOf ("ConnectorBase"))
     {
-
       return Base::addBase (base, alias, location);
     }
 

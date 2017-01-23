@@ -198,7 +198,6 @@ short
 PresentationEngineManager::getMappedInterfaceType (string nclFile,
                                                    string portId)
 {
-
   INCLPlayer *formatter;
   short miType = -1;
 
@@ -226,7 +225,6 @@ PresentationEngineManager::autoMountOC (arg_unused (bool autoMountIt))
 void
 PresentationEngineManager::setCurrentPrivateBaseId (unsigned int baseId)
 {
-
   clog << "PresentationEngineManager::setCurrentPrivateBaseId '";
   clog << baseId << "'";
   clog << endl;
@@ -236,7 +234,6 @@ PresentationEngineManager::setCurrentPrivateBaseId (unsigned int baseId)
 void
 PresentationEngineManager::setTimeBaseProvider (ITimeBaseProvider *tmp)
 {
-
   timeBaseProvider = tmp;
   hasTMPNotification = true;
 }
@@ -285,7 +282,6 @@ bool
 PresentationEngineManager::editingCommand (string commandTag,
                                            string commandPayload)
 {
-
   vector<string> *args;
   vector<string>::iterator i;
   GingaLocatorFactory *glf = NULL;
@@ -567,7 +563,6 @@ PresentationEngineManager::setInteractivityInfo (bool hasInt)
 INCLPlayer *
 PresentationEngineManager::createNclPlayer (string baseId, string fname)
 {
-
   NclPlayerData *data = NULL;
   INCLPlayer *formatter = NULL;
 
@@ -627,7 +622,6 @@ void
 PresentationEngineManager::addPlayerListener (string nclFile,
                                               IPlayerListener *listener)
 {
-
   map<string, INCLPlayer *>::iterator i;
   INCLPlayer *nclPlayer;
 
@@ -648,7 +642,6 @@ void
 PresentationEngineManager::removePlayerListener (string nclFile,
                                                  IPlayerListener *listener)
 {
-
   map<string, INCLPlayer *>::iterator i;
   INCLPlayer *nclPlayer;
 
@@ -690,7 +683,6 @@ bool
 PresentationEngineManager::startPresentation (string nclFile,
                                               string interfId)
 {
-
   INCLPlayer *formatter;
 
   clog << "PresentationEngineManager::startPresentation" << endl;
@@ -769,7 +761,6 @@ PresentationEngineManager::setPropertyValue (string nclFile,
                                              string interfaceId,
                                              string value)
 {
-
   INCLPlayer *formatter;
 
   if (getNclPlayer (nclFile, &formatter))
@@ -785,7 +776,6 @@ string
 PresentationEngineManager::getPropertyValue (string nclFile,
                                              string interfaceId)
 {
-
   INCLPlayer *formatter;
 
   if (getNclPlayer (nclFile, &formatter))
@@ -895,7 +885,6 @@ void
 PresentationEngineManager::openNclDocument (string docUri, int x, int y,
                                             int w, int h)
 {
-
   clog << "PresentationEngineManager::openNclDocument docUri '";
   clog << docUri << "' x = '" << x << "', y = '" << y << "', w = '";
   clog << w << "', h = '" << h << "'" << endl;
@@ -1112,7 +1101,6 @@ void
 PresentationEngineManager::updateStatus (short code, string parameter,
                                          short type, arg_unused (string value))
 {
-
   struct inputEventNotification *ev;
 
   switch (code)
@@ -1188,7 +1176,6 @@ PresentationEngineManager::userEventReceived (SDLInputEvent *ev)
 bool
 PresentationEngineManager::cmdEventReceived (string command, string args)
 {
-
   size_t token;
   string nCmd;
   string nArgs;
@@ -1268,7 +1255,6 @@ PresentationEngineManager::eventReceived (void *ptr)
            && (code == CodeMap::KEY_POWER || code == CodeMap::KEY_F10
                || code == CodeMap::KEY_STOP || code == CodeMap::KEY_F11))
     {
-
       clog << "PresentationEngineManager::eventReceived: POWER_OFF";
       clog << endl;
 
@@ -1283,13 +1269,11 @@ PresentationEngineManager::eventReceived (void *ptr)
     }
   else if (code == CodeMap::KEY_PRINTSCREEN || code == CodeMap::KEY_SUPER)
     {
-
       p->getScreenShot ();
     }
   else if (!p->disableFKeys
            && (code == CodeMap::KEY_PAUSE || code == CodeMap::KEY_F12))
     {
-
       clog << "PresentationEngineManager::eventReceived: PAUSE";
       clog << endl;
 
@@ -1410,7 +1394,6 @@ bool
 PresentationEngineManager::getNclPlayer (string docLocation,
                                          INCLPlayer **nclPlayer)
 {
-
   map<string, INCLPlayer *>::iterator i;
 
   lock ();
@@ -1433,7 +1416,6 @@ bool
 PresentationEngineManager::getNclPlayer (string baseId, string docId,
                                          INCLPlayer **nclPlayer)
 {
-
   string docLocation;
 
   docLocation = privateBaseManager->getDocumentLocation (baseId, docId);
@@ -1444,7 +1426,6 @@ void
 PresentationEngineManager::updateFormatters (short command,
                                              string parameter)
 {
-
   map<string, INCLPlayer *>::iterator i;
   INCLPlayer *formatter;
   clog << "PresentationEngineManager::updateFormatters" << endl;

@@ -31,7 +31,6 @@ NclAttributionEvent::NclAttributionEvent (string id, void *executionObject,
                                           PresentationContext *presContext)
     : NclFormatterEvent (id, executionObject)
 {
-
   Entity *entity;
   NodeEntity *dataObject;
 
@@ -48,7 +47,6 @@ NclAttributionEvent::NclAttributionEvent (string id, void *executionObject,
   if (dataObject->instanceOf ("ContentNode")
       && ((ContentNode *)dataObject)->isSettingNode ())
     {
-
       settingNode = true;
     }
 
@@ -60,7 +58,6 @@ NclAttributionEvent::NclAttributionEvent (string id, void *executionObject,
           if (entity->instanceOf ("ContentNode")
               && ((ContentNode *)entity)->isSettingNode ())
             {
-
               settingNode = true;
             }
         }
@@ -117,7 +114,6 @@ NclAttributionEvent::setValue (string newValue)
                               (newValue == "" && value != "") ||
                               (newValue != "" && value != "" && (newValue !=
      value))) {
-
                           value = newValue;
                           return true;
                   }
@@ -136,7 +132,6 @@ void
 NclAttributionEvent::setValueMaintainer (
     INclAttributeValueMaintainer *valueMaintainer)
 {
-
   this->valueMaintainer = valueMaintainer;
 }
 
@@ -150,14 +145,12 @@ void
 NclAttributionEvent::setImplicitRefAssessmentEvent (
     string roleId, NclFormatterEvent *event)
 {
-
   assessments[roleId] = event;
 }
 
 NclFormatterEvent *
 NclAttributionEvent::getImplicitRefAssessmentEvent (string roleId)
 {
-
   if (assessments.count (roleId) == 0)
     {
       return NULL;

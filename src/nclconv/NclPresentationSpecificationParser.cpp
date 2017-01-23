@@ -31,7 +31,6 @@ void *
 NclPresentationSpecificationParser::parseDescriptor (
     DOMElement *parentElement, void *objGrandParent)
 {
-
   clog << "parseDescriptor" << endl;
   void *parentObject;
   DOMNodeList *elementNodeList;
@@ -63,7 +62,6 @@ NclPresentationSpecificationParser::parseDescriptor (
                                          "descriptorParam")
               == 0)
             {
-
               elementObject = parseDescriptorParam (element, parentObject);
 
               if (elementObject != NULL)
@@ -82,7 +80,6 @@ void *
 NclPresentationSpecificationParser::parseDescriptorBase (
     DOMElement *parentElement, void *objGrandParent)
 {
-
   clog << "parseDescriptorBase" << endl;
   void *parentObject;
   DOMNodeList *elementNodeList;
@@ -114,7 +111,6 @@ NclPresentationSpecificationParser::parseDescriptorBase (
                                          "importBase")
               == 0)
             {
-
               elementObject = getImportParser ()->parseImportBase (
                   element, parentObject);
 
@@ -128,7 +124,6 @@ NclPresentationSpecificationParser::parseDescriptorBase (
                                               "descriptorSwitch")
                    == 0)
             {
-
               elementObject
                   = ((NclPresentationControlParser *)
                          getPresentationControlParser ())
@@ -144,7 +139,6 @@ NclPresentationSpecificationParser::parseDescriptorBase (
                                               "descriptor")
                    == 0)
             {
-
               elementObject = parseDescriptor (element, parentObject);
               if (elementObject != NULL)
                 {
@@ -162,7 +156,6 @@ void *
 NclPresentationSpecificationParser::parseDescriptorBind (
     DOMElement *parentElement, void *objGrandParent)
 {
-
   clog << "parseDescriptorBind" << endl;
   return createDescriptorBind (parentElement, objGrandParent);
 }
@@ -171,7 +164,6 @@ void *
 NclPresentationSpecificationParser::parseDescriptorParam (
     DOMElement *parentElement, void *objGrandParent)
 {
-
   clog << "parseDescriptorParam" << endl;
   return createDescriptorParam (parentElement, objGrandParent);
 }
@@ -186,7 +178,6 @@ void
 NclPresentationSpecificationParser::setImportParser (
     NclImportParser *importParser)
 {
-
   this->importParser = importParser;
 }
 
@@ -200,7 +191,6 @@ void
 NclPresentationSpecificationParser::setPresentationControlParser (
     void *presentationControlParser)
 {
-
   this->presentationControlParser = presentationControlParser;
 }
 

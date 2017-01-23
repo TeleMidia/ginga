@@ -186,7 +186,6 @@ bool
 DeviceDomain::addDevice (int reqDeviceClass, int width, int height,
                          int srvPort)
 {
-
   bool added = false;
 
   if (reqDeviceClass == 2)
@@ -219,7 +218,6 @@ void
 DeviceDomain::postEventTask (int destDevClass, int frameType, char *payload,
                              int payloadSize)
 {
-
   char *task;
   string _doc;
   int taskSize;

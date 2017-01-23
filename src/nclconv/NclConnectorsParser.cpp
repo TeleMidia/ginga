@@ -29,7 +29,6 @@ void *
 NclConnectorsParser::parseSimpleCondition (DOMElement *parentElement,
                                            void *objGrandParent)
 {
-
   clog << "parseSimpleCondition" << endl;
   return createSimpleCondition (parentElement, objGrandParent);
 }
@@ -38,7 +37,6 @@ void *
 NclConnectorsParser::parseCompoundCondition (DOMElement *parentElement,
                                              void *objGrandParent)
 {
-
   clog << "parseCompoundCondition" << endl;
   void *parentObject = NULL;
   DOMNodeList *elementNodeList;
@@ -70,7 +68,6 @@ NclConnectorsParser::parseCompoundCondition (DOMElement *parentElement,
                                          "simpleCondition")
               == 0)
             {
-
               elementObject = parseSimpleCondition (element, parentObject);
               if (elementObject != NULL)
                 {
@@ -82,7 +79,6 @@ NclConnectorsParser::parseCompoundCondition (DOMElement *parentElement,
                                               "assessmentStatement")
                    == 0)
             {
-
               elementObject
                   = parseAssessmentStatement (element, parentObject);
 
@@ -96,7 +92,6 @@ NclConnectorsParser::parseCompoundCondition (DOMElement *parentElement,
                                               "compoundCondition")
                    == 0)
             {
-
               elementObject
                   = parseCompoundCondition (element, parentObject);
 
@@ -110,7 +105,6 @@ NclConnectorsParser::parseCompoundCondition (DOMElement *parentElement,
                                               "compoundStatement")
                    == 0)
             {
-
               elementObject
                   = parseCompoundStatement (element, parentObject);
 
@@ -130,7 +124,6 @@ void *
 NclConnectorsParser::parseAssessmentStatement (DOMElement *parentElement,
                                                void *objGrandParent)
 {
-
   clog << "parseAssessmentStatement" << endl;
   void *parentObject = NULL;
   DOMNodeList *elementNodeList;
@@ -157,7 +150,6 @@ NclConnectorsParser::parseAssessmentStatement (DOMElement *parentElement,
                                          "attributeAssessment")
               == 0)
             {
-
               elementObject
                   = parseAttributeAssessment (element, parentObject);
 
@@ -171,7 +163,6 @@ NclConnectorsParser::parseAssessmentStatement (DOMElement *parentElement,
                                               "valueAssessment")
                    == 0)
             {
-
               elementObject = parseValueAssessment (element, parentObject);
               if (elementObject != NULL)
                 {
@@ -189,7 +180,6 @@ void *
 NclConnectorsParser::parseAttributeAssessment (DOMElement *parentElement,
                                                void *objGrandParent)
 {
-
   clog << "parseAttributeAssessment" << endl;
   return createAttributeAssessment (parentElement, objGrandParent);
 }
@@ -198,7 +188,6 @@ void *
 NclConnectorsParser::parseValueAssessment (DOMElement *parentElement,
                                            void *objGrandParent)
 {
-
   clog << "parseValueAssessment" << endl;
   return createValueAssessment (parentElement, objGrandParent);
 }
@@ -207,7 +196,6 @@ void *
 NclConnectorsParser::parseCompoundStatement (DOMElement *parentElement,
                                              void *objGrandParent)
 {
-
   clog << "parseCompoundStatement" << endl;
   void *parentObject = NULL;
   DOMNodeList *elementNodeList;
@@ -239,7 +227,6 @@ NclConnectorsParser::parseCompoundStatement (DOMElement *parentElement,
                                          "assessmentStatement")
               == 0)
             {
-
               elementObject
                   = parseAssessmentStatement (element, parentObject);
 
@@ -253,7 +240,6 @@ NclConnectorsParser::parseCompoundStatement (DOMElement *parentElement,
                                               "compoundStatement")
                    == 0)
             {
-
               elementObject
                   = parseCompoundStatement (element, parentObject);
 
@@ -273,7 +259,6 @@ void *
 NclConnectorsParser::parseSimpleAction (DOMElement *parentElement,
                                         void *objGrandParent)
 {
-
   clog << "parseSimpleAction" << endl;
   return createSimpleAction (parentElement, objGrandParent);
 }
@@ -282,7 +267,6 @@ void *
 NclConnectorsParser::parseCompoundAction (DOMElement *parentElement,
                                           void *objGrandParent)
 {
-
   clog << "parseCompoundAction" << endl;
   void *parentObject = NULL;
   DOMNodeList *elementNodeList;
@@ -314,7 +298,6 @@ NclConnectorsParser::parseCompoundAction (DOMElement *parentElement,
                                          "simpleAction")
               == 0)
             {
-
               elementObject = parseSimpleAction (element, parentObject);
               if (elementObject != NULL)
                 {
@@ -326,7 +309,6 @@ NclConnectorsParser::parseCompoundAction (DOMElement *parentElement,
                                               "compoundAction")
                    == 0)
             {
-
               elementObject = parseCompoundAction (element, parentObject);
               if (elementObject != NULL)
                 {
@@ -344,7 +326,6 @@ void *
 NclConnectorsParser::parseConnectorParam (DOMElement *parentElement,
                                           void *objGrandParent)
 {
-
   clog << "parseConnectorParam" << endl;
   return createConnectorParam (parentElement, objGrandParent);
 }
@@ -353,7 +334,6 @@ void *
 NclConnectorsParser::parseCausalConnector (DOMElement *parentElement,
                                            void *objGrandParent)
 {
-
   clog << "parseCausalConnector" << endl;
   void *parentObject = NULL;
   DOMNodeList *elementNodeList;
@@ -387,7 +367,6 @@ NclConnectorsParser::parseCausalConnector (DOMElement *parentElement,
                                          "simpleCondition")
               == 0)
             {
-
               elementObject = parseSimpleCondition (element, parentObject);
 
               if (elementObject != NULL)
@@ -400,7 +379,6 @@ NclConnectorsParser::parseCausalConnector (DOMElement *parentElement,
                                               "simpleAction")
                    == 0)
             {
-
               elementObject = parseSimpleAction (element, parentObject);
 
               if (elementObject != NULL)
@@ -413,7 +391,6 @@ NclConnectorsParser::parseCausalConnector (DOMElement *parentElement,
                                               "compoundAction")
                    == 0)
             {
-
               elementObject = parseCompoundAction (element, parentObject);
 
               if (elementObject != NULL)
@@ -426,7 +403,6 @@ NclConnectorsParser::parseCausalConnector (DOMElement *parentElement,
                                               "connectorParam")
                    == 0)
             {
-
               elementObject = parseConnectorParam (element, parentObject);
 
               if (elementObject != NULL)
@@ -439,7 +415,6 @@ NclConnectorsParser::parseCausalConnector (DOMElement *parentElement,
                                               "compoundCondition")
                    == 0)
             {
-
               elementObject
                   = parseCompoundCondition (element, parentObject);
 
@@ -459,7 +434,6 @@ void *
 NclConnectorsParser::parseConnectorBase (DOMElement *parentElement,
                                          void *objGrandParent)
 {
-
   clog << "parseConnectorBase" << endl;
   void *parentObject = NULL;
   DOMNodeList *elementNodeList;
@@ -491,7 +465,6 @@ NclConnectorsParser::parseConnectorBase (DOMElement *parentElement,
                                          "importBase")
               == 0)
             {
-
               elementObject = getImportParser ()->parseImportBase (
                   element, parentObject);
 
@@ -505,7 +478,6 @@ NclConnectorsParser::parseConnectorBase (DOMElement *parentElement,
                                               "causalConnector")
                    == 0)
             {
-
               elementObject = parseCausalConnector (element, parentObject);
               if (elementObject != NULL)
                 {
@@ -528,7 +500,6 @@ NclConnectorsParser::getImportParser ()
 void
 NclConnectorsParser::setImportParser (NclImportParser *importParser)
 {
-
   this->importParser = importParser;
 }
 

@@ -289,7 +289,6 @@ SDL2ffmpeg::prepare ()
 
   if (vs->video_st != NULL)
     {
-
       clog << "SDL2ffmpeg::prepare Video frame rate is '";
       clog << vs->video_st->r_frame_rate.num << "/";
       clog << vs->video_st->r_frame_rate.den << "'" << endl;
@@ -349,7 +348,6 @@ SDL2ffmpeg::prepare ()
       && (unsigned int)wantedSpec.channels < 8
       && (unsigned int)spec.channels > 0 && (unsigned int)spec.channels < 8)
     {
-
       SDL_BuildAudioCVT (&acvt, wantedSpec.format, wantedSpec.channels,
                          wantedSpec.freq, spec.format, spec.channels,
                          spec.freq);
@@ -470,7 +468,6 @@ SDL2ffmpeg::getOriginalResolution (int *w, int *h)
     }
   else
     {
-
       clog << "SDL2ffmpeg::getOriginalResolution(" << vs->filename;
       clog << "Can't get video data. video_st = '" << vs->video_st;
       clog << "'";
@@ -573,7 +570,6 @@ bool
 SDL2ffmpeg::getAudioSpec (SDL_AudioSpec *spec, int sample_rate,
                           uint8_t channels)
 {
-
   bool audioSpec = false;
 
   if (sample_rate > 0 && (unsigned int)channels > 0)
@@ -622,7 +618,6 @@ SDL2ffmpeg::getAudioSpec (SDL_AudioSpec *spec, int sample_rate,
 int
 SDL2ffmpeg::opt_add_vfilter (arg_unused (void *optctx), arg_unused (const char *opt), const char *arg)
 {
-
   vfilters_list.push_back (deconst (char *, arg));
   return 0;
 }
@@ -633,7 +628,6 @@ SDL2ffmpeg::cmp_audio_fmts (enum AVSampleFormat fmt1,
                             enum AVSampleFormat fmt2,
                             int64_t channel_count2)
 {
-
   /* If channel count == 1, planar and non-planar formats are the same */
   if (channel_count1 == 1 && channel_count2 == 1)
     {
@@ -649,11 +643,9 @@ SDL2ffmpeg::cmp_audio_fmts (enum AVSampleFormat fmt1,
 int64_t
 SDL2ffmpeg::get_valid_channel_layout (int64_t channel_layout, int channels)
 {
-
   if (channel_layout
       && av_get_channel_layout_nb_channels (channel_layout) == channels)
     {
-
       return channel_layout;
     }
   else
@@ -732,7 +724,6 @@ SDL2ffmpeg::packet_queue_put (PacketQueue *q, AVPacket *pkt)
 int
 SDL2ffmpeg::packet_queue_put_nullpacket (PacketQueue *q, int stream_index)
 {
-
   AVPacket pkt1, *pkt = &pkt1;
   av_init_packet (pkt);
   pkt->data = NULL;
@@ -813,7 +804,6 @@ int
 SDL2ffmpeg::packet_queue_get (PacketQueue *q, AVPacket *pkt, int block,
                               int *serial)
 {
-
   MyAVPacketList *pkt1;
   int ret;
 
@@ -898,7 +888,6 @@ SDL2ffmpeg::render_vp (VideoPicture *vp)
         {
           if (vp->tex && vp->src_frame->data && vp->height > 0)
             {
-
               AVPixelFormat fmt = (AVPixelFormat)vp->src_frame->format;
 
               if (fmt == AV_PIX_FMT_NONE)
@@ -1048,7 +1037,6 @@ SDL2ffmpeg::sync_clock_to_slave (Clock *c, Clock *slave)
       && (isnan (clock)
           || fabs (clock - slave_clock) > AV_NOSYNC_THRESHOLD))
     {
-
       set_clock (c, slave_clock, slave->serial);
     }
 }
@@ -1114,7 +1102,6 @@ SDL2ffmpeg::check_external_clock_speed ()
   if ((vs->video_stream >= 0 && vs->videoq.nb_packets <= MIN_FRAMES / 2)
       || (vs->audio_stream >= 0 && vs->audioq.nb_packets <= MIN_FRAMES / 2))
     {
-
       set_clock_speed (
           &vs->extclk,
           FFMAX (EXTERNAL_CLOCK_SPEED_MIN,
@@ -1124,7 +1111,6 @@ SDL2ffmpeg::check_external_clock_speed ()
            && (vs->audio_stream < 0
                || vs->audioq.nb_packets > MIN_FRAMES * 2))
     {
-
       set_clock_speed (
           &vs->extclk,
           FFMIN (EXTERNAL_CLOCK_SPEED_MAX,
@@ -1328,7 +1314,6 @@ SDL2ffmpeg::video_refresh (void *opaque, double *remaining_time)
   if (!vs->paused && dec->get_master_sync_type () == AV_SYNC_EXTERNAL_CLOCK
       && vs->realtime)
     {
-
       dec->check_external_clock_speed ();
     }
 
@@ -1438,7 +1423,6 @@ SDL2ffmpeg::video_refresh (void *opaque, double *remaining_time)
                                            != AV_SYNC_VIDEO_MASTER))
                   && time > vs->frame_timer + duration)
                 {
-
                   if (!redisplay)
                     {
                       vs->frame_drops_late++;
@@ -1487,7 +1471,6 @@ int
 SDL2ffmpeg::queue_picture (AVFrame *src_frame, double pts, double duration,
                            int64_t pos, int serial)
 {
-
   VideoPicture *vp;
 
   /* wait until we have space to put a new picture */
@@ -1496,7 +1479,6 @@ SDL2ffmpeg::queue_picture (AVFrame *src_frame, double pts, double duration,
   while (vs->pictq_size >= VIDEO_PICTURE_QUEUE_SIZE
          && !vs->videoq.abort_request)
     {
-
       SDL_CondWait (vs->pictq_cond, vs->pictq_mutex);
     }
 
@@ -1515,7 +1497,6 @@ SDL2ffmpeg::queue_picture (AVFrame *src_frame, double pts, double duration,
   if (!vp->tex || vp->reallocate || !vp->allocated
       || vp->width != src_frame->width || vp->height != src_frame->height)
     {
-
       // SDL_Event event;
 
       vp->allocated = 0;
@@ -1542,7 +1523,6 @@ while (!vp->allocated && !vs->videoq.abort_request) {
                                       SDL_GETEVENT,
                                       FF_ALLOC_EVENT,
                                       FF_ALLOC_EVENT) != 1) {
-
           while (!vp->allocated && !vs->abort_request) {
               SDL_CondWait(vs->pictq_cond, vs->pictq_mutex);
           }
@@ -1585,7 +1565,6 @@ SDL2ffmpeg::get_video_frame (AVFrame *frame, AVPacket *pkt, int *serial)
   if (packet_queue_get (&vs->videoq, pkt, 1, serial) < 0
       || vs->videoq.abort_request)
     {
-
       return -1;
     }
 
@@ -1598,7 +1577,6 @@ SDL2ffmpeg::get_video_frame (AVFrame *frame, AVPacket *pkt, int *serial)
   if (avcodec_decode_video2 (vs->video_st->codec, frame, &got_picture, pkt)
       < 0)
     {
-
       return 0;
     }
 
@@ -1643,7 +1621,6 @@ SDL2ffmpeg::get_video_frame (AVFrame *frame, AVPacket *pkt, int *serial)
                   && diff - vs->frame_last_filter_delay < 0
                   && *serial == vs->vidclk.serial && vs->videoq.nb_packets)
                 {
-
                   vs->frame_drops_early++;
                   av_frame_unref (frame);
                   ret = 0;
@@ -1664,7 +1641,6 @@ SDL2ffmpeg::configure_filtergraph (AVFilterGraph *graph,
                                    AVFilterContext *source_ctx,
                                    AVFilterContext *sink_ctx)
 {
-
   int ret;
   int nb_filters = graph->nb_filters;
   AVFilterInOut *outputs = NULL, *inputs = NULL;
@@ -1758,7 +1734,6 @@ SDL2ffmpeg::configure_video_filters (AVFilterGraph *graph,
            buffersrc_args, NULL, graph))
       < 0)
     {
-
       clog << "SDL2ffmpeg::configure_video_filters Warning! ";
       clog << "Can't create buffer filter.";
       clog << endl;
@@ -1793,7 +1768,6 @@ SDL2ffmpeg::configure_video_filters (AVFilterGraph *graph,
                           "pix_fmts=rgb24",
                           NULL,
                           graph)) < 0) {
-
                   return ret;
           }
 
@@ -1822,7 +1796,6 @@ SDL2ffmpeg::configure_video_filters (AVFilterGraph *graph,
                NULL, graph))
           < 0)
         {
-
           clog << "SDL2ffmpeg::configure_video_filters Warning! ";
           clog << "Can't create yadif filter.";
           clog << endl;
@@ -1989,7 +1962,6 @@ SDL2ffmpeg::configure_audio_filters (const char *afilters,
                               AV_SAMPLE_FMT_NONE, AV_OPT_SEARCH_CHILDREN))
       < 0)
     {
-
       goto end;
     }
 
@@ -1997,7 +1969,6 @@ SDL2ffmpeg::configure_audio_filters (const char *afilters,
                              AV_OPT_SEARCH_CHILDREN))
       < 0)
     {
-
       goto end;
     }
 
@@ -2011,7 +1982,6 @@ SDL2ffmpeg::configure_audio_filters (const char *afilters,
                                  AV_OPT_SEARCH_CHILDREN))
           < 0)
         {
-
           goto end;
         }
 
@@ -2020,7 +1990,6 @@ SDL2ffmpeg::configure_audio_filters (const char *afilters,
                                       AV_OPT_SEARCH_CHILDREN))
           < 0)
         {
-
           goto end;
         }
 
@@ -2028,7 +1997,6 @@ SDL2ffmpeg::configure_audio_filters (const char *afilters,
                                       channels, -1, AV_OPT_SEARCH_CHILDREN))
           < 0)
         {
-
           goto end;
         }
 
@@ -2037,7 +2005,6 @@ SDL2ffmpeg::configure_audio_filters (const char *afilters,
                                   -1, AV_OPT_SEARCH_CHILDREN))
           < 0)
         {
-
           goto end;
         }
     }
@@ -2046,7 +2013,6 @@ SDL2ffmpeg::configure_audio_filters (const char *afilters,
                                     filt_asink))
       < 0)
     {
-
       goto end;
     }
 
@@ -2119,7 +2085,6 @@ SDL2ffmpeg::video_thread (void *arg)
           || last_format != frame->format || last_serial != serial
           || last_vfilter_idx != vs->vfilter_idx)
         {
-
           avfilter_graph_free (&graph);
           graph = avfilter_graph_alloc ();
           if ((ret = dec->configure_video_filters (graph, vfilter, frame))
@@ -2452,7 +2417,6 @@ SDL2ffmpeg::audio_decode_frame ()
               || (wanted_nb_samples != vs->frame->nb_samples
                   && !vs->swr_ctx))
             {
-
               swr_free (&vs->swr_ctx);
               vs->swr_ctx = swr_alloc_set_opts (
                   NULL, vs->audio_tgt.channel_layout, vs->audio_tgt.fmt,
@@ -2504,7 +2468,6 @@ SDL2ffmpeg::audio_decode_frame ()
                               / vs->frame->sample_rate)
                       < 0)
                     {
-
                       clog << "SDL2ffmpeg::audio_decode_frame ";
                       clog << "swr_set_compensation() failed" << endl;
                       break;
@@ -2636,7 +2599,6 @@ SDL2ffmpeg::sdl_audio_callback (arg_unused (void *opaque), Uint8 *stream, int le
       if (dec->status == ST_PLAYING && vs != NULL && vs->audio_stream >= 0
           && vs->audio_st != NULL)
         {
-
           currentLen = len;
           offset = 0;
 
@@ -2716,7 +2678,6 @@ SDL2ffmpeg::audio_open (int64_t wanted_channel_layout,
                         int wanted_nb_channels, int wanted_sample_rate,
                         struct AudioParams *audio_hw_params)
 {
-
   Uint8 tmpChannels;
   int tmpFreq;
 
@@ -2735,7 +2696,6 @@ SDL2ffmpeg::audio_open (int64_t wanted_channel_layout,
       || wanted_nb_channels
              != av_get_channel_layout_nb_channels (wanted_channel_layout))
     {
-
       wanted_channel_layout
           = av_get_default_channel_layout (wanted_nb_channels);
 
@@ -2749,7 +2709,6 @@ SDL2ffmpeg::audio_open (int64_t wanted_channel_layout,
   if (tmpFreq <= 0 || (unsigned int)tmpChannels == 0
       || (unsigned int)tmpChannels > 7)
     {
-
       fprintf (stderr, "Invalid sample rate or channel count!\n");
       return -1;
     }
@@ -2772,7 +2731,6 @@ SDL2ffmpeg::audio_open (int64_t wanted_channel_layout,
           if ((unsigned int)wantedSpec.channels == 0
               || (unsigned int)wantedSpec.channels > 7)
             {
-
               return -1;
             }
 
@@ -2792,7 +2750,6 @@ SDL2ffmpeg::audio_open (int64_t wanted_channel_layout,
     }
   else
     {
-
       wantedSpec.samples = spec.samples;
 
       clog << "SDL2ffmpeg::stream_component_open (2nd audio src = '";
@@ -3111,7 +3068,6 @@ SDL2ffmpeg::is_realtime (AVFormatContext *s)
       || !strcmp (s->iformat->name, "rtsp")
       || !strcmp (s->iformat->name, "sdp"))
     {
-
       return 1;
     }
 
@@ -3242,7 +3198,6 @@ SDL2ffmpeg::read_thread (void *arg)
           && (!strcmp (vs->ic->iformat->name, "rtsp")
               || (vs->ic->pb && !strncmp (vs->filename, "mmsh:", 5))))
         {
-
           /* wait 10 ms to avoid trying to get another packet */
           /* XXX: horrible */
           SDL_Delay (10);
@@ -3338,7 +3293,6 @@ SDL2ffmpeg::read_thread (void *arg)
                       || (vs->video_st->disposition
                           & AV_DISPOSITION_ATTACHED_PIC)))))
         {
-
           /* wait 10 ms */
           SDL_LockMutex (wait_mutex);
           SDL_CondWaitTimeout (vs->continue_read_thread, wait_mutex, 10);
@@ -3420,7 +3374,6 @@ SDL2ffmpeg::read_thread (void *arg)
                && !(vs->video_st->disposition
                     & AV_DISPOSITION_ATTACHED_PIC))
         {
-
           dec->packet_queue_put (&vs->videoq, pkt);
         }
       else
@@ -3559,7 +3512,6 @@ SDL2ffmpeg::filter_codec_opts (AVDictionary *opts, enum AVCodecID codec_id,
                                AVFormatContext *s, arg_unused (AVStream *st),
                                AVCodec *codec)
 {
-
   AVDictionary *ret = NULL;
   AVDictionaryEntry *t = NULL;
 
@@ -3604,14 +3556,12 @@ SDL2ffmpeg::filter_codec_opts (AVDictionary *opts, enum AVCodecID codec_id,
               && av_opt_find (&codec->priv_class, t->key, NULL, flags,
                               AV_OPT_SEARCH_FAKE_OBJ)))
         {
-
           av_dict_set (&ret, t->key, t->value, 0);
         }
       else if (t->key[0] == prefix
                && av_opt_find (&cc, t->key + 1, NULL, flags,
                                AV_OPT_SEARCH_FAKE_OBJ))
         {
-
           av_dict_set (&ret, t->key + 1, t->value, 0);
         }
 

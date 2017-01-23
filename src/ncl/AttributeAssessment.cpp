@@ -23,7 +23,6 @@ GINGA_NCL_BEGIN
 AttributeAssessment::AttributeAssessment (string role)
     : Assessment (), Role ()
 {
-
   Role::setLabel (role);
   eventType = EventUtil::EVT_ATTRIBUTION;
   attributeType = EventUtil::ATT_NODE_PROPERTY;

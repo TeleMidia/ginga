@@ -85,7 +85,6 @@ ParentalRatingDescriptor::getAge (Parental *parental)
 unsigned int
 ParentalRatingDescriptor::getContentDescription (Parental *parental)
 {
-
   return (unsigned int)parental->contentDescription;
 }
 

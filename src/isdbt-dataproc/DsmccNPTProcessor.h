@@ -39,7 +39,6 @@ GINGA_DATAPROC_BEGIN
 
 class DsmccNPTProcessor : public Thread, public ITimeBaseProvider
 {
-
   struct TimeControl
   {
     double time;

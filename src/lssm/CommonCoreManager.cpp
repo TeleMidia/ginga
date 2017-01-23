@@ -79,7 +79,6 @@ void
 CommonCoreManager::addPEM (PresentationEngineManager *pem,
                            GingaScreenID screenId)
 {
-
   this->myScreen = screenId;
   this->pem = pem;
 
@@ -170,7 +169,6 @@ void
 CommonCoreManager::showTunningWindow (GingaScreenID screenId, int x, int y,
                                       int w, int h)
 {
-
   GingaSurfaceID s = 0;
   string tunerImg = "";
 
@@ -213,7 +211,6 @@ CommonCoreManager::createMainAVPlayer (string dstUri,
                                        GingaScreenID screenId, int x, int y,
                                        int w, int h)
 {
-
   IPlayer *ipav;
 
   clog << "lssm-ccm::cmavp creating player" << endl;

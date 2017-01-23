@@ -23,7 +23,6 @@ GINGA_NCL_BEGIN
 LambdaAnchor::LambdaAnchor (string id)
     : RelativeTimeIntervalAnchor (id, 0, IntervalAnchor::OBJECT_DURATION)
 {
-
   typeSet.insert ("LambdaAnchor");
 }
 

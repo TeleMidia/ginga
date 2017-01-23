@@ -165,7 +165,6 @@ main (int argc, char *argv[])
 
   for (int i = 1; i < argc; i++)
     {
-
       if ((strcmp (argv[i], "-h") == 0)
           || (strcmp (argv[i], "--help") == 0))
         {
@@ -175,7 +174,6 @@ main (int argc, char *argv[])
       else if ((strcmp (argv[i], "-v") == 0)
                || (strcmp (argv[i], "--version")) == 0)
         {
-
           printf ("%s\n", PACKAGE_VERSION);
           return 0;
         }
@@ -210,7 +208,6 @@ main (int argc, char *argv[])
       else if ((strcmp (argv[i], "--set-bg-image") == 0)
                && ((i + 1) < argc))
         {
-
           param = argv[i + 1];
           if (fileExists (param))
             {
@@ -271,7 +268,6 @@ main (int argc, char *argv[])
   // TODO: Add support to multi-devices (old --devClass option).
   // TODO: Add support to remote NCL files.
   // TODO: Add ISDBT tuning support.
-
 
   GingaScreenID screen;
   int xoffset, yoffset, width, height;

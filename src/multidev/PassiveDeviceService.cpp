@@ -51,7 +51,6 @@ bool
 PassiveDeviceService::receiveMediaContent (unsigned int devAddr,
                                            char *stream, int streamSize)
 {
-
   int remoteDevClass, bytesWrite;
   FILE *fd;
   RemoteDevice *dev;

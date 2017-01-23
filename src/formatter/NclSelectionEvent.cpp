@@ -24,7 +24,6 @@ NclSelectionEvent::NclSelectionEvent (string id, void *executionObject,
                                       ContentAnchor *anchor)
     : NclAnchorEvent (id, executionObject, anchor)
 {
-
   selectionCode = CodeMap::KEY_NULL;
   typeSet.insert ("NclSelectionEvent");
 }

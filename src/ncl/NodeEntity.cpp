@@ -49,7 +49,6 @@ NodeEntity::~NodeEntity ()
 
   for (j = instSameInstances.begin (); j != instSameInstances.end (); ++j)
     {
-
       if ((Node *)(*j) != (Node *)this && Entity::hasInstance ((*j), true))
         {
           delete (*j);
@@ -59,7 +58,6 @@ NodeEntity::~NodeEntity ()
 
   for (j = gradSameInstances.begin (); j != gradSameInstances.end (); ++j)
     {
-
       delete (*j);
     }
   gradSameInstances.clear ();

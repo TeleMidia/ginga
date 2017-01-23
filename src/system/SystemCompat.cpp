@@ -74,10 +74,8 @@ zipwalker (void *zipfile, string initdir, string dirpath, string iUriD)
 
   while ((dir = readdir (d)))
     {
-
       if (strcmp (dir->d_name, ".") == 0 || strcmp (dir->d_name, "..") == 0)
         {
-
           continue;
         }
 
@@ -123,7 +121,6 @@ zipwalker (void *zipfile, string initdir, string dirpath, string iUriD)
         }
       else
         {
-
           clog << ":: full uri: " << fullpath << endl;
           clog << ":: init dir: " << initdir << endl;
           clog << ":: file name: " << string (dir->d_name) << endl;
@@ -239,7 +236,6 @@ SystemCompat::initializeGingaConfigFile ()
       if (line.find ("#") == std::string::npos
           && (line.find ("=") != std::string::npos || value != ""))
         {
-
           if (value == "")
             {
               key = line.substr (0, line.find_last_of ("="));
@@ -362,7 +358,6 @@ SystemCompat::initializeGingaPath ()
               if (gingaCurrentPath.find_last_of (iUriD)
                   != gingaCurrentPath.length () - 1)
                 {
-
                   gingaCurrentPath = gingaCurrentPath + iUriD;
                 }
 
@@ -385,7 +380,6 @@ SystemCompat::initializeUserCurrentPath ()
 
   if (userCurrentPath.find_last_of (iUriD) != userCurrentPath.length () - 1)
     {
-
       userCurrentPath = userCurrentPath + iUriD;
     }
 }
@@ -407,7 +401,6 @@ SystemCompat::zip_directory (const string &zipfile_path,
                              const string &directory_path,
                              const string &iUriD)
 {
-
 #if WITH_MULTIDEVICE
   struct zip *zipFile;
   int error_open;
@@ -528,7 +521,6 @@ SystemCompat::unzip_file (const char *zipname, const char *filedir)
 
   for (k = 0; (inf = zip_fopen_index (zipf, k, 0)); k++)
     {
-
       cur_file_name = zip_get_name (zipf, k, 0);
 
       if ((k == 0) && (cur_file_name == NULL))
@@ -609,7 +601,6 @@ SystemCompat::updatePath (string dir, string separator)
 
   if (dir.find ("<") != std::string::npos || checkUriPrefix (dir))
     {
-
       return dir;
     }
 
@@ -682,7 +673,6 @@ SystemCompat::isXmlStr (string location)
       || location.find ("?xml") != std::string::npos
       || location.find ("|") != std::string::npos)
     {
-
       return true;
     }
 
@@ -706,7 +696,6 @@ SystemCompat::checkUriPrefix (string uri)
       || (len >= 13 && uri.substr (0, 13) == "ncl-mirror://")
       || (len >= 7 && uri.substr (0, 7) == "rtsp://"))
     {
-
       return true;
     }
 
@@ -741,7 +730,6 @@ SystemCompat::isAbsolutePath (string path)
   if ((len >= 1 && path.substr (0, 1) == iUriD)
       || (len >= 2 && path.substr (1, 2) == ":" + iUriD))
     {
-
       return true;
     }
 
@@ -784,7 +772,6 @@ SystemCompat::getPath (string filename)
 string
 SystemCompat::convertRelativePath (string relPath)
 {
-
   string _str;
   _str = relPath;
 
@@ -949,7 +936,6 @@ SystemCompat::checkPipeName (string pipeName)
   if (pipeName.length () < tempDir.length ()
       || pipeName.substr (0, tempDir.length ()) != tempDir)
     {
-
       newPipeName = tempDir + pipeName;
     }
 #endif

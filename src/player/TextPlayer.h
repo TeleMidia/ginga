@@ -90,7 +90,8 @@ public:
   void setFontSize (int size);
   int getFontSize ();
   int getFontHeight ();
-  void setBgColor (guint8 red, guint8 green, guint8 blue, guint8 alpha = 255);
+  void setBgColor (guint8 red, guint8 green, guint8 blue,
+                   guint8 alpha = 255);
   void setColor (guint8 red, guint8 green, guint8 blue, guint8 alpha = 255);
   void setTabSize (int size);
   int getTabSize ();

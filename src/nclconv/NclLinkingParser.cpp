@@ -29,7 +29,6 @@ void *
 NclLinkingParser::parseBind (DOMElement *parentElement,
                              void *objGrandParent)
 {
-
   clog << "parseBind" << endl;
   void *parentObject;
   DOMNodeList *elementNodeList;
@@ -61,7 +60,6 @@ NclLinkingParser::parseBind (DOMElement *parentElement,
                                          "bindParam")
               == 0)
             {
-
               elementObject = parseBindParam (element, parentObject);
               if (elementObject != NULL)
                 {
@@ -78,7 +76,6 @@ void *
 NclLinkingParser::parseLinkParam (DOMElement *parentElement,
                                   void *objGrandParent)
 {
-
   clog << "parseLinkParam" << endl;
   return createLinkParam (parentElement, objGrandParent);
 }
@@ -87,7 +84,6 @@ void *
 NclLinkingParser::parseBindParam (DOMElement *parentElement,
                                   void *objGrandParent)
 {
-
   clog << "parseBindParam" << endl;
   return createBindParam (parentElement, objGrandParent);
 }
@@ -96,7 +92,6 @@ void *
 NclLinkingParser::parseLink (DOMElement *parentElement,
                              void *objGrandParent)
 {
-
   clog << "parseLink" << endl;
   void *parentObject;
   DOMNodeList *elementNodeList;
@@ -128,7 +123,6 @@ NclLinkingParser::parseLink (DOMElement *parentElement,
                                          "linkParam")
               == 0)
             {
-
               elementObject = parseLinkParam (element, parentObject);
               if (elementObject != NULL)
                 {
@@ -139,7 +133,6 @@ NclLinkingParser::parseLink (DOMElement *parentElement,
                                               "bind")
                    == 0)
             {
-
               elementObject = parseBind (element, parentObject);
               if (elementObject != NULL)
                 {

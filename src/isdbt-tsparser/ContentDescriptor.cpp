@@ -126,7 +126,6 @@ ContentDescriptor::process (char *data, size_t pos)
 
   while (remainingBytes > 0)
     {
-
       pos++;
       content = new struct Content;
       content->contentNibbleLevel1 = ((data[pos] & 0xF0) >> 4);

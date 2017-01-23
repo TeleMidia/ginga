@@ -141,7 +141,6 @@ Transition::setDirection (short dir)
   if (dir >= Transition::DIRECTION_FORWARD
       && dir <= Transition::DIRECTION_REVERSE)
     {
-
       this->direction = dir;
     }
 }
@@ -200,7 +199,6 @@ Transition::setSubtype (int subtype)
       if (subtype >= Transition::SUBTYPE_BARWIPE_LEFTTORIGHT
           && subtype <= Transition::SUBTYPE_BARWIPE_TOPTOBOTTOM)
         {
-
           this->subtype = subtype;
         }
 
@@ -210,7 +208,6 @@ Transition::setSubtype (int subtype)
       if (subtype >= Transition::SUBTYPE_IRISWIPE_RECTANGLE
           && subtype <= Transition::SUBTYPE_IRISWIPE_DIAMOND)
         {
-
           this->subtype = subtype;
         }
 
@@ -220,7 +217,6 @@ Transition::setSubtype (int subtype)
       if (subtype >= Transition::SUBTYPE_CLOCKWIPE_CLOCKWISETWELVE
           && subtype <= Transition::SUBTYPE_CLOCKWIPE_CLOCKWISENINE)
         {
-
           this->subtype = subtype;
         }
 
@@ -230,7 +226,6 @@ Transition::setSubtype (int subtype)
       if (subtype >= Transition::SUBTYPE_SNAKEWIPE_TOPLEFTHORIZONTAL
           && subtype <= Transition::SUBTYPE_SNAKEWIPE_BOTTOMLEFTDIAGONAL)
         {
-
           this->subtype = subtype;
         }
 
@@ -241,7 +236,6 @@ Transition::setSubtype (int subtype)
       if (subtype >= Transition::SUBTYPE_FADE_CROSSFADE
           && subtype <= Transition::SUBTYPE_FADE_FADEFROMCOLOR)
         {
-
           this->subtype = subtype;
         }
       break;
@@ -253,7 +247,6 @@ Transition::setType (int type)
 {
   if (type >= Transition::TYPE_BARWIPE && type <= Transition::TYPE_FADE)
     {
-
       this->type = type;
       subtype = TransitionUtil::getDefaultSubtype (type);
     }

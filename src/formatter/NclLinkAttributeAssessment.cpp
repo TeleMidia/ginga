@@ -24,7 +24,6 @@ NclLinkAttributeAssessment::NclLinkAttributeAssessment (
     NclFormatterEvent *ev, short attrType)
     : NclLinkAssessment ()
 {
-
   event = ev;
   attributeType = attrType;
   offset = "";

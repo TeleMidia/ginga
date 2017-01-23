@@ -150,7 +150,6 @@ NclFormatterEvent::hasNcmId (NclFormatterEvent *event, string anchorId)
           if (anchorName == anchorId
               && !event->instanceOf ("NclSelectionEvent"))
             {
-
               return true;
             }
         }
@@ -239,7 +238,6 @@ NclFormatterEvent::containsEventListener (INclEventListener *listener)
       || linksListeners.count (listener) != 0
       || objectsListeners.count (listener) != 0)
     {
-
       Thread::mutexUnlock (&mutex);
       return true;
     }
@@ -486,7 +484,6 @@ NclFormatterEvent::getPreviousState ()
 short
 NclFormatterEvent::getTransistion (short previousState, short newState)
 {
-
   switch (previousState)
     {
     case EventUtil::ST_SLEEPING:

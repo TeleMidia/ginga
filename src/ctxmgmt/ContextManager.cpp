@@ -144,7 +144,6 @@ ContextManager::initializeUsers ()
                                   fis >> line;
                                   if (line == "m" || line == "f")
                                     {
-
                                       genre = line[0];
                                       validUser = true;
                                       invalidUser = false;
@@ -292,7 +291,6 @@ ContextManager::initializeContexts ()
 void
 ContextManager::addContextVar (int userId, string varName, string varValue)
 {
-
   map<int, map<string, string> *>::iterator i;
   map<string, string> *vars;
 
@@ -382,7 +380,6 @@ void
 ContextManager::saveProfile (FILE *fd, int userId,
                              map<string, string> *profile)
 {
-
   map<string, string>::iterator i;
 
   GingaUser::saveString (fd, "|| =");

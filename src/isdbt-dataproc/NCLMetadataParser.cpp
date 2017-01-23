@@ -98,7 +98,6 @@ NCLMetadataParser::parse (char *xmlStream, int streamSize)
 
   if (XML_Parse (parser, xmlStream, streamSize, true) == XML_STATUS_ERROR)
     {
-
       clog << "NCLMetadataParser::parse() error '";
       clog << XML_ErrorString (XML_GetErrorCode (parser));
       clog << "' at line '" << XML_GetCurrentLineNumber (parser);
@@ -126,7 +125,6 @@ void
 NCLMetadataParser::startElementHandler (void *data, const XML_Char *element,
                                         const XML_Char **attrs)
 {
-
   INCLMetadata *nm = ((MetadataAndParser *)data)->metadata;
   bool isValid = (nm != NULL);
   clog << "NCLMetadataParser::startElementHandler element '";
@@ -216,7 +214,6 @@ NCLMetadataParser::parseData (void *data, const XML_Char **attrs)
 INCLDataFile *
 NCLMetadataParser::createObject (arg_unused (void *data), const XML_Char **attrs)
 {
-
   INCLDataFile *dataObject = NULL;
   int structureId = -1;
   double size = 0;
@@ -257,7 +254,6 @@ NCLMetadataParser::createObject (arg_unused (void *data), const XML_Char **attrs
 void
 NCLMetadataParser::stopElementHandler (void *data, const XML_Char *element)
 {
-
   if (strcmp (element, "metadata") == 0)
     {
       ((MetadataAndParser *)data)->isParsing = false;

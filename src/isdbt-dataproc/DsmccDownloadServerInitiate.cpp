@@ -212,7 +212,6 @@ DsmccDownloadServerInitiate::processIor ()
           if (((data[idx] & 0xFF) != 0x01)
               || ((data[idx + 1] & 0xFF) != 0x00))
             {
-
               clog << "DSI Warning: DsmccObject version, never reach "
                       "here!!!";
               clog << endl;

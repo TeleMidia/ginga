@@ -73,7 +73,8 @@ public:
 
 protected:
   bool
-  newDeviceConnected (arg_unused (int newDevClass), arg_unused (int w), arg_unused (int h))
+  newDeviceConnected (arg_unused (int newDevClass), arg_unused (int w),
+                      arg_unused (int h))
   {
     return false;
   };
@@ -82,7 +83,9 @@ protected:
   bool receiveRemoteEvent (int remoteDevClass, int eventType,
                            string eventContent);
   bool
-  receiveRemoteContent (arg_unused (int remoteDevClass), arg_unused (char *stream), arg_unused (int streamSize))
+  receiveRemoteContent (arg_unused (int remoteDevClass),
+                        arg_unused (char *stream),
+                        arg_unused (int streamSize))
   {
     return false;
   };

@@ -30,7 +30,6 @@ void *
 NclMetainformationConverter::createMeta (DOMElement *parentElement,
                                          arg_unused (void *objGrandParent))
 {
-
   string name, content;
   Meta *meta;
 
@@ -62,7 +61,6 @@ void *
 NclMetainformationConverter::createMetadata (arg_unused (DOMElement *parentElement),
                                              arg_unused (void *objGrandParent))
 {
-
   Metadata *metadata;
 
   metadata = new Metadata ();

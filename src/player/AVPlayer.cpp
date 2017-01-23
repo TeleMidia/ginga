@@ -26,7 +26,6 @@ GINGA_PLAYER_BEGIN
 AVPlayer::AVPlayer (GingaScreenID screenId, string mrl)
     : Thread (), Player (screenId, mrl)
 {
-
   string::size_type pos;
 
   this->provider = 0;
@@ -126,7 +125,6 @@ AVPlayer::createProvider (void)
   if (mrl.substr (0, 7) == "rtsp://" || mrl.substr (0, 6) == "rtp://"
       || mrl.substr (0, 7) == "http://" || mrl.substr (0, 8) == "https://")
     {
-
       isRemote = true;
     }
 
@@ -327,7 +325,6 @@ void
 AVPlayer::setScope (string scope, short type, double begin, double end,
                     double outTransDur)
 {
-
   Player::setScope (scope, type, begin, end, outTransDur);
   if (type == TYPE_PRESENTATION)
     {
@@ -441,7 +438,6 @@ AVPlayer::setPropertyValue (string name, string value)
   // TODO: animation, set volume, brightness, ...
   if (name == "soundLevel")
     {
-
       if (isPercentualValue (value))
         {
           value = itos (getPercentualValue (value) / 100);
@@ -540,7 +536,6 @@ AVPlayer::isPlaying ()
   if ((getCurrentMediaTime () <= 0 && status != PAUSE)
       || (getCurrentMediaTime () >= getStopTime () && getStopTime () > 0))
     {
-
       return false;
     }
   else
@@ -656,7 +651,6 @@ AVPlayer::run ()
       if (!isInfinity (scopeEndTime) && scopeEndTime > 0
           && scopeEndTime < totalTime)
         {
-
           dur = getStopTime ();
         }
       else

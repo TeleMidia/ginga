@@ -33,7 +33,6 @@ GINGA_FORMATTER_BEGIN
 class NclLinkCompoundAction : public NclLinkAction,
                               public NclLinkActionProgressionListener
 {
-
 protected:
   vector<NclLinkAction *> actions;
   short op;
