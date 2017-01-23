@@ -36,6 +36,8 @@ using namespace ::ginga::system;
 #include "ncl/DeviceLayout.h"
 using namespace ::ginga::ncl;
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_FORMATTER_BEGIN
 
 FormatterActiveDevice::FormatterActiveDevice (GingaScreenID screenId,
@@ -221,7 +223,7 @@ FormatterActiveDevice::socketSend (TCPSocket *sock, string payload)
       return false;
     }
 
-  buffer = (char *)payload.c_str ();
+  buffer = deconst (char *, payload.c_str ());
   plSize = (int)payload.size ();
 
   try
@@ -314,7 +316,6 @@ FormatterActiveDevice::receiveRemoteContent (int remoteDevClass,
 {
 
   map<string, string>::iterator i;
-  GingaSurfaceID s;
 
   clog << "FormatterActiveDevice::receiveRemoteContent from class '";
   clog << remoteDevClass << "' and contentUri '" << contentUri << "'";
@@ -364,9 +365,6 @@ FormatterActiveDevice::userEventReceived (SDLInputEvent *ev)
 bool
 FormatterActiveDevice::openDocument (string contentUri)
 {
-  bool open = false;
-  // lock();
-
   if (formatter == NULL)
     {
       formatter = createNCLPlayer ();
@@ -484,7 +482,7 @@ FormatterActiveDevice::getCommandCode (string *com)
  * 	  <ID> <NPT> <COMMAND> <PAYLOAD_DESC> <PAYLOAD_SIZE>\n<PAYLOAD>
  */
 bool
-FormatterActiveDevice::handleTCPCommand (string sid, string snpt,
+FormatterActiveDevice::handleTCPCommand (arg_unused (string sid), arg_unused (string snpt),
                                          string scommand,
                                          string spayload_desc,
                                          string payload)
@@ -515,10 +513,10 @@ FormatterActiveDevice::handleTCPCommand (string sid, string snpt,
       {
         clog << "FormatterActiveDevice::ADD_DOCUMENT" << endl;
         g_mkdir (appPath.c_str (), 0755);
-        writeFileFromBase64 (payload, (char *)zip_dump.c_str ());
-        SystemCompat::unzip_file ((char *)zip_dump.c_str (),
-                                  (char *)appPath.c_str ());
-        remove ((char *)zip_dump.c_str ());
+        writeFileFromBase64 (payload, deconst (char *, zip_dump.c_str ()));
+        SystemCompat::unzip_file (deconst (char *, zip_dump.c_str ()),
+                                  deconst (char *, appPath.c_str ()));
+        remove (deconst (char *, zip_dump.c_str ()));
         clog << "FormatterActiveDevice:: unzip app=" << spayload_desc
              << " with payload size=" << strlen (payload.c_str ())
              << "in dir=" << appPath << endl;
@@ -537,10 +535,10 @@ FormatterActiveDevice::handleTCPCommand (string sid, string snpt,
         if (!payload.empty ())
           {
             g_mkdir (appPath.c_str (), 0755);
-            writeFileFromBase64 (payload, (char *)zip_dump.c_str ());
-            SystemCompat::unzip_file ((char *)zip_dump.c_str (),
-                                      (char *)appPath.c_str ());
-            remove ((char *)zip_dump.c_str ());
+            writeFileFromBase64 (payload, deconst (char *, zip_dump.c_str ()));
+            SystemCompat::unzip_file (deconst (char *, zip_dump.c_str ()),
+                                      deconst (char *, appPath.c_str ()));
+            remove (deconst (char *, zip_dump.c_str ()));
             clog << "FormatterActiveDevice:: unzip app=" << spayload_desc
                  << " with payload size=" << strlen (payload.c_str ())
                  << "in dir=" << appPath << endl;

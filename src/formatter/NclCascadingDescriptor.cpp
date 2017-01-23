@@ -49,7 +49,7 @@ NclCascadingDescriptor::NclCascadingDescriptor (
   initializeCascadingDescriptor ();
   if (descriptor != NULL)
     {
-      size = ((NclCascadingDescriptor *)descriptor)->descriptors.size ();
+      size = (int)((NclCascadingDescriptor *)descriptor)->descriptors.size ();
       for (i = 0; i < size; i++)
         {
           cascade (
@@ -57,7 +57,7 @@ NclCascadingDescriptor::NclCascadingDescriptor (
                                         ->descriptors[i]));
         }
 
-      size = ((NclCascadingDescriptor *)descriptor)
+      size = (int)((NclCascadingDescriptor *)descriptor)
                  ->unsolvedDescriptors.size ();
 
       for (i = 0; i < size; i++)
@@ -335,7 +335,7 @@ NclCascadingDescriptor::cascade (GenericDescriptor *descriptor)
 GenericDescriptor *
 NclCascadingDescriptor::getUnsolvedDescriptor (int i)
 {
-  if (i >= unsolvedDescriptors.size ())
+  if ((size_t) i >= unsolvedDescriptors.size ())
     {
       return NULL;
     }
@@ -470,19 +470,19 @@ NclCascadingDescriptor::updateRegion (void *formatterLayout, string name,
   else if (name == "zIndex")
     {
       createDummyRegion (formatterLayout);
-      region->setZIndex (::ginga::util::stof (value));
+      region->setZIndex (std::stoi (value));
     }
   else if (name == "bounds")
     {
       createDummyRegion (formatterLayout);
-      params = split (trim (value), ",");
+      params = split (xstrchomp (value), ",");
       if (params->size () == 4)
         {
           if (region != NULL)
             {
               value = cvtPercentual ((*params)[0], &isPercentual);
 
-              region->setLeft (::ginga::util::stof (value), isPercentual);
+              region->setLeft (std::stof (value), isPercentual);
 
               value = cvtPercentual ((*params)[1], &isPercentual);
 
@@ -502,7 +502,7 @@ NclCascadingDescriptor::updateRegion (void *formatterLayout, string name,
   else if (name == "location")
     {
       createDummyRegion (formatterLayout);
-      params = split (trim (value), ",");
+      params = split (xstrchomp (value), ",");
       if (params->size () == 4)
         {
           if (region != NULL)
@@ -521,7 +521,7 @@ NclCascadingDescriptor::updateRegion (void *formatterLayout, string name,
   else if (name == "size")
     {
       createDummyRegion (formatterLayout);
-      params = split (trim (value), ",");
+      params = split (xstrchomp (value), ",");
       if (params->size () == 4)
         {
           if (region != NULL)
@@ -675,7 +675,6 @@ NclCascadingDescriptor::getParameterValue (string paramName)
 {
   string::size_type pos;
   string paramValue;
-  double value;
 
   if (parameters.count (paramName) == 0)
     {
@@ -692,12 +691,10 @@ NclCascadingDescriptor::getParameterValue (string paramName)
   pos = paramValue.find_last_of ("%");
   if (pos != std::string::npos && pos == paramValue.length () - 1)
     {
+      double d;
       paramValue = paramValue.substr (0, paramValue.length () - 1);
-      if (isNumeric ((void *)(paramValue.c_str ())))
-        {
-          value = ::ginga::util::stof (paramValue) / 100;
-          paramValue = itos (value);
-        }
+      if (_xstrtod (paramValue, &d))
+        g_assert (xstrassign (paramValue, "%f", d / 100) > 0);
     }
 
   return paramValue;

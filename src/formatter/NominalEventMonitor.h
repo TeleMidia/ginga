@@ -50,7 +50,7 @@ private:
   double expectedSleepTime;
   NclExecutionObject *executionObject;
   IAdapterPlayer *adapter;
-  int timeBaseId;
+  unsigned char timeBaseId;
   ITimeBaseProvider *timeBaseProvider;
 
   static const double DEFAULT_SLEEP_TIME;

@@ -45,7 +45,7 @@ void *FormatterMultiDevice::rdm = NULL;
 FormatterMultiDevice::FormatterMultiDevice (GingaScreenID screenId,
                                             DeviceLayout *deviceLayout,
                                             int x, int y, int w, int h,
-                                            bool useMulticast, int srvPort)
+                                            bool useMulticast, arg_unused (int srvPort))
 {
 
   this->xOffset = x;
@@ -188,8 +188,8 @@ FormatterMultiDevice::printGingaWindows ()
           if (i->first == 1)
             {
               quality = 45;
-              dumpW = 480 / 1.8;
-              dumpH = 320 / 1.8;
+              dumpW = (int)(480 / 1.8);
+              dumpH = (int)(320 / 1.8);
             }
 
           cout << "has the following : ";
@@ -328,8 +328,8 @@ FormatterMultiDevice::serializeScreen (int devClass,
           if (devClass == 1)
             {
               quality = 45;
-              dumpW = 480 / 1.8;
-              dumpH = 320 / 1.8;
+              dumpW = (int)(480 / 1.8);
+              dumpH = (int)(320 / 1.8);
             }
         }
       fileUri = Ginga_Display->getWindowDumpFileUri (myScreen, mapWindow, quality,
@@ -679,24 +679,8 @@ FormatterMultiDevice::showObject (NclExecutionObject *executionObject)
 #if WITH_MULTIDEVICE
                   rdm->postEvent (
                       devClass, DeviceDomain::FT_PRESENTATIONEVENT,
-                      (char *)("start::" + tempRelPath).c_str (),
-                      ("start::" + tempRelPath).size ());
-
-/**streams = nsp->createNCLSections(
-                "0x01.0x01",
-                executionObject->getId(),
-                activeBaseUri,
-                activeUris,
-                NULL);
-
-rdm->postNclMetadata(devClass, streams);
-
-fileUri = "start::" + executionObject->getId();*
-rdm->postEvent(
-                devClass,
-                DeviceDomain::FT_PRESENTATIONEVENT,
-                (char*)(fileUri.c_str()),
-                fileUri.length());*/
+                      deconst (char *, ("start::" + tempRelPath).c_str ()),
+                      (int)(("start::" + tempRelPath).size ()));
 #endif // WITH_MULTIDEVICE
                 }
             }
@@ -766,20 +750,12 @@ FormatterMultiDevice::hideObject (NclExecutionObject *executionObject)
                       relativePath = url.substr (
                           activeBaseUri.size () + 1,
                           url.size () - activeBaseUri.size ());
-
-                      /*clog << "FormatterMultiDevice::hideObject";
-                      clog << " executionObject.RP = '" << relativePath;
-                      clog << "'" << endl;*/
                     }
-
-/*clog << "FormatterMultiDevice::hideObject";
-clog << " POSTING STOP EVENT";
-clog << endl;*/
 #if WITH_MULTIDEVICE
                   rdm->postEvent (
                       devClass, DeviceDomain::FT_PRESENTATIONEVENT,
-                      (char *)("stop::" + relativePath).c_str (),
-                      ("stop::" + relativePath).size ());
+                      deconst (char *, ("stop::" + relativePath).c_str ()),
+                      (int)("stop::" + relativePath).size ());
 #endif // WITH_MULTIDEVICE
                 }
             }
@@ -963,10 +939,9 @@ FormatterMultiDevice::updatePassiveDevices ()
 }
 
 void
-FormatterMultiDevice::updateStatus (short code, string parameter,
-                                    short type, string value)
+FormatterMultiDevice::updateStatus (short code, arg_unused (string parameter),
+                                    short type, arg_unused (string value))
 {
-
   switch (code)
     {
     case IPlayer::PL_NOTIFY_UPDATECONTENT:

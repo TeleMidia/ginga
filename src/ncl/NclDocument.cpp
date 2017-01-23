@@ -221,7 +221,7 @@ NclDocument::getTransition (string transitionId)
         }
     }
 
-  size = documentBase.size ();
+  size = (int) documentBase.size ();
   for (i = 0; i < size; i++)
     {
       document = documentBase[i];

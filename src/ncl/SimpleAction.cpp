@@ -46,34 +46,33 @@ void
 SimpleAction::setLabel (string id)
 {
   label = id;
-  string upLabel = upperCase (label);
 
-  if (upLabel == upperCase ("start"))
+  if (xstrcaseeq (label, "start"))
     {
       actionType = ACT_START;
       eventType = EventUtil::EVT_PRESENTATION;
     }
-  else if (upLabel == upperCase ("stop"))
+  else if (xstrcaseeq (label, "stop"))
     {
       actionType = ACT_STOP;
       eventType = EventUtil::EVT_PRESENTATION;
     }
-  else if (upLabel == upperCase ("set"))
+  else if (xstrcaseeq (label, "set"))
     {
       actionType = ACT_START;
       eventType = EventUtil::EVT_ATTRIBUTION;
     }
-  else if (upLabel == upperCase ("abort"))
+  else if (xstrcaseeq (label, "abort"))
     {
       actionType = ACT_ABORT;
       eventType = EventUtil::EVT_PRESENTATION;
     }
-  else if (upLabel == upperCase ("pause"))
+  else if (xstrcaseeq (label, "pause"))
     {
       actionType = ACT_PAUSE;
       eventType = EventUtil::EVT_PRESENTATION;
     }
-  else if (upLabel == upperCase ("resume"))
+  else if (xstrcaseeq (label, "resume"))
     {
       actionType = ACT_RESUME;
       eventType = EventUtil::EVT_PRESENTATION;

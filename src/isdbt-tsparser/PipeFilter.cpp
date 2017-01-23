@@ -111,12 +111,12 @@ PipeFilter::receiveTSPacket (ITSPacket *pack)
 }
 
 void
-PipeFilter::receiveSection (char *buf, int len, IFrontendFilter *filter)
+PipeFilter::receiveSection (arg_unused (char *buf), arg_unused (int len), arg_unused (IFrontendFilter *filter))
 {
 }
 
 void
-PipeFilter::receivePes (char *buf, int len, IFrontendFilter *filter)
+PipeFilter::receivePes (arg_unused (char *buf), arg_unused (int len), arg_unused (IFrontendFilter *filter))
 {
 }
 
@@ -143,7 +143,6 @@ PipeFilter::setDestinationUri (string dstUri)
 void
 PipeFilter::run ()
 {
-  FILE *fd;
   int rval;
   int buffSize = 188 * 1024;
   char *buff = new char[buffSize];

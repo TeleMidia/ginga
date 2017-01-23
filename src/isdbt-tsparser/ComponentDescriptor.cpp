@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "ComponentDescriptor.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_TSPARSER_BEGIN
 
 ComponentDescriptor::ComponentDescriptor ()

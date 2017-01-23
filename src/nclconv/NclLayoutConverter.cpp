@@ -90,7 +90,7 @@ NclLayoutConverter::addRegionToRegionBase (void *parentObject,
 
 void *
 NclLayoutConverter::createRegionBase (DOMElement *parentElement,
-                                      void *objGrandParent)
+                                      arg_unused (void *objGrandParent))
 {
 
   RegionBase *layout;
@@ -126,7 +126,7 @@ NclLayoutConverter::createRegionBase (DOMElement *parentElement,
 
 void *
 NclLayoutConverter::createRegion (DOMElement *parentElement,
-                                  void *objGrandParent)
+                                  arg_unused (void *objGrandParent))
 {
 
   LayoutRegion *ncmRegion;

@@ -133,7 +133,7 @@ SwitchNode::addSwitchPortMap (SwitchPort *switchPort, Node *node,
 bool
 SwitchNode::addPort (Port *port)
 {
-  return addPort (portList.size (), port);
+  return addPort ((int) portList.size (), port);
 }
 
 bool
@@ -228,7 +228,7 @@ SwitchNode::getNode (Rule *rule)
 unsigned int
 SwitchNode::getNumRules ()
 {
-  return ruleList.size ();
+  return (unsigned int) ruleList.size ();
 }
 
 Rule *
@@ -256,7 +256,7 @@ SwitchNode::indexOfRule (Rule *rule)
         }
       i++;
     }
-  return (ruleList.size () + 10);
+  return (unsigned int) ruleList.size () + 10;
 }
 
 bool
@@ -303,7 +303,7 @@ SwitchNode::removeNode (Node *node)
   int i, size;
   Node *auxNode;
 
-  size = CompositeNode::nodes.size ();
+  size = (int) CompositeNode::nodes.size ();
   for (i = 0; i < size; i++)
     {
       auxNode = (Node *)CompositeNode::nodes[i];

@@ -115,13 +115,13 @@ public:
   void drawRectangle (int x, int y, int w, int h);
   void fillRectangle (int x, int y, int w, int h);
   void drawString (int x, int y, const char *txt);
-  void setChromaColor (int r, int g, int b, int alpha);
+  void setChromaColor (guint8 r, guint8 g, guint8 b, guint8 alpha);
   Color *getChromaColor ();
-  void setBorderColor (int r, int g, int b, int alpha);
+  void setBorderColor (guint8 r, guint8 g, guint8 b, guint8 alpha);
   Color *getBorderColor ();
-  void setBgColor (int r, int g, int b, int alpha);
+  void setBgColor (guint8 r, guint8 g, guint8 b, guint8 alpha);
   Color *getBgColor ();
-  void setColor (int r, int g, int b, int alpha);
+  void setColor (guint8 r, guint8 g, guint8 b, guint8 alpha);
   Color *getColor ();
   void setSurfaceFont (void *font);
   void getStringExtents (const char *text, int *w, int *h);

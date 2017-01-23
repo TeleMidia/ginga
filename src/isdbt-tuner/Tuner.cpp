@@ -434,7 +434,6 @@ Tuner::run ()
   NetworkInterface *nInterface = NULL, *curInt = NULL;
   map<int, NetworkInterface *>::iterator i;
   bool tuned = false;
-  int intIx = -1;
   Channel *channel;
 
   clog << "Tuner::run tuning... " << endl;
@@ -462,7 +461,6 @@ Tuner::run ()
       i = interfaces.begin ();
       while (i != interfaces.end ())
         {
-          intIx = i->first;
           nInterface = i->second;
 
           if (curInt != nInterface)

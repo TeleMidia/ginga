@@ -19,6 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Pmt.h"
 #include "IDemuxer.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_TSPARSER_BEGIN
 
 Pmt::Pmt (unsigned int pid, unsigned int programNumber)
@@ -197,7 +199,9 @@ Pmt::getStreamTypeName (short streamType)
 {
   if (streamTypeNames.count (streamType) == 0)
     {
-      return "unknown type '" + intToStrHexa (streamType) + "'";
+      string s;
+      xstrassign (s, "%x", (unsigned int) streamType);
+      return "unknown type '" + s + "'";
     }
   return streamTypeNames[streamType];
 }
@@ -268,6 +272,8 @@ Pmt::processSectionPayload ()
               sid->process (sectionPayload, i);
               componentTags[elementaryPid] = sid->getComponentTag ();
               delete sid;
+              break;
+            default:
               break;
             }
           esInfoPos += descriptorSize;

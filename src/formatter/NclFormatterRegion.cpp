@@ -78,7 +78,7 @@ NclFormatterRegion::NclFormatterRegion (string objectId, void *descriptor,
   value = ((NclCascadingDescriptor *)descriptor)
               ->getParameterValue ("background");
 
-  if (::ginga::util::trim (value) != "")
+  if (xstrchomp (value) != "")
     {
       if (value.find (",") == std::string::npos)
         {
@@ -89,22 +89,20 @@ NclFormatterRegion::NclFormatterRegion (string objectId, void *descriptor,
           Color *bg = NULL;
           vector<string> *params = NULL;
 
-          params = split (trim (value), ",");
+          params = split (xstrchomp (value), ",");
           if (params->size () == 3)
             {
-              bg = new Color (::ginga::util::stof ((*params)[0]),
-                              ::ginga::util::stof ((*params)[1]),
-                              ::ginga::util::stof ((*params)[2]));
-
+              bg = new Color (xstrto_uint8 ((*params)[0]),
+                              xstrto_uint8 ((*params)[1]),
+                              xstrto_uint8 ((*params)[2]));
               setBackgroundColor (bg);
             }
           else if (params->size () == 4)
             {
-              bg = new Color (::ginga::util::stof ((*params)[0]),
-                              ::ginga::util::stof ((*params)[1]),
-                              ::ginga::util::stof ((*params)[2]),
-                              ::ginga::util::stof ((*params)[3]));
-
+              bg = new Color (xstrto_uint8 ((*params)[0]),
+                              xstrto_uint8 ((*params)[1]),
+                              xstrto_uint8 ((*params)[2]),
+                              xstrto_uint8 ((*params)[3]));
               setBackgroundColor (bg);
             }
           delete params;
@@ -208,8 +206,6 @@ NclFormatterRegion::~NclFormatterRegion ()
 void
 NclFormatterRegion::initializeNCMRegion ()
 {
-  int left, top, width, height;
-
   originalRegion = NULL;
 
   if (descriptor != NULL)
@@ -623,149 +619,25 @@ NclFormatterRegion::getLayoutManager ()
 GingaWindowID
 NclFormatterRegion::getOutputId ()
 {
-  //		GingaWindowID outputId = NULL;
-  //		lock();
-  //		if (outputDisplay != NULL) {
-  //			outputId = outputDisplay->getId();
-  //		}
-  //		unlock();
-
   return outputDisplay;
 }
 
 void
-NclFormatterRegion::meetComponent (int width, int height, int prefWidth,
-                                   int prefHeight, GingaSurfaceID component)
+NclFormatterRegion::meetComponent (arg_unused (int width), arg_unused (int height), arg_unused (int prefWidth),
+                                   arg_unused (int prefHeight), arg_unused (GingaSurfaceID component))
 {
-
-  int finalH, finalW;
-
-  if (prefWidth == 0 || prefHeight == 0)
-    {
-      return;
-    }
-
-  finalH = (prefHeight * width) / prefWidth;
-  if (finalH <= height)
-    {
-      finalW = width;
-    }
-  else
-    {
-      finalH = height;
-      finalW = (prefWidth * height) / prefHeight;
-    }
-  // component->setSize(finalW, finalH);
 }
 
 void
-NclFormatterRegion::sliceComponent (int width, int height, int prefWidth,
-                                    int prefHeight,
-                                    GingaSurfaceID component)
+NclFormatterRegion::sliceComponent (arg_unused (int width), arg_unused (int height), arg_unused (int prefWidth),
+                                    arg_unused (int prefHeight),
+                                    arg_unused (GingaSurfaceID component))
 {
-
-  int finalH, finalW;
-
-  if (prefWidth == 0 || prefHeight == 0)
-    {
-      return;
-    }
-
-  finalH = (prefHeight * width) / prefWidth;
-  if (finalH > height)
-    {
-      finalW = width;
-    }
-  else
-    {
-      finalH = height;
-      finalW = (prefWidth * height) / prefHeight;
-    }
-
-  // component->setSize(finalW, finalH);
 }
 
 void
 NclFormatterRegion::updateCurrentComponentSize ()
 {
-  // int prefWidth, prefHeight, width, height;
-
-  // sizeRegion();
-
-  switch (fit)
-    {
-    case Descriptor::FIT_HIDDEN:
-      /*currentComponent.setSize(
-              (int)currentComponent.getPreferredSize().getWidth(),
-              (int)currentComponent.getPreferredSize().getHeight());*/
-      break;
-
-    case Descriptor::FIT_MEET:
-      /*				prefWidth = (int)currentComponent.
-                                                  getPreferredSize().getWidth();
-
-                                      prefHeight = (int)currentComponent.
-                                                  getPreferredSize().getHeight();
-
-                                      width = outputDisplay.getWidth();
-                                      height = outputDisplay.getHeight();
-                                      meetComponent(
-                                                  width,
-                                                  height,
-                                                  prefWidth,
-                                                  prefHeight,
-                                                  currentComponent);*/
-
-      break;
-
-    case Descriptor::FIT_MEETBEST:
-      /*prefWidth = (int)currentComponent.
-                  getPreferredSize().getWidth();
-
-      prefHeight = (int)currentComponent.
-                  getPreferredSize().getHeight();
-
-      width = outputDisplay.getWidth();
-      height = outputDisplay.getHeight();
-
-      // the scale factor must not overtake 100% (2 times)
-      if ((2 * prefWidth) >= width &&	(2 * prefHeight) >= height) {
-              meetComponent(
-                          width,
-                          height,
-                          prefWidth,
-                          prefHeight,
-                          currentComponent);
-
-      }*/
-
-      break;
-
-    case Descriptor::FIT_SLICE:
-      /*prefWidth = (int)currentComponent->
-                  getPreferredSize().getWidth();
-
-      prefHeight = (int)currentComponent->
-                  getPreferredSize().getHeight();
-
-      width = outputDisplay.getWidth();
-      height = outputDisplay.getHeight();
-      sliceComponent(
-                  width,
-                  height,
-                  prefWidth,
-                  prefHeight,
-                  currentComponent);*/
-
-      break;
-
-    case Descriptor::FIT_FILL:
-    default:
-      /*currentComponent->setSize(
-                      outputDisplay.getWidth(),
-                      outputDisplay.getHeight());*/
-      break;
-    }
 }
 
 void
@@ -861,10 +733,6 @@ GingaWindowID
 NclFormatterRegion::prepareOutputDisplay (GingaSurfaceID renderedSurface,
                                           double cvtIndex)
 {
-
-  GingaWindowID windowId = 0;
-
-  // clog << "NclFormatterRegion::prepareOutputDisplay" << endl;
   lock ();
   GingaScreenID screenId
       = ((NclFormatterLayout *)layoutManager)->getScreenID ();
@@ -955,7 +823,7 @@ NclFormatterRegion::prepareOutputDisplay (GingaSurfaceID renderedSurface,
         {
           Ginga_Display
             ->setWindowCurrentTransparency (screenId, outputDisplay,
-                                            (int)(transparency * 255));
+                                            (guint8)(transparency * 255));
         }
 
       int caps = Ginga_Display
@@ -1170,6 +1038,9 @@ NclFormatterRegion::getOutTransDur ()
             case Transition::TYPE_BARWIPE:
               unlockTransition ();
               return transition->getDur ();
+
+            default:
+              g_assert_not_reached ();
             }
         }
     }
@@ -1698,8 +1569,9 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
 {
   int i, factor = 1, x, y, width, height;
   double time, initTime;
-  int transitionSubType, transparencyValue, initValue, endValue;
+  int transitionSubType, initValue, endValue;
   double transitionDur, startProgress, endProgress;
+  guint8 transparencyValue;
   short transitionDir;
 
   lock ();
@@ -1731,11 +1603,7 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
 
   transparencyValue
       = Ginga_Display->getWindowTransparencyValue (screenId, outputDisplay);
-
-  // outputDisplay->setStretch(false);
   initTime = getCurrentTimeMillis ();
-
-  // clog << transition->getStartProgress() << endl << endl;
 
   if (transitionSubType == Transition::SUBTYPE_BARWIPE_LEFTTORIGHT)
     {
@@ -1750,14 +1618,14 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
             }
           unlock ();
 
-          initValue = width * startProgress;
+          initValue = (int)(width * startProgress);
           i = initValue + 1;
-          endValue = width * endProgress;
+          endValue = (int)(width * endProgress);
         }
       else
         {
-          initValue = width * endProgress;
-          endValue = width * startProgress;
+          initValue = (int)(width * endProgress);
+          endValue = (int)(width * startProgress);
           i = initValue - 1;
         }
 
@@ -1797,8 +1665,8 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
 
           unlock ();
 
-          i = getNextStepValue (initValue, endValue, factor, time, initTime,
-                                transitionDur, 0);
+          i = (int) getNextStepValue (initValue, endValue, factor, time, initTime,
+                                      transitionDur, 0);
 
           lock ();
           if (outputDisplay != 0)
@@ -1864,14 +1732,14 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
                 }
             }
           unlock ();
-          initValue = height * startProgress;
+          initValue = (int)(height * startProgress);
           i = initValue + 1;
-          endValue = height * endProgress;
+          endValue = (int)(height * endProgress);
         }
       else
         {
-          initValue = height * endProgress;
-          endValue = height * startProgress;
+          initValue = (int)(height * endProgress);
+          endValue = (int)(height * startProgress);
           i = initValue - 1;
         }
 
@@ -1911,8 +1779,8 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
             }
           unlock ();
 
-          i = getNextStepValue (initValue, endValue, factor, time, initTime,
-                                transitionDur, 0);
+          i = (int) getNextStepValue (initValue, endValue, factor, time, initTime,
+                                      transitionDur, 0);
 
           lock ();
           if (outputDisplay != 0)
@@ -2027,13 +1895,13 @@ NclFormatterRegion::fade (Transition *transition, bool isShowEffect)
     {
       initValue = opacityValue * startProgress;
       endValue = opacityValue * endProgress;
-      i = initValue + 1;
+      i = (int)(initValue + 1);
     }
   else
     {
       initValue = opacityValue * endProgress;
       endValue = opacityValue * startProgress;
-      i = initValue + 1; // TODO: confirm if + or -
+      i = (int)(initValue + 1);
     }
 
   initTime = getCurrentTimeMillis ();
@@ -2048,8 +1916,7 @@ NclFormatterRegion::fade (Transition *transition, bool isShowEffect)
       lock ();
       if (outputDisplay != 0)
         {
-          Ginga_Display->setWindowCurrentTransparency (screenId, outputDisplay,
-                                            255 - i);
+          Ginga_Display->setWindowCurrentTransparency (screenId, outputDisplay, (guint8) (255 - i));
         }
       else
         {
@@ -2058,8 +1925,8 @@ NclFormatterRegion::fade (Transition *transition, bool isShowEffect)
         }
       unlock ();
 
-      i = getNextStepValue (initValue, endValue, factor, time, initTime,
-                            transitionDur, 0);
+      i = (int) getNextStepValue (initValue, endValue, factor, time, initTime,
+                                  transitionDur, 0);
 
       if ((abortTransitionIn && isShowEffect)
           || (abortTransitionOut && !isShowEffect))
@@ -2188,7 +2055,7 @@ NclFormatterRegion::setTransparency (double transparency)
           = ((NclFormatterLayout *)layoutManager)->getScreenID ();
       Ginga_Display
         ->setWindowCurrentTransparency (screenId, outputDisplay,
-                                        (int)(this->transparency * 255));
+                                        (guint8)(this->transparency * 255));
     }
 
   unlock ();
@@ -2198,12 +2065,9 @@ void
 NclFormatterRegion::setBackgroundColor (string color)
 {
   Color *bg = NULL;
-  string trimColor = ::ginga::util::trim (color);
-
-  if (trimColor != "" && trimColor != "transparent")
-    {
-      bg = new Color (color, (int)(transparency * 255));
-    }
+  color = xstrchomp (color);
+  if (color != "" && color != "transparent")
+    bg = new Color (color, (guint8)(transparency * 255));
 
   setBackgroundColor (bg);
 }
@@ -2249,9 +2113,9 @@ NclFormatterRegion::setRgbChromaKey (string value)
       if (params->size () == 3)
         {
           this->chromaKey
-              = new Color ((int)::ginga::util::stof ((*params)[0]),
-                           (int)::ginga::util::stof ((*params)[1]),
-                           (int)::ginga::util::stof ((*params)[2]));
+              = new Color (xstrto_uint8 ((*params)[0]),
+                           xstrto_uint8 ((*params)[1]),
+                           xstrto_uint8 ((*params)[2]));
         }
       delete params;
     }

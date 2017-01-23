@@ -46,33 +46,9 @@ ActiveDeviceService::connectedToBaseDevice (unsigned int domainAddr)
 }
 
 bool
-ActiveDeviceService::receiveMediaContent (unsigned int devAddr,
-                                          char *stream, int streamSize)
+ActiveDeviceService::receiveMediaContent (arg_unused (unsigned int devAddr),
+                                          arg_unused (char *stream), arg_unused (int streamSize))
 {
-
-  int remoteDevClass;
-  RemoteDevice *dev;
-  string uri;
-  set<IRemoteDeviceListener *>::iterator i;
-  // INCLSectionProcessor* nsp = NULL;
-  bool hasLists;
-
-  // clog << "ActiveDeviceService::receiveMediaContent" << endl;
-
-  dev = getDevice (devAddr);
-  Thread::mutexLock (&lMutex);
-  hasLists = !listeners->empty ();
-  Thread::mutexUnlock (&lMutex);
-
-  if (dev != NULL && hasLists)
-    {
-      remoteDevClass = dev->getDeviceClass ();
-    }
-
-  clog << "ActiveDeviceService::receiveMediaContent Warning! ";
-  clog << " can't find device '" << dev << "' or no listeners found";
-  clog << endl;
-
   return false;
 }
 

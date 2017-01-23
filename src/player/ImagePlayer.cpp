@@ -33,12 +33,13 @@ ImagePlayer::ImagePlayer (GingaScreenID screenId, string mrl)
 
   if (mrl.substr (0, 7) == "http://" || mrl.substr (0, 8) == "https://")
     {
-
       InteractiveChannelManager *icm;
 
       icm = InteractiveChannelManager::getInstance ();
       CurlInteractiveChannel *ic = icm->createInteractiveChannel (mrl);
-      newMrl = itos ((long int)this);
+
+      xstrassign (newMrl, "%" G_GUINT64_FORMAT, (guint64) this);
+
       ic->setSourceTarget (newMrl);
       ic->reserveUrl (mrl, NULL, "GingaNCL/0.13.6");
       ic->performUrl ();
@@ -180,7 +181,7 @@ ImagePlayer::setPropertyValue (string name, string value)
 }
 
 GingaSurfaceID
-ImagePlayer::prepareSurface (GingaProviderID provider, string mrl)
+ImagePlayer::prepareSurface (GingaProviderID provider, arg_unused (string mrl))
 {
 
   GingaSurfaceID renderedSurface = 0;

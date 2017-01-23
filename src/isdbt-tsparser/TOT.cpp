@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "TOT.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_TSPARSER_BEGIN
 
 TOT::TOT ()
@@ -69,9 +71,9 @@ TOT::convertMJDtoUTC (unsigned int mjd)
   struct tm time;
   int year, month, day, k, weekDay;
 
-  year = ((mjd - 15078.2) / 365.25);
-  month = ((mjd - 14956.1 - (int)(year * 365.25)) / 30.6001);
-  day = mjd - 14956 - ((int)(year * 365.25)) - ((int)(month * 30.6001));
+  year = (int) ((mjd - 15078.2) / 365.25);
+  month = (int) ((mjd - 14956.1 - (int)(year * 365.25)) / 30.6001);
+  day = (int) mjd - 14956 - ((int)(year * 365.25)) - ((int)(month * 30.6001));
 
   if (month == 14 || month == 15)
     {

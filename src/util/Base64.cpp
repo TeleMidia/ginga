@@ -32,6 +32,8 @@
 #include "ginga.h"
 #include "Base64.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_UTIL_BEGIN
 
 static const std::string base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -76,7 +78,7 @@ getBase64FromFile (string file_path)
     }
 
   // Read file contents into buffer
-  int read_bytes = fread (buffer, 1, stbuf.st_size, readfile);
+  int read_bytes = (int) fread (buffer, 1, stbuf.st_size, readfile);
 
   // dump_buffer(buffer, euli);
 

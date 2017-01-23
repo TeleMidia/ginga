@@ -42,7 +42,6 @@ bool
 InteractiveChannelManager::hasInteractiveChannel ()
 {
   CurlInteractiveChannel *ic;
-  set<string> *objects;
   string symbol;
   set<string>::iterator i;
   ic = new CurlInteractiveChannel ();

@@ -45,7 +45,7 @@ NclStructureParser::parseBody (DOMElement *parentElement,
     }
 
   elementNodeList = parentElement->getChildNodes ();
-  size = elementNodeList->getLength ();
+  size = (int) elementNodeList->getLength ();
 
   for (i = 0; i < size; i++)
     {
@@ -144,7 +144,7 @@ NclStructureParser::parseHead (DOMElement *parentElement,
     }
 
   elementNodeList = parentElement->getChildNodes ();
-  size = elementNodeList->getLength ();
+  size = (int) elementNodeList->getLength ();
 
   for (i = 0; i < size; i++)
     {
@@ -334,7 +334,7 @@ NclStructureParser::parseNcl (DOMElement *parentElement,
     }
 
   elementNodeList = parentElement->getChildNodes ();
-  size = elementNodeList->getLength ();
+  size = (int) elementNodeList->getLength ();
 
   for (i = 0; i < size; i++)
     {

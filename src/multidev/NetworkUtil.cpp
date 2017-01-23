@@ -25,11 +25,7 @@ map<int, char> _rdf; // received data frames;
 char _scf = -1; // sending control frame;
 char _sdf = -1; // sending data frame;
 
-/*static char sendingControlFrameId   = -1;
-static char receivedControlFrameId = -2;
-
-static char sendingDataFrameId      = -1;
-static char receivedDataFrameId    = -2;*/
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
 
 GINGA_MULTIDEV_BEGIN
 

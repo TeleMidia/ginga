@@ -101,7 +101,7 @@ NTPDatagram::updateStream ()
   memset (stream, 0x00, NTP_BUFFER_SIZE);
 
   // NTP Control Header Encode
-  stream[0] = precision & 0xFF;
+  stream[0] = (char) (precision & 0xFF);
   stream[1] = poll_interval & 0xFF;
   stream[2] = stratum & 0xFF;
   stream[3] = mode & NTP_CONT_HEAD_MODE_MSK;
@@ -553,7 +553,7 @@ NTPDatagram::ntp2unix (u_long ntp)
     {
       tm = gmtime (&t);
 
-#if SIZEOF_TIME_T == 4
+#if defined SIZEOF_TIME_T && SIZEOF_TIME_T == 4
       /* If 32 bits, then year is 1970-2038, so no sense looking */
       epoch_nr = MAX_EPOCH_NR;
 #else  /* SIZEOF_TIME_T > 4 */

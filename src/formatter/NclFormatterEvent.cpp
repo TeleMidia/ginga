@@ -223,6 +223,9 @@ NclFormatterEvent::addEventListener (INclEventListener *listener)
     case INclEventListener::PT_OBJECT:
       objectsListeners.insert (listener);
       break;
+
+    default:
+      g_assert_not_reached ();
     }
 
   Thread::mutexUnlock (&mutex);

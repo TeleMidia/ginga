@@ -119,7 +119,10 @@ nw="$nw -Woverride-init"                 # invalid in C++
 nw="$nw -Wpointer-sign"                  # invalid in C++
 nw="$nw -Wpointer-to-int-cast"           # invalid in C++
 nw="$nw -Wstrict-prototypes"             # invalid in C++
-nw="$nw -Wsystem-headers"                # Suppress system headers warnings
+nw="$nw -Wshadow"                        # too many warnings
+nw="$nw -Wsign-compare"                  # too many warnings
+nw="$nw -Wsign-conversion"               # too many warnings
+nw="$nw -Wsystem-headers"                # too many warnings
 AU_ARG_ENABLE_WARNINGS([$nw])
 
 AU_ARG_ENABLE([nclua-trace], [trace NCLua calls], [no])

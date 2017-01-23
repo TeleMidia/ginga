@@ -331,7 +331,7 @@ DataProcessor::receiveSection (ITransportSection *section)
 
   assert (section != NULL);
 
-  tableId = section->getTableId ();
+  tableId = (short) section->getTableId ();
 
   // stream event
   if (tableId == DDE_TID)
@@ -347,12 +347,12 @@ DataProcessor::receiveSection (ITransportSection *section)
           || (payload[0] & 0xFF) == 0x1a)
         {
           static char lastSeVer = -1;
-          if (lastSeVer == section->getVersionNumber ())
+          if (lastSeVer == (char) section->getVersionNumber ())
             {
               delete section;
               return;
             }
-          lastSeVer = section->getVersionNumber ();
+          lastSeVer = (char) section->getVersionNumber ();
           se = new DsmccStreamEvent (section->getPayload (),
                                      section->getPayloadSize ());
 
@@ -479,7 +479,7 @@ DataProcessor::receiveSection (ITransportSection *section)
 }
 
 void
-DataProcessor::updateChannelStatus (short newStatus, Channel *channel)
+DataProcessor::updateChannelStatus (short newStatus, arg_unused (Channel *channel))
 {
   if (newStatus == TS_LOOP_DETECTED)
     {
@@ -535,7 +535,7 @@ DataProcessor::run ()
                     {
                       if (processors.count (pid) == 0)
                         {
-                          processor = new DsmccMessageProcessor (pid);
+                          processor = new DsmccMessageProcessor ((unsigned short) pid);
                           processors[pid] = processor;
                         }
                       else

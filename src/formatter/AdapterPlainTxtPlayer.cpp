@@ -44,31 +44,31 @@ AdapterPlainTxtPlayer::createPlayer ()
   descriptor = object->getDescriptor ();
   if (descriptor != NULL)
     {
-      paramValue = trim (descriptor->getParameterValue ("fontUri"));
+      paramValue = xstrchomp (descriptor->getParameterValue ("fontUri"));
       if (paramValue == "")
         {
-          paramValue = string (GINGA_FONT_DATADIR) + "vera.ttf";
+          paramValue = string (GINGA_FONT_DATADIR) + "/" + "vera.ttf";
         }
       player->setPropertyValue ("fontUri", paramValue);
 
-      paramValue = trim (descriptor->getParameterValue ("fontSize"));
+      paramValue = xstrchomp (descriptor->getParameterValue ("fontSize"));
       if (paramValue == "")
         {
           paramValue = "10";
         }
       player->setPropertyValue ("fontSize", paramValue);
 
-      paramValue = trim (descriptor->getParameterValue ("x-rgbBgColor"));
+      paramValue = xstrchomp (descriptor->getParameterValue ("x-rgbBgColor"));
       if (paramValue != "")
         {
           player->setPropertyValue ("x-rgbBgColor", paramValue);
         }
 
-      paramValue = trim (descriptor->getParameterValue ("fontColor"));
+      paramValue = xstrchomp (descriptor->getParameterValue ("fontColor"));
       if (paramValue == "")
         {
           paramValue
-              = trim (descriptor->getParameterValue ("x-rgbFontColor"));
+              = xstrchomp (descriptor->getParameterValue ("x-rgbFontColor"));
 
           if (paramValue == "")
             {

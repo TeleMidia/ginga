@@ -87,12 +87,12 @@ SDLVideoProvider::feedBuffers ()
 }
 
 void
-SDLVideoProvider::getVideoSurfaceDescription (void *dsc)
+SDLVideoProvider::getVideoSurfaceDescription (arg_unused (void *dsc))
 {
 }
 
 bool
-SDLVideoProvider::checkVideoResizeEvent (GingaSurfaceID frame)
+SDLVideoProvider::checkVideoResizeEvent (arg_unused (GingaSurfaceID frame))
 {
   return false;
 }

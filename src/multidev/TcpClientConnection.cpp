@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "TcpClientConnection.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_MULTIDEV_BEGIN
 
 const static int MAX_MSG_SIZE = 1024;
@@ -33,16 +35,10 @@ TCPClientConnection::TCPClientConnection (unsigned int devid,
       deviceId = devid;
       orderId = index;
       counter = 0;
-      tcpSocket = new TCPSocket (string (hostname), atoi (port_str));
-      ////
-      // TODO: improve (create setIndex e getIndex methods) so index does
-      // not
-      // change
-
-      char *set_index = g_strdup_printf ("%d %s %s=%d\n", 0, "SET",
+      tcpSocket = new TCPSocket (string (hostname), xstrto_int (string (port_str)));
+      char *set_index = g_strdup_printf ("%d %s %s=%ud\n", 0, "SET",
                                          "child.index", orderId);
       this->post (set_index);
-      ////
       running = true;
       resrv = srv;
     }
@@ -77,8 +73,7 @@ TCPClientConnection::post (char *str)
 
   try
     {
-      // tcpSocket->send(com, strlen(com));
-      tcpSocket->send ((char *)s_com.c_str (), (int)s_com.size ());
+      tcpSocket->send (deconst (char *, s_com.c_str ()), (int)s_com.size ());
       return true;
     }
   catch (SocketException &e)

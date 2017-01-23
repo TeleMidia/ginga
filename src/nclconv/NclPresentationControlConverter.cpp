@@ -117,7 +117,7 @@ NclPresentationControlConverter::addSwitchPortToSwitch (void *parentObject,
 
 void *
 NclPresentationControlConverter::createCompositeRule (
-    DOMElement *parentElement, void *objGrandParent)
+    DOMElement *parentElement, arg_unused (void *objGrandParent))
 {
 
   CompositeRule *compositePresentationRule;
@@ -153,7 +153,7 @@ NclPresentationControlConverter::createCompositeRule (
 
 void *
 NclPresentationControlConverter::createSwitch (DOMElement *parentElement,
-                                               void *objGrandParent)
+                                               arg_unused (void *objGrandParent))
 {
 
   string id;
@@ -232,7 +232,7 @@ NclPresentationControlConverter::createSwitch (DOMElement *parentElement,
 
 void *
 NclPresentationControlConverter::createRuleBase (DOMElement *parentElement,
-                                                 void *objGrandParent)
+                                                 arg_unused (void *objGrandParent))
 {
 
   RuleBase *ruleBase;
@@ -244,7 +244,7 @@ NclPresentationControlConverter::createRuleBase (DOMElement *parentElement,
 
 void *
 NclPresentationControlConverter::createRule (DOMElement *parentElement,
-                                             void *objGrandParent)
+                                             arg_unused (void *objGrandParent))
 {
 
   SimpleRule *simplePresentationRule;
@@ -271,7 +271,7 @@ NclPresentationControlConverter::createRule (DOMElement *parentElement,
 
 void *
 NclPresentationControlConverter::createDescriptorSwitch (
-    DOMElement *parentElement, void *objGrandParent)
+    DOMElement *parentElement, arg_unused (void *objGrandParent))
 {
 
   DescriptorSwitch *descriptorSwitch
@@ -618,7 +618,7 @@ NclPresentationControlConverter::addNodeToSwitch (SwitchNode *switchNode,
 
 void *
 NclPresentationControlConverter::createBindRule (DOMElement *parentElement,
-                                                 void *objGrandParent)
+                                                 arg_unused (void *objGrandParent))
 {
 
   return parentElement;
@@ -626,7 +626,7 @@ NclPresentationControlConverter::createBindRule (DOMElement *parentElement,
 
 void *
 NclPresentationControlConverter::createDefaultComponent (
-    DOMElement *parentElement, void *objGrandParent)
+    DOMElement *parentElement, arg_unused (void *objGrandParent))
 {
 
   return parentElement;
@@ -634,7 +634,7 @@ NclPresentationControlConverter::createDefaultComponent (
 
 void *
 NclPresentationControlConverter::createDefaultDescriptor (
-    DOMElement *parentElement, void *objGrandParent)
+    DOMElement *parentElement, arg_unused (void *objGrandParent))
 {
 
   return parentElement;
@@ -654,7 +654,7 @@ NclPresentationControlConverter::posCompileSwitch (
   Node *elementObject;
 
   elementNodeList = parentElement->getChildNodes ();
-  size = elementNodeList->getLength ();
+  size = (int) elementNodeList->getLength ();
 
   for (i = 0; i < size; i++)
     {

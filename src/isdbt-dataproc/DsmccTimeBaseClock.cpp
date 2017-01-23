@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "DsmccTimeBaseClock.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_DATAPROC_BEGIN
 
 DsmccTimeBaseClock::DsmccTimeBaseClock () : Stc ()

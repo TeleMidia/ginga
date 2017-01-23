@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "MulticastSocketService.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_MULTIDEV_BEGIN
 
 MulticastSocketService::MulticastSocketService (char *groupAddr,
@@ -92,7 +94,6 @@ MulticastSocketService::createMulticastGroup ()
 bool
 MulticastSocketService::createSocket ()
 {
-  unsigned char trueVar = 1;
   try
     {
       writeSocket = new UDPSocket ();
@@ -190,7 +191,7 @@ bool
 MulticastSocketService::sendData (struct frame *f)
 {
   char *data;
-  int taskSize, result, i;
+  int taskSize, i;
 
   data = f->data;
   taskSize = f->size;

@@ -183,7 +183,7 @@ DsmccObjectProcessor::mountObject (DsmccObject *object)
 
           fd = fopen (path.c_str (), "w+b");
           size = object->getDataSize ();
-          if (fd > 0)
+          if (fd != NULL)
             {
               // TODO: correct BUG in content provider
               if (path.find (".ncl") != std::string::npos)

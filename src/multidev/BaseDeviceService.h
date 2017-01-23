@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _BaseDeviceService_H_
-#define _BaseDeviceService_H_
+#ifndef BASE_DEVICE_SERVICE_H
+#define BASE_DEVICE_SERVICE_H
 
 #include "RemoteDevice.h"
 #include "IRemoteDeviceListener.h"
@@ -30,15 +30,12 @@ class BaseDeviceService : public DeviceService
 public:
   BaseDeviceService ();
   virtual ~BaseDeviceService ();
-
   virtual void newDeviceConnected (unsigned int devAddr);
-  virtual void connectedToBaseDevice (unsigned int domainAddr){};
-
+  virtual void connectedToBaseDevice (arg_unused (unsigned int domainAddr)){};
   virtual bool receiveEvent (unsigned int devAddr, int eventType,
                              char *stream, int streamSize);
-
   virtual bool
-  receiveMediaContent (unsigned int devAddr, char *stream, int streamSize)
+  receiveMediaContent (arg_unused (unsigned int devAddr), arg_unused (char *stream), arg_unused (int streamSize))
   {
     return false;
   };
@@ -46,4 +43,4 @@ public:
 
 GINGA_MULTIDEV_END
 
-#endif /*_BaseDeviceService_H_*/
+#endif /* BASE_DEVICE_SERVICE_H */

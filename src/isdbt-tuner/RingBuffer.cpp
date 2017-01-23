@@ -61,11 +61,11 @@ ring_buffer_create (struct ring_buffer *buffer, unsigned long order)
   if (address != buffer->address)
     report_exceptional_condition ();
 
-  address = mmap (buffer->address + buffer->count_bytes,
+  address = mmap ((void*)((gintptr)buffer->address + (gintptr)buffer->count_bytes),
                   buffer->count_bytes, PROT_READ | PROT_WRITE,
                   MAP_FIXED | MAP_SHARED, file_descriptor, 0);
 
-  if (address != buffer->address + buffer->count_bytes)
+  if (address != (void*)((gintptr)buffer->address + (gintptr)buffer->count_bytes))
     report_exceptional_condition ();
 
   status = close (file_descriptor);
@@ -87,7 +87,7 @@ void *
 ring_buffer_write_address (struct ring_buffer *buffer)
 {
 
-  return buffer->address + buffer->write_offset_bytes;
+  return (void*)((gintptr)buffer->address + (gintptr)buffer->write_offset_bytes);
 }
 
 void
@@ -100,7 +100,7 @@ ring_buffer_write_advance (struct ring_buffer *buffer,
 void *
 ring_buffer_read_address (struct ring_buffer *buffer)
 {
-  return buffer->address + buffer->read_offset_bytes;
+  return (void*)((gintptr)buffer->address + (gintptr)buffer->read_offset_bytes);
 }
 
 void

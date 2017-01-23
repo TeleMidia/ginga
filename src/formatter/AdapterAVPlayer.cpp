@@ -29,7 +29,6 @@ AdapterAVPlayer::AdapterAVPlayer () : AdapterFormatterPlayer ()
 void
 AdapterAVPlayer::createPlayer ()
 {
-  NclCascadingDescriptor *descriptor;
   string soundLevel;
 
   clog << "AdapterAVPlayer::createPlayer for '" << mrl << "'" << endl;

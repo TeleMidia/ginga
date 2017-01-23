@@ -67,9 +67,9 @@ DsmccDownloadServerInitiate::processMessage (DsmccMessageHeader *message)
   data = new char[header->getMessageLength () + idx];
 
   fd = fopen (header->getFileName ().c_str (), "rb");
-  if (fd >= 0)
+  if (fd != NULL)
     {
-      rval = fread ((void *)&(data[0]), 1,
+      rval = (int) fread ((void *)&(data[0]), 1,
                     header->getMessageLength () + idx, fd);
 
       // skip serverId

@@ -245,9 +245,7 @@ Player::notifyPlayerListeners (short code, string parameter, short type,
   PendingNotification *pn;
   vector<PendingNotification *>::iterator i;
 
-  short c;
   string p;
-  short t;
   string v;
   set<IPlayerListener *> *clone = NULL;
 
@@ -547,10 +545,10 @@ Player::setPropertyValue (string name, string value)
           if (params->size () == 4)
             {
               Ginga_Display->setWindowBounds (myScreen, outputWindow,
-                                   ::ginga::util::stof ((*params)[0]),
-                                   ::ginga::util::stof ((*params)[1]),
-                                   ::ginga::util::stof ((*params)[2]),
-                                   ::ginga::util::stof ((*params)[3]));
+                                   xstrto_int ((*params)[0]),
+                                   xstrto_int ((*params)[1]),
+                                   xstrto_int ((*params)[2]),
+                                   xstrto_int ((*params)[3]));
             }
           delete params;
         }
@@ -560,8 +558,8 @@ Player::setPropertyValue (string name, string value)
           if (params->size () == 2)
             {
               Ginga_Display->moveWindowTo (myScreen, outputWindow,
-                                ::ginga::util::stof ((*params)[0]),
-                                ::ginga::util::stof ((*params)[1]));
+                                xstrto_int ((*params)[0]),
+                                xstrto_int ((*params)[1]));
             }
           delete params;
         }
@@ -571,35 +569,35 @@ Player::setPropertyValue (string name, string value)
           if (params->size () == 2)
             {
               Ginga_Display->resizeWindow (myScreen, outputWindow,
-                                ::ginga::util::stof ((*params)[0]),
-                                ::ginga::util::stof ((*params)[1]));
+                                xstrto_int ((*params)[0]),
+                                xstrto_int ((*params)[1]));
             }
           delete params;
         }
       else if (name == "left")
         {
           Ginga_Display->setWindowX (myScreen, outputWindow,
-                          ::ginga::util::stof (value));
+                          xstrto_int (value));
         }
       else if (name == "top")
         {
           Ginga_Display->setWindowY (myScreen, outputWindow,
-                          ::ginga::util::stof (value));
+                          xstrto_int (value));
         }
       else if (name == "width")
         {
           Ginga_Display->setWindowW (myScreen, outputWindow,
-                          ::ginga::util::stof (value));
+                          xstrto_int (value));
         }
       else if (name == "height")
         {
           Ginga_Display->setWindowH (myScreen, outputWindow,
-                          ::ginga::util::stof (value));
+                          xstrto_int (value));
         }
       else if (name == "transparency")
         {
           Ginga_Display->setWindowCurrentTransparency (myScreen, outputWindow,
-                                            ::ginga::util::stof (value));
+                                            xstrto_uint8 (value));
         }
     }
   properties[name] = value;
@@ -736,7 +734,7 @@ Player::scopeTimeHandler (void *ptr)
                  - (p->scopeInitTime + (p->getMediaTime () / 1000)));
         }
 
-      g_usleep (expectedSleepTime * 1000000);
+      g_usleep ((gulong)(expectedSleepTime * 1000000));
 
       if (p->outTransTime > 0.0)
         {
@@ -746,7 +744,7 @@ Player::scopeTimeHandler (void *ptr)
               = (p->scopeEndTime
                  - (p->scopeInitTime + (p->getMediaTime () / 1000)));
 
-          g_usleep (expectedSleepTime * 1000000);
+          g_usleep ((gulong)(expectedSleepTime * 1000000));
         }
     }
 

@@ -140,7 +140,7 @@ DsmccBiop::processMessageHeader ()
 
   // BIOP::MessageHeader
   // Check magic Field == BIOP
-  rval = fread ((void *)&(data[0]), 1, 12, moduleFd);
+  rval = (int) fread ((void *)&(data[0]), 1, 12, moduleFd);
   if (rval != 12)
     {
       abortProcess ("DsmccBiop::processMessageHeader "
@@ -216,7 +216,7 @@ DsmccBiop::processMessageSubHeader ()
   unsigned int len;
 
   createData (messageSize + 12);
-  rval = fread ((void *)&(data[0]), 1, messageSize, moduleFd);
+  rval = (int) fread ((void *)&(data[0]), 1, messageSize, moduleFd);
 
   if ((unsigned int)rval != messageSize)
     {

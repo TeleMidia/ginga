@@ -31,23 +31,23 @@ public:
   static short
   getFitCode (string fitName)
   {
-    if (upperCase (fitName) == upperCase ("fill"))
+    if (xstrcaseeq (fitName, "fill"))
       {
         return Descriptor::FIT_FILL;
       }
-    else if (upperCase (fitName) == upperCase ("hidden"))
+    else if (xstrcaseeq (fitName, "hidden"))
       {
         return Descriptor::FIT_HIDDEN;
       }
-    else if (upperCase (fitName) == upperCase ("meet"))
+    else if (xstrcaseeq (fitName, "meet"))
       {
         return Descriptor::FIT_MEET;
       }
-    else if (upperCase (fitName) == upperCase ("meetBest"))
+    else if (xstrcaseeq (fitName, "meetBest"))
       {
         return Descriptor::FIT_MEETBEST;
       }
-    else if (upperCase (fitName) == upperCase ("slice"))
+    else if (xstrcaseeq (fitName, "slice"))
       {
         return Descriptor::FIT_SLICE;
       }
@@ -85,23 +85,23 @@ public:
   static short
   getScrollCode (string scrollName)
   {
-    if (upperCase (scrollName) == upperCase ("none"))
+    if (xstrcaseeq (scrollName, "none"))
       {
         return Descriptor::SCROLL_NONE;
       }
-    else if (upperCase (scrollName) == upperCase ("horizontal"))
+    else if (xstrcaseeq (scrollName, "horizontal"))
       {
         return Descriptor::SCROLL_HORIZONTAL;
       }
-    else if (upperCase (scrollName) == upperCase ("vertical"))
+    else if (xstrcaseeq (scrollName, "vertical"))
       {
         return Descriptor::SCROLL_VERTICAL;
       }
-    else if (upperCase (scrollName) == upperCase ("both"))
+    else if (xstrcaseeq (scrollName, "both"))
       {
         return Descriptor::SCROLL_BOTH;
       }
-    else if (upperCase (scrollName) == upperCase ("automatic"))
+    else if (xstrcaseeq (scrollName, "automatic"))
       {
         return Descriptor::SCROLL_AUTOMATIC;
       }

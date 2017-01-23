@@ -284,7 +284,7 @@ NclLinkCompoundAction::run ()
       Thread::mutexUnlock (&mutexActions);
       return;
     }
-  size = actions.size ();
+  size = (int) actions.size ();
   clog << "NclLinkCompoundAction::run '" << size << "' actions" << endl;
   Thread::mutexUnlock (&mutexActions);
 

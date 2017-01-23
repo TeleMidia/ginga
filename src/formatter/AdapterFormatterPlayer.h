@@ -92,7 +92,7 @@ public:
   virtual void setAdapterManager (void *manager);
 
   bool instanceOf (string s);
-  virtual void setNclEditListener (IPlayerListener *listener){};
+  virtual void setNclEditListener (arg_unused (IPlayerListener *listener)){};
   void setOutputWindow (GingaWindowID windowId);
 
 protected:

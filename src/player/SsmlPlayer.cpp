@@ -32,7 +32,7 @@ bool terminateSpeak;
 // Callback method which delivers the synthetized audio samples and the
 // events.
 static int
-SynthCallback (short *wav, int numsamples, espeak_EVENT *events)
+SynthCallback (arg_unused (short *wav), arg_unused (int numsamples), arg_unused (espeak_EVENT *events))
 {
   if (terminateSpeak == true)
     return 1;
@@ -88,19 +88,7 @@ void
 SsmlPlayer::loadSsml ()
 {
   espeak_AUDIO_OUTPUT outType = AUDIO_OUTPUT_SYNCH_PLAYBACK;
-  espeak_POSITION_TYPE pType = POS_CHARACTER;
-  espeak_VOICE voiceType;
-  espeak_ERROR errType = EE_OK;
-  int sampleRate = 0;
   clog << "SsmlPlayer::loadSsml!! " << endl;
-
-  voiceType.name = NULL;
-  // TODO: Hardcoded to Brazilian Portuguese
-  voiceType.languages = "pt-br";
-  voiceType.gender = 0;
-  voiceType.age = 0;
-  voiceType.variant = 0;
-
   ifstream fis;
 
   fis.open ((this->mrl).c_str (), ifstream::in);
@@ -119,10 +107,8 @@ SsmlPlayer::loadSsml ()
         sleep (1);
     }
 
-  sampleRate = espeak_Initialize (outType, MAX_READ, NULL, 0);
+  espeak_Initialize (outType, MAX_READ, NULL, 0);
   isRunning = true;
-
-  errType = espeak_SetVoiceByProperties (&voiceType);
 
   espeak_SetSynthCallback (SynthCallback);
 
@@ -134,8 +120,6 @@ SsmlPlayer::loadSsml ()
         break;
 
       getline (fis, line);
-      errType = espeak_Synth (line.c_str (), line.length (), 0, pType, 0,
-                              espeakSSML, NULL, NULL);
     }
   while (!fis.eof ());
 

@@ -425,11 +425,11 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                 }
               else if (name == "zIndex")
                 {
-                  region->setZIndex (::ginga::util::stof (value));
+                  region->setZIndex (std::stoi (value));
                 }
               else if (name == "bounds")
                 {
-                  params = split (trim (value), ",");
+                  params = split (xstrchomp (value), ",");
                   if (params->size () == 4)
                     {
                       left = (*params)[0];
@@ -442,7 +442,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                 }
               else if (name == "location")
                 {
-                  params = split (trim (value), ",");
+                  params = split (xstrchomp (value), ",");
                   if (params->size () == 2)
                     {
                       left = (*params)[0];
@@ -453,7 +453,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                 }
               else if (name == "size")
                 {
-                  params = split (trim (value), ",");
+                  params = split (xstrchomp (value), ",");
                   if (params->size () == 2)
                     {
                       width = (*params)[0];
@@ -501,24 +501,20 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                         {
                           Color *bg = NULL;
 
-                          params = split (trim (value), ",");
+                          params = split (xstrchomp (value), ",");
                           if (params->size () == 3)
                             {
-                              bg = new Color (
-                                  ::ginga::util::stof ((*params)[0]),
-                                  ::ginga::util::stof ((*params)[1]),
-                                  ::ginga::util::stof ((*params)[2]));
-
+                              bg = new Color (xstrto_uint8 ((*params)[0]),
+                                              xstrto_uint8 ((*params)[1]),
+                                              xstrto_uint8 ((*params)[2]));
                               fRegion->setBackgroundColor (bg);
                             }
                           else if (params->size () == 4)
                             {
-                              bg = new Color (
-                                  ::ginga::util::stof ((*params)[0]),
-                                  ::ginga::util::stof ((*params)[1]),
-                                  ::ginga::util::stof ((*params)[2]),
-                                  ::ginga::util::stof ((*params)[3]));
-
+                              bg = new Color (xstrto_uint8 ((*params)[0]),
+                                              xstrto_uint8 ((*params)[1]),
+                                              xstrto_uint8 ((*params)[2]),
+                                              xstrto_uint8 ((*params)[3]));
                               fRegion->setBackgroundColor (bg);
                             }
                           delete params;
@@ -547,7 +543,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                   if (fRegion != NULL)
                     {
                       fRegion->setFocusBorderWidth (
-                          ::ginga::util::stof (value));
+                          std::stoi (value));
                     }
                 }
               else if (name == "focusComponentSrc")
@@ -572,7 +568,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                   if (fRegion != NULL)
                     {
                       fRegion->setSelBorderWidth (
-                          ::ginga::util::stof (value));
+                          std::stoi (value));
                     }
                 }
               else if (name == "selComponentSrc")
@@ -671,11 +667,11 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                     }
                   else if (name == "zIndex")
                     {
-                      region->setZIndex (::ginga::util::stof (value));
+                      region->setZIndex (std::stoi (value));
                     }
                   else if (name == "bounds")
                     {
-                      params = split (trim (value), ",");
+                      params = split (xstrchomp (value), ",");
                       if (params->size () == 4)
                         {
                           left = (*params)[0];
@@ -688,7 +684,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                     }
                   else if (name == "location")
                     {
-                      params = split (trim (value), ",");
+                      params = split (xstrchomp (value), ",");
                       if (params->size () == 2)
                         {
                           left = (*params)[0];
@@ -699,7 +695,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                     }
                   else if (name == "size")
                     {
-                      params = split (trim (value), ",");
+                      params = split (xstrchomp (value), ",");
                       if (params->size () == 2)
                         {
                           width = (*params)[0];
@@ -710,7 +706,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                   else if (name == "transparency")
                     {
                       value = cvtPercentual (value, &isPercentual);
-                      transpValue = ::ginga::util::stof (value);
+                      transpValue = std::stof (value);
                       if (isPercentual)
                         {
                           transpValue = transpValue / 100;
@@ -747,24 +743,20 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                             {
                               Color *bg = NULL;
 
-                              params = split (trim (value), ",");
+                              params = split (xstrchomp (value), ",");
                               if (params->size () == 3)
                                 {
-                                  bg = new Color (
-                                      ::ginga::util::stof ((*params)[0]),
-                                      ::ginga::util::stof ((*params)[1]),
-                                      ::ginga::util::stof ((*params)[2]));
-
+                                  bg = new Color (xstrto_uint8 ((*params)[0]),
+                                                  xstrto_uint8 ((*params)[1]),
+                                                  xstrto_uint8 ((*params)[2]));
                                   fRegion->setBackgroundColor (bg);
                                 }
                               else if (params->size () == 4)
                                 {
-                                  bg = new Color (
-                                      ::ginga::util::stof ((*params)[0]),
-                                      ::ginga::util::stof ((*params)[1]),
-                                      ::ginga::util::stof ((*params)[2]),
-                                      ::ginga::util::stof ((*params)[3]));
-
+                                  bg = new Color (xstrto_uint8 ((*params)[0]),
+                                                  xstrto_uint8 ((*params)[1]),
+                                                  xstrto_uint8 ((*params)[2]),
+                                                  xstrto_uint8 ((*params)[3]));
                                   fRegion->setBackgroundColor (bg);
                                 }
                               delete params;
@@ -793,7 +785,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                       if (fRegion != NULL)
                         {
                           fRegion->setFocusBorderWidth (
-                              ::ginga::util::stof (value));
+                              std::stoi (value));
                         }
                     }
                   else if (name == "focusComponentSrc")
@@ -818,7 +810,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                       if (fRegion != NULL)
                         {
                           fRegion->setSelBorderWidth (
-                              ::ginga::util::stof (value));
+                              std::stoi (value));
                         }
                     }
                   else if (name == "selComponentSrc")
@@ -955,7 +947,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
       fRegion->setPlan (plan);
     }
 
-  if (transpValue == -1
+  if (transpValue < 0.
       && descriptor->getParameterValue ("transparency") == "")
     {
 
@@ -973,7 +965,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
 }
 
 void
-AdapterFormatterPlayer::updatePlayerProperties (NclExecutionObject *obj)
+AdapterFormatterPlayer::updatePlayerProperties (arg_unused (NclExecutionObject *obj))
 {
   NclCascadingDescriptor *descriptor;
   string value;
@@ -1951,7 +1943,7 @@ AdapterFormatterPlayer::setTimeBasePlayer (
 
 void
 AdapterFormatterPlayer::updateStatus (short code, string parameter,
-                                      short type, string value)
+                                      short type, arg_unused (string value))
 {
 
   NclFormatterEvent *mainEvent;

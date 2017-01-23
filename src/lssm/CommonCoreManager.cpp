@@ -246,14 +246,9 @@ CommonCoreManager::tune ()
 void
 CommonCoreManager::startPresentation ()
 {
-
 #if !defined WITH_ISDBT || WITH_ISDBT == 0
   return;
 #endif
-
-  int cpid;
-
-  ITSFilter *mavFilter = NULL;
   IPlayer *ipav = NULL;
   NclPlayerData *data = NULL;
   StcWrapper *sw = NULL;

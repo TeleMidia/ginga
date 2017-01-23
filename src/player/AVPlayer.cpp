@@ -165,7 +165,7 @@ AVPlayer::getEndTime ()
 }
 
 void
-AVPlayer::initializeAudio (int numArgs, char *args[])
+AVPlayer::initializeAudio (arg_unused (int numArgs), arg_unused (char *args[]))
 {
 }
 
@@ -460,11 +460,10 @@ AVPlayer::setPropertyValue (string name, string value)
           vals = split (value, ",");
           if (vals->size () == 4)
             {
-              win = Ginga_Display->createWindow (
-                  myScreen, ::ginga::util::stof ((*vals)[0]),
-                  ::ginga::util::stof ((*vals)[1]),
-                  ::ginga::util::stof ((*vals)[2]),
-                  ::ginga::util::stof ((*vals)[3]), 1.0);
+              win = Ginga_Display->createWindow (myScreen, xstrto_int ((*vals)[0]),
+                                                 xstrto_int ((*vals)[1]),
+                                                 xstrto_int ((*vals)[2]),
+                                                 xstrto_int ((*vals)[3]), 1.0);
 
               int caps = Ginga_Display->getWindowCap (myScreen, win, "NOSTRUCTURE")
                          | Ginga_Display->getWindowCap (myScreen, win, "DOUBLEBUFFER");
@@ -485,10 +484,10 @@ AVPlayer::setPropertyValue (string name, string value)
           if (vals->size () == 4)
             {
               Ginga_Display->setWindowBounds (myScreen, win,
-                                   ::ginga::util::stof ((*vals)[0]),
-                                   ::ginga::util::stof ((*vals)[1]),
-                                   ::ginga::util::stof ((*vals)[2]),
-                                   ::ginga::util::stof ((*vals)[3]));
+                                              xstrto_int ((*vals)[0]),
+                                   xstrto_int ((*vals)[1]),
+                                   xstrto_int ((*vals)[2]),
+                                   xstrto_int ((*vals)[3]));
             }
           delete vals;
         }
@@ -720,7 +719,7 @@ AVPlayer::run ()
                       break;
                     }
                 }
-              else if (status != PLAY || !this->mSleep (timeRemain))
+              else if (status != PLAY || !this->mSleep ((long int) timeRemain))
                 {
                   clog << "AVPlayer::run can't sleep '" << timeRemain;
                   clog << "' => exiting" << endl;
@@ -753,7 +752,7 @@ AVPlayer::run ()
                   break;
                 }
 
-              if (lastCurrentTime == currentTime && status != PAUSE)
+              if (xnumeq (lastCurrentTime, currentTime) && status != PAUSE)
                 {
                   break;
                 }

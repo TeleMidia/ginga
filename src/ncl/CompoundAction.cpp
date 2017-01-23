@@ -124,7 +124,7 @@ CompoundAction::getRoles ()
   vector<Role *> *childRoles;
 
   roles = new vector<Role *>;
-  size = actions->size ();
+  size = (int) actions->size ();
   for (i = 0; i < size; i++)
     {
       action = (Action *)((*actions)[i]);

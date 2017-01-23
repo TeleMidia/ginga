@@ -179,7 +179,7 @@ NclNodeNesting::getNumNodes ()
     }
   else
     {
-      s = nodes->size ();
+      s = (int) nodes->size ();
     }
   Thread::mutexUnlock (&mutexNodes);
   return s;

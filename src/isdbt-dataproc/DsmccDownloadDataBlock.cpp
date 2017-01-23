@@ -59,7 +59,7 @@ DsmccDownloadDataBlock::processDataBlock (
 
   while (rval > 0 && fd != NULL)
     {
-      rval = fread ((void *)&(headerBytes[0]), 1, 12, fd);
+      rval = (int) fread ((void *)&(headerBytes[0]), 1, 12, fd);
       trval = trval + rval;
 
       if (rval == 0)
@@ -79,7 +79,7 @@ DsmccDownloadDataBlock::processDataBlock (
 
           bytes = new char[messageLength];
           memset (bytes, 0, messageLength);
-          rval = fread ((void *)&(bytes[0]), 1, messageLength, fd);
+          rval = (int) fread ((void *)&(bytes[0]), 1, messageLength, fd);
           trval = trval + rval;
           if (rval == (int)messageLength)
             {

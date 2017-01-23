@@ -15,13 +15,10 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef PrefecthManager_H_
-#define PrefecthManager_H_
+#ifndef PREFETCH_MANAGER_H
+#define PREFETCH_MANAGER_H
 
 #include "ginga.h"
-
-#include "system/SystemCompat.h"
-using namespace ::ginga::system;
 
 #include "ic/InteractiveChannelManager.h"
 using namespace ::ginga::ic;
@@ -72,10 +69,10 @@ public:
 
 private:
   void scheduleContent (string remoteUri, string localUri);
-  void receiveCode (long respCode){};
-  void receiveDataStream (char *buffer, int size){};
+  void receiveCode (arg_unused (long respCode)){};
+  void receiveDataStream (arg_unused (char *buffer), arg_unused (int size)){};
   void receiveDataPipe (FILE *fd, int size);
-  void downloadCompleted (const char *localUri){};
+  void downloadCompleted (arg_unused (const char *localUri)){};
 
 public:
   void getScheduledContent (string clientUri);
@@ -84,4 +81,4 @@ public:
 
 GINGA_FORMATTER_END
 
-#endif /*PrefetchManager_H_*/
+#endif /* PREFETCH_MANAGER_H */

@@ -138,7 +138,7 @@ CompoundStatement::getRoles ()
   vector<Role *> *childRoles;
 
   roles = new vector<Role *>;
-  size = statements->size ();
+  size = (int) statements->size ();
   for (i = 0; i < size; i++)
     {
       statement = (Statement *)((*statements)[i]);

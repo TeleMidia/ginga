@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _FormatterMediator_H_
-#define _FormatterMediator_H_
+#ifndef FORMATTER_MEDIATOR_H
+#define FORMATTER_MEDIATOR_H
 
 #include "player/INCLPlayer.h"
 #include "player/IApplicationPlayer.h"
@@ -314,12 +314,11 @@ private:
                          string propertyId, string value);
 
 public:
-  void setNotifyContentUpdate (bool notify){};
+  void setNotifyContentUpdate (arg_unused (bool notify)){};
   void addListener (IPlayerListener *listener);
   void removeListener (IPlayerListener *listener);
   void notifyPlayerListeners (short code, string paremeter, short type,
                               string value);
-
   void setSurface (GingaSurfaceID surface);
   GingaSurfaceID getSurface ();
   void flip ();
@@ -355,40 +354,36 @@ public:
   bool isForcedNaturalEnd ();
   bool setOutWindow (GingaWindowID windowId);
 
-  /*Exclusive for ChannelPlayer*/
+  // Channel player only.
   IPlayer *
   getSelectedPlayer ()
   {
     return NULL;
   };
-  void setPlayerMap (map<string, IPlayer *> *objs){};
+  void setPlayerMap (arg_unused (map<string, IPlayer *> *objs)){};
   map<string, IPlayer *> *
   getPlayerMap ()
   {
     return NULL;
   };
   IPlayer *
-  getPlayer (string objectId)
+  getPlayer (arg_unused (string objectId))
   {
     return NULL;
   };
-  void select (IPlayer *selObject){};
+  void select (arg_unused (IPlayer *selObject)){};
 
-  /*Exclusive for Application Players*/
+  // Application player only.
   void setCurrentScope (string scopeId);
-
   string getActiveUris (vector<string> *uris);
   string getDepUris (vector<string> *uris, int targetDev = 0);
-
   PresentationContext *getPresentationContext ();
 
 private:
   string getDepUrisFromNodes (vector<string> *uris, vector<Node *> *nodes,
                               int targetDev = 0);
-
   string getDepUriFromNode (vector<string> *uris, Node *node,
                             int targetDev = 0);
-
   string getBaseUri (string baseA, string baseB);
 
 public:
@@ -397,4 +392,4 @@ public:
 
 GINGA_FORMATTER_END
 
-#endif //_FormatterMediator_H_
+#endif /* FORMATTER_MEDIATOR_H */

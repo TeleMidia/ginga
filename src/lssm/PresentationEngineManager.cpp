@@ -216,9 +216,9 @@ PresentationEngineManager::getMappedInterfaceType (string nclFile,
 }
 
 void
-PresentationEngineManager::autoMountOC (bool autoMountIt)
+PresentationEngineManager::autoMountOC (arg_unused (bool autoMountIt))
 {
-#ifdef DataWrapperListener_H_
+#ifdef WITH_ISDBT
   ((DataWrapperListener *)dsmccListener)->autoMountOC (autoMountIt);
 #endif
 }
@@ -274,7 +274,7 @@ bool
 PresentationEngineManager::nclEdit (string nclEditApi)
 {
   string::size_type pos = nclEditApi.find_first_of (",");
-  string commandTag = trim (nclEditApi.substr (0, pos));
+  string commandTag = xstrchomp (nclEditApi.substr (0, pos));
 
   return editingCommand (
       commandTag,
@@ -1110,7 +1110,7 @@ PresentationEngineManager::checkStatus ()
 
 void
 PresentationEngineManager::updateStatus (short code, string parameter,
-                                         short type, string value)
+                                         short type, arg_unused (string value))
 {
 
   struct inputEventNotification *ev;
@@ -1370,7 +1370,7 @@ PresentationEngineManager::readCommand (string command)
           delay = ::ginga::util::stof (((*params)[0]));
           if (delay > 0)
             {
-              Thread::mSleep (delay);
+              Thread::mSleep ((long int) delay);
             }
           editingCmd = (*params)[1];
         }
@@ -1398,10 +1398,9 @@ PresentationEngineManager::readCommand (string command)
       if (cmdParams.find (")") != std::string::npos)
         {
           cmdParams = cmdParams.substr (0, cmdParams.find_last_of (")"));
-
           editingCmd = cmdTag + "1" + cmdParams;
           cmdHeader = "02000000000";
-          cmdHeader[10] = editingCmd.length ();
+          // cmdHeader[10] = editingCmd.length ();
           editingCommand (cmdHeader + editingCmd);
         }
     }

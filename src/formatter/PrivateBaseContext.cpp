@@ -422,7 +422,7 @@ PrivateBaseContext::getDocuments ()
 }
 
 void
-PrivateBaseContext::removeDocumentBase (NclDocument *document, Base *base)
+PrivateBaseContext::removeDocumentBase (arg_unused (NclDocument *document), Base *base)
 {
   vector<Base *> *bases;
   vector<Base *>::iterator i;
@@ -484,7 +484,6 @@ PrivateBaseContext::removeDocument (string id)
   NclDocument *document = NULL;
   string docLocation;
   map<string, NclDocument *>::iterator i;
-  vector<NclDocument *> *docs;
 
   document = getBaseDocument (id);
   if (document != NULL)
@@ -626,7 +625,7 @@ PrivateBaseContext::addRegion (string documentId, string regionBaseId,
       return NULL;
     }
 
-  if (trim (regionId) == "")
+  if (xstrchomp (regionId) == "")
     {
       parentRegion = NULL;
       region = (LayoutRegion *)compileEntity (xmlRegion, document, base);
@@ -837,7 +836,7 @@ PrivateBaseContext::addRuleBase (string documentId, string xmlRuleBase)
 }
 
 RuleBase *
-PrivateBaseContext::removeRuleBase (string documentId, string ruleBaseId)
+PrivateBaseContext::removeRuleBase (string documentId, arg_unused (string ruleBaseId))
 {
 
   NclDocument *document;
@@ -955,7 +954,7 @@ PrivateBaseContext::addTransitionBase (string documentId,
 
 TransitionBase *
 PrivateBaseContext::removeTransitionBase (string documentId,
-                                          string transitionBaseId)
+                                          arg_unused (string transitionBaseId))
 {
 
   NclDocument *document;
@@ -1071,7 +1070,7 @@ PrivateBaseContext::addConnectorBase (string documentId,
 
 ConnectorBase *
 PrivateBaseContext::removeConnectorBase (string documentId,
-                                         string connectorBaseId)
+                                         arg_unused (string connectorBaseId))
 {
 
   NclDocument *document;
@@ -1188,7 +1187,7 @@ PrivateBaseContext::addDescriptorBase (string documentId,
 
 DescriptorBase *
 PrivateBaseContext::removeDescriptorBase (string documentId,
-                                          string descriptorBaseId)
+                                          arg_unused (string descriptorBaseId))
 {
 
   NclDocument *document;
@@ -1396,7 +1395,7 @@ PrivateBaseContext::addImportedDocumentBase (string documentId,
 
 NclDocument *
 PrivateBaseContext::removeImportedDocumentBase (
-    string documentId, string importedDocumentBaseId)
+    string documentId, arg_unused (string importedDocumentBaseId))
 {
 
   NclDocument *document;

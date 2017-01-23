@@ -84,7 +84,7 @@ NclLinkTriggerCondition::setDelay (double delay)
 }
 
 void
-NclLinkTriggerCondition::conditionSatisfied (void *condition)
+NclLinkTriggerCondition::conditionSatisfied (arg_unused (void *condition))
 {
   if (delay > 0)
     {
@@ -134,7 +134,7 @@ NclLinkTriggerCondition::notifyConditionObservers (short status)
 }
 
 void *
-NclLinkTriggerCondition::notificationThread (void *ptr)
+NclLinkTriggerCondition::notificationThread (arg_unused (void *ptr))
 {
   ConditionStatus *data;
   NclLinkTriggerListener *listener;
@@ -179,6 +179,9 @@ NclLinkTriggerCondition::notificationThread (void *ptr)
             case NclLinkTriggerListener::EVALUATION_ENDED:
               listener->evaluationEnded ();
               break;
+
+            default:
+              g_assert_not_reached ();
             }
 
           delete data;

@@ -59,15 +59,12 @@ XMLParsing::parse (string src)
       DOMTreeErrorReporter *errReporter = new DOMTreeErrorReporter ();
       parser->setErrorHandler (errReporter);
       parser->setCreateEntityReferenceNodes (false);
-
-      // parser->setToCreateXMLDeclTypeNode(true);
       try
         {
-          // checking if source is xml or uri
           if (src.find ("<") != std::string::npos)
             {
               MemBufInputSource xmlSource (
-                  (XMLByte *)(src.c_str ()), src.length (),
+                  deconst (XMLByte *, src.c_str ()), src.length (),
                   XMLString::transcode ("xmlContent"));
 
               parser->parse (xmlSource);

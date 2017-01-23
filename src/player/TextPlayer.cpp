@@ -66,7 +66,7 @@ TextPlayer::~TextPlayer ()
 }
 
 void
-TextPlayer::initializePlayer (GingaScreenID screenId)
+TextPlayer::initializePlayer (arg_unused (GingaScreenID screenId))
 {
   this->fontHeight = 0;
   this->currentAlign = IFontProvider::FP_TA_LEFT;
@@ -113,7 +113,7 @@ TextPlayer::write (GingaScreenID screenId, GingaSurfaceID s, string text,
                            fontColor->getB (), fontColor->getAlpha ());
 
       width = Ginga_Display->getProviderStringWidth (
-          font, text.c_str (), strlen ((const char *)(text.c_str ())));
+          font, text.c_str (), (int) text.size ());
 
       Ginga_Display->playProviderOver (font, s, text.c_str (), 0, 0, textAlign);
 
@@ -176,7 +176,7 @@ TextPlayer::getFontHeight ()
 }
 
 void
-TextPlayer::setBgColor (int red, int green, int blue, int alpha)
+TextPlayer::setBgColor (guint8 red, guint8 green, guint8 blue, guint8 alpha)
 {
   if (bgColor != NULL)
     {
@@ -192,7 +192,7 @@ TextPlayer::setBgColor (int red, int green, int blue, int alpha)
 }
 
 void
-TextPlayer::setColor (int red, int green, int blue, int alpha)
+TextPlayer::setColor (guint8 red, guint8 green, guint8 blue, guint8 alpha)
 {
   if (this->fontColor != NULL)
     {
@@ -253,7 +253,7 @@ TextPlayer::drawText (string text, short align)
     {
       Ginga_Display->getSurfaceSize (surface, &surWidth, &surHeight);
       textWidth = Ginga_Display->getProviderStringWidth (
-          font, aux.c_str (), strlen ((const char *)(aux.c_str ())));
+          font, aux.c_str (), (int) aux.size ());
 
       if (textWidth > surWidth && aux.length () > 1)
         {

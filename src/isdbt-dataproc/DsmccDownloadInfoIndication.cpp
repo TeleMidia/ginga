@@ -47,7 +47,6 @@ int
 DsmccDownloadInfoIndication::processMessage (DsmccMessageHeader *message)
 {
   FILE *fd;
-  int rval;
   unsigned int i, moduleId, moduleSize, moduleVersion, moduleInfoLength;
   DsmccModule *module;
 
@@ -61,8 +60,6 @@ DsmccDownloadInfoIndication::processMessage (DsmccMessageHeader *message)
   fd = fopen (header->getFileName ().c_str (), "rb");
   if (fd != NULL)
     {
-      rval = fread ((void *)bytes, 1, header->getMessageLength () + i, fd);
-
       this->downloadId
           = ((bytes[i] & 0xFF) << 24) | ((bytes[i + 1] & 0xFF) << 16)
             | ((bytes[i + 2] & 0xFF) << 8) | (bytes[i + 3] & 0xFF);

@@ -23,12 +23,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLSurface.h"
 #include "SDLWindow.h"
 
-#if WITH_LIBRSVG
+#if defined (WITH_LIBRSVG) && WITH_LIBRSVG
 #include "SDLSvgDecoder.h"
 #endif
 
-#if WITH_LIBBPG
-#include "SDLBpgDecoder.h"
+#if defined (WITH_LIBBPG) && WITH_LIBBPG
+# include "SDLBpgDecoder.h"
 #endif
 
 #include "util/Color.h"
@@ -115,7 +115,7 @@ SDLImageProvider::playOver (GingaSurfaceID surface)
         }
       else
 #endif
-#if WITH_LIBBPG
+#if defined WITH_LIBBPG && WITH_LIBBPG
           if (imgUri.substr (imgUri.find_last_of (".") + 1) == "bpg")
         {
           SDLBpgDecoder *bpgdec = new SDLBpgDecoder (imgUri);

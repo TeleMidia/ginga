@@ -54,99 +54,99 @@ Color::setColorToI (string color)
 
   if (color.substr (0, 1) == "#" && color.length () > 6)
     {
-      r = (int)(::ginga::util::stof (color.substr (1, 2)));
-      g = (int)(::ginga::util::stof (color.substr (3, 2)));
-      b = (int)(::ginga::util::stof (color.substr (5, 2)));
+      r = xstrto_uint8 (color.substr (1, 2));
+      g = xstrto_uint8 (color.substr (3, 2));
+      b = xstrto_uint8 (color.substr (5, 2));
       return;
     }
 
   if (color == "black")
     {
-      setColor (0x10, 0x10, 0x10);
+      setColor ((guint8) 0x10, (guint8) 0x10, (guint8) 0x10);
     }
   else if (color == "blue")
     {
-      setColor (0x00, 0x00, 0xFF);
+      setColor ((guint8) 0x00, (guint8) 0x00, (guint8) 0xFF);
     }
   else if (color == "cyan")
     {
-      setColor (0x00, 0xFF, 0xFF);
+      setColor ((guint8) 0x00, (guint8) 0xFF, (guint8) 0xFF);
     }
   else if (color == "darkGray")
     {
-      setColor (0xA9, 0xA9, 0xA9);
+      setColor ((guint8) 0xA9, (guint8) 0xA9, (guint8) 0xA9);
     }
   else if (color == "gray")
     {
-      setColor (0x80, 0x80, 0x80);
+      setColor ((guint8) 0x80, (guint8) 0x80, (guint8) 0x80);
     }
   else if (color == "green")
     {
-      setColor (0x00, 0x80, 0x00);
+      setColor ((guint8) 0x00, (guint8) 0x80, (guint8) 0x00);
     }
   else if (color == "lightGray")
     {
-      setColor (0xD3, 0xD3, 0xD3);
+      setColor ((guint8) 0xD3, (guint8) 0xD3, (guint8) 0xD3);
     }
   else if (color == "magenta")
     {
-      setColor (0xFF, 0x00, 0xFF);
+      setColor ((guint8) 0xFF, (guint8) 0x00, (guint8) 0xFF);
     }
   else if (color == "orange")
     {
-      setColor (0xFF, 0xA5, 0x00);
+      setColor ((guint8) 0xFF, (guint8) 0xA5, (guint8) 0x00);
     }
   else if (color == "pink")
     {
-      setColor (0xFF, 0xC0, 0xCB);
+      setColor ((guint8) 0xFF, (guint8) 0xC0, (guint8) 0xCB);
     }
   else if (color == "red")
     {
-      setColor (0xFF, 0x00, 0x00);
+      setColor ((guint8) 0xFF, (guint8) 0x00, (guint8) 0x00);
     }
   else if (color == "yellow")
     {
-      setColor (0xFF, 0xFF, 0x00);
+      setColor ((guint8) 0xFF, (guint8) 0xFF, (guint8) 0x00);
     }
   else if (color == "silver")
     {
-      setColor (0xC0, 0xC0, 0xC0);
+      setColor ((guint8) 0xC0, (guint8) 0xC0, (guint8) 0xC0);
     }
   else if (color == "maroon")
     {
-      setColor (0x80, 0x00, 0x00);
+      setColor ((guint8) 0x80, (guint8) 0x00, (guint8) 0x00);
     }
   else if (color == "fuchsia")
     {
-      setColor (0xFF, 0x00, 0xFF);
+      setColor ((guint8) 0xFF, (guint8) 0x00, (guint8) 0xFF);
     }
   else if (color == "purple")
     {
-      setColor (0x80, 0x00, 0x80);
+      setColor ((guint8) 0x80, (guint8) 0x00, (guint8) 0x80);
     }
   else if (color == "lime")
     {
-      setColor (0x00, 0xFF, 0x00);
+      setColor ((guint8) 0x00, (guint8) 0xFF, (guint8) 0x00);
     }
   else if (color == "olive")
     {
-      setColor (0x80, 0x80, 0x00);
+      setColor ((guint8) 0x80, (guint8) 0x80, (guint8) 0x00);
     }
   else if (color == "navy")
     {
-      setColor (0x00, 0x00, 0x80);
+      setColor ((guint8) 0x00, (guint8) 0x00, (guint8) 0x80);
     }
   else if (color == "aqua")
     {
-      setColor (0x00, 0xFF, 0xFF);
+      setColor ((guint8) 0x00, (guint8) 0xFF, (guint8) 0xFF);
     }
   else if (color == "teal")
     {
-      setColor (0x00, 0x80, 0x80);
+      setColor ((guint8) 0x00, (guint8) 0x80, (guint8) 0x80);
     }
   else
     {
-      setColor (0xFF, 0xFF, 0xFF);
+      setColor ((guint8) 0xFF, (guint8) 0xFF, (guint8) 0xFF);
     }
 }
 
@@ -162,9 +162,9 @@ Color::colortoi (string color)
     {
       int red, green, blue;
 
-      red = (int)(::ginga::util::stof (color.substr (1, 2)));
-      green = (int)(::ginga::util::stof (color.substr (3, 2)));
-      blue = (int)(::ginga::util::stof (color.substr (5, 2)));
+      red = xstrto_uint8 (color.substr (1, 2));
+      green = xstrto_uint8 (color.substr (3, 2));
+      blue = xstrto_uint8 (color.substr (5, 2));
 
       return 256 * 256 * red + 256 * green + blue;
     }
@@ -261,7 +261,7 @@ Color::colortoi (string color)
 
 Color::Color () { this->alpha = 255; }
 
-Color::Color (int r, int g, int b, int alpha)
+Color::Color (guint8 r, guint8 g, guint8 b, guint8 alpha)
 {
   this->r = r;
   this->g = g;
@@ -269,7 +269,7 @@ Color::Color (int r, int g, int b, int alpha)
   this->alpha = alpha;
 }
 
-Color::Color (string color, int alpha)
+Color::Color (string color, guint8 alpha)
 {
   this->alpha = alpha;
   setColorToI (color);
@@ -282,50 +282,54 @@ Color::setColor (string color)
 }
 
 void
-Color::setColor (int red, int green, int blue)
+Color::setColor (guint8 red, guint8 green, guint8 blue, arg_unused (guint8 alpha))
 {
   this->r = red;
   this->g = green;
   this->b = blue;
-  this->alpha = 0xFF;
+  this->alpha = 0xff;
 }
 
-int
+guint8
 Color::getR ()
 {
   return r;
 }
 
-int
+guint8
 Color::getG ()
 {
   return g;
 }
 
-int
+guint8
 Color::getB ()
 {
   return b;
 }
 
-int
+guint8
 Color::getAlpha ()
 {
   return alpha;
 }
 
-uint32_t
+guint32
 Color::getRGBA ()
 {
-  return (r << 24) & 0xFF000000 + (g << 16) & 0x00FF0000 + (b << 8)
-         & 0x0000FF00 + alpha & 0x000000FF;
+  return ((r << 24) & 0xFF000000)
+    + ((g << 16) & 0x00FF0000)
+    + ((b << 8) & 0x0000FF00)
+    + (alpha & 0x000000FF);
 }
 
-uint32_t
+guint32
 Color::getARGB ()
 {
-  return (alpha << 24) & 0xFF000000 + (r << 16) & 0x00FF0000 + (g << 8)
-         & 0x0000FF00 + b & 0x000000FF;
+  return ((alpha << 24) & 0xFF000000)
+    + ((r << 16) & 0x00FF0000)
+    + ((g << 8) & 0x0000FF00)
+    + (b & 0x000000FF);
 }
 
 GINGA_UTIL_END

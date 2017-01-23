@@ -26,6 +26,9 @@ using namespace ::ginga::tuner;
 
 GINGA_TSPARSER_BEGIN
 
+GINGA_PRAGMA_DIAG_PUSH ()
+GINGA_PRAGMA_DIAG_IGNORE (-Wunused-const-variable)
+
 // specific packet ids
 static const short PAT_PID = 0x0000;
 static const short CAT_PID = 0x0001;
@@ -68,6 +71,8 @@ static const short STREAM_TYPE_AUDIO_MPEG4 = 0x11;
 static const short STREAM_TYPE_VIDEO_H264 = 0x1B;
 static const short STREAM_TYPE_AUDIO_AC3 = 0x81;
 static const short STREAM_TYPE_AUDIO_DTS = 0x8A;
+
+GINGA_PRAGMA_DIAG_POP ()
 
 class IDemuxer : public ITunerListener
 {

@@ -19,6 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "TSPacket.h"
 #include "Demuxer.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_TSPARSER_BEGIN
 
 TSPacket::TSPacket (char *packetData)

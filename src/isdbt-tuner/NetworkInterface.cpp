@@ -152,7 +152,7 @@ NetworkInterface::createProvider ()
           if (freq < 1)
             return false;
         }
-#if _MSC_VER
+#if defined _MSC_VER
       provider = new BDAProvider (freq);
 #elif WITH_LINUXDVB
       provider = new ISDBTProvider (freq);

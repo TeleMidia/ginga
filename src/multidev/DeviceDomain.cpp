@@ -196,7 +196,7 @@ DeviceDomain::addDevice (int reqDeviceClass, int width, int height,
 
       ((RemoteEventService *)res)
           ->addDevice (reqDeviceClass, (sourceIp + srvPort),
-                       (char *)getStrIP (sourceIp).c_str (), srvPort,
+                       deconst (char *, getStrIP (sourceIp).c_str ()), srvPort,
                        (sourceIp == myIP));
     }
 
@@ -236,7 +236,7 @@ DeviceDomain::postEventTask (int destDevClass, int frameType, char *payload,
               clog << "startDocument with doc = '";
               clog << _doc << "'" << endl;
               ((RemoteEventService *)res)
-                  ->startDocument (2, (char *)(_doc.c_str ()));
+                  ->startDocument (2, deconst (char *, _doc.c_str ()));
             }
           else if (strstr (payload, "stop::") != NULL)
             {
@@ -245,7 +245,7 @@ DeviceDomain::postEventTask (int destDevClass, int frameType, char *payload,
 
               _doc.assign (payload + 6, payloadSize - 6);
               ((RemoteEventService *)res)
-                  ->stopDocument (2, (char *)(_doc.c_str ()));
+                  ->stopDocument (2, deconst (char *, _doc.c_str ()));
             }
         }
     }
@@ -286,7 +286,6 @@ void
 DeviceDomain::checkDomainTasks ()
 {
   int tmpClass, res;
-  double receivedElapsedTime;
 
   if (deviceClass < 0)
     {

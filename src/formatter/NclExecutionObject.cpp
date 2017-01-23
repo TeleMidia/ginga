@@ -512,7 +512,7 @@ NclExecutionObject::addPresentationEvent (NclPresentationEvent *event)
         }
 
       posBeg = 0;
-      posEnd = presEvents.size () - 1;
+      posEnd = (int)(presEvents.size () - 1);
       while (posBeg <= posEnd)
         {
           posMid = (posBeg + posEnd) / 2;
@@ -1205,7 +1205,7 @@ NclExecutionObject::prepare (NclFormatterEvent *event, double offsetTime)
 
   prepareTransitionEvents (ContentAnchor::CAT_TIME, startTime);
 
-  size = otherEvents.size ();
+  size = (int) otherEvents.size ();
   for (j = 0; j < size; j++)
     {
       auxEvent = otherEvents[j];
@@ -1515,7 +1515,7 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
       return true;
     }
 
-  params = split (trim (value), ",");
+  params = split (xstrchomp (value), ",");
 
   if (propName == "size")
     {

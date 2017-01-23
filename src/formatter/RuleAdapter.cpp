@@ -211,111 +211,14 @@ RuleAdapter::initializeAttributeRuleRelation (Rule *topRule, Rule *rule)
 
 void
 RuleAdapter::initializeRuleObjectRelation (
-    NclExecutionObjectSwitch *objectAlternatives)
+    arg_unused (NclExecutionObjectSwitch *objectAlternatives))
 {
-
-  /*
-  vector<NclExecutionObjectSwitch*>* objectVector;
-  NclExecutionObject* object;
-  Rule* rule;
-  int i, size;
-  size = objectAlternatives->getNumRules();
-  map<Rule*, vector<NclExecutionObjectSwitch*>*>::iterator j;
-  for (i = 0; i < size; i++) {
-          rule = objectAlternatives->getRule(i);
-          initializeAttributeRuleRelation(rule, rule);
-
-          // the switch will pertain to a set of objects that depend on this
-  rule
-          bool containsKey = false;
-          for (j = entityListenMap->begin(); j != entityListenMap->end();
-  ++j)
-  {
-                  if (j->first == rule) {
-                          containsKey = true;
-                          objectVector = j->second;
-                          break;
-                  }
-          }
-
-          if (!containsKey) {
-                  objectVector = new vector<NclExecutionObjectSwitch*>;
-                  (*entityListenMap)[rule] = objectVector;
-          }
-
-          vector<NclExecutionObjectSwitch*>::iterator j;
-          bool containsObject = false;
-          for (j = objectVector->begin(); j != objectVector->end(); ++j) {
-                  if ((*j) == objectAlternatives) {
-                          containsObject = true;
-                  }
-          }
-
-          if (!containsObject) {
-                  objectVector->push_back(objectAlternatives);
-          }
-
-          object = objectAlternatives->getExecutionObject(i);
-          if (object->instanceOf("NclExecutionObjectSwitch")) {
-                  initializeRuleObjectRelation((NclExecutionObjectSwitch*)object);
-          }
-  }
-  */
 }
 
 void
-RuleAdapter::adapt (NclExecutionObjectSwitch *objectAlternatives,
-                    bool force)
+RuleAdapter::adapt (arg_unused (NclExecutionObjectSwitch *objectAlternatives),
+                    arg_unused (bool force))
 {
-
-  /*
-  int i, size;
-  Rule* rule;
-  NclExecutionObject* object;
-  vector<NclFormatterEvent*>* events;
-  bool selected, result;
-
-  if (!force && objectAlternatives->getSelectedObject() != NULL) {
-          return;
-  }
-
-  object = objectAlternatives->getSelectedObject();
-  if (object != NULL) {
-          events = object->getEvents();
-          if (events != NULL) {
-                  vector<NclFormatterEvent*>::iterator i;
-                  i = events->begin();
-                  while (i != events->end()) {
-                          if ((*i)->getCurrentState() ==
-  Event::ST_OCCURRING) {
-                                  return;
-                          }
-                          ++i;
-                  }
-          }
-  }
-
-  selected = false;
-  size = objectAlternatives->getNumRules();
-  for (i = 0; i < size && !selected; i++) {
-          rule = objectAlternatives->getRule(i);
-          result = evaluateRule(rule);
-          if (result && !selected) {
-                  selected = true;
-                  objectAlternatives->select(objectAlternatives->getExecutionObject(i));
-          }
-  }
-
-  if (!selected)
-          objectAlternatives->selectDefault();
-
-  object = objectAlternatives->getSelectedObject();
-  if (object != NULL) {
-          if (object->instanceOf("NclExecutionObjectSwitch")) {
-                  adapt((NclExecutionObjectSwitch*)object, force);
-          }
-  }
-  */
 }
 
 bool
@@ -547,7 +450,7 @@ RuleAdapter::evaluateSimpleRule (SimpleRule *rule)
 }
 
 void
-RuleAdapter::update (void *arg0, void *arg1)
+RuleAdapter::update (arg_unused (void *arg0), void *arg1)
 {
   string arg;
   arg = *((string *)(arg1));

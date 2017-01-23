@@ -256,7 +256,7 @@ FormatterLinkConverter::createAction (
       binds = ncmLink->getRoleBinds (sae);
       if (binds != NULL)
         {
-          size = binds->size ();
+          size = (int) binds->size ();
           if (size == 1)
             {
               return createSimpleAction (sae, (*binds)[0], ncmLink,
@@ -393,7 +393,7 @@ FormatterLinkConverter::createCondition (
       binds = ncmLink->getRoleBinds (ste);
       if (binds != NULL)
         {
-          size = binds->size ();
+          size = (int) binds->size ();
           if (size == 1)
             {
               return createSimpleCondition (ste, (*binds)[0], ncmLink,
@@ -540,7 +540,7 @@ FormatterLinkConverter::createStatement (
       binds = ncmLink->getRoleBinds (as->getMainAssessment ());
       if (binds != NULL)
         {
-          size = binds->size ();
+          size = (int) binds->size ();
           if (size == 1)
             {
               statement = createAssessmentStatement (

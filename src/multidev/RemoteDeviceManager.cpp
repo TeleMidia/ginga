@@ -85,7 +85,7 @@ RemoteDeviceManager::setDeviceDomain (DeviceDomain *domain)
 }
 
 void
-RemoteDeviceManager::setDeviceInfo (int deviceClass, int width, int height,
+RemoteDeviceManager::setDeviceInfo (arg_unused (int deviceClass), int width, int height,
                                     string base_device_ncl_path)
 {
 
@@ -141,19 +141,11 @@ RemoteDeviceManager::postMediaContent (int destDevClass, string url)
   return domainService->postMediaContentTask (destDevClass, url);
 }
 
-/*void RemoteDeviceManager::postNclMetadata(
-                int devClass, vector<StreamData*>* streams) {
-
-        domainService->postNclMetadata(devClass, streams);
-}*/
-
 void
 RemoteDeviceManager::run ()
 {
-  double rdmTimer;
   bool notifyWarning = true;
 
-  rdmTimer = 0;
   connecting = true;
   running = true;
 

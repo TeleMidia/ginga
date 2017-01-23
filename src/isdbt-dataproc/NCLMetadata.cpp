@@ -24,6 +24,8 @@ using namespace ::ginga::system;
 #include "util/functions.h"
 using namespace ::ginga::util;
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_DATAPROC_BEGIN
 
 NCLMetadata::NCLMetadata (string name)
@@ -96,7 +98,7 @@ NCLMetadata::isConsolidated ()
 {
   bool consolidated = false;
 
-  if (targetTotalLen == totalLength)
+  if (xnumeq (targetTotalLen, totalLength))
     {
       consolidated = true;
     }
@@ -190,7 +192,7 @@ NCLMetadata::createNCLSections ()
 
   structId = rootObject->getId ();
   fileUri = rootObject->getUri ();
-  fileSize = rootObject->getSize ();
+  fileSize = (int) rootObject->getSize ();
   cTag = rootObject->getCopmonentTag ();
 
   writeDataElement (itos (structId), fileUri, itos (fileSize), cTag);
@@ -204,7 +206,7 @@ NCLMetadata::createNCLSections ()
       structId = i->first;
       dataFile = i->second;
       fileUri = dataFile->getUri ();
-      fileSize = dataFile->getSize ();
+      fileSize = (int) dataFile->getSize ();
       cTag = dataFile->getCopmonentTag ();
 
       writeDataElement (itos (structId), fileUri, itos (fileSize), cTag);
@@ -329,7 +331,7 @@ NCLMetadata::copyContent (string uri, char *stream, int fileSize)
   fd = fopen (absUri.c_str (), "rb");
   if (fd != NULL)
     {
-      bytes = fread (stream, 1, fileSize, fd);
+      bytes = (int) fread (stream, 1, fileSize, fd);
       if (bytes != fileSize)
         {
           clog << "NCLMetadata::copyContent Warning! Can't read '";
@@ -372,7 +374,7 @@ NCLMetadata::getFileSize (string uri)
   int bytes = 0;
 
   fd = fopen (uri.c_str (), "rb");
-  if (fd > 0)
+  if (fd != NULL)
     {
       fseek (fd, 0L, SEEK_END);
       bytes = ftell (fd);

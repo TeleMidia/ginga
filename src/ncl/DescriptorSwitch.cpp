@@ -161,7 +161,7 @@ bool
 DescriptorSwitch::addDescriptor (GenericDescriptor *descriptor, Rule *rule)
 {
 
-  return addDescriptor (descriptorList->size (), descriptor, rule);
+  return addDescriptor ((int) descriptorList->size (), descriptor, rule);
 }
 
 bool
@@ -211,7 +211,7 @@ DescriptorSwitch::indexOfRule (Rule *rule)
         return i;
       i++;
     }
-  return ruleList->size () + 1;
+  return (int) ruleList->size () + 1;
 }
 
 GenericDescriptor *
@@ -235,7 +235,7 @@ DescriptorSwitch::indexOfDescriptor (GenericDescriptor *descriptor)
         return i;
       i++;
     }
-  return (descriptorList->size () + 1);
+  return (int) descriptorList->size () + 1;
 }
 
 GenericDescriptor *
@@ -261,7 +261,7 @@ DescriptorSwitch::getDescriptor (string descriptorId)
         }
     }
 
-  size = descriptorList->size ();
+  size = (int) descriptorList->size ();
   for (i = 0; i < size; i++)
     {
       descriptor = (*descriptorList)[i];
@@ -298,13 +298,13 @@ DescriptorSwitch::getRule (unsigned int index)
 unsigned int
 DescriptorSwitch::getNumDescriptors ()
 {
-  return descriptorList->size ();
+  return (unsigned int) descriptorList->size ();
 }
 
 unsigned int
 DescriptorSwitch::getNumRules ()
 {
-  return ruleList->size ();
+  return (unsigned int) ruleList->size ();
 }
 
 bool

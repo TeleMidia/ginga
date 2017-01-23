@@ -77,7 +77,7 @@ FormatterFocusManager::FormatterFocusManager (
     }
   else
     {
-      defaultFocusBorderWidth = ::ginga::util::stof (strValue);
+      defaultFocusBorderWidth = std::stoi (strValue);
     }
 
   strValue = presContext->getPropertyValue (DEFAULT_SEL_BORDER_COLOR);
@@ -474,7 +474,6 @@ FormatterFocusManager::setKeyMaster (string mediaId)
   NclCascadingDescriptor *nextDescriptor = NULL;
   NclFormatterRegion *fr = NULL;
   AdapterFormatterPlayer *player = NULL;
-  LayoutRegion *ncmRegion = NULL;
   bool isFRVisible = false;
   bool abortKeyMaster = false;
   string lastFocus = "";
@@ -677,7 +676,7 @@ FormatterFocusManager::setFocus (NclCascadingDescriptor *descriptor)
       canDelFocusColor = true;
       focusColor
           = new Color (focusColor->getR (), focusColor->getG (),
-                       focusColor->getB (), (int)(borderAlpha * 255));
+                       focusColor->getB (), (guint8)(borderAlpha * 255));
     }
 
   width = borderWidth;
@@ -691,7 +690,7 @@ FormatterFocusManager::setFocus (NclCascadingDescriptor *descriptor)
     {
       canDelSelColor = true;
       selColor = new Color (selColor->getR (), selColor->getG (),
-                            selColor->getB (), (int)(borderAlpha * 255));
+                            selColor->getB (), (guint8)(borderAlpha * 255));
     }
 
   if (fr != NULL)
@@ -1404,15 +1403,11 @@ FormatterFocusManager::userEventReceived (SDLInputEvent *userEvent)
 }
 
 bool
-FormatterFocusManager::motionEventReceived (int x, int y, int z)
+FormatterFocusManager::motionEventReceived (int x, int y, arg_unused (int z))
 {
   NclFormatterLayout *formatterLayout;
   NclExecutionObject *object;
   string objectFocusIndex;
-
-  /*clog << "FormatterFocusManager::motionEventReceived (x, y, z) = '";
-  clog << x << ", " << y << ", " << z << "' is handler: ";
-  clog << isHandler << "'" << endl;*/
 
   if (isHandler)
     {

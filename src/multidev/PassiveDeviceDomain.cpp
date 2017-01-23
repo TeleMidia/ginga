@@ -19,6 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "PassiveDeviceDomain.h"
 #include "PassiveDeviceService.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_MULTIDEV_BEGIN
 
 PassiveDeviceDomain::PassiveDeviceDomain (bool useMulticast, int srvPort)
@@ -35,7 +37,7 @@ PassiveDeviceDomain::PassiveDeviceDomain (bool useMulticast, int srvPort)
   if (useMulticast)
     {
       passiveSocket = new MulticastSocketService (
-          (char *)(PASSIVE_MCAST_ADDR.c_str ()),
+          deconst (char *, PASSIVE_MCAST_ADDR.c_str ()),
           BROADCAST_PORT + CT_PASSIVE);
     }
   else
@@ -48,10 +50,9 @@ PassiveDeviceDomain::PassiveDeviceDomain (bool useMulticast, int srvPort)
 PassiveDeviceDomain::~PassiveDeviceDomain () {}
 
 bool
-PassiveDeviceDomain::taskRequest (int destDevClass, char *data,
+PassiveDeviceDomain::taskRequest (arg_unused (int destDevClass), char *data,
                                   int taskSize)
 {
-
   return passiveTaskRequest (data, taskSize);
 }
 
@@ -132,7 +133,7 @@ PassiveDeviceDomain::receiveMediaContentTask (char *task)
 
 void
 PassiveDeviceDomain::setDeviceInfo (int width, int height,
-                                    string base_device_ncl_path)
+                                    arg_unused (string path))
 {
   DeviceDomain::setDeviceInfo (width, height, "");
   connected = false;
@@ -175,7 +176,7 @@ PassiveDeviceDomain::runControlTask ()
           return false;
         }
 
-      if (frameSize + HEADER_SIZE != bytesRecv)
+      if (frameSize + HEADER_SIZE != (unsigned int) bytesRecv)
         {
           delete[] task;
           taskIndicationFlag = false;
@@ -258,7 +259,7 @@ PassiveDeviceDomain::runDataTask ()
       return false;
     }
 
-  if (frameSize + HEADER_SIZE != bytesRecv)
+  if (frameSize + HEADER_SIZE != (unsigned int) bytesRecv)
     {
       delete[] task;
       clog << "PassiveDeviceDomain::runDataTask Warning! wrong ";

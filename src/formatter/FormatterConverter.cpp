@@ -850,15 +850,6 @@ FormatterConverter::createExecutionObject (
   NclNodeNesting *nodePerspective;
   NclExecutionObject *executionObject;
   NclPresentationEvent *compositeEvent;
-  vector<PropertyAnchor *> *properties;
-
-  /*clog << "FormatterConverter::createExecutionObject ";
-  clog << " id = '" << id << "'";
-  clog << " perspective = '" << perspective->getId() << "'";
-  if (descriptor != NULL) {
-          clog << " descriptor = '" << descriptor->getId() << "'";
-  }
-  clog << endl;*/
 
   nodeEntity
       = (NodeEntity *)(perspective->getAnchorNode ()->getDataEntity ());
@@ -1017,7 +1008,7 @@ FormatterConverter::hasDescriptorPropName (string name)
 }
 
 Descriptor *
-FormatterConverter::createDummyDescriptor (Node *node)
+FormatterConverter::createDummyDescriptor (arg_unused (Node *node))
 {
   Descriptor *ncmDesc = NULL;
   FocusDecoration *focusDecoration;
@@ -1175,8 +1166,6 @@ FormatterConverter::getCascadingDescriptor (NclNodeNesting *nodePerspective,
   Descriptor *ncmDesc;
   Node *anchorNode;
   Node *node;
-  ContextNode *context;
-  int size;
 
   anchorNode = nodePerspective->getAnchorNode ();
   if (anchorNode->instanceOf ("ReferNode")
@@ -1563,7 +1552,7 @@ FormatterConverter::resolveSwitchEvents (
 
   NclExecutionObject *selectedObject;
   NclExecutionObject *endPointObject;
-  Node *selectedNode, *mappedNode;
+  Node *selectedNode;
   NodeEntity *selectedNodeEntity;
   vector<NclFormatterEvent *> *events;
   vector<NclFormatterEvent *>::iterator i;
@@ -1965,7 +1954,7 @@ FormatterConverter::addCausalLink (ContextNode *context, CausalLink *link)
 
 void
 FormatterConverter::eventStateChanged (void *someEvent, short transition,
-                                       short previousState)
+                                       arg_unused (short previousState))
 {
 
   NclExecutionObject *executionObject;
@@ -1973,7 +1962,6 @@ FormatterConverter::eventStateChanged (void *someEvent, short transition,
   vector<NclFormatterEvent *> *evs;
   vector<NclFormatterEvent *>::iterator i;
   NclFormatterEvent *ev;
-  NclExecutionObject *obj;
 
   event = (NclFormatterEvent *)someEvent;
   executionObject = (NclExecutionObject *)(event->getExecutionObject ());

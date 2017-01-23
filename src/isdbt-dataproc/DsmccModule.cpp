@@ -145,7 +145,7 @@ DsmccModule::pushDownloadData (unsigned int blockNumber, void *data,
       blocks.insert (blockNumber);
       if (moduleFd != NULL)
         {
-          bytesSaved = fwrite (data, 1, dataSize, moduleFd);
+          bytesSaved = (int) fwrite (data, 1, dataSize, moduleFd);
           if (bytesSaved != dataSize)
             {
               clog << "DsmccModule::pushDownloadData Warning!";
@@ -162,7 +162,7 @@ DsmccModule::pushDownloadData (unsigned int blockNumber, void *data,
         }
     }
 
-  if (isConsolidated () && moduleFd > 0)
+  if (isConsolidated () && moduleFd != NULL)
     {
       fclose (moduleFd);
     }

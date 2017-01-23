@@ -79,7 +79,7 @@ EntryEventListener::listenEvent (NclFormatterEvent *event)
 
 void
 EntryEventListener::eventStateChanged (void *event, short transition,
-                                       short previousState)
+                                       arg_unused (short previousState))
 {
 
   string interfaceId;
@@ -898,7 +898,7 @@ FormatterMediator::processDocument (string documentId, string interfaceId)
     }
 
   entryEvents = new vector<NclFormatterEvent *>;
-  size = ports->size ();
+  size = (int) ports->size ();
   for (i = 0; i < size; i++)
     {
       port = (*ports)[i];
@@ -1035,14 +1035,12 @@ bool
 FormatterMediator::compileDocument (string documentId)
 {
   vector<NclFormatterEvent *> *entryEvents;
-  vector<NclFormatterEvent *> *oldEntryEvents;
   map<string, NclFormatterEvent *>::iterator i;
   vector<NclFormatterEvent *>::iterator j, k;
   NclFormatterEvent *event;
   NclExecutionObject *executionObject;
   NclCompositeExecutionObject *parentObject;
   NclFormatterEvent *documentEvent;
-  bool newEntryEvent;
 
   i = documentEvents.find (documentId);
   if (i == documentEvents.end ())
@@ -1174,7 +1172,7 @@ FormatterMediator::prepareDocument (string documentId)
 void
 FormatterMediator::solveRemoteDescriptorsUris (
     string docLocation, vector<GenericDescriptor *> *descs,
-    bool isRemoteDoc)
+    arg_unused (bool isRemoteDoc))
 {
 
   string src;
@@ -1578,7 +1576,7 @@ FormatterMediator::resumeDocument (string documentId)
 }
 
 void
-FormatterMediator::presentationCompleted (NclFormatterEvent *documentEvent)
+FormatterMediator::presentationCompleted (arg_unused (NclFormatterEvent *documentEvent))
 {
 
   string documentId;
@@ -1603,13 +1601,7 @@ bool
 FormatterMediator::nclEdit (string nclEditApi)
 {
   string commandTag
-      = trim (nclEditApi.substr (0, nclEditApi.find_first_of (",")));
-
-  /*return editingCommand(commandTag, nclEditApi.substr(
-                  nclEditApi.find_first_of(",") + 1,
-                  nclEditApi.length() - (nclEditApi.find_first_of(",") +
-     1)));*/
-
+      = xstrchomp (nclEditApi.substr (0, nclEditApi.find_first_of (",")));
   return editingCommand (commandTag, nclEditApi);
 }
 
@@ -1621,9 +1613,6 @@ FormatterMediator::editingCommand (string commandTag,
   vector<string> *args;
   vector<string>::iterator i;
   string arg, uri, ior, docUri, docIor, uName, docId;
-  GingaLocatorFactory *glf = NULL;
-
-  glf = GingaLocatorFactory::getInstance ();
 
   args = split (privateDataPayload, ",", "'");
   i = args->begin ();
@@ -2937,7 +2926,7 @@ FormatterMediator::removeInterfaceMappings (Node *node,
         }
     }
 
-  size = portsToBeRemoved->size ();
+  size = (int) portsToBeRemoved->size ();
   for (i = 0; i < size; i++)
     {
       port = (Port *)((*portsToBeRemoved)[i]);

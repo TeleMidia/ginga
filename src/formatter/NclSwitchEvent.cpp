@@ -27,7 +27,7 @@ NclSwitchEvent::NclSwitchEvent (string id, void *executionObjectSwitch,
 {
 
   this->interfacePoint = interfacePoint;
-  this->eventType = eventType;
+  this->eventType = (short) eventType;
   this->key = key;
   this->mappedEvent = NULL;
 
@@ -83,8 +83,8 @@ NclSwitchEvent::getMappedEvent ()
 }
 
 void
-NclSwitchEvent::eventStateChanged (void *someEvent, short transition,
-                                   short previousState)
+NclSwitchEvent::eventStateChanged (arg_unused (void *someEvent), short transition,
+                                   arg_unused (short previousState))
 {
 
   changeState (getNewState (transition), transition);

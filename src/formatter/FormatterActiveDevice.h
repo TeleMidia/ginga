@@ -73,7 +73,7 @@ public:
 
 protected:
   bool
-  newDeviceConnected (int newDevClass, int w, int h)
+  newDeviceConnected (arg_unused (int newDevClass), arg_unused (int w), arg_unused (int h))
   {
     return false;
   };
@@ -82,11 +82,10 @@ protected:
   bool receiveRemoteEvent (int remoteDevClass, int eventType,
                            string eventContent);
   bool
-  receiveRemoteContent (int remoteDevClass, char *stream, int streamSize)
+  receiveRemoteContent (arg_unused (int remoteDevClass), arg_unused (char *stream), arg_unused (int streamSize))
   {
     return false;
   };
-
   bool receiveRemoteContent (int remoteDevClass, string contentUri);
   bool receiveRemoteContentInfo (string contentId, string contentUri);
   bool userEventReceived (SDLInputEvent *ev);

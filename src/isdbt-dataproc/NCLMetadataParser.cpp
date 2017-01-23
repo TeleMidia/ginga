@@ -21,6 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NCLMetadata.h"
 #include "INCLMetadata.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_DATAPROC_BEGIN
 
 typedef struct
@@ -37,7 +39,7 @@ NCLMetadataParser::parse (string xmlDocument)
   int fileSize;
 
   fd = fopen (xmlDocument.c_str (), "rb");
-  if (fd < 0)
+  if (fd == NULL)
     {
       clog << "NCLMetadataParser::parse: can't open file:" << xmlDocument;
       clog << endl;
@@ -212,7 +214,7 @@ NCLMetadataParser::parseData (void *data, const XML_Char **attrs)
 }
 
 INCLDataFile *
-NCLMetadataParser::createObject (void *data, const XML_Char **attrs)
+NCLMetadataParser::createObject (arg_unused (void *data), const XML_Char **attrs)
 {
 
   INCLDataFile *dataObject = NULL;
@@ -225,11 +227,11 @@ NCLMetadataParser::createObject (void *data, const XML_Char **attrs)
     {
       if (strcmp (attrs[i], "structureId") == 0)
         {
-          structureId = ::ginga::util::stof ((string)attrs[i + 1]);
+          structureId = xstrto_int ((string)attrs[i + 1]);
         }
       else if (strcmp (attrs[i], "size") == 0)
         {
-          size = ::ginga::util::stof ((string)attrs[i + 1]);
+          size = xstrtod ((string)attrs[i + 1]);
         }
       else if (strcmp (attrs[i], "component_tag") == 0)
         {
@@ -241,7 +243,7 @@ NCLMetadataParser::createObject (void *data, const XML_Char **attrs)
         }
     }
 
-  if (structureId != -1 && size != 0 && componentTag != "" && uri != "")
+  if (structureId != -1 && xnumeq (size, 0.) && componentTag != "" && uri != "")
     {
       dataObject = new NCLDataFile (structureId);
       dataObject->setComponentTag (componentTag);

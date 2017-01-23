@@ -26,7 +26,7 @@ NclImportConverter::NclImportConverter (DocumentParser *documentParser)
 }
 
 void
-NclImportConverter::addImportNCLToImportedDocumentBase (void *parentObject,
+NclImportConverter::addImportNCLToImportedDocumentBase (arg_unused (void *parentObject),
                                                         void *childObject)
 {
 
@@ -34,7 +34,6 @@ NclImportConverter::addImportNCLToImportedDocumentBase (void *parentObject,
   NclDocumentConverter *compiler;
   NclDocument *thisDocument, *importedDocument;
 
-  // apanha o alias e a localizacao do documento
   docAlias = XMLString::transcode (
       ((DOMElement *)childObject)
           ->getAttribute (XMLString::transcode ("alias")));
@@ -56,7 +55,7 @@ NclImportConverter::addImportNCLToImportedDocumentBase (void *parentObject,
 
 void *
 NclImportConverter::createImportBase (DOMElement *parentElement,
-                                      void *objGrandParent)
+                                      arg_unused (void *objGrandParent))
 {
 
   return parentElement;
@@ -64,14 +63,14 @@ NclImportConverter::createImportBase (DOMElement *parentElement,
 
 void *
 NclImportConverter::createImportNCL (DOMElement *parentElement,
-                                     void *objGrandParent)
+                                     arg_unused (void *objGrandParent))
 {
 
   return parentElement;
 }
 void *
 NclImportConverter::createImportedDocumentBase (DOMElement *parentElement,
-                                                void *objGrandParent)
+                                                arg_unused (void *objGrandParent))
 {
 
   return parentElement;

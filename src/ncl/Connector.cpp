@@ -51,7 +51,7 @@ Connector::getNumRoles ()
 
   vector<Role *> *childRoles;
   childRoles = getRoles ();
-  numOfRoles = childRoles->size ();
+  numOfRoles = (int) childRoles->size ();
   delete childRoles;
 
   return numOfRoles;

@@ -96,7 +96,7 @@ NclCompositeExecutionObject::~NclCompositeExecutionObject ()
 
 void
 NclCompositeExecutionObject::initializeCompositeExecutionObject (
-    string id, Node *dataObject, NclCascadingDescriptor *descriptor)
+    arg_unused (string id), Node *dataObject, arg_unused (NclCascadingDescriptor *descriptor))
 {
 
   ContextNode *compositeNode;
@@ -267,7 +267,7 @@ NclCompositeExecutionObject::getNumExecutionObjects ()
   int size = 0;
 
   lockComposite ();
-  size = execObjList.size ();
+  size = (int) execObjList.size ();
   unlockComposite ();
 
   return size;

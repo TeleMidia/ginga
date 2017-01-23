@@ -175,7 +175,7 @@ Thread::mutexUnlock (pthread_mutex_t *mutex)
 }
 
 void
-Thread::condInit (pthread_cond_t *cond, const pthread_condattr_t *attr)
+Thread::condInit (pthread_cond_t *cond, arg_unused (const pthread_condattr_t *attr))
 {
   g_assert (pthread_cond_init (cond, NULL) == 0);
 }

@@ -20,8 +20,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "SDL2ffmpeg.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wcast-qual)
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+GINGA_PRAGMA_DIAG_IGNORE (-Wdeprecated-declarations)
+GINGA_PRAGMA_DIAG_IGNORE (-Wdouble-promotion)
+GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-conversion)
+GINGA_PRAGMA_DIAG_IGNORE (-Wmissing-field-initializers)
+GINGA_PRAGMA_DIAG_IGNORE (-Wsign-compare)
+
 #ifndef AV_LOG_SKIP_REPEATED
-#define AV_LOG_SKIP_REPEATED 1
+# define AV_LOG_SKIP_REPEATED 1
 #endif
 
 GINGA_MB_BEGIN
@@ -127,7 +135,6 @@ SDL2ffmpeg::SDL2ffmpeg (const char *filename)
 
 SDL2ffmpeg::~SDL2ffmpeg ()
 {
-  int sdlReturn;
   set<SDL2ffmpeg *>::iterator i;
 
   clog << "SDL2ffmpeg::~SDL2ffmpeg" << endl;
@@ -165,7 +172,7 @@ SDL2ffmpeg::release ()
     }
 
   // AVFILTER
-  for (int i = 0; i < vfilters_list.size (); i++)
+  for (size_t i = 0; i < vfilters_list.size (); i++)
     {
       av_freep (vfilters_list[i]);
     }
@@ -488,7 +495,7 @@ SDL2ffmpeg::getDuration ()
 {
   if (vs != NULL && vs->ic != NULL)
     {
-      return vs->ic->duration / 1000LL;
+      return (double)(vs->ic->duration / 1000LL);
     }
 
   return 0.0;
@@ -499,21 +506,10 @@ SDL2ffmpeg::getPosition ()
 {
   double position;
 
-  /*clog << "SDL2ffmpeg::getPosition(" << vs->filename;
-  clog << ") master_clock = '";
-  clog << get_master_clock() << "' (duration = '" << getDuration();
-  clog << "')" << endl;
-
-  clog << "SDL2ffmpeg::getPosition(" << vs->filename;
-  clog << ") external clock pts = '";
-  clog << vs->extclk.pts << "' (duration = '" << getDuration();
-  clog << "')" << endl;*/
-
   position = get_master_clock ();
-
   if (position < 0.0 || isnan (position))
     {
-      position = vs->seek_pos / 1000000;
+      position = (double) vs->seek_pos / 1000000;
     }
 
   return position;
@@ -624,10 +620,10 @@ SDL2ffmpeg::getAudioSpec (SDL_AudioSpec *spec, int sample_rate,
 }
 
 int
-SDL2ffmpeg::opt_add_vfilter (void *optctx, const char *opt, const char *arg)
+SDL2ffmpeg::opt_add_vfilter (arg_unused (void *optctx), arg_unused (const char *opt), const char *arg)
 {
 
-  vfilters_list.push_back ((char *)arg);
+  vfilters_list.push_back (deconst (char *, arg));
   return 0;
 }
 
@@ -1115,8 +1111,8 @@ SDL2ffmpeg::get_master_clock ()
 void
 SDL2ffmpeg::check_external_clock_speed ()
 {
-  if (vs->video_stream >= 0 && vs->videoq.nb_packets <= MIN_FRAMES / 2
-      || vs->audio_stream >= 0 && vs->audioq.nb_packets <= MIN_FRAMES / 2)
+  if ((vs->video_stream >= 0 && vs->videoq.nb_packets <= MIN_FRAMES / 2)
+      || (vs->audio_stream >= 0 && vs->audioq.nb_packets <= MIN_FRAMES / 2))
     {
 
       set_clock_speed (
@@ -1137,7 +1133,7 @@ SDL2ffmpeg::check_external_clock_speed ()
   else
     {
       double speed = vs->extclk.speed;
-      if (speed != 1.0)
+      if (xnumeq (speed, 1.0))
         {
           set_clock_speed (&vs->extclk, speed
                                             + EXTERNAL_CLOCK_SPEED_STEP
@@ -1669,7 +1665,7 @@ SDL2ffmpeg::configure_filtergraph (AVFilterGraph *graph,
                                    AVFilterContext *sink_ctx)
 {
 
-  int ret, i;
+  int ret;
   int nb_filters = graph->nb_filters;
   AVFilterInOut *outputs = NULL, *inputs = NULL;
 
@@ -1717,7 +1713,7 @@ SDL2ffmpeg::configure_filtergraph (AVFilterGraph *graph,
   /* Reorder the filters to ensure that inputs of the custom filters are
    * merged
    * first */
-  for (i = 0; i < graph->nb_filters - nb_filters; i++)
+  for (size_t i = 0; i < graph->nb_filters - nb_filters; i++)
     FFSWAP (AVFilterContext *, graph->filters[i],
             graph->filters[i + nb_filters]);
 
@@ -1732,8 +1728,6 @@ int
 SDL2ffmpeg::configure_video_filters (AVFilterGraph *graph,
                                      const char *vfilters, AVFrame *frame)
 {
-  static const enum AVPixelFormat pix_fmts[]
-      = { AV_PIX_FMT_YUV420P, AV_PIX_FMT_NONE };
   char sws_flags_str[128];
   char buffersrc_args[256];
   int ret;
@@ -1968,8 +1962,7 @@ SDL2ffmpeg::configure_audio_filters (const char *afilters,
   if (vs->audio_filter_src.channel_layout)
     {
       snprintf (asrc_args + ret, sizeof (asrc_args) - ret,
-                ":channel_layout=0x%" PRIx64,
-
+                ":channel_layout=0x%" G_GINT64_FORMAT,
                 vs->audio_filter_src.channel_layout);
     }
 
@@ -2334,8 +2327,8 @@ SDL2ffmpeg::audio_decode_frame ()
               pkt_temp->dts = pkt_temp->pts = AV_NOPTS_VALUE;
               pkt_temp->data += len1;
               pkt_temp->size -= len1;
-              if (pkt_temp->data && pkt_temp->size <= 0
-                  || !pkt_temp->data && !got_frame)
+              if ((pkt_temp->data && pkt_temp->size <= 0)
+                  || (!pkt_temp->data && !got_frame))
                 {
                   pkt_temp->stream_index = -1;
                 }
@@ -2619,7 +2612,7 @@ SDL2ffmpeg::audio_decode_frame ()
 }
 
 void
-SDL2ffmpeg::sdl_audio_callback (void *opaque, Uint8 *stream, int len)
+SDL2ffmpeg::sdl_audio_callback (arg_unused (void *opaque), Uint8 *stream, int len)
 {
   set<SDL2ffmpeg *>::iterator i;
   SDL2ffmpeg *dec;
@@ -2893,6 +2886,9 @@ SDL2ffmpeg::stream_component_open (int stream_index)
     case AVMEDIA_TYPE_VIDEO:
       vs->last_video_stream = stream_index;
       break;
+
+    default:
+      g_assert_not_reached ();
     }
 
   if (!codec)
@@ -3551,13 +3547,16 @@ SDL2ffmpeg::lockmgr (void **mtx, enum AVLockOp op)
       SDL_UnlockMutex ((SDL_mutex *)*mtx);
       SDL_DestroyMutex ((SDL_mutex *)*mtx);
       return 0;
+
+    default:
+      g_assert_not_reached ();
     }
   return 1;
 }
 
 AVDictionary *
 SDL2ffmpeg::filter_codec_opts (AVDictionary *opts, enum AVCodecID codec_id,
-                               AVFormatContext *s, AVStream *st,
+                               AVFormatContext *s, arg_unused (AVStream *st),
                                AVCodec *codec)
 {
 
@@ -3591,9 +3590,12 @@ SDL2ffmpeg::filter_codec_opts (AVDictionary *opts, enum AVCodecID codec_id,
       prefix = 'a';
       flags |= AV_OPT_FLAG_AUDIO_PARAM;
       break;
+
+    default:
+      g_assert_not_reached ();
     }
 
-  while (t = av_dict_get (opts, "", t, AV_DICT_IGNORE_SUFFIX))
+  while ((t = av_dict_get (opts, "", t, AV_DICT_IGNORE_SUFFIX)))
     {
       char *p = strchr (t->key, ':');
 

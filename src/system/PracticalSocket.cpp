@@ -19,15 +19,10 @@
  */
 
 #include "ginga.h"
-#include "PracticalSocket.h"
 
-std::string
-itos (double i)
-{
-  ostringstream os;
-  os << i;
-  return os.str ();
-}
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+GINGA_PRAGMA_DIAG_IGNORE (-Wcast-qual)
+#include "PracticalSocket.h"
 
 #ifdef _MSC_VER
 #include <winsock2.h> // For socket(), connect(), send(), and recv()
@@ -500,12 +495,6 @@ UDPSocket::getBroadcastAddress () throw (SocketException)
   string interfaceName;
   bool validInterface;
   char buffer[1024000];
-  ///
-  struct sockaddr_in domain_addr;
-  int domain_addr_len;
-  struct sockaddr_in broadcast_addr;
-  socklen_t broadcast_addr_len;
-  ///
 
   interfaces.ifc_len = sizeof (buffer);
   interfaces.ifc_buf = buffer;

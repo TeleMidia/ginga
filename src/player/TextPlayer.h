@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef TEXTPLAYER_H_
-#define TEXTPLAYER_H_
+#ifndef TEXT_PLAYER_H
+#define TEXT_PLAYER_H
 
 #include "mb/SDLWindow.h"
 #include "mb/IFontProvider.h"
@@ -90,8 +90,8 @@ public:
   void setFontSize (int size);
   int getFontSize ();
   int getFontHeight ();
-  void setBgColor (int red, int green, int blue, int alpha = 255);
-  void setColor (int red, int green, int blue, int alpha = 255);
+  void setBgColor (guint8 red, guint8 green, guint8 blue, guint8 alpha = 255);
+  void setColor (guint8 red, guint8 green, guint8 blue, guint8 alpha = 255);
   void setTabSize (int size);
   int getTabSize ();
   void drawText (string text, short align);
@@ -100,10 +100,9 @@ public:
   bool breakLine ();
   int getCurrentColumn ();
   int getCurrentLine ();
-
   virtual void setPropertyValue (string name, string value);
 };
 
 GINGA_PLAYER_END
 
-#endif /*TEXTPLAYER_H_*/
+#endif /* TEXT_PLAYER_H */

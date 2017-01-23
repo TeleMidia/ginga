@@ -35,7 +35,7 @@ NCLEventDescriptor::getEventNPT (string event)
   uint64_t nptRef = 0;
   char *strNpt;
 
-  strNpt = (char *)(event.substr (5, 5).c_str ());
+  strNpt = deconst (char *, event.substr (5, 5).c_str ());
 
   nptRef = (strNpt[0] & 0x01);
   nptRef = nptRef << 8;
@@ -63,7 +63,7 @@ NCLEventDescriptor::getSequenceNumber (string event)
 {
   char *strSeq;
 
-  strSeq = (char *)(event.substr (12, 1).c_str ());
+  strSeq = deconst (char *, event.substr (12, 1).c_str ());
   return strSeq[0] & 0xFE;
 }
 
@@ -72,7 +72,7 @@ NCLEventDescriptor::getFinalFlag (string event)
 {
   char *strFF;
 
-  strFF = (char *)(event.substr (12, 1).c_str ());
+  strFF = deconst (char *, event.substr (12, 1).c_str ());
   return strFF[0] & 0x01;
 }
 
@@ -93,16 +93,15 @@ NCLEventDescriptor::getPrivateDataPayload (string event)
 }
 
 bool
-NCLEventDescriptor::checkFCS (string event)
+NCLEventDescriptor::checkFCS (arg_unused (string event))
 {
-  // TODO: check FCS
   return true;
 }
 
 string
 NCLEventDescriptor::extractMarks (string eventParam)
 {
-  string noMarks = trim (eventParam);
+  string noMarks = xstrchomp (eventParam);
 
   if (eventParam.find ("\"") != std::string::npos)
     {

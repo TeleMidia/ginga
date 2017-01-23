@@ -53,13 +53,10 @@ public:
   void pause ();
   void resume ();
   void stop ();
-
   virtual void setPropertyValue (string name, string value);
-
   void updateStatus (short code, string parameter = "",
                      short type = TYPE_PRESENTATION, string value = "");
-
-  virtual void timeShift (string direction){};
+  virtual void timeShift (arg_unused (string direction)){};
 };
 
 GINGA_PLAYER_END

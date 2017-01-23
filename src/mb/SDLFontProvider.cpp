@@ -231,7 +231,7 @@ SDLFontProvider::getStringWidth (const char *text, int textLength)
   else
     {
       aux.assign (text, strlen (text));
-      if (aux.length () > textLength)
+      if (aux.length () > (unsigned int) textLength)
         {
           aux = aux.substr (0, textLength);
         }
@@ -335,9 +335,9 @@ SDLFontProvider::playOver (GingaSurfaceID surface)
 
       if (fontColor != NULL)
         {
-          sdlColor.r = fontColor->getR ();
-          sdlColor.g = fontColor->getG ();
-          sdlColor.b = fontColor->getB ();
+          sdlColor.r = (gint8) fontColor->getR ();
+          sdlColor.g = (gint8) fontColor->getG ();
+          sdlColor.b = (gint8) fontColor->getB ();
         }
       else
         {

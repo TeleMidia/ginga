@@ -170,9 +170,7 @@ public:
   virtual void resume ();
   virtual string getPropertyValue (string name);
   virtual void setPropertyValue (string name, string value);
-
-  virtual void setReferenceTimePlayer (IPlayer *player){};
-
+  virtual void setReferenceTimePlayer (arg_unused (IPlayer *player)){};
   void addTimeReferPlayer (IPlayer *referPlayer);
   void removeTimeReferPlayer (IPlayer *referPlayer);
   void notifyReferPlayers (int transition);
@@ -196,29 +194,29 @@ public:
   bool isForcedNaturalEnd ();
   virtual bool setOutWindow (GingaWindowID windowId);
 
-  /*Exclusive for ChannelPlayer*/
+  // Channel player only.
   virtual IPlayer *
   getSelectedPlayer ()
   {
     return NULL;
   };
-  virtual void setPlayerMap (map<string, IPlayer *> *objs){};
+  virtual void setPlayerMap (arg_unused (map<string, IPlayer *> *objs)){};
   virtual map<string, IPlayer *> *
   getPlayerMap ()
   {
     return NULL;
   };
   virtual IPlayer *
-  getPlayer (string objectId)
+  getPlayer (arg_unused (string objectId))
   {
     return NULL;
   };
-  virtual void select (IPlayer *selObject){};
+  virtual void select (arg_unused (IPlayer *selObject)){};
 
-  /*Exclusive for Application Players*/
-  virtual void setCurrentScope (string scopeId){};
+  // Application player only.
+  virtual void setCurrentScope (arg_unused (string scopeId)){};
 
-  virtual void timeShift (string direction){};
+  virtual void timeShift (arg_unused (string direction)){};
 };
 
 struct notify

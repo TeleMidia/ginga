@@ -69,10 +69,9 @@ GINGA_BEGIN_DECLS
 #include <ncluaw.h>
 
 GINGA_PRAGMA_DIAG_PUSH ()
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
 GINGA_PRAGMA_DIAG_IGNORE (-Wswitch-default)
 #include <SDL.h>
-#include <SDL_bits.h>
-#include <SDL_endian.h>
 #include <SDL_syswm.h>
 GINGA_PRAGMA_DIAG_POP ()
 
@@ -98,8 +97,6 @@ GINGA_PRAGMA_DIAG_POP ()
 # include <cairo.h>
 # include <librsvg/rsvg.h>
 #endif
-
-#define gpointerof(p) ((gpointer)((ptrdiff_t)(p)))
 
 GINGA_END_DECLS
 
@@ -175,6 +172,173 @@ typedef unsigned int GingaProviderID;
              "global variable %s is null", G_STRINGIFY (G)),    \
       ((Type) NULL)))
 
-#define streq(a,b) (g_strcmp0 ((a),(b)) == 0)
+#define arg_unused(...) G_GNUC_UNUSED __VA_ARGS__
+#define set_if_nonnull(a, x) G_STMT_START {if (a) *(a) = (x); } G_STMT_END
+
+#define likely(cond)    G_LIKELY ((cond))
+#define unlikely(cond)  G_UNLIKELY ((cond))
+
+#define deconst(t, x)   ((t)(ptrdiff_t)(const void *)(x))
+#define pointerof(p)    ((void *)((ptrdiff_t)(p)))
+#define streq(a,b)      (g_strcmp0 ((a),(b)) == 0)
+
+
+// Auxiliary number functions.
+
+// Tests whether two floating-point numbers are equal.
+static bool G_GNUC_UNUSED
+xnumeq (double x, double y, double epsilon=.0000001)
+{
+  return ABS (x - y) <= epsilon;
+}
+
+
+// Auxiliary string functions.
+
+// Converts string to double.
+static inline bool
+_xstrtod (const string &s, double *dp)
+{
+  const gchar *c_str;
+  gchar *endptr;
+  double d;
+
+  c_str = s.c_str ();
+  d = g_ascii_strtod (c_str, &endptr);
+  if (endptr == c_str)
+    return false;
+
+  set_if_nonnull (dp, d);
+  return true;
+}
+
+// Converts string to gint64.
+static inline bool
+_xstrtoll (const string &s, gint64 *ip, guint base=10)
+{
+  const gchar *c_str;
+  gchar *endptr;
+  gint64 i;
+
+  c_str = s.c_str ();
+  i = g_ascii_strtoll (c_str, &endptr, base);
+  if (endptr == c_str)
+    return false;
+
+  set_if_nonnull (ip, i);
+  return true;
+}
+
+// Converts string to guint64.
+static inline bool
+_xstrtoull (const string &s, guint64 *ip, guint base=10)
+{
+  const gchar *c_str;
+  gchar *endptr;
+  guint64 u;
+
+  c_str = s.c_str ();
+  u = g_ascii_strtoull (c_str, &endptr, base);
+  if (endptr == c_str)
+    return false;
+
+  set_if_nonnull (ip, u);
+  return true;
+}
+
+// Asserted wrappers for _xstrtod, _xstrtoll, and _xstrtoull.
+static inline double
+xstrtod (const string &s)
+{
+  double d;
+  g_assert (_xstrtod (s, &d));
+  return d;
+}
+
+#define _GINGA_XSTRTO_DEFN(Type, Typemin, Typemax)      \
+  static inline g##Type                                 \
+  xstrto_##Type (const string &s, guint8 base=10)       \
+  {                                                     \
+    gint64 x;                                           \
+    g_assert (_xstrtoll (s, &x, base));                 \
+    return (g##Type)(CLAMP (x, Typemin, Typemax));      \
+  }
+
+_GINGA_XSTRTO_DEFN  (int,    G_MININT,    G_MAXINT)
+_GINGA_XSTRTO_DEFN  (int8,   G_MININT8,   G_MAXINT8)
+_GINGA_XSTRTO_DEFN  (int64,  G_MININT64,  G_MAXINT64)
+
+#define _GINGA_XSTRTOU_DEFN(Type, Typemax)              \
+  static inline g##Type                                 \
+  xstrto_##Type (const string &s, guint8 base=10)       \
+  {                                                     \
+    guint64 x;                                          \
+    g_assert (_xstrtoull (s, &x, base));                \
+    return (g##Type)(MIN (x, Typemax));                 \
+  }
+
+_GINGA_XSTRTOU_DEFN (uint,   G_MAXUINT)
+_GINGA_XSTRTOU_DEFN (uint8,  G_MAXUINT8)
+_GINGA_XSTRTOU_DEFN (uint64, G_MAXUINT64)
+
+// Compares two strings ignoring case.
+static inline int
+xstrcasecmp (string s1, string s2)
+{
+  return g_ascii_strcasecmp (s1.c_str (), s2.c_str ());
+}
+
+// Tests whether two strings are equal ignoring case.
+#define xstrcaseeq(s1, s2) (xstrcasecmp ((s1), (s2)) == 0)
+
+// Assigns format to string.
+static inline int G_GNUC_PRINTF (2,3)
+xstrassign (string &s, const char *format, ...)
+{
+  va_list args;
+  char *c_str;
+  int n;
+
+  va_start (args, format);
+  n = g_vasprintf (&c_str, format, args);
+  va_end (args);
+
+  if (c_str != NULL)
+    s.assign (c_str);
+  g_free (c_str);
+
+  return n;
+}
+
+// Converts string to uppercase.
+static inline string
+xstrup (string s)
+{
+  gchar *dup = g_ascii_strup (s.c_str (), s.size ());
+  s.assign (dup);
+  free (dup);
+  return s;
+}
+
+// Converts string to lowercase.
+static inline string
+xstrdown (string s)
+{
+  gchar *dup = g_ascii_strdown (s.c_str (), s.size ());
+  s.assign (dup);
+  free (dup);
+  return s;
+}
+
+// Removes leading and trailing whitespace from string.
+static inline string
+xstrchomp (string s)
+{
+  gchar *dup = g_strdup (s.c_str ());
+  g_strchomp (dup);
+  s.assign (dup);
+  g_free (dup);
+  return s;
+}
 
 #endif /* GINGA_H */

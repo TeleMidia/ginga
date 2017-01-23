@@ -131,7 +131,7 @@ NclLinkCompoundStatement::evaluate ()
   int i, size;
   NclLinkStatement *childStatement;
 
-  size = statements->size ();
+  size = (int) statements->size ();
   if (op == CompoundStatement::OP_OR)
     {
       for (i = 0; i < size; i++)

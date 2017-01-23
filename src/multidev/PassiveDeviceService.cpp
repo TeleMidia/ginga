@@ -71,12 +71,11 @@ PassiveDeviceService::receiveMediaContent (unsigned int devAddr,
       remoteDevClass = dev->getDeviceClass ();
 
       uri = string (g_get_tmp_dir ()) + "/render.jpg";
-      remove ((char *)(uri.c_str ()));
+      remove (deconst (char *, uri.c_str ()));
       fd = fopen (uri.c_str (), "w+b");
-
       if (fd != NULL)
         {
-          bytesWrite = fwrite (stream, 1, streamSize, fd);
+          bytesWrite = (int) fwrite (stream, 1, streamSize, fd);
           fclose (fd);
           if (bytesWrite == streamSize)
             {

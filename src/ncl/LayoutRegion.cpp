@@ -977,8 +977,6 @@ LayoutRegion::setTargetTop (double newTop, bool isPercentual)
 bool
 LayoutRegion::setWidth (double newWidth, bool isPercentual)
 {
-  double oldWidth;
-
   if (newWidth < 0 || isNaN (newWidth))
     {
       clog << "LayoutRegion::setWidth Warning! Trying ";
@@ -987,7 +985,6 @@ LayoutRegion::setWidth (double newWidth, bool isPercentual)
       return false;
     }
 
-  oldWidth = width;
   width = newWidth;
   widthPercentual = isPercentual;
 

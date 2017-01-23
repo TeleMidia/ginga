@@ -27,7 +27,7 @@ UDPClient::~UDPClient () { closeSocket (); }
 bool
 UDPClient::connectSocket (string host, int port)
 {
-#if defined _MSC_VER || defined __CYGWIN__
+#if defined _MSC_VER
   WORD L_Ver;
   WSADATA wsaData;
 
@@ -100,7 +100,7 @@ UDPClient::closeSocket ()
 {
   if (sd > 0)
     {
-#if defined _MSC_VER || defined __CYGWIN__
+#if defined _MSC_VER
       closesocket (sd);
 #else
       close (sd);

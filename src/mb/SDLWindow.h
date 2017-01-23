@@ -58,7 +58,7 @@ private:
   SDL_Rect rect;
 
   double z;
-  int transparencyValue;
+  guint8 transparencyValue;
   bool visible;
   bool ghost;
 
@@ -104,14 +104,14 @@ public:
   void setMirrorSrc (SDLWindow *mirrorSrc);
   SDLWindow *getMirrorSrc ();
 
-  void setBgColor (int r, int g, int b, int alpha);
+  void setBgColor (guint8 r, guint8 g, guint8 b, guint8 alpha);
   Color *getBgColor ();
-  void setColorKey (int r, int g, int b);
+  void setColorKey (guint8 r, guint8 g, guint8 b);
   Color *getColorKey ();
-  void setWindowColor (int r, int g, int b, int alpha);
+  void setWindowColor (guint8 r, guint8 g, guint8 b, guint8 alpha);
   Color *getWindowColor ();
-  void setBorder (int r, int g, int b, int alpha = 255, int bWidth = 0);
-  void getBorder (int *r, int *g, int *b, int *alpha, int *bWidth);
+  void setBorder (guint8 r, guint8 g, guint8 b, guint8 alpha = 255, int bWidth = 0);
+  void getBorder (guint8 *r, guint8 *g, guint8 *b, guint8 *alpha, int *bWidth);
 
   GingaScreenID getScreen ();
   void revertContent ();
@@ -127,8 +127,8 @@ public:
   void resize (int width, int height);
   void raiseToTop ();
   void lowerToBottom ();
-  void setCurrentTransparency (int alpha);
-  int getTransparencyValue ();
+  void setCurrentTransparency (guint8 alpha);
+  guint8 getTransparencyValue ();
   GingaWindowID getId ();
   void show ();
   void hide ();

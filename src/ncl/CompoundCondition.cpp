@@ -123,7 +123,7 @@ CompoundCondition::getRoles ()
   vector<Role *> *childRoles;
 
   roles = new vector<Role *>;
-  size = expressions->size ();
+  size = (int) expressions->size ();
   for (i = 0; i < size; i++)
     {
       condition = (*expressions)[i];

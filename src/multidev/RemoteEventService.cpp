@@ -25,6 +25,8 @@ using namespace ::ginga::system;
 
 #include "ctxmgmt/ContextManager.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_MULTIDEV_BEGIN
 
 ContextManager *RemoteEventService::contextManager = NULL;
@@ -129,9 +131,8 @@ RemoteEventService::addDocument (unsigned int device_class, char *name,
     }
 
   tss = groups[device_class];
-  tss->postTcpCommand ((char *)"ADD", 0, name, body);
+  tss->postTcpCommand (deconst (char *, "ADD"), 0, name, body);
   Thread::mutexUnlock (&groupsMutex);
-  // ADD without start will be used by prefetch mechanisms
 }
 
 void
@@ -197,18 +198,9 @@ RemoteEventService::startDocument (unsigned int device_class, char *name)
     {
       clog << "RemoteEventService::zipb64.len = ";
       clog << zip_base64.length () << endl;
-
-      //		tss->postTcpCommand((char*)"ADD", 0, name,
-      //(char*)zip_base64.c_str());
-      //		clog << "RemoteEventService:: ADD
-      // name="<<name<<endl;
-
-      //		tss->postTcpCommand((char*)"START", 0, name,
-      //(char*)"");
-      //
-      tss->postTcpCommand ((char *)"START", 0,
-                           (char *)doc_rel_path.c_str (),
-                           (char *)zip_base64.c_str ());
+      tss->postTcpCommand (deconst (char *, "START"), 0,
+                           deconst (char *, doc_rel_path.c_str ()),
+                           deconst (char *, zip_base64.c_str ()));
 
       clog << "RemoteEventService:: START name=" << doc_rel_path << endl;
     }
@@ -231,54 +223,48 @@ RemoteEventService::stopDocument (unsigned int device_class, char *name)
 
   tss = groups[device_class];
   clog << "RemoteEventService::stopDocument " << name << endl;
-  tss->postTcpCommand ((char *)"STOP", 0, name, (char *)"");
+  tss->postTcpCommand (deconst (char *, "STOP"), 0, name, deconst (char *, ""));
   Thread::mutexUnlock (&groupsMutex);
 }
 
-/***/
-
 bool
-RemoteEventService::newDeviceConnected (int newDevClass, int w, int h)
+RemoteEventService::newDeviceConnected (arg_unused (int newDevClass), arg_unused (int w), arg_unused (int h))
 {
   return false;
 }
 
 void
-RemoteEventService::connectedToBaseDevice (unsigned int domainAddr)
+RemoteEventService::connectedToBaseDevice (unsigned arg_unused (int domainAddr))
 {
 }
 
 bool
-RemoteEventService::receiveRemoteContent (int remoteDevClass,
-                                          string contentUri)
+RemoteEventService::receiveRemoteContent (arg_unused (int remoteDevClass),
+                                          arg_unused (string contentUri))
 {
   return false;
 }
 
 bool
-RemoteEventService::receiveRemoteContent (int remoteDevClass, char *stream,
-                                          int streamSize)
+RemoteEventService::receiveRemoteContent (arg_unused (int remoteDevClass), arg_unused (char *stream),
+                                          arg_unused (int streamSize))
 {
   return false;
 }
 
 bool
-RemoteEventService::receiveRemoteContentInfo (string contentId,
-                                              string contentUri)
+RemoteEventService::receiveRemoteContentInfo (arg_unused (string contentId),
+                                              arg_unused (string contentUri))
 {
   return false;
 }
 
 bool
-RemoteEventService::receiveRemoteEvent (int remoteDevClass, int eventType,
-                                        string eventContent)
+RemoteEventService::receiveRemoteEvent (arg_unused (int remoteDevClass), arg_unused (int eventType),
+                                        arg_unused (string eventContent))
 {
-
   if (eventType == 5)
     {
-      // clog << "RemoteEventService::receiveRemoteEvent ATTR";
-      // clog << eventContent << endl;
-
       string name, value;
       size_t pos;
       pos = eventContent.find ("=");
