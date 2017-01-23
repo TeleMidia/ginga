@@ -161,8 +161,6 @@ private:
   void setEmbedFromParent (string parentCoords);
 
 public:
-  void setBackgroundImage (string uri);
-
   unsigned int getWidthResolution ();
   void setWidthResolution (unsigned int wRes);
   unsigned int getHeightResolution ();

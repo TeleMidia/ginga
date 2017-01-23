@@ -264,12 +264,6 @@ FormatterMultiDevice::setFocusManager (void *focusManager)
   this->focusManager = focusManager;
 }
 
-void
-FormatterMultiDevice::setBackgroundImage (string uri)
-{
-  Ginga_Display->setBackgroundImage (myScreen, uri);
-}
-
 void *
 FormatterMultiDevice::getMainLayout ()
 {

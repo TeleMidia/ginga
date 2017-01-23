@@ -132,7 +132,6 @@ public:
   void setParent (FormatterMultiDevice *parent);
   void setPresentationContex (PresentationContext *presContext);
   void setFocusManager (void *focusManager);
-  void setBackgroundImage (string uri);
   void *getMainLayout ();
   void *getFormatterLayout (int devClass);
   string getScreenShot ();

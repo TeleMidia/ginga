@@ -437,12 +437,6 @@ PresentationEngineManager::editingCommand (string editingCmd)
 }
 
 void
-PresentationEngineManager::setBackgroundImage (string uri)
-{
-  updateFormatters (UC_BACKGROUND, uri);
-}
-
-void
 PresentationEngineManager::getScreenShot ()
 {
   updateFormatters (UC_PRINTSCREEN);
@@ -1446,10 +1440,6 @@ PresentationEngineManager::updateFormatters (short command,
           formatter->getScreenShot ();
           unlock ();
           return;
-
-        case UC_BACKGROUND:
-          formatter->setBackgroundImage (parameter);
-          break;
 
         case UC_PAUSE:
           paused = true;

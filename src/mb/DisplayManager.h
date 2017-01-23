@@ -91,8 +91,6 @@ public:
   static bool hasMEListenerInstance (IMotionEventListener *listener,
                                      bool removeInstance = false);
 
-  void setBackgroundImage (GingaScreenID screenId, string uri);
-
   int getDeviceWidth (GingaScreenID screenId);
 
   int getDeviceHeight (GingaScreenID screenId);
