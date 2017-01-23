@@ -513,17 +513,6 @@ FormatterMediator::setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider)
 }
 
 void
-FormatterMediator::setBackgroundImage (string uri)
-{
-  clog << endl << endl;
-  clog << "FormatterMediator::setBackgroundImage '";
-  clog << uri << "'" << endl;
-  clog << endl << endl;
-
-  multiDevice->setBackgroundImage (uri);
-}
-
-void
 FormatterMediator::setParentLayout (void *parentLayout)
 {
   NclFormatterLayout *mainLayout;

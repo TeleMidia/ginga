@@ -209,17 +209,6 @@ DisplayManager::hasMEListenerInstance (IMotionEventListener *listener,
   return hasListener;
 }
 
-void
-DisplayManager::setBackgroundImage (GingaScreenID screenId, string uri)
-{
-  SDLDisplay *screen;
-
-  if (getScreen (screenId, &screen))
-    {
-      screen->setBackgroundImage (uri);
-    }
-}
-
 int
 DisplayManager::getDeviceWidth (GingaScreenID screenId)
 {
@@ -272,28 +261,6 @@ DisplayManager::releaseScreen (GingaScreenID screenId)
       removeScreen (screenId);
       screen->releaseScreen ();
       delete screen;
-    }
-}
-
-void
-DisplayManager::releaseMB (GingaScreenID screenId)
-{
-  SDLDisplay *screen;
-
-  if (getScreen (screenId, &screen))
-    {
-      screen->releaseMB ();
-    }
-}
-
-void
-DisplayManager::clearWidgetPools (GingaScreenID screenId)
-{
-  SDLDisplay *screen;
-
-  if (getScreen (screenId, &screen))
-    {
-      screen->clearWidgetPools ();
     }
 }
 
@@ -413,34 +380,6 @@ DisplayManager::createScreen (string vMode, string vParent,
   return screenId;
 }
 
-string
-DisplayManager::getScreenName (GingaScreenID screenId)
-{
-  SDLDisplay *screen;
-  string screenName = "";
-
-  if (getScreen (screenId, &screen))
-    {
-      screenName = screen->getScreenName ();
-    }
-
-  return screenName;
-}
-
-UnderlyingWindowID
-DisplayManager::getScreenUnderlyingWindow (GingaScreenID screenId)
-{
-  SDLDisplay *screen;
-  UnderlyingWindowID uWin = NULL;
-
-  if (getScreen (screenId, &screen))
-    {
-      uWin = screen->getScreenUnderlyingWindow ();
-    }
-
-  return uWin;
-}
-
 SDLWindow *
 DisplayManager::getIWindowFromId (GingaScreenID screenId,
                                       GingaWindowID winId)
@@ -493,17 +432,6 @@ DisplayManager::blitScreen (GingaScreenID screenId, string fileUri)
     }
 }
 
-void
-DisplayManager::refreshScreen (GingaScreenID screenId)
-{
-  SDLDisplay *screen;
-
-  if (getScreen (screenId, &screen))
-    {
-      screen->refreshScreen ();
-    }
-}
-
 /* interfacing output */
 
 GingaWindowID
@@ -524,27 +452,6 @@ DisplayManager::createWindow (GingaScreenID screenId, int x, int y,
     }
 
   return window->getId ();
-}
-
-UnderlyingWindowID
-DisplayManager::createUnderlyingSubWindow (GingaScreenID screenId,
-                                               int x, int y, int w, int h,
-                                               double z)
-{
-  SDLDisplay *screen;
-  UnderlyingWindowID window = NULL;
-
-  if (getScreen (screenId, &screen))
-    {
-      window = screen->createUnderlyingSubWindow (x, y, w, h, z);
-    }
-  else
-    {
-      clog << "DisplayManager::createWindow Warning! ";
-      clog << "can't find screen '" << screenId << "'" << endl;
-    }
-
-  return window;
 }
 
 bool

@@ -65,7 +65,6 @@ public:
   virtual void setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider)
       = 0;
 
-  virtual void setBackgroundImage (string uri) = 0;
   virtual void setParentLayout (void *layout) = 0;
   virtual string getScreenShot () = 0;
   virtual void *setCurrentDocument (string fName) = 0;

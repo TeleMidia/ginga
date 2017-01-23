@@ -104,8 +104,6 @@ private:
 
 public:
   bool editingCommand (string editingCmd);
-  void setBackgroundImage (string uri);
-
 private:
   void close ();
   void registerKeys ();

@@ -125,10 +125,6 @@ SDLDisplay::SDLDisplay (int argc, char **args, GingaScreenID myId,
 #ifdef _MSC_VER
   putenv ("SDL_AUDIODRIVER=DirectSound");
 #endif
-  if (uEmbedId == NULL)
-    {
-      setEmbedFromParent (parentCoords);
-    }
 
   waitingCreator = false;
   Thread::mutexInit (&condMutex);
@@ -280,107 +276,13 @@ SDLDisplay::releaseScreen ()
   Thread::mutexUnlock (&scrMutex);
 }
 
-void
-SDLDisplay::releaseMB ()
-{
-  int errCount = 0;
-  int numSDL;
-
-  Thread::mutexLock (&scrMutex);
-  numSDL = (int) sdlScreens.size ();
-
-  while (numSDL > 1)
-    {
-      g_usleep (100000);
-      errCount++;
-
-      numSDL = (int) sdlScreens.size ();
-
-      if (errCount > 5 || numSDL <= 1)
-        {
-          break;
-        }
-    }
-  Thread::mutexUnlock (&scrMutex);
-
-  hasRenderer = false;
-  Thread::mutexLock (&proMutex);
-  cmpRenderList.clear ();
-  Thread::mutexUnlock (&proMutex);
-}
-
-void
-SDLDisplay::clearWidgetPools ()
-{
-  Thread::mutexLock (&scrMutex);
-  sdlScreens[this] = SPT_CLEAR;
-  Thread::mutexUnlock (&scrMutex);
-}
-
-string
-SDLDisplay::getScreenName ()
-{
-  return "sdl";
-}
-
-void
-SDLDisplay::setEmbedFromParent (string parentCoords)
-{
-  vector<string> *params;
-  gint64 id;
-  int x, y, w, h;
-
-  params = split (parentCoords, ",");
-  if (params->size () != 6)
-    {
-      delete params;
-      return;
-    }
-
-  id = xstrto_int64 ((*params)[1]);
-  x = xstrto_int ((*params)[2]);
-  y = xstrto_int ((*params)[3]);
-  w = xstrto_int ((*params)[4]);
-  h = xstrto_int ((*params)[5]);
-  uEmbedId = createUnderlyingSubWindow ((void *) id, (*params)[0], x, y, w, h, 1.0);
-
-  delete params;
-}
-
-void
-SDLDisplay::setBackgroundImage (string uri)
-{
-  lockSDL ();
-
-  if (backgroundLayer == NULL)
-    {
-      backgroundLayer = createWindow (0, 0, wRes, hRes, 0.0);
-    }
-
-  backgroundLayer->lock ();
-  backgroundLayer->renderImgFile (uri);
-  backgroundLayer->show ();
-  backgroundLayer->unlock ();
-
-  unlockSDL ();
-}
-
 unsigned int
 SDLDisplay::getWidthResolution ()
 {
-  /*
-   * wRes == 0 is an initial state. So pthread_cond_t
-   * is not necessary here.
-   */
   while (wRes <= 0)
     {
       g_usleep (uSleepTime);
     }
-
-  clog << "SDLDisplay::getWidthResolution returns '";
-  clog << wRes << "'";
-  clog << endl;
-
   return wRes;
 }
 
@@ -395,10 +297,6 @@ SDLDisplay::setWidthResolution (unsigned int wRes)
       SDL_SetWindowSize (screen, this->wRes, this->hRes);
     }
   unlockSDL ();
-
-  clog << "SDLDisplay::setWidthResolution to '";
-  clog << wRes << "'";
-  clog << endl;
 }
 
 unsigned int
@@ -435,11 +333,6 @@ SDLDisplay::setHeightResolution (unsigned int hRes)
   clog << "SDLDisplay::setHeightResolution to '";
   clog << hRes << "'";
   clog << endl;
-}
-
-void
-SDLDisplay::setColorKey (arg_unused (int r), arg_unused (int g), arg_unused (int b))
-{
 }
 
 SDLWindow *
@@ -593,15 +486,6 @@ SDLDisplay::setInitScreenFlag ()
   Thread::mutexUnlock (&scrMutex);
 }
 
-void
-SDLDisplay::refreshScreen ()
-{
-  if (hasERC)
-    {
-      rendererT (NULL);
-    }
-}
-
 /* interfacing output */
 
 SDLWindow *
@@ -623,199 +507,6 @@ SDLDisplay::createWindow (int x, int y, int w, int h, double z)
   Thread::mutexUnlock (&winMutex);
 
   return iWin;
-}
-
-UnderlyingWindowID
-SDLDisplay::createUnderlyingSubWindow (int x, int y, int w, int h,
-                                            double z)
-{
-  UnderlyingWindowID uWin = NULL;
-  UnderlyingWindowID parent = NULL;
-
-  lockSDL ();
-  parent = getScreenUnderlyingWindow ();
-
-  uWin = createUnderlyingSubWindow (parent, "", x, y, w, h, z);
-  if (uWin != NULL)
-    {
-      initEmbed (this, uWin);
-      forceInputFocus (this, uWin);
-    }
-
-  unlockSDL ();
-
-  return uWin;
-}
-
-#if defined(SDL_VIDEO_DRIVER_WINDOWS)
-LRESULT CALLBACK
-MyWndProc (HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-  switch (msg)
-    {
-    case WM_DESTROY:
-      PostQuitMessage (0);
-      return 0;
-    }
-
-  return DefWindowProc (hwnd, msg, wParam, lParam);
-}
-#endif
-
-UnderlyingWindowID
-SDLDisplay::createUnderlyingSubWindow (arg_unused (UnderlyingWindowID parent),
-                                            arg_unused (string spec), arg_unused (int x), arg_unused (int y),
-                                            int w, int h, arg_unused (double z))
-{
-  UnderlyingWindowID uWin = NULL;
-
-#if defined(SDL_VIDEO_DRIVER_X11)
-// 		Display* xDisplay;
-// 		int xScreen;
-// 		int blackColor;
-
-// 		if (spec == "") {
-// 			xDisplay = XOpenDisplay(getenv("DISPLAY"));
-
-// 		} else {
-// 			xDisplay = XOpenDisplay(spec.c_str());
-// 		}
-
-// 		if (parent == NULL) {
-// 			parent =
-// (UnderlyingWindowID)XDefaultRootWindow(xDisplay);
-// 		}
-
-// 		xScreen    = DefaultScreen(xDisplay);
-// 		blackColor = BlackPixel(xDisplay, xScreen);
-
-// 		uWin       = (UnderlyingWindowID)XCreateSimpleWindow(
-// 				xDisplay,               /* display */
-// 				(Window)parent,         /* parent */
-// 				x,                      /* x */
-// 				y,                      /* y */
-// 				w,                      /* w */
-// 				h,                      /* h */
-// 				0,                      /* border_width */
-// 				blackColor,             /* border_color */
-// 				blackColor);            /* background_color
-// */
-
-// 		XSync(xDisplay, 0);
-
-// 		if (uWin == NULL) {
-// 			clog << "SDLDisplay::createUnderlyingSubWindow
-// Warning!
-// ";
-// 			clog << "Can't create embed child window" << endl;
-// 			return NULL;
-// 		}
-
-// 		XMapWindow(xDisplay, (Window)uWin);
-// 		XClearWindow(xDisplay, (Window)uWin);
-// 		XFlush(xDisplay);
-
-// 		if (!hasRenderer) {
-// 			XInitThreads();
-// 		}
-
-// 		clog << "SDLDisplay::createUnderlyingSubWindow embed id
-// created '";
-// 		clog << (void*)uWin << "'";
-// 		clog << endl;
-
-// 		XSync(xDisplay, 1);
-
-#elif defined(SDL_VIDEO_DRIVER_WINDOWS)
-  TCHAR cName[MAX_PATH] = "Ginga";
-  HINSTANCE hInst = (HINSTANCE)GetWindowLong ((HWND)parent, GWL_HINSTANCE);
-  WNDCLASS wndclass;
-
-  // GetClassName((HWND)parent, cName, _countof(cName));
-
-  wndclass.style = CS_HREDRAW | CS_VREDRAW;
-  wndclass.lpfnWndProc = MyWndProc;
-  wndclass.cbClsExtra = 0;
-  wndclass.cbWndExtra = 0;
-  wndclass.hInstance = hInst;
-  wndclass.hIcon = LoadIcon (NULL, IDI_APPLICATION);
-  wndclass.hCursor = LoadCursor (NULL, IDC_ARROW);
-  wndclass.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
-  wndclass.lpszMenuName = NULL;
-  wndclass.lpszClassName = cName;
-
-  if (!RegisterClass (&wndclass))
-    {
-      clog << "SDLDisplay::createUnderlyingSubWindow Warning! ";
-      clog << "Can't register class " << cName;
-      clog << endl;
-      return NULL;
-    }
-
-  clog << "SDLDisplay::createUnderlyingSubWindow Creating ";
-  clog << "Embedded window within the following class: " << cName;
-  clog << endl;
-
-  // Create the main window.
-  uWin = (UnderlyingWindowID)CreateWindow (
-      cName,                 // name of window class
-      cName,                 // title-bar string
-      WS_VISIBLE | WS_CHILD, // window style
-      x, y, w, h,
-      (HWND)parent,  // owner window
-      (HMENU)NULL,   // use class menu
-      hInst,         // handle to application instance
-      (LPVOID)NULL); // no window-creation data
-
-  if (uWin != NULL)
-    {
-      // Show the window and send a WM_PAINT message to the window
-      // procedure.
-      ShowWindow ((HWND)uWin, 1);
-      UpdateWindow ((HWND)uWin);
-      clog << "SDLDisplay::createUnderlyingSubWindow embed id created "
-              "'";
-      clog << (void *)uWin << "'";
-      clog << endl;
-    }
-  else
-    {
-      clog << "SDLDisplay::createUnderlyingSubWindow Warning!";
-      clog << " Can't create sub-window with the following data:";
-      clog << endl;
-      clog << "last error = " << GetLastError () << endl;
-      clog << "class name = " << cName << endl;
-      clog << "x = " << x << endl;
-      clog << "y = " << y << endl;
-      clog << "w = " << w << endl;
-      clog << "h = " << h << endl;
-      clog << "parentId = " << parent << endl;
-    }
-#endif
-
-  wRes = w;
-  hRes = h;
-
-  return uWin;
-}
-
-UnderlyingWindowID
-SDLDisplay::getScreenUnderlyingWindow ()
-{
-  UnderlyingWindowID sUWin = NULL;
-
-  lockSDL ();
-  if (uEmbedId != NULL)
-    {
-      sUWin = uEmbedId;
-    }
-  else
-    {
-      g_assert_not_reached ();
-    }
-  unlockSDL ();
-
-  return sUWin;
 }
 
 bool
@@ -1937,9 +1628,6 @@ SDLDisplay::initScreen (SDLDisplay *s)
 
   lockSDL ();
 
-  clog << "SDLDisplay::initScreen '" << s->getScreenName ();
-  clog << "'" << endl;
-
   if (s->mbSubSystem != "")
     {
       numOfDrivers = SDL_GetNumVideoDrivers ();
@@ -1963,10 +1651,6 @@ SDLDisplay::initScreen (SDLDisplay *s)
       rect.y = 0;
       rect.w = 0;
       rect.h = 0;
-
-      clog << "SDLDisplay::initScreen '" << s->getScreenName ();
-      clog << "' Warning! Can't get display bounds. ";
-      clog << SDL_GetError () << endl;
     }
 
   if (s->uEmbedId != NULL)
@@ -2088,10 +1772,6 @@ SDLDisplay::initScreen (SDLDisplay *s)
     s->im->setAxisBoundaries (s->wRes, s->hRes, 0);
 
   unlockSDL ();
-
-  clog << "SDLDisplay::initScreen '" << s->getScreenName ();
-  clog << "': '" << s->wRes << "x" << s->hRes << "' all done";
-  clog << endl;
 }
 
 void
@@ -2849,98 +2529,6 @@ SDLDisplay::renderMapRemoveWindow (GingaScreenID screenId,
         }
     }
   Thread::mutexUnlock (&renMutex);
-}
-
-/*void SDLDisplay::updateWindowState(
-                GingaScreenID screenId, SDLWindow* win, short state) {
-        map<GingaScreenID, vector<SDLWindow*>*>::iterator i;
-        vector<SDLWindow*>* wins;
-
-        Thread::mutexLock(&wrMutex);
-        i = windowRenderMap.find(screenId);
-        if (i != windowRenderMap.end()) {
-                wins = i->second;
-                updateWindowList(wins, win, state);
-
-        } else {
-                wins = new vector<SDLWindow*>;
-                wins->push_back(win);
-                windowRenderMap[screenId] = wins;
-        }
-
-        Thread::mutexUnlock(&wrMutex);
-}
-
-void SDLDisplay::updateWindowList(
-                vector<SDLWindow*>* windows, SDLWindow* win, short state) {
-        switch (state) {
-                case SUW_SHOW:
-                        windows->push_back(win);
-                        break;
-
-                case SUW_HIDE:
-                        removeFromWindowList(windows, win);
-                        break;
-
-                case SUW_RAISETOTOP:
-                        removeFromWindowList(windows, win);
-                        windows->push_back(win);
-                        break;
-
-                case SUW_LOWERTOBOTTOM:
-                        removeFromWindowList(windows, win);
-                        windows->insert(windows->begin(), win);
-                        break;
-
-                default:
-                        break;
-        }
-}*/
-
-void
-SDLDisplay::removeFromWindowList (vector<SDLWindow *> *windows,
-                                       SDLWindow *win)
-{
-  vector<SDLWindow *>::iterator i;
-
-  i = windows->begin ();
-  while (i != windows->end ())
-    {
-      if ((*i) == win)
-        {
-          windows->erase (i);
-          i = windows->begin ();
-        }
-      else
-        {
-          ++i;
-        }
-    }
-}
-
-SDL_Window *
-SDLDisplay::getUnderlyingWindow (GingaWindowID winId)
-{
-  SDL_Window *window = NULL;
-  Uint32 wid;
-
-  checkMutexInit ();
-
-  lockSDL ();
-
-  wid = (Uint32) (unsigned long)winId;
-  window = SDL_GetWindowFromID (wid);
-
-  if (window == NULL)
-    {
-      clog << "SDLDisplay::getUnderlyingWindow ";
-      clog << "can't find id '" << wid;
-      clog << "'" << endl;
-    }
-
-  unlockSDL ();
-
-  return window;
 }
 
 bool

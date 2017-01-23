@@ -165,7 +165,6 @@ public:
   void printData (NclPlayerData *data);
   void setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider);
 
-  void setBackgroundImage (string uri);
   void setParentLayout (void *parentLayout);
   string getScreenShot ();
 
