@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLEventBuffer.h"
 #include "SDLInputEvent.h"
 
-#include "SDLDeviceScreen.h"
+#include "SDLScreen.h"
 
 GINGA_MB_BEGIN
 
