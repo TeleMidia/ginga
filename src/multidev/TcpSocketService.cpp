@@ -47,7 +47,7 @@ TcpSocketService::~TcpSocketService ()
 
 void
 TcpSocketService::addConnection (unsigned int deviceId, char *addr,
-                                 int srvPort, bool isLocalConnection)
+                                 int srvPort, arg_unused (bool isLocalConnection))
 {
   char *portStr;
   TCPClientConnection *tcpcc;
@@ -142,7 +142,7 @@ TcpSocketService::postTcpCommand (char *command, int npt, char *payloadDesc,
 
   while (i != connections->end ())
     {
-      i->second->post ((char *)s_com.c_str ());
+      i->second->post (deconst (char *, s_com.c_str ()));
       ++i;
     }
 

@@ -32,7 +32,7 @@ AnimationController::AnimationController (NclExecutionObject *execObj,
   this->player = player;
   this->event = event;
 
-  this->params = split (trim (value), ",");
+  this->params = split (xstrchomp (value), ",");
   this->propName = (event->getAnchor ())->getPropertyName ();
 
   this->duration = ::ginga::util::stof (anim->getDuration ());
@@ -224,7 +224,6 @@ AnimationController::loadInitValues ()
 
       this->targetRegion
           = descriptor->getFormatterRegion ()->getLayoutRegion ();
-      ;
       for (i = 0; i < this->propertySingleNames.size (); i++)
         {
           value = player->getPropertyValue (this->propertySingleNames[i]);

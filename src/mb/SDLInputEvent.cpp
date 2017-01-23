@@ -53,7 +53,7 @@ SDLInputEvent::SDLInputEvent (int type, void *data)
 {
   event.type = SDL_USEREVENT;
   event.user.code = type;
-  event.user.data1 = (void *)(ET_USEREVENT.c_str ());
+  event.user.data1 = deconst (void *, ET_USEREVENT.c_str ());
   event.user.data2 = data;
 
   x = 0;
@@ -288,14 +288,14 @@ SDLInputEvent::isApplicationType ()
 }
 
 void
-SDLInputEvent::setAxisValue (int x, int y, int z)
+SDLInputEvent::setAxisValue (int x, int y, arg_unused (int z))
 {
   this->x = x;
   this->y = y;
 }
 
 void
-SDLInputEvent::getAxisValue (int *x, int *y, int *z)
+SDLInputEvent::getAxisValue (int *x, int *y, arg_unused (int *z))
 {
   *x = 0;
   *y = 0;
@@ -309,16 +309,19 @@ SDLInputEvent::getAxisValue (int *x, int *y, int *z)
 
     case SDL_MOUSEBUTTONUP:
     case SDL_MOUSEBUTTONDOWN:
-      *x = event.button.x;
-      *y = event.button.y;
+      *x = (int) event.button.x;
+      *y = (int) event.button.y;
       break;
 
     case SDL_FINGERUP:
     case SDL_FINGERDOWN:
     case SDL_FINGERMOTION:
-      *x = event.tfinger.x;
-      *y = event.tfinger.y;
+      *x = (int) event.tfinger.x;
+      *y = (int) event.tfinger.y;
       break;
+
+    default:
+      g_assert_not_reached ();
     }
 }
 

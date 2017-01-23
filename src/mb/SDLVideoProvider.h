@@ -37,18 +37,13 @@ private:
 
 public:
   SDLVideoProvider (GingaScreenID screenId, const char *mrl);
-
   virtual ~SDLVideoProvider ();
-
   void setLoadSymbol (string symbol);
   string getLoadSymbol ();
-
   bool getHasVisual ();
-
   void *getProviderContent ();
   void setProviderContent (void *texture);
-
-  virtual void setAVPid (int aPid, int vPid){};
+  virtual void setAVPid (arg_unused (int aPid), arg_unused (int vPid)){};
   void feedBuffers ();
 
 private:

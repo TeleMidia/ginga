@@ -70,9 +70,9 @@ DataWrapperListener::autoMountOC (bool autoMountIt)
 }
 
 void
-DataWrapperListener::writeAITCommand (const string &appName,
+DataWrapperListener::writeAITCommand (arg_unused (const string &appName),
                                       const string &appUri,
-                                      IApplication *app)
+                                      arg_unused (IApplication *app))
 {
   // cmd::0::ait::${APP_ID}::${CONTROL_CODE}::${$BASE_URI}::{$INITIAL_ENTITY}::${URI}::${PROFILE}::${TRANSPORT_ID}
   cout << "cmd::0::ait::";
@@ -86,7 +86,7 @@ DataWrapperListener::writeAITCommand (const string &appName,
 }
 
 bool
-DataWrapperListener::startApp (const string &appName, IApplication *app)
+DataWrapperListener::startApp (const string &appName, arg_unused (IApplication *app))
 {
   map<string, string>::iterator i;
   string appUri;
@@ -173,7 +173,7 @@ DataWrapperListener::processAIT ()
       clog << "Transport protocol: 0x" << hex
            << app->getTransportProtocolId () << endl;
 
-      unsigned char controlCode = (*i)->getControlCode ();
+      unsigned char controlCode = (unsigned char) (*i)->getControlCode ();
       switch (controlCode)
         {
         case IApplication::CC_AUTOSTART:
@@ -327,7 +327,7 @@ DataWrapperListener::addNCLInfo (string name, string path)
 }
 
 void
-DataWrapperListener::serviceDomainMounted (string mountPoint,
+DataWrapperListener::serviceDomainMounted (arg_unused (string mountPoint),
                                            map<string, string> *names,
                                            map<string, string> *paths)
 {

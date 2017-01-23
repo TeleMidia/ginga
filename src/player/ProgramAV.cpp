@@ -145,8 +145,8 @@ ProgramAV::forcePids (string pValue)
   if (vals->size () == 3)
     {
       name = getNameFromMrl ((*vals)[0]);
-      setAVPid (name, ::ginga::util::stof ((*vals)[1]),
-                ::ginga::util::stof ((*vals)[2]));
+      setAVPid (name, xstrto_int ((*vals)[1]),
+                xstrto_int ((*vals)[2]));
     }
 
   delete vals;
@@ -225,12 +225,13 @@ void
 ProgramAV::createPlayer (string mrl)
 {
   string name;
+  gint64 x;
   int pid;
 
   name = getNameFromMrl (mrl);
-  if (isNumeric ((void *)(name.c_str ())))
+  if (_xstrtoll (name.c_str (), &x))
     {
-      pid = ::ginga::util::stof (name);
+      pid = (int) x;
     }
   else
     {
@@ -284,12 +285,13 @@ IPlayer *
 ProgramAV::getPlayer (string mrl)
 {
   string name;
+  gint64 x;
   int pid;
 
   name = getNameFromMrl (mrl);
-  if (isNumeric ((void *)(name.c_str ())))
+  if (_xstrtoll (name.c_str (), &x))
     {
-      pid = ::ginga::util::stof (name);
+      pid = (int) x;
     }
   else
     {
@@ -339,7 +341,7 @@ ProgramAV::setPropertyValue (string pName, string pValue)
 
   if (pName.substr (0, 11) == "sbtvd-ts://")
     {
-      addPidName (getNameFromMrl (pName), ::ginga::util::stof (pValue));
+      addPidName (getNameFromMrl (pName), xstrto_int (pValue));
     }
   else if (pName == "createPlayer")
     {

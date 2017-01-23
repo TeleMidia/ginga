@@ -661,7 +661,7 @@ InputManager::setAxisValues (int x, int y, int z)
 }
 
 void
-InputManager::setAxisBoundaries (int x, int y, int z)
+InputManager::setAxisBoundaries (int x, int y, arg_unused (int z))
 {
   this->maxX = x;
   this->maxY = y;
@@ -744,8 +744,8 @@ InputManager::run ()
 }
 
 void
-InputManager::handleInputEvent (SDLInputEvent *inputEvent, int &pLastCode,
-                                int &lastCode, double &pTimeStamp,
+InputManager::handleInputEvent (SDLInputEvent *inputEvent, arg_unused (int &pLastCode),
+                                int &lastCode, arg_unused (double &pTimeStamp),
                                 double &timeStamp, int &mouseX, int &mouseY)
 {
   if (inputEvent->isMotionType ())

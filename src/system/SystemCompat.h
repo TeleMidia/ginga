@@ -91,22 +91,6 @@ extern "C" {
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-#ifndef INT64_C
-#define INT64_C(c) (c##LL)
-#endif // INT64_C
-
-#ifndef UINT64_C
-#define UINT64_C(c) (c##ULL)
-#endif // UINT64_C
-
-#ifndef __INT64_C
-#define __INT64_C int64_t
-#endif //__INT64_C
-
-#ifndef PRIx64
-#define PRIx64 "llx"
-#endif
-
 #if defined(_MSC_VER) && !defined(__MINGW32__)
 struct timezone
 {

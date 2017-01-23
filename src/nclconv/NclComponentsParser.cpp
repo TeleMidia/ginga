@@ -46,7 +46,7 @@ NclComponentsParser::parseMedia (DOMElement *parentElement,
     }
 
   elementNodeList = parentElement->getChildNodes ();
-  size = elementNodeList->getLength ();
+  size = (int) elementNodeList->getLength ();
 
   for (i = 0; i < size; i++)
     {
@@ -107,7 +107,7 @@ NclComponentsParser::parseContext (DOMElement *parentElement,
     }
 
   elementNodeList = parentElement->getChildNodes ();
-  size = elementNodeList->getLength ();
+  size = (int) elementNodeList->getLength ();
 
   for (i = 0; i < size; i++)
     {
@@ -187,7 +187,7 @@ NclComponentsParser::posCompileContext (DOMElement *parentElement,
   void *elementObject;
 
   elementNodeList = parentElement->getChildNodes ();
-  size = elementNodeList->getLength ();
+  size = (int) elementNodeList->getLength ();
 
   for (i = 0; i < size; i++)
     {

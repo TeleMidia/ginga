@@ -38,69 +38,54 @@ protected:
 public:
   NetworkProvider (string address, int port, string protocol);
   ~NetworkProvider ();
-
-  virtual void setListener (ITProviderListener *listener){};
-  virtual void attachFilter (IFrontendFilter *filter){};
-  virtual void removeFilter (IFrontendFilter *filter){};
-
+  virtual void setListener (arg_unused (ITProviderListener *listener)){};
+  virtual void attachFilter (arg_unused (IFrontendFilter *filter)){};
+  virtual void removeFilter (arg_unused (IFrontendFilter *filter)){};
   virtual short
   getCaps ()
   {
     return capabilities;
   };
-
   virtual bool
   tune ()
   {
     if (callServer () > 0)
-      {
-        return true;
-      }
-
+      return true;
     return false;
   };
-
   virtual Channel *
   getCurrentChannel ()
   {
     return NULL;
   }
-
   virtual bool
-  getSTCValue (uint64_t *stc, int *valueType)
+  getSTCValue (arg_unused (uint64_t *stc), arg_unused (int *valueType))
   {
     return false;
   }
-
   virtual bool
-  changeChannel (int factor)
+  changeChannel (arg_unused (int factor))
   {
     return false;
   }
-
   bool
-  setChannel (string channelValue)
+  setChannel (arg_unused (string channelValue))
   {
     return false;
   }
-
   virtual int
-  createPesFilter (int pid, int pesType, bool compositeFiler)
+  createPesFilter (arg_unused (int pid), arg_unused (int pesType),
+                   arg_unused (bool compositeFiler))
   {
-
     return -1;
   }
-
   virtual string
   getPesFilterOutput ()
   {
     return "";
   }
-
   virtual void close (){};
-
   virtual int callServer ();
-
   virtual char *receiveData (int *len);
 };
 

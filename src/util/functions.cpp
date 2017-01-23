@@ -25,63 +25,9 @@ extern "C" {
 #include <dirent.h>
 }
 
-#ifndef _MSC_VER
-#define IS_DIRECTORY(st_mode) (((st_mode)&S_IFMT) == S_IFDIR)
-#define IS_LINK(st_mode) (((st_mode)&S_IFMT) == S_IFLNK)
-#define IS_REGULAR(st_mode) (((st_mode)&S_IFMT) == S_IFREG)
-#include <dirent.h>
-typedef struct dirent DIRENT;
-#include <sys/time.h>
-#include <sys/resource.h>
-#else // _MSC_VER
-#define IS_DIRECTORY(st_mode) (((st_mode)&S_IFMT) == S_IFDIR)
-#define IS_LINK(st_mode) 0
-#define IS_REGULAR(st_mode) (((st_mode)&S_IFMT) == S_IFREG)
-#define lstat stat
-#include <windows.h>
-#include <double.h>
-#endif
-
 GINGA_UTIL_BEGIN
 
 string userCurrentPath;
-
-string
-ultostr (unsigned long int value)
-{
-  string strValue;
-
-  char dst[32];
-  char digits[32];
-  unsigned long int i = 0, j = 0, n = 0;
-
-  do
-    {
-      n = value % 10;
-      digits[i++] = (n < 10 ? (char)n + '0' : (char)n - 10 + 'a');
-      value /= 10;
-
-      if (i > 31)
-        {
-          break;
-        }
-    }
-  while (value != 0);
-
-  n = i;
-  i--;
-
-  while (j < 32)
-    {
-      dst[j] = digits[i];
-      i--;
-      j++;
-    }
-
-  strValue.assign (dst, n);
-
-  return strValue;
-}
 
 double
 strUTCToSec (string utcValue)
@@ -168,59 +114,6 @@ strHexaToInt (string value)
 }
 
 string
-intToStrHexa (int value)
-{
-  stringstream str;
-  str << std::hex << std::uppercase << value;
-  return "0x" + str.str ();
-}
-
-string
-lowerCase (string s)
-{
-  for (unsigned int j = 0; j < s.length (); ++j)
-    {
-      s[j] = tolower (s[j]);
-    }
-  return s;
-}
-
-string
-upperCase (string s)
-{
-  if (s == "")
-    {
-      return "";
-    }
-
-  for (unsigned int j = 0; j < s.length (); ++j)
-    {
-      s[j] = toupper (s[j]);
-    }
-  return s;
-}
-
-bool
-isNumeric (void *value)
-{
-  bool r = true;
-  char *str = (char *)value;
-
-  for (unsigned int i = 0; i < strlen (str); i++)
-    {
-      if (i == 0)
-        if ((str[i] < '0' || str[i] > '9') && (str[i] != '.')
-            && (str[i] != '+' || str[i] != '-'))
-          r = false;
-
-      if ((str[i] < '0' || str[i] > '9') && (str[i] != '.'))
-        r = false;
-    }
-
-  return r;
-}
-
-string
 itos (double i)
 {
   ostringstream os;
@@ -245,13 +138,7 @@ itof (int i)
   return ::ginga::util::stof (s);
 }
 
-string
-getUserCurrentPath ()
-{
-  return userCurrentPath;
-}
-
-vector<string> *
+static vector<string> *
 localSplit (string str, string delimiter)
 {
   vector<string> *splited;
@@ -343,23 +230,6 @@ split (string str, string delimiter, string pos_delimiter)
   return splited;
 }
 
-string
-trim (string str)
-{
-  string strR = "";
-
-  string::size_type lastPos = str.find_first_not_of (" ", 0);
-  string::size_type pos = str.find_first_of (" ", lastPos);
-
-  while (string::npos != pos || string::npos != lastPos)
-    {
-      strR = strR + str.substr (lastPos, pos - lastPos);
-      lastPos = str.find_first_not_of (" ", pos);
-      pos = str.find_first_of (" ", lastPos);
-    }
-  return strR;
-}
-
 double
 getPercentualValue (string value)
 {
@@ -400,7 +270,6 @@ bool
 fileExists (string fileName)
 {
   string currentPath;
-  char path[PATH_MAX] = "";
 
   if (fileName == "")
     {
@@ -520,12 +389,12 @@ getCurrentTimeMillis ()
       first_call = false;
       t0 = g_get_monotonic_time () * 1000;
     }
-  return (g_get_monotonic_time () * 1000) - t0;
+  return (double)((g_get_monotonic_time () * 1000) - t0);
 }
 
 // factor is not in use. It will be removed.
 double
-getNextStepValue (double initValue, double target, int factor, double time,
+getNextStepValue (double initValue, double target, arg_unused (int factor), double time,
                   double initTime, double dur, int durStep)
 {
 
@@ -545,7 +414,7 @@ getNextStepValue (double initValue, double target, int factor, double time,
     }
   else
     {
-      numSteps = dur / (durStep * 1000);
+      numSteps = (int) (dur / (durStep * 1000));
       stepSize = (target - initValue) / numSteps;
 
       // clog << floor((time-initTime)/(durStep*1000)) << endl;

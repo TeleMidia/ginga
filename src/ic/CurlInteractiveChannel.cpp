@@ -238,10 +238,10 @@ CurlInteractiveChannel::releaseUrl ()
   curl_easy_cleanup (curl);
   curl = NULL;
 
-  if (fd > 0)
+  if (fd != NULL)
     {
       fclose (fd);
-      fd = 0;
+      fd = NULL;
     }
 
   return true;
@@ -252,7 +252,7 @@ CurlInteractiveChannel::writeCallBack (void *ptr, size_t size, size_t nmemb,
                                        void *stream)
 {
 
-  int w;
+  size_t w;
   FILE *fd;
   CurlInteractiveChannel *channel;
   IInteractiveChannelListener *l;
@@ -265,15 +265,15 @@ CurlInteractiveChannel::writeCallBack (void *ptr, size_t size, size_t nmemb,
   if (fd != NULL)
     {
       w = fwrite (ptr, 1, (size * nmemb), fd);
-      if (w != (int)(size * nmemb))
+      if (w != size * nmemb)
         {
           clog << "CurlInteractiveChannel::writeCallBack can't write";
           clog << endl;
         }
       else if (l != NULL)
         {
-          l->receiveDataPipe (fd, w);
-          l->receiveDataStream ((char *)ptr, w);
+          l->receiveDataPipe (fd, (int) w);
+          l->receiveDataStream ((char *) ptr, (int) w);
         }
     }
   else

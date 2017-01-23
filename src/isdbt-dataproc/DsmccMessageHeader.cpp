@@ -39,7 +39,7 @@ DsmccMessageHeader::readMessageFromFile (string fileName, unsigned int pid)
     {
       this->fileName = fileName;
 
-      rval = fread ((void *)&(bytes[0]), 1, 12, fd);
+      rval = (int) fread ((void *)&(bytes[0]), 1, 12, fd);
       if (rval == 12)
         {
           this->protocolDiscriminator = (bytes[0] & 0xFF);

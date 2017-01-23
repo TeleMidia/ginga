@@ -24,7 +24,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_SYSTEM_BEGIN
 
 #if WITH_MULTIDEVICE
-bool
+static bool
 getZipError (zip *file, string *strError)
 {
   bool hasError = false;
@@ -49,7 +49,7 @@ printZipError (string function, string strError)
   clog << strError << "'" << endl;
 }
 
-int
+static int
 zipwalker (void *zipfile, string initdir, string dirpath, string iUriD)
 {
   DIR *d;
@@ -59,11 +59,9 @@ zipwalker (void *zipfile, string initdir, string dirpath, string iUriD)
   string fullpath;
   struct zip *file;
   int len_dirpath;
-  int len_initdir;
   int ret = 0;
   string strDirName;
   string strError;
-  bool hasError;
 
   d = opendir (initdir.c_str ());
   if (d == NULL)
@@ -72,8 +70,7 @@ zipwalker (void *zipfile, string initdir, string dirpath, string iUriD)
     }
 
   file = (struct zip *)zipfile;
-  len_dirpath = dirpath.length ();
-  len_initdir = initdir.length ();
+  len_dirpath = (int) dirpath.length ();
 
   while ((dir = readdir (d)))
     {
@@ -86,7 +83,7 @@ zipwalker (void *zipfile, string initdir, string dirpath, string iUriD)
 
       strDirName.assign (dir->d_name, strlen (dir->d_name));
       fullpath = initdir + iUriD + strDirName;
-      if (fullpath.length () > len_dirpath)
+      if ((int) fullpath.length () > len_dirpath)
         {
           // Uses "/" as separator because is the default zip funcion
           // separator.
@@ -416,7 +413,6 @@ SystemCompat::zip_directory (const string &zipfile_path,
   int error_open;
   string dir_name;
   string partial_path;
-  int pos;
   string strError;
   string functionStr;
   size_t strPos;
@@ -506,7 +502,6 @@ SystemCompat::unzip_file (const char *zipname, const char *filedir)
   int k;
   int errorp;
   FILE *ofp;
-  int i;
   const char *cur_file_name;
   int name_len;
 
@@ -541,7 +536,7 @@ SystemCompat::unzip_file (const char *zipname, const char *filedir)
           continue;
         }
 
-      name_len = strlen (cur_file_name);
+      name_len = (int) strlen (cur_file_name);
 
       // open the file for writting
       char *filename = (char *)malloc ((name_len + 3) * sizeof (char));
@@ -578,7 +573,7 @@ SystemCompat::unzip_file (const char *zipname, const char *filedir)
               continue;
             }
 
-          while ((len = zip_fread (inf, buf, 1024)))
+          while ((len = (int) zip_fread (inf, buf, 1024)))
             {
               fwrite (buf, sizeof (char), len, ofp);
 
@@ -852,12 +847,6 @@ SystemCompat::appendGingaInstallPrefix (string relUrl)
   return absuri;
 }
 
-#if defined(_MSC_VER)
-#define DELTA_EPOCH_IN_MICROSECS 11644473600000000Ui64
-#else
-#define DELTA_EPOCH_IN_MICROSECS 11644473600000000ULL
-#endif
-
 int
 SystemCompat::getUserClock (struct timeval *usrClk)
 {
@@ -1086,7 +1075,7 @@ SystemCompat::readPipe (PipeDescriptor pd, char *buffer, int buffSize)
 
   bytesRead = (int)bRead;
 #else
-  bytesRead = read (pd, buffer, buffSize);
+  bytesRead = (int) read (pd, buffer, buffSize);
 #endif
 
   return bytesRead;
@@ -1114,7 +1103,7 @@ SystemCompat::writePipe (PipeDescriptor pd, char *data, int dataSize)
 
   assert (bytesWritten == dataSize);
 #else
-  bytesWritten = write (pd, (void *)data, dataSize);
+  bytesWritten = (int) write (pd, (void *)data, dataSize);
 #endif
 
   return bytesWritten;

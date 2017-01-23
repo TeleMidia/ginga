@@ -33,9 +33,6 @@ AdapterSsmlPlayer::createPlayer ()
   clog << "AdapterSsmlPlayer::createPlayer '" << mrl << "'" << endl;
 
   string paramValue;
-  NclCascadingDescriptor *descriptor;
-
-  bool hasVisual = false;
 
   player = new SsmlPlayer (myScreen, mrl.c_str ());
 

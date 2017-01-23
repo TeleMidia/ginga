@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "DsmccNPTEndpoint.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_DATAPROC_BEGIN
 
 DsmccNPTEndpoint::DsmccNPTEndpoint () : DsmccMpegDescriptor (0x02)

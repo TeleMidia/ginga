@@ -45,7 +45,7 @@ using namespace ::ginga::multidev;
 #define usage_error(fmt, ...) _error (TRUE, fmt, ## __VA_ARGS__)
 #define print_error(fmt, ...) _error (FALSE, fmt, ## __VA_ARGS__)
 
-static void
+static void G_GNUC_PRINTF (2,3)
 _error (gboolean try_help, const gchar *format, ...)
 {
   va_list args;
@@ -60,7 +60,7 @@ _error (gboolean try_help, const gchar *format, ...)
     g_fprintf (stderr, "Try '%s --help' for more information.\n", me);
 }
 
-void
+static void
 printHelp ()
 {
   cout << endl << "Usage: ginga [OPTIONS]... [<--ncl> NCLFILE]" << endl;
@@ -163,26 +163,7 @@ main (int argc, char *argv[])
   string file = "", param = "", bgUri = "", cmdFile = "", tSpec = "";
   string interfaceId = "";
 
-  int i, devClass = 0;
-  int xOffset = 0, yOffset = 0, w = 0, h = 0, maxTransp = 0;
-  double delayTime = 0;
-  double ocDelay = 0;
-  int deviceSrvPort = 22222;
-  bool isRemoteDoc = false;
-  bool removeOCFilter = false;
-  bool forceQuit = true;
-  bool enableGfx = true;
-  bool autoMount = false;
-  bool hasInteract = true;
-  bool hasOCSupport = true;
-  bool disableUC = false;
-  bool exitOnEnd = false;
-  bool disableFKeys = false;
-  bool useMulticast = true;
-  bool nptPrinter = false;
-  short logDest = SystemCompat::LOG_NULL;
-
-  for (i = 1; i < argc; i++)
+  for (int i = 1; i < argc; i++)
     {
 
       if ((strcmp (argv[i], "-h") == 0)
@@ -206,63 +187,25 @@ main (int argc, char *argv[])
         }
       else if ((strcmp (argv[i], "--enable-log") == 0) && ((i + 1) < argc))
         {
-          if (strcmp (argv[i + 1], "file") == 0)
-            {
-              logDest = SystemCompat::LOG_FILE;
-            }
-          else if (strcmp (argv[i + 1], "stdout") == 0)
-            {
-              logDest = SystemCompat::LOG_STDO;
-            }
         }
       else if ((strcmp (argv[i], "--force-quit") == 0) && ((i + 1) < argc))
         {
-          if (strcmp (argv[i + 1], "false") == 0)
-            {
-              forceQuit = false;
-            }
         }
       else if ((strcmp (argv[i], "--x-offset") == 0) && ((i + 1) < argc))
         {
-          if (isNumeric (argv[i + 1]))
-            {
-              param = argv[i + 1];
-              xOffset = ::ginga::util::stof (param);
-            }
         }
       else if ((strcmp (argv[i], "--y-offset") == 0) && ((i + 1) < argc))
         {
-          if (isNumeric (argv[i + 1]))
-            {
-              param = argv[i + 1];
-              yOffset = ::ginga::util::stof (param);
-            }
         }
       else if ((strcmp (argv[i], "--set-width") == 0) && ((i + 1) < argc))
         {
-          if (isNumeric (argv[i + 1]))
-            {
-              param = argv[i + 1];
-              w = ::ginga::util::stof (param);
-            }
         }
       else if ((strcmp (argv[i], "--set-height") == 0) && ((i + 1) < argc))
         {
-          if (isNumeric (argv[i + 1]))
-            {
-              param = argv[i + 1];
-              h = ::ginga::util::stof (param);
-            }
         }
       else if ((strcmp (argv[i], "--set-max-transp") == 0)
                && ((i + 1) < argc))
         {
-
-          if (isNumeric (argv[i + 1]))
-            {
-              param = argv[i + 1];
-              maxTransp = ::ginga::util::stof (param);
-            }
         }
       else if ((strcmp (argv[i], "--set-bg-image") == 0)
                && ((i + 1) < argc))
@@ -281,85 +224,46 @@ main (int argc, char *argv[])
               clog << " file does not exist" << endl;
             }
         }
-      else if (((strcmp (argv[i], "--device-class") == 0)
-                || (strcmp (argv[i], "--dev-class") == 0))
-               && ((i + 1) < argc))
-        {
-
-          if (strcmp (argv[i + 1], "1") == 0
-              || strcmp (argv[i + 1], "passive") == 0)
-            {
-
-              devClass = 1;
-            }
-          else if (strcmp (argv[i + 1], "2") == 0
-                   || strcmp (argv[i + 1], "active") == 0)
-            {
-
-              devClass = 2;
-            }
-        }
       else if (strcmp (argv[i], "--disable-multicast") == 0)
         {
-          useMulticast = false;
         }
       else if (strcmp (argv[i], "--device-srv-port") == 0)
         {
-          if (isNumeric (argv[i + 1]) && ((i + 1) < argc))
-            {
-              deviceSrvPort = ::ginga::util::stof (argv[i + 1]);
-            }
         }
       else if (strcmp (argv[i], "--enable-automount") == 0)
         {
-          autoMount = true;
         }
       else if (strcmp (argv[i], "--enable-remove-oc-filter") == 0)
         {
-          removeOCFilter = true;
         }
       else if ((strcmp (argv[i], "--enable-cmdfile") == 0
                 || strcmp (argv[i], "--set-cmdfile") == 0)
                && ((i + 1) < argc))
         {
-
-          cmdFile.assign (argv[i + 1], strlen (argv[i + 1]));
-          clog << "argv = '" << argv[i + 1] << "' cmdFile = '";
-          clog << cmdFile << "'" << endl;
         }
       else if (strcmp (argv[i], "--disable-unload") == 0)
         {
-          disableUC = true;
         }
       else if (strcmp (argv[i], "--disable-interactivity") == 0)
         {
-          hasInteract = false;
         }
       else if (strcmp (argv[i], "--disable-oc") == 0)
         {
-          hasOCSupport = false;
         }
       else if (strcmp (argv[i], "--enable-nptprinter") == 0)
         {
-          nptPrinter = true;
-          hasOCSupport = false;
-          hasInteract = false;
         }
       else if ((strcmp (argv[i], "--set-tuner") == 0) && ((i + 1) < argc))
         {
-          tSpec.assign (argv[i + 1], strlen (argv[i + 1]));
         }
       else if (strcmp (argv[i], "--set-interfaceId") == 0)
         {
-          interfaceId.assign (argv[i + 1], strlen (argv[i + 1]));
         }
       else if (strcmp (argv[i], "--set-exitonend") == 0)
         {
-          exitOnEnd = true;
         }
       else if (strcmp (argv[i], "--disable-fkeys") == 0)
         {
-          disableFKeys = true;
         }
     }
 
@@ -373,7 +277,11 @@ main (int argc, char *argv[])
   int xoffset, yoffset, width, height;
 
   g_set_prgname ("ginga");
-  g_assert (file != "");
+  if (file == "")
+    {
+      usage_error ("missing file operand");
+      exit (EXIT_FAILURE);
+    }
 
   _Ginga_Display = new DisplayManager ();
   screen = Ginga_Display->createScreen (argc, argv);

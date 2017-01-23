@@ -24,6 +24,9 @@ using namespace ::ginga::util;
 
 #include "LuaPlayer.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+GINGA_PRAGMA_DIAG_IGNORE (-Wunused-macros)
+
 GINGA_PLAYER_BEGIN
 
 #define ASSERT_NOT_REACHED (assert (!"reached"), ::abort ())
@@ -48,7 +51,7 @@ GINGA_PLAYER_BEGIN
 
 #define warn(fmt, ...) __clog ("Warning: " fmt, ##__VA_ARGS__)
 
-#if LUAPLAYER_ENABLE_TRACE
+#if defined LUAPLAYER_ENABLE_TRACE && LUAPLAYER_ENABLE_TRACE
 #define trace0() trace ("%s", "")
 #define trace(fmt, ...) __clog ("%s: " fmt, __FUNCTION__, ##__VA_ARGS__)
 
@@ -106,7 +109,8 @@ static const evt_map_t evt_map_ncl_action[] = {
 static int
 evt_map_compare (const void *e1, const void *e2)
 {
-  return strcmp (((evt_map_t *)e1)->key, ((evt_map_t *)e2)->key);
+     return g_strcmp0 (deconst (evt_map_t *, e1)->key,
+                       deconst (evt_map_t *, e2)->key);
 }
 
 static const evt_map_t *
@@ -117,14 +121,14 @@ _evt_map_get (const evt_map_t map[], size_t size, const char *key)
                                      evt_map_compare);
 }
 
-#define evt_map_get(map, key)                                              \
-  ((ptrdiff_t) ((_evt_map_get (map, nelementsof (map), key))->value))
+#define evt_map_get(map, key)                                           \
+  ((ptrdiff_t)((_evt_map_get (map, nelementsof (map), key))->value))
 
 #define evt_ncl_get_type(type) evt_map_get (evt_map_ncl_type, type)
 
 #define evt_ncl_get_action(act) evt_map_get (evt_map_ncl_action, act)
 
-#define evt_ncl_send_attribution(nw, action, name, value)                  \
+#define evt_ncl_send_attribution(nw, action, name, value)\
   ncluaw_send_ncl_event (nw, "attribution", action, name, value)
 
 #define evt_ncl_send_presentation(nw, action, name)                        \
@@ -155,7 +159,7 @@ pthread_t LuaPlayer::nw_update_tid;
 // destroyed whenever the last NCLua state is destroyed.
 
 void *
-LuaPlayer::nw_update_thread (void *data)
+LuaPlayer::nw_update_thread (arg_unused (void *data))
 {
   trace ("starting update thread");
   while (true)
@@ -651,8 +655,3 @@ tail:
 }
 
 GINGA_PLAYER_END
-
-// Local variables:
-// mode: c++
-// c-file-style: "k&r"
-// End:

@@ -20,6 +20,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ic/InteractiveChannelManager.h"
 
+#include "system/SystemCompat.h"
+using namespace ::ginga::system;
+
 #include "util/functions.h"
 using namespace ::ginga::util;
 
@@ -118,7 +121,7 @@ PrefetchManager::releaseContents ()
           resource = i->first;
           clog << "PrefetchManager::releaseContents trying to remove '";
           clog << resource << "'" << endl;
-          remove ((char *)(resource.c_str ()));
+          remove (deconst (char *, resource.c_str ()));
           ++i;
         }
       localToRemoteUris->clear ();
@@ -371,7 +374,7 @@ PrefetchManager::scheduleContent (string remoteUri, string localUri)
 }
 
 void
-PrefetchManager::receiveDataPipe (FILE *fd, int size)
+PrefetchManager::receiveDataPipe (arg_unused (FILE *fd), int size)
 {
   string txt = "", nFiles;
 
@@ -449,7 +452,7 @@ PrefetchManager::getScheduledContents ()
     {
       i = scheduledLocalUris->begin ();
       j = scheduledRemoteUris->begin ();
-      filesSched = scheduledLocalUris->size ();
+      filesSched = (int) scheduledLocalUris->size ();
       kbytes = 0;
       filesDown = 0;
       while (i != scheduledLocalUris->end ())

@@ -20,6 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FileSystemProvider.h"
 #include "IProviderListener.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_TUNER_BEGIN
 
 FileSystemProvider::FileSystemProvider (string fileName)
@@ -64,13 +66,13 @@ FileSystemProvider::getCurrentChannel ()
 }
 
 bool
-FileSystemProvider::getSTCValue (uint64_t *stc, int *valueType)
+FileSystemProvider::getSTCValue (arg_unused (uint64_t *stc), arg_unused (int *valueType))
 {
   return false;
 }
 
 bool
-FileSystemProvider::changeChannel (int factor)
+FileSystemProvider::changeChannel (arg_unused (int factor))
 {
   return false;
 }
@@ -83,10 +85,9 @@ FileSystemProvider::setChannel (string channelValue)
 }
 
 int
-FileSystemProvider::createPesFilter (int pid, int pesType,
-                                     bool compositeFiler)
+FileSystemProvider::createPesFilter (arg_unused (int pid), arg_unused (int pesType),
+                                     arg_unused (bool compositeFiler))
 {
-
   return -1;
 }
 
@@ -147,7 +148,7 @@ FileSystemProvider::receiveData (int *len)
   char *buff = NULL;
   *len = 0;
 
-  if (fileDescriptor > 0)
+  if (fileDescriptor != NULL)
     {
       buff = new char[BUFFSIZE];
       *len = fread ((void *)buff, 1, BUFFSIZE, fileDescriptor);

@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "EventInfo.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_TSPARSER_BEGIN
 
 EventInfo::EventInfo ()
@@ -61,9 +63,9 @@ EventInfo::convertMJDtoUTC (unsigned int mjd)
   struct tm start;
   int year, month, day, k, weekDay;
 
-  year = ((mjd - 15078.2) / 365.25);
-  month = ((mjd - 14956.1 - (int)(year * 365.25)) / 30.6001);
-  day = mjd - 14956 - ((int)(year * 365.25)) - ((int)(month * 30.6001));
+  year = (int) ((mjd - 15078.2) / 365.25);
+  month = (int) ((mjd - 14956.1 - (int)(year * 365.25)) / 30.6001);
+  day = (int) mjd - 14956 - ((int)(year * 365.25)) - ((int)(month * 30.6001));
   if (month == 14 || month == 15)
     {
       k = 1;
@@ -443,7 +445,7 @@ EventInfo::getDurationEncoded ()
 unsigned short
 EventInfo::getLength ()
 {
-  return (descriptorsLoopLength + 12);
+  return (unsigned short) (descriptorsLoopLength + 12);
 }
 
 unsigned short
@@ -540,7 +542,10 @@ EventInfo::getRunningStatusDescription ()
     case 4:
       return "Running";
       break;
+
+      default:
       // 5-7 are reserved for future used
+        break;
     }
 
   return "";
@@ -627,7 +632,6 @@ EventInfo::process (char *data, size_t pos)
   pos += 2;
 
   remainingBytesDescriptor = descriptorsLoopLength;
-  size_t localpos = pos;
 
   while (remainingBytesDescriptor)
     {
@@ -639,70 +643,70 @@ EventInfo::process (char *data, size_t pos)
         { // pos = descriptorTag
         case DT_SHORT_EVENT:
           descriptor = new ShortEventDescriptor ();
-          localpos = descriptor->process (data, pos);
+          descriptor->process (data, pos);
           pos += value;
           descriptors->push_back (descriptor);
           break;
 
         case DT_EXTENDED_EVENT:
           descriptor = new ExtendedEventDescriptor ();
-          localpos = descriptor->process (data, pos);
+          descriptor->process (data, pos);
           pos += value;
           descriptors->push_back (descriptor);
           break;
 
         case DT_COMPONENT:
           descriptor = new ComponentDescriptor ();
-          localpos = descriptor->process (data, pos);
+          descriptor->process (data, pos);
           pos += value;
           descriptors->push_back (descriptor);
           break;
 
         case DT_CONTENT:
           descriptor = new ContentDescriptor ();
-          localpos = descriptor->process (data, pos);
+          descriptor->process (data, pos);
           pos += value;
           descriptors->push_back (descriptor);
           break;
 
         case DT_DIGITAL_COPY:
           descriptor = new DigitalCCDescriptor ();
-          localpos = descriptor->process (data, pos);
+          descriptor->process (data, pos);
           pos += value;
           descriptors->push_back (descriptor);
           break;
 
         case DT_AUDIO_COMPONENT:
           descriptor = new AudioComponentDescriptor ();
-          localpos = descriptor->process (data, pos);
+          descriptor->process (data, pos);
           pos += value;
           descriptors->push_back (descriptor);
           break;
 
         case DT_DATA_CONTENTS:
           descriptor = new DataContentDescriptor ();
-          localpos = descriptor->process (data, pos);
+          descriptor->process (data, pos);
           pos += value;
           descriptors->push_back (descriptor);
           break;
 
         case DT_SERIES:
           descriptor = new SeriesDescriptor ();
-          localpos = descriptor->process (data, pos);
+          descriptor->process (data, pos);
           pos += value;
           descriptors->push_back (descriptor);
           break;
 
         case DT_PARENTAL_RATING:
           descriptor = new ParentalRatingDescriptor ();
-          localpos = descriptor->process (data, pos);
+          descriptor->process (data, pos);
           pos += value;
           descriptors->push_back (descriptor);
           break;
 
         case DT_CONTENT_AVAILABILITY:
           descriptor = new ContentAvailabilityDescriptor ();
-          localpos = descriptor->process (data, pos);
+          descriptor->process (data, pos);
           pos += value;
           descriptors->push_back (descriptor);
           break;

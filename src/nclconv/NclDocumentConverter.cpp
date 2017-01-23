@@ -162,13 +162,8 @@ NclDocumentConverter::getNode (string nodeId)
 }
 
 bool
-NclDocumentConverter::removeNode (Node *node)
+NclDocumentConverter::removeNode (arg_unused (Node *node))
 {
-  NclDocument *document;
-  document
-      = (NclDocument *)NclDocumentParser::getObject ("return", "document");
-
-  // return document->removeDocument()
   return true;
 }
 

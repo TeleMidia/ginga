@@ -23,6 +23,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::ginga::util;
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+GINGA_PRAGMA_DIAG_IGNORE (-Wformat)
+
 GINGA_TUNER_BEGIN
 
 const string ISDBTProvider::iniFileName (GINGA_ISDBT_PATH);
@@ -100,7 +103,7 @@ ISDBTProvider::output_thread (void *ptr)
 
     try_again_write:
       if (ring_buffer_count_free_bytes (&(obj->output_buffer))
-          >= bytes_read)
+          >= (unsigned long) bytes_read)
         {
           pthread_mutex_lock (&(obj->output_mutex));
           addr = ring_buffer_write_address (&(obj->output_buffer));
@@ -172,7 +175,6 @@ ISDBTProvider::scanChannels ()
 
   FILE *fp = fopen (file_name.c_str (), "w");
 
-  int channel_id = 0;
   int first_pass = 1;
   int progress = 0;
 
@@ -314,6 +316,7 @@ ISDBTProvider::scanChannels ()
 
   cout << "cmd::0::tunerscanprogress::100%" << endl;
   fclose (fp);
+  return true;
 }
 
 void
@@ -583,7 +586,7 @@ ISDBTProvider::changeChannel (int factor)
 bool
 ISDBTProvider::setChannel (string channelValue)
 {
-  return frontend->changeFrequency (::ginga::util::stof (channelValue));
+  return frontend->changeFrequency (xstrto_uint (channelValue));
 }
 
 int

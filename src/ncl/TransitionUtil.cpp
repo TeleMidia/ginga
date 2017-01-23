@@ -166,6 +166,9 @@ TransitionUtil::getSubtypeCode (int type, string subtype)
         }
 
       break;
+
+    default:
+      g_assert_not_reached ();
     }
 
   return -1;

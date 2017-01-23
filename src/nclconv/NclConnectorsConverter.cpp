@@ -98,7 +98,7 @@ NclConnectorsConverter::addImportBaseToConnectorBase (void *parentObject,
 
 void *
 NclConnectorsConverter::createCausalConnector (DOMElement *parentElement,
-                                               void *objGrandParent)
+                                               arg_unused (void *objGrandParent))
 {
 
   string connectorId = "";
@@ -120,7 +120,7 @@ NclConnectorsConverter::createCausalConnector (DOMElement *parentElement,
 
 void *
 NclConnectorsConverter::createConnectorBase (DOMElement *parentElement,
-                                             void *objGrandParent)
+                                             arg_unused (void *objGrandParent))
 {
 
   ConnectorBase *connBase;
@@ -134,7 +134,7 @@ NclConnectorsConverter::createConnectorBase (DOMElement *parentElement,
 
 void *
 NclConnectorsConverter::createConnectorParam (DOMElement *parentElement,
-                                              void *objGrandParent)
+                                              arg_unused (void *objGrandParent))
 {
 
   Parameter *parameter;
@@ -190,7 +190,7 @@ NclConnectorsConverter::compileRoleInformation (Role *role,
 
 void *
 NclConnectorsConverter::createSimpleCondition (DOMElement *parentElement,
-                                               void *objGrandParent)
+                                               arg_unused (void *objGrandParent))
 {
 
   SimpleCondition *conditionExpression;
@@ -270,7 +270,7 @@ NclConnectorsConverter::createSimpleCondition (DOMElement *parentElement,
 
 void *
 NclConnectorsConverter::createCompoundCondition (DOMElement *parentElement,
-                                                 void *objGrandParent)
+                                                 arg_unused (void *objGrandParent))
 {
 
   CompoundCondition *conditionExpression;
@@ -319,7 +319,7 @@ NclConnectorsConverter::createCompoundCondition (DOMElement *parentElement,
 
 void *
 NclConnectorsConverter::createAttributeAssessment (
-    DOMElement *parentElement, void *objGrandParent)
+    DOMElement *parentElement, arg_unused (void *objGrandParent))
 {
 
   AttributeAssessment *attributeAssessment;
@@ -377,7 +377,7 @@ NclConnectorsConverter::createAttributeAssessment (
 
 void *
 NclConnectorsConverter::createValueAssessment (DOMElement *parentElement,
-                                               void *objGrandParent)
+                                               arg_unused (void *objGrandParent))
 {
 
   string attValue;
@@ -390,7 +390,7 @@ NclConnectorsConverter::createValueAssessment (DOMElement *parentElement,
 
 void *
 NclConnectorsConverter::createAssessmentStatement (
-    DOMElement *parentElement, void *objGrandParent)
+    DOMElement *parentElement, arg_unused (void *objGrandParent))
 {
 
   AssessmentStatement *assessmentStatement;
@@ -414,7 +414,7 @@ NclConnectorsConverter::createAssessmentStatement (
 
 void *
 NclConnectorsConverter::createCompoundStatement (DOMElement *parentElement,
-                                                 void *objGrandParent)
+                                                 arg_unused (void *objGrandParent))
 {
 
   CompoundStatement *compoundStatement;
@@ -451,7 +451,7 @@ NclConnectorsConverter::createCompoundStatement (DOMElement *parentElement,
 
 void *
 NclConnectorsConverter::createSimpleAction (DOMElement *parentElement,
-                                            void *objGrandParent)
+                                            arg_unused (void *objGrandParent))
 {
 
   SimpleAction *actionExpression;
@@ -628,7 +628,7 @@ NclConnectorsConverter::createSimpleAction (DOMElement *parentElement,
 
 void *
 NclConnectorsConverter::createCompoundAction (DOMElement *parentElement,
-                                              void *objGrandParent)
+                                              arg_unused (void *objGrandParent))
 {
 
   CompoundAction *actionExpression;
@@ -855,15 +855,13 @@ NclConnectorsConverter::addCompoundActionToCausalConnector (
 
 void
 NclConnectorsConverter::addAssessmentStatementToConstraintConnector (
-    void *parentObject, void *childObject)
+    arg_unused (void *parentObject), arg_unused (void *childObject))
 {
-
-  // TODO Auto-generated method stub
 }
 
 void
 NclConnectorsConverter::addCompoundStatementToConstraintConnector (
-    void *parentObject, void *childObject)
+    arg_unused (void *parentObject), arg_unused (void *childObject))
 {
 
   // TODO Auto-generated method stub
@@ -871,7 +869,7 @@ NclConnectorsConverter::addCompoundStatementToConstraintConnector (
 
 void
 NclConnectorsConverter::addConstraintConnectorToConnectorBase (
-    void *parentObject, void *childObject)
+    arg_unused (void *parentObject), arg_unused (void *childObject))
 {
 
   // TODO Auto-generated method stub
@@ -879,7 +877,7 @@ NclConnectorsConverter::addConstraintConnectorToConnectorBase (
 
 void *
 NclConnectorsConverter::createConstraintConnector (
-    DOMElement *parentElement, void *objGrandParent)
+    arg_unused (DOMElement *parentElement), arg_unused (void *objGrandParent))
 {
 
   // TODO Auto-generated method stub

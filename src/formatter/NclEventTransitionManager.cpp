@@ -129,7 +129,7 @@ NclEventTransitionManager::addEventTransition (
 
   // binary search
   beg = 0;
-  end = transitionEvents->size () - 1;
+  end = (int)(transitionEvents->size () - 1);
   while (beg <= end)
     {
       pos = (beg + end) / 2;
@@ -140,14 +140,14 @@ NclEventTransitionManager::addEventTransition (
           clog << "NclEventTransitionManager::addEventTransition ";
           clog << "event transition already exists" << endl;
           return;
-
         case -1:
           end = pos - 1;
           break;
-
         case 1:
           beg = pos + 1;
           break;
+        default:
+          g_assert_not_reached ();
         }
     }
 
@@ -179,7 +179,7 @@ NclEventTransitionManager::removeEventTransition (
 
   if (transitionEvents != NULL)
     {
-      size = transitionEvents->size ();
+      size = (int) transitionEvents->size ();
     }
 
   for (i = 0; i < size; i++)
@@ -199,11 +199,10 @@ NclEventTransitionManager::removeEventTransition (
               for (j = transitionEvents->begin ();
                    j != transitionEvents->end (); ++j)
                 {
-
                   if (*j == endTransition)
                     {
                       transitionEvents->erase (j);
-                      size = transitionEvents->size ();
+                      size = (int) transitionEvents->size ();
                       i = 0;
                       break;
                     }
@@ -213,11 +212,10 @@ NclEventTransitionManager::removeEventTransition (
           for (j = transitionEvents->begin ();
                j != transitionEvents->end (); ++j)
             {
-
               if (*j == transition)
                 {
                   transitionEvents->erase (j);
-                  size = transitionEvents->size ();
+                  size = (int) transitionEvents->size ();
                   i = 0;
                   break;
                 }
@@ -264,7 +262,7 @@ NclEventTransitionManager::prepare (bool wholeContent, double startTime,
   NclEventTransition *transition;
   unsigned int transIx, size;
 
-  if (wholeContent && startTime == 0.0)
+  if (wholeContent && xnumeq (startTime, 0.0))
     {
       Thread::mutexLock (&transMutex);
       startTransitionIndex[type] = 0;
@@ -273,7 +271,7 @@ NclEventTransitionManager::prepare (bool wholeContent, double startTime,
   else
     {
       transitionEvents = getTransitionEvents (type);
-      size = transitionEvents->size ();
+      size = (int) transitionEvents->size ();
       transIx = 0;
       Thread::mutexLock (&transMutex);
       startTransitionIndex[type] = transIx;
@@ -320,7 +318,7 @@ NclEventTransitionManager::start (double offsetTime)
   unsigned int transIx, size;
 
   transitionEvents = getTransitionEvents (ContentAnchor::CAT_TIME);
-  size = transitionEvents->size ();
+  size = (int) transitionEvents->size ();
 
   Thread::mutexLock (&transMutex);
   if (currentTransitionIndex.count (ContentAnchor::CAT_TIME) == 0)
@@ -402,7 +400,7 @@ NclEventTransitionManager::abort (double endTime, bool applicationType)
   Thread::mutexUnlock (&transMutex);
 
   transitionEvents = getTransitionEvents (ContentAnchor::CAT_TIME);
-  size = transitionEvents->size ();
+  size = (int) transitionEvents->size ();
 
   for (i = transIx; i < size; i++)
     {
@@ -539,7 +537,7 @@ NclEventTransitionManager::timeBaseNaturalEnd (int64_t timeValue,
 
           if (ev->getCurrentState () == EventUtil::ST_OCCURRING)
             {
-              if (ev->getEnd () > timeValue)
+              if (ev->getEnd () > (double) timeValue)
                 {
                   ev->setCurrentState (EventUtil::ST_SLEEPING);
                 }

@@ -65,9 +65,9 @@ NclLinkTransitionTriggerCondition::getBind ()
 }
 
 void
-NclLinkTransitionTriggerCondition::eventStateChanged (void *someEvent,
+NclLinkTransitionTriggerCondition::eventStateChanged (arg_unused (void *someEvent),
                                                       short transition,
-                                                      short previousState)
+                                                      arg_unused (short previousState))
 {
 
   if (this->transition == transition)

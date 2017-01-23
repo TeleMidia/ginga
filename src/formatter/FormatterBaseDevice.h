@@ -33,16 +33,16 @@ public:
 
 protected:
   bool newDeviceConnected (int newDevClass, int w, int h);
-  void connectedToBaseDevice (unsigned int domainAddr){};
+  void connectedToBaseDevice (arg_unused (unsigned int domainAddr)){};
   bool receiveRemoteEvent (int remoteDevClass, int eventType,
                            string eventContent);
   bool
-  receiveRemoteContent (int remoteDevClass, char *stream, int streamSize)
+  receiveRemoteContent (arg_unused (int remoteDevClass), arg_unused (char *stream), arg_unused (int streamSize))
   {
     return false;
   };
   bool
-  receiveRemoteContent (int remoteDevClass, string contentUri)
+  receiveRemoteContent (arg_unused (int remoteDevClass), arg_unused (string contentUri))
   {
     return false;
   };

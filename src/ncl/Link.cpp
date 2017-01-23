@@ -241,7 +241,7 @@ Link::getParentComposition ()
 unsigned int
 Link::getNumBinds ()
 {
-  return binds->size ();
+  return (unsigned int) binds->size ();
 }
 
 unsigned int
@@ -255,13 +255,12 @@ Link::getNumRoleBinds (Role *role)
       return 0;
     }
 
-  return i->second->size ();
+  return (unsigned int) i->second->size ();
 }
 
 vector<Bind *> *
 Link::getRoleBinds (Role *role)
 {
-  vector<Bind *> *roleBindList;
   map<string, vector<Bind *> *>::iterator i;
 
   i = roleBinds->find (role->getLabel ());
@@ -420,7 +419,7 @@ Link::updateConnector (Connector *newConnector)
       return;
     }
 
-  size = binds->size ();
+  size = (int) binds->size ();
   for (i = 0; i < size; i++)
     {
       bind = (Bind *)(*binds)[i];

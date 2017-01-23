@@ -98,25 +98,6 @@ ParentalRatingDescriptor::getCountryRatings ()
 void
 ParentalRatingDescriptor::print ()
 {
-  clog << "ParentalRatingDescriptor::print printing..." << endl;
-  clog << " -descriptorLength = " << getDescriptorLength () << endl;
-
-  if (countryRatings != NULL)
-    {
-      vector<Parental *>::iterator i;
-      Parental *parental;
-
-      for (i = countryRatings->begin (); i != countryRatings->end (); ++i)
-        {
-          parental = ((Parental *)(*i));
-
-          /*clog << " -country = "     << getCountryCode(parental);
-          clog << " -age = "         << getAge(parental);
-          clog << " -description = ";
-          clog << getContentDescription(parental);
-          clog << endl;*/
-        }
-    }
 }
 
 size_t

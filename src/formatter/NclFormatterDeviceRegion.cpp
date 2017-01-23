@@ -163,7 +163,7 @@ NclFormatterDeviceRegion::getRegion (string id)
   LayoutRegion *region;
 
   Thread::mutexLock (&rMutex);
-  size = sortedRegions->size ();
+  size = (int) sortedRegions->size ();
   for (i = 0; i < size; i++)
     {
       region = (LayoutRegion *)((*sortedRegions)[i]);
@@ -185,7 +185,7 @@ NclFormatterDeviceRegion::getRegionRecursively (string id)
   LayoutRegion *region, *auxRegion;
 
   Thread::mutexLock (&rMutex);
-  size = sortedRegions->size ();
+  size = (int) sortedRegions->size ();
   for (i = 0; i < size; i++)
     {
       region = (LayoutRegion *)((*sortedRegions)[i]);
@@ -303,7 +303,7 @@ NclFormatterDeviceRegion::toString ()
 
   str = "id: " + getId () + '\n';
   Thread::mutexLock (&rMutex);
-  size = sortedRegions->size ();
+  size = (int) sortedRegions->size ();
   Thread::mutexUnlock (&rMutex);
   for (i = 0; i < size; i++)
     {
@@ -349,57 +349,57 @@ NclFormatterDeviceRegion::removeRegions ()
 }
 
 void
-NclFormatterDeviceRegion::setBackgroundColor (Color *newBackgroundColor)
+NclFormatterDeviceRegion::setBackgroundColor (arg_unused (Color *newBackgroundColor))
 {
 }
 
 bool
-NclFormatterDeviceRegion::setBottom (double newBottom, bool isPercentual)
+NclFormatterDeviceRegion::setBottom (arg_unused (double newBottom), arg_unused (bool isPercentual))
 {
   return false;
 }
 
 bool
-NclFormatterDeviceRegion::setHeight (double newHeight, bool isPercentual)
+NclFormatterDeviceRegion::setHeight (double newHeight, arg_unused (bool isPercentual))
 {
-  this->height = (int)newHeight;
+  this->height = (int) newHeight;
   return true;
 }
 
 bool
-NclFormatterDeviceRegion::setLeft (double newLeft, bool isPercentual)
+NclFormatterDeviceRegion::setLeft (double newLeft, arg_unused (bool isPercentual))
 {
-  this->left = (int)newLeft;
+  this->left = (int) newLeft;
   return true;
 }
 
 bool
-NclFormatterDeviceRegion::setRight (double newRight, bool isPercentual)
+NclFormatterDeviceRegion::setRight (arg_unused (double newRight), arg_unused (bool isPercentual))
 {
   return false;
 }
 
 void
-NclFormatterDeviceRegion::setTitle (string newTitle)
+NclFormatterDeviceRegion::setTitle (arg_unused (string newTitle))
 {
 }
 
 bool
-NclFormatterDeviceRegion::setTop (double newTop, bool isPercentual)
+NclFormatterDeviceRegion::setTop (double newTop, arg_unused (bool isPercentual))
 {
   this->top = (int)newTop;
   return true;
 }
 
 bool
-NclFormatterDeviceRegion::setWidth (double newWidth, bool isPercentual)
+NclFormatterDeviceRegion::setWidth (double newWidth, arg_unused (bool isPercentual))
 {
   this->width = (int)newWidth;
   return true;
 }
 
 void
-NclFormatterDeviceRegion::setZIndex (int newZIndex)
+NclFormatterDeviceRegion::setZIndex (arg_unused (int newZIndex))
 {
 }
 
@@ -480,7 +480,7 @@ NclFormatterDeviceRegion::getParent ()
 }
 
 void
-NclFormatterDeviceRegion::setParent (LayoutRegion *parent)
+NclFormatterDeviceRegion::setParent (arg_unused (LayoutRegion *parent))
 {
 }
 
@@ -539,17 +539,17 @@ NclFormatterDeviceRegion::isDecorated ()
 }
 
 void
-NclFormatterDeviceRegion::setMovable (bool movable)
+NclFormatterDeviceRegion::setMovable (arg_unused (bool movable))
 {
 }
 
 void
-NclFormatterDeviceRegion::setResizable (bool resizable)
+NclFormatterDeviceRegion::setResizable (arg_unused (bool resizable))
 {
 }
 
 void
-NclFormatterDeviceRegion::setDecorated (bool decorated)
+NclFormatterDeviceRegion::setDecorated (arg_unused (bool decorated))
 {
 }
 
@@ -641,7 +641,7 @@ NclFormatterDeviceRegion::getDataEntity ()
 }
 
 int
-NclFormatterDeviceRegion::compareTo (void *arg0)
+NclFormatterDeviceRegion::compareTo (arg_unused (void *arg0))
 {
   return 0;
 }

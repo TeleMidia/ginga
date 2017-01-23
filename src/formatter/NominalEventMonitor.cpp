@@ -60,12 +60,11 @@ NominalEventMonitor::~NominalEventMonitor ()
 void
 NominalEventMonitor::unregisterFromTimeBase ()
 {
-  if (timeBaseProvider != NULL)
-    {
-      timeBaseProvider->removeTimeListener (timeBaseId, this);
-      timeBaseProvider->removeIdListener (this);
-      timeBaseProvider->removeLoopListener (timeBaseId, this);
-    }
+  if (timeBaseProvider == NULL)
+    return;
+  timeBaseProvider->removeTimeListener (timeBaseId, this);
+  timeBaseProvider->removeIdListener (this);
+  timeBaseProvider->removeLoopListener (timeBaseId, this);
 }
 
 void
@@ -202,7 +201,7 @@ NominalEventMonitor::timeBaseNaturalEnd (unsigned char contentId,
       clog << "' value '" << timeValue;
       clog << "'" << endl;
 
-      executionObject->timeBaseNaturalEnd (timeValue,
+      executionObject->timeBaseNaturalEnd ((gint64)timeValue,
                                            ContentAnchor::CAT_NPT);
     }
 }

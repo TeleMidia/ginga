@@ -94,7 +94,7 @@ SDLWindow::~SDLWindow ()
 }
 
 void
-SDLWindow::initialize (GingaWindowID windowID, GingaWindowID parentWindowID,
+SDLWindow::initialize (GingaWindowID windowID, arg_unused (GingaWindowID parentWindowID),
                        GingaScreenID screenId, int x, int y, int w, int h,
                        double z)
 {
@@ -237,15 +237,9 @@ SDLWindow::getMirrorSrc ()
 }
 
 void
-SDLWindow::setBgColor (int r, int g, int b, int alpha)
+SDLWindow::setBgColor (guint8 r, guint8 g, guint8 b, guint8 alpha)
 {
   releaseBGColor ();
-
-  if (r < 0 || g < 0 || b < 0)
-    {
-      return;
-    }
-
   bgColor = new Color (r, g, b, alpha);
 }
 
@@ -256,15 +250,9 @@ SDLWindow::getBgColor ()
 }
 
 void
-SDLWindow::setColorKey (int r, int g, int b)
+SDLWindow::setColorKey (guint8 r, guint8 g, guint8 b)
 {
   releaseColorKey ();
-
-  if (r < 0 || g < 0 || b < 0)
-    {
-      return;
-    }
-
   colorKey = new Color (r, g, b);
 }
 
@@ -275,15 +263,9 @@ SDLWindow::getColorKey ()
 }
 
 void
-SDLWindow::setWindowColor (int r, int g, int b, int alpha)
+SDLWindow::setWindowColor (guint8 r, guint8 g, guint8 b, guint8 alpha)
 {
   releaseWinColor ();
-
-  if (r < 0 || g < 0 || b < 0)
-    {
-      return;
-    }
-
   winColor = new Color (r, g, b, alpha);
 }
 
@@ -294,22 +276,15 @@ SDLWindow::getWindowColor ()
 }
 
 void
-SDLWindow::setBorder (int r, int g, int b, int alpha, int bWidth)
+SDLWindow::setBorder (guint8 r, guint8 g, guint8 b, guint8 alpha, int bWidth)
 {
   releaseBorderColor ();
-
   borderWidth = bWidth;
-
-  if (r < 0 || g < 0 || b < 0)
-    {
-      return;
-    }
-
   borderColor = new Color (r, g, b, alpha);
 }
 
 void
-SDLWindow::getBorder (int *r, int *g, int *b, int *alpha, int *bWidth)
+SDLWindow::getBorder (guint8 *r, guint8 *g, guint8 *b, guint8 *alpha, int *bWidth)
 {
 
   if (borderColor != NULL)
@@ -354,7 +329,7 @@ SDLWindow::setChildSurface (SDLSurface *iSur)
 }
 
 int
-SDLWindow::getCap (string cap)
+SDLWindow::getCap (arg_unused (string cap))
 {
   return 0;
 }
@@ -422,7 +397,7 @@ SDLWindow::lowerToBottom ()
 }
 
 void
-SDLWindow::setCurrentTransparency (int alpha)
+SDLWindow::setCurrentTransparency (guint8 alpha)
 {
   if (alpha != 255)
     {
@@ -438,7 +413,7 @@ SDLWindow::setCurrentTransparency (int alpha)
   lockTexture ();
   if (texture != NULL)
     {
-      if (SDL_SetTextureAlphaMod (texture, 255 - alpha) < 0)
+      if (SDL_SetTextureAlphaMod (texture, (guint8)(255 - alpha)) < 0)
         {
           clog << "SDLWindow::setCurrentTransparency SDL error: '";
           clog << SDL_GetError () << "'" << endl;
@@ -447,7 +422,7 @@ SDLWindow::setCurrentTransparency (int alpha)
   unlockTexture ();
 }
 
-int
+guint8
 SDLWindow::getTransparencyValue ()
 {
   return this->transparencyValue;
@@ -829,50 +804,17 @@ SDLWindow::renderFrom (SDLSurface *surface)
 }
 
 void
-SDLWindow::blit (SDLWindow *src)
+SDLWindow::blit (arg_unused (SDLWindow *src))
 {
-  /*SDL_Window* srcWin;
-  SDL_Surface* srcSur;
-
-  if (src != NULL) {
-          srcWin = (SDL_Window*)(src->getSurfaceContent());
-          srcWin->GetSurface(srcWin, &srcSur);
-
-          if (winSur != NULL) {
-                  SDLCHECK(winSur->SetBlittingFlags(
-                                  winSur,
-                                  (SDLSurfaceBlittingFlags)DSBLIT_BLEND_ALPHACHANNEL));
-
-                  SDLCHECK(winSur->Blit(
-                                  winSur, srcSur, NULL, src->getX(),
-  src->getY()));
-          }
-  }*/
 }
 
 void
-SDLWindow::stretchBlit (SDLWindow *src)
+SDLWindow::stretchBlit (arg_unused (SDLWindow *src))
 {
-  // SDLRectangle rect, *r = NULL;
-  // SDL_Window* srcWin;
-  // SDL_Surface* srcSur;
-
-  /*if (src != NULL) {
-          srcWin = (SDL_Window*)(src->getSurfaceContent());
-          srcWin->GetSurface(srcWin, &srcSur);
-
-          if (winSur != NULL) {
-                  SDLCHECK(winSur->SetBlittingFlags(
-                                  winSur,
-                                  (SDLSurfaceBlittingFlags)DSBLIT_BLEND_ALPHACHANNEL));
-
-                  SDLCHECK(winSur->StretchBlit(winSur, srcSur, NULL, NULL));
-          }
-  }*/
 }
 
 string
-SDLWindow::getDumpFileUri (int quality, int dumpW, int dumpH)
+SDLWindow::getDumpFileUri (int quality, arg_unused (int dumpW), arg_unused (int dumpH))
 {
   string uri;
   SDL_Surface *dumpUSur;
@@ -899,8 +841,9 @@ SDLWindow::getDumpFileUri (int quality, int dumpW, int dumpH)
     }
 
   SDLDeviceScreen::lockSDL ();
-  uri = string (g_get_tmp_dir ()) + "/" + "dump_"
-        + itos ((unsigned long)windowId) + ".jpg";
+  string id;
+  xstrassign (id, "%d", (int) windowId);
+  uri = string (g_get_tmp_dir ()) + "/" + "dump_" + id + ".jpg";
   int ret
       = SDLConvert::convertSurfaceToJPEG (uri.c_str (), dumpUSur, quality);
   if (ret == -1)

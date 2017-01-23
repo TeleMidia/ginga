@@ -168,7 +168,7 @@ Node::addAnchor (int index, Anchor *anchor)
 bool
 Node::addAnchor (Anchor *anchor)
 {
-  return Node::addAnchor (anchorList.size (), anchor);
+  return Node::addAnchor ((int) anchorList.size (), anchor);
 }
 
 Anchor *
@@ -247,7 +247,7 @@ Node::getPropertyAnchor (string propertyName)
 int
 Node::getNumAnchors ()
 {
-  return anchorList.size ();
+  return (int) anchorList.size ();
 }
 
 int
@@ -266,7 +266,7 @@ Node::indexOfAnchor (Anchor *anchor)
       n++;
     }
 
-  return anchorList.size () + 10;
+  return (int) anchorList.size () + 10;
 }
 
 bool

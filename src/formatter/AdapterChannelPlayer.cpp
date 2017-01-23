@@ -24,7 +24,6 @@ GINGA_FORMATTER_BEGIN
 
 AdapterChannelPlayer::AdapterChannelPlayer () : AdapterFormatterPlayer ()
 {
-  // clog << "AdapterChannelPlayer::AdapterChannelPlayer" << endl;
   typeSet.insert ("AdapterChannelPlayer");
 }
 

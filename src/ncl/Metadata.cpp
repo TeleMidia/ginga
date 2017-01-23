@@ -23,14 +23,12 @@ GINGA_NCL_BEGIN
 void *
 Metadata::getRDFTree ()
 {
-  // TODO Auto-generated method stub
   return NULL;
 }
 
 void
-Metadata::setRDFTree (void *tree)
+Metadata::setRDFTree (arg_unused (void *tree))
 {
-  // TODO Auto-generated method stub
 }
 
 GINGA_NCL_END

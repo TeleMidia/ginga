@@ -216,10 +216,10 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
   g_assert (entity->instanceOf ("ContentNode"));
 
   if (((ContentNode *)entity)->isSettingNode ())
-    return NULL; // nothing to do
+    return NULL;                // nothing to do
 
   content = entity->getContent ();
-  g_assert (content != NULL);
+  g_assert_nonnull (content);
 
   if (content->instanceOf ("ReferenceContent"))
     {
@@ -432,7 +432,7 @@ AdapterPlayerManager::isEmbeddedApp (NodeEntity *dataObject)
 bool
 AdapterPlayerManager::isEmbeddedAppMediaType (string mediaType)
 {
-  string upMediaType = upperCase (mediaType);
+  string upMediaType = xstrup (mediaType);
 
   if (upMediaType == "APPLICATION/X-GINGA-NCLUA"
       || upMediaType == "APPLICATION/X-GINGA-NCLET"

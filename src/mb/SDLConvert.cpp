@@ -16,10 +16,12 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
+
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
 #include "SDLConvert.h"
 
-#if _MSC_VER
-#include "atlimage.h"
+#ifdef _MSC_VER
+# include "atlimage.h"
 #endif
 
 GINGA_MB_BEGIN
@@ -30,42 +32,14 @@ GINGA_MB_BEGIN
 #define RMASK24 0xFF0000
 #define GMASK24 0x00FF00
 #define BMASK24 0x0000FF
-// 32 bit RGBA masks on big-endian
-#define RMASK32 0xFF000000
-#define GMASK32 0x00FF0000
-#define BMASK32 0x0000FF00
-#define AMASK32 0x000000FF
-// 24 bit shifts on big-endian
-#define RSHIFT24 16
-#define GSHIFT24 8
-#define BSHIFT24 0
-// 32 bit shifts on big-endian
-#define RSHIFT24 24
-#define GSHIFT24 16
-#define BSHIFT24 8
-#define ASHIFT24 0
 #else
-// 24 bit RGB masks on little-endian
 #define RMASK24 0x0000FF
 #define GMASK24 0x00FF00
 #define BMASK24 0xFF0000
-// 32 bit RGBA masks on little-endian
-#define RMASK32 0x000000FF
-#define GMASK32 0x0000FF00
-#define BMASK32 0x00FF0000
-#define AMASK32 0xFF000000
-// 24 bit shifts on little-endian
-#define RSHIFT24 0
-#define GSHIFT24 8
-#define BSHIFT24 16
-// 32 bit shifts on little-endian
-#define RSHIFT32 0
-#define GSHIFT32 8
-#define BSHIFT32 16
-#define ASHIFT32 24
 #endif
 
 #define OUTPUT_BUFFER_SIZE 4096
+
 typedef struct
 {
   struct jpeg_destination_mgr pub;
@@ -73,14 +47,16 @@ typedef struct
   Uint8 buffer[OUTPUT_BUFFER_SIZE];
 } sdlrw_dest_mgr;
 typedef sdlrw_dest_mgr *sdlrw_dest_ptr;
-void
+
+static void
 init_destination (j_compress_ptr cinfo)
 {
   sdlrw_dest_ptr dest = (sdlrw_dest_ptr)cinfo->dest;
   dest->pub.next_output_byte = dest->buffer;
   dest->pub.free_in_buffer = OUTPUT_BUFFER_SIZE;
 }
-int
+
+static int
 empty_output_buffer (j_compress_ptr cinfo)
 {
   sdlrw_dest_ptr dest = (sdlrw_dest_ptr)cinfo->dest;
@@ -94,7 +70,8 @@ empty_output_buffer (j_compress_ptr cinfo)
 
   return TRUE;
 }
-void
+
+static void
 term_destination (j_compress_ptr cinfo)
 {
   sdlrw_dest_ptr dest = (sdlrw_dest_ptr)cinfo->dest;
@@ -107,7 +84,8 @@ term_destination (j_compress_ptr cinfo)
         }
     }
 }
-void
+
+static void
 jpeg_SDL_RW_dest (j_compress_ptr cinfo, SDL_RWops *rwop)
 {
   sdlrw_dest_ptr dest;
@@ -126,6 +104,7 @@ jpeg_SDL_RW_dest (j_compress_ptr cinfo, SDL_RWops *rwop)
   dest->pub.next_output_byte = dest->buffer;
   dest->pub.free_in_buffer = OUTPUT_BUFFER_SIZE;
 }
+
 typedef struct
 {
   struct jpeg_error_mgr errmgr;
@@ -134,14 +113,15 @@ typedef struct
 } sdlrw_error_mgr;
 
 typedef sdlrw_error_mgr *sdlrw_error_ptr;
-void
+
+static void
 sdlrw_error_exit (j_common_ptr cinfo)
 {
   sdlrw_error_ptr err = (sdlrw_error_ptr)cinfo->err;
   longjmp (err->environ, 1);
 }
 
-int
+static int
 is_usable_format (SDL_Surface *surf)
 {
   SDL_PixelFormat *fmt = surf->format;
@@ -152,15 +132,9 @@ is_usable_format (SDL_Surface *surf)
                  == 8); // Aloss is 8 when there is no alpha channel to use.
 }
 
-SDL_Surface *
+static SDL_Surface *
 make_usable_format (SDL_Surface *surf)
 {
-  // SDL_PixelFormat pf_temp = { SDL_PIXELFORMAT_RGB332, NULL, 24, 3, 0, 0,
-  // 0,
-  // 8,
-  // RSHIFT24, GSHIFT24, BSHIFT24, 0,
-  // RMASK24, GMASK24, BMASK24, 0, 0, 255 };
-
   SDL_PixelFormat *pf = SDL_AllocFormat (SDL_PIXELFORMAT_RGB332);
   SDL_Surface *rgb_surf = SDL_ConvertSurface (surf, pf, SDL_SWSURFACE);
   SDL_FreeFormat (pf);
@@ -168,7 +142,7 @@ make_usable_format (SDL_Surface *surf)
   return rgb_surf;
 }
 
-int
+static int
 IMG_SaveJPG_RW (SDL_RWops *dest, SDL_Surface *surf, int quality)
 {
   struct jpeg_compress_struct cinfo;
@@ -244,7 +218,7 @@ int
 SDLConvert::convertSurfaceToJPEG (const char *filename, SDL_Surface *surf,
                                   int quality)
 {
-#if _MSC_VER
+#ifdef _MSC_VER
   char *bmpfile;
   bmpfile = new char[strlen (filename) + 5];
   strcpy (bmpfile, filename);

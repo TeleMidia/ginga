@@ -79,12 +79,12 @@ Comparator::evaluate (double first, double second, short comparator)
 { // 2 object -> comparable
 
   int ret;
-  if (first == second)
-    ret = 0;
+  if (first > second)
+    ret = 1;
   else if (first < second)
     ret = -1;
   else
-    ret = 1;
+    ret = 0;
 
   switch (comparator)
     {
@@ -166,7 +166,7 @@ Comparator::fromString (string comp)
     {
       if (comparator[i] >= 'A' && comparator[i] <= 'Z')
         {
-          comparator[i] = comparator[i] - 'A' + 'a';
+          comparator[i] = (char) (comparator[i] - 'A' + 'a');
         }
     }
 

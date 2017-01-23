@@ -20,6 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ActiveDeviceService.h"
 #include "MulticastSocketService.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_MULTIDEV_BEGIN
 
 ActiveDeviceDomain::ActiveDeviceDomain (bool useMulticast, int srvPort)
@@ -67,16 +69,8 @@ ActiveDeviceDomain::postConnectionRequestTask (int w, int h)
 }
 
 void
-ActiveDeviceDomain::receiveAnswerTask (char *task)
+ActiveDeviceDomain::receiveAnswerTask (arg_unused (char *task))
 {
-  /*unsigned int taskIP;
-
-  taskIP = getUIntFromStream(task);
-  if (taskIP != myIP) {
-          return; //this is'nt a warning
-  }
-
-  deviceService->connectedToBaseDevice(sourceIp);*/
 
   if (connected)
     {
@@ -84,20 +78,15 @@ ActiveDeviceDomain::receiveAnswerTask (char *task)
       clog << "received an answer task in connected state" << endl;
     }
 
-  // TODO: check if central domain IP + port received in task is correct
   clog << "ActiveDeviceDomain::receiveAnswerTask Connected with ";
   clog << "base multi-device domain" << endl;
   connected = true;
 }
 
 bool
-ActiveDeviceDomain::receiveMediaContentTask (char *task)
+ActiveDeviceDomain::receiveMediaContentTask (arg_unused (char *task))
 {
   clog << "ActiveDeviceDomain::receiveMediaContentTask" << endl;
-
-  /*return deviceService->receiveMediaContent(
-                  sourceIp, task, this->frameSize);*/
-
   return false;
 }
 
@@ -138,7 +127,7 @@ ActiveDeviceDomain::runControlTask ()
           return false;
         }
 
-      if (frameSize + HEADER_SIZE != bytesRecv)
+      if (frameSize + HEADER_SIZE != (unsigned int) bytesRecv)
         {
           delete[] task;
           taskIndicationFlag = false;

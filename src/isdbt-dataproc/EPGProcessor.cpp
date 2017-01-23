@@ -43,6 +43,8 @@ using namespace ::ginga::tsparser;
 
 #include "DataProcessor.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_DATAPROC_BEGIN
 
 EPGProcessor::EPGProcessor ()
@@ -154,7 +156,7 @@ EPGProcessor::setDataProcessor (void *dataProcessor)
  */
 
 void
-EPGProcessor::addEPGListener (IEPGListener *listener, string request,
+EPGProcessor::addEPGListener (IEPGListener *listener, arg_unused (string request),
                               unsigned char type)
 {
 
@@ -224,10 +226,8 @@ void
 EPGProcessor::decodeSdtSection (ITransportSection *section)
 {
   IServiceInfo *srvi;
-  unsigned int payloadSize, tableId, sectionNumber, lastSectionNumber;
-  unsigned int sectionVersion;
+  unsigned int payloadSize, sectionNumber;
   char *data;
-  unsigned short originalNetworkId;
   size_t pos;
   string newSectionName;
 
@@ -240,32 +240,13 @@ EPGProcessor::decodeSdtSection (ITransportSection *section)
       return;
     }
 
-  tableId = section->getTableId ();
-  sectionVersion = section->getVersionNumber ();
   sectionNumber = section->getSectionNumber ();
-  lastSectionNumber = section->getLastSectionNumber ();
   newSectionName = section->getSectionName () + itos (sectionNumber);
 
   data = new char[payloadSize];
   memcpy ((void *)&(data[0]), section->getPayload (), payloadSize);
 
   pos = 0;
-  originalNetworkId
-      = (((data[pos] << 8) & 0xFF00) | (data[pos + 1] & 0xFF));
-  /*
-                  clog << endl;
-                  clog << "OriginalNetworkId: " << originalNetworkId <<
-     endl;
-
-                  clog << "TableId: " << hex   << tableId   << dec  << endl;
-                  clog << "SectionVersion: "   << sectionVersion    << endl;
-                  clog << "SectionNumber:"     << sectionNumber     << endl;
-                  clog << "LastSectionNumber:" << lastSectionNumber << endl;
-                  clog << "CurrentNextId: "    <<
-     section->getCurrentNextIndicator();
-                  clog << endl;
-  */
-  // pos = 3; //jumping reserved... it points to service_id
   pos += 3;
   while (pos < payloadSize)
     {
@@ -410,9 +391,8 @@ EPGProcessor::checkProcessedSections (ITransportSection *section)
 void
 EPGProcessor::decodeEitSection (ITransportSection *section)
 {
-  unsigned int payloadSize, transportStreamId, originalNetworkId;
-  unsigned int segmentLastSectionNumber, lastTableId, sectionLength;
-  unsigned int sectionVersion, tableId, sectionNumber, lastSectionNumber;
+  unsigned int payloadSize;
+  unsigned int tableId, sectionNumber;
   string sectionName, newSectionName;
   IEventInfo *ei;
   char *data;
@@ -431,10 +411,7 @@ EPGProcessor::decodeEitSection (ITransportSection *section)
   clog << tableId << dec << " and payloadSize = ";
   clog << payloadSize << endl;
 
-  sectionLength = section->getSectionLength ();
-  sectionVersion = section->getVersionNumber ();
   sectionNumber = section->getSectionNumber ();
-  lastSectionNumber = section->getLastSectionNumber ();
   sectionName = section->getSectionName ();
   newSectionName = sectionName + itos (sectionNumber);
 
@@ -442,39 +419,9 @@ EPGProcessor::decodeEitSection (ITransportSection *section)
   memcpy ((void *)&(data[0]), section->getPayload (), payloadSize);
 
   pos = 0;
-  transportStreamId
-      = (((data[pos] << 8) & 0xFF00) | (data[pos + 1] & 0xFF));
-
   pos += 2;
-  originalNetworkId
-      = (((data[pos] << 8) & 0xFF00) | (data[pos + 1] & 0xFF));
-
   pos += 2;
-  segmentLastSectionNumber = data[pos];
   pos++;
-  lastTableId = data[pos];
-  /*
-                  clog << "TransportStreamId: "      << transportStreamId;
-                  clog << " and OriginalNetworkId: " << originalNetworkId <<
-     endl;
-                  //clog << endl;
-
-                  clog << "TableId: " << hex    << tableId   << dec  <<
-     endl;
-                  clog << "SectionVersion: "    << sectionVersion    <<
-     endl;
-                  clog << "SectionNumber: "     << sectionNumber     <<
-     endl;
-                  clog << "LastSectionNumber: " << lastSectionNumber <<
-     endl;
-                  clog << "CurrentNextId: "     <<
-     section->getCurrentNextIndicator();
-                  clog << endl;
-                  //clog << "SectionName: "       << sectionName       <<
-     endl;
-                  //clog << "NewSectionName: "    << newSectionName    <<
-     endl;
-  */
   pos++; // pos = 6;
   while (pos < payloadSize)
     {
@@ -785,7 +732,6 @@ EPGProcessor::decodeCdt (string fileName)
   char data[4084];
   FILE *fd;
   int rval, pngSize, totalSize, times, remainder, pos;
-  int originalNetworkId /*, descriptorsLoopLength*/;
 
   clog << "Decoding CDT stream..." << endl << endl;
 
@@ -811,9 +757,6 @@ EPGProcessor::decodeCdt (string fileName)
       rval = fread ((void *)&(data[0]), 1, 4084, fd);
       if (rval == 4084)
         {
-          originalNetworkId
-              = (((data[0] << 8) & 0xFF00) | (data[1] & 0xFF));
-
           // TODO: check data_type!!!
 
           // descriptorsLoopLength = ((((data[3] & 0x0F) << 8) & 0xFF00) |
@@ -860,7 +803,7 @@ int
 EPGProcessor::savePNG (char *pngData, int pngSize)
 {
   FILE *png;
-  size_t wc;
+  int wc;
   string path;
 
   path = itos (files) + ".png";
@@ -880,7 +823,7 @@ EPGProcessor::savePNG (char *pngData, int pngSize)
     }
 
   clog << "Writing data to png file." << endl;
-  wc = fwrite (pngData, 1, pngSize, png);
+  wc = (int) fwrite (pngData, 1, pngSize, png);
   if (wc != pngSize)
     {
       clog << "Writing error." << endl;

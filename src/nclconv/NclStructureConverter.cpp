@@ -27,10 +27,8 @@ NclStructureConverter::NclStructureConverter (
 }
 
 void
-NclStructureConverter::addBodyToNcl (void *parentObject, void *childObject)
+NclStructureConverter::addBodyToNcl (arg_unused (void *parentObject), arg_unused (void *childObject))
 {
-
-  // nothing to do
 }
 
 void
@@ -65,7 +63,7 @@ NclStructureConverter::addSwitchToBody (void *parentObject,
 }
 
 void
-NclStructureConverter::addDescriptorBaseToHead (void *parentObject,
+NclStructureConverter::addDescriptorBaseToHead (arg_unused (void *parentObject),
                                                 void *childObject)
 {
 
@@ -77,14 +75,14 @@ NclStructureConverter::addDescriptorBaseToHead (void *parentObject,
 }
 
 void
-NclStructureConverter::addHeadToNcl (void *parentObject, void *childObject)
+NclStructureConverter::addHeadToNcl (arg_unused (void *parentObject), arg_unused (void *childObject))
 {
 
   // nothing to do
 }
 
 void
-NclStructureConverter::addRegionBaseToHead (void *parentObject,
+NclStructureConverter::addRegionBaseToHead (arg_unused (void *parentObject),
                                             void *childObject)
 {
 
@@ -96,7 +94,7 @@ NclStructureConverter::addRegionBaseToHead (void *parentObject,
 }
 
 void
-NclStructureConverter::addTransitionBaseToHead (void *parentObject,
+NclStructureConverter::addTransitionBaseToHead (arg_unused (void *parentObject),
                                                 void *childObject)
 {
 
@@ -126,7 +124,7 @@ NclStructureConverter::addMediaToBody (void *parentObject,
 }
 
 void
-NclStructureConverter::addRuleBaseToHead (void *parentObject,
+NclStructureConverter::addRuleBaseToHead (arg_unused (void *parentObject),
                                           void *childObject)
 {
 
@@ -138,7 +136,7 @@ NclStructureConverter::addRuleBaseToHead (void *parentObject,
 }
 
 void
-NclStructureConverter::addConnectorBaseToHead (void *parentObject,
+NclStructureConverter::addConnectorBaseToHead (arg_unused (void *parentObject),
                                                void *childObject)
 {
 
@@ -266,24 +264,20 @@ void *
 NclStructureConverter::posCompileBody (DOMElement *parentElement,
                                        void *parentObject)
 {
-
-  // solve refer references before the second trace through the document
   solveNodeReferences ((CompositeNode *)parentObject);
   return NclStructureParser::posCompileBody (parentElement, parentObject);
 }
 
 void *
 NclStructureConverter::createHead (DOMElement *parentElement,
-                                   void *objGrandParent)
+                                   arg_unused (void *objGrandParent))
 {
-
-  // nothing to do
   return parentElement;
 }
 
 void *
 NclStructureConverter::createNcl (DOMElement *parentElement,
-                                  void *objGrandParent)
+                                  arg_unused (void *objGrandParent))
 {
 
   string docName;
@@ -306,13 +300,13 @@ NclStructureConverter::createNcl (DOMElement *parentElement,
 }
 
 void
-NclStructureConverter::addImportedDocumentBaseToHead (void *parentObject,
-                                                      void *childObject)
+NclStructureConverter::addImportedDocumentBaseToHead (arg_unused (void *parentObject),
+                                                      arg_unused (void *childObject))
 {
 }
 
 void
-NclStructureConverter::addMetaToHead (void *parentObject, void *childObject)
+NclStructureConverter::addMetaToHead (arg_unused (void *parentObject), void *childObject)
 {
 
   NclDocument *document;
@@ -324,7 +318,7 @@ NclStructureConverter::addMetaToHead (void *parentObject, void *childObject)
 }
 
 void
-NclStructureConverter::addMetadataToHead (void *parentObject,
+NclStructureConverter::addMetadataToHead (arg_unused (void *parentObject),
                                           void *childObject)
 {
 

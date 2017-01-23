@@ -596,26 +596,13 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
           else
             {
               time = getCurrentTimeMillis () - time;
-              /*clog << "FormatterScheduler::runAction takes '";
-              clog << time << "' ms to start '";
-              clog << executionObject->getId() << "'";
-              clog << endl;*/
-
               printAction ("start", condition, action);
             }
           break;
 
         case SimpleAction::ACT_PAUSE:
-          /*clog << "FormatterScheduler::runAction event '";
-          clog << event->getId() << "' for '";
-          clog << executionObject->getId() << "' PAUSE" << endl;*/
           if (!player->pause ())
             {
-              /*clog << "FormatterScheduler::runAction event '";
-              clog << event->getId() << "' for '";
-              clog << executionObject->getId() << "' PLAYER ";
-              clog << "is not able to pause event anymore. ";
-              clog << endl;*/
             }
           else
             {
@@ -624,16 +611,8 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
           break;
 
         case SimpleAction::ACT_RESUME:
-          /*clog << "FormatterScheduler::runAction event '";
-          clog << event->getId() << "' for '";
-          clog << executionObject->getId() << "' RESUME" << endl;*/
           if (!player->resume ())
             {
-              /*clog << "FormatterScheduler::runAction event '";
-              clog << event->getId() << "' for '";
-              clog << executionObject->getId() << "' PLAYER ";
-              clog << "is not able to resume event anymore. ";
-              clog << endl;*/
             }
           else
             {
@@ -642,16 +621,8 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
           break;
 
         case SimpleAction::ACT_ABORT:
-          /*clog << "FormatterScheduler::runAction event '";
-          clog << event->getId() << "' for '";
-          clog << executionObject->getId() << "' ABORT" << endl;*/
           if (!player->abort ())
             {
-              /*clog << "FormatterScheduler::runAction event '";
-              clog << event->getId() << "' for '";
-              clog << executionObject->getId() << "' PLAYER ";
-              clog << "is not able to abort event anymore. ";
-              clog << endl;*/
             }
           else
             {
@@ -660,22 +631,16 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
           break;
 
         case SimpleAction::ACT_STOP:
-          /*clog << "FormatterScheduler::runAction event '";
-          clog << event->getId() << "' for '";
-          clog << executionObject->getId() << "' STOP" << endl;*/
           if (!player->stop ())
             {
-              /*clog << "FormatterScheduler::runAction event '";
-              clog << event->getId() << "' for '";
-              clog << executionObject->getId() << "' PLAYER ";
-              clog << "is not able to STOP event anymore. ";
-              clog << endl;*/
             }
           else
             {
               printAction ("stop", condition, action);
             }
           break;
+        default:
+          g_assert_not_reached ();
         }
     }
 }
@@ -936,7 +901,6 @@ FormatterScheduler::runActionOverApplicationObject (
       if (((AdapterApplicationPlayer *)player)
               ->setAndLockCurrentEvent (event))
         {
-
           if (!player->start ())
             {
               clog << "FormatterScheduler::";
@@ -964,19 +928,16 @@ FormatterScheduler::runActionOverApplicationObject (
         }
 
       time = getCurrentTimeMillis () - time;
-
       clog << "FormatterScheduler::runActionOverApp takes '";
       clog << time << "' ms to start '";
       clog << executionObject->getId () << "'";
       clog << endl;
-
       break;
 
     case SimpleAction::ACT_PAUSE:
       if (((AdapterApplicationPlayer *)player)
               ->setAndLockCurrentEvent (event))
         {
-
           player->pause ();
           ((AdapterApplicationPlayer *)player)->unlockCurrentEvent (event);
         }
@@ -987,7 +948,6 @@ FormatterScheduler::runActionOverApplicationObject (
       if (((AdapterApplicationPlayer *)player)
               ->setAndLockCurrentEvent (event))
         {
-
           player->resume ();
           ((AdapterApplicationPlayer *)player)->unlockCurrentEvent (event);
         }
@@ -998,7 +958,6 @@ FormatterScheduler::runActionOverApplicationObject (
       if (((AdapterApplicationPlayer *)player)
               ->setAndLockCurrentEvent (event))
         {
-
           player->abort ();
           ((AdapterApplicationPlayer *)player)->unlockCurrentEvent (event);
         }
@@ -1009,12 +968,13 @@ FormatterScheduler::runActionOverApplicationObject (
       if (((AdapterApplicationPlayer *)player)
               ->setAndLockCurrentEvent (event))
         {
-
           player->stop ();
           ((AdapterApplicationPlayer *)player)->unlockCurrentEvent (event);
         }
 
       break;
+    default:
+      g_assert_not_reached ();
     }
 }
 
@@ -1254,7 +1214,7 @@ FormatterScheduler::runActionOverComposition (
 
           delete compositionPerspective;
 
-          size = events->size ();
+          size = (int) events->size ();
 
           clog << "FormatterScheduler::runActionOverComposition ";
           clog << "action '" << action->getType () << "' over ";
@@ -1376,7 +1336,7 @@ FormatterScheduler::runActionOverComposition (
       clog << "' (objects = '" << objects;
       clog << "'): '" << size << "' EVENTS FOUND" << endl;
 
-      size = events->size ();
+      size = (int) events->size ();
       for (i = 0; i < size; i++)
         {
           runAction ((*events)[i], NULL, action);
@@ -1594,8 +1554,8 @@ FormatterScheduler::initializeDefaultSettings ()
     {
       alfa = 1;
     }
-  int alpha;
-  alpha = (int)(255 * alfa);
+  guint8 alpha;
+  alpha = (guint8)(255 * alfa);
 
   value = presContext->getPropertyValue (DEFAULT_FOCUS_BORDER_COLOR);
   if (value != "")
@@ -1701,7 +1661,7 @@ FormatterScheduler::startDocument (NclFormatterEvent *documentEvent,
 
   if (isDocumentRunning (documentEvent))
     {
-      size = entryEvents->size ();
+      size = (int) entryEvents->size ();
       for (i = 0; i < size; i++)
         {
           event = (*entryEvents)[i];
@@ -1744,7 +1704,7 @@ FormatterScheduler::startDocument (NclFormatterEvent *documentEvent,
   initializeDocumentSettings (object->getDataObject ());
   initializeDefaultSettings ();
 
-  size = entryEvents->size ();
+  size = (int) entryEvents->size ();
   for (i = 0; i < size; i++)
     {
       event = (*entryEvents)[i];
@@ -1905,7 +1865,7 @@ FormatterScheduler::stopAllDocuments ()
     {
       auxDocEventList = new vector<NclFormatterEvent *> (documentEvents);
 
-      size = auxDocEventList->size ();
+      size = (int) auxDocEventList->size ();
       for (i = 0; i < size; i++)
         {
           documentEvent = (*auxDocEventList)[i];
@@ -1926,7 +1886,7 @@ FormatterScheduler::pauseAllDocuments ()
 
   if (!documentEvents.empty ())
     {
-      size = documentEvents.size ();
+      size = (int) documentEvents.size ();
       for (i = 0; i < size; i++)
         {
           documentEvent = documentEvents[i];
@@ -1938,23 +1898,16 @@ FormatterScheduler::pauseAllDocuments ()
 void
 FormatterScheduler::resumeAllDocuments ()
 {
-  int i, size;
-  NclFormatterEvent *documentEvent;
+  if (documentEvents.empty ())
+    return;                     // nothing to do
 
-  if (!documentEvents.empty ())
-    {
-      size = documentEvents.size ();
-      for (i = 0; i < size; i++)
-        {
-          documentEvent = documentEvents[i];
-          resumeDocument (documentEvent);
-        }
-    }
+  for (size_t i = 0; i < documentEvents.size (); i++)
+    resumeDocument (documentEvents[i]);
 }
 
 void
 FormatterScheduler::eventStateChanged (void *someEvent, short transition,
-                                       short previousState)
+                                       arg_unused (short previousState))
 {
 
   NclExecutionObject *object;
@@ -2013,6 +1966,8 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
               // removeDocument(event);
             }
           break;
+        default:
+          break;
         }
     }
   else
@@ -2031,14 +1986,12 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
 
               focusManager->showObject (object);
             }
-          //}
           break;
 
         case EventUtil::TR_STOPS:
           if (((NclPresentationEvent *)event)->getRepetitions () == 0)
             {
               bool hideObj = true;
-
               event->removeEventListener (this);
               object = (NclExecutionObject *)(event->getExecutionObject ());
 
@@ -2047,7 +2000,6 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
                   if (!((NclApplicationExecutionObject *)object)
                            ->isSleeping ())
                     {
-
                       hideObj = false;
                     }
                 }
@@ -2073,52 +2025,48 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
                     }
                 }
             }
-          else
-            {
-              /*clog << "FormatterScheduler::";
-              clog << "eventStateChanged(" << object->getId();
-              clog << ") REPEATING!" << endl;*/
-            }
           break;
 
         case EventUtil::TR_ABORTS:
-          bool hideObj = true;
+          {
+            bool hideObj = true;
 
-          event->removeEventListener (this);
-          object = (NclExecutionObject *)(event->getExecutionObject ());
+            event->removeEventListener (this);
+            object = (NclExecutionObject *)(event->getExecutionObject ());
 
-          if (object->instanceOf ("NclApplicationExecutionObject"))
-            {
-              if (!((NclApplicationExecutionObject *)object)->isSleeping ())
-                {
+            if (object->instanceOf ("NclApplicationExecutionObject"))
+              {
+                if (!((NclApplicationExecutionObject *)object)->isSleeping ())
+                  {
 
-                  hideObj = false;
-                }
-            }
+                    hideObj = false;
+                  }
+              }
+            if (hideObj)
+              {
+                clog << "FormatterScheduler::eventStateChanged '";
+                clog << event->getId ();
+                clog << "' ABORTS: hideObject '" << object->getId ();
+                clog << endl;
 
-          if (hideObj)
-            {
-              clog << "FormatterScheduler::eventStateChanged '";
-              clog << event->getId ();
-              clog << "' ABORTS: hideObject '" << object->getId ();
-              clog << endl;
+                focusManager->hideObject (object);
+                ((FormatterMultiDevice *)multiDevPres)->hideObject (object);
 
-              focusManager->hideObject (object);
-              ((FormatterMultiDevice *)multiDevPres)->hideObject (object);
+                player = (AdapterFormatterPlayer *)
+                  playerManager->getObjectPlayer (object);
+                if (player != NULL && player->getPlayer () != NULL
+                    && player->getObjectDevice () == 0)
+                  {
 
-              player = (AdapterFormatterPlayer *)
-                           playerManager->getObjectPlayer (object);
-              if (player != NULL && player->getPlayer () != NULL
-                  && player->getObjectDevice () == 0)
-                {
+                    player->flip ();
 
-                  player->flip ();
-
-                  multiDevPres->stopListenPlayer (player->getPlayer ());
-                }
-            }
-
-          break;
+                    multiDevPres->stopListenPlayer (player->getPlayer ());
+                  }
+              }
+            break;
+          }
+        default:
+          g_assert_not_reached ();
         }
     }
 }

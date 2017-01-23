@@ -64,23 +64,15 @@ FormatterPassiveDevice::FormatterPassiveDevice (GingaScreenID screenId,
 FormatterPassiveDevice::~FormatterPassiveDevice () {}
 
 void
-FormatterPassiveDevice::connectedToBaseDevice (unsigned int domainAddr)
+FormatterPassiveDevice::connectedToBaseDevice (arg_unused (unsigned int domainAddr))
 {
-  /*clog << "FormatterPassiveDevice::connectedToDomainService '";
-  clog << domainAddr << "'" << endl;*/
-
   hasRemoteDevices = true;
 }
 
 bool
-FormatterPassiveDevice::receiveRemoteContent (int remoteDevClass,
+FormatterPassiveDevice::receiveRemoteContent (arg_unused (int remoteDevClass),
                                               string contentUri)
 {
-
-  /*clog << "FormatterPassiveDevice::receiveRemoteContent from class '";
-  clog << remoteDevClass << "' and contentUri '" << contentUri << "'";
-  clog << endl;*/
-
   renderFromUri (serialized, contentUri);
   return true;
 }
@@ -127,7 +119,7 @@ FormatterPassiveDevice::userEventReceived (SDLInputEvent *ev)
   clog << mnemonicCode << "'" << endl;
 
   rdm->postEvent (DeviceDomain::CT_BASE, DeviceDomain::FT_SELECTIONEVENT,
-                  (char *)(mnemonicCode.c_str ()),
+                  deconst (char *, mnemonicCode.c_str ()),
                   (int)(mnemonicCode.length ()));
 
   return false;

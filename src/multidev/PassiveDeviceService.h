@@ -29,12 +29,12 @@ public:
   PassiveDeviceService ();
   ~PassiveDeviceService ();
 
-  void newDeviceConnected (unsigned int devAddr){};
+  void newDeviceConnected (arg_unused (unsigned int devAddr)){};
   void connectedToBaseDevice (unsigned int domainAddr);
 
   bool
-  receiveEvent (unsigned int devAddr, int eventType, char *stream,
-                int streamSize)
+  receiveEvent (arg_unused (unsigned int devAddr), arg_unused (int eventType), arg_unused (char *stream),
+                arg_unused (int streamSize))
   {
     return false;
   };

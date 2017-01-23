@@ -71,44 +71,43 @@ void
 SimpleCondition::setLabel (string id)
 {
   label = id;
-  string upLabel = upperCase (label);
 
-  if (upLabel == upperCase ("onBegin"))
+  if (xstrcaseeq (label, "onBegin"))
     {
       transition = EventUtil::TR_STARTS;
       eventType = EventUtil::EVT_PRESENTATION;
     }
-  else if (upLabel == upperCase ("onEnd"))
+  else if (xstrcaseeq (label, "onEnd"))
     {
       transition = EventUtil::TR_STOPS;
       eventType = EventUtil::EVT_PRESENTATION;
     }
-  else if (upLabel == upperCase ("onSelection"))
+  else if (xstrcaseeq (label, "onSelection"))
     {
       transition = EventUtil::TR_STOPS;
       eventType = EventUtil::EVT_SELECTION;
     }
-  else if (upLabel == upperCase ("onBeginAttribution"))
+  else if (xstrcaseeq (label, "onBeginAttribution"))
     {
       transition = EventUtil::TR_STARTS;
       eventType = EventUtil::EVT_ATTRIBUTION;
     }
-  else if (upLabel == upperCase ("onEndAttribution"))
+  else if (xstrcaseeq (label, "onEndAttribution"))
     {
       transition = EventUtil::TR_STOPS;
       eventType = EventUtil::EVT_ATTRIBUTION;
     }
-  else if (upLabel == upperCase ("onAbort"))
+  else if (xstrcaseeq (label, "onAbort"))
     {
       transition = EventUtil::TR_ABORTS;
       eventType = EventUtil::EVT_PRESENTATION;
     }
-  else if (upLabel == upperCase ("onPause"))
+  else if (xstrcaseeq (label, "onPause"))
     {
       transition = EventUtil::TR_PAUSES;
       eventType = EventUtil::EVT_PRESENTATION;
     }
-  else if (upLabel == upperCase ("onResume"))
+  else if (xstrcaseeq (label, "onResume"))
     {
       transition = EventUtil::TR_RESUMES;
       eventType = EventUtil::EVT_PRESENTATION;

@@ -25,7 +25,7 @@ GINGA_UTIL_BEGIN
 class Color
 {
 private:
-  int r, g, b, alpha;
+  guint8 r, g, b, alpha;
 
 protected:
   void setColorToI (string color);
@@ -79,16 +79,16 @@ public:
 
   static int colortoi (string color);
   Color ();
-  Color (int r, int g, int b, int alpha = 255);
-  Color (string color, int alpha = 255);
+  Color (guint8 r, guint8 g, guint8 b, guint8 alpha = (guint8) 0xff);
+  Color (string color, guint8 alpha = (guint8) 0xff);
   void setColor (string color);
-  void setColor (int red, int green, int blue);
-  int getR ();
-  int getG ();
-  int getB ();
-  int getAlpha ();
-  uint32_t getRGBA ();
-  uint32_t getARGB ();
+  void setColor (guint8 red, guint8 green, guint8 blue, guint8 alpha = (guint8) 0xff);
+  guint8 getR ();
+  guint8 getG ();
+  guint8 getB ();
+  guint8 getAlpha ();
+  guint32 getRGBA ();
+  guint32 getARGB ();
 };
 
 GINGA_UTIL_END

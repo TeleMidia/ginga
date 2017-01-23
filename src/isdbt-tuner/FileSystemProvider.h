@@ -40,14 +40,11 @@ protected:
 public:
   FileSystemProvider (string fileName);
   virtual ~FileSystemProvider ();
-
   void setListener (ITProviderListener *listener);
-  void attachFilter (IFrontendFilter *filter){};
-  void removeFilter (IFrontendFilter *filter){};
-
+  void attachFilter (arg_unused (IFrontendFilter *filter)){};
+  void removeFilter (arg_unused (IFrontendFilter *filter)){};
   short getCaps ();
   bool tune ();
-
   Channel *getCurrentChannel ();
   bool getSTCValue (uint64_t *stc, int *valueType);
   bool changeChannel (int factor);

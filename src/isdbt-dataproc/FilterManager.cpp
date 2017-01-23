@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "FilterManager.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_DATAPROC_BEGIN
 
 FilterManager::FilterManager ()
@@ -240,7 +242,7 @@ FilterManager::processSection (ITransportSection *section)
       delete section;
       return false;
     }
-  else if (!isDirectory ((char *)sectionDir.c_str ()))
+  else if (!isDirectory (deconst (char *, sectionDir.c_str ())))
     {
 
       clog << "FilterManager::processSection ";
@@ -321,8 +323,7 @@ FilterManager::processSection (ITransportSection *section)
   if (secs->size () == (lsn + 1))
     {
       sectionFd = fopen (sectionName.c_str (), "wb");
-
-      if (sectionFd <= 0)
+      if (sectionFd == NULL)
         {
           clog << "FilterManager Warning! error open file ";
           clog << sectionName;

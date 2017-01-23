@@ -63,7 +63,7 @@ CompositeNode::addAnchor (int index, Anchor *anchor)
 bool
 CompositeNode::addAnchor (Anchor *anchor)
 {
-  return CompositeNode::addAnchor (anchorList.size (), anchor);
+  return CompositeNode::addAnchor ((int) anchorList.size (), anchor);
 }
 
 bool
@@ -94,7 +94,7 @@ CompositeNode::addPort (unsigned int index, Port *port)
 bool
 CompositeNode::addPort (Port *port)
 {
-  return addPort (portList.size (), port);
+  return addPort ((int) portList.size (), port);
 }
 
 void
@@ -106,7 +106,7 @@ CompositeNode::clearPorts ()
 unsigned int
 CompositeNode::getNumPorts ()
 {
-  return portList.size ();
+  return (int) portList.size ();
 }
 
 Port *
@@ -161,7 +161,7 @@ CompositeNode::indexOfPort (Port *port)
         }
       i++;
     }
-  return portList.size () + 10;
+  return (int) portList.size () + 10;
 }
 
 bool
@@ -224,7 +224,7 @@ CompositeNode::getNodes ()
 unsigned int
 CompositeNode::getNumNodes ()
 {
-  return nodes.size ();
+  return (unsigned int) nodes.size ();
 }
 
 bool
@@ -359,18 +359,15 @@ CompositeNode::removeNode (Node *node)
 }
 
 GenericDescriptor *
-CompositeNode::getNodeDescriptor (Node *node)
+CompositeNode::getNodeDescriptor (arg_unused (Node *node))
 {
-  // do nothing
   return NULL;
 }
 
 bool
-CompositeNode::setNodeDescriptor (string nodeId,
-                                  GenericDescriptor *descriptor)
+CompositeNode::setNodeDescriptor (arg_unused (string nodeId),
+                                  arg_unused (GenericDescriptor *descriptor))
 {
-
-  // do nothing
   return false;
 }
 

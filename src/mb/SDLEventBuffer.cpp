@@ -79,22 +79,11 @@ SDLEventBuffer::checkEvent (Uint32 winId, SDL_Event event)
       // TODO: how to get windowID from new SDL tfinger structure
       // windowID = event.tfinger.windowID;
       break;
-    }
 
-  if (windowID == winId)
-    {
-      // cout << "SDLEventBuffer::checkEvent returning true" << endl;
-      return true;
+    default:
+      break;
     }
-  else
-    {
-      /*cout << "SDLEventBuffer::checkEvent returning false because ";
-      cout << "event with type = '";
-      cout << event.type << "' has windowID = '" << windowID;
-      cout << "' and SDL window has id = '";
-      cout << winId << "'" << endl;*/
-      return false;
-    }
+  return (windowID == winId) ? true : false;
 }
 
 void

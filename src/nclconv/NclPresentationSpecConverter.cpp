@@ -155,7 +155,7 @@ NclPresentationSpecConverter::addImportBaseToDescriptorBase (
 
 void *
 NclPresentationSpecConverter::createDescriptorParam (
-    DOMElement *parentElement, void *objGrandParent)
+    DOMElement *parentElement, arg_unused (void *objGrandParent))
 {
 
   return parentElement;
@@ -163,16 +163,14 @@ NclPresentationSpecConverter::createDescriptorParam (
 
 void *
 NclPresentationSpecConverter::createDescriptorBind (
-    DOMElement *parentElement, void *objGrandParent)
+    DOMElement *parentElement, arg_unused (void *objGrandParent))
 {
-
-  // ver componentCompilers para comentarios
   return parentElement;
 }
 
 void *
 NclPresentationSpecConverter::createDescriptorBase (
-    DOMElement *parentElement, void *objGrandParent)
+    DOMElement *parentElement, arg_unused (void *objGrandParent))
 {
 
   DescriptorBase *descBase;
@@ -186,7 +184,7 @@ NclPresentationSpecConverter::createDescriptorBase (
 
 void *
 NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
-                                                void *objGrandParent)
+                                                arg_unused (void *objGrandParent))
 {
 
   Descriptor *descriptor;
@@ -384,7 +382,7 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
               while (it != transIds->end ())
                 {
                   value = (*it);
-                  trimValue = trim (value);
+                  trimValue = xstrchomp (value);
                   *it = trimValue;
                   transition = transitionBase->getTransition (trimValue);
                   if (transition != NULL)
@@ -416,7 +414,7 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
               for (i = 0; i < transIds->size (); i++)
                 {
                   value = (*transIds)[i];
-                  trimValue = trim (value);
+                  trimValue = xstrchomp (value);
                   (*transIds)[i] = trimValue;
                   transition = transitionBase->getTransition (trimValue);
                   if (transition != NULL)

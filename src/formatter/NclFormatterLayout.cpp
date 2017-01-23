@@ -402,9 +402,8 @@ NclFormatterLayout::refreshZIndex (NclFormatterRegion *region,
 
 void
 NclFormatterLayout::sortRegion (string regionId, double cvtIndex,
-                                string plan)
+                                arg_unused (string plan))
 {
-
   vector<string>::iterator i;
   map<string, double>::iterator j;
 

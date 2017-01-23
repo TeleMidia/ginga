@@ -20,8 +20,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #define INPUT_BUFFER_SIZE 4096
 
+GINGA_PRAGMA_DIAG_PUSH ()
+GINGA_PRAGMA_DIAG_IGNORE (-Wunused-variable)
 extern "C" {
-
 // Latin America channel assignments for ISDB-T International
 static uint64_t tv_channels_list[] = {
   /* 0 */ 0, /* index placeholders... */
@@ -98,6 +99,7 @@ static uint64_t tv_channels_list[] = {
   /* 69 */ 803142000,
 };
 }
+GINGA_PRAGMA_DIAG_POP ()
 
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;

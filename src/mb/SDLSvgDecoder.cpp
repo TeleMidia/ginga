@@ -29,7 +29,7 @@ SDLSvgDecoder::SDLSvgDecoder (string filename)
 SDLSvgDecoder::~SDLSvgDecoder () {}
 
 SDL_Surface *
-SDLSvgDecoder::decode (int width, int height)
+SDLSvgDecoder::decode (arg_unused (int width), arg_unused (int height))
 {
   RsvgHandle *h;
   RsvgDimensionData dim;
@@ -37,7 +37,6 @@ SDLSvgDecoder::decode (int width, int height)
   cairo_surface_t *cairoSurface;
   cairo_t *cairoState;
 
-  /* RSVG initiation */
   h = rsvg_handle_new_from_file (filePath.c_str (), &e);
 
   rsvg_handle_get_dimensions (h, &dim);
@@ -49,15 +48,13 @@ SDLSvgDecoder::decode (int width, int height)
   double scale = (dim.width > dim.height) ? (double)1920 / dim.width
                                           : (double)1080 / dim.height;
 
-  int x = floor (dim.width * scale) + 1;
-  int y = floor (dim.height * scale) + 1;
+  int x = (int) floor (dim.width * scale) + 1;
+  int y = (int) floor (dim.height * scale) + 1;
   int stride = x * 4; // ARGB
 
-  /* Cairo Initiation */
   uint8_t *image
       = (uint8_t *)malloc (stride * y); // ARGB uses 4 bytes / pixel
 
-  // here the correct would be...
   cairoSurface = cairo_image_surface_create_for_data (
       image, CAIRO_FORMAT_ARGB32, x, y, stride);
   cairoState = cairo_create (cairoSurface);

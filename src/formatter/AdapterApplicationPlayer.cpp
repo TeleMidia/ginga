@@ -848,7 +848,7 @@ AdapterApplicationPlayer::notificationHandler (short code, string param,
           param = param.substr (pos + 1, param.length () - pos + 1);
 
           pos = param.find_first_of (",");
-          bId = trim (param.substr (0, pos));
+          bId = xstrchomp (param.substr (0, pos));
           param = param.substr (pos + 1, param.length () - pos + 1);
 
           if (bId == "" || bId == "''")
@@ -857,7 +857,7 @@ AdapterApplicationPlayer::notificationHandler (short code, string param,
             }
 
           pos = param.find_first_of (",");
-          dId = trim (param.substr (0, pos));
+          dId = xstrchomp (param.substr (0, pos));
           param = param.substr (pos + 1, param.length () - pos + 1);
 
           if (dId == "" || dId == "''")

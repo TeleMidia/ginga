@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
-PlainTxtPlayer::PlainTxtPlayer (GingaScreenID screenId, string mrl)
+PlainTxtPlayer::PlainTxtPlayer (GingaScreenID screenId, arg_unused (string mrl))
     : TextPlayer (screenId)
 {
 
@@ -234,14 +234,10 @@ void
 PlainTxtPlayer::setPropertyValue (string name, string value)
 {
   Thread::mutexLock (&mutex);
+  gint64 size;
 
   vector<string> *params;
   bool refresh = true;
-
-  /*
-  clog << "PlainTxtPlayer::setPropertyValue name = '" << name.c_str();
-  clog << "' value = '" << value.c_str() << "'" << endl;
-  */
 
   if (value == "")
     {
@@ -264,10 +260,9 @@ PlainTxtPlayer::setPropertyValue (string name, string value)
 
       fontColor = new Color (value);
     }
-  else if (name == "fontSize" && isNumeric ((void *)(value.c_str ())))
+  else if (name == "fontSize" && _xstrtoll (value.c_str (), &size))
     {
-
-      setFontSize ((int)(::ginga::util::stof (value)));
+      setFontSize ((int) size);
     }
   else if (name == "fontUri")
     {
@@ -324,9 +319,9 @@ PlainTxtPlayer::setPropertyValue (string name, string value)
                   bgColor = NULL;
                 }
 
-              bgColor = new Color ((int)::ginga::util::stof ((*params)[0]),
-                                   (int)::ginga::util::stof ((*params)[1]),
-                                   (int)::ginga::util::stof ((*params)[2]));
+              bgColor = new Color (xstrto_uint8 ((*params)[0]),
+                                   xstrto_uint8 ((*params)[1]),
+                                   xstrto_uint8 ((*params)[2]));
 
               GingaWindowID parentWindow
                   = Ginga_Display->getSurfaceParentWindow (surface);
@@ -360,9 +355,9 @@ PlainTxtPlayer::setPropertyValue (string name, string value)
               fontColor = NULL;
             }
 
-          fontColor = new Color ((int)::ginga::util::stof ((*params)[0]),
-                                 (int)::ginga::util::stof ((*params)[1]),
-                                 (int)::ginga::util::stof ((*params)[2]));
+          fontColor = new Color (xstrto_uint8 ((*params)[0]),
+                                 xstrto_uint8 ((*params)[1]),
+                                 xstrto_uint8 ((*params)[2]));
         }
       else
         {

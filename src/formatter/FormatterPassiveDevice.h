@@ -32,30 +32,24 @@ public:
   virtual ~FormatterPassiveDevice ();
 
 protected:
-  void postMediaContent (int destDevClass){};
+  void postMediaContent (arg_unused (int destDevClass)){};
   bool
-  newDeviceConnected (int newDevClass, int w, int h)
+  newDeviceConnected (arg_unused (int newDevClass), arg_unused (int w), arg_unused (int h))
   {
     return false;
   };
-
   void connectedToBaseDevice (unsigned int domainAddr);
-
   bool
-  receiveRemoteEvent (int remoteDevClass, int eventType,
-                      string eventContent)
+  receiveRemoteEvent (arg_unused (int remoteDevClass), arg_unused (int eventType),
+                      arg_unused (string eventContent))
   {
-
     return false;
   };
-
   bool
-  receiveRemoteContent (int remoteDevClass, char *stream, int streamSize)
+  receiveRemoteContent (arg_unused (int remoteDevClass), arg_unused (char *stream), arg_unused (int streamSize))
   {
-
     return false;
   };
-
   bool receiveRemoteContent (int remoteDevClass, string contentUri);
   bool userEventReceived (SDLInputEvent *ev);
 };

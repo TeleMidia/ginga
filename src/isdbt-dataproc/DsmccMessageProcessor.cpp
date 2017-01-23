@@ -22,7 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define DII_MESSAGE 0x1002
 #define DDB_MESSAGE 0x1003
 #define DSI_MESSAGE 0x1006
-#define MSG_HEADER_LEN 0xC
 #endif
 
 GINGA_DATAPROC_BEGIN

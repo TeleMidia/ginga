@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "ExtendedEventDescriptor.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_TSPARSER_BEGIN
 
 ExtendedEventDescriptor::ExtendedEventDescriptor ()
@@ -148,23 +150,8 @@ ExtendedEventDescriptor::print ()
   // endl;
   // clog << " -textChar = "             << getTextChar()            <<
   // endl;
-
-  if (lengthOfItems > 0)
-    {
-      vector<Item *>::iterator i;
-      struct Item *item;
-
-      for (i = items->begin (); i != items->end (); ++i)
-        {
-          item = ((Item *)(*i));
-          clog << " -Item: ";
-          /*clog << "itemDescriptionChar = " <<
-                          getItemDescriptionChar(item);
-          clog << " -itemChar = " << getItemChar(item);*/
-        }
-      clog << endl;
-    }
 }
+
 size_t
 ExtendedEventDescriptor::process (char *data, size_t pos)
 {
@@ -227,14 +214,6 @@ ExtendedEventDescriptor::process (char *data, size_t pos)
           item->itemChar = new char[item->itemLength];
           memset (item->itemChar, 0, item->itemLength);
           memcpy (item->itemChar, data + pos + 1, item->itemLength);
-          // clog << "itemLenght = " << (item->itemLength&0xFF);
-          /*
-          clog << "itemChar = ";
-          for (int i = 0; i < item->itemLength; i++){
-                  clog << (item->itemChar[i]);
-          }
-          clog << endl;
-          */
         }
       value = item->itemDescriptionLength + item->itemLength + 2;
       items->push_back (item);

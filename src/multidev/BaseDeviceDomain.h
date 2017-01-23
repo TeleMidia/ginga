@@ -15,11 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _BaseDeviceDomain_H_
-#define _BaseDeviceDomain_H_
-
-#include "system/SystemCompat.h"
-using namespace ::ginga::system;
+#ifndef BASE_DEVICE_DOMAIN_H
+#define BASE_DEVICE_DOMAIN_H
 
 #include "system/Thread.h"
 using namespace ::ginga::system;
@@ -59,18 +56,17 @@ protected:
   virtual bool taskRequest (int destDevClass, char *data, int taskSize);
   virtual bool passiveTaskRequest (char *data, int taskSize);
   virtual bool activeTaskRequest (char *data, int taskSize);
-
-  virtual void postConnectionRequestTask (int width, int height){};
+  virtual void postConnectionRequestTask (arg_unused (int width), arg_unused (int height)){};
   virtual void receiveConnectionRequest (char *task);
   virtual void postAnswerTask (int reqDeviceClass, int answer);
-  virtual void receiveAnswerTask (char *answerTask){};
+  virtual void receiveAnswerTask (arg_unused (char *answerTask)){};
 
 public:
   virtual bool postMediaContentTask (int destDevClass, string url);
 
 protected:
   virtual bool
-  receiveMediaContentTask (char *task)
+  receiveMediaContentTask (arg_unused (char *task))
   {
     return false;
   };
@@ -89,4 +85,4 @@ protected:
 
 GINGA_MULTIDEV_END
 
-#endif /*_BaseDeviceDomain_H_*/
+#endif /* BASE_DEVICE_DOMAIN_H */

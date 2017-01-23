@@ -153,7 +153,6 @@ NclApplicationExecutionObject::getCurrentEvent ()
 bool
 NclApplicationExecutionObject::hasPreparedEvent (NclFormatterEvent *event)
 {
-  bool hasEvents;
   map<string, NclFormatterEvent *>::iterator i;
 
   lockEvents ();
@@ -269,7 +268,7 @@ NclApplicationExecutionObject::prepare (NclFormatterEvent *event,
   transMan->prepare (event == wholeContent, startTime,
                      ContentAnchor::CAT_TIME);
 
-  size = otherEvents.size ();
+  size = (int) otherEvents.size ();
   for (j = 0; j < size; j++)
     {
       auxEvent = otherEvents[j];

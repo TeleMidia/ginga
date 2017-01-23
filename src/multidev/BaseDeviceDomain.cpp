@@ -26,6 +26,8 @@ using namespace ::ginga::util;
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_MULTIDEV_BEGIN
 
 BaseDeviceDomain::BaseDeviceDomain (bool useMulticast, int srvPort)
@@ -44,7 +46,7 @@ BaseDeviceDomain::BaseDeviceDomain (bool useMulticast, int srvPort)
   if (useMulticast)
     {
       passiveSocket = new MulticastSocketService (
-          (char *)(PASSIVE_MCAST_ADDR.c_str ()),
+          deconst (char *, PASSIVE_MCAST_ADDR.c_str ()),
           BROADCAST_PORT + CT_PASSIVE);
     }
   else
@@ -104,11 +106,8 @@ BaseDeviceDomain::passiveTaskRequest (char *data, int taskSize)
 }
 
 bool
-BaseDeviceDomain::activeTaskRequest (char *data, int taskSize)
+BaseDeviceDomain::activeTaskRequest (arg_unused (char *data), arg_unused (int taskSize))
 {
-  /*clog << "BaseDeviceDomain::activeTaskRequest ";
-  clog << endl;*/
-
   return true;
 }
 
@@ -259,7 +258,7 @@ BaseDeviceDomain::postMediaContentTask (int destDevClass, string url)
             }
 
           fd = fopen (url.c_str (), "rb");
-          if (fd < 0)
+          if (fd == NULL)
             {
               clog << "BaseDeviceDomain::postMediaContentTask ";
               clog << "Warning! Can't re-open file '" << url;
@@ -373,7 +372,7 @@ BaseDeviceDomain::runControlTask ()
           return false;
         }
 
-      if (frameSize + HEADER_SIZE != bytesRecv)
+      if (frameSize + HEADER_SIZE != (unsigned int) bytesRecv)
         {
           delete[] task;
           task = NULL;
@@ -465,7 +464,7 @@ BaseDeviceDomain::runDataTask ()
       return false;
     }
 
-  if (frameSize + HEADER_SIZE != bytesRecv)
+  if (frameSize + HEADER_SIZE != (unsigned int) bytesRecv)
     {
       delete[] task;
       clog << "BaseDeviceDomain::runDataTask Warning! wrong ";
@@ -512,7 +511,7 @@ BaseDeviceDomain::checkPassiveTasks ()
 
       if (((remoteTask->timestamp - passiveTimestamp)
            > (1000 / PASSIVE_FPS))
-          || passiveTimestamp == 0)
+          || xnumeq (passiveTimestamp, 0.))
         {
 
           passiveTimestamp = getCurrentTimeMillis ();

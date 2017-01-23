@@ -366,7 +366,6 @@ DisplayManager::createScreen (string vMode, string vParent,
   UnderlyingWindowID embedWin = NULL;
   int argc = 0;
 
-  short sysType;
   GingaScreenID screenId;
   char *mbArgs[64];
 
@@ -375,24 +374,24 @@ DisplayManager::createScreen (string vMode, string vParent,
   string mycmd = "ginga";
 
   screenId = getNumOfScreens ();
-  mbArgs[argc] = (char *)mycmd.c_str ();
+  mbArgs[argc] = deconst (char *, mycmd.c_str ());
   argc++;
 
   if (vMode != "")
     {
-      mbArgs[argc] = (char *)"mode";
+      mbArgs[argc] = deconst (char *, "mode");
       argc++;
 
-      mbArgs[argc] = (char *)vMode.c_str ();
+      mbArgs[argc] = deconst (char *, vMode.c_str ());
       argc++;
     }
 
   if (vParent != "")
     {
-      mbArgs[argc] = (char *)"parent";
+      mbArgs[argc] = deconst (char *, "parent");
       argc++;
 
-      mbArgs[argc] = (char *)vParent.c_str ();
+      mbArgs[argc] = deconst (char *, vParent.c_str ());
       argc++;
 
       clog << "DisplayManager::createScreen parent with ";
@@ -411,7 +410,7 @@ DisplayManager::createScreen (string vMode, string vParent,
 
   if (useStdin)
     {
-      mbArgs[argc] = (char *)"poll-stdin";
+      mbArgs[argc] = deconst (char *, "poll-stdin");
       argc++;
     }
 
@@ -1069,8 +1068,8 @@ DisplayManager::renderWindowFrom (const GingaScreenID &screenId,
 
 void
 DisplayManager::setWindowBgColor (const GingaScreenID &screenId,
-                                      const GingaWindowID &winId, int r,
-                                      int g, int b, int alpha)
+                                  const GingaWindowID &winId, guint8 r,
+                                  guint8 g, guint8 b, guint8 alpha)
 {
   SDLWindow *win = NULL;
   win = getIWindowFromId (screenId, winId);
@@ -1080,8 +1079,8 @@ DisplayManager::setWindowBgColor (const GingaScreenID &screenId,
 
 void
 DisplayManager::setWindowBorder (const GingaScreenID &screenId,
-                                     const GingaWindowID &winId, int r,
-                                     int g, int b, int alpha, int width)
+                                     const GingaWindowID &winId, guint8 r,
+                                     guint8 g, guint8 b, guint8 alpha, int width)
 {
   SDLWindow *win = NULL;
   win = getIWindowFromId (screenId, winId);
@@ -1092,7 +1091,7 @@ DisplayManager::setWindowBorder (const GingaScreenID &screenId,
 void
 DisplayManager::setWindowCurrentTransparency (
     const GingaScreenID &screenId, const GingaWindowID &winId,
-    int transparency)
+    guint8 transparency)
 {
   SDLWindow *win = NULL;
   win = getIWindowFromId (screenId, winId);
@@ -1102,8 +1101,8 @@ DisplayManager::setWindowCurrentTransparency (
 
 void
 DisplayManager::setWindowColorKey (const GingaScreenID &screenId,
-                                       const GingaWindowID &winId, int r,
-                                       int g, int b)
+                                       const GingaWindowID &winId, guint8 r,
+                                       guint8 g, guint8 b)
 {
   SDLWindow *win = NULL;
   win = getIWindowFromId (screenId, winId);
@@ -1256,11 +1255,11 @@ DisplayManager::getWindowZ (const GingaScreenID &screenId,
   return reply;
 }
 
-int
+guint8
 DisplayManager::getWindowTransparencyValue (
     const GingaScreenID &screenId, const GingaWindowID &winId)
 {
-  int reply = 0;
+  guint8 reply = 0;
   SDLWindow *win = NULL;
   win = getIWindowFromId (screenId, winId);
   if (win != NULL)
@@ -1392,7 +1391,6 @@ DisplayManager::getSurfaceParentWindow (const GingaSurfaceID &surId)
 void
 DisplayManager::deleteSurface (const GingaSurfaceID &surId)
 {
-  SDLDeviceScreen *screen = NULL;
   SDLSurface *surface = NULL;
 
   surface = getISurfaceFromId (surId);
@@ -1501,8 +1499,8 @@ DisplayManager::getSurfaceCaps (const GingaSurfaceID &surId)
 }
 
 void
-DisplayManager::setSurfaceBgColor (const GingaSurfaceID &surId, int r,
-                                       int g, int b, int alpha)
+DisplayManager::setSurfaceBgColor (const GingaSurfaceID &surId, guint8 r,
+                                       guint8 g, guint8 b, guint8 alpha)
 {
   SDLSurface *surface = NULL;
 
@@ -1532,8 +1530,8 @@ DisplayManager::setSurfaceFont (const GingaSurfaceID &surId,
 }
 
 void
-DisplayManager::setColor (const GingaSurfaceID &surId, int r, int g,
-                              int b, int alpha)
+DisplayManager::setColor (const GingaSurfaceID &surId, guint8 r, guint8 g,
+                              guint8 b, guint8 alpha)
 {
   SDLSurface *surface = NULL;
 
@@ -1617,8 +1615,8 @@ DisplayManager::hasSurfaceExternalHandler (const GingaSurfaceID &surId)
 }
 
 void
-DisplayManager::setSurfaceColor (const GingaSurfaceID &surId, int r,
-                                     int g, int b, int alpha)
+DisplayManager::setSurfaceColor (const GingaSurfaceID &surId, guint8 r,
+                                     guint8 g, guint8 b, guint8 alpha)
 {
   SDLSurface *surface = NULL;
 
@@ -1970,7 +1968,7 @@ DisplayManager::getNumOfScreens ()
   short numOfScreens;
 
   lockScreenMap ();
-  numOfScreens = screens.size ();
+  numOfScreens = (short) screens.size ();
   unlockScreenMap ();
 
   return numOfScreens;

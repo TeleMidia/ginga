@@ -76,7 +76,7 @@ CompositeRule::getRules ()
 unsigned int
 CompositeRule::getNumRules ()
 {
-  return rules->size ();
+  return (unsigned int) rules->size ();
 }
 
 short

@@ -46,12 +46,12 @@ public:
     return false;
   };
 
-  virtual void setAVPid (int aPid, int vPid){};
+  virtual void setAVPid (arg_unused (int aPid), arg_unused (int vPid)){};
   virtual void feedBuffers (){};
   void *getProviderContent ();
-  virtual void setProviderContent (void *content){};
+  virtual void setProviderContent (arg_unused (void *content)){};
   virtual bool
-  checkVideoResizeEvent (GingaSurfaceID frame)
+  checkVideoResizeEvent (arg_unused (GingaSurfaceID frame))
   {
     return false;
   };

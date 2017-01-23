@@ -57,7 +57,6 @@ ContentNode::initialize (string type)
 bool
 ContentNode::isSettingNode ()
 {
-  string upNodeType;
   string nodeType = getNodeType ();
 
   if (isSettingNodeType)
@@ -70,12 +69,9 @@ ContentNode::isSettingNode ()
       return false;
     }
 
-  // W3C (and RFC2045) type value isn't sensitive
-  upNodeType = upperCase (nodeType);
-  if (upNodeType == "APPLICATION/X-GINGA-SETTINGS"
-      || upNodeType == "APPLICATION/X-NCL-SETTINGS")
+  if (xstrcaseeq (nodeType, "application/x-ginga-settings")
+      || xstrcaseeq (nodeType, "application/x-ncl-settings"))
     {
-
       return true;
     }
 
@@ -85,7 +81,6 @@ ContentNode::isSettingNode ()
 bool
 ContentNode::isTimeNode ()
 {
-  string upNodeType;
   string nodeType = getNodeType ();
 
   if (isTimeNodeType)
@@ -98,12 +93,9 @@ ContentNode::isTimeNode ()
       return false;
     }
 
-  // W3C (and RFC2045) type value isn't sensitive
-  upNodeType = upperCase (nodeType);
-  if (upNodeType == "APPLICATION/X-GINGA-TIME"
-      || upNodeType == "APPLICATION/X-NCL-TIME")
+  if (xstrcaseeq (nodeType, "application/x-ginga-time")
+      || xstrcaseeq (nodeType, "application/x-ncl-time"))
     {
-
       return true;
     }
 

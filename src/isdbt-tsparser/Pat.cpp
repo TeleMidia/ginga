@@ -20,6 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "IDemuxer.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_TSPARSER_BEGIN
 
 int Pat::defaultProgramNumber = -1;
@@ -366,7 +368,7 @@ Pat::processSectionPayload ()
             {
 
               if (defaultProgramNumber == -1
-                  || programNumber < defaultProgramNumber)
+                  || programNumber < (unsigned int) defaultProgramNumber)
                 {
 
                   /*clog << "Pat::process ";

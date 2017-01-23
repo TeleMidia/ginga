@@ -24,6 +24,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "util/functions.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_DATAPROC_BEGIN
 
 NCLSectionProcessor::NCLSectionProcessor ()
@@ -129,9 +131,9 @@ NCLSectionProcessor::addDataToProcess (char *stream, int streamSize)
 }
 
 void
-NCLSectionProcessor::processDataFile (char *stream, int streamSize)
+NCLSectionProcessor::processDataFile (char *stream, arg_unused (int streamSize))
 {
-  int structId, bw;
+  int structId;
   FILE *fd;
   INCLDataFile *df;
   string fileUri;
@@ -153,11 +155,11 @@ NCLSectionProcessor::processDataFile (char *stream, int streamSize)
   clog << "NCLSectionProcessor::processDataFile '" << fileUri;
   clog << "'" << endl;
 
-  remove ((char *)(fileUri.c_str ()));
+  remove (deconst (char *, fileUri.c_str ()));
   fd = fopen (fileUri.c_str (), "w+b");
   if (fd != NULL)
     {
-      bw = fwrite (stream + 2, 1, df->getSize (), fd);
+      fwrite (stream + 2, 1, (guint64) df->getSize (), fd);
       fclose (fd);
     }
   else
@@ -253,7 +255,7 @@ vector<StreamData *> *
 NCLSectionProcessor::createNCLSections (string componentTag, string name,
                                         string baseUri,
                                         vector<string> *files,
-                                        map<int, string> *eventMap)
+                                        arg_unused (map<int, string> *eventMap))
 {
 
   vector<StreamData *> *streams;

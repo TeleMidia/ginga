@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "Application.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_TSPARSER_BEGIN
 
 Application::Application ()
@@ -157,7 +159,6 @@ Application::getTransportProtocolId ()
 {
   vector<IMpegDescriptor *>::iterator i;
   TransportProtocolDescriptor *tpd;
-  vector<struct Profile *> *profs;
   unsigned char descTag;
 
   Thread::mutexLock (&stlMutex);

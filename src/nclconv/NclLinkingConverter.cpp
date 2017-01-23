@@ -21,13 +21,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NCLCONV_BEGIN
 
 NclLinkingConverter::NclLinkingConverter (
-    DocumentParser *documentParser, NclConnectorsConverter *connCompiler)
+    DocumentParser *documentParser, arg_unused (NclConnectorsConverter *connCompiler))
     : NclLinkingParser (documentParser)
 {
 }
 
 void
-NclLinkingConverter::addBindToLink (void *parentObject, void *childObject)
+NclLinkingConverter::addBindToLink (arg_unused (void *parentObject), arg_unused (void *childObject))
 {
 
   // nothing to do, since to be created the bind needs to be associated
@@ -297,7 +297,7 @@ NclLinkingConverter::createLink (DOMElement *parentElement,
 
 void *
 NclLinkingConverter::createBindParam (DOMElement *parentElement,
-                                      void *objGrandParent)
+                                      arg_unused (void *objGrandParent))
 {
 
   Parameter *parameter;
@@ -313,7 +313,7 @@ NclLinkingConverter::createBindParam (DOMElement *parentElement,
 
 void *
 NclLinkingConverter::createLinkParam (DOMElement *parentElement,
-                                      void *objGrandParent)
+                                      arg_unused (void *objGrandParent))
 {
 
   Parameter *parameter;

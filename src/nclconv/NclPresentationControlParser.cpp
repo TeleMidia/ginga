@@ -142,7 +142,7 @@ NclPresentationControlParser::parseSwitch (DOMElement *parentElement,
     }
 
   elementNodeList = parentElement->getChildNodes ();
-  size = elementNodeList->getLength ();
+  size = (int) elementNodeList->getLength ();
 
   for (i = 0; i < size; i++)
     {
@@ -245,7 +245,7 @@ NclPresentationControlParser::posCompileSwitch (DOMElement *parentElement,
   void *elementObject;
 
   elementNodeList = parentElement->getChildNodes ();
-  size = elementNodeList->getLength ();
+  size = (int) elementNodeList->getLength ();
 
   for (i = 0; i < size; i++)
     {
@@ -368,7 +368,7 @@ NclPresentationControlParser::parseDescriptorSwitch (
     }
 
   elementNodeList = parentElement->getChildNodes ();
-  size = elementNodeList->getLength ();
+  size = (int) elementNodeList->getLength ();
 
   for (i = 0; i < size; i++)
     {

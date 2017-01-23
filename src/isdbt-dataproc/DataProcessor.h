@@ -112,7 +112,7 @@ private:
   void notifyEitListeners (set<IEventInfo *> *events);
 
 public:
-  void receiveData (char *buff, unsigned int size){};
+  void receiveData (arg_unused (char *buff), arg_unused (unsigned int size)){};
   void receiveSection (ITransportSection *section);
   void updateChannelStatus (short newStatus, Channel *channel);
   bool isReady ();

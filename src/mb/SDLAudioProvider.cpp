@@ -21,9 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLDeviceScreen.h"
 #include "SDLSurface.h"
 
-extern "C" {
-}
-
 GINGA_MB_BEGIN
 
 SDLAudioProvider::SDLAudioProvider (GingaScreenID screenId, const char *mrl)
@@ -112,9 +109,8 @@ SDLAudioProvider::setMediaTime (double pos)
 }
 
 void
-SDLAudioProvider::playOver (GingaSurfaceID surface)
+SDLAudioProvider::playOver (arg_unused (GingaSurfaceID surface))
 {
-
   clog << "SDLAudioProvider::playOver" << endl;
   SDLDeviceScreen::addCMPToRendererList (this);
   if (decoder != NULL)
@@ -133,7 +129,7 @@ SDLAudioProvider::pause ()
 }
 
 void
-SDLAudioProvider::resume (GingaSurfaceID surface)
+SDLAudioProvider::resume (arg_unused (GingaSurfaceID surface))
 {
   if (decoder != NULL)
     {
@@ -180,12 +176,12 @@ SDLAudioProvider::releaseAll ()
 }
 
 void
-SDLAudioProvider::getOriginalResolution (int *width, int *height)
+SDLAudioProvider::getOriginalResolution (arg_unused (int *width), arg_unused (int *height))
 {
 }
 
 void
-SDLAudioProvider::refreshDR (void *data)
+SDLAudioProvider::refreshDR (arg_unused (void *data))
 {
   double rt;
 

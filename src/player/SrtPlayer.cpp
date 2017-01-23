@@ -127,14 +127,15 @@ SrtPlayer::loadSrt ()
   int i = 1;
   while (!fisSub.eof ())
     {
+      string s;
       getline (fisSub, line);
 
       if (line.find ('\r') != std::string::npos)
         {
           line = line.substr (0, line.find ('\r'));
         }
-      //			clog << "line = '" << line << "'" << endl;
-      if (trim (line) == itos (i))
+      xstrassign (s, "%d", i);
+      if (xstrchomp (line) == s)
         {
           while (line.find ("-->") == std::string::npos && !fisSub.eof ())
             {
@@ -147,9 +148,9 @@ SrtPlayer::loadSrt ()
               line = line.substr (0, line.find ('\r'));
             }
 
-          key = trim (line.substr (0, line.find ("-->")));
+          key = xstrchomp (line.substr (0, line.find ("-->")));
 
-          value = trim (
+          value = xstrchomp (
               line.substr ((line.find ("-->") + 3), line.length ()));
 
           //				clog << "key = '" << key << "'" <<
@@ -161,7 +162,7 @@ SrtPlayer::loadSrt ()
           (*textEvents)[strTimeToFloat (key)] = strTimeToFloat (value);
 
           text = "";
-          while (trim (line) != "" && !fisSub.eof ())
+          while (xstrchomp (line) != "" && !fisSub.eof ())
             {
               getline (fisSub, line);
               if (line.find ('\r') != std::string::npos)

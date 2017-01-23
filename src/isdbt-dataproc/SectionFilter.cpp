@@ -18,10 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "SectionFilter.h"
 
-#ifndef abs
-#define abs(a) ((a) < 0 ? (-a) : (a))
-#endif
-
 #include "isdbt-tsparser/TransportSection.h"
 
 GINGA_DATAPROC_BEGIN
@@ -239,8 +235,7 @@ SectionFilter::receiveTSPacket (ITSPacket *pack)
           if (pack->getAdaptationFieldControl () == 2
               || pack->getAdaptationFieldControl () == 0)
             {
-
-              if (last == counter)
+              if (last == (int) counter)
                 {
                   isValidCounter = true;
                 }
@@ -321,10 +316,8 @@ SectionFilter::receiveSection (char *buf, int len, IFrontendFilter *filter)
 }
 
 void
-SectionFilter::receivePes (char *buf, int len, IFrontendFilter *filter)
+SectionFilter::receivePes (arg_unused (char *buf), arg_unused (int len), arg_unused (IFrontendFilter *filter))
 {
-
-  clog << "SectionFilter::receivePes" << endl;
 }
 
 SectionHandler *
@@ -340,7 +333,7 @@ SectionFilter::getSectionHandler (unsigned int pid)
 
 // Process and frees SECTION.
 void
-SectionFilter::process (ITransportSection *section, unsigned int pid)
+SectionFilter::process (arg_unused (ITransportSection *section), unsigned int pid)
 {
   SectionHandler *handler;
 
@@ -396,7 +389,7 @@ SectionFilter::verifyAndAddData (ITSPacket *pack, bool lastPacket)
   SectionHandler *handler;
   int payloadSize = pack->getPayloadSize ();
   /* Get the freespace in Section */
-  unsigned int freespace;
+  int freespace;
 
   handler = getSectionHandler (pack->getPid ());
 
@@ -434,7 +427,7 @@ SectionFilter::verifyAndAddData (ITSPacket *pack, bool lastPacket)
   if (handler->section == NULL)
     {
       int headerSizeLeft = 8 - handler->headerSize;
-      if ((headerSizeLeft > 0) || (headerSizeLeft <= 8))
+      if (headerSizeLeft > 0)
         {
           memcpy (handler->sectionHeader + handler->headerSize, data,
                   headerSizeLeft);

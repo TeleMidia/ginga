@@ -31,8 +31,6 @@ using namespace ::ginga::system;
 
 GINGA_MULTIDEV_BEGIN
 
-static UDPSocket *udpSocket;
-
 BroadcastSocketService::BroadcastSocketService ()
 {
   interfaceIP = 0;
@@ -159,16 +157,10 @@ BroadcastSocketService::sendData (struct frame *f)
 {
 
   char *data;
-  int taskSize, result, i;
+  int taskSize, i;
 
   data = f->data;
   taskSize = f->size;
-
-  // clog << "BroadcastSocketService::sendData Sending to "<<
-  // broadcastIPAddr;
-  // clog << " taskSize = " << taskSize << endl; //<< "' and headerSize =
-  // '";
-  // clog << headerSize << "'" << endl;
 
   try
     {

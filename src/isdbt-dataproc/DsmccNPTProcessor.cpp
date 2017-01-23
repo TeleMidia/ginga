@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "DsmccNPTProcessor.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_DATAPROC_BEGIN
 
 DsmccNPTProcessor::DsmccNPTProcessor (ISTCProvider *stcProvider) : Thread ()
@@ -335,7 +337,7 @@ DsmccNPTProcessor::addTimeListener (unsigned char cid, double nptValue,
   j = valueListeners->begin ();
   while (j != valueListeners->end ())
     {
-      if (j->first->time == nptValue)
+      if (xnumeq (j->first->time, nptValue))
         {
           break;
         }
@@ -563,7 +565,7 @@ DsmccNPTProcessor::notifyTimeListeners (unsigned char cid, double nptValue)
       j = i->second->begin ();
       while (j != i->second->end ())
         {
-          if (j->first->time == nptValue)
+          if (xnumeq (j->first->time, nptValue))
             {
               break;
             }
@@ -744,7 +746,7 @@ DsmccNPTProcessor::decodeDescriptors (vector<DsmccMpegDescriptor *> *list)
       desc = *it;
       if (desc->getDescriptorTag () == 0x01)
         {
-          if (getNPTValue (getCurrentTimeBaseId ()) != 0.0)
+          if (!xnumeq (getNPTValue (getCurrentTimeBaseId ()), 0.0))
             {
               clog << "DsmccNPTProcessor::decodeDescriptors - cmp = ";
               clog << getNPTValue (getCurrentTimeBaseId ()) << endl;
@@ -1188,7 +1190,7 @@ DsmccNPTProcessor::getNextNptValue (char cid, double *nextNptValue,
 bool
 DsmccNPTProcessor::processNptValues ()
 {
-  double nextNptValue, nptValue, sleepTime;
+  double nextNptValue, sleepTime;
   bool timedOut;
   char notify;
   bool restart = true;
@@ -1201,14 +1203,12 @@ DsmccNPTProcessor::processNptValues ()
   map<unsigned char,
       map<TimeControl *, set<ITimeBaseProvider *> *> *>::iterator i;
   map<TimeControl *, set<ITimeBaseProvider *> *>::iterator j;
-  double sleeper;
 
   cid = getCurrentTimeBaseId ();
 
   notify = getNextNptValue (cid, &nextNptValue, &sleepTime);
   if (sleepTime > 0.0)
     {
-      sleeper = getCurrentTimeMillis ();
       timedOut = Thread::mSleep ((long int)sleepTime);
       if (!timedOut)
         {
@@ -1227,7 +1227,7 @@ DsmccNPTProcessor::processNptValues ()
             {
               if (!j->first->notified)
                 {
-                  if (j->first->time == nextNptValue)
+                  if (xnumeq (j->first->time, nextNptValue))
                     {
                       notifyTimeListeners (cid, nextNptValue);
                       j->first->notified = true;

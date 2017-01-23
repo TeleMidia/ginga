@@ -75,11 +75,9 @@ AdapterProgramAVPlayer::resume ()
 void
 AdapterProgramAVPlayer::createPlayer ()
 {
-  NclCascadingDescriptor *descriptor;
   string soundLevel;
 
   player = ProgramAV::getInstance (myScreen);
-
   AdapterFormatterPlayer::createPlayer ();
   updateAVBounds ();
 }

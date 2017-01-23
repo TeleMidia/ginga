@@ -28,7 +28,7 @@ NclMetainformationConverter::NclMetainformationConverter (
 
 void *
 NclMetainformationConverter::createMeta (DOMElement *parentElement,
-                                         void *objGrandParent)
+                                         arg_unused (void *objGrandParent))
 {
 
   string name, content;
@@ -54,13 +54,13 @@ NclMetainformationConverter::createMeta (DOMElement *parentElement,
       return NULL;
     }
 
-  meta = new Meta (name, (void *)content.c_str ());
+  meta = new Meta (name, deconst (void *, content.c_str ()));
   return (void *)meta;
 }
 
 void *
-NclMetainformationConverter::createMetadata (DOMElement *parentElement,
-                                             void *objGrandParent)
+NclMetainformationConverter::createMetadata (arg_unused (DOMElement *parentElement),
+                                             arg_unused (void *objGrandParent))
 {
 
   Metadata *metadata;

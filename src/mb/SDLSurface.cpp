@@ -145,7 +145,7 @@ SDLSurface::checkPendingSurface ()
 void
 SDLSurface::fill ()
 {
-  int r = 0, g = 0, b = 0, alpha = 0;
+  guint8 r = 0, g = 0, b = 0;
 
   Thread::mutexLock (&sMutex);
   if (sur != NULL)
@@ -155,7 +155,6 @@ SDLSurface::fill ()
           r = bgColor->getR ();
           g = bgColor->getG ();
           b = bgColor->getB ();
-          alpha = bgColor->getAlpha ();
         }
 
       Thread::mutexLock (&pMutex);
@@ -315,7 +314,7 @@ SDLSurface::setCaps (int caps)
 }
 
 int
-SDLSurface::getCap (string cap)
+SDLSurface::getCap (arg_unused (string cap))
 {
   return 1;
 }
@@ -483,11 +482,7 @@ void
 SDLSurface::fillRectangle (int x, int y, int w, int h)
 {
   SDL_Rect rect;
-  int r, g, b;
-
-  /* clog << "SDLSurface::fillRectangle '";
-  clog << x << ", " << y << ", " << w << ", " << h << "'";
-  clog << endl; */
+  guint8 r, g, b;
 
   assert (x >= 0);
   assert (y >= 0);
@@ -553,7 +548,7 @@ SDLSurface::drawString (int x, int y, const char *txt)
 }
 
 void
-SDLSurface::setChromaColor (int r, int g, int b, int alpha)
+SDLSurface::setChromaColor (guint8 r, guint8 g, guint8 b, guint8 alpha)
 {
   releaseChromaColor ();
   SDLWindow *w = (SDLWindow *)parent;
@@ -593,7 +588,7 @@ SDLSurface::getChromaColor ()
 }
 
 void
-SDLSurface::setBorderColor (int r, int g, int b, int alpha)
+SDLSurface::setBorderColor (guint8 r, guint8 g, guint8 b, guint8 alpha)
 {
   releaseBorderColor ();
 
@@ -607,7 +602,7 @@ SDLSurface::getBorderColor ()
 }
 
 void
-SDLSurface::setBgColor (int r, int g, int b, int alpha)
+SDLSurface::setBgColor (guint8 r, guint8 g, guint8 b, guint8 alpha)
 {
   releaseBgColor ();
 
@@ -622,7 +617,7 @@ SDLSurface::getBgColor ()
 }
 
 void
-SDLSurface::setColor (int r, int g, int b, int alpha)
+SDLSurface::setColor (guint8 r, guint8 g, guint8 b, guint8 alpha)
 {
   releaseSurfaceColor ();
 
@@ -658,22 +653,10 @@ SDLSurface::flip ()
   checkPendingSurface ();
 }
 
-void
-SDLSurface::scale (double x, double y)
+void G_GNUC_NORETURN
+SDLSurface::scale (arg_unused (double x), arg_unused (double y))
 {
-  int width = 0, height = 0;
-
-  Thread::mutexLock (&sMutex);
-  if (sur == NULL)
-    {
-      clog << "SDLSurface::scale Warning! ";
-      clog << "Can't scale surface: ";
-      clog << "internal surface is NULL" << endl;
-      Thread::mutexUnlock (&sMutex);
-      return;
-    }
-
-  Thread::mutexUnlock (&sMutex);
+  g_assert_not_reached ();
 }
 
 void
@@ -891,7 +874,7 @@ SDLSurface::getDumpFileUri ()
     {
       uri = string (g_get_tmp_dir ()) + "/" + "dump_0000.bmp";
 
-      remove ((char *)(uri.c_str ()));
+      remove (deconst (char *, uri.c_str ()));
       SDL_SaveBMP (sur, uri.c_str ());
     }
   Thread::mutexUnlock (&sMutex);

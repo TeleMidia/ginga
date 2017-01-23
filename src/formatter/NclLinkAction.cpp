@@ -183,7 +183,7 @@ NclLinkAction::notifyProgressionListeners (bool start)
 
           Thread::mutexUnlock (&plMutex);
 
-          size = notifyList->size ();
+          size = (int) notifyList->size ();
           for (i = 0; i < size; i++)
             {
               listener = (*notifyList)[i];

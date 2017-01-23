@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "BroadcastDualSocketService.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_MULTIDEV_BEGIN
 
 BroadcastDualSocketService::BroadcastDualSocketService (
@@ -75,8 +77,6 @@ BroadcastDualSocketService::~BroadcastDualSocketService ()
 bool
 BroadcastDualSocketService::createSocket ()
 {
-  unsigned char trueVar = 1;
-
   try
     {
       writeSocket = new UDPSocket ();
@@ -135,7 +135,7 @@ bool
 BroadcastDualSocketService::sendData (struct frame *f)
 {
   char *data;
-  int taskSize, result, i;
+  int taskSize, i;
 
   data = f->data;
   taskSize = f->size;
@@ -202,15 +202,10 @@ BroadcastDualSocketService::checkInputBuffer (char *data, int *size)
 
   if (readSocket == NULL)
     {
-      clog << "BroadcastDualSocketService::checkInputBuffer readSocket == "
-              "NULL"
-           << endl;
       return false;
     }
 
   res = readSocket->select_t (0, 0);
-  // clog << "BroadcastDualSocketService::checkInputBuffer
-  // readSocket->select_t(0,0)" << endl;
 
   switch (res)
     {

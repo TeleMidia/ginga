@@ -22,6 +22,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TUNER_BEGIN
 
+GINGA_PRAGMA_DIAG_PUSH ()
+GINGA_PRAGMA_DIAG_IGNORE (-Wunused-const-variable)
+
 // tuner status
 static const short TS_LOOP_DETECTED = 0x01;
 static const short TS_SWITCHING_CHANNEL = 0x02;
@@ -30,6 +33,8 @@ static const short TS_NEW_SERVICE_TUNED = 0x04;
 static const short TS_SWITCHING_INTERFACE = 0x05;
 static const short TS_NEW_INTERFACE_SELECTED = 0x06;
 static const short TS_TUNER_POWEROFF = 0x07;
+
+GINGA_PRAGMA_DIAG_POP ()
 
 class ITunerListener
 {

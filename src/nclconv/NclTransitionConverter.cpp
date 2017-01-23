@@ -38,7 +38,7 @@ NclTransitionConverter::addTransitionToTransitionBase (void *parentObject,
 
 void *
 NclTransitionConverter::createTransitionBase (DOMElement *parentElement,
-                                              void *objGrandParent)
+                                              arg_unused (void *objGrandParent))
 {
 
   return new TransitionBase (XMLString::transcode (
@@ -47,7 +47,7 @@ NclTransitionConverter::createTransitionBase (DOMElement *parentElement,
 
 void *
 NclTransitionConverter::createTransition (DOMElement *parentElement,
-                                          void *objGrandParent)
+                                          arg_unused (void *objGrandParent))
 {
 
   Transition *transition;

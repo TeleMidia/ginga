@@ -87,16 +87,23 @@ NclLinkAttributeAssessment::getValue ()
       break;
 
     case EventUtil::ATT_OCCURRENCES:
-      value = getAssessmentWithOffset (itos (event->getOccurrences ()));
-      break;
+      {
+        string s;
+        xstrassign (s, "%d", (int) event->getOccurrences ());
+        value = getAssessmentWithOffset (s);
+        break;
+      }
 
     case EventUtil::ATT_REPETITIONS:
       if (event->instanceOf ("NclPresentationEvent"))
         {
-          value = getAssessmentWithOffset (
-              itos (((NclPresentationEvent *)event)->getRepetitions ()));
+          string s;
+          xstrassign (s, "%d", (int) ((NclPresentationEvent *)event)->getRepetitions ());
         }
       break;
+
+      default:
+        g_assert_not_reached ();
     }
 
   return value;
@@ -105,25 +112,14 @@ NclLinkAttributeAssessment::getValue ()
 string
 NclLinkAttributeAssessment::getAssessmentWithOffset (string assessmentValue)
 {
+  string s;
+  double off, val;
 
-  if (offset != "" && isNumeric ((void *)(assessmentValue.c_str ())))
-    {
-      return itos (::ginga::util::stof (assessmentValue)
-                   + ::ginga::util::stof (offset));
-    }
+  if (!_xstrtod (offset, &off) || !_xstrtod (assessmentValue, &val))
+    return assessmentValue;
 
-  return assessmentValue;
-  /*
-  if (!(assessmentValue->instanceof Double) || offset == null ||
-              !(offset instanceof Double)) {
-
-          return assessmentValue;
-  }
-  else {
-          return new Double(((Double)assessmentValue).doubleValue() +
-                      ((Double)offset).doubleValue());
-  }
-  */
+  xstrassign (s, "%f", val + off);
+  return s;
 }
 
 GINGA_FORMATTER_END

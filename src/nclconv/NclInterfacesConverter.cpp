@@ -252,7 +252,7 @@ NclInterfacesConverter::createTemporalAnchor (DOMElement *areaElement)
           endVal = IntervalAnchor::OBJECT_DURATION;
         }
 
-      if ((endVal == IntervalAnchor::OBJECT_DURATION) || endVal > begVal)
+      if (xnumeq (endVal, IntervalAnchor::OBJECT_DURATION) || endVal > begVal)
         {
 
           anchor = new RelativeTimeIntervalAnchor (
@@ -345,7 +345,7 @@ NclInterfacesConverter::createTemporalAnchor (DOMElement *areaElement)
 
 void *
 NclInterfacesConverter::createProperty (DOMElement *parentElement,
-                                        void *objGrandParent)
+                                        arg_unused (void *objGrandParent))
 {
 
   string attributeName, attributeValue;
@@ -375,7 +375,7 @@ NclInterfacesConverter::createProperty (DOMElement *parentElement,
 
 void *
 NclInterfacesConverter::createArea (DOMElement *parentElement,
-                                    void *objGrandParent)
+                                    arg_unused (void *objGrandParent))
 {
 
   string anchorId;

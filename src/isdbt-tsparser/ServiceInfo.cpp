@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "ServiceInfo.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+
 GINGA_TSPARSER_BEGIN
 
 ServiceInfo::ServiceInfo ()
@@ -100,7 +102,10 @@ ServiceInfo::getRunningStatusDescription ()
     case 4:
       return "Running";
       break;
+
+    default:
       // 5-7 are reserved for future used
+      break;
     }
 
   return "";
@@ -157,7 +162,6 @@ size_t
 ServiceInfo::process (char *data, size_t pos)
 {
   IMpegDescriptor *descriptor;
-  size_t localpos;
   unsigned char remainingBytesDescriptor, value;
 
   cout << "ServiceInfo::process with pos " << pos << endl;
@@ -190,14 +194,14 @@ ServiceInfo::process (char *data, size_t pos)
         {
         case LOGO_TRANSMISSION:
           descriptor = new LogoTransmissionDescriptor ();
-          localpos = descriptor->process (data, pos);
+          descriptor->process (data, pos);
           pos += value;
           descriptors->push_back (descriptor);
           break;
 
         case SERVICE:
           descriptor = new ServiceDescriptor ();
-          localpos = descriptor->process (data, pos);
+          descriptor->process (data, pos);
           pos += value;
           descriptors->push_back (descriptor);
           break;
