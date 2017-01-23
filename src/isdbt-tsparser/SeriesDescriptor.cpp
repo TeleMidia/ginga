@@ -102,33 +102,7 @@ SeriesDescriptor::getSeriesNameChar ()
   str.append (seriesNameChar, seriesNameLength);
   return str;
 }
-/*
-map<string, string> SeriesDescriptor::mapGenerator() {
-        map<string, string> series;
-        stringstream ss;
 
-        ss << seriesId;
-        t["id"] = ss.str();
-        ss = "";
-
-        ss << repeatLabel;
-        t["repeatLabel"] = ss.str();
-        ss = "";
-
-        ss << programPattern;
-        t["programPattern"] =  ss.str();
-        ss = "";
-
-        ss << lastEpisodeNumber;
-        t["lastEpisodeNumber"] = ss.str();
-        ss = "";
-
-        t["name"] = getSeriesNameChar();
-
-        return series;
-
-}
-*/
 void
 SeriesDescriptor::print ()
 {
@@ -142,16 +116,10 @@ SeriesDescriptor::print ()
 size_t
 SeriesDescriptor::process (char *data, size_t pos)
 {
-  // clog << "SeriesDescriptor::process with pos = " << pos;
-
   descriptorLength = data[pos + 1];
   pos += 2;
 
-  // clog << "and descriptorlength = ";
-  // cout<< (descriptorLength & 0xFF) << endl;
-
   seriesId = (((data[pos] << 8) & 0xFF00) | (data[pos + 1] & 0xFF));
-  // clog << "Series seriedId = "<< (seriesId & 0xFF) << endl;
   pos += 2; // pos = 22
 
   repeatLabel = ((data[pos] & 0xF0) >> 4);
@@ -159,14 +127,8 @@ SeriesDescriptor::process (char *data, size_t pos)
   expireDateValidFlag = (data[pos] & 0x01);
   pos++; // pos = 23
 
-  // clog << "Series repeatLabel" << repeatLabel;
-  // clog << " and programPattern = " << programPattern;
-  // clog << " and expireDateValidFlag = " << expireDateValidFlag << endl;
-
   expireDate[0] = data[pos];
-  // clog << "Series expireDate = " << (expireDate[0]&0xFF);
   expireDate[1] = data[pos + 1];
-  // cout <<"."<< (expireDate[1] & 0xFF) << endl;
   pos += 2; // pos = 25
 
   episodeNumber
@@ -176,10 +138,6 @@ SeriesDescriptor::process (char *data, size_t pos)
       = (((data[pos + 1] & 0x0F) << 8) | (data[pos + 2] & 0xFF) >> 8);
 
   pos += 3; // pos = 28
-  // clog << "Series episodeNumber = " << (episodeNumber & 0xFF);
-  // clog << " and lastEpisodeNUmber = " ;
-  // clog << (lastEpisodeNumber & 0xFF) << endl;
-
   seriesNameLength = descriptorLength - 8;
   if (seriesNameLength > 0)
     {

@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLImageProvider.h"
 
 #include "DisplayManager.h"
-#include "SDLDeviceScreen.h"
+#include "SDLScreen.h"
 #include "SDLSurface.h"
 #include "SDLWindow.h"
 
@@ -106,9 +106,9 @@ SDLImageProvider::playOver (GingaSurfaceID surface)
           // We need the region dimensions for SVG. How to do it?
 
           SDLSvgDecoder *svgdec = new SDLSvgDecoder (imgUri);
-          SDLDeviceScreen::lockSDL ();
+          SDLScreen::lockSDL ();
           renderedSurface = svgdec->decode (w, h);
-          SDLDeviceScreen::unlockSDL ();
+          SDLScreen::unlockSDL ();
           delete svgdec;
         }
       else
@@ -117,21 +117,21 @@ SDLImageProvider::playOver (GingaSurfaceID surface)
           if (imgUri.substr (imgUri.find_last_of (".") + 1) == "bpg")
         {
           SDLBpgDecoder *bpgdec = new SDLBpgDecoder (imgUri);
-          SDLDeviceScreen::lockSDL ();
+          SDLScreen::lockSDL ();
           renderedSurface = bpgdec->decode ();
-          SDLDeviceScreen::unlockSDL ();
+          SDLScreen::unlockSDL ();
         }
       else
 #endif
         {
-          SDLDeviceScreen::lockSDL ();
+          SDLScreen::lockSDL ();
           renderedSurface = IMG_Load (imgUri.c_str ());
-          SDLDeviceScreen::unlockSDL ();
+          SDLScreen::unlockSDL ();
         }
 
       if (renderedSurface != NULL)
         {
-          SDLDeviceScreen::addUnderlyingSurface (renderedSurface);
+          SDLScreen::addUnderlyingSurface (renderedSurface);
           GingaWindowID parentId = Ginga_Display
                                        ->getSurfaceParentWindow (surface);
           parent = (SDLWindow *)Ginga_Display

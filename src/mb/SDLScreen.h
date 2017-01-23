@@ -50,7 +50,7 @@ typedef struct
   SDL_Texture *uTex;
 } ReleaseContainer;
 
-class SDLDeviceScreen
+class SDLScreen
 {
 public:
   static const unsigned int DSA_UNKNOWN;
@@ -77,7 +77,7 @@ public:
 private:
   static bool hasRenderer;
   static bool mutexInit;
-  static map<SDLDeviceScreen *, short> sdlScreens;
+  static map<SDLScreen *, short> sdlScreens;
 
   string mbMode;
   string mbSubSystem;
@@ -137,10 +137,10 @@ private:
       cstMutex; // mutex for the others C++ STL structures
 
 public:
-  SDLDeviceScreen (int numArgs, char **args, GingaScreenID myId,
+  SDLScreen (int numArgs, char **args, GingaScreenID myId,
                    UnderlyingWindowID embedId, bool externalRenderer);
 
-  virtual ~SDLDeviceScreen ();
+  virtual ~SDLScreen ();
 
 private:
   static void checkMutexInit ();
@@ -236,32 +236,32 @@ private:
   static void notifyQuit ();
   static void sdlQuit ();
 
-  static void checkWindowFocus (SDLDeviceScreen *s, SDL_Event *event);
-  static bool notifyEvent (SDLDeviceScreen *screen, SDL_Event *event,
+  static void checkWindowFocus (SDLScreen *s, SDL_Event *event);
+  static bool notifyEvent (SDLScreen *screen, SDL_Event *event,
                            bool capsOn, bool shiftOn);
 
   static void *checkStdin (void *ptr);
-  static void processCmd (SDLDeviceScreen *s, string cmd, string type,
+  static void processCmd (SDLScreen *s, string cmd, string type,
                           string args);
 
   static bool checkEvents ();
   static void *rendererT (void *ptr);
 
-  static void refreshRC (SDLDeviceScreen *screen);
-  static int refreshCMP (SDLDeviceScreen *screen);
-  static void refreshWin (SDLDeviceScreen *screen);
+  static void refreshRC (SDLScreen *screen);
+  static int refreshCMP (SDLScreen *screen);
+  static void refreshWin (SDLScreen *screen);
 
-  static void initEmbed (SDLDeviceScreen *s, UnderlyingWindowID uWin);
-  static void forceInputFocus (SDLDeviceScreen *screen,
+  static void initEmbed (SDLScreen *s, UnderlyingWindowID uWin);
+  static void forceInputFocus (SDLScreen *screen,
                                UnderlyingWindowID uWin);
 
-  static void initScreen (SDLDeviceScreen *screen);
-  static void clearScreen (SDLDeviceScreen *screen);
-  static void releaseScreen (SDLDeviceScreen *screen);
+  static void initScreen (SDLScreen *screen);
+  static void clearScreen (SDLScreen *screen);
+  static void releaseScreen (SDLScreen *screen);
 
   static void releaseAll ();
 
-  static void initCMP (SDLDeviceScreen *screen,
+  static void initCMP (SDLScreen *screen,
                        IContinuousMediaProvider *cmp);
 
   static bool blitFromWindow (SDLWindow *iWin, SDL_Surface *dest);
@@ -288,7 +288,7 @@ private:
   /* input */
   static int convertEventCodeStrToInt (string strEvent);
   static void initCodeMaps ();
-  static bool checkEventFocus (SDLDeviceScreen *s);
+  static bool checkEventFocus (SDLScreen *s);
 
 public:
   /* output */

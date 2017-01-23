@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "SDLDeviceScreen.h"
+#include "SDLScreen.h"
 
 #include "DisplayManager.h"
 #include "InputManager.h"
@@ -31,37 +31,37 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-map<SDLDeviceScreen *, short> SDLDeviceScreen::sdlScreens;
-bool SDLDeviceScreen::hasRenderer = false;
-bool SDLDeviceScreen::hasERC = false;
-bool SDLDeviceScreen::mutexInit = false;
+map<SDLScreen *, short> SDLScreen::sdlScreens;
+bool SDLScreen::hasRenderer = false;
+bool SDLScreen::hasERC = false;
+bool SDLScreen::mutexInit = false;
 
-map<int, int> SDLDeviceScreen::gingaToSDLCodeMap;
-map<int, int> SDLDeviceScreen::sdlToGingaCodeMap;
-map<string, int> SDLDeviceScreen::sdlStrToSdlCode;
+map<int, int> SDLScreen::gingaToSDLCodeMap;
+map<int, int> SDLScreen::sdlToGingaCodeMap;
+map<string, int> SDLScreen::sdlStrToSdlCode;
 
-set<SDL_Texture *> SDLDeviceScreen::uTexPool;
-set<SDL_Surface *> SDLDeviceScreen::uSurPool;
-vector<ReleaseContainer *> SDLDeviceScreen::releaseList;
+set<SDL_Texture *> SDLScreen::uTexPool;
+set<SDL_Surface *> SDLScreen::uSurPool;
+vector<ReleaseContainer *> SDLScreen::releaseList;
 map<GingaScreenID, map<double, set<SDLWindow *> *> *>
-    SDLDeviceScreen::renderMap;
-set<IContinuousMediaProvider *> SDLDeviceScreen::cmpRenderList;
+    SDLScreen::renderMap;
+set<IContinuousMediaProvider *> SDLScreen::cmpRenderList;
 
-const unsigned int SDLDeviceScreen::DSA_UNKNOWN = 0;
-const unsigned int SDLDeviceScreen::DSA_4x3 = 1;
-const unsigned int SDLDeviceScreen::DSA_16x9 = 2;
+const unsigned int SDLScreen::DSA_UNKNOWN = 0;
+const unsigned int SDLScreen::DSA_4x3 = 1;
+const unsigned int SDLScreen::DSA_16x9 = 2;
 
-pthread_mutex_t SDLDeviceScreen::sdlMutex;
-pthread_mutex_t SDLDeviceScreen::sieMutex;
-pthread_mutex_t SDLDeviceScreen::renMutex;
-pthread_mutex_t SDLDeviceScreen::scrMutex;
-pthread_mutex_t SDLDeviceScreen::recMutex;
-pthread_mutex_t SDLDeviceScreen::winMutex;
-pthread_mutex_t SDLDeviceScreen::surMutex;
-pthread_mutex_t SDLDeviceScreen::proMutex;
-pthread_mutex_t SDLDeviceScreen::cstMutex;
+pthread_mutex_t SDLScreen::sdlMutex;
+pthread_mutex_t SDLScreen::sieMutex;
+pthread_mutex_t SDLScreen::renMutex;
+pthread_mutex_t SDLScreen::scrMutex;
+pthread_mutex_t SDLScreen::recMutex;
+pthread_mutex_t SDLScreen::winMutex;
+pthread_mutex_t SDLScreen::surMutex;
+pthread_mutex_t SDLScreen::proMutex;
+pthread_mutex_t SDLScreen::cstMutex;
 
-SDLDeviceScreen::SDLDeviceScreen (int argc, char **args, GingaScreenID myId,
+SDLScreen::SDLScreen (int argc, char **args, GingaScreenID myId,
                                   UnderlyingWindowID embedId,
                                   bool externalRenderer)
 {
@@ -147,7 +147,7 @@ SDLDeviceScreen::SDLDeviceScreen (int argc, char **args, GingaScreenID myId,
         {
           setInitScreenFlag ();
 
-          pthread_create (&tId, &tattr, SDLDeviceScreen::rendererT, this);
+          pthread_create (&tId, &tattr, SDLScreen::rendererT, this);
           pthread_detach (tId);
         }
       else
@@ -168,14 +168,14 @@ SDLDeviceScreen::SDLDeviceScreen (int argc, char **args, GingaScreenID myId,
 
   if (useStdin)
     {
-      pthread_create (&tId, &tattr, SDLDeviceScreen::checkStdin, this);
+      pthread_create (&tId, &tattr, SDLScreen::checkStdin, this);
       pthread_detach (tId);
     }
 }
 
-SDLDeviceScreen::~SDLDeviceScreen ()
+SDLScreen::~SDLScreen ()
 {
-  map<SDLDeviceScreen *, short>::iterator i;
+  map<SDLScreen *, short>::iterator i;
   map<GingaScreenID, map<double, set<SDLWindow *> *> *>::iterator j;
   map<double, set<SDLWindow *> *>::iterator k;
 
@@ -227,11 +227,11 @@ SDLDeviceScreen::~SDLDeviceScreen ()
     }
   Thread::mutexUnlock (&scrMutex);
 
-  clog << "SDLDeviceScreen::~SDLDeviceScreen all done" << endl;
+  clog << "SDLScreen::~SDLScreen all done" << endl;
 }
 
 void
-SDLDeviceScreen::checkMutexInit ()
+SDLScreen::checkMutexInit ()
 {
   if (!mutexInit)
     {
@@ -250,7 +250,7 @@ SDLDeviceScreen::checkMutexInit ()
 }
 
 void
-SDLDeviceScreen::lockSDL ()
+SDLScreen::lockSDL ()
 {
   checkMutexInit ();
 
@@ -258,7 +258,7 @@ SDLDeviceScreen::lockSDL ()
 }
 
 void
-SDLDeviceScreen::unlockSDL ()
+SDLScreen::unlockSDL ()
 {
   checkMutexInit ();
 
@@ -266,7 +266,7 @@ SDLDeviceScreen::unlockSDL ()
 }
 
 void
-SDLDeviceScreen::updateRenderMap (GingaScreenID screenId, SDLWindow *window,
+SDLScreen::updateRenderMap (GingaScreenID screenId, SDLWindow *window,
                                   double oldZIndex, double newZIndex)
 {
   checkMutexInit ();
@@ -276,7 +276,7 @@ SDLDeviceScreen::updateRenderMap (GingaScreenID screenId, SDLWindow *window,
 }
 
 void
-SDLDeviceScreen::releaseScreen ()
+SDLScreen::releaseScreen ()
 {
   Thread::mutexLock (&scrMutex);
   sdlScreens[this] = SPT_RELEASE;
@@ -284,7 +284,7 @@ SDLDeviceScreen::releaseScreen ()
 }
 
 void
-SDLDeviceScreen::releaseMB ()
+SDLScreen::releaseMB ()
 {
   int errCount = 0;
   int numSDL;
@@ -313,7 +313,7 @@ SDLDeviceScreen::releaseMB ()
 }
 
 void
-SDLDeviceScreen::clearWidgetPools ()
+SDLScreen::clearWidgetPools ()
 {
   Thread::mutexLock (&scrMutex);
   sdlScreens[this] = SPT_CLEAR;
@@ -321,13 +321,13 @@ SDLDeviceScreen::clearWidgetPools ()
 }
 
 string
-SDLDeviceScreen::getScreenName ()
+SDLScreen::getScreenName ()
 {
   return "sdl";
 }
 
 void
-SDLDeviceScreen::setEmbedFromParent (string parentCoords)
+SDLScreen::setEmbedFromParent (string parentCoords)
 {
   vector<string> *params;
   gint64 id;
@@ -351,7 +351,7 @@ SDLDeviceScreen::setEmbedFromParent (string parentCoords)
 }
 
 void
-SDLDeviceScreen::setBackgroundImage (string uri)
+SDLScreen::setBackgroundImage (string uri)
 {
   lockSDL ();
 
@@ -369,7 +369,7 @@ SDLDeviceScreen::setBackgroundImage (string uri)
 }
 
 unsigned int
-SDLDeviceScreen::getWidthResolution ()
+SDLScreen::getWidthResolution ()
 {
   /*
    * wRes == 0 is an initial state. So pthread_cond_t
@@ -380,7 +380,7 @@ SDLDeviceScreen::getWidthResolution ()
       g_usleep (uSleepTime);
     }
 
-  clog << "SDLDeviceScreen::getWidthResolution returns '";
+  clog << "SDLScreen::getWidthResolution returns '";
   clog << wRes << "'";
   clog << endl;
 
@@ -388,7 +388,7 @@ SDLDeviceScreen::getWidthResolution ()
 }
 
 void
-SDLDeviceScreen::setWidthResolution (unsigned int wRes)
+SDLScreen::setWidthResolution (unsigned int wRes)
 {
   this->wRes = wRes;
 
@@ -399,13 +399,13 @@ SDLDeviceScreen::setWidthResolution (unsigned int wRes)
     }
   unlockSDL ();
 
-  clog << "SDLDeviceScreen::setWidthResolution to '";
+  clog << "SDLScreen::setWidthResolution to '";
   clog << wRes << "'";
   clog << endl;
 }
 
 unsigned int
-SDLDeviceScreen::getHeightResolution ()
+SDLScreen::getHeightResolution ()
 {
   /*
    * hRes == 0 is an initial state. So pthread_cond_t
@@ -416,7 +416,7 @@ SDLDeviceScreen::getHeightResolution ()
       g_usleep (uSleepTime);
     }
 
-  clog << "SDLDeviceScreen::getHeightResolution returns '";
+  clog << "SDLScreen::getHeightResolution returns '";
   clog << hRes << "'";
   clog << endl;
 
@@ -424,7 +424,7 @@ SDLDeviceScreen::getHeightResolution ()
 }
 
 void
-SDLDeviceScreen::setHeightResolution (unsigned int hRes)
+SDLScreen::setHeightResolution (unsigned int hRes)
 {
   this->hRes = hRes;
 
@@ -435,18 +435,18 @@ SDLDeviceScreen::setHeightResolution (unsigned int hRes)
     }
   unlockSDL ();
 
-  clog << "SDLDeviceScreen::setHeightResolution to '";
+  clog << "SDLScreen::setHeightResolution to '";
   clog << hRes << "'";
   clog << endl;
 }
 
 void
-SDLDeviceScreen::setColorKey (arg_unused (int r), arg_unused (int g), arg_unused (int b))
+SDLScreen::setColorKey (arg_unused (int r), arg_unused (int g), arg_unused (int b))
 {
 }
 
 SDLWindow *
-SDLDeviceScreen::getIWindowFromId (GingaWindowID winId)
+SDLScreen::getIWindowFromId (GingaWindowID winId)
 {
   map<GingaWindowID, SDLWindow *>::iterator i;
   SDLWindow *iWin = NULL;
@@ -463,7 +463,7 @@ SDLDeviceScreen::getIWindowFromId (GingaWindowID winId)
 }
 
 bool
-SDLDeviceScreen::mergeIds (GingaWindowID destId,
+SDLScreen::mergeIds (GingaWindowID destId,
                            vector<GingaWindowID> *srcIds)
 {
   map<GingaWindowID, SDLWindow *>::iterator i;
@@ -494,7 +494,7 @@ SDLDeviceScreen::mergeIds (GingaWindowID destId,
             {
               if (blitFromWindow (i->second, destSur))
                 {
-                  clog << "SDLDeviceScreen::mergeIds merged '";
+                  clog << "SDLScreen::mergeIds merged '";
                   clog << (unsigned long)(*j) << "' on destination '";
                   clog << (unsigned long)destId << "'" << endl;
 
@@ -502,7 +502,7 @@ SDLDeviceScreen::mergeIds (GingaWindowID destId,
                 }
               else
                 {
-                  clog << "SDLDeviceScreen::mergeIds can't merge '";
+                  clog << "SDLScreen::mergeIds can't merge '";
                   clog << (unsigned long)(*j) << "' on destination '";
                   clog << (unsigned long)destId << "'" << endl;
                 }
@@ -517,7 +517,7 @@ SDLDeviceScreen::mergeIds (GingaWindowID destId,
     }
   else
     {
-      clog << "SDLDeviceScreen::mergeIds can't find destination window '";
+      clog << "SDLScreen::mergeIds can't find destination window '";
       clog << (unsigned long)destId << "'" << endl;
 
       Thread::mutexUnlock (&winMutex);
@@ -528,7 +528,7 @@ SDLDeviceScreen::mergeIds (GingaWindowID destId,
 }
 
 void
-SDLDeviceScreen::blitScreen (SDLSurface *destination)
+SDLScreen::blitScreen (SDLSurface *destination)
 {
   SDL_Surface *dest;
 
@@ -546,7 +546,7 @@ SDLDeviceScreen::blitScreen (SDLSurface *destination)
 }
 
 void
-SDLDeviceScreen::blitScreen (string fileUri)
+SDLScreen::blitScreen (string fileUri)
 {
   SDL_Surface *dest;
 
@@ -556,14 +556,14 @@ SDLDeviceScreen::blitScreen (string fileUri)
 
   if (SDL_SaveBMP_RW (dest, SDL_RWFromFile (fileUri.c_str (), "wb"), 1) < 0)
     {
-      clog << "SDLDeviceScreen::blitScreen SDL error: '";
+      clog << "SDLScreen::blitScreen SDL error: '";
       clog << SDL_GetError () << "'" << endl;
     }
   unlockSDL ();
 }
 
 void
-SDLDeviceScreen::blitScreen (SDL_Surface *dest)
+SDLScreen::blitScreen (SDL_Surface *dest)
 {
   map<GingaScreenID, map<double, set<SDLWindow *> *> *>::iterator i;
   map<double, set<SDLWindow *> *>::iterator j;
@@ -589,7 +589,7 @@ SDLDeviceScreen::blitScreen (SDL_Surface *dest)
 }
 
 void
-SDLDeviceScreen::setInitScreenFlag ()
+SDLScreen::setInitScreenFlag ()
 {
   Thread::mutexLock (&scrMutex);
   sdlScreens[this] = SPT_INIT;
@@ -597,7 +597,7 @@ SDLDeviceScreen::setInitScreenFlag ()
 }
 
 void
-SDLDeviceScreen::refreshScreen ()
+SDLScreen::refreshScreen ()
 {
   if (hasERC)
     {
@@ -608,7 +608,7 @@ SDLDeviceScreen::refreshScreen ()
 /* interfacing output */
 
 SDLWindow *
-SDLDeviceScreen::createWindow (int x, int y, int w, int h, double z)
+SDLScreen::createWindow (int x, int y, int w, int h, double z)
 {
   SDLWindow *iWin;
 
@@ -629,7 +629,7 @@ SDLDeviceScreen::createWindow (int x, int y, int w, int h, double z)
 }
 
 UnderlyingWindowID
-SDLDeviceScreen::createUnderlyingSubWindow (int x, int y, int w, int h,
+SDLScreen::createUnderlyingSubWindow (int x, int y, int w, int h,
                                             double z)
 {
   UnderlyingWindowID uWin = NULL;
@@ -666,7 +666,7 @@ MyWndProc (HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 #endif
 
 UnderlyingWindowID
-SDLDeviceScreen::createUnderlyingSubWindow (arg_unused (UnderlyingWindowID parent),
+SDLScreen::createUnderlyingSubWindow (arg_unused (UnderlyingWindowID parent),
                                             arg_unused (string spec), arg_unused (int x), arg_unused (int y),
                                             int w, int h, arg_unused (double z))
 {
@@ -707,7 +707,7 @@ SDLDeviceScreen::createUnderlyingSubWindow (arg_unused (UnderlyingWindowID paren
 // 		XSync(xDisplay, 0);
 
 // 		if (uWin == NULL) {
-// 			clog << "SDLDeviceScreen::createUnderlyingSubWindow
+// 			clog << "SDLScreen::createUnderlyingSubWindow
 // Warning!
 // ";
 // 			clog << "Can't create embed child window" << endl;
@@ -722,7 +722,7 @@ SDLDeviceScreen::createUnderlyingSubWindow (arg_unused (UnderlyingWindowID paren
 // 			XInitThreads();
 // 		}
 
-// 		clog << "SDLDeviceScreen::createUnderlyingSubWindow embed id
+// 		clog << "SDLScreen::createUnderlyingSubWindow embed id
 // created '";
 // 		clog << (void*)uWin << "'";
 // 		clog << endl;
@@ -749,13 +749,13 @@ SDLDeviceScreen::createUnderlyingSubWindow (arg_unused (UnderlyingWindowID paren
 
   if (!RegisterClass (&wndclass))
     {
-      clog << "SDLDeviceScreen::createUnderlyingSubWindow Warning! ";
+      clog << "SDLScreen::createUnderlyingSubWindow Warning! ";
       clog << "Can't register class " << cName;
       clog << endl;
       return NULL;
     }
 
-  clog << "SDLDeviceScreen::createUnderlyingSubWindow Creating ";
+  clog << "SDLScreen::createUnderlyingSubWindow Creating ";
   clog << "Embedded window within the following class: " << cName;
   clog << endl;
 
@@ -776,14 +776,14 @@ SDLDeviceScreen::createUnderlyingSubWindow (arg_unused (UnderlyingWindowID paren
       // procedure.
       ShowWindow ((HWND)uWin, 1);
       UpdateWindow ((HWND)uWin);
-      clog << "SDLDeviceScreen::createUnderlyingSubWindow embed id created "
+      clog << "SDLScreen::createUnderlyingSubWindow embed id created "
               "'";
       clog << (void *)uWin << "'";
       clog << endl;
     }
   else
     {
-      clog << "SDLDeviceScreen::createUnderlyingSubWindow Warning!";
+      clog << "SDLScreen::createUnderlyingSubWindow Warning!";
       clog << " Can't create sub-window with the following data:";
       clog << endl;
       clog << "last error = " << GetLastError () << endl;
@@ -803,7 +803,7 @@ SDLDeviceScreen::createUnderlyingSubWindow (arg_unused (UnderlyingWindowID paren
 }
 
 UnderlyingWindowID
-SDLDeviceScreen::getScreenUnderlyingWindow ()
+SDLScreen::getScreenUnderlyingWindow ()
 {
   UnderlyingWindowID sUWin = NULL;
 
@@ -822,7 +822,7 @@ SDLDeviceScreen::getScreenUnderlyingWindow ()
 }
 
 bool
-SDLDeviceScreen::hasWindow (SDLWindow *win)
+SDLScreen::hasWindow (SDLWindow *win)
 {
   set<SDLWindow *>::iterator i;
   bool hasWin = false;
@@ -841,7 +841,7 @@ SDLDeviceScreen::hasWindow (SDLWindow *win)
 }
 
 void
-SDLDeviceScreen::releaseWindow (SDLWindow *win)
+SDLScreen::releaseWindow (SDLWindow *win)
 {
   set<SDLWindow *>::iterator i;
   map<GingaWindowID, SDLWindow *>::iterator j;
@@ -885,13 +885,13 @@ SDLDeviceScreen::releaseWindow (SDLWindow *win)
 }
 
 SDLSurface *
-SDLDeviceScreen::createSurface ()
+SDLScreen::createSurface ()
 {
   return createSurfaceFrom (NULL);
 }
 
 SDLSurface *
-SDLDeviceScreen::createSurface (int w, int h)
+SDLScreen::createSurface (int w, int h)
 {
   SDLSurface *iSur = NULL;
   SDL_Surface *uSur = NULL;
@@ -912,7 +912,7 @@ SDLDeviceScreen::createSurface (int w, int h)
 }
 
 SDLSurface *
-SDLDeviceScreen::createSurfaceFrom (void *uSur)
+SDLScreen::createSurfaceFrom (void *uSur)
 {
   SDLSurface *iSur = NULL;
 
@@ -935,7 +935,7 @@ SDLDeviceScreen::createSurfaceFrom (void *uSur)
 }
 
 bool
-SDLDeviceScreen::hasSurface (SDLSurface *s)
+SDLScreen::hasSurface (SDLSurface *s)
 {
   set<SDLSurface *>::iterator i;
   bool hasSur = false;
@@ -952,7 +952,7 @@ SDLDeviceScreen::hasSurface (SDLSurface *s)
 }
 
 bool
-SDLDeviceScreen::releaseSurface (SDLSurface *s)
+SDLScreen::releaseSurface (SDLSurface *s)
 {
   set<SDLSurface *>::iterator i;
   bool released = false;
@@ -971,7 +971,7 @@ SDLDeviceScreen::releaseSurface (SDLSurface *s)
 
 /* interfacing content */
 IContinuousMediaProvider *
-SDLDeviceScreen::createContinuousMediaProvider (const char *mrl,
+SDLScreen::createContinuousMediaProvider (const char *mrl,
                                                 arg_unused (bool isRemote))
 {
   IContinuousMediaProvider *provider;
@@ -990,7 +990,7 @@ SDLDeviceScreen::createContinuousMediaProvider (const char *mrl,
 }
 
 void
-SDLDeviceScreen::releaseContinuousMediaProvider (
+SDLScreen::releaseContinuousMediaProvider (
     IContinuousMediaProvider *provider)
 {
   set<IContinuousMediaProvider *>::iterator i;
@@ -1014,7 +1014,7 @@ SDLDeviceScreen::releaseContinuousMediaProvider (
 }
 
 IFontProvider *
-SDLDeviceScreen::createFontProvider (const char *mrl, int fontSize)
+SDLScreen::createFontProvider (const char *mrl, int fontSize)
 {
   IFontProvider *provider = NULL;
 
@@ -1030,7 +1030,7 @@ SDLDeviceScreen::createFontProvider (const char *mrl, int fontSize)
 }
 
 void
-SDLDeviceScreen::releaseFontProvider (IFontProvider *provider)
+SDLScreen::releaseFontProvider (IFontProvider *provider)
 {
   set<IDiscreteMediaProvider *>::iterator i;
   IDiscreteMediaProvider *dmp;
@@ -1052,7 +1052,7 @@ SDLDeviceScreen::releaseFontProvider (IFontProvider *provider)
 }
 
 IImageProvider *
-SDLDeviceScreen::createImageProvider (const char *mrl)
+SDLScreen::createImageProvider (const char *mrl)
 {
   IImageProvider *provider = NULL;
 
@@ -1070,7 +1070,7 @@ SDLDeviceScreen::createImageProvider (const char *mrl)
 }
 
 void
-SDLDeviceScreen::releaseImageProvider (IImageProvider *provider)
+SDLScreen::releaseImageProvider (IImageProvider *provider)
 {
   set<IDiscreteMediaProvider *>::iterator i;
   IDiscreteMediaProvider *dmp;
@@ -1092,7 +1092,7 @@ SDLDeviceScreen::releaseImageProvider (IImageProvider *provider)
 }
 
 SDLSurface *
-SDLDeviceScreen::createRenderedSurfaceFromImageFile (const char *mrl)
+SDLScreen::createRenderedSurfaceFromImageFile (const char *mrl)
 {
   SDLSurface *iSur = NULL;
   IImageProvider *provider = NULL;
@@ -1111,7 +1111,7 @@ SDLDeviceScreen::createRenderedSurfaceFromImageFile (const char *mrl)
 }
 
 void
-SDLDeviceScreen::addCMPToRendererList (IContinuousMediaProvider *cmp)
+SDLScreen::addCMPToRendererList (IContinuousMediaProvider *cmp)
 {
   checkMutexInit ();
 
@@ -1124,7 +1124,7 @@ SDLDeviceScreen::addCMPToRendererList (IContinuousMediaProvider *cmp)
 }
 
 void
-SDLDeviceScreen::removeCMPToRendererList (IContinuousMediaProvider *cmp)
+SDLScreen::removeCMPToRendererList (IContinuousMediaProvider *cmp)
 {
   set<IContinuousMediaProvider *>::iterator i;
 
@@ -1140,7 +1140,7 @@ SDLDeviceScreen::removeCMPToRendererList (IContinuousMediaProvider *cmp)
 }
 
 void
-SDLDeviceScreen::createReleaseContainer (SDL_Surface *uSur,
+SDLScreen::createReleaseContainer (SDL_Surface *uSur,
                                          SDL_Texture *uTex,
                                          IMediaProvider *iDec)
 {
@@ -1161,7 +1161,7 @@ SDLDeviceScreen::createReleaseContainer (SDL_Surface *uSur,
 }
 
 void
-SDLDeviceScreen::checkSDLInit ()
+SDLScreen::checkSDLInit ()
 {
   Uint32 subsystem_init = SDL_WasInit (0);
 
@@ -1171,7 +1171,7 @@ SDLDeviceScreen::checkSDLInit ()
                               | SDL_INIT_TIMER | SDL_INIT_NOPARACHUTE))
           != 0)
         {
-          clog << "SDLDeviceScreen::checkSDLInit ";
+          clog << "SDLScreen::checkSDLInit ";
           clog << "Warning! " << SDL_GetError ();
           clog << endl;
         }
@@ -1196,10 +1196,10 @@ SDLDeviceScreen::checkSDLInit ()
 }
 
 void
-SDLDeviceScreen::notifyQuit ()
+SDLScreen::notifyQuit ()
 {
-  map<SDLDeviceScreen *, short>::iterator i;
-  SDLDeviceScreen *s;
+  map<SDLScreen *, short>::iterator i;
+  SDLScreen *s;
 
   Thread::mutexLock (&scrMutex);
 
@@ -1213,11 +1213,11 @@ SDLDeviceScreen::notifyQuit ()
     }
   Thread::mutexUnlock (&scrMutex);
 
-  clog << "SDLDeviceScreen::notifyQuit all done!" << endl;
+  clog << "SDLScreen::notifyQuit all done!" << endl;
 }
 
 void
-SDLDeviceScreen::sdlQuit ()
+SDLScreen::sdlQuit ()
 {
   if (SDL_GetAudioStatus () != SDL_AUDIO_STOPPED)
     {
@@ -1226,11 +1226,11 @@ SDLDeviceScreen::sdlQuit ()
       SDL_AudioQuit ();
     }
   SDL_Quit ();
-  clog << "SDLDeviceScreen::sdlQuit all done!" << endl;
+  clog << "SDLScreen::sdlQuit all done!" << endl;
 }
 
 void
-SDLDeviceScreen::checkWindowFocus (SDLDeviceScreen *s, SDL_Event *event)
+SDLScreen::checkWindowFocus (SDLScreen *s, SDL_Event *event)
 {
   if (s->uEmbedId != NULL)
     {
@@ -1240,19 +1240,19 @@ SDLDeviceScreen::checkWindowFocus (SDLDeviceScreen *s, SDL_Event *event)
           switch (event->window.event)
             {
             case SDL_WINDOWEVENT_SHOWN:
-              clog << "SDLDeviceScreen::checkWindowFocus ";
+              clog << "SDLScreen::checkWindowFocus ";
               clog << "Window '" << event->window.windowID;
               clog << "' shown" << endl;
               break;
 
             case SDL_WINDOWEVENT_HIDDEN:
-              clog << "SDLDeviceScreen::checkWindowFocus ";
+              clog << "SDLScreen::checkWindowFocus ";
               clog << "Window '" << event->window.windowID;
               clog << "' hidden" << endl;
               break;
 
             case SDL_WINDOWEVENT_EXPOSED:
-              clog << "SDLDeviceScreen::checkWindowFocus ";
+              clog << "SDLScreen::checkWindowFocus ";
               clog << "Window '" << event->window.windowID;
               clog << "' exposed" << endl;
 
@@ -1260,7 +1260,7 @@ SDLDeviceScreen::checkWindowFocus (SDLDeviceScreen *s, SDL_Event *event)
               break;
 
             case SDL_WINDOWEVENT_MOVED:
-              clog << "SDLDeviceScreen::checkWindowFocus ";
+              clog << "SDLScreen::checkWindowFocus ";
               clog << "Window '" << event->window.windowID;
               clog << "' moved to '";
               clog << event->window.data1;
@@ -1269,7 +1269,7 @@ SDLDeviceScreen::checkWindowFocus (SDLDeviceScreen *s, SDL_Event *event)
               break;
 
             case SDL_WINDOWEVENT_RESIZED:
-              clog << "SDLDeviceScreen::checkWindowFocus ";
+              clog << "SDLScreen::checkWindowFocus ";
               clog << "Window '" << event->window.windowID;
               clog << "' resized to '";
               clog << event->window.data1;
@@ -1287,19 +1287,19 @@ SDLDeviceScreen::checkWindowFocus (SDLDeviceScreen *s, SDL_Event *event)
               break;
 
             case SDL_WINDOWEVENT_MINIMIZED:
-              clog << "SDLDeviceScreen::checkWindowFocus ";
+              clog << "SDLScreen::checkWindowFocus ";
               clog << "Window '" << event->window.windowID;
               clog << "' minimized" << endl;
               break;
 
             case SDL_WINDOWEVENT_MAXIMIZED:
-              clog << "SDLDeviceScreen::checkWindowFocus ";
+              clog << "SDLScreen::checkWindowFocus ";
               clog << "Window '" << event->window.windowID;
               clog << "' maximized" << endl;
               break;
 
             case SDL_WINDOWEVENT_RESTORED:
-              clog << "SDLDeviceScreen::checkWindowFocus ";
+              clog << "SDLScreen::checkWindowFocus ";
               clog << "Window '" << event->window.windowID;
               clog << "' restored to '";
               clog << event->window.data1;
@@ -1308,7 +1308,7 @@ SDLDeviceScreen::checkWindowFocus (SDLDeviceScreen *s, SDL_Event *event)
               break;
 
             case SDL_WINDOWEVENT_ENTER:
-              clog << "SDLDeviceScreen::checkWindowFocus ";
+              clog << "SDLScreen::checkWindowFocus ";
               clog << "Window '" << event->window.windowID;
               clog << "' Mouse entered" << endl;
 
@@ -1316,13 +1316,13 @@ SDLDeviceScreen::checkWindowFocus (SDLDeviceScreen *s, SDL_Event *event)
               break;
 
             case SDL_WINDOWEVENT_LEAVE:
-              clog << "SDLDeviceScreen::checkWindowFocus ";
+              clog << "SDLScreen::checkWindowFocus ";
               clog << "Window '" << event->window.windowID;
               clog << "' Mouse left" << endl;
               break;
 
             case SDL_WINDOWEVENT_FOCUS_GAINED:
-              clog << "SDLDeviceScreen::checkWindowFocus ";
+              clog << "SDLScreen::checkWindowFocus ";
               clog << "Window '" << event->window.windowID;
               clog << "' gained keyboard focus" << endl;
 
@@ -1330,7 +1330,7 @@ SDLDeviceScreen::checkWindowFocus (SDLDeviceScreen *s, SDL_Event *event)
               break;
 
             case SDL_WINDOWEVENT_FOCUS_LOST:
-              clog << "SDLDeviceScreen::checkWindowFocus ";
+              clog << "SDLScreen::checkWindowFocus ";
               clog << "Window '" << event->window.windowID;
               clog << "' lost keyboard focus" << endl;
 
@@ -1338,13 +1338,13 @@ SDLDeviceScreen::checkWindowFocus (SDLDeviceScreen *s, SDL_Event *event)
               break;
 
             case SDL_WINDOWEVENT_CLOSE:
-              clog << "SDLDeviceScreen::checkWindowFocus ";
+              clog << "SDLScreen::checkWindowFocus ";
               clog << "Window '" << event->window.windowID;
               clog << "' closed" << endl;
               break;
 
             default:
-              clog << "SDLDeviceScreen::checkWindowFocus ";
+              clog << "SDLScreen::checkWindowFocus ";
               clog << "Window '" << event->window.windowID;
               clog << "' got unknown event '";
               clog << event->window.event << "'" << endl;
@@ -1355,12 +1355,12 @@ SDLDeviceScreen::checkWindowFocus (SDLDeviceScreen *s, SDL_Event *event)
 }
 
 bool
-SDLDeviceScreen::notifyEvent (SDLDeviceScreen *s, SDL_Event *event,
+SDLScreen::notifyEvent (SDLScreen *s, SDL_Event *event,
                               bool capsOn, bool shiftOn)
 {
   SDLEventBuffer *eventBuffer = NULL;
 
-  /*clog << "SDLDeviceScreen::notifyEvent";
+  /*clog << "SDLScreen::notifyEvent";
   clog << endl;*/
   checkWindowFocus (s, event);
 
@@ -1371,7 +1371,7 @@ SDLDeviceScreen::notifyEvent (SDLDeviceScreen *s, SDL_Event *event,
             && s->uEmbedId == NULL)
            || checkEventFocus (s)))
         {
-          /*clog << "SDLDeviceScreen::notifyEvent feeding event buffer";
+          /*clog << "SDLScreen::notifyEvent feeding event buffer";
             clog << endl;*/
           eventBuffer->feed (*event, capsOn, shiftOn);
           return true;
@@ -1382,7 +1382,7 @@ SDLDeviceScreen::notifyEvent (SDLDeviceScreen *s, SDL_Event *event,
 }
 
 void
-SDLDeviceScreen::processCmd (SDLDeviceScreen *s, string cmd, string type,
+SDLScreen::processCmd (SDLScreen *s, string cmd, string type,
                              string args)
 {
   int intEvent;
@@ -1412,7 +1412,7 @@ SDLDeviceScreen::processCmd (SDLDeviceScreen *s, string cmd, string type,
             {
               ie.type = SDL_QUIT;
             }
-          clog << "SDLDeviceScreen::processCmd pushing keyboard '";
+          clog << "SDLScreen::processCmd pushing keyboard '";
           clog << cmd << "'" << endl;
           SDL_PushEvent (&ie);
         }
@@ -1430,7 +1430,7 @@ SDLDeviceScreen::processCmd (SDLDeviceScreen *s, string cmd, string type,
           ie.button.x = x;
           ie.button.y = y;
 
-          clog << "SDLDeviceScreen::processCmd pushing click '";
+          clog << "SDLScreen::processCmd pushing click '";
           clog << cmd << "' on '" << args << "'" << endl;
           SDL_PushEvent (&ie);
         }
@@ -1449,7 +1449,7 @@ SDLDeviceScreen::processCmd (SDLDeviceScreen *s, string cmd, string type,
 
       if (s->im != NULL)
         {
-          clog << "SDLDeviceScreen::processCmd calling postCommand" << endl;
+          clog << "SDLScreen::processCmd calling postCommand" << endl;
           clog << "nCmd: " << nCmd << endl;
           clog << "nArgs: " << nArgs << endl;
           s->im->postCommand (nCmd, nArgs);
@@ -1458,16 +1458,16 @@ SDLDeviceScreen::processCmd (SDLDeviceScreen *s, string cmd, string type,
 }
 
 void *
-SDLDeviceScreen::checkStdin (void *ptr)
+SDLScreen::checkStdin (void *ptr)
 {
-  SDLDeviceScreen *s;
+  SDLScreen *s;
   string strCmd;
   string cmdType;
 
-  clog << "SDLDeviceScreen::checkStdin calling cin" << endl;
+  clog << "SDLScreen::checkStdin calling cin" << endl;
 
   Thread::mutexLock (&scrMutex);
-  s = (SDLDeviceScreen *)ptr;
+  s = (SDLScreen *)ptr;
   Thread::mutexUnlock (&scrMutex);
 
   while (true)
@@ -1485,7 +1485,7 @@ SDLDeviceScreen::checkStdin (void *ptr)
 
       if (strCmd == "GIEK:QUIT")
         {
-          clog << "SDLDeviceScreen::checkStdin QUIT";
+          clog << "SDLScreen::checkStdin QUIT";
           clog << endl;
           break;
         }
@@ -1493,16 +1493,16 @@ SDLDeviceScreen::checkStdin (void *ptr)
       strCmd = "";
     }
 
-  clog << "SDLDeviceScreen::checkStdin all done" << endl;
+  clog << "SDLScreen::checkStdin all done" << endl;
 
   return NULL;
 }
 
 bool
-SDLDeviceScreen::checkEvents ()
+SDLScreen::checkEvents ()
 {
-  map<SDLDeviceScreen *, short>::iterator i;
-  SDLDeviceScreen *s;
+  map<SDLScreen *, short>::iterator i;
+  SDLScreen *s;
   SDL_Event event;
   bool shiftOn = false;
   bool capsOn = false;
@@ -1512,12 +1512,12 @@ SDLDeviceScreen::checkEvents ()
 
   while (hasEvent)
     {
-      // clog << "SDLDeviceScreen::checkEvents poll event";
+      // clog << "SDLScreen::checkEvents poll event";
       // clog << " type '" << event.type << "'" << endl;
 
       if (event.type == SDL_KEYDOWN)
         {
-          clog << "SDLDeviceScreen::checkEvents poll event '";
+          clog << "SDLScreen::checkEvents poll event '";
           clog << event.key.keysym.sym << "'" << endl;
 
           if (event.key.keysym.sym == SDLK_LSHIFT
@@ -1543,7 +1543,7 @@ SDLDeviceScreen::checkEvents ()
           notifyQuit ();
           sdlQuit ();
           hasRenderer = false;
-          clog << "SDLDeviceScreen::checkEvents QUIT" << endl;
+          clog << "SDLScreen::checkEvents QUIT" << endl;
 
           return false;
         }
@@ -1565,10 +1565,10 @@ SDLDeviceScreen::checkEvents ()
 }
 
 void *
-SDLDeviceScreen::rendererT (arg_unused (void *ptr))
+SDLScreen::rendererT (arg_unused (void *ptr))
 {
-  map<SDLDeviceScreen *, short>::iterator i;
-  SDLDeviceScreen *s;
+  map<SDLScreen *, short>::iterator i;
+  SDLScreen *s;
   pthread_mutex_t mutex;
   pthread_cond_t cond;
 
@@ -1640,12 +1640,12 @@ SDLDeviceScreen::rendererT (arg_unused (void *ptr))
         }
     }
 
-  clog << "SDLDeviceScreen::rendererT ALL DONE" << endl;
+  clog << "SDLScreen::rendererT ALL DONE" << endl;
   return NULL;
 }
 
 void
-SDLDeviceScreen::refreshRC (SDLDeviceScreen *s)
+SDLScreen::refreshRC (SDLScreen *s)
 {
   vector<ReleaseContainer *>::iterator i;
   ReleaseContainer *rc;
@@ -1730,7 +1730,7 @@ SDLDeviceScreen::refreshRC (SDLDeviceScreen *s)
 }
 
 int
-SDLDeviceScreen::refreshCMP (SDLDeviceScreen *s)
+SDLScreen::refreshCMP (SDLScreen *s)
 {
   set<IContinuousMediaProvider *>::iterator i;
   set<IContinuousMediaProvider *>::iterator j;
@@ -1763,7 +1763,7 @@ SDLDeviceScreen::refreshCMP (SDLDeviceScreen *s)
 }
 
 void
-SDLDeviceScreen::refreshWin (SDLDeviceScreen *s)
+SDLScreen::refreshWin (SDLScreen *s)
 {
   SDL_Texture *uTex;
   SDLWindow *dstWin;
@@ -1826,7 +1826,7 @@ SDLDeviceScreen::refreshWin (SDLDeviceScreen *s)
 }
 
 void
-SDLDeviceScreen::initEmbed (SDLDeviceScreen *s, arg_unused (UnderlyingWindowID uWin))
+SDLScreen::initEmbed (SDLScreen *s, arg_unused (UnderlyingWindowID uWin))
 {
   SDL_SysWMinfo info;
 
@@ -1868,11 +1868,11 @@ SDLDeviceScreen::initEmbed (SDLDeviceScreen *s, arg_unused (UnderlyingWindowID u
 
 // 	XSync(info.info.x11.display, 1);
 
-// 	clog << "SDLDeviceScreen::initEmbed set attributes for '";
+// 	clog << "SDLScreen::initEmbed set attributes for '";
 // 	clog << uWin << "'" << endl;
 
 // } else {
-// 	clog << "SDLDeviceScreen::initEmbed Warning! ";
+// 	clog << "SDLScreen::initEmbed Warning! ";
 // 	clog << "Can't set input event mask for embedded ";
 // 	clog << "window '" << uWin << "'" << endl;
 // }
@@ -1885,7 +1885,7 @@ SDLDeviceScreen::initEmbed (SDLDeviceScreen *s, arg_unused (UnderlyingWindowID u
 }
 
 void
-SDLDeviceScreen::forceInputFocus (arg_unused (SDLDeviceScreen *s),
+SDLScreen::forceInputFocus (arg_unused (SDLScreen *s),
                                   arg_unused (UnderlyingWindowID uWin))
 {
   lockSDL ();
@@ -1923,12 +1923,12 @@ SDLDeviceScreen::forceInputFocus (arg_unused (SDLDeviceScreen *s),
 
 // 		XSync(info.info.x11.display, 1);
 
-// 		clog << "SDLDeviceScreen::forceInputFocus set input for '";
+// 		clog << "SDLScreen::forceInputFocus set input for '";
 // 		clog << uWin << "'" << endl;
 // 	}
 
 // } else {
-// 	clog << "SDLDeviceScreen::forceInputFocus Warning! ";
+// 	clog << "SDLScreen::forceInputFocus Warning! ";
 // 	clog << "Can't set input event mask for embedded ";
 // 	clog << "window '" << uWin << "'" << endl;
 // }
@@ -1937,7 +1937,7 @@ SDLDeviceScreen::forceInputFocus (arg_unused (SDLDeviceScreen *s),
 }
 
 void
-SDLDeviceScreen::initScreen (SDLDeviceScreen *s)
+SDLScreen::initScreen (SDLScreen *s)
 {
   SDL_Rect rect;
   int i, numOfDrivers, x, y;
@@ -1945,7 +1945,7 @@ SDLDeviceScreen::initScreen (SDLDeviceScreen *s)
 
   lockSDL ();
 
-  clog << "SDLDeviceScreen::initScreen '" << s->getScreenName ();
+  clog << "SDLScreen::initScreen '" << s->getScreenName ();
   clog << "'" << endl;
 
   if (s->mbSubSystem != "")
@@ -1972,7 +1972,7 @@ SDLDeviceScreen::initScreen (SDLDeviceScreen *s)
       rect.w = 0;
       rect.h = 0;
 
-      clog << "SDLDeviceScreen::initScreen '" << s->getScreenName ();
+      clog << "SDLScreen::initScreen '" << s->getScreenName ();
       clog << "' Warning! Can't get display bounds. ";
       clog << SDL_GetError () << endl;
     }
@@ -2057,7 +2057,7 @@ SDLDeviceScreen::initScreen (SDLDeviceScreen *s)
   for (int i = 0; i < d; i++)
     {
       SDL_GetRenderDriverInfo (i, &info);
-      clog << "SDLDeviceScreen::initScreen renderer driver: (" << i
+      clog << "SDLScreen::initScreen renderer driver: (" << i
            << ") = '" << info.name << "'";
       clog << endl;
     }
@@ -2067,7 +2067,7 @@ SDLDeviceScreen::initScreen (SDLDeviceScreen *s)
 
   if (s->renderer == NULL)
     {
-      clog << "SDLDeviceScreen::initScreen Warning! Can't create "
+      clog << "SDLScreen::initScreen Warning! Can't create "
               "accelerated "
               "renderer";
       clog << endl;
@@ -2078,7 +2078,7 @@ SDLDeviceScreen::initScreen (SDLDeviceScreen *s)
       if (s->renderer == NULL)
         {
           clog
-              << "SDLDeviceScreen::initScreen Warning! Can't create target "
+              << "SDLScreen::initScreen Warning! Can't create target "
                  "renderer";
           clog << endl;
           s->renderer
@@ -2097,13 +2097,13 @@ SDLDeviceScreen::initScreen (SDLDeviceScreen *s)
 
   unlockSDL ();
 
-  clog << "SDLDeviceScreen::initScreen '" << s->getScreenName ();
+  clog << "SDLScreen::initScreen '" << s->getScreenName ();
   clog << "': '" << s->wRes << "x" << s->hRes << "' all done";
   clog << endl;
 }
 
 void
-SDLDeviceScreen::clearScreen (SDLDeviceScreen *s)
+SDLScreen::clearScreen (SDLScreen *s)
 {
   SDLWindow *iWin;
   SDLSurface *iSur;
@@ -2194,7 +2194,7 @@ SDLDeviceScreen::clearScreen (SDLDeviceScreen *s)
 }
 
 void
-SDLDeviceScreen::releaseScreen (SDLDeviceScreen *s)
+SDLScreen::releaseScreen (SDLScreen *s)
 {
   lockSDL ();
 
@@ -2224,9 +2224,9 @@ SDLDeviceScreen::releaseScreen (SDLDeviceScreen *s)
 }
 
 void
-SDLDeviceScreen::releaseAll ()
+SDLScreen::releaseAll ()
 {
-  map<SDLDeviceScreen *, short>::iterator i;
+  map<SDLScreen *, short>::iterator i;
 
   Thread::mutexLock (&scrMutex);
 
@@ -2242,14 +2242,14 @@ SDLDeviceScreen::releaseAll ()
 }
 
 void
-SDLDeviceScreen::initCMP (SDLDeviceScreen *s, IContinuousMediaProvider *cmp)
+SDLScreen::initCMP (SDLScreen *s, IContinuousMediaProvider *cmp)
 {
   SDL_Texture *texture;
   int w, h;
 
   cmp->getOriginalResolution (&w, &h);
 
-  /*clog << "SDLDeviceScreen::initCMP creating texture with w = '";
+  /*clog << "SDLScreen::initCMP creating texture with w = '";
   clog << w << "' and h = '" << h << "'" << endl;*/
 
   texture = createTexture (s->renderer, w, h);
@@ -2257,7 +2257,7 @@ SDLDeviceScreen::initCMP (SDLDeviceScreen *s, IContinuousMediaProvider *cmp)
 }
 
 bool
-SDLDeviceScreen::blitFromWindow (SDLWindow *iWin, SDL_Surface *dest)
+SDLScreen::blitFromWindow (SDLWindow *iWin, SDL_Surface *dest)
 {
   SDL_Surface *tmpSur;
   SDL_Texture *tmpTex;
@@ -2291,7 +2291,7 @@ SDLDeviceScreen::blitFromWindow (SDLWindow *iWin, SDL_Surface *dest)
         {
           SDL_Surface *tmpSur2;
 
-          clog << "SDLDeviceScreen::blitFromWindow SDL error: '";
+          clog << "SDLScreen::blitFromWindow SDL error: '";
           clog << SDL_GetError () << "'! Trying to convert source surface";
           clog << endl;
 
@@ -2301,7 +2301,7 @@ SDLDeviceScreen::blitFromWindow (SDLWindow *iWin, SDL_Surface *dest)
             {
               if (SDL_UpperBlitScaled (tmpSur2, NULL, dest, &rect) < 0)
                 {
-                  clog << "SDLDeviceScreen::blitFromWindow ";
+                  clog << "SDLScreen::blitFromWindow ";
                   clog << "BLIT from converted surface SDL error: '";
                   clog << SDL_GetError () << "'";
                   clog << endl;
@@ -2314,7 +2314,7 @@ SDLDeviceScreen::blitFromWindow (SDLWindow *iWin, SDL_Surface *dest)
             }
           else
             {
-              clog << "SDLDeviceScreen::blitFromWindow convert surface";
+              clog << "SDLScreen::blitFromWindow convert surface";
               clog << " SDL error: '";
               clog << SDL_GetError () << "'" << endl;
             }
@@ -2326,7 +2326,7 @@ SDLDeviceScreen::blitFromWindow (SDLWindow *iWin, SDL_Surface *dest)
     }
   else
     {
-      clog << "SDLDeviceScreen::blitFromWindow can't blit from '";
+      clog << "SDLScreen::blitFromWindow can't blit from '";
       clog << (unsigned long)iWin->getId () << "' null texture" << endl;
     }
 
@@ -2345,7 +2345,7 @@ SDLDeviceScreen::blitFromWindow (SDLWindow *iWin, SDL_Surface *dest)
 /* interfacing input */
 
 InputManager *
-SDLDeviceScreen::getInputManager ()
+SDLScreen::getInputManager ()
 {
   /*
    * im == NULL is an initial state. So pthread_cond_t
@@ -2359,13 +2359,13 @@ SDLDeviceScreen::getInputManager ()
 }
 
 SDLEventBuffer *
-SDLDeviceScreen::createEventBuffer ()
+SDLScreen::createEventBuffer ()
 {
   return new SDLEventBuffer (id);
 }
 
 SDLInputEvent *
-SDLDeviceScreen::createInputEvent (void *event, const int symbol)
+SDLScreen::createInputEvent (void *event, const int symbol)
 {
   SDLInputEvent *ie = NULL;
 
@@ -2383,13 +2383,13 @@ SDLDeviceScreen::createInputEvent (void *event, const int symbol)
 }
 
 SDLInputEvent *
-SDLDeviceScreen::createApplicationEvent (int type, void *data)
+SDLScreen::createApplicationEvent (int type, void *data)
 {
   return new SDLInputEvent (type, data);
 }
 
 int
-SDLDeviceScreen::fromMBToGinga (int keyCode)
+SDLScreen::fromMBToGinga (int keyCode)
 {
   map<int, int>::iterator i;
   int translated;
@@ -2406,7 +2406,7 @@ SDLDeviceScreen::fromMBToGinga (int keyCode)
     }
   else
     {
-      clog << "SDLDeviceScreen::fromMBToGinga can't find code '";
+      clog << "SDLScreen::fromMBToGinga can't find code '";
       clog << keyCode << "' returning KEY_NULL" << endl;
     }
 
@@ -2416,7 +2416,7 @@ SDLDeviceScreen::fromMBToGinga (int keyCode)
 }
 
 int
-SDLDeviceScreen::fromGingaToMB (int keyCode)
+SDLScreen::fromGingaToMB (int keyCode)
 {
   map<int, int>::iterator i;
   int translated;
@@ -2433,7 +2433,7 @@ SDLDeviceScreen::fromGingaToMB (int keyCode)
     }
   else
     {
-      clog << "SDLDeviceScreen::fromGingaToMB can't find code '";
+      clog << "SDLScreen::fromGingaToMB can't find code '";
       clog << keyCode << "' returning KEY_NULL" << endl;
     }
 
@@ -2445,7 +2445,7 @@ SDLDeviceScreen::fromGingaToMB (int keyCode)
 /* interfacing underlying multimedia system */
 
 void *
-SDLDeviceScreen::getGfxRoot ()
+SDLScreen::getGfxRoot ()
 {
   return renderer;
 }
@@ -2454,7 +2454,7 @@ SDLDeviceScreen::getGfxRoot ()
 
 /* input */
 int
-SDLDeviceScreen::convertEventCodeStrToInt (string strEvent)
+SDLScreen::convertEventCodeStrToInt (string strEvent)
 {
   int intEvent = -1;
   map<string, int>::iterator i;
@@ -2469,7 +2469,7 @@ SDLDeviceScreen::convertEventCodeStrToInt (string strEvent)
 }
 
 void
-SDLDeviceScreen::initCodeMaps ()
+SDLScreen::initCodeMaps ()
 {
   checkMutexInit ();
 
@@ -2766,7 +2766,7 @@ SDLDeviceScreen::initCodeMaps ()
 }
 
 bool
-SDLDeviceScreen::checkEventFocus (SDLDeviceScreen *s)
+SDLScreen::checkEventFocus (SDLScreen *s)
 {
   bool hasFocus = false;
 
@@ -2784,7 +2784,7 @@ SDLDeviceScreen::checkEventFocus (SDLDeviceScreen *s)
 
 /* output */
 void
-SDLDeviceScreen::renderMapInsertWindow (GingaScreenID screenId,
+SDLScreen::renderMapInsertWindow (GingaScreenID screenId,
                                         SDLWindow *iWin, double z)
 {
   map<GingaScreenID, map<double, set<SDLWindow *> *> *>::iterator i;
@@ -2823,7 +2823,7 @@ SDLDeviceScreen::renderMapInsertWindow (GingaScreenID screenId,
 }
 
 void
-SDLDeviceScreen::renderMapRemoveWindow (GingaScreenID screenId,
+SDLScreen::renderMapRemoveWindow (GingaScreenID screenId,
                                         SDLWindow *iWin, double z)
 {
   map<GingaScreenID, map<double, set<SDLWindow *> *> *>::iterator i;
@@ -2859,7 +2859,7 @@ SDLDeviceScreen::renderMapRemoveWindow (GingaScreenID screenId,
   Thread::mutexUnlock (&renMutex);
 }
 
-/*void SDLDeviceScreen::updateWindowState(
+/*void SDLScreen::updateWindowState(
                 GingaScreenID screenId, SDLWindow* win, short state) {
         map<GingaScreenID, vector<SDLWindow*>*>::iterator i;
         vector<SDLWindow*>* wins;
@@ -2879,7 +2879,7 @@ SDLDeviceScreen::renderMapRemoveWindow (GingaScreenID screenId,
         Thread::mutexUnlock(&wrMutex);
 }
 
-void SDLDeviceScreen::updateWindowList(
+void SDLScreen::updateWindowList(
                 vector<SDLWindow*>* windows, SDLWindow* win, short state) {
         switch (state) {
                 case SUW_SHOW:
@@ -2906,7 +2906,7 @@ void SDLDeviceScreen::updateWindowList(
 }*/
 
 void
-SDLDeviceScreen::removeFromWindowList (vector<SDLWindow *> *windows,
+SDLScreen::removeFromWindowList (vector<SDLWindow *> *windows,
                                        SDLWindow *win)
 {
   vector<SDLWindow *>::iterator i;
@@ -2927,7 +2927,7 @@ SDLDeviceScreen::removeFromWindowList (vector<SDLWindow *> *windows,
 }
 
 SDL_Window *
-SDLDeviceScreen::getUnderlyingWindow (GingaWindowID winId)
+SDLScreen::getUnderlyingWindow (GingaWindowID winId)
 {
   SDL_Window *window = NULL;
   Uint32 wid;
@@ -2941,7 +2941,7 @@ SDLDeviceScreen::getUnderlyingWindow (GingaWindowID winId)
 
   if (window == NULL)
     {
-      clog << "SDLDeviceScreen::getUnderlyingWindow ";
+      clog << "SDLScreen::getUnderlyingWindow ";
       clog << "can't find id '" << wid;
       clog << "'" << endl;
     }
@@ -2952,7 +2952,7 @@ SDLDeviceScreen::getUnderlyingWindow (GingaWindowID winId)
 }
 
 bool
-SDLDeviceScreen::drawSDLWindow (SDL_Renderer *renderer,
+SDLScreen::drawSDLWindow (SDL_Renderer *renderer,
                                 SDL_Texture *srcTxtr, SDLWindow *dstWin)
 {
   SDL_Rect dstRect;
@@ -3007,7 +3007,7 @@ SDLDeviceScreen::drawSDLWindow (SDL_Renderer *renderer,
 
           if (SDL_RenderFillRect (renderer, &dstRect) < 0)
             {
-              clog << "SDLDeviceScreen::drawWindow ";
+              clog << "SDLScreen::drawWindow ";
               clog << "Warning! Can't use render to fill rect ";
               clog << SDL_GetError ();
               clog << endl;
@@ -3034,7 +3034,7 @@ SDLDeviceScreen::drawSDLWindow (SDL_Renderer *renderer,
                       || (dd->coord3 > dstRect.w)
                       || (dd->coord4 > dstRect.h))
                     {
-                      clog << "SDLDeviceScreen::drawWindow Warning!";
+                      clog << "SDLScreen::drawWindow Warning!";
                       clog << " Invalid line coords: " << endl;
                       clog << dd->coord1 << ", ";
                       clog << dd->coord2 << ", ";
@@ -3056,7 +3056,7 @@ SDLDeviceScreen::drawSDLWindow (SDL_Renderer *renderer,
                                           dd->coord4 + dstRect.y)
                       < 0)
                     {
-                      clog << "SDLDeviceScreen::drawWindow ";
+                      clog << "SDLScreen::drawWindow ";
                       clog << "Warning! Can't draw line ";
                       clog << SDL_GetError ();
                       clog << endl;
@@ -3075,7 +3075,7 @@ SDLDeviceScreen::drawSDLWindow (SDL_Renderer *renderer,
                       || (dd->coord1 + dr.w > dstRect.w)
                       || (dd->coord2 + dr.h > dstRect.h))
                     {
-                      clog << "SDLDeviceScreen::drawWindow Warning!";
+                      clog << "SDLScreen::drawWindow Warning!";
                       clog << " Invalid rect coords: " << endl;
                       clog << dr.x << ", ";
                       clog << dr.y << ", ";
@@ -3095,7 +3095,7 @@ SDLDeviceScreen::drawSDLWindow (SDL_Renderer *renderer,
                     {
                       if (SDL_RenderDrawRect (renderer, &dr) < 0)
                         {
-                          clog << "SDLDeviceScreen::drawWindow ";
+                          clog << "SDLScreen::drawWindow ";
                           clog << "Warning! Can't draw rect ";
                           clog << SDL_GetError ();
                           clog << endl;
@@ -3105,7 +3105,7 @@ SDLDeviceScreen::drawSDLWindow (SDL_Renderer *renderer,
                     {
                       if (SDL_RenderFillRect (renderer, &dr) < 0)
                         {
-                          clog << "SDLDeviceScreen::drawWindow ";
+                          clog << "SDLScreen::drawWindow ";
                           clog << "Warning! Can't fill rect ";
                           clog << SDL_GetError ();
                           clog << endl;
@@ -3141,7 +3141,7 @@ SDLDeviceScreen::drawSDLWindow (SDL_Renderer *renderer,
           drawing = true;
           if (SDL_RenderCopy (renderer, srcTxtr, NULL, &dstRect) < 0)
             {
-              clog << "SDLDeviceScreen::drawWindow Warning! ";
+              clog << "SDLScreen::drawWindow Warning! ";
               clog << "can't perform render copy " << SDL_GetError ();
               clog << endl;
             }
@@ -3167,7 +3167,7 @@ SDLDeviceScreen::drawSDLWindow (SDL_Renderer *renderer,
 
               if (SDL_RenderDrawRect (renderer, &dstRect) < 0)
                 {
-                  clog << "SDLDeviceScreen::drawWindow SDL error: '";
+                  clog << "SDLScreen::drawWindow SDL error: '";
                   clog << SDL_GetError () << "'" << endl;
                 }
 
@@ -3187,7 +3187,7 @@ SDLDeviceScreen::drawSDLWindow (SDL_Renderer *renderer,
     }
   else
     {
-      clog << "SDLDeviceScreen::drawWindow Warning! ";
+      clog << "SDLScreen::drawWindow Warning! ";
       clog << "NULL interface window";
       clog << endl;
     }
@@ -3198,7 +3198,7 @@ SDLDeviceScreen::drawSDLWindow (SDL_Renderer *renderer,
 }
 
 SDL_Texture *
-SDLDeviceScreen::createTextureFromSurface (SDL_Renderer *renderer,
+SDLScreen::createTextureFromSurface (SDL_Renderer *renderer,
                                            SDL_Surface *surface)
 {
   SDL_Texture *texture = NULL;
@@ -3208,12 +3208,12 @@ SDLDeviceScreen::createTextureFromSurface (SDL_Renderer *renderer,
   lockSDL ();
   Thread::mutexLock (&surMutex);
 
-  if (SDLDeviceScreen::hasUnderlyingSurface (surface))
+  if (SDLScreen::hasUnderlyingSurface (surface))
     {
       texture = SDL_CreateTextureFromSurface (renderer, surface);
       if (texture == NULL)
         {
-          clog << "SDLDeviceScreen::createTextureFromSurface Warning! ";
+          clog << "SDLScreen::createTextureFromSurface Warning! ";
           clog << "Couldn't create texture: " << SDL_GetError ();
           clog << endl;
         }
@@ -3233,7 +3233,7 @@ SDLDeviceScreen::createTextureFromSurface (SDL_Renderer *renderer,
 }
 
 SDL_Texture *
-SDLDeviceScreen::createTexture (SDL_Renderer *renderer, int w, int h)
+SDLScreen::createTexture (SDL_Renderer *renderer, int w, int h)
 {
   SDL_Texture *texture;
 
@@ -3256,7 +3256,7 @@ SDLDeviceScreen::createTexture (SDL_Renderer *renderer, int w, int h)
 }
 
 bool
-SDLDeviceScreen::hasTexture (SDL_Texture *uTex)
+SDLScreen::hasTexture (SDL_Texture *uTex)
 {
   set<SDL_Texture *>::iterator i;
   bool hasIt = false;
@@ -3275,7 +3275,7 @@ SDLDeviceScreen::hasTexture (SDL_Texture *uTex)
 }
 
 void
-SDLDeviceScreen::releaseTexture (SDL_Texture *texture)
+SDLScreen::releaseTexture (SDL_Texture *texture)
 {
   set<SDL_Texture *>::iterator i;
 
@@ -3292,7 +3292,7 @@ SDLDeviceScreen::releaseTexture (SDL_Texture *texture)
 }
 
 void
-SDLDeviceScreen::addUnderlyingSurface (SDL_Surface *uSur)
+SDLScreen::addUnderlyingSurface (SDL_Surface *uSur)
 {
   checkMutexInit ();
 
@@ -3302,7 +3302,7 @@ SDLDeviceScreen::addUnderlyingSurface (SDL_Surface *uSur)
 }
 
 SDL_Surface *
-SDLDeviceScreen::createUnderlyingSurface (int width, int height)
+SDLScreen::createUnderlyingSurface (int width, int height)
 {
   SDL_Surface *newUSur = NULL;
   Uint32 rmask, gmask, bmask, amask;
@@ -3328,7 +3328,7 @@ SDLDeviceScreen::createUnderlyingSurface (int width, int height)
     }
   else
     {
-      clog << "SDLDeviceScreen::createUnderlyingSurface SDL error: '";
+      clog << "SDLScreen::createUnderlyingSurface SDL error: '";
       clog << SDL_GetError () << "'" << endl;
     }
   Thread::mutexUnlock (&surMutex);
@@ -3337,7 +3337,7 @@ SDLDeviceScreen::createUnderlyingSurface (int width, int height)
 }
 
 SDL_Surface *
-SDLDeviceScreen::createUnderlyingSurfaceFromTexture (SDL_Texture *texture)
+SDLScreen::createUnderlyingSurfaceFromTexture (SDL_Texture *texture)
 {
   SDL_Surface *uSur = NULL;
   void *pixels;
@@ -3383,7 +3383,7 @@ SDLDeviceScreen::createUnderlyingSurfaceFromTexture (SDL_Texture *texture)
 }
 
 bool
-SDLDeviceScreen::hasUnderlyingSurface (SDL_Surface *uSur)
+SDLScreen::hasUnderlyingSurface (SDL_Surface *uSur)
 {
   set<SDL_Surface *>::iterator i;
   bool hasIt = false;
@@ -3402,7 +3402,7 @@ SDLDeviceScreen::hasUnderlyingSurface (SDL_Surface *uSur)
 }
 
 void
-SDLDeviceScreen::releaseUnderlyingSurface (SDL_Surface *uSur)
+SDLScreen::releaseUnderlyingSurface (SDL_Surface *uSur)
 {
   set<SDL_Surface *>::iterator i;
 
