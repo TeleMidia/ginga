@@ -53,7 +53,6 @@ GINGA_FORMATTER_BEGIN
 
 class PresentationContext : public Observable, public IContextListener
 {
-
 private:
   GingaScreenID myScreen;
   map<string, string> contextTable;

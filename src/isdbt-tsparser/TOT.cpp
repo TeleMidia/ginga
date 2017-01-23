@@ -117,7 +117,6 @@ TOT::calculateTime ()
       && ((UTC3Time[2] & 0xFF) == 0xFF) && ((UTC3Time[3] & 0xFF) == 0xFF)
       && ((UTC3Time[4] & 0xFF) == 0xFF))
     {
-
       return;
     }
 

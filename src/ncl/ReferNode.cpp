@@ -83,7 +83,6 @@ ReferNode::setInstanceType (string instance)
           if (referredNode != NULL
               && referredNode->instanceOf ("NodeEntity"))
             {
-
               ((NodeEntity *)referredNode)->addSameInstance (this);
             }
         }
@@ -93,7 +92,6 @@ ReferNode::setInstanceType (string instance)
           if (referredNode != NULL
               && referredNode->instanceOf ("NodeEntity"))
             {
-
               if (instance == "new")
                 {
                   ((NodeEntity *)referredNode)->removeSameInstance (this);
@@ -116,7 +114,6 @@ ReferNode::setReferredEntity (Entity *entity)
     {
       if (referredNode != NULL && referredNode->instanceOf ("NodeEntity"))
         {
-
           ((NodeEntity *)referredNode)->removeSameInstance (this);
         }
 
@@ -125,7 +122,6 @@ ReferNode::setReferredEntity (Entity *entity)
       if (referredNode != NULL && referredNode->instanceOf ("NodeEntity")
           && instanceType != "new")
         {
-
           ((NodeEntity *)referredNode)->addSameInstance (this);
         }
     }

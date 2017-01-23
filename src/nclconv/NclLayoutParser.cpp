@@ -29,7 +29,6 @@ void *
 NclLayoutParser::parseRegion (DOMElement *parentElement,
                               void *objGrandParent)
 {
-
   clog << "parseRegion" << endl;
   void *parentObject;
   DOMNodeList *elementNodeList;
@@ -59,7 +58,6 @@ NclLayoutParser::parseRegion (DOMElement *parentElement,
           if (XMLString::compareIString (elementTagName.c_str (), "region")
               == 0)
             {
-
               elementObject = parseRegion (element, parentObject);
               if (elementObject != NULL)
                 {
@@ -76,7 +74,6 @@ void *
 NclLayoutParser::parseRegionBase (DOMElement *parentElement,
                                   void *objGrandParent)
 {
-
   clog << "parseRegionBase" << endl;
   void *parentObject;
   DOMNodeList *elementNodeList;
@@ -107,7 +104,6 @@ NclLayoutParser::parseRegionBase (DOMElement *parentElement,
                                          "importBase")
               == 0)
             {
-
               elementObject = getImportParser ()->parseImportBase (
                   element, parentObject);
 
@@ -120,7 +116,6 @@ NclLayoutParser::parseRegionBase (DOMElement *parentElement,
                                               "region")
                    == 0)
             {
-
               elementObject = parseRegion (element, parentObject);
               if (elementObject != NULL)
                 {

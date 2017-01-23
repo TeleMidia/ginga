@@ -25,7 +25,6 @@ RelativeTimeIntervalAnchor::RelativeTimeIntervalAnchor (string id,
                                                         double end)
     : IntervalAnchor (id, begin, end)
 {
-
   typeSet.insert ("RelativeTimeIntervalAnchor");
 }
 

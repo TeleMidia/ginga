@@ -48,7 +48,6 @@ FormatterActiveDevice::FormatterActiveDevice (GingaScreenID screenId,
     : FormatterMultiDevice (screenId, deviceLayout, x, y, w, h,
                             useMulticast, srvPort)
 {
-
   this->deviceServicePort = srvPort;
 
   img_dev = string (GINGA_MB_DATADIR) + "active-device.png";
@@ -173,7 +172,6 @@ FormatterActiveDevice::FormatterActiveDevice (GingaScreenID screenId,
 
 FormatterActiveDevice::~FormatterActiveDevice ()
 {
-
   // lock();
 
   listening = false;
@@ -253,13 +251,11 @@ FormatterActiveDevice::receiveRemoteEvent (int remoteDevClass,
                                            int eventType,
                                            string eventContent)
 {
-
   vector<string> *args;
   if (eventType == DeviceDomain::FT_ATTRIBUTIONEVENT)
     {
       if (remoteDevClass == -1)
         {
-
           // Only sends to parent device vars within the "parent." namespace
 
           int tokenPos = eventContent.find ("parent.");
@@ -314,7 +310,6 @@ bool
 FormatterActiveDevice::receiveRemoteContent (int remoteDevClass,
                                              string contentUri)
 {
-
   map<string, string>::iterator i;
 
   clog << "FormatterActiveDevice::receiveRemoteContent from class '";
@@ -335,7 +330,6 @@ bool
 FormatterActiveDevice::receiveRemoteContentInfo (string contentId,
                                                  string contentUri)
 {
-
   (*contentsInfo)[contentUri] = contentId;
   return true;
 }
@@ -487,7 +481,6 @@ FormatterActiveDevice::handleTCPCommand (arg_unused (string sid), arg_unused (st
                                          string spayload_desc,
                                          string payload)
 {
-
   bool handled = false;
   clog << "FormatterActiveDevice::handleTCPCommand scommand=" << scommand
        << endl;
@@ -546,7 +539,6 @@ FormatterActiveDevice::handleTCPCommand (arg_unused (string sid), arg_unused (st
         string full_path = appPath + spayload_desc;
         if (openDocument (full_path))
           {
-
             clog << "FormatterActiveDevice::START_DOCUMENT play "
                  << full_path << endl;
             formatter->setKeyHandler (true);

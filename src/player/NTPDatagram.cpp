@@ -47,7 +47,6 @@ NTPDatagram::NTPDatagram ()
 
 NTPDatagram::NTPDatagram (char *ntpStream)
 {
-
   memcpy (this->stream, ntpStream, NTP_BUFFER_SIZE);
   // Convert the NTP data received to host byte order
   NTPDatagram::convertNTPDataToHost ((alt_u8 *)stream);

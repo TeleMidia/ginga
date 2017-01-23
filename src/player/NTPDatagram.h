@@ -37,7 +37,6 @@ typedef unsigned long long alt_u64;
 
 class NTPDatagram
 {
-
 #define NTP_BUFFER_SIZE 48
 
 #define NTP_DATA_GRAM_CONTROL_HEADER(base_addr)                            \

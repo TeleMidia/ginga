@@ -39,7 +39,6 @@ GINGA_PLAYER_BEGIN
 
 class AVPlayer : public Thread, public Player, public IProviderListener
 {
-
 private:
   pthread_mutex_t pMutex; // provider mutex
   pthread_mutex_t tMutex; // AV player thread mutex

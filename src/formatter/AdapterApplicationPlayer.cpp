@@ -24,7 +24,6 @@ GINGA_FORMATTER_BEGIN
 AdapterApplicationPlayer::AdapterApplicationPlayer ()
     : AdapterFormatterPlayer ()
 {
-
   typeSet.insert ("AdapterApplicationPlayer");
   Thread::mutexInit (&eventMutex, false);
   Thread::mutexInit (&eventsMutex, false);
@@ -73,7 +72,6 @@ AdapterApplicationPlayer::~AdapterApplicationPlayer ()
 void
 AdapterApplicationPlayer::setNclEditListener (IPlayerListener *listener)
 {
-
   this->editingCommandListener = listener;
 }
 
@@ -153,7 +151,6 @@ bool
 AdapterApplicationPlayer::prepare (NclExecutionObject *object,
                                    NclFormatterEvent *event)
 {
-
   Content *content;
   NclCascadingDescriptor *descriptor;
   double explicitDur;
@@ -179,14 +176,12 @@ AdapterApplicationPlayer::prepare (NclExecutionObject *object,
       if (this->object->getDataObject () != NULL
           && this->object->getDataObject ()->getDataEntity () != NULL)
         {
-
           content
               = ((NodeEntity *)(object->getDataObject ()->getDataEntity ()))
                     ->getContent ();
 
           if (content != NULL && content->instanceOf ("ReferenceContent"))
             {
-
               this->mrl = ((ReferenceContent *)content)
                               ->getCompleteReferenceUrl ();
 
@@ -319,7 +314,6 @@ AdapterApplicationPlayer::prepare (NclFormatterEvent *event)
       if ((((NclAnchorEvent *)event)->getAnchor ())
               ->instanceOf ("LambdaAnchor"))
         {
-
           duration = ((NclPresentationEvent *)event)->getDuration ();
 
           if (duration < IntervalAnchor::OBJECT_DURATION)
@@ -331,7 +325,6 @@ AdapterApplicationPlayer::prepare (NclFormatterEvent *event)
       else if (((((NclAnchorEvent *)event)->getAnchor ()))
                    ->instanceOf ("IntervalAnchor"))
         {
-
           intervalAnchor
               = (IntervalAnchor *)(((NclAnchorEvent *)event)->getAnchor ());
 
@@ -344,7 +337,6 @@ AdapterApplicationPlayer::prepare (NclFormatterEvent *event)
       else if (((((NclAnchorEvent *)event)->getAnchor ()))
                    ->instanceOf ("LabeledAnchor"))
         {
-
           duration = ((NclPresentationEvent *)event)->getDuration ();
 
           clog << "AdapterApplicationPlayer::prepare '" << object->getId ();
@@ -434,7 +426,6 @@ AdapterApplicationPlayer::stop ()
              ->getAnchor ()
              ->instanceOf ("LambdaAnchor"))
     {
-
       stopLambda = true;
     }
 
@@ -446,7 +437,6 @@ AdapterApplicationPlayer::stop ()
       if (currentEvent->getCurrentState () != EventUtil::ST_SLEEPING
           && player != NULL)
         {
-
           player->stop ();
           player->notifyReferPlayers (EventUtil::TR_STOPS);
           AdapterFormatterPlayer::printAction ("stop", object);
@@ -459,7 +449,6 @@ AdapterApplicationPlayer::stop ()
           if (event != currentEvent
               && event->getCurrentState () != EventUtil::ST_SLEEPING)
             {
-
               preparedEvents.erase (i);
               i = preparedEvents.begin ();
 
@@ -559,7 +548,6 @@ AdapterApplicationPlayer::abort ()
              ->getAnchor ()
              ->instanceOf ("LambdaAnchor"))
     {
-
       abortLambda = true;
     }
 
@@ -580,7 +568,6 @@ AdapterApplicationPlayer::abort ()
           if (event != currentEvent
               && event->getCurrentState () != EventUtil::ST_SLEEPING)
             {
-
               preparedEvents.erase (i);
               i = preparedEvents.begin ();
 
@@ -663,7 +650,6 @@ AdapterApplicationPlayer::unprepare ()
   if (currentEvent->getCurrentState () == EventUtil::ST_OCCURRING
       || currentEvent->getCurrentState () == EventUtil::ST_PAUSED)
     {
-
       clog << "AdapterApplicationPlayer::unprepare stopping ";
       clog << "current event '" << currentEvent->getId () << "'";
       clog << endl;
@@ -675,7 +661,6 @@ AdapterApplicationPlayer::unprepare ()
   if (preparedEvents.count (currentEvent->getId ()) != 0
       && preparedEvents.size () == 1)
     {
-
       if (object != NULL)
         {
           object->unprepare ();
@@ -733,7 +718,6 @@ AdapterApplicationPlayer::naturalEnd ()
                  ->getAnchor ()
                  ->instanceOf ("LambdaAnchor"))
         {
-
           unlockPreparedEvents ();
           event->stop ();
           AdapterFormatterPlayer::printAction ("stop", object);
@@ -758,7 +742,6 @@ void
 AdapterApplicationPlayer::updateStatus (short code, string param,
                                         short type, string value)
 {
-
   ApplicationStatus *data;
 
   lock ();
@@ -785,7 +768,6 @@ void
 AdapterApplicationPlayer::notificationHandler (short code, string param,
                                                short type, string value)
 {
-
   clog << "AdapterApplicationPlayer::notificationHandler";
   clog << " with code = '" << code << "' param = '";
   clog << param << "'";
@@ -949,7 +931,6 @@ AdapterApplicationPlayer::run ()
 bool
 AdapterApplicationPlayer::checkEvent (NclFormatterEvent *event, short type)
 {
-
   bool isPresentation;
   bool isAttribution;
 
@@ -974,7 +955,6 @@ bool
 AdapterApplicationPlayer::startEvent (string anchorId, short type,
                                       string value)
 {
-
   NclFormatterEvent *event;
   bool fakeStart = false;
 
@@ -1037,7 +1017,6 @@ bool
 AdapterApplicationPlayer::stopEvent (string anchorId, short type,
                                      string value)
 {
-
   NclFormatterEvent *event;
 
   if (object->getId () == anchorId)

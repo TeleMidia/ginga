@@ -29,7 +29,6 @@ GINGA_FORMATTER_BEGIN
 class NclLinkAndCompoundTriggerCondition
     : public NclLinkCompoundTriggerCondition
 {
-
 private:
   vector<NclLinkCondition *> unsatisfiedConditions;
   vector<NclLinkCondition *> statements;

@@ -116,7 +116,6 @@ DsmccObjectProcessor::mountObject (DsmccObject *object)
   if (object->getKind () == "srg"
       || object->getKind () == "DSM::ServiceGateway")
     {
-
       bindings = object->getBindings ();
       for (i = bindings->begin (); i != bindings->end (); ++i)
         {
@@ -137,7 +136,6 @@ DsmccObjectProcessor::mountObject (DsmccObject *object)
   else if (object->getKind () == "dir"
            || object->getKind () == "DSM::Directory")
     {
-
       if (objectPaths.count (object->getObjectId ()) == 0)
         {
           /*clog << "DsmccObjectProcessor::mountObject Warning!";
@@ -168,7 +166,6 @@ DsmccObjectProcessor::mountObject (DsmccObject *object)
     }
   else if (object->getKind () == "fil" || object->getKind () == "DSM::File")
     {
-
       if (objectPaths.count (object->getObjectId ()) == 0)
         {
           clog << "DsmccObjectProcessor::mountObject Warning! ";

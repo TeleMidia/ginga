@@ -88,7 +88,6 @@ void
 RemoteDeviceManager::setDeviceInfo (arg_unused (int deviceClass), int width, int height,
                                     string base_device_ncl_path)
 {
-
   if (domainService != NULL)
     {
       domainService->setDeviceInfo (width, height, base_device_ncl_path);
@@ -131,7 +130,6 @@ void
 RemoteDeviceManager::postEvent (int devClass, int eventType, char *event,
                                 int eventSize)
 {
-
   domainService->postEventTask (devClass, eventType, event, eventSize);
 }
 
@@ -185,7 +183,6 @@ RemoteDeviceManager::run ()
               } else if (rdmTimer == 0 ||
                               ((getCurrentTimeMillis() - rdmTimer) > 3000))
       {
-
                       rdmTimer = getCurrentTimeMillis();
                       domainService->postConnectionRequestTask();
               }

@@ -56,7 +56,8 @@ protected:
   virtual bool taskRequest (int destDevClass, char *data, int taskSize);
   virtual bool passiveTaskRequest (char *data, int taskSize);
   virtual bool activeTaskRequest (char *data, int taskSize);
-  virtual void postConnectionRequestTask (arg_unused (int width), arg_unused (int height)){};
+  virtual void postConnectionRequestTask (arg_unused (int width),
+                                          arg_unused (int height)){};
   virtual void receiveConnectionRequest (char *task);
   virtual void postAnswerTask (int reqDeviceClass, int answer);
   virtual void receiveAnswerTask (arg_unused (char *answerTask)){};

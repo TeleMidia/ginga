@@ -24,7 +24,6 @@ SampleIntervalAnchor::SampleIntervalAnchor (string id, double begin,
                                             double end)
     : IntervalAnchor (id, begin, end)
 {
-
   typeSet.insert ("SampleIntervalAnchor");
   this->firstSyntax = 0;
   this->lastSyntax = 0;
@@ -33,7 +32,6 @@ SampleIntervalAnchor::SampleIntervalAnchor (string id, double begin,
 void
 SampleIntervalAnchor::setValueSyntax (short firstSyntax, short lastSyntax)
 {
-
   this->firstSyntax = firstSyntax;
   this->lastSyntax = lastSyntax;
 }
@@ -41,7 +39,6 @@ SampleIntervalAnchor::setValueSyntax (short firstSyntax, short lastSyntax)
 void
 SampleIntervalAnchor::getValueSyntax (short *firstSyntax, short *lastSyntax)
 {
-
   *firstSyntax = this->firstSyntax;
   *lastSyntax = this->lastSyntax;
 }

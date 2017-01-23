@@ -277,7 +277,6 @@ Demuxer::setupFilter (IFrontendFilter *filter)
 
   if (pmt != NULL)
     {
-
       tid = filter->getTid ();
       pids = pmt->copyPidsByTid (tid);
 
@@ -378,7 +377,6 @@ Demuxer::demux (ITSPacket *packet)
           && (packet->getAdaptationFieldControl () == 1
               || packet->getAdaptationFieldControl () == 3))
         {
-
           packet->getPayload (tsPacketPayload);
           pat->addData (tsPacketPayload, 184); /* Mount PAT HEADER */
           if (pat->processSectionPayload ())
@@ -622,7 +620,6 @@ Demuxer::addFilter (IFrontendFilter *filter)
     }
   else if (!setupFilter (filter))
     {
-
       Thread::mutexLock (&stlMutex);
       feFiltersToSetup.insert (filter);
       Thread::mutexUnlock (&stlMutex);
@@ -689,7 +686,6 @@ Demuxer::createPmtFilter (NetworkInterface *ni)
 void
 Demuxer::receiveSection (char *section, int secLen, IFrontendFilter *f)
 {
-
   unsigned int pid, newVer, currVer;
   set<UnpPmtTime *> *pids;
   set<UnpPmtTime *>::iterator i;
@@ -873,7 +869,6 @@ Demuxer::processDemuxData (char *buff, unsigned int size)
           && ((i + packetSize == size)
               || ((buff[i + packetSize] & 0xFF) == 0x47)))
         {
-
           packet = new TSPacket (buff + i);
           if (packet->isConstructionFailed ())
             {
@@ -891,7 +886,6 @@ Demuxer::processDemuxData (char *buff, unsigned int size)
         }
       else if (i + packetSize < size)
         {
-
           int diff = i;
           i++;
           i = i + hunt (buff + i, size - i);

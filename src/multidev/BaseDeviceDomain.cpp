@@ -66,7 +66,6 @@ BaseDeviceDomain::~BaseDeviceDomain () { Thread::mutexDestroy (&pMutex); }
 bool
 BaseDeviceDomain::taskRequest (int destDevClass, char *data, int taskSize)
 {
-
   RemoteTask *task;
 
   switch (destDevClass)
@@ -142,7 +141,6 @@ BaseDeviceDomain::receiveConnectionRequest (char *task)
 void
 BaseDeviceDomain::postAnswerTask (int reqDeviceClass, int answer)
 {
-
   int taskSize, pos, broadcastPort;
   int answerPayloadSize = 11;
   char *task;
@@ -183,14 +181,12 @@ BaseDeviceDomain::postAnswerTask (int reqDeviceClass, int answer)
 /*
         void BaseDeviceDomain::postNclMetadata(
                         int devClass, vector<StreamData*>* streams) {
-
                 char* task;
                 StreamData* streamData;
                 vector<StreamData*>::iterator i;
 
                 if (devClass != DeviceDomain::CT_BASE &&
                                 devClass != DeviceDomain::CT_ACTIVE) {
-
                         return;
                 }
 
@@ -217,7 +213,6 @@ BaseDeviceDomain::postAnswerTask (int reqDeviceClass, int answer)
 bool
 BaseDeviceDomain::postMediaContentTask (int destDevClass, string url)
 {
-
   FILE *fd;
   int fileSize, bytesRead, tSize;
   char *task;
@@ -513,7 +508,6 @@ BaseDeviceDomain::checkPassiveTasks ()
            > (1000 / PASSIVE_FPS))
           || xnumeq (passiveTimestamp, 0.))
         {
-
           passiveTimestamp = getCurrentTimeMillis ();
           passiveTaskRequest (data, taskSize);
         }

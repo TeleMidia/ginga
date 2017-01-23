@@ -23,7 +23,6 @@ GINGA_NCL_BEGIN
 SimpleRule::SimpleRule (string id, string attr, short op, string val)
     : Rule (id)
 {
-
   attribute = attr;
   setOperator (op);
   value = val;

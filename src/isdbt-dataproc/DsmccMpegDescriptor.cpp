@@ -53,7 +53,6 @@ DsmccMpegDescriptor::addData (char *data, unsigned short length)
 
   if (currentSize == 0)
     {
-
       if (length < 2)
         {
           return -1; // error

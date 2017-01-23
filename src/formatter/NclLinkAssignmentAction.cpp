@@ -25,7 +25,6 @@ NclLinkAssignmentAction::NclLinkAssignmentAction (NclFormatterEvent *event,
                                                   string value)
     : NclLinkRepeatAction (event, actionType)
 {
-
   this->value = value;
   this->animation = NULL;
   typeSet.insert ("NclLinkAssignmentAction");

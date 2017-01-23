@@ -34,19 +34,23 @@ public:
 protected:
   void postMediaContent (arg_unused (int destDevClass)){};
   bool
-  newDeviceConnected (arg_unused (int newDevClass), arg_unused (int w), arg_unused (int h))
+  newDeviceConnected (arg_unused (int newDevClass), arg_unused (int w),
+                      arg_unused (int h))
   {
     return false;
   };
   void connectedToBaseDevice (unsigned int domainAddr);
   bool
-  receiveRemoteEvent (arg_unused (int remoteDevClass), arg_unused (int eventType),
+  receiveRemoteEvent (arg_unused (int remoteDevClass),
+                      arg_unused (int eventType),
                       arg_unused (string eventContent))
   {
     return false;
   };
   bool
-  receiveRemoteContent (arg_unused (int remoteDevClass), arg_unused (char *stream), arg_unused (int streamSize))
+  receiveRemoteContent (arg_unused (int remoteDevClass),
+                        arg_unused (char *stream),
+                        arg_unused (int streamSize))
   {
     return false;
   };

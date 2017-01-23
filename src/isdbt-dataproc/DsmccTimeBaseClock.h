@@ -25,7 +25,6 @@ GINGA_DATAPROC_BEGIN
 
 class DsmccTimeBaseClock : public Stc
 {
-
 private:
 protected:
   unsigned char contentId;

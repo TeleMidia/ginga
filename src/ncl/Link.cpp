@@ -82,7 +82,6 @@ Bind *
 Link::bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
             string roleId)
 {
-
   Role *role;
 
   role = connector->getRole (roleId);
@@ -100,7 +99,6 @@ Bind *
 Link::bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
             Role *role)
 {
-
   Bind *bind;
   vector<Bind *> *roleBindList;
   int maxConn;
@@ -124,7 +122,6 @@ Link::bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
 
   if (maxConn != Role::UNBOUNDED && (int)(roleBindList->size ()) >= maxConn)
     {
-
       clog << "Link::bind Warning! Bind overflows maxConn(";
       clog << maxConn;
       clog << ")" << endl;
@@ -161,7 +158,6 @@ Link::isConsistent ()
           || (maxConn != Role::UNBOUNDED
               && (int)getNumRoleBinds (role) > maxConn))
         {
-
           delete roles;
           return false;
         }
@@ -175,7 +171,6 @@ Bind *
 Link::getBind (Node *node, InterfacePoint *interfPt,
                GenericDescriptor *desc, Role *role)
 {
-
   map<string, vector<Bind *> *>::iterator i;
 
   bool containsKey = false;
@@ -195,7 +190,6 @@ Link::getBind (Node *node, InterfacePoint *interfPt,
   for (bindIterator = roleBindList->begin ();
        bindIterator != roleBindList->end (); ++roleBindList)
     {
-
       bind = (*bindIterator);
       if ((bind->getNode () == node)
           && (bind->getInterfacePoint () == interfPt)
@@ -227,7 +221,6 @@ Link::setParentComposition (LinkComposition *composition)
   if (composition == NULL
       || ((ContextNode *)composition)->containsLink (this))
     {
-
       this->composition = composition;
     }
 }
@@ -439,7 +432,6 @@ bool
 Link::containsNode (Node *node, GenericDescriptor *descriptor,
                     vector<Bind *> *binds)
 {
-
   Bind *bind;
   Node *bindNode;
   InterfacePoint *bindInterface;
@@ -461,7 +453,6 @@ Link::containsNode (Node *node, GenericDescriptor *descriptor,
       bindInterface = bind->getInterfacePoint ();
       if (bindInterface != NULL && bindInterface->instanceOf ("Port"))
         {
-
           bindNode = ((Port *)bindInterface)->getEndNode ();
         }
       else
@@ -507,14 +498,12 @@ Link::containsNode (Node *node, GenericDescriptor *descriptor,
                        && descriptor->getId ().find ("dummy")
                               != std::string::npos)
                 {
-
                   return true;
                 }
               else if (entityDesc != NULL
                        && entityDesc->getId ().find ("dummy")
                               != std::string::npos)
                 {
-
                   return true;
                 }
             }

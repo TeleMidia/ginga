@@ -31,7 +31,6 @@ double AdapterFormatterPlayer::eventTS = 0;
 
 AdapterFormatterPlayer::AdapterFormatterPlayer ()
 {
-
   typeSet.insert ("AdapterFormatterPlayer");
 
   this->manager = NULL;
@@ -950,7 +949,6 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
   if (transpValue < 0.
       && descriptor->getParameterValue ("transparency") == "")
     {
-
       transpValue = ((AdapterPlayerManager *)manager)
                         ->getNclPlayerData ()
                         ->transparency;
@@ -993,7 +991,6 @@ bool
 AdapterFormatterPlayer::prepare (NclExecutionObject *object,
                                  NclFormatterEvent *event)
 {
-
   Content *content;
   NclCascadingDescriptor *descriptor;
   double explicitDur = -1;
@@ -1304,7 +1301,6 @@ AdapterFormatterPlayer::checkAnchorMonitor ()
 
   if (nextTransition != NULL && !isInfinity (nextTransition->getTime ()))
     {
-
       clog << "AdapterFormatterPlayer::checkAnchorMonitor ";
       clog << "creating TIME NominalEventMonitor for '";
       clog << object->getId () << "'";
@@ -1371,7 +1367,6 @@ void
 AdapterFormatterPlayer::printAction (string action,
                                      NclExecutionObject *object)
 {
-
   NclFormatterEvent *event;
 
   if (object->instanceOf ("NclApplicationExecutionObject"))
@@ -1396,7 +1391,6 @@ AdapterFormatterPlayer::printAction (string action,
 void
 AdapterFormatterPlayer::printAction (string command)
 {
-
   // notifying GingaGUI
   // cmd means a command to an embeddor process
   // 0 means successful status message
@@ -1706,7 +1700,6 @@ AdapterFormatterPlayer::unprepare ()
           || object->getMainEvent ()->getCurrentState ()
                  == EventUtil::ST_PAUSED))
     {
-
       return stop ();
     }
 
@@ -1727,7 +1720,6 @@ bool
 AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
                                           string value)
 {
-
   string propName;
 
   if (player == NULL || object == NULL)
@@ -1768,7 +1760,6 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
           if (!((AdapterApplicationPlayer *)this)
                    ->setAndLockCurrentEvent (event))
             {
-
               return false;
             }
         }
@@ -1902,7 +1893,6 @@ AdapterFormatterPlayer::updateObjectExpectedDuration ()
       || (isNaN ((object->getDescriptor ())->getExplicitDuration ()))
       || (duration < 0) || (isNaN (duration)))
     {
-
       implicitDur = getObjectExpectedDuration ();
       ((IntervalAnchor *)wholeContentEvent->getAnchor ())
           ->setEnd (implicitDur);
@@ -1931,7 +1921,6 @@ void
 AdapterFormatterPlayer::setTimeBasePlayer (
     AdapterFormatterPlayer *timeBasePlayerAdapter)
 {
-
   IPlayer *timePlayer;
   timePlayer = timeBasePlayerAdapter->getPlayer ();
   if (timePlayer != NULL)
@@ -1945,7 +1934,6 @@ void
 AdapterFormatterPlayer::updateStatus (short code, string parameter,
                                       short type, arg_unused (string value))
 {
-
   NclFormatterEvent *mainEvent;
 
   switch (code)
@@ -1989,7 +1977,6 @@ AdapterFormatterPlayer::updateStatus (short code, string parameter,
                   && mainEvent->getCurrentState ()
                          != EventUtil::ST_SLEEPING)
                 {
-
                   rebase ();
                   clog << "AdapterFormatterPlayer::updateStatus ";
                   clog << "process recovered";

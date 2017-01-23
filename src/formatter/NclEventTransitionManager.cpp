@@ -64,7 +64,6 @@ NclEventTransitionManager::getType (NclPresentationEvent *event)
       || anchor->instanceOf ("LambdaAnchor")
       || anchor->instanceOf ("LabeledAnchor"))
     {
-
       return ContentAnchor::CAT_TIME;
     }
   else if (anchor->instanceOf ("SampleIntervalAnchor"))
@@ -83,7 +82,6 @@ NclEventTransitionManager::getType (NclPresentationEvent *event)
 vector<NclEventTransition *> *
 NclEventTransitionManager::getTransitionEvents (short int type)
 {
-
   vector<NclEventTransition *> *transitionEvents;
   map<short int, vector<NclEventTransition *> *>::iterator i;
 
@@ -112,7 +110,6 @@ void
 NclEventTransitionManager::addEventTransition (
     NclEventTransition *transition, short int type)
 {
-
   int beg, end, pos;
   NclEventTransition *auxTransition;
   vector<NclEventTransition *> *transitionEvents;
@@ -166,7 +163,6 @@ void
 NclEventTransitionManager::removeEventTransition (
     NclPresentationEvent *event)
 {
-
   int i, size = -1;
   vector<NclEventTransition *>::iterator j;
   NclEventTransition *transition;
@@ -192,7 +188,6 @@ NclEventTransitionManager::removeEventTransition (
                          ->getEndTransition ()
                      != NULL)
             {
-
               endTransition = ((NclBeginEventTransition *)transition)
                                   ->getEndTransition ();
 
@@ -257,7 +252,6 @@ void
 NclEventTransitionManager::prepare (bool wholeContent, double startTime,
                                     short int type)
 {
-
   vector<NclEventTransition *> *transitionEvents;
   NclEventTransition *transition;
   unsigned int transIx, size;
@@ -367,7 +361,6 @@ NclEventTransitionManager::stop (double endTime, bool applicationType)
       if (!applicationType
           || (applicationType && !isInfinity (transition->getTime ())))
         {
-
           fev = transition->getEvent ();
           if (transition->getTime () > endTime)
             {
@@ -408,7 +401,6 @@ NclEventTransitionManager::abort (double endTime, bool applicationType)
       if (!applicationType
           || (applicationType && !isInfinity (transition->getTime ())))
         {
-
           fev = transition->getEvent ();
           if (transition->getTime () > endTime)
             {
@@ -426,7 +418,6 @@ void
 NclEventTransitionManager::addPresentationEvent (
     NclPresentationEvent *event)
 {
-
   double begin, end;
   NclBeginEventTransition *beginTransition;
   NclEndEventTransition *endTransition;
@@ -457,7 +448,6 @@ NclEventTransitionManager::addPresentationEvent (
               if (IntervalAnchor::isObjectDuration (lTime)
                   || endTransition->getTime () < lTime)
                 {
-
                   transitionEvents->insert (i, endTransition);
                   break;
                 }
@@ -518,7 +508,6 @@ NclEventTransitionManager::timeBaseNaturalEnd (int64_t timeValue,
                                                NclFormatterEvent *mainEvent,
                                                short int transType)
 {
-
   NclPresentationEvent *ev;
   vector<NclEventTransition *> *transitionEvents;
   vector<NclEventTransition *>::iterator i;
@@ -561,7 +550,6 @@ NclEventTransitionManager::updateTransitionTable (
     double value, IPlayer *player, NclFormatterEvent *mainEvent,
     short int transType)
 {
-
   NclEventTransition *transition;
   NclFormatterEvent *ev;
   vector<NclEventTransition *> *transitionEvents;
@@ -571,7 +559,6 @@ NclEventTransitionManager::updateTransitionTable (
   if (currentTransitionIndex.count (transType) == 0
       || transTable.count (transType) == 0)
     {
-
       Thread::mutexUnlock (&transMutex);
 
       clog << "NclEventTransitionManager::updateTransitionTable ";
@@ -629,7 +616,6 @@ NclEventTransitionManager::updateTransitionTable (
 set<double> *
 NclEventTransitionManager::getTransitionsValues (short int transType)
 {
-
   set<double> *transValues;
   unsigned int currentIx, ix;
   vector<NclEventTransition *> *transitionEvents;
@@ -681,7 +667,6 @@ NclEventTransitionManager::getTransitionsValues (short int transType)
 NclEventTransition *
 NclEventTransitionManager::getNextTransition (NclFormatterEvent *mainEvent)
 {
-
   NclEventTransition *transition;
   vector<NclEventTransition *> *transitionEvents;
   unsigned int currentIx;
@@ -692,7 +677,6 @@ NclEventTransitionManager::getNextTransition (NclFormatterEvent *mainEvent)
   if (currentTransitionIndex.count (ContentAnchor::CAT_TIME) == 0
       || transTable.count (ContentAnchor::CAT_TIME) == 0)
     {
-
       clog << "NclEventTransitionManager::getNextTransition(" << this;
       clog << ") for '" << mainEvent->getId ();
       clog << "'. There is no transition tables";
@@ -720,7 +704,6 @@ NclEventTransitionManager::getNextTransition (NclFormatterEvent *mainEvent)
       if (IntervalAnchor::isObjectDuration (eventEnd)
           || transTime <= eventEnd)
         {
-
           return transition;
         }
     }

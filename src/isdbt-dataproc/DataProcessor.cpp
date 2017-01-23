@@ -136,7 +136,6 @@ DataProcessor::serviceDomainMounted (string mountPoint,
                                      map<string, string> *names,
                                      map<string, string> *paths)
 {
-
   if (removeOCFilter && demux != NULL)
     {
       clog << "DataProcessor::run requesting ";
@@ -192,7 +191,6 @@ void
 DataProcessor::addSEListener (string eventType,
                               IDsmccStreamEventListener *listener)
 {
-
   map<string, set<IDsmccStreamEventListener *> *>::iterator i;
   set<IDsmccStreamEventListener *> *listeners;
 
@@ -221,7 +219,6 @@ void
 DataProcessor::removeSEListener (string eventType,
                                  IDsmccStreamEventListener *listener)
 {
-
   map<string, set<IDsmccStreamEventListener *> *>::iterator i;
   set<IDsmccStreamEventListener *>::iterator j;
   set<IDsmccStreamEventListener *> *listeners;
@@ -245,7 +242,6 @@ void
 DataProcessor::setServiceDomainListener (
     IDsmccServiceDomainListener *listener)
 {
-
   sdl = listener;
 }
 
@@ -374,7 +370,6 @@ DataProcessor::receiveSection (ITransportSection *section)
       else if ((payload[0] & 0xFF) == IMpegDescriptor::NPT_REFERENCE_TAG
                || (payload[0] & 0xFF) == IMpegDescriptor::NPT_ENDPOINT_TAG)
         {
-
           if (nptPrinter)
             {
               cout << "FOUND NEW NPT DSM-CC SECTION" << endl;
@@ -407,7 +402,6 @@ DataProcessor::receiveSection (ITransportSection *section)
     }
   else if (tableId == AIT_TID)
     {
-
       if (ait != NULL)
         {
           if (ait->getSectionName () == section->getSectionName ())

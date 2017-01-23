@@ -29,7 +29,6 @@ TCPClientConnection::TCPClientConnection (unsigned int devid,
                                           char *hostname, char *port_str,
                                           IRemoteDeviceListener *srv)
 {
-
   try
     {
       deviceId = devid;
@@ -96,7 +95,6 @@ TCPClientConnection::run ()
   int nr;
   while (running)
     {
-
       memset (buf, 0, MAX_MSG_SIZE);
       memset (msgType, 0, 4);
       memset (evtType, 0, 5);

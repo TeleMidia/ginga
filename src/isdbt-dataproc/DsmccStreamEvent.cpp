@@ -23,7 +23,6 @@ GINGA_DATAPROC_BEGIN
 DsmccStreamEvent::DsmccStreamEvent (void *descriptorData,
                                     unsigned int descriptorSize)
 {
-
   memset (data, 0, sizeof (data));
   memcpy ((void *)&(data[0]), descriptorData, descriptorSize);
 

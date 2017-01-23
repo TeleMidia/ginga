@@ -142,7 +142,6 @@ ShortEventDescriptor::process (char *data, size_t pos)
   textLength = data[pos];
   if (textLength)
     {
-
       textChar = new char[textLength];
       if (textChar == NULL)
         {

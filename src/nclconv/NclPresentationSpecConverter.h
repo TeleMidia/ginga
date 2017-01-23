@@ -62,7 +62,6 @@ GINGA_NCLCONV_BEGIN
 class NclPresentationSpecConverter
     : public NclPresentationSpecificationParser
 {
-
 private:
   DeviceLayout *deviceLayout;
 

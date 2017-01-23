@@ -29,7 +29,6 @@ void *
 NclImportParser::parseImportedDocumentBase (DOMElement *parentElement,
                                             void *objGrandParent)
 {
-
   void *parentObject;
   DOMNodeList *elementNodeList;
   DOMElement *element;
@@ -57,7 +56,6 @@ NclImportParser::parseImportedDocumentBase (DOMElement *parentElement,
                                          "importNCL")
               == 0)
             {
-
               elementObject = parseImportNCL (element, parentObject);
               if (elementObject != NULL)
                 {
@@ -75,7 +73,6 @@ void *
 NclImportParser::parseImportNCL (DOMElement *parentElement,
                                  void *objGrandParent)
 {
-
   return createImportNCL (parentElement, objGrandParent);
 }
 
@@ -83,7 +80,6 @@ void *
 NclImportParser::parseImportBase (DOMElement *parentElement,
                                   void *objGrandParent)
 {
-
   return createImportBase (parentElement, objGrandParent);
 }
 

@@ -25,10 +25,8 @@ GINGA_NCL_BEGIN
 class Statement : public ConditionExpression
 {
 public:
-  Statement () : ConditionExpression () { typeSet.insert ("Statement"); };
-
-  virtual ~Statement () { typeSet.clear (); };
-
+  Statement () : ConditionExpression () {typeSet.insert ("Statement"); };
+  virtual ~Statement () {typeSet.clear (); };
   virtual string
   toString ()
   {

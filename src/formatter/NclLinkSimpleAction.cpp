@@ -25,7 +25,6 @@ NclLinkSimpleAction::NclLinkSimpleAction (NclFormatterEvent *event,
                                           short type)
     : NclLinkAction ()
 {
-
   this->event = event;
   actionType = type;
   listener = NULL;
@@ -61,7 +60,6 @@ void
 NclLinkSimpleAction::setSimpleActionListener (
     INclLinkActionListener *listener)
 {
-
   if (listener != NULL)
     {
       listener->addAction (this);
@@ -107,7 +105,6 @@ NclLinkSimpleAction::getImplicitRefRoleActions ()
           || (durVal != "" && durVal.substr (0, 1) == "$")
           || (attVal != "" && attVal.substr (0, 1) == "$"))
         {
-
           if (event->instanceOf ("NclAttributionEvent"))
             {
               actions->push_back ((NclLinkAction *)this);

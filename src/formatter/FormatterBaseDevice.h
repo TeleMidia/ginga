@@ -37,12 +37,15 @@ protected:
   bool receiveRemoteEvent (int remoteDevClass, int eventType,
                            string eventContent);
   bool
-  receiveRemoteContent (arg_unused (int remoteDevClass), arg_unused (char *stream), arg_unused (int streamSize))
+  receiveRemoteContent (arg_unused (int remoteDevClass),
+                        arg_unused (char *stream),
+                        arg_unused (int streamSize))
   {
     return false;
   };
   bool
-  receiveRemoteContent (arg_unused (int remoteDevClass), arg_unused (string contentUri))
+  receiveRemoteContent (arg_unused (int remoteDevClass),
+                        arg_unused (string contentUri))
   {
     return false;
   };

@@ -33,7 +33,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 class UDPClient
 {
-
 protected:
 #if defined _MSC_VER || defined __CYGWIN__
   SOCKET sd;

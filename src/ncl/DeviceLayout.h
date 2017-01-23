@@ -29,10 +29,8 @@ private:
   int height;
 
 public:
-  DeviceProperty () { initialize (0, 0, 0, 0); }
-
-  DeviceProperty (int x, int y, int w, int h) { initialize (x, y, w, h); }
-
+  DeviceProperty () {initialize (0, 0, 0, 0); }
+  DeviceProperty (int x, int y, int w, int h) {initialize (x, y, w, h); }
   virtual ~DeviceProperty () {}
 
 private:

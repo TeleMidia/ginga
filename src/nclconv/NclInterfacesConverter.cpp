@@ -31,7 +31,6 @@ void *
 NclInterfacesConverter::createPort (DOMElement *parentElement,
                                     void *objGrandParent)
 {
-
   string id, attValue;
   Node *portNode;
   NodeEntity *portNodeEntity;
@@ -86,7 +85,6 @@ NclInterfacesConverter::createPort (DOMElement *parentElement,
       if (portNode->instanceOf ("ReferNode")
           && ((ReferNode *)portNode)->getInstanceType () == "new")
         {
-
           portInterfacePoint = portNode->getAnchor (0);
           if (portInterfacePoint == NULL)
             {
@@ -119,7 +117,6 @@ NclInterfacesConverter::createPort (DOMElement *parentElement,
       if (portNode->instanceOf ("ReferNode")
           && ((ReferNode *)portNode)->getInstanceType () == "new")
         {
-
           portInterfacePoint = portNode->getAnchor (attValue);
         }
       else
@@ -131,7 +128,6 @@ NclInterfacesConverter::createPort (DOMElement *parentElement,
         {
           if (portNodeEntity->instanceOf ("CompositeNode"))
             {
-
               // the interface may refer to a composition port
               // instead of an anchor
               portInterfacePoint
@@ -175,7 +171,6 @@ NclInterfacesConverter::createPort (DOMElement *parentElement,
 SpatialAnchor *
 NclInterfacesConverter::createSpatialAnchor (DOMElement *areaElement)
 {
-
   SpatialAnchor *anchor = NULL;
   string coords, shape;
 
@@ -218,7 +213,6 @@ NclInterfacesConverter::createSpatialAnchor (DOMElement *areaElement)
 IntervalAnchor *
 NclInterfacesConverter::createTemporalAnchor (DOMElement *areaElement)
 {
-
   IntervalAnchor *anchor = NULL;
   string begin, end;
   double begVal, endVal;
@@ -227,7 +221,6 @@ NclInterfacesConverter::createTemporalAnchor (DOMElement *areaElement)
   if (areaElement->hasAttribute (XMLString::transcode ("begin"))
       || areaElement->hasAttribute (XMLString::transcode ("end")))
     {
-
       if (areaElement->hasAttribute (XMLString::transcode ("begin")))
         {
           begin = XMLString::transcode (
@@ -254,7 +247,6 @@ NclInterfacesConverter::createTemporalAnchor (DOMElement *areaElement)
 
       if (xnumeq (endVal, IntervalAnchor::OBJECT_DURATION) || endVal > begVal)
         {
-
           anchor = new RelativeTimeIntervalAnchor (
               XMLString::transcode (
                   areaElement->getAttribute (XMLString::transcode ("id"))),
@@ -266,7 +258,6 @@ NclInterfacesConverter::createTemporalAnchor (DOMElement *areaElement)
   if (areaElement->hasAttribute (XMLString::transcode ("first"))
       || areaElement->hasAttribute (XMLString::transcode ("last")))
     {
-
       begVal = 0;
       endVal = IntervalAnchor::OBJECT_DURATION;
       firstSyntax = ContentAnchor::CAT_NPT;
@@ -292,7 +283,6 @@ NclInterfacesConverter::createTemporalAnchor (DOMElement *areaElement)
           else if (begin.find ("npt") != std::string::npos
                    || begin.find ("NPT") != std::string::npos)
             {
-
               firstSyntax = ContentAnchor::CAT_NPT;
               begVal = ::ginga::util::stof (
                   begin.substr (0, begin.length () - 3));
@@ -319,7 +309,6 @@ NclInterfacesConverter::createTemporalAnchor (DOMElement *areaElement)
           else if (end.find ("npt") != std::string::npos
                    || end.find ("NPT") != std::string::npos)
             {
-
               lastSyntax = ContentAnchor::CAT_NPT;
               endVal
                   = ::ginga::util::stof (end.substr (0, end.length () - 3));
@@ -347,7 +336,6 @@ void *
 NclInterfacesConverter::createProperty (DOMElement *parentElement,
                                         arg_unused (void *objGrandParent))
 {
-
   string attributeName, attributeValue;
   PropertyAnchor *anchor;
 
@@ -377,7 +365,6 @@ void *
 NclInterfacesConverter::createArea (DOMElement *parentElement,
                                     arg_unused (void *objGrandParent))
 {
-
   string anchorId;
   string position, anchorLabel;
   Anchor *anchor;
@@ -400,7 +387,6 @@ NclInterfacesConverter::createArea (DOMElement *parentElement,
       || parentElement->hasAttribute (XMLString::transcode ("first"))
       || parentElement->hasAttribute (XMLString::transcode ("last")))
     {
-
       anchor = createTemporalAnchor (parentElement);
 
       // ancora textual
@@ -417,12 +403,10 @@ NclInterfacesConverter::createArea (DOMElement *parentElement,
     }
   else if (parentElement->hasAttribute (XMLString::transcode ("coords")))
     {
-
       anchor = createSpatialAnchor (parentElement);
     }
   else if (parentElement->hasAttribute (XMLString::transcode ("label")))
     {
-
       anchorLabel = XMLString::transcode (
           parentElement->getAttribute (XMLString::transcode ("label")));
 
@@ -446,7 +430,6 @@ void *
 NclInterfacesConverter::createMapping (DOMElement *parentElement,
                                        void *objGrandParent)
 {
-
   DOMElement *switchElement;
   SwitchNode *switchNode;
   NodeEntity *mappingNodeEntity;
@@ -525,7 +508,6 @@ void *
 NclInterfacesConverter::createSwitchPort (DOMElement *parentElement,
                                           void *objGrandParent)
 {
-
   SwitchNode *switchNode;
   SwitchPort *switchPort;
   string id;
@@ -558,7 +540,6 @@ void
 NclInterfacesConverter::addMappingToSwitchPort (void *parentObject,
                                                 void *childObject)
 {
-
   ((SwitchPort *)parentObject)->addPort ((Port *)childObject);
 }
 

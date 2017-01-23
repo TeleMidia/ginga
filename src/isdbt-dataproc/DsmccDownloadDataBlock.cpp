@@ -40,7 +40,6 @@ int
 DsmccDownloadDataBlock::processDataBlock (
     map<unsigned int, DsmccModule *> *ocModules)
 {
-
   FILE *fd;
   int rval, trval;
   unsigned int i, blockNumber;

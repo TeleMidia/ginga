@@ -112,7 +112,6 @@ void
 NclDocumentConverter::setConverterInfo (IPrivateBaseContext *pbc,
                                         DeviceLayout *deviceLayout)
 {
-
   setDeviceLayout (deviceLayout);
   this->privateBaseContext = pbc;
 
@@ -144,7 +143,6 @@ NclDocumentConverter::initialize ()
 string
 NclDocumentConverter::getAttribute (void *element, string attribute)
 {
-
   return XMLString::transcode (
       ((DOMElement *)element)
           ->getAttribute (XMLString::transcode (attribute.c_str ())));
@@ -218,7 +216,6 @@ void *
 NclDocumentConverter::parseEntity (string entityLocation,
                                    NclDocument *document, void *parent)
 {
-
   void *entity;
 
   parseEntityVar = true;

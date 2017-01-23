@@ -29,7 +29,6 @@ const double IntervalAnchor::OBJECT_DURATION = infinity ();
 IntervalAnchor::IntervalAnchor (string id, double begin, double end)
     : ContentAnchor (id)
 {
-
   typeSet.insert ("IntervalAnchor");
   this->begin = 0;
   setEnd (end);
@@ -79,7 +78,6 @@ IntervalAnchor::setBegin (double b)
     }
   else if ((!isBDur && !isEDur && b > end) || (isBDur && !isEDur))
     {
-
       begin = end;
     }
   else

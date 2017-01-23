@@ -65,7 +65,6 @@ Application::getBaseDirectory ()
       if (descTag == DT_GINGANCL_APPLICATION_LOCATION
           || descTag == DT_GINGAJ_APPLICATION_LOCATION)
         {
-
           location = (ApplicationLocationDescriptor *)(*i);
 
           Thread::mutexUnlock (&stlMutex);
@@ -94,7 +93,6 @@ Application::getInitialClass ()
       if (descTag == DT_GINGANCL_APPLICATION_LOCATION
           || descTag == DT_GINGAJ_APPLICATION_LOCATION)
         {
-
           location = (ApplicationLocationDescriptor *)(*i);
 
           Thread::mutexUnlock (&stlMutex);

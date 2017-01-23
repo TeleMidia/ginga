@@ -52,7 +52,6 @@ GINGA_FORMATTER_BEGIN
 class FormatterFocusManager : public IMotionEventListener,
                               public IInputEventListener
 {
-
 private:
   InputManager *im;
 

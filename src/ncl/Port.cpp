@@ -24,7 +24,6 @@ GINGA_NCL_BEGIN
 Port::Port (string id, Node *someNode, InterfacePoint *someInterfacePoint)
     : InterfacePoint (id)
 {
-
   node = someNode;
   interfacePoint = someInterfacePoint;
 
@@ -79,7 +78,6 @@ Port::getMapNodeNesting ()
   if (interfacePoint->instanceOf ("Anchor")
       || interfacePoint->instanceOf ("SwitchPort"))
     {
-
       return nodeSequence;
     }
   else

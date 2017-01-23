@@ -50,7 +50,6 @@ NclFocusSourceManager::getFocusSourceComponent (GingaScreenID screenId,
               || extension == "bpg" || extension == "svg"
               || extension == "svgz" || extension == "webp")
             {
-
               s = Ginga_Display->createRenderedSurfaceFromImageFile
                 (screenId, src.c_str ());
 

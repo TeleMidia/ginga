@@ -164,7 +164,6 @@ EventInfo::setStartTime (char *date)
       && ((startTimeEncoded[3] & 0xFF) == 0xFF)
       && ((startTimeEncoded[4] & 0xFF) == 0xFF))
     {
-
       // startTime = 0;
       return;
     }
@@ -266,7 +265,6 @@ EventInfo::getEndTimeSecsStr ()
 void
 EventInfo::setDuration (char *dur)
 {
-
   memcpy (durationEncoded, dur, 3);
   if (((durationEncoded[0] & 0xFF) == 0xFF)
       && ((durationEncoded[1] & 0xFF) == 0xFF)
@@ -566,7 +564,6 @@ EventInfo::getDescriptorsLoopLength ()
 vector<IMpegDescriptor *> *
 EventInfo::getDescriptors ()
 {
-
   /*vector<IMpegDescriptor*>* descs;
 
   //lock();

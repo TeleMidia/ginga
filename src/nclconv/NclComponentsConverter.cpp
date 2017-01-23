@@ -30,7 +30,6 @@ void
 NclComponentsConverter::addPortToContext (void *parentObject,
                                           void *childObject)
 {
-
   if (((Entity *)parentObject)->instanceOf ("ContextNode"))
     {
       ((ContextNode *)parentObject)->addPort ((Port *)childObject);
@@ -41,7 +40,6 @@ void
 NclComponentsConverter::addPropertyToContext (void *parentObject,
                                               void *childObject)
 {
-
   if (((Entity *)parentObject)->instanceOf ("ContextNode"))
     {
       ((ContextNode *)parentObject)->addAnchor ((Anchor *)childObject);
@@ -56,7 +54,6 @@ void
 NclComponentsConverter::addContextToContext (void *parentObject,
                                              void *childObject)
 {
-
   if (((Entity *)parentObject)->instanceOf ("ContextNode"))
     {
       // adicionar composicao aa composicao
@@ -69,7 +66,6 @@ void
 NclComponentsConverter::addSwitchToContext (void *parentObject,
                                             void *childObject)
 {
-
   if (((Entity *)parentObject)->instanceOf ("ContextNode"))
     {
       // adicionar switch aa composicao
@@ -82,7 +78,6 @@ void
 NclComponentsConverter::addMediaToContext (void *parentObject,
                                            void *childObject)
 {
-
   if (((Entity *)parentObject)->instanceOf ("ContextNode"))
     {
       // adicionar media aa composicao
@@ -95,7 +90,6 @@ void
 NclComponentsConverter::addLinkToContext (void *parentObject,
                                           void *childObject)
 {
-
   int min;
   int max;
   Role *role;
@@ -124,7 +118,6 @@ NclComponentsConverter::addLinkToContext (void *parentObject,
               if (((Link *)childObject)->getNumRoleBinds (role)
                   < (unsigned int)min)
                 {
-
                   clog << "NclComponentsConverter::addLinkToContext";
                   clog << " role " << role->getLabel ().c_str ();
                   clog << " with less than minimum binds." << endl;
@@ -138,7 +131,6 @@ NclComponentsConverter::addLinkToContext (void *parentObject,
                        && ((Link *)childObject)->getNumRoleBinds (role)
                               > (unsigned int)max)
                 {
-
                   clog << "NclComponentsConverter::addLinkToContext";
                   clog << " role " << role->getLabel ().c_str ();
                   clog << " with more than maximum binds." << endl;
@@ -161,7 +153,6 @@ void
 NclComponentsConverter::addNodeToContext (ContextNode *contextNode,
                                           NodeEntity *node)
 {
-
   // adicionar um noh aa composicao
   contextNode->addNode (node);
 }
@@ -170,7 +161,6 @@ void
 NclComponentsConverter::addAnchorToMedia (ContentNode *contentNode,
                                           Anchor *anchor)
 {
-
   if (contentNode->getAnchor (anchor->getId ()) != NULL)
     {
       clog << "NclComponentsConverter::addAnchorToMedia ";
@@ -189,7 +179,6 @@ void
 NclComponentsConverter::addAreaToMedia (void *parentObject,
                                         void *childObject)
 {
-
   addAnchorToMedia ((ContentNode *)parentObject, (Anchor *)childObject);
 }
 
@@ -197,7 +186,6 @@ void
 NclComponentsConverter::addPropertyToMedia (void *parentObject,
                                             void *childObject)
 {
-
   addAnchorToMedia ((ContentNode *)parentObject, (Anchor *)childObject);
 }
 
@@ -205,7 +193,6 @@ void *
 NclComponentsConverter::createContext (DOMElement *parentElement,
                                        arg_unused (void *objGrandParent))
 {
-
   NclDocument *document;
   string id, attValue;
   Node *node;
@@ -308,7 +295,6 @@ void *
 NclComponentsConverter::posCompileContext (DOMElement *parentElement,
                                            void *parentObject)
 {
-
   clog << "posCompileContext" << endl;
   DOMNodeList *elementNodeList;
   int i, size;
@@ -330,7 +316,6 @@ NclComponentsConverter::posCompileContext (DOMElement *parentElement,
           if (XMLString::compareIString (elementTagName.c_str (), "context")
               == 0)
             {
-
               if (parentObject != NULL)
                 {
                   elementObject
@@ -356,7 +341,6 @@ NclComponentsConverter::posCompileContext (DOMElement *parentElement,
                       if (((NodeEntity *)elementObject)
                               ->instanceOf ("ContextNode"))
                         {
-
                           posCompileContext (element, elementObject);
                         }
                     }
@@ -370,7 +354,6 @@ NclComponentsConverter::posCompileContext (DOMElement *parentElement,
                                               "switch")
                    == 0)
             {
-
               elementObject = ((NclDocumentConverter *)getDocumentParser ())
                                   ->getNode (XMLString::transcode (
                                       element->getAttribute (
@@ -389,7 +372,6 @@ NclComponentsConverter::posCompileContext (DOMElement *parentElement,
               else if (((NodeEntity *)elementObject)
                            ->instanceOf ("SwitchNode"))
                 {
-
                   getPresentationControlParser ()->posCompileSwitch (
                       element, elementObject);
                 }
@@ -405,7 +387,6 @@ void *
 NclComponentsConverter::createMedia (DOMElement *parentElement,
                                      arg_unused (void *objGrandParent))
 {
-
   string attValue, id;
   NclDocument *document;
   Node *node;
@@ -466,7 +447,6 @@ NclComponentsConverter::createMedia (DOMElement *parentElement,
       node = new ReferNode (id);
       if (parentElement->hasAttribute (XMLString::transcode ("instance")))
         {
-
           attValue = XMLString::transcode (parentElement->getAttribute (
               XMLString::transcode ("instance")));
 

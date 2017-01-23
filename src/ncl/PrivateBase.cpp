@@ -22,7 +22,6 @@ GINGA_NCL_BEGIN
 
 PrivateBase::PrivateBase (string uid) : CompositeNode (uid)
 {
-
   typeSet.insert ("PrivateBase");
 }
 

@@ -24,7 +24,6 @@ NclPresentationControlConverter::NclPresentationControlConverter (
     DocumentParser *documentParser)
     : NclPresentationControlParser (documentParser)
 {
-
   switchConstituents = new map<string, map<string, NodeEntity *> *>;
 }
 
@@ -49,7 +48,6 @@ vector<Node *> *
 NclPresentationControlConverter::getSwitchConstituents (
     SwitchNode *switchNode)
 {
-
   map<string, map<string, NodeEntity *> *>::iterator i;
 
   map<string, NodeEntity *> *hTable;
@@ -78,7 +76,6 @@ void
 NclPresentationControlConverter::addCompositeRuleToCompositeRule (
     void *parentObject, void *childObject)
 {
-
   ((CompositeRule *)parentObject)->addRule ((Rule *)childObject);
 }
 
@@ -86,7 +83,6 @@ void
 NclPresentationControlConverter::addCompositeRuleToRuleBase (
     void *parentObject, void *childObject)
 {
-
   ((RuleBase *)parentObject)->addRule ((Rule *)childObject);
 }
 
@@ -94,7 +90,6 @@ void
 NclPresentationControlConverter::addRuleToCompositeRule (void *parentObject,
                                                          void *childObject)
 {
-
   // adicionar regra
   ((CompositeRule *)parentObject)->addRule ((Rule *)childObject);
 }
@@ -103,7 +98,6 @@ void
 NclPresentationControlConverter::addRuleToRuleBase (void *parentObject,
                                                     void *childObject)
 {
-
   ((RuleBase *)parentObject)->addRule ((Rule *)childObject);
 }
 
@@ -111,7 +105,6 @@ void
 NclPresentationControlConverter::addSwitchPortToSwitch (void *parentObject,
                                                         void *childObject)
 {
-
   ((SwitchNode *)parentObject)->addPort ((Port *)childObject);
 }
 
@@ -119,7 +112,6 @@ void *
 NclPresentationControlConverter::createCompositeRule (
     DOMElement *parentElement, arg_unused (void *objGrandParent))
 {
-
   CompositeRule *compositePresentationRule;
   short ruleOp = CompositeRule::OP_AND;
 
@@ -129,7 +121,6 @@ NclPresentationControlConverter::createCompositeRule (
           "and")
       == 0)
     {
-
       ruleOp = CompositeRule::OP_AND;
     }
   else if (XMLString::compareIString (
@@ -138,7 +129,6 @@ NclPresentationControlConverter::createCompositeRule (
                "or")
            == 0)
     {
-
       ruleOp = CompositeRule::OP_OR;
     }
 
@@ -155,7 +145,6 @@ void *
 NclPresentationControlConverter::createSwitch (DOMElement *parentElement,
                                                arg_unused (void *objGrandParent))
 {
-
   string id;
   Node *node;
   string attValue;
@@ -234,7 +223,6 @@ void *
 NclPresentationControlConverter::createRuleBase (DOMElement *parentElement,
                                                  arg_unused (void *objGrandParent))
 {
-
   RuleBase *ruleBase;
   ruleBase = new RuleBase (XMLString::transcode (
       parentElement->getAttribute (XMLString::transcode ("id"))));
@@ -246,7 +234,6 @@ void *
 NclPresentationControlConverter::createRule (DOMElement *parentElement,
                                              arg_unused (void *objGrandParent))
 {
-
   SimpleRule *simplePresentationRule;
   short ruleOp;
 
@@ -273,7 +260,6 @@ void *
 NclPresentationControlConverter::createDescriptorSwitch (
     DOMElement *parentElement, arg_unused (void *objGrandParent))
 {
-
   DescriptorSwitch *descriptorSwitch
       = new DescriptorSwitch (XMLString::transcode (
           parentElement->getAttribute (XMLString::transcode ("id"))));
@@ -289,7 +275,6 @@ void
 NclPresentationControlConverter::addDescriptorToDescriptorSwitch (
     void *parentObject, void *childObject)
 {
-
   map<string, NodeEntity *> *descriptors;
   try
     {
@@ -297,7 +282,6 @@ NclPresentationControlConverter::addDescriptorToDescriptorSwitch (
               ((DescriptorSwitch *)parentObject)->getId ())
           != 0)
         {
-
           descriptors
               = (*switchConstituents)[((DescriptorSwitch *)parentObject)
                                           ->getId ()];
@@ -306,7 +290,6 @@ NclPresentationControlConverter::addDescriptorToDescriptorSwitch (
                   ((GenericDescriptor *)childObject)->getId ())
               == 0)
             {
-
               (*descriptors)[((GenericDescriptor *)childObject)->getId ()]
                   = (NodeEntity *)childObject;
             }
@@ -321,7 +304,6 @@ void
 NclPresentationControlConverter::addImportBaseToRuleBase (
     void *parentObject, void *childObject)
 {
-
   string baseAlias, baseLocation;
   NclDocumentConverter *compiler;
   NclDocument *importedDocument;
@@ -364,7 +346,6 @@ void
 NclPresentationControlConverter::addBindRuleToDescriptorSwitch (
     void *parentObject, void *childObject)
 {
-
   DescriptorSwitch *descriptorSwitch;
   DOMElement *bindRule;
   map<string, NodeEntity *> *descriptors;
@@ -384,7 +365,6 @@ NclPresentationControlConverter::addBindRuleToDescriptorSwitch (
           bindRule->getAttribute (XMLString::transcode ("constituent"))))
       == 0)
     {
-
       return;
     }
 
@@ -414,7 +394,6 @@ void
 NclPresentationControlConverter::addBindRuleToSwitch (void *parentObject,
                                                       void *childObject)
 {
-
   SwitchNode *switchNode;
   DOMElement *bindRule;
   map<string, NodeEntity *> *nodes;
@@ -435,7 +414,6 @@ NclPresentationControlConverter::addBindRuleToSwitch (void *parentObject,
           bindRule->getAttribute (XMLString::transcode ("constituent"))))
       == 0)
     {
-
       return;
     }
 
@@ -465,7 +443,6 @@ void
 NclPresentationControlConverter::addUnmappedNodesToSwitch (
     void *parentObject)
 {
-
   SwitchNode *switchNode;
 
   map<string, NodeEntity *> *nodes;
@@ -498,7 +475,6 @@ void
 NclPresentationControlConverter::addDefaultComponentToSwitch (
     void *parentObject, void *childObject)
 {
-
   SwitchNode *switchNode;
   DOMElement *defaultComponent;
   map<string, NodeEntity *> *nodes;
@@ -517,7 +493,6 @@ NclPresentationControlConverter::addDefaultComponentToSwitch (
           XMLString::transcode ("component"))))
       == 0)
     {
-
       return;
     }
 
@@ -536,7 +511,6 @@ void
 NclPresentationControlConverter::addDefaultDescriptorToDescriptorSwitch (
     void *parentObject, void *childObject)
 {
-
   DescriptorSwitch *descriptorSwitch;
   DOMElement *defaultDescriptor;
   map<string, NodeEntity *> *descriptors;
@@ -556,7 +530,6 @@ NclPresentationControlConverter::addDefaultDescriptorToDescriptorSwitch (
               XMLString::transcode ("descriptor"))))
       == 0)
     {
-
       return;
     }
 
@@ -576,7 +549,6 @@ void
 NclPresentationControlConverter::addContextToSwitch (void *parentObject,
                                                      void *childObject)
 {
-
   addNodeToSwitch ((SwitchNode *)parentObject, (NodeEntity *)childObject);
 }
 
@@ -584,7 +556,6 @@ void
 NclPresentationControlConverter::addMediaToSwitch (void *parentObject,
                                                    void *childObject)
 {
-
   addNodeToSwitch ((SwitchNode *)parentObject, (NodeEntity *)childObject);
 }
 
@@ -592,7 +563,6 @@ void
 NclPresentationControlConverter::addSwitchToSwitch (void *parentObject,
                                                     void *childObject)
 {
-
   addNodeToSwitch ((SwitchNode *)parentObject, (NodeEntity *)childObject);
 }
 
@@ -600,7 +570,6 @@ void
 NclPresentationControlConverter::addNodeToSwitch (SwitchNode *switchNode,
                                                   NodeEntity *node)
 {
-
   map<string, NodeEntity *> *nodes;
 
   if (switchConstituents->count (switchNode->getId ()) == 0)
@@ -620,7 +589,6 @@ void *
 NclPresentationControlConverter::createBindRule (DOMElement *parentElement,
                                                  arg_unused (void *objGrandParent))
 {
-
   return parentElement;
 }
 
@@ -628,7 +596,6 @@ void *
 NclPresentationControlConverter::createDefaultComponent (
     DOMElement *parentElement, arg_unused (void *objGrandParent))
 {
-
   return parentElement;
 }
 
@@ -636,7 +603,6 @@ void *
 NclPresentationControlConverter::createDefaultDescriptor (
     DOMElement *parentElement, arg_unused (void *objGrandParent))
 {
-
   return parentElement;
 }
 
@@ -644,7 +610,6 @@ void *
 NclPresentationControlConverter::posCompileSwitch (
     DOMElement *parentElement, void *parentObject)
 {
-
   clog << "posCompileSwitch" << endl;
   DOMNodeList *elementNodeList;
   int i, size;
@@ -666,7 +631,6 @@ NclPresentationControlConverter::posCompileSwitch (
           if (XMLString::compareIString (elementTagName.c_str (), "context")
               == 0)
             {
-
               elementObject
                   = (Node *)(((NclDocumentConverter *)getDocumentParser ())
                                  ->getNode (XMLString::transcode (
@@ -684,7 +648,6 @@ NclPresentationControlConverter::posCompileSwitch (
                                               "switch")
                    == 0)
             {
-
               elementObject = ((NclDocumentConverter *)getDocumentParser ())
                                   ->getNode (XMLString::transcode (
                                       element->getAttribute (
@@ -715,7 +678,6 @@ NclPresentationControlConverter::posCompileSwitch (
 short
 NclPresentationControlConverter::convertComparator (string comparator)
 {
-
   if (comparator == "eq")
     return Comparator::CMP_EQ;
 

@@ -22,7 +22,6 @@ GINGA_NCL_BEGIN
 
 ContextNode::ContextNode (string id) : CompositeNode (id)
 {
-
   typeSet.insert ("ContextNode");
   typeSet.insert ("DocumentNode");
   typeSet.insert ("LinkComposition");
@@ -182,7 +181,6 @@ bool
 ContextNode::setNodeDescriptor (string nodeId,
                                 GenericDescriptor *descriptor)
 {
-
   Node *node;
   node = getNode (nodeId);
   if (node == NULL)

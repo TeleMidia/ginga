@@ -43,7 +43,6 @@ pthread_mutex_t SDLImageProvider::pMutex;
 
 SDLImageProvider::SDLImageProvider (GingaScreenID screenId, const char *mrl)
 {
-
   type = ImageProvider;
 
   if (!mutexInit)
@@ -99,7 +98,6 @@ SDLImageProvider::playOver (GingaSurfaceID surface)
   if (surface != 0
       && Ginga_Display->hasSurface (myScreen, surface))
     {
-
 #if WITH_LIBRSVG
       if (imgUri.substr (imgUri.find_last_of (".") + 1) == "svg"
           || imgUri.substr (imgUri.find_last_of (".") + 1) == "svgz")

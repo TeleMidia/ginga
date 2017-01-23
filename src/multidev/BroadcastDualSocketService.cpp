@@ -25,7 +25,6 @@ GINGA_MULTIDEV_BEGIN
 BroadcastDualSocketService::BroadcastDualSocketService (
     unsigned int readPort, unsigned int writePort)
 {
-
   outputBuffer = new vector<struct frame *>;
 
   interfaceIP = 0;
@@ -119,7 +118,6 @@ void
 BroadcastDualSocketService::dataRequest (char *data, int taskSize,
                                          bool repeat)
 {
-
   struct frame *f;
 
   Thread::mutexLock (&mutexBuffer);
@@ -195,7 +193,6 @@ BroadcastDualSocketService::checkOutputBuffer ()
 bool
 BroadcastDualSocketService::checkInputBuffer (char *data, int *size)
 {
-
   int res, recvFrom;
   string null_string;
   unsigned short null_short;

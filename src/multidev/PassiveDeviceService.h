@@ -33,7 +33,8 @@ public:
   void connectedToBaseDevice (unsigned int domainAddr);
 
   bool
-  receiveEvent (arg_unused (unsigned int devAddr), arg_unused (int eventType), arg_unused (char *stream),
+  receiveEvent (arg_unused (unsigned int devAddr),
+                arg_unused (int eventType), arg_unused (char *stream),
                 arg_unused (int streamSize))
   {
     return false;

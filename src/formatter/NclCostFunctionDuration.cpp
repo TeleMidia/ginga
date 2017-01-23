@@ -25,7 +25,6 @@ NclCostFunctionDuration::NclCostFunctionDuration (
     TemporalFlexibilityFunction *function)
     : FlexibleTimeMeasurement (expectedValue, minValue, maxValue)
 {
-
   this->costFunction = function;
 }
 
@@ -33,7 +32,6 @@ NclCostFunctionDuration::NclCostFunctionDuration (
     double expectedValue, TemporalFlexibilityFunction *function)
     : FlexibleTimeMeasurement (expectedValue, expectedValue, expectedValue)
 {
-
   this->costFunction = function;
   updateDurationInterval ();
 }
@@ -48,7 +46,6 @@ void
 NclCostFunctionDuration::setCostFunction (
     TemporalFlexibilityFunction *function)
 {
-
   costFunction = function;
   updateDurationInterval ();
 }
@@ -68,7 +65,6 @@ NclCostFunctionDuration::updateDurationInterval ()
       if (costFunction->getShrinkingFactor () > 0
           && costFunction->getShrinkingFactor () <= 1)
         {
-
           minimumValue = (long)((1 - costFunction->getShrinkingFactor ())
                                 * expectedValue);
         }

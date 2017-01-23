@@ -107,8 +107,7 @@ public:
 
 protected:
   GingaScreenID createScreen (string vMode, string vParent, string vEmbed,
-                              bool externalRenderer,
-                              bool useStdin);
+                              bool externalRenderer, bool useStdin);
 
 public:
   string getScreenName (GingaScreenID screenId);
@@ -217,18 +216,19 @@ public:
                          const GingaSurfaceID &surId);
 
   void setWindowBgColor (const GingaScreenID &screenId,
-                         const GingaWindowID &winId, guint8 r, guint8 g, guint8 b,
-                         guint8 alpha);
+                         const GingaWindowID &winId, guint8 r, guint8 g,
+                         guint8 b, guint8 alpha);
 
   void setWindowBorder (const GingaScreenID &screenId,
-                        const GingaWindowID &winId, guint8 r, guint8 g, guint8 b,
-                        guint8 alpha, int width);
+                        const GingaWindowID &winId, guint8 r, guint8 g,
+                        guint8 b, guint8 alpha, int width);
 
   void setWindowCurrentTransparency (const GingaScreenID &screenId,
                                      const GingaWindowID &winId,
                                      guint8 transparency);
   void setWindowColorKey (const GingaScreenID &screenId,
-                          const GingaWindowID &winId, guint8 r, guint8 g, guint8 b);
+                          const GingaWindowID &winId, guint8 r, guint8 g,
+                          guint8 b);
 
   void setWindowX (const GingaScreenID &screenId,
                    const GingaWindowID &winId, int x);
@@ -263,9 +263,9 @@ public:
   int getWindowH (const GingaScreenID &screenId,
                   const GingaWindowID &winId);
   double getWindowZ (const GingaScreenID &screenId,
-                    const GingaWindowID &winId);
+                     const GingaWindowID &winId);
   guint8 getWindowTransparencyValue (const GingaScreenID &screenId,
-                                  const GingaWindowID &winId);
+                                     const GingaWindowID &winId);
   void resizeWindow (const GingaScreenID &screenId,
                      const GingaWindowID &winId, int width, int height);
   string getWindowDumpFileUri (const GingaScreenID &screenId,
@@ -296,8 +296,8 @@ public:
   void setSurfaceCaps (const GingaSurfaceID &surId, const int caps);
   int getSurfaceCap (const GingaSurfaceID &surId, const string &cap);
   int getSurfaceCaps (const GingaSurfaceID &surId);
-  void setSurfaceBgColor (const GingaSurfaceID &surId, guint8 r, guint8 g, guint8 b,
-                          guint8 alpha);
+  void setSurfaceBgColor (const GingaSurfaceID &surId, guint8 r, guint8 g,
+                          guint8 b, guint8 alpha);
   void setSurfaceFont (const GingaSurfaceID &surId, GingaSurfaceID font);
   void setColor (const GingaSurfaceID &surId, guint8 r, guint8 g, guint8 b,
                  guint8 alpha);
@@ -309,8 +309,8 @@ public:
   void setSurfaceContent (const GingaSurfaceID &surId, void *surface);
   Color *getSurfaceColor (const GingaSurfaceID &surId);
   bool hasSurfaceExternalHandler (const GingaSurfaceID &surId);
-  void setSurfaceColor (const GingaSurfaceID &surId, guint8 r, guint8 g, guint8 b,
-                        guint8 alpha);
+  void setSurfaceColor (const GingaSurfaceID &surId, guint8 r, guint8 g,
+                        guint8 b, guint8 alpha);
   // providers
   void setProviderSoundLevel (const GingaProviderID &provId, double level);
   void getProviderOriginalResolution (const GingaProviderID &provId,
@@ -350,8 +350,8 @@ protected:
 
 // Global screen manager.
 extern DisplayManager *_Ginga_Display;
-#define Ginga_Display\
- GINGA_ASSERT_GLOBAL_NONNULL (_Ginga_Display, DisplayManager *)
+#define Ginga_Display                                                      \
+  GINGA_ASSERT_GLOBAL_NONNULL (_Ginga_Display, DisplayManager *)
 
 GINGA_MB_END
 

@@ -22,7 +22,6 @@ GINGA_NCL_BEGIN
 
 SimpleAction::SimpleAction (string role) : Action (), Role ()
 {
-
   SimpleAction::setLabel (role);
   qualifier = CompoundAction::OP_PAR;
   repeat = "0";

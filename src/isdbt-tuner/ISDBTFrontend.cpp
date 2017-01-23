@@ -38,7 +38,6 @@ vector<ActionsToFilters *> *ISDBTFrontend::actsToRunningFilters
 
 ISDBTFrontend::ISDBTFrontend (int feFd) : Thread ()
 {
-
   int res;
   clog << "ISDBTFrontend::ISDBTFrontend" << endl;
 
@@ -68,7 +67,6 @@ ISDBTFrontend::hasFrontend ()
 void
 ISDBTFrontend::initIsdbtParameters ()
 {
-
   clog << "ISDBTFrontend::initIsdbtParameters: Enter" << endl;
 
   memset (&params, 0, sizeof (dvb_frontend_parameters));
@@ -120,7 +118,6 @@ ISDBTFrontend::updateIsdbtFrontendParameters ()
 
   if (params.frequency != 0)
     {
-
       if (ioctl (feFd, FE_SET_FRONTEND, &params) == -1)
         {
           clog << "ISDBTFrontend::updateIsdbtFrontendParameters: ioctl "
@@ -138,7 +135,6 @@ ISDBTFrontend::updateIsdbtFrontendParameters ()
        * the linux kernel, so we just grab the "full" TS */
       if (dmFd < 0)
         {
-
           clog << "ISDBTFrontend::updateIsdbtFrontendParameters: "
                << IFE_DEMUX_DEV_NAME.c_str ()
                << " could not be opened, bad things will happen!" << endl;
@@ -162,7 +158,6 @@ ISDBTFrontend::updateIsdbtFrontendParameters ()
 
   if (dvrFd == -1)
     {
-
       // opening DVR device (non-blocking mode), we read TS data in this fd
       dvrFd = open (IFE_DVR_DEV_NAME.c_str (), O_RDONLY | O_NONBLOCK);
       if (dvrFd < 0)

@@ -86,7 +86,6 @@ bool
 AdapterProgramAVPlayer::setPropertyValue (NclAttributionEvent *event,
                                           string value)
 {
-
   string propName;
   bool attribution;
 
@@ -101,7 +100,6 @@ AdapterProgramAVPlayer::setPropertyValue (NclAttributionEvent *event,
       || propName == "top" || propName == "left" || propName == "bottom"
       || propName == "right" || propName == "width" || propName == "height")
     {
-
       updateAVBounds ();
     }
   else if (propName == "standby")

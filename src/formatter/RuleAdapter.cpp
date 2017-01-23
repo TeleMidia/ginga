@@ -133,7 +133,6 @@ void
 RuleAdapter::adapt (NclCompositeExecutionObject *compositeObject,
                     bool force)
 {
-
   NclExecutionObject *object;
   map<string, NclExecutionObject *> *objs;
   map<string, NclExecutionObject *>::iterator i;
@@ -170,7 +169,6 @@ RuleAdapter::adapt (NclCompositeExecutionObject *compositeObject,
 void
 RuleAdapter::initializeAttributeRuleRelation (Rule *topRule, Rule *rule)
 {
-
   vector<Rule *> *ruleVector = NULL;
   vector<Rule *>::iterator rules;
 
@@ -296,7 +294,6 @@ RuleAdapter::adaptDescriptor (NclExecutionObject *executionObject)
           if (selectedDescriptor
               != descAlternatives->getSelectedDescriptor ())
             {
-
               adapted = true;
             }
         }
@@ -352,7 +349,6 @@ RuleAdapter::evaluateRule (Rule *rule)
 bool
 RuleAdapter::evaluateCompositeRule (CompositeRule *rule)
 {
-
   Rule *childRule;
 
   vector<Rule *> *rules;
@@ -479,7 +475,6 @@ RuleAdapter::update (arg_unused (void *arg0), void *arg1)
   for (ruleIter = ruleVector->begin (); ruleIter != ruleVector->end ();
        ++ruleIter)
     {
-
       rule = (Rule *)(*ruleIter);
 
       if (entityListenMap->count (rule) != 0)
@@ -490,7 +485,6 @@ RuleAdapter::update (arg_unused (void *arg0), void *arg1)
           for (objIter = objectVector->begin ();
                objIter != objectVector->end (); ++objIter)
             {
-
               object = (*objIter);
               if (object->instanceOf ("NclExecutionObjectSwitch"))
                 {

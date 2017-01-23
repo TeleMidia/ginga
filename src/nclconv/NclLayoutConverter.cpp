@@ -24,7 +24,6 @@ NclLayoutConverter::NclLayoutConverter (DocumentParser *documentParser,
                                         DeviceLayout *deviceLayout)
     : NclLayoutParser (documentParser)
 {
-
   this->deviceLayout = deviceLayout;
 }
 
@@ -32,7 +31,6 @@ void
 NclLayoutConverter::addImportBaseToRegionBase (void *parentObject,
                                                void *childObject)
 {
-
   map<int, RegionBase *> *bases;
   map<int, RegionBase *>::iterator i;
   string baseAlias, baseLocation;
@@ -75,7 +73,6 @@ void
 NclLayoutConverter::addRegionToRegion (void *parentObject,
                                        void *childObject)
 {
-
   ((LayoutRegion *)parentObject)->addRegion ((LayoutRegion *)childObject);
 }
 
@@ -83,7 +80,6 @@ void
 NclLayoutConverter::addRegionToRegionBase (void *parentObject,
                                            void *childObject)
 {
-
   RegionBase *layout = (RegionBase *)parentObject;
   layout->addRegion ((LayoutRegion *)childObject);
 }
@@ -92,7 +88,6 @@ void *
 NclLayoutConverter::createRegionBase (DOMElement *parentElement,
                                       arg_unused (void *objGrandParent))
 {
-
   RegionBase *layout;
   string mapId = "";
 
@@ -128,7 +123,6 @@ void *
 NclLayoutConverter::createRegion (DOMElement *parentElement,
                                   arg_unused (void *objGrandParent))
 {
-
   LayoutRegion *ncmRegion;
   string attribute;
   double percentValue;

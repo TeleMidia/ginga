@@ -82,7 +82,6 @@ void
 InteractiveChannelManager::releaseInteractiveChannel (
     CurlInteractiveChannel *ic)
 {
-
   set<CurlInteractiveChannel *>::iterator i;
   map<string, CurlInteractiveChannel *>::iterator j;
 
@@ -109,7 +108,6 @@ InteractiveChannelManager::releaseInteractiveChannel (
 CurlInteractiveChannel *
 InteractiveChannelManager::createInteractiveChannel (string rUri)
 {
-
   CurlInteractiveChannel *ic = NULL;
 
   if (rUri.length () > 7 && rUri.substr (0, 7) == "http://")
@@ -129,7 +127,6 @@ InteractiveChannelManager::createInteractiveChannel (string rUri)
 CurlInteractiveChannel *
 InteractiveChannelManager::getInteractiveChannel (string remoteUri)
 {
-
   if (urisIcs->count (remoteUri) != 0)
     {
       return (*urisIcs)[remoteUri];

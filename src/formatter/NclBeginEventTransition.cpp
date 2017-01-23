@@ -24,7 +24,6 @@ NclBeginEventTransition::NclBeginEventTransition (
     double time, NclPresentationEvent *event)
     : NclEventTransition (time, event)
 {
-
   typeSet.insert ("NclBeginEventTransition");
   endTransition = NULL;
 }

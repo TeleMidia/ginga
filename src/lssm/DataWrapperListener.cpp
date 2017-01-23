@@ -49,7 +49,6 @@ GINGA_LSSM_BEGIN
 
 DataWrapperListener::DataWrapperListener (PresentationEngineManager *pem)
 {
-
   this->ait = NULL;
   this->pem = pem;
   this->documentUri = "";
@@ -261,7 +260,6 @@ void
 DataWrapperListener::objectMounted (string ior, string clientUri,
                                     string name)
 {
-
   GingaLocatorFactory *glf = NULL;
 
   glf = GingaLocatorFactory::getInstance ();
@@ -319,7 +317,6 @@ DataWrapperListener::receiveStreamEvent (DsmccStreamEvent *event)
 void
 DataWrapperListener::addNCLInfo (string name, string path)
 {
-
   if (name.find (".ncl") != std::string::npos)
     {
       ncls[name] = SystemCompat::updatePath (path + "/" + name);
@@ -331,7 +328,6 @@ DataWrapperListener::serviceDomainMounted (arg_unused (string mountPoint),
                                            map<string, string> *names,
                                            map<string, string> *paths)
 {
-
   map<string, string>::iterator i;
   string nclName, baseDir;
 

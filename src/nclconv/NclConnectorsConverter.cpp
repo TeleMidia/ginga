@@ -31,7 +31,6 @@ void
 NclConnectorsConverter::addCausalConnectorToConnectorBase (
     void *parentObject, void *childObject)
 {
-
   ((ConnectorBase *)parentObject)->addConnector ((Connector *)childObject);
 }
 
@@ -39,7 +38,6 @@ void
 NclConnectorsConverter::addConnectorParamToCausalConnector (
     void *parentObject, void *childObject)
 {
-
   ((Connector *)parentObject)->addParameter ((Parameter *)childObject);
 }
 
@@ -47,7 +45,6 @@ void
 NclConnectorsConverter::addImportBaseToConnectorBase (void *parentObject,
                                                       void *childObject)
 {
-
   string baseAlias, baseLocation;
   NclDocumentConverter *compiler;
   NclDocument *importedDocument;
@@ -100,7 +97,6 @@ void *
 NclConnectorsConverter::createCausalConnector (DOMElement *parentElement,
                                                arg_unused (void *objGrandParent))
 {
-
   string connectorId = "";
   /*
    * if (connectorUri->equalsIgnoreCase("")) { //se nao tiver uma uri do
@@ -122,7 +118,6 @@ void *
 NclConnectorsConverter::createConnectorBase (DOMElement *parentElement,
                                              arg_unused (void *objGrandParent))
 {
-
   ConnectorBase *connBase;
   // criar nova base de conectores com id gerado a partir do nome de seu
   // elemento
@@ -136,7 +131,6 @@ void *
 NclConnectorsConverter::createConnectorParam (DOMElement *parentElement,
                                               arg_unused (void *objGrandParent))
 {
-
   Parameter *parameter;
   parameter = new Parameter (
       XMLString::transcode (
@@ -152,7 +146,6 @@ void
 NclConnectorsConverter::compileRoleInformation (Role *role,
                                                 DOMElement *parentElement)
 {
-
   string attValue;
   // event type
   if (parentElement->hasAttribute (XMLString::transcode ("eventType")))
@@ -192,7 +185,6 @@ void *
 NclConnectorsConverter::createSimpleCondition (DOMElement *parentElement,
                                                arg_unused (void *objGrandParent))
 {
-
   SimpleCondition *conditionExpression;
   string attValue;
 
@@ -229,7 +221,6 @@ NclConnectorsConverter::createSimpleCondition (DOMElement *parentElement,
   // qualifier
   if (parentElement->hasAttribute (XMLString::transcode ("qualifier")))
     {
-
       attValue = XMLString::transcode (
           parentElement->getAttribute (XMLString::transcode ("qualifier")));
 
@@ -272,7 +263,6 @@ void *
 NclConnectorsConverter::createCompoundCondition (DOMElement *parentElement,
                                                  arg_unused (void *objGrandParent))
 {
-
   CompoundCondition *conditionExpression;
   string attValue;
 
@@ -285,7 +275,6 @@ NclConnectorsConverter::createCompoundCondition (DOMElement *parentElement,
           "and")
       == 0)
     {
-
       conditionExpression->setOperator (CompoundCondition::OP_AND);
     }
   else
@@ -321,7 +310,6 @@ void *
 NclConnectorsConverter::createAttributeAssessment (
     DOMElement *parentElement, arg_unused (void *objGrandParent))
 {
-
   AttributeAssessment *attributeAssessment;
   string attValue;
 
@@ -343,7 +331,6 @@ NclConnectorsConverter::createAttributeAssessment (
   // event type
   if (parentElement->hasAttribute (XMLString::transcode ("attributeType")))
     {
-
       attValue = XMLString::transcode (parentElement->getAttribute (
           XMLString::transcode ("attributeType")));
 
@@ -379,7 +366,6 @@ void *
 NclConnectorsConverter::createValueAssessment (DOMElement *parentElement,
                                                arg_unused (void *objGrandParent))
 {
-
   string attValue;
 
   attValue = XMLString::transcode (
@@ -392,7 +378,6 @@ void *
 NclConnectorsConverter::createAssessmentStatement (
     DOMElement *parentElement, arg_unused (void *objGrandParent))
 {
-
   AssessmentStatement *assessmentStatement;
   string attValue;
 
@@ -416,7 +401,6 @@ void *
 NclConnectorsConverter::createCompoundStatement (DOMElement *parentElement,
                                                  arg_unused (void *objGrandParent))
 {
-
   CompoundStatement *compoundStatement;
   string attValue;
 
@@ -428,7 +412,6 @@ NclConnectorsConverter::createCompoundStatement (DOMElement *parentElement,
           "and")
       == 0)
     {
-
       compoundStatement->setOperator (CompoundStatement::OP_AND);
     }
   else
@@ -453,7 +436,6 @@ void *
 NclConnectorsConverter::createSimpleAction (DOMElement *parentElement,
                                             arg_unused (void *objGrandParent))
 {
-
   SimpleAction *actionExpression;
   string attValue;
 
@@ -483,28 +465,24 @@ NclConnectorsConverter::createSimpleAction (DOMElement *parentElement,
   if (actionExpression->getEventType () == EventUtil::EVT_ATTRIBUTION
       && actionExpression->getActionType () == SimpleAction::ACT_START)
     {
-
       Animation *animation = NULL;
       string durVal = "";
       string byVal = "";
 
       if (parentElement->hasAttribute (XMLString::transcode ("duration")))
         {
-
           durVal = XMLString::transcode (parentElement->getAttribute (
               XMLString::transcode ("duration")));
         }
 
       if (parentElement->hasAttribute (XMLString::transcode ("by")))
         {
-
           byVal = XMLString::transcode (
               parentElement->getAttribute (XMLString::transcode ("by")));
         }
 
       if (durVal != "" || byVal != "")
         {
-
           animation = new Animation ();
 
           if (durVal[0] == '$')
@@ -549,7 +527,6 @@ NclConnectorsConverter::createSimpleAction (DOMElement *parentElement,
               "seq")
           == 0)
         {
-
           actionExpression->setQualifier (CompoundAction::OP_SEQ);
         }
       else
@@ -630,7 +607,6 @@ void *
 NclConnectorsConverter::createCompoundAction (DOMElement *parentElement,
                                               arg_unused (void *objGrandParent))
 {
-
   CompoundAction *actionExpression;
   string attValue;
 
@@ -642,7 +618,6 @@ NclConnectorsConverter::createCompoundAction (DOMElement *parentElement,
           "seq")
       == 0)
     {
-
       actionExpression->setOperator (CompoundAction::OP_SEQ);
     }
   else
@@ -726,7 +701,6 @@ void
 NclConnectorsConverter::addSimpleConditionToCompoundCondition (
     void *parentObject, void *childObject)
 {
-
   ((CompoundCondition *)parentObject)
       ->addConditionExpression ((ConditionExpression *)childObject);
 }
@@ -735,7 +709,6 @@ void
 NclConnectorsConverter::addCompoundConditionToCompoundCondition (
     void *parentObject, void *childObject)
 {
-
   ((CompoundCondition *)parentObject)
       ->addConditionExpression ((ConditionExpression *)childObject);
 }
@@ -744,7 +717,6 @@ void
 NclConnectorsConverter::addAssessmentStatementToCompoundCondition (
     void *parentObject, void *childObject)
 {
-
   ((CompoundCondition *)parentObject)
       ->addConditionExpression ((ConditionExpression *)childObject);
 }
@@ -753,7 +725,6 @@ void
 NclConnectorsConverter::addCompoundStatementToCompoundCondition (
     void *parentObject, void *childObject)
 {
-
   ((CompoundCondition *)parentObject)
       ->addConditionExpression ((ConditionExpression *)childObject);
 }
@@ -762,7 +733,6 @@ void
 NclConnectorsConverter::addAttributeAssessmentToAssessmentStatement (
     void *parentObject, void *childObject)
 {
-
   AssessmentStatement *statement;
 
   statement = (AssessmentStatement *)parentObject;
@@ -780,7 +750,6 @@ void
 NclConnectorsConverter::addValueAssessmentToAssessmentStatement (
     void *parentObject, void *childObject)
 {
-
   ((AssessmentStatement *)parentObject)
       ->setOtherAssessment ((ValueAssessment *)childObject);
 }
@@ -789,7 +758,6 @@ void
 NclConnectorsConverter::addAssessmentStatementToCompoundStatement (
     void *parentObject, void *childObject)
 {
-
   ((CompoundStatement *)parentObject)
       ->addStatement ((Statement *)childObject);
 }
@@ -798,7 +766,6 @@ void
 NclConnectorsConverter::addCompoundStatementToCompoundStatement (
     void *parentObject, void *childObject)
 {
-
   ((CompoundStatement *)parentObject)
       ->addStatement ((Statement *)childObject);
 }
@@ -807,7 +774,6 @@ void
 NclConnectorsConverter::addSimpleActionToCompoundAction (void *parentObject,
                                                          void *childObject)
 {
-
   ((CompoundAction *)parentObject)->addAction ((Action *)childObject);
 }
 
@@ -815,7 +781,6 @@ void
 NclConnectorsConverter::addCompoundActionToCompoundAction (
     void *parentObject, void *childObject)
 {
-
   ((CompoundAction *)parentObject)->addAction ((Action *)childObject);
 }
 
@@ -823,7 +788,6 @@ void
 NclConnectorsConverter::addSimpleConditionToCausalConnector (
     void *parentObject, void *childObject)
 {
-
   ((CausalConnector *)parentObject)
       ->setConditionExpression ((ConditionExpression *)childObject);
 }
@@ -832,7 +796,6 @@ void
 NclConnectorsConverter::addCompoundConditionToCausalConnector (
     void *parentObject, void *childObject)
 {
-
   ((CausalConnector *)parentObject)
       ->setConditionExpression ((ConditionExpression *)childObject);
 }
@@ -841,7 +804,6 @@ void
 NclConnectorsConverter::addSimpleActionToCausalConnector (
     void *parentObject, void *childObject)
 {
-
   ((CausalConnector *)parentObject)->setAction ((Action *)childObject);
 }
 
@@ -849,7 +811,6 @@ void
 NclConnectorsConverter::addCompoundActionToCausalConnector (
     void *parentObject, void *childObject)
 {
-
   ((CausalConnector *)parentObject)->setAction ((Action *)childObject);
 }
 
@@ -863,7 +824,6 @@ void
 NclConnectorsConverter::addCompoundStatementToConstraintConnector (
     arg_unused (void *parentObject), arg_unused (void *childObject))
 {
-
   // TODO Auto-generated method stub
 }
 
@@ -871,7 +831,6 @@ void
 NclConnectorsConverter::addConstraintConnectorToConnectorBase (
     arg_unused (void *parentObject), arg_unused (void *childObject))
 {
-
   // TODO Auto-generated method stub
 }
 
@@ -879,7 +838,6 @@ void *
 NclConnectorsConverter::createConstraintConnector (
     arg_unused (DOMElement *parentElement), arg_unused (void *objGrandParent))
 {
-
   // TODO Auto-generated method stub
   return NULL;
 }

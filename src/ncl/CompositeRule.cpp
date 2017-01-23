@@ -31,7 +31,6 @@ CompositeRule::CompositeRule (string id, Rule *firstRule, Rule *secondRule,
                               short someOperator)
     : Rule (id)
 {
-
   rules = new vector<Rule *>;
   setOperator (someOperator);
   rules->push_back (firstRule);
@@ -115,7 +114,6 @@ CompositeRule::toString ()
   for (ruleIterator = rules->begin (); ruleIterator != rules->end ();
        ++ruleIterator)
     {
-
       rule = (Rule *)(*ruleIterator);
       result = result + (rule->getId ()) + " " + opStr + " ";
     }

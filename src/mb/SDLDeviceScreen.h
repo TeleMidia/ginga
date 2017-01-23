@@ -301,6 +301,7 @@ public:
 private:
   static void removeFromWindowList (vector<SDLWindow *> *windows,
                                     SDLWindow *win);
+
 public:
   static SDL_Window *getUnderlyingWindow (GingaWindowID winId);
 

@@ -132,7 +132,6 @@ void
 DsmccModule::pushDownloadData (unsigned int blockNumber, void *data,
                                unsigned int dataSize)
 {
-
   unsigned int bytesSaved;
 
   if (!isConsolidated ())

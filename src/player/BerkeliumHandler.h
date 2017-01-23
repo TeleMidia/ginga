@@ -43,7 +43,6 @@ class BerkeliumHandler : public WindowDelegate,
                          public IInputEventListener,
                          public IMotionEventListener
 {
-
 private:
   static map<int, int> fromGingaToBklm;
   std::string mURL;

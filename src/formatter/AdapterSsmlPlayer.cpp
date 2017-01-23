@@ -23,7 +23,6 @@ GINGA_FORMATTER_BEGIN
 
 AdapterSsmlPlayer::AdapterSsmlPlayer () : AdapterFormatterPlayer ()
 {
-
   typeSet.insert ("AdapterSsmlPlayer");
 }
 

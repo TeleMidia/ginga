@@ -25,7 +25,6 @@ GINGA_PLAYER_BEGIN
 PlainTxtPlayer::PlainTxtPlayer (GingaScreenID screenId, arg_unused (string mrl))
     : TextPlayer (screenId)
 {
-
   Thread::mutexInit (&mutex, false);
   content = "";
 }
@@ -123,7 +122,6 @@ PlainTxtPlayer::loadTxt ()
       while (!fis.eof () && fis.good ()
              && (currentLine + fontHeight) < surfaceH)
         {
-
           getline (fis, line);
           if (line != "")
             {

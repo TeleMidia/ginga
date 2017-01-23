@@ -28,10 +28,8 @@ protected:
   set<string> typeSet;
 
 public:
-  ConditionExpression () { typeSet.insert ("ConditionExpression"); };
-
-  virtual ~ConditionExpression () { typeSet.clear (); };
-
+  ConditionExpression () {typeSet.insert ("ConditionExpression"); };
+  virtual ~ConditionExpression () {typeSet.clear (); };
   virtual bool
   instanceOf (string type)
   {

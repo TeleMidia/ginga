@@ -28,7 +28,7 @@ protected:
   set<string> typeSet;
 
 public:
-  NclLinkAssessment () { typeSet.insert ("NclLinkAssessment"); }
+  NclLinkAssessment () {typeSet.insert ("NclLinkAssessment"); }
   virtual ~NclLinkAssessment () {}
   virtual string getValue () = 0;
   bool

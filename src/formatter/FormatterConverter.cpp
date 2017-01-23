@@ -198,7 +198,6 @@ void
 FormatterConverter::setLinkActionListener (
     INclLinkActionListener *actionListener)
 {
-
   this->actionListener = actionListener;
 }
 
@@ -218,7 +217,6 @@ NclCompositeExecutionObject *
 FormatterConverter::addSameInstance (NclExecutionObject *executionObject,
                                      ReferNode *referNode)
 {
-
   NclNodeNesting *referPerspective;
   NclCompositeExecutionObject *referParentObject;
   NclCascadingDescriptor *desc;
@@ -237,7 +235,6 @@ FormatterConverter::addSameInstance (NclExecutionObject *executionObject,
 
       if (referParentObject != NULL)
         {
-
           clog << "FormatterConverter::addSameInstance '";
           clog << referNode->getId () << "' with head node '";
           clog << referPerspective->getHeadNode ()->getId ();
@@ -294,7 +291,6 @@ void
 FormatterConverter::checkGradSameInstance (set<ReferNode *> *gradSame,
                                            NclExecutionObject *object)
 {
-
   clog << "FormatterConverter::checkGradSameInstance obj '";
   clog << object->getId () << "'";
 
@@ -330,7 +326,6 @@ FormatterConverter::addExecutionObject (
     NclExecutionObject *executionObject,
     NclCompositeExecutionObject *parentObject, int depthLevel)
 {
-
   NodeEntity *dataObject;
   set<ReferNode *> *sameInstances;
   set<ReferNode *>::iterator i;
@@ -363,7 +358,6 @@ FormatterConverter::addExecutionObject (
   if (dataObject->instanceOf ("ContentNode")
       && ((ContentNode *)dataObject)->isSettingNode ())
     {
-
       settingObjects.insert (executionObject);
     }
 
@@ -375,7 +369,6 @@ FormatterConverter::addExecutionObject (
           if (entity->instanceOf ("ContentNode")
               && ((ContentNode *)entity)->isSettingNode ())
             {
-
               settingObjects.insert (executionObject);
             }
         }
@@ -393,7 +386,6 @@ FormatterConverter::addExecutionObject (
   if (headNode->instanceOf ("CompositeNode")
       && dataObject->instanceOf ("NodeEntity"))
     {
-
       sameInstances = dataObject->getInstSameInstances ();
       if (sameInstances != NULL)
         {
@@ -408,7 +400,6 @@ FormatterConverter::addExecutionObject (
               if (((CompositeNode *)headNode)
                       ->recursivelyContainsNode (referNode))
                 {
-
                   addSameInstance (executionObject, referNode);
                 }
               else
@@ -442,7 +433,6 @@ FormatterConverter::addExecutionObject (
           || (descriptor->getPlayerName ()
               == "QtAudioChannelPlayerAdapter")))
     {
-
       createMultichannelObject (
           (NclCompositeExecutionObject *)executionObject, depthLevel);
     }
@@ -465,7 +455,6 @@ void
 FormatterConverter::compileExecutionObjectLinks (
     NclExecutionObject *executionObject, int depthLevel)
 {
-
   vector<Node *> *nodes;
   vector<Node *>::iterator i;
   Node *node;
@@ -499,7 +488,6 @@ FormatterConverter::getExecutionObjectFromPerspective (
     NclNodeNesting *perspective, GenericDescriptor *descriptor,
     int depthLevel) throw (ObjectCreationForbiddenException *)
 {
-
   map<string, NclExecutionObject *>::iterator i;
   NclCascadingDescriptor *cascadingDescriptor = NULL;
   string id;
@@ -576,7 +564,6 @@ FormatterConverter::getExecutionObjectFromPerspective (
 void
 FormatterConverter::checkMirror (NclExecutionObject *object, int depthLevel)
 {
-
   CompositeNode *parentNode;
   Node *mirrorNode;
   Node *dataObject = object->getDataObject ();
@@ -630,7 +617,6 @@ FormatterConverter::getParentExecutionObject (
     NclNodeNesting *perspective,
     int depthLevel) throw (ObjectCreationForbiddenException *)
 {
-
   NclNodeNesting *parentPerspective;
   NclCompositeExecutionObject *cObj;
 
@@ -659,7 +645,6 @@ FormatterConverter::getEvent (NclExecutionObject *executionObject,
                               InterfacePoint *interfacePoint,
                               int ncmEventType, string key)
 {
-
   string id;
   NclFormatterEvent *event;
 
@@ -738,7 +723,6 @@ FormatterConverter::getEvent (NclExecutionObject *executionObject,
 
                       if (interfacePoint->instanceOf ("IntervalAnchor"))
                         {
-
                           clog << "FormatterConverter::getEvent ";
                           clog << "it was supposed to be ";
                           clog << "a PRESENTATION EVENT ";
@@ -791,7 +775,6 @@ void
 FormatterConverter::createMultichannelObject (
     NclCompositeExecutionObject *compositeObject, int depthLevel)
 {
-
   CompositeNode *compositeNode;
   vector<Node *> *nodes;
   Node *node;
@@ -844,7 +827,6 @@ FormatterConverter::createExecutionObject (
     string id, NclNodeNesting *perspective,
     NclCascadingDescriptor *descriptor, int depthLevel)
 {
-
   NodeEntity *nodeEntity;
   Node *node;
   NclNodeNesting *nodePerspective;
@@ -875,12 +857,10 @@ FormatterConverter::createExecutionObject (
       && ((ContentNode *)nodeEntity)->getNodeType () != ""
       && !((ContentNode *)nodeEntity)->isSettingNode ())
     {
-
       if (node->instanceOf ("ReferNode"))
         {
           if (((ReferNode *)node)->getInstanceType () != "new")
             {
-
               nodePerspective
                   = new NclNodeNesting (nodeEntity->getPerspective ());
 
@@ -888,7 +868,6 @@ FormatterConverter::createExecutionObject (
               if (nodePerspective->getHeadNode ()
                   == perspective->getHeadNode ())
                 {
-
                   try
                     {
                       executionObject = getExecutionObjectFromPerspective (
@@ -1000,7 +979,6 @@ FormatterConverter::hasDescriptorPropName (string name)
       || name == "size" || name == "bounds" || name == "location"
       || name == "zIndex")
     {
-
       return true;
     }
 
@@ -1024,7 +1002,6 @@ FormatterConverter::createDummyDescriptor (arg_unused (Node *node))
 NclCascadingDescriptor *
 FormatterConverter::createDummyCascadingDescriptor (Node *node)
 {
-
   NodeEntity *nodeEntity;
   Descriptor *ncmDesc = NULL;
   string name;
@@ -1053,7 +1030,6 @@ FormatterConverter::createDummyCascadingDescriptor (Node *node)
               else if (node->instanceOf ("ReferNode")
                        && ((ReferNode *)node)->getInstanceType () == "new")
                 {
-
                   if (((ReferNode *)node)->getInstanceDescriptor () == NULL)
                     {
                       nodeEntity = (NodeEntity *)node->getDataEntity ();
@@ -1087,7 +1063,6 @@ FormatterConverter::createDummyCascadingDescriptor (Node *node)
       && ((ReferNode *)node)->getInstanceType () == "new"
       && ((ReferNode *)node)->getInstanceDescriptor () == NULL)
     {
-
       nodeEntity = (NodeEntity *)node->getDataEntity ();
       ncmDesc = (Descriptor *)nodeEntity->getDescriptor ();
       ((ReferNode *)node)->setInstanceDescriptor (ncmDesc);
@@ -1100,7 +1075,6 @@ FormatterConverter::createDummyCascadingDescriptor (Node *node)
 NclCascadingDescriptor *
 FormatterConverter::checkCascadingDescriptor (Node *node)
 {
-
   NodeEntity *nodeEntity;
 
   NclCascadingDescriptor *cascadingDescriptor = NULL;
@@ -1112,7 +1086,6 @@ FormatterConverter::checkCascadingDescriptor (Node *node)
   else if (node->instanceOf ("ReferNode")
            && ((ReferNode *)node)->getInstanceType () == "new")
     {
-
       nodeEntity = (NodeEntity *)node->getDataEntity ();
       node->copyProperties (nodeEntity);
       cascadingDescriptor = createDummyCascadingDescriptor (node);
@@ -1126,7 +1099,6 @@ FormatterConverter::checkContextCascadingDescriptor (
     NclNodeNesting *nodePerspective,
     NclCascadingDescriptor *cascadingDescriptor, Node *ncmNode)
 {
-
   ContextNode *context;
   int size;
   NclCascadingDescriptor *resDesc = cascadingDescriptor;
@@ -1136,7 +1108,6 @@ FormatterConverter::checkContextCascadingDescriptor (
   if (size > 1 && nodePerspective->getNode (size - 2) != NULL
       && nodePerspective->getNode (size - 2)->instanceOf ("ContextNode"))
     {
-
       context = (ContextNode *)(nodePerspective->getNode (size - 2)
                                     ->getDataEntity ());
 
@@ -1161,7 +1132,6 @@ NclCascadingDescriptor *
 FormatterConverter::getCascadingDescriptor (NclNodeNesting *nodePerspective,
                                             GenericDescriptor *descriptor)
 {
-
   NclCascadingDescriptor *cascadingDescriptor = NULL;
   Descriptor *ncmDesc;
   Node *anchorNode;
@@ -1171,7 +1141,6 @@ FormatterConverter::getCascadingDescriptor (NclNodeNesting *nodePerspective,
   if (anchorNode->instanceOf ("ReferNode")
       && ((ReferNode *)anchorNode)->getInstanceType () == "new")
     {
-
       node = anchorNode;
       ncmDesc = (Descriptor *)((ReferNode *)node)->getInstanceDescriptor ();
     }
@@ -1224,7 +1193,6 @@ FormatterConverter::processLink (Link *ncmLink, Node *dataObject,
                                  NclExecutionObject *executionObject,
                                  NclCompositeExecutionObject *parentObject)
 {
-
   vector<GenericDescriptor *> *descriptors;
   GenericDescriptor *descriptor;
   NodeEntity *nodeEntity = NULL;
@@ -1236,7 +1204,6 @@ FormatterConverter::processLink (Link *ncmLink, Node *dataObject,
   if (executionObject->getDataObject () != NULL
       && executionObject->getDataObject ()->instanceOf ("NodeEntity"))
     {
-
       nodeEntity = (NodeEntity *)(executionObject->getDataObject ());
     }
 
@@ -1306,7 +1273,6 @@ FormatterConverter::processLink (Link *ncmLink, Node *dataObject,
                   ->containsSourceNode (dataObject, descriptor)
               || contains)
             {
-
               // compile causal link
               parentObject->removeLinkUncompiled (ncmLink);
               formatterLink
@@ -1363,7 +1329,6 @@ FormatterConverter::compileExecutionObjectLinks (
     NclExecutionObject *executionObject, Node *dataObject,
     NclCompositeExecutionObject *parentObject, int depthLevel)
 {
-
   set<Link *> *dataLinks;
   set<Link *> *uncompiledLinks;
   set<Link *>::iterator i;
@@ -1419,7 +1384,6 @@ FormatterConverter::compileExecutionObjectLinks (
     }
   else
     {
-
       NclExecutionObject *object;
 
       delete uncompiledLinks;
@@ -1467,7 +1431,6 @@ NclExecutionObject *
 FormatterConverter::processExecutionObjectSwitch (
     NclExecutionObjectSwitch *switchObject)
 {
-
   SwitchNode *switchNode;
   Node *selectedNode;
   NclNodeNesting *selectedPerspective;
@@ -1549,7 +1512,6 @@ void
 FormatterConverter::resolveSwitchEvents (
     NclExecutionObjectSwitch *switchObject, int depthLevel)
 {
-
   NclExecutionObject *selectedObject;
   NclExecutionObject *endPointObject;
   Node *selectedNode;
@@ -1608,7 +1570,6 @@ FormatterConverter::resolveSwitchEvents (
                           || mapping->getNode ()->getDataEntity ()
                                  == selectedNode->getDataEntity ())
                         {
-
                           nodePerspective
                               = switchObject->getNodePerspective ();
 
@@ -1633,7 +1594,6 @@ FormatterConverter::resolveSwitchEvents (
                             }
                           catch (ObjectCreationForbiddenException *exc)
                             {
-
                               clog << "FormatterConverter::";
                               clog << "resolveSwitchEvents exception ";
                               clog << "for '" << nodePerspective->getId ();
@@ -1684,7 +1644,6 @@ FormatterConverter::insertNode (NclNodeNesting *perspective,
                                 InterfacePoint *interfacePoint,
                                 GenericDescriptor *descriptor)
 {
-
   NclExecutionObject *executionObject;
   NclFormatterEvent *event;
   short eventType;
@@ -1724,7 +1683,6 @@ NclFormatterEvent *
 FormatterConverter::insertContext (NclNodeNesting *contextPerspective,
                                    Port *port)
 {
-
   vector<Node *> *nestedSeq;
   NclNodeNesting *perspective;
   NclFormatterEvent *newEvent;
@@ -1738,7 +1696,6 @@ FormatterConverter::insertContext (NclNodeNesting *contextPerspective,
                ->getDataEntity ()
                ->instanceOf ("ContextNode")))
     {
-
       clog << "FormatterConverter::insertContext Warning! ";
       clog << "can't find a valid interface point in '";
       clog << contextPerspective->getId () << "'";
@@ -1761,7 +1718,6 @@ bool
 FormatterConverter::removeExecutionObject (
     NclExecutionObject *executionObject, ReferNode *referNode)
 {
-
   NclNodeNesting *referPerspective;
   map<string, NclExecutionObject *>::iterator i;
   set<NclExecutionObject *>::iterator j;
@@ -1800,7 +1756,6 @@ bool
 FormatterConverter::removeExecutionObject (
     NclExecutionObject *executionObject)
 {
-
   map<string, NclExecutionObject *>::iterator i;
   bool removed;
 
@@ -1815,7 +1770,6 @@ bool
 FormatterConverter::ntsRemoveExecutionObject (
     NclExecutionObject *executionObject)
 {
-
   map<string, NclExecutionObject *>::iterator i;
   bool removed = false;
 
@@ -1850,7 +1804,6 @@ NclExecutionObject *
 FormatterConverter::hasExecutionObject (Node *node,
                                         GenericDescriptor *descriptor)
 {
-
   NclExecutionObject *expectedObject;
   map<string, NclExecutionObject *>::iterator i;
   NclNodeNesting *perspective;
@@ -1888,7 +1841,6 @@ FormatterConverter::hasExecutionObject (Node *node,
 NclFormatterCausalLink *
 FormatterConverter::addCausalLink (ContextNode *context, CausalLink *link)
 {
-
   NclExecutionObject *object;
 
   object = hasExecutionObject (context, NULL);
@@ -1956,7 +1908,6 @@ void
 FormatterConverter::eventStateChanged (void *someEvent, short transition,
                                        arg_unused (short previousState))
 {
-
   NclExecutionObject *executionObject;
   NclFormatterEvent *event;
   vector<NclFormatterEvent *> *evs;
@@ -2004,7 +1955,6 @@ FormatterConverter::eventStateChanged (void *someEvent, short transition,
       if (transition == EventUtil::TR_STOPS
           || transition == EventUtil::TR_ABORTS)
         {
-
           /*
           removeExecutionObject(
                           ((NclExecutionObjectSwitch*)executionObject)->
@@ -2024,7 +1974,6 @@ FormatterConverter::eventStateChanged (void *someEvent, short transition,
       if (transition == EventUtil::TR_STOPS
           || transition == EventUtil::TR_ABORTS)
         {
-
           removeExecutionObject (executionObject);
         }
     }

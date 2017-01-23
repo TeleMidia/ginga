@@ -29,7 +29,6 @@ void *
 NclInterfacesParser::parseSwitchPort (DOMElement *parentElement,
                                       void *objGrandParent)
 {
-
   // Element: mapping.
   //  Content of: switchPort,
   clog << "parseSwitchPort" << endl;
@@ -64,7 +63,6 @@ NclInterfacesParser::parseSwitchPort (DOMElement *parentElement,
           if (XMLString::compareIString (elementTagName.c_str (), "mapping")
               == 0)
             {
-
               elementObject = parseMapping (element, parentObject);
               if (elementObject != NULL)
                 {
@@ -81,7 +79,6 @@ void *
 NclInterfacesParser::parseMapping (DOMElement *parentElement,
                                    void *objGrandParent)
 {
-
   clog << "parseMapping" << endl;
   return createMapping (parentElement, objGrandParent);
 }
@@ -90,7 +87,6 @@ void *
 NclInterfacesParser::parseArea (DOMElement *parentElement,
                                 void *objGrandParent)
 {
-
   clog << "parseArea" << endl;
   return createArea (parentElement, objGrandParent);
 }
@@ -99,7 +95,6 @@ void *
 NclInterfacesParser::parseProperty (DOMElement *parentElement,
                                     void *objGrandParent)
 {
-
   clog << "parseProperty" << endl;
   return createProperty (parentElement, objGrandParent);
 }
@@ -108,7 +103,6 @@ void *
 NclInterfacesParser::parsePort (DOMElement *parentElement,
                                 void *objGrandParent)
 {
-
   clog << "parsePort" << endl;
   return createPort (parentElement, objGrandParent);
 }

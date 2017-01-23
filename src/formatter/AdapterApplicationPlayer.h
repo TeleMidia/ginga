@@ -38,7 +38,6 @@ typedef struct
 class AdapterApplicationPlayer : public AdapterFormatterPlayer,
                                  public Thread
 {
-
 private:
   IPlayerListener *editingCommandListener;
   pthread_mutex_t eventMutex;

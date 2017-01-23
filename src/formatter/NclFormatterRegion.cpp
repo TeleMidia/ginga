@@ -32,7 +32,6 @@ GINGA_FORMATTER_BEGIN
 NclFormatterRegion::NclFormatterRegion (string objectId, void *descriptor,
                                         void *layoutManager)
 {
-
   this->layoutManager = layoutManager;
   this->objectId = objectId;
   this->descriptor = descriptor;
@@ -221,7 +220,6 @@ NclFormatterRegion::initializeNCMRegion ()
                       originalRegion->isTopPercentual() ||
                       originalRegion->isWidthPercentual() ||
                       originalRegion->isHeightPercentual()) {
-
               left   = originalRegion->getAbsoluteLeft();
               top    = originalRegion->getAbsoluteTop();
               width  = originalRegion->getWidthInPixels();
@@ -601,7 +599,6 @@ NclFormatterRegion::setFocusInfo (Color *focusBorderColor,
                                   Color *selBorderColor, int selBorderWidth,
                                   string selComponentSrc)
 {
-
   setFocusBorderColor (focusBorderColor);
   setFocusBorderWidth (focusBorderWidth);
   setFocusComponentSrc (focusComponentSrc);
@@ -831,7 +828,6 @@ NclFormatterRegion::prepareOutputDisplay (GingaSurfaceID renderedSurface,
       if (!externHandler && renderedSurface != 0
           && (caps & Ginga_Display->getSurfaceCaps (renderedSurface)))
         {
-
           Ginga_Display->addWindowCaps (screenId, outputDisplay, caps);
         }
 
@@ -1202,7 +1198,6 @@ void
 NclFormatterRegion::traverseFormatterRegions (LayoutRegion *region,
                                               LayoutRegion *baseRegion)
 {
-
   LayoutRegion *auxRegion;
   set<NclFormatterRegion *> *formRegions;
   NclFormatterRegion *formRegion;
@@ -1225,7 +1220,6 @@ NclFormatterRegion::traverseFormatterRegions (LayoutRegion *region,
                   if (ncmRegion->intersects (auxRegion)
                       && ncmRegion != auxRegion)
                     {
-
                       formRegion->toFront ();
                     }
                 }
@@ -1256,7 +1250,6 @@ void
 NclFormatterRegion::bringHideWindowToFront (LayoutRegion *baseRegion,
                                             LayoutRegion *hideRegion)
 {
-
   vector<LayoutRegion *> *regions;
   LayoutRegion *region;
   vector<LayoutRegion *>::iterator it;
@@ -1678,7 +1671,6 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
           if ((abortTransitionIn && isShowEffect)
               || (abortTransitionOut && !isShowEffect))
             {
-
               lock ();
               if (outputDisplay != 0)
                 {
@@ -1718,7 +1710,6 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
     }
   else if (transitionSubType == Transition::SUBTYPE_BARWIPE_TOPTOBOTTOM)
     {
-
       if (isShowEffect)
         {
           lock ();
@@ -1792,7 +1783,6 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
           if ((abortTransitionIn && isShowEffect)
               || (abortTransitionOut && !isShowEffect))
             {
-
               lock ();
               if (outputDisplay != 0)
                 {
@@ -1931,7 +1921,6 @@ NclFormatterRegion::fade (Transition *transition, bool isShowEffect)
       if ((abortTransitionIn && isShowEffect)
           || (abortTransitionOut && !isShowEffect))
         {
-
           break;
         }
     }

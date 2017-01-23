@@ -242,7 +242,6 @@ SectionFilter::receiveTSPacket (ITSPacket *pack)
             }
           else if ((last == 15 && counter == 0) || (counter - last == 1))
             {
-
               isValidCounter = true;
             }
 
@@ -268,7 +267,6 @@ SectionFilter::receiveTSPacket (ITSPacket *pack)
 void
 SectionFilter::receiveSection (char *buf, int len, IFrontendFilter *filter)
 {
-
   // clog << "SectionFilter::receiveSection '" << len << "'" << endl;
   ITransportSection *filteredSection = NULL;
   map<int, ITransportSection *>::iterator i;
@@ -434,7 +432,6 @@ SectionFilter::verifyAndAddData (ITSPacket *pack, bool lastPacket)
           handler->headerSize += headerSizeLeft;
           if (handler->headerSize == 8)
             {
-
               handler->section = new TransportSection (
                   handler->sectionHeader, handler->headerSize);
 

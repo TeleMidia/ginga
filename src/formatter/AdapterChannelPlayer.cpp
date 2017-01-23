@@ -57,7 +57,6 @@ AdapterChannelPlayer::createPlayer ()
                          ->getContent ()
                      != NULL)
             {
-
               content = ((NodeEntity *)(childObj->getDataObject ()
                                             ->getDataEntity ()))
                             ->getContent ();
@@ -113,7 +112,6 @@ bool
 AdapterChannelPlayer::setPropertyValue (NclAttributionEvent *event,
                                         string value)
 {
-
   if (value == "")
     {
       event->stop ();

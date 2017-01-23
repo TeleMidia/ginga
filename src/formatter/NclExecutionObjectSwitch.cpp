@@ -25,7 +25,6 @@ NclExecutionObjectSwitch::NclExecutionObjectSwitch (
     INclLinkActionListener *seListener)
     : NclCompositeExecutionObject (id, switchNode, handling, seListener)
 {
-
   selectedObject = NULL;
   typeSet.insert ("NclExecutionObjectSwitch");
 }
@@ -46,7 +45,6 @@ NclExecutionObjectSwitch::select (NclExecutionObject *executionObject)
   if (executionObject != NULL
       && containsExecutionObject (executionObject->getId ()))
     {
-
       clog << "NclExecutionObjectSwitch::select '";
       clog << executionObject->getId () << "'" << endl;
 
@@ -78,7 +76,6 @@ NclExecutionObjectSwitch::addEvent (NclFormatterEvent *event)
       && (((NclPresentationEvent *)event)->getAnchor ())
              ->instanceOf ("LambdaAnchor"))
     {
-
       NclExecutionObject::wholeContent = (NclPresentationEvent *)event;
       return true;
     }

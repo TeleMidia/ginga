@@ -26,7 +26,6 @@ GINGA_PLAYER_BEGIN
 ImagePlayer::ImagePlayer (GingaScreenID screenId, string mrl)
     : Player (screenId, mrl)
 {
-
   GingaLocatorFactory *glf = NULL;
   string path, name, clientPath, newMrl;
   bool resolved = false;
@@ -80,7 +79,6 @@ ImagePlayer::ImagePlayer (GingaScreenID screenId, string mrl)
           else if (mrl.find (SystemCompat::getFUriD ())
                    != std::string::npos)
             {
-
               path = mrl.substr (
                   0, mrl.find_last_of (SystemCompat::getFUriD ()));
 
@@ -143,7 +141,6 @@ ImagePlayer::play ()
 {
   if (provider == 0)
     {
-
       return false;
     }
 
@@ -183,7 +180,6 @@ ImagePlayer::setPropertyValue (string name, string value)
 GingaSurfaceID
 ImagePlayer::prepareSurface (GingaProviderID provider, arg_unused (string mrl))
 {
-
   GingaSurfaceID renderedSurface = 0;
 
   renderedSurface = Ginga_Display->createSurfaceFrom (myScreen, 0);

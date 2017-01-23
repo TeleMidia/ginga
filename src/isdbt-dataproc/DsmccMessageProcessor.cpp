@@ -103,7 +103,6 @@ DsmccMessageProcessor::pushMessage (DsmccMessageHeader *message)
 DsmccServiceDomain *
 DsmccMessageProcessor::processDSIMessage (DsmccMessageHeader *message)
 {
-
   if (dsi == NULL)
     {
       clog << "Message Processor dsi done!" << endl;
@@ -131,7 +130,6 @@ DsmccMessageProcessor::processDSIMessage (DsmccMessageHeader *message)
 DsmccServiceDomain *
 DsmccMessageProcessor::processDIIMessage (DsmccMessageHeader *message)
 {
-
   if (dii == NULL)
     {
       dii = new DsmccDownloadInfoIndication ();

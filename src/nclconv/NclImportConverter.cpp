@@ -29,7 +29,6 @@ void
 NclImportConverter::addImportNCLToImportedDocumentBase (arg_unused (void *parentObject),
                                                         void *childObject)
 {
-
   string docAlias, docLocation;
   NclDocumentConverter *compiler;
   NclDocument *thisDocument, *importedDocument;
@@ -57,7 +56,6 @@ void *
 NclImportConverter::createImportBase (DOMElement *parentElement,
                                       arg_unused (void *objGrandParent))
 {
-
   return parentElement;
 }
 
@@ -65,14 +63,12 @@ void *
 NclImportConverter::createImportNCL (DOMElement *parentElement,
                                      arg_unused (void *objGrandParent))
 {
-
   return parentElement;
 }
 void *
 NclImportConverter::createImportedDocumentBase (DOMElement *parentElement,
                                                 arg_unused (void *objGrandParent))
 {
-
   return parentElement;
 }
 

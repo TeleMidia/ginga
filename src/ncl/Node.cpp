@@ -125,7 +125,6 @@ Node::setParentComposition (void *composition)
   if (composition == NULL
       || ((CompositeNode *)composition)->getNode (getId ()) != NULL)
     {
-
       this->parentNode = (CompositeNode *)composition;
     }
 }

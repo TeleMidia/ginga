@@ -35,7 +35,6 @@ int64_t
 DsmccTimeBaseClock::convertToNpt (int64_t base, short numerator,
                                   unsigned short denominator)
 {
-
   double scale, ret;
 
   scale = ((double)numerator) / denominator;

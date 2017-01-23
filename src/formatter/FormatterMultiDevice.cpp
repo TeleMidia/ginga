@@ -47,7 +47,6 @@ FormatterMultiDevice::FormatterMultiDevice (GingaScreenID screenId,
                                             int x, int y, int w, int h,
                                             bool useMulticast, arg_unused (int srvPort))
 {
-
   this->xOffset = x;
   this->yOffset = y;
   this->defaultWidth = w;
@@ -256,14 +255,12 @@ void
 FormatterMultiDevice::setPresentationContex (
     PresentationContext *presContext)
 {
-
   this->presContext = presContext;
 }
 
 void
 FormatterMultiDevice::setFocusManager (void *focusManager)
 {
-
   this->focusManager = focusManager;
 }
 
@@ -303,7 +300,6 @@ string
 FormatterMultiDevice::serializeScreen (int devClass,
                                        GingaWindowID mapWindow)
 {
-
   string fileUri = "";
   NclFormatterLayout *formatterLayout;
   vector<GingaWindowID> sortedIds;
@@ -413,7 +409,6 @@ NclFormatterLayout *
 FormatterMultiDevice::getFormatterLayout (
     NclCascadingDescriptor *descriptor, NclExecutionObject *object)
 {
-
   map<int, NclFormatterLayout *>::iterator i;
   NclFormatterLayout *layout;
   LayoutRegion *region;
@@ -471,7 +466,6 @@ GingaWindowID
 FormatterMultiDevice::prepareFormatterRegion (
     NclExecutionObject *executionObject, GingaSurfaceID renderedSurface)
 {
-
   NclFormatterLayout *layout;
   NclCascadingDescriptor *descriptor;
   string regionId, plan = "";
@@ -637,7 +631,6 @@ FormatterMultiDevice::showObject (NclExecutionObject *executionObject)
                   if (content != NULL
                       && content->instanceOf ("ReferenceContent"))
                     {
-
                       url = ((ReferenceContent *)content)
                                 ->getCompleteReferenceUrl ();
 
@@ -737,7 +730,6 @@ FormatterMultiDevice::hideObject (NclExecutionObject *executionObject)
                   if (content != NULL
                       && content->instanceOf ("ReferenceContent"))
                     {
-
                       url = ((ReferenceContent *)content)
                                 ->getCompleteReferenceUrl ();
 
@@ -811,7 +803,6 @@ FormatterMultiDevice::tapObject (int devClass, int x, int y)
 bool
 FormatterMultiDevice::newDeviceConnected (int newDevClass, int w, int h)
 {
-
   bool isNewClass = false;
   /*INCLSectionProcessor* nsp = NULL;
   vector<StreamData*>* streams;*/
@@ -865,7 +856,6 @@ bool
 FormatterMultiDevice::receiveRemoteEvent (int remoteDevClass, int eventType,
                                           string eventContent)
 {
-
   vector<string> *params;
   int eventCode;
 
@@ -876,7 +866,6 @@ FormatterMultiDevice::receiveRemoteEvent (int remoteDevClass, int eventType,
   if (remoteDevClass == DeviceDomain::CT_PASSIVE
       && eventType == DeviceDomain::FT_SELECTIONEVENT)
     {
-
       if (eventContent.find (",") != std::string::npos)
         {
           params = split (eventContent, ",");
@@ -920,7 +909,6 @@ FormatterMultiDevice::receiveRemoteEvent (int remoteDevClass, int eventType,
 void
 FormatterMultiDevice::addActiveUris (string baseUri, vector<string> *uris)
 {
-
   if (activeUris != NULL)
     {
       delete activeUris;

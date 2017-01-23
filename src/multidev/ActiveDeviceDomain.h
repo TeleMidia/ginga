@@ -30,7 +30,8 @@ public:
 
 protected:
   bool
-  taskRequest (arg_unused (int destDevClass), arg_unused (char *data), arg_unused (int taskSize))
+  taskRequest (arg_unused (int destDevClass), arg_unused (char *data),
+               arg_unused (int taskSize))
   {
     return false;
   };
@@ -46,10 +47,12 @@ protected:
   };
   void postConnectionRequestTask (int width, int height);
   void receiveConnectionRequest (arg_unused (char *task)){};
-  void postAnswerTask (arg_unused (int reqDeviceClass), arg_unused (int answer)){};
+  void postAnswerTask (arg_unused (int reqDeviceClass),
+                       arg_unused (int answer)){};
   void receiveAnswerTask (char *answerTask);
   bool
-  postMediaContentTask (arg_unused (int destDevClass), arg_unused (string url))
+  postMediaContentTask (arg_unused (int destDevClass),
+                        arg_unused (string url))
   {
     return false;
   };

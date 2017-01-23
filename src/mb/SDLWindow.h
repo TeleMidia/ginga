@@ -110,8 +110,10 @@ public:
   Color *getColorKey ();
   void setWindowColor (guint8 r, guint8 g, guint8 b, guint8 alpha);
   Color *getWindowColor ();
-  void setBorder (guint8 r, guint8 g, guint8 b, guint8 alpha = 255, int bWidth = 0);
-  void getBorder (guint8 *r, guint8 *g, guint8 *b, guint8 *alpha, int *bWidth);
+  void setBorder (guint8 r, guint8 g, guint8 b, guint8 alpha = 255,
+                  int bWidth = 0);
+  void getBorder (guint8 *r, guint8 *g, guint8 *b, guint8 *alpha,
+                  int *bWidth);
 
   GingaScreenID getScreen ();
   void revertContent ();

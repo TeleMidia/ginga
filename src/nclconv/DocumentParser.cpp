@@ -167,7 +167,6 @@ DocumentParser::initializeUserCurrentPath ()
   userCurrentPath.assign (g_get_current_dir ());
   if (userCurrentPath.find_last_of (iUriD) != userCurrentPath.length () - 1)
     {
-
       userCurrentPath = userCurrentPath + iUriD;
     }
 }
@@ -226,7 +225,6 @@ DocumentParser::checkUriPrefix (string uri)
       || (len >= 13 && uri.substr (0, 13) == "ncl-mirror://")
       || (len >= 7 && uri.substr (0, 7) == "rtsp://"))
     {
-
       return true;
     }
 
@@ -259,7 +257,6 @@ DocumentParser::isAbsolutePath (string path)
   if ((len >= 1 && path.substr (0, 1) == iUriD)
       || (len >= 2 && path.substr (1, 2) == ":" + iUriD))
     {
-
       return true;
     }
 
@@ -273,7 +270,6 @@ DocumentParser::isXmlStr (string location)
       || location.find ("?xml") != std::string::npos
       || location.find ("|") != std::string::npos)
     {
-
       return true;
     }
 
@@ -348,7 +344,6 @@ DocumentParser::getDocumentTree ()
 void
 DocumentParser::addObject (string tableName, string key, void *value)
 {
-
   map<string, void *> *table;
   map<string, void *>::iterator i;
 
@@ -424,7 +419,6 @@ DocumentParser::removeObject (string tableName, string key)
 void
 DocumentParser::addObjectGrouped (string tableName, string key, void *value)
 {
-
   map<string, void *> *table = NULL;
   map<string, void *>::iterator i;
 
@@ -469,7 +463,6 @@ DocumentParser::addObjectGrouped (string tableName, string key, void *value)
 bool
 DocumentParser::importDocument (DocumentParser *parser, string docLocation)
 {
-
   string uri;
 
   if (!isAbsolutePath (docLocation))

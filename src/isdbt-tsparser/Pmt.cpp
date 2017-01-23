@@ -26,7 +26,6 @@ GINGA_TSPARSER_BEGIN
 Pmt::Pmt (unsigned int pid, unsigned int programNumber)
     : TransportSection ()
 {
-
   processed = false;
 
   streamTypeNames[STREAM_TYPE_VIDEO_MPEG1] = "ISO/IEC 11172-2 Video";
@@ -188,7 +187,6 @@ Pmt::isSectionType (unsigned int pid)
       || (value >= STREAM_TYPE_DSMCC_TYPE_A
           && value <= STREAM_TYPE_DSMCC_TYPE_D))
     {
-
       return true;
     }
   return false;
@@ -397,7 +395,6 @@ Pmt::getTaggedVideoPid (unsigned char idx)
           || (st == STREAM_TYPE_VIDEO_MPEG4)
           || (st == STREAM_TYPE_VIDEO_H264))
         {
-
           videoTags[itTag->second] = itTag->first;
         }
       ++itTag;
@@ -434,7 +431,6 @@ Pmt::getTaggedAudioPid (unsigned char idx)
           || (st == STREAM_TYPE_AUDIO_AAC) || (st == STREAM_TYPE_AUDIO_AC3)
           || (st == STREAM_TYPE_AUDIO_DTS))
         {
-
           audioTags[itTag->second] = itTag->first;
         }
       ++itTag;

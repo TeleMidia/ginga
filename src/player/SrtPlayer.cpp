@@ -26,7 +26,6 @@ GINGA_PLAYER_BEGIN
 SrtPlayer::SrtPlayer (GingaScreenID screenId, string mrl)
     : TextPlayer (screenId), Thread ()
 {
-
   this->mrl = mrl;
   this->textEvents = NULL;
   this->textLines = NULL;
@@ -139,7 +138,6 @@ SrtPlayer::loadSrt ()
         {
           while (line.find ("-->") == std::string::npos && !fisSub.eof ())
             {
-
               getline (fisSub, line);
             }
 
@@ -432,7 +430,6 @@ SrtPlayer::run ()
 
       while (isPlayingSrt () && !events->empty () && !text->empty ())
         {
-
           i = events->begin ();
           k = text->begin ();
 

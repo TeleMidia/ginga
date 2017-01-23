@@ -98,7 +98,6 @@ void
 AdapterPlayerManager::setTimeBaseProvider (
     ITimeBaseProvider *timeBaseProvider)
 {
-
   this->timeBaseProvider = timeBaseProvider;
 }
 
@@ -112,7 +111,6 @@ void
 AdapterPlayerManager::setVisible (string objectId, string visible,
                                   NclAttributionEvent *event)
 {
-
   map<string, IAdapterPlayer *>::iterator i;
   AdapterFormatterPlayer *player;
 
@@ -353,7 +351,6 @@ AdapterPlayerManager::getMimeTypeFromSchema (string url)
       || (url.length () > 7 && url.substr (0, 7) == "http://")
       || (url.length () > 4 && url.substr (0, 4) == "www."))
     {
-
       clog << "AdapterPlayerManager::getMimeTypeFromSchema is ";
       clog << "considering HTML MIME." << endl;
 
@@ -362,7 +359,6 @@ AdapterPlayerManager::getMimeTypeFromSchema (string url)
   else if ((url.length () > 6 && url.substr (0, 6) == "rtp://")
            || (url.length () > 7 && url.substr (0, 7) == "rtsp://"))
     {
-
       mime = ContentTypeManager::getInstance ()->getMimeType ("mpg");
     }
 
@@ -387,7 +383,6 @@ AdapterPlayerManager::isEmbeddedApp (NodeEntity *dataObject)
           || mediaType == "AdapterBerkeliumPlayer"
           || mediaType == "AdapterNCLPlayer")
         {
-
           return true;
         }
     }
@@ -440,7 +435,6 @@ AdapterPlayerManager::isEmbeddedAppMediaType (string mediaType)
       || upMediaType == "APPLICATION/X-NCL-NCL"
       || upMediaType == "APPLICATION/X-NCL-NCLUA")
     {
-
       return true;
     }
 

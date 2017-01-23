@@ -30,7 +30,6 @@ GINGA_FORMATTER_BEGIN
 class NclLinkCompoundTriggerCondition : public NclLinkTriggerCondition,
                                         public NclLinkTriggerListener
 {
-
 protected:
   vector<NclLinkCondition *> conditions;
 

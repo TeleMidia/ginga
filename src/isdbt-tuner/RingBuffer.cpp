@@ -86,7 +86,6 @@ ring_buffer_free (struct ring_buffer *buffer)
 void *
 ring_buffer_write_address (struct ring_buffer *buffer)
 {
-
   return (void*)((gintptr)buffer->address + (gintptr)buffer->write_offset_bytes);
 }
 

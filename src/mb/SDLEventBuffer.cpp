@@ -140,12 +140,10 @@ SDLEventBuffer::waitEvent ()
       if (event.type == SDL_USEREVENT && event.user.code == SDLK_APPLICATION
           && event.user.data1 != NULL && event.user.data2 == NULL)
         {
-
           if (strcmp ((char *)event.user.data1,
                       SDLInputEvent::ET_WAKEUP.c_str ())
               == 0)
             {
-
               eventBuffer.erase (i);
               Thread::mutexUnlock (&ebMutex);
               return;

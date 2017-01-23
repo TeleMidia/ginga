@@ -189,7 +189,6 @@ PrefetchManager::createDocumentPrefetcher (string remoteDocUri)
 string
 PrefetchManager::createSourcePrefetcher (string localDocUri, string src)
 {
-
   string remoteDocUri, newSrc, localRoot;
   string remoteRoot, relativeSrc, remoteUri;
 
@@ -424,7 +423,6 @@ PrefetchManager::getScheduledContent (string clientUri)
       if (i != scheduledLocalUris->end ()
           && j != scheduledRemoteUris->end ())
         {
-
           scheduledLocalUris->erase (i);
           scheduledRemoteUris->erase (j);
           getContent (remoteUri, clientUri);

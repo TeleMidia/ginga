@@ -26,7 +26,6 @@ NclPresentationSpecConverter::NclPresentationSpecConverter (
     DocumentParser *documentParser, DeviceLayout *deviceLayout)
     : NclPresentationSpecificationParser (documentParser)
 {
-
   this->deviceLayout = deviceLayout;
 }
 
@@ -34,7 +33,6 @@ void
 NclPresentationSpecConverter::addDescriptorToDescriptorBase (
     void *parentObject, void *childObject)
 {
-
   ((DescriptorBase *)parentObject)
       ->addDescriptor ((GenericDescriptor *)childObject);
 }
@@ -43,7 +41,6 @@ void
 NclPresentationSpecConverter::addDescriptorSwitchToDescriptorBase (
     void *parentObject, void *childObject)
 {
-
   ((DescriptorBase *)parentObject)
       ->addDescriptor ((GenericDescriptor *)childObject);
 }
@@ -52,7 +49,6 @@ void
 NclPresentationSpecConverter::addDescriptorParamToDescriptor (
     void *parentObject, void *childObject)
 {
-
   // cast para descritor
   Descriptor *descriptor = (Descriptor *)parentObject;
   DOMElement *param = (DOMElement *)childObject;
@@ -72,7 +68,6 @@ void
 NclPresentationSpecConverter::addImportBaseToDescriptorBase (
     void *parentObject, void *childObject)
 {
-
   string baseAlias, baseLocation;
   NclDocumentConverter *compiler;
   NclDocument *importedDocument, *thisDocument;
@@ -157,7 +152,6 @@ void *
 NclPresentationSpecConverter::createDescriptorParam (
     DOMElement *parentElement, arg_unused (void *objGrandParent))
 {
-
   return parentElement;
 }
 
@@ -172,7 +166,6 @@ void *
 NclPresentationSpecConverter::createDescriptorBase (
     DOMElement *parentElement, arg_unused (void *objGrandParent))
 {
-
   DescriptorBase *descBase;
   // criar nova base de conectores com id gerado a partir do nome de seu
   // elemento
@@ -186,7 +179,6 @@ void *
 NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
                                                 arg_unused (void *objGrandParent))
 {
-
   Descriptor *descriptor;
   NclDocument *document;
   LayoutRegion *region;
@@ -308,7 +300,6 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
   if (parentElement->hasAttribute (
           XMLString::transcode ("focusBorderColor")))
     {
-
       color = new Color (XMLString::transcode (parentElement->getAttribute (
           XMLString::transcode ("focusBorderColor"))));
 
@@ -318,7 +309,6 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
   if (parentElement->hasAttribute (
           XMLString::transcode ("focusBorderWidth")))
     {
-
       int w;
       w = (int)::ginga::util::stof (
           XMLString::transcode (parentElement->getAttribute (
@@ -330,7 +320,6 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
   if (parentElement->hasAttribute (
           XMLString::transcode ("focusBorderTransparency")))
     {
-
       double alpha;
       alpha = (double)::ginga::util::stof (
           XMLString::transcode (parentElement->getAttribute (
@@ -357,7 +346,6 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
 
   if (parentElement->hasAttribute (XMLString::transcode ("selBorderColor")))
     {
-
       color = new Color (XMLString::transcode (parentElement->getAttribute (
           XMLString::transcode ("selBorderColor"))));
 

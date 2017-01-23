@@ -23,7 +23,6 @@ GINGA_NCL_BEGIN
 SimpleCondition::SimpleCondition (string role)
     : TriggerExpression (), Role ()
 {
-
   SimpleCondition::setLabel (role);
   key = "";
   qualifier = SimpleCondition::NO_QUALIFIER;

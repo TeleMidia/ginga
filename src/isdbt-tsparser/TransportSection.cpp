@@ -29,7 +29,6 @@ TransportSection::TransportSection () { initialize (); }
 
 TransportSection::TransportSection (char *sectionBytes, unsigned int size)
 {
-
   initialize ();
   constructionFailed = create (sectionBytes, size);
 }
@@ -230,7 +229,6 @@ TransportSection::setSectionName ()
   if (tableId == SDT_TID || tableId == EIT_TID || tableId == CDT_TID
       || (tableId >= 0x50 && tableId <= 0x5F))
     {
-
       sectionName += "epg" + SystemCompat::getIUriD () + "data"
                      + SystemCompat::getIUriD () + itos (pid)
                      + itos (tableId) + itos (idExtention)

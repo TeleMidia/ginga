@@ -29,7 +29,6 @@ void *
 NclTransitionParser::parseTransitionBase (DOMElement *parentElement,
                                           void *objGrandParent)
 {
-
   clog << "parseTransitionBase" << endl;
   void *parentObject;
   DOMNodeList *elementNodeList;
@@ -57,7 +56,6 @@ NclTransitionParser::parseTransitionBase (DOMElement *parentElement,
                                          "importBase")
               == 0)
             {
-
               elementObject = getImportParser ()->parseImportBase (
                   element, parentObject);
 
@@ -71,7 +69,6 @@ NclTransitionParser::parseTransitionBase (DOMElement *parentElement,
                                               "transition")
                    == 0)
             {
-
               elementObject = parseTransition (element, parentObject);
               if (elementObject != NULL)
                 {
@@ -89,7 +86,6 @@ void *
 NclTransitionParser::parseTransition (DOMElement *parentElement,
                                       void *objGrandParent)
 {
-
   return createTransition (parentElement, objGrandParent);
 }
 
@@ -102,7 +98,6 @@ NclTransitionParser::getImportParser ()
 void
 NclTransitionParser::setImportParser (NclImportParser *importParser)
 {
-
   this->importParser = importParser;
 }
 

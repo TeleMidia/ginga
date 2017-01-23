@@ -41,7 +41,6 @@ FormatterFocusManager::FormatterFocusManager (
     FormatterMultiDevice *multiDevice,
     INclLinkActionListener *settingActions, void *converter)
 {
-
   string strValue;
 
   DisplayManager::addIEListenerInstance (this);
@@ -166,7 +165,6 @@ bool
 FormatterFocusManager::hasInstance (FormatterFocusManager *instance,
                                     bool remove)
 {
-
   set<FormatterFocusManager *>::iterator i;
   bool find = false;
 
@@ -228,7 +226,6 @@ FormatterFocusManager::setKeyHandler (bool isHandler)
 
   if (isHandler && parentManager != NULL && !parentManager->isKeyHandler ())
     {
-
       clog << "FormatterFocusManager::setKeyHandler(" << this << ")";
       clog << " can't set handler because parent manager is not ";
       clog << "handling";
@@ -296,7 +293,6 @@ FormatterFocusManager::setHandlingObjects (bool isHandling)
 NclExecutionObject *
 FormatterFocusManager::getObjectFromFocusIndex (string focusIndex)
 {
-
   map<string, set<NclExecutionObject *> *>::iterator i;
   set<NclExecutionObject *>::iterator j;
   NclCascadingDescriptor *desc;
@@ -333,7 +329,6 @@ void
 FormatterFocusManager::insertObject (NclExecutionObject *obj,
                                      string focusIndex)
 {
-
   string auxIndex;
   map<string, set<NclExecutionObject *> *>::iterator i;
   vector<string>::iterator j;
@@ -357,7 +352,6 @@ void
 FormatterFocusManager::removeObject (NclExecutionObject *obj,
                                      string focusIndex)
 {
-
   map<string, set<NclExecutionObject *> *>::iterator i;
   set<NclExecutionObject *>::iterator j;
   vector<string>::iterator k;
@@ -724,7 +718,6 @@ FormatterFocusManager::recoveryDefaultState (NclExecutionObject *object)
   if (object == NULL || object->getDescriptor () == NULL
       || object->getDescriptor ()->getFormatterRegion () == NULL)
     {
-
       multiDevice->updatePassiveDevices ();
       return;
     }
@@ -827,7 +820,6 @@ FormatterFocusManager::showObject (NclExecutionObject *object)
       paramValue = presContext->getPropertyValue ("service.currentFocus");
       if (paramValue != "" && paramValue == focusIndex && fr->isVisible ())
         {
-
           /*if (focusTable->count(currentFocus) != 0) {
                   currentObject = (*focusTable)[currentFocus];
                   currentObject->getDescriptor()->
@@ -846,7 +838,6 @@ FormatterFocusManager::showObject (NclExecutionObject *object)
       if ((paramValue == mediaId || objectToSelect == mediaId)
           && fr->isVisible ())
         {
-
           objectToSelect = "";
 
           if (focusIndex != "")
@@ -907,7 +898,6 @@ FormatterFocusManager::hideObject (NclExecutionObject *object)
       if (fr != NULL && fr->getFocusState () == NclFormatterRegion::SELECTED
           && selectedObject == object)
         {
-
           player
               = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
                   selectedObject);
@@ -1188,7 +1178,6 @@ FormatterFocusManager::setDefaultSelBorderColor (Color *color)
 void
 FormatterFocusManager::setMotionBoundaries (int x, int y, int w, int h)
 {
-
   xOffset = x;
   yOffset = y;
   width = w;
@@ -1275,7 +1264,6 @@ FormatterFocusManager::userEventReceived (SDLInputEvent *userEvent)
   if (getCurrentTimeMillis () - focusHandlerTS < 300
       && code != CodeMap::KEY_BACKSPACE && code != CodeMap::KEY_BACK)
     {
-
       Thread::mutexUnlock (&mutexTable);
       return true;
     }
@@ -1295,7 +1283,6 @@ FormatterFocusManager::userEventReceived (SDLInputEvent *userEvent)
       if (selectedObject != NULL
           && (code == CodeMap::KEY_BACKSPACE || code == CodeMap::KEY_BACK))
         {
-
           bool canBack = keyCodeBack ();
           Thread::mutexUnlock (&mutexTable);
 
@@ -1383,7 +1370,6 @@ FormatterFocusManager::userEventReceived (SDLInputEvent *userEvent)
     }
   else if (code == CodeMap::KEY_ENTER || code == CodeMap::KEY_TAP)
     {
-
       userEvent->setKeyCode (myScreen, CodeMap::KEY_NULL);
       tapObject (currentObject);
       multiDevice->updatePassiveDevices ();
@@ -1418,7 +1404,6 @@ FormatterFocusManager::motionEventReceived (int x, int y, arg_unused (int z))
           if ((x < xOffset || x > xOffset + width) || y < yOffset
               || y > yOffset + height)
             {
-
               return true;
             }
 
@@ -1434,7 +1419,6 @@ FormatterFocusManager::motionEventReceived (int x, int y, arg_unused (int z))
                   if (objectFocusIndex != ""
                       && objectFocusIndex != currentFocus)
                     {
-
                       setFocus (objectFocusIndex);
                     }
                 }

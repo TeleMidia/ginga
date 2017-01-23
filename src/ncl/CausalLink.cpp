@@ -23,14 +23,12 @@ GINGA_NCL_BEGIN
 CausalLink::CausalLink (string uid, Connector *connector)
     : Link (uid, connector)
 {
-
   typeSet.insert ("CausalLink");
 }
 
 bool
 CausalLink::containsSourceNode (Node *node, GenericDescriptor *descriptor)
 {
-
   bool contains;
   vector<Bind *> *conds;
 
@@ -92,7 +90,6 @@ CausalLink::getConditionBinds ()
           if (role->instanceOf ("SimpleCondition")
               || role->instanceOf ("AttributeAssessment"))
             {
-
               conditionsVector->push_back (bind);
             }
         }

@@ -29,7 +29,6 @@ CompoundAction::CompoundAction () : Action ()
 CompoundAction::CompoundAction (Action *a1, Action *a2, short op)
     : Action ()
 {
-
   actions = new vector<Action *>;
   actions->push_back (a1);
   actions->push_back (a2);

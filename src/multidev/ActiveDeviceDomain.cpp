@@ -37,7 +37,6 @@ ActiveDeviceDomain::~ActiveDeviceDomain () {}
 void
 ActiveDeviceDomain::postConnectionRequestTask (int w, int h)
 {
-
   char *task;
   int connReqPayloadSize = 7;
   int taskSize;
@@ -71,7 +70,6 @@ ActiveDeviceDomain::postConnectionRequestTask (int w, int h)
 void
 ActiveDeviceDomain::receiveAnswerTask (arg_unused (char *task))
 {
-
   if (connected)
     {
       clog << "ActiveDeviceDomain::receiveAnswerTask Warning! ";

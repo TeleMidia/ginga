@@ -28,10 +28,8 @@ protected:
   set<string> typeSet;
 
 public:
-  Assessment () { typeSet.insert ("Assessment"); };
-
-  virtual ~Assessment () { typeSet.clear (); };
-
+  Assessment () {typeSet.insert ("Assessment"); };
+  virtual ~Assessment () {typeSet.clear (); };
   virtual string
   toString ()
   {

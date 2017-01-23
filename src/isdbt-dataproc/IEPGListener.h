@@ -68,7 +68,6 @@ GINGA_DATAPROC_BEGIN
 
 class IEPGListener
 {
-
 public:
   static const unsigned char SI_LISTENER = 1;
   static const unsigned char EPG_LISTENER = 2;

@@ -162,13 +162,11 @@ AdapterNCLPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
       && !event->instanceOf ("NclSelectionEvent")
       && event->instanceOf ("NclAnchorEvent"))
     {
-
       interfaceId = ((NclAnchorEvent *)event)->getAnchor ()->getId ();
 
       if ((((NclAnchorEvent *)event)->getAnchor ())
               ->instanceOf ("LabeledAnchor"))
         {
-
           interfaceId
               = ((LabeledAnchor *)((NclAnchorEvent *)event)->getAnchor ())
                     ->getLabel ();
@@ -176,7 +174,6 @@ AdapterNCLPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
       else if ((((NclAnchorEvent *)event)->getAnchor ())
                    ->instanceOf ("LambdaAnchor"))
         {
-
           interfaceId = "";
         }
 

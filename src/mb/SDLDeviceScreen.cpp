@@ -65,7 +65,6 @@ SDLDeviceScreen::SDLDeviceScreen (int argc, char **args, GingaScreenID myId,
                                   UnderlyingWindowID embedId,
                                   bool externalRenderer)
 {
-
   string parentCoords = "";
   int i;
 
@@ -270,7 +269,6 @@ void
 SDLDeviceScreen::updateRenderMap (GingaScreenID screenId, SDLWindow *window,
                                   double oldZIndex, double newZIndex)
 {
-
   checkMutexInit ();
 
   renderMapRemoveWindow (screenId, window, oldZIndex);
@@ -468,7 +466,6 @@ bool
 SDLDeviceScreen::mergeIds (GingaWindowID destId,
                            vector<GingaWindowID> *srcIds)
 {
-
   map<GingaWindowID, SDLWindow *>::iterator i;
   vector<GingaWindowID>::iterator j;
   SDLWindow *destWin;
@@ -613,7 +610,6 @@ SDLDeviceScreen::refreshScreen ()
 SDLWindow *
 SDLDeviceScreen::createWindow (int x, int y, int w, int h, double z)
 {
-
   SDLWindow *iWin;
 
   Thread::mutexLock (&winMutex);
@@ -636,7 +632,6 @@ UnderlyingWindowID
 SDLDeviceScreen::createUnderlyingSubWindow (int x, int y, int w, int h,
                                             double z)
 {
-
   UnderlyingWindowID uWin = NULL;
   UnderlyingWindowID parent = NULL;
 
@@ -675,7 +670,6 @@ SDLDeviceScreen::createUnderlyingSubWindow (arg_unused (UnderlyingWindowID paren
                                             arg_unused (string spec), arg_unused (int x), arg_unused (int y),
                                             int w, int h, arg_unused (double z))
 {
-
   UnderlyingWindowID uWin = NULL;
 
 #if defined(SDL_VIDEO_DRIVER_X11)
@@ -980,7 +974,6 @@ IContinuousMediaProvider *
 SDLDeviceScreen::createContinuousMediaProvider (const char *mrl,
                                                 arg_unused (bool isRemote))
 {
-
   IContinuousMediaProvider *provider;
   string strSym;
 
@@ -1000,7 +993,6 @@ void
 SDLDeviceScreen::releaseContinuousMediaProvider (
     IContinuousMediaProvider *provider)
 {
-
   set<IContinuousMediaProvider *>::iterator i;
   IContinuousMediaProvider *cmp;
 
@@ -1024,7 +1016,6 @@ SDLDeviceScreen::releaseContinuousMediaProvider (
 IFontProvider *
 SDLDeviceScreen::createFontProvider (const char *mrl, int fontSize)
 {
-
   IFontProvider *provider = NULL;
 
   lockSDL ();
@@ -1103,7 +1094,6 @@ SDLDeviceScreen::releaseImageProvider (IImageProvider *provider)
 SDLSurface *
 SDLDeviceScreen::createRenderedSurfaceFromImageFile (const char *mrl)
 {
-
   SDLSurface *iSur = NULL;
   IImageProvider *provider = NULL;
 
@@ -1136,7 +1126,6 @@ SDLDeviceScreen::addCMPToRendererList (IContinuousMediaProvider *cmp)
 void
 SDLDeviceScreen::removeCMPToRendererList (IContinuousMediaProvider *cmp)
 {
-
   set<IContinuousMediaProvider *>::iterator i;
 
   checkMutexInit ();
@@ -1155,7 +1144,6 @@ SDLDeviceScreen::createReleaseContainer (SDL_Surface *uSur,
                                          SDL_Texture *uTex,
                                          IMediaProvider *iDec)
 {
-
   ReleaseContainer *rc;
 
   checkMutexInit ();
@@ -1183,7 +1171,6 @@ SDLDeviceScreen::checkSDLInit ()
                               | SDL_INIT_TIMER | SDL_INIT_NOPARACHUTE))
           != 0)
         {
-
           clog << "SDLDeviceScreen::checkSDLInit ";
           clog << "Warning! " << SDL_GetError ();
           clog << endl;
@@ -1245,13 +1232,11 @@ SDLDeviceScreen::sdlQuit ()
 void
 SDLDeviceScreen::checkWindowFocus (SDLDeviceScreen *s, SDL_Event *event)
 {
-
   if (s->uEmbedId != NULL)
     {
       if (event->type == SDL_WINDOWEVENT
           && event->window.windowID == s->sdlId)
         {
-
           switch (event->window.event)
             {
             case SDL_WINDOWEVENT_SHOWN:
@@ -1373,7 +1358,6 @@ bool
 SDLDeviceScreen::notifyEvent (SDLDeviceScreen *s, SDL_Event *event,
                               bool capsOn, bool shiftOn)
 {
-
   SDLEventBuffer *eventBuffer = NULL;
 
   /*clog << "SDLDeviceScreen::notifyEvent";
@@ -1387,7 +1371,6 @@ SDLDeviceScreen::notifyEvent (SDLDeviceScreen *s, SDL_Event *event,
             && s->uEmbedId == NULL)
            || checkEventFocus (s)))
         {
-
           /*clog << "SDLDeviceScreen::notifyEvent feeding event buffer";
             clog << endl;*/
           eventBuffer->feed (*event, capsOn, shiftOn);
@@ -1402,7 +1385,6 @@ void
 SDLDeviceScreen::processCmd (SDLDeviceScreen *s, string cmd, string type,
                              string args)
 {
-
   int intEvent;
   SDL_Event ie;
   size_t token;
@@ -1541,7 +1523,6 @@ SDLDeviceScreen::checkEvents ()
           if (event.key.keysym.sym == SDLK_LSHIFT
               || event.key.keysym.sym == SDLK_RSHIFT)
             {
-
               shiftOn = true;
             }
         }
@@ -1554,7 +1535,6 @@ SDLDeviceScreen::checkEvents ()
           else if (event.key.keysym.sym == SDLK_LSHIFT
                    || event.key.keysym.sym == SDLK_RSHIFT)
             {
-
               shiftOn = false;
             }
         }
@@ -1599,7 +1579,6 @@ SDLDeviceScreen::rendererT (arg_unused (void *ptr))
 
   while (hasRenderer)
     {
-
       if (!checkEvents ())
         {
           return NULL;
@@ -1976,7 +1955,6 @@ SDLDeviceScreen::initScreen (SDLDeviceScreen *s)
         {
           if (strcmp (SDL_GetVideoDriver (i), s->mbSubSystem.c_str ()) == 0)
             {
-
               SDL_VideoInit (s->mbSubSystem.c_str ());
               break;
             }
@@ -2266,7 +2244,6 @@ SDLDeviceScreen::releaseAll ()
 void
 SDLDeviceScreen::initCMP (SDLDeviceScreen *s, IContinuousMediaProvider *cmp)
 {
-
   SDL_Texture *texture;
   int w, h;
 
@@ -2390,7 +2367,6 @@ SDLDeviceScreen::createEventBuffer ()
 SDLInputEvent *
 SDLDeviceScreen::createInputEvent (void *event, const int symbol)
 {
-
   SDLInputEvent *ie = NULL;
 
   if (event != NULL)
@@ -2811,7 +2787,6 @@ void
 SDLDeviceScreen::renderMapInsertWindow (GingaScreenID screenId,
                                         SDLWindow *iWin, double z)
 {
-
   map<GingaScreenID, map<double, set<SDLWindow *> *> *>::iterator i;
   map<double, set<SDLWindow *> *>::iterator j;
 
@@ -2851,7 +2826,6 @@ void
 SDLDeviceScreen::renderMapRemoveWindow (GingaScreenID screenId,
                                         SDLWindow *iWin, double z)
 {
-
   map<GingaScreenID, map<double, set<SDLWindow *> *> *>::iterator i;
   map<double, set<SDLWindow *> *>::iterator j;
   set<SDLWindow *>::iterator k;
@@ -2887,7 +2861,6 @@ SDLDeviceScreen::renderMapRemoveWindow (GingaScreenID screenId,
 
 /*void SDLDeviceScreen::updateWindowState(
                 GingaScreenID screenId, SDLWindow* win, short state) {
-
         map<GingaScreenID, vector<SDLWindow*>*>::iterator i;
         vector<SDLWindow*>* wins;
 
@@ -2903,13 +2876,11 @@ SDLDeviceScreen::renderMapRemoveWindow (GingaScreenID screenId,
                 windowRenderMap[screenId] = wins;
         }
 
-
         Thread::mutexUnlock(&wrMutex);
 }
 
 void SDLDeviceScreen::updateWindowList(
                 vector<SDLWindow*>* windows, SDLWindow* win, short state) {
-
         switch (state) {
                 case SUW_SHOW:
                         windows->push_back(win);
@@ -2938,7 +2909,6 @@ void
 SDLDeviceScreen::removeFromWindowList (vector<SDLWindow *> *windows,
                                        SDLWindow *win)
 {
-
   vector<SDLWindow *>::iterator i;
 
   i = windows->begin ();
@@ -2985,7 +2955,6 @@ bool
 SDLDeviceScreen::drawSDLWindow (SDL_Renderer *renderer,
                                 SDL_Texture *srcTxtr, SDLWindow *dstWin)
 {
-
   SDL_Rect dstRect;
   Color *bgColor;
   Uint8 rr, rg, rb, ra;
@@ -3065,7 +3034,6 @@ SDLDeviceScreen::drawSDLWindow (SDL_Renderer *renderer,
                       || (dd->coord3 > dstRect.w)
                       || (dd->coord4 > dstRect.h))
                     {
-
                       clog << "SDLDeviceScreen::drawWindow Warning!";
                       clog << " Invalid line coords: " << endl;
                       clog << dd->coord1 << ", ";
@@ -3088,7 +3056,6 @@ SDLDeviceScreen::drawSDLWindow (SDL_Renderer *renderer,
                                           dd->coord4 + dstRect.y)
                       < 0)
                     {
-
                       clog << "SDLDeviceScreen::drawWindow ";
                       clog << "Warning! Can't draw line ";
                       clog << SDL_GetError ();
@@ -3108,7 +3075,6 @@ SDLDeviceScreen::drawSDLWindow (SDL_Renderer *renderer,
                       || (dd->coord1 + dr.w > dstRect.w)
                       || (dd->coord2 + dr.h > dstRect.h))
                     {
-
                       clog << "SDLDeviceScreen::drawWindow Warning!";
                       clog << " Invalid rect coords: " << endl;
                       clog << dr.x << ", ";
@@ -3235,7 +3201,6 @@ SDL_Texture *
 SDLDeviceScreen::createTextureFromSurface (SDL_Renderer *renderer,
                                            SDL_Surface *surface)
 {
-
   SDL_Texture *texture = NULL;
 
   checkMutexInit ();
@@ -3270,7 +3235,6 @@ SDLDeviceScreen::createTextureFromSurface (SDL_Renderer *renderer,
 SDL_Texture *
 SDLDeviceScreen::createTexture (SDL_Renderer *renderer, int w, int h)
 {
-
   SDL_Texture *texture;
 
   lockSDL ();
@@ -3340,7 +3304,6 @@ SDLDeviceScreen::addUnderlyingSurface (SDL_Surface *uSur)
 SDL_Surface *
 SDLDeviceScreen::createUnderlyingSurface (int width, int height)
 {
-
   SDL_Surface *newUSur = NULL;
   Uint32 rmask, gmask, bmask, amask;
   int bpp;
@@ -3376,7 +3339,6 @@ SDLDeviceScreen::createUnderlyingSurface (int width, int height)
 SDL_Surface *
 SDLDeviceScreen::createUnderlyingSurfaceFromTexture (SDL_Texture *texture)
 {
-
   SDL_Surface *uSur = NULL;
   void *pixels;
   int tpitch[3];

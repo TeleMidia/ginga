@@ -85,7 +85,6 @@ cvtPercentual (string value, bool *isPercentual)
   return newValue;
 }
 
-
 int
 strHexaToInt (string value)
 {
@@ -397,7 +396,6 @@ double
 getNextStepValue (double initValue, double target, arg_unused (int factor), double time,
                   double initTime, double dur, int durStep)
 {
-
   int numSteps;
   double stepSize, nextStepValue;
 

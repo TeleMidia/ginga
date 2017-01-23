@@ -88,7 +88,6 @@ ContentTypeManager::getMimeType (string fileExtension)
   pthread_mutex_lock (&mutex);
   if (fileExtension != "" && mimeDefaultTable.count (fileExtension) != 0)
     {
-
       mType = mimeDefaultTable[fileExtension];
     }
   pthread_mutex_unlock (&mutex);

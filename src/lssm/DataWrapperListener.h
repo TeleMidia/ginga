@@ -38,7 +38,6 @@ class DataWrapperListener : public IDsmccStreamEventListener,
                             public IDsmccServiceDomainListener,
                             public Thread
 {
-
 private:
   PresentationEngineManager *pem;
   string documentUri;

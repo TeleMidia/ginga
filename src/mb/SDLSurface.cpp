@@ -57,7 +57,6 @@ SDLSurface::~SDLSurface ()
       && Ginga_Display->hasWindow (myScreen,
                                                           w->getId ()))
     {
-
       if (w->getContent () == sur)
         {
           w->setRenderedSurface (NULL);
@@ -169,7 +168,6 @@ SDLSurface::fill ()
                             SDL_MapRGB (pending->format, b, g, r))
               < 0)
             {
-
               clog << "SDLSurface::fill SDL error: '";
               clog << SDL_GetError () << "'" << endl;
             }
@@ -511,7 +509,6 @@ SDLSurface::fillRectangle (int x, int y, int w, int h)
                             SDL_MapRGB (pending->format, b, g, r))
               < 0)
             {
-
               clog << "SDLSurface::fillRectangle SDL error: '";
               clog << SDL_GetError () << "'" << endl;
             }
@@ -565,7 +562,6 @@ SDLSurface::setChromaColor (guint8 r, guint8 g, guint8 b, guint8 alpha)
                                SDL_MapRGB (pending->format, r, g, b))
               < 0)
             {
-
               clog << "SDLSurface::setChromaColor SDL error: '";
               clog << SDL_GetError () << "'" << endl;
             }
@@ -712,7 +708,6 @@ void
 SDLSurface::blit (int x, int y, SDLSurface *src, int srcX, int srcY,
                   int srcW, int srcH)
 {
-
   SDL_Rect srcRect;
   SDL_Rect *srcPtr = NULL;
   SDL_Rect dstRect;

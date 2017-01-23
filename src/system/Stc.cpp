@@ -36,7 +36,6 @@ int
 Stc::timevalSubtract (struct timeval *result, struct timeval *x,
                       struct timeval *y)
 {
-
   int nsec;
 
   if (x->tv_usec < y->tv_usec)

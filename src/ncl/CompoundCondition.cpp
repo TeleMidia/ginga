@@ -22,7 +22,6 @@ GINGA_NCL_BEGIN
 
 CompoundCondition::CompoundCondition () : TriggerExpression ()
 {
-
   expressions = new vector<ConditionExpression *>;
   typeSet.insert ("CompoundCondition");
 }
@@ -31,7 +30,6 @@ CompoundCondition::CompoundCondition (ConditionExpression *c1,
                                       ConditionExpression *c2, short op)
     : TriggerExpression ()
 {
-
   expressions = new vector<ConditionExpression *>;
   expressions->push_back (c1);
   expressions->push_back (c2);
@@ -81,7 +79,6 @@ CompoundCondition::getConditions ()
 void
 CompoundCondition::addConditionExpression (ConditionExpression *condition)
 {
-
   if (condition == NULL)
     {
       clog << "CompoundCondition::addConditionExpression ";
@@ -97,7 +94,6 @@ void
 CompoundCondition::removeConditionExpression (
     ConditionExpression *condition)
 {
-
   vector<ConditionExpression *>::iterator iterator;
   vector<ConditionExpression *>::iterator i;
 

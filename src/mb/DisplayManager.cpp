@@ -115,7 +115,6 @@ DisplayManager::checkInitMutex ()
 void
 DisplayManager::addIEListenerInstance (IInputEventListener *listener)
 {
-
   checkInitMutex ();
   Thread::mutexLock (&ilMutex);
   iListeners.insert (listener);
@@ -125,7 +124,6 @@ DisplayManager::addIEListenerInstance (IInputEventListener *listener)
 void
 DisplayManager::removeIEListenerInstance (IInputEventListener *listener)
 {
-
   set<IInputEventListener *>::iterator i;
 
   checkInitMutex ();
@@ -142,7 +140,6 @@ bool
 DisplayManager::hasIEListenerInstance (IInputEventListener *listener,
                                            bool removeInstance)
 {
-
   set<IInputEventListener *>::iterator i;
   bool hasListener = false;
 
@@ -166,7 +163,6 @@ DisplayManager::hasIEListenerInstance (IInputEventListener *listener,
 void
 DisplayManager::addMEListenerInstance (IMotionEventListener *listener)
 {
-
   checkInitMutex ();
   Thread::mutexLock (&mlMutex);
   mListeners.insert (listener);
@@ -177,7 +173,6 @@ void
 DisplayManager::removeMEListenerInstance (
     IMotionEventListener *listener)
 {
-
   set<IMotionEventListener *>::iterator i;
 
   checkInitMutex ();
@@ -194,7 +189,6 @@ bool
 DisplayManager::hasMEListenerInstance (IMotionEventListener *listener,
                                            bool removeInstance)
 {
-
   set<IMotionEventListener *>::iterator i;
   bool hasListener = false;
 
@@ -218,7 +212,6 @@ DisplayManager::hasMEListenerInstance (IMotionEventListener *listener,
 void
 DisplayManager::setBackgroundImage (GingaScreenID screenId, string uri)
 {
-
   SDLDeviceScreen *screen;
 
   if (getScreen (screenId, &screen))
@@ -332,7 +325,6 @@ DisplayManager::createScreen (int argc, char **args)
                 || strcmp (args[i], "--wid") == 0)
                && ((i + 1) < argc))
         {
-
           vEmbed.assign (args[i + 1]);
         }
       else if (strcmp (args[i], "--external-renderer") == 0)
@@ -361,7 +353,6 @@ DisplayManager::createScreen (string vMode, string vParent,
                                   string vEmbed,
                                   bool externalRenderer, bool useStdin)
 {
-
   SDLDeviceScreen *screen = NULL;
   UnderlyingWindowID embedWin = NULL;
   int argc = 0;
@@ -439,7 +430,6 @@ DisplayManager::getScreenName (GingaScreenID screenId)
 UnderlyingWindowID
 DisplayManager::getScreenUnderlyingWindow (GingaScreenID screenId)
 {
-
   SDLDeviceScreen *screen;
   UnderlyingWindowID uWin = NULL;
 
@@ -455,7 +445,6 @@ SDLWindow *
 DisplayManager::getIWindowFromId (GingaScreenID screenId,
                                       GingaWindowID winId)
 {
-
   SDLDeviceScreen *screen;
   SDLWindow *window = NULL;
 
@@ -471,7 +460,6 @@ bool
 DisplayManager::mergeIds (GingaScreenID screenId, GingaWindowID destId,
                               vector<GingaWindowID> *srcIds)
 {
-
   SDLDeviceScreen *screen;
 
   if (getScreen (screenId, &screen))
@@ -486,7 +474,6 @@ void
 DisplayManager::blitScreen (GingaScreenID screenId,
                                 SDLSurface *destination)
 {
-
   SDLDeviceScreen *screen;
 
   if (getScreen (screenId, &screen))
@@ -498,7 +485,6 @@ DisplayManager::blitScreen (GingaScreenID screenId,
 void
 DisplayManager::blitScreen (GingaScreenID screenId, string fileUri)
 {
-
   SDLDeviceScreen *screen;
 
   if (getScreen (screenId, &screen))
@@ -524,7 +510,6 @@ GingaWindowID
 DisplayManager::createWindow (GingaScreenID screenId, int x, int y,
                                   int w, int h, double z)
 {
-
   SDLDeviceScreen *screen;
   SDLWindow *window = NULL;
 
@@ -546,7 +531,6 @@ DisplayManager::createUnderlyingSubWindow (GingaScreenID screenId,
                                                int x, int y, int w, int h,
                                                double z)
 {
-
   SDLDeviceScreen *screen;
   UnderlyingWindowID window = NULL;
 
@@ -566,7 +550,6 @@ DisplayManager::createUnderlyingSubWindow (GingaScreenID screenId,
 bool
 DisplayManager::hasWindow (GingaScreenID screenId, GingaWindowID winId)
 {
-
   SDLWindow *window;
   SDLDeviceScreen *screen;
   bool hasWin = false;
@@ -583,7 +566,6 @@ DisplayManager::hasWindow (GingaScreenID screenId, GingaWindowID winId)
 void
 DisplayManager::releaseWindow (GingaScreenID screenId, SDLWindow *win)
 {
-
   SDLDeviceScreen *screen;
 
   if (getScreen (screenId, &screen))
@@ -626,7 +608,6 @@ DisplayManager::createSurface (GingaScreenID screenId)
 GingaSurfaceID
 DisplayManager::createSurface (GingaScreenID screenId, int w, int h)
 {
-
   SDLDeviceScreen *screen;
   SDLSurface *surface = NULL;
   GingaSurfaceID surId = 0;
@@ -648,7 +629,6 @@ GingaSurfaceID
 DisplayManager::createSurfaceFrom (GingaScreenID screenId,
                                        GingaSurfaceID underlyingSurface)
 {
-
   SDLDeviceScreen *screen;
   SDLSurface *surface = NULL;
   GingaSurfaceID surId = 0;
@@ -671,7 +651,6 @@ bool
 DisplayManager::hasSurface (const GingaScreenID &screenId,
                                 const GingaSurfaceID &surId)
 {
-
   SDLSurface *surface = NULL;
   SDLDeviceScreen *screen = NULL;
   bool hasSur = false;
@@ -691,7 +670,6 @@ DisplayManager::hasSurface (const GingaScreenID &screenId,
 bool
 DisplayManager::releaseSurface (GingaScreenID screenId, SDLSurface *sur)
 {
-
   SDLDeviceScreen *screen;
 
   if (getScreen (screenId, &screen))
@@ -709,7 +687,6 @@ DisplayManager::createContinuousMediaProvider (GingaScreenID screenId,
                                                    const char *mrl,
                                                    bool isRemote)
 {
-
   SDLDeviceScreen *screen;
   IContinuousMediaProvider *provider = NULL;
   GingaProviderID providerId = 0;
@@ -734,7 +711,6 @@ void
 DisplayManager::releaseContinuousMediaProvider (
     GingaScreenID screenId, GingaProviderID providerId)
 {
-
   SDLDeviceScreen *screen;
   IContinuousMediaProvider *provider = NULL;
   IMediaProvider *iProvider = getIMediaProviderFromId (providerId);
@@ -759,7 +735,6 @@ GingaProviderID
 DisplayManager::createFontProvider (GingaScreenID screenId,
                                         const char *mrl, int fontSize)
 {
-
   SDLDeviceScreen *screen;
   IFontProvider *provider = NULL;
   GingaProviderID providerId = 0;
@@ -784,7 +759,6 @@ void
 DisplayManager::releaseFontProvider (GingaScreenID screenId,
                                          GingaProviderID providerId)
 {
-
   SDLDeviceScreen *screen;
   IFontProvider *provider = NULL;
   IMediaProvider *iProvider = getIMediaProviderFromId (providerId);
@@ -807,7 +781,6 @@ GingaProviderID
 DisplayManager::createImageProvider (GingaScreenID screenId,
                                          const char *mrl)
 {
-
   SDLDeviceScreen *screen;
   IImageProvider *provider = NULL;
   GingaProviderID providerId = 0;
@@ -832,7 +805,6 @@ void
 DisplayManager::releaseImageProvider (GingaScreenID screenId,
                                           GingaProviderID providerId)
 {
-
   SDLDeviceScreen *screen;
   IImageProvider *provider = NULL;
   IMediaProvider *iProvider = getIMediaProviderFromId (providerId);
@@ -855,7 +827,6 @@ GingaSurfaceID
 DisplayManager::createRenderedSurfaceFromImageFile (
     GingaScreenID screenId, const char *mrl)
 {
-
   SDLDeviceScreen *screen;
   SDLSurface *uSur = NULL;
   GingaSurfaceID surId = 0;
@@ -906,7 +877,6 @@ SDLInputEvent *
 DisplayManager::createInputEvent (GingaScreenID screenId, void *event,
                                       const int symbol)
 {
-
   SDLDeviceScreen *screen;
   SDLInputEvent *iEvent = NULL;
 
@@ -922,7 +892,6 @@ SDLInputEvent *
 DisplayManager::createApplicationEvent (GingaScreenID screenId,
                                             int type, void *data)
 {
-
   SDLDeviceScreen *screen;
   SDLInputEvent *iEvent = NULL;
 
@@ -1813,7 +1782,6 @@ void
 DisplayManager::resumeProvider (const GingaProviderID &provId,
                                     GingaSurfaceID surface)
 {
-
   IContinuousMediaProvider *provider = NULL;
   IMediaProvider *iProvider = getIMediaProviderFromId (provId);
 
@@ -1948,7 +1916,6 @@ void
 DisplayManager::addScreen (GingaScreenID screenId,
                                SDLDeviceScreen *screen)
 {
-
   lockScreenMap ();
   if (screen != NULL)
     {
@@ -1978,7 +1945,6 @@ bool
 DisplayManager::getScreen (GingaScreenID screenId,
                                SDLDeviceScreen **screen)
 {
-
   bool hasScreen = false;
   map<GingaScreenID, SDLDeviceScreen *>::iterator i;
 

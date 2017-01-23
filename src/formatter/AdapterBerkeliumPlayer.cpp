@@ -82,7 +82,6 @@ AdapterBerkeliumPlayer::createPlayer ()
 {
   if (mrl != "")
     {
-
       if (mrl.substr (0, 1) == SystemCompat::getIUriD ())
         {
           mrl = SystemCompat::updatePath (mrl);
@@ -100,14 +99,12 @@ bool
 AdapterBerkeliumPlayer::setPropertyValue (NclAttributionEvent *event,
                                           string value)
 {
-
   string propName;
   propName = (event->getAnchor ())->getPropertyName ();
   if (propName == "size" || propName == "bounds" || propName == "top"
       || propName == "left" || propName == "bottom" || propName == "right"
       || propName == "width" || propName == "height")
     {
-
       if (player != NULL)
         {
           LayoutRegion *ncmRegion;

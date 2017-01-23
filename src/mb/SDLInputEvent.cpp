@@ -106,7 +106,6 @@ SDLInputEvent::getKeyCode (GingaScreenID screenId)
 
   if (event.type == SDL_FINGERUP || event.type == SDL_MOUSEBUTTONUP)
     {
-
       return CodeMap::KEY_TAP;
     }
 
@@ -136,7 +135,6 @@ SDLInputEvent::getKeyCode (GingaScreenID screenId)
       && gingaValue <= CodeMap::KEY_SMALL_Z
       && ((capsOn && !shiftOn) || (!capsOn && shiftOn)))
     {
-
       gingaValue = Ginga_Display->fromMBToGinga (
           screenId, sdlValue + 5000);
     }
@@ -232,7 +230,6 @@ SDLInputEvent::isButtonPressType ()
   if (event.type == SDL_FINGERUP || event.type == SDL_MOUSEBUTTONUP
       || event.type == SDL_FINGERDOWN || event.type == SDL_MOUSEBUTTONDOWN)
     {
-
       return true;
     }
 
@@ -244,7 +241,6 @@ SDLInputEvent::isMotionType ()
 {
   if (event.type == SDL_MOUSEMOTION || event.type == SDL_FINGERMOTION)
     {
-
       return true;
     }
   return false;
@@ -276,10 +272,8 @@ SDLInputEvent::isApplicationType ()
   if (event.type == SDL_USEREVENT && event.user.data1 != NULL
       && event.user.data2 != NULL)
     {
-
       if (strcmp ((char *)(event.user.data1), ET_USEREVENT.c_str ()) == 0)
         {
-
           return true;
         }
     }

@@ -33,7 +33,6 @@ CompoundStatement::CompoundStatement (Statement *p1, Statement *p2,
                                       short op)
     : Statement ()
 {
-
   statements = new vector<Statement *>;
   negated = false;
   myOperator = op;

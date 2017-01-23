@@ -32,7 +32,6 @@ GINGA_FORMATTER_BEGIN
 class NclLinkTransitionTriggerCondition : public NclLinkTriggerCondition,
                                           public INclEventListener
 {
-
 protected:
   NclFormatterEvent *event;
   short transition;

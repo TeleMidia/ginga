@@ -35,7 +35,6 @@ class NclFormatterCausalLink : public NclFormatterLink,
                                public NclLinkTriggerListener,
                                public NclLinkActionProgressionListener
 {
-
 private:
   NclLinkTriggerCondition *condition;
   NclLinkAction *action;

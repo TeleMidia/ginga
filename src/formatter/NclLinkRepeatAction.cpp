@@ -24,7 +24,6 @@ NclLinkRepeatAction::NclLinkRepeatAction (NclFormatterEvent *event,
                                           short actionType)
     : NclLinkSimpleAction (event, actionType)
 {
-
   this->repetitions = 0;
   this->repetitionInterval = 0;
 
