@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "SDLFontProvider.h"
 
-#include "SDLScreen.h"
+#include "SDLDisplay.h"
 #include "DisplayManager.h"
 #include "SDLWindow.h"
 #include "SDLSurface.h"
@@ -355,7 +355,7 @@ SDLFontProvider::playOver (GingaSurfaceID surface)
           return;
         }
 
-      SDLScreen::addUnderlyingSurface (text);
+      SDLDisplay::addUnderlyingSurface (text);
 
       rect.x = coordX;
       rect.y = coordY;
@@ -374,12 +374,12 @@ SDLFontProvider::playOver (GingaSurfaceID surface)
       if (renderedSurface == NULL)
         {
           renderedSurface
-              = SDLScreen::createUnderlyingSurface (pW, pH);
+              = SDLDisplay::createUnderlyingSurface (pW, pH);
 
           /*
                   *******************************************
                   Code removed due to new default behavior of
-                  SDLScreen::createUnderlyingSurface
+                  SDLDisplay::createUnderlyingSurface
                   *******************************************
 
                                           if (SDL_SetColorKey(
@@ -419,7 +419,7 @@ SDLFontProvider::playOver (GingaSurfaceID surface)
             }
         }
 
-      SDLScreen::lockSDL ();
+      SDLDisplay::lockSDL ();
       if (renderedSurface != NULL)
         {
           if (SDL_UpperBlit (text, NULL, renderedSurface, &rect) < 0)
@@ -432,9 +432,9 @@ SDLFontProvider::playOver (GingaSurfaceID surface)
               clog << endl;
             }
         }
-      SDLScreen::unlockSDL ();
+      SDLDisplay::unlockSDL ();
 
-      SDLScreen::createReleaseContainer (text, NULL, NULL);
+      SDLDisplay::createReleaseContainer (text, NULL, NULL);
       text = NULL;
     }
   else

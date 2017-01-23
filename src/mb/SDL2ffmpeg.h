@@ -25,7 +25,7 @@ using namespace ::ginga::system;
 using namespace ::ginga::system;
 
 #include "IContinuousMediaProvider.h"
-#include "SDLScreen.h"
+#include "SDLDisplay.h"
 
 /* SDL2ffmpeg cplusplus compat begin */
 extern "C" {

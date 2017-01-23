@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "DisplayManager.h"
 #include "SDLConvert.h"
-#include "SDLScreen.h"
+#include "SDLDisplay.h"
 #include "SDLSurface.h"
 
 #include "util/Color.h"
@@ -380,17 +380,17 @@ SDLWindow::resize (int width, int height)
 void
 SDLWindow::raiseToTop ()
 {
-  //		SDLScreen::updateWindowState(
+  //		SDLDisplay::updateWindowState(
   //				myScreen, this,
-  // SDLScreen::SUW_RAISETOTOP);
+  // SDLDisplay::SUW_RAISETOTOP);
 }
 
 void
 SDLWindow::lowerToBottom ()
 {
-  //		SDLScreen::updateWindowState(
+  //		SDLDisplay::updateWindowState(
   //				myScreen, this,
-  // SDLScreen::SUW_LOWERTOBOTTOM);
+  // SDLDisplay::SUW_LOWERTOBOTTOM);
 }
 
 void
@@ -438,16 +438,16 @@ void
 SDLWindow::show ()
 {
   this->visible = true;
-  //		SDLScreen::updateWindowState(
-  //				myScreen, this, SDLScreen::SUW_SHOW);
+  //		SDLDisplay::updateWindowState(
+  //				myScreen, this, SDLDisplay::SUW_SHOW);
 }
 
 void
 SDLWindow::hide ()
 {
   visible = false;
-  //		SDLScreen::updateWindowState(
-  //				myScreen, this, SDLScreen::SUW_HIDE);
+  //		SDLDisplay::updateWindowState(
+  //				myScreen, this, SDLDisplay::SUW_HIDE);
 }
 
 int
@@ -511,7 +511,7 @@ SDLWindow::setZ (double z)
 
   this->z = z;
 
-  SDLScreen::updateRenderMap (myScreen, this, oldZ, z);
+  SDLDisplay::updateRenderMap (myScreen, this, oldZ, z);
 }
 
 bool
@@ -647,7 +647,7 @@ SDLWindow::setTexture (SDL_Texture *texture)
 
   if (textureOwner && this->texture != NULL)
     {
-      SDLScreen::createReleaseContainer (NULL, this->texture, NULL);
+      SDLDisplay::createReleaseContainer (NULL, this->texture, NULL);
     }
 
   if (texture == NULL)
@@ -673,7 +673,7 @@ SDLWindow::getTexture (SDL_Renderer *renderer)
     {
       if (textureOwner && textureUpdate && texture != NULL)
         {
-          SDLScreen::releaseTexture (texture);
+          SDLDisplay::releaseTexture (texture);
           textureUpdate = false;
           texture = NULL;
         }
@@ -684,7 +684,7 @@ SDLWindow::getTexture (SDL_Renderer *renderer)
           if (curSur != NULL)
             {
               textureOwner = true;
-              texture = SDLScreen::createTextureFromSurface (renderer,
+              texture = SDLDisplay::createTextureFromSurface (renderer,
                                                                    curSur);
             }
           unlockSurface ();
@@ -823,7 +823,7 @@ SDLWindow::getDumpFileUri (int quality, arg_unused (int dumpW), arg_unused (int 
   else if (texture != NULL)
     {
       dumpUSur
-          = SDLScreen::createUnderlyingSurfaceFromTexture (texture);
+          = SDLDisplay::createUnderlyingSurfaceFromTexture (texture);
       freeSurface = true;
     }
   else
@@ -835,15 +835,15 @@ SDLWindow::getDumpFileUri (int quality, arg_unused (int dumpW), arg_unused (int 
       return "";
     }
 
-  SDLScreen::lockSDL ();
+  SDLDisplay::lockSDL ();
   xstrassign (uri, "%s/dump_%d.jpg", g_get_tmp_dir (), (int) windowId);
   int ret
       = SDLConvert::convertSurfaceToJPEG (uri.c_str (), dumpUSur, quality);
   if (ret == -1)
     uri = "";
   if (freeSurface)
-    SDLScreen::createReleaseContainer (dumpUSur, NULL, NULL);
-  SDLScreen::unlockSDL ();
+    SDLDisplay::createReleaseContainer (dumpUSur, NULL, NULL);
+  SDLDisplay::unlockSDL ();
 
   unlockSurface ();
   return uri;

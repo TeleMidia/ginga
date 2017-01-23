@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-#include "SDLScreen.h"
+#include "SDLDisplay.h"
 #include "InputManager.h"
 
 #include "SDLWindow.h"
@@ -45,7 +45,7 @@ public:
   DisplayManager ();
 
 protected:
-  map<GingaScreenID, SDLScreen *> screens;
+  map<GingaScreenID, SDLDisplay *> screens;
 
   pthread_mutex_t mapMutex;
   pthread_mutex_t genMutex;
@@ -338,9 +338,9 @@ public:
   int getProviderHeight (const GingaProviderID &provId);
 
 protected:
-  void addScreen (GingaScreenID screenId, SDLScreen *screen);
+  void addScreen (GingaScreenID screenId, SDLDisplay *screen);
   short getNumOfScreens ();
-  bool getScreen (GingaScreenID screenId, SDLScreen **screen);
+  bool getScreen (GingaScreenID screenId, SDLDisplay **screen);
   bool removeScreen (GingaScreenID screenId);
   void lockScreenMap ();
   void unlockScreenMap ();
