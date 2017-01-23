@@ -50,7 +50,7 @@ typedef struct
   SDL_Texture *uTex;
 } ReleaseContainer;
 
-class SDLScreen
+class SDLDisplay
 {
 public:
   static const unsigned int DSA_UNKNOWN;
@@ -77,7 +77,7 @@ public:
 private:
   static bool hasRenderer;
   static bool mutexInit;
-  static map<SDLScreen *, short> sdlScreens;
+  static map<SDLDisplay *, short> sdlScreens;
 
   string mbMode;
   string mbSubSystem;
@@ -134,10 +134,10 @@ private:
       cstMutex; // mutex for the others C++ STL structures
 
 public:
-  SDLScreen (int numArgs, char **args, GingaScreenID myId,
+  SDLDisplay (int numArgs, char **args, GingaScreenID myId,
                    UnderlyingWindowID embedId, bool externalRenderer);
 
-  virtual ~SDLScreen ();
+  virtual ~SDLDisplay ();
 
 private:
   static void checkMutexInit ();
@@ -233,32 +233,32 @@ private:
   static void notifyQuit ();
   static void sdlQuit ();
 
-  static void checkWindowFocus (SDLScreen *s, SDL_Event *event);
-  static bool notifyEvent (SDLScreen *screen, SDL_Event *event,
+  static void checkWindowFocus (SDLDisplay *s, SDL_Event *event);
+  static bool notifyEvent (SDLDisplay *screen, SDL_Event *event,
                            bool capsOn, bool shiftOn);
 
   static void *checkStdin (void *ptr);
-  static void processCmd (SDLScreen *s, string cmd, string type,
+  static void processCmd (SDLDisplay *s, string cmd, string type,
                           string args);
 
   static bool checkEvents ();
   static void *rendererT (void *ptr);
 
-  static void refreshRC (SDLScreen *screen);
-  static int refreshCMP (SDLScreen *screen);
-  static void refreshWin (SDLScreen *screen);
+  static void refreshRC (SDLDisplay *screen);
+  static int refreshCMP (SDLDisplay *screen);
+  static void refreshWin (SDLDisplay *screen);
 
-  static void initEmbed (SDLScreen *s, UnderlyingWindowID uWin);
-  static void forceInputFocus (SDLScreen *screen,
+  static void initEmbed (SDLDisplay *s, UnderlyingWindowID uWin);
+  static void forceInputFocus (SDLDisplay *screen,
                                UnderlyingWindowID uWin);
 
-  static void initScreen (SDLScreen *screen);
-  static void clearScreen (SDLScreen *screen);
-  static void releaseScreen (SDLScreen *screen);
+  static void initScreen (SDLDisplay *screen);
+  static void clearScreen (SDLDisplay *screen);
+  static void releaseScreen (SDLDisplay *screen);
 
   static void releaseAll ();
 
-  static void initCMP (SDLScreen *screen,
+  static void initCMP (SDLDisplay *screen,
                        IContinuousMediaProvider *cmp);
 
   static bool blitFromWindow (SDLWindow *iWin, SDL_Surface *dest);
@@ -285,7 +285,7 @@ private:
   /* input */
   static int convertEventCodeStrToInt (string strEvent);
   static void initCodeMaps ();
-  static bool checkEventFocus (SDLScreen *s);
+  static bool checkEventFocus (SDLDisplay *s);
 
 public:
   /* output */

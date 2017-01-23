@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLVideoProvider.h"
 
 #include "DisplayManager.h"
-#include "SDLScreen.h"
+#include "SDLDisplay.h"
 #include "SDLSurface.h"
 #include "SDLWindow.h"
 
@@ -136,7 +136,7 @@ SDLVideoProvider::playOver (GingaSurfaceID surface)
   GingaWindowID parentId;
   SDLWindow *parent;
 
-  SDLScreen::addCMPToRendererList (this);
+  SDLDisplay::addCMPToRendererList (this);
   parentId = Ginga_Display->getSurfaceParentWindow (
       surface);
 

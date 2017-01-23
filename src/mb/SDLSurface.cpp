@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "DisplayManager.h"
 #include "IFontProvider.h"
-#include "SDLScreen.h"
+#include "SDLDisplay.h"
 #include "SDLWindow.h"
 
 GINGA_MB_BEGIN
@@ -65,7 +65,7 @@ SDLSurface::~SDLSurface ()
 
   if (sur != NULL)
     {
-      SDLScreen::createReleaseContainer (sur, NULL, NULL);
+      SDLDisplay::createReleaseContainer (sur, NULL, NULL);
     }
 
   sur = NULL;
@@ -88,7 +88,7 @@ SDLSurface::releasePendingSurface ()
 {
   if (pending != NULL)
     {
-      SDLScreen::createReleaseContainer (pending, NULL, NULL);
+      SDLDisplay::createReleaseContainer (pending, NULL, NULL);
       pending = NULL;
     }
 }
@@ -102,13 +102,13 @@ SDLSurface::createPendingSurface ()
 
       if (sur != NULL && pending != NULL)
         {
-          SDLScreen::lockSDL ();
+          SDLDisplay::lockSDL ();
           if (SDL_UpperBlit (sur, NULL, pending, NULL) < 0)
             {
               clog << "SDLSurface::createPendingSurface SDL error: '";
               clog << SDL_GetError () << "'" << endl;
             }
-          SDLScreen::unlockSDL ();
+          SDLDisplay::unlockSDL ();
         }
     }
 
@@ -128,7 +128,7 @@ SDLSurface::checkPendingSurface ()
         }
 
       Thread::mutexLock (&sMutex);
-      SDLScreen::createReleaseContainer (sur, NULL, NULL);
+      SDLDisplay::createReleaseContainer (sur, NULL, NULL);
       sur = pending;
       pending = NULL;
       Thread::mutexUnlock (&sMutex);
@@ -351,7 +351,7 @@ SDLSurface::setSurfaceContent (void *surface)
 
   if (sur != NULL)
     {
-      SDLScreen::createReleaseContainer (sur, NULL, NULL);
+      SDLDisplay::createReleaseContainer (sur, NULL, NULL);
     }
   this->sur = (SDL_Surface *)surface;
   Thread::mutexUnlock (&sMutex);
@@ -694,7 +694,7 @@ SDLSurface::createSurface ()
       return NULL;
     }
 
-  sdlSurface = SDLScreen::createUnderlyingSurface (w, h);
+  sdlSurface = SDLDisplay::createUnderlyingSurface (w, h);
   if (sdlSurface == NULL)
     return NULL;
 
@@ -756,13 +756,13 @@ SDLSurface::blit (int x, int y, SDLSurface *src, int srcX, int srcY,
 
           if (createPendingSurface ())
             {
-              SDLScreen::lockSDL ();
+              SDLDisplay::lockSDL ();
               if (SDL_UpperBlit (uSur, srcPtr, pending, &dstRect) < 0)
                 {
                   clog << "SDLSurface::blit SDL error: '";
                   clog << SDL_GetError () << "'" << endl;
                 }
-              SDLScreen::unlockSDL ();
+              SDLDisplay::unlockSDL ();
             }
         }
 
