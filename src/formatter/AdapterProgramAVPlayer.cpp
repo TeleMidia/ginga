@@ -133,15 +133,17 @@ AdapterProgramAVPlayer::updateAVBounds ()
 
   if (object != NULL && object->getDescriptor () != NULL)
     {
+      string s;
+
       descriptor = object->getDescriptor ();
       region = descriptor->getFormatterRegion ();
       ncmRegion = region->getLayoutRegion ();
 
-      player->setPropertyValue (
-          "bounds", itos (ncmRegion->getAbsoluteLeft ()) + ","
-                        + itos (ncmRegion->getAbsoluteTop ()) + ","
-                        + itos (ncmRegion->getWidthInPixels ()) + ","
-                        + itos (ncmRegion->getHeightInPixels ()));
+      xstrassign (s, "%d,%d,%d,%d", ncmRegion->getAbsoluteTop (),
+                  ncmRegion->getAbsoluteLeft (),
+                  ncmRegion->getWidthInPixels (),
+                  ncmRegion->getHeightInPixels ());
+      player->setPropertyValue ("bounds", s);
     }
   else
     {

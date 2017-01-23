@@ -196,7 +196,8 @@ EntryEventListener::getPriorityType ()
 FormatterMediator::FormatterMediator (NclPlayerData *pData)
     : Player (pData->screenId, "")
 {
-  string deviceName = "systemScreen(" + itos (pData->devClass) + ")";
+  string deviceName;
+  xstrassign (deviceName, "systemScreen(%d)", pData->devClass);
 
   this->data = pData;
   this->currentFile = "";

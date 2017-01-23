@@ -194,7 +194,7 @@ NCLMetadata::createNCLSections ()
   fileSize = (int) rootObject->getSize ();
   cTag = rootObject->getCopmonentTag ();
 
-  writeDataElement (itos (structId), fileUri, itos (fileSize), cTag);
+  writeDataElement (xstrbuild ("%d", structId), fileUri, xstrbuild ("%d", fileSize), cTag);
   streamData = createStreamData (structId, ST_DATAFILE, fileUri, fileSize);
 
   streams->push_back (streamData);
@@ -208,7 +208,7 @@ NCLMetadata::createNCLSections ()
       fileSize = (int) dataFile->getSize ();
       cTag = dataFile->getCopmonentTag ();
 
-      writeDataElement (itos (structId), fileUri, itos (fileSize), cTag);
+      writeDataElement (xstrbuild ("%d", structId), fileUri, xstrbuild ("%d", fileSize), cTag);
 
       streamData
           = createStreamData (structId, ST_DATAFILE, fileUri, fileSize);

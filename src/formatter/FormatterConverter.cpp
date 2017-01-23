@@ -647,14 +647,16 @@ FormatterConverter::getEvent (NclExecutionObject *executionObject,
 {
   string id;
   NclFormatterEvent *event;
+  string type;
 
+  xstrassign (type, "%d", ncmEventType);
   if (key == "")
     {
-      id = interfacePoint->getId () + "_" + itos (ncmEventType);
+      id = interfacePoint->getId () + "_" + type;
     }
   else
     {
-      id = interfacePoint->getId () + "_" + itos (ncmEventType) + "_" + key;
+      id = interfacePoint->getId () + "_" + type + "_" + key;
     }
 
   event = executionObject->getEvent (id);
@@ -923,12 +925,12 @@ FormatterConverter::createExecutionObject (
 
   if (nodeEntity->instanceOf ("SwitchNode"))
     {
+      string s;
       executionObject = new NclExecutionObjectSwitch (id, node, handling,
                                                       actionListener);
-
+      xstrassign (s, "%d", EventUtil::EVT_PRESENTATION);
       compositeEvent = new NclPresentationEvent (
-          nodeEntity->getLambdaAnchor ()->getId () + "_"
-              + itos (EventUtil::EVT_PRESENTATION),
+          nodeEntity->getLambdaAnchor ()->getId () + "_" + s,
           executionObject,
           (ContentAnchor *)(nodeEntity->getLambdaAnchor ()));
 
@@ -942,12 +944,13 @@ FormatterConverter::createExecutionObject (
     }
   else if (nodeEntity->instanceOf ("CompositeNode"))
     {
+      string s;
       executionObject = new NclCompositeExecutionObject (
           id, node, descriptor, handling, actionListener);
 
+      xstrassign (s, "%d", EventUtil::EVT_PRESENTATION);
       compositeEvent = new NclPresentationEvent (
-          nodeEntity->getLambdaAnchor ()->getId () + "_"
-              + itos (EventUtil::EVT_PRESENTATION),
+          nodeEntity->getLambdaAnchor ()->getId () + "_" + s,
           executionObject,
           (ContentAnchor *)(nodeEntity->getLambdaAnchor ()));
 
@@ -990,8 +993,7 @@ FormatterConverter::createDummyDescriptor (arg_unused (Node *node))
 {
   Descriptor *ncmDesc = NULL;
   FocusDecoration *focusDecoration;
-
-  ncmDesc = new Descriptor ("dummyDescriptor" + itos (dummyCount));
+  ncmDesc = new Descriptor ("dummyDescriptor" + xstrbuild ("%d", dummyCount));
   dummyCount++;
   focusDecoration = new FocusDecoration ();
   ncmDesc->setFocusDecoration (focusDecoration);

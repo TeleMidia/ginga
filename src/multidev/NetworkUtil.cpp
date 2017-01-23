@@ -150,9 +150,9 @@ getStreamFromUInt (unsigned int uint)
 string
 getStrIP (unsigned int someIp)
 {
-  return itos (someIp & 0xFF) + "." + itos ((someIp & 0xFF00) >> 8) + "."
-         + itos ((someIp & 0xFF0000) >> 16) + "."
-         + itos ((someIp & 0xFF000000) >> 24);
+  return xstrbuild ("%u", someIp & 0xFF) + "." + xstrbuild ("%u", (someIp & 0xFF00) >> 8) + "."
+         + xstrbuild ("%u", (someIp & 0xFF0000) >> 16) + "."
+         + xstrbuild ("%u", (someIp & 0xFF000000) >> 24);
 }
 
 char *

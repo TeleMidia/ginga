@@ -804,8 +804,6 @@ bool
 FormatterMultiDevice::newDeviceConnected (int newDevClass, int w, int h)
 {
   bool isNewClass = false;
-  /*INCLSectionProcessor* nsp = NULL;
-  vector<StreamData*>* streams;*/
 
   clog << "FormatterMultiDevice::newDeviceConnected class '";
   clog << newDevClass << "', w = '" << w << "', h = '" << h << "'";
@@ -813,8 +811,8 @@ FormatterMultiDevice::newDeviceConnected (int newDevClass, int w, int h)
 
   if (presContext != NULL)
     {
-      presContext->incPropertyValue (SYSTEM_DEVNUMBER + "("
-                                     + itos (newDevClass) + ")");
+      presContext->incPropertyValue (SYSTEM_DEVNUMBER
+                                     + xstrbuild ("(%d)", newDevClass));
     }
 
   if (!hasRemoteDevices)
@@ -834,15 +832,6 @@ FormatterMultiDevice::newDeviceConnected (int newDevClass, int w, int h)
     {
       clog << "FormatterMulDevice::newDeviceConnected class = ";
       clog << DeviceDomain::CT_ACTIVE << endl;
-
-      /*streams = nsp->createNCLSections(
-                      "0x01.0x01",
-                      "nclApp",
-                      activeBaseUri,
-                      activeUris,
-                      NULL);
-
-      rdm->postNclMetadata(newDevClass, streams);*/
     }
   else
     {
@@ -858,10 +847,6 @@ FormatterMultiDevice::receiveRemoteEvent (int remoteDevClass, int eventType,
 {
   vector<string> *params;
   int eventCode;
-
-  /*clog << "FormatterActiveDevice::receiveRemoteEvent from class '";
-  clog << remoteDevClass << "', eventType '" << eventType << "', ";
-  clog << "eventContent = '" << eventContent << "'" << endl;*/
 
   if (remoteDevClass == DeviceDomain::CT_PASSIVE
       && eventType == DeviceDomain::FT_SELECTIONEVENT)
@@ -881,9 +866,7 @@ FormatterMultiDevice::receiveRemoteEvent (int remoteDevClass, int eventType,
                       strX = (*params)[1];
                       strY = (*params)[2];
 
-                      tapObject (DeviceDomain::CT_PASSIVE,
-                                 (int)::ginga::util::stof (strX),
-                                 (int)::ginga::util::stof (strY));
+                      tapObject (DeviceDomain::CT_PASSIVE, xstrto_int (strX), xstrto_int (strY));
                     }
                   else if (eventCode != CodeMap::KEY_NULL)
                     {

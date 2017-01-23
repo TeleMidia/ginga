@@ -142,21 +142,14 @@ DsmccBiop::processMessageHeader ()
   rval = (int) fread ((void *)&(data[0]), 1, 12, moduleFd);
   if (rval != 12)
     {
-      abortProcess ("DsmccBiop::processMessageHeader "
-                    "Can't read 12 bytes on file, "
-                    + module->getModuleFileName () + ", rval = "
-                    + itos ((int)rval));
-
+      ::abort ();
       return false;
     }
 
   if ((data[i] & 0xFF) != 0x42 || (data[i + 1] & 0xFF) != 0x49
       || (data[i + 2] & 0xFF) != 0x4F || (data[i + 3] & 0xFF) != 0x50)
     {
-      abortProcess ("DsmccBiop::processMessageHeader "
-                    "magic Field is not 'BIOP' in file: "
-                    + module->getModuleFileName ());
-
+      ::abort ();
       return false;
     }
 
@@ -218,10 +211,7 @@ DsmccBiop::processMessageSubHeader ()
 
   if ((unsigned int)rval != messageSize)
     {
-      abortProcess ("Cant read message on file, "
-                    + module->getModuleFileName () + ", rval = "
-                    + itos ((int)rval));
-
+      ::abort ();
       return -1;
     }
 

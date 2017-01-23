@@ -30,37 +30,29 @@ AnimationController::AnimationController (NclExecutionObject *execObj,
   this->pManager = pManager;
   this->player = player;
   this->event = event;
-
   this->params = split (xstrchomp (value), ",");
   this->propName = (event->getAnchor ())->getPropertyName ();
-
-  this->duration = ::ginga::util::stof (anim->getDuration ());
-  this->stepSize = (int)::ginga::util::stof (anim->getBy ());
-
+  this->duration = xstrtod (anim->getDuration ());
+  this->stepSize = xstrto_int (anim->getBy ());
   this->targetRegion = NULL;
-
   this->previousValues = "";
 }
 
 AnimationController::~AnimationController ()
 {
   isDeleting = true;
-
   pManager = NULL;
   player = NULL;
-
   if (targetRegion != NULL)
     {
       delete targetRegion;
       targetRegion = NULL;
     }
-
   if (params != NULL)
     {
       delete params;
       params = NULL;
     }
-
   targetValues.clear ();
   strTargetValues.clear ();
 }
@@ -98,7 +90,7 @@ AnimationController::run ()
 
   if (loadInitValues () && loadTargetValues ())
     {
-      this->initTime = getCurrentTimeMillis ();
+      this->initTime = xruntime_ms ();
       // the animation can be performed
       while (!done)
         {
@@ -125,7 +117,7 @@ AnimationController::animeStep ()
   vector<double> *nextValues = new vector<double>;
   string paramValue = "";
 
-  time = getCurrentTimeMillis ();
+  time = xruntime_ms ();
 
   //		clog << "AnimationController::animeStep : Next Values = ";
   for (i = 0; i < initValues.size (); i++)
@@ -149,8 +141,7 @@ AnimationController::animeStep ()
             {
               paramValue += ",";
             }
-
-          paramValue += itos (targetValues[i]);
+          paramValue += xstrbuild ("%d", (int) targetValues[i]);
         }
 
       if (player == NULL || !pManager->hasPlayer (player)
@@ -167,8 +158,7 @@ AnimationController::animeStep ()
             {
               paramValue += ",";
             }
-
-          paramValue += itos ((*nextValues)[i]);
+          paramValue += xstrbuild ("%d", (int)(*nextValues)[i]);
         }
 
       if (paramValue == previousValues)
@@ -228,7 +218,7 @@ AnimationController::loadInitValues ()
               value = execObj->getPropertyValue (
                   this->propertySingleNames[i]);
             }
-          propValue = ::ginga::util::stof (value);
+          propValue = xstrtod (value);
 
           clog << "AnimationController::loadInitValues (execObj): ";
           clog << propertySingleNames[i] << " value = '";
@@ -451,32 +441,32 @@ AnimationController::updateTargetRegion ()
           if (param == "left")
             {
               targetRegion->setTargetLeft (
-                  (double)(::ginga::util::stof (value)), false);
+                  xstrtod (value), false);
             }
           else if (param == "top")
             {
               targetRegion->setTargetTop (
-                  (double)(::ginga::util::stof (value)), false);
+                  xstrtod (value), false);
             }
           else if (param == "width")
             {
               targetRegion->setTargetWidth (
-                  (double)(::ginga::util::stof (value)), false);
+                  xstrtod (value), false);
             }
           else if (param == "height")
             {
               targetRegion->setTargetHeight (
-                  (double)(::ginga::util::stof (value)), false);
+                  xstrtod (value), false);
             }
           else if (param == "bottom")
             {
               targetRegion->setTargetBottom (
-                  (double)(::ginga::util::stof (value)), false);
+                  xstrtod (value), false);
             }
           else if (param == "right")
             {
               targetRegion->setTargetRight (
-                  (double)(::ginga::util::stof (value)), false);
+                  xstrtod (value), false);
             }
         }
     }
@@ -516,7 +506,7 @@ AnimationController::getSinglePropertyTarget (int i)
     }
   else
     {
-      target = (double)(::ginga::util::stof (strTargetValues[i]));
+      target = xstrtod (strTargetValues[i]);
     }
 
   return target;

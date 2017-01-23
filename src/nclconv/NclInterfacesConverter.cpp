@@ -271,20 +271,20 @@ NclInterfacesConverter::createTemporalAnchor (DOMElement *areaElement)
           if (begin.find ("s") != std::string::npos)
             {
               firstSyntax = ContentAnchor::CAT_SAMPLES;
-              begVal = ::ginga::util::stof (
+              begVal = xstrtod (
                   begin.substr (0, begin.length () - 1));
             }
           else if (begin.find ("f") != std::string::npos)
             {
               firstSyntax = ContentAnchor::CAT_FRAMES;
-              begVal = ::ginga::util::stof (
+              begVal = xstrtod (
                   begin.substr (0, begin.length () - 1));
             }
           else if (begin.find ("npt") != std::string::npos
                    || begin.find ("NPT") != std::string::npos)
             {
               firstSyntax = ContentAnchor::CAT_NPT;
-              begVal = ::ginga::util::stof (
+              begVal = xstrtod (
                   begin.substr (0, begin.length () - 3));
             }
         }
@@ -298,20 +298,20 @@ NclInterfacesConverter::createTemporalAnchor (DOMElement *areaElement)
             {
               lastSyntax = ContentAnchor::CAT_SAMPLES;
               endVal
-                  = ::ginga::util::stof (end.substr (0, end.length () - 1));
+                  = xstrtod (end.substr (0, end.length () - 1));
             }
           else if (end.find ("f") != std::string::npos)
             {
               lastSyntax = ContentAnchor::CAT_FRAMES;
               endVal
-                  = ::ginga::util::stof (end.substr (0, end.length () - 1));
+                  = xstrtod (end.substr (0, end.length () - 1));
             }
           else if (end.find ("npt") != std::string::npos
                    || end.find ("NPT") != std::string::npos)
             {
               lastSyntax = ContentAnchor::CAT_NPT;
               endVal
-                  = ::ginga::util::stof (end.substr (0, end.length () - 3));
+                  = xstrtod (end.substr (0, end.length () - 3));
             }
         }
 

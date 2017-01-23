@@ -310,7 +310,7 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
           XMLString::transcode ("focusBorderWidth")))
     {
       int w;
-      w = (int)::ginga::util::stof (
+      w = xstrto_int (
           XMLString::transcode (parentElement->getAttribute (
               XMLString::transcode ("focusBorderWidth"))));
 
@@ -321,7 +321,7 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
           XMLString::transcode ("focusBorderTransparency")))
     {
       double alpha;
-      alpha = (double)::ginga::util::stof (
+      alpha = xstrtod (
           XMLString::transcode (parentElement->getAttribute (
               XMLString::transcode ("focusBorderTransparency"))));
 

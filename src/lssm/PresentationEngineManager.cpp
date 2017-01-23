@@ -285,7 +285,6 @@ PresentationEngineManager::editingCommand (string commandTag,
   vector<string> *args;
   vector<string>::iterator i;
   GingaLocatorFactory *glf = NULL;
-  // NclDocument* document     = NULL;
   INCLPlayer *docPlayer = NULL;
   string baseId, docId;
   string docIor, docUri, arg, uri, ior, uName;
@@ -673,7 +672,7 @@ PresentationEngineManager::openNclFile (string fname)
       return false;
     }
 
-  formatter = createNclPlayer (itos (currentPrivateBaseId), fname);
+  formatter = createNclPlayer (xstrbuild ("%d", currentPrivateBaseId), fname);
   unlock ();
 
   return (formatter != NULL);
@@ -1351,7 +1350,7 @@ PresentationEngineManager::readCommand (string command)
         }
       else if (params->size () == 2)
         {
-          delay = ::ginga::util::stof (((*params)[0]));
+          delay = xstrtod (((*params)[0]));
           if (delay > 0)
             {
               Thread::mSleep ((long int) delay);

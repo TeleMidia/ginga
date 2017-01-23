@@ -390,17 +390,8 @@ PrefetchManager::receiveDataPipe (arg_unused (FILE *fd), int size)
     }
   else
     {
-      if (filesSched < 2)
-        {
-          nFiles = " file.";
-        }
-      else
-        {
-          nFiles = " files.";
-        }
-
-      txt = "Downloaded (" + itos (kbytes) + " KB): " + itos (filesDown)
-            + " of " + itos (filesSched) + nFiles;
+      xstrassign (txt, "Downloaded (%dKB): %d of %d file(s)",
+                  kbytes, filesDown, filesSched);
     }
 }
 

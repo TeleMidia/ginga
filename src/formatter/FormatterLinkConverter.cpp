@@ -603,7 +603,7 @@ FormatterLinkConverter::createSimpleAction (
   Parameter *param;
   string paramValue;
   Animation *animation;
-  long repeat;
+  int repeat;
   double delay;
   Animation *newAnimation;
   bool isUsing;
@@ -675,12 +675,12 @@ FormatterLinkConverter::createSimpleAction (
                 }
               else
                 {
-                  repeat = (long)::ginga::util::stof (param->getValue ());
+                  repeat = xstrto_int (param->getValue ());
                 }
             }
           else
             {
-              repeat = (long)::ginga::util::stof (paramValue);
+              repeat = xstrto_int (paramValue);
             }
 
           ((NclLinkRepeatAction *)action)->setRepetitions (repeat);
@@ -1029,7 +1029,7 @@ FormatterLinkConverter::getDelayParameter (Link *ncmLink,
             }
           else
             {
-              return ::ginga::util::stof (param) * 1000;
+              return xstrtod (param) * 1000;
             }
         }
       catch (exception *exc)
@@ -1125,7 +1125,7 @@ FormatterLinkConverter::compileDelay (Link *ncmLink, string delayObject,
         }
       else
         {
-          delay = (double)(::ginga::util::stof (delayObject));
+          delay = xstrtod (delayObject);
         }
     }
 

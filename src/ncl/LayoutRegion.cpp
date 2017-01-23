@@ -1711,7 +1711,7 @@ LayoutRegion::getPercentualValue (string value)
   // retirar o caracter percentual da string
   actualValue = value.substr (0, value.length () - 1);
   // converter para double
-  floatValue = ::ginga::util::stof (actualValue);
+  floatValue = xstrtod (actualValue);
 
   // se menor que zero, retornar zero
   if (floatValue < 0)

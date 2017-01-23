@@ -76,7 +76,7 @@ SDLFontProvider::~SDLFontProvider ()
 
   fontRefs--;
 
-  fonts[fontUri + itos (height)] = font;
+  fonts[fontUri + xstrbuild ("%d", height)] = font;
 
   content = NULL;
   plainText = "";
@@ -148,7 +148,7 @@ SDLFontProvider::createFont ()
   Thread::mutexLock (&ntsMutex);
   if (fileExists (fontUri))
     {
-      i = fonts.find (fontUri + itos (height));
+      i = fonts.find (fontUri + xstrbuild ("%d", height));
       if (i != fonts.end ())
         {
           font = i->second;

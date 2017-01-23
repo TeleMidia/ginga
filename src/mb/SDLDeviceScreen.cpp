@@ -1992,10 +1992,10 @@ SDLDeviceScreen::initScreen (SDLDeviceScreen *s)
       title = string (PACKAGE_NAME) + " " + PACKAGE_VERSION;
       if (s->mbMode != "" && s->mbMode.find ("x") != std::string::npos)
         {
-          s->wRes = (int)::ginga::util::stof (
+          s->wRes = xstrto_int (
               s->mbMode.substr (0, s->mbMode.find_first_of ("x")));
 
-          s->hRes = (int)::ginga::util::stof (s->mbMode.substr (
+          s->hRes = xstrto_int (s->mbMode.substr (
               s->mbMode.find_first_of ("x") + 1,
               (s->mbMode.length () - (s->mbMode.find_first_of ("x")) + 1)));
         }

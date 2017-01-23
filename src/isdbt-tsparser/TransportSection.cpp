@@ -224,23 +224,18 @@ TransportSection::addData (char *bytes, unsigned int size)
 void
 TransportSection::setSectionName ()
 {
-  sectionName
-      = string (g_get_tmp_dir ()) + "/ginga" + SystemCompat::getIUriD ();
   if (tableId == SDT_TID || tableId == EIT_TID || tableId == CDT_TID
       || (tableId >= 0x50 && tableId <= 0x5F))
     {
-      sectionName += "epg" + SystemCompat::getIUriD () + "data"
-                     + SystemCompat::getIUriD () + itos (pid)
-                     + itos (tableId) + itos (idExtention)
-                     + itos (versionNumber);
+      xstrassign (sectionName, "%s/ginga/epg/data/%u%u%u%u",
+                  g_get_tmp_dir (), pid, tableId,
+                  idExtention, versionNumber);
     }
   else
     {
-      sectionName += "carousel" + SystemCompat::getIUriD () + "modules"
-                     + SystemCompat::getIUriD () + itos (pid)
-                     + itos (tableId) + itos (section[11])
-                     + // part of messageId
-                     itos (idExtention) + itos (versionNumber);
+      xstrassign (sectionName, "%s/ginga/carousel/modules/%u%u%d%u%u",
+                  g_get_tmp_dir (), pid, tableId, section[11],
+                  idExtention, versionNumber);
     }
 }
 

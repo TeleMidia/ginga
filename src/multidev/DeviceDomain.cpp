@@ -321,7 +321,7 @@ DeviceDomain::checkDomainTasks ()
           taskIndicationFlag = true;
           if (runControlTask ())
             {
-              receivedTimeStamp = getCurrentTimeMillis ();
+              receivedTimeStamp = xruntime_ms ();
             }
         }
 

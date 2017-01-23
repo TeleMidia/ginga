@@ -75,7 +75,7 @@ InputManager::initializeInputIntervalTime ()
               fis >> strVar;
               if (strVar != "")
                 {
-                  imperativeIntervalTime = ::ginga::util::stof (strVar);
+                  imperativeIntervalTime = xstrtod (strVar);
                 }
             }
         }
@@ -87,7 +87,7 @@ InputManager::initializeInputIntervalTime ()
               fis >> strVar;
               if (strVar != "")
                 {
-                  declarativeIntervalTime = ::ginga::util::stof (strVar);
+                  declarativeIntervalTime = xstrtod (strVar);
                 }
             }
         }
@@ -794,10 +794,10 @@ InputManager::handleInputEvent (SDLInputEvent *inputEvent, arg_unused (int &pLas
     }
 
   if (inputEvent->isPressedType ()
-      && ((getCurrentTimeMillis () - timeStamp) >= declarativeIntervalTime))
+      && ((xruntime_ms () - timeStamp) >= declarativeIntervalTime))
     {
       lastCode = inputEvent->getKeyCode (myScreen);
-      timeStamp = getCurrentTimeMillis ();
+      timeStamp = xruntime_ms ();
 
       clog << "InputManager::run event code = '";
       clog << lastCode << "'" << endl;

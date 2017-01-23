@@ -352,10 +352,10 @@ BerkeliumPlayer::setPropertyValue (string name, string value)
           return;
         }
 
-      x = (int)::ginga::util::stof ((*params)[0]);
-      y = (int)::ginga::util::stof ((*params)[1]);
-      w = (int)::ginga::util::stof ((*params)[2]);
-      h = (int)::ginga::util::stof ((*params)[3]);
+      x = xstrto_int ((*params)[0]);
+      y = xstrto_int ((*params)[1]);
+      w = xstrto_int ((*params)[2]);
+      h = xstrto_int ((*params)[3]);
 
       delete params;
 
@@ -376,8 +376,8 @@ BerkeliumPlayer::setPropertyValue (string name, string value)
           return;
         }
 
-      w = (int)::ginga::util::stof ((*params)[2]);
-      h = (int)::ginga::util::stof ((*params)[3]);
+      w = xstrto_int ((*params)[2]);
+      h = xstrto_int ((*params)[3]);
 
       delete params;
 

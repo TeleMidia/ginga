@@ -74,7 +74,7 @@ BaseDeviceDomain::taskRequest (int destDevClass, char *data, int taskSize)
       task = new RemoteTask;
       task->data = data;
       task->size = taskSize;
-      task->timestamp = getCurrentTimeMillis ();
+      task->timestamp = xruntime_ms ();
       // hasNewPassiveTask = true;
       Thread::mutexLock (&pMutex);
       passiveTasks.push_back (task);
@@ -508,7 +508,7 @@ BaseDeviceDomain::checkPassiveTasks ()
            > (1000 / PASSIVE_FPS))
           || xnumeq (passiveTimestamp, 0.))
         {
-          passiveTimestamp = getCurrentTimeMillis ();
+          passiveTimestamp = xruntime_ms ();
           passiveTaskRequest (data, taskSize);
         }
       else
@@ -519,7 +519,7 @@ BaseDeviceDomain::checkPassiveTasks ()
                   delete[] data;
 
           } else {*/
-          passiveTimestamp = getCurrentTimeMillis ();
+          passiveTimestamp = xruntime_ms ();
           passiveTaskRequest (data, taskSize);
           //}
         }

@@ -84,7 +84,7 @@ AttributeAssessment::setOffset (string offset)
 string
 AttributeAssessment::toString ()
 {
-  return itos (attributeType);
+  return xstrbuild ("%d", attributeType);
 }
 
 GINGA_NCL_END

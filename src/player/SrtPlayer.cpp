@@ -126,15 +126,13 @@ SrtPlayer::loadSrt ()
   int i = 1;
   while (!fisSub.eof ())
     {
-      string s;
       getline (fisSub, line);
 
       if (line.find ('\r') != std::string::npos)
         {
           line = line.substr (0, line.find ('\r'));
         }
-      xstrassign (s, "%d", i);
-      if (xstrchomp (line) == s)
+      if (xstrchomp (line) == xstrbuild ("%d", i))
         {
           while (line.find ("-->") == std::string::npos && !fisSub.eof ())
             {
@@ -198,13 +196,13 @@ SrtPlayer::strTimeToFloat (string time)
 
   double hours, minutes, seconds, milliseconds;
 
-  hours = ::ginga::util::stof (time.substr (0, time.find_first_of (":")));
+  hours = xstrtod (time.substr (0, time.find_first_of (":")));
   time = time.substr (time.find_first_of (":") + 1, time.length ());
-  minutes = ::ginga::util::stof (time.substr (0, time.find_first_of (":")));
+  minutes = xstrtod (time.substr (0, time.find_first_of (":")));
   time = time.substr (time.find_first_of (":") + 1, time.length ());
-  seconds = ::ginga::util::stof (time.substr (0, time.find_first_of (",")));
+  seconds = xstrtod (time.substr (0, time.find_first_of (",")));
   time = time.substr (time.find_first_of (",") + 1, time.length ());
-  milliseconds = ::ginga::util::stof (time);
+  milliseconds = xstrtod (time);
 
   return (double)((hours * 3600) + (minutes * 60) + (seconds)
                  + (milliseconds / 1000));
@@ -331,7 +329,7 @@ SrtPlayer::setPropertyValue (string name, string value)
     }
   else if (name == "x-setFontSize")
     {
-      setFontSize ((int)::ginga::util::stof (value));
+      setFontSize (xstrto_int (value));
     }
   else if (name == "x-controlVisibility")
     {

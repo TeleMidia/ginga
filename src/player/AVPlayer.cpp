@@ -420,7 +420,7 @@ AVPlayer::getPropertyValue (string name)
 {
   if (name == "soundLevel")
     {
-      return itos (Ginga_Display->getProviderSoundLevel (provider));
+      return xstrbuild ("%d", (int) Ginga_Display->getProviderSoundLevel (provider));
     }
 
   return Player::getPropertyValue (name);
@@ -432,20 +432,16 @@ AVPlayer::setPropertyValue (string name, string value)
   double fValue = 1.0;
   vector<string> *vals;
 
-  /*clog << "AVPlayer::setPropertyValue '" << name << "' ";
-  clog << "= '" << value << "'" << endl;*/
-
-  // TODO: animation, set volume, brightness, ...
   if (name == "soundLevel")
     {
       if (isPercentualValue (value))
         {
-          value = itos (getPercentualValue (value) / 100);
+          xstrassign (value, "%d", (int) (getPercentualValue (value) / 100));
         }
 
       if (value != "")
         {
-          fValue = ::ginga::util::stof (value);
+          fValue = xstrtod (value);
         }
       setSoundLevel (fValue);
     }

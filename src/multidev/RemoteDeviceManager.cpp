@@ -181,9 +181,9 @@ RemoteDeviceManager::run ()
                       connecting = false;
 
               } else if (rdmTimer == 0 ||
-                              ((getCurrentTimeMillis() - rdmTimer) > 3000))
+                              ((xruntime_ms() - rdmTimer) > 3000))
       {
-                      rdmTimer = getCurrentTimeMillis();
+                      rdmTimer = xruntime_ms();
                       domainService->postConnectionRequestTask();
               }
       }*/

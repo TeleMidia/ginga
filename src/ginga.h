@@ -296,18 +296,40 @@ static inline int G_GNUC_PRINTF (2,3)
 xstrassign (string &s, const char *format, ...)
 {
   va_list args;
-  char *c_str;
+  char *c_str = NULL;
   int n;
 
   va_start (args, format);
   n = g_vasprintf (&c_str, format, args);
   va_end (args);
 
-  if (c_str != NULL)
-    s.assign (c_str);
+  g_assert (n >= 0);
+  g_assert_nonnull (c_str);
+  s.assign (c_str);
   g_free (c_str);
 
   return n;
+}
+
+// Builds string from format.
+static inline string G_GNUC_PRINTF (1,2)
+xstrbuild (const char *format, ...)
+{
+  va_list args;
+  char *c_str = NULL;
+  int n;
+  string s;
+
+  va_start (args, format);
+  n = g_vasprintf (&c_str, format, args);
+  va_end (args);
+
+  g_assert (n >= 0);
+  g_assert_nonnull (c_str);
+  s.assign (c_str);
+  g_free (c_str);
+
+  return s;
 }
 
 // Converts string to uppercase.
@@ -340,5 +362,22 @@ xstrchomp (string s)
   g_free (dup);
   return s;
 }
+
+
+// Auxiliary system functions.
+
+// Returns the running time in microseconds.
+static inline gint64
+xruntime ()
+{
+  static gint64 t0 = -1;
+  if (unlikely (t0 < 0))
+      t0 = g_get_monotonic_time ();
+  return g_get_monotonic_time () - t0;
+}
+
+// Returns the running time in milliseconds.
+// FIXME: Use gint64 and time in microseconds.
+#define xruntime_ms() (double)(xruntime () * 1000)
 
 #endif /* GINGA_H */

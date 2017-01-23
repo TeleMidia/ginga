@@ -428,42 +428,42 @@ NclCascadingDescriptor::updateRegion (void *formatterLayout, string name,
     {
       createDummyRegion (formatterLayout);
       value = cvtPercentual (value, &isPercentual);
-      region->setLeft (::ginga::util::stof (value), isPercentual);
+      region->setLeft (xstrtod (value), isPercentual);
     }
   else if (name == "top")
     {
       createDummyRegion (formatterLayout);
       value = cvtPercentual (value, &isPercentual);
-      region->setTop (::ginga::util::stof (value), isPercentual);
+      region->setTop (xstrtod (value), isPercentual);
     }
   else if (name == "width")
     {
       createDummyRegion (formatterLayout);
       value = cvtPercentual (value, &isPercentual);
-      region->setWidth (::ginga::util::stof (value), isPercentual);
+      region->setWidth (xstrtod (value), isPercentual);
     }
   else if (name == "height")
     {
       createDummyRegion (formatterLayout);
       value = cvtPercentual (value, &isPercentual);
-      region->setHeight (::ginga::util::stof (value), isPercentual);
+      region->setHeight (xstrtod (value), isPercentual);
     }
   else if (name == "bottom")
     {
       createDummyRegion (formatterLayout);
       value = cvtPercentual (value, &isPercentual);
-      region->setBottom (::ginga::util::stof (value), isPercentual);
+      region->setBottom (xstrtod (value), isPercentual);
     }
   else if (name == "right")
     {
       createDummyRegion (formatterLayout);
       value = cvtPercentual (value, &isPercentual);
-      region->setRight (::ginga::util::stof (value), isPercentual);
+      region->setRight (xstrtod (value), isPercentual);
     }
   else if (name == "zIndex")
     {
       createDummyRegion (formatterLayout);
-      region->setZIndex (std::stoi (value));
+      region->setZIndex (xstrto_int (value));
     }
   else if (name == "bounds")
     {
@@ -479,15 +479,15 @@ NclCascadingDescriptor::updateRegion (void *formatterLayout, string name,
 
               value = cvtPercentual ((*params)[1], &isPercentual);
 
-              region->setTop (::ginga::util::stof (value), isPercentual);
+              region->setTop (xstrtod (value), isPercentual);
 
               value = cvtPercentual ((*params)[2], &isPercentual);
 
-              region->setWidth (::ginga::util::stof (value), isPercentual);
+              region->setWidth (xstrtod (value), isPercentual);
 
               value = cvtPercentual ((*params)[3], &isPercentual);
 
-              region->setHeight (::ginga::util::stof (value), isPercentual);
+              region->setHeight (xstrtod (value), isPercentual);
             }
         }
       delete params;
@@ -502,11 +502,11 @@ NclCascadingDescriptor::updateRegion (void *formatterLayout, string name,
             {
               value = cvtPercentual ((*params)[0], &isPercentual);
 
-              region->setLeft (::ginga::util::stof (value), isPercentual);
+              region->setLeft (xstrtod (value), isPercentual);
 
               value = cvtPercentual ((*params)[1], &isPercentual);
 
-              region->setTop (::ginga::util::stof (value), isPercentual);
+              region->setTop (xstrtod (value), isPercentual);
             }
         }
       delete params;
@@ -521,11 +521,11 @@ NclCascadingDescriptor::updateRegion (void *formatterLayout, string name,
             {
               value = cvtPercentual ((*params)[0], &isPercentual);
 
-              region->setWidth (::ginga::util::stof (value), isPercentual);
+              region->setWidth (xstrtod (value), isPercentual);
 
               value = cvtPercentual ((*params)[1], &isPercentual);
 
-              region->setHeight (::ginga::util::stof (value), isPercentual);
+              region->setHeight (xstrtod (value), isPercentual);
             }
         }
       delete params;
@@ -601,7 +601,7 @@ NclCascadingDescriptor::createDummyRegion (void *formatterLayout)
           clog << "inside deviceRegion '" << deviceRegion->getId ();
           clog << "'" << endl;
 
-          region = new LayoutRegion ("dummyRegion" + itos (dummyCount));
+          region = new LayoutRegion ("dummyRegion" + xstrbuild ("%d", dummyCount));
           dummyCount++;
 
           deviceRegion->addRegion (region);
@@ -685,7 +685,7 @@ NclCascadingDescriptor::getParameterValue (string paramName)
       double d;
       paramValue = paramValue.substr (0, paramValue.length () - 1);
       if (_xstrtod (paramValue, &d))
-        g_assert (xstrassign (paramValue, "%f", d / 100) > 0);
+        xstrassign (paramValue, "%f", d / 100);
     }
 
   return paramValue;

@@ -80,7 +80,7 @@ DsmccObject::setDataSize (unsigned int size)
 string
 DsmccObject::getObjectId ()
 {
-  return itos (carouselId) + itos (moduleId) + itos (key);
+  return xstrbuild ("%u%u%u", carouselId, moduleId, key);
 }
 
 unsigned int

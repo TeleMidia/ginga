@@ -110,8 +110,8 @@ FormatterPassiveDevice::userEventReceived (SDLInputEvent *ev)
     {
       ev->getAxisValue (&currentX, &currentY, NULL);
 
-      mnemonicCode = (mnemonicCode + "," + itos (currentX - xOffset) + ","
-                      + itos (currentY - yOffset));
+      mnemonicCode = (mnemonicCode + "," + xstrbuild ("%d", currentX - xOffset) + ","
+                      + xstrbuild ("%d", currentY - yOffset));
     }
 
   clog << "FormatterPassiveDevice::userEventReceived posting '";

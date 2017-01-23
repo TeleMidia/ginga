@@ -123,10 +123,10 @@ GingaUser::saveTo (FILE *fd)
     genre = "m";
 
   saveString (fd, "|| =");
-  saveString (fd, itos (userId));
+  saveString (fd, xstrbuild ("%d", userId));
   saveString (fd, userName);
   saveString (fd, userPasswd);
-  saveString (fd, itos (userAge));
+  saveString (fd, xstrbuild ("%d", userAge));
   saveString (fd, userLocation);
   saveString (fd, genre);
 }

@@ -371,14 +371,9 @@ ISDBTProvider::initializeChannels ()
                           if (!skipLine)
                             {
                               channel = new Channel ();
-                              channel->setId (
-                                  (short)(::ginga::util::stof (id)));
+                              channel->setId ((short)(xstrto_int (id)));
                               channel->setName (name);
-
-                              channel->setFrequency (
-                                  (unsigned int)(::ginga::util::stof (
-                                      freq)));
-
+                              channel->setFrequency ((unsigned int)(xstrto_int (freq)));
                               if (seg == "FULLSEG")
                                 {
                                   channel->setSegment (true);

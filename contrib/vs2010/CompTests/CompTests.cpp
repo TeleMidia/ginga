@@ -20,7 +20,7 @@ main ()
 
           clog << "telemidia-util tests" << endl;
 
-          initTime = getCurrentTimeMillis();
+          initTime = xruntime_ms();
           clog << "initTime = '" << initTime << "'";
           clog << endl;
 
@@ -42,7 +42,7 @@ main ()
   #else
                   Sleep(1000);
   #endif
-                  clog << "elapsedTime = '" << getCurrentTimeMillis() -
+                  clog << "elapsedTime = '" << xruntime_ms() -
   initTime << "'";
                   clog << endl;
           }
