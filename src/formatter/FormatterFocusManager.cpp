@@ -76,7 +76,7 @@ FormatterFocusManager::FormatterFocusManager (
     }
   else
     {
-      defaultFocusBorderWidth = std::stoi (strValue);
+      defaultFocusBorderWidth = xstrto_int (strValue);
     }
 
   strValue = presContext->getPropertyValue (DEFAULT_SEL_BORDER_COLOR);
@@ -1261,14 +1261,14 @@ FormatterFocusManager::userEventReceived (SDLInputEvent *userEvent)
 
   Thread::mutexLock (&mutexTable);
 
-  if (getCurrentTimeMillis () - focusHandlerTS < 300
+  if (xruntime_ms () - focusHandlerTS < 300
       && code != CodeMap::KEY_BACKSPACE && code != CodeMap::KEY_BACK)
     {
       Thread::mutexUnlock (&mutexTable);
       return true;
     }
 
-  focusHandlerTS = getCurrentTimeMillis ();
+  focusHandlerTS = xruntime_ms ();
 
   i = focusTable->find (currentFocus);
   if (i == focusTable->end ())

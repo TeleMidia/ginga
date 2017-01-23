@@ -110,7 +110,7 @@ AdapterNCLPlayer::createPlayer ()
               double parentOpacity = (1 - playerData->transparency);
 
               value = cvtPercentual (value, &isPercent);
-              transpValue = ::ginga::util::stof (value);
+              transpValue = xstrtod (value);
               if (isPercent)
                 {
                   transpValue = transpValue / 100;

@@ -106,7 +106,7 @@ double
 SystemInfo::getReturnBitRate ()
 {
   string value = getValue ("system.returnBitRate");
-  return (value != "") ? ::ginga::util::stof (value) : 0.;
+  return (value != "") ? xstrtod (value) : 0.;
 }
 
 void

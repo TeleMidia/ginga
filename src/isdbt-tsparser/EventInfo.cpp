@@ -498,11 +498,11 @@ EventInfo::getFormatNumStr (int un)
   fUn = convertDecimaltoBCD (un);
   if (fUn < 10)
     {
-      return "0" + itos (fUn);
+      return "0" + xstrbuild ("%d", fUn);
     }
   else
     {
-      return itos (fUn);
+      return xstrbuild ("%d", fUn);
     }
 }
 

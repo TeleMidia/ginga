@@ -130,23 +130,23 @@ SectionFilter::checkSectionVersion (ITransportSection *section)
     {
       if (tableId == 0x42 || tableId == 0x4E || tableId == 0xC8)
         {
-          sectionName = "epg/data/" + itos (section->getESId ())
-                        + itos (section->getTableId ())
-                        + itos (section->getExtensionId ())
-                        + itos (section->getVersionNumber () - 1);
+          xstrassign (sectionName, "%s/ginga/epg/data/%u%u%u%u",
+                      g_get_tmp_dir (),
+                      section->getESId (),
+                      section->getTableId (),
+                      section->getExtensionId (),
+                      section->getVersionNumber () - 1);
         }
       else
         {
-          sectionName
-              = string (g_get_tmp_dir ()) + "/ginga"
-                + SystemCompat::getIUriD () + "carousel"
-                + SystemCompat::getIUriD () + "modules"
-                + SystemCompat::getIUriD () + itos (section->getESId ())
-                + itos (section->getTableId ())
-                + itos (((TransportSection *)section)->getSection ()[11])
-                + // part of messageId
-                itos (section->getExtensionId ())
-                + itos (section->getVersionNumber () - 1);
+          xstrassign (sectionName,
+                      "%s/ginga/carousel/modules/%u%u%d%u%u",
+                      g_get_tmp_dir (),
+                      section->getESId (),
+                      section->getTableId (),
+                      ((TransportSection *)section)->getSection ()[11],
+                      section->getExtensionId (),
+                      section->getVersionNumber () - 1);
         }
 
       if (checkProcessedSections (sectionName))

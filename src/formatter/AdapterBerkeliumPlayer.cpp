@@ -65,10 +65,10 @@ AdapterBerkeliumPlayer::updateProperties ()
       h = (int)(ncmRegion->getHeightInPixels ());
     }
 
-  strX = itos (x);
-  strY = itos (y);
-  strW = itos (w);
-  strH = itos (h);
+  strX = xstrbuild ("%d",  (x);
+  strY = xstrbuild ("%d",  (y);
+  strW = xstrbuild ("%d",  (w);
+  strH = xstrbuild ("%d",  (h);
   value = strX + "," + strY + "," + strW + "," + strH;
 
   clog << "AdapterBerkeliumPlayer::updateProperties bounds = '";
@@ -120,10 +120,10 @@ AdapterBerkeliumPlayer::setPropertyValue (NclAttributionEvent *event,
           w = (int)(ncmRegion->getWidthInPixels ());
           h = (int)(ncmRegion->getHeightInPixels ());
 
-          strX = itos (x);
-          strY = itos (y);
-          strW = itos (w);
-          strH = itos (h);
+          strX = xstrbuild ("%d", (x);
+          strY = xstrbuild ("%d", (y);
+          strW = xstrbuild ("%d", (w);
+          strH = xstrbuild ("%d", (h);
           bVal = strX + "," + strY + "," + strW + "," + strH;
 
           clog << "AdapterBerkeliumPlayer::setPropertyValue bounds = '";

@@ -97,7 +97,7 @@ string
 AssessmentStatement::toString ()
 {
   return "Role = " + getMainAssessment ()->toString () + "\n"
-         + "Comparator = " + itos (getComparator ()) + "\n" + " "
+         + "Comparator = " + xstrbuild ("%d", getComparator ()) + "\n" + " "
          + getOtherAssessment ()->toString ();
 }
 

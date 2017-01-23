@@ -396,7 +396,7 @@ Player::getMediaTime ()
   else
     {
       mediaTime
-          = elapsedTime + getCurrentTimeMillis () - initTime - elapsedPause;
+          = elapsedTime + xruntime_ms () - initTime - elapsedPause;
     }
 
   return (mediaTime / 1000);
@@ -485,7 +485,7 @@ Player::play ()
       elapsedTime = 0;
     }
   elapsedPause = 0;
-  initTime = getCurrentTimeMillis ();
+  initTime = xruntime_ms ();
 
   return true;
 }
@@ -505,7 +505,7 @@ Player::abort ()
 void
 Player::pause ()
 {
-  pauseTime = getCurrentTimeMillis ();
+  pauseTime = xruntime_ms ();
   elapsedTime = elapsedTime + (pauseTime - initTime);
   this->status = PAUSE;
 }
@@ -513,7 +513,7 @@ Player::pause ()
 void
 Player::resume ()
 {
-  initTime = getCurrentTimeMillis ();
+  initTime = xruntime_ms ();
   elapsedPause = elapsedPause + (initTime - pauseTime);
   this->status = PLAY;
 }

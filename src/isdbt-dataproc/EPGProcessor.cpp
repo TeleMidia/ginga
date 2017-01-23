@@ -240,7 +240,7 @@ EPGProcessor::decodeSdtSection (ITransportSection *section)
     }
 
   sectionNumber = section->getSectionNumber ();
-  newSectionName = section->getSectionName () + itos (sectionNumber);
+  newSectionName = section->getSectionName () + xstrbuild ("%u", sectionNumber);
 
   data = new char[payloadSize];
   memcpy ((void *)&(data[0]), section->getPayload (), payloadSize);
@@ -326,7 +326,7 @@ EPGProcessor::addProcessedSection (ITransportSection *section)
    * syntax == 1. section with syntax == 0 does not have number, version.
   */
   sectionNumber = section->getSectionNumber ();
-  newName = section->getSectionName () + itos (sectionNumber);
+  newName = section->getSectionName () + xstrbuild ("%u", sectionNumber);
   processedSections->insert (newName);
 
   if (sectionNumber == section->getLastSectionNumber ())
@@ -355,13 +355,12 @@ EPGProcessor::checkProcessedSections (ITransportSection *section)
 
   if (section->getPayloadSize () <= 6)
     {
-      // clog << "EPGProcessor::checkSection discarding section" << endl;
       return true;
     }
 
   sectionNumber = section->getSectionNumber ();
   lastSectionNumber = section->getLastSectionNumber ();
-  newSectionName = section->getSectionName () + itos (sectionNumber);
+  newSectionName = section->getSectionName () + xstrbuild ("%u", sectionNumber);
 
   if (processedSections->count (newSectionName) > 0)
     {
@@ -411,7 +410,7 @@ EPGProcessor::decodeEitSection (ITransportSection *section)
 
   sectionNumber = section->getSectionNumber ();
   sectionName = section->getSectionName ();
-  newSectionName = sectionName + itos (sectionNumber);
+  newSectionName = sectionName + xstrbuild ("%u", sectionNumber);
 
   data = new char[payloadSize];
   memcpy ((void *)&(data[0]), section->getPayload (), payloadSize);
@@ -473,10 +472,10 @@ EPGProcessor::generateSdtMap (IServiceInfo *si)
       return;
     }
 
-  field.str = itos (si->getServiceId ());
+  field.str = xstrbuild ("%d", si->getServiceId ());
   (responseMap)["id"] = field;
 
-  field.str = itos (si->getRunningStatus ());
+  field.str = xstrbuild ("%d", si->getRunningStatus ());
   (responseMap)["runningStatus"] = field;
 
   descs = si->getDescriptors ();
@@ -543,22 +542,22 @@ EPGProcessor::generateTotMap (ITOT *tot)
     }
 
   time = tot->getUTC3TimeTm ();
-  field.str = itos (time.tm_year);
+  field.str = xstrbuild ("%d", time.tm_year);
   (responseMap)["year"] = field;
 
-  field.str = itos (time.tm_mon);
+  field.str = xstrbuild ("%d", time.tm_mon);
   (responseMap)["month"] = field;
 
-  field.str = itos (time.tm_mday);
+  field.str = xstrbuild ("%d", time.tm_mday);
   (responseMap)["day"] = field;
 
-  field.str = itos (time.tm_hour);
+  field.str = xstrbuild ("%d", time.tm_hour);
   (responseMap)["hours"] = field;
 
-  field.str = itos (time.tm_min);
+  field.str = xstrbuild ("%d", time.tm_min);
   (responseMap)["minutes"] = field;
 
-  field.str = itos (time.tm_sec);
+  field.str = xstrbuild ("%d", time.tm_sec);
   (responseMap)["seconds"] = field;
 
   if (timeListeners != NULL && !timeListeners->empty ())
@@ -590,7 +589,7 @@ EPGProcessor::generateEitMap (map<unsigned int, IEventInfo *> *actualMap)
       ei = i->second;
       if (ei != NULL)
         {
-          field.str = itos (ei->getEventId ());
+          field.str = xstrbuild ("%d", ei->getEventId ());
           (responseMap)["id"] = field;
 
           field.str = ei->getStartTimeSecsStr ();
@@ -634,7 +633,7 @@ EPGProcessor::generateEitMap (map<unsigned int, IEventInfo *> *actualMap)
                 }
             }
           // clog << endl;
-          name = "evt" + itos (ei->getEventId ());
+          name = "evt" + xstrbuild ("%d", ei->getEventId ());
           fieldMap.table = responseMap;
           (data)[name] = fieldMap;
           // clog << "(evt belongs to data[" << name << "])" << endl;
@@ -801,7 +800,7 @@ EPGProcessor::savePNG (char *pngData, int pngSize)
   int wc;
   string path;
 
-  path = itos (files) + ".png";
+  xstrassign (path, "%d.png", files);
   files++;
   if (pngData == NULL)
     {

@@ -119,16 +119,15 @@ DsmccObjectProcessor::mountObject (DsmccObject *object)
       bindings = object->getBindings ();
       for (i = bindings->begin (); i != bindings->end (); ++i)
         {
-          objectId = itos ((*i)->getIor ()->getCarouselId ())
-                     + itos ((*i)->getIor ()->getModuleId ())
-                     + itos ((*i)->getIor ()->getObjectKey ());
+          xstrassign (objectId, "%u%u%u",
+                      (*i)->getIor ()->getCarouselId (),
+                      (*i)->getIor ()->getModuleId (),
+                      (*i)->getIor ()->getObjectKey ());
 
           objectNames[objectId] = (*i)->getId ();
-          objectPaths[objectId] = string (g_get_tmp_dir ()) + "/ginga"
-                                  + SystemCompat::getIUriD () + "carousel"
-                                  + SystemCompat::getIUriD () + itos (pid)
-                                  + "." + itos (object->getCarouselId ())
-                                  + SystemCompat::getIUriD ();
+          xstrassign (objectPaths[objectId],
+                      "%s/ginga/carousel/%u.%u/",
+                      g_get_tmp_dir (), pid, object->getCarouselId ());
         }
 
       return true;
@@ -138,16 +137,13 @@ DsmccObjectProcessor::mountObject (DsmccObject *object)
     {
       if (objectPaths.count (object->getObjectId ()) == 0)
         {
-          /*clog << "DsmccObjectProcessor::mountObject Warning!";
-          clog << "cant find object id '" << object->getObjectId();
-          clog << endl;*/
           return false;
         }
       else
         {
           path = (objectPaths.find (object->getObjectId ()))->second
                  + (objectNames.find (object->getObjectId ()))->second
-                 + SystemCompat::getIUriD ();
+                 + "/";
 
           g_mkdir (path.c_str (), 0777);
         }
@@ -155,9 +151,10 @@ DsmccObjectProcessor::mountObject (DsmccObject *object)
       bindings = object->getBindings ();
       for (i = bindings->begin (); i != bindings->end (); ++i)
         {
-          objectId = itos ((*i)->getIor ()->getCarouselId ())
-                     + itos ((*i)->getIor ()->getModuleId ())
-                     + itos ((*i)->getIor ()->getObjectKey ());
+          xstrassign (objectId, "%u%u%u",
+                      (*i)->getIor ()->getCarouselId (),
+                      (*i)->getIor ()->getModuleId (),
+                      (*i)->getIor ()->getObjectKey ());
 
           objectNames[objectId] = (*i)->getId ();
           objectPaths[objectId] = path;

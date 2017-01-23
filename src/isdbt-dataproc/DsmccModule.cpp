@@ -122,10 +122,8 @@ DsmccModule::getInfoLength ()
 string
 DsmccModule::getModuleFileName ()
 {
-  return (string (g_get_tmp_dir ()) + "/ginga" + SystemCompat::getIUriD ()
-          + "carousel" + SystemCompat::getIUriD () + "modules"
-          + SystemCompat::getIUriD () + itos (pid) + itos (id)
-          + itos (version) + ".mod");
+  return xstrbuild ("%s/ginga/carousel/modules/%u%u%u.mod",
+                    g_get_tmp_dir (), pid, id, version);
 }
 
 void

@@ -357,9 +357,8 @@ FormatterScheduler::printAction (string action, NclLinkCondition *condition,
         {
           specTime = -1;
         }
-
       action = action + "::" + role + "::" + nodeId;
-      action = action + "::" + itos (specTime);
+      action = action + "::" + xstrbuild ("%d", (int) specTime);
     }
 
   AdapterFormatterPlayer::printAction (action);
@@ -412,7 +411,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
   double time;
   GingaWindowID winId = 0;
 
-  time = getCurrentTimeMillis ();
+  time = xruntime_ms ();
   executionObject = (NclExecutionObject *)(event->getExecutionObject ());
 
   if (isDocumentRunning (event) && !executionObject->isCompiled ())
@@ -581,7 +580,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
             }
           else
             {
-              time = getCurrentTimeMillis () - time;
+              time = xruntime_ms () - time;
               printAction ("start", condition, action);
             }
           break;
@@ -799,7 +798,7 @@ FormatterScheduler::runActionOverApplicationObject (
 
   string attValue, attName;
 
-  double time = getCurrentTimeMillis ();
+  double time = xruntime_ms ();
   int actionType = action->getType ();
   GingaWindowID winId = 0;
 
@@ -908,7 +907,7 @@ FormatterScheduler::runActionOverApplicationObject (
           ((AdapterApplicationPlayer *)player)->unlockCurrentEvent (event);
         }
 
-      time = getCurrentTimeMillis () - time;
+      time = xruntime_ms () - time;
       clog << "FormatterScheduler::runActionOverApp takes '";
       clog << time << "' ms to start '";
       clog << executionObject->getId () << "'";
@@ -1520,11 +1519,11 @@ FormatterScheduler::initializeDefaultSettings ()
 
   if (value != "")
     {
-      alfa = ::ginga::util::stof (value);
+      alfa = xstrtod (value);
     }
   else
     {
-      alfa = 1;
+      alfa = 1.;
     }
   guint8 alpha;
   alpha = (guint8)(255 * alfa);
@@ -1538,8 +1537,7 @@ FormatterScheduler::initializeDefaultSettings ()
   value = presContext->getPropertyValue (DEFAULT_FOCUS_BORDER_WIDTH);
   if (value != "")
     {
-      focusManager->setDefaultFocusBorderWidth (
-          (int)::ginga::util::stof (value));
+      focusManager->setDefaultFocusBorderWidth (xstrto_int (value));
     }
 
   value = presContext->getPropertyValue (DEFAULT_SEL_BORDER_COLOR);

@@ -38,14 +38,11 @@ DsmccServiceDomain::DsmccServiceDomain (DsmccDownloadServerInitiate *dsi,
   mounted = false;
   hasServiceGateway = false;
   mountingServiceDomain = true;
-
-  mountPoint = string (g_get_tmp_dir ()) + "/ginga"
-               + SystemCompat::getIUriD () + "carousel"
-               + SystemCompat::getIUriD () + itos (pid) + "."
-               + itos (carouselId) + SystemCompat::getIUriD ();
+  xstrassign (mountPoint,
+              "%s/ginga/carousel/%u.%u/",
+              g_get_tmp_dir (), pid, carouselId);
 
   remove (mountPoint.c_str ());
-
   g_mkdir (mountPoint.c_str (), 0777);
 
   processor = new DsmccObjectProcessor (pid);

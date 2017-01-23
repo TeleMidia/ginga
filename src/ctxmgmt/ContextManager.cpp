@@ -101,7 +101,7 @@ ContextManager::initializeUsers ()
           if (line == "=")
             {
               fis >> line;
-              curUserId = ::std::stoi (line);
+              curUserId = xstrto_int (line);
             }
           else
             {
@@ -122,7 +122,7 @@ ContextManager::initializeUsers ()
           if (line == "=")
             {
               fis >> line;
-              id = (int)::ginga::util::stof (line);
+              id = xstrto_int (line);
               if (id >= 0)
                 {
                   fis >> line;
@@ -134,7 +134,7 @@ ContextManager::initializeUsers ()
                       if (passwd != "")
                         {
                           fis >> line;
-                          age = (int)::ginga::util::stof (line);
+                          age = xstrto_int (line);
                           if (age >= 0)
                             {
                               fis >> line;
@@ -246,7 +246,7 @@ ContextManager::initializeContexts ()
           if (line == "=")
             {
               fis >> line;
-              curUserId = std::stoi (line);
+              curUserId = xstrto_int (line);
             }
         }
 
@@ -260,7 +260,7 @@ ContextManager::initializeContexts ()
           if (line == "=")
             {
               fis >> line;
-              id = (int)::ginga::util::stof (line);
+              id = xstrto_int (line);
               if (id >= 0)
                 {
                   while (fis.good ())
@@ -337,7 +337,7 @@ ContextManager::saveUsersAccounts ()
     return;
 
   GingaUser::saveString (fd, ":: =");
-  GingaUser::saveString (fd, itos (curUserId));
+  GingaUser::saveString (fd, xstrbuild ("%d", curUserId));
   GingaUser::saveString (fd, "\n");
 
   i = users.begin ();
@@ -356,6 +356,7 @@ ContextManager::saveUsersProfiles ()
 {
   FILE *fd;
   map<int, map<string, string> *>::iterator i;
+  string id;
 
   remove (contextsUri.c_str ());
   fd = fopen (contextsUri.c_str (), "w+b");
@@ -363,7 +364,7 @@ ContextManager::saveUsersProfiles ()
     return;
 
   GingaUser::saveString (fd, ":: =");
-  GingaUser::saveString (fd, itos (curUserId));
+  GingaUser::saveString (fd, xstrbuild ("%d", curUserId));
   GingaUser::saveString (fd, "\n");
 
   i = contexts.begin ();
@@ -380,10 +381,11 @@ void
 ContextManager::saveProfile (FILE *fd, int userId,
                              map<string, string> *profile)
 {
+  string id;
   map<string, string>::iterator i;
 
   GingaUser::saveString (fd, "|| =");
-  GingaUser::saveString (fd, itos (userId));
+  GingaUser::saveString (fd, xstrbuild ("%d", userId));
   GingaUser::saveString (fd, "\n");
 
   i = profile->begin ();

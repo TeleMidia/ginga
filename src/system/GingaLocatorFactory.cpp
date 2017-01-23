@@ -83,7 +83,7 @@ GingaLocatorFactory::createLocator (string providerUri, string ior)
 {
   vector<string> *args;
   vector<string>::iterator i;
-  string arg, newIor;
+  string newIor;
 
   if (ior.find (".") == std::string::npos)
     {
@@ -96,8 +96,7 @@ GingaLocatorFactory::createLocator (string providerUri, string ior)
       i = args->begin ();
       while (i != args->end ())
         {
-          arg = *i;
-          newIor = newIor + itos (strHexaToInt (arg));
+          newIor = newIor + xstrbuild ("%d", xstrto_int (*i));
           ++i;
         }
 
@@ -224,7 +223,7 @@ GingaLocatorFactory::getName (string ior)
 {
   vector<string> *args;
   vector<string>::iterator i;
-  string arg, newIor;
+  string newIor;
 
   if (ior.find (".") == std::string::npos)
     {
@@ -237,8 +236,7 @@ GingaLocatorFactory::getName (string ior)
       i = args->begin ();
       while (i != args->end ())
         {
-          arg = *i;
-          newIor = newIor + itos (strHexaToInt (arg));
+          newIor = newIor + xstrbuild ("%d", xstrto_int (*i));
           ++i;
         }
 
@@ -261,7 +259,7 @@ GingaLocatorFactory::addClientLocation (string ior, string clientUri,
 {
   vector<string> *args;
   vector<string>::iterator i;
-  string arg, newIor;
+  string newIor;
 
   if (ior.find (".") == std::string::npos)
     {
@@ -274,8 +272,7 @@ GingaLocatorFactory::addClientLocation (string ior, string clientUri,
       i = args->begin ();
       while (i != args->end ())
         {
-          arg = *i;
-          newIor = newIor + itos (strHexaToInt (arg));
+          newIor = newIor + xstrbuild ("%d", xstrto_int (*i));
           ++i;
         }
 

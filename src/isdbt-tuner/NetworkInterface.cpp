@@ -124,8 +124,7 @@ NetworkInterface::createProvider ()
       portNumber
           = address.substr (address.find (":") + 1, address.length ());
 
-      provider = new NetworkProvider (
-          ip, (int)::ginga::util::stof (portNumber), protocol);
+      provider = new NetworkProvider (ip, xstrto_int (portNumber), protocol);
       return true;
     }
   else if (name == "file")
@@ -147,7 +146,7 @@ NetworkInterface::createProvider ()
         }
       else
         {
-          freq = (long)::ginga::util::stof (address);
+          freq = xstrto_int (address);
           if (freq < 1)
             return false;
         }

@@ -53,7 +53,7 @@ NCLEventDescriptor::getEventNPT (string event)
 string
 NCLEventDescriptor::getCommandTag (string event)
 {
-  string cmdTag = "0x" + itos (event[11] & 0xFF);
+  string cmdTag = "0x" + xstrbuild ("%d", event[11] & 0xFF);
 
   return cmdTag;
 }

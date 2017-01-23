@@ -44,18 +44,18 @@ strUTCToSec (string utcValue)
           utcValue = utcValue.substr (0, utcValue.length () - 1);
         }
 
-      secs = ::ginga::util::stof (utcValue);
+      secs = xstrtod (utcValue);
       break;
 
     case 2:
-      secs = 60 * ::ginga::util::stof ((*params)[0])
-             + ::ginga::util::stof ((*params)[1]);
+      secs = 60 * xstrtod ((*params)[0])
+             + xstrtod ((*params)[1]);
       break;
 
     case 3:
-      secs = 3600 * ::ginga::util::stof ((*params)[0])
-             + 60 * ::ginga::util::stof ((*params)[1])
-             + ::ginga::util::stof ((*params)[2]);
+      secs = 3600 * xstrtod ((*params)[0])
+             + 60 * xstrtod ((*params)[1])
+             + xstrtod ((*params)[2]);
       break;
 
     default:
@@ -83,58 +83,6 @@ cvtPercentual (string value, bool *isPercentual)
     }
 
   return newValue;
-}
-
-int
-strHexaToInt (string value)
-{
-  std::stringstream str1 (value);
-  int number;
-
-  if (value == "")
-    {
-      number = -1;
-    }
-  else if (value.find ("0x") != string::npos)
-    {
-      if (!(str1 >> std::hex >> number))
-        {
-          number = -1;
-        }
-    }
-  else
-    {
-      if (!(str1 >> number))
-        {
-          number = -1;
-        }
-    }
-  return number;
-}
-
-string
-itos (double i)
-{
-  ostringstream os;
-  os << i;
-  return os.str ();
-}
-
-double
-stof (string s)
-{
-  double f = 0.0f;
-  stringstream ss;
-  ss << s;
-  ss >> f;
-  return f;
-}
-
-double
-itof (int i)
-{
-  string s = itos (i);
-  return ::ginga::util::stof (s);
 }
 
 static vector<string> *
@@ -238,7 +186,7 @@ getPercentualValue (string value)
   // retirar o caracter percentual da string
   actualValue = value.substr (0, (value.length () - 1));
   // converter para double
-  floatValue = ::ginga::util::stof (actualValue);
+  floatValue = xstrtod (actualValue);
 
   // se menor que zero, retornar zero
   if (floatValue < 0)
@@ -375,20 +323,6 @@ isInfinity (double value)
     }
 
   return false;
-}
-
-double
-getCurrentTimeMillis ()
-{
-  static bool first_call = true;
-  static gint64 t0;
-
-  if (first_call)
-    {
-      first_call = false;
-      t0 = g_get_monotonic_time () * 1000;
-    }
-  return (double)((g_get_monotonic_time () * 1000) - t0);
 }
 
 // factor is not in use. It will be removed.

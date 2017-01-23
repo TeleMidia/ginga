@@ -1596,7 +1596,7 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
 
   transparencyValue
       = Ginga_Display->getWindowTransparencyValue (screenId, outputDisplay);
-  initTime = getCurrentTimeMillis ();
+  initTime = xruntime_ms ();
 
   if (transitionSubType == Transition::SUBTYPE_BARWIPE_LEFTTORIGHT)
     {
@@ -1624,7 +1624,7 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
 
       while (true)
         {
-          time = getCurrentTimeMillis ();
+          time = xruntime_ms ();
           if (time >= initTime + transitionDur)
             {
               break;
@@ -1741,7 +1741,7 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
 
       while (true)
         {
-          time = getCurrentTimeMillis ();
+          time = xruntime_ms ();
           if (time >= initTime + transitionDur)
             {
               break;
@@ -1894,10 +1894,10 @@ NclFormatterRegion::fade (Transition *transition, bool isShowEffect)
       i = (int)(initValue + 1);
     }
 
-  initTime = getCurrentTimeMillis ();
+  initTime = xruntime_ms ();
   while (true)
     {
-      time = getCurrentTimeMillis ();
+      time = xruntime_ms ();
       if (time >= initTime + transitionDur)
         {
           break;
@@ -2009,7 +2009,7 @@ NclFormatterRegion::setTransparency (string strTrans)
     }
   else
     {
-      trans = ::ginga::util::stof (strTrans);
+      trans = xstrtod (strTrans);
     }
 
   setTransparency (trans);

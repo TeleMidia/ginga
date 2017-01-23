@@ -87,17 +87,14 @@ NclLinkAttributeAssessment::getValue ()
 
     case EventUtil::ATT_OCCURRENCES:
       {
-        string s;
-        xstrassign (s, "%d", (int) event->getOccurrences ());
-        value = getAssessmentWithOffset (s);
+        value = getAssessmentWithOffset (xstrbuild ("%d", (int) event->getOccurrences ()));
         break;
       }
 
     case EventUtil::ATT_REPETITIONS:
       if (event->instanceOf ("NclPresentationEvent"))
         {
-          string s;
-          xstrassign (s, "%d", (int) ((NclPresentationEvent *)event)->getRepetitions ());
+          xstrassign (value, "%d", (int) ((NclPresentationEvent *)event)->getRepetitions ());
         }
       break;
 
@@ -111,14 +108,10 @@ NclLinkAttributeAssessment::getValue ()
 string
 NclLinkAttributeAssessment::getAssessmentWithOffset (string assessmentValue)
 {
-  string s;
   double off, val;
-
   if (!_xstrtod (offset, &off) || !_xstrtod (assessmentValue, &val))
     return assessmentValue;
-
-  xstrassign (s, "%f", val + off);
-  return s;
+  return xstrbuild ("%f", val + off);
 }
 
 GINGA_FORMATTER_END

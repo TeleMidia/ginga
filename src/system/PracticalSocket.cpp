@@ -562,25 +562,8 @@ UDPSocket::getLocalIPAddress () throw (SocketException)
           return (unsigned int)pAddress->sin_addr.S_un.S_addr;
         }
 
-      /*int aux = pAddress->sin_addr.S_un.S_addr;
-      std::string pAddress_str = itos(aux& 0xFF) + "." +
-                                      itos((aux & 0xFF00) >> 8) + "." +
-                                      itos((aux & 0xFF0000) >> 16) + "." +
-                                      itos((aux & 0xFF000000) >> 24);
-      clog << "==============> pAddress->sin_addr.S_un.S_addr="  << aux <<
-      "which means" << pAddress_str << endl;
-      clog << endl;*/
       if (pAddress->sin_family == AF_INET)
         {
-          //			return (unsigned int)
-          // pAddress->sin_addr.S_un.S_addr;
-          /*
-          #else
-                                  return (unsigned int)
-          pAddress->sin_addr.S_addr;
-
-          #endif
-          */
         }
     }
   return -1;

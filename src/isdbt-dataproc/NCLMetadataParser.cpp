@@ -162,7 +162,7 @@ NCLMetadataParser::parseMetadata (void *data, const XML_Char **attrs)
         }
       else if (strcmp (attrs[i], "size") == 0)
         {
-          size = ::ginga::util::stof ((string)attrs[i + 1]);
+          size = xstrtod ((string)attrs[i + 1]);
         }
     }
 

@@ -424,7 +424,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                 }
               else if (name == "zIndex")
                 {
-                  region->setZIndex (std::stoi (value));
+                  region->setZIndex (xstrto_int (value));
                 }
               else if (name == "bounds")
                 {
@@ -463,7 +463,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
               else if (name == "transparency")
                 {
                   value = cvtPercentual (value, &isPercentual);
-                  transpValue = ::ginga::util::stof (value);
+                  transpValue = xstrtod (value);
                   if (isPercentual)
                     {
                       transpValue = transpValue / 100;
@@ -542,7 +542,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                   if (fRegion != NULL)
                     {
                       fRegion->setFocusBorderWidth (
-                          std::stoi (value));
+                          xstrto_int (value));
                     }
                 }
               else if (name == "focusComponentSrc")
@@ -567,7 +567,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                   if (fRegion != NULL)
                     {
                       fRegion->setSelBorderWidth (
-                          std::stoi (value));
+                          xstrto_int (value));
                     }
                 }
               else if (name == "selComponentSrc")
@@ -666,7 +666,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                     }
                   else if (name == "zIndex")
                     {
-                      region->setZIndex (std::stoi (value));
+                      region->setZIndex (xstrto_int (value));
                     }
                   else if (name == "bounds")
                     {
@@ -784,7 +784,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                       if (fRegion != NULL)
                         {
                           fRegion->setFocusBorderWidth (
-                              std::stoi (value));
+                              xstrto_int (value));
                         }
                     }
                   else if (name == "focusComponentSrc")
@@ -809,7 +809,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                       if (fRegion != NULL)
                         {
                           fRegion->setSelBorderWidth (
-                              std::stoi (value));
+                              xstrto_int (value));
                         }
                     }
                   else if (name == "selComponentSrc")
@@ -898,37 +898,37 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
   if (left != "")
     {
       value = cvtPercentual (left, &isPercentual);
-      region->setLeft (::ginga::util::stof (value), isPercentual);
+      region->setLeft (xstrtod (value), isPercentual);
     }
 
   if (top != "")
     {
       value = cvtPercentual (top, &isPercentual);
-      region->setTop (::ginga::util::stof (value), isPercentual);
+      region->setTop (xstrtod (value), isPercentual);
     }
 
   if (width != "")
     {
       value = cvtPercentual (width, &isPercentual);
-      region->setWidth (::ginga::util::stof (value), isPercentual);
+      region->setWidth (xstrtod (value), isPercentual);
     }
 
   if (height != "")
     {
       value = cvtPercentual (height, &isPercentual);
-      region->setHeight (::ginga::util::stof (value), isPercentual);
+      region->setHeight (xstrtod (value), isPercentual);
     }
 
   if (bottom != "")
     {
       value = cvtPercentual (bottom, &isPercentual);
-      region->setBottom (::ginga::util::stof (value), isPercentual);
+      region->setBottom (xstrtod (value), isPercentual);
     }
 
   if (right != "")
     {
       value = cvtPercentual (right, &isPercentual);
-      region->setRight (::ginga::util::stof (value), isPercentual);
+      region->setRight (xstrtod (value), isPercentual);
     }
 
   if (plan == "" && mrl.find ("sbtvd-ts://") != std::string::npos)
@@ -1779,7 +1779,7 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
               NclCascadingDescriptor *descriptor;
 
               value = cvtPercentual (value, &isPercentual);
-              transpValue = ::ginga::util::stof (value);
+              transpValue = xstrtod (value);
               if (isPercentual)
                 {
                   transpValue = transpValue / 100;
@@ -2004,7 +2004,7 @@ AdapterFormatterPlayer::userEventReceived (SDLInputEvent *ev)
       return true;
     }
 
-  if (getCurrentTimeMillis () - eventTS < 300)
+  if (xruntime_ms () - eventTS < 300)
     {
       return true;
     }
@@ -2018,7 +2018,7 @@ AdapterFormatterPlayer::userEventReceived (SDLInputEvent *ev)
       clog << endl;
       if (player->isVisible ())
         {
-          eventTS = getCurrentTimeMillis ();
+          eventTS = xruntime_ms ();
           object->selectionEvent (keyCode, player->getMediaTime () * 1000);
         }
     }

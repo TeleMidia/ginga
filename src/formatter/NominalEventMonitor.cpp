@@ -145,7 +145,7 @@ NominalEventMonitor::prepareNptTransitionsEvents ()
 
   if (event != NULL)
     {
-      adapter->setPropertyValue (event, itos (timeBaseId));
+      adapter->setPropertyValue (event, xstrbuild ("%d", timeBaseId));
       event->stop ();
     }
 }

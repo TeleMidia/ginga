@@ -389,7 +389,7 @@ Pat::processSectionPayload ()
 
               UnpPmtTime *upt = new UnpPmtTime ();
               upt->pid = pid;
-              upt->time = getCurrentTimeMillis ();
+              upt->time = xruntime_ms ();
               unprocessedPmts.insert (upt);
             }
         }
@@ -470,7 +470,7 @@ Pat::hasUnprocessedPmt ()
   i = unprocessedPmts.begin ();
   while (i != unprocessedPmts.end ())
     {
-      if (((getCurrentTimeMillis () - (*i)->time) >= 10000.0)
+      if (((xruntime_ms () - (*i)->time) >= 10000.0)
           && programs.size ())
         {
           cout << "PMT PID = " << (*i)->pid << " has been expired." << endl;

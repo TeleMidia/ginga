@@ -26,14 +26,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_UTIL_BEGIN
 
-string ultostr (unsigned long int value);
 double strUTCToSec (string utcValue);
 string cvtPercentual (string value, bool *isPercentual);
-string intToStrHexa (int value);
-int strHexaToInt (string value);
-string itos (double i);
-double stof (string s);
-double itof (int i);
 vector<string> *split (string str, string token, string pos_delimiter = "");
 double getPercentualValue (string value);
 bool isPercentualValue (string value);
@@ -43,7 +37,6 @@ double NaN ();
 double infinity ();
 bool isNaN (double value);
 bool isInfinity (double value);
-double getCurrentTimeMillis ();
 
 double getNextStepValue (double currentStepValue, double value, int factor,
                          double time, double initTime, double dur,

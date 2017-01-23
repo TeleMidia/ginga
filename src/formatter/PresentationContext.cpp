@@ -113,7 +113,7 @@ PresentationContext::incPropertyValue (string propertyName)
       return;
     }
 
-  newValue = itos (::ginga::util::stof (oldValue) + 1);
+  xstrassign (newValue, "%d", (int) (xstrtod (oldValue) + 1));
   if ((newValue != "") && (newValue != oldValue))
     {
       contextTable[propertyName] = newValue;
@@ -138,7 +138,7 @@ PresentationContext::decPropertyValue (string propertyName)
       return;
     }
 
-  newValue = itos (::ginga::util::stof (oldValue) - 1);
+  xstrassign (newValue, "%d", (int) (xstrtod (oldValue) - 1));
   if ((newValue != "") && (newValue != oldValue))
     {
       contextTable[propertyName] = newValue;
@@ -216,12 +216,12 @@ PresentationContext::initializeUserInfo (int currentUserId)
   GingaUser *user;
 
   user = PresentationContext::contextManager->getUser (currentUserId);
-  if (user != NULL)
-    {
-      contextTable[USER_AGE] = itos (user->getUserAge ());
-      contextTable[USER_LOCATION] = user->getUserLocation ();
-      contextTable[USER_GENRE] = user->getUserGenre ();
-    }
+  if (user == NULL)
+    return;                     // nothing to do
+
+  xstrassign (contextTable[USER_AGE], "%d", user->getUserAge ());
+  contextTable[USER_LOCATION] = user->getUserLocation ();
+  contextTable[USER_GENRE] = user->getUserGenre ();
 }
 
 void
@@ -236,16 +236,16 @@ PresentationContext::initializeSystemValues ()
   contextTable[SYSTEM_LANGUAGE] = si->getSystemLanguage ();
   contextTable[SYSTEM_CAPTION] = si->getCaptionLanguage ();
   contextTable[SYSTEM_SUBTITLE] = si->getSubtitleLanguage ();
-  contextTable[SYSTEM_RETURN_BIT_RATE] = itos (si->getReturnBitRate ());
+  xstrassign (contextTable[SYSTEM_RETURN_BIT_RATE], "%d", (int) si->getReturnBitRate ());
 
   si->getScreenSize (myScreen, &w, &h);
-  contextTable[SYSTEM_SCREEN_SIZE] = itos (w) + "," + itos (h);
+  xstrassign (contextTable[SYSTEM_SCREEN_SIZE], "%d,%d", w, h);
 
   si->getScreenGraphicSize (myScreen, &w, &h);
-  contextTable[SYSTEM_SCREEN_GRAPHIC_SIZE] = itos (w) + "," + itos (h);
+  xstrassign (contextTable[SYSTEM_SCREEN_GRAPHIC_SIZE], "%d,%d", w, h);
   contextTable[SYSTEM_AUDIO_TYPE] = si->getAudioType ();
-  contextTable[SYSTEM_CPU] = itos (si->getCPUClock ());
-  contextTable[SYSTEM_MEMORY] = itos (si->getMemorySize ());
+  xstrassign (contextTable[SYSTEM_CPU], "%d", (int) si->getCPUClock ());
+  xstrassign (contextTable[SYSTEM_MEMORY], "%d", (int) si->getMemorySize ());
   contextTable[SYSTEM_OPERATING_SYSTEM] = "";
 
   contextTable[SYSTEM_DEVNUMBER + "(0)"] = "0";

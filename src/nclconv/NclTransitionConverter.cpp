@@ -100,7 +100,7 @@ NclTransitionConverter::createTransition (DOMElement *parentElement,
       attValue = XMLString::transcode (
           parentElement->getAttribute (XMLString::transcode ("dur")));
 
-      dur = ::ginga::util::stof (
+      dur = xstrtod (
           attValue.substr (0, attValue.length () - 1));
       transition->setDur (dur * 1000);
     }
@@ -110,7 +110,7 @@ NclTransitionConverter::createTransition (DOMElement *parentElement,
       attValue = XMLString::transcode (parentElement->getAttribute (
           XMLString::transcode ("startProgress")));
 
-      transition->setStartProgress (::ginga::util::stof (attValue));
+      transition->setStartProgress (xstrtod (attValue));
     }
 
   if (parentElement->hasAttribute (XMLString::transcode ("endProgress")))
@@ -118,7 +118,7 @@ NclTransitionConverter::createTransition (DOMElement *parentElement,
       attValue = XMLString::transcode (parentElement->getAttribute (
           XMLString::transcode ("endProgress")));
 
-      transition->setEndProgress (::ginga::util::stof (attValue));
+      transition->setEndProgress (xstrtod (attValue));
     }
 
   if (parentElement->hasAttribute (XMLString::transcode ("direction")))
@@ -146,7 +146,7 @@ NclTransitionConverter::createTransition (DOMElement *parentElement,
       attValue = XMLString::transcode (parentElement->getAttribute (
           XMLString::transcode ("horzRepeat")));
 
-      transition->setHorzRepeat ((int)::ginga::util::stof (attValue));
+      transition->setHorzRepeat (xstrto_int (attValue));
     }
 
   if (parentElement->hasAttribute (XMLString::transcode ("vertRepeat")))
@@ -154,7 +154,7 @@ NclTransitionConverter::createTransition (DOMElement *parentElement,
       attValue = XMLString::transcode (parentElement->getAttribute (
           XMLString::transcode ("vertRepeat")));
 
-      transition->setVertRepeat ((int)::ginga::util::stof (attValue));
+      transition->setVertRepeat (xstrto_int (attValue));
     }
 
   if (parentElement->hasAttribute (XMLString::transcode ("borderWidth")))
@@ -162,7 +162,7 @@ NclTransitionConverter::createTransition (DOMElement *parentElement,
       attValue = XMLString::transcode (parentElement->getAttribute (
           XMLString::transcode ("borderWidth")));
 
-      transition->setBorderWidth ((int)::ginga::util::stof (attValue));
+      transition->setBorderWidth (xstrto_int (attValue));
     }
 
   if (parentElement->hasAttribute (XMLString::transcode ("borderColor")))

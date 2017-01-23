@@ -1483,7 +1483,7 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
 
   if (propName == "zIndex")
     {
-      region->setZIndex ((int)::ginga::util::stof (value));
+      region->setZIndex (xstrto_int (value));
       unlock ();
       return true;
     }
@@ -1567,8 +1567,7 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
             }
           else
             {
-              ncmRegion->setTargetLeft ((double)::ginga::util::stof (left),
-                                        false);
+              ncmRegion->setTargetLeft (xstrtod (left), false);
             }
         }
 
@@ -1580,8 +1579,7 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
             }
           else
             {
-              ncmRegion->setTargetTop ((double)::ginga::util::stof (top),
-                                       false);
+              ncmRegion->setTargetTop (xstrtod (top), false);
             }
         }
 
@@ -1593,8 +1591,7 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
             }
           else
             {
-              ncmRegion->setTargetWidth (
-                  (double)::ginga::util::stof (width), false);
+              ncmRegion->setTargetWidth (xstrtod (width), false);
             }
         }
 
@@ -1607,8 +1604,7 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
             }
           else
             {
-              ncmRegion->setTargetHeight (
-                  (double)::ginga::util::stof (height), false);
+              ncmRegion->setTargetHeight (xstrtod (height), false);
             }
         }
 
@@ -1621,8 +1617,7 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
             }
           else
             {
-              ncmRegion->setTargetBottom (
-                  (double)::ginga::util::stof (bottom), false);
+              ncmRegion->setTargetBottom (xstrtod (bottom), false);
             }
         }
 
@@ -1634,8 +1629,7 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
             }
           else
             {
-              ncmRegion->setTargetRight (
-                  (double)::ginga::util::stof (right), false);
+              ncmRegion->setTargetRight (xstrtod (right), false);
             }
         }
 
@@ -1678,62 +1672,57 @@ NclExecutionObject::getPropertyValue (string param)
   if (param == "left")
     {
       current = ncmRegion->getLeftInPixels ();
-      value = itos (current);
+      xstrassign (value, "%d", (int) current);
     }
   else if (param == "top")
     {
       current = ncmRegion->getTopInPixels ();
-      value = itos (current);
+      xstrassign (value, "%d", (int) current);
     }
   else if (param == "width")
     {
       current = ncmRegion->getWidthInPixels ();
-      value = itos (current);
+      xstrassign (value, "%d", (int) current);
     }
   else if (param == "height")
     {
       current = ncmRegion->getHeightInPixels ();
-      value = itos (current);
+      xstrassign (value, "%d", (int) current);
     }
   else if (param == "bottom")
     {
       current = ncmRegion->getBottomInPixels ();
-      value = itos (current);
+      xstrassign (value, "%d", (int) current);
     }
   else if (param == "right")
     {
       current = ncmRegion->getRightInPixels ();
-      value = itos (current);
+      xstrassign (value, "%d", (int) current);
     }
   else if (param == "transparency")
     {
       current = region->getTransparency ();
-      value = itos (current);
+      xstrassign (value, "%d", (int) current);
     }
   else if (param == "bounds")
     {
-      current = ncmRegion->getLeftInPixels ();
-      value = itos (current);
-      current = ncmRegion->getTopInPixels ();
-      value += "," + itos (current);
-      current = ncmRegion->getWidthInPixels ();
-      value += "," + itos (current);
-      current = ncmRegion->getHeightInPixels ();
-      value += "," + itos (current);
+      xstrassign (value, "%d,%d,%d,%d",
+                  ncmRegion->getLeftInPixels (),
+                  ncmRegion->getTopInPixels (),
+                  ncmRegion->getWidthInPixels (),
+                  ncmRegion->getHeightInPixels ());
     }
   else if (param == "location")
     {
-      current = ncmRegion->getLeftInPixels ();
-      value = itos (current);
-      current = ncmRegion->getTopInPixels ();
-      value += "," + itos (current);
+      xstrassign (value, "%d,%d",
+                  ncmRegion->getLeftInPixels (),
+                  ncmRegion->getTopInPixels ());
     }
   else if (param == "size")
     {
-      current = ncmRegion->getWidthInPixels ();
-      value = itos (current);
-      current = ncmRegion->getHeightInPixels ();
-      value += "," + itos (current);
+      xstrassign (value, "%d,%d",
+                  ncmRegion->getWidthInPixels (),
+                  ncmRegion->getHeightInPixels ());
     }
 
   return value;

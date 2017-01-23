@@ -108,7 +108,7 @@ Application::getInitialClass ()
 string
 Application::getId ()
 {
-  return itos (applicationId.applicationId);
+  return xstrbuild ("%d", applicationId.applicationId);
 }
 
 unsigned short

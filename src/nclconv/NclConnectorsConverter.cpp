@@ -247,15 +247,14 @@ NclConnectorsConverter::createSimpleCondition (DOMElement *parentElement,
       else
         {
           double delayValue;
-          delayValue = ::ginga::util::stof (
+          delayValue = xstrtod (
                            attValue.substr (0, (attValue.length () - 1)))
                        * 1000;
 
-          conditionExpression->setDelay (itos (delayValue));
+          conditionExpression->setDelay (xstrbuild ("%d", (int) delayValue));
         }
     }
 
-  // retornar expressao de condicao
   return conditionExpression;
 }
 
@@ -294,15 +293,14 @@ NclConnectorsConverter::createCompoundCondition (DOMElement *parentElement,
         }
       else
         {
-          double delayValue = ::ginga::util::stof (attValue.substr (
+          double delayValue = xstrtod (attValue.substr (
                                   0, (attValue.length () - 1)))
                               * 1000;
 
-          conditionExpression->setDelay (itos (delayValue));
+          conditionExpression->setDelay (xstrbuild ("%d", (int) delayValue));
         }
     }
 
-  // retornar expressao de condicao
   return conditionExpression;
 }
 
@@ -493,24 +491,25 @@ NclConnectorsConverter::createSimpleAction (DOMElement *parentElement,
             {
               if (durVal.find ("s") != std::string::npos)
                 {
-                  animation->setDuration (itos (::ginga::util::stof (
-                      durVal.substr (0, durVal.length () - 1))));
+                  animation->setDuration (xstrbuild ("%d", xstrto_int (durVal.substr (0, durVal.length () - 1))));
                 }
               else
                 {
-                  animation->setDuration (
-                      itos (::ginga::util::stof (durVal)));
+                  animation->setDuration (xstrbuild ("%d", (xstrto_int (durVal))));
                 }
             }
 
           if (byVal.find ("s") != std::string::npos)
             {
-              animation->setBy (itos (::ginga::util::stof (
-                  byVal.substr (0, byVal.length () - 1))));
+              animation->setBy (xstrbuild ("%d", (xstrto_int (byVal.substr (0, byVal.length () - 1)))));
             }
           else
             {
-              animation->setBy (itos (::ginga::util::stof (byVal)));
+              guint64 i;
+              if (_xstrtoull (byVal, &i))
+                animation->setBy (xstrbuild ("%u", (guint) i));
+              else
+                animation->setBy ("indefinite"); // default
             }
         }
 
@@ -548,9 +547,9 @@ NclConnectorsConverter::createSimpleAction (DOMElement *parentElement,
       else
         {
           actionExpression->setDelay (
-              itos (::ginga::util::stof (
+              xstrbuild ("%d", (xstrto_int (
                         attValue.substr (0, attValue.length () - 1))
-                    * 1000));
+                    * 1000)));
         }
     }
 
@@ -568,9 +567,9 @@ NclConnectorsConverter::createSimpleAction (DOMElement *parentElement,
       else
         {
           actionExpression->setDelay (
-              itos (::ginga::util::stof (
+              xstrbuild ("%d", (xstrto_int (
                         attValue.substr (0, attValue.length () - 1))
-                    * 1000));
+                    * 1000)));
         }
     }
 
@@ -582,7 +581,8 @@ NclConnectorsConverter::createSimpleAction (DOMElement *parentElement,
 
       if (XMLString::compareIString (attValue.c_str (), "indefinite") == 0)
         {
-          actionExpression->setRepeat (itos (2 ^ 30));
+          // This is insane :@
+          actionExpression->setRepeat (xstrbuild ("%d", 2 ^ 30));
         }
       else
         {
@@ -638,13 +638,12 @@ NclConnectorsConverter::createCompoundAction (DOMElement *parentElement,
       else
         {
           actionExpression->setDelay (
-              itos (::ginga::util::stof (
+              xstrbuild ("%d", (xstrto_int (
                         attValue.substr (0, attValue.length () - 1))
-                    * 1000));
+                    * 1000)));
         }
     }
 
-  // retornar expressao de condicao
   return actionExpression;
 }
 

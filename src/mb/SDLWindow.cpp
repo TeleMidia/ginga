@@ -836,9 +836,7 @@ SDLWindow::getDumpFileUri (int quality, arg_unused (int dumpW), arg_unused (int 
     }
 
   SDLDeviceScreen::lockSDL ();
-  string id;
-  xstrassign (id, "%d", (int) windowId);
-  uri = string (g_get_tmp_dir ()) + "/" + "dump_" + id + ".jpg";
+  xstrassign (uri, "%s/dump_%d.jpg", g_get_tmp_dir (), (int) windowId);
   int ret
       = SDLConvert::convertSurfaceToJPEG (uri.c_str (), dumpUSur, quality);
   if (ret == -1)

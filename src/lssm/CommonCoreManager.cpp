@@ -212,19 +212,11 @@ CommonCoreManager::createMainAVPlayer (string dstUri,
                                        int w, int h)
 {
   IPlayer *ipav;
-
-  clog << "lssm-ccm::cmavp creating player" << endl;
+  string s;
 
   ipav = ProgramAV::getInstance (screenId);
-
-  // vPid = ((IDemuxer*)demuxer)->getDefaultMainVideoPid();
-  // aPid = ((IDemuxer*)demuxer)->getDefaultMainAudioPid();
-
-  // ipav->setPropertyValue("sbtvd-ts://audio", itos(aPid));
-  // ipav->setPropertyValue("sbtvd-ts://video", itos(vPid));
-  ipav->setPropertyValue ("setBoundaries", itos (x) + "," + itos (y) + ","
-                                               + itos (w) + "," + itos (h));
-
+  xstrassign (s, "%d,%d,%d,%d", x, y, w, h);
+  ipav->setPropertyValue ("setBoundaries", s);
   ipav->setPropertyValue ("createPlayer", "sbtvd-ts://" + dstUri);
   ipav->setPropertyValue ("showPlayer", "sbtvd-ts://" + dstUri);
 
