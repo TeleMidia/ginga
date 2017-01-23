@@ -81,9 +81,6 @@ private:
 
   string mbMode;
   string mbSubSystem;
-  unsigned int aspect;
-  unsigned int hSize;
-  unsigned int vSize;
   int hRes;
   int wRes;
 

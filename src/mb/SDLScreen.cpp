@@ -75,9 +75,6 @@ SDLScreen::SDLScreen (int argc, char **args, GingaScreenID myId,
   pthread_attr_setdetachstate (&tattr, PTHREAD_CREATE_DETACHED);
   pthread_attr_setscope (&tattr, PTHREAD_SCOPE_SYSTEM);
 
-  aspect = DSA_UNKNOWN;
-  hSize = 0;
-  vSize = 0;
   hRes = 0;
   wRes = 0;
   im = NULL;
@@ -1359,9 +1356,6 @@ SDLScreen::notifyEvent (SDLScreen *s, SDL_Event *event,
                               bool capsOn, bool shiftOn)
 {
   SDLEventBuffer *eventBuffer = NULL;
-
-  /*clog << "SDLScreen::notifyEvent";
-  clog << endl;*/
   checkWindowFocus (s, event);
 
   if (s->im != NULL)
@@ -1371,8 +1365,6 @@ SDLScreen::notifyEvent (SDLScreen *s, SDL_Event *event,
             && s->uEmbedId == NULL)
            || checkEventFocus (s)))
         {
-          /*clog << "SDLScreen::notifyEvent feeding event buffer";
-            clog << endl;*/
           eventBuffer->feed (*event, capsOn, shiftOn);
           return true;
         }
