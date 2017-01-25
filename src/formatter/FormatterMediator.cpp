@@ -3230,10 +3230,6 @@ FormatterMediator::flip ()
             }
         }
     }
-  else if (data->devClass == 1)
-    {
-      multiDevice->updatePassiveDevices ();
-    }
 }
 
 void
@@ -3275,58 +3271,16 @@ bool
 FormatterMediator::play ()
 {
   bool documentStarted;
-  // SDLWindow* window;
 
   if (currentDocument != NULL)
     {
       Player::play ();
       documentStarted = startDocument (currentDocument->getId (), scope);
       checkScopeTime ();
-
-      /*if (data->devClass == 1) {
-              clog << "FormatterMediator::play (PASSIVE)";
-              clog << " surface = '" << surface;
-              clog << "'";
-              if (surface != NULL) {
-                      window = (SDLWindow*)(surface->getParentWindow());
-
-                      clog << " parent window = '";
-                      clog << window << "'";
-                      if (window != NULL) {
-                              clog << " with ID = '";
-                              clog << (long)window->getId() << "'";
-                              clog << endl;
-
-                              multiDevice->serializeScreen(1, window);
-                      }
-                      clog << endl;
-              }
-
-      } else {
-              clog << "FormatterMediator::play (BASE)";
-              clog << " surface = '" << surface;
-              clog << "'";
-              if (surface != NULL) {
-                      window = (SDLWindow*)(surface->getParentWindow());
-
-                      clog << " parent window = '";
-                      clog << window << "'";
-                      if (window != NULL) {
-                              clog << " with ID = '";
-                              clog << (long)window->getId() << "'";
-                      }
-                      clog << endl;
-              }
-      }*/
-
       return documentStarted;
     }
   else
     {
-      clog << "FormatterMediator::play()";
-      clog << " Warning! Trying to start a NULL doc";
-      clog << " for '" << data->playerId << "'" << endl;
-
       return false;
     }
 }

@@ -385,11 +385,6 @@ PlainTxtPlayer::setPropertyValue (string name, string value)
   if (refresh)
     {
       loadTxt ();
-      if (notifyContentUpdate)
-        {
-          notifyPlayerListeners (PL_NOTIFY_UPDATECONTENT, "",
-                                 TYPE_PASSIVEDEVICE, "");
-        }
     }
 }
 

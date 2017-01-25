@@ -39,14 +39,9 @@ typedef struct
 class BaseDeviceDomain : public DeviceDomain
 {
 protected:
-  ISocketService *passiveSocket;
-
   pthread_mutex_t pMutex;
-  vector<RemoteTask *> passiveTasks;
   RemoteTask lastMediaContentTask;
-  bool hasNewPassiveTask;
   int timerCount;
-  double passiveTimestamp;
 
 public:
   BaseDeviceDomain (bool useMulticast, int srvPort);
@@ -54,7 +49,6 @@ public:
 
 protected:
   virtual bool taskRequest (int destDevClass, char *data, int taskSize);
-  virtual bool passiveTaskRequest (char *data, int taskSize);
   virtual bool activeTaskRequest (char *data, int taskSize);
   virtual void postConnectionRequestTask (arg_unused (int width),
                                           arg_unused (int height)){};
@@ -80,7 +74,6 @@ public:
 protected:
   virtual bool runControlTask ();
   virtual bool runDataTask ();
-  virtual void checkPassiveTasks ();
   virtual void checkDomainTasks ();
 };
 
