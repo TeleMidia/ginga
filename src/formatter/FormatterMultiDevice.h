@@ -35,7 +35,6 @@ class DeviceDomain
 public:
   // CT: class types
   static const int CT_BASE = 0;
-  static const int CT_PASSIVE = 1;
   static const int CT_ACTIVE = 2;
 
   // FT: frame types
@@ -177,7 +176,6 @@ protected:
 
 public:
   void addActiveUris (string baseUri, vector<string> *uris);
-  virtual void updatePassiveDevices ();
 
 protected:
   void updateStatus (short code, string parameter, short type,

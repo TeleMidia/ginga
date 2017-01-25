@@ -30,12 +30,10 @@ struct frame
 GINGA_PRAGMA_DIAG_PUSH ()
 GINGA_PRAGMA_DIAG_IGNORE (-Wunused-const-variable)
 static const unsigned int BROADCAST_PORT = 41000;
-static const string PASSIVE_MCAST_ADDR = "239.10.10.3";
 static const int BASE_WRITE_BCAST_PORT = 51000;
 static const int SECO_WRITE_BCAST_PORT = 61000;
 static const string INTERFACE_NAME_A = "eth0";
 static const string INTERFACE_NAME_B = "wlan0";
-static const int PASSIVE_FPS = 15;
 static const int MCAST_TTL = 31;
 static const int HEADER_SIZE = 11;
 static const int MAX_FRAME_SIZE = 400000;

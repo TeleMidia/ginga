@@ -50,10 +50,6 @@ map<int, map<double, set<SDLWindow *> *> *>
     SDLDisplay::renderMap;
 set<IContinuousMediaProvider *> SDLDisplay::cmpRenderList;
 
-const unsigned int SDLDisplay::DSA_UNKNOWN = 0;
-const unsigned int SDLDisplay::DSA_4x3 = 1;
-const unsigned int SDLDisplay::DSA_16x9 = 2;
-
 pthread_mutex_t SDLDisplay::sdlMutex;
 pthread_mutex_t SDLDisplay::sieMutex;
 pthread_mutex_t SDLDisplay::renMutex;

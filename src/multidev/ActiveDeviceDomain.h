@@ -36,11 +36,6 @@ protected:
     return false;
   };
   bool
-  passiveTaskRequest (arg_unused (char *data), arg_unused (int taskSize))
-  {
-    return false;
-  };
-  bool
   activeTaskRequest (arg_unused (char *data), arg_unused (int taskSize))
   {
     return false;

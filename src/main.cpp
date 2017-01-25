@@ -37,7 +37,6 @@ using namespace ::ginga::util;
 #include "formatter/FormatterActiveDevice.h"
 #include "formatter/FormatterMultiDevice.h"
 #include "formatter/FormatterMultiDevice.h"
-#include "formatter/FormatterPassiveDevice.h"
 #include "multidev/DeviceDomain.h"
 using namespace ::ginga::multidev;
 #endif

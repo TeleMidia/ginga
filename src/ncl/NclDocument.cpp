@@ -605,33 +605,6 @@ NclDocument::addRegionBase (RegionBase *regionBase)
     {
       regionBases[dClass] = regionBase;
     }
-
-  /*
-   * checking if passive region base has an output map region
-   * if it does create map region reference on base device region base.
-   */
-  if (regionBases.find (0) != regionBases.end ()
-      && regionBases.find (1) != regionBases.end ())
-    {
-      RegionBase *baseRegionBase = regionBases[0];
-      RegionBase *passiveRegionBase = regionBases[1];
-      LayoutRegion *outputMapRegion;
-      string regionId;
-
-      regionId = passiveRegionBase->getOutputMapRegionId ();
-      if (regionId != "")
-        {
-          outputMapRegion = baseRegionBase->getRegion (regionId);
-          /*
-           *  ignoring if the NCL author have specified a
-           *  non-existent region id
-           */
-          if (outputMapRegion != NULL)
-            {
-              passiveRegionBase->setOutputMapRegion (outputMapRegion);
-            }
-        }
-    }
 }
 
 void

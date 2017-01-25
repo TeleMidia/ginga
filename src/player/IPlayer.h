@@ -42,7 +42,6 @@ public:
   static const short TYPE_PRESENTATION = 10;
   static const short TYPE_ATTRIBUTION = 11;
   static const short TYPE_SIGNAL = 12;
-  static const short TYPE_PASSIVEDEVICE = 13;
   static const short TYPE_SELECTION = 14;
 
   virtual ~IPlayer (){};

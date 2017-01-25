@@ -551,7 +551,6 @@ FormatterFocusManager::setKeyMaster (string mediaId)
                               player->getMediaTime () * 1000);
 
   Thread::mutexUnlock (&mutexFocus);
-  multiDevice->updatePassiveDevices ();
 }
 
 void
@@ -582,7 +581,6 @@ FormatterFocusManager::setFocus (string focusIndex)
     {
       Thread::mutexUnlock (&mutexFocus);
       Thread::mutexUnlock (&mutexTable);
-      multiDevice->updatePassiveDevices ();
       return;
     }
 
@@ -621,7 +619,6 @@ FormatterFocusManager::setFocus (string focusIndex)
     }
 
   Thread::mutexUnlock (&mutexFocus);
-  multiDevice->updatePassiveDevices ();
 }
 
 void
@@ -717,7 +714,6 @@ FormatterFocusManager::recoveryDefaultState (NclExecutionObject *object)
   if (object == NULL || object->getDescriptor () == NULL
       || object->getDescriptor ()->getFormatterRegion () == NULL)
     {
-      multiDevice->updatePassiveDevices ();
       return;
     }
 
@@ -732,7 +728,6 @@ FormatterFocusManager::recoveryDefaultState (NclExecutionObject *object)
       player->setOutputWindow (wId);
       player->flip ();
     }
-  multiDevice->updatePassiveDevices ();
 }
 
 void
@@ -750,7 +745,6 @@ FormatterFocusManager::showObject (NclExecutionObject *object)
     {
       clog << "FormatterFocusManager::showObject Warning! object ";
       clog << "is null." << endl;
-      multiDevice->updatePassiveDevices ();
       return;
     }
 
@@ -759,7 +753,6 @@ FormatterFocusManager::showObject (NclExecutionObject *object)
     {
       clog << "FormatterFocusManager::showObject Warning! ";
       clog << " descriptor is null." << endl;
-      multiDevice->updatePassiveDevices ();
       return;
     }
 
@@ -768,7 +761,6 @@ FormatterFocusManager::showObject (NclExecutionObject *object)
     {
       clog << "FormatterFocusManager::showObject Warning! ";
       clog << " FR is null." << endl;
-      multiDevice->updatePassiveDevices ();
       return;
     }
 
@@ -866,7 +858,6 @@ FormatterFocusManager::showObject (NclExecutionObject *object)
             }
         }
     }
-  multiDevice->updatePassiveDevices ();
 }
 
 void
@@ -974,7 +965,6 @@ FormatterFocusManager::keyCodeOk (NclExecutionObject *currentObject)
 
   changeSettingState ("service.currentKeyMaster", "stop");
 
-  multiDevice->updatePassiveDevices ();
   return isHandling;
 }
 
@@ -1001,7 +991,6 @@ FormatterFocusManager::keyCodeBack ()
 
   if (selectedObject == NULL)
     {
-      multiDevice->updatePassiveDevices ();
       clog << "FormatterFocusManager::keyCodeBack NULL selObject";
       clog << endl;
       return false;
@@ -1011,7 +1000,6 @@ FormatterFocusManager::keyCodeBack ()
   selectedDescriptor = selectedObject->getDescriptor ();
   if (selectedDescriptor == NULL)
     {
-      multiDevice->updatePassiveDevices ();
       clog << "FormatterFocusManager::keyCodeBack NULL selDescriptor";
       clog << endl;
       return false;
@@ -1020,7 +1008,6 @@ FormatterFocusManager::keyCodeBack ()
   fr = selectedDescriptor->getFormatterRegion ();
   if (fr == NULL)
     {
-      multiDevice->updatePassiveDevices ();
       clog << "FormatterFocusManager::keyCodeBack NULL formatterRegion";
       clog << endl;
       return false;
@@ -1046,7 +1033,6 @@ FormatterFocusManager::keyCodeBack ()
     }
   Thread::mutexUnlock (&mutexFocus);
 
-  multiDevice->updatePassiveDevices ();
   return false;
 }
 
@@ -1066,7 +1052,6 @@ FormatterFocusManager::enterSelection (AdapterFormatterPlayer *player)
       presContext->setPropertyValue ("service.currentKeyMaster", keyMaster);
 
       newHandler = player->setKeyHandler (true);
-      multiDevice->updatePassiveDevices ();
 
       clog << "FormatterFocusManager::enterSelection(" << this << "): '";
       clog << keyMaster << "'" << endl;
@@ -1095,11 +1080,6 @@ FormatterFocusManager::exitSelection (AdapterFormatterPlayer *player)
     }
 
   registerNavigationKeys ();
-
-  if (player != NULL)
-    {
-      multiDevice->updatePassiveDevices ();
-    }
 }
 
 void
@@ -1233,7 +1213,6 @@ FormatterFocusManager::changeSettingState (string name, string act)
     }
 
   delete settingObjects;
-  multiDevice->updatePassiveDevices ();
 }
 
 bool
@@ -1298,7 +1277,6 @@ FormatterFocusManager::userEventReceived (SDLInputEvent *userEvent)
         {
           Thread::mutexUnlock (&mutexTable);
         }
-      multiDevice->updatePassiveDevices ();
 
       return true;
     }
@@ -1306,13 +1284,7 @@ FormatterFocusManager::userEventReceived (SDLInputEvent *userEvent)
   currentObject = getObjectFromFocusIndex (currentFocus);
   if (currentObject == NULL)
     {
-      clog << "FormatterFocusManager::userEventReceived ";
-      clog << "Warning! object == NULL" << endl;
-      clog << "'" << endl;
-
       Thread::mutexUnlock (&mutexTable);
-      multiDevice->updatePassiveDevices ();
-
       return true;
     }
   Thread::mutexUnlock (&mutexTable);
@@ -1320,11 +1292,6 @@ FormatterFocusManager::userEventReceived (SDLInputEvent *userEvent)
   currentDescriptor = currentObject->getDescriptor ();
   if (currentDescriptor == NULL)
     {
-      clog << "FormatterFocusManager::userEventReceived ";
-      clog << "Warning! descriptor == NULL" << endl;
-      clog << "'" << endl;
-      multiDevice->updatePassiveDevices ();
-
       return true;
     }
 
@@ -1371,7 +1338,6 @@ FormatterFocusManager::userEventReceived (SDLInputEvent *userEvent)
     {
       userEvent->setKeyCode (CodeMap::KEY_NULL);
       tapObject (currentObject);
-      multiDevice->updatePassiveDevices ();
 
       return false;
     }
@@ -1383,7 +1349,6 @@ FormatterFocusManager::userEventReceived (SDLInputEvent *userEvent)
       changeSettingState ("service.currentFocus", "stop");
     }
 
-  multiDevice->updatePassiveDevices ();
   return true;
 }
 

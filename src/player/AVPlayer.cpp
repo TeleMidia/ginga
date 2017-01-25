@@ -695,20 +695,7 @@ AVPlayer::run ()
                   timeRemain = outTransTime - (currentTime * 1000);
                 }
 
-              if (notifyContentUpdate)
-                {
-                  if (timeRemain > 250)
-                    {
-                      notifyPlayerListeners (PL_NOTIFY_UPDATECONTENT, "",
-                                             TYPE_PASSIVEDEVICE, "");
-                    }
-
-                  if (!this->mSleep (65))
-                    { // 15 fps
-                      break;
-                    }
-                }
-              else if (status != PLAY || !this->mSleep ((long int) timeRemain))
+              if (status != PLAY || !this->mSleep ((long int) timeRemain))
                 {
                   clog << "AVPlayer::run can't sleep '" << timeRemain;
                   clog << "' => exiting" << endl;
