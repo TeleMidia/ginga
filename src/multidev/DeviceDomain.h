@@ -34,7 +34,6 @@ class DeviceDomain
 public:
   // CT: Class types.
   static const int CT_BASE = 0;
-  static const int CT_PASSIVE = 1;
   static const int CT_ACTIVE = 2;
 
   // FT: Frame types.
@@ -81,7 +80,6 @@ protected:
   void clearHeader ();
   bool broadcastTaskRequest (char *data, int taskSize);
   virtual bool taskRequest (int destDevClass, char *data, int taskSize) = 0;
-  virtual bool passiveTaskRequest (char *data, int taskSize) = 0;
   virtual bool activeTaskRequest (char *data, int taskSize) = 0;
   char *taskReceive ();
   void parseTaskHeader ();

@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "BaseDeviceDomain.h"
 #include "ActiveDeviceService.h"
-#include "PassiveDeviceService.h"
 
 #include "util/functions.h"
 using namespace ::ginga::util;
@@ -36,29 +35,10 @@ BaseDeviceDomain::BaseDeviceDomain (bool useMulticast, int srvPort)
   timerCount = 0;
 
   Thread::mutexInit (&pMutex, false);
-  hasNewPassiveTask = false;
-  passiveTimestamp = 0;
   lastMediaContentTask.size = 0;
 
   deviceClass = CT_BASE;
   deviceService = new BaseDeviceService ();
-
-  if (useMulticast)
-    {
-      passiveSocket = new MulticastSocketService (
-          deconst (char *, PASSIVE_MCAST_ADDR.c_str ()),
-          BROADCAST_PORT + CT_PASSIVE);
-    }
-  else
-    {
-      passiveSocket = new BroadcastDualSocketService (
-          BASE_WRITE_BCAST_PORT, SECO_WRITE_BCAST_PORT);
-    }
-  /*
-passiveMulticast  = new MulticastSocketService(
-          (char*)(PASSIVE_MCAST_ADDR.c_str()),
-          BROADCAST_PORT + CT_PASSIVE);
-          */
 }
 
 BaseDeviceDomain::~BaseDeviceDomain () { Thread::mutexDestroy (&pMutex); }
@@ -66,42 +46,14 @@ BaseDeviceDomain::~BaseDeviceDomain () { Thread::mutexDestroy (&pMutex); }
 bool
 BaseDeviceDomain::taskRequest (int destDevClass, char *data, int taskSize)
 {
-  RemoteTask *task;
-
   switch (destDevClass)
     {
-    case CT_PASSIVE:
-      task = new RemoteTask;
-      task->data = data;
-      task->size = taskSize;
-      task->timestamp = xruntime_ms ();
-      // hasNewPassiveTask = true;
-      Thread::mutexLock (&pMutex);
-      passiveTasks.push_back (task);
-      // hasNewPassiveTask = false;
-      Thread::mutexUnlock (&pMutex);
-      return true;
-
     case CT_ACTIVE:
       return activeTaskRequest (data, taskSize);
 
     default:
       return false;
     }
-}
-
-bool
-BaseDeviceDomain::passiveTaskRequest (char *data, int taskSize)
-{
-  bool repeat = true;
-
-  if (!passiveTasks.empty () || hasNewPassiveTask)
-    {
-      // repeat = false;
-    }
-
-  passiveSocket->dataRequest (data, taskSize, repeat);
-  return true;
 }
 
 bool
@@ -214,8 +166,7 @@ bool
 BaseDeviceDomain::postMediaContentTask (int destDevClass, string url)
 {
   FILE *fd;
-  int fileSize, bytesRead, tSize;
-  char *task;
+  int fileSize;
 
   clog << "BaseDeviceDomain::postMediaContentTask file '";
   clog << url << "' to devices of class '" << destDevClass << "'";
@@ -259,37 +210,6 @@ BaseDeviceDomain::postMediaContentTask (int destDevClass, string url)
               clog << "Warning! Can't re-open file '" << url;
               clog << "'" << endl;
               return false;
-            }
-
-          if (destDevClass == DeviceDomain::CT_PASSIVE)
-            {
-              // prepare frame
-              task = mountFrame (myIP, destDevClass, FT_MEDIACONTENT,
-                                 fileSize);
-
-              bytesRead = fread (task + HEADER_SIZE, 1, fileSize, fd);
-              if (bytesRead == fileSize)
-                {
-                  tSize = fileSize + HEADER_SIZE;
-                  if (lastMediaContentTask.size != 0)
-                    {
-                      delete[] lastMediaContentTask.data;
-                    }
-                  lastMediaContentTask.data = new char[tSize];
-                  lastMediaContentTask.size = tSize;
-                  memcpy (lastMediaContentTask.data, task, tSize);
-
-                  taskRequest (destDevClass, task, tSize);
-                }
-              else
-                {
-                  clog << "BaseDeviceDomain::";
-                  clog << "postMediaContentTask ";
-                  clog << "Warning! Can't read '" << fileSize;
-                  clog << "' bytes from file '" << url << "' (";
-                  clog << bytesRead << " bytes read)" << endl;
-                  delete[] task;
-                }
             }
         }
       else
@@ -488,82 +408,13 @@ BaseDeviceDomain::runDataTask ()
 }
 
 void
-BaseDeviceDomain::checkPassiveTasks ()
-{
-  vector<RemoteTask *>::iterator i;
-  RemoteTask *remoteTask;
-  char *data;
-  int taskSize;
-
-  Thread::mutexLock (&pMutex);
-  i = passiveTasks.begin ();
-  if (i != passiveTasks.end ())
-    {
-      remoteTask = *i;
-      data = remoteTask->data;
-      taskSize = remoteTask->size;
-      passiveTasks.erase (i);
-
-      if (((remoteTask->timestamp - passiveTimestamp)
-           > (1000 / PASSIVE_FPS))
-          || xnumeq (passiveTimestamp, 0.))
-        {
-          passiveTimestamp = xruntime_ms ();
-          passiveTaskRequest (data, taskSize);
-        }
-      else
-        {
-          // clog << "CONTIGUOUS FRAME" << endl;
-          /*if (passiveTasks.size() > 1) {
-                  clog << "DISCARDING FRAME" << endl;
-                  delete[] data;
-
-          } else {*/
-          passiveTimestamp = xruntime_ms ();
-          passiveTaskRequest (data, taskSize);
-          //}
-        }
-
-      delete remoteTask;
-    }
-  Thread::mutexUnlock (&pMutex);
-}
-
-void
 BaseDeviceDomain::checkDomainTasks ()
 {
-  char *data;
-
   DeviceDomain::checkDomainTasks ();
   if (newAnswerPosted)
     {
       newAnswerPosted = false;
       deviceService->newDeviceConnected (sourceIp);
-    }
-
-  if (passiveSocket->checkInputBuffer (mdFrame, &bytesRecv))
-    {
-      runDataTask ();
-    }
-
-  checkPassiveTasks ();
-  if (!passiveSocket->checkOutputBuffer ())
-    {
-      if (lastMediaContentTask.size != 0)
-        {
-          timerCount++;
-          if (timerCount > 5)
-            {
-              data = new char[lastMediaContentTask.size];
-              memcpy (data, lastMediaContentTask.data,
-                      lastMediaContentTask.size);
-
-              taskRequest (DeviceDomain::CT_PASSIVE, data,
-                           lastMediaContentTask.size);
-
-              timerCount = 0;
-            }
-        }
     }
 }
 
