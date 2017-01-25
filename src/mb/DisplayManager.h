@@ -89,12 +89,6 @@ public:
   void releaseMB ();
   void clearWidgetPools ();
 
-  SDLDisplay *createScreen (int argc, char **args);
-
-protected:
-  SDLDisplay *createScreen (string vMode, string vParent, string vEmbed,
-                            bool externalRenderer, bool useStdin);
-
 public:
   UnderlyingWindowID getScreenUnderlyingWindow ();
 

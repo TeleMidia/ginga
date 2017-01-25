@@ -52,11 +52,6 @@ typedef struct
 
 class SDLDisplay
 {
-public:
-  static const unsigned int DSA_UNKNOWN;
-  static const unsigned int DSA_4x3;
-  static const unsigned int DSA_16x9;
-
 private:
   /* SDL Pending Tasks*/
   static const short SPT_NONE = 0;
@@ -91,13 +86,7 @@ private:
   set<IContinuousMediaProvider *> cmpPool;
   set<IDiscreteMediaProvider *> dmpPool;
 
-  UnderlyingWindowID uParentId;
-  UnderlyingWindowID uEmbedId;
-  bool uEmbedFocused;
-  bool mustGainFocus;
-
   InputManager *im;
-  bool useStdin;
 
   bool waitingCreator;
   pthread_mutex_t condMutex;
@@ -133,9 +122,7 @@ private:
       cstMutex; // mutex for the others C++ STL structures
 
 public:
-  SDLDisplay (int numArgs, char **args,
-                   UnderlyingWindowID embedId, bool externalRenderer);
-
+  SDLDisplay (int width, int height, bool fullscreen);
   virtual ~SDLDisplay ();
 
 private:
