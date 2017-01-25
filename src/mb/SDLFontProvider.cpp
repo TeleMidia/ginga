@@ -293,7 +293,7 @@ SDLFontProvider::playOver (GingaSurfaceID surface)
 
   Thread::mutexLock (&ntsMutex);
   this->content
-      = Ginga_Display->getISurfaceFromId (surface);
+      = Ginga_Display_M->getISurfaceFromId (surface);
 
   if (font == NULL)
     {
@@ -307,7 +307,7 @@ SDLFontProvider::playOver (GingaSurfaceID surface)
         }
     }
 
-  if (Ginga_Display->hasSurface (myScreen,
+  if (Ginga_Display_M->hasSurface (myScreen,
                                                         content->getId ()))
     {
       parent = (SDLWindow *)(content->getParentWindow ());

@@ -85,7 +85,7 @@ SDLInputEvent::setKeyCode (GingaScreenID screenId, const int keyCode)
 {
   int sdlCode;
 
-  sdlCode = Ginga_Display->fromGingaToMB (screenId,
+  sdlCode = Ginga_Display_M->fromGingaToMB (screenId,
                                                                  keyCode);
 
   if (event.type == SDL_USEREVENT)
@@ -128,14 +128,14 @@ SDLInputEvent::getKeyCode (GingaScreenID screenId)
       ;
     }
 
-  gingaValue = Ginga_Display->fromMBToGinga (
+  gingaValue = Ginga_Display_M->fromMBToGinga (
       screenId, sdlValue);
 
   if (gingaValue >= CodeMap::KEY_SMALL_A
       && gingaValue <= CodeMap::KEY_SMALL_Z
       && ((capsOn && !shiftOn) || (!capsOn && shiftOn)))
     {
-      gingaValue = Ginga_Display->fromMBToGinga (
+      gingaValue = Ginga_Display_M->fromMBToGinga (
           screenId, sdlValue + 5000);
     }
 

@@ -88,15 +88,6 @@ public:
 
   static void removeMEListenerInstance (IMotionEventListener *listener);
 
-  static bool hasMEListenerInstance (IMotionEventListener *listener,
-                                     bool removeInstance = false);
-
-  int getDeviceWidth (GingaScreenID screenId);
-
-  int getDeviceHeight (GingaScreenID screenId);
-
-  void *getGfxRoot (GingaScreenID screenId);
-
   void releaseScreen (GingaScreenID screenId);
   void releaseMB (GingaScreenID screenId);
   void clearWidgetPools (GingaScreenID screenId);
@@ -108,7 +99,6 @@ protected:
                               bool externalRenderer, bool useStdin);
 
 public:
-  string getScreenName (GingaScreenID screenId);
   UnderlyingWindowID getScreenUnderlyingWindow (GingaScreenID screenId);
 
 protected:
@@ -335,10 +325,11 @@ public:
                          int x, int y, short align);
   int getProviderHeight (const GingaProviderID &provId);
 
+  bool getScreen (GingaScreenID screenId, SDLDisplay **screen);
+
 protected:
   void addScreen (GingaScreenID screenId, SDLDisplay *screen);
   short getNumOfScreens ();
-  bool getScreen (GingaScreenID screenId, SDLDisplay **screen);
   bool removeScreen (GingaScreenID screenId);
   void lockScreenMap ();
   void unlockScreenMap ();
@@ -347,9 +338,9 @@ protected:
 };
 
 // Global screen manager.
-extern DisplayManager *_Ginga_Display;
-#define Ginga_Display                                                      \
-  GINGA_ASSERT_GLOBAL_NONNULL (_Ginga_Display, DisplayManager *)
+extern DisplayManager *_Ginga_Display_M;
+#define Ginga_Display_M                                                      \
+  GINGA_ASSERT_GLOBAL_NONNULL (_Ginga_Display_M, DisplayManager *)
 
 GINGA_MB_END
 

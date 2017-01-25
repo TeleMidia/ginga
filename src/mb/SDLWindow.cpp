@@ -76,7 +76,7 @@ SDLWindow::~SDLWindow ()
   releaseColorKey ();
 
   // release window will delete texture
-  Ginga_Display->releaseWindow (myScreen, this);
+  Ginga_Display_M->releaseWindow (myScreen, this);
 
   Thread::mutexDestroy (&mutexC);
 
@@ -145,7 +145,7 @@ SDLWindow::releaseWinISur ()
 {
   if (winISur != 0)
     {
-      Ginga_Display->deleteSurface (winISur);
+      Ginga_Display_M->deleteSurface (winISur);
       winISur = 0;
     }
 }
@@ -545,8 +545,8 @@ SDLWindow::unprotectedValidate ()
 {
   if (winISur != 0)
     {
-      Ginga_Display->flipSurface (winISur);
-      curSur = (SDL_Surface *)(Ginga_Display
+      Ginga_Display_M->flipSurface (winISur);
+      curSur = (SDL_Surface *)(Ginga_Display_M
                                    ->getSurfaceContent (winISur));
       textureUpdate = true;
     }
@@ -564,7 +564,7 @@ SDLWindow::createDrawDataList ()
 
   lockChilds ();
   if (childSurface != NULL
-      && Ginga_Display->hasSurface (
+      && Ginga_Display_M->hasSurface (
              myScreen, childSurface->getId ()))
     {
       dd = ((SDLSurface *)childSurface)->createDrawDataList ();
@@ -732,29 +732,29 @@ SDLWindow::renderImgFile (string serializedImageUrl)
   GingaProviderID providerId;
   GingaSurfaceID surId;
 
-  providerId = Ginga_Display->createImageProvider (
+  providerId = Ginga_Display_M->createImageProvider (
       myScreen, serializedImageUrl.c_str ());
 
   IMediaProvider *mediaProvider
-      = Ginga_Display->getIMediaProviderFromId (
+      = Ginga_Display_M->getIMediaProviderFromId (
           providerId);
   if (mediaProvider
       && mediaProvider->getType () == IMediaProvider::ImageProvider)
     img = (IImageProvider *)mediaProvider;
 
-  surId = Ginga_Display->createSurface (myScreen);
+  surId = Ginga_Display_M->createSurface (myScreen);
   img->playOver (surId);
 
   lockSurface ();
-  curSur = (SDL_Surface *)Ginga_Display
+  curSur = (SDL_Surface *)Ginga_Display_M
                ->getSurfaceContent (surId);
   unlockSurface ();
 
   textureUpdate = true;
 
-  Ginga_Display->releaseImageProvider (
+  Ginga_Display_M->releaseImageProvider (
       myScreen, img->getId ());
-  Ginga_Display->deleteSurface (surId);
+  Ginga_Display_M->deleteSurface (surId);
 }
 
 void
@@ -777,14 +777,14 @@ SDLWindow::renderFrom (SDLSurface *surface)
   if (!isMine (surface))
     {
       releaseWinISur ();
-      winISur = Ginga_Display->createSurface (
+      winISur = Ginga_Display_M->createSurface (
           myScreen, contentSurface->w, contentSurface->h);
 
-      Ginga_Display->blitSurface (winISur, 0, 0,
+      Ginga_Display_M->blitSurface (winISur, 0, 0,
                                                          surface->getId ());
-      Ginga_Display->flipSurface (winISur);
+      Ginga_Display_M->flipSurface (winISur);
 
-      curSur = (SDL_Surface *)Ginga_Display
+      curSur = (SDL_Surface *)Ginga_Display_M
                    ->getSurfaceContent (winISur);
       textureUpdate = true;
     }

@@ -198,7 +198,7 @@ LuaPlayer::nw_update_thread (arg_unused (void *data))
               SDL_Surface *sfc;
               GingaWindowID window;
 
-              dest = (SDL_Surface *)Ginga_Display->getSurfaceContent (wrapper);
+              dest = (SDL_Surface *)Ginga_Display_M->getSurfaceContent (wrapper);
 
               sfc = SDL_CreateRGBSurface (0, dest->w, dest->h, 32, 0, 0, 0,
                                           0);
@@ -209,9 +209,9 @@ LuaPlayer::nw_update_thread (arg_unused (void *data))
               SDL_FreeSurface (sfc);
 
               // Refresh surface.
-              window = Ginga_Display->getSurfaceParentWindow (wrapper);
+              window = Ginga_Display_M->getSurfaceParentWindow (wrapper);
               assert (window != 0);
-              Ginga_Display->renderWindowFrom (player->getScreenID (), window,
+              Ginga_Display_M->renderWindowFrom (player->getScreenID (), window,
                                     wrapper);
             }
 
@@ -383,7 +383,7 @@ LuaPlayer::doPlay (void)
   sfc = this->getSurface ();
   if (sfc != 0)
     {
-      Ginga_Display->getSurfaceSize (sfc, &w, &h);
+      Ginga_Display_M->getSurfaceSize (sfc, &w, &h);
     }
 
   // Create the NCLua state.
@@ -449,7 +449,7 @@ LuaPlayer::LuaPlayer (GingaScreenID id, string mrl) : Player (id, mrl)
     g_warning ("%s", g_strerror (errno));
 
   DisplayManager::addIEListenerInstance (this);
-  this->im = Ginga_Display->getInputManager (id);
+  this->im = Ginga_Display_M->getInputManager (id);
 
   this->nw = NULL; // created by start()
   MUTEX_INIT (&this->mutex);

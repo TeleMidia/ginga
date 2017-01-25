@@ -31,6 +31,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
+// Global display; initialized by main().
+SDLDisplay *_Ginga_Display = NULL;
+
 map<SDLDisplay *, short> SDLDisplay::sdlScreens;
 bool SDLDisplay::hasRenderer = false;
 bool SDLDisplay::hasERC = false;
@@ -276,7 +279,7 @@ SDLDisplay::releaseScreen ()
   Thread::mutexUnlock (&scrMutex);
 }
 
-unsigned int
+int
 SDLDisplay::getWidthResolution ()
 {
   while (wRes <= 0)
@@ -287,7 +290,7 @@ SDLDisplay::getWidthResolution ()
 }
 
 void
-SDLDisplay::setWidthResolution (unsigned int wRes)
+SDLDisplay::setWidthResolution (int wRes)
 {
   this->wRes = wRes;
 
@@ -299,7 +302,7 @@ SDLDisplay::setWidthResolution (unsigned int wRes)
   unlockSDL ();
 }
 
-unsigned int
+int
 SDLDisplay::getHeightResolution ()
 {
   /*
@@ -319,7 +322,7 @@ SDLDisplay::getHeightResolution ()
 }
 
 void
-SDLDisplay::setHeightResolution (unsigned int hRes)
+SDLDisplay::setHeightResolution (int hRes)
 {
   this->hRes = hRes;
 
@@ -791,7 +794,7 @@ SDLDisplay::createRenderedSurfaceFromImageFile (const char *mrl)
       return NULL;
     }
   iSur = createSurfaceFrom (NULL);
-  Ginga_Display->registerSurface (iSur);
+  Ginga_Display_M->registerSurface (iSur);
   provider->playOver (iSur->getId ());
 
   releaseImageProvider (provider);
@@ -2112,14 +2115,6 @@ SDLDisplay::fromGingaToMB (int keyCode)
   Thread::mutexUnlock (&sieMutex);
 
   return translated;
-}
-
-/* interfacing underlying multimedia system */
-
-void *
-SDLDisplay::getGfxRoot ()
-{
-  return renderer;
 }
 
 /* libgingaccmbsdl internal use*/

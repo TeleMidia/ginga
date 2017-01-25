@@ -175,20 +175,20 @@ CommonCoreManager::showTunningWindow (GingaScreenID screenId, int x, int y,
   tunerImg = string (GINGA_TUNER_DATADIR) + "tuning.png";
   if (fileExists (tunerImg))
     {
-      tuningWindow = Ginga_Display->createWindow (screenId, x, y, w, h, -10.0);
+      tuningWindow = Ginga_Display_M->createWindow (screenId, x, y, w, h, -10.0);
 
-      s = Ginga_Display->createRenderedSurfaceFromImageFile (screenId,
+      s = Ginga_Display_M->createRenderedSurfaceFromImageFile (screenId,
                                                   tunerImg.c_str ());
 
-      int cap = Ginga_Display->getWindowCap (myScreen, tuningWindow, "ALPHACHANNEL");
-      Ginga_Display->setWindowCaps (myScreen, tuningWindow, cap);
+      int cap = Ginga_Display_M->getWindowCap (myScreen, tuningWindow, "ALPHACHANNEL");
+      Ginga_Display_M->setWindowCaps (myScreen, tuningWindow, cap);
 
-      Ginga_Display->drawWindow (myScreen, tuningWindow);
-      Ginga_Display->showWindow (myScreen, tuningWindow);
-      Ginga_Display->renderWindowFrom (myScreen, tuningWindow, s);
-      Ginga_Display->lowerWindowToBottom (myScreen, tuningWindow);
+      Ginga_Display_M->drawWindow (myScreen, tuningWindow);
+      Ginga_Display_M->showWindow (myScreen, tuningWindow);
+      Ginga_Display_M->renderWindowFrom (myScreen, tuningWindow, s);
+      Ginga_Display_M->lowerWindowToBottom (myScreen, tuningWindow);
 
-      Ginga_Display->deleteSurface (s);
+      Ginga_Display_M->deleteSurface (s);
       s = 0;
     }
 }
@@ -198,10 +198,10 @@ CommonCoreManager::releaseTunningWindow ()
 {
   if (tuningWindow != 0)
     {
-      Ginga_Display->clearWindowContent (myScreen, tuningWindow);
-      Ginga_Display->hideWindow (myScreen, tuningWindow);
+      Ginga_Display_M->clearWindowContent (myScreen, tuningWindow);
+      Ginga_Display_M->hideWindow (myScreen, tuningWindow);
 
-      Ginga_Display->deleteWindow (myScreen, tuningWindow);
+      Ginga_Display_M->deleteWindow (myScreen, tuningWindow);
       tuningWindow = 0;
     }
 }

@@ -161,12 +161,10 @@ private:
   void setEmbedFromParent (string parentCoords);
 
 public:
-  unsigned int getWidthResolution ();
-  void setWidthResolution (unsigned int wRes);
-  unsigned int getHeightResolution ();
-  void setHeightResolution (unsigned int hRes);
-
-  void setColorKey (int r, int g, int b);
+  int getWidthResolution ();
+  void setWidthResolution (int wRes);
+  int getHeightResolution ();
+  void setHeightResolution (int hRes);
 
   SDLWindow *getIWindowFromId (GingaWindowID winId);
   bool mergeIds (GingaWindowID destId, vector<GingaWindowID> *srcIds);
@@ -333,6 +331,11 @@ public:
 private:
   static void releaseUnderlyingSurface (SDL_Surface *uSur);
 };
+
+// Global screen manager.
+extern SDLDisplay *_Ginga_Display;
+#define Ginga_Display                                           \
+  GINGA_ASSERT_GLOBAL_NONNULL (_Ginga_Display, SDLDisplay *)
 
 GINGA_MB_END
 
