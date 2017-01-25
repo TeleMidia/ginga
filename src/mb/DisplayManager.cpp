@@ -24,7 +24,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_MB_BEGIN
 
 // Global display manager; initialized by main().
-DisplayManager *_Ginga_Display = NULL;
+DisplayManager *_Ginga_Display_M = NULL;
 
 set<IInputEventListener *> DisplayManager::iListeners;
 pthread_mutex_t DisplayManager::ilMutex;
@@ -183,72 +183,6 @@ DisplayManager::removeMEListenerInstance (
       mListeners.erase (i);
     }
   Thread::mutexUnlock (&mlMutex);
-}
-
-bool
-DisplayManager::hasMEListenerInstance (IMotionEventListener *listener,
-                                           bool removeInstance)
-{
-  set<IMotionEventListener *>::iterator i;
-  bool hasListener = false;
-
-  checkInitMutex ();
-  Thread::mutexLock (&mlMutex);
-  i = mListeners.find (listener);
-  if (i != mListeners.end ())
-    {
-      hasListener = true;
-
-      if (removeInstance)
-        {
-          mListeners.erase (i);
-        }
-    }
-  Thread::mutexUnlock (&mlMutex);
-
-  return hasListener;
-}
-
-int
-DisplayManager::getDeviceWidth (GingaScreenID screenId)
-{
-  SDLDisplay *screen;
-  int width = 0;
-
-  if (getScreen (screenId, &screen))
-    {
-      width = screen->getWidthResolution ();
-    }
-
-  return width;
-}
-
-int
-DisplayManager::getDeviceHeight (GingaScreenID screenId)
-{
-  SDLDisplay *screen;
-  int height = 0;
-
-  if (getScreen (screenId, &screen))
-    {
-      height = screen->getHeightResolution ();
-    }
-
-  return height;
-}
-
-void *
-DisplayManager::getGfxRoot (GingaScreenID screenId)
-{
-  SDLDisplay *screen;
-  void *gfxRoot = NULL;
-
-  if (getScreen (screenId, &screen))
-    {
-      gfxRoot = screen->getGfxRoot ();
-    }
-
-  return gfxRoot;
 }
 
 void

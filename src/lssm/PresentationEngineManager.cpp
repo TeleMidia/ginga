@@ -89,13 +89,13 @@ PresentationEngineManager::PresentationEngineManager (
   myScreen = screenId;
   enableMulticast = useMulticast;
 
-  w = Ginga_Display->getDeviceWidth (myScreen);
+  w = Ginga_Display->getWidthResolution ();
   if (width > 0 && (width < w || w == 0))
     {
       w = width;
     }
 
-  h = Ginga_Display->getDeviceHeight (myScreen);
+  h = Ginga_Display->getHeightResolution ();
   if (height > 0 && (height < h || h == 0))
     {
       h = height;
@@ -130,7 +130,7 @@ PresentationEngineManager::PresentationEngineManager (
   this->isEmbedded = true;
   this->currentPrivateBaseId = -1;
   this->timeBaseProvider = NULL;
-  this->im = Ginga_Display->getInputManager (myScreen);
+  this->im = Ginga_Display_M->getInputManager (myScreen);
   privateBaseManager = new PrivateBaseManager ();
   this->sb = new ShowButton (myScreen);
 

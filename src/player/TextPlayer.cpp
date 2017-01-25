@@ -44,23 +44,23 @@ TextPlayer::~TextPlayer ()
     }
 
   /* release window and surface first; then, release font */
-  if (outputWindow != 0 && Ginga_Display->hasWindow (myScreen, outputWindow))
+  if (outputWindow != 0 && Ginga_Display_M->hasWindow (myScreen, outputWindow))
     {
-      Ginga_Display->revertWindowContent (myScreen, outputWindow);
-      Ginga_Display->deleteWindow (myScreen, outputWindow);
+      Ginga_Display_M->revertWindowContent (myScreen, outputWindow);
+      Ginga_Display_M->deleteWindow (myScreen, outputWindow);
 
       outputWindow = 0;
     }
 
-  if (surface != 0 && Ginga_Display->hasSurface (myScreen, surface))
+  if (surface != 0 && Ginga_Display_M->hasSurface (myScreen, surface))
     {
-      Ginga_Display->deleteSurface (surface);
+      Ginga_Display_M->deleteSurface (surface);
       surface = 0;
     }
 
   if (font != 0)
     {
-      Ginga_Display->releaseFontProvider (myScreen, font);
+      Ginga_Display_M->releaseFontProvider (myScreen, font);
       font = 0;
     }
 }
@@ -78,11 +78,11 @@ TextPlayer::initializePlayer (arg_unused (GingaScreenID screenId))
   this->fontColor = NULL;
   this->fontSize = 12;
   this->fontUri = string (GINGA_FONT_DATADIR) + "vera.ttf";
-  this->surface = Ginga_Display->createSurface (myScreen);
+  this->surface = Ginga_Display_M->createSurface (myScreen);
   if (this->surface != 0)
     {
-      int cap = Ginga_Display->getSurfaceCap (surface, "ALPHACHANNEL");
-      Ginga_Display->setSurfaceCaps (surface, cap);
+      int cap = Ginga_Display_M->getSurfaceCap (surface, "ALPHACHANNEL");
+      Ginga_Display_M->setSurfaceCaps (surface, cap);
     }
 }
 
@@ -99,7 +99,7 @@ TextPlayer::write (GingaScreenID screenId, GingaSurfaceID s, string text,
   GingaProviderID font = 0;
   int width = 0;
 
-  font = Ginga_Display->createFontProvider (screenId, fontUri.c_str (), fontSize);
+  font = Ginga_Display_M->createFontProvider (screenId, fontUri.c_str (), fontSize);
 
   if (fontColor == NULL)
     {
@@ -108,15 +108,15 @@ TextPlayer::write (GingaScreenID screenId, GingaSurfaceID s, string text,
 
   if (font != 0)
     {
-      Ginga_Display->setSurfaceColor (s, fontColor->getR (), fontColor->getG (),
+      Ginga_Display_M->setSurfaceColor (s, fontColor->getR (), fontColor->getG (),
                            fontColor->getB (), fontColor->getAlpha ());
 
-      width = Ginga_Display->getProviderStringWidth (
+      width = Ginga_Display_M->getProviderStringWidth (
           font, text.c_str (), (int) text.size ());
 
-      Ginga_Display->playProviderOver (font, s, text.c_str (), 0, 0, textAlign);
+      Ginga_Display_M->playProviderOver (font, s, text.c_str (), 0, 0, textAlign);
 
-      Ginga_Display->releaseFontProvider (screenId, font);
+      Ginga_Display_M->releaseFontProvider (screenId, font);
       font = 0;
     }
 
@@ -139,11 +139,11 @@ TextPlayer::setFont (string someUri)
   this->fontUri = someUri;
   if (font != 0)
     {
-      Ginga_Display->releaseFontProvider (myScreen, font);
+      Ginga_Display_M->releaseFontProvider (myScreen, font);
       font = 0;
     }
 
-  font = Ginga_Display->createFontProvider (myScreen, someUri.c_str (), fontSize);
+  font = Ginga_Display_M->createFontProvider (myScreen, someUri.c_str (), fontSize);
   if (font == 0)
     {
       clog << "TextPlayer::setFont Warning! Can't create Font '";
@@ -151,7 +151,7 @@ TextPlayer::setFont (string someUri)
       return false;
     }
 
-  fontHeight = Ginga_Display->getProviderHeight (font);
+  fontHeight = Ginga_Display_M->getProviderHeight (font);
   return true;
 }
 
@@ -186,7 +186,7 @@ TextPlayer::setBgColor (guint8 red, guint8 green, guint8 blue, guint8 alpha)
   bgColor = new Color (red, green, blue, alpha);
   if (this->surface != 0)
     {
-      Ginga_Display->setSurfaceBgColor (surface, red, green, blue, alpha);
+      Ginga_Display_M->setSurfaceBgColor (surface, red, green, blue, alpha);
     }
 }
 
@@ -245,13 +245,13 @@ TextPlayer::drawText (string text, short align)
       fontColor = new Color ("black");
     }
 
-  Ginga_Display->setSurfaceColor (surface, fontColor->getR (), fontColor->getG (),
+  Ginga_Display_M->setSurfaceColor (surface, fontColor->getR (), fontColor->getG (),
                        fontColor->getB (), fontColor->getAlpha ());
 
   if (font != 0 && surface != 0)
     {
-      Ginga_Display->getSurfaceSize (surface, &surWidth, &surHeight);
-      textWidth = Ginga_Display->getProviderStringWidth (
+      Ginga_Display_M->getSurfaceSize (surface, &surWidth, &surHeight);
+      textWidth = Ginga_Display_M->getProviderStringWidth (
           font, aux.c_str (), (int) aux.size ());
 
       if (textWidth > surWidth && aux.length () > 1)
@@ -279,7 +279,7 @@ TextPlayer::drawText (string text, short align)
 
           aux = aux.substr (0, splitPos);
 
-          textWidth = Ginga_Display->getProviderStringWidth (font, aux.c_str ());
+          textWidth = Ginga_Display_M->getProviderStringWidth (font, aux.c_str ());
 
           while (textWidth > surWidth)
             {
@@ -307,7 +307,7 @@ TextPlayer::drawText (string text, short align)
                 }
 
               oldTextWidth = textWidth;
-              textWidth = Ginga_Display->getProviderStringWidth (font, aux.c_str ());
+              textWidth = Ginga_Display_M->getProviderStringWidth (font, aux.c_str ());
 
               if (oldTextWidth == textWidth)
                 {
@@ -315,7 +315,7 @@ TextPlayer::drawText (string text, short align)
                 }
             }
 
-          Ginga_Display->playProviderOver (font, surface, aux.c_str (), currentColumn,
+          Ginga_Display_M->playProviderOver (font, surface, aux.c_str (), currentColumn,
                                 currentLine, align);
 
           breakLine ();
@@ -326,7 +326,7 @@ TextPlayer::drawText (string text, short align)
         }
       else
         {
-          Ginga_Display->playProviderOver (font, surface, aux.c_str (), currentColumn,
+          Ginga_Display_M->playProviderOver (font, surface, aux.c_str (), currentColumn,
                                 currentLine, align);
 
           currentColumn += textWidth;
@@ -362,7 +362,7 @@ TextPlayer::breakLine ()
       setFont (string (GINGA_FONT_DATADIR) + "decker.ttf");
     }
 
-  Ginga_Display->getSurfaceSize (surface, &w, &h);
+  Ginga_Display_M->getSurfaceSize (surface, &w, &h);
   if ((currentLine + fontHeight) > h)
     {
       clog << "TextPlayer::breakLine() Exceeding surface bounds";

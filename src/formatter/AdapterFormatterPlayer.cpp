@@ -97,7 +97,7 @@ AdapterFormatterPlayer::setAdapterManager (void *manager)
   this->myScreen
       = ((AdapterPlayerManager *)manager)->getNclPlayerData ()->screenId;
   DisplayManager::addIEListenerInstance (this);
-  im = Ginga_Display->getInputManager (myScreen);
+  im = Ginga_Display_M->getInputManager (myScreen);
 }
 
 bool
@@ -1349,7 +1349,7 @@ AdapterFormatterPlayer::checkAnchorMonitor ()
 
   if (im == NULL)
     { // player was recovered from manager gc
-      im = Ginga_Display->getInputManager (myScreen);
+      im = Ginga_Display_M->getInputManager (myScreen);
     }
 
   if (im != NULL)
