@@ -18,11 +18,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef AdapterBerkeliumPlayer_H_
 #define AdapterBerkeliumPlayer_H_
 
-#include "../../../../../model/NclExecutionObject.h"
+#include "NclExecutionObject.h"
 
-#include "../../../../../model/NclPresentationEvent.h"
+#include "NclPresentationEvent.h"
 
-#include "../../../../AdapterFormatterPlayer.h"
+#include "AdapterFormatterPlayer.h"
 
 #include "mb/DisplayManager.h"
 using namespace ::ginga::mb;
