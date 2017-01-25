@@ -105,14 +105,6 @@ public:
   IMediaProvider *getIMediaProviderFromId (const GingaProviderID &provId);
   SDLSurface *getISurfaceFromId (const GingaSurfaceID &surfaceId);
 
-  SDLWindow *getIWindowFromId (GingaWindowID winId);
-
-  bool mergeIds (GingaWindowID destId, vector<GingaWindowID> *srcIds);
-
-  void blitScreen (SDLSurface *destination);
-  void blitScreen (string fileUri);
-  void refreshScreen ();
-
   // Interfacing output.
   GingaWindowID createWindow (int x, int y, int w, int h, double z);
 

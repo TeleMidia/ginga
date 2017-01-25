@@ -307,7 +307,7 @@ FormatterMultiDevice::serializeScreen (int devClass,
       formatterLayout->getSortedIds (&sortedIds);
       if (!sortedIds.empty ())
         {
-          if (!Ginga_Display_M->mergeIds (mapWindow, &sortedIds))
+          if (!Ginga_Display->mergeIds (mapWindow, &sortedIds))
             {
               return "";
             }
@@ -369,7 +369,7 @@ FormatterMultiDevice::postMediaContent (int destDevClass)
           if (bmpScr != 0)
             {
               wins.push_back (serialized);
-              Ginga_Display_M->mergeIds (bmpScr, &wins);
+              Ginga_Display->mergeIds (bmpScr, &wins);
 
               Ginga_Display_M->showWindow (bmpScr);
 
