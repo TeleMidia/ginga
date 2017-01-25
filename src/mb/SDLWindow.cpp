@@ -29,10 +29,10 @@ using namespace ::ginga::util;
 GINGA_MB_BEGIN
 
 SDLWindow::SDLWindow (GingaWindowID windowID, GingaWindowID parentWindowID,
-                      GingaScreenID screenId, int x, int y, int width,
+                      int x, int y, int width,
                       int height, double z)
 {
-  initialize (windowID, parentWindowID, screenId, x, y, width, height, z);
+  initialize (windowID, parentWindowID, x, y, width, height, z);
 }
 
 SDLWindow::~SDLWindow ()
@@ -76,7 +76,7 @@ SDLWindow::~SDLWindow ()
   releaseColorKey ();
 
   // release window will delete texture
-  Ginga_Display_M->releaseWindow (myScreen, this);
+  Ginga_Display_M->releaseWindow (this);
 
   Thread::mutexDestroy (&mutexC);
 
@@ -94,7 +94,7 @@ SDLWindow::~SDLWindow ()
 
 void
 SDLWindow::initialize (GingaWindowID windowID, arg_unused (GingaWindowID parentWindowID),
-                       GingaScreenID screenId, int x, int y, int w, int h,
+                       int x, int y, int w, int h,
                        double z)
 {
   this->windowId = windowID;
@@ -111,8 +111,6 @@ SDLWindow::initialize (GingaWindowID windowID, arg_unused (GingaWindowID parentW
   this->borderColor = NULL;
   this->winColor = NULL;
   this->colorKey = NULL;
-
-  this->myScreen = screenId;
 
   this->rect.x = x;
   this->rect.y = y;
@@ -302,12 +300,6 @@ SDLWindow::getBorder (guint8 *r, guint8 *g, guint8 *b, guint8 *alpha, int *bWidt
     }
 }
 
-GingaScreenID
-SDLWindow::getScreen ()
-{
-  return myScreen;
-}
-
 void
 SDLWindow::revertContent ()
 {
@@ -380,17 +372,11 @@ SDLWindow::resize (int width, int height)
 void
 SDLWindow::raiseToTop ()
 {
-  //		SDLDisplay::updateWindowState(
-  //				myScreen, this,
-  // SDLDisplay::SUW_RAISETOTOP);
 }
 
 void
 SDLWindow::lowerToBottom ()
 {
-  //		SDLDisplay::updateWindowState(
-  //				myScreen, this,
-  // SDLDisplay::SUW_LOWERTOBOTTOM);
 }
 
 void
@@ -438,16 +424,12 @@ void
 SDLWindow::show ()
 {
   this->visible = true;
-  //		SDLDisplay::updateWindowState(
-  //				myScreen, this, SDLDisplay::SUW_SHOW);
 }
 
 void
 SDLWindow::hide ()
 {
   visible = false;
-  //		SDLDisplay::updateWindowState(
-  //				myScreen, this, SDLDisplay::SUW_HIDE);
 }
 
 int
@@ -511,7 +493,7 @@ SDLWindow::setZ (double z)
 
   this->z = z;
 
-  SDLDisplay::updateRenderMap (myScreen, this, oldZ, z);
+  SDLDisplay::updateRenderMap (this, oldZ, z);
 }
 
 bool
@@ -564,8 +546,7 @@ SDLWindow::createDrawDataList ()
 
   lockChilds ();
   if (childSurface != NULL
-      && Ginga_Display_M->hasSurface (
-             myScreen, childSurface->getId ()))
+      && Ginga_Display_M->hasSurface (childSurface->getId ()))
     {
       dd = ((SDLSurface *)childSurface)->createDrawDataList ();
     }
@@ -732,8 +713,7 @@ SDLWindow::renderImgFile (string serializedImageUrl)
   GingaProviderID providerId;
   GingaSurfaceID surId;
 
-  providerId = Ginga_Display_M->createImageProvider (
-      myScreen, serializedImageUrl.c_str ());
+  providerId = Ginga_Display_M->createImageProvider (serializedImageUrl.c_str ());
 
   IMediaProvider *mediaProvider
       = Ginga_Display_M->getIMediaProviderFromId (
@@ -742,7 +722,7 @@ SDLWindow::renderImgFile (string serializedImageUrl)
       && mediaProvider->getType () == IMediaProvider::ImageProvider)
     img = (IImageProvider *)mediaProvider;
 
-  surId = Ginga_Display_M->createSurface (myScreen);
+  surId = Ginga_Display_M->createSurface ();
   img->playOver (surId);
 
   lockSurface ();
@@ -752,8 +732,7 @@ SDLWindow::renderImgFile (string serializedImageUrl)
 
   textureUpdate = true;
 
-  Ginga_Display_M->releaseImageProvider (
-      myScreen, img->getId ());
+  Ginga_Display_M->releaseImageProvider (img->getId ());
   Ginga_Display_M->deleteSurface (surId);
 }
 
@@ -778,7 +757,7 @@ SDLWindow::renderFrom (SDLSurface *surface)
     {
       releaseWinISur ();
       winISur = Ginga_Display_M->createSurface (
-          myScreen, contentSurface->w, contentSurface->h);
+          contentSurface->w, contentSurface->h);
 
       Ginga_Display_M->blitSurface (winISur, 0, 0,
                                                          surface->getId ());

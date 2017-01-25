@@ -46,8 +46,7 @@ FormatterFocusManager::FormatterFocusManager (
   DisplayManager::addIEListenerInstance (this);
   DisplayManager::addMEListenerInstance (this);
 
-  myScreen = playerManager->getNclPlayerData ()->screenId;
-  im = Ginga_Display_M->getInputManager (myScreen);
+  im = Ginga_Display_M->getInputManager ();
   focusTable = new map<string, set<NclExecutionObject *> *>;
   currentFocus = "";
   objectToSelect = "";
@@ -1246,7 +1245,7 @@ FormatterFocusManager::userEventReceived (SDLInputEvent *userEvent)
   string nextIndex;
   map<string, set<NclExecutionObject *> *>::iterator i;
 
-  const int code = userEvent->getKeyCode (myScreen);
+  const int code = userEvent->getKeyCode ();
 
   if (code == CodeMap::KEY_QUIT)
     {
@@ -1370,7 +1369,7 @@ FormatterFocusManager::userEventReceived (SDLInputEvent *userEvent)
     }
   else if (code == CodeMap::KEY_ENTER || code == CodeMap::KEY_TAP)
     {
-      userEvent->setKeyCode (myScreen, CodeMap::KEY_NULL);
+      userEvent->setKeyCode (CodeMap::KEY_NULL);
       tapObject (currentObject);
       multiDevice->updatePassiveDevices ();
 

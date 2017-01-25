@@ -27,21 +27,20 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-FormatterPassiveDevice::FormatterPassiveDevice (GingaScreenID screenId,
-                                                DeviceLayout *deviceLayout,
+FormatterPassiveDevice::FormatterPassiveDevice (DeviceLayout *deviceLayout,
                                                 int x, int y, int w, int h,
                                                 bool useMulticast,
                                                 int srvPort)
-    : FormatterMultiDevice (screenId, deviceLayout, x, y, w, h,
+    : FormatterMultiDevice (deviceLayout, x, y, w, h,
                             useMulticast, srvPort)
 {
   deviceClass = DeviceDomain::CT_PASSIVE;
-  serialized = Ginga_Display_M->createWindow (myScreen, x, y, defaultWidth,
+  serialized = Ginga_Display_M->createWindow (x, y, defaultWidth,
                                  defaultHeight, -1.0);
 
-  int cap = Ginga_Display_M->getWindowCap (myScreen, serialized, "ALPHACHANNEL");
-  Ginga_Display_M->setWindowCaps (myScreen, serialized, cap);
-  Ginga_Display_M->drawWindow (myScreen, serialized);
+  int cap = Ginga_Display_M->getWindowCap (serialized, "ALPHACHANNEL");
+  Ginga_Display_M->setWindowCaps (serialized, cap);
+  Ginga_Display_M->drawWindow (serialized);
 
   if (rdm == NULL)
     {
@@ -56,7 +55,7 @@ FormatterPassiveDevice::FormatterPassiveDevice (GingaScreenID screenId,
 
   im->addInputEventListener (this, NULL);
 
-  mainLayout = new NclFormatterLayout (myScreen, x, y, w, h);
+  mainLayout = new NclFormatterLayout (x, y, w, h);
   layoutManager[deviceClass] = mainLayout;
 }
 
@@ -86,7 +85,7 @@ FormatterPassiveDevice::userEventReceived (SDLInputEvent *ev)
 
   clog << "FormatterPassiveDevice::userEventReceived" << endl;
 
-  code = ev->getKeyCode (myScreen);
+  code = ev->getKeyCode ();
   if (code == CodeMap::KEY_F11 || code == CodeMap::KEY_F10)
     {
       std::abort ();

@@ -43,7 +43,6 @@ class SDLSurface
 private:
   static GingaSurfaceID refIdCounter;
   GingaSurfaceID myId;
-  GingaScreenID myScreen;
   SDL_Surface *sur;
   SDL_Surface *pending;
   void *parent;
@@ -63,8 +62,8 @@ private:
   pthread_mutex_t pMutex;
 
 public:
-  SDLSurface (GingaScreenID screenId);
-  SDLSurface (GingaScreenID screenId, void *underlyingSurface);
+  SDLSurface ();
+  SDLSurface (void *underlyingSurface);
 
   virtual ~SDLSurface ();
 
@@ -84,7 +83,7 @@ private:
   void releaseFont ();
   void releaseDrawData ();
 
-  void initialize (const GingaScreenID &screenId, const GingaSurfaceID &id);
+  void initialize (const GingaSurfaceID &id);
 
 public:
   void takeOwnership ();

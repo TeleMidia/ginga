@@ -23,8 +23,8 @@ using namespace ::ginga::util;
 
 GINGA_PLAYER_BEGIN
 
-SrtPlayer::SrtPlayer (GingaScreenID screenId, string mrl)
-    : TextPlayer (screenId), Thread ()
+SrtPlayer::SrtPlayer (string mrl)
+    : TextPlayer (), Thread ()
 {
   this->mrl = mrl;
   this->textEvents = NULL;
@@ -515,7 +515,7 @@ SrtPlayer::run ()
                     {
                       clog << "SrtPlayer::run show";
                       clog << "LINE: '" << line.c_str () << "'" << endl;
-                      Ginga_Display_M->showWindow (myScreen, parent);
+                      Ginga_Display_M->showWindow (parent);
                     }
                 }
               else
@@ -557,7 +557,7 @@ SrtPlayer::run ()
               parent = Ginga_Display_M->getSurfaceParentWindow (surface);
               if (parent != 0 && controlParentVisibility)
                 {
-                  Ginga_Display_M->hideWindow (myScreen, parent);
+                  Ginga_Display_M->hideWindow (parent);
                 }
             }
           unlock ();

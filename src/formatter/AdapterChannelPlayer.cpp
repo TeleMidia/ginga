@@ -66,7 +66,7 @@ AdapterChannelPlayer::createPlayer ()
                   mrlPlayer = ((ReferenceContent *)content)
                                   ->getCompleteReferenceUrl ();
 
-                  childPlayer = new AVPlayer (myScreen, mrlPlayer.c_str ());
+                  childPlayer = new AVPlayer (mrlPlayer.c_str ());
 
                   if (childPlayer != NULL)
                     {
@@ -90,7 +90,7 @@ AdapterChannelPlayer::createPlayer ()
       objects = NULL;
     }
 
-  player = new ChannelPlayer (myScreen);
+  player = new ChannelPlayer ();
 
   if (player != NULL)
     {

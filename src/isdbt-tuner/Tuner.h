@@ -64,14 +64,10 @@ private:
   int currentInterface;
   bool firstTune;
   string currentSpec;
-  GingaScreenID screenId;
 
 public:
-  Tuner (GingaScreenID screenId, string network = "", string protocol = "",
-         string address = "");
-
+  Tuner (string network = "", string protocol = "", string address = "");
   virtual ~Tuner ();
-
   void setLoopListener (ITunerListener *loopListener);
   bool userEventReceived (SDLInputEvent *ev);
 

@@ -22,8 +22,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
-PlainTxtPlayer::PlainTxtPlayer (GingaScreenID screenId, arg_unused (string mrl))
-    : TextPlayer (screenId)
+PlainTxtPlayer::PlainTxtPlayer (arg_unused (string mrl))
+    : TextPlayer ()
 {
   Thread::mutexInit (&mutex, false);
   content = "";
@@ -32,9 +32,9 @@ PlainTxtPlayer::PlainTxtPlayer (GingaScreenID screenId, arg_unused (string mrl))
 PlainTxtPlayer::~PlainTxtPlayer ()
 {
   Thread::mutexLock (&mutex);
-  if (Ginga_Display_M->hasSurface (myScreen, surface))
+  if (Ginga_Display_M->hasSurface (surface))
     {
-      Ginga_Display_M->setSurfaceParentWindow (myScreen, surface, 0);
+      Ginga_Display_M->setSurfaceParentWindow (surface, 0);
     }
   Thread::mutexUnlock (&mutex);
   Thread::mutexDestroy (&mutex);
@@ -101,7 +101,7 @@ PlainTxtPlayer::loadTxt ()
         {
           // this->surface->setCaps(0);
           Ginga_Display_M->clearSurfaceContent (surface);
-          Ginga_Display_M->setWindowBgColor (myScreen,
+          Ginga_Display_M->setWindowBgColor (
                                 Ginga_Display_M->getSurfaceParentWindow (surface),
                                 bgColor->getR (), bgColor->getG (),
                                 bgColor->getB (), bgColor->getAlpha ());
@@ -109,7 +109,7 @@ PlainTxtPlayer::loadTxt ()
       else
         {
           GingaWindowID parentWindow = Ginga_Display_M->getSurfaceParentWindow (surface);
-          Ginga_Display_M->clearWindowContent (myScreen, parentWindow);
+          Ginga_Display_M->clearWindowContent (parentWindow);
         }
     }
 
@@ -140,7 +140,7 @@ PlainTxtPlayer::loadTxt ()
   if (surface != 0 && Ginga_Display_M->getSurfaceParentWindow (surface) != 0)
     {
       GingaWindowID parentWin = Ginga_Display_M->getSurfaceParentWindow (surface);
-      Ginga_Display_M->validateWindow (myScreen, parentWin);
+      Ginga_Display_M->validateWindow (parentWin);
     }
 
   fis.close ();
@@ -183,13 +183,13 @@ PlainTxtPlayer::setContent (string content)
         {
           // this->surface->setCaps(0);
           Ginga_Display_M->clearSurfaceContent (surface);
-          Ginga_Display_M->setWindowBgColor (myScreen, parentWindow, bgColor->getR (),
+          Ginga_Display_M->setWindowBgColor (parentWindow, bgColor->getR (),
                                 bgColor->getG (), bgColor->getB (),
                                 bgColor->getAlpha ());
         }
       else
         {
-          Ginga_Display_M->clearWindowContent (myScreen, parentWindow);
+          Ginga_Display_M->clearWindowContent (parentWindow);
         }
     }
 
@@ -205,7 +205,7 @@ PlainTxtPlayer::setContent (string content)
 
   if (surface != 0 && parentWindow != 0)
     {
-      Ginga_Display_M->validateWindow (myScreen, parentWindow);
+      Ginga_Display_M->validateWindow (parentWindow);
     }
 
   Thread::mutexUnlock (&mutex);
@@ -298,7 +298,7 @@ PlainTxtPlayer::setPropertyValue (string name, string value)
             {
               // this->surface->setCaps(0);
               Ginga_Display_M->clearSurfaceContent (surface);
-              Ginga_Display_M->setWindowBgColor (myScreen, parentWindow,
+              Ginga_Display_M->setWindowBgColor (parentWindow,
                                     bgColor->getR (), bgColor->getG (),
                                     bgColor->getB (), bgColor->getAlpha ());
             }
@@ -327,7 +327,7 @@ PlainTxtPlayer::setPropertyValue (string name, string value)
                 {
                   // this->surface->setCaps(0);
                   Ginga_Display_M->clearSurfaceContent (surface);
-                  Ginga_Display_M->setWindowBgColor (myScreen, parentWindow,
+                  Ginga_Display_M->setWindowBgColor (parentWindow,
                                         bgColor->getR (), bgColor->getG (),
                                         bgColor->getB (),
                                         bgColor->getAlpha ());

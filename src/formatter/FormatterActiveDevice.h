@@ -66,7 +66,7 @@ private:
   bool listening;
 
 public:
-  FormatterActiveDevice (GingaScreenID screenId, DeviceLayout *deviceLayout,
+  FormatterActiveDevice (DeviceLayout *deviceLayout,
                          int x, int y, int w, int h, bool useMulticast,
                          int srvPort);
   virtual ~FormatterActiveDevice ();

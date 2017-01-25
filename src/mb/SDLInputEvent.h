@@ -47,8 +47,8 @@ public:
   void setModifiers (bool capsOn, bool shiftOn);
 
   void clearContent ();
-  void setKeyCode (GingaScreenID screenId, const int keyCode);
-  int getKeyCode (GingaScreenID screenId);
+  void setKeyCode (const int keyCode);
+  int getKeyCode ();
 
   unsigned int getType ();
   void *getApplicationData ();

@@ -76,7 +76,6 @@ protected:
   string playerCompName;
   string mrl;
   int objectDevice;
-  GingaScreenID myScreen;
 
 private:
   double outTransDur;

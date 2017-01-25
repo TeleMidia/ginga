@@ -27,14 +27,14 @@ GINGA_MB_BEGIN
 
 GingaSurfaceID SDLSurface::refIdCounter = 1;
 
-SDLSurface::SDLSurface (GingaScreenID screenId)
+SDLSurface::SDLSurface ()
 {
-  initialize (screenId, refIdCounter++);
+  initialize (refIdCounter++);
 }
 
-SDLSurface::SDLSurface (GingaScreenID screenId, void *underlyingSurface)
+SDLSurface::SDLSurface (void *underlyingSurface)
 {
-  initialize (screenId, refIdCounter++);
+  initialize (refIdCounter++);
   this->sur = (SDL_Surface *)underlyingSurface;
 }
 
@@ -45,7 +45,7 @@ SDLSurface::~SDLSurface ()
   Thread::mutexLock (&pMutex);
 
   SDLWindow *w = (SDLWindow *)parent;
-  Ginga_Display_M->releaseSurface (myScreen, this);
+  Ginga_Display_M->releaseSurface (this);
 
   releaseChromaColor ();
   releaseBorderColor ();
@@ -54,8 +54,7 @@ SDLSurface::~SDLSurface ()
   releaseFont ();
 
   if (w != NULL
-      && Ginga_Display_M->hasWindow (myScreen,
-                                                          w->getId ()))
+      && Ginga_Display_M->hasWindow (w->getId ()))
     {
       if (w->getContent () == sur)
         {
@@ -225,8 +224,7 @@ SDLSurface::releaseFont ()
 {
   if (iFont != NULL)
     {
-      Ginga_Display_M->releaseFontProvider (
-          myScreen, iFont->getId ());
+      Ginga_Display_M->releaseFontProvider (iFont->getId ());
       iFont = NULL;
     }
 }
@@ -251,10 +249,8 @@ SDLSurface::releaseDrawData ()
 }
 
 void
-SDLSurface::initialize (const GingaScreenID &screenId,
-                        const GingaSurfaceID &id)
+SDLSurface::initialize (const GingaSurfaceID &id)
 {
-  this->myScreen = screenId;
   this->sur = NULL;
   this->iFont = NULL;
   this->parent = NULL;
@@ -678,8 +674,7 @@ SDLSurface::createSurface ()
   if (win == NULL)
     return NULL;
 
-  if (Ginga_Display_M->hasWindow (myScreen,
-                                                       win->getId ()))
+  if (Ginga_Display_M->hasWindow (win->getId ()))
     {
       w = win->getW ();
       h = win->getH ();

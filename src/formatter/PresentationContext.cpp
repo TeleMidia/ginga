@@ -24,11 +24,9 @@ GINGA_FORMATTER_BEGIN
 
 ContextManager *PresentationContext::contextManager = NULL;
 
-PresentationContext::PresentationContext (GingaScreenID screenId)
+PresentationContext::PresentationContext ()
 {
   createObserversVector ();
-
-  myScreen = screenId;
 
   if (contextManager == NULL)
     {
@@ -238,10 +236,10 @@ PresentationContext::initializeSystemValues ()
   contextTable[SYSTEM_SUBTITLE] = si->getSubtitleLanguage ();
   xstrassign (contextTable[SYSTEM_RETURN_BIT_RATE], "%d", (int) si->getReturnBitRate ());
 
-  si->getScreenSize (myScreen, &w, &h);
+  si->getScreenSize (&w, &h);
   xstrassign (contextTable[SYSTEM_SCREEN_SIZE], "%d,%d", w, h);
 
-  si->getScreenGraphicSize (myScreen, &w, &h);
+  si->getScreenGraphicSize (&w, &h);
   xstrassign (contextTable[SYSTEM_SCREEN_GRAPHIC_SIZE], "%d,%d", w, h);
   contextTable[SYSTEM_AUDIO_TYPE] = si->getAudioType ();
   xstrassign (contextTable[SYSTEM_CPU], "%d", (int) si->getCPUClock ());

@@ -54,7 +54,6 @@ GINGA_FORMATTER_BEGIN
 class PresentationContext : public Observable, public IContextListener
 {
 private:
-  GingaScreenID myScreen;
   map<string, string> contextTable;
   static ContextManager *contextManager;
   IContextListener *globalVarListener;
@@ -67,7 +66,7 @@ private:
 #endif // WITH_MULTIDEVICE
 
 public:
-  PresentationContext (GingaScreenID screenId);
+  PresentationContext ();
   virtual ~PresentationContext ();
 
   void setPropertyValue (string propertyName, string value);

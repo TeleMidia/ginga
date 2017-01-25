@@ -77,7 +77,7 @@ AdapterProgramAVPlayer::createPlayer ()
 {
   string soundLevel;
 
-  player = ProgramAV::getInstance (myScreen);
+  player = ProgramAV::getInstance ();
   AdapterFormatterPlayer::createPlayer ();
   updateAVBounds ();
 }

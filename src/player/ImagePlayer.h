@@ -42,7 +42,7 @@ private:
   GingaProviderID provider;
 
 public:
-  ImagePlayer (GingaScreenID screenId, string mrl);
+  ImagePlayer (string mrl);
   virtual ~ImagePlayer ();
   bool play ();
   void stop ();

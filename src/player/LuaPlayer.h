@@ -50,7 +50,7 @@ public:
   static void nw_update_remove (LuaPlayer *player);
 
 public:
-  LuaPlayer (GingaScreenID screenId, string mrl);
+  LuaPlayer (string mrl);
   virtual ~LuaPlayer (void);
 
   // TODO: Make private.

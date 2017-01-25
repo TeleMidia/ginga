@@ -23,13 +23,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-SDLEventBuffer::SDLEventBuffer (GingaScreenID screen)
+SDLEventBuffer::SDLEventBuffer ()
 {
   Thread::mutexInit (&ebMutex);
 
-  myScreen = screen;
-
-  // Please, instantiate this class with your Caps Lock at off state :)
   capsOn = false;
   shiftOn = false;
 

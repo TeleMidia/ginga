@@ -43,9 +43,8 @@ public:
   string getCaptionLanguage ();
   string getSubtitleLanguage ();
   double getReturnBitRate ();
-  void getScreenSize (GingaScreenID screenId, int *width, int *height);
-  void getScreenGraphicSize (GingaScreenID screenId, int *width,
-                             int *height);
+  void getScreenSize (int *width, int *height);
+  void getScreenGraphicSize (int *width, int *height);
   string getAudioType ();
   double getCPUClock ();
   double getMemorySize ();

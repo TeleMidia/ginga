@@ -42,8 +42,7 @@ RemoteDeviceManager *FormatterMultiDevice::rdm = NULL;
 void *FormatterMultiDevice::rdm = NULL;
 #endif
 
-FormatterMultiDevice::FormatterMultiDevice (GingaScreenID screenId,
-                                            DeviceLayout *deviceLayout,
+FormatterMultiDevice::FormatterMultiDevice (DeviceLayout *deviceLayout,
                                             int x, int y, int w, int h,
                                             bool useMulticast, arg_unused (int srvPort))
 {
@@ -61,7 +60,6 @@ FormatterMultiDevice::FormatterMultiDevice (GingaScreenID screenId,
   this->presContext = NULL;
   this->focusManager = NULL;
   this->parent = NULL;
-  this->myScreen = screenId;
   this->enableMulticast = useMulticast;
 
   DisplayManager::addIEListenerInstance (this);
@@ -76,19 +74,18 @@ FormatterMultiDevice::FormatterMultiDevice (GingaScreenID screenId,
       defaultHeight = Ginga_Display->getHeightResolution ();
     }
 
-  im = Ginga_Display_M->getInputManager (myScreen);
+  im = Ginga_Display_M->getInputManager ();
 
   im->setAxisValues ((int)(Ginga_Display->getWidthResolution () / 2),
                      (int)(Ginga_Display->getHeightResolution () / 2), 0);
 
-  printScreen = Ginga_Display_M->createWindow (myScreen, 0, 0,
+  printScreen = Ginga_Display_M->createWindow (0, 0,
                                                 defaultWidth,
                                                 defaultHeight, -1.0);
 
-  int caps = Ginga_Display_M->getWindowCap (myScreen,
-                                             printScreen, "ALPHACHANNEL");
-  Ginga_Display_M->setWindowCaps (myScreen, printScreen, caps);
-  Ginga_Display_M->drawWindow (myScreen, printScreen);
+  int caps = Ginga_Display_M->getWindowCap (printScreen, "ALPHACHANNEL");
+  Ginga_Display_M->setWindowCaps (printScreen, caps);
+  Ginga_Display_M->drawWindow (printScreen);
 
   Thread::mutexInit (&mutex, false);
   Thread::mutexInit (&lMutex, false);
@@ -159,13 +156,13 @@ FormatterMultiDevice::printGingaWindows ()
   cout << (unsigned long)serialized;
   cout << "'" << endl;
 
-  Ginga_Display_M->getWindowDumpFileUri (myScreen, serialized, quality, dumpW, dumpH);
+  Ginga_Display_M->getWindowDumpFileUri (serialized, quality, dumpW, dumpH);
 
   cout << "BitMapScreen window Id = '";
   if (bitMapScreen != 0)
     {
       cout << (unsigned long)bitMapScreen << "'";
-      Ginga_Display_M->getWindowDumpFileUri (myScreen, bitMapScreen, quality, dumpW,
+      Ginga_Display_M->getWindowDumpFileUri (bitMapScreen, quality, dumpW,
                                 dumpH);
     }
   else
@@ -199,7 +196,7 @@ FormatterMultiDevice::printGingaWindows ()
 
               if (iWin != 0)
                 {
-                  Ginga_Display_M->getWindowDumpFileUri (myScreen, iWin, quality, dumpW,
+                  Ginga_Display_M->getWindowDumpFileUri (iWin, quality, dumpW,
                                             dumpH);
                 }
 
@@ -306,11 +303,11 @@ FormatterMultiDevice::serializeScreen (int devClass,
   if (i != layoutManager.end ())
     {
       formatterLayout = i->second;
-      Ginga_Display_M->clearWindowContent (myScreen, mapWindow);
+      Ginga_Display_M->clearWindowContent (mapWindow);
       formatterLayout->getSortedIds (&sortedIds);
       if (!sortedIds.empty ())
         {
-          if (!Ginga_Display_M->mergeIds (myScreen, mapWindow, &sortedIds))
+          if (!Ginga_Display_M->mergeIds (mapWindow, &sortedIds))
             {
               return "";
             }
@@ -322,7 +319,7 @@ FormatterMultiDevice::serializeScreen (int devClass,
               dumpH = (int)(320 / 1.8);
             }
         }
-      fileUri = Ginga_Display_M->getWindowDumpFileUri (myScreen, mapWindow, quality,
+      fileUri = Ginga_Display_M->getWindowDumpFileUri (mapWindow, quality,
                                           dumpW, dumpH);
 
       clog << "FormatterMultiDevice::serializeScreen fileURI = '";
@@ -372,9 +369,9 @@ FormatterMultiDevice::postMediaContent (int destDevClass)
           if (bmpScr != 0)
             {
               wins.push_back (serialized);
-              Ginga_Display_M->mergeIds (myScreen, bmpScr, &wins);
+              Ginga_Display_M->mergeIds (bmpScr, &wins);
 
-              Ginga_Display_M->showWindow (myScreen, bmpScr);
+              Ginga_Display_M->showWindow (bmpScr);
 
               clog << "' bmpScr = '";
               clog << (unsigned long)bmpScr;
@@ -437,21 +434,16 @@ FormatterMultiDevice::getFormatterLayout (
     {
       if (devClass == DeviceDomain::CT_PASSIVE)
         {
-          layout = new NclFormatterLayout (myScreen, 0, 0, DV_QVGA_WIDTH,
+          layout = new NclFormatterLayout (0, 0, DV_QVGA_WIDTH,
                                            DV_QVGA_HEIGHT);
 
           layoutManager[devClass] = layout;
           return layout;
         }
-
-      /*clog << "FormatterMultiDevice::getFormatterLayout NOT FOUND for ";
-      clog << "class '" << devClass << "'" << endl;*/
       return NULL;
     }
   else
     {
-      /*clog << "FormatterMultiDevice::getFormatterLayout FOUND class '";
-      clog << devClass << "' in LAYOUTMANAGER" << endl;*/
       return i->second;
     }
 }
@@ -529,7 +521,7 @@ FormatterMultiDevice::prepareFormatterRegion (
             }
 
           bitMapScreen = Ginga_Display_M->createWindow (
-              myScreen, bitMapRegion->getAbsoluteLeft (),
+              bitMapRegion->getAbsoluteLeft (),
               bitMapRegion->getAbsoluteTop (),
               bitMapRegion->getWidthInPixels (),
               bitMapRegion->getHeightInPixels (),
@@ -548,9 +540,9 @@ FormatterMultiDevice::prepareFormatterRegion (
           clog << endl << endl;
 
           int caps
-              = Ginga_Display_M->getWindowCap (myScreen, bitMapScreen, "ALPHACHANNEL");
-          Ginga_Display_M->setWindowCaps (myScreen, bitMapScreen, caps);
-          Ginga_Display_M->drawWindow (myScreen, bitMapScreen);
+              = Ginga_Display_M->getWindowCap (bitMapScreen, "ALPHACHANNEL");
+          Ginga_Display_M->setWindowCaps (bitMapScreen, caps);
+          Ginga_Display_M->drawWindow (bitMapScreen);
         }
     }
 
@@ -753,12 +745,12 @@ void
 FormatterMultiDevice::renderFromUri (GingaWindowID win, string uri)
 {
   GingaSurfaceID s;
-  s = Ginga_Display_M->createRenderedSurfaceFromImageFile (myScreen, uri.c_str ());
-  Ginga_Display_M->setWindowColorKey (myScreen, win, 0, 0, 0);
-  Ginga_Display_M->clearWindowContent (myScreen, win);
-  Ginga_Display_M->renderWindowFrom (myScreen, win, s);
-  Ginga_Display_M->showWindow (myScreen, win);
-  Ginga_Display_M->validateWindow (myScreen, win);
+  s = Ginga_Display_M->createRenderedSurfaceFromImageFile (uri.c_str ());
+  Ginga_Display_M->setWindowColorKey (win, 0, 0, 0);
+  Ginga_Display_M->clearWindowContent (win);
+  Ginga_Display_M->renderWindowFrom (win, s);
+  Ginga_Display_M->showWindow (win);
+  Ginga_Display_M->validateWindow (win);
   Ginga_Display_M->deleteSurface (s);
 }
 
@@ -817,7 +809,7 @@ FormatterMultiDevice::newDeviceConnected (int newDevClass, int w, int h)
   if (layoutManager.count (newDevClass) == 0)
     {
       layoutManager[newDevClass]
-          = new NclFormatterLayout (myScreen, 0, 0, w, h);
+          = new NclFormatterLayout (0, 0, w, h);
 
       isNewClass = true;
     }

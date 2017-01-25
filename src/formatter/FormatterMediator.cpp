@@ -194,7 +194,7 @@ EntryEventListener::getPriorityType ()
 }
 
 FormatterMediator::FormatterMediator (NclPlayerData *pData)
-    : Player (pData->screenId, "")
+    : Player ("")
 {
   string deviceName;
   xstrassign (deviceName, "systemScreen(%d)", pData->devClass);
@@ -211,10 +211,10 @@ FormatterMediator::FormatterMediator (NclPlayerData *pData)
   deviceLayout = new DeviceLayout (deviceName);
   deviceLayout->addDevice (deviceName, data->x, data->y, data->w, data->h);
 
-  presContext = new PresentationContext (data->screenId);
+  presContext = new PresentationContext ();
 
   multiDevice = new FormatterBaseDevice (
-      data->screenId, deviceLayout, data->playerId, data->x, data->y,
+      deviceLayout, data->playerId, data->x, data->y,
       data->w, data->h, data->enableMulticast, 22222);
 
   multiDevice->setPresentationContex (presContext);
@@ -492,7 +492,6 @@ void
 FormatterMediator::printData (NclPlayerData *data)
 {
   clog << "FormatterMediator::printData(" << this << ")";
-  clog << " screenId: " << data->screenId;
   clog << " baseId: " << data->baseId;
   clog << " playerId: " << data->playerId;
   clog << " devClass: " << data->devClass;
@@ -3221,13 +3220,13 @@ FormatterMediator::flip ()
 
   if (data->devClass == 0)
     {
-      if (surface != 0 && Ginga_Display_M->hasSurface (myScreen, surface))
+      if (surface != 0 && Ginga_Display_M->hasSurface (surface))
         {
           w = Ginga_Display_M->getSurfaceParentWindow (surface);
           if (w != 0)
             {
-              Ginga_Display_M->clearWindowContent (myScreen, w);
-              Ginga_Display_M->validateWindow (myScreen, w);
+              Ginga_Display_M->clearWindowContent (w);
+              Ginga_Display_M->validateWindow (w);
             }
         }
     }

@@ -68,7 +68,6 @@ private:
   vector<PendingNotification *> pendingNotifications;
 
 protected:
-  GingaScreenID myScreen;
   short status;
   static const short NONE = 0;
   static const short PLAY = 1;
@@ -96,14 +95,8 @@ protected:
   set<IPlayer *> mirrors;
 
 public:
-  Player (GingaScreenID screenId, string mrl);
+  Player (string mrl);
   virtual ~Player ();
-
-  inline GingaScreenID
-  getScreenID () const
-  {
-    return myScreen;
-  }
   void setMirrorSrc (IPlayer *mirrorSrc);
 
 private:

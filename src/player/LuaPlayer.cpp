@@ -211,8 +211,7 @@ LuaPlayer::nw_update_thread (arg_unused (void *data))
               // Refresh surface.
               window = Ginga_Display_M->getSurfaceParentWindow (wrapper);
               assert (window != 0);
-              Ginga_Display_M->renderWindowFrom (player->getScreenID (), window,
-                                    wrapper);
+              Ginga_Display_M->renderWindowFrom (window, wrapper);
             }
 
           while ((evt = ncluaw_receive (nw)) != NULL)
@@ -420,7 +419,7 @@ LuaPlayer::doStop (void)
 
 // Constructor and destructor.
 
-LuaPlayer::LuaPlayer (GingaScreenID id, string mrl) : Player (id, mrl)
+LuaPlayer::LuaPlayer (string mrl) : Player (mrl)
 {
 #ifdef _MSC_VER
   static int putenv = 0;
@@ -449,7 +448,7 @@ LuaPlayer::LuaPlayer (GingaScreenID id, string mrl) : Player (id, mrl)
     g_warning ("%s", g_strerror (errno));
 
   DisplayManager::addIEListenerInstance (this);
-  this->im = Ginga_Display_M->getInputManager (id);
+  this->im = Ginga_Display_M->getInputManager ();
 
   this->nw = NULL; // created by start()
   MUTEX_INIT (&this->mutex);
@@ -641,7 +640,7 @@ LuaPlayer::userEventReceived (SDLInputEvent *evt)
       int press;
 
       key = (CodeMap::getInstance ()->getValue (
-          evt->getKeyCode (myScreen)));
+          evt->getKeyCode ()));
       press = evt->isPressedType ();
       ptrace ("key='%s', type='%s'", key.c_str (),
               press ? "press" : "release");

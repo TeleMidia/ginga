@@ -46,7 +46,7 @@ map<string, int> SDLDisplay::sdlStrToSdlCode;
 set<SDL_Texture *> SDLDisplay::uTexPool;
 set<SDL_Surface *> SDLDisplay::uSurPool;
 vector<ReleaseContainer *> SDLDisplay::releaseList;
-map<GingaScreenID, map<double, set<SDLWindow *> *> *>
+map<int, map<double, set<SDLWindow *> *> *>
     SDLDisplay::renderMap;
 set<IContinuousMediaProvider *> SDLDisplay::cmpRenderList;
 
@@ -64,7 +64,7 @@ pthread_mutex_t SDLDisplay::surMutex;
 pthread_mutex_t SDLDisplay::proMutex;
 pthread_mutex_t SDLDisplay::cstMutex;
 
-SDLDisplay::SDLDisplay (int argc, char **args, GingaScreenID myId,
+SDLDisplay::SDLDisplay (int argc, char **args,
                                   UnderlyingWindowID embedId,
                                   bool externalRenderer)
 {
@@ -82,7 +82,6 @@ SDLDisplay::SDLDisplay (int argc, char **args, GingaScreenID myId,
   wRes = 0;
   im = NULL;
   useStdin = false;
-  id = myId;
   uParentId = NULL;
   uEmbedId = embedId;
   uEmbedFocused = false;
@@ -172,7 +171,7 @@ SDLDisplay::SDLDisplay (int argc, char **args, GingaScreenID myId,
 SDLDisplay::~SDLDisplay ()
 {
   map<SDLDisplay *, short>::iterator i;
-  map<GingaScreenID, map<double, set<SDLWindow *> *> *>::iterator j;
+  map<int, map<double, set<SDLWindow *> *> *>::iterator j;
   map<double, set<SDLWindow *> *>::iterator k;
 
   useStdin = false;
@@ -182,7 +181,7 @@ SDLDisplay::~SDLDisplay ()
   Thread::condDestroy (&cond);
 
   Thread::mutexLock (&renMutex);
-  j = renderMap.find (id);
+  j = renderMap.find (0);
   if (j != renderMap.end ())
     {
       k = j->second->begin ();
@@ -262,13 +261,13 @@ SDLDisplay::unlockSDL ()
 }
 
 void
-SDLDisplay::updateRenderMap (GingaScreenID screenId, SDLWindow *window,
-                                  double oldZIndex, double newZIndex)
+SDLDisplay::updateRenderMap (SDLWindow *window,
+                             double oldZIndex, double newZIndex)
 {
   checkMutexInit ();
 
-  renderMapRemoveWindow (screenId, window, oldZIndex);
-  renderMapInsertWindow (screenId, window, newZIndex);
+  renderMapRemoveWindow (window, oldZIndex);
+  renderMapInsertWindow (window, newZIndex);
 }
 
 void
@@ -458,12 +457,12 @@ SDLDisplay::blitScreen (string fileUri)
 void
 SDLDisplay::blitScreen (SDL_Surface *dest)
 {
-  map<GingaScreenID, map<double, set<SDLWindow *> *> *>::iterator i;
+  map<int, map<double, set<SDLWindow *> *> *>::iterator i;
   map<double, set<SDLWindow *> *>::iterator j;
   set<SDLWindow *>::iterator k;
 
   Thread::mutexLock (&renMutex);
-  i = renderMap.find (id);
+  i = renderMap.find (0);
   if (i != renderMap.end ())
     {
       j = i->second->begin ();
@@ -498,14 +497,14 @@ SDLDisplay::createWindow (int x, int y, int w, int h, double z)
 
   Thread::mutexLock (&winMutex);
 
-  iWin = new SDLWindow ((GingaWindowID)winIdRefCounter, 0, id, x, y, w, h,
+  iWin = new SDLWindow ((GingaWindowID)winIdRefCounter, 0, x, y, w, h,
                         z);
 
   windowRefs[(GingaWindowID)winIdRefCounter] = iWin;
 
   winIdRefCounter++;
   windowPool.insert (iWin);
-  renderMapInsertWindow (id, iWin, z);
+  renderMapInsertWindow (iWin, z);
 
   Thread::mutexUnlock (&winMutex);
 
@@ -552,7 +551,7 @@ SDLDisplay::releaseWindow (SDLWindow *win)
           windowRefs.erase (j);
         }
 
-      renderMapRemoveWindow (id, iWin, iWin->getZ ());
+      renderMapRemoveWindow (iWin, iWin->getZ ());
 
       windowPool.erase (i);
 
@@ -591,7 +590,7 @@ SDLDisplay::createSurface (int w, int h)
 
   uSur = createUnderlyingSurface (w, h);
 
-  iSur = new SDLSurface (id, uSur);
+  iSur = new SDLSurface (uSur);
 
   unlockSDL ();
 
@@ -610,11 +609,11 @@ SDLDisplay::createSurfaceFrom (void *uSur)
   lockSDL ();
   if (uSur != NULL)
     {
-      iSur = new SDLSurface (id, uSur);
+      iSur = new SDLSurface (uSur);
     }
   else
     {
-      iSur = new SDLSurface (id);
+      iSur = new SDLSurface ();
     }
   unlockSDL ();
 
@@ -670,7 +669,7 @@ SDLDisplay::createContinuousMediaProvider (const char *mrl,
 
   lockSDL ();
   strSym = "SDLVideoProvider";
-  provider = new SDLVideoProvider (id, mrl);
+  provider = new SDLVideoProvider (mrl);
   unlockSDL ();
 
   Thread::mutexLock (&proMutex);
@@ -710,7 +709,7 @@ SDLDisplay::createFontProvider (const char *mrl, int fontSize)
   IFontProvider *provider = NULL;
 
   lockSDL ();
-  provider = new SDLFontProvider (id, mrl, fontSize);
+  provider = new SDLFontProvider (mrl, fontSize);
   unlockSDL ();
 
   Thread::mutexLock (&proMutex);
@@ -747,11 +746,7 @@ SDLDisplay::createImageProvider (const char *mrl)
 {
   IImageProvider *provider = NULL;
 
-  // lockSDL(); There is no SDL call inside SDLImageProvider constructor
-
-  provider = new SDLImageProvider (id, mrl);
-
-  // unlockSDL();
+  provider = new SDLImageProvider (mrl);
 
   Thread::mutexLock (&proMutex);
   dmpPool.insert (provider);
@@ -1455,7 +1450,7 @@ SDLDisplay::refreshWin (SDLDisplay *s)
   SDLWindow *dstWin;
   SDLWindow *mirrorSrc;
 
-  map<GingaScreenID, map<double, set<SDLWindow *> *> *>::iterator i;
+  map<int, map<double, set<SDLWindow *> *> *>::iterator i;
   map<double, set<SDLWindow *> *>::iterator j;
   set<SDLWindow *>::iterator k;
 
@@ -1466,7 +1461,7 @@ SDLDisplay::refreshWin (SDLDisplay *s)
       SDL_RenderClear (s->renderer);
       unlockSDL ();
 
-      i = renderMap.find (s->id);
+      i = renderMap.find (0);
       if (i != renderMap.end ())
         {
           j = i->second->begin ();
@@ -1769,7 +1764,7 @@ SDLDisplay::initScreen (SDLDisplay *s)
 
   initCodeMaps ();
 
-  s->im = new InputManager (s->id);
+  s->im = new InputManager ();
 
   if (s->im != NULL)
     s->im->setAxisBoundaries (s->wRes, s->hRes, 0);
@@ -2036,7 +2031,7 @@ SDLDisplay::getInputManager ()
 SDLEventBuffer *
 SDLDisplay::createEventBuffer ()
 {
-  return new SDLEventBuffer (id);
+  return new SDLEventBuffer ();
 }
 
 SDLInputEvent *
@@ -2451,10 +2446,9 @@ SDLDisplay::checkEventFocus (SDLDisplay *s)
 
 /* output */
 void
-SDLDisplay::renderMapInsertWindow (GingaScreenID screenId,
-                                        SDLWindow *iWin, double z)
+SDLDisplay::renderMapInsertWindow (SDLWindow *iWin, double z)
 {
-  map<GingaScreenID, map<double, set<SDLWindow *> *> *>::iterator i;
+  map<int, map<double, set<SDLWindow *> *> *>::iterator i;
   map<double, set<SDLWindow *> *>::iterator j;
 
   map<double, set<SDLWindow *> *> *sortedMap;
@@ -2463,7 +2457,7 @@ SDLDisplay::renderMapInsertWindow (GingaScreenID screenId,
   checkMutexInit ();
 
   Thread::mutexLock (&renMutex);
-  i = renderMap.find (screenId);
+  i = renderMap.find (0);
   if (i != renderMap.end ())
     {
       sortedMap = i->second;
@@ -2471,7 +2465,7 @@ SDLDisplay::renderMapInsertWindow (GingaScreenID screenId,
   else
     {
       sortedMap = new map<double, set<SDLWindow *> *>;
-      renderMap[screenId] = sortedMap;
+      renderMap[0] = sortedMap;
     }
 
   j = sortedMap->find (z);
@@ -2490,10 +2484,9 @@ SDLDisplay::renderMapInsertWindow (GingaScreenID screenId,
 }
 
 void
-SDLDisplay::renderMapRemoveWindow (GingaScreenID screenId,
-                                        SDLWindow *iWin, double z)
+SDLDisplay::renderMapRemoveWindow (SDLWindow *iWin, double z)
 {
-  map<GingaScreenID, map<double, set<SDLWindow *> *> *>::iterator i;
+  map<int, map<double, set<SDLWindow *> *> *>::iterator i;
   map<double, set<SDLWindow *> *>::iterator j;
   set<SDLWindow *>::iterator k;
 
@@ -2503,7 +2496,7 @@ SDLDisplay::renderMapRemoveWindow (GingaScreenID screenId,
   checkMutexInit ();
 
   Thread::mutexLock (&renMutex);
-  i = renderMap.find (screenId);
+  i = renderMap.find (0);
   if (i != renderMap.end ())
     {
       sortedMap = i->second;

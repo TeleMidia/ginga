@@ -29,7 +29,6 @@ typedef struct
   string baseId;
   string playerId;
   int devClass;
-  GingaScreenID screenId;
   int x;
   int y;
   int w;

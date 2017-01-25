@@ -69,7 +69,7 @@ bool PresentationEngineManager::autoProcess = false;
 
 PresentationEngineManager::PresentationEngineManager (
     int devClass, int xOffset, int yOffset, int width, int height,
-    bool enableGfx, bool useMulticast, GingaScreenID screenId)
+    bool enableGfx, bool useMulticast)
     : Thread ()
 {
   DisplayManager::addIEListenerInstance (this);
@@ -86,7 +86,6 @@ PresentationEngineManager::PresentationEngineManager (
       y = yOffset;
     }
 
-  myScreen = screenId;
   enableMulticast = useMulticast;
 
   w = Ginga_Display->getWidthResolution ();
@@ -130,9 +129,9 @@ PresentationEngineManager::PresentationEngineManager (
   this->isEmbedded = true;
   this->currentPrivateBaseId = -1;
   this->timeBaseProvider = NULL;
-  this->im = Ginga_Display_M->getInputManager (myScreen);
+  this->im = Ginga_Display_M->getInputManager ();
   privateBaseManager = new PrivateBaseManager ();
-  this->sb = new ShowButton (myScreen);
+  this->sb = new ShowButton ();
 
   ContentTypeManager::getInstance ()->setMimeFile (string (GINGA_DATADIR)
                                                    + "mimetypes.ini");
@@ -151,9 +150,6 @@ PresentationEngineManager::~PresentationEngineManager ()
       clog << " closing" << endl;
       this->close ();
     }
-
-  clog << "PresentationEngineManager::~PresentationEngineManager";
-  clog << " releasing screen '" << myScreen << "'" << endl;
 
   lock ();
   while (!formattersToRelease.empty ())
@@ -593,7 +589,6 @@ PresentationEngineManager::createNclPlayerData ()
   data->baseId = "";
   data->playerId = "";
   data->devClass = devClass;
-  data->screenId = myScreen;
   data->x = x;
   data->y = y;
   data->w = w;
@@ -1139,7 +1134,7 @@ PresentationEngineManager::userEventReceived (SDLInputEvent *ev)
   struct inputEventNotification *evR;
   int keyCode;
 
-  keyCode = ev->getKeyCode (myScreen);
+  keyCode = ev->getKeyCode ();
 
   clog << "PresentationEngineManager::userEventReceived" << endl;
   evR = new struct inputEventNotification;

@@ -20,8 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
-ChannelPlayer::ChannelPlayer (GingaScreenID screenId)
-    : Player (screenId, "")
+ChannelPlayer::ChannelPlayer () : Player ("")
 {
   this->objectMap = NULL;
   this->selectedPlayer = NULL;
@@ -131,7 +130,7 @@ ChannelPlayer::setSurfacesParent (GingaWindowID parent)
       s = ((Player *)avPlayer)->getSurface ();
       if (s != 0 && Ginga_Display_M->getSurfaceParentWindow (s) != parent)
         {
-          Ginga_Display_M->setSurfaceParentWindow (myScreen, s, parent);
+          Ginga_Display_M->setSurfaceParentWindow (s, parent);
         }
       ++players;
     }

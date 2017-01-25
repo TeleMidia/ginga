@@ -35,13 +35,12 @@ private:
   double ocDelay;
   bool hasOCSupport;
   bool nptPrinter;
-  GingaScreenID myScreen;
   PresentationEngineManager *pem;
 
 public:
   CommonCoreManager ();
   ~CommonCoreManager ();
-  void addPEM (PresentationEngineManager *pem, GingaScreenID screenId);
+  void addPEM (PresentationEngineManager *pem);
   void enableNPTPrinter (bool enableNPTPrinter);
   void setOCDelay (double ocDelay);
   void setInteractivityInfo (bool hasOCSupport);
@@ -49,11 +48,9 @@ public:
   void setTunerSpec (string tunerSpec);
 
 private:
-  void showTunningWindow (GingaScreenID screenId, int x, int y, int w,
-                          int h);
+  void showTunningWindow (int x, int y, int w, int h);
   void releaseTunningWindow ();
-  IPlayer *createMainAVPlayer (string dstUri, GingaScreenID screenId, int x,
-                               int y, int w, int h);
+  IPlayer *createMainAVPlayer (string dstUri, int x, int y, int w, int h);
 
 public:
   void tune ();

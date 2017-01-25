@@ -43,8 +43,7 @@ bool SDLFontProvider::initNTSMutex = false;
 bool SDLFontProvider::initialized = false;
 short SDLFontProvider::fontRefs = 0;
 
-SDLFontProvider::SDLFontProvider (GingaScreenID screenId,
-                                  const char *fontUri, int heightInPixel)
+SDLFontProvider::SDLFontProvider (const char *fontUri, int heightInPixel)
 {
   type = FontProvider;
 
@@ -59,7 +58,6 @@ SDLFontProvider::SDLFontProvider (GingaScreenID screenId,
   this->fontInit = false;
   this->fontUri = "";
   this->dfltFont = string (GINGA_FONT_DATADIR) + "vera.ttf";
-  this->myScreen = screenId;
   this->height = heightInPixel;
   this->font = NULL;
   this->content = NULL;
@@ -307,8 +305,7 @@ SDLFontProvider::playOver (GingaSurfaceID surface)
         }
     }
 
-  if (Ginga_Display_M->hasSurface (myScreen,
-                                                        content->getId ()))
+  if (Ginga_Display_M->hasSurface (content->getId ()))
     {
       parent = (SDLWindow *)(content->getParentWindow ());
 

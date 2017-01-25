@@ -33,7 +33,7 @@ AdapterSsmlPlayer::createPlayer ()
 
   string paramValue;
 
-  player = new SsmlPlayer (myScreen, mrl.c_str ());
+  player = new SsmlPlayer (mrl.c_str ());
 
   clog << "AdapterSsmlPlayer::createPlayer '";
   clog << mrl << "' ALL DONE" << endl;

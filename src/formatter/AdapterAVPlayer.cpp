@@ -35,7 +35,7 @@ AdapterAVPlayer::createPlayer ()
 
   if (mrl != "")
     {
-      player = new AVPlayer (myScreen, mrl.c_str ());
+      player = new AVPlayer (mrl.c_str ());
     }
 
   AdapterFormatterPlayer::createPlayer ();

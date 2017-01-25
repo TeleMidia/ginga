@@ -23,8 +23,7 @@ using namespace ::ginga::mb;
 
 GINGA_TUNER_BEGIN
 
-Tuner::Tuner (GingaScreenID screenId, string network, string protocol,
-              string address)
+Tuner::Tuner (string network, string protocol, string address)
     : Thread ()
 {
   receiving = false;
@@ -33,9 +32,8 @@ Tuner::Tuner (GingaScreenID screenId, string network, string protocol,
   listener = NULL;
   loopListener = NULL;
   currentSpec = "";
-  this->screenId = screenId;
 
-  Ginga_Display_M->getInputManager (screenId)->addInputEventListener (this, NULL);
+  Ginga_Display_M->getInputManager ()->addInputEventListener (this, NULL);
 
   interfaces.clear ();
 
@@ -55,7 +53,7 @@ Tuner::~Tuner ()
 {
   clog << "Tuner::~Tuner" << endl;
 
-  Ginga_Display_M->getInputManager (screenId)->removeInputEventListener (this);
+  Ginga_Display_M->getInputManager ()->removeInputEventListener (this);
   listener = NULL;
   loopListener = NULL;
 
@@ -75,7 +73,7 @@ Tuner::userEventReceived (SDLInputEvent *ev)
   map<int, NetworkInterface *>::iterator i;
 
   clog << "Tuner::userEventReceived" << endl;
-  if (ev->getKeyCode (screenId) == CodeMap::KEY_QUIT)
+  if (ev->getKeyCode () == CodeMap::KEY_QUIT)
     {
       // CLOSE ALL TUNER INTERFACE/PROVIDER
       lock ();

@@ -54,8 +54,6 @@ class FormatterFocusManager : public IMotionEventListener,
 {
 private:
   InputManager *im;
-
-  GingaScreenID myScreen;
   PresentationContext *presContext;
   map<string, set<NclExecutionObject *> *> *focusTable;
   bool isHandler;

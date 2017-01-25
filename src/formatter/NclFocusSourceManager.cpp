@@ -30,8 +30,7 @@ using namespace ::ginga::util;
 GINGA_FORMATTER_BEGIN
 
 GingaSurfaceID
-NclFocusSourceManager::getFocusSourceComponent (GingaScreenID screenId,
-                                                string src)
+NclFocusSourceManager::getFocusSourceComponent (string src)
 {
   string::size_type index;
   string extension;
@@ -51,7 +50,7 @@ NclFocusSourceManager::getFocusSourceComponent (GingaScreenID screenId,
               || extension == "svgz" || extension == "webp")
             {
               s = Ginga_Display_M->createRenderedSurfaceFromImageFile
-                (screenId, src.c_str ());
+                (src.c_str ());
 
               return s;
             }

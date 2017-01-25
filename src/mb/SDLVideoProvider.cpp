@@ -25,12 +25,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-SDLVideoProvider::SDLVideoProvider (GingaScreenID screenId, const char *mrl)
-    : SDLAudioProvider (screenId, mrl)
+SDLVideoProvider::SDLVideoProvider (const char *mrl)
+    : SDLAudioProvider (mrl)
 {
   type = VideoProvider;
 
-  myScreen = screenId;
   win = NULL;
   hasTex = false;
 
@@ -146,14 +145,12 @@ SDLVideoProvider::playOver (GingaSurfaceID surface)
       return;
     }
 
-  parent = (SDLWindow *)(Ginga_Display_M
-                             ->getIWindowFromId (myScreen, parentId));
+  parent = (SDLWindow *)(Ginga_Display_M->getIWindowFromId (parentId));
 
   clog << "SDLVideoProvider::playOver parent(" << parent << ")" << endl;
-  if (Ginga_Display_M->hasWindow (myScreen, parentId))
+  if (Ginga_Display_M->hasWindow (parentId))
     {
-      win = (SDLWindow *)Ginga_Display_M
-                ->getIWindowFromId (myScreen, parentId);
+      win = (SDLWindow *)Ginga_Display_M->getIWindowFromId (parentId);
       if (hasTex)
         {
           ((SDLWindow *)win)->setTexture (tex);

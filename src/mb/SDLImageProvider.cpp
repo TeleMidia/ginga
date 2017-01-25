@@ -41,7 +41,7 @@ bool SDLImageProvider::initialized = false;
 short SDLImageProvider::imageRefs = 0;
 pthread_mutex_t SDLImageProvider::pMutex;
 
-SDLImageProvider::SDLImageProvider (GingaScreenID screenId, const char *mrl)
+SDLImageProvider::SDLImageProvider (const char *mrl)
 {
   type = ImageProvider;
 
@@ -51,29 +51,13 @@ SDLImageProvider::SDLImageProvider (GingaScreenID screenId, const char *mrl)
       Thread::mutexInit (&pMutex, true);
     }
 
-  // Thread::mutexLock(&pMutex);
-  // imageRefs++;
-
   imgUri = "";
-  myScreen = screenId;
 
   imgUri.assign (mrl);
-
-  // Thread::mutexUnlock(&pMutex);
 }
 
 SDLImageProvider::~SDLImageProvider ()
 {
-  // Thread::mutexLock(&pMutex);
-  // imageRefs--;
-
-  // if (imageRefs == 0) {
-  // FIXME: Find a better way to do this!
-  // IMG_Quit();
-  // initialized = false;
-  //}
-
-  // Thread::mutexUnlock(&pMutex);
 }
 
 void
@@ -96,7 +80,7 @@ SDLImageProvider::playOver (GingaSurfaceID surface)
     }
 
   if (surface != 0
-      && Ginga_Display_M->hasSurface (myScreen, surface))
+      && Ginga_Display_M->hasSurface (surface))
     {
 #if WITH_LIBRSVG
       if (imgUri.substr (imgUri.find_last_of (".") + 1) == "svg"
@@ -135,7 +119,7 @@ SDLImageProvider::playOver (GingaSurfaceID surface)
           GingaWindowID parentId = Ginga_Display_M
                                        ->getSurfaceParentWindow (surface);
           parent = (SDLWindow *)Ginga_Display_M
-                       ->getIWindowFromId (myScreen, parentId);
+                       ->getIWindowFromId (parentId);
 
           if (parent != NULL)
             {

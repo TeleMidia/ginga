@@ -58,7 +58,7 @@ private:
   GingaWindowID win;
 
 public:
-  AVPlayer (GingaScreenID screenId, string mrl);
+  AVPlayer (string mrl);
   virtual ~AVPlayer ();
   GingaSurfaceID getSurface ();
 

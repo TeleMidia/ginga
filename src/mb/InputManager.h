@@ -63,7 +63,6 @@ protected:
   double lastEventTime;
   double imperativeIntervalTime;
   double declarativeIntervalTime;
-  GingaScreenID myScreen;
 
   int currentXAxis;
   int currentYAxis;
@@ -77,7 +76,7 @@ protected:
   pthread_mutex_t appMutex;
 
 public:
-  InputManager (GingaScreenID screenId);
+  InputManager ();
   ~InputManager ();
 
 protected:
