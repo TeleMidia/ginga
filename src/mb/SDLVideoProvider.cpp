@@ -145,12 +145,12 @@ SDLVideoProvider::playOver (GingaSurfaceID surface)
       return;
     }
 
-  parent = (SDLWindow *)(Ginga_Display_M->getIWindowFromId (parentId));
+  parent = (SDLWindow *)(Ginga_Display->getIWindowFromId (parentId));
 
   clog << "SDLVideoProvider::playOver parent(" << parent << ")" << endl;
   if (Ginga_Display_M->hasWindow (parentId))
     {
-      win = (SDLWindow *)Ginga_Display_M->getIWindowFromId (parentId);
+      win = (SDLWindow *)Ginga_Display->getIWindowFromId (parentId);
       if (hasTex)
         {
           ((SDLWindow *)win)->setTexture (tex);
