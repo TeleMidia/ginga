@@ -28,8 +28,7 @@ GINGA_FORMATTER_BEGIN
 class NclFocusSourceManager
 {
 public:
-  static GingaSurfaceID getFocusSourceComponent (GingaScreenID screenId,
-                                                 string src);
+  static GingaSurfaceID getFocusSourceComponent (string src);
 };
 
 GINGA_FORMATTER_END

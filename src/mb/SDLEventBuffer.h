@@ -26,7 +26,6 @@ GINGA_MB_BEGIN
 class SDLEventBuffer
 {
 private:
-  GingaScreenID myScreen;
   pthread_mutex_t ebMutex;
   vector<SDL_Event> eventBuffer;
   bool capsOn;
@@ -36,7 +35,7 @@ private:
   pthread_mutex_t condMutex;
 
 public:
-  SDLEventBuffer (GingaScreenID screen);
+  SDLEventBuffer ();
   virtual ~SDLEventBuffer ();
   static bool checkEvent (Uint32 winId, SDL_Event event);
   void feed (SDL_Event event, bool capsOn, bool shiftOn);

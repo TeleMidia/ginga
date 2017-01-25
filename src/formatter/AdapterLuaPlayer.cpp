@@ -28,7 +28,7 @@ AdapterLuaPlayer::createPlayer ()
 {
   if (fileExists (mrl))
     {
-      player = new LuaPlayer (myScreen, mrl.c_str ());
+      player = new LuaPlayer (mrl.c_str ());
     }
   else
     {

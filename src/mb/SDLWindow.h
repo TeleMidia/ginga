@@ -52,7 +52,6 @@ private:
   Color *winColor;
   Color *colorKey;
 
-  GingaScreenID myScreen;
   GingaWindowID windowId;
 
   SDL_Rect rect;
@@ -82,14 +81,14 @@ private:
 
 public:
   SDLWindow (GingaWindowID underlyingWindowID, GingaWindowID parentWindowID,
-             GingaScreenID screenId, int x, int y, int width, int height,
+             int x, int y, int width, int height,
              double z);
 
   virtual ~SDLWindow ();
 
 private:
   void initialize (GingaWindowID underlyingWindowID,
-                   GingaWindowID parentWindowID, GingaScreenID screenId,
+                   GingaWindowID parentWindowID,
                    int x, int y, int width, int height, double z);
 
   void releaseWinISur ();
@@ -115,7 +114,6 @@ public:
   void getBorder (guint8 *r, guint8 *g, guint8 *b, guint8 *alpha,
                   int *bWidth);
 
-  GingaScreenID getScreen ();
   void revertContent ();
   void setChildSurface (SDLSurface *iSur);
   int getCap (string cap);

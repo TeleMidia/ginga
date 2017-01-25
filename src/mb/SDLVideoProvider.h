@@ -36,7 +36,7 @@ private:
   bool hasTex;
 
 public:
-  SDLVideoProvider (GingaScreenID screenId, const char *mrl);
+  SDLVideoProvider (const char *mrl);
   virtual ~SDLVideoProvider ();
   void setLoadSymbol (string symbol);
   string getLoadSymbol ();

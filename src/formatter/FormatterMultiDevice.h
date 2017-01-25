@@ -115,14 +115,13 @@ protected:
   PresentationContext *presContext;
   void *focusManager;
   FormatterMultiDevice *parent;
-  GingaScreenID myScreen;
   set<IPlayer *> listening;
   pthread_mutex_t lMutex;
   static const int DV_QVGA_WIDTH = 480;
   static const int DV_QVGA_HEIGHT = 320;
 
 public:
-  FormatterMultiDevice (GingaScreenID screenId, DeviceLayout *deviceLayout,
+  FormatterMultiDevice (DeviceLayout *deviceLayout,
                         int x, int y, int w, int h, bool useMulticast,
                         int srvPort);
   virtual ~FormatterMultiDevice ();

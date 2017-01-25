@@ -23,8 +23,7 @@ using namespace ::ginga::ic;
 
 GINGA_PLAYER_BEGIN
 
-ImagePlayer::ImagePlayer (GingaScreenID screenId, string mrl)
-    : Player (screenId, mrl)
+ImagePlayer::ImagePlayer (string mrl) : Player (mrl)
 {
   GingaLocatorFactory *glf = NULL;
   string path, name, clientPath, newMrl;
@@ -50,7 +49,7 @@ ImagePlayer::ImagePlayer (GingaScreenID screenId, string mrl)
 
   if (fileExists (mrl))
     {
-      provider = Ginga_Display_M->createImageProvider (myScreen, mrl.c_str ());
+      provider = Ginga_Display_M->createImageProvider (mrl.c_str ());
     }
   else
     {
@@ -102,7 +101,7 @@ ImagePlayer::ImagePlayer (GingaScreenID screenId, string mrl)
               if (fileExists (newMrl))
                 {
                   provider
-                      = Ginga_Display_M->createImageProvider (myScreen, newMrl.c_str ());
+                      = Ginga_Display_M->createImageProvider (newMrl.c_str ());
                 }
               else
                 {
@@ -132,7 +131,7 @@ ImagePlayer::~ImagePlayer ()
 {
   if (provider != 0)
     {
-      Ginga_Display_M->releaseImageProvider (myScreen, provider);
+      Ginga_Display_M->releaseImageProvider (provider);
     }
 }
 
@@ -170,7 +169,7 @@ ImagePlayer::setPropertyValue (string name, string value)
       win = Ginga_Display_M->getSurfaceParentWindow (surface);
       if (win != 0)
         {
-          Ginga_Display_M->renderWindowFrom (myScreen, win, surface);
+          Ginga_Display_M->renderWindowFrom (win, surface);
         }
     }
 
@@ -182,7 +181,7 @@ ImagePlayer::prepareSurface (GingaProviderID provider, arg_unused (string mrl))
 {
   GingaSurfaceID renderedSurface = 0;
 
-  renderedSurface = Ginga_Display_M->createSurfaceFrom (myScreen, 0);
+  renderedSurface = Ginga_Display_M->createSurfaceFrom (0);
   Ginga_Display_M->playProviderOver (provider, renderedSurface);
 
   return renderedSurface;

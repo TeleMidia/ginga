@@ -38,7 +38,6 @@ protected:
   set<string> typeSet;
 
 private:
-  GingaScreenID myScreen;
   map<string, NclFormatterLayout *> flChilds;
   LayoutRegion *deviceRegion;
   vector<string> sortedRegions;
@@ -48,10 +47,8 @@ private:
   pthread_mutex_t mutex;
 
 public:
-  NclFormatterLayout (GingaScreenID screenId, int x, int y, int w, int h);
+  NclFormatterLayout (int x, int y, int w, int h);
   virtual ~NclFormatterLayout ();
-
-  GingaScreenID getScreenID ();
   LayoutRegion *getDeviceRegion ();
   void addChild (string objectId, NclFormatterLayout *child);
   NclFormatterLayout *getChild (string objectId);

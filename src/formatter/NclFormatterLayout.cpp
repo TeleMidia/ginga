@@ -20,10 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclFormatterLayout::NclFormatterLayout (GingaScreenID screenId, int x,
-                                        int y, int w, int h)
+NclFormatterLayout::NclFormatterLayout (int x, int y, int w, int h)
 {
-  myScreen = screenId;
   deviceRegion = NULL;
 
   typeSet.insert ("NclFormatterLayout");
@@ -41,12 +39,6 @@ NclFormatterLayout::~NclFormatterLayout ()
   objectMap.clear ();
   flChilds.clear ();
   unlock ();
-}
-
-GingaScreenID
-NclFormatterLayout::getScreenID ()
-{
-  return myScreen;
 }
 
 LayoutRegion *

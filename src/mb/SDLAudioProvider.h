@@ -27,14 +27,13 @@ GINGA_MB_BEGIN
 class SDLAudioProvider : public IContinuousMediaProvider
 {
 protected:
-  GingaScreenID myScreen;
   string symbol;
   string mrl;
 
   SDL2ffmpeg *decoder;
 
 public:
-  SDLAudioProvider (GingaScreenID screenId, const char *mrl);
+  SDLAudioProvider (const char *mrl);
   virtual ~SDLAudioProvider ();
 
   virtual void setLoadSymbol (string symbol);

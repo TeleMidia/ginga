@@ -30,14 +30,11 @@ private:
   static bool mutexInit;
   static bool initialized;
   static short imageRefs;
-
   static pthread_mutex_t pMutex;
-
-  GingaScreenID myScreen;
   string imgUri;
 
 public:
-  SDLImageProvider (GingaScreenID screenId, const char *mrl);
+  SDLImageProvider (const char *mrl);
   virtual ~SDLImageProvider ();
 
   string

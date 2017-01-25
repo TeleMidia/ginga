@@ -33,7 +33,6 @@ GINGA_MB_BEGIN
 class SDLFontProvider : public IFontProvider
 {
 private:
-  GingaScreenID myScreen;
   string dfltFont;
   string fontUri;
   int height;
@@ -67,9 +66,7 @@ public:
   static const short A_BOTTOM_LEFT;
   static const short A_BOTTOM_RIGHT;
 
-  SDLFontProvider (GingaScreenID screenId, const char *fontUri,
-                   int heightInPixel);
-
+  SDLFontProvider (const char *fontUri, int heightInPixel);
   virtual ~SDLFontProvider ();
 
 private:

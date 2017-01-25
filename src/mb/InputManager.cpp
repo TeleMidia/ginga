@@ -23,14 +23,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-InputManager::InputManager (GingaScreenID screenId) : Thread ()
+InputManager::InputManager () : Thread ()
 {
   currentXAxis = 0;
   currentYAxis = 0;
   maxX = 0;
   maxY = 0;
   lastEventTime = 0;
-  myScreen = screenId;
   eventBuffer = NULL;
   running = false;
   notifying = false;
@@ -120,8 +119,8 @@ InputManager::release ()
       runDone = (maxX == 0 && maxY == 0);
     }
 
-  mbKeyCode = Ginga_Display_M->fromGingaToMB (myScreen, CodeMap::KEY_QUIT);
-  ie = Ginga_Display_M->createInputEvent (myScreen, NULL, mbKeyCode);
+  mbKeyCode = Ginga_Display_M->fromGingaToMB (CodeMap::KEY_QUIT);
+  ie = Ginga_Display_M->createInputEvent (NULL, mbKeyCode);
 
   if (wasRunning)
     {
@@ -438,7 +437,7 @@ InputManager::dispatchEvent (SDLInputEvent *inputEvent)
       return true;
     }
 
-  keyCode = inputEvent->getKeyCode (myScreen);
+  keyCode = inputEvent->getKeyCode ();
 
   clog << "InputManger::dispatchEvent ";
   if (keyCode == CodeMap::KEY_TAP)
@@ -449,8 +448,6 @@ InputManager::dispatchEvent (SDLInputEvent *inputEvent)
     {
       clog << "keyCode = '" << keyCode << "' ";
     }
-  clog << "on screen id = '";
-  clog << myScreen << "'";
   clog << endl;
 
   i = eventListeners.begin ();
@@ -630,8 +627,8 @@ InputManager::postInputEvent (int keyCode)
   SDLInputEvent *ie;
   int mbKeyCode;
 
-  mbKeyCode = Ginga_Display_M->fromGingaToMB (myScreen, keyCode);
-  ie = Ginga_Display_M->createInputEvent (myScreen, NULL, mbKeyCode);
+  mbKeyCode = Ginga_Display_M->fromGingaToMB (keyCode);
+  ie = Ginga_Display_M->createInputEvent (NULL, mbKeyCode);
   postInputEvent (ie);
 }
 
@@ -676,7 +673,7 @@ InputManager::getEventBuffer ()
 {
   if (eventBuffer == NULL)
     {
-      eventBuffer= Ginga_Display_M->createEventBuffer (myScreen);
+      eventBuffer= Ginga_Display_M->createEventBuffer ();
       if (!running)
         {
           running = true;
@@ -777,7 +774,7 @@ InputManager::handleInputEvent (SDLInputEvent *inputEvent, arg_unused (int &pLas
     }
 
   if (!inputEvent->isApplicationType ()
-      && inputEvent->getKeyCode (myScreen) == CodeMap::KEY_NULL)
+      && inputEvent->getKeyCode () == CodeMap::KEY_NULL)
     {
       return;
     }
@@ -796,7 +793,7 @@ InputManager::handleInputEvent (SDLInputEvent *inputEvent, arg_unused (int &pLas
   if (inputEvent->isPressedType ()
       && ((xruntime_ms () - timeStamp) >= declarativeIntervalTime))
     {
-      lastCode = inputEvent->getKeyCode (myScreen);
+      lastCode = inputEvent->getKeyCode ();
       timeStamp = xruntime_ms ();
 
       clog << "InputManager::run event code = '";

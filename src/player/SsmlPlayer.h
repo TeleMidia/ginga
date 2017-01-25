@@ -44,7 +44,7 @@ private:
   string content;
 
 public:
-  SsmlPlayer (GingaScreenID screenId, string mrl);
+  SsmlPlayer (string mrl);
   virtual ~SsmlPlayer ();
 
 protected:

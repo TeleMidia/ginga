@@ -42,14 +42,12 @@ private:
   static const short PLAY = 1;
   static const short PAUSE = 2;
   static const short STOP = 3;
-
-  GingaScreenID myScreen;
   short previousStatus;
   GingaWindowID win;
   bool running;
 
 public:
-  ShowButton (GingaScreenID screenId);
+  ShowButton ();
   virtual ~ShowButton ();
 
   void initializeWindow ();

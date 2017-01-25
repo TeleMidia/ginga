@@ -33,7 +33,7 @@ AdapterPlainTxtPlayer::createPlayer ()
 
   if (fileExists (mrl))
     {
-      player = new PlainTxtPlayer (myScreen, mrl.c_str ());
+      player = new PlainTxtPlayer (mrl.c_str ());
     }
   else
     {

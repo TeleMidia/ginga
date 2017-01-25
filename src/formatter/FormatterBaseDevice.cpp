@@ -31,12 +31,11 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-FormatterBaseDevice::FormatterBaseDevice (GingaScreenID screenId,
-                                          DeviceLayout *deviceLayout,
+FormatterBaseDevice::FormatterBaseDevice (DeviceLayout *deviceLayout,
                                           string playerId, int x, int y,
                                           int w, int h, bool useMulticast,
                                           int srvPort)
-    : FormatterMultiDevice (screenId, deviceLayout, x, y, w, h,
+    : FormatterMultiDevice (deviceLayout, x, y, w, h,
                             useMulticast, srvPort)
 {
   set<int> *evs;
@@ -47,7 +46,7 @@ FormatterBaseDevice::FormatterBaseDevice (GingaScreenID screenId,
   deviceLayout->addDevice ("systemScreen(1)", 0, 0, DV_QVGA_WIDTH,
                            DV_QVGA_HEIGHT);
 
-  serialized = Ginga_Display_M->createWindow (myScreen, 0, 0, DV_QVGA_WIDTH,
+  serialized = Ginga_Display_M->createWindow (0, 0, DV_QVGA_WIDTH,
                                  DV_QVGA_HEIGHT, -1.0);
 
   evs = new set<int>;
@@ -55,9 +54,9 @@ FormatterBaseDevice::FormatterBaseDevice (GingaScreenID screenId,
 
   im->addInputEventListener (this, evs);
 
-  int caps = Ginga_Display_M->getWindowCap (myScreen, serialized, "ALPHACHANNEL");
-  Ginga_Display_M->setWindowCaps (myScreen, serialized, caps);
-  Ginga_Display_M->drawWindow (myScreen, serialized);
+  int caps = Ginga_Display_M->getWindowCap (serialized, "ALPHACHANNEL");
+  Ginga_Display_M->setWindowCaps (serialized, caps);
+  Ginga_Display_M->drawWindow (serialized);
 
 #if WITH_MULTIDEVICE
   if (rdm == NULL)
@@ -77,7 +76,7 @@ FormatterBaseDevice::FormatterBaseDevice (GingaScreenID screenId,
   rdm->addListener (this);
 #endif // WITH_MULTIDEVICE
 
-  mainLayout = new NclFormatterLayout (myScreen, x, y, w, h);
+  mainLayout = new NclFormatterLayout (x, y, w, h);
   mainLayout->getDeviceRegion ()->setDeviceClass (0, "");
   layoutManager[deviceClass] = mainLayout;
 }
@@ -96,9 +95,9 @@ FormatterBaseDevice::~FormatterBaseDevice ()
 #endif
     }
 
-  if (Ginga_Display_M->hasWindow (myScreen, serialized))
+  if (Ginga_Display_M->hasWindow (serialized))
     {
-      Ginga_Display_M->deleteWindow (myScreen, serialized);
+      Ginga_Display_M->deleteWindow (serialized);
       serialized = 0;
     }
 
@@ -130,7 +129,7 @@ FormatterBaseDevice::userEventReceived (SDLInputEvent *ev)
   int currentY;
   int code;
 
-  code = ev->getKeyCode (myScreen);
+  code = ev->getKeyCode ();
 
   if (code == CodeMap::KEY_TAP)
     {

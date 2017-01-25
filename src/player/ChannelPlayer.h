@@ -33,7 +33,7 @@ protected:
   bool hasParent;
 
 public:
-  ChannelPlayer (GingaScreenID screenId);
+  ChannelPlayer ();
   virtual ~ChannelPlayer ();
   IPlayer *getSelectedPlayer ();
   void setPlayerMap (map<string, IPlayer *> *objs);

@@ -33,12 +33,11 @@ private:
   IPlayer *currentPlayer;
   int currentPid;
   string fullScreenBounds;
-
-  ProgramAV (GingaScreenID screenId);
+  ProgramAV ();
   virtual ~ProgramAV ();
 
 public:
-  static ProgramAV *getInstance (GingaScreenID screenId);
+  static ProgramAV *getInstance ();
   void release ();
   int64_t getVPts ();
   GingaSurfaceID getSurface ();

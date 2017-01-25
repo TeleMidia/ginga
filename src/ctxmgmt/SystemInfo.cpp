@@ -110,16 +110,14 @@ SystemInfo::getReturnBitRate ()
 }
 
 void
-SystemInfo::getScreenSize (arg_unused (GingaScreenID screenId),
-                           int *width, int *height)
+SystemInfo::getScreenSize (int *width, int *height)
 {
   *width = Ginga_Display->getWidthResolution ();
   *height = Ginga_Display->getHeightResolution ();
 }
 
 void
-SystemInfo::getScreenGraphicSize (arg_unused (GingaScreenID screenId),
-                                  int *width, int *height)
+SystemInfo::getScreenGraphicSize (int *width, int *height)
 {
   *width = Ginga_Display->getWidthResolution ();
   *height = Ginga_Display->getHeightResolution ();

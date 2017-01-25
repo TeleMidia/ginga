@@ -25,8 +25,7 @@ GINGA_FORMATTER_BEGIN
 class FormatterPassiveDevice : public FormatterMultiDevice
 {
 public:
-  FormatterPassiveDevice (GingaScreenID screenId,
-                          DeviceLayout *deviceLayout, int x, int y, int w,
+  FormatterPassiveDevice (DeviceLayout *deviceLayout, int x, int y, int w,
                           int h, bool useMulticast, int srvPort);
 
   virtual ~FormatterPassiveDevice ();

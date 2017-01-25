@@ -23,11 +23,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-SDLAudioProvider::SDLAudioProvider (GingaScreenID screenId, const char *mrl)
+SDLAudioProvider::SDLAudioProvider (const char *mrl)
 {
   type = AudioProvider;
 
-  myScreen = screenId;
   this->mrl = "";
   decoder = new SDL2ffmpeg (mrl);
 

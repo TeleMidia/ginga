@@ -41,7 +41,6 @@ AdapterFormatterPlayer::AdapterFormatterPlayer ()
   this->mrl = "";
   this->playerCompName = "";
   this->objectDevice = -1;
-  this->myScreen = 0;
   this->outTransDur = 0;
   this->outTransTime = -1.0;
   this->isLocked = false;
@@ -94,10 +93,8 @@ void
 AdapterFormatterPlayer::setAdapterManager (void *manager)
 {
   this->manager = manager;
-  this->myScreen
-      = ((AdapterPlayerManager *)manager)->getNclPlayerData ()->screenId;
   DisplayManager::addIEListenerInstance (this);
-  im = Ginga_Display_M->getInputManager (myScreen);
+  im = Ginga_Display_M->getInputManager ();
 }
 
 bool
@@ -153,7 +150,7 @@ AdapterFormatterPlayer::createPlayer ()
 
   if (player == NULL)
     {
-      player = new Player (myScreen, mrl);
+      player = new Player (mrl);
     }
 
   player->addListener (this);
@@ -1349,7 +1346,7 @@ AdapterFormatterPlayer::checkAnchorMonitor ()
 
   if (im == NULL)
     { // player was recovered from manager gc
-      im = Ginga_Display_M->getInputManager (myScreen);
+      im = Ginga_Display_M->getInputManager ();
     }
 
   if (im != NULL)
@@ -1996,7 +1993,7 @@ AdapterFormatterPlayer::userEventReceived (SDLInputEvent *ev)
 {
   int keyCode;
 
-  keyCode = ev->getKeyCode (myScreen);
+  keyCode = ev->getKeyCode ();
 
   if (keyCode == CodeMap::KEY_QUIT)
     {
@@ -2013,7 +2010,7 @@ AdapterFormatterPlayer::userEventReceived (SDLInputEvent *ev)
     {
       clog << "AdapterFormatterPlayer::userEventReceived for '";
       clog << mrl << "' player visibility = '" << player->isVisible ();
-      clog << "' event key code = '" << ev->getKeyCode (myScreen);
+      clog << "' event key code = '" << ev->getKeyCode ();
       clog << "'";
       clog << endl;
       if (player->isVisible ())

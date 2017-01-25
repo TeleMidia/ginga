@@ -23,9 +23,8 @@ using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
-ShowButton::ShowButton (GingaScreenID screenId) : Thread ()
+ShowButton::ShowButton () : Thread ()
 {
-  myScreen = screenId;
   status = NONE;
   previousStatus = NONE;
   win = 0;
@@ -52,11 +51,11 @@ ShowButton::initializeWindow ()
   w = 60;
   h = 60;
 
-  win = Ginga_Display_M->createWindow (myScreen, x, y, w, h, 4.0);
+  win = Ginga_Display_M->createWindow (x, y, w, h, 4.0);
 
-  int caps = Ginga_Display_M->getWindowCap (myScreen, win, "ALPHACHANNEL");
-  Ginga_Display_M->setWindowCaps (myScreen, win, caps);
-  Ginga_Display_M->drawWindow (myScreen, win);
+  int caps = Ginga_Display_M->getWindowCap (win, "ALPHACHANNEL");
+  Ginga_Display_M->setWindowCaps (win, caps);
+  Ginga_Display_M->drawWindow (win);
 }
 
 void
@@ -101,8 +100,8 @@ ShowButton::release ()
   lock ();
   if (win != 0)
     {
-      Ginga_Display_M->hideWindow (myScreen, win);
-      Ginga_Display_M->deleteWindow (myScreen, win);
+      Ginga_Display_M->hideWindow (win);
+      Ginga_Display_M->deleteWindow (win);
       win = 0;
     }
   unlock ();
@@ -113,7 +112,7 @@ ShowButton::render (string mrl)
 {
   GingaSurfaceID surface;
 
-  surface = Ginga_Display_M->createRenderedSurfaceFromImageFile (myScreen, mrl.c_str ());
+  surface = Ginga_Display_M->createRenderedSurfaceFromImageFile (mrl.c_str ());
 
   lock ();
   if (win == 0)
@@ -121,12 +120,12 @@ ShowButton::render (string mrl)
       initializeWindow ();
     }
 
-  if (Ginga_Display_M->setSurfaceParentWindow (myScreen, surface, win))
+  if (Ginga_Display_M->setSurfaceParentWindow (surface, win))
     {
-      Ginga_Display_M->renderWindowFrom (myScreen, win, surface);
+      Ginga_Display_M->renderWindowFrom (win, surface);
     }
-  Ginga_Display_M->showWindow (myScreen, win);
-  Ginga_Display_M->raiseWindowToTop (myScreen, win);
+  Ginga_Display_M->showWindow (win);
+  Ginga_Display_M->raiseWindowToTop (win);
   unlock ();
 }
 

@@ -42,8 +42,8 @@ SynthCallback (arg_unused (short *wav), arg_unused (int numsamples), arg_unused 
 
 GINGA_PLAYER_BEGIN
 
-SsmlPlayer::SsmlPlayer (GingaScreenID screenId, string mrl)
-    : Thread (), Player (screenId, mrl)
+SsmlPlayer::SsmlPlayer (string mrl)
+    : Thread (), Player (mrl)
 {
 }
 

@@ -26,14 +26,13 @@ using namespace ::ginga::util;
 
 GINGA_PLAYER_BEGIN
 
-Player::Player (GingaScreenID screenId, string mrl)
+Player::Player (string mrl)
 {
   Thread::mutexInit (&listM, false);
   Thread::mutexInit (&lockedListM, false);
   Thread::mutexInit (&referM, false);
   Thread::mutexInit (&pnMutex, false);
 
-  this->myScreen = screenId;
   this->mrl = mrl;
   this->outputWindow = 0;
   this->surface = 0;
@@ -78,14 +77,14 @@ Player::~Player ()
     }
   mirrors.clear ();
 
-  if (Ginga_Display_M->hasWindow (myScreen, outputWindow))
+  if (Ginga_Display_M->hasWindow (outputWindow))
     {
-      Ginga_Display_M->revertWindowContent (myScreen, outputWindow);
-      Ginga_Display_M->deleteWindow (myScreen, outputWindow);
+      Ginga_Display_M->revertWindowContent (outputWindow);
+      Ginga_Display_M->deleteWindow (outputWindow);
       outputWindow = 0;
     }
 
-  if (Ginga_Display_M->hasSurface (myScreen, surface))
+  if (Ginga_Display_M->hasSurface (surface))
     {
       Ginga_Display_M->deleteSurface (surface);
       surface = 0;
@@ -449,7 +448,7 @@ Player::mirrorIt (Player *mirrorSrc, Player *mirror)
           iWin = Ginga_Display_M->getSurfaceParentWindow (iSur);
           if (iSrcWin != 0 && iWin != 0)
             {
-              Ginga_Display_M->setWindowMirrorSrc (myScreen, iWin, iSrcWin);
+              Ginga_Display_M->setWindowMirrorSrc (iWin, iSrcWin);
             }
         }
     }
@@ -541,7 +540,7 @@ Player::setPropertyValue (string name, string value)
           params = split (value, ",");
           if (params->size () == 4)
             {
-              Ginga_Display_M->setWindowBounds (myScreen, outputWindow,
+              Ginga_Display_M->setWindowBounds (outputWindow,
                                    xstrto_int ((*params)[0]),
                                    xstrto_int ((*params)[1]),
                                    xstrto_int ((*params)[2]),
@@ -554,7 +553,7 @@ Player::setPropertyValue (string name, string value)
           params = split (value, ",");
           if (params->size () == 2)
             {
-              Ginga_Display_M->moveWindowTo (myScreen, outputWindow,
+              Ginga_Display_M->moveWindowTo (outputWindow,
                                 xstrto_int ((*params)[0]),
                                 xstrto_int ((*params)[1]));
             }
@@ -565,7 +564,7 @@ Player::setPropertyValue (string name, string value)
           params = split (value, ",");
           if (params->size () == 2)
             {
-              Ginga_Display_M->resizeWindow (myScreen, outputWindow,
+              Ginga_Display_M->resizeWindow (outputWindow,
                                 xstrto_int ((*params)[0]),
                                 xstrto_int ((*params)[1]));
             }
@@ -573,27 +572,27 @@ Player::setPropertyValue (string name, string value)
         }
       else if (name == "left")
         {
-          Ginga_Display_M->setWindowX (myScreen, outputWindow,
+          Ginga_Display_M->setWindowX (outputWindow,
                           xstrto_int (value));
         }
       else if (name == "top")
         {
-          Ginga_Display_M->setWindowY (myScreen, outputWindow,
+          Ginga_Display_M->setWindowY (outputWindow,
                           xstrto_int (value));
         }
       else if (name == "width")
         {
-          Ginga_Display_M->setWindowW (myScreen, outputWindow,
+          Ginga_Display_M->setWindowW (outputWindow,
                           xstrto_int (value));
         }
       else if (name == "height")
         {
-          Ginga_Display_M->setWindowH (myScreen, outputWindow,
+          Ginga_Display_M->setWindowH (outputWindow,
                           xstrto_int (value));
         }
       else if (name == "transparency")
         {
-          Ginga_Display_M->setWindowCurrentTransparency (myScreen, outputWindow,
+          Ginga_Display_M->setWindowCurrentTransparency (outputWindow,
                                             xstrto_uint8 (value));
         }
     }
@@ -775,7 +774,7 @@ Player::setOutWindow (GingaWindowID windowId)
 {
   if (surface != 0 && Ginga_Display_M->getSurfaceParentWindow (surface) == 0)
     {
-      Ginga_Display_M->setSurfaceParentWindow (myScreen, surface, windowId);
+      Ginga_Display_M->setSurfaceParentWindow (surface, windowId);
     }
   return true;
 }

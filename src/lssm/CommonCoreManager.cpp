@@ -66,7 +66,6 @@ CommonCoreManager::CommonCoreManager ()
   hasOCSupport = true;
   pem = NULL;
   nptPrinter = false;
-  myScreen = 0;
 }
 
 CommonCoreManager::~CommonCoreManager ()
@@ -76,14 +75,12 @@ CommonCoreManager::~CommonCoreManager ()
 }
 
 void
-CommonCoreManager::addPEM (PresentationEngineManager *pem,
-                           GingaScreenID screenId)
+CommonCoreManager::addPEM (PresentationEngineManager *pem)
 {
-  this->myScreen = screenId;
   this->pem = pem;
 
 #if WITH_ISDBT
-  tuner = new Tuner (myScreen);
+  tuner = new Tuner ();
 
   pem->setIsLocalNcl (false, tuner);
 
@@ -166,7 +163,7 @@ CommonCoreManager::setTunerSpec (string tunerSpec)
 }
 
 void
-CommonCoreManager::showTunningWindow (GingaScreenID screenId, int x, int y,
+CommonCoreManager::showTunningWindow (int x, int y,
                                       int w, int h)
 {
   GingaSurfaceID s = 0;
@@ -175,18 +172,17 @@ CommonCoreManager::showTunningWindow (GingaScreenID screenId, int x, int y,
   tunerImg = string (GINGA_TUNER_DATADIR) + "tuning.png";
   if (fileExists (tunerImg))
     {
-      tuningWindow = Ginga_Display_M->createWindow (screenId, x, y, w, h, -10.0);
+      tuningWindow = Ginga_Display_M->createWindow (x, y, w, h, -10.0);
 
-      s = Ginga_Display_M->createRenderedSurfaceFromImageFile (screenId,
-                                                  tunerImg.c_str ());
+      s = Ginga_Display_M->createRenderedSurfaceFromImageFile (tunerImg.c_str ());
 
-      int cap = Ginga_Display_M->getWindowCap (myScreen, tuningWindow, "ALPHACHANNEL");
-      Ginga_Display_M->setWindowCaps (myScreen, tuningWindow, cap);
+      int cap = Ginga_Display_M->getWindowCap (tuningWindow, "ALPHACHANNEL");
+      Ginga_Display_M->setWindowCaps (tuningWindow, cap);
 
-      Ginga_Display_M->drawWindow (myScreen, tuningWindow);
-      Ginga_Display_M->showWindow (myScreen, tuningWindow);
-      Ginga_Display_M->renderWindowFrom (myScreen, tuningWindow, s);
-      Ginga_Display_M->lowerWindowToBottom (myScreen, tuningWindow);
+      Ginga_Display_M->drawWindow (tuningWindow);
+      Ginga_Display_M->showWindow (tuningWindow);
+      Ginga_Display_M->renderWindowFrom (tuningWindow, s);
+      Ginga_Display_M->lowerWindowToBottom (tuningWindow);
 
       Ginga_Display_M->deleteSurface (s);
       s = 0;
@@ -198,23 +194,22 @@ CommonCoreManager::releaseTunningWindow ()
 {
   if (tuningWindow != 0)
     {
-      Ginga_Display_M->clearWindowContent (myScreen, tuningWindow);
-      Ginga_Display_M->hideWindow (myScreen, tuningWindow);
-
-      Ginga_Display_M->deleteWindow (myScreen, tuningWindow);
+      Ginga_Display_M->clearWindowContent (tuningWindow);
+      Ginga_Display_M->hideWindow (tuningWindow);
+      Ginga_Display_M->deleteWindow (tuningWindow);
       tuningWindow = 0;
     }
 }
 
 IPlayer *
 CommonCoreManager::createMainAVPlayer (string dstUri,
-                                       GingaScreenID screenId, int x, int y,
+                                       int x, int y,
                                        int w, int h)
 {
   IPlayer *ipav;
   string s;
 
-  ipav = ProgramAV::getInstance (screenId);
+  ipav = ProgramAV::getInstance ();
   xstrassign (s, "%d,%d,%d,%d", x, y, w, h);
   ipav->setPropertyValue ("setBoundaries", s);
   ipav->setPropertyValue ("createPlayer", "sbtvd-ts://" + dstUri);
@@ -246,12 +241,12 @@ CommonCoreManager::startPresentation ()
 
   data = pem->createNclPlayerData ();
 
-  showTunningWindow (data->screenId, data->x, data->y, data->w, data->h);
+  showTunningWindow (data->x, data->y, data->w, data->h);
   tune ();
   dstUri = ((IDemuxer *)demuxer)->createTSUri (dstUri);
 
   // Create Main AV
-  ipav = createMainAVPlayer (dstUri, data->screenId, data->x, data->y,
+  ipav = createMainAVPlayer (dstUri, data->x, data->y,
                              data->w, data->h);
 
   delete data;

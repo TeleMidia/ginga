@@ -59,7 +59,6 @@ private:
   int w;
   int h;
   bool enableGfx;
-  GingaScreenID myScreen;
   PrivateBaseManager *privateBaseManager;
   map<string, INCLPlayer *> formatters;
   set<INCLPlayer *> formattersToRelease;
@@ -87,7 +86,7 @@ private:
 public:
   PresentationEngineManager (int devClass, int xOffset, int yOffset,
                              int width, int height, bool disableGfx,
-                             bool useMulticast, GingaScreenID screenId);
+                             bool useMulticast);
   virtual ~PresentationEngineManager ();
   void setExitOnEnd (bool exitOnEnd);
   void setDisableFKeys (bool disableFKeys);

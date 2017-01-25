@@ -29,7 +29,7 @@ private:
   string content;
 
 public:
-  PlainTxtPlayer (GingaScreenID screenId, string mrl);
+  PlainTxtPlayer (string mrl);
   virtual ~PlainTxtPlayer ();
 
 protected:

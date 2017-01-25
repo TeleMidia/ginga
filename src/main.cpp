@@ -269,8 +269,6 @@ main (int argc, char *argv[])
   // TODO: Add support to remote NCL files.
   // TODO: Add ISDBT tuning support.
 
-  GingaScreenID id;
-  SDLDisplay *display;
   int xoffset, yoffset, width, height;
 
   g_set_prgname ("ginga");
@@ -281,20 +279,15 @@ main (int argc, char *argv[])
     }
 
   _Ginga_Display_M = new DisplayManager ();
-  id = Ginga_Display_M->createScreen (argc, argv);
-  g_assert (id == 0);
-
-  display = NULL;
-  g_assert (Ginga_Display_M->getScreen (id, &display));
-  g_assert_nonnull (display);
-  _Ginga_Display = display;
+  _Ginga_Display = Ginga_Display_M->createScreen (argc, argv);
+  g_assert_nonnull (_Ginga_Display);
 
   xoffset = 0;
   yoffset = 0;
   width = 800;
   height = 600;
   pem = new PresentationEngineManager (0, xoffset, yoffset, width, height,
-                                       true, false, id);
+                                       true, false);
   g_assert_nonnull (pem);
   pem->setEmbedApp (false);
   pem->setExitOnEnd (false);

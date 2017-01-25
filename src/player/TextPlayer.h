@@ -49,14 +49,14 @@ protected:
   GingaProviderID font;
 
 public:
-  TextPlayer (GingaScreenID screenId);
+  TextPlayer ();
   virtual ~TextPlayer ();
 
 private:
-  void initializePlayer (GingaScreenID screenId);
+  void initializePlayer ();
 
 public:
-  static int write (GingaScreenID screenId, GingaSurfaceID s, string text,
+  static int write (GingaSurfaceID s, string text,
                     short textAlign, string fontUri = "", int fontSize = 12,
                     Color *fontColor = NULL);
 

@@ -24,7 +24,7 @@ using namespace ::ginga::util;
 
 GINGA_PLAYER_BEGIN
 
-ProgramAV::ProgramAV (GingaScreenID screenId) : Player (screenId, "")
+ProgramAV::ProgramAV () : Player ("")
 {
   currentPid = -1;
   currentPlayer = NULL;
@@ -61,11 +61,11 @@ ProgramAV::~ProgramAV ()
 ProgramAV *ProgramAV::_instance = 0;
 
 ProgramAV *
-ProgramAV::getInstance (GingaScreenID screenId)
+ProgramAV::getInstance ()
 {
   if (ProgramAV::_instance == NULL)
     {
-      ProgramAV::_instance = new ProgramAV (screenId);
+      ProgramAV::_instance = new ProgramAV ();
     }
   return ProgramAV::_instance;
 }
@@ -247,7 +247,7 @@ ProgramAV::createPlayer (string mrl)
     }
 
   currentPid = pid;
-  currentPlayer = new AVPlayer (myScreen, mrl.c_str ());
+  currentPlayer = new AVPlayer (mrl.c_str ());
 
   if (fullScreenBounds != "")
     {

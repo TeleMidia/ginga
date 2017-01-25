@@ -91,7 +91,6 @@ private:
   set<IContinuousMediaProvider *> cmpPool;
   set<IDiscreteMediaProvider *> dmpPool;
 
-  GingaScreenID id;
   UnderlyingWindowID uParentId;
   UnderlyingWindowID uEmbedId;
   bool uEmbedFocused;
@@ -119,7 +118,7 @@ private:
   static set<SDL_Surface *> uSurPool;
   static set<SDL_Texture *> uTexPool;
   static vector<ReleaseContainer *> releaseList;
-  static map<GingaScreenID, map<double, set<SDLWindow *> *> *> renderMap;
+  static map<int, map<double, set<SDLWindow *> *> *> renderMap;
   static set<IContinuousMediaProvider *> cmpRenderList;
 
   static pthread_mutex_t sdlMutex; // mutex for SDL structures
@@ -134,7 +133,7 @@ private:
       cstMutex; // mutex for the others C++ STL structures
 
 public:
-  SDLDisplay (int numArgs, char **args, GingaScreenID myId,
+  SDLDisplay (int numArgs, char **args,
                    UnderlyingWindowID embedId, bool externalRenderer);
 
   virtual ~SDLDisplay ();
@@ -146,7 +145,7 @@ public:
   static void lockSDL ();
   static void unlockSDL ();
 
-  static void updateRenderMap (GingaScreenID screenId, SDLWindow *window,
+  static void updateRenderMap (SDLWindow *window,
                                double oldZIndex, double newZIndex);
 
   void releaseScreen ();
@@ -285,11 +284,8 @@ private:
 
 public:
   /* output */
-  static void renderMapInsertWindow (GingaScreenID screenId,
-                                     SDLWindow *iWin, double z);
-
-  static void renderMapRemoveWindow (GingaScreenID screenId,
-                                     SDLWindow *iWin, double z);
+  static void renderMapInsertWindow (SDLWindow *iWin, double z);
+  static void renderMapRemoveWindow (SDLWindow *iWin, double z);
 
 private:
   static void removeFromWindowList (vector<SDLWindow *> *windows,

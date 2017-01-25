@@ -36,7 +36,7 @@ protected:
   bool running;
 
 public:
-  SrtPlayer (GingaScreenID screenId, string mrl);
+  SrtPlayer (string mrl);
   virtual ~SrtPlayer ();
   void loadFile (string url);
 
