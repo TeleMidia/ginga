@@ -37,7 +37,6 @@ using namespace ::ginga::util;
 #include "formatter/FormatterActiveDevice.h"
 #include "formatter/FormatterMultiDevice.h"
 #include "formatter/FormatterMultiDevice.h"
-#include "formatter/FormatterPassiveDevice.h"
 #include "multidev/DeviceDomain.h"
 using namespace ::ginga::multidev;
 #endif
@@ -279,7 +278,7 @@ main (int argc, char *argv[])
     }
 
   _Ginga_Display_M = new DisplayManager ();
-  _Ginga_Display = Ginga_Display_M->createScreen (argc, argv);
+  _Ginga_Display = new SDLDisplay (800, 600, false);
   g_assert_nonnull (_Ginga_Display);
 
   xoffset = 0;

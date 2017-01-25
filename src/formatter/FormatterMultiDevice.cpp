@@ -22,7 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterBaseDevice.h"
 
 #if WITH_MULTIDEVICE
-# include "FormatterPassiveDevice.h"
 # include "FormatterActiveDevice.h"
 #endif
 
@@ -311,88 +310,18 @@ FormatterMultiDevice::serializeScreen (int devClass,
             {
               return "";
             }
-
-          if (devClass == 1)
-            {
-              quality = 45;
-              dumpW = (int)(480 / 1.8);
-              dumpH = (int)(320 / 1.8);
-            }
         }
       fileUri = Ginga_Display_M->getWindowDumpFileUri (mapWindow, quality,
                                           dumpW, dumpH);
-
-      clog << "FormatterMultiDevice::serializeScreen fileURI = '";
-      clog << fileUri << "' sortedIds size = '" << sortedIds.size ();
-      clog << endl;
     }
 
   return fileUri;
 }
 
 void
-FormatterMultiDevice::postMediaContent (int destDevClass)
+FormatterMultiDevice::postMediaContent (arg_unused (int destDevClass))
 {
-  string fileUri;
-  GingaWindowID bmpScr = 0;
-  vector<GingaWindowID> wins;
-
-  /*clog << "FormatterMultiDevice::postMediaContent to class '";
-  clog << destDevClass << "'";
-  clog << endl;*/
-
   Thread::mutexLock (&mutex);
-  if (destDevClass == DeviceDomain::CT_PASSIVE)
-    {
-      if (parent != NULL)
-        {
-          bmpScr = parent->bitMapScreen;
-        }
-      else
-        {
-          bmpScr = bitMapScreen;
-        }
-
-      fileUri = serializeScreen (destDevClass, serialized);
-      if (fileUri != "" && fileExists (fileUri))
-        {
-#if WITH_MULTIDEVICE
-          rdm->postMediaContent (destDevClass, fileUri);
-
-          clog << "FormatterMultiDevice::postMediaContent(";
-          clog << this << ")";
-          clog << " serialized window id = '";
-          clog << (unsigned long)serialized;
-
-#endif // WITH_MULTIDEVICE
-
-          if (bmpScr != 0)
-            {
-              wins.push_back (serialized);
-              Ginga_Display->mergeIds (bmpScr, &wins);
-
-              Ginga_Display_M->showWindow (bmpScr);
-
-              clog << "' bmpScr = '";
-              clog << (unsigned long)bmpScr;
-
-              /*bmpScr->clearContent();
-              bmpScr->stretchBlit(serialized);
-              bmpScr->show();
-              bmpScr->validate();*/
-
-              // renderFromUri(bitMapScreen, fileUri);
-            }
-
-          clog << "'" << endl;
-        }
-    }
-  else if (destDevClass == DeviceDomain::CT_ACTIVE)
-    {
-      if (!activeUris->empty ())
-        {
-        }
-    }
   Thread::mutexUnlock (&mutex);
 }
 
@@ -401,13 +330,8 @@ FormatterMultiDevice::getFormatterLayout (
     NclCascadingDescriptor *descriptor, NclExecutionObject *object)
 {
   map<int, NclFormatterLayout *>::iterator i;
-  NclFormatterLayout *layout;
   LayoutRegion *region;
   int devClass;
-
-  /*clog << "FormatterMultiDevice::getFormatterLayout for '";
-  clog << object->getId() << "' formatterMultiDevice class = '";
-  clog << this->deviceClass << "'" << endl;*/
 
   region = descriptor->getRegion ();
   if (region == NULL)
@@ -429,23 +353,7 @@ FormatterMultiDevice::getFormatterLayout (
 
   devClass = region->getDeviceClass ();
   i = layoutManager.find (devClass);
-
-  if (i == layoutManager.end ())
-    {
-      if (devClass == DeviceDomain::CT_PASSIVE)
-        {
-          layout = new NclFormatterLayout (0, 0, DV_QVGA_WIDTH,
-                                           DV_QVGA_HEIGHT);
-
-          layoutManager[devClass] = layout;
-          return layout;
-        }
-      return NULL;
-    }
-  else
-    {
-      return i->second;
-    }
+  return i->second;
 }
 
 GingaWindowID
@@ -598,15 +506,8 @@ FormatterMultiDevice::showObject (NclExecutionObject *executionObject)
 
           if (hasRemoteDevices)
             {
-              if (devClass == DeviceDomain::CT_PASSIVE)
+              if (devClass == DeviceDomain::CT_ACTIVE)
                 {
-                  postMediaContent (devClass);
-                }
-              else if (devClass == DeviceDomain::CT_ACTIVE)
-                {
-                  // clog << "activeBaseUri: "<<activeBaseUri<<endl;
-                  // clog << "activeUris: "<<activeUris<<endl;
-
                   content
                       = ((NodeEntity *)(executionObject->getDataObject ()
                                             ->getDataEntity ()))
@@ -689,20 +590,12 @@ FormatterMultiDevice::hideObject (NclExecutionObject *executionObject)
           devClass = region->getDeviceClass ();
           if (devClass != DeviceDomain::CT_ACTIVE)
             {
-              /*clog << "FormatterMultiDevice::hideObject '";
-              clog << executionObject->getId() << "' class '";
-              clog << devClass << "'" << endl;*/
-
               layout->hideObject (executionObject);
             }
 
           if (hasRemoteDevices)
             {
-              if (devClass == DeviceDomain::CT_PASSIVE)
-                {
-                  postMediaContent (devClass);
-                }
-              else if (devClass == DeviceDomain::CT_ACTIVE)
+              if (devClass == DeviceDomain::CT_ACTIVE)
                 {
                   Content *content;
                   string relativePath = "";
@@ -828,50 +721,10 @@ FormatterMultiDevice::newDeviceConnected (int newDevClass, int w, int h)
 }
 
 bool
-FormatterMultiDevice::receiveRemoteEvent (int remoteDevClass, int eventType,
-                                          string eventContent)
+FormatterMultiDevice::receiveRemoteEvent (arg_unused (int remoteDevClass),
+                                          arg_unused (int eventType),
+                                          arg_unused (string eventContent))
 {
-  vector<string> *params;
-  int eventCode;
-
-  if (remoteDevClass == DeviceDomain::CT_PASSIVE
-      && eventType == DeviceDomain::FT_SELECTIONEVENT)
-    {
-      if (eventContent.find (",") != std::string::npos)
-        {
-          params = split (eventContent, ",");
-          if (params != NULL)
-            {
-              if (params->size () == 3)
-                {
-                  string strCode, strX, strY;
-                  strCode = (*params)[0];
-                  eventCode = CodeMap::getInstance ()->getCode (strCode);
-                  if (eventCode == CodeMap::KEY_TAP)
-                    {
-                      strX = (*params)[1];
-                      strY = (*params)[2];
-
-                      tapObject (DeviceDomain::CT_PASSIVE, xstrto_int (strX), xstrto_int (strY));
-                    }
-                  else if (eventCode != CodeMap::KEY_NULL)
-                    {
-                      im->postInputEvent (eventCode);
-                    }
-                }
-              delete params;
-            }
-        }
-      else
-        {
-          eventCode = CodeMap::getInstance ()->getCode (eventContent);
-          if (eventCode != CodeMap::KEY_NULL)
-            {
-              im->postInputEvent (eventCode);
-            }
-        }
-    }
-
   return true;
 }
 
@@ -890,27 +743,11 @@ FormatterMultiDevice::addActiveUris (string baseUri, vector<string> *uris)
 }
 
 void
-FormatterMultiDevice::updatePassiveDevices ()
+FormatterMultiDevice::updateStatus (arg_unused (short code),
+                                    arg_unused (string parameter),
+                                    arg_unused (short type),
+                                    arg_unused (string value))
 {
-  postMediaContent (DeviceDomain::CT_PASSIVE);
-}
-
-void
-FormatterMultiDevice::updateStatus (short code, arg_unused (string parameter),
-                                    short type, arg_unused (string value))
-{
-  switch (code)
-    {
-    case IPlayer::PL_NOTIFY_UPDATECONTENT:
-      if (type == IPlayer::TYPE_PASSIVEDEVICE)
-        {
-          FormatterMultiDevice::updatePassiveDevices ();
-        }
-      break;
-
-    default:
-      break;
-    }
 }
 
 GINGA_FORMATTER_END

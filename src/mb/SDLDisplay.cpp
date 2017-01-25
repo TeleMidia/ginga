@@ -50,10 +50,6 @@ map<int, map<double, set<SDLWindow *> *> *>
     SDLDisplay::renderMap;
 set<IContinuousMediaProvider *> SDLDisplay::cmpRenderList;
 
-const unsigned int SDLDisplay::DSA_UNKNOWN = 0;
-const unsigned int SDLDisplay::DSA_4x3 = 1;
-const unsigned int SDLDisplay::DSA_16x9 = 2;
-
 pthread_mutex_t SDLDisplay::sdlMutex;
 pthread_mutex_t SDLDisplay::sieMutex;
 pthread_mutex_t SDLDisplay::renMutex;
@@ -64,65 +60,20 @@ pthread_mutex_t SDLDisplay::surMutex;
 pthread_mutex_t SDLDisplay::proMutex;
 pthread_mutex_t SDLDisplay::cstMutex;
 
-SDLDisplay::SDLDisplay (int argc, char **args,
-                                  UnderlyingWindowID embedId,
-                                  bool externalRenderer)
+SDLDisplay::SDLDisplay (int width, int height, bool fullscreen)
 {
-  string parentCoords = "";
-  int i;
-
   pthread_t tId;
-  pthread_attr_t tattr;
 
-  pthread_attr_init (&tattr);
-  pthread_attr_setdetachstate (&tattr, PTHREAD_CREATE_DETACHED);
-  pthread_attr_setscope (&tattr, PTHREAD_SCOPE_SYSTEM);
-
-  hRes = 0;
-  wRes = 0;
+  wRes = width;
+  hRes = height;
+  fullScreen = fullscreen;
   im = NULL;
-  useStdin = false;
-  uParentId = NULL;
-  uEmbedId = embedId;
-  uEmbedFocused = false;
-  mustGainFocus = false;
+
   renderer = NULL;
-  mbMode = "";
-  mbSubSystem = "";
   screen = NULL;
   sdlId = 0;
   backgroundLayer = NULL;
-  fullScreen = false;
   winIdRefCounter = 1;
-
-  if (externalRenderer)
-    {
-      hasERC = externalRenderer;
-    }
-
-  for (i = 0; i < argc; i++)
-    {
-      if ((strcmp (args[i], "subsystem") == 0) && ((i + 1) < argc))
-        {
-          mbSubSystem.assign (args[i + 1]);
-        }
-      else if ((strcmp (args[i], "parent") == 0) && ((i + 1) < argc))
-        {
-          parentCoords.assign (args[i + 1]);
-        }
-      else if ((strcmp (args[i], "mode") == 0) && ((i + 1) < argc))
-        {
-          mbMode.assign (args[i + 1]);
-          if (mbMode == "fullscreen")
-            {
-              fullScreen = true;
-            }
-        }
-      else if ((strcmp (args[i], "poll-stdin") == 0))
-        {
-          useStdin = true;
-        }
-    }
 
 #ifdef _MSC_VER
   putenv ("SDL_AUDIODRIVER=DirectSound");
@@ -133,39 +84,10 @@ SDLDisplay::SDLDisplay (int argc, char **args,
   Thread::condInit (&cond, NULL);
 
   checkMutexInit ();
-
-  if (!hasRenderer)
-    {
-      hasRenderer = true;
-
-      if (!hasERC)
-        {
-          setInitScreenFlag ();
-
-          pthread_create (&tId, &tattr, SDLDisplay::rendererT, this);
-          pthread_detach (tId);
-        }
-      else
-        {
-          setInitScreenFlag ();
-          rendererT (this);
-        }
-    }
-  else
-    {
-      setInitScreenFlag ();
-
-      if (hasERC)
-        {
-          rendererT (this);
-        }
-    }
-
-  if (useStdin)
-    {
-      pthread_create (&tId, &tattr, SDLDisplay::checkStdin, this);
-      pthread_detach (tId);
-    }
+  hasRenderer = true;
+  setInitScreenFlag ();
+  pthread_create (&tId, NULL, SDLDisplay::rendererT, this);
+  pthread_detach (tId);
 }
 
 SDLDisplay::~SDLDisplay ()
@@ -173,8 +95,6 @@ SDLDisplay::~SDLDisplay ()
   map<SDLDisplay *, short>::iterator i;
   map<int, map<double, set<SDLWindow *> *> *>::iterator j;
   map<double, set<SDLWindow *> *>::iterator k;
-
-  useStdin = false;
 
   waitingCreator = false;
   Thread::mutexDestroy (&condMutex);
@@ -847,41 +767,6 @@ SDLDisplay::createReleaseContainer (SDL_Surface *uSur,
 }
 
 void
-SDLDisplay::checkSDLInit ()
-{
-  Uint32 subsystem_init = SDL_WasInit (0);
-
-  if (subsystem_init == 0)
-    {
-      if (SDL_Init ((Uint32) (SDL_INIT_AUDIO | SDL_INIT_VIDEO
-                              | SDL_INIT_TIMER | SDL_INIT_NOPARACHUTE))
-          != 0)
-        {
-          clog << "SDLDisplay::checkSDLInit ";
-          clog << "Warning! " << SDL_GetError ();
-          clog << endl;
-        }
-    }
-  else
-    {
-      if ((subsystem_init & SDL_INIT_AUDIO) == 0)
-        {
-          SDL_InitSubSystem (SDL_INIT_AUDIO);
-        }
-
-      if ((subsystem_init & SDL_INIT_VIDEO) == 0)
-        {
-          SDL_InitSubSystem (SDL_INIT_VIDEO);
-        }
-
-      if ((subsystem_init & SDL_INIT_TIMER) == 0)
-        {
-          SDL_InitSubSystem (SDL_INIT_TIMER);
-        }
-    }
-}
-
-void
 SDLDisplay::notifyQuit ()
 {
   map<SDLDisplay *, short>::iterator i;
@@ -918,124 +803,113 @@ SDLDisplay::sdlQuit ()
 void
 SDLDisplay::checkWindowFocus (SDLDisplay *s, SDL_Event *event)
 {
-  if (s->uEmbedId != NULL)
+  if (event->type == SDL_WINDOWEVENT
+      && event->window.windowID == s->sdlId)
     {
-      if (event->type == SDL_WINDOWEVENT
-          && event->window.windowID == s->sdlId)
+      switch (event->window.event)
         {
-          switch (event->window.event)
+        case SDL_WINDOWEVENT_SHOWN:
+          clog << "SDLDisplay::checkWindowFocus ";
+          clog << "Window '" << event->window.windowID;
+          clog << "' shown" << endl;
+          break;
+
+        case SDL_WINDOWEVENT_HIDDEN:
+          clog << "SDLDisplay::checkWindowFocus ";
+          clog << "Window '" << event->window.windowID;
+          clog << "' hidden" << endl;
+          break;
+
+        case SDL_WINDOWEVENT_EXPOSED:
+          clog << "SDLDisplay::checkWindowFocus ";
+          clog << "Window '" << event->window.windowID;
+          clog << "' exposed" << endl;
+          break;
+
+        case SDL_WINDOWEVENT_MOVED:
+          clog << "SDLDisplay::checkWindowFocus ";
+          clog << "Window '" << event->window.windowID;
+          clog << "' moved to '";
+          clog << event->window.data1;
+          clog << "," << event->window.data2 << "'";
+          clog << endl;
+          break;
+
+        case SDL_WINDOWEVENT_RESIZED:
+          clog << "SDLDisplay::checkWindowFocus ";
+          clog << "Window '" << event->window.windowID;
+          clog << "' resized to '";
+          clog << event->window.data1;
+          clog << "," << event->window.data2 << "'";
+          clog << endl;
+
+          s->wRes = event->window.data1;
+          s->hRes = event->window.data2;
+
+          if (s->im != NULL)
             {
-            case SDL_WINDOWEVENT_SHOWN:
-              clog << "SDLDisplay::checkWindowFocus ";
-              clog << "Window '" << event->window.windowID;
-              clog << "' shown" << endl;
-              break;
-
-            case SDL_WINDOWEVENT_HIDDEN:
-              clog << "SDLDisplay::checkWindowFocus ";
-              clog << "Window '" << event->window.windowID;
-              clog << "' hidden" << endl;
-              break;
-
-            case SDL_WINDOWEVENT_EXPOSED:
-              clog << "SDLDisplay::checkWindowFocus ";
-              clog << "Window '" << event->window.windowID;
-              clog << "' exposed" << endl;
-
-              s->mustGainFocus = true;
-              break;
-
-            case SDL_WINDOWEVENT_MOVED:
-              clog << "SDLDisplay::checkWindowFocus ";
-              clog << "Window '" << event->window.windowID;
-              clog << "' moved to '";
-              clog << event->window.data1;
-              clog << "," << event->window.data2 << "'";
-              clog << endl;
-              break;
-
-            case SDL_WINDOWEVENT_RESIZED:
-              clog << "SDLDisplay::checkWindowFocus ";
-              clog << "Window '" << event->window.windowID;
-              clog << "' resized to '";
-              clog << event->window.data1;
-              clog << "," << event->window.data2 << "'";
-              clog << endl;
-
-              s->wRes = event->window.data1;
-              s->hRes = event->window.data2;
-
-              if (s->im != NULL)
-                {
-                  s->im->setAxisBoundaries (s->wRes, s->hRes, 0);
-                }
-
-              break;
-
-            case SDL_WINDOWEVENT_MINIMIZED:
-              clog << "SDLDisplay::checkWindowFocus ";
-              clog << "Window '" << event->window.windowID;
-              clog << "' minimized" << endl;
-              break;
-
-            case SDL_WINDOWEVENT_MAXIMIZED:
-              clog << "SDLDisplay::checkWindowFocus ";
-              clog << "Window '" << event->window.windowID;
-              clog << "' maximized" << endl;
-              break;
-
-            case SDL_WINDOWEVENT_RESTORED:
-              clog << "SDLDisplay::checkWindowFocus ";
-              clog << "Window '" << event->window.windowID;
-              clog << "' restored to '";
-              clog << event->window.data1;
-              clog << ", " << event->window.data2 << "'";
-              clog << endl;
-              break;
-
-            case SDL_WINDOWEVENT_ENTER:
-              clog << "SDLDisplay::checkWindowFocus ";
-              clog << "Window '" << event->window.windowID;
-              clog << "' Mouse entered" << endl;
-
-              s->mustGainFocus = true;
-              break;
-
-            case SDL_WINDOWEVENT_LEAVE:
-              clog << "SDLDisplay::checkWindowFocus ";
-              clog << "Window '" << event->window.windowID;
-              clog << "' Mouse left" << endl;
-              break;
-
-            case SDL_WINDOWEVENT_FOCUS_GAINED:
-              clog << "SDLDisplay::checkWindowFocus ";
-              clog << "Window '" << event->window.windowID;
-              clog << "' gained keyboard focus" << endl;
-
-              s->uEmbedFocused = true;
-              break;
-
-            case SDL_WINDOWEVENT_FOCUS_LOST:
-              clog << "SDLDisplay::checkWindowFocus ";
-              clog << "Window '" << event->window.windowID;
-              clog << "' lost keyboard focus" << endl;
-
-              s->uEmbedFocused = false;
-              break;
-
-            case SDL_WINDOWEVENT_CLOSE:
-              clog << "SDLDisplay::checkWindowFocus ";
-              clog << "Window '" << event->window.windowID;
-              clog << "' closed" << endl;
-              break;
-
-            default:
-              clog << "SDLDisplay::checkWindowFocus ";
-              clog << "Window '" << event->window.windowID;
-              clog << "' got unknown event '";
-              clog << event->window.event << "'" << endl;
-              break;
+              s->im->setAxisBoundaries (s->wRes, s->hRes, 0);
             }
+
+          break;
+
+        case SDL_WINDOWEVENT_MINIMIZED:
+          clog << "SDLDisplay::checkWindowFocus ";
+          clog << "Window '" << event->window.windowID;
+          clog << "' minimized" << endl;
+          break;
+
+        case SDL_WINDOWEVENT_MAXIMIZED:
+          clog << "SDLDisplay::checkWindowFocus ";
+          clog << "Window '" << event->window.windowID;
+          clog << "' maximized" << endl;
+          break;
+
+        case SDL_WINDOWEVENT_RESTORED:
+          clog << "SDLDisplay::checkWindowFocus ";
+          clog << "Window '" << event->window.windowID;
+          clog << "' restored to '";
+          clog << event->window.data1;
+          clog << ", " << event->window.data2 << "'";
+          clog << endl;
+          break;
+
+        case SDL_WINDOWEVENT_ENTER:
+          clog << "SDLDisplay::checkWindowFocus ";
+          clog << "Window '" << event->window.windowID;
+          clog << "' Mouse entered" << endl;
+          break;
+
+        case SDL_WINDOWEVENT_LEAVE:
+          clog << "SDLDisplay::checkWindowFocus ";
+          clog << "Window '" << event->window.windowID;
+          clog << "' Mouse left" << endl;
+          break;
+
+        case SDL_WINDOWEVENT_FOCUS_GAINED:
+          clog << "SDLDisplay::checkWindowFocus ";
+          clog << "Window '" << event->window.windowID;
+          clog << "' gained keyboard focus" << endl;
+          break;
+
+        case SDL_WINDOWEVENT_FOCUS_LOST:
+          clog << "SDLDisplay::checkWindowFocus ";
+          clog << "Window '" << event->window.windowID;
+          clog << "' lost keyboard focus" << endl;
+          break;
+
+        case SDL_WINDOWEVENT_CLOSE:
+          clog << "SDLDisplay::checkWindowFocus ";
+          clog << "Window '" << event->window.windowID;
+          clog << "' closed" << endl;
+          break;
+
+        default:
+          clog << "SDLDisplay::checkWindowFocus ";
+          clog << "Window '" << event->window.windowID;
+          clog << "' got unknown event '";
+          clog << event->window.event << "'" << endl;
+          break;
         }
     }
 }
@@ -1050,8 +924,7 @@ SDLDisplay::notifyEvent (SDLDisplay *s, SDL_Event *event,
   if (s->im != NULL)
     {
       eventBuffer = (SDLEventBuffer *)(s->im->getEventBuffer ());
-      if (((SDLEventBuffer::checkEvent (s->sdlId, *event)
-            && s->uEmbedId == NULL)
+      if (((SDLEventBuffer::checkEvent (s->sdlId, *event))
            || checkEventFocus (s)))
         {
           eventBuffer->feed (*event, capsOn, shiftOn);
@@ -1060,123 +933,6 @@ SDLDisplay::notifyEvent (SDLDisplay *s, SDL_Event *event,
     }
 
   return false;
-}
-
-void
-SDLDisplay::processCmd (SDLDisplay *s, string cmd, string type,
-                             string args)
-{
-  int intEvent;
-  SDL_Event ie;
-  size_t token;
-
-  assert (s->useStdin);
-  if (s->uEmbedId != NULL)
-    {
-      ie.window.windowID = (Uint32) (unsigned long)s->uEmbedId;
-    }
-
-  if (type == "GIEK")
-    {
-      intEvent = convertEventCodeStrToInt (cmd);
-      if (intEvent >= 0)
-        {
-          if (cmd != "GIEK:QUIT")
-            {
-              ie.type = SDL_KEYDOWN;
-              ie.key.type = SDL_KEYDOWN;
-              ie.key.state = SDL_PRESSED;
-              ie.key.repeat = 0;
-              ie.key.keysym.sym = intEvent;
-            }
-          else
-            {
-              ie.type = SDL_QUIT;
-            }
-          clog << "SDLDisplay::processCmd pushing keyboard '";
-          clog << cmd << "'" << endl;
-          SDL_PushEvent (&ie);
-        }
-    }
-  else if (type == "GIEC")
-    {
-      token = args.find_first_of (",");
-      if (token != std::string::npos)
-        {
-          int x = atoi (args.substr (0, token).c_str ());
-          int y
-              = atoi (args.substr (token + 1, args.length () - (token + 1))
-                          .c_str ());
-          ie.type = SDL_MOUSEBUTTONUP;
-          ie.button.x = x;
-          ie.button.y = y;
-
-          clog << "SDLDisplay::processCmd pushing click '";
-          clog << cmd << "' on '" << args << "'" << endl;
-          SDL_PushEvent (&ie);
-        }
-    }
-  else if (type == "GCMD")
-    {
-      string nCmd = args;
-      string nArgs = "";
-
-      token = args.find_first_of (",");
-      if (token != std::string::npos)
-        {
-          nCmd = args.substr (0, token);
-          nArgs = args.substr (token + 1, args.length () - (token + 1));
-        }
-
-      if (s->im != NULL)
-        {
-          clog << "SDLDisplay::processCmd calling postCommand" << endl;
-          clog << "nCmd: " << nCmd << endl;
-          clog << "nArgs: " << nArgs << endl;
-          s->im->postCommand (nCmd, nArgs);
-        }
-    }
-}
-
-void *
-SDLDisplay::checkStdin (void *ptr)
-{
-  SDLDisplay *s;
-  string strCmd;
-  string cmdType;
-
-  clog << "SDLDisplay::checkStdin calling cin" << endl;
-
-  Thread::mutexLock (&scrMutex);
-  s = (SDLDisplay *)ptr;
-  Thread::mutexUnlock (&scrMutex);
-
-  while (true)
-    {
-      size_t token;
-
-      std::getline (std::cin, strCmd);
-      token = strCmd.find_first_of (":");
-      if (token != std::string::npos && token < strCmd.length ())
-        {
-          processCmd (
-              s, strCmd, strCmd.substr (0, token),
-              strCmd.substr (token + 1, strCmd.length () - (token + 1)));
-        }
-
-      if (strCmd == "GIEK:QUIT")
-        {
-          clog << "SDLDisplay::checkStdin QUIT";
-          clog << endl;
-          break;
-        }
-
-      strCmd = "";
-    }
-
-  clog << "SDLDisplay::checkStdin all done" << endl;
-
-  return NULL;
 }
 
 bool
@@ -1253,7 +1009,8 @@ SDLDisplay::rendererT (arg_unused (void *ptr))
   pthread_mutex_t mutex;
   pthread_cond_t cond;
 
-  checkSDLInit ();
+  g_assert (!SDL_WasInit (0));
+  g_assert (SDL_Init (0) == 0);
 
   Thread::mutexInit (&mutex, false);
   Thread::condInit (&cond, NULL);
@@ -1274,19 +1031,8 @@ SDLDisplay::rendererT (arg_unused (void *ptr))
           switch (i->second)
             {
             case SPT_NONE:
-
               refreshCMP (s);
               refreshWin (s);
-
-              if (s->mustGainFocus)
-                {
-                  if (!s->uEmbedFocused)
-                    {
-                      forceInputFocus (s, s->uEmbedId);
-                    }
-                  s->mustGainFocus = false;
-                }
-
               refreshRC (s);
               ++i;
               break;
@@ -1507,260 +1253,24 @@ SDLDisplay::refreshWin (SDLDisplay *s)
 }
 
 void
-SDLDisplay::initEmbed (SDLDisplay *s, arg_unused (UnderlyingWindowID uWin))
-{
-  SDL_SysWMinfo info;
-
-  lockSDL ();
-  SDL_VERSION (&info.version);
-  SDL_GetWindowWMInfo (s->screen, &info);
-
-#if defined(SDL_VIDEO_DRIVER_X11)
-// XSetWindowAttributes attributes;
-
-// if (info.info.x11.display == NULL) {
-// 	info.info.x11.display = XOpenDisplay(getenv("DISPLAY"));
-// }
-
-// if (info.info.x11.display != NULL) {
-// 	attributes.event_mask = (
-// 			FocusChangeMask       |
-// 			EnterWindowMask       |
-// 			LeaveWindowMask       |
-// 			ExposureMask          |
-// 			ButtonPressMask       |
-// 			ButtonReleaseMask     |
-// 			PointerMotionMask     |
-// 			KeyPressMask          |
-// 			KeyReleaseMask        |
-// 			PropertyChangeMask    |
-// 			StructureNotifyMask   |
-// 			KeymapStateMask);
-
-// 	attributes.override_redirect = False;
-
-// 	XChangeWindowAttributes(
-// 			info.info.x11.display,
-// 			(Window)uWin,
-// 			(CWEventMask | CWOverrideRedirect),
-// 			&attributes);
-
-// 	XFlush(info.info.x11.display);
-
-// 	XSync(info.info.x11.display, 1);
-
-// 	clog << "SDLDisplay::initEmbed set attributes for '";
-// 	clog << uWin << "'" << endl;
-
-// } else {
-// 	clog << "SDLDisplay::initEmbed Warning! ";
-// 	clog << "Can't set input event mask for embedded ";
-// 	clog << "window '" << uWin << "'" << endl;
-// }
-
-#elif defined(SDL_VIDEO_DRIVER_WINDOWS)
-// TODO: Windows input event configuration
-#endif
-
-  unlockSDL ();
-}
-
-void
-SDLDisplay::forceInputFocus (arg_unused (SDLDisplay *s),
-                                  arg_unused (UnderlyingWindowID uWin))
-{
-  lockSDL ();
-
-#if defined(SDL_VIDEO_DRIVER_X11)
-// Window focusedWindow;
-// int revert;
-// SDL_SysWMinfo info;
-
-// SDL_VERSION(&info.version);
-// SDL_GetWindowWMInfo(s->screen, &info);
-
-// if (info.info.x11.display == NULL) {
-// 	info.info.x11.display = XOpenDisplay(getenv("DISPLAY"));
-// }
-
-// if (info.info.x11.display != NULL) {
-// 	XGetInputFocus(
-// 			info.info.x11.display,
-// 			&focusedWindow,
-// 			&revert);
-
-// 	if (focusedWindow != (Window)uWin) {
-// 		XSetInputFocus(
-// 				info.info.x11.display,
-// 				(Window)uWin,
-// 				RevertToParent,
-// 				CurrentTime);
-
-// 		XCirculateSubwindowsUp(
-// 				info.info.x11.display,
-// 				(Window)uWin);
-
-// 		XFlush(info.info.x11.display);
-
-// 		XSync(info.info.x11.display, 1);
-
-// 		clog << "SDLDisplay::forceInputFocus set input for '";
-// 		clog << uWin << "'" << endl;
-// 	}
-
-// } else {
-// 	clog << "SDLDisplay::forceInputFocus Warning! ";
-// 	clog << "Can't set input event mask for embedded ";
-// 	clog << "window '" << uWin << "'" << endl;
-// }
-#endif
-  unlockSDL ();
-}
-
-void
 SDLDisplay::initScreen (SDLDisplay *s)
 {
-  SDL_Rect rect;
-  int i, numOfDrivers, x, y;
-  string title = "";
-
   lockSDL ();
 
-  if (s->mbSubSystem != "")
-    {
-      numOfDrivers = SDL_GetNumVideoDrivers ();
-      for (i = 0; i < numOfDrivers; i++)
-        {
-          if (strcmp (SDL_GetVideoDriver (i), s->mbSubSystem.c_str ()) == 0)
-            {
-              SDL_VideoInit (s->mbSubSystem.c_str ());
-              break;
-            }
-        }
-    }
-  else
-    {
-      SDL_VideoInit (NULL);
-    }
+  SDL_VideoInit (NULL);
 
-  if (SDL_GetDisplayBounds (0, &rect) != 0)
-    {
-      rect.x = 0;
-      rect.y = 0;
-      rect.w = 0;
-      rect.h = 0;
-    }
+  guint flags = SDL_WINDOW_SHOWN;
+  if (s->fullScreen)
+    flags |= SDL_WINDOW_FULLSCREEN;
 
-  if (s->uEmbedId != NULL)
-    {
-      s->screen = SDL_CreateWindowFrom (s->uEmbedId);
-      if (s->screen != NULL)
-        {
-          SDL_GetWindowSize (s->screen, &s->wRes, &s->hRes);
-          s->sdlId = SDL_GetWindowID (s->screen);
-          initEmbed (s, s->uEmbedId);
-        }
-    }
-  else
-    {
-      title = string (PACKAGE_NAME) + " " + PACKAGE_VERSION;
-      if (s->mbMode != "" && s->mbMode.find ("x") != std::string::npos)
-        {
-          s->wRes = xstrto_int (
-              s->mbMode.substr (0, s->mbMode.find_first_of ("x")));
-
-          s->hRes = xstrto_int (s->mbMode.substr (
-              s->mbMode.find_first_of ("x") + 1,
-              (s->mbMode.length () - (s->mbMode.find_first_of ("x")) + 1)));
-        }
-      else if (rect.w > 0 && rect.h > 0)
-        {
-          s->wRes = rect.w;
-          s->hRes = rect.h;
-        }
-      else
-        {
-          s->wRes = 1920;
-          s->hRes = 1080;
-        }
-
-      if (rect.w > 0 && (s->wRes <= 0 || s->wRes > rect.w))
-        {
-          s->wRes = rect.w;
-        }
-
-      if (rect.h > 0 && (s->hRes <= 0 || s->hRes > rect.h))
-        {
-          s->hRes = rect.h;
-        }
-
-      x = 0;
-      y = 0;
-
-      if (rect.w > 0)
-        {
-          x = (rect.w - s->wRes) / 2;
-        }
-
-      if (rect.h > 0)
-        {
-          y = (rect.h - s->hRes) / 2;
-        }
-
-      Uint32 winFlags;
-
-      if (s->fullScreen)
-        {
-          winFlags = (Uint32) (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_SHOWN);
-        }
-      else
-        {
-          winFlags = (Uint32) (SDL_WINDOW_SHOWN);
-        }
-
-      s->screen = SDL_CreateWindow (title.c_str (), x, y, s->wRes, s->hRes,
-                                    winFlags);
-
-      s->sdlId = SDL_GetWindowID (s->screen);
-    }
-
-  assert (s->screen != NULL);
-
-  SDL_RendererInfo info;
-  int d = SDL_GetNumRenderDrivers ();
-  for (int i = 0; i < d; i++)
-    {
-      SDL_GetRenderDriverInfo (i, &info);
-      clog << "SDLDisplay::initScreen renderer driver: (" << i
-           << ") = '" << info.name << "'";
-      clog << endl;
-    }
-
-  s->renderer
-      = SDL_CreateRenderer (s->screen, -1, SDL_RENDERER_ACCELERATED);
-
-  if (s->renderer == NULL)
-    {
-      clog << "SDLDisplay::initScreen Warning! Can't create "
-              "accelerated "
-              "renderer";
-      clog << endl;
-
-      s->renderer
-          = SDL_CreateRenderer (s->screen, -1, SDL_RENDERER_TARGETTEXTURE);
-
-      if (s->renderer == NULL)
-        {
-          clog
-              << "SDLDisplay::initScreen Warning! Can't create target "
-                 "renderer";
-          clog << endl;
-          s->renderer
-              = SDL_CreateRenderer (s->screen, -1, SDL_RENDERER_SOFTWARE);
-        }
-    }
-
-  assert (s->renderer != NULL);
+  s->screen = NULL;
+  s->renderer = NULL;
+  int status = SDL_CreateWindowAndRenderer (s->wRes, s->hRes, flags,
+                                            &s->screen, &s->renderer);
+  g_assert (status == 0);
+  g_assert_nonnull (s->screen);
+  g_assert_nonnull (s->renderer);
+  s->sdlId = SDL_GetWindowID (s->screen);
 
   initCodeMaps ();
 
@@ -1870,24 +1380,21 @@ SDLDisplay::releaseScreen (SDLDisplay *s)
 
   clearScreen (s);
 
-  if (s->uEmbedId == NULL)
+  if (s->screen != NULL)
     {
-      if (s->screen != NULL)
-        {
-          SDL_HideWindow (s->screen);
-        }
+      SDL_HideWindow (s->screen);
+    }
 
-      if (s->renderer != NULL)
-        {
-          SDL_DestroyRenderer (s->renderer);
-          s->renderer = NULL;
-        }
+  if (s->renderer != NULL)
+    {
+      SDL_DestroyRenderer (s->renderer);
+      s->renderer = NULL;
+    }
 
-      if (s->screen != NULL)
-        {
-          SDL_DestroyWindow (s->screen);
-          s->screen = NULL;
-        }
+  if (s->screen != NULL)
+    {
+      SDL_DestroyWindow (s->screen);
+      s->screen = NULL;
     }
 
   unlockSDL ();
@@ -2428,20 +1935,9 @@ SDLDisplay::initCodeMaps ()
 }
 
 bool
-SDLDisplay::checkEventFocus (SDLDisplay *s)
+SDLDisplay::checkEventFocus (arg_unused (SDLDisplay *s))
 {
-  bool hasFocus = false;
-
-  if (s->uEmbedId != NULL)
-    {
-      /*
-       * NOTE: in this case, the focus is defined by the application
-       *       that is embedding Ginga, through keyHandler specs.
-       */
-      hasFocus = true;
-    }
-
-  return hasFocus;
+  return true;
 }
 
 /* output */

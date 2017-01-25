@@ -251,11 +251,9 @@ PresentationContext::initializeSystemValues ()
   contextTable[SYSTEM_DEVNUMBER + "(2)"] = "0";
 
   contextTable[SYSTEM_CLASSTYPE + "(0)"] = "base";
-  contextTable[SYSTEM_CLASSTYPE + "(1)"] = "passive";
   contextTable[SYSTEM_CLASSTYPE + "(2)"] = "active";
 
   contextTable[SYSTEM_INFO + "(0)"] = "0";
-  contextTable[SYSTEM_INFO + "(1)"] = "1";
   contextTable[SYSTEM_INFO + "(2)"] = "2";
 
   contextTable[SYSTEM_CLASS_NUMBER] = "3";

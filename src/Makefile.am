@@ -371,7 +371,6 @@ if WITH_MULTIDEVICE
 AM_CXXFLAGS+= $(MULTIDEVICE_CFLAGS)
 AM_LDFLAGS+= $(MULTIDEVICE_LIBS)
 src+= formatter/FormatterActiveDevice.cpp
-src+= formatter/FormatterPassiveDevice.cpp
 src+= multidev/ActiveDeviceDomain.cpp
 src+= multidev/ActiveDeviceService.cpp
 src+= multidev/BaseDeviceDomain.cpp
@@ -382,8 +381,6 @@ src+= multidev/DeviceDomain.cpp
 src+= multidev/DeviceService.cpp
 src+= multidev/MulticastSocketService.cpp
 src+= multidev/NetworkUtil.cpp
-src+= multidev/PassiveDeviceDomain.cpp
-src+= multidev/PassiveDeviceService.cpp
 src+= multidev/RemoteDevice.cpp
 src+= multidev/RemoteDeviceManager.cpp
 src+= multidev/RemoteEventService.cpp

@@ -537,12 +537,6 @@ SrtPlayer::run ()
               break;
             }
 
-          if (notifyContentUpdate)
-            {
-              notifyPlayerListeners (PL_NOTIFY_UPDATECONTENT, "",
-                                     TYPE_PASSIVEDEVICE, "");
-            }
-
           mediaTime = (double)(player->getMediaTime ());
           sleepTime = (int)(((hide - mediaTime) * 1000000) - 100000);
           if (sleepTime > 0)
@@ -561,12 +555,6 @@ SrtPlayer::run ()
                 }
             }
           unlock ();
-
-          if (notifyContentUpdate)
-            {
-              notifyPlayerListeners (PL_NOTIFY_UPDATECONTENT, "",
-                                     TYPE_PASSIVEDEVICE, "");
-            }
 
           this->currentLine = 0;
           this->currentColumn = 0;

@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "RemoteDeviceManager.h"
 #include "ActiveDeviceDomain.h"
-#include "PassiveDeviceDomain.h"
 #include "BaseDeviceDomain.h"
 
 #include "util/functions.h"

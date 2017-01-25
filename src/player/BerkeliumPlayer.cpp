@@ -436,15 +436,6 @@ BerkeliumPlayer::mainLoop (void *ptr)
       if (berkeliumFactory.hasBrowser ())
         {
           Berkelium::update ();
-
-          /*if (notifyContentUpdate) {
-                  if (status == PLAY || status == PAUSE) {
-                          notifyPlayerListeners(
-                                          PL_NOTIFY_UPDATECONTENT, "",
-                                          TYPE_PASSIVEDEVICE, "");
-                  }
-          }*/
-
           g_usleep (30000);
         }
       else
