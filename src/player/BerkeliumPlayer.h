@@ -67,7 +67,7 @@ private:
   BerkeliumHandler *bInfo;
 
 public:
-  BerkeliumPlayer (GingaScreenID myScreen, string mrl);
+  BerkeliumPlayer ( string mrl);
   virtual ~BerkeliumPlayer ();
 
   GingaSurfaceID getSurface ();
