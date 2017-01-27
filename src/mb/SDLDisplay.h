@@ -165,16 +165,16 @@ public:
 
   SDLWindow *createWindow (int x, int y, int w, int h, double z);
 
-  UnderlyingWindowID createUnderlyingSubWindow (int x, int y, int w, int h,
+  SDLWindow* createUnderlyingSubWindow (int x, int y, int w, int h,
                                                 double z);
 
 private:
-  UnderlyingWindowID createUnderlyingSubWindow (UnderlyingWindowID parent,
+  SDLWindow* createUnderlyingSubWindow (SDLWindow* parent,
                                                 string spec, int x, int y,
                                                 int w, int h, double z);
 
 public:
-  UnderlyingWindowID getScreenUnderlyingWindow ();
+  SDLWindow* getScreenUnderlyingWindow ();
 
   bool hasWindow (SDLWindow *win);
   void releaseWindow (SDLWindow *win);
@@ -227,9 +227,9 @@ private:
   static int refreshCMP (SDLDisplay *screen);
   static void refreshWin (SDLDisplay *screen);
 
-  static void initEmbed (SDLDisplay *s, UnderlyingWindowID uWin);
+  static void initEmbed (SDLDisplay *s, SDLWindow* uWin);
   static void forceInputFocus (SDLDisplay *screen,
-                               UnderlyingWindowID uWin);
+                               SDLWindow* uWin);
 
   static void initScreen (SDLDisplay *screen);
   static void clearScreen (SDLDisplay *screen);
