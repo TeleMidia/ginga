@@ -3258,7 +3258,7 @@ FormatterMediator::setKeyHandler (bool isHandler)
 }
 
 void
-FormatterMediator::setScope (string scope, short type, double initTime,
+FormatterMediator::setScope (const string &scope, short type, double initTime,
                              double endTime, double outTransDur)
 {
   Player::setScope (scope, type, initTime, endTime, outTransDur);
