@@ -656,217 +656,87 @@ void
 DisplayManager::setProviderSoundLevel (IMediaProvider*provId,
                                            double level)
 {
-  IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = provId;
-
-  if (iProvider != NULL
-      && (iProvider->getType () == IMediaProvider::AudioProvider
-          || iProvider->getType () == IMediaProvider::VideoProvider))
-    {
-      provider = (IContinuousMediaProvider *)iProvider;
-      provider->setSoundLevel (level);
-    }
+  ((IContinuousMediaProvider *)provId)->setSoundLevel (level);
 }
 
 void
 DisplayManager::getProviderOriginalResolution (
     IMediaProvider*provId, int *width, int *height)
 {
-  IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = provId;
 
-  if (iProvider != NULL
-      && (iProvider->getType () == IMediaProvider::AudioProvider
-          || iProvider->getType () == IMediaProvider::VideoProvider))
-    {
-      provider = (IContinuousMediaProvider *)iProvider;
-      provider->getOriginalResolution (width, height);
-    }
+  ((IContinuousMediaProvider *)provId)->getOriginalResolution (width, height);
 }
 
 double
 DisplayManager::getProviderTotalMediaTime (
     IMediaProvider*provId)
 {
-  double totalTime = 0.0;
-  IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = provId;
-
-  if (iProvider != NULL
-      && (iProvider->getType () == IMediaProvider::AudioProvider
-          || iProvider->getType () == IMediaProvider::VideoProvider))
-    {
-      provider = (IContinuousMediaProvider *)iProvider;
-      totalTime = provider->getTotalMediaTime ();
-    }
-
-  return totalTime;
+  return ((IContinuousMediaProvider *)provId)->getTotalMediaTime ();
 }
 
 double
 DisplayManager::getProviderSoundLevel (IMediaProvider*provId)
 {
-  double soundLevel = 0.0;
-  IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = provId;
-
-  if (iProvider != NULL
-      && (iProvider->getType () == IMediaProvider::AudioProvider
-          || iProvider->getType () == IMediaProvider::VideoProvider))
-    {
-      provider = (IContinuousMediaProvider *)iProvider;
-      soundLevel = provider->getSoundLevel ();
-    }
-
-  return soundLevel;
+  return ((IContinuousMediaProvider *)provId)->getSoundLevel ();
 }
 
 int64_t
 DisplayManager::getProviderVPts (IMediaProvider*provId)
 {
-  int64_t vpts = 0.0;
-  IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = provId;
-
-  if (iProvider != NULL
-      && (iProvider->getType () == IMediaProvider::AudioProvider
-          || iProvider->getType () == IMediaProvider::VideoProvider))
-    {
-      provider = (IContinuousMediaProvider *)iProvider;
-      vpts = provider->getVPts ();
-    }
-
-  return vpts;
+  return ((IContinuousMediaProvider *)provId)->getVPts ();
 }
 
 void
 DisplayManager::setProviderMediaTime (IMediaProvider*provId,
                                           double pos)
 {
-  IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = provId;
-
-  if (iProvider != NULL
-      && (iProvider->getType () == IMediaProvider::AudioProvider
-          || iProvider->getType () == IMediaProvider::VideoProvider))
-    {
-      provider = (IContinuousMediaProvider *)iProvider;
-      provider->setMediaTime (pos);
-    }
+  ((IContinuousMediaProvider *)provId)->setMediaTime (pos);
 }
 
 double
 DisplayManager::getProviderMediaTime (IMediaProvider*provId)
 {
-  double totalTime = 0.0;
-  IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = provId;
 
-  if (iProvider != NULL
-      && (iProvider->getType () == IMediaProvider::AudioProvider
-          || iProvider->getType () == IMediaProvider::VideoProvider))
-    {
-      provider = (IContinuousMediaProvider *)iProvider;
-      totalTime = provider->getMediaTime ();
-    }
-
-  return totalTime;
+  return ((IContinuousMediaProvider *)provId)->getMediaTime ();
 }
 
 void
 DisplayManager::pauseProvider (IMediaProvider*provId)
 {
-  IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = provId;
-
-  if (iProvider != NULL
-      && (iProvider->getType () == IMediaProvider::AudioProvider
-          || iProvider->getType () == IMediaProvider::VideoProvider))
-    {
-      provider = (IContinuousMediaProvider *)iProvider;
-      provider->pause ();
-    }
+  ((IContinuousMediaProvider *)provId)->pause ();
 }
 
 void
 DisplayManager::stopProvider (IMediaProvider*provId)
 {
-  IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = provId;
-
-  if (iProvider != NULL
-      && (iProvider->getType () == IMediaProvider::AudioProvider
-          || iProvider->getType () == IMediaProvider::VideoProvider))
-    {
-      provider = (IContinuousMediaProvider *)iProvider;
-      provider->stop ();
-    }
+  ((IContinuousMediaProvider *)provId)->stop ();
 }
 
 void
 DisplayManager::setProviderAVPid (IMediaProvider*provId,
                                       int aPid, int vPid)
 {
-  IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = provId;
-
-  if (iProvider != NULL
-      && (iProvider->getType () == IMediaProvider::AudioProvider
-          || iProvider->getType () == IMediaProvider::VideoProvider))
-    {
-      provider = (IContinuousMediaProvider *)iProvider;
-      provider->setAVPid (aPid, vPid);
-    }
+  ((IContinuousMediaProvider *)provId)->setAVPid (aPid, vPid);
 }
 
 void
 DisplayManager::resumeProvider (IMediaProvider*provId,
                                     SDLSurface* surface)
 {
-  IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = provId;
-
-  if (iProvider != NULL
-      && (iProvider->getType () == IMediaProvider::AudioProvider
-          || iProvider->getType () == IMediaProvider::VideoProvider))
-    {
-      provider = (IContinuousMediaProvider *)iProvider;
-      provider->resume (surface);
-    }
+  ((IContinuousMediaProvider *)provId)->resume (surface);
 }
 
 void
 DisplayManager::feedProviderBuffers (IMediaProvider*provId)
 {
-  IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = provId;
-
-  if (iProvider != NULL
-      && (iProvider->getType () == IMediaProvider::AudioProvider
-          || iProvider->getType () == IMediaProvider::VideoProvider))
-    {
-      provider = (IContinuousMediaProvider *)iProvider;
-      provider->feedBuffers ();
-    }
+  ((IContinuousMediaProvider *)provId)->feedBuffers ();
 }
 
 bool
 DisplayManager::checkProviderVideoResizeEvent (
     IMediaProvider*provId, SDLSurface *frame)
 {
-  bool resized = false;
-  IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = provId;
-
-  if (iProvider != NULL
-      && (iProvider->getType () == IMediaProvider::AudioProvider
-          || iProvider->getType () == IMediaProvider::VideoProvider))
-    {
-      provider = (IContinuousMediaProvider *)iProvider;
-      resized = provider->checkVideoResizeEvent (frame);
-    }
-
-  return resized;
+  return ((IContinuousMediaProvider *)provId)->checkVideoResizeEvent (frame);
 }
 
 int
@@ -874,30 +744,14 @@ DisplayManager::getProviderStringWidth (IMediaProvider*provId,
                                             const char *text,
                                             int textLength)
 {
-  int width = 0;
-  IFontProvider *provider = NULL;
-  IMediaProvider *iProvider = provId;
-
-  if (iProvider != NULL
-      && iProvider->getType () == IMediaProvider::FontProvider)
-    {
-      provider = (IFontProvider *)iProvider;
-      width = provider->getStringWidth (text, textLength);
-    }
-
-  return width;
+  return ((IFontProvider *)provId)->getStringWidth (text, textLength);
 }
 
 void
 DisplayManager::playProviderOver (IMediaProvider*provId,
                                       SDLSurface *surface)
 {
-  IMediaProvider *iProvider = provId;
-
-  if (iProvider != NULL)
-    {
-      iProvider->playOver (surface);
-    }
+  provId->playOver (surface);
 }
 
 void
@@ -906,32 +760,13 @@ DisplayManager::playProviderOver (IMediaProvider*provId,
                                       const char *text, int x, int y,
                                       short align)
 {
-  IFontProvider *provider = NULL;
-  IMediaProvider *iProvider = provId;
-
-  if (iProvider != NULL
-      && iProvider->getType () == IMediaProvider::FontProvider)
-    {
-      provider = (IFontProvider *)iProvider;
-      provider->playOver (surface, text, x, y, align);
-    }
+  ((IFontProvider*)provId)->playOver (surface, text, x, y, align);
 }
 
 int
 DisplayManager::getProviderHeight (IMediaProvider*provId)
 {
-  int height = 0;
-  IFontProvider *provider = NULL;
-  IMediaProvider *iProvider = provId;
-
-  if (iProvider != NULL
-      && iProvider->getType () == IMediaProvider::FontProvider)
-    {
-      provider = (IFontProvider *)iProvider;
-      height = provider->getHeight ();
-    }
-
-  return height;
+  return ((IFontProvider *)provId)->getHeight ();
 }
 
 /* private functions */
