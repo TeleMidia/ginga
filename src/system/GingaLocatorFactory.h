@@ -45,10 +45,10 @@ private:
 public:
   void release ();
   static GingaLocatorFactory *getInstance ();
-  void createLocator (string providerUri, string ior);
-  string getLocation (string ior);
-  string getName (string ior);
-  void addClientLocation (string ior, string clientUri, string name);
+  void createLocator (const string &providerUri, const string &ior);
+  string getLocation (const string &ior);
+  string getName (const string &ior);
+  void addClientLocation (const string &ior, const string &clientUri, const string &name);
   void waitNewLocatorCondition ();
   bool newLocatorConditionSatisfied ();
 };
