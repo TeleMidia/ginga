@@ -111,7 +111,7 @@ AdapterFormatterPlayer::instanceOf (string s)
 }
 
 void
-AdapterFormatterPlayer::setOutputWindow (GingaWindowID windowId)
+AdapterFormatterPlayer::setOutputWindow (SDLWindow* windowId)
 {
   if (player != NULL)
     {

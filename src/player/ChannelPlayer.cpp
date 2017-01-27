@@ -117,7 +117,7 @@ ChannelPlayer::getMediaTime ()
 }
 
 void
-ChannelPlayer::setSurfacesParent (GingaWindowID parent)
+ChannelPlayer::setSurfacesParent (SDLWindow* parent)
 {
   map<string, IPlayer *>::iterator players;
   IPlayer *avPlayer;
@@ -157,7 +157,7 @@ ChannelPlayer::play ()
       s = ((Player *)selectedPlayer)->getSurface ();
       if (!hasParent && s != 0 && Ginga_Display_M->getSurfaceParentWindow (s) != 0)
         {
-          GingaWindowID parentWindow = Ginga_Display_M->getSurfaceParentWindow (s);
+          SDLWindow* parentWindow = Ginga_Display_M->getSurfaceParentWindow (s);
           setSurfacesParent (parentWindow);
         }
       selectedPlayer->play ();

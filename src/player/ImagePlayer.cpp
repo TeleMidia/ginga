@@ -162,7 +162,7 @@ ImagePlayer::resume ()
 void
 ImagePlayer::setPropertyValue (string name, string value)
 {
-  GingaWindowID win;
+  SDLWindow* win;
 
   if (surface != 0)
     {

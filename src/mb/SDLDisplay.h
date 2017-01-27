@@ -79,8 +79,6 @@ private:
   int hRes;
   int wRes;
 
-  GingaWindowID winIdRefCounter;
-  map<GingaWindowID, SDLWindow *> windowRefs;
   set<SDLWindow *> windowPool;
   set<SDLSurface *> surfacePool;
   set<IContinuousMediaProvider *> cmpPool;
@@ -152,8 +150,7 @@ public:
   int getHeightResolution ();
   void setHeightResolution (int hRes);
 
-  SDLWindow *getIWindowFromId (GingaWindowID winId);
-  bool mergeIds (GingaWindowID destId, vector<GingaWindowID> *srcIds);
+  bool mergeIds (SDLWindow* destId, vector<SDLWindow *> *srcIds);
   void blitScreen (SDLSurface *destination);
   void blitScreen (string fileUri);
 
@@ -279,7 +276,7 @@ private:
                                     SDLWindow *win);
 
 public:
-  static SDL_Window *getUnderlyingWindow (GingaWindowID winId);
+  static SDL_Window *getUnderlyingWindow (SDLWindow* winId);
 
 private:
   static bool drawSDLWindow (SDL_Renderer *renderer, SDL_Texture *texture,

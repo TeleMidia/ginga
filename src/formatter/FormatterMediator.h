@@ -350,7 +350,7 @@ public:
   void setImmediatelyStart (bool immediatelyStartVal);
   void forceNaturalEnd (bool forceIt);
   bool isForcedNaturalEnd ();
-  bool setOutWindow (GingaWindowID windowId);
+  bool setOutWindow (SDLWindow* windowId);
 
   // Channel player only.
   IPlayer *

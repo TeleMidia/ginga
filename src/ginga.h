@@ -160,7 +160,6 @@ XERCES_CPP_NAMESPACE_USE
 
 // Typedefs.
 typedef void *UnderlyingWindowID;
-typedef unsigned long GingaWindowID;
 typedef unsigned int GingaSurfaceID;
 typedef unsigned int GingaProviderID;
 

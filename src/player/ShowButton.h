@@ -43,7 +43,7 @@ private:
   static const short PAUSE = 2;
   static const short STOP = 3;
   short previousStatus;
-  GingaWindowID win;
+  SDLWindow* win;
   bool running;
 
 public:

@@ -433,10 +433,10 @@ void
 Player::mirrorIt (Player *mirrorSrc, Player *mirror)
 {
   GingaSurfaceID iSrcSur;
-  GingaWindowID iSrcWin;
+  SDLWindow* iSrcWin;
 
   GingaSurfaceID iSur;
-  GingaWindowID iWin;
+  SDLWindow* iWin;
 
   if (mirrorSrc != NULL && mirror != NULL)
     {
@@ -770,7 +770,7 @@ Player::isForcedNaturalEnd ()
 }
 
 bool
-Player::setOutWindow (GingaWindowID windowId)
+Player::setOutWindow (SDLWindow* windowId)
 {
   if (surface != 0 && Ginga_Display_M->getSurfaceParentWindow (surface) == 0)
     {

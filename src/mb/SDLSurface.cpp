@@ -53,8 +53,7 @@ SDLSurface::~SDLSurface ()
   releaseSurfaceColor ();
   releaseFont ();
 
-  if (w != NULL
-      && Ginga_Display_M->hasWindow (w->getId ()))
+  if (w != NULL && Ginga_Display_M->hasWindow (w))
     {
       if (w->getContent () == sur)
         {
@@ -674,7 +673,7 @@ SDLSurface::createSurface ()
   if (win == NULL)
     return NULL;
 
-  if (Ginga_Display_M->hasWindow (win->getId ()))
+  if (Ginga_Display_M->hasWindow (win))
     {
       w = win->getW ();
       h = win->getH ();

@@ -116,9 +116,9 @@ SDLImageProvider::playOver (GingaSurfaceID surface)
       if (renderedSurface != NULL)
         {
           SDLDisplay::addUnderlyingSurface (renderedSurface);
-          GingaWindowID parentId = Ginga_Display_M
+          SDLWindow* parentId = Ginga_Display_M
                                        ->getSurfaceParentWindow (surface);
-          parent = (SDLWindow *)Ginga_Display->getIWindowFromId (parentId);
+          parent = parentId;
 
           if (parent != NULL)
             {

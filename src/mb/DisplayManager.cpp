@@ -175,21 +175,16 @@ DisplayManager::removeMEListenerInstance (
 
 /* interfacing output */
 
-GingaWindowID
+SDLWindow*
 DisplayManager::createWindow (int x, int y, int w, int h, double z)
 {
-  SDLWindow *window = NULL;
-  window = Ginga_Display->createWindow (x, y, w, h, z);
-  g_assert_nonnull (window);
-  return window->getId ();
+  return Ginga_Display->createWindow (x, y, w, h, z);
 }
 
 bool
-DisplayManager::hasWindow (GingaWindowID winId)
+DisplayManager::hasWindow (SDLWindow* winId)
 {
-  SDLWindow *window;
-  window = Ginga_Display->getIWindowFromId (winId);
-  return Ginga_Display->hasWindow (window);
+  return Ginga_Display->hasWindow (winId);
 }
 
 void
@@ -449,363 +444,228 @@ DisplayManager::fromGingaToMB (int keyCode)
 
 /* Methods created to isolate gingacc-mb */
 void
-DisplayManager::addWindowCaps (const GingaWindowID &winId, int caps)
+DisplayManager::addWindowCaps (SDLWindow* winId, int caps)
 {
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    win->addCaps (caps);
+    winId->addCaps (caps);
 }
 
 void
-DisplayManager::setWindowCaps (const GingaWindowID &winId, int caps)
+DisplayManager::setWindowCaps (SDLWindow* winId, int caps)
 {
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    win->setCaps (caps);
+  winId->setCaps (caps);
 }
 int
-DisplayManager::getWindowCap (const GingaWindowID &winId,
+DisplayManager::getWindowCap (SDLWindow* winId,
                                   const string &capName)
 {
-  int cap = 0;
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    cap = win->getCap (capName);
-
-  return cap;
+  return winId->getCap (capName);
 }
 
 void
-DisplayManager::drawWindow (const GingaWindowID &winId)
+DisplayManager::drawWindow (SDLWindow* winId)
 {
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    win->draw ();
+  winId->draw ();
 }
 
 void
-DisplayManager::setWindowBounds (const GingaWindowID &winId, int x,
+DisplayManager::setWindowBounds (SDLWindow* winId, int x,
                                  int y, int w, int h)
 {
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    win->setBounds (x, y, w, h);
+    return winId->setBounds (x, y, w, h);
 }
 
 void
-DisplayManager::showWindow (const GingaWindowID &winId)
+DisplayManager::showWindow (SDLWindow* winId)
 {
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    win->show ();
+    winId->show ();
 }
 
 void
-DisplayManager::hideWindow (const GingaWindowID &winId)
+DisplayManager::hideWindow (SDLWindow* winId)
 {
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    win->hide ();
+  winId->hide ();
 }
 
 void
-DisplayManager::raiseWindowToTop (const GingaWindowID &winId)
+DisplayManager::raiseWindowToTop (SDLWindow* winId)
 {
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    win->raiseToTop ();
+    winId->raiseToTop ();
 }
 
 void
-DisplayManager::renderWindowFrom (const GingaWindowID &winId,
+DisplayManager::renderWindowFrom (SDLWindow* winId,
                                   const GingaSurfaceID &surId)
 {
-  SDLWindow *win = NULL;
   SDLSurface *surface = NULL;
 
   surface = getISurfaceFromId (surId);
   if (surface != NULL)
     {
-      win = Ginga_Display->getIWindowFromId (winId);
-      if (win != NULL)
-        {
-          win->renderFrom (surface);
-        }
+      winId->renderFrom (surface);
     }
 }
 
 void
-DisplayManager::setWindowBgColor (const GingaWindowID &winId, guint8 r,
+DisplayManager::setWindowBgColor (SDLWindow* winId, guint8 r,
                                   guint8 g, guint8 b, guint8 alpha)
 {
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    win->setBgColor (r, g, b, alpha);
+  winId->setBgColor (r, g, b, alpha);
 }
 
 void
-DisplayManager::setWindowBorder (const GingaWindowID &winId, guint8 r,
+DisplayManager::setWindowBorder (SDLWindow* winId, guint8 r,
                                  guint8 g, guint8 b, guint8 alpha, int width)
 {
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    win->setBorder (r, g, b, alpha, width);
+  winId->setBorder (r, g, b, alpha, width);
 }
 
 void
-DisplayManager::setWindowCurrentTransparency (const GingaWindowID &winId,
+DisplayManager::setWindowCurrentTransparency (SDLWindow* winId,
                                               guint8 transparency)
 {
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    win->setCurrentTransparency (transparency);
+  winId->setCurrentTransparency (transparency);
 }
 
 void
-DisplayManager::setWindowColorKey (const GingaWindowID &winId, guint8 r,
+DisplayManager::setWindowColorKey (SDLWindow* winId, guint8 r,
                                    guint8 g, guint8 b)
 {
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    win->setColorKey (r, g, b);
+  winId->setColorKey (r, g, b);
 }
 
 void
-DisplayManager::setWindowX (const GingaWindowID &winId, int x)
+DisplayManager::setWindowX (SDLWindow* winId, int x)
 {
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    win->setX (x);
+  winId->setX (x);
 }
 
 void
-DisplayManager::setWindowY (const GingaWindowID &winId, int y)
+DisplayManager::setWindowY (SDLWindow* winId, int y)
 {
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    win->setY (y);
+  winId->setY (y);
 }
 
 void
-DisplayManager::setWindowW (const GingaWindowID &winId, int w)
+DisplayManager::setWindowW (SDLWindow* winId, int w)
 {
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    win->setW (w);
+  winId->setW (w);
 }
 
 void
-DisplayManager::setWindowH (const GingaWindowID &winId, int h)
+DisplayManager::setWindowH (SDLWindow* winId, int h)
 {
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    win->setH (h);
+  winId->setH (h);
 }
 
 void
-DisplayManager::setWindowZ (const GingaWindowID &winId, double z)
+DisplayManager::setWindowZ (SDLWindow* winId, double z)
 {
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    win->setZ (z);
+  winId->setZ (z);
 }
 
 void
-DisplayManager::disposeWindow (const GingaWindowID &winId)
+DisplayManager::disposeWindow (SDLWindow* winId)
 {
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    delete win;
+  delete winId;
 }
 
 void
-DisplayManager::setGhostWindow (const GingaWindowID &winId, bool ghost)
+DisplayManager::setGhostWindow (SDLWindow* winId, bool ghost)
 {
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    win->setGhostWindow (ghost);
+  winId->setGhostWindow (ghost);
 }
 
 void
-DisplayManager::validateWindow (const GingaWindowID &winId)
+DisplayManager::validateWindow (SDLWindow* winId)
 {
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    win->validate ();
+  winId->validate ();
 }
 
 int
-DisplayManager::getWindowX (const GingaWindowID &winId)
+DisplayManager::getWindowX (SDLWindow* winId)
 {
-  int reply = 0;
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    reply = win->getX ();
-
-  return reply;
+  return winId->getX ();
 }
 
 int
-DisplayManager::getWindowY (const GingaWindowID &winId)
+DisplayManager::getWindowY (SDLWindow* winId)
 {
-  int reply = 0;
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    reply = win->getY ();
-
-  return reply;
+  return winId->getY ();
 }
 
 int
-DisplayManager::getWindowW (const GingaWindowID &winId)
+DisplayManager::getWindowW (SDLWindow* winId)
 {
-  int reply = 0;
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    reply = win->getW ();
-
-  return reply;
+  return winId->getW ();
 }
 
 int
-DisplayManager::getWindowH (const GingaWindowID &winId)
+DisplayManager::getWindowH (SDLWindow* winId)
 {
-  int reply = 0;
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    reply = win->getH ();
-
-  return reply;
+  return winId->getH ();
 }
 
 double
-DisplayManager::getWindowZ (const GingaWindowID &winId)
+DisplayManager::getWindowZ (SDLWindow* winId)
 {
-  double reply = 0.0;
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    reply = win->getZ ();
-
-  return reply;
+  return winId->getZ ();
 }
 
 guint8
-DisplayManager::getWindowTransparencyValue (const GingaWindowID &winId)
+DisplayManager::getWindowTransparencyValue (SDLWindow* winId)
 {
-  guint8 reply = 0;
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    reply = win->getTransparencyValue ();
-
-  return reply;
+  return winId->getTransparencyValue ();
 }
 
 void
-DisplayManager::resizeWindow (const GingaWindowID &winId, int width,
+DisplayManager::resizeWindow (SDLWindow* winId, int width,
                               int height)
 {
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    win->resize (width, height);
+  winId->resize (width, height);
 }
 
 string
-DisplayManager::getWindowDumpFileUri (const GingaWindowID &winId,
+DisplayManager::getWindowDumpFileUri (SDLWindow* winId,
                                       int quality, int dumpW, int dumpH)
 {
-  string reply = "";
-  SDLWindow *win = NULL;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    reply = win->getDumpFileUri (quality, dumpW, dumpH);
-
-  return reply;
+  return winId->getDumpFileUri (quality, dumpW, dumpH);
 }
 
 void
-DisplayManager::clearWindowContent (const GingaWindowID &winId)
+DisplayManager::clearWindowContent (SDLWindow* winId)
 {
-  SDLWindow *win;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    win->clearContent ();
+  winId->clearContent ();
 }
 
 void
-DisplayManager::revertWindowContent (const GingaWindowID &winId)
+DisplayManager::revertWindowContent (SDLWindow* winId)
 {
-  SDLWindow *win;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    win->revertContent ();
+  winId->revertContent ();
 }
 
 void
-DisplayManager::deleteWindow (const GingaWindowID &winId)
+DisplayManager::deleteWindow (SDLWindow* winId)
 {
-  SDLWindow *win;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    delete win;
+  delete winId;
 }
 
 void
-DisplayManager::moveWindowTo (const GingaWindowID &winId, int x, int y)
+DisplayManager::moveWindowTo (SDLWindow* winId, int x, int y)
 {
-  SDLWindow *win;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    win->moveTo (x, y);
+  winId->moveTo (x, y);
 }
 
 void
-DisplayManager::lowerWindowToBottom (const GingaWindowID &winId)
+DisplayManager::lowerWindowToBottom (SDLWindow* winId)
 {
-  SDLWindow *win;
-  win = Ginga_Display->getIWindowFromId (winId);
-  if (win != NULL)
-    win->lowerToBottom ();
+  winId->lowerToBottom ();
 }
 
 void
-DisplayManager::setWindowMirrorSrc (const GingaWindowID &winId,
-                                    const GingaWindowID &mirrorSrc)
+DisplayManager::setWindowMirrorSrc (SDLWindow* winId,
+                                    SDLWindow* mirrorSrc)
 {
-  SDLWindow *win;
-  SDLWindow *mirrorSrcWin;
-
-  win = Ginga_Display->getIWindowFromId (winId);
-  mirrorSrcWin = Ginga_Display->getIWindowFromId (mirrorSrc);
-
-  if (win != NULL && mirrorSrcWin != NULL)
-    win->setMirrorSrc (mirrorSrcWin);
+  winId->setMirrorSrc (mirrorSrc);
 }
 
 void *
@@ -821,21 +681,13 @@ DisplayManager::getSurfaceContent (const GingaSurfaceID &surId)
   return surfaceContent;
 }
 
-GingaWindowID
+SDLWindow*
 DisplayManager::getSurfaceParentWindow (const GingaSurfaceID &surId)
 {
-  SDLSurface *surface = NULL;
-  GingaWindowID parentWindow = 0;
-
+  SDLSurface *surface;
   surface = getISurfaceFromId (surId);
-  if (surface != NULL)
-    {
-      SDLWindow *win = (SDLWindow *)surface->getParentWindow ();
-      if (win != NULL)
-        parentWindow = win->getId ();
-    }
-
-  return parentWindow;
+  g_assert_nonnull (surface);
+  return (SDLWindow *) surface->getParentWindow ();
 }
 
 void
@@ -856,7 +708,7 @@ DisplayManager::deleteSurface (const GingaSurfaceID &surId)
 
 bool
 DisplayManager::setSurfaceParentWindow (const GingaSurfaceID &surId,
-                                            const GingaWindowID &winId)
+                                            SDLWindow* winId)
 {
   bool reply = false;
   SDLSurface *surface = NULL;
@@ -865,7 +717,7 @@ DisplayManager::setSurfaceParentWindow (const GingaSurfaceID &surId,
   surface = getISurfaceFromId (surId);
   if (surface != NULL)
     {
-      window = Ginga_Display->getIWindowFromId (winId);
+      window = winId;
       if (window != NULL)
         reply = surface->setParentWindow (window);
     }

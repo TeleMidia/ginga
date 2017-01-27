@@ -92,7 +92,7 @@ public:
   bool instanceOf (string s);
   virtual void
   setNclEditListener (arg_unused (IPlayerListener *listener)){};
-  void setOutputWindow (GingaWindowID windowId);
+  void setOutputWindow (SDLWindow* windowId);
 
 protected:
   virtual void rebase ();

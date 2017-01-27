@@ -270,7 +270,7 @@ BerkeliumPlayer::setNotifyContentUpdate (bool notify)
 }
 
 bool
-BerkeliumPlayer::setOutWindow (GingaWindowID windowId)
+BerkeliumPlayer::setOutWindow (SDLWindow* windowId)
 {
   clog << "BerkeliumPlayer::setOutWindow '" << mrl << "'" << endl;
   Player::setOutWindow (windowId);
@@ -309,7 +309,7 @@ BerkeliumPlayer::setBounds (int x, int y, int w, int h)
 bool
 BerkeliumPlayer::play ()
 {
-  GingaWindowID iWin;
+  SDLWindow* iWin;
 
   berkeliumFactory.createBrowser (bInfo);
   iWin = Ginga_Display_M->getSurfaceParentWindow (surface);

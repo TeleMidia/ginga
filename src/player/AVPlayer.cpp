@@ -540,7 +540,7 @@ AVPlayer::isPlaying ()
 }
 
 bool
-AVPlayer::setOutWindow (GingaWindowID windowId)
+AVPlayer::setOutWindow (SDLWindow* windowId)
 {
   if (mainAV && win == 0)
     {

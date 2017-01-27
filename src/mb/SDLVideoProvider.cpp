@@ -132,7 +132,7 @@ SDLVideoProvider::setMediaTime (double pos)
 void
 SDLVideoProvider::playOver (GingaSurfaceID surface)
 {
-  GingaWindowID parentId;
+  SDLWindow* parentId;
   SDLWindow *parent;
 
   SDLDisplay::addCMPToRendererList (this);
@@ -145,12 +145,12 @@ SDLVideoProvider::playOver (GingaSurfaceID surface)
       return;
     }
 
-  parent = (SDLWindow *)(Ginga_Display->getIWindowFromId (parentId));
+  parent = parentId;
 
   clog << "SDLVideoProvider::playOver parent(" << parent << ")" << endl;
   if (Ginga_Display_M->hasWindow (parentId))
     {
-      win = (SDLWindow *)Ginga_Display->getIWindowFromId (parentId);
+      win = parentId;
       if (hasTex)
         {
           ((SDLWindow *)win)->setTexture (tex);

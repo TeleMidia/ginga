@@ -43,7 +43,7 @@ public:
   double getMediaTime ();
 
 private:
-  void setSurfacesParent (GingaWindowID parent);
+  void setSurfacesParent (SDLWindow* parent);
 
 protected:
   GingaSurfaceID getSurface ();
