@@ -106,7 +106,7 @@ ProgramAV::getSurface ()
       pSur = currentPlayer->getSurface ();
       if (pSur != 0)
         {
-          Ginga_Display_M->setExternalHandler (pSur, true);
+          pSur->setExternalHandler (true);
         }
     }
 

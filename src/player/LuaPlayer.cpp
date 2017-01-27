@@ -198,8 +198,7 @@ LuaPlayer::nw_update_thread (arg_unused (void *data))
               SDL_Surface *sfc;
               SDLWindow* window;
 
-              dest = (SDL_Surface *)Ginga_Display_M->getSurfaceContent (wrapper);
-
+              dest = wrapper->getContent ();
               sfc = SDL_CreateRGBSurface (0, dest->w, dest->h, 32, 0, 0, 0,
                                           0);
               assert (sfc != NULL);
@@ -382,7 +381,7 @@ LuaPlayer::doPlay (void)
   sfc = this->getSurface ();
   if (sfc != 0)
     {
-      Ginga_Display_M->getSurfaceSize (sfc, &w, &h);
+      sfc->getSize (&w, &h);
     }
 
   // Create the NCLua state.

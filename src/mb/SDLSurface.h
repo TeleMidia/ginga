@@ -94,8 +94,8 @@ public:
   int getCaps ();
   bool setParentWindow (SDLWindow *parentWindow);
   SDLWindow *getParentWindow ();
-  void *getSurfaceContent ();
-  void setSurfaceContent (void *surface);
+  SDL_Surface *getContent ();
+  void setContent (SDL_Surface *surface);
   void clearContent ();
   void clearSurface ();
 

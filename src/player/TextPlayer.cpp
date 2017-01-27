@@ -53,7 +53,7 @@ TextPlayer::~TextPlayer ()
 
   if (surface != 0 && Ginga_Display->hasSurface (surface))
     {
-      Ginga_Display_M->deleteSurface (surface);
+      delete surface;
       surface = 0;
     }
 
@@ -80,8 +80,8 @@ TextPlayer::initializePlayer ()
   this->surface = Ginga_Display->createSurface ();
   if (this->surface != 0)
     {
-      int cap = Ginga_Display_M->getSurfaceCap (surface, "ALPHACHANNEL");
-      Ginga_Display_M->setSurfaceCaps (surface, cap);
+      int cap = surface->getCap ("ALPHACHANNEL");
+      surface->setCaps (cap);
     }
 }
 
@@ -107,7 +107,7 @@ TextPlayer::write (SDLSurface* s, string text,
 
   if (font != 0)
     {
-      Ginga_Display_M->setSurfaceColor (s, fontColor->getR (), fontColor->getG (),
+      s->setColor (fontColor->getR (), fontColor->getG (),
                            fontColor->getB (), fontColor->getAlpha ());
 
       width = Ginga_Display_M->getProviderStringWidth (
@@ -185,7 +185,7 @@ TextPlayer::setBgColor (guint8 red, guint8 green, guint8 blue, guint8 alpha)
   bgColor = new Color (red, green, blue, alpha);
   if (this->surface != 0)
     {
-      Ginga_Display_M->setSurfaceBgColor (surface, red, green, blue, alpha);
+      surface->setBgColor (red, green, blue, alpha);
     }
 }
 
@@ -244,12 +244,12 @@ TextPlayer::drawText (string text, short align)
       fontColor = new Color ("black");
     }
 
-  Ginga_Display_M->setSurfaceColor (surface, fontColor->getR (), fontColor->getG (),
+  surface->setColor (fontColor->getR (), fontColor->getG (),
                        fontColor->getB (), fontColor->getAlpha ());
 
   if (font != 0 && surface != 0)
     {
-      Ginga_Display_M->getSurfaceSize (surface, &surWidth, &surHeight);
+      surface->getSize (&surWidth, &surHeight);
       textWidth = Ginga_Display_M->getProviderStringWidth (
           font, aux.c_str (), (int) aux.size ());
 
@@ -361,7 +361,7 @@ TextPlayer::breakLine ()
       setFont (string (GINGA_FONT_DATADIR) + "decker.ttf");
     }
 
-  Ginga_Display_M->getSurfaceSize (surface, &w, &h);
+  surface->getSize (&w, &h);
   if ((currentLine + fontHeight) > h)
     {
       clog << "TextPlayer::breakLine() Exceeding surface bounds";

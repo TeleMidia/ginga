@@ -136,8 +136,7 @@ SDLVideoProvider::playOver (SDLSurface* surface)
   SDLWindow *parent;
 
   SDLDisplay::addCMPToRendererList (this);
-  parentId = Ginga_Display_M->getSurfaceParentWindow (
-      surface);
+  parentId = surface->getParentWindow ();
 
   if (parentId == 0)
     {

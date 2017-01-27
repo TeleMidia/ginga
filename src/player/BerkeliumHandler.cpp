@@ -37,7 +37,7 @@ BerkeliumHandler::BerkeliumHandler (GingaScreenID myScreen, int x, int y,
 
   this->myScreen = myScreen;
 
-  surface = Ginga_Display_M->createSurface (myScreen, w, h);
+  surface = myScreen->create (w, h);
   xOffset = x;
   yOffset = y;
   this->w = w;
@@ -48,7 +48,7 @@ BerkeliumHandler::BerkeliumHandler (GingaScreenID myScreen, int x, int y,
   keyCode = -1;
   isValid = false;
 
-  Ginga_Display_M->setSurfaceCaps (surface, 0);
+  surface->setCaps (0);
 
   if (fromGingaToBklm.empty ())
     {
@@ -545,11 +545,10 @@ BerkeliumHandler::mapOnPaintToTexture (
       strFile
           = createFile (bitmap_in, dest_texture_width, dest_texture_height);
 
-      s = Ginga_Display_M->createRenderedSurfaceFromImageFile (myScreen,
-                                                  strFile.c_str ());
+      s = myScreen->createRenderedFromImageFile (strFile.c_str ());
       remove (strFile.c_str ());
 
-      Ginga_Display_M->blitSurface (surface, 0, 0, s);
+      surface->blit (0, 0, s);
       sWin = surface->getSurfaceParent ();
       if (sWin != 0)
         {
@@ -558,7 +557,7 @@ BerkeliumHandler::mapOnPaintToTexture (
 
       ignore_partial = false;
 
-      Ginga_Display_M->deleteSurface (s);
+      delete f;
 
       Thread::mutexUnlock (&sMutex);
       return true;
@@ -595,18 +594,18 @@ BerkeliumHandler::mapOnPaintToTexture (
 
           if (dx > 0)
             {
-              Ginga_Display_M->clearSurfaceContent (surface);
-              Ginga_Display_M->blitSurface (surface, dx, 0, surface, 0, 0, wid, hig);
+              surface->clearContent ();
+              surface->blit (dx, 0, surface, 0, 0, wid, hig);
             }
           else if (dy > 0)
             {
-              Ginga_Display_M->clearSurfaceContent (surface);
-              Ginga_Display_M->blitSurface (surface, 0, dy, surface, 0, 0, wid, hig);
+              surface->clearContent ();
+              surface->blit (0, dy, surface, 0, 0, wid, hig);
             }
           else
             {
-              Ginga_Display_M->clearSurfaceContent (surface);
-              Ginga_Display_M->blitSurface (surface, 0, 0, surface, left, top, wid, hig);
+              surface->clearContent ();
+              surface->blit (0, 0, surface, left, top, wid, hig);
             }
 
           sWin = surface->getSurfaceParent ();
@@ -640,22 +639,21 @@ BerkeliumHandler::mapOnPaintToTexture (
       // is marked as dirty but not from scrolled data.
       strFile = createFile ((const unsigned char *)tmp_buffer, wid, hig);
 
-      s = Ginga_Display_M->createRenderedSurfaceFromImageFile (myScreen,
-                                                  strFile.c_str ());
+      s = myScreen->createRenderedFromImageFile (strFile.c_str ());
       remove (strFile.c_str ());
 
       delete[] tmp_buffer;
       left = copy_rects[i].left ();
       top = copy_rects[i].top ();
 
-      Ginga_Display_M->blitSurface (surface, left, top, s, 0, 0, wid, hig);
+      surface->blit (left, top, s, 0, 0, wid, hig);
       sWin = surface->getSurfaceParent ();
       if (sWin != 0)
         {
           myScreen->validate (sWin);
         }
 
-      Ginga_Display_M->deleteSurface (s);
+      delete s;
     }
 
   Thread::mutexUnlock (&sMutex);

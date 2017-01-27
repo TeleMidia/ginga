@@ -768,11 +768,10 @@ NclFormatterRegion::prepareOutputDisplay (SDLSurface* renderedSurface,
       this->renderedSurface = renderedSurface;
 
       if (renderedSurface != 0
-          && Ginga_Display_M->hasSurfaceExternalHandler (renderedSurface))
+          && renderedSurface->hasExternalHandler ())
         {
           externHandler = true;
-          outputDisplay = Ginga_Display_M
-            ->getSurfaceParentWindow (renderedSurface);
+          outputDisplay = renderedSurface->getParentWindow ();
         }
 
       if (!externHandler)
@@ -812,7 +811,7 @@ NclFormatterRegion::prepareOutputDisplay (SDLSurface* renderedSurface,
 
       int caps = outputDisplay->getCap ("ALPHACHANNEL");
       if (!externHandler && renderedSurface != 0
-          && (caps & Ginga_Display_M->getSurfaceCaps (renderedSurface)))
+          && (caps & renderedSurface->getCaps ()))
         {
           outputDisplay->addCaps (caps);
         }
@@ -1327,7 +1326,7 @@ NclFormatterRegion::setSelection (bool selOn)
                                         selSurface);
                 }
 
-              Ginga_Display_M->deleteSurface (selSurface);
+              delete selSurface;
             }
           unlock ();
         }
@@ -1384,7 +1383,7 @@ NclFormatterRegion::setFocus (bool focusOn)
                   outputDisplay->renderFrom (
                                         focusSurface);
                 }
-              Ginga_Display_M->deleteSurface (focusSurface);
+              delete focusSurface;
             }
           unlock ();
         }

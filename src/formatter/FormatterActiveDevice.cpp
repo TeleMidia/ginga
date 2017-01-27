@@ -82,7 +82,7 @@ FormatterActiveDevice::FormatterActiveDevice (DeviceLayout *deviceLayout,
       serialized->renderFrom (s);
       serialized->lowerToBottom ();
 
-      Ginga_Display_M->deleteSurface (s);
+      delete s;
       s = 0;
     }
   else
@@ -753,7 +753,7 @@ FormatterActiveDevice::handleTCPClient (TCPSocket *sock)
               serialized->renderFrom (s);
               serialized->lowerToBottom ();
 
-              Ginga_Display_M->deleteSurface (s);
+              delete s;
               s = 0;
             }
           break;

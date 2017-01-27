@@ -99,7 +99,7 @@ PlainTxtPlayer::loadTxt ()
     {
       if (bgColor != NULL)
         {
-          Ginga_Display_M->clearSurfaceContent (surface);
+          surface->clearContent ();
           surface->getParentWindow ()->setBgColor (
                                 bgColor->getR (), bgColor->getG (),
                                 bgColor->getB (), bgColor->getAlpha ());
@@ -116,7 +116,7 @@ PlainTxtPlayer::loadTxt ()
 
   if (mrl != "" && content == "")
     {
-      Ginga_Display_M->getSurfaceSize (surface, &surfaceW, &surfaceH);
+      surface->getSize (&surfaceW, &surfaceH);
       while (!fis.eof () && fis.good ()
              && (currentLine + fontHeight) < surfaceH)
         {
@@ -177,7 +177,7 @@ PlainTxtPlayer::setContent (string content)
     {
       if (bgColor != NULL)
         {
-          Ginga_Display_M->clearSurfaceContent (surface);
+          surface->clearContent ();
           parentWindow->setBgColor (bgColor->getR (),
                                 bgColor->getG (), bgColor->getB (),
                                 bgColor->getAlpha ());
@@ -292,7 +292,7 @@ PlainTxtPlayer::setPropertyValue (string name, string value)
           if (parentWindow != 0)
             {
               // this->surface->setCaps(0);
-              Ginga_Display_M->clearSurfaceContent (surface);
+              surface->clearContent ();
               parentWindow->setBgColor (
                                     bgColor->getR (), bgColor->getG (),
                                     bgColor->getB (), bgColor->getAlpha ());
@@ -321,7 +321,7 @@ PlainTxtPlayer::setPropertyValue (string name, string value)
               if (parentWindow != 0)
                 {
                   // this->surface->setCaps(0);
-                  Ginga_Display_M->clearSurfaceContent (surface);
+                  surface->clearContent ();
                   parentWindow->setBgColor (
                                         bgColor->getR (), bgColor->getG (),
                                         bgColor->getB (),

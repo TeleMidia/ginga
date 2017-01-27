@@ -383,7 +383,7 @@ SrtPlayer::isPlayingSrt ()
   lock ();
   if (surface != 0)
     {
-      Ginga_Display_M->clearSurfaceContent (surface);
+      surface->clearContent ();
     }
   unlock ();
   return false;
@@ -547,7 +547,7 @@ SrtPlayer::run ()
           lock ();
           if (surface != 0)
             {
-              Ginga_Display_M->clearSurfaceContent (surface);
+              surface->clearContent ();
               parent = surface->getParentWindow ();
               if (parent != 0 && controlParentVisibility)
                 {

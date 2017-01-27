@@ -182,7 +182,7 @@ public:
   void setWindowMirrorSrc (SDLWindow* winId,
                            SDLWindow* mirrorSrc);
   // surfaces
-  void *getSurfaceContent (SDLSurface *surId);
+  void *getContent (SDLSurface *surId);
   SDLWindow* getSurfaceParentWindow (SDLSurface *surId);
   void deleteSurface (SDLSurface *surId);
   bool setSurfaceParentWindow (SDLSurface *surId,
@@ -204,7 +204,7 @@ public:
                     SDLSurface* src = 0, int srcX = -1, int srcY = -1,
                     int srcW = -1, int srcH = -1);
   void flipSurface (SDLSurface *surId);
-  void setSurfaceContent (SDLSurface *surId, void *surface);
+  void setContent (SDLSurface *surId, void *surface);
   Color *getSurfaceColor (SDLSurface *surId);
   bool hasSurfaceExternalHandler (SDLSurface *surId);
   void setSurfaceColor (SDLSurface *surId, guint8 r, guint8 g,

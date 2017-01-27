@@ -293,11 +293,11 @@ SDLDisplay::blitScreen (SDLSurface *destination)
   SDL_Surface *dest;
 
   lockSDL ();
-  dest = (SDL_Surface *)(destination->getSurfaceContent ());
+  dest = (SDL_Surface *)(destination->getContent ());
   if (dest == NULL)
     {
       dest = createUnderlyingSurface (wRes, hRes);
-      destination->setSurfaceContent (dest);
+      destination->setContent (dest);
     }
 
   blitScreen (dest);
