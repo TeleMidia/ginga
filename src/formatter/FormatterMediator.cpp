@@ -3207,8 +3207,8 @@ FormatterMediator::getSurface ()
   SDLSurface* s = 0;
 
   s = Player::getSurface ();
-  Ginga_Display_M->clearSurfaceContent (s);
-  Ginga_Display_M->flipSurface (s);
+  s->clearContent ();
+  s->flip ();
 
   return s;
 }

@@ -86,7 +86,7 @@ Player::~Player ()
 
   if (Ginga_Display->hasSurface (surface))
     {
-      Ginga_Display_M->deleteSurface (surface);
+      delete surface;
       surface = 0;
     }
 
@@ -364,7 +364,7 @@ Player::setSurface (SDLSurface* surface)
 {
   if (this->surface != 0)
     {
-      Ginga_Display_M->deleteSurface (surface);
+      delete this->surface;
       this->surface = 0;
     }
   this->surface = surface;

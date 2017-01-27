@@ -141,7 +141,7 @@ SDLWindow::releaseWinISur ()
 {
   if (winISur != 0)
     {
-      Ginga_Display_M->deleteSurface (winISur);
+      delete winISur;
       winISur = 0;
     }
 }
@@ -516,9 +516,8 @@ SDLWindow::unprotectedValidate ()
 {
   if (winISur != 0)
     {
-      Ginga_Display_M->flipSurface (winISur);
-      curSur = (SDL_Surface *)(Ginga_Display_M
-                                   ->getSurfaceContent (winISur));
+      winISur->flip ();
+      curSur = (SDL_Surface *)(winISur->getContent ());
       textureUpdate = true;
     }
   else if (childSurface != NULL)
@@ -684,7 +683,7 @@ SDLWindow::isMine (SDLSurface *surface)
 {
   bool itIs = false;
 
-  if (surface != NULL && surface->getSurfaceContent () != NULL)
+  if (surface != NULL && surface->getContent () != NULL)
     {
       if (surface == winISur || surface == childSurface)
         {
@@ -713,14 +712,13 @@ SDLWindow::renderImgFile (string serializedImageUrl)
   img->playOver (surId);
 
   lockSurface ();
-  curSur = (SDL_Surface *)Ginga_Display_M
-               ->getSurfaceContent (surId);
+  curSur = (SDL_Surface *)surId->getContent ();
   unlockSurface ();
 
   textureUpdate = true;
 
   Ginga_Display->releaseImageProvider (img);
-  Ginga_Display_M->deleteSurface (surId);
+  delete surId;
 }
 
 void
@@ -729,7 +727,7 @@ SDLWindow::renderFrom (SDLSurface *surface)
   SDL_Surface *contentSurface;
 
   Thread::mutexLock (&rMutex);
-  contentSurface = (SDL_Surface *)surface->getSurfaceContent ();
+  contentSurface = (SDL_Surface *)surface->getContent ();
   if (contentSurface == NULL)
     {
       clog << "SDLWindow::renderFrom(" << this;
@@ -746,11 +744,10 @@ SDLWindow::renderFrom (SDLSurface *surface)
       winISur = Ginga_Display->createSurface (
           contentSurface->w, contentSurface->h);
 
-      Ginga_Display_M->blitSurface (winISur, 0, 0, surface);
-      Ginga_Display_M->flipSurface (winISur);
+      winISur->blit (0, 0, surface);
+      winISur->flip ();
 
-      curSur = (SDL_Surface *)Ginga_Display_M
-                   ->getSurfaceContent (winISur);
+      curSur = (SDL_Surface *)winISur->getContent ();
       textureUpdate = true;
     }
   else

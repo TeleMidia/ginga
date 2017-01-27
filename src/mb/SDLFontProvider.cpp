@@ -371,26 +371,7 @@ SDLFontProvider::playOver (SDLSurface* surface)
         {
           renderedSurface
               = SDLDisplay::createUnderlyingSurface (pW, pH);
-
-          /*
-                  *******************************************
-                  Code removed due to new default behavior of
-                  SDLDisplay::createUnderlyingSurface
-                  *******************************************
-
-                                          if (SDL_SetColorKey(
-                                                          renderedSurface,
-                                                          1,
-                                                          *((Uint8*)renderedSurface->pixels))
-             < 0) {
-                                                  clog <<
-             "SDLFontProvider::playOver SDL error: '";
-                                                  clog << SDL_GetError() <<
-             "'"
-             << endl;
-                                          }
-          */
-          content->setSurfaceContent ((void *)renderedSurface);
+          content->setContent (renderedSurface);
           parent->setRenderedSurface (renderedSurface);
 
           clog << "SDLFontProvider::playOver parent = '" << parent;

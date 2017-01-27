@@ -184,7 +184,7 @@ CommonCoreManager::showTunningWindow (int x, int y,
       tuningWindow->renderFrom (s);
       tuningWindow->lowerToBottom ();
 
-      Ginga_Display_M->deleteSurface (s);
+      delete s;
       s = 0;
     }
 }

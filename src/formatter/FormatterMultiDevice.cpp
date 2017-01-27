@@ -642,7 +642,7 @@ FormatterMultiDevice::renderFromUri (SDLWindow* win, string uri)
   win->renderFrom (s);
   win->show ();
   win->validate ();
-  Ginga_Display_M->deleteSurface (s);
+  delete s;
 }
 
 void

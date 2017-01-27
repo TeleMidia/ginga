@@ -315,14 +315,14 @@ SDLSurface::getCaps ()
   return this->caps;
 }
 
-void *
-SDLSurface::getSurfaceContent ()
+SDL_Surface *
+SDLSurface::getContent ()
 {
   return sur;
 }
 
 void
-SDLSurface::setSurfaceContent (void *surface)
+SDLSurface::setContent (SDL_Surface *surface)
 {
   Thread::mutexLock (&sMutex);
   SDLWindow *w = (SDLWindow *)parent;
@@ -717,7 +717,7 @@ SDLSurface::blit (int x, int y, SDLSurface *src, int srcX, int srcY,
           Thread::mutexLock (&((SDLSurface *)src)->pMutex);
         }
 
-      uSur = (SDL_Surface *)(src->getSurfaceContent ());
+      uSur = (SDL_Surface *)(src->getContent ());
 
       if (uSur != NULL)
         {
