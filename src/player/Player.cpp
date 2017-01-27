@@ -418,7 +418,7 @@ Player::setKeyHandler (bool isHandler)
 }
 
 void
-Player::setScope (string scope, short type, double initTime, double endTime,
+Player::setScope (const string &scope, short type, double initTime, double endTime,
                   double outTransDur)
 {
   clog << "Player::setScope '" << scope << "'" << endl;

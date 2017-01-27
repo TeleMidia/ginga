@@ -318,7 +318,7 @@ AVPlayer::getStopTime ()
 }
 
 void
-AVPlayer::setScope (string scope, short type, double begin, double end,
+AVPlayer::setScope (const string &scope, short type, double begin, double end,
                     double outTransDur)
 {
   Player::setScope (scope, type, begin, end, outTransDur);

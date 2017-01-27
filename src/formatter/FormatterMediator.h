@@ -324,7 +324,7 @@ public:
   double getTotalMediaTime ();
   void setMediaTime (double newTime);
   bool setKeyHandler (bool isHandler);
-  void setScope (string scope, short type, double begin = -1,
+  void setScope (const string &scope, short type, double begin = -1,
                  double end = -1, double outTransDur = -1);
 
   bool play ();

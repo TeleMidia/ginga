@@ -95,7 +95,7 @@ public:
   void setMediaTime (double pos);
   void setStopTime (double pos);
   double getStopTime ();
-  void setScope (string scope, short type = TYPE_PRESENTATION,
+  void setScope (const string &scope, short type = TYPE_PRESENTATION,
                  double begin = -1, double end = -1,
                  double outTransDur = -1);
 

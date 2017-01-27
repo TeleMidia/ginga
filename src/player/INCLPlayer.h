@@ -90,7 +90,7 @@ public:
   virtual double getTotalMediaTime () = 0;
   virtual void setMediaTime (double newTime) = 0;
   virtual bool setKeyHandler (bool isHandler) = 0;
-  virtual void setScope (string scope, short type, double begin = -1,
+  virtual void setScope (const string &scope, short type, double begin = -1,
                          double end = -1, double outTransDur = -1)
       = 0;
 

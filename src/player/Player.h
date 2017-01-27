@@ -145,7 +145,7 @@ public:
   virtual double getTotalMediaTime ();
 
   virtual bool setKeyHandler (bool isHandler);
-  virtual void setScope (string scope, short type = TYPE_PRESENTATION,
+  virtual void setScope (const string &scope, short type = TYPE_PRESENTATION,
                          double begin = -1, double end = -1,
                          double outTransDur = -1);
 
