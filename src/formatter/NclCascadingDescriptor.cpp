@@ -475,7 +475,7 @@ NclCascadingDescriptor::updateRegion (void *formatterLayout, string name,
             {
               value = cvtPercentual ((*params)[0], &isPercentual);
 
-              region->setLeft (std::stof (value), isPercentual);
+              region->setLeft (xstrtod (value), isPercentual);
 
               value = cvtPercentual ((*params)[1], &isPercentual);
 
