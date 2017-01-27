@@ -191,7 +191,7 @@ public:
   short getPriorityType ();
   void addSchedulerListener (IFormatterSchedulerListener *listener);
   void removeSchedulerListener (IFormatterSchedulerListener *listener);
-  void receiveGlobalAttribution (string propertyName, string value);
+  void receiveGlobalAttribution (const string &pName, const string &value);
 };
 
 GINGA_FORMATTER_END
