@@ -100,7 +100,7 @@ public:
   virtual void pause () = 0;
   virtual void resume () = 0;
 
-  virtual string getPropertyValue (string name) = 0;
+  virtual string getPropertyValue (string const &name) = 0;
   virtual void setPropertyValue (const string &name, const string &value) = 0;
 
   virtual void setReferenceTimePlayer (IPlayer *player) = 0;

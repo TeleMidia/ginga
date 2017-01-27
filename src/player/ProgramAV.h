@@ -55,7 +55,7 @@ private:
   IPlayer *getPlayer (string mrl);
   IPlayer *getPlayer (int pid);
 
-  string getPropertyValue (string pName);
+  string getPropertyValue (const string &name);
   void setPropertyValue (const string &name, const string &value);
 };
 

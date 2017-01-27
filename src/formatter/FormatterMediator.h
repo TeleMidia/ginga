@@ -333,7 +333,7 @@ public:
   void pause ();
   void resume ();
 
-  string getPropertyValue (string name);
+  string getPropertyValue (string const &name);
   void setPropertyValue (const string &name, const string &value);
 
   void setReferenceTimePlayer (IPlayer *player);

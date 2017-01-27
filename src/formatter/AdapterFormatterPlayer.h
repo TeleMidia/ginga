@@ -142,7 +142,7 @@ public:
   void setPropertyValue (const string &name, const string &value);
 
   string getPropertyValue (void *event);
-  virtual string getPropertyValue (string name);
+  virtual string getPropertyValue (string const &name);
 
   double getObjectExpectedDuration ();
   void updateObjectExpectedDuration ();
