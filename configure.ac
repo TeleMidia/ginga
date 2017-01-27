@@ -90,6 +90,7 @@ AC_SUBST([LIBZIP_REQUIRED_VERSION],      libzip_required_version)
 # Compiler and tool checks.
 AC_PROG_CXX
 AC_LANG_CPLUSPLUS
+AX_CXX_COMPILE_STDCXX_11([ext],[mandatory])
 AU_PROG_PKG_CONFIG
 
 # Configure options.
