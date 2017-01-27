@@ -18,11 +18,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "SystemInfo.h"
 
-#include "mb/DisplayManager.h"
-using namespace ::ginga::mb;
-
 #include "util/functions.h"
 using namespace ::ginga::util;
+
+#include "mb/SDLDisplay.h"
+using namespace ::ginga::mb;
 
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;

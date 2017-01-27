@@ -18,6 +18,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "ImagePlayer.h"
 
+#include "mb/SDLDisplay.h"
+using namespace ::ginga::mb;
+
 #include "ic/InteractiveChannelManager.h"
 using namespace ::ginga::ic;
 

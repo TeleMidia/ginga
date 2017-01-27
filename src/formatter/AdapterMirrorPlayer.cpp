@@ -19,6 +19,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AdapterMirrorPlayer.h"
 #include "AdapterPlayerManager.h"
 
+#include "mb/SDLDisplay.h"
+using namespace ::ginga::mb;
+
 GINGA_FORMATTER_BEGIN
 
 AdapterMirrorPlayer::AdapterMirrorPlayer () : AdapterFormatterPlayer () {}

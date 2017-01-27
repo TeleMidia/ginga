@@ -22,6 +22,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AdapterPlayerManager.h"
 #include "NclLinkTransitionTriggerCondition.h"
 
+#include "mb/SDLDisplay.h"
+using namespace ::ginga::mb;
+
 #include "player/Player.h"
 using namespace ::ginga::player;
 
@@ -57,7 +60,6 @@ AdapterFormatterPlayer::~AdapterFormatterPlayer ()
       im = NULL;
     }
 
-  DisplayManager::removeIEListenerInstance (this);
   lockObject ();
   if (anchorMonitor != NULL)
     {
@@ -93,7 +95,6 @@ void
 AdapterFormatterPlayer::setAdapterManager (void *manager)
 {
   this->manager = manager;
-  DisplayManager::addIEListenerInstance (this);
   im = Ginga_Display->getInputManager ();
 }
 

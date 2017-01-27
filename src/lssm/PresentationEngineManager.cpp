@@ -39,7 +39,7 @@ using namespace ::ginga::formatter;
 using namespace ::ginga::ncl;
 
 #include "mb/CodeMap.h"
-#include "mb/DisplayManager.h"
+#include "mb/SDLDisplay.h"
 #include "mb/InputManager.h"
 using namespace ::ginga::mb;
 
@@ -72,8 +72,6 @@ PresentationEngineManager::PresentationEngineManager (
     bool enableGfx, bool useMulticast)
     : Thread ()
 {
-  DisplayManager::addIEListenerInstance (this);
-
   x = 0;
   if (xOffset > 0)
     {
@@ -141,8 +139,6 @@ PresentationEngineManager::PresentationEngineManager (
 PresentationEngineManager::~PresentationEngineManager ()
 {
   clog << "PresentationEngineManager::~PresentationEngineManager" << endl;
-
-  DisplayManager::removeIEListenerInstance (this);
 
   if (!closed)
     {

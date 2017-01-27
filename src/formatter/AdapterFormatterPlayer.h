@@ -24,7 +24,6 @@ using namespace ::ginga::util;
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
 
-#include "mb/DisplayManager.h"
 #include "mb/IInputEventListener.h"
 #include "mb/SDLSurface.h"
 using namespace ::ginga::mb;
@@ -63,7 +62,6 @@ class AdapterFormatterPlayer : public IAdapterPlayer,
                                public IInputEventListener
 {
 protected:
-  static DisplayManager *dm;
   static double eventTS;
   InputManager *im;
 

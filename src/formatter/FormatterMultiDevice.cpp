@@ -25,7 +25,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 # include "FormatterActiveDevice.h"
 #endif
 
-#include "mb/DisplayManager.h"
+#include "mb/SDLDisplay.h"
 #include "mb/InputManager.h"
 #include "mb/CodeMap.h"
 using namespace ::ginga::mb;
@@ -61,8 +61,6 @@ FormatterMultiDevice::FormatterMultiDevice (DeviceLayout *deviceLayout,
   this->parent = NULL;
   this->enableMulticast = useMulticast;
 
-  DisplayManager::addIEListenerInstance (this);
-
   if (defaultWidth == 0)
     {
       defaultWidth = Ginga_Display->getWidthResolution ();
@@ -93,7 +91,6 @@ FormatterMultiDevice::FormatterMultiDevice (DeviceLayout *deviceLayout,
 FormatterMultiDevice::~FormatterMultiDevice ()
 {
   set<IPlayer *>::iterator i;
-  DisplayManager::removeIEListenerInstance (this);
 
   presContext = NULL;
 
