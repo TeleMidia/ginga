@@ -1851,7 +1851,7 @@ AdapterFormatterPlayer::getPropertyValue (void *event)
 }
 
 string
-AdapterFormatterPlayer::getPropertyValue (string name)
+AdapterFormatterPlayer::getPropertyValue (string const &name)
 {
   string value = "";
 

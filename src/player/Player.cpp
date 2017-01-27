@@ -518,7 +518,7 @@ Player::resume ()
 }
 
 string
-Player::getPropertyValue (string name)
+Player::getPropertyValue (string const &name)
 {
   if (properties.count (name) != 0)
     {

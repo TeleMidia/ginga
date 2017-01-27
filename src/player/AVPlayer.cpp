@@ -412,7 +412,7 @@ AVPlayer::resume ()
 }
 
 string
-AVPlayer::getPropertyValue (string name)
+AVPlayer::getPropertyValue (string const &name)
 {
   if (name == "soundLevel")
     {

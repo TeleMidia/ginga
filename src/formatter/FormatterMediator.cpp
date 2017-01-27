@@ -3322,7 +3322,7 @@ FormatterMediator::resume ()
 }
 
 string
-FormatterMediator::getPropertyValue (string name)
+FormatterMediator::getPropertyValue (string const &name)
 {
   map<Port *, NclFormatterEvent *>::iterator i;
   NclFormatterEvent *portEvent = NULL;

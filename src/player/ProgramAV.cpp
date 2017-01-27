@@ -316,7 +316,7 @@ ProgramAV::getPlayer (int pid)
 }
 
 string
-ProgramAV::getPropertyValue (string name)
+ProgramAV::getPropertyValue (string const &name)
 {
   string value = "";
 

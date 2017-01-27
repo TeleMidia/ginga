@@ -48,7 +48,7 @@ public:
   virtual bool setPropertyValue (NclAttributionEvent *event, string value)
       = 0;
 
-  virtual string getPropertyValue (string name) = 0;
+  virtual string getPropertyValue (string const &name) = 0;
 };
 
 GINGA_FORMATTER_END
