@@ -23,6 +23,9 @@ using namespace ::ginga::util;
 
 GINGA_MB_BEGIN
 
+class SDLWindow;
+class IFontProvider;
+
 typedef struct DrawData
 {
   int coord1;
@@ -41,13 +44,13 @@ class SDLSurface
 private:
   SDL_Surface *sur;
   SDL_Surface *pending;
-  void *parent;
+  SDLWindow *parent;
   bool hasExtHandler;
   Color *chromaColor;
   Color *borderColor;
   Color *bgColor;
   Color *surfaceColor;
-  void *iFont;
+  IFontProvider *iFont;
   int caps;
   bool isDeleting;
 
@@ -89,8 +92,8 @@ public:
   void setCaps (int caps);
   int getCap (string cap);
   int getCaps ();
-  bool setParentWindow (void *parentWindow);
-  void *getParentWindow ();
+  bool setParentWindow (SDLWindow *parentWindow);
+  SDLWindow *getParentWindow ();
   void *getSurfaceContent ();
   void setSurfaceContent (void *surface);
   void clearContent ();

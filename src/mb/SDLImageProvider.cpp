@@ -80,7 +80,7 @@ SDLImageProvider::playOver (SDLSurface* surface)
     }
 
   if (surface != 0
-      && Ginga_Display_M->hasSurface (surface))
+      && Ginga_Display->hasSurface (surface))
     {
 #if WITH_LIBRSVG
       if (imgUri.substr (imgUri.find_last_of (".") + 1) == "svg"

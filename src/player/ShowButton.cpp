@@ -51,11 +51,11 @@ ShowButton::initializeWindow ()
   w = 60;
   h = 60;
 
-  win = Ginga_Display_M->createWindow (x, y, w, h, 4.0);
+  win = Ginga_Display->createWindow (x, y, w, h, 4.0);
 
-  int caps = Ginga_Display_M->getWindowCap (win, "ALPHACHANNEL");
-  Ginga_Display_M->setWindowCaps (win, caps);
-  Ginga_Display_M->drawWindow (win);
+  int caps = win->getCap ("ALPHACHANNEL");
+  win->setCaps (caps);
+  win->draw ();
 }
 
 void
@@ -100,8 +100,8 @@ ShowButton::release ()
   lock ();
   if (win != 0)
     {
-      Ginga_Display_M->hideWindow (win);
-      Ginga_Display_M->deleteWindow (win);
+      win->hide ();
+      delete win;
       win = 0;
     }
   unlock ();
@@ -112,7 +112,7 @@ ShowButton::render (string mrl)
 {
   SDLSurface* surface;
 
-  surface = Ginga_Display_M->createRenderedSurfaceFromImageFile (mrl.c_str ());
+  surface = Ginga_Display->createRenderedSurfaceFromImageFile (mrl.c_str ());
 
   lock ();
   if (win == 0)
@@ -120,12 +120,12 @@ ShowButton::render (string mrl)
       initializeWindow ();
     }
 
-  if (Ginga_Display_M->setSurfaceParentWindow (surface, win))
+  if (surface->setParentWindow (win))
     {
-      Ginga_Display_M->renderWindowFrom (win, surface);
+      win->renderFrom (surface);
     }
-  Ginga_Display_M->showWindow (win);
-  Ginga_Display_M->raiseWindowToTop (win);
+  win->show ();
+  win->raiseToTop ();
   unlock ();
 }
 

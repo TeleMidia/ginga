@@ -73,18 +73,18 @@ FormatterMultiDevice::FormatterMultiDevice (DeviceLayout *deviceLayout,
       defaultHeight = Ginga_Display->getHeightResolution ();
     }
 
-  im = Ginga_Display_M->getInputManager ();
+  im = Ginga_Display->getInputManager ();
 
   im->setAxisValues ((int)(Ginga_Display->getWidthResolution () / 2),
                      (int)(Ginga_Display->getHeightResolution () / 2), 0);
 
-  printScreen = Ginga_Display_M->createWindow (0, 0,
+  printScreen = Ginga_Display->createWindow (0, 0,
                                                 defaultWidth,
                                                 defaultHeight, -1.0);
 
-  int caps = Ginga_Display_M->getWindowCap (printScreen, "ALPHACHANNEL");
-  Ginga_Display_M->setWindowCaps (printScreen, caps);
-  Ginga_Display_M->drawWindow (printScreen);
+  int caps = printScreen->getCap ("ALPHACHANNEL");
+  printScreen->setCaps (caps);
+  printScreen->draw ();
 
   Thread::mutexInit (&mutex, false);
   Thread::mutexInit (&lMutex, false);
@@ -155,14 +155,13 @@ FormatterMultiDevice::printGingaWindows ()
   cout << (unsigned long)serialized;
   cout << "'" << endl;
 
-  Ginga_Display_M->getWindowDumpFileUri (serialized, quality, dumpW, dumpH);
+  serialized->getDumpFileUri (quality, dumpW, dumpH);
 
   cout << "BitMapScreen window Id = '";
   if (bitMapScreen != 0)
     {
       cout << (unsigned long)bitMapScreen << "'";
-      Ginga_Display_M->getWindowDumpFileUri (bitMapScreen, quality, dumpW,
-                                dumpH);
+      bitMapScreen->getDumpFileUri (quality, dumpW, dumpH);
     }
   else
     {
@@ -195,8 +194,7 @@ FormatterMultiDevice::printGingaWindows ()
 
               if (iWin != 0)
                 {
-                  Ginga_Display_M->getWindowDumpFileUri (iWin, quality, dumpW,
-                                            dumpH);
+                  iWin->getDumpFileUri (quality, dumpW, dumpH);
                 }
 
               cout << "'" << (unsigned long)(*j) << "' ";
@@ -302,7 +300,7 @@ FormatterMultiDevice::serializeScreen (int devClass,
   if (i != layoutManager.end ())
     {
       formatterLayout = i->second;
-      Ginga_Display_M->clearWindowContent (mapWindow);
+      mapWindow->clearContent ();
       formatterLayout->getSortedIds (&sortedIds);
       if (!sortedIds.empty ())
         {
@@ -311,7 +309,7 @@ FormatterMultiDevice::serializeScreen (int devClass,
               return "";
             }
         }
-      fileUri = Ginga_Display_M->getWindowDumpFileUri (mapWindow, quality,
+      fileUri = mapWindow->getDumpFileUri (quality,
                                           dumpW, dumpH);
     }
 
@@ -428,7 +426,7 @@ FormatterMultiDevice::prepareFormatterRegion (
               return windowId;
             }
 
-          bitMapScreen = Ginga_Display_M->createWindow (
+          bitMapScreen = Ginga_Display->createWindow (
               bitMapRegion->getAbsoluteLeft (),
               bitMapRegion->getAbsoluteTop (),
               bitMapRegion->getWidthInPixels (),
@@ -448,9 +446,9 @@ FormatterMultiDevice::prepareFormatterRegion (
           clog << endl << endl;
 
           int caps
-              = Ginga_Display_M->getWindowCap (bitMapScreen, "ALPHACHANNEL");
-          Ginga_Display_M->setWindowCaps (bitMapScreen, caps);
-          Ginga_Display_M->drawWindow (bitMapScreen);
+              = bitMapScreen->getCap ("ALPHACHANNEL");
+          bitMapScreen->setCaps (caps);
+          bitMapScreen->draw ();
         }
     }
 
@@ -638,12 +636,12 @@ void
 FormatterMultiDevice::renderFromUri (SDLWindow* win, string uri)
 {
   SDLSurface* s;
-  s = Ginga_Display_M->createRenderedSurfaceFromImageFile (uri.c_str ());
-  Ginga_Display_M->setWindowColorKey (win, 0, 0, 0);
-  Ginga_Display_M->clearWindowContent (win);
-  Ginga_Display_M->renderWindowFrom (win, s);
-  Ginga_Display_M->showWindow (win);
-  Ginga_Display_M->validateWindow (win);
+  s = Ginga_Display->createRenderedSurfaceFromImageFile (uri.c_str ());
+  win->setColorKey (0, 0, 0);
+  win->clearContent ();
+  win->renderFrom (s);
+  win->show ();
+  win->validate ();
   Ginga_Display_M->deleteSurface (s);
 }
 

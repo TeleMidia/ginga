@@ -69,18 +69,18 @@ FormatterActiveDevice::FormatterActiveDevice (DeviceLayout *deviceLayout,
 
   if (fileExists (img_dev))
     {
-      serialized = Ginga_Display_M->createWindow (0, 0, DV_QVGA_WIDTH,
+      serialized = Ginga_Display->createWindow (0, 0, DV_QVGA_WIDTH,
                                      DV_QVGA_HEIGHT, -1.0);
 
-      s = Ginga_Display_M->createRenderedSurfaceFromImageFile (img_dev.c_str ());
+      s = Ginga_Display->createRenderedSurfaceFromImageFile (img_dev.c_str ());
 
-      int cap = Ginga_Display_M->getWindowCap (serialized, "ALPHACHANNEL");
-      Ginga_Display_M->setWindowCaps (serialized, cap);
-      Ginga_Display_M->drawWindow (serialized);
+      int cap = serialized->getCap ("ALPHACHANNEL");
+      serialized->setCaps (cap);
+      serialized->draw ();
 
-      Ginga_Display_M->showWindow (serialized);
-      Ginga_Display_M->renderWindowFrom (serialized, s);
-      Ginga_Display_M->lowerWindowToBottom (serialized);
+      serialized->show ();
+      serialized->renderFrom (s);
+      serialized->lowerToBottom ();
 
       Ginga_Display_M->deleteSurface (s);
       s = 0;
@@ -151,7 +151,7 @@ FormatterActiveDevice::FormatterActiveDevice (DeviceLayout *deviceLayout,
           // handleTCPClient(servSock.accept());
           if (serialized)
             {
-              Ginga_Display_M->hideWindow (serialized);
+              serialized->hide ();
             }
           handleTCPClient (tcpSocket);
         }
@@ -736,22 +736,22 @@ FormatterActiveDevice::handleTCPClient (TCPSocket *sock)
           // TODO: player->stop()? flag to define this?
           // TODO: only change image if nothing is playing?
 
-          serialized = Ginga_Display_M->createWindow (0, 0, DV_QVGA_WIDTH,
+          serialized = Ginga_Display->createWindow (0, 0, DV_QVGA_WIDTH,
                                          DV_QVGA_HEIGHT, -1.0);
 
           if (fileExists (img_reset))
             {
-              s = Ginga_Display_M->createRenderedSurfaceFromImageFile (
+              s = Ginga_Display->createRenderedSurfaceFromImageFile (
                   img_reset.c_str ());
 
               int cap
-                  = Ginga_Display_M->getWindowCap (serialized, "ALPHACHANNEL");
-              Ginga_Display_M->setWindowCaps (serialized, cap);
-              Ginga_Display_M->drawWindow (serialized);
+                  = serialized->getCap ("ALPHACHANNEL");
+              serialized->setCaps (cap);
+              serialized->draw ();
 
-              Ginga_Display_M->showWindow (serialized);
-              Ginga_Display_M->renderWindowFrom (serialized, s);
-              Ginga_Display_M->lowerWindowToBottom (serialized);
+              serialized->show ();
+              serialized->renderFrom (s);
+              serialized->lowerToBottom ();
 
               Ginga_Display_M->deleteSurface (s);
               s = 0;

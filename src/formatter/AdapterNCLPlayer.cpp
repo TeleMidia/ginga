@@ -124,7 +124,7 @@ AdapterNCLPlayer::createPlayer ()
 
       player = (INCLPlayer *)(new FormatterMediator (childData));
 
-      s = Ginga_Display_M->createSurface ();
+      s = Ginga_Display->createSurface ();
       int cap = Ginga_Display_M->getSurfaceCap (s, "ALPHACHANNEL");
       Ginga_Display_M->setSurfaceCaps (s, cap);
 

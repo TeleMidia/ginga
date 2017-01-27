@@ -46,7 +46,7 @@ FormatterFocusManager::FormatterFocusManager (
   DisplayManager::addIEListenerInstance (this);
   DisplayManager::addMEListenerInstance (this);
 
-  im = Ginga_Display_M->getInputManager ();
+  im = Ginga_Display->getInputManager ();
   focusTable = new map<string, set<NclExecutionObject *> *>;
   currentFocus = "";
   objectToSelect = "";

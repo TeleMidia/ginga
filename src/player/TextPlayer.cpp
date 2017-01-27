@@ -44,15 +44,14 @@ TextPlayer::~TextPlayer ()
     }
 
   /* release window and surface first; then, release font */
-  if (outputWindow != 0 && Ginga_Display_M->hasWindow (outputWindow))
+  if (outputWindow != 0 && Ginga_Display->hasWindow (outputWindow))
     {
-      Ginga_Display_M->revertWindowContent (outputWindow);
-      Ginga_Display_M->deleteWindow (outputWindow);
-
+      outputWindow->revertContent ();
+      delete outputWindow;
       outputWindow = 0;
     }
 
-  if (surface != 0 && Ginga_Display_M->hasSurface (surface))
+  if (surface != 0 && Ginga_Display->hasSurface (surface))
     {
       Ginga_Display_M->deleteSurface (surface);
       surface = 0;
@@ -60,7 +59,7 @@ TextPlayer::~TextPlayer ()
 
   if (font != 0)
     {
-      Ginga_Display_M->releaseFontProvider (font);
+      Ginga_Display->releaseFontProvider ((IFontProvider*)font);
       font = 0;
     }
 }
@@ -78,7 +77,7 @@ TextPlayer::initializePlayer ()
   this->fontColor = NULL;
   this->fontSize = 12;
   this->fontUri = string (GINGA_FONT_DATADIR) + "vera.ttf";
-  this->surface = Ginga_Display_M->createSurface ();
+  this->surface = Ginga_Display->createSurface ();
   if (this->surface != 0)
     {
       int cap = Ginga_Display_M->getSurfaceCap (surface, "ALPHACHANNEL");
@@ -99,7 +98,7 @@ TextPlayer::write (SDLSurface* s, string text,
   IMediaProvider* font = 0;
   int width = 0;
 
-  font = Ginga_Display_M->createFontProvider (fontUri.c_str (), fontSize);
+  font = Ginga_Display->createFontProvider (fontUri.c_str (), fontSize);
 
   if (fontColor == NULL)
     {
@@ -116,7 +115,7 @@ TextPlayer::write (SDLSurface* s, string text,
 
       Ginga_Display_M->playProviderOver (font, s, text.c_str (), 0, 0, textAlign);
 
-      Ginga_Display_M->releaseFontProvider (font);
+      Ginga_Display->releaseFontProvider ((IFontProvider*)font);
       font = 0;
     }
 
@@ -139,11 +138,11 @@ TextPlayer::setFont (string someUri)
   this->fontUri = someUri;
   if (font != 0)
     {
-      Ginga_Display_M->releaseFontProvider (font);
+      Ginga_Display->releaseFontProvider ((IFontProvider*)font);
       font = 0;
     }
 
-  font = Ginga_Display_M->createFontProvider (someUri.c_str (), fontSize);
+  font = Ginga_Display->createFontProvider (someUri.c_str (), fontSize);
   if (font == 0)
     {
       clog << "TextPlayer::setFont Warning! Can't create Font '";

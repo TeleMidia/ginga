@@ -75,14 +75,14 @@ AVPlayer::~AVPlayer ()
   Thread::mutexLock (&tMutex);
   if (surface != 0 && mainAV)
     {
-      Ginga_Display_M->setSurfaceParentWindow (surface, 0);
+      surface->setParentWindow (0);
     }
 
   if (mainAV)
     {
       if (win != 0)
         {
-          Ginga_Display_M->disposeWindow (win);
+          delete win;
           win = 0;
         }
     }
@@ -129,7 +129,7 @@ AVPlayer::createProvider (void)
 
   if (provider == 0 && (fileExists (mrl) || isRemote))
     {
-      provider = Ginga_Display_M->createContinuousMediaProvider (mrl.c_str (),
+      provider = Ginga_Display->createContinuousMediaProvider (mrl.c_str (),
                                                     isRemote);
 
       surface = createFrame ();
@@ -196,15 +196,15 @@ AVPlayer::createFrame ()
       clog << endl;
       if (mainAV)
         {
-          Ginga_Display_M->setSurfaceParentWindow (surface, 0);
+          surface->setParentWindow (0);
         }
       Ginga_Display_M->deleteSurface (surface);
     }
 
-  surface = Ginga_Display_M->createSurface ();
+  surface = Ginga_Display->createSurface ();
   if (win != 0 && mainAV)
     {
-      Ginga_Display_M->setSurfaceParentWindow (surface, win);
+      surface->setParentWindow (win);
     }
 
   Thread::mutexUnlock (&tMutex);
@@ -373,7 +373,7 @@ AVPlayer::pause ()
 
   if (outputWindow != 0)
     {
-      Ginga_Display_M->validateWindow (outputWindow);
+      outputWindow->validate ();
     }
   Ginga_Display_M->pauseProvider (provider);
 
@@ -451,15 +451,15 @@ AVPlayer::setPropertyValue (string name, string value)
           vals = split (value, ",");
           if (vals->size () == 4)
             {
-              win = Ginga_Display_M->createWindow (xstrto_int ((*vals)[0]),
+              win = Ginga_Display->createWindow (xstrto_int ((*vals)[0]),
                                                  xstrto_int ((*vals)[1]),
                                                  xstrto_int ((*vals)[2]),
                                                  xstrto_int ((*vals)[3]), 1.0);
 
-              int caps = Ginga_Display_M->getWindowCap (win, "NOSTRUCTURE")
-                         | Ginga_Display_M->getWindowCap (win, "DOUBLEBUFFER");
-              Ginga_Display_M->setWindowCaps (win, caps);
-              Ginga_Display_M->drawWindow (win);
+              int caps = win->getCap ("NOSTRUCTURE")
+                         | win->getCap ("DOUBLEBUFFER");
+              win->setCaps (caps);
+              win->draw ();
             }
 
           delete vals;
@@ -474,7 +474,7 @@ AVPlayer::setPropertyValue (string name, string value)
           vals = split (value, ",");
           if (vals->size () == 4)
             {
-              Ginga_Display_M->setWindowBounds (win,
+              win->setBounds (
                                               xstrto_int ((*vals)[0]),
                                    xstrto_int ((*vals)[1]),
                                    xstrto_int ((*vals)[2]),
@@ -484,11 +484,11 @@ AVPlayer::setPropertyValue (string name, string value)
         }
       else if (name == "show" && win != 0)
         {
-          Ginga_Display_M->showWindow (win);
+          win->show ();
         }
       else if (name == "hide" && win != 0)
         {
-          Ginga_Display_M->hideWindow (win);
+          win->hide ();
         }
     }
 
@@ -504,7 +504,7 @@ AVPlayer::addListener (IPlayerListener *listener)
 void
 AVPlayer::release ()
 {
-  Ginga_Display_M->releaseContinuousMediaProvider (provider);
+  Ginga_Display->releaseContinuousMediaProvider ((IContinuousMediaProvider*)provider);
   provider = 0;
 }
 
@@ -615,14 +615,14 @@ AVPlayer::run ()
     {
       running = true;
 
-      this->provider = Ginga_Display_M->createContinuousMediaProvider (
+      this->provider = Ginga_Display->createContinuousMediaProvider (
           mrl.c_str (), true);
 
       this->surface = createFrame ();
 
-      if (this->win != 0 && Ginga_Display_M->getSurfaceParentWindow (surface) == 0)
+      if (this->win != 0 && surface->getParentWindow () == 0)
         {
-          Ginga_Display_M->setSurfaceParentWindow (surface, win);
+          surface->setParentWindow (win);
         }
       Ginga_Display_M->playProviderOver (provider, surface);
       checkVideoResizeEvent ();
