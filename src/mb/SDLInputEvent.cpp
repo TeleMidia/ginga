@@ -85,7 +85,7 @@ SDLInputEvent::setKeyCode (const int keyCode)
 {
   int sdlCode;
 
-  sdlCode = Ginga_Display_M->fromGingaToMB (keyCode);
+  sdlCode = Ginga_Display->fromGingaToMB (keyCode);
 
   if (event.type == SDL_USEREVENT)
     {
@@ -127,13 +127,13 @@ SDLInputEvent::getKeyCode ()
       ;
     }
 
-  gingaValue = Ginga_Display_M->fromMBToGinga (sdlValue);
+  gingaValue = Ginga_Display->fromMBToGinga (sdlValue);
 
   if (gingaValue >= CodeMap::KEY_SMALL_A
       && gingaValue <= CodeMap::KEY_SMALL_Z
       && ((capsOn && !shiftOn) || (!capsOn && shiftOn)))
     {
-      gingaValue = Ginga_Display_M->fromMBToGinga (sdlValue + 5000);
+      gingaValue = Ginga_Display->fromMBToGinga (sdlValue + 5000);
     }
 
   // Mapping between keyboard and remote control

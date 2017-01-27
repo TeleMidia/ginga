@@ -271,7 +271,7 @@ NclFormatterRegion::setZIndex (int zIndex)
 
       if (outputDisplay != 0)
         {
-          Ginga_Display_M->setWindowZ (outputDisplay, cvtZIndex);
+          outputDisplay->setZ (cvtZIndex);
         }
 
       toFront ();
@@ -690,7 +690,7 @@ NclFormatterRegion::sizeRegion ()
   lock ();
   if (outputDisplay != 0)
     {
-      Ginga_Display_M->setWindowBounds (outputDisplay, left, top, width, height);
+      outputDisplay->setBounds (left, top, width, height);
     }
   unlock ();
 }
@@ -777,7 +777,7 @@ NclFormatterRegion::prepareOutputDisplay (SDLSurface* renderedSurface,
 
       if (!externHandler)
         {
-          outputDisplay = Ginga_Display_M
+          outputDisplay = Ginga_Display
             ->createWindow (left, top, width, height, cvtIndex);
         }
 
@@ -799,8 +799,7 @@ NclFormatterRegion::prepareOutputDisplay (SDLSurface* renderedSurface,
           clog << "b = '" << bgColor->getB () << "' ";
           clog << endl;
 
-          Ginga_Display_M
-            ->setWindowBgColor (outputDisplay, bgColor->getR (),
+          outputDisplay->setBgColor (bgColor->getR (),
                                 bgColor->getG (), bgColor->getB (),
                                 bgColor->getAlpha ());
         }
@@ -808,34 +807,29 @@ NclFormatterRegion::prepareOutputDisplay (SDLSurface* renderedSurface,
 
       if (!externHandler)
         {
-          Ginga_Display_M
-            ->setWindowCurrentTransparency (outputDisplay,
-                                            (guint8)(transparency * 255));
+          outputDisplay->setCurrentTransparency ((guint8)(transparency * 255));
         }
 
-      int caps = Ginga_Display_M
-        ->getWindowCap (outputDisplay, "ALPHACHANNEL");
+      int caps = outputDisplay->getCap ("ALPHACHANNEL");
       if (!externHandler && renderedSurface != 0
           && (caps & Ginga_Display_M->getSurfaceCaps (renderedSurface)))
         {
-          Ginga_Display_M->addWindowCaps (outputDisplay, caps);
+          outputDisplay->addCaps (caps);
         }
 
       if (chromaKey != NULL)
         {
-          caps = Ginga_Display_M
-            ->getWindowCap (outputDisplay, "NOSTRUCTURE");
+          caps = outputDisplay->getCap ("NOSTRUCTURE");
+          outputDisplay->setCaps (caps);
+          outputDisplay->draw ();
 
-          Ginga_Display_M->setWindowCaps (outputDisplay, caps);
-          Ginga_Display_M->drawWindow (outputDisplay);
-
-          Ginga_Display_M->setWindowColorKey (outputDisplay,
+          outputDisplay->setColorKey (
                                  chromaKey->getR (), chromaKey->getG (),
                                  chromaKey->getB ());
         }
       else if (!externHandler)
         {
-          Ginga_Display_M->drawWindow (outputDisplay);
+          outputDisplay->draw ();
         }
     }
   else
@@ -846,10 +840,10 @@ NclFormatterRegion::prepareOutputDisplay (SDLSurface* renderedSurface,
 
   if (renderedSurface != 0 && !externHandler)
     {
-      if (Ginga_Display_M->setSurfaceParentWindow (renderedSurface,
+      if (renderedSurface->setParentWindow (
                                       outputDisplay))
         {
-          Ginga_Display_M->renderWindowFrom (outputDisplay, renderedSurface);
+          outputDisplay->renderFrom (renderedSurface);
         }
     }
 
@@ -1054,7 +1048,7 @@ NclFormatterRegion::setRegionVisibility (bool visible)
           clog << outputDisplay;
           clog << "' HIDE" << endl;
 
-          Ginga_Display_M->hideWindow (outputDisplay);
+          outputDisplay->hide ();
         }
       else
         {
@@ -1063,7 +1057,7 @@ NclFormatterRegion::setRegionVisibility (bool visible)
           clog << outputDisplay;
           clog << "' SHOW" << endl;
 
-          Ginga_Display_M->showWindow (outputDisplay);
+          outputDisplay->show ();
         }
     }
   imVisible = visible;
@@ -1077,7 +1071,7 @@ NclFormatterRegion::disposeOutputDisplay ()
     {
       if (!externHandler)
         {
-          Ginga_Display_M->disposeWindow (outputDisplay);
+          delete outputDisplay;
         }
       outputDisplay = 0;
     }
@@ -1092,7 +1086,7 @@ NclFormatterRegion::toFront ()
   lock ();
   if (outputDisplay != 0 && !externHandler)
     {
-      Ginga_Display_M->raiseWindowToTop (outputDisplay);
+      outputDisplay->raiseToTop ();
       unlock ();
       if (ncmRegion != NULL)
         {
@@ -1289,7 +1283,7 @@ NclFormatterRegion::setGhostRegion (bool ghost)
   lock ();
   if (outputDisplay != 0 && !externHandler)
     {
-      Ginga_Display_M->setGhostWindow (outputDisplay, ghost);
+      outputDisplay->setGhostWindow (ghost);
     }
   unlock ();
 }
@@ -1329,7 +1323,7 @@ NclFormatterRegion::setSelection (bool selOn)
             {
               if (outputDisplay != 0 && !externHandler)
                 {
-                  Ginga_Display_M->renderWindowFrom (outputDisplay,
+                  outputDisplay->renderFrom (
                                         selSurface);
                 }
 
@@ -1344,13 +1338,13 @@ NclFormatterRegion::setSelection (bool selOn)
           lockFocusInfo ();
           if (selComponentSrc == "")
             {
-              Ginga_Display_M->validateWindow (outputDisplay);
+              outputDisplay->validate ();
             }
 
           if (selBorderColor != NULL)
             {
-              Ginga_Display_M->setWindowBorder (
-                  outputDisplay, selBorderColor->getR (),
+              outputDisplay->setBorder (
+                  selBorderColor->getR (),
                   selBorderColor->getG (), selBorderColor->getB (),
                   selBorderColor->getAlpha (), selBorderWidth);
             }
@@ -1387,7 +1381,7 @@ NclFormatterRegion::setFocus (bool focusOn)
             {
               if (outputDisplay != 0 && !externHandler)
                 {
-                  Ginga_Display_M->renderWindowFrom (outputDisplay,
+                  outputDisplay->renderFrom (
                                         focusSurface);
                 }
               Ginga_Display_M->deleteSurface (focusSurface);
@@ -1401,13 +1395,12 @@ NclFormatterRegion::setFocus (bool focusOn)
           lockFocusInfo ();
           if (focusComponentSrc == "")
             {
-              Ginga_Display_M->validateWindow (outputDisplay);
+              outputDisplay->validate ();
             }
 
           if (focusBorderColor != NULL)
             {
-              Ginga_Display_M->setWindowBorder (
-                  outputDisplay, focusBorderColor->getR (),
+              outputDisplay->setBorder (focusBorderColor->getR (),
                   focusBorderColor->getG (), focusBorderColor->getB (),
                   focusBorderColor->getAlpha (), focusBorderWidth);
             }
@@ -1430,58 +1423,15 @@ NclFormatterRegion::unselect ()
   lock ();
   if (outputDisplay != 0 && !externHandler)
     {
-      Ginga_Display_M->setWindowBorder (outputDisplay, -1, -1, -1, -1, 0);
+      outputDisplay->setBorder (-1, -1, -1, -1, 0);
       if (renderedSurface != 0)
         {
-          Ginga_Display_M->setSurfaceParentWindow (renderedSurface,
-                                      outputDisplay);
-          Ginga_Display_M->renderWindowFrom (outputDisplay, renderedSurface);
+          renderedSurface->setParentWindow (outputDisplay);
+          outputDisplay->renderFrom (renderedSurface);
         }
-      Ginga_Display_M->validateWindow (outputDisplay);
+      outputDisplay->validate ();
     }
   unlock ();
-
-  /*if (outputDisplay != NULL) {
-          outputDisplay->clear();
-  }*/
-
-  /*		clog << "NclFormatterRegion::unselect(" << this << ")" <<
-     endl;
-                  lock();
-                  if (outputDisplay == NULL) {
-                          unlock();
-                          return;
-                  }
-
-                  if (bgColor != NULL) {
-                          outputDisplay->setBgColor(
-                                      bgColor->getR(),
-                                      bgColor->getG(),
-                                      bgColor->getB());
-
-                  } else {
-                          outputDisplay->setBgColor(0, 0, 0);
-                  }
-  */
-  /*currentComponent.setLocation(
-                          currentComponent.getX() - borderWidth,
-                          currentComponent.getY() - borderWidth);
-  }
-  else if (borderWidth < 0){
-          currentComponent.setLocation(
-                          currentComponent.getX() + borderWidth,
-                          currentComponent.getY() + borderWidth);
-
-          currentComponent.setSize(
-                          currentComponent.getWidth() - (2 * borderWidth),
-                  currentComponent.getHeight() - (2* borderWidth));
-  }*/
-
-  /*
-                  outputDisplay->showContentSurface();
-                  outputDisplay->validate();
-                  unlock();
-  */
 }
 
 Color *
@@ -1513,10 +1463,10 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
       return;
     }
 
-  x = Ginga_Display_M->getWindowX (outputDisplay);
-  y = Ginga_Display_M->getWindowY (outputDisplay);
-  width = Ginga_Display_M->getWindowW (outputDisplay);
-  height = Ginga_Display_M->getWindowH (outputDisplay);
+  x = outputDisplay->getX ();
+  y = outputDisplay->getY ();
+  width = outputDisplay->getW ();
+  height = outputDisplay->getH ();
   unlock ();
 
   transitionDur = transition->getDur ();
@@ -1526,7 +1476,7 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
   endProgress = transition->getEndProgress ();
 
   transparencyValue
-      = Ginga_Display_M->getWindowTransparencyValue (outputDisplay);
+      = outputDisplay->getTransparencyValue ();
   initTime = xruntime_ms ();
 
   if (transitionSubType == Transition::SUBTYPE_BARWIPE_LEFTTORIGHT)
@@ -1536,9 +1486,9 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
           lock ();
           if (outputDisplay != 0)
             {
-              Ginga_Display_M->setWindowCurrentTransparency (outputDisplay,
+              outputDisplay->setCurrentTransparency (
                                                 transparencyValue);
-              Ginga_Display_M->resizeWindow (outputDisplay, 1, height);
+              outputDisplay->resize (1, height);
             }
           unlock ();
 
@@ -1572,13 +1522,13 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
 
                   if (x >= 0 && x + (width - i) >= 0 && i > 0 && height > 0)
                     {
-                      Ginga_Display_M->setWindowBounds (outputDisplay,
+                      outputDisplay->setBounds (
                                            x + (width - i), y, i, height);
                     }
                 }
               else if (i > 0 && height > 0)
                 {
-                  Ginga_Display_M->resizeWindow (outputDisplay, i, height);
+                  outputDisplay->resize (i, height);
                 }
             }
           else
@@ -1595,7 +1545,7 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
           lock ();
           if (outputDisplay != 0)
             {
-              Ginga_Display_M->validateWindow (outputDisplay);
+              outputDisplay->validate ();
             }
           unlock ();
 
@@ -1617,7 +1567,7 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
                     }
                   else
                     {
-                      Ginga_Display_M->setWindowBounds (outputDisplay, x, y,
+                      outputDisplay->setBounds (x, y,
                                            width, height);
                     }
 
@@ -1646,11 +1596,11 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
           lock ();
           if (outputDisplay != 0)
             {
-              Ginga_Display_M->setWindowCurrentTransparency (outputDisplay,
+              outputDisplay->setCurrentTransparency (
                                                 transparencyValue);
               if (width > 0)
                 {
-                  Ginga_Display_M->resizeWindow (outputDisplay, width, 1);
+                  outputDisplay->resize (width, 1);
                 }
             }
           unlock ();
@@ -1685,13 +1635,13 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
                 {
                   if (x >= 0 && y + (height - i) >= 0 && width > 0 && i > 0)
                     {
-                      Ginga_Display_M->setWindowBounds (outputDisplay, x,
+                      outputDisplay->setBounds (x,
                                            y + (height - i), width, i);
                     }
                 }
               else if (width > 0 && i > 0)
                 {
-                  Ginga_Display_M->resizeWindow (outputDisplay, width, i);
+                  outputDisplay->resize (width, i);
                 }
             }
           else
@@ -1707,7 +1657,7 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
           lock ();
           if (outputDisplay != 0)
             {
-              Ginga_Display_M->validateWindow (outputDisplay);
+              outputDisplay->validate ();
             }
           unlock ();
 
@@ -1729,7 +1679,7 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
                     }
                   else
                     {
-                      Ginga_Display_M->setWindowBounds (outputDisplay, x, y,
+                      outputDisplay->setBounds (x, y,
                                            width, height);
                     }
 
@@ -1756,9 +1706,9 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
       if (outputDisplay != 0)
         {
           // outputDisplay->setStretch(true);
-          Ginga_Display_M->setWindowBounds (outputDisplay, x, y, width,
+          outputDisplay->setBounds (x, y, width,
                                height);
-          Ginga_Display_M->validateWindow (outputDisplay);
+          outputDisplay->validate ();
         }
     }
   unlock ();
@@ -1803,7 +1753,7 @@ NclFormatterRegion::fade (Transition *transition, bool isShowEffect)
     }
 
   opacityValue
-      = (255 - Ginga_Display_M->getWindowTransparencyValue (outputDisplay));
+      = (255 - outputDisplay->getTransparencyValue ());
   unlock ();
 
   transitionDur = transition->getDur ();
@@ -1835,7 +1785,7 @@ NclFormatterRegion::fade (Transition *transition, bool isShowEffect)
       lock ();
       if (outputDisplay != 0)
         {
-          Ginga_Display_M->setWindowCurrentTransparency (outputDisplay, (guint8) (255 - i));
+          outputDisplay->setCurrentTransparency ((guint8) (255 - i));
         }
       else
         {
@@ -1969,9 +1919,7 @@ NclFormatterRegion::setTransparency (double transparency)
 
   if (outputDisplay != 0 && !externHandler)
     {
-      Ginga_Display_M
-        ->setWindowCurrentTransparency (outputDisplay,
-                                        (guint8)(this->transparency * 255));
+      outputDisplay->setCurrentTransparency ((guint8)(this->transparency * 255));
     }
 
   unlock ();

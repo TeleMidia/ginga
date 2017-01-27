@@ -304,7 +304,7 @@ SDLFontProvider::playOver (SDLSurface* surface)
         }
     }
 
-  if (Ginga_Display_M->hasSurface (content))
+  if (Ginga_Display->hasSurface (content))
     {
       parent = (SDLWindow *)(content->getParentWindow ());
 

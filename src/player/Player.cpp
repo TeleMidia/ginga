@@ -77,14 +77,14 @@ Player::~Player ()
     }
   mirrors.clear ();
 
-  if (Ginga_Display_M->hasWindow (outputWindow))
+  if (Ginga_Display->hasWindow (outputWindow))
     {
-      Ginga_Display_M->revertWindowContent (outputWindow);
-      Ginga_Display_M->deleteWindow (outputWindow);
+      outputWindow->revertContent ();
+      delete outputWindow;
       outputWindow = 0;
     }
 
-  if (Ginga_Display_M->hasSurface (surface))
+  if (Ginga_Display->hasSurface (surface))
     {
       Ginga_Display_M->deleteSurface (surface);
       surface = 0;
@@ -444,11 +444,11 @@ Player::mirrorIt (Player *mirrorSrc, Player *mirror)
       iSur = mirror->getSurface ();
       if (iSrcSur != 0 && iSur != 0)
         {
-          iSrcWin = Ginga_Display_M->getSurfaceParentWindow (iSrcSur);
-          iWin = Ginga_Display_M->getSurfaceParentWindow (iSur);
+          iSrcWin = iSrcSur->getParentWindow ();
+          iWin = iSur->getParentWindow ();
           if (iSrcWin != 0 && iWin != 0)
             {
-              Ginga_Display_M->setWindowMirrorSrc (iWin, iSrcWin);
+              iWin->setMirrorSrc (iSrcWin);
             }
         }
     }
@@ -540,7 +540,7 @@ Player::setPropertyValue (string name, string value)
           params = split (value, ",");
           if (params->size () == 4)
             {
-              Ginga_Display_M->setWindowBounds (outputWindow,
+              outputWindow->setBounds (
                                    xstrto_int ((*params)[0]),
                                    xstrto_int ((*params)[1]),
                                    xstrto_int ((*params)[2]),
@@ -553,7 +553,7 @@ Player::setPropertyValue (string name, string value)
           params = split (value, ",");
           if (params->size () == 2)
             {
-              Ginga_Display_M->moveWindowTo (outputWindow,
+              outputWindow->moveTo (
                                 xstrto_int ((*params)[0]),
                                 xstrto_int ((*params)[1]));
             }
@@ -564,7 +564,7 @@ Player::setPropertyValue (string name, string value)
           params = split (value, ",");
           if (params->size () == 2)
             {
-              Ginga_Display_M->resizeWindow (outputWindow,
+              outputWindow->resize (
                                 xstrto_int ((*params)[0]),
                                 xstrto_int ((*params)[1]));
             }
@@ -572,27 +572,27 @@ Player::setPropertyValue (string name, string value)
         }
       else if (name == "left")
         {
-          Ginga_Display_M->setWindowX (outputWindow,
+          outputWindow->setX (
                           xstrto_int (value));
         }
       else if (name == "top")
         {
-          Ginga_Display_M->setWindowY (outputWindow,
+          outputWindow->setY (
                           xstrto_int (value));
         }
       else if (name == "width")
         {
-          Ginga_Display_M->setWindowW (outputWindow,
+          outputWindow->setW (
                           xstrto_int (value));
         }
       else if (name == "height")
         {
-          Ginga_Display_M->setWindowH (outputWindow,
+          outputWindow->setH (
                           xstrto_int (value));
         }
       else if (name == "transparency")
         {
-          Ginga_Display_M->setWindowCurrentTransparency (outputWindow,
+          outputWindow->setCurrentTransparency (
                                             xstrto_uint8 (value));
         }
     }
@@ -772,9 +772,9 @@ Player::isForcedNaturalEnd ()
 bool
 Player::setOutWindow (SDLWindow* windowId)
 {
-  if (surface != 0 && Ginga_Display_M->getSurfaceParentWindow (surface) == 0)
+  if (surface != 0 && surface->getParentWindow () == 0)
     {
-      Ginga_Display_M->setSurfaceParentWindow (surface, windowId);
+      surface->setParentWindow (windowId);
     }
   return true;
 }

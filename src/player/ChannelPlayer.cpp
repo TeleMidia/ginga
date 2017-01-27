@@ -128,9 +128,9 @@ ChannelPlayer::setSurfacesParent (SDLWindow* parent)
     {
       avPlayer = players->second;
       s = ((Player *)avPlayer)->getSurface ();
-      if (s != 0 && Ginga_Display_M->getSurfaceParentWindow (s) != parent)
+      if (s != 0 && s->getParentWindow () != parent)
         {
-          Ginga_Display_M->setSurfaceParentWindow (s, parent);
+          s->setParentWindow (parent);
         }
       ++players;
     }
@@ -155,9 +155,9 @@ ChannelPlayer::play ()
   if (selectedPlayer != NULL)
     {
       s = ((Player *)selectedPlayer)->getSurface ();
-      if (!hasParent && s != 0 && Ginga_Display_M->getSurfaceParentWindow (s) != 0)
+      if (!hasParent && s != 0 && s->getParentWindow () != 0)
         {
-          SDLWindow* parentWindow = Ginga_Display_M->getSurfaceParentWindow (s);
+          SDLWindow* parentWindow = s->getParentWindow ();
           setSurfacesParent (parentWindow);
         }
       selectedPlayer->play ();

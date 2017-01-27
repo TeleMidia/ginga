@@ -49,7 +49,7 @@ ImagePlayer::ImagePlayer (string mrl) : Player (mrl)
 
   if (fileExists (mrl))
     {
-      provider = Ginga_Display_M->createImageProvider (mrl.c_str ());
+      provider = Ginga_Display->createImageProvider (mrl.c_str ());
     }
   else
     {
@@ -101,7 +101,7 @@ ImagePlayer::ImagePlayer (string mrl) : Player (mrl)
               if (fileExists (newMrl))
                 {
                   provider
-                      = Ginga_Display_M->createImageProvider (newMrl.c_str ());
+                      = Ginga_Display->createImageProvider (newMrl.c_str ());
                 }
               else
                 {
@@ -131,7 +131,7 @@ ImagePlayer::~ImagePlayer ()
 {
   if (provider != 0)
     {
-      Ginga_Display_M->releaseImageProvider (provider);
+      Ginga_Display->releaseImageProvider ((IImageProvider*)provider);
     }
 }
 
@@ -166,10 +166,10 @@ ImagePlayer::setPropertyValue (string name, string value)
 
   if (surface != 0)
     {
-      win = Ginga_Display_M->getSurfaceParentWindow (surface);
+      win = surface->getParentWindow ();
       if (win != 0)
         {
-          Ginga_Display_M->renderWindowFrom (win, surface);
+          win->renderFrom (surface);
         }
     }
 
@@ -181,7 +181,7 @@ ImagePlayer::prepareSurface (IMediaProvider* provider, arg_unused (string mrl))
 {
   SDLSurface* renderedSurface = 0;
 
-  renderedSurface = Ginga_Display_M->createSurfaceFrom (0);
+  renderedSurface = Ginga_Display->createSurfaceFrom (0);
   Ginga_Display_M->playProviderOver (provider, renderedSurface);
 
   return renderedSurface;

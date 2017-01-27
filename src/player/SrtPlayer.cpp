@@ -398,7 +398,7 @@ SrtPlayer::run ()
   SDLWindow* parent = 0;
   if (surface != 0)
     {
-      parent = Ginga_Display_M->getSurfaceParentWindow (surface);
+      parent = surface->getParentWindow ();
     }
   else
     {
@@ -508,14 +508,14 @@ SrtPlayer::run ()
           lock ();
           if (surface != 0)
             {
-              parent = Ginga_Display_M->getSurfaceParentWindow (surface);
+              parent = surface->getParentWindow ();
               if (parent != 0 && isPlayingSrt ())
                 {
                   if (controlParentVisibility)
                     {
                       clog << "SrtPlayer::run show";
                       clog << "LINE: '" << line.c_str () << "'" << endl;
-                      Ginga_Display_M->showWindow (parent);
+                      parent->show ();
                     }
                 }
               else
@@ -548,10 +548,10 @@ SrtPlayer::run ()
           if (surface != 0)
             {
               Ginga_Display_M->clearSurfaceContent (surface);
-              parent = Ginga_Display_M->getSurfaceParentWindow (surface);
+              parent = surface->getParentWindow ();
               if (parent != 0 && controlParentVisibility)
                 {
-                  Ginga_Display_M->hideWindow (parent);
+                  parent->hide ();
                 }
             }
           unlock ();

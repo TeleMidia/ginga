@@ -148,7 +148,7 @@ SDLVideoProvider::playOver (SDLSurface* surface)
   parent = parentId;
 
   clog << "SDLVideoProvider::playOver parent(" << parent << ")" << endl;
-  if (Ginga_Display_M->hasWindow (parentId))
+  if (Ginga_Display->hasWindow (parentId))
     {
       win = parentId;
       if (hasTex)

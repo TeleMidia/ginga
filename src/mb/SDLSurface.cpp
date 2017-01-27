@@ -43,7 +43,7 @@ SDLSurface::~SDLSurface ()
   Thread::mutexLock (&pMutex);
 
   SDLWindow *w = (SDLWindow *)parent;
-  Ginga_Display_M->releaseSurface (this);
+  Ginga_Display->releaseSurface (this);
 
   releaseChromaColor ();
   releaseBorderColor ();
@@ -51,7 +51,7 @@ SDLSurface::~SDLSurface ()
   releaseSurfaceColor ();
   releaseFont ();
 
-  if (w != NULL && Ginga_Display_M->hasWindow (w))
+  if (w != NULL && Ginga_Display->hasWindow (w))
     {
       if (w->getContent () == sur)
         {
@@ -221,7 +221,7 @@ SDLSurface::releaseFont ()
 {
   if (iFont != NULL)
     {
-      Ginga_Display_M->releaseFontProvider ((IFontProvider*)iFont);
+      Ginga_Display->releaseFontProvider ((IFontProvider*)iFont);
       iFont = NULL;
     }
 }
@@ -350,7 +350,7 @@ SDLSurface::setSurfaceContent (void *surface)
 }
 
 bool
-SDLSurface::setParentWindow (void *parentWindow)
+SDLSurface::setParentWindow (SDLWindow *parentWindow)
 {
   Thread::mutexLock (&sMutex);
   SDLWindow *w = (SDLWindow *)parent;
@@ -378,7 +378,7 @@ SDLSurface::setParentWindow (void *parentWindow)
   return true;
 }
 
-void *
+SDLWindow *
 SDLSurface::getParentWindow ()
 {
   return this->parent;
@@ -670,7 +670,7 @@ SDLSurface::createSurface ()
   if (win == NULL)
     return NULL;
 
-  if (Ginga_Display_M->hasWindow (win))
+  if (Ginga_Display->hasWindow (win))
     {
       w = win->getW ();
       h = win->getH ();

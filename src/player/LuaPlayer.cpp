@@ -209,9 +209,9 @@ LuaPlayer::nw_update_thread (arg_unused (void *data))
               SDL_FreeSurface (sfc);
 
               // Refresh surface.
-              window = Ginga_Display_M->getSurfaceParentWindow (wrapper);
+              window = wrapper->getParentWindow ();
               assert (window != 0);
-              Ginga_Display_M->renderWindowFrom (window, wrapper);
+              window->renderFrom (wrapper);
             }
 
           while ((evt = ncluaw_receive (nw)) != NULL)
@@ -448,7 +448,7 @@ LuaPlayer::LuaPlayer (string mrl) : Player (mrl)
     g_warning ("%s", g_strerror (errno));
 
   DisplayManager::addIEListenerInstance (this);
-  this->im = Ginga_Display_M->getInputManager ();
+  this->im = Ginga_Display->getInputManager ();
 
   this->nw = NULL; // created by start()
   MUTEX_INIT (&this->mutex);

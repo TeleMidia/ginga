@@ -3220,13 +3220,13 @@ FormatterMediator::flip ()
 
   if (data->devClass == 0)
     {
-      if (surface != 0 && Ginga_Display_M->hasSurface (surface))
+      if (surface != 0 && Ginga_Display->hasSurface (surface))
         {
-          w = Ginga_Display_M->getSurfaceParentWindow (surface);
+          w = (SDLWindow*) surface->getParentWindow ();
           if (w != 0)
             {
-              Ginga_Display_M->clearWindowContent (w);
-              Ginga_Display_M->validateWindow (w);
+              w->clearContent ();
+              w->validate ();
             }
         }
     }

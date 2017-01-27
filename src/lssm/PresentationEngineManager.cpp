@@ -129,7 +129,7 @@ PresentationEngineManager::PresentationEngineManager (
   this->isEmbedded = true;
   this->currentPrivateBaseId = -1;
   this->timeBaseProvider = NULL;
-  this->im = Ginga_Display_M->getInputManager ();
+  this->im = Ginga_Display->getInputManager ();
   privateBaseManager = new PrivateBaseManager ();
   this->sb = new ShowButton ();
 

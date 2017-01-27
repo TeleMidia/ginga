@@ -33,7 +33,7 @@ Tuner::Tuner (string network, string protocol, string address)
   loopListener = NULL;
   currentSpec = "";
 
-  Ginga_Display_M->getInputManager ()->addInputEventListener (this, NULL);
+  Ginga_Display->getInputManager ()->addInputEventListener (this, NULL);
 
   interfaces.clear ();
 
@@ -53,7 +53,7 @@ Tuner::~Tuner ()
 {
   clog << "Tuner::~Tuner" << endl;
 
-  Ginga_Display_M->getInputManager ()->removeInputEventListener (this);
+  Ginga_Display->getInputManager ()->removeInputEventListener (this);
   listener = NULL;
   loopListener = NULL;
 

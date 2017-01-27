@@ -550,10 +550,10 @@ BerkeliumHandler::mapOnPaintToTexture (
       remove (strFile.c_str ());
 
       Ginga_Display_M->blitSurface (surface, 0, 0, s);
-      sWin = Ginga_Display_M->getSurfaceParentWindow (surface);
+      sWin = surface->getSurfaceParent ();
       if (sWin != 0)
         {
-          Ginga_Display_M->validateWindow (myScreen, sWin);
+          myScreen->validate (sWin);
         }
 
       ignore_partial = false;
@@ -609,10 +609,10 @@ BerkeliumHandler::mapOnPaintToTexture (
               Ginga_Display_M->blitSurface (surface, 0, 0, surface, left, top, wid, hig);
             }
 
-          sWin = Ginga_Display_M->getSurfaceParentWindow (surface);
+          sWin = surface->getSurfaceParent ();
           if (sWin != 0)
             {
-              Ginga_Display_M->validateWindow (myScreen, sWin);
+              myScreen->validate (sWin);
             }
         }
     }
@@ -649,10 +649,10 @@ BerkeliumHandler::mapOnPaintToTexture (
       top = copy_rects[i].top ();
 
       Ginga_Display_M->blitSurface (surface, left, top, s, 0, 0, wid, hig);
-      sWin = Ginga_Display_M->getSurfaceParentWindow (surface);
+      sWin = surface->getSurfaceParent ();
       if (sWin != 0)
         {
-          Ginga_Display_M->validateWindow (myScreen, sWin);
+          myScreen->validate (sWin);
         }
 
       Ginga_Display_M->deleteSurface (s);
