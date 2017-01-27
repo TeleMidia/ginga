@@ -43,14 +43,17 @@ getZipError (zip *file, string *strError)
 }
 
 static void
-printZipError (string function, string strError)
+printZipError (const string &function, const string &strError)
 {
   clog << function << " Warning! libzip error: '";
   clog << strError << "'" << endl;
 }
 
 static int
-zipwalker (void *zipfile, string initdir, string dirpath, string iUriD)
+zipwalker (void *zipfile,
+           const string &initdir,
+           const string &dirpath,
+           const string &iUriD)
 {
   DIR *d;
   struct dirent *dir;
@@ -391,7 +394,7 @@ SystemCompat::getGingaPrefix ()
 }
 
 string
-SystemCompat::updatePath (string dir)
+SystemCompat::updatePath (const string &dir)
 {
   return updatePath (dir, iUriD);
 }
@@ -589,9 +592,10 @@ SystemCompat::unzip_file (const char *zipname, const char *filedir)
 }
 
 string
-SystemCompat::updatePath (string dir, string separator)
+SystemCompat::updatePath (const string &d, const string &separator)
 {
   bool found = false;
+  string dir = d;
   string temp, newDir;
   vector<string> *params;
   vector<string>::iterator it;
@@ -667,7 +671,7 @@ SystemCompat::updatePath (string dir, string separator)
 }
 
 bool
-SystemCompat::isXmlStr (string location)
+SystemCompat::isXmlStr (const string &location)
 {
   if (location.find ("<") != std::string::npos
       || location.find ("?xml") != std::string::npos
@@ -680,7 +684,7 @@ SystemCompat::isXmlStr (string location)
 }
 
 bool
-SystemCompat::checkUriPrefix (string uri)
+SystemCompat::checkUriPrefix (const string &uri)
 {
   string::size_type len;
 
@@ -703,9 +707,10 @@ SystemCompat::checkUriPrefix (string uri)
 }
 
 bool
-SystemCompat::isAbsolutePath (string path)
+SystemCompat::isAbsolutePath (const string &p)
 {
   string::size_type i, len;
+  string path = p;
 
   checkValues ();
 
@@ -751,7 +756,7 @@ SystemCompat::getFUriD ()
 }
 
 string
-SystemCompat::getPath (string filename)
+SystemCompat::getPath (const string &filename)
 {
   string path;
   string::size_type i;
@@ -770,7 +775,7 @@ SystemCompat::getPath (string filename)
 }
 
 string
-SystemCompat::convertRelativePath (string relPath)
+SystemCompat::convertRelativePath (const string &relPath)
 {
   string _str;
   _str = relPath;
@@ -798,7 +803,7 @@ SystemCompat::getUserCurrentPath ()
 }
 
 void
-SystemCompat::setGingaContextPrefix (string newBaseDir)
+SystemCompat::setGingaContextPrefix (const string &newBaseDir)
 {
   ctxFilesPref = newBaseDir;
 }
@@ -816,7 +821,7 @@ SystemCompat::getGingaContextPrefix ()
 }
 
 string
-SystemCompat::appendGingaFilesPrefix (string relUrl)
+SystemCompat::appendGingaFilesPrefix (const string &relUrl)
 {
   string absuri;
 
@@ -826,7 +831,7 @@ SystemCompat::appendGingaFilesPrefix (string relUrl)
 }
 
 string
-SystemCompat::appendGingaInstallPrefix (string relUrl)
+SystemCompat::appendGingaInstallPrefix (const string &relUrl)
 {
   string absuri;
   checkValues ();
@@ -865,7 +870,7 @@ SystemCompat::getUserClock (struct timeval *usrClk)
 static std::ofstream logOutput;
 
 void
-SystemCompat::setLogTo (short logType, string sufix)
+SystemCompat::setLogTo (short logType, const string &sufix)
 {
   string logUri = "";
 
@@ -919,7 +924,7 @@ SystemCompat::setLogTo (short logType, string sufix)
 }
 
 string
-SystemCompat::checkPipeName (string pipeName)
+SystemCompat::checkPipeName (const string &pipeName)
 {
   string newPipeName = pipeName;
 
@@ -954,9 +959,9 @@ SystemCompat::checkPipeDescriptor (PipeDescriptor pd)
 }
 
 bool
-SystemCompat::createPipe (string pipeName, PipeDescriptor *pd)
+SystemCompat::createPipe (const string &pName, PipeDescriptor *pd)
 {
-  pipeName = checkPipeName (pipeName);
+  string pipeName = checkPipeName (pName);
 
 #if defined(_MSC_VER)
   *pd = CreateNamedPipe (pipeName.c_str (),
@@ -1003,9 +1008,9 @@ SystemCompat::createPipe (string pipeName, PipeDescriptor *pd)
 }
 
 bool
-SystemCompat::openPipe (string pipeName, PipeDescriptor *pd)
+SystemCompat::openPipe (const string &pName, PipeDescriptor *pd)
 {
-  pipeName = checkPipeName (pipeName);
+  string pipeName = checkPipeName (pName);
 
 #if defined(_MSC_VER)
   *pd = CreateFile (pipeName.c_str (), GENERIC_READ,
