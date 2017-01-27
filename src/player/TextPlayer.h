@@ -46,7 +46,7 @@ protected:
   Color *bgColor;
   string fontUri;
   short currentAlign;
-  IMediaProvider* font;
+  IFontProvider* font;
 
 public:
   TextPlayer ();
