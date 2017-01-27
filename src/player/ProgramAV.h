@@ -56,7 +56,7 @@ private:
   IPlayer *getPlayer (int pid);
 
   string getPropertyValue (string pName);
-  void setPropertyValue (string pName, string pValue);
+  void setPropertyValue (const string &name, const string &value);
 };
 
 GINGA_PLAYER_END

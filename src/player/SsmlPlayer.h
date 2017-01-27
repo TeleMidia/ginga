@@ -57,7 +57,7 @@ public:
   bool play ();
   void stop ();
   void resume ();
-  virtual void setPropertyValue (string name, string value);
+  virtual void setPropertyValue (const string &name, const string &value);
 };
 
 GINGA_PLAYER_END

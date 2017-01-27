@@ -220,7 +220,7 @@ PlainTxtPlayer::setTextAlign (string align)
 }
 
 void
-PlainTxtPlayer::setPropertyValue (string name, string value)
+PlainTxtPlayer::setPropertyValue (const string &name, const string &value)
 {
   Thread::mutexLock (&mutex);
   gint64 size;

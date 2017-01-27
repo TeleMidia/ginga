@@ -211,7 +211,7 @@ ChannelPlayer::updateStatus (short code, string parameter, short type,
 }
 
 void
-ChannelPlayer::setPropertyValue (string name, string value)
+ChannelPlayer::setPropertyValue (const string &name, const string &value)
 {
   IPlayer *objectPlayer;
   map<string, IPlayer *>::iterator players;

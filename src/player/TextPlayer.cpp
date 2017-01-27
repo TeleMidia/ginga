@@ -392,7 +392,7 @@ TextPlayer::getCurrentLine ()
 }
 
 void
-TextPlayer::setPropertyValue (string name, string value)
+TextPlayer::setPropertyValue (const string &name, const string &value)
 {
   // TODO: set font url, font size, font color, ...
   Player::setPropertyValue (name, value);

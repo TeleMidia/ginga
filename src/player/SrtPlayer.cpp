@@ -321,7 +321,7 @@ SrtPlayer::resume ()
 }
 
 void
-SrtPlayer::setPropertyValue (string name, string value)
+SrtPlayer::setPropertyValue (const string &name, const string &value)
 {
   if (name == "x-setFontUri")
     {

@@ -423,29 +423,30 @@ AVPlayer::getPropertyValue (string name)
 }
 
 void
-AVPlayer::setPropertyValue (string name, string value)
+AVPlayer::setPropertyValue (const string &name, const string &value)
 {
-  double fValue = 1.0;
+  string val = value;
+  double fVal = 1.0;
   vector<string> *vals;
 
   if (name == "soundLevel")
     {
-      if (isPercentualValue (value))
+      if (isPercentualValue (val))
         {
-          xstrassign (value, "%d", (int) (getPercentualValue (value) / 100));
+          xstrassign (val, "%d", (int) (getPercentualValue (val) / 100));
         }
 
-      if (value != "")
+      if (val != "")
         {
-          fValue = xstrtod (value);
+          fVal = xstrtod (val);
         }
-      setSoundLevel (fValue);
+      setSoundLevel (fVal);
     }
   else if (mainAV)
     {
       if (name == "createWindow")
         {
-          vals = split (value, ",");
+          vals = split (val, ",");
           if (vals->size () == 4)
             {
               win = Ginga_Display->createWindow (xstrto_int ((*vals)[0]),
@@ -468,14 +469,13 @@ AVPlayer::setPropertyValue (string name, string value)
         }
       else if (name == "bounds" && win != 0)
         {
-          vals = split (value, ",");
+          vals = split (val, ",");
           if (vals->size () == 4)
             {
-              win->setBounds (
-                                              xstrto_int ((*vals)[0]),
-                                   xstrto_int ((*vals)[1]),
-                                   xstrto_int ((*vals)[2]),
-                                   xstrto_int ((*vals)[3]));
+              win->setBounds ( xstrto_int ((*vals)[0]),
+                               xstrto_int ((*vals)[1]),
+                               xstrto_int ((*vals)[2]),
+                               xstrto_int ((*vals)[3]));
             }
           delete vals;
         }
@@ -489,7 +489,7 @@ AVPlayer::setPropertyValue (string name, string value)
         }
     }
 
-  Player::setPropertyValue (name, value);
+  Player::setPropertyValue (name, val);
 }
 
 void

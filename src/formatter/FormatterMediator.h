@@ -334,7 +334,7 @@ public:
   void resume ();
 
   string getPropertyValue (string name);
-  void setPropertyValue (string name, string value);
+  void setPropertyValue (const string &name, const string &value);
 
   void setReferenceTimePlayer (IPlayer *player);
   void addTimeReferPlayer (IPlayer *referPlayer);

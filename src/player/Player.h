@@ -160,7 +160,7 @@ public:
   virtual void pause ();
   virtual void resume ();
   virtual string getPropertyValue (string name);
-  virtual void setPropertyValue (string name, string value);
+  virtual void setPropertyValue (const string &name, const string &value);
   virtual void setReferenceTimePlayer (arg_unused (IPlayer *player)){};
   void addTimeReferPlayer (IPlayer *referPlayer);
   void removeTimeReferPlayer (IPlayer *referPlayer);

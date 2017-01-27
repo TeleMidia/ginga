@@ -68,7 +68,7 @@ public:
   virtual bool hasPresented (void);
   void setCurrentScope (string scopeId);
   bool setKeyHandler (bool isHandler);
-  virtual void setPropertyValue (string name, string value);
+  virtual void setPropertyValue (const string &name, const string &value);
 
   // Input event callback.
   bool userEventReceived (SDLInputEvent *evt);

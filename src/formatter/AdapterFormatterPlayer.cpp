@@ -1820,7 +1820,7 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
 }
 
 void
-AdapterFormatterPlayer::setPropertyValue (string name, string value)
+AdapterFormatterPlayer::setPropertyValue (const string &name, const string &value)
 {
   if (player != NULL)
     {
