@@ -71,7 +71,7 @@ DisplayManager::~DisplayManager ()
   Thread::mutexUnlock (&surMapMutex);
   Thread::mutexDestroy (&surMapMutex);
 
-  map<GingaProviderID, IMediaProvider *>::iterator k;
+  map<IMediaProvider*, IMediaProvider *>::iterator k;
 
   Thread::mutexLock (&provMapMutex);
   k = provMap.begin ();
@@ -225,118 +225,41 @@ DisplayManager::releaseSurface (SDLSurface *sur)
 
 /* interfacing content */
 
-GingaProviderID
+IMediaProvider*
 DisplayManager::createContinuousMediaProvider (const char *mrl,
                                                bool isRemote)
 {
-  IContinuousMediaProvider *provider = NULL;
-  GingaProviderID providerId = 0;
-
-  provider = Ginga_Display->createContinuousMediaProvider (mrl, isRemote);
-
-  provider->setId (provIdRefCounter++);
-
-  Thread::mutexLock (&provMapMutex);
-  provMap[provider->getId ()] = provider;
-  Thread::mutexUnlock (&provMapMutex);
-
-  providerId = provider->getId ();
-
-  return providerId;
+  return Ginga_Display->createContinuousMediaProvider (mrl, isRemote);
 }
 
 void
-DisplayManager::releaseContinuousMediaProvider (GingaProviderID providerId)
+DisplayManager::releaseContinuousMediaProvider (IMediaProvider* providerId)
 {
-  IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = getIMediaProviderFromId (providerId);
-
-  assert (iProvider != NULL);
-  assert (iProvider->getType () == IMediaProvider::VideoProvider
-          || iProvider->getType () == IMediaProvider::AudioProvider);
-
-  provider = (IContinuousMediaProvider *)iProvider;
-
-  Thread::mutexLock (&provMapMutex);
-  provMap.erase (providerId);
-  Thread::mutexUnlock (&provMapMutex);
-
-  Ginga_Display->releaseContinuousMediaProvider (provider);
+  Ginga_Display->releaseContinuousMediaProvider ((IContinuousMediaProvider *)providerId);
 }
 
-GingaProviderID
+IMediaProvider*
 DisplayManager::createFontProvider (const char *mrl, int fontSize)
 {
-  IFontProvider *provider = NULL;
-  GingaProviderID providerId = 0;
-
-  provider = Ginga_Display->createFontProvider (mrl, fontSize);
-
-  provider->setId (provIdRefCounter++);
-
-  Thread::mutexLock (&provMapMutex);
-  provMap[provider->getId ()] = provider;
-  Thread::mutexUnlock (&provMapMutex);
-
-  providerId = provider->getId ();
-
-  return providerId;
+  return Ginga_Display->createFontProvider (mrl, fontSize);
 }
 
 void
-DisplayManager::releaseFontProvider (GingaProviderID providerId)
+DisplayManager::releaseFontProvider (IMediaProvider* providerId)
 {
-  IFontProvider *provider = NULL;
-  IMediaProvider *iProvider = getIMediaProviderFromId (providerId);
-
-  assert (iProvider != NULL);
-  assert (iProvider->getType () == IMediaProvider::FontProvider);
-
-  provider = (IFontProvider *)iProvider;
-  if (provider != NULL)
-    {
-      Thread::mutexLock (&provMapMutex);
-      provMap.erase (providerId);
-      Thread::mutexUnlock (&provMapMutex);
-
-      Ginga_Display->releaseFontProvider (provider);
-    }
+  Ginga_Display->releaseFontProvider ((IFontProvider *)providerId);
 }
 
-GingaProviderID
+IMediaProvider*
 DisplayManager::createImageProvider (const char *mrl)
 {
-  IImageProvider *provider = NULL;
-  GingaProviderID providerId = 0;
-
-  provider = Ginga_Display->createImageProvider (mrl);
-
-  provider->setId (provIdRefCounter++);
-
-  Thread::mutexLock (&provMapMutex);
-  provMap[provider->getId ()] = provider;
-  Thread::mutexUnlock (&provMapMutex);
-
-  providerId = provider->getId ();
-
-  return providerId;
+  return Ginga_Display->createImageProvider (mrl);
 }
 
 void
-DisplayManager::releaseImageProvider (GingaProviderID providerId)
+DisplayManager::releaseImageProvider (IMediaProvider* providerId)
 {
-  IImageProvider *provider = NULL;
-  IMediaProvider *iProvider = getIMediaProviderFromId (providerId);
-
-  assert (iProvider != NULL);
-  assert (iProvider->getType () == IMediaProvider::ImageProvider);
-
-  provider = (IImageProvider *)provider;
-  Thread::mutexLock (&provMapMutex);
-  provMap.erase (providerId);
-  Thread::mutexUnlock (&provMapMutex);
-
-  Ginga_Display->releaseImageProvider (provider);
+  Ginga_Display->releaseImageProvider ((IImageProvider *)providerId);
 }
 
 SDLSurface*
@@ -674,20 +597,6 @@ DisplayManager::setSurfaceBgColor (SDLSurface *surId, guint8 r,
   surId->setBgColor (r, g, b, alpha);
 }
 
-void
-DisplayManager::setSurfaceFont (SDLSurface *surId,
-                                    arg_unused (SDLSurface* font))
-{
-  IFontProvider *fontProvider = NULL;
-  IMediaProvider *iProvider = getIMediaProviderFromId (0);
-
-  if (iProvider->getType () == IMediaProvider::FontProvider)
-    fontProvider = (IFontProvider *)iProvider;
-  else
-    return;
-
-  surId->setSurfaceFont (fontProvider);
-}
 
 void
 DisplayManager::setColor (SDLSurface *surId, guint8 r, guint8 g,
@@ -744,11 +653,11 @@ DisplayManager::setSurfaceColor (SDLSurface *surId, guint8 r,
 }
 
 void
-DisplayManager::setProviderSoundLevel (const GingaProviderID &provId,
+DisplayManager::setProviderSoundLevel (IMediaProvider*provId,
                                            double level)
 {
   IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = getIMediaProviderFromId (provId);
+  IMediaProvider *iProvider = provId;
 
   if (iProvider != NULL
       && (iProvider->getType () == IMediaProvider::AudioProvider
@@ -761,10 +670,10 @@ DisplayManager::setProviderSoundLevel (const GingaProviderID &provId,
 
 void
 DisplayManager::getProviderOriginalResolution (
-    const GingaProviderID &provId, int *width, int *height)
+    IMediaProvider*provId, int *width, int *height)
 {
   IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = getIMediaProviderFromId (provId);
+  IMediaProvider *iProvider = provId;
 
   if (iProvider != NULL
       && (iProvider->getType () == IMediaProvider::AudioProvider
@@ -777,11 +686,11 @@ DisplayManager::getProviderOriginalResolution (
 
 double
 DisplayManager::getProviderTotalMediaTime (
-    const GingaProviderID &provId)
+    IMediaProvider*provId)
 {
   double totalTime = 0.0;
   IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = getIMediaProviderFromId (provId);
+  IMediaProvider *iProvider = provId;
 
   if (iProvider != NULL
       && (iProvider->getType () == IMediaProvider::AudioProvider
@@ -795,11 +704,11 @@ DisplayManager::getProviderTotalMediaTime (
 }
 
 double
-DisplayManager::getProviderSoundLevel (const GingaProviderID &provId)
+DisplayManager::getProviderSoundLevel (IMediaProvider*provId)
 {
   double soundLevel = 0.0;
   IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = getIMediaProviderFromId (provId);
+  IMediaProvider *iProvider = provId;
 
   if (iProvider != NULL
       && (iProvider->getType () == IMediaProvider::AudioProvider
@@ -813,11 +722,11 @@ DisplayManager::getProviderSoundLevel (const GingaProviderID &provId)
 }
 
 int64_t
-DisplayManager::getProviderVPts (const GingaProviderID &provId)
+DisplayManager::getProviderVPts (IMediaProvider*provId)
 {
   int64_t vpts = 0.0;
   IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = getIMediaProviderFromId (provId);
+  IMediaProvider *iProvider = provId;
 
   if (iProvider != NULL
       && (iProvider->getType () == IMediaProvider::AudioProvider
@@ -831,11 +740,11 @@ DisplayManager::getProviderVPts (const GingaProviderID &provId)
 }
 
 void
-DisplayManager::setProviderMediaTime (const GingaProviderID &provId,
+DisplayManager::setProviderMediaTime (IMediaProvider*provId,
                                           double pos)
 {
   IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = getIMediaProviderFromId (provId);
+  IMediaProvider *iProvider = provId;
 
   if (iProvider != NULL
       && (iProvider->getType () == IMediaProvider::AudioProvider
@@ -847,11 +756,11 @@ DisplayManager::setProviderMediaTime (const GingaProviderID &provId,
 }
 
 double
-DisplayManager::getProviderMediaTime (const GingaProviderID &provId)
+DisplayManager::getProviderMediaTime (IMediaProvider*provId)
 {
   double totalTime = 0.0;
   IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = getIMediaProviderFromId (provId);
+  IMediaProvider *iProvider = provId;
 
   if (iProvider != NULL
       && (iProvider->getType () == IMediaProvider::AudioProvider
@@ -865,10 +774,10 @@ DisplayManager::getProviderMediaTime (const GingaProviderID &provId)
 }
 
 void
-DisplayManager::pauseProvider (const GingaProviderID &provId)
+DisplayManager::pauseProvider (IMediaProvider*provId)
 {
   IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = getIMediaProviderFromId (provId);
+  IMediaProvider *iProvider = provId;
 
   if (iProvider != NULL
       && (iProvider->getType () == IMediaProvider::AudioProvider
@@ -880,10 +789,10 @@ DisplayManager::pauseProvider (const GingaProviderID &provId)
 }
 
 void
-DisplayManager::stopProvider (const GingaProviderID &provId)
+DisplayManager::stopProvider (IMediaProvider*provId)
 {
   IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = getIMediaProviderFromId (provId);
+  IMediaProvider *iProvider = provId;
 
   if (iProvider != NULL
       && (iProvider->getType () == IMediaProvider::AudioProvider
@@ -895,11 +804,11 @@ DisplayManager::stopProvider (const GingaProviderID &provId)
 }
 
 void
-DisplayManager::setProviderAVPid (const GingaProviderID &provId,
+DisplayManager::setProviderAVPid (IMediaProvider*provId,
                                       int aPid, int vPid)
 {
   IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = getIMediaProviderFromId (provId);
+  IMediaProvider *iProvider = provId;
 
   if (iProvider != NULL
       && (iProvider->getType () == IMediaProvider::AudioProvider
@@ -911,11 +820,11 @@ DisplayManager::setProviderAVPid (const GingaProviderID &provId,
 }
 
 void
-DisplayManager::resumeProvider (const GingaProviderID &provId,
+DisplayManager::resumeProvider (IMediaProvider*provId,
                                     SDLSurface* surface)
 {
   IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = getIMediaProviderFromId (provId);
+  IMediaProvider *iProvider = provId;
 
   if (iProvider != NULL
       && (iProvider->getType () == IMediaProvider::AudioProvider
@@ -927,10 +836,10 @@ DisplayManager::resumeProvider (const GingaProviderID &provId,
 }
 
 void
-DisplayManager::feedProviderBuffers (const GingaProviderID &provId)
+DisplayManager::feedProviderBuffers (IMediaProvider*provId)
 {
   IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = getIMediaProviderFromId (provId);
+  IMediaProvider *iProvider = provId;
 
   if (iProvider != NULL
       && (iProvider->getType () == IMediaProvider::AudioProvider
@@ -943,11 +852,11 @@ DisplayManager::feedProviderBuffers (const GingaProviderID &provId)
 
 bool
 DisplayManager::checkProviderVideoResizeEvent (
-    const GingaProviderID &provId, SDLSurface *frame)
+    IMediaProvider*provId, SDLSurface *frame)
 {
   bool resized = false;
   IContinuousMediaProvider *provider = NULL;
-  IMediaProvider *iProvider = getIMediaProviderFromId (provId);
+  IMediaProvider *iProvider = provId;
 
   if (iProvider != NULL
       && (iProvider->getType () == IMediaProvider::AudioProvider
@@ -961,13 +870,13 @@ DisplayManager::checkProviderVideoResizeEvent (
 }
 
 int
-DisplayManager::getProviderStringWidth (const GingaProviderID &provId,
+DisplayManager::getProviderStringWidth (IMediaProvider*provId,
                                             const char *text,
                                             int textLength)
 {
   int width = 0;
   IFontProvider *provider = NULL;
-  IMediaProvider *iProvider = getIMediaProviderFromId (provId);
+  IMediaProvider *iProvider = provId;
 
   if (iProvider != NULL
       && iProvider->getType () == IMediaProvider::FontProvider)
@@ -980,10 +889,10 @@ DisplayManager::getProviderStringWidth (const GingaProviderID &provId,
 }
 
 void
-DisplayManager::playProviderOver (const GingaProviderID &provId,
+DisplayManager::playProviderOver (IMediaProvider*provId,
                                       SDLSurface *surface)
 {
-  IMediaProvider *iProvider = getIMediaProviderFromId (provId);
+  IMediaProvider *iProvider = provId;
 
   if (iProvider != NULL)
     {
@@ -992,13 +901,13 @@ DisplayManager::playProviderOver (const GingaProviderID &provId,
 }
 
 void
-DisplayManager::playProviderOver (const GingaProviderID &provId,
+DisplayManager::playProviderOver (IMediaProvider*provId,
                                       SDLSurface *surface,
                                       const char *text, int x, int y,
                                       short align)
 {
   IFontProvider *provider = NULL;
-  IMediaProvider *iProvider = getIMediaProviderFromId (provId);
+  IMediaProvider *iProvider = provId;
 
   if (iProvider != NULL
       && iProvider->getType () == IMediaProvider::FontProvider)
@@ -1009,11 +918,11 @@ DisplayManager::playProviderOver (const GingaProviderID &provId,
 }
 
 int
-DisplayManager::getProviderHeight (const GingaProviderID &provId)
+DisplayManager::getProviderHeight (IMediaProvider*provId)
 {
   int height = 0;
   IFontProvider *provider = NULL;
-  IMediaProvider *iProvider = getIMediaProviderFromId (provId);
+  IMediaProvider *iProvider = provId;
 
   if (iProvider != NULL
       && iProvider->getType () == IMediaProvider::FontProvider)
@@ -1023,23 +932,6 @@ DisplayManager::getProviderHeight (const GingaProviderID &provId)
     }
 
   return height;
-}
-
-IMediaProvider *
-DisplayManager::getIMediaProviderFromId (const GingaProviderID &provId)
-{
-  map<GingaProviderID, IMediaProvider *>::iterator i;
-  IMediaProvider *iProv = NULL;
-
-  Thread::mutexLock (&provMapMutex);
-  i = provMap.find (provId);
-  if (i != provMap.end ())
-    {
-      iProv = i->second;
-    }
-  Thread::mutexUnlock (&provMapMutex);
-
-  return iProv;
 }
 
 /* private functions */

@@ -50,7 +50,7 @@ protected:
 
 private:
   string pSym;
-  GingaProviderID provider;
+  IMediaProvider* provider;
   bool hasResized;
   bool mainAV;
   bool isRemote;
@@ -64,7 +64,7 @@ public:
 
 private:
   void createProvider ();
-  static GingaProviderID createProviderT (void *ptr);
+  static IMediaProvider* createProviderT (void *ptr);
 
 public:
   void finished ();

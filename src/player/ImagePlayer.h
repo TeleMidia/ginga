@@ -39,7 +39,7 @@ GINGA_PLAYER_BEGIN
 class ImagePlayer : public Player
 {
 private:
-  GingaProviderID provider;
+  IMediaProvider* provider;
 
 public:
   ImagePlayer (string mrl);
@@ -51,7 +51,7 @@ public:
   virtual void setPropertyValue (string name, string value);
 
 private:
-  SDLSurface* prepareSurface (GingaProviderID provider, string mrl);
+  SDLSurface* prepareSurface (IMediaProvider* provider, string mrl);
 };
 
 GINGA_PLAYER_END

@@ -158,9 +158,6 @@ XERCES_CPP_NAMESPACE_USE
 #define GINGA_UTIL_BEGIN      _GINGA_BEGIN (util)
 #define GINGA_UTIL_END        _GINGA_END
 
-// Typedefs.
-typedef unsigned int GingaProviderID;
-
 // Macros.
 #define GINGA_ASSERT_GLOBAL_NONNULL(G, Type)                    \
   ((G != NULL) ? (G)                                            \

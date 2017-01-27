@@ -177,7 +177,7 @@ ImagePlayer::setPropertyValue (string name, string value)
 }
 
 SDLSurface*
-ImagePlayer::prepareSurface (GingaProviderID provider, arg_unused (string mrl))
+ImagePlayer::prepareSurface (IMediaProvider* provider, arg_unused (string mrl))
 {
   SDLSurface* renderedSurface = 0;
 
