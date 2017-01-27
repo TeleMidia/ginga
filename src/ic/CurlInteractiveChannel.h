@@ -43,13 +43,14 @@ public:
   CurlInteractiveChannel ();
   ~CurlInteractiveChannel ();
   bool hasConnection ();
-  void setSourceTarget (string url);
+  void setSourceTarget (const string &url);
   void setTarget (FILE *fd);
   short getType ();
   double getRate ();
   void setListener (IInteractiveChannelListener *listener);
-  bool reserveUrl (string uri, IInteractiveChannelListener *listener = NULL,
-                   string userAgent = "");
+  bool reserveUrl (const string &uri,
+                   IInteractiveChannelListener *listener = NULL,
+                   const string &userAgent = "");
 
   bool performUrl ();
   bool releaseUrl ();
