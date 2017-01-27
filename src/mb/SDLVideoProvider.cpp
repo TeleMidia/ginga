@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "SDLVideoProvider.h"
 
-#include "DisplayManager.h"
+
 #include "SDLDisplay.h"
 #include "SDLSurface.h"
 #include "SDLWindow.h"

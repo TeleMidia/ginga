@@ -21,9 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "lssm/PresentationEngineManager.h"
 using namespace ::ginga::lssm;
 
-#include "mb/DisplayManager.h"
-using namespace ::ginga::mb;
-
 #include "ncl/DeviceLayout.h"
 using namespace ::ginga::ncl;
 
@@ -277,7 +274,6 @@ main (int argc, char *argv[])
       exit (EXIT_FAILURE);
     }
 
-  _Ginga_Display_M = new DisplayManager ();
   _Ginga_Display = new SDLDisplay (800, 600, false);
   g_assert_nonnull (_Ginga_Display);
 

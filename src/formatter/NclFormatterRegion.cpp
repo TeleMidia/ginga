@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclCascadingDescriptor.h"
 #include "NclFormatterLayout.h"
 
-#include "mb/DisplayManager.h"
+#include "mb/SDLDisplay.h"
 using namespace ::ginga::mb;
 
 #include "util/Color.h"

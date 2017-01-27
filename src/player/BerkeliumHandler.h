@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/interface/SDLWindow.h"
 #include "mb/interface/IInputEventListener.h"
 
-#include "mb/DisplayManager.h"
+#include "mb/SDLDisplay.h"
 #include "mb/interface/SDLWindow.h"
 using namespace ::ginga::mb;
 

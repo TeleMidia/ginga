@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 
 #include "mb/InputManager.h"
-#include "mb/DisplayManager.h"
+#include "mb/SDLDisplay.h"
 #include "util/functions.h"
 using namespace ::ginga::util;
 
@@ -446,9 +446,7 @@ LuaPlayer::LuaPlayer (string mrl) : Player (mrl)
   if (g_chdir (cwd.c_str ()) < 0)
     g_warning ("%s", g_strerror (errno));
 
-  DisplayManager::addIEListenerInstance (this);
   this->im = Ginga_Display->getInputManager ();
-
   this->nw = NULL; // created by start()
   MUTEX_INIT (&this->mutex);
   this->hasExecuted = false;
@@ -460,8 +458,6 @@ LuaPlayer::~LuaPlayer (void)
 {
   this->lock ();
   ptrace0 ();
-
-  DisplayManager::removeIEListenerInstance (this);
 
   if (nw_update_list != NULL && nw_update_list->empty ())
     {

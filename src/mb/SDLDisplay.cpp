@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "SDLDisplay.h"
 
-#include "DisplayManager.h"
 #include "InputManager.h"
 #include "SDLAudioProvider.h"
 #include "SDLEventBuffer.h"

@@ -24,7 +24,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::system;
 
 #include "mb/InputManager.h"
-#include "mb/DisplayManager.h"
 #include "mb/IInputEventListener.h"
 #include "mb/CodeMap.h"
 using namespace ::ginga::mb;
@@ -75,7 +74,6 @@ protected:
   static const short STOP = 3;
 
   string mrl;
-  static DisplayManager *dm;
   SDLSurface* surface;
   SDLWindow* outputWindow;
   double initTime, elapsedTime, elapsedPause, pauseTime;

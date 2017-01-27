@@ -20,11 +20,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::player;
 
 #include "AdapterNCLPlayer.h"
-
-#include "mb/DisplayManager.h"
-using namespace ::ginga::mb;
-
 #include "FormatterMediator.h"
+
+#include "mb/SDLDisplay.h"
+using namespace ::ginga::mb;
 
 GINGA_FORMATTER_BEGIN
 

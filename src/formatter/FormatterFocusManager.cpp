@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterScheduler.h"
 #include "NclFormatterLayout.h"
 
-#include "mb/DisplayManager.h"
+#include "mb/SDLDisplay.h"
 using namespace ::ginga::mb;
 
 #if WITH_MULTIDEVICE
@@ -42,9 +42,6 @@ FormatterFocusManager::FormatterFocusManager (
     INclLinkActionListener *settingActions, void *converter)
 {
   string strValue;
-
-  DisplayManager::addIEListenerInstance (this);
-  DisplayManager::addMEListenerInstance (this);
 
   im = Ginga_Display->getInputManager ();
   focusTable = new map<string, set<NclExecutionObject *> *>;
@@ -107,9 +104,6 @@ FormatterFocusManager::FormatterFocusManager (
 
 FormatterFocusManager::~FormatterFocusManager ()
 {
-  DisplayManager::removeIEListenerInstance (this);
-  DisplayManager::removeMEListenerInstance (this);
-
   Thread::mutexLock (&mutexFocus);
   Thread::mutexLock (&mutexTable);
 
