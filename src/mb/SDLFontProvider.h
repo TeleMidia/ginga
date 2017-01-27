@@ -85,11 +85,11 @@ public:
   void getStringExtents (const char *text, int *w, int *h);
   int getStringWidth (const char *text, int textLength = 0);
   int getHeight ();
-  void playOver (GingaSurfaceID surface, const char *text, int x, int y,
+  void playOver (SDLSurface* surface, const char *text, int x, int y,
                  short align);
 
 private:
-  void playOver (GingaSurfaceID surface);
+  void playOver (SDLSurface* surface);
 };
 
 GINGA_MB_END

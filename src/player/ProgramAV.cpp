@@ -96,10 +96,10 @@ ProgramAV::getVPts ()
   return 0;
 }
 
-GingaSurfaceID
+SDLSurface*
 ProgramAV::getSurface ()
 {
-  GingaSurfaceID pSur = 0;
+  SDLSurface* pSur = 0;
 
   if (currentPlayer != NULL)
     {

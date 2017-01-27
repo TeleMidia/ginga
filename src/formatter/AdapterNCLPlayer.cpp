@@ -41,7 +41,7 @@ AdapterNCLPlayer::createPlayer ()
   NclCascadingDescriptor *descriptor = NULL;
   string value;
   bool isPercent;
-  GingaSurfaceID s;
+  SDLSurface* s;
   NclPlayerData *childData, *playerData;
   PropertyAnchor *property;
 

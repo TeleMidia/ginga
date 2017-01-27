@@ -29,12 +29,12 @@ using namespace ::ginga::util;
 
 GINGA_FORMATTER_BEGIN
 
-GingaSurfaceID
+SDLSurface*
 NclFocusSourceManager::getFocusSourceComponent (string src)
 {
   string::size_type index;
   string extension;
-  GingaSurfaceID s;
+  SDLSurface* s;
 
   if (src != "")
     {

@@ -647,8 +647,7 @@ SDLDisplay::createRenderedSurfaceFromImageFile (const char *mrl)
       return NULL;
     }
   iSur = createSurfaceFrom (NULL);
-  Ginga_Display_M->registerSurface (iSur);
-  provider->playOver (iSur->getId ());
+  provider->playOver (iSur);
 
   releaseImageProvider (provider);
   return iSur;

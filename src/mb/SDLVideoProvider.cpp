@@ -90,7 +90,7 @@ SDLVideoProvider::getVideoSurfaceDescription (arg_unused (void *dsc))
 }
 
 bool
-SDLVideoProvider::checkVideoResizeEvent (arg_unused (GingaSurfaceID frame))
+SDLVideoProvider::checkVideoResizeEvent (arg_unused (SDLSurface* frame))
 {
   return false;
 }
@@ -130,7 +130,7 @@ SDLVideoProvider::setMediaTime (double pos)
 }
 
 void
-SDLVideoProvider::playOver (GingaSurfaceID surface)
+SDLVideoProvider::playOver (SDLSurface* surface)
 {
   SDLWindow* parentId;
   SDLWindow *parent;
@@ -165,7 +165,7 @@ SDLVideoProvider::playOver (GingaSurfaceID surface)
 }
 
 void
-SDLVideoProvider::resume (GingaSurfaceID surface)
+SDLVideoProvider::resume (SDLSurface* surface)
 {
   SDLAudioProvider::resume (surface);
 }

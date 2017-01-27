@@ -3196,15 +3196,15 @@ FormatterMediator::notifyPlayerListeners (short code, string paremeter,
 }
 
 void
-FormatterMediator::setSurface (GingaSurfaceID surface)
+FormatterMediator::setSurface (SDLSurface* surface)
 {
   Player::setSurface (surface);
 }
 
-GingaSurfaceID
+SDLSurface*
 FormatterMediator::getSurface ()
 {
-  GingaSurfaceID s = 0;
+  SDLSurface* s = 0;
 
   s = Player::getSurface ();
   Ginga_Display_M->clearSurfaceContent (s);

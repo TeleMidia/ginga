@@ -40,7 +40,7 @@ public:
   static ProgramAV *getInstance ();
   void release ();
   int64_t getVPts ();
-  GingaSurfaceID getSurface ();
+  SDLSurface* getSurface ();
 
 private:
   void addPidName (string name, int pid);

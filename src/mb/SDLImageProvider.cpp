@@ -61,7 +61,7 @@ SDLImageProvider::~SDLImageProvider ()
 }
 
 void
-SDLImageProvider::playOver (GingaSurfaceID surface)
+SDLImageProvider::playOver (SDLSurface* surface)
 {
   SDL_Surface *renderedSurface;
   SDLWindow *parent;

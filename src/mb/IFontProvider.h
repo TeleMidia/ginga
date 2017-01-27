@@ -41,9 +41,9 @@ public:
   virtual int getStringWidth (const char *text, int textLength = 0) = 0;
   virtual int getHeight () = 0;
 
-  virtual void playOver (GingaSurfaceID surface) = 0;
+  virtual void playOver (SDLSurface* surface) = 0;
 
-  virtual void playOver (GingaSurfaceID surface, const char *text, int x,
+  virtual void playOver (SDLSurface* surface, const char *text, int x,
                          int y, short align)
       = 0;
 };

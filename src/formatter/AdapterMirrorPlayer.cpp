@@ -31,7 +31,7 @@ AdapterMirrorPlayer::createPlayer ()
   NclFormatterRegion *fRegion;
   NclCascadingDescriptor *descriptor;
   LayoutRegion *ncmRegion = NULL;
-  GingaSurfaceID mirrorSur;
+  SDLSurface* mirrorSur;
 
   clog << "AdapterMirrorPlayer::createPlayer '" << mrl << "'" << endl;
 

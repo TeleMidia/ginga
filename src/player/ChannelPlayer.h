@@ -46,7 +46,7 @@ private:
   void setSurfacesParent (SDLWindow* parent);
 
 protected:
-  GingaSurfaceID getSurface ();
+  SDLSurface* getSurface ();
 
 public:
   bool play ();

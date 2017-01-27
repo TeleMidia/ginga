@@ -41,7 +41,7 @@ private:
   SDL_Texture *texture;
   SDL_Surface *curSur;
 
-  GingaSurfaceID winISur;
+  SDLSurface* winISur;
 
   bool textureUpdate;
   bool textureOwner;

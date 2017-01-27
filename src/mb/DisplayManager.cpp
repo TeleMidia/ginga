@@ -58,7 +58,7 @@ DisplayManager::~DisplayManager ()
   unlock ();
   Thread::mutexDestroy (&genMutex);
 
-  map<GingaSurfaceID, SDLSurface *>::iterator j;
+  map<SDLSurface*, SDLSurface *>::iterator j;
 
   Thread::mutexLock (&surMapMutex);
   j = surMap.begin ();
@@ -193,78 +193,28 @@ DisplayManager::releaseWindow (SDLWindow *win)
   Ginga_Display->releaseWindow (win);
 }
 
-void
-DisplayManager::registerSurface (SDLSurface *surface)
-{
-  if (surface != NULL)
-    {
-      Thread::mutexLock (&surMapMutex);
-      surMap[surface->getId ()] = surface;
-      Thread::mutexUnlock (&surMapMutex);
-    }
-}
-
-GingaSurfaceID
+SDLSurface*
 DisplayManager::createSurface ()
 {
-  SDLSurface *surface = NULL;
-  GingaSurfaceID surId = 0;
-
-  surface = Ginga_Display->createSurface ();
-  surId = surface->getId ();
-
-  Thread::mutexLock (&surMapMutex);
-  surMap[surId] = surface;
-  Thread::mutexUnlock (&surMapMutex);
-
-  return surId;
+  return Ginga_Display->createSurface ();
 }
 
-GingaSurfaceID
+SDLSurface*
 DisplayManager::createSurface (int w, int h)
 {
-  SDLSurface *surface = NULL;
-  GingaSurfaceID surId = 0;
-
-  surface = Ginga_Display->createSurface (w, h);
-  surId = surface->getId ();
-
-  Thread::mutexLock (&surMapMutex);
-  surMap[surId] = surface;
-  Thread::mutexUnlock (&surMapMutex);
-
-  return surId;
+  return Ginga_Display->createSurface (w, h);
 }
 
-GingaSurfaceID
-DisplayManager::createSurfaceFrom (GingaSurfaceID underlyingSurface)
+SDLSurface*
+DisplayManager::createSurfaceFrom (SDLSurface* underlyingSurface)
 {
-  SDLSurface *surface = NULL;
-  GingaSurfaceID surId = 0;
-
-  surface = Ginga_Display->createSurfaceFrom ((void *)getISurfaceFromId (underlyingSurface));
-  surId = surface->getId ();
-
-  Thread::mutexLock (&surMapMutex);
-  surMap[surId] = surface;
-  Thread::mutexUnlock (&surMapMutex);
-
-  return surId;
+  return Ginga_Display->createSurfaceFrom (underlyingSurface);
 }
 
 bool
-DisplayManager::hasSurface (const GingaSurfaceID &surId)
+DisplayManager::hasSurface (SDLSurface *surId)
 {
-  SDLSurface *surface = NULL;
-  bool hasSur = false;
-
-  surface = getISurfaceFromId (surId);
-  if (surface != NULL)
-    {
-      hasSur = Ginga_Display->hasSurface (surface);
-    }
-
-  return hasSur;
+  return Ginga_Display->hasSurface (surId);
 }
 
 bool
@@ -389,20 +339,10 @@ DisplayManager::releaseImageProvider (GingaProviderID providerId)
   Ginga_Display->releaseImageProvider (provider);
 }
 
-GingaSurfaceID
+SDLSurface*
 DisplayManager::createRenderedSurfaceFromImageFile (const char *mrl)
 {
-  SDLSurface *uSur = NULL;
-  GingaSurfaceID surId = 0;
-
-  uSur = Ginga_Display->createRenderedSurfaceFromImageFile (mrl);
-  surId = uSur->getId ();
-
-  Thread::mutexLock (&surMapMutex);
-  surMap[surId] = uSur;
-  Thread::mutexUnlock (&surMapMutex);
-
-  return surId;
+  return Ginga_Display->createRenderedSurfaceFromImageFile (mrl);
 }
 
 /* interfacing input */
@@ -494,15 +434,9 @@ DisplayManager::raiseWindowToTop (SDLWindow* winId)
 
 void
 DisplayManager::renderWindowFrom (SDLWindow* winId,
-                                  const GingaSurfaceID &surId)
+                                  SDLSurface *surId)
 {
-  SDLSurface *surface = NULL;
-
-  surface = getISurfaceFromId (surId);
-  if (surface != NULL)
-    {
-      winId->renderFrom (surface);
-    }
+  winId->renderFrom (surId);
 }
 
 void
@@ -669,278 +603,144 @@ DisplayManager::setWindowMirrorSrc (SDLWindow* winId,
 }
 
 void *
-DisplayManager::getSurfaceContent (const GingaSurfaceID &surId)
+DisplayManager::getSurfaceContent (SDLSurface *surId)
 {
-  SDLSurface *surface = NULL;
-  void *surfaceContent = NULL;
-
-  surface = getISurfaceFromId (surId);
-  if (surface != NULL)
-    surfaceContent = surface->getSurfaceContent ();
-
-  return surfaceContent;
+  return surId->getSurfaceContent ();
 }
 
 SDLWindow*
-DisplayManager::getSurfaceParentWindow (const GingaSurfaceID &surId)
+DisplayManager::getSurfaceParentWindow (SDLSurface *surId)
 {
-  SDLSurface *surface;
-  surface = getISurfaceFromId (surId);
-  g_assert_nonnull (surface);
-  return (SDLWindow *) surface->getParentWindow ();
+  return (SDLWindow *) surId->getParentWindow ();
 }
 
 void
-DisplayManager::deleteSurface (const GingaSurfaceID &surId)
+DisplayManager::deleteSurface (SDLSurface *surId)
 {
-  SDLSurface *surface = NULL;
-
-  surface = getISurfaceFromId (surId);
-  if (surface)
-    {
-      Thread::mutexLock (&surMapMutex);
-      surMap.erase (surId);
-      Thread::mutexUnlock (&surMapMutex);
-
-      delete surface;
-    }
+  delete surId;
 }
 
 bool
-DisplayManager::setSurfaceParentWindow (const GingaSurfaceID &surId,
+DisplayManager::setSurfaceParentWindow (SDLSurface *surId,
                                             SDLWindow* winId)
 {
-  bool reply = false;
-  SDLSurface *surface = NULL;
-  SDLWindow *window = NULL;
-
-  surface = getISurfaceFromId (surId);
-  if (surface != NULL)
-    {
-      window = winId;
-      if (window != NULL)
-        reply = surface->setParentWindow (window);
-    }
-
-  return reply;
+  return surId->setParentWindow (winId);
 }
 
 void
-DisplayManager::clearSurfaceContent (const GingaSurfaceID &surId)
+DisplayManager::clearSurfaceContent (SDLSurface *surId)
 {
-  SDLSurface *surface = NULL;
-
-  surface = getISurfaceFromId (surId);
-  if (surface != NULL)
-    surface->clearContent ();
+  surId->clearContent ();
 }
 
 void
-DisplayManager::getSurfaceSize (const GingaSurfaceID &surId, int *width,
+DisplayManager::getSurfaceSize (SDLSurface *surId, int *width,
                                     int *height)
 {
-  SDLSurface *surface = NULL;
-  surface = getISurfaceFromId (surId);
-  if (surface != NULL)
-    surface->getSize (width, height);
-  else
-    {
-      *width = 0;
-      *height = 0;
-    }
+  surId->getSize (width, height);
 }
 
 void
-DisplayManager::addSurfaceCaps (const GingaSurfaceID &surId,
+DisplayManager::addSurfaceCaps (SDLSurface *surId,
                                     const int caps)
 {
-  SDLSurface *surface = NULL;
-
-  surface = getISurfaceFromId (surId);
-  if (surface != NULL)
-    surface->addCaps (caps);
+  surId->addCaps (caps);
 }
 
 void
-DisplayManager::setSurfaceCaps (const GingaSurfaceID &surId,
+DisplayManager::setSurfaceCaps (SDLSurface *surId,
                                     const int caps)
 {
-  SDLSurface *surface = NULL;
-
-  surface = getISurfaceFromId (surId);
-  if (surface != NULL)
-    surface->setCaps (caps);
+  surId->setCaps (caps);
 }
 
 int
-DisplayManager::getSurfaceCap (const GingaSurfaceID &surId,
+DisplayManager::getSurfaceCap (SDLSurface *surId,
                                    const string &cap)
 {
-  SDLSurface *surface = NULL;
-  int value = 0;
-
-  surface = getISurfaceFromId (surId);
-  if (surface != NULL)
-    value = surface->getCap (cap);
-
-  return value;
+  return surId->getCap (cap);
 }
 
 int
-DisplayManager::getSurfaceCaps (const GingaSurfaceID &surId)
+DisplayManager::getSurfaceCaps (SDLSurface *surId)
 {
-  SDLSurface *surface = NULL;
-  int value = 0;
-
-  surface = getISurfaceFromId (surId);
-  if (surface != NULL)
-    value = surface->getCaps ();
-
-  return value;
+  return surId->getCaps ();
 }
 
 void
-DisplayManager::setSurfaceBgColor (const GingaSurfaceID &surId, guint8 r,
+DisplayManager::setSurfaceBgColor (SDLSurface *surId, guint8 r,
                                        guint8 g, guint8 b, guint8 alpha)
 {
-  SDLSurface *surface = NULL;
-
-  surface = getISurfaceFromId (surId);
-  if (surface != NULL)
-    surface->setBgColor (r, g, b, alpha);
+  surId->setBgColor (r, g, b, alpha);
 }
 
 void
-DisplayManager::setSurfaceFont (const GingaSurfaceID &surId,
-                                    GingaSurfaceID font)
+DisplayManager::setSurfaceFont (SDLSurface *surId,
+                                    arg_unused (SDLSurface* font))
 {
-  SDLSurface *surface = NULL;
   IFontProvider *fontProvider = NULL;
-  IMediaProvider *iProvider = getIMediaProviderFromId (font);
+  IMediaProvider *iProvider = getIMediaProviderFromId (0);
 
   if (iProvider->getType () == IMediaProvider::FontProvider)
     fontProvider = (IFontProvider *)iProvider;
   else
     return;
 
-  surface = getISurfaceFromId (surId);
-  if (surface != NULL)
-    {
-      surface->setSurfaceFont (fontProvider);
-    }
+  surId->setSurfaceFont (fontProvider);
 }
 
 void
-DisplayManager::setColor (const GingaSurfaceID &surId, guint8 r, guint8 g,
+DisplayManager::setColor (SDLSurface *surId, guint8 r, guint8 g,
                               guint8 b, guint8 alpha)
 {
-  SDLSurface *surface = NULL;
-
-  surface = getISurfaceFromId (surId);
-  if (surface != NULL)
-    surface->setColor (r, g, b, alpha);
+  surId->setColor (r, g, b, alpha);
 }
 
 void
-DisplayManager::setExternalHandler (const GingaSurfaceID &surId,
+DisplayManager::setExternalHandler (SDLSurface *surId,
                                         bool extHandler)
 {
-  SDLSurface *surface = NULL;
-
-  surface = getISurfaceFromId (surId);
-  if (surface != NULL)
-    surface->setExternalHandler (extHandler);
+  surId->setExternalHandler (extHandler);
 }
 
 void
-DisplayManager::blitSurface (const GingaSurfaceID &surId, int x, int y,
-                                 GingaSurfaceID src, int srcX, int srcY,
+DisplayManager::blitSurface (SDLSurface *surId, int x, int y,
+                                 SDLSurface* src, int srcX, int srcY,
                                  int srcW, int srcH)
 {
-  SDLSurface *surface = NULL;
-  SDLSurface *surfaceSrc = NULL;
-
-  surface = getISurfaceFromId (surId);
-  surfaceSrc = getISurfaceFromId (src);
-  if (surface != NULL)
-    {
-      surface->blit (x, y, surfaceSrc, srcX, srcY, srcW, srcH);
-    }
+  surId->blit (x, y, src, srcX, srcY, srcW, srcH);
 }
 
 void
-DisplayManager::flipSurface (const GingaSurfaceID &surId)
+DisplayManager::flipSurface (SDLSurface *surId)
 {
-  SDLSurface *surface = NULL;
-
-  surface = getISurfaceFromId (surId);
-  if (surface != NULL)
-    surface->flip ();
+  surId->flip ();
 }
 
 void
-DisplayManager::setSurfaceContent (const GingaSurfaceID &surId,
+DisplayManager::setSurfaceContent (SDLSurface *surId,
                                        void *surface)
 {
-  SDLSurface *sur = NULL;
-
-  sur = getISurfaceFromId (surId);
-  if (sur != NULL)
-    sur->setSurfaceContent (surface);
+  surId->setSurfaceContent (surface);
 }
 
 Color *
-DisplayManager::getSurfaceColor (const GingaSurfaceID &surId)
+DisplayManager::getSurfaceColor (SDLSurface *surId)
 {
-  SDLSurface *surface = NULL;
-  Color *color = NULL;
-
-  surface = getISurfaceFromId (surId);
-  if (surface != NULL)
-    color = surface->getColor ();
-
-  return color;
+  return surId->getColor ();
 }
 
 bool
-DisplayManager::hasSurfaceExternalHandler (const GingaSurfaceID &surId)
+DisplayManager::hasSurfaceExternalHandler (SDLSurface *surId)
 {
-  SDLSurface *surface = NULL;
-  bool reply = false;
-
-  surface = getISurfaceFromId (surId);
-  if (surface != NULL)
-    reply = surface->hasExternalHandler ();
-
-  return reply;
+  return surId->hasExternalHandler ();
 }
 
 void
-DisplayManager::setSurfaceColor (const GingaSurfaceID &surId, guint8 r,
+DisplayManager::setSurfaceColor (SDLSurface *surId, guint8 r,
                                      guint8 g, guint8 b, guint8 alpha)
 {
-  SDLSurface *surface = NULL;
-
-  surface = getISurfaceFromId (surId);
-  if (surface != NULL)
-    surface->setColor (r, g, b, alpha);
-}
-
-SDLSurface *
-DisplayManager::getISurfaceFromId (const GingaSurfaceID &surId)
-{
-  map<GingaSurfaceID, SDLSurface *>::iterator i;
-  SDLSurface *iSur = NULL;
-
-  Thread::mutexLock (&surMapMutex);
-  i = surMap.find (surId);
-  if (i != surMap.end ())
-    {
-      iSur = i->second;
-    }
-  Thread::mutexUnlock (&surMapMutex);
-
-  return iSur;
+  return surId->setColor (r, g, b, alpha);
 }
 
 void
@@ -1112,7 +912,7 @@ DisplayManager::setProviderAVPid (const GingaProviderID &provId,
 
 void
 DisplayManager::resumeProvider (const GingaProviderID &provId,
-                                    GingaSurfaceID surface)
+                                    SDLSurface* surface)
 {
   IContinuousMediaProvider *provider = NULL;
   IMediaProvider *iProvider = getIMediaProviderFromId (provId);
@@ -1143,7 +943,7 @@ DisplayManager::feedProviderBuffers (const GingaProviderID &provId)
 
 bool
 DisplayManager::checkProviderVideoResizeEvent (
-    const GingaProviderID &provId, const GingaSurfaceID &frame)
+    const GingaProviderID &provId, SDLSurface *frame)
 {
   bool resized = false;
   IContinuousMediaProvider *provider = NULL;
@@ -1181,7 +981,7 @@ DisplayManager::getProviderStringWidth (const GingaProviderID &provId,
 
 void
 DisplayManager::playProviderOver (const GingaProviderID &provId,
-                                      const GingaSurfaceID &surface)
+                                      SDLSurface *surface)
 {
   IMediaProvider *iProvider = getIMediaProviderFromId (provId);
 
@@ -1193,7 +993,7 @@ DisplayManager::playProviderOver (const GingaProviderID &provId,
 
 void
 DisplayManager::playProviderOver (const GingaProviderID &provId,
-                                      const GingaSurfaceID &surface,
+                                      SDLSurface *surface,
                                       const char *text, int x, int y,
                                       short align)
 {

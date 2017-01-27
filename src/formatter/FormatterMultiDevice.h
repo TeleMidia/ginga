@@ -143,7 +143,7 @@ public:
   getFormatterLayout (NclCascadingDescriptor *descriptor,
                       NclExecutionObject *object);
   SDLWindow* prepareFormatterRegion (NclExecutionObject *object,
-                                        GingaSurfaceID renderedSurface);
+                                        SDLSurface* renderedSurface);
   void showObject (NclExecutionObject *executionObject);
   void hideObject (NclExecutionObject *executionObject);
 

@@ -54,7 +54,7 @@ private:
   bool externHandler;
   SDLWindow* outputDisplay;
 
-  GingaSurfaceID renderedSurface;
+  SDLSurface* renderedSurface;
 
   bool imVisible;
 
@@ -103,7 +103,7 @@ private:
   void initializeNCMRegion ();
 
 public:
-  void setRenderedSurface (GingaSurfaceID iSur);
+  void setRenderedSurface (SDLSurface* iSur);
 
   void setZIndex (int zIndex);
   int getZIndex ();
@@ -153,10 +153,10 @@ public:
 
 private:
   void meetComponent (int width, int height, int prefWidth, int prefHeight,
-                      GingaSurfaceID component);
+                      SDLSurface* component);
 
   void sliceComponent (int width, int height, int prefWidth, int prefHeight,
-                       GingaSurfaceID component);
+                       SDLSurface* component);
 
   void updateCurrentComponentSize ();
 
@@ -171,7 +171,7 @@ public:
   LayoutRegion *getLayoutRegion ();
   LayoutRegion *getOriginalRegion ();
 
-  SDLWindow* prepareOutputDisplay (GingaSurfaceID renderedSurface,
+  SDLWindow* prepareOutputDisplay (SDLSurface* renderedSurface,
                                       double cvtIndex);
 
   void showContent ();

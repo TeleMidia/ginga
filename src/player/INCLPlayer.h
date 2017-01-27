@@ -79,8 +79,8 @@ public:
                                       short type, string value)
       = 0;
 
-  virtual void setSurface (GingaSurfaceID surface) = 0;
-  virtual GingaSurfaceID getSurface () = 0;
+  virtual void setSurface (SDLSurface* surface) = 0;
+  virtual SDLSurface* getSurface () = 0;
   virtual int64_t
   getVPts ()
   {

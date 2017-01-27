@@ -34,13 +34,13 @@ public:
   virtual string getLoadSymbol () = 0;
   virtual void setAVPid (int aPid, int vPid) = 0;
   virtual void feedBuffers () = 0;
-  virtual bool checkVideoResizeEvent (GingaSurfaceID frame) = 0;
+  virtual bool checkVideoResizeEvent (SDLSurface* frame) = 0;
   virtual double getTotalMediaTime () = 0;
   virtual int64_t getVPts () = 0;
   virtual double getMediaTime () = 0;
   virtual void setMediaTime (double pos) = 0;
-  virtual void playOver (GingaSurfaceID surface) = 0;
-  virtual void resume (GingaSurfaceID surface) = 0;
+  virtual void playOver (SDLSurface* surface) = 0;
+  virtual void resume (SDLSurface* surface) = 0;
   virtual void pause () = 0;
   virtual void stop () = 0;
   virtual void setSoundLevel (double level) = 0;

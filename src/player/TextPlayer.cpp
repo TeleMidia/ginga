@@ -87,7 +87,7 @@ TextPlayer::initializePlayer ()
 }
 
 int
-TextPlayer::write (GingaSurfaceID s, string text,
+TextPlayer::write (SDLSurface* s, string text,
                    short textAlign, string fontUri, int fontSize,
                    Color *fontColor)
 {

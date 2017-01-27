@@ -19,6 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define I_MEDIA_PROVIDER_H
 
 #include "ginga.h"
+#include "SDLSurface.h"
 
 GINGA_MB_BEGIN
 
@@ -35,7 +36,7 @@ public:
 
   virtual ~IMediaProvider (){};
   virtual string getLoadSymbol () = 0;
-  virtual void playOver (GingaSurfaceID surface) = 0;
+  virtual void playOver (SDLSurface* surface) = 0;
   IMediaProviderType
   getType () const
   {

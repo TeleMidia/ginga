@@ -247,7 +247,7 @@ SDLFontProvider::getHeight ()
 }
 
 void
-SDLFontProvider::playOver (GingaSurfaceID surface, const char *text, int x,
+SDLFontProvider::playOver (SDLSurface* surface, const char *text, int x,
                            int y, short align)
 {
   size_t textLength;
@@ -278,7 +278,7 @@ SDLFontProvider::playOver (GingaSurfaceID surface, const char *text, int x,
 }
 
 void
-SDLFontProvider::playOver (GingaSurfaceID surface)
+SDLFontProvider::playOver (SDLSurface* surface)
 {
   SDLWindow *parent;
   Color *fontColor = NULL;
@@ -290,8 +290,7 @@ SDLFontProvider::playOver (GingaSurfaceID surface)
   int pW, pH;
 
   Thread::mutexLock (&ntsMutex);
-  this->content
-      = Ginga_Display_M->getISurfaceFromId (surface);
+  this->content = surface;
 
   if (font == NULL)
     {
@@ -305,7 +304,7 @@ SDLFontProvider::playOver (GingaSurfaceID surface)
         }
     }
 
-  if (Ginga_Display_M->hasSurface (content->getId ()))
+  if (Ginga_Display_M->hasSurface (content))
     {
       parent = (SDLWindow *)(content->getParentWindow ());
 

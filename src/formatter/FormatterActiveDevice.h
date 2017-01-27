@@ -57,7 +57,7 @@ public:
 private:
   TCPSocket *tcpSocket;
   int deviceServicePort;
-  GingaSurfaceID s;
+  SDLSurface* s;
   map<string, string> *contentsInfo;
   map<string, string> initVars;
   string currentDocUri;

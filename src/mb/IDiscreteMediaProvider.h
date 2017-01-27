@@ -29,7 +29,7 @@ public:
 
   virtual string getLoadSymbol () = 0;
 
-  virtual void playOver (GingaSurfaceID surface) = 0;
+  virtual void playOver (SDLSurface* surface) = 0;
 };
 
 GINGA_MB_END

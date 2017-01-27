@@ -360,7 +360,7 @@ Player::ntsNotifyPlayerListeners (set<IPlayerListener *> *list, short code,
 }
 
 void
-Player::setSurface (GingaSurfaceID surface)
+Player::setSurface (SDLSurface* surface)
 {
   if (this->surface != 0)
     {
@@ -370,7 +370,7 @@ Player::setSurface (GingaSurfaceID surface)
   this->surface = surface;
 }
 
-GingaSurfaceID
+SDLSurface*
 Player::getSurface ()
 {
   return surface;
@@ -432,10 +432,10 @@ Player::setScope (string scope, short type, double initTime, double endTime,
 void
 Player::mirrorIt (Player *mirrorSrc, Player *mirror)
 {
-  GingaSurfaceID iSrcSur;
+  SDLSurface* iSrcSur;
   SDLWindow* iSrcWin;
 
-  GingaSurfaceID iSur;
+  SDLSurface* iSur;
   SDLWindow* iWin;
 
   if (mirrorSrc != NULL && mirror != NULL)

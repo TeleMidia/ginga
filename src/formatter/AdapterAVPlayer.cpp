@@ -17,6 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "AdapterAVPlayer.h"
+#include "mb/SDLSurface.h"
 #include "player/AVPlayer.h"
 
 GINGA_FORMATTER_BEGIN

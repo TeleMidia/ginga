@@ -243,7 +243,7 @@ NclFormatterRegion::initializeNCMRegion ()
 }
 
 void
-NclFormatterRegion::setRenderedSurface (GingaSurfaceID iSur)
+NclFormatterRegion::setRenderedSurface (SDLSurface* iSur)
 {
   this->renderedSurface = iSur;
 }
@@ -615,14 +615,14 @@ NclFormatterRegion::getOutputId ()
 
 void
 NclFormatterRegion::meetComponent (arg_unused (int width), arg_unused (int height), arg_unused (int prefWidth),
-                                   arg_unused (int prefHeight), arg_unused (GingaSurfaceID component))
+                                   arg_unused (int prefHeight), arg_unused (SDLSurface* component))
 {
 }
 
 void
 NclFormatterRegion::sliceComponent (arg_unused (int width), arg_unused (int height), arg_unused (int prefWidth),
                                     arg_unused (int prefHeight),
-                                    arg_unused (GingaSurfaceID component))
+                                    arg_unused (SDLSurface* component))
 {
 }
 
@@ -719,7 +719,7 @@ NclFormatterRegion::getOriginalRegion ()
 }
 
 SDLWindow*
-NclFormatterRegion::prepareOutputDisplay (GingaSurfaceID renderedSurface,
+NclFormatterRegion::prepareOutputDisplay (SDLSurface* renderedSurface,
                                           double cvtIndex)
 {
   lock ();
@@ -1309,7 +1309,7 @@ NclFormatterRegion::getFocusState ()
 bool
 NclFormatterRegion::setSelection (bool selOn)
 {
-  GingaSurfaceID selSurface;
+  SDLSurface* selSurface;
 
   if (selOn && focusState == NclFormatterRegion::SELECTED)
     {
@@ -1370,7 +1370,7 @@ NclFormatterRegion::setSelection (bool selOn)
 void
 NclFormatterRegion::setFocus (bool focusOn)
 {
-  GingaSurfaceID focusSurface;
+  SDLSurface* focusSurface;
 
   if (focusOn)
     {

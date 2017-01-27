@@ -317,8 +317,8 @@ public:
   void removeListener (IPlayerListener *listener);
   void notifyPlayerListeners (short code, string paremeter, short type,
                               string value);
-  void setSurface (GingaSurfaceID surface);
-  GingaSurfaceID getSurface ();
+  void setSurface (SDLSurface* surface);
+  SDLSurface* getSurface ();
   void flip ();
   double getMediaTime ();
   double getTotalMediaTime ();

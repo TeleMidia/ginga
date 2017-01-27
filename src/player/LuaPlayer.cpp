@@ -181,7 +181,7 @@ LuaPlayer::nw_update_thread (arg_unused (void *data))
       for (i = lst.begin (); i != lst.end (); i++)
         {
           LuaPlayer *player;
-          GingaSurfaceID wrapper;
+          SDLSurface* wrapper;
           ncluaw_t *nw;
           ncluaw_event_t *evt;
 
@@ -192,7 +192,7 @@ LuaPlayer::nw_update_thread (arg_unused (void *data))
           ncluaw_cycle (nw);
 
           wrapper = player->getSurface ();
-          if (wrapper != 0)
+          if (wrapper != NULL)
             {
               SDL_Surface *dest;
               SDL_Surface *sfc;
@@ -372,7 +372,7 @@ LuaPlayer::unlock (void)
 bool
 LuaPlayer::doPlay (void)
 {
-  GingaSurfaceID sfc;
+  SDLSurface* sfc;
   char *errmsg = NULL;
   int w = 0;
   int h = 0;

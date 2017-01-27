@@ -49,7 +49,7 @@ private:
   DisplayManager *dm;
   GingaScreenID myScreen;
   InputManager *im;
-  GingaSurfaceID surface;
+  SDLSurface* surface;
   int xOffset, yOffset;
   int x, y;
   int w, h;
@@ -87,7 +87,7 @@ public:
   void setBounds (int x, int y, int w, int h);
   void setUrl (string url);
   string getUrl ();
-  GingaSurfaceID getSurface ();
+  SDLSurface* getSurface ();
 
   void updateEvents ();
 
@@ -111,7 +111,7 @@ private:
       unsigned int dest_texture_height, bool ignore_partial,
       unsigned char *scroll_buffer);
 
-  GingaSurfaceID createRenderedSurface (string fileName);
+  SDLSurface* createRenderedSurface (string fileName);
 
   string createFile (const unsigned char *sourceBuffer, int width,
                      int height);
