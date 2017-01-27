@@ -30,8 +30,9 @@ GINGA_UTIL_BEGIN
 string userCurrentPath;
 
 double
-strUTCToSec (string utcValue)
+strUTCToSec (const string &utcV)
 {
+  string utcValue = utcV;
   double secs = 0;
   vector<string> *params;
 
@@ -69,7 +70,7 @@ strUTCToSec (string utcValue)
 }
 
 string
-cvtPercentual (string value, bool *isPercentual)
+cvtPercentual (const string &value, bool *isPercentual)
 {
   string newValue;
 
@@ -86,7 +87,7 @@ cvtPercentual (string value, bool *isPercentual)
 }
 
 static vector<string> *
-localSplit (string str, string delimiter)
+localSplit (const string &str, const string &delimiter)
 {
   vector<string> *splited;
   string::size_type lastPos, curPos;
@@ -129,7 +130,7 @@ localSplit (string str, string delimiter)
 }
 
 vector<string> *
-split (string str, string delimiter, string pos_delimiter)
+split (const string &str, const string &delimiter, const string &pos_delimiter)
 {
   vector<string> *splited;
   splited = new vector<string>;
@@ -178,7 +179,7 @@ split (string str, string delimiter, string pos_delimiter)
 }
 
 double
-getPercentualValue (string value)
+getPercentualValue (const string &value)
 {
   string actualValue;
   double floatValue;
@@ -205,7 +206,7 @@ getPercentualValue (string value)
  * @return true se o valor e' percentual; false caso contrario.
  */
 bool
-isPercentualValue (string value)
+isPercentualValue (const string &value)
 {
   if (value.find_last_of ("%") == (value.length () - 1))
     return true;
@@ -214,7 +215,7 @@ isPercentualValue (string value)
 }
 
 bool
-fileExists (string fileName)
+fileExists (const string &fileName)
 {
   string currentPath;
 

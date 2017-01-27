@@ -45,8 +45,10 @@ const string Color::saqua = "#00FFFF";
 const string Color::steal = "#008080";
 
 void
-Color::setColorToI (string color)
+Color::setColorToI (const string &c)
 {
+  string color = c;
+
   if (color == "")
     {
       color = "#FFFFFF";
@@ -151,7 +153,7 @@ Color::setColorToI (string color)
 }
 
 int
-Color::colortoi (string color)
+Color::colortoi (const string &color)
 {
   if (color == "")
     {
@@ -269,14 +271,14 @@ Color::Color (guint8 r, guint8 g, guint8 b, guint8 alpha)
   this->alpha = alpha;
 }
 
-Color::Color (string color, guint8 alpha)
+Color::Color (const string &color, guint8 alpha)
 {
   this->alpha = alpha;
   setColorToI (color);
 }
 
 void
-Color::setColor (string color)
+Color::setColor (const string &color)
 {
   setColorToI (color);
 }
