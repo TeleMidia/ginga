@@ -25,16 +25,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-GingaSurfaceID SDLSurface::refIdCounter = 1;
-
 SDLSurface::SDLSurface ()
 {
-  initialize (refIdCounter++);
+  initialize ();
 }
 
 SDLSurface::SDLSurface (void *underlyingSurface)
 {
-  initialize (refIdCounter++);
+  initialize ();
   this->sur = (SDL_Surface *)underlyingSurface;
 }
 
@@ -223,7 +221,7 @@ SDLSurface::releaseFont ()
 {
   if (iFont != NULL)
     {
-      Ginga_Display_M->releaseFontProvider (iFont->getId ());
+      Ginga_Display_M->releaseFontProvider (((IFontProvider*)iFont)->getId ());
       iFont = NULL;
     }
 }
@@ -248,7 +246,7 @@ SDLSurface::releaseDrawData ()
 }
 
 void
-SDLSurface::initialize (const GingaSurfaceID &id)
+SDLSurface::initialize ()
 {
   this->sur = NULL;
   this->iFont = NULL;
@@ -261,7 +259,6 @@ SDLSurface::initialize (const GingaSurfaceID &id)
   this->hasExtHandler = false;
   this->isDeleting = false;
   this->pending = NULL;
-  this->myId = id;
 
   this->drawData.clear ();
 
@@ -533,7 +530,7 @@ SDLSurface::drawString (int x, int y, const char *txt)
       Thread::mutexLock (&pMutex);
       if (createPendingSurface ())
         {
-          iFont->playOver (this->getId (), txt, x, y, 0);
+          ((IFontProvider*)iFont)->playOver (this, txt, x, y, 0);
         }
       Thread::mutexUnlock (&pMutex);
     }
@@ -784,7 +781,7 @@ SDLSurface::getStringExtents (const char *text, int *w, int *h)
 {
   if (iFont != NULL)
     {
-      iFont->getStringExtents (text, w, h);
+      ((IFontProvider*)iFont)->getStringExtents (text, w, h);
     }
   else
     {
@@ -868,18 +865,6 @@ SDLSurface::getDumpFileUri ()
     }
   Thread::mutexUnlock (&sMutex);
   return uri;
-}
-
-GingaSurfaceID
-SDLSurface::getId () const
-{
-  return myId;
-}
-
-void
-SDLSurface::setId (const GingaSurfaceID &surId)
-{
-  myId = surId;
 }
 
 GINGA_MB_END

@@ -176,10 +176,10 @@ ImagePlayer::setPropertyValue (string name, string value)
   Player::setPropertyValue (name, value);
 }
 
-GingaSurfaceID
+SDLSurface*
 ImagePlayer::prepareSurface (GingaProviderID provider, arg_unused (string mrl))
 {
-  GingaSurfaceID renderedSurface = 0;
+  SDLSurface* renderedSurface = 0;
 
   renderedSurface = Ginga_Display_M->createSurfaceFrom (0);
   Ginga_Display_M->playProviderOver (provider, renderedSurface);

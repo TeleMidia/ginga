@@ -358,7 +358,7 @@ FormatterMultiDevice::getFormatterLayout (
 
 SDLWindow*
 FormatterMultiDevice::prepareFormatterRegion (
-    NclExecutionObject *executionObject, GingaSurfaceID renderedSurface)
+    NclExecutionObject *executionObject, SDLSurface* renderedSurface)
 {
   NclFormatterLayout *layout;
   NclCascadingDescriptor *descriptor;
@@ -637,7 +637,7 @@ FormatterMultiDevice::hideObject (NclExecutionObject *executionObject)
 void
 FormatterMultiDevice::renderFromUri (SDLWindow* win, string uri)
 {
-  GingaSurfaceID s;
+  SDLSurface* s;
   s = Ginga_Display_M->createRenderedSurfaceFromImageFile (uri.c_str ());
   Ginga_Display_M->setWindowColorKey (win, 0, 0, 0);
   Ginga_Display_M->clearWindowContent (win);

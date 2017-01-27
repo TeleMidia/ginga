@@ -110,7 +110,7 @@ ShowButton::release ()
 void
 ShowButton::render (string mrl)
 {
-  GingaSurfaceID surface;
+  SDLSurface* surface;
 
   surface = Ginga_Display_M->createRenderedSurfaceFromImageFile (mrl.c_str ());
 

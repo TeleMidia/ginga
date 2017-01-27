@@ -289,7 +289,7 @@ NclFormatterLayout::getSortedIds (vector<SDLWindow*> *sortedIds)
 
 SDLWindow*
 NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object,
-                                            GingaSurfaceID renderedSurface,
+                                            SDLSurface* renderedSurface,
                                             string plan)
 {
   NclCascadingDescriptor *descriptor;
@@ -374,7 +374,7 @@ double
 NclFormatterLayout::refreshZIndex (NclFormatterRegion *region,
                                    string layoutRegionId, int zIndex,
                                    string plan,
-                                   GingaSurfaceID renderedSurface)
+                                   SDLSurface* renderedSurface)
 {
   NclExecutionObject *object;
   double cvtZIndex;
@@ -482,7 +482,7 @@ NclFormatterLayout::hideObject (NclExecutionObject *object)
 SDLWindow*
 NclFormatterLayout::addRegionOnMaps (NclExecutionObject *object,
                                      NclFormatterRegion *region,
-                                     GingaSurfaceID renderedSurface,
+                                     SDLSurface* renderedSurface,
                                      string layoutRegionId, int zIndex,
                                      string plan, double *cvtZIndex)
 {

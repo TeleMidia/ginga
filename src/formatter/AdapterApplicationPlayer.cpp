@@ -81,7 +81,7 @@ AdapterApplicationPlayer::checkPlayerSurface (NclExecutionObject *obj)
   NclCascadingDescriptor *descriptor;
   NclFormatterRegion *fRegion;
   LayoutRegion *ncmRegion;
-  GingaSurfaceID wrapper;
+  SDLSurface* wrapper;
   int w, h;
 
   if (player != NULL)

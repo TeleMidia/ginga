@@ -70,7 +70,7 @@ public:
   BerkeliumPlayer ( string mrl);
   virtual ~BerkeliumPlayer ();
 
-  GingaSurfaceID getSurface ();
+  SDLSurface* getSurface ();
   void setNotifyContentUpdate (bool notify);
 
   bool play ();

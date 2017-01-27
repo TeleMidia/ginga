@@ -51,7 +51,7 @@ public:
   virtual void setPropertyValue (string name, string value);
 
 private:
-  GingaSurfaceID prepareSurface (GingaProviderID provider, string mrl);
+  SDLSurface* prepareSurface (GingaProviderID provider, string mrl);
 };
 
 GINGA_PLAYER_END

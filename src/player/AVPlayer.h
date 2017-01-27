@@ -60,7 +60,7 @@ private:
 public:
   AVPlayer (string mrl);
   virtual ~AVPlayer ();
-  GingaSurfaceID getSurface ();
+  SDLSurface* getSurface ();
 
 private:
   void createProvider ();
@@ -79,7 +79,7 @@ public:
 
 private:
   void setSoundLevel (double level);
-  GingaSurfaceID createFrame ();
+  SDLSurface* createFrame ();
 
 public:
   void getOriginalResolution (int *width, int *height);

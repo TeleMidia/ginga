@@ -49,8 +49,8 @@ public:
   virtual void setMirrorSrc (IPlayer *mirrorSrc) = 0;
 
   virtual void flip () = 0;
-  virtual GingaSurfaceID getSurface () = 0;
-  virtual void setSurface (GingaSurfaceID sfc) = 0;
+  virtual SDLSurface* getSurface () = 0;
+  virtual void setSurface (SDLSurface* sfc) = 0;
   virtual void setMrl (string mrl, bool visible = true) = 0;
   virtual void reset () = 0;
   virtual void rebase () = 0;

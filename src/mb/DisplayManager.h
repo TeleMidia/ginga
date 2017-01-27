@@ -48,7 +48,7 @@ protected:
   pthread_mutex_t mapMutex;
   pthread_mutex_t genMutex;
 
-  map<GingaSurfaceID, SDLSurface *> surMap;
+  map<SDLSurface*, SDLSurface *> surMap;
   pthread_mutex_t surMapMutex;
 
   map<GingaProviderID, IMediaProvider *> provMap;
@@ -93,11 +93,11 @@ public:
   SDLWindow* getScreenUnderlyingWindow ();
 
 protected:
-  GingaSurfaceID provIdRefCounter;
+  int provIdRefCounter;
 
 public:
   IMediaProvider *getIMediaProviderFromId (const GingaProviderID &provId);
-  SDLSurface *getISurfaceFromId (const GingaSurfaceID &surfaceId);
+  SDLSurface *getISurfaceFromId (SDLSurface *surfaceId);
 
   // Interfacing output.
   SDLWindow* createWindow (int x, int y, int w, int h, double z);
@@ -109,15 +109,13 @@ public:
 
   void releaseWindow (SDLWindow *window);
 
-  void registerSurface (SDLSurface *);
+  SDLSurface* createSurface ();
 
-  GingaSurfaceID createSurface ();
+  SDLSurface* createSurface (int w, int h);
 
-  GingaSurfaceID createSurface (int w, int h);
+  SDLSurface* createSurfaceFrom (SDLSurface* underlyingSurface);
 
-  GingaSurfaceID createSurfaceFrom (GingaSurfaceID underlyingSurface);
-
-  bool hasSurface (const GingaSurfaceID &surId);
+  bool hasSurface (SDLSurface *surId);
   bool releaseSurface (SDLSurface *surface);
 
   void lowerWindowToBottom (SDLWindow* winId);
@@ -130,7 +128,7 @@ public:
   void releaseFontProvider (GingaProviderID provider);
   GingaProviderID createImageProvider (const char *mrl);
   void releaseImageProvider (GingaProviderID provider);
-  GingaSurfaceID createRenderedSurfaceFromImageFile (const char *mrl);
+  SDLSurface* createRenderedSurfaceFromImageFile (const char *mrl);
 
 public:
   InputManager *getInputManager ();
@@ -152,7 +150,7 @@ public:
   void hideWindow (SDLWindow* winId);
   void raiseWindowToTop (SDLWindow* winId);
   void renderWindowFrom (SDLWindow* winId,
-                         const GingaSurfaceID &surId);
+                         SDLSurface *surId);
   void setWindowBgColor (SDLWindow* winId, guint8 r, guint8 g,
                          guint8 b, guint8 alpha);
   void setWindowBorder (SDLWindow* winId, guint8 r, guint8 g,
@@ -185,32 +183,32 @@ public:
   void setWindowMirrorSrc (SDLWindow* winId,
                            SDLWindow* mirrorSrc);
   // surfaces
-  void *getSurfaceContent (const GingaSurfaceID &surId);
-  SDLWindow* getSurfaceParentWindow (const GingaSurfaceID &surId);
-  void deleteSurface (const GingaSurfaceID &surId);
-  bool setSurfaceParentWindow (const GingaSurfaceID &surId,
+  void *getSurfaceContent (SDLSurface *surId);
+  SDLWindow* getSurfaceParentWindow (SDLSurface *surId);
+  void deleteSurface (SDLSurface *surId);
+  bool setSurfaceParentWindow (SDLSurface *surId,
                                SDLWindow* winId);
-  void clearSurfaceContent (const GingaSurfaceID &surId);
-  void getSurfaceSize (const GingaSurfaceID &surId, int *width,
+  void clearSurfaceContent (SDLSurface *surId);
+  void getSurfaceSize (SDLSurface *surId, int *width,
                        int *height);
-  void addSurfaceCaps (const GingaSurfaceID &surId, const int caps);
-  void setSurfaceCaps (const GingaSurfaceID &surId, const int caps);
-  int getSurfaceCap (const GingaSurfaceID &surId, const string &cap);
-  int getSurfaceCaps (const GingaSurfaceID &surId);
-  void setSurfaceBgColor (const GingaSurfaceID &surId, guint8 r, guint8 g,
+  void addSurfaceCaps (SDLSurface *surId, const int caps);
+  void setSurfaceCaps (SDLSurface *surId, const int caps);
+  int getSurfaceCap (SDLSurface *surId, const string &cap);
+  int getSurfaceCaps (SDLSurface *surId);
+  void setSurfaceBgColor (SDLSurface *surId, guint8 r, guint8 g,
                           guint8 b, guint8 alpha);
-  void setSurfaceFont (const GingaSurfaceID &surId, GingaSurfaceID font);
-  void setColor (const GingaSurfaceID &surId, guint8 r, guint8 g, guint8 b,
+  void setSurfaceFont (SDLSurface *surId, SDLSurface* font);
+  void setColor (SDLSurface *surId, guint8 r, guint8 g, guint8 b,
                  guint8 alpha);
-  void setExternalHandler (const GingaSurfaceID &surId, bool extHandler);
-  void blitSurface (const GingaSurfaceID &surId, int x, int y,
-                    GingaSurfaceID src = 0, int srcX = -1, int srcY = -1,
+  void setExternalHandler (SDLSurface *surId, bool extHandler);
+  void blitSurface (SDLSurface *surId, int x, int y,
+                    SDLSurface* src = 0, int srcX = -1, int srcY = -1,
                     int srcW = -1, int srcH = -1);
-  void flipSurface (const GingaSurfaceID &surId);
-  void setSurfaceContent (const GingaSurfaceID &surId, void *surface);
-  Color *getSurfaceColor (const GingaSurfaceID &surId);
-  bool hasSurfaceExternalHandler (const GingaSurfaceID &surId);
-  void setSurfaceColor (const GingaSurfaceID &surId, guint8 r, guint8 g,
+  void flipSurface (SDLSurface *surId);
+  void setSurfaceContent (SDLSurface *surId, void *surface);
+  Color *getSurfaceColor (SDLSurface *surId);
+  bool hasSurfaceExternalHandler (SDLSurface *surId);
+  void setSurfaceColor (SDLSurface *surId, guint8 r, guint8 g,
                         guint8 b, guint8 alpha);
   // providers
   void setProviderSoundLevel (const GingaProviderID &provId, double level);
@@ -224,17 +222,17 @@ public:
   void pauseProvider (const GingaProviderID &provId);
   void stopProvider (const GingaProviderID &provId);
   void resumeProvider (const GingaProviderID &provId,
-                       GingaSurfaceID surface);
+                       SDLSurface* surface);
   void setProviderAVPid (const GingaProviderID &provId, int aPid, int vPid);
   void feedProviderBuffers (const GingaProviderID &provId);
   bool checkProviderVideoResizeEvent (const GingaProviderID &provId,
-                                      const GingaSurfaceID &frame);
+                                      SDLSurface *frame);
   int getProviderStringWidth (const GingaProviderID &provId,
                               const char *text, int textLength = 0);
   void playProviderOver (const GingaProviderID &provId,
-                         const GingaSurfaceID &surface);
+                         SDLSurface *surface);
   void playProviderOver (const GingaProviderID &provId,
-                         const GingaSurfaceID &surface, const char *text,
+                         SDLSurface *surface, const char *text,
                          int x, int y, short align);
   int getProviderHeight (const GingaProviderID &provId);
   bool getScreen (SDLDisplay **screen);

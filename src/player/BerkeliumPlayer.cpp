@@ -246,7 +246,7 @@ BerkeliumPlayer::~BerkeliumPlayer ()
   clog << "BerkeliumPlayer::~BerkeliumPlayer all done" << endl;
 }
 
-GingaSurfaceID
+SDLSurface*
 BerkeliumPlayer::getSurface ()
 {
   clog << "BerkeliumPlayer::getSurface '" << mrl << "'" << endl;

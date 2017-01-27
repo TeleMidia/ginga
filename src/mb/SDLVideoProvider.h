@@ -50,7 +50,7 @@ private:
   void getVideoSurfaceDescription (void *dsc);
 
 public:
-  bool checkVideoResizeEvent (GingaSurfaceID frame);
+  bool checkVideoResizeEvent (SDLSurface* frame);
 
   void getOriginalResolution (int *width, int *height);
   double getTotalMediaTime ();
@@ -58,9 +58,9 @@ public:
   double getMediaTime ();
   void setMediaTime (double pos);
 
-  void playOver (GingaSurfaceID surface);
+  void playOver (SDLSurface* surface);
 
-  void resume (GingaSurfaceID surface);
+  void resume (SDLSurface* surface);
   void pause ();
   void stop ();
   void setSoundLevel (double level);

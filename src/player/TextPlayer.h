@@ -56,7 +56,7 @@ private:
   void initializePlayer ();
 
 public:
-  static int write (GingaSurfaceID s, string text,
+  static int write (SDLSurface* s, string text,
                     short textAlign, string fontUri = "", int fontSize = 12,
                     Color *fontColor = NULL);
 

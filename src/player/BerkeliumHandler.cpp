@@ -296,7 +296,7 @@ BerkeliumHandler::getUrl ()
   return mURL;
 }
 
-GingaSurfaceID
+SDLSurface*
 BerkeliumHandler::getSurface ()
 {
   return surface;
@@ -524,7 +524,7 @@ BerkeliumHandler::mapOnPaintToTexture (
 {
   string strFile;
   SDLWindow* sWin;
-  GingaSurfaceID s;
+  SDLSurface* s;
   const int kBytesPerPixel = 4;
 
   // If we've reloaded the page and need a full update, ignore updates

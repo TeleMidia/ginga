@@ -535,7 +535,7 @@ SDLWindow::createDrawDataList ()
 
   lockChilds ();
   if (childSurface != NULL
-      && Ginga_Display_M->hasSurface (childSurface->getId ()))
+      && Ginga_Display_M->hasSurface (childSurface))
     {
       dd = ((SDLSurface *)childSurface)->createDrawDataList ();
     }
@@ -686,7 +686,7 @@ SDLWindow::isMine (SDLSurface *surface)
 
   if (surface != NULL && surface->getSurfaceContent () != NULL)
     {
-      if (surface->getId () == winISur || surface == childSurface)
+      if (surface == winISur || surface == childSurface)
         {
           itIs = true;
         }
@@ -700,7 +700,7 @@ SDLWindow::renderImgFile (string serializedImageUrl)
 {
   IImageProvider *img;
   GingaProviderID providerId;
-  GingaSurfaceID surId;
+  SDLSurface* surId;
 
   providerId = Ginga_Display_M->createImageProvider (serializedImageUrl.c_str ());
 
@@ -748,8 +748,7 @@ SDLWindow::renderFrom (SDLSurface *surface)
       winISur = Ginga_Display_M->createSurface (
           contentSurface->w, contentSurface->h);
 
-      Ginga_Display_M->blitSurface (winISur, 0, 0,
-                                                         surface->getId ());
+      Ginga_Display_M->blitSurface (winISur, 0, 0, surface);
       Ginga_Display_M->flipSurface (winISur);
 
       curSur = (SDL_Surface *)Ginga_Display_M

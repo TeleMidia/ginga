@@ -68,12 +68,12 @@ private:
 public:
   NclExecutionObject *getObject (int x, int y);
   SDLWindow* prepareFormatterRegion (NclExecutionObject *object,
-                                        GingaSurfaceID renderedSurface,
+                                        SDLSurface* renderedSurface,
                                         string plan);
 
   double refreshZIndex (NclFormatterRegion *region, string layoutRegionId,
                         int zIndex, string plan,
-                        GingaSurfaceID renderedSurface);
+                        SDLSurface* renderedSurface);
 
 private:
   void sortRegion (string regionId, double cvtIndex, string plan);
@@ -86,7 +86,7 @@ public:
 private:
   SDLWindow* addRegionOnMaps (NclExecutionObject *object,
                                  NclFormatterRegion *region,
-                                 GingaSurfaceID renderedSurface,
+                                 SDLSurface* renderedSurface,
                                  string layoutRegionId, int zIndex,
                                  string plan, double *cvtZIndex);
 

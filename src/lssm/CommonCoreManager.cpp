@@ -166,7 +166,7 @@ void
 CommonCoreManager::showTunningWindow (int x, int y,
                                       int w, int h)
 {
-  GingaSurfaceID s = 0;
+  SDLSurface* s = 0;
   string tunerImg = "";
 
   tunerImg = string (GINGA_TUNER_DATADIR) + "tuning.png";

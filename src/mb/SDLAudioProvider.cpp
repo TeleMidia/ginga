@@ -107,7 +107,7 @@ SDLAudioProvider::setMediaTime (double pos)
 }
 
 void
-SDLAudioProvider::playOver (arg_unused (GingaSurfaceID surface))
+SDLAudioProvider::playOver (arg_unused (SDLSurface* surface))
 {
   clog << "SDLAudioProvider::playOver" << endl;
   SDLDisplay::addCMPToRendererList (this);
@@ -127,7 +127,7 @@ SDLAudioProvider::pause ()
 }
 
 void
-SDLAudioProvider::resume (arg_unused (GingaSurfaceID surface))
+SDLAudioProvider::resume (arg_unused (SDLSurface* surface))
 {
   if (decoder != NULL)
     {

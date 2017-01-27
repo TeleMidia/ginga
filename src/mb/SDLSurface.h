@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef SDLSURFACE_H_
 #define SDLSURFACE_H_
 
-#include "IFontProvider.h"
-
 #include "util/Color.h"
 using namespace ::ginga::util;
 
@@ -41,8 +39,6 @@ typedef struct DrawData
 class SDLSurface
 {
 private:
-  static GingaSurfaceID refIdCounter;
-  GingaSurfaceID myId;
   SDL_Surface *sur;
   SDL_Surface *pending;
   void *parent;
@@ -51,7 +47,7 @@ private:
   Color *borderColor;
   Color *bgColor;
   Color *surfaceColor;
-  IFontProvider *iFont;
+  void *iFont;
   int caps;
   bool isDeleting;
 
@@ -64,11 +60,7 @@ private:
 public:
   SDLSurface ();
   SDLSurface (void *underlyingSurface);
-
   virtual ~SDLSurface ();
-
-  GingaSurfaceID getId () const;
-  void setId (const GingaSurfaceID &surId);
 
 private:
   void releasePendingSurface ();
@@ -83,7 +75,7 @@ private:
   void releaseFont ();
   void releaseDrawData ();
 
-  void initialize (const GingaSurfaceID &id);
+  void initialize ();
 
 public:
   void takeOwnership ();

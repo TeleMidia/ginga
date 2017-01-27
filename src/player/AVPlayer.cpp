@@ -100,7 +100,7 @@ AVPlayer::~AVPlayer ()
   Thread::mutexDestroy (&tMutex);
 }
 
-GingaSurfaceID
+SDLSurface*
 AVPlayer::getSurface ()
 {
   if (provider == 0)
@@ -184,7 +184,7 @@ AVPlayer::setSoundLevel (double level)
   // unlock();
 }
 
-GingaSurfaceID
+SDLSurface*
 AVPlayer::createFrame ()
 {
   // clog << "AVPlayer::createFrame()" << endl;

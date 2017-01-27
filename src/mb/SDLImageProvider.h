@@ -43,7 +43,7 @@ public:
     return "SDLImageProvider";
   };
 
-  void playOver (GingaSurfaceID surface);
+  void playOver (SDLSurface* surface);
 
   bool releaseAll ();
 };

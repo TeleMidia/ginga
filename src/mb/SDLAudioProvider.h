@@ -50,7 +50,7 @@ public:
   void *getProviderContent ();
   virtual void setProviderContent (arg_unused (void *content)){};
   virtual bool
-  checkVideoResizeEvent (arg_unused (GingaSurfaceID frame))
+  checkVideoResizeEvent (arg_unused (SDLSurface* frame))
   {
     return false;
   };
@@ -61,8 +61,8 @@ public:
   void setMediaTime (double pos);
 
 public:
-  void playOver (GingaSurfaceID surface);
-  void resume (GingaSurfaceID surface);
+  void playOver (SDLSurface* surface);
+  void resume (SDLSurface* surface);
   void pause ();
   void stop ();
   void setSoundLevel (double level);

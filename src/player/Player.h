@@ -76,7 +76,7 @@ protected:
 
   string mrl;
   static DisplayManager *dm;
-  GingaSurfaceID surface;
+  SDLSurface* surface;
   SDLWindow* outputWindow;
   double initTime, elapsedTime, elapsedPause, pauseTime;
   set<IPlayer *> referredPlayers;
@@ -127,8 +127,8 @@ private:
                                         short type, string value);
 
 public:
-  virtual void setSurface (GingaSurfaceID surface);
-  virtual GingaSurfaceID getSurface ();
+  virtual void setSurface (SDLSurface* surface);
+  virtual SDLSurface* getSurface ();
 
   virtual void setMediaTime (double newTime);
   virtual int64_t
