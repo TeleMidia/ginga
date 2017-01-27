@@ -27,7 +27,7 @@ class CommonCoreManager
 {
 private:
   void *tuner;
-  GingaWindowID tuningWindow;
+  SDLWindow* tuningWindow;
   void *demuxer;
   void *dataProcessor;
   void *nptProvider;

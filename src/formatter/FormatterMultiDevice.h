@@ -101,9 +101,9 @@ protected:
   vector<string> *activeUris;
   string activeBaseUri;
   NclFormatterLayout *mainLayout;
-  GingaWindowID serialized;
-  GingaWindowID printScreen;
-  GingaWindowID bitMapScreen;
+  SDLWindow* serialized;
+  SDLWindow* printScreen;
+  SDLWindow* bitMapScreen;
   int xOffset;
   int yOffset;
   int defaultWidth;
@@ -133,7 +133,7 @@ public:
   void *getMainLayout ();
   void *getFormatterLayout (int devClass);
   string getScreenShot ();
-  string serializeScreen (int devClass, GingaWindowID mapWindow);
+  string serializeScreen (int devClass, SDLWindow* mapWindow);
 
 protected:
   virtual void postMediaContent (int destDevClass);
@@ -142,7 +142,7 @@ public:
   NclFormatterLayout *
   getFormatterLayout (NclCascadingDescriptor *descriptor,
                       NclExecutionObject *object);
-  GingaWindowID prepareFormatterRegion (NclExecutionObject *object,
+  SDLWindow* prepareFormatterRegion (NclExecutionObject *object,
                                         GingaSurfaceID renderedSurface);
   void showObject (NclExecutionObject *executionObject);
   void hideObject (NclExecutionObject *executionObject);
@@ -165,7 +165,7 @@ protected:
   {
     return false;
   };
-  void renderFromUri (GingaWindowID win, string uri);
+  void renderFromUri (SDLWindow* win, string uri);
   void tapObject (int devClass, int x, int y);
   virtual bool
   receiveRemoteContent (arg_unused (int remoteDevClass),

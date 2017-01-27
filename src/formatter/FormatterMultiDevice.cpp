@@ -136,12 +136,12 @@ void
 FormatterMultiDevice::printGingaWindows ()
 {
   string fileUri = "";
-  GingaWindowID iWin;
+  SDLWindow* iWin;
   NclFormatterLayout *formatterLayout;
 
-  vector<GingaWindowID> sortedIds;
+  vector<SDLWindow*> sortedIds;
   map<int, NclFormatterLayout *>::iterator i;
-  vector<GingaWindowID>::iterator j;
+  vector<SDLWindow*>::iterator j;
 
   int quality = 100;
   int dumpW = defaultWidth;
@@ -288,11 +288,11 @@ FormatterMultiDevice::getScreenShot ()
 
 string
 FormatterMultiDevice::serializeScreen (int devClass,
-                                       GingaWindowID mapWindow)
+                                       SDLWindow* mapWindow)
 {
   string fileUri = "";
   NclFormatterLayout *formatterLayout;
-  vector<GingaWindowID> sortedIds;
+  vector<SDLWindow*> sortedIds;
   map<int, NclFormatterLayout *>::iterator i;
   int quality = 100;
   int dumpW = defaultWidth;
@@ -356,14 +356,14 @@ FormatterMultiDevice::getFormatterLayout (
   return i->second;
 }
 
-GingaWindowID
+SDLWindow*
 FormatterMultiDevice::prepareFormatterRegion (
     NclExecutionObject *executionObject, GingaSurfaceID renderedSurface)
 {
   NclFormatterLayout *layout;
   NclCascadingDescriptor *descriptor;
   string regionId, plan = "";
-  GingaWindowID windowId = 0;
+  SDLWindow* windowId = 0;
 
   map<int, NclFormatterLayout *>::iterator i;
   LayoutRegion *bitMapRegion;
@@ -635,7 +635,7 @@ FormatterMultiDevice::hideObject (NclExecutionObject *executionObject)
 }
 
 void
-FormatterMultiDevice::renderFromUri (GingaWindowID win, string uri)
+FormatterMultiDevice::renderFromUri (SDLWindow* win, string uri)
 {
   GingaSurfaceID s;
   s = Ginga_Display_M->createRenderedSurfaceFromImageFile (uri.c_str ());

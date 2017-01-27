@@ -100,12 +100,12 @@ public:
   SDLSurface *getISurfaceFromId (const GingaSurfaceID &surfaceId);
 
   // Interfacing output.
-  GingaWindowID createWindow (int x, int y, int w, int h, double z);
+  SDLWindow* createWindow (int x, int y, int w, int h, double z);
 
   UnderlyingWindowID createUnderlyingSubWindow (int x, int y, int w, int h,
                                                 double z);
 
-  bool hasWindow (GingaWindowID window);
+  bool hasWindow (SDLWindow* window);
 
   void releaseWindow (SDLWindow *window);
 
@@ -120,7 +120,7 @@ public:
   bool hasSurface (const GingaSurfaceID &surId);
   bool releaseSurface (SDLSurface *surface);
 
-  void lowerWindowToBottom (const GingaWindowID &winId);
+  void lowerWindowToBottom (SDLWindow* winId);
 
   /* Interfacing content */
   GingaProviderID createContinuousMediaProvider (const char *mrl,
@@ -141,55 +141,55 @@ public:
   int fromGingaToMB (int keyCode);
 
   // windows
-  void addWindowCaps (const GingaWindowID &winId, int caps);
-  void setWindowCaps (const GingaWindowID &winId, int caps);
-  int getWindowCap (const GingaWindowID &winId, const string &capName);
+  void addWindowCaps (SDLWindow* winId, int caps);
+  void setWindowCaps (SDLWindow* winId, int caps);
+  int getWindowCap (SDLWindow* winId, const string &capName);
 
-  void drawWindow (const GingaWindowID &winId);
-  void setWindowBounds (const GingaWindowID &winId, int x, int y, int w,
+  void drawWindow (SDLWindow* winId);
+  void setWindowBounds (SDLWindow* winId, int x, int y, int w,
                         int h);
-  void showWindow (const GingaWindowID &winId);
-  void hideWindow (const GingaWindowID &winId);
-  void raiseWindowToTop (const GingaWindowID &winId);
-  void renderWindowFrom (const GingaWindowID &winId,
+  void showWindow (SDLWindow* winId);
+  void hideWindow (SDLWindow* winId);
+  void raiseWindowToTop (SDLWindow* winId);
+  void renderWindowFrom (SDLWindow* winId,
                          const GingaSurfaceID &surId);
-  void setWindowBgColor (const GingaWindowID &winId, guint8 r, guint8 g,
+  void setWindowBgColor (SDLWindow* winId, guint8 r, guint8 g,
                          guint8 b, guint8 alpha);
-  void setWindowBorder (const GingaWindowID &winId, guint8 r, guint8 g,
+  void setWindowBorder (SDLWindow* winId, guint8 r, guint8 g,
                         guint8 b, guint8 alpha, int width);
-  void setWindowCurrentTransparency (const GingaWindowID &winId,
+  void setWindowCurrentTransparency (SDLWindow* winId,
                                      guint8 transparency);
-  void setWindowColorKey (const GingaWindowID &winId, guint8 r, guint8 g,
+  void setWindowColorKey (SDLWindow* winId, guint8 r, guint8 g,
                           guint8 b);
-  void setWindowX (const GingaWindowID &winId, int x);
-  void setWindowY (const GingaWindowID &winId, int y);
-  void setWindowW (const GingaWindowID &winId, int w);
-  void setWindowH (const GingaWindowID &winId, int h);
-  void setWindowZ (const GingaWindowID &winId, double z);
-  void disposeWindow (const GingaWindowID &winId);
-  void setGhostWindow (const GingaWindowID &winId, bool ghost);
-  void validateWindow (const GingaWindowID &winId);
-  int getWindowX (const GingaWindowID &winId);
-  int getWindowY (const GingaWindowID &winId);
-  int getWindowW (const GingaWindowID &winId);
-  int getWindowH (const GingaWindowID &winId);
-  double getWindowZ (const GingaWindowID &winId);
-  guint8 getWindowTransparencyValue (const GingaWindowID &winId);
-  void resizeWindow (const GingaWindowID &winId, int width, int height);
-  string getWindowDumpFileUri (const GingaWindowID &winId, int quality,
+  void setWindowX (SDLWindow* winId, int x);
+  void setWindowY (SDLWindow* winId, int y);
+  void setWindowW (SDLWindow* winId, int w);
+  void setWindowH (SDLWindow* winId, int h);
+  void setWindowZ (SDLWindow* winId, double z);
+  void disposeWindow (SDLWindow* winId);
+  void setGhostWindow (SDLWindow* winId, bool ghost);
+  void validateWindow (SDLWindow* winId);
+  int getWindowX (SDLWindow* winId);
+  int getWindowY (SDLWindow* winId);
+  int getWindowW (SDLWindow* winId);
+  int getWindowH (SDLWindow* winId);
+  double getWindowZ (SDLWindow* winId);
+  guint8 getWindowTransparencyValue (SDLWindow* winId);
+  void resizeWindow (SDLWindow* winId, int width, int height);
+  string getWindowDumpFileUri (SDLWindow* winId, int quality,
                                int dumpW, int dumpH);
-  void clearWindowContent (const GingaWindowID &winId);
-  void revertWindowContent (const GingaWindowID &winId);
-  void deleteWindow (const GingaWindowID &winId);
-  void moveWindowTo (const GingaWindowID &winId, int x, int y);
-  void setWindowMirrorSrc (const GingaWindowID &winId,
-                           const GingaWindowID &mirrorSrc);
+  void clearWindowContent (SDLWindow* winId);
+  void revertWindowContent (SDLWindow* winId);
+  void deleteWindow (SDLWindow* winId);
+  void moveWindowTo (SDLWindow* winId, int x, int y);
+  void setWindowMirrorSrc (SDLWindow* winId,
+                           SDLWindow* mirrorSrc);
   // surfaces
   void *getSurfaceContent (const GingaSurfaceID &surId);
-  GingaWindowID getSurfaceParentWindow (const GingaSurfaceID &surId);
+  SDLWindow* getSurfaceParentWindow (const GingaSurfaceID &surId);
   void deleteSurface (const GingaSurfaceID &surId);
   bool setSurfaceParentWindow (const GingaSurfaceID &surId,
-                               const GingaWindowID &winId);
+                               SDLWindow* winId);
   void clearSurfaceContent (const GingaSurfaceID &surId);
   void getSurfaceSize (const GingaSurfaceID &surId, int *width,
                        int *height);

@@ -60,14 +60,14 @@ private:
   void printObjectMap ();
 
 public:
-  void getSortedIds (vector<GingaWindowID> *sortedIds);
+  void getSortedIds (vector<SDLWindow*> *sortedIds);
 
 private:
   void createDeviceRegion (int x, int y, int w, int h);
 
 public:
   NclExecutionObject *getObject (int x, int y);
-  GingaWindowID prepareFormatterRegion (NclExecutionObject *object,
+  SDLWindow* prepareFormatterRegion (NclExecutionObject *object,
                                         GingaSurfaceID renderedSurface,
                                         string plan);
 
@@ -84,7 +84,7 @@ public:
   void hideObject (NclExecutionObject *object);
 
 private:
-  GingaWindowID addRegionOnMaps (NclExecutionObject *object,
+  SDLWindow* addRegionOnMaps (NclExecutionObject *object,
                                  NclFormatterRegion *region,
                                  GingaSurfaceID renderedSurface,
                                  string layoutRegionId, int zIndex,

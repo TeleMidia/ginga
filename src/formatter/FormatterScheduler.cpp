@@ -409,7 +409,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
   string attName;
   string attValue;
   double time;
-  GingaWindowID winId = 0;
+  SDLWindow* winId = 0;
 
   time = xruntime_ms ();
   executionObject = (NclExecutionObject *)(event->getExecutionObject ());
@@ -800,7 +800,7 @@ FormatterScheduler::runActionOverApplicationObject (
 
   double time = xruntime_ms ();
   int actionType = action->getType ();
-  GingaWindowID winId = 0;
+  SDLWindow* winId = 0;
 
   clog << "FormatterScheduler::";
   clog << "runActionOverApplicationObject ACTION = '";

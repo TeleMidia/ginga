@@ -241,7 +241,7 @@ false;
 }*/
 
 void
-NclFormatterLayout::getSortedIds (vector<GingaWindowID> *sortedIds)
+NclFormatterLayout::getSortedIds (vector<SDLWindow*> *sortedIds)
 {
   map<string, set<NclFormatterRegion *> *>::iterator i;
   set<NclFormatterRegion *>::iterator j;
@@ -251,7 +251,7 @@ NclFormatterLayout::getSortedIds (vector<GingaWindowID> *sortedIds)
 
   set<NclFormatterRegion *> *formRegions = NULL;
   NclFormatterRegion *formatterRegion;
-  GingaWindowID outputId;
+  SDLWindow* outputId;
 
   lock ();
   k = sortedRegions.begin ();
@@ -287,7 +287,7 @@ NclFormatterLayout::getSortedIds (vector<GingaWindowID> *sortedIds)
   unlock ();
 }
 
-GingaWindowID
+SDLWindow*
 NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object,
                                             GingaSurfaceID renderedSurface,
                                             string plan)
@@ -303,7 +303,7 @@ NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object,
 
   int devClass, zIndex;
   double cvtZIndex;
-  GingaWindowID windowId = 0;
+  SDLWindow* windowId = 0;
 
   if (object == NULL || object->getDescriptor () == NULL
       || object->getDescriptor ()->getFormatterRegion () == NULL)
@@ -479,7 +479,7 @@ NclFormatterLayout::hideObject (NclExecutionObject *object)
   // removeFormatterRegionFromMaps(regionId, region);
 }
 
-GingaWindowID
+SDLWindow*
 NclFormatterLayout::addRegionOnMaps (NclExecutionObject *object,
                                      NclFormatterRegion *region,
                                      GingaSurfaceID renderedSurface,
@@ -488,7 +488,7 @@ NclFormatterLayout::addRegionOnMaps (NclExecutionObject *object,
 {
   double convertedZIndex;
   set<NclFormatterRegion *> *formRegions;
-  GingaWindowID windowId;
+  SDLWindow* windowId;
 
   lock ();
   convertedZIndex = convertZIndex (zIndex, plan);

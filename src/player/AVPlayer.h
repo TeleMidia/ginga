@@ -55,7 +55,7 @@ private:
   bool mainAV;
   bool isRemote;
   bool hasData;
-  GingaWindowID win;
+  SDLWindow* win;
 
 public:
   AVPlayer (string mrl);
@@ -116,7 +116,7 @@ public:
 
   void setAVPid (int aPid, int vPid);
 
-  bool setOutWindow (GingaWindowID windowId);
+  bool setOutWindow (SDLWindow* windowId);
 
 private:
   bool checkVideoResizeEvent ();

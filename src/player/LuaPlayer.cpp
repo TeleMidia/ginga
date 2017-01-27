@@ -196,7 +196,7 @@ LuaPlayer::nw_update_thread (arg_unused (void *data))
             {
               SDL_Surface *dest;
               SDL_Surface *sfc;
-              GingaWindowID window;
+              SDLWindow* window;
 
               dest = (SDL_Surface *)Ginga_Display_M->getSurfaceContent (wrapper);
 

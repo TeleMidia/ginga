@@ -52,7 +52,7 @@ private:
   LayoutRegion *ncmRegion;
   LayoutRegion *originalRegion;
   bool externHandler;
-  GingaWindowID outputDisplay;
+  SDLWindow* outputDisplay;
 
   GingaSurfaceID renderedSurface;
 
@@ -149,7 +149,7 @@ public:
                      int selBorderWidth, string selComponentSrc);
 
   void *getLayoutManager ();
-  GingaWindowID getOutputId ();
+  SDLWindow* getOutputId ();
 
 private:
   void meetComponent (int width, int height, int prefWidth, int prefHeight,
@@ -171,7 +171,7 @@ public:
   LayoutRegion *getLayoutRegion ();
   LayoutRegion *getOriginalRegion ();
 
-  GingaWindowID prepareOutputDisplay (GingaSurfaceID renderedSurface,
+  SDLWindow* prepareOutputDisplay (GingaSurfaceID renderedSurface,
                                       double cvtIndex);
 
   void showContent ();

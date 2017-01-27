@@ -73,7 +73,6 @@ SDLDisplay::SDLDisplay (int width, int height, bool fullscreen)
   screen = NULL;
   sdlId = 0;
   backgroundLayer = NULL;
-  winIdRefCounter = 1;
 
 #ifdef _MSC_VER
   putenv ("SDL_AUDIODRIVER=DirectSound");
@@ -257,29 +256,11 @@ SDLDisplay::setHeightResolution (int hRes)
   clog << endl;
 }
 
-SDLWindow *
-SDLDisplay::getIWindowFromId (GingaWindowID winId)
-{
-  map<GingaWindowID, SDLWindow *>::iterator i;
-  SDLWindow *iWin = NULL;
-
-  Thread::mutexLock (&winMutex);
-  i = windowRefs.find (winId);
-  if (i != windowRefs.end ())
-    {
-      iWin = i->second;
-    }
-  Thread::mutexUnlock (&winMutex);
-
-  return iWin;
-}
-
 bool
-SDLDisplay::mergeIds (GingaWindowID destId,
-                           vector<GingaWindowID> *srcIds)
+SDLDisplay::mergeIds (SDLWindow* destId,
+                           vector<SDLWindow*> *srcIds)
 {
-  map<GingaWindowID, SDLWindow *>::iterator i;
-  vector<GingaWindowID>::iterator j;
+  vector<SDLWindow*>::iterator i;
   SDLWindow *destWin;
   SDL_Surface *destSur;
   bool merged = false;
@@ -288,54 +269,21 @@ SDLDisplay::mergeIds (GingaWindowID destId,
   lockSDL ();
 
   Thread::mutexLock (&winMutex);
-  i = windowRefs.find (destId);
-  if (i != windowRefs.end ())
-    {
-      destWin = (SDLWindow *)(i->second);
 
-      w = destWin->getW ();
-      h = destWin->getH ();
+  destWin = destId;
+  w = destWin->getW ();
+  h = destWin->getH ();
 
-      destSur = createUnderlyingSurface (w, h);
+  destSur = createUnderlyingSurface (w, h);
 
-      j = srcIds->begin ();
-      while (j != srcIds->end ())
-        {
-          i = windowRefs.find (*j);
-          if (i != windowRefs.end ())
-            {
-              if (blitFromWindow (i->second, destSur))
-                {
-                  clog << "SDLDisplay::mergeIds merged '";
-                  clog << (unsigned long)(*j) << "' on destination '";
-                  clog << (unsigned long)destId << "'" << endl;
+  for (i = srcIds->begin (); i != srcIds->end (); i++)
+    if (blitFromWindow (*i, destSur))
+      merged = true;
 
-                  merged = true;
-                }
-              else
-                {
-                  clog << "SDLDisplay::mergeIds can't merge '";
-                  clog << (unsigned long)(*j) << "' on destination '";
-                  clog << (unsigned long)destId << "'" << endl;
-                }
-            }
-          ++j;
-        }
+  Thread::mutexUnlock (&winMutex);
+  unlockSDL ();
 
-      Thread::mutexUnlock (&winMutex);
-      unlockSDL ();
-
-      destWin->setRenderedSurface (destSur);
-    }
-  else
-    {
-      clog << "SDLDisplay::mergeIds can't find destination window '";
-      clog << (unsigned long)destId << "'" << endl;
-
-      Thread::mutexUnlock (&winMutex);
-      unlockSDL ();
-    }
-
+  destWin->setRenderedSurface (destSur);
   return merged;
 }
 
@@ -417,12 +365,8 @@ SDLDisplay::createWindow (int x, int y, int w, int h, double z)
 
   Thread::mutexLock (&winMutex);
 
-  iWin = new SDLWindow ((GingaWindowID)winIdRefCounter, 0, x, y, w, h,
-                        z);
+  iWin = new SDLWindow (0, x, y, w, h, z);
 
-  windowRefs[(GingaWindowID)winIdRefCounter] = iWin;
-
-  winIdRefCounter++;
   windowPool.insert (iWin);
   renderMapInsertWindow (iWin, z);
 
@@ -454,7 +398,7 @@ void
 SDLDisplay::releaseWindow (SDLWindow *win)
 {
   set<SDLWindow *>::iterator i;
-  map<GingaWindowID, SDLWindow *>::iterator j;
+  map<SDLWindow*, SDLWindow *>::iterator j;
   SDLWindow *iWin;
   SDL_Texture *uTex = NULL;
   bool uTexOwn;
@@ -464,12 +408,6 @@ SDLDisplay::releaseWindow (SDLWindow *win)
   if (i != windowPool.end ())
     {
       iWin = (SDLWindow *)(*i);
-
-      j = windowRefs.find (iWin->getId ());
-      if (j != windowRefs.end ())
-        {
-          windowRefs.erase (j);
-        }
 
       renderMapRemoveWindow (iWin, iWin->getZ ());
 
@@ -1500,11 +1438,6 @@ SDLDisplay::blitFromWindow (SDLWindow *iWin, SDL_Surface *dest)
         {
           blitted = true;
         }
-    }
-  else
-    {
-      clog << "SDLDisplay::blitFromWindow can't blit from '";
-      clog << (unsigned long)iWin->getId () << "' null texture" << endl;
     }
 
   if (freeSurface)

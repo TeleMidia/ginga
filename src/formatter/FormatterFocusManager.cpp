@@ -707,7 +707,7 @@ FormatterFocusManager::setFocus (NclCascadingDescriptor *descriptor)
 void
 FormatterFocusManager::recoveryDefaultState (NclExecutionObject *object)
 {
-  GingaWindowID wId;
+  SDLWindow* wId;
   AdapterFormatterPlayer *player;
   NclFormatterRegion *fRegion;
 

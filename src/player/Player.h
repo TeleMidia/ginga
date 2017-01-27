@@ -77,7 +77,7 @@ protected:
   string mrl;
   static DisplayManager *dm;
   GingaSurfaceID surface;
-  GingaWindowID outputWindow;
+  SDLWindow* outputWindow;
   double initTime, elapsedTime, elapsedPause, pauseTime;
   set<IPlayer *> referredPlayers;
   IPlayer *timeBasePlayer;
@@ -185,7 +185,7 @@ private:
 public:
   void forceNaturalEnd (bool forceIt);
   bool isForcedNaturalEnd ();
-  virtual bool setOutWindow (GingaWindowID windowId);
+  virtual bool setOutWindow (SDLWindow* windowId);
 
   // Channel player only.
   virtual IPlayer *

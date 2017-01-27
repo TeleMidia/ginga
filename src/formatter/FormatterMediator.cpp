@@ -3216,7 +3216,7 @@ FormatterMediator::getSurface ()
 void
 FormatterMediator::flip ()
 {
-  GingaWindowID w = 0;
+  SDLWindow* w = 0;
 
   if (data->devClass == 0)
     {
@@ -3556,7 +3556,7 @@ FormatterMediator::isForcedNaturalEnd ()
 }
 
 bool
-FormatterMediator::setOutWindow (GingaWindowID windowId)
+FormatterMediator::setOutWindow (SDLWindow* windowId)
 {
   return Player::setOutWindow (windowId);
 }

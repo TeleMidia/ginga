@@ -75,7 +75,7 @@ public:
 
   bool play ();
   void stop ();
-  bool setOutWindow (GingaWindowID windowId);
+  bool setOutWindow (SDLWindow* windowId);
   void setBounds (int x, int y, int w, int h);
 
   void setPropertyValue (string name, string value);

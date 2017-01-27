@@ -28,11 +28,11 @@ using namespace ::ginga::util;
 
 GINGA_MB_BEGIN
 
-SDLWindow::SDLWindow (GingaWindowID windowID, GingaWindowID parentWindowID,
+SDLWindow::SDLWindow (SDLWindow* parentWindowID,
                       int x, int y, int width,
                       int height, double z)
 {
-  initialize (windowID, parentWindowID, x, y, width, height, z);
+  initialize (parentWindowID, x, y, width, height, z);
 }
 
 SDLWindow::~SDLWindow ()
@@ -93,12 +93,10 @@ SDLWindow::~SDLWindow ()
 }
 
 void
-SDLWindow::initialize (GingaWindowID windowID, arg_unused (GingaWindowID parentWindowID),
+SDLWindow::initialize (arg_unused (SDLWindow* parentWindowID),
                        int x, int y, int w, int h,
                        double z)
 {
-  this->windowId = windowID;
-
   this->texture = NULL;
   this->winISur = 0;
   this->curSur = NULL;
@@ -409,15 +407,6 @@ guint8
 SDLWindow::getTransparencyValue ()
 {
   return this->transparencyValue;
-}
-
-GingaWindowID
-SDLWindow::getId ()
-{
-  GingaWindowID myId;
-
-  myId = windowId;
-  return myId;
 }
 
 void
@@ -808,14 +797,11 @@ SDLWindow::getDumpFileUri (int quality, arg_unused (int dumpW), arg_unused (int 
   else
     {
       unlockSurface ();
-      clog << "SDLWindow::getDumpFileUri window '";
-      clog << (unsigned long)getId () << "' can't dump: ";
-      clog << "NULL surface and NULL texture" << endl;
       return "";
     }
 
   SDLDisplay::lockSDL ();
-  xstrassign (uri, "%s/dump_%d.jpg", g_get_tmp_dir (), (int) windowId);
+  xstrassign (uri, "%s/dump_%p.jpg", g_get_tmp_dir (), (void *) this);
   int ret
       = SDLConvert::convertSurfaceToJPEG (uri.c_str (), dumpUSur, quality);
   if (ret == -1)

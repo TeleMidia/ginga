@@ -523,7 +523,7 @@ BerkeliumHandler::mapOnPaintToTexture (
     unsigned char *scroll_buffer)
 {
   string strFile;
-  GingaWindowID sWin;
+  SDLWindow* sWin;
   GingaSurfaceID s;
   const int kBytesPerPixel = 4;
 

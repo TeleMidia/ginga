@@ -52,8 +52,6 @@ private:
   Color *winColor;
   Color *colorKey;
 
-  GingaWindowID windowId;
-
   SDL_Rect rect;
 
   double z;
@@ -80,15 +78,14 @@ private:
   pthread_cond_t cond;
 
 public:
-  SDLWindow (GingaWindowID underlyingWindowID, GingaWindowID parentWindowID,
+  SDLWindow (SDLWindow* parentWindowID,
              int x, int y, int width, int height,
              double z);
 
   virtual ~SDLWindow ();
 
 private:
-  void initialize (GingaWindowID underlyingWindowID,
-                   GingaWindowID parentWindowID,
+  void initialize (SDLWindow* parentWindowID,
                    int x, int y, int width, int height, double z);
 
   void releaseWinISur ();
@@ -129,7 +126,7 @@ public:
   void lowerToBottom ();
   void setCurrentTransparency (guint8 alpha);
   guint8 getTransparencyValue ();
-  GingaWindowID getId ();
+  SDLWindow* getId ();
   void show ();
   void hide ();
 

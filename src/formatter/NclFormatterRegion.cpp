@@ -607,7 +607,7 @@ NclFormatterRegion::getLayoutManager ()
   return layoutManager;
 }
 
-GingaWindowID
+SDLWindow*
 NclFormatterRegion::getOutputId ()
 {
   return outputDisplay;
@@ -718,7 +718,7 @@ NclFormatterRegion::getOriginalRegion ()
   return originalRegion;
 }
 
-GingaWindowID
+SDLWindow*
 NclFormatterRegion::prepareOutputDisplay (GingaSurfaceID renderedSurface,
                                           double cvtIndex)
 {

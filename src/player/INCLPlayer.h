@@ -117,7 +117,7 @@ public:
   virtual void setImmediatelyStart (bool immediatelyStartVal) = 0;
   virtual void forceNaturalEnd (bool forceIt) = 0;
   virtual bool isForcedNaturalEnd () = 0;
-  virtual bool setOutWindow (GingaWindowID windowId) = 0;
+  virtual bool setOutWindow (SDLWindow* windowId) = 0;
 
   /*Exclusive for ChannelPlayer*/
   virtual IPlayer *getSelectedPlayer () = 0;

@@ -395,7 +395,7 @@ SrtPlayer::run ()
   clog << "SrtPlayer::run" << endl;
   running = true;
   lock ();
-  GingaWindowID parent = 0;
+  SDLWindow* parent = 0;
   if (surface != 0)
     {
       parent = Ginga_Display_M->getSurfaceParentWindow (surface);
