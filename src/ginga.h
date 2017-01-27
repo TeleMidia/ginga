@@ -159,7 +159,6 @@ XERCES_CPP_NAMESPACE_USE
 #define GINGA_UTIL_END        _GINGA_END
 
 // Typedefs.
-typedef void *UnderlyingWindowID;
 typedef unsigned int GingaSurfaceID;
 typedef unsigned int GingaProviderID;
 

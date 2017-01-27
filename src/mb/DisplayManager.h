@@ -90,7 +90,7 @@ public:
   void clearWidgetPools ();
 
 public:
-  UnderlyingWindowID getScreenUnderlyingWindow ();
+  SDLWindow* getScreenUnderlyingWindow ();
 
 protected:
   GingaSurfaceID provIdRefCounter;
@@ -102,7 +102,7 @@ public:
   // Interfacing output.
   SDLWindow* createWindow (int x, int y, int w, int h, double z);
 
-  UnderlyingWindowID createUnderlyingSubWindow (int x, int y, int w, int h,
+  SDLWindow* createUnderlyingSubWindow (int x, int y, int w, int h,
                                                 double z);
 
   bool hasWindow (SDLWindow* window);
