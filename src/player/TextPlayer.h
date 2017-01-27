@@ -46,7 +46,7 @@ protected:
   Color *bgColor;
   string fontUri;
   short currentAlign;
-  GingaProviderID font;
+  IMediaProvider* font;
 
 public:
   TextPlayer ();

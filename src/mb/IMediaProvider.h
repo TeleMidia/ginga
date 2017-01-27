@@ -42,19 +42,8 @@ public:
   {
     return type;
   }
-  GingaProviderID
-  getId () const
-  {
-    return id;
-  }
-  void
-  setId (const GingaProviderID &_id)
-  {
-    this->id = _id;
-  }
 
 protected:
-  GingaProviderID id;
   IMediaProviderType type;
 };
 

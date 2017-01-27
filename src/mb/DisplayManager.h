@@ -51,7 +51,7 @@ protected:
   map<SDLSurface*, SDLSurface *> surMap;
   pthread_mutex_t surMapMutex;
 
-  map<GingaProviderID, IMediaProvider *> provMap;
+  map<IMediaProvider*, IMediaProvider *> provMap;
   pthread_mutex_t provMapMutex;
 
   static set<IInputEventListener *> iListeners;
@@ -96,7 +96,6 @@ protected:
   int provIdRefCounter;
 
 public:
-  IMediaProvider *getIMediaProviderFromId (const GingaProviderID &provId);
   SDLSurface *getISurfaceFromId (SDLSurface *surfaceId);
 
   // Interfacing output.
@@ -121,13 +120,13 @@ public:
   void lowerWindowToBottom (SDLWindow* winId);
 
   /* Interfacing content */
-  GingaProviderID createContinuousMediaProvider (const char *mrl,
+  IMediaProvider* createContinuousMediaProvider (const char *mrl,
                                                  bool isRemote);
-  void releaseContinuousMediaProvider (GingaProviderID provider);
-  GingaProviderID createFontProvider (const char *mrl, int fontSize);
-  void releaseFontProvider (GingaProviderID provider);
-  GingaProviderID createImageProvider (const char *mrl);
-  void releaseImageProvider (GingaProviderID provider);
+  void releaseContinuousMediaProvider (IMediaProvider* provider);
+  IMediaProvider* createFontProvider (const char *mrl, int fontSize);
+  void releaseFontProvider (IMediaProvider* provider);
+  IMediaProvider* createImageProvider (const char *mrl);
+  void releaseImageProvider (IMediaProvider* provider);
   SDLSurface* createRenderedSurfaceFromImageFile (const char *mrl);
 
 public:
@@ -211,30 +210,30 @@ public:
   void setSurfaceColor (SDLSurface *surId, guint8 r, guint8 g,
                         guint8 b, guint8 alpha);
   // providers
-  void setProviderSoundLevel (const GingaProviderID &provId, double level);
-  void getProviderOriginalResolution (const GingaProviderID &provId,
+  void setProviderSoundLevel (IMediaProvider*provId, double level);
+  void getProviderOriginalResolution (IMediaProvider*provId,
                                       int *width, int *height);
-  double getProviderTotalMediaTime (const GingaProviderID &provId);
-  double getProviderSoundLevel (const GingaProviderID &provId);
-  int64_t getProviderVPts (const GingaProviderID &provId);
-  void setProviderMediaTime (const GingaProviderID &provId, double pos);
-  double getProviderMediaTime (const GingaProviderID &provId);
-  void pauseProvider (const GingaProviderID &provId);
-  void stopProvider (const GingaProviderID &provId);
-  void resumeProvider (const GingaProviderID &provId,
+  double getProviderTotalMediaTime (IMediaProvider*provId);
+  double getProviderSoundLevel (IMediaProvider*provId);
+  int64_t getProviderVPts (IMediaProvider*provId);
+  void setProviderMediaTime (IMediaProvider*provId, double pos);
+  double getProviderMediaTime (IMediaProvider*provId);
+  void pauseProvider (IMediaProvider*provId);
+  void stopProvider (IMediaProvider*provId);
+  void resumeProvider (IMediaProvider*provId,
                        SDLSurface* surface);
-  void setProviderAVPid (const GingaProviderID &provId, int aPid, int vPid);
-  void feedProviderBuffers (const GingaProviderID &provId);
-  bool checkProviderVideoResizeEvent (const GingaProviderID &provId,
+  void setProviderAVPid (IMediaProvider*provId, int aPid, int vPid);
+  void feedProviderBuffers (IMediaProvider*provId);
+  bool checkProviderVideoResizeEvent (IMediaProvider*provId,
                                       SDLSurface *frame);
-  int getProviderStringWidth (const GingaProviderID &provId,
+  int getProviderStringWidth (IMediaProvider*provId,
                               const char *text, int textLength = 0);
-  void playProviderOver (const GingaProviderID &provId,
+  void playProviderOver (IMediaProvider*provId,
                          SDLSurface *surface);
-  void playProviderOver (const GingaProviderID &provId,
+  void playProviderOver (IMediaProvider*provId,
                          SDLSurface *surface, const char *text,
                          int x, int y, short align);
-  int getProviderHeight (const GingaProviderID &provId);
+  int getProviderHeight (IMediaProvider*provId);
   bool getScreen (SDLDisplay **screen);
 
 protected:

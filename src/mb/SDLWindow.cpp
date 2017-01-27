@@ -699,14 +699,12 @@ void
 SDLWindow::renderImgFile (string serializedImageUrl)
 {
   IImageProvider *img;
-  GingaProviderID providerId;
+  IMediaProvider* providerId;
   SDLSurface* surId;
 
   providerId = Ginga_Display_M->createImageProvider (serializedImageUrl.c_str ());
 
-  IMediaProvider *mediaProvider
-      = Ginga_Display_M->getIMediaProviderFromId (
-          providerId);
+  IMediaProvider *mediaProvider = providerId;
   if (mediaProvider
       && mediaProvider->getType () == IMediaProvider::ImageProvider)
     img = (IImageProvider *)mediaProvider;
@@ -721,7 +719,7 @@ SDLWindow::renderImgFile (string serializedImageUrl)
 
   textureUpdate = true;
 
-  Ginga_Display_M->releaseImageProvider (img->getId ());
+  Ginga_Display_M->releaseImageProvider (img);
   Ginga_Display_M->deleteSurface (surId);
 }
 

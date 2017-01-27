@@ -221,7 +221,7 @@ SDLSurface::releaseFont ()
 {
   if (iFont != NULL)
     {
-      Ginga_Display_M->releaseFontProvider (((IFontProvider*)iFont)->getId ());
+      Ginga_Display_M->releaseFontProvider ((IFontProvider*)iFont);
       iFont = NULL;
     }
 }

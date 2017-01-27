@@ -96,7 +96,7 @@ TextPlayer::write (SDLSurface* s, string text,
       return 0;
     }
 
-  GingaProviderID font = 0;
+  IMediaProvider* font = 0;
   int width = 0;
 
   font = Ginga_Display_M->createFontProvider (fontUri.c_str (), fontSize);

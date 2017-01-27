@@ -139,7 +139,7 @@ AVPlayer::createProvider (void)
   clog << "AVPlayer::createProvider '" << mrl << "' all done" << endl;
 }
 
-GingaProviderID
+IMediaProvider*
 AVPlayer::createProviderT (void *ptr)
 {
   AVPlayer *p = (AVPlayer *)ptr;
