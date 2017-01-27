@@ -296,12 +296,12 @@ PresentationContext::setGlobalVarListener (IContextListener *listener)
 }
 
 void
-PresentationContext::receiveGlobalAttribution (string propertyName,
-                                               string value)
+PresentationContext::receiveGlobalAttribution (const string &pName,
+                                               const string &value)
 {
   if (globalVarListener != NULL)
     {
-      globalVarListener->receiveGlobalAttribution (propertyName, value);
+      globalVarListener->receiveGlobalAttribution (pName, value);
     }
 }
 

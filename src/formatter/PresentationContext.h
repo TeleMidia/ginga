@@ -83,7 +83,7 @@ private:
 public:
   void save ();
   void setGlobalVarListener (IContextListener *listener);
-  void receiveGlobalAttribution (string propertyName, string value);
+  void receiveGlobalAttribution (const string &pName, const string &value);
 
 #if WITH_MULTIDEVICE
   void setRemoteDeviceListener (IRemoteDeviceListener *rdl);
