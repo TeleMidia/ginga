@@ -341,7 +341,7 @@ FormatterActiveDevice::userEventReceived (SDLInputEvent *ev)
   code = ev->getKeyCode ();
   if (code == CodeMap::KEY_F11 || code == CodeMap::KEY_F10)
     {
-      std::abort ();
+      abort ();
     }
   if (code == CodeMap::KEY_TAP)
     {

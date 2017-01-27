@@ -702,7 +702,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                   else if (name == "transparency")
                     {
                       value = cvtPercentual (value, &isPercentual);
-                      transpValue = std::stof (value);
+                      transpValue = xstrtod (value);
                       if (isPercentual)
                         {
                           transpValue = transpValue / 100;
