@@ -95,7 +95,7 @@ TextPlayer::write (SDLSurface* s, string text,
       return 0;
     }
 
-  IMediaProvider* font = 0;
+  IFontProvider* font = 0;
   int width = 0;
 
   font = Ginga_Display->createFontProvider (fontUri.c_str (), fontSize);
@@ -110,10 +110,9 @@ TextPlayer::write (SDLSurface* s, string text,
       s->setColor (fontColor->getR (), fontColor->getG (),
                            fontColor->getB (), fontColor->getAlpha ());
 
-      width = Ginga_Display_M->getProviderStringWidth (
-          font, text.c_str (), (int) text.size ());
+      width = font->getStringWidth (text.c_str (), (int) text.size ());
 
-      Ginga_Display_M->playProviderOver (font, s, text.c_str (), 0, 0, textAlign);
+      font->playOver (s, text.c_str (), 0, 0, textAlign);
 
       Ginga_Display->releaseFontProvider ((IFontProvider*)font);
       font = 0;
@@ -150,7 +149,7 @@ TextPlayer::setFont (string someUri)
       return false;
     }
 
-  fontHeight = Ginga_Display_M->getProviderHeight (font);
+  fontHeight = font->getHeight ();
   return true;
 }
 
@@ -250,8 +249,7 @@ TextPlayer::drawText (string text, short align)
   if (font != 0 && surface != 0)
     {
       surface->getSize (&surWidth, &surHeight);
-      textWidth = Ginga_Display_M->getProviderStringWidth (
-          font, aux.c_str (), (int) aux.size ());
+      textWidth = font->getStringWidth (aux.c_str (), (int) aux.size ());
 
       if (textWidth > surWidth && aux.length () > 1)
         {
@@ -278,7 +276,7 @@ TextPlayer::drawText (string text, short align)
 
           aux = aux.substr (0, splitPos);
 
-          textWidth = Ginga_Display_M->getProviderStringWidth (font, aux.c_str ());
+          textWidth = font->getStringWidth (aux.c_str ());
 
           while (textWidth > surWidth)
             {
@@ -306,7 +304,7 @@ TextPlayer::drawText (string text, short align)
                 }
 
               oldTextWidth = textWidth;
-              textWidth = Ginga_Display_M->getProviderStringWidth (font, aux.c_str ());
+              textWidth = font->getStringWidth (aux.c_str ());
 
               if (oldTextWidth == textWidth)
                 {
@@ -314,7 +312,7 @@ TextPlayer::drawText (string text, short align)
                 }
             }
 
-          Ginga_Display_M->playProviderOver (font, surface, aux.c_str (), currentColumn,
+          font->playOver (surface, aux.c_str (), currentColumn,
                                 currentLine, align);
 
           breakLine ();
@@ -325,7 +323,7 @@ TextPlayer::drawText (string text, short align)
         }
       else
         {
-          Ginga_Display_M->playProviderOver (font, surface, aux.c_str (), currentColumn,
+          font->playOver (surface, aux.c_str (), currentColumn,
                                 currentLine, align);
 
           currentColumn += textWidth;

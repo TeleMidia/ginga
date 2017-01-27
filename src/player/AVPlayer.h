@@ -50,7 +50,7 @@ protected:
 
 private:
   string pSym;
-  IMediaProvider* provider;
+  IContinuousMediaProvider* provider;
   bool hasResized;
   bool mainAV;
   bool isRemote;

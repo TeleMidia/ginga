@@ -143,7 +143,7 @@ ImagePlayer::play ()
       return false;
     }
 
-  Ginga_Display_M->playProviderOver (provider, surface);
+  provider->playOver (surface);
   return Player::play ();
 }
 
@@ -182,7 +182,7 @@ ImagePlayer::prepareSurface (IMediaProvider* provider, arg_unused (string mrl))
   SDLSurface* renderedSurface = 0;
 
   renderedSurface = Ginga_Display->createSurfaceFrom (0);
-  Ginga_Display_M->playProviderOver (provider, renderedSurface);
+  provider->playOver (renderedSurface);
 
   return renderedSurface;
 }

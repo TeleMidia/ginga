@@ -179,7 +179,7 @@ AVPlayer::setSoundLevel (double level)
   this->soundLevel = level;
   if (provider != 0)
     {
-      Ginga_Display_M->setProviderSoundLevel (provider, soundLevel);
+      provider->setSoundLevel (soundLevel);
     }
   // unlock();
 }
@@ -217,7 +217,7 @@ AVPlayer::getOriginalResolution (int *width, int *height)
 {
   if (provider != 0)
     {
-      Ginga_Display_M->getProviderOriginalResolution (provider, height, width);
+      provider->getOriginalResolution (height, width);
     }
 }
 
@@ -226,7 +226,7 @@ AVPlayer::getTotalMediaTime ()
 {
   if (provider != 0)
     {
-      return Ginga_Display_M->getProviderTotalMediaTime (provider);
+      return provider->getTotalMediaTime ();
     }
   return 0;
 }
@@ -239,7 +239,7 @@ AVPlayer::getVPts ()
       return 0;
     }
 
-  return Ginga_Display_M->getProviderVPts (provider);
+  return provider->getVPts ();
 }
 
 void
@@ -249,13 +249,11 @@ AVPlayer::timeShift (string direction)
     {
       if (direction == "forward")
         {
-          Ginga_Display_M->setProviderMediaTime (
-              provider, Ginga_Display_M->getProviderMediaTime (provider) + 10);
+          provider->setMediaTime (provider->getMediaTime () + 10);
         }
       else if (direction == "backward")
         {
-          Ginga_Display_M->setProviderMediaTime (
-              provider, Ginga_Display_M->getProviderMediaTime (provider) - 10);
+          provider->setMediaTime (provider->getMediaTime () - 10);
         }
     }
 }
@@ -271,7 +269,7 @@ AVPlayer::getCurrentMediaTime ()
       return -1;
     }
 
-  return Ginga_Display_M->getProviderMediaTime (provider);
+  return provider->getMediaTime ();
 }
 
 double
@@ -286,14 +284,14 @@ AVPlayer::setMediaTime (double pos)
   if (status == PLAY)
     {
       status = PAUSE;
-      Ginga_Display_M->setProviderMediaTime (provider, pos);
+      provider->setMediaTime (pos);
       status = PLAY;
       running = true;
       Thread::startThread ();
     }
   else if (provider != 0)
     {
-      Ginga_Display_M->setProviderMediaTime (provider, pos);
+      provider->setMediaTime (pos);
     }
 }
 
@@ -350,7 +348,7 @@ AVPlayer::play ()
 
   Player::play ();
   clog << "AVPlayer::play() calling provider play over" << endl;
-  Ginga_Display_M->playProviderOver (provider, surface);
+  provider->playOver (surface);
 
   if (!running)
     {
@@ -375,7 +373,7 @@ AVPlayer::pause ()
     {
       outputWindow->validate ();
     }
-  Ginga_Display_M->pauseProvider (provider);
+  provider->pause ();
 
   clog << "AVPlayer::pause(" << mrl << ") all done!" << endl;
 }
@@ -393,7 +391,7 @@ AVPlayer::stop ()
 
   if (previousStatus != STOP)
     {
-      Ginga_Display_M->stopProvider (provider);
+      provider->stop ();
     }
 
   clog << "AVPlayer::stop(" << mrl << ") all done!" << endl;
@@ -405,7 +403,7 @@ AVPlayer::resume ()
   setSoundLevel (soundLevel);
 
   Player::play ();
-  Ginga_Display_M->resumeProvider (provider, surface);
+  provider->resume (surface);
 
   if (!running)
     {
@@ -419,7 +417,7 @@ AVPlayer::getPropertyValue (string name)
 {
   if (name == "soundLevel")
     {
-      return xstrbuild ("%d", (int) Ginga_Display_M->getProviderSoundLevel (provider));
+      return xstrbuild ("%d", (int) provider->getSoundLevel ());
     }
 
   return Player::getPropertyValue (name);
@@ -566,7 +564,7 @@ AVPlayer::setAVPid (int aPid, int vPid)
     {
       g_usleep (150000);
     }
-  Ginga_Display_M->setProviderAVPid (provider, aPid, vPid);
+  provider->setAVPid (aPid, vPid);
 }
 
 bool
@@ -582,17 +580,17 @@ AVPlayer::checkVideoResizeEvent ()
 
   if (mainAV)
     {
-      Ginga_Display_M->feedProviderBuffers (provider);
+      provider->feedBuffers ();
     }
   else
     {
       g_usleep (150000);
     }
-  hasEvent = Ginga_Display_M->checkProviderVideoResizeEvent (provider, surface);
+  hasEvent = provider->checkVideoResizeEvent (surface);
   setSoundLevel (this->soundLevel);
   if (hasEvent)
     {
-      Ginga_Display_M->playProviderOver (provider, surface);
+      provider->playOver (surface);
     }
 
   return hasEvent;
@@ -624,7 +622,7 @@ AVPlayer::run ()
         {
           surface->setParentWindow (win);
         }
-      Ginga_Display_M->playProviderOver (provider, surface);
+      provider->playOver (surface);
       checkVideoResizeEvent ();
       buffered = true;
 
@@ -761,7 +759,7 @@ AVPlayer::run ()
 
       if (provider != 0)
         {
-          Ginga_Display_M->stopProvider (provider);
+          provider->stop ();
         }
 
       clog << "AVPlayer::run(" << mrl << ") NOTIFY STOP" << endl;
