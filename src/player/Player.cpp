@@ -529,7 +529,7 @@ Player::getPropertyValue (string name)
 }
 
 void
-Player::setPropertyValue (string name, string value)
+Player::setPropertyValue (const string &name, const string &value)
 {
   vector<string> *params = NULL;
 

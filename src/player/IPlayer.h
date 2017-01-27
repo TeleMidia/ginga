@@ -76,7 +76,7 @@ public:
   virtual void resume () = 0;
 
   virtual string getPropertyValue (string name) = 0;
-  virtual void setPropertyValue (string name, string value) = 0;
+  virtual void setPropertyValue (const string &name, const string &value) = 0;
 
   virtual void setReferenceTimePlayer (IPlayer *player) = 0;
   virtual void addTimeReferPlayer (IPlayer *referPlayer) = 0;

@@ -101,7 +101,7 @@ public:
   bool breakLine ();
   int getCurrentColumn ();
   int getCurrentLine ();
-  virtual void setPropertyValue (string name, string value);
+  virtual void setPropertyValue (const string &name, const string &value);
 };
 
 GINGA_PLAYER_END

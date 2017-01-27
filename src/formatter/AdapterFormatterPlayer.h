@@ -139,7 +139,7 @@ public:
   virtual bool unprepare ();
   virtual bool setPropertyValue (NclAttributionEvent *event, string value);
 
-  void setPropertyValue (string name, string value);
+  void setPropertyValue (const string &name, const string &value);
 
   string getPropertyValue (void *event);
   virtual string getPropertyValue (string name);

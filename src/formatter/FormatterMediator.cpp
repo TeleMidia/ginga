@@ -3354,7 +3354,7 @@ FormatterMediator::getPropertyValue (string name)
 }
 
 void
-FormatterMediator::setPropertyValue (string name, string value)
+FormatterMediator::setPropertyValue (const string &name, const string &value)
 {
   INclAttributeValueMaintainer *valueMaintainer;
   PropertyAnchor *anchor;

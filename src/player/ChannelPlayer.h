@@ -53,7 +53,7 @@ public:
   void pause ();
   void resume ();
   void stop ();
-  virtual void setPropertyValue (string name, string value);
+  virtual void setPropertyValue (const string &name, const string &value);
   void updateStatus (short code, string parameter = "",
                      short type = TYPE_PRESENTATION, string value = "");
   virtual void timeShift (arg_unused (string direction)){};

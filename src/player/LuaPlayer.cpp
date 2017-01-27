@@ -594,7 +594,7 @@ LuaPlayer::setKeyHandler (bool b)
 }
 
 void
-LuaPlayer::setPropertyValue (string name, string value)
+LuaPlayer::setPropertyValue (const string &name, const string &value)
 {
   this->lock ();
   ptrace ("name='%s', value='%s'", name.c_str (), value.c_str ());

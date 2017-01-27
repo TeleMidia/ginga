@@ -105,7 +105,7 @@ public:
   void resume ();
 
   virtual string getPropertyValue (string name);
-  virtual void setPropertyValue (string name, string value);
+  virtual void setPropertyValue (const string &name, const string &value);
 
   void addListener (IPlayerListener *listener);
   void release ();

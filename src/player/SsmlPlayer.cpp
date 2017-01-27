@@ -160,7 +160,7 @@ SsmlPlayer::resume ()
 }
 
 void
-SsmlPlayer::setPropertyValue (string name, string value)
+SsmlPlayer::setPropertyValue (const string &name, const string &value)
 {
   Player::setPropertyValue (name, value);
 }

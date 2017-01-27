@@ -78,7 +78,7 @@ public:
   bool setOutWindow (SDLWindow* windowId);
   void setBounds (int x, int y, int w, int h);
 
-  void setPropertyValue (string name, string value);
+  void setPropertyValue (const string &name, const string &value);
 
   bool setKeyHandler (bool isHandler);
 

@@ -56,7 +56,7 @@ public:
   void pause ();
   void resume ();
 
-  virtual void setPropertyValue (string name, string value);
+  virtual void setPropertyValue (const string &name, const string &value);
 
   void busy ();
   bool isPlayingSrt ();
