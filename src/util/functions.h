@@ -26,12 +26,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_UTIL_BEGIN
 
-double strUTCToSec (string utcValue);
-string cvtPercentual (string value, bool *isPercentual);
-vector<string> *split (string str, string token, string pos_delimiter = "");
-double getPercentualValue (string value);
-bool isPercentualValue (string value);
-bool fileExists (string filename);
+double strUTCToSec (const string &utcValue);
+string cvtPercentual (const string &value, bool *isPercentual);
+vector<string> *split (const string &str, const string &token, const string &pos_delimiter = "");
+double getPercentualValue (const string &value);
+bool isPercentualValue (const string &value);
+bool fileExists (const string &filename);
 bool isDirectory (const char *path);
 double NaN ();
 double infinity ();
