@@ -40,9 +40,9 @@ private:
   set<CurlInteractiveChannel *> *getInteractiveChannels ();
 
 public:
-  CurlInteractiveChannel *createInteractiveChannel (string remoteUri);
+  CurlInteractiveChannel *createInteractiveChannel (const string &remoteUri);
   void releaseInteractiveChannel (CurlInteractiveChannel *ic);
-  CurlInteractiveChannel *getInteractiveChannel (string remoteUri);
+  CurlInteractiveChannel *getInteractiveChannel (const string &remoteUri);
   void clearInteractiveChannelManager ();
 
 private:

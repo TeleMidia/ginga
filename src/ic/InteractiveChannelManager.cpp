@@ -106,7 +106,7 @@ InteractiveChannelManager::releaseInteractiveChannel (
 }
 
 CurlInteractiveChannel *
-InteractiveChannelManager::createInteractiveChannel (string rUri)
+InteractiveChannelManager::createInteractiveChannel (const string &rUri)
 {
   CurlInteractiveChannel *ic = NULL;
 
@@ -125,7 +125,7 @@ InteractiveChannelManager::createInteractiveChannel (string rUri)
 }
 
 CurlInteractiveChannel *
-InteractiveChannelManager::getInteractiveChannel (string remoteUri)
+InteractiveChannelManager::getInteractiveChannel (const string &remoteUri)
 {
   if (urisIcs->count (remoteUri) != 0)
     {

@@ -100,7 +100,7 @@ CurlInteractiveChannel::hasConnection ()
 }
 
 void
-CurlInteractiveChannel::setSourceTarget (string url)
+CurlInteractiveChannel::setSourceTarget (const string &url)
 {
   string localPath;
 
@@ -143,9 +143,9 @@ CurlInteractiveChannel::setListener (IInteractiveChannelListener *listener)
 }
 
 bool
-CurlInteractiveChannel::reserveUrl (string uri,
+CurlInteractiveChannel::reserveUrl (const string &uri,
                                     IInteractiveChannelListener *listener,
-                                    string userAgent)
+                                    const string &userAgent)
 {
   clog << "RESERVE '" << uri << "'" << endl;
   this->uri = uri;
