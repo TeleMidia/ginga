@@ -177,8 +177,10 @@ public:
   void addActiveUris (string baseUri, vector<string> *uris);
 
 protected:
-  void updateStatus (short code, string parameter, short type,
-                     string value);
+  void updateStatus (short code,
+                     const string &parameter,
+                     short type,
+                     const string &value);
   virtual bool userEventReceived (SDLInputEvent *ev) = 0;
 };
 

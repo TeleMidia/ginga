@@ -142,15 +142,17 @@ public:
   void setPropertyValue (const string &name, const string &value);
 
   string getPropertyValue (void *event);
-  virtual string getPropertyValue (string const &name);
+  virtual string getPropertyValue (const string &name);
 
   double getObjectExpectedDuration ();
   void updateObjectExpectedDuration ();
   double getMediaTime ();
   IPlayer *getPlayer ();
   void setTimeBasePlayer (AdapterFormatterPlayer *timeBasePlayer);
-  virtual void updateStatus (short code, string parameter = "",
-                             short type = 10, string value = "");
+  virtual void updateStatus (short code,
+                             const string &parameter = "",
+                             short type = 10,
+                             const string &value = "");
 
   bool userEventReceived (SDLInputEvent *ev);
 

@@ -36,13 +36,13 @@ protected:
   bool running;
 
 public:
-  SrtPlayer (string mrl);
+  SrtPlayer (const string &mrl);
   virtual ~SrtPlayer ();
-  void loadFile (string url);
+  void loadFile (const string &url);
 
 protected:
   void loadSrt ();
-  double strTimeToFloat (string time);
+  double strTimeToFloat (const string &time);
   void printSrt ();
 
 public:

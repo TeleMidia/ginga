@@ -50,7 +50,7 @@ public:
   static void nw_update_remove (LuaPlayer *player);
 
 public:
-  LuaPlayer (string mrl);
+  LuaPlayer (const string &mrl);
   virtual ~LuaPlayer (void);
 
   // TODO: Make private.
@@ -66,7 +66,7 @@ public:
   void resume (void);
   void stop (void);
   virtual bool hasPresented (void);
-  void setCurrentScope (string scopeId);
+  void setCurrentScope (const string &scopeId);
   bool setKeyHandler (bool isHandler);
   virtual void setPropertyValue (const string &name, const string &value);
 

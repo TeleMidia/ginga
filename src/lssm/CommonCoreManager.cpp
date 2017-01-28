@@ -146,7 +146,7 @@ CommonCoreManager::removeOCFilterAfterMount (bool removeIt)
 }
 
 void
-CommonCoreManager::setTunerSpec (string tunerSpec)
+CommonCoreManager::setTunerSpec (const string &tunerSpec)
 {
 #if WITH_ISDBT
   string ni, ch;
@@ -201,7 +201,7 @@ CommonCoreManager::releaseTunningWindow ()
 }
 
 IPlayer *
-CommonCoreManager::createMainAVPlayer (string dstUri,
+CommonCoreManager::createMainAVPlayer (const string &dstUri,
                                        int x, int y,
                                        int w, int h)
 {

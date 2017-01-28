@@ -703,9 +703,9 @@ FormatterMultiDevice::addActiveUris (string baseUri, vector<string> *uris)
 
 void
 FormatterMultiDevice::updateStatus (arg_unused (short code),
-                                    arg_unused (string parameter),
+                                    arg_unused (const string &parameter),
                                     arg_unused (short type),
-                                    arg_unused (string value))
+                                    arg_unused (const string &value))
 {
 }
 

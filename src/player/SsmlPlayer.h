@@ -43,11 +43,11 @@ private:
   string content;
 
 public:
-  SsmlPlayer (string mrl);
+  SsmlPlayer (const string &mrl);
   virtual ~SsmlPlayer ();
 
 protected:
-  void setFile (string mrl);
+  void setFile (const string &mrl);
 
 private:
   void loadSsml ();

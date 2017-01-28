@@ -78,8 +78,10 @@ private:
 
 public:
   virtual void naturalEnd ();
-  virtual void updateStatus (short code, string parameter = "",
-                             short type = 10, string value = "");
+  virtual void updateStatus (short code,
+                             const string &parameter = "",
+                             short type = 10,
+                             const string &value = "");
 
 private:
   void notificationHandler (short code, string parameter, short type,

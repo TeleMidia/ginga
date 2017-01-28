@@ -114,7 +114,7 @@ ProgramAV::getSurface ()
 }
 
 void
-ProgramAV::addPidName (string name, int pid)
+ProgramAV::addPidName (const string &name, int pid)
 {
   clog << "ProgramAV::addPidName '" << name << "' = '" << pid;
   clog << "'" << endl;
@@ -122,7 +122,7 @@ ProgramAV::addPidName (string name, int pid)
 }
 
 int
-ProgramAV::getPidByName (string name)
+ProgramAV::getPidByName (const string &name)
 {
   map<string, int>::iterator i;
 
@@ -136,7 +136,7 @@ ProgramAV::getPidByName (string name)
 }
 
 void
-ProgramAV::forcePids (string pValue)
+ProgramAV::forcePids (const string &pValue)
 {
   vector<string> *vals;
   string name;
@@ -153,7 +153,7 @@ ProgramAV::forcePids (string pValue)
 }
 
 void
-ProgramAV::setAVPid (string name, int aPid, int vPid)
+ProgramAV::setAVPid (const string &name, int aPid, int vPid)
 {
   IPlayer *p;
   int pid;
@@ -183,7 +183,7 @@ ProgramAV::setAVPid (string name, int aPid, int vPid)
 }
 
 string
-ProgramAV::getNameFromMrl (string mrl)
+ProgramAV::getNameFromMrl (const string &mrl)
 {
   if (mrl.substr (0, 11) == "sbtvd-ts://")
     {
@@ -198,7 +198,7 @@ ProgramAV::getNameFromMrl (string mrl)
 }
 
 void
-ProgramAV::showPlayer (string mrl)
+ProgramAV::showPlayer (const string &mrl)
 {
   IPlayer *player;
 
@@ -210,7 +210,7 @@ ProgramAV::showPlayer (string mrl)
 }
 
 void
-ProgramAV::hidePlayer (string mrl)
+ProgramAV::hidePlayer (const string &mrl)
 {
   IPlayer *player;
 
@@ -222,7 +222,7 @@ ProgramAV::hidePlayer (string mrl)
 }
 
 void
-ProgramAV::createPlayer (string mrl)
+ProgramAV::createPlayer (const string &mrl)
 {
   string name;
   gint64 x;
@@ -247,7 +247,7 @@ ProgramAV::createPlayer (string mrl)
     }
 
   currentPid = pid;
-  currentPlayer = new AVPlayer (mrl.c_str ());
+  currentPlayer = new AVPlayer (mrl);
 
   if (fullScreenBounds != "")
     {
@@ -282,7 +282,7 @@ ProgramAV::setPlayer (int pid, IPlayer *player)
 }
 
 IPlayer *
-ProgramAV::getPlayer (string mrl)
+ProgramAV::getPlayer (const string &mrl)
 {
   string name;
   gint64 x;
@@ -316,7 +316,7 @@ ProgramAV::getPlayer (int pid)
 }
 
 string
-ProgramAV::getPropertyValue (string const &name)
+ProgramAV::getPropertyValue (const string &name)
 {
   string value = "";
 

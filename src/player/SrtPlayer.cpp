@@ -23,7 +23,7 @@ using namespace ::ginga::util;
 
 GINGA_PLAYER_BEGIN
 
-SrtPlayer::SrtPlayer (string mrl)
+SrtPlayer::SrtPlayer (const string &mrl)
     : TextPlayer (), Thread ()
 {
   this->mrl = mrl;
@@ -60,7 +60,7 @@ SrtPlayer::~SrtPlayer ()
 }
 
 void
-SrtPlayer::loadFile (string mrl)
+SrtPlayer::loadFile (const string &mrl)
 {
   this->mrl = mrl;
 
@@ -187,8 +187,9 @@ SrtPlayer::loadSrt ()
 }
 
 double
-SrtPlayer::strTimeToFloat (string time)
+SrtPlayer::strTimeToFloat (const string &t)
 {
+  string time = t;
   if (time == "" || time.find (":") == std::string::npos)
     {
       return 0;

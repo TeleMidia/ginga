@@ -109,7 +109,7 @@ ShowButton::release ()
 }
 
 void
-ShowButton::render (string mrl)
+ShowButton::render (const string &mrl)
 {
   SDLSurface* surface;
 

@@ -24,7 +24,7 @@ using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
-ImagePlayer::ImagePlayer (string mrl) : Player (mrl)
+ImagePlayer::ImagePlayer (const string &_mrl) : Player (_mrl)
 {
   this->surface = Ginga_Display->createSurfaceFrom (NULL);
 }
