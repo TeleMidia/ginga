@@ -89,7 +89,7 @@ NclPresentationSpecConverter::addImportBaseToDescriptorBase (
           ->getAttribute (XMLString::transcode ("documentURI")));
 
   compiler = (NclDocumentConverter *)getDocumentParser ();
-  importedDocument = compiler->importDocument (&baseLocation);
+  importedDocument = compiler->importDocument (baseLocation);
   if (importedDocument == NULL)
     {
       return;

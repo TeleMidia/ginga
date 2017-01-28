@@ -68,9 +68,10 @@ DocumentParser::~DocumentParser ()
 }
 
 void *
-DocumentParser::parse (string uri, string iUriD, string fUriD)
+DocumentParser::parse (const string &_uri, const string &iUriD, const string &fUriD)
 {
   DOMElement *rootElement;
+  string uri = _uri;
 
   this->iUriD = iUriD;
   this->fUriD = fUriD;
@@ -106,8 +107,10 @@ DocumentParser::parse (string uri, string iUriD, string fUriD)
 }
 
 void *
-DocumentParser::parse (DOMElement *rootElement, string uri)
+DocumentParser::parse (DOMElement *rootElement, const string &_uri)
 {
+  string uri = _uri;
+
   if (!isXmlStr (uri))
     {
       string::size_type pos;
@@ -144,7 +147,7 @@ DocumentParser::setDependencies ()
 }
 
 string
-DocumentParser::absoluteFile (string basePath, string fileName)
+DocumentParser::absoluteFile (const string &basePath, const string &fileName)
 {
   if (isXmlStr (fileName))
     {
@@ -156,9 +159,7 @@ DocumentParser::absoluteFile (string basePath, string fileName)
       return fileName;
     }
 
-  fileName = basePath + iUriD + fileName;
-
-  return fileName;
+  return basePath + iUriD + fileName;
 }
 
 void
@@ -172,7 +173,7 @@ DocumentParser::initializeUserCurrentPath ()
 }
 
 string
-DocumentParser::getPath (string filename)
+DocumentParser::getPath (const string &filename)
 {
   string path;
   string::size_type i;
@@ -209,7 +210,7 @@ DocumentParser::getUserCurrentPath ()
 }
 
 bool
-DocumentParser::checkUriPrefix (string uri)
+DocumentParser::checkUriPrefix (const string &uri)
 {
   string::size_type len;
 
@@ -232,8 +233,9 @@ DocumentParser::checkUriPrefix (string uri)
 }
 
 bool
-DocumentParser::isAbsolutePath (string path)
+DocumentParser::isAbsolutePath (const string &p)
 {
+  string path = p;
   string::size_type i, len;
 
   if (isXmlStr (path))
@@ -264,7 +266,7 @@ DocumentParser::isAbsolutePath (string path)
 }
 
 bool
-DocumentParser::isXmlStr (string location)
+DocumentParser::isXmlStr (const string &location)
 {
   if (location.find ("<") != std::string::npos
       || location.find ("?xml") != std::string::npos
@@ -277,7 +279,7 @@ DocumentParser::isXmlStr (string location)
 }
 
 string
-DocumentParser::getAbsolutePath (string path)
+DocumentParser::getAbsolutePath (const string &path)
 {
   // uri_t* newUrl = NULL;
   string newPath = path;
@@ -312,9 +314,10 @@ DocumentParser::getDocumentPath ()
 }
 
 void
-DocumentParser::setDocumentPath (string path)
+DocumentParser::setDocumentPath (const string &p)
 {
   string::size_type pos;
+  string path = p;
   while (true)
     {
       pos = path.find_first_of (fUriD);
@@ -342,7 +345,7 @@ DocumentParser::getDocumentTree ()
 }
 
 void
-DocumentParser::addObject (string tableName, string key, void *value)
+DocumentParser::addObject (const string &tableName, const string &key, void *value)
 {
   map<string, void *> *table;
   map<string, void *>::iterator i;
@@ -361,7 +364,7 @@ DocumentParser::addObject (string tableName, string key, void *value)
 }
 
 void *
-DocumentParser::getObject (string tableName, string key)
+DocumentParser::getObject (const string &tableName, const string &key)
 {
   map<string, void *> *table = NULL;
   map<string, void *>::iterator i;
@@ -385,7 +388,7 @@ DocumentParser::getObject (string tableName, string key)
 }
 
 void
-DocumentParser::removeObject (string tableName, string key)
+DocumentParser::removeObject (const string &tableName, const string &key)
 {
   map<string, void *> *table = NULL;
   map<string, void *>::iterator i;
@@ -417,7 +420,7 @@ DocumentParser::removeObject (string tableName, string key)
 }
 
 void
-DocumentParser::addObjectGrouped (string tableName, string key, void *value)
+DocumentParser::addObjectGrouped (const string &tableName, const string &key, void *value)
 {
   map<string, void *> *table = NULL;
   map<string, void *>::iterator i;
@@ -461,7 +464,7 @@ DocumentParser::addObjectGrouped (string tableName, string key, void *value)
 }
 
 bool
-DocumentParser::importDocument (DocumentParser *parser, string docLocation)
+DocumentParser::importDocument (DocumentParser *parser, const string &docLocation)
 {
   string uri;
 

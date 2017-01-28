@@ -32,10 +32,10 @@ public:
   virtual void setConverterInfo (IPrivateBaseContext *pbc,
                                  DeviceLayout *deviceLayout)
       = 0;
-  virtual string getAttribute (void *element, string attribute) = 0;
-  virtual void *getObject (string tableName, string key) = 0;
-  virtual void *parse (string uri, string iUriD, string fUriD) = 0;
-  virtual void *parseEntity (string entityLocation, NclDocument *document,
+  virtual string getAttribute (void *element, const string &attribute) = 0;
+  virtual void *getObject (const string &tableName, const string &key) = 0;
+  virtual void *parse (const string &uri, const string &iUriD, const string &fUriD) = 0;
+  virtual void *parseEntity (const string &entityLocation, NclDocument *document,
                              void *parent)
       = 0;
 };
