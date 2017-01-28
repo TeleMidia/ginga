@@ -33,7 +33,7 @@ private:
   static XMLParsing *myInstance;
 
 public:
-  static DOMNode *parse (string src);
+  static DOMNode *parse (const string &src);
   ~XMLParsing ();
 };
 

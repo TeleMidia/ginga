@@ -33,7 +33,7 @@ XMLParsing::~XMLParsing ()
 }
 
 DOMNode *
-XMLParsing::parse (string src)
+XMLParsing::parse (const string &src)
 {
   bool bFailed = false;
 

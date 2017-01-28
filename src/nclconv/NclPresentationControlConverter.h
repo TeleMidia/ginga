@@ -128,7 +128,7 @@ public:
   void *posCompileSwitch (DOMElement *parentElement, void *parentObject);
 
 private:
-  short convertComparator (string comparator);
+  short convertComparator (const string &comparator);
 };
 
 GINGA_NCLCONV_END

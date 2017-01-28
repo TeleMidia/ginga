@@ -47,7 +47,7 @@ NclLayoutConverter::addImportBaseToRegionBase (void *parentObject,
           ->getAttribute (XMLString::transcode ("documentURI")));
 
   compiler = (NclDocumentConverter *)getDocumentParser ();
-  importedDocument = compiler->importDocument (&baseLocation);
+  importedDocument = compiler->importDocument (baseLocation);
   if (importedDocument == NULL)
     {
       return;
@@ -309,7 +309,7 @@ NclLayoutConverter::createRegion (DOMElement *parentElement,
 }
 
 double
-NclLayoutConverter::getPercentualValue (string value)
+NclLayoutConverter::getPercentualValue (const string &value)
 {
   string actualValue;
   double floatValue;
@@ -331,7 +331,7 @@ NclLayoutConverter::getPercentualValue (string value)
 }
 
 int
-NclLayoutConverter::getPixelValue (string value)
+NclLayoutConverter::getPixelValue (const string &value)
 {
   string actualValue;
 
@@ -351,7 +351,7 @@ NclLayoutConverter::getPixelValue (string value)
 }
 
 bool
-NclLayoutConverter::isPercentualValue (string value)
+NclLayoutConverter::isPercentualValue (const string &value)
 {
   if (value[value.length () - 1] == '%')
     return true;
