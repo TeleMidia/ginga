@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-SimpleCondition::SimpleCondition (string role)
+SimpleCondition::SimpleCondition (const string &role)
     : TriggerExpression (), Role ()
 {
   SimpleCondition::setLabel (role);
@@ -37,7 +37,7 @@ SimpleCondition::getKey ()
 }
 
 void
-SimpleCondition::setKey (string key)
+SimpleCondition::setKey (const string &key)
 {
   this->key = key;
 }
@@ -67,7 +67,7 @@ SimpleCondition::setQualifier (short qualifier)
 }
 
 void
-SimpleCondition::setLabel (string id)
+SimpleCondition::setLabel (const string &id)
 {
   label = id;
 

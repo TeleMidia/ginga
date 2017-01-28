@@ -90,7 +90,7 @@ PrivateBaseContext::~PrivateBaseContext ()
 }
 
 void
-PrivateBaseContext::createPrivateBase (string id)
+PrivateBaseContext::createPrivateBase (const string &id)
 {
   if (privateBase != NULL)
     {
@@ -275,13 +275,13 @@ PrivateBaseContext::embedDocument (string docId, string nodeId,
 }
 
 void *
-PrivateBaseContext::addVisibleDocument (string location,
+PrivateBaseContext::addVisibleDocument (const string &loc,
                                         DeviceLayout *deviceLayout)
 {
   NclDocument *newDocument;
   string id;
 
-  location = SystemCompat::updatePath (location);
+  string location = SystemCompat::updatePath (loc);
   if (baseDocuments.count (location) != 0)
     {
       return baseDocuments[location];

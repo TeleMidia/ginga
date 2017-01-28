@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-PrivateBase::PrivateBase (string uid) : CompositeNode (uid)
+PrivateBase::PrivateBase (const string &uid) : CompositeNode (uid)
 {
   typeSet.insert ("PrivateBase");
 }
@@ -58,7 +58,7 @@ PrivateBase::addNode (Node *node)
 }
 
 bool
-PrivateBase::removeAllNodeOccurrences (string nodeUID)
+PrivateBase::removeAllNodeOccurrences (const string &nodeUID)
 {
   Node *node;
 

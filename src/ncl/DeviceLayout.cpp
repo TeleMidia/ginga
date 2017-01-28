@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-DeviceLayout::DeviceLayout (string layoutName)
+DeviceLayout::DeviceLayout (const string &layoutName)
 {
   devices = new map<string, DeviceProperty *>;
   this->layoutName = layoutName;
@@ -46,7 +46,7 @@ DeviceLayout::getLayoutName ()
 }
 
 void
-DeviceLayout::addDevice (string name, int x, int y, int width, int height)
+DeviceLayout::addDevice (const string &name, int x, int y, int width, int height)
 {
   DeviceProperty *device;
 
@@ -67,7 +67,7 @@ DeviceLayout::addDevice (string name, int x, int y, int width, int height)
 }
 
 DeviceProperty *
-DeviceLayout::getDeviceProperty (string name)
+DeviceLayout::getDeviceProperty (const string &name)
 {
   if (devices->count (name) != 0)
     {

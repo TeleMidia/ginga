@@ -29,7 +29,7 @@ class DescriptorUtil
 {
 public:
   static short
-  getFitCode (string fitName)
+  getFitCode (const string &fitName)
   {
     if (xstrcaseeq (fitName, "fill"))
       {
@@ -83,7 +83,7 @@ public:
   }
 
   static short
-  getScrollCode (string scrollName)
+  getScrollCode (const string &scrollName)
   {
     if (xstrcaseeq (scrollName, "none"))
       {

@@ -35,17 +35,17 @@ private:
   string id; // id=comparable unique entity Id
 
 public:
-  Entity (string someId);
+  Entity (const string &someId);
   virtual ~Entity ();
 
   static bool hasInstance (Entity *instance, bool eraseFromList);
   void printHierarchy ();
-  bool instanceOf (string s);
+  bool instanceOf (const string &s);
   int compareTo (Entity *otherEntity);
   string getId ();
   int hashCode ();
 
-  virtual void setId (string someId);
+  virtual void setId (const string &someId);
 
   virtual string toString ();
   virtual Entity *getDataEntity ();

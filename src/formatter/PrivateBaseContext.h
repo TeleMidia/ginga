@@ -83,7 +83,7 @@ public:
   PrivateBaseContext ();
   virtual ~PrivateBaseContext ();
 
-  void createPrivateBase (string id);
+  void createPrivateBase (const string &id);
 
 private:
   NclDocument *compileDocument (string location,
@@ -95,7 +95,7 @@ public:
   NclDocument *embedDocument (string docId, string nodeId, string location,
                               DeviceLayout *deviceLayout);
 
-  void *addVisibleDocument (string location, DeviceLayout *deviceLayout);
+  void *addVisibleDocument (const string &location, DeviceLayout *deviceLayout);
   NclDocument *getVisibleDocument (string docId);
 
 private:

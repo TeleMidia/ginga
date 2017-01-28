@@ -37,21 +37,21 @@ protected:
   set<string> typeSet;
 
 public:
-  Base (string id);
+  Base (const string &id);
   virtual ~Base ();
   static bool hasInstance (Base *base, bool eraseFromList);
-  virtual bool addBase (Base *base, string alias, string location);
+  virtual bool addBase (Base *base, const string &alias, const string &location);
   virtual void clear ();
-  Base *getBase (string baseId);
+  Base *getBase (const string &baseId);
   string getBaseAlias (Base *base);
   string getBaseLocation (Base *base);
   vector<Base *> *getBases ();
   bool removeBase (Base *base);
-  void setBaseAlias (Base *base, string alias);
-  void setBaseLocation (Base *base, string location);
+  void setBaseAlias (Base *base, const string &alias);
+  void setBaseLocation (Base *base, const string &location);
   string getId ();
-  void setId (string id);
-  bool instanceOf (string s);
+  void setId (const string &id);
+  bool instanceOf (const string &s);
 };
 
 GINGA_NCL_END

@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-Link::Link (string id, Connector *connector) : Entity (id)
+Link::Link (const string &id, Connector *connector) : Entity (id)
 {
   roleBinds = new map<string, vector<Bind *> *>;
   binds = new vector<Bind *>;
@@ -369,7 +369,7 @@ Link::getParameters ()
 }
 
 Parameter *
-Link::getParameter (string name)
+Link::getParameter (const string &name)
 {
   if (parameters->empty ())
     return NULL;

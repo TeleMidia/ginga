@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-LayoutRegion::LayoutRegion (string id) : Entity (id)
+LayoutRegion::LayoutRegion (const string &id) : Entity (id)
 {
   title = "";
   outputMapRegionId = "";
@@ -255,7 +255,7 @@ LayoutRegion::copyRegion ()
 }
 
 int
-LayoutRegion::compareWidthSize (string w)
+LayoutRegion::compareWidthSize (const string &w)
 {
   int oldW;
   int newW;
@@ -287,7 +287,7 @@ LayoutRegion::compareWidthSize (string w)
 }
 
 int
-LayoutRegion::compareHeightSize (string h)
+LayoutRegion::compareHeightSize (const string &h)
 {
   int oldH;
   int newH;
@@ -342,7 +342,7 @@ LayoutRegion::getRight ()
 }
 
 LayoutRegion *
-LayoutRegion::getRegion (string id)
+LayoutRegion::getRegion (const string &id)
 {
   map<string, LayoutRegion *>::iterator i;
   LayoutRegion *someRegion;
@@ -368,7 +368,7 @@ LayoutRegion::getRegion (string id)
 }
 
 LayoutRegion *
-LayoutRegion::getRegionRecursively (string id)
+LayoutRegion::getRegionRecursively (const string &id)
 {
   map<string, LayoutRegion *>::iterator i;
   LayoutRegion *region;
@@ -1091,7 +1091,7 @@ LayoutRegion::validateTarget ()
 }
 
 void
-LayoutRegion::setTitle (string newTitle)
+LayoutRegion::setTitle (const string &newTitle)
 {
   title = newTitle;
 }
@@ -1150,7 +1150,7 @@ LayoutRegion::getParent ()
 }
 
 void
-LayoutRegion::setDeviceClass (int deviceClass, string mapId)
+LayoutRegion::setDeviceClass (int deviceClass, const string &mapId)
 {
   bool changed = false;
 
@@ -1703,7 +1703,7 @@ LayoutRegion::getAbsoluteTop ()
 }
 
 double
-LayoutRegion::getPercentualValue (string value)
+LayoutRegion::getPercentualValue (const string &value)
 {
   string actualValue;
   double floatValue;
@@ -1725,7 +1725,7 @@ LayoutRegion::getPercentualValue (string value)
 }
 
 bool
-LayoutRegion::isPercentualValue (string value)
+LayoutRegion::isPercentualValue (const string &value)
 {
   if (value.substr (value.length () - 1, 1) == "%")
     return true;

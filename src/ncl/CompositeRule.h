@@ -33,8 +33,8 @@ public:
   static const short OP_AND = 0;
   static const short OP_OR = 1;
 
-  CompositeRule (string id, short someOperator);
-  CompositeRule (string id, Rule *firstRule, Rule *secondRule,
+  CompositeRule (const string &id, short someOperator);
+  CompositeRule (const string &id, Rule *firstRule, Rule *secondRule,
                  short someOperator);
 
   virtual ~CompositeRule ();

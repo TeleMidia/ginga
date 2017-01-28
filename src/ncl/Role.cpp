@@ -47,7 +47,7 @@ Role::setEventType (short type)
 }
 
 void
-Role::setLabel (string id)
+Role::setLabel (const string &id)
 {
   label = id;
 }

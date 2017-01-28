@@ -25,7 +25,7 @@ GINGA_NCL_BEGIN
 class Rule : public Entity
 {
 public:
-  Rule (string id);
+  Rule (const string &id);
   virtual ~Rule (){};
 };
 

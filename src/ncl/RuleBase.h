@@ -30,19 +30,19 @@ private:
   vector<Rule *> *ruleSet;
 
 public:
-  RuleBase (string id);
+  RuleBase (const string &id);
   virtual ~RuleBase ();
 
   bool addRule (Rule *rule);
-  bool addBase (Base *base, string alias, string location);
+  bool addBase (Base *base, const string &alias, const string &location);
 
   void clear ();
 
 private:
-  Rule *getRuleLocally (string ruleId);
+  Rule *getRuleLocally (const string &ruleId);
 
 public:
-  Rule *getRule (string ruleId);
+  Rule *getRule (const string &ruleId);
   vector<Rule *> *getRules ();
   bool removeRule (Rule *rule);
 };

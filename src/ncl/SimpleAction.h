@@ -48,26 +48,26 @@ public:
   static const short ACT_ABORT = 5;
   static const short ACT_SET = 6;
 
-  SimpleAction (string role);
+  SimpleAction (const string &role);
   virtual ~SimpleAction ();
 
-  void setLabel (string id);
+  void setLabel (const string &id);
 
   short getQualifier ();
   void setQualifier (short qualifier);
   string getRepeat ();
   string getRepeatDelay ();
-  void setRepeatDelay (string time);
-  void setRepeat (string newRepetitions);
+  void setRepeatDelay (const string &time);
+  void setRepeat (const string &newRepetitions);
   short getActionType ();
   void setActionType (short action);
   string getValue ();
-  void setValue (string value);
+  void setValue (const string &value);
   Animation *getAnimation ();
   void setAnimation (Animation *animation);
 
   bool
-  instanceOf (string type)
+  instanceOf (const string &type)
   {
     return Action::instanceOf (type);
   }

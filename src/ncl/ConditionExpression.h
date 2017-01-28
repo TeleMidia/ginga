@@ -31,7 +31,7 @@ public:
   ConditionExpression () {typeSet.insert ("ConditionExpression"); };
   virtual ~ConditionExpression () {typeSet.clear (); };
   virtual bool
-  instanceOf (string type)
+  instanceOf (const string &type)
   {
     return typeSet.count (type);
   }

@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-RuleBase::RuleBase (string id) : Base (id)
+RuleBase::RuleBase (const string &id) : Base (id)
 {
   ruleSet = new vector<Rule *>;
   typeSet.insert ("RuleBase");
@@ -62,7 +62,7 @@ RuleBase::addRule (Rule *rule)
 }
 
 bool
-RuleBase::addBase (Base *base, string alias, string location)
+RuleBase::addBase (Base *base, const string &alias, const string &location)
 {
   if (base->instanceOf ("RuleBase"))
     {
@@ -79,7 +79,7 @@ RuleBase::clear ()
 }
 
 Rule *
-RuleBase::getRuleLocally (string ruleId)
+RuleBase::getRuleLocally (const string &ruleId)
 {
   vector<Rule *>::iterator rules;
 
@@ -96,7 +96,7 @@ RuleBase::getRuleLocally (string ruleId)
 }
 
 Rule *
-RuleBase::getRule (string ruleId)
+RuleBase::getRule (const string &ruleId)
 {
   string::size_type index;
   string prefix, suffix;

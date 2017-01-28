@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-TextAnchor::TextAnchor (string id, string t, long p) : Anchor (id)
+TextAnchor::TextAnchor (const string &id, const string &t, long p) : Anchor (id)
 {
   position = p;
   text = t;
@@ -46,7 +46,7 @@ TextAnchor::setPosition (long p)
 }
 
 void
-TextAnchor::setText (string t)
+TextAnchor::setText (const string &t)
 {
   text = t;
 }

@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-NodeEntity::NodeEntity (string uid, Content *someContent) : Node (uid)
+NodeEntity::NodeEntity (const string &uid, Content *someContent) : Node (uid)
 {
   descriptor = NULL;
   anchorList.push_back (new LambdaAnchor (uid));
@@ -94,7 +94,7 @@ NodeEntity::getLambdaAnchor ()
 }
 
 void
-NodeEntity::setId (string id)
+NodeEntity::setId (const string &id)
 {
   LambdaAnchor *anchor;
 

@@ -26,7 +26,7 @@ GINGA_NCL_BEGIN
 class LambdaAnchor : public RelativeTimeIntervalAnchor
 {
 public:
-  LambdaAnchor (string id);
+  LambdaAnchor (const string &id);
   virtual ~LambdaAnchor (){};
 };
 

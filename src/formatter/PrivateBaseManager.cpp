@@ -49,7 +49,7 @@ PrivateBaseManager::releasePrivateBases ()
 }
 
 void
-PrivateBaseManager::createPrivateBase (string id)
+PrivateBaseManager::createPrivateBase (const string &id)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -103,7 +103,7 @@ PrivateBaseManager::embedDocument (string id, string docId, string nodeId,
 }
 
 void *
-PrivateBaseManager::addVisibleDocument (string id, string location,
+PrivateBaseManager::addVisibleDocument (const string &id, string location,
                                         DeviceLayout *deviceLayout)
 {
   PrivateBaseContext *privateBaseContext;

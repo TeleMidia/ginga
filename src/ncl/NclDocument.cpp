@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-NclDocument::NclDocument (string id, string docLocation)
+NclDocument::NclDocument (const string &id, const string &docLocation)
 {
   this->id = id;
 
@@ -73,8 +73,8 @@ NclDocument::getDocumentLocation ()
 }
 
 bool
-NclDocument::addDocument (NclDocument *document, string alias,
-                          string location)
+NclDocument::addDocument (NclDocument *document, const string &alias,
+                          const string &location)
 {
   assert (document != NULL);
 
@@ -171,7 +171,7 @@ NclDocument::clearDocument ()
 }
 
 Connector *
-NclDocument::getConnector (string connectorId)
+NclDocument::getConnector (const string &connectorId)
 {
   Connector *connector;
   vector<NclDocument *>::iterator i;
@@ -204,7 +204,7 @@ NclDocument::getConnectorBase ()
 }
 
 Transition *
-NclDocument::getTransition (string transitionId)
+NclDocument::getTransition (const string &transitionId)
 {
   Transition *transition;
   int i, size;
@@ -240,7 +240,7 @@ NclDocument::getTransitionBase ()
 }
 
 GenericDescriptor *
-NclDocument::getDescriptor (string descriptorId)
+NclDocument::getDescriptor (const string &descriptorId)
 {
   GenericDescriptor *descriptor;
   vector<NclDocument *>::iterator i;
@@ -273,7 +273,7 @@ NclDocument::getDescriptorBase ()
 }
 
 NclDocument *
-NclDocument::getDocument (string documentId)
+NclDocument::getDocument (const string &documentId)
 {
   vector<NclDocument *>::iterator i;
 
@@ -339,7 +339,7 @@ NclDocument::getId ()
 }
 
 Node *
-NclDocument::getNodeLocally (string nodeId)
+NclDocument::getNodeLocally (const string &nodeId)
 {
   if (body != NULL)
     {
@@ -359,7 +359,7 @@ NclDocument::getNodeLocally (string nodeId)
 }
 
 Node *
-NclDocument::getNode (string nodeId)
+NclDocument::getNode (const string &nodeId)
 {
   string::size_type index;
   string prefix, suffix;
@@ -397,7 +397,7 @@ NclDocument::getNode (string nodeId)
 }
 
 LayoutRegion *
-NclDocument::getRegion (string regionId)
+NclDocument::getRegion (const string &regionId)
 {
   LayoutRegion *region;
   map<int, RegionBase *>::iterator i;
@@ -417,7 +417,7 @@ NclDocument::getRegion (string regionId)
 }
 
 LayoutRegion *
-NclDocument::getRegion (string regionId, RegionBase *regionBase)
+NclDocument::getRegion (const string &regionId, RegionBase *regionBase)
 {
   LayoutRegion *region;
   vector<NclDocument *>::iterator i;
@@ -458,7 +458,7 @@ NclDocument::getRegionBase (int devClass)
 }
 
 RegionBase *
-NclDocument::getRegionBase (string regionBaseId)
+NclDocument::getRegionBase (const string &regionBaseId)
 {
   map<int, RegionBase *>::iterator i;
 
@@ -482,7 +482,7 @@ NclDocument::getRegionBases ()
 }
 
 Rule *
-NclDocument::getRule (string ruleId)
+NclDocument::getRule (const string &ruleId)
 {
   Rule *rule;
   vector<NclDocument *>::iterator i;
@@ -554,7 +554,7 @@ NclDocument::setDescriptorBase (DescriptorBase *descriptorBase)
 }
 
 void
-NclDocument::setDocumentAlias (NclDocument *document, string alias)
+NclDocument::setDocumentAlias (NclDocument *document, const string &alias)
 {
   string oldAlias;
 
@@ -570,7 +570,7 @@ NclDocument::setBody (ContextNode *node)
 }
 
 void
-NclDocument::setDocumentLocation (NclDocument *document, string location)
+NclDocument::setDocumentLocation (NclDocument *document, const string &location)
 {
   string oldLocation;
 
@@ -580,7 +580,7 @@ NclDocument::setDocumentLocation (NclDocument *document, string location)
 }
 
 void
-NclDocument::setId (string id)
+NclDocument::setId (const string &id)
 {
   this->id = id;
 }
@@ -642,7 +642,7 @@ NclDocument::getMetadata ()
 }
 
 void
-NclDocument::removeRegionBase (string regionBaseId)
+NclDocument::removeRegionBase (const string &regionBaseId)
 {
   map<int, RegionBase *>::iterator i;
 

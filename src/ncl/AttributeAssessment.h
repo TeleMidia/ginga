@@ -37,19 +37,19 @@ private:
   string offset;
 
 public:
-  AttributeAssessment (string role);
+  AttributeAssessment (const string &role);
   virtual ~AttributeAssessment (){};
   void setMaxCon (int max);
   void setMinCon (int min);
   short getAttributeType ();
   void setAttributeType (short attribute);
   string getKey ();
-  void setKey (string key);
+  void setKey (const string &key);
   string getOffset ();
-  void setOffset (string offset);
+  void setOffset (const string &offset);
   string toString ();
   bool
-  instanceOf (string type)
+  instanceOf (const string &type)
   {
     return Assessment::instanceOf (type);
   }

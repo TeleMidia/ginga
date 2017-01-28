@@ -30,17 +30,17 @@ private:
   vector<Transition *> *transitionSet;
 
 public:
-  TransitionBase (string id);
+  TransitionBase (const string &id);
   virtual ~TransitionBase ();
   bool addTransition (Transition *transition);
-  bool addBase (Base *base, string alias, string location);
+  bool addBase (Base *base, const string &alias, const string &location);
   void clear ();
 
 private:
-  Transition *getTransitionLocally (string transitionId);
+  Transition *getTransitionLocally (const string &transitionId);
 
 public:
-  Transition *getTransition (string transitionId);
+  Transition *getTransition (const string &transitionId);
   vector<Transition *> *getTransitions ();
   bool removeTransition (Transition *transition);
 };

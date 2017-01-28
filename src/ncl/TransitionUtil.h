@@ -28,11 +28,11 @@ GINGA_NCL_BEGIN
 class TransitionUtil
 {
 public:
-  static int getTypeCode (string type);
+  static int getTypeCode (const string &type);
   static string getTypeName (int type);
-  static int getSubtypeCode (int type, string subtype);
+  static int getSubtypeCode (int type, const string &subtype);
   static string getSubtypeName (int type, int subtype);
-  static short getDirectionCode (string direction);
+  static short getDirectionCode (const string &direction);
   static string getDirectionName (short direction);
   static int getDefaultSubtype (int type);
 };

@@ -33,7 +33,7 @@ private:
   long height;
 
 public:
-  RectangleSpatialAnchor (string id, long left, long top, long width,
+  RectangleSpatialAnchor (const string &id, long left, long top, long width,
                           long height);
 
   long getLeft ();
