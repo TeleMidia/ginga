@@ -23,7 +23,7 @@ extern "C" {
 
 GINGA_MB_BEGIN
 
-SDLBpgDecoder::SDLBpgDecoder (string filename)
+SDLBpgDecoder::SDLBpgDecoder (const string &filename)
 {
   filePath.assign (filename);
 }
