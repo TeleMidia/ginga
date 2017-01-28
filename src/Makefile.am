@@ -17,6 +17,7 @@
 # along with Ginga.  If not, see <http://www.gnu.org/licenses/>.
 
 include $(top_srcdir)/build-aux/Makefile.am.common
+MAINTAINERCLEANFILES+= config.h.in
 
 AM_CPPFLAGS=\
   -DGINGA_DATADIR='"$(pkgdatadir)/"'\
@@ -76,7 +77,6 @@ src+= formatter/AdapterPlainTxtPlayer.cpp
 src+= formatter/AdapterPlayerManager.cpp
 src+= formatter/AdapterProgramAVPlayer.cpp
 src+= formatter/AdapterSubtitlePlayer.cpp
-#src+= formatter/AdapterTimePlayer.cpp
 src+= formatter/AnimationController.cpp
 src+= formatter/FormatterBaseDevice.cpp
 src+= formatter/FormatterConverter.cpp
@@ -240,15 +240,12 @@ src+= player/AVPlayer.cpp
 src+= player/ChannelPlayer.cpp
 src+= player/ImagePlayer.cpp
 src+= player/LuaPlayer.cpp
-#src+= player/NTPDatagram.cpp
-#src+= player/NTPPlayer.cpp
 src+= player/PlainTxtPlayer.cpp
 src+= player/Player.cpp
 src+= player/ProgramAV.cpp
 src+= player/ShowButton.cpp
 src+= player/SrtPlayer.cpp
 src+= player/TextPlayer.cpp
-#src+= player/UDPClient.cpp
 src+= system/GingaLocatorFactory.cpp
 src+= system/PracticalSocket.cpp
 src+= system/Stc.cpp
