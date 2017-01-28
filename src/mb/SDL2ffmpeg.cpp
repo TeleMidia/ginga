@@ -895,7 +895,7 @@ SDL2ffmpeg::render_vp (VideoPicture *vp)
                   fmt = AV_PIX_FMT_YUV420P;
                 }
 
-              if (format != GINGA_PIXEL_FMT)
+              if (format != SDL_PIXELFORMAT_RGB24)
                 {
                   clog << "SDL2ffmpeg::render_vp Warning! SDL texture has ";
                   clog << "an invalid pixel format" << endl;

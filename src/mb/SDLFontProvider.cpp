@@ -410,7 +410,7 @@ SDLFontProvider::playOver (SDLSurface* surface)
         }
       SDLDisplay::unlockSDL ();
 
-      SDLDisplay::createReleaseContainer (text, NULL, NULL);
+      //SDLDisplay::createReleaseContainer (text, NULL, NULL);
       text = NULL;
     }
   else

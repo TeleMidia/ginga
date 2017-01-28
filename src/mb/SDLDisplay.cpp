@@ -32,15 +32,10 @@ GINGA_MB_BEGIN
 // Global display; initialized by main().
 SDLDisplay *_Ginga_Display = NULL;
 
-map<SDLDisplay *, short> SDLDisplay::sdlScreens;
-bool SDLDisplay::hasRenderer = false;
-bool SDLDisplay::hasERC = false;
 bool SDLDisplay::mutexInit = false;
-
 map<int, int> SDLDisplay::gingaToSDLCodeMap;
 map<int, int> SDLDisplay::sdlToGingaCodeMap;
 map<string, int> SDLDisplay::sdlStrToSdlCode;
-
 set<SDL_Texture *> SDLDisplay::uTexPool;
 set<SDL_Surface *> SDLDisplay::uSurPool;
 vector<ReleaseContainer *> SDLDisplay::releaseList;
@@ -58,34 +53,137 @@ pthread_mutex_t SDLDisplay::surMutex;
 pthread_mutex_t SDLDisplay::proMutex;
 pthread_mutex_t SDLDisplay::cstMutex;
 
+// BEGIN SANITY ------------------------------------------------------------
+
+static gpointer
+render_thread_func (gpointer data)
+{
+  SDLDisplay *display;
+
+  display = (SDLDisplay *) data;
+  g_assert_nonnull (display);
+
+  while (!display->hasQuitted())
+    {
+      SDL_Event evt;
+
+      // Handle input events.
+      while (SDL_PollEvent (&evt))
+        {
+          switch (evt.type)
+            {
+            case SDL_KEYDOWN:
+            case SDL_KEYUP:
+              if (evt.key.keysym.sym != SDLK_ESCAPE)
+                break;
+              // fall-through
+            case SDL_QUIT:
+              display->quit ();
+              goto tail;
+            default:
+              break;
+            }
+
+          InputManager *im = display->getInputManager ();
+          SDLEventBuffer *buf = im->getEventBuffer ();
+          buf->feed (evt, false, false);
+        }
+
+      // Step continuous media providers.
+      SDLDisplay::refreshCMP (display); // FIXME
+
+      // Step windows.
+      SDLDisplay::refreshWin (display); // FIXME
+    tail:
+      ;
+    }
+
+  SDL_Quit ();
+  exit (EXIT_SUCCESS);          // FIXME: Die gracefully
+  return display;
+}
+
+void
+SDLDisplay::lock (void)
+{
+  g_mutex_lock (&this->mutex);
+}
+
+void
+SDLDisplay::unlock (void)
+{
+  g_mutex_unlock (&this->mutex);
+}
+
+bool
+SDLDisplay::hasQuitted ()
+{
+  bool quit;
+
+  this->lock ();
+  quit = this->_quit;
+  this->unlock ();
+
+  return quit;
+}
+
+void
+SDLDisplay::quit ()
+{
+  this->lock ();
+  this->_quit = true;
+  this->unlock ();
+}
+
 SDLDisplay::SDLDisplay (int width, int height, bool fullscreen)
 {
-  pthread_t tId;
+  guint flags;
+  int status;
 
-  wRes = width;
-  hRes = height;
-  fullScreen = fullscreen;
-  im = NULL;
+  // Initialize attributes.
+  g_assert (width >= 0);
+  g_assert (height >= 0);
 
-  renderer = NULL;
-  screen = NULL;
-  sdlId = 0;
-  backgroundLayer = NULL;
+  this->width = width;
+  this->height = height;
+  this->fullscreen = fullscreen;
 
-#ifdef _MSC_VER
-  putenv ("SDL_AUDIODRIVER=DirectSound");
-#endif
+  this->im = NULL;
+  this->renderer = NULL;
+  this->screen = NULL;
 
-  waitingCreator = false;
-  Thread::mutexInit (&condMutex);
-  Thread::condInit (&cond, NULL);
+  this->_quit = false;
+  g_mutex_init (&this->mutex);
 
-  checkMutexInit ();
-  hasRenderer = true;
-  setInitScreenFlag ();
-  pthread_create (&tId, NULL, SDLDisplay::rendererT, this);
-  pthread_detach (tId);
+  // Initialize SDL.
+  g_assert (!SDL_WasInit (0));
+  status = SDL_Init (0);
+  if (unlikely (status != 0))
+    g_critical ("cannot initialize SDL: %s", SDL_GetError ());
+
+  flags = SDL_WINDOW_SHOWN;
+  if (this->fullscreen)
+    flags |= SDL_WINDOW_FULLSCREEN;
+
+  status = SDL_CreateWindowAndRenderer (this->width, this->height, flags,
+                                        &this->screen, &this->renderer);
+  g_assert (status == 0);
+  g_assert_nonnull (this->screen);
+  g_assert_nonnull (this->renderer);
+
+  this->im = new InputManager ();
+  g_assert_nonnull (this->im);
+  this->im->setAxisBoundaries (this->width, this->height, 0);
+
+  checkMutexInit ();            // FIXME
+  initCodeMaps ();              // FIXME
+
+  // Create render thread.
+  this->render_thread = g_thread_new ("render", render_thread_func, this);
+  g_assert_nonnull (this->render_thread);
 }
+
+// END SANITY --------------------------------------------------------------
 
 SDLDisplay::~SDLDisplay ()
 {
@@ -117,29 +215,6 @@ SDLDisplay::~SDLDisplay ()
       delete im;
       im = NULL;
     }
-
-  releaseScreen ();
-
-  while (this->renderer != NULL)
-    {
-      g_usleep (10000);
-    }
-
-  Thread::mutexLock (&scrMutex);
-  i = sdlScreens.find (this);
-  if (i != sdlScreens.end ())
-    {
-      sdlScreens.erase (i);
-    }
-
-  if (sdlScreens.empty ())
-    {
-      hasRenderer = false;
-      sdlQuit ();
-    }
-  Thread::mutexUnlock (&scrMutex);
-
-  clog << "SDLDisplay::~SDLDisplay all done" << endl;
 }
 
 void
@@ -182,76 +257,20 @@ SDLDisplay::updateRenderMap (SDLWindow *window,
                              double oldZIndex, double newZIndex)
 {
   checkMutexInit ();
-
   renderMapRemoveWindow (window, oldZIndex);
   renderMapInsertWindow (window, newZIndex);
-}
-
-void
-SDLDisplay::releaseScreen ()
-{
-  Thread::mutexLock (&scrMutex);
-  sdlScreens[this] = SPT_RELEASE;
-  Thread::mutexUnlock (&scrMutex);
 }
 
 int
 SDLDisplay::getWidthResolution ()
 {
-  while (wRes <= 0)
-    {
-      g_usleep (uSleepTime);
-    }
-  return wRes;
-}
-
-void
-SDLDisplay::setWidthResolution (int wRes)
-{
-  this->wRes = wRes;
-
-  lockSDL ();
-  if (screen != NULL)
-    {
-      SDL_SetWindowSize (screen, this->wRes, this->hRes);
-    }
-  unlockSDL ();
+  return this->width;
 }
 
 int
 SDLDisplay::getHeightResolution ()
 {
-  /*
-   * hRes == 0 is an initial state. So pthread_cond_t
-   * is not necessary here.
-   */
-  while (hRes <= 0)
-    {
-      g_usleep (uSleepTime);
-    }
-
-  clog << "SDLDisplay::getHeightResolution returns '";
-  clog << hRes << "'";
-  clog << endl;
-
-  return hRes;
-}
-
-void
-SDLDisplay::setHeightResolution (int hRes)
-{
-  this->hRes = hRes;
-
-  lockSDL ();
-  if (screen != NULL)
-    {
-      SDL_SetWindowSize (screen, this->wRes, this->hRes);
-    }
-  unlockSDL ();
-
-  clog << "SDLDisplay::setHeightResolution to '";
-  clog << hRes << "'";
-  clog << endl;
+  return this->height;
 }
 
 bool
@@ -294,7 +313,7 @@ SDLDisplay::blitScreen (SDLSurface *destination)
   dest = (SDL_Surface *)(destination->getContent ());
   if (dest == NULL)
     {
-      dest = createUnderlyingSurface (wRes, hRes);
+      dest = createUnderlyingSurface (this->width, this->height);
       destination->setContent (dest);
     }
 
@@ -309,7 +328,7 @@ SDLDisplay::blitScreen (string fileUri)
   SDL_Surface *dest;
 
   lockSDL ();
-  dest = createUnderlyingSurface (wRes, hRes);
+  dest = createUnderlyingSurface (this->width, this->height);
   blitScreen (dest);
 
   if (SDL_SaveBMP_RW (dest, SDL_RWFromFile (fileUri.c_str (), "wb"), 1) < 0)
@@ -344,14 +363,6 @@ SDLDisplay::blitScreen (SDL_Surface *dest)
         }
     }
   Thread::mutexUnlock (&renMutex);
-}
-
-void
-SDLDisplay::setInitScreenFlag ()
-{
-  Thread::mutexLock (&scrMutex);
-  sdlScreens[this] = SPT_INIT;
-  Thread::mutexUnlock (&scrMutex);
 }
 
 /* interfacing output */
@@ -421,7 +432,7 @@ SDLDisplay::releaseWindow (SDLWindow *win)
 
       if (uTexOwn)
         {
-          createReleaseContainer (NULL, uTex, NULL);
+          //createReleaseContainer (NULL, uTex, NULL);
         }
     }
   else
@@ -551,7 +562,7 @@ SDLDisplay::releaseContinuousMediaProvider (
       cmp->stop ();
 
       Thread::mutexUnlock (&proMutex);
-      createReleaseContainer (NULL, NULL, cmp);
+      //createReleaseContainer (NULL, NULL, cmp);
     }
   else
     {
@@ -579,17 +590,17 @@ void
 SDLDisplay::releaseFontProvider (IFontProvider *provider)
 {
   set<IDiscreteMediaProvider *>::iterator i;
-  IDiscreteMediaProvider *dmp;
+  //IDiscreteMediaProvider *dmp;
 
   Thread::mutexLock (&proMutex);
   i = dmpPool.find (provider);
   if (i != dmpPool.end ())
     {
-      dmp = (*i);
+      //dmp = (*i);
       dmpPool.erase (i);
 
       Thread::mutexUnlock (&proMutex);
-      createReleaseContainer (NULL, NULL, dmp);
+      //createReleaseContainer (NULL, NULL, dmp);
     }
   else
     {
@@ -608,7 +619,8 @@ SDLDisplay::createRenderedSurfaceFromImageFile (const char *mrl)
   g_assert_nonnull (surface);
 
   sfc = IMG_Load (mrl);
-  g_assert_nonnull (sfc);
+  if (unlikely (sfc == NULL))
+    g_error ("cannot load image file %s: %s", mrl, IMG_GetError ());
 
   g_assert_nonnull (surface);
   surface->setContent (sfc);
@@ -647,332 +659,6 @@ SDLDisplay::removeCMPToRendererList (IContinuousMediaProvider *cmp)
       cmpRenderList.erase (i);
     }
   Thread::mutexUnlock (&proMutex);
-}
-
-void
-SDLDisplay::createReleaseContainer (SDL_Surface *uSur,
-                                         SDL_Texture *uTex,
-                                         IMediaProvider *iDec)
-{
-  ReleaseContainer *rc;
-
-  checkMutexInit ();
-
-  Thread::mutexLock (&recMutex);
-
-  rc = new ReleaseContainer;
-  rc->iDec = iDec;
-  rc->uSur = uSur;
-  rc->uTex = uTex;
-
-  releaseList.push_back (rc);
-
-  Thread::mutexUnlock (&recMutex);
-}
-
-void
-SDLDisplay::notifyQuit ()
-{
-  map<SDLDisplay *, short>::iterator i;
-  SDLDisplay *s;
-
-  Thread::mutexLock (&scrMutex);
-
-  i = sdlScreens.begin ();
-  while (i != sdlScreens.end ())
-    {
-      s = i->first;
-      if (s->im != NULL)
-        s->im->postInputEvent (CodeMap::KEY_QUIT);
-      ++i;
-    }
-  Thread::mutexUnlock (&scrMutex);
-
-  clog << "SDLDisplay::notifyQuit all done!" << endl;
-}
-
-void
-SDLDisplay::sdlQuit ()
-{
-  if (SDL_GetAudioStatus () != SDL_AUDIO_STOPPED)
-    {
-      SDL_PauseAudio (1);
-      SDL_CloseAudio ();
-      SDL_AudioQuit ();
-    }
-  SDL_Quit ();
-  clog << "SDLDisplay::sdlQuit all done!" << endl;
-}
-
-void
-SDLDisplay::checkWindowFocus (SDLDisplay *s, SDL_Event *event)
-{
-  if (event->type == SDL_WINDOWEVENT
-      && event->window.windowID == s->sdlId)
-    {
-      switch (event->window.event)
-        {
-        case SDL_WINDOWEVENT_SHOWN:
-          clog << "SDLDisplay::checkWindowFocus ";
-          clog << "Window '" << event->window.windowID;
-          clog << "' shown" << endl;
-          break;
-
-        case SDL_WINDOWEVENT_HIDDEN:
-          clog << "SDLDisplay::checkWindowFocus ";
-          clog << "Window '" << event->window.windowID;
-          clog << "' hidden" << endl;
-          break;
-
-        case SDL_WINDOWEVENT_EXPOSED:
-          clog << "SDLDisplay::checkWindowFocus ";
-          clog << "Window '" << event->window.windowID;
-          clog << "' exposed" << endl;
-          break;
-
-        case SDL_WINDOWEVENT_MOVED:
-          clog << "SDLDisplay::checkWindowFocus ";
-          clog << "Window '" << event->window.windowID;
-          clog << "' moved to '";
-          clog << event->window.data1;
-          clog << "," << event->window.data2 << "'";
-          clog << endl;
-          break;
-
-        case SDL_WINDOWEVENT_RESIZED:
-          clog << "SDLDisplay::checkWindowFocus ";
-          clog << "Window '" << event->window.windowID;
-          clog << "' resized to '";
-          clog << event->window.data1;
-          clog << "," << event->window.data2 << "'";
-          clog << endl;
-
-          s->wRes = event->window.data1;
-          s->hRes = event->window.data2;
-
-          if (s->im != NULL)
-            {
-              s->im->setAxisBoundaries (s->wRes, s->hRes, 0);
-            }
-
-          break;
-
-        case SDL_WINDOWEVENT_MINIMIZED:
-          clog << "SDLDisplay::checkWindowFocus ";
-          clog << "Window '" << event->window.windowID;
-          clog << "' minimized" << endl;
-          break;
-
-        case SDL_WINDOWEVENT_MAXIMIZED:
-          clog << "SDLDisplay::checkWindowFocus ";
-          clog << "Window '" << event->window.windowID;
-          clog << "' maximized" << endl;
-          break;
-
-        case SDL_WINDOWEVENT_RESTORED:
-          clog << "SDLDisplay::checkWindowFocus ";
-          clog << "Window '" << event->window.windowID;
-          clog << "' restored to '";
-          clog << event->window.data1;
-          clog << ", " << event->window.data2 << "'";
-          clog << endl;
-          break;
-
-        case SDL_WINDOWEVENT_ENTER:
-          clog << "SDLDisplay::checkWindowFocus ";
-          clog << "Window '" << event->window.windowID;
-          clog << "' Mouse entered" << endl;
-          break;
-
-        case SDL_WINDOWEVENT_LEAVE:
-          clog << "SDLDisplay::checkWindowFocus ";
-          clog << "Window '" << event->window.windowID;
-          clog << "' Mouse left" << endl;
-          break;
-
-        case SDL_WINDOWEVENT_FOCUS_GAINED:
-          clog << "SDLDisplay::checkWindowFocus ";
-          clog << "Window '" << event->window.windowID;
-          clog << "' gained keyboard focus" << endl;
-          break;
-
-        case SDL_WINDOWEVENT_FOCUS_LOST:
-          clog << "SDLDisplay::checkWindowFocus ";
-          clog << "Window '" << event->window.windowID;
-          clog << "' lost keyboard focus" << endl;
-          break;
-
-        case SDL_WINDOWEVENT_CLOSE:
-          clog << "SDLDisplay::checkWindowFocus ";
-          clog << "Window '" << event->window.windowID;
-          clog << "' closed" << endl;
-          break;
-
-        default:
-          clog << "SDLDisplay::checkWindowFocus ";
-          clog << "Window '" << event->window.windowID;
-          clog << "' got unknown event '";
-          clog << event->window.event << "'" << endl;
-          break;
-        }
-    }
-}
-
-bool
-SDLDisplay::notifyEvent (SDLDisplay *s, SDL_Event *event,
-                              bool capsOn, bool shiftOn)
-{
-  SDLEventBuffer *eventBuffer = NULL;
-  checkWindowFocus (s, event);
-
-  if (s->im != NULL)
-    {
-      eventBuffer = (SDLEventBuffer *)(s->im->getEventBuffer ());
-      if (((SDLEventBuffer::checkEvent (s->sdlId, *event))
-           || checkEventFocus (s)))
-        {
-          eventBuffer->feed (*event, capsOn, shiftOn);
-          return true;
-        }
-    }
-
-  return false;
-}
-
-bool
-SDLDisplay::checkEvents ()
-{
-  map<SDLDisplay *, short>::iterator i;
-  SDLDisplay *s;
-  SDL_Event event;
-  bool shiftOn = false;
-  bool capsOn = false;
-  bool hasEvent;
-
-  hasEvent = SDL_PollEvent (&event);
-
-  while (hasEvent)
-    {
-      // clog << "SDLDisplay::checkEvents poll event";
-      // clog << " type '" << event.type << "'" << endl;
-
-      if (event.type == SDL_KEYDOWN)
-        {
-          clog << "SDLDisplay::checkEvents poll event '";
-          clog << event.key.keysym.sym << "'" << endl;
-
-          if (event.key.keysym.sym == SDLK_LSHIFT
-              || event.key.keysym.sym == SDLK_RSHIFT)
-            {
-              shiftOn = true;
-            }
-        }
-      else if (event.type == SDL_KEYUP)
-        {
-          if (event.key.keysym.sym == SDLK_CAPSLOCK)
-            {
-              capsOn = !capsOn;
-            }
-          else if (event.key.keysym.sym == SDLK_LSHIFT
-                   || event.key.keysym.sym == SDLK_RSHIFT)
-            {
-              shiftOn = false;
-            }
-        }
-      else if (event.type == SDL_QUIT)
-        {
-          notifyQuit ();
-          sdlQuit ();
-          hasRenderer = false;
-          clog << "SDLDisplay::checkEvents QUIT" << endl;
-
-          return false;
-        }
-
-      Thread::mutexLock (&scrMutex);
-      i = sdlScreens.begin ();
-      while (i != sdlScreens.end ())
-        {
-          s = i->first;
-          notifyEvent (s, &event, capsOn, shiftOn);
-          ++i;
-        }
-      Thread::mutexUnlock (&scrMutex);
-
-      hasEvent = SDL_PollEvent (&event);
-    }
-
-  return true;
-}
-
-void *
-SDLDisplay::rendererT (arg_unused (void *ptr))
-{
-  map<SDLDisplay *, short>::iterator i;
-  SDLDisplay *s;
-  pthread_mutex_t mutex;
-  pthread_cond_t cond;
-
-  g_assert (!SDL_WasInit (0));
-  g_assert (SDL_Init (0) == 0);
-
-  Thread::mutexInit (&mutex, false);
-  Thread::condInit (&cond, NULL);
-
-  while (hasRenderer)
-    {
-      if (!checkEvents ())
-        {
-          return NULL;
-        }
-
-      Thread::mutexLock (&scrMutex);
-      i = sdlScreens.begin ();
-      while (i != sdlScreens.end ())
-        {
-          s = i->first;
-
-          switch (i->second)
-            {
-            case SPT_NONE:
-              refreshCMP (s);
-              refreshWin (s);
-              refreshRC (s);
-              ++i;
-              break;
-
-            case SPT_INIT:
-              initScreen (s);
-              sdlScreens[s] = SPT_NONE;
-              i = sdlScreens.begin ();
-              break;
-
-            case SPT_CLEAR:
-              clearScreen (s);
-              sdlScreens[s] = SPT_NONE;
-              i = sdlScreens.begin ();
-              break;
-
-            case SPT_RELEASE:
-              releaseScreen (s);
-              sdlScreens.erase (i);
-              i = sdlScreens.begin ();
-              break;
-
-            default:
-              i = sdlScreens.end ();
-              break;
-            }
-        }
-      Thread::mutexUnlock (&scrMutex);
-      if (hasERC)
-        {
-          break;
-        }
-    }
-
-  clog << "SDLDisplay::rendererT ALL DONE" << endl;
-  return NULL;
 }
 
 void
@@ -1060,37 +746,28 @@ SDLDisplay::refreshRC (SDLDisplay *s)
   Thread::mutexUnlock (&recMutex);
 }
 
-int
+void
 SDLDisplay::refreshCMP (SDLDisplay *s)
 {
   set<IContinuousMediaProvider *>::iterator i;
-  set<IContinuousMediaProvider *>::iterator j;
-  IContinuousMediaProvider *cmp;
-  int size;
 
   Thread::mutexLock (&proMutex);
-  size = (int) cmpRenderList.size ();
-  i = cmpRenderList.begin ();
-  while (i != cmpRenderList.end ())
+  for (i = cmpRenderList.begin (); i != cmpRenderList.end (); i++)
     {
-      cmp = (*i);
-      j = s->cmpPool.find (cmp);
-      if (j != s->cmpPool.end ())
+      IContinuousMediaProvider *p = *i;
+      if (p->getProviderContent () == NULL)
         {
-          if (cmp->getProviderContent () == NULL)
-            {
-              initCMP (s, cmp);
-            }
-          else
-            {
-              cmp->refreshDR (NULL);
-            }
+          SDL_Texture *texture;
+          int w, h;
+
+          p->getOriginalResolution (&w, &h);
+          texture = createTexture (s->renderer, w, h);
+          g_assert_nonnull (texture);
+          p->setProviderContent (texture);
         }
-      ++i;
+      p->refreshDR (NULL);
     }
   Thread::mutexUnlock (&proMutex);
-
-  return size;
 }
 
 void
@@ -1164,24 +841,23 @@ SDLDisplay::initScreen (SDLDisplay *s)
   SDL_VideoInit (NULL);
 
   guint flags = SDL_WINDOW_SHOWN;
-  if (s->fullScreen)
+  if (s->fullscreen)
     flags |= SDL_WINDOW_FULLSCREEN;
 
   s->screen = NULL;
   s->renderer = NULL;
-  int status = SDL_CreateWindowAndRenderer (s->wRes, s->hRes, flags,
+  int status = SDL_CreateWindowAndRenderer (s->width, s->height, flags,
                                             &s->screen, &s->renderer);
   g_assert (status == 0);
   g_assert_nonnull (s->screen);
   g_assert_nonnull (s->renderer);
-  s->sdlId = SDL_GetWindowID (s->screen);
 
   initCodeMaps ();
 
   s->im = new InputManager ();
 
   if (s->im != NULL)
-    s->im->setAxisBoundaries (s->wRes, s->hRes, 0);
+    s->im->setAxisBoundaries (s->width, s->height, 0);
 
   unlockSDL ();
 }
@@ -1304,39 +980,6 @@ SDLDisplay::releaseScreen (SDLDisplay *s)
   unlockSDL ();
 }
 
-void
-SDLDisplay::releaseAll ()
-{
-  map<SDLDisplay *, short>::iterator i;
-
-  Thread::mutexLock (&scrMutex);
-
-  i = sdlScreens.begin ();
-  while (i != sdlScreens.begin ())
-    {
-      releaseScreen (i->first);
-      ++i;
-    }
-  sdlScreens.clear ();
-
-  Thread::mutexUnlock (&scrMutex);
-}
-
-void
-SDLDisplay::initCMP (SDLDisplay *s, IContinuousMediaProvider *cmp)
-{
-  SDL_Texture *texture;
-  int w, h;
-
-  cmp->getOriginalResolution (&w, &h);
-
-  /*clog << "SDLDisplay::initCMP creating texture with w = '";
-  clog << w << "' and h = '" << h << "'" << endl;*/
-
-  texture = createTexture (s->renderer, w, h);
-  cmp->setProviderContent ((void *)texture);
-}
-
 bool
 SDLDisplay::blitFromWindow (SDLWindow *iWin, SDL_Surface *dest)
 {
@@ -1391,7 +1034,7 @@ SDLDisplay::blitFromWindow (SDLWindow *iWin, SDL_Surface *dest)
                 {
                   blitted = true;
                 }
-              createReleaseContainer (tmpSur2, NULL, NULL);
+              //createReleaseContainer (tmpSur2, NULL, NULL);
             }
           else
             {
@@ -1833,12 +1476,6 @@ SDLDisplay::initCodeMaps ()
   Thread::mutexUnlock (&sieMutex);
 }
 
-bool
-SDLDisplay::checkEventFocus (arg_unused (SDLDisplay *s))
-{
-  return true;
-}
-
 /* output */
 void
 SDLDisplay::renderMapInsertWindow (SDLWindow *iWin, double z)
@@ -2202,7 +1839,7 @@ SDLDisplay::createTexture (SDL_Renderer *renderer, int w, int h)
 
   lockSDL ();
 
-  texture = SDL_CreateTexture (renderer, GINGA_PIXEL_FMT,
+  texture = SDL_CreateTexture (renderer, SDL_PIXELFORMAT_RGB24,
                                SDL_TEXTUREACCESS_STREAMING, w, h);
 
   // w > maxW || h > maxH || format is not supported
@@ -2275,7 +1912,7 @@ SDLDisplay::createUnderlyingSurface (int width, int height)
 
   lockSDL ();
 
-  SDL_PixelFormatEnumToMasks (GINGA_PIXEL_FMT, &bpp, &rmask, &gmask, &bmask,
+  SDL_PixelFormatEnumToMasks (SDL_PIXELFORMAT_RGB24, &bpp, &rmask, &gmask, &bmask,
                               &amask);
 
   newUSur = SDL_CreateRGBSurface (0, width, height, bpp, rmask, gmask,
@@ -2321,7 +1958,7 @@ SDLDisplay::createUnderlyingSurfaceFromTexture (SDL_Texture *texture)
           locked = false;
         }
 
-      SDL_PixelFormatEnumToMasks (GINGA_PIXEL_FMT, &bpp, &rmask, &gmask,
+      SDL_PixelFormatEnumToMasks (SDL_PIXELFORMAT_RGB24, &bpp, &rmask, &gmask,
                                   &bmask, &amask);
 
       uSur = SDL_CreateRGBSurfaceFrom (pixels, w, h, bpp, tpitch[0], rmask,

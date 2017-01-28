@@ -61,7 +61,7 @@ SDLSurface::~SDLSurface ()
 
   if (sur != NULL)
     {
-      SDLDisplay::createReleaseContainer (sur, NULL, NULL);
+      //SDLDisplay::createReleaseContainer (sur, NULL, NULL);
     }
 
   sur = NULL;
@@ -84,7 +84,7 @@ SDLSurface::releasePendingSurface ()
 {
   if (pending != NULL)
     {
-      SDLDisplay::createReleaseContainer (pending, NULL, NULL);
+      //SDLDisplay::createReleaseContainer (pending, NULL, NULL);
       pending = NULL;
     }
 }
@@ -124,7 +124,7 @@ SDLSurface::checkPendingSurface ()
         }
 
       Thread::mutexLock (&sMutex);
-      SDLDisplay::createReleaseContainer (sur, NULL, NULL);
+      //SDLDisplay::createReleaseContainer (sur, NULL, NULL);
       sur = pending;
       pending = NULL;
       Thread::mutexUnlock (&sMutex);
@@ -343,7 +343,7 @@ SDLSurface::setContent (SDL_Surface *surface)
 
   if (sur != NULL)
     {
-      SDLDisplay::createReleaseContainer (sur, NULL, NULL);
+      //SDLDisplay::createReleaseContainer (sur, NULL, NULL);
     }
   this->sur = (SDL_Surface *)surface;
   Thread::mutexUnlock (&sMutex);
