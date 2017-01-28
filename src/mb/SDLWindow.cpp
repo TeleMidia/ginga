@@ -314,7 +314,7 @@ SDLWindow::setChildSurface (SDLSurface *iSur)
 }
 
 int
-SDLWindow::getCap (arg_unused (string cap))
+SDLWindow::getCap (arg_unused (const string &cap))
 {
   return 0;
 }

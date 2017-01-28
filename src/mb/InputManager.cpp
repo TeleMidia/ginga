@@ -633,7 +633,7 @@ InputManager::postInputEvent (int keyCode)
 }
 
 void
-InputManager::postCommand (string cmd, string args)
+InputManager::postCommand (const string &cmd, const string &args)
 {
   if (cmdListener != NULL)
     {
