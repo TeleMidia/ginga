@@ -615,7 +615,7 @@ SDLWindow::setTexture (SDL_Texture *texture)
 
   if (textureOwner && this->texture != NULL)
     {
-      SDLDisplay::createReleaseContainer (NULL, this->texture, NULL);
+      //SDLDisplay::createReleaseContainer (NULL, this->texture, NULL);
     }
 
   if (texture == NULL)
@@ -773,7 +773,7 @@ SDLWindow::getDumpFileUri (int quality, arg_unused (int dumpW), arg_unused (int 
   if (ret == -1)
     uri = "";
   if (freeSurface)
-    SDLDisplay::createReleaseContainer (dumpUSur, NULL, NULL);
+    //SDLDisplay::createReleaseContainer (dumpUSur, NULL, NULL);
   SDLDisplay::unlockSDL ();
 
   unlockSurface ();

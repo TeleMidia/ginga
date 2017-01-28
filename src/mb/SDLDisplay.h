@@ -20,25 +20,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
+#include "IContinuousMediaProvider.h"
+#include "IDiscreteMediaProvider.h"
+#include "IFontProvider.h"
 #include "InputManager.h"
 #include "SDLEventBuffer.h"
 #include "SDLInputEvent.h"
-#include "IContinuousMediaProvider.h"
-#include "IFontProvider.h"
-
-#include "SDLWindow.h"
 #include "SDLSurface.h"
-
-#include "util/functions.h"
-using namespace ::ginga::util;
-
-#include "IDiscreteMediaProvider.h"
-
-#include "SDL.h"
-
-#ifndef GINGA_PIXEL_FMT
-#define GINGA_PIXEL_FMT SDL_PIXELFORMAT_RGB24
-#endif
+#include "SDLWindow.h"
 
 GINGA_MB_BEGIN
 
@@ -51,6 +40,31 @@ typedef struct
 
 class SDLDisplay
 {
+  // -----------------------------------------------------------------------
+private:
+  GMutex mutex;                 // sync access to display
+
+  int width;                    // display width in pixels
+  int height;                   // display height in pixels
+  bool fullscreen;              // whether full-screen mode is on
+
+  SDL_Renderer *renderer;       // display renderer
+  SDL_Window *screen;           // display screen
+  InputManager *im;             // display input manager (FIXME)
+
+  bool _quit;                   // whether the render thread should quit
+  GThread *render_thread;       // render thread handle
+
+private:
+  void lock (void);             // lock display
+  void unlock (void);           // unlock display
+
+public:
+  bool hasQuitted ();
+  void quit ();
+
+  // -----------------------------------------------------------------------
+
 private:
   /* SDL Pending Tasks*/
   static const short SPT_NONE = 0;
@@ -73,29 +87,16 @@ private:
   static bool mutexInit;
   static map<SDLDisplay *, short> sdlScreens;
 
-  string mbMode;
-  string mbSubSystem;
-  int hRes;
-  int wRes;
-
   set<SDLWindow *> windowPool;
   set<SDLSurface *> surfacePool;
   set<IContinuousMediaProvider *> cmpPool;
   set<IDiscreteMediaProvider *> dmpPool;
 
-  InputManager *im;
+
 
   bool waitingCreator;
   pthread_mutex_t condMutex;
   pthread_cond_t cond;
-
-  SDLWindow *backgroundLayer;
-  bool fullScreen;
-  SDL_Window *screen;
-  Uint32 sdlId;
-  SDL_Renderer *renderer;
-
-  static bool hasERC; // external renderer controller
 
   static map<int, int> gingaToSDLCodeMap;
   static map<int, int> sdlToGingaCodeMap;
@@ -155,7 +156,6 @@ public:
 
 private:
   void blitScreen (SDL_Surface *destination);
-  void setInitScreenFlag ();
 
 public:
   void refreshScreen ();
@@ -203,30 +203,12 @@ public:
   static void createReleaseContainer (SDL_Surface *uSur, SDL_Texture *uTex,
                                       IMediaProvider *iDec);
 
-private:
-  static void checkSDLInit ();
-  static void notifyQuit ();
-  static void sdlQuit ();
-
-  static void checkWindowFocus (SDLDisplay *s, SDL_Event *event);
-  static bool notifyEvent (SDLDisplay *screen, SDL_Event *event,
-                           bool capsOn, bool shiftOn);
-
-  static void *checkStdin (void *ptr);
-  static void processCmd (SDLDisplay *s, string cmd, string type,
-                          string args);
-
-  static bool checkEvents ();
-  static void *rendererT (void *ptr);
-
+public:
   static void refreshRC (SDLDisplay *screen);
-  static int refreshCMP (SDLDisplay *screen);
+  static void refreshCMP (SDLDisplay *screen);
   static void refreshWin (SDLDisplay *screen);
 
-  static void initEmbed (SDLDisplay *s, SDLWindow* uWin);
-  static void forceInputFocus (SDLDisplay *screen,
-                               SDLWindow* uWin);
-
+private:
   static void initScreen (SDLDisplay *screen);
   static void clearScreen (SDLDisplay *screen);
   static void releaseScreen (SDLDisplay *screen);

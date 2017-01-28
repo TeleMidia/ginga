@@ -171,7 +171,7 @@ FormatterActiveDevice::~FormatterActiveDevice ()
   // lock();
 
   listening = false;
-  Ginga_Display->releaseScreen ();
+  //Ginga_Display->releaseScreen ();
 
   if (privateBaseManager != NULL)
     {

@@ -36,7 +36,9 @@ ImagePlayer::play ()
   SDLWindow *win;
 
   sfc = IMG_Load (mrl.c_str ());
-  g_assert_nonnull (sfc);
+  if (unlikely (sfc == NULL))
+    g_error ("cannot load image file %s: %s", mrl.c_str (),
+             IMG_GetError ());
 
   g_assert_nonnull (this->surface);
   this->surface->setContent (sfc);
