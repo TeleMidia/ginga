@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-PropertyAnchor::PropertyAnchor (string attName) : Anchor (attName)
+PropertyAnchor::PropertyAnchor (const string &attName) : Anchor (attName)
 {
   typeSet.insert ("PropertyAnchor");
   value = "";
@@ -33,7 +33,7 @@ PropertyAnchor::getPropertyName ()
 }
 
 void
-PropertyAnchor::setPropertyName (string name)
+PropertyAnchor::setPropertyName (const string &name)
 {
   Anchor::setId (name);
 }
@@ -45,7 +45,7 @@ PropertyAnchor::getPropertyValue ()
 }
 
 void
-PropertyAnchor::setPropertyValue (string value)
+PropertyAnchor::setPropertyValue (const string &value)
 {
   this->value = value;
 }

@@ -36,7 +36,7 @@ private:
   DeviceLayout *deviceLayout;
 
 public:
-  RegionBase (string id, DeviceLayout *deviceLayout);
+  RegionBase (const string &id, DeviceLayout *deviceLayout);
   virtual ~RegionBase ();
 
 private:
@@ -44,19 +44,19 @@ private:
 
 public:
   bool addRegion (LayoutRegion *region);
-  virtual bool addBase (Base *base, string alias, string location);
+  virtual bool addBase (Base *base, const string &alias, const string &location);
 
 private:
-  LayoutRegion *getRegionLocally (string regionId);
+  LayoutRegion *getRegionLocally (const string &regionId);
 
 public:
   string getOutputMapRegionId ();
   void setOutputMapRegion (LayoutRegion *outputMapRegion);
-  LayoutRegion *getRegion (string regionId);
+  LayoutRegion *getRegion (const string &regionId);
   vector<LayoutRegion *> *getRegions ();
   bool removeRegion (LayoutRegion *region);
   string getDevice ();
-  void setDevice (string device, string regionId);
+  void setDevice (const string &device, const string &regionId);
   int getDeviceClass ();
   void clear ();
 };

@@ -25,7 +25,7 @@ GINGA_NCL_BEGIN
 class GenericDescriptor : public Entity
 {
 public:
-  GenericDescriptor (string someId) : Entity (someId)
+  GenericDescriptor (const string &someId) : Entity (someId)
   {
     typeSet.insert ("GenericDescriptor");
   };

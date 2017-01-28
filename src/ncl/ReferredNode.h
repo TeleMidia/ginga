@@ -28,7 +28,7 @@ private:
   void *referElement;
 
 public:
-  ReferredNode (string id, void *element);
+  ReferredNode (const string &id, void *element);
   void *getReferElement ();
 };
 

@@ -27,7 +27,7 @@ Animation::Animation ()
 }
 
 void
-Animation::setDuration (string dur)
+Animation::setDuration (const string &dur)
 {
   duration = dur;
 }
@@ -39,7 +39,7 @@ Animation::getDuration ()
 }
 
 void
-Animation::setBy (string by)
+Animation::setBy (const string &by)
 {
   this->by = by;
 }

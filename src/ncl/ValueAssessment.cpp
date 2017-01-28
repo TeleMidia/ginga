@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-ValueAssessment::ValueAssessment (string value) : Assessment ()
+ValueAssessment::ValueAssessment (const string &value) : Assessment ()
 {
   this->value = value;
   typeSet.insert ("ValueAssessment");
@@ -33,7 +33,7 @@ ValueAssessment::getValue ()
 }
 
 void
-ValueAssessment::setValue (string newValue)
+ValueAssessment::setValue (const string &newValue)
 {
   value = newValue;
 }

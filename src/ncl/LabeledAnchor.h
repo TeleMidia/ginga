@@ -30,9 +30,9 @@ private:
   string label;
 
 public:
-  LabeledAnchor (string id, string label);
+  LabeledAnchor (const string &id, const string &label);
   string getLabel ();
-  void setLabel (string label);
+  void setLabel (const string &label);
 };
 
 GINGA_NCL_END

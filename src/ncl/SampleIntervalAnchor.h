@@ -29,7 +29,7 @@ private:
   short lastSyntax;
 
 public:
-  SampleIntervalAnchor (string id, double first, double last);
+  SampleIntervalAnchor (const string &id, double first, double last);
   void setValueSyntax (short firstSyntax, short lastSyntax);
   void getValueSyntax (short *firstSyntax, short *lastSyntax);
 };

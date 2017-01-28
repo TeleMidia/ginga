@@ -53,7 +53,7 @@ public:
   void removeConditionExpression (ConditionExpression *condition);
   vector<Role *> *getRoles ();
   bool
-  instanceOf (string type)
+  instanceOf (const string &type)
   {
     return TriggerExpression::instanceOf (type);
   }

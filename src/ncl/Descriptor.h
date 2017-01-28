@@ -64,7 +64,7 @@ protected:
   vector<Transition *> outputTransitions;
 
 public:
-  Descriptor (string id);
+  Descriptor (const string &id);
   virtual ~Descriptor ();
   double getExplicitDuration ();
   string getPlayerName ();
@@ -74,12 +74,12 @@ public:
   bool isFreeze ();
   void setFreeze (bool freeze);
   void setExplicitDuration (double d);
-  void setPlayerName (string name);
+  void setPlayerName (const string &name);
   void setRegion (LayoutRegion *region);
   void setRepetitions (long r);
   void addParameter (Parameter *parameter);
   vector<Parameter *> *getParameters ();
-  Parameter *getParameter (string paramName);
+  Parameter *getParameter (const string &paramName);
   void removeParameter (Parameter *parameter);
   KeyNavigation *getKeyNavigation ();
   void setKeyNavigation (KeyNavigation *keyNav);

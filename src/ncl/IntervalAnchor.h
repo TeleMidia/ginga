@@ -33,8 +33,8 @@ protected:
 public:
   static const double OBJECT_DURATION;
 
-  IntervalAnchor (string id, double begin, double end);
-  void setStrValues (string begin, string end);
+  IntervalAnchor (const string &id, double begin, double end);
+  void setStrValues (const string &begin, const string &end);
   string getStrBegin ();
   string getStrEnd ();
   double getBegin ();

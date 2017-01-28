@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-Meta::Meta (string name, void *content)
+Meta::Meta (const string &name, void *content)
 {
   this->name = name;
   this->content = content;
@@ -45,7 +45,7 @@ Meta::setContent (void *content)
 }
 
 void
-Meta::setName (string name)
+Meta::setName (const string &name)
 {
   this->name = name;
 }

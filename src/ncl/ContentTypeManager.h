@@ -33,9 +33,9 @@ private:
 
 public:
   static ContentTypeManager *getInstance ();
-  void setMimeFile (string mimeFile);
+  void setMimeFile (const string &mimeFile);
   void readMimeDefinitions ();
-  string getMimeType (string fileExtension);
+  string getMimeType (const string &fileExtension);
 };
 
 GINGA_NCL_END

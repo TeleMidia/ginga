@@ -33,7 +33,7 @@ public:
   static const short CAT_FRAMES;
   static const short CAT_NPT;
 
-  ContentAnchor (string id);
+  ContentAnchor (const string &id);
   virtual ~ContentAnchor (){};
 };
 

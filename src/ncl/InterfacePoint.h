@@ -25,7 +25,7 @@ GINGA_NCL_BEGIN
 class InterfacePoint : public Entity
 {
 public:
-  InterfacePoint (string someId) : Entity (someId)
+  InterfacePoint (const string &someId) : Entity (someId)
   {
     typeSet.insert ("InterfacePoint");
   };

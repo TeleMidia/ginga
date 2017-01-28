@@ -32,17 +32,17 @@ private:
 
 public:
   Action ();
-  Action (string newDelay);
+  Action (const string &newDelay);
   virtual ~Action (){};
   string getDelay ();
-  void setDelay (string dur);
+  void setDelay (const string &dur);
   virtual string
   toString ()
   {
     return "";
   };
   virtual bool
-  instanceOf (string type)
+  instanceOf (const string &type)
   {
     return typeSet.count (type);
   }

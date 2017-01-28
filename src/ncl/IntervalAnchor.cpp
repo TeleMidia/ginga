@@ -26,7 +26,7 @@ GINGA_NCL_BEGIN
 // if the representation changes, update isObjectDuration method
 const double IntervalAnchor::OBJECT_DURATION = infinity ();
 
-IntervalAnchor::IntervalAnchor (string id, double begin, double end)
+IntervalAnchor::IntervalAnchor (const string &id, double begin, double end)
     : ContentAnchor (id)
 {
   typeSet.insert ("IntervalAnchor");
@@ -36,7 +36,7 @@ IntervalAnchor::IntervalAnchor (string id, double begin, double end)
 }
 
 void
-IntervalAnchor::setStrValues (string begin, string end)
+IntervalAnchor::setStrValues (const string &begin, const string &end)
 {
   this->strBegin = begin;
   this->strEnd = end;

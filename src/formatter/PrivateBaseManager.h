@@ -35,7 +35,7 @@ public:
   PrivateBaseManager ();
   virtual ~PrivateBaseManager ();
 
-  void createPrivateBase (string id);
+  void createPrivateBase (const string &id);
   void releasePrivateBases ();
 
   NclDocument *addDocument (string id, string location,
@@ -44,7 +44,7 @@ public:
   NclDocument *embedDocument (string id, string docId, string nodeId,
                               string location, DeviceLayout *deviceLayout);
 
-  void *addVisibleDocument (string id, string location,
+  void *addVisibleDocument (const string &id, string location,
                             DeviceLayout *deviceLayout);
 
   string getDocumentLocation (string id, string docId);

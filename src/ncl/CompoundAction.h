@@ -48,7 +48,7 @@ public:
   vector<Role *> *getRoles ();
   string toString ();
   bool
-  instanceOf (string type)
+  instanceOf (const string &type)
   {
     return Action::instanceOf (type);
   }

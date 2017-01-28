@@ -20,14 +20,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-CompositeRule::CompositeRule (string id, short someOperator) : Rule (id)
+CompositeRule::CompositeRule (const string &id, short someOperator) : Rule (id)
 {
   rules = new vector<Rule *>;
   setOperator (someOperator);
   typeSet.insert ("CompositeRule");
 }
 
-CompositeRule::CompositeRule (string id, Rule *firstRule, Rule *secondRule,
+CompositeRule::CompositeRule (const string &id, Rule *firstRule, Rule *secondRule,
                               short someOperator)
     : Rule (id)
 {

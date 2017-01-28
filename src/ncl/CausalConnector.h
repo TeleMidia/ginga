@@ -39,8 +39,8 @@ private:
   Action *actionExpression;
 
 public:
-  CausalConnector (string id);
-  CausalConnector (string id, ConditionExpression *condition,
+  CausalConnector (const string &id);
+  CausalConnector (const string &id, ConditionExpression *condition,
                    Action *action);
 
   virtual ~CausalConnector ();

@@ -47,8 +47,8 @@ public:
   void setFocusBorderColor (Color *color);
   void setFocusBorderTransparency (double alpha);
   void setFocusBorderWidth (int width);
-  void setFocusSelSrc (string src);
-  void setFocusSrc (string src);
+  void setFocusSelSrc (const string &src);
+  void setFocusSrc (const string &src);
   void setSelBorderColor (Color *color);
 };
 

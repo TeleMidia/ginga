@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-Transition::Transition (string id, int type) : Entity (id)
+Transition::Transition (const string &id, int type) : Entity (id)
 {
   setType (type);
 

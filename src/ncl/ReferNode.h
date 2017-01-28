@@ -32,14 +32,14 @@ private:
   GenericDescriptor *instDesc;
 
 public:
-  ReferNode (string id);
-  ReferNode (string id, Entity *entity);
+  ReferNode (const string &id);
+  ReferNode (const string &id, Entity *entity);
 
   GenericDescriptor *getInstanceDescriptor ();
   void setInstanceDescriptor (GenericDescriptor *descriptor);
 
   string getInstanceType ();
-  void setInstanceType (string instance);
+  void setInstanceType (const string &instance);
 
   Entity *getReferredEntity ();
   void setReferredEntity (Entity *entity);

@@ -37,11 +37,11 @@ private:
   set<Link *> linkSet;
 
 public:
-  ContextNode (string id);
+  ContextNode (const string &id);
   virtual ~ContextNode ();
 
   bool
-  instanceOf (string className)
+  instanceOf (const string &className)
   {
     return Entity::instanceOf (className);
   };
@@ -52,12 +52,12 @@ public:
   void clearLinks ();
   bool containsLink (Link *link);
   virtual set<Link *> *getLinks ();
-  Link *getLink (string linkId);
+  Link *getLink (const string &linkId);
   GenericDescriptor *getNodeDescriptor (Node *node);
   int getNumLinks ();
-  bool removeLink (string linkId);
+  bool removeLink (const string &linkId);
   bool removeLink (Link *link);
-  bool setNodeDescriptor (string nodeId, GenericDescriptor *descriptor);
+  bool setNodeDescriptor (const string &nodeId, GenericDescriptor *descriptor);
 };
 
 GINGA_NCL_END

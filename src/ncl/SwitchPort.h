@@ -31,7 +31,7 @@ private:
   vector<Port *> *portList;
 
 public:
-  SwitchPort (string id, void *switchNode);
+  SwitchPort (const string &id, void *switchNode);
   virtual ~SwitchPort ();
   bool addPort (Port *port);
   bool containsMap (Node *node);

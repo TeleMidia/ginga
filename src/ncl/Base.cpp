@@ -24,7 +24,7 @@ set<Base *> Base::baseInstances;
 pthread_mutex_t Base::biMutex;
 bool Base::initMutex = false;
 
-Base::Base (string id)
+Base::Base (const string &id)
 {
   this->id = id;
 
@@ -95,7 +95,7 @@ Base::hasInstance (Base *instance, bool eraseFromList)
 }
 
 bool
-Base::addBase (Base *base, string alias, string location)
+Base::addBase (Base *base, const string &alias, const string &location)
 {
   if (base == NULL || location == "")
     {
@@ -131,7 +131,7 @@ Base::clear ()
 }
 
 Base *
-Base::getBase (string baseId)
+Base::getBase (const string &baseId)
 {
   vector<Base *>::iterator i;
   for (i = baseSet.begin (); i != baseSet.end (); ++i)
@@ -209,7 +209,7 @@ Base::removeBase (Base *base)
 }
 
 void
-Base::setBaseAlias (Base *base, string alias)
+Base::setBaseAlias (Base *base, const string &alias)
 {
   string oldAlias;
   oldAlias = getBaseAlias (base);
@@ -226,7 +226,7 @@ Base::setBaseAlias (Base *base, string alias)
 }
 
 void
-Base::setBaseLocation (Base *base, string location)
+Base::setBaseLocation (Base *base, const string &location)
 {
   string oldLocation;
 
@@ -245,13 +245,13 @@ Base::getId ()
 }
 
 void
-Base::setId (string id)
+Base::setId (const string &id)
 {
   this->id = id;
 }
 
 bool
-Base::instanceOf (string s)
+Base::instanceOf (const string &s)
 {
   if (!typeSet.empty ())
     {

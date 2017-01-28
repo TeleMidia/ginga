@@ -113,13 +113,13 @@ FocusDecoration::setFocusBorderWidth (int width)
 }
 
 void
-FocusDecoration::setFocusSelSrc (string src)
+FocusDecoration::setFocusSelSrc (const string &src)
 {
   focusSelSrc = src;
 }
 
 void
-FocusDecoration::setFocusSrc (string src)
+FocusDecoration::setFocusSrc (const string &src)
 {
   focusSrc = src;
 }

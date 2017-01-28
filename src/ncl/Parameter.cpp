@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-Parameter::Parameter (string n, string v)
+Parameter::Parameter (const string &n, const string &v)
 {
   name = n;
   value = v;
@@ -28,7 +28,7 @@ Parameter::Parameter (string n, string v)
 }
 
 bool
-Parameter::instanceOf (string s)
+Parameter::instanceOf (const string &s)
 {
   return typeSet.count (s) == 1;
 }
@@ -46,13 +46,13 @@ Parameter::getValue ()
 }
 
 void
-Parameter::setName (string n)
+Parameter::setName (const string &n)
 {
   name = n;
 }
 
 void
-Parameter::setValue (string v)
+Parameter::setValue (const string &v)
 {
   value = v;
 }
