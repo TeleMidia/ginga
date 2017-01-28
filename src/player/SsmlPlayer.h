@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-#include "mb/IImageProvider.h"
 #include "mb/SDLWindow.h"
 using namespace ::ginga::mb;
 

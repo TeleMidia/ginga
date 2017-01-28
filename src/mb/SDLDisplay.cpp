@@ -22,7 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLAudioProvider.h"
 #include "SDLEventBuffer.h"
 #include "SDLFontProvider.h"
-#include "SDLImageProvider.h"
 #include "SDLInputEvent.h"
 #include "SDLSurface.h"
 #include "SDLVideoProvider.h"
@@ -598,58 +597,27 @@ SDLDisplay::releaseFontProvider (IFontProvider *provider)
     }
 }
 
-IImageProvider *
-SDLDisplay::createImageProvider (const char *mrl)
-{
-  IImageProvider *provider = NULL;
-
-  provider = new SDLImageProvider (mrl);
-
-  Thread::mutexLock (&proMutex);
-  dmpPool.insert (provider);
-  Thread::mutexUnlock (&proMutex);
-
-  return provider;
-}
-
-void
-SDLDisplay::releaseImageProvider (IImageProvider *provider)
-{
-  set<IDiscreteMediaProvider *>::iterator i;
-  IDiscreteMediaProvider *dmp;
-
-  Thread::mutexLock (&proMutex);
-  i = dmpPool.find (provider);
-  if (i != dmpPool.end ())
-    {
-      dmp = (*i);
-      dmpPool.erase (i);
-
-      Thread::mutexUnlock (&proMutex);
-      createReleaseContainer (NULL, NULL, dmp);
-    }
-  else
-    {
-      Thread::mutexUnlock (&proMutex);
-    }
-}
-
 SDLSurface *
 SDLDisplay::createRenderedSurfaceFromImageFile (const char *mrl)
 {
-  SDLSurface *iSur = NULL;
-  IImageProvider *provider = NULL;
+  SDL_Surface *sfc;
+  SDLSurface *surface;
+  SDLWindow *window;
 
-  provider = createImageProvider (mrl);
-  if (provider == NULL)
-    {
-      return NULL;
-    }
-  iSur = createSurfaceFrom (NULL);
-  provider->playOver (iSur);
+  surface = Ginga_Display->createSurfaceFrom (NULL);
+  g_assert_nonnull (surface);
 
-  releaseImageProvider (provider);
-  return iSur;
+  sfc = IMG_Load (mrl);
+  g_assert_nonnull (sfc);
+
+  g_assert_nonnull (surface);
+  surface->setContent (sfc);
+  SDLDisplay::addUnderlyingSurface (sfc);
+
+  window = surface->getParentWindow ();
+  g_assert_null (window);
+
+  return surface;
 }
 
 void

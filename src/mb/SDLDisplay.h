@@ -25,7 +25,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLInputEvent.h"
 #include "IContinuousMediaProvider.h"
 #include "IFontProvider.h"
-#include "IImageProvider.h"
 
 #include "SDLWindow.h"
 #include "SDLSurface.h"
@@ -195,9 +194,6 @@ public:
   IFontProvider *createFontProvider (const char *mrl, int fontSize);
 
   void releaseFontProvider (IFontProvider *provider);
-
-  IImageProvider *createImageProvider (const char *mrl);
-  void releaseImageProvider (IImageProvider *provider);
 
   SDLSurface *createRenderedSurfaceFromImageFile (const char *mrl);
 

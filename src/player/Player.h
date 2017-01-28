@@ -74,8 +74,8 @@ protected:
   static const short STOP = 3;
 
   string mrl;
-  SDLSurface* surface;
-  SDLWindow* outputWindow;
+  SDLSurface *surface;
+  SDLWindow *outputWindow;
   double initTime, elapsedTime, elapsedPause, pauseTime;
   set<IPlayer *> referredPlayers;
   IPlayer *timeBasePlayer;
