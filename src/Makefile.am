@@ -138,7 +138,6 @@ src+= mb/SDLConvert.cpp
 src+= mb/SDLDisplay.cpp
 src+= mb/SDLEventBuffer.cpp
 src+= mb/SDLFontProvider.cpp
-src+= mb/SDLImageProvider.cpp
 src+= mb/SDLInputEvent.cpp
 src+= mb/SDLSurface.cpp
 src+= mb/SDLVideoProvider.cpp

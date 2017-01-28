@@ -15,22 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef IMAGEPLAYER_H_
-#define IMAGEPLAYER_H_
-
-#include "mb/IImageProvider.h"
-#include "mb/SDLWindow.h"
-using namespace ::ginga::mb;
-
-#include "system/GingaLocatorFactory.h"
-using namespace ::ginga::system;
-
-#include "util/Color.h"
-#include "util/functions.h"
-using namespace ::ginga::util;
-
-#include "system/SystemCompat.h"
-using namespace ::ginga::system;
+#ifndef IMAGE_PLAYER_H
+#define IMAGE_PLAYER_H
 
 #include "Player.h"
 
@@ -38,22 +24,11 @@ GINGA_PLAYER_BEGIN
 
 class ImagePlayer : public Player
 {
-private:
-  IMediaProvider* provider;
-
 public:
   ImagePlayer (string mrl);
-  virtual ~ImagePlayer ();
   bool play ();
-  void stop ();
-  void resume ();
-
-  virtual void setPropertyValue (string name, string value);
-
-private:
-  SDLSurface* prepareSurface (IMediaProvider* provider, string mrl);
 };
 
 GINGA_PLAYER_END
 
-#endif /*IMAGEPLAYER_H_*/
+#endif /* IMAGE_PLAYER_H */

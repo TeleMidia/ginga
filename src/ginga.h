@@ -72,6 +72,7 @@ GINGA_PRAGMA_DIAG_PUSH ()
 GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
 GINGA_PRAGMA_DIAG_IGNORE (-Wswitch-default)
 #include <SDL.h>
+#include <SDL_image.h>
 #include <SDL_syswm.h>
 GINGA_PRAGMA_DIAG_POP ()
 

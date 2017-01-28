@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "SDLWindow.h"
 
-
 #include "SDLConvert.h"
 #include "SDLDisplay.h"
 #include "SDLSurface.h"
@@ -692,33 +691,6 @@ SDLWindow::isMine (SDLSurface *surface)
     }
 
   return itIs;
-}
-
-void
-SDLWindow::renderImgFile (string serializedImageUrl)
-{
-  IImageProvider *img;
-  IMediaProvider* providerId;
-  SDLSurface* surId;
-
-  providerId = Ginga_Display->createImageProvider (serializedImageUrl.c_str ());
-
-  IMediaProvider *mediaProvider = providerId;
-  if (mediaProvider
-      && mediaProvider->getType () == IMediaProvider::ImageProvider)
-    img = (IImageProvider *)mediaProvider;
-
-  surId = Ginga_Display->createSurface ();
-  img->playOver (surId);
-
-  lockSurface ();
-  curSur = (SDL_Surface *)surId->getContent ();
-  unlockSurface ();
-
-  textureUpdate = true;
-
-  Ginga_Display->releaseImageProvider (img);
-  delete surId;
 }
 
 void

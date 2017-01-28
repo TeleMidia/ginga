@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef SDLSVGDECODER_H
 #define SDLSVGDECODER_H
 
-#include "SDLImageProvider.h"
 #include "SDLWindow.h"
 #include "SDLSurface.h"
 #include "SDLDisplay.h"
