@@ -28,7 +28,7 @@ AdapterImagePlayer::createPlayer ()
 {
   clog << "AdapterImagePlayer::createPlayer '" << mrl << "'" << endl;
 
-  player = new ImagePlayer (mrl.c_str ());
+  player = new ImagePlayer (mrl);
 
   clog << "AdapterImagePlayer::createPlayer '";
   clog << mrl << "' ALL DONE" << endl;

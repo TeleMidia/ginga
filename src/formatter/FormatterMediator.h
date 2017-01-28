@@ -157,9 +157,9 @@ public:
   void setMirrorSrc (IPlayer *mirrorSrc);
   void printGingaWindows ();
   set<string> *createPortIdList ();
-  short getMappedInterfaceType (string portId);
+  short getMappedInterfaceType (const string &portId);
 
-  void setMrl (string mrl, bool visible = true);
+  void setMrl (const string &mrl, bool visible = true);
   void reset (){};
   void rebase (){};
   void printData (NclPlayerData *data);
@@ -169,7 +169,7 @@ public:
   string getScreenShot ();
 
   vector<string> *getCompileErrors ();
-  void *setCurrentDocument (string fName);
+  void *setCurrentDocument (const string &fName);
 
 private:
   virtual void *addDocument (string fName);
@@ -221,7 +221,7 @@ private:
 
 public:
   bool nclEdit (string nclEditApi);
-  bool editingCommand (string commandTag, string privateDataPayload);
+  bool editingCommand (const string &commandTag, const string &privateDataPayload);
 
 private:
   LayoutRegion *addRegion (string documentId, string regionBaseId,
@@ -315,8 +315,10 @@ public:
   void setNotifyContentUpdate (arg_unused (bool notify)){};
   void addListener (IPlayerListener *listener);
   void removeListener (IPlayerListener *listener);
-  void notifyPlayerListeners (short code, string paremeter, short type,
-                              string value);
+  void notifyPlayerListeners (short code,
+                              const string &paremeter,
+                              short type,
+                              const string &value);
   void setSurface (SDLSurface* surface);
   SDLSurface* getSurface ();
   void flip ();
@@ -365,27 +367,29 @@ public:
     return NULL;
   };
   IPlayer *
-  getPlayer (arg_unused (string objectId))
+  getPlayer (arg_unused (const string &objectId))
   {
     return NULL;
   };
   void select (arg_unused (IPlayer *selObject)){};
 
   // Application player only.
-  void setCurrentScope (string scopeId);
+  void setCurrentScope (const string &scopeId);
   string getActiveUris (vector<string> *uris);
   string getDepUris (vector<string> *uris, int targetDev = 0);
   PresentationContext *getPresentationContext ();
 
 private:
-  string getDepUrisFromNodes (vector<string> *uris, vector<Node *> *nodes,
+  string getDepUrisFromNodes (vector<string> *uris,
+                              vector<Node *> *nodes,
                               int targetDev = 0);
-  string getDepUriFromNode (vector<string> *uris, Node *node,
+  string getDepUriFromNode (vector<string> *uris,
+                            Node *node,
                             int targetDev = 0);
   string getBaseUri (string baseA, string baseB);
 
 public:
-  void timeShift (string direction);
+  void timeShift (const string &direction);
 };
 
 GINGA_FORMATTER_END

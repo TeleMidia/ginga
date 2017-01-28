@@ -61,15 +61,16 @@ private:
 
 public:
   bool applicationInfoMounted (IAIT *ait);
-  void objectMounted (string ior, string clientUri, string name);
+  void objectMounted (const string &ior, const string &clientUri, const string &name);
   void receiveStreamEvent (DsmccStreamEvent *event);
 
 private:
-  void addNCLInfo (string name, string path);
+  void addNCLInfo (const string &name, const string &path);
 
 public:
-  void serviceDomainMounted (string mountPoint, map<string, string> *names,
-                             map<string, string> *paths);
+  void serviceDomainMounted (const string &mountPoint,
+                             const map<string, string> *names,
+                             const map<string, string> *paths);
 
 private:
   void run ();

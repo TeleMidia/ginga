@@ -1929,8 +1929,10 @@ AdapterFormatterPlayer::setTimeBasePlayer (
 }
 
 void
-AdapterFormatterPlayer::updateStatus (short code, string parameter,
-                                      short type, arg_unused (string value))
+AdapterFormatterPlayer::updateStatus (short code,
+                                      const string &parameter,
+                                      short type,
+                                      arg_unused (const string &value))
 {
   NclFormatterEvent *mainEvent;
 

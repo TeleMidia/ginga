@@ -24,8 +24,10 @@ class IPlayerListener
 {
 public:
   virtual ~IPlayerListener (){};
-  virtual void updateStatus (short code, string parameter, short type,
-                             string value)
+  virtual void updateStatus (short code,
+                             const string &parameter,
+                             short type,
+                             const string &value)
       = 0;
 };
 

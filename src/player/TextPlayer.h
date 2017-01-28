@@ -56,8 +56,11 @@ private:
   void initializePlayer ();
 
 public:
-  static int write (SDLSurface* s, string text,
-                    short textAlign, string fontUri = "", int fontSize = 12,
+  static int write (SDLSurface* s,
+                    const string &text,
+                    short textAlign,
+                    const string &fontUri = "",
+                    int fontSize = 12,
                     Color *fontColor = NULL);
 
   virtual bool
@@ -86,7 +89,7 @@ public:
     Player::resume ();
   };
 
-  bool setFont (string someUri);
+  bool setFont (const string &someUri);
   void setFontSize (int size);
   int getFontSize ();
   int getFontHeight ();
@@ -95,8 +98,8 @@ public:
   void setColor (guint8 red, guint8 green, guint8 blue, guint8 alpha = 255);
   void setTabSize (int size);
   int getTabSize ();
-  void drawText (string text, short align);
-  bool drawTextLn (string text, short align);
+  void drawText (const string &text, short align);
+  bool drawTextLn (const string &text, short align);
   void tab ();
   bool breakLine ();
   int getCurrentColumn ();

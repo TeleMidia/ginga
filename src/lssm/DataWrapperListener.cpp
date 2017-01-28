@@ -257,8 +257,8 @@ DataWrapperListener::applicationInfoMounted (IAIT *ait)
 }
 
 void
-DataWrapperListener::objectMounted (string ior, string clientUri,
-                                    string name)
+DataWrapperListener::objectMounted (const string &ior, const string &clientUri,
+                                    const string &name)
 {
   GingaLocatorFactory *glf = NULL;
 
@@ -315,7 +315,7 @@ DataWrapperListener::receiveStreamEvent (DsmccStreamEvent *event)
 }
 
 void
-DataWrapperListener::addNCLInfo (string name, string path)
+DataWrapperListener::addNCLInfo (const string &name, const string &path)
 {
   if (name.find (".ncl") != std::string::npos)
     {
@@ -324,11 +324,11 @@ DataWrapperListener::addNCLInfo (string name, string path)
 }
 
 void
-DataWrapperListener::serviceDomainMounted (arg_unused (string mountPoint),
-                                           map<string, string> *names,
-                                           map<string, string> *paths)
+DataWrapperListener::serviceDomainMounted (arg_unused (const string &mountPoint),
+                                           const map<string, string> *names,
+                                           const map<string, string> *paths)
 {
-  map<string, string>::iterator i;
+  map<string, string>::const_iterator i;
   string nclName, baseDir;
 
   if (processAIT ())

@@ -285,7 +285,7 @@ BerkeliumHandler::setBounds (int x, int y, int w, int h)
 }
 
 void
-BerkeliumHandler::setUrl (string url)
+BerkeliumHandler::setUrl (const string &url)
 {
   mURL = url;
 }

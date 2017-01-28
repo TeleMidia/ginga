@@ -445,7 +445,7 @@ FormatterMediator::createPortIdList ()
 }
 
 short
-FormatterMediator::getMappedInterfaceType (string portId)
+FormatterMediator::getMappedInterfaceType (const string &portId)
 {
   short interfaceType = -1;
   map<Port *, NclFormatterEvent *>::iterator i;
@@ -482,7 +482,7 @@ FormatterMediator::getMappedInterfaceType (string portId)
 }
 
 void
-FormatterMediator::setMrl (string mrl, bool visible)
+FormatterMediator::setMrl (const string &mrl, bool visible)
 {
   this->mrl = mrl;
   this->visible = visible;
@@ -541,7 +541,7 @@ FormatterMediator::getCompileErrors ()
 }
 
 void *
-FormatterMediator::setCurrentDocument (string fName)
+FormatterMediator::setCurrentDocument (const string &fName)
 {
   vector<string> *uris;
   string baseUri;
@@ -1571,8 +1571,8 @@ FormatterMediator::nclEdit (string nclEditApi)
 }
 
 bool
-FormatterMediator::editingCommand (string commandTag,
-                                   string privateDataPayload)
+FormatterMediator::editingCommand (const string &commandTag,
+                                   const string &privateDataPayload)
 {
   vector<string> *args;
   vector<string>::iterator i;
@@ -3189,8 +3189,8 @@ FormatterMediator::removeListener (IPlayerListener *listener)
 }
 
 void
-FormatterMediator::notifyPlayerListeners (short code, string paremeter,
-                                          short type, string value)
+FormatterMediator::notifyPlayerListeners (short code, const string &paremeter,
+                                          short type, const string &value)
 {
   Player::notifyPlayerListeners (code, paremeter, type, value);
 }
@@ -3562,7 +3562,7 @@ FormatterMediator::setOutWindow (SDLWindow* windowId)
 }
 
 void
-FormatterMediator::setCurrentScope (string scopeId)
+FormatterMediator::setCurrentScope (const string &scopeId)
 {
   Player::setScope (scopeId);
 }
@@ -3751,7 +3751,7 @@ FormatterMediator::getBaseUri (string baseA, string baseB)
 }
 
 void
-FormatterMediator::timeShift (string direction)
+FormatterMediator::timeShift (const string &direction)
 {
   playerManager->timeShift (direction);
 }

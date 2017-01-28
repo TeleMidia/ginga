@@ -89,19 +89,20 @@ public:
   virtual ~PresentationEngineManager ();
   void setExitOnEnd (bool exitOnEnd);
   void setDisableFKeys (bool disableFKeys);
-  set<string> *createPortIdList (string nclFile);
-  short getMappedInterfaceType (string nclFile, string portId);
+  set<string> *createPortIdList (const string &nclFile);
+  short getMappedInterfaceType (const string &nclFile, const string &portId);
   void autoMountOC (bool autoMountIt);
   void setCurrentPrivateBaseId (unsigned int baseId);
   void setTimeBaseProvider (ITimeBaseProvider *tmp);
 
 private:
   void printGingaWindows ();
-  bool nclEdit (string nclEditApi);
-  bool editingCommand (string commandTag, string commandPayload);
+  bool nclEdit (const string &nclEditApi);
+  bool editingCommand (const string &commandTag, const string &commandPayload);
 
 public:
-  bool editingCommand (string editingCmd);
+  bool editingCommand (const string &editingCmd);
+
 private:
   void close ();
   void registerKeys ();
@@ -115,45 +116,49 @@ public:
   void setInteractivityInfo (bool hasInt);
 
 private:
-  INCLPlayer *createNclPlayer (string baseId, string fname);
+  INCLPlayer *createNclPlayer (const string &baseId, const string &fname);
 
 public:
   NclPlayerData *createNclPlayerData ();
-  void addPlayerListener (string nclFile, IPlayerListener *listener);
-  void removePlayerListener (string nclFile, IPlayerListener *listener);
-  bool openNclFile (string nclFile);
-  bool startPresentation (string nclFile, string interfId);
-  bool pausePresentation (string nclFile);
-  bool resumePresentation (string nclFile);
-  bool stopPresentation (string nclFile);
-  bool setPropertyValue (string nclFile, string interfaceId, string value);
-  string getPropertyValue (string nclFile, string interfaceId);
+  void addPlayerListener (const string &nclFile, IPlayerListener *listener);
+  void removePlayerListener (const string &nclFile, IPlayerListener *listener);
+  bool openNclFile (const string &nclFile);
+  bool startPresentation (const string &nclFile, const string &interfId);
+  bool pausePresentation (const string &nclFile);
+  bool resumePresentation (const string &nclFile);
+  bool stopPresentation (const string &nclFile);
+  bool setPropertyValue (const string &nclFile,
+                         const string &interfaceId,
+                         const string &value);
+  string getPropertyValue (const string &nclFile, const string &interfaceId);
   bool stopAllPresentations ();
-  bool abortPresentation (string nclFile);
+  bool abortPresentation (const string &nclFile);
 
 private:
-  void openNclDocument (string docUri, int x, int y, int w, int h);
+  void openNclDocument (const string &docUri, int x, int y, int w, int h);
   void pausePressed ();
 
 public:
   void *getDsmccListener ();
-  void setCmdFile (string cmdFile);
+  void setCmdFile (const string &cmdFile);
   static void *processAutoCmd (void *ptr);
   void waitUnlockCondition ();
 
 private:
-  void presentationCompleted (string formatterId);
-  void releaseFormatter (string formatterId);
+  void presentationCompleted (const string &formatterId);
+  void releaseFormatter (const string &formatterId);
   bool checkStatus ();
-  void updateStatus (short code, string parameter, short type,
-                     string value);
+  void updateStatus (short code,
+                     const string &parameter,
+                     short type,
+                     const string &value);
   bool userEventReceived (SDLInputEvent *ev);
-  bool cmdEventReceived (string command, string args);
+  bool cmdEventReceived (const string &command, const string &args);
   static void *eventReceived (void *ptr);
-  void readCommand (string command);
-  bool getNclPlayer (string docLocation, INCLPlayer **player);
-  bool getNclPlayer (string baseId, string docId, INCLPlayer **p);
-  void updateFormatters (short command, string parameter = "");
+  void readCommand (const string &command);
+  bool getNclPlayer (const string &docLocation, INCLPlayer **player);
+  bool getNclPlayer (const string &baseId, const string &docId, INCLPlayer **p);
+  void updateFormatters (short command, const string &parameter = "");
   void run ();
 };
 

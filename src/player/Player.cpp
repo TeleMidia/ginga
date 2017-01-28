@@ -26,7 +26,7 @@ using namespace ::ginga::util;
 
 GINGA_PLAYER_BEGIN
 
-Player::Player (string mrl)
+Player::Player (const string &mrl)
 {
   Thread::mutexInit (&listM, false);
   Thread::mutexInit (&lockedListM, false);
@@ -137,7 +137,7 @@ Player::removeMirror (IPlayer *mirror)
 }
 
 void
-Player::setMrl (string mrl, bool visible)
+Player::setMrl (const string &mrl, bool visible)
 {
   this->mrl = mrl;
   this->visible = visible;
@@ -237,8 +237,10 @@ Player::performLockedListenersRequest ()
 }
 
 void
-Player::notifyPlayerListeners (short code, string parameter, short type,
-                               string value)
+Player::notifyPlayerListeners (short code,
+                               const string &parameter,
+                               short type,
+                               const string &value)
 {
   PendingNotification *pn;
   vector<PendingNotification *>::iterator i;
@@ -342,9 +344,11 @@ Player::detachedNotifier (void *ptr)
 }
 
 void
-Player::ntsNotifyPlayerListeners (set<IPlayerListener *> *list, short code,
-                                  string parameter, short type,
-                                  string value)
+Player::ntsNotifyPlayerListeners (set<IPlayerListener *> *list,
+                                  short code,
+                                  const string &parameter,
+                                  short type,
+                                  const string &value)
 {
   set<IPlayerListener *>::iterator i;
 

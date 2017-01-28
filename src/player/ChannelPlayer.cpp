@@ -79,7 +79,7 @@ ChannelPlayer::getPlayerMap ()
 }
 
 IPlayer *
-ChannelPlayer::getPlayer (string objectId)
+ChannelPlayer::getPlayer (const string &objectId)
 {
   IPlayer *newSelected;
 
@@ -204,8 +204,10 @@ ChannelPlayer::stop ()
 }
 
 void
-ChannelPlayer::updateStatus (short code, string parameter, short type,
-                             string value)
+ChannelPlayer::updateStatus (short code,
+                             const string &parameter,
+                             short type,
+                             const string &value)
 {
   notifyPlayerListeners (code, parameter, type, value);
 }

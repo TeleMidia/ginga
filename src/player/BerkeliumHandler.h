@@ -85,7 +85,7 @@ public:
   void setWindow (std::auto_ptr<Window> window);
   void getSize (int *w, int *h);
   void setBounds (int x, int y, int w, int h);
-  void setUrl (string url);
+  void setUrl (const string &url);
   string getUrl ();
   SDLSurface* getSurface ();
 
@@ -111,7 +111,7 @@ private:
       unsigned int dest_texture_height, bool ignore_partial,
       unsigned char *scroll_buffer);
 
-  SDLSurface* createRenderedSurface (string fileName);
+  SDLSurface* createRenderedSurface (const string &fileName);
 
   string createFile (const unsigned char *sourceBuffer, int width,
                      int height);

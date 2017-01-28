@@ -24,7 +24,7 @@ using namespace ::ginga::util;
 
 GINGA_PLAYER_BEGIN
 
-AVPlayer::AVPlayer (string mrl) : Thread (), Player (mrl)
+AVPlayer::AVPlayer (const string &mrl) : Thread (), Player (mrl)
 {
   string::size_type pos;
 
@@ -242,7 +242,7 @@ AVPlayer::getVPts ()
 }
 
 void
-AVPlayer::timeShift (string direction)
+AVPlayer::timeShift (const string &direction)
 {
   if (provider != 0)
     {
@@ -412,7 +412,7 @@ AVPlayer::resume ()
 }
 
 string
-AVPlayer::getPropertyValue (string const &name)
+AVPlayer::getPropertyValue (const string &name)
 {
   if (name == "soundLevel")
     {

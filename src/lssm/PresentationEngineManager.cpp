@@ -171,7 +171,7 @@ PresentationEngineManager::setDisableFKeys (bool disableFKeys)
 }
 
 set<string> *
-PresentationEngineManager::createPortIdList (string nclFile)
+PresentationEngineManager::createPortIdList (const string &nclFile)
 {
   INCLPlayer *formatter;
   set<string> *portIds = NULL;
@@ -185,8 +185,8 @@ PresentationEngineManager::createPortIdList (string nclFile)
 }
 
 short
-PresentationEngineManager::getMappedInterfaceType (string nclFile,
-                                                   string portId)
+PresentationEngineManager::getMappedInterfaceType (const string &nclFile,
+                                                   const string &portId)
 {
   INCLPlayer *formatter;
   short miType = -1;
@@ -258,7 +258,7 @@ PresentationEngineManager::printGingaWindows ()
 }
 
 bool
-PresentationEngineManager::nclEdit (string nclEditApi)
+PresentationEngineManager::nclEdit (const string &nclEditApi)
 {
   string::size_type pos = nclEditApi.find_first_of (",");
   string commandTag = xstrchomp (nclEditApi.substr (0, pos));
@@ -269,8 +269,8 @@ PresentationEngineManager::nclEdit (string nclEditApi)
 }
 
 bool
-PresentationEngineManager::editingCommand (string commandTag,
-                                           string commandPayload)
+PresentationEngineManager::editingCommand (const string &commandTag,
+                                           const string &commandPayload)
 {
   vector<string> *args;
   vector<string>::iterator i;
@@ -413,7 +413,7 @@ PresentationEngineManager::editingCommand (string commandTag,
 }
 
 bool
-PresentationEngineManager::editingCommand (string editingCmd)
+PresentationEngineManager::editingCommand (const string &editingCmd)
 {
   string commandTag = "";
   string commandPayload = "";
@@ -544,7 +544,8 @@ PresentationEngineManager::setInteractivityInfo (bool hasInt)
 }
 
 INCLPlayer *
-PresentationEngineManager::createNclPlayer (string baseId, string fname)
+PresentationEngineManager::createNclPlayer (const string &baseId,
+                                            const string &fname)
 {
   NclPlayerData *data = NULL;
   INCLPlayer *formatter = NULL;
@@ -601,7 +602,7 @@ PresentationEngineManager::createNclPlayerData ()
 }
 
 void
-PresentationEngineManager::addPlayerListener (string nclFile,
+PresentationEngineManager::addPlayerListener (const string &nclFile,
                                               IPlayerListener *listener)
 {
   map<string, INCLPlayer *>::iterator i;
@@ -621,7 +622,7 @@ PresentationEngineManager::addPlayerListener (string nclFile,
 }
 
 void
-PresentationEngineManager::removePlayerListener (string nclFile,
+PresentationEngineManager::removePlayerListener (const string &nclFile,
                                                  IPlayerListener *listener)
 {
   map<string, INCLPlayer *>::iterator i;
@@ -641,7 +642,7 @@ PresentationEngineManager::removePlayerListener (string nclFile,
 }
 
 bool
-PresentationEngineManager::openNclFile (string fname)
+PresentationEngineManager::openNclFile (const string &fname)
 {
   INCLPlayer *formatter;
 
@@ -662,8 +663,8 @@ PresentationEngineManager::openNclFile (string fname)
 }
 
 bool
-PresentationEngineManager::startPresentation (string nclFile,
-                                              string interfId)
+PresentationEngineManager::startPresentation (const string &nclFile,
+                                              const string &interfId)
 {
   INCLPlayer *formatter;
 
@@ -708,7 +709,7 @@ PresentationEngineManager::startPresentation (string nclFile,
 }
 
 bool
-PresentationEngineManager::stopPresentation (string nclFile)
+PresentationEngineManager::stopPresentation (const string &nclFile)
 {
   clog << "PresentationEngineManager::stopPresentation" << endl;
   map<string, INCLPlayer *>::iterator i;
@@ -739,9 +740,9 @@ PresentationEngineManager::stopPresentation (string nclFile)
 }
 
 bool
-PresentationEngineManager::setPropertyValue (string nclFile,
-                                             string interfaceId,
-                                             string value)
+PresentationEngineManager::setPropertyValue (const string &nclFile,
+                                             const string &interfaceId,
+                                             const string &value)
 {
   INCLPlayer *formatter;
 
@@ -755,8 +756,8 @@ PresentationEngineManager::setPropertyValue (string nclFile,
 }
 
 string
-PresentationEngineManager::getPropertyValue (string nclFile,
-                                             string interfaceId)
+PresentationEngineManager::getPropertyValue (const string &nclFile,
+                                             const string &interfaceId)
 {
   INCLPlayer *formatter;
 
@@ -799,7 +800,7 @@ PresentationEngineManager::stopAllPresentations ()
 }
 
 bool
-PresentationEngineManager::pausePresentation (string nclFile)
+PresentationEngineManager::pausePresentation (const string &nclFile)
 {
   clog << "PresentationEngineManager::pausePresentation" << endl;
 
@@ -819,7 +820,7 @@ PresentationEngineManager::pausePresentation (string nclFile)
 }
 
 bool
-PresentationEngineManager::resumePresentation (string nclFile)
+PresentationEngineManager::resumePresentation (const string &nclFile)
 {
   clog << "PresentationEngineManager::resumePresentation" << endl;
   INCLPlayer *formatter;
@@ -838,7 +839,7 @@ PresentationEngineManager::resumePresentation (string nclFile)
 }
 
 bool
-PresentationEngineManager::abortPresentation (string nclFile)
+PresentationEngineManager::abortPresentation (const string &nclFile)
 {
   clog << "PresentationEngineManager::stopPresentation" << endl;
   map<string, INCLPlayer *>::iterator i;
@@ -864,7 +865,8 @@ PresentationEngineManager::abortPresentation (string nclFile)
 }
 
 void
-PresentationEngineManager::openNclDocument (string docUri, int x, int y,
+PresentationEngineManager::openNclDocument (const string &docUri,
+                                            int x, int y,
                                             int w, int h)
 {
   clog << "PresentationEngineManager::openNclDocument docUri '";
@@ -893,7 +895,7 @@ PresentationEngineManager::pausePressed ()
 }
 
 void
-PresentationEngineManager::setCmdFile (string cmdFile)
+PresentationEngineManager::setCmdFile (const string &cmdFile)
 {
   ifstream fis;
   string cmd;
@@ -990,7 +992,7 @@ PresentationEngineManager::waitUnlockCondition ()
 }
 
 void
-PresentationEngineManager::presentationCompleted (string formatterId)
+PresentationEngineManager::presentationCompleted (const string &formatterId)
 {
   clog << "PresentationEngineManager";
   clog << "::presentationCompleted for '" << formatterId;
@@ -1003,7 +1005,7 @@ PresentationEngineManager::presentationCompleted (string formatterId)
 }
 
 void
-PresentationEngineManager::releaseFormatter (string formatterId)
+PresentationEngineManager::releaseFormatter (const string &formatterId)
 {
   map<string, INCLPlayer *>::iterator i;
   INCLPlayer *formatter;
@@ -1080,8 +1082,10 @@ PresentationEngineManager::checkStatus ()
 }
 
 void
-PresentationEngineManager::updateStatus (short code, string parameter,
-                                         short type, arg_unused (string value))
+PresentationEngineManager::updateStatus (short code,
+                                         const string &parameter,
+                                         short type,
+                                         arg_unused (const string &value))
 {
   struct inputEventNotification *ev;
 
@@ -1156,7 +1160,8 @@ PresentationEngineManager::userEventReceived (SDLInputEvent *ev)
 }
 
 bool
-PresentationEngineManager::cmdEventReceived (string command, string args)
+PresentationEngineManager::cmdEventReceived (const string &command,
+                                             const string &args)
 {
   size_t token;
   string nCmd;
@@ -1296,7 +1301,7 @@ PresentationEngineManager::eventReceived (void *ptr)
 }
 
 void
-PresentationEngineManager::readCommand (string command)
+PresentationEngineManager::readCommand (const string &command)
 {
   string cmdTag = "", cmdParams = "", editingCmd = "", cmdHeader = "";
   vector<string> *params;
@@ -1373,7 +1378,7 @@ PresentationEngineManager::readCommand (string command)
 }
 
 bool
-PresentationEngineManager::getNclPlayer (string docLocation,
+PresentationEngineManager::getNclPlayer (const string &docLocation,
                                          INCLPlayer **nclPlayer)
 {
   map<string, INCLPlayer *>::iterator i;
@@ -1395,7 +1400,8 @@ PresentationEngineManager::getNclPlayer (string docLocation,
 }
 
 bool
-PresentationEngineManager::getNclPlayer (string baseId, string docId,
+PresentationEngineManager::getNclPlayer (const string &baseId,
+                                         const string &docId,
                                          INCLPlayer **nclPlayer)
 {
   string docLocation;
@@ -1406,7 +1412,7 @@ PresentationEngineManager::getNclPlayer (string baseId, string docId,
 
 void
 PresentationEngineManager::updateFormatters (short command,
-                                             string parameter)
+                                             const string &parameter)
 {
   map<string, INCLPlayer *>::iterator i;
   INCLPlayer *formatter;

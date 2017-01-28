@@ -57,7 +57,7 @@ public:
 
 private:
   void release ();
-  void render (string mrl);
+  void render (const string &mrl);
   void run ();
 };
 

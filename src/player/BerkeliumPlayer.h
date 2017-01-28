@@ -67,7 +67,7 @@ private:
   BerkeliumHandler *bInfo;
 
 public:
-  BerkeliumPlayer ( string mrl);
+  BerkeliumPlayer ( const string &mrl);
   virtual ~BerkeliumPlayer ();
 
   SDLSurface* getSurface ();

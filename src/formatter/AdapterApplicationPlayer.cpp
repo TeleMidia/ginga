@@ -742,8 +742,10 @@ AdapterApplicationPlayer::naturalEnd ()
 }
 
 void
-AdapterApplicationPlayer::updateStatus (short code, string param,
-                                        short type, string value)
+AdapterApplicationPlayer::updateStatus (short code,
+                                        const string &param,
+                                        short type,
+                                        const string &value)
 {
   ApplicationStatus *data;
 

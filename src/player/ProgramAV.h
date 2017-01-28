@@ -43,16 +43,16 @@ public:
   SDLSurface* getSurface ();
 
 private:
-  void addPidName (string name, int pid);
-  int getPidByName (string name);
-  void forcePids (string pValue);
-  void setAVPid (string name, int aPid, int vPid);
-  string getNameFromMrl (string mrl);
-  void showPlayer (string mrl);
-  void hidePlayer (string mrl);
-  void createPlayer (string mrl);
+  void addPidName (const string &name, int pid);
+  int getPidByName (const string &name);
+  void forcePids (const string &pValue);
+  void setAVPid (const string &name, int aPid, int vPid);
+  string getNameFromMrl (const string &mrl);
+  void showPlayer (const string &mrl);
+  void hidePlayer (const string &mrl);
+  void createPlayer (const string &mrl);
   void setPlayer (int pid, IPlayer *);
-  IPlayer *getPlayer (string mrl);
+  IPlayer *getPlayer (const string &mrl);
   IPlayer *getPlayer (int pid);
 
   string getPropertyValue (const string &name);
