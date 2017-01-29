@@ -53,8 +53,20 @@ pthread_mutex_t SDLDisplay::surMutex;
 pthread_mutex_t SDLDisplay::proMutex;
 pthread_mutex_t SDLDisplay::cstMutex;
 
-// BEGIN SANITY ------------------------------------------------------------
+// -------------------------------------------------------------------------
 
+// Compare the z-index of two windows.
+static gint
+cmp_win_z (gconstpointer p1, gconstpointer p2)
+{
+  SDLWindow *w1 = deconst (SDLWindow *, p1);
+  SDLWindow *w2 = deconst (SDLWindow *, p2);
+  double z1 = w1->getZ ();
+  double z2 = w2->getZ ();
+  return (z1 < z2) ? -1 : (z1 > z2) ? 1 : 0;
+}
+
+// Render thread.
 static gpointer
 render_thread_func (gpointer data)
 {
@@ -66,9 +78,7 @@ render_thread_func (gpointer data)
   while (!display->hasQuitted())
     {
       SDL_Event evt;
-
-      // Handle input events.
-      while (SDL_PollEvent (&evt))
+      while (SDL_PollEvent (&evt)) // handle input
         {
           switch (evt.type)
             {
@@ -89,11 +99,8 @@ render_thread_func (gpointer data)
           buf->feed (evt, false, false);
         }
 
-      // Step continuous media providers.
-      SDLDisplay::refreshCMP (display); // FIXME
-
-      // Step windows.
-      SDLDisplay::refreshWin (display); // FIXME
+      SDLDisplay::refreshCMP (display);
+      display->redraw ();       // redraw providers and windows
     tail:
       ;
     }
@@ -102,6 +109,9 @@ render_thread_func (gpointer data)
   exit (EXIT_SUCCESS);          // FIXME: Die gracefully
   return display;
 }
+
+
+// Private methods.
 
 void
 SDLDisplay::lock (void)
@@ -115,6 +125,33 @@ SDLDisplay::unlock (void)
   g_mutex_unlock (&this->mutex);
 }
 
+void
+SDLDisplay::add (GList **list, gpointer data)
+{
+  this->lock ();
+  g_assert_null (g_list_find (*list, data));
+  *list = g_list_append (*list, data);
+  this->unlock ();
+}
+
+void
+SDLDisplay::remove (GList **list, gpointer data)
+{
+  GList *elt;
+
+  this->lock ();
+  elt = g_list_find (*list, data);
+  g_assert_nonnull (elt);
+  *list = g_list_remove_link (*list, elt);
+  this->unlock ();
+}
+
+
+// Public methods.
+
+/**
+ * Returns true if display render thread has quitted.
+ */
 bool
 SDLDisplay::hasQuitted ()
 {
@@ -127,6 +164,9 @@ SDLDisplay::hasQuitted ()
   return quit;
 }
 
+/**
+ * Quits display render thread.
+ */
 void
 SDLDisplay::quit ()
 {
@@ -135,14 +175,45 @@ SDLDisplay::quit ()
   this->unlock ();
 }
 
+/**
+ * Redraws the registered providers and windows.
+ * The z-index order of windows determines their redraw order.
+ */
+void
+SDLDisplay::redraw ()
+{
+  GList *l;
+
+  this->lock ();
+  this->windows = g_list_sort (this->windows, cmp_win_z);
+  for (l = this->windows; l != NULL; l = l->next)
+    {
+      SDL_Texture *texture;
+      SDLWindow *win;
+
+      win = (SDLWindow *) l->data;
+      if (!win->isVisible () || win->isGhostWindow ())
+        continue;               // nothing to do
+
+      texture = win->getTexture (this->renderer);
+      drawSDLWindow (this->renderer, texture, win);
+      win->rendered ();
+    }
+
+  SDL_RenderPresent (this->renderer);
+  this->unlock ();
+}
+
+/**
+ * Creates and returns a new display with the given dimensions.
+ * If FULLSCREEN is true, enable full-screen mode.
+ */
 SDLDisplay::SDLDisplay (int width, int height, bool fullscreen)
 {
   guint flags;
   int status;
 
-  // Initialize attributes.
-  g_assert (width >= 0);
-  g_assert (height >= 0);
+  g_mutex_init (&this->mutex);
 
   this->width = width;
   this->height = height;
@@ -153,9 +224,11 @@ SDLDisplay::SDLDisplay (int width, int height, bool fullscreen)
   this->screen = NULL;
 
   this->_quit = false;
-  g_mutex_init (&this->mutex);
+  this->render_thread = NULL;
 
-  // Initialize SDL.
+  this->windows = NULL;
+  this->providers = NULL;
+
   g_assert (!SDL_WasInit (0));
   status = SDL_Init (0);
   if (unlikely (status != 0))
@@ -178,7 +251,6 @@ SDLDisplay::SDLDisplay (int width, int height, bool fullscreen)
   checkMutexInit ();            // FIXME
   initCodeMaps ();              // FIXME
 
-  // Create render thread.
   this->render_thread = g_thread_new ("render", render_thread_func, this);
   g_assert_nonnull (this->render_thread);
 }
@@ -377,6 +449,8 @@ SDLDisplay::createWindow (int x, int y, int w, int h, double z)
   iWin = new SDLWindow (0, x, y, w, h, z);
 
   windowPool.insert (iWin);
+  this->add (&this->windows, iWin);
+
   renderMapInsertWindow (iWin, z);
 
   Thread::mutexUnlock (&winMutex);
@@ -421,6 +495,7 @@ SDLDisplay::releaseWindow (SDLWindow *win)
       renderMapRemoveWindow (iWin, iWin->getZ ());
 
       windowPool.erase (i);
+      this->remove (&this->windows, win);
 
       uTex = iWin->getTexture (NULL);
       uTexOwn = iWin->isTextureOwner (uTex);

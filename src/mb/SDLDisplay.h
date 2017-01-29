@@ -46,31 +46,29 @@ private:
 
   int width;                    // display width in pixels
   int height;                   // display height in pixels
-  bool fullscreen;              // whether full-screen mode is on
+  bool fullscreen;              // true if full-screen mode is on
 
   SDL_Renderer *renderer;       // display renderer
   SDL_Window *screen;           // display screen
   InputManager *im;             // display input manager (FIXME)
 
-  bool _quit;                   // whether the render thread should quit
+  bool _quit;                   // true if render thread should quit
   GThread *render_thread;       // render thread handle
 
-private:
-  void lock (void);             // lock display
-  void unlock (void);           // unlock display
+  GList *windows;               // list of windows to be redrawn
+  GList *providers;             // list of providers to be redrawn
+
+  void lock (void);
+  void unlock (void);
+  void add (GList **, gpointer);
+  void remove (GList **, gpointer);
 
 public:
   bool hasQuitted ();
   void quit ();
+  void redraw ();
 
   // -----------------------------------------------------------------------
-
-private:
-  /* SDL Pending Tasks*/
-  static const short SPT_NONE = 0;
-  static const short SPT_INIT = 1;
-  static const short SPT_CLEAR = 2;
-  static const short SPT_RELEASE = 3;
 
 public:
   /* SDL Underlying Window Tasks*/

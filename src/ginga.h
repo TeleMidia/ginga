@@ -102,6 +102,7 @@ GINGA_PRAGMA_DIAG_POP ()
 GINGA_END_DECLS
 
 // C++ library.
+#include <algorithm>
 #include <exception>
 #include <fstream>
 #include <iostream>
