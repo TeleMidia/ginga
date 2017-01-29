@@ -90,6 +90,8 @@ public:
   guint8 getAlpha ();
   guint32 getRGBA ();
   guint32 getARGB ();
+
+  SDL_Color getColor ();
 };
 
 GINGA_UTIL_END

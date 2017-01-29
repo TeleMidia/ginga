@@ -68,7 +68,7 @@ FormatterFocusManager::FormatterFocusManager (
   strValue = presContext->getPropertyValue (DEFAULT_FOCUS_BORDER_WIDTH);
   if (strValue == "")
     {
-      defaultFocusBorderWidth = -3;
+      defaultFocusBorderWidth = 1;
     }
   else
     {
@@ -623,7 +623,7 @@ FormatterFocusManager::setFocus (NclCascadingDescriptor *descriptor)
   bool canDelSelColor = false;
   Color *focusColor = NULL;
   Color *selColor = NULL;
-  int borderWidth = -3;
+  int borderWidth = 1;
   int width;
   NclFormatterRegion *fr = NULL;
 

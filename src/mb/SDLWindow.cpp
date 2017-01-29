@@ -103,8 +103,8 @@ SDLWindow::initialize (arg_unused (SDLWindow* parentWindowID),
   this->textureOwner = true;
 
   this->borderWidth = 0;
-  this->bgColor = NULL;
-  this->borderColor = NULL;
+  this->bgColor = {0, 0, 0, 0};
+  this->borderColor = {0, 0, 0, 0};
   this->winColor = NULL;
   this->colorKey = NULL;
 
@@ -147,21 +147,11 @@ SDLWindow::releaseWinISur ()
 void
 SDLWindow::releaseBGColor ()
 {
-  if (bgColor != NULL)
-    {
-      delete bgColor;
-      bgColor = NULL;
-    }
 }
 
 void
 SDLWindow::releaseBorderColor ()
 {
-  if (borderColor != NULL)
-    {
-      delete borderColor;
-      borderColor = NULL;
-    }
 }
 
 void
@@ -229,16 +219,27 @@ SDLWindow::getMirrorSrc ()
 }
 
 void
-SDLWindow::setBgColor (guint8 r, guint8 g, guint8 b, guint8 alpha)
+SDLWindow::setBgColor (SDL_Color c)
 {
-  releaseBGColor ();
-  bgColor = new Color (r, g, b, alpha);
+  this->bgColor = c;
 }
 
-Color *
+SDL_Color
 SDLWindow::getBgColor ()
 {
-  return bgColor;
+  return this->bgColor;
+}
+
+SDL_Rect
+SDLWindow::getRect ()
+{
+  return this->rect;
+}
+
+void
+SDLWindow::setRect (SDL_Rect r)
+{
+  this->rect = r;
 }
 
 void
@@ -268,32 +269,17 @@ SDLWindow::getWindowColor ()
 }
 
 void
-SDLWindow::setBorder (guint8 r, guint8 g, guint8 b, guint8 alpha, int bWidth)
+SDLWindow::setBorder (SDL_Color c, int w)
 {
-  releaseBorderColor ();
-  borderWidth = bWidth;
-  borderColor = new Color (r, g, b, alpha);
+  borderWidth = w;
+  borderColor = c;
 }
 
 void
-SDLWindow::getBorder (guint8 *r, guint8 *g, guint8 *b, guint8 *alpha, int *bWidth)
+SDLWindow::getBorder (SDL_Color *c, int *w)
 {
-  if (borderColor != NULL)
-    {
-      *r = borderColor->getR ();
-      *g = borderColor->getG ();
-      *b = borderColor->getB ();
-      *alpha = borderColor->getAlpha ();
-      *bWidth = borderWidth;
-    }
-  else
-    {
-      *r = 0;
-      *g = 0;
-      *b = 0;
-      *alpha = 0;
-      *bWidth = 0;
-    }
+  set_if_nonnull (c, this->borderColor);
+  set_if_nonnull (w, this->borderWidth);
 }
 
 void

@@ -155,10 +155,6 @@ private:
 public:
   static SDL_Window *getUnderlyingWindow (SDLWindow* winId);
 
-private:
-  static bool drawSDLWindow (SDL_Renderer *renderer, SDL_Texture *texture,
-                             SDLWindow *iWin);
-
 public:
   /* CAUTION: call this method only from main SDL thread */
   static SDL_Texture *createTextureFromSurface (SDL_Renderer *renderer,

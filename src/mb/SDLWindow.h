@@ -47,8 +47,8 @@ private:
   bool textureOwner;
 
   int borderWidth;
-  Color *bgColor;
-  Color *borderColor;
+  SDL_Color bgColor;
+  SDL_Color borderColor;
   Color *winColor;
   Color *colorKey;
 
@@ -99,16 +99,19 @@ public:
   void setMirrorSrc (SDLWindow *mirrorSrc);
   SDLWindow *getMirrorSrc ();
 
-  void setBgColor (guint8 r, guint8 g, guint8 b, guint8 alpha);
-  Color *getBgColor ();
+  void setBgColor (SDL_Color);
+  SDL_Color getBgColor ();
+
+  SDL_Rect getRect ();
+  void setRect (SDL_Rect);
+
   void setColorKey (guint8 r, guint8 g, guint8 b);
   Color *getColorKey ();
   void setWindowColor (guint8 r, guint8 g, guint8 b, guint8 alpha);
   Color *getWindowColor ();
-  void setBorder (guint8 r, guint8 g, guint8 b, guint8 alpha = 255,
-                  int bWidth = 0);
-  void getBorder (guint8 *r, guint8 *g, guint8 *b, guint8 *alpha,
-                  int *bWidth);
+
+  void setBorder (SDL_Color, int);
+  void getBorder (SDL_Color *, int *);
 
   void revertContent ();
   void setChildSurface (SDLSurface *iSur);
