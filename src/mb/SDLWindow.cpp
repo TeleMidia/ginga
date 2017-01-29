@@ -610,7 +610,6 @@ SDLWindow::setTexture (SDL_Texture *texture)
 
   if (textureOwner && this->texture != NULL)
     {
-      //Display::createReleaseContainer (NULL, this->texture, NULL);
     }
 
   if (texture == NULL)
@@ -742,7 +741,6 @@ SDLWindow::getDumpFileUri (int quality, arg_unused (int dumpW), arg_unused (int 
 {
   string uri;
   SDL_Surface *dumpUSur;
-  bool freeSurface = false;
 
   lockSurface ();
   if (curSur != NULL)
@@ -753,7 +751,6 @@ SDLWindow::getDumpFileUri (int quality, arg_unused (int dumpW), arg_unused (int 
     {
       dumpUSur
           = Display::createUnderlyingSurfaceFromTexture (texture);
-      freeSurface = true;
     }
   else
     {
@@ -767,7 +764,6 @@ SDLWindow::getDumpFileUri (int quality, arg_unused (int dumpW), arg_unused (int 
       = SDLConvert::convertSurfaceToJPEG (uri.c_str (), dumpUSur, quality);
   if (ret == -1)
     uri = "";
-  if (freeSurface)
     //Display::createReleaseContainer (dumpUSur, NULL, NULL);
   Display::unlockSDL ();
 

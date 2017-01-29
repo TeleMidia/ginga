@@ -611,11 +611,9 @@ Display::releaseFontProvider (IFontProvider *provider)
   i = dmpPool.find (provider);
   if (i != dmpPool.end ())
     {
-      //dmp = (*i);
       dmpPool.erase (i);
 
       Thread::mutexUnlock (&proMutex);
-      //createReleaseContainer (NULL, NULL, dmp);
     }
   else
     {
@@ -645,99 +643,6 @@ Display::createRenderedSurfaceFromImageFile (const char *mrl)
   g_assert_null (window);
 
   return surface;
-}
-
-void
-Display::addCMPToRendererList (arg_unused (IContinuousMediaProvider *prov))
-{
-  //this->add (&this->providers, prov);
-}
-
-void
-Display::removeCMPToRendererList (arg_unused (IContinuousMediaProvider *prov))
-{
-  //this->remove (&this->providers, prov);
-}
-
-bool
-Display::blitFromWindow (SDLWindow *iWin, SDL_Surface *dest)
-{
-  SDL_Surface *tmpSur;
-  SDL_Texture *tmpTex;
-  SDL_Rect rect;
-
-  bool blitted = false;
-  bool freeSurface = false;
-
-  lockSDL ();
-  iWin->lock ();
-  tmpSur = (SDL_Surface *)(iWin->getContent ());
-
-  if (tmpSur == NULL)
-    {
-      tmpTex = ((SDLWindow *)iWin)->getTexture (NULL);
-      if (hasTexture (tmpTex))
-        {
-          tmpSur = createUnderlyingSurfaceFromTexture (tmpTex);
-          freeSurface = true;
-        }
-    }
-
-  if (tmpSur != NULL)
-    {
-      rect.x = iWin->getX ();
-      rect.y = iWin->getY ();
-      rect.w = iWin->getW ();
-      rect.h = iWin->getH ();
-
-      if (SDL_UpperBlitScaled (tmpSur, NULL, dest, &rect) < 0)
-        {
-          SDL_Surface *tmpSur2;
-
-          clog << "Display::blitFromWindow SDL error: '";
-          clog << SDL_GetError () << "'! Trying to convert source surface";
-          clog << endl;
-
-          tmpSur2 = SDL_ConvertSurface (tmpSur, dest->format, 0);
-
-          if (tmpSur2 != NULL)
-            {
-              if (SDL_UpperBlitScaled (tmpSur2, NULL, dest, &rect) < 0)
-                {
-                  clog << "Display::blitFromWindow ";
-                  clog << "BLIT from converted surface SDL error: '";
-                  clog << SDL_GetError () << "'";
-                  clog << endl;
-                }
-              else
-                {
-                  blitted = true;
-                }
-              //createReleaseContainer (tmpSur2, NULL, NULL);
-            }
-          else
-            {
-              clog << "Display::blitFromWindow convert surface";
-              clog << " SDL error: '";
-              clog << SDL_GetError () << "'" << endl;
-            }
-        }
-      else
-        {
-          blitted = true;
-        }
-    }
-
-  if (freeSurface)
-    {
-      freeSurface = false;
-      releaseUnderlyingSurface (tmpSur);
-    }
-
-  iWin->unlock ();
-  unlockSDL ();
-
-  return blitted;
 }
 
 /* interfacing input */
