@@ -274,7 +274,7 @@ main (int argc, char *argv[])
       exit (EXIT_FAILURE);
     }
 
-  _Ginga_Display = new SDLDisplay (800, 600, false);
+  _Ginga_Display = new ginga::mb::Display (800, 600, false);
   g_assert_nonnull (_Ginga_Display);
 
   xoffset = 0;
@@ -293,8 +293,8 @@ main (int argc, char *argv[])
     {
       print_error ("cannot open NCL file: %s", file.c_str ());
       //
-      // FIXME: The next instruction causes the process to freeze.
-      // delete pem;
+      // FIXME: The next instruction causes the process to freeze:
+      //     delete pem;
       //
       exit (EXIT_FAILURE);
     }
@@ -302,8 +302,8 @@ main (int argc, char *argv[])
   pem->startPresentation (file, "");
   pem->waitUnlockCondition ();
   //
-  // FIXME: The next instruction causes the process to freeze.
-  // delete pem;
+  // FIXME: The next instruction causes the process to freeze:
+  //     delete pem;
   //
   exit (EXIT_SUCCESS);
 }

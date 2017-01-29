@@ -39,7 +39,7 @@ using namespace ::ginga::formatter;
 using namespace ::ginga::ncl;
 
 #include "mb/CodeMap.h"
-#include "mb/SDLDisplay.h"
+#include "mb/Display.h"
 #include "mb/InputManager.h"
 using namespace ::ginga::mb;
 

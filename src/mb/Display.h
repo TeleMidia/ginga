@@ -38,7 +38,7 @@ typedef struct
   SDL_Texture *uTex;
 } ReleaseContainer;
 
-class SDLDisplay
+class Display
 {
   // -----------------------------------------------------------------------
 private:
@@ -83,7 +83,7 @@ public:
 private:
   static bool hasRenderer;
   static bool mutexInit;
-  static map<SDLDisplay *, short> sdlScreens;
+  static map<Display *, short> sdlScreens;
 
   set<SDLWindow *> windowPool;
   set<SDLSurface *> surfacePool;
@@ -118,8 +118,8 @@ private:
       cstMutex; // mutex for the others C++ STL structures
 
 public:
-  SDLDisplay (int width, int height, bool fullscreen);
-  virtual ~SDLDisplay ();
+  Display (int width, int height, bool fullscreen);
+  virtual ~Display ();
 
 private:
   static void checkMutexInit ();
@@ -202,18 +202,18 @@ public:
                                       IMediaProvider *iDec);
 
 public:
-  static void refreshRC (SDLDisplay *screen);
-  static void refreshCMP (SDLDisplay *screen);
-  static void refreshWin (SDLDisplay *screen);
+  static void refreshRC (Display *screen);
+  static void refreshCMP (Display *screen);
+  static void refreshWin (Display *screen);
 
 private:
-  static void initScreen (SDLDisplay *screen);
-  static void clearScreen (SDLDisplay *screen);
-  static void releaseScreen (SDLDisplay *screen);
+  static void initScreen (Display *screen);
+  static void clearScreen (Display *screen);
+  static void releaseScreen (Display *screen);
 
   static void releaseAll ();
 
-  static void initCMP (SDLDisplay *screen,
+  static void initCMP (Display *screen,
                        IContinuousMediaProvider *cmp);
 
   static bool blitFromWindow (SDLWindow *iWin, SDL_Surface *dest);
@@ -240,7 +240,7 @@ private:
   /* input */
   static int convertEventCodeStrToInt (string strEvent);
   static void initCodeMaps ();
-  static bool checkEventFocus (SDLDisplay *s);
+  static bool checkEventFocus (Display *s);
 
 public:
   /* output */
@@ -288,10 +288,10 @@ private:
   static void releaseUnderlyingSurface (SDL_Surface *uSur);
 };
 
-// Global screen manager.
-extern SDLDisplay *_Ginga_Display;
-#define Ginga_Display                                           \
-  GINGA_ASSERT_GLOBAL_NONNULL (_Ginga_Display, SDLDisplay *)
+// Global display.
+extern Display *_Ginga_Display;
+#define Ginga_Display\
+  GINGA_ASSERT_GLOBAL_NONNULL (_Ginga_Display, ::ginga::mb::Display *)
 
 GINGA_MB_END
 

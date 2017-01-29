@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "SDLDisplay.h"
+#include "Display.h"
 
 #include "InputManager.h"
 #include "SDLAudioProvider.h"
@@ -30,28 +30,28 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_MB_BEGIN
 
 // Global display; initialized by main().
-SDLDisplay *_Ginga_Display = NULL;
+Display *_Ginga_Display = NULL;
 
-bool SDLDisplay::mutexInit = false;
-map<int, int> SDLDisplay::gingaToSDLCodeMap;
-map<int, int> SDLDisplay::sdlToGingaCodeMap;
-map<string, int> SDLDisplay::sdlStrToSdlCode;
-set<SDL_Texture *> SDLDisplay::uTexPool;
-set<SDL_Surface *> SDLDisplay::uSurPool;
-vector<ReleaseContainer *> SDLDisplay::releaseList;
+bool Display::mutexInit = false;
+map<int, int> Display::gingaToSDLCodeMap;
+map<int, int> Display::sdlToGingaCodeMap;
+map<string, int> Display::sdlStrToSdlCode;
+set<SDL_Texture *> Display::uTexPool;
+set<SDL_Surface *> Display::uSurPool;
+vector<ReleaseContainer *> Display::releaseList;
 map<int, map<double, set<SDLWindow *> *> *>
-    SDLDisplay::renderMap;
-set<IContinuousMediaProvider *> SDLDisplay::cmpRenderList;
+    Display::renderMap;
+set<IContinuousMediaProvider *> Display::cmpRenderList;
 
-pthread_mutex_t SDLDisplay::sdlMutex;
-pthread_mutex_t SDLDisplay::sieMutex;
-pthread_mutex_t SDLDisplay::renMutex;
-pthread_mutex_t SDLDisplay::scrMutex;
-pthread_mutex_t SDLDisplay::recMutex;
-pthread_mutex_t SDLDisplay::winMutex;
-pthread_mutex_t SDLDisplay::surMutex;
-pthread_mutex_t SDLDisplay::proMutex;
-pthread_mutex_t SDLDisplay::cstMutex;
+pthread_mutex_t Display::sdlMutex;
+pthread_mutex_t Display::sieMutex;
+pthread_mutex_t Display::renMutex;
+pthread_mutex_t Display::scrMutex;
+pthread_mutex_t Display::recMutex;
+pthread_mutex_t Display::winMutex;
+pthread_mutex_t Display::surMutex;
+pthread_mutex_t Display::proMutex;
+pthread_mutex_t Display::cstMutex;
 
 // -------------------------------------------------------------------------
 
@@ -70,9 +70,9 @@ cmp_win_z (gconstpointer p1, gconstpointer p2)
 static gpointer
 render_thread_func (gpointer data)
 {
-  SDLDisplay *display;
+  Display *display;
 
-  display = (SDLDisplay *) data;
+  display = (Display *) data;
   g_assert_nonnull (display);
 
   while (!display->hasQuitted())
@@ -99,7 +99,7 @@ render_thread_func (gpointer data)
           buf->feed (evt, false, false);
         }
 
-      SDLDisplay::refreshCMP (display);
+      Display::refreshCMP (display);
       display->redraw ();       // redraw providers and windows
     tail:
       ;
@@ -114,19 +114,19 @@ render_thread_func (gpointer data)
 // Private methods.
 
 void
-SDLDisplay::lock (void)
+Display::lock (void)
 {
   g_mutex_lock (&this->mutex);
 }
 
 void
-SDLDisplay::unlock (void)
+Display::unlock (void)
 {
   g_mutex_unlock (&this->mutex);
 }
 
 void
-SDLDisplay::add (GList **list, gpointer data)
+Display::add (GList **list, gpointer data)
 {
   this->lock ();
   g_assert_null (g_list_find (*list, data));
@@ -135,7 +135,7 @@ SDLDisplay::add (GList **list, gpointer data)
 }
 
 void
-SDLDisplay::remove (GList **list, gpointer data)
+Display::remove (GList **list, gpointer data)
 {
   GList *elt;
 
@@ -153,7 +153,7 @@ SDLDisplay::remove (GList **list, gpointer data)
  * Returns true if display render thread has quitted.
  */
 bool
-SDLDisplay::hasQuitted ()
+Display::hasQuitted ()
 {
   bool quit;
 
@@ -168,7 +168,7 @@ SDLDisplay::hasQuitted ()
  * Quits display render thread.
  */
 void
-SDLDisplay::quit ()
+Display::quit ()
 {
   this->lock ();
   this->_quit = true;
@@ -180,7 +180,7 @@ SDLDisplay::quit ()
  * The z-index order of windows determines their redraw order.
  */
 void
-SDLDisplay::redraw ()
+Display::redraw ()
 {
   GList *l;
 
@@ -208,7 +208,7 @@ SDLDisplay::redraw ()
  * Creates and returns a new display with the given dimensions.
  * If FULLSCREEN is true, enable full-screen mode.
  */
-SDLDisplay::SDLDisplay (int width, int height, bool fullscreen)
+Display::Display (int width, int height, bool fullscreen)
 {
   guint flags;
   int status;
@@ -257,9 +257,9 @@ SDLDisplay::SDLDisplay (int width, int height, bool fullscreen)
 
 // END SANITY --------------------------------------------------------------
 
-SDLDisplay::~SDLDisplay ()
+Display::~Display ()
 {
-  map<SDLDisplay *, short>::iterator i;
+  map<Display *, short>::iterator i;
   map<int, map<double, set<SDLWindow *> *> *>::iterator j;
   map<double, set<SDLWindow *> *>::iterator k;
 
@@ -290,7 +290,7 @@ SDLDisplay::~SDLDisplay ()
 }
 
 void
-SDLDisplay::checkMutexInit ()
+Display::checkMutexInit ()
 {
   if (!mutexInit)
     {
@@ -309,7 +309,7 @@ SDLDisplay::checkMutexInit ()
 }
 
 void
-SDLDisplay::lockSDL ()
+Display::lockSDL ()
 {
   checkMutexInit ();
 
@@ -317,7 +317,7 @@ SDLDisplay::lockSDL ()
 }
 
 void
-SDLDisplay::unlockSDL ()
+Display::unlockSDL ()
 {
   checkMutexInit ();
 
@@ -325,7 +325,7 @@ SDLDisplay::unlockSDL ()
 }
 
 void
-SDLDisplay::updateRenderMap (SDLWindow *window,
+Display::updateRenderMap (SDLWindow *window,
                              double oldZIndex, double newZIndex)
 {
   checkMutexInit ();
@@ -334,19 +334,19 @@ SDLDisplay::updateRenderMap (SDLWindow *window,
 }
 
 int
-SDLDisplay::getWidthResolution ()
+Display::getWidthResolution ()
 {
   return this->width;
 }
 
 int
-SDLDisplay::getHeightResolution ()
+Display::getHeightResolution ()
 {
   return this->height;
 }
 
 bool
-SDLDisplay::mergeIds (SDLWindow* destId,
+Display::mergeIds (SDLWindow* destId,
                            vector<SDLWindow*> *srcIds)
 {
   vector<SDLWindow*>::iterator i;
@@ -377,7 +377,7 @@ SDLDisplay::mergeIds (SDLWindow* destId,
 }
 
 void
-SDLDisplay::blitScreen (SDLSurface *destination)
+Display::blitScreen (SDLSurface *destination)
 {
   SDL_Surface *dest;
 
@@ -395,7 +395,7 @@ SDLDisplay::blitScreen (SDLSurface *destination)
 }
 
 void
-SDLDisplay::blitScreen (string fileUri)
+Display::blitScreen (string fileUri)
 {
   SDL_Surface *dest;
 
@@ -405,14 +405,14 @@ SDLDisplay::blitScreen (string fileUri)
 
   if (SDL_SaveBMP_RW (dest, SDL_RWFromFile (fileUri.c_str (), "wb"), 1) < 0)
     {
-      clog << "SDLDisplay::blitScreen SDL error: '";
+      clog << "Display::blitScreen SDL error: '";
       clog << SDL_GetError () << "'" << endl;
     }
   unlockSDL ();
 }
 
 void
-SDLDisplay::blitScreen (SDL_Surface *dest)
+Display::blitScreen (SDL_Surface *dest)
 {
   map<int, map<double, set<SDLWindow *> *> *>::iterator i;
   map<double, set<SDLWindow *> *>::iterator j;
@@ -440,7 +440,7 @@ SDLDisplay::blitScreen (SDL_Surface *dest)
 /* interfacing output */
 
 SDLWindow *
-SDLDisplay::createWindow (int x, int y, int w, int h, double z)
+Display::createWindow (int x, int y, int w, int h, double z)
 {
   SDLWindow *iWin;
 
@@ -459,7 +459,7 @@ SDLDisplay::createWindow (int x, int y, int w, int h, double z)
 }
 
 bool
-SDLDisplay::hasWindow (SDLWindow *win)
+Display::hasWindow (SDLWindow *win)
 {
   set<SDLWindow *>::iterator i;
   bool hasWin = false;
@@ -478,7 +478,7 @@ SDLDisplay::hasWindow (SDLWindow *win)
 }
 
 void
-SDLDisplay::releaseWindow (SDLWindow *win)
+Display::releaseWindow (SDLWindow *win)
 {
   set<SDLWindow *>::iterator i;
   map<SDLWindow*, SDLWindow *>::iterator j;
@@ -517,13 +517,13 @@ SDLDisplay::releaseWindow (SDLWindow *win)
 }
 
 SDLSurface *
-SDLDisplay::createSurface ()
+Display::createSurface ()
 {
   return createSurfaceFrom (NULL);
 }
 
 SDLSurface *
-SDLDisplay::createSurface (int w, int h)
+Display::createSurface (int w, int h)
 {
   SDLSurface *iSur = NULL;
   SDL_Surface *uSur = NULL;
@@ -544,7 +544,7 @@ SDLDisplay::createSurface (int w, int h)
 }
 
 SDLSurface *
-SDLDisplay::createSurfaceFrom (void *uSur)
+Display::createSurfaceFrom (void *uSur)
 {
   SDLSurface *iSur = NULL;
 
@@ -567,7 +567,7 @@ SDLDisplay::createSurfaceFrom (void *uSur)
 }
 
 bool
-SDLDisplay::hasSurface (SDLSurface *s)
+Display::hasSurface (SDLSurface *s)
 {
   set<SDLSurface *>::iterator i;
   bool hasSur = false;
@@ -584,7 +584,7 @@ SDLDisplay::hasSurface (SDLSurface *s)
 }
 
 bool
-SDLDisplay::releaseSurface (SDLSurface *s)
+Display::releaseSurface (SDLSurface *s)
 {
   set<SDLSurface *>::iterator i;
   bool released = false;
@@ -603,7 +603,7 @@ SDLDisplay::releaseSurface (SDLSurface *s)
 
 /* interfacing content */
 IContinuousMediaProvider *
-SDLDisplay::createContinuousMediaProvider (const char *mrl,
+Display::createContinuousMediaProvider (const char *mrl,
                                                 arg_unused (bool isRemote))
 {
   IContinuousMediaProvider *provider;
@@ -622,7 +622,7 @@ SDLDisplay::createContinuousMediaProvider (const char *mrl,
 }
 
 void
-SDLDisplay::releaseContinuousMediaProvider (
+Display::releaseContinuousMediaProvider (
     IContinuousMediaProvider *provider)
 {
   set<IContinuousMediaProvider *>::iterator i;
@@ -646,7 +646,7 @@ SDLDisplay::releaseContinuousMediaProvider (
 }
 
 IFontProvider *
-SDLDisplay::createFontProvider (const char *mrl, int fontSize)
+Display::createFontProvider (const char *mrl, int fontSize)
 {
   IFontProvider *provider = NULL;
 
@@ -662,7 +662,7 @@ SDLDisplay::createFontProvider (const char *mrl, int fontSize)
 }
 
 void
-SDLDisplay::releaseFontProvider (IFontProvider *provider)
+Display::releaseFontProvider (IFontProvider *provider)
 {
   set<IDiscreteMediaProvider *>::iterator i;
   //IDiscreteMediaProvider *dmp;
@@ -684,7 +684,7 @@ SDLDisplay::releaseFontProvider (IFontProvider *provider)
 }
 
 SDLSurface *
-SDLDisplay::createRenderedSurfaceFromImageFile (const char *mrl)
+Display::createRenderedSurfaceFromImageFile (const char *mrl)
 {
   SDL_Surface *sfc;
   SDLSurface *surface;
@@ -699,7 +699,7 @@ SDLDisplay::createRenderedSurfaceFromImageFile (const char *mrl)
 
   g_assert_nonnull (surface);
   surface->setContent (sfc);
-  SDLDisplay::addUnderlyingSurface (sfc);
+  Display::addUnderlyingSurface (sfc);
 
   window = surface->getParentWindow ();
   g_assert_null (window);
@@ -708,7 +708,7 @@ SDLDisplay::createRenderedSurfaceFromImageFile (const char *mrl)
 }
 
 void
-SDLDisplay::addCMPToRendererList (IContinuousMediaProvider *cmp)
+Display::addCMPToRendererList (IContinuousMediaProvider *cmp)
 {
   checkMutexInit ();
 
@@ -721,7 +721,7 @@ SDLDisplay::addCMPToRendererList (IContinuousMediaProvider *cmp)
 }
 
 void
-SDLDisplay::removeCMPToRendererList (IContinuousMediaProvider *cmp)
+Display::removeCMPToRendererList (IContinuousMediaProvider *cmp)
 {
   set<IContinuousMediaProvider *>::iterator i;
 
@@ -737,7 +737,7 @@ SDLDisplay::removeCMPToRendererList (IContinuousMediaProvider *cmp)
 }
 
 void
-SDLDisplay::refreshRC (SDLDisplay *s)
+Display::refreshRC (Display *s)
 {
   vector<ReleaseContainer *>::iterator i;
   ReleaseContainer *rc;
@@ -822,7 +822,7 @@ SDLDisplay::refreshRC (SDLDisplay *s)
 }
 
 void
-SDLDisplay::refreshCMP (SDLDisplay *s)
+Display::refreshCMP (Display *s)
 {
   set<IContinuousMediaProvider *>::iterator i;
 
@@ -846,7 +846,7 @@ SDLDisplay::refreshCMP (SDLDisplay *s)
 }
 
 void
-SDLDisplay::refreshWin (SDLDisplay *s)
+Display::refreshWin (Display *s)
 {
   SDL_Texture *uTex;
   SDLWindow *dstWin;
@@ -909,7 +909,7 @@ SDLDisplay::refreshWin (SDLDisplay *s)
 }
 
 void
-SDLDisplay::initScreen (SDLDisplay *s)
+Display::initScreen (Display *s)
 {
   lockSDL ();
 
@@ -938,7 +938,7 @@ SDLDisplay::initScreen (SDLDisplay *s)
 }
 
 void
-SDLDisplay::clearScreen (SDLDisplay *s)
+Display::clearScreen (Display *s)
 {
   SDLWindow *iWin;
   SDLSurface *iSur;
@@ -1029,7 +1029,7 @@ SDLDisplay::clearScreen (SDLDisplay *s)
 }
 
 void
-SDLDisplay::releaseScreen (SDLDisplay *s)
+Display::releaseScreen (Display *s)
 {
   lockSDL ();
 
@@ -1056,7 +1056,7 @@ SDLDisplay::releaseScreen (SDLDisplay *s)
 }
 
 bool
-SDLDisplay::blitFromWindow (SDLWindow *iWin, SDL_Surface *dest)
+Display::blitFromWindow (SDLWindow *iWin, SDL_Surface *dest)
 {
   SDL_Surface *tmpSur;
   SDL_Texture *tmpTex;
@@ -1090,7 +1090,7 @@ SDLDisplay::blitFromWindow (SDLWindow *iWin, SDL_Surface *dest)
         {
           SDL_Surface *tmpSur2;
 
-          clog << "SDLDisplay::blitFromWindow SDL error: '";
+          clog << "Display::blitFromWindow SDL error: '";
           clog << SDL_GetError () << "'! Trying to convert source surface";
           clog << endl;
 
@@ -1100,7 +1100,7 @@ SDLDisplay::blitFromWindow (SDLWindow *iWin, SDL_Surface *dest)
             {
               if (SDL_UpperBlitScaled (tmpSur2, NULL, dest, &rect) < 0)
                 {
-                  clog << "SDLDisplay::blitFromWindow ";
+                  clog << "Display::blitFromWindow ";
                   clog << "BLIT from converted surface SDL error: '";
                   clog << SDL_GetError () << "'";
                   clog << endl;
@@ -1113,7 +1113,7 @@ SDLDisplay::blitFromWindow (SDLWindow *iWin, SDL_Surface *dest)
             }
           else
             {
-              clog << "SDLDisplay::blitFromWindow convert surface";
+              clog << "Display::blitFromWindow convert surface";
               clog << " SDL error: '";
               clog << SDL_GetError () << "'" << endl;
             }
@@ -1139,7 +1139,7 @@ SDLDisplay::blitFromWindow (SDLWindow *iWin, SDL_Surface *dest)
 /* interfacing input */
 
 InputManager *
-SDLDisplay::getInputManager ()
+Display::getInputManager ()
 {
   /*
    * im == NULL is an initial state. So pthread_cond_t
@@ -1153,13 +1153,13 @@ SDLDisplay::getInputManager ()
 }
 
 SDLEventBuffer *
-SDLDisplay::createEventBuffer ()
+Display::createEventBuffer ()
 {
   return new SDLEventBuffer ();
 }
 
 SDLInputEvent *
-SDLDisplay::createInputEvent (void *event, const int symbol)
+Display::createInputEvent (void *event, const int symbol)
 {
   SDLInputEvent *ie = NULL;
 
@@ -1177,13 +1177,13 @@ SDLDisplay::createInputEvent (void *event, const int symbol)
 }
 
 SDLInputEvent *
-SDLDisplay::createApplicationEvent (int type, void *data)
+Display::createApplicationEvent (int type, void *data)
 {
   return new SDLInputEvent (type, data);
 }
 
 int
-SDLDisplay::fromMBToGinga (int keyCode)
+Display::fromMBToGinga (int keyCode)
 {
   map<int, int>::iterator i;
   int translated;
@@ -1200,7 +1200,7 @@ SDLDisplay::fromMBToGinga (int keyCode)
     }
   else
     {
-      clog << "SDLDisplay::fromMBToGinga can't find code '";
+      clog << "Display::fromMBToGinga can't find code '";
       clog << keyCode << "' returning KEY_NULL" << endl;
     }
 
@@ -1210,7 +1210,7 @@ SDLDisplay::fromMBToGinga (int keyCode)
 }
 
 int
-SDLDisplay::fromGingaToMB (int keyCode)
+Display::fromGingaToMB (int keyCode)
 {
   map<int, int>::iterator i;
   int translated;
@@ -1227,7 +1227,7 @@ SDLDisplay::fromGingaToMB (int keyCode)
     }
   else
     {
-      clog << "SDLDisplay::fromGingaToMB can't find code '";
+      clog << "Display::fromGingaToMB can't find code '";
       clog << keyCode << "' returning KEY_NULL" << endl;
     }
 
@@ -1240,7 +1240,7 @@ SDLDisplay::fromGingaToMB (int keyCode)
 
 /* input */
 int
-SDLDisplay::convertEventCodeStrToInt (string strEvent)
+Display::convertEventCodeStrToInt (string strEvent)
 {
   int intEvent = -1;
   map<string, int>::iterator i;
@@ -1255,7 +1255,7 @@ SDLDisplay::convertEventCodeStrToInt (string strEvent)
 }
 
 void
-SDLDisplay::initCodeMaps ()
+Display::initCodeMaps ()
 {
   checkMutexInit ();
 
@@ -1553,7 +1553,7 @@ SDLDisplay::initCodeMaps ()
 
 /* output */
 void
-SDLDisplay::renderMapInsertWindow (SDLWindow *iWin, double z)
+Display::renderMapInsertWindow (SDLWindow *iWin, double z)
 {
   map<int, map<double, set<SDLWindow *> *> *>::iterator i;
   map<double, set<SDLWindow *> *>::iterator j;
@@ -1591,7 +1591,7 @@ SDLDisplay::renderMapInsertWindow (SDLWindow *iWin, double z)
 }
 
 void
-SDLDisplay::renderMapRemoveWindow (SDLWindow *iWin, double z)
+Display::renderMapRemoveWindow (SDLWindow *iWin, double z)
 {
   map<int, map<double, set<SDLWindow *> *> *>::iterator i;
   map<double, set<SDLWindow *> *>::iterator j;
@@ -1627,7 +1627,7 @@ SDLDisplay::renderMapRemoveWindow (SDLWindow *iWin, double z)
 }
 
 bool
-SDLDisplay::drawSDLWindow (SDL_Renderer *renderer,
+Display::drawSDLWindow (SDL_Renderer *renderer,
                                 SDL_Texture *srcTxtr, SDLWindow *dstWin)
 {
   SDL_Rect dstRect;
@@ -1639,9 +1639,9 @@ SDLDisplay::drawSDLWindow (SDL_Renderer *renderer,
 
   bool drawing = false;
 
-  DrawData *dd;
-  SDL_Rect dr;
-  vector<DrawData *> *drawData;
+  //DrawData *dd;
+  //SDL_Rect dr;
+  //vector<DrawData *> *drawData;
   vector<DrawData *>::iterator it;
 
   lockSDL ();
@@ -1682,7 +1682,7 @@ SDLDisplay::drawSDLWindow (SDL_Renderer *renderer,
 
           if (SDL_RenderFillRect (renderer, &dstRect) < 0)
             {
-              clog << "SDLDisplay::drawWindow ";
+              clog << "Display::drawWindow ";
               clog << "Warning! Can't use render to fill rect ";
               clog << SDL_GetError ();
               clog << endl;
@@ -1690,6 +1690,7 @@ SDLDisplay::drawSDLWindow (SDL_Renderer *renderer,
         }
 
       /* geometric figures (lua only) */
+#if 0
       drawData = ((SDLWindow *)dstWin)->createDrawDataList ();
       if (drawData != NULL)
         {
@@ -1709,7 +1710,7 @@ SDLDisplay::drawSDLWindow (SDL_Renderer *renderer,
                       || (dd->coord3 > dstRect.w)
                       || (dd->coord4 > dstRect.h))
                     {
-                      clog << "SDLDisplay::drawWindow Warning!";
+                      clog << "Display::drawWindow Warning!";
                       clog << " Invalid line coords: " << endl;
                       clog << dd->coord1 << ", ";
                       clog << dd->coord2 << ", ";
@@ -1731,7 +1732,7 @@ SDLDisplay::drawSDLWindow (SDL_Renderer *renderer,
                                           dd->coord4 + dstRect.y)
                       < 0)
                     {
-                      clog << "SDLDisplay::drawWindow ";
+                      clog << "Display::drawWindow ";
                       clog << "Warning! Can't draw line ";
                       clog << SDL_GetError ();
                       clog << endl;
@@ -1750,7 +1751,7 @@ SDLDisplay::drawSDLWindow (SDL_Renderer *renderer,
                       || (dd->coord1 + dr.w > dstRect.w)
                       || (dd->coord2 + dr.h > dstRect.h))
                     {
-                      clog << "SDLDisplay::drawWindow Warning!";
+                      clog << "Display::drawWindow Warning!";
                       clog << " Invalid rect coords: " << endl;
                       clog << dr.x << ", ";
                       clog << dr.y << ", ";
@@ -1770,7 +1771,7 @@ SDLDisplay::drawSDLWindow (SDL_Renderer *renderer,
                     {
                       if (SDL_RenderDrawRect (renderer, &dr) < 0)
                         {
-                          clog << "SDLDisplay::drawWindow ";
+                          clog << "Display::drawWindow ";
                           clog << "Warning! Can't draw rect ";
                           clog << SDL_GetError ();
                           clog << endl;
@@ -1780,7 +1781,7 @@ SDLDisplay::drawSDLWindow (SDL_Renderer *renderer,
                     {
                       if (SDL_RenderFillRect (renderer, &dr) < 0)
                         {
-                          clog << "SDLDisplay::drawWindow ";
+                          clog << "Display::drawWindow ";
                           clog << "Warning! Can't fill rect ";
                           clog << SDL_GetError ();
                           clog << endl;
@@ -1795,7 +1796,7 @@ SDLDisplay::drawSDLWindow (SDL_Renderer *renderer,
             }
           delete drawData;
         }
-
+#endif
       /* window rendering */
       if (hasTexture (srcTxtr))
         {
@@ -1816,7 +1817,7 @@ SDLDisplay::drawSDLWindow (SDL_Renderer *renderer,
           drawing = true;
           if (SDL_RenderCopy (renderer, srcTxtr, NULL, &dstRect) < 0)
             {
-              clog << "SDLDisplay::drawWindow Warning! ";
+              clog << "Display::drawWindow Warning! ";
               clog << "can't perform render copy " << SDL_GetError ();
               clog << endl;
             }
@@ -1842,7 +1843,7 @@ SDLDisplay::drawSDLWindow (SDL_Renderer *renderer,
 
               if (SDL_RenderDrawRect (renderer, &dstRect) < 0)
                 {
-                  clog << "SDLDisplay::drawWindow SDL error: '";
+                  clog << "Display::drawWindow SDL error: '";
                   clog << SDL_GetError () << "'" << endl;
                 }
 
@@ -1862,7 +1863,7 @@ SDLDisplay::drawSDLWindow (SDL_Renderer *renderer,
     }
   else
     {
-      clog << "SDLDisplay::drawWindow Warning! ";
+      clog << "Display::drawWindow Warning! ";
       clog << "NULL interface window";
       clog << endl;
     }
@@ -1873,7 +1874,7 @@ SDLDisplay::drawSDLWindow (SDL_Renderer *renderer,
 }
 
 SDL_Texture *
-SDLDisplay::createTextureFromSurface (SDL_Renderer *renderer,
+Display::createTextureFromSurface (SDL_Renderer *renderer,
                                            SDL_Surface *surface)
 {
   SDL_Texture *texture = NULL;
@@ -1883,12 +1884,12 @@ SDLDisplay::createTextureFromSurface (SDL_Renderer *renderer,
   lockSDL ();
   Thread::mutexLock (&surMutex);
 
-  if (SDLDisplay::hasUnderlyingSurface (surface))
+  if (Display::hasUnderlyingSurface (surface))
     {
       texture = SDL_CreateTextureFromSurface (renderer, surface);
       if (texture == NULL)
         {
-          clog << "SDLDisplay::createTextureFromSurface Warning! ";
+          clog << "Display::createTextureFromSurface Warning! ";
           clog << "Couldn't create texture: " << SDL_GetError ();
           clog << endl;
         }
@@ -1908,7 +1909,7 @@ SDLDisplay::createTextureFromSurface (SDL_Renderer *renderer,
 }
 
 SDL_Texture *
-SDLDisplay::createTexture (SDL_Renderer *renderer, int w, int h)
+Display::createTexture (SDL_Renderer *renderer, int w, int h)
 {
   SDL_Texture *texture;
 
@@ -1931,7 +1932,7 @@ SDLDisplay::createTexture (SDL_Renderer *renderer, int w, int h)
 }
 
 bool
-SDLDisplay::hasTexture (SDL_Texture *uTex)
+Display::hasTexture (SDL_Texture *uTex)
 {
   set<SDL_Texture *>::iterator i;
   bool hasIt = false;
@@ -1950,7 +1951,7 @@ SDLDisplay::hasTexture (SDL_Texture *uTex)
 }
 
 void
-SDLDisplay::releaseTexture (SDL_Texture *texture)
+Display::releaseTexture (SDL_Texture *texture)
 {
   set<SDL_Texture *>::iterator i;
 
@@ -1967,7 +1968,7 @@ SDLDisplay::releaseTexture (SDL_Texture *texture)
 }
 
 void
-SDLDisplay::addUnderlyingSurface (SDL_Surface *uSur)
+Display::addUnderlyingSurface (SDL_Surface *uSur)
 {
   checkMutexInit ();
 
@@ -1977,7 +1978,7 @@ SDLDisplay::addUnderlyingSurface (SDL_Surface *uSur)
 }
 
 SDL_Surface *
-SDLDisplay::createUnderlyingSurface (int width, int height)
+Display::createUnderlyingSurface (int width, int height)
 {
   SDL_Surface *newUSur = NULL;
   Uint32 rmask, gmask, bmask, amask;
@@ -2003,7 +2004,7 @@ SDLDisplay::createUnderlyingSurface (int width, int height)
     }
   else
     {
-      clog << "SDLDisplay::createUnderlyingSurface SDL error: '";
+      clog << "Display::createUnderlyingSurface SDL error: '";
       clog << SDL_GetError () << "'" << endl;
     }
   Thread::mutexUnlock (&surMutex);
@@ -2012,7 +2013,7 @@ SDLDisplay::createUnderlyingSurface (int width, int height)
 }
 
 SDL_Surface *
-SDLDisplay::createUnderlyingSurfaceFromTexture (SDL_Texture *texture)
+Display::createUnderlyingSurfaceFromTexture (SDL_Texture *texture)
 {
   SDL_Surface *uSur = NULL;
   void *pixels;
@@ -2058,7 +2059,7 @@ SDLDisplay::createUnderlyingSurfaceFromTexture (SDL_Texture *texture)
 }
 
 bool
-SDLDisplay::hasUnderlyingSurface (SDL_Surface *uSur)
+Display::hasUnderlyingSurface (SDL_Surface *uSur)
 {
   set<SDL_Surface *>::iterator i;
   bool hasIt = false;
@@ -2077,7 +2078,7 @@ SDLDisplay::hasUnderlyingSurface (SDL_Surface *uSur)
 }
 
 void
-SDLDisplay::releaseUnderlyingSurface (SDL_Surface *uSur)
+Display::releaseUnderlyingSurface (SDL_Surface *uSur)
 {
   set<SDL_Surface *>::iterator i;
 

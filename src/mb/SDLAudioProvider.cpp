@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "SDLAudioProvider.h"
-#include "SDLDisplay.h"
+#include "Display.h"
 #include "SDLSurface.h"
 
 GINGA_MB_BEGIN
@@ -109,7 +109,7 @@ void
 SDLAudioProvider::playOver (arg_unused (SDLSurface* surface))
 {
   clog << "SDLAudioProvider::playOver" << endl;
-  SDLDisplay::addCMPToRendererList (this);
+  Display::addCMPToRendererList (this);
   if (decoder != NULL)
     {
       decoder->play ();
@@ -137,7 +137,7 @@ SDLAudioProvider::resume (arg_unused (SDLSurface* surface))
 void
 SDLAudioProvider::stop ()
 {
-  SDLDisplay::removeCMPToRendererList (this);
+  Display::removeCMPToRendererList (this);
   if (decoder != NULL)
     {
       decoder->stop ();

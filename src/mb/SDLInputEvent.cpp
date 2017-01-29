@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "SDLInputEvent.h"
-#include "SDLDisplay.h"
+#include "Display.h"
 #include "CodeMap.h"
 
 GINGA_MB_BEGIN

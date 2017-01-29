@@ -278,7 +278,7 @@ _GINGA_XSTRTOU_DEFN (uint64, G_MAXUINT64)
 
 // Compares two strings ignoring case.
 static inline int
-xstrcasecmp (string s1, string s2)
+xstrcasecmp (const string &s1, const string &s2)
 {
   return g_ascii_strcasecmp (s1.c_str (), s2.c_str ());
 }

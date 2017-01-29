@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "ImagePlayer.h"
 
-#include "mb/SDLDisplay.h"
+#include "mb/Display.h"
 #include "mb/SDLWindow.h"
 using namespace ::ginga::mb;
 
@@ -42,7 +42,7 @@ ImagePlayer::play ()
 
   g_assert_nonnull (this->surface);
   this->surface->setContent (sfc);
-  SDLDisplay::addUnderlyingSurface (sfc);
+  ginga::mb::Display::addUnderlyingSurface (sfc);
 
   win = surface->getParentWindow ();
   g_assert_nonnull (win);

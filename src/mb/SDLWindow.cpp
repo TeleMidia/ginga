@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLWindow.h"
 
 #include "SDLConvert.h"
-#include "SDLDisplay.h"
+#include "Display.h"
 #include "SDLSurface.h"
 
 #include "util/Color.h"
@@ -481,7 +481,7 @@ SDLWindow::setZ (double z)
 
   this->z = z;
 
-  SDLDisplay::updateRenderMap (this, oldZ, z);
+  Display::updateRenderMap (this, oldZ, z);
 }
 
 bool
@@ -615,7 +615,7 @@ SDLWindow::setTexture (SDL_Texture *texture)
 
   if (textureOwner && this->texture != NULL)
     {
-      //SDLDisplay::createReleaseContainer (NULL, this->texture, NULL);
+      //Display::createReleaseContainer (NULL, this->texture, NULL);
     }
 
   if (texture == NULL)
@@ -641,7 +641,7 @@ SDLWindow::getTexture (SDL_Renderer *renderer)
     {
       if (textureOwner && textureUpdate && texture != NULL)
         {
-          SDLDisplay::releaseTexture (texture);
+          Display::releaseTexture (texture);
           textureUpdate = false;
           texture = NULL;
         }
@@ -652,7 +652,7 @@ SDLWindow::getTexture (SDL_Renderer *renderer)
           if (curSur != NULL)
             {
               textureOwner = true;
-              texture = SDLDisplay::createTextureFromSurface (renderer,
+              texture = Display::createTextureFromSurface (renderer,
                                                                    curSur);
             }
           unlockSurface ();
@@ -757,7 +757,7 @@ SDLWindow::getDumpFileUri (int quality, arg_unused (int dumpW), arg_unused (int 
   else if (texture != NULL)
     {
       dumpUSur
-          = SDLDisplay::createUnderlyingSurfaceFromTexture (texture);
+          = Display::createUnderlyingSurfaceFromTexture (texture);
       freeSurface = true;
     }
   else
@@ -766,15 +766,15 @@ SDLWindow::getDumpFileUri (int quality, arg_unused (int dumpW), arg_unused (int 
       return "";
     }
 
-  SDLDisplay::lockSDL ();
+  Display::lockSDL ();
   xstrassign (uri, "%s/dump_%p.jpg", g_get_tmp_dir (), (void *) this);
   int ret
       = SDLConvert::convertSurfaceToJPEG (uri.c_str (), dumpUSur, quality);
   if (ret == -1)
     uri = "";
   if (freeSurface)
-    //SDLDisplay::createReleaseContainer (dumpUSur, NULL, NULL);
-  SDLDisplay::unlockSDL ();
+    //Display::createReleaseContainer (dumpUSur, NULL, NULL);
+  Display::unlockSDL ();
 
   unlockSurface ();
   return uri;

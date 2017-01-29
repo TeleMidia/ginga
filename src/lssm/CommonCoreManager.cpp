@@ -35,7 +35,7 @@ using namespace ::ginga::tsparser;
 using namespace ::ginga::tuner;
 #endif
 
-#include "mb/SDLDisplay.h"
+#include "mb/Display.h"
 #include "mb/SDLWindow.h"
 using namespace ::ginga::mb;
 
