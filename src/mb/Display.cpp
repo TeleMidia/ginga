@@ -215,6 +215,18 @@ Display::redraw ()
     }
 
   // Redraw windows.
+  //
+  // FIXME:
+  //
+  // - We should expose the main window background color, e.g., via
+  //   command-line argument --background.
+  // - Window transparency attribute should be called alpha; 0.0 means
+  //   transparent and 1.0 opaque.
+  // - The alpha component of colors is inverted.
+  // - Alpha blending is not working.
+  // - Handle border width.
+  //
+  SDL_SetRenderDrawColor (this->renderer, 255, 255, 255, 255);
   SDL_RenderClear (this->renderer);
   this->windows = g_list_sort (this->windows, win_cmp_z);
   for (l = this->windows; l != NULL; l = l->next)
@@ -223,17 +235,54 @@ Display::redraw ()
       SDLWindow *win;
       SDLWindow *mir;
 
+      SDL_Rect rect;
+      SDL_Color color;
+      guint8 alpha;
+      int width;
+      int status;
+
       win = (SDLWindow *) l->data;
+      g_assert_nonnull (win);
       if (!win->isVisible () || win->isGhostWindow ())
         continue;               // nothing to do
 
+      // Get texture.
       for (mir = win; mir != NULL; mir = mir->getMirrorSrc ());
       texture = (mir)
         ? mir->getTexture (this->renderer)
         : win->getTexture (this->renderer);
-      // g_assert_nonnull (texture);
-      drawSDLWindow (this->renderer, texture, win);
-      win->rendered ();
+      if (texture == NULL)
+        continue;               // nothing to do
+
+      // Draw background color.
+      rect = win->getRect ();
+      color = win->getBgColor ();
+      status = SDL_SetRenderDrawColor (this->renderer,
+                                       color.r, color.g, color.b,
+                                       (guint8)(255 - color.a));
+      g_assert (status == 0);
+      status = SDL_RenderFillRect (this->renderer, &rect);
+      g_assert (status == 0);
+
+      // Draw texture.
+      alpha = win->getTransparencyValue ();
+      status = SDL_SetTextureAlphaMod (texture, (guint8)(255 - alpha));
+      g_assert (status == 0);
+
+      status = SDL_RenderCopy (this->renderer, texture, NULL, &rect);
+      g_assert (status == 0);
+
+      // Draw border.
+      win->getBorder (&color, &width);
+      if (width > 0)
+        continue;               // nothing to do
+
+      status = SDL_SetRenderDrawColor (this->renderer,
+                                       color.r, color.g, color.b,
+                                       (guint8)(255 - alpha));
+      g_assert (status == 0);
+      status = SDL_RenderDrawRect (this->renderer, &rect);
+      g_assert (status == 0);
     }
   SDL_RenderPresent (this->renderer);
 
@@ -1050,253 +1099,6 @@ Display::initCodeMaps ()
     }
 
   Thread::mutexUnlock (&sieMutex);
-}
-
-bool
-Display::drawSDLWindow (SDL_Renderer *renderer,
-                                SDL_Texture *srcTxtr, SDLWindow *dstWin)
-{
-  SDL_Rect dstRect;
-  Color *bgColor;
-  Uint8 rr, rg, rb, ra;
-  int i, bw;
-  guint8 r, g, b, a;
-  int alpha = 0;
-
-  bool drawing = false;
-
-  //DrawData *dd;
-  //SDL_Rect dr;
-  //vector<DrawData *> *drawData;
-  vector<DrawData *>::iterator it;
-
-  lockSDL ();
-
-  if (dstWin != NULL)
-    {
-      /* getting renderer previous state */
-      SDL_GetRenderDrawColor (renderer, &rr, &rg, &rb, &ra);
-
-      dstRect.x = dstWin->getX ();
-      dstRect.y = dstWin->getY ();
-      dstRect.w = dstWin->getW ();
-      dstRect.h = dstWin->getH ();
-
-      alpha = dstWin->getTransparencyValue ();
-      if (srcTxtr != NULL)
-        {
-          SDL_SetTextureAlphaMod (srcTxtr, (unsigned char) (255 - (unsigned char) (CLAMP (alpha, 0, 255))));
-        }
-
-      /* setting window background */
-      bgColor = dstWin->getBgColor ();
-      if (bgColor != NULL)
-        {
-          drawing = true;
-          if (alpha == 0)
-            {
-              alpha = 255 - bgColor->getAlpha ();
-            }
-
-          r = bgColor->getR ();
-          g = bgColor->getG ();
-          b = bgColor->getB ();
-
-          SDL_SetRenderDrawColor (renderer, (gint8) bgColor->getR (),
-                                  (gint8) bgColor->getG (), (gint8) bgColor->getB (),
-                                  (gint8)(255 - (gint8) alpha));
-
-          if (SDL_RenderFillRect (renderer, &dstRect) < 0)
-            {
-              clog << "Display::drawWindow ";
-              clog << "Warning! Can't use render to fill rect ";
-              clog << SDL_GetError ();
-              clog << endl;
-            }
-        }
-
-      /* geometric figures (lua only) */
-#if 0
-      drawData = ((SDLWindow *)dstWin)->createDrawDataList ();
-      if (drawData != NULL)
-        {
-          drawing = true;
-          it = drawData->begin ();
-          while (it != drawData->end ())
-            {
-              dd = (*it);
-              SDL_SetRenderDrawColor (renderer, (gint8) dd->r, (gint8) dd->g, (gint8) dd->b, (gint8) dd->a);
-
-              switch (dd->dataType)
-                {
-                case SDLWindow::DDT_LINE:
-                  if ((dd->coord1 < dstRect.x) || (dd->coord2 < dstRect.y)
-                      || (dd->coord1 > dstRect.w)
-                      || (dd->coord2 > dstRect.h)
-                      || (dd->coord3 > dstRect.w)
-                      || (dd->coord4 > dstRect.h))
-                    {
-                      clog << "Display::drawWindow Warning!";
-                      clog << " Invalid line coords: " << endl;
-                      clog << dd->coord1 << ", ";
-                      clog << dd->coord2 << ", ";
-                      clog << dd->coord3 << ", ";
-                      clog << dd->coord4 << "'";
-                      clog << endl;
-                      clog << "Window rect coords: " << endl;
-                      clog << dstRect.x << ", ";
-                      clog << dstRect.y << ", ";
-                      clog << dstRect.w << ", ";
-                      clog << dstRect.h << "'";
-                      clog << endl;
-                      break;
-                    }
-
-                  if (SDL_RenderDrawLine (renderer, dd->coord1 + dstRect.x,
-                                          dd->coord2 + dstRect.y,
-                                          dd->coord3 + dstRect.x,
-                                          dd->coord4 + dstRect.y)
-                      < 0)
-                    {
-                      clog << "Display::drawWindow ";
-                      clog << "Warning! Can't draw line ";
-                      clog << SDL_GetError ();
-                      clog << endl;
-                    }
-
-                  break;
-
-                case SDLWindow::DDT_RECT:
-                  dr.x = dd->coord1 + dstRect.x;
-                  dr.y = dd->coord2 + dstRect.y;
-                  dr.w = dd->coord3;
-                  dr.h = dd->coord4;
-
-                  if ((dr.x > +dstRect.x + dstRect.w)
-                      || (dr.y > +dstRect.y + dstRect.h)
-                      || (dd->coord1 + dr.w > dstRect.w)
-                      || (dd->coord2 + dr.h > dstRect.h))
-                    {
-                      clog << "Display::drawWindow Warning!";
-                      clog << " Invalid rect coords: " << endl;
-                      clog << dr.x << ", ";
-                      clog << dr.y << ", ";
-                      clog << dr.w << ", ";
-                      clog << dr.h << "'";
-                      clog << endl;
-                      clog << "Window rect coords: " << endl;
-                      clog << dstRect.x << ", ";
-                      clog << dstRect.y << ", ";
-                      clog << dstRect.w << ", ";
-                      clog << dstRect.h << "'";
-                      clog << endl;
-                      break;
-                    }
-
-                  if (dd->dataType == SDLWindow::DDT_RECT)
-                    {
-                      if (SDL_RenderDrawRect (renderer, &dr) < 0)
-                        {
-                          clog << "Display::drawWindow ";
-                          clog << "Warning! Can't draw rect ";
-                          clog << SDL_GetError ();
-                          clog << endl;
-                        }
-                    }
-                  else
-                    {
-                      if (SDL_RenderFillRect (renderer, &dr) < 0)
-                        {
-                          clog << "Display::drawWindow ";
-                          clog << "Warning! Can't fill rect ";
-                          clog << SDL_GetError ();
-                          clog << endl;
-                        }
-                    }
-                  break;
-
-                default:
-                  g_assert_not_reached ();
-                }
-              ++it;
-            }
-          delete drawData;
-        }
-#endif
-      /* window rendering */
-      if (hasTexture (srcTxtr))
-        {
-          /*void* pixels;
-          int tpitch;
-          bool locked;*/
-
-          // trying to lock texture
-          /*locked = SDL_LockTexture(
-                          texture, NULL, &pixels, &tpitch) == 0;*/
-
-          /*
-           * Warning: there is no need to lock the texture
-           * lock the texture can imply some delay in
-           * the decoder procedure
-           */
-
-          drawing = true;
-          if (SDL_RenderCopy (renderer, srcTxtr, NULL, &dstRect) < 0)
-            {
-              clog << "Display::drawWindow Warning! ";
-              clog << "can't perform render copy " << SDL_GetError ();
-              clog << endl;
-            }
-
-          /*if (locked) {
-                  SDL_UnlockTexture(texture);
-          }*/
-        }
-
-      /* window border */
-      dstWin->getBorder (&r, &g, &b, &a, &bw);
-      if (bw != 0)
-        {
-          SDL_SetRenderDrawColor (renderer, (gint8) r, (gint8) g, (gint8) b, (gint8) a);
-
-          i = 0;
-          while (i != bw)
-            {
-              dstRect.x = dstWin->getX () - i;
-              dstRect.y = dstWin->getY () - i;
-              dstRect.w = dstWin->getW () + 2 * i;
-              dstRect.h = dstWin->getH () + 2 * i;
-
-              if (SDL_RenderDrawRect (renderer, &dstRect) < 0)
-                {
-                  clog << "Display::drawWindow SDL error: '";
-                  clog << SDL_GetError () << "'" << endl;
-                }
-
-              if (bw < 0)
-                {
-                  i--;
-                }
-              else
-                {
-                  i++;
-                }
-            }
-        }
-
-      /* setting renderer previous state */
-      SDL_SetRenderDrawColor (renderer, rr, rg, rb, ra);
-    }
-  else
-    {
-      clog << "Display::drawWindow Warning! ";
-      clog << "NULL interface window";
-      clog << endl;
-    }
-
-  unlockSDL ();
-
-  return (drawing);
 }
 
 SDL_Texture *

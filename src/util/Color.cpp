@@ -332,4 +332,15 @@ Color::getARGB ()
     + (b & 0x000000FF);
 }
 
+SDL_Color
+Color::getColor ()
+{
+  SDL_Color c;
+  c.r = this->r;
+  c.g = this->g;
+  c.b = this->b;
+  c.a = this->alpha;
+  return c;
+}
+
 GINGA_UTIL_END

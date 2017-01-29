@@ -798,9 +798,7 @@ NclFormatterRegion::prepareOutputDisplay (SDLSurface* renderedSurface,
           clog << "b = '" << bgColor->getB () << "' ";
           clog << endl;
 
-          outputDisplay->setBgColor (bgColor->getR (),
-                                bgColor->getG (), bgColor->getB (),
-                                bgColor->getAlpha ());
+          outputDisplay->setBgColor (bgColor->getColor ());
         }
       unlockFocusInfo ();
 
@@ -1342,10 +1340,8 @@ NclFormatterRegion::setSelection (bool selOn)
 
           if (selBorderColor != NULL)
             {
-              outputDisplay->setBorder (
-                  selBorderColor->getR (),
-                  selBorderColor->getG (), selBorderColor->getB (),
-                  selBorderColor->getAlpha (), selBorderWidth);
+              outputDisplay->setBorder (selBorderColor->getColor (),
+                  selBorderWidth);
             }
 
           unlockFocusInfo ();
@@ -1399,9 +1395,8 @@ NclFormatterRegion::setFocus (bool focusOn)
 
           if (focusBorderColor != NULL)
             {
-              outputDisplay->setBorder (focusBorderColor->getR (),
-                  focusBorderColor->getG (), focusBorderColor->getB (),
-                  focusBorderColor->getAlpha (), focusBorderWidth);
+              outputDisplay->setBorder (focusBorderColor->getColor (),
+                                        focusBorderWidth);
             }
 
           unlockFocusInfo ();
@@ -1422,7 +1417,8 @@ NclFormatterRegion::unselect ()
   lock ();
   if (outputDisplay != 0 && !externHandler)
     {
-      outputDisplay->setBorder (-1, -1, -1, -1, 0);
+      SDL_Color c = {0, 0, 0, 0};
+      outputDisplay->setBorder (c, 0);
       if (renderedSurface != 0)
         {
           renderedSurface->setParentWindow (outputDisplay);

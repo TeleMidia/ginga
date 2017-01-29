@@ -100,9 +100,7 @@ PlainTxtPlayer::loadTxt ()
       if (bgColor != NULL)
         {
           surface->clearContent ();
-          surface->getParentWindow ()->setBgColor (
-                                bgColor->getR (), bgColor->getG (),
-                                bgColor->getB (), bgColor->getAlpha ());
+          surface->getParentWindow ()->setBgColor (bgColor->getColor ());
         }
       else
         {
@@ -178,9 +176,7 @@ PlainTxtPlayer::setContent (string content)
       if (bgColor != NULL)
         {
           surface->clearContent ();
-          parentWindow->setBgColor (bgColor->getR (),
-                                bgColor->getG (), bgColor->getB (),
-                                bgColor->getAlpha ());
+          parentWindow->setBgColor (bgColor->getColor ());
         }
       else
         {
@@ -293,9 +289,7 @@ PlainTxtPlayer::setPropertyValue (string name, string value)
             {
               // this->surface->setCaps(0);
               surface->clearContent ();
-              parentWindow->setBgColor (
-                                    bgColor->getR (), bgColor->getG (),
-                                    bgColor->getB (), bgColor->getAlpha ());
+              parentWindow->setBgColor (bgColor->getColor ());
             }
         }
     }
@@ -322,10 +316,7 @@ PlainTxtPlayer::setPropertyValue (string name, string value)
                 {
                   // this->surface->setCaps(0);
                   surface->clearContent ();
-                  parentWindow->setBgColor (
-                                        bgColor->getR (), bgColor->getG (),
-                                        bgColor->getB (),
-                                        bgColor->getAlpha ());
+                  parentWindow->setBgColor (bgColor->getColor ());
                 }
             }
         }

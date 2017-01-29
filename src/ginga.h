@@ -178,6 +178,19 @@ XERCES_CPP_NAMESPACE_USE
 #define streq(a,b)      (g_strcmp0 ((a),(b)) == 0)
 
 
+// Auxiliary color functions.
+#include "ginga-color-table.h"
+
+// Gets color value from color string.
+static inline bool
+xcolorvalue (const string &s, SDL_Color *c)
+{
+  return (c != NULL)
+    ? ginga_color_table_index (s.c_str (), &c->r, &c->g, &c->b)
+    : false;
+}
+
+
 // Auxiliary number functions.
 
 // Tests whether two floating-point numbers are equal.
