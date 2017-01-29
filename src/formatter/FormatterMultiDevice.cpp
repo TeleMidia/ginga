@@ -25,7 +25,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 # include "FormatterActiveDevice.h"
 #endif
 
-#include "mb/SDLDisplay.h"
+#include "mb/Display.h"
 #include "mb/InputManager.h"
 #include "mb/CodeMap.h"
 using namespace ::ginga::mb;

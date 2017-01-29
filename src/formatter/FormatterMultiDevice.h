@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-#include "mb/SDLDisplay.h"
+#include "mb/Display.h"
 #include "mb/IInputEventListener.h"
 using namespace ::ginga::mb;
 

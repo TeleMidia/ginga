@@ -27,7 +27,7 @@ using namespace ::ginga::system;
 using namespace ::ginga::system;
 
 #include "mb/SDLWindow.h"
-#include "mb/SDLDisplay.h"
+#include "mb/Display.h"
 using namespace ::ginga::mb;
 
 #include "ImagePlayer.h"

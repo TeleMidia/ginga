@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "SDLFontProvider.h"
 
-#include "SDLDisplay.h"
+#include "Display.h"
 #include "SDLWindow.h"
 #include "SDLSurface.h"
 
@@ -350,7 +350,7 @@ SDLFontProvider::playOver (SDLSurface* surface)
           return;
         }
 
-      SDLDisplay::addUnderlyingSurface (text);
+      Display::addUnderlyingSurface (text);
 
       rect.x = coordX;
       rect.y = coordY;
@@ -369,7 +369,7 @@ SDLFontProvider::playOver (SDLSurface* surface)
       if (renderedSurface == NULL)
         {
           renderedSurface
-              = SDLDisplay::createUnderlyingSurface (pW, pH);
+              = Display::createUnderlyingSurface (pW, pH);
           content->setContent (renderedSurface);
           parent->setRenderedSurface (renderedSurface);
 
@@ -395,7 +395,7 @@ SDLFontProvider::playOver (SDLSurface* surface)
             }
         }
 
-      SDLDisplay::lockSDL ();
+      Display::lockSDL ();
       if (renderedSurface != NULL)
         {
           if (SDL_UpperBlit (text, NULL, renderedSurface, &rect) < 0)
@@ -408,9 +408,9 @@ SDLFontProvider::playOver (SDLSurface* surface)
               clog << endl;
             }
         }
-      SDLDisplay::unlockSDL ();
+      Display::unlockSDL ();
 
-      //SDLDisplay::createReleaseContainer (text, NULL, NULL);
+      //Display::createReleaseContainer (text, NULL, NULL);
       text = NULL;
     }
   else

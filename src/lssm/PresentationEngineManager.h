@@ -28,7 +28,7 @@ using namespace ::ginga::player;
 using namespace ::ginga::system;
 
 #include "mb/InputManager.h"
-#include "mb/SDLDisplay.h"
+#include "mb/Display.h"
 #include "mb/IInputEventListener.h"
 using namespace ::ginga::mb;
 

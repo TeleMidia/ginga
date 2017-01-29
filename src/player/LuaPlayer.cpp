@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 
 #include "mb/InputManager.h"
-#include "mb/SDLDisplay.h"
+#include "mb/Display.h"
 #include "util/functions.h"
 using namespace ::ginga::util;
 

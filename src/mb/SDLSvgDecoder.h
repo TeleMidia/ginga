@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "SDLWindow.h"
 #include "SDLSurface.h"
-#include "SDLDisplay.h"
+#include "Display.h"
 
 GINGA_MB_BEGIN
 

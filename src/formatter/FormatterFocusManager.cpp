@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterScheduler.h"
 #include "NclFormatterLayout.h"
 
-#include "mb/SDLDisplay.h"
+#include "mb/Display.h"
 using namespace ::ginga::mb;
 
 #if WITH_MULTIDEVICE

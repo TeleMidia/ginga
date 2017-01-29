@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-#include "mb/SDLDisplay.h"
+#include "mb/Display.h"
 using namespace ::ginga::mb;
 
 #include "system/SystemCompat.h"

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "FormatterMediator.h"
 
-#include "mb/SDLDisplay.h"
+#include "mb/Display.h"
 #include "system/GingaLocatorFactory.h"
 #include "PrefetchManager.h"
 #include "FormatterBaseDevice.h"

@@ -154,7 +154,7 @@ SDL2ffmpeg::~SDL2ffmpeg ()
 
   release ();
 
-  SDLDisplay::releaseTexture (texture);
+  Display::releaseTexture (texture);
   texture = NULL;
 
   refCount--;
@@ -301,12 +301,12 @@ SDL2ffmpeg::prepare ()
       clog << vs->video_st->time_base.num << "/";
       clog << vs->video_st->time_base.den << "'" << endl;
 
-      SDLDisplay::lockSDL ();
+      Display::lockSDL ();
 
       vs->video_tid = SDL_CreateThread (SDL2ffmpeg::video_thread,
                                         "video_thread", this);
 
-      SDLDisplay::unlockSDL ();
+      Display::unlockSDL ();
 
       if (!vs->video_tid)
         {
@@ -327,11 +327,11 @@ SDL2ffmpeg::prepare ()
           return false;
   }*/
 
-  SDLDisplay::lockSDL ();
+  Display::lockSDL ();
   vs->read_tid
       = SDL_CreateThread (SDL2ffmpeg::read_thread, "read_thread", this);
 
-  SDLDisplay::unlockSDL ();
+  Display::unlockSDL ();
 
   if (!vs->read_tid)
     {
@@ -343,7 +343,7 @@ SDL2ffmpeg::prepare ()
       return false;
     }
 
-  SDLDisplay::lockSDL ();
+  Display::lockSDL ();
   if ((unsigned int)wantedSpec.channels > 0
       && (unsigned int)wantedSpec.channels < 8
       && (unsigned int)spec.channels > 0 && (unsigned int)spec.channels < 8)
@@ -353,7 +353,7 @@ SDL2ffmpeg::prepare ()
                          spec.freq);
     }
 
-  SDLDisplay::unlockSDL ();
+  Display::unlockSDL ();
 
   return true;
 }
@@ -737,10 +737,10 @@ SDL2ffmpeg::packet_queue_init (PacketQueue *q)
 {
   memset (q, 0, sizeof (PacketQueue));
 
-  SDLDisplay::lockSDL ();
+  Display::lockSDL ();
   q->mutex = SDL_CreateMutex ();
   q->cond = SDL_CreateCond ();
-  SDLDisplay::unlockSDL ();
+  Display::unlockSDL ();
 
   q->abort_request = 1;
 }
@@ -773,10 +773,10 @@ SDL2ffmpeg::packet_queue_destroy (PacketQueue *q)
 {
   packet_queue_flush (q);
 
-  SDLDisplay::lockSDL ();
+  Display::lockSDL ();
   SDL_DestroyMutex (q->mutex);
   SDL_DestroyCond (q->cond);
-  SDLDisplay::unlockSDL ();
+  Display::unlockSDL ();
 }
 
 void
@@ -871,7 +871,7 @@ SDL2ffmpeg::render_vp (VideoPicture *vp)
           clog << "SDL2ffmpeg::render_vp(" << vs->filename;
           clog << ") Warning! ";
           clog << "Can't lock texture: " << SDL_GetError () << endl;
-          if (!SDLDisplay::hasTexture (vp->tex))
+          if (!Display::hasTexture (vp->tex))
             {
               clog << "SDL2ffmpeg::render_vp(";
               clog << vs->filename << ") Warning! ";
@@ -962,11 +962,11 @@ SDL2ffmpeg::stream_close ()
 
   sws_freeContext (ctx);
 
-  SDLDisplay::lockSDL ();
+  Display::lockSDL ();
   SDL_DestroyMutex (vs->pictq_mutex);
   SDL_DestroyCond (vs->pictq_cond);
   SDL_DestroyCond (vs->continue_read_thread);
-  SDLDisplay::unlockSDL ();
+  Display::unlockSDL ();
 
   av_free (vs);
 
@@ -1350,10 +1350,10 @@ SDL2ffmpeg::video_refresh (void *opaque, double *remaining_time)
           lastvp = &vs->pictq[vs->pictq_rindex];
           if (lastvp->src_frame)
             {
-              SDLDisplay::lockSDL ();
+              Display::lockSDL ();
               dec->render_vp (lastvp);
               lastvp->src_frame = NULL;
-              SDLDisplay::unlockSDL ();
+              Display::unlockSDL ();
             }
 
           vp = &vs->pictq[(vs->pictq_rindex + vs->pictq_rindex_shown)

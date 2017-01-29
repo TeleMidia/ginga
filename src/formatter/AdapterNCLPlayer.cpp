@@ -22,7 +22,7 @@ using namespace ::ginga::player;
 #include "AdapterNCLPlayer.h"
 #include "FormatterMediator.h"
 
-#include "mb/SDLDisplay.h"
+#include "mb/Display.h"
 using namespace ::ginga::mb;
 
 GINGA_FORMATTER_BEGIN
