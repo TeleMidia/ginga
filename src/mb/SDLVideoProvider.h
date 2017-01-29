@@ -36,7 +36,7 @@ private:
   bool hasTex;
 
 public:
-  SDLVideoProvider (const char *mrl);
+  SDLVideoProvider (string);
   virtual ~SDLVideoProvider ();
   void setLoadSymbol (string symbol);
   string getLoadSymbol ();

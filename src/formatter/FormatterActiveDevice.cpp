@@ -55,8 +55,7 @@ FormatterActiveDevice::FormatterActiveDevice (DeviceLayout *deviceLayout,
   deviceClass = DeviceDomain::CT_ACTIVE;
   formatter = NULL;
 
-  defaultWidth = Ginga_Display->getWidthResolution ();
-  defaultHeight = Ginga_Display->getHeightResolution ();
+  Ginga_Display->getSize (&defaultWidth, &defaultHeight);
 
   mainLayout = new NclFormatterLayout (x, y, w, h);
   layoutManager[deviceClass] = mainLayout;
@@ -171,7 +170,7 @@ FormatterActiveDevice::~FormatterActiveDevice ()
   // lock();
 
   listening = false;
-  //Ginga_Display->releaseScreen ();
+  delete Ginga_Display;
 
   if (privateBaseManager != NULL)
     {

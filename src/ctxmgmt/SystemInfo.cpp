@@ -112,15 +112,13 @@ SystemInfo::getReturnBitRate ()
 void
 SystemInfo::getScreenSize (int *width, int *height)
 {
-  *width = Ginga_Display->getWidthResolution ();
-  *height = Ginga_Display->getHeightResolution ();
+  Ginga_Display->getSize (width, height);
 }
 
 void
 SystemInfo::getScreenGraphicSize (int *width, int *height)
 {
-  *width = Ginga_Display->getWidthResolution ();
-  *height = Ginga_Display->getHeightResolution ();
+  Ginga_Display->getSize (width, height);
 }
 
 string

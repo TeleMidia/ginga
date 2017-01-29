@@ -62,20 +62,16 @@ FormatterMultiDevice::FormatterMultiDevice (DeviceLayout *deviceLayout,
   this->enableMulticast = useMulticast;
 
   if (defaultWidth == 0)
-    {
-      defaultWidth = Ginga_Display->getWidthResolution ();
-    }
+    Ginga_Display->getSize (&defaultWidth, NULL);
 
   if (defaultHeight == 0)
-    {
-      defaultHeight = Ginga_Display->getHeightResolution ();
-    }
+    Ginga_Display->getSize (NULL, &defaultHeight);
 
   im = Ginga_Display->getInputManager ();
 
-  im->setAxisValues ((int)(Ginga_Display->getWidthResolution () / 2),
-                     (int)(Ginga_Display->getHeightResolution () / 2), 0);
-
+  int tmpw, tmph;
+  Ginga_Display->getSize (&tmpw, &tmph);
+  im->setAxisValues ((int)(tmpw / 2), (int)(tmph / 2), 0);
   printScreen = Ginga_Display->createWindow (0, 0,
                                                 defaultWidth,
                                                 defaultHeight, -1.0);
@@ -275,42 +271,10 @@ FormatterMultiDevice::getFormatterLayout (int devClass)
   return NULL;
 }
 
-string
+string G_GNUC_NORETURN
 FormatterMultiDevice::getScreenShot ()
 {
-  return serializeScreen (deviceClass, printScreen);
-}
-
-string
-FormatterMultiDevice::serializeScreen (int devClass,
-                                       SDLWindow* mapWindow)
-{
-  string fileUri = "";
-  NclFormatterLayout *formatterLayout;
-  vector<SDLWindow*> sortedIds;
-  map<int, NclFormatterLayout *>::iterator i;
-  int quality = 100;
-  int dumpW = defaultWidth;
-  int dumpH = defaultHeight;
-
-  i = layoutManager.find (devClass);
-  if (i != layoutManager.end ())
-    {
-      formatterLayout = i->second;
-      mapWindow->clearContent ();
-      formatterLayout->getSortedIds (&sortedIds);
-      if (!sortedIds.empty ())
-        {
-          if (!Ginga_Display->mergeIds (mapWindow, &sortedIds))
-            {
-              return "";
-            }
-        }
-      fileUri = mapWindow->getDumpFileUri (quality,
-                                          dumpW, dumpH);
-    }
-
-  return fileUri;
+  g_error ("screen-shot is not implemented");
 }
 
 void

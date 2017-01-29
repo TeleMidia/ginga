@@ -38,10 +38,6 @@ map<int, int> Display::sdlToGingaCodeMap;
 map<string, int> Display::sdlStrToSdlCode;
 set<SDL_Texture *> Display::uTexPool;
 set<SDL_Surface *> Display::uSurPool;
-vector<ReleaseContainer *> Display::releaseList;
-map<int, map<double, set<SDLWindow *> *> *>
-    Display::renderMap;
-set<IContinuousMediaProvider *> Display::cmpRenderList;
 
 pthread_mutex_t Display::sdlMutex;
 pthread_mutex_t Display::sieMutex;
@@ -53,17 +49,34 @@ pthread_mutex_t Display::surMutex;
 pthread_mutex_t Display::proMutex;
 pthread_mutex_t Display::cstMutex;
 
-// -------------------------------------------------------------------------
+
+// BEGIN SANITY ------------------------------------------------------------
 
-// Compare the z-index of two windows.
+// Compares the z-index of two windows.
 static gint
-cmp_win_z (gconstpointer p1, gconstpointer p2)
+win_cmp_z (gconstpointer p1, gconstpointer p2)
 {
   SDLWindow *w1 = deconst (SDLWindow *, p1);
   SDLWindow *w2 = deconst (SDLWindow *, p2);
   double z1 = w1->getZ ();
   double z2 = w2->getZ ();
   return (z1 < z2) ? -1 : (z1 > z2) ? 1 : 0;
+}
+
+// Deletes window.
+static void
+win_delete (gpointer p)
+{
+  SDLWindow *win = (SDLWindow *) p;
+  delete win;
+}
+
+// Deletes provider.
+static void
+prov_delete (gpointer p)
+{
+  IContinuousMediaProvider *prov = (IContinuousMediaProvider *) p;
+  delete prov;
 }
 
 // Render thread.
@@ -89,7 +102,7 @@ render_thread_func (gpointer data)
               // fall-through
             case SDL_QUIT:
               display->quit ();
-              goto tail;
+              goto quit;
             default:
               break;
             }
@@ -98,16 +111,12 @@ render_thread_func (gpointer data)
           SDLEventBuffer *buf = im->getEventBuffer ();
           buf->feed (evt, false, false);
         }
-
-      Display::refreshCMP (display);
       display->redraw ();       // redraw providers and windows
-    tail:
-      ;
     }
-
+ quit:
   SDL_Quit ();
-  exit (EXIT_SUCCESS);          // FIXME: Die gracefully
-  return display;
+  exit (EXIT_SUCCESS);
+  return NULL;
 }
 
 
@@ -125,55 +134,53 @@ Display::unlock (void)
   g_mutex_unlock (&this->mutex);
 }
 
-void
+gpointer
 Display::add (GList **list, gpointer data)
 {
   this->lock ();
-  g_assert_null (g_list_find (*list, data));
+  if (unlikely (g_list_find (*list, data)))
+    {
+      g_warning ("object %p already in list %p", data, *list);
+      goto done;
+    }
   *list = g_list_append (*list, data);
+ done:
   this->unlock ();
+  return data;
 }
 
-void
+gpointer
 Display::remove (GList **list, gpointer data)
 {
   GList *elt;
 
   this->lock ();
   elt = g_list_find (*list, data);
-  g_assert_nonnull (elt);
+  if (unlikely (elt == NULL))
+    {
+      g_warning ("object %p not in list %p", data, *list);
+      goto done;
+    }
   *list = g_list_remove_link (*list, elt);
+ done:
   this->unlock ();
+  return data;
+}
+
+gboolean
+Display::find (GList *list, gconstpointer data)
+{
+  GList *elt;
+
+  this->lock ();
+  elt = g_list_find (list, data);
+  this->unlock ();
+
+  return elt != NULL;
 }
 
 
 // Public methods.
-
-/**
- * Returns true if display render thread has quitted.
- */
-bool
-Display::hasQuitted ()
-{
-  bool quit;
-
-  this->lock ();
-  quit = this->_quit;
-  this->unlock ();
-
-  return quit;
-}
-
-/**
- * Quits display render thread.
- */
-void
-Display::quit ()
-{
-  this->lock ();
-  this->_quit = true;
-  this->unlock ();
-}
 
 /**
  * Redraws the registered providers and windows.
@@ -185,27 +192,56 @@ Display::redraw ()
   GList *l;
 
   this->lock ();
-  this->windows = g_list_sort (this->windows, cmp_win_z);
+
+  // Update providers.
+  for (l = this->providers; l != NULL; l = l->next)
+    {
+      SDL_Texture *texture;
+      IContinuousMediaProvider *prov;
+      int width, height;
+
+      prov = (IContinuousMediaProvider *) l->data;
+      if (!prov->getHasVisual ())
+        continue;               // nothing to do
+
+      if (prov->getProviderContent () == NULL)
+        {
+          prov->getOriginalResolution (&width, &height);
+          texture = createTexture (this->renderer, width, height);
+          g_assert_nonnull (texture);
+          prov->setProviderContent (texture);
+        }
+      prov->refreshDR (NULL);
+    }
+
+  // Redraw windows.
+  SDL_RenderClear (this->renderer);
+  this->windows = g_list_sort (this->windows, win_cmp_z);
   for (l = this->windows; l != NULL; l = l->next)
     {
       SDL_Texture *texture;
       SDLWindow *win;
+      SDLWindow *mir;
 
       win = (SDLWindow *) l->data;
       if (!win->isVisible () || win->isGhostWindow ())
         continue;               // nothing to do
 
-      texture = win->getTexture (this->renderer);
+      for (mir = win; mir != NULL; mir = mir->getMirrorSrc ());
+      texture = (mir)
+        ? mir->getTexture (this->renderer)
+        : win->getTexture (this->renderer);
+      // g_assert_nonnull (texture);
       drawSDLWindow (this->renderer, texture, win);
       win->rendered ();
     }
-
   SDL_RenderPresent (this->renderer);
+
   this->unlock ();
 }
 
 /**
- * Creates and returns a new display with the given dimensions.
+ * Creates a display with the given dimensions.
  * If FULLSCREEN is true, enable full-screen mode.
  */
 Display::Display (int width, int height, bool fullscreen)
@@ -255,39 +291,175 @@ Display::Display (int width, int height, bool fullscreen)
   g_assert_nonnull (this->render_thread);
 }
 
-// END SANITY --------------------------------------------------------------
-
+/**
+ * Destroys display.
+ */
 Display::~Display ()
 {
-  map<Display *, short>::iterator i;
-  map<int, map<double, set<SDLWindow *> *> *>::iterator j;
-  map<double, set<SDLWindow *> *>::iterator k;
+  this->quit ();
+  g_assert_null (g_thread_join (this->render_thread));
 
-  waitingCreator = false;
-  Thread::mutexDestroy (&condMutex);
-  Thread::condDestroy (&cond);
-
-  Thread::mutexLock (&renMutex);
-  j = renderMap.find (0);
-  if (j != renderMap.end ())
-    {
-      k = j->second->begin ();
-      while (k != j->second->end ())
-        {
-          delete k->second;
-          ++k;
-        }
-      delete j->second;
-      renderMap.erase (j);
-    }
-  Thread::mutexUnlock (&renMutex);
-
-  if (im != NULL)
-    {
-      delete im;
-      im = NULL;
-    }
+  this->lock ();
+  SDL_DestroyRenderer (this->renderer);
+  SDL_DestroyWindow (this->screen);
+  delete im;
+  g_list_free_full (this->windows, win_delete);
+  g_list_free_full (this->providers, prov_delete);
+  this->unlock ();
+  g_mutex_clear (&this->mutex);
 }
+
+/**
+ * Gets display size.
+ */
+void
+Display::getSize (int *width, int *height)
+{
+  this->lock ();
+  set_if_nonnull (width, this->width);
+  set_if_nonnull (height, this->height);
+  this->unlock ();
+}
+
+/**
+ * Sets display size.
+ */
+void
+Display::setSize (int width, int height)
+{
+  this->lock ();
+  SDL_SetWindowSize (this->screen, width, height); // don't return a status
+  this->width = width;
+  this->height = height;
+  this->unlock ();
+}
+
+/**
+ * Gets display full-screen mode.
+ */
+bool
+Display::getFullscreen ()
+{
+  bool fullscreen;
+
+  this->lock ();
+  fullscreen = this->fullscreen;
+  this->unlock ();
+  return fullscreen;
+}
+
+/**
+ * Sets display full-screen mode.
+ */
+void
+Display::setFullscreen (bool fullscreen)
+{
+  int status;
+  int flags;
+
+  this->lock ();
+  flags = (fullscreen) ? SDL_WINDOW_FULLSCREEN : 0;
+  status = SDL_SetWindowFullscreen (this->screen, flags);
+  if (unlikely (status != 0))
+    {
+      g_warning ("cannot change display full-screen mode to %s: %s",
+                 (fullscreen) ? "true" : "false", SDL_GetError ());
+      goto done;
+    }
+  this->fullscreen = fullscreen;
+ done:
+  this->unlock ();
+}
+
+/**
+ * Quits display render thread.
+ */
+void
+Display::quit ()
+{
+  this->lock ();
+  this->_quit = true;
+  this->unlock ();
+}
+
+/**
+ * Returns true if display render thread has quitted.
+ */
+bool
+Display::hasQuitted ()
+{
+  bool quit;
+
+  this->lock ();
+  quit = this->_quit;
+  this->unlock ();
+
+  return quit;
+}
+
+/**
+ * Creates managed window with the given position, dimensions, and z-index.
+ */
+SDLWindow *
+Display::createWindow (int x, int y, int w, int h, int z)
+{
+  SDLWindow *win;
+
+  win = new SDLWindow (x, y, w, h, z);
+  g_assert_nonnull (win);
+  this->add (&this->windows, win);
+
+  return win;
+}
+
+/**
+ * Tests whether window WIN managed by display.
+ */
+bool
+Display::hasWindow (const SDLWindow *win)
+{
+  g_assert_nonnull (win);
+  return this->find (this->windows, win);
+}
+
+/**
+ * Destroys managed window.
+ */
+void
+Display::destroyWindow (SDLWindow *win)
+{
+  g_assert_nonnull (win);
+  this->remove (&this->windows, win);
+  delete win;
+}
+
+/**
+ * Creates managed continuous media provider to decode URI.
+ */
+IContinuousMediaProvider *
+Display::createContinuousMediaProvider (const string &uri)
+{
+  IContinuousMediaProvider *prov;
+
+  prov = new SDLVideoProvider (uri);
+  g_assert_nonnull (prov);
+  this->add (&this->providers, prov);
+  return prov;
+}
+
+/**
+ * Destroys managed continuous media provider.
+ */
+void
+Display::destroyContinuousMediaProvider (IContinuousMediaProvider *prov)
+{
+  g_assert_nonnull (prov);
+  this->remove (&this->providers, prov);
+  delete prov;
+}
+
+
+// END SANITY --------------------------------------------------------------
 
 void
 Display::checkMutexInit ()
@@ -324,197 +496,7 @@ Display::unlockSDL ()
   Thread::mutexUnlock (&sdlMutex);
 }
 
-void
-Display::updateRenderMap (SDLWindow *window,
-                             double oldZIndex, double newZIndex)
-{
-  checkMutexInit ();
-  renderMapRemoveWindow (window, oldZIndex);
-  renderMapInsertWindow (window, newZIndex);
-}
-
-int
-Display::getWidthResolution ()
-{
-  return this->width;
-}
-
-int
-Display::getHeightResolution ()
-{
-  return this->height;
-}
-
-bool
-Display::mergeIds (SDLWindow* destId,
-                           vector<SDLWindow*> *srcIds)
-{
-  vector<SDLWindow*>::iterator i;
-  SDLWindow *destWin;
-  SDL_Surface *destSur;
-  bool merged = false;
-  int w, h;
-
-  lockSDL ();
-
-  Thread::mutexLock (&winMutex);
-
-  destWin = destId;
-  w = destWin->getW ();
-  h = destWin->getH ();
-
-  destSur = createUnderlyingSurface (w, h);
-
-  for (i = srcIds->begin (); i != srcIds->end (); i++)
-    if (blitFromWindow (*i, destSur))
-      merged = true;
-
-  Thread::mutexUnlock (&winMutex);
-  unlockSDL ();
-
-  destWin->setRenderedSurface (destSur);
-  return merged;
-}
-
-void
-Display::blitScreen (SDLSurface *destination)
-{
-  SDL_Surface *dest;
-
-  lockSDL ();
-  dest = (SDL_Surface *)(destination->getContent ());
-  if (dest == NULL)
-    {
-      dest = createUnderlyingSurface (this->width, this->height);
-      destination->setContent (dest);
-    }
-
-  blitScreen (dest);
-
-  unlockSDL ();
-}
-
-void
-Display::blitScreen (string fileUri)
-{
-  SDL_Surface *dest;
-
-  lockSDL ();
-  dest = createUnderlyingSurface (this->width, this->height);
-  blitScreen (dest);
-
-  if (SDL_SaveBMP_RW (dest, SDL_RWFromFile (fileUri.c_str (), "wb"), 1) < 0)
-    {
-      clog << "Display::blitScreen SDL error: '";
-      clog << SDL_GetError () << "'" << endl;
-    }
-  unlockSDL ();
-}
-
-void
-Display::blitScreen (SDL_Surface *dest)
-{
-  map<int, map<double, set<SDLWindow *> *> *>::iterator i;
-  map<double, set<SDLWindow *> *>::iterator j;
-  set<SDLWindow *>::iterator k;
-
-  Thread::mutexLock (&renMutex);
-  i = renderMap.find (0);
-  if (i != renderMap.end ())
-    {
-      j = i->second->begin ();
-      while (j != i->second->end ())
-        {
-          k = j->second->begin ();
-          while (k != j->second->end ())
-            {
-              blitFromWindow ((*k), dest);
-              ++k;
-            }
-          ++j;
-        }
-    }
-  Thread::mutexUnlock (&renMutex);
-}
-
 /* interfacing output */
-
-SDLWindow *
-Display::createWindow (int x, int y, int w, int h, double z)
-{
-  SDLWindow *iWin;
-
-  Thread::mutexLock (&winMutex);
-
-  iWin = new SDLWindow (0, x, y, w, h, z);
-
-  windowPool.insert (iWin);
-  this->add (&this->windows, iWin);
-
-  renderMapInsertWindow (iWin, z);
-
-  Thread::mutexUnlock (&winMutex);
-
-  return iWin;
-}
-
-bool
-Display::hasWindow (SDLWindow *win)
-{
-  set<SDLWindow *>::iterator i;
-  bool hasWin = false;
-
-  Thread::mutexLock (&winMutex);
-
-  i = windowPool.find (win);
-  if (i != windowPool.end ())
-    {
-      hasWin = true;
-    }
-
-  Thread::mutexUnlock (&winMutex);
-
-  return hasWin;
-}
-
-void
-Display::releaseWindow (SDLWindow *win)
-{
-  set<SDLWindow *>::iterator i;
-  map<SDLWindow*, SDLWindow *>::iterator j;
-  SDLWindow *iWin;
-  SDL_Texture *uTex = NULL;
-  bool uTexOwn;
-
-  Thread::mutexLock (&winMutex);
-  i = windowPool.find (win);
-  if (i != windowPool.end ())
-    {
-      iWin = (SDLWindow *)(*i);
-
-      renderMapRemoveWindow (iWin, iWin->getZ ());
-
-      windowPool.erase (i);
-      this->remove (&this->windows, win);
-
-      uTex = iWin->getTexture (NULL);
-      uTexOwn = iWin->isTextureOwner (uTex);
-
-      iWin->clearContent ();
-      iWin->setTexture (NULL);
-
-      Thread::mutexUnlock (&winMutex);
-
-      if (uTexOwn)
-        {
-          //createReleaseContainer (NULL, uTex, NULL);
-        }
-    }
-  else
-    {
-      Thread::mutexUnlock (&winMutex);
-    }
-}
 
 SDLSurface *
 Display::createSurface ()
@@ -602,48 +584,6 @@ Display::releaseSurface (SDLSurface *s)
 }
 
 /* interfacing content */
-IContinuousMediaProvider *
-Display::createContinuousMediaProvider (const char *mrl,
-                                                arg_unused (bool isRemote))
-{
-  IContinuousMediaProvider *provider;
-  string strSym;
-
-  lockSDL ();
-  strSym = "SDLVideoProvider";
-  provider = new SDLVideoProvider (mrl);
-  unlockSDL ();
-
-  Thread::mutexLock (&proMutex);
-  cmpPool.insert (provider);
-  Thread::mutexUnlock (&proMutex);
-
-  return provider;
-}
-
-void
-Display::releaseContinuousMediaProvider (
-    IContinuousMediaProvider *provider)
-{
-  set<IContinuousMediaProvider *>::iterator i;
-  IContinuousMediaProvider *cmp;
-
-  Thread::mutexLock (&proMutex);
-  i = cmpPool.find (provider);
-  if (i != cmpPool.end ())
-    {
-      cmp = (*i);
-      cmpPool.erase (i);
-      cmp->stop ();
-
-      Thread::mutexUnlock (&proMutex);
-      //createReleaseContainer (NULL, NULL, cmp);
-    }
-  else
-    {
-      Thread::mutexUnlock (&proMutex);
-    }
-}
 
 IFontProvider *
 Display::createFontProvider (const char *mrl, int fontSize)
@@ -708,351 +648,15 @@ Display::createRenderedSurfaceFromImageFile (const char *mrl)
 }
 
 void
-Display::addCMPToRendererList (IContinuousMediaProvider *cmp)
+Display::addCMPToRendererList (arg_unused (IContinuousMediaProvider *prov))
 {
-  checkMutexInit ();
-
-  Thread::mutexLock (&proMutex);
-  if (cmp->getHasVisual ())
-    {
-      cmpRenderList.insert (cmp);
-    }
-  Thread::mutexUnlock (&proMutex);
+  //this->add (&this->providers, prov);
 }
 
 void
-Display::removeCMPToRendererList (IContinuousMediaProvider *cmp)
+Display::removeCMPToRendererList (arg_unused (IContinuousMediaProvider *prov))
 {
-  set<IContinuousMediaProvider *>::iterator i;
-
-  checkMutexInit ();
-
-  Thread::mutexLock (&proMutex);
-  i = cmpRenderList.find (cmp);
-  if (i != cmpRenderList.end ())
-    {
-      cmpRenderList.erase (i);
-    }
-  Thread::mutexUnlock (&proMutex);
-}
-
-void
-Display::refreshRC (Display *s)
-{
-  vector<ReleaseContainer *>::iterator i;
-  ReleaseContainer *rc;
-  IMediaProvider *dec;
-  SDL_Surface *sur;
-  SDL_Texture *tex;
-  IContinuousMediaProvider *cmp;
-  IDiscreteMediaProvider *dmp;
-  string strSym = "";
-
-  set<IDiscreteMediaProvider *>::iterator j;
-
-  Thread::mutexLock (&recMutex);
-
-  if (s->releaseList.empty ())
-    {
-      Thread::mutexUnlock (&recMutex);
-      return;
-    }
-
-  i = s->releaseList.begin ();
-  while (i != s->releaseList.end ())
-    {
-      rc = (*i);
-
-      dec = rc->iDec;
-      sur = rc->uSur;
-      tex = rc->uTex;
-
-      delete rc;
-
-      s->releaseList.erase (i);
-      Thread::mutexUnlock (&recMutex);
-
-      if (sur != NULL)
-        {
-          releaseUnderlyingSurface (sur);
-        }
-
-      if (tex != NULL)
-        {
-          releaseTexture (tex);
-        }
-
-      if (dec != NULL)
-        {
-          strSym = "";
-
-          cmp = dynamic_cast<IContinuousMediaProvider *> (dec);
-
-          if (cmp != NULL)
-            {
-              strSym = cmp->getLoadSymbol ();
-              delete cmp;
-            }
-          else
-            {
-              dmp = dynamic_cast<IDiscreteMediaProvider *> (dec);
-
-              if (dmp != NULL)
-                {
-                  Thread::mutexLock (&proMutex);
-                  j = s->dmpPool.find (dmp);
-                  if (j != s->dmpPool.end ())
-                    {
-                      s->dmpPool.erase (j);
-                    }
-                  Thread::mutexUnlock (&proMutex);
-
-                  strSym = dmp->getLoadSymbol ();
-                  delete dmp;
-                }
-            }
-        }
-
-      Thread::mutexLock (&recMutex);
-      i = s->releaseList.begin ();
-    }
-
-  s->releaseList.clear ();
-  Thread::mutexUnlock (&recMutex);
-}
-
-void
-Display::refreshCMP (Display *s)
-{
-  set<IContinuousMediaProvider *>::iterator i;
-
-  Thread::mutexLock (&proMutex);
-  for (i = cmpRenderList.begin (); i != cmpRenderList.end (); i++)
-    {
-      IContinuousMediaProvider *p = *i;
-      if (p->getProviderContent () == NULL)
-        {
-          SDL_Texture *texture;
-          int w, h;
-
-          p->getOriginalResolution (&w, &h);
-          texture = createTexture (s->renderer, w, h);
-          g_assert_nonnull (texture);
-          p->setProviderContent (texture);
-        }
-      p->refreshDR (NULL);
-    }
-  Thread::mutexUnlock (&proMutex);
-}
-
-void
-Display::refreshWin (Display *s)
-{
-  SDL_Texture *uTex;
-  SDLWindow *dstWin;
-  SDLWindow *mirrorSrc;
-
-  map<int, map<double, set<SDLWindow *> *> *>::iterator i;
-  map<double, set<SDLWindow *> *>::iterator j;
-  set<SDLWindow *>::iterator k;
-
-  Thread::mutexLock (&renMutex);
-  if (s->renderer != NULL && !renderMap.empty ())
-    {
-      lockSDL ();
-      SDL_RenderClear (s->renderer);
-      unlockSDL ();
-
-      i = renderMap.find (0);
-      if (i != renderMap.end ())
-        {
-          j = i->second->begin ();
-          while (j != i->second->end ())
-            {
-              k = j->second->begin ();
-              while (k != j->second->end ())
-                {
-                  dstWin = (SDLWindow *)(*k);
-
-                  if (dstWin->isVisible () && !dstWin->isGhostWindow ())
-                    {
-                      mirrorSrc = (SDLWindow *)dstWin->getMirrorSrc ();
-                      if (mirrorSrc != NULL)
-                        {
-                          while (mirrorSrc->getMirrorSrc () != NULL)
-                            {
-                              mirrorSrc
-                                  = (SDLWindow *)mirrorSrc->getMirrorSrc ();
-                            }
-                          uTex = mirrorSrc->getTexture (s->renderer);
-                        }
-                      else
-                        {
-                          uTex = dstWin->getTexture (s->renderer);
-                        }
-
-                      drawSDLWindow (s->renderer, uTex, dstWin);
-                      dstWin->rendered ();
-                    }
-
-                  ++k;
-                }
-              ++j;
-            }
-        }
-
-      lockSDL ();
-      SDL_RenderPresent (s->renderer);
-      unlockSDL ();
-    }
-  Thread::mutexUnlock (&renMutex);
-}
-
-void
-Display::initScreen (Display *s)
-{
-  lockSDL ();
-
-  SDL_VideoInit (NULL);
-
-  guint flags = SDL_WINDOW_SHOWN;
-  if (s->fullscreen)
-    flags |= SDL_WINDOW_FULLSCREEN;
-
-  s->screen = NULL;
-  s->renderer = NULL;
-  int status = SDL_CreateWindowAndRenderer (s->width, s->height, flags,
-                                            &s->screen, &s->renderer);
-  g_assert (status == 0);
-  g_assert_nonnull (s->screen);
-  g_assert_nonnull (s->renderer);
-
-  initCodeMaps ();
-
-  s->im = new InputManager ();
-
-  if (s->im != NULL)
-    s->im->setAxisBoundaries (s->width, s->height, 0);
-
-  unlockSDL ();
-}
-
-void
-Display::clearScreen (Display *s)
-{
-  SDLWindow *iWin;
-  SDLSurface *iSur;
-  IContinuousMediaProvider *iCmp;
-  IDiscreteMediaProvider *iDmp;
-
-  set<SDLWindow *>::iterator i;
-  set<SDLSurface *>::iterator j;
-  set<IContinuousMediaProvider *>::iterator k;
-  set<IDiscreteMediaProvider *>::iterator l;
-
-  Thread::mutexLock (&winMutex);
-
-  // Releasing remaining Window objects in Window Pool
-  if (!s->windowPool.empty ())
-    {
-      i = s->windowPool.begin ();
-      while (i != s->windowPool.end ())
-        {
-          iWin = (*i);
-          if (iWin != NULL)
-            {
-              delete iWin;
-            }
-          ++i;
-        }
-      s->windowPool.clear ();
-    }
-  Thread::mutexUnlock (&winMutex);
-
-  Thread::mutexLock (&surMutex);
-  // Releasing remaining Surface objects in Surface Pool
-  if (!s->surfacePool.empty ())
-    {
-      j = s->surfacePool.begin ();
-      while (j != s->surfacePool.end ())
-        {
-          iSur = (*j);
-          if (iSur != NULL)
-            {
-              delete iSur;
-            }
-          ++j;
-        }
-      s->surfacePool.clear ();
-    }
-
-  Thread::mutexUnlock (&surMutex);
-
-  Thread::mutexLock (&proMutex);
-
-  // Releasing remaining CMP objects in CMP Pool
-  if (!s->cmpPool.empty ())
-    {
-      k = s->cmpPool.begin ();
-      while (k != s->cmpPool.end ())
-        {
-          iCmp = (*k);
-
-          if (iCmp != NULL)
-            {
-              iCmp->stop ();
-              delete iCmp;
-            }
-          ++k;
-        }
-      s->cmpPool.clear ();
-    }
-
-  // Releasing remaining DMP objects in DMP Pool
-  if (!s->dmpPool.empty ())
-    {
-      l = s->dmpPool.begin ();
-      while (l != s->dmpPool.end ())
-        {
-          iDmp = *l;
-
-          if (iDmp != NULL)
-            {
-              delete iDmp;
-            }
-          ++l;
-        }
-      s->dmpPool.clear ();
-    }
-
-  Thread::mutexUnlock (&proMutex);
-}
-
-void
-Display::releaseScreen (Display *s)
-{
-  lockSDL ();
-
-  clearScreen (s);
-
-  if (s->screen != NULL)
-    {
-      SDL_HideWindow (s->screen);
-    }
-
-  if (s->renderer != NULL)
-    {
-      SDL_DestroyRenderer (s->renderer);
-      s->renderer = NULL;
-    }
-
-  if (s->screen != NULL)
-    {
-      SDL_DestroyWindow (s->screen);
-      s->screen = NULL;
-    }
-
-  unlockSDL ();
+  //this->remove (&this->providers, prov);
 }
 
 bool
@@ -1141,14 +745,6 @@ Display::blitFromWindow (SDLWindow *iWin, SDL_Surface *dest)
 InputManager *
 Display::getInputManager ()
 {
-  /*
-   * im == NULL is an initial state. So pthread_cond_t
-   * is not necessary here.
-   */
-  while (im == NULL)
-    {
-      g_usleep (1000000 / SDS_FPS);
-    }
   return im;
 }
 
@@ -1549,81 +1145,6 @@ Display::initCodeMaps ()
     }
 
   Thread::mutexUnlock (&sieMutex);
-}
-
-/* output */
-void
-Display::renderMapInsertWindow (SDLWindow *iWin, double z)
-{
-  map<int, map<double, set<SDLWindow *> *> *>::iterator i;
-  map<double, set<SDLWindow *> *>::iterator j;
-
-  map<double, set<SDLWindow *> *> *sortedMap;
-  set<SDLWindow *> *windows;
-
-  checkMutexInit ();
-
-  Thread::mutexLock (&renMutex);
-  i = renderMap.find (0);
-  if (i != renderMap.end ())
-    {
-      sortedMap = i->second;
-    }
-  else
-    {
-      sortedMap = new map<double, set<SDLWindow *> *>;
-      renderMap[0] = sortedMap;
-    }
-
-  j = sortedMap->find (z);
-  if (j != sortedMap->end ())
-    {
-      windows = j->second;
-    }
-  else
-    {
-      windows = new set<SDLWindow *>;
-      (*sortedMap)[z] = windows;
-    }
-
-  windows->insert (iWin);
-  Thread::mutexUnlock (&renMutex);
-}
-
-void
-Display::renderMapRemoveWindow (SDLWindow *iWin, double z)
-{
-  map<int, map<double, set<SDLWindow *> *> *>::iterator i;
-  map<double, set<SDLWindow *> *>::iterator j;
-  set<SDLWindow *>::iterator k;
-
-  map<double, set<SDLWindow *> *> *sortedMap;
-  set<SDLWindow *> *windows;
-
-  checkMutexInit ();
-
-  Thread::mutexLock (&renMutex);
-  i = renderMap.find (0);
-  if (i != renderMap.end ())
-    {
-      sortedMap = i->second;
-      j = sortedMap->find (z);
-      if (j != sortedMap->end ())
-        {
-          windows = j->second;
-          k = windows->find (iWin);
-          if (k != windows->end ())
-            {
-              windows->erase (k);
-            }
-          if (windows->empty ())
-            {
-              delete windows;
-              sortedMap->erase (j);
-            }
-        }
-    }
-  Thread::mutexUnlock (&renMutex);
 }
 
 bool

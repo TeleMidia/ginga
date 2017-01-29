@@ -27,11 +27,10 @@ using namespace ::ginga::util;
 
 GINGA_MB_BEGIN
 
-SDLWindow::SDLWindow (SDLWindow* parentWindowID,
-                      int x, int y, int width,
-                      int height, double z)
+SDLWindow::SDLWindow (int x, int y, int width,
+                      int height, int z)
 {
-  initialize (parentWindowID, x, y, width, height, z);
+  initialize (0, x, y, width, height, (double) z);
 }
 
 SDLWindow::~SDLWindow ()
@@ -75,7 +74,7 @@ SDLWindow::~SDLWindow ()
   releaseColorKey ();
 
   // release window will delete texture
-  Ginga_Display->releaseWindow (this);
+  Ginga_Display->destroyWindow (this);
 
   Thread::mutexDestroy (&mutexC);
 
@@ -477,11 +476,7 @@ SDLWindow::setH (int h)
 void
 SDLWindow::setZ (double z)
 {
-  double oldZ = this->z;
-
   this->z = z;
-
-  Display::updateRenderMap (this, oldZ, z);
 }
 
 bool

@@ -6,7 +6,7 @@
       <property name='width' value='640'/>
       <property name='height' value='480'/>
     </media>
-    <media id='mir' src='mirror://img'>
+    <media id='mir' src='ncl-mirror://img'>
       <property name='top' value='50%'/>
       <property name='left' value='50%'/>
     </media>

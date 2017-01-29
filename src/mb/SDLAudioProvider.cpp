@@ -22,14 +22,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-SDLAudioProvider::SDLAudioProvider (const char *mrl)
+SDLAudioProvider::SDLAudioProvider (string uri)
 {
   type = AudioProvider;
 
-  this->mrl = "";
-  decoder = new SDL2ffmpeg (mrl);
-
-  this->mrl.assign (mrl);
+  this->mrl = uri;
+  decoder = new SDL2ffmpeg (uri.c_str ());
 }
 
 SDLAudioProvider::~SDLAudioProvider ()
@@ -109,7 +107,7 @@ void
 SDLAudioProvider::playOver (arg_unused (SDLSurface* surface))
 {
   clog << "SDLAudioProvider::playOver" << endl;
-  Display::addCMPToRendererList (this);
+  Ginga_Display->addCMPToRendererList (this);
   if (decoder != NULL)
     {
       decoder->play ();
@@ -137,7 +135,7 @@ SDLAudioProvider::resume (arg_unused (SDLSurface* surface))
 void
 SDLAudioProvider::stop ()
 {
-  Display::removeCMPToRendererList (this);
+  Ginga_Display->removeCMPToRendererList (this);
   if (decoder != NULL)
     {
       decoder->stop ();

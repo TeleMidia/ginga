@@ -33,7 +33,7 @@ protected:
   SDL2ffmpeg *decoder;
 
 public:
-  SDLAudioProvider (const char *mrl);
+  SDLAudioProvider (string uri);
   virtual ~SDLAudioProvider ();
 
   virtual void setLoadSymbol (string symbol);
