@@ -61,7 +61,6 @@ SDLSurface::~SDLSurface ()
 
   if (sur != NULL)
     {
-      //Display::createReleaseContainer (sur, NULL, NULL);
     }
 
   sur = NULL;

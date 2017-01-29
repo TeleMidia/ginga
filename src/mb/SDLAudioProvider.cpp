@@ -107,7 +107,6 @@ void
 SDLAudioProvider::playOver (arg_unused (SDLSurface* surface))
 {
   clog << "SDLAudioProvider::playOver" << endl;
-  Ginga_Display->addCMPToRendererList (this);
   if (decoder != NULL)
     {
       decoder->play ();
@@ -135,7 +134,6 @@ SDLAudioProvider::resume (arg_unused (SDLSurface* surface))
 void
 SDLAudioProvider::stop ()
 {
-  Ginga_Display->removeCMPToRendererList (this);
   if (decoder != NULL)
     {
       decoder->stop ();

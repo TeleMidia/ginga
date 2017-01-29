@@ -132,15 +132,6 @@ public:
 
   SDLSurface *createRenderedSurfaceFromImageFile (const char *mrl);
 
-  void addCMPToRendererList (IContinuousMediaProvider *cmp);
-  void removeCMPToRendererList (IContinuousMediaProvider *cmp);
-
-  static void createReleaseContainer (SDL_Surface *uSur, SDL_Texture *uTex,
-                                      IMediaProvider *iDec);
-
-private:
-  static bool blitFromWindow (SDLWindow *iWin, SDL_Surface *dest);
-
 public:
   /* interfacing input */
 
