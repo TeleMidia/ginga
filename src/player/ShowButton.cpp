@@ -46,7 +46,8 @@ ShowButton::initializeWindow ()
 {
   int x = 0, y, w, h;
 
-  x = (int)(Ginga_Display->getWidthResolution () - 70);
+  Ginga_Display->getSize (&x, NULL);
+  x = x - 70;
   y = 10;
   w = 60;
   h = 60;

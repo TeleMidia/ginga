@@ -777,7 +777,7 @@ NclFormatterRegion::prepareOutputDisplay (SDLSurface* renderedSurface,
       if (!externHandler)
         {
           outputDisplay = Ginga_Display
-            ->createWindow (left, top, width, height, cvtIndex);
+            ->createWindow (left, top, width, height, (int)cvtIndex);
         }
 
       clog << "NclFormatterRegion::prepareOutputDisplay '" << outputDisplay;

@@ -25,8 +25,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-SDLVideoProvider::SDLVideoProvider (const char *mrl)
-    : SDLAudioProvider (mrl)
+SDLVideoProvider::SDLVideoProvider (string uri)
+    : SDLAudioProvider (uri)
 {
   type = VideoProvider;
 
@@ -135,7 +135,7 @@ SDLVideoProvider::playOver (SDLSurface* surface)
   SDLWindow* parentId;
   SDLWindow *parent;
 
-  Display::addCMPToRendererList (this);
+  Ginga_Display->addCMPToRendererList (this);
   parentId = surface->getParentWindow ();
 
   if (parentId == 0)

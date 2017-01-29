@@ -78,9 +78,8 @@ private:
   pthread_cond_t cond;
 
 public:
-  SDLWindow (SDLWindow* parentWindowID,
-             int x, int y, int width, int height,
-             double z);
+  SDLWindow (int x, int y, int width, int height,
+             int z);
 
   virtual ~SDLWindow ();
 

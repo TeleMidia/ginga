@@ -86,13 +86,11 @@ PresentationEngineManager::PresentationEngineManager (
 
   enableMulticast = useMulticast;
 
-  w = Ginga_Display->getWidthResolution ();
+  Ginga_Display->getSize (&w, &h);
   if (width > 0 && (width < w || w == 0))
     {
       w = width;
     }
-
-  h = Ginga_Display->getHeightResolution ();
   if (height > 0 && (height < h || h == 0))
     {
       h = height;
