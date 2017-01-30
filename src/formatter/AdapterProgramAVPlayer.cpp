@@ -84,7 +84,7 @@ AdapterProgramAVPlayer::createPlayer ()
 
 bool
 AdapterProgramAVPlayer::setPropertyValue (NclAttributionEvent *event,
-                                          string value)
+                                          const string &value)
 {
   string propName;
   bool attribution;

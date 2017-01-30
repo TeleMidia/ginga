@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 NclExecutionObjectSwitch::NclExecutionObjectSwitch (
-    string id, Node *switchNode, bool handling,
+    const string &id, Node *switchNode, bool handling,
     INclLinkActionListener *seListener)
     : NclCompositeExecutionObject (id, switchNode, handling, seListener)
 {

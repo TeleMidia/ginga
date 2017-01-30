@@ -69,11 +69,11 @@ public:
   PresentationContext ();
   virtual ~PresentationContext ();
 
-  void setPropertyValue (string propertyName, string value);
-  void incPropertyValue (string propertyName);
-  void decPropertyValue (string propertyName);
+  void setPropertyValue (const string &propertyName, const string &value);
+  void incPropertyValue (const string &propertyName);
+  void decPropertyValue (const string &propertyName);
   set<string> *getPropertyNames ();
-  string getPropertyValue (string attributeId);
+  string getPropertyValue (const string &attributeId);
 
 private:
   void initializeUserContext ();

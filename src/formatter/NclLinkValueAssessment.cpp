@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclLinkValueAssessment::NclLinkValueAssessment (string value)
+NclLinkValueAssessment::NclLinkValueAssessment (const string &value)
     : NclLinkAssessment ()
 {
   this->value = value;
@@ -36,7 +36,7 @@ NclLinkValueAssessment::getComparableValue ()
 }
 
 void
-NclLinkValueAssessment::setComparableValue (string value)
+NclLinkValueAssessment::setComparableValue (const string &value)
 {
   this->value = value;
 }

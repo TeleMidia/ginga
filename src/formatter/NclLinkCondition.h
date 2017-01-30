@@ -31,7 +31,7 @@ public:
   NclLinkCondition () {typeSet.insert ("NclLinkCondition"); };
   virtual ~NclLinkCondition (){};
   bool
-  instanceOf (string s)
+  instanceOf (const string &s)
   {
     if (!typeSet.empty ())
       {

@@ -51,7 +51,7 @@ NclFormatterLink::getNcmLink ()
 }
 
 bool
-NclFormatterLink::instanceOf (string s)
+NclFormatterLink::instanceOf (const string &s)
 {
   if (typeSet.empty ())
     {

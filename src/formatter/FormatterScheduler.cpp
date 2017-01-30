@@ -300,7 +300,8 @@ FormatterScheduler::setTimeBaseObject (NclExecutionObject *object,
 }
 
 void
-FormatterScheduler::printAction (string action, NclLinkCondition *condition,
+FormatterScheduler::printAction (const string &act,
+                                 NclLinkCondition *condition,
                                  NclLinkSimpleAction *linkAction)
 {
   NclExecutionObject *cndObject;
@@ -313,6 +314,7 @@ FormatterScheduler::printAction (string action, NclLinkCondition *condition,
   string role;
   string nodeId;
   double specTime;
+  string action = act;
 
   event = linkAction->getEvent ();
   object = (NclExecutionObject *)event->getExecutionObject ();
@@ -1430,7 +1432,7 @@ FormatterScheduler::runSwitchEvent (NclExecutionObjectSwitch *switchObject,
 }
 
 string
-FormatterScheduler::solveImplicitRefAssessment (string propValue,
+FormatterScheduler::solveImplicitRefAssessment (const string &propValue,
                                                 NclAttributionEvent *event)
 {
   NclFormatterEvent *refEvent;

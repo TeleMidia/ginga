@@ -26,7 +26,7 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-NclAttributionEvent::NclAttributionEvent (string id, void *executionObject,
+NclAttributionEvent::NclAttributionEvent (const string &id, void *executionObject,
                                           PropertyAnchor *anchor,
                                           PresentationContext *presContext)
     : NclFormatterEvent (id, executionObject)
@@ -108,7 +108,7 @@ NclAttributionEvent::getCurrentValue ()
 }
 
 bool
-NclAttributionEvent::setValue (string newValue)
+NclAttributionEvent::setValue (const string &newValue)
 {
   /*		if ((value == "" && newValue != "") ||
                               (newValue == "" && value != "") ||
@@ -143,13 +143,13 @@ NclAttributionEvent::getValueMaintainer ()
 
 void
 NclAttributionEvent::setImplicitRefAssessmentEvent (
-    string roleId, NclFormatterEvent *event)
+    const string &roleId, NclFormatterEvent *event)
 {
   assessments[roleId] = event;
 }
 
 NclFormatterEvent *
-NclAttributionEvent::getImplicitRefAssessmentEvent (string roleId)
+NclAttributionEvent::getImplicitRefAssessmentEvent (const string &roleId)
 {
   if (assessments.count (roleId) == 0)
     {

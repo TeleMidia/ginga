@@ -82,14 +82,14 @@ NclExecutionObject::hasInstance (NclExecutionObject *object,
   return hasObject;
 }
 
-NclExecutionObject::NclExecutionObject (string id, Node *node,
+NclExecutionObject::NclExecutionObject (const string &id, Node *node,
                                         bool handling,
                                         INclLinkActionListener *seListener)
 {
   initializeExecutionObject (id, node, NULL, handling, seListener);
 }
 
-NclExecutionObject::NclExecutionObject (string id, Node *node,
+NclExecutionObject::NclExecutionObject (const string &id, Node *node,
                                         GenericDescriptor *descriptor,
                                         bool handling,
                                         INclLinkActionListener *seListener)
@@ -99,7 +99,7 @@ NclExecutionObject::NclExecutionObject (string id, Node *node,
                              handling, seListener);
 }
 
-NclExecutionObject::NclExecutionObject (string id, Node *node,
+NclExecutionObject::NclExecutionObject (const string &id, Node *node,
                                         NclCascadingDescriptor *descriptor,
                                         bool handling,
                                         INclLinkActionListener *seListener)
@@ -162,7 +162,7 @@ NclExecutionObject::~NclExecutionObject ()
 
 void
 NclExecutionObject::initializeExecutionObject (
-    string id, Node *node, NclCascadingDescriptor *descriptor,
+    const string &id, Node *node, NclCascadingDescriptor *descriptor,
     bool handling, INclLinkActionListener *seListener)
 {
   typeSet.insert ("NclExecutionObject");
@@ -298,7 +298,7 @@ NclExecutionObject::isPaused ()
 }
 
 bool
-NclExecutionObject::instanceOf (string s)
+NclExecutionObject::instanceOf (const string &s)
 {
   return (typeSet.find (s) != typeSet.end ());
 }
@@ -577,7 +577,7 @@ NclExecutionObject::containsEvent (NclFormatterEvent *event)
 }
 
 NclFormatterEvent *
-NclExecutionObject::getEventFromAnchorId (string anchorId)
+NclExecutionObject::getEventFromAnchorId (const string &anchorId)
 {
   map<string, NclFormatterEvent *>::iterator i;
   NclFormatterEvent *event;
@@ -627,7 +627,7 @@ NclExecutionObject::getEventFromAnchorId (string anchorId)
 }
 
 NclFormatterEvent *
-NclExecutionObject::getEvent (string id)
+NclExecutionObject::getEvent (const string &id)
 {
   NclFormatterEvent *ev;
   lockEvents ();
@@ -956,7 +956,7 @@ NclExecutionObject::getNCMAnchors ()
 }
 
 PropertyAnchor *
-NclExecutionObject::getNCMProperty (string propertyName)
+NclExecutionObject::getNCMProperty (const string &propertyName)
 {
   PropertyAnchor *property = NULL;
 
@@ -1439,7 +1439,7 @@ NclExecutionObject::resume ()
 
 bool
 NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
-                                      string value)
+                                      const string &value)
 {
   string propName;
 
@@ -1651,7 +1651,7 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
 }
 
 string
-NclExecutionObject::getPropertyValue (string param)
+NclExecutionObject::getPropertyValue (const string &param)
 {
   NclFormatterRegion *region = NULL;
   LayoutRegion *ncmRegion = NULL;

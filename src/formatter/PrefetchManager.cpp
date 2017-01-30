@@ -75,7 +75,7 @@ PrefetchManager::getInstance ()
 }
 
 void
-PrefetchManager::createDirectory (string newDir)
+PrefetchManager::createDirectory (const string &newDir)
 {
   vector<string> *dirs;
   vector<string>::iterator i;
@@ -135,7 +135,7 @@ PrefetchManager::releaseContents ()
 }
 
 string
-PrefetchManager::createDocumentPrefetcher (string remoteDocUri)
+PrefetchManager::createDocumentPrefetcher (const string &remoteDocUri)
 {
   string localUri = "";
 
@@ -187,8 +187,9 @@ PrefetchManager::createDocumentPrefetcher (string remoteDocUri)
 }
 
 string
-PrefetchManager::createSourcePrefetcher (string localDocUri, string src)
+PrefetchManager::createSourcePrefetcher (const string &localDocUri, const string &_src)
 {
+  string src = _src;
   string remoteDocUri, newSrc, localRoot;
   string remoteRoot, relativeSrc, remoteUri;
 
@@ -304,7 +305,7 @@ PrefetchManager::hasIChannel ()
 }
 
 bool
-PrefetchManager::hasRemoteLocation (string docUri)
+PrefetchManager::hasRemoteLocation (const string &docUri)
 {
   if (localToRemoteUris->count (docUri) == 0)
     {
@@ -314,7 +315,7 @@ PrefetchManager::hasRemoteLocation (string docUri)
 }
 
 string
-PrefetchManager::getRemoteLocation (string docUri)
+PrefetchManager::getRemoteLocation (const string &docUri)
 {
   if (hasRemoteLocation (docUri))
     {
@@ -324,7 +325,7 @@ PrefetchManager::getRemoteLocation (string docUri)
 }
 
 string
-PrefetchManager::getLocalRoot (string remoteUri)
+PrefetchManager::getLocalRoot (const string &remoteUri)
 {
   if (urisToLocalRoots->count (remoteUri) != 0)
     {
@@ -340,7 +341,7 @@ PrefetchManager::setSynchPrefetch (bool synch)
 }
 
 void
-PrefetchManager::getContent (string remoteUri, string localUri)
+PrefetchManager::getContent (const string &remoteUri, const string &localUri)
 {
   if (icm != NULL)
     {
@@ -356,7 +357,7 @@ PrefetchManager::getContent (string remoteUri, string localUri)
 }
 
 void
-PrefetchManager::scheduleContent (string remoteUri, string localUri)
+PrefetchManager::scheduleContent (const string &remoteUri, const string &localUri)
 {
   if (scheduledLocalUris == NULL)
     {
@@ -396,7 +397,7 @@ PrefetchManager::receiveDataPipe (arg_unused (FILE *fd), int size)
 }
 
 void
-PrefetchManager::getScheduledContent (string clientUri)
+PrefetchManager::getScheduledContent (const string &clientUri)
 {
   set<string>::iterator i, j;
   string remoteUri = "";

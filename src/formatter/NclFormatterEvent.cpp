@@ -27,7 +27,7 @@ set<NclFormatterEvent *> NclFormatterEvent::instances;
 bool NclFormatterEvent::init = false;
 pthread_mutex_t NclFormatterEvent::iMutex;
 
-NclFormatterEvent::NclFormatterEvent (string id, void *execObject)
+NclFormatterEvent::NclFormatterEvent (const string &id, void *execObject)
 {
   this->id = id;
   currentState = EventUtil::ST_SLEEPING;
@@ -111,7 +111,7 @@ NclFormatterEvent::removeInstance (NclFormatterEvent *event)
 }
 
 bool
-NclFormatterEvent::instanceOf (string s)
+NclFormatterEvent::instanceOf (const string &s)
 {
   if (typeSet.empty ())
     {
@@ -124,7 +124,7 @@ NclFormatterEvent::instanceOf (string s)
 }
 
 bool
-NclFormatterEvent::hasNcmId (NclFormatterEvent *event, string anchorId)
+NclFormatterEvent::hasNcmId (NclFormatterEvent *event, const string &anchorId)
 {
   Anchor *anchor;
   string anchorName = " ";
@@ -197,7 +197,7 @@ NclFormatterEvent::destroyListeners ()
 }
 
 void
-NclFormatterEvent::setId (string id)
+NclFormatterEvent::setId (const string &id)
 {
   this->id = id;
 }

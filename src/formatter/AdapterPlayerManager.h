@@ -67,12 +67,12 @@ public:
   NclPlayerData *getNclPlayerData ();
   void setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider);
   ITimeBaseProvider *getTimeBaseProvider ();
-  void setVisible (string objectId, string visible,
+  void setVisible (const string &objectId, const string &visible,
                    NclAttributionEvent *event);
   bool removePlayer (void *object);
 
 private:
-  bool removePlayer (string objectId);
+  bool removePlayer (const string &objectId);
   void clear ();
 
 public:
@@ -85,16 +85,16 @@ public:
   void *getObjectPlayer (void *execObj);
 
 private:
-  string getMimeTypeFromSchema (string url);
+  string getMimeTypeFromSchema (const string &url);
 
 public:
   static bool isEmbeddedApp (NodeEntity *dataObject);
 
 private:
-  static bool isEmbeddedAppMediaType (string mediaType);
+  static bool isEmbeddedAppMediaType (const string &mediaType);
 
 public:
-  void timeShift (string direction);
+  void timeShift (const string &direction);
 
 protected:
   void clearDeletePlayers ();

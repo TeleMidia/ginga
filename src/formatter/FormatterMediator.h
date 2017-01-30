@@ -109,7 +109,7 @@ private:
   pthread_mutex_t evMutex;
 
 public:
-  EntryEventListener (Player *player, string interfaceId);
+  EntryEventListener (Player *player, const string &interfaceId);
   virtual ~EntryEventListener ();
 
   virtual void listenEvent (NclFormatterEvent *event);
@@ -172,9 +172,9 @@ public:
   void *setCurrentDocument (const string &fName);
 
 private:
-  virtual void *addDocument (string fName);
-  bool removeDocument (string documentId);
-  ContextNode *getDocumentContext (string documentId);
+  virtual void *addDocument (const string &fName);
+  bool removeDocument (const string &documentId);
+  ContextNode *getDocumentContext (const string &documentId);
 
 public:
   void setDepthLevel (int level);
@@ -184,112 +184,112 @@ public:
 
 private:
   vector<Port *> *getContextPorts (ContextNode *context,
-                                   string interfaceId);
+                                   const string &interfaceId);
 
-  vector<NclFormatterEvent *> *processDocument (string documentId,
-                                                string interfaceId);
+  vector<NclFormatterEvent *> *processDocument (const string &documentId,
+                                                const string &interfaceId);
 
   void initializeSettingNodes (Node *node);
 
-  vector<NclFormatterEvent *> *getDocumentEntryEvent (string documentId);
+  vector<NclFormatterEvent *> *getDocumentEntryEvent (const string &documentId);
 
-  bool compileDocument (string documentId);
-  bool prepareDocument (string documentId);
+  bool compileDocument (const string &documentId);
+  bool prepareDocument (const string &documentId);
 
-  void solveRemoteDescriptorsUris (string docLocation,
+  void solveRemoteDescriptorsUris (const string &docLocation,
                                    vector<GenericDescriptor *> *descs,
                                    bool isRemoteDoc);
 
-  void solveRemoteNodesUris (string docLocation, vector<Node *> *nodes,
+  void solveRemoteNodesUris (const string &docLocation, vector<Node *> *nodes,
                              bool isRemoteDoc);
 
-  void solveRemoteNclDeps (string docLocation, bool isRemoteDoc);
+  void solveRemoteNclDeps (const string &docLocation, bool isRemoteDoc);
 
-  void solveRemoteLuaDeps (string docLocation, string src,
+  void solveRemoteLuaDeps (const string &docLocation, const string &src,
                            bool isRemoteDoc);
 
-  string solveRemoteSourceUri (string docLocation, string src);
+  string solveRemoteSourceUri (const string &docLocation, const string &src);
 
-  NclFormatterEvent *getEntryEvent (string interfaceId,
+  NclFormatterEvent *getEntryEvent (const string &interfaceId,
                                     vector<NclFormatterEvent *> *events);
 
-  bool startDocument (string documentId, string interfaceId);
-  bool stopDocument (string documentId);
-  bool pauseDocument (string documentId);
-  bool resumeDocument (string documentId);
+  bool startDocument (const string &documentId, const string &interfaceId);
+  bool stopDocument (const string &documentId);
+  bool pauseDocument (const string &documentId);
+  bool resumeDocument (const string &documentId);
   void presentationCompleted (NclFormatterEvent *documentEvent);
 
 public:
-  bool nclEdit (string nclEditApi);
+  bool nclEdit (const string &nclEditApi);
   bool editingCommand (const string &commandTag, const string &privateDataPayload);
 
 private:
-  LayoutRegion *addRegion (string documentId, string regionBaseId,
-                           string regionId, string xmlRegion);
+  LayoutRegion *addRegion (const string &documentId, const string &regionBaseId,
+                           const string &regionId, const string &xmlRegion);
 
-  LayoutRegion *removeRegion (string documentId, string regionBaseId,
-                              string regionId);
+  LayoutRegion *removeRegion (const string &documentId, const string &regionBaseId,
+                              const string &regionId);
 
-  RegionBase *addRegionBase (string documentId, string xmlRegionBase);
-  RegionBase *removeRegionBase (string documentId, string regionBaseId);
+  RegionBase *addRegionBase (const string &documentId, const string &xmlRegionBase);
+  RegionBase *removeRegionBase (const string &documentId, const string &regionBaseId);
 
-  Rule *addRule (string documentId, string xmlRule);
-  Rule *removeRule (string documentId, string ruleId);
-  RuleBase *addRuleBase (string documentId, string xmlRuleBase);
-  RuleBase *removeRuleBase (string documentId, string ruleBaseId);
-  Transition *addTransition (string documentId, string xmlTransition);
-  Transition *removeTransition (string documentId, string transitionId);
+  Rule *addRule (const string &documentId, const string &xmlRule);
+  Rule *removeRule (const string &documentId, const string &ruleId);
+  RuleBase *addRuleBase (const string &documentId, const string &xmlRuleBase);
+  RuleBase *removeRuleBase (const string &documentId, const string &ruleBaseId);
+  Transition *addTransition (const string &documentId, const string &xmlTransition);
+  Transition *removeTransition (const string &documentId, const string &transitionId);
 
-  TransitionBase *addTransitionBase (string documentId,
-                                     string xmlTransitionBase);
+  TransitionBase *addTransitionBase (const string &documentId,
+                                     const string &xmlTransitionBase);
 
-  TransitionBase *removeTransitionBase (string documentId,
-                                        string transitionBaseId);
+  TransitionBase *removeTransitionBase (const string &documentId,
+                                        const string &transitionBaseId);
 
-  Connector *addConnector (string documentId, string xmlConnector);
-  Connector *removeConnector (string documentId, string connectorId);
-  ConnectorBase *addConnectorBase (string documentId,
-                                   string xmlConnectorBase);
+  Connector *addConnector (const string &documentId, const string &xmlConnector);
+  Connector *removeConnector (const string &documentId, const string &connectorId);
+  ConnectorBase *addConnectorBase (const string &documentId,
+                                   const string &xmlConnectorBase);
 
-  ConnectorBase *removeConnectorBase (string documentId,
-                                      string connectorBaseId);
+  ConnectorBase *removeConnectorBase (const string &documentId,
+                                      const string &connectorBaseId);
 
-  GenericDescriptor *addDescriptor (string documentId,
-                                    string xmlDescriptor);
+  GenericDescriptor *addDescriptor (const string &documentId,
+                                    const string &xmlDescriptor);
 
-  GenericDescriptor *removeDescriptor (string documentId,
-                                       string descriptorId);
+  GenericDescriptor *removeDescriptor (const string &documentId,
+                                       const string &descriptorId);
 
-  DescriptorBase *addDescriptorBase (string documentId,
-                                     string xmlDescriptorBase);
+  DescriptorBase *addDescriptorBase (const string &documentId,
+                                     const string &xmlDescriptorBase);
 
-  DescriptorBase *removeDescriptorBase (string documentId,
-                                        string descriptorBaseId);
+  DescriptorBase *removeDescriptorBase (const string &documentId,
+                                        const string &descriptorBaseId);
 
-  Base *addImportBase (string documentId, string docBaseId,
-                       string xmlImportBase);
+  Base *addImportBase (const string &documentId, const string &docBaseId,
+                       const string &xmlImportBase);
 
-  Base *removeImportBase (string documentId, string docBaseId,
-                          string documentURI);
+  Base *removeImportBase (const string &documentId, const string &docBaseId,
+                          const string &documentURI);
 
-  NclDocument *addImportedDocumentBase (string documentId,
-                                        string xmlImportedDocumentBase);
+  NclDocument *addImportedDocumentBase (const string &documentId,
+                                        const string &xmlImportedDocumentBase);
 
-  NclDocument *removeImportedDocumentBase (string documentId,
-                                           string importedDocumentBaseId);
+  NclDocument *removeImportedDocumentBase (const string &documentId,
+                                           const string &importedDocumentBaseId);
 
-  NclDocument *addImportNCL (string documentId, string xmlImportNCL);
-  NclDocument *removeImportNCL (string documentId, string documentURI);
+  NclDocument *addImportNCL (const string &documentId, const string &xmlImportNCL);
+  NclDocument *removeImportNCL (const string &documentId, const string &documentURI);
 
   void processInsertedReferNode (ReferNode *referNode);
   void processInsertedComposition (CompositeNode *composition);
 
-  Node *addNode (string documentId, string compositeId, string xmlNode);
+  Node *addNode (const string &documentId, const string &compositeId, const string &xmlNode);
 
-  Node *removeNode (string documentId, string compositeId, string nodeId);
+  Node *removeNode (const string &documentId, const string &compositeId, const string &nodeId);
 
-  InterfacePoint *addInterface (string documentId, string nodeId,
-                                string xmlInterface);
+  InterfacePoint *addInterface (const string &documentId, const string &nodeId,
+                                const string &xmlInterface);
 
   void removeInterfaceMappings (Node *node, InterfacePoint *interfacePoint,
                                 CompositeNode *composition);
@@ -299,17 +299,17 @@ private:
 
   void removeInterface (Node *node, InterfacePoint *interfacePoint);
 
-  InterfacePoint *removeInterface (string documentId, string nodeId,
-                                   string interfaceId);
+  InterfacePoint *removeInterface (const string &documentId, const string &nodeId,
+                                   const string &interfaceId);
 
-  Link *addLink (string documentId, string compositeId, string xmlLink);
+  Link *addLink (const string &documentId, const string &compositeId, const string &xmlLink);
 
   void removeLink (ContextNode *composition, Link *link);
 
-  Link *removeLink (string documentId, string compositeId, string linkId);
+  Link *removeLink (const string &documentId, const string &compositeId, const string &linkId);
 
-  bool setPropertyValue (string documentId, string nodeId,
-                         string propertyId, string value);
+  bool setPropertyValue (const string &documentId, const string &nodeId,
+                         const string &propertyId, const string &value);
 
 public:
   void setNotifyContentUpdate (arg_unused (bool notify)){};
@@ -335,7 +335,7 @@ public:
   void pause ();
   void resume ();
 
-  string getPropertyValue (string const &name);
+  string getPropertyValue (const string &name);
   void setPropertyValue (const string &name, const string &value);
 
   void setReferenceTimePlayer (IPlayer *player);
@@ -386,7 +386,7 @@ private:
   string getDepUriFromNode (vector<string> *uris,
                             Node *node,
                             int targetDev = 0);
-  string getBaseUri (string baseA, string baseB);
+  string getBaseUri (const string &baseA, const string &baseB);
 
 public:
   void timeShift (const string &direction);

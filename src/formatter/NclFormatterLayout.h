@@ -50,10 +50,10 @@ public:
   NclFormatterLayout (int x, int y, int w, int h);
   virtual ~NclFormatterLayout ();
   LayoutRegion *getDeviceRegion ();
-  void addChild (string objectId, NclFormatterLayout *child);
-  NclFormatterLayout *getChild (string objectId);
+  void addChild (const string &objectId, NclFormatterLayout *child);
+  NclFormatterLayout *getChild (const string &objectId);
   string getBitMapRegionId ();
-  LayoutRegion *getNcmRegion (string regionId);
+  LayoutRegion *getNcmRegion (const string &regionId);
 
 private:
   void printRegionMap ();
@@ -71,13 +71,14 @@ public:
                                         SDLSurface* renderedSurface,
                                         string plan);
 
-  double refreshZIndex (NclFormatterRegion *region, string layoutRegionId,
-                        int zIndex, string plan,
+  double refreshZIndex (NclFormatterRegion *region, const string &layoutRegionId,
+                        int zIndex, const string &plan,
                         SDLSurface* renderedSurface);
 
 private:
-  void sortRegion (string regionId, double cvtIndex, string plan);
-  double convertZIndex (int zIndex, string plan);
+  void sortRegion (const string &regionId, double cvtIndex,
+                   const string &plan);
+  double convertZIndex (int zIndex, const string &plan);
 
 public:
   void showObject (NclExecutionObject *object);
@@ -91,12 +92,12 @@ private:
                                  string plan, double *cvtZIndex);
 
   NclExecutionObject *
-  removeFormatterRegionFromMaps (string layoutRegionId,
+  removeFormatterRegionFromMaps (const string &layoutRegionId,
                                  NclFormatterRegion *formatterRegion);
 
 public:
   set<NclFormatterRegion *> *
-  getFormatterRegionsFromNcmRegion (string regionId);
+  getFormatterRegionsFromNcmRegion (const string &regionId);
 
   void clear ();
 

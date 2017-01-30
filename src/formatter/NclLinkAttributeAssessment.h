@@ -40,7 +40,7 @@ public:
   NclLinkAttributeAssessment (NclFormatterEvent *ev, short attrType);
 
   NclFormatterEvent *getEvent ();
-  void setOffset (string offset);
+  void setOffset (const string &offset);
   string getOffset ();
   void setEvent (NclFormatterEvent *ev);
   short getAttributeType ();
@@ -48,7 +48,7 @@ public:
   string getValue ();
 
 private:
-  string getAssessmentWithOffset (string assessmentValue);
+  string getAssessmentWithOffset (const string &assessmentValue);
 };
 
 GINGA_FORMATTER_END

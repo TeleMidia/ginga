@@ -108,7 +108,7 @@ AdapterPlayerManager::getTimeBaseProvider ()
 }
 
 void
-AdapterPlayerManager::setVisible (string objectId, string visible,
+AdapterPlayerManager::setVisible (const string &objectId, const string &visible,
                                   NclAttributionEvent *event)
 {
   map<string, IAdapterPlayer *>::iterator i;
@@ -145,7 +145,7 @@ AdapterPlayerManager::removePlayer (void *exObject)
 }
 
 bool
-AdapterPlayerManager::removePlayer (string objectId)
+AdapterPlayerManager::removePlayer (const string &objectId)
 {
   map<string, IAdapterPlayer *>::iterator i;
   AdapterFormatterPlayer *player;
@@ -343,7 +343,7 @@ AdapterPlayerManager::getObjectPlayer (void *eObj)
 }
 
 string
-AdapterPlayerManager::getMimeTypeFromSchema (string url)
+AdapterPlayerManager::getMimeTypeFromSchema (const string &url)
 {
   string mime = "";
 
@@ -425,7 +425,7 @@ AdapterPlayerManager::isEmbeddedApp (NodeEntity *dataObject)
 }
 
 bool
-AdapterPlayerManager::isEmbeddedAppMediaType (string mediaType)
+AdapterPlayerManager::isEmbeddedAppMediaType (const string &mediaType)
 {
   string upMediaType = xstrup (mediaType);
 
@@ -442,7 +442,7 @@ AdapterPlayerManager::isEmbeddedAppMediaType (string mediaType)
 }
 
 void
-AdapterPlayerManager::timeShift (string direction)
+AdapterPlayerManager::timeShift (const string &direction)
 {
   map<string, IAdapterPlayer *>::iterator i;
   AdapterFormatterPlayer *player;

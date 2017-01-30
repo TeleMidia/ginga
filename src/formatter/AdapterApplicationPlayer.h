@@ -84,8 +84,8 @@ public:
                              const string &value = "");
 
 private:
-  void notificationHandler (short code, string parameter, short type,
-                            string value);
+  void notificationHandler (short code, const string &parameter, short type,
+                            const string &value);
 
   void run ();
 
@@ -97,11 +97,11 @@ private:
   bool checkEvent (NclFormatterEvent *event, short type);
 
 protected:
-  bool startEvent (string anchorId, short type, string value);
-  bool stopEvent (string anchorId, short type, string value);
-  bool abortEvent (string anchorId, short type);
-  bool pauseEvent (string anchorId, short type);
-  bool resumeEvent (string anchorId, short type);
+  bool startEvent (const string &anchorId, short type, const string &value);
+  bool stopEvent (const string &anchorId, short type, const string &value);
+  bool abortEvent (const string &anchorId, short type);
+  bool pauseEvent (const string &anchorId, short type);
+  bool resumeEvent (const string &anchorId, short type);
 
   void lockEvent ();
   void unlockEvent ();

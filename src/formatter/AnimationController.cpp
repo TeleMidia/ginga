@@ -24,7 +24,7 @@ AnimationController::AnimationController (NclExecutionObject *execObj,
                                           AdapterPlayerManager *pManager,
                                           AdapterFormatterPlayer *player,
                                           NclAttributionEvent *event,
-                                          string value, Animation *anim)
+                                          const string &value, Animation *anim)
 {
   this->execObj = execObj;
   this->pManager = pManager;
@@ -62,7 +62,7 @@ AnimationController::startAnimation (NclExecutionObject *execObj,
                                      AdapterPlayerManager *pManager,
                                      AdapterFormatterPlayer *player,
                                      NclAttributionEvent *event,
-                                     string value, Animation *anim)
+                                     const string &value, Animation *anim)
 {
   AnimationController *animControl = new AnimationController (
       execObj, pManager, player, event, value, anim);
@@ -369,7 +369,7 @@ AnimationController::ungroupProperty ()
 }
 
 bool
-AnimationController::isExecutionObjectProperty (string name)
+AnimationController::isExecutionObjectProperty (const string &name)
 {
   if (name == "bounds" || name == "location" || name == "size"
       || propName == "left" || propName == "top" || propName == "bottom"
