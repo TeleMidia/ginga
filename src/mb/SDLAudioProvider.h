@@ -35,10 +35,6 @@ protected:
 public:
   SDLAudioProvider (string uri);
   virtual ~SDLAudioProvider ();
-
-  virtual void setLoadSymbol (string symbol);
-  virtual string getLoadSymbol ();
-
   virtual bool
   getHasVisual ()
   {

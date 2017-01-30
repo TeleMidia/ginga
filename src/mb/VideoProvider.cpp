@@ -41,18 +41,6 @@ VideoProvider::VideoProvider (string uri)
 
 VideoProvider::~VideoProvider () { hasTex = false; }
 
-void
-VideoProvider::setLoadSymbol (string symbol)
-{
-  this->symbol = symbol;
-}
-
-string
-VideoProvider::getLoadSymbol ()
-{
-  return this->symbol;
-}
-
 bool
 VideoProvider::getHasVisual ()
 {

@@ -75,11 +75,6 @@ private:
   bool createFont ();
 
 public:
-  string
-  getLoadSymbol ()
-  {
-    return "SDLFontProvider";
-  };
   void *getFontProviderContent ();
 
   void getStringExtents (const char *text, int *w, int *h);

@@ -41,18 +41,6 @@ SDLAudioProvider::~SDLAudioProvider ()
     }
 }
 
-void
-SDLAudioProvider::setLoadSymbol (string symbol)
-{
-  this->symbol = symbol;
-}
-
-string
-SDLAudioProvider::getLoadSymbol ()
-{
-  return this->symbol;
-}
-
 void *
 SDLAudioProvider::getProviderContent ()
 {
