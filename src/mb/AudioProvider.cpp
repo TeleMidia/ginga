@@ -16,13 +16,13 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "SDLAudioProvider.h"
+#include "AudioProvider.h"
 #include "Display.h"
 #include "SDLSurface.h"
 
 GINGA_MB_BEGIN
 
-SDLAudioProvider::SDLAudioProvider (string uri)
+AudioProvider::AudioProvider (string uri)
 {
   type = AudioProviderType;
 
@@ -30,7 +30,7 @@ SDLAudioProvider::SDLAudioProvider (string uri)
   decoder = new SDL2ffmpeg (uri.c_str ());
 }
 
-SDLAudioProvider::~SDLAudioProvider ()
+AudioProvider::~AudioProvider ()
 {
   if (decoder != NULL)
     {
@@ -42,13 +42,13 @@ SDLAudioProvider::~SDLAudioProvider ()
 }
 
 void *
-SDLAudioProvider::getProviderContent ()
+AudioProvider::getProviderContent ()
 {
   return NULL;
 }
 
 double
-SDLAudioProvider::getTotalMediaTime ()
+AudioProvider::getTotalMediaTime ()
 {
   if (decoder != NULL)
     {
@@ -59,7 +59,7 @@ SDLAudioProvider::getTotalMediaTime ()
 }
 
 int64_t
-SDLAudioProvider::getVPts ()
+AudioProvider::getVPts ()
 {
   int64_t vpts = 0;
 
@@ -72,7 +72,7 @@ SDLAudioProvider::getVPts ()
 }
 
 double
-SDLAudioProvider::getMediaTime ()
+AudioProvider::getMediaTime ()
 {
   if (decoder != NULL)
     {
@@ -83,7 +83,7 @@ SDLAudioProvider::getMediaTime ()
 }
 
 void
-SDLAudioProvider::setMediaTime (double pos)
+AudioProvider::setMediaTime (double pos)
 {
   if (decoder != NULL)
     {
@@ -92,9 +92,9 @@ SDLAudioProvider::setMediaTime (double pos)
 }
 
 void
-SDLAudioProvider::playOver (arg_unused (SDLSurface* surface))
+AudioProvider::playOver (arg_unused (SDLSurface* surface))
 {
-  clog << "SDLAudioProvider::playOver" << endl;
+  clog << "AudioProvider::playOver" << endl;
   if (decoder != NULL)
     {
       decoder->play ();
@@ -102,7 +102,7 @@ SDLAudioProvider::playOver (arg_unused (SDLSurface* surface))
 }
 
 void
-SDLAudioProvider::pause ()
+AudioProvider::pause ()
 {
   if (decoder != NULL)
     {
@@ -111,7 +111,7 @@ SDLAudioProvider::pause ()
 }
 
 void
-SDLAudioProvider::resume (arg_unused (SDLSurface* surface))
+AudioProvider::resume (arg_unused (SDLSurface* surface))
 {
   if (decoder != NULL)
     {
@@ -120,7 +120,7 @@ SDLAudioProvider::resume (arg_unused (SDLSurface* surface))
 }
 
 void
-SDLAudioProvider::stop ()
+AudioProvider::stop ()
 {
   if (decoder != NULL)
     {
@@ -129,7 +129,7 @@ SDLAudioProvider::stop ()
 }
 
 void
-SDLAudioProvider::setSoundLevel (double level)
+AudioProvider::setSoundLevel (double level)
 {
   if (decoder != NULL)
     {
@@ -138,7 +138,7 @@ SDLAudioProvider::setSoundLevel (double level)
 }
 
 double
-SDLAudioProvider::getSoundLevel ()
+AudioProvider::getSoundLevel ()
 {
   double soundLevel = 0.0;
 
@@ -151,18 +151,18 @@ SDLAudioProvider::getSoundLevel ()
 }
 
 bool
-SDLAudioProvider::releaseAll ()
+AudioProvider::releaseAll ()
 {
   return false;
 }
 
 void
-SDLAudioProvider::getOriginalResolution (arg_unused (int *width), arg_unused (int *height))
+AudioProvider::getOriginalResolution (arg_unused (int *width), arg_unused (int *height))
 {
 }
 
 void
-SDLAudioProvider::refreshDR (arg_unused (void *data))
+AudioProvider::refreshDR (arg_unused (void *data))
 {
   double rt;
 

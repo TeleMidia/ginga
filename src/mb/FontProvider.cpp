@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "SDLFontProvider.h"
+#include "FontProvider.h"
 
 #include "Display.h"
 #include "SDLWindow.h"
@@ -24,25 +24,25 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-const short SDLFontProvider::A_TOP = 3;
-const short SDLFontProvider::A_TOP_CENTER = 4;
-const short SDLFontProvider::A_TOP_LEFT = 5;
-const short SDLFontProvider::A_TOP_RIGHT = 6;
+const short FontProvider::A_TOP = 3;
+const short FontProvider::A_TOP_CENTER = 4;
+const short FontProvider::A_TOP_LEFT = 5;
+const short FontProvider::A_TOP_RIGHT = 6;
 
-const short SDLFontProvider::A_BOTTOM = 7;
-const short SDLFontProvider::A_BOTTOM_CENTER = 8;
-const short SDLFontProvider::A_BOTTOM_LEFT = 9;
-const short SDLFontProvider::A_BOTTOM_RIGHT = 10;
+const short FontProvider::A_BOTTOM = 7;
+const short FontProvider::A_BOTTOM_CENTER = 8;
+const short FontProvider::A_BOTTOM_LEFT = 9;
+const short FontProvider::A_BOTTOM_RIGHT = 10;
 
-map<string, TTF_Font *> SDLFontProvider::fonts;
+map<string, TTF_Font *> FontProvider::fonts;
 
-pthread_mutex_t SDLFontProvider::ntsMutex;
-bool SDLFontProvider::initNTSMutex = false;
+pthread_mutex_t FontProvider::ntsMutex;
+bool FontProvider::initNTSMutex = false;
 
-bool SDLFontProvider::initialized = false;
-short SDLFontProvider::fontRefs = 0;
+bool FontProvider::initialized = false;
+short FontProvider::fontRefs = 0;
 
-SDLFontProvider::SDLFontProvider (const char *fontUri, int heightInPixel)
+FontProvider::FontProvider (const char *fontUri, int heightInPixel)
 {
   type = FontProviderType;
 
@@ -67,7 +67,7 @@ SDLFontProvider::SDLFontProvider (const char *fontUri, int heightInPixel)
   this->fontUri.assign (fontUri, strlen (fontUri));
 }
 
-SDLFontProvider::~SDLFontProvider ()
+FontProvider::~FontProvider ()
 {
   Thread::mutexLock (&ntsMutex);
 
@@ -91,7 +91,7 @@ SDLFontProvider::~SDLFontProvider ()
 }
 
 void
-SDLFontProvider::releaseFonts ()
+FontProvider::releaseFonts ()
 {
   map<string, TTF_Font *>::iterator i;
 
@@ -109,7 +109,7 @@ SDLFontProvider::releaseFonts ()
 }
 
 bool
-SDLFontProvider::initializeFont ()
+FontProvider::initializeFont ()
 {
   Thread::mutexLock (&ntsMutex);
 
@@ -118,7 +118,7 @@ SDLFontProvider::initializeFont ()
       initialized = true;
       if (TTF_Init () < 0)
         {
-          clog << "SDLFontProvider::initializeFont Warning! ";
+          clog << "FontProvider::initializeFont Warning! ";
           clog << "Couldn't initialize TTF: " << SDL_GetError ();
           clog << endl;
           Thread::mutexUnlock (&ntsMutex);
@@ -138,7 +138,7 @@ SDLFontProvider::initializeFont ()
 }
 
 bool
-SDLFontProvider::createFont ()
+FontProvider::createFont ()
 {
   map<string, TTF_Font *>::iterator i;
 
@@ -162,7 +162,7 @@ SDLFontProvider::createFont ()
 
       if (font == NULL)
         {
-          clog << "SDLFontProvider::initializeFont Warning! ";
+          clog << "FontProvider::initializeFont Warning! ";
           clog << "Couldn't initialize font: " << fontUri;
           clog << endl;
 
@@ -184,13 +184,13 @@ SDLFontProvider::createFont ()
 }
 
 void *
-SDLFontProvider::getFontProviderContent ()
+FontProvider::getFontProviderContent ()
 {
   return (void *)font;
 }
 
 void
-SDLFontProvider::getStringExtents (const char *text, int *w, int *h)
+FontProvider::getStringExtents (const char *text, int *w, int *h)
 {
   Thread::mutexLock (&ntsMutex);
 
@@ -205,7 +205,7 @@ SDLFontProvider::getStringExtents (const char *text, int *w, int *h)
     }
   else
     {
-      clog << "SDLFontProvider::getStringExtents Warning! ";
+      clog << "FontProvider::getStringExtents Warning! ";
       clog << "Can't get text size: font is NULL." << endl;
     }
 
@@ -213,7 +213,7 @@ SDLFontProvider::getStringExtents (const char *text, int *w, int *h)
 }
 
 int
-SDLFontProvider::getStringWidth (const char *text, int textLength)
+FontProvider::getStringWidth (const char *text, int textLength)
 {
   int w = -1, h = -1;
   string aux = "";
@@ -240,13 +240,13 @@ SDLFontProvider::getStringWidth (const char *text, int textLength)
 }
 
 int
-SDLFontProvider::getHeight ()
+FontProvider::getHeight ()
 {
   return height;
 }
 
 void
-SDLFontProvider::playOver (SDLSurface* surface, const char *text, int x,
+FontProvider::playOver (SDLSurface* surface, const char *text, int x,
                            int y, short align)
 {
   size_t textLength;
@@ -277,7 +277,7 @@ SDLFontProvider::playOver (SDLSurface* surface, const char *text, int x,
 }
 
 void
-SDLFontProvider::playOver (SDLSurface* surface)
+FontProvider::playOver (SDLSurface* surface)
 {
   SDLWindow *parent;
   Color *fontColor = NULL;
@@ -295,7 +295,7 @@ SDLFontProvider::playOver (SDLSurface* surface)
     {
       if (!createFont ())
         {
-          clog << "SDLFontProvider::playOver Warning! NULL font.";
+          clog << "FontProvider::playOver Warning! NULL font.";
           clog << endl;
 
           Thread::mutexUnlock (&ntsMutex);
@@ -309,7 +309,7 @@ SDLFontProvider::playOver (SDLSurface* surface)
 
       if (parent == NULL)
         {
-          clog << "SDLFontProvider::playOver Warning! NULL parent.";
+          clog << "FontProvider::playOver Warning! NULL parent.";
           clog << endl;
           Thread::mutexUnlock (&ntsMutex);
           return;
@@ -317,7 +317,7 @@ SDLFontProvider::playOver (SDLSurface* surface)
 
       if (coordX >= parent->getW () || coordY >= parent->getH ())
         {
-          clog << "SDLFontProvider::playOver Warning! Invalid coords.";
+          clog << "FontProvider::playOver Warning! Invalid coords.";
           clog << endl;
           Thread::mutexUnlock (&ntsMutex);
           return;
@@ -344,7 +344,7 @@ SDLFontProvider::playOver (SDLSurface* surface)
 
       if (text == NULL)
         {
-          clog << "SDLFontProvider::playOver Warning! Can't create ";
+          clog << "FontProvider::playOver Warning! Can't create ";
           clog << "underlying surface from text" << endl;
           Thread::mutexUnlock (&ntsMutex);
           return;
@@ -373,7 +373,7 @@ SDLFontProvider::playOver (SDLSurface* surface)
           content->setContent (renderedSurface);
           parent->setRenderedSurface (renderedSurface);
 
-          clog << "SDLFontProvider::playOver parent = '" << parent;
+          clog << "FontProvider::playOver parent = '" << parent;
           clog << "' bounds = '" << parent->getX () << ",";
           clog << parent->getY () << ",";
           clog << pW << ",";
@@ -400,7 +400,7 @@ SDLFontProvider::playOver (SDLSurface* surface)
         {
           if (SDL_UpperBlit (text, NULL, renderedSurface, &rect) < 0)
             {
-              clog << "SDLFontProvider::playOver Warning! Can't blit ";
+              clog << "FontProvider::playOver Warning! Can't blit ";
               clog << "text considering rectangle = '";
               clog << rect.x << ", " << rect.y << ", ";
               clog << rect.w << ", " << rect.h << "': ";
@@ -415,7 +415,7 @@ SDLFontProvider::playOver (SDLSurface* surface)
     }
   else
     {
-      clog << "SDLFontProvider::playOver Warning! Invalid Surface.";
+      clog << "FontProvider::playOver Warning! Invalid Surface.";
       clog << endl;
     }
 

@@ -19,9 +19,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Display.h"
 
 #include "InputManager.h"
-#include "SDLAudioProvider.h"
+#include "AudioProvider.h"
 #include "SDLEventBuffer.h"
-#include "SDLFontProvider.h"
+#include "FontProvider.h"
 #include "SDLInputEvent.h"
 #include "SDLSurface.h"
 #include "VideoProvider.h"
@@ -636,7 +636,7 @@ Display::createFontProvider (const char *mrl, int fontSize)
   IFontProvider *provider = NULL;
 
   lockSDL ();
-  provider = new SDLFontProvider (mrl, fontSize);
+  provider = new FontProvider (mrl, fontSize);
   unlockSDL ();
 
   Thread::mutexLock (&proMutex);

@@ -20,11 +20,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "IContinuousMediaProvider.h"
 
-#include "SDLAudioProvider.h"
+#include "AudioProvider.h"
 
 GINGA_MB_BEGIN
 
-class VideoProvider : public SDLAudioProvider
+class VideoProvider : public AudioProvider
 {
 private:
   int wRes;

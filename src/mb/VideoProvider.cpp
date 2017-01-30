@@ -26,7 +26,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_MB_BEGIN
 
 VideoProvider::VideoProvider (string uri)
-    : SDLAudioProvider (uri)
+    : AudioProvider (uri)
 {
   type = VideoProviderType;
 
@@ -96,25 +96,25 @@ VideoProvider::getOriginalResolution (int *width, int *height)
 double
 VideoProvider::getTotalMediaTime ()
 {
-  return SDLAudioProvider::getTotalMediaTime ();
+  return AudioProvider::getTotalMediaTime ();
 }
 
 int64_t
 VideoProvider::getVPts ()
 {
-  return SDLAudioProvider::getVPts ();
+  return AudioProvider::getVPts ();
 }
 
 double
 VideoProvider::getMediaTime ()
 {
-  return SDLAudioProvider::getMediaTime ();
+  return AudioProvider::getMediaTime ();
 }
 
 void
 VideoProvider::setMediaTime (double pos)
 {
-  SDLAudioProvider::setMediaTime (pos);
+  AudioProvider::setMediaTime (pos);
 }
 
 void
@@ -127,7 +127,7 @@ VideoProvider::playOver (SDLSurface* surface)
 
   if (parentId == 0)
     {
-      SDLAudioProvider::playOver (surface);
+      AudioProvider::playOver (surface);
       return;
     }
 
@@ -153,25 +153,25 @@ VideoProvider::playOver (SDLSurface* surface)
 void
 VideoProvider::resume (SDLSurface* surface)
 {
-  SDLAudioProvider::resume (surface);
+  AudioProvider::resume (surface);
 }
 
 void
 VideoProvider::pause ()
 {
-  SDLAudioProvider::pause ();
+  AudioProvider::pause ();
 }
 
 void
 VideoProvider::stop ()
 {
-  SDLAudioProvider::stop ();
+  AudioProvider::stop ();
 }
 
 void
 VideoProvider::setSoundLevel (double level)
 {
-  SDLAudioProvider::setSoundLevel (level);
+  AudioProvider::setSoundLevel (level);
 }
 
 bool
@@ -184,7 +184,7 @@ VideoProvider::releaseAll ()
 void
 VideoProvider::refreshDR (void *data)
 {
-  SDLAudioProvider::refreshDR (data);
+  AudioProvider::refreshDR (data);
 }
 
 bool
