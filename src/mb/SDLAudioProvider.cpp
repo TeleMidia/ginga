@@ -24,7 +24,7 @@ GINGA_MB_BEGIN
 
 SDLAudioProvider::SDLAudioProvider (string uri)
 {
-  type = AudioProvider;
+  type = AudioProviderType;
 
   this->mrl = uri;
   decoder = new SDL2ffmpeg (uri.c_str ());

@@ -44,7 +44,7 @@ short SDLFontProvider::fontRefs = 0;
 
 SDLFontProvider::SDLFontProvider (const char *fontUri, int heightInPixel)
 {
-  type = FontProvider;
+  type = FontProviderType;
 
   if (!initNTSMutex)
     {

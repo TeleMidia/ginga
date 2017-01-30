@@ -24,7 +24,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-class SDLVideoProvider : public SDLAudioProvider
+class VideoProvider : public SDLAudioProvider
 {
 private:
   int wRes;
@@ -36,8 +36,8 @@ private:
   bool hasTex;
 
 public:
-  SDLVideoProvider (string);
-  virtual ~SDLVideoProvider ();
+  VideoProvider (string);
+  virtual ~VideoProvider ();
   void setLoadSymbol (string symbol);
   string getLoadSymbol ();
   bool getHasVisual ();
