@@ -32,9 +32,6 @@ public:
   static const short FP_TA_RIGHT = 0x04;
 
   virtual ~IFontProvider (){};
-
-  virtual string getLoadSymbol () = 0;
-
   virtual void *getFontProviderContent () = 0;
 
   virtual void getStringExtents (const char *text, int *w, int *h) = 0;

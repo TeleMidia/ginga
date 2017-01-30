@@ -35,7 +35,6 @@ public:
   };
 
   virtual ~IMediaProvider (){};
-  virtual string getLoadSymbol () = 0;
   virtual void playOver (SDLSurface* surface) = 0;
   IMediaProviderType
   getType () const

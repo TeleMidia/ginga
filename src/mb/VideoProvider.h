@@ -38,8 +38,6 @@ private:
 public:
   VideoProvider (string);
   virtual ~VideoProvider ();
-  void setLoadSymbol (string symbol);
-  string getLoadSymbol ();
   bool getHasVisual ();
   void *getProviderContent ();
   void setProviderContent (void *texture);
