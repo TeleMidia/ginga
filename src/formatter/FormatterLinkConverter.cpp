@@ -161,7 +161,7 @@ FormatterLinkConverter::createCausalLink (
 }
 
 void
-FormatterLinkConverter::setImplicitRefAssessment (string roleId,
+FormatterLinkConverter::setImplicitRefAssessment (const string &roleId,
                                                   CausalLink *ncmLink,
                                                   NclFormatterEvent *event)
 {
@@ -1101,7 +1101,7 @@ FormatterLinkConverter::getBindKey (Link *ncmLink, Bind *ncmBind)
 }
 
 double
-FormatterLinkConverter::compileDelay (Link *ncmLink, string delayObject,
+FormatterLinkConverter::compileDelay (Link *ncmLink, const string &delayObject,
                                       Bind *bind)
 {
   double delay;

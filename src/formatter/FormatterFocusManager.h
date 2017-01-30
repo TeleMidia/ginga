@@ -108,8 +108,8 @@ private:
 
 public:
   void tapObject (void *executionObject);
-  void setKeyMaster (string mediaId);
-  void setFocus (string focusIndex);
+  void setKeyMaster (const string &mediaId);
+  void setFocus (const string &focusIndex);
 
 private:
   void setFocus (NclCascadingDescriptor *descriptor);
@@ -120,9 +120,9 @@ public:
   void hideObject (NclExecutionObject *object);
 
 private:
-  NclExecutionObject *getObjectFromFocusIndex (string focusIndex);
-  void insertObject (NclExecutionObject *object, string focusIndex);
-  void removeObject (NclExecutionObject *object, string focusIndex);
+  NclExecutionObject *getObjectFromFocusIndex (const string &focusIndex);
+  void insertObject (NclExecutionObject *object, const string &focusIndex);
+  void removeObject (NclExecutionObject *object, const string &focusIndex);
 
   bool keyCodeOk (NclExecutionObject *currentObject);
   bool keyCodeBack ();
@@ -140,7 +140,7 @@ public:
   void setMotionBoundaries (int x, int y, int w, int h);
 
 private:
-  void changeSettingState (string name, string act);
+  void changeSettingState (const string &name, const string &act);
 
 public:
   bool userEventReceived (SDLInputEvent *ev);

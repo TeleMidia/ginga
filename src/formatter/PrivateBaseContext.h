@@ -86,26 +86,27 @@ public:
   void createPrivateBase (const string &id);
 
 private:
-  NclDocument *compileDocument (string location,
+  NclDocument *compileDocument (const string &location,
                                 DeviceLayout *deviceLayout);
 
 public:
-  NclDocument *addDocument (string location, DeviceLayout *deviceLayout);
+  NclDocument *addDocument (const string &location, DeviceLayout *deviceLayout);
 
-  NclDocument *embedDocument (string docId, string nodeId, string location,
+  NclDocument *embedDocument (const string &docId, const string &nodeId,
+                              const string &location,
                               DeviceLayout *deviceLayout);
 
   void *addVisibleDocument (const string &location, DeviceLayout *deviceLayout);
-  NclDocument *getVisibleDocument (string docId);
+  NclDocument *getVisibleDocument (const string &docId);
 
 private:
-  bool eraseVisibleDocument (string docLocation);
+  bool eraseVisibleDocument (const string &docLocation);
 
 public:
-  string getDocumentLocation (string docId);
-  string getEmbeddedDocumentLocation (string parentDocId, string nodeId);
-  NclDocument *getDocument (string id);
-  NclDocument *getEmbeddedDocument (string parendDocId, string nodeId);
+  string getDocumentLocation (const string &docId);
+  string getEmbeddedDocumentLocation (const string &parentDocId, const string &nodeId);
+  NclDocument *getDocument (const string &id);
+  NclDocument *getEmbeddedDocument (const string &parendDocId, const string &nodeId);
   vector<NclDocument *> *getDocuments ();
 
 private:
@@ -113,80 +114,81 @@ private:
   void removeDocumentBases (NclDocument *document);
 
 public:
-  NclDocument *removeDocument (string id);
-  NclDocument *removeEmbeddedDocument (string parentDocId, string nodeId);
+  NclDocument *removeDocument (const string &id);
+  NclDocument *removeEmbeddedDocument (const string &parentDocId, const string &nodeId);
 
 private:
-  NclDocument *getBaseDocument (string documentId);
-  void *compileEntity (string location, NclDocument *document,
+  NclDocument *getBaseDocument (const string &documentId);
+  void *compileEntity (const string &location, NclDocument *document,
                        void *parentObject);
 
 public:
-  LayoutRegion *addRegion (string documentId, string regionBaseId,
-                           string regionId, string xmlRegion);
+  LayoutRegion *addRegion (const string &documentId, const string &regionBaseId,
+                           const string &regionId, const string &xmlRegion);
 
-  LayoutRegion *removeRegion (string documentId, string regionBaseId,
-                              string regionId);
+  LayoutRegion *removeRegion (const string &documentId, const string &regionBaseId,
+                              const string &regionId);
 
-  RegionBase *addRegionBase (string documentId, string xmlRegionBase);
+  RegionBase *addRegionBase (const string &documentId, const string &xmlRegionBase);
 
-  RegionBase *removeRegionBase (string documentId, string regionBaseId);
+  RegionBase *removeRegionBase (const string &documentId, const string &regionBaseId);
 
-  Rule *addRule (string documentId, string xmlRule);
-  Rule *removeRule (string documentId, string ruleId);
-  RuleBase *addRuleBase (string documentId, string xmlRuleBase);
-  RuleBase *removeRuleBase (string documentId, string ruleBaseId);
-  Transition *addTransition (string documentId, string xmlTransition);
-  Transition *removeTransition (string documentId, string transitionId);
-  TransitionBase *addTransitionBase (string documentId,
-                                     string xmlTransitionBase);
+  Rule *addRule (const string &documentId, const string &xmlRule);
+  Rule *removeRule (const string &documentId, const string &ruleId);
+  RuleBase *addRuleBase (const string &documentId, const string &xmlRuleBase);
+  RuleBase *removeRuleBase (const string &documentId, const string &ruleBaseId);
+  Transition *addTransition (const string &documentId, const string &xmlTransition);
+  Transition *removeTransition (const string &documentId, const string &transitionId);
+  TransitionBase *addTransitionBase (const string &documentId,
+                                     const string &xmlTransitionBase);
 
-  TransitionBase *removeTransitionBase (string documentId,
-                                        string transitionBaseId);
+  TransitionBase *removeTransitionBase (const string &documentId,
+                                        const string &transitionBaseId);
 
-  Connector *addConnector (string documentId, string xmlConnector);
-  Connector *removeConnector (string documentId, string connectorId);
-  ConnectorBase *addConnectorBase (string documentId,
-                                   string xmlConnectorBase);
+  Connector *addConnector (const string &documentId, const string &xmlConnector);
+  Connector *removeConnector (const string &documentId, const string &connectorId);
+  ConnectorBase *addConnectorBase (const string &documentId,
+                                   const string &xmlConnectorBase);
 
-  ConnectorBase *removeConnectorBase (string documentId,
-                                      string connectorBaseId);
+  ConnectorBase *removeConnectorBase (const string &documentId,
+                                      const string &connectorBaseId);
 
-  GenericDescriptor *addDescriptor (string documentId,
-                                    string xmlDescriptor);
+  GenericDescriptor *addDescriptor (const string &documentId,
+                                    const string &xmlDescriptor);
 
-  GenericDescriptor *removeDescriptor (string documentId,
-                                       string descriptorId);
+  GenericDescriptor *removeDescriptor (const string &documentId,
+                                       const string &descriptorId);
 
-  DescriptorBase *addDescriptorBase (string documentId,
-                                     string xmlDescriptorBase);
+  DescriptorBase *addDescriptorBase (const string &documentId,
+                                     const string &xmlDescriptorBase);
 
-  DescriptorBase *removeDescriptorBase (string documentId,
-                                        string descriptorBaseId);
+  DescriptorBase *removeDescriptorBase (const string &documentId,
+                                        const string &descriptorBaseId);
 
 private:
-  Base *getBase (NclDocument *document, string baseId);
+  Base *getBase (NclDocument *document, const string &baseId);
 
 public:
-  Base *addImportBase (string documentId, string docBaseId,
-                       string xmlImportBase);
+  Base *addImportBase (const string &documentId, const string &docBaseId,
+                       const string &xmlImportBase);
 
-  Base *removeImportBase (string documentId, string docBaseId,
-                          string documentURI);
+  Base *removeImportBase (const string &documentId, const string &docBaseId,
+                          const string &documentURI);
 
-  NclDocument *addImportedDocumentBase (string documentId,
-                                        string xmlImportedDocumentBase);
+  NclDocument *addImportedDocumentBase (const string &documentId,
+                                        const string &xmlImportedDocumentBase);
 
-  NclDocument *removeImportedDocumentBase (string documentId,
-                                           string importedDocumentBaseId);
+  NclDocument *removeImportedDocumentBase (const string &documentId,
+                                           const string &importedDocumentBaseId);
 
-  NclDocument *addImportNCL (string documentId, string xmlImportNCL);
-  NclDocument *removeImportNCL (string documentId, string documentURI);
-  Node *addNode (string documentId, string compositeId, string xmlNode);
-  InterfacePoint *addInterface (string documentId, string nodeId,
-                                string xmlInterface);
+  NclDocument *addImportNCL (const string &documentId, const string &xmlImportNCL);
+  NclDocument *removeImportNCL (const string &documentId, const string &documentURI);
+  Node *addNode (const string &documentId, const string &compositeId,
+                 const string &xmlNode);
+  InterfacePoint *addInterface (const string &documentId, const string &nodeId,
+                                const string &xmlInterface);
 
-  Link *addLink (string documentId, string compositeId, string xmlLink);
+  Link *addLink (const string &documentId, const string &compositeId, const string &xmlLink);
   PrivateBase *getPrivateBase ();
 };
 

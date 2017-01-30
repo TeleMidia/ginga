@@ -80,7 +80,7 @@ private:
   bool evaluateSimpleRule (SimpleRule *rule);
 
 public:
-  virtual void update (void *arg0, void *arg1);
+  virtual void update (void *arg0, const void *arg1);
 };
 
 GINGA_FORMATTER_END

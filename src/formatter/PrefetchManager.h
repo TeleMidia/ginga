@@ -48,26 +48,26 @@ public:
   static PrefetchManager *getInstance ();
 
 private:
-  void createDirectory (string newDir);
+  void createDirectory (const string &newDir);
 
 public:
   void release ();
   void releaseContents ();
-  string createDocumentPrefetcher (string remoteDocUri);
-  string createSourcePrefetcher (string localDocUri, string srcUri);
+  string createDocumentPrefetcher (const string &remoteDocUri);
+  string createSourcePrefetcher (const string &localDocUri, const string &srcUri);
   bool hasIChannel ();
-  bool hasRemoteLocation (string localUri);
-  string getRemoteLocation (string localUri);
-  string getLocalRoot (string remoteUri);
+  bool hasRemoteLocation (const string &localUri);
+  string getRemoteLocation (const string &localUri);
+  string getLocalRoot (const string &remoteUri);
 
 private:
-  void getContent (string remoteUri, string localUri);
+  void getContent (const string &remoteUri, const string &localUri);
 
 public:
   void setSynchPrefetch (bool synch);
 
 private:
-  void scheduleContent (string remoteUri, string localUri);
+  void scheduleContent (const string &remoteUri, const string &localUri);
   void receiveCode (arg_unused (long respCode)){};
   void receiveDataStream (arg_unused (char *buffer),
                           arg_unused (int size)){};
@@ -75,7 +75,7 @@ private:
   void downloadCompleted (arg_unused (const char *localUri)){};
 
 public:
-  void getScheduledContent (string clientUri);
+  void getScheduledContent (const string &clientUri);
   void getScheduledContents ();
 };
 

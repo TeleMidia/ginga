@@ -88,7 +88,7 @@ FormatterConverter::~FormatterConverter ()
 }
 
 void
-FormatterConverter::executionObjectReleased (string objectId)
+FormatterConverter::executionObjectReleased (const string &objectId)
 {
   map<string, NclExecutionObject *>::iterator i;
   set<NclExecutionObject *>::iterator j;
@@ -158,7 +158,7 @@ FormatterConverter::setHandlingStatus (bool handling)
 }
 
 NclExecutionObject *
-FormatterConverter::getObjectFromNodeId (string id)
+FormatterConverter::getObjectFromNodeId (const string &id)
 {
   NodeEntity *dataObject;
   NclExecutionObject *expectedObject;
@@ -643,7 +643,7 @@ FormatterConverter::getParentExecutionObject (
 NclFormatterEvent *
 FormatterConverter::getEvent (NclExecutionObject *executionObject,
                               InterfacePoint *interfacePoint,
-                              int ncmEventType, string key)
+                              int ncmEventType, const string &key)
 {
   string id;
   NclFormatterEvent *event;
@@ -826,7 +826,7 @@ FormatterConverter::createMultichannelObject (
 
 NclExecutionObject *
 FormatterConverter::createExecutionObject (
-    string id, NclNodeNesting *perspective,
+    const string &id, NclNodeNesting *perspective,
     NclCascadingDescriptor *descriptor, int depthLevel)
 {
   NodeEntity *nodeEntity;
@@ -974,7 +974,7 @@ FormatterConverter::createExecutionObject (
 }
 
 bool
-FormatterConverter::hasDescriptorPropName (string name)
+FormatterConverter::hasDescriptorPropName (const string &name)
 {
   // TODO: create a set with reserved words
   if (name == "left" || name == "top" || name == "width" || name == "height"

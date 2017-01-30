@@ -44,7 +44,7 @@ public:
 
 protected:
   void createPlayer ();
-  bool setPropertyValue (NclAttributionEvent *event, string value);
+  bool setPropertyValue (NclAttributionEvent *event, const string &value);
 };
 
 GINGA_FORMATTER_END

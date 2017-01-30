@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 NclApplicationExecutionObject::NclApplicationExecutionObject (
-    string id, Node *node, bool handling,
+    const string &id, Node *node, bool handling,
     INclLinkActionListener *seListener)
     : NclExecutionObject (id, node, handling, seListener)
 {
@@ -29,7 +29,7 @@ NclApplicationExecutionObject::NclApplicationExecutionObject (
 }
 
 NclApplicationExecutionObject::NclApplicationExecutionObject (
-    string id, Node *node, GenericDescriptor *descriptor, bool handling,
+    const string &id, Node *node, GenericDescriptor *descriptor, bool handling,
     INclLinkActionListener *seListener)
     : NclExecutionObject (id, node, descriptor, handling, seListener)
 {
@@ -37,7 +37,7 @@ NclApplicationExecutionObject::NclApplicationExecutionObject (
 }
 
 NclApplicationExecutionObject::NclApplicationExecutionObject (
-    string id, Node *node, NclCascadingDescriptor *descriptor,
+    const string &id, Node *node, NclCascadingDescriptor *descriptor,
     bool handling, INclLinkActionListener *seListener)
     : NclExecutionObject (id, node, descriptor, handling, seListener)
 {

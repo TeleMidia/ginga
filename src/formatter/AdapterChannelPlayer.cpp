@@ -110,7 +110,7 @@ AdapterChannelPlayer::createPlayer ()
 
 bool
 AdapterChannelPlayer::setPropertyValue (NclAttributionEvent *event,
-                                        string value)
+                                        const string &value)
 {
   if (value == "")
     {

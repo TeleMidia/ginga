@@ -284,7 +284,7 @@ FormatterFocusManager::setHandlingObjects (bool isHandling)
 }
 
 NclExecutionObject *
-FormatterFocusManager::getObjectFromFocusIndex (string focusIndex)
+FormatterFocusManager::getObjectFromFocusIndex (const string &focusIndex)
 {
   map<string, set<NclExecutionObject *> *>::iterator i;
   set<NclExecutionObject *>::iterator j;
@@ -320,7 +320,7 @@ FormatterFocusManager::getObjectFromFocusIndex (string focusIndex)
 
 void
 FormatterFocusManager::insertObject (NclExecutionObject *obj,
-                                     string focusIndex)
+                                     const string &focusIndex)
 {
   string auxIndex;
   map<string, set<NclExecutionObject *> *>::iterator i;
@@ -343,7 +343,7 @@ FormatterFocusManager::insertObject (NclExecutionObject *obj,
 
 void
 FormatterFocusManager::removeObject (NclExecutionObject *obj,
-                                     string focusIndex)
+                                     const string &focusIndex)
 {
   map<string, set<NclExecutionObject *> *>::iterator i;
   set<NclExecutionObject *>::iterator j;
@@ -455,7 +455,7 @@ FormatterFocusManager::tapObject (void *executionObject)
 }
 
 void
-FormatterFocusManager::setKeyMaster (string mediaId)
+FormatterFocusManager::setKeyMaster (const string &mediaId)
 {
   NclExecutionObject *nextObject = NULL;
   NclCascadingDescriptor *nextDescriptor = NULL;
@@ -548,7 +548,7 @@ FormatterFocusManager::setKeyMaster (string mediaId)
 }
 
 void
-FormatterFocusManager::setFocus (string focusIndex)
+FormatterFocusManager::setFocus (const string &focusIndex)
 {
   NclExecutionObject *nextObject = NULL;
   NclExecutionObject *currentObject = NULL;
@@ -1158,7 +1158,7 @@ FormatterFocusManager::setMotionBoundaries (int x, int y, int w, int h)
 }
 
 void
-FormatterFocusManager::changeSettingState (string name, string act)
+FormatterFocusManager::changeSettingState (const string &name, const string &act)
 {
   set<NclExecutionObject *> *settingObjects;
   set<NclExecutionObject *>::iterator i;

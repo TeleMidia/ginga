@@ -66,10 +66,10 @@ private:
   pthread_mutex_t stlMutex;
 
 public:
-  NclCompositeExecutionObject (string id, Node *dataObject, bool handling,
+  NclCompositeExecutionObject (const string &id, Node *dataObject, bool handling,
                                INclLinkActionListener *seListener);
 
-  NclCompositeExecutionObject (string id, Node *dataObject,
+  NclCompositeExecutionObject (const string &id, Node *dataObject,
                                NclCascadingDescriptor *descriptor,
                                bool handling,
                                INclLinkActionListener *seListener);
@@ -78,15 +78,15 @@ public:
 
 protected:
   void
-  initializeCompositeExecutionObject (string id, Node *dataObject,
+  initializeCompositeExecutionObject (const string &id, Node *dataObject,
                                       NclCascadingDescriptor *descriptor);
 
 public:
   NclCompositeExecutionObject *getParentFromDataObject (Node *dataObject);
   void suspendLinkEvaluation (bool suspend);
   bool addExecutionObject (NclExecutionObject *execObj);
-  bool containsExecutionObject (string execObjId);
-  NclExecutionObject *getExecutionObject (string execObjId);
+  bool containsExecutionObject (const string &execObjId);
+  NclExecutionObject *getExecutionObject (const string &execObjId);
   map<string, NclExecutionObject *> *getExecutionObjects ();
   map<string, NclExecutionObject *> *recursivellyGetExecutionObjects ();
   int getNumExecutionObjects ();
@@ -108,7 +108,7 @@ public:
   void linkEvaluationStarted (NclFormatterCausalLink *link);
   void linkEvaluationFinished (NclFormatterCausalLink *link, bool start);
 
-  bool setPropertyValue (NclAttributionEvent *event, string value);
+  bool setPropertyValue (NclAttributionEvent *event, const string &value);
 
 private:
   void checkLinkConditions ();

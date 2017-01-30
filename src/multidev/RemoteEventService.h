@@ -41,7 +41,7 @@ public:
   virtual ~RemoteEventService ();
   static RemoteEventService *getInstance ();
   void addDeviceClass (unsigned int id);
-  void setBaseDeviceNCLPath (string base_device_ncl_path);
+  void setBaseDeviceNCLPath (const string &base_device_ncl_path);
   void addDevice (unsigned int device_class, unsigned int device_id,
                   char *addr, int srvPort, bool isLocalConnection);
   void addDocument (unsigned int device_class, char *name, char *body);
@@ -49,12 +49,13 @@ public:
   void stopDocument (unsigned int device_class, char *name);
   bool newDeviceConnected (int newDevClass, int w, int h);
   void connectedToBaseDevice (unsigned int domainAddr);
-  bool receiveRemoteContent (int remoteDevClass, string contentUri);
+  bool receiveRemoteContent (int remoteDevClass, const string &contentUri);
   bool receiveRemoteContent (int remoteDevClass, char *stream,
                              int streamSize);
-  bool receiveRemoteContentInfo (string contentId, string contentUri);
+  bool receiveRemoteContentInfo (const string &contentId,
+                                 const string &contentUri);
   bool receiveRemoteEvent (int remoteDevClass, int eventType,
-                           string eventContent);
+                           const string &eventContent);
 };
 
 GINGA_MULTIDEV_END

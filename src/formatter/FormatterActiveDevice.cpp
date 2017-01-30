@@ -206,7 +206,7 @@ FormatterActiveDevice::~FormatterActiveDevice ()
 }
 
 bool
-FormatterActiveDevice::socketSend (TCPSocket *sock, string payload)
+FormatterActiveDevice::socketSend (TCPSocket *sock, const string &payload)
 {
   char *buffer;
   int plSize;
@@ -244,7 +244,7 @@ FormatterActiveDevice::connectedToBaseDevice (unsigned int domainAddr)
 bool
 FormatterActiveDevice::receiveRemoteEvent (int remoteDevClass,
                                            int eventType,
-                                           string eventContent)
+                                           const string &eventContent)
 {
   vector<string> *args;
   if (eventType == DeviceDomain::FT_ATTRIBUTIONEVENT)
@@ -303,7 +303,7 @@ FormatterActiveDevice::receiveRemoteEvent (int remoteDevClass,
 
 bool
 FormatterActiveDevice::receiveRemoteContent (int remoteDevClass,
-                                             string contentUri)
+                                             const string &contentUri)
 {
   map<string, string>::iterator i;
 
@@ -322,8 +322,8 @@ FormatterActiveDevice::receiveRemoteContent (int remoteDevClass,
 }
 
 bool
-FormatterActiveDevice::receiveRemoteContentInfo (string contentId,
-                                                 string contentUri)
+FormatterActiveDevice::receiveRemoteContentInfo (const string &contentId,
+                                                 const string &contentUri)
 {
   (*contentsInfo)[contentUri] = contentId;
   return true;
@@ -352,7 +352,7 @@ FormatterActiveDevice::userEventReceived (SDLInputEvent *ev)
 }
 
 bool
-FormatterActiveDevice::openDocument (string contentUri)
+FormatterActiveDevice::openDocument (const string &contentUri)
 {
   if (formatter == NULL)
     {
@@ -426,37 +426,37 @@ FormatterActiveDevice::createNCLPlayer ()
 
 /* translates the command code from string to the const int values */
 int
-FormatterActiveDevice::getCommandCode (string *com)
+FormatterActiveDevice::getCommandCode (const string &com)
 {
-  if (com->compare ("ADD") == 0)
+  if (com.compare ("ADD") == 0)
     {
       return FormatterActiveDevice::ADD_DOCUMENT;
     }
-  else if (com->compare ("REMOVE") == 0)
+  else if (com.compare ("REMOVE") == 0)
     {
       return FormatterActiveDevice::REMOVE_DOCUMENT;
     }
-  else if (com->compare ("START") == 0)
+  else if (com.compare ("START") == 0)
     {
       return FormatterActiveDevice::START_DOCUMENT;
     }
-  else if (com->compare ("STOP") == 0)
+  else if (com.compare ("STOP") == 0)
     {
       return FormatterActiveDevice::STOP_DOCUMENT;
     }
-  else if (com->compare ("PAUSE") == 0)
+  else if (com.compare ("PAUSE") == 0)
     {
       return FormatterActiveDevice::PAUSE_DOCUMENT;
     }
-  else if (com->compare ("RESUME") == 0)
+  else if (com.compare ("RESUME") == 0)
     {
       return FormatterActiveDevice::RESUME_DOCUMENT;
     }
-  else if (com->compare ("SET") == 0)
+  else if (com.compare ("SET") == 0)
     {
       return FormatterActiveDevice::SET_VAR;
     }
-  else if (com->compare ("SELECT") == 0)
+  else if (com.compare ("SELECT") == 0)
     {
       return FormatterActiveDevice::SELECTION;
     }
@@ -470,10 +470,11 @@ FormatterActiveDevice::getCommandCode (string *com)
  * 	  <ID> <NPT> <COMMAND> <PAYLOAD_DESC> <PAYLOAD_SIZE>\n<PAYLOAD>
  */
 bool
-FormatterActiveDevice::handleTCPCommand (arg_unused (string sid), arg_unused (string snpt),
-                                         string scommand,
-                                         string spayload_desc,
-                                         string payload)
+FormatterActiveDevice::handleTCPCommand (arg_unused (const string &sid),
+                                         arg_unused (const string &snpt),
+                                         const string &scommand,
+                                         const string &spayload_desc,
+                                         const string &payload)
 {
   bool handled = false;
   clog << "FormatterActiveDevice::handleTCPCommand scommand=" << scommand
@@ -493,7 +494,7 @@ FormatterActiveDevice::handleTCPCommand (arg_unused (string sid), arg_unused (st
   clog << "FormatterActiveDevice::handleTCPCommand zip_dump=" << zip_dump
        << endl;
 
-  int command_id = getCommandCode (&scommand);
+  int command_id = getCommandCode (scommand);
   switch (command_id)
     {
     case FormatterActiveDevice::ADD_DOCUMENT:

@@ -51,7 +51,7 @@ private:
 
 public:
   virtual ~NclLinkAction ();
-  bool instanceOf (string s);
+  bool instanceOf (const string &s);
   double getWaitDelay ();
   void setWaitDelay (double delay);
   bool hasDelay ();

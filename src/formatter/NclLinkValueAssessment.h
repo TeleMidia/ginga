@@ -28,10 +28,10 @@ protected:
   string value;
 
 public:
-  NclLinkValueAssessment (string value);
+  NclLinkValueAssessment (const string &value);
   virtual ~NclLinkValueAssessment ();
   string getComparableValue ();
-  void setComparableValue (string value);
+  void setComparableValue (const string &value);
   string getValue ();
 };
 

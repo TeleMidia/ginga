@@ -36,7 +36,7 @@ GINGA_FORMATTER_BEGIN
 
 PrefetchManager *FormatterMediator::pm = NULL;
 
-EntryEventListener::EntryEventListener (Player *player, string interfaceId)
+EntryEventListener::EntryEventListener (Player *player, const string &interfaceId)
 {
   this->player = player;
   hasStartPoint = interfaceId != "";
@@ -621,7 +621,7 @@ FormatterMediator::setCurrentDocument (const string &fName)
 }
 
 void *
-FormatterMediator::addDocument (string docLocation)
+FormatterMediator::addDocument (const string &docLocation)
 {
   NclDocument *addedDoc = NULL;
 
@@ -671,7 +671,7 @@ FormatterMediator::addDocument (string docLocation)
 }
 
 bool
-FormatterMediator::removeDocument (string documentId)
+FormatterMediator::removeDocument (const string &documentId)
 {
   NclDocument *document;
 
@@ -703,7 +703,7 @@ FormatterMediator::removeDocument (string documentId)
 }
 
 ContextNode *
-FormatterMediator::getDocumentContext (string documentId)
+FormatterMediator::getDocumentContext (const string &documentId)
 {
   NclDocument *nclDocument;
 
@@ -788,7 +788,7 @@ FormatterMediator::getPortFromEvent (NclFormatterEvent *event)
 
 vector<Port *> *
 FormatterMediator::getContextPorts (ContextNode *context,
-                                    string interfaceId)
+                                    const string &interfaceId)
 {
   int i, size;
   InterfacePoint *entryPoint;
@@ -831,7 +831,7 @@ FormatterMediator::getContextPorts (ContextNode *context,
 }
 
 vector<NclFormatterEvent *> *
-FormatterMediator::processDocument (string documentId, string interfaceId)
+FormatterMediator::processDocument (const string &documentId, const string &interfaceId)
 {
   vector<NclFormatterEvent *> *entryEvents;
   vector<Port *> *ports = NULL;
@@ -996,7 +996,7 @@ FormatterMediator::initializeSettingNodes (Node *node)
 }
 
 vector<NclFormatterEvent *> *
-FormatterMediator::getDocumentEntryEvent (string documentId)
+FormatterMediator::getDocumentEntryEvent (const string &documentId)
 {
   if (documentEntryEvents.count (documentId) != 0)
     {
@@ -1009,7 +1009,7 @@ FormatterMediator::getDocumentEntryEvent (string documentId)
 }
 
 bool
-FormatterMediator::compileDocument (string documentId)
+FormatterMediator::compileDocument (const string &documentId)
 {
   vector<NclFormatterEvent *> *entryEvents;
   map<string, NclFormatterEvent *>::iterator i;
@@ -1061,7 +1061,7 @@ FormatterMediator::compileDocument (string documentId)
 }
 
 bool
-FormatterMediator::prepareDocument (string documentId)
+FormatterMediator::prepareDocument (const string &documentId)
 {
   NclDocument *doc;
   string src, docLocation;
@@ -1148,7 +1148,7 @@ FormatterMediator::prepareDocument (string documentId)
 
 void
 FormatterMediator::solveRemoteDescriptorsUris (
-    string docLocation, vector<GenericDescriptor *> *descs,
+    const string &docLocation, vector<GenericDescriptor *> *descs,
     arg_unused (bool isRemoteDoc))
 {
   string src;
@@ -1198,7 +1198,7 @@ FormatterMediator::solveRemoteDescriptorsUris (
 }
 
 void
-FormatterMediator::solveRemoteNodesUris (string docLocation,
+FormatterMediator::solveRemoteNodesUris (const string &docLocation,
                                          vector<Node *> *nodes,
                                          bool isRemoteDoc)
 {
@@ -1265,7 +1265,7 @@ FormatterMediator::solveRemoteNodesUris (string docLocation,
 }
 
 void
-FormatterMediator::solveRemoteNclDeps (string docLocation, bool isRemoteDoc)
+FormatterMediator::solveRemoteNclDeps (const string &docLocation, bool isRemoteDoc)
 {
   string docRoot, nclDep;
   ifstream fis;
@@ -1327,7 +1327,7 @@ FormatterMediator::solveRemoteNclDeps (string docLocation, bool isRemoteDoc)
 }
 
 void
-FormatterMediator::solveRemoteLuaDeps (string docLocation, string src,
+FormatterMediator::solveRemoteLuaDeps (const string &docLocation, const string &src,
                                        bool isRemoteDoc)
 {
   string clientLuaDepsSrc, clientLuaDepsRoot, luaDep;
@@ -1374,13 +1374,13 @@ FormatterMediator::solveRemoteLuaDeps (string docLocation, string src,
 }
 
 string
-FormatterMediator::solveRemoteSourceUri (string localDocUri, string src)
+FormatterMediator::solveRemoteSourceUri (const string &localDocUri, const string &src)
 {
   return pm->createSourcePrefetcher (localDocUri, src);
 }
 
 NclFormatterEvent *
-FormatterMediator::getEntryEvent (string interfaceId,
+FormatterMediator::getEntryEvent (const string &interfaceId,
                                   vector<NclFormatterEvent *> *events)
 {
   map<Port *, NclFormatterEvent *>::iterator i;
@@ -1412,7 +1412,7 @@ FormatterMediator::getEntryEvent (string interfaceId,
 }
 
 bool
-FormatterMediator::startDocument (string documentId, string interfaceId)
+FormatterMediator::startDocument (const string &documentId, const string &interfaceId)
 {
   vector<NclFormatterEvent *> *entryEvents;
   vector<NclFormatterEvent *> filteredEvents;
@@ -1466,7 +1466,7 @@ FormatterMediator::startDocument (string documentId, string interfaceId)
 }
 
 bool
-FormatterMediator::stopDocument (string documentId)
+FormatterMediator::stopDocument (const string &documentId)
 {
   NclFormatterEvent *documentEvent;
 
@@ -1508,7 +1508,7 @@ FormatterMediator::stopDocument (string documentId)
 }
 
 bool
-FormatterMediator::pauseDocument (string documentId)
+FormatterMediator::pauseDocument (const string &documentId)
 {
   NclFormatterEvent *documentEvent;
 
@@ -1525,7 +1525,7 @@ FormatterMediator::pauseDocument (string documentId)
 }
 
 bool
-FormatterMediator::resumeDocument (string documentId)
+FormatterMediator::resumeDocument (const string &documentId)
 {
   NclFormatterEvent *documentEvent;
 
@@ -1563,7 +1563,7 @@ FormatterMediator::presentationCompleted (arg_unused (NclFormatterEvent *documen
 }
 
 bool
-FormatterMediator::nclEdit (string nclEditApi)
+FormatterMediator::nclEdit (const string &nclEditApi)
 {
   string commandTag
       = xstrchomp (nclEditApi.substr (0, nclEditApi.find_first_of (",")));
@@ -2387,170 +2387,171 @@ FormatterMediator::editingCommand (const string &commandTag,
 }
 
 LayoutRegion *
-FormatterMediator::addRegion (string documentId, string regionBaseId,
-                              string regionId, string xmlRegion)
+FormatterMediator::addRegion (const string &documentId, const string &regionBaseId,
+                              const string &regionId, const string &xmlRegion)
 {
   return privateBaseManager->addRegion (data->baseId, documentId,
                                         regionBaseId, regionId, xmlRegion);
 }
 
 LayoutRegion *
-FormatterMediator::removeRegion (string documentId, string regionBaseId,
-                                 string regionId)
+FormatterMediator::removeRegion (const string &documentId, const string &regionBaseId,
+                                 const string &regionId)
 {
   return privateBaseManager->removeRegion (data->baseId, documentId,
                                            regionBaseId, regionId);
 }
 
 RegionBase *
-FormatterMediator::addRegionBase (string documentId, string xmlRegionBase)
+FormatterMediator::addRegionBase (const string &documentId, const string &xmlRegionBase)
 {
   return privateBaseManager->addRegionBase (data->baseId, documentId,
                                             xmlRegionBase);
 }
 
 RegionBase *
-FormatterMediator::removeRegionBase (string documentId, string regionBaseId)
+FormatterMediator::removeRegionBase (const string &documentId, const string &regionBaseId)
 {
   return privateBaseManager->removeRegionBase (data->baseId, documentId,
                                                regionBaseId);
 }
 
 Rule *
-FormatterMediator::addRule (string documentId, string xmlRule)
+FormatterMediator::addRule (const string &documentId, const string &xmlRule)
 {
   return privateBaseManager->addRule (data->baseId, documentId, xmlRule);
 }
 
 Rule *
-FormatterMediator::removeRule (string documentId, string ruleId)
+FormatterMediator::removeRule (const string &documentId, const string &ruleId)
 {
   return privateBaseManager->removeRule (data->baseId, documentId, ruleId);
 }
 
 RuleBase *
-FormatterMediator::addRuleBase (string documentId, string xmlRuleBase)
+FormatterMediator::addRuleBase (const string &documentId, const string &xmlRuleBase)
 {
   return privateBaseManager->addRuleBase (data->baseId, documentId,
                                           xmlRuleBase);
 }
 
 RuleBase *
-FormatterMediator::removeRuleBase (string documentId, string ruleBaseId)
+FormatterMediator::removeRuleBase (const string &documentId, const string &ruleBaseId)
 {
   return privateBaseManager->removeRuleBase (data->baseId, documentId,
                                              ruleBaseId);
 }
 
 Transition *
-FormatterMediator::addTransition (string documentId, string xmlTransition)
+FormatterMediator::addTransition (const string &documentId, const string &xmlTransition)
 {
   return privateBaseManager->addTransition (data->baseId, documentId,
                                             xmlTransition);
 }
 
 Transition *
-FormatterMediator::removeTransition (string documentId, string transitionId)
+FormatterMediator::removeTransition (const string &documentId,
+                                     const string &transitionId)
 {
   return privateBaseManager->removeTransition (data->baseId, documentId,
                                                transitionId);
 }
 
 TransitionBase *
-FormatterMediator::addTransitionBase (string documentId,
-                                      string xmlTransitionBase)
+FormatterMediator::addTransitionBase (const string &documentId,
+                                      const string &xmlTransitionBase)
 {
   return privateBaseManager->addTransitionBase (data->baseId, documentId,
                                                 xmlTransitionBase);
 }
 
 TransitionBase *
-FormatterMediator::removeTransitionBase (string documentId,
-                                         string transitionBaseId)
+FormatterMediator::removeTransitionBase (const string &documentId,
+                                         const string &transitionBaseId)
 {
   return privateBaseManager->removeTransitionBase (data->baseId, documentId,
                                                    transitionBaseId);
 }
 
 Connector *
-FormatterMediator::addConnector (string documentId, string xmlConnector)
+FormatterMediator::addConnector (const string &documentId, const string &xmlConnector)
 {
   return privateBaseManager->addConnector (data->baseId, documentId,
                                            xmlConnector);
 }
 
 Connector *
-FormatterMediator::removeConnector (string documentId, string connectorId)
+FormatterMediator::removeConnector (const string &documentId, const string &connectorId)
 {
   return privateBaseManager->removeConnector (data->baseId, documentId,
                                               connectorId);
 }
 
 ConnectorBase *
-FormatterMediator::addConnectorBase (string documentId,
-                                     string xmlConnectorBase)
+FormatterMediator::addConnectorBase (const string &documentId,
+                                     const string &xmlConnectorBase)
 {
   return privateBaseManager->addConnectorBase (data->baseId, documentId,
                                                xmlConnectorBase);
 }
 
 ConnectorBase *
-FormatterMediator::removeConnectorBase (string documentId,
-                                        string connectorBaseId)
+FormatterMediator::removeConnectorBase (const string &documentId,
+                                        const string &connectorBaseId)
 {
   return privateBaseManager->removeConnectorBase (data->baseId, documentId,
                                                   connectorBaseId);
 }
 
 GenericDescriptor *
-FormatterMediator::addDescriptor (string documentId, string xmlDescriptor)
+FormatterMediator::addDescriptor (const string &documentId, const string &xmlDescriptor)
 {
   return privateBaseManager->addDescriptor (data->baseId, documentId,
                                             xmlDescriptor);
 }
 
 GenericDescriptor *
-FormatterMediator::removeDescriptor (string documentId, string descriptorId)
+FormatterMediator::removeDescriptor (const string &documentId, const string &descriptorId)
 {
   return privateBaseManager->removeDescriptor (data->baseId, documentId,
                                                descriptorId);
 }
 
 DescriptorBase *
-FormatterMediator::addDescriptorBase (string documentId,
-                                      string xmlDescriptorBase)
+FormatterMediator::addDescriptorBase (const string &documentId,
+                                      const string &xmlDescriptorBase)
 {
   return privateBaseManager->addDescriptorBase (data->baseId, documentId,
                                                 xmlDescriptorBase);
 }
 
 DescriptorBase *
-FormatterMediator::removeDescriptorBase (string documentId,
-                                         string descriptorBaseId)
+FormatterMediator::removeDescriptorBase (const string &documentId,
+                                         const string &descriptorBaseId)
 {
   return privateBaseManager->removeDescriptorBase (data->baseId, documentId,
                                                    descriptorBaseId);
 }
 
 Base *
-FormatterMediator::addImportBase (string documentId, string docBaseId,
-                                  string xmlImportBase)
+FormatterMediator::addImportBase (const string &documentId, const string &docBaseId,
+                                  const string &xmlImportBase)
 {
   return privateBaseManager->addImportBase (data->baseId, documentId,
                                             docBaseId, xmlImportBase);
 }
 
 Base *
-FormatterMediator::removeImportBase (string documentId, string docBaseId,
-                                     string documentURI)
+FormatterMediator::removeImportBase (const string &documentId, const string &docBaseId,
+                                     const string &documentURI)
 {
   return privateBaseManager->removeImportBase (data->baseId, documentId,
                                                docBaseId, documentURI);
 }
 
 NclDocument *
-FormatterMediator::addImportedDocumentBase (string documentId,
-                                            string xmlImportedDocumentBase)
+FormatterMediator::addImportedDocumentBase (const string &documentId,
+                                            const string &xmlImportedDocumentBase)
 {
   return privateBaseManager->addImportedDocumentBase (
       data->baseId, documentId, xmlImportedDocumentBase);
@@ -2558,21 +2559,21 @@ FormatterMediator::addImportedDocumentBase (string documentId,
 
 NclDocument *
 FormatterMediator::removeImportedDocumentBase (
-    string documentId, string importedDocumentBaseId)
+    const string &documentId, const string &importedDocumentBaseId)
 {
   return privateBaseManager->removeImportedDocumentBase (
       data->baseId, documentId, importedDocumentBaseId);
 }
 
 NclDocument *
-FormatterMediator::addImportNCL (string documentId, string xmlImportNCL)
+FormatterMediator::addImportNCL (const string &documentId, const string &xmlImportNCL)
 {
   return privateBaseManager->addImportNCL (data->baseId, documentId,
                                            xmlImportNCL);
 }
 
 NclDocument *
-FormatterMediator::removeImportNCL (string documentId, string documentURI)
+FormatterMediator::removeImportNCL (const string &documentId, const string &documentURI)
 {
   return privateBaseManager->removeImportNCL (data->baseId, documentId,
                                               documentURI);
@@ -2651,8 +2652,8 @@ FormatterMediator::processInsertedComposition (CompositeNode *composition)
 }
 
 Node *
-FormatterMediator::addNode (string documentId, string compositeId,
-                            string xmlNode)
+FormatterMediator::addNode (const string &documentId, const string &compositeId,
+                            const string &xmlNode)
 {
   Node *node;
 
@@ -2678,8 +2679,8 @@ FormatterMediator::addNode (string documentId, string compositeId,
 }
 
 Node *
-FormatterMediator::removeNode (string documentId, string compositeId,
-                               string nodeId)
+FormatterMediator::removeNode (const string &documentId, const string &compositeId,
+                               const string &nodeId)
 {
   NclDocument *document;
 
@@ -2792,8 +2793,8 @@ FormatterMediator::removeNode (string documentId, string compositeId,
 }
 
 InterfacePoint *
-FormatterMediator::addInterface (string documentId, string nodeId,
-                                 string xmlInterface)
+FormatterMediator::addInterface (const string &documentId, const string &nodeId,
+                                 const string &xmlInterface)
 {
   return privateBaseManager->addInterface (data->baseId, documentId, nodeId,
                                            xmlInterface);
@@ -2951,8 +2952,8 @@ FormatterMediator::removeInterface (Node *node,
 }
 
 InterfacePoint *
-FormatterMediator::removeInterface (string documentId, string nodeId,
-                                    string interfaceId)
+FormatterMediator::removeInterface (const string &documentId, const string &nodeId,
+                                    const string &interfaceId)
 {
   NclDocument *document;
   Node *node;
@@ -2991,8 +2992,8 @@ FormatterMediator::removeInterface (string documentId, string nodeId,
 }
 
 Link *
-FormatterMediator::addLink (string documentId, string compositeId,
-                            string xmlLink)
+FormatterMediator::addLink (const string &documentId, const string &compositeId,
+                            const string &xmlLink)
 {
   NclFormatterCausalLink *fLink;
   AdapterFormatterPlayer *player;
@@ -3078,8 +3079,8 @@ FormatterMediator::removeLink (ContextNode *composition, Link *ncmLink)
 }
 
 Link *
-FormatterMediator::removeLink (string documentId, string compositeId,
-                               string linkId)
+FormatterMediator::removeLink (const string &documentId, const string &compositeId,
+                               const string &linkId)
 {
   NclDocument *document;
   Node *node;
@@ -3114,8 +3115,8 @@ FormatterMediator::removeLink (string documentId, string compositeId,
 }
 
 bool
-FormatterMediator::setPropertyValue (string documentId, string nodeId,
-                                     string propertyId, string value)
+FormatterMediator::setPropertyValue (const string &documentId, const string &nodeId,
+                                     const string &propertyId, const string &value)
 {
   NclDocument *document;
   Node *node;
@@ -3322,7 +3323,7 @@ FormatterMediator::resume ()
 }
 
 string
-FormatterMediator::getPropertyValue (string const &name)
+FormatterMediator::getPropertyValue (const string &name)
 {
   map<Port *, NclFormatterEvent *>::iterator i;
   NclFormatterEvent *portEvent = NULL;
@@ -3727,7 +3728,7 @@ FormatterMediator::getDepUriFromNode (vector<string> *uris, Node *node,
 }
 
 string
-FormatterMediator::getBaseUri (string baseA, string baseB)
+FormatterMediator::getBaseUri (const string &baseA, const string &baseB)
 {
   string base = "";
 

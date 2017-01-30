@@ -105,10 +105,10 @@ public:
   FormatterConverter (RuleAdapter *ruleAdapter);
   virtual ~FormatterConverter ();
 
-  void executionObjectReleased (string objectId);
+  void executionObjectReleased (const string &objectId);
   set<NclExecutionObject *> *getRunningObjects ();
   void setHandlingStatus (bool hanling);
-  NclExecutionObject *getObjectFromNodeId (string id);
+  NclExecutionObject *getObjectFromNodeId (const string &id);
 
   void setScheduler (void *scheduler);
   void setLinkActionListener (INclLinkActionListener *actionListener);
@@ -149,7 +149,7 @@ private:
 public:
   NclFormatterEvent *getEvent (NclExecutionObject *executionObject,
                                InterfacePoint *interfacePoint,
-                               int ncmEventType, string key);
+                               int ncmEventType, const string &key);
 
 private:
   void
@@ -157,11 +157,11 @@ private:
                             int depthLevel);
 
   NclExecutionObject *
-  createExecutionObject (string id, NclNodeNesting *perspective,
+  createExecutionObject (const string &id, NclNodeNesting *perspective,
                          NclCascadingDescriptor *descriptor,
                          int depthLevel);
 
-  static bool hasDescriptorPropName (string name);
+  static bool hasDescriptorPropName (const string &name);
 
   static Descriptor *createDummyDescriptor (Node *node);
   static NclCascadingDescriptor *

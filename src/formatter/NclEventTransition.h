@@ -44,7 +44,7 @@ public:
   bool equals (NclEventTransition *object);
   NclPresentationEvent *getEvent ();
   double getTime ();
-  bool instanceOf (string s);
+  bool instanceOf (const string &s);
 };
 
 GINGA_FORMATTER_END

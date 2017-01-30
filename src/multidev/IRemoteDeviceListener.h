@@ -29,15 +29,16 @@ public:
   virtual bool newDeviceConnected (int newDevClass, int w, int h) = 0;
   virtual void connectedToBaseDevice (unsigned int domainAddr) = 0;
   virtual bool receiveRemoteEvent (int remoteDevClass, int eventType,
-                                   string eventContent)
+                                   const string &eventContent)
       = 0;
-  virtual bool receiveRemoteContent (int remoteDevClass, string contentUri)
+  virtual bool receiveRemoteContent (int remoteDevClass,
+                                     const string &contentUri)
       = 0;
   virtual bool receiveRemoteContent (int remoteDevClass, char *stream,
                                      int streamSize)
       = 0;
-  virtual bool receiveRemoteContentInfo (string contentId,
-                                         string contentUri)
+  virtual bool receiveRemoteContentInfo (const string &contentId,
+                                         const string &contentUri)
       = 0;
 };
 

@@ -31,15 +31,15 @@ private:
   pthread_mutex_t eventsMutex;
 
 public:
-  NclApplicationExecutionObject (string id, Node *node, bool handling,
+  NclApplicationExecutionObject (const string &id, Node *node, bool handling,
                                  INclLinkActionListener *seListener);
 
-  NclApplicationExecutionObject (string id, Node *node,
+  NclApplicationExecutionObject (const string &id, Node *node,
                                  GenericDescriptor *descriptor,
                                  bool handling,
                                  INclLinkActionListener *seListener);
 
-  NclApplicationExecutionObject (string id, Node *node,
+  NclApplicationExecutionObject (const string &id, Node *node,
                                  NclCascadingDescriptor *descriptor,
                                  bool handling,
                                  INclLinkActionListener *seListener);

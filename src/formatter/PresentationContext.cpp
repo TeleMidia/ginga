@@ -52,7 +52,7 @@ PresentationContext::~PresentationContext ()
 }
 
 void
-PresentationContext::setPropertyValue (string property, string value)
+PresentationContext::setPropertyValue (const string &property, const string &value)
 {
   string oldValue = "";
   map<string, string>::iterator i;
@@ -95,7 +95,7 @@ PresentationContext::setPropertyValue (string property, string value)
 }
 
 void
-PresentationContext::incPropertyValue (string propertyName)
+PresentationContext::incPropertyValue (const string &propertyName)
 {
   string oldValue = "", newValue = "";
   map<string, string>::iterator i;
@@ -120,7 +120,7 @@ PresentationContext::incPropertyValue (string propertyName)
 }
 
 void
-PresentationContext::decPropertyValue (string propertyName)
+PresentationContext::decPropertyValue (const string &propertyName)
 {
   string oldValue = "", newValue = "";
   map<string, string>::iterator i;
@@ -158,7 +158,7 @@ PresentationContext::getPropertyNames ()
 }
 
 string
-PresentationContext::getPropertyValue (string attributeId)
+PresentationContext::getPropertyValue (const string &attributeId)
 {
   string propValue;
 

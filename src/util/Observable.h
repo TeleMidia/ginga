@@ -70,7 +70,7 @@ public:
   };
 
   virtual void
-  notifyObservers (void *object)
+  notifyObservers (const void *object)
   {
     set<Observer *>::iterator i;
 

@@ -84,7 +84,7 @@ protected:
   void initializeCascadingDescriptor ();
 
 public:
-  bool instanceOf (string s);
+  bool instanceOf (const string &s);
   string getId ();
   bool isLastDescriptor (GenericDescriptor *descriptor);
   void cascade (GenericDescriptor *preferredDescriptor);
@@ -99,7 +99,8 @@ public:
   NclFormatterRegion *getFormatterRegion ();
 
 private:
-  void updateRegion (void *formatterLayout, string name, string value);
+  void updateRegion (void *formatterLayout, const string &name,
+                     const string &value);
 
   void createDummyRegion (void *formatterLayout, void *executionObject);
   void createDummyRegion (void *formatterLayout);
@@ -108,7 +109,7 @@ public:
   void setFormatterLayout (void *formatterLayout);
   long getRepetitions ();
   vector<Parameter *> *getParameters ();
-  string getParameterValue (string paramName);
+  string getParameterValue (const string &paramName);
   vector<GenericDescriptor *> *getNcmDescriptors ();
   Color *getFocusBorderColor ();
   double getFocusBorderTransparency ();

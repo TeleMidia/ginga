@@ -29,7 +29,7 @@ using namespace ::ginga::util;
 
 GINGA_FORMATTER_BEGIN
 
-NclFormatterRegion::NclFormatterRegion (string objectId, void *descriptor,
+NclFormatterRegion::NclFormatterRegion (const string &objectId, void *descriptor,
                                         void *layoutManager)
 {
   this->layoutManager = layoutManager;
@@ -285,7 +285,7 @@ NclFormatterRegion::getZIndex ()
 }
 
 void
-NclFormatterRegion::setPlan (string plan)
+NclFormatterRegion::setPlan (const string &plan)
 {
   if (this->plan != plan)
     {
@@ -307,7 +307,7 @@ NclFormatterRegion::getPlan ()
 }
 
 void
-NclFormatterRegion::setFocusIndex (string focusIndex)
+NclFormatterRegion::setFocusIndex (const string &focusIndex)
 {
   this->focusIndex = focusIndex;
 }
@@ -328,7 +328,7 @@ NclFormatterRegion::getFocusIndex ()
 }
 
 void
-NclFormatterRegion::setMoveUp (string moveUp)
+NclFormatterRegion::setMoveUp (const string &moveUp)
 {
   this->moveUp = moveUp;
 }
@@ -349,7 +349,7 @@ NclFormatterRegion::getMoveUp ()
 }
 
 void
-NclFormatterRegion::setMoveDown (string moveDown)
+NclFormatterRegion::setMoveDown (const string &moveDown)
 {
   this->moveDown = moveDown;
 }
@@ -370,7 +370,7 @@ NclFormatterRegion::getMoveDown ()
 }
 
 void
-NclFormatterRegion::setMoveLeft (string moveLeft)
+NclFormatterRegion::setMoveLeft (const string &moveLeft)
 {
   this->moveLeft = moveLeft;
 }
@@ -391,7 +391,7 @@ NclFormatterRegion::getMoveLeft ()
 }
 
 void
-NclFormatterRegion::setMoveRight (string moveRight)
+NclFormatterRegion::setMoveRight (const string &moveRight)
 {
   this->moveRight = moveRight;
 }
@@ -478,7 +478,7 @@ NclFormatterRegion::getFocusBorderWidth ()
 }
 
 void
-NclFormatterRegion::setFocusComponentSrc (string focusComponentSrc)
+NclFormatterRegion::setFocusComponentSrc (const string &focusComponentSrc)
 {
   this->focusComponentSrc = focusComponentSrc;
 }
@@ -566,7 +566,7 @@ NclFormatterRegion::getSelBorderWidth ()
 }
 
 void
-NclFormatterRegion::setSelComponentSrc (string selComponentSrc)
+NclFormatterRegion::setSelComponentSrc (const string &selComponentSrc)
 {
   this->selComponentSrc = selComponentSrc;
 }
@@ -589,9 +589,9 @@ NclFormatterRegion::getSelComponentSrc ()
 void
 NclFormatterRegion::setFocusInfo (Color *focusBorderColor,
                                   int focusBorderWidth,
-                                  string focusComponentSrc,
+                                  const string &focusComponentSrc,
                                   Color *selBorderColor, int selBorderWidth,
-                                  string selComponentSrc)
+                                  const string &selComponentSrc)
 {
   setFocusBorderColor (focusBorderColor);
   setFocusBorderWidth (focusBorderWidth);
@@ -1874,7 +1874,7 @@ NclFormatterRegion::unlockFocusInfo ()
 }
 
 void
-NclFormatterRegion::setTransparency (string strTrans)
+NclFormatterRegion::setTransparency (const string &strTrans)
 {
   double trans;
   if (strTrans == "")
@@ -1921,10 +1921,10 @@ NclFormatterRegion::setTransparency (double transparency)
 }
 
 void
-NclFormatterRegion::setBackgroundColor (string color)
+NclFormatterRegion::setBackgroundColor (const string &c)
 {
   Color *bg = NULL;
-  color = xstrchomp (color);
+  string color = xstrchomp (c);
   if (color != "" && color != "transparent")
     bg = new Color (color, (guint8)(transparency * 255));
 
@@ -1946,7 +1946,7 @@ NclFormatterRegion::setBackgroundColor (Color *color)
 }
 
 void
-NclFormatterRegion::setChromaKey (string value)
+NclFormatterRegion::setChromaKey (const string &value)
 {
   if (value != "")
     {
@@ -1962,7 +1962,7 @@ NclFormatterRegion::setChromaKey (string value)
 }
 
 void
-NclFormatterRegion::setRgbChromaKey (string value)
+NclFormatterRegion::setRgbChromaKey (const string &value)
 {
   if (value != "")
     {
@@ -1981,7 +1981,7 @@ NclFormatterRegion::setRgbChromaKey (string value)
 }
 
 void
-NclFormatterRegion::setFit (string value)
+NclFormatterRegion::setFit (const string &value)
 {
   if (value != "")
     {
@@ -2007,7 +2007,7 @@ NclFormatterRegion::setFit (short value)
 }
 
 void
-NclFormatterRegion::setScroll (string value)
+NclFormatterRegion::setScroll (const string &value)
 {
   if (value != "")
     {

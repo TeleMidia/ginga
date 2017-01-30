@@ -99,7 +99,7 @@ AdapterFormatterPlayer::setAdapterManager (void *manager)
 }
 
 bool
-AdapterFormatterPlayer::instanceOf (string s)
+AdapterFormatterPlayer::instanceOf (const string &s)
 {
   if (!typeSet.empty ())
     {
@@ -1362,9 +1362,11 @@ AdapterFormatterPlayer::checkAnchorMonitor ()
 }
 
 void
-AdapterFormatterPlayer::printAction (string action,
+AdapterFormatterPlayer::printAction (const string &act,
                                      NclExecutionObject *object)
 {
+  string action = act;
+
   NclFormatterEvent *event;
 
   if (object->instanceOf ("NclApplicationExecutionObject"))
@@ -1387,7 +1389,7 @@ AdapterFormatterPlayer::printAction (string action,
 }
 
 void
-AdapterFormatterPlayer::printAction (string command)
+AdapterFormatterPlayer::printAction (const string &command)
 {
   // notifying GingaGUI
   // cmd means a command to an embeddor process
@@ -1716,9 +1718,10 @@ AdapterFormatterPlayer::unprepare ()
 
 bool
 AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
-                                          string value)
+                                          const string &v)
 {
   string propName;
+  string value = v;
 
   if (player == NULL || object == NULL)
     {
@@ -1851,7 +1854,7 @@ AdapterFormatterPlayer::getPropertyValue (void *event)
 }
 
 string
-AdapterFormatterPlayer::getPropertyValue (string const &name)
+AdapterFormatterPlayer::getPropertyValue (const string &name)
 {
   string value = "";
 
@@ -2044,7 +2047,7 @@ AdapterFormatterPlayer::setVisible (bool visible)
 }
 
 void
-AdapterFormatterPlayer::timeShift (string direction)
+AdapterFormatterPlayer::timeShift (const string &direction)
 {
   if (player == NULL)
     {

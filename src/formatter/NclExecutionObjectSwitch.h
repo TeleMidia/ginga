@@ -39,7 +39,7 @@ protected:
   NclExecutionObject *selectedObject;
 
 public:
-  NclExecutionObjectSwitch (string id, Node *switchNode, bool handling,
+  NclExecutionObjectSwitch (const string &id, Node *switchNode, bool handling,
                             INclLinkActionListener *seListener);
 
   virtual ~NclExecutionObjectSwitch (){};
