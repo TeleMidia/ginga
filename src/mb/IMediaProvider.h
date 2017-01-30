@@ -28,10 +28,10 @@ class IMediaProvider
 public:
   enum IMediaProviderType
   {
-    AudioProvider,
-    FontProvider,
-    ImageProvider,
-    VideoProvider,
+    AudioProviderType,
+    FontProviderType,
+    ImageProviderType,
+    VideoProviderType,
   };
 
   virtual ~IMediaProvider (){};

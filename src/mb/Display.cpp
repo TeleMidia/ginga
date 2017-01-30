@@ -24,7 +24,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLFontProvider.h"
 #include "SDLInputEvent.h"
 #include "SDLSurface.h"
-#include "SDLVideoProvider.h"
+#include "VideoProvider.h"
 #include "SDLWindow.h"
 
 GINGA_MB_BEGIN
@@ -486,7 +486,7 @@ Display::createContinuousMediaProvider (const string &uri)
 {
   IContinuousMediaProvider *prov;
 
-  prov = new SDLVideoProvider (uri);
+  prov = new VideoProvider (uri);
   g_assert_nonnull (prov);
   this->add (&this->providers, prov);
   return prov;

@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "SDLVideoProvider.h"
+#include "VideoProvider.h"
 
 
 #include "Display.h"
@@ -25,10 +25,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-SDLVideoProvider::SDLVideoProvider (string uri)
+VideoProvider::VideoProvider (string uri)
     : SDLAudioProvider (uri)
 {
-  type = VideoProvider;
+  type = VideoProviderType;
 
   win = NULL;
   hasTex = false;
@@ -39,22 +39,22 @@ SDLVideoProvider::SDLVideoProvider (string uri)
     }
 }
 
-SDLVideoProvider::~SDLVideoProvider () { hasTex = false; }
+VideoProvider::~VideoProvider () { hasTex = false; }
 
 void
-SDLVideoProvider::setLoadSymbol (string symbol)
+VideoProvider::setLoadSymbol (string symbol)
 {
   this->symbol = symbol;
 }
 
 string
-SDLVideoProvider::getLoadSymbol ()
+VideoProvider::getLoadSymbol ()
 {
   return this->symbol;
 }
 
 bool
-SDLVideoProvider::getHasVisual ()
+VideoProvider::getHasVisual ()
 {
   assert (decoder != NULL);
 
@@ -62,7 +62,7 @@ SDLVideoProvider::getHasVisual ()
 }
 
 void *
-SDLVideoProvider::getProviderContent ()
+VideoProvider::getProviderContent ()
 {
   assert (decoder != NULL);
 
@@ -70,7 +70,7 @@ SDLVideoProvider::getProviderContent ()
 }
 
 void
-SDLVideoProvider::setProviderContent (void *texture)
+VideoProvider::setProviderContent (void *texture)
 {
   assert (decoder != NULL);
   assert (texture != NULL);
@@ -80,23 +80,23 @@ SDLVideoProvider::setProviderContent (void *texture)
 }
 
 void
-SDLVideoProvider::feedBuffers ()
+VideoProvider::feedBuffers ()
 {
 }
 
 void
-SDLVideoProvider::getVideoSurfaceDescription (arg_unused (void *dsc))
+VideoProvider::getVideoSurfaceDescription (arg_unused (void *dsc))
 {
 }
 
 bool
-SDLVideoProvider::checkVideoResizeEvent (arg_unused (SDLSurface* frame))
+VideoProvider::checkVideoResizeEvent (arg_unused (SDLSurface* frame))
 {
   return false;
 }
 
 void
-SDLVideoProvider::getOriginalResolution (int *width, int *height)
+VideoProvider::getOriginalResolution (int *width, int *height)
 {
   assert (decoder != NULL);
   assert (width != NULL);
@@ -106,31 +106,31 @@ SDLVideoProvider::getOriginalResolution (int *width, int *height)
 }
 
 double
-SDLVideoProvider::getTotalMediaTime ()
+VideoProvider::getTotalMediaTime ()
 {
   return SDLAudioProvider::getTotalMediaTime ();
 }
 
 int64_t
-SDLVideoProvider::getVPts ()
+VideoProvider::getVPts ()
 {
   return SDLAudioProvider::getVPts ();
 }
 
 double
-SDLVideoProvider::getMediaTime ()
+VideoProvider::getMediaTime ()
 {
   return SDLAudioProvider::getMediaTime ();
 }
 
 void
-SDLVideoProvider::setMediaTime (double pos)
+VideoProvider::setMediaTime (double pos)
 {
   SDLAudioProvider::setMediaTime (pos);
 }
 
 void
-SDLVideoProvider::playOver (SDLSurface* surface)
+VideoProvider::playOver (SDLSurface* surface)
 {
   SDLWindow* parentId;
   SDLWindow *parent;
@@ -145,7 +145,7 @@ SDLVideoProvider::playOver (SDLSurface* surface)
 
   parent = parentId;
 
-  clog << "SDLVideoProvider::playOver parent(" << parent << ")" << endl;
+  clog << "VideoProvider::playOver parent(" << parent << ")" << endl;
   if (Ginga_Display->hasWindow (parentId))
     {
       win = parentId;
@@ -157,50 +157,50 @@ SDLVideoProvider::playOver (SDLSurface* surface)
     }
   else
     {
-      clog << "SDLVideoProvider::playOver parent(" << parent << ") ";
+      clog << "VideoProvider::playOver parent(" << parent << ") ";
       clog << "Warning! hasWindow(parent) has returned false" << endl;
     }
 }
 
 void
-SDLVideoProvider::resume (SDLSurface* surface)
+VideoProvider::resume (SDLSurface* surface)
 {
   SDLAudioProvider::resume (surface);
 }
 
 void
-SDLVideoProvider::pause ()
+VideoProvider::pause ()
 {
   SDLAudioProvider::pause ();
 }
 
 void
-SDLVideoProvider::stop ()
+VideoProvider::stop ()
 {
   SDLAudioProvider::stop ();
 }
 
 void
-SDLVideoProvider::setSoundLevel (double level)
+VideoProvider::setSoundLevel (double level)
 {
   SDLAudioProvider::setSoundLevel (level);
 }
 
 bool
-SDLVideoProvider::releaseAll ()
+VideoProvider::releaseAll ()
 {
   // TODO: release all structures
   return false;
 }
 
 void
-SDLVideoProvider::refreshDR (void *data)
+VideoProvider::refreshDR (void *data)
 {
   SDLAudioProvider::refreshDR (data);
 }
 
 bool
-SDLVideoProvider::textureCreated ()
+VideoProvider::textureCreated ()
 {
   assert (decoder != NULL);
 
