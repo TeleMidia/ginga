@@ -28,7 +28,7 @@ GINGA_DATAPROC_BEGIN
 class NCLMetadataParser
 {
 public:
-  static INCLMetadata *parse (string xmlDocument);
+  static INCLMetadata *parse (const string &xmlDocument);
   static INCLMetadata *parse (char *xmlStream, int streamSize);
 
 private:

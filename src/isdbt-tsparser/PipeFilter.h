@@ -60,8 +60,8 @@ public:
   void receiveSection (char *buf, int len, IFrontendFilter *filter);
   void receivePes (char *buf, int len, IFrontendFilter *filter);
 
-  void setSourceUri (string srcUri, bool isPipe);
-  string setDestinationUri (string dstUri);
+  void setSourceUri (const string &srcUri, bool isPipe);
+  string setDestinationUri (const string &dstUri);
 
 private:
   void run ();

@@ -39,15 +39,15 @@ private:
   void releaseIor ();
 
 public:
-  void setId (string id);
+  void setId (const string &id);
   string getId ();
-  void setKind (string kind);
+  void setKind (const string &kind);
   string getKind ();
   void setType (unsigned int type);
   unsigned int getType ();
   void setIor (DsmccIor *ior);
   DsmccIor *getIor ();
-  void setObjectInfo (string objectInfo);
+  void setObjectInfo (const string &objectInfo);
   string getObjectInfo ();
   void print ();
 };

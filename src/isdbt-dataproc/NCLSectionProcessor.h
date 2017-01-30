@@ -42,7 +42,7 @@ private:
   void clearMetadata ();
   void clearDataToProcess ();
 
-  void createDirectory (string newDir);
+  void createDirectory (const string &newDir);
   void addDataToProcess (char *stream, int streamSize);
   void processDataFile (char *stream, int streamSize);
 
@@ -55,8 +55,8 @@ public:
   INCLMetadata *getMetadata ();
 
   // creating stream
-  vector<StreamData *> *createNCLSections (string componentTag, string name,
-                                           string baseUri,
+  vector<StreamData *> *createNCLSections (const string &componentTag, const string &name,
+                                           const string &baseUri,
                                            vector<string> *files,
                                            map<int, string> *eventMap);
 };

@@ -76,7 +76,7 @@ DsmccStreamEvent::getEventData ()
 }
 
 void
-DsmccStreamEvent::setEventName (string name)
+DsmccStreamEvent::setEventName (const string &name)
 {
   this->eventName = name;
 }

@@ -29,7 +29,7 @@ public:
   virtual ~IDsmccServiceDomainListener (){};
   virtual bool applicationInfoMounted (IAIT *ait) = 0;
 
-  virtual void serviceDomainMounted (string mountPoint,
+  virtual void serviceDomainMounted (const string &mountPoint,
                                      map<string, string> *names,
                                      map<string, string> *paths)
       = 0;

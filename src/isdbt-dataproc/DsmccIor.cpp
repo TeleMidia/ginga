@@ -23,7 +23,7 @@ GINGA_DATAPROC_BEGIN
 DsmccIor::DsmccIor () {}
 
 void
-DsmccIor::setTypeId (string typeId)
+DsmccIor::setTypeId (const string &typeId)
 {
   this->typeId = typeId;
 }

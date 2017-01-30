@@ -37,7 +37,7 @@ public:
 
   // creating stream
   virtual vector<StreamData *> *
-  createNCLSections (string componentTag, string name, string baseUri,
+  createNCLSections (const string &componentTag, const string &name, const string &baseUri,
                      vector<string> *files, map<int, string> *eventMap)
       = 0;
 };

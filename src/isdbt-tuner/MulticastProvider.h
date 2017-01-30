@@ -35,7 +35,7 @@ protected:
   UDPSocket *udpSocket;
 
 public:
-  MulticastProvider (string groupAddr, int port);
+  MulticastProvider (const string &groupAddr, int port);
   ~MulticastProvider ();
   virtual void setListener (arg_unused (ITProviderListener *listener)){};
   virtual void attachFilter (arg_unused (IFrontendFilter *filter)){};
@@ -72,7 +72,7 @@ public:
     return false;
   }
   bool
-  setChannel (arg_unused (string channelValue))
+  setChannel (arg_unused (const string &channelValue))
   {
     return false;
   }

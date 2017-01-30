@@ -36,7 +36,7 @@ public:
   virtual unsigned short getLogoVersion () = 0;
   virtual void setDownloadDataId (unsigned short id) = 0;
   virtual unsigned short getDownloadDataId () = 0;
-  virtual void setName (string name) = 0;
+  virtual void setName (const string &name) = 0;
   virtual string getName () = 0;
   virtual unsigned char getNameLength () = 0;
   virtual unsigned char getDescriptorTag () = 0;

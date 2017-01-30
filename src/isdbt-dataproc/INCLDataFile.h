@@ -32,9 +32,9 @@ public:
     return ST_DATAFILE;
   };
   virtual int getId () = 0;
-  virtual void setComponentTag (string componentTag) = 0;
+  virtual void setComponentTag (const string &componentTag) = 0;
   virtual string getCopmonentTag () = 0;
-  virtual void setUri (string uri) = 0;
+  virtual void setUri (const string &uri) = 0;
   virtual string getUri () = 0;
   virtual void setSize (double size) = 0;
   virtual double getSize () = 0;

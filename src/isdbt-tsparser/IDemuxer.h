@@ -79,7 +79,7 @@ class IDemuxer : public ITunerListener
 public:
   virtual ~IDemuxer (){};
 
-  virtual string createTSUri (string tsOutputUri) = 0;
+  virtual string createTSUri (const string &tsOutputUri) = 0;
   virtual bool hasStreamType (short streamType) = 0;
   virtual void printPat () = 0;
   virtual void setNptPrinter (bool nptPrinter) = 0;

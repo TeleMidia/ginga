@@ -32,7 +32,7 @@ typedef struct
 } MetadataAndParser;
 
 INCLMetadata *
-NCLMetadataParser::parse (string xmlDocument)
+NCLMetadataParser::parse (const string &xmlDocument)
 {
   FILE *fd;
   int bytes = 1;

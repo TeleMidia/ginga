@@ -35,7 +35,7 @@ private:
 
 public:
   DsmccIor ();
-  void setTypeId (string typeId);
+  void setTypeId (const string &typeId);
   string getTypeId ();
   void setCarouselId (unsigned int carouselId);
   unsigned int getCarouselId ();

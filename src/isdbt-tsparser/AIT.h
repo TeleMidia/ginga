@@ -45,7 +45,7 @@ public:
   AIT ();
   ~AIT ();
   string getSectionName ();
-  void setSectionName (string secName);
+  void setSectionName (const string &secName);
   void setApplicationType (unsigned int type);
   void process (void *payloadBytes, unsigned int payloadSize);
   vector<IMpegDescriptor *> *copyDescriptors ();

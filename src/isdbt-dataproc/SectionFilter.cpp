@@ -71,7 +71,7 @@ SectionFilter::setListener (IFilterListener *listener)
 // Set manipulation functions.
 
 bool
-SectionFilter::checkProcessedSections (string sectionName)
+SectionFilter::checkProcessedSections (const string &sectionName)
 {
   bool checked;
 
@@ -90,7 +90,7 @@ SectionFilter::checkProcessedSections (string sectionName)
 }
 
 void
-SectionFilter::addProcessedSection (string sectionName)
+SectionFilter::addProcessedSection (const string &sectionName)
 {
   Thread::mutexLock (&stlMutex);
   processedSections.insert (sectionName);
@@ -98,7 +98,7 @@ SectionFilter::addProcessedSection (string sectionName)
 }
 
 void
-SectionFilter::removeProcessedSection (string sectionName)
+SectionFilter::removeProcessedSection (const string &sectionName)
 {
   set<string>::iterator i;
 

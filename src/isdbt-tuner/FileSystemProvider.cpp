@@ -24,7 +24,7 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
 
 GINGA_TUNER_BEGIN
 
-FileSystemProvider::FileSystemProvider (string fileName)
+FileSystemProvider::FileSystemProvider (const string &fileName)
 {
   this->fileName = fileName;
   this->fileDescriptor = NULL;
@@ -78,7 +78,7 @@ FileSystemProvider::changeChannel (arg_unused (int factor))
 }
 
 bool
-FileSystemProvider::setChannel (string channelValue)
+FileSystemProvider::setChannel (const string &channelValue)
 {
   fileName = channelValue;
   return true;

@@ -24,7 +24,7 @@ class IDsmccObjectListener
 {
 public:
   virtual ~IDsmccObjectListener (){};
-  virtual void objectMounted (string ior, string clientUri, string name)
+  virtual void objectMounted (const string &ior, const string &clientUri, const string &name)
       = 0;
 };
 
