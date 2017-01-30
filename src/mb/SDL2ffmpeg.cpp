@@ -895,15 +895,9 @@ SDL2ffmpeg::render_vp (VideoPicture *vp)
                   fmt = AV_PIX_FMT_YUV420P;
                 }
 
-              if (format != SDL_PIXELFORMAT_RGB24)
-                {
-                  clog << "SDL2ffmpeg::render_vp Warning! SDL texture has ";
-                  clog << "an invalid pixel format" << endl;
-                }
-
               ctx = sws_getCachedContext (
                   ctx, vp->width, vp->height, (AVPixelFormat)fmt, w, h,
-                  AV_PIX_FMT_RGB24, SWS_FAST_BILINEAR, 0, 0, 0);
+                  AV_PIX_FMT_ARGB, SWS_FAST_BILINEAR, 0, 0, 0);
 
               int ret = sws_scale (
                   ctx, (const uint8_t *const *)vp->src_frame->data,

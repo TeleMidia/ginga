@@ -67,14 +67,7 @@ GINGA_BEGIN_DECLS
 #include <pthread.h>
 #include <curl/curl.h>
 #include <ncluaw.h>
-
-GINGA_PRAGMA_DIAG_PUSH ()
-GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
-GINGA_PRAGMA_DIAG_IGNORE (-Wswitch-default)
-#include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_syswm.h>
-GINGA_PRAGMA_DIAG_POP ()
+#include "ginga-sdlx.h"
 
 #if WITH_ESPEAK
 # include <espeak/speak_lib.h>

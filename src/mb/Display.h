@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef SDLDEVICESCREEN_H_
-#define SDLDEVICESCREEN_H_
+#ifndef DISPLAY_H
+#define DISPLAY_H
 
 #include "ginga.h"
 
@@ -186,4 +186,4 @@ extern Display *_Ginga_Display;
 
 GINGA_MB_END
 
-#endif /*SDLDEVICESCREEN_H_*/
+#endif /* DISPLAY_H */

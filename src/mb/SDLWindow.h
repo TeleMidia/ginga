@@ -94,16 +94,20 @@ private:
   void releaseBorderColor ();
 
 public:
+// SANITY BEGIN ------------------------------------------------------------
+  double getAlpha ();
+  void setAlpha (double);
+  void setBgColor (SDL_Color);
+  SDL_Color getBgColor ();
+  SDL_Rect getRect ();
+  void setRect (SDL_Rect);
+// SANITY END --------------------------------------------------------------
+
   void addMirror (SDLWindow *window);
   bool removeMirror (SDLWindow *window);
   void setMirrorSrc (SDLWindow *mirrorSrc);
   SDLWindow *getMirrorSrc ();
 
-  void setBgColor (SDL_Color);
-  SDL_Color getBgColor ();
-
-  SDL_Rect getRect ();
-  void setRect (SDL_Rect);
 
   void setColorKey (guint8 r, guint8 g, guint8 b);
   Color *getColorKey ();
@@ -160,7 +164,7 @@ public:
   bool getFit ();
   void clearContent ();
   void setRenderedSurface (SDL_Surface *uSur);
-  void *getContent ();
+  SDL_Surface *getContent ();
   void setTexture (SDL_Texture *texture);
   SDL_Texture *getTexture (SDL_Renderer *renderer);
   bool isTextureOwner (SDL_Texture *texture);

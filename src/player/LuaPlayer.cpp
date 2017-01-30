@@ -202,7 +202,7 @@ LuaPlayer::nw_update_thread (arg_unused (void *data))
               sfc = SDL_CreateRGBSurface (0, dest->w, dest->h, 32, 0, 0, 0,
                                           0);
               assert (sfc != NULL);
-              ncluaw_paint (nw, (unsigned char *)sfc->pixels, "RGB24",
+              ncluaw_paint (nw, (unsigned char *)sfc->pixels, "ARGB32",
                             sfc->w, sfc->h, sfc->pitch);
               assert (SDL_BlitSurface (sfc, NULL, dest, NULL) == 0);
               SDL_FreeSurface (sfc);
