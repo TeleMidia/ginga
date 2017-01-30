@@ -66,7 +66,7 @@ private:
   string currentSpec;
 
 public:
-  Tuner (string network = "", string protocol = "", string address = "");
+  Tuner (const string &network = "", const string &protocol = "", const string &address = "");
   virtual ~Tuner ();
   void setLoopListener (ITunerListener *loopListener);
   bool userEventReceived (SDLInputEvent *ev);
@@ -74,15 +74,15 @@ public:
 private:
   void clearInterfaces ();
   void receiveSignal (short signalCode);
-  void initializeInterface (string niSpec);
+  void initializeInterface (const string &niSpec);
   void initializeInterfaces ();
-  void createInterface (string network, string protocol, string address);
+  void createInterface (const string &network, const string &protocol, const string &address);
 
   bool listenInterface (NetworkInterface *nInterface);
   void receiveInterface (NetworkInterface *nInterface);
 
 public:
-  void setSpec (string ni, string ch);
+  void setSpec (const string &ni, const string &ch);
   void tune ();
   NetworkInterface *getCurrentInterface ();
   void channelUp ();

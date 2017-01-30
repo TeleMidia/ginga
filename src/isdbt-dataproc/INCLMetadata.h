@@ -51,7 +51,7 @@ public:
   virtual void setTargetTotalLength (double targetSize) = 0;
   virtual bool isConsolidated () = 0;
 
-  virtual void setBaseUri (string uri) = 0;
+  virtual void setBaseUri (const string &uri) = 0;
   virtual string getBaseUri () = 0;
 
   virtual void setRootObject (INCLDataFile *rootObject) = 0;

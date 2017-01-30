@@ -35,7 +35,7 @@ private:
   map<int, INCLDataFile *> *dataFiles;
 
 public:
-  NCLMetadata (string name);
+  NCLMetadata (const string &name);
   virtual ~NCLMetadata ();
 
   string getRootUri ();
@@ -44,7 +44,7 @@ public:
   void setTargetTotalLength (double targetSize);
   bool isConsolidated ();
 
-  void setBaseUri (string uri);
+  void setBaseUri (const string &uri);
   string getBaseUri ();
 
   void setRootObject (INCLDataFile *rootObject);
@@ -70,19 +70,19 @@ private:
   void openBaseDataElement ();
   void closeBaseDataElement ();
 
-  void writeRootElement (string sId, string uri, string size,
+  void writeRootElement (const string &sId, const string &uri, const string &size,
                          string componentTag);
 
-  void writeDataElement (string sId, string uri, string size,
+  void writeDataElement (const string &sId, const string &uri, const string &size,
                          string componentTag);
 
-  void copyContent (string uri, char *stream, int fileSize);
+  void copyContent (const string &uri, char *stream, int fileSize);
 
-  StreamData *createStreamData (int structId, int structType, string uri,
+  StreamData *createStreamData (int structId, int structType, const string &uri,
                                 int fileSize);
 
 public:
-  static int getFileSize (string uri);
+  static int getFileSize (const string &uri);
 };
 
 GINGA_DATAPROC_END

@@ -36,7 +36,7 @@ public:
   short getId ();
   void setId (short id);
   string getName ();
-  void setName (string name);
+  void setName (const string &name);
   unsigned int getFrequency ();
   void setFrequency (unsigned int freq);
   bool isFullSeg ();

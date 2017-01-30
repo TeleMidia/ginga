@@ -35,7 +35,7 @@ DsmccBinding::releaseIor ()
 }
 
 void
-DsmccBinding::setId (string id)
+DsmccBinding::setId (const string &id)
 {
   this->id = id;
 }
@@ -47,7 +47,7 @@ DsmccBinding::getId ()
 }
 
 void
-DsmccBinding::setKind (string kind)
+DsmccBinding::setKind (const string &kind)
 {
   this->kind = kind;
 }
@@ -85,7 +85,7 @@ DsmccBinding::getIor ()
 }
 
 void
-DsmccBinding::setObjectInfo (string objectInfo)
+DsmccBinding::setObjectInfo (const string &objectInfo)
 {
   this->objectInfo = objectInfo;
 }

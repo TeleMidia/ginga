@@ -23,15 +23,15 @@ GINGA_DATAPROC_BEGIN
 class NCLEventDescriptor
 {
 public:
-  static string getEventId (string event);
-  static uint64_t getEventNPT (string event);
-  static string getCommandTag (string event);
-  static int getSequenceNumber (string event);
-  static bool getFinalFlag (string event);
-  static string getPrivateDataPayload (string event);
-  static bool checkFCS (string event);
+  static string getEventId (const string &event);
+  static uint64_t getEventNPT (const string &event);
+  static string getCommandTag (const string &event);
+  static int getSequenceNumber (const string &event);
+  static bool getFinalFlag (const string &event);
+  static string getPrivateDataPayload (const string &event);
+  static bool checkFCS (const string &event);
 
-  static string extractMarks (string eventParam);
+  static string extractMarks (const string &eventParam);
 };
 
 GINGA_DATAPROC_END

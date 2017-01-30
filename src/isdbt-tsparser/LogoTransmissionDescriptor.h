@@ -45,7 +45,7 @@ public:
   unsigned short getLogoVersion ();
   void setDownloadDataId (unsigned short id);
   unsigned short getDownloadDataId ();
-  void setName (string name);
+  void setName (const string &name);
   string getName ();
   unsigned int getNameLength ();
   unsigned char getDescriptorTag ();

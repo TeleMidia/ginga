@@ -29,7 +29,7 @@ class IAIT
 public:
   virtual ~IAIT (){};
   virtual string getSectionName () = 0;
-  virtual void setSectionName (string secName) = 0;
+  virtual void setSectionName (const string &secName) = 0;
   virtual void setApplicationType (unsigned int type) = 0;
   virtual void process (void *payload, unsigned int payloadSize) = 0;
   virtual vector<IMpegDescriptor *> *copyDescriptors () = 0;

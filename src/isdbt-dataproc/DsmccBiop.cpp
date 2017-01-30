@@ -119,7 +119,7 @@ DsmccBiop::getObjectInfo ()
 }
 
 void
-DsmccBiop::abortProcess (string warningText)
+DsmccBiop::abortProcess (const string &warningText)
 {
   clog << "Warning! " << warningText.c_str () << endl;
   Thread::mutexLock (&dataMutex);

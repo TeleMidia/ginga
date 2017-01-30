@@ -49,7 +49,7 @@ public:
   void setCarouselId (unsigned int objectCarouselId);
   void setModuleId (unsigned int objectModuleId);
   void setKey (unsigned int objectKey);
-  void setKind (string objectKind);
+  void setKind (const string &objectKind);
   void addBinding (DsmccBinding *binding);
   void setData (char *data);
   void setDataSize (unsigned int size);

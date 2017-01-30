@@ -120,14 +120,14 @@ PipeFilter::receivePes (arg_unused (char *buf), arg_unused (int len), arg_unused
 }
 
 void
-PipeFilter::setSourceUri (string srcUri, bool isPipe)
+PipeFilter::setSourceUri (const string &srcUri, bool isPipe)
 {
   this->srcUri = srcUri;
   this->srcIsAPipe = isPipe;
 }
 
 string
-PipeFilter::setDestinationUri (string dstUri)
+PipeFilter::setDestinationUri (const string &dstUri)
 {
   this->dstUri = SystemCompat::checkPipeName (dstUri);
 

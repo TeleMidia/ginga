@@ -61,11 +61,11 @@ public:
 
 private:
   string
-  setDestinationUri (string dstUri)
+  setDestinationUri (const string &dstUri)
   {
     return dstUri;
   };
-  void setSourceUri (arg_unused (string srcUri),
+  void setSourceUri (arg_unused (const string &srcUri),
                      arg_unused (bool isPipe)){};
   void resetHandler (SectionHandler *handler);
   void ignore (unsigned int pid);
@@ -77,9 +77,9 @@ private:
 
 public:
   void setListener (IFilterListener *listener);
-  bool checkProcessedSections (string sectionName);
-  void addProcessedSection (string sectionName);
-  void removeProcessedSection (string sectionName);
+  bool checkProcessedSections (const string &sectionName);
+  void addProcessedSection (const string &sectionName);
+  void removeProcessedSection (const string &sectionName);
   void clearProcessedSections ();
   bool checkSectionVersion (ITransportSection *section);
   void receiveTSPacket (ITSPacket *pack);

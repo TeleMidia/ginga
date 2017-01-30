@@ -24,13 +24,13 @@ using namespace ::ginga::util;
 GINGA_DATAPROC_BEGIN
 
 string
-NCLEventDescriptor::getEventId (string event)
+NCLEventDescriptor::getEventId (const string &event)
 {
   return event.substr (0, 2);
 }
 
 uint64_t
-NCLEventDescriptor::getEventNPT (string event)
+NCLEventDescriptor::getEventNPT (const string &event)
 {
   uint64_t nptRef = 0;
   char *strNpt;
@@ -51,7 +51,7 @@ NCLEventDescriptor::getEventNPT (string event)
 }
 
 string
-NCLEventDescriptor::getCommandTag (string event)
+NCLEventDescriptor::getCommandTag (const string &event)
 {
   string cmdTag = "0x" + xstrbuild ("%d", event[11] & 0xFF);
 
@@ -59,7 +59,7 @@ NCLEventDescriptor::getCommandTag (string event)
 }
 
 int
-NCLEventDescriptor::getSequenceNumber (string event)
+NCLEventDescriptor::getSequenceNumber (const string &event)
 {
   char *strSeq;
 
@@ -68,7 +68,7 @@ NCLEventDescriptor::getSequenceNumber (string event)
 }
 
 bool
-NCLEventDescriptor::getFinalFlag (string event)
+NCLEventDescriptor::getFinalFlag (const string &event)
 {
   char *strFF;
 
@@ -77,7 +77,7 @@ NCLEventDescriptor::getFinalFlag (string event)
 }
 
 string
-NCLEventDescriptor::getPrivateDataPayload (string event)
+NCLEventDescriptor::getPrivateDataPayload (const string &event)
 {
   unsigned int privateDataLength;
 
@@ -93,13 +93,13 @@ NCLEventDescriptor::getPrivateDataPayload (string event)
 }
 
 bool
-NCLEventDescriptor::checkFCS (arg_unused (string event))
+NCLEventDescriptor::checkFCS (arg_unused (const string &event))
 {
   return true;
 }
 
 string
-NCLEventDescriptor::extractMarks (string eventParam)
+NCLEventDescriptor::extractMarks (const string &eventParam)
 {
   string noMarks = xstrchomp (eventParam);
 

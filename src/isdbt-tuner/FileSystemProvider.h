@@ -38,7 +38,7 @@ protected:
   int synchBuffer (char *buff, int diff);
 
 public:
-  FileSystemProvider (string fileName);
+  FileSystemProvider (const string &fileName);
   virtual ~FileSystemProvider ();
   void setListener (ITProviderListener *listener);
   void attachFilter (arg_unused (IFrontendFilter *filter)){};
@@ -48,7 +48,7 @@ public:
   Channel *getCurrentChannel ();
   bool getSTCValue (uint64_t *stc, int *valueType);
   bool changeChannel (int factor);
-  bool setChannel (string channelValue);
+  bool setChannel (const string &channelValue);
   int createPesFilter (int pid, int pesType, bool compositeFiler);
   string getPesFilterOutput ();
   void close ();

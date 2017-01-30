@@ -36,7 +36,7 @@ protected:
   UDPSocket *udpSocket;
 
 public:
-  NetworkProvider (string address, int port, string protocol);
+  NetworkProvider (const string &address, int port, const string &protocol);
   ~NetworkProvider ();
   virtual void setListener (arg_unused (ITProviderListener *listener)){};
   virtual void attachFilter (arg_unused (IFrontendFilter *filter)){};
@@ -69,7 +69,7 @@ public:
     return false;
   }
   bool
-  setChannel (arg_unused (string channelValue))
+  setChannel (arg_unused (const string &channelValue))
   {
     return false;
   }

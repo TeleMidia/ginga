@@ -75,7 +75,7 @@ Demuxer::~Demuxer ()
 }
 
 string
-Demuxer::createTSUri (string tsOutputUri)
+Demuxer::createTSUri (const string &tsOutputUri)
 {
   outPipeUri = SystemCompat::checkPipeName (tsOutputUri);
   Thread::startNewThread (Demuxer::createNullDemuxer, this);

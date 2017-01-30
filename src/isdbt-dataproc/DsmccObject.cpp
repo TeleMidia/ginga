@@ -54,7 +54,7 @@ DsmccObject::setKey (unsigned int objectKey)
 }
 
 void
-DsmccObject::setKind (string objectKind)
+DsmccObject::setKind (const string &objectKind)
 {
   kind = objectKind;
 }
