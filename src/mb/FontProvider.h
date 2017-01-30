@@ -30,7 +30,7 @@ using namespace ::ginga::system;
 
 GINGA_MB_BEGIN
 
-class SDLFontProvider : public IFontProvider
+class FontProvider : public IFontProvider
 {
 private:
   string dfltFont;
@@ -66,8 +66,8 @@ public:
   static const short A_BOTTOM_LEFT;
   static const short A_BOTTOM_RIGHT;
 
-  SDLFontProvider (const char *fontUri, int heightInPixel);
-  virtual ~SDLFontProvider ();
+  FontProvider (const char *fontUri, int heightInPixel);
+  virtual ~FontProvider ();
 
 private:
   void releaseFonts ();

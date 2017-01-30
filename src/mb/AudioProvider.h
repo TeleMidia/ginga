@@ -24,7 +24,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-class SDLAudioProvider : public IContinuousMediaProvider
+class AudioProvider : public IContinuousMediaProvider
 {
 protected:
   string symbol;
@@ -33,8 +33,8 @@ protected:
   SDL2ffmpeg *decoder;
 
 public:
-  SDLAudioProvider (string uri);
-  virtual ~SDLAudioProvider ();
+  AudioProvider (string uri);
+  virtual ~AudioProvider ();
   virtual bool
   getHasVisual ()
   {
