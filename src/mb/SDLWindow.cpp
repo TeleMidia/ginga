@@ -218,16 +218,29 @@ SDLWindow::getMirrorSrc ()
   return mirrorSrc;
 }
 
-void
-SDLWindow::setBgColor (SDL_Color c)
+// SANITY BEGIN ------------------------------------------------------------
+double
+SDLWindow::getAlpha ()
 {
-  this->bgColor = c;
+  return (double)(255 - this->transparencyValue) / 255;
+}
+
+void
+SDLWindow::setAlpha (double a)
+{
+  this->transparencyValue = (guint8)(255 - (255 * a));
 }
 
 SDL_Color
 SDLWindow::getBgColor ()
 {
   return this->bgColor;
+}
+
+void
+SDLWindow::setBgColor (SDL_Color c)
+{
+  this->bgColor = c;
 }
 
 SDL_Rect
@@ -241,6 +254,7 @@ SDLWindow::setRect (SDL_Rect r)
 {
   this->rect = r;
 }
+// SANITY END --------------------------------------------------------------
 
 void
 SDLWindow::setColorKey (guint8 r, guint8 g, guint8 b)
@@ -497,7 +511,7 @@ SDLWindow::unprotectedValidate ()
   if (winISur != 0)
     {
       winISur->flip ();
-      curSur = (SDL_Surface *)(winISur->getContent ());
+      curSur = winISur->getContent ();
       textureUpdate = true;
     }
   else if (childSurface != NULL)
@@ -577,7 +591,7 @@ SDLWindow::setRenderedSurface (SDL_Surface *uSur)
   unlockSurface ();
 }
 
-void *
+SDL_Surface *
 SDLWindow::getContent ()
 {
   return curSur;
@@ -679,7 +693,7 @@ SDLWindow::renderFrom (SDLSurface *surface)
   SDL_Surface *contentSurface;
 
   Thread::mutexLock (&rMutex);
-  contentSurface = (SDL_Surface *)surface->getContent ();
+  contentSurface = surface->getContent ();
   if (contentSurface == NULL)
     {
       clog << "SDLWindow::renderFrom(" << this;
@@ -699,7 +713,7 @@ SDLWindow::renderFrom (SDLSurface *surface)
       winISur->blit (0, 0, surface);
       winISur->flip ();
 
-      curSur = (SDL_Surface *)winISur->getContent ();
+      curSur = winISur->getContent ();
       textureUpdate = true;
     }
   else

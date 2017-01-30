@@ -231,15 +231,14 @@ Display::redraw ()
   this->windows = g_list_sort (this->windows, win_cmp_z);
   for (l = this->windows; l != NULL; l = l->next)
     {
-      SDL_Texture *texture;
       SDLWindow *win;
       SDLWindow *mir;
+      SDL_Texture *texture;
 
       SDL_Rect rect;
       SDL_Color color;
       guint8 alpha;
       int width;
-      int status;
 
       win = (SDLWindow *) l->data;
       g_assert_nonnull (win);
@@ -257,32 +256,29 @@ Display::redraw ()
       // Draw background color.
       rect = win->getRect ();
       color = win->getBgColor ();
-      status = SDL_SetRenderDrawColor (this->renderer,
-                                       color.r, color.g, color.b,
-                                       (guint8)(255 - color.a));
-      g_assert (status == 0);
-      status = SDL_RenderFillRect (this->renderer, &rect);
-      g_assert (status == 0);
+      SDLx_SetRenderDrawBlendMode (this->renderer, SDL_BLENDMODE_BLEND);
+      SDLx_SetRenderDrawColor (this->renderer, color.r, color.g, color.b,
+                               color.a);
+      SDLx_RenderFillRect (this->renderer, &rect);
 
-      // Draw texture.
-      alpha = win->getTransparencyValue ();
-      status = SDL_SetTextureAlphaMod (texture, (guint8)(255 - alpha));
-      g_assert (status == 0);
+      // Create and draw texture.
+      // texture = SDL_CreateTextureFromSurface (this->renderer, surface);
+      // texture = win->getTexture (this->renderer);
+      // g_assert_nonnull (texture);
 
-      status = SDL_RenderCopy (this->renderer, texture, NULL, &rect);
-      g_assert (status == 0);
+      alpha = (guint8)(win->getAlpha () * 255);
+      SDLx_SetTextureAlphaMod (texture, alpha);
+      SDLx_RenderCopy (this->renderer, texture, NULL, &rect);
 
       // Draw border.
       win->getBorder (&color, &width);
       if (width > 0)
         continue;               // nothing to do
 
-      status = SDL_SetRenderDrawColor (this->renderer,
-                                       color.r, color.g, color.b,
-                                       (guint8)(255 - alpha));
-      g_assert (status == 0);
-      status = SDL_RenderDrawRect (this->renderer, &rect);
-      g_assert (status == 0);
+      SDLx_SetRenderDrawBlendMode (this->renderer, SDL_BLENDMODE_BLEND);
+      SDLx_SetRenderDrawColor (this->renderer, color.r, color.g, color.b,
+                               color.a);
+      SDLx_RenderDrawRect (this->renderer, &rect);
     }
   SDL_RenderPresent (this->renderer);
 
@@ -1114,20 +1110,18 @@ Display::createTextureFromSurface (SDL_Renderer *renderer,
 
   if (Display::hasUnderlyingSurface (surface))
     {
+      g_assert_nonnull (surface);
       texture = SDL_CreateTextureFromSurface (renderer, surface);
-      if (texture == NULL)
+      if (unlikely (texture == NULL))
         {
-          clog << "Display::createTextureFromSurface Warning! ";
-          clog << "Couldn't create texture: " << SDL_GetError ();
-          clog << endl;
+          g_error ("cannot create texture for surface %p: %s",
+                   surface, SDL_GetError ());
         }
-      else
-        {
-          uTexPool.insert (texture);
+      g_assert_nonnull (texture);
+      uTexPool.insert (texture);
 
-          /* allowing alpha */
-          SDL_SetTextureBlendMode (texture, SDL_BLENDMODE_BLEND);
-        }
+      /* allowing alpha */
+      g_assert (SDL_SetTextureBlendMode (texture, SDL_BLENDMODE_BLEND) == 0);
     }
 
   Thread::mutexUnlock (&surMutex);
@@ -1143,14 +1137,14 @@ Display::createTexture (SDL_Renderer *renderer, int w, int h)
 
   lockSDL ();
 
-  texture = SDL_CreateTexture (renderer, SDL_PIXELFORMAT_RGB24,
+  texture = SDL_CreateTexture (renderer, SDL_PIXELFORMAT_ARGB32,
                                SDL_TEXTUREACCESS_STREAMING, w, h);
 
   // w > maxW || h > maxH || format is not supported
   assert (texture != NULL);
 
   /* allowing alpha */
-  SDL_SetTextureBlendMode (texture, SDL_BLENDMODE_BLEND);
+  g_assert (SDL_SetTextureBlendMode (texture, SDL_BLENDMODE_BLEND) == 0);
 
   uTexPool.insert (texture);
 
@@ -1216,7 +1210,7 @@ Display::createUnderlyingSurface (int width, int height)
 
   lockSDL ();
 
-  SDL_PixelFormatEnumToMasks (SDL_PIXELFORMAT_RGB24, &bpp, &rmask, &gmask, &bmask,
+  SDL_PixelFormatEnumToMasks (SDL_PIXELFORMAT_ARGB32, &bpp, &rmask, &gmask, &bmask,
                               &amask);
 
   newUSur = SDL_CreateRGBSurface (0, width, height, bpp, rmask, gmask,
@@ -1262,7 +1256,7 @@ Display::createUnderlyingSurfaceFromTexture (SDL_Texture *texture)
           locked = false;
         }
 
-      SDL_PixelFormatEnumToMasks (SDL_PIXELFORMAT_RGB24, &bpp, &rmask, &gmask,
+      SDL_PixelFormatEnumToMasks (SDL_PIXELFORMAT_ARGB32, &bpp, &rmask, &gmask,
                                   &bmask, &amask);
 
       uSur = SDL_CreateRGBSurfaceFrom (pixels, w, h, bpp, tpitch[0], rmask,
