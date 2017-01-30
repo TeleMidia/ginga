@@ -85,7 +85,7 @@ RemoteDeviceManager::setDeviceDomain (DeviceDomain *domain)
 
 void
 RemoteDeviceManager::setDeviceInfo (arg_unused (int deviceClass), int width, int height,
-                                    string base_device_ncl_path)
+                                    const string &base_device_ncl_path)
 {
   if (domainService != NULL)
     {
@@ -133,7 +133,7 @@ RemoteDeviceManager::postEvent (int devClass, int eventType, char *event,
 }
 
 bool
-RemoteDeviceManager::postMediaContent (int destDevClass, string url)
+RemoteDeviceManager::postMediaContent (int destDevClass, const string &url)
 {
   return domainService->postMediaContentTask (destDevClass, url);
 }
