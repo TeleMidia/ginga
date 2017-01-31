@@ -813,277 +813,281 @@ Display::initCodeMaps ()
     }
 
   // sdlStrToSdlCode
-  sdlStrToSdlCode["GIEK:QUIT"] = SDL_QUIT;
-  sdlStrToSdlCode["GIEK:UNKNOWN"] = SDLK_UNKNOWN;
-  sdlStrToSdlCode["GIEK:0"] = SDLK_0;
-  sdlStrToSdlCode["GIEK:1"] = SDLK_1;
-  sdlStrToSdlCode["GIEK:2"] = SDLK_2;
-  sdlStrToSdlCode["GIEK:3"] = SDLK_3;
-  sdlStrToSdlCode["GIEK:4"] = SDLK_4;
-  sdlStrToSdlCode["GIEK:5"] = SDLK_5;
-  sdlStrToSdlCode["GIEK:6"] = SDLK_6;
-  sdlStrToSdlCode["GIEK:7"] = SDLK_7;
-  sdlStrToSdlCode["GIEK:8"] = SDLK_8;
-  sdlStrToSdlCode["GIEK:9"] = SDLK_9;
+  sdlStrToSdlCode = {
+    {"GIEK:QUIT", SDL_QUIT},
+    {"GIEK:UNKNOWN", SDLK_UNKNOWN},
+    {"GIEK:0", SDLK_0},
+    {"GIEK:1", SDLK_1},
+    {"GIEK:2", SDLK_2},
+    {"GIEK:3", SDLK_3},
+    {"GIEK:4", SDLK_4},
+    {"GIEK:5", SDLK_5},
+    {"GIEK:6", SDLK_6},
+    {"GIEK:7", SDLK_7},
+    {"GIEK:8", SDLK_8},
+    {"GIEK:9", SDLK_9},
 
-  sdlStrToSdlCode["GIEK:a"] = SDLK_a;
-  sdlStrToSdlCode["GIEK:b"] = SDLK_b;
-  sdlStrToSdlCode["GIEK:c"] = SDLK_c;
-  sdlStrToSdlCode["GIEK:d"] = SDLK_d;
-  sdlStrToSdlCode["GIEK:e"] = SDLK_e;
-  sdlStrToSdlCode["GIEK:f"] = SDLK_f;
-  sdlStrToSdlCode["GIEK:g"] = SDLK_g;
-  sdlStrToSdlCode["GIEK:h"] = SDLK_h;
-  sdlStrToSdlCode["GIEK:i"] = SDLK_i;
-  sdlStrToSdlCode["GIEK:j"] = SDLK_j;
-  sdlStrToSdlCode["GIEK:k"] = SDLK_k;
-  sdlStrToSdlCode["GIEK:l"] = SDLK_l;
-  sdlStrToSdlCode["GIEK:m"] = SDLK_m;
-  sdlStrToSdlCode["GIEK:n"] = SDLK_n;
-  sdlStrToSdlCode["GIEK:o"] = SDLK_o;
-  sdlStrToSdlCode["GIEK:p"] = SDLK_p;
-  sdlStrToSdlCode["GIEK:q"] = SDLK_q;
-  sdlStrToSdlCode["GIEK:r"] = SDLK_r;
-  sdlStrToSdlCode["GIEK:s"] = SDLK_s;
-  sdlStrToSdlCode["GIEK:t"] = SDLK_t;
-  sdlStrToSdlCode["GIEK:u"] = SDLK_u;
-  sdlStrToSdlCode["GIEK:v"] = SDLK_v;
-  sdlStrToSdlCode["GIEK:w"] = SDLK_w;
-  sdlStrToSdlCode["GIEK:x"] = SDLK_x;
-  sdlStrToSdlCode["GIEK:y"] = SDLK_y;
-  sdlStrToSdlCode["GIEK:z"] = SDLK_z;
+    {"GIEK:a", SDLK_a},
+    {"GIEK:b", SDLK_b},
+    {"GIEK:c", SDLK_c},
+    {"GIEK:d", SDLK_d},
+    {"GIEK:e", SDLK_e},
+    {"GIEK:f", SDLK_f},
+    {"GIEK:g", SDLK_g},
+    {"GIEK:h", SDLK_h},
+    {"GIEK:i", SDLK_i},
+    {"GIEK:j", SDLK_j},
+    {"GIEK:k", SDLK_k},
+    {"GIEK:l", SDLK_l},
+    {"GIEK:m", SDLK_m},
+    {"GIEK:n", SDLK_n},
+    {"GIEK:o", SDLK_o},
+    {"GIEK:p", SDLK_p},
+    {"GIEK:q", SDLK_q},
+    {"GIEK:r", SDLK_r},
+    {"GIEK:s", SDLK_s},
+    {"GIEK:t", SDLK_t},
+    {"GIEK:u", SDLK_u},
+    {"GIEK:v", SDLK_v},
+    {"GIEK:w", SDLK_w},
+    {"GIEK:x", SDLK_x},
+    {"GIEK:y", SDLK_y},
+    {"GIEK:z", SDLK_z},
 
-  sdlStrToSdlCode["GIEK:A"] = SDLK_a + 5000;
-  sdlStrToSdlCode["GIEK:B"] = SDLK_b + 5000;
-  sdlStrToSdlCode["GIEK:C"] = SDLK_c + 5000;
-  sdlStrToSdlCode["GIEK:D"] = SDLK_d + 5000;
-  sdlStrToSdlCode["GIEK:E"] = SDLK_e + 5000;
-  sdlStrToSdlCode["GIEK:F"] = SDLK_f + 5000;
-  sdlStrToSdlCode["GIEK:G"] = SDLK_g + 5000;
-  sdlStrToSdlCode["GIEK:H"] = SDLK_h + 5000;
-  sdlStrToSdlCode["GIEK:I"] = SDLK_i + 5000;
-  sdlStrToSdlCode["GIEK:J"] = SDLK_j + 5000;
-  sdlStrToSdlCode["GIEK:K"] = SDLK_k + 5000;
-  sdlStrToSdlCode["GIEK:L"] = SDLK_l + 5000;
-  sdlStrToSdlCode["GIEK:M"] = SDLK_m + 5000;
-  sdlStrToSdlCode["GIEK:N"] = SDLK_n + 5000;
-  sdlStrToSdlCode["GIEK:O"] = SDLK_o + 5000;
-  sdlStrToSdlCode["GIEK:P"] = SDLK_p + 5000;
-  sdlStrToSdlCode["GIEK:Q"] = SDLK_q + 5000;
-  sdlStrToSdlCode["GIEK:R"] = SDLK_r + 5000;
-  sdlStrToSdlCode["GIEK:S"] = SDLK_s + 5000;
-  sdlStrToSdlCode["GIEK:T"] = SDLK_t + 5000;
-  sdlStrToSdlCode["GIEK:U"] = SDLK_u + 5000;
-  sdlStrToSdlCode["GIEK:V"] = SDLK_v + 5000;
-  sdlStrToSdlCode["GIEK:W"] = SDLK_w + 5000;
-  sdlStrToSdlCode["GIEK:X"] = SDLK_x + 5000;
-  sdlStrToSdlCode["GIEK:Y"] = SDLK_y + 5000;
-  sdlStrToSdlCode["GIEK:Z"] = SDLK_z + 5000;
+    {"GIEK:A", SDLK_a + 5000},
+    {"GIEK:B", SDLK_b + 5000},
+    {"GIEK:C", SDLK_c + 5000},
+    {"GIEK:D", SDLK_d + 5000},
+    {"GIEK:E", SDLK_e + 5000},
+    {"GIEK:F", SDLK_f + 5000},
+    {"GIEK:G", SDLK_g + 5000},
+    {"GIEK:H", SDLK_h + 5000},
+    {"GIEK:I", SDLK_i + 5000},
+    {"GIEK:J", SDLK_j + 5000},
+    {"GIEK:K", SDLK_k + 5000},
+    {"GIEK:L", SDLK_l + 5000},
+    {"GIEK:M", SDLK_m + 5000},
+    {"GIEK:N", SDLK_n + 5000},
+    {"GIEK:O", SDLK_o + 5000},
+    {"GIEK:P", SDLK_p + 5000},
+    {"GIEK:Q", SDLK_q + 5000},
+    {"GIEK:R", SDLK_r + 5000},
+    {"GIEK:S", SDLK_s + 5000},
+    {"GIEK:T", SDLK_t + 5000},
+    {"GIEK:U", SDLK_u + 5000},
+    {"GIEK:V", SDLK_v + 5000},
+    {"GIEK:W", SDLK_w + 5000},
+    {"GIEK:X", SDLK_x + 5000},
+    {"GIEK:Y", SDLK_y + 5000},
+    {"GIEK:Z", SDLK_z + 5000},
 
-  sdlStrToSdlCode["GIEK:PAGEDOWN"] = SDLK_PAGEDOWN;
-  sdlStrToSdlCode["GIEK:PAGEUP"] = SDLK_PAGEUP;
+    {"GIEK:PAGEDOWN", SDLK_PAGEDOWN},
+    {"GIEK:PAGEUP", SDLK_PAGEUP},
 
-  sdlStrToSdlCode["GIEK:F1"] = SDLK_F1;
-  sdlStrToSdlCode["GIEK:F2"] = SDLK_F2;
-  sdlStrToSdlCode["GIEK:F3"] = SDLK_F3;
-  sdlStrToSdlCode["GIEK:F4"] = SDLK_F4;
-  sdlStrToSdlCode["GIEK:F5"] = SDLK_F5;
-  sdlStrToSdlCode["GIEK:F6"] = SDLK_F6;
-  sdlStrToSdlCode["GIEK:F7"] = SDLK_F7;
-  sdlStrToSdlCode["GIEK:F8"] = SDLK_F8;
-  sdlStrToSdlCode["GIEK:F9"] = SDLK_F9;
-  sdlStrToSdlCode["GIEK:F10"] = SDLK_F10;
-  sdlStrToSdlCode["GIEK:F11"] = SDLK_F11;
-  sdlStrToSdlCode["GIEK:F12"] = SDLK_F12;
+    {"GIEK:F1", SDLK_F1},
+    {"GIEK:F2", SDLK_F2},
+    {"GIEK:F3", SDLK_F3},
+    {"GIEK:F4", SDLK_F4},
+    {"GIEK:F5", SDLK_F5},
+    {"GIEK:F6", SDLK_F6},
+    {"GIEK:F7", SDLK_F7},
+    {"GIEK:F8", SDLK_F8},
+    {"GIEK:F9", SDLK_F9},
+    {"GIEK:F10", SDLK_F10},
+    {"GIEK:F11", SDLK_F11},
+    {"GIEK:F12", SDLK_F12},
 
-  sdlStrToSdlCode["GIEK:PLUS"] = SDLK_PLUS;
-  sdlStrToSdlCode["GIEK:MINUS"] = SDLK_MINUS;
+    {"GIEK:PLUS", SDLK_PLUS},
+    {"GIEK:MINUS", SDLK_MINUS},
 
-  sdlStrToSdlCode["GIEK:ASTERISK"] = SDLK_ASTERISK;
-  sdlStrToSdlCode["GIEK:HASH"] = SDLK_HASH;
+    {"GIEK:ASTERISK", SDLK_ASTERISK},
+    {"GIEK:HASH", SDLK_HASH},
 
-  sdlStrToSdlCode["GIEK:PERIOD"] = SDLK_PERIOD;
+    {"GIEK:PERIOD", SDLK_PERIOD},
 
-  sdlStrToSdlCode["GIEK:CAPSLOCK"] = SDLK_CAPSLOCK;
-  sdlStrToSdlCode["GIEK:PRINTSCREEN"] = SDLK_PRINTSCREEN;
-  sdlStrToSdlCode["GIEK:MENU"] = SDLK_MENU;
-  sdlStrToSdlCode["GIEK:F14"] = SDLK_F14;
-  sdlStrToSdlCode["GIEK:QUESTION"] = SDLK_QUESTION;
+    {"GIEK:CAPSLOCK", SDLK_CAPSLOCK},
+    {"GIEK:PRINTSCREEN", SDLK_PRINTSCREEN},
+    {"GIEK:MENU", SDLK_MENU},
+    {"GIEK:F14", SDLK_F14},
+    {"GIEK:QUESTION", SDLK_QUESTION},
 
-  sdlStrToSdlCode["GIEK:DOWN"] = SDLK_DOWN;
-  sdlStrToSdlCode["GIEK:LEFT"] = SDLK_LEFT;
-  sdlStrToSdlCode["GIEK:RIGHT"] = SDLK_RIGHT;
-  sdlStrToSdlCode["GIEK:UP"] = SDLK_UP;
+    {"GIEK:DOWN", SDLK_DOWN},
+    {"GIEK:LEFT", SDLK_LEFT},
+    {"GIEK:RIGHT", SDLK_RIGHT},
+    {"GIEK:UP", SDLK_UP},
 
-  sdlStrToSdlCode["GIEK:F15"] = SDLK_F15;
-  sdlStrToSdlCode["GIEK:F16"] = SDLK_F16;
+    {"GIEK:F15", SDLK_F15},
+    {"GIEK:F16", SDLK_F16},
 
-  sdlStrToSdlCode["GIEK:VOLUMEDOWN"] = SDLK_VOLUMEDOWN;
-  sdlStrToSdlCode["GIEK:VOLUMEUP"] = SDLK_VOLUMEUP;
+    {"GIEK:VOLUMEDOWN", SDLK_VOLUMEDOWN},
+    {"GIEK:VOLUMEUP", SDLK_VOLUMEUP},
 
-  sdlStrToSdlCode["GIEK:RETURN"] = SDLK_RETURN;
-  sdlStrToSdlCode["GIEK:RETURN2"] = SDLK_RETURN2;
+    {"GIEK:RETURN", SDLK_RETURN},
+    {"GIEK:RETURN2", SDLK_RETURN2},
 
-  sdlStrToSdlCode["GIEK:F17"] = SDLK_F17;
-  sdlStrToSdlCode["GIEK:F18"] = SDLK_F18;
-  sdlStrToSdlCode["GIEK:F19"] = SDLK_F19;
-  sdlStrToSdlCode["GIEK:F20"] = SDLK_F20;
+    {"GIEK:F17", SDLK_F17},
+    {"GIEK:F18", SDLK_F18},
+    {"GIEK:F19", SDLK_F19},
+    {"GIEK:F20", SDLK_F20},
 
-  sdlStrToSdlCode["GIEK:SPACE"] = SDLK_SPACE;
-  sdlStrToSdlCode["GIEK:BACKSPACE"] = SDLK_BACKSPACE;
-  sdlStrToSdlCode["GIEK:AC_BACK"] = SDLK_AC_BACK;
-  sdlStrToSdlCode["GIEK:ESCAPE"] = SDLK_ESCAPE;
-  sdlStrToSdlCode["GIEK:OUT"] = SDLK_OUT;
+    {"GIEK:SPACE", SDLK_SPACE},
+    {"GIEK:BACKSPACE", SDLK_BACKSPACE},
+    {"GIEK:AC_BACK", SDLK_AC_BACK},
+    {"GIEK:ESCAPE", SDLK_ESCAPE},
+    {"GIEK:OUT", SDLK_OUT},
 
-  sdlStrToSdlCode["GIEK:POWER"] = SDLK_POWER;
-  sdlStrToSdlCode["GIEK:F21"] = SDLK_F21;
-  sdlStrToSdlCode["GIEK:STOP"] = SDLK_STOP;
-  sdlStrToSdlCode["GIEK:EJECT"] = SDLK_EJECT;
-  sdlStrToSdlCode["GIEK:EXECUTE"] = SDLK_EXECUTE;
-  sdlStrToSdlCode["GIEK:F22"] = SDLK_F22;
-  sdlStrToSdlCode["GIEK:PAUSE"] = SDLK_PAUSE;
+    {"GIEK:POWER", SDLK_POWER},
+    {"GIEK:F21", SDLK_F21},
+    {"GIEK:STOP", SDLK_STOP},
+    {"GIEK:EJECT", SDLK_EJECT},
+    {"GIEK:EXECUTE", SDLK_EXECUTE},
+    {"GIEK:F22", SDLK_F22},
+    {"GIEK:PAUSE", SDLK_PAUSE},
 
-  sdlStrToSdlCode["GIEK:GREATER"] = SDLK_GREATER;
-  sdlStrToSdlCode["GIEK:LESS"] = SDLK_LESS;
+    {"GIEK:GREATER", SDLK_GREATER},
+    {"GIEK:LESS", SDLK_LESS},
 
-  sdlStrToSdlCode["GIEK:TAB"] = SDLK_TAB;
-  sdlStrToSdlCode["GIEK:F23"] = SDLK_F23;
+    {"GIEK:TAB", SDLK_TAB},
+    {"GIEK:F23", SDLK_F23}
+  };
 
   // gingaToSDLCodeMap
-  gingaToSDLCodeMap[CodeMap::KEY_QUIT] = SDL_QUIT;
-  gingaToSDLCodeMap[CodeMap::KEY_NULL] = SDLK_UNKNOWN;
-  gingaToSDLCodeMap[CodeMap::KEY_0] = SDLK_0;
-  gingaToSDLCodeMap[CodeMap::KEY_1] = SDLK_1;
-  gingaToSDLCodeMap[CodeMap::KEY_2] = SDLK_2;
-  gingaToSDLCodeMap[CodeMap::KEY_3] = SDLK_3;
-  gingaToSDLCodeMap[CodeMap::KEY_4] = SDLK_4;
-  gingaToSDLCodeMap[CodeMap::KEY_5] = SDLK_5;
-  gingaToSDLCodeMap[CodeMap::KEY_6] = SDLK_6;
-  gingaToSDLCodeMap[CodeMap::KEY_7] = SDLK_7;
-  gingaToSDLCodeMap[CodeMap::KEY_8] = SDLK_8;
-  gingaToSDLCodeMap[CodeMap::KEY_9] = SDLK_9;
+  gingaToSDLCodeMap = {
+    {CodeMap::KEY_QUIT, SDL_QUIT},
+    {CodeMap::KEY_NULL, SDLK_UNKNOWN},
+    {CodeMap::KEY_0, SDLK_0},
+    {CodeMap::KEY_1, SDLK_1},
+    {CodeMap::KEY_2, SDLK_2},
+    {CodeMap::KEY_3, SDLK_3},
+    {CodeMap::KEY_4, SDLK_4},
+    {CodeMap::KEY_5, SDLK_5},
+    {CodeMap::KEY_6, SDLK_6},
+    {CodeMap::KEY_7, SDLK_7},
+    {CodeMap::KEY_8, SDLK_8},
+    {CodeMap::KEY_9, SDLK_9},
 
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_A] = SDLK_a;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_B] = SDLK_b;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_C] = SDLK_c;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_D] = SDLK_d;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_E] = SDLK_e;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_F] = SDLK_f;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_G] = SDLK_g;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_H] = SDLK_h;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_I] = SDLK_i;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_J] = SDLK_j;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_K] = SDLK_k;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_L] = SDLK_l;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_M] = SDLK_m;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_N] = SDLK_n;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_O] = SDLK_o;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_P] = SDLK_p;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_Q] = SDLK_q;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_R] = SDLK_r;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_S] = SDLK_s;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_T] = SDLK_t;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_U] = SDLK_u;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_V] = SDLK_v;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_W] = SDLK_w;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_X] = SDLK_x;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_Y] = SDLK_y;
-  gingaToSDLCodeMap[CodeMap::KEY_SMALL_Z] = SDLK_z;
+    {CodeMap::KEY_SMALL_A, SDLK_a},
+    {CodeMap::KEY_SMALL_B, SDLK_b},
+    {CodeMap::KEY_SMALL_C, SDLK_c},
+    {CodeMap::KEY_SMALL_D, SDLK_d},
+    {CodeMap::KEY_SMALL_E, SDLK_e},
+    {CodeMap::KEY_SMALL_F, SDLK_f},
+    {CodeMap::KEY_SMALL_G, SDLK_g},
+    {CodeMap::KEY_SMALL_H, SDLK_h},
+    {CodeMap::KEY_SMALL_I, SDLK_i},
+    {CodeMap::KEY_SMALL_J, SDLK_j},
+    {CodeMap::KEY_SMALL_K, SDLK_k},
+    {CodeMap::KEY_SMALL_L, SDLK_l},
+    {CodeMap::KEY_SMALL_M, SDLK_m},
+    {CodeMap::KEY_SMALL_N, SDLK_n},
+    {CodeMap::KEY_SMALL_O, SDLK_o},
+    {CodeMap::KEY_SMALL_P, SDLK_p},
+    {CodeMap::KEY_SMALL_Q, SDLK_q},
+    {CodeMap::KEY_SMALL_R, SDLK_r},
+    {CodeMap::KEY_SMALL_S, SDLK_s},
+    {CodeMap::KEY_SMALL_T, SDLK_t},
+    {CodeMap::KEY_SMALL_U, SDLK_u},
+    {CodeMap::KEY_SMALL_V, SDLK_v},
+    {CodeMap::KEY_SMALL_W, SDLK_w},
+    {CodeMap::KEY_SMALL_X, SDLK_x},
+    {CodeMap::KEY_SMALL_Y, SDLK_y},
+    {CodeMap::KEY_SMALL_Z, SDLK_z},
 
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_A] = SDLK_a + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_B] = SDLK_b + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_C] = SDLK_c + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_D] = SDLK_d + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_E] = SDLK_e + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_F] = SDLK_f + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_G] = SDLK_g + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_H] = SDLK_h + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_I] = SDLK_i + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_J] = SDLK_j + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_K] = SDLK_k + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_L] = SDLK_l + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_M] = SDLK_m + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_N] = SDLK_n + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_O] = SDLK_o + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_P] = SDLK_p + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_Q] = SDLK_q + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_R] = SDLK_r + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_S] = SDLK_s + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_T] = SDLK_t + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_U] = SDLK_u + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_V] = SDLK_v + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_W] = SDLK_w + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_X] = SDLK_x + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_Y] = SDLK_y + 5000;
-  gingaToSDLCodeMap[CodeMap::KEY_CAPITAL_Z] = SDLK_z + 5000;
+    {CodeMap::KEY_CAPITAL_A, SDLK_a + 5000},
+    {CodeMap::KEY_CAPITAL_B, SDLK_b + 5000},
+    {CodeMap::KEY_CAPITAL_C, SDLK_c + 5000},
+    {CodeMap::KEY_CAPITAL_D, SDLK_d + 5000},
+    {CodeMap::KEY_CAPITAL_E, SDLK_e + 5000},
+    {CodeMap::KEY_CAPITAL_F, SDLK_f + 5000},
+    {CodeMap::KEY_CAPITAL_G, SDLK_g + 5000},
+    {CodeMap::KEY_CAPITAL_H, SDLK_h + 5000},
+    {CodeMap::KEY_CAPITAL_I, SDLK_i + 5000},
+    {CodeMap::KEY_CAPITAL_J, SDLK_j + 5000},
+    {CodeMap::KEY_CAPITAL_K, SDLK_k + 5000},
+    {CodeMap::KEY_CAPITAL_L, SDLK_l + 5000},
+    {CodeMap::KEY_CAPITAL_M, SDLK_m + 5000},
+    {CodeMap::KEY_CAPITAL_N, SDLK_n + 5000},
+    {CodeMap::KEY_CAPITAL_O, SDLK_o + 5000},
+    {CodeMap::KEY_CAPITAL_P, SDLK_p + 5000},
+    {CodeMap::KEY_CAPITAL_Q, SDLK_q + 5000},
+    {CodeMap::KEY_CAPITAL_R, SDLK_r + 5000},
+    {CodeMap::KEY_CAPITAL_S, SDLK_s + 5000},
+    {CodeMap::KEY_CAPITAL_T, SDLK_t + 5000},
+    {CodeMap::KEY_CAPITAL_U, SDLK_u + 5000},
+    {CodeMap::KEY_CAPITAL_V, SDLK_v + 5000},
+    {CodeMap::KEY_CAPITAL_W, SDLK_w + 5000},
+    {CodeMap::KEY_CAPITAL_X, SDLK_x + 5000},
+    {CodeMap::KEY_CAPITAL_Y, SDLK_y + 5000},
+    {CodeMap::KEY_CAPITAL_Z, SDLK_z + 5000},
 
-  gingaToSDLCodeMap[CodeMap::KEY_PAGE_DOWN] = SDLK_PAGEDOWN;
-  gingaToSDLCodeMap[CodeMap::KEY_PAGE_UP] = SDLK_PAGEUP;
+    {CodeMap::KEY_PAGE_DOWN, SDLK_PAGEDOWN},
+    {CodeMap::KEY_PAGE_UP, SDLK_PAGEUP},
 
-  gingaToSDLCodeMap[CodeMap::KEY_F1] = SDLK_F1;
-  gingaToSDLCodeMap[CodeMap::KEY_F2] = SDLK_F2;
-  gingaToSDLCodeMap[CodeMap::KEY_F3] = SDLK_F3;
-  gingaToSDLCodeMap[CodeMap::KEY_F4] = SDLK_F4;
-  gingaToSDLCodeMap[CodeMap::KEY_F5] = SDLK_F5;
-  gingaToSDLCodeMap[CodeMap::KEY_F6] = SDLK_F6;
-  gingaToSDLCodeMap[CodeMap::KEY_F7] = SDLK_F7;
-  gingaToSDLCodeMap[CodeMap::KEY_F8] = SDLK_F8;
-  gingaToSDLCodeMap[CodeMap::KEY_F9] = SDLK_F9;
-  gingaToSDLCodeMap[CodeMap::KEY_F10] = SDLK_F10;
-  gingaToSDLCodeMap[CodeMap::KEY_F11] = SDLK_F11;
-  gingaToSDLCodeMap[CodeMap::KEY_F12] = SDLK_F12;
+    {CodeMap::KEY_F1, SDLK_F1},
+    {CodeMap::KEY_F2, SDLK_F2},
+    {CodeMap::KEY_F3, SDLK_F3},
+    {CodeMap::KEY_F4, SDLK_F4},
+    {CodeMap::KEY_F5, SDLK_F5},
+    {CodeMap::KEY_F6, SDLK_F6},
+    {CodeMap::KEY_F7, SDLK_F7},
+    {CodeMap::KEY_F8, SDLK_F8},
+    {CodeMap::KEY_F9, SDLK_F9},
+    {CodeMap::KEY_F10, SDLK_F10},
+    {CodeMap::KEY_F11, SDLK_F11},
+    {CodeMap::KEY_F12, SDLK_F12},
 
-  gingaToSDLCodeMap[CodeMap::KEY_PLUS_SIGN] = SDLK_PLUS;
-  gingaToSDLCodeMap[CodeMap::KEY_MINUS_SIGN] = SDLK_MINUS;
+    {CodeMap::KEY_PLUS_SIGN, SDLK_PLUS},
+    {CodeMap::KEY_MINUS_SIGN, SDLK_MINUS},
 
-  gingaToSDLCodeMap[CodeMap::KEY_ASTERISK] = SDLK_ASTERISK;
-  gingaToSDLCodeMap[CodeMap::KEY_NUMBER_SIGN] = SDLK_HASH;
+    {CodeMap::KEY_ASTERISK, SDLK_ASTERISK},
+    {CodeMap::KEY_NUMBER_SIGN, SDLK_HASH},
 
-  gingaToSDLCodeMap[CodeMap::KEY_PERIOD] = SDLK_PERIOD;
+    {CodeMap::KEY_PERIOD, SDLK_PERIOD},
 
-  gingaToSDLCodeMap[CodeMap::KEY_SUPER] = SDLK_CAPSLOCK;
-  gingaToSDLCodeMap[CodeMap::KEY_PRINTSCREEN] = SDLK_PRINTSCREEN;
-  gingaToSDLCodeMap[CodeMap::KEY_MENU] = SDLK_MENU;
-  gingaToSDLCodeMap[CodeMap::KEY_INFO] = SDLK_F14;
-  gingaToSDLCodeMap[CodeMap::KEY_EPG] = SDLK_QUESTION;
+    {CodeMap::KEY_SUPER, SDLK_CAPSLOCK},
+    {CodeMap::KEY_PRINTSCREEN, SDLK_PRINTSCREEN},
+    {CodeMap::KEY_MENU, SDLK_MENU},
+    {CodeMap::KEY_INFO, SDLK_F14},
+    {CodeMap::KEY_EPG, SDLK_QUESTION},
 
-  gingaToSDLCodeMap[CodeMap::KEY_CURSOR_DOWN] = SDLK_DOWN;
-  gingaToSDLCodeMap[CodeMap::KEY_CURSOR_LEFT] = SDLK_LEFT;
-  gingaToSDLCodeMap[CodeMap::KEY_CURSOR_RIGHT] = SDLK_RIGHT;
-  gingaToSDLCodeMap[CodeMap::KEY_CURSOR_UP] = SDLK_UP;
+    {CodeMap::KEY_CURSOR_DOWN, SDLK_DOWN},
+    {CodeMap::KEY_CURSOR_LEFT, SDLK_LEFT},
+    {CodeMap::KEY_CURSOR_RIGHT, SDLK_RIGHT},
+    {CodeMap::KEY_CURSOR_UP, SDLK_UP},
 
-  gingaToSDLCodeMap[CodeMap::KEY_CHANNEL_DOWN] = SDLK_F15;
-  gingaToSDLCodeMap[CodeMap::KEY_CHANNEL_UP] = SDLK_F16;
+    {CodeMap::KEY_CHANNEL_DOWN, SDLK_F15},
+    {CodeMap::KEY_CHANNEL_UP, SDLK_F16},
 
-  gingaToSDLCodeMap[CodeMap::KEY_VOLUME_DOWN] = SDLK_VOLUMEDOWN;
-  gingaToSDLCodeMap[CodeMap::KEY_VOLUME_UP] = SDLK_VOLUMEUP;
+    {CodeMap::KEY_VOLUME_DOWN, SDLK_VOLUMEDOWN},
+    {CodeMap::KEY_VOLUME_UP, SDLK_VOLUMEUP},
 
-  gingaToSDLCodeMap[CodeMap::KEY_ENTER] = SDLK_RETURN;
+    {CodeMap::KEY_ENTER, SDLK_RETURN},
 
-  gingaToSDLCodeMap[CodeMap::KEY_RED] = SDLK_F17;
-  gingaToSDLCodeMap[CodeMap::KEY_GREEN] = SDLK_F18;
-  gingaToSDLCodeMap[CodeMap::KEY_YELLOW] = SDLK_F19;
-  gingaToSDLCodeMap[CodeMap::KEY_BLUE] = SDLK_F20;
+    {CodeMap::KEY_RED, SDLK_F17},
+    {CodeMap::KEY_GREEN, SDLK_F18},
+    {CodeMap::KEY_YELLOW, SDLK_F19},
+    {CodeMap::KEY_BLUE, SDLK_F20},
 
-  gingaToSDLCodeMap[CodeMap::KEY_SPACE] = SDLK_SPACE;
-  gingaToSDLCodeMap[CodeMap::KEY_BACKSPACE] = SDLK_BACKSPACE;
-  gingaToSDLCodeMap[CodeMap::KEY_BACK] = SDLK_AC_BACK;
-  gingaToSDLCodeMap[CodeMap::KEY_ESCAPE] = SDLK_ESCAPE;
-  gingaToSDLCodeMap[CodeMap::KEY_EXIT] = SDLK_OUT;
+    {CodeMap::KEY_SPACE, SDLK_SPACE},
+    {CodeMap::KEY_BACKSPACE, SDLK_BACKSPACE},
+    {CodeMap::KEY_BACK, SDLK_AC_BACK},
+    {CodeMap::KEY_ESCAPE, SDLK_ESCAPE},
+    {CodeMap::KEY_EXIT, SDLK_OUT},
 
-  gingaToSDLCodeMap[CodeMap::KEY_POWER] = SDLK_POWER;
-  gingaToSDLCodeMap[CodeMap::KEY_REWIND] = SDLK_F21;
-  gingaToSDLCodeMap[CodeMap::KEY_STOP] = SDLK_STOP;
-  gingaToSDLCodeMap[CodeMap::KEY_EJECT] = SDLK_EJECT;
-  gingaToSDLCodeMap[CodeMap::KEY_PLAY] = SDLK_EXECUTE;
-  gingaToSDLCodeMap[CodeMap::KEY_RECORD] = SDLK_F22;
-  gingaToSDLCodeMap[CodeMap::KEY_PAUSE] = SDLK_PAUSE;
+    {CodeMap::KEY_POWER, SDLK_POWER},
+    {CodeMap::KEY_REWIND, SDLK_F21},
+    {CodeMap::KEY_STOP, SDLK_STOP},
+    {CodeMap::KEY_EJECT, SDLK_EJECT},
+    {CodeMap::KEY_PLAY, SDLK_EXECUTE},
+    {CodeMap::KEY_RECORD, SDLK_F22},
+    {CodeMap::KEY_PAUSE, SDLK_PAUSE},
 
-  gingaToSDLCodeMap[CodeMap::KEY_GREATER_THAN_SIGN] = SDLK_GREATER;
-  gingaToSDLCodeMap[CodeMap::KEY_LESS_THAN_SIGN] = SDLK_LESS;
+    {CodeMap::KEY_GREATER_THAN_SIGN, SDLK_GREATER},
+    {CodeMap::KEY_LESS_THAN_SIGN, SDLK_LESS},
 
-  gingaToSDLCodeMap[CodeMap::KEY_TAB] = SDLK_TAB;
-  gingaToSDLCodeMap[CodeMap::KEY_TAP] = SDLK_F23;
+    {CodeMap::KEY_TAB, SDLK_TAB},
+    {CodeMap::KEY_TAP, SDLK_F23}
+  };
 
   // sdlToGingaCodeMap
   map<int, int>::iterator i;
