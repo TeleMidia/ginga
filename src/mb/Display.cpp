@@ -33,8 +33,8 @@ GINGA_MB_BEGIN
 Display *_Ginga_Display = NULL;
 
 bool Display::mutexInit = false;
-map<int, int> Display::gingaToSDLCodeMap;
-map<int, int> Display::sdlToGingaCodeMap;
+map<CodeMap::KeyCode, int> Display::gingaToSDLCodeMap;
+map<int, CodeMap::KeyCode> Display::sdlToGingaCodeMap;
 map<string, int> Display::sdlStrToSdlCode;
 set<SDL_Texture *> Display::uTexPool;
 set<SDL_Surface *> Display::uSurPool;
@@ -728,21 +728,21 @@ Display::createApplicationEvent (int type, void *data)
   return new SDLInputEvent (type, data);
 }
 
-int
+CodeMap::KeyCode
 Display::fromMBToGinga (int keyCode)
 {
-  map<int, int>::iterator i;
-  int translated;
+  map<int, CodeMap::KeyCode>::iterator it;
+  CodeMap::KeyCode translated;
 
   checkMutexInit ();
 
   Thread::mutexLock (&sieMutex);
 
   translated = CodeMap::KEY_NULL;
-  i = sdlToGingaCodeMap.find (keyCode);
-  if (i != sdlToGingaCodeMap.end ())
+  it = sdlToGingaCodeMap.find (keyCode);
+  if (it != sdlToGingaCodeMap.end ())
     {
-      translated = i->second;
+      translated = it->second;
     }
   else
     {
@@ -756,9 +756,9 @@ Display::fromMBToGinga (int keyCode)
 }
 
 int
-Display::fromGingaToMB (int keyCode)
+Display::fromGingaToMB (CodeMap::KeyCode keyCode)
 {
-  map<int, int>::iterator i;
+  map<CodeMap::KeyCode, int>::iterator i;
   int translated;
 
   checkMutexInit ();
@@ -1090,12 +1090,12 @@ Display::initCodeMaps ()
   };
 
   // sdlToGingaCodeMap
-  map<int, int>::iterator i;
-  i = gingaToSDLCodeMap.begin ();
-  while (i != gingaToSDLCodeMap.end ())
+  map<CodeMap::KeyCode, int>::iterator it;
+  it = gingaToSDLCodeMap.begin ();
+  while (it != gingaToSDLCodeMap.end ())
     {
-      sdlToGingaCodeMap[i->second] = i->first;
-      ++i;
+      sdlToGingaCodeMap[it->second] = it->first;
+      ++it;
     }
 
   Thread::mutexUnlock (&sieMutex);

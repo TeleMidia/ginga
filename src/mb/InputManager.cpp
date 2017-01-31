@@ -622,7 +622,7 @@ InputManager::postInputEvent (SDLInputEvent *event)
 }
 
 void
-InputManager::postInputEvent (int keyCode)
+InputManager::postInputEvent (CodeMap::KeyCode keyCode)
 {
   SDLInputEvent *ie;
   int mbKeyCode;

@@ -47,8 +47,8 @@ public:
   void setModifiers (bool capsOn, bool shiftOn);
 
   void clearContent ();
-  void setKeyCode (const int keyCode);
-  int getKeyCode ();
+  void setKeyCode (CodeMap::KeyCode keyCode);
+  CodeMap::KeyCode getKeyCode ();
 
   unsigned int getType ();
   void *getApplicationData ();
