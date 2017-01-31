@@ -90,8 +90,8 @@ private:
   pthread_mutex_t condMutex;
   pthread_cond_t cond;
 
-  static map<int, int> gingaToSDLCodeMap;
-  static map<int, int> sdlToGingaCodeMap;
+  static map<CodeMap::KeyCode, int> gingaToSDLCodeMap;
+  static map<int, CodeMap::KeyCode> sdlToGingaCodeMap;
   static map<string, int> sdlStrToSdlCode;
 
   static set<SDL_Surface *> uSurPool;
@@ -125,25 +125,20 @@ public:
   bool releaseSurface (SDLSurface *sur);
 
   /* interfacing content */
-
   IFontProvider *createFontProvider (const char *mrl, int fontSize);
-
   void releaseFontProvider (IFontProvider *provider);
-
   SDLSurface *createRenderedSurfaceFromImageFile (const char *mrl);
 
 public:
   /* interfacing input */
 
   InputManager *getInputManager ();
-
   SDLEventBuffer *createEventBuffer ();
-
   SDLInputEvent *createInputEvent (void *event, const int symbol);
   SDLInputEvent *createApplicationEvent (int type, void *data);
 
-  int fromMBToGinga (int keyCode);
-  int fromGingaToMB (int keyCode);
+  CodeMap::KeyCode fromMBToGinga (int keyCode);
+  int fromGingaToMB (CodeMap::KeyCode keyCode);
 
   /* SDL MB internal use*/
 private:

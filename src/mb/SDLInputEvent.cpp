@@ -80,7 +80,7 @@ SDLInputEvent::getContent ()
 }
 
 void
-SDLInputEvent::setKeyCode (const int keyCode)
+SDLInputEvent::setKeyCode (CodeMap::KeyCode keyCode)
 {
   int sdlCode;
 
@@ -96,10 +96,10 @@ SDLInputEvent::setKeyCode (const int keyCode)
     }
 }
 
-int
+CodeMap::KeyCode
 SDLInputEvent::getKeyCode ()
 {
-  int gingaValue;
+  CodeMap::KeyCode gingaValue;
   int sdlValue;
 
   if (event.type == SDL_FINGERUP || event.type == SDL_MOUSEBUTTONUP)
@@ -135,59 +135,29 @@ SDLInputEvent::getKeyCode ()
       gingaValue = Ginga_Display->fromMBToGinga (sdlValue + 5000);
     }
 
+  map <CodeMap::KeyCode, CodeMap::KeyCode> keyboardToRemoteControl
+    = {
+        {CodeMap::KEY_F1, CodeMap::KEY_RED},
+        {CodeMap::KEY_F2, CodeMap::KEY_GREEN},
+        {CodeMap::KEY_F3, CodeMap::KEY_YELLOW},
+        {CodeMap::KEY_F4, CodeMap::KEY_BLUE},
+        {CodeMap::KEY_F5, CodeMap::KEY_MENU},
+        {CodeMap::KEY_F6, CodeMap::KEY_INFO},
+        {CodeMap::KEY_F7, CodeMap::KEY_EPG},
+        {CodeMap::KEY_PLUS_SIGN, CodeMap::KEY_VOLUME_UP},
+        {CodeMap::KEY_MINUS_SIGN, CodeMap::KEY_VOLUME_DOWN},
+        {CodeMap::KEY_PAGE_UP, CodeMap::KEY_CHANNEL_UP},
+        {CodeMap::KEY_PAGE_DOWN, CodeMap::KEY_CHANNEL_DOWN},
+        {CodeMap::KEY_BACKSPACE, CodeMap::KEY_BACK},
+        {CodeMap::KEY_ESCAPE, CodeMap::KEY_EXIT}
+      };
+
+  if (keyboardToRemoteControl.count (gingaValue))
+    {
+      gingaValue = keyboardToRemoteControl[gingaValue];
+    }
+
   // Mapping between keyboard and remote control
-  if (gingaValue == CodeMap::KEY_F1)
-    {
-      gingaValue = CodeMap::KEY_RED;
-    }
-  else if (gingaValue == CodeMap::KEY_F2)
-    {
-      gingaValue = CodeMap::KEY_GREEN;
-    }
-  else if (gingaValue == CodeMap::KEY_F3)
-    {
-      gingaValue = CodeMap::KEY_YELLOW;
-    }
-  else if (gingaValue == CodeMap::KEY_F4)
-    {
-      gingaValue = CodeMap::KEY_BLUE;
-    }
-  else if (gingaValue == CodeMap::KEY_F5)
-    {
-      gingaValue = CodeMap::KEY_MENU;
-    }
-  else if (gingaValue == CodeMap::KEY_F6)
-    {
-      gingaValue = CodeMap::KEY_INFO;
-    }
-  else if (gingaValue == CodeMap::KEY_F7)
-    {
-      gingaValue = CodeMap::KEY_EPG;
-    }
-  else if (gingaValue == CodeMap::KEY_PLUS_SIGN)
-    {
-      gingaValue = CodeMap::KEY_VOLUME_UP;
-    }
-  else if (gingaValue == CodeMap::KEY_MINUS_SIGN)
-    {
-      gingaValue = CodeMap::KEY_VOLUME_DOWN;
-    }
-  else if (gingaValue == CodeMap::KEY_PAGE_UP)
-    {
-      gingaValue = CodeMap::KEY_CHANNEL_UP;
-    }
-  else if (gingaValue == CodeMap::KEY_PAGE_DOWN)
-    {
-      gingaValue = CodeMap::KEY_CHANNEL_DOWN;
-    }
-  else if (gingaValue == CodeMap::KEY_BACKSPACE)
-    {
-      gingaValue = CodeMap::KEY_BACK;
-    }
-  else if (gingaValue == CodeMap::KEY_ESCAPE)
-    {
-      gingaValue = CodeMap::KEY_EXIT;
-    }
 
   return gingaValue;
 }
