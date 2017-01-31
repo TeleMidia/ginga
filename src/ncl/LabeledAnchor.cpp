@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-LabeledAnchor::LabeledAnchor (string id, string label) : Anchor (id)
+LabeledAnchor::LabeledAnchor (const string &id, const string &label) : Anchor (id)
 {
   this->label = label;
   typeSet.insert ("LabeledAnchor");
@@ -33,7 +33,7 @@ LabeledAnchor::getLabel ()
 }
 
 void
-LabeledAnchor::setLabel (string label)
+LabeledAnchor::setLabel (const string &label)
 {
   this->label = label;
 }

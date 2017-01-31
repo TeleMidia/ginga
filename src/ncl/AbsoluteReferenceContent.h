@@ -25,7 +25,7 @@ GINGA_NCL_BEGIN
 class AbsoluteReferenceContent : public ReferenceContent
 {
 public:
-  AbsoluteReferenceContent (string ref);
+  AbsoluteReferenceContent (const string &ref);
   virtual ~AbsoluteReferenceContent (){};
 };
 

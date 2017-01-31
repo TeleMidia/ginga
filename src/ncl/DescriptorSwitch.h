@@ -42,7 +42,7 @@ private:
   static bool removeInstance (DescriptorSwitch *object);
 
 public:
-  DescriptorSwitch (string id);
+  DescriptorSwitch (const string &id);
   virtual ~DescriptorSwitch ();
 
   static bool hasInstance (DescriptorSwitch *object, bool eraseFromList);
@@ -59,7 +59,7 @@ public:
   GenericDescriptor *getDefaultDescriptor ();
   unsigned int indexOfDescriptor (GenericDescriptor *descriptor);
   GenericDescriptor *getDescriptor (unsigned int index);
-  GenericDescriptor *getDescriptor (string descriptorId);
+  GenericDescriptor *getDescriptor (const string &descriptorId);
   GenericDescriptor *getDescriptor (Rule *rule);
   Rule *getRule (unsigned int index);
   unsigned int getNumDescriptors ();

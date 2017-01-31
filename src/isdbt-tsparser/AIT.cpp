@@ -58,7 +58,7 @@ AIT::getSectionName ()
 }
 
 void
-AIT::setSectionName (string secName)
+AIT::setSectionName (const string &secName)
 {
   this->secName = secName;
 }

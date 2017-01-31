@@ -150,7 +150,7 @@ protected:
   virtual bool newDeviceConnected (int newDevClass, int w, int h);
   virtual void connectedToBaseDevice (unsigned int domainAddr) = 0;
   virtual bool receiveRemoteEvent (int remoteDevClass, int eventType,
-                                   string eventContent);
+                                   const string &eventContent);
   virtual bool
   receiveRemoteContent (arg_unused (int remoteDevClass),
                         arg_unused (char *stream),
@@ -159,26 +159,28 @@ protected:
     return false;
   };
   virtual bool
-  receiveRemoteContentInfo (arg_unused (string contentId),
-                            arg_unused (string contentUri))
+  receiveRemoteContentInfo (arg_unused (const string &contentId),
+                            arg_unused (const string &contentUri))
   {
     return false;
   };
-  void renderFromUri (SDLWindow* win, string uri);
+  void renderFromUri (SDLWindow* win, const string &uri);
   void tapObject (int devClass, int x, int y);
   virtual bool
   receiveRemoteContent (arg_unused (int remoteDevClass),
-                        arg_unused (string contentUri))
+                        arg_unused (const string &contentUri))
   {
     return false;
   };
 
 public:
-  void addActiveUris (string baseUri, vector<string> *uris);
+  void addActiveUris (const string &baseUri, vector<string> *uris);
 
 protected:
-  void updateStatus (short code, string parameter, short type,
-                     string value);
+  void updateStatus (short code,
+                     const string &parameter,
+                     short type,
+                     const string &value);
   virtual bool userEventReceived (SDLInputEvent *ev) = 0;
 };
 

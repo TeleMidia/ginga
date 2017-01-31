@@ -24,7 +24,7 @@ using namespace ::ginga::util;
 
 GINGA_PLAYER_BEGIN
 
-AVPlayer::AVPlayer (string mrl) : Thread (), Player (mrl)
+AVPlayer::AVPlayer (const string &mrl) : Thread (), Player (mrl)
 {
   string::size_type pos;
 
@@ -242,7 +242,7 @@ AVPlayer::getVPts ()
 }
 
 void
-AVPlayer::timeShift (string direction)
+AVPlayer::timeShift (const string &direction)
 {
   if (provider != 0)
     {
@@ -318,7 +318,7 @@ AVPlayer::getStopTime ()
 }
 
 void
-AVPlayer::setScope (string scope, short type, double begin, double end,
+AVPlayer::setScope (const string &scope, short type, double begin, double end,
                     double outTransDur)
 {
   Player::setScope (scope, type, begin, end, outTransDur);
@@ -412,7 +412,7 @@ AVPlayer::resume ()
 }
 
 string
-AVPlayer::getPropertyValue (string name)
+AVPlayer::getPropertyValue (const string &name)
 {
   if (name == "soundLevel")
     {
@@ -423,29 +423,30 @@ AVPlayer::getPropertyValue (string name)
 }
 
 void
-AVPlayer::setPropertyValue (string name, string value)
+AVPlayer::setPropertyValue (const string &name, const string &value)
 {
-  double fValue = 1.0;
+  string val = value;
+  double fVal = 1.0;
   vector<string> *vals;
 
   if (name == "soundLevel")
     {
-      if (isPercentualValue (value))
+      if (isPercentualValue (val))
         {
-          xstrassign (value, "%d", (int) (getPercentualValue (value) / 100));
+          xstrassign (val, "%d", (int) (getPercentualValue (val) / 100));
         }
 
-      if (value != "")
+      if (val != "")
         {
-          fValue = xstrtod (value);
+          fVal = xstrtod (val);
         }
-      setSoundLevel (fValue);
+      setSoundLevel (fVal);
     }
   else if (mainAV)
     {
       if (name == "createWindow")
         {
-          vals = split (value, ",");
+          vals = split (val, ",");
           if (vals->size () == 4)
             {
               win = Ginga_Display->createWindow (xstrto_int ((*vals)[0]),
@@ -468,14 +469,13 @@ AVPlayer::setPropertyValue (string name, string value)
         }
       else if (name == "bounds" && win != 0)
         {
-          vals = split (value, ",");
+          vals = split (val, ",");
           if (vals->size () == 4)
             {
-              win->setBounds (
-                                              xstrto_int ((*vals)[0]),
-                                   xstrto_int ((*vals)[1]),
-                                   xstrto_int ((*vals)[2]),
-                                   xstrto_int ((*vals)[3]));
+              win->setBounds ( xstrto_int ((*vals)[0]),
+                               xstrto_int ((*vals)[1]),
+                               xstrto_int ((*vals)[2]),
+                               xstrto_int ((*vals)[3]));
             }
           delete vals;
         }
@@ -489,7 +489,7 @@ AVPlayer::setPropertyValue (string name, string value)
         }
     }
 
-  Player::setPropertyValue (name, value);
+  Player::setPropertyValue (name, val);
 }
 
 void

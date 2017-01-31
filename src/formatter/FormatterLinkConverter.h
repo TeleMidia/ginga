@@ -93,7 +93,7 @@ public:
                     int depthLevel);
 
 private:
-  void setImplicitRefAssessment (string roleId, CausalLink *ncmLink,
+  void setImplicitRefAssessment (const string &roleId, CausalLink *ncmLink,
                                  NclFormatterEvent *event);
 
   NclLinkAction *createAction (Action *actionExpression,
@@ -151,7 +151,7 @@ private:
                             Bind *ncmBind);
 
   string getBindKey (Link *ncmLink, Bind *ncmBind);
-  double compileDelay (Link *ncmLink, string delayObject, Bind *bind);
+  double compileDelay (Link *ncmLink, const string &delayObject, Bind *bind);
 };
 
 GINGA_FORMATTER_END

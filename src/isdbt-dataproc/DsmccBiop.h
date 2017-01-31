@@ -70,7 +70,7 @@ private:
   string getObjectKind ();
   string getObjectInfo ();
 
-  void abortProcess (string warningText);
+  void abortProcess (const string &warningText);
   bool processServiceContext ();
   bool processMessageHeader ();
   int processMessageSubHeader ();

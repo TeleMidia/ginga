@@ -27,7 +27,7 @@ const short ContentAnchor::CAT_SAMPLES = 0x03;
 const short ContentAnchor::CAT_FRAMES = 0x04;
 const short ContentAnchor::CAT_NPT = 0x05;
 
-ContentAnchor::ContentAnchor (string id) : Anchor (id)
+ContentAnchor::ContentAnchor (const string &id) : Anchor (id)
 {
   typeSet.insert ("ContentAnchor");
 }

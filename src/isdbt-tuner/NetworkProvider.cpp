@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TUNER_BEGIN
 
-NetworkProvider::NetworkProvider (string address, int port, string protocol)
+NetworkProvider::NetworkProvider (const string &address, int port, const string &protocol)
 {
   clog << "UDP MulticastProvider address '" << address << ":";
   clog << port << "'" << endl;

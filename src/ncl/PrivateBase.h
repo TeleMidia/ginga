@@ -28,11 +28,11 @@ GINGA_NCL_BEGIN
 class PrivateBase : public CompositeNode
 {
 public:
-  PrivateBase (string uid);
+  PrivateBase (const string &uid);
   virtual ~PrivateBase ();
 
   bool addNode (Node *node);
-  bool removeAllNodeOccurrences (string nodeUID);
+  bool removeAllNodeOccurrences (const string &nodeUID);
   bool removeAllNodeOccurrences (Node *node);
 };
 

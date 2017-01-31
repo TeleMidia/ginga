@@ -37,7 +37,7 @@ NCLDataFile::getId ()
 }
 
 void
-NCLDataFile::setComponentTag (string componentTag)
+NCLDataFile::setComponentTag (const string &componentTag)
 {
   this->componentTag = componentTag;
 }
@@ -49,7 +49,7 @@ NCLDataFile::getCopmonentTag ()
 }
 
 void
-NCLDataFile::setUri (string uri)
+NCLDataFile::setUri (const string &uri)
 {
   this->uri = uri;
 }

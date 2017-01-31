@@ -35,7 +35,7 @@ GINGA_NCL_BEGIN
 class CausalLink : public Link
 {
 public:
-  CausalLink (string uid, Connector *connector);
+  CausalLink (const string &uid, Connector *connector);
   virtual ~CausalLink (){};
   bool containsSourceNode (Node *node, GenericDescriptor *descriptor);
 

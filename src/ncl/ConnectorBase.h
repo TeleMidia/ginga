@@ -30,22 +30,22 @@ private:
   set<Connector *> connectorSet;
 
 public:
-  ConnectorBase (string id);
+  ConnectorBase (const string &id);
   virtual ~ConnectorBase ();
 
   bool addConnector (Connector *connector);
-  bool addBase (Base *base, string alias, string location);
+  bool addBase (Base *base, const string &alias, const string &location);
 
   void clear ();
-  bool containsConnector (string connectorId);
+  bool containsConnector (const string &connectorId);
   bool containsConnector (Connector *connector);
 
 private:
-  Connector *getConnectorLocally (string connectorId);
+  Connector *getConnectorLocally (const string &connectorId);
 
 public:
-  Connector *getConnector (string connectorId);
-  bool removeConnector (string connectorId);
+  Connector *getConnector (const string &connectorId);
+  bool removeConnector (const string &connectorId);
   bool removeConnector (Connector *connector);
 };
 

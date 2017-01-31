@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NCL_BEGIN
 
 short
-EventUtil::getTypeCode (string typeName)
+EventUtil::getTypeCode (const string &typeName)
 {
   if (typeName == "presentation")
     {
@@ -66,7 +66,7 @@ EventUtil::getTypeName (short type)
 }
 
 short
-EventUtil::getStateCode (string stateName)
+EventUtil::getStateCode (const string &stateName)
 {
   if (stateName == "occurring")
     {
@@ -126,7 +126,7 @@ EventUtil::getTransitionName (short transition)
 }
 
 short
-EventUtil::getTransitionCode (string transition)
+EventUtil::getTransitionCode (const string &transition)
 {
   if (transition == "starts")
     {
@@ -153,7 +153,7 @@ EventUtil::getTransitionCode (string transition)
 }
 
 short
-EventUtil::getAttributeTypeCode (string attTypeName)
+EventUtil::getAttributeTypeCode (const string &attTypeName)
 {
   if (attTypeName == "occurrences")
     {

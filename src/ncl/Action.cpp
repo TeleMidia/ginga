@@ -26,7 +26,7 @@ Action::Action ()
   typeSet.insert ("Action");
 }
 
-Action::Action (string newDelay)
+Action::Action (const string &newDelay)
 {
   delay = newDelay;
   typeSet.insert ("Action");
@@ -39,7 +39,7 @@ Action::getDelay ()
 }
 
 void
-Action::setDelay (string dur)
+Action::setDelay (const string &dur)
 {
   delay = dur;
 }

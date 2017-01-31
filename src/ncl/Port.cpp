@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-Port::Port (string id, Node *someNode, InterfacePoint *someInterfacePoint)
+Port::Port (const string &id, Node *someNode, InterfacePoint *someInterfacePoint)
     : InterfacePoint (id)
 {
   node = someNode;

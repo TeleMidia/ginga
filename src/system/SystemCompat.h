@@ -150,17 +150,17 @@ public:
    * URIs *
    ********/
   static string getGingaPrefix ();
-  static string updatePath (string dir);
-  static string updatePath (string dir, string separator);
-  static bool isXmlStr (string location);
-  static bool checkUriPrefix (string uri);
-  static bool isAbsolutePath (string path);
+  static string updatePath (const string &dir);
+  static string updatePath (const string &dir, const string &separator);
+  static bool isXmlStr (const string &location);
+  static bool checkUriPrefix (const string &uri);
+  static bool isAbsolutePath (const string &path);
 
   static string getIUriD ();
   static string getFUriD ();
 
-  static string getPath (string filename);
-  static string convertRelativePath (string relPath);
+  static string getPath (const string &filename);
+  static string convertRelativePath (const string &relPath);
 
   static string getGingaBinPath ();
   static string getUserCurrentPath ();
@@ -169,7 +169,7 @@ public:
    * defines a new base directory to ginga context files
    * use it carefully
    */
-  static void setGingaContextPrefix (string newBaseDir);
+  static void setGingaContextPrefix (const string &newBaseDir);
 
   /*
    * get base directory to ginga context files
@@ -180,13 +180,13 @@ public:
    * updates the URL with specific system delimiter
    * and append with ginga config files prefix
    */
-  static string appendGingaFilesPrefix (string relUrl);
+  static string appendGingaFilesPrefix (const string &relUrl);
 
   /*
    * updates the URL with specific system delimiter
    * and append with ginga config install prefix
    */
-  static string appendGingaInstallPrefix (string relUrl);
+  static string appendGingaInstallPrefix (const string &relUrl);
 
   /**********************
    * Specific Functions *
@@ -194,7 +194,7 @@ public:
   static const short LOG_NULL = 0;
   static const short LOG_STDO = 1;
   static const short LOG_FILE = 2;
-  static void setLogTo (short logType, string sufix = "");
+  static void setLogTo (short logType, const string &sufix = "");
 
   /******************
    * Time functions *
@@ -204,14 +204,14 @@ public:
   /******************
    * Pipe Functions *
    ******************/
-  static string checkPipeName (string pipeName);
+  static string checkPipeName (const string &pipeName);
 
 private:
   static void checkPipeDescriptor (PipeDescriptor pd);
 
 public:
-  static bool createPipe (string pipeName, PipeDescriptor *pd);
-  static bool openPipe (string pipeName, PipeDescriptor *pd);
+  static bool createPipe (const string &pipeName, PipeDescriptor *pd);
+  static bool openPipe (const string &pipeName, PipeDescriptor *pd);
   static void closePipe (PipeDescriptor pd);
   static int readPipe (PipeDescriptor pd, char *buffer, int buffSize);
   static int writePipe (PipeDescriptor pd, char *data, int dataSize);

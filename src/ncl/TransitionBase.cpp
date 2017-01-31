@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-TransitionBase::TransitionBase (string id) : Base (id)
+TransitionBase::TransitionBase (const string &id) : Base (id)
 {
   transitionSet = new vector<Transition *>;
 }
@@ -67,7 +67,7 @@ TransitionBase::addTransition (Transition *transition)
 }
 
 bool
-TransitionBase::addBase (Base *base, string alias, string location)
+TransitionBase::addBase (Base *base, const string &alias, const string &location)
 {
   if (base->instanceOf ("TransitionBase"))
     {
@@ -84,7 +84,7 @@ TransitionBase::clear ()
 }
 
 Transition *
-TransitionBase::getTransitionLocally (string transitionId)
+TransitionBase::getTransitionLocally (const string &transitionId)
 {
   vector<Transition *>::iterator i;
   Transition *transition;
@@ -103,7 +103,7 @@ TransitionBase::getTransitionLocally (string transitionId)
 }
 
 Transition *
-TransitionBase::getTransition (string transitionId)
+TransitionBase::getTransition (const string &transitionId)
 {
   string::size_type index;
   string prefix, suffix;

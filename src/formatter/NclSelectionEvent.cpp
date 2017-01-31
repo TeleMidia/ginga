@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclSelectionEvent::NclSelectionEvent (string id, void *executionObject,
+NclSelectionEvent::NclSelectionEvent (const string &id, void *executionObject,
                                       ContentAnchor *anchor)
     : NclAnchorEvent (id, executionObject, anchor)
 {
@@ -46,7 +46,7 @@ NclSelectionEvent::start ()
 }
 
 void
-NclSelectionEvent::setSelectionCode (string codeStr)
+NclSelectionEvent::setSelectionCode (const string &codeStr)
 {
   selectionCode = CodeMap::getInstance ()->getCode (codeStr);
 }

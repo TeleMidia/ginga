@@ -31,15 +31,15 @@ private:
   map<string, Parameter *> *parameters;
 
 public:
-  Connector (string id);
+  Connector (const string &id);
   virtual ~Connector ();
   int getNumRoles ();
-  Role *getRole (string roleId);
+  Role *getRole (const string &roleId);
   virtual vector<Role *> *getRoles () = 0;
   void addParameter (Parameter *parameter);
   vector<Parameter *> *getParameters ();
-  Parameter *getParameter (string name);
-  bool removeParameter (string name);
+  Parameter *getParameter (const string &name);
+  bool removeParameter (const string &name);
 };
 
 GINGA_NCL_END

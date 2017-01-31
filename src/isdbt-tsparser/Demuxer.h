@@ -79,7 +79,7 @@ public:
   Demuxer (Tuner *tuner);
   virtual ~Demuxer ();
 
-  string createTSUri (string tsOutputUri);
+  string createTSUri (const string &tsOutputUri);
   bool hasStreamType (short streamType);
   void printPat ();
   void setNptPrinter (bool nptPrinter);

@@ -24,7 +24,7 @@ set<Entity *> Entity::instances;
 pthread_mutex_t Entity::iMutex;
 bool Entity::initMutex = false;
 
-Entity::Entity (string id)
+Entity::Entity (const string &id)
 {
   this->id = id;
   typeSet.insert ("Entity");
@@ -93,7 +93,7 @@ Entity::printHierarchy ()
 }
 
 bool
-Entity::instanceOf (string s)
+Entity::instanceOf (const string &s)
 {
   if (!typeSet.empty ())
     {
@@ -161,7 +161,7 @@ Entity::getId ()
 }
 
 void
-Entity::setId (string someId)
+Entity::setId (const string &someId)
 {
   id = someId;
 }

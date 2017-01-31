@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-DescriptorBase::DescriptorBase (string id) : Base (id)
+DescriptorBase::DescriptorBase (const string &id) : Base (id)
 {
   descriptorSet = new vector<GenericDescriptor *>;
   typeSet.insert ("DescriptorBase");
@@ -62,7 +62,7 @@ DescriptorBase::addDescriptor (GenericDescriptor *descriptor)
 }
 
 bool
-DescriptorBase::addBase (Base *base, string alias, string location)
+DescriptorBase::addBase (Base *base, const string &alias, const string &location)
 {
   if (base->instanceOf ("DescriptorBase"))
     {
@@ -79,7 +79,7 @@ DescriptorBase::clear ()
 }
 
 GenericDescriptor *
-DescriptorBase::getDescriptorLocally (string descriptorId)
+DescriptorBase::getDescriptorLocally (const string &descriptorId)
 {
   vector<GenericDescriptor *>::iterator descriptors;
 
@@ -96,7 +96,7 @@ DescriptorBase::getDescriptorLocally (string descriptorId)
 }
 
 GenericDescriptor *
-DescriptorBase::getDescriptor (string descriptorId)
+DescriptorBase::getDescriptor (const string &descriptorId)
 {
   string::size_type index;
   string prefix, suffix;

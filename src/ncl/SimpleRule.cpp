@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-SimpleRule::SimpleRule (string id, string attr, short op, string val)
+SimpleRule::SimpleRule (const string &id, const string &attr, short op, const string &val)
     : Rule (id)
 {
   attribute = attr;
@@ -57,7 +57,7 @@ SimpleRule::setOperator (short newOp)
 }
 
 void
-SimpleRule::setValue (string newValue)
+SimpleRule::setValue (const string &newValue)
 {
   value = newValue;
 }
@@ -71,7 +71,7 @@ SimpleRule::toString ()
 }
 
 void
-SimpleRule::setAttribute (string someAttribute)
+SimpleRule::setAttribute (const string &someAttribute)
 {
   attribute = someAttribute;
 }

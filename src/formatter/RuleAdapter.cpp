@@ -446,10 +446,10 @@ RuleAdapter::evaluateSimpleRule (SimpleRule *rule)
 }
 
 void
-RuleAdapter::update (arg_unused (void *arg0), void *arg1)
+RuleAdapter::update (arg_unused (void *arg0), const void *arg1)
 {
   string arg;
-  arg = *((string *)(arg1));
+  arg = *((const string *)(arg1));
 
   vector<Rule *> *ruleVector = NULL;
   map<string, vector<Rule *> *>::iterator i;

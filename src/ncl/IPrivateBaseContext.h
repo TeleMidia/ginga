@@ -26,8 +26,8 @@ class IPrivateBaseContext
 {
 public:
   virtual ~IPrivateBaseContext (){};
-  virtual void createPrivateBase (string id) = 0;
-  virtual void *addVisibleDocument (string location,
+  virtual void createPrivateBase (const string &id) = 0;
+  virtual void *addVisibleDocument (const string &location,
                                     DeviceLayout *deviceLayout)
       = 0;
 };

@@ -79,7 +79,7 @@ DescriptorSwitch::hasInstance (DescriptorSwitch *object, bool eraseFromList)
   return hasDSwitch;
 }
 
-DescriptorSwitch::DescriptorSwitch (string id) : GenericDescriptor (id)
+DescriptorSwitch::DescriptorSwitch (const string &id) : GenericDescriptor (id)
 {
   if (!initMutex)
     {
@@ -239,7 +239,7 @@ DescriptorSwitch::getDescriptor (unsigned int index)
 }
 
 GenericDescriptor *
-DescriptorSwitch::getDescriptor (string descriptorId)
+DescriptorSwitch::getDescriptor (const string &descriptorId)
 {
   int i, size;
   GenericDescriptor *descriptor;

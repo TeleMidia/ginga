@@ -42,7 +42,7 @@ NclImportConverter::addImportNCLToImportedDocumentBase (arg_unused (void *parent
           ->getAttribute (XMLString::transcode ("documentURI")));
 
   compiler = (NclDocumentConverter *)getDocumentParser ();
-  importedDocument = compiler->importDocument (&docLocation);
+  importedDocument = compiler->importDocument (docLocation);
   if (importedDocument != NULL)
     {
       thisDocument = (NclDocument *)getDocumentParser ()->getObject (

@@ -87,7 +87,7 @@ public:
 
   virtual void setAdapterManager (void *manager);
 
-  bool instanceOf (string s);
+  bool instanceOf (const string &s);
   virtual void
   setNclEditListener (arg_unused (IPlayerListener *listener)){};
   void setOutputWindow (SDLWindow* windowId);
@@ -120,9 +120,9 @@ public:
   double getOutTransTime ();
   void checkAnchorMonitor ();
 
-  static void printAction (string action, NclExecutionObject *object);
+  static void printAction (const string &action, NclExecutionObject *object);
 
-  static void printAction (string command);
+  static void printAction (const string &command);
 
 public:
   virtual bool start ();
@@ -137,20 +137,22 @@ private:
 
 public:
   virtual bool unprepare ();
-  virtual bool setPropertyValue (NclAttributionEvent *event, string value);
+  virtual bool setPropertyValue (NclAttributionEvent *event, const string &value);
 
-  void setPropertyValue (string name, string value);
+  void setPropertyValue (const string &name, const string &value);
 
   string getPropertyValue (void *event);
-  virtual string getPropertyValue (string name);
+  virtual string getPropertyValue (const string &name);
 
   double getObjectExpectedDuration ();
   void updateObjectExpectedDuration ();
   double getMediaTime ();
   IPlayer *getPlayer ();
   void setTimeBasePlayer (AdapterFormatterPlayer *timeBasePlayer);
-  virtual void updateStatus (short code, string parameter = "",
-                             short type = 10, string value = "");
+  virtual void updateStatus (short code,
+                             const string &parameter = "",
+                             short type = 10,
+                             const string &value = "");
 
   bool userEventReceived (SDLInputEvent *ev);
 
@@ -163,7 +165,7 @@ protected:
 
 public:
   virtual void flip (){};
-  virtual void timeShift (string direction);
+  virtual void timeShift (const string &direction);
 };
 
 GINGA_FORMATTER_END

@@ -89,7 +89,7 @@ NCLSectionProcessor::clearDataToProcess ()
 }
 
 void
-NCLSectionProcessor::createDirectory (string newDir)
+NCLSectionProcessor::createDirectory (const string &newDir)
 {
   vector<string> *dirs;
   vector<string>::iterator i;
@@ -252,8 +252,8 @@ NCLSectionProcessor::getMetadata ()
 
 // creating stream
 vector<StreamData *> *
-NCLSectionProcessor::createNCLSections (string componentTag, string name,
-                                        string baseUri,
+NCLSectionProcessor::createNCLSections (const string &componentTag, const string &name,
+                                        const string &baseUri,
                                         vector<string> *files,
                                         arg_unused (map<int, string> *eventMap))
 {

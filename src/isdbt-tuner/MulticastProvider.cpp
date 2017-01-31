@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TUNER_BEGIN
 
-MulticastProvider::MulticastProvider (string groupAddr, int port)
+MulticastProvider::MulticastProvider (const string &groupAddr, int port)
 {
   clog << "UDP MulticastProvider address '" << groupAddr << ":";
   clog << port << "'" << endl;

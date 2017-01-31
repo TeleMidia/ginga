@@ -46,11 +46,11 @@ public:
   * @param s true if the text of this region is case sensitive
   * and false otherwise.
   */
-  TextAnchor (string id, string t, long p);
+  TextAnchor (const string &id, const string &t, long p);
   long getPosition ();
   string getText ();
   void setPosition (long p);
-  void setText (string t);
+  void setText (const string &t);
 };
 
 GINGA_NCL_END

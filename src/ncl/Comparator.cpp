@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NCL_BEGIN
 
 bool
-Comparator::evaluate (string first, string second, short comparator)
+Comparator::evaluate (const string &first, const string &second, short comparator)
 { // 2 object -> comparable
 
   if (first == "" || second == "")
@@ -158,7 +158,7 @@ Comparator::toString (short comparator)
 }
 
 short
-Comparator::fromString (string comp)
+Comparator::fromString (const string &comp)
 {
   string comparator = comp;
   for (unsigned i = 0; i < comparator.length (); i++)

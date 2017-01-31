@@ -30,7 +30,7 @@ using namespace ::ginga::util;
 GINGA_FORMATTER_BEGIN
 
 SDLSurface*
-NclFocusSourceManager::getFocusSourceComponent (string src)
+NclFocusSourceManager::getFocusSourceComponent (const string &src)
 {
   string::size_type index;
   string extension;

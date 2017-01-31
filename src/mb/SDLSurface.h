@@ -90,7 +90,7 @@ public:
 
   void addCaps (int caps);
   void setCaps (int caps);
-  int getCap (string cap);
+  int getCap (const string &cap);
   int getCaps ();
   bool setParentWindow (SDLWindow *parentWindow);
   SDLWindow *getParentWindow ();

@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclAnchorEvent::NclAnchorEvent (string id, void *executionObject,
+NclAnchorEvent::NclAnchorEvent (const string &id, void *executionObject,
                                 ContentAnchor *anchor)
     : NclFormatterEvent (id, executionObject)
 {

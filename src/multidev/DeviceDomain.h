@@ -96,7 +96,7 @@ protected:
   virtual void receiveAnswerTask (char *answerTask) = 0;
 
 public:
-  virtual bool postMediaContentTask (int destDevClass, string url) = 0;
+  virtual bool postMediaContentTask (int destDevClass, const string &url) = 0;
 
 protected:
   virtual bool receiveMediaContentTask (char *task) = 0;
@@ -110,7 +110,7 @@ protected:
 
 public:
   virtual void setDeviceInfo (int width, int height,
-                              string base_device_ncl_path);
+                              const string &base_device_ncl_path);
   int getDeviceClass ();
 
 protected:

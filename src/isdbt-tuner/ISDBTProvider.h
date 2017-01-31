@@ -151,7 +151,7 @@ public:
   Channel *getCurrentChannel ();
   bool getSTCValue (uint64_t *stc, int *valueType);
   bool changeChannel (int factor);
-  bool setChannel (string channelValue);
+  bool setChannel (const string &channelValue);
   int createPesFilter (int pid, int pesType, bool compositeFiler);
   string getPesFilterOutput ();
   void close ();

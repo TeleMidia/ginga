@@ -156,7 +156,7 @@ EPGProcessor::setDataProcessor (void *dataProcessor)
  */
 
 void
-EPGProcessor::addEPGListener (IEPGListener *listener, arg_unused (string request),
+EPGProcessor::addEPGListener (IEPGListener *listener, arg_unused (const string &request),
                               unsigned char type)
 {
   // TODO: handle request properly.
@@ -686,7 +686,7 @@ EPGProcessor::printFieldMap (map<string, struct SIField> *fieldMap)
 }
 
 struct SIField *
-EPGProcessor::handleFieldStr (string str)
+EPGProcessor::handleFieldStr (const string &str)
 {
   struct SIField *field;
   // clog << "EPGProcessor::handleFieldstr with str = " << str << endl;
@@ -721,7 +721,7 @@ EPGProcessor::decodeTot (ITransportSection *section)
 }
 
 void
-EPGProcessor::decodeCdt (string fileName)
+EPGProcessor::decodeCdt (const string &fileName)
 {
   char data[4084];
   FILE *fd;

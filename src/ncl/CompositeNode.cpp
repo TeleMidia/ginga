@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-CompositeNode::CompositeNode (string id) : NodeEntity (id, NULL)
+CompositeNode::CompositeNode (const string &id) : NodeEntity (id, NULL)
 {
   typeSet.insert ("CompositeNode");
 }
@@ -109,7 +109,7 @@ CompositeNode::getNumPorts ()
 }
 
 Port *
-CompositeNode::getPort (string portId)
+CompositeNode::getPort (const string &portId)
 {
   if (portId == "")
     {
@@ -199,7 +199,7 @@ CompositeNode::getMapInterface (Port *port)
 }
 
 Node *
-CompositeNode::getNode (string nodeId)
+CompositeNode::getNode (const string &nodeId)
 {
   vector<Node *>::iterator i;
 
@@ -227,7 +227,7 @@ CompositeNode::getNumNodes ()
 }
 
 bool
-CompositeNode::recursivelyContainsNode (string nodeId)
+CompositeNode::recursivelyContainsNode (const string &nodeId)
 {
   if (recursivelyGetNode (nodeId) != NULL)
     {
@@ -295,7 +295,7 @@ CompositeNode::recursivelyContainsNode (Node *node)
 }
 
 Node *
-CompositeNode::recursivelyGetNode (string nodeId)
+CompositeNode::recursivelyGetNode (const string &nodeId)
 {
   Node *node;
   vector<Node *>::iterator i;
@@ -364,7 +364,7 @@ CompositeNode::getNodeDescriptor (arg_unused (Node *node))
 }
 
 bool
-CompositeNode::setNodeDescriptor (arg_unused (string nodeId),
+CompositeNode::setNodeDescriptor (arg_unused (const string &nodeId),
                                   arg_unused (GenericDescriptor *descriptor))
 {
   return false;

@@ -52,7 +52,7 @@ NclLinkAction::initLinkAction (double delay)
 }
 
 bool
-NclLinkAction::instanceOf (string s)
+NclLinkAction::instanceOf (const string &s)
 {
   if (typeSet.empty ())
     {

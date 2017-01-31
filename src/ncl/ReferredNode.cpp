@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-ReferredNode::ReferredNode (string id, void *element) : Entity (id)
+ReferredNode::ReferredNode (const string &id, void *element) : Entity (id)
 {
   referElement = element;
   typeSet.insert ("ReferredNode");

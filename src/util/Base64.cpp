@@ -47,7 +47,7 @@ is_base64 (unsigned char c)
 }
 
 string
-getBase64FromFile (string file_path)
+getBase64FromFile (const string &file_path)
 {
   string sResult;
   FILE *readfile;
@@ -100,7 +100,7 @@ getBase64FromFile (string file_path)
 
 /* writes a file to a path with data coming from a Base64 string */
 int
-writeFileFromBase64 (string payload, char *file_path)
+writeFileFromBase64 (const string &payload, char *file_path)
 {
   int len = -1;
   string result;
@@ -183,7 +183,7 @@ base64_encode (unsigned char const *bytes_to_encode, unsigned int in_len)
 }
 
 std::string
-base64_decode (std::string const &encoded_string)
+base64_decode (const string &encoded_string)
 {
   int in_len = encoded_string.size ();
 

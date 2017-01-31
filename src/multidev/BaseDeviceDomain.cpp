@@ -163,7 +163,7 @@ BaseDeviceDomain::postAnswerTask (int reqDeviceClass, int answer)
         }*/
 
 bool
-BaseDeviceDomain::postMediaContentTask (int destDevClass, string url)
+BaseDeviceDomain::postMediaContentTask (int destDevClass, const string &url)
 {
   FILE *fd;
   int fileSize;
@@ -240,7 +240,7 @@ BaseDeviceDomain::receiveEventTask (char *task)
 
 void
 BaseDeviceDomain::setDeviceInfo (int width, int height,
-                                 string base_device_ncl_path)
+                                 const string &base_device_ncl_path)
 {
   DeviceDomain::setDeviceInfo (width, height, base_device_ncl_path);
   connected = true;

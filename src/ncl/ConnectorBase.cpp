@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-ConnectorBase::ConnectorBase (string id) : Base (id)
+ConnectorBase::ConnectorBase (const string &id) : Base (id)
 {
   typeSet.insert ("ConnectorBase");
 }
@@ -54,7 +54,7 @@ ConnectorBase::addConnector (Connector *connector)
 }
 
 bool
-ConnectorBase::addBase (Base *base, string alias, string location)
+ConnectorBase::addBase (Base *base, const string &alias, const string &location)
 {
   if (Base::hasInstance (base, false) && base->instanceOf ("ConnectorBase"))
     {
@@ -72,7 +72,7 @@ ConnectorBase::clear ()
 }
 
 bool
-ConnectorBase::containsConnector (string connectorId)
+ConnectorBase::containsConnector (const string &connectorId)
 {
   if (getConnectorLocally (connectorId) != NULL)
     {
@@ -98,7 +98,7 @@ ConnectorBase::containsConnector (Connector *connector)
 }
 
 Connector *
-ConnectorBase::getConnectorLocally (string connectorId)
+ConnectorBase::getConnectorLocally (const string &connectorId)
 {
   set<Connector *>::iterator i;
 
@@ -116,7 +116,7 @@ ConnectorBase::getConnectorLocally (string connectorId)
 }
 
 Connector *
-ConnectorBase::getConnector (string connectorId)
+ConnectorBase::getConnector (const string &connectorId)
 {
   string::size_type index;
   string prefix, suffix;
@@ -165,7 +165,7 @@ ConnectorBase::getConnector (string connectorId)
 }
 
 bool
-ConnectorBase::removeConnector (string connectorId)
+ConnectorBase::removeConnector (const string &connectorId)
 {
   Connector *connector;
 

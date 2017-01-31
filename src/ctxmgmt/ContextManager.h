@@ -49,16 +49,16 @@ private:
   void initializeContexts ();
 
 public:
-  void addContextVar (int userId, string varName, string varValue);
-  void addUser (GingaUser *newUser);
+  void addContextVar (int userId, const string &varName, const string &varValue);
+  void addUser (GingaUser *newUser); // fixme: should be const GingaUser*
   void saveUsersAccounts ();
   void saveUsersProfiles ();
-  void addContextListener (IContextListener *listener);
-  void removeContextListener (IContextListener *listener);
-  void setGlobalVar (string varName, string varValue);
+  void addContextListener (IContextListener *listener); // fixme: should be const GingaUser*
+  void removeContextListener (IContextListener *listener); // fixme: should be const GingaUser*
+  void setGlobalVar (const string &varName, const string &varValue);
 
 private:
-  void saveProfile (FILE *fd, int userId, map<string, string> *profile);
+  void saveProfile (FILE *fd, int userId, const map<string, string> *profile);
 
 public:
   void setCurrentUserId (int userId);

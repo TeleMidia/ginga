@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclFormatterDeviceRegion::NclFormatterDeviceRegion (string id)
+NclFormatterDeviceRegion::NclFormatterDeviceRegion (const string &id)
     : LayoutRegion (id)
 {
   this->id = id;
@@ -86,7 +86,7 @@ NclFormatterDeviceRegion::cloneRegion ()
 }
 
 int
-NclFormatterDeviceRegion::compareWidthSize (string w)
+NclFormatterDeviceRegion::compareWidthSize (const string &w)
 {
   int newW;
 
@@ -106,7 +106,7 @@ NclFormatterDeviceRegion::compareWidthSize (string w)
 }
 
 int
-NclFormatterDeviceRegion::compareHeightSize (string h)
+NclFormatterDeviceRegion::compareHeightSize (const string &h)
 {
   int newH;
 
@@ -156,7 +156,7 @@ NclFormatterDeviceRegion::getRight ()
 }
 
 LayoutRegion *
-NclFormatterDeviceRegion::getRegion (string id)
+NclFormatterDeviceRegion::getRegion (const string &id)
 {
   int i, size;
   LayoutRegion *region;
@@ -178,7 +178,7 @@ NclFormatterDeviceRegion::getRegion (string id)
 }
 
 LayoutRegion *
-NclFormatterDeviceRegion::getRegionRecursively (string id)
+NclFormatterDeviceRegion::getRegionRecursively (const string &id)
 {
   int i, size;
   LayoutRegion *region, *auxRegion;
@@ -379,7 +379,7 @@ NclFormatterDeviceRegion::setRight (arg_unused (double newRight), arg_unused (bo
 }
 
 void
-NclFormatterDeviceRegion::setTitle (arg_unused (string newTitle))
+NclFormatterDeviceRegion::setTitle (arg_unused (const string &newTitle))
 {
 }
 
@@ -625,7 +625,7 @@ NclFormatterDeviceRegion::getId ()
 }
 
 void
-NclFormatterDeviceRegion::setId (string id)
+NclFormatterDeviceRegion::setId (const string &id)
 {
   this->id = id;
 }

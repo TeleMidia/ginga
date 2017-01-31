@@ -42,8 +42,8 @@ protected:
   virtual void initialize () = 0;
 
 public:
-  void *parse (string uri, string iUriD, string fUriD);
-  void *parse (DOMElement *rootElement, string uri);
+  void *parse (const string &uri, const string &iUriD, const string &fUriD);
+  void *parse (DOMElement *rootElement, const string &uri);
 
 protected:
   virtual void setDependencies ();
@@ -51,27 +51,27 @@ protected:
 
 private:
   void initializeUserCurrentPath ();
-  string absoluteFile (string basePath, string filename);
-  string getPath (string filename);
+  string absoluteFile (const string &basePath, const string &filename);
+  string getPath (const string &filename);
 
 public:
   string getIUriD ();
   string getFUriD ();
   string getUserCurrentPath ();
-  bool checkUriPrefix (string uri);
-  bool isAbsolutePath (string path);
-  bool isXmlStr (string location);
+  bool checkUriPrefix (const string &uri);
+  bool isAbsolutePath (const string &path);
+  bool isXmlStr (const string &location);
 
-  string getAbsolutePath (string path);
+  string getAbsolutePath (const string &path);
   string getDocumentUri ();
   string getDocumentPath ();
-  void setDocumentPath (string path);
+  void setDocumentPath (const string &path);
   DOMDocument *getDocumentTree ();
-  void addObject (string tableName, string key, void *value);
-  void *getObject (string tableName, string key);
-  void removeObject (string tableName, string key);
-  void addObjectGrouped (string tableName, string key, void *value);
-  bool importDocument (DocumentParser *parser, string docLocation);
+  void addObject (const string &tableName, const string &key, void *value);
+  void *getObject (const string &tableName, const string &key);
+  void removeObject (const string &tableName, const string &key);
+  void addObjectGrouped (const string &tableName, const string &key, void *value);
+  bool importDocument (DocumentParser *parser, const string &docLocation);
 };
 
 GINGA_NCLCONV_END

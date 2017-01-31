@@ -26,7 +26,7 @@ class LinkComposition
 {
 public:
   virtual ~LinkComposition (){};
-  virtual bool instanceOf (string className) = 0;
+  virtual bool instanceOf (const string &className) = 0;
   virtual bool addLink (Link *link) = 0;
   virtual void clearLinks () = 0;
   virtual bool containsLink (Link *link) = 0;

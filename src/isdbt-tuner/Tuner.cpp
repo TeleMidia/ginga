@@ -23,7 +23,7 @@ using namespace ::ginga::mb;
 
 GINGA_TUNER_BEGIN
 
-Tuner::Tuner (string network, string protocol, string address)
+Tuner::Tuner (const string &network, const string &protocol, const string &address)
     : Thread ()
 {
   receiving = false;
@@ -128,8 +128,9 @@ Tuner::receiveSignal (short signalCode)
 }
 
 void
-Tuner::initializeInterface (string niSpec)
+Tuner::initializeInterface (const string &_niSpec)
 {
+  string niSpec = _niSpec;
   size_t pos;
   int fo = 0;
 
@@ -223,7 +224,7 @@ Tuner::initializeInterfaces ()
 }
 
 void
-Tuner::createInterface (string network, string protocol, string address)
+Tuner::createInterface (const string &network, const string &protocol, const string &address)
 {
   currentInterface++;
   NetworkInterface *newInterface
@@ -294,7 +295,7 @@ Tuner::hasSignal ()
 }
 
 void
-Tuner::setSpec (string niName, string ch)
+Tuner::setSpec (const string &niName, const string &ch)
 {
   clearInterfaces ();
 

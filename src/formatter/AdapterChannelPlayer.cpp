@@ -66,7 +66,7 @@ AdapterChannelPlayer::createPlayer ()
                   mrlPlayer = ((ReferenceContent *)content)
                                   ->getCompleteReferenceUrl ();
 
-                  childPlayer = new AVPlayer (mrlPlayer.c_str ());
+                  childPlayer = new AVPlayer (mrlPlayer);
 
                   if (childPlayer != NULL)
                     {
@@ -110,7 +110,7 @@ AdapterChannelPlayer::createPlayer ()
 
 bool
 AdapterChannelPlayer::setPropertyValue (NclAttributionEvent *event,
-                                        string value)
+                                        const string &value)
 {
   if (value == "")
     {

@@ -40,7 +40,7 @@ private:
   set<ReferNode *> gradSameInstances;
 
 public:
-  NodeEntity (string uid, Content *someContent);
+  NodeEntity (const string &uid, Content *someContent);
   virtual ~NodeEntity ();
 
   LambdaAnchor *getLambdaAnchor ();
@@ -50,7 +50,7 @@ public:
   void setContent (Content *content);
   bool addAnchor (Anchor *anchor);
   bool addAnchor (int index, Anchor *anchor);
-  void setId (string id);
+  void setId (const string &id);
   bool removeAnchor (int index);
   bool removeAnchor (Anchor *anchor);
   set<ReferNode *> *getInstSameInstances ();

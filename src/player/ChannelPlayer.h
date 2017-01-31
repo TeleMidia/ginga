@@ -38,7 +38,7 @@ public:
   IPlayer *getSelectedPlayer ();
   void setPlayerMap (map<string, IPlayer *> *objs);
   map<string, IPlayer *> *getPlayerMap ();
-  IPlayer *getPlayer (string objectId);
+  IPlayer *getPlayer (const string &objectId);
   void select (IPlayer *selObject);
   double getMediaTime ();
 
@@ -53,10 +53,12 @@ public:
   void pause ();
   void resume ();
   void stop ();
-  virtual void setPropertyValue (string name, string value);
-  void updateStatus (short code, string parameter = "",
-                     short type = TYPE_PRESENTATION, string value = "");
-  virtual void timeShift (arg_unused (string direction)){};
+  virtual void setPropertyValue (const string &name, const string &value);
+  void updateStatus (short code,
+                     const string &parameter = "",
+                     short type = TYPE_PRESENTATION,
+                     const string &value = "");
+  virtual void timeShift (arg_unused (const string &direction)){};
 };
 
 GINGA_PLAYER_END

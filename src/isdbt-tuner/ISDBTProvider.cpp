@@ -576,7 +576,7 @@ ISDBTProvider::changeChannel (int factor)
 }
 
 bool
-ISDBTProvider::setChannel (string channelValue)
+ISDBTProvider::setChannel (const string &channelValue)
 {
   return frontend->changeFrequency (xstrto_uint (channelValue));
 }

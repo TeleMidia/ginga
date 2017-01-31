@@ -30,9 +30,9 @@ private:
 
 public:
   Animation ();
-  void setDuration (string dur);
+  void setDuration (const string &dur);
   string getDuration ();
-  void setBy (string by);
+  void setBy (const string &by);
   string getBy ();
 };
 

@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-ContextNode::ContextNode (string id) : CompositeNode (id)
+ContextNode::ContextNode (const string &id) : CompositeNode (id)
 {
   typeSet.insert ("ContextNode");
   typeSet.insert ("DocumentNode");
@@ -129,7 +129,7 @@ ContextNode::getLinks ()
 }
 
 Link *
-ContextNode::getLink (string linkId)
+ContextNode::getLink (const string &linkId)
 {
   set<Link *>::iterator i;
 
@@ -178,7 +178,7 @@ ContextNode::removeLink (Link *link)
 }
 
 bool
-ContextNode::setNodeDescriptor (string nodeId,
+ContextNode::setNodeDescriptor (const string &nodeId,
                                 GenericDescriptor *descriptor)
 {
   Node *node;

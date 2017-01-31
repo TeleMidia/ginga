@@ -25,7 +25,7 @@ GINGA_NCL_BEGIN
 class Anchor : public InterfacePoint
 {
 public:
-  Anchor (string id);
+  Anchor (const string &id);
 };
 
 GINGA_NCL_END

@@ -45,12 +45,12 @@ public:
   void setOCDelay (double ocDelay);
   void setInteractivityInfo (bool hasOCSupport);
   void removeOCFilterAfterMount (bool removeIt);
-  void setTunerSpec (string tunerSpec);
+  void setTunerSpec (const string &tunerSpec);
 
 private:
   void showTunningWindow (int x, int y, int w, int h);
   void releaseTunningWindow ();
-  IPlayer *createMainAVPlayer (string dstUri, int x, int y, int w, int h);
+  IPlayer *createMainAVPlayer (const string &dstUri, int x, int y, int w, int h);
 
 public:
   void tune ();

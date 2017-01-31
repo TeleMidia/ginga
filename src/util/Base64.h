@@ -37,9 +37,9 @@
 GINGA_UTIL_BEGIN
 
 string base64_encode (unsigned char const *, unsigned int len);
-string base64_decode (std::string const &s);
-string getBase64FromFile (string file_path);
-int writeFileFromBase64 (string payload, char *file_path);
+string base64_decode (const string &s);
+string getBase64FromFile (const string &file_path);
+int writeFileFromBase64 (const string &payload, char *file_path);
 
 GINGA_UTIL_END
 

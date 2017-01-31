@@ -142,7 +142,7 @@ NclCascadingDescriptor::initializeCascadingDescriptor ()
 }
 
 bool
-NclCascadingDescriptor::instanceOf (string s)
+NclCascadingDescriptor::instanceOf (const string &s)
 {
   if (typeSet.empty ())
     return false;
@@ -418,11 +418,12 @@ NclCascadingDescriptor::getFormatterRegion ()
 }
 
 void
-NclCascadingDescriptor::updateRegion (void *formatterLayout, string name,
-                                      string value)
+NclCascadingDescriptor::updateRegion (void *formatterLayout, const string &name,
+                                      const string &v)
 {
   vector<string> *params;
   bool isPercentual;
+  string value = v;
 
   if (name == "left")
     {
@@ -662,7 +663,7 @@ NclCascadingDescriptor::getParameters ()
 }
 
 string
-NclCascadingDescriptor::getParameterValue (string paramName)
+NclCascadingDescriptor::getParameterValue (const string &paramName)
 {
   string::size_type pos;
   string paramValue;

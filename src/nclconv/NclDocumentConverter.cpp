@@ -141,7 +141,7 @@ NclDocumentConverter::initialize ()
 }
 
 string
-NclDocumentConverter::getAttribute (void *element, string attribute)
+NclDocumentConverter::getAttribute (void *element, const string &attribute)
 {
   return XMLString::transcode (
       ((DOMElement *)element)
@@ -149,7 +149,7 @@ NclDocumentConverter::getAttribute (void *element, string attribute)
 }
 
 Node *
-NclDocumentConverter::getNode (string nodeId)
+NclDocumentConverter::getNode (const string &nodeId)
 {
   NclDocument *document;
 
@@ -172,12 +172,12 @@ NclDocumentConverter::getPrivateBaseContext ()
 }
 
 NclDocument *
-NclDocumentConverter::importDocument (string *docLocation)
+NclDocumentConverter::importDocument (string &docLocation)
 {
   string uri;
   string::size_type pos;
 
-  uri = *docLocation;
+  uri = docLocation;
   while (true)
     {
       pos = uri.find_first_of (getFUriD ());
@@ -204,16 +204,16 @@ NclDocumentConverter::importDocument (string *docLocation)
     }
 
   clog << "NclDocumentConverter::importDocument location '";
-  clog << *docLocation << "' translated URI = '" << uri << "'";
+  clog << docLocation << "' translated URI = '" << uri << "'";
   clog << endl;
 
-  *docLocation = uri;
+  docLocation = uri;
   return (NclDocument *)(privateBaseContext->addVisibleDocument (
       uri, deviceLayout));
 }
 
 void *
-NclDocumentConverter::parseEntity (string entityLocation,
+NclDocumentConverter::parseEntity (const string &entityLocation,
                                    NclDocument *document, void *parent)
 {
   void *entity;

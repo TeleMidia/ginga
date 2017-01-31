@@ -84,7 +84,7 @@ public:
   void setNptPrinter (bool nptPrinter);
 
   bool applicationInfoMounted (IAIT *ait);
-  void serviceDomainMounted (string mountPoint, map<string, string> *names,
+  void serviceDomainMounted (const string &mountPoint, map<string, string> *names,
                              map<string, string> *paths);
 
   void setDemuxer (IDemuxer *demux);
@@ -96,10 +96,10 @@ public:
   void createStreamTypeSectionFilter (short streamType);
   void createPidSectionFilter (int pid);
 
-  void addSEListener (string eventType,
+  void addSEListener (const string &eventType,
                       IDsmccStreamEventListener *listener);
 
-  void removeSEListener (string eventType,
+  void removeSEListener (const string &eventType,
                          IDsmccStreamEventListener *listener);
 
   void setServiceDomainListener (IDsmccServiceDomainListener *listener);

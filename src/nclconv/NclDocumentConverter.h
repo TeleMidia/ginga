@@ -59,22 +59,22 @@ protected:
   virtual void *parseRootElement (DOMElement *rootElement);
 
 public:
-  string getAttribute (void *element, string attribute);
-  Node *getNode (string id);
+  string getAttribute (void *element, const string &attribute);
+  Node *getNode (const string &id);
   bool removeNode (Node *node);
   IPrivateBaseContext *getPrivateBaseContext ();
-  NclDocument *importDocument (string *docLocation);
-  void *parseEntity (string entityLocation, NclDocument *document,
+  NclDocument *importDocument (string &docLocation);
+  void *parseEntity (const string &entityLocation, NclDocument *document,
                      void *parent);
 
   void *
-  getObject (string tableName, string key)
+  getObject (const string &tableName, const string &key)
   {
     return DocumentParser::getObject (tableName, key);
   }
 
   void *
-  parse (string uri, string iUriD, string fUriD)
+  parse (const string &uri, const string &iUriD, const string &fUriD)
   {
     return DocumentParser::parse (uri, iUriD, fUriD);
   }

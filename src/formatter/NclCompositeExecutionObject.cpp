@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 NclCompositeExecutionObject::NclCompositeExecutionObject (
-    string id, Node *dataObject, bool handling,
+    const string &id, Node *dataObject, bool handling,
     INclLinkActionListener *seListener)
     : NclExecutionObject (id, dataObject, handling, seListener)
 {
@@ -29,7 +29,7 @@ NclCompositeExecutionObject::NclCompositeExecutionObject (
 }
 
 NclCompositeExecutionObject::NclCompositeExecutionObject (
-    string id, Node *dataObject, NclCascadingDescriptor *descriptor,
+    const string &id, Node *dataObject, NclCascadingDescriptor *descriptor,
     bool handling, INclLinkActionListener *seListener)
     : NclExecutionObject (id, dataObject, descriptor, handling, seListener)
 {
@@ -94,7 +94,7 @@ NclCompositeExecutionObject::~NclCompositeExecutionObject ()
 
 void
 NclCompositeExecutionObject::initializeCompositeExecutionObject (
-    arg_unused (string id), Node *dataObject, arg_unused (NclCascadingDescriptor *descriptor))
+    arg_unused (const string &id), Node *dataObject, arg_unused (NclCascadingDescriptor *descriptor))
 {
   ContextNode *compositeNode;
   set<Link *> *compositionLinks;
@@ -202,7 +202,7 @@ NclCompositeExecutionObject::addExecutionObject (NclExecutionObject *obj)
 }
 
 bool
-NclCompositeExecutionObject::containsExecutionObject (string execObjId)
+NclCompositeExecutionObject::containsExecutionObject (const string &execObjId)
 {
   if (getExecutionObject (execObjId) != NULL)
     {
@@ -215,7 +215,7 @@ NclCompositeExecutionObject::containsExecutionObject (string execObjId)
 }
 
 NclExecutionObject *
-NclCompositeExecutionObject::getExecutionObject (string id)
+NclCompositeExecutionObject::getExecutionObject (const string &id)
 {
   map<string, NclExecutionObject *>::iterator i;
   NclExecutionObject *execObj;
@@ -766,7 +766,7 @@ NclCompositeExecutionObject::linkEvaluationFinished (
 
 bool
 NclCompositeExecutionObject::setPropertyValue (NclAttributionEvent *event,
-                                               string value)
+                                               const string &value)
 {
   if (event->getAnchor ()->getPropertyName () == "visible")
     {

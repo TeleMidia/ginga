@@ -114,7 +114,7 @@ ProgramAV::getSurface ()
 }
 
 void
-ProgramAV::addPidName (string name, int pid)
+ProgramAV::addPidName (const string &name, int pid)
 {
   clog << "ProgramAV::addPidName '" << name << "' = '" << pid;
   clog << "'" << endl;
@@ -122,7 +122,7 @@ ProgramAV::addPidName (string name, int pid)
 }
 
 int
-ProgramAV::getPidByName (string name)
+ProgramAV::getPidByName (const string &name)
 {
   map<string, int>::iterator i;
 
@@ -136,7 +136,7 @@ ProgramAV::getPidByName (string name)
 }
 
 void
-ProgramAV::forcePids (string pValue)
+ProgramAV::forcePids (const string &pValue)
 {
   vector<string> *vals;
   string name;
@@ -153,7 +153,7 @@ ProgramAV::forcePids (string pValue)
 }
 
 void
-ProgramAV::setAVPid (string name, int aPid, int vPid)
+ProgramAV::setAVPid (const string &name, int aPid, int vPid)
 {
   IPlayer *p;
   int pid;
@@ -183,7 +183,7 @@ ProgramAV::setAVPid (string name, int aPid, int vPid)
 }
 
 string
-ProgramAV::getNameFromMrl (string mrl)
+ProgramAV::getNameFromMrl (const string &mrl)
 {
   if (mrl.substr (0, 11) == "sbtvd-ts://")
     {
@@ -198,7 +198,7 @@ ProgramAV::getNameFromMrl (string mrl)
 }
 
 void
-ProgramAV::showPlayer (string mrl)
+ProgramAV::showPlayer (const string &mrl)
 {
   IPlayer *player;
 
@@ -210,7 +210,7 @@ ProgramAV::showPlayer (string mrl)
 }
 
 void
-ProgramAV::hidePlayer (string mrl)
+ProgramAV::hidePlayer (const string &mrl)
 {
   IPlayer *player;
 
@@ -222,7 +222,7 @@ ProgramAV::hidePlayer (string mrl)
 }
 
 void
-ProgramAV::createPlayer (string mrl)
+ProgramAV::createPlayer (const string &mrl)
 {
   string name;
   gint64 x;
@@ -247,7 +247,7 @@ ProgramAV::createPlayer (string mrl)
     }
 
   currentPid = pid;
-  currentPlayer = new AVPlayer (mrl.c_str ());
+  currentPlayer = new AVPlayer (mrl);
 
   if (fullScreenBounds != "")
     {
@@ -282,7 +282,7 @@ ProgramAV::setPlayer (int pid, IPlayer *player)
 }
 
 IPlayer *
-ProgramAV::getPlayer (string mrl)
+ProgramAV::getPlayer (const string &mrl)
 {
   string name;
   gint64 x;
@@ -316,7 +316,7 @@ ProgramAV::getPlayer (int pid)
 }
 
 string
-ProgramAV::getPropertyValue (string name)
+ProgramAV::getPropertyValue (const string &name)
 {
   string value = "";
 
@@ -334,56 +334,56 @@ ProgramAV::getPropertyValue (string name)
 }
 
 void
-ProgramAV::setPropertyValue (string pName, string pValue)
+ProgramAV::setPropertyValue (const string &name, const string &value)
 {
-  clog << "ProgramAV::setPropertyValue '" << pName << "' = '";
-  clog << pValue << "'" << endl;
+  clog << "ProgramAV::setPropertyValue '" << name << "' = '";
+  clog << value << "'" << endl;
 
-  if (pName.substr (0, 11) == "sbtvd-ts://")
+  if (name.substr (0, 11) == "sbtvd-ts://")
     {
-      addPidName (getNameFromMrl (pName), xstrto_int (pValue));
+      addPidName (getNameFromMrl (name), xstrto_int (value));
     }
-  else if (pName == "createPlayer")
+  else if (name == "createPlayer")
     {
-      createPlayer (pValue);
+      createPlayer (value);
     }
-  else if (pName == "showPlayer")
+  else if (name == "showPlayer")
     {
-      showPlayer (pValue);
+      showPlayer (value);
     }
-  else if (pName == "hidePlayer")
+  else if (name == "hidePlayer")
     {
-      hidePlayer (pValue);
+      hidePlayer (value);
     }
-  else if (pName == "setBoundaries")
+  else if (name == "setBoundaries")
     {
-      fullScreenBounds = pValue;
+      fullScreenBounds = value;
     }
-  else if (pName == "forcePids")
+  else if (name == "forcePids")
     {
-      forcePids (pValue);
+      forcePids (value);
     }
   else if (currentPlayer != NULL)
     {
-      if (pName == "bounds")
+      if (name == "bounds")
         {
-          if (pValue == "")
+          if (value == "")
             {
               if (playerBounds.count (currentPid) != 0)
                 {
                   currentPlayer->setPropertyValue (
-                      pName, playerBounds[currentPid]);
+                      name, playerBounds[currentPid]);
                 }
             }
           else
             {
-              currentPlayer->setPropertyValue (pName, pValue);
+              currentPlayer->setPropertyValue (name, value);
             }
         }
       else
         {
-          currentPlayer->setPropertyValue (pName, pValue);
-          Player::setPropertyValue (pName, pValue);
+          currentPlayer->setPropertyValue (name, value);
+          Player::setPropertyValue (name, value);
         }
     }
 }

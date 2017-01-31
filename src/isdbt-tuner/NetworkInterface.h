@@ -39,8 +39,8 @@ private:
   bool tuned;
 
 public:
-  NetworkInterface (int networkId, string name, string protocol,
-                    string addr);
+  NetworkInterface (int networkId, const string &name, const string &protocol,
+                    const string &addr);
 
   virtual ~NetworkInterface ();
 
@@ -62,7 +62,7 @@ public:
   bool hasSignal ();
   IDataProvider *tune ();
   bool changeChannel (int factor);
-  bool setChannel (string channelValue);
+  bool setChannel (const string &channelValue);
   bool getSTCValue (uint64_t *stc, int *valueType);
   Channel *getCurrentChannel ();
   int createPesFilter (int pid, int pesType, bool compositeFiler);

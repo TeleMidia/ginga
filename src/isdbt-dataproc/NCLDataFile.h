@@ -36,10 +36,10 @@ public:
 
   int getId ();
 
-  void setComponentTag (string componentTag);
+  void setComponentTag (const string &componentTag);
   string getCopmonentTag ();
 
-  void setUri (string uri);
+  void setUri (const string &uri);
   string getUri ();
 
   void setSize (double size);

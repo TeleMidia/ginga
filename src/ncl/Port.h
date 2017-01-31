@@ -31,7 +31,7 @@ protected:
   InterfacePoint *interfacePoint;
 
 public:
-  Port (string id, Node *someNode, InterfacePoint *someInterfacePoint);
+  Port (const string &id, Node *someNode, InterfacePoint *someInterfacePoint);
 
   virtual ~Port ();
   InterfacePoint *getInterfacePoint ();

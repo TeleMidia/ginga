@@ -49,7 +49,7 @@ Channel::getName ()
 }
 
 void
-Channel::setName (string name)
+Channel::setName (const string &name)
 {
   this->name = name;
 }

@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-SimpleAction::SimpleAction (string role) : Action (), Role ()
+SimpleAction::SimpleAction (const string &role) : Action (), Role ()
 {
   SimpleAction::setLabel (role);
   qualifier = CompoundAction::OP_PAR;
@@ -42,7 +42,7 @@ SimpleAction::~SimpleAction ()
 }
 
 void
-SimpleAction::setLabel (string id)
+SimpleAction::setLabel (const string &id)
 {
   label = id;
 
@@ -103,13 +103,13 @@ SimpleAction::getRepeatDelay ()
 }
 
 void
-SimpleAction::setRepeatDelay (string time)
+SimpleAction::setRepeatDelay (const string &time)
 {
   repeatDelay = time;
 }
 
 void
-SimpleAction::setRepeat (string newRepetitions)
+SimpleAction::setRepeat (const string &newRepetitions)
 {
   repeat = newRepetitions;
 }
@@ -133,7 +133,7 @@ SimpleAction::getValue ()
 }
 
 void
-SimpleAction::setValue (string value)
+SimpleAction::setValue (const string &value)
 {
   this->value = value;
 }

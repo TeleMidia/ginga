@@ -25,7 +25,7 @@ GINGA_FORMATTER_BEGIN
 const double NclPresentationEvent::UNDEFINED_INSTANT
     = std::numeric_limits<double>::quiet_NaN ();
 
-NclPresentationEvent::NclPresentationEvent (string id,
+NclPresentationEvent::NclPresentationEvent (const string &id,
                                             void *executionObject,
                                             ContentAnchor *anchor)
     : NclAnchorEvent (id, executionObject, anchor)

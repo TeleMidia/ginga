@@ -34,7 +34,7 @@ public:
 
 private:
   void initializeClockSpeed ();
-  string getValue (string attribute);
+  string getValue (const string &attribute);
   void printSysTable ();
 
 public:

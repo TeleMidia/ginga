@@ -42,7 +42,7 @@ ContentTypeManager::getInstance ()
 }
 
 void
-ContentTypeManager::setMimeFile (string mimeFile)
+ContentTypeManager::setMimeFile (const string &mimeFile)
 {
   if (mimeFile != absUrl)
     {
@@ -81,7 +81,7 @@ ContentTypeManager::readMimeDefinitions ()
 }
 
 string
-ContentTypeManager::getMimeType (string fileExtension)
+ContentTypeManager::getMimeType (const string &fileExtension)
 {
   string mType = "";
 

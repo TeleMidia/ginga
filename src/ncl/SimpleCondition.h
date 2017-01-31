@@ -36,18 +36,18 @@ private:
 
 public:
   static const short NO_QUALIFIER = -1;
-  SimpleCondition (string role);
+  SimpleCondition (const string &role);
   virtual ~SimpleCondition (){};
 
-  void setLabel (string id);
+  void setLabel (const string &id);
   string getKey ();
-  void setKey (string key);
+  void setKey (const string &key);
   short getTransition ();
   void setTransition (short transition);
   short getQualifier ();
   void setQualifier (short qualifier);
   bool
-  instanceOf (string type)
+  instanceOf (const string &type)
   {
     return TriggerExpression::instanceOf (type);
   }

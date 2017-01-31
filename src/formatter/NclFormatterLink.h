@@ -37,7 +37,7 @@ public:
 
   void suspendLinkEvaluation (bool suspend);
   Link *getNcmLink ();
-  bool instanceOf (string s);
+  bool instanceOf (const string &s);
 };
 
 GINGA_FORMATTER_END

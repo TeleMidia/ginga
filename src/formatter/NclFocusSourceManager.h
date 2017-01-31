@@ -28,7 +28,7 @@ GINGA_FORMATTER_BEGIN
 class NclFocusSourceManager
 {
 public:
-  static SDLSurface* getFocusSourceComponent (string src);
+  static SDLSurface* getFocusSourceComponent (const string &src);
 };
 
 GINGA_FORMATTER_END

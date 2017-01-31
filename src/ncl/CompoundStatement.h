@@ -52,7 +52,7 @@ public:
   bool isNegated ();
   vector<Role *> *getRoles ();
   bool
-  instanceOf (string type)
+  instanceOf (const string &type)
   {
     return Statement::instanceOf (type);
   }

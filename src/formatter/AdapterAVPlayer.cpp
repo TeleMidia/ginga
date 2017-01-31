@@ -36,7 +36,7 @@ AdapterAVPlayer::createPlayer ()
 
   if (mrl != "")
     {
-      player = new AVPlayer (mrl.c_str ());
+      player = new AVPlayer (mrl);
     }
 
   AdapterFormatterPlayer::createPlayer ();
@@ -45,7 +45,7 @@ AdapterAVPlayer::createPlayer ()
 }
 
 bool
-AdapterAVPlayer::setPropertyValue (NclAttributionEvent *event, string value)
+AdapterAVPlayer::setPropertyValue (NclAttributionEvent *event, const string &value)
 {
   return AdapterFormatterPlayer::setPropertyValue (event, value);
 }

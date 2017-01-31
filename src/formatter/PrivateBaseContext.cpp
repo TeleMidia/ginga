@@ -90,7 +90,7 @@ PrivateBaseContext::~PrivateBaseContext ()
 }
 
 void
-PrivateBaseContext::createPrivateBase (string id)
+PrivateBaseContext::createPrivateBase (const string &id)
 {
   if (privateBase != NULL)
     {
@@ -106,7 +106,7 @@ PrivateBaseContext::createPrivateBase (string id)
 }
 
 NclDocument *
-PrivateBaseContext::compileDocument (string location,
+PrivateBaseContext::compileDocument (const string &location,
                                      DeviceLayout *deviceLayout)
 {
   IDocumentConverter *compiler = NULL;
@@ -149,7 +149,7 @@ PrivateBaseContext::compileDocument (string location,
 }
 
 NclDocument *
-PrivateBaseContext::addDocument (string location,
+PrivateBaseContext::addDocument (const string &location,
                                  DeviceLayout *deviceLayout)
 {
   NclDocument *newDocument;
@@ -219,8 +219,8 @@ PrivateBaseContext::addDocument (string location,
 }
 
 NclDocument *
-PrivateBaseContext::embedDocument (string docId, string nodeId,
-                                   string location,
+PrivateBaseContext::embedDocument (const string &docId, const string &nodeId,
+                                   const string &location,
                                    DeviceLayout *deviceLayout)
 {
   map<string, EmbeddedNclData *>::iterator i;
@@ -275,13 +275,13 @@ PrivateBaseContext::embedDocument (string docId, string nodeId,
 }
 
 void *
-PrivateBaseContext::addVisibleDocument (string location,
+PrivateBaseContext::addVisibleDocument (const string &loc,
                                         DeviceLayout *deviceLayout)
 {
   NclDocument *newDocument;
   string id;
 
-  location = SystemCompat::updatePath (location);
+  string location = SystemCompat::updatePath (loc);
   if (baseDocuments.count (location) != 0)
     {
       return baseDocuments[location];
@@ -304,7 +304,7 @@ PrivateBaseContext::addVisibleDocument (string location,
 }
 
 NclDocument *
-PrivateBaseContext::getVisibleDocument (string id)
+PrivateBaseContext::getVisibleDocument (const string &id)
 {
   map<string, NclDocument *>::iterator i;
 
@@ -323,7 +323,7 @@ PrivateBaseContext::getVisibleDocument (string id)
 }
 
 bool
-PrivateBaseContext::eraseVisibleDocument (string docLocation)
+PrivateBaseContext::eraseVisibleDocument (const string &docLocation)
 {
   map<string, NclDocument *>::iterator i;
 
@@ -337,7 +337,7 @@ PrivateBaseContext::eraseVisibleDocument (string docLocation)
 }
 
 string
-PrivateBaseContext::getDocumentLocation (string docId)
+PrivateBaseContext::getDocumentLocation (const string &docId)
 {
   map<string, NclDocument *>::iterator i;
   NclDocument *nclDoc = NULL;
@@ -355,8 +355,8 @@ PrivateBaseContext::getDocumentLocation (string docId)
 }
 
 string
-PrivateBaseContext::getEmbeddedDocumentLocation (string parentDocId,
-                                                 string nodeId)
+PrivateBaseContext::getEmbeddedDocumentLocation (const string &parentDocId,
+                                                 const string &nodeId)
 {
   map<string, EmbeddedNclData *>::iterator i;
 
@@ -370,7 +370,7 @@ PrivateBaseContext::getEmbeddedDocumentLocation (string parentDocId,
 }
 
 NclDocument *
-PrivateBaseContext::getDocument (string id)
+PrivateBaseContext::getDocument (const string &id)
 {
   NclDocument *doc = NULL;
   map<string, NclDocument *>::iterator i;
@@ -385,7 +385,7 @@ PrivateBaseContext::getDocument (string id)
 }
 
 NclDocument *
-PrivateBaseContext::getEmbeddedDocument (string parentDocId, string nodeId)
+PrivateBaseContext::getEmbeddedDocument (const string &parentDocId, const string &nodeId)
 {
   map<string, EmbeddedNclData *>::iterator i;
   NclDocument *document = NULL;
@@ -472,7 +472,7 @@ PrivateBaseContext::removeDocumentBases (NclDocument *document)
 }
 
 NclDocument *
-PrivateBaseContext::removeDocument (string id)
+PrivateBaseContext::removeDocument (const string &id)
 {
   NclDocument *document = NULL;
   string docLocation;
@@ -511,8 +511,8 @@ PrivateBaseContext::removeDocument (string id)
 }
 
 NclDocument *
-PrivateBaseContext::removeEmbeddedDocument (string parentDocId,
-                                            string nodeId)
+PrivateBaseContext::removeEmbeddedDocument (const string &parentDocId,
+                                            const string &nodeId)
 {
   map<string, EmbeddedNclData *>::iterator i;
   NclDocument *document = NULL;
@@ -528,7 +528,7 @@ PrivateBaseContext::removeEmbeddedDocument (string parentDocId,
 }
 
 NclDocument *
-PrivateBaseContext::getBaseDocument (string documentId)
+PrivateBaseContext::getBaseDocument (const string &documentId)
 {
   map<string, NclDocument *>::iterator i;
 
@@ -547,7 +547,7 @@ PrivateBaseContext::getBaseDocument (string documentId)
 }
 
 void *
-PrivateBaseContext::compileEntity (string location, NclDocument *document,
+PrivateBaseContext::compileEntity (const string &location, NclDocument *document,
                                    void *parentObject)
 {
   IDocumentConverter *compiler;
@@ -587,8 +587,10 @@ PrivateBaseContext::compileEntity (string location, NclDocument *document,
 }
 
 LayoutRegion *
-PrivateBaseContext::addRegion (string documentId, string regionBaseId,
-                               string regionId, string xmlRegion)
+PrivateBaseContext::addRegion (const string &documentId,
+                               const string &regionBaseId,
+                               const string &regionId,
+                               const string &xmlRegion)
 {
   NclDocument *document;
   RegionBase *base;
@@ -648,8 +650,9 @@ PrivateBaseContext::addRegion (string documentId, string regionBaseId,
 }
 
 LayoutRegion *
-PrivateBaseContext::removeRegion (string documentId, string regionBaseId,
-                                  string regionId)
+PrivateBaseContext::removeRegion (const string &documentId,
+                                  const string &regionBaseId,
+                                  const string &regionId)
 {
   NclDocument *document;
   RegionBase *base;
@@ -690,7 +693,8 @@ PrivateBaseContext::removeRegion (string documentId, string regionBaseId,
 }
 
 RegionBase *
-PrivateBaseContext::addRegionBase (string documentId, string xmlRegionBase)
+PrivateBaseContext::addRegionBase (const string &documentId,
+                                   const string &xmlRegionBase)
 {
   NclDocument *document;
   RegionBase *base;
@@ -712,8 +716,8 @@ PrivateBaseContext::addRegionBase (string documentId, string xmlRegionBase)
 }
 
 RegionBase *
-PrivateBaseContext::removeRegionBase (string documentId,
-                                      string regionBaseId)
+PrivateBaseContext::removeRegionBase (const string &documentId,
+                                      const string &regionBaseId)
 {
   NclDocument *document;
   RegionBase *base;
@@ -735,7 +739,8 @@ PrivateBaseContext::removeRegionBase (string documentId,
 }
 
 Rule *
-PrivateBaseContext::addRule (string documentId, string xmlRule)
+PrivateBaseContext::addRule (const string &documentId,
+                             const string &xmlRule)
 {
   NclDocument *document;
   RuleBase *base;
@@ -764,7 +769,8 @@ PrivateBaseContext::addRule (string documentId, string xmlRule)
 }
 
 Rule *
-PrivateBaseContext::removeRule (string documentId, string ruleId)
+PrivateBaseContext::removeRule (const string &documentId,
+                                const string &ruleId)
 {
   NclDocument *document;
   RuleBase *base;
@@ -799,7 +805,8 @@ PrivateBaseContext::removeRule (string documentId, string ruleId)
 }
 
 RuleBase *
-PrivateBaseContext::addRuleBase (string documentId, string xmlRuleBase)
+PrivateBaseContext::addRuleBase (const string &documentId,
+                                 const string &xmlRuleBase)
 {
   NclDocument *document;
   RuleBase *base;
@@ -821,7 +828,8 @@ PrivateBaseContext::addRuleBase (string documentId, string xmlRuleBase)
 }
 
 RuleBase *
-PrivateBaseContext::removeRuleBase (string documentId, arg_unused (string ruleBaseId))
+PrivateBaseContext::removeRuleBase (const string &documentId,
+                                    arg_unused (const string &ruleBaseId))
 {
   NclDocument *document;
   RuleBase *base;
@@ -843,7 +851,8 @@ PrivateBaseContext::removeRuleBase (string documentId, arg_unused (string ruleBa
 }
 
 Transition *
-PrivateBaseContext::addTransition (string documentId, string xmlTransition)
+PrivateBaseContext::addTransition (const string &documentId,
+                                   const string &xmlTransition)
 {
   NclDocument *document;
   TransitionBase *base;
@@ -873,8 +882,8 @@ PrivateBaseContext::addTransition (string documentId, string xmlTransition)
 }
 
 Transition *
-PrivateBaseContext::removeTransition (string documentId,
-                                      string transitionId)
+PrivateBaseContext::removeTransition (const string &documentId,
+                                      const string &transitionId)
 {
   NclDocument *document;
   TransitionBase *base;
@@ -909,8 +918,8 @@ PrivateBaseContext::removeTransition (string documentId,
 }
 
 TransitionBase *
-PrivateBaseContext::addTransitionBase (string documentId,
-                                       string xmlTransitionBase)
+PrivateBaseContext::addTransitionBase (const string &documentId,
+                                       const string &xmlTransitionBase)
 {
   NclDocument *document;
   TransitionBase *base;
@@ -934,8 +943,8 @@ PrivateBaseContext::addTransitionBase (string documentId,
 }
 
 TransitionBase *
-PrivateBaseContext::removeTransitionBase (string documentId,
-                                          arg_unused (string transitionBaseId))
+PrivateBaseContext::removeTransitionBase (const string &documentId,
+                                          arg_unused (const string &transitionBaseId))
 {
   NclDocument *document;
   TransitionBase *base;
@@ -957,7 +966,8 @@ PrivateBaseContext::removeTransitionBase (string documentId,
 }
 
 Connector *
-PrivateBaseContext::addConnector (string documentId, string xmlConnector)
+PrivateBaseContext::addConnector (const string &documentId,
+                                  const string &xmlConnector)
 {
   NclDocument *document;
   ConnectorBase *base;
@@ -988,7 +998,8 @@ PrivateBaseContext::addConnector (string documentId, string xmlConnector)
 }
 
 Connector *
-PrivateBaseContext::removeConnector (string documentId, string connectorId)
+PrivateBaseContext::removeConnector (const string &documentId,
+                                     const string &connectorId)
 {
   NclDocument *document;
   ConnectorBase *base;
@@ -1023,8 +1034,8 @@ PrivateBaseContext::removeConnector (string documentId, string connectorId)
 }
 
 ConnectorBase *
-PrivateBaseContext::addConnectorBase (string documentId,
-                                      string xmlConnectorBase)
+PrivateBaseContext::addConnectorBase (const string &documentId,
+                                      const string &xmlConnectorBase)
 {
   NclDocument *document;
   ConnectorBase *base;
@@ -1046,8 +1057,8 @@ PrivateBaseContext::addConnectorBase (string documentId,
 }
 
 ConnectorBase *
-PrivateBaseContext::removeConnectorBase (string documentId,
-                                         arg_unused (string connectorBaseId))
+PrivateBaseContext::removeConnectorBase (const string &documentId,
+                                         arg_unused (const string &connectorBaseId))
 {
   NclDocument *document;
   ConnectorBase *base;
@@ -1069,7 +1080,8 @@ PrivateBaseContext::removeConnectorBase (string documentId,
 }
 
 GenericDescriptor *
-PrivateBaseContext::addDescriptor (string documentId, string xmlDescriptor)
+PrivateBaseContext::addDescriptor (const string &documentId,
+                                   const string &xmlDescriptor)
 {
   NclDocument *document;
   DescriptorBase *base;
@@ -1100,8 +1112,8 @@ PrivateBaseContext::addDescriptor (string documentId, string xmlDescriptor)
 }
 
 GenericDescriptor *
-PrivateBaseContext::removeDescriptor (string documentId,
-                                      string descriptorId)
+PrivateBaseContext::removeDescriptor (const string &documentId,
+                                      const string &descriptorId)
 {
   NclDocument *document;
   DescriptorBase *base;
@@ -1134,8 +1146,8 @@ PrivateBaseContext::removeDescriptor (string documentId,
 }
 
 DescriptorBase *
-PrivateBaseContext::addDescriptorBase (string documentId,
-                                       string xmlDescriptorBase)
+PrivateBaseContext::addDescriptorBase (const string &documentId,
+                                       const string &xmlDescriptorBase)
 {
   NclDocument *document;
   DescriptorBase *base;
@@ -1159,8 +1171,8 @@ PrivateBaseContext::addDescriptorBase (string documentId,
 }
 
 DescriptorBase *
-PrivateBaseContext::removeDescriptorBase (string documentId,
-                                          arg_unused (string descriptorBaseId))
+PrivateBaseContext::removeDescriptorBase (const string &documentId,
+                                          arg_unused (const string &descriptorBaseId))
 {
   NclDocument *document;
   DescriptorBase *base;
@@ -1182,7 +1194,7 @@ PrivateBaseContext::removeDescriptorBase (string documentId,
 }
 
 Base *
-PrivateBaseContext::getBase (NclDocument *document, string baseId)
+PrivateBaseContext::getBase (NclDocument *document, const string &baseId)
 {
   Base *base;
 
@@ -1214,8 +1226,9 @@ PrivateBaseContext::getBase (NclDocument *document, string baseId)
 }
 
 Base *
-PrivateBaseContext::addImportBase (string documentId, string docBaseId,
-                                   string xmlImportBase)
+PrivateBaseContext::addImportBase (const string &documentId,
+                                   const string &docBaseId,
+                                   const string &xmlImportBase)
 {
   IDocumentConverter *compiler;
   NclDocument *document;
@@ -1295,8 +1308,9 @@ PrivateBaseContext::addImportBase (string documentId, string docBaseId,
 }
 
 Base *
-PrivateBaseContext::removeImportBase (string documentId, string docBaseId,
-                                      string documentURI)
+PrivateBaseContext::removeImportBase (const string &documentId,
+                                      const string &docBaseId,
+                                      const string &documentURI)
 {
   NclDocument *document;
   Base *parentBase;
@@ -1339,8 +1353,8 @@ PrivateBaseContext::removeImportBase (string documentId, string docBaseId,
 }
 
 NclDocument *
-PrivateBaseContext::addImportedDocumentBase (string documentId,
-                                             string xmlImportedDocumentBase)
+PrivateBaseContext::addImportedDocumentBase (const string &documentId,
+                                             const string &xmlImportedDocumentBase)
 {
   NclDocument *document;
   void *baseElement;
@@ -1364,7 +1378,8 @@ PrivateBaseContext::addImportedDocumentBase (string documentId,
 
 NclDocument *
 PrivateBaseContext::removeImportedDocumentBase (
-    string documentId, arg_unused (string importedDocumentBaseId))
+    const string &documentId,
+    arg_unused (const string &importedDocumentBaseId))
 {
   NclDocument *document;
 
@@ -1393,7 +1408,8 @@ PrivateBaseContext::removeImportedDocumentBase (
 }
 
 NclDocument *
-PrivateBaseContext::addImportNCL (string documentId, string xmlImportNCL)
+PrivateBaseContext::addImportNCL (const string &documentId,
+                                  const string &xmlImportNCL)
 {
   IDocumentConverter *compiler;
   NclDocument *document;
@@ -1451,7 +1467,8 @@ PrivateBaseContext::addImportNCL (string documentId, string xmlImportNCL)
 }
 
 NclDocument *
-PrivateBaseContext::removeImportNCL (string documentId, string documentURI)
+PrivateBaseContext::removeImportNCL (const string &documentId,
+                                     const string &documentURI)
 {
   NclDocument *document;
 
@@ -1495,8 +1512,9 @@ removeTransitionBase (baseId, documentId, transitionBaseId)
 */
 
 Node *
-PrivateBaseContext::addNode (string documentId, string compositeId,
-                             string xmlNode)
+PrivateBaseContext::addNode (const string &documentId,
+                             const string &compositeId,
+                             const string &xmlNode)
 {
   NclDocument *document;
   Node *node = NULL;
@@ -1543,8 +1561,9 @@ PrivateBaseContext::addNode (string documentId, string compositeId,
 }
 
 InterfacePoint *
-PrivateBaseContext::addInterface (string documentId, string nodeId,
-                                  string xmlInterface)
+PrivateBaseContext::addInterface (const string &documentId,
+                                  const string &nodeId,
+                                  const string &xmlInterface)
 {
   NclDocument *document;
   Node *node;
@@ -1603,8 +1622,9 @@ PrivateBaseContext::addInterface (string documentId, string nodeId,
 }
 
 Link *
-PrivateBaseContext::addLink (string documentId, string compositeId,
-                             string xmlLink)
+PrivateBaseContext::addLink (const string &documentId,
+                             const string &compositeId,
+                             const string &xmlLink)
 {
   NclDocument *document;
   Node *node;

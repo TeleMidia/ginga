@@ -102,7 +102,7 @@ LogoTransmissionDescriptor::getDownloadDataId ()
 }
 
 void
-LogoTransmissionDescriptor::setName (string name)
+LogoTransmissionDescriptor::setName (const string &name)
 {
   logoName = name;
   descriptorLength = (logoName.length () + 1);

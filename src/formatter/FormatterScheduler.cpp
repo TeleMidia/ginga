@@ -300,7 +300,8 @@ FormatterScheduler::setTimeBaseObject (NclExecutionObject *object,
 }
 
 void
-FormatterScheduler::printAction (string action, NclLinkCondition *condition,
+FormatterScheduler::printAction (const string &act,
+                                 NclLinkCondition *condition,
                                  NclLinkSimpleAction *linkAction)
 {
   NclExecutionObject *cndObject;
@@ -313,6 +314,7 @@ FormatterScheduler::printAction (string action, NclLinkCondition *condition,
   string role;
   string nodeId;
   double specTime;
+  string action = act;
 
   event = linkAction->getEvent ();
   object = (NclExecutionObject *)event->getExecutionObject ();
@@ -1430,7 +1432,7 @@ FormatterScheduler::runSwitchEvent (NclExecutionObjectSwitch *switchObject,
 }
 
 string
-FormatterScheduler::solveImplicitRefAssessment (string propValue,
+FormatterScheduler::solveImplicitRefAssessment (const string &propValue,
                                                 NclAttributionEvent *event)
 {
   NclFormatterEvent *refEvent;
@@ -2081,8 +2083,8 @@ FormatterScheduler::removeSchedulerListener (
 }
 
 void
-FormatterScheduler::receiveGlobalAttribution (string propertyName,
-                                              string value)
+FormatterScheduler::receiveGlobalAttribution (const string &pName,
+                                              const string &value)
 {
   set<NclExecutionObject *> *objs;
   set<NclExecutionObject *>::iterator i;
@@ -2095,7 +2097,7 @@ FormatterScheduler::receiveGlobalAttribution (string propertyName,
   NclLinkSimpleAction *fakeAction;
 
   clog << "FormatterScheduler::receiveGlobalAttribution ";
-  clog << "prop = '" << propertyName << "', value = '" << value;
+  clog << "prop = '" << pName << "', value = '" << value;
   clog << "'" << endl;
 
   objs = ((FormatterConverter *)compiler)->getSettingNodeObjects ();
@@ -2111,7 +2113,7 @@ FormatterScheduler::receiveGlobalAttribution (string propertyName,
   while (i != objs->end ())
     {
       object = *i;
-      event = object->getEventFromAnchorId (propertyName);
+      event = object->getEventFromAnchorId (pName);
       if (event != NULL && event->instanceOf ("NclAttributionEvent"))
         {
           fakeAction = new NclLinkAssignmentAction (
@@ -2123,7 +2125,7 @@ FormatterScheduler::receiveGlobalAttribution (string propertyName,
         }
 
       clog << "FormatterScheduler::receiveGlobalAttribution ";
-      clog << "can't find anchor with name = '" << propertyName;
+      clog << "can't find anchor with name = '" << pName;
       clog << "' inside object '" << object->getId () << "'";
       clog << endl;
 
@@ -2131,10 +2133,10 @@ FormatterScheduler::receiveGlobalAttribution (string propertyName,
     }
 
   names = presContext->getPropertyNames ();
-  j = names->find (propertyName);
+  j = names->find (pName);
   if (j != names->end ())
     {
-      presContext->setPropertyValue (propertyName, value);
+      presContext->setPropertyValue (pName, value);
     }
 
   delete names;

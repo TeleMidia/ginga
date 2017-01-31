@@ -23,20 +23,20 @@ using namespace ::ginga::util;
 
 GINGA_NCL_BEGIN
 
-ContentNode::ContentNode (string uid, Content *someContent)
+ContentNode::ContentNode (const string &uid, Content *someContent)
     : NodeEntity (uid, someContent)
 {
   initialize ("");
 }
 
-ContentNode::ContentNode (string uid, Content *someContent, string type)
+ContentNode::ContentNode (const string &uid, Content *someContent, const string &type)
     : NodeEntity (uid, someContent)
 {
   initialize (type);
 }
 
 void
-ContentNode::initialize (string type)
+ContentNode::initialize (const string &type)
 {
   typeSet.insert ("ContentNode");
   typeSet.insert ("DocumentNode");
@@ -124,7 +124,7 @@ ContentNode::getNodeType ()
 }
 
 void
-ContentNode::setNodeType (string type)
+ContentNode::setNodeType (const string &type)
 {
   this->type = type;
 

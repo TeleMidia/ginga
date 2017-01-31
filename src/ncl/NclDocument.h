@@ -64,7 +64,7 @@ private:
   NclDocument *parentDocument;
 
 public:
-  NclDocument (string id, string docLocation);
+  NclDocument (const string &id, const string &docLocation);
   ~NclDocument ();
 
   NclDocument *getParentDocument ();
@@ -73,15 +73,16 @@ public:
 
   string getDocumentLocation ();
 
-  bool addDocument (NclDocument *document, string alias, string location);
+  bool addDocument (NclDocument *document, const string &alias,
+                    const string &location);
   void clearDocument ();
-  Connector *getConnector (string connectorId);
+  Connector *getConnector (const string &connectorId);
   ConnectorBase *getConnectorBase ();
-  Transition *getTransition (string transitionId);
+  Transition *getTransition (const string &transitionId);
   TransitionBase *getTransitionBase ();
-  GenericDescriptor *getDescriptor (string descriptorId);
+  GenericDescriptor *getDescriptor (const string &descriptorId);
   DescriptorBase *getDescriptorBase ();
-  NclDocument *getDocument (string documentId);
+  NclDocument *getDocument (const string &documentId);
   string getDocumentAlias (NclDocument *document);
   ContextNode *getBody ();
   string getDocumentLocation (NclDocument *document);
@@ -89,36 +90,36 @@ public:
   string getId ();
 
 private:
-  Node *getNodeLocally (string nodeId);
+  Node *getNodeLocally (const string &nodeId);
 
 public:
-  Node *getNode (string nodeId);
-  LayoutRegion *getRegion (string regionId);
+  Node *getNode (const string &nodeId);
+  LayoutRegion *getRegion (const string &regionId);
 
 private:
-  LayoutRegion *getRegion (string regionId, RegionBase *regionBase);
+  LayoutRegion *getRegion (const string &regionId, RegionBase *regionBase);
 
 public:
   RegionBase *getRegionBase (int devClass);
-  RegionBase *getRegionBase (string regionBaseId);
+  RegionBase *getRegionBase (const string &regionBaseId);
   map<int, RegionBase *> *getRegionBases ();
-  Rule *getRule (string ruleId);
+  Rule *getRule (const string &ruleId);
   RuleBase *getRuleBase ();
   bool removeDocument (NclDocument *document);
   void setConnectorBase (ConnectorBase *connectorBase);
   void setTransitionBase (TransitionBase *transitionBase);
   void setDescriptorBase (DescriptorBase *descriptorBase);
-  void setDocumentAlias (NclDocument *document, string alias);
+  void setDocumentAlias (NclDocument *document, const string &alias);
   void setBody (ContextNode *node);
-  void setDocumentLocation (NclDocument *document, string location);
-  void setId (string id);
+  void setDocumentLocation (NclDocument *document, const string &location);
+  void setId (const string &id);
   void addRegionBase (RegionBase *regionBase);
   void setRuleBase (RuleBase *ruleBase);
   void addMetainformation (Meta *meta);
   void addMetadata (Metadata *metadata);
   vector<Meta *> *getMetainformation ();
   vector<Metadata *> *getMetadata ();
-  void removeRegionBase (string regionBaseId);
+  void removeRegionBase (const string &regionBaseId);
   void removeMetainformation (Meta *meta);
   void removeMetadata (Metadata *metadata);
   void removeAllMetainformation ();

@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
-PlainTxtPlayer::PlainTxtPlayer (arg_unused (string mrl))
+PlainTxtPlayer::PlainTxtPlayer (arg_unused (const string &mrl))
     : TextPlayer ()
 {
   Thread::mutexInit (&mutex, false);
@@ -41,7 +41,7 @@ PlainTxtPlayer::~PlainTxtPlayer ()
 }
 
 void
-PlainTxtPlayer::setFile (string mrl)
+PlainTxtPlayer::setFile (const string &mrl)
 {
   if (mrl == "" || !fileExists (mrl))
     {
@@ -166,7 +166,7 @@ PlainTxtPlayer::stop ()
 }
 
 void
-PlainTxtPlayer::setContent (string content)
+PlainTxtPlayer::setContent (const string &content)
 {
   Thread::mutexLock (&mutex);
 
@@ -203,7 +203,7 @@ PlainTxtPlayer::setContent (string content)
 }
 
 void
-PlainTxtPlayer::setTextAlign (string align)
+PlainTxtPlayer::setTextAlign (const string &align)
 {
   if (align == "left")
     {
@@ -220,7 +220,7 @@ PlainTxtPlayer::setTextAlign (string align)
 }
 
 void
-PlainTxtPlayer::setPropertyValue (string name, string value)
+PlainTxtPlayer::setPropertyValue (const string &name, const string &value)
 {
   Thread::mutexLock (&mutex);
   gint64 size;

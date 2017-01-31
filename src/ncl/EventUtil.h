@@ -49,13 +49,13 @@ public:
   static const short ATT_STATE = 2;
   static const short ATT_NODE_PROPERTY = 3;
 
-  static short getTypeCode (string typeName);
+  static short getTypeCode (const string &typeName);
   static string getTypeName (short type);
-  static short getStateCode (string stateName);
+  static short getStateCode (const string &stateName);
   static string getStateName (short state);
   static string getTransitionName (short transition);
-  static short getTransitionCode (string transition);
-  static short getAttributeTypeCode (string attTypeName);
+  static short getTransitionCode (const string &transition);
+  static short getAttributeTypeCode (const string &attTypeName);
   static string getAttributeTypeName (short type);
 };
 
