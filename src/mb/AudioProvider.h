@@ -33,7 +33,7 @@ protected:
   SDL2ffmpeg *decoder;
 
 public:
-  AudioProvider (string uri);
+  AudioProvider (const string &uri);
   virtual ~AudioProvider ();
   virtual bool
   getHasVisual ()

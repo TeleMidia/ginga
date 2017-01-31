@@ -36,7 +36,7 @@ private:
   bool hasTex;
 
 public:
-  VideoProvider (string);
+  VideoProvider (const string &);
   virtual ~VideoProvider ();
   bool getHasVisual ();
   void *getProviderContent ();

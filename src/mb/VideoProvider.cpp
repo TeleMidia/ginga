@@ -25,7 +25,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-VideoProvider::VideoProvider (string uri)
+VideoProvider::VideoProvider (const string &uri)
     : AudioProvider (uri)
 {
   type = VideoProviderType;
