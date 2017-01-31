@@ -22,21 +22,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::util;
 
 #include "SDL.h"
-
 #include "SDLSurface.h"
-
-typedef uint32_t Uint32;
-typedef Uint32 SDL_WindowID;
 
 GINGA_MB_BEGIN
 
 class SDLWindow
 {
-public:
-  static const short DDT_LINE = 0;
-  static const short DDT_RECT = 1;
-  static const short DDT_FILL_RECT = 2;
-
 private:
   SDL_Texture *texture;
   SDL_Surface *curSur;
