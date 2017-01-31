@@ -24,16 +24,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-const short FontProvider::A_TOP = 3;
-const short FontProvider::A_TOP_CENTER = 4;
-const short FontProvider::A_TOP_LEFT = 5;
-const short FontProvider::A_TOP_RIGHT = 6;
-
-const short FontProvider::A_BOTTOM = 7;
-const short FontProvider::A_BOTTOM_CENTER = 8;
-const short FontProvider::A_BOTTOM_LEFT = 9;
-const short FontProvider::A_BOTTOM_RIGHT = 10;
-
 map<string, TTF_Font *> FontProvider::fonts;
 
 pthread_mutex_t FontProvider::ntsMutex;

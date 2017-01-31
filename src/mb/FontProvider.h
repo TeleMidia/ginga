@@ -52,19 +52,22 @@ private:
   static short fontRefs;
 
 public:
-  static const short A_LEFT;
-  static const short A_CENTER;
-  static const short A_RIGHT;
+  enum TextAlign : short int
+    {
+      A_LEFT,
+      A_CENTER,
+      A_RIGHT,
 
-  static const short A_TOP;
-  static const short A_TOP_CENTER;
-  static const short A_TOP_LEFT;
-  static const short A_TOP_RIGHT;
+      A_TOP,
+      A_TOP_CENTER,
+      A_TOP_LEFT,
+      A_TOP_RIGHT,
 
-  static const short A_BOTTOM;
-  static const short A_BOTTOM_CENTER;
-  static const short A_BOTTOM_LEFT;
-  static const short A_BOTTOM_RIGHT;
+      A_BOTTOM,
+      A_BOTTOM_CENTER,
+      A_BOTTOM_LEFT,
+      A_BOTTOM_RIGHT
+    };
 
   FontProvider (const char *fontUri, int heightInPixel);
   virtual ~FontProvider ();
