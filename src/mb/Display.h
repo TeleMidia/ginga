@@ -34,12 +34,13 @@ GINGA_MB_BEGIN
 class Display
 {
 private:
-  GMutex mutex;                 // sync access to display
+  GRecMutex mutex;              // sync access to display
 
   int width;                    // display width in pixels
   int height;                   // display height in pixels
   bool fullscreen;              // true if full-screen mode is on
 
+  GRecMutex renderer_mutex;     // sync access to renderer
   SDL_Renderer *renderer;       // display renderer
   SDL_Window *screen;           // display screen
   InputManager *im;             // display input manager (FIXME)
@@ -66,6 +67,11 @@ public:
   void setSize (int, int);
   bool getFullscreen ();
   void setFullscreen (bool);
+
+  void lockRenderer ();
+  void unlockRenderer ();
+  SDL_Renderer *getLockedRenderer ();
+  SDL_Renderer *getRenderer ();
 
   void quit ();
   bool hasQuitted ();

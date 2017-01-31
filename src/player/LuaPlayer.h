@@ -32,18 +32,18 @@ GINGA_PLAYER_BEGIN
 class LuaPlayer : public Player, public IInputEventListener
 {
 private:
+  GRecMutex mutex;       // sync access to player
   ncluaw_t *nw;          // the NCLua state
   bool hasExecuted;      // true if script was executed
   bool isKeyHandler;     // true if player has the focus
   string scope;          // the label of the active anchor
-  pthread_mutex_t mutex; // sync access to player
   InputManager *im;
 
   // Update thread.
   static list<LuaPlayer *> *nw_update_list;
-  static pthread_mutex_t nw_update_mutex;
-  static pthread_t nw_update_tid;
-  static void *nw_update_thread (void *data);
+  static GRecMutex nw_update_mutex;
+  static GThread *nw_update_thread;
+  static void *nw_update_thread_fn (void *data);
   static void nw_update_insert (LuaPlayer *player);
 
 public:
@@ -77,8 +77,3 @@ public:
 GINGA_PLAYER_END
 
 #endif // LUAPLAYER_H
-
-// Local variables:
-// mode: c++
-// c-file-style: "k&r"
-// End:

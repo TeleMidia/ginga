@@ -125,13 +125,13 @@ render_thread_func (gpointer data)
 void
 Display::lock (void)
 {
-  g_mutex_lock (&this->mutex);
+  g_rec_mutex_lock (&this->mutex);
 }
 
 void
 Display::unlock (void)
 {
-  g_mutex_unlock (&this->mutex);
+  g_rec_mutex_unlock (&this->mutex);
 }
 
 gpointer
@@ -226,61 +226,26 @@ Display::redraw ()
   // - Alpha blending is not working.
   // - Handle border width.
   //
-  SDL_SetRenderDrawColor (this->renderer, 255, 255, 255, 255);
+  this->lockRenderer ();
+  SDL_SetRenderDrawColor (this->renderer, 255, 0, 255, 255);
   SDL_RenderClear (this->renderer);
+  this->unlockRenderer ();
+
   this->windows = g_list_sort (this->windows, win_cmp_z);
   for (l = this->windows; l != NULL; l = l->next)
     {
       SDLWindow *win;
-      SDLWindow *mir;
-      SDL_Texture *texture;
-
-      SDL_Rect rect;
-      SDL_Color color;
-      guint8 alpha;
-      int width;
 
       win = (SDLWindow *) l->data;
       g_assert_nonnull (win);
-      if (!win->isVisible () || win->isGhostWindow ())
-        continue;               // nothing to do
 
-      // Get texture.
-      for (mir = win; mir != NULL; mir = mir->getMirrorSrc ());
-      texture = (mir)
-        ? mir->getTexture (this->renderer)
-        : win->getTexture (this->renderer);
-      if (texture == NULL)
-        continue;               // nothing to do
-
-      // Draw background color.
-      rect = win->getRect ();
-      color = win->getBgColor ();
-      SDLx_SetRenderDrawBlendMode (this->renderer, SDL_BLENDMODE_BLEND);
-      SDLx_SetRenderDrawColor (this->renderer, color.r, color.g, color.b,
-                               color.a);
-      SDLx_RenderFillRect (this->renderer, &rect);
-
-      // Create and draw texture.
-      // texture = SDL_CreateTextureFromSurface (this->renderer, surface);
-      // texture = win->getTexture (this->renderer);
-      // g_assert_nonnull (texture);
-
-      alpha = (guint8)(win->getAlpha () * 255);
-      SDLx_SetTextureAlphaMod (texture, alpha);
-      SDLx_RenderCopy (this->renderer, texture, NULL, &rect);
-
-      // Draw border.
-      win->getBorder (&color, &width);
-      if (width > 0)
-        continue;               // nothing to do
-
-      SDLx_SetRenderDrawBlendMode (this->renderer, SDL_BLENDMODE_BLEND);
-      SDLx_SetRenderDrawColor (this->renderer, color.r, color.g, color.b,
-                               color.a);
-      SDLx_RenderDrawRect (this->renderer, &rect);
+      if (win->isVisible () && !win->isGhostWindow ())
+        win->redraw ();
     }
+
+  this->lockRenderer ();
   SDL_RenderPresent (this->renderer);
+  this->unlockRenderer ();
 
   this->unlock ();
 }
@@ -294,15 +259,16 @@ Display::Display (int width, int height, bool fullscreen)
   guint flags;
   int status;
 
-  g_mutex_init (&this->mutex);
+  g_rec_mutex_init (&this->mutex);
 
   this->width = width;
   this->height = height;
   this->fullscreen = fullscreen;
 
-  this->im = NULL;
+  g_rec_mutex_init (&this->renderer_mutex);
   this->renderer = NULL;
   this->screen = NULL;
+  this->im = NULL;
 
   this->_quit = false;
   this->render_thread = NULL;
@@ -325,6 +291,9 @@ Display::Display (int width, int height, bool fullscreen)
   g_assert_nonnull (this->screen);
   g_assert_nonnull (this->renderer);
 
+  SDL_SetHint (SDL_HINT_NO_SIGNAL_HANDLERS, "1");
+  SDL_SetHint (SDL_HINT_RENDER_SCALE_QUALITY, "1");
+
   this->im = new InputManager ();
   g_assert_nonnull (this->im);
   this->im->setAxisBoundaries (this->width, this->height, 0);
@@ -345,13 +314,14 @@ Display::~Display ()
   g_assert_null (g_thread_join (this->render_thread));
 
   this->lock ();
+  g_rec_mutex_clear (&this->mutex);
   SDL_DestroyRenderer (this->renderer);
   SDL_DestroyWindow (this->screen);
   delete im;
   g_list_free_full (this->windows, win_delete);
   g_list_free_full (this->providers, prov_delete);
   this->unlock ();
-  g_mutex_clear (&this->mutex);
+  g_rec_mutex_clear (&this->mutex);
 }
 
 /**
@@ -417,6 +387,50 @@ Display::setFullscreen (bool fullscreen)
 }
 
 /**
+ * Locks display renderer.
+ */
+void
+Display::lockRenderer ()
+{
+  g_rec_mutex_lock (&this->renderer_mutex);
+}
+
+/**
+ * Unlocks display renderer.
+ */
+void
+Display::unlockRenderer ()
+{
+  g_rec_mutex_unlock (&this->renderer_mutex);
+}
+
+/**
+ * Gets display renderer and locks it.
+ */
+SDL_Renderer *
+Display::getLockedRenderer ()
+{
+  SDL_Renderer *renderer = this->getRenderer ();
+  this->lockRenderer ();
+  return renderer;
+}
+
+/**
+ * Gets display renderer.
+ */
+SDL_Renderer *
+Display::getRenderer ()
+{
+  SDL_Renderer *renderer;
+
+  this->lock ();
+  renderer = this->renderer;
+  this->unlock ();
+  g_assert_nonnull (renderer);
+  return renderer;
+}
+
+/**
  * Quits display render thread.
  */
 void
@@ -450,7 +464,7 @@ Display::createWindow (int x, int y, int w, int h, int z)
 {
   SDLWindow *win;
 
-  win = new SDLWindow (x, y, w, h, z);
+  win = new SDLWindow (x, y, z, w, h);
   g_assert_nonnull (win);
   this->add (&this->windows, win);
 

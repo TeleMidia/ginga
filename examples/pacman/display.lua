@@ -263,8 +263,8 @@ Display.end_message = end_message
 -- Redraw everything.
 
 function Display:redraw (level, lives)
-   -- Fill canvas with black.
-   canvas:attrColor ('black')
+   -- Fill canvas with transparent.
+   canvas:attrColor (0, 0, 0, 0)
    canvas:clear ()
 
    -- Draws gameboard.
