@@ -26,27 +26,27 @@ GINGA_PLAYER_BEGIN
 
 ImagePlayer::ImagePlayer (const string &_mrl) : Player (_mrl)
 {
-  this->surface = Ginga_Display->createSurfaceFrom (NULL);
+  this->surface = new SDLSurface ();
 }
 
 bool
 ImagePlayer::play ()
 {
-  SDL_Surface *sfc;
+  SDL_Renderer *renderer;
+  SDL_Texture *texture;
   SDLWindow *win;
 
-  sfc = IMG_Load (mrl.c_str ());
-  if (unlikely (sfc == NULL))
+  renderer = Ginga_Display->getLockedRenderer ();
+  texture = IMG_LoadTexture (renderer, mrl.c_str ());
+  Ginga_Display->unlockRenderer ();
+
+  if (unlikely (texture == NULL))
     g_error ("cannot load image file %s: %s", mrl.c_str (),
              IMG_GetError ());
 
-  g_assert_nonnull (this->surface);
-  this->surface->setContent (sfc);
-  ginga::mb::Display::addUnderlyingSurface (sfc);
-
   win = surface->getParentWindow ();
   g_assert_nonnull (win);
-  win->setRenderedSurface (sfc);
+  win->setTexture (texture);
 
   return Player::play ();
 }

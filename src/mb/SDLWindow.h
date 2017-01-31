@@ -28,8 +28,25 @@ GINGA_MB_BEGIN
 
 class SDLWindow
 {
+// BEGIN SANITY ------------------------------------------------------------
 private:
-  SDL_Texture *texture;
+  GRecMutex mutex;              // sync access to window
+  SDL_Texture *texture;         // window texture
+
+  void lock ();
+  void unlock ();
+
+public:
+  SDLWindow (int, int, int, int, int);
+  virtual ~SDLWindow ();
+
+  void setTexture (SDL_Texture *);
+  SDL_Texture *getTexture ();
+
+  void redraw ();
+// END SANITY --------------------------------------------------------------
+
+private:
   SDL_Surface *curSur;
 
   SDLSurface* winISur;
@@ -58,7 +75,7 @@ private:
   set<SDLWindow *> mirrors;
   SDLWindow *mirrorSrc;
 
-  pthread_mutex_t mutex;    // external mutex
+  pthread_mutex_t _mutex;    // external mutex
   pthread_mutex_t mutexC;   // childs mutex
   pthread_mutex_t texMutex; // texture mutex
   pthread_mutex_t surMutex; // underlying surface mutex
@@ -67,12 +84,6 @@ private:
   pthread_mutex_t rMutex; // render mutex
   pthread_mutex_t cMutex; // condition mutex
   pthread_cond_t cond;
-
-public:
-  SDLWindow (int x, int y, int width, int height,
-             int z);
-
-  virtual ~SDLWindow ();
 
 private:
   void initialize (SDLWindow* parentWindowID,
@@ -156,8 +167,6 @@ public:
   void clearContent ();
   void setRenderedSurface (SDL_Surface *uSur);
   SDL_Surface *getContent ();
-  void setTexture (SDL_Texture *texture);
-  SDL_Texture *getTexture (SDL_Renderer *renderer);
   bool isTextureOwner (SDL_Texture *texture);
 
 private:
@@ -171,8 +180,8 @@ public:
   void stretchBlit (SDLWindow *src);
   string getDumpFileUri (int quality, int dumpW, int dumpH);
 
-  void lock ();
-  void unlock ();
+  void _lock ();
+  void _unlock ();
 
   void lockChilds ();
   void unlockChilds ();

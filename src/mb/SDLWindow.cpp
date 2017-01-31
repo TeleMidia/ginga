@@ -27,17 +27,109 @@ using namespace ::ginga::util;
 
 GINGA_MB_BEGIN
 
-SDLWindow::SDLWindow (int x, int y, int width,
-                      int height, int z)
+// BEGIN SANITY ------------------------------------------------------------
+
+
+// Private methods.
+
+void
+SDLWindow::lock (void)
 {
+  g_rec_mutex_lock (&this->mutex);
+}
+
+void
+SDLWindow::unlock (void)
+{
+  g_rec_mutex_unlock (&this->mutex);
+}
+
+
+// Public methods.
+
+/**
+ * Creates a window with the given position, dimensions, and z-index.
+ */
+SDLWindow::SDLWindow (int x, int y, int z, int width, int height)
+{
+  g_rec_mutex_init (&this->mutex);
+  this->texture = NULL;
   initialize (0, x, y, width, height, (double) z);
 }
+
+/**
+ * Gets window texture.
+ */
+SDL_Texture *
+SDLWindow::getTexture ()
+{
+  SDL_Texture *texture;
+
+  this->lock ();
+  texture = this->texture;
+  this->unlock ();
+  return texture;
+}
+
+/**
+ * Sets window texture.
+ */
+void
+SDLWindow::setTexture (SDL_Texture *texture)
+{
+  this->lock ();
+  g_debug ("setting texture of %p to %p", this, texture);
+  this->texture = texture;
+  this->unlock ();
+}
+
+/**
+ * Redraw window texture onto global display.
+ */
+void
+SDLWindow::redraw ()
+{
+  SDL_Renderer *renderer;
+  SDL_Color c;
+
+  this->lock ();
+  renderer = Ginga_Display->getLockedRenderer ();
+  g_assert_nonnull (renderer);
+
+  c = this->bgColor;
+  if (c.a > 0)                  // background color
+    {
+      SDLx_SetRenderDrawBlendMode (renderer, SDL_BLENDMODE_BLEND);
+      SDLx_SetRenderDrawColor (renderer, c.r, c.g, c.b, c.a);
+      SDLx_RenderFillRect (renderer, &this->rect);
+    }
+
+  if (this->texture != NULL)
+    {
+      guint8 alpha = (guint8)(this->getAlpha() * 255);
+      SDLx_SetTextureAlphaMod (this->texture, alpha);
+      SDLx_RenderCopy (renderer, this->texture, NULL, &rect);
+    }
+
+  if (abs (this->borderWidth) > 0) // FIXME
+    {
+      c = this->borderColor;
+      SDLx_SetRenderDrawBlendMode (renderer, SDL_BLENDMODE_BLEND);
+      SDLx_SetRenderDrawColor (renderer, c.r, c.g, c.b, 255);
+      SDLx_RenderDrawRect (renderer, &this->rect);
+    }
+
+  Ginga_Display->unlockRenderer ();
+  this->unlock ();
+}
+
+// END SANITY --------------------------------------------------------------
 
 SDLWindow::~SDLWindow ()
 {
   vector<SDLSurface *>::iterator i;
 
-  lock ();
+  _lock ();
   lockChilds ();
   if (childSurface != NULL)
     {
@@ -84,8 +176,8 @@ SDLWindow::~SDLWindow ()
 
   Thread::mutexDestroy (&rMutex);
 
-  unlock ();
-  Thread::mutexDestroy (&mutex);
+  _unlock ();
+  Thread::mutexDestroy (&_mutex);
 
   clog << "SDLWindow::~SDLWindow(" << this << ") all done" << endl;
 }
@@ -122,7 +214,7 @@ SDLWindow::initialize (arg_unused (SDLWindow* parentWindowID),
   this->transparencyValue = 0x00;
   this->mirrorSrc = NULL;
 
-  Thread::mutexInit (&mutex);
+  Thread::mutexInit (&_mutex);
   Thread::mutexInit (&mutexC);
   Thread::mutexInit (&texMutex);
   Thread::mutexInit (&surMutex, true);
@@ -597,6 +689,7 @@ SDLWindow::getContent ()
   return curSur;
 }
 
+#if 0
 void
 SDLWindow::setTexture (SDL_Texture *texture)
 {
@@ -624,7 +717,9 @@ SDLWindow::setTexture (SDL_Texture *texture)
   this->texture = texture;
   unlockTexture ();
 }
+#endif
 
+#if 0
 SDL_Texture *
 SDLWindow::getTexture (SDL_Renderer *renderer)
 {
@@ -658,6 +753,7 @@ SDLWindow::getTexture (SDL_Renderer *renderer)
 
   return uTex;
 }
+#endif
 
 bool
 SDLWindow::isTextureOwner (SDL_Texture *texture)
@@ -772,15 +868,15 @@ SDLWindow::getDumpFileUri (int quality, arg_unused (int dumpW), arg_unused (int 
 }
 
 void
-SDLWindow::lock ()
+SDLWindow::_lock ()
 {
-  Thread::mutexLock (&mutex);
+  Thread::mutexLock (&_mutex);
 }
 
 void
-SDLWindow::unlock ()
+SDLWindow::_unlock ()
 {
-  Thread::mutexUnlock (&mutex);
+  Thread::mutexUnlock (&_mutex);
 }
 
 void
