@@ -73,7 +73,7 @@ private:
   int borderWidth;
 
 public:
-  Transition (string id, int type);
+  Transition (const string &id, int type);
   virtual ~Transition ();
   Color *getBorderColor ();
   int getBorderWidth ();

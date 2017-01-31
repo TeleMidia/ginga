@@ -28,7 +28,7 @@ private:
   guint8 r, g, b, alpha;
 
 protected:
-  void setColorToI (string color);
+  void setColorToI (const string &color);
 
 public:
   static const int white = 0xFFFFFF;
@@ -77,11 +77,11 @@ public:
   static const string saqua;
   static const string steal;
 
-  static int colortoi (string color);
+  static int colortoi (const string &color);
   Color ();
   Color (guint8 r, guint8 g, guint8 b, guint8 alpha = 0xff);
-  Color (string color, guint8 alpha = 0xff);
-  void setColor (string color);
+  Color (const string &color, guint8 alpha = 0xff);
+  void setColor (const string &color);
   void setColor (guint8 red, guint8 green, guint8 blue,
                  guint8 alpha = 0xff);
   guint8 getR ();

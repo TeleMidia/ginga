@@ -170,7 +170,7 @@ private:
 public:
   static CodeMap *getInstance ();
 
-  int getCode (string codeStr);
+  int getCode (const string &codeStr);
   string getValue (int value);
   map<string, int> *cloneKeyMap ();
 };

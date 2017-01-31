@@ -48,13 +48,13 @@ NclFormatterLayout::getDeviceRegion ()
 }
 
 void
-NclFormatterLayout::addChild (string objectId, NclFormatterLayout *child)
+NclFormatterLayout::addChild (const string &objectId, NclFormatterLayout *child)
 {
   flChilds[objectId] = child;
 }
 
 NclFormatterLayout *
-NclFormatterLayout::getChild (string objectId)
+NclFormatterLayout::getChild (const string &objectId)
 {
   map<string, NclFormatterLayout *>::iterator i;
 
@@ -78,7 +78,7 @@ NclFormatterLayout::getBitMapRegionId ()
 }
 
 LayoutRegion *
-NclFormatterLayout::getNcmRegion (string regionId)
+NclFormatterLayout::getNcmRegion (const string &regionId)
 {
   if (deviceRegion != NULL)
     {
@@ -372,8 +372,8 @@ NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object,
 
 double
 NclFormatterLayout::refreshZIndex (NclFormatterRegion *region,
-                                   string layoutRegionId, int zIndex,
-                                   string plan,
+                                   const string &layoutRegionId, int zIndex,
+                                   const string &plan,
                                    SDLSurface* renderedSurface)
 {
   NclExecutionObject *object;
@@ -388,8 +388,8 @@ NclFormatterLayout::refreshZIndex (NclFormatterRegion *region,
 }
 
 void
-NclFormatterLayout::sortRegion (string regionId, double cvtIndex,
-                                arg_unused (string plan))
+NclFormatterLayout::sortRegion (const string &regionId, double cvtIndex,
+                                arg_unused (const string &plan))
 {
   vector<string>::iterator i;
   map<string, double>::iterator j;
@@ -412,7 +412,7 @@ NclFormatterLayout::sortRegion (string regionId, double cvtIndex,
 }
 
 double
-NclFormatterLayout::convertZIndex (int zIndex, string plan)
+NclFormatterLayout::convertZIndex (int zIndex, const string &plan)
 {
   double planPower = 2.0;
 
@@ -522,7 +522,7 @@ NclFormatterLayout::addRegionOnMaps (NclExecutionObject *object,
 
 NclExecutionObject *
 NclFormatterLayout::removeFormatterRegionFromMaps (
-    string layoutRegionId, NclFormatterRegion *formatterRegion)
+    const string &layoutRegionId, NclFormatterRegion *formatterRegion)
 {
   set<NclFormatterRegion *> *formRegions;
   set<NclFormatterRegion *>::iterator i;
@@ -584,7 +584,7 @@ NclFormatterLayout::removeFormatterRegionFromMaps (
 }
 
 set<NclFormatterRegion *> *
-NclFormatterLayout::getFormatterRegionsFromNcmRegion (string regionId)
+NclFormatterLayout::getFormatterRegionsFromNcmRegion (const string &regionId)
 {
   set<NclFormatterRegion *> *regions;
 

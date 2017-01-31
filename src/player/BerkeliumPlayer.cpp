@@ -329,7 +329,7 @@ BerkeliumPlayer::stop ()
 }
 
 void
-BerkeliumPlayer::setPropertyValue (string name, string value)
+BerkeliumPlayer::setPropertyValue (const string &name, const string &value)
 {
   int x, y, w, h;
   vector<string> *params;

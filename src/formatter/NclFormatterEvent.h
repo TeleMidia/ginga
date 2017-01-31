@@ -49,7 +49,7 @@ protected:
   static pthread_mutex_t iMutex;
 
 public:
-  NclFormatterEvent (string id, void *executionObject);
+  NclFormatterEvent (const string &id, void *executionObject);
   virtual ~NclFormatterEvent ();
 
 private:
@@ -65,13 +65,13 @@ protected:
   static bool removeInstance (NclFormatterEvent *event);
 
 public:
-  bool instanceOf (string s);
+  bool instanceOf (const string &s);
 
-  static bool hasNcmId (NclFormatterEvent *event, string anchorId);
+  static bool hasNcmId (NclFormatterEvent *event, const string &anchorId);
 
   void setEventType (short eventType);
   virtual short getEventType ();
-  void setId (string id);
+  void setId (const string &id);
   void addEventListener (INclEventListener *listener);
   bool containsEventListener (INclEventListener *listener);
   void removeEventListener (INclEventListener *listener);

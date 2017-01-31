@@ -29,11 +29,11 @@ private:
   void *content;
 
 public:
-  Meta (string name, void *content);
+  Meta (const string &name, void *content);
   void *getContent ();
   string getName ();
   void setContent (void *content);
-  void setName (string name);
+  void setName (const string &name);
 };
 
 GINGA_NCL_END

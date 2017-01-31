@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NCL_BEGIN
 
 int
-TransitionUtil::getTypeCode (string type)
+TransitionUtil::getTypeCode (const string &type)
 {
   if (type == "barWipe")
     {
@@ -75,7 +75,7 @@ TransitionUtil::getTypeName (int type)
 }
 
 int
-TransitionUtil::getSubtypeCode (int type, string subtype)
+TransitionUtil::getSubtypeCode (int type, const string &subtype)
 {
   switch (type)
     {
@@ -297,7 +297,7 @@ TransitionUtil::getSubtypeName (int type, int subtype)
 }
 
 short
-TransitionUtil::getDirectionCode (string direction)
+TransitionUtil::getDirectionCode (const string &direction)
 {
   if (direction == "forward")
     {

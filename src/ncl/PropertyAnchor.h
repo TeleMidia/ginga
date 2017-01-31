@@ -30,12 +30,12 @@ private:
   string value;
 
 public:
-  PropertyAnchor (string attName);
+  PropertyAnchor (const string &attName);
   virtual ~PropertyAnchor (){};
   string getPropertyName ();
-  void setPropertyName (string name);
+  void setPropertyName (const string &name);
   string getPropertyValue ();
-  void setPropertyValue (string value);
+  void setPropertyValue (const string &value);
   PropertyAnchor *clone ();
 };
 

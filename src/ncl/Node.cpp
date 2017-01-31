@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-Node::Node (string id) : Entity (id)
+Node::Node (const string &id) : Entity (id)
 {
   typeSet.insert ("Node");
   parentNode = NULL;
@@ -48,7 +48,7 @@ Node::~Node ()
 }
 
 bool
-Node::hasProperty (string propName)
+Node::hasProperty (const string &propName)
 {
   vector<PropertyAnchor *>::iterator i;
 
@@ -171,7 +171,7 @@ Node::addAnchor (Anchor *anchor)
 }
 
 Anchor *
-Node::getAnchor (string anchorId)
+Node::getAnchor (const string &anchorId)
 {
   vector<Anchor *>::iterator i;
   Anchor *anchor;
@@ -221,7 +221,7 @@ Node::getOriginalPropertyAnchors ()
 }
 
 PropertyAnchor *
-Node::getPropertyAnchor (string propertyName)
+Node::getPropertyAnchor (const string &propertyName)
 {
   vector<Anchor *>::iterator i;
   PropertyAnchor *property;

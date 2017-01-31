@@ -48,7 +48,7 @@ private:
   LinkComposition *composition;
 
 public:
-  Link (string id, Connector *connector);
+  Link (const string &id, Connector *connector);
   virtual ~Link ();
   Bind *bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
               string roleId);
@@ -73,7 +73,7 @@ public:
   bool unBind (Bind *bind);
   void addParameter (Parameter *parameter);
   vector<Parameter *> *getParameters ();
-  Parameter *getParameter (string name);
+  Parameter *getParameter (const string &name);
   void removeParameter (Parameter *parameter);
   void updateConnector (Connector *newConnector);
   bool containsNode (Node *node, GenericDescriptor *descriptor);

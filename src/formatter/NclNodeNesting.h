@@ -48,7 +48,7 @@ private:
   void initialize ();
 
 public:
-  bool instanceOf (string s);
+  bool instanceOf (const string &s);
   void append (NclNodeNesting *otherSeq);
   void append (vector<Node *> *otherSeq);
   Node *getAnchorNode ();

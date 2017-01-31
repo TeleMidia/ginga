@@ -63,7 +63,7 @@ NclNodeNesting::initialize ()
 }
 
 bool
-NclNodeNesting::instanceOf (string s)
+NclNodeNesting::instanceOf (const string &s)
 {
   if (!typeSet.empty ())
     {

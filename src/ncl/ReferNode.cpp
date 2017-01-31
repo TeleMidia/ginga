@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-ReferNode::ReferNode (string id) : Node (id)
+ReferNode::ReferNode (const string &id) : Node (id)
 {
   typeSet.insert ("ReferNode");
   typeSet.insert ("DocumentNode");
@@ -32,7 +32,7 @@ ReferNode::ReferNode (string id) : Node (id)
   instDesc = NULL;
 }
 
-ReferNode::ReferNode (string id, Entity *entity) : Node (id)
+ReferNode::ReferNode (const string &id, Entity *entity) : Node (id)
 {
   typeSet.insert ("ReferNode");
   typeSet.insert ("DocumentNode");
@@ -72,7 +72,7 @@ ReferNode::getInstanceType ()
 }
 
 void
-ReferNode::setInstanceType (string instance)
+ReferNode::setInstanceType (const string &instance)
 {
   if (instance != this->instanceType)
     {

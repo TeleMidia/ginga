@@ -42,19 +42,19 @@ private:
   pthread_mutex_t rMutex;
 
 public:
-  NclFormatterDeviceRegion (string id);
+  NclFormatterDeviceRegion (const string &id);
   virtual ~NclFormatterDeviceRegion (){};
   void addRegion (LayoutRegion *region);
   LayoutRegion *cloneRegion ();
-  int compareWidthSize (string w);
-  int compareHeightSize (string h);
+  int compareWidthSize (const string &w);
+  int compareHeightSize (const string &h);
   short getBackgroundColor ();
   double getBottom ();
   double getHeight ();
   double getLeft ();
   double getRight ();
-  LayoutRegion *getRegion (string id);
-  LayoutRegion *getRegionRecursively (string id);
+  LayoutRegion *getRegion (const string &id);
+  LayoutRegion *getRegionRecursively (const string &id);
   vector<LayoutRegion *> *getRegions ();
   string getTitle ();
   double getTop ();
@@ -75,7 +75,7 @@ public:
   bool setHeight (double newHeight, bool isPercentual);
   bool setLeft (double newLeft, bool isPercentual);
   bool setRight (double newRight, bool isPercentual);
-  void setTitle (string newTitle);
+  void setTitle (const string &newTitle);
   bool setTop (double newTop, bool isPercentual);
   bool setWidth (double newWidth, bool isPercentual);
   void setZIndex (int newZIndex);
@@ -111,7 +111,7 @@ public:
 
   void dispose ();
   string getId ();
-  void setId (string id);
+  void setId (const string &id);
   Entity *getDataEntity ();
   int compareTo (void *arg0);
 };

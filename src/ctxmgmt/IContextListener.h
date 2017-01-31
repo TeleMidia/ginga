@@ -26,7 +26,7 @@ class IContextListener
 {
 public:
   virtual ~IContextListener (){};
-  virtual void receiveGlobalAttribution (string propertyName, string value)
+  virtual void receiveGlobalAttribution (const string &propertyName, const string &value)
       = 0;
 };
 

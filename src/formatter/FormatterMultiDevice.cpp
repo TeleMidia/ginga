@@ -594,7 +594,7 @@ FormatterMultiDevice::hideObject (NclExecutionObject *executionObject)
 }
 
 void
-FormatterMultiDevice::renderFromUri (SDLWindow* win, string uri)
+FormatterMultiDevice::renderFromUri (SDLWindow* win, const string &uri)
 {
   SDLSurface* s;
   s = Ginga_Display->createRenderedSurfaceFromImageFile (uri.c_str ());
@@ -682,13 +682,13 @@ FormatterMultiDevice::newDeviceConnected (int newDevClass, int w, int h)
 bool
 FormatterMultiDevice::receiveRemoteEvent (arg_unused (int remoteDevClass),
                                           arg_unused (int eventType),
-                                          arg_unused (string eventContent))
+                                          arg_unused (const string &eventContent))
 {
   return true;
 }
 
 void
-FormatterMultiDevice::addActiveUris (string baseUri, vector<string> *uris)
+FormatterMultiDevice::addActiveUris (const string &baseUri, vector<string> *uris)
 {
   if (activeUris != NULL)
     {
@@ -703,9 +703,9 @@ FormatterMultiDevice::addActiveUris (string baseUri, vector<string> *uris)
 
 void
 FormatterMultiDevice::updateStatus (arg_unused (short code),
-                                    arg_unused (string parameter),
+                                    arg_unused (const string &parameter),
                                     arg_unused (short type),
-                                    arg_unused (string value))
+                                    arg_unused (const string &value))
 {
 }
 

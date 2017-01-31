@@ -42,7 +42,7 @@ RemoteEventService::RemoteEventService ()
 }
 
 void
-RemoteEventService::setBaseDeviceNCLPath (string base_device_ncl_path)
+RemoteEventService::setBaseDeviceNCLPath (const string &base_device_ncl_path)
 {
   this->base_device_ncl_path = base_device_ncl_path;
 }
@@ -236,7 +236,7 @@ RemoteEventService::connectedToBaseDevice (unsigned arg_unused (int domainAddr))
 
 bool
 RemoteEventService::receiveRemoteContent (arg_unused (int remoteDevClass),
-                                          arg_unused (string contentUri))
+                                          arg_unused (const string &contentUri))
 {
   return false;
 }
@@ -249,15 +249,15 @@ RemoteEventService::receiveRemoteContent (arg_unused (int remoteDevClass), arg_u
 }
 
 bool
-RemoteEventService::receiveRemoteContentInfo (arg_unused (string contentId),
-                                              arg_unused (string contentUri))
+RemoteEventService::receiveRemoteContentInfo (arg_unused (const string &contentId),
+                                              arg_unused (const string &contentUri))
 {
   return false;
 }
 
 bool
 RemoteEventService::receiveRemoteEvent (arg_unused (int remoteDevClass), arg_unused (int eventType),
-                                        arg_unused (string eventContent))
+                                        arg_unused (const string &eventContent))
 {
   if (eventType == 5)
     {

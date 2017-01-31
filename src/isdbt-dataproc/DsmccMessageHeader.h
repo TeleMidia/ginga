@@ -71,7 +71,7 @@ private:
 
 public:
   DsmccMessageHeader ();
-  int readMessageFromFile (string fileName, unsigned int pid);
+  int readMessageFromFile (const string &fileName, unsigned int pid);
   unsigned int getESId ();
   string getFileName ();
   unsigned int getDsmccType ();

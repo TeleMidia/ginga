@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-SwitchNode::SwitchNode (string id) : CompositeNode (id)
+SwitchNode::SwitchNode (const string &id) : CompositeNode (id)
 {
   content = new SwitchContent ();
   defaultNode = NULL;
@@ -186,7 +186,7 @@ SwitchNode::getMapInterface (Port *port)
 }
 
 Node *
-SwitchNode::getNode (string nodeId)
+SwitchNode::getNode (const string &nodeId)
 {
   // verifica se o no' default possui identificador dado por nodeId
   if (defaultNode != NULL && defaultNode->getId () == nodeId)
@@ -263,7 +263,7 @@ SwitchNode::recursivelyContainsNode (Node *node)
 }
 
 bool
-SwitchNode::recursivelyContainsNode (string nodeId)
+SwitchNode::recursivelyContainsNode (const string &nodeId)
 {
   if (recursivelyGetNode (nodeId) != NULL)
     {
@@ -274,7 +274,7 @@ SwitchNode::recursivelyContainsNode (string nodeId)
 }
 
 Node *
-SwitchNode::recursivelyGetNode (string nodeId)
+SwitchNode::recursivelyGetNode (const string &nodeId)
 {
   Node *wanted;
 

@@ -42,7 +42,7 @@ private:
   vector<Rule *> ruleList;
 
 public:
-  SwitchNode (string id);
+  SwitchNode (const string &id);
   virtual ~SwitchNode ();
   bool addNode (unsigned int index, Node *node, Rule *rule);
   bool addNode (Node *node, Rule *rule);
@@ -67,7 +67,7 @@ public:
   InterfacePoint *getMapInterface (Port *port);
 
   // virtual from CompositeNode
-  Node *getNode (string nodeId);
+  Node *getNode (const string &nodeId);
 
   Node *getNode (unsigned int index);
   Node *getNode (Rule *rule);
@@ -79,10 +79,10 @@ public:
   bool recursivelyContainsNode (Node *node);
 
   // virtual from CompositeNode
-  bool recursivelyContainsNode (string nodeId);
+  bool recursivelyContainsNode (const string &nodeId);
 
   // virtual from CompositeNode
-  Node *recursivelyGetNode (string nodeId);
+  Node *recursivelyGetNode (const string &nodeId);
 
   // virtual from CompositeNode
   bool removeNode (Node *node);

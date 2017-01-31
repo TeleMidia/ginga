@@ -33,7 +33,7 @@ TriggerExpression::getDelay ()
 }
 
 void
-TriggerExpression::setDelay (string delay)
+TriggerExpression::setDelay (const string &delay)
 {
   this->delay = delay;
 }

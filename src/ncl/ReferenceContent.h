@@ -30,11 +30,11 @@ protected:
   // string url;
 public:
   ReferenceContent ();
-  ReferenceContent (string ref);
+  ReferenceContent (const string &ref);
   virtual ~ReferenceContent (){};
   string getReference ();
   string getCompleteReferenceUrl ();
-  void setReference (string ref);
+  void setReference (const string &ref);
   string getType ();
 };
 

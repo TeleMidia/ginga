@@ -119,7 +119,7 @@ public:
 
   void revertContent ();
   void setChildSurface (SDLSurface *iSur);
-  int getCap (string cap);
+  int getCap (const string &cap);
   void setCaps (int caps);
   void addCaps (int capability);
   int getCaps ();
@@ -173,7 +173,7 @@ private:
   bool isMine (SDLSurface *surface);
 
 public:
-  void renderImgFile (string serializedImageUrl);
+  void renderImgFile (const string &serializedImageUrl);
   void renderFrom (SDLSurface *s);
 
   void blit (SDLWindow *src);

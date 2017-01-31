@@ -57,7 +57,7 @@ protected:
   virtual void receiveAnswerTask (arg_unused (char *answerTask)){};
 
 public:
-  virtual bool postMediaContentTask (int destDevClass, string url);
+  virtual bool postMediaContentTask (int destDevClass, const string &url);
 
 protected:
   virtual bool
@@ -69,7 +69,7 @@ protected:
 
 public:
   virtual void setDeviceInfo (int width, int height,
-                              string base_device_ncl_path);
+                              const string &base_device_ncl_path);
 
 protected:
   virtual bool runControlTask ();

@@ -67,7 +67,7 @@ private:
   BerkeliumHandler *bInfo;
 
 public:
-  BerkeliumPlayer ( string mrl);
+  BerkeliumPlayer ( const string &mrl);
   virtual ~BerkeliumPlayer ();
 
   SDLSurface* getSurface ();
@@ -78,7 +78,7 @@ public:
   bool setOutWindow (SDLWindow* windowId);
   void setBounds (int x, int y, int w, int h);
 
-  void setPropertyValue (string name, string value);
+  void setPropertyValue (const string &name, const string &value);
 
   bool setKeyHandler (bool isHandler);
 

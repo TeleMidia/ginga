@@ -49,7 +49,7 @@ PrivateBaseManager::releasePrivateBases ()
 }
 
 void
-PrivateBaseManager::createPrivateBase (string id)
+PrivateBaseManager::createPrivateBase (const string &id)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -70,7 +70,7 @@ PrivateBaseManager::createPrivateBase (string id)
 }
 
 NclDocument *
-PrivateBaseManager::addDocument (string id, string location,
+PrivateBaseManager::addDocument (const string &id, const string &location,
                                  DeviceLayout *deviceLayout)
 {
   PrivateBaseContext *privateBaseContext;
@@ -86,8 +86,8 @@ PrivateBaseManager::addDocument (string id, string location,
 }
 
 NclDocument *
-PrivateBaseManager::embedDocument (string id, string docId, string nodeId,
-                                   string location,
+PrivateBaseManager::embedDocument (const string &id, const string &docId, const string &nodeId,
+                                   const string &location,
                                    DeviceLayout *deviceLayout)
 {
   PrivateBaseContext *privateBaseContext;
@@ -103,7 +103,7 @@ PrivateBaseManager::embedDocument (string id, string docId, string nodeId,
 }
 
 void *
-PrivateBaseManager::addVisibleDocument (string id, string location,
+PrivateBaseManager::addVisibleDocument (const string &id, const string &location,
                                         DeviceLayout *deviceLayout)
 {
   PrivateBaseContext *privateBaseContext;
@@ -119,7 +119,7 @@ PrivateBaseManager::addVisibleDocument (string id, string location,
 }
 
 string
-PrivateBaseManager::getDocumentLocation (string id, string docId)
+PrivateBaseManager::getDocumentLocation (const string &id, const string &docId)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -133,9 +133,9 @@ PrivateBaseManager::getDocumentLocation (string id, string docId)
 }
 
 string
-PrivateBaseManager::getEmbeddedDocumentLocation (string id,
-                                                 string parentDocId,
-                                                 string nodeId)
+PrivateBaseManager::getEmbeddedDocumentLocation (const string &id,
+                                                 const string &parentDocId,
+                                                 const string &nodeId)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -150,7 +150,7 @@ PrivateBaseManager::getEmbeddedDocumentLocation (string id,
 }
 
 NclDocument *
-PrivateBaseManager::getDocument (string id, string docId)
+PrivateBaseManager::getDocument (const string &id, const string &docId)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -164,8 +164,8 @@ PrivateBaseManager::getDocument (string id, string docId)
 }
 
 NclDocument *
-PrivateBaseManager::getEmbeddedDocument (string id, string parentDocId,
-                                         string nodeId)
+PrivateBaseManager::getEmbeddedDocument (const string &id, const string &parentDocId,
+                                         const string &nodeId)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -179,7 +179,7 @@ PrivateBaseManager::getEmbeddedDocument (string id, string parentDocId,
 }
 
 vector<NclDocument *> *
-PrivateBaseManager::getDocuments (string id)
+PrivateBaseManager::getDocuments (const string &id)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -193,7 +193,7 @@ PrivateBaseManager::getDocuments (string id)
 }
 
 NclDocument *
-PrivateBaseManager::removeDocument (string id, string docId)
+PrivateBaseManager::removeDocument (const string &id, const string &docId)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -207,9 +207,9 @@ PrivateBaseManager::removeDocument (string id, string docId)
 }
 
 NclDocument *
-PrivateBaseManager::removeEmbeddedDocument (string baseId,
-                                            string parentDocId,
-                                            string nodeId)
+PrivateBaseManager::removeEmbeddedDocument (const string &baseId,
+                                            const string &parentDocId,
+                                            const string &nodeId)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -224,9 +224,9 @@ PrivateBaseManager::removeEmbeddedDocument (string baseId,
 }
 
 LayoutRegion *
-PrivateBaseManager::addRegion (string id, string documentId,
-                               string regionBaseId, string regionId,
-                               string xmlRegion)
+PrivateBaseManager::addRegion (const string &id, const string &documentId,
+                               const string &regionBaseId, const string &regionId,
+                               const string &xmlRegion)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -241,8 +241,8 @@ PrivateBaseManager::addRegion (string id, string documentId,
 }
 
 LayoutRegion *
-PrivateBaseManager::removeRegion (string id, string documentId,
-                                  string regionBaseId, string regionId)
+PrivateBaseManager::removeRegion (const string &id, const string &documentId,
+                                  const string &regionBaseId, const string &regionId)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -257,8 +257,8 @@ PrivateBaseManager::removeRegion (string id, string documentId,
 }
 
 RegionBase *
-PrivateBaseManager::addRegionBase (string id, string documentId,
-                                   string xmlRegionBase)
+PrivateBaseManager::addRegionBase (const string &id, const string &documentId,
+                                   const string &xmlRegionBase)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -272,8 +272,8 @@ PrivateBaseManager::addRegionBase (string id, string documentId,
 }
 
 RegionBase *
-PrivateBaseManager::removeRegionBase (string id, string documentId,
-                                      string regionBaseId)
+PrivateBaseManager::removeRegionBase (const string &id, const string &documentId,
+                                      const string &regionBaseId)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -288,7 +288,7 @@ PrivateBaseManager::removeRegionBase (string id, string documentId,
 }
 
 Rule *
-PrivateBaseManager::addRule (string id, string documentId, string xmlRule)
+PrivateBaseManager::addRule (const string &id, const string &documentId, const string &xmlRule)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -302,7 +302,7 @@ PrivateBaseManager::addRule (string id, string documentId, string xmlRule)
 }
 
 Rule *
-PrivateBaseManager::removeRule (string id, string documentId, string ruleId)
+PrivateBaseManager::removeRule (const string &id, const string &documentId, const string &ruleId)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -316,8 +316,8 @@ PrivateBaseManager::removeRule (string id, string documentId, string ruleId)
 }
 
 RuleBase *
-PrivateBaseManager::addRuleBase (string id, string documentId,
-                                 string xmlRuleBase)
+PrivateBaseManager::addRuleBase (const string &id, const string &documentId,
+                                 const string &xmlRuleBase)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -331,8 +331,8 @@ PrivateBaseManager::addRuleBase (string id, string documentId,
 }
 
 RuleBase *
-PrivateBaseManager::removeRuleBase (string id, string documentId,
-                                    string ruleBaseId)
+PrivateBaseManager::removeRuleBase (const string &id, const string &documentId,
+                                    const string &ruleBaseId)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -346,8 +346,8 @@ PrivateBaseManager::removeRuleBase (string id, string documentId,
 }
 
 Transition *
-PrivateBaseManager::addTransition (string id, string documentId,
-                                   string xmlTransition)
+PrivateBaseManager::addTransition (const string &id, const string &documentId,
+                                   const string &xmlTransition)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -361,8 +361,8 @@ PrivateBaseManager::addTransition (string id, string documentId,
 }
 
 Transition *
-PrivateBaseManager::removeTransition (string id, string documentId,
-                                      string transitionId)
+PrivateBaseManager::removeTransition (const string &id, const string &documentId,
+                                      const string &transitionId)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -377,8 +377,8 @@ PrivateBaseManager::removeTransition (string id, string documentId,
 }
 
 TransitionBase *
-PrivateBaseManager::addTransitionBase (string id, string documentId,
-                                       string xmlTransitionBase)
+PrivateBaseManager::addTransitionBase (const string &id, const string &documentId,
+                                       const string &xmlTransitionBase)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -393,8 +393,8 @@ PrivateBaseManager::addTransitionBase (string id, string documentId,
 }
 
 TransitionBase *
-PrivateBaseManager::removeTransitionBase (string id, string documentId,
-                                          string transitionBaseId)
+PrivateBaseManager::removeTransitionBase (const string &id, const string &documentId,
+                                          const string &transitionBaseId)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -409,8 +409,8 @@ PrivateBaseManager::removeTransitionBase (string id, string documentId,
 }
 
 Connector *
-PrivateBaseManager::addConnector (string id, string documentId,
-                                  string xmlConnector)
+PrivateBaseManager::addConnector (const string &id, const string &documentId,
+                                  const string &xmlConnector)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -424,8 +424,8 @@ PrivateBaseManager::addConnector (string id, string documentId,
 }
 
 Connector *
-PrivateBaseManager::removeConnector (string id, string documentId,
-                                     string connectorId)
+PrivateBaseManager::removeConnector (const string &id, const string &documentId,
+                                     const string &connectorId)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -439,8 +439,8 @@ PrivateBaseManager::removeConnector (string id, string documentId,
 }
 
 ConnectorBase *
-PrivateBaseManager::addConnectorBase (string id, string documentId,
-                                      string xmlConnectorBase)
+PrivateBaseManager::addConnectorBase (const string &id, const string &documentId,
+                                      const string &xmlConnectorBase)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -455,8 +455,8 @@ PrivateBaseManager::addConnectorBase (string id, string documentId,
 }
 
 ConnectorBase *
-PrivateBaseManager::removeConnectorBase (string id, string documentId,
-                                         string connectorBaseId)
+PrivateBaseManager::removeConnectorBase (const string &id, const string &documentId,
+                                         const string &connectorBaseId)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -471,8 +471,8 @@ PrivateBaseManager::removeConnectorBase (string id, string documentId,
 }
 
 GenericDescriptor *
-PrivateBaseManager::addDescriptor (string id, string documentId,
-                                   string xmlDescriptor)
+PrivateBaseManager::addDescriptor (const string &id, const string &documentId,
+                                   const string &xmlDescriptor)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -486,8 +486,8 @@ PrivateBaseManager::addDescriptor (string id, string documentId,
 }
 
 GenericDescriptor *
-PrivateBaseManager::removeDescriptor (string id, string documentId,
-                                      string descriptorId)
+PrivateBaseManager::removeDescriptor (const string &id, const string &documentId,
+                                      const string &descriptorId)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -502,8 +502,8 @@ PrivateBaseManager::removeDescriptor (string id, string documentId,
 }
 
 DescriptorBase *
-PrivateBaseManager::addDescriptorBase (string id, string documentId,
-                                       string xmlDescriptorBase)
+PrivateBaseManager::addDescriptorBase (const string &id, const string &documentId,
+                                       const string &xmlDescriptorBase)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -518,8 +518,8 @@ PrivateBaseManager::addDescriptorBase (string id, string documentId,
 }
 
 DescriptorBase *
-PrivateBaseManager::removeDescriptorBase (string id, string documentId,
-                                          string descriptorBaseId)
+PrivateBaseManager::removeDescriptorBase (const string &id, const string &documentId,
+                                          const string &descriptorBaseId)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -534,15 +534,17 @@ PrivateBaseManager::removeDescriptorBase (string id, string documentId,
 }
 
 Base *
-PrivateBaseManager::addImportBase (string id, string documentId,
-                                   string docBaseId, string xmlImportBase)
+PrivateBaseManager::addImportBase (const string &id,
+                                   const string &docId,
+                                   const string &docBaseId,
+                                   const string &xmlImportBase)
 {
   PrivateBaseContext *privateBaseContext;
 
   privateBaseContext = getPrivateBaseContext (id);
   if (privateBaseContext != NULL)
     {
-      return privateBaseContext->addImportBase (documentId, docBaseId,
+      return privateBaseContext->addImportBase (docId, docBaseId,
                                                 xmlImportBase);
     }
 
@@ -550,8 +552,8 @@ PrivateBaseManager::addImportBase (string id, string documentId,
 }
 
 Base *
-PrivateBaseManager::removeImportBase (string id, string documentId,
-                                      string docBaseId, string documentURI)
+PrivateBaseManager::removeImportBase (const string &id, const string &documentId,
+                                      const string &docBaseId, const string &documentURI)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -566,8 +568,8 @@ PrivateBaseManager::removeImportBase (string id, string documentId,
 }
 
 NclDocument *
-PrivateBaseManager::addImportedDocumentBase (string id, string documentId,
-                                             string xmlImportedDocumentBase)
+PrivateBaseManager::addImportedDocumentBase (const string &id, const string &documentId,
+                                             const string &xmlImportedDocumentBase)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -583,7 +585,7 @@ PrivateBaseManager::addImportedDocumentBase (string id, string documentId,
 
 NclDocument *
 PrivateBaseManager::removeImportedDocumentBase (
-    string id, string documentId, string importedDocumentBaseId)
+    const string &id, const string &documentId, const string &importedDocumentBaseId)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -598,8 +600,8 @@ PrivateBaseManager::removeImportedDocumentBase (
 }
 
 NclDocument *
-PrivateBaseManager::addImportNCL (string id, string documentId,
-                                  string xmlImportNCL)
+PrivateBaseManager::addImportNCL (const string &id, const string &documentId,
+                                  const string &xmlImportNCL)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -613,8 +615,8 @@ PrivateBaseManager::addImportNCL (string id, string documentId,
 }
 
 NclDocument *
-PrivateBaseManager::removeImportNCL (string id, string documentId,
-                                     string documentURI)
+PrivateBaseManager::removeImportNCL (const string &id, const string &documentId,
+                                     const string &documentURI)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -628,8 +630,8 @@ PrivateBaseManager::removeImportNCL (string id, string documentId,
 }
 
 Node *
-PrivateBaseManager::addNode (string id, string documentId,
-                             string compositeId, string xmlNode)
+PrivateBaseManager::addNode (const string &id, const string &documentId,
+                             const string &compositeId, const string &xmlNode)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -643,8 +645,8 @@ PrivateBaseManager::addNode (string id, string documentId,
 }
 
 InterfacePoint *
-PrivateBaseManager::addInterface (string id, string documentId,
-                                  string nodeId, string xmlInterface)
+PrivateBaseManager::addInterface (const string &id, const string &documentId,
+                                  const string &nodeId, const string &xmlInterface)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -659,8 +661,8 @@ PrivateBaseManager::addInterface (string id, string documentId,
 }
 
 Link *
-PrivateBaseManager::addLink (string id, string documentId,
-                             string compositeId, string xmlLink)
+PrivateBaseManager::addLink (const string &id, const string &documentId,
+                             const string &compositeId, const string &xmlLink)
 {
   PrivateBaseContext *privateBaseContext;
 
@@ -674,7 +676,7 @@ PrivateBaseManager::addLink (string id, string documentId,
 }
 
 PrivateBaseContext *
-PrivateBaseManager::getPrivateBaseContext (string id)
+PrivateBaseManager::getPrivateBaseContext (const string &id)
 {
   map<string, PrivateBaseContext *>::iterator i;
   PrivateBaseContext *privateBaseContext = NULL;
@@ -691,7 +693,7 @@ PrivateBaseManager::getPrivateBaseContext (string id)
 }
 
 PrivateBase *
-PrivateBaseManager::getPrivateBase (string id)
+PrivateBaseManager::getPrivateBase (const string &id)
 {
   PrivateBaseContext *privateBaseContext;
 

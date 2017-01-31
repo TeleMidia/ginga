@@ -36,7 +36,7 @@ KeyNavigation::getFocusIndex ()
 }
 
 void
-KeyNavigation::setFocusIndex (string index)
+KeyNavigation::setFocusIndex (const string &index)
 {
   focusIndex = index;
 }
@@ -48,7 +48,7 @@ KeyNavigation::getMoveUp ()
 }
 
 void
-KeyNavigation::setMoveUp (string index)
+KeyNavigation::setMoveUp (const string &index)
 {
   moveUp = index;
 }
@@ -60,7 +60,7 @@ KeyNavigation::getMoveDown ()
 }
 
 void
-KeyNavigation::setMoveDown (string index)
+KeyNavigation::setMoveDown (const string &index)
 {
   moveDown = index;
 }
@@ -72,7 +72,7 @@ KeyNavigation::getMoveRight ()
 }
 
 void
-KeyNavigation::setMoveRight (string index)
+KeyNavigation::setMoveRight (const string &index)
 {
   moveRight = index;
 }
@@ -84,7 +84,7 @@ KeyNavigation::getMoveLeft ()
 }
 
 void
-KeyNavigation::setMoveLeft (string index)
+KeyNavigation::setMoveLeft (const string &index)
 {
   moveLeft = index;
 }

@@ -40,20 +40,20 @@ protected:
   PresentationContext *presContext;
 
 public:
-  NclAttributionEvent (string id, void *executionObject,
+  NclAttributionEvent (const string &id, void *executionObject,
                        PropertyAnchor *anchor,
                        PresentationContext *presContext);
 
   virtual ~NclAttributionEvent ();
   PropertyAnchor *getAnchor ();
   string getCurrentValue ();
-  bool setValue (string newValue);
+  bool setValue (const string &newValue);
   void setValueMaintainer (INclAttributeValueMaintainer *valueMaintainer);
   INclAttributeValueMaintainer *getValueMaintainer ();
-  void setImplicitRefAssessmentEvent (string roleId,
+  void setImplicitRefAssessmentEvent (const string &roleId,
                                       NclFormatterEvent *event);
 
-  NclFormatterEvent *getImplicitRefAssessmentEvent (string roleId);
+  NclFormatterEvent *getImplicitRefAssessmentEvent (const string &roleId);
 };
 
 GINGA_FORMATTER_END

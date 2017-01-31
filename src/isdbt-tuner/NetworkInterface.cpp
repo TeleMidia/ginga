@@ -30,8 +30,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TUNER_BEGIN
 
-NetworkInterface::NetworkInterface (int id, string name, string protocol,
-                                    string addr)
+NetworkInterface::NetworkInterface (int id, const string &name, const string &protocol,
+                                    const string &addr)
 {
   this->provider = NULL;
   this->id = id;
@@ -203,7 +203,7 @@ NetworkInterface::changeChannel (int factor)
 }
 
 bool
-NetworkInterface::setChannel (string channelValue)
+NetworkInterface::setChannel (const string &channelValue)
 {
   if (provider != NULL)
     {

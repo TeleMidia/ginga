@@ -95,11 +95,11 @@ public:
                               void *objGrandParent);
 
 private:
-  Parameter *getParameter (string paramName);
-  short convertActionType (string actionType);
+  Parameter *getParameter (const string &paramName);
+  short convertActionType (const string &actionType);
 
 public:
-  static short convertEventState (string eventState);
+  static short convertEventState (const string &eventState);
   void addSimpleConditionToCompoundCondition (void *parent, void *child);
   void addCompoundConditionToCompoundCondition (void *parent, void *child);
   void addAssessmentStatementToCompoundCondition (void *parent,

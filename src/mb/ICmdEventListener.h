@@ -24,7 +24,8 @@ class ICmdEventListener
 {
 public:
   virtual ~ICmdEventListener (){};
-  virtual bool cmdEventReceived (string command, string args) = 0;
+  virtual bool cmdEventReceived (const string &command, 
+                                 const string &args) = 0;
 };
 
 GINGA_MB_END

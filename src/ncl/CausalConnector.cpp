@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-CausalConnector::CausalConnector (string id) : Connector (id)
+CausalConnector::CausalConnector (const string &id) : Connector (id)
 {
   conditionExpression = NULL;
   actionExpression = NULL;
@@ -28,7 +28,7 @@ CausalConnector::CausalConnector (string id) : Connector (id)
   typeSet.insert ("CausalConnector");
 }
 
-CausalConnector::CausalConnector (string id, ConditionExpression *condition,
+CausalConnector::CausalConnector (const string &id, ConditionExpression *condition,
                                   Action *action)
     : Connector (id)
 {

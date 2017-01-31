@@ -34,11 +34,11 @@ protected:
   vector<PropertyAnchor *> originalPAnchors;
 
 public:
-  Node (string id);
+  Node (const string &id);
   virtual ~Node ();
 
 private:
-  bool hasProperty (string propName);
+  bool hasProperty (const string &propName);
 
 public:
   void copyProperties (Node *node);
@@ -47,13 +47,13 @@ public:
   vector<Node *> *getPerspective ();
   virtual bool addAnchor (Anchor *anchor);
   virtual bool addAnchor (int index, Anchor *anchor);
-  Anchor *getAnchor (string anchorId);
+  Anchor *getAnchor (const string &anchorId);
   Anchor *getAnchor (int index);
 
   vector<Anchor *> *getAnchors ();
   vector<PropertyAnchor *> *getOriginalPropertyAnchors ();
 
-  PropertyAnchor *getPropertyAnchor (string propertyName);
+  PropertyAnchor *getPropertyAnchor (const string &propertyName);
   int getNumAnchors ();
   int indexOfAnchor (Anchor *anchor);
   virtual bool removeAnchor (int index);

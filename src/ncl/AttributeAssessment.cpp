@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-AttributeAssessment::AttributeAssessment (string role)
+AttributeAssessment::AttributeAssessment (const string &role)
     : Assessment (), Role ()
 {
   Role::setLabel (role);
@@ -64,7 +64,7 @@ AttributeAssessment::getKey ()
 }
 
 void
-AttributeAssessment::setKey (string key)
+AttributeAssessment::setKey (const string &key)
 {
   this->key = key;
 }
@@ -76,7 +76,7 @@ AttributeAssessment::getOffset ()
 }
 
 void
-AttributeAssessment::setOffset (string offset)
+AttributeAssessment::setOffset (const string &offset)
 {
   this->offset = offset;
 }

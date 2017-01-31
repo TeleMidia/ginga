@@ -34,7 +34,7 @@ public:
   };
 
   virtual bool
-  instanceOf (string type)
+  instanceOf (const string &type)
   {
     return ConditionExpression::instanceOf (type);
   };

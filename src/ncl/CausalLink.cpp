@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-CausalLink::CausalLink (string uid, Connector *connector)
+CausalLink::CausalLink (const string &uid, Connector *connector)
     : Link (uid, connector)
 {
   typeSet.insert ("CausalLink");

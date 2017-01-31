@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-RegionBase::RegionBase (string id, DeviceLayout *deviceLayout) : Base (id)
+RegionBase::RegionBase (const string &id, DeviceLayout *deviceLayout) : Base (id)
 {
   this->deviceLayout = deviceLayout;
   this->device = "";
@@ -121,7 +121,7 @@ RegionBase::addRegion (LayoutRegion *region)
 }
 
 bool
-RegionBase::addBase (Base *base, string alias, string location)
+RegionBase::addBase (Base *base, const string &alias, const string &location)
 {
   if (base->instanceOf ("RegionBase"))
     {
@@ -131,7 +131,7 @@ RegionBase::addBase (Base *base, string alias, string location)
 }
 
 LayoutRegion *
-RegionBase::getRegionLocally (string regionId)
+RegionBase::getRegionLocally (const string &regionId)
 {
   map<string, LayoutRegion *>::iterator childRegions;
   LayoutRegion *region;
@@ -173,7 +173,7 @@ RegionBase::setOutputMapRegion (LayoutRegion *outputMapRegion)
 }
 
 LayoutRegion *
-RegionBase::getRegion (string regionId)
+RegionBase::getRegion (const string &regionId)
 {
   string::size_type index;
   string prefix, suffix;
@@ -241,7 +241,7 @@ RegionBase::getDevice ()
 }
 
 void
-RegionBase::setDevice (string device, string regionId)
+RegionBase::setDevice (const string &device, const string &regionId)
 {
   this->device = device;
 

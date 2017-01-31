@@ -28,7 +28,7 @@ class SDLSvgDecoder
 {
 public:
   string filePath;
-  SDLSvgDecoder (string filename);
+  SDLSvgDecoder (const string &filename);
   ~SDLSvgDecoder ();
   SDL_Surface *decode (int width, int height);
 

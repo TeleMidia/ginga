@@ -369,7 +369,7 @@ FilterManager::processSection (ITransportSection *section)
 }
 
 void
-FilterManager::addProcessedSection (string sectionName)
+FilterManager::addProcessedSection (const string &sectionName)
 {
   map<short, SectionFilter *>::iterator i;
   map<int, SectionFilter *>::iterator j;

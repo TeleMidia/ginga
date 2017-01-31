@@ -45,7 +45,7 @@ SystemInfo::initializeClockSpeed ()
 }
 
 string
-SystemInfo::getValue (string attribute)
+SystemInfo::getValue (const string &attribute)
 {
   map<string, string>::iterator i;
 

@@ -72,7 +72,7 @@ NclEventTransition::compareTo (NclEventTransition *object)
 }
 
 bool
-NclEventTransition::instanceOf (string s)
+NclEventTransition::instanceOf (const string &s)
 {
   if (typeSet.empty ())
     {

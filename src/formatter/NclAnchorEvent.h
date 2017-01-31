@@ -31,7 +31,7 @@ protected:
   ContentAnchor *anchor;
 
 public:
-  NclAnchorEvent (string id, void *executionObject, ContentAnchor *anchor);
+  NclAnchorEvent (const string &id, void *executionObject, ContentAnchor *anchor);
 
   virtual ~NclAnchorEvent ();
 

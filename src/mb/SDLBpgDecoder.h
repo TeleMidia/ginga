@@ -30,7 +30,7 @@ class SDLBpgDecoder
 {
 public:
   string filePath;
-  SDLBpgDecoder (string filename);
+  SDLBpgDecoder (const string &filename);
   ~SDLBpgDecoder ();
   SDL_Surface *decode ();
 

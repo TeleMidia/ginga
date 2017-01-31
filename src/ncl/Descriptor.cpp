@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-Descriptor::Descriptor (string id) : GenericDescriptor (id)
+Descriptor::Descriptor (const string &id) : GenericDescriptor (id)
 {
   explicitDuration = NaN ();
   presentationTool = "";
@@ -107,7 +107,7 @@ Descriptor::setExplicitDuration (double dur)
 }
 
 void
-Descriptor::setPlayerName (string name)
+Descriptor::setPlayerName (const string &name)
 {
   presentationTool = name;
 }
@@ -153,7 +153,7 @@ Descriptor::getParameters ()
 }
 
 Parameter *
-Descriptor::getParameter (string paramName)
+Descriptor::getParameter (const string &paramName)
 {
   if (parameters.count (paramName) == 0)
     {

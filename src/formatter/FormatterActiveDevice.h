@@ -78,10 +78,10 @@ protected:
   {
     return false;
   };
-  bool socketSend (TCPSocket *sock, string payload);
+  bool socketSend (TCPSocket *sock, const string &payload);
   void connectedToBaseDevice (unsigned int domainAddr);
   bool receiveRemoteEvent (int remoteDevClass, int eventType,
-                           string eventContent);
+                           const string &eventContent);
   bool
   receiveRemoteContent (arg_unused (int remoteDevClass),
                         arg_unused (char *stream),
@@ -89,16 +89,19 @@ protected:
   {
     return false;
   };
-  bool receiveRemoteContent (int remoteDevClass, string contentUri);
-  bool receiveRemoteContentInfo (string contentId, string contentUri);
+  bool receiveRemoteContent (int remoteDevClass, const string &contentUri);
+  bool receiveRemoteContentInfo (const string &contentId, const string &contentUri);
   bool userEventReceived (SDLInputEvent *ev);
-  bool openDocument (string contentUri);
+  bool openDocument (const string &contentUri);
   INCLPlayer *createNCLPlayer ();
   NclPlayerData *createNclPlayerData ();
-  int getCommandCode (string *com);
+  int getCommandCode (const string &com);
   void handleTCPClient (TCPSocket *sock);
-  bool handleTCPCommand (string sid, string snpt, string scommand,
-                         string spayload_desc, string payload);
+  bool handleTCPCommand (const string &sid,
+                         const string &snpt,
+                         const string &scommand,
+                         const string &spayload_desc,
+                         const string &payload);
 };
 
 GINGA_FORMATTER_END

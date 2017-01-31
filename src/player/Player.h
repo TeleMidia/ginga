@@ -93,7 +93,7 @@ protected:
   set<IPlayer *> mirrors;
 
 public:
-  Player (string mrl);
+  Player (const string &mrl);
   virtual ~Player ();
   void setMirrorSrc (IPlayer *mirrorSrc);
 
@@ -103,7 +103,7 @@ private:
 
 public:
   virtual void flip (){};
-  virtual void setMrl (string mrl, bool visible = true);
+  virtual void setMrl (const string &mrl, bool visible = true);
   virtual void reset (){};
   virtual void rebase (){};
   virtual void setNotifyContentUpdate (bool notify);
@@ -114,15 +114,18 @@ private:
   void performLockedListenersRequest ();
 
 public:
-  void notifyPlayerListeners (short code, string parameter = "",
+  void notifyPlayerListeners (short code,
+                              const string &parameter = "",
                               short type = TYPE_PRESENTATION,
-                              string value = "");
+                              const string &value = "");
 
 private:
   static void *detachedNotifier (void *ptr);
   static void ntsNotifyPlayerListeners (set<IPlayerListener *> *list,
-                                        short code, string parameter,
-                                        short type, string value);
+                                        short code,
+                                        const string &parameter,
+                                        short type,
+                                        const string &value);
 
 public:
   virtual void setSurface (SDLSurface* surface);
@@ -145,7 +148,7 @@ public:
   virtual double getTotalMediaTime ();
 
   virtual bool setKeyHandler (bool isHandler);
-  virtual void setScope (string scope, short type = TYPE_PRESENTATION,
+  virtual void setScope (const string &scope, short type = TYPE_PRESENTATION,
                          double begin = -1, double end = -1,
                          double outTransDur = -1);
 
@@ -159,8 +162,8 @@ public:
   virtual void abort ();
   virtual void pause ();
   virtual void resume ();
-  virtual string getPropertyValue (string name);
-  virtual void setPropertyValue (string name, string value);
+  virtual string getPropertyValue (const string &name);
+  virtual void setPropertyValue (const string &name, const string &value);
   virtual void setReferenceTimePlayer (arg_unused (IPlayer *player)){};
   void addTimeReferPlayer (IPlayer *referPlayer);
   void removeTimeReferPlayer (IPlayer *referPlayer);
@@ -198,16 +201,16 @@ public:
     return NULL;
   };
   virtual IPlayer *
-  getPlayer (arg_unused (string objectId))
+  getPlayer (arg_unused (const string &objectId))
   {
     return NULL;
   };
   virtual void select (arg_unused (IPlayer *selObject)){};
 
   // Application player only.
-  virtual void setCurrentScope (arg_unused (string scopeId)){};
+  virtual void setCurrentScope (arg_unused (const string &scopeId)){};
 
-  virtual void timeShift (arg_unused (string direction)){};
+  virtual void timeShift (arg_unused (const string &direction)){};
 };
 
 struct notify

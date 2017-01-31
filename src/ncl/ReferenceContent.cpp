@@ -26,7 +26,7 @@ ReferenceContent::ReferenceContent () : Content ()
   typeSet.insert ("ReferenceContent");
 }
 
-ReferenceContent::ReferenceContent (string ref) : Content ()
+ReferenceContent::ReferenceContent (const string &ref) : Content ()
 {
   setReference (ref);
   typeSet.insert ("ReferenceContent");
@@ -45,7 +45,7 @@ ReferenceContent::getCompleteReferenceUrl ()
 }
 
 void
-ReferenceContent::setReference (string ref)
+ReferenceContent::setReference (const string &ref)
 {
   reference = ref;
 }

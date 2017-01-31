@@ -86,8 +86,8 @@ TextPlayer::initializePlayer ()
 }
 
 int
-TextPlayer::write (SDLSurface* s, string text,
-                   short textAlign, string fontUri, int fontSize,
+TextPlayer::write (SDLSurface* s, const string &text,
+                   short textAlign, const string &fontUri, int fontSize,
                    Color *fontColor)
 {
   if (fontSize < 1 || s == 0 || text == "")
@@ -125,7 +125,7 @@ TextPlayer::write (SDLSurface* s, string text,
 }
 
 bool
-TextPlayer::setFont (string someUri)
+TextPlayer::setFont (const string &someUri)
 {
   if (!fileExists (someUri))
     {
@@ -213,7 +213,7 @@ TextPlayer::getTabSize ()
 }
 
 void
-TextPlayer::drawText (string text, short align)
+TextPlayer::drawText (const string &text, short align)
 {
   string uri;
   int textWidth, surWidth, surHeight;
@@ -338,7 +338,7 @@ TextPlayer::drawText (string text, short align)
 }
 
 bool
-TextPlayer::drawTextLn (string text, short align)
+TextPlayer::drawTextLn (const string &text, short align)
 {
   drawText (text, align);
   return breakLine ();
@@ -392,7 +392,7 @@ TextPlayer::getCurrentLine ()
 }
 
 void
-TextPlayer::setPropertyValue (string name, string value)
+TextPlayer::setPropertyValue (const string &name, const string &value)
 {
   // TODO: set font url, font size, font color, ...
   Player::setPropertyValue (name, value);

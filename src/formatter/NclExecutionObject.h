@@ -123,13 +123,13 @@ protected:
   static bool removeInstance (NclExecutionObject *object);
 
 public:
-  NclExecutionObject (string id, Node *node, bool handling,
+  NclExecutionObject (const string &id, Node *node, bool handling,
                       INclLinkActionListener *seListener);
 
-  NclExecutionObject (string id, Node *node, GenericDescriptor *descriptor,
+  NclExecutionObject (const string &id, Node *node, GenericDescriptor *descriptor,
                       bool handling, INclLinkActionListener *seListener);
 
-  NclExecutionObject (string id, Node *node,
+  NclExecutionObject (const string &id, Node *node,
                       NclCascadingDescriptor *descriptor, bool handling,
                       INclLinkActionListener *seListener);
 
@@ -138,7 +138,7 @@ public:
   static bool hasInstance (NclExecutionObject *object, bool eraseFromList);
 
 private:
-  void initializeExecutionObject (string id, Node *node,
+  void initializeExecutionObject (const string &id, Node *node,
                                   NclCascadingDescriptor *descriptor,
                                   bool handling,
                                   INclLinkActionListener *seListener);
@@ -151,7 +151,7 @@ protected:
 public:
   virtual bool isSleeping ();
   virtual bool isPaused ();
-  bool instanceOf (string s);
+  bool instanceOf (const string &s);
   int compareToUsingId (NclExecutionObject *object);
   Node *getDataObject ();
   NclCascadingDescriptor *getDescriptor ();
@@ -174,10 +174,10 @@ public:
   int compareTo (NclExecutionObject *object);
   int compareToUsingStartTime (NclExecutionObject *object);
   bool containsEvent (NclFormatterEvent *event);
-  NclFormatterEvent *getEventFromAnchorId (string anchorId);
+  NclFormatterEvent *getEventFromAnchorId (const string &anchorId);
 
 public:
-  NclFormatterEvent *getEvent (string id);
+  NclFormatterEvent *getEvent (const string &id);
   vector<NclFormatterEvent *> *getEvents ();
   bool hasSampleEvents ();
   set<NclAnchorEvent *> *getSampleEvents ();
@@ -192,7 +192,7 @@ public:
   void removeNode (Node *node);
   vector<Node *> *getNodes ();
   vector<Anchor *> *getNCMAnchors ();
-  PropertyAnchor *getNCMProperty (string propertyName);
+  PropertyAnchor *getNCMProperty (const string &propertyName);
   NclNodeNesting *getNodePerspective ();
   NclNodeNesting *getNodePerspective (Node *node);
   vector<NclExecutionObject *> *getObjectPerspective ();
@@ -214,9 +214,9 @@ public:
   virtual bool abort ();
   virtual bool pause ();
   virtual bool resume ();
-  virtual bool setPropertyValue (NclAttributionEvent *event, string value);
+  virtual bool setPropertyValue (NclAttributionEvent *event, const string &value);
 
-  virtual string getPropertyValue (string propName);
+  virtual string getPropertyValue (const string &propName);
 
   virtual bool unprepare ();
 

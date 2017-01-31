@@ -319,7 +319,7 @@ NclPresentationControlConverter::addImportBaseToRuleBase (
           ->getAttribute (XMLString::transcode ("documentURI")));
 
   compiler = (NclDocumentConverter *)getDocumentParser ();
-  importedDocument = compiler->importDocument (&baseLocation);
+  importedDocument = compiler->importDocument (baseLocation);
   if (importedDocument == NULL)
     {
       return;
@@ -676,7 +676,7 @@ NclPresentationControlConverter::posCompileSwitch (
 }
 
 short
-NclPresentationControlConverter::convertComparator (string comparator)
+NclPresentationControlConverter::convertComparator (const string &comparator)
 {
   if (comparator == "eq")
     return Comparator::CMP_EQ;

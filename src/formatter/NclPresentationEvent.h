@@ -38,7 +38,7 @@ private:
   double repetitionInterval;
 
 public:
-  NclPresentationEvent (string id, void *executionObject,
+  NclPresentationEvent (const string &id, void *executionObject,
                         ContentAnchor *anchor);
   virtual ~NclPresentationEvent ();
   bool stop ();

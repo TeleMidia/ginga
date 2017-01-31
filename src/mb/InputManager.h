@@ -112,7 +112,7 @@ public:
 
   void postInputEvent (SDLInputEvent *event);
   void postInputEvent (int keyCode);
-  void postCommand (string cmd, string args);
+  void postCommand (const string &cmd, const string &args);
 
   void setAxisValues (int x, int y, int z);
   void setAxisBoundaries (int x, int y, int z);

@@ -34,10 +34,10 @@ private:
   NclFormatterEvent *mappedEvent;
 
 public:
-  NclSwitchEvent (string id,
+  NclSwitchEvent (const string &id,
                   void *executionObjectSwitch, // NclExecutionObjectSwitch
                   InterfacePoint *interfacePoint, int eventType,
-                  string key);
+                  const string &key);
 
   virtual ~NclSwitchEvent ();
 

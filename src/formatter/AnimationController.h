@@ -69,7 +69,7 @@ private:
   AnimationController (NclExecutionObject *execObj,
                        AdapterPlayerManager *pManager,
                        AdapterFormatterPlayer *player,
-                       NclAttributionEvent *event, string value,
+                       NclAttributionEvent *event, const string &value,
                        Animation *anim);
 
   virtual ~AnimationController ();
@@ -78,7 +78,7 @@ public:
   static void startAnimation (NclExecutionObject *execObj,
                               AdapterPlayerManager *pManager,
                               AdapterFormatterPlayer *player,
-                              NclAttributionEvent *event, string value,
+                              NclAttributionEvent *event, const string &value,
                               Animation *anim);
 
 private:
@@ -135,7 +135,7 @@ private:
    */
   bool ungroupProperty ();
 
-  bool isExecutionObjectProperty (string name);
+  bool isExecutionObjectProperty (const string &name);
 };
 
 GINGA_FORMATTER_END

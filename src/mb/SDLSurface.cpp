@@ -303,7 +303,7 @@ SDLSurface::setCaps (int caps)
 }
 
 int
-SDLSurface::getCap (arg_unused (string cap))
+SDLSurface::getCap (arg_unused (const string &cap))
 {
   return 1;
 }

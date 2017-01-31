@@ -265,7 +265,7 @@ DeviceDomain::postEventTask (int destDevClass, int frameType, char *payload,
 
 void
 DeviceDomain::setDeviceInfo (int width, int height,
-                             string base_device_ncl_path)
+                             const string &base_device_ncl_path)
 {
   this->deviceWidth = width;
   this->deviceHeight = height;

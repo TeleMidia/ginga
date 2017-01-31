@@ -26,7 +26,7 @@ GINGA_DATAPROC_BEGIN
 DsmccMessageHeader::DsmccMessageHeader () {}
 
 int
-DsmccMessageHeader::readMessageFromFile (string fileName, unsigned int pid)
+DsmccMessageHeader::readMessageFromFile (const string &fileName, unsigned int pid)
 {
   FILE *fd;
   int rval;

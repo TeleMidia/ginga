@@ -51,7 +51,7 @@ public:
         Role *role);
 
   virtual ~Bind ();
-  bool instanceOf (string s);
+  bool instanceOf (const string &s);
   GenericDescriptor *getDescriptor ();
   InterfacePoint *getInterfacePoint ();
   Node *getNode ();
@@ -60,13 +60,13 @@ public:
   void setNode (Node *node);
   void setRole (Role *role);
   void setDescriptor (GenericDescriptor *desc);
-  Parameter *setParameterValue (string propertyLabel,
+  Parameter *setParameterValue (const string &propertyLabel,
                                 Parameter *propertyValue);
 
   string toString ();
   void addParameter (Parameter *parameter);
   vector<Parameter *> *getParameters ();
-  Parameter *getParameter (string name);
+  Parameter *getParameter (const string &name);
   bool removeParameter (Parameter *parameter);
   vector<Node *> *getNodeNesting ();
   InterfacePoint *getEndPointInterface ();

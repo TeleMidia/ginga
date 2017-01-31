@@ -42,7 +42,7 @@ public:
   long double getTimeReference ();
   char *getData ();
   void *getEventData ();
-  void setEventName (string eventName);
+  void setEventName (const string &eventName);
   string getEventName ();
   void print ();
 };

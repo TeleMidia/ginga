@@ -23,7 +23,7 @@ using namespace ::ginga::util;
 
 GINGA_CTXMGMT_BEGIN
 
-GingaUser::GingaUser (int id, string name, string passwd)
+GingaUser::GingaUser (int id, const string &name, const string &passwd)
 {
   this->userId = id;
   this->userName = name;
@@ -66,13 +66,13 @@ GingaUser::getUserGenre ()
 }
 
 bool
-GingaUser::isValidPassword (string passwd)
+GingaUser::isValidPassword (const string &passwd)
 {
   return passwd == userPasswd;
 }
 
 bool
-GingaUser::setPassword (string oldPasswd, string newPasswd)
+GingaUser::setPassword (const string &oldPasswd, const string &newPasswd)
 {
   if (oldPasswd != userPasswd)
     return false;
@@ -81,7 +81,7 @@ GingaUser::setPassword (string oldPasswd, string newPasswd)
 }
 
 void
-GingaUser::setUserName (string passwd, string name)
+GingaUser::setUserName (const string &passwd, const string &name)
 {
   if (passwd != userPasswd)
     return;
@@ -89,7 +89,7 @@ GingaUser::setUserName (string passwd, string name)
 }
 
 void
-GingaUser::setUserAge (string passwd, int age)
+GingaUser::setUserAge (const string &passwd, int age)
 {
   if (passwd != userPasswd)
     return;
@@ -97,7 +97,7 @@ GingaUser::setUserAge (string passwd, int age)
 }
 
 void
-GingaUser::setUserLocation (string passwd, string location)
+GingaUser::setUserLocation (const string &passwd, const string &location)
 {
   if (passwd != userPasswd)
     return;
@@ -105,7 +105,7 @@ GingaUser::setUserLocation (string passwd, string location)
 }
 
 void
-GingaUser::setUserGenre (string passwd, char genre)
+GingaUser::setUserGenre (const string &passwd, char genre)
 {
   if (passwd != userPasswd)
     return;
@@ -132,7 +132,7 @@ GingaUser::saveTo (FILE *fd)
 }
 
 void
-GingaUser::saveString (FILE *fd, string bytesToSave)
+GingaUser::saveString (FILE *fd, const string &bytesToSave)
 {
   fwrite (bytesToSave.c_str (), 1, bytesToSave.length (), fd);
   fwrite (" ", 1, 1, fd);

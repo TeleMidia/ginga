@@ -287,7 +287,7 @@ CodeMap::getInstance ()
 }
 
 int
-CodeMap::getCode (string codeStr)
+CodeMap::getCode (const string &codeStr)
 {
   if (keyMap.count (codeStr) == 0)
     {

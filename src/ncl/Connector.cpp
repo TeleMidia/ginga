@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-Connector::Connector (string id) : Entity (id)
+Connector::Connector (const string &id) : Entity (id)
 {
   parameters = new map<string, Parameter *>;
 
@@ -58,7 +58,7 @@ Connector::getNumRoles ()
 }
 
 Role *
-Connector::getRole (string roleId)
+Connector::getRole (const string &roleId)
 {
   Role *wRole;
   vector<Role *> *roles = getRoles ();
@@ -111,7 +111,7 @@ Connector::getParameters ()
 }
 
 Parameter *
-Connector::getParameter (string name)
+Connector::getParameter (const string &name)
 {
   if (parameters->empty ())
     return NULL;
@@ -125,7 +125,7 @@ Connector::getParameter (string name)
 }
 
 bool
-Connector::removeParameter (string name)
+Connector::removeParameter (const string &name)
 {
   if (parameters->empty ())
     return false;

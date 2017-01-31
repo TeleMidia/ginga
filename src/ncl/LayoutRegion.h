@@ -59,26 +59,26 @@ protected:
   pthread_mutex_t mutex;
 
 public:
-  LayoutRegion (string id);
+  LayoutRegion (const string &id);
   virtual ~LayoutRegion ();
   virtual void setOutputMapRegion (LayoutRegion *outMapRegion);
   virtual LayoutRegion *getOutputMapRegion ();
   virtual string getOutputMapRegionId ();
-  virtual void setDeviceClass (int deviceClass, string mapId);
+  virtual void setDeviceClass (int deviceClass, const string &mapId);
   virtual int getDeviceClass ();
   virtual void addRegion (LayoutRegion *region);
   virtual LayoutRegion *cloneRegion ();
 
   virtual LayoutRegion *copyRegion ();
 
-  virtual int compareWidthSize (string w);
-  virtual int compareHeightSize (string h);
+  virtual int compareWidthSize (const string &w);
+  virtual int compareHeightSize (const string &h);
   virtual double getBottom ();
   virtual double getHeight ();
   virtual double getLeft ();
   virtual double getRight ();
-  virtual LayoutRegion *getRegion (string id);
-  virtual LayoutRegion *getRegionRecursively (string id);
+  virtual LayoutRegion *getRegion (const string &id);
+  virtual LayoutRegion *getRegionRecursively (const string &id);
   void printRegionIdsRecursively ();
   virtual vector<LayoutRegion *> *getRegions ();
   virtual string getTitle ();
@@ -121,7 +121,7 @@ public:
 
   virtual void validateTarget ();
 
-  virtual void setTitle (string newTitle);
+  virtual void setTitle (const string &newTitle);
   virtual void setZIndex (int newZIndex);
   virtual vector<LayoutRegion *> *getRegionsSortedByZIndex ();
   virtual vector<LayoutRegion *> *
@@ -158,8 +158,8 @@ public:
   virtual bool intersects (int x, int y);
 
 private:
-  double getPercentualValue (string value);
-  bool isPercentualValue (string value);
+  double getPercentualValue (const string &value);
+  bool isPercentualValue (const string &value);
   void lock ();
   void unlock ();
 };

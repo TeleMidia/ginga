@@ -63,13 +63,13 @@ public:
   static EPGProcessor *getInstance ();
   void release ();
   void setDataProcessor (void *dataProcessor);
-  void decodeSdt (string fileName);
+  void decodeSdt (const string &fileName);
   void decodeSdtSection (ITransportSection *section);
-  set<IEventInfo *> *decodeEit (string fileName);
+  set<IEventInfo *> *decodeEit (const string &fileName);
   void decodeTot (ITransportSection *section);
-  void decodeCdt (string fileName);
+  void decodeCdt (const string &fileName);
   void decodeEitSection (ITransportSection *section);
-  void addEPGListener (IEPGListener *listener, string request,
+  void addEPGListener (IEPGListener *listener, const string &request,
                        unsigned char type);
   map<string, struct SIField> createMap ();
   void removeEPGListener (IEPGListener *listener);
@@ -78,7 +78,7 @@ public:
 
 private:
   EPGProcessor ();
-  struct SIField *handleFieldStr (string str);
+  struct SIField *handleFieldStr (const string &str);
   int savePNG (char *data, int pngSize);
   void generateEitMap (map<unsigned int, IEventInfo *> *actualMap);
   void generateSdtMap (IServiceInfo *si);

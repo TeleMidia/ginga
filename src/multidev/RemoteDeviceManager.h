@@ -44,12 +44,12 @@ public:
 
   void setDeviceDomain (DeviceDomain *domain);
   void setDeviceInfo (int deviceClass, int width, int height,
-                      string base_device_ncl_path);
+                      const string &base_device_ncl_path);
   int getDeviceClass ();
   void addListener (IRemoteDeviceListener *listener);
   void removeListener (IRemoteDeviceListener *listener);
   void postEvent (int devClass, int eventType, char *event, int eventSize);
-  bool postMediaContent (int destDevClass, string url);
+  bool postMediaContent (int destDevClass, const string &url);
 
 private:
   void run ();

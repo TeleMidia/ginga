@@ -100,11 +100,11 @@ private:
   string layoutName;
 
 public:
-  DeviceLayout (string layoutName);
+  DeviceLayout (const string &layoutName);
   virtual ~DeviceLayout ();
   string getLayoutName ();
-  void addDevice (string name, int x, int y, int width, int height);
-  DeviceProperty *getDeviceProperty (string name);
+  void addDevice (const string &name, int x, int y, int width, int height);
+  DeviceProperty *getDeviceProperty (const string &name);
 };
 
 GINGA_NCL_END

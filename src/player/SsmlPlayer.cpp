@@ -42,7 +42,7 @@ SynthCallback (arg_unused (short *wav), arg_unused (int numsamples), arg_unused 
 
 GINGA_PLAYER_BEGIN
 
-SsmlPlayer::SsmlPlayer (string mrl)
+SsmlPlayer::SsmlPlayer (const string &mrl)
     : Thread (), Player (mrl)
 {
 }
@@ -50,7 +50,7 @@ SsmlPlayer::SsmlPlayer (string mrl)
 SsmlPlayer::~SsmlPlayer () {}
 
 void
-SsmlPlayer::setFile (string mrl)
+SsmlPlayer::setFile (const string &mrl)
 {
   clog << "SsmlPlayer::setFile!! " << endl;
 
@@ -160,7 +160,7 @@ SsmlPlayer::resume ()
 }
 
 void
-SsmlPlayer::setPropertyValue (string name, string value)
+SsmlPlayer::setPropertyValue (const string &name, const string &value)
 {
   Player::setPropertyValue (name, value);
 }

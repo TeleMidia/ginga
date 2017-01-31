@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-SDLSvgDecoder::SDLSvgDecoder (string filename)
+SDLSvgDecoder::SDLSvgDecoder (const string &filename)
 {
   filePath.assign (filename);
 }

@@ -132,7 +132,7 @@ DataProcessor::applicationInfoMounted (IAIT *ait)
 }
 
 void
-DataProcessor::serviceDomainMounted (string mountPoint,
+DataProcessor::serviceDomainMounted (const string &mountPoint,
                                      map<string, string> *names,
                                      map<string, string> *paths)
 {
@@ -188,7 +188,7 @@ DataProcessor::createPidSectionFilter (int pid)
 }
 
 void
-DataProcessor::addSEListener (string eventType,
+DataProcessor::addSEListener (const string &eventType,
                               IDsmccStreamEventListener *listener)
 {
   map<string, set<IDsmccStreamEventListener *> *>::iterator i;
@@ -216,7 +216,7 @@ DataProcessor::addSEListener (string eventType,
 }
 
 void
-DataProcessor::removeSEListener (string eventType,
+DataProcessor::removeSEListener (const string &eventType,
                                  IDsmccStreamEventListener *listener)
 {
   map<string, set<IDsmccStreamEventListener *> *>::iterator i;

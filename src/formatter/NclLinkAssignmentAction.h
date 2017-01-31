@@ -37,7 +37,7 @@ public:
   virtual ~NclLinkAssignmentAction ();
 
   string getValue ();
-  void setValue (string value);
+  void setValue (const string &value);
   Animation *getAnimation ();
   void setAnimation (Animation *animation);
 };

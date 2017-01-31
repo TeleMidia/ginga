@@ -29,21 +29,21 @@ private:
   string content;
 
 public:
-  PlainTxtPlayer (string mrl);
+  PlainTxtPlayer (const string &mrl);
   virtual ~PlainTxtPlayer ();
 
 protected:
-  void setFile (string mrl);
+  void setFile (const string &mrl);
 
 private:
   void loadTxt ();
-  void setContent (string content);
-  void setTextAlign (string align);
+  void setContent (const string &content);
+  void setTextAlign (const string &align);
 
 public:
   bool play ();
   void stop ();
-  virtual void setPropertyValue (string name, string value);
+  virtual void setPropertyValue (const string &name, const string &value);
 };
 
 GINGA_PLAYER_END

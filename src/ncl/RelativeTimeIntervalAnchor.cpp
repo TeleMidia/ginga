@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-RelativeTimeIntervalAnchor::RelativeTimeIntervalAnchor (string id,
+RelativeTimeIntervalAnchor::RelativeTimeIntervalAnchor (const string &id,
                                                         double begin,
                                                         double end)
     : IntervalAnchor (id, begin, end)

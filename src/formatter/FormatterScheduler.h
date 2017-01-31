@@ -125,7 +125,7 @@ private:
                           AdapterFormatterPlayer *objectPlayer,
                           string nodeId);
 
-  static void printAction (string action, NclLinkCondition *condition,
+  static void printAction (const string &action, NclLinkCondition *condition,
                            NclLinkSimpleAction *linkAction);
 
 public:
@@ -158,7 +158,7 @@ private:
                        NclExecutionObject *selectedObject,
                        NclLinkSimpleAction *action);
 
-  string solveImplicitRefAssessment (string propValue,
+  string solveImplicitRefAssessment (const string &propValue,
                                      NclAttributionEvent *event);
 
 public:
@@ -191,7 +191,7 @@ public:
   short getPriorityType ();
   void addSchedulerListener (IFormatterSchedulerListener *listener);
   void removeSchedulerListener (IFormatterSchedulerListener *listener);
-  void receiveGlobalAttribution (string propertyName, string value);
+  void receiveGlobalAttribution (const string &pName, const string &value);
 };
 
 GINGA_FORMATTER_END

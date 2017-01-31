@@ -48,7 +48,7 @@ NclLinkAssignmentAction::getValue ()
 }
 
 void
-NclLinkAssignmentAction::setValue (string value)
+NclLinkAssignmentAction::setValue (const string &value)
 {
   this->value = value;
 }

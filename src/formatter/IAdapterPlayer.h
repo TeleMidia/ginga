@@ -35,7 +35,7 @@ public:
   virtual void setAdapterManager (void *manager) = 0;
 
 public:
-  virtual bool instanceOf (string s) = 0;
+  virtual bool instanceOf (const string &s) = 0;
 
 protected:
   virtual void createPlayer () = 0;
@@ -45,10 +45,10 @@ public:
 
   virtual double getOutTransTime () = 0;
 
-  virtual bool setPropertyValue (NclAttributionEvent *event, string value)
+  virtual bool setPropertyValue (NclAttributionEvent *event, const string &value)
       = 0;
 
-  virtual string getPropertyValue (string name) = 0;
+  virtual string getPropertyValue (const string &name) = 0;
 };
 
 GINGA_FORMATTER_END

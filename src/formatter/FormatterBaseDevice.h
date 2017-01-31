@@ -45,7 +45,7 @@ protected:
   };
   bool
   receiveRemoteContent (arg_unused (int remoteDevClass),
-                        arg_unused (string contentUri))
+                        arg_unused (const string &contentUri))
   {
     return false;
   };

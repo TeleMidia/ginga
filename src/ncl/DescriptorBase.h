@@ -30,19 +30,19 @@ private:
   vector<GenericDescriptor *> *descriptorSet;
 
 public:
-  DescriptorBase (string id);
+  DescriptorBase (const string &id);
   virtual ~DescriptorBase ();
 
   bool addDescriptor (GenericDescriptor *descriptor);
-  bool addBase (Base *base, string alias, string location);
+  bool addBase (Base *base, const string &alias, const string &location);
 
   void clear ();
 
 private:
-  GenericDescriptor *getDescriptorLocally (string descriptorId);
+  GenericDescriptor *getDescriptorLocally (const string &descriptorId);
 
 public:
-  GenericDescriptor *getDescriptor (string descriptorId);
+  GenericDescriptor *getDescriptor (const string &descriptorId);
   vector<GenericDescriptor *> *getDescriptors ();
   bool removeDescriptor (GenericDescriptor *descriptor);
 };

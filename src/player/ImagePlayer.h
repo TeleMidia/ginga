@@ -25,7 +25,7 @@ GINGA_PLAYER_BEGIN
 class ImagePlayer : public Player
 {
 public:
-  ImagePlayer (string mrl);
+  ImagePlayer (const string &mrl);
   bool play ();
 };
 

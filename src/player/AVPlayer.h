@@ -58,7 +58,7 @@ private:
   SDLWindow* win;
 
 public:
-  AVPlayer (string mrl);
+  AVPlayer (const string &mrl);
   virtual ~AVPlayer ();
   SDLSurface* getSurface ();
 
@@ -85,7 +85,7 @@ public:
   void getOriginalResolution (int *width, int *height);
   double getTotalMediaTime ();
   int64_t getVPts ();
-  void timeShift (string direction);
+  void timeShift (const string &direction);
 
 private:
   double getCurrentMediaTime ();
@@ -95,7 +95,7 @@ public:
   void setMediaTime (double pos);
   void setStopTime (double pos);
   double getStopTime ();
-  void setScope (string scope, short type = TYPE_PRESENTATION,
+  void setScope (const string &scope, short type = TYPE_PRESENTATION,
                  double begin = -1, double end = -1,
                  double outTransDur = -1);
 
@@ -104,8 +104,8 @@ public:
   void stop ();
   void resume ();
 
-  virtual string getPropertyValue (string name);
-  virtual void setPropertyValue (string name, string value);
+  virtual string getPropertyValue (const string &name);
+  virtual void setPropertyValue (const string &name, const string &value);
 
   void addListener (IPlayerListener *listener);
   void release ();

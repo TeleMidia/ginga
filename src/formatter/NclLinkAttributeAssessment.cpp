@@ -37,7 +37,7 @@ NclLinkAttributeAssessment::getEvent ()
 }
 
 void
-NclLinkAttributeAssessment::setOffset (string offset)
+NclLinkAttributeAssessment::setOffset (const string &offset)
 {
   this->offset = offset;
 }
@@ -106,7 +106,7 @@ NclLinkAttributeAssessment::getValue ()
 }
 
 string
-NclLinkAttributeAssessment::getAssessmentWithOffset (string assessmentValue)
+NclLinkAttributeAssessment::getAssessmentWithOffset (const string &assessmentValue)
 {
   double off, val;
   if (!_xstrtod (offset, &off) || !_xstrtod (assessmentValue, &val))

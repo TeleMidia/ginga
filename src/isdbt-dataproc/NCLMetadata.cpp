@@ -28,7 +28,7 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
 
 GINGA_DATAPROC_BEGIN
 
-NCLMetadata::NCLMetadata (string name)
+NCLMetadata::NCLMetadata (const string &name)
 {
   this->name = name;
   this->targetTotalLen = 0;
@@ -107,7 +107,7 @@ NCLMetadata::isConsolidated ()
 }
 
 void
-NCLMetadata::setBaseUri (string uri)
+NCLMetadata::setBaseUri (const string &uri)
 {
   this->baseUri = uri;
   this->mdUri = SystemCompat::updatePath (baseUri + "/metadata.xml");
@@ -291,7 +291,7 @@ NCLMetadata::closeBaseDataElement ()
 }
 
 void
-NCLMetadata::writeRootElement (string sId, string uri, string size,
+NCLMetadata::writeRootElement (const string &sId, const string &uri, const string &size,
                                string componentTag)
 {
   *mdFile << "    <pushedRoot structureId=\"" << sId << "\" uri=\"";
@@ -300,7 +300,7 @@ NCLMetadata::writeRootElement (string sId, string uri, string size,
 }
 
 void
-NCLMetadata::writeDataElement (string sId, string uri, string size,
+NCLMetadata::writeDataElement (const string &sId, const string &uri, const string &size,
                                string componentTag)
 {
   *mdFile << "    <pushedData structureId=\"" << sId << "\" uri=\"";
@@ -309,7 +309,7 @@ NCLMetadata::writeDataElement (string sId, string uri, string size,
 }
 
 void
-NCLMetadata::copyContent (string uri, char *stream, int fileSize)
+NCLMetadata::copyContent (const string &uri, char *stream, int fileSize)
 {
   FILE *fd;
   int bytes;
@@ -345,7 +345,7 @@ NCLMetadata::copyContent (string uri, char *stream, int fileSize)
 }
 
 StreamData *
-NCLMetadata::createStreamData (int structId, int structType, string uri,
+NCLMetadata::createStreamData (int structId, int structType, const string &uri,
                                int fileSize)
 {
   StreamData *streamData;
@@ -364,7 +364,7 @@ NCLMetadata::createStreamData (int structId, int structType, string uri,
 }
 
 int
-NCLMetadata::getFileSize (string uri)
+NCLMetadata::getFileSize (const string &uri)
 {
   FILE *fd;
   int bytes = 0;

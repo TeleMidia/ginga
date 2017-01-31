@@ -93,7 +93,7 @@ public:
   static const short FOCUSED = 1;
   static const short SELECTED = 2;
 
-  NclFormatterRegion (string objectId, void *descriptor,
+  NclFormatterRegion (const string &objectId, void *descriptor,
                       void *layoutManager);
 
   virtual ~NclFormatterRegion ();
@@ -107,22 +107,22 @@ public:
   void setZIndex (int zIndex);
   int getZIndex ();
 
-  void setPlan (string plan);
+  void setPlan (const string &plan);
   string getPlan ();
 
-  void setFocusIndex (string focusIndex);
+  void setFocusIndex (const string &focusIndex);
   string getFocusIndex ();
 
-  void setMoveUp (string moveUp);
+  void setMoveUp (const string &moveUp);
   string getMoveUp ();
 
-  void setMoveDown (string moveDown);
+  void setMoveDown (const string &moveDown);
   string getMoveDown ();
 
-  void setMoveLeft (string moveLeft);
+  void setMoveLeft (const string &moveLeft);
   string getMoveLeft ();
 
-  void setMoveRight (string moveRight);
+  void setMoveRight (const string &moveRight);
   string getMoveRight ();
 
   void setFocusBorderColor (Color *focusBorderColor);
@@ -131,7 +131,7 @@ public:
   void setFocusBorderWidth (int focusBorderWidth);
   int getFocusBorderWidth ();
 
-  void setFocusComponentSrc (string focusComponentSrc);
+  void setFocusComponentSrc (const string &focusComponentSrc);
   string getFocusComponentSrc ();
 
   void setSelBorderColor (Color *selBorderColor);
@@ -140,12 +140,12 @@ public:
   void setSelBorderWidth (int selBorderWidth);
   int getSelBorderWidth ();
 
-  void setSelComponentSrc (string selComponentSrc);
+  void setSelComponentSrc (const string &selComponentSrc);
   string getSelComponentSrc ();
 
   void setFocusInfo (Color *focusBorderColor, int focusBorderWidth,
-                     string focusComponentSrc, Color *selBorderColor,
-                     int selBorderWidth, string selComponentSrc);
+                     const string &focusComponentSrc, Color *selBorderColor,
+                     int selBorderWidth, const string &selComponentSrc);
 
   void *getLayoutManager ();
   SDLWindow* getOutputId ();
@@ -208,15 +208,15 @@ public:
   Color *getBackgroundColor ();
 
   double getTransparency ();
-  void setTransparency (string strTrans);
+  void setTransparency (const string &strTrans);
   void setTransparency (double transparency);
-  void setBackgroundColor (string color);
+  void setBackgroundColor (const string &color);
   void setBackgroundColor (Color *color);
-  void setChromaKey (string value);
-  void setRgbChromaKey (string value);
-  void setFit (string value);
+  void setChromaKey (const string &value);
+  void setRgbChromaKey (const string &value);
+  void setFit (const string &value);
   void setFit (short value);
-  void setScroll (string value);
+  void setScroll (const string &value);
   void setScroll (short value);
 
 private:

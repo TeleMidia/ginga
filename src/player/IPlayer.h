@@ -50,14 +50,16 @@ public:
   virtual void flip () = 0;
   virtual SDLSurface* getSurface () = 0;
   virtual void setSurface (SDLSurface* sfc) = 0;
-  virtual void setMrl (string mrl, bool visible = true) = 0;
+  virtual void setMrl (const string &mrl, bool visible = true) = 0;
   virtual void reset () = 0;
   virtual void rebase () = 0;
   virtual void setNotifyContentUpdate (bool notify) = 0;
   virtual void addListener (IPlayerListener *listener) = 0;
   virtual void removeListener (IPlayerListener *listener) = 0;
-  virtual void notifyPlayerListeners (short code, string paremeter,
-                                      short type, string value)
+  virtual void notifyPlayerListeners (short code,
+                                      const string &parameter,
+                                      short type,
+                                      const string &value)
       = 0;
 
   virtual int64_t getVPts () = 0;
@@ -65,7 +67,7 @@ public:
   virtual double getTotalMediaTime () = 0;
   virtual void setMediaTime (double newTime) = 0;
   virtual bool setKeyHandler (bool isHandler) = 0;
-  virtual void setScope (string scope, short type, double begin = -1,
+  virtual void setScope (const string &scope, short type, double begin = -1,
                          double end = -1, double outTransDur = -1)
       = 0;
 
@@ -75,8 +77,8 @@ public:
   virtual void pause () = 0;
   virtual void resume () = 0;
 
-  virtual string getPropertyValue (string name) = 0;
-  virtual void setPropertyValue (string name, string value) = 0;
+  virtual string getPropertyValue (const string &name) = 0;
+  virtual void setPropertyValue (const string &name, const string &value) = 0;
 
   virtual void setReferenceTimePlayer (IPlayer *player) = 0;
   virtual void addTimeReferPlayer (IPlayer *referPlayer) = 0;
@@ -98,13 +100,13 @@ public:
   virtual IPlayer *getSelectedPlayer () = 0;
   virtual void setPlayerMap (map<string, IPlayer *> *objs) = 0;
   virtual map<string, IPlayer *> *getPlayerMap () = 0;
-  virtual IPlayer *getPlayer (string objectId) = 0;
+  virtual IPlayer *getPlayer (const string &objectId) = 0;
   virtual void select (IPlayer *selObject) = 0;
 
   /*Exclusive for Application Players*/
-  virtual void setCurrentScope (string scopeId) = 0;
+  virtual void setCurrentScope (const string &scopeId) = 0;
 
-  virtual void timeShift (string direction) = 0;
+  virtual void timeShift (const string &direction) = 0;
 };
 
 GINGA_PLAYER_END

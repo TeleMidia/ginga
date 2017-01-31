@@ -742,8 +742,10 @@ AdapterApplicationPlayer::naturalEnd ()
 }
 
 void
-AdapterApplicationPlayer::updateStatus (short code, string param,
-                                        short type, string value)
+AdapterApplicationPlayer::updateStatus (short code,
+                                        const string &param,
+                                        short type,
+                                        const string &value)
 {
   ApplicationStatus *data;
 
@@ -768,9 +770,11 @@ AdapterApplicationPlayer::updateStatus (short code, string param,
 }
 
 void
-AdapterApplicationPlayer::notificationHandler (short code, string param,
-                                               short type, string value)
+AdapterApplicationPlayer::notificationHandler (short code, const string &_param,
+                                               short type, const string &value)
 {
+  string param = _param;
+
   clog << "AdapterApplicationPlayer::notificationHandler";
   clog << " with code = '" << code << "' param = '";
   clog << param << "'";
@@ -955,8 +959,8 @@ AdapterApplicationPlayer::checkEvent (NclFormatterEvent *event, short type)
 }
 
 bool
-AdapterApplicationPlayer::startEvent (string anchorId, short type,
-                                      string value)
+AdapterApplicationPlayer::startEvent (const string &anchorId, short type,
+                                      const string &value)
 {
   NclFormatterEvent *event;
   bool fakeStart = false;
@@ -1017,8 +1021,8 @@ AdapterApplicationPlayer::startEvent (string anchorId, short type,
 }
 
 bool
-AdapterApplicationPlayer::stopEvent (string anchorId, short type,
-                                     string value)
+AdapterApplicationPlayer::stopEvent (const string &anchorId, short type,
+                                     const string &value)
 {
   NclFormatterEvent *event;
 
@@ -1088,7 +1092,7 @@ AdapterApplicationPlayer::stopEvent (string anchorId, short type,
 }
 
 bool
-AdapterApplicationPlayer::abortEvent (string anchorId, short type)
+AdapterApplicationPlayer::abortEvent (const string &anchorId, short type)
 {
   NclFormatterEvent *event;
   string cvt_id = anchorId;
@@ -1154,7 +1158,7 @@ AdapterApplicationPlayer::abortEvent (string anchorId, short type)
 }
 
 bool
-AdapterApplicationPlayer::pauseEvent (string anchorId, short type)
+AdapterApplicationPlayer::pauseEvent (const string &anchorId, short type)
 {
   NclFormatterEvent *event;
   string cvt_id = anchorId;
@@ -1205,7 +1209,7 @@ AdapterApplicationPlayer::pauseEvent (string anchorId, short type)
 }
 
 bool
-AdapterApplicationPlayer::resumeEvent (string anchorId, short type)
+AdapterApplicationPlayer::resumeEvent (const string &anchorId, short type)
 {
   NclFormatterEvent *event;
   string cvt_id = anchorId;

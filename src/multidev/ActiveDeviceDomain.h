@@ -47,7 +47,7 @@ protected:
   void receiveAnswerTask (char *answerTask);
   bool
   postMediaContentTask (arg_unused (int destDevClass),
-                        arg_unused (string url))
+                        arg_unused (const string &url))
   {
     return false;
   };

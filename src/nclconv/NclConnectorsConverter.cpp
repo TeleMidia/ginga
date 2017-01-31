@@ -61,7 +61,7 @@ NclConnectorsConverter::addImportBaseToConnectorBase (void *parentObject,
 
   compiler = (NclDocumentConverter *)getDocumentParser ();
 
-  importedDocument = compiler->importDocument (&baseLocation);
+  importedDocument = compiler->importDocument (baseLocation);
   if (importedDocument == NULL)
     {
       clog << "NclConnectorsConverter::addImportBaseToConnectorBase ";
@@ -648,13 +648,13 @@ NclConnectorsConverter::createCompoundAction (DOMElement *parentElement,
 }
 
 Parameter *
-NclConnectorsConverter::getParameter (string paramName)
+NclConnectorsConverter::getParameter (const string &paramName)
 {
   return (Parameter *)(connector->getParameter (paramName));
 }
 
 short
-NclConnectorsConverter::convertActionType (string actionType)
+NclConnectorsConverter::convertActionType (const string &actionType)
 {
   if (actionType == "start")
     return SimpleAction::ACT_START;
@@ -678,7 +678,7 @@ NclConnectorsConverter::convertActionType (string actionType)
 }
 
 short
-NclConnectorsConverter::convertEventState (string eventState)
+NclConnectorsConverter::convertEventState (const string &eventState)
 {
   if (eventState == "occurring")
     {

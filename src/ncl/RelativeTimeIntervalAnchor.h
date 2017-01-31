@@ -25,7 +25,7 @@ GINGA_NCL_BEGIN
 class RelativeTimeIntervalAnchor : public IntervalAnchor
 {
 public:
-  RelativeTimeIntervalAnchor (string id, double begin, double end);
+  RelativeTimeIntervalAnchor (const string &id, double begin, double end);
 };
 
 GINGA_NCL_END

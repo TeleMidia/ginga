@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-RectangleSpatialAnchor::RectangleSpatialAnchor (string id, long left,
+RectangleSpatialAnchor::RectangleSpatialAnchor (const string &id, long left,
                                                 long top, long width,
                                                 long height)
     : SpatialAnchor (id)

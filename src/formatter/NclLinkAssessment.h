@@ -32,7 +32,7 @@ public:
   virtual ~NclLinkAssessment () {}
   virtual string getValue () = 0;
   bool
-  instanceOf (string type)
+  instanceOf (const string &type)
   {
     return typeSet.count (type);
   }

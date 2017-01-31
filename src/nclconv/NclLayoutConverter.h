@@ -54,9 +54,9 @@ public:
   void *createRegion (DOMElement *parentElement, void *objGrandParent);
 
 private:
-  double getPercentualValue (string value);
-  int getPixelValue (string value);
-  bool isPercentualValue (string value);
+  double getPercentualValue (const string &value);
+  int getPixelValue (const string &value);
+  bool isPercentualValue (const string &value);
 };
 
 GINGA_NCLCONV_END

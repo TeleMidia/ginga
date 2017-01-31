@@ -30,7 +30,7 @@ public:
   virtual void setAVPid (int programPid, int aPid, int vPid) = 0;
   virtual IPlayer *getPlayer (int pid) = 0;
   virtual void setPlayer (int pid, IPlayer *) = 0;
-  virtual void setPropertyValue (string pName, string pValue) = 0;
+  virtual void setPropertyValue (const string &name, const string &value) = 0;
 };
 
 GINGA_PLAYER_END

@@ -289,7 +289,7 @@ ContextManager::initializeContexts ()
 }
 
 void
-ContextManager::addContextVar (int userId, string varName, string varValue)
+ContextManager::addContextVar (int userId, const string &varName, const string &varValue)
 {
   map<int, map<string, string> *>::iterator i;
   map<string, string> *vars;
@@ -379,10 +379,10 @@ ContextManager::saveUsersProfiles ()
 
 void
 ContextManager::saveProfile (FILE *fd, int userId,
-                             map<string, string> *profile)
+                             const map<string, string> *profile)
 {
   string id;
-  map<string, string>::iterator i;
+  map<string, string>::const_iterator i;
 
   GingaUser::saveString (fd, "|| =");
   GingaUser::saveString (fd, xstrbuild ("%d", userId));
@@ -531,7 +531,7 @@ ContextManager::removeContextListener (IContextListener *listener)
 }
 
 void
-ContextManager::setGlobalVar (string varName, string varValue)
+ContextManager::setGlobalVar (const string &varName, const string &varValue)
 {
   set<IContextListener *>::iterator i;
 

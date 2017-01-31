@@ -418,7 +418,7 @@ LuaPlayer::doStop (void)
 
 // Constructor and destructor.
 
-LuaPlayer::LuaPlayer (string mrl) : Player (mrl)
+LuaPlayer::LuaPlayer (const string &mrl) : Player (mrl)
 {
 #ifdef _MSC_VER
   static int putenv = 0;
@@ -574,7 +574,7 @@ LuaPlayer::hasPresented (void)
 }
 
 void
-LuaPlayer::setCurrentScope (string name)
+LuaPlayer::setCurrentScope (const string &name)
 {
   this->lock ();
   this->scope = name;
@@ -594,7 +594,7 @@ LuaPlayer::setKeyHandler (bool b)
 }
 
 void
-LuaPlayer::setPropertyValue (string name, string value)
+LuaPlayer::setPropertyValue (const string &name, const string &value)
 {
   this->lock ();
   ptrace ("name='%s', value='%s'", name.c_str (), value.c_str ());

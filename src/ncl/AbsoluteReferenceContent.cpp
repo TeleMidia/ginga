@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-AbsoluteReferenceContent::AbsoluteReferenceContent (string ref)
+AbsoluteReferenceContent::AbsoluteReferenceContent (const string &ref)
     : ReferenceContent (ref)
 {
   typeSet.insert ("AbsoluteReferenceContent");

@@ -38,8 +38,8 @@ public:
 
   virtual void receivePes (char *buf, int len, IFrontendFilter *filter) = 0;
 
-  virtual string setDestinationUri (string dstUri) = 0;
-  virtual void setSourceUri (string srcUri, bool isPipe) = 0;
+  virtual string setDestinationUri (const string &dstUri) = 0;
+  virtual void setSourceUri (const string &srcUri, bool isPipe) = 0;
 };
 
 GINGA_TSPARSER_END

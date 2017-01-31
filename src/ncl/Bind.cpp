@@ -50,7 +50,7 @@ Bind::~Bind ()
 }
 
 bool
-Bind::instanceOf (string s)
+Bind::instanceOf (const string &s)
 {
   if (typeSet.empty ())
     return false;
@@ -107,7 +107,7 @@ Bind::setDescriptor (GenericDescriptor *desc)
 }
 
 Parameter *
-Bind::setParameterValue (string propertyLabel, Parameter *propertyValue)
+Bind::setParameterValue (const string &propertyLabel, Parameter *propertyValue)
 {
   return (*parameters)[propertyLabel] = propertyValue;
 }
@@ -147,7 +147,7 @@ Bind::getParameters ()
 }
 
 Parameter *
-Bind::getParameter (string paramName)
+Bind::getParameter (const string &paramName)
 {
   if (parameters->empty ())
     return NULL;

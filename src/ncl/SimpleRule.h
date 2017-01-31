@@ -33,16 +33,16 @@ private:
   string value;
 
 public:
-  SimpleRule (string id, string attr, short op, string val);
+  SimpleRule (const string &id, const string &attr, short op, const string &val);
 
   virtual ~SimpleRule (){};
   string getAttribute ();
   short getOperator ();
   string getValue ();
   void setOperator (short newOp);
-  void setValue (string newValue);
+  void setValue (const string &newValue);
   string toString ();
-  void setAttribute (string someAttribute);
+  void setAttribute (const string &someAttribute);
 };
 
 GINGA_NCL_END

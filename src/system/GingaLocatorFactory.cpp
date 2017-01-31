@@ -79,8 +79,9 @@ GingaLocatorFactory::getInstance ()
 }
 
 void
-GingaLocatorFactory::createLocator (string providerUri, string ior)
+GingaLocatorFactory::createLocator (const string &pUri, const string &ior)
 {
+  string providerUri = pUri;
   vector<string> *args;
   vector<string>::iterator i;
   string newIor;
@@ -148,8 +149,9 @@ GingaLocatorFactory::createLocator (string providerUri, string ior)
 }
 
 string
-GingaLocatorFactory::getLocation (string providerUri)
+GingaLocatorFactory::getLocation (const string &pUri)
 {
+  string providerUri = pUri;
   map<string, string>::iterator i;
   string clientUri = "";
   string ior = "-1";
@@ -219,7 +221,7 @@ GingaLocatorFactory::getLocation (string providerUri)
 }
 
 string
-GingaLocatorFactory::getName (string ior)
+GingaLocatorFactory::getName (const string &ior)
 {
   vector<string> *args;
   vector<string>::iterator i;
@@ -254,8 +256,9 @@ GingaLocatorFactory::getName (string ior)
 }
 
 void
-GingaLocatorFactory::addClientLocation (string ior, string clientUri,
-                                        string name)
+GingaLocatorFactory::addClientLocation (const string &ior,
+                                        const string &clientUri,
+                                        const string &name)
 {
   vector<string> *args;
   vector<string>::iterator i;

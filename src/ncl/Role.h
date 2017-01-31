@@ -38,7 +38,7 @@ public:
   virtual short getEventType ();
   virtual string getLabel ();
   virtual void setEventType (short type);
-  virtual void setLabel (string id);
+  virtual void setLabel (const string &id);
 
   virtual int getMinCon ();
   virtual int getMaxCon ();
@@ -46,7 +46,7 @@ public:
   virtual void setMinCon (int minCon);
   virtual void setMaxCon (int maxCon);
   virtual bool
-  instanceOf (string type)
+  instanceOf (const string &type)
   {
     return type == "Role";
   };

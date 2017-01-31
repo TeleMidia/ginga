@@ -36,7 +36,7 @@ protected:
   vector<Port *> portList;
 
 public:
-  CompositeNode (string id);
+  CompositeNode (const string &id);
   virtual ~CompositeNode ();
   bool addAnchor (int index, Anchor *anchor);
   bool addAnchor (Anchor *anchor);
@@ -52,7 +52,7 @@ public:
 
   void clearPorts ();
   unsigned int getNumPorts ();
-  Port *getPort (string portId);
+  Port *getPort (const string &portId);
   Port *getPort (unsigned int index);
   vector<Port *> *getPorts ();
   unsigned int indexOfPort (Port *port);
@@ -62,19 +62,19 @@ public:
   virtual InterfacePoint *getMapInterface (Port *port);
 
   // virtual to SwitchNode
-  virtual Node *getNode (string nodeId);
+  virtual Node *getNode (const string &nodeId);
 
   vector<Node *> *getNodes ();
   unsigned int getNumNodes ();
 
   // virtual to SwitchNode
-  virtual bool recursivelyContainsNode (string nodeId);
+  virtual bool recursivelyContainsNode (const string &nodeId);
 
   // virtual to SwitchNode
   virtual bool recursivelyContainsNode (Node *node);
 
   // virtual to SwitchNode
-  virtual Node *recursivelyGetNode (string nodeId);
+  virtual Node *recursivelyGetNode (const string &nodeId);
 
   // virtual to SwitchNode
   virtual bool removeNode (Node *node);
@@ -83,7 +83,7 @@ public:
   virtual GenericDescriptor *getNodeDescriptor (Node *node);
 
   // virtual to ContextNode
-  virtual bool setNodeDescriptor (string nodeId,
+  virtual bool setNodeDescriptor (const string &nodeId,
                                   GenericDescriptor *descriptor);
 };
 

@@ -51,7 +51,7 @@ public:
   void destroyFilter (IDemuxer *demux, short streamType);
   void destroyFilter (IDemuxer *demux, ITSFilter *filter);
   bool processSection (ITransportSection *section);
-  void addProcessedSection (string sectionName);
+  void addProcessedSection (const string &sectionName);
   void setInfo (map<unsigned int, DsmccModule *> *info);
   void setBlockSize (unsigned short size);
 };
