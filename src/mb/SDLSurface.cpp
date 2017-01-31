@@ -448,94 +448,6 @@ SDLSurface::pushDrawData (int c1, int c2, int c3, int c4, short type)
 }
 
 void
-SDLSurface::drawLine (int x1, int y1, int x2, int y2)
-{
-  clog << "SDLSurface::drawLine '";
-  clog << x1 << ", " << y1 << ", " << x2 << ", " << y2 << "'";
-  clog << endl;
-
-  pushDrawData (x1, y1, x2, y2, SDLWindow::DDT_LINE);
-}
-
-void
-SDLSurface::drawRectangle (int x, int y, int w, int h)
-{
-  /* clog << "SDLSurface::drawRectangle '";
-  clog << x << ", " << y << ", " << w << ", " << h << "'";
-  clog << endl; */
-
-  pushDrawData (x, y, w, h, SDLWindow::DDT_RECT);
-}
-
-void
-SDLSurface::fillRectangle (int x, int y, int w, int h)
-{
-  SDL_Rect rect;
-  guint8 r, g, b;
-
-  assert (x >= 0);
-  assert (y >= 0);
-  assert (w > 0);
-  assert (h > 0);
-
-  Thread::mutexLock (&sMutex);
-  initContentSurface ();
-
-  if (sur != NULL && surfaceColor != NULL)
-    {
-      rect.x = x;
-      rect.y = y;
-      rect.w = w;
-      rect.h = h;
-
-      r = surfaceColor->getR ();
-      g = surfaceColor->getG ();
-      b = surfaceColor->getB ();
-
-      Thread::mutexLock (&pMutex);
-      if (createPendingSurface ())
-        {
-          // TODO: check why we have to set BGR instead of RGB
-          if (SDL_FillRect (pending, &rect,
-                            SDL_MapRGB (pending->format, b, g, r))
-              < 0)
-            {
-              clog << "SDLSurface::fillRectangle SDL error: '";
-              clog << SDL_GetError () << "'" << endl;
-            }
-        }
-      Thread::mutexUnlock (&pMutex);
-    }
-  Thread::mutexUnlock (&sMutex);
-
-  // pushDrawData(x, y, w, h, SDLWindow::DDT_FILL_RECT);
-}
-
-void
-SDLSurface::drawString (int x, int y, const char *txt)
-{
-  if (iFont != NULL && txt != NULL)
-    {
-      if (x < 0)
-        {
-          x = 0;
-        }
-
-      if (y < 0)
-        {
-          y = 0;
-        }
-
-      Thread::mutexLock (&pMutex);
-      if (createPendingSurface ())
-        {
-          ((IFontProvider*)iFont)->playOver (this, txt, x, y, 0);
-        }
-      Thread::mutexUnlock (&pMutex);
-    }
-}
-
-void
 SDLSurface::setChromaColor (guint8 r, guint8 g, guint8 b, guint8 alpha)
 {
   releaseChromaColor ();
@@ -566,26 +478,6 @@ SDLSurface::setChromaColor (guint8 r, guint8 g, guint8 b, guint8 alpha)
     }
 
   Thread::mutexUnlock (&sMutex);
-}
-
-Color *
-SDLSurface::getChromaColor ()
-{
-  return this->chromaColor;
-}
-
-void
-SDLSurface::setBorderColor (guint8 r, guint8 g, guint8 b, guint8 alpha)
-{
-  releaseBorderColor ();
-
-  this->borderColor = new Color (r, g, b, alpha);
-}
-
-Color *
-SDLSurface::getBorderColor ()
-{
-  return borderColor;
 }
 
 void
