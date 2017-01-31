@@ -143,7 +143,7 @@ public:
   /* SDL MB internal use*/
 private:
   /* input */
-  static int convertEventCodeStrToInt (string strEvent);
+  static int convertEventCodeStrToInt (const string &strEvent);
   static void initCodeMaps ();
   static bool checkEventFocus (Display *s);
 

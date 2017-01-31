@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-AudioProvider::AudioProvider (string uri)
+AudioProvider::AudioProvider (const string &uri)
 {
   type = AudioProviderType;
 

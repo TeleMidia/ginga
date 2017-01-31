@@ -786,7 +786,7 @@ Display::fromGingaToMB (CodeMap::KeyCode keyCode)
 
 /* input */
 int
-Display::convertEventCodeStrToInt (string strEvent)
+Display::convertEventCodeStrToInt (const string &strEvent)
 {
   int intEvent = -1;
   map<string, int>::iterator i;
