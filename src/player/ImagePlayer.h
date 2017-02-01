@@ -24,9 +24,22 @@ GINGA_PLAYER_BEGIN
 
 class ImagePlayer : public Player
 {
+private:
+  GRecMutex mutex;              // sync access to image player
+  bool display_job_done;        // signals that display job is done
+  GMutex display_job_mutex;     // sync access to done flag
+  GCond display_job_cond;       // sync access to done flag
+
+  void lock (void);
+  void unlock (void);
+
+  static void displayJobWrapper (SDL_Renderer *, void *);
+  void displayJob (SDL_Renderer *);
+
 public:
   ImagePlayer (const string &mrl);
-  bool play ();
+  ~ImagePlayer (void);
+  bool play (void);
 };
 
 GINGA_PLAYER_END

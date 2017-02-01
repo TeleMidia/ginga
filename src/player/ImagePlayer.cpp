@@ -24,29 +24,83 @@ using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
+
+// Private methods.
+
+void
+ImagePlayer::lock (void)
+{
+  g_rec_mutex_lock (&this->mutex);
+}
+
+void
+ImagePlayer::unlock (void)
+{
+  g_rec_mutex_unlock (&this->mutex);
+}
+
+void
+ImagePlayer::displayJobWrapper (SDL_Renderer *renderer, void *data)
+{
+  g_assert_nonnull (data);
+  ((ImagePlayer *) data)->displayJob (renderer);
+}
+
+void
+ImagePlayer::displayJob (SDL_Renderer *renderer)
+{
+  SDL_Texture *texture;
+  SDLWindow *window;
+
+  texture = IMG_LoadTexture (renderer, mrl.c_str ());
+  if (unlikely (texture == NULL))
+    g_error ("cannot load image file %s: %s", mrl.c_str (),
+             IMG_GetError ());
+
+  this->lock ();
+  window = surface->getParentWindow ();
+  g_assert_nonnull (window);
+  window->setTexture (texture);
+  this->unlock ();
+
+  g_mutex_lock (&this->display_job_mutex);
+  this->display_job_done = true;
+  g_cond_signal (&this->display_job_cond);
+  g_mutex_unlock (&this->display_job_mutex);
+}
+
+
+// Public methods.
+
 ImagePlayer::ImagePlayer (const string &_mrl) : Player (_mrl)
 {
-  this->surface = Ginga_Display->createSurfaceFrom (NULL);
+  g_rec_mutex_init (&this->mutex);
+  this->display_job_done = false;
+  g_mutex_init (&this->display_job_mutex);
+  g_cond_init (&this->display_job_cond);
+
+  this->surface = new SDLSurface ();
+}
+
+ImagePlayer::~ImagePlayer (void) // FIXME: Destroy texture
+{
+  this->lock ();
+  g_mutex_clear (&this->display_job_mutex);
+  g_cond_clear (&this->display_job_cond);
+  this->unlock ();
+  g_rec_mutex_clear (&this->mutex);
+
 }
 
 bool
 ImagePlayer::play ()
 {
-  SDL_Surface *sfc;
-  SDLWindow *win;
+  Ginga_Display->addJob (displayJobWrapper, this);
 
-  sfc = IMG_Load (mrl.c_str ());
-  if (unlikely (sfc == NULL))
-    g_error ("cannot load image file %s: %s", mrl.c_str (),
-             IMG_GetError ());
-
-  g_assert_nonnull (this->surface);
-  this->surface->setContent (sfc);
-  ginga::mb::Display::addUnderlyingSurface (sfc);
-
-  win = surface->getParentWindow ();
-  g_assert_nonnull (win);
-  win->setRenderedSurface (sfc);
+  g_mutex_lock (&this->display_job_mutex);
+  while (!this->display_job_done)
+    g_cond_wait (&this->display_job_cond, &this->display_job_mutex);
+  g_mutex_unlock (&this->display_job_mutex);
 
   return Player::play ();
 }
