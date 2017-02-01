@@ -54,18 +54,18 @@ private:
   GList *windows;               // list of windows to be redrawn
   GList *providers;             // list of providers to be redrawn
 
-  void lock ();
-  void unlock ();
+  void lock (void);
+  void unlock (void);
   gpointer add (GList **, gpointer);
   gpointer remove (GList **, gpointer);
   gboolean find (GList *, gconstpointer);
 
+  static gpointer renderThreadWrapper (gpointer);
+  void renderThread (void);
+
 public:
   Display (int, int, bool);
   ~Display ();
-
-  void _init (SDL_Window *, SDL_Renderer*); // internal
-  void _redraw ();              // internal (called only by render thread)
 
   void getSize (int *, int *);
   void setSize (int, int);
