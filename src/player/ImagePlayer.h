@@ -19,6 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define IMAGE_PLAYER_H
 
 #include "Player.h"
+#include "mb/Display.h"
+using namespace ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
@@ -33,8 +35,9 @@ private:
   void lock (void);
   void unlock (void);
 
-  static void displayJobWrapper (SDL_Renderer *, void *);
-  void displayJob (SDL_Renderer *);
+  static bool displayJobCallbackWrapper (DisplayJob *,
+                                         SDL_Renderer *, void *);
+  bool displayJobCallback (DisplayJob *, SDL_Renderer *);
 
 public:
   ImagePlayer (const string &mrl);
