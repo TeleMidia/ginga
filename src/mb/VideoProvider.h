@@ -38,7 +38,7 @@ private:
 public:
   VideoProvider (const string &);
   virtual ~VideoProvider ();
-  bool getHasVisual ();
+  bool hasVisual ();
   void *getProviderContent ();
   void setProviderContent (void *texture);
   virtual void setAVPid (arg_unused (int aPid), arg_unused (int vPid)){};

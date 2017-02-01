@@ -29,7 +29,7 @@ class IContinuousMediaProvider : public IMediaProvider
 {
 public:
   virtual ~IContinuousMediaProvider (){};
-  virtual bool getHasVisual () = 0;
+  virtual bool hasVisual () = 0;
   virtual void setAVPid (int aPid, int vPid) = 0;
   virtual void feedBuffers () = 0;
   virtual bool checkVideoResizeEvent (SDLSurface* frame) = 0;
