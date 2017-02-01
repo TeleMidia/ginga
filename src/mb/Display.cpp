@@ -79,71 +79,6 @@ prov_delete (gpointer p)
   delete prov;
 }
 
-// Render thread.
-static gpointer
-render_thread_func (gpointer data)
-{
-  Display *display;
-  int width;
-  int height;
-  guint flags;
-
-  SDL_Window *screen;
-  SDL_Renderer *renderer;
-
-  display = (Display *) data;
-  g_assert_nonnull (display);
-  display->getSize (&width, &height);
-
-  g_assert (!SDL_WasInit (0));
-  if (unlikely (SDL_Init (0) != 0))
-    g_critical ("cannot initialize SDL: %s", SDL_GetError ());
-
-  SDL_SetHint (SDL_HINT_NO_SIGNAL_HANDLERS, "1");
-  SDL_SetHint (SDL_HINT_RENDER_SCALE_QUALITY, "1");
-
-  flags = SDL_WINDOW_SHOWN;
-  if (display->getFullscreen ())
-    flags |= SDL_WINDOW_FULLSCREEN;
-
-  screen = NULL;
-  renderer = NULL;
-  SDLx_CreateWindowAndRenderer (width, height, flags, &screen, &renderer);
-  g_assert_nonnull (screen);
-  g_assert_nonnull (renderer);
-  display->_init (screen, renderer);
-
-  while (!display->hasQuitted())
-    {
-      SDL_Event evt;
-      while (SDL_PollEvent (&evt)) // handle input
-        {
-          switch (evt.type)
-            {
-            case SDL_KEYDOWN:
-            case SDL_KEYUP:
-              if (evt.key.keysym.sym != SDLK_ESCAPE)
-                break;
-              // fall-through
-            case SDL_QUIT:
-              display->quit ();
-              goto quit;
-            default:
-              break;
-            }
-
-          InputManager *im = display->getInputManager ();
-          SDLEventBuffer *buf = im->getEventBuffer ();
-          buf->feed (evt, false, false);
-        }
-      display->_redraw ();      // redraw providers and windows
-    }
- quit:
-  SDL_Quit ();
-  exit (EXIT_SUCCESS);
-  return NULL;
-}
-
 
 // Private methods.
 
@@ -204,6 +139,123 @@ Display::find (GList *list, gconstpointer data)
   return elt != NULL;
 }
 
+gpointer
+Display::renderThreadWrapper (gpointer data)
+{
+  g_assert_nonnull (data);
+  ((Display *) data)->renderThread ();
+  return NULL;
+}
+
+// FIXME:
+//
+// - We should expose the main window background color, e.g., via
+//   command-line argument --background.
+// - Window transparency attribute should be called alpha; 0.0 means
+//   transparent and 1.0 opaque.
+// - The alpha component of colors is inverted.
+// - Alpha blending is not working.
+// - Handle border width.
+//
+void
+Display::renderThread ()
+{
+  guint flags;
+
+  g_assert (!SDL_WasInit (0));
+  if (unlikely (SDL_Init (0) != 0))
+    g_critical ("cannot initialize SDL: %s", SDL_GetError ());
+
+  SDL_SetHint (SDL_HINT_NO_SIGNAL_HANDLERS, "1");
+  SDL_SetHint (SDL_HINT_RENDER_SCALE_QUALITY, "1");
+
+  this->lock ();
+  flags = SDL_WINDOW_SHOWN;
+  if (this->fullscreen)
+    flags |= SDL_WINDOW_FULLSCREEN;
+
+  g_assert_null (this->screen);
+  g_assert_null (this->renderer);
+  SDLx_CreateWindowAndRenderer (this->width, this->height, flags,
+                                &this->screen, &this->renderer);
+  g_assert (!this->render_thread_ready);
+  g_mutex_lock (&this->render_thread_mutex);
+  this->render_thread_ready = true;
+  g_cond_signal (&this->render_thread_cond);
+  g_mutex_unlock (&this->render_thread_mutex);
+  this->unlock ();
+
+  while (!this->hasQuitted())   // render loop
+    {
+      SDL_Event evt;
+      GList *l;
+
+      while (SDL_PollEvent (&evt)) // handle input
+        {
+          switch (evt.type)
+            {
+            case SDL_KEYDOWN:
+            case SDL_KEYUP:
+              if (evt.key.keysym.sym != SDLK_ESCAPE)
+                break;
+              // fall-through
+            case SDL_QUIT:
+              this->quit ();
+              goto quit;
+            default:
+              break;
+            }
+
+          InputManager *im = this->getInputManager ();
+          SDLEventBuffer *buf = im->getEventBuffer ();
+          buf->feed (evt, false, false);
+        }
+
+      this->lock ();            //  update providers
+      for (l = this->providers; l != NULL; l = l->next)
+        {
+          SDL_Texture *texture;
+          IContinuousMediaProvider *prov;
+          int width, height;
+
+          prov = (IContinuousMediaProvider *) l->data;
+          if (!prov->getHasVisual ())
+            continue;               // nothing to do
+
+          if (prov->getProviderContent () == NULL)
+            {
+              prov->getOriginalResolution (&width, &height);
+              texture = createTexture (this->renderer, width, height);
+              g_assert_nonnull (texture);
+              prov->setProviderContent (texture);
+            }
+          prov->refreshDR (NULL);
+        }
+      this->unlock ();
+
+      this->lock ();            // redraw windows
+      SDL_SetRenderDrawColor (this->renderer, 255, 0, 255, 255);
+      SDL_RenderClear (this->renderer);
+      this->windows = g_list_sort (this->windows, win_cmp_z);
+      for (l = this->windows; l != NULL; l = l->next)
+        {
+          SDLWindow *win;
+
+          win = (SDLWindow *) l->data;
+          g_assert_nonnull (win);
+
+          if (win->isVisible () && !win->isGhostWindow ())
+            win->redraw ();
+        }
+      SDL_RenderPresent (this->renderer);
+      this->unlock ();
+    }
+
+ quit:
+  SDL_Quit ();
+  exit (EXIT_SUCCESS);
+}
+
 
 // Public methods.
 
@@ -240,7 +292,7 @@ Display::Display (int width, int height, bool fullscreen)
   checkMutexInit ();            // FIXME
   initCodeMaps ();              // FIXME
 
-  this->render_thread = g_thread_new ("render", render_thread_func, this);
+  this->render_thread = g_thread_new ("render", renderThreadWrapper, this);
   g_assert_nonnull (this->render_thread);
   g_mutex_lock (&this->render_thread_mutex);
   while (!this->render_thread_ready)
@@ -268,94 +320,6 @@ Display::~Display ()
   g_list_free_full (this->providers, prov_delete);
   this->unlock ();
   g_rec_mutex_clear (&this->mutex);
-}
-
-/**
- * Redraws the registered providers and windows.  The z-index order of
- * windows determines their redraw order.
- */
-void
-Display::_redraw ()
-{
-  GList *l;
-
-  this->lock ();
-
-  // Update providers.
-  for (l = this->providers; l != NULL; l = l->next)
-    {
-      SDL_Texture *texture;
-      IContinuousMediaProvider *prov;
-      int width, height;
-
-      prov = (IContinuousMediaProvider *) l->data;
-      if (!prov->getHasVisual ())
-        continue;               // nothing to do
-
-      if (prov->getProviderContent () == NULL)
-        {
-          prov->getOriginalResolution (&width, &height);
-          texture = createTexture (this->renderer, width, height);
-          g_assert_nonnull (texture);
-          prov->setProviderContent (texture);
-        }
-      prov->refreshDR (NULL);
-    }
-
-  // Redraw windows.
-  //
-  // FIXME:
-  //
-  // - We should expose the main window background color, e.g., via
-  //   command-line argument --background.
-  // - Window transparency attribute should be called alpha; 0.0 means
-  //   transparent and 1.0 opaque.
-  // - The alpha component of colors is inverted.
-  // - Alpha blending is not working.
-  // - Handle border width.
-  //
-  this->lockRenderer ();
-  SDL_SetRenderDrawColor (this->renderer, 255, 0, 255, 255);
-  SDL_RenderClear (this->renderer);
-  this->unlockRenderer ();
-
-  this->windows = g_list_sort (this->windows, win_cmp_z);
-  for (l = this->windows; l != NULL; l = l->next)
-    {
-      SDLWindow *win;
-
-      win = (SDLWindow *) l->data;
-      g_assert_nonnull (win);
-
-      if (win->isVisible () && !win->isGhostWindow ())
-        win->redraw ();
-    }
-
-  this->lockRenderer ();
-  SDL_RenderPresent (this->renderer);
-  this->unlockRenderer ();
-
-  this->unlock ();
-}
-
-/**
- * Initializes display with the given screen and renderer.
- * Signals that render thread is ready.
- */
-void
-Display::_init (SDL_Window *screen, SDL_Renderer *renderer)
-{
-  this->lock ();
-  g_assert (!this->render_thread_ready);
-  g_assert_null (this->screen);
-  g_assert_null (this->renderer);
-  this->screen = screen;
-  this->renderer = renderer;
-  g_mutex_lock (&this->render_thread_mutex);
-  this->render_thread_ready = true;
-  g_cond_signal (&this->render_thread_cond);
-  g_mutex_unlock (&this->render_thread_mutex);
-  this->unlock ();
 }
 
 /**
