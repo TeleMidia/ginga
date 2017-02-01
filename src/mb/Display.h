@@ -40,13 +40,16 @@ private:
   int height;                   // display height in pixels
   bool fullscreen;              // true if full-screen mode is on
 
+  SDL_Window *screen;           // display screen
   GRecMutex renderer_mutex;     // sync access to renderer
   SDL_Renderer *renderer;       // display renderer
-  SDL_Window *screen;           // display screen
   InputManager *im;             // display input manager (FIXME)
 
   bool _quit;                   // true if render thread should quit
   GThread *render_thread;       // render thread handle
+  bool render_thread_ready;     // signals that the render thread is ready
+  GMutex render_thread_mutex;   // synchronize access to ready flag
+  GCond render_thread_cond;     // synchronize access to ready flag
 
   GList *windows;               // list of windows to be redrawn
   GList *providers;             // list of providers to be redrawn
@@ -58,10 +61,11 @@ private:
   gboolean find (GList *, gconstpointer);
 
 public:
-  void redraw ();               // internal (called by render thread)
-
   Display (int, int, bool);
   ~Display ();
+
+  void _init (SDL_Window *, SDL_Renderer*); // internal
+  void _redraw ();              // internal (called only by render thread)
 
   void getSize (int *, int *);
   void setSize (int, int);
