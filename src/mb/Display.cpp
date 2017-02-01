@@ -84,9 +84,34 @@ static gpointer
 render_thread_func (gpointer data)
 {
   Display *display;
+  int width;
+  int height;
+  guint flags;
+
+  SDL_Window *screen;
+  SDL_Renderer *renderer;
 
   display = (Display *) data;
   g_assert_nonnull (display);
+  display->getSize (&width, &height);
+
+  g_assert (!SDL_WasInit (0));
+  if (unlikely (SDL_Init (0) != 0))
+    g_critical ("cannot initialize SDL: %s", SDL_GetError ());
+
+  SDL_SetHint (SDL_HINT_NO_SIGNAL_HANDLERS, "1");
+  SDL_SetHint (SDL_HINT_RENDER_SCALE_QUALITY, "1");
+
+  flags = SDL_WINDOW_SHOWN;
+  if (display->getFullscreen ())
+    flags |= SDL_WINDOW_FULLSCREEN;
+
+  screen = NULL;
+  renderer = NULL;
+  SDLx_CreateWindowAndRenderer (width, height, flags, &screen, &renderer);
+  g_assert_nonnull (screen);
+  g_assert_nonnull (renderer);
+  display->_init (screen, renderer);
 
   while (!display->hasQuitted())
     {
@@ -111,7 +136,7 @@ render_thread_func (gpointer data)
           SDLEventBuffer *buf = im->getEventBuffer ();
           buf->feed (evt, false, false);
         }
-      display->redraw ();       // redraw providers and windows
+      display->_redraw ();      // redraw providers and windows
     }
  quit:
   SDL_Quit ();
@@ -183,11 +208,74 @@ Display::find (GList *list, gconstpointer data)
 // Public methods.
 
 /**
- * Redraws the registered providers and windows.
- * The z-index order of windows determines their redraw order.
+ * Creates a display with the given dimensions.
+ * If FULLSCREEN is true, enable full-screen mode.
+ */
+Display::Display (int width, int height, bool fullscreen)
+{
+  g_rec_mutex_init (&this->mutex);
+
+  this->width = width;
+  this->height = height;
+  this->fullscreen = fullscreen;
+
+  g_rec_mutex_init (&this->renderer_mutex);
+  this->renderer = NULL;
+  this->screen = NULL;
+  this->im = NULL;
+
+  this->_quit = false;
+  this->render_thread = NULL;
+  this->render_thread_ready = false;
+  g_mutex_init (&this->render_thread_mutex);
+  g_cond_init (&this->render_thread_cond);
+
+  this->windows = NULL;
+  this->providers = NULL;
+
+  this->im = new InputManager ();
+  g_assert_nonnull (this->im);
+  this->im->setAxisBoundaries (this->width, this->height, 0);
+
+  checkMutexInit ();            // FIXME
+  initCodeMaps ();              // FIXME
+
+  this->render_thread = g_thread_new ("render", render_thread_func, this);
+  g_assert_nonnull (this->render_thread);
+  g_mutex_lock (&this->render_thread_mutex);
+  while (!this->render_thread_ready)
+    g_cond_wait (&this->render_thread_cond, &this->render_thread_mutex);
+  g_mutex_unlock (&this->render_thread_mutex);
+  g_assert (this->render_thread_ready);
+}
+
+/**
+ * Destroys display.
+ */
+Display::~Display ()
+{
+  this->quit ();
+  g_assert_null (g_thread_join (this->render_thread));
+  g_mutex_clear (&this->render_thread_mutex);
+  g_cond_clear (&this->render_thread_cond);
+
+  this->lock ();
+  g_rec_mutex_clear (&this->mutex);
+  SDL_DestroyRenderer (this->renderer);
+  SDL_DestroyWindow (this->screen);
+  delete im;
+  g_list_free_full (this->windows, win_delete);
+  g_list_free_full (this->providers, prov_delete);
+  this->unlock ();
+  g_rec_mutex_clear (&this->mutex);
+}
+
+/**
+ * Redraws the registered providers and windows.  The z-index order of
+ * windows determines their redraw order.
  */
 void
-Display::redraw ()
+Display::_redraw ()
 {
   GList *l;
 
@@ -251,77 +339,23 @@ Display::redraw ()
 }
 
 /**
- * Creates a display with the given dimensions.
- * If FULLSCREEN is true, enable full-screen mode.
+ * Initializes display with the given screen and renderer.
+ * Signals that render thread is ready.
  */
-Display::Display (int width, int height, bool fullscreen)
+void
+Display::_init (SDL_Window *screen, SDL_Renderer *renderer)
 {
-  guint flags;
-  int status;
-
-  g_rec_mutex_init (&this->mutex);
-
-  this->width = width;
-  this->height = height;
-  this->fullscreen = fullscreen;
-
-  g_rec_mutex_init (&this->renderer_mutex);
-  this->renderer = NULL;
-  this->screen = NULL;
-  this->im = NULL;
-
-  this->_quit = false;
-  this->render_thread = NULL;
-
-  this->windows = NULL;
-  this->providers = NULL;
-
-  g_assert (!SDL_WasInit (0));
-  status = SDL_Init (0);
-  if (unlikely (status != 0))
-    g_critical ("cannot initialize SDL: %s", SDL_GetError ());
-
-  flags = SDL_WINDOW_SHOWN;
-  if (this->fullscreen)
-    flags |= SDL_WINDOW_FULLSCREEN;
-
-  status = SDL_CreateWindowAndRenderer (this->width, this->height, flags,
-                                        &this->screen, &this->renderer);
-  g_assert (status == 0);
-  g_assert_nonnull (this->screen);
-  g_assert_nonnull (this->renderer);
-
-  SDL_SetHint (SDL_HINT_NO_SIGNAL_HANDLERS, "1");
-  SDL_SetHint (SDL_HINT_RENDER_SCALE_QUALITY, "1");
-
-  this->im = new InputManager ();
-  g_assert_nonnull (this->im);
-  this->im->setAxisBoundaries (this->width, this->height, 0);
-
-  checkMutexInit ();            // FIXME
-  initCodeMaps ();              // FIXME
-
-  this->render_thread = g_thread_new ("render", render_thread_func, this);
-  g_assert_nonnull (this->render_thread);
-}
-
-/**
- * Destroys display.
- */
-Display::~Display ()
-{
-  this->quit ();
-  g_assert_null (g_thread_join (this->render_thread));
-
   this->lock ();
-  g_rec_mutex_clear (&this->mutex);
-  SDL_DestroyRenderer (this->renderer);
-  SDL_DestroyWindow (this->screen);
-  delete im;
-  g_list_free_full (this->windows, win_delete);
-  g_list_free_full (this->providers, prov_delete);
+  g_assert (!this->render_thread_ready);
+  g_assert_null (this->screen);
+  g_assert_null (this->renderer);
+  this->screen = screen;
+  this->renderer = renderer;
+  g_mutex_lock (&this->render_thread_mutex);
+  this->render_thread_ready = true;
+  g_cond_signal (&this->render_thread_cond);
+  g_mutex_unlock (&this->render_thread_mutex);
   this->unlock ();
-  g_rec_mutex_clear (&this->mutex);
 }
 
 /**
