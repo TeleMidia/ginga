@@ -232,7 +232,7 @@ Display::renderThread ()
 
           prov = (IContinuousMediaProvider *) l->data;
           g_assert_nonnull (prov);
-          if (!prov->getHasVisual ())
+          if (!prov->hasVisual ())
             continue;
 
           if (prov->getProviderContent () == NULL)
