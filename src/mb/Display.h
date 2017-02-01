@@ -31,6 +31,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
+// Type used for renderer job ids.
+typedef guint64 DisplayJobId;
+
+// Type used for renderer job tasks.
+typedef void (*DisplayJob) (SDL_Renderer *, void *data);
+
 class Display
 {
 private:
@@ -48,9 +54,10 @@ private:
   bool _quit;                   // true if render thread should quit
   GThread *render_thread;       // render thread handle
   bool render_thread_ready;     // signals that the render thread is ready
-  GMutex render_thread_mutex;   // synchronize access to ready flag
-  GCond render_thread_cond;     // synchronize access to ready flag
+  GMutex render_thread_mutex;   // sync access to ready flag
+  GCond render_thread_cond;     // sync access to ready flag
 
+  GList *jobs;                  // list of jobs to be executed by renderer
   GList *windows;               // list of windows to be redrawn
   GList *providers;             // list of providers to be redrawn
 
@@ -72,13 +79,16 @@ public:
   bool getFullscreen ();
   void setFullscreen (bool);
 
+  void quit ();
+  bool hasQuitted ();
+
+  DisplayJobId addJob (DisplayJob, void *);
+  bool removeJob (DisplayJobId);
+
   void lockRenderer ();
   void unlockRenderer ();
   SDL_Renderer *getLockedRenderer ();
   SDL_Renderer *getRenderer ();
-
-  void quit ();
-  bool hasQuitted ();
 
   SDLWindow *createWindow (int, int, int, int, int);
   bool hasWindow (const SDLWindow *);

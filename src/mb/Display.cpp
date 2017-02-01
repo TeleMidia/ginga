@@ -52,6 +52,33 @@ pthread_mutex_t Display::cstMutex;
 
 // BEGIN SANITY ------------------------------------------------------------
 
+// Display renderer job data.
+typedef struct _Job
+{
+  guint64 id;
+  DisplayJob func;
+  void *data;
+} Job;
+
+// Compares the ids of two job data.
+static gint
+job_cmp_id (gconstpointer p1, gconstpointer p2)
+{
+  Job *j1 = deconst (Job *, p1);
+  Job *j2 = deconst (Job *, p2);
+  int id1 = j1->id;
+  int id2 = j2->id;
+  return (id1 < id2) ? -1 : (id1 > id2) ? 1 : 0;
+}
+
+// Deletes job data.
+static void
+job_delete (gpointer p)
+{
+  Job *job = (Job *) p;
+  delete job;
+}
+
 // Compares the z-index of two windows.
 static gint
 win_cmp_z (gconstpointer p1, gconstpointer p2)
@@ -179,11 +206,12 @@ Display::renderThread ()
   SDLx_CreateWindowAndRenderer (this->width, this->height, flags,
                                 &this->screen, &this->renderer);
   g_assert (!this->render_thread_ready);
+  this->unlock ();
+
   g_mutex_lock (&this->render_thread_mutex);
   this->render_thread_ready = true;
   g_cond_signal (&this->render_thread_cond);
   g_mutex_unlock (&this->render_thread_mutex);
-  this->unlock ();
 
   while (!this->hasQuitted())   // render loop
     {
@@ -231,6 +259,17 @@ Display::renderThread ()
             }
           prov->refreshDR (NULL);
         }
+      this->unlock ();
+
+      this->lock ();            // run jobs
+      for (l = this->jobs; l != NULL; l = l->next)
+      {
+        Job *job;
+
+        job = (Job *) l->data;
+        g_assert_nonnull (job);
+        job->func (this->renderer, job->data);
+      }
       this->unlock ();
 
       this->lock ();            // redraw windows
@@ -282,6 +321,7 @@ Display::Display (int width, int height, bool fullscreen)
   g_mutex_init (&this->render_thread_mutex);
   g_cond_init (&this->render_thread_cond);
 
+  this->jobs = NULL;
   this->windows = NULL;
   this->providers = NULL;
 
@@ -307,15 +347,15 @@ Display::Display (int width, int height, bool fullscreen)
 Display::~Display ()
 {
   this->quit ();
+
+  this->lock ();
   g_assert_null (g_thread_join (this->render_thread));
   g_mutex_clear (&this->render_thread_mutex);
   g_cond_clear (&this->render_thread_cond);
-
-  this->lock ();
-  g_rec_mutex_clear (&this->mutex);
   SDL_DestroyRenderer (this->renderer);
   SDL_DestroyWindow (this->screen);
   delete im;
+  g_list_free_full (this->jobs, job_delete);
   g_list_free_full (this->windows, win_delete);
   g_list_free_full (this->providers, prov_delete);
   this->unlock ();
@@ -385,6 +425,82 @@ Display::setFullscreen (bool fullscreen)
 }
 
 /**
+ * Quits display render thread.
+ */
+void
+Display::quit ()
+{
+  this->lock ();
+  this->_quit = true;
+  this->unlock ();
+}
+
+/**
+ * Returns true if display render thread has quitted.
+ */
+bool
+Display::hasQuitted ()
+{
+  bool quit;
+
+  this->lock ();
+  quit = this->_quit;
+  this->unlock ();
+
+  return quit;
+}
+
+/**
+ * Pushes a new job to renderer job list.
+ * Returns the job id.
+ */
+DisplayJobId
+Display::addJob (DisplayJob func, void *data)
+{
+  Job *job;
+  static DisplayJobId last = 0;
+
+  this->lock ();
+  job = new Job;
+  g_assert_nonnull (job);
+  job->id = last++;
+  job->func = func;
+  job->data = data;
+  this->add (&this->jobs, job);
+  this->unlock ();
+
+  return job->id;
+}
+
+/**
+ * Removes from the renderer job list the job with the given id.
+ * Returns true if job was removed.
+ */
+bool
+Display::removeJob (DisplayJobId id)
+{
+  Job j;
+  GList *elt;
+  bool result;
+
+  this->lock ();
+  j.id = id;
+  elt = g_list_find_custom (this->jobs, &j, job_cmp_id);
+  if (elt == NULL)
+    {
+      result = false;
+    }
+  else
+    {
+      result = true;
+      delete (Job *) elt->data;
+    }
+
+  this->unlock ();
+  return result;
+}
+
+/**
  * Locks display renderer.
  */
 void
@@ -426,32 +542,6 @@ Display::getRenderer ()
   this->unlock ();
   g_assert_nonnull (renderer);
   return renderer;
-}
-
-/**
- * Quits display render thread.
- */
-void
-Display::quit ()
-{
-  this->lock ();
-  this->_quit = true;
-  this->unlock ();
-}
-
-/**
- * Returns true if display render thread has quitted.
- */
-bool
-Display::hasQuitted ()
-{
-  bool quit;
-
-  this->lock ();
-  quit = this->_quit;
-  this->unlock ();
-
-  return quit;
 }
 
 /**
