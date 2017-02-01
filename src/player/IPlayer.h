@@ -29,19 +29,22 @@ GINGA_PLAYER_BEGIN
 class IPlayer
 {
 public:
-  static const short PL_NOTIFY_START = 1;
-  static const short PL_NOTIFY_PAUSE = 2;
-  static const short PL_NOTIFY_RESUME = 3;
-  static const short PL_NOTIFY_STOP = 4;
-  static const short PL_NOTIFY_ABORT = 5;
-  static const short PL_NOTIFY_NCLEDIT = 6;
-  static const short PL_NOTIFY_UPDATECONTENT = 7;
-  static const short PL_NOTIFY_OUTTRANS = 8;
+  enum NotifyCode : short
+    {
+      PL_NOTIFY_START = 1,
+      PL_NOTIFY_PAUSE,
+      PL_NOTIFY_RESUME,
+      PL_NOTIFY_STOP,
+      PL_NOTIFY_ABORT,
+      PL_NOTIFY_NCLEDIT,
+      PL_NOTIFY_UPDATECONTENT,
+      PL_NOTIFY_OUTTRANS,
 
-  static const short TYPE_PRESENTATION = 10;
-  static const short TYPE_ATTRIBUTION = 11;
-  static const short TYPE_SIGNAL = 12;
-  static const short TYPE_SELECTION = 14;
+      TYPE_PRESENTATION,
+      TYPE_ATTRIBUTION,
+      TYPE_SIGNAL,
+      TYPE_SELECTION
+    };
 
   virtual ~IPlayer (){};
 

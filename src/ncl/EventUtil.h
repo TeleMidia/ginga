@@ -26,37 +26,62 @@ class EventUtil
 {
 public:
   // Event types.
-  static const short EVT_SELECTION = 0;
-  static const short EVT_PRESENTATION = 1;
-  static const short EVT_ATTRIBUTION = 2;
-  static const short EVT_COMPOSITION = 4;
+  enum EventType {
+    EVT_SELECTION = 0,
+    EVT_PRESENTATION,
+    EVT_ATTRIBUTION,
+    EVT_COMPOSITION
+  };
 
   // Event state transitions.
-  static const short TR_STARTS = 0;
-  static const short TR_STOPS = 1;
-  static const short TR_PAUSES = 2;
-  static const short TR_RESUMES = 3;
-  static const short TR_ABORTS = 4;
+  enum EventStateTransition {
+    TR_UNKNOWN = -1,
+    TR_STARTS = 0,
+    TR_STOPS,
+    TR_PAUSES,
+    TR_RESUMES,
+    TR_ABORTS
+  };
 
   // Event states.
-  static const short ST_SLEEPING = 0;
-  static const short ST_OCCURRING = 1;
-  static const short ST_PAUSED = 2;
+  enum EventState {
+    ST_SLEEPING = 0,
+    ST_OCCURRING,
+    ST_PAUSED
+  };
 
   // Attribute types.
-  static const short ATT_OCCURRENCES = 0;
-  static const short ATT_REPETITIONS = 1;
-  static const short ATT_STATE = 2;
-  static const short ATT_NODE_PROPERTY = 3;
+  enum AttributeType {
+    ATT_UNKNOWN = -1,
+    ATT_OCCURRENCES = 0,
+    ATT_REPETITIONS,
+    ATT_STATE,
+    ATT_NODE_PROPERTY
+  };
 
-  static short getTypeCode (const string &typeName);
-  static string getTypeName (short type);
-  static short getStateCode (const string &stateName);
-  static string getStateName (short state);
-  static string getTransitionName (short transition);
-  static short getTransitionCode (const string &transition);
-  static short getAttributeTypeCode (const string &attTypeName);
-  static string getAttributeTypeName (short type);
+  static EventUtil::EventType
+    getTypeCode (const string &typeName);
+
+  static string
+    getTypeName (EventUtil::EventType type);
+
+  static EventUtil::EventState
+    getStateCode (const string &stateName);
+
+  static string
+    getStateName (EventUtil::EventState state);
+
+  static EventUtil::EventStateTransition
+    getTransitionCode (const string &transition);
+
+  static string
+    getTransitionName (EventUtil::EventStateTransition transition);
+
+  static EventUtil::AttributeType
+    getAttributeTypeCode (const string &attTypeName);
+
+  static string
+    getAttributeTypeName (EventUtil::AttributeType type);
 };
 
 GINGA_NCL_END

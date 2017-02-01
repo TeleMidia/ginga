@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-short
+EventUtil::EventType
 EventUtil::getTypeCode (const string &typeName)
 {
   if (typeName == "presentation")
@@ -44,7 +44,7 @@ EventUtil::getTypeCode (const string &typeName)
 }
 
 string
-EventUtil::getTypeName (short type)
+EventUtil::getTypeName (EventUtil::EventType type)
 {
   switch (type)
     {
@@ -65,7 +65,7 @@ EventUtil::getTypeName (short type)
     }
 }
 
-short
+EventUtil::EventState
 EventUtil::getStateCode (const string &stateName)
 {
   if (stateName == "occurring")
@@ -82,7 +82,7 @@ EventUtil::getStateCode (const string &stateName)
 }
 
 string
-EventUtil::getStateName (short state)
+EventUtil::getStateName (EventUtil::EventState state)
 {
   switch (state)
     {
@@ -101,7 +101,7 @@ EventUtil::getStateName (short state)
 }
 
 string
-EventUtil::getTransitionName (short transition)
+EventUtil::getTransitionName (EventUtil::EventStateTransition transition)
 {
   switch (transition)
     {
@@ -125,7 +125,7 @@ EventUtil::getTransitionName (short transition)
     }
 }
 
-short
+EventUtil::EventStateTransition
 EventUtil::getTransitionCode (const string &transition)
 {
   if (transition == "starts")
@@ -149,10 +149,10 @@ EventUtil::getTransitionCode (const string &transition)
       return EventUtil::TR_ABORTS;
     }
 
-  return -1;
+  return EventUtil::TR_UNKNOWN;
 }
 
-short
+EventUtil::AttributeType
 EventUtil::getAttributeTypeCode (const string &attTypeName)
 {
   if (attTypeName == "occurrences")
@@ -172,11 +172,11 @@ EventUtil::getAttributeTypeCode (const string &attTypeName)
       return EventUtil::ATT_STATE;
     }
 
-  return -1;
+  return EventUtil::ATT_UNKNOWN;
 }
 
 string
-EventUtil::getAttributeTypeName (short type)
+EventUtil::getAttributeTypeName (EventUtil::AttributeType type)
 {
   switch (type)
     {
