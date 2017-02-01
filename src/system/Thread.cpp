@@ -24,7 +24,7 @@ Thread::Thread ()
 {
   isDeleting = false;
 
-  Thread::mutexInit (&threadMutex);
+  g_rec_mutex_init (&threadMutex);
 
   isThreadSleeping = false;
   Thread::mutexInit (&threadFlagMutex);
@@ -47,9 +47,7 @@ Thread::~Thread ()
   Thread::condSignal (&threadFlagCVLockUntilSignal);
   Thread::condDestroy (&threadFlagCVLockUntilSignal);
 
-  Thread::mutexLock (&threadMutex);
-  Thread::mutexUnlock (&threadMutex);
-  Thread::mutexDestroy (&threadMutex);
+  g_rec_mutex_clear (&threadMutex);
 
   Thread::mutexLock (&threadFlagMutex);
   Thread::mutexUnlock (&threadFlagMutex);
@@ -73,7 +71,7 @@ Thread::function (void *ptr)
     return NULL;
 
   static_cast<Thread *> (ptr)->run ();
-  pthread_exit (ptr);
+//  pthread_exit (ptr);
   return NULL;
 }
 
@@ -106,13 +104,13 @@ Thread::mSleep (long int ms)
 void
 Thread::lock ()
 {
-  Thread::mutexLock (&threadMutex);
+  g_rec_mutex_lock (&threadMutex);
 }
 
 void
 Thread::unlock ()
 {
-  Thread::mutexUnlock (&threadMutex);
+  g_rec_mutex_unlock (&threadMutex);
 }
 
 void

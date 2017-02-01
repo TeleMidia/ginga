@@ -789,7 +789,7 @@ NclCompositeExecutionObject::checkLinkConditions ()
 {
   if (!running)
     {
-      Thread::startThread ();
+      //Thread::startThread ();
     }
 }
 
@@ -797,22 +797,20 @@ void
 NclCompositeExecutionObject::run ()
 {
   running = true;
-  if (Thread::mSleep (mSleepTime))
+  if (deleting || (runningEvents.empty () && pausedEvents.empty ()
+                   && pendingLinks.empty ()))
     {
-      if (deleting || (runningEvents.empty () && pausedEvents.empty ()
-                       && pendingLinks.empty ()))
-        {
-          clog << "NclCompositeExecutionObject::run ";
-          clog << "I (" << id << ") am ending because of STOP of";
-          clog << " the last running event (no pending links nor ";
-          clog << "paused events)";
-          clog << endl;
+      clog << "NclCompositeExecutionObject::run ";
+      clog << "I (" << id << ") am ending because of STOP of";
+      clog << " the last running event (no pending links nor ";
+      clog << "paused events)";
+      clog << endl;
 
-          if (NclFormatterEvent::hasInstance (wholeContent, false))
-            {
-              wholeContent->stop ();
-              unsetParentsAsListeners ();
-            }
+      if (wholeContent != NULL &&
+          NclFormatterEvent::hasInstance (wholeContent, false))
+        {
+          wholeContent->stop ();
+          unsetParentsAsListeners ();
         }
     }
   running = false;

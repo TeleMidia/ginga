@@ -27,7 +27,7 @@ class Thread
 protected:
   bool isDeleting;
 
-  pthread_mutex_t threadMutex;
+  GRecMutex threadMutex;
 
   bool isThreadSleeping;
   pthread_mutex_t threadFlagMutex;

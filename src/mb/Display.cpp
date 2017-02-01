@@ -52,6 +52,8 @@ pthread_mutex_t Display::cstMutex;
 
 // BEGIN SANITY ------------------------------------------------------------
 
+#define debug(fmt, ...) g_debug ("%s: " fmt, G_STRLOC, ## __VA_ARGS__)
+
 // Display renderer job data.
 typedef struct _Job
 {
@@ -66,8 +68,8 @@ job_cmp_id (gconstpointer p1, gconstpointer p2)
 {
   Job *j1 = deconst (Job *, p1);
   Job *j2 = deconst (Job *, p2);
-  int id1 = j1->id;
-  int id2 = j2->id;
+  DisplayJobId id1 = j1->id;
+  DisplayJobId id2 = j2->id;
   return (id1 < id2) ? -1 : (id1 > id2) ? 1 : 0;
 }
 
@@ -189,6 +191,7 @@ Display::renderThread ()
 {
   guint flags;
 
+  debug ("create render thread");
   g_assert (!SDL_WasInit (0));
   if (unlikely (SDL_Init (0) != 0))
     g_critical ("cannot initialize SDL: %s", SDL_GetError ());
@@ -291,8 +294,9 @@ Display::renderThread ()
     }
 
  quit:
+  this->im->postInputEvent (CodeMap::KEY_QUIT);
   SDL_Quit ();
-  exit (EXIT_SUCCESS);
+  debug ("destroy render thread");
 }
 
 
@@ -339,6 +343,8 @@ Display::Display (int width, int height, bool fullscreen)
     g_cond_wait (&this->render_thread_cond, &this->render_thread_mutex);
   g_mutex_unlock (&this->render_thread_mutex);
   g_assert (this->render_thread_ready);
+
+  debug ("create display %p", this);
 }
 
 /**
@@ -360,6 +366,8 @@ Display::~Display ()
   g_list_free_full (this->providers, prov_delete);
   this->unlock ();
   g_rec_mutex_clear (&this->mutex);
+
+  debug ("destroy display %p", this);
 }
 
 /**

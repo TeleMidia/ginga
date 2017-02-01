@@ -102,10 +102,10 @@ void
 InputManager::release ()
 {
   map<IInputEventListener *, set<int> *>::iterator i;
-  bool runDone = false;
-  SDLInputEvent *ie;
-  int mbKeyCode;
-  bool wasRunning = running;
+//  bool runDone = false;
+  // SDLInputEvent *ie;
+  // int mbKeyCode;
+  // bool wasRunning = running;
 
   running = false;
   if (eventBuffer == NULL)
@@ -113,23 +113,23 @@ InputManager::release ()
       return;
     }
 
-  while (!runDone)
-    {
-      g_usleep (10000);
-      runDone = (maxX == 0 && maxY == 0);
-    }
+  // while (!runDone)
+  //   {
+  //     g_usleep (10000);
+  //     runDone = (maxX == 0 && maxY == 0);
+  //   }
 
-  mbKeyCode = Ginga_Display->fromGingaToMB (CodeMap::KEY_QUIT);
-  ie = Ginga_Display->createInputEvent (NULL, mbKeyCode);
+  // mbKeyCode = Ginga_Display->fromGingaToMB (CodeMap::KEY_QUIT);
+  // ie = Ginga_Display->createInputEvent (NULL, mbKeyCode);
 
-  if (wasRunning)
-    {
-      running = true;
-      dispatchEvent (ie);
-      running = false;
-    }
+  // if (wasRunning)
+  //   {
+  //     running = true;
+  //     dispatchEvent (ie);
+  //     running = false;
+  //   }
 
-  delete ie;
+  // delete ie;
 
   lock ();
 
@@ -410,6 +410,7 @@ bool
 InputManager::dispatchEvent (SDLInputEvent *inputEvent)
 {
   map<IInputEventListener *, set<int> *>::iterator i;
+  static bool die = false;
 
   IInputEventListener *lis;
   set<int> *evs;
@@ -469,12 +470,14 @@ InputManager::dispatchEvent (SDLInputEvent *inputEvent)
             }
           else if (keyCode == CodeMap::KEY_QUIT)
             {
-              if (!lis->userEventReceived (inputEvent))
+              if (!die && !lis->userEventReceived (inputEvent))
                 {
                   unlock ();
                   notifying = false;
                   return false;
                 }
+              die = true;
+              this->running = false;
             }
         }
       else if (!lis->userEventReceived (inputEvent))
