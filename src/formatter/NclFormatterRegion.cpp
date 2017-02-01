@@ -1068,7 +1068,7 @@ NclFormatterRegion::disposeOutputDisplay ()
     {
       if (!externHandler)
         {
-          delete outputDisplay;
+          Ginga_Display->destroyWindow (outputDisplay);
         }
       outputDisplay = 0;
     }

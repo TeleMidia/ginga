@@ -95,7 +95,7 @@ FormatterBaseDevice::~FormatterBaseDevice ()
 
   if (Ginga_Display->hasWindow (serialized))
     {
-      delete serialized;
+      Ginga_Display->destroyWindow (serialized);
       serialized = 0;
     }
 

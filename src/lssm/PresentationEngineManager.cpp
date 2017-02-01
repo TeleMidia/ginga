@@ -72,6 +72,9 @@ PresentationEngineManager::PresentationEngineManager (
     bool enableGfx, bool useMulticast)
     : Thread ()
 {
+  g_mutex_init (&this->quit_mutex);
+  g_cond_init (&this->quit_cond);
+
   x = 0;
   if (xOffset > 0)
     {
@@ -137,6 +140,10 @@ PresentationEngineManager::PresentationEngineManager (
 PresentationEngineManager::~PresentationEngineManager ()
 {
   clog << "PresentationEngineManager::~PresentationEngineManager" << endl;
+
+  quit = false;
+  g_mutex_clear (&this->quit_mutex);
+  g_cond_clear (&this->quit_cond);
 
   if (!closed)
     {
@@ -1100,10 +1107,6 @@ PresentationEngineManager::updateStatus (short code,
           ev->parameter = parameter;
           ev->code = code;
 
-#ifdef DSMCCWRAPPERLISTENER_H_
-          ev->tuner = NULL;
-#endif
-
           pthread_t notifyThreadId_;
           pthread_create (&notifyThreadId_, 0,
                           PresentationEngineManager::eventReceived,
@@ -1139,9 +1142,6 @@ PresentationEngineManager::userEventReceived (SDLInputEvent *ev)
   evR->p = this;
   evR->parameter = "";
   evR->code = keyCode;
-#ifdef DSMCCWRAPPERLISTENER_H_
-  evR->tuner = (Tuner *)this->tuner;
-#endif
   if (!commands.empty ())
     {
       evR->cmds = new vector<string> (commands);
@@ -1151,11 +1151,14 @@ PresentationEngineManager::userEventReceived (SDLInputEvent *ev)
       evR->cmds = NULL;
     }
 
+#if 0
   pthread_t notifyThreadId_;
   pthread_create (&notifyThreadId_, 0,
                   PresentationEngineManager::eventReceived, (void *)evR);
 
   pthread_detach (notifyThreadId_);
+#endif
+  PresentationEngineManager::eventReceived ((void *)evR);
   return true;
 }
 
@@ -1214,21 +1217,19 @@ PresentationEngineManager::eventReceived (void *ptr)
   clog << "PresentationEngineManager::eventReceived '";
   clog << code << "'" << endl;
 
-#ifdef DSMCCWRAPPERLISTENER_H_
-  Tuner *t;
-  t = ev->tuner;
-#endif
-
   delete (struct inputEventNotification *)ptr;
 
   if (code == CodeMap::KEY_QUIT)
     {
       cout << "PresentationEngineManager::eventReceived QUIT" << endl;
 
-      p->sb->stop ();
+      //p->sb->stop (); show button
       p->setIsLocalNcl (true, NULL);
       p->stopAllPresentations ();
-      exit (0);
+      g_mutex_lock (&p->quit_mutex);
+      p->quit = true;
+      g_cond_signal (&p->quit_cond);
+      g_mutex_unlock (&p->quit_mutex);
     }
   else if (parameter != "" && code == IPlayer::PL_NOTIFY_STOP)
     {

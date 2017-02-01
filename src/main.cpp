@@ -300,10 +300,13 @@ main (int argc, char *argv[])
     }
 
   pem->startPresentation (file, "");
-  pem->waitUnlockCondition ();
-  //
-  // FIXME: The next instruction causes the process to freeze:
-  //     delete pem;
-  //
+
+  g_mutex_lock (&pem->quit_mutex);
+  while (!pem->quit)
+    g_cond_wait (&pem->quit_cond, &pem->quit_mutex);
+  g_mutex_unlock (&pem->quit_mutex);
+
+  delete Ginga_Display;
+
   exit (EXIT_SUCCESS);
 }

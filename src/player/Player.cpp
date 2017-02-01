@@ -77,12 +77,13 @@ Player::~Player ()
     }
   mirrors.clear ();
 
-  if (Ginga_Display->hasWindow (outputWindow))
-    {
-      outputWindow->revertContent ();
-      delete outputWindow;
-      outputWindow = 0;
-    }
+  g_assert_null (outputWindow);
+  // if (Ginga_Display->hasWindow (outputWindow))
+  //   {
+  //     outputWindow->revertContent ();
+  //     delete outputWindow;
+  //     outputWindow = 0;
+  //   }
 
   if (Ginga_Display->hasSurface (surface))
     {

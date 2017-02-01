@@ -78,7 +78,6 @@ void
 SDLWindow::setTexture (SDL_Texture *texture)
 {
   this->lock ();
-  g_debug ("setting texture of %p to %p", this, texture);
   this->texture = texture;
   this->unlock ();
 }
@@ -164,9 +163,6 @@ SDLWindow::~SDLWindow ()
   releaseBorderColor ();
   releaseWinColor ();
   releaseColorKey ();
-
-  // release window will delete texture
-  Ginga_Display->destroyWindow (this);
 
   Thread::mutexDestroy (&mutexC);
 

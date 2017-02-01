@@ -46,6 +46,11 @@ class PresentationEngineManager : public IPlayerListener,
                                   public ICmdEventListener,
                                   public Thread
 {
+public:
+  bool quit;
+  GMutex quit_mutex;
+  GCond quit_cond;
+
 private:
   static const short UC_BACKGROUND = 0;
   static const short UC_PRINTSCREEN = 1;
