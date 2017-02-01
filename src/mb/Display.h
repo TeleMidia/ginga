@@ -31,34 +31,46 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
+// Type used for renderer job ids.
+typedef guint64 DisplayJobId;
+
+// Type used for renderer job tasks.
+typedef void (*DisplayJob) (SDL_Renderer *, void *data);
+
 class Display
 {
 private:
-  GMutex mutex;                 // sync access to display
+  GRecMutex mutex;              // sync access to display
 
   int width;                    // display width in pixels
   int height;                   // display height in pixels
   bool fullscreen;              // true if full-screen mode is on
 
-  SDL_Renderer *renderer;       // display renderer
   SDL_Window *screen;           // display screen
+  GRecMutex renderer_mutex;     // sync access to renderer
+  SDL_Renderer *renderer;       // display renderer
   InputManager *im;             // display input manager (FIXME)
 
   bool _quit;                   // true if render thread should quit
   GThread *render_thread;       // render thread handle
+  bool render_thread_ready;     // signals that the render thread is ready
+  GMutex render_thread_mutex;   // sync access to ready flag
+  GCond render_thread_cond;     // sync access to ready flag
 
+  GList *jobs;                  // list of jobs to be executed by renderer
   GList *windows;               // list of windows to be redrawn
   GList *providers;             // list of providers to be redrawn
 
-  void lock ();
-  void unlock ();
+  void lock (void);
+  void unlock (void);
   gpointer add (GList **, gpointer);
   gpointer remove (GList **, gpointer);
   gboolean find (GList *, gconstpointer);
 
-public:
-  void redraw ();               // internal (called by render thread)
+  static gpointer renderThreadWrapper (gpointer);
+  void renderThread (void);
 
+public:
   Display (int, int, bool);
   ~Display ();
 
@@ -69,6 +81,14 @@ public:
 
   void quit ();
   bool hasQuitted ();
+
+  DisplayJobId addJob (DisplayJob, void *);
+  bool removeJob (DisplayJobId);
+
+  void lockRenderer ();
+  void unlockRenderer ();
+  SDL_Renderer *getLockedRenderer ();
+  SDL_Renderer *getRenderer ();
 
   SDLWindow *createWindow (int, int, int, int, int);
   bool hasWindow (const SDLWindow *);

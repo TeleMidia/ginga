@@ -18,6 +18,33 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef GINGA_H
 #define GINGA_H
 
+#if defined __GNUC__ && defined __GNUC_MINOR__
+# define GINGA_GNUC_PREREQ(major, minor)\
+   ((__GNUC__ << 16) + __GNUC_MINOR__ >= ((major) << 16) + (minor))
+#else
+# define GINGA_GNUC_PREREQ(major, minor) 0
+#endif
+
+#if GINGA_GNUC_PREREQ(4,2)
+# define _GCC_PRAGMA(x) _Pragma (#x)
+# define GINGA_PRAGMA_DIAG(x) _GCC_PRAGMA (GCC diagnostic x)
+#elif defined (__clang__)
+# define _CLANG_PRAGMA(x) _Pragma (#x))
+# define GINGA_PRAGMA_DIAG(x) _CLANG_PRAGMA (clang diagnostic x)
+#else
+# define GINGA_PRAGMA_DIAG(x)
+#endif
+
+#if GINGA_GNUC_PREREQ(4,6) || defined (__clang__)
+# define GINGA_PRAGMA_DIAG_PUSH()    GINGA_PRAGMA_DIAG (push)
+# define GINGA_PRAGMA_DIAG_POP()     GINGA_PRAGMA_DIAG (pop)
+#else
+# define GINGA_PRAGMA_DIAG_PUSH()
+# define GINGA_PRAGMA_DIAG_POP()
+#endif
+#define GINGA_PRAGMA_DIAG_IGNORE(x)  GINGA_PRAGMA_DIAG (ignored #x)
+#define GINGA_PRAGMA_DIAG_WARNING(x) GINGA_PRAGMA_DIAG (warning #x))
+
 #ifdef  __cplusplus
 # define GINGA_BEGIN_DECLS extern "C" {/*}*/
 # define GINGA_END_DECLS            /*{*/}
@@ -41,29 +68,6 @@ GINGA_BEGIN_DECLS
 // External C libraries.
 #include <glib.h>
 #include <glib/gstdio.h>
-
-#if G_GNUC_CHECK_VERSION(4,2)
-# define _GCC_PRAGMA(x) _Pragma (G_STRINGIFY (x))
-# define GINGA_PRAGMA_DIAG(x) _GCC_PRAGMA (GCC diagnostic x)
-#elif defined (__clang__)
-# define _CLANG_PRAGMA(x) _Pragma (G_STRINGIFY (x))
-# define GINGA_PRAGMA_DIAG(x) _CLANG_PRAGMA (clang diagnostic x)
-#else
-# define GINGA_PRAGMA_DIAG(x)
-#endif
-
-#if G_GNUC_CHECK_VERSION(4,6) || defined (__clang__)
-# define GINGA_PRAGMA_DIAG_PUSH()    GINGA_PRAGMA_DIAG (push)
-# define GINGA_PRAGMA_DIAG_POP()     GINGA_PRAGMA_DIAG (pop)
-#else
-# define GINGA_PRAGMA_DIAG_PUSH()
-# define GINGA_PRAGMA_DIAG_POP()
-#endif
-#define GINGA_PRAGMA_DIAG_IGNORE(x)\
-  GINGA_PRAGMA_DIAG (ignored G_STRINGIFY (x))
-#define GINGA_PRAGMA_DIAG_WARNING(x)\
-  GINGA_PRAGMA_DIAG (warning G_STRINGIFY (x))
-
 #include <pthread.h>
 #include <curl/curl.h>
 #include <ncluaw.h>

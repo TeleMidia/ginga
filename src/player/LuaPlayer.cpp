@@ -29,58 +29,13 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wunused-macros)
 
 GINGA_PLAYER_BEGIN
 
-#define ASSERT_NOT_REACHED (assert (!"reached"), ::abort ())
-#define nelementsof(x) (sizeof (x) / sizeof (x[0]))
+#define debug(...)  g_debug ("nclua: " __VA_ARGS__)
+#define nelementsof G_N_ELEMENTS
 
-#ifdef _MSC_VER
-#define snprintf _snprintf
-#endif
-
-#define __clog(fmt, ...)                                                   \
-  do                                                                       \
-    {                                                                      \
-      fflush (NULL);                                                       \
-      fprintf (stderr, "NCLUA " fmt "\n", ##__VA_ARGS__);                  \
-    }                                                                      \
-  while (0)
-
-#define error(fmt, ...) __clog ("ERROR: " fmt, ##__VA_ARGS__)
-
-#define perror(fmt, ...)                                                   \
-  __clog ("%p ERROR: " fmt, (void *)this, ##__VA_ARGS__)
-
-#define warn(fmt, ...) __clog ("Warning: " fmt, ##__VA_ARGS__)
-
-#if defined LUAPLAYER_ENABLE_TRACE && LUAPLAYER_ENABLE_TRACE
-#define trace0() trace ("%s", "")
-#define trace(fmt, ...) __clog ("%s: " fmt, __FUNCTION__, ##__VA_ARGS__)
-
-#define ptrace0() ptrace ("%s", "")
-#define ptrace(fmt, ...)                                                   \
-  __clog ("%p %s: " fmt, (void *)this, __FUNCTION__, __VA_ARGS__)
-#else
-#define trace0()         // nothing
-#define trace(fmt, ...)  // nothing
-#define ptrace0()        // nothing
-#define ptrace(fmt, ...) // nothing
-#endif
-
-// Mutex handling.
-
-#define MUTEX_INIT(m)                                                      \
-  do                                                                       \
-    {                                                                      \
-      pthread_mutexattr_t attr;                                            \
-      assert (pthread_mutexattr_init (&attr) == 0);                        \
-      assert (pthread_mutexattr_settype (&attr, PTHREAD_MUTEX_RECURSIVE)   \
-              == 0);                                                       \
-      assert (pthread_mutex_init (m, &attr) == 0);                         \
-      assert (pthread_mutexattr_destroy (&attr) == 0);                     \
-    }                                                                      \
-  while (0)
-#define MUTEX_FINI(m) assert (pthread_mutex_destroy (m) == 0)
-#define MUTEX_LOCK(m) assert (pthread_mutex_lock (m) == 0)
-#define MUTEX_UNLOCK(m) assert (pthread_mutex_unlock (m) == 0)
+#define MUTEX_INIT(m)   g_rec_mutex_init (m)
+#define MUTEX_FINI(m)   g_rec_mutex_clear (m)
+#define MUTEX_LOCK(m)   g_rec_mutex_lock (m)
+#define MUTEX_UNLOCK(m) g_rec_mutex_unlock (m)
 
 // Event handling.
 
@@ -146,10 +101,10 @@ _evt_map_get (const evt_map_t map[], size_t size, const char *key)
 list<LuaPlayer *> *LuaPlayer::nw_update_list = NULL;
 
 // Synchronize access to nw_update_list.
-pthread_mutex_t LuaPlayer::nw_update_mutex;
+GRecMutex LuaPlayer::nw_update_mutex;
 
 // Id of the update thread.
-pthread_t LuaPlayer::nw_update_tid;
+GThread *LuaPlayer::nw_update_thread;
 
 // Time delay (in milliseconds) between updates.
 #define NW_UPDATE_DELAY 10
@@ -159,9 +114,9 @@ pthread_t LuaPlayer::nw_update_tid;
 // destroyed whenever the last NCLua state is destroyed.
 
 void *
-LuaPlayer::nw_update_thread (arg_unused (void *data))
+LuaPlayer::nw_update_thread_fn (arg_unused (void *data))
 {
-  trace ("starting update thread");
+  debug ("starting update thread");
   while (true)
     {
       g_usleep ((NW_UPDATE_DELAY)*1000);
@@ -171,7 +126,7 @@ LuaPlayer::nw_update_thread (arg_unused (void *data))
       if (nw_update_list == NULL) // end of cycle process
         {
           MUTEX_UNLOCK (&nw_update_mutex);
-          trace ("exiting update thread");
+          debug ("exiting update thread");
           return NULL;
         }
 
@@ -181,7 +136,7 @@ LuaPlayer::nw_update_thread (arg_unused (void *data))
       for (i = lst.begin (); i != lst.end (); i++)
         {
           LuaPlayer *player;
-          SDLSurface* wrapper;
+          SDLSurface *wrapper;
           ncluaw_t *nw;
           ncluaw_event_t *evt;
 
@@ -194,23 +149,25 @@ LuaPlayer::nw_update_thread (arg_unused (void *data))
           wrapper = player->getSurface ();
           if (wrapper != NULL)
             {
-              SDL_Surface *dest;
-              SDL_Surface *sfc;
-              SDLWindow* window;
+              SDLWindow *window;
+              SDL_Texture *texture;
+              guchar *pixels;
+              int pitch;
+              int width;
+              int height;
 
-              dest = wrapper->getContent ();
-              sfc = SDL_CreateRGBSurface (0, dest->w, dest->h, 32, 0, 0, 0,
-                                          0);
-              assert (sfc != NULL);
-              ncluaw_paint (nw, (unsigned char *)sfc->pixels, "ARGB32",
-                            sfc->w, sfc->h, sfc->pitch);
-              assert (SDL_BlitSurface (sfc, NULL, dest, NULL) == 0);
-              SDL_FreeSurface (sfc);
-
-              // Refresh surface.
               window = wrapper->getParentWindow ();
-              assert (window != 0);
-              window->renderFrom (wrapper);
+              g_assert_nonnull (window);
+
+              texture = window->getTexture ();
+              g_assert_nonnull (texture);
+              SDLx_QueryTexture (texture, NULL, NULL, &width, &height);
+
+              Ginga_Display->lockRenderer ();
+              SDLx_LockTexture (texture, NULL, (void **) &pixels, &pitch);
+              ncluaw_paint (nw, pixels, "ARGB32", width, height, pitch);
+              SDLx_UnlockTexture (texture);
+              Ginga_Display->unlockRenderer ();
             }
 
           while ((evt = ncluaw_receive (nw)) != NULL)
@@ -234,9 +191,9 @@ LuaPlayer::nw_update_thread (arg_unused (void *data))
               name = evt->u.ncl.name;
               value = evt->u.ncl.value;
 
-              assert (type != NULL);
-              assert (action != NULL);
-              assert (name != NULL);
+              g_assert_nonnull (type);
+              g_assert_nonnull (action);
+              g_assert_nonnull (name);
 
               type_value = evt_ncl_get_type (type);
               action_value = evt_ncl_get_action (action);
@@ -270,7 +227,7 @@ LuaPlayer::nw_update_thread (arg_unused (void *data))
                   break;
 
                 default:
-                  ASSERT_NOT_REACHED;
+                  g_assert_not_reached ();
                 }
 
             done:
@@ -303,8 +260,8 @@ LuaPlayer::nw_update_insert (LuaPlayer *player)
       MUTEX_INIT (&nw_update_mutex);
       MUTEX_LOCK (&nw_update_mutex);
       nw_update_list = new list<LuaPlayer *> ();
-      assert (pthread_create (&nw_update_tid, 0, nw_update_thread, NULL)
-              == 0);
+      nw_update_thread = g_thread_new ("nclua", nw_update_thread_fn, NULL);
+      g_assert_nonnull (nw_update_thread);
     }
   else
     {
@@ -323,7 +280,7 @@ LuaPlayer::nw_update_remove (LuaPlayer *player)
 {
   MUTEX_LOCK (&nw_update_mutex);
 
-  assert (nw_update_list != NULL);
+  g_assert_nonnull (nw_update_list);
   nw_update_list->remove (player);
 
   // FIXME (The "Stop" Mess - Part II): If a "stop" was posted by the
@@ -332,13 +289,12 @@ LuaPlayer::nw_update_remove (LuaPlayer *player)
   // to be destroyed.  To avoid corruption, we postpone the destruction
   // of nw_update_list until the player's destructor is called.
 
-  if (nw_update_list->empty ()
-      && !pthread_equal (pthread_self (), nw_update_tid))
+  if (nw_update_list->empty () && g_thread_self () != nw_update_thread)
     {
       delete nw_update_list;
-      nw_update_list = NULL; // signal end of cycle process
+      nw_update_list = NULL;    // signal end of cycle process
       MUTEX_UNLOCK (&nw_update_mutex);
-      assert (pthread_join (nw_update_tid, NULL) == 0);
+      g_assert_null (g_thread_join (nw_update_thread));
       MUTEX_FINI (&nw_update_mutex);
     }
   else
@@ -371,31 +327,36 @@ LuaPlayer::unlock (void)
 bool
 LuaPlayer::doPlay (void)
 {
-  SDLSurface* sfc;
+  SDLSurface *surface;
+  SDLWindow *window;
+  SDL_Renderer *renderer;
+  SDL_Texture *texture;
   char *errmsg = NULL;
-  int w = 0;
-  int h = 0;
+  int width = 0;
+  int height = 0;
 
-  assert (this->nw == NULL);
+  g_assert_null (this->nw);
 
-  sfc = this->getSurface ();
-  if (sfc != 0)
-    {
-      sfc->getSize (&w, &h);
-    }
+  surface = this->getSurface ();
+  g_assert_nonnull (surface);
+  surface->getSize (&width, &height);
 
   // Create the NCLua state.
-  this->nw = ncluaw_open (this->mrl.c_str (), w, h, &errmsg);
+  this->nw = ncluaw_open (this->mrl.c_str (), width, height, &errmsg);
+  if (unlikely (this->nw == NULL))
+    g_error ("cannot load NCLua file %s: %s", this->mrl.c_str (),
+             errmsg);
 
-  if (this->nw == NULL)
-    {
-      perror ("%s", errmsg);
-      free (errmsg);
-      this->doStop ();
-      this->notifyPlayerListeners (Player::PL_NOTIFY_ABORT, "");
-      Player::abort ();
-      return false;
-    }
+  renderer = Ginga_Display->getLockedRenderer ();
+  texture = SDL_CreateTexture (renderer, SDL_PIXELFORMAT_ARGB8888,
+                               SDL_TEXTUREACCESS_STREAMING, width, height);
+  g_assert_nonnull (texture);
+  Ginga_Display->unlockRenderer ();
+
+  window = surface->getParentWindow ();
+  g_assert_nonnull (window);
+  window->setTexture (texture);
+
   this->im->addApplicationInputEventListener (this);
 
   return true;
@@ -437,7 +398,7 @@ LuaPlayer::LuaPlayer (const string &mrl) : Player (mrl)
       putenv = 1;
     }
 #endif
-  ptrace ("mrl='%s'", mrl.c_str ());
+  debug ("mrl='%s'", mrl.c_str ());
 
   // FIXME: This is *WRONG*: the chdir() call changes the working
   // directory of the whole process.
@@ -457,7 +418,6 @@ LuaPlayer::LuaPlayer (const string &mrl) : Player (mrl)
 LuaPlayer::~LuaPlayer (void)
 {
   this->lock ();
-  ptrace0 ();
 
   if (nw_update_list != NULL && nw_update_list->empty ())
     {
@@ -482,7 +442,7 @@ void
 LuaPlayer::abort (void)
 {
   this->lock ();
-  ptrace ("scope='%s'", this->scope.c_str ());
+  debug ("scope='%s'", this->scope.c_str ());
 
   evt_ncl_send_presentation (this->nw, "abort", this->scope.c_str ());
   this->stop ();
@@ -494,7 +454,7 @@ void
 LuaPlayer::pause (void)
 {
   this->lock ();
-  ptrace ("scope='%s'", this->scope.c_str ());
+  debug ("scope='%s'", this->scope.c_str ());
 
   evt_ncl_send_presentation (this->nw, "pause", this->scope.c_str ());
   Player::pause ();
@@ -508,7 +468,7 @@ LuaPlayer::play (void)
   bool status;
 
   this->lock ();
-  ptrace ("scope='%s'", this->scope.c_str ());
+  debug ("scope='%s'", this->scope.c_str ());
 
   status = true;
   if (this->nw == NULL)
@@ -534,7 +494,7 @@ void
 LuaPlayer::resume (void)
 {
   this->lock ();
-  ptrace ("scope='%s'", this->scope.c_str ());
+  debug ("scope='%s'", this->scope.c_str ());
 
   evt_ncl_send_presentation (this->nw, "resume", this->scope.c_str ());
   Player::resume ();
@@ -546,7 +506,7 @@ void
 LuaPlayer::stop (void)
 {
   this->lock ();
-  ptrace ("scope='%s'", this->scope.c_str ());
+  debug ("scope='%s'", this->scope.c_str ());
 
   if (this->nw != NULL)
     {
@@ -585,7 +545,7 @@ bool
 LuaPlayer::setKeyHandler (bool b)
 {
   this->lock ();
-  ptrace ("isKeyHandler=%s", b ? "true" : "false");
+  debug ("isKeyHandler=%s", b ? "true" : "false");
 
   this->isKeyHandler = b;
 
@@ -597,7 +557,7 @@ void
 LuaPlayer::setPropertyValue (const string &name, const string &value)
 {
   this->lock ();
-  ptrace ("name='%s', value='%s'", name.c_str (), value.c_str ());
+  debug ("name='%s', value='%s'", name.c_str (), value.c_str ());
 
   // FIXME: Before calling play(), FormatterPlayerAdapter calls
   // setPropertyValue() to initialize the object's properties.  We
@@ -637,8 +597,8 @@ LuaPlayer::userEventReceived (SDLInputEvent *evt)
       key = (CodeMap::getInstance ()->getValue (
           evt->getKeyCode ()));
       press = evt->isPressedType ();
-      ptrace ("key='%s', type='%s'", key.c_str (),
-              press ? "press" : "release");
+      debug ("key='%s', type='%s'", key.c_str (),
+             press ? "press" : "release");
 
       evt_key_send (this->nw, press ? "press" : "release", key.c_str ());
     }
