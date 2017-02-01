@@ -247,7 +247,7 @@ Display::renderThread ()
           int width, height;
 
           prov = (IContinuousMediaProvider *) l->data;
-          if (!prov->getHasVisual ())
+          if (!prov->hasVisual ())
             continue;               // nothing to do
 
           if (prov->getProviderContent () == NULL)

@@ -42,7 +42,7 @@ VideoProvider::VideoProvider (const string &uri)
 VideoProvider::~VideoProvider () { hasTex = false; }
 
 bool
-VideoProvider::getHasVisual ()
+VideoProvider::hasVisual ()
 {
   assert (decoder != NULL);
 
