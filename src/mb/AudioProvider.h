@@ -36,7 +36,7 @@ public:
   AudioProvider (const string &uri);
   virtual ~AudioProvider ();
   virtual bool
-  getHasVisual ()
+  hasVisual ()
   {
     return false;
   };

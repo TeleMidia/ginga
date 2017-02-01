@@ -686,22 +686,24 @@ SystemCompat::isXmlStr (const string &location)
 bool
 SystemCompat::checkUriPrefix (const string &uri)
 {
-  string::size_type len;
+  static const vector <string> uri_protocols = {
+    "x-sbtvdts:",
+    "sbtvd-ts:",
+    "http://",
+    "ftp://",
+    "file://",
+    "tcp://",
+    "udp://",
+    "rtp://",
+    "ncl-mirror://",
+    "rtsp://"
+  };
 
-  len = uri.length ();
-  if ((len >= 10 && uri.substr (0, 10) == "x-sbtvdts:")
-      || (len >= 9 && uri.substr (0, 9) == "sbtvd-ts:")
-      || (len >= 7 && uri.substr (0, 7) == "http://")
-      || (len >= 6 && uri.substr (0, 6) == "ftp://")
-      || (len >= 7 && uri.substr (0, 7) == "file://")
-      || (len >= 6 && uri.substr (0, 6) == "tcp://")
-      || (len >= 6 && uri.substr (0, 6) == "udp://")
-      || (len >= 6 && uri.substr (0, 6) == "rtp://")
-      || (len >= 13 && uri.substr (0, 13) == "ncl-mirror://")
-      || (len >= 7 && uri.substr (0, 7) == "rtsp://"))
-    {
+  for (const string &s: uri_protocols)
+  {
+    if ( uri.compare (0, s.size(), s) == 0 )
       return true;
-    }
+  }
 
   return false;
 }
@@ -870,7 +872,7 @@ SystemCompat::getUserClock (struct timeval *usrClk)
 static std::ofstream logOutput;
 
 void
-SystemCompat::setLogTo (short logType, const string &sufix)
+SystemCompat::setLogTo (SystemCompat::LogType logType, const string &sufix)
 {
   string logUri = "";
 

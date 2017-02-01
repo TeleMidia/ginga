@@ -191,10 +191,13 @@ public:
   /**********************
    * Specific Functions *
    **********************/
-  static const short LOG_NULL = 0;
-  static const short LOG_STDO = 1;
-  static const short LOG_FILE = 2;
-  static void setLogTo (short logType, const string &sufix = "");
+  enum LogType : short {
+    LOG_NULL = 0,
+    LOG_STDO,
+    LOG_FILE = 2
+  };
+
+  static void setLogTo (SystemCompat::LogType logType, const string &sufix = "");
 
   /******************
    * Time functions *
