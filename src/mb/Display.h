@@ -31,11 +31,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-// Type used for renderer job ids.
-typedef guint64 DisplayJobId;
+// Type used for renderer job data.
+typedef struct _DisplayJob DisplayJob;
 
-// Type used for renderer job tasks.
-typedef void (*DisplayJob) (SDL_Renderer *, void *data);
+// Type used for renderer job callbacks.
+// Return true to keep job on the display job list.
+typedef bool (*DisplayJobCallback) (DisplayJob *, SDL_Renderer *, void *);
 
 class Display
 {
@@ -58,6 +59,7 @@ private:
   GCond render_thread_cond;     // sync access to ready flag
 
   GList *jobs;                  // list of jobs to be executed by renderer
+  GList *textures;              // list of textures to be destructed
   GList *windows;               // list of windows to be redrawn
   GList *providers;             // list of providers to be redrawn
 
@@ -82,17 +84,19 @@ public:
   void quit ();
   bool hasQuitted ();
 
-  DisplayJobId addJob (DisplayJob, void *);
-  bool removeJob (DisplayJobId);
+  DisplayJob *addJob (DisplayJobCallback, void *);
+  bool removeJob (DisplayJob *);
+  void destroyTexture (SDL_Texture *);
 
-  void lockRenderer ();
-  void unlockRenderer ();
-  SDL_Renderer *getLockedRenderer ();
-  SDL_Renderer *getRenderer ();
+  void lockRenderer ();               // legacy
+  void unlockRenderer ();             // legacy
+  SDL_Renderer *getLockedRenderer (); // legacy
+  SDL_Renderer *getRenderer ();       // legacy
 
   SDLWindow *createWindow (int, int, int, int, int);
   bool hasWindow (const SDLWindow *);
   void destroyWindow (SDLWindow *);
+
   IContinuousMediaProvider *createContinuousMediaProvider (const string&);
   void destroyContinuousMediaProvider (IContinuousMediaProvider *);
 

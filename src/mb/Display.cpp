@@ -52,41 +52,24 @@ pthread_mutex_t Display::cstMutex;
 
 // BEGIN SANITY ------------------------------------------------------------
 
-#define debug(fmt, ...) g_debug ("%s: " fmt, G_STRLOC, ## __VA_ARGS__)
-
-// Display renderer job data.
-typedef struct _Job
+// Entry in display job list.
+struct _DisplayJob
 {
-  guint64 id;
-  DisplayJob func;
+  DisplayJobCallback func;
   void *data;
-} Job;
+};
 
-// Compares the ids of two job data.
-static gint
-job_cmp_id (gconstpointer p1, gconstpointer p2)
-{
-  Job *j1 = deconst (Job *, p1);
-  Job *j2 = deconst (Job *, p2);
-  DisplayJobId id1 = j1->id;
-  DisplayJobId id2 = j2->id;
-  return (id1 < id2) ? -1 : (id1 > id2) ? 1 : 0;
-}
-
-// Deletes job data.
+// Deletes job entry.
 static void
-job_delete (gpointer p)
+job_delete (DisplayJob *job)
 {
-  Job *job = (Job *) p;
   delete job;
 }
 
 // Compares the z-index of two windows.
 static gint
-win_cmp_z (gconstpointer p1, gconstpointer p2)
+win_cmp_z (SDLWindow *w1, SDLWindow *w2)
 {
-  SDLWindow *w1 = deconst (SDLWindow *, p1);
-  SDLWindow *w2 = deconst (SDLWindow *, p2);
   double z1 = w1->getZ ();
   double z2 = w2->getZ ();
   return (z1 < z2) ? -1 : (z1 > z2) ? 1 : 0;
@@ -94,9 +77,8 @@ win_cmp_z (gconstpointer p1, gconstpointer p2)
 
 // Deletes window.
 static void
-win_delete (gpointer p)
+win_delete (SDLWindow *win)
 {
-  SDLWindow *win = (SDLWindow *) p;
   delete win;
 }
 
@@ -191,7 +173,6 @@ Display::renderThread ()
 {
   guint flags;
 
-  debug ("create render thread");
   g_assert (!SDL_WasInit (0));
   if (unlikely (SDL_Init (0) != 0))
     g_critical ("cannot initialize SDL: %s", SDL_GetError ());
@@ -250,8 +231,9 @@ Display::renderThread ()
           int width, height;
 
           prov = (IContinuousMediaProvider *) l->data;
+          g_assert_nonnull (prov);
           if (!prov->getHasVisual ())
-            continue;               // nothing to do
+            continue;
 
           if (prov->getProviderContent () == NULL)
             {
@@ -265,38 +247,45 @@ Display::renderThread ()
       this->unlock ();
 
       this->lock ();            // run jobs
-      for (l = this->jobs; l != NULL; l = l->next)
-      {
-        Job *job;
-
-        job = (Job *) l->data;
-        g_assert_nonnull (job);
-        job->func (this->renderer, job->data);
-      }
+      l = this->jobs;           // list may be modified while being iterated
+      while (l != NULL)
+        {
+          GList *next = l->next;
+          DisplayJob *job = (DisplayJob *) l->data;
+          g_assert_nonnull (job);
+          if (!job->func (job, this->renderer, job->data))
+            this->jobs = g_list_remove_link (this->jobs, l);
+          l = next;
+        }
       this->unlock ();
 
       this->lock ();            // redraw windows
       SDL_SetRenderDrawColor (this->renderer, 255, 0, 255, 255);
       SDL_RenderClear (this->renderer);
-      this->windows = g_list_sort (this->windows, win_cmp_z);
+      this->windows = g_list_sort (this->windows, (GCompareFunc) win_cmp_z);
       for (l = this->windows; l != NULL; l = l->next)
         {
-          SDLWindow *win;
-
-          win = (SDLWindow *) l->data;
-          g_assert_nonnull (win);
-
-          if (win->isVisible () && !win->isGhostWindow ())
-            win->redraw ();
+          SDLWindow * window = (SDLWindow *) l->data;
+          g_assert_nonnull (window);
+          if (window->isVisible () && !window->isGhostWindow ())
+            window->redraw ();
         }
       SDL_RenderPresent (this->renderer);
       this->unlock ();
+
+    quit:
+      this->lock ();            // destroy dead textures
+      for (l = this->textures; l != NULL; l = l->next)
+        {
+          SDL_Texture *texture = (SDL_Texture *) l->data;
+          g_assert_nonnull (texture);
+          SDL_DestroyTexture (texture);
+        }
+      this->unlock ();
     }
 
- quit:
   this->im->postInputEvent (CodeMap::KEY_QUIT);
   SDL_Quit ();
-  debug ("destroy render thread");
 }
 
 
@@ -326,6 +315,7 @@ Display::Display (int width, int height, bool fullscreen)
   g_cond_init (&this->render_thread_cond);
 
   this->jobs = NULL;
+  this->textures = NULL;
   this->windows = NULL;
   this->providers = NULL;
 
@@ -343,8 +333,6 @@ Display::Display (int width, int height, bool fullscreen)
     g_cond_wait (&this->render_thread_cond, &this->render_thread_mutex);
   g_mutex_unlock (&this->render_thread_mutex);
   g_assert (this->render_thread_ready);
-
-  debug ("create display %p", this);
 }
 
 /**
@@ -361,13 +349,12 @@ Display::~Display ()
   SDL_DestroyRenderer (this->renderer);
   SDL_DestroyWindow (this->screen);
   delete im;
-  g_list_free_full (this->jobs, job_delete);
-  g_list_free_full (this->windows, win_delete);
-  g_list_free_full (this->providers, prov_delete);
+  g_list_free_full (this->jobs, (GDestroyNotify) job_delete);
+  g_assert (g_list_length (this->textures) == 0);
+  g_list_free_full (this->windows, (GDestroyNotify) win_delete);
+  g_list_free_full (this->providers, (GDestroyNotify) prov_delete);
   this->unlock ();
   g_rec_mutex_clear (&this->mutex);
-
-  debug ("destroy display %p", this);
 }
 
 /**
@@ -462,22 +449,20 @@ Display::hasQuitted ()
  * Pushes a new job to renderer job list.
  * Returns the job id.
  */
-DisplayJobId
-Display::addJob (DisplayJob func, void *data)
+DisplayJob *
+Display::addJob (DisplayJobCallback func, void *data)
 {
-  Job *job;
-  static DisplayJobId last = 0;
+  DisplayJob *job;
 
   this->lock ();
-  job = new Job;
+  job = new DisplayJob;
   g_assert_nonnull (job);
-  job->id = last++;
   job->func = func;
   job->data = data;
   this->add (&this->jobs, job);
   this->unlock ();
 
-  return job->id;
+  return job;
 }
 
 /**
@@ -485,27 +470,33 @@ Display::addJob (DisplayJob func, void *data)
  * Returns true if job was removed.
  */
 bool
-Display::removeJob (DisplayJobId id)
+Display::removeJob (DisplayJob *job)
 {
-  Job j;
   GList *elt;
-  bool result;
 
   this->lock ();
-  j.id = id;
-  elt = g_list_find_custom (this->jobs, &j, job_cmp_id);
+  elt = g_list_find (this->jobs, job);
   if (elt == NULL)
     {
-      result = false;
+      this->unlock ();
+      return false;
     }
-  else
-    {
-      result = true;
-      delete (Job *) elt->data;
-    }
-
+  this->jobs = g_list_remove_link (this->jobs, elt);
+  delete (DisplayJob *) elt->data;
   this->unlock ();
-  return result;
+  return true;
+}
+
+/**
+ * Schedules the destruction of texture by render thread.
+ */
+void
+Display::destroyTexture (SDL_Texture *texture)
+{
+  this->lock ();
+  g_assert_nonnull (texture);
+  this->add (&this->textures, texture);
+  this->unlock ();
 }
 
 /**

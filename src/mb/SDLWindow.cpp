@@ -78,6 +78,7 @@ void
 SDLWindow::setTexture (SDL_Texture *texture)
 {
   this->lock ();
+  g_debug ("adding texture %p to window %p", texture, this);
   this->texture = texture;
   this->unlock ();
 }

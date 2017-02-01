@@ -39,15 +39,17 @@ ImagePlayer::unlock (void)
   g_rec_mutex_unlock (&this->mutex);
 }
 
-void
-ImagePlayer::displayJobWrapper (SDL_Renderer *renderer, void *data)
+bool
+ImagePlayer::displayJobCallbackWrapper (DisplayJob *job,
+                                        SDL_Renderer *renderer,
+                                        void *self)
 {
-  g_assert_nonnull (data);
-  ((ImagePlayer *) data)->displayJob (renderer);
+  return ((ImagePlayer *) self)->displayJobCallback (job, renderer);
 }
 
-void
-ImagePlayer::displayJob (SDL_Renderer *renderer)
+bool
+ImagePlayer::displayJobCallback (arg_unused (DisplayJob *job),
+                                 SDL_Renderer *renderer)
 {
   SDL_Texture *texture;
   SDLWindow *window;
@@ -67,6 +69,8 @@ ImagePlayer::displayJob (SDL_Renderer *renderer)
   this->display_job_done = true;
   g_cond_signal (&this->display_job_cond);
   g_mutex_unlock (&this->display_job_mutex);
+
+  return false;                 // remove job
 }
 
 
@@ -95,8 +99,7 @@ ImagePlayer::~ImagePlayer (void) // FIXME: Destroy texture
 bool
 ImagePlayer::play ()
 {
-  Ginga_Display->addJob (displayJobWrapper, this);
-
+  Ginga_Display->addJob (displayJobCallbackWrapper, this);
   g_mutex_lock (&this->display_job_mutex);
   while (!this->display_job_done)
     g_cond_wait (&this->display_job_cond, &this->display_job_mutex);
