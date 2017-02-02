@@ -32,7 +32,7 @@ GINGA_MB_BEGIN
 // Global display; initialized by main().
 Display *_Ginga_Display = NULL;
 
-bool Display::mutexInit = false;
+bool Display::mutexInitialized = false;
 map<CodeMap::KeyCode, int> Display::gingaToSDLCodeMap;
 map<int, CodeMap::KeyCode> Display::sdlToGingaCodeMap;
 map<string, int> Display::sdlStrToSdlCode;
@@ -92,18 +92,6 @@ prov_delete (gpointer p)
 
 
 // Private methods.
-
-void
-Display::lock (void)
-{
-  g_rec_mutex_lock (&this->mutex);
-}
-
-void
-Display::unlock (void)
-{
-  g_rec_mutex_unlock (&this->mutex);
-}
 
 gpointer
 Display::add (GList **list, gpointer data)
@@ -189,13 +177,8 @@ Display::renderThread ()
   g_assert_null (this->renderer);
   SDLx_CreateWindowAndRenderer (this->width, this->height, flags,
                                 &this->screen, &this->renderer);
-  g_assert (!this->render_thread_ready);
   this->unlock ();
-
-  g_mutex_lock (&this->render_thread_mutex);
-  this->render_thread_ready = true;
-  g_cond_signal (&this->render_thread_cond);
-  g_mutex_unlock (&this->render_thread_mutex);
+  this->condRenderThreadSignal (); // unlocks constructor thread
 
   while (!this->hasQuitted())   // render loop
     {
@@ -268,7 +251,7 @@ Display::renderThread ()
           SDLWindow * window = (SDLWindow *) l->data;
           g_assert_nonnull (window);
           if (window->isVisible () && !window->isGhostWindow ())
-            window->redraw ();
+            window->redraw (this->renderer);
         }
       SDL_RenderPresent (this->renderer);
       this->unlock ();
@@ -297,22 +280,19 @@ Display::renderThread ()
  */
 Display::Display (int width, int height, bool fullscreen)
 {
-  g_rec_mutex_init (&this->mutex);
+  this->mutexInit ();
 
   this->width = width;
   this->height = height;
   this->fullscreen = fullscreen;
 
-  g_rec_mutex_init (&this->renderer_mutex);
   this->renderer = NULL;
   this->screen = NULL;
   this->im = NULL;
 
   this->_quit = false;
   this->render_thread = NULL;
-  this->render_thread_ready = false;
-  g_mutex_init (&this->render_thread_mutex);
-  g_cond_init (&this->render_thread_cond);
+  this->condRenderThreadInit ();
 
   this->jobs = NULL;
   this->textures = NULL;
@@ -328,11 +308,7 @@ Display::Display (int width, int height, bool fullscreen)
 
   this->render_thread = g_thread_new ("render", renderThreadWrapper, this);
   g_assert_nonnull (this->render_thread);
-  g_mutex_lock (&this->render_thread_mutex);
-  while (!this->render_thread_ready)
-    g_cond_wait (&this->render_thread_cond, &this->render_thread_mutex);
-  g_mutex_unlock (&this->render_thread_mutex);
-  g_assert (this->render_thread_ready);
+  this->condRenderThreadWait ();
 }
 
 /**
@@ -344,8 +320,6 @@ Display::~Display ()
 
   this->lock ();
   g_assert_null (g_thread_join (this->render_thread));
-  g_mutex_clear (&this->render_thread_mutex);
-  g_cond_clear (&this->render_thread_cond);
   SDL_DestroyRenderer (this->renderer);
   SDL_DestroyWindow (this->screen);
   delete im;
@@ -354,7 +328,8 @@ Display::~Display ()
   g_list_free_full (this->windows, (GDestroyNotify) win_delete);
   g_list_free_full (this->providers, (GDestroyNotify) prov_delete);
   this->unlock ();
-  g_rec_mutex_clear (&this->mutex);
+  this->mutexClear ();
+  this->condRenderThreadClear ();
 }
 
 /**
@@ -500,50 +475,6 @@ Display::destroyTexture (SDL_Texture *texture)
 }
 
 /**
- * Locks display renderer.
- */
-void
-Display::lockRenderer ()
-{
-  g_rec_mutex_lock (&this->renderer_mutex);
-}
-
-/**
- * Unlocks display renderer.
- */
-void
-Display::unlockRenderer ()
-{
-  g_rec_mutex_unlock (&this->renderer_mutex);
-}
-
-/**
- * Gets display renderer and locks it.
- */
-SDL_Renderer *
-Display::getLockedRenderer ()
-{
-  SDL_Renderer *renderer = this->getRenderer ();
-  this->lockRenderer ();
-  return renderer;
-}
-
-/**
- * Gets display renderer.
- */
-SDL_Renderer *
-Display::getRenderer ()
-{
-  SDL_Renderer *renderer;
-
-  this->lock ();
-  renderer = this->renderer;
-  this->unlock ();
-  g_assert_nonnull (renderer);
-  return renderer;
-}
-
-/**
  * Creates managed window with the given position, dimensions, and z-index.
  */
 SDLWindow *
@@ -610,9 +541,9 @@ Display::destroyContinuousMediaProvider (IContinuousMediaProvider *prov)
 void
 Display::checkMutexInit ()
 {
-  if (!mutexInit)
+  if (!mutexInitialized)
     {
-      mutexInit = true;
+      mutexInitialized = true;
 
       Thread::mutexInit (&sdlMutex, true);
       Thread::mutexInit (&sieMutex, true);

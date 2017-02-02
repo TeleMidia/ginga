@@ -163,11 +163,13 @@ LuaPlayer::nw_update_thread_fn (arg_unused (void *data))
               g_assert_nonnull (texture);
               SDLx_QueryTexture (texture, NULL, NULL, &width, &height);
 
+#if 0
               Ginga_Display->lockRenderer ();
               SDLx_LockTexture (texture, NULL, (void **) &pixels, &pitch);
               ncluaw_paint (nw, pixels, "ARGB32", width, height, pitch);
               SDLx_UnlockTexture (texture);
               Ginga_Display->unlockRenderer ();
+#endif
             }
 
           while ((evt = ncluaw_receive (nw)) != NULL)
@@ -347,11 +349,16 @@ LuaPlayer::doPlay (void)
     g_error ("cannot load NCLua file %s: %s", this->mrl.c_str (),
              errmsg);
 
+  renderer = NULL;
+#if 0
   renderer = Ginga_Display->getLockedRenderer ();
+#endif
   texture = SDL_CreateTexture (renderer, SDL_PIXELFORMAT_ARGB8888,
                                SDL_TEXTUREACCESS_STREAMING, width, height);
   g_assert_nonnull (texture);
+#if 0
   Ginga_Display->unlockRenderer ();
+#endif
 
   window = surface->getParentWindow ();
   g_assert_nonnull (window);

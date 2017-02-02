@@ -41,7 +41,7 @@ typedef bool (*DisplayJobCallback) (DisplayJob *, SDL_Renderer *, void *);
 class Display
 {
 private:
-  GRecMutex mutex;              // sync access to display
+  GINGA_MUTEX_DEFN ();
 
   int width;                    // display width in pixels
   int height;                   // display height in pixels
@@ -54,17 +54,13 @@ private:
 
   bool _quit;                   // true if render thread should quit
   GThread *render_thread;       // render thread handle
-  bool render_thread_ready;     // signals that the render thread is ready
-  GMutex render_thread_mutex;   // sync access to ready flag
-  GCond render_thread_cond;     // sync access to ready flag
+  GINGA_COND_DEFN (RenderThread);
 
   GList *jobs;                  // list of jobs to be executed by renderer
   GList *textures;              // list of textures to be destructed
   GList *windows;               // list of windows to be redrawn
   GList *providers;             // list of providers to be redrawn
 
-  void lock (void);
-  void unlock (void);
   gpointer add (GList **, gpointer);
   gpointer remove (GList **, gpointer);
   gboolean find (GList *, gconstpointer);
@@ -88,11 +84,6 @@ public:
   bool removeJob (DisplayJob *);
   void destroyTexture (SDL_Texture *);
 
-  void lockRenderer ();               // legacy
-  void unlockRenderer ();             // legacy
-  SDL_Renderer *getLockedRenderer (); // legacy
-  SDL_Renderer *getRenderer ();       // legacy
-
   SDLWindow *createWindow (int, int, int, int, int);
   bool hasWindow (const SDLWindow *);
   void destroyWindow (SDLWindow *);
@@ -104,7 +95,7 @@ public:
   // Let the clutter begin -------------------------------------------------
 
 private:
-  static bool mutexInit;
+  static bool mutexInitialized;
 
   set<SDLSurface *> surfacePool;
   set<IContinuousMediaProvider *> cmpPool;
