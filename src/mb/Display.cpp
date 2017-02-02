@@ -159,6 +159,7 @@ Display::renderThreadWrapper (gpointer data)
 void
 Display::renderThread ()
 {
+  bool doquit = false;
   guint flags;
 
   g_assert (!SDL_WasInit (0));
@@ -178,7 +179,7 @@ Display::renderThread ()
   SDLx_CreateWindowAndRenderer (this->width, this->height, flags,
                                 &this->screen, &this->renderer);
   this->unlock ();
-  this->condRenderThreadSignal (); // unlocks constructor thread
+  this->condRenderThreadSignal (); // wake up constructor thread
 
   while (!this->hasQuitted())   // render loop
     {
@@ -258,17 +259,26 @@ Display::renderThread ()
 
     quit:
       this->lock ();            // destroy dead textures
-      for (l = this->textures; l != NULL; l = l->next)
-        {
-          SDL_Texture *texture = (SDL_Texture *) l->data;
-          g_assert_nonnull (texture);
-          SDL_DestroyTexture (texture);
-        }
+      g_list_free_full (this->textures,
+                        (GDestroyNotify) SDL_DestroyTexture);
+      this->textures = NULL;
       this->unlock ();
     }
 
+  if (doquit)
+    goto beach;
+
+  doquit = true;
+  this->lock ();
   this->im->postInputEvent (CodeMap::KEY_QUIT);
+  this->unlock ();
+  this->condRenderThreadWait ();
+  goto quit;
+
+ beach:
+  this->lock ();
   SDL_Quit ();
+  this->unlock ();
 }
 
 
@@ -317,9 +327,10 @@ Display::Display (int width, int height, bool fullscreen)
 Display::~Display ()
 {
   this->quit ();
+  this->condRenderThreadSignal (); // wake up render thread
+  g_assert_null (g_thread_join (this->render_thread));
 
   this->lock ();
-  g_assert_null (g_thread_join (this->render_thread));
   SDL_DestroyRenderer (this->renderer);
   SDL_DestroyWindow (this->screen);
   delete im;
@@ -505,7 +516,15 @@ Display::hasWindow (const SDLWindow *win)
 void
 Display::destroyWindow (SDLWindow *win)
 {
+  SDL_Texture *texture;
+
   g_assert_nonnull (win);
+  texture = win->getTexture ();
+  if (texture != NULL)
+    {
+      this->destroyTexture (texture);
+      win->setTexture (NULL);
+    }
   this->remove (&this->windows, win);
   delete win;
 }
