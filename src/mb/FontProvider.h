@@ -32,6 +32,18 @@ GINGA_MB_BEGIN
 
 class FontProvider : public IFontProvider
 {
+public:
+  FontProvider (const char *fontUri, int heightInPixel);
+  virtual ~FontProvider ();
+
+  void *getFontProviderContent ();
+
+  void getStringExtents (const char *text, int *w, int *h);
+  int getStringWidth (const char *text, int textLength = 0);
+  int getHeight ();
+  void playOver (SDLSurface* surface, const char *text, int x, int y,
+                 IFontProvider::TextAlign align);
+
 private:
   string dfltFont;
   string fontUri;
@@ -41,7 +53,7 @@ private:
   string plainText;
   int coordX;
   int coordY;
-  short align;
+  TextAlign align;
   bool fontInit;
 
   static map<string, TTF_Font *> fonts;
@@ -51,43 +63,11 @@ private:
   static bool initialized;
   static short fontRefs;
 
-public:
-  enum TextAlign : short int
-    {
-      A_LEFT,
-      A_CENTER,
-      A_RIGHT,
-
-      A_TOP,
-      A_TOP_CENTER,
-      A_TOP_LEFT,
-      A_TOP_RIGHT,
-
-      A_BOTTOM,
-      A_BOTTOM_CENTER,
-      A_BOTTOM_LEFT,
-      A_BOTTOM_RIGHT
-    };
-
-  FontProvider (const char *fontUri, int heightInPixel);
-  virtual ~FontProvider ();
-
-private:
+  void playOver (SDLSurface* surface);
   void releaseFonts ();
   bool initializeFont ();
   bool createFont ();
 
-public:
-  void *getFontProviderContent ();
-
-  void getStringExtents (const char *text, int *w, int *h);
-  int getStringWidth (const char *text, int textLength = 0);
-  int getHeight ();
-  void playOver (SDLSurface* surface, const char *text, int x, int y,
-                 short align);
-
-private:
-  void playOver (SDLSurface* surface);
 };
 
 GINGA_MB_END

@@ -207,15 +207,15 @@ PlainTxtPlayer::setTextAlign (const string &align)
 {
   if (align == "left")
     {
-      currentAlign = IFontProvider::FP_TA_LEFT;
+      currentAlign = IFontProvider::A_LEFT;
     }
   else if (align == "right")
     {
-      currentAlign = IFontProvider::FP_TA_RIGHT;
+      currentAlign = IFontProvider::A_RIGHT;
     }
   else if (align == "center")
     {
-      currentAlign = IFontProvider::FP_TA_CENTER;
+      currentAlign = IFontProvider::A_CENTER;
     }
 }
 
