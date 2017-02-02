@@ -295,22 +295,6 @@ infinity ()
 }
 
 bool
-isNaN (double value)
-{
-#ifdef _MSC_VER
-  if (_isnan (value))
-    {
-#else
-  if (isnan (value))
-    {
-#endif
-      return true;
-    }
-
-  return false;
-}
-
-bool
 isInfinity (double value)
 {
 #ifndef _MSC_VER

@@ -655,7 +655,7 @@ FormatterFocusManager::setFocus (NclCascadingDescriptor *descriptor)
     }
 
   borderAlpha = descriptor->getFocusBorderTransparency ();
-  if (!isNaN (borderAlpha))
+  if (!std::isnan (borderAlpha))
     {
       canDelFocusColor = true;
       focusColor
@@ -670,7 +670,7 @@ FormatterFocusManager::setFocus (NclCascadingDescriptor *descriptor)
       selColor = defaultSelBorderColor;
     }
 
-  if (!isNaN (borderAlpha))
+  if (!std::isnan (borderAlpha))
     {
       canDelSelColor = true;
       selColor = new Color (selColor->getR (), selColor->getG (),

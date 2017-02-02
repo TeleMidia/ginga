@@ -147,32 +147,32 @@ LayoutRegion::cloneRegion ()
 
   cloneRegion->setTitle (getTitle ());
 
-  if (!isNaN (getBottom ()))
+  if (!std::isnan (getBottom ()))
     {
       cloneRegion->setBottom (getBottom (), isBottomPercentual ());
     }
 
-  if (!isNaN (getLeft ()))
+  if (!std::isnan (getLeft ()))
     {
       cloneRegion->setLeft (getLeft (), isLeftPercentual ());
     }
 
-  if (!isNaN (getTop ()))
+  if (!std::isnan (getTop ()))
     {
       cloneRegion->setTop (getTop (), isTopPercentual ());
     }
 
-  if (!isNaN (getRight ()))
+  if (!std::isnan (getRight ()))
     {
       cloneRegion->setRight (getRight (), isRightPercentual ());
     }
 
-  if (!isNaN (getWidth ()))
+  if (!std::isnan (getWidth ()))
     {
       cloneRegion->setWidth (getWidth (), isWidthPercentual ());
     }
 
-  if (!isNaN (getHeight ()))
+  if (!std::isnan (getHeight ()))
     {
       cloneRegion->setHeight (getHeight (), isHeightPercentual ());
     }
@@ -213,32 +213,32 @@ LayoutRegion::copyRegion ()
 
   cloneRegion->setTitle (getTitle ());
 
-  if (!isNaN (getBottom ()))
+  if (!std::isnan (getBottom ()))
     {
       cloneRegion->setBottom (getBottomInPixels (), false);
     }
 
-  if (!isNaN (getLeft ()))
+  if (!std::isnan (getLeft ()))
     {
       cloneRegion->setLeft (getAbsoluteLeft (), false);
     }
 
-  if (!isNaN (getTop ()))
+  if (!std::isnan (getTop ()))
     {
       cloneRegion->setTop (getAbsoluteTop (), false);
     }
 
-  if (!isNaN (getRight ()))
+  if (!std::isnan (getRight ()))
     {
       cloneRegion->setRight (getRightInPixels (), false);
     }
 
-  if (!isNaN (getWidth ()))
+  if (!std::isnan (getWidth ()))
     {
       cloneRegion->setWidth (getWidthInPixels (), false);
     }
 
-  if (!isNaN (getHeight ()))
+  if (!std::isnan (getHeight ()))
     {
       cloneRegion->setHeight (getHeightInPixels (), false);
     }
@@ -626,7 +626,7 @@ LayoutRegion::getDeviceHeightInPixels ()
 bool
 LayoutRegion::setBottom (double newBottom, bool isPercentual)
 {
-  if (newBottom < 0 || isNaN (newBottom))
+  if (newBottom < 0 || std::isnan (newBottom))
     {
       clog << "LayoutRegion::setBottom Warning! Trying ";
       clog << "to set an invalid bottom value: " << newBottom << endl;
@@ -700,7 +700,7 @@ LayoutRegion::setTargetBottom (double newBottom, bool isPercentual)
 bool
 LayoutRegion::setHeight (double newHeight, bool isPercentual)
 {
-  if (newHeight < 0 || isNaN (newHeight))
+  if (newHeight < 0 || std::isnan (newHeight))
     {
       clog << "LayoutRegion::setHeight Warning! Trying ";
       clog << "to set an invalid height value: " << newHeight << endl;
@@ -765,7 +765,7 @@ LayoutRegion::setTargetHeight (double newHeight, bool isPercentual)
 bool
 LayoutRegion::setLeft (double newLeft, bool isPercentual)
 {
-  if ((newLeft < 0) || (isNaN (newLeft)))
+  if ((newLeft < 0) || (std::isnan (newLeft)))
     {
       clog << "LayoutRegion::setLeft Warning! Trying ";
       clog << "to set an invalid left value: " << newLeft << endl;
@@ -832,7 +832,7 @@ LayoutRegion::setTargetLeft (double newLeft, bool isPercentual)
 bool
 LayoutRegion::setRight (double newRight, bool isPercentual)
 {
-  if (newRight < 0 || isNaN (newRight))
+  if (newRight < 0 || std::isnan (newRight))
     {
       clog << "LayoutRegion::setRight Warning! Trying ";
       clog << "to set an invalid right value: " << newRight << endl;
@@ -907,7 +907,7 @@ LayoutRegion::setTargetRight (double newRight, bool isPercentual)
 bool
 LayoutRegion::setTop (double newTop, bool isPercentual)
 {
-  if (newTop < 0 || isNaN (newTop))
+  if (newTop < 0 || std::isnan (newTop))
     {
       clog << "LayoutRegion::setTop Warning! Trying ";
       clog << "to set an invalid top value: " << newTop << endl;
@@ -946,7 +946,7 @@ LayoutRegion::setTargetTop (double newTop, bool isPercentual)
 {
   double tTop;
 
-  if (newTop < 0 || isNaN (newTop))
+  if (newTop < 0 || std::isnan (newTop))
     {
       clog << "LayoutRegion::setTop Warning! Trying ";
       clog << "to set an invalid top value: " << newTop << endl;
@@ -972,7 +972,7 @@ LayoutRegion::setTargetTop (double newTop, bool isPercentual)
 bool
 LayoutRegion::setWidth (double newWidth, bool isPercentual)
 {
-  if (newWidth < 0 || isNaN (newWidth))
+  if (newWidth < 0 || std::isnan (newWidth))
     {
       clog << "LayoutRegion::setWidth Warning! Trying ";
       clog << "to set an invalid width value: " << newWidth;
@@ -1243,7 +1243,7 @@ LayoutRegion::getTopInPixels ()
 {
   double b, h;
 
-  if (!isNaN (top))
+  if (!std::isnan (top))
     {
       // top was defined
       if (isTopPercentual () && parent != NULL)
@@ -1255,7 +1255,7 @@ LayoutRegion::getTopInPixels ()
           return (int)top;
         }
     }
-  else if ((!isNaN (height)) && (!isNaN (bottom)))
+  else if ((!std::isnan (height)) && (!std::isnan (bottom)))
     {
       // top is based on height and bottom
       if (isHeightPercentual () && parent != NULL)
@@ -1301,7 +1301,7 @@ LayoutRegion::getBottomInPixels ()
 
   bottomInPixels = NaN ();
 
-  if (!isNaN (height) && !isNaN (top))
+  if (!std::isnan (height) && !std::isnan (top))
     {
       // bottom is based on height and top, independent
       // of bottom definition
@@ -1324,7 +1324,7 @@ LayoutRegion::getBottomInPixels ()
         }
       bottomInPixels = (int)(t + h);
     }
-  else if (!isNaN (bottom))
+  else if (!std::isnan (bottom))
     {
       // bottom is based on its own value
       if (isBottomPercentual () && parent != NULL)
@@ -1351,7 +1351,7 @@ LayoutRegion::getRightInPixels ()
 {
   double l, w;
 
-  if (!isNaN (width) && !isNaN (left))
+  if (!std::isnan (width) && !std::isnan (left))
     {
       // right is based on width and left, independent of right
       // definition
@@ -1374,7 +1374,7 @@ LayoutRegion::getRightInPixels ()
         }
       return (int)(l + w);
     }
-  else if (!isNaN (right))
+  else if (!std::isnan (right))
     {
       // right is based on its own value
       if (isRightPercentual () && parent != NULL)
@@ -1398,7 +1398,7 @@ LayoutRegion::getLeftInPixels ()
 {
   double r, w;
 
-  if (!isNaN (left))
+  if (!std::isnan (left))
     {
       // left was defined
       if (isLeftPercentual () && parent != NULL)
@@ -1410,7 +1410,7 @@ LayoutRegion::getLeftInPixels ()
           return (int)left;
         }
     }
-  else if (!isNaN (width) && !isNaN (right))
+  else if (!std::isnan (width) && !std::isnan (right))
     {
       // left is based on width and right
       if (isWidthPercentual () && parent != NULL)
@@ -1454,7 +1454,7 @@ LayoutRegion::getHeightInPixels ()
   int t = 0;
   int b = 0;
 
-  if (!isNaN (getHeight ()))
+  if (!std::isnan (getHeight ()))
     {
       if (isHeightPercentual () && parent != NULL)
         {
@@ -1474,7 +1474,7 @@ LayoutRegion::getHeightInPixels ()
           b = parent->getHeightInPixels ();
         }
 
-      if (!isNaN (getTop ()))
+      if (!std::isnan (getTop ()))
         {
           // height is based on top and bottom, independent of
           // height definition
@@ -1488,7 +1488,7 @@ LayoutRegion::getHeightInPixels ()
             }
         }
 
-      if (!isNaN (getBottom ()) && parent != NULL)
+      if (!std::isnan (getBottom ()) && parent != NULL)
         {
           if (isBottomPercentual ())
             {
@@ -1519,7 +1519,7 @@ LayoutRegion::getWidthInPixels ()
   int l = 0;
   int r = 0;
 
-  if (!(isNaN (getWidth ())))
+  if (!(std::isnan (getWidth ())))
     {
       if (isWidthPercentual () && parent != NULL)
         {
@@ -1539,7 +1539,7 @@ LayoutRegion::getWidthInPixels ()
           r = parent->getWidthInPixels ();
         }
 
-      if (!(isNaN (getLeft ())))
+      if (!(std::isnan (getLeft ())))
         {
           if (isLeftPercentual () && parent != NULL)
             {
@@ -1551,7 +1551,7 @@ LayoutRegion::getWidthInPixels ()
             }
         }
 
-      if (!(isNaN (getRight ())) && parent != NULL)
+      if (!(std::isnan (getRight ())) && parent != NULL)
         {
           if (isRightPercentual ())
             {
