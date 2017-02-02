@@ -60,7 +60,7 @@ strUTCToSec (const string &utcV)
       break;
 
     default:
-      secs = infinity ();
+      secs = INFINITY;
     }
 
   delete params;
@@ -274,30 +274,6 @@ isDirectory (const char *path)
 
   if (f_stat.st_mode & S_IFDIR)
     {
-      return true;
-    }
-
-  return false;
-}
-
-static numeric_limits<double> double_info;
-
-double
-infinity ()
-{
-  return double_info.infinity ();
-}
-
-bool
-isInfinity (double value)
-{
-#ifndef _MSC_VER
-  if (isinf (value))
-    {
-#else
-  if (!_finite (value))
-    {
-#endif
       return true;
     }
 

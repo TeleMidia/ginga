@@ -224,7 +224,7 @@ AdapterApplicationPlayer::prepare (NclExecutionObject *object,
   if (event->instanceOf ("NclPresentationEvent"))
     {
       double duration = ((NclPresentationEvent *)event)->getDuration ();
-      bool infDur = (std::isnan (duration) || isInfinity (duration));
+      bool infDur = (std::isnan (duration) || std::isinf (duration));
 
       if (explicitDur < 0)
         {

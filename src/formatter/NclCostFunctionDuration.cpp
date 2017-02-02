@@ -76,7 +76,7 @@ NclCostFunctionDuration::updateDurationInterval ()
         }
       else
         {
-          maximumValue = infinity ();
+          maximumValue = INFINITY;
         }
     }
   else
