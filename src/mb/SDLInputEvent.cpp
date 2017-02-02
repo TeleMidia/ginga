@@ -82,7 +82,7 @@ SDLInputEvent::getContent ()
 }
 
 void
-SDLInputEvent::setKeyCode (CodeMap::KeyCode keyCode)
+SDLInputEvent::setKeyCode (MbKey::KeyCode keyCode)
 {
   int sdlCode;
 
@@ -98,15 +98,15 @@ SDLInputEvent::setKeyCode (CodeMap::KeyCode keyCode)
     }
 }
 
-CodeMap::KeyCode
+MbKey::KeyCode
 SDLInputEvent::getKeyCode ()
 {
-  CodeMap::KeyCode gingaValue;
+  MbKey::KeyCode gingaValue;
   int sdlValue;
 
   if (event.type == SDL_FINGERUP || event.type == SDL_MOUSEBUTTONUP)
     {
-      return CodeMap::KEY_TAP;
+      return MbKey::KEY_TAP;
     }
 
   if (event.type == SDL_USEREVENT)
@@ -124,34 +124,34 @@ SDLInputEvent::getKeyCode ()
     {
       clog << "SDLInputEvent::getKeyCode unknown event type.";
       clog << "Returning KEY_NULL" << endl;
-      return CodeMap::KEY_NULL;
+      return MbKey::KEY_NULL;
       ;
     }
 
   gingaValue = Ginga_Display->fromMBToGinga (sdlValue);
 
-  if (gingaValue >= CodeMap::KEY_SMALL_A
-      && gingaValue <= CodeMap::KEY_SMALL_Z
+  if (gingaValue >= MbKey::KEY_SMALL_A
+      && gingaValue <= MbKey::KEY_SMALL_Z
       && ((capsOn && !shiftOn) || (!capsOn && shiftOn)))
     {
       gingaValue = Ginga_Display->fromMBToGinga (sdlValue + 5000);
     }
 
-  map <CodeMap::KeyCode, CodeMap::KeyCode> keyboardToRemoteControl
+  map <MbKey::KeyCode, MbKey::KeyCode> keyboardToRemoteControl
     = {
-        {CodeMap::KEY_F1, CodeMap::KEY_RED},
-        {CodeMap::KEY_F2, CodeMap::KEY_GREEN},
-        {CodeMap::KEY_F3, CodeMap::KEY_YELLOW},
-        {CodeMap::KEY_F4, CodeMap::KEY_BLUE},
-        {CodeMap::KEY_F5, CodeMap::KEY_MENU},
-        {CodeMap::KEY_F6, CodeMap::KEY_INFO},
-        {CodeMap::KEY_F7, CodeMap::KEY_EPG},
-        {CodeMap::KEY_PLUS_SIGN, CodeMap::KEY_VOLUME_UP},
-        {CodeMap::KEY_MINUS_SIGN, CodeMap::KEY_VOLUME_DOWN},
-        {CodeMap::KEY_PAGE_UP, CodeMap::KEY_CHANNEL_UP},
-        {CodeMap::KEY_PAGE_DOWN, CodeMap::KEY_CHANNEL_DOWN},
-        {CodeMap::KEY_BACKSPACE, CodeMap::KEY_BACK},
-        {CodeMap::KEY_ESCAPE, CodeMap::KEY_EXIT}
+        {MbKey::KEY_F1, MbKey::KEY_RED},
+        {MbKey::KEY_F2, MbKey::KEY_GREEN},
+        {MbKey::KEY_F3, MbKey::KEY_YELLOW},
+        {MbKey::KEY_F4, MbKey::KEY_BLUE},
+        {MbKey::KEY_F5, MbKey::KEY_MENU},
+        {MbKey::KEY_F6, MbKey::KEY_INFO},
+        {MbKey::KEY_F7, MbKey::KEY_EPG},
+        {MbKey::KEY_PLUS_SIGN, MbKey::KEY_VOLUME_UP},
+        {MbKey::KEY_MINUS_SIGN, MbKey::KEY_VOLUME_DOWN},
+        {MbKey::KEY_PAGE_UP, MbKey::KEY_CHANNEL_UP},
+        {MbKey::KEY_PAGE_DOWN, MbKey::KEY_CHANNEL_DOWN},
+        {MbKey::KEY_BACKSPACE, MbKey::KEY_BACK},
+        {MbKey::KEY_ESCAPE, MbKey::KEY_EXIT}
       };
 
   if (keyboardToRemoteControl.count (gingaValue))
@@ -178,7 +178,7 @@ SDLInputEvent::getApplicationData ()
 unsigned int
 SDLInputEvent::getType ()
 {
-  unsigned int result = CodeMap::KEY_NULL;
+  unsigned int result = MbKey::KEY_NULL;
 
   if (event.type == SDL_USEREVENT)
     {

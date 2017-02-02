@@ -217,8 +217,7 @@ AnimationController::loadInitValues ()
 
           if (value == "")
             {
-              value = execObj->getPropertyValue (
-                  this->propertySingleNames[i]);
+              value = execObj->getPropertyValue (this->propertySingleNames[i]);
             }
           propValue = xstrtod (value);
 

@@ -61,9 +61,9 @@ FormatterActiveDevice::FormatterActiveDevice (DeviceLayout *deviceLayout,
   layoutManager[deviceClass] = mainLayout;
 
   evs = new set<int>;
-  evs->insert (CodeMap::KEY_TAP);
-  evs->insert (CodeMap::KEY_F11);
-  evs->insert (CodeMap::KEY_F10);
+  evs->insert (MbKey::KEY_TAP);
+  evs->insert (MbKey::KEY_F11);
+  evs->insert (MbKey::KEY_F10);
   im->addInputEventListener (this, evs);
 
   if (fileExists (img_dev))
@@ -338,11 +338,11 @@ FormatterActiveDevice::userEventReceived (SDLInputEvent *ev)
   int code;
 
   code = ev->getKeyCode ();
-  if (code == CodeMap::KEY_F11 || code == CodeMap::KEY_F10)
+  if (code == MbKey::KEY_F11 || code == MbKey::KEY_F10)
     {
       abort ();
     }
-  if (code == CodeMap::KEY_TAP)
+  if (code == MbKey::KEY_TAP)
     {
       ev->getAxisValue (&currentX, &currentY, NULL);
       tapObject (deviceClass, currentX, currentY);

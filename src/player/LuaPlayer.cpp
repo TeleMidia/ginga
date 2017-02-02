@@ -603,7 +603,7 @@ LuaPlayer::userEventReceived (SDLInputEvent *evt)
       string key;
       int press;
 
-      key = (CodeMap::getInstance ()->getValue (
+      key = (MbKey::getInstance ()->getName (
           evt->getKeyCode ()));
       press = evt->isPressedType ();
       debug ("key='%s', type='%s'", key.c_str (),

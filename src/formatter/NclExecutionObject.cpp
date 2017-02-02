@@ -1455,7 +1455,7 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
 
   if (descriptor == NULL || descriptor->getFormatterRegion () == NULL)
     {
-      clog << "NclExecutionObject::setPropertyValue : setProperty could ";
+      clog << "NclExecutionObject::setPropertyValue : setPropertyValue could ";
       clog << "not be performed. Descriptor or formatterRegion is NULL";
       clog << endl;
 
@@ -1661,7 +1661,7 @@ NclExecutionObject::getPropertyValue (const string &param)
 
   if (descriptor == NULL || descriptor->getFormatterRegion () == NULL)
     {
-      clog << "NclExecutionObject::setPropertyValue : setProperty could ";
+      clog << "NclExecutionObject::setPropertyValue : setPropertyValue could ";
       clog << "not be performed. Descriptor or formatterRegion is NULL";
       clog << endl;
       return value;
@@ -1926,57 +1926,57 @@ NclExecutionObject::getInputEvents ()
       ev = (*i);
       keyCode = ev->getSelectionCode ();
       evs->insert (keyCode);
-      if (keyCode == CodeMap::KEY_RED)
+      if (keyCode == MbKey::KEY_RED)
         {
-          evs->insert (CodeMap::KEY_F1);
+          evs->insert (MbKey::KEY_F1);
         }
-      else if (keyCode == CodeMap::KEY_GREEN)
+      else if (keyCode == MbKey::KEY_GREEN)
         {
-          evs->insert (CodeMap::KEY_F2);
+          evs->insert (MbKey::KEY_F2);
         }
-      else if (keyCode == CodeMap::KEY_YELLOW)
+      else if (keyCode == MbKey::KEY_YELLOW)
         {
-          evs->insert (CodeMap::KEY_F3);
+          evs->insert (MbKey::KEY_F3);
         }
-      else if (keyCode == CodeMap::KEY_BLUE)
+      else if (keyCode == MbKey::KEY_BLUE)
         {
-          evs->insert (CodeMap::KEY_F4);
+          evs->insert (MbKey::KEY_F4);
         }
-      else if (keyCode == CodeMap::KEY_MENU)
+      else if (keyCode == MbKey::KEY_MENU)
         {
-          evs->insert (CodeMap::KEY_F5);
+          evs->insert (MbKey::KEY_F5);
         }
-      else if (keyCode == CodeMap::KEY_INFO)
+      else if (keyCode == MbKey::KEY_INFO)
         {
-          evs->insert (CodeMap::KEY_F6);
+          evs->insert (MbKey::KEY_F6);
         }
-      else if (keyCode == CodeMap::KEY_EPG)
+      else if (keyCode == MbKey::KEY_EPG)
         {
-          evs->insert (CodeMap::KEY_F7);
+          evs->insert (MbKey::KEY_F7);
         }
-      else if (keyCode == CodeMap::KEY_VOLUME_UP)
+      else if (keyCode == MbKey::KEY_VOLUME_UP)
         {
-          evs->insert (CodeMap::KEY_PLUS_SIGN);
+          evs->insert (MbKey::KEY_PLUS_SIGN);
         }
-      else if (keyCode == CodeMap::KEY_VOLUME_DOWN)
+      else if (keyCode == MbKey::KEY_VOLUME_DOWN)
         {
-          evs->insert (CodeMap::KEY_MINUS_SIGN);
+          evs->insert (MbKey::KEY_MINUS_SIGN);
         }
-      else if (keyCode == CodeMap::KEY_CHANNEL_UP)
+      else if (keyCode == MbKey::KEY_CHANNEL_UP)
         {
-          evs->insert (CodeMap::KEY_PAGE_UP);
+          evs->insert (MbKey::KEY_PAGE_UP);
         }
-      else if (keyCode == CodeMap::KEY_CHANNEL_DOWN)
+      else if (keyCode == MbKey::KEY_CHANNEL_DOWN)
         {
-          evs->insert (CodeMap::KEY_PAGE_DOWN);
+          evs->insert (MbKey::KEY_PAGE_DOWN);
         }
-      else if (keyCode == CodeMap::KEY_BACK)
+      else if (keyCode == MbKey::KEY_BACK)
         {
-          evs->insert (CodeMap::KEY_BACKSPACE);
+          evs->insert (MbKey::KEY_BACKSPACE);
         }
-      else if (keyCode == CodeMap::KEY_EXIT)
+      else if (keyCode == MbKey::KEY_EXIT)
         {
-          evs->insert (CodeMap::KEY_ESCAPE);
+          evs->insert (MbKey::KEY_ESCAPE);
         }
       ++i;
     }

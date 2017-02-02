@@ -478,32 +478,32 @@ PresentationEngineManager::registerKeys ()
 
   keys = new set<int>;
 
-  keys->insert (CodeMap::KEY_GREATER_THAN_SIGN);
-  keys->insert (CodeMap::KEY_LESS_THAN_SIGN);
+  keys->insert (MbKey::KEY_GREATER_THAN_SIGN);
+  keys->insert (MbKey::KEY_LESS_THAN_SIGN);
 
-  keys->insert (CodeMap::KEY_SUPER);
-  keys->insert (CodeMap::KEY_PRINTSCREEN);
+  keys->insert (MbKey::KEY_SUPER);
+  keys->insert (MbKey::KEY_PRINTSCREEN);
 
-  keys->insert (CodeMap::KEY_F10);
-  keys->insert (CodeMap::KEY_POWER);
+  keys->insert (MbKey::KEY_F10);
+  keys->insert (MbKey::KEY_POWER);
 
-  keys->insert (CodeMap::KEY_F11);
-  keys->insert (CodeMap::KEY_STOP);
+  keys->insert (MbKey::KEY_F11);
+  keys->insert (MbKey::KEY_STOP);
 
-  keys->insert (CodeMap::KEY_F12);
-  keys->insert (CodeMap::KEY_PAUSE);
+  keys->insert (MbKey::KEY_F12);
+  keys->insert (MbKey::KEY_PAUSE);
 
 #if WITH_ISDBT
   this->tuner = NULL;
-  keys->insert (CodeMap::KEY_PAGE_UP);
-  keys->insert (CodeMap::KEY_PAGE_DOWN);
-  keys->insert (CodeMap::KEY_CHANNEL_UP);
-  keys->insert (CodeMap::KEY_CHANNEL_DOWN);
+  keys->insert (MbKey::KEY_PAGE_UP);
+  keys->insert (MbKey::KEY_PAGE_DOWN);
+  keys->insert (MbKey::KEY_CHANNEL_UP);
+  keys->insert (MbKey::KEY_CHANNEL_DOWN);
 #endif
 
   if (!commands.empty ())
     {
-      keys->insert (CodeMap::KEY_PLUS_SIGN);
+      keys->insert (MbKey::KEY_PLUS_SIGN);
     }
 
   im->addInputEventListener (this, keys);
@@ -1219,7 +1219,7 @@ PresentationEngineManager::eventReceived (void *ptr)
 
   delete (struct inputEventNotification *)ptr;
 
-  if (code == CodeMap::KEY_QUIT)
+  if (code == MbKey::KEY_QUIT)
     {
       cout << "PresentationEngineManager::eventReceived QUIT" << endl;
 
@@ -1240,8 +1240,8 @@ PresentationEngineManager::eventReceived (void *ptr)
       p->presentationCompleted (parameter);
     }
   else if (!p->disableFKeys
-           && (code == CodeMap::KEY_POWER || code == CodeMap::KEY_F10
-               || code == CodeMap::KEY_STOP || code == CodeMap::KEY_F11))
+           && (code == MbKey::KEY_POWER || code == MbKey::KEY_F10
+               || code == MbKey::KEY_STOP || code == MbKey::KEY_F11))
     {
       clog << "PresentationEngineManager::eventReceived: POWER_OFF";
       clog << endl;
@@ -1255,12 +1255,12 @@ PresentationEngineManager::eventReceived (void *ptr)
       g_usleep (500000);
       p->unlockConditionSatisfied ();
     }
-  else if (code == CodeMap::KEY_PRINTSCREEN || code == CodeMap::KEY_SUPER)
+  else if (code == MbKey::KEY_PRINTSCREEN || code == MbKey::KEY_SUPER)
     {
       p->getScreenShot ();
     }
   else if (!p->disableFKeys
-           && (code == CodeMap::KEY_PAUSE || code == CodeMap::KEY_F12))
+           && (code == MbKey::KEY_PAUSE || code == MbKey::KEY_F12))
     {
       clog << "PresentationEngineManager::eventReceived: PAUSE";
       clog << endl;
@@ -1268,7 +1268,7 @@ PresentationEngineManager::eventReceived (void *ptr)
       p->sb->pause ();
       p->pausePressed ();
     }
-  else if (code == CodeMap::KEY_PLUS_SIGN && cmds != NULL)
+  else if (code == MbKey::KEY_PLUS_SIGN && cmds != NULL)
     {
       if (!cmds->empty () && !autoProcess)
         {
@@ -1282,17 +1282,17 @@ PresentationEngineManager::eventReceived (void *ptr)
         }
       delete cmds;
     }
-  else if (code == CodeMap::KEY_GREATER_THAN_SIGN)
+  else if (code == MbKey::KEY_GREATER_THAN_SIGN)
     {
       clog << ">> TIME SHIFT >>" << endl;
       p->updateFormatters (UC_SHIFT, "forward");
     }
-  else if (code == CodeMap::KEY_LESS_THAN_SIGN)
+  else if (code == MbKey::KEY_LESS_THAN_SIGN)
     {
       clog << "<< TIME SHIFT <<" << endl;
       p->updateFormatters (UC_SHIFT, "backward");
     }
-  else if (code == CodeMap::KEY_SMALL_W)
+  else if (code == MbKey::KEY_SMALL_W)
     {
       cout << "<< GINGA WINDOW DEBUG <<" << endl;
       p->printGingaWindows ();
