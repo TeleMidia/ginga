@@ -491,14 +491,16 @@ SrtPlayer::run ()
 
           while (line.find ("||") != std::string::npos)
             {
-              drawTextLn (line.substr (0, line.find ("||")), 1);
+              drawTextLn (line.substr (0, line.find ("||")),
+                          IFontProvider::A_CENTER);
 
               line = line.substr (line.find ("||") + 2, line.length ());
             }
 
           if (line != "")
             {
-              drawText (line.substr (0, line.find ("||")), 1);
+              drawText (line.substr (0, line.find ("||")),
+                        IFontProvider::A_CENTER);
             }
 
           if (!isPlayingSrt ())
