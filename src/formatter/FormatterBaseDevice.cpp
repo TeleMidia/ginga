@@ -48,7 +48,7 @@ FormatterBaseDevice::FormatterBaseDevice (DeviceLayout *deviceLayout,
                                  DV_QVGA_HEIGHT, -1.0);
 
   evs = new set<int>;
-  evs->insert (CodeMap::KEY_TAP);
+  evs->insert (MbKey::KEY_TAP);
 
   im->addInputEventListener (this, evs);
 
@@ -129,12 +129,12 @@ FormatterBaseDevice::userEventReceived (SDLInputEvent *ev)
 
   code = ev->getKeyCode ();
 
-  if (code == CodeMap::KEY_TAP)
+  if (code == MbKey::KEY_TAP)
     {
       ev->getAxisValue (&currentX, &currentY, NULL);
       tapObject (deviceClass, currentX, currentY);
     }
-  else if (code == CodeMap::KEY_QUIT)
+  else if (code == MbKey::KEY_QUIT)
     {
       clog << "FormatterBaseDevice::userEventReceived setting im as NULL";
       clog << endl;

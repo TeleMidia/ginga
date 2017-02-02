@@ -105,8 +105,8 @@ private:
   pthread_mutex_t condMutex;
   pthread_cond_t cond;
 
-  static map<CodeMap::KeyCode, int> gingaToSDLCodeMap;
-  static map<int, CodeMap::KeyCode> sdlToGingaCodeMap;
+  static map<MbKey::KeyCode, int> gingaToSDLCodeMap;
+  static map<int, MbKey::KeyCode> sdlToGingaCodeMap;
   static map<string, int> sdlStrToSdlCode;
 
   static set<SDL_Surface *> uSurPool;
@@ -152,8 +152,8 @@ public:
   SDLInputEvent *createInputEvent (void *event, const int symbol);
   SDLInputEvent *createApplicationEvent (int type, void *data);
 
-  CodeMap::KeyCode fromMBToGinga (int keyCode);
-  int fromGingaToMB (CodeMap::KeyCode keyCode);
+  MbKey::KeyCode fromMBToGinga (int keyCode);
+  int fromGingaToMB (MbKey::KeyCode keyCode);
 
   /* SDL MB internal use*/
 private:

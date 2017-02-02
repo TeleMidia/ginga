@@ -111,7 +111,7 @@ public:
   void removeApplicationInputEventListener (IInputEventListener *listener);
 
   void postInputEvent (SDLInputEvent *event);
-  void postInputEvent (CodeMap::KeyCode keyCode);
+  void postInputEvent (MbKey::KeyCode keyCode);
   void postCommand (const string &cmd, const string &args);
 
   void setAxisValues (int x, int y, int z);

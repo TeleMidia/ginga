@@ -20,9 +20,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-CodeMap *CodeMap::_instance = NULL;
+MbKey *MbKey::_instance = NULL;
 
-map <string, int> CodeMap::keyMap = {
+unordered_map<MbKey::KeyCode, string, std::hash<int>>
+MbKey::_valueMap;
+
+unordered_map <string, MbKey::KeyCode>
+MbKey::_keyMap =
+{
   {"QUIT", KEY_QUIT},
   {"NO_CODE", KEY_NULL},
   {"0", KEY_0},
@@ -130,55 +135,49 @@ map <string, int> CodeMap::keyMap = {
   {"PAUSE", KEY_PAUSE}
 };
 
-CodeMap::CodeMap ()
-{
-  map<string, int>::iterator it;
-  for (it = keyMap.begin (); it != keyMap.end (); ++it)
-  {
-    valueMap[it->second] = it->first;
-  }
-}
-
-CodeMap *
-CodeMap::getInstance ()
+MbKey *
+MbKey::getInstance ()
 {
   if (_instance == NULL)
     {
-      _instance = new CodeMap ();
+      _instance = new MbKey ();
+
+      for (const auto &it: MbKey::_keyMap)
+        _valueMap[it.second] = it.first;
     }
 
   return _instance;
 }
 
-int
-CodeMap::getCode (const string &codeStr)
+MbKey::KeyCode
+MbKey::getCode (const string &codeStr)
 {
-  if (keyMap.count (codeStr) == 0)
+  if (_keyMap.count (codeStr) == 0)
     {
       return KEY_NULL;
     }
 
-  return keyMap[codeStr];
+  return _keyMap[codeStr];
 }
 
 string
-CodeMap::getValue (int code)
+MbKey::getName (MbKey::KeyCode code)
 {
-  map<int, string>::iterator i;
+  unordered_map<MbKey::KeyCode, string, std::hash<int>>::iterator it;
 
-  i = valueMap.find (code);
-  if (i != valueMap.end ())
+  it = _valueMap.find (code);
+  if (it != _valueMap.end ())
     {
-      return i->second;
+      return it->second;
     }
 
   return "";
 }
 
-map<string, int> *
-CodeMap::cloneKeyMap ()
+unordered_map<string, MbKey::KeyCode> *
+MbKey::cloneKeyMap ()
 {
-  return new map<string, int> (keyMap);
+  return new unordered_map<string, MbKey::KeyCode> (_keyMap);
 }
 
 GINGA_MB_END

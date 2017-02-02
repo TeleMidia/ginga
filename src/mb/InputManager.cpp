@@ -441,7 +441,7 @@ InputManager::dispatchEvent (SDLInputEvent *inputEvent)
   keyCode = inputEvent->getKeyCode ();
 
   clog << "InputManger::dispatchEvent ";
-  if (keyCode == CodeMap::KEY_TAP)
+  if (keyCode == MbKey::KEY_TAP)
     {
       clog << "TAP ";
     }
@@ -468,7 +468,7 @@ InputManager::dispatchEvent (SDLInputEvent *inputEvent)
                   return false;
                 }
             }
-          else if (keyCode == CodeMap::KEY_QUIT)
+          else if (keyCode == MbKey::KEY_QUIT)
             {
               if (!die && !lis->userEventReceived (inputEvent))
                 {
@@ -625,7 +625,7 @@ InputManager::postInputEvent (SDLInputEvent *event)
 }
 
 void
-InputManager::postInputEvent (CodeMap::KeyCode keyCode)
+InputManager::postInputEvent (MbKey::KeyCode keyCode)
 {
   SDLInputEvent *ie;
   int mbKeyCode;
@@ -777,7 +777,7 @@ InputManager::handleInputEvent (SDLInputEvent *inputEvent, arg_unused (int &pLas
     }
 
   if (!inputEvent->isApplicationType ()
-      && inputEvent->getKeyCode () == CodeMap::KEY_NULL)
+      && inputEvent->getKeyCode () == MbKey::KEY_NULL)
     {
       return;
     }

@@ -19,10 +19,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define CODE_MAP_H
 
 #include "ginga.h"
+#include <unordered_map>
 
 GINGA_MB_BEGIN
 
-class CodeMap
+class MbKey
 {
 public:
   enum KeyCode
@@ -163,19 +164,20 @@ public:
     KEY_TAP,
   };
 
-private:
-  static map<string, int> keyMap;
-  map<int, string> valueMap;
-  static CodeMap *_instance;
-
-  CodeMap ();
-
 public:
-  static CodeMap *getInstance ();
+  static MbKey *getInstance ();
 
-  int getCode (const string &codeStr);
-  string getValue (int value);
-  map<string, int> *cloneKeyMap ();
+  MbKey::KeyCode getCode (const string &codeStr);
+  string getName (MbKey::KeyCode value);
+  unordered_map<string, MbKey::KeyCode> *cloneKeyMap ();
+
+private:
+  static MbKey *_instance;
+
+  static unordered_map<string, MbKey::KeyCode> _keyMap;
+  static unordered_map<MbKey::KeyCode, string, std::hash<int>> _valueMap;
+
+  MbKey () { };
 };
 
 GINGA_MB_END
