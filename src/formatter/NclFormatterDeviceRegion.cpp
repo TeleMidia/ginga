@@ -136,7 +136,7 @@ NclFormatterDeviceRegion::getBackgroundColor ()
 double
 NclFormatterDeviceRegion::getBottom ()
 {
-  return NaN ();
+  return NAN;
 }
 
 double
@@ -154,7 +154,7 @@ NclFormatterDeviceRegion::getLeft ()
 double
 NclFormatterDeviceRegion::getRight ()
 {
-  return NaN ();
+  return NAN;
 }
 
 LayoutRegion *

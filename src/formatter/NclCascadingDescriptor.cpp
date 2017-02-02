@@ -119,7 +119,7 @@ NclCascadingDescriptor::initializeCascadingDescriptor ()
   typeSet.insert ("NclCascadingDescriptor");
 
   id = "";
-  explicitDuration = NaN ();
+  explicitDuration = NAN;
   playerName = "";
   repetitions = 0;
   freeze = false;
@@ -138,7 +138,7 @@ NclCascadingDescriptor::initializeCascadingDescriptor ()
   selBorderColor = NULL;
   focusBorderWidth = 0;
   selBorderWidth = 0;
-  focusBorderTransparency = NaN ();
+  focusBorderTransparency = NAN;
   inputTransitions = new vector<Transition *>;
   outputTransitions = new vector<Transition *>;
 }

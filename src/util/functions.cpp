@@ -283,12 +283,6 @@ isDirectory (const char *path)
 static numeric_limits<double> double_info;
 
 double
-NaN ()
-{
-  return double_info.quiet_NaN ();
-}
-
-double
 infinity ()
 {
   return double_info.infinity ();
@@ -312,7 +306,10 @@ isInfinity (double value)
 
 // factor is not in use. It will be removed.
 double
-getNextStepValue (double initValue, double target, arg_unused (int factor), double time,
+getNextStepValue (double initValue,
+                  double target,
+                  arg_unused (int factor),
+                  double time,
                   double initTime, double dur, int durStep)
 {
   int numSteps;
