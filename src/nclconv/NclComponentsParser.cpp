@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "NclComponentsParser.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
+
 GINGA_NCLCONV_BEGIN
 
 NclComponentsParser::NclComponentsParser (DocumentParser *documentParser)

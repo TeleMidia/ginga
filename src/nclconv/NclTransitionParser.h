@@ -31,7 +31,6 @@ class NclTransitionParser : public ModuleParser
 {
 private:
   NclImportParser *importParser;
-  void *presentationControlParser;
 
 public:
   NclTransitionParser (DocumentParser *documentParser);

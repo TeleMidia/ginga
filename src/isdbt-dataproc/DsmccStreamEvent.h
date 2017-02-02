@@ -29,7 +29,6 @@ private:
   unsigned int descriptorLength;
   unsigned int eventId;
   uint64_t timeReference;
-  void *privateData;
   string eventName;
   char data[262]; // 7 header bytes + 255 data field bytes
 

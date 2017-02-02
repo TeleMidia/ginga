@@ -109,7 +109,6 @@ public:
 
   void addListener (IPlayerListener *listener);
   void release ();
-  void setMrl (const char *mrl);
   string getMrl ();
   bool isPlaying ();
   bool isRunning ();

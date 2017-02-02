@@ -22,6 +22,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "PSIFilter.h"
 #include "PesFilter.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
+
 GINGA_TSPARSER_BEGIN
 
 vector<Pat *> Demuxer::pats;

@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "ParentalRatingDescriptor.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
+
 GINGA_TSPARSER_BEGIN
 
 ParentalRatingDescriptor::ParentalRatingDescriptor ()
@@ -114,6 +116,11 @@ ParentalRatingDescriptor::process (char *data, size_t pos)
     {
       countryRatings = new vector<Parental *>;
       remainingBytes = descriptorLength;
+    }
+  else
+    {
+      countryRatings = NULL;
+      remainingBytes = 0;
     }
 
   while (remainingBytes)

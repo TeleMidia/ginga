@@ -84,8 +84,8 @@ public:
   void setNptPrinter (bool nptPrinter);
 
   bool applicationInfoMounted (IAIT *ait);
-  void serviceDomainMounted (const string &mountPoint, map<string, string> *names,
-                             map<string, string> *paths);
+  void serviceDomainMounted (const string &mountPoint, const map<string, string> *names,
+                             const map<string, string> *paths);
 
   void setDemuxer (IDemuxer *demux);
   void removeOCFilterAfterMount (bool removeIt);

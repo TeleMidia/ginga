@@ -32,6 +32,8 @@ using namespace ::ginga::system;
 #include "multidev/DeviceDomain.h"
 #endif
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
+
 GINGA_FORMATTER_BEGIN
 
 PrefetchManager *FormatterMediator::pm = NULL;

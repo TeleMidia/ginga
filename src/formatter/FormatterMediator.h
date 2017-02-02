@@ -138,7 +138,7 @@ private:
   RuleAdapter *ruleAdapter;
   FormatterConverter *compiler;
   AdapterPlayerManager *playerManager;
-  ITimeBaseProvider *timeBaseProvider;
+//  ITimeBaseProvider *timeBaseProvider;
   vector<string> compileErrors;
   DeviceLayout *deviceLayout;
   FormatterMultiDevice *multiDevice;

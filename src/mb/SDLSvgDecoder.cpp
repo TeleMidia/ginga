@@ -16,8 +16,9 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-
 #include "SDLSvgDecoder.h"
+
+GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_MB_BEGIN
 

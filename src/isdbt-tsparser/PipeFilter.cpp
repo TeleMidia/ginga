@@ -20,6 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Pat.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
+
 GINGA_TSPARSER_BEGIN
 
 PipeFilter::PipeFilter (unsigned int pid) : Thread ()

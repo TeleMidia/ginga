@@ -35,7 +35,7 @@ protected:
   bool newDeviceConnected (int newDevClass, int w, int h);
   void connectedToBaseDevice (arg_unused (unsigned int domainAddr)){};
   bool receiveRemoteEvent (int remoteDevClass, int eventType,
-                           string eventContent);
+                           const string &eventContent);
   bool
   receiveRemoteContent (arg_unused (int remoteDevClass),
                         arg_unused (char *stream),

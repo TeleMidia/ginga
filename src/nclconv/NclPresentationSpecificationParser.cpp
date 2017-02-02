@@ -19,6 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclPresentationSpecificationParser.h"
 #include "NclPresentationControlParser.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
+
 GINGA_NCLCONV_BEGIN
 
 NclPresentationSpecificationParser::NclPresentationSpecificationParser (

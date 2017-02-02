@@ -26,8 +26,7 @@ using namespace ::ginga::util;
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
 
-#ifndef _MSC_VER
-#endif
+GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_MULTIDEV_BEGIN
 

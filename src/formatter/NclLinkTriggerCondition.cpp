@@ -202,7 +202,7 @@ NclLinkTriggerCondition::run ()
 {
   if (delay > 0)
     {
-      g_usleep ((long)(delay * 1000));
+      g_usleep ((gulong) delay * 1000);
     }
   notifyConditionObservers (NclLinkTriggerListener::CONDITION_SATISFIED);
 }

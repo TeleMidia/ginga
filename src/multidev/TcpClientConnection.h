@@ -33,12 +33,7 @@ class TCPClientConnection : public Thread
 {
 private:
   TCPSocket *tcpSocket;
-  int sockfd;
   int counter;
-  char *srv_hostname;
-  char *portno;
-  struct sockaddr_in server_addr;
-  struct hostent *server;
   IRemoteDeviceListener *resrv;
   void run ();
   bool running;

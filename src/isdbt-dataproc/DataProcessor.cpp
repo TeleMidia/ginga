@@ -21,6 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "DsmccSectionPayload.h"
 #include "isdbt-tsparser/AIT.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
+
 GINGA_DATAPROC_BEGIN
 
 DataProcessor::DataProcessor () : Thread ()
@@ -133,8 +135,8 @@ DataProcessor::applicationInfoMounted (IAIT *ait)
 
 void
 DataProcessor::serviceDomainMounted (const string &mountPoint,
-                                     map<string, string> *names,
-                                     map<string, string> *paths)
+                                     const map<string, string> *names,
+                                     const map<string, string> *paths)
 {
   if (removeOCFilter && demux != NULL)
     {

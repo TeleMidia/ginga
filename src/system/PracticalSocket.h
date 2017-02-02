@@ -23,6 +23,8 @@
 
 #include "ginga.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wdeprecated)
+
 GINGA_SYSTEM_BEGIN
 
 /**

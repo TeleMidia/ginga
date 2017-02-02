@@ -40,7 +40,6 @@ private:
   InterfacePoint *interfacePoint;
   GenericDescriptor *descriptor;
   Role *role;
-  bool embed;
 
 protected:
   map<string, Parameter *> *parameters;

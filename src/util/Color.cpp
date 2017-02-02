@@ -19,6 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Color.h"
 #include "functions.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
+
 GINGA_UTIL_BEGIN
 
 const string Color::swhite = "#FFFFFF";

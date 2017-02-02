@@ -35,7 +35,7 @@ NominalEventMonitor::NominalEventMonitor (NclExecutionObject *object,
   this->executionObject = object;
   this->sleepTime = DEFAULT_SLEEP_TIME;
   this->expectedSleepTime = 0;
-  this->timeBaseId = -1;
+  this->timeBaseId = 0xff;
   this->timeBaseProvider = NULL;
 }
 
