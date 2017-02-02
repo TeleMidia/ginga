@@ -30,8 +30,8 @@ public:
   virtual bool applicationInfoMounted (IAIT *ait) = 0;
 
   virtual void serviceDomainMounted (const string &mountPoint,
-                                     map<string, string> *names,
-                                     map<string, string> *paths)
+                                     const map<string, string> *names,
+                                     const map<string, string> *paths)
       = 0;
 };
 

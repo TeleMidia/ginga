@@ -20,8 +20,9 @@
 
 #include "ginga.h"
 
-GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+GINGA_PRAGMA_DIAG_IGNORE (-Wcast-align)
 GINGA_PRAGMA_DIAG_IGNORE (-Wcast-qual)
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
 #include "PracticalSocket.h"
 
 #ifdef _MSC_VER
@@ -165,10 +166,12 @@ Socket::setLocalPort (unsigned short localPort) throw (SocketException)
   localAddr.sin_addr.s_addr = htonl (INADDR_ANY);
   localAddr.sin_port = htons (localPort);
 
+#if 0
   if (bind (sockDesc, (sockaddr *)&localAddr, sizeof (sockaddr_in)) < 0)
     {
       throw SocketException ("Set of local port failed (bind())", true);
     }
+#endif
 }
 
 void
@@ -180,11 +183,13 @@ Socket::setLocalAddressAndPort (
   sockaddr_in localAddr;
   fillAddr (localAddress, localPort, localAddr);
 
+#if 0
   if (bind (sockDesc, (sockaddr *)&localAddr, sizeof (sockaddr_in)) < 0)
     {
       throw SocketException (
           "Set of local address and port failed (bind())", true);
     }
+#endif
 }
 
 void

@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "ContentAvailabilityDescriptor.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
+
 GINGA_TSPARSER_BEGIN
 
 ContentAvailabilityDescriptor::ContentAvailabilityDescriptor ()

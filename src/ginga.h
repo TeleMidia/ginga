@@ -87,8 +87,11 @@ GINGA_BEGIN_DECLS
 #endif
 
 #if WITH_MULTIDEVICE
+GINGA_PRAGMA_DIAG_PUSH ()
+GINGA_PRAGMA_DIAG_IGNORE (-Wundef)
 # include <jerror.h>
 # include <jpeglib.h>
+GINGA_PRAGMA_DIAG_POP ()
 #endif
 
 #if WITH_LIBRSVG
@@ -113,6 +116,9 @@ GINGA_END_DECLS
 using namespace std;
 
 // External C++ libraries.
+GINGA_PRAGMA_DIAG_PUSH ()
+GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
+GINGA_PRAGMA_DIAG_IGNORE (-Wundef)
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/framework/LocalFileInputSource.hpp>
 #include <xercesc/framework/MemBufInputSource.hpp>
@@ -122,6 +128,7 @@ using namespace std;
 #include <xercesc/sax/SAXParseException.hpp>
 #include <xercesc/util/XercesDefs.hpp>
 XERCES_CPP_NAMESPACE_USE
+GINGA_PRAGMA_DIAG_POP ()
 
 // Namespaces.
 #define _GINGA_NS_BEGIN(t)      namespace t {/*}*/
@@ -341,7 +348,7 @@ xstrbuild (const char *format, ...)
 static inline string
 xstrup (string s)
 {
-  gchar *dup = g_ascii_strup (s.c_str (), s.size ());
+  gchar *dup = g_ascii_strup (s.c_str (), (gssize) s.size ());
   s.assign (dup);
   free (dup);
   return s;
@@ -351,7 +358,7 @@ xstrup (string s)
 static inline string
 xstrdown (string s)
 {
-  gchar *dup = g_ascii_strdown (s.c_str (), s.size ());
+  gchar *dup = g_ascii_strdown (s.c_str (), (gssize) s.size ());
   s.assign (dup);
   free (dup);
   return s;

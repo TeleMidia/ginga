@@ -378,7 +378,7 @@ void
 Display::setFullscreen (bool fullscreen)
 {
   int status;
-  int flags;
+  guint flags;
 
   this->lock ();
   flags = (fullscreen) ? SDL_WINDOW_FULLSCREEN : 0;

@@ -26,6 +26,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/EventUtil.h"
 using namespace ::ginga::ncl;
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
+
 GINGA_FORMATTER_BEGIN
 
 FormatterScheduler::FormatterScheduler (AdapterPlayerManager *playerManager,

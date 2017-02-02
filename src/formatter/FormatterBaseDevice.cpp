@@ -113,7 +113,7 @@ FormatterBaseDevice::newDeviceConnected (int newDevClass, int w, int h)
 
 bool
 FormatterBaseDevice::receiveRemoteEvent (int remoteDevClass, int eventType,
-                                         string eventContent)
+                                         const string &eventContent)
 {
   return FormatterMultiDevice::receiveRemoteEvent (remoteDevClass,
                                                    eventType, eventContent);

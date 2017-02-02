@@ -505,12 +505,6 @@ AVPlayer::release ()
   provider = 0;
 }
 
-void
-AVPlayer::setMrl (const char *mrl)
-{
-  this->mrl = mrl;
-}
-
 string
 AVPlayer::getMrl ()
 {

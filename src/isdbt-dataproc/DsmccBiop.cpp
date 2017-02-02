@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "DsmccBiop.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
+
 GINGA_DATAPROC_BEGIN
 
 DsmccBiop::DsmccBiop (DsmccModule *module, DsmccObjectProcessor *processor)

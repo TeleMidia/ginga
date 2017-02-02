@@ -151,8 +151,10 @@ LuaPlayer::nw_update_thread_fn (arg_unused (void *data))
             {
               SDLWindow *window;
               SDL_Texture *texture;
-              guchar *pixels;
+//              guchar *pixels;
+#if 0
               int pitch;
+#endif
               int width;
               int height;
 

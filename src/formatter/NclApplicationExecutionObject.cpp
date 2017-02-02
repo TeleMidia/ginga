@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "NclApplicationExecutionObject.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
+
 GINGA_FORMATTER_BEGIN
 
 NclApplicationExecutionObject::NclApplicationExecutionObject (

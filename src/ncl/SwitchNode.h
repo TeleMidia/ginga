@@ -57,7 +57,7 @@ public:
   bool addPort (Port *port);
 
   // virtual from CompositeNode
-  bool addPort (int index, Port *port);
+  bool addPort (unsigned int index, Port *port);
 
   void exchangeNodesAndRules (unsigned int index1, unsigned int index2);
 

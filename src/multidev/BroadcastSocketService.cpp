@@ -29,6 +29,8 @@ typedef int socklen_t;
 #include "system/PracticalSocket.h"
 using namespace ::ginga::system;
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
+
 GINGA_MULTIDEV_BEGIN
 
 BroadcastSocketService::BroadcastSocketService ()

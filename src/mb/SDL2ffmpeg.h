@@ -27,7 +27,10 @@ using namespace ::ginga::system;
 #include "IContinuousMediaProvider.h"
 #include "Display.h"
 
-/* SDL2ffmpeg cplusplus compat begin */
+GINGA_PRAGMA_DIAG_PUSH ()
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+GINGA_PRAGMA_DIAG_IGNORE (-Wdeprecated)
+GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 extern "C" {
 #include "libavutil/avstring.h"
 #include "libavutil/pixfmt.h"
@@ -37,14 +40,12 @@ extern "C" {
 #include "libavutil/opt.h"
 #include "libavcodec/avfft.h"
 #include "libswresample/swresample.h"
-
-// AVFILTER BEGIN
 #include "libavcodec/avcodec.h"
 #include "libavfilter/avfilter.h"
 #include "libavfilter/buffersink.h"
 #include "libavfilter/buffersrc.h"
-// AVFILTER end
 }
+GINGA_PRAGMA_DIAG_POP ()
 
 #ifndef INT64_MIN
 #define INT64_MIN (-__INT64_C (9223372036854775807) - 1)
@@ -367,11 +368,8 @@ private:
   static pthread_mutex_t aiMutex;
   static set<SDL2ffmpeg *> aInstances;
 
-  AVFrame vFrame;
   AVPacket vPkt;
 
-  int audioFreq;
-  Uint8 audioChannels;
 
   short status;
   SDL_AudioSpec wantedSpec;
@@ -387,7 +385,6 @@ private:
 
   bool abortRequest;
 
-  int64_t mono_cb_time;
   int monoStep;
 
 public:

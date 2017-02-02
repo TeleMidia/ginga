@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "SwitchNode.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
+
 GINGA_NCL_BEGIN
 
 SwitchNode::SwitchNode (const string &id) : CompositeNode (id)
@@ -135,7 +137,7 @@ SwitchNode::addPort (Port *port)
 }
 
 bool
-SwitchNode::addPort (int index, Port *port)
+SwitchNode::addPort (unsigned int index, Port *port)
 {
   if (!(port->instanceOf ("SwitchPort")))
     {
