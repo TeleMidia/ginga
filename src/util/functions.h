@@ -26,10 +26,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_UTIL_BEGIN
 
-// math
-double infinity ();
-bool isInfinity (double value);
-
 // string
 double strUTCToSec (const string &utcValue);
 string cvtPercentual (const string &value, bool *isPercentual);

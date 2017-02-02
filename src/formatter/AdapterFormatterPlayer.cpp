@@ -1061,7 +1061,7 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
   if (event->instanceOf ("NclPresentationEvent"))
     {
       double duration = ((NclPresentationEvent *)event)->getDuration ();
-      bool infDur = (std::isnan (duration) || isInfinity (duration));
+      bool infDur = (std::isnan (duration) || std::isinf (duration));
 
       if (descriptor != NULL && explicitDur < 0)
         {
@@ -1174,7 +1174,7 @@ AdapterFormatterPlayer::prepareScope (double offset)
           if (outTransDur > 0.0)
             {
               playerDur = player->getTotalMediaTime ();
-              if (isInfinity (duration) && playerDur > 0.0)
+              if (std::isinf (duration) && playerDur > 0.0)
                 {
                   duration = playerDur * 1000;
                 }
@@ -1214,7 +1214,7 @@ AdapterFormatterPlayer::prepareScope (double offset)
           if (outTransDur > 0.0)
             {
               playerDur = player->getTotalMediaTime ();
-              if (isInfinity (duration) && playerDur > 0.0)
+              if (std::isinf (duration) && playerDur > 0.0)
                 {
                   duration = playerDur * 1000;
                 }
@@ -1297,7 +1297,7 @@ AdapterFormatterPlayer::checkAnchorMonitor ()
       return;
     }
 
-  if (nextTransition != NULL && !isInfinity (nextTransition->getTime ()))
+  if (nextTransition != NULL && !std::isinf (nextTransition->getTime ()))
     {
       clog << "AdapterFormatterPlayer::checkAnchorMonitor ";
       clog << "creating TIME NominalEventMonitor for '";

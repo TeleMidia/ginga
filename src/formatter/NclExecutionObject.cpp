@@ -182,7 +182,7 @@ NclExecutionObject::initializeExecutionObject (
   this->id = id;
   this->dataObject = node;
   this->wholeContent = NULL;
-  this->startTime = infinity ();
+  this->startTime = INFINITY;
   this->descriptor = NULL;
 
   this->isItCompiled = false;
