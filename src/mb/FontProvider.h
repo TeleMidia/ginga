@@ -30,7 +30,8 @@ using namespace ::ginga::system;
 
 GINGA_MB_BEGIN
 
-class FontProvider : public IFontProvider
+class FontProvider :
+    public IFontProvider
 {
 public:
   FontProvider (const char *fontUri, int heightInPixel);

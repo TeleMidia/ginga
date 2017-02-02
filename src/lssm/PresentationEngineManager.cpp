@@ -38,7 +38,7 @@ using namespace ::ginga::formatter;
 #include "ncl/NclDocument.h"
 using namespace ::ginga::ncl;
 
-#include "mb/CodeMap.h"
+#include "mb/Key.h"
 #include "mb/Display.h"
 #include "mb/InputManager.h"
 using namespace ::ginga::mb;
@@ -478,32 +478,32 @@ PresentationEngineManager::registerKeys ()
 
   keys = new set<int>;
 
-  keys->insert (MbKey::KEY_GREATER_THAN_SIGN);
-  keys->insert (MbKey::KEY_LESS_THAN_SIGN);
+  keys->insert (Key::KEY_GREATER_THAN_SIGN);
+  keys->insert (Key::KEY_LESS_THAN_SIGN);
 
-  keys->insert (MbKey::KEY_SUPER);
-  keys->insert (MbKey::KEY_PRINTSCREEN);
+  keys->insert (Key::KEY_SUPER);
+  keys->insert (Key::KEY_PRINTSCREEN);
 
-  keys->insert (MbKey::KEY_F10);
-  keys->insert (MbKey::KEY_POWER);
+  keys->insert (Key::KEY_F10);
+  keys->insert (Key::KEY_POWER);
 
-  keys->insert (MbKey::KEY_F11);
-  keys->insert (MbKey::KEY_STOP);
+  keys->insert (Key::KEY_F11);
+  keys->insert (Key::KEY_STOP);
 
-  keys->insert (MbKey::KEY_F12);
-  keys->insert (MbKey::KEY_PAUSE);
+  keys->insert (Key::KEY_F12);
+  keys->insert (Key::KEY_PAUSE);
 
 #if WITH_ISDBT
   this->tuner = NULL;
-  keys->insert (MbKey::KEY_PAGE_UP);
-  keys->insert (MbKey::KEY_PAGE_DOWN);
-  keys->insert (MbKey::KEY_CHANNEL_UP);
-  keys->insert (MbKey::KEY_CHANNEL_DOWN);
+  keys->insert (Key::KEY_PAGE_UP);
+  keys->insert (Key::KEY_PAGE_DOWN);
+  keys->insert (Key::KEY_CHANNEL_UP);
+  keys->insert (Key::KEY_CHANNEL_DOWN);
 #endif
 
   if (!commands.empty ())
     {
-      keys->insert (MbKey::KEY_PLUS_SIGN);
+      keys->insert (Key::KEY_PLUS_SIGN);
     }
 
   im->addInputEventListener (this, keys);
@@ -1219,7 +1219,7 @@ PresentationEngineManager::eventReceived (void *ptr)
 
   delete (struct inputEventNotification *)ptr;
 
-  if (code == MbKey::KEY_QUIT)
+  if (code == Key::KEY_QUIT)
     {
       cout << "PresentationEngineManager::eventReceived QUIT" << endl;
 
@@ -1240,8 +1240,8 @@ PresentationEngineManager::eventReceived (void *ptr)
       p->presentationCompleted (parameter);
     }
   else if (!p->disableFKeys
-           && (code == MbKey::KEY_POWER || code == MbKey::KEY_F10
-               || code == MbKey::KEY_STOP || code == MbKey::KEY_F11))
+           && (code == Key::KEY_POWER || code == Key::KEY_F10
+               || code == Key::KEY_STOP || code == Key::KEY_F11))
     {
       clog << "PresentationEngineManager::eventReceived: POWER_OFF";
       clog << endl;
@@ -1255,12 +1255,12 @@ PresentationEngineManager::eventReceived (void *ptr)
       g_usleep (500000);
       p->unlockConditionSatisfied ();
     }
-  else if (code == MbKey::KEY_PRINTSCREEN || code == MbKey::KEY_SUPER)
+  else if (code == Key::KEY_PRINTSCREEN || code == Key::KEY_SUPER)
     {
       p->getScreenShot ();
     }
   else if (!p->disableFKeys
-           && (code == MbKey::KEY_PAUSE || code == MbKey::KEY_F12))
+           && (code == Key::KEY_PAUSE || code == Key::KEY_F12))
     {
       clog << "PresentationEngineManager::eventReceived: PAUSE";
       clog << endl;
@@ -1268,7 +1268,7 @@ PresentationEngineManager::eventReceived (void *ptr)
       p->sb->pause ();
       p->pausePressed ();
     }
-  else if (code == MbKey::KEY_PLUS_SIGN && cmds != NULL)
+  else if (code == Key::KEY_PLUS_SIGN && cmds != NULL)
     {
       if (!cmds->empty () && !autoProcess)
         {
@@ -1282,17 +1282,17 @@ PresentationEngineManager::eventReceived (void *ptr)
         }
       delete cmds;
     }
-  else if (code == MbKey::KEY_GREATER_THAN_SIGN)
+  else if (code == Key::KEY_GREATER_THAN_SIGN)
     {
       clog << ">> TIME SHIFT >>" << endl;
       p->updateFormatters (UC_SHIFT, "forward");
     }
-  else if (code == MbKey::KEY_LESS_THAN_SIGN)
+  else if (code == Key::KEY_LESS_THAN_SIGN)
     {
       clog << "<< TIME SHIFT <<" << endl;
       p->updateFormatters (UC_SHIFT, "backward");
     }
-  else if (code == MbKey::KEY_SMALL_W)
+  else if (code == Key::KEY_SMALL_W)
     {
       cout << "<< GINGA WINDOW DEBUG <<" << endl;
       p->printGingaWindows ();
