@@ -169,7 +169,7 @@ NclCascadingDescriptor::cascadeDescriptor (Descriptor *descriptor)
     }
 
   region = descriptor->getRegion ();
-  if (!isNaN (descriptor->getExplicitDuration ()))
+  if (!std::isnan (descriptor->getExplicitDuration ()))
     {
       explicitDuration = descriptor->getExplicitDuration ();
     }
@@ -225,7 +225,7 @@ NclCascadingDescriptor::cascadeDescriptor (Descriptor *descriptor)
 
       focusBorderWidth = focusDecoration->getFocusBorderWidth ();
 
-      if (!(isNaN (focusDecoration->getFocusBorderTransparency ())))
+      if (!(std::isnan (focusDecoration->getFocusBorderTransparency ())))
         {
           focusBorderTransparency
               = focusDecoration->getFocusBorderTransparency ();

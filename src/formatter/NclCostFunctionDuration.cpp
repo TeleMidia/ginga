@@ -60,7 +60,7 @@ NclCostFunctionDuration::overwrite (NclCostFunctionDuration *dur)
 void
 NclCostFunctionDuration::updateDurationInterval ()
 {
-  if (!isNaN (expectedValue))
+  if (!std::isnan (expectedValue))
     {
       if (costFunction->getShrinkingFactor () > 0
           && costFunction->getShrinkingFactor () <= 1)

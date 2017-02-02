@@ -1061,7 +1061,7 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
   if (event->instanceOf ("NclPresentationEvent"))
     {
       double duration = ((NclPresentationEvent *)event)->getDuration ();
-      bool infDur = (isNaN (duration) || isInfinity (duration));
+      bool infDur = (std::isnan (duration) || isInfinity (duration));
 
       if (descriptor != NULL && explicitDur < 0)
         {
@@ -1077,7 +1077,7 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
         }
 
       // explicit duration overwrites implicit duration
-      if (!isNaN (explicitDur) && explicitDur > 0)
+      if (!std::isnan (explicitDur) && explicitDur > 0)
         {
           object->removeEvent (event);
 
@@ -1891,8 +1891,8 @@ AdapterFormatterPlayer::updateObjectExpectedDuration ()
   wholeContentEvent = object->getWholeContentPresentationEvent ();
   duration = wholeContentEvent->getDuration ();
   if ((object->getDescriptor () == NULL)
-      || (isNaN ((object->getDescriptor ())->getExplicitDuration ()))
-      || (duration < 0) || (isNaN (duration)))
+      || (std::isnan ((object->getDescriptor ())->getExplicitDuration ()))
+      || (duration < 0) || (std::isnan (duration)))
     {
       implicitDur = getObjectExpectedDuration ();
       ((IntervalAnchor *)wholeContentEvent->getAnchor ())
