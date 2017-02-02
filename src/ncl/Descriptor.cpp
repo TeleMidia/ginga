@@ -22,7 +22,7 @@ GINGA_NCL_BEGIN
 
 Descriptor::Descriptor (const string &id) : GenericDescriptor (id)
 {
-  explicitDuration = NaN ();
+  explicitDuration = NAN;
   presentationTool = "";
   repetitions = 0;
   freeze = false;

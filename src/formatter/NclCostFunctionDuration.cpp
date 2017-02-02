@@ -81,8 +81,8 @@ NclCostFunctionDuration::updateDurationInterval ()
     }
   else
     {
-      minimumValue = NaN ();
-      maximumValue = NaN ();
+      minimumValue = NAN;
+      maximumValue = NAN;
     }
 }
 

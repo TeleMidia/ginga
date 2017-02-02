@@ -777,7 +777,7 @@ NclExecutionObject::updateEventDuration (NclPresentationEvent *event)
       return;
     }
 
-  duration = NaN ();
+  duration = NAN;
 
   if (descriptor != NULL)
     {
@@ -812,7 +812,7 @@ NclExecutionObject::updateEventDuration (NclPresentationEvent *event)
 
   if (duration < 0)
     {
-      event->setDuration (NaN ());
+      event->setDuration (NAN);
     }
   else
     {
