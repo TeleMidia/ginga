@@ -445,6 +445,7 @@ xruntime ()
     g_mutex_lock (&this->mutex##Name);                          \
     while (!this->cond##Name##_done)                            \
       g_cond_wait (&this->cond##Name, &this->mutex##Name);      \
+    this->cond##Name##_done = false;                            \
     g_mutex_unlock (&this->mutex##Name);                        \
   }
 
