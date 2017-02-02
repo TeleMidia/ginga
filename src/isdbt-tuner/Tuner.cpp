@@ -73,7 +73,7 @@ Tuner::userEventReceived (SDLInputEvent *ev)
   map<int, NetworkInterface *>::iterator i;
 
   clog << "Tuner::userEventReceived" << endl;
-  if (ev->getKeyCode () == MbKey::KEY_QUIT)
+  if (ev->getKeyCode () == Key::KEY_QUIT)
     {
       // CLOSE ALL TUNER INTERFACE/PROVIDER
       lock ();

@@ -24,7 +24,7 @@ NclSelectionEvent::NclSelectionEvent (const string &id, void *executionObject,
                                       ContentAnchor *anchor)
     : NclAnchorEvent (id, executionObject, anchor)
 {
-  selectionCode = MbKey::KEY_NULL;
+  selectionCode = Key::KEY_NULL;
   typeSet.insert ("NclSelectionEvent");
 }
 
@@ -48,7 +48,7 @@ NclSelectionEvent::start ()
 void
 NclSelectionEvent::setSelectionCode (const string &codeStr)
 {
-  selectionCode = MbKey::getInstance ()->getCode (codeStr);
+  selectionCode = Key::getCode (codeStr);
 }
 
 GINGA_FORMATTER_END

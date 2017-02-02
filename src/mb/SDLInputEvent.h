@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef SDLINPUTEVENT_H_
 #define SDLINPUTEVENT_H_
 
-#include "CodeMap.h"
+#include "Key.h"
 
 GINGA_MB_BEGIN
 
@@ -47,8 +47,8 @@ public:
   void setModifiers (bool capsOn, bool shiftOn);
 
   void clearContent ();
-  void setKeyCode (MbKey::KeyCode keyCode);
-  MbKey::KeyCode getKeyCode ();
+  void setKeyCode (Key::KeyCode keyCode);
+  Key::KeyCode getKeyCode ();
 
   unsigned int getType ();
   void *getApplicationData ();

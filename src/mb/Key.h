@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-class MbKey
+class Key
 {
 public:
   enum KeyCode
@@ -165,19 +165,17 @@ public:
   };
 
 public:
-  static MbKey *getInstance ();
-
-  MbKey::KeyCode getCode (const string &codeStr);
-  string getName (MbKey::KeyCode value);
-  unordered_map<string, MbKey::KeyCode> *cloneKeyMap ();
+  static Key::KeyCode getCode (const string &codeStr);
+  static string getName (Key::KeyCode value);
 
 private:
-  static MbKey *_instance;
+  using code2str_map =
+      typename std::unordered_map<KeyCode, string, std::hash<int> >;
 
-  static unordered_map<string, MbKey::KeyCode> _keyMap;
-  static unordered_map<MbKey::KeyCode, string, std::hash<int>> _valueMap;
+  static unordered_map<string, Key::KeyCode> _keyMap;
+  static Key::code2str_map _valueMap;
 
-  MbKey () { };
+  static Key::code2str_map createValueMap();
 };
 
 GINGA_MB_END

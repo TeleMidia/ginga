@@ -25,7 +25,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "mb/InputManager.h"
 #include "mb/IInputEventListener.h"
-#include "mb/CodeMap.h"
+#include "mb/Key.h"
 using namespace ::ginga::mb;
 
 #include "NclCascadingDescriptor.h"

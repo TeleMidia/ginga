@@ -1926,57 +1926,57 @@ NclExecutionObject::getInputEvents ()
       ev = (*i);
       keyCode = ev->getSelectionCode ();
       evs->insert (keyCode);
-      if (keyCode == MbKey::KEY_RED)
+      if (keyCode == Key::KEY_RED)
         {
-          evs->insert (MbKey::KEY_F1);
+          evs->insert (Key::KEY_F1);
         }
-      else if (keyCode == MbKey::KEY_GREEN)
+      else if (keyCode == Key::KEY_GREEN)
         {
-          evs->insert (MbKey::KEY_F2);
+          evs->insert (Key::KEY_F2);
         }
-      else if (keyCode == MbKey::KEY_YELLOW)
+      else if (keyCode == Key::KEY_YELLOW)
         {
-          evs->insert (MbKey::KEY_F3);
+          evs->insert (Key::KEY_F3);
         }
-      else if (keyCode == MbKey::KEY_BLUE)
+      else if (keyCode == Key::KEY_BLUE)
         {
-          evs->insert (MbKey::KEY_F4);
+          evs->insert (Key::KEY_F4);
         }
-      else if (keyCode == MbKey::KEY_MENU)
+      else if (keyCode == Key::KEY_MENU)
         {
-          evs->insert (MbKey::KEY_F5);
+          evs->insert (Key::KEY_F5);
         }
-      else if (keyCode == MbKey::KEY_INFO)
+      else if (keyCode == Key::KEY_INFO)
         {
-          evs->insert (MbKey::KEY_F6);
+          evs->insert (Key::KEY_F6);
         }
-      else if (keyCode == MbKey::KEY_EPG)
+      else if (keyCode == Key::KEY_EPG)
         {
-          evs->insert (MbKey::KEY_F7);
+          evs->insert (Key::KEY_F7);
         }
-      else if (keyCode == MbKey::KEY_VOLUME_UP)
+      else if (keyCode == Key::KEY_VOLUME_UP)
         {
-          evs->insert (MbKey::KEY_PLUS_SIGN);
+          evs->insert (Key::KEY_PLUS_SIGN);
         }
-      else if (keyCode == MbKey::KEY_VOLUME_DOWN)
+      else if (keyCode == Key::KEY_VOLUME_DOWN)
         {
-          evs->insert (MbKey::KEY_MINUS_SIGN);
+          evs->insert (Key::KEY_MINUS_SIGN);
         }
-      else if (keyCode == MbKey::KEY_CHANNEL_UP)
+      else if (keyCode == Key::KEY_CHANNEL_UP)
         {
-          evs->insert (MbKey::KEY_PAGE_UP);
+          evs->insert (Key::KEY_PAGE_UP);
         }
-      else if (keyCode == MbKey::KEY_CHANNEL_DOWN)
+      else if (keyCode == Key::KEY_CHANNEL_DOWN)
         {
-          evs->insert (MbKey::KEY_PAGE_DOWN);
+          evs->insert (Key::KEY_PAGE_DOWN);
         }
-      else if (keyCode == MbKey::KEY_BACK)
+      else if (keyCode == Key::KEY_BACK)
         {
-          evs->insert (MbKey::KEY_BACKSPACE);
+          evs->insert (Key::KEY_BACKSPACE);
         }
-      else if (keyCode == MbKey::KEY_EXIT)
+      else if (keyCode == Key::KEY_EXIT)
         {
-          evs->insert (MbKey::KEY_ESCAPE);
+          evs->insert (Key::KEY_ESCAPE);
         }
       ++i;
     }

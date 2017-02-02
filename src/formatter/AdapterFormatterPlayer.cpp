@@ -2001,7 +2001,7 @@ AdapterFormatterPlayer::userEventReceived (SDLInputEvent *ev)
 
   keyCode = ev->getKeyCode ();
 
-  if (keyCode == MbKey::KEY_QUIT)
+  if (keyCode == Key::KEY_QUIT)
     {
       this->im = NULL;
       return true;
