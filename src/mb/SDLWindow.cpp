@@ -30,21 +30,6 @@ GINGA_MB_BEGIN
 // BEGIN SANITY ------------------------------------------------------------
 
 
-// Private methods.
-
-void
-SDLWindow::lock (void)
-{
-  g_rec_mutex_lock (&this->mutex);
-}
-
-void
-SDLWindow::unlock (void)
-{
-  g_rec_mutex_unlock (&this->mutex);
-}
-
-
 // Public methods.
 
 /**
@@ -52,7 +37,7 @@ SDLWindow::unlock (void)
  */
 SDLWindow::SDLWindow (int x, int y, int z, int width, int height)
 {
-  g_rec_mutex_init (&this->mutex);
+  this->mutexInit ();
   this->texture = NULL;
   initialize (0, x, y, width, height, (double) z);
 }
@@ -87,14 +72,10 @@ SDLWindow::setTexture (SDL_Texture *texture)
  * Redraw window texture onto global display.
  */
 void
-SDLWindow::redraw ()
+SDLWindow::redraw (SDL_Renderer *renderer)
 {
-  SDL_Renderer *renderer;
   SDL_Color c;
-
   this->lock ();
-  renderer = Ginga_Display->getLockedRenderer ();
-  g_assert_nonnull (renderer);
 
   c = this->bgColor;
   if (c.a > 0)                  // background color
@@ -118,8 +99,6 @@ SDLWindow::redraw ()
       SDLx_SetRenderDrawColor (renderer, c.r, c.g, c.b, 255);
       SDLx_RenderDrawRect (renderer, &this->rect);
     }
-
-  Ginga_Display->unlockRenderer ();
   this->unlock ();
 }
 
@@ -177,6 +156,7 @@ SDLWindow::~SDLWindow ()
   Thread::mutexDestroy (&_mutex);
 
   clog << "SDLWindow::~SDLWindow(" << this << ") all done" << endl;
+  this->mutexClear ();
 }
 
 void

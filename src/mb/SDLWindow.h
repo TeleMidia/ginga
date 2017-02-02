@@ -30,11 +30,8 @@ class SDLWindow
 {
 // BEGIN SANITY ------------------------------------------------------------
 private:
-  GRecMutex mutex;              // sync access to window
+  GINGA_MUTEX_DEFN ();
   SDL_Texture *texture;         // window texture
-
-  void lock ();
-  void unlock ();
 
 public:
   SDLWindow (int, int, int, int, int);
@@ -43,7 +40,7 @@ public:
   void setTexture (SDL_Texture *);
   SDL_Texture *getTexture ();
 
-  void redraw ();
+  void redraw (SDL_Renderer *); // called only by the render thread
 // END SANITY --------------------------------------------------------------
 
 private:

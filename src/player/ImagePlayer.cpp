@@ -27,18 +27,6 @@ GINGA_PLAYER_BEGIN
 
 // Private methods.
 
-void
-ImagePlayer::lock (void)
-{
-  g_rec_mutex_lock (&this->mutex);
-}
-
-void
-ImagePlayer::unlock (void)
-{
-  g_rec_mutex_unlock (&this->mutex);
-}
-
 bool
 ImagePlayer::displayJobCallbackWrapper (DisplayJob *job,
                                         SDL_Renderer *renderer,
@@ -64,47 +52,31 @@ ImagePlayer::displayJobCallback (arg_unused (DisplayJob *job),
   g_assert_nonnull (window);
   window->setTexture (texture);
   this->unlock ();
-
-  g_mutex_lock (&this->display_job_mutex);
-  this->display_job_done = true;
-  g_cond_signal (&this->display_job_cond);
-  g_mutex_unlock (&this->display_job_mutex);
-
+  this->condDisplayJobSignal ();
   return false;                 // remove job
 }
 
 
 // Public methods.
 
-ImagePlayer::ImagePlayer (const string &_mrl) : Player (_mrl)
+ImagePlayer::ImagePlayer (const string &uri) : Player (uri)
 {
-  g_rec_mutex_init (&this->mutex);
-  this->display_job_done = false;
-  g_mutex_init (&this->display_job_mutex);
-  g_cond_init (&this->display_job_cond);
-
+  this->mutexInit ();
+  this->condDisplayJobInit ();
   this->surface = new SDLSurface ();
 }
 
-ImagePlayer::~ImagePlayer (void) // FIXME: Destroy texture
+ImagePlayer::~ImagePlayer (void)
 {
-  this->lock ();
-  g_mutex_clear (&this->display_job_mutex);
-  g_cond_clear (&this->display_job_cond);
-  this->unlock ();
-  g_rec_mutex_clear (&this->mutex);
-
+  this->condDisplayJobClear ();
+  this->mutexClear ();
 }
 
 bool
 ImagePlayer::play ()
 {
   Ginga_Display->addJob (displayJobCallbackWrapper, this);
-  g_mutex_lock (&this->display_job_mutex);
-  while (!this->display_job_done)
-    g_cond_wait (&this->display_job_cond, &this->display_job_mutex);
-  g_mutex_unlock (&this->display_job_mutex);
-
+  this->condDisplayJobWait ();
   return Player::play ();
 }
 
