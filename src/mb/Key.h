@@ -170,12 +170,12 @@ public:
 
 private:
   using code2str_map =
-      typename std::unordered_map<KeyCode, string, std::hash<int> >;
+      typename std::unordered_map<KeyCode, string, std::hash<int>>;
 
   static unordered_map<string, Key::KeyCode> _keyMap;
   static Key::code2str_map _valueMap;
 
-  static Key::code2str_map createValueMap();
+  static Key::code2str_map createValueMap ();
 };
 
 GINGA_MB_END
