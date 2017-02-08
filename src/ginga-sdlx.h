@@ -28,6 +28,14 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wvariadic-macros)
 #include <SDL_syswm.h>
 GINGA_PRAGMA_DIAG_POP ()
 
+#ifndef SDL_PIXELFORMAT_ARGB32
+# if SDL_BYTEORDER == SDL_BIG_ENDIAN
+#  define SDL_PIXELFORMAT_ARGB32 SDL_PIXELFORMAT_ARGB8888
+# else
+#  define SDL_PIXELFORMAT_ARGB32 SDL_PIXELFORMAT_BGRA8888
+# endif
+#endif
+
 #define SDLx_assert(f) g_assert ((f) == 0)
 
 #define SDLx_CreateWindowAndRenderer(w, h, f, S, R)\
