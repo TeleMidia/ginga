@@ -18,6 +18,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "RingBuffer.h"
 
+#ifndef _MSC_VER
+#include <unistd.h>
+#endif
+
 GINGA_BEGIN_DECLS
 #include <sys/mman.h>
 GINGA_END_DECLS
