@@ -55,7 +55,7 @@ FontProvider::FontProvider (const char *fontUri, int heightInPixel)
   this->plainText = "";
   this->coordX = 0;
   this->coordY = 0;
-  this->align = A_TOP_LEFT;
+  this->align = IFontProvider::A_TOP_LEFT;
   this->fontUri.assign (fontUri, strlen (fontUri));
 }
 
@@ -239,7 +239,7 @@ FontProvider::getHeight ()
 
 void
 FontProvider::playOver (SDLSurface* surface, const char *text, int x,
-                           int y, short align)
+                           int y, IFontProvider::TextAlign align)
 {
   size_t textLength;
   Thread::mutexLock (&ntsMutex);
@@ -377,11 +377,11 @@ FontProvider::playOver (SDLSurface* surface)
 
       if (rect.w < pW)
         {
-          if (align == IFontProvider::FP_TA_CENTER)
+          if (align == IFontProvider::A_CENTER)
             {
               rect.x = rect.x + (int)((pW - rect.w) / 2);
             }
-          else if (align == IFontProvider::FP_TA_RIGHT)
+          else if (align == IFontProvider::A_RIGHT)
             {
               rect.x = pW - rect.w;
             }

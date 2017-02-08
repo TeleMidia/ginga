@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "multidev/BaseDeviceDomain.h"
 #include "FormatterMediator.h"
 
-#include "mb/CodeMap.h"
+#include "mb/Key.h"
 
 #include "ncl/DeviceLayout.h"
 using namespace ::ginga::ncl;
@@ -48,7 +48,7 @@ FormatterBaseDevice::FormatterBaseDevice (DeviceLayout *deviceLayout,
                                  DV_QVGA_HEIGHT, -1.0);
 
   evs = new set<int>;
-  evs->insert (CodeMap::KEY_TAP);
+  evs->insert (Key::KEY_TAP);
 
   im->addInputEventListener (this, evs);
 
@@ -129,12 +129,12 @@ FormatterBaseDevice::userEventReceived (SDLInputEvent *ev)
 
   code = ev->getKeyCode ();
 
-  if (code == CodeMap::KEY_TAP)
+  if (code == Key::KEY_TAP)
     {
       ev->getAxisValue (&currentX, &currentY, NULL);
       tapObject (deviceClass, currentX, currentY);
     }
-  else if (code == CodeMap::KEY_QUIT)
+  else if (code == Key::KEY_QUIT)
     {
       clog << "FormatterBaseDevice::userEventReceived setting im as NULL";
       clog << endl;

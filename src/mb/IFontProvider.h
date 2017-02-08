@@ -25,11 +25,25 @@ GINGA_MB_BEGIN
 class IFontProvider : public IDiscreteMediaProvider
 {
 public:
-  static const short FP_AUTO_WORDWRAP = -10;
 
-  static const short FP_TA_LEFT = 0x01;
-  static const short FP_TA_CENTER = 0x02;
-  static const short FP_TA_RIGHT = 0x04;
+  enum TextAlign : short int
+    {
+      A_LEFT,
+      A_CENTER,
+      A_RIGHT,
+
+      A_TOP,
+      A_TOP_CENTER,
+      A_TOP_LEFT,
+      A_TOP_RIGHT,
+
+      A_BOTTOM,
+      A_BOTTOM_CENTER,
+      A_BOTTOM_LEFT,
+      A_BOTTOM_RIGHT
+    };
+
+  static const short FP_AUTO_WORDWRAP = -10;
 
   virtual ~IFontProvider (){};
   virtual void *getFontProviderContent () = 0;
@@ -41,7 +55,7 @@ public:
   virtual void playOver (SDLSurface* surface) = 0;
 
   virtual void playOver (SDLSurface* surface, const char *text, int x,
-                         int y, short align)
+                         int y, IFontProvider::TextAlign align)
       = 0;
 };
 

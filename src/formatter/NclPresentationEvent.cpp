@@ -22,8 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 // if the representation changes, update isUndefinedInstant method
-const double NclPresentationEvent::UNDEFINED_INSTANT
-    = std::numeric_limits<double>::quiet_NaN ();
+const double NclPresentationEvent::UNDEFINED_INSTANT = NAN;
 
 NclPresentationEvent::NclPresentationEvent (const string &id,
                                             void *executionObject,

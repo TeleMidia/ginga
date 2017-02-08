@@ -25,9 +25,7 @@ using namespace ::ginga::system;
 using namespace ::ginga::system;
 
 #include "mb/IInputEventListener.h"
-using namespace ::ginga::mb;
-
-#include "mb/CodeMap.h"
+#include "mb/Key.h"
 using namespace ::ginga::mb;
 
 #include "Tuner.h"

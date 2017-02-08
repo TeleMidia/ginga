@@ -45,7 +45,7 @@ protected:
   Color *fontColor;
   Color *bgColor;
   string fontUri;
-  short currentAlign;
+  IFontProvider::TextAlign currentAlign;
   IFontProvider* font;
 
 public:
@@ -58,7 +58,7 @@ private:
 public:
   static int write (SDLSurface* s,
                     const string &text,
-                    short textAlign,
+                    IFontProvider::TextAlign textAlign,
                     const string &fontUri = "",
                     int fontSize = 12,
                     Color *fontColor = NULL);
@@ -98,8 +98,8 @@ public:
   void setColor (guint8 red, guint8 green, guint8 blue, guint8 alpha = 255);
   void setTabSize (int size);
   int getTabSize ();
-  void drawText (const string &text, short align);
-  bool drawTextLn (const string &text, short align);
+  void drawText (const string &text, IFontProvider::TextAlign align);
+  bool drawTextLn (const string &text, IFontProvider::TextAlign align);
   void tab ();
   bool breakLine ();
   int getCurrentColumn ();
