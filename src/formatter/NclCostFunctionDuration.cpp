@@ -60,7 +60,7 @@ NclCostFunctionDuration::overwrite (NclCostFunctionDuration *dur)
 void
 NclCostFunctionDuration::updateDurationInterval ()
 {
-  if (!isNaN (expectedValue))
+  if (!std::isnan (expectedValue))
     {
       if (costFunction->getShrinkingFactor () > 0
           && costFunction->getShrinkingFactor () <= 1)
@@ -76,13 +76,13 @@ NclCostFunctionDuration::updateDurationInterval ()
         }
       else
         {
-          maximumValue = infinity ();
+          maximumValue = INFINITY;
         }
     }
   else
     {
-      minimumValue = NaN ();
-      maximumValue = NaN ();
+      minimumValue = NAN;
+      maximumValue = NAN;
     }
 }
 

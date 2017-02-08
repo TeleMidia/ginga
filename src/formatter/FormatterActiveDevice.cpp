@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "multidev/BaseDeviceDomain.h"
 #include "FormatterMediator.h"
 
-#include "mb/CodeMap.h"
+#include "mb/Key.h"
 #include "mb/InputManager.h"
 #include "mb/Display.h"
 using namespace ::ginga::mb;
@@ -61,9 +61,9 @@ FormatterActiveDevice::FormatterActiveDevice (DeviceLayout *deviceLayout,
   layoutManager[deviceClass] = mainLayout;
 
   evs = new set<int>;
-  evs->insert (CodeMap::KEY_TAP);
-  evs->insert (CodeMap::KEY_F11);
-  evs->insert (CodeMap::KEY_F10);
+  evs->insert (Key::KEY_TAP);
+  evs->insert (Key::KEY_F11);
+  evs->insert (Key::KEY_F10);
   im->addInputEventListener (this, evs);
 
   if (fileExists (img_dev))
@@ -338,11 +338,11 @@ FormatterActiveDevice::userEventReceived (SDLInputEvent *ev)
   int code;
 
   code = ev->getKeyCode ();
-  if (code == CodeMap::KEY_F11 || code == CodeMap::KEY_F10)
+  if (code == Key::KEY_F11 || code == Key::KEY_F10)
     {
       abort ();
     }
-  if (code == CodeMap::KEY_TAP)
+  if (code == Key::KEY_TAP)
     {
       ev->getAxisValue (&currentX, &currentY, NULL);
       tapObject (deviceClass, currentX, currentY);

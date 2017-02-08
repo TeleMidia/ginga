@@ -361,7 +361,7 @@ NclEventTransitionManager::stop (double endTime, bool applicationType)
     {
       transition = *i;
       if (!applicationType
-          || (applicationType && !isInfinity (transition->getTime ())))
+          || (applicationType && !std::isinf (transition->getTime ())))
         {
           fev = transition->getEvent ();
           if (transition->getTime () > endTime)
@@ -401,7 +401,7 @@ NclEventTransitionManager::abort (double endTime, bool applicationType)
     {
       transition = (*transitionEvents)[i];
       if (!applicationType
-          || (applicationType && !isInfinity (transition->getTime ())))
+          || (applicationType && !std::isinf (transition->getTime ())))
         {
           fev = transition->getEvent ();
           if (transition->getTime () > endTime)

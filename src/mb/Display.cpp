@@ -33,8 +33,8 @@ GINGA_MB_BEGIN
 Display *_Ginga_Display = NULL;
 
 bool Display::mutexInitialized = false;
-map<CodeMap::KeyCode, int> Display::gingaToSDLCodeMap;
-map<int, CodeMap::KeyCode> Display::sdlToGingaCodeMap;
+map<Key::KeyCode, int> Display::gingaToSDLCodeMap;
+map<int, Key::KeyCode> Display::sdlToGingaCodeMap;
 map<string, int> Display::sdlStrToSdlCode;
 set<SDL_Texture *> Display::uTexPool;
 set<SDL_Surface *> Display::uSurPool;
@@ -270,7 +270,7 @@ Display::renderThread ()
 
   doquit = true;
   this->lock ();
-  this->im->postInputEvent (CodeMap::KEY_QUIT);
+  this->im->postInputEvent (Key::KEY_QUIT);
   this->unlock ();
   this->condRenderThreadWait ();
   goto quit;
@@ -779,17 +779,17 @@ Display::createApplicationEvent (int type, void *data)
   return new SDLInputEvent (type, data);
 }
 
-CodeMap::KeyCode
+Key::KeyCode
 Display::fromMBToGinga (int keyCode)
 {
-  map<int, CodeMap::KeyCode>::iterator it;
-  CodeMap::KeyCode translated;
+  map<int, Key::KeyCode>::iterator it;
+  Key::KeyCode translated;
 
   checkMutexInit ();
 
   Thread::mutexLock (&sieMutex);
 
-  translated = CodeMap::KEY_NULL;
+  translated = Key::KEY_NULL;
   it = sdlToGingaCodeMap.find (keyCode);
   if (it != sdlToGingaCodeMap.end ())
     {
@@ -807,16 +807,16 @@ Display::fromMBToGinga (int keyCode)
 }
 
 int
-Display::fromGingaToMB (CodeMap::KeyCode keyCode)
+Display::fromGingaToMB (Key::KeyCode keyCode)
 {
-  map<CodeMap::KeyCode, int>::iterator i;
+  map<Key::KeyCode, int>::iterator i;
   int translated;
 
   checkMutexInit ();
 
   Thread::mutexLock (&sieMutex);
 
-  translated = CodeMap::KEY_NULL;
+  translated = Key::KEY_NULL;
   i = gingaToSDLCodeMap.find (keyCode);
   if (i != gingaToSDLCodeMap.end ())
     {
@@ -1004,144 +1004,144 @@ Display::initCodeMaps ()
 
   // gingaToSDLCodeMap
   gingaToSDLCodeMap = {
-    {CodeMap::KEY_QUIT, SDL_QUIT},
-    {CodeMap::KEY_NULL, SDLK_UNKNOWN},
-    {CodeMap::KEY_0, SDLK_0},
-    {CodeMap::KEY_1, SDLK_1},
-    {CodeMap::KEY_2, SDLK_2},
-    {CodeMap::KEY_3, SDLK_3},
-    {CodeMap::KEY_4, SDLK_4},
-    {CodeMap::KEY_5, SDLK_5},
-    {CodeMap::KEY_6, SDLK_6},
-    {CodeMap::KEY_7, SDLK_7},
-    {CodeMap::KEY_8, SDLK_8},
-    {CodeMap::KEY_9, SDLK_9},
+    {Key::KEY_QUIT, SDL_QUIT},
+    {Key::KEY_NULL, SDLK_UNKNOWN},
+    {Key::KEY_0, SDLK_0},
+    {Key::KEY_1, SDLK_1},
+    {Key::KEY_2, SDLK_2},
+    {Key::KEY_3, SDLK_3},
+    {Key::KEY_4, SDLK_4},
+    {Key::KEY_5, SDLK_5},
+    {Key::KEY_6, SDLK_6},
+    {Key::KEY_7, SDLK_7},
+    {Key::KEY_8, SDLK_8},
+    {Key::KEY_9, SDLK_9},
 
-    {CodeMap::KEY_SMALL_A, SDLK_a},
-    {CodeMap::KEY_SMALL_B, SDLK_b},
-    {CodeMap::KEY_SMALL_C, SDLK_c},
-    {CodeMap::KEY_SMALL_D, SDLK_d},
-    {CodeMap::KEY_SMALL_E, SDLK_e},
-    {CodeMap::KEY_SMALL_F, SDLK_f},
-    {CodeMap::KEY_SMALL_G, SDLK_g},
-    {CodeMap::KEY_SMALL_H, SDLK_h},
-    {CodeMap::KEY_SMALL_I, SDLK_i},
-    {CodeMap::KEY_SMALL_J, SDLK_j},
-    {CodeMap::KEY_SMALL_K, SDLK_k},
-    {CodeMap::KEY_SMALL_L, SDLK_l},
-    {CodeMap::KEY_SMALL_M, SDLK_m},
-    {CodeMap::KEY_SMALL_N, SDLK_n},
-    {CodeMap::KEY_SMALL_O, SDLK_o},
-    {CodeMap::KEY_SMALL_P, SDLK_p},
-    {CodeMap::KEY_SMALL_Q, SDLK_q},
-    {CodeMap::KEY_SMALL_R, SDLK_r},
-    {CodeMap::KEY_SMALL_S, SDLK_s},
-    {CodeMap::KEY_SMALL_T, SDLK_t},
-    {CodeMap::KEY_SMALL_U, SDLK_u},
-    {CodeMap::KEY_SMALL_V, SDLK_v},
-    {CodeMap::KEY_SMALL_W, SDLK_w},
-    {CodeMap::KEY_SMALL_X, SDLK_x},
-    {CodeMap::KEY_SMALL_Y, SDLK_y},
-    {CodeMap::KEY_SMALL_Z, SDLK_z},
+    {Key::KEY_SMALL_A, SDLK_a},
+    {Key::KEY_SMALL_B, SDLK_b},
+    {Key::KEY_SMALL_C, SDLK_c},
+    {Key::KEY_SMALL_D, SDLK_d},
+    {Key::KEY_SMALL_E, SDLK_e},
+    {Key::KEY_SMALL_F, SDLK_f},
+    {Key::KEY_SMALL_G, SDLK_g},
+    {Key::KEY_SMALL_H, SDLK_h},
+    {Key::KEY_SMALL_I, SDLK_i},
+    {Key::KEY_SMALL_J, SDLK_j},
+    {Key::KEY_SMALL_K, SDLK_k},
+    {Key::KEY_SMALL_L, SDLK_l},
+    {Key::KEY_SMALL_M, SDLK_m},
+    {Key::KEY_SMALL_N, SDLK_n},
+    {Key::KEY_SMALL_O, SDLK_o},
+    {Key::KEY_SMALL_P, SDLK_p},
+    {Key::KEY_SMALL_Q, SDLK_q},
+    {Key::KEY_SMALL_R, SDLK_r},
+    {Key::KEY_SMALL_S, SDLK_s},
+    {Key::KEY_SMALL_T, SDLK_t},
+    {Key::KEY_SMALL_U, SDLK_u},
+    {Key::KEY_SMALL_V, SDLK_v},
+    {Key::KEY_SMALL_W, SDLK_w},
+    {Key::KEY_SMALL_X, SDLK_x},
+    {Key::KEY_SMALL_Y, SDLK_y},
+    {Key::KEY_SMALL_Z, SDLK_z},
 
-    {CodeMap::KEY_CAPITAL_A, SDLK_a + 5000},
-    {CodeMap::KEY_CAPITAL_B, SDLK_b + 5000},
-    {CodeMap::KEY_CAPITAL_C, SDLK_c + 5000},
-    {CodeMap::KEY_CAPITAL_D, SDLK_d + 5000},
-    {CodeMap::KEY_CAPITAL_E, SDLK_e + 5000},
-    {CodeMap::KEY_CAPITAL_F, SDLK_f + 5000},
-    {CodeMap::KEY_CAPITAL_G, SDLK_g + 5000},
-    {CodeMap::KEY_CAPITAL_H, SDLK_h + 5000},
-    {CodeMap::KEY_CAPITAL_I, SDLK_i + 5000},
-    {CodeMap::KEY_CAPITAL_J, SDLK_j + 5000},
-    {CodeMap::KEY_CAPITAL_K, SDLK_k + 5000},
-    {CodeMap::KEY_CAPITAL_L, SDLK_l + 5000},
-    {CodeMap::KEY_CAPITAL_M, SDLK_m + 5000},
-    {CodeMap::KEY_CAPITAL_N, SDLK_n + 5000},
-    {CodeMap::KEY_CAPITAL_O, SDLK_o + 5000},
-    {CodeMap::KEY_CAPITAL_P, SDLK_p + 5000},
-    {CodeMap::KEY_CAPITAL_Q, SDLK_q + 5000},
-    {CodeMap::KEY_CAPITAL_R, SDLK_r + 5000},
-    {CodeMap::KEY_CAPITAL_S, SDLK_s + 5000},
-    {CodeMap::KEY_CAPITAL_T, SDLK_t + 5000},
-    {CodeMap::KEY_CAPITAL_U, SDLK_u + 5000},
-    {CodeMap::KEY_CAPITAL_V, SDLK_v + 5000},
-    {CodeMap::KEY_CAPITAL_W, SDLK_w + 5000},
-    {CodeMap::KEY_CAPITAL_X, SDLK_x + 5000},
-    {CodeMap::KEY_CAPITAL_Y, SDLK_y + 5000},
-    {CodeMap::KEY_CAPITAL_Z, SDLK_z + 5000},
+    {Key::KEY_CAPITAL_A, SDLK_a + 5000},
+    {Key::KEY_CAPITAL_B, SDLK_b + 5000},
+    {Key::KEY_CAPITAL_C, SDLK_c + 5000},
+    {Key::KEY_CAPITAL_D, SDLK_d + 5000},
+    {Key::KEY_CAPITAL_E, SDLK_e + 5000},
+    {Key::KEY_CAPITAL_F, SDLK_f + 5000},
+    {Key::KEY_CAPITAL_G, SDLK_g + 5000},
+    {Key::KEY_CAPITAL_H, SDLK_h + 5000},
+    {Key::KEY_CAPITAL_I, SDLK_i + 5000},
+    {Key::KEY_CAPITAL_J, SDLK_j + 5000},
+    {Key::KEY_CAPITAL_K, SDLK_k + 5000},
+    {Key::KEY_CAPITAL_L, SDLK_l + 5000},
+    {Key::KEY_CAPITAL_M, SDLK_m + 5000},
+    {Key::KEY_CAPITAL_N, SDLK_n + 5000},
+    {Key::KEY_CAPITAL_O, SDLK_o + 5000},
+    {Key::KEY_CAPITAL_P, SDLK_p + 5000},
+    {Key::KEY_CAPITAL_Q, SDLK_q + 5000},
+    {Key::KEY_CAPITAL_R, SDLK_r + 5000},
+    {Key::KEY_CAPITAL_S, SDLK_s + 5000},
+    {Key::KEY_CAPITAL_T, SDLK_t + 5000},
+    {Key::KEY_CAPITAL_U, SDLK_u + 5000},
+    {Key::KEY_CAPITAL_V, SDLK_v + 5000},
+    {Key::KEY_CAPITAL_W, SDLK_w + 5000},
+    {Key::KEY_CAPITAL_X, SDLK_x + 5000},
+    {Key::KEY_CAPITAL_Y, SDLK_y + 5000},
+    {Key::KEY_CAPITAL_Z, SDLK_z + 5000},
 
-    {CodeMap::KEY_PAGE_DOWN, SDLK_PAGEDOWN},
-    {CodeMap::KEY_PAGE_UP, SDLK_PAGEUP},
+    {Key::KEY_PAGE_DOWN, SDLK_PAGEDOWN},
+    {Key::KEY_PAGE_UP, SDLK_PAGEUP},
 
-    {CodeMap::KEY_F1, SDLK_F1},
-    {CodeMap::KEY_F2, SDLK_F2},
-    {CodeMap::KEY_F3, SDLK_F3},
-    {CodeMap::KEY_F4, SDLK_F4},
-    {CodeMap::KEY_F5, SDLK_F5},
-    {CodeMap::KEY_F6, SDLK_F6},
-    {CodeMap::KEY_F7, SDLK_F7},
-    {CodeMap::KEY_F8, SDLK_F8},
-    {CodeMap::KEY_F9, SDLK_F9},
-    {CodeMap::KEY_F10, SDLK_F10},
-    {CodeMap::KEY_F11, SDLK_F11},
-    {CodeMap::KEY_F12, SDLK_F12},
+    {Key::KEY_F1, SDLK_F1},
+    {Key::KEY_F2, SDLK_F2},
+    {Key::KEY_F3, SDLK_F3},
+    {Key::KEY_F4, SDLK_F4},
+    {Key::KEY_F5, SDLK_F5},
+    {Key::KEY_F6, SDLK_F6},
+    {Key::KEY_F7, SDLK_F7},
+    {Key::KEY_F8, SDLK_F8},
+    {Key::KEY_F9, SDLK_F9},
+    {Key::KEY_F10, SDLK_F10},
+    {Key::KEY_F11, SDLK_F11},
+    {Key::KEY_F12, SDLK_F12},
 
-    {CodeMap::KEY_PLUS_SIGN, SDLK_PLUS},
-    {CodeMap::KEY_MINUS_SIGN, SDLK_MINUS},
+    {Key::KEY_PLUS_SIGN, SDLK_PLUS},
+    {Key::KEY_MINUS_SIGN, SDLK_MINUS},
 
-    {CodeMap::KEY_ASTERISK, SDLK_ASTERISK},
-    {CodeMap::KEY_NUMBER_SIGN, SDLK_HASH},
+    {Key::KEY_ASTERISK, SDLK_ASTERISK},
+    {Key::KEY_NUMBER_SIGN, SDLK_HASH},
 
-    {CodeMap::KEY_PERIOD, SDLK_PERIOD},
+    {Key::KEY_PERIOD, SDLK_PERIOD},
 
-    {CodeMap::KEY_SUPER, SDLK_CAPSLOCK},
-    {CodeMap::KEY_PRINTSCREEN, SDLK_PRINTSCREEN},
-    {CodeMap::KEY_MENU, SDLK_MENU},
-    {CodeMap::KEY_INFO, SDLK_F14},
-    {CodeMap::KEY_EPG, SDLK_QUESTION},
+    {Key::KEY_SUPER, SDLK_CAPSLOCK},
+    {Key::KEY_PRINTSCREEN, SDLK_PRINTSCREEN},
+    {Key::KEY_MENU, SDLK_MENU},
+    {Key::KEY_INFO, SDLK_F14},
+    {Key::KEY_EPG, SDLK_QUESTION},
 
-    {CodeMap::KEY_CURSOR_DOWN, SDLK_DOWN},
-    {CodeMap::KEY_CURSOR_LEFT, SDLK_LEFT},
-    {CodeMap::KEY_CURSOR_RIGHT, SDLK_RIGHT},
-    {CodeMap::KEY_CURSOR_UP, SDLK_UP},
+    {Key::KEY_CURSOR_DOWN, SDLK_DOWN},
+    {Key::KEY_CURSOR_LEFT, SDLK_LEFT},
+    {Key::KEY_CURSOR_RIGHT, SDLK_RIGHT},
+    {Key::KEY_CURSOR_UP, SDLK_UP},
 
-    {CodeMap::KEY_CHANNEL_DOWN, SDLK_F15},
-    {CodeMap::KEY_CHANNEL_UP, SDLK_F16},
+    {Key::KEY_CHANNEL_DOWN, SDLK_F15},
+    {Key::KEY_CHANNEL_UP, SDLK_F16},
 
-    {CodeMap::KEY_VOLUME_DOWN, SDLK_VOLUMEDOWN},
-    {CodeMap::KEY_VOLUME_UP, SDLK_VOLUMEUP},
+    {Key::KEY_VOLUME_DOWN, SDLK_VOLUMEDOWN},
+    {Key::KEY_VOLUME_UP, SDLK_VOLUMEUP},
 
-    {CodeMap::KEY_ENTER, SDLK_RETURN},
+    {Key::KEY_ENTER, SDLK_RETURN},
 
-    {CodeMap::KEY_RED, SDLK_F17},
-    {CodeMap::KEY_GREEN, SDLK_F18},
-    {CodeMap::KEY_YELLOW, SDLK_F19},
-    {CodeMap::KEY_BLUE, SDLK_F20},
+    {Key::KEY_RED, SDLK_F17},
+    {Key::KEY_GREEN, SDLK_F18},
+    {Key::KEY_YELLOW, SDLK_F19},
+    {Key::KEY_BLUE, SDLK_F20},
 
-    {CodeMap::KEY_SPACE, SDLK_SPACE},
-    {CodeMap::KEY_BACKSPACE, SDLK_BACKSPACE},
-    {CodeMap::KEY_BACK, SDLK_AC_BACK},
-    {CodeMap::KEY_ESCAPE, SDLK_ESCAPE},
-    {CodeMap::KEY_EXIT, SDLK_OUT},
+    {Key::KEY_SPACE, SDLK_SPACE},
+    {Key::KEY_BACKSPACE, SDLK_BACKSPACE},
+    {Key::KEY_BACK, SDLK_AC_BACK},
+    {Key::KEY_ESCAPE, SDLK_ESCAPE},
+    {Key::KEY_EXIT, SDLK_OUT},
 
-    {CodeMap::KEY_POWER, SDLK_POWER},
-    {CodeMap::KEY_REWIND, SDLK_F21},
-    {CodeMap::KEY_STOP, SDLK_STOP},
-    {CodeMap::KEY_EJECT, SDLK_EJECT},
-    {CodeMap::KEY_PLAY, SDLK_EXECUTE},
-    {CodeMap::KEY_RECORD, SDLK_F22},
-    {CodeMap::KEY_PAUSE, SDLK_PAUSE},
+    {Key::KEY_POWER, SDLK_POWER},
+    {Key::KEY_REWIND, SDLK_F21},
+    {Key::KEY_STOP, SDLK_STOP},
+    {Key::KEY_EJECT, SDLK_EJECT},
+    {Key::KEY_PLAY, SDLK_EXECUTE},
+    {Key::KEY_RECORD, SDLK_F22},
+    {Key::KEY_PAUSE, SDLK_PAUSE},
 
-    {CodeMap::KEY_GREATER_THAN_SIGN, SDLK_GREATER},
-    {CodeMap::KEY_LESS_THAN_SIGN, SDLK_LESS},
+    {Key::KEY_GREATER_THAN_SIGN, SDLK_GREATER},
+    {Key::KEY_LESS_THAN_SIGN, SDLK_LESS},
 
-    {CodeMap::KEY_TAB, SDLK_TAB},
-    {CodeMap::KEY_TAP, SDLK_F23}
+    {Key::KEY_TAB, SDLK_TAB},
+    {Key::KEY_TAP, SDLK_F23}
   };
 
   // sdlToGingaCodeMap
-  map<CodeMap::KeyCode, int>::iterator it;
+  map<Key::KeyCode, int>::iterator it;
   it = gingaToSDLCodeMap.begin ();
   while (it != gingaToSDLCodeMap.end ())
     {

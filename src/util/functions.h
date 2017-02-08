@@ -26,30 +26,27 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_UTIL_BEGIN
 
+// string
 double strUTCToSec (const string &utcValue);
 string cvtPercentual (const string &value, bool *isPercentual);
-vector<string> *split (const string &str, const string &token, const string &pos_delimiter = "");
-double getPercentualValue (const string &value);
+
 bool isPercentualValue (const string &value);
-bool fileExists (const string &filename);
-bool isDirectory (const char *path);
-double NaN ();
-double infinity ();
-bool isNaN (double value);
-bool isInfinity (double value);
-
-double getNextStepValue (double currentStepValue, double value, int factor,
-                         double time, double initTime, double dur,
-                         int stepSize);
-
-bool readPPMFile (char *fn, int &X, int &Y, unsigned char *&result);
-bool readBMPFile (char *fn, int &X, int &Y, unsigned char *&result);
-
-bool ppmToJpeg (char *ppmfile, char *jpegfile, int quality);
-bool bmpToJpeg (char *bmpfile, char *jpegfile, int quality);
+double getPercentualValue (const string &value);
 
 void str_replace_all (string &str, const string &find_what,
                       const string &replace_with);
+
+vector<string> *split (const string &str, const string &token,
+                       const string &pos_delimiter = "");
+
+// filesystem
+bool fileExists (const string &filename);
+bool isDirectory (const char *path);
+
+// misc
+double getNextStepValue (double currentStepValue, double value, int factor,
+                         double time, double initTime, double dur,
+                         int stepSize);
 
 GINGA_UTIL_END
 

@@ -70,7 +70,7 @@ void
 TextPlayer::initializePlayer ()
 {
   this->fontHeight = 0;
-  this->currentAlign = IFontProvider::FP_TA_LEFT;
+  this->currentAlign = IFontProvider::A_LEFT;
   this->currentLine = 0;
   this->currentColumn = 0;
   this->tabSize = 0;
@@ -88,8 +88,11 @@ TextPlayer::initializePlayer ()
 }
 
 int
-TextPlayer::write (SDLSurface* s, const string &text,
-                   short textAlign, const string &fontUri, int fontSize,
+TextPlayer::write (SDLSurface* s,
+                   const string &text,
+                   IFontProvider::TextAlign textAlign,
+                   const string &fontUri,
+                   int fontSize,
                    Color *fontColor)
 {
   if (fontSize < 1 || s == 0 || text == "")
@@ -215,7 +218,7 @@ TextPlayer::getTabSize ()
 }
 
 void
-TextPlayer::drawText (const string &text, short align)
+TextPlayer::drawText (const string &text, IFontProvider::TextAlign align)
 {
   string uri;
   int textWidth, surWidth, surHeight;
@@ -340,7 +343,7 @@ TextPlayer::drawText (const string &text, short align)
 }
 
 bool
-TextPlayer::drawTextLn (const string &text, short align)
+TextPlayer::drawTextLn (const string &text, IFontProvider::TextAlign align)
 {
   drawText (text, align);
   return breakLine ();

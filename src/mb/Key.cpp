@@ -16,13 +16,13 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "CodeMap.h"
+#include "Key.h"
 
 GINGA_MB_BEGIN
 
-CodeMap *CodeMap::_instance = NULL;
-
-map <string, int> CodeMap::keyMap = {
+unordered_map <string, Key::KeyCode>
+Key::_keyMap =
+{
   {"QUIT", KEY_QUIT},
   {"NO_CODE", KEY_NULL},
   {"0", KEY_0},
@@ -130,55 +130,40 @@ map <string, int> CodeMap::keyMap = {
   {"PAUSE", KEY_PAUSE}
 };
 
-CodeMap::CodeMap ()
+Key::code2str_map Key::_valueMap = Key::createValueMap();
+
+Key::code2str_map
+Key::createValueMap()
 {
-  map<string, int>::iterator it;
-  for (it = keyMap.begin (); it != keyMap.end (); ++it)
-  {
-    valueMap[it->second] = it->first;
-  }
+  Key::code2str_map valueMap;
+  for (const auto &it: Key::_keyMap)
+    valueMap[it.second] = it.first;
+  return valueMap;
 }
 
-CodeMap *
-CodeMap::getInstance ()
+Key::KeyCode
+Key::getCode (const string &codeStr)
 {
-  if (_instance == NULL)
-    {
-      _instance = new CodeMap ();
-    }
-
-  return _instance;
-}
-
-int
-CodeMap::getCode (const string &codeStr)
-{
-  if (keyMap.count (codeStr) == 0)
+  if (_keyMap.count (codeStr) == 0)
     {
       return KEY_NULL;
     }
 
-  return keyMap[codeStr];
+  return _keyMap[codeStr];
 }
 
 string
-CodeMap::getValue (int code)
+Key::getName (Key::KeyCode code)
 {
-  map<int, string>::iterator i;
+  Key::code2str_map::iterator it;
 
-  i = valueMap.find (code);
-  if (i != valueMap.end ())
+  it = _valueMap.find (code);
+  if (it != _valueMap.end ())
     {
-      return i->second;
+      return it->second;
     }
 
   return "";
-}
-
-map<string, int> *
-CodeMap::cloneKeyMap ()
-{
-  return new map<string, int> (keyMap);
 }
 
 GINGA_MB_END

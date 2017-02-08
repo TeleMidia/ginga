@@ -18,12 +18,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "SDLInputEvent.h"
 #include "Display.h"
-#include "CodeMap.h"
+#include "Key.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_MB_BEGIN
-
 const string SDLInputEvent::ET_WAKEUP = "GINGA_WAKEUP";
 const string SDLInputEvent::ET_INPUTEVENT = "GINGA_INPUTEVENT";
 const string SDLInputEvent::ET_USEREVENT = "GINGA_USEREVENT";
@@ -32,8 +31,7 @@ SDLInputEvent::SDLInputEvent (SDL_Event event)
 {
   this->event = event;
 
-  x = 0;
-  y = 0;
+  x = y = 0;
   capsOn = false;
   shiftOn = false;
 }
@@ -46,8 +44,7 @@ SDLInputEvent::SDLInputEvent (const int keyCode)
   event.key.repeat = 0;
   event.key.keysym.sym = keyCode;
 
-  x = 0;
-  y = 0;
+  x = y = 0;
 }
 
 SDLInputEvent::SDLInputEvent (int type, void *data)
@@ -57,8 +54,7 @@ SDLInputEvent::SDLInputEvent (int type, void *data)
   event.user.data1 = deconst (void *, ET_USEREVENT.c_str ());
   event.user.data2 = data;
 
-  x = 0;
-  y = 0;
+  x = y = 0;
 }
 
 SDLInputEvent::~SDLInputEvent () {}
@@ -82,7 +78,7 @@ SDLInputEvent::getContent ()
 }
 
 void
-SDLInputEvent::setKeyCode (CodeMap::KeyCode keyCode)
+SDLInputEvent::setKeyCode (Key::KeyCode keyCode)
 {
   int sdlCode;
 
@@ -98,15 +94,15 @@ SDLInputEvent::setKeyCode (CodeMap::KeyCode keyCode)
     }
 }
 
-CodeMap::KeyCode
+Key::KeyCode
 SDLInputEvent::getKeyCode ()
 {
-  CodeMap::KeyCode gingaValue;
+  Key::KeyCode gingaValue;
   int sdlValue;
 
   if (event.type == SDL_FINGERUP || event.type == SDL_MOUSEBUTTONUP)
     {
-      return CodeMap::KEY_TAP;
+      return Key::KEY_TAP;
     }
 
   if (event.type == SDL_USEREVENT)
@@ -124,34 +120,34 @@ SDLInputEvent::getKeyCode ()
     {
       clog << "SDLInputEvent::getKeyCode unknown event type.";
       clog << "Returning KEY_NULL" << endl;
-      return CodeMap::KEY_NULL;
+      return Key::KEY_NULL;
       ;
     }
 
   gingaValue = Ginga_Display->fromMBToGinga (sdlValue);
 
-  if (gingaValue >= CodeMap::KEY_SMALL_A
-      && gingaValue <= CodeMap::KEY_SMALL_Z
+  if (gingaValue >= Key::KEY_SMALL_A
+      && gingaValue <= Key::KEY_SMALL_Z
       && ((capsOn && !shiftOn) || (!capsOn && shiftOn)))
     {
       gingaValue = Ginga_Display->fromMBToGinga (sdlValue + 5000);
     }
 
-  map <CodeMap::KeyCode, CodeMap::KeyCode> keyboardToRemoteControl
+  map <Key::KeyCode, Key::KeyCode> keyboardToRemoteControl
     = {
-        {CodeMap::KEY_F1, CodeMap::KEY_RED},
-        {CodeMap::KEY_F2, CodeMap::KEY_GREEN},
-        {CodeMap::KEY_F3, CodeMap::KEY_YELLOW},
-        {CodeMap::KEY_F4, CodeMap::KEY_BLUE},
-        {CodeMap::KEY_F5, CodeMap::KEY_MENU},
-        {CodeMap::KEY_F6, CodeMap::KEY_INFO},
-        {CodeMap::KEY_F7, CodeMap::KEY_EPG},
-        {CodeMap::KEY_PLUS_SIGN, CodeMap::KEY_VOLUME_UP},
-        {CodeMap::KEY_MINUS_SIGN, CodeMap::KEY_VOLUME_DOWN},
-        {CodeMap::KEY_PAGE_UP, CodeMap::KEY_CHANNEL_UP},
-        {CodeMap::KEY_PAGE_DOWN, CodeMap::KEY_CHANNEL_DOWN},
-        {CodeMap::KEY_BACKSPACE, CodeMap::KEY_BACK},
-        {CodeMap::KEY_ESCAPE, CodeMap::KEY_EXIT}
+        {Key::KEY_F1, Key::KEY_RED},
+        {Key::KEY_F2, Key::KEY_GREEN},
+        {Key::KEY_F3, Key::KEY_YELLOW},
+        {Key::KEY_F4, Key::KEY_BLUE},
+        {Key::KEY_F5, Key::KEY_MENU},
+        {Key::KEY_F6, Key::KEY_INFO},
+        {Key::KEY_F7, Key::KEY_EPG},
+        {Key::KEY_PLUS_SIGN, Key::KEY_VOLUME_UP},
+        {Key::KEY_MINUS_SIGN, Key::KEY_VOLUME_DOWN},
+        {Key::KEY_PAGE_UP, Key::KEY_CHANNEL_UP},
+        {Key::KEY_PAGE_DOWN, Key::KEY_CHANNEL_DOWN},
+        {Key::KEY_BACKSPACE, Key::KEY_BACK},
+        {Key::KEY_ESCAPE, Key::KEY_EXIT}
       };
 
   if (keyboardToRemoteControl.count (gingaValue))
@@ -178,7 +174,7 @@ SDLInputEvent::getApplicationData ()
 unsigned int
 SDLInputEvent::getType ()
 {
-  unsigned int result = CodeMap::KEY_NULL;
+  unsigned int result = Key::KEY_NULL;
 
   if (event.type == SDL_USEREVENT)
     {

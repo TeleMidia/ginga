@@ -25,7 +25,7 @@ GINGA_NCL_BEGIN
 
 FocusDecoration::FocusDecoration ()
 {
-  focusBorderTransparency = NaN ();
+  focusBorderTransparency = NAN;
   focusSrc = "";
   focusBorderWidth = -3;
   focusBorderColor = NULL;

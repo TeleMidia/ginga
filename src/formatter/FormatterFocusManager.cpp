@@ -432,7 +432,7 @@ FormatterFocusManager::tapObject (void *executionObject)
                 {
                   if (im != NULL)
                     {
-                      im->postInputEvent (CodeMap::KEY_BACK);
+                      im->postInputEvent (Key::KEY_BACK);
                     }
                 }
             }
@@ -541,7 +541,7 @@ FormatterFocusManager::setKeyMaster (const string &mediaId)
       selectedObject);
 
   enterSelection (player);
-  nextObject->selectionEvent (CodeMap::KEY_NULL,
+  nextObject->selectionEvent (Key::KEY_NULL,
                               player->getMediaTime () * 1000);
 
   Thread::mutexUnlock (&mutexFocus);
@@ -655,7 +655,7 @@ FormatterFocusManager::setFocus (NclCascadingDescriptor *descriptor)
     }
 
   borderAlpha = descriptor->getFocusBorderTransparency ();
-  if (!isNaN (borderAlpha))
+  if (!std::isnan (borderAlpha))
     {
       canDelFocusColor = true;
       focusColor
@@ -670,7 +670,7 @@ FormatterFocusManager::setFocus (NclCascadingDescriptor *descriptor)
       selColor = defaultSelBorderColor;
     }
 
-  if (!isNaN (borderAlpha))
+  if (!std::isnan (borderAlpha))
     {
       canDelSelColor = true;
       selColor = new Color (selColor->getR (), selColor->getG (),
@@ -953,7 +953,7 @@ FormatterFocusManager::keyCodeOk (NclExecutionObject *currentObject)
     {
       clog << "FormatterFocusManager::keyCodeOk ";
       clog << "selecting '" << selectedObject->getId () << "'" << endl;
-      selectedObject->selectionEvent (CodeMap::KEY_NULL,
+      selectedObject->selectionEvent (Key::KEY_NULL,
                                       player->getMediaTime () * 1000);
     }
 
@@ -1084,12 +1084,12 @@ FormatterFocusManager::registerNavigationKeys ()
   if (im != NULL)
     {
       evs = new set<int>;
-      evs->insert (CodeMap::KEY_CURSOR_DOWN);
-      evs->insert (CodeMap::KEY_CURSOR_LEFT);
-      evs->insert (CodeMap::KEY_CURSOR_RIGHT);
-      evs->insert (CodeMap::KEY_CURSOR_UP);
+      evs->insert (Key::KEY_CURSOR_DOWN);
+      evs->insert (Key::KEY_CURSOR_LEFT);
+      evs->insert (Key::KEY_CURSOR_RIGHT);
+      evs->insert (Key::KEY_CURSOR_UP);
 
-      evs->insert (CodeMap::KEY_ENTER);
+      evs->insert (Key::KEY_ENTER);
 
       im->addInputEventListener (this, evs);
       im->addMotionEventListener (this);
@@ -1104,8 +1104,8 @@ FormatterFocusManager::registerBackKeys ()
   if (im != NULL)
     {
       evs = new set<int>;
-      evs->insert (CodeMap::KEY_BACKSPACE);
-      evs->insert (CodeMap::KEY_BACK);
+      evs->insert (Key::KEY_BACKSPACE);
+      evs->insert (Key::KEY_BACK);
 
       im->addInputEventListener (this, evs);
       im->removeMotionEventListener (this);
@@ -1220,7 +1220,7 @@ FormatterFocusManager::userEventReceived (SDLInputEvent *userEvent)
 
   const int code = userEvent->getKeyCode ();
 
-  if (code == CodeMap::KEY_QUIT)
+  if (code == Key::KEY_QUIT)
     {
       this->im = NULL;
       return true;
@@ -1234,7 +1234,7 @@ FormatterFocusManager::userEventReceived (SDLInputEvent *userEvent)
   Thread::mutexLock (&mutexTable);
 
   if (xruntime_ms () - focusHandlerTS < 300
-      && code != CodeMap::KEY_BACKSPACE && code != CodeMap::KEY_BACK)
+      && code != Key::KEY_BACKSPACE && code != Key::KEY_BACK)
     {
       Thread::mutexUnlock (&mutexTable);
       return true;
@@ -1253,7 +1253,7 @@ FormatterFocusManager::userEventReceived (SDLInputEvent *userEvent)
         }
 
       if (selectedObject != NULL
-          && (code == CodeMap::KEY_BACKSPACE || code == CodeMap::KEY_BACK))
+          && (code == Key::KEY_BACKSPACE || code == Key::KEY_BACK))
         {
           bool canBack = keyCodeBack ();
           Thread::mutexUnlock (&mutexTable);
@@ -1293,44 +1293,44 @@ FormatterFocusManager::userEventReceived (SDLInputEvent *userEvent)
   nextIndex = "";
   if (selectedObject != NULL)
     {
-      if (code == CodeMap::KEY_BACKSPACE || code == CodeMap::KEY_BACK)
+      if (code == Key::KEY_BACKSPACE || code == Key::KEY_BACK)
         {
           bool canItBack = keyCodeBack ();
 
           return canItBack;
         }
     }
-  else if (code == CodeMap::KEY_CURSOR_UP)
+  else if (code == Key::KEY_CURSOR_UP)
     {
       if (fr != NULL)
         {
           nextIndex = fr->getMoveUp ();
         }
     }
-  else if (code == CodeMap::KEY_CURSOR_DOWN)
+  else if (code == Key::KEY_CURSOR_DOWN)
     {
       if (fr != NULL)
         {
           nextIndex = fr->getMoveDown ();
         }
     }
-  else if (code == CodeMap::KEY_CURSOR_LEFT)
+  else if (code == Key::KEY_CURSOR_LEFT)
     {
       if (fr != NULL)
         {
           nextIndex = fr->getMoveLeft ();
         }
     }
-  else if (code == CodeMap::KEY_CURSOR_RIGHT)
+  else if (code == Key::KEY_CURSOR_RIGHT)
     {
       if (fr != NULL)
         {
           nextIndex = fr->getMoveRight ();
         }
     }
-  else if (code == CodeMap::KEY_ENTER || code == CodeMap::KEY_TAP)
+  else if (code == Key::KEY_ENTER || code == Key::KEY_TAP)
     {
-      userEvent->setKeyCode (CodeMap::KEY_NULL);
+      userEvent->setKeyCode (Key::KEY_NULL);
       tapObject (currentObject);
 
       return false;

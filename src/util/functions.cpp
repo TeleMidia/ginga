@@ -60,7 +60,7 @@ strUTCToSec (const string &utcV)
       break;
 
     default:
-      secs = infinity ();
+      secs = INFINITY;
     }
 
   delete params;
@@ -280,55 +280,12 @@ isDirectory (const char *path)
   return false;
 }
 
-static numeric_limits<double> double_info;
-
-double
-NaN ()
-{
-  return double_info.quiet_NaN ();
-}
-
-double
-infinity ()
-{
-  return double_info.infinity ();
-}
-
-bool
-isNaN (double value)
-{
-#ifdef _MSC_VER
-  if (_isnan (value))
-    {
-#else
-  if (isnan (value))
-    {
-#endif
-      return true;
-    }
-
-  return false;
-}
-
-bool
-isInfinity (double value)
-{
-#ifndef _MSC_VER
-  if (isinf (value))
-    {
-#else
-  if (!_finite (value))
-    {
-#endif
-      return true;
-    }
-
-  return false;
-}
-
 // factor is not in use. It will be removed.
 double
-getNextStepValue (double initValue, double target, arg_unused (int factor), double time,
+getNextStepValue (double initValue,
+                  double target,
+                  arg_unused (int factor),
+                  double time,
                   double initTime, double dur, int durStep)
 {
   int numSteps;
