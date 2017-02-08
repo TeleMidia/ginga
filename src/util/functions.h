@@ -33,20 +33,17 @@ string cvtPercentual (const string &value, bool *isPercentual);
 bool isPercentualValue (const string &value);
 double getPercentualValue (const string &value);
 
-void str_replace_all (string &str, const string &find_what,
-                      const string &replace_with);
-
-vector<string> *split (const string &str, const string &token,
-                       const string &pos_delimiter = "");
+vector<string> *
+split (const string &str, const string &token, const string &pos_delimiter="");
 
 // filesystem
 bool fileExists (const string &filename);
 bool isDirectory (const char *path);
 
 // misc
-double getNextStepValue (double currentStepValue, double value, int factor,
-                         double time, double initTime, double dur,
-                         int stepSize);
+double
+getNextStepValue (double currentStepValue, double value, int factor,
+                  double time, double initTime, double dur, int stepSize);
 
 GINGA_UTIL_END
 
