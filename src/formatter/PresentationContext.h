@@ -29,7 +29,7 @@ using namespace ::ginga::ctxmgmt;
 
 #include "ginga.h"
 
-#if WITH_MULTIDEVICE
+#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
 #include "multidev/DeviceDomain.h"
 using namespace ::ginga::multidev;
 #endif
@@ -42,7 +42,7 @@ using namespace ::ginga::system;
 #include "ctxmgmt/IContextListener.h"
 using namespace ::ginga::ctxmgmt;
 
-#if WITH_MULTIDEVICE
+#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
 #include "multidev/DeviceDomain.h"
 using namespace ::ginga::multidev;
 #endif
@@ -59,7 +59,7 @@ private:
   IContextListener *globalVarListener;
   pthread_mutex_t attrMutex;
 
-#if WITH_MULTIDEVICE
+#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
   IRemoteDeviceListener *devListener;
 #else
   void *devListener;
@@ -85,7 +85,7 @@ public:
   void setGlobalVarListener (IContextListener *listener);
   void receiveGlobalAttribution (const string &pName, const string &value);
 
-#if WITH_MULTIDEVICE
+#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
   void setRemoteDeviceListener (IRemoteDeviceListener *rdl);
 #endif // WITH_MULTIDEVICE
 };

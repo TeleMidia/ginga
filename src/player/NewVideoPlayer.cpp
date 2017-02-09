@@ -40,6 +40,7 @@ SDLSurface*
 NewVideoPlayer::getSurface ()
 {
 	TRACE ();
+  return NULL;
 }
 
 void
@@ -52,6 +53,7 @@ double
 NewVideoPlayer::getEndTime ()
 {
 	TRACE ();
+  return 0;
 }
 
 void
@@ -67,7 +69,7 @@ NewVideoPlayer::releaseAudio ()
 }
 
 void
-NewVideoPlayer::getOriginalResolution (int *width, int *height)
+NewVideoPlayer::getOriginalResolution (arg_unused(int *width), arg_unused(int *height))
 {
 	g_debug ("%s", G_STRLOC);
 }
@@ -76,16 +78,18 @@ double
 NewVideoPlayer::getTotalMediaTime ()
 {
 	g_debug ("%s", G_STRLOC);
+  return 0;
 }
 
 int64_t
 NewVideoPlayer::getVPts ()
 {
 	g_debug ("%s", G_STRLOC);
+  return 0;
 }
 
 void
-NewVideoPlayer::timeShift (const string &direction)
+NewVideoPlayer::timeShift (arg_unused(const string &direction))
 {
 	TRACE ();
 }
@@ -94,16 +98,17 @@ double
 NewVideoPlayer::getMediaTime ()
 {
 	TRACE ();
+  return 0;
 }
 
 void
-NewVideoPlayer::setMediaTime (double pos)
+NewVideoPlayer::setMediaTime (arg_unused(double pos))
 {
 	TRACE ();
 }
 
 void
-NewVideoPlayer::setStopTime (double pos)
+NewVideoPlayer::setStopTime (arg_unused(double pos))
 {
 	TRACE ();
 }
@@ -112,11 +117,11 @@ double
 NewVideoPlayer::getStopTime ()
 {
 	TRACE ();
+  return 0;
 }
 
 void
-NewVideoPlayer::setScope (const string &scope, short type, double begin, double end,
-                    double outTransDur)
+NewVideoPlayer::setScope (arg_unused(const string &scope), arg_unused(short type), arg_unused(double begin), arg_unused(double end),arg_unused(double outTransDur))
 {
 	TRACE ();
 }
@@ -147,13 +152,14 @@ NewVideoPlayer::resume ()
 }
 
 string
-NewVideoPlayer::getPropertyValue (const string &name)
+NewVideoPlayer::getPropertyValue (arg_unused(const string &name))
 {
 	TRACE ();
+  return NULL;
 }
 
 void
-NewVideoPlayer::setPropertyValue (const string &name, const string &value)
+NewVideoPlayer::setPropertyValue (arg_unused(const string &name), arg_unused(const string &value))
 {
 	TRACE ();
 }
@@ -161,6 +167,7 @@ NewVideoPlayer::setPropertyValue (const string &name, const string &value)
 void
 NewVideoPlayer::addListener (IPlayerListener *listener)
 {
+  (void) listener;
 	TRACE ();
 }
 
@@ -174,6 +181,7 @@ string
 NewVideoPlayer::getMrl ()
 {
 	TRACE ();
+  return NULL;
 }
 
 bool
@@ -183,13 +191,13 @@ NewVideoPlayer::isPlaying ()
 }
 
 bool
-NewVideoPlayer::setOutWindow (SDLWindow* windowId)
+NewVideoPlayer::setOutWindow (arg_unused(SDLWindow* windowId))
 {
 	return true;
 }
 
 void
-NewVideoPlayer::setAVPid (int aPid, int vPid)
+NewVideoPlayer::setAVPid (arg_unused(int aPid), arg_unused(int vPid))
 {
 	TRACE ();
 }
