@@ -22,23 +22,38 @@ find_package(LibZip REQUIRED)
 
 find_package(LinuxDVB)
 
+# NCLUA download/configure/build
+include(ExternalProject)
+ExternalProject_Add(nclua
+  GIT_REPOSITORY "https://github.com/gflima/nclua.git"
+  GIT_TAG "master"
+
+  CONFIGURE_COMMAND <SOURCE_DIR>/bootstrap && <SOURCE_DIR>/configure --prefix=<INSTALL_DIR>
+  BUILD_COMMAND make
+  INSTALL_COMMAND make install
+)
+
+ExternalProject_Get_Property(nclua install_dir)
+set(NCLUA_INCLUDE_DIRS ${install_dir}/include)
+set(NCLUA_LIBRARIES ${install_dir}/lib/nclua.so)
+#end NCLUA
+
 #add_definitions(-DPACKAGE_VERSION="1.0")
-
-add_definitions(-DGINGA_DATADIR="data/")
-add_definitions(-DGINGA_BUTTON_DATADIR="data/img/button")
-add_definitions(-DGINGA_CONTEXTMANAGER_DATADIR="data/contextmanager")
-add_definitions(-DGINGA_FONT_DATADIR="data/font")
-add_definitions(-DGINGA_FORMATTER_DATADIR="data/")
-add_definitions(-DGINGA_FORMATTERIMG_DATADIR="data/img/roller")
-add_definitions(-DGINGA_FORMATTERMD_DATADIR="data/md")
-add_definitions(-DGINGA_MB_DATADIR="data/mb/config")
-add_definitions(-DGINGA_ISDBT_PATH="$(gingaconfdir)/tuner/isdbt.ini")
-add_definitions(-DGINGA_TUNER_DATADIR="$(tunerdir)")
-add_definitions(-DGINGA_TUNER_PATH="$(gingaconfdir)/tuner/tuner.ini")
-
 #add_definitions(-DWITH_ISDBT=0)
 #add_definitions(-DWITH_LINUXDVB)
 #add_definitions(-DWITH_MULTIDEVICE)
+
+add_definitions(-DGINGA_DATADIR="./data/ini/")
+add_definitions(-DGINGA_BUTTON_DATADIR="${CMAKE_BINARY_DIR}/data/img/button/")
+add_definitions(-DGINGA_CONTEXTMANAGER_DATADIR="${CMAKE_BINARY_DIR}/data/contextmanager/")
+add_definitions(-DGINGA_FONT_DATADIR="${CMAKE_BINARY_DIR}/data/font/")
+add_definitions(-DGINGA_FORMATTER_DATADIR="${CMAKE_BINARY_DIR}/data/")
+add_definitions(-DGINGA_FORMATTERIMG_DATADIR="${CMAKE_BINARY_DIR}/data/img/roller/")
+add_definitions(-DGINGA_FORMATTERMD_DATADIR="${CMAKE_BINARY_DIR}/data/md/")
+add_definitions(-DGINGA_MB_DATADIR="${CMAKE_BINARY_DIR}/data/mb/")
+add_definitions(-DGINGA_ISDBT_PATH="${CMAKE_BINARY_DIR}/data/tuner/isdbt.ini")
+add_definitions(-DGINGA_TUNER_DATADIR="${CMAKE_BINARY_DIR}/data/tuner")
+add_definitions(-DGINGA_TUNER_PATH="${CMAKE_BINARY_DIR}/data/tuner/tuner.ini")
 
 add_executable(ginga
   ../src/ginga.h
@@ -364,6 +379,8 @@ target_include_directories(ginga PRIVATE
   ${LIBZIP_INCLUDE_DIRS}
 
   ${LinuxDVB_INCLUDE_DIRS}
+
+  nclua-prefix/include
 )
 
 target_link_libraries(ginga PRIVATE
@@ -389,8 +406,13 @@ target_link_libraries(ginga PRIVATE
   ${RSVG_LIBRARIES}
   ${LIBZIP_LIBRARY}
 
-  -lnclua
+  ${NCLUA_LIBRARIES}
 )
 
-configure_file(../src/config.h.in config.h)
+# Copy datafiles to build dir
+add_custom_target(copy-data-files ALL
+  COMMAND ${CMAKE_COMMAND} -E
+    copy_directory ${CMAKE_SOURCE_DIR}/../data/ ${CMAKE_BINARY_DIR}/data
+)
 
+configure_file(${CMAKE_SOURCE_DIR}/config.h.in config.h)
