@@ -73,7 +73,6 @@ src+= formatter/AdapterImagePlayer.cpp
 src+= formatter/AdapterLuaPlayer.cpp
 src+= formatter/AdapterMirrorPlayer.cpp
 src+= formatter/AdapterNCLPlayer.cpp
-src+= formatter/AdapterNewVideoPlayer.cpp
 src+= formatter/AdapterPlainTxtPlayer.cpp
 src+= formatter/AdapterPlayerManager.cpp
 src+= formatter/AdapterProgramAVPlayer.cpp
@@ -241,7 +240,6 @@ src+= player/AVPlayer.cpp
 src+= player/ChannelPlayer.cpp
 src+= player/ImagePlayer.cpp
 src+= player/LuaPlayer.cpp
-src+= player/NewVideoPlayer.cpp
 src+= player/PlainTxtPlayer.cpp
 src+= player/Player.cpp
 src+= player/ProgramAV.cpp
@@ -271,6 +269,13 @@ AM_LDFLAGS+= $(ESPEAK_LIBS)
 src+= formatter/AdapterSsmlPlayer.cpp
 src+= player/SsmlPlayer.cpp
 endif # WITH_ESPEAK
+
+if WITH_GSTREAMER
+AM_CXXFLAGS+= $(GSTREAMER_CFLAGS)
+AM_LDFLAGS+= $(GSTREAMER_LIBS)
+src+= formatter/AdapterNewVideoPlayer.cpp
+src+= player/NewVideoPlayer.cpp
+endif # WITH_GSTREAMER
 
 if WITH_ISDBT
 AM_CPPFLAGS+=\

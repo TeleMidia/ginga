@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_TUNER_BEGIN
 
 GINGA_PRAGMA_DIAG_PUSH ()
-GINGA_PRAGMA_DIAG_IGNORE (-Wunused-const-variable)
+//GINGA_PRAGMA_DIAG_IGNORE (-Wunused-const-variable)
 static const int ST_90KHz = 0x01;
 static const int ST_27MHz = 0x02;
 GINGA_PRAGMA_DIAG_POP ()

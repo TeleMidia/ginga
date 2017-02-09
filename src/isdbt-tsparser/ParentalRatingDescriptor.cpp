@@ -132,7 +132,7 @@ ParentalRatingDescriptor::process (char *data, size_t pos)
       memcpy (parental->countryCode, data + pos, 3);
 
       pos += 3;
-      parental->contentDescription = ((data[pos] & 0xF0) >> 4);
+      parental->contentDescription = (unsigned char)((data[pos] & 0xF0) >> 4);
       parental->age = (data[pos] & 0x0F);
 
       // clog << "contentDescription = ";

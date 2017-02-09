@@ -28,7 +28,7 @@ struct frame
 };
 
 GINGA_PRAGMA_DIAG_PUSH ()
-GINGA_PRAGMA_DIAG_IGNORE (-Wunused-const-variable)
+//GINGA_PRAGMA_DIAG_IGNORE (-Wunused-const-variable)
 static const unsigned int BROADCAST_PORT = 41000;
 static const int BASE_WRITE_BCAST_PORT = 51000;
 static const int SECO_WRITE_BCAST_PORT = 61000;
