@@ -35,8 +35,8 @@ static gboolean
 opt_size (arg_unused (const gchar *opt), const gchar *arg,
           arg_unused (gpointer data), GError **err)
 {
-  guint64 width;
-  guint64 height;
+  gint64 width;
+  gint64 height;
   gchar *end;
 
   width = g_ascii_strtoull (arg, &end, 10);
@@ -77,14 +77,14 @@ static GOptionEntry options[] = {
    &opt_scale, "Scale canvas to fit window", NULL},
   {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
    pointerof (opt_version), "Print version information and exit", NULL},
-  {NULL}
+  {NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL}
 };
 
 /* Error handling: */
 #define usage_error(format, ...) _error (TRUE, format, ## __VA_ARGS__)
 #define print_error(format, ...) _error (FALSE, format, ## __VA_ARGS__)
 
-static void
+static G_GNUC_PRINTF (2,3) void
 _error (gboolean try_help, const gchar *format, ...)
 {
   const gchar *me = g_get_application_name ();
@@ -120,7 +120,7 @@ main (int argc, char **argv)
   if (unlikely (!status))
     {
       g_assert (error != NULL);
-      usage_error (error->message);
+      usage_error ("%s", error->message);
       g_error_free (error);
       exit (EXIT_FAILURE);
     }

@@ -28,7 +28,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/GingaLocatorFactory.h"
 using namespace ::ginga::system;
 
-#if WITH_MULTIDEVICE
+#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
 #include "multidev/DeviceDomain.h"
 #endif
 

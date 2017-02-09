@@ -24,7 +24,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/IInputEventListener.h"
 using namespace ::ginga::mb;
 
-#if WITH_MULTIDEVICE
+#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
 #include "multidev/DeviceDomain.h"
 #include "multidev/RemoteDeviceManager.h"
 #include "multidev/IRemoteDeviceListener.h"
@@ -75,7 +75,7 @@ using namespace ::ginga::player;
 
 GINGA_FORMATTER_BEGIN
 
-#if WITH_MULTIDEVICE
+#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
 class FormatterMultiDevice : public IPlayerListener,
                              public IInputEventListener,
                              public IRemoteDeviceListener
@@ -89,7 +89,7 @@ protected:
   InputManager *im;
   pthread_mutex_t mutex;
 
-#if WITH_MULTIDEVICE
+#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
   static RemoteDeviceManager *rdm;
 #else
   static void *rdm;
