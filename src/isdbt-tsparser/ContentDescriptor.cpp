@@ -130,7 +130,7 @@ ContentDescriptor::process (char *data, size_t pos)
     {
       pos++;
       content = new struct Content;
-      content->contentNibbleLevel1 = ((data[pos] & 0xF0) >> 4);
+      content->contentNibbleLevel1 = (unsigned char)((data[pos] & 0xF0) >> 4);
       content->contentNibbleLevel2 = (data[pos] & 0x0F);
 
       // clog << "Content contentNibble 1 = " << ((unsigned
@@ -138,7 +138,7 @@ ContentDescriptor::process (char *data, size_t pos)
       // clog << " and 2 = " << ((unsigned int)contentNibbleLevel2) << endl;
       pos++;
 
-      content->userNibble1 = ((data[pos] & 0xF0) >> 4);
+      content->userNibble1 = (unsigned char)((data[pos] & 0xF0) >> 4);
       content->userNibble2 = (data[pos] & 0x0F);
 
       // clog << "userNibble 1 = " << ((unsigned int)userNibble1) ;

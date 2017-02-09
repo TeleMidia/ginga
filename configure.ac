@@ -54,6 +54,7 @@ m4_define([avformat_required_version],   [55.19.104])
 m4_define([avutil_required_version],     [52.48.101])
 m4_define([curl_required_version],       [7.18])
 m4_define([glib_required_version],       [2.32.4])
+m4_define([gstreamer_required_version],  [1.8.0])
 m4_define([nclua_required_version],      [1.0])
 m4_define([sdl2_image_require_version],  [2.0])
 m4_define([sdl2_required_version],       [2.0])
@@ -67,6 +68,7 @@ AC_SUBST([AVFORMAT_REQUIRED_VERSION],    avformat_required_version)
 AC_SUBST([AVUTIL_REQUIRED_VERSION],      avutil_required_version)
 AC_SUBST([CURL_REQUIRED_VERSION],        curl_required_version)
 AC_SUBST([GLIB_REQUIRED_VERSION],        glib_required_version)
+AC_SUBST([GSTREAMER_REQUIRED_VERSION],   gstreamer_required_version)
 AC_SUBST([NCLUA_REQUIRED_VERSION],       nclua_required_version)
 AC_SUBST([SDL2_IMAGE_REQUIRE_VERSION],   sdl2_image_require_version)
 AC_SUBST([SDL2_REQUIRED_VERSION],        sdl2_required_version)
@@ -120,6 +122,7 @@ nw="$nw -Woverride-init"                 # invalid in C++
 nw="$nw -Wpointer-sign"                  # invalid in C++
 nw="$nw -Wpointer-to-int-cast"           # invalid in C++
 nw="$nw -Wstrict-prototypes"             # invalid in C++
+nw="$nw -Wpragmas"                       # too many warnings
 nw="$nw -Wshadow"                        # too many warnings
 nw="$nw -Wsign-compare"                  # too many warnings
 nw="$nw -Wsign-conversion"               # too many warnings
@@ -180,6 +183,14 @@ AU_CHECK_PKG([XERCESC],
 AU_CHECK_OPTIONAL_PKG([isdbt], [build isdbt support], [],
  [ISDBT], [expat >= expat_required_version])
 
+AU_CHECK_OPTIONAL_PKG([gstreamer], [build gstreamer support], [],
+  [GSTREAMER],
+  gstreamer-1.0 >= gstreamer_required_version[]dnl
+  gstreamer-video-1.0 >= gstreamer_required_version[]dnl
+  gstreamer-audio-1.0 >= gstreamer_required_version[]dnl
+  gstreamer-app-1.0 >= gstreamer_required_version
+)
+
 AU_CHECK_OPTIONAL_PKG([multidevice], [build multidevice support], [],
  [MULTIDEVICE], [libjpeg libzip])
 
@@ -188,9 +199,9 @@ AU_CHECK_OPTIONAL_PKG([libbpg], [build with libbpg BPG support], [],
 
 AU_CHECK_OPTIONAL_PKG([librsvg], [build with LibRsvg SVG support], [],
  [LIBRSVG],
- [librsvg-2.0 >= librsvg_required_version[]#
-  cairo >= cairo_required_version
-])
+ librsvg-2.0 >= librsvg_required_version[]dnl
+ cairo >= cairo_required_version
+)
 
 # Optional dependencies that do not use pkg-config.
 #   $1: name;
@@ -255,6 +266,7 @@ AC_MSG_NOTICE([summary of main build options:
 
   with berkelium:     ${with_berkelium_result}
   with espeak:        ${with_espeak_result}
+  with gstreamer:     ${with_gstreamer_result}
   with libbpg:        ${with_libbpg_result}
   with librsvg:       ${with_librsvg_result}
 
