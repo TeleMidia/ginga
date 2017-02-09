@@ -30,6 +30,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "AdapterAVPlayer.h"
 
+#include "AdapterNewVideoPlayer.h"
+
 #include "AdapterLuaPlayer.h"
 
 #include "AdapterNCLPlayer.h"
@@ -254,6 +256,11 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
     {
       classname = "AdapterImagePlayer";
       adapter = new AdapterImagePlayer ();
+    }
+  else if (streq (mime, "video/x-new-video-player"))
+    {
+      classname = "AdapterNewVideoPlayer";
+      adapter = new AdapterNewVideoPlayer ();
     }
   else if (g_str_has_prefix (mime, "audio")
            || g_str_has_prefix (mime, "video"))
