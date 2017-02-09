@@ -22,30 +22,12 @@ find_package(LibZip REQUIRED)
 
 find_package(LinuxDVB)
 
-# NCLUA download/configure/build
-include(ExternalProject)
-ExternalProject_Add(nclua
-  GIT_REPOSITORY "https://github.com/gflima/nclua.git"
-  GIT_TAG "master"
-
-  CONFIGURE_COMMAND <SOURCE_DIR>/bootstrap && <SOURCE_DIR>/configure --prefix=<INSTALL_DIR>
-  BUILD_COMMAND make
-  INSTALL_COMMAND make install
-
-  BUILD_ALWAYS 0
-)
-
-ExternalProject_Get_Property(nclua install_dir)
-set(NCLUA_INCLUDE_DIRS "${install_dir}/include")
-set(NCLUA_LIBRARIES "${install_dir}/lib/nclua.so")
-#end NCLUA
-
 #add_definitions(-DPACKAGE_VERSION="1.0")
 #add_definitions(-DWITH_ISDBT=0)
 #add_definitions(-DWITH_LINUXDVB)
 #add_definitions(-DWITH_MULTIDEVICE)
 
-add_definitions(-DGINGA_DATADIR="./data/ini/")
+add_definitions(-DGINGA_DATADIR="${CMAKE_BINARY_DIR}/data/ini/")
 add_definitions(-DGINGA_BUTTON_DATADIR="${CMAKE_BINARY_DIR}/data/img/button/")
 add_definitions(-DGINGA_CONTEXTMANAGER_DATADIR="${CMAKE_BINARY_DIR}/data/contextmanager/")
 add_definitions(-DGINGA_FONT_DATADIR="${CMAKE_BINARY_DIR}/data/font/")
@@ -56,6 +38,23 @@ add_definitions(-DGINGA_MB_DATADIR="${CMAKE_BINARY_DIR}/data/mb/")
 add_definitions(-DGINGA_ISDBT_PATH="${CMAKE_BINARY_DIR}/data/tuner/isdbt.ini")
 add_definitions(-DGINGA_TUNER_DATADIR="${CMAKE_BINARY_DIR}/data/tuner")
 add_definitions(-DGINGA_TUNER_PATH="${CMAKE_BINARY_DIR}/data/tuner/tuner.ini")
+
+# NCLUA download/configure/build/install
+include(ExternalProject)
+ExternalProject_Add(nclua_build
+  GIT_REPOSITORY "https://github.com/gflima/nclua.git"
+  GIT_TAG master
+  UPDATE_COMMAND ""
+
+  CONFIGURE_COMMAND <SOURCE_DIR>/bootstrap && <SOURCE_DIR>/configure --prefix=<INSTALL_DIR>
+  BUILD_COMMAND make
+  INSTALL_COMMAND make install
+)
+
+ExternalProject_Get_Property(nclua_build install_dir)
+set(NCLUA_INCLUDE_DIRS "${install_dir}/include")
+link_directories("${install_dir}/lib")
+#end NCLUA
 
 add_executable(ginga
   ../src/ginga.h
@@ -366,6 +365,8 @@ add_executable(ginga
   ../src/main.cpp
 )
 
+add_dependencies(ginga nclua_build)
+
 target_include_directories(ginga PRIVATE
   ../src
 
@@ -382,20 +383,20 @@ target_include_directories(ginga PRIVATE
 
   ${LinuxDVB_INCLUDE_DIRS}
 
-  ${NCLUA_INLCUDE_DIRS}
+  ${NCLUA_INCLUDE_DIRS}
 )
 
 target_link_libraries(ginga PRIVATE
-  -lpthread
-  -ljpeg
+  pthread
+  jpeg
 
   XercesC::XercesC
-  -lexpat
+  expat
 
   ${FFMPEG_LIBRARIES}
-  -lswresample
-  -lswscale
-  -lavfilter
+  swresample
+  swscale
+  avfilter
 
   ${SDL2_LIBRARY}
   ${SDL2_IMAGE_LIBRARIES}
@@ -408,13 +409,13 @@ target_link_libraries(ginga PRIVATE
   ${RSVG_LIBRARIES}
   ${LIBZIP_LIBRARY}
 
-  ${NCLUA_LIBRARIES}
+  nclua
 )
 
 # Copy datafiles to build dir
 add_custom_target(copy-data-files ALL
   COMMAND ${CMAKE_COMMAND} -E
-    copy_directory ${CMAKE_SOURCE_DIR}/../data/ ${CMAKE_BINARY_DIR}/data
+    copy_directory ${CMAKE_SOURCE_DIR}/../data ${CMAKE_BINARY_DIR}/data
 )
 
 configure_file(${CMAKE_SOURCE_DIR}/config.h.in config.h)
