@@ -31,11 +31,13 @@ ExternalProject_Add(nclua
   CONFIGURE_COMMAND <SOURCE_DIR>/bootstrap && <SOURCE_DIR>/configure --prefix=<INSTALL_DIR>
   BUILD_COMMAND make
   INSTALL_COMMAND make install
+
+  BUILD_ALWAYS 0
 )
 
 ExternalProject_Get_Property(nclua install_dir)
-set(NCLUA_INCLUDE_DIRS ${install_dir}/include)
-set(NCLUA_LIBRARIES ${install_dir}/lib/nclua.so)
+set(NCLUA_INCLUDE_DIRS "${install_dir}/include")
+set(NCLUA_LIBRARIES "${install_dir}/lib/nclua.so")
 #end NCLUA
 
 #add_definitions(-DPACKAGE_VERSION="1.0")
@@ -380,7 +382,7 @@ target_include_directories(ginga PRIVATE
 
   ${LinuxDVB_INCLUDE_DIRS}
 
-  nclua-prefix/include
+  ${NCLUA_INLCUDE_DIRS}
 )
 
 target_link_libraries(ginga PRIVATE
