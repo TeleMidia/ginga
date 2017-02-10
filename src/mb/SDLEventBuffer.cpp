@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "SDLEventBuffer.h"
-#include "SDLInputEvent.h"
+#include "InputEvent.h"
 
 #include "Display.h"
 
@@ -96,7 +96,7 @@ SDLEventBuffer::feed (SDL_Event event, bool capsOn, bool shiftOn)
 }
 
 void
-SDLEventBuffer::postInputEvent (SDLInputEvent *event)
+SDLEventBuffer::postInputEvent (InputEvent *event)
 {
   SDL_Event ev;
 
@@ -138,7 +138,7 @@ SDLEventBuffer::waitEvent ()
           && event.user.data1 != NULL && event.user.data2 == NULL)
         {
           if (strcmp ((char *)event.user.data1,
-                      SDLInputEvent::ET_WAKEUP.c_str ())
+                      InputEvent::ET_WAKEUP.c_str ())
               == 0)
             {
               eventBuffer.erase (i);
@@ -150,11 +150,11 @@ SDLEventBuffer::waitEvent ()
   Thread::mutexUnlock (&ebMutex);
 }
 
-SDLInputEvent *
+InputEvent *
 SDLEventBuffer::getNextEvent ()
 {
   SDL_Event sdlEvent;
-  SDLInputEvent *gingaEvent = NULL;
+  InputEvent *gingaEvent = NULL;
   vector<SDL_Event>::iterator i;
 
   Thread::mutexLock (&ebMutex);
@@ -163,7 +163,7 @@ SDLEventBuffer::getNextEvent ()
       i = eventBuffer.begin ();
       sdlEvent = *i;
 
-      gingaEvent = new SDLInputEvent (sdlEvent);
+      gingaEvent = new InputEvent (sdlEvent);
       gingaEvent->setModifiers (capsOn, shiftOn);
       eventBuffer.erase (i);
     }

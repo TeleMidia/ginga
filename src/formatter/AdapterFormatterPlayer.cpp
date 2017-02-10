@@ -1995,7 +1995,7 @@ AdapterFormatterPlayer::updateStatus (short code,
 }
 
 bool
-AdapterFormatterPlayer::userEventReceived (SDLInputEvent *ev)
+AdapterFormatterPlayer::userEventReceived (InputEvent *ev)
 {
   int keyCode;
 

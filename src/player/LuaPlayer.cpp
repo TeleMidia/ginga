@@ -589,7 +589,7 @@ LuaPlayer::setPropertyValue (const string &name, const string &value)
 // Inherited from IInputEventListener.
 
 bool
-LuaPlayer::userEventReceived (SDLInputEvent *evt)
+LuaPlayer::userEventReceived (InputEvent *evt)
 {
   this->lock ();
 

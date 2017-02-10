@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AudioProvider.h"
 #include "SDLEventBuffer.h"
 #include "FontProvider.h"
-#include "SDLInputEvent.h"
+#include "InputEvent.h"
 #include "SDLSurface.h"
 #include "VideoProvider.h"
 #include "SDLWindow.h"
@@ -755,28 +755,28 @@ Display::createEventBuffer ()
   return new SDLEventBuffer ();
 }
 
-SDLInputEvent *
+InputEvent *
 Display::createInputEvent (void *event, const int symbol)
 {
-  SDLInputEvent *ie = NULL;
+  InputEvent *ie = NULL;
 
   if (event != NULL)
     {
-      ie = new SDLInputEvent (*(SDL_Event *)event);
+      ie = new InputEvent (*(SDL_Event *)event);
     }
 
   if (symbol >= 0)
     {
-      ie = new SDLInputEvent (symbol);
+      ie = new InputEvent (symbol);
     }
 
   return ie;
 }
 
-SDLInputEvent *
+InputEvent *
 Display::createApplicationEvent (int type, void *data)
 {
-  return new SDLInputEvent (type, data);
+  return new InputEvent (type, data);
 }
 
 Key::KeyCode

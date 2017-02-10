@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IINPUTEVENTLISTENER_H_
 #define IINPUTEVENTLISTENER_H_
 
-#include "SDLInputEvent.h"
+#include "InputEvent.h"
 
 GINGA_MB_BEGIN
 
@@ -26,7 +26,7 @@ class IInputEventListener
 {
 public:
   virtual ~IInputEventListener (){};
-  virtual bool userEventReceived (SDLInputEvent *ev) = 0;
+  virtual bool userEventReceived (InputEvent *ev) = 0;
 };
 
 GINGA_MB_END

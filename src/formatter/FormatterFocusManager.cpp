@@ -1210,7 +1210,7 @@ FormatterFocusManager::changeSettingState (const string &name, const string &act
 }
 
 bool
-FormatterFocusManager::userEventReceived (SDLInputEvent *userEvent)
+FormatterFocusManager::userEventReceived (InputEvent *userEvent)
 {
   NclExecutionObject *currentObject;
   NclCascadingDescriptor *currentDescriptor;
