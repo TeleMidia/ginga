@@ -103,7 +103,7 @@ InputManager::release ()
 {
   map<IInputEventListener *, set<int> *>::iterator i;
 //  bool runDone = false;
-  // SDLInputEvent *ie;
+  // InputEvent *ie;
   // int mbKeyCode;
   // bool wasRunning = running;
 
@@ -407,7 +407,7 @@ InputManager::performApplicationLockedActions ()
 }
 
 bool
-InputManager::dispatchEvent (SDLInputEvent *inputEvent)
+InputManager::dispatchEvent (InputEvent *inputEvent)
 {
   map<IInputEventListener *, set<int> *>::iterator i;
   static bool die = false;
@@ -494,7 +494,7 @@ InputManager::dispatchEvent (SDLInputEvent *inputEvent)
 }
 
 bool
-InputManager::dispatchApplicationEvent (SDLInputEvent *inputEvent)
+InputManager::dispatchApplicationEvent (InputEvent *inputEvent)
 {
   set<IInputEventListener *>::iterator i;
   vector<LockedAction *>::iterator j;
@@ -613,7 +613,7 @@ InputManager::setCommandEventListener (ICmdEventListener *listener)
 }
 
 void
-InputManager::postInputEvent (SDLInputEvent *event)
+InputManager::postInputEvent (InputEvent *event)
 {
   if (!running)
     {
@@ -627,7 +627,7 @@ InputManager::postInputEvent (SDLInputEvent *event)
 void
 InputManager::postInputEvent (Key::KeyCode keyCode)
 {
-  SDLInputEvent *ie;
+  InputEvent *ie;
   int mbKeyCode;
 
   mbKeyCode = Ginga_Display->fromGingaToMB (keyCode);
@@ -690,7 +690,7 @@ InputManager::getEventBuffer ()
 void
 InputManager::run ()
 {
-  SDLInputEvent *inputEvent;
+  InputEvent *inputEvent;
 
   int pLastCode = -1;
   int lastCode = -1;
@@ -736,7 +736,7 @@ InputManager::run ()
 }
 
 void
-InputManager::handleInputEvent (SDLInputEvent *inputEvent, arg_unused (int &pLastCode),
+InputManager::handleInputEvent (InputEvent *inputEvent, arg_unused (int &pLastCode),
                                 int &lastCode, arg_unused (double &pTimeStamp),
                                 double &timeStamp, int &mouseX, int &mouseY)
 {

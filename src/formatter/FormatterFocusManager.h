@@ -143,7 +143,7 @@ private:
   void changeSettingState (const string &name, const string &act);
 
 public:
-  bool userEventReceived (SDLInputEvent *ev);
+  bool userEventReceived (InputEvent *ev);
   bool motionEventReceived (int x, int y, int z);
 };
 

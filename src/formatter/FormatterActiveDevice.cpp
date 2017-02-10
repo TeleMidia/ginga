@@ -330,9 +330,8 @@ FormatterActiveDevice::receiveRemoteContentInfo (const string &contentId,
 }
 
 bool
-FormatterActiveDevice::userEventReceived (SDLInputEvent *ev)
+FormatterActiveDevice::userEventReceived (InputEvent *ev)
 {
-  string mnemonicCode;
   int currentX;
   int currentY;
   int code;

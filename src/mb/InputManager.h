@@ -28,7 +28,7 @@ using namespace ::ginga::util;
 using namespace ::ginga::system;
 
 #include "SDLEventBuffer.h"
-#include "SDLInputEvent.h"
+#include "InputEvent.h"
 #include "ICmdEventListener.h"
 #include "IInputEventListener.h"
 #include "IMotionEventListener.h"
@@ -103,14 +103,14 @@ public:
 protected:
   void performInputLockedActions ();
   void performApplicationLockedActions ();
-  virtual bool dispatchEvent (SDLInputEvent *keyEvent);
-  virtual bool dispatchApplicationEvent (SDLInputEvent *keyEvent);
+  virtual bool dispatchEvent (InputEvent *keyEvent);
+  virtual bool dispatchApplicationEvent (InputEvent *keyEvent);
 
 public:
   void addApplicationInputEventListener (IInputEventListener *listener);
   void removeApplicationInputEventListener (IInputEventListener *listener);
 
-  void postInputEvent (SDLInputEvent *event);
+  void postInputEvent (InputEvent *event);
   void postInputEvent (Key::KeyCode keyCode);
   void postCommand (const string &cmd, const string &args);
 
@@ -123,7 +123,7 @@ public:
 
 protected:
   virtual void run ();
-  void handleInputEvent (SDLInputEvent *inputEvent, int &pLastCode,
+  void handleInputEvent (InputEvent *inputEvent, int &pLastCode,
                          int &lastCode, double &pTimeStamp,
                          double &timeStamp, int &mouseX, int &mouseY);
 };

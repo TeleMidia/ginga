@@ -154,7 +154,7 @@ public:
                              short type = 10,
                              const string &value = "");
 
-  bool userEventReceived (SDLInputEvent *ev);
+  bool userEventReceived (InputEvent *ev);
 
 private:
   void setVisible (bool visible);

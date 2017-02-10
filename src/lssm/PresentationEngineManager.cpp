@@ -1130,7 +1130,7 @@ PresentationEngineManager::updateStatus (short code,
 }
 
 bool
-PresentationEngineManager::userEventReceived (SDLInputEvent *ev)
+PresentationEngineManager::userEventReceived (InputEvent *ev)
 {
   struct inputEventNotification *evR;
   int keyCode;

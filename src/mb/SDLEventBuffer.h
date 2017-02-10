@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define SDL_EVENT_BUFFER_H
 
 #include "ginga.h"
-#include "SDLInputEvent.h"
+#include "InputEvent.h"
 
 GINGA_MB_BEGIN
 
@@ -39,9 +39,9 @@ public:
   virtual ~SDLEventBuffer ();
   static bool checkEvent (Uint32 winId, SDL_Event event);
   void feed (SDL_Event event, bool capsOn, bool shiftOn);
-  void postInputEvent (SDLInputEvent *event);
+  void postInputEvent (InputEvent *event);
   void waitEvent ();
-  SDLInputEvent *getNextEvent ();
+  InputEvent *getNextEvent ();
   void *getContent ();
 
 private:

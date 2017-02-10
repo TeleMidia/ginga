@@ -136,11 +136,11 @@ add_executable(ginga
   ../src/mb/Key.cpp
   ../src/mb/Display.cpp
   ../src/mb/FontProvider.cpp
+  ../src/mb/InputEvent.cpp
   ../src/mb/InputManager.cpp
   ../src/mb/SDL2ffmpeg.cpp
   ../src/mb/SDLConvert.cpp
   ../src/mb/SDLEventBuffer.cpp
-  ../src/mb/SDLInputEvent.cpp
   ../src/mb/SDLSurface.cpp
   ../src/mb/SDLWindow.cpp
   ../src/mb/VideoProvider.cpp
