@@ -15,15 +15,15 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef SDL_EVENT_BUFFER_H
-#define SDL_EVENT_BUFFER_H
+#ifndef EVENTBUFFER_H
+#define EVENTBUFFER_H
 
 #include "ginga.h"
 #include "InputEvent.h"
 
 GINGA_MB_BEGIN
 
-class SDLEventBuffer
+class EventBuffer
 {
 private:
   pthread_mutex_t ebMutex;
@@ -35,8 +35,8 @@ private:
   pthread_mutex_t condMutex;
 
 public:
-  SDLEventBuffer ();
-  virtual ~SDLEventBuffer ();
+  EventBuffer ();
+  virtual ~EventBuffer ();
   static bool checkEvent (Uint32 winId, SDL_Event event);
   void feed (SDL_Event event, bool capsOn, bool shiftOn);
   void postInputEvent (InputEvent *event);

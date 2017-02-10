@@ -133,14 +133,14 @@ add_executable(ginga
   ../src/lssm/PresentationEngineManager.cpp
 
   ../src/mb/AudioProvider.cpp
-  ../src/mb/Key.cpp
   ../src/mb/Display.cpp
+  ../src/mb/EventBuffer.cpp
   ../src/mb/FontProvider.cpp
   ../src/mb/InputEvent.cpp
   ../src/mb/InputManager.cpp
+  ../src/mb/Key.cpp
   ../src/mb/SDL2ffmpeg.cpp
   ../src/mb/SDLConvert.cpp
-  ../src/mb/SDLEventBuffer.cpp
   ../src/mb/SDLSurface.cpp
   ../src/mb/SDLWindow.cpp
   ../src/mb/VideoProvider.cpp

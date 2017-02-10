@@ -16,14 +16,14 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "SDLEventBuffer.h"
+#include "EventBuffer.h"
 #include "InputEvent.h"
 
 #include "Display.h"
 
 GINGA_MB_BEGIN
 
-SDLEventBuffer::SDLEventBuffer ()
+EventBuffer::EventBuffer ()
 {
   Thread::mutexInit (&ebMutex);
 
@@ -35,7 +35,7 @@ SDLEventBuffer::SDLEventBuffer ()
   Thread::mutexInit (&condMutex);
 }
 
-SDLEventBuffer::~SDLEventBuffer ()
+EventBuffer::~EventBuffer ()
 {
   vector<SDL_Event>::iterator i;
 
@@ -50,7 +50,7 @@ SDLEventBuffer::~SDLEventBuffer ()
 }
 
 bool
-SDLEventBuffer::checkEvent (Uint32 winId, SDL_Event event)
+EventBuffer::checkEvent (Uint32 winId, SDL_Event event)
 {
   Uint32 windowID = winId + 1;
 
@@ -84,7 +84,7 @@ SDLEventBuffer::checkEvent (Uint32 winId, SDL_Event event)
 }
 
 void
-SDLEventBuffer::feed (SDL_Event event, bool capsOn, bool shiftOn)
+EventBuffer::feed (SDL_Event event, bool capsOn, bool shiftOn)
 {
   Thread::mutexLock (&ebMutex);
   this->capsOn = capsOn;
@@ -96,7 +96,7 @@ SDLEventBuffer::feed (SDL_Event event, bool capsOn, bool shiftOn)
 }
 
 void
-SDLEventBuffer::postInputEvent (InputEvent *event)
+EventBuffer::postInputEvent (InputEvent *event)
 {
   SDL_Event ev;
 
@@ -114,7 +114,7 @@ SDLEventBuffer::postInputEvent (InputEvent *event)
 }
 
 void
-SDLEventBuffer::waitEvent ()
+EventBuffer::waitEvent ()
 {
   SDL_Event event;
   vector<SDL_Event>::iterator i;
@@ -151,7 +151,7 @@ SDLEventBuffer::waitEvent ()
 }
 
 InputEvent *
-SDLEventBuffer::getNextEvent ()
+EventBuffer::getNextEvent ()
 {
   SDL_Event sdlEvent;
   InputEvent *gingaEvent = NULL;
@@ -173,13 +173,13 @@ SDLEventBuffer::getNextEvent ()
 }
 
 void *
-SDLEventBuffer::getContent ()
+EventBuffer::getContent ()
 {
   return (void *)&eventBuffer;
 }
 
 void
-SDLEventBuffer::waitForEvent ()
+EventBuffer::waitForEvent ()
 {
   isWaiting = true;
   Thread::mutexLock (&condMutex);
@@ -189,7 +189,7 @@ SDLEventBuffer::waitForEvent ()
 }
 
 bool
-SDLEventBuffer::eventArrived ()
+EventBuffer::eventArrived ()
 {
   if (isWaiting)
     {

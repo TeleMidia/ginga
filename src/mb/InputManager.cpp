@@ -671,7 +671,7 @@ InputManager::getCurrentYAxisValue ()
   return currentYAxis;
 }
 
-SDLEventBuffer *
+EventBuffer *
 InputManager::getEventBuffer ()
 {
   if (eventBuffer == NULL)
