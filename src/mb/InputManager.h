@@ -27,7 +27,7 @@ using namespace ::ginga::util;
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
 
-#include "SDLEventBuffer.h"
+#include "EventBuffer.h"
 #include "InputEvent.h"
 #include "ICmdEventListener.h"
 #include "IInputEventListener.h"
@@ -59,7 +59,7 @@ protected:
   bool running;
   bool notifying;
   bool notifyingApp;
-  SDLEventBuffer *eventBuffer;
+  EventBuffer *eventBuffer;
   double lastEventTime;
   double imperativeIntervalTime;
   double declarativeIntervalTime;
@@ -119,7 +119,7 @@ public:
   int getCurrentXAxisValue ();
   int getCurrentYAxisValue ();
 
-  SDLEventBuffer *getEventBuffer ();
+  EventBuffer *getEventBuffer ();
 
 protected:
   virtual void run ();

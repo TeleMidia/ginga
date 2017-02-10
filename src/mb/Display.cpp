@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "InputManager.h"
 #include "AudioProvider.h"
-#include "SDLEventBuffer.h"
+#include "EventBuffer.h"
 #include "FontProvider.h"
 #include "InputEvent.h"
 #include "SDLSurface.h"
@@ -203,7 +203,7 @@ Display::renderThread ()
             }
 
           InputManager *im = this->getInputManager ();
-          SDLEventBuffer *buf = im->getEventBuffer ();
+          EventBuffer *buf = im->getEventBuffer ();
           buf->feed (evt, false, false);
         }
 
@@ -749,10 +749,10 @@ Display::getInputManager ()
   return im;
 }
 
-SDLEventBuffer *
+EventBuffer *
 Display::createEventBuffer ()
 {
-  return new SDLEventBuffer ();
+  return new EventBuffer ();
 }
 
 InputEvent *
