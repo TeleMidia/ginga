@@ -122,6 +122,7 @@ nw="$nw -Woverride-init"                 # invalid in C++
 nw="$nw -Wpointer-sign"                  # invalid in C++
 nw="$nw -Wpointer-to-int-cast"           # invalid in C++
 nw="$nw -Wstrict-prototypes"             # invalid in C++
+nw="$nw -Wpragmas"                       # too many warnings
 nw="$nw -Wshadow"                        # too many warnings
 nw="$nw -Wsign-compare"                  # too many warnings
 nw="$nw -Wsign-conversion"               # too many warnings
@@ -184,11 +185,11 @@ AU_CHECK_OPTIONAL_PKG([isdbt], [build isdbt support], [],
 
 AU_CHECK_OPTIONAL_PKG([gstreamer], [build gstreamer support], [],
   [GSTREAMER],
-  [gstreamer-1.0 >= gstreamer_required_version[]#
-   gstreamer-video-1.0 >= gstreamer_required_version[]#
-   gstreamer-audio-1.0 >= gstreamer_required_version[]#
-   gstreamer-app-1.0 >= gstreamer_required_version[]#
-])
+  gstreamer-1.0 >= gstreamer_required_version[]dnl
+  gstreamer-video-1.0 >= gstreamer_required_version[]dnl
+  gstreamer-audio-1.0 >= gstreamer_required_version[]dnl
+  gstreamer-app-1.0 >= gstreamer_required_version
+)
 
 AU_CHECK_OPTIONAL_PKG([multidevice], [build multidevice support], [],
  [MULTIDEVICE], [libjpeg libzip])
@@ -198,9 +199,9 @@ AU_CHECK_OPTIONAL_PKG([libbpg], [build with libbpg BPG support], [],
 
 AU_CHECK_OPTIONAL_PKG([librsvg], [build with LibRsvg SVG support], [],
  [LIBRSVG],
- [librsvg-2.0 >= librsvg_required_version[]#
-  cairo >= cairo_required_version
-])
+ librsvg-2.0 >= librsvg_required_version[]dnl
+ cairo >= cairo_required_version
+)
 
 # Optional dependencies that do not use pkg-config.
 #   $1: name;

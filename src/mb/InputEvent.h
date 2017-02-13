@@ -15,14 +15,14 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef SDLINPUTEVENT_H_
-#define SDLINPUTEVENT_H_
+#ifndef INPUTEVENT_H_
+#define INPUTEVENT_H_
 
 #include "Key.h"
 
 GINGA_MB_BEGIN
 
-class SDLInputEvent
+class InputEvent
 {
 public:
   static const string ET_WAKEUP;
@@ -38,11 +38,11 @@ private:
   bool shiftOn;
 
 public:
-  SDLInputEvent (SDL_Event event);
-  SDLInputEvent (const int keyCode);
-  SDLInputEvent (int type, void *data);
+  InputEvent (SDL_Event event);
+  InputEvent (const int keyCode);
+  InputEvent (int type, void *data);
 
-  virtual ~SDLInputEvent ();
+  virtual ~InputEvent ();
 
   void setModifiers (bool capsOn, bool shiftOn);
 

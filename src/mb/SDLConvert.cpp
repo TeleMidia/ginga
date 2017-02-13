@@ -26,7 +26,7 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
 
 GINGA_MB_BEGIN
 
-#if !defined(_MSC_VER) && (WITH_MULTIDEVICE == 1)
+#if !defined _MSC_VER && defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 // 24 bit RGB masks on big-endian
 #define RMASK24 0xFF0000
@@ -215,8 +215,7 @@ IMG_SaveJPG_RW (SDL_RWops *dest, SDL_Surface *surf, int quality)
 #endif
 
 int
-SDLConvert::convertSurfaceToJPEG (const char *filename, SDL_Surface *surf,
-                                  int quality)
+SDLConvert::convertSurfaceToJPEG (arg_unused (const char *filename), arg_unused(SDL_Surface *surf), arg_unused(int quality))
 {
 #ifdef _MSC_VER
   char *bmpfile;
@@ -229,7 +228,7 @@ SDLConvert::convertSurfaceToJPEG (const char *filename, SDL_Surface *surf,
   myImage.Save (filename);
   delete bmpfile;
   return 0;
-#elif WITH_MULTIDEVICE
+#elif defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
   SDL_RWops *out;
   if (!(out = SDL_RWFromFile (filename, "wb")))
     {

@@ -30,7 +30,7 @@ using namespace ::ginga::ncl;
 GINGA_FORMATTER_BEGIN
 
 FormatterBaseDevice::FormatterBaseDevice (DeviceLayout *deviceLayout,
-                                          string playerId, int x, int y,
+                                          arg_unused (string) playerId, int x, int y,
                                           int w, int h, bool useMulticast,
                                           int srvPort)
     : FormatterMultiDevice (deviceLayout, x, y, w, h,
@@ -39,7 +39,6 @@ FormatterBaseDevice::FormatterBaseDevice (DeviceLayout *deviceLayout,
   set<int> *evs;
   string layoutName = deviceLayout->getLayoutName ();
 
-  bool active_dev = (layoutName.compare ("systemScreen(2)") == 0);
   deviceClass = DeviceDomain::CT_BASE;
   deviceLayout->addDevice ("systemScreen(1)", 0, 0, DV_QVGA_WIDTH,
                            DV_QVGA_HEIGHT);
@@ -56,11 +55,11 @@ FormatterBaseDevice::FormatterBaseDevice (DeviceLayout *deviceLayout,
   serialized->setCaps (caps);
   serialized->draw ();
 
-#if WITH_MULTIDEVICE
+#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
   if (rdm == NULL)
     {
       rdm = RemoteDeviceManager::getInstance ();
-      if (!active_dev)
+      if (!(layoutName.compare ("systemScreen(2)") == 0))
         ((RemoteDeviceManager *)rdm)
             ->setDeviceDomain (
                 new BaseDeviceDomain (useMulticast, srvPort));
@@ -88,7 +87,7 @@ FormatterBaseDevice::~FormatterBaseDevice ()
 
   if (rdm != NULL)
     {
-#if WITH_MULTIDEVICE
+#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
       rdm->removeListener (this);
 #endif
     }
@@ -120,9 +119,8 @@ FormatterBaseDevice::receiveRemoteEvent (int remoteDevClass, int eventType,
 }
 
 bool
-FormatterBaseDevice::userEventReceived (SDLInputEvent *ev)
+FormatterBaseDevice::userEventReceived (InputEvent *ev)
 {
-  string mnemonicCode;
   int currentX;
   int currentY;
   int code;

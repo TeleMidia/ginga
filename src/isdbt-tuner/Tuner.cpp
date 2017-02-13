@@ -68,7 +68,7 @@ Tuner::setLoopListener (ITunerListener *loopListener)
 }
 
 bool
-Tuner::userEventReceived (SDLInputEvent *ev)
+Tuner::userEventReceived (InputEvent *ev)
 {
   map<int, NetworkInterface *>::iterator i;
 

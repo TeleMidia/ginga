@@ -24,8 +24,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "IDiscreteMediaProvider.h"
 #include "IFontProvider.h"
 #include "InputManager.h"
-#include "SDLEventBuffer.h"
-#include "SDLInputEvent.h"
+#include "InputEvent.h"
 #include "SDLSurface.h"
 #include "SDLWindow.h"
 
@@ -148,9 +147,9 @@ public:
   /* interfacing input */
 
   InputManager *getInputManager ();
-  SDLEventBuffer *createEventBuffer ();
-  SDLInputEvent *createInputEvent (void *event, const int symbol);
-  SDLInputEvent *createApplicationEvent (int type, void *data);
+  EventBuffer *createEventBuffer ();
+  InputEvent *createInputEvent (void *event, const int symbol);
+  InputEvent *createApplicationEvent (int type, void *data);
 
   Key::KeyCode fromMBToGinga (int keyCode);
   int fromGingaToMB (Key::KeyCode keyCode);
