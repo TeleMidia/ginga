@@ -1,5 +1,5 @@
 dnl util.m4 -- Utility macros for Autoconf.
-dnl Copyright (C) 2015-2016 Free Software Foundation, Inc.
+dnl Copyright (C) 2015-2017 Free Software Foundation, Inc.
 dnl
 dnl This program is free software: you can redistribute it and/or modify
 dnl it under the terms of the GNU General Public License as published by
