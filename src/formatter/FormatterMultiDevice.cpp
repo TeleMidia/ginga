@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterMediator.h"
 #include "FormatterBaseDevice.h"
 
-#if WITH_MULTIDEVICE
+#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
 # include "FormatterActiveDevice.h"
 #endif
 
@@ -35,7 +35,7 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-#if WITH_MULTIDEVICE
+#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
 RemoteDeviceManager *FormatterMultiDevice::rdm = NULL;
 #else
 void *FormatterMultiDevice::rdm = NULL;
@@ -515,7 +515,7 @@ FormatterMultiDevice::showObject (NclExecutionObject *executionObject)
                       clog << "executionObject.RP = '";
                       clog << tempRelPath << "'" << endl;
                     }
-#if WITH_MULTIDEVICE
+#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
                   rdm->postEvent (
                       devClass, DeviceDomain::FT_PRESENTATIONEVENT,
                       deconst (char *, ("start::" + tempRelPath).c_str ()),
@@ -581,7 +581,7 @@ FormatterMultiDevice::hideObject (NclExecutionObject *executionObject)
                           activeBaseUri.size () + 1,
                           url.size () - activeBaseUri.size ());
                     }
-#if WITH_MULTIDEVICE
+#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
                   rdm->postEvent (
                       devClass, DeviceDomain::FT_PRESENTATIONEVENT,
                       deconst (char *, ("stop::" + relativePath).c_str ()),

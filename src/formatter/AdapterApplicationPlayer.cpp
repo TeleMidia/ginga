@@ -190,8 +190,9 @@ AdapterApplicationPlayer::prepare (NclExecutionObject *object,
 
               // Update the url with the iUriD separation path
               // FIXME: This code is here and in FomatterPlayerAdapter.cpp
-              str_replace_all (this->mrl, SystemCompat::getFUriD (),
-                               SystemCompat::getIUriD ());
+              xstrreplaceall ( this->mrl,
+                               SystemCompat::getFUriD (),
+                               SystemCompat::getIUriD () );
             }
           else
             {

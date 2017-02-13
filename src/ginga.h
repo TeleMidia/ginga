@@ -73,20 +73,20 @@ GINGA_BEGIN_DECLS
 #include <ncluaw.h>
 #include "ginga-sdlx.h"
 
-#if WITH_ESPEAK
+#if defined WITH_ESPEAK && WITH_ESPEAK
 # include <espeak/speak_lib.h>
 #endif
 
-#if WITH_ISDBT
+#if defined WITH_ISDBT && WITH_ISDBT
 # include <expat.h>
-# if WITH_LINUXDVB
+# if defined WITH_LINUXDVB && WITH_LINUXDVB
 #  include <linux/dvb/version.h>
 #  include <linux/dvb/frontend.h>
 #  include <linux/dvb/dmx.h>
 # endif
 #endif
 
-#if WITH_MULTIDEVICE
+#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
 GINGA_PRAGMA_DIAG_PUSH ()
 GINGA_PRAGMA_DIAG_IGNORE (-Wundef)
 # include <jerror.h>
@@ -94,7 +94,7 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wundef)
 GINGA_PRAGMA_DIAG_POP ()
 #endif
 
-#if WITH_LIBRSVG
+#if defined WITH_LIBRSVG && WITH_LIBRSVG
 # include <cairo.h>
 # include <librsvg/rsvg.h>
 #endif
@@ -373,6 +373,21 @@ xstrchomp (string s)
   s.assign (dup);
   g_free (dup);
   return s;
+}
+
+// Replaces all the occurences of <find_what> in the string <str> with the
+// string <replace_with>
+static void
+xstrreplaceall (string &str, const string &find_what,
+                const string &replace_with)
+{
+  string::size_type pos = 0;
+  while ((pos = str.find (find_what, pos)) != string::npos)
+    {
+      str.erase (pos, find_what.length ());
+      str.insert (pos, replace_with);
+      pos += replace_with.length ();
+    }
 }
 
 

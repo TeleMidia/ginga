@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "SystemCompat.h"
-#if WITH_MULTIDEVICE
+#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
 #include <zip.h>
 #endif
 
@@ -25,7 +25,7 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_SYSTEM_BEGIN
 
-#if WITH_MULTIDEVICE
+#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
 static bool
 getZipError (zip *file, string *strError)
 {
@@ -402,11 +402,11 @@ SystemCompat::updatePath (const string &dir)
 }
 
 int
-SystemCompat::zip_directory (const string &zipfile_path,
-                             const string &directory_path,
-                             const string &iUriD)
+SystemCompat::zip_directory (arg_unused(const string &zipfile_path),
+                             arg_unused(const string &directory_path),
+                             arg_unused(const string &iUriD))
 {
-#if WITH_MULTIDEVICE
+#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
   struct zip *zipFile;
   int error_open;
   string dir_name;
@@ -489,9 +489,9 @@ SystemCompat::zip_directory (const string &zipfile_path,
 }
 
 int
-SystemCompat::unzip_file (const char *zipname, const char *filedir)
+SystemCompat::unzip_file (arg_unused(const char *zipname), arg_unused(const char *filedir))
 {
-#if WITH_MULTIDEVICE
+#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
   struct zip *zipf;
   struct zip_file *inf;
   char cur_dir[2000];

@@ -71,7 +71,7 @@ public:
   virtual void setPropertyValue (const string &name, const string &value);
 
   // Input event callback.
-  bool userEventReceived (SDLInputEvent *evt);
+  bool userEventReceived (InputEvent *evt);
 };
 
 GINGA_PLAYER_END

@@ -27,7 +27,7 @@ using namespace ::ginga::tuner;
 GINGA_TSPARSER_BEGIN
 
 GINGA_PRAGMA_DIAG_PUSH ()
-GINGA_PRAGMA_DIAG_IGNORE (-Wunused-const-variable)
+//GINGA_PRAGMA_DIAG_IGNORE (-Wunused-const-variable)
 
 // specific packet ids
 static const short PAT_PID = 0x0000;
