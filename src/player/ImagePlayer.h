@@ -33,6 +33,7 @@ private:
   static bool displayJobCallbackWrapper (DisplayJob *,
                                          SDL_Renderer *, void *);
   bool displayJobCallback (DisplayJob *, SDL_Renderer *);
+  SDL_Surface* decodeSVG(int width, int height);
 
 public:
   ImagePlayer (const string &mrl);
