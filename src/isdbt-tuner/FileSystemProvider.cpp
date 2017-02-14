@@ -66,7 +66,7 @@ FileSystemProvider::getCurrentChannel ()
 }
 
 bool
-FileSystemProvider::getSTCValue (arg_unused (uint64_t *stc), arg_unused (int *valueType))
+FileSystemProvider::getSTCValue (arg_unused (guint64 *stc), arg_unused (int *valueType))
 {
   return false;
 }
