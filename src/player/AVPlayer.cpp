@@ -633,7 +633,7 @@ AVPlayer::run ()
   else
     {
       totalTime = getTotalMediaTime ();
-      if (!std::isinf (scopeEndTime) && scopeEndTime > 0
+      if (!isinf (scopeEndTime) && scopeEndTime > 0
           && scopeEndTime < totalTime)
         {
           dur = getStopTime ();
@@ -647,7 +647,7 @@ AVPlayer::run ()
       clog << " is '" << dur << "'";
       clog << endl;
 
-      if (std::isinf (dur))
+      if (isinf (dur))
         {
           clog << "AVPlayer::run duration is INF";
           clog << " => returning" << endl;

@@ -30,7 +30,7 @@ StcWrapper::StcWrapper (IPlayer *realStcProvider)
 StcWrapper::~StcWrapper () { this->realStcProvider = NULL; }
 
 bool
-StcWrapper::getSTCValue (uint64_t *stc, int *valueType)
+StcWrapper::getSTCValue (guint64 *stc, int *valueType)
 {
   if (realStcProvider == NULL)
     {
