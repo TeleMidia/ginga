@@ -108,7 +108,7 @@ IntervalAnchor::setEnd (double e)
 bool
 IntervalAnchor::isObjectDuration (double value)
 {
-  return std::isinf (value);
+  return isinf (value);
 }
 
 GINGA_NCL_END

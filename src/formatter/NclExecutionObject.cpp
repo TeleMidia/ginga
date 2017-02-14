@@ -783,7 +783,7 @@ NclExecutionObject::updateEventDuration (NclPresentationEvent *event)
     {
       if (descriptor->instanceOf ("NclCascadingDescriptor"))
         {
-          if (!std::isnan (descriptor->getExplicitDuration ())
+          if (!isnan (descriptor->getExplicitDuration ())
               && event == wholeContent)
             {
               duration = descriptor->getExplicitDuration ();
