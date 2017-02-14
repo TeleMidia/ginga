@@ -357,7 +357,7 @@ FormatterScheduler::printAction (const string &act,
         }
 
       specTime = specTime + delay;
-      if (std::isinf (specTime))
+      if (isinf (specTime))
         {
           specTime = -1;
         }

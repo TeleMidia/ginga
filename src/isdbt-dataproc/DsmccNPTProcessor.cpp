@@ -230,7 +230,7 @@ DsmccNPTProcessor::clearUnusedTimebase ()
 uint64_t
 DsmccNPTProcessor::getSTCValue ()
 {
-  uint64_t stcValue;
+  guint64 stcValue;
   int valueType;
 
   stcProvider->getSTCValue (&stcValue, &valueType);

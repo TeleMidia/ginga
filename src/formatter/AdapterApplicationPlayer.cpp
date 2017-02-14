@@ -225,7 +225,7 @@ AdapterApplicationPlayer::prepare (NclExecutionObject *object,
   if (event->instanceOf ("NclPresentationEvent"))
     {
       double duration = ((NclPresentationEvent *)event)->getDuration ();
-      bool infDur = (std::isnan (duration) || std::isinf (duration));
+      bool infDur = (isnan (duration) || isinf (duration));
 
       if (explicitDur < 0)
         {
@@ -246,7 +246,7 @@ AdapterApplicationPlayer::prepare (NclExecutionObject *object,
         }
 
       // explicit duration overwrites implicit duration
-      if (!std::isnan (explicitDur) && explicitDur > 0)
+      if (!isnan (explicitDur) && explicitDur > 0)
         {
           object->removeEvent (event);
 
@@ -346,7 +346,7 @@ AdapterApplicationPlayer::prepare (NclFormatterEvent *event)
           clog << "AdapterApplicationPlayer::prepare '" << object->getId ();
           clog << "' with dur = '" << duration << "'" << endl;
 
-          if (std::isnan (duration))
+          if (isnan (duration))
             {
               player->setScope (
                   ((LabeledAnchor *)((NclAnchorEvent *)event)->getAnchor ())

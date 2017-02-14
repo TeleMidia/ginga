@@ -63,7 +63,7 @@ public:
   IDataProvider *tune ();
   bool changeChannel (int factor);
   bool setChannel (const string &channelValue);
-  bool getSTCValue (uint64_t *stc, int *valueType);
+  bool getSTCValue (guint64 *stc, int *valueType);
   Channel *getCurrentChannel ();
   int createPesFilter (int pid, int pesType, bool compositeFiler);
   string getPesFilterOutput ();

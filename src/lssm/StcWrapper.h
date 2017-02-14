@@ -36,7 +36,7 @@ private:
 public:
   StcWrapper (IPlayer *realStcProvider);
   virtual ~StcWrapper ();
-  bool getSTCValue (uint64_t *stc, int *valueType);
+  bool getSTCValue (guint64 *stc, int *valueType);
 };
 
 GINGA_LSSM_END
