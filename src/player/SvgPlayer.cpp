@@ -1,0 +1,134 @@
+/* Copyright (C) 2006-2017 PUC-Rio/Laboratorio TeleMidia
+
+This file is part of Ginga (Ginga-NCL).
+
+Ginga is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 2 of the License, or
+(at your option) any later version.
+
+Ginga is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
+
+#include "ginga.h"
+#include "SvgPlayer.h"
+
+#include "mb/Display.h"
+#include "mb/SDLWindow.h"
+using namespace ::ginga::mb;
+
+GINGA_PLAYER_BEGIN
+
+
+// Private methods.
+
+bool
+SvgPlayer::displayJobCallbackWrapper (DisplayJob *job,
+                                        SDL_Renderer *renderer,
+                                        void *self)
+{
+  return ((SvgPlayer *) self)->displayJobCallback (job, renderer);
+}
+
+bool
+SvgPlayer::displayJobCallback (arg_unused (DisplayJob *job),
+                                 SDL_Renderer *renderer)
+{
+  SDLWindow *window;
+
+  RsvgHandle* svg;
+  RsvgDimensionData dim;
+  GError *error = NULL;
+
+  double scale;
+  int width;
+  int height;
+
+  SDL_Rect rect;
+  SDL_Surface *sfc;
+  SDL_Texture *texture;
+
+  cairo_surface_t *cr_sfc;
+  cairo_t *cr;
+
+  svg = rsvg_handle_new_from_file(this->mrl.c_str (), &error);
+  if (unlikely (svg == NULL))
+    g_error ("cannot load SVG file %s: %s",
+             this->mrl.c_str (), error->message);
+
+  rsvg_handle_get_dimensions (svg, &dim);
+
+  this->lock ();
+
+  window = this->surface->getParentWindow ();
+  g_assert_nonnull (window);
+
+  rect = window->getRect ();
+  g_assert (rect.w > 0 && rect.h > 0);
+
+  scale = (dim.width > dim.height)
+    ? (double) rect.w / dim.width
+    : (double) rect.h / dim.height;
+
+  width = (int)(floor (dim.width * scale) + 1);
+  height = (int)(floor (dim.height * scale) + 1);
+
+  sfc = SDL_CreateRGBSurfaceWithFormat (0, width, height, 32,
+                                        SDL_PIXELFORMAT_ARGB8888);
+  g_assert_nonnull (sfc);
+
+  cr_sfc = cairo_image_surface_create_for_data ((guchar*) sfc->pixels,
+                                                CAIRO_FORMAT_ARGB32,
+                                                sfc->w, sfc->h, sfc->pitch);
+  g_assert_nonnull (cr_sfc);
+
+  cr = cairo_create (cr_sfc);
+  g_assert_nonnull (cr);
+
+  cairo_scale (cr, scale, scale);
+  rsvg_handle_render_cairo (svg, cr);
+
+  cairo_destroy (cr);
+  cairo_surface_destroy (cr_sfc);
+
+  texture = SDL_CreateTextureFromSurface (renderer, sfc);
+  g_assert_nonnull (texture);
+  SDL_FreeSurface (sfc);
+
+  window->setTexture (texture);
+
+  this->unlock ();
+  this->condDisplayJobSignal ();
+  return false;                 // remove job
+}
+
+
+// Public methods.
+
+SvgPlayer::SvgPlayer (const string &uri) : Player (uri)
+{
+  this->mutexInit ();
+  this->condDisplayJobInit ();
+  this->surface = new SDLSurface ();
+}
+
+SvgPlayer::~SvgPlayer (void)
+{
+  this->condDisplayJobClear ();
+  this->mutexClear ();
+}
+
+bool
+SvgPlayer::play ()
+{
+  Ginga_Display->addJob (displayJobCallbackWrapper, this);
+  this->condDisplayJobWait ();
+  return Player::play ();
+}
+
+GINGA_PLAYER_END

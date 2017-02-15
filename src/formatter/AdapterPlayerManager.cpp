@@ -18,32 +18,22 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "AdapterPlayerManager.h"
 
-#include "AdapterSubtitlePlayer.h"
-
-#include "AdapterPlainTxtPlayer.h"
-
-#include "AdapterSsmlPlayer.h"
-
-#include "AdapterImagePlayer.h"
-
-#include "AdapterMirrorPlayer.h"
-
 #include "AdapterAVPlayer.h"
-
+#include "AdapterChannelPlayer.h"
+#include "AdapterImagePlayer.h"
+#include "AdapterLuaPlayer.h"
+#include "AdapterMirrorPlayer.h"
+#include "AdapterNCLPlayer.h"
 #if WITH_GSTREAMER
 # include "AdapterNewVideoPlayer.h"
 #endif
-
-#include "AdapterLuaPlayer.h"
-
-#include "AdapterNCLPlayer.h"
-
-#include "AdapterChannelPlayer.h"
-
+#include "AdapterPlainTxtPlayer.h"
 #include "AdapterProgramAVPlayer.h"
-
-// #include "AdapterTimePlayer.h"
-// using namespace ::br::pucrio::telemidia::ginga::ncl::adapters::time;
+#include "AdapterSsmlPlayer.h"
+#include "AdapterSubtitlePlayer.h"
+#if WITH_LIBRSVG
+# include "AdapterSvgPlayer.h"
+#endif
 
 GINGA_FORMATTER_BEGIN
 
@@ -254,7 +244,22 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
   mime = buf.c_str ();
   g_assert_nonnull (mime);
 
-  if (g_str_has_prefix (mime, "image"))
+  g_debug ("mime %s", mime);
+
+  if (g_str_has_prefix (mime, "audio")
+      || g_str_has_prefix (mime, "video"))
+    {
+      classname = "AdapterAVPlayer";
+      adapter = new AdapterAVPlayer ();
+    }
+#if WITH_LIBRSVG
+  else if (g_str_has_prefix (mime, "image/svg"))
+    {
+      classname = "AdapterSvgPlayer";
+      adapter = new AdapterSvgPlayer ();
+    }
+#endif
+  else if (g_str_has_prefix (mime, "image"))
     {
       classname = "AdapterImagePlayer";
       adapter = new AdapterImagePlayer ();
@@ -264,19 +269,6 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
     {
       classname = "AdapterNewVideoPlayer";
       adapter = new AdapterNewVideoPlayer ();
-    }
-#endif
-  else if (g_str_has_prefix (mime, "audio")
-           || g_str_has_prefix (mime, "video"))
-    {
-      classname = "AdapterAVPlayer";
-      adapter = new AdapterAVPlayer ();
-    }
-#if WITH_BERKELIUM
-  else if (g_strcmp0 (mime, "text/html"))
-    {
-      classname = "AdapterBerkeliumPlayer";
-      adapter = new AdapterBerkeliumPlayer ();
     }
 #endif
   else if (g_strcmp0 (mime, "text/plain") == 0)

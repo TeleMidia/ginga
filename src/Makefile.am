@@ -32,17 +32,18 @@ AM_CPPFLAGS=\
   $(NULL)
 
 AM_CXXFLAGS=\
-  $(WERROR_CFLAGS)\
-  $(WARN_CFLAGS)\
   $(CURL_CFLAGS)\
   $(FFMPEG_CFLAGS)\
   $(GLIB_CFLAGS)\
   $(JPEG_CFLAGS)\
+  $(LIBRSVG_CFLAGS)\
   $(NCLUA_CFLAGS)\
   $(PTHREAD_CFLAGS)\
   $(SDL2IMAGE_CFLAGS)\
   $(SDL2TTF_CFLAGS)\
   $(SDL2_CFLAGS)\
+  $(WARN_CFLAGS)\
+  $(WERROR_CFLAGS)\
   $(XERCESC_CFLAGS)\
   $(NULL)
 
@@ -51,6 +52,7 @@ AM_LDFLAGS= -R $(libdir) -rpath $(libdir)\
   $(FFMPEG_LIBS)\
   $(GLIB_LIBS)\
   $(JPEG_LIBS)\
+  $(LIBRSVG_LIBS)\
   $(NCLUA_LIBS)\
   $(PTHREAD_LIBS)\
   $(SDL2IMAGE_LIBS)\
@@ -70,6 +72,9 @@ src+= formatter/AdapterApplicationPlayer.cpp
 src+= formatter/AdapterChannelPlayer.cpp
 src+= formatter/AdapterFormatterPlayer.cpp
 src+= formatter/AdapterImagePlayer.cpp
+if WITH_LIBRSVG
+src+= formatter/AdapterSvgPlayer.cpp
+endif # WITH_LIBRSVG
 src+= formatter/AdapterLuaPlayer.cpp
 src+= formatter/AdapterMirrorPlayer.cpp
 src+= formatter/AdapterNCLPlayer.cpp
@@ -245,6 +250,9 @@ src+= player/Player.cpp
 src+= player/ProgramAV.cpp
 src+= player/ShowButton.cpp
 src+= player/SrtPlayer.cpp
+if WITH_LIBRSVG
+src+= player/SvgPlayer.cpp
+endif #WITH_LIBRSVG
 src+= player/TextPlayer.cpp
 src+= system/GingaLocatorFactory.cpp
 src+= system/PracticalSocket.cpp
@@ -389,9 +397,3 @@ src+= multidev/RemoteEventService.cpp
 src+= multidev/TcpClientConnection.cpp
 src+= multidev/TcpSocketService.cpp
 endif # WITH_MULTIDEVICE
-
-if WITH_LIBRSVG
-AM_CXXFLAGS+= $(LIBRSVG_CFLAGS)
-AM_LDFLAGS+= $(LIBRSVG_LIBS)
-src+= mb/SDLSvgDecoder.cpp
-endif # WITH_LIBRSVG
