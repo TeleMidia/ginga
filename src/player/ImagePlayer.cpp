@@ -30,9 +30,9 @@ GINGA_PLAYER_BEGIN
 
 
 // Private methods.
-SDL_Surface *
-ImagePlayer::decodeSVG(int width, int height){
-   
+SDL_Texture *
+ImagePlayer::decodeSVG(SDL_Renderer *renderer){
+ 
    RsvgHandle* h;
    RsvgDimensionData dim;
   
@@ -42,30 +42,35 @@ ImagePlayer::decodeSVG(int width, int height){
 
    /* RSVG initiation */
    h = rsvg_handle_new_from_file(this->mrl.c_str (), &e);
+   g_assert_nonnull(h);
    rsvg_handle_get_dimensions (h, &dim);
+   
+   //get region dim
+   this->lock ();
+   SDL_Rect r = surface->getParentWindow ()->getRect();
+   this->unlock();
 
-   // precisamos ver o quanto vamos escalar... Usando 1920x1080 como pior caso...
-   // Ver: http://www.svgopen.org/2009/presentations/62-Rendering_SVG_graphics_with_libSDL_a_crossplatform_multimedia_library/index.pdf
-   double scale = (dim.width > dim.height)? (double) 1920 / dim.width : (double) 1080 / dim.height;
+   //texture scale 
+   double scale = (dim.width > dim.height)? (double) r.w / dim.width : (double) r.h / dim.height;
+   
+   //new texture dim
+   int tw = floor(dim.width * scale) + 1;
+   int th = floor(dim.height * scale) + 1;
+   int stride = tw * 4; // ARGB
 
-   int x = floor(dim.width * scale) + 1;
-   int y = floor(dim.height * scale) + 1;
-   int stride = x * 4; // ARGB
-
-   /* Cairo Initiation */
-   uint8_t *image = (uint8_t *) malloc (stride * y); // ARGB uses 4 bytes / pixel
-
-   // here the correct would be...
-   cairoSurface = cairo_image_surface_create_for_data (image, CAIRO_FORMAT_ARGB32, x, y, stride);
+   uint8_t *pixels = (uint8_t *) malloc ( stride * th ); // ARGB uses 4 bytes / pixel
+   
+   //create surface
+   cairoSurface = cairo_image_surface_create_for_data (pixels, CAIRO_FORMAT_ARGB32, tw, th, stride);
+   g_assert_nonnull(cairoSurface);
    cairoState = cairo_create (cairoSurface);
-
+   g_assert_nonnull(cairoState);
+   
+   //apply scale
    cairo_scale(cairoState, scale, scale);
    rsvg_handle_render_cairo (h, cairoState);
 
-   // Use the following line for debug purposes
-//        cairo_surface_write_to_png (cairoSurface, "/tmp/out.png");
-
-        // Match ARGB32 format masks
+  // Match ARGB32 format masks
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
         Uint32 rmask = 0x0000ff00;
         Uint32 gmask = 0x00ff0000;
@@ -78,13 +83,12 @@ ImagePlayer::decodeSVG(int width, int height){
         Uint32 amask = 0xff000000;
 #endif
 
-        SDL_Surface *sdlSurface = SDL_CreateRGBSurfaceFrom ( (void *) image, x, y, 32, stride, rmask, gmask, bmask, amask);
-
-        cairo_surface_destroy (cairoSurface);
-        cairo_destroy (cairoState);
-
-        return sdlSurface;
-
+    //free
+    cairo_surface_destroy (cairoSurface);
+    cairo_destroy (cairoState);
+    
+    return SDL_CreateTextureFromSurface(renderer, 
+    SDL_CreateRGBSurfaceFrom ( (void *) pixels, tw, th, 32, stride, rmask, gmask, bmask, amask));
 }
 
 
@@ -105,13 +109,14 @@ ImagePlayer::displayJobCallback (arg_unused (DisplayJob *job),
   
    if( mrl.substr(mrl.find_last_of(".") + 1) == "svg" ||
        mrl.substr(mrl.find_last_of(".") + 1) == "svgz"){
-       texture = SDL_CreateTextureFromSurface(renderer, this->decodeSVG(100,100));
+       texture = this->decodeSVG(renderer);
+       if(unlikely(texture == NULL))
+          g_error ("cannot load image file %s: %s", this->mrl.c_str (), SDL_GetError());
   }
   else{ 
       texture = IMG_LoadTexture (renderer, this->mrl.c_str ());
       if (unlikely (texture == NULL))
-          g_error ("cannot load image file %s: %s", this->mrl.c_str (),
-      IMG_GetError ());
+          g_error ("cannot load image file %s: %s", this->mrl.c_str (),IMG_GetError ());
   }           
 
   this->lock ();
