@@ -15,32 +15,23 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef SVG_PLAYER_H
-#define SVG_PLAYER_H
+#ifndef ADAPTER_SVG_PLAYER_H
+#define ADAPTER_SVG_PLAYER_H
 
-#include "Player.h"
-#include "mb/Display.h"
-using namespace ginga::mb;
+#include "AdapterFormatterPlayer.h"
 
-GINGA_PLAYER_BEGIN
+GINGA_FORMATTER_BEGIN
 
-class SVGPlayer : public Player
+class AdapterSvgPlayer : public AdapterFormatterPlayer
 {
-private:
-  GINGA_MUTEX_DEFN ();
-  GINGA_COND_DEFN (DisplayJob);
-
-  static bool displayJobCallbackWrapper (DisplayJob *,
-                                         SDL_Renderer *, void *);
-  bool displayJobCallback (DisplayJob *, SDL_Renderer *);
-  SDL_Texture* decode( SDL_Renderer *renderer);
-
 public:
-  SVGPlayer (const string &mrl);
-  ~SVGPlayer (void);
-  bool play (void);
+  AdapterSvgPlayer ();
+  virtual ~AdapterSvgPlayer (){};
+
+protected:
+  void createPlayer ();
 };
 
-GINGA_PLAYER_END
+GINGA_FORMATTER_END
 
-#endif /* SVG_PLAYER_H */
+#endif /* ADAPTER_SVG_PLAYER_H */

@@ -16,17 +16,17 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "AdapterImagePlayer.h"
-#include "player/ImagePlayer.h"
+#include "AdapterSvgPlayer.h"
+#include "player/SvgPlayer.h"
 
 GINGA_FORMATTER_BEGIN
 
-AdapterImagePlayer::AdapterImagePlayer () : AdapterFormatterPlayer () {}
+AdapterSvgPlayer::AdapterSvgPlayer () : AdapterFormatterPlayer () {}
 
 void
-AdapterImagePlayer::createPlayer ()
+AdapterSvgPlayer::createPlayer ()
 {
-  player = new ImagePlayer (mrl);
+  player = new SvgPlayer (mrl);
   AdapterFormatterPlayer::createPlayer ();
 }
 

@@ -20,14 +20,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "mb/Display.h"
 #include "mb/SDLWindow.h"
-
-#include "librsvg/rsvg.h"
-
-
 using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
+
 // Private methods.
 bool
 ImagePlayer::displayJobCallbackWrapper (DisplayJob *job,
@@ -43,11 +40,12 @@ ImagePlayer::displayJobCallback (arg_unused (DisplayJob *job),
 {
   SDL_Texture *texture;
   SDLWindow *window;
-  
+
   texture = IMG_LoadTexture (renderer, this->mrl.c_str ());
   if (unlikely (texture == NULL))
-      g_error ("cannot load image file %s: %s", this->mrl.c_str (),IMG_GetError ());
-             
+      g_error ("cannot load image file %s: %s",
+               this->mrl.c_str (),IMG_GetError ());
+
   this->lock ();
   window = surface->getParentWindow ();
   g_assert_nonnull (window);
@@ -60,6 +58,10 @@ ImagePlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
 // Public methods.
 
+
+/**
+ * Creates ImagePlayer for the given URI
+ */
 ImagePlayer::ImagePlayer (const string &uri) : Player (uri)
 {
   this->mutexInit ();
@@ -67,12 +69,18 @@ ImagePlayer::ImagePlayer (const string &uri) : Player (uri)
   this->surface = new SDLSurface ();
 }
 
+/**
+ * Destroys ImagePlayer.
+ */
 ImagePlayer::~ImagePlayer (void)
 {
   this->condDisplayJobClear ();
   this->mutexClear ();
 }
 
+/**
+ * Present player content.
+ */
 bool
 ImagePlayer::play ()
 {
