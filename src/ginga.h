@@ -377,7 +377,7 @@ xstrchomp (string s)
 
 // Replaces all the occurences of <find_what> in the string <str> with the
 // string <replace_with>
-static void
+static inline void
 xstrreplaceall (string &str, const string &find_what,
                 const string &replace_with)
 {

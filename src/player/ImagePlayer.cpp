@@ -30,9 +30,15 @@ GINGA_PLAYER_BEGIN
 
 
 // Private methods.
+<<<<<<< HEAD
 SDL_Texture *
 ImagePlayer::decodeSVG(SDL_Renderer *renderer){
  
+=======
+SDL_Surface *
+ImagePlayer::decodeSVG(arg_unused (int width), arg_unused (int height)){
+   
+>>>>>>> aa1f05abd49544a43358a6d2e86099f16e7716af
    RsvgHandle* h;
    RsvgDimensionData dim;
   
@@ -50,6 +56,7 @@ ImagePlayer::decodeSVG(SDL_Renderer *renderer){
    SDL_Rect r = surface->getParentWindow ()->getRect();
    this->unlock();
 
+<<<<<<< HEAD
    //texture scale 
    double scale = (dim.width > dim.height)? (double) r.w / dim.width : (double) r.h / dim.height;
    
@@ -57,6 +64,18 @@ ImagePlayer::decodeSVG(SDL_Renderer *renderer){
    int tw = floor(dim.width * scale) + 1;
    int th = floor(dim.height * scale) + 1;
    int stride = tw * 4; // ARGB
+=======
+   // precisamos ver o quanto vamos escalar... Usando 1920x1080 como pior caso...
+   // Ver: http://www.svgopen.org/2009/presentations/62-Rendering_SVG_graphics_with_libSDL_a_crossplatform_multimedia_library/index.pdf
+   double scale = (dim.width > dim.height)? (double) 1920 / dim.width : (double) 1080 / dim.height;
+
+   int x = (int) floor (dim.width * scale) + 1;
+   int y = (int) floor (dim.height * scale) + 1;
+   int stride = x * 4; // ARGB
+
+   /* Cairo Initiation */
+   uint8_t *image = (uint8_t *) malloc (stride * y); // ARGB uses 4 bytes / pixel
+>>>>>>> aa1f05abd49544a43358a6d2e86099f16e7716af
 
    uint8_t *pixels = (uint8_t *) malloc ( stride * th ); // ARGB uses 4 bytes / pixel
    
