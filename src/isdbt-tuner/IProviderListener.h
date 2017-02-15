@@ -20,10 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TUNER_BEGIN
 
-GINGA_PRAGMA_DIAG_PUSH ()
-//GINGA_PRAGMA_DIAG_IGNORE (-Wunused-const-variable)
-static const short PST_LOOP = 0x01;
-GINGA_PRAGMA_DIAG_POP ()
+static G_GNUC_UNUSED const short PST_LOOP = 0x01;
 
 class ITProviderListener
 {

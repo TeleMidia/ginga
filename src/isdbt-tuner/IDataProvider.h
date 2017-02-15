@@ -24,25 +24,20 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_TUNER_BEGIN
 
-GINGA_PRAGMA_DIAG_PUSH ()
-//GINGA_PRAGMA_DIAG_IGNORE (-Wunused-const-variable)
-
 // data provider capabilities
-static const short DPC_CAN_FETCHDATA = 0x01;
-static const short DPC_CAN_DEMUXBYHW = 0x02;
-static const short DPC_CAN_FILTERPID = 0x04;
-static const short DPC_CAN_FILTERTID = 0x08;
-static const short DPC_CAN_DECODESTC = 0x10;
-static const short DPC_CAN_CTLSTREAM = 0x20;
+static G_GNUC_UNUSED const short DPC_CAN_FETCHDATA = 0x01;
+static G_GNUC_UNUSED const short DPC_CAN_DEMUXBYHW = 0x02;
+static G_GNUC_UNUSED const short DPC_CAN_FILTERPID = 0x04;
+static G_GNUC_UNUSED const short DPC_CAN_FILTERTID = 0x08;
+static G_GNUC_UNUSED const short DPC_CAN_DECODESTC = 0x10;
+static G_GNUC_UNUSED const short DPC_CAN_CTLSTREAM = 0x20;
 
 // pes filter types
-static const int PFT_DEFAULTTS = 0x01;
-static const int PFT_PCR = 0x02;
-static const int PFT_VIDEO = 0x03;
-static const int PFT_AUDIO = 0x04;
-static const int PFT_OTHER = 0x05;
-
-GINGA_PRAGMA_DIAG_POP ()
+static G_GNUC_UNUSED const int PFT_DEFAULTTS = 0x01;
+static G_GNUC_UNUSED const int PFT_PCR = 0x02;
+static G_GNUC_UNUSED const int PFT_VIDEO = 0x03;
+static G_GNUC_UNUSED const int PFT_AUDIO = 0x04;
+static G_GNUC_UNUSED const int PFT_OTHER = 0x05;
 
 class IDataProvider
 {
