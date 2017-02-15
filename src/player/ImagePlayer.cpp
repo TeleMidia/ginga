@@ -31,7 +31,7 @@ GINGA_PLAYER_BEGIN
 
 // Private methods.
 SDL_Surface *
-ImagePlayer::decodeSVG(int width, int height){
+ImagePlayer::decodeSVG(arg_unused (int width), arg_unused (int height)){
    
    RsvgHandle* h;
    RsvgDimensionData dim;
@@ -48,8 +48,8 @@ ImagePlayer::decodeSVG(int width, int height){
    // Ver: http://www.svgopen.org/2009/presentations/62-Rendering_SVG_graphics_with_libSDL_a_crossplatform_multimedia_library/index.pdf
    double scale = (dim.width > dim.height)? (double) 1920 / dim.width : (double) 1080 / dim.height;
 
-   int x = floor(dim.width * scale) + 1;
-   int y = floor(dim.height * scale) + 1;
+   int x = (int) floor (dim.width * scale) + 1;
+   int y = (int) floor (dim.height * scale) + 1;
    int stride = x * 4; // ARGB
 
    /* Cairo Initiation */
