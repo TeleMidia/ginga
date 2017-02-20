@@ -34,6 +34,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #if WITH_LIBRSVG
 # include "AdapterSvgPlayer.h"
 #endif
+#if WITH_PANGO
+# include "AdapterNewTextPlayer.h"
+#endif
 
 GINGA_FORMATTER_BEGIN
 
@@ -271,11 +274,13 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
       adapter = new AdapterNewVideoPlayer ();
     }
 #endif
-  else if (g_strcmp0 (mime, "text/plain") == 0)
+#if WITH_PANGO
+  else if (streq (mime, "text/plain"))
     {
-      classname = "AdapterPlainTxtPlayer";
-      adapter = new AdapterPlainTxtPlayer ();
+      classname = "AdapterNewTextPlayer";
+      adapter = new AdapterNewTextPlayer ();
     }
+#endif
   else if (g_strcmp0 (mime, "text/srt") == 0)
     {
       classname = "AdapterSubtitlePlayer";
