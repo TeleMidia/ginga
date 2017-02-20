@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "ImagePlayer.h"
+#include "NewTextPlayer.h"
 
 #include "mb/Display.h"
 #include "mb/SDLWindow.h"
@@ -24,29 +24,23 @@ using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
-
 // Private methods.
+
 bool
-ImagePlayer::displayJobCallbackWrapper (DisplayJob *job,
+NewTextPlayer::displayJobCallbackWrapper (DisplayJob *job,
                                         SDL_Renderer *renderer,
                                         void *self)
 {
-  return ((ImagePlayer *) self)->displayJobCallback (job, renderer);
+  return ((NewTextPlayer *) self)->displayJobCallback (job, renderer);
 }
 
 bool
-ImagePlayer::displayJobCallback (arg_unused (DisplayJob *job),
+NewTextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
                                  SDL_Renderer *renderer)
 {
   SDL_Texture *texture;
   SDLWindow *window;
-
-  texture = IMG_LoadTexture (renderer, mrl.c_str ());
-  if (unlikely (texture == NULL))
-    g_error ("cannot load image file %s: %s", mrl.c_str (),
-             IMG_GetError ());
-
-
+  //texture =
   this->lock ();
   window = surface->getParentWindow ();
   g_assert_nonnull (window);
@@ -59,31 +53,21 @@ ImagePlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
 // Public methods.
 
-
-/**
- * Creates ImagePlayer for the given URI
- */
-ImagePlayer::ImagePlayer (const string &uri) : Player (uri)
+NewTextPlayer::TextPlayer (const string &uri) : Player (uri)
 {
   this->mutexInit ();
   this->condDisplayJobInit ();
   this->surface = new SDLSurface ();
 }
 
-/**
- * Destroys ImagePlayer.
- */
-ImagePlayer::~ImagePlayer (void)
+NewTextPlayer::~TextPlayer (void)
 {
   this->condDisplayJobClear ();
   this->mutexClear ();
 }
 
-/**
- * Present player content.
- */
 bool
-ImagePlayer::play ()
+NewTextPlayer::play ()
 {
   Ginga_Display->addJob (displayJobCallbackWrapper, this);
   this->condDisplayJobWait ();
