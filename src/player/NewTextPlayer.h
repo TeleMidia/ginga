@@ -20,6 +20,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Player.h"
 #include "mb/Display.h"
+
+#include <pango/pangocairo.h>
+
 using namespace ginga::mb;
 
 GINGA_PLAYER_BEGIN
@@ -27,18 +30,27 @@ GINGA_PLAYER_BEGIN
 class NewTextPlayer : public Player
 {
 private:
+  SDL_Color fontColor;
+  SDL_Color backgroundColor;
+  string fontFamily;   
+  string fontStyle;
+  string fontSize;
+  string fontVariant;
+  string fontWeight;
+  string fontURI;
+  string textAlign;
+
   GINGA_MUTEX_DEFN ();
   GINGA_COND_DEFN (DisplayJob);
 
   static bool displayJobCallbackWrapper (DisplayJob *,
                                          SDL_Renderer *, void *);
   bool displayJobCallback (DisplayJob *, SDL_Renderer *);
-  SDL_Texture* decode( SDL_Renderer *renderer);
-
 public:
   NewTextPlayer (const string &mrl);
   ~NewTextPlayer (void);
   bool play (void);
+  void setPropertyValue (const string &name, const string &value);
 };
 
 GINGA_PLAYER_END

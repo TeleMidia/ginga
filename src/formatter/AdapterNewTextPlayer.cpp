@@ -31,4 +31,5 @@ AdapterNewTextPlayer::createPlayer ()
   AdapterFormatterPlayer::createPlayer ();
 }
 
+
 GINGA_FORMATTER_END
