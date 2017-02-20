@@ -27,10 +27,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #if WITH_GSTREAMER
 # include "AdapterNewVideoPlayer.h"
 #endif
-#include "AdapterPlainTxtPlayer.h"
 #include "AdapterProgramAVPlayer.h"
 #include "AdapterSsmlPlayer.h"
-#include "AdapterSubtitlePlayer.h"
 #if WITH_LIBRSVG
 # include "AdapterSvgPlayer.h"
 #endif
@@ -284,7 +282,7 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
   else if (g_strcmp0 (mime, "text/srt") == 0)
     {
       classname = "AdapterSubtitlePlayer";
-      adapter = new AdapterSubtitlePlayer ();
+  //    adapter = new AdapterSubtitlePlayer ();
     }
   else if (g_strcmp0 (mime, "application/x-ginga-NCLua") == 0
            || g_strcmp0 (mime, "application/x-ginga-EPGFactory") == 0)
