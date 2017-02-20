@@ -82,6 +82,7 @@ SvgPlayer::displayJobCallback (arg_unused (DisplayJob *job),
                                         SDL_PIXELFORMAT_ARGB8888);
   g_assert_nonnull (sfc);
 
+  SDLx_LockSurface (sfc);
   cr_sfc = cairo_image_surface_create_for_data ((guchar*) sfc->pixels,
                                                 CAIRO_FORMAT_ARGB32,
                                                 sfc->w, sfc->h, sfc->pitch);
@@ -98,6 +99,8 @@ SvgPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
   texture = SDL_CreateTextureFromSurface (renderer, sfc);
   g_assert_nonnull (texture);
+
+  SDLx_UnlockSurface (sfc);
   SDL_FreeSurface (sfc);
 
   window->setTexture (texture);
