@@ -24,7 +24,6 @@ using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
-
 // Private methods.
 
 bool
