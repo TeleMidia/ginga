@@ -36,15 +36,15 @@ NewTextPlayer::displayJobCallbackWrapper (DisplayJob *job,
 
 bool
 NewTextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
-                                 SDL_Renderer *renderer)
+                                   arg_unused (SDL_Renderer *renderer))
 {
-  SDL_Texture *texture;
-  SDLWindow *window;
+  // SDL_Texture *texture;
+  // SDLWindow *window;
   //texture =
   this->lock ();
-  window = surface->getParentWindow ();
-  g_assert_nonnull (window);
-  window->setTexture (texture);
+  // window = surface->getParentWindow ();
+  // g_assert_nonnull (window);
+  // window->setTexture (texture);
   this->unlock ();
   this->condDisplayJobSignal ();
   return false;                 // remove job
@@ -53,14 +53,14 @@ NewTextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
 // Public methods.
 
-NewTextPlayer::TextPlayer (const string &uri) : Player (uri)
+NewTextPlayer::NewTextPlayer (const string &uri) : Player (uri)
 {
   this->mutexInit ();
   this->condDisplayJobInit ();
   this->surface = new SDLSurface ();
 }
 
-NewTextPlayer::~TextPlayer (void)
+NewTextPlayer::~NewTextPlayer (void)
 {
   this->condDisplayJobClear ();
   this->mutexClear ();
@@ -69,6 +69,7 @@ NewTextPlayer::~TextPlayer (void)
 bool
 NewTextPlayer::play ()
 {
+  g_debug ("hello!!");
   Ginga_Display->addJob (displayJobCallbackWrapper, this);
   this->condDisplayJobWait ();
   return Player::play ();

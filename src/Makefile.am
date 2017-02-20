@@ -38,6 +38,7 @@ AM_CXXFLAGS=\
   $(JPEG_CFLAGS)\
   $(LIBRSVG_CFLAGS)\
   $(NCLUA_CFLAGS)\
+  $(PANGO_CFLAGS)\
   $(PTHREAD_CFLAGS)\
   $(SDL2IMAGE_CFLAGS)\
   $(SDL2TTF_CFLAGS)\
@@ -54,6 +55,7 @@ AM_LDFLAGS= -R $(libdir) -rpath $(libdir)\
   $(JPEG_LIBS)\
   $(LIBRSVG_LIBS)\
   $(NCLUA_LIBS)\
+  $(PANGO_LIBS)\
   $(PTHREAD_LIBS)\
   $(SDL2IMAGE_LIBS)\
   $(SDL2TTF_LIBS)\
@@ -72,9 +74,6 @@ src+= formatter/AdapterApplicationPlayer.cpp
 src+= formatter/AdapterChannelPlayer.cpp
 src+= formatter/AdapterFormatterPlayer.cpp
 src+= formatter/AdapterImagePlayer.cpp
-if WITH_LIBRSVG
-src+= formatter/AdapterSvgPlayer.cpp
-endif # WITH_LIBRSVG
 src+= formatter/AdapterLuaPlayer.cpp
 src+= formatter/AdapterMirrorPlayer.cpp
 src+= formatter/AdapterNCLPlayer.cpp
@@ -245,15 +244,9 @@ src+= player/AVPlayer.cpp
 src+= player/ChannelPlayer.cpp
 src+= player/ImagePlayer.cpp
 src+= player/LuaPlayer.cpp
-src+= player/PlainTxtPlayer.cpp
 src+= player/Player.cpp
 src+= player/ProgramAV.cpp
 src+= player/ShowButton.cpp
-src+= player/SrtPlayer.cpp
-if WITH_LIBRSVG
-src+= player/SvgPlayer.cpp
-endif #WITH_LIBRSVG
-src+= player/TextPlayer.cpp
 src+= system/GingaLocatorFactory.cpp
 src+= system/PracticalSocket.cpp
 src+= system/Stc.cpp
@@ -284,6 +277,16 @@ AM_LDFLAGS+= $(GSTREAMER_LIBS)
 src+= formatter/AdapterNewVideoPlayer.cpp
 src+= player/NewVideoPlayer.cpp
 endif # WITH_GSTREAMER
+
+if WITH_LIBRSVG
+src+= formatter/AdapterSvgPlayer.cpp
+src+= player/SvgPlayer.cpp
+endif #WITH_LIBRSVG
+
+if WITH_PANGO
+src+= formatter/AdapterNewTextPlayer.cpp
+src+= player/NewTextPlayer.cpp
+endif # WITH_PANGO
 
 if WITH_ISDBT
 AM_CPPFLAGS+=\
