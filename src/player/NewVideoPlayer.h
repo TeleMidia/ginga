@@ -18,22 +18,31 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NEW_VIDEO_PLAYER_H
 #define NEW_VIDEO_PLAYER_H
 
-#include "system/SystemCompat.h"
-using namespace ::ginga::system;
+//#include "ginga.h"
 
-#include "system/Thread.h"
-using namespace ::ginga::system;
+//#include "system/Thread.h"
+//using namespace ginga::system;
 
-#ifdef IPROVIDERLISTENER
-#undef IPROVIDERLISTENER
-#endif
+//#ifdef IPROVIDERLISTENER
+//#undef IPROVIDERLISTENER
+//#endif
 
-#include "mb/IContinuousMediaProvider.h"
-#include "mb/SDLWindow.h"
-#include "mb/IProviderListener.h"
-using namespace ::ginga::mb;
+//#include "mb/IContinuousMediaProvider.h"
+//#include "mb/SDLWindow.h"
+//#include "mb/IProviderListener.h"
+
+GINGA_PRAGMA_DIAG_PUSH ()
+GINGA_PRAGMA_DIAG_IGNORE (-Wcast-qual)
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+#include <glib.h>
+#include <gst/gst.h>
+#include <gst/app/gstappsink.h>
+#include <gst/video/video.h>
+GINGA_PRAGMA_DIAG_POP ()
 
 #include "Player.h"
+#include "mb/Display.h"
+using namespace ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
@@ -79,8 +88,38 @@ public:
   void setAVPid (int aPid, int vPid);
 
   bool setOutWindow (SDLWindow* windowId);
+  
+ 
+ private:  
 
- private:
+  GINGA_MUTEX_DEFN ();
+  GINGA_COND_DEFN (DisplayJob);
+
+  static void eosCB (GstAppSink *, gpointer);
+  static GstFlowReturn newPrerollCB (GstAppSink *, gpointer);
+  static GstFlowReturn newSampleCB (GstAppSink *, gpointer);
+
+  static bool displayJobCallbackWrapper (DisplayJob *,
+                                         SDL_Renderer *, void *);
+  bool displayJobCallback (DisplayJob *, SDL_Renderer *);
+  
+  SDL_Texture *texture;
+
+  GstElement *playbin;
+  GstElement *bin;
+
+  GstSample *sample;
+
+  GstStateChangeReturn ret;  
+  GstBus *bus;
+  GstMessage *msg;
+
+  GstAppSinkCallbacks callbacks;
+
+  bool textureUpdated;
+
+  void createPipeline (string);
+
   void run ();
 
 };
