@@ -27,18 +27,15 @@ struct frame
   bool repeat;
 };
 
-GINGA_PRAGMA_DIAG_PUSH ()
-//GINGA_PRAGMA_DIAG_IGNORE (-Wunused-const-variable)
-static const unsigned int BROADCAST_PORT = 41000;
-static const int BASE_WRITE_BCAST_PORT = 51000;
-static const int SECO_WRITE_BCAST_PORT = 61000;
-static const string INTERFACE_NAME_A = "eth0";
-static const string INTERFACE_NAME_B = "wlan0";
-static const int MCAST_TTL = 31;
-static const int HEADER_SIZE = 11;
-static const int MAX_FRAME_SIZE = 400000;
-static const int NUM_OF_COPIES = 1;
-GINGA_PRAGMA_DIAG_POP ()
+static G_GNUC_UNUSED const unsigned int BROADCAST_PORT = 41000;
+static G_GNUC_UNUSED const int BASE_WRITE_BCAST_PORT = 51000;
+static G_GNUC_UNUSED const int SECO_WRITE_BCAST_PORT = 61000;
+static G_GNUC_UNUSED const string INTERFACE_NAME_A = "eth0";
+static G_GNUC_UNUSED const string INTERFACE_NAME_B = "wlan0";
+static G_GNUC_UNUSED const int MCAST_TTL = 31;
+static G_GNUC_UNUSED const int HEADER_SIZE = 11;
+static G_GNUC_UNUSED const int MAX_FRAME_SIZE = 400000;
+static G_GNUC_UNUSED const int NUM_OF_COPIES = 1;
 
 bool isValidRecvFrame (int recvFrom, int myIP, char *frame);
 bool isControlFrame (int frameType);

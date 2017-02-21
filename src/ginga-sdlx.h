@@ -38,8 +38,17 @@ GINGA_PRAGMA_DIAG_POP ()
 
 #define SDLx_assert(f) g_assert ((f) == 0)
 
+#define SDLx_BlitSurface(S1, r1, S2, r2)\
+  SDLx_assert (SDL_BlitSurface ((S1), (r1), (S2), (r2)))
+
 #define SDLx_CreateWindowAndRenderer(w, h, f, S, R)\
   SDLx_assert (SDL_CreateWindowAndRenderer ((w), (h), (f), (S), (R)))
+
+#define SDLx_LockSurface(S)\
+  SDLx_assert (SDL_LockSurface ((S)))
+
+#define SDLx_UnlockSurface(S)\
+  SDL_UnlockSurface ((S))
 
 #define SDLx_LockTexture(T, r, p, s)\
   SDLx_assert (SDL_LockTexture ((T), (r), (p), (s)))

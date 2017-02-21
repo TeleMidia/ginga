@@ -27,8 +27,8 @@ using namespace ::ginga::util;
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
 
-#include "SDLEventBuffer.h"
-#include "SDLInputEvent.h"
+#include "EventBuffer.h"
+#include "InputEvent.h"
 #include "ICmdEventListener.h"
 #include "IInputEventListener.h"
 #include "IMotionEventListener.h"
@@ -59,7 +59,7 @@ protected:
   bool running;
   bool notifying;
   bool notifyingApp;
-  SDLEventBuffer *eventBuffer;
+  EventBuffer *eventBuffer;
   double lastEventTime;
   double imperativeIntervalTime;
   double declarativeIntervalTime;
@@ -103,14 +103,14 @@ public:
 protected:
   void performInputLockedActions ();
   void performApplicationLockedActions ();
-  virtual bool dispatchEvent (SDLInputEvent *keyEvent);
-  virtual bool dispatchApplicationEvent (SDLInputEvent *keyEvent);
+  virtual bool dispatchEvent (InputEvent *keyEvent);
+  virtual bool dispatchApplicationEvent (InputEvent *keyEvent);
 
 public:
   void addApplicationInputEventListener (IInputEventListener *listener);
   void removeApplicationInputEventListener (IInputEventListener *listener);
 
-  void postInputEvent (SDLInputEvent *event);
+  void postInputEvent (InputEvent *event);
   void postInputEvent (Key::KeyCode keyCode);
   void postCommand (const string &cmd, const string &args);
 
@@ -119,11 +119,11 @@ public:
   int getCurrentXAxisValue ();
   int getCurrentYAxisValue ();
 
-  SDLEventBuffer *getEventBuffer ();
+  EventBuffer *getEventBuffer ();
 
 protected:
   virtual void run ();
-  void handleInputEvent (SDLInputEvent *inputEvent, int &pLastCode,
+  void handleInputEvent (InputEvent *inputEvent, int &pLastCode,
                          int &lastCode, double &pTimeStamp,
                          double &timeStamp, int &mouseX, int &mouseY);
 };

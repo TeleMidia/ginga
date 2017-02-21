@@ -15,40 +15,23 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef SDL_EVENT_BUFFER_H
-#define SDL_EVENT_BUFFER_H
+#ifndef ADAPTER_SVG_PLAYER_H
+#define ADAPTER_SVG_PLAYER_H
 
-#include "ginga.h"
-#include "SDLInputEvent.h"
+#include "AdapterFormatterPlayer.h"
 
-GINGA_MB_BEGIN
+GINGA_FORMATTER_BEGIN
 
-class SDLEventBuffer
+class AdapterSvgPlayer : public AdapterFormatterPlayer
 {
-private:
-  pthread_mutex_t ebMutex;
-  vector<SDL_Event> eventBuffer;
-  bool capsOn;
-  bool shiftOn;
-  bool isWaiting;
-  pthread_cond_t cond;
-  pthread_mutex_t condMutex;
-
 public:
-  SDLEventBuffer ();
-  virtual ~SDLEventBuffer ();
-  static bool checkEvent (Uint32 winId, SDL_Event event);
-  void feed (SDL_Event event, bool capsOn, bool shiftOn);
-  void postInputEvent (SDLInputEvent *event);
-  void waitEvent ();
-  SDLInputEvent *getNextEvent ();
-  void *getContent ();
+  AdapterSvgPlayer ();
+  virtual ~AdapterSvgPlayer (){};
 
-private:
-  void waitForEvent ();
-  bool eventArrived ();
+protected:
+  void createPlayer ();
 };
 
-GINGA_MB_END
+GINGA_FORMATTER_END
 
-#endif /* SDL_EVENT_BUFFER_H */
+#endif /* ADAPTER_SVG_PLAYER_H */

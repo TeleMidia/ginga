@@ -26,13 +26,7 @@ AdapterImagePlayer::AdapterImagePlayer () : AdapterFormatterPlayer () {}
 void
 AdapterImagePlayer::createPlayer ()
 {
-  clog << "AdapterImagePlayer::createPlayer '" << mrl << "'" << endl;
-
   player = new ImagePlayer (mrl);
-
-  clog << "AdapterImagePlayer::createPlayer '";
-  clog << mrl << "' ALL DONE" << endl;
-
   AdapterFormatterPlayer::createPlayer ();
 }
 

@@ -181,7 +181,7 @@ protected:
                      const string &parameter,
                      short type,
                      const string &value);
-  virtual bool userEventReceived (SDLInputEvent *ev) = 0;
+  virtual bool userEventReceived (InputEvent *ev) = 0;
 };
 
 GINGA_FORMATTER_END

@@ -26,53 +26,48 @@ using namespace ::ginga::tuner;
 
 GINGA_TSPARSER_BEGIN
 
-GINGA_PRAGMA_DIAG_PUSH ()
-//GINGA_PRAGMA_DIAG_IGNORE (-Wunused-const-variable)
-
 // specific packet ids
-static const short PAT_PID = 0x0000;
-static const short CAT_PID = 0x0001;
-static const short TSDT_PID = 0x0001; // TS Description Table
-static const short NIT_PID = 0x0010;
-static const short SDT_PID = 0x0011;
-static const short EIT_PID = 0x0012;
-static const short CDT_PID = 0x0029;
+static G_GNUC_UNUSED const short PAT_PID = 0x0000;
+static G_GNUC_UNUSED const short CAT_PID = 0x0001;
+static G_GNUC_UNUSED const short TSDT_PID = 0x0001; // TS Description Table
+static G_GNUC_UNUSED const short NIT_PID = 0x0010;
+static G_GNUC_UNUSED const short SDT_PID = 0x0011;
+static G_GNUC_UNUSED const short EIT_PID = 0x0012;
+static G_GNUC_UNUSED const short CDT_PID = 0x0029;
 
 // specific section ids
-static const short PAT_TID = 0x00;
-static const short CAT_TID = 0x01;
-static const short PMT_TID = 0x02;
-static const short TSDT_TID = 0x03; // TS Description Section
-static const short OCI_TID = 0x3B;  // Object Carousel Info
-static const short OCD_TID = 0x3C;  // Object Carousel Data
-static const short DDE_TID = 0x3D;  // DSM-CC Descriptors
-static const short NIT_TID = 0x40;
-static const short SDT_TID = 0x42;
-static const short EIT_TID = 0x4E;
-static const short CDT_TID = 0xC8;
-static const short AIT_TID = 0x74;
-static const short TOT_TID = 0x73;
+static G_GNUC_UNUSED const short PAT_TID = 0x00;
+static G_GNUC_UNUSED const short CAT_TID = 0x01;
+static G_GNUC_UNUSED const short PMT_TID = 0x02;
+static G_GNUC_UNUSED const short TSDT_TID = 0x03; // TS Description Section
+static G_GNUC_UNUSED const short OCI_TID = 0x3B;  // Object Carousel Info
+static G_GNUC_UNUSED const short OCD_TID = 0x3C;  // Object Carousel Data
+static G_GNUC_UNUSED const short DDE_TID = 0x3D;  // DSM-CC Descriptors
+static G_GNUC_UNUSED const short NIT_TID = 0x40;
+static G_GNUC_UNUSED const short SDT_TID = 0x42;
+static G_GNUC_UNUSED const short EIT_TID = 0x4E;
+static G_GNUC_UNUSED const short CDT_TID = 0xC8;
+static G_GNUC_UNUSED const short AIT_TID = 0x74;
+static G_GNUC_UNUSED const short TOT_TID = 0x73;
 
 // specific stream types
-static const short STREAM_TYPE_VIDEO_MPEG1 = 0x01;
-static const short STREAM_TYPE_VIDEO_MPEG2 = 0x02;
-static const short STREAM_TYPE_AUDIO_MPEG1 = 0x03;
-static const short STREAM_TYPE_AUDIO_MPEG2 = 0x04;
-static const short STREAM_TYPE_PRIVATE_SECTION = 0x05;
-static const short STREAM_TYPE_PRIVATE_DATA = 0x06;
-static const short STREAM_TYPE_MHEG = 0x07;
-static const short STREAM_TYPE_DSMCC_TYPE_A = 0x0A;
-static const short STREAM_TYPE_DSMCC_TYPE_B = 0x0B;
-static const short STREAM_TYPE_DSMCC_TYPE_C = 0x0C;
-static const short STREAM_TYPE_DSMCC_TYPE_D = 0x0D;
-static const short STREAM_TYPE_AUDIO_AAC = 0x0F;
-static const short STREAM_TYPE_VIDEO_MPEG4 = 0x10;
-static const short STREAM_TYPE_AUDIO_MPEG4 = 0x11;
-static const short STREAM_TYPE_VIDEO_H264 = 0x1B;
-static const short STREAM_TYPE_AUDIO_AC3 = 0x81;
-static const short STREAM_TYPE_AUDIO_DTS = 0x8A;
-
-GINGA_PRAGMA_DIAG_POP ()
+static G_GNUC_UNUSED const short STREAM_TYPE_VIDEO_MPEG1 = 0x01;
+static G_GNUC_UNUSED const short STREAM_TYPE_VIDEO_MPEG2 = 0x02;
+static G_GNUC_UNUSED const short STREAM_TYPE_AUDIO_MPEG1 = 0x03;
+static G_GNUC_UNUSED const short STREAM_TYPE_AUDIO_MPEG2 = 0x04;
+static G_GNUC_UNUSED const short STREAM_TYPE_PRIVATE_SECTION = 0x05;
+static G_GNUC_UNUSED const short STREAM_TYPE_PRIVATE_DATA = 0x06;
+static G_GNUC_UNUSED const short STREAM_TYPE_MHEG = 0x07;
+static G_GNUC_UNUSED const short STREAM_TYPE_DSMCC_TYPE_A = 0x0A;
+static G_GNUC_UNUSED const short STREAM_TYPE_DSMCC_TYPE_B = 0x0B;
+static G_GNUC_UNUSED const short STREAM_TYPE_DSMCC_TYPE_C = 0x0C;
+static G_GNUC_UNUSED const short STREAM_TYPE_DSMCC_TYPE_D = 0x0D;
+static G_GNUC_UNUSED const short STREAM_TYPE_AUDIO_AAC = 0x0F;
+static G_GNUC_UNUSED const short STREAM_TYPE_VIDEO_MPEG4 = 0x10;
+static G_GNUC_UNUSED const short STREAM_TYPE_AUDIO_MPEG4 = 0x11;
+static G_GNUC_UNUSED const short STREAM_TYPE_VIDEO_H264 = 0x1B;
+static G_GNUC_UNUSED const short STREAM_TYPE_AUDIO_AC3 = 0x81;
+static G_GNUC_UNUSED const short STREAM_TYPE_AUDIO_DTS = 0x8A;
 
 class IDemuxer : public ITunerListener
 {

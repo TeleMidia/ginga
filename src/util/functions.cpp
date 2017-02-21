@@ -217,8 +217,6 @@ isPercentualValue (const string &value)
 bool
 fileExists (const string &fileName)
 {
-  string currentPath;
-
   if (fileName == "")
     {
       clog << "fileExists is false: null entry" << endl;
@@ -262,20 +260,13 @@ bool
 isDirectory (const char *path)
 {
   struct stat f_stat;
-
   stat (path, &f_stat);
 
-  /* return IS_DIRECTORY(f_stat.st_mode); */
-
   if (f_stat.st_mode & S_IFREG)
-    {
-      return false;
-    }
+    return false;
 
   if (f_stat.st_mode & S_IFDIR)
-    {
-      return true;
-    }
+    return true;
 
   return false;
 }
@@ -315,21 +306,6 @@ getNextStepValue (double initValue,
     }
 
   return nextStepValue;
-}
-
-// Replaces ALL occurences in <str> of the string <find_what> with the
-// string <replace_with>
-void
-str_replace_all (string &str, const string &find_what,
-                 const string &replace_with)
-{
-  string::size_type pos = 0;
-  while ((pos = str.find (find_what, pos)) != string::npos)
-    {
-      str.erase (pos, find_what.length ());
-      str.insert (pos, replace_with);
-      pos += replace_with.length ();
-    }
 }
 
 GINGA_UTIL_END
