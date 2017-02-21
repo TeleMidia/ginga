@@ -46,7 +46,7 @@ public:
   short getCaps ();
   bool tune ();
   Channel *getCurrentChannel ();
-  bool getSTCValue (uint64_t *stc, int *valueType);
+  bool getSTCValue (guint64 *stc, int *valueType);
   bool changeChannel (int factor);
   bool setChannel (const string &channelValue);
   int createPesFilter (int pid, int pesType, bool compositeFiler);

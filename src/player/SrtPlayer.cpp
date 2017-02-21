@@ -39,12 +39,7 @@ SrtPlayer::~SrtPlayer ()
 {
   clog << "SrtPlayer::~SrtPlayer" << endl;
   lock ();
-  /*
-   * TODO: is some class deleting this
-   * if (renderSurface != NULL) {
-          delete renderSurface;
-          renderSurface = NULL;
-  }*/
+ 
 
   if (textEvents != NULL)
     {

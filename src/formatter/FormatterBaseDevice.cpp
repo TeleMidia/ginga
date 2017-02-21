@@ -119,9 +119,8 @@ FormatterBaseDevice::receiveRemoteEvent (int remoteDevClass, int eventType,
 }
 
 bool
-FormatterBaseDevice::userEventReceived (SDLInputEvent *ev)
+FormatterBaseDevice::userEventReceived (InputEvent *ev)
 {
-  string mnemonicCode;
   int currentX;
   int currentY;
   int code;

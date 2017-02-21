@@ -214,7 +214,7 @@ NetworkInterface::setChannel (const string &channelValue)
 }
 
 bool
-NetworkInterface::getSTCValue (uint64_t *stc, int *valueType)
+NetworkInterface::getSTCValue (guint64 *stc, int *valueType)
 {
   if (provider != NULL)
     {

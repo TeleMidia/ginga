@@ -16,18 +16,18 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "SDLInputEvent.h"
+#include "InputEvent.h"
 #include "Display.h"
 #include "Key.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_MB_BEGIN
-const string SDLInputEvent::ET_WAKEUP = "GINGA_WAKEUP";
-const string SDLInputEvent::ET_INPUTEVENT = "GINGA_INPUTEVENT";
-const string SDLInputEvent::ET_USEREVENT = "GINGA_USEREVENT";
+const string InputEvent::ET_WAKEUP = "GINGA_WAKEUP";
+const string InputEvent::ET_INPUTEVENT = "GINGA_INPUTEVENT";
+const string InputEvent::ET_USEREVENT = "GINGA_USEREVENT";
 
-SDLInputEvent::SDLInputEvent (SDL_Event event)
+InputEvent::InputEvent (SDL_Event event)
 {
   this->event = event;
 
@@ -36,7 +36,7 @@ SDLInputEvent::SDLInputEvent (SDL_Event event)
   shiftOn = false;
 }
 
-SDLInputEvent::SDLInputEvent (const int keyCode)
+InputEvent::InputEvent (const int keyCode)
 {
   event.type = SDL_KEYDOWN;
   event.key.type = SDL_KEYDOWN;
@@ -47,7 +47,7 @@ SDLInputEvent::SDLInputEvent (const int keyCode)
   x = y = 0;
 }
 
-SDLInputEvent::SDLInputEvent (int type, void *data)
+InputEvent::InputEvent (int type, void *data)
 {
   event.type = SDL_USEREVENT;
   event.user.code = type;
@@ -57,28 +57,28 @@ SDLInputEvent::SDLInputEvent (int type, void *data)
   x = y = 0;
 }
 
-SDLInputEvent::~SDLInputEvent () {}
+InputEvent::~InputEvent () {}
 
 void
-SDLInputEvent::setModifiers (bool capsOn, bool shiftOn)
+InputEvent::setModifiers (bool capsOn, bool shiftOn)
 {
   this->capsOn = capsOn;
   this->shiftOn = shiftOn;
 }
 
 void
-SDLInputEvent::clearContent ()
+InputEvent::clearContent ()
 {
 }
 
 void *
-SDLInputEvent::getContent ()
+InputEvent::getContent ()
 {
   return &event;
 }
 
 void
-SDLInputEvent::setKeyCode (Key::KeyCode keyCode)
+InputEvent::setKeyCode (Key::KeyCode keyCode)
 {
   int sdlCode;
 
@@ -95,7 +95,7 @@ SDLInputEvent::setKeyCode (Key::KeyCode keyCode)
 }
 
 Key::KeyCode
-SDLInputEvent::getKeyCode ()
+InputEvent::getKeyCode ()
 {
   Key::KeyCode gingaValue;
   int sdlValue;
@@ -161,7 +161,7 @@ SDLInputEvent::getKeyCode ()
 }
 
 void *
-SDLInputEvent::getApplicationData ()
+InputEvent::getApplicationData ()
 {
   if (isApplicationType ())
     {
@@ -172,7 +172,7 @@ SDLInputEvent::getApplicationData ()
 }
 
 unsigned int
-SDLInputEvent::getType ()
+InputEvent::getType ()
 {
   unsigned int result = Key::KEY_NULL;
 
@@ -189,7 +189,7 @@ SDLInputEvent::getType ()
 }
 
 bool
-SDLInputEvent::isButtonPressType ()
+InputEvent::isButtonPressType ()
 {
   if (event.type == SDL_FINGERUP || event.type == SDL_MOUSEBUTTONUP
       || event.type == SDL_FINGERDOWN || event.type == SDL_MOUSEBUTTONDOWN)
@@ -201,7 +201,7 @@ SDLInputEvent::isButtonPressType ()
 }
 
 bool
-SDLInputEvent::isMotionType ()
+InputEvent::isMotionType ()
 {
   if (event.type == SDL_MOUSEMOTION || event.type == SDL_FINGERMOTION)
     {
@@ -211,7 +211,7 @@ SDLInputEvent::isMotionType ()
 }
 
 bool
-SDLInputEvent::isPressedType ()
+InputEvent::isPressedType ()
 {
   if (event.type == SDL_KEYDOWN)
     {
@@ -221,7 +221,7 @@ SDLInputEvent::isPressedType ()
 }
 
 bool
-SDLInputEvent::isKeyType ()
+InputEvent::isKeyType ()
 {
   if (event.type == SDL_KEYUP || event.type == SDL_KEYDOWN)
     {
@@ -231,7 +231,7 @@ SDLInputEvent::isKeyType ()
 }
 
 bool
-SDLInputEvent::isApplicationType ()
+InputEvent::isApplicationType ()
 {
   if (event.type == SDL_USEREVENT && event.user.data1 != NULL
       && event.user.data2 != NULL)
@@ -246,14 +246,14 @@ SDLInputEvent::isApplicationType ()
 }
 
 void
-SDLInputEvent::setAxisValue (int x, int y, arg_unused (int z))
+InputEvent::setAxisValue (int x, int y, arg_unused (int z))
 {
   this->x = x;
   this->y = y;
 }
 
 void
-SDLInputEvent::getAxisValue (int *x, int *y, arg_unused (int *z))
+InputEvent::getAxisValue (int *x, int *y, arg_unused (int *z))
 {
   *x = 0;
   *y = 0;

@@ -1061,7 +1061,7 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
   if (event->instanceOf ("NclPresentationEvent"))
     {
       double duration = ((NclPresentationEvent *)event)->getDuration ();
-      bool infDur = (std::isnan (duration) || std::isinf (duration));
+      bool infDur = (isnan (duration) || isinf (duration));
 
       if (descriptor != NULL && explicitDur < 0)
         {
@@ -1077,7 +1077,7 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
         }
 
       // explicit duration overwrites implicit duration
-      if (!std::isnan (explicitDur) && explicitDur > 0)
+      if (!isnan (explicitDur) && explicitDur > 0)
         {
           object->removeEvent (event);
 
@@ -1174,7 +1174,7 @@ AdapterFormatterPlayer::prepareScope (double offset)
           if (outTransDur > 0.0)
             {
               playerDur = player->getTotalMediaTime ();
-              if (std::isinf (duration) && playerDur > 0.0)
+              if (isinf (duration) && playerDur > 0.0)
                 {
                   duration = playerDur * 1000;
                 }
@@ -1214,7 +1214,7 @@ AdapterFormatterPlayer::prepareScope (double offset)
           if (outTransDur > 0.0)
             {
               playerDur = player->getTotalMediaTime ();
-              if (std::isinf (duration) && playerDur > 0.0)
+              if (isinf (duration) && playerDur > 0.0)
                 {
                   duration = playerDur * 1000;
                 }
@@ -1297,7 +1297,7 @@ AdapterFormatterPlayer::checkAnchorMonitor ()
       return;
     }
 
-  if (nextTransition != NULL && !std::isinf (nextTransition->getTime ()))
+  if (nextTransition != NULL && !isinf (nextTransition->getTime ()))
     {
       clog << "AdapterFormatterPlayer::checkAnchorMonitor ";
       clog << "creating TIME NominalEventMonitor for '";
@@ -1891,8 +1891,8 @@ AdapterFormatterPlayer::updateObjectExpectedDuration ()
   wholeContentEvent = object->getWholeContentPresentationEvent ();
   duration = wholeContentEvent->getDuration ();
   if ((object->getDescriptor () == NULL)
-      || (std::isnan ((object->getDescriptor ())->getExplicitDuration ()))
-      || (duration < 0) || (std::isnan (duration)))
+      || (isnan ((object->getDescriptor ())->getExplicitDuration ()))
+      || (duration < 0) || (isnan (duration)))
     {
       implicitDur = getObjectExpectedDuration ();
       ((IntervalAnchor *)wholeContentEvent->getAnchor ())
@@ -1995,7 +1995,7 @@ AdapterFormatterPlayer::updateStatus (short code,
 }
 
 bool
-AdapterFormatterPlayer::userEventReceived (SDLInputEvent *ev)
+AdapterFormatterPlayer::userEventReceived (InputEvent *ev)
 {
   int keyCode;
 

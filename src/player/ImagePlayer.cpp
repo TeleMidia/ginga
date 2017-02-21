@@ -26,7 +26,6 @@ GINGA_PLAYER_BEGIN
 
 
 // Private methods.
-
 bool
 ImagePlayer::displayJobCallbackWrapper (DisplayJob *job,
                                         SDL_Renderer *renderer,
@@ -47,6 +46,7 @@ ImagePlayer::displayJobCallback (arg_unused (DisplayJob *job),
     g_error ("cannot load image file %s: %s", mrl.c_str (),
              IMG_GetError ());
 
+
   this->lock ();
   window = surface->getParentWindow ();
 
@@ -66,6 +66,10 @@ ImagePlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
 // Public methods.
 
+
+/**
+ * Creates ImagePlayer for the given URI
+ */
 ImagePlayer::ImagePlayer (const string &uri) : Player (uri)
 {
   this->mutexInit ();
@@ -73,12 +77,18 @@ ImagePlayer::ImagePlayer (const string &uri) : Player (uri)
   this->surface = new SDLSurface ();
 }
 
+/**
+ * Destroys ImagePlayer.
+ */
 ImagePlayer::~ImagePlayer (void)
 {
   this->condDisplayJobClear ();
   this->mutexClear ();
 }
 
+/**
+ * Present player content.
+ */
 bool
 ImagePlayer::play ()
 {

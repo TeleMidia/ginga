@@ -19,43 +19,32 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define LUAPLAYER_H
 
 #include "Player.h"
-#include "mb/SDLWindow.h"
-#include "mb/IFontProvider.h"
+
+#include "mb/Display.h"
 #include "mb/InputManager.h"
 using namespace ::ginga::mb;
-
-#include "system/SystemCompat.h"
-using namespace ::ginga::system;
 
 GINGA_PLAYER_BEGIN
 
 class LuaPlayer : public Player, public IInputEventListener
 {
 private:
-  GRecMutex mutex;       // sync access to player
+  GINGA_MUTEX_DEFN ();
+  GINGA_COND_DEFN (DisplayJob);
+
   ncluaw_t *nw;          // the NCLua state
   bool hasExecuted;      // true if script was executed
   bool isKeyHandler;     // true if player has the focus
   string scope;          // the label of the active anchor
   InputManager *im;
 
-  // Update thread.
-  static list<LuaPlayer *> *nw_update_list;
-  static GRecMutex nw_update_mutex;
-  static GThread *nw_update_thread;
-  static void *nw_update_thread_fn (void *data);
-  static void nw_update_insert (LuaPlayer *player);
-
-public:
-  static void nw_update_remove (LuaPlayer *player);
+  static bool displayJobCallbackWrapper (DisplayJob *,
+                                         SDL_Renderer *, void *);
+  bool displayJobCallback (DisplayJob *, SDL_Renderer *);
 
 public:
   LuaPlayer (const string &mrl);
   virtual ~LuaPlayer (void);
-
-  // TODO: Make private.
-  void lock (void);
-  void unlock (void);
   bool doPlay (void);
   void doStop (void);
 
@@ -71,7 +60,7 @@ public:
   virtual void setPropertyValue (const string &name, const string &value);
 
   // Input event callback.
-  bool userEventReceived (SDLInputEvent *evt);
+  bool userEventReceived (InputEvent *evt);
 };
 
 GINGA_PLAYER_END

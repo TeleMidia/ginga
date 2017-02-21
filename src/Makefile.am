@@ -32,17 +32,19 @@ AM_CPPFLAGS=\
   $(NULL)
 
 AM_CXXFLAGS=\
-  $(WERROR_CFLAGS)\
-  $(WARN_CFLAGS)\
   $(CURL_CFLAGS)\
   $(FFMPEG_CFLAGS)\
   $(GLIB_CFLAGS)\
   $(JPEG_CFLAGS)\
+  $(LIBRSVG_CFLAGS)\
   $(NCLUA_CFLAGS)\
+  $(PANGO_CFLAGS)\
   $(PTHREAD_CFLAGS)\
   $(SDL2IMAGE_CFLAGS)\
   $(SDL2TTF_CFLAGS)\
   $(SDL2_CFLAGS)\
+  $(WARN_CFLAGS)\
+  $(WERROR_CFLAGS)\
   $(XERCESC_CFLAGS)\
   $(NULL)
 
@@ -51,7 +53,9 @@ AM_LDFLAGS= -R $(libdir) -rpath $(libdir)\
   $(FFMPEG_LIBS)\
   $(GLIB_LIBS)\
   $(JPEG_LIBS)\
+  $(LIBRSVG_LIBS)\
   $(NCLUA_LIBS)\
+  $(PANGO_LIBS)\
   $(PTHREAD_LIBS)\
   $(SDL2IMAGE_LIBS)\
   $(SDL2TTF_LIBS)\
@@ -73,10 +77,8 @@ src+= formatter/AdapterImagePlayer.cpp
 src+= formatter/AdapterLuaPlayer.cpp
 src+= formatter/AdapterMirrorPlayer.cpp
 src+= formatter/AdapterNCLPlayer.cpp
-src+= formatter/AdapterPlainTxtPlayer.cpp
 src+= formatter/AdapterPlayerManager.cpp
 src+= formatter/AdapterProgramAVPlayer.cpp
-src+= formatter/AdapterSubtitlePlayer.cpp
 src+= formatter/AnimationController.cpp
 src+= formatter/FormatterBaseDevice.cpp
 src+= formatter/FormatterConverter.cpp
@@ -131,14 +133,14 @@ src+= ic/InteractiveChannelManager.cpp
 src+= lssm/CommonCoreManager.cpp
 src+= lssm/PresentationEngineManager.cpp
 src+= mb/AudioProvider.cpp
-src+= mb/Key.cpp
 src+= mb/Display.cpp
+src+= mb/EventBuffer.cpp
 src+= mb/FontProvider.cpp
+src+= mb/InputEvent.cpp
 src+= mb/InputManager.cpp
+src+= mb/Key.cpp
 src+= mb/SDL2ffmpeg.cpp
 src+= mb/SDLConvert.cpp
-src+= mb/SDLEventBuffer.cpp
-src+= mb/SDLInputEvent.cpp
 src+= mb/SDLSurface.cpp
 src+= mb/SDLWindow.cpp
 src+= mb/VideoProvider.cpp
@@ -240,12 +242,9 @@ src+= player/AVPlayer.cpp
 src+= player/ChannelPlayer.cpp
 src+= player/ImagePlayer.cpp
 src+= player/LuaPlayer.cpp
-src+= player/PlainTxtPlayer.cpp
 src+= player/Player.cpp
 src+= player/ProgramAV.cpp
 src+= player/ShowButton.cpp
-src+= player/SrtPlayer.cpp
-src+= player/TextPlayer.cpp
 src+= system/GingaLocatorFactory.cpp
 src+= system/PracticalSocket.cpp
 src+= system/Stc.cpp
@@ -276,6 +275,16 @@ AM_LDFLAGS+= $(GSTREAMER_LIBS)
 src+= formatter/AdapterNewVideoPlayer.cpp
 src+= player/NewVideoPlayer.cpp
 endif # WITH_GSTREAMER
+
+if WITH_LIBRSVG
+src+= formatter/AdapterSvgPlayer.cpp
+src+= player/SvgPlayer.cpp
+endif #WITH_LIBRSVG
+
+if WITH_PANGO
+src+= formatter/AdapterNewTextPlayer.cpp
+src+= player/NewTextPlayer.cpp
+endif # WITH_PANGO
 
 if WITH_ISDBT
 AM_CPPFLAGS+=\
@@ -389,9 +398,3 @@ src+= multidev/RemoteEventService.cpp
 src+= multidev/TcpClientConnection.cpp
 src+= multidev/TcpSocketService.cpp
 endif # WITH_MULTIDEVICE
-
-if WITH_LIBRSVG
-AM_CXXFLAGS+= $(LIBRSVG_CFLAGS)
-AM_LDFLAGS+= $(LIBRSVG_LIBS)
-src+= mb/SDLSvgDecoder.cpp
-endif # WITH_LIBRSVG

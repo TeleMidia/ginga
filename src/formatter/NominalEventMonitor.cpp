@@ -124,7 +124,7 @@ NominalEventMonitor::prepareNptTransitionsEvents ()
   i = transValues->begin ();
   while (i != transValues->end ())
     {
-      if (!std::isinf (*i))
+      if (!isinf (*i))
         {
           clog << "NominalEventMonitor::prepareNptTransitionsEvents ";
           clog << "add listener contentId '" << timeBaseId;
@@ -270,7 +270,7 @@ NominalEventMonitor::pauseMonitor ()
 {
   clog << "NominalEventMonitor::pauseMonitor" << endl;
 
-  if (!std::isinf (expectedSleepTime))
+  if (!isinf (expectedSleepTime))
     {
       paused = true;
     }
@@ -279,7 +279,7 @@ NominalEventMonitor::pauseMonitor ()
 void
 NominalEventMonitor::resumeMonitor ()
 {
-  if (!std::isinf (expectedSleepTime) && paused)
+  if (!isinf (expectedSleepTime) && paused)
     {
       paused = false;
       unlockConditionSatisfied ();
@@ -298,7 +298,7 @@ NominalEventMonitor::stopMonitor ()
   if (running)
     {
       running = false;
-      if (std::isinf (expectedSleepTime) || paused)
+      if (isinf (expectedSleepTime) || paused)
         {
           unlockConditionSatisfied ();
         }
@@ -363,7 +363,7 @@ NominalEventMonitor::run ()
                       IPlayer::TYPE_PRESENTATION, "");
                 }
 
-              if (std::isinf (nextEntryTime))
+              if (isinf (nextEntryTime))
                 {
                   expectedSleepTime = INFINITY;
                 }
@@ -382,7 +382,7 @@ NominalEventMonitor::run ()
 
               if (running && !isDeleting)
                 {
-                  if (std::isinf (expectedSleepTime))
+                  if (isinf (expectedSleepTime))
                     {
                       waitForUnlockCondition ();
                     }

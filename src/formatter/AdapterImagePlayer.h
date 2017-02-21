@@ -15,16 +15,10 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef IMAGEPLAYERADAPTER_H_
-#define IMAGEPLAYERADAPTER_H_
+#ifndef ADAPTER_IMAGE_PLAYER_H
+#define ADAPTER_IMAGE_PLAYER_H
 
 #include "AdapterFormatterPlayer.h"
-
-#include "NclExecutionObject.h"
-
-#include "NclFormatterEvent.h"
-#include "NclPresentationEvent.h"
-#include "NclSelectionEvent.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -40,4 +34,4 @@ protected:
 
 GINGA_FORMATTER_END
 
-#endif /*IMAGEPLAYERADAPTER_H_*/
+#endif /* ADAPTER_IMAGE_PLAYER_H */
