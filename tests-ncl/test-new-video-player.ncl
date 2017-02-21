@@ -8,7 +8,7 @@
     </descriptorBase>
   </head>
   <body>
-    <port id='start' component='img'/>
-    <media id='img' src='samples/animGar.mp4' descriptor='desc' type='video/x-new-video-player'/>
+    <port id='start' component='video'/>
+    <media id='video' src='samples/bunny.ogg' descriptor='desc' type='video/x-new-video-player'/>
   </body>
 </ncl>
