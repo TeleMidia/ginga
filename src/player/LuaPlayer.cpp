@@ -129,16 +129,14 @@ LuaPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   g_assert_nonnull (sfc);
 
   SDLx_LockSurface (sfc);
-  ncluaw_paint (nw, (guchar *) sfc->pixels, "ARGB24",
+  ncluaw_paint (nw, (guchar *) sfc->pixels, "ARGB32",
                 sfc->w, sfc->h, sfc->pitch);
   SDLx_UnlockSurface (sfc);
 
   texture = window->getTexture ();
   if (unlikely (texture == NULL)) // first call
     {
-      texture = SDL_CreateTexture (renderer, SDL_PIXELFORMAT_ARGB8888,
-                                   SDL_TEXTUREACCESS_STATIC,
-                                   rect.w, rect.h);
+      texture = SDL_CreateTextureFromSurface (renderer, sfc);
       g_assert_nonnull (texture);
       signal = true;
     }
