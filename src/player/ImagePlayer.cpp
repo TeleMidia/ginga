@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "mb/Display.h"
 #include "mb/SDLWindow.h"
-using namespace ::ginga::mb;
+//using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
@@ -49,6 +49,13 @@ ImagePlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
   this->lock ();
   window = surface->getParentWindow ();
+
+  if (window == NULL ){
+    this->unlock ();
+    return true;
+  }
+
+
   g_assert_nonnull (window);
   window->setTexture (texture);
   this->unlock ();
