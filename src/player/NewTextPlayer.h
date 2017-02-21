@@ -31,7 +31,7 @@ class NewTextPlayer : public Player
 {
 private:
   SDL_Color fontColor;
-  SDL_Color backgroundColor;
+  SDL_Color bgColor;
   string fontFamily;   
   string fontStyle;
   string fontSize;
@@ -39,6 +39,7 @@ private:
   string fontWeight;
   string fontURI;
   string textAlign;
+  string verticalAlign;
 
   GINGA_MUTEX_DEFN ();
   GINGA_COND_DEFN (DisplayJob);

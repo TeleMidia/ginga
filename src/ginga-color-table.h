@@ -182,11 +182,21 @@ ginga_color_table_compar (const void *e1, const void *e2)
   return g_ascii_strcasecmp (c1->name, c2->name);
 }
 
+
+
+static inline double
+ginga_color_percent(guint c){
+    if(c>0) return (double)c/255;
+    else return 0;
+}
+
+//ginga_hex_to_rgb(const char* hex )
+
 /* Gets the color value associated with the given name.  If NAME is in color
    table, stores its color components into *R, *G, *B, and returns true,
    otherwise returns false.  */
 
-static gboolean
+static inline gboolean
 ginga_color_table_index (const char *name, guchar *r, guchar *g, guchar *b)
 {
   GingaColorTable key;
