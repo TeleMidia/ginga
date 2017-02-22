@@ -23,6 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <cairo.h>
 #include <pango/pangocairo.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "mb/Display.h"
 #include "mb/SDLWindow.h"
@@ -146,6 +147,18 @@ NewTextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
 NewTextPlayer::NewTextPlayer (const string &uri) : Player (uri)
 {
+  //defalts attr values 
+  ginga_color_input_to_sdl_color("#0", &fontColor); //black
+  ginga_color_input_to_sdl_color("#0000", &bgColor); //transparent
+  fontFamily = "serif";   
+  fontStyle ="normal";
+  fontSize ="18px";
+  fontVariant="normal";
+  fontWeight="normal";
+  fontURI="NULL";
+  textAlign="left";
+  verticalAlign="top";
+
   this->mutexInit ();
   this->condDisplayJobInit ();
   this->surface = new SDLSurface ();
@@ -170,14 +183,10 @@ void
 NewTextPlayer::setPropertyValue (const string &name, const string &value){
 
   if(name == "fontColor"){
-    fontColor.a=255;
-     if(!ginga_color_table_index (value.c_str(), &fontColor.r, &fontColor.g, &fontColor.b))
-         ginga_color_table_index ("White", &fontColor.r, &fontColor.g, &fontColor.b);
+      ginga_color_input_to_sdl_color(value, &fontColor);
   }
   else if(name == "backgroundColor"){
-     bgColor.a=255;
-     if(!ginga_color_table_index (value.c_str(), &bgColor.r, &bgColor.g, &bgColor.b))
-         ginga_color_table_index ("White", &bgColor.r, &bgColor.g, &bgColor.b);
+      ginga_color_input_to_sdl_color(value, &bgColor);
   }
   else if(name == "fontSize"){
          fontSize = value;
@@ -193,12 +202,10 @@ NewTextPlayer::setPropertyValue (const string &name, const string &value){
   else if(name == "fontStyle"){ 
          if(value == "normal" || value == "italic")
             fontStyle = value;
-      //   else fontStyle = "normal";
   }    
   else if(name == "fontWeight"){ 
          if(value == "normal" || value == "bold")
             fontStyle = value;
-       //  else fontStyle = "normal";
   } 
   else if(name == "fontFamily"){ 
          fontFamily = value;
@@ -206,7 +213,6 @@ NewTextPlayer::setPropertyValue (const string &name, const string &value){
   else if(name == "fontVariant"){ 
          if(value == "normal" || value == "small-caps")
             fontStyle = value;
-       //  else fontStyle = "normal"; 
   }
 
 }

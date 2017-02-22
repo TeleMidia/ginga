@@ -182,15 +182,88 @@ ginga_color_table_compar (const void *e1, const void *e2)
   return g_ascii_strcasecmp (c1->name, c2->name);
 }
 
+static inline const char *
+ginga_color_hex_formatter(string hex){
+   //remove #
+   if(hex[0]=='#') hex.erase(0, 1);
+   // 16 colors GrayScale
+   if(hex.length() == 1){
+      hex.insert(1, string(1,hex[0]) );
+      hex.insert(2, string(1,hex[0]) );
+      hex.insert(3, string(1,hex[0]) );
+      hex.insert(4, string(1,hex[0]) );
+      hex.insert(5, string(1,hex[0]) );
+      hex.append("FF"); 
+   } // RGB 16 colors per channel
+   else if(hex.length() == 3){
+      hex.insert(3, string(1,hex[2]) ); 
+      hex.insert(2, string(1,hex[1]) ); 
+      hex.insert(1, string(1,hex[0]) ); 
+      hex.append("FF");
+  } // RGBA 16 colors per channel
+   else if(hex.length() == 4){
+      hex.insert(4, string(1,hex[3]) ); 
+      hex.insert(3, string(1,hex[2]) ); 
+      hex.insert(2, string(1,hex[1]) );
+      hex.insert(1, string(1,hex[0]) );
+   } //RGB 256 colors per channel
+   else if(hex.length() == 6){
+      hex.append("FF"); 
+   }
+  
+   return hex.c_str();
+}
 
+static inline gboolean
+ginga_color_rgbatext_to_rgba(const string value, SDL_Color *color){
+      gchar **pixels = g_strsplit( value.substr 
+                                   (value.find("(")+1,
+                                    value.find(")")-value.find("(")-1).c_str()
+                                   ,",",-1 );
+   if(g_strv_length(pixels) < 3 )
+         return FALSE;
+
+   color->r = atoi( pixels[0] );          
+   color->g = atoi( pixels[1] );  
+   color->b = atoi( pixels[2] );  
+   if(pixels[3]!=NULL) color->a = atoi( pixels[3] );  
+   else color->a=255;
+   
+   g_strfreev(pixels);
+   return TRUE;
+}
+
+
+static inline gboolean
+ginga_color_hex_to_rgba(const string hex, SDL_Color *color){
+   const char *c = ginga_color_hex_formatter(hex);
+   if( strlen(c) < 8 ) return FALSE; 
+   int hexValue=0;
+  
+   for(int i=0; i<8; i++, ++c){
+         char  thisC = *c; 
+        thisC = toupper(thisC);
+        hexValue <<= 4;
+        if( thisC >= 48 &&  thisC <= 57 )
+            hexValue += thisC - 48;
+        else if( thisC >= 65 && thisC <= 70)
+            hexValue += thisC - 65 + 10;
+        else return FALSE;
+    }
+   
+   color->r = ((hexValue >> 24) & 0xFF);   // extract the RR byte
+   color->g = ((hexValue >> 16) & 0xFF);    // extract the GG byte
+   color->b = ((hexValue >> 8) & 0xFF);  // extract the BB byte
+   color->a = ((hexValue) & 0xFF);  // extract the AA byte
+   
+   return TRUE;
+}
 
 static inline double
 ginga_color_percent(guint c){
     if(c>0) return (double)c/255;
     else return 0;
 }
-
-//ginga_hex_to_rgb(const char* hex )
 
 /* Gets the color value associated with the given name.  If NAME is in color
    table, stores its color components into *R, *G, *B, and returns true,
@@ -214,6 +287,16 @@ ginga_color_table_index (const char *name, guchar *r, guchar *g, guchar *b)
   *b = match->b;
 
   return TRUE;
+}
+
+static inline gboolean
+ginga_color_input_to_sdl_color(const string value, SDL_Color *color){
+   if(value[0] == '#') //by hex 
+         return ginga_color_hex_to_rgba(value, color);
+   else if(value.substr (0,3)=="rgb") //by rgbatxt
+         return ginga_color_rgbatext_to_rgba(value, color);
+   else  //by name
+         return ginga_color_table_index (value.c_str(), &color->r, &color->g, &color->b ); 
 }
 
 #endif /* GINGA_COLOR_TABLE_H */
