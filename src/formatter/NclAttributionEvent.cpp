@@ -83,6 +83,10 @@ NclAttributionEvent::getCurrentValue ()
   string propName;
   string maintainerValue = "";
 
+  if (unlikely (anchor == NULL))
+    g_error ("Trying to set a null (probably undeclared) "
+             "property anchor of object %s", id.c_str ());
+
   if (settingNode)
     {
       propName = anchor->getPropertyName ();

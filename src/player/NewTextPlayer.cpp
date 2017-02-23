@@ -48,91 +48,90 @@ bool
 NewTextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
                                    arg_unused (SDL_Renderer *renderer))
 {
-   
+
     gchar *contents;
     GError *err = NULL;
     g_file_get_contents (this->mrl.c_str (), &contents, NULL, &err);
     if (err != NULL) g_error_free (err);
     g_assert_nonnull(contents);
-  
+
     SDLWindow *window;
     SDL_Texture *texture;
 
     SDL_Surface *sfc;
     cairo_t *cr;
-    cairo_status_t status;
     cairo_surface_t *surface_c;
-    
+
     double vAlign=0;
     int textAreaHeight;
-  
+
     this->lock ();
     SDL_Rect r = this->surface->getParentWindow()->getRect();
   //  g_debug("%f", this->surface->getParentWindow()->getAlpha() );
-    sfc = SDL_CreateRGBSurfaceWithFormat (0, r.w, 
-                                           r.h, 
+    sfc = SDL_CreateRGBSurfaceWithFormat (0, r.w,
+                                           r.h,
                                            32, SDL_PIXELFORMAT_ARGB8888);
-    g_assert_nonnull (sfc);                                       
-    this->unlock ();                                      
+    g_assert_nonnull (sfc);
+    this->unlock ();
 
-    SDLx_LockSurface (sfc); 
+    SDLx_LockSurface (sfc);
     surface_c = cairo_image_surface_create_for_data ((guchar*) sfc->pixels,
                                                 CAIRO_FORMAT_ARGB32,
                                                 sfc->w, sfc->h, sfc->pitch);
     cr = cairo_create (surface_c);
     g_assert_nonnull (cr);
     //background
-    cairo_set_source_rgba (cr,ginga_color_percent(bgColor.r), 
-                              ginga_color_percent(bgColor.g),  
-                              ginga_color_percent(bgColor.b), 
+    cairo_set_source_rgba (cr,ginga_color_percent(bgColor.r),
+                              ginga_color_percent(bgColor.g),
+                              ginga_color_percent(bgColor.b),
                               ginga_color_percent(bgColor.a));
 
-    cairo_paint (cr); 
+    cairo_paint (cr);
 
-    // Create a PangoLayout, set the font face and text 
+    // Create a PangoLayout, set the font face and text
     PangoLayout * layout = pango_cairo_create_layout (cr);
     pango_layout_set_text (layout,  contents, -1);
     string fontDescription = fontFamily+" "+fontWeight+" "+fontStyle+" "+fontSize;
     PangoFontDescription *desc = pango_font_description_from_string ( fontDescription.c_str() );
     pango_layout_set_font_description (layout, desc);
-    
-    if(textAlign == "left") 
+
+    if(textAlign == "left")
         pango_layout_set_alignment(layout,PANGO_ALIGN_LEFT);
     else if(textAlign == "center")
         pango_layout_set_alignment(layout,PANGO_ALIGN_CENTER);
     else if(textAlign == "right")
         pango_layout_set_alignment(layout,PANGO_ALIGN_RIGHT);
     else
-        pango_layout_set_justify(layout, true);    
+        pango_layout_set_justify(layout, true);
 
     pango_layout_set_width (layout,r.w*PANGO_SCALE);
     pango_layout_set_wrap (layout,PANGO_WRAP_WORD);
     pango_layout_get_size (layout, NULL, &textAreaHeight);
     pango_font_description_free (desc);
-     
-    cairo_set_source_rgba (cr, ginga_color_percent(fontColor.r), 
-                               ginga_color_percent(fontColor.g),  
-                               ginga_color_percent(fontColor.b), 
+
+    cairo_set_source_rgba (cr, ginga_color_percent(fontColor.r),
+                               ginga_color_percent(fontColor.g),
+                               ginga_color_percent(fontColor.b),
                                ginga_color_percent(fontColor.a));
-  
+
     pango_cairo_update_layout (cr, layout);
 
     if(verticalAlign == "top") vAlign = 0;
     else if(verticalAlign == "middle") vAlign = (r.h/2) - ( (textAreaHeight/PANGO_SCALE) /2);
     else vAlign= r.h - (textAreaHeight/PANGO_SCALE);
-    
+
     cairo_move_to (cr, 0, vAlign);
     pango_cairo_show_layout (cr, layout);
-   
-    // free the layout object 
+
+    // free the layout object
     g_object_unref (layout);
     cairo_destroy (cr);
     cairo_surface_destroy (surface_c);
-    
+
     texture = SDL_CreateTextureFromSurface (renderer, sfc);
-    g_assert_nonnull (texture); 
+    g_assert_nonnull (texture);
     SDLx_UnlockSurface (sfc);
-              
+
     this->lock ();
     window = surface->getParentWindow ();
     g_assert_nonnull (window);
@@ -147,10 +146,10 @@ NewTextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
 NewTextPlayer::NewTextPlayer (const string &uri) : Player (uri)
 {
-  //defalts attr values 
+  //defalts attr values
   ginga_color_input_to_sdl_color("#0", &fontColor); //black
   ginga_color_input_to_sdl_color("#0000", &bgColor); //transparent
-  fontFamily = "serif";   
+  fontFamily = "serif";
   fontStyle ="";
   fontSize ="18px";
   fontVariant="";
@@ -172,13 +171,13 @@ NewTextPlayer::~NewTextPlayer (void)
 bool
 NewTextPlayer::play ()
 {
- 
+
   Ginga_Display->addJob (displayJobCallbackWrapper, this);
   this->condDisplayJobWait ();
   return Player::play ();
 }
 
-void 
+void
 NewTextPlayer::setPropertyValue (const string &name, const string &value){
 
   if(name == "fontColor"){
@@ -190,7 +189,7 @@ NewTextPlayer::setPropertyValue (const string &name, const string &value){
   else if(name == "fontSize"){
          fontSize = value;
   }
-  else if(name == "textAlign"){ 
+  else if(name == "textAlign"){
          if(value == "left" || value == "right" || value == "center" || value == "justify" )
             textAlign = value;
   }
@@ -198,18 +197,18 @@ NewTextPlayer::setPropertyValue (const string &name, const string &value){
          if(value == "top" || value == "middle" || value == "bottom" )
             verticalAlign = value;
   }
-  else if(name == "fontStyle"){ 
+  else if(name == "fontStyle"){
          if(value == "italic")
             fontStyle = value;
-  }    
-  else if(name == "fontWeight"){ 
+  }
+  else if(name == "fontWeight"){
          if(value == "bold")
             fontWeight = value;
-  } 
-  else if(name == "fontFamily"){ 
+  }
+  else if(name == "fontFamily"){
          fontFamily = value;
   }
-  else if(name == "fontVariant"){ 
+  else if(name == "fontVariant"){
          if(value == "small-caps")
             fontVariant = value;
   }
