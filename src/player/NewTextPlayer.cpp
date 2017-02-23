@@ -22,8 +22,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include <cairo.h>
 #include <pango/pangocairo.h>
+//#include <fontconfig/fontconfig.h>
 #include <stdio.h>
 #include <string.h>
+
 
 #include "mb/Display.h"
 #include "mb/SDLWindow.h"
@@ -66,6 +68,7 @@ NewTextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   
     this->lock ();
     SDL_Rect r = this->surface->getParentWindow()->getRect();
+  //  g_debug("%f", this->surface->getParentWindow()->getAlpha() );
     sfc = SDL_CreateRGBSurfaceWithFormat (0, r.w, 
                                            r.h, 
                                            32, SDL_PIXELFORMAT_ARGB8888);
@@ -84,18 +87,15 @@ NewTextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
                               ginga_color_percent(bgColor.b), 
                               ginga_color_percent(bgColor.a));
 
-    cairo_paint (cr);
- 
-    PangoLayout *layout;
-    PangoFontDescription *desc;
+    cairo_paint (cr); 
 
-    // Create a PangoLayout, set the font and text 
-    layout = pango_cairo_create_layout (cr);
+    // Create a PangoLayout, set the font face and text 
+    PangoLayout * layout = pango_cairo_create_layout (cr);
     pango_layout_set_text (layout,  contents, -1);
     string fontDescription = fontFamily+" "+fontWeight+" "+fontStyle+" "+fontSize;
-    desc = pango_font_description_from_string ( fontDescription.c_str() );
+    PangoFontDescription *desc = pango_font_description_from_string ( fontDescription.c_str() );
     pango_layout_set_font_description (layout, desc);
-
+    
     if(textAlign == "left") 
         pango_layout_set_alignment(layout,PANGO_ALIGN_LEFT);
     else if(textAlign == "center")
@@ -151,11 +151,10 @@ NewTextPlayer::NewTextPlayer (const string &uri) : Player (uri)
   ginga_color_input_to_sdl_color("#0", &fontColor); //black
   ginga_color_input_to_sdl_color("#0000", &bgColor); //transparent
   fontFamily = "serif";   
-  fontStyle ="normal";
+  fontStyle ="";
   fontSize ="18px";
-  fontVariant="normal";
-  fontWeight="normal";
-  fontURI="NULL";
+  fontVariant="";
+  fontWeight="";
   textAlign="left";
   verticalAlign="top";
 
@@ -200,19 +199,19 @@ NewTextPlayer::setPropertyValue (const string &name, const string &value){
             verticalAlign = value;
   }
   else if(name == "fontStyle"){ 
-         if(value == "normal" || value == "italic")
+         if(value == "italic")
             fontStyle = value;
   }    
   else if(name == "fontWeight"){ 
-         if(value == "normal" || value == "bold")
-            fontStyle = value;
+         if(value == "bold")
+            fontWeight = value;
   } 
   else if(name == "fontFamily"){ 
          fontFamily = value;
   }
   else if(name == "fontVariant"){ 
-         if(value == "normal" || value == "small-caps")
-            fontStyle = value;
+         if(value == "small-caps")
+            fontVariant = value;
   }
 
 }

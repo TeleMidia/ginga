@@ -967,7 +967,7 @@ FormatterLinkConverter::createEvent (
           return NULL;
         }
     }
-  catch (ObjectCreationForbiddenException *exc)
+  catch (exception *exc)
     {
       clog << "FormatterLinkConverter::createEvent Warning! ";
       clog << "can't execution object exception for perspective '";
