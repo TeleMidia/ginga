@@ -37,7 +37,6 @@ private:
   string fontSize;
   string fontVariant;
   string fontWeight;
-  string fontURI;
   string textAlign;
   string verticalAlign;
 

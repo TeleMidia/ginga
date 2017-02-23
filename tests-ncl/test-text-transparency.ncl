@@ -29,42 +29,46 @@
        <property name="fontSize" value="18px" />
        <property name="fontWeight" value="normal" />
        <property name="fontVariant" value="small-caps" />
+       <property name='transparency' value='90%'/>
     </media>
 
     <media id='text2' src='samples/text.txt' descriptor='desc2'>
-       <property name="fontColor" value="rgb(255,0,0)" />
-       <property name="backgroundColor" value="#0F0" />       
-       <property name="fontFamily" value="Arial" />
-       <property name="textAlign" value="left" />
-       <property name="verticalAlign" value="bottom" />
-       <property name="fontStyle" value="italic" />
-       <property name="fontSize" value="12pt" />
-       <property name="fontWeight" value="bold" />
+       <property name="fontColor" value="#0" />
+       <property name="backgroundColor" value="#F" />       
+       <property name="fontFamily" value="Courier" />
+       <property name="textAlign" value="center" />
+       <property name="verticalAlign" value="middle" />
+       <property name="fontStyle" value="normal" />
+       <property name="fontSize" value="18px" />
+       <property name="fontWeight" value="normal" />
        <property name="fontVariant" value="small-caps" />
+       <property name='transparency' value='60%'/>
     </media>
 
      <media id='text3' src='samples/text.txt' descriptor='desc3'>
-       <property name="fontColor" value="#E6F732" />
-       <property name="backgroundColor" value="#000055" />       
-       <property name="fontFamily" value="Times" />
-       <property name="textAlign" value="justify" />
-       <property name="verticalAlign" value="top" />
-       <property name="fontStyle" value="italic" />
-       <property name="fontSize" value="22px" />
-       <property name="fontWeight" value="bold" />
+       <property name="fontColor" value="#0" />
+       <property name="backgroundColor" value="#F" />       
+       <property name="fontFamily" value="Courier" />
+       <property name="textAlign" value="center" />
+       <property name="verticalAlign" value="middle" />
+       <property name="fontStyle" value="normal" />
+       <property name="fontSize" value="18px" />
+       <property name="fontWeight" value="normal" />
        <property name="fontVariant" value="small-caps" />
+       <property name='transparency' value='30%'/>
     </media>
    
     <media id='text4' src='samples/text.txt' descriptor='desc4'>
-       <property name="fontColor" value="#000000FF" />
-       <property name="backgroundColor" value="#e5e5e555" />       
-       <property name="fontFamily" value="Georgia" />
-       <property name="textAlign" value="right" />
+       <property name="fontColor" value="#0" />
+       <property name="backgroundColor" value="#F" />       
+       <property name="fontFamily" value="Courier" />
+       <property name="textAlign" value="center" />
        <property name="verticalAlign" value="middle" />
-       <property name="fontStyle" value="italic" />
-       <property name="fontSize" value="16" />
+       <property name="fontStyle" value="normal" />
+       <property name="fontSize" value="18px" />
        <property name="fontWeight" value="normal" />
        <property name="fontVariant" value="small-caps" />
+       <property name='transparency' value='10%'/>
     </media>
 
   </body>

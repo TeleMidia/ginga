@@ -3159,7 +3159,7 @@ FormatterMediator::setPropertyValue (const string &documentId, const string &nod
       executionObject = compiler->getExecutionObjectFromPerspective (
           perspective, NULL, compiler->getDepthLevel ());
     }
-  catch (ObjectCreationForbiddenException *exc)
+  catch (exception *exc)
     {
       return false;
     }
