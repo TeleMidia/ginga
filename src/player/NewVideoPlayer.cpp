@@ -15,11 +15,11 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga.h"
+//#include "ginga.h"
 #include "NewVideoPlayer.h"
 
-#include "mb/Display.h"
-#include "mb/SDLWindow.h"
+//#include "mb/Display.h"
+//#include "mb/SDLWindow.h"
 
 #define TRACE() g_debug ("%s",G_STRFUNC);
 
@@ -28,6 +28,95 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 //using namespace ::ginga::util;
 
 GINGA_PLAYER_BEGIN
+
+NewVideoPlayer::NewVideoPlayer (const string &mrl) : Thread (), Player (mrl)
+{
+	//TRACE ();
+  texture = NULL;
+  
+  this->mutexInit ();
+  this->condDisplayJobInit ();
+  this->surface = new SDLSurface ();
+  textureUpdated = false;
+  createPipeline(mrl);
+}
+
+NewVideoPlayer::~NewVideoPlayer ()
+{
+	TRACE ();
+}
+
+void
+NewVideoPlayer::createPipeline (string mrl)
+{
+  GstElement *filter;
+  GstElement *scale;
+  GstElement *sink;
+
+  GstPad *pad;
+  GstCaps *caps;
+  GstStructure *st;
+
+  char *uri;
+  
+  gst_init (NULL, NULL);
+
+  playbin = gst_element_factory_make ("playbin", NULL);
+  g_assert_nonnull (playbin);
+  
+  uri = gst_filename_to_uri (mrl.c_str (), NULL);
+  g_assert_nonnull (uri);
+
+  g_object_set (G_OBJECT (playbin), "uri", uri, NULL);
+  g_free (uri);
+
+  bin = gst_bin_new (NULL);
+  g_assert_nonnull (bin);
+
+  filter = gst_element_factory_make ("capsfilter", NULL);
+  g_assert_nonnull (filter);
+
+  st = gst_structure_new_empty ("video/x-raw");
+  gst_structure_set (st, "format", G_TYPE_STRING, "ARGB",
+                      "width", G_TYPE_INT, /*surface->getParentWindow ()->getRect().w*/ 800,
+                      "height", G_TYPE_INT, /*surface->getParentWindow ()->getRect().h*/ 600, 
+                      NULL);
+
+  caps = gst_caps_new_full (st, NULL);
+  g_assert_nonnull (caps);
+
+  g_object_set (filter, "caps", caps, NULL);
+  gst_caps_unref (caps);
+
+  scale = gst_element_factory_make ("videoscale", NULL);
+  g_assert_nonnull (scale);
+
+  sink = gst_element_factory_make ("appsink", NULL);
+  g_assert_nonnull (sink);
+
+  g_assert (gst_bin_add (GST_BIN (bin), filter));
+  g_assert (gst_bin_add (GST_BIN (bin), scale));
+  g_assert (gst_bin_add (GST_BIN (bin), sink));
+
+  g_assert (gst_element_link (filter, scale));
+  g_assert (gst_element_link (scale, sink)); 
+
+  pad = gst_element_get_static_pad (filter, "sink");
+  gst_element_add_pad (bin, gst_ghost_pad_new ("sink", pad));
+
+  g_object_set (G_OBJECT (playbin), "video-sink", bin, NULL);
+
+  callbacks.eos = eosCB;
+  callbacks.new_preroll = newPrerollCB;
+  callbacks.new_sample = newSampleCB;
+  gst_app_sink_set_callbacks (GST_APP_SINK (sink), &callbacks, this, NULL);
+
+//  bus = gst_element_get_bus (playbin);
+//  msg = gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE,
+//                                    (GstMessageType)(GST_MESSAGE_ERROR | GST_MESSAGE_EOS));
+//  gst_object_unref (playbin);
+//  gst_object_unref (bin);
+}
 
 void 
 NewVideoPlayer::eosCB (arg_unused (GstAppSink *appsink), arg_unused(gpointer data))
@@ -126,95 +215,6 @@ NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   this->unlock ();
   this->condDisplayJobSignal ();
   return true; //Keep job
-}
-
-NewVideoPlayer::NewVideoPlayer (const string &mrl) : Thread (), Player (mrl)
-{
-	//TRACE ();
-  texture = NULL;
-  
-  this->mutexInit ();
-  this->condDisplayJobInit ();
-  this->surface = new SDLSurface ();
-  textureUpdated = false;
-  createPipeline(mrl);
-}
-
-NewVideoPlayer::~NewVideoPlayer ()
-{
-	TRACE ();
-}
-
-void
-NewVideoPlayer::createPipeline (string mrl)
-{
-  GstElement *filter;
-  GstElement *scale;
-  GstElement *sink;
-
-  GstPad *pad;
-  GstCaps *caps;
-  GstStructure *st;
-
-  char *uri;
-  
-  gst_init (NULL, NULL);
-
-  playbin = gst_element_factory_make ("playbin", NULL);
-  g_assert_nonnull (playbin);
-  
-  uri = gst_filename_to_uri (mrl.c_str (), NULL);
-  g_assert_nonnull (uri);
-
-  g_object_set (G_OBJECT (playbin), "uri", uri, NULL);
-  g_free (uri);
-
-  bin = gst_bin_new (NULL);
-  g_assert_nonnull (bin);
-
-  filter = gst_element_factory_make ("capsfilter", NULL);
-  g_assert_nonnull (filter);
-
-  st = gst_structure_new_empty ("video/x-raw");
-  gst_structure_set (st, "format", G_TYPE_STRING, "ARGB",
-                      "width", G_TYPE_INT, /*surface->getParentWindow ()->getRect().w*/ 800,
-                      "height", G_TYPE_INT, /*surface->getParentWindow ()->getRect().h*/ 600, 
-                      NULL);
-
-  caps = gst_caps_new_full (st, NULL);
-  g_assert_nonnull (caps);
-
-  g_object_set (filter, "caps", caps, NULL);
-  gst_caps_unref (caps);
-
-  scale = gst_element_factory_make ("videoscale", NULL);
-  g_assert_nonnull (scale);
-
-  sink = gst_element_factory_make ("appsink", NULL);
-  g_assert_nonnull (sink);
-
-  g_assert (gst_bin_add (GST_BIN (bin), filter));
-  g_assert (gst_bin_add (GST_BIN (bin), scale));
-  g_assert (gst_bin_add (GST_BIN (bin), sink));
-
-  g_assert (gst_element_link (filter, scale));
-  g_assert (gst_element_link (scale, sink)); 
-
-  pad = gst_element_get_static_pad (filter, "sink");
-  gst_element_add_pad (bin, gst_ghost_pad_new ("sink", pad));
-
-  g_object_set (G_OBJECT (playbin), "video-sink", bin, NULL);
-
-  callbacks.eos = eosCB;
-  callbacks.new_preroll = newPrerollCB;
-  callbacks.new_sample = newSampleCB;
-  gst_app_sink_set_callbacks (GST_APP_SINK (sink), &callbacks, this, NULL);
-
-//  bus = gst_element_get_bus (playbin);
-//  msg = gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE,
-//                                    (GstMessageType)(GST_MESSAGE_ERROR | GST_MESSAGE_EOS));
-//  gst_object_unref (playbin);
-//  gst_object_unref (bin);
 }
 
 SDLSurface*

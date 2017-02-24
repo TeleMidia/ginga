@@ -77,8 +77,18 @@ SvgPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   width = (int)(floor (dim.width * scale) + 1);
   height = (int)(floor (dim.height * scale) + 1);
 
+#if SDL_VERSION_ATLEAST(2,0,5)
+
   sfc = SDL_CreateRGBSurfaceWithFormat (0, width, height, 32,
                                         SDL_PIXELFORMAT_ARGB8888);
+#else
+  sfc = SDL_CreateRGBSurface (0, width, height, 32,
+                              0xff000000,
+                              0x00ff0000,
+                              0x0000ff00,
+                              0x000000ff);
+#endif
+
   g_assert_nonnull (sfc);
 
   SDLx_LockSurface (sfc);
