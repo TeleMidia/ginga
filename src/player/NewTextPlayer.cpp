@@ -59,9 +59,23 @@ NewTextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
     cairo_surface_t *surface_c;
   
     this->lock ();
+
+#if SDL_VERSION_ATLEAST(2,0,5)
+
     sfc = SDL_CreateRGBSurfaceWithFormat (0, this->surface->getParentWindow()->getRect().w, 
                                            this->surface->getParentWindow()->getRect().h, 
                                            32, SDL_PIXELFORMAT_ARGB32);
+
+#else
+  sfc = SDL_CreateRGBSurface (0, this->surface->getParentWindow()->getRect().w, 
+                                           this->surface->getParentWindow()->getRect().h, 32,
+                              0xff000000,
+                              0x00ff0000,
+                              0x0000ff00,
+                              0x000000ff);
+#endif
+
+
     g_assert_nonnull (sfc);                                       
     this->unlock ();                                      
 
