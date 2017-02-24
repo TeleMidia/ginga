@@ -47,7 +47,6 @@ bool
 TextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
                                    arg_unused (SDL_Renderer *renderer))
 {
-
     gchar *contents;
     GError *err = NULL;
     g_file_get_contents (this->mrl.c_str (), &contents, NULL, &err);
@@ -66,7 +65,6 @@ TextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
     this->lock ();
     SDL_Rect r = this->surface->getParentWindow()->getRect();
-  //  g_debug("%f", this->surface->getParentWindow()->getAlpha() );
     sfc = SDL_CreateRGBSurfaceWithFormat (0, r.w,
                                            r.h,
                                            32, SDL_PIXELFORMAT_ARGB8888);
@@ -179,6 +177,8 @@ TextPlayer::play ()
 void
 TextPlayer::setPropertyValue (const string &name, const string &value){
 
+   Player::setPropertyValue(name,value);
+
   if(name == "fontColor"){
       ginga_color_input_to_sdl_color(value, &fontColor);
   }
@@ -211,7 +211,7 @@ TextPlayer::setPropertyValue (const string &name, const string &value){
          if(value == "small-caps")
             fontVariant = value;
   }
-
+ 
 }
 
 GINGA_PLAYER_END
