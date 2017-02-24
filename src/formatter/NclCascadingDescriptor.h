@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _CASCADINGDESCRIPTOR_H_
 
 #include "util/functions.h"
-#include "util/Color.h"
+//#include "util/Color.h"
 
 #include "ncl/Parameter.h"
 using namespace ::ginga::ncl;
@@ -65,8 +65,8 @@ private:
 
   string focusIndex, moveUp, moveDown, moveLeft, moveRight;
   string focusSrc, selectionSrc;
-  Color *focusBorderColor;
-  Color *selBorderColor;
+  SDL_Color *focusBorderColor;
+  SDL_Color *selBorderColor;
   int focusBorderWidth;
   int selBorderWidth;
   double focusBorderTransparency;
@@ -111,7 +111,7 @@ public:
   vector<Parameter *> *getParameters ();
   string getParameterValue (const string &paramName);
   vector<GenericDescriptor *> *getNcmDescriptors ();
-  Color *getFocusBorderColor ();
+  SDL_Color *getFocusBorderColor ();
   double getFocusBorderTransparency ();
   int getFocusBorderWidth ();
   string getFocusIndex ();
@@ -121,7 +121,7 @@ public:
   string getMoveLeft ();
   string getMoveRight ();
   string getMoveUp ();
-  Color *getSelBorderColor ();
+  SDL_Color *getSelBorderColor ();
   int getSelBorderWidth ();
   vector<Transition *> *getInputTransitions ();
   vector<Transition *> *getOutputTransitions ();

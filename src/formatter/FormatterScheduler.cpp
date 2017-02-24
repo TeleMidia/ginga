@@ -1535,7 +1535,8 @@ FormatterScheduler::initializeDefaultSettings ()
   value = presContext->getPropertyValue (DEFAULT_FOCUS_BORDER_COLOR);
   if (value != "")
     {
-      focusManager->setDefaultFocusBorderColor (new Color (value, alpha));
+      SDL_Color c = (new Color (value, alpha))->getColor();
+      focusManager->setDefaultFocusBorderColor( &c );
     }
 
   value = presContext->getPropertyValue (DEFAULT_FOCUS_BORDER_WIDTH);
@@ -1547,7 +1548,8 @@ FormatterScheduler::initializeDefaultSettings ()
   value = presContext->getPropertyValue (DEFAULT_SEL_BORDER_COLOR);
   if (value != "")
     {
-      focusManager->setDefaultSelBorderColor (new Color (value, alpha));
+      SDL_Color c = (new Color (value, alpha))->getColor();
+      focusManager->setDefaultSelBorderColor( &c );
     }
 }
 

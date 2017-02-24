@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTERREGION_H_
 #define FORMATTERREGION_H_
 
-#include "util/Color.h"
+//#include "util/Color.h"
 #include "util/functions.h"
 using namespace ::ginga::util;
 
@@ -58,20 +58,20 @@ private:
   bool imVisible;
 
   short focusState;
-  Color *focusBorderColor;
+  SDL_Color *focusBorderColor;
   int focusBorderWidth;
   string focusComponentSrc;
-  Color *selBorderColor;
+  SDL_Color *selBorderColor;
   string selComponentSrc;
   int selBorderWidth;
 
   int zIndex;
 
-  Color *bgColor;
+  SDL_Color *bgColor;
   double transparency;
   short fit;
   short scroll;
-  Color *chromaKey;
+  SDL_Color *chromaKey;
   string transitionIn;
   string transitionOut;
   bool abortTransitionIn;
@@ -125,8 +125,8 @@ public:
   void setMoveRight (const string &moveRight);
   string getMoveRight ();
 
-  void setFocusBorderColor (Color *focusBorderColor);
-  Color *getFocusBorderColor ();
+  void setFocusBorderColor (SDL_Color *focusBorderColor);
+  SDL_Color *getFocusBorderColor ();
 
   void setFocusBorderWidth (int focusBorderWidth);
   int getFocusBorderWidth ();
@@ -134,8 +134,8 @@ public:
   void setFocusComponentSrc (const string &focusComponentSrc);
   string getFocusComponentSrc ();
 
-  void setSelBorderColor (Color *selBorderColor);
-  Color *getSelBorderColor ();
+  void setSelBorderColor (SDL_Color *selBorderColor);
+  SDL_Color *getSelBorderColor ();
 
   void setSelBorderWidth (int selBorderWidth);
   int getSelBorderWidth ();
@@ -143,8 +143,8 @@ public:
   void setSelComponentSrc (const string &selComponentSrc);
   string getSelComponentSrc ();
 
-  void setFocusInfo (Color *focusBorderColor, int focusBorderWidth,
-                     const string &focusComponentSrc, Color *selBorderColor,
+  void setFocusInfo (SDL_Color *focusBorderColor, int focusBorderWidth,
+                     const string &focusComponentSrc, SDL_Color *selBorderColor,
                      int selBorderWidth, const string &selComponentSrc);
 
   void *getLayoutManager ();
@@ -205,13 +205,13 @@ public:
   void setFocus (bool focusOn);
   void unselect ();
 
-  Color *getBackgroundColor ();
+  SDL_Color *getBackgroundColor ();
 
   double getTransparency ();
   void setTransparency (const string &strTrans);
   void setTransparency (double transparency);
   void setBackgroundColor (const string &color);
-  void setBackgroundColor (Color *color);
+  void setBackgroundColor (SDL_Color *color);
   void setChromaKey (const string &value);
   void setRgbChromaKey (const string &value);
   void setFit (const string &value);

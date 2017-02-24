@@ -137,8 +137,8 @@ NclTransitionConverter::createTransition (DOMElement *parentElement,
     {
       color = new Color (XMLString::transcode (parentElement->getAttribute (
           XMLString::transcode ("fadeColor"))));
-
-      transition->setFadeColor (color);
+      SDL_Color a = color->getColor ();
+      transition->setFadeColor ( &a );
     }
 
   if (parentElement->hasAttribute (XMLString::transcode ("horzRepeat")))
@@ -169,8 +169,8 @@ NclTransitionConverter::createTransition (DOMElement *parentElement,
     {
       color = new Color (XMLString::transcode (parentElement->getAttribute (
           XMLString::transcode ("borderColor"))));
-
-      transition->setBorderColor (color);
+      SDL_Color a = color->getColor ();
+      transition->setBorderColor ( &a);
     }
 
   return transition;

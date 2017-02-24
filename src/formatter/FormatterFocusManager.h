@@ -21,7 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 
 #include "util/functions.h"
-#include "util/Color.h"
 
 #include "mb/InputManager.h"
 #include "mb/IInputEventListener.h"
@@ -61,9 +60,9 @@ private:
   string objectToSelect;
   NclExecutionObject *selectedObject;
 
-  Color *defaultFocusBorderColor;
+  SDL_Color *defaultFocusBorderColor;
   int defaultFocusBorderWidth;
-  Color *defaultSelBorderColor;
+  SDL_Color *defaultSelBorderColor;
   AdapterPlayerManager *playerManager;
   FormatterFocusManager *parentManager;
   FormatterMultiDevice *multiDevice;
@@ -133,9 +132,9 @@ private:
   void unregister ();
 
 public:
-  void setDefaultFocusBorderColor (Color *color);
+  void setDefaultFocusBorderColor (SDL_Color *color);
   void setDefaultFocusBorderWidth (int width);
-  void setDefaultSelBorderColor (Color *color);
+  void setDefaultSelBorderColor (SDL_Color *color);
 
   void setMotionBoundaries (int x, int y, int w, int h);
 

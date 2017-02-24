@@ -18,8 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef TRANSITION_H_
 #define TRANSITION_H_
 
-#include "util/Color.h"
-using namespace ::ginga::util;
+//using namespace ginga::util;
 
 #include "Entity.h"
 
@@ -66,32 +65,32 @@ private:
   double startProgress;
   double endProgress;
   short direction;
-  Color *fadeColor;
+  SDL_Color *fadeColor;
   int horzRepeat;
   int vertRepeat;
-  Color *borderColor;
+  SDL_Color *borderColor;
   int borderWidth;
 
 public:
   Transition (const string &id, int type);
   virtual ~Transition ();
-  Color *getBorderColor ();
+  SDL_Color *getBorderColor ();
   int getBorderWidth ();
   short getDirection ();
   double getDur ();
   double getEndProgress ();
-  Color *getFadeColor ();
+  SDL_Color *getFadeColor ();
   int getHorzRepeat ();
   double getStartProgress ();
   int getSubtype ();
   int getType ();
   int getVertRepeat ();
-  void setBorderColor (Color *color);
+  void setBorderColor (SDL_Color *color);
   void setBorderWidth (int width);
   void setDirection (short dir);
   void setDur (double dur);
   void setEndProgress (double ep);
-  void setFadeColor (Color *color);
+  void setFadeColor (SDL_Color *color);
   void setHorzRepeat (int num);
   void setStartProgress (double sp);
   void setSubtype (int subtype);

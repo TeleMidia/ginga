@@ -700,7 +700,7 @@ NclCascadingDescriptor::getNcmDescriptors ()
   return &descriptors;
 }
 
-Color *
+SDL_Color *
 NclCascadingDescriptor::getFocusBorderColor ()
 {
   return focusBorderColor;
@@ -760,7 +760,7 @@ NclCascadingDescriptor::getMoveUp ()
   return moveUp;
 }
 
-Color *
+SDL_Color *
 NclCascadingDescriptor::getSelBorderColor ()
 {
   return selBorderColor;

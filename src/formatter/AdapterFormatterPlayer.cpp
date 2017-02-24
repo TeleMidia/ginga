@@ -496,22 +496,25 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                         }
                       else
                         {
-                          Color *bg = NULL;
+                          SDL_Color *bg = NULL;
 
                           params = split (xstrchomp (value), ",");
                           if (params->size () == 3)
                             {
-                              bg = new Color (xstrto_uint8 ((*params)[0]),
-                                              xstrto_uint8 ((*params)[1]),
-                                              xstrto_uint8 ((*params)[2]));
+                              bg = new SDL_Color();
+                              bg->r = xstrto_uint8 ((*params)[0]);
+                              bg->g = xstrto_uint8 ((*params)[1]);
+                              bg->b = xstrto_uint8 ((*params)[2]);
+                              bg->a = 255;
                               fRegion->setBackgroundColor (bg);
                             }
                           else if (params->size () == 4)
                             {
-                              bg = new Color (xstrto_uint8 ((*params)[0]),
-                                              xstrto_uint8 ((*params)[1]),
-                                              xstrto_uint8 ((*params)[2]),
-                                              xstrto_uint8 ((*params)[3]));
+                              bg = new SDL_Color();
+                              bg->r = xstrto_uint8 ((*params)[0]);
+                              bg->g = xstrto_uint8 ((*params)[1]);
+                              bg->b = xstrto_uint8 ((*params)[2]);
+                              bg->a = xstrto_uint8 ((*params)[3]);
                               fRegion->setBackgroundColor (bg);
                             }
                           delete params;
@@ -531,7 +534,8 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                   if (fRegion != NULL)
                     {
                       color = new Color (value);
-                      fRegion->setFocusBorderColor (color);
+                      SDL_Color c = color->getColor();
+                      fRegion->setFocusBorderColor ( &c );
                       delete color;
                     }
                 }
@@ -556,7 +560,8 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                   if (fRegion != NULL)
                     {
                       color = new Color (value);
-                      fRegion->setSelBorderColor (color);
+                       SDL_Color c = color->getColor();
+                      fRegion->setSelBorderColor (&c);
                       delete color;
                     }
                 }
@@ -738,22 +743,25 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                             }
                           else
                             {
-                              Color *bg = NULL;
+                              SDL_Color *bg = NULL;
 
                               params = split (xstrchomp (value), ",");
                               if (params->size () == 3)
                                 {
-                                  bg = new Color (xstrto_uint8 ((*params)[0]),
-                                                  xstrto_uint8 ((*params)[1]),
-                                                  xstrto_uint8 ((*params)[2]));
-                                  fRegion->setBackgroundColor (bg);
+                                 bg = new SDL_Color();
+                                 bg->r = xstrto_uint8 ((*params)[0]);
+                                 bg->g = xstrto_uint8 ((*params)[1]);
+                                 bg->b = xstrto_uint8 ((*params)[2]);
+                                 bg->a = 255;
+                                 fRegion->setBackgroundColor (bg);
                                 }
                               else if (params->size () == 4)
                                 {
-                                  bg = new Color (xstrto_uint8 ((*params)[0]),
-                                                  xstrto_uint8 ((*params)[1]),
-                                                  xstrto_uint8 ((*params)[2]),
-                                                  xstrto_uint8 ((*params)[3]));
+                                 bg = new SDL_Color();
+                                 bg->r = xstrto_uint8 ((*params)[0]);
+                                 bg->g = xstrto_uint8 ((*params)[1]);
+                                 bg->b = xstrto_uint8 ((*params)[2]);
+                                 bg->a = xstrto_uint8 ((*params)[3]);
                                   fRegion->setBackgroundColor (bg);
                                 }
                               delete params;
@@ -773,7 +781,8 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                       if (fRegion != NULL)
                         {
                           color = new Color (value);
-                          fRegion->setFocusBorderColor (color);
+                           SDL_Color c = color->getColor();
+                          fRegion->setFocusBorderColor (&c);
                           delete color;
                         }
                     }
@@ -798,7 +807,8 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                       if (fRegion != NULL)
                         {
                           color = new Color (value);
-                          fRegion->setSelBorderColor (color);
+                           SDL_Color c = color->getColor();
+                          fRegion->setSelBorderColor (&c);
                           delete color;
                         }
                     }

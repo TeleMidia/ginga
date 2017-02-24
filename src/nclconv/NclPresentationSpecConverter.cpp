@@ -304,8 +304,8 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
     {
       color = new Color (XMLString::transcode (parentElement->getAttribute (
           XMLString::transcode ("focusBorderColor"))));
-
-      focusDecoration->setFocusBorderColor (color);
+           SDL_Color c = color->getColor();
+      focusDecoration->setFocusBorderColor ( &c );
     }
 
   if (parentElement->hasAttribute (
@@ -350,8 +350,8 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
     {
       color = new Color (XMLString::transcode (parentElement->getAttribute (
           XMLString::transcode ("selBorderColor"))));
-
-      focusDecoration->setSelBorderColor (color);
+           SDL_Color c = color->getColor();
+      focusDecoration->setSelBorderColor ( &c );
     }
 
   if (parentElement->hasAttribute (XMLString::transcode ("transIn")))

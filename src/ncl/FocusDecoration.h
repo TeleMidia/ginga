@@ -20,36 +20,36 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-#include "util/Color.h"
-using namespace ::ginga::util;
+//#include "util/Color.h"
+//using namespace ::ginga::util;
 
 GINGA_NCL_BEGIN
 
 class FocusDecoration
 {
 private:
-  Color *focusBorderColor;
+  SDL_Color *focusBorderColor;
   double focusBorderTransparency;
   string focusSrc;
   int focusBorderWidth;
-  Color *selBorderColor;
+  SDL_Color *selBorderColor;
   string focusSelSrc;
 
 public:
   FocusDecoration ();
   virtual ~FocusDecoration ();
-  Color *getFocusBorderColor ();
+  SDL_Color *getFocusBorderColor ();
   double getFocusBorderTransparency ();
   string getFocusSelSrc ();
   string getFocusSrc ();
   int getFocusBorderWidth ();
-  Color *getSelBorderColor ();
-  void setFocusBorderColor (Color *color);
+  SDL_Color *getSelBorderColor ();
+  void setFocusBorderColor (SDL_Color *color);
   void setFocusBorderTransparency (double alpha);
   void setFocusBorderWidth (int width);
   void setFocusSelSrc (const string &src);
   void setFocusSrc (const string &src);
-  void setSelBorderColor (Color *color);
+  void setSelBorderColor (SDL_Color *color);
 };
 
 GINGA_NCL_END
