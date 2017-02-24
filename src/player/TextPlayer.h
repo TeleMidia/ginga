@@ -32,7 +32,7 @@ class TextPlayer : public Player
 private:
   SDL_Color fontColor;
   SDL_Color bgColor;
-  string fontFamily;   
+  string fontFamily;
   string fontStyle;
   string fontSize;
   string fontVariant;
@@ -51,6 +51,7 @@ public:
   ~TextPlayer (void);
   bool play (void);
   void setPropertyValue (const string &name, const string &value);
+  void updateTexture();
 };
 
 GINGA_PLAYER_END

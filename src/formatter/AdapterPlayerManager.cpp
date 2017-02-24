@@ -275,7 +275,7 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
 #if defined WITH_PANGO && WITH_PANGO
   else if (streq (mime, "text/plain"))
     {
-      classname = "AdapterNewTextPlayer";
+      classname = "AdapterPlayer";
       adapter = new AdapterTextPlayer ();
     }
 #endif
