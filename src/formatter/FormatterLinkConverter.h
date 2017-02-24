@@ -74,7 +74,6 @@ using namespace ::ginga::ncl;
 #include "NclNodeNesting.h"
 
 #include "FormatterConverter.h"
-#include "ObjectCreationForbiddenException.h"
 
 GINGA_FORMATTER_BEGIN
 

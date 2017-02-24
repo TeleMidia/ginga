@@ -135,7 +135,6 @@ src+= lssm/PresentationEngineManager.cpp
 src+= mb/AudioProvider.cpp
 src+= mb/Display.cpp
 src+= mb/EventBuffer.cpp
-src+= mb/FontProvider.cpp
 src+= mb/InputEvent.cpp
 src+= mb/InputManager.cpp
 src+= mb/Key.cpp
@@ -282,8 +281,8 @@ src+= player/SvgPlayer.cpp
 endif #WITH_LIBRSVG
 
 if WITH_PANGO
-src+= formatter/AdapterNewTextPlayer.cpp
-src+= player/NewTextPlayer.cpp
+src+= formatter/AdapterTextPlayer.cpp
+src+= player/TextPlayer.cpp
 endif # WITH_PANGO
 
 if WITH_ISDBT

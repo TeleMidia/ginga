@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLSurface.h"
 
 
-#include "IFontProvider.h"
+//#include "IFontProvider.h" removed
 #include "Display.h"
 #include "SDLWindow.h"
 
@@ -220,8 +220,8 @@ SDLSurface::releaseFont ()
 {
   if (iFont != NULL)
     {
-      Ginga_Display->releaseFontProvider ((IFontProvider*)iFont);
-      iFont = NULL;
+    //  Ginga_Display->releaseFontProvider ((IFontProvider*)iFont);
+    //  iFont = NULL;
     }
 }
 
@@ -523,7 +523,7 @@ SDLSurface::setSurfaceFont (void *font)
       releaseFont ();
     }
 
-  iFont = (IFontProvider *)font;
+ // iFont = (IFontProvider *)font;
 }
 
 void
@@ -672,7 +672,7 @@ SDLSurface::getStringExtents (const char *text, int *w, int *h)
 {
   if (iFont != NULL)
     {
-      ((IFontProvider*)iFont)->getStringExtents (text, w, h);
+    //   ((IFontProvider*)iFont)->getStringExtents (text, w, h);
     }
   else
     {

@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef GINGA_COLOR_TABLE_H
 #define GINGA_COLOR_TABLE_H
 
+#include "ginga.h"
+
 typedef struct _GingaColorTable
 {
   const char *name;
@@ -182,11 +184,117 @@ ginga_color_table_compar (const void *e1, const void *e2)
   return g_ascii_strcasecmp (c1->name, c2->name);
 }
 
+/* Formating of Hex Input to 8 bytes standard (#RRGGBBAA) */
+static inline const char *
+ginga_color_hex_formatter(string hex){
+   //remove #
+   if(hex[0]=='#') hex.erase(0, 1);
+   // 16 colors GrayScale
+   if(hex.length() == 1){
+      hex.insert(1, string(1,hex[0]) );
+      hex.insert(2, string(1,hex[0]) );
+      hex.insert(3, string(1,hex[0]) );
+      hex.insert(4, string(1,hex[0]) );
+      hex.insert(5, string(1,hex[0]) );
+      hex.append("FF");
+   } // 256 colors GrayScale
+    if(hex.length() == 2){
+      hex.insert(2, string(1,hex[0]) );
+      hex.insert(3, string(1,hex[1]) );
+      hex.insert(4, string(1,hex[0]) );
+      hex.insert(5, string(1,hex[1]) );
+      hex.append("FF");
+   } // RGB 16 colors per channel
+   else if(hex.length() == 3){
+      hex.insert(3, string(1,hex[2]) );
+      hex.insert(2, string(1,hex[1]) );
+      hex.insert(1, string(1,hex[0]) );
+      hex.append("FF");
+  } // RGB 16 colors per channel and A with 16 levels
+   else if(hex.length() == 4){
+      hex.insert(4, string(1,hex[3]) );
+      hex.insert(3, string(1,hex[2]) );
+      hex.insert(2, string(1,hex[1]) );
+      hex.insert(1, string(1,hex[0]) );
+   } //RGB 256 colors per channel and A with 16 levels
+   else if(hex.length() == 5){
+      hex.insert(5, string(1,hex[4]) );
+      hex.append("FF");
+   } //RGB 256 colors per channel
+   else if(hex.length() == 6){
+      hex.append("FF");
+   } //RGB 256 colors per channel and A with 16 levels
+   else if(hex.length() == 7){
+       hex.insert(7, string(1,hex[6]) );
+   } //RGB 256 colors per channel and A with 256 levels
+   else if(hex.length() > 8){
+      return  hex.substr (0,8).c_str(); //limit to 8 characters
+   }
+   return hex.c_str();
+}
+
+/* Gets the matching SDL_Color to the given RGB or RGBA text input.  If the input
+is valid and returns true, otherwise returns false.  */
+static inline gboolean
+ginga_rgbatext_to_sdl_color(const string value, SDL_Color *color){
+      gchar **pixels = g_strsplit( value.substr
+                                   (value.find("(")+1,
+                                    value.find(")")-value.find("(")-1).c_str()
+                                   ,",",-1 );
+   if(g_strv_length(pixels) < 3 )
+         return FALSE;
+
+   color->r = xstrto_uint8 (pixels[0]);
+   color->g = xstrto_uint8 (pixels[1]);
+   color->b = xstrto_uint8 (pixels[2]);
+   if(pixels[3] != NULL)
+     color->a = xstrto_uint8 (pixels[3]);
+   else
+     color->a=255;
+
+   g_strfreev(pixels);
+   return TRUE;
+}
+
+/* Gets the matching SDL_Color to the given HEX code input.  If the input
+is valid and returns true, otherwise returns false.  */
+static inline gboolean
+ginga_hex_to_sdl_color(const string hex, SDL_Color *color){
+   const char *c = ginga_color_hex_formatter(hex);
+   if (strlen(c) < 8)
+     return FALSE;
+   int hexValue=0;
+
+   for(int i=0; i<8; i++, ++c){
+         int  thisC = *c;
+        thisC = toupper (thisC);
+        hexValue <<= 4;
+        if( thisC >= 48 &&  thisC <= 57 )
+            hexValue += thisC - 48;
+        else if( thisC >= 65 && thisC <= 70)
+            hexValue += thisC - 65 + 10;
+        else return FALSE;
+    }
+
+   color->r = (guint8)((hexValue >> 24) & 0xFF); // extract the RR byte
+   color->g = (guint8)((hexValue >> 16) & 0xFF); // extract the GG byte
+   color->b = (guint8)((hexValue >> 8) & 0xFF);  // extract the BB byte
+   color->a = (guint8)((hexValue) & 0xFF);       // extract the AA byte
+
+   return TRUE;
+}
+
+/* Convert byte color to percentage  */
+static inline double
+ginga_color_percent(guint c){
+    if(c>0) return (double)c/255;
+    else return 0;
+}
+
 /* Gets the color value associated with the given name.  If NAME is in color
    table, stores its color components into *R, *G, *B, and returns true,
    otherwise returns false.  */
-
-static gboolean
+static inline gboolean
 ginga_color_table_index (const char *name, guchar *r, guchar *g, guchar *b)
 {
   GingaColorTable key;
@@ -204,6 +312,21 @@ ginga_color_table_index (const char *name, guchar *r, guchar *g, guchar *b)
   *b = match->b;
 
   return TRUE;
+}
+
+/* Gets the matching SDL_Color to the given input.  If Value is a
+ HEX (#FFF) the function calls 'ginga_hex_to_sdl_color'. If  Value is a RGB_TEXT,
+ like 'rgb(255,255,255)', the function calls 'ginga_rgbatext_to_sdl_color'. If the
+ value is a COLOR NAME the function calls 'ginga_color_table_index'. Return true if
+ the input is valid,  otherwise returns false. */
+static inline gboolean
+ginga_color_input_to_sdl_color(const string value, SDL_Color *color){
+   if(value[0] == '#') //by hex
+         return ginga_hex_to_sdl_color(value, color);
+   else if(value.substr (0,3)=="rgb") //by rgbatxt
+         return ginga_rgbatext_to_sdl_color(value, color);
+   else  //by name
+         return ginga_color_table_index (value.c_str(), &color->r, &color->g, &color->b );
 }
 
 #endif /* GINGA_COLOR_TABLE_H */

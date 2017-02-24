@@ -275,7 +275,7 @@ FormatterConverter::addSameInstance (NclExecutionObject *executionObject,
       delete referPerspective;
       return referParentObject;
     }
-  catch (ObjectCreationForbiddenException *exc)
+  catch (exception *exc)
     {
       // nothing to be done
       delete referPerspective;
@@ -486,7 +486,7 @@ FormatterConverter::compileExecutionObjectLinks (
 NclExecutionObject *
 FormatterConverter::getExecutionObjectFromPerspective (
     NclNodeNesting *perspective, GenericDescriptor *descriptor,
-    int depthLevel) throw (ObjectCreationForbiddenException *)
+    int depthLevel) 
 {
   map<string, NclExecutionObject *>::iterator i;
   NclCascadingDescriptor *cascadingDescriptor = NULL;
@@ -615,7 +615,7 @@ FormatterConverter::getSettingNodeObjects ()
 NclCompositeExecutionObject *
 FormatterConverter::getParentExecutionObject (
     NclNodeNesting *perspective,
-    int depthLevel) throw (ObjectCreationForbiddenException *)
+    int depthLevel) 
 {
   NclNodeNesting *parentPerspective;
   NclCompositeExecutionObject *cObj;
@@ -875,7 +875,7 @@ FormatterConverter::createExecutionObject (
                       executionObject = getExecutionObjectFromPerspective (
                           nodePerspective, NULL, depthLevel);
                     }
-                  catch (ObjectCreationForbiddenException *exc1)
+                  catch (exception *exc1)
                     {
                       if (AdapterPlayerManager::isEmbeddedApp (nodeEntity))
                         {
@@ -1594,7 +1594,7 @@ FormatterConverter::resolveSwitchEvents (
                                       switchEvent->getKey ());
                                 }
                             }
-                          catch (ObjectCreationForbiddenException *exc)
+                          catch (exception *exc)
                             {
                               clog << "FormatterConverter::";
                               clog << "resolveSwitchEvents exception ";
@@ -1673,7 +1673,7 @@ FormatterConverter::insertNode (NclNodeNesting *perspective,
 
       return event;
     }
-  catch (ObjectCreationForbiddenException *exc)
+  catch (exception *exc)
     {
       clog << "FormatterConverter::insertNode exception" << endl;
     }

@@ -295,7 +295,7 @@ FormatterScheduler::setTimeBaseObject (NclExecutionObject *object,
             }
         }
     }
-  catch (ObjectCreationForbiddenException *exc)
+  catch (exception *exc)
     {
       return;
     }
@@ -1184,7 +1184,7 @@ FormatterScheduler::runActionOverComposition (
                         }
                     }
                 }
-              catch (ObjectCreationForbiddenException *exc)
+              catch (exception *exc)
                 {
                   // keep on starting child objects
                 }
@@ -1414,7 +1414,7 @@ FormatterScheduler::runSwitchEvent (NclExecutionObjectSwitch *switchObject,
                                     switchEvent->getKey ());
                     }
                 }
-              catch (ObjectCreationForbiddenException *exc)
+              catch (exception *exc)
                 {
                   // continue
                 }

@@ -15,23 +15,34 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef OBJECTCREATIONFORBIDDENEXCEPTION_H_
-#define OBJECTCREATIONFORBIDDENEXCEPTION_H_
+#ifndef ADAPTER_TEXT_PLAYER_H
+#define ADAPTER_TEXT_PLAYER_H
+
+#include "NclExecutionObject.h"
+
+#include "NclAttributionEvent.h"
+#include "NclFormatterEvent.h"
+#include "NclPresentationEvent.h"
+#include "NclSelectionEvent.h"
+
+#include "ncl/NodeEntity.h"
+#include "ncl/ReferenceContent.h"
+using namespace ::ginga::ncl;
+
+#include "AdapterFormatterPlayer.h"
 
 GINGA_FORMATTER_BEGIN
 
-class ObjectCreationForbiddenException : public exception
+class AdapterTextPlayer : public AdapterFormatterPlayer
 {
-  virtual const char *
-  what () const throw ()
-  {
-    string exceptionDescription;
-    exceptionDescription = "br::pucrio::telemidia::ginga::ncl::";
-    exceptionDescription += "conversor::ObjectCreationForbiddenException";
-    return exceptionDescription.c_str ();
-  }
+public:
+  AdapterTextPlayer ();
+  virtual ~AdapterTextPlayer (){};
+
+protected:
+  void createPlayer ();
 };
 
 GINGA_FORMATTER_END
 
-#endif /*OBJECTCREATIONFORBIDDENEXCEPTION_H_*/
+#endif /* ADAPTER_TEXT_PLAYER_H */

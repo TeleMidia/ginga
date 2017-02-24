@@ -21,7 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "InputManager.h"
 #include "AudioProvider.h"
 #include "EventBuffer.h"
-#include "FontProvider.h"
 #include "InputEvent.h"
 #include "SDLSurface.h"
 #include "VideoProvider.h"
@@ -679,43 +678,6 @@ Display::releaseSurface (SDLSurface *s)
   return released;
 }
 
-/* interfacing content */
-
-IFontProvider *
-Display::createFontProvider (const char *mrl, int fontSize)
-{
-  IFontProvider *provider = NULL;
-
-  lockSDL ();
-  provider = new FontProvider (mrl, fontSize);
-  unlockSDL ();
-
-  Thread::mutexLock (&proMutex);
-  dmpPool.insert (provider);
-  Thread::mutexUnlock (&proMutex);
-
-  return provider;
-}
-
-void
-Display::releaseFontProvider (IFontProvider *provider)
-{
-  set<IDiscreteMediaProvider *>::iterator i;
-  //IDiscreteMediaProvider *dmp;
-
-  Thread::mutexLock (&proMutex);
-  i = dmpPool.find (provider);
-  if (i != dmpPool.end ())
-    {
-      dmpPool.erase (i);
-
-      Thread::mutexUnlock (&proMutex);
-    }
-  else
-    {
-      Thread::mutexUnlock (&proMutex);
-    }
-}
 
 SDLSurface *
 Display::createRenderedSurfaceFromImageFile (const char *mrl)

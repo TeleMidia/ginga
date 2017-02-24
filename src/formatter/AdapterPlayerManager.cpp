@@ -24,16 +24,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AdapterLuaPlayer.h"
 #include "AdapterMirrorPlayer.h"
 #include "AdapterNCLPlayer.h"
-#if WITH_GSTREAMER
+#if defined WITH_GSTREAMER && WITH_GSTREAMER
 # include "AdapterNewVideoPlayer.h"
 #endif
 #include "AdapterProgramAVPlayer.h"
 #include "AdapterSsmlPlayer.h"
-#if WITH_LIBRSVG
+#if defined WITH_LIBRSVG && WITH_LIBRSVG
 # include "AdapterSvgPlayer.h"
 #endif
-#if WITH_PANGO
-# include "AdapterNewTextPlayer.h"
+#if defined WITH_PANGO && WITH_PANGO
+# include "AdapterTextPlayer.h"
 #endif
 
 GINGA_FORMATTER_BEGIN
@@ -253,7 +253,7 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
       classname = "AdapterAVPlayer";
       adapter = new AdapterAVPlayer ();
     }
-#if WITH_LIBRSVG
+#if WITH_LIBRSVG && WITH_LIBRSVG
   else if (g_str_has_prefix (mime, "image/svg"))
     {
       classname = "AdapterSvgPlayer";
@@ -265,18 +265,18 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
       classname = "AdapterImagePlayer";
       adapter = new AdapterImagePlayer ();
     }
-#if WITH_GSTREAMER
+#if defined WITH_GSTREAMER && WITH_GSTREAMER
   else if (streq (mime, "video/x-new-video-player"))
     {
       classname = "AdapterNewVideoPlayer";
       adapter = new AdapterNewVideoPlayer ();
     }
 #endif
-#if WITH_PANGO
+#if defined WITH_PANGO && WITH_PANGO
   else if (streq (mime, "text/plain"))
     {
       classname = "AdapterNewTextPlayer";
-      adapter = new AdapterNewTextPlayer ();
+      adapter = new AdapterTextPlayer ();
     }
 #endif
   else if (g_strcmp0 (mime, "text/srt") == 0)

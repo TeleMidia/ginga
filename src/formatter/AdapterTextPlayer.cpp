@@ -15,26 +15,21 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef PLAINTXTPLAYERADAPTER_H_
-#define PLAINTXTPLAYERADAPTER_H_
-
-#include "AdapterFormatterPlayer.h"
-
-#include "system/SystemCompat.h"
-using namespace ::ginga::system;
+#include "ginga.h"
+#include "AdapterTextPlayer.h"
+#include "mb/SDLSurface.h"
+#include "player/TextPlayer.h"
 
 GINGA_FORMATTER_BEGIN
 
-class AdapterPlainTxtPlayer : public AdapterFormatterPlayer
-{
-public:
-  AdapterPlainTxtPlayer ();
-  virtual ~AdapterPlainTxtPlayer (){};
+AdapterTextPlayer::AdapterTextPlayer () : AdapterFormatterPlayer () {}
 
-protected:
-  void createPlayer ();
-};
+void
+AdapterTextPlayer::createPlayer ()
+{
+  player = new TextPlayer (mrl);
+  AdapterFormatterPlayer::createPlayer ();
+}
+
 
 GINGA_FORMATTER_END
-
-#endif /*TXTPLAINPLAYERADAPTER_H_*/

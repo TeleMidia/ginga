@@ -16,391 +16,212 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "util/Color.h"
-#include "mb/IFontProvider.h"
-#include "mb/SDLSurface.h"
-
+#include "ginga-color-table.h"
 #include "TextPlayer.h"
 
-GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
+
+#include <cairo.h>
+#include <pango/pangocairo.h>
+#include <stdio.h>
+#include <string.h>
+
+
+#include "mb/Display.h"
+#include "mb/SDLWindow.h"
+
+using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
-TextPlayer::TextPlayer () : Player ("")
+
+// Private methods.
+bool
+TextPlayer::displayJobCallbackWrapper (DisplayJob *job,
+                                        SDL_Renderer *renderer,
+                                        void *self)
 {
-  initializePlayer ();
-}
-
-TextPlayer::~TextPlayer ()
-{
-  if (fontColor != NULL)
-    {
-      delete fontColor;
-      fontColor = NULL;
-    }
-
-  if (bgColor != NULL)
-    {
-      delete bgColor;
-      bgColor = NULL;
-    }
-
-  /* release window and surface first; then, release font */
-  if (outputWindow != 0 && Ginga_Display->hasWindow (outputWindow))
-    {
-      outputWindow->revertContent ();
-      delete outputWindow;
-      outputWindow = 0;
-    }
-
-  if (surface != 0 && Ginga_Display->hasSurface (surface))
-    {
-      delete surface;
-      surface = 0;
-    }
-
-  if (font != 0)
-    {
-      Ginga_Display->releaseFontProvider ((IFontProvider*)font);
-      font = 0;
-    }
-}
-
-void
-TextPlayer::initializePlayer ()
-{
-  this->fontHeight = 0;
-  this->currentAlign = IFontProvider::A_LEFT;
-  this->currentLine = 0;
-  this->currentColumn = 0;
-  this->tabSize = 0;
-  this->font = 0;
-  this->bgColor = NULL;
-  this->fontColor = NULL;
-  this->fontSize = 12;
-  this->fontUri = string (GINGA_FONT_DATADIR) + "vera.ttf";
-  this->surface = Ginga_Display->createSurface ();
-  if (this->surface != 0)
-    {
-      int cap = surface->getCap ("ALPHACHANNEL");
-      surface->setCaps (cap);
-    }
-}
-
-int
-TextPlayer::write (SDLSurface* s,
-                   const string &text,
-                   IFontProvider::TextAlign textAlign,
-                   const string &fontUri,
-                   int fontSize,
-                   Color *fontColor)
-{
-  if (fontSize < 1 || s == 0 || text == "")
-    {
-      return 0;
-    }
-
-  IFontProvider* font = 0;
-  int width = 0;
-
-  font = Ginga_Display->createFontProvider (fontUri.c_str (), fontSize);
-
-  if (fontColor == NULL)
-    {
-      fontColor = new Color ("black");
-    }
-
-  if (font != 0)
-    {
-      s->setColor (fontColor->getR (), fontColor->getG (),
-                           fontColor->getB (), fontColor->getAlpha ());
-
-      width = font->getStringWidth (text.c_str (), (int) text.size ());
-
-      font->playOver (s, text.c_str (), 0, 0, textAlign);
-
-      Ginga_Display->releaseFontProvider ((IFontProvider*)font);
-      font = 0;
-    }
-
-  delete fontColor;
-  fontColor = NULL;
-
-  return width;
+  return ((TextPlayer *) self)->displayJobCallback (job, renderer);
 }
 
 bool
-TextPlayer::setFont (const string &someUri)
+TextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
+                                   arg_unused (SDL_Renderer *renderer))
 {
-  if (!fileExists (someUri))
-    {
-      clog << "TextPlayer::setFont Warning! File not found: '";
-      clog << someUri.c_str () << "'" << endl;
-      return false;
-    }
 
-  this->fontUri = someUri;
-  if (font != 0)
-    {
-      Ginga_Display->releaseFontProvider ((IFontProvider*)font);
-      font = 0;
-    }
+    gchar *contents;
+    GError *err = NULL;
+    g_file_get_contents (this->mrl.c_str (), &contents, NULL, &err);
+    if (err != NULL) g_error_free (err);
+    g_assert_nonnull(contents);
 
-  font = Ginga_Display->createFontProvider (someUri.c_str (), fontSize);
-  if (font == 0)
-    {
-      clog << "TextPlayer::setFont Warning! Can't create Font '";
-      clog << someUri << "': '" << font << "'" << endl;
-      return false;
-    }
+    SDLWindow *window;
+    SDL_Texture *texture;
 
-  fontHeight = font->getHeight ();
-  return true;
+    SDL_Surface *sfc;
+    cairo_t *cr;
+    cairo_surface_t *surface_c;
+
+    double vAlign=0;
+    int textAreaHeight;
+
+    this->lock ();
+    SDL_Rect r = this->surface->getParentWindow()->getRect();
+  //  g_debug("%f", this->surface->getParentWindow()->getAlpha() );
+
+#if SDL_VERSION_ATLEAST(2,0,5)
+    sfc = SDL_CreateRGBSurfaceWithFormat (0, r.w,
+                                           r.h,
+                                           32, SDL_PIXELFORMAT_ARGB8888);
+#else
+    sfc = SDL_CreateRGBSurface (0, r.w, r.h, 32,
+                              0xff000000,
+                              0x00ff0000,
+                              0x0000ff00,
+                              0x000000ff); 
+#endif
+
+    g_assert_nonnull (sfc);
+    this->unlock ();
+
+    SDLx_LockSurface (sfc);
+    surface_c = cairo_image_surface_create_for_data ((guchar*) sfc->pixels,
+                                                CAIRO_FORMAT_ARGB32,
+                                                sfc->w, sfc->h, sfc->pitch);
+    cr = cairo_create (surface_c);
+    g_assert_nonnull (cr);
+    //background
+    cairo_set_source_rgba (cr,ginga_color_percent(bgColor.r),
+                              ginga_color_percent(bgColor.g),
+                              ginga_color_percent(bgColor.b),
+                              ginga_color_percent(bgColor.a));
+
+    cairo_paint (cr);
+
+    // Create a PangoLayout, set the font face and text
+    PangoLayout * layout = pango_cairo_create_layout (cr);
+    pango_layout_set_text (layout,  contents, -1);
+    string fontDescription = fontFamily+" "+fontWeight+" "+fontStyle+" "+fontSize;
+    PangoFontDescription *desc = pango_font_description_from_string ( fontDescription.c_str() );
+    pango_layout_set_font_description (layout, desc);
+
+    if(textAlign == "left")
+        pango_layout_set_alignment(layout,PANGO_ALIGN_LEFT);
+    else if(textAlign == "center")
+        pango_layout_set_alignment(layout,PANGO_ALIGN_CENTER);
+    else if(textAlign == "right")
+        pango_layout_set_alignment(layout,PANGO_ALIGN_RIGHT);
+    else
+        pango_layout_set_justify(layout, true);
+
+    pango_layout_set_width (layout,r.w*PANGO_SCALE);
+    pango_layout_set_wrap (layout,PANGO_WRAP_WORD);
+    pango_layout_get_size (layout, NULL, &textAreaHeight);
+    pango_font_description_free (desc);
+
+    cairo_set_source_rgba (cr, ginga_color_percent(fontColor.r),
+                               ginga_color_percent(fontColor.g),
+                               ginga_color_percent(fontColor.b),
+                               ginga_color_percent(fontColor.a));
+
+    pango_cairo_update_layout (cr, layout);
+
+    if(verticalAlign == "top") vAlign = 0;
+    else if(verticalAlign == "middle") vAlign = (r.h/2) - ( (textAreaHeight/PANGO_SCALE) /2);
+    else vAlign= r.h - (textAreaHeight/PANGO_SCALE);
+
+    cairo_move_to (cr, 0, vAlign);
+    pango_cairo_show_layout (cr, layout);
+
+    // free the layout object
+    g_object_unref (layout);
+    cairo_destroy (cr);
+    cairo_surface_destroy (surface_c);
+
+    texture = SDL_CreateTextureFromSurface (renderer, sfc);
+    g_assert_nonnull (texture);
+    SDLx_UnlockSurface (sfc);
+
+    this->lock ();
+    window = surface->getParentWindow ();
+    g_assert_nonnull (window);
+    window->setTexture (texture);
+    this->unlock ();
+    this->condDisplayJobSignal ();
+    return false;                 // remove job
 }
 
-void
-TextPlayer::setFontSize (int size)
+
+// Public methods.
+
+TextPlayer::TextPlayer (const string &uri) : Player (uri)
 {
-  fontSize = size;
-  setFont (fontUri);
+  //defalts attr values
+  ginga_color_input_to_sdl_color("#0", &fontColor); //black
+  ginga_color_input_to_sdl_color("#0000", &bgColor); //transparent
+  fontFamily = "serif";
+  fontStyle ="";
+  fontSize ="18px";
+  fontVariant="";
+  fontWeight="";
+  textAlign="left";
+  verticalAlign="top";
+
+  this->mutexInit ();
+  this->condDisplayJobInit ();
+  this->surface = new SDLSurface ();
 }
 
-int
-TextPlayer::getFontSize ()
+TextPlayer::~TextPlayer (void)
 {
-  return fontSize;
-}
-
-int
-TextPlayer::getFontHeight ()
-{
-  return fontHeight;
-}
-
-void
-TextPlayer::setBgColor (guint8 red, guint8 green, guint8 blue, guint8 alpha)
-{
-  if (bgColor != NULL)
-    {
-      delete bgColor;
-      bgColor = NULL;
-    }
-
-  bgColor = new Color (red, green, blue, alpha);
-  if (this->surface != 0)
-    {
-      surface->setBgColor (red, green, blue, alpha);
-    }
-}
-
-void
-TextPlayer::setColor (guint8 red, guint8 green, guint8 blue, guint8 alpha)
-{
-  if (this->fontColor != NULL)
-    {
-      delete this->fontColor;
-      this->fontColor = NULL;
-    }
-
-  this->fontColor = new Color (red, green, blue, alpha);
-}
-
-void
-TextPlayer::setTabSize (int size)
-{
-  this->tabSize = size;
-}
-
-int
-TextPlayer::getTabSize ()
-{
-  return tabSize;
-}
-
-void
-TextPlayer::drawText (const string &text, IFontProvider::TextAlign align)
-{
-  string uri;
-  int textWidth, surWidth, surHeight;
-
-  unsigned int maxToDraw;
-  string::size_type splitPos, len;
-  unsigned int widthAverage;
-  bool space;
-  int oldTextWidth;
-  string aux, splited;
-
-  aux = text;
-  uri = string (GINGA_FONT_DATADIR) + "vera.ttf";
-  if (font == 0 && fileExists (uri))
-    {
-      setFont (uri);
-    }
-
-  if (font == 0)
-    {
-      clog << "TextPlayer::drawText Warning! can't set font" << endl;
-      return;
-    }
-
-  if (fontColor == NULL)
-    {
-      fontColor = new Color ("black");
-    }
-
-  surface->setColor (fontColor->getR (), fontColor->getG (),
-                       fontColor->getB (), fontColor->getAlpha ());
-
-  if (font != 0 && surface != 0)
-    {
-      surface->getSize (&surWidth, &surHeight);
-      textWidth = font->getStringWidth (aux.c_str (), (int) aux.size ());
-
-      if (textWidth > surWidth && aux.length () > 1)
-        {
-          space = false;
-
-          widthAverage = (int)(textWidth / aux.length ());
-          maxToDraw = (int)(((surWidth) / widthAverage) * 0.85);
-
-          len = aux.length ();
-          splited = aux.substr (0, maxToDraw);
-          splitPos = splited.find_last_of (" ");
-
-          if (splitPos == std::string::npos)
-            {
-              splitPos = maxToDraw;
-              splited = aux.substr (splitPos, len - splitPos);
-            }
-          else
-            {
-              splitPos++;
-              splited = aux.substr (splitPos, len - splitPos);
-              space = true;
-            }
-
-          aux = aux.substr (0, splitPos);
-
-          textWidth = font->getStringWidth (aux.c_str ());
-
-          while (textWidth > surWidth)
-            {
-              if (space)
-                {
-                  splited = " " + splited;
-                }
-
-              len = aux.length ();
-              splitPos = aux.find_last_of (" ");
-
-              if (splitPos == std::string::npos)
-                {
-                  splited = aux[len] + splited;
-                  aux = aux.substr (0, len - 1);
-                  space = false;
-                }
-              else
-                {
-                  splitPos++;
-                  splited = aux.substr (splitPos, len - splitPos) + splited;
-
-                  aux = aux.substr (0, splitPos);
-                  space = true;
-                }
-
-              oldTextWidth = textWidth;
-              textWidth = font->getStringWidth (aux.c_str ());
-
-              if (oldTextWidth == textWidth)
-                {
-                  break;
-                }
-            }
-
-          font->playOver (surface, aux.c_str (), currentColumn,
-                                currentLine, align);
-
-          breakLine ();
-          if (splited != text)
-            {
-              drawText (splited, align);
-            }
-        }
-      else
-        {
-          font->playOver (surface, aux.c_str (), currentColumn,
-                                currentLine, align);
-
-          currentColumn += textWidth;
-        }
-    }
-  else
-    {
-      clog << "TextPlayer::drawText Warning! FontProvider(" << font;
-      clog << ") or Surface(" << surface << ") = NULL";
-      clog << endl;
-    }
+  this->condDisplayJobClear ();
+  this->mutexClear ();
 }
 
 bool
-TextPlayer::drawTextLn (const string &text, IFontProvider::TextAlign align)
+TextPlayer::play ()
 {
-  drawText (text, align);
-  return breakLine ();
+
+  Ginga_Display->addJob (displayJobCallbackWrapper, this);
+  this->condDisplayJobWait ();
+  return Player::play ();
 }
 
 void
-TextPlayer::tab ()
-{
-  currentColumn = currentColumn + (tabSize * 12);
-}
+TextPlayer::setPropertyValue (const string &name, const string &value){
 
-bool
-TextPlayer::breakLine ()
-{
-  int w, h;
-  if (font == 0)
-    {
-      setFont (string (GINGA_FONT_DATADIR) + "decker.ttf");
-    }
+  if(name == "fontColor"){
+      ginga_color_input_to_sdl_color(value, &fontColor);
+  }
+  else if(name == "backgroundColor"){
+      ginga_color_input_to_sdl_color(value, &bgColor);
+  }
+  else if(name == "fontSize"){
+         fontSize = value;
+  }
+  else if(name == "textAlign"){
+         if(value == "left" || value == "right" || value == "center" || value == "justify" )
+            textAlign = value;
+  }
+  else if(name == "verticalAlign"){
+         if(value == "top" || value == "middle" || value == "bottom" )
+            verticalAlign = value;
+  }
+  else if(name == "fontStyle"){
+         if(value == "italic")
+            fontStyle = value;
+  }
+  else if(name == "fontWeight"){
+         if(value == "bold")
+            fontWeight = value;
+  }
+  else if(name == "fontFamily"){
+         fontFamily = value;
+  }
+  else if(name == "fontVariant"){
+         if(value == "small-caps")
+            fontVariant = value;
+  }
 
-  surface->getSize (&w, &h);
-  if ((currentLine + fontHeight) > h)
-    {
-      clog << "TextPlayer::breakLine() Exceeding surface bounds";
-      clog << " currentLine = '" << currentLine << "'";
-      clog << " fontHeight = '" << fontHeight << "'";
-      clog << " surH = '" << h << "'" << endl;
-
-      currentLine = currentLine + (int)(1.15 * fontHeight);
-      currentColumn = 0;
-      return false;
-    }
-  else
-    {
-      currentLine = currentLine + (int)(1.15 * fontHeight);
-      currentColumn = 0;
-      return true;
-    }
-}
-
-int
-TextPlayer::getCurrentColumn ()
-{
-  return this->currentColumn;
-}
-
-int
-TextPlayer::getCurrentLine ()
-{
-  return this->currentLine;
-}
-
-void
-TextPlayer::setPropertyValue (const string &name, const string &value)
-{
-  // TODO: set font url, font size, font color, ...
-  Player::setPropertyValue (name, value);
 }
 
 GINGA_PLAYER_END

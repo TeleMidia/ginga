@@ -139,7 +139,9 @@ LuaPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   g_assert_nonnull (sfc);
 
   SDLx_LockSurface (sfc);
+
   ncluaw_paint (nw, (guchar *) sfc->pixels, "ARGB32",
+
                 sfc->w, sfc->h, sfc->pitch);
   SDLx_UnlockSurface (sfc);
 
