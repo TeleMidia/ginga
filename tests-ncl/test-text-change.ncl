@@ -2,11 +2,9 @@
   <head>
     <regionBase>
       <region id='reg' width='50%' height='50%'/>
-      <region id='reg2' width='100%' height='50%'/>
     </regionBase>
     <descriptorBase>
       <descriptor id='desc' region='reg'/>
-      <descriptor id='desc2' region='reg2'/>
     </descriptorBase>
     <connectorBase>
       <causalConnector id="onBeginSet">
