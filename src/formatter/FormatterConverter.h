@@ -81,7 +81,6 @@ using namespace ::ginga::ncl;
 
 #include "FormatterScheduler.h"
 
-#include "ObjectCreationForbiddenException.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -133,7 +132,7 @@ public:
 
   NclExecutionObject *getExecutionObjectFromPerspective (
       NclNodeNesting *perspective, GenericDescriptor *descriptor,
-      int depthLevel) throw (ObjectCreationForbiddenException *);
+      int depthLevel);
 
 private:
   void checkMirror (NclExecutionObject *object, int depthLevel);
@@ -144,7 +143,7 @@ public:
 private:
   NclCompositeExecutionObject *getParentExecutionObject (
       NclNodeNesting *perspective,
-      int depthLevel) throw (ObjectCreationForbiddenException *);
+      int depthLevel);
 
 public:
   NclFormatterEvent *getEvent (NclExecutionObject *executionObject,

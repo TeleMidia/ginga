@@ -89,7 +89,6 @@ using namespace ::ginga::ncl;
 
 #include "RuleAdapter.h"
 
-#include "ObjectCreationForbiddenException.h"
 #include "FormatterConverter.h"
 
 #include "PrefetchManager.h"

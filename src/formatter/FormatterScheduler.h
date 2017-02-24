@@ -71,7 +71,6 @@ using namespace ::ginga::ncl;
 #include "FormatterMultiDevice.h"
 
 #include "IFormatterSchedulerListener.h"
-#include "ObjectCreationForbiddenException.h"
 
 #include "AnimationController.h"
 
