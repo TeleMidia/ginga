@@ -33,7 +33,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 # include "AdapterSvgPlayer.h"
 #endif
 #if defined WITH_PANGO && WITH_PANGO
-# include "AdapterNewTextPlayer.h"
+# include "AdapterTextPlayer.h"
 #endif
 
 GINGA_FORMATTER_BEGIN
@@ -276,7 +276,7 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
   else if (streq (mime, "text/plain"))
     {
       classname = "AdapterNewTextPlayer";
-      adapter = new AdapterNewTextPlayer ();
+      adapter = new AdapterTextPlayer ();
     }
 #endif
   else if (g_strcmp0 (mime, "text/srt") == 0)
