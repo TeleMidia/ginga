@@ -37,13 +37,14 @@ NewVideoPlayer::NewVideoPlayer (const string &mrl) : Thread (), Player (mrl)
   this->mutexInit ();
   this->condDisplayJobInit ();
   this->surface = new SDLSurface ();
-  textureUpdated = false;
+  
   createPipeline(mrl);
 }
 
 NewVideoPlayer::~NewVideoPlayer ()
 {
-	TRACE ();
+  this-condDisplayJobClear ();
+  this->mutexClear ();
 }
 
 void
@@ -171,9 +172,6 @@ NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   guint stride;
   
   SDLWindow *window;
-
-  //if(unlikely (texture == NULL))
-    //g_error("cannot load video file");
 
   this->lock ();
   
@@ -310,10 +308,8 @@ NewVideoPlayer::setScope (arg_unused(const string &scope), arg_unused(short type
 bool
 NewVideoPlayer::play ()
 {
-	//TRACE ();  
   ret = gst_element_set_state (playbin, GST_STATE_PLAYING);
   g_assert (ret != GST_STATE_CHANGE_FAILURE);
-  //GST_STATE_PLAYING
   
   GstStateChangeReturn retWait = gst_element_get_state (playbin, NULL, NULL, GST_CLOCK_TIME_NONE);
 
