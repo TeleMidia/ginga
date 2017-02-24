@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
+#include "ginga-color-table.h"
 #include "FormatterFocusManager.h"
 
 #include "FormatterConverter.h"
@@ -58,11 +59,13 @@ FormatterFocusManager::FormatterFocusManager (
   strValue = presContext->getPropertyValue (DEFAULT_FOCUS_BORDER_COLOR);
   if (strValue == "")
     {
-      defaultFocusBorderColor = new Color ("blue");
+      defaultFocusBorderColor = new SDL_Color();
+      ginga_hex_to_sdl_color( "#00F" , defaultFocusBorderColor); //blue
     }
   else
     {
-      defaultFocusBorderColor = new Color (strValue);
+      defaultFocusBorderColor = new SDL_Color();
+      ginga_color_input_to_sdl_color( strValue, defaultFocusBorderColor);
     }
 
   strValue = presContext->getPropertyValue (DEFAULT_FOCUS_BORDER_WIDTH);
@@ -78,11 +81,13 @@ FormatterFocusManager::FormatterFocusManager (
   strValue = presContext->getPropertyValue (DEFAULT_SEL_BORDER_COLOR);
   if (strValue == "")
     {
-      defaultSelBorderColor = new Color ("green");
+      defaultSelBorderColor = new SDL_Color();
+      ginga_hex_to_sdl_color( "#0F0" ,defaultSelBorderColor); //green
     }
   else
     {
-      defaultSelBorderColor = new Color (strValue);
+      defaultSelBorderColor = new SDL_Color();
+      ginga_color_input_to_sdl_color( strValue, defaultSelBorderColor);
     }
 
   this->presContext = presContext;
@@ -621,8 +626,8 @@ FormatterFocusManager::setFocus (NclCascadingDescriptor *descriptor)
   double borderAlpha;
   bool canDelFocusColor = false;
   bool canDelSelColor = false;
-  Color *focusColor = NULL;
-  Color *selColor = NULL;
+  SDL_Color *focusColor = NULL;
+  SDL_Color *selColor = NULL;
   int borderWidth = 1;
   int width;
   NclFormatterRegion *fr = NULL;
@@ -658,9 +663,8 @@ FormatterFocusManager::setFocus (NclCascadingDescriptor *descriptor)
   if (!isnan (borderAlpha))
     {
       canDelFocusColor = true;
-      focusColor
-          = new Color (focusColor->getR (), focusColor->getG (),
-                       focusColor->getB (), (guint8)(borderAlpha * 255));
+       if(focusColor==NULL)focusColor = new SDL_Color();
+       focusColor->a = (guint8)(borderAlpha * 255);
     }
 
   width = borderWidth;
@@ -673,8 +677,8 @@ FormatterFocusManager::setFocus (NclCascadingDescriptor *descriptor)
   if (!isnan (borderAlpha))
     {
       canDelSelColor = true;
-      selColor = new Color (selColor->getR (), selColor->getG (),
-                            selColor->getB (), (guint8)(borderAlpha * 255));
+      if(selColor==NULL)selColor = new SDL_Color();
+      selColor->a = (guint8)(borderAlpha * 255);
     }
 
   if (fr != NULL)
@@ -1123,7 +1127,7 @@ FormatterFocusManager::unregister ()
 }
 
 void
-FormatterFocusManager::setDefaultFocusBorderColor (Color *color)
+FormatterFocusManager::setDefaultFocusBorderColor (SDL_Color *color)
 {
   if (defaultFocusBorderColor != NULL)
     {
@@ -1139,7 +1143,7 @@ FormatterFocusManager::setDefaultFocusBorderWidth (int width)
 }
 
 void
-FormatterFocusManager::setDefaultSelBorderColor (Color *color)
+FormatterFocusManager::setDefaultSelBorderColor (SDL_Color *color)
 {
   if (defaultSelBorderColor != NULL)
     {

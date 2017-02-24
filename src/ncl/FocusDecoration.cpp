@@ -49,7 +49,7 @@ FocusDecoration::~FocusDecoration ()
     }
 }
 
-Color *
+SDL_Color *
 FocusDecoration::getFocusBorderColor ()
 {
   return focusBorderColor;
@@ -79,14 +79,14 @@ FocusDecoration::getFocusBorderWidth ()
   return focusBorderWidth;
 }
 
-Color *
+SDL_Color *
 FocusDecoration::getSelBorderColor ()
 {
   return selBorderColor;
 }
 
 void
-FocusDecoration::setFocusBorderColor (Color *color)
+FocusDecoration::setFocusBorderColor (SDL_Color *color)
 {
   focusBorderColor = color;
 }
@@ -125,7 +125,7 @@ FocusDecoration::setFocusSrc (const string &src)
 }
 
 void
-FocusDecoration::setSelBorderColor (Color *color)
+FocusDecoration::setSelBorderColor (SDL_Color *color)
 {
   selBorderColor = color;
 }
