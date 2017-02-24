@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef ADAPTER_NEW_TEXT_PLAYER_H
-#define ADAPTER_NEW_TEXT_PLAYER_H
+#ifndef ADAPTER_TEXT_PLAYER_H
+#define ADAPTER_TEXT_PLAYER_H
 
 #include "NclExecutionObject.h"
 
@@ -33,11 +33,11 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-class AdapterNewTextPlayer : public AdapterFormatterPlayer
+class AdapterTextPlayer : public AdapterFormatterPlayer
 {
 public:
-  AdapterNewTextPlayer ();
-  virtual ~AdapterNewTextPlayer (){};
+  AdapterTextPlayer ();
+  virtual ~AdapterTextPlayer (){};
 
 protected:
   void createPlayer ();
@@ -45,4 +45,4 @@ protected:
 
 GINGA_FORMATTER_END
 
-#endif /* ADAPTER_NEW_TEXT_PLAYER_H */
+#endif /* ADAPTER_TEXT_PLAYER_H */

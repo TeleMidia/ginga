@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "IContinuousMediaProvider.h"
 #include "IDiscreteMediaProvider.h"
-#include "IFontProvider.h"
+//#include "IFontProvider.h" deleted
 #include "InputManager.h"
 #include "InputEvent.h"
 #include "SDLSurface.h"
@@ -139,8 +139,6 @@ public:
   bool releaseSurface (SDLSurface *sur);
 
   /* interfacing content */
-  IFontProvider *createFontProvider (const char *mrl, int fontSize);
-  void releaseFontProvider (IFontProvider *provider);
   SDLSurface *createRenderedSurfaceFromImageFile (const char *mrl);
 
 public:
