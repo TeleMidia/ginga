@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NEW_VIDEO_PLAYER_H
 #define NEW_VIDEO_PLAYER_H
 
-//#include "ginga.h"
+#include "ginga.h"
 
 //#include "system/Thread.h"
 //using namespace ginga::system;
@@ -40,8 +40,11 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
 #include <gst/video/video.h>
 GINGA_PRAGMA_DIAG_POP ()
 
+//#include "ginga.h"  
 #include "Player.h"
 #include "mb/Display.h"
+#include "mb/SDLWindow.h"
+
 using namespace ginga::mb;
 
 GINGA_PLAYER_BEGIN

@@ -15,11 +15,11 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga.h"
+//#include "ginga.h"
 #include "NewVideoPlayer.h"
 
-#include "mb/Display.h"
-#include "mb/SDLWindow.h"
+//#include "mb/Display.h"
+//#include "mb/SDLWindow.h"
 
 #define TRACE() g_debug ("%s",G_STRFUNC);
 
@@ -29,105 +29,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
-void 
-NewVideoPlayer::eosCB (arg_unused (GstAppSink *appsink), arg_unused(gpointer data))
-{
-  g_print("eos\n");
-}
-
-GstFlowReturn
-NewVideoPlayer::newPrerollCB (arg_unused (GstAppSink *appsink), arg_unused(gpointer data))
-{
-  return GST_FLOW_OK;
-}
-
-GstFlowReturn
-NewVideoPlayer::newSampleCB (arg_unused (GstAppSink *appsink), arg_unused(gpointer data))
-{
-  NewVideoPlayer *player = (NewVideoPlayer *) data;
-
-  player->lock();
-  
-  if ( player->sample != NULL ){
-    gst_sample_unref (player->sample);
-    player->sample = NULL;
-  }
-
-  player->sample = gst_app_sink_pull_sample (appsink);
-  g_assert_nonnull (player->sample);
-  
-
-  player->unlock ();
-
-  return GST_FLOW_OK;
-}
-  
-bool
-NewVideoPlayer::displayJobCallbackWrapper (DisplayJob *job,
-                                           SDL_Renderer *renderer,
-                                           void *self)
-{
-  return ((NewVideoPlayer *) self)->displayJobCallback (job, renderer);
-}
-
-bool
-NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
-                                    SDL_Renderer *renderer)
-{
-  GstVideoFrame v_frame;
-  GstVideoInfo v_info;
-  GstBuffer *buf;
-  GstCaps *caps;
-  guint8 *pixels;
-  guint stride;
-  
-  SDLWindow *window;
-
-  //if(unlikely (texture == NULL))
-    //g_error("cannot load video file");
-
-  this->lock ();
-  
-  //g_assert_nonnull(surface);
-  if ( sample != NULL ){
-
-    window = surface->getParentWindow ();
-    
-    if (texture == NULL){
-      texture = SDL_CreateTexture (renderer, SDL_PIXELFORMAT_ARGB32,
-                                SDL_TEXTUREACCESS_TARGET, 
-                                surface->getParentWindow ()->getRect().w,
-                                surface->getParentWindow ()->getRect().h);
-    }
-
-
-    buf = gst_sample_get_buffer (sample);
-    g_assert_nonnull (buf);
-
-    caps = gst_sample_get_caps (sample);
-    g_assert_nonnull (caps);
-
-    g_assert (gst_video_info_from_caps(&v_info, caps));
-    g_assert (gst_video_frame_map (&v_frame, &v_info, buf, GST_MAP_READ));
-
-    pixels = (guint8 *) GST_VIDEO_FRAME_PLANE_DATA (&v_frame, 0);
-    stride = GST_VIDEO_FRAME_PLANE_STRIDE (&v_frame, 0);
-    g_assert (SDL_UpdateTexture(texture, NULL, pixels, stride) == 0);
-  
-    g_assert_nonnull (window);
-    window->setTexture (texture);
-
-    gst_video_frame_unmap (&v_frame);
-
-    gst_sample_unref (sample);
-    sample = NULL;
-  }
-
-  this->unlock ();
-  this->condDisplayJobSignal ();
-  return true; //Keep job
-}
-
 NewVideoPlayer::NewVideoPlayer (const string &mrl) : Thread (), Player (mrl)
 {
 	//TRACE ();
@@ -136,13 +37,14 @@ NewVideoPlayer::NewVideoPlayer (const string &mrl) : Thread (), Player (mrl)
   this->mutexInit ();
   this->condDisplayJobInit ();
   this->surface = new SDLSurface ();
-  textureUpdated = false;
+  
   createPipeline(mrl);
 }
 
 NewVideoPlayer::~NewVideoPlayer ()
 {
-	TRACE ();
+  this-condDisplayJobClear ();
+  this->mutexClear ();
 }
 
 void
@@ -215,6 +117,102 @@ NewVideoPlayer::createPipeline (string mrl)
 //                                    (GstMessageType)(GST_MESSAGE_ERROR | GST_MESSAGE_EOS));
 //  gst_object_unref (playbin);
 //  gst_object_unref (bin);
+}
+
+void 
+NewVideoPlayer::eosCB (arg_unused (GstAppSink *appsink), arg_unused(gpointer data))
+{
+  g_print("eos\n");
+}
+
+GstFlowReturn
+NewVideoPlayer::newPrerollCB (arg_unused (GstAppSink *appsink), arg_unused(gpointer data))
+{
+  return GST_FLOW_OK;
+}
+
+GstFlowReturn
+NewVideoPlayer::newSampleCB (arg_unused (GstAppSink *appsink), arg_unused(gpointer data))
+{
+  NewVideoPlayer *player = (NewVideoPlayer *) data;
+
+  player->lock();
+  
+  if ( player->sample != NULL ){
+    gst_sample_unref (player->sample);
+    player->sample = NULL;
+  }
+
+  player->sample = gst_app_sink_pull_sample (appsink);
+  g_assert_nonnull (player->sample);
+  
+
+  player->unlock ();
+
+  return GST_FLOW_OK;
+}
+  
+bool
+NewVideoPlayer::displayJobCallbackWrapper (DisplayJob *job,
+                                           SDL_Renderer *renderer,
+                                           void *self)
+{
+  return ((NewVideoPlayer *) self)->displayJobCallback (job, renderer);
+}
+
+bool
+NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
+                                    SDL_Renderer *renderer)
+{
+  GstVideoFrame v_frame;
+  GstVideoInfo v_info;
+  GstBuffer *buf;
+  GstCaps *caps;
+  guint8 *pixels;
+  guint stride;
+  
+  SDLWindow *window;
+
+  this->lock ();
+  
+  //g_assert_nonnull(surface);
+  if ( sample != NULL ){
+
+    window = surface->getParentWindow ();
+    
+    if (texture == NULL){
+      texture = SDL_CreateTexture (renderer, SDL_PIXELFORMAT_ARGB32,
+                                SDL_TEXTUREACCESS_TARGET, 
+                                surface->getParentWindow ()->getRect().w,
+                                surface->getParentWindow ()->getRect().h);
+    }
+
+
+    buf = gst_sample_get_buffer (sample);
+    g_assert_nonnull (buf);
+
+    caps = gst_sample_get_caps (sample);
+    g_assert_nonnull (caps);
+
+    g_assert (gst_video_info_from_caps(&v_info, caps));
+    g_assert (gst_video_frame_map (&v_frame, &v_info, buf, GST_MAP_READ));
+
+    pixels = (guint8 *) GST_VIDEO_FRAME_PLANE_DATA (&v_frame, 0);
+    stride = GST_VIDEO_FRAME_PLANE_STRIDE (&v_frame, 0);
+    g_assert (SDL_UpdateTexture(texture, NULL, pixels, stride) == 0);
+  
+    g_assert_nonnull (window);
+    window->setTexture (texture);
+
+    gst_video_frame_unmap (&v_frame);
+
+    gst_sample_unref (sample);
+    sample = NULL;
+  }
+
+  this->unlock ();
+  this->condDisplayJobSignal ();
+  return true; //Keep job
 }
 
 SDLSurface*
@@ -310,10 +308,8 @@ NewVideoPlayer::setScope (arg_unused(const string &scope), arg_unused(short type
 bool
 NewVideoPlayer::play ()
 {
-	//TRACE ();  
   ret = gst_element_set_state (playbin, GST_STATE_PLAYING);
   g_assert (ret != GST_STATE_CHANGE_FAILURE);
-  //GST_STATE_PLAYING
   
   GstStateChangeReturn retWait = gst_element_get_state (playbin, NULL, NULL, GST_CLOCK_TIME_NONE);
 
