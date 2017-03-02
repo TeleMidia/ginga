@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef SDLSURFACE_H_
 #define SDLSURFACE_H_
 
-#include "util/Color.h"
-using namespace ::ginga::util;
 
 GINGA_MB_BEGIN
 
@@ -46,10 +44,10 @@ private:
   SDL_Surface *pending;
   SDLWindow *parent;
   bool hasExtHandler;
-  Color *chromaColor;
-  Color *borderColor;
-  Color *bgColor;
-  Color *surfaceColor;
+  SDL_Color *chromaColor;
+  SDL_Color *borderColor;
+  SDL_Color *bgColor;
+  SDL_Color *surfaceColor;
   IFontProvider *iFont;
   int caps;
   bool isDeleting;
@@ -75,7 +73,6 @@ private:
   void releaseBorderColor ();
   void releaseSurfaceColor ();
 
-  void releaseFont ();
   void releaseDrawData ();
 
   void initialize ();
@@ -109,14 +106,14 @@ public:
   void drawRectangle (int x, int y, int w, int h);
   void fillRectangle (int x, int y, int w, int h);
   void drawString (int x, int y, const char *txt);
-  void setChromaColor (guint8 r, guint8 g, guint8 b, guint8 alpha);
-  Color *getChromaColor ();
-  void setBorderColor (guint8 r, guint8 g, guint8 b, guint8 alpha);
-  Color *getBorderColor ();
-  void setBgColor (guint8 r, guint8 g, guint8 b, guint8 alpha);
-  Color *getBgColor ();
-  void setColor (guint8 r, guint8 g, guint8 b, guint8 alpha);
-  Color *getColor ();
+  void setChromaColor (SDL_Color color);
+  SDL_Color *getChromaColor ();
+  void setBorderColor (SDL_Color color);
+  SDL_Color *getBorderColor ();
+  void setBgColor (SDL_Color color);
+  SDL_Color *getBgColor ();
+  void setColor (SDL_Color color);
+  SDL_Color *getColor ();
   void setSurfaceFont (void *font);
   void getStringExtents (const char *text, int *w, int *h);
   void flip ();

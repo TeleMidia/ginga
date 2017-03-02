@@ -22,8 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Display.h"
 #include "SDLSurface.h"
 
-#include "util/Color.h"
-using namespace ::ginga::util;
 
 GINGA_MB_BEGIN
 
@@ -326,26 +324,34 @@ SDLWindow::setRect (SDL_Rect r)
 // SANITY END --------------------------------------------------------------
 
 void
-SDLWindow::setColorKey (guint8 r, guint8 g, guint8 b)
+SDLWindow::setColorKey (SDL_Color color)
 {
   releaseColorKey ();
-  colorKey = new Color (r, g, b);
+  this->colorKey = new SDL_Color();
+  this->colorKey->r = color.r;
+  this->colorKey->g = color.g;
+  this->colorKey->b = color.b;
+  this->colorKey->a = color.a;
 }
 
-Color *
+SDL_Color *
 SDLWindow::getColorKey ()
 {
   return colorKey;
 }
 
 void
-SDLWindow::setWindowColor (guint8 r, guint8 g, guint8 b, guint8 alpha)
+SDLWindow::setWindowColor (SDL_Color color)
 {
   releaseWinColor ();
-  winColor = new Color (r, g, b, alpha);
+  this->winColor = new SDL_Color();
+  this->winColor->r = color.r;
+  this->winColor->g = color.g;
+  this->winColor->b = color.b;
+  this->winColor->a = color.a;
 }
 
-Color *
+SDL_Color *
 SDLWindow::getWindowColor ()
 {
   return winColor;

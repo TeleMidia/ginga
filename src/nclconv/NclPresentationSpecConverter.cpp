@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
+#include "ginga-color-table.h"
 #include "NclPresentationSpecConverter.h"
 #include "NclImportConverter.h"
 #include "NclPresentationControlConverter.h"
@@ -187,7 +188,7 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
   KeyNavigation *keyNavigation;
   string src;
   FocusDecoration *focusDecoration;
-  Color *color;
+  SDL_Color *color;
   string attValue;
   vector<string> *transIds;
   unsigned int i;
@@ -302,10 +303,10 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
   if (parentElement->hasAttribute (
           XMLString::transcode ("focusBorderColor")))
     {
-      color = new Color (XMLString::transcode (parentElement->getAttribute (
-          XMLString::transcode ("focusBorderColor"))));
-           SDL_Color c = color->getColor();
-      focusDecoration->setFocusBorderColor ( &c );
+      color = new SDL_Color ();
+      ginga_color_input_to_sdl_color( XMLString::transcode (parentElement->getAttribute (
+          XMLString::transcode ("focusBorderColor"))) ,color);
+      focusDecoration->setFocusBorderColor ( color );
     }
 
   if (parentElement->hasAttribute (
@@ -348,10 +349,10 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
 
   if (parentElement->hasAttribute (XMLString::transcode ("selBorderColor")))
     {
-      color = new Color (XMLString::transcode (parentElement->getAttribute (
-          XMLString::transcode ("selBorderColor"))));
-           SDL_Color c = color->getColor();
-      focusDecoration->setSelBorderColor ( &c );
+      color = new SDL_Color ();
+      ginga_color_input_to_sdl_color( XMLString::transcode (parentElement->getAttribute (
+          XMLString::transcode ("selBorderColor"))) ,color);
+       focusDecoration->setSelBorderColor ( color );      
     }
 
   if (parentElement->hasAttribute (XMLString::transcode ("transIn")))

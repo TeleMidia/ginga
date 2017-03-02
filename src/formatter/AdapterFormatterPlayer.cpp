@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
+#include "ginga-color-table.h"
 #include "AdapterFormatterPlayer.h"
 
 #include "AdapterApplicationPlayer.h"
@@ -490,35 +491,9 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                 {
                   if (fRegion != NULL)
                     {
-                      if (value.find (",") == std::string::npos)
-                        {
-                          fRegion->setBackgroundColor (value);
-                        }
-                      else
-                        {
-                          SDL_Color *bg = NULL;
-
-                          params = split (xstrchomp (value), ",");
-                          if (params->size () == 3)
-                            {
-                              bg = new SDL_Color();
-                              bg->r = xstrto_uint8 ((*params)[0]);
-                              bg->g = xstrto_uint8 ((*params)[1]);
-                              bg->b = xstrto_uint8 ((*params)[2]);
-                              bg->a = 255;
-                              fRegion->setBackgroundColor (bg);
-                            }
-                          else if (params->size () == 4)
-                            {
-                              bg = new SDL_Color();
-                              bg->r = xstrto_uint8 ((*params)[0]);
-                              bg->g = xstrto_uint8 ((*params)[1]);
-                              bg->b = xstrto_uint8 ((*params)[2]);
-                              bg->a = xstrto_uint8 ((*params)[3]);
-                              fRegion->setBackgroundColor (bg);
-                            }
-                          delete params;
-                        }
+                      SDL_Color *bg = new SDL_Color();
+                      ginga_color_input_to_sdl_color(value,bg);
+                      fRegion->setBackgroundColor (bg);
                     }
                 }
               else if (name == "focusIndex")
@@ -530,13 +505,11 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                 }
               else if (name == "focusBorderColor")
                 {
-                  Color *color;
                   if (fRegion != NULL)
                     {
-                      color = new Color (value);
-                      SDL_Color c = color->getColor();
-                      fRegion->setFocusBorderColor ( &c );
-                      delete color;
+                      SDL_Color *c = new SDL_Color();
+                      ginga_color_input_to_sdl_color(value,c); 
+                      fRegion->setFocusBorderColor(c);
                     }
                 }
               else if (name == "focusBorderWidth")
@@ -556,13 +529,11 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                 }
               else if (name == "selBorderColor")
                 {
-                  Color *color;
                   if (fRegion != NULL)
                     {
-                      color = new Color (value);
-                       SDL_Color c = color->getColor();
-                      fRegion->setSelBorderColor (&c);
-                      delete color;
+                      SDL_Color *c = new SDL_Color();
+                      ginga_color_input_to_sdl_color(value,c); 
+                      fRegion->setSelBorderColor (c);
                     }
                 }
               else if (name == "selBorderWidth")
@@ -743,28 +714,9 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                             }
                           else
                             {
-                              SDL_Color *bg = NULL;
-
-                              params = split (xstrchomp (value), ",");
-                              if (params->size () == 3)
-                                {
-                                 bg = new SDL_Color();
-                                 bg->r = xstrto_uint8 ((*params)[0]);
-                                 bg->g = xstrto_uint8 ((*params)[1]);
-                                 bg->b = xstrto_uint8 ((*params)[2]);
-                                 bg->a = 255;
-                                 fRegion->setBackgroundColor (bg);
-                                }
-                              else if (params->size () == 4)
-                                {
-                                 bg = new SDL_Color();
-                                 bg->r = xstrto_uint8 ((*params)[0]);
-                                 bg->g = xstrto_uint8 ((*params)[1]);
-                                 bg->b = xstrto_uint8 ((*params)[2]);
-                                 bg->a = xstrto_uint8 ((*params)[3]);
-                                  fRegion->setBackgroundColor (bg);
-                                }
-                              delete params;
+                              SDL_Color *bg = new SDL_Color();
+                              ginga_color_input_to_sdl_color(value,bg); 
+                              fRegion->setBackgroundColor (bg);      
                             }
                         }
                     }
@@ -777,13 +729,11 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                     }
                   else if (name == "focusBorderColor")
                     {
-                      Color *color;
                       if (fRegion != NULL)
                         {
-                          color = new Color (value);
-                           SDL_Color c = color->getColor();
-                          fRegion->setFocusBorderColor (&c);
-                          delete color;
+                          SDL_Color *c = new SDL_Color();
+                          ginga_color_input_to_sdl_color(value,c);
+                          fRegion->setFocusBorderColor(c);
                         }
                     }
                   else if (name == "focusBorderWidth")
@@ -803,13 +753,11 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                     }
                   else if (name == "selBorderColor")
                     {
-                      Color *color;
                       if (fRegion != NULL)
                         {
-                          color = new Color (value);
-                           SDL_Color c = color->getColor();
-                          fRegion->setSelBorderColor (&c);
-                          delete color;
+                          SDL_Color *c = new SDL_Color();
+                          ginga_color_input_to_sdl_color(value,c);
+                          fRegion->setSelBorderColor(c);
                         }
                     }
                   else if (name == "selBorderWidth")

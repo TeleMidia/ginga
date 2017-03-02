@@ -250,7 +250,6 @@ src+= system/Stc.cpp
 src+= system/SystemCompat.cpp
 src+= system/Thread.cpp
 src+= util/Base64.cpp
-src+= util/Color.cpp
 src+= util/functions.cpp
 
 if WITH_BERKELIUM

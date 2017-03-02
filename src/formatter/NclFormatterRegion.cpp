@@ -820,9 +820,7 @@ NclFormatterRegion::prepareOutputDisplay (SDLSurface* renderedSurface,
           outputDisplay->setCaps (caps);
           outputDisplay->draw ();
 
-          outputDisplay->setColorKey (
-                                 chromaKey->r, chromaKey->g,
-                                 chromaKey->b);
+          outputDisplay->setColorKey (*chromaKey);
         }
       else if (!externHandler)
         {
@@ -1923,12 +1921,10 @@ NclFormatterRegion::setTransparency (double transparency)
 void
 NclFormatterRegion::setBackgroundColor (const string &c)
 {
-  Color *bg = NULL;
-  string color = xstrchomp (c);
-  if (color != "" && color != "transparent")
-    bg = new Color (color, (guint8)(transparency * 255));
-     SDL_Color col = bg->getColor();
-  setBackgroundColor (&col);
+    SDL_Color *bg = new SDL_Color();
+    ginga_color_input_to_sdl_color(c,bg);
+    bg->a = (guint8)(transparency * 255);
+    setBackgroundColor (bg);
 }
 
 void
@@ -1966,17 +1962,8 @@ NclFormatterRegion::setRgbChromaKey (const string &value)
 {
   if (value != "")
     {
-      vector<string> *params;
-
-      params = split (value, ",");
-      if (params->size () == 3)
-        {
-          this->chromaKey = new SDL_Color();
-          this->chromaKey->r = xstrto_uint8 ((*params)[0]);
-          this->chromaKey->g = xstrto_uint8 ((*params)[1]);
-          this->chromaKey->b = xstrto_uint8 ((*params)[2]);
-        }
-      delete params;
+      this->chromaKey = new SDL_Color();
+      ginga_color_input_to_sdl_color(value, this->chromaKey);   
     }
 }
 

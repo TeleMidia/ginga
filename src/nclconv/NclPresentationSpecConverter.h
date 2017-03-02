@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NclPresentationSpecConverter_H
 #define NclPresentationSpecConverter_H
 
-#include "util/Color.h"
-
 #include "ncl/Parameter.h"
 using namespace ::ginga::ncl;
 

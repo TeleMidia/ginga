@@ -598,7 +598,9 @@ FormatterMultiDevice::renderFromUri (SDLWindow* win, const string &uri)
 {
   SDLSurface* s;
   s = Ginga_Display->createRenderedSurfaceFromImageFile (uri.c_str ());
-  win->setColorKey (0, 0, 0);
+  SDL_Color c;
+  c.r=0; c.g=0; c.b=0; c.a=0;
+  win->setColorKey (c);
   win->clearContent ();
   win->renderFrom (s);
   win->show ();

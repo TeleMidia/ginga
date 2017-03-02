@@ -350,7 +350,7 @@ NclFormatterDeviceRegion::removeRegions ()
 }
 
 void
-NclFormatterDeviceRegion::setBackgroundColor (arg_unused (Color *newBackgroundColor))
+NclFormatterDeviceRegion::setBackgroundColor (arg_unused (SDL_Color *newBackgroundColor))
 {
 }
 

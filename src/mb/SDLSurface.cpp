@@ -49,7 +49,6 @@ SDLSurface::~SDLSurface ()
   releaseBorderColor ();
   releaseBgColor ();
   releaseSurfaceColor ();
-  releaseFont ();
 
   if (w != NULL && Ginga_Display->hasWindow (w))
     {
@@ -139,18 +138,10 @@ SDLSurface::checkPendingSurface ()
 void
 SDLSurface::fill ()
 {
-  guint8 r = 0, g = 0, b = 0;
-
   Thread::mutexLock (&sMutex);
   if (sur != NULL)
     {
-      if (bgColor != NULL)
-        {
-          r = bgColor->getR ();
-          g = bgColor->getG ();
-          b = bgColor->getB ();
-        }
-
+     
       Thread::mutexLock (&pMutex);
       releasePendingSurface ();
 
@@ -160,7 +151,7 @@ SDLSurface::fill ()
         {
           // TODO: check why we have to set BGR instead of RGB
           if (SDL_FillRect (pending, NULL,
-                            SDL_MapRGB (pending->format, b, g, r))
+                            SDL_MapRGB (pending->format, bgColor->r, bgColor->g, bgColor->b))
               < 0)
             {
               clog << "SDLSurface::fill SDL error: '";
@@ -214,17 +205,6 @@ SDLSurface::releaseSurfaceColor ()
       this->surfaceColor = NULL;
     }
 }
-
-void
-SDLSurface::releaseFont ()
-{
-  if (iFont != NULL)
-    {
-    //  Ginga_Display->releaseFontProvider ((IFontProvider*)iFont);
-    //  iFont = NULL;
-    }
-}
-
 void
 SDLSurface::releaseDrawData ()
 {
@@ -365,8 +345,7 @@ SDLSurface::setParentWindow (SDLWindow *parentWindow)
     {
       if (chromaColor != NULL)
         {
-          w->setColorKey (chromaColor->getR (), chromaColor->getG (),
-                          chromaColor->getB ());
+          w->setColorKey (*chromaColor);
         }
 
       w->setChildSurface (this);
@@ -434,10 +413,10 @@ SDLSurface::pushDrawData (int c1, int c2, int c3, int c4, short type)
       dd->coord3 = c3;
       dd->coord4 = c4;
       dd->dataType = type;
-      dd->r = surfaceColor->getR ();
-      dd->g = surfaceColor->getG ();
-      dd->b = surfaceColor->getB ();
-      dd->a = surfaceColor->getAlpha ();
+      dd->r = surfaceColor->r;
+      dd->g = surfaceColor->g;
+      dd->b = surfaceColor->b;
+      dd->a = surfaceColor->a;
 
       clog << "SDLSurface::pushDrawData current size = '";
       clog << drawData.size () << "'" << endl;
@@ -448,12 +427,16 @@ SDLSurface::pushDrawData (int c1, int c2, int c3, int c4, short type)
 }
 
 void
-SDLSurface::setChromaColor (guint8 r, guint8 g, guint8 b, guint8 alpha)
+SDLSurface::setChromaColor (SDL_Color color)
 {
   releaseChromaColor ();
   SDLWindow *w = (SDLWindow *)parent;
 
-  this->chromaColor = new Color (r, g, b, alpha);
+  this->chromaColor = new  SDL_Color();
+  this->chromaColor->r = color.r;
+  this->chromaColor->g = color.g;
+  this->chromaColor->b = color.b;
+  this->chromaColor->a = color.a;
 
   Thread::mutexLock (&sMutex);
   if (sur != NULL)
@@ -462,7 +445,7 @@ SDLSurface::setChromaColor (guint8 r, guint8 g, guint8 b, guint8 alpha)
       if (createPendingSurface ())
         {
           if (SDL_SetColorKey (pending, SDL_TRUE,
-                               SDL_MapRGB (pending->format, r, g, b))
+                               SDL_MapRGB (pending->format, color.r, color.g, color.b))
               < 0)
             {
               clog << "SDLSurface::setChromaColor SDL error: '";
@@ -474,56 +457,45 @@ SDLSurface::setChromaColor (guint8 r, guint8 g, guint8 b, guint8 alpha)
 
   if (parent != NULL)
     {
-      w->setColorKey (r, g, b);
+      w->setColorKey (color);
     }
 
   Thread::mutexUnlock (&sMutex);
 }
 
 void
-SDLSurface::setBgColor (guint8 r, guint8 g, guint8 b, guint8 alpha)
+SDLSurface::setBgColor (SDL_Color color)
 {
   releaseBgColor ();
-
-  this->bgColor = new Color (r, g, b, alpha);
+  this->bgColor = new  SDL_Color();
+  this->bgColor->r = color.r;
+  this->bgColor->g = color.g;
+  this->bgColor->b = color.b;
+  this->bgColor->a = color.a;
   fill ();
 }
 
-Color *
+SDL_Color *
 SDLSurface::getBgColor ()
 {
   return bgColor;
 }
 
 void
-SDLSurface::setColor (guint8 r, guint8 g, guint8 b, guint8 alpha)
+SDLSurface::setColor (SDL_Color color)
 {
   releaseSurfaceColor ();
-
-  if (r < 10 && g < 10 && b < 10)
-    {
-      r = 10;
-      g = 10;
-      b = 10;
-    }
-  this->surfaceColor = new Color (r, g, b, alpha);
+  this->surfaceColor = new  SDL_Color();
+  this->surfaceColor->r = color.r;
+  this->surfaceColor->g = color.g;
+  this->surfaceColor->b = color.b;
+  this->surfaceColor->a = color.a;
 }
 
-Color *
+SDL_Color *
 SDLSurface::getColor ()
 {
   return surfaceColor;
-}
-
-void
-SDLSurface::setSurfaceFont (void *font)
-{
-  if (iFont != font)
-    {
-      releaseFont ();
-    }
-
- // iFont = (IFontProvider *)font;
 }
 
 void
