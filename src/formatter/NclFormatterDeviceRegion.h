@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTERDEVICEREGION_H_
 #define FORMATTERDEVICEREGION_H_
 
-#include "util/Color.h"
-using namespace ::ginga::util;
-
 #include "ncl/Entity.h"
 using namespace ::ginga::ncl;
 
@@ -70,7 +67,7 @@ public:
   string toString ();
   bool removeRegion (LayoutRegion *region);
   void removeRegions ();
-  void setBackgroundColor (Color *newBackgroundColor);
+  void setBackgroundColor (SDL_Color *newBackgroundColor);
   bool setBottom (double newBottom, bool isPercentual);
   bool setHeight (double newHeight, bool isPercentual);
   bool setLeft (double newLeft, bool isPercentual);

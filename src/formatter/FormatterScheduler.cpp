@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
+#include "ginga-color-table.h"
 #include "FormatterConverter.h"
 
 #include "NclLinkTransitionTriggerCondition.h"
@@ -1519,24 +1520,15 @@ FormatterScheduler::initializeDefaultSettings ()
   string value;
   double alfa;
 
-  value = presContext->getPropertyValue (DEFAULT_FOCUS_BORDER_TRANSPARENCY);
+ // value = presContext->getPropertyValue (DEFAULT_FOCUS_BORDER_TRANSPARENCY);
 
-  if (value != "")
-    {
-      alfa = xstrtod (value);
-    }
-  else
-    {
-      alfa = 1.;
-    }
-  guint8 alpha;
-  alpha = (guint8)(255 * alfa);
 
   value = presContext->getPropertyValue (DEFAULT_FOCUS_BORDER_COLOR);
   if (value != "")
     {
-      SDL_Color c = (new Color (value, alpha))->getColor();
-      focusManager->setDefaultFocusBorderColor( &c );
+      SDL_Color *c = new SDL_Color();
+      ginga_color_input_to_sdl_color(value,c);
+      focusManager->setDefaultFocusBorderColor(c);
     }
 
   value = presContext->getPropertyValue (DEFAULT_FOCUS_BORDER_WIDTH);
@@ -1548,8 +1540,9 @@ FormatterScheduler::initializeDefaultSettings ()
   value = presContext->getPropertyValue (DEFAULT_SEL_BORDER_COLOR);
   if (value != "")
     {
-      SDL_Color c = (new Color (value, alpha))->getColor();
-      focusManager->setDefaultSelBorderColor( &c );
+      SDL_Color *c = new SDL_Color();
+       ginga_color_input_to_sdl_color(value,c);
+      focusManager->setDefaultSelBorderColor(c);
     }
 }
 

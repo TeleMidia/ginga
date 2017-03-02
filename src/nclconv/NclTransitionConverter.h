@@ -31,7 +31,6 @@ using namespace ::ginga::ncl;
 #include "NclTransitionParser.h"
 
 #include "util/functions.h"
-#include "util/Color.h"
 using namespace ::ginga::util;
 
 XERCES_CPP_NAMESPACE_USE

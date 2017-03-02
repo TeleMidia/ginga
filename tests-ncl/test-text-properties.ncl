@@ -21,7 +21,7 @@
 
     <media id='text' src='samples/text.txt' descriptor='desc'>
        <property name="fontColor" value="#0" />
-       <property name="backgroundColor" value="#F" />       
+       <property name="backgroundColor" value="255,255,0" />       
        <property name="fontFamily" value="Courier" />
        <property name="textAlign" value="center" />
        <property name="verticalAlign" value="middle" />

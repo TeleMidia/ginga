@@ -21,7 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Entity.h"
 
 #include "util/functions.h"
-#include "util/Color.h"
 using namespace ::ginga::util;
 
 //#include <limits>

@@ -233,8 +233,30 @@ ginga_color_hex_formatter(string hex){
    return hex.c_str();
 }
 
-/* Gets the matching SDL_Color to the given RGB or RGBA text input.  If the input
-is valid and returns true, otherwise returns false.  */
+/* Gets the matching SDL_Color to the given RGB or RGBA input (255,255,255 
+or 255,255,255,255).  If the input is valid and returns true, otherwise 
+returns false.  */
+static inline gboolean
+ginga_rgba_to_sdl_color(const string value,  SDL_Color *color){
+   gchar **pixels = g_strsplit(value.c_str(),",",-1 );
+   if(g_strv_length(pixels) < 3 )
+         return FALSE;
+
+   color->r = xstrto_uint8 (pixels[0]);
+   color->g = xstrto_uint8 (pixels[1]);
+   color->b = xstrto_uint8 (pixels[2]);
+   if(pixels[3] != NULL)
+     color->a = xstrto_uint8 (pixels[3]);
+   else
+     color->a=255;
+
+   g_strfreev(pixels);
+   return TRUE;
+}
+
+/* Gets the matching SDL_Color to the given RGB or RGBA text input [rgb(255,255,255) 
+or rgba(255,255,255,255)]. If the input is valid and returns true, otherwise 
+returns false.  */
 static inline gboolean
 ginga_rgbatext_to_sdl_color(const string value, SDL_Color *color){
       gchar **pixels = g_strsplit( value.substr
@@ -257,7 +279,7 @@ ginga_rgbatext_to_sdl_color(const string value, SDL_Color *color){
 }
 
 /* Gets the matching SDL_Color to the given HEX code input.  If the input
-is valid and returns true, otherwise returns false.  */
+is valid returns true, otherwise returns false.  */
 static inline gboolean
 ginga_hex_to_sdl_color(const string hex, SDL_Color *color){
    const char *c = ginga_color_hex_formatter(hex);
@@ -318,15 +340,17 @@ ginga_color_table_index (const char *name, guchar *r, guchar *g, guchar *b)
  HEX (#FFF) the function calls 'ginga_hex_to_sdl_color'. If  Value is a RGB_TEXT,
  like 'rgb(255,255,255)', the function calls 'ginga_rgbatext_to_sdl_color'. If the
  value is a COLOR NAME the function calls 'ginga_color_table_index'. Return true if
- the input is valid,  otherwise returns false. */
+ the input is valid, otherwise returns false. */
 static inline gboolean
 ginga_color_input_to_sdl_color(const string value, SDL_Color *color){
    if(value[0] == '#') //by hex
          return ginga_hex_to_sdl_color(value, color);
    else if(value.substr (0,3)=="rgb") //by rgbatxt
          return ginga_rgbatext_to_sdl_color(value, color);
-   else  //by name
-         return ginga_color_table_index (value.c_str(), &color->r, &color->g, &color->b );
+   else  if(ginga_color_table_index (value.c_str(), &color->r, &color->g, &color->b ))  //by name
+         return TRUE;
+   else
+         return ginga_rgba_to_sdl_color(value, color);      
 }
 
 #endif /* GINGA_COLOR_TABLE_H */

@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
+#include "ginga-color-table.h"
 #include "NclTransitionConverter.h"
 #include "NclDocumentConverter.h"
 
@@ -52,7 +53,7 @@ NclTransitionConverter::createTransition (DOMElement *parentElement,
   int type, subtype;
   short direction;
   double dur;
-  Color *color;
+  SDL_Color *color;
 
   if (!parentElement->hasAttribute (XMLString::transcode ("id")))
     {
@@ -135,10 +136,10 @@ NclTransitionConverter::createTransition (DOMElement *parentElement,
 
   if (parentElement->hasAttribute (XMLString::transcode ("fadeColor")))
     {
-      color = new Color (XMLString::transcode (parentElement->getAttribute (
-          XMLString::transcode ("fadeColor"))));
-      SDL_Color a = color->getColor ();
-      transition->setFadeColor ( &a );
+      color = new SDL_Color ();
+      ginga_color_input_to_sdl_color( XMLString::transcode (parentElement->getAttribute (
+          XMLString::transcode ("fadeColor"))), color);
+      transition->setFadeColor (color);
     }
 
   if (parentElement->hasAttribute (XMLString::transcode ("horzRepeat")))
@@ -167,10 +168,10 @@ NclTransitionConverter::createTransition (DOMElement *parentElement,
 
   if (parentElement->hasAttribute (XMLString::transcode ("borderColor")))
     {
-      color = new Color (XMLString::transcode (parentElement->getAttribute (
-          XMLString::transcode ("borderColor"))));
-      SDL_Color a = color->getColor ();
-      transition->setBorderColor ( &a);
+      color = new SDL_Color ();
+      ginga_color_input_to_sdl_color( XMLString::transcode (parentElement->getAttribute (
+          XMLString::transcode ("borderColor"))), color);
+      transition->setBorderColor (color);
     }
 
   return transition;

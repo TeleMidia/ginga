@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef SDLWINDOW_H_
 #define SDLWINDOW_H_
 
-#include "util/Color.h"
-using namespace ::ginga::util;
 
 #include "SDL.h"
 #include "SDLSurface.h"
@@ -54,8 +52,8 @@ private:
   int borderWidth;
   SDL_Color bgColor;
   SDL_Color borderColor;
-  Color *winColor;
-  Color *colorKey;
+  SDL_Color *winColor;
+  SDL_Color *colorKey;
 
   SDL_Rect rect;
 
@@ -108,10 +106,10 @@ public:
   SDLWindow *getMirrorSrc ();
 
 
-  void setColorKey (guint8 r, guint8 g, guint8 b);
-  Color *getColorKey ();
-  void setWindowColor (guint8 r, guint8 g, guint8 b, guint8 alpha);
-  Color *getWindowColor ();
+  void setColorKey (SDL_Color color);
+  SDL_Color *getColorKey ();
+  void setWindowColor (SDL_Color color);
+  SDL_Color *getWindowColor ();
 
   void setBorder (SDL_Color, int);
   void getBorder (SDL_Color *, int *);
