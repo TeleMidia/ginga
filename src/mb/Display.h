@@ -45,6 +45,7 @@ private:
   int width;                    // display width in pixels
   int height;                   // display height in pixels
   bool fullscreen;              // true if full-screen mode is on
+  gdouble frameTime;            //frame time rate
 
   SDL_Window *screen;           // display screen
   GRecMutex renderer_mutex;     // sync access to renderer
@@ -68,7 +69,7 @@ private:
   void renderThread (void);
 
 public:
-  Display (int, int, bool);
+  Display (int, int, bool, gdouble);
   ~Display ();
 
   void getSize (int *, int *);
@@ -122,6 +123,8 @@ private:
   static pthread_mutex_t surMutex; // mutex for C++ STL Surface
   static pthread_mutex_t proMutex; // mutex for C++ STL Providers
   static pthread_mutex_t cstMutex;
+
+  void displayFps(SDL_Renderer* renderer, guint fps);
 
 private:
   static void checkMutexInit ();

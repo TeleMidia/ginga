@@ -30,6 +30,7 @@ static gboolean opt_fullscreen = FALSE; /* true if --fullscreen was given */
 static gboolean opt_scale = FALSE;      /* true if --scale was given */
 static gint opt_width = 800;            /* initial window width */
 static gint opt_height = 600;           /* initial window height */
+static gdouble opt_fps = 60;           /* initial FPS rate */
 
 static gboolean
 opt_size (arg_unused (const gchar *opt), const gchar *arg,
@@ -75,6 +76,8 @@ static GOptionEntry options[] = {
    &opt_fullscreen, "Enable full-screen mode", NULL},
   {"scale", 'x', 0, G_OPTION_ARG_NONE,
    &opt_scale, "Scale canvas to fit window", NULL},
+   {"fps", 'f', 0, G_OPTION_ARG_DOUBLE,
+   &opt_fps, "Set display FPS rate", NULL},
   {"version", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
    pointerof (opt_version), "Print version information and exit", NULL},
   {NULL, 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL}
@@ -130,8 +133,8 @@ main (int argc, char **argv)
       usage_error ("Missing file operand");
       exit (EXIT_FAILURE);
     }
-
-  _Ginga_Display = new ginga::mb::Display (opt_width, opt_height, false);
+  
+  _Ginga_Display = new ginga::mb::Display (opt_width, opt_height, false, opt_fps);
   g_assert_nonnull (_Ginga_Display);
 
   pem = new PresentationEngineManager (0, 0, 0, opt_width, opt_height,
