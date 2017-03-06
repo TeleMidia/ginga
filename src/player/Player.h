@@ -38,10 +38,9 @@ GINGA_PLAYER_BEGIN
 
 
 enum PLAYER_STATUS{
-  NONE,
-  PLAY,
-  PAUSE,
-  STOP
+  SLEEPING,
+  OCCURRING,
+  PAUSED
 };
 
 typedef struct LockedPlayerLitenerAction

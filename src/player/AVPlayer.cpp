@@ -33,7 +33,7 @@ AVPlayer::AVPlayer (const string &mrl) : Thread (), Player (mrl)
   this->buffered = false;
   this->isRemote = false;
 
-  this->status = STOP;
+  this->status = SLEEPING;
   this->running = false;
   this->soundLevel = 1.0;
   this->win = 0;
@@ -66,7 +66,7 @@ AVPlayer::AVPlayer (const string &mrl) : Thread (), Player (mrl)
 
 AVPlayer::~AVPlayer ()
 {
-  if (status != STOP)
+  if (status != SLEEPING)
     {
       stop ();
     }
@@ -280,11 +280,11 @@ AVPlayer::getMediaTime ()
 void
 AVPlayer::setMediaTime (double pos)
 {
-  if (status == PLAY)
+  if (status == OCCURRING)
     {
-      status = PAUSE;
+      status = PAUSED;
       provider->setMediaTime (pos);
-      status = PLAY;
+      status = OCCURRING;
       running = true;
       Thread::startThread ();
     }
@@ -297,11 +297,11 @@ AVPlayer::setMediaTime (double pos)
 void
 AVPlayer::setStopTime (double pos)
 {
-  if (status == PLAY)
+  if (status == OCCURRING)
     {
-      status = PAUSE;
+      status = PAUSED;
       scopeEndTime = pos;
-      status = PLAY;
+      status = OCCURRING;
       running = true;
       Thread::startThread ();
     }
@@ -362,7 +362,7 @@ AVPlayer::play ()
 void
 AVPlayer::pause ()
 {
-  status = PAUSE;
+  status = PAUSED;
   if (provider == 0)
     {
       return;
@@ -388,7 +388,7 @@ AVPlayer::stop ()
       return;
     }
 
-  if (previousStatus != STOP)
+  if (previousStatus != SLEEPING)
     {
       provider->stop ();
     }
@@ -519,7 +519,7 @@ AVPlayer::isPlaying ()
       return false;
     }
 
-  if ((getCurrentMediaTime () <= 0 && status != PAUSE)
+  if ((getCurrentMediaTime () <= 0 && status != PAUSED)
       || (getCurrentMediaTime () >= getStopTime () && getStopTime () > 0))
     {
       return false;
@@ -672,7 +672,7 @@ AVPlayer::run ()
               clog << getTotalMediaTime ();
               clog << "' for '" << mrl << "'" << endl;
 
-              if (status != PLAY)
+              if (status != OCCURRING)
                 {
                   clog << "AVPlayer::run status != play => exiting";
                   clog << endl;
@@ -685,12 +685,12 @@ AVPlayer::run ()
                   timeRemain = outTransTime - (currentTime * 1000);
                 }
 
-              if (status != PLAY || !this->mSleep ((long int) timeRemain))
+              if (status != OCCURRING || !this->mSleep ((long int) timeRemain))
                 {
                   clog << "AVPlayer::run can't sleep '" << timeRemain;
                   clog << "' => exiting" << endl;
 
-                  if (status == PLAY && outTransTime > 0.0)
+                  if (status == OCCURRING && outTransTime > 0.0)
                     {
                       outTransTime = 0;
                       notifyPlayerListeners (PL_NOTIFY_OUTTRANS, "");
@@ -718,7 +718,7 @@ AVPlayer::run ()
                   break;
                 }
 
-              if (xnumeq (lastCurrentTime, currentTime) && status != PAUSE)
+              if (xnumeq (lastCurrentTime, currentTime) && status != PAUSED)
                 {
                   break;
                 }
@@ -739,14 +739,14 @@ AVPlayer::run ()
     }
 
   clog << "AVPlayer::run(" << mrl << ") notifying ... " << endl;
-  if (status != PAUSE)
+  if (status != PAUSED)
     {
       presented = true;
     }
 
-  if (status != STOP && status != PAUSE)
+  if (status != SLEEPING && status != PAUSED)
     {
-      status = STOP;
+      status = SLEEPING;
       running = false;
 
       if (provider != 0)
@@ -760,7 +760,7 @@ AVPlayer::run ()
     }
   else
     {
-      status = STOP;
+      status = SLEEPING;
       running = false;
       Thread::mutexUnlock (&tMutex);
     }

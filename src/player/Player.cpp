@@ -41,7 +41,7 @@ Player::Player (const string &mrl)
   this->presented = false;
   this->visible = true;
   this->immediatelyStartVar = false;
-  this->status = STOP;
+  this->status = SLEEPING;
   this->forcedNaturalEnd = false;
   this->scope = "";
   this->scopeType = -1;
@@ -56,7 +56,7 @@ Player::~Player ()
 {
   set<IPlayer *>::iterator i;
 
-  this->status = STOP;
+  this->status = SLEEPING;
 
   Thread::mutexLock (&listM);
   listeners.clear ();
@@ -393,7 +393,7 @@ Player::getMediaTime ()
   double mediaTime;
   mediaTime = 0;
 
-  if (status == PAUSE)
+  if (status == PAUSED)
     {
       mediaTime = elapsedTime;
     }
@@ -479,7 +479,7 @@ Player::play ()
 {
   checkMirrors ();
   this->forcedNaturalEnd = false;
-  this->status = PLAY;
+  this->status = OCCURRING;
   if (scopeInitTime > 0)
     {
       elapsedTime = scopeInitTime * 1000;
@@ -497,7 +497,7 @@ Player::play ()
 void
 Player::stop ()
 {
-  this->status = STOP;
+  this->status = SLEEPING;
 }
 
 void
@@ -511,7 +511,7 @@ Player::pause ()
 {
   pauseTime = xruntime_ms ();
   elapsedTime = elapsedTime + (pauseTime - initTime);
-  this->status = PAUSE;
+  this->status = PAUSED;
 }
 
 void
@@ -519,7 +519,7 @@ Player::resume ()
 {
   initTime = xruntime_ms ();
   elapsedPause = elapsedPause + (initTime - pauseTime);
-  this->status = PLAY;
+  this->status = OCCURRING;
 }
 
 string

@@ -329,7 +329,7 @@ LuaPlayer::setPropertyValue (const string &name, const string &value)
   // need to work around this bogus behavior, since it is the play()
   // call that creates the NCLua engine.
 
-  if (this->nw != NULL && this->status == PLAY)
+  if (this->nw != NULL && this->status == OCCURRING)
     {
       const char *k = name.c_str ();
       const char *v = value.c_str ();

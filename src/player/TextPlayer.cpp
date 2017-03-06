@@ -222,7 +222,7 @@ TextPlayer::setPropertyValue (const string &name, const string &value){
             fontVariant = value;
   }
 
-  if(status!=PLAY)return;
+  if(status!=OCCURRING)return;
   Ginga_Display->addJob (displayJobCallbackWrapper, this);
   this->condDisplayJobWait ();
 }
