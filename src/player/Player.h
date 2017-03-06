@@ -36,7 +36,6 @@ using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
-
 enum PLAYER_STATUS{
   SLEEPING,
   OCCURRING,
