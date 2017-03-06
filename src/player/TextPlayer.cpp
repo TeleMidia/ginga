@@ -221,7 +221,10 @@ TextPlayer::setPropertyValue (const string &name, const string &value){
          if(value == "small-caps")
             fontVariant = value;
   }
- 
+
+  if(status!=PLAY)return;
+  Ginga_Display->addJob (displayJobCallbackWrapper, this);
+  this->condDisplayJobWait ();
 }
 
 GINGA_PLAYER_END

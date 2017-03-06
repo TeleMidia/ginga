@@ -36,6 +36,14 @@ using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
+
+enum PLAYER_STATUS{
+  NONE,
+  PLAY,
+  PAUSE,
+  STOP
+};
+
 typedef struct LockedPlayerLitenerAction
 {
   ::ginga::player::IPlayerListener *l;
@@ -67,11 +75,7 @@ private:
   vector<PendingNotification *> pendingNotifications;
 
 protected:
-  short status;
-  static const short NONE = 0;
-  static const short PLAY = 1;
-  static const short PAUSE = 2;
-  static const short STOP = 3;
+  PLAYER_STATUS status;
 
   string mrl;
   SDLSurface *surface;

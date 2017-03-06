@@ -39,6 +39,7 @@ public:
   SvgPlayer (const string &mrl);
   ~SvgPlayer (void);
   bool play (void);
+  void setPropertyValue (const string &name, const string &value);
 };
 
 GINGA_PLAYER_END
