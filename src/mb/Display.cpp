@@ -17,6 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "Display.h"
+#include "DisplayDebug.h"
 
 #include "InputManager.h"
 #include "AudioProvider.h"
@@ -185,29 +186,26 @@ Display::renderThread ()
   
   GTimeVal *tv = new GTimeVal();
 
+  //fps control vars
   gint64 curTime=0,preTime=g_get_monotonic_time();
-  gdouble elapsedTime=0, accTime=0, sleepTime=0;
-  guint fpsRate=0;
+  gdouble elapsedTime=0, sleepTime;
+
+  DisplayDebug* displayDebug = new DisplayDebug(this->width, this->height);
 
   while (!this->hasQuitted())   // render loop
     {
-
       curTime = g_get_monotonic_time();
       elapsedTime = (gdouble)(curTime - preTime)/G_USEC_PER_SEC;
-      accTime += elapsedTime;
       preTime = curTime;
-      sleepTime = (this->frameTime - elapsedTime)*G_USEC_PER_SEC;
-      if(sleepTime >0) g_usleep(sleepTime);  
-      else g_usleep(this->frameTime * G_USEC_PER_SEC );  
-      
-      if(!fpsRate)
-          fpsRate = (guint)(1/elapsedTime);
-         
-      if(accTime > 0.5){
-          fpsRate = (guint)(1/elapsedTime);
-          accTime=0;
-      }
-  
+      sleepTime = this->frameTime - elapsedTime;
+      if(sleepTime >0){ //need sleep to complete frame time
+         displayDebug->update(sleepTime+elapsedTime);
+         g_usleep(sleepTime*G_USEC_PER_SEC);
+      }  
+      else //loop time > frametime
+         displayDebug->update(elapsedTime);
+
+     
       SDL_Event evt;
       GList *l;
 
@@ -279,7 +277,7 @@ Display::renderThread ()
           if (window->isVisible () && !window->isGhostWindow ())
             window->redraw (this->renderer);
         }
-      displayFps(renderer, fpsRate);
+      displayDebug->draw(this->renderer);
       SDL_RenderPresent (this->renderer);
       this->unlock ();
 
@@ -291,7 +289,7 @@ Display::renderThread ()
       this->unlock ();
     }
     
-
+  delete displayDebug;
 
   if (doquit)
     goto beach;
@@ -350,8 +348,7 @@ Display::displayFps(SDL_Renderer* renderer, guint fps){
     cairo_set_source_rgba (cr,0,0,0,0.5);
 
     cairo_paint (cr);
-    gchar * fps_str =  g_strdup_printf("%d", fps);
-    g_strlcat(fps_str," FPS",-1);
+    gchar * fps_str =  g_strdup_printf("%d FPS", fps);
     // Create a PangoLayout, set the font face and text
     PangoLayout * layout = pango_cairo_create_layout (cr);
     pango_layout_set_text (layout, fps_str, -1);
@@ -362,19 +359,21 @@ Display::displayFps(SDL_Renderer* renderer, guint fps){
     cairo_set_source_rgba (cr,1,1,1,10.5);
     pango_cairo_update_layout (cr, layout);
     pango_cairo_show_layout (cr, layout);
+    
+    SDLx_UnlockSurface (sfc);
 
     // free the layout object
     g_object_unref (layout);
     cairo_destroy (cr);
     cairo_surface_destroy (surface_c);
-
+    
     texture = SDL_CreateTextureFromSurface (renderer, sfc);
     g_assert_nonnull (texture);
     SDL_RenderCopy(renderer, texture, NULL, &texture_rect); 
     
-   // SDL_DestroyTexture(texture);
+    SDL_DestroyTexture(texture);
     g_free(fps_str);
-    SDLx_UnlockSurface (sfc);
+  
 }
 
 
@@ -416,6 +415,7 @@ Display::Display (int width, int height, bool fullscreen, gdouble fps)
   this->render_thread = g_thread_new ("render", renderThreadWrapper, this);
   g_assert_nonnull (this->render_thread);
   this->condRenderThreadWait ();
+
 }
 
 /**
@@ -460,6 +460,7 @@ Display::setSize (int width, int height)
 {
   this->lock ();
   SDL_SetWindowSize (this->screen, width, height); // don't return a status
+  
   this->width = width;
   this->height = height;
   this->unlock ();
