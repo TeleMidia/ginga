@@ -26,7 +26,6 @@ using namespace ::ginga::mb;
 #include "system/GingaLocatorFactory.h"
 using namespace ::ginga::system;
 
-#include "util/Color.h"
 #include "util/functions.h"
 using namespace ::ginga::util;
 
