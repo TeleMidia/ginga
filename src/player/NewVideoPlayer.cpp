@@ -43,7 +43,7 @@ NewVideoPlayer::NewVideoPlayer (const string &mrl) : Thread (), Player (mrl)
 
 NewVideoPlayer::~NewVideoPlayer ()
 {
-  this-condDisplayJobClear ();
+  this->condDisplayJobClear ();
   this->mutexClear ();
 }
 
