@@ -42,6 +42,7 @@ class DisplayDebug{
    SDL_Rect fps_rect;
    SDL_Rect timer_rect;
    SDL_Rect file_rect;
+   gboolean isActive;
    
    SDL_Texture * updateTexture(SDL_Renderer * renderer, SDL_Rect rect,gchar * fps_str);
 

@@ -124,8 +124,6 @@ private:
   static pthread_mutex_t proMutex; // mutex for C++ STL Providers
   static pthread_mutex_t cstMutex;
 
-  void displayFps(SDL_Renderer* renderer, guint fps);
-
 private:
   static void checkMutexInit ();
 
