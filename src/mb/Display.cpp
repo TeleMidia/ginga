@@ -306,76 +306,6 @@ Display::renderThread ()
   SDL_Quit ();
   this->unlock ();
 }
-
-
-void
-Display::displayFps(SDL_Renderer* renderer, guint fps){
-    
-    SDL_Rect texture_rect;
-   
-    texture_rect.w = 70; 
-    texture_rect.h = 23; 
-
-    texture_rect.x = this->width - texture_rect.w;  
-    texture_rect.y = this->height - texture_rect.h; 
-
-    SDL_Texture *texture;
-    SDL_Surface *sfc;
-    cairo_t *cr;
-    cairo_surface_t *surface_c;
-
-#if SDL_VERSION_ATLEAST(2,0,5)
-    sfc = SDL_CreateRGBSurfaceWithFormat (0, texture_rect.w,
-                                           texture_rect.h,
-                                           32, SDL_PIXELFORMAT_ARGB8888);
-#else
-    sfc = SDL_CreateRGBSurface (0, texture_rect.w, texture_rect.h, 32,
-                              0xff000000,
-                              0x00ff0000,
-                              0x0000ff00,
-                              0x000000ff); 
-#endif
-
-    g_assert_nonnull (sfc);
-   
-    SDLx_LockSurface (sfc);
-    surface_c = cairo_image_surface_create_for_data ((guchar*) sfc->pixels,
-                                                CAIRO_FORMAT_ARGB32,
-                                                sfc->w, sfc->h, sfc->pitch);
-    cr = cairo_create (surface_c);
-    g_assert_nonnull (cr);
-    //background
-    cairo_set_source_rgba (cr,0,0,0,0.5);
-
-    cairo_paint (cr);
-    gchar * fps_str =  g_strdup_printf("%d FPS", fps);
-    // Create a PangoLayout, set the font face and text
-    PangoLayout * layout = pango_cairo_create_layout (cr);
-    pango_layout_set_text (layout, fps_str, -1);
-    PangoFontDescription *desc = pango_font_description_from_string ( "Arial 20px" );
-    pango_layout_set_font_description (layout, desc);
-
-    pango_font_description_free (desc);
-    cairo_set_source_rgba (cr,1,1,1,10.5);
-    pango_cairo_update_layout (cr, layout);
-    pango_cairo_show_layout (cr, layout);
-    
-    SDLx_UnlockSurface (sfc);
-
-    // free the layout object
-    g_object_unref (layout);
-    cairo_destroy (cr);
-    cairo_surface_destroy (surface_c);
-    
-    texture = SDL_CreateTextureFromSurface (renderer, sfc);
-    g_assert_nonnull (texture);
-    SDL_RenderCopy(renderer, texture, NULL, &texture_rect); 
-    
-    SDL_DestroyTexture(texture);
-    g_free(fps_str);
-  
-}
-
 
 // Public methods.
 
@@ -390,7 +320,11 @@ Display::Display (int width, int height, bool fullscreen, gdouble fps)
   this->width = width;
   this->height = height;
   this->fullscreen = fullscreen;
-  this-> frameTime = 1/fps;
+  
+  if(fps> 0) //controlled fps 
+    this-> frameTime = 1/fps;
+  else //go horse fps
+    this-> frameTime=0;
 
   this->renderer = NULL;
   this->screen = NULL;

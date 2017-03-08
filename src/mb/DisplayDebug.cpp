@@ -35,20 +35,22 @@ DisplayDebug::DisplayDebug(int width, int height){
     this->width = width;
     this->height = height;
 
+    this->isActive=false;
+
     this->fpsTexture = NULL;
     this->timerTexture = NULL;
     this->fileTexture = NULL; 
 
     //fps texture area
-    fps_rect.w = 70; 
+    fps_rect.w = 100; 
     fps_rect.h = 23; 
     fps_rect.x = this->width - fps_rect.w;  
     fps_rect.y = this->height - fps_rect.h; 
 
-    timer_rect.w = 135; 
+    timer_rect.w = 100; 
     timer_rect.h = 23; 
     timer_rect.x = this->width - timer_rect.w;  
-    timer_rect.y = 0; 
+    timer_rect.y = this->height - timer_rect.h - fps_rect.h; 
 }
 
 DisplayDebug::~DisplayDebug(){
@@ -69,19 +71,18 @@ DisplayDebug::update(gdouble elapsedTime){
 void
 DisplayDebug::draw(SDL_Renderer * renderer){
     
-    if(accTime >= 0.5){ //every 0.33s  
+    if(accTime >= 0.5){ //every 0.5s  
         //update textures
         SDL_DestroyTexture(this->fpsTexture);
         this->fpsTexture = updateTexture(renderer, fps_rect,
-                               g_strdup_printf("%d FPS", fps));
+                               g_strdup_printf("%d fps", fps));
         g_assert_nonnull (this->fpsTexture);
 
         SDL_DestroyTexture(this->timerTexture);
         this->timerTexture = updateTexture(renderer, timer_rect,
-                               g_strdup_printf("Time %02d:%02d:%02d", 
+                               g_strdup_printf("Time %02d:%02d", 
                                (guint)this->totalTime/60,
-                               ((guint)this->totalTime)%60,
-                               (guint)(this->totalTime*100)%100));                     
+                               ((guint)this->totalTime)%60));                     
         g_assert_nonnull (this->timerTexture);                         
         
         accTime=0; 
@@ -125,12 +126,16 @@ DisplayDebug::updateTexture(SDL_Renderer * renderer, SDL_Rect rect, gchar * fps_
     // Create a PangoLayout, set the font face and text
     PangoLayout * layout = pango_cairo_create_layout (cr);
     pango_layout_set_text (layout, fps_str, -1);
-    PangoFontDescription *desc = pango_font_description_from_string ( "Arial 20px" );
+    PangoFontDescription *desc = pango_font_description_from_string ( "Arial 16px Bold" );
     pango_layout_set_font_description (layout, desc);
+    pango_layout_set_alignment(layout,PANGO_ALIGN_CENTER);
+    pango_layout_set_width (layout,rect.w*PANGO_SCALE);
+    pango_layout_set_wrap (layout,PANGO_WRAP_WORD);
 
     pango_font_description_free (desc);
     cairo_set_source_rgba (cr,1,1,1,10.5);
     pango_cairo_update_layout (cr, layout);
+    cairo_move_to (cr, 0,5);
     pango_cairo_show_layout (cr, layout);
     
     // free the layout object
