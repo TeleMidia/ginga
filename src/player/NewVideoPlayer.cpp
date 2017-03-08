@@ -50,14 +50,11 @@ NewVideoPlayer::~NewVideoPlayer ()
 void
 NewVideoPlayer::createPipeline (string mrl)
 {
-  GstElement *filter;
   GstElement *scale;
   GstElement *sink;
 
   GstPad *pad;
-  GstCaps *caps;
-  GstStructure *st;
-
+ 
   char *uri;
   
   gst_init (NULL, NULL);
@@ -76,18 +73,6 @@ NewVideoPlayer::createPipeline (string mrl)
 
   filter = gst_element_factory_make ("capsfilter", NULL);
   g_assert_nonnull (filter);
-
-  st = gst_structure_new_empty ("video/x-raw");
-  gst_structure_set (st, "format", G_TYPE_STRING, "ARGB",
-                      "width", G_TYPE_INT, /*surface->getParentWindow ()->getRect().w*/ 800,
-                      "height", G_TYPE_INT, /*surface->getParentWindow ()->getRect().h*/ 600, 
-                      NULL);
-
-  caps = gst_caps_new_full (st, NULL);
-  g_assert_nonnull (caps);
-
-  g_object_set (filter, "caps", caps, NULL);
-  gst_caps_unref (caps);
 
   scale = gst_element_factory_make ("videoscale", NULL);
   g_assert_nonnull (scale);
@@ -386,8 +371,23 @@ NewVideoPlayer::isPlaying ()
 bool
 NewVideoPlayer::setOutWindow (arg_unused(SDLWindow* windowId))
 {
+  GstCaps *caps;
+  GstStructure *st;
+
   if (surface != 0 && surface->getParentWindow () == 0){
     surface->setParentWindow (windowId);
+
+    st = gst_structure_new_empty ("video/x-raw");
+    gst_structure_set (st, "format", G_TYPE_STRING, "ARGB",
+                      "width", G_TYPE_INT, surface->getParentWindow ()->getRect().w,
+                      "height", G_TYPE_INT, surface->getParentWindow ()->getRect().h, 
+                      NULL);
+
+    caps = gst_caps_new_full (st, NULL);
+    g_assert_nonnull (caps);
+
+    g_object_set (filter, "caps", caps, NULL);
+    gst_caps_unref (caps);
   }
 
 	return true;
