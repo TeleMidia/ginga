@@ -129,16 +129,21 @@ TextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
     cairo_move_to (cr, 0, vAlign);
     pango_cairo_show_layout (cr, layout);
+    
+    
 
     // free the layout object
     g_object_unref (layout);
     cairo_destroy (cr);
     cairo_surface_destroy (surface_c);
+    g_free(contents);
 
     texture = SDL_CreateTextureFromSurface (renderer, sfc);
     g_assert_nonnull (texture);
+    
     SDLx_UnlockSurface (sfc);
-
+    SDL_FreeSurface(sfc);
+     
     this->lock ();
     window = surface->getParentWindow ();
     g_assert_nonnull (window);

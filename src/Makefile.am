@@ -134,6 +134,7 @@ src+= lssm/CommonCoreManager.cpp
 src+= lssm/PresentationEngineManager.cpp
 src+= mb/AudioProvider.cpp
 src+= mb/Display.cpp
+src+= mb/DisplayDebug.cpp
 src+= mb/EventBuffer.cpp
 src+= mb/InputEvent.cpp
 src+= mb/InputManager.cpp
