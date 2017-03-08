@@ -110,6 +110,7 @@ public:
 
   GstElement *playbin;
   GstElement *bin;
+  GstElement *filter;
 
   GstSample *sample;
 
