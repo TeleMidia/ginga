@@ -134,7 +134,7 @@ main (int argc, char **argv)
       exit (EXIT_FAILURE);
     }
   
-  _Ginga_Display = new ginga::mb::Display (opt_width, opt_height, false, opt_fps);
+  _Ginga_Display = new ginga::mb::Display (opt_width, opt_height, opt_fullscreen, opt_fps);
   g_assert_nonnull (_Ginga_Display);
 
   pem = new PresentationEngineManager (0, 0, 0, opt_width, opt_height,

@@ -102,14 +102,15 @@ SvgPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
   cairo_scale (cr, scale, scale);
   rsvg_handle_render_cairo (svg, cr);
-
+  
+  SDLx_UnlockSurface (sfc);
+  
   cairo_destroy (cr);
   cairo_surface_destroy (cr_sfc);
 
   texture = SDL_CreateTextureFromSurface (renderer, sfc);
   g_assert_nonnull (texture);
 
-  SDLx_UnlockSurface (sfc);
   SDL_FreeSurface (sfc);
 
   window->setTexture (texture);
