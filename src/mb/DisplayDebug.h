@@ -33,9 +33,8 @@ class DisplayDebug{
    int width;
    int height;
    gdouble iniTime;
-   gdouble accTime;
+   guint32 accTime;
    gdouble totalTime;
-   guint fps;
    SDL_Texture* fpsTexture;
    SDL_Texture* timerTexture;
    SDL_Texture* fileTexture;
@@ -51,7 +50,7 @@ class DisplayDebug{
    ~DisplayDebug ();
 
    void update(gdouble elapsedTime);
-   void draw(SDL_Renderer* renderer);
+   void draw(SDL_Renderer* renderer, guint32 elapsedTime);
 
 };
 

@@ -28,7 +28,6 @@ DisplayDebug::DisplayDebug(int width, int height){
    
     this->accTime = 1.0;
     this->totalTime = 0;
-    this->fps = 0;
 
     this->iniTime= (gdouble)g_get_monotonic_time()/G_USEC_PER_SEC;
 
@@ -59,23 +58,20 @@ DisplayDebug::~DisplayDebug(){
     SDL_DestroyTexture(this->fileTexture);
 }
 
-void
-DisplayDebug::update(gdouble elapsedTime){
-
-    this->totalTime = ((gdouble)g_get_monotonic_time()/G_USEC_PER_SEC) - iniTime;
-    this->accTime += elapsedTime;
-    this->fps = (guint)(1/elapsedTime);
-  
-}
 
 void
-DisplayDebug::draw(SDL_Renderer * renderer){
+DisplayDebug::draw(SDL_Renderer * renderer, guint32 elapsedTime){
     
-    if(accTime >= 0.5){ //every 0.5s  
+    this->accTime += elapsedTime;
+
+    if(this->accTime >= 500){ //every 0.5s  
+        
+       this->totalTime = ((gdouble)g_get_monotonic_time()/G_USEC_PER_SEC) - iniTime;
+        
         //update textures
         SDL_DestroyTexture(this->fpsTexture);
         this->fpsTexture = updateTexture(renderer, fps_rect,
-                               g_strdup_printf("%d fps", fps));
+                               g_strdup_printf("%d fps", 1000/elapsedTime ));
         g_assert_nonnull (this->fpsTexture);
 
         SDL_DestroyTexture(this->timerTexture);
@@ -132,7 +128,6 @@ DisplayDebug::updateTexture(SDL_Renderer * renderer, SDL_Rect rect, gchar * fps_
     pango_layout_set_width (layout,rect.w*PANGO_SCALE);
     pango_layout_set_wrap (layout,PANGO_WRAP_WORD);
 
-    pango_font_description_free (desc);
     cairo_set_source_rgba (cr,1,1,1,10.5);
     pango_cairo_update_layout (cr, layout);
     cairo_move_to (cr, 0,5);
@@ -140,6 +135,7 @@ DisplayDebug::updateTexture(SDL_Renderer * renderer, SDL_Rect rect, gchar * fps_
     
     // free the layout object
     g_object_unref (layout);
+    pango_font_description_free (desc);
     cairo_destroy (cr);
     cairo_surface_destroy (surface_c);
     g_free(fps_str);

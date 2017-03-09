@@ -21,7 +21,7 @@ local function redraw (e)
    end
    local diff = e.time - LAST
    LAST = e.time
-   local text = ('%.2gs\n%.2g fps'):format ((LAST-FIRST)/1000,1000/diff)
+   local text = ('%.2fs\n%.2f fps'):format ((LAST-FIRST)/1000,1000/diff)
    local tw, th = canvas:measureText (text)
    canvas:attrColor ('yellow')
    canvas:drawText ((w-tw)/2, (h-th)/2, text)
