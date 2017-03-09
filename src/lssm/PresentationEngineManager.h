@@ -86,6 +86,10 @@ private:
   vector<string> commands;
   InputManager *im;
   ShowButton *sb;
+  string nclFile;
+  string interfId;
+
+  static gpointer startPresentationThreadWrapper (gpointer data);
 
 public:
   PresentationEngineManager (int devClass, int xOffset, int yOffset,
@@ -99,6 +103,8 @@ public:
   void autoMountOC (bool autoMountIt);
   void setCurrentPrivateBaseId (unsigned int baseId);
   void setTimeBaseProvider (ITimeBaseProvider *tmp);
+
+  void startPresentationThread(void);
 
 private:
   void printGingaWindows ();

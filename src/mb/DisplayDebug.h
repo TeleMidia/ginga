@@ -35,12 +35,8 @@ class DisplayDebug{
    gdouble iniTime;
    guint32 accTime;
    gdouble totalTime;
-   SDL_Texture* fpsTexture;
-   SDL_Texture* timerTexture;
-   SDL_Texture* fileTexture;
-   SDL_Rect fps_rect;
-   SDL_Rect timer_rect;
-   SDL_Rect file_rect;
+   SDL_Texture* texture;
+   SDL_Rect rect;
    gboolean isActive;
    
    SDL_Texture * updateTexture(SDL_Renderer * renderer, SDL_Rect rect,gchar * fps_str);
@@ -49,6 +45,7 @@ class DisplayDebug{
    DisplayDebug (int width, int height);
    ~DisplayDebug ();
 
+   void toggle(void);
    void update(gdouble elapsedTime);
    void draw(SDL_Renderer* renderer, guint32 elapsedTime);
 

@@ -53,8 +53,7 @@ private:
   InputManager *im;             // display input manager (FIXME)
 
   bool _quit;                   // true if render thread should quit
-  GThread *render_thread;       // render thread handle
-  GINGA_COND_DEFN (RenderThread);
+  
 
   GList *jobs;                  // list of jobs to be executed by renderer
   GList *textures;              // list of textures to be destructed
@@ -64,9 +63,6 @@ private:
   gpointer add (GList **, gpointer);
   gpointer remove (GList **, gpointer);
   gboolean find (GList *, gconstpointer);
-
-  static gpointer renderThreadWrapper (gpointer);
-  void renderThread (void);
 
 public:
   Display (int, int, bool, gdouble);
@@ -90,7 +86,8 @@ public:
 
   IContinuousMediaProvider *createContinuousMediaProvider (const string&);
   void destroyContinuousMediaProvider (IContinuousMediaProvider *);
-
+  
+  void renderLoop (void);
 
   // Let the clutter begin -------------------------------------------------
 
@@ -101,9 +98,7 @@ private:
   set<IContinuousMediaProvider *> cmpPool;
   set<IDiscreteMediaProvider *> dmpPool;
 
-  bool waitingCreator;
-  pthread_mutex_t condMutex;
-  pthread_cond_t cond;
+ 
 
   static map<Key::KeyCode, int> gingaToSDLCodeMap;
   static map<int, Key::KeyCode> sdlToGingaCodeMap;
@@ -113,16 +108,6 @@ private:
   static set<SDL_Texture *> uTexPool;
   static map<int, map<double, set<SDLWindow *> *> *> renderMap;
   static set<IContinuousMediaProvider *> cmpRenderList;
-
-  static pthread_mutex_t sdlMutex; // mutex for SDL structures
-  static pthread_mutex_t sieMutex; // mutex for SDL input event Map
-  static pthread_mutex_t renMutex; // mutex for C++ STL SDL Render Map
-  static pthread_mutex_t scrMutex; // mutex for C++ STL SDL Screens
-  static pthread_mutex_t recMutex; // mutex for C++ STL release structures
-  static pthread_mutex_t winMutex; // mutex for C++ STL Window
-  static pthread_mutex_t surMutex; // mutex for C++ STL Surface
-  static pthread_mutex_t proMutex; // mutex for C++ STL Providers
-  static pthread_mutex_t cstMutex;
 
 private:
   static void checkMutexInit ();

@@ -42,16 +42,6 @@ map<string, int> Display::sdlStrToSdlCode;
 set<SDL_Texture *> Display::uTexPool;
 set<SDL_Surface *> Display::uSurPool;
 
-pthread_mutex_t Display::sdlMutex;
-pthread_mutex_t Display::sieMutex;
-pthread_mutex_t Display::renMutex;
-pthread_mutex_t Display::scrMutex;
-pthread_mutex_t Display::recMutex;
-pthread_mutex_t Display::winMutex;
-pthread_mutex_t Display::surMutex;
-pthread_mutex_t Display::proMutex;
-pthread_mutex_t Display::cstMutex;
-
 
 // BEGIN SANITY ------------------------------------------------------------
 
@@ -141,14 +131,6 @@ Display::find (GList *list, gconstpointer data)
   return elt != NULL;
 }
 
-gpointer
-Display::renderThreadWrapper (gpointer data)
-{
-  g_assert_nonnull (data);
-  ((Display *) data)->renderThread ();
-  return NULL;
-}
-
 // FIXME:
 //
 // - We should expose the main window background color, e.g., via
@@ -160,34 +142,9 @@ Display::renderThreadWrapper (gpointer data)
 // - Handle border width.
 //
 void
-Display::renderThread ()
+Display::renderLoop ()
 {
   bool doquit = false;
-  guint flags;
-
-  g_assert (!SDL_WasInit (0));
-  if (unlikely (SDL_Init (0) != 0))
-    g_critical ("cannot initialize SDL: %s", SDL_GetError ());
-
-  SDL_SetHint (SDL_HINT_NO_SIGNAL_HANDLERS, "1");
-  SDL_SetHint (SDL_HINT_RENDER_SCALE_QUALITY, "1");
-
-  this->lock ();
-  flags = SDL_WINDOW_SHOWN;
-  if (this->fullscreen)
-    flags |= SDL_WINDOW_FULLSCREEN;
-
-  g_assert_null (this->screen);
-  g_assert_null (this->renderer);
- 
-  this->screen = SDL_CreateWindow("ginga",0,0, this->width, this->height, flags);
-  this->renderer = SDL_CreateRenderer( this->screen , -1, SDL_RENDERER_PRESENTVSYNC);
-                               
-
-  this->unlock ();
-  this->condRenderThreadSignal (); // wake up constructor thread
-  
-  GTimeVal *tv = new GTimeVal();
 
   //fps control vars
   gint32 curTime=0,preTime=SDL_GetTicks(),elapsedTime=0;
@@ -205,9 +162,7 @@ Display::renderThread ()
         elapsedTime = this-> frameTime;
         SDL_Delay(sleepTime);
       }
-
       
-         
       SDL_Event evt;
       GList *l;
 
@@ -216,8 +171,13 @@ Display::renderThread ()
           switch (evt.type)
             {
             case SDL_KEYDOWN:
+                break;
             case SDL_KEYUP:
-              if (evt.key.keysym.sym != SDLK_ESCAPE)
+              if(evt.key.keysym.sym == SDLK_d)
+                   displayDebug->toggle();
+              else if (evt.key.keysym.sym == SDLK_ESCAPE)
+                   this->quit ();
+                   goto quit;
                 break;
               // fall-through
             case SDL_QUIT:
@@ -300,7 +260,6 @@ Display::renderThread ()
   this->lock ();
   this->im->postInputEvent (Key::KEY_QUIT);
   this->unlock ();
-  this->condRenderThreadWait ();
   goto quit;
 
  beach:
@@ -333,8 +292,6 @@ Display::Display (int width, int height, bool fullscreen, gdouble fps)
   this->im = NULL;
 
   this->_quit = false;
-  this->render_thread = NULL;
-  this->condRenderThreadInit ();
 
   this->jobs = NULL;
   this->textures = NULL;
@@ -348,9 +305,29 @@ Display::Display (int width, int height, bool fullscreen, gdouble fps)
   checkMutexInit ();            // FIXME
   initCodeMaps ();              // FIXME
 
-  this->render_thread = g_thread_new ("render", renderThreadWrapper, this);
-  g_assert_nonnull (this->render_thread);
-  this->condRenderThreadWait ();
+  //--
+  g_assert (!SDL_WasInit (0));
+  if (unlikely (SDL_Init (0) != 0))
+    g_critical ("cannot initialize SDL: %s", SDL_GetError ());
+
+  SDL_SetHint (SDL_HINT_NO_SIGNAL_HANDLERS, "1");
+  SDL_SetHint (SDL_HINT_RENDER_SCALE_QUALITY, "1");
+
+  this->lock ();
+  guint flags = SDL_WINDOW_SHOWN;
+  if (this->fullscreen)
+    flags |= SDL_WINDOW_FULLSCREEN;
+
+  g_assert_null (this->screen);
+  g_assert_null (this->renderer);
+ 
+  SDL_Init(SDL_INIT_VIDEO); 
+
+  this->screen = SDL_CreateWindow("ginga",0,0, this->width, this->height, flags);
+  this->renderer = SDL_CreateRenderer( this->screen , -1, SDL_RENDERER_PRESENTVSYNC);
+                               
+  this->unlock ();
+ 
 
 }
 
@@ -360,8 +337,7 @@ Display::Display (int width, int height, bool fullscreen, gdouble fps)
 Display::~Display ()
 {
   this->quit ();
-  this->condRenderThreadSignal (); // wake up render thread
-  g_assert_null (g_thread_join (this->render_thread));
+ 
 
   this->lock ();
   SDL_DestroyRenderer (this->renderer);
@@ -373,7 +349,7 @@ Display::~Display ()
   g_list_free_full (this->providers, (GDestroyNotify) prov_delete);
   this->unlock ();
   this->mutexClear ();
-  this->condRenderThreadClear ();
+ 
 }
 
 /**
@@ -598,15 +574,7 @@ Display::checkMutexInit ()
     {
       mutexInitialized = true;
 
-      Thread::mutexInit (&sdlMutex, true);
-      Thread::mutexInit (&sieMutex, true);
-      Thread::mutexInit (&renMutex, true);
-      Thread::mutexInit (&scrMutex, true);
-      Thread::mutexInit (&recMutex, true);
-      Thread::mutexInit (&winMutex, true);
-      Thread::mutexInit (&surMutex, true);
-      Thread::mutexInit (&proMutex, true);
-      Thread::mutexInit (&cstMutex, true);
+    
     }
 }
 
@@ -615,7 +583,6 @@ Display::lockSDL ()
 {
   checkMutexInit ();
 
-  Thread::mutexLock (&sdlMutex);
 }
 
 void
@@ -623,7 +590,6 @@ Display::unlockSDL ()
 {
   checkMutexInit ();
 
-  Thread::mutexUnlock (&sdlMutex);
 }
 
 /* interfacing output */
@@ -648,9 +614,9 @@ Display::createSurface (int w, int h)
 
   unlockSDL ();
 
-  Thread::mutexLock (&surMutex);
+    
   surfacePool.insert (iSur);
-  Thread::mutexUnlock (&surMutex);
+   
 
   return iSur;
 }
@@ -671,9 +637,9 @@ Display::createSurfaceFrom (void *uSur)
     }
   unlockSDL ();
 
-  Thread::mutexLock (&surMutex);
+ 
   surfacePool.insert (iSur);
-  Thread::mutexUnlock (&surMutex);
+ 
 
   return iSur;
 }
@@ -684,13 +650,13 @@ Display::hasSurface (SDLSurface *s)
   set<SDLSurface *>::iterator i;
   bool hasSur = false;
 
-  Thread::mutexLock (&surMutex);
+    
   i = surfacePool.find (s);
   if (i != surfacePool.end ())
     {
       hasSur = true;
     }
-  Thread::mutexUnlock (&surMutex);
+   
 
   return hasSur;
 }
@@ -701,14 +667,13 @@ Display::releaseSurface (SDLSurface *s)
   set<SDLSurface *>::iterator i;
   bool released = false;
 
-  Thread::mutexLock (&surMutex);
   i = surfacePool.find (s);
   if (i != surfacePool.end ())
     {
       surfacePool.erase (i);
       released = true;
     }
-  Thread::mutexUnlock (&surMutex);
+
 
   return released;
 }
@@ -784,7 +749,7 @@ Display::fromMBToGinga (int keyCode)
 
   checkMutexInit ();
 
-  Thread::mutexLock (&sieMutex);
+ 
 
   translated = Key::KEY_NULL;
   it = sdlToGingaCodeMap.find (keyCode);
@@ -798,7 +763,6 @@ Display::fromMBToGinga (int keyCode)
       clog << keyCode << "' returning KEY_NULL" << endl;
     }
 
-  Thread::mutexUnlock (&sieMutex);
 
   return translated;
 }
@@ -811,7 +775,6 @@ Display::fromGingaToMB (Key::KeyCode keyCode)
 
   checkMutexInit ();
 
-  Thread::mutexLock (&sieMutex);
 
   translated = Key::KEY_NULL;
   i = gingaToSDLCodeMap.find (keyCode);
@@ -825,7 +788,6 @@ Display::fromGingaToMB (Key::KeyCode keyCode)
       clog << keyCode << "' returning KEY_NULL" << endl;
     }
 
-  Thread::mutexUnlock (&sieMutex);
 
   return translated;
 }
@@ -853,10 +815,8 @@ Display::initCodeMaps ()
 {
   checkMutexInit ();
 
-  Thread::mutexLock (&sieMutex);
   if (!gingaToSDLCodeMap.empty ())
     {
-      Thread::mutexUnlock (&sieMutex);
       return;
     }
 
@@ -1146,7 +1106,7 @@ Display::initCodeMaps ()
       ++it;
     }
 
-  Thread::mutexUnlock (&sieMutex);
+  
 }
 
 SDL_Texture *
@@ -1158,7 +1118,7 @@ Display::createTextureFromSurface (SDL_Renderer *renderer,
   checkMutexInit ();
 
   lockSDL ();
-  Thread::mutexLock (&surMutex);
+    
 
   if (Display::hasUnderlyingSurface (surface))
     {
@@ -1176,7 +1136,7 @@ Display::createTextureFromSurface (SDL_Renderer *renderer,
       g_assert (SDL_SetTextureBlendMode (texture, SDL_BLENDMODE_BLEND) == 0);
     }
 
-  Thread::mutexUnlock (&surMutex);
+   
   unlockSDL ();
 
   return texture;
@@ -1246,9 +1206,9 @@ Display::addUnderlyingSurface (SDL_Surface *uSur)
 {
   checkMutexInit ();
 
-  Thread::mutexLock (&surMutex);
+    
   uSurPool.insert (uSur);
-  Thread::mutexUnlock (&surMutex);
+   
 }
 
 SDL_Surface *
@@ -1271,7 +1231,7 @@ Display::createUnderlyingSurface (int width, int height)
   SDL_SetColorKey (newUSur, 1, *((Uint8 *)newUSur->pixels));
   unlockSDL ();
 
-  Thread::mutexLock (&surMutex);
+    
   if (newUSur != NULL)
     {
       uSurPool.insert (newUSur);
@@ -1281,7 +1241,7 @@ Display::createUnderlyingSurface (int width, int height)
       clog << "Display::createUnderlyingSurface SDL error: '";
       clog << SDL_GetError () << "'" << endl;
     }
-  Thread::mutexUnlock (&surMutex);
+   
 
   return newUSur;
 }
@@ -1322,12 +1282,12 @@ Display::createUnderlyingSurfaceFromTexture (SDL_Texture *texture)
 
   unlockSDL ();
 
-  Thread::mutexLock (&surMutex);
+    
   if (uSur != NULL)
     {
       uSurPool.insert (uSur);
     }
-  Thread::mutexUnlock (&surMutex);
+   
 
   return uSur;
 }
@@ -1340,13 +1300,13 @@ Display::hasUnderlyingSurface (SDL_Surface *uSur)
 
   checkMutexInit ();
 
-  Thread::mutexLock (&surMutex);
+    
   i = uSurPool.find (uSur);
   if (i != uSurPool.end ())
     {
       hasIt = true;
     }
-  Thread::mutexUnlock (&surMutex);
+   
 
   return hasIt;
 }
@@ -1359,7 +1319,7 @@ Display::releaseUnderlyingSurface (SDL_Surface *uSur)
   checkMutexInit ();
 
   lockSDL ();
-  Thread::mutexLock (&surMutex);
+    
 
   i = uSurPool.find (uSur);
   if (i != uSurPool.end ())
@@ -1369,7 +1329,7 @@ Display::releaseUnderlyingSurface (SDL_Surface *uSur)
       SDL_FreeSurface (uSur);
     }
 
-  Thread::mutexUnlock (&surMutex);
+   
   unlockSDL ();
 }
 
