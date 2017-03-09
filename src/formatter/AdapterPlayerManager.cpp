@@ -246,8 +246,17 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
   g_assert_nonnull (mime);
 
   g_debug ("mime %s", mime);
-
-  if (g_str_has_prefix (mime, "audio")
+  if (false)
+    {
+    }
+#if defined WITH_GSTREAMER && WITH_GSTREAMER
+  else if (streq (mime, "video/x-new-video-player"))
+    {
+      classname = "AdapterNewVideoPlayer";
+      adapter = new AdapterNewVideoPlayer ();
+    }
+#endif
+  else if (g_str_has_prefix (mime, "audio")
       || g_str_has_prefix (mime, "video"))
     {
       classname = "AdapterAVPlayer";
@@ -265,13 +274,7 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
       classname = "AdapterImagePlayer";
       adapter = new AdapterImagePlayer ();
     }
-#if defined WITH_GSTREAMER && WITH_GSTREAMER
-  else if (streq (mime, "video/x-new-video-player"))
-    {
-      classname = "AdapterNewVideoPlayer";
-      adapter = new AdapterNewVideoPlayer ();
-    }
-#endif
+
 #if defined WITH_PANGO && WITH_PANGO
   else if (streq (mime, "text/plain"))
     {
