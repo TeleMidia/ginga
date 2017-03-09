@@ -36,56 +36,54 @@ DisplayDebug::DisplayDebug(int width, int height){
 
     this->isActive=false;
 
-    this->fpsTexture = NULL;
-    this->timerTexture = NULL;
-    this->fileTexture = NULL; 
+    this->texture = NULL;
 
     //fps texture area
-    fps_rect.w = 100; 
-    fps_rect.h = 23; 
-    fps_rect.x = this->width - fps_rect.w;  
-    fps_rect.y = this->height - fps_rect.h; 
+    rect.w = 150; 
+    rect.h = 100; 
+    rect.x = this->width - rect.w;  
+    rect.y = this->height - rect.h; 
 
-    timer_rect.w = 100; 
-    timer_rect.h = 23; 
-    timer_rect.x = this->width - timer_rect.w;  
-    timer_rect.y = this->height - timer_rect.h - fps_rect.h; 
 }
 
 DisplayDebug::~DisplayDebug(){
-    SDL_DestroyTexture(this->fpsTexture);
-    SDL_DestroyTexture(this->timerTexture);
-    SDL_DestroyTexture(this->fileTexture);
+    if(this->texture)
+       SDL_DestroyTexture(this->texture);;
 }
 
+void 
+DisplayDebug:: toggle(){
+    this->isActive = !this->isActive;
+}
 
 void
 DisplayDebug::draw(SDL_Renderer * renderer, guint32 elapsedTime){
     
+    if(!this->isActive)
+       return;
+
     this->accTime += elapsedTime;
 
     if(this->accTime >= 500){ //every 0.5s  
         
        this->totalTime = ((gdouble)g_get_monotonic_time()/G_USEC_PER_SEC) - iniTime;
         
-        //update textures
-        SDL_DestroyTexture(this->fpsTexture);
-        this->fpsTexture = updateTexture(renderer, fps_rect,
-                               g_strdup_printf("%d fps", 1000/elapsedTime ));
-        g_assert_nonnull (this->fpsTexture);
-
-        SDL_DestroyTexture(this->timerTexture);
-        this->timerTexture = updateTexture(renderer, timer_rect,
-                               g_strdup_printf("Time %02d:%02d", 
+        //update texture
+       SDL_DestroyTexture(this->texture);
+       this->texture = updateTexture(renderer, this->rect,
+                               g_strdup_printf("Res %dx%d\nTime %02d:%02d\n%d fps\n",
+                               this->width,
+                               this->height, 
                                (guint)this->totalTime/60,
-                               ((guint)this->totalTime)%60));                     
-        g_assert_nonnull (this->timerTexture);                         
-        
-        accTime=0; 
+                               ((guint)this->totalTime)%60,
+                               1000/elapsedTime
+                                ));
+       g_assert_nonnull (this->texture);
+
+       accTime=0; 
      }
     
-     SDL_RenderCopy(renderer, this->fpsTexture, NULL, &fps_rect); 
-     SDL_RenderCopy(renderer, this->timerTexture, NULL, &timer_rect); 
+     SDL_RenderCopy(renderer, this->texture, NULL, &rect); 
   
 }
 

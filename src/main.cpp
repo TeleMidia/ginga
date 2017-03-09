@@ -155,11 +155,10 @@ main (int argc, char **argv)
 
   pem->startPresentation (file, "");
 
-  // Blocks main thread until PEM quits.
-  // (FIXME: The main thread should do something useful.)
   g_mutex_lock (&pem->quit_mutex);
-  while (!pem->quit)
-    g_cond_wait (&pem->quit_cond, &pem->quit_mutex);
+  
+  _Ginga_Display->renderLoop ();
+
   g_mutex_unlock (&pem->quit_mutex);
 
   delete Ginga_Display;

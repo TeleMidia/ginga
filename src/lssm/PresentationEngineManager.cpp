@@ -669,11 +669,20 @@ PresentationEngineManager::openNclFile (const string &fname)
   return (formatter != NULL);
 }
 
-bool
-PresentationEngineManager::startPresentation (const string &nclFile,
-                                              const string &interfId)
+//--
+
+gpointer
+PresentationEngineManager::startPresentationThreadWrapper (gpointer data)
 {
-  INCLPlayer *formatter;
+  g_assert_nonnull (data);
+  ((PresentationEngineManager *) data)->startPresentationThread();
+  return NULL;
+}
+
+void
+PresentationEngineManager::startPresentationThread (){
+   
+   INCLPlayer *formatter;
 
   clog << "PresentationEngineManager::startPresentation" << endl;
   if (hasInteractivity)
@@ -687,7 +696,7 @@ PresentationEngineManager::startPresentation (const string &nclFile,
               clog << "can't start! formatter for '" << nclFile;
               clog << "' is NULL";
               clog << endl;
-              return false;
+              return ;
             }
         }
 
@@ -709,10 +718,24 @@ PresentationEngineManager::startPresentation (const string &nclFile,
     {
       clog << "PresentationEngineManager::startPresentation with ";
       clog << "disable-interactivity option" << endl;
-      return false;
+      return ;
     }
 
-  return true;
+  return ;
+
+}
+
+bool
+PresentationEngineManager::startPresentation (const string &nclFile,
+                                              const string &interfId)
+{
+   this->nclFile = nclFile;
+   this->interfId = interfId;
+
+   g_thread_new ("startPresentation", startPresentationThreadWrapper, this);
+
+   return TRUE;
+
 }
 
 bool
