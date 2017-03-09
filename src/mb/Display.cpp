@@ -179,33 +179,35 @@ Display::renderThread ()
 
   g_assert_null (this->screen);
   g_assert_null (this->renderer);
-  SDLx_CreateWindowAndRenderer (this->width, this->height, flags,
-                                &this->screen, &this->renderer);
+ 
+  this->screen = SDL_CreateWindow("ginga",0,0, this->width, this->height, flags);
+  this->renderer = SDL_CreateRenderer( this->screen , -1, SDL_RENDERER_PRESENTVSYNC);
+                               
+
   this->unlock ();
   this->condRenderThreadSignal (); // wake up constructor thread
   
   GTimeVal *tv = new GTimeVal();
 
   //fps control vars
-  gint64 curTime=0,preTime=g_get_monotonic_time();
-  gdouble elapsedTime=0, sleepTime;
+  gint32 curTime=0,preTime=SDL_GetTicks(),elapsedTime=0;
 
   DisplayDebug* displayDebug = new DisplayDebug(this->width, this->height);
 
   while (!this->hasQuitted())   // render loop
     {
-      curTime = g_get_monotonic_time();
-      elapsedTime = (gdouble)(curTime - preTime)/G_USEC_PER_SEC;
+      curTime = SDL_GetTicks();
+      elapsedTime = curTime - preTime;
       preTime = curTime;
-      sleepTime = this->frameTime - elapsedTime;
-      if(sleepTime >0){ //need sleep to complete frame time
-         displayDebug->update(sleepTime+elapsedTime);
-         g_usleep(sleepTime*G_USEC_PER_SEC);
-      }  
-      else //loop time > frametime
-         displayDebug->update(elapsedTime);
 
-     
+      if(elapsedTime < this->frameTime ){
+        guint32 sleepTime = this-> frameTime - elapsedTime;
+        elapsedTime = this-> frameTime;
+        SDL_Delay(sleepTime);
+      }
+
+      
+         
       SDL_Event evt;
       GList *l;
 
@@ -277,7 +279,7 @@ Display::renderThread ()
           if (window->isVisible () && !window->isGhostWindow ())
             window->redraw (this->renderer);
         }
-      displayDebug->draw(this->renderer);
+      displayDebug->draw(this->renderer,elapsedTime);
       SDL_RenderPresent (this->renderer);
       this->unlock ();
 
@@ -322,9 +324,9 @@ Display::Display (int width, int height, bool fullscreen, gdouble fps)
   this->fullscreen = fullscreen;
   
   if(fps> 0) //controlled fps 
-    this-> frameTime = 1/fps;
+    this->frameTime = (guint32)(1000/fps);
   else //go horse fps
-    this-> frameTime=0;
+    this->frameTime=0;
 
   this->renderer = NULL;
   this->screen = NULL;

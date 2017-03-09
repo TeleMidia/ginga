@@ -45,7 +45,7 @@ private:
   int width;                    // display width in pixels
   int height;                   // display height in pixels
   bool fullscreen;              // true if full-screen mode is on
-  gdouble frameTime;            //frame time rate
+  guint32 frameTime;            //frame time rate
 
   SDL_Window *screen;           // display screen
   GRecMutex renderer_mutex;     // sync access to renderer
