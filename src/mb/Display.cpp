@@ -21,7 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "InputManager.h"
 #include "AudioProvider.h"
-#include "EventBuffer.h"
 #include "InputEvent.h"
 #include "SDLSurface.h"
 #include "VideoProvider.h"
@@ -187,9 +186,9 @@ Display::renderLoop ()
               break;
             }
 
-          InputManager *im = this->getInputManager ();
-          EventBuffer *buf = im->getEventBuffer ();
-          buf->feed (evt, false, false);
+     //     InputManager *im = this->getInputManager ();
+      //    EventBuffer *buf = im->getEventBuffer ();
+      //    buf->feed (evt, false, false);
         }
 
       this->lock ();            //  update providers
@@ -258,7 +257,7 @@ Display::renderLoop ()
 
   doquit = true;
   this->lock ();
-  this->im->postInputEvent (Key::KEY_QUIT);
+//  this->im->postInputEvent (Key::KEY_QUIT);
   this->unlock ();
 //  goto quit;
 
@@ -709,12 +708,13 @@ Display::getInputManager ()
 {
   return im;
 }
-
+/*
 EventBuffer *
 Display::createEventBuffer ()
 {
   return new EventBuffer ();
 }
+*/
 
 InputEvent *
 Display::createInputEvent (void *event, const int symbol)

@@ -131,7 +131,6 @@ public:
   /* interfacing input */
 
   InputManager *getInputManager ();
-  EventBuffer *createEventBuffer ();
   InputEvent *createInputEvent (void *event, const int symbol);
   InputEvent *createApplicationEvent (int type, void *data);
 
