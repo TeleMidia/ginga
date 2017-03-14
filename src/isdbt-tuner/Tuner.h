@@ -67,7 +67,7 @@ public:
   Tuner (const string &network = "", const string &protocol = "", const string &address = "");
   virtual ~Tuner ();
   void setLoopListener (ITunerListener *loopListener);
-  bool userEventReceived (InputEvent *ev);
+//  bool userEventReceived (InputEvent *ev);
 
 private:
   void clearInterfaces ();

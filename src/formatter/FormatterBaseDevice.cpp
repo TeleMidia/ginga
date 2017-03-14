@@ -117,7 +117,7 @@ FormatterBaseDevice::receiveRemoteEvent (int remoteDevClass, int eventType,
   return FormatterMultiDevice::receiveRemoteEvent (remoteDevClass,
                                                    eventType, eventContent);
 }
-
+/*
 bool
 FormatterBaseDevice::userEventReceived (InputEvent *ev)
 {
@@ -140,6 +140,6 @@ FormatterBaseDevice::userEventReceived (InputEvent *ev)
     }
 
   return true;
-}
+} */
 
 GINGA_FORMATTER_END

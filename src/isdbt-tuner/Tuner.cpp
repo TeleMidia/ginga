@@ -66,7 +66,7 @@ Tuner::setLoopListener (ITunerListener *loopListener)
 {
   this->loopListener = loopListener;
 }
-
+/*
 bool
 Tuner::userEventReceived (InputEvent *ev)
 {
@@ -88,7 +88,7 @@ Tuner::userEventReceived (InputEvent *ev)
     }
 
   return true;
-}
+} */
 
 void
 Tuner::clearInterfaces ()

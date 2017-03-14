@@ -1953,7 +1953,7 @@ AdapterFormatterPlayer::updateStatus (short code,
       break;
     }
 }
-
+/*
 bool
 AdapterFormatterPlayer::userEventReceived (InputEvent *ev)
 {
@@ -1987,7 +1987,7 @@ AdapterFormatterPlayer::userEventReceived (InputEvent *ev)
     }
   return true;
 }
-
+*/
 void
 AdapterFormatterPlayer::setVisible (bool visible)
 {

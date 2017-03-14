@@ -95,12 +95,6 @@ private:
   set<IContinuousMediaProvider *> cmpPool;
   set<IDiscreteMediaProvider *> dmpPool;
 
- 
-
-  static map<Key::KeyCode, int> gingaToSDLCodeMap;
-  static map<int, Key::KeyCode> sdlToGingaCodeMap;
-  static map<string, int> sdlStrToSdlCode;
-
   static set<SDL_Surface *> uSurPool;
   static set<SDL_Texture *> uTexPool;
   static map<int, map<double, set<SDLWindow *> *> *> renderMap;
@@ -123,22 +117,6 @@ public:
 
   /* interfacing content */
   SDLSurface *createRenderedSurfaceFromImageFile (const char *mrl);
-
-public:
-  /* interfacing input */
-
-  InputEvent *createInputEvent (void *event, const int symbol);
-  InputEvent *createApplicationEvent (int type, void *data);
-
-  Key::KeyCode fromMBToGinga (int keyCode);
-  int fromGingaToMB (Key::KeyCode keyCode);
-
-  /* SDL MB internal use*/
-private:
-  /* input */
-  static int convertEventCodeStrToInt (const string &strEvent);
-  static void initCodeMaps ();
-  static bool checkEventFocus (Display *s);
 
 public:
   static SDL_Window *getUnderlyingWindow (SDLWindow* winId);

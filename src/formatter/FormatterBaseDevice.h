@@ -49,7 +49,7 @@ protected:
   {
     return false;
   };
-  bool userEventReceived (InputEvent *ev);
+ // bool userEventReceived (InputEvent *ev);
 };
 
 GINGA_FORMATTER_END

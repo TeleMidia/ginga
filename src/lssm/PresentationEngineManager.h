@@ -163,7 +163,7 @@ private:
                      const string &parameter,
                      short type,
                      const string &value);
-  bool userEventReceived (InputEvent *ev);
+//  bool userEventReceived (InputEvent *ev);
   bool cmdEventReceived (const string &command, const string &args);
   static void *eventReceived (void *ptr);
   void readCommand (const string &command);

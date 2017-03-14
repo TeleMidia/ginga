@@ -1150,7 +1150,7 @@ PresentationEngineManager::updateStatus (short code,
       break;
     }
 }
-
+/*
 bool
 PresentationEngineManager::userEventReceived (InputEvent *ev)
 {
@@ -1182,7 +1182,7 @@ PresentationEngineManager::userEventReceived (InputEvent *ev)
 #endif
   PresentationEngineManager::eventReceived ((void *)evR);
   return true;
-}
+} */
 
 bool
 PresentationEngineManager::cmdEventReceived (const string &command,

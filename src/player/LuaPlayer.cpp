@@ -340,7 +340,7 @@ LuaPlayer::setPropertyValue (const string &name, const string &value)
 }
 
 // Inherited from IInputEventListener.
-
+/*
 bool
 LuaPlayer::userEventReceived (InputEvent *evt)
 {
@@ -362,6 +362,6 @@ LuaPlayer::userEventReceived (InputEvent *evt)
 tail:
   this->unlock ();
   return true;
-}
+} */
 
 GINGA_PLAYER_END
