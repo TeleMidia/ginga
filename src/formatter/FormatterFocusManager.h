@@ -22,7 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "util/functions.h"
 
-#include "mb/InputManager.h"
 #include "mb/IInputEventListener.h"
 #include "mb/Key.h"
 using namespace ::ginga::mb;
@@ -52,7 +51,7 @@ class FormatterFocusManager : public IMotionEventListener,
                               public IInputEventListener
 {
 private:
-  InputManager *im;
+//  InputManager *im;
   PresentationContext *presContext;
   map<string, set<NclExecutionObject *> *> *focusTable;
   bool isHandler;

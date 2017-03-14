@@ -86,7 +86,7 @@ class FormatterMultiDevice : public IPlayerListener,
 {
 #endif
 protected:
-  InputManager *im;
+//  InputManager *im;
   pthread_mutex_t mutex;
 
 #if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE

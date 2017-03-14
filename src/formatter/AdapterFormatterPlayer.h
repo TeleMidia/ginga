@@ -63,7 +63,7 @@ class AdapterFormatterPlayer : public IAdapterPlayer,
 {
 protected:
   static double eventTS;
-  InputManager *im;
+ // InputManager *im;
 
   void *manager;
   NominalEventMonitor *anchorMonitor;

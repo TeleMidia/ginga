@@ -19,6 +19,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLSurface.h"
 
 
+#include "system/Thread.h"
+using namespace ::ginga::system;
+
+
 //#include "IFontProvider.h" removed
 #include "Display.h"
 #include "SDLWindow.h"

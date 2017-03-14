@@ -54,12 +54,13 @@ AdapterFormatterPlayer::AdapterFormatterPlayer ()
 AdapterFormatterPlayer::~AdapterFormatterPlayer ()
 {
   int objDevice;
-
+   /*
   if (im != NULL)
     {
       im->removeInputEventListener (this);
       im = NULL;
-    }
+    } 
+    */
 
   lockObject ();
   if (anchorMonitor != NULL)
@@ -96,7 +97,8 @@ void
 AdapterFormatterPlayer::setAdapterManager (void *manager)
 {
   this->manager = manager;
-  im = Ginga_Display->getInputManager ();
+ //
+ // im = Ginga_Display->getInputManager ();
 }
 
 bool
@@ -1302,7 +1304,7 @@ AdapterFormatterPlayer::checkAnchorMonitor ()
           anchorMonitor = new NominalEventMonitor (object, this);
         }
     }
-
+/*
   if (im == NULL)
     { // player was recovered from manager gc
       im = Ginga_Display->getInputManager ();
@@ -1311,7 +1313,7 @@ AdapterFormatterPlayer::checkAnchorMonitor ()
   if (im != NULL)
     {
       im->addInputEventListener (this, object->getInputEvents ());
-    }
+    } */
 
   if (anchorMonitor != NULL)
     {
@@ -1450,11 +1452,11 @@ AdapterFormatterPlayer::stop ()
 
   if (player == NULL && object == NULL)
     {
-      if (im != NULL)
+     /* if (im != NULL)
         {
           im->removeInputEventListener (this);
           im = NULL;
-        }
+        } */
       unlockObject ();
       return false;
     }
@@ -1475,11 +1477,11 @@ AdapterFormatterPlayer::stop ()
   /*clog << "AdapterFormatterPlayer::stop(" << object->getId();
   clog << ")" << endl;*/
 
-  if (im != NULL)
+ /* if (im != NULL)
     {
-      im->removeInputEventListener (this);
-      im = NULL;
-    }
+    //  im->removeInputEventListener (this);
+    //  im = NULL;
+    } */
 
   if (events != NULL)
     {
@@ -1562,11 +1564,11 @@ AdapterFormatterPlayer::resume ()
 bool
 AdapterFormatterPlayer::abort ()
 {
-  if (im != NULL)
+ /* if (im != NULL)
     {
       im->removeInputEventListener (this);
       im = NULL;
-    }
+    } */
 
   if (anchorMonitor != NULL)
     {
@@ -1961,7 +1963,7 @@ AdapterFormatterPlayer::userEventReceived (InputEvent *ev)
 
   if (keyCode == Key::KEY_QUIT)
     {
-      this->im = NULL;
+    //  this->im = NULL;
       return true;
     }
 

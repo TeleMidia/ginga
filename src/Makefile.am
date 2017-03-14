@@ -136,7 +136,6 @@ src+= mb/AudioProvider.cpp
 src+= mb/Display.cpp
 src+= mb/DisplayDebug.cpp
 src+= mb/InputEvent.cpp
-src+= mb/InputManager.cpp
 src+= mb/Key.cpp
 src+= mb/SDL2ffmpeg.cpp
 src+= mb/SDLConvert.cpp

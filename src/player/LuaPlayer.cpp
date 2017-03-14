@@ -17,7 +17,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "LuaPlayer.h"
-#include "mb/InputManager.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wunused-macros)
 
@@ -188,7 +187,7 @@ LuaPlayer::LuaPlayer (const string &mrl) : Player (mrl)
 
   this->mutexInit ();
   this->condDisplayJobInit ();
-  this->im = Ginga_Display->getInputManager ();
+ // this->im = Ginga_Display->getInputManager ();
   this->nw = NULL;              // created by start ()
   this->hasExecuted = false;
   this->isKeyHandler = false;
@@ -247,7 +246,7 @@ LuaPlayer::play (void)
   if (unlikely (this->nw == NULL))
     g_error ("cannot load NCLua file %s: %s", this->mrl.c_str (), errmsg);
 
-  this->im->addApplicationInputEventListener (this);
+//  this->im->addApplicationInputEventListener (this);
   evt_ncl_send_presentation (this->nw, "start", this->scope.c_str ());
 
   Ginga_Display->addJob (displayJobCallbackWrapper, this);
@@ -282,7 +281,7 @@ LuaPlayer::stop (void)
   ncluaw_cycle (this->nw);
   ncluaw_close (this->nw);
   this->nw = NULL;
-  this->im->removeApplicationInputEventListener (this);
+ // this->im->removeApplicationInputEventListener (this);
   this->forcedNaturalEnd = true;
   this->hasExecuted = true;
  done:
