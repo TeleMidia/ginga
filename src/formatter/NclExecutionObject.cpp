@@ -1920,7 +1920,7 @@ NclExecutionObject::getInputEvents ()
   int keyCode;
 
   evs = new set<int>;
-  i = selectionEvents.begin ();
+  i = selectionEvents.begin (); /*
   while (i != selectionEvents.end ())
     {
       ev = (*i);
@@ -1979,7 +1979,7 @@ NclExecutionObject::getInputEvents ()
           evs->insert (Key::KEY_ESCAPE);
         }
       ++i;
-    }
+    } */
 
   return evs;
 }

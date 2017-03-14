@@ -38,7 +38,6 @@ using namespace ::ginga::formatter;
 #include "ncl/NclDocument.h"
 using namespace ::ginga::ncl;
 
-#include "mb/Key.h"
 #include "mb/Display.h"
 using namespace ::ginga::mb;
 
@@ -1240,7 +1239,7 @@ PresentationEngineManager::eventReceived (void *ptr)
   clog << code << "'" << endl;
 
   delete (struct inputEventNotification *)ptr;
-
+/*
   if (code == Key::KEY_QUIT)
     {
       cout << "PresentationEngineManager::eventReceived QUIT" << endl;
@@ -1319,7 +1318,7 @@ PresentationEngineManager::eventReceived (void *ptr)
       cout << "<< GINGA WINDOW DEBUG <<" << endl;
       p->printGingaWindows ();
     }
-
+ */
   return NULL;
 }
 

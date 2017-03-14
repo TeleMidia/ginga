@@ -22,8 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "multidev/BaseDeviceDomain.h"
 #include "FormatterMediator.h"
 
-#include "mb/Key.h"
-
 #include "ncl/DeviceLayout.h"
 using namespace ::ginga::ncl;
 
@@ -47,7 +45,7 @@ FormatterBaseDevice::FormatterBaseDevice (DeviceLayout *deviceLayout,
                                  DV_QVGA_HEIGHT, -1.0);
 
   evs = new set<int>;
-  evs->insert (Key::KEY_TAP);
+//  evs->insert (Key::KEY_TAP);
 
   //im->addInputEventListener (this, evs);
 

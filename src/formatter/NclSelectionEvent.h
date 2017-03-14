@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _SELECTIONEVENT_H_
 #define _SELECTIONEVENT_H_
 
-#include "mb/Key.h"
-using namespace ::ginga::mb;
-
 #include "ncl/ContentAnchor.h"
 using namespace ::ginga::ncl;
 

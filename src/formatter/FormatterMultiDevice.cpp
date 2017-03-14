@@ -26,7 +26,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #endif
 
 #include "mb/Display.h"
-#include "mb/Key.h"
 using namespace ::ginga::mb;
 
 #include "ncl/DeviceLayout.h"

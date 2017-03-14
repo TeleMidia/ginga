@@ -24,8 +24,6 @@ using namespace ::ginga::util;
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
-#include "mb/Key.h"
-using namespace ::ginga::mb;
 
 #include "player/IPlayer.h"
 using namespace ::ginga::player;

@@ -23,8 +23,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 
 #include "mb/IInputEventListener.h"
-#include "mb/Key.h"
-using namespace ::ginga::mb;
 
 #include "NclCascadingDescriptor.h"
 #include "NclExecutionObject.h"
