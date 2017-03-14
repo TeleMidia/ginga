@@ -54,6 +54,7 @@ DisplayDebug::~DisplayDebug(){
 void 
 DisplayDebug:: toggle(){
     this->isActive = !this->isActive;
+    this->accTime=1.0; //force texture updates
 }
 
 void
