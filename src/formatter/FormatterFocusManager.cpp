@@ -1212,7 +1212,7 @@ FormatterFocusManager::changeSettingState (const string &name, const string &act
 
   delete settingObjects;
 }
-
+/*
 bool
 FormatterFocusManager::userEventReceived (InputEvent *userEvent)
 {
@@ -1349,6 +1349,7 @@ FormatterFocusManager::userEventReceived (InputEvent *userEvent)
 
   return true;
 }
+*/
 
 bool
 FormatterFocusManager::motionEventReceived (int x, int y, arg_unused (int z))

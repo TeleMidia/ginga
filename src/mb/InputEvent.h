@@ -13,7 +13,7 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
 License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
+along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  
 
 #ifndef INPUTEVENT_H_
 #define INPUTEVENT_H_
@@ -66,4 +66,4 @@ public:
 
 GINGA_MB_END
 
-#endif /*SDLINPUTEVENT_H_*/
+#endif SDLINPUTEVENT_H_*/

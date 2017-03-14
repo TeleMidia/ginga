@@ -26,7 +26,7 @@ class IInputEventListener
 {
 public:
   virtual ~IInputEventListener (){};
-  virtual bool userEventReceived (InputEvent *ev) = 0;
+//  virtual bool userEventReceived (InputEvent *ev) = 0;
 };
 
 GINGA_MB_END
