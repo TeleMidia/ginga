@@ -152,14 +152,12 @@ main (int argc, char **argv)
       print_error ("Cannot open NCL file: %s", file.c_str ());
       exit (EXIT_FAILURE);
     }
-
-  pem->startPresentation (file, "");
-
-  g_mutex_lock (&pem->quit_mutex);
   
+  //start presentation thread
+  pem->startPresentation (file, ""); 
+  
+  //ginga render loop
   _Ginga_Display->renderLoop ();
-
-  g_mutex_unlock (&pem->quit_mutex);
 
   delete Ginga_Display;
 

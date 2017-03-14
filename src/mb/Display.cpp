@@ -260,9 +260,9 @@ Display::renderLoop ()
   this->lock ();
   this->im->postInputEvent (Key::KEY_QUIT);
   this->unlock ();
-  goto quit;
+//  goto quit;
 
- beach:
+  beach:
   this->lock ();
   SDL_Quit ();
   this->unlock ();
@@ -328,7 +328,6 @@ Display::Display (int width, int height, bool fullscreen, gdouble fps)
                                
   this->unlock ();
  
-
 }
 
 /**
