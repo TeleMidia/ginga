@@ -83,12 +83,12 @@ public:
   virtual void setPropertyValue (const string &name, const string &value);
 
   void addListener (IPlayerListener *listener);
-  void release ();
+  //void release ();
   string getMrl ();
   bool isPlaying ();
-  bool isRunning ();
+  //bool isRunning ();
 
-  void setAVPid (int aPid, int vPid);
+  //void setAVPid (int aPid, int vPid);
 
   bool setOutWindow (SDLWindow* windowId);
   
@@ -105,7 +105,7 @@ public:
   static bool displayJobCallbackWrapper (DisplayJob *,
                                          SDL_Renderer *, void *);
   bool displayJobCallback (DisplayJob *, SDL_Renderer *);
-  
+
   SDL_Texture *texture;
 
   GstElement *playbin;
@@ -122,7 +122,7 @@ public:
 
   bool textureUpdated;
 
-  void createPipeline (string);
+  void createPipeline ();
 
   void run ();
 
