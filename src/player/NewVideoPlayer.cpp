@@ -32,13 +32,13 @@ GINGA_PLAYER_BEGIN
 NewVideoPlayer::NewVideoPlayer (const string &mrl) : Thread (), Player (mrl)
 {
 	//TRACE ();
-  texture = NULL;
+  texture = NULL;  
   
   this->mutexInit ();
   this->condDisplayJobInit ();
   this->surface = new SDLSurface ();
   
-  createPipeline(mrl);
+  createPipeline ();
 }
 
 NewVideoPlayer::~NewVideoPlayer ()
@@ -48,7 +48,7 @@ NewVideoPlayer::~NewVideoPlayer ()
 }
 
 void
-NewVideoPlayer::createPipeline (string mrl)
+NewVideoPlayer::createPipeline ()
 {
   GstElement *scale;
   GstElement *sink;
@@ -130,7 +130,6 @@ NewVideoPlayer::newSampleCB (arg_unused (GstAppSink *appsink), arg_unused(gpoint
 
   player->sample = gst_app_sink_pull_sample (appsink);
   g_assert_nonnull (player->sample);
-  
 
   player->unlock ();
 
@@ -149,6 +148,13 @@ bool
 NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
                                     SDL_Renderer *renderer)
 {
+  
+  //g_print ("%" G_GUINT64_FORMAT "\n" , gst_clock_get_time ( gst_element_get_clock (playbin) ) );
+  
+//  if( gst_clock_get_time ( gst_element_get_clock (playbin) ) > 3474088000) //Apagar
+//    return false;
+//    pause ();
+  
   GstVideoFrame v_frame;
   GstVideoInfo v_info;
   GstBuffer *buf;
@@ -194,17 +200,22 @@ NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
     gst_sample_unref (sample);
     sample = NULL;
   }
-
+  
   this->unlock ();
-  this->condDisplayJobSignal ();
+
+  if (GST_ELEMENT_CAST(playbin)->current_state == GST_STATE_PAUSED)
+  {
+    //this->condDisplayJobSignal ();
+    return false; //Remove job
+  }
+
   return true; //Keep job
 }
 
 SDLSurface*
 NewVideoPlayer::getSurface ()
 {
-	TRACE ();
-  return NULL;
+	return this->surface;  
 }
 
 void
@@ -312,21 +323,30 @@ NewVideoPlayer::play ()
 void
 NewVideoPlayer::pause ()
 {
-	//TRACE ();
   ret = gst_element_set_state (playbin, GST_STATE_PAUSED);
   g_assert (ret != GST_STATE_CHANGE_FAILURE);
+
+  GstStateChangeReturn retWait = gst_element_get_state (playbin, NULL, NULL, GST_CLOCK_TIME_NONE);
+
+  if ( retWait != GST_STATE_CHANGE_SUCCESS )
+  {
+    g_print ("failed to pause the file\n");
+  }
 }
 
 void
 NewVideoPlayer::stop ()
 {
-	TRACE ();
+  TRACE ();
 }
 
 void
 NewVideoPlayer::resume ()
 {
-	TRACE ();
+  if (GST_ELEMENT_CAST(playbin)->current_state == GST_STATE_PAUSED)
+  {
+    this->play ();
+  }
 }
 
 string
@@ -345,27 +365,29 @@ NewVideoPlayer::setPropertyValue (arg_unused(const string &name), arg_unused(con
 void
 NewVideoPlayer::addListener (IPlayerListener *listener)
 {
-  (void) listener;
-	TRACE ();
+  Player::addListener (listener);
 }
 
-void
-NewVideoPlayer::release ()
-{
-	TRACE ();
-}
+//void
+//NewVideoPlayer::release ()
+//{
+//	TRACE ();
+//}
 
 string
 NewVideoPlayer::getMrl ()
 {
-	TRACE ();
-  return NULL;
+  return mrl;
 }
 
 bool
 NewVideoPlayer::isPlaying ()
 {
-	return true;
+  if (GST_ELEMENT_CAST(playbin)->current_state == GST_STATE_PLAYING)
+  {
+    return true;
+  }
+	return false;
 }
 
 bool
@@ -393,18 +415,18 @@ NewVideoPlayer::setOutWindow (arg_unused(SDLWindow* windowId))
 	return true;
 }
 
-void
+/*void
 NewVideoPlayer::setAVPid (arg_unused(int aPid), arg_unused(int vPid))
 {
 	TRACE ();
-}
+}*/
 
-bool
-NewVideoPlayer::isRunning ()
-{
-	TRACE ();
-	return true;
-}
+//bool
+//NewVideoPlayer::isRunning ()
+//{
+//	TRACE ();
+//	return true;
+//}
 
 void
 NewVideoPlayer::run ()
