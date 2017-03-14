@@ -24,8 +24,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::system;
 
 #include "mb/IInputEventListener.h"
-#include "mb/Key.h"
-using namespace ::ginga::mb;
 
 #include "IPlayer.h"
 

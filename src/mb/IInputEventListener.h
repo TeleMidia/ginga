@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef IINPUTEVENTLISTENER_H_
 #define IINPUTEVENTLISTENER_H_
 
-#include "InputEvent.h"
-
 GINGA_MB_BEGIN
 
 class IInputEventListener

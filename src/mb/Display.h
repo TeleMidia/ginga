@@ -22,7 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "IContinuousMediaProvider.h"
 #include "IDiscreteMediaProvider.h"
-#include "InputEvent.h"
 #include "SDLSurface.h"
 #include "SDLWindow.h"
 
