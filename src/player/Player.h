@@ -23,7 +23,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
-#include "mb/InputManager.h"
 #include "mb/IInputEventListener.h"
 #include "mb/Key.h"
 using namespace ::ginga::mb;

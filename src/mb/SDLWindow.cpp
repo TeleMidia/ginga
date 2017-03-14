@@ -23,6 +23,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLSurface.h"
 
 
+#include "system/Thread.h"
+using namespace ::ginga::system;
+
+
+
 GINGA_MB_BEGIN
 
 // BEGIN SANITY ------------------------------------------------------------

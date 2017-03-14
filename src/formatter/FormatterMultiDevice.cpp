@@ -26,7 +26,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #endif
 
 #include "mb/Display.h"
-#include "mb/InputManager.h"
 #include "mb/Key.h"
 using namespace ::ginga::mb;
 
@@ -67,11 +66,11 @@ FormatterMultiDevice::FormatterMultiDevice (DeviceLayout *deviceLayout,
   if (defaultHeight == 0)
     Ginga_Display->getSize (NULL, &defaultHeight);
 
-  im = Ginga_Display->getInputManager ();
+//  im = Ginga_Display->getInputManager ();
 
   int tmpw, tmph;
   Ginga_Display->getSize (&tmpw, &tmph);
-  im->setAxisValues ((int)(tmpw / 2), (int)(tmph / 2), 0);
+ // im->setAxisValues ((int)(tmpw / 2), (int)(tmph / 2), 0);
   printScreen = Ginga_Display->createWindow (0, 0,
                                                 defaultWidth,
                                                 defaultHeight, -1.0);

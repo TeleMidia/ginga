@@ -40,7 +40,6 @@ using namespace ::ginga::ncl;
 
 #include "mb/Key.h"
 #include "mb/Display.h"
-#include "mb/InputManager.h"
 using namespace ::ginga::mb;
 
 #include "player/ShowButton.h"
@@ -128,13 +127,13 @@ PresentationEngineManager::PresentationEngineManager (
   this->isEmbedded = true;
   this->currentPrivateBaseId = -1;
   this->timeBaseProvider = NULL;
-  this->im = Ginga_Display->getInputManager ();
+ // this->im = Ginga_Display->getInputManager ();
   privateBaseManager = new PrivateBaseManager ();
   this->sb = new ShowButton ();
 
   ContentTypeManager::getInstance ()->setMimeFile (string (GINGA_DATADIR)
                                                    + "mimetypes.ini");
-  im->setCommandEventListener (this);
+ // im->setCommandEventListener (this);
 }
 
 PresentationEngineManager::~PresentationEngineManager ()
@@ -445,14 +444,14 @@ PresentationEngineManager::close ()
   map<int, set<INCLPlayer *> *>::iterator i;
 
   closed = true;
-
+/*
   if (im != NULL)
     {
       im->removeInputEventListener (this);
       im->setCommandEventListener (NULL);
       delete im;
       im = NULL;
-    }
+    } */
 
   lock ();
   formattersToRelease.clear ();
@@ -468,13 +467,13 @@ PresentationEngineManager::close ()
 
 void
 PresentationEngineManager::registerKeys ()
-{
+{ /*
   set<int> *keys;
 
   if (im == NULL)
     {
       return;
-    }
+    } 
 
   keys = new set<int>;
 
@@ -506,7 +505,7 @@ PresentationEngineManager::registerKeys ()
       keys->insert (Key::KEY_PLUS_SIGN);
     }
 
-  im->addInputEventListener (this, keys);
+ // im->addInputEventListener (this, keys); */
 }
 
 bool
@@ -526,7 +525,7 @@ PresentationEngineManager::setEmbedApp (bool isEmbedded)
     }
   else
     {
-      im->removeInputEventListener (this);
+    //  im->removeInputEventListener (this);
     }
 }
 

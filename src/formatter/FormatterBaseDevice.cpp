@@ -49,7 +49,7 @@ FormatterBaseDevice::FormatterBaseDevice (DeviceLayout *deviceLayout,
   evs = new set<int>;
   evs->insert (Key::KEY_TAP);
 
-  im->addInputEventListener (this, evs);
+  //im->addInputEventListener (this, evs);
 
   int caps = serialized->getCap ("ALPHACHANNEL");
   serialized->setCaps (caps);
@@ -80,10 +80,10 @@ FormatterBaseDevice::FormatterBaseDevice (DeviceLayout *deviceLayout,
 
 FormatterBaseDevice::~FormatterBaseDevice ()
 {
-  if (im != NULL)
+ /* if (im != NULL)
     {
       im->removeInputEventListener (this);
-    }
+    }  */
 
   if (rdm != NULL)
     {
@@ -136,7 +136,7 @@ FormatterBaseDevice::userEventReceived (InputEvent *ev)
     {
       clog << "FormatterBaseDevice::userEventReceived setting im as NULL";
       clog << endl;
-      this->im = NULL;
+    //  this->im = NULL;
     }
 
   return true;

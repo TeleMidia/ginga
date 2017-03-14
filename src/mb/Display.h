@@ -22,8 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "IContinuousMediaProvider.h"
 #include "IDiscreteMediaProvider.h"
-//#include "IFontProvider.h" deleted
-#include "InputManager.h"
 #include "InputEvent.h"
 #include "SDLSurface.h"
 #include "SDLWindow.h"
@@ -50,7 +48,6 @@ private:
   SDL_Window *screen;           // display screen
   GRecMutex renderer_mutex;     // sync access to renderer
   SDL_Renderer *renderer;       // display renderer
-  InputManager *im;             // display input manager (FIXME)
 
   bool _quit;                   // true if render thread should quit
   
@@ -130,7 +127,6 @@ public:
 public:
   /* interfacing input */
 
-  InputManager *getInputManager ();
   InputEvent *createInputEvent (void *event, const int symbol);
   InputEvent *createApplicationEvent (int type, void *data);
 

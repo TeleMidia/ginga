@@ -27,8 +27,8 @@ using namespace ::ginga::player;
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
-#include "mb/InputManager.h"
 #include "mb/Display.h"
+#include "mb/ICmdEventListener.h"
 #include "mb/IInputEventListener.h"
 using namespace ::ginga::mb;
 
@@ -84,7 +84,7 @@ private:
   int currentPrivateBaseId;
   static bool autoProcess;
   vector<string> commands;
-  InputManager *im;
+//  InputManager *im;
   ShowButton *sb;
   string nclFile;
   string interfId;

@@ -44,7 +44,7 @@ FormatterFocusManager::FormatterFocusManager (
 {
   string strValue;
 
-  im = Ginga_Display->getInputManager ();
+ // im = Ginga_Display->getInputManager ();
   focusTable = new map<string, set<NclExecutionObject *> *>;
   currentFocus = "";
   objectToSelect = "";
@@ -435,10 +435,10 @@ FormatterFocusManager::tapObject (void *executionObject)
             {
               if (!keyCodeOk (object))
                 {
-                  if (im != NULL)
+                /*  if (im != NULL)
                     {
                       im->postInputEvent (Key::KEY_BACK);
-                    }
+                    } */
                 }
             }
         }
@@ -1085,7 +1085,7 @@ FormatterFocusManager::registerNavigationKeys ()
 {
   set<int> *evs;
 
-  if (im != NULL)
+ /* if (im != NULL)
     {
       evs = new set<int>;
       evs->insert (Key::KEY_CURSOR_DOWN);
@@ -1097,7 +1097,7 @@ FormatterFocusManager::registerNavigationKeys ()
 
       im->addInputEventListener (this, evs);
       im->addMotionEventListener (this);
-    }
+    } */
 }
 
 void
@@ -1105,7 +1105,7 @@ FormatterFocusManager::registerBackKeys ()
 {
   set<int> *evs;
 
-  if (im != NULL)
+ /* if (im != NULL)
     {
       evs = new set<int>;
       evs->insert (Key::KEY_BACKSPACE);
@@ -1113,17 +1113,17 @@ FormatterFocusManager::registerBackKeys ()
 
       im->addInputEventListener (this, evs);
       im->removeMotionEventListener (this);
-    }
+    } */
 }
 
 void
 FormatterFocusManager::unregister ()
 {
-  if (im != NULL)
+ /* if (im != NULL)
     {
       im->removeInputEventListener (this);
       im->removeMotionEventListener (this);
-    }
+    } */
 }
 
 void
@@ -1226,7 +1226,7 @@ FormatterFocusManager::userEventReceived (InputEvent *userEvent)
 
   if (code == Key::KEY_QUIT)
     {
-      this->im = NULL;
+    //  this->im = NULL;
       return true;
     }
 

@@ -21,7 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Player.h"
 
 #include "mb/Display.h"
-#include "mb/InputManager.h"
 using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
@@ -36,7 +35,7 @@ private:
   bool hasExecuted;      // true if script was executed
   bool isKeyHandler;     // true if player has the focus
   string scope;          // the label of the active anchor
-  InputManager *im;
+//  InputManager *im;
 
   static bool displayJobCallbackWrapper (DisplayJob *,
                                          SDL_Renderer *, void *);

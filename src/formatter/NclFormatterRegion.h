@@ -33,7 +33,6 @@ using namespace ::ginga::ncl;
 #include "ncl/TransitionUtil.h"
 using namespace ::ginga::ncl;
 
-#include "mb/InputManager.h"
 #include "mb/SDLWindow.h"
 using namespace ::ginga::mb;
 

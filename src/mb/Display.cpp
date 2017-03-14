@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Display.h"
 #include "DisplayDebug.h"
 
-#include "InputManager.h"
 #include "AudioProvider.h"
 #include "InputEvent.h"
 #include "SDLSurface.h"
@@ -288,7 +287,7 @@ Display::Display (int width, int height, bool fullscreen, gdouble fps)
 
   this->renderer = NULL;
   this->screen = NULL;
-  this->im = NULL;
+ // this->im = NULL;
 
   this->_quit = false;
 
@@ -297,9 +296,9 @@ Display::Display (int width, int height, bool fullscreen, gdouble fps)
   this->windows = NULL;
   this->providers = NULL;
 
-  this->im = new InputManager ();
-  g_assert_nonnull (this->im);
-  this->im->setAxisBoundaries (this->width, this->height, 0);
+ // this->im = new InputManager ();
+ // g_assert_nonnull (this->im);
+ // this->im->setAxisBoundaries (this->width, this->height, 0);
 
   checkMutexInit ();            // FIXME
   initCodeMaps ();              // FIXME
@@ -340,7 +339,7 @@ Display::~Display ()
   this->lock ();
   SDL_DestroyRenderer (this->renderer);
   SDL_DestroyWindow (this->screen);
-  delete im;
+ // delete im;
   g_list_free_full (this->jobs, (GDestroyNotify) job_delete);
   g_assert (g_list_length (this->textures) == 0);
   g_list_free_full (this->windows, (GDestroyNotify) win_delete);
@@ -702,12 +701,13 @@ Display::createRenderedSurfaceFromImageFile (const char *mrl)
 }
 
 /* interfacing input */
-
+/*
 InputManager *
 Display::getInputManager ()
 {
   return im;
 }
+*/
 /*
 EventBuffer *
 Display::createEventBuffer ()
