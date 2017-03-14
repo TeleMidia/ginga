@@ -30,7 +30,7 @@ InputManager::InputManager () : Thread ()
   maxX = 0;
   maxY = 0;
   lastEventTime = 0;
-  eventBuffer = NULL;
+//  eventBuffer = NULL;
   running = false;
   notifying = false;
   notifyingApp = false;
@@ -107,11 +107,6 @@ InputManager::release ()
   // int mbKeyCode;
   // bool wasRunning = running;
 
-  running = false;
-  if (eventBuffer == NULL)
-    {
-      return;
-    }
 
   // while (!runDone)
   //   {
@@ -168,13 +163,13 @@ InputManager::release ()
     }
   Thread::mutexDestroy (&actAppMutex);
   Thread::mutexDestroy (&appMutex);
-
+/*
   if (eventBuffer != NULL)
     {
       delete eventBuffer;
       eventBuffer = NULL;
     }
-
+*/
   if (!motionListeners.empty ())
     {
       Thread::mutexLock (&mlMutex);
@@ -239,7 +234,7 @@ InputManager::addInputEventListener (IInputEventListener *listener,
 
   if (!running)
     {
-      eventBuffer = getEventBuffer ();
+    //  eventBuffer = getEventBuffer ();
     }
 
   if (notifying)
@@ -621,7 +616,7 @@ InputManager::postInputEvent (InputEvent *event)
       return;
     }
 
-  eventBuffer->postInputEvent (event);
+ // eventBuffer->postInputEvent (event);
 }
 
 void
@@ -670,7 +665,7 @@ InputManager::getCurrentYAxisValue ()
 {
   return currentYAxis;
 }
-
+/*
 EventBuffer *
 InputManager::getEventBuffer ()
 {
@@ -685,7 +680,7 @@ InputManager::getEventBuffer ()
     }
 
   return eventBuffer;
-}
+} */
 
 void
 InputManager::run ()
@@ -700,7 +695,7 @@ InputManager::run ()
   int mouseX, mouseY;
 
   clog << "InputManager::run main loop" << endl;
-
+/*
   while (running && eventBuffer != NULL)
     {
       eventBuffer->waitEvent ();
@@ -718,13 +713,13 @@ InputManager::run ()
           delete inputEvent;
           inputEvent = eventBuffer->getNextEvent ();
         }
-    }
+    } 
 
   if (running && eventBuffer == NULL)
     {
       clog << "InputManager::run Warning! Can't receive events: ";
       clog << "event buffer is NULL" << endl;
-    }
+    }*/
 
   currentXAxis = 0;
   currentYAxis = 0;
@@ -765,11 +760,11 @@ InputManager::handleInputEvent (InputEvent *inputEvent, arg_unused (int &pLastCo
         {
           currentYAxis = maxY;
         }
-
+/*
       if (eventBuffer != NULL)
         {
           inputEvent = eventBuffer->getNextEvent ();
-        }
+        } */
 
       notifyMotionListeners (currentXAxis, currentYAxis, currentZAxis);
 

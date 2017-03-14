@@ -27,7 +27,6 @@ using namespace ::ginga::util;
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
 
-#include "EventBuffer.h"
 #include "InputEvent.h"
 #include "ICmdEventListener.h"
 #include "IInputEventListener.h"
@@ -59,7 +58,6 @@ protected:
   bool running;
   bool notifying;
   bool notifyingApp;
-  EventBuffer *eventBuffer;
   double lastEventTime;
   double imperativeIntervalTime;
   double declarativeIntervalTime;
@@ -118,8 +116,6 @@ public:
   void setAxisBoundaries (int x, int y, int z);
   int getCurrentXAxisValue ();
   int getCurrentYAxisValue ();
-
-  EventBuffer *getEventBuffer ();
 
 protected:
   virtual void run ();
