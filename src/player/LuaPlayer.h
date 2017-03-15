@@ -25,7 +25,7 @@ using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
-class LuaPlayer : public Player, public IInputEventListener
+class LuaPlayer : public Player
 {
 private:
   GINGA_MUTEX_DEFN ();
@@ -59,7 +59,7 @@ public:
   virtual void setPropertyValue (const string &name, const string &value);
 
   // Input event callback.
-//  bool userEventReceived (InputEvent *evt);
+  // bool keyReceived (SDL_Keycode key);
 };
 
 GINGA_PLAYER_END

@@ -24,7 +24,6 @@ using namespace ::ginga::util;
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
 
-#include "mb/IInputEventListener.h"
 #include "mb/SDLSurface.h"
 using namespace ::ginga::mb;
 
@@ -58,8 +57,7 @@ GINGA_FORMATTER_BEGIN
 
 class AdapterFormatterPlayer : public IAdapterPlayer,
                                public IPlayerListener,
-                               public INclAttributeValueMaintainer,
-                               public IInputEventListener
+                               public INclAttributeValueMaintainer
 {
 protected:
   static double eventTS;

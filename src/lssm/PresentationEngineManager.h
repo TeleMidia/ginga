@@ -29,7 +29,6 @@ using namespace ::ginga::system;
 
 #include "mb/Display.h"
 #include "mb/ICmdEventListener.h"
-#include "mb/IInputEventListener.h"
 using namespace ::ginga::mb;
 
 #include "player/ShowButton.h"
@@ -42,7 +41,6 @@ using namespace ::ginga::formatter;
 GINGA_LSSM_BEGIN
 
 class PresentationEngineManager : public IPlayerListener,
-                                  public IInputEventListener,
                                   public ICmdEventListener,
                                   public Thread
 {

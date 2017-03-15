@@ -21,7 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 
 #include "mb/Display.h"
-#include "mb/IInputEventListener.h"
 using namespace ::ginga::mb;
 
 #if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
@@ -77,12 +76,10 @@ GINGA_FORMATTER_BEGIN
 
 #if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
 class FormatterMultiDevice : public IPlayerListener,
-                             public IInputEventListener,
                              public IRemoteDeviceListener
 {
 #else
-class FormatterMultiDevice : public IPlayerListener,
-                             public IInputEventListener
+class FormatterMultiDevice : public IPlayerListener
 {
 #endif
 protected:
