@@ -22,8 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "util/functions.h"
 
-#include "mb/IInputEventListener.h"
-
 #include "NclCascadingDescriptor.h"
 #include "NclExecutionObject.h"
 
@@ -45,8 +43,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-class FormatterFocusManager : public IMotionEventListener,
-                              public IInputEventListener
+class FormatterFocusManager : public IMotionEventListener
 {
 private:
 //  InputManager *im;

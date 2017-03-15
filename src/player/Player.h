@@ -23,8 +23,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
-#include "mb/IInputEventListener.h"
-
 #include "IPlayer.h"
 
 #ifndef HAVE_CLOCKTIME

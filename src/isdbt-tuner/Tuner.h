@@ -24,9 +24,6 @@ using namespace ::ginga::system;
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
 
-#include "mb/IInputEventListener.h"
-using namespace ::ginga::mb;
-
 #include "Tuner.h"
 
 #ifndef BUFFSIZE
@@ -49,8 +46,7 @@ typedef struct
 
 GINGA_TUNER_BEGIN
 
-class Tuner : public IInputEventListener,
-              public ITProviderListener,
+class Tuner : public ITProviderListener,
               public Thread
 {
 private:
