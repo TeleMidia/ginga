@@ -58,7 +58,6 @@ m4_define([gstreamer_required_version],  [1.8.0])
 m4_define([nclua_required_version],      [1.0])
 m4_define([sdl2_image_require_version],  [2.0])
 m4_define([sdl2_required_version],       [2.0])
-m4_define([sdl2_ttf_require_version],    [2.0])
 m4_define([swresample_required_version], [0.17.104])
 m4_define([swscale_required_version],    [2.5.101])
 m4_define([xercesc_required_version],    [2.7])
@@ -72,7 +71,6 @@ AC_SUBST([GSTREAMER_REQUIRED_VERSION],   gstreamer_required_version)
 AC_SUBST([NCLUA_REQUIRED_VERSION],       nclua_required_version)
 AC_SUBST([SDL2_IMAGE_REQUIRE_VERSION],   sdl2_image_require_version)
 AC_SUBST([SDL2_REQUIRED_VERSION],        sdl2_required_version)
-AC_SUBST([SDL2_TTF_REQUIRED_VERSION],    sdl2_ttf_required_version)
 AC_SUBST([SWRESAMPLE_REQUIRED_VERSION],  swresample_required_version)
 AC_SUBST([SWSCALE_REQUIRED_VERSION],     swscale_required_version)
 AC_SUBST([XERCESC_REQUIRED_VERSION],     xercesc_required_version)
@@ -175,8 +173,6 @@ AU_CHECK_PKG([SDL2],
  [sdl2 >= sdl2_required_version])
 AU_CHECK_PKG([SDL2IMAGE],
  [SDL2_image >= sdl2_image_require_version])
-AU_CHECK_PKG([SDL2TTF],
- [SDL2_ttf >= sdl2_ttf_require_version])
 
 AU_CHECK_PKG([XERCESC],
  [xerces-c >= xercesc_required_version])
