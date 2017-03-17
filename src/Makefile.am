@@ -135,6 +135,7 @@ src+= lssm/PresentationEngineManager.cpp
 src+= mb/AudioProvider.cpp
 src+= mb/Display.cpp
 src+= mb/DisplayDebug.cpp
+src+= mb/KeyMap.cpp
 src+= mb/SDL2ffmpeg.cpp
 src+= mb/SDLConvert.cpp
 src+= mb/SDLSurface.cpp

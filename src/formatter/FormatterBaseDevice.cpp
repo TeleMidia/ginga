@@ -115,29 +115,6 @@ FormatterBaseDevice::receiveRemoteEvent (int remoteDevClass, int eventType,
   return FormatterMultiDevice::receiveRemoteEvent (remoteDevClass,
                                                    eventType, eventContent);
 }
-/*
-bool
-FormatterBaseDevice::userEventReceived (InputEvent *ev)
-{
-  int currentX;
-  int currentY;
-  int code;
 
-  code = ev->getKeyCode ();
-
-  if (code == Key::KEY_TAP)
-    {
-      ev->getAxisValue (&currentX, &currentY, NULL);
-      tapObject (deviceClass, currentX, currentY);
-    }
-  else if (code == Key::KEY_QUIT)
-    {
-      clog << "FormatterBaseDevice::userEventReceived setting im as NULL";
-      clog << endl;
-    //  this->im = NULL;
-    }
-
-  return true;
-} */
 
 GINGA_FORMATTER_END

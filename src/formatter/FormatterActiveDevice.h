@@ -35,9 +35,11 @@ using namespace ::ginga::system;
 
 #include "PrivateBaseManager.h"
 
+#include "mb/IKeyInputEventListener.h"
+
 GINGA_FORMATTER_BEGIN
 
-class FormatterActiveDevice : public FormatterMultiDevice
+class FormatterActiveDevice : public FormatterMultiDevice, IKeyInputEventListener
 {
 public:
   static const unsigned int ADD_DOCUMENT = 10081;
@@ -70,6 +72,8 @@ public:
                          int x, int y, int w, int h, bool useMulticast,
                          int srvPort);
   virtual ~FormatterActiveDevice ();
+
+  void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
 
 protected:
   bool

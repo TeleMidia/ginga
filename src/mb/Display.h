@@ -25,6 +25,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLSurface.h"
 #include "SDLWindow.h"
 
+#include "IKeyInputEventListener.h"
+
 GINGA_MB_BEGIN
 
 // Type used for renderer job data.
@@ -43,6 +45,8 @@ private:
   int height;                   // display height in pixels
   bool fullscreen;              // true if full-screen mode is on
   guint32 frameTime;            //frame time rate
+
+  set<IKeyInputEventListener*> keyEventListeners; //
 
   SDL_Window *screen;           // display screen
   GRecMutex renderer_mutex;     // sync access to renderer
@@ -84,7 +88,11 @@ public:
   void destroyContinuousMediaProvider (IContinuousMediaProvider *);
   
   void renderLoop (void);
+
+  void registerKeyEventListener(IKeyInputEventListener*);
 
+private:
+  void notifyKeyEventListeners(SDL_EventType, SDL_Keycode);
   // Let the clutter begin -------------------------------------------------
 
 private:
@@ -139,6 +147,8 @@ public:
   createUnderlyingSurfaceFromTexture (SDL_Texture *texture);
 
   static bool hasUnderlyingSurface (SDL_Surface *uSur);
+
+  
 
 private:
   static void releaseUnderlyingSurface (SDL_Surface *uSur);

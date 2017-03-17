@@ -33,7 +33,7 @@ Tuner::Tuner (const string &network, const string &protocol, const string &addre
   loopListener = NULL;
   currentSpec = "";
 
- // Ginga_Display->getInputManager ()->addInputEventListener (this, NULL);
+  Ginga_Display->registerKeyEventListener(this);
 
   interfaces.clear ();
 
@@ -66,17 +66,17 @@ Tuner::setLoopListener (ITunerListener *loopListener)
 {
   this->loopListener = loopListener;
 }
-/*
-bool
-Tuner::userEventReceived (InputEvent *ev)
-{
+
+void
+Tuner::keyInputCallback (SDL_EventType evtType, SDL_Keycode key){
+
   map<int, NetworkInterface *>::iterator i;
 
-  clog << "Tuner::userEventReceived" << endl;
-  if (ev->getKeyCode () == Key::KEY_QUIT)
+//  clog << "Tuner::userEventReceived" << endl;
+  if (key == SDLK_ESCAPE)
     {
       // CLOSE ALL TUNER INTERFACE/PROVIDER
-      lock ();
+      this->lock ();
       notifyStatus (TS_TUNER_POWEROFF, NULL);
       i = interfaces.begin ();
       while (i != interfaces.end ())
@@ -84,11 +84,9 @@ Tuner::userEventReceived (InputEvent *ev)
           i->second->close ();
           ++i;
         }
-      unlock ();
+       this->unlock ();
     }
-
-  return true;
-} */
+}
 
 void
 Tuner::clearInterfaces ()
