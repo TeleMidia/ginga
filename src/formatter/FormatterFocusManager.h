@@ -40,10 +40,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterMultiDevice.h"
 
 #include "mb/IMotionEventListener.h"
+#include "mb/IkeyInputEventListener.h"
 
 GINGA_FORMATTER_BEGIN
 
-class FormatterFocusManager : public IMotionEventListener
+class FormatterFocusManager : public IMotionEventListener, IKeyInputEventListener
 {
 private:
 //  InputManager *im;
@@ -136,7 +137,7 @@ private:
   void changeSettingState (const string &name, const string &act);
 
 public:
-//  bool userEventReceived (InputEvent *ev);
+  void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
   bool motionEventReceived (int x, int y, int z);
 };
 

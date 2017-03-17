@@ -329,25 +329,19 @@ FormatterActiveDevice::receiveRemoteContentInfo (const string &contentId,
   return true;
 }
 
-bool
-FormatterActiveDevice::userEventReceived (InputEvent *ev)
-{
-  int currentX;
-  int currentY;
-  int code;
+void 
+FormatterActiveDevice::keyInputCallback (SDL_EventType evtType, SDL_Keycode key){ 
 
-  code = ev->getKeyCode ();
-  if (code == Key::KEY_F11 || code == Key::KEY_F10)
+  if (key == SDLK_F11 || key == SDLK_F10)
+          abort ();
+  
+ /* if (code == Key::KEY_TAP)
     {
-      abort ();
-    }
-  if (code == Key::KEY_TAP)
-    {
+      int currentX;
+      int currentY;
       ev->getAxisValue (&currentX, &currentY, NULL);
       tapObject (deviceClass, currentX, currentY);
-    }
-
-  return true;
+    } */  
 }
 
 bool

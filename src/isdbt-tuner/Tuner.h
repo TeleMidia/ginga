@@ -33,6 +33,8 @@ using namespace ::ginga::system;
 #include "ITunerListener.h"
 #include "NetworkInterface.h"
 
+#include "mb/IKeyInputEventListener.h"
+
 typedef struct
 {
   char *buff;
@@ -47,7 +49,8 @@ typedef struct
 GINGA_TUNER_BEGIN
 
 class Tuner : public ITProviderListener,
-              public Thread
+              public Thread,
+              IKeyInputEventListener
 {
 private:
   bool receiving;
@@ -62,7 +65,8 @@ public:
   Tuner (const string &network = "", const string &protocol = "", const string &address = "");
   virtual ~Tuner ();
   void setLoopListener (ITunerListener *loopListener);
-//  bool userEventReceived (InputEvent *ev);
+  // Input event callback.
+  void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
 
 private:
   void clearInterfaces ();

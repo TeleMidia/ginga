@@ -165,13 +165,11 @@ Display::renderLoop ()
           switch (evt.type)
             {
             case SDL_KEYDOWN:
+                this->notifyKeyEventListeners(SDL_KEYDOWN, evt.key.keysym.sym);
                 break;
             case SDL_KEYUP:
-              if(evt.key.keysym.sym == SDLK_d)
-                   displayDebug->toggle();
-              else if (evt.key.keysym.sym == SDLK_ESCAPE)
-                   this->quit ();
-                   goto quit;
+                this->notifyKeyEventListeners(SDL_KEYUP, evt.key.keysym.sym);
+                goto quit;
                 break;
               // fall-through
             case SDL_QUIT:
@@ -918,6 +916,19 @@ Display::releaseUnderlyingSurface (SDL_Surface *uSur)
 
    
   unlockSDL ();
+}
+
+void 
+Display::notifyKeyEventListeners(SDL_EventType evtType, SDL_Keycode key){
+   set<IKeyInputEventListener*>::iterator it;
+   for (it=keyEventListeners.begin(); it!=keyEventListeners.end(); ++it)
+          (*it)->keyInputCallback(evtType, key);
+}
+
+void 
+Display::registerKeyEventListener(IKeyInputEventListener* obj){
+   g_debug("UM REGISTRO 111");
+   keyEventListeners.insert(obj);
 }
 
 GINGA_MB_END

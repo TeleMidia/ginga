@@ -20,12 +20,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Player.h"
 
+#include "mb/IKeyInputEventListener.h"
 #include "mb/Display.h"
 using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
-class LuaPlayer : public Player
+class LuaPlayer : public Player, IKeyInputEventListener
 {
 private:
   GINGA_MUTEX_DEFN ();
@@ -59,7 +60,7 @@ public:
   virtual void setPropertyValue (const string &name, const string &value);
 
   // Input event callback.
-  // bool keyReceived (SDL_Keycode key);
+  void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
 };
 
 GINGA_PLAYER_END

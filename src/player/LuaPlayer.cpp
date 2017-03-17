@@ -187,11 +187,12 @@ LuaPlayer::LuaPlayer (const string &mrl) : Player (mrl)
 
   this->mutexInit ();
   this->condDisplayJobInit ();
- // this->im = Ginga_Display->getInputManager ();
   this->nw = NULL;              // created by start ()
   this->hasExecuted = false;
   this->isKeyHandler = false;
   this->scope = "";
+  
+  Ginga_Display->registerKeyEventListener(this);
 }
 
 LuaPlayer::~LuaPlayer (void)
@@ -339,29 +340,24 @@ LuaPlayer::setPropertyValue (const string &name, const string &value)
   this->unlock ();
 }
 
-// Inherited from IInputEventListener.
-/*
-bool
-LuaPlayer::userEventReceived (InputEvent *evt)
-{
+void
+LuaPlayer::keyInputCallback (SDL_EventType evtType, SDL_Keycode key){
+  
   this->lock ();
 
   if (this->nw == NULL)
     goto tail;
 
-  if (evt->isKeyType () && this->isKeyHandler)
-    {
-      string key;
-      int press;
+  if(evtType == SDL_KEYDOWN || evtType == SDL_KEYUP){
+     string evt="release";
+     if(evtType == SDL_KEYDOWN)
+            evt="press";
+     
+     evt_key_send (this->nw, evt.c_str(), convertSdl2GingaKey(key));
+  }
 
-      key = (Key::getName (evt->getKeyCode ()));
-      press = evt->isPressedType ();
-      evt_key_send (this->nw, press ? "press" : "release", key.c_str ());
-    }
-
-tail:
+  tail:
   this->unlock ();
-  return true;
-} */
+}
 
 GINGA_PLAYER_END

@@ -1212,36 +1212,34 @@ FormatterFocusManager::changeSettingState (const string &name, const string &act
 
   delete settingObjects;
 }
-/*
-bool
-FormatterFocusManager::userEventReceived (InputEvent *userEvent)
-{
+
+void 
+FormatterFocusManager::keyInputCallback (SDL_EventType evtType, SDL_Keycode key){
+  
+  if (key == SDLK_ESCAPE)
+        return ;
+
+
   NclExecutionObject *currentObject;
   NclCascadingDescriptor *currentDescriptor;
   NclFormatterRegion *fr;
   string nextIndex;
   map<string, set<NclExecutionObject *> *>::iterator i;
 
-  const int code = userEvent->getKeyCode ();
-
-  if (code == Key::KEY_QUIT)
-    {
-    //  this->im = NULL;
-      return true;
-    }
-
   if (!isHandler)
     {
-      return true;
+     // return true;
+     return;
     }
 
   Thread::mutexLock (&mutexTable);
 
   if (xruntime_ms () - focusHandlerTS < 300
-      && code != Key::KEY_BACKSPACE && code != Key::KEY_BACK)
+      && key != SDLK_BACKSPACE)
     {
       Thread::mutexUnlock (&mutexTable);
-      return true;
+     // return true;
+     return;
     }
 
   focusHandlerTS = xruntime_ms ();
@@ -1256,13 +1254,12 @@ FormatterFocusManager::userEventReceived (InputEvent *userEvent)
           clog << "'" << endl;
         }
 
-      if (selectedObject != NULL
-          && (code == Key::KEY_BACKSPACE || code == Key::KEY_BACK))
-        {
+      if (selectedObject != NULL && key == SDLK_BACKSPACE){
           bool canBack = keyCodeBack ();
           Thread::mutexUnlock (&mutexTable);
 
-          return canBack;
+         // return canBack;
+            return;
         }
 
       if (!focusTable->empty ())
@@ -1276,68 +1273,68 @@ FormatterFocusManager::userEventReceived (InputEvent *userEvent)
           Thread::mutexUnlock (&mutexTable);
         }
 
-      return true;
+      return;
     }
 
   currentObject = getObjectFromFocusIndex (currentFocus);
   if (currentObject == NULL)
     {
       Thread::mutexUnlock (&mutexTable);
-      return true;
+      return;
     }
   Thread::mutexUnlock (&mutexTable);
 
   currentDescriptor = currentObject->getDescriptor ();
   if (currentDescriptor == NULL)
     {
-      return true;
+      return;
     }
 
   fr = currentDescriptor->getFormatterRegion ();
   nextIndex = "";
   if (selectedObject != NULL)
     {
-      if (code == Key::KEY_BACKSPACE || code == Key::KEY_BACK)
+      if (key == SDLK_BACKSPACE)
         {
-          bool canItBack = keyCodeBack ();
-
-          return canItBack;
+         // bool canItBack = keyCodeBack ();
+         /// return canItBack;
+           return;
         }
     }
-  else if (code == Key::KEY_CURSOR_UP)
+  else if (key == SDLK_UP)
     {
       if (fr != NULL)
         {
           nextIndex = fr->getMoveUp ();
         }
     }
-  else if (code == Key::KEY_CURSOR_DOWN)
+  else if (key == SDLK_DOWN)
     {
       if (fr != NULL)
         {
           nextIndex = fr->getMoveDown ();
         }
     }
-  else if (code == Key::KEY_CURSOR_LEFT)
+  else if (key == SDLK_LEFT)
     {
       if (fr != NULL)
         {
           nextIndex = fr->getMoveLeft ();
         }
     }
-  else if (code == Key::KEY_CURSOR_RIGHT)
+  else if (key == SDLK_RIGHT)
     {
       if (fr != NULL)
         {
           nextIndex = fr->getMoveRight ();
         }
     }
-  else if (code == Key::KEY_ENTER || code == Key::KEY_TAP)
+  else if (key == SDLK_RETURN)
     {
-      userEvent->setKeyCode (Key::KEY_NULL);
+    //  userEvent->setKeyCode (Key::KEY_NULL);
       tapObject (currentObject);
 
-      return false;
+      return ;
     }
 
   if (nextIndex != "")
@@ -1347,9 +1344,7 @@ FormatterFocusManager::userEventReceived (InputEvent *userEvent)
       changeSettingState ("service.currentFocus", "stop");
     }
 
-  return true;
 }
-*/
 
 bool
 FormatterFocusManager::motionEventReceived (int x, int y, arg_unused (int z))

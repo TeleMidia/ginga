@@ -20,6 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
+#include "IKeyInputEventListener.h"
 #include "IContinuousMediaProvider.h"
 #include "IDiscreteMediaProvider.h"
 #include "SDLSurface.h"
@@ -27,7 +28,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-class DisplayDebug{
+class DisplayDebug: public  IKeyInputEventListener{
    
    private:
    int width;
@@ -45,7 +46,7 @@ class DisplayDebug{
    DisplayDebug (int width, int height);
    ~DisplayDebug ();
 
-   void toggle(void);
+   void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
    void update(gdouble elapsedTime);
    void draw(SDL_Renderer* renderer, guint32 elapsedTime);
 

@@ -19,6 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "DisplayDebug.h"
 #include "SDLSurface.h"
 
+#include "Display.h"
+
 #include <cairo.h>
 #include <pango/pangocairo.h>
 
@@ -44,6 +46,7 @@ DisplayDebug::DisplayDebug(int width, int height){
     rect.x = this->width - rect.w;  
     rect.y = this->height - rect.h; 
 
+    Ginga_Display->registerKeyEventListener(this);
 }
 
 DisplayDebug::~DisplayDebug(){
@@ -51,10 +54,12 @@ DisplayDebug::~DisplayDebug(){
        SDL_DestroyTexture(this->texture);;
 }
 
-void 
-DisplayDebug:: toggle(){
-    this->isActive = !this->isActive;
-    this->accTime=1.0; //force texture updates
+void
+DisplayDebug::keyInputCallback (SDL_EventType evtType, SDL_Keycode key){     
+    if(evtType == SDL_KEYDOWN &&  key == SDLK_d){
+        this->isActive = !this->isActive;
+        this->accTime=1.0;
+    }
 }
 
 void
