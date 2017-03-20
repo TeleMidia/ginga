@@ -1216,7 +1216,7 @@ FormatterFocusManager::changeSettingState (const string &name, const string &act
 void 
 FormatterFocusManager::keyInputCallback (SDL_EventType evtType, SDL_Keycode key){
   
-  if (key == SDLK_ESCAPE)
+  if (key == SDLK_ESCAPE || evtType == SDL_KEYDOWN)
         return ;
 
 

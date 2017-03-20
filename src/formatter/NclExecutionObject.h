@@ -221,7 +221,6 @@ public:
   void setHandling (bool isHandling);
   void setHandler (bool isHandler);
   bool selectionEvent (SDL_Keycode key, double currentTime);
- // set<int> *getInputEvents ();
 
 protected:
   bool lock ();
