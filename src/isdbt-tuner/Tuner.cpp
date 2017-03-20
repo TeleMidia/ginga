@@ -72,7 +72,7 @@ Tuner::keyInputCallback (SDL_EventType evtType, SDL_Keycode key){
 
   map<int, NetworkInterface *>::iterator i;
 
-//  clog << "Tuner::userEventReceived" << endl;
+//  clog << "Tuner::keyEventReceived" << endl;
   if (key == SDLK_ESCAPE)
     {
       // CLOSE ALL TUNER INTERFACE/PROVIDER

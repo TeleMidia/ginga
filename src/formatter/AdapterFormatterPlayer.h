@@ -24,6 +24,7 @@ using namespace ::ginga::util;
 #include "system/SystemCompat.h"
 using namespace ::ginga::system;
 
+#include "mb/IKeyInputEventListener.h"
 #include "mb/SDLSurface.h"
 using namespace ::ginga::mb;
 
@@ -57,11 +58,11 @@ GINGA_FORMATTER_BEGIN
 
 class AdapterFormatterPlayer : public IAdapterPlayer,
                                public IPlayerListener,
-                               public INclAttributeValueMaintainer
+                               public INclAttributeValueMaintainer,
+                               IKeyInputEventListener
 {
 protected:
   static double eventTS;
- // InputManager *im;
 
   void *manager;
   NominalEventMonitor *anchorMonitor;
@@ -152,7 +153,7 @@ public:
                              short type = 10,
                              const string &value = "");
 
-//  bool userEventReceived (InputEvent *ev);
+  void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
 
 private:
   void setVisible (bool visible);

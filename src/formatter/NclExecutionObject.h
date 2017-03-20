@@ -220,8 +220,8 @@ public:
 
   void setHandling (bool isHandling);
   void setHandler (bool isHandler);
-  bool selectionEvent (int keyCode, double currentTime);
-  set<int> *getInputEvents ();
+  bool selectionEvent (SDL_Keycode key, double currentTime);
+ // set<int> *getInputEvents ();
 
 protected:
   bool lock ();

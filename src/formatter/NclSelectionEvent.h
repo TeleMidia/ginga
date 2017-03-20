@@ -31,14 +31,14 @@ GINGA_FORMATTER_BEGIN
 class NclSelectionEvent : public NclAnchorEvent
 {
 private:
-  int selectionCode;
+  string selectionCode;
 
 public:
   NclSelectionEvent (const string &id, void *executionObject,
                      ContentAnchor *anchor);
   virtual ~NclSelectionEvent ();
   bool start ();
-  int getSelectionCode ();
+  const string getSelectionCode ();
   void setSelectionCode (const string &codeStr);
 };
 

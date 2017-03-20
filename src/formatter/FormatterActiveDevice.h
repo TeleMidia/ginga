@@ -95,7 +95,6 @@ protected:
   };
   bool receiveRemoteContent (int remoteDevClass, const string &contentUri);
   bool receiveRemoteContentInfo (const string &contentId, const string &contentUri);
-  bool userEventReceived (InputEvent *ev);
   bool openDocument (const string &contentUri);
   INCLPlayer *createNCLPlayer ();
   NclPlayerData *createNclPlayerData ();

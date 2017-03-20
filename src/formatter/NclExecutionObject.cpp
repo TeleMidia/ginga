@@ -20,6 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclCompositeExecutionObject.h"
 #include "NclApplicationExecutionObject.h"
 
+#include "mb/IKeyInputEventListener.h"
+
 #include "NclSwitchEvent.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
@@ -1763,10 +1765,12 @@ NclExecutionObject::setHandler (bool isHandler)
   this->isHandler = isHandler;
 }
 
+//dragon head
 bool
-NclExecutionObject::selectionEvent (int keyCode, double currentTime)
-{
-  int selCode;
+NclExecutionObject::selectionEvent (SDL_Keycode key, double currentTime)
+{ 
+  string selCode;
+  string keyString = convertSdl2GingaKey(key); 
   NclSelectionEvent *selectionEvent;
   IntervalAnchor *intervalAnchor;
   NclFormatterEvent *expectedEvent;
@@ -1780,7 +1784,7 @@ NclExecutionObject::selectionEvent (int keyCode, double currentTime)
   double intervalBegin;
   double intervalEnd;
 
-  if ((!isHandling && !isHandler) || sleeping || paused)
+   if ((!isHandling && !isHandler) || sleeping || paused)
     {
       clog << "NclExecutionObject::selectionEvent Can't receive event on '";
       clog << getId () << "': isHandling = '" << isHandling << "' ";
@@ -1808,9 +1812,9 @@ NclExecutionObject::selectionEvent (int keyCode, double currentTime)
 
       clog << "NclExecutionObject::selectionEvent(" << id << ") event '";
       clog << selectionEvent->getId () << "' has selCode = '" << selCode;
-      clog << "' (looking for key code '" << keyCode << "'" << endl;
-
-      if (selCode == keyCode)
+      clog << "' (looking for key code '" << keyString << "'" << endl;
+     
+     if ( !keyString.compare(selCode) )
         {
           if (selectionEvent->getAnchor ()->instanceOf ("LambdaAnchor"))
             {
@@ -1878,7 +1882,7 @@ NclExecutionObject::selectionEvent (int keyCode, double currentTime)
                   clog << anchorId << "'" << endl;
                 }
             }
-        }
+        } 
       ++i;
     }
 
@@ -1908,81 +1912,9 @@ NclExecutionObject::selectionEvent (int keyCode, double currentTime)
   delete selectedEvents;
   selectedEvents = NULL;
 
-  return selected;
+  return selected; 
 }
 
-set<int> *
-NclExecutionObject::getInputEvents ()
-{
-  set<NclSelectionEvent *>::iterator i;
-  set<int> *evs;
-  NclSelectionEvent *ev;
-  int keyCode;
-
-  evs = new set<int>;
-  i = selectionEvents.begin (); /*
-  while (i != selectionEvents.end ())
-    {
-      ev = (*i);
-      keyCode = ev->getSelectionCode ();
-      evs->insert (keyCode);
-      if (keyCode == Key::KEY_RED)
-        {
-          evs->insert (Key::KEY_F1);
-        }
-      else if (keyCode == Key::KEY_GREEN)
-        {
-          evs->insert (Key::KEY_F2);
-        }
-      else if (keyCode == Key::KEY_YELLOW)
-        {
-          evs->insert (Key::KEY_F3);
-        }
-      else if (keyCode == Key::KEY_BLUE)
-        {
-          evs->insert (Key::KEY_F4);
-        }
-      else if (keyCode == Key::KEY_MENU)
-        {
-          evs->insert (Key::KEY_F5);
-        }
-      else if (keyCode == Key::KEY_INFO)
-        {
-          evs->insert (Key::KEY_F6);
-        }
-      else if (keyCode == Key::KEY_EPG)
-        {
-          evs->insert (Key::KEY_F7);
-        }
-      else if (keyCode == Key::KEY_VOLUME_UP)
-        {
-          evs->insert (Key::KEY_PLUS_SIGN);
-        }
-      else if (keyCode == Key::KEY_VOLUME_DOWN)
-        {
-          evs->insert (Key::KEY_MINUS_SIGN);
-        }
-      else if (keyCode == Key::KEY_CHANNEL_UP)
-        {
-          evs->insert (Key::KEY_PAGE_UP);
-        }
-      else if (keyCode == Key::KEY_CHANNEL_DOWN)
-        {
-          evs->insert (Key::KEY_PAGE_DOWN);
-        }
-      else if (keyCode == Key::KEY_BACK)
-        {
-          evs->insert (Key::KEY_BACKSPACE);
-        }
-      else if (keyCode == Key::KEY_EXIT)
-        {
-          evs->insert (Key::KEY_ESCAPE);
-        }
-      ++i;
-    } */
-
-  return evs;
-}
 
 bool
 NclExecutionObject::lock ()

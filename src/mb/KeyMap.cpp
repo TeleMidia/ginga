@@ -124,11 +124,11 @@ static map<SDL_Keycode, string> _keyMap
     //    { "RECORD", KEY_RECORD }, //inexist
         { SDLK_PAUSE, "PAUSE" } };
 
-const char * convertSdl2GingaKey(SDL_Keycode key){
+string convertSdl2GingaKey(SDL_Keycode key){
       map<SDL_Keycode, string>::iterator it;
       it = _keyMap.find(key);
       if (it != _keyMap.end()) 
-           return (it->second).c_str();
+           return (it->second);
       else 
            return "NO_CODE";     
 }
