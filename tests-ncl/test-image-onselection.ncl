@@ -29,10 +29,10 @@
   </head>
   <body>
     <port id='start' component='text1'/>
-    <media id='text1' src='samples/text.txt' descriptor='desc'>
+    <media id='text1' src='samples/gnu.png' descriptor='desc'>
       <property name="width"/>
     </media>
-    <media id='text2' src='samples/text.txt' descriptor='desc'>
+    <media id='text2' src='samples/gnu.png' descriptor='desc'>
       <property name="color" value="#FFFF00" />
     </media>
     

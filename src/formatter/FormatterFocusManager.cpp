@@ -1234,15 +1234,15 @@ FormatterFocusManager::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
 
   Thread::mutexLock (&mutexTable);
 
-  if (xruntime_ms () - focusHandlerTS < 300
-      && key != SDLK_BACKSPACE)
-    {
-      Thread::mutexUnlock (&mutexTable);
-     // return true;
-     return;
-    }
+  // if (xruntime_ms () - focusHandlerTS < 300
+  //     && key != SDLK_BACKSPACE)
+  //   {
+  //     Thread::mutexUnlock (&mutexTable);
+  //    // return true;
+  //    return;
+  //   }
 
-  focusHandlerTS = xruntime_ms ();
+  // focusHandlerTS = xruntime_ms ();
 
   i = focusTable->find (currentFocus);
   if (i == focusTable->end ())
