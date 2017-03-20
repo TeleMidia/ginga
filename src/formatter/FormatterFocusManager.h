@@ -40,7 +40,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterMultiDevice.h"
 
 #include "mb/IMotionEventListener.h"
-#include "mb/IkeyInputEventListener.h"
+#include "mb/IKeyInputEventListener.h"
 
 GINGA_FORMATTER_BEGIN
 
