@@ -926,4 +926,9 @@ Display::registerKeyEventListener(IKeyInputEventListener* obj){
    keyEventListeners.insert(obj);
 }
 
+void
+Display::unregisterKeyEventListener(IKeyInputEventListener* obj){
+   keyEventListeners.erase (obj);
+}
+
 GINGA_MB_END

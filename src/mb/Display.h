@@ -90,6 +90,7 @@ public:
   void renderLoop (void);
 
   void registerKeyEventListener(IKeyInputEventListener*);
+  void unregisterKeyEventListener(IKeyInputEventListener*);
 
 private:
   void notifyKeyEventListeners(SDL_EventType, SDL_Keycode);

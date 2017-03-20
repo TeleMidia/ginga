@@ -54,13 +54,8 @@ AdapterFormatterPlayer::AdapterFormatterPlayer ()
 AdapterFormatterPlayer::~AdapterFormatterPlayer ()
 {
   int objDevice;
-   /*
-  if (im != NULL)
-    {
-      im->removeInputEventListener (this);
-      im = NULL;
-    } 
-    */
+  
+  Ginga_Display->unregisterKeyEventListener(this);
 
   lockObject ();
   if (anchorMonitor != NULL)
