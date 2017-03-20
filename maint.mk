@@ -231,7 +231,7 @@ perl_fetch_remote_utilm4=\
 # Fetches remote files.
 .PHONY: fetch-remote
 fetch-remote:
-	@case "$(REMOTE_FILES)" in \
+	@case " $(REMOTE_FILES) " in \
 	*\ $(ME)\ *)\
 	  $(V_P) && echo "chmod +w $(ME)";\
 	  chmod +w $(ME);\
@@ -241,7 +241,9 @@ fetch-remote:
 	  $(V_P) && echo "rm -f $(REMOTE_FILES)";\
 	  rm -f $(REMOTE_FILES);;\
 	esac
-	@$(PERL) -0777 -wne '$(perl_fetch_remote_utilm4)' $(configure_ac)
+	@if test -f $(configure_ac); then\
+	  $(PERL) -0777 -wne '$(perl_fetch_remote_utilm4)' $(configure_ac);\
+	fi;
 	@$(FETCH) -dir=build-aux '$(gnulib)/build-aux/useless-if-before-free'
 	$(V_at)$(MAKE) -f $(ME) fetch-remote-local
 	@for file in $(REMOTE_SCRIPTS); do\
@@ -294,7 +296,7 @@ gcc-extra-warnings:
 	  exit 0;\
 	fi;\
 	for w in `$(list_gcc_extra_warnings)`; do\
-	  $(GREP) -q -e "$$w" configure.ac $(build_aux)/manywarnings.m4\
+	  $(GREP) -q -e "$$w" $(configure_ac) $(build_aux)/manywarnings.m4\
 	  || echo "$$w";\
 	done
 
