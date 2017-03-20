@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-const char* convertSdl2GingaKey(SDL_Keycode);
+string convertSdl2GingaKey(SDL_Keycode);
 
 class IKeyInputEventListener
 {

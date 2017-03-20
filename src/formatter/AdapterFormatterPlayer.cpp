@@ -97,8 +97,7 @@ void
 AdapterFormatterPlayer::setAdapterManager (void *manager)
 {
   this->manager = manager;
- //
- // im = Ginga_Display->getInputManager ();
+  Ginga_Display->registerKeyEventListener(this);
 }
 
 bool
@@ -1953,41 +1952,34 @@ AdapterFormatterPlayer::updateStatus (short code,
       break;
     }
 }
-/*
-bool
-AdapterFormatterPlayer::userEventReceived (InputEvent *ev)
-{
-  int keyCode;
 
-  keyCode = ev->getKeyCode ();
-
-  if (keyCode == Key::KEY_QUIT)
-    {
-    //  this->im = NULL;
-      return true;
-    }
-
-  if (xruntime_ms () - eventTS < 300)
-    {
-      return true;
-    }
+//dragon head
+void
+AdapterFormatterPlayer::keyInputCallback (SDL_EventType evtType, SDL_Keycode key){     
+    
+   if(evtType == SDL_KEYDOWN)
+      return; 
+  /*
+  if (xruntime_ms () - eventTS < 300){
+      return;
+  } */
 
   if (object != NULL && player != NULL)
     {
-      clog << "AdapterFormatterPlayer::userEventReceived for '";
+      clog << "AdapterFormatterPlayer::keyEventReceived for '";
       clog << mrl << "' player visibility = '" << player->isVisible ();
-      clog << "' event key code = '" << ev->getKeyCode ();
+      clog << "' event key code = '" << key ;
       clog << "'";
       clog << endl;
       if (player->isVisible ())
         {
           eventTS = xruntime_ms ();
-          object->selectionEvent (keyCode, player->getMediaTime () * 1000);
+          object->selectionEvent (key, player->getMediaTime () * 1000);
         }
     }
-  return true;
+
 }
-*/
+
 void
 AdapterFormatterPlayer::setVisible (bool visible)
 {

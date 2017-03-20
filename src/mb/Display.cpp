@@ -178,10 +178,6 @@ Display::renderLoop ()
             default:
               break;
             }
-
-     //     InputManager *im = this->getInputManager ();
-      //    EventBuffer *buf = im->getEventBuffer ();
-      //    buf->feed (evt, false, false);
         }
 
       this->lock ();            //  update providers
@@ -288,10 +284,6 @@ Display::Display (int width, int height, bool fullscreen, gdouble fps)
   this->textures = NULL;
   this->windows = NULL;
   this->providers = NULL;
-
- // this->im = new InputManager ();
- // g_assert_nonnull (this->im);
- // this->im->setAxisBoundaries (this->width, this->height, 0);
 
   checkMutexInit ();            // FIXME
 
@@ -920,6 +912,10 @@ Display::releaseUnderlyingSurface (SDL_Surface *uSur)
 
 void 
 Display::notifyKeyEventListeners(SDL_EventType evtType, SDL_Keycode key){
+   if(key == SDLK_ESCAPE){
+     this->quit();
+     return;
+   }
    set<IKeyInputEventListener*>::iterator it;
    for (it=keyEventListeners.begin(); it!=keyEventListeners.end(); ++it)
           (*it)->keyInputCallback(evtType, key);
@@ -927,7 +923,6 @@ Display::notifyKeyEventListeners(SDL_EventType evtType, SDL_Keycode key){
 
 void 
 Display::registerKeyEventListener(IKeyInputEventListener* obj){
-   g_debug("UM REGISTRO 111");
    keyEventListeners.insert(obj);
 }
 

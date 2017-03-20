@@ -353,7 +353,7 @@ LuaPlayer::keyInputCallback (SDL_EventType evtType, SDL_Keycode key){
      if(evtType == SDL_KEYDOWN)
             evt="press";
      
-     evt_key_send (this->nw, evt.c_str(), convertSdl2GingaKey(key));
+     evt_key_send (this->nw, evt.c_str(), convertSdl2GingaKey(key).c_str() );
   }
 
   tail:

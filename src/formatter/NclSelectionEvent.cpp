@@ -24,13 +24,14 @@ NclSelectionEvent::NclSelectionEvent (const string &id, void *executionObject,
                                       ContentAnchor *anchor)
     : NclAnchorEvent (id, executionObject, anchor)
 {
- // selectionCode = Key::KEY_NULL;
+  selectionCode.assign("NO_CODE");
+  
   typeSet.insert ("NclSelectionEvent");
 }
 
 NclSelectionEvent::~NclSelectionEvent () { removeInstance (this); }
 
-int
+const string
 NclSelectionEvent::getSelectionCode ()
 {
   return selectionCode;
@@ -48,7 +49,7 @@ NclSelectionEvent::start ()
 void
 NclSelectionEvent::setSelectionCode (const string &codeStr)
 {
- // selectionCode = Key::getCode (codeStr);
+   selectionCode = codeStr;
 }
 
 GINGA_FORMATTER_END

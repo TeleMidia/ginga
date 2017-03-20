@@ -178,7 +178,6 @@ protected:
                      const string &parameter,
                      short type,
                      const string &value);
- // virtual bool userEventReceived (InputEvent *ev) = 0;
 };
 
 GINGA_FORMATTER_END

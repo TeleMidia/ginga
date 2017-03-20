@@ -44,7 +44,7 @@ FormatterFocusManager::FormatterFocusManager (
 {
   string strValue;
 
- // im = Ginga_Display->getInputManager ();
+  Ginga_Display->registerKeyEventListener(this);
   focusTable = new map<string, set<NclExecutionObject *> *>;
   currentFocus = "";
   objectToSelect = "";
@@ -1249,7 +1249,7 @@ FormatterFocusManager::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
     {
       if (currentFocus != "")
         {
-          clog << "FormatterFocusManager::userEventReceived ";
+          clog << "FormatterFocusManager::keyEventReceived ";
           clog << "currentFocus not found which is '" << currentFocus;
           clog << "'" << endl;
         }
