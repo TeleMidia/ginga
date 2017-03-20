@@ -7,18 +7,19 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_INCLUDE_CURRENTDIR ON)
 
-find_package(XercesC 2.7 REQUIRED)
-find_package(FFmpeg REQUIRED)
+find_package(GLIB 2.32 REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
-find_package(SDL2_ttf REQUIRED)
 find_package(CURL REQUIRED)
-find_package(GLIB 2.32 REQUIRED)
+
+find_package(XercesC 2.7 REQUIRED)
 
 find_package(Cairo REQUIRED)
+find_package(Pango REQUIRED)
 find_package(GDKPixBuf REQUIRED)
 find_package(RSVG REQUIRED)
-find_package(LibZip REQUIRED)
+find_package(FFmpeg REQUIRED)
+find_package(GStreamer REQUIRED)
 
 find_package(LinuxDVB)
 
@@ -46,7 +47,7 @@ ExternalProject_Add(nclua_build
   GIT_TAG master
   UPDATE_COMMAND ""
 
-  CONFIGURE_COMMAND <SOURCE_DIR>/bootstrap && <SOURCE_DIR>/configure --prefix=<INSTALL_DIR>
+  CONFIGURE_COMMAND <SOURCE_DIR>/bootstrap && <SOURCE_DIR>/configure --prefix=<INSTALL_DIR> --without-nclua-gst
   BUILD_COMMAND make
   INSTALL_COMMAND make install
 )
@@ -72,10 +73,10 @@ add_executable(ginga
   ../src/formatter/AdapterMirrorPlayer.cpp
   ../src/formatter/AdapterNCLPlayer.cpp
   ../src/formatter/AdapterNewVideoPlayer.cpp
-  ../src/formatter/AdapterPlainTxtPlayer.cpp
+  ../src/formatter/AdapterSvgPlayer.cpp
+  ../src/formatter/AdapterTextPlayer.cpp
   ../src/formatter/AdapterPlayerManager.cpp
   ../src/formatter/AdapterProgramAVPlayer.cpp
-  ../src/formatter/AdapterSubtitlePlayer.cpp
   ../src/formatter/AnimationController.cpp
   ../src/formatter/FormatterBaseDevice.cpp
   ../src/formatter/FormatterConverter.cpp
@@ -134,11 +135,8 @@ add_executable(ginga
 
   ../src/mb/AudioProvider.cpp
   ../src/mb/Display.cpp
-  ../src/mb/EventBuffer.cpp
-  ../src/mb/FontProvider.cpp
-  ../src/mb/InputEvent.cpp
-  ../src/mb/InputManager.cpp
-  ../src/mb/Key.cpp
+  ../src/mb/DisplayDebug.cpp
+  ../src/mb/KeyMap.cpp
   ../src/mb/SDL2ffmpeg.cpp
   ../src/mb/SDLConvert.cpp
   ../src/mb/SDLSurface.cpp
@@ -246,12 +244,11 @@ add_executable(ginga
   ../src/player/ImagePlayer.cpp
   ../src/player/LuaPlayer.cpp
   ../src/player/NewVideoPlayer.cpp
-  ../src/player/PlainTxtPlayer.cpp
+  ../src/player/SvgPlayer.cpp
+  ../src/player/TextPlayer.cpp
   ../src/player/Player.cpp
   ../src/player/ProgramAV.cpp
   ../src/player/ShowButton.cpp
-  ../src/player/SrtPlayer.cpp
-  ../src/player/TextPlayer.cpp
 
   ../src/system/GingaLocatorFactory.cpp
   ../src/system/PracticalSocket.cpp
@@ -260,7 +257,6 @@ add_executable(ginga
   ../src/system/Thread.cpp
 
   ../src/util/Base64.cpp
-  ../src/util/Color.cpp
   ../src/util/functions.cpp
 
 #  WITH_ISDBT
@@ -339,22 +335,22 @@ add_executable(ginga
   ../src/isdbt-tuner/Tuner.cpp
 
 #  WITH_MULTIDEVICE
-  ../src/formatter/FormatterActiveDevice.cpp
-  ../src/multidev/ActiveDeviceDomain.cpp
-  ../src/multidev/ActiveDeviceService.cpp
-  ../src/multidev/BaseDeviceDomain.cpp
-  ../src/multidev/BaseDeviceService.cpp
-  ../src/multidev/BroadcastDualSocketService.cpp
-  ../src/multidev/BroadcastSocketService.cpp
-  ../src/multidev/DeviceDomain.cpp
-  ../src/multidev/DeviceService.cpp
-  ../src/multidev/MulticastSocketService.cpp
-  ../src/multidev/NetworkUtil.cpp
-  ../src/multidev/RemoteDevice.cpp
-  ../src/multidev/RemoteDeviceManager.cpp
-  ../src/multidev/RemoteEventService.cpp
-  ../src/multidev/TcpClientConnection.cpp
-  ../src/multidev/TcpSocketService.cpp
+  #../src/formatter/FormatterActiveDevice.cpp
+  #../src/multidev/ActiveDeviceDomain.cpp
+  #../src/multidev/ActiveDeviceService.cpp
+  #../src/multidev/BaseDeviceDomain.cpp
+  #../src/multidev/BaseDeviceService.cpp
+  #../src/multidev/BroadcastDualSocketService.cpp
+  #../src/multidev/BroadcastSocketService.cpp
+  #../src/multidev/DeviceDomain.cpp
+  #../src/multidev/DeviceService.cpp
+  #../src/multidev/MulticastSocketService.cpp
+  #../src/multidev/NetworkUtil.cpp
+  #../src/multidev/RemoteDevice.cpp
+  #../src/multidev/RemoteDeviceManager.cpp
+  #../src/multidev/RemoteEventService.cpp
+  #../src/multidev/TcpClientConnection.cpp
+  #../src/multidev/TcpSocketService.cpp
 
 # WITH_LINUXDVB
   ../src/isdbt-tuner/ISDBTFrontend.cpp
@@ -378,8 +374,10 @@ target_include_directories(ginga PRIVATE
   ${SDL2_INCLUDE_DIR}
 
   ${CAIRO_INCLUDE_DIRS}
+  ${PANGO_INCLUDE_DIRS}
   ${RSVG_INCLUDE_DIRS}
-  ${LIBZIP_INCLUDE_DIRS}
+  ${GSTREAMER_INCLUDE_DIRS}
+  ${GSTREAMER_BASE_INCLUDE_DIRS}
 
   ${LinuxDVB_INCLUDE_DIRS}
 
@@ -388,7 +386,6 @@ target_include_directories(ginga PRIVATE
 
 target_link_libraries(ginga PRIVATE
   pthread
-  jpeg
 
   XercesC::XercesC
   expat
@@ -404,10 +401,13 @@ target_link_libraries(ginga PRIVATE
   
   ${CURL_LIBRARIES}
   ${GLIB_LIBRARIES}
+  ${GSTREAMER_LIBRARIES}
+  ${GSTREAMER_APP_LIBRARIES}
+  ${GSTREAMER_VIDEO_LIBRARIES}
 
   ${CAIRO_LIBRARIES}
+  ${PANGO_LIBRARIES}
   ${RSVG_LIBRARIES}
-  ${LIBZIP_LIBRARY}
 
   nclua
 )
