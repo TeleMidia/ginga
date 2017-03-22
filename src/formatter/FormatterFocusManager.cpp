@@ -543,8 +543,8 @@ FormatterFocusManager::setKeyMaster (const string &mediaId)
       selectedObject);
 
   enterSelection (player);
-//  nextObject->selectionEvent (Key::KEY_NULL,
-//                              player->getMediaTime () * 1000);
+  nextObject->selectionEvent (0,
+                              player->getMediaTime () * 1000);
 
   Thread::mutexUnlock (&mutexFocus);
 }
@@ -954,8 +954,8 @@ FormatterFocusManager::keyCodeOk (NclExecutionObject *currentObject)
     {
       clog << "FormatterFocusManager::keyCodeOk ";
       clog << "selecting '" << selectedObject->getId () << "'" << endl;
-    //  selectedObject->selectionEvent (Key::KEY_NULL,
-    //                                  player->getMediaTime () * 1000);
+      selectedObject->selectionEvent (0,
+                                      player->getMediaTime () * 1000);
     }
 
   changeSettingState ("service.currentKeyMaster", "stop");
