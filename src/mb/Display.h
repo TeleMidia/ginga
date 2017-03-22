@@ -91,6 +91,7 @@ public:
 
   void registerKeyEventListener(IKeyInputEventListener*);
   void unregisterKeyEventListener(IKeyInputEventListener*);
+  void postKeyInputEventListener(SDL_Keycode);       //gambi used by formatterFocusManager listener
 
 private:
   void notifyKeyEventListeners(SDL_EventType, SDL_Keycode);

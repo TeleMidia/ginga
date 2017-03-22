@@ -931,4 +931,9 @@ Display::unregisterKeyEventListener(IKeyInputEventListener* obj){
    keyEventListeners.erase (obj);
 }
 
+void
+Display::postKeyInputEventListener(SDL_Keycode key){
+   notifyKeyEventListeners(SDL_KEYUP, key);
+}
+
 GINGA_MB_END

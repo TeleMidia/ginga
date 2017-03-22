@@ -435,10 +435,7 @@ FormatterFocusManager::tapObject (void *executionObject)
             {
               if (!keyCodeOk (object))
                 {
-                /*  if (im != NULL)
-                    {
-                      im->postInputEvent (Key::KEY_BACK);
-                    } */
+                   Ginga_Display->postKeyInputEventListener(SDLK_BACKSPACE);
                 }
             }
         }
@@ -1296,8 +1293,8 @@ FormatterFocusManager::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
     {
       if (key == SDLK_BACKSPACE)
         {
-         // bool canItBack = keyCodeBack ();
-         /// return canItBack;
+          bool canItBack = keyCodeBack ();
+         // return canItBack;
            return;
         }
     }
