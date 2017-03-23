@@ -171,6 +171,9 @@ Display::renderLoop ()
                 this->notifyKeyEventListeners(SDL_KEYUP, evt.key.keysym.sym);
                 goto quit;
                 break;
+            case SDL_MOUSEBUTTONUP:
+                this->notifyMouseEventListeners(SDL_MOUSEBUTTONUP);
+                break;    
               // fall-through
             case SDL_QUIT:
               this->quit ();
@@ -921,14 +924,33 @@ Display::notifyKeyEventListeners(SDL_EventType evtType, SDL_Keycode key){
           (*it)->keyInputCallback(evtType, key);
 }
 
+void
+Display::notifyMouseEventListeners(SDL_EventType evtType){
+    int x, y;
+    SDL_GetMouseState(&x, &y);
+    set<IMouseEventListener*>::iterator it;
+   for (it=mouseEventListeners.begin(); it!=mouseEventListeners.end(); ++it)
+          (*it)->mouseInputCallback (evtType, x, y);
+}
+
 void 
 Display::registerKeyEventListener(IKeyInputEventListener* obj){
    keyEventListeners.insert(obj);
 }
 
+void 
+Display::registerMouseEventListener(IMouseEventListener* obj){
+   mouseEventListeners.insert(obj);
+}
+
 void
 Display::unregisterKeyEventListener(IKeyInputEventListener* obj){
    keyEventListeners.erase (obj);
+}
+
+void 
+Display::unregisterMouseEventListener(IMouseEventListener* obj){
+   mouseEventListeners.erase (obj);
 }
 
 void

@@ -15,18 +15,18 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef IMOTIONEVENTLISTENER_H_
-#define IMOTIONEVENTLISTENER_H_
+#ifndef IMOUSEEVENTLISTENER_H_
+#define IMOUSEEVENTLISTENER_H_
 
 GINGA_MB_BEGIN
 
-class IMotionEventListener
+class IMouseEventListener
 {
 public:
-  virtual ~IMotionEventListener (){};
-  virtual bool motionEventReceived (int x, int y, int z) = 0;
+  virtual ~IMouseEventListener (){};
+  virtual void mouseInputCallback (SDL_EventType, int, int) = 0;
 };
 
 GINGA_MB_END
 
-#endif /*IMOTIONEVENTLISTENER_H_*/
+#endif /*IMOUSEEVENTLISTENER_H_*/
