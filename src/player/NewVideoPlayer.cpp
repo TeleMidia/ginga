@@ -153,7 +153,7 @@ NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   
 //  if( gst_clock_get_time ( gst_element_get_clock (playbin) ) > 3474088000) //Apagar
 //    return false;
-//    pause ();
+//    stop ();
   
   GstVideoFrame v_frame;
   GstVideoInfo v_info;
@@ -176,6 +176,9 @@ NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
                                 SDL_TEXTUREACCESS_TARGET, 
                                 surface->getParentWindow ()->getRect().w,
                                 surface->getParentWindow ()->getRect().h);
+      g_assert_nonnull (texture);
+      
+      this->condDisplayJobSignal ();
     }
 
 
@@ -304,6 +307,8 @@ NewVideoPlayer::setScope (arg_unused(const string &scope), arg_unused(short type
 bool
 NewVideoPlayer::play ()
 {
+  Player::play();
+
   ret = gst_element_set_state (playbin, GST_STATE_PLAYING);
   g_assert (ret != GST_STATE_CHANGE_FAILURE);
   
@@ -312,7 +317,7 @@ NewVideoPlayer::play ()
   if ( retWait == GST_STATE_CHANGE_SUCCESS ){
     Ginga_Display->addJob(displayJobCallbackWrapper, this);
     this->condDisplayJobWait (); 
-    
+    Thread::startThread ();
     return true;
   }
 
@@ -337,7 +342,17 @@ NewVideoPlayer::pause ()
 void
 NewVideoPlayer::stop ()
 {
-  TRACE ();
+  ret = gst_element_set_state (playbin, GST_STATE_NULL);
+  g_assert (ret != GST_STATE_CHANGE_FAILURE);
+
+  GstStateChangeReturn retWait = gst_element_get_state (playbin, NULL, NULL, GST_CLOCK_TIME_NONE);
+
+  if ( retWait != GST_STATE_CHANGE_SUCCESS )
+  {
+    g_print ("failed to stop the file\n");
+  } 
+
+  Player::stop();
 }
 
 void
@@ -421,16 +436,18 @@ NewVideoPlayer::setAVPid (arg_unused(int aPid), arg_unused(int vPid))
 	TRACE ();
 }*/
 
-//bool
-//NewVideoPlayer::isRunning ()
-//{
-//	TRACE ();
-//	return true;
-//}
+bool
+NewVideoPlayer::isRunning ()
+{
+  return this->isPlaying ();
+}
 
 void
 NewVideoPlayer::run ()
 {
+  while (1){
+
+  }
 }
 
 GINGA_PLAYER_END
