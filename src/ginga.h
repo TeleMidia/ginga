@@ -57,6 +57,14 @@ GINGA_BEGIN_DECLS
 
 #include <config.h>
 
+// TODO: This should be in config.h. Fix
+// this later.
+//
+// Uncoment the line bellow to 
+// build Ginga with Chromium (CEF) 
+// based HTML Player.
+// #define WITH_CEF
+
 // C library.
 #include <assert.h>
 #include <errno.h>
