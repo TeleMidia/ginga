@@ -20,6 +20,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "lssm/PresentationEngineManager.h"
 using namespace ::ginga::lssm;
 
+#if defined WITH_CEF 
+#include "cef_app.h"
+#endif
+
 /* Options: */
 #define OPTION_LINE "FILE"
 #define OPTION_DESC                             \
@@ -106,12 +110,68 @@ _error (gboolean try_help, const gchar *format, ...)
 int
 main (int argc, char **argv)
 {
+  string file;
+  PresentationEngineManager *pem;
+
+#if defined WITH_CEF 
+  
+  CefMainArgs args(argc, argv);
+  CefSettings settings;
+  
+  {
+    int result = CefExecuteProcess(args, nullptr, nullptr);
+    
+    if (result >= 0)
+    {
+      return result;
+    }
+    else if (result == -1)
+    {
+      // nothing todo  
+    }
+  }
+
+  {
+    bool result = CefInitialize(args, settings, nullptr, nullptr);
+    
+    if (!result)
+    {
+        return -1;
+    }
+  }
+
+  file = string(argv[0]);
+
+  char c = ' ';
+  string buffer = "";
+
+  vector<string> list;
+  
+  for(auto n:file)
+  {
+    if(n != c) 
+    {
+      buffer += n; 
+    }
+    else if(n == c && buffer != "") 
+    { 
+      list.push_back(buffer); 
+      buffer = ""; 
+    }
+  }
+
+  if(buffer != "") 
+  {
+    list.push_back(buffer);
+  }
+
+  file = list[1];
+
+#else
+
   GOptionContext *ctx;
   gboolean status;
   GError *error = NULL;
-
-  string file;
-  PresentationEngineManager *pem;
 
   g_set_prgname ("ginga");
   ctx = g_option_context_new (OPTION_LINE);
@@ -120,6 +180,7 @@ main (int argc, char **argv)
   g_option_context_add_main_entries (ctx, options, NULL);
   status = g_option_context_parse (ctx, &argc, &argv, &error);
   g_option_context_free (ctx);
+ 
   if (unlikely (!status))
     {
       g_assert (error != NULL);
@@ -133,6 +194,10 @@ main (int argc, char **argv)
       usage_error ("Missing file operand");
       exit (EXIT_FAILURE);
     }
+
+  file = string(argv[1]);
+
+#endif // WITH_CEF 
   
   _Ginga_Display = new ginga::mb::Display (opt_width, opt_height, opt_fullscreen, opt_fps);
   g_assert_nonnull (_Ginga_Display);
@@ -146,7 +211,7 @@ main (int argc, char **argv)
   pem->setInteractivityInfo (true);
   pem->setIsLocalNcl (true, NULL);
 
-  file = string (argv[1]);
+  
   if (unlikely (!pem->openNclFile (file)))
     {
       print_error ("Cannot open NCL file: %s", file.c_str ());
@@ -155,7 +220,7 @@ main (int argc, char **argv)
   
   //start presentation thread
   pem->startPresentation (file, ""); 
-  
+
   //ginga render loop
   _Ginga_Display->renderLoop ();
 
