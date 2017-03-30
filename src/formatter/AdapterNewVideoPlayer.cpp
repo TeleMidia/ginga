@@ -32,6 +32,8 @@ AdapterNewVideoPlayer::createPlayer ()
 {
   player = new NewVideoPlayer (mrl);
   AdapterFormatterPlayer::createPlayer ();
+
+  clog << "AdapaterNewVideoPlayer::createPlayer for '" << mrl << "'" << endl;
 }
 
 bool

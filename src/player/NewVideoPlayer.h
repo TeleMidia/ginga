@@ -86,7 +86,7 @@ public:
   //void release ();
   string getMrl ();
   bool isPlaying ();
-  //bool isRunning ();
+  bool isRunning ();
 
   //void setAVPid (int aPid, int vPid);
 

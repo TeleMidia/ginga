@@ -26,6 +26,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLWindow.h"
 
 #include "IKeyInputEventListener.h"
+#include "IMouseEventListener.h"
 
 GINGA_MB_BEGIN
 
@@ -46,7 +47,8 @@ private:
   bool fullscreen;              // true if full-screen mode is on
   guint32 frameTime;            //frame time rate
 
-  set<IKeyInputEventListener*> keyEventListeners; //
+  set<IKeyInputEventListener*> keyEventListeners;  // key event listeners
+  set<IMouseEventListener*> mouseEventListeners; // mouse event listeners
 
   SDL_Window *screen;           // display screen
   GRecMutex renderer_mutex;     // sync access to renderer
@@ -54,7 +56,6 @@ private:
 
   bool _quit;                   // true if render thread should quit
   
-
   GList *jobs;                  // list of jobs to be executed by renderer
   GList *textures;              // list of textures to be destructed
   GList *windows;               // list of windows to be redrawn
@@ -92,9 +93,13 @@ public:
   void registerKeyEventListener(IKeyInputEventListener*);
   void unregisterKeyEventListener(IKeyInputEventListener*);
   void postKeyInputEventListener(SDL_Keycode);       //gambi used by formatterFocusManager listener
+
+  void registerMouseEventListener(IMouseEventListener*);
+  void unregisterMouseEventListener(IMouseEventListener*);
 
 private:
   void notifyKeyEventListeners(SDL_EventType, SDL_Keycode);
+  void notifyMouseEventListeners(SDL_EventType);
   // Let the clutter begin -------------------------------------------------
 
 private:
