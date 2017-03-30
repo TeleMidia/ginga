@@ -36,6 +36,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 # include "AdapterTextPlayer.h"
 #endif
 
+#if defined WITH_CEF 
+# include "AdapterHTMLPlayer.h"
+#endif
+
 GINGA_FORMATTER_BEGIN
 
 AdapterPlayerManager::AdapterPlayerManager (NclPlayerData *data) : Thread ()
@@ -274,7 +278,13 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
       classname = "AdapterImagePlayer";
       adapter = new AdapterImagePlayer ();
     }
-
+#if defined WITH_CEF 
+  else if (g_str_has_prefix (mime, "text/test-html"))
+    {
+      classname = "AdapterHTMLPlayer";
+      adapter = new AdapterHTMLPlayer();
+    }
+#endif 
 #if defined WITH_PANGO && WITH_PANGO
   else if (streq (mime, "text/plain"))
     {
