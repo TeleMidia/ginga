@@ -39,12 +39,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "FormatterMultiDevice.h"
 
-#include "mb/IMotionEventListener.h"
+#include "mb/IMouseEventListener.h"
 #include "mb/IKeyInputEventListener.h"
 
 GINGA_FORMATTER_BEGIN
 
-class FormatterFocusManager : public IMotionEventListener, IKeyInputEventListener
+class FormatterFocusManager : public IMouseEventListener, IKeyInputEventListener
 {
 private:
 //  InputManager *im;
@@ -122,9 +122,6 @@ private:
   bool keyCodeBack ();
   bool enterSelection (AdapterFormatterPlayer *player);
   void exitSelection (AdapterFormatterPlayer *player);
-  void registerNavigationKeys ();
-  void registerBackKeys ();
-  void unregister ();
 
 public:
   void setDefaultFocusBorderColor (SDL_Color *color);
@@ -138,7 +135,8 @@ private:
 
 public:
   void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
-  bool motionEventReceived (int x, int y, int z);
+  void mouseInputCallback (SDL_EventType evtType, int x, int y);
+//  bool motionEventReceived (int x, int y, int z);
 };
 
 GINGA_FORMATTER_END

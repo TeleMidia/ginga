@@ -45,6 +45,8 @@ FormatterFocusManager::FormatterFocusManager (
   string strValue;
 
   Ginga_Display->registerKeyEventListener(this);
+  Ginga_Display->registerMouseEventListener(this);
+
   focusTable = new map<string, set<NclExecutionObject *> *>;
   currentFocus = "";
   objectToSelect = "";
@@ -118,7 +120,7 @@ FormatterFocusManager::~FormatterFocusManager ()
     {
       if (isHandler && !parentManager->setKeyHandler (true))
         {
-          parentManager->registerNavigationKeys ();
+      
         }
     }
   selectedObject = NULL;
@@ -259,7 +261,7 @@ FormatterFocusManager::setKeyHandler (bool isHandler)
           currentFocus = "";
           setFocus (ix);
         }
-      registerNavigationKeys ();
+      
     }
   else
     {
@@ -276,7 +278,7 @@ FormatterFocusManager::setKeyHandler (bool isHandler)
             }
           recoveryDefaultState (focusedObj);
         }
-      unregister ();
+   
     }
 
   return isHandler;
@@ -786,8 +788,6 @@ FormatterFocusManager::showObject (NclExecutionObject *object)
 
   if (currentFocus == "")
     {
-      registerNavigationKeys ();
-
       paramValue
           = presContext->getPropertyValue ("service.currentKeyMaster");
 
@@ -902,7 +902,6 @@ FormatterFocusManager::hideObject (NclExecutionObject *object)
             {
               Thread::mutexUnlock (&mutexTable);
               currentFocus = "";
-              unregister ();
             }
           else
             {
@@ -926,11 +925,7 @@ FormatterFocusManager::keyCodeOk (NclExecutionObject *currentObject)
                   clog << " parentManager '" << parentManager << "'";
                   clog << " lastHandler '" << lastHandler << "'";
                   clog << endl;
-  */
-  if (parentManager != NULL)
-    {
-      parentManager->unregister ();
-    }
+ */
 
   if (currentObject != selectedObject)
     {
@@ -977,13 +972,8 @@ FormatterFocusManager::keyCodeBack ()
                   clog << " parentManager '" << parentManager << "'";
                   clog << " lastHandler '" << lastHandler << "'";
                   clog << endl;
-  */
-
-  if (parentManager != NULL)
-    {
-      parentManager->registerBackKeys ();
     }
-
+  */
   if (selectedObject == NULL)
     {
       clog << "FormatterFocusManager::keyCodeBack NULL selObject";
@@ -1037,8 +1027,6 @@ FormatterFocusManager::enterSelection (AdapterFormatterPlayer *player)
   bool newHandler = false;
   string keyMaster;
 
-  registerBackKeys ();
-
   if (player != NULL && selectedObject != NULL)
     {
       keyMaster
@@ -1065,63 +1053,14 @@ FormatterFocusManager::exitSelection (AdapterFormatterPlayer *player)
 {
   clog << "FormatterFocusManager::exitSelection(" << this << ")" << endl;
 
-  unregister ();
-
   if (player != NULL)
     {
       player->setKeyHandler (false);
 
       presContext->setPropertyValue ("service.currentKeyMaster", "");
     }
-
-  registerNavigationKeys ();
 }
-
-void
-FormatterFocusManager::registerNavigationKeys ()
-{
-  set<int> *evs;
-
- /* if (im != NULL)
-    {
-      evs = new set<int>;
-      evs->insert (Key::KEY_CURSOR_DOWN);
-      evs->insert (Key::KEY_CURSOR_LEFT);
-      evs->insert (Key::KEY_CURSOR_RIGHT);
-      evs->insert (Key::KEY_CURSOR_UP);
-
-      evs->insert (Key::KEY_ENTER);
-
-      im->addInputEventListener (this, evs);
-      im->addMotionEventListener (this);
-    } */
-}
-
-void
-FormatterFocusManager::registerBackKeys ()
-{
-  set<int> *evs;
-
- /* if (im != NULL)
-    {
-      evs = new set<int>;
-      evs->insert (Key::KEY_BACKSPACE);
-      evs->insert (Key::KEY_BACK);
-
-      im->addInputEventListener (this, evs);
-      im->removeMotionEventListener (this);
-    } */
-}
-
-void
-FormatterFocusManager::unregister ()
-{
- /* if (im != NULL)
-    {
-      im->removeInputEventListener (this);
-      im->removeMotionEventListener (this);
-    } */
-}
+ 
 
 void
 FormatterFocusManager::setDefaultFocusBorderColor (SDL_Color *color)
@@ -1343,9 +1282,9 @@ FormatterFocusManager::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
 
 }
 
-bool
-FormatterFocusManager::motionEventReceived (int x, int y, arg_unused (int z))
-{
+void 
+FormatterFocusManager::mouseInputCallback (SDL_EventType evtType, int x, int y){
+
   NclFormatterLayout *formatterLayout;
   NclExecutionObject *object;
   string objectFocusIndex;
@@ -1359,9 +1298,9 @@ FormatterFocusManager::motionEventReceived (int x, int y, arg_unused (int z))
           if ((x < xOffset || x > xOffset + width) || y < yOffset
               || y > yOffset + height)
             {
-              return true;
+              return;
             }
-
+  
           object = formatterLayout->getObject (x, y);
           if (object != NULL && object->getDescriptor () != NULL)
             {
@@ -1374,14 +1313,13 @@ FormatterFocusManager::motionEventReceived (int x, int y, arg_unused (int z))
                   if (objectFocusIndex != ""
                       && objectFocusIndex != currentFocus)
                     {
-                      setFocus (objectFocusIndex);
+                       setFocus (objectFocusIndex);
+                       tapObject (object);
                     }
                 }
             }
         }
     }
-
-  return true;
 }
 
 GINGA_FORMATTER_END

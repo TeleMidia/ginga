@@ -370,7 +370,7 @@ NominalEventMonitor::run ()
               else
                 {
                   mediaTime
-                      = (adapter->getPlayer ()->getMediaTime () * 1000);
+                      = (adapter->getPlayer ()->getMediaTime ());
 
                   expectedSleepTime = nextEntryTime - mediaTime;
                 }
@@ -379,7 +379,7 @@ NominalEventMonitor::run ()
               clog << nextEntryTime << "' MEDIATIME = '" << mediaTime;
               clog << "' EXPECTEDSLEEPTIME = '" << expectedSleepTime;
               clog << "' (" << this << ")" << endl;
-
+             
               if (running && !isDeleting)
                 {
                   if (isinf (expectedSleepTime))
