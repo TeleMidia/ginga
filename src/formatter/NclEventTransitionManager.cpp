@@ -576,6 +576,8 @@ NclEventTransitionManager::updateTransitionTable (
     {
       transition = (*transitionEvents)[currentIx];
 
+      g_debug("! time: %f - value %f !", transition->getTime () , value);
+
       if (transition->getTime () <= value)
         {
           ev = transition->getEvent ();

@@ -282,6 +282,16 @@ src+= formatter/AdapterTextPlayer.cpp
 src+= player/TextPlayer.cpp
 endif # WITH_PANGO
 
+# TODO: if WITH_CEF
+#
+# Uncomment the lines bellow to 
+# build Ginga with Chromium (CEF) 
+# based HTML Player.
+#AM_CXXFLAGS+= -I../deps/cef -I../deps/cef/include
+#AM_LDFLAGS+= -lcef -lcef_dll_wrapper
+#src+= formatter/AdapterHTMLPlayer.cpp
+#src+= player/HTMLPlayer.cpp
+
 if WITH_ISDBT
 AM_CPPFLAGS+=\
   -DGINGA_ISDBT_PATH='"$(gingaconfdir)/tuner/isdbt.ini"'\
