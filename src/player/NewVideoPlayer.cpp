@@ -107,7 +107,9 @@ NewVideoPlayer::createPipeline ()
 void 
 NewVideoPlayer::eosCB (arg_unused (GstAppSink *appsink), arg_unused(gpointer data))
 {
-  g_print("eos\n");
+  g_print("eos NewVideoPlayer\n");
+
+    
 }
 
 GstFlowReturn
@@ -149,7 +151,7 @@ NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
                                     SDL_Renderer *renderer)
 {
   
-  //g_print ("%" G_GUINT64_FORMAT "\n" , gst_clock_get_time ( gst_element_get_clock (playbin) ) );
+  g_print ("%" G_GUINT64_FORMAT "\n" , GST_TIME_AS_MSECONDS (gst_clock_get_time ( gst_element_get_clock (playbin) )) );
   
 //  if( gst_clock_get_time ( gst_element_get_clock (playbin) ) > 3474088000) //Apagar
 //    return false;
@@ -208,7 +210,7 @@ NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
   if (GST_ELEMENT_CAST(playbin)->current_state == GST_STATE_PAUSED)
   {
-    //this->condDisplayJobSignal ();
+    this->condDisplayJobSignal ();
     return false; //Remove job
   }
 
@@ -275,8 +277,7 @@ NewVideoPlayer::timeShift (arg_unused(const string &direction))
 double
 NewVideoPlayer::getMediaTime ()
 {
-	TRACE ();
-  return 0;
+  return GST_TIME_AS_SECONDS (gst_clock_get_time ( gst_element_get_clock (playbin) ));
 }
 
 void
@@ -352,7 +353,10 @@ NewVideoPlayer::stop ()
     g_print ("failed to stop the file\n");
   } 
 
-  Player::stop();
+  Player::stop ();
+
+  gst_object_unref (playbin);
+  gst_object_unref (bin);
 }
 
 void
@@ -445,9 +449,6 @@ NewVideoPlayer::isRunning ()
 void
 NewVideoPlayer::run ()
 {
-  while (1){
-
-  }
 }
 
 GINGA_PLAYER_END
