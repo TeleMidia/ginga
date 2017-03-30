@@ -372,7 +372,7 @@ NominalEventMonitor::run ()
                   mediaTime
                       = (adapter->getPlayer ()->getMediaTime ());
 
-                  expectedSleepTime = nextEntryTime - mediaTime;
+                  expectedSleepTime = nextEntryTime; // - mediaTime;
                 }
 
               clog << "ANCHORMONITOR NEXTTRANSITIONTIME = '";
@@ -380,6 +380,7 @@ NominalEventMonitor::run ()
               clog << "' EXPECTEDSLEEPTIME = '" << expectedSleepTime;
               clog << "' (" << this << ")" << endl;
              
+            
               if (running && !isDeleting)
                 {
                   if (isinf (expectedSleepTime))
@@ -400,7 +401,7 @@ NominalEventMonitor::run ()
                         }
 
                       mediaTime
-                          = (adapter->getPlayer ()->getMediaTime () * 1000);
+                          = (adapter->getPlayer ()->getMediaTime () );
 
                       time = nextEntryTime - mediaTime;
                       if (time < 0)
@@ -412,7 +413,7 @@ NominalEventMonitor::run ()
                         {
                           // efetua a transicao no estado do evento
                           executionObject->updateTransitionTable (
-                              mediaTime + DEFAULT_ERROR,
+                              nextEntryTime,
                               adapter->getPlayer (),
                               ContentAnchor::CAT_TIME);
                         }
