@@ -157,6 +157,8 @@ Display::renderLoop ()
         SDL_Delay(sleepTime);
       }
       
+      notifyTimeAnchorListeners();
+
       SDL_Event evt;
       GList *l;
 
@@ -933,6 +935,13 @@ Display::notifyMouseEventListeners(SDL_EventType evtType){
           (*it)->mouseInputCallback (evtType, x, y);
 }
 
+void
+Display::notifyTimeAnchorListeners(){
+    set<Player*>::iterator it;
+    for (it=timeAnchorListeners.begin(); it!=timeAnchorListeners.end(); ++it)
+          (*it)->notifyTimeAnchorCallBack();
+}
+
 void 
 Display::registerKeyEventListener(IKeyInputEventListener* obj){
    keyEventListeners.insert(obj);
@@ -956,6 +965,17 @@ Display::unregisterMouseEventListener(IMouseEventListener* obj){
 void
 Display::postKeyInputEventListener(SDL_Keycode key){
    notifyKeyEventListeners(SDL_KEYUP, key);
+}
+
+void 
+Display::registerTimeAnchorListener(Player* obj){
+   g_debug("\n\n REGISTROU!!! \n\n");
+   timeAnchorListeners.insert(obj);
+}
+
+void 
+Display::unregisterTimeAnchorListener(Player* obj){
+   timeAnchorListeners.erase (obj);
 }
 
 GINGA_MB_END

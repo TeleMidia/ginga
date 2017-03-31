@@ -23,6 +23,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
+#include "formatter/NclExecutionObject.h"
+using namespace ::ginga::formatter;
+
 #include "IPlayer.h"
 
 #ifndef HAVE_CLOCKTIME
@@ -94,6 +97,9 @@ protected:
   guint32 accTimePlaying;
   guint32 accTimePaused; 
 
+  //time anchor 
+  NclExecutionObject* nclExecutionObject;
+
 public:
   Player (const string &mrl);
   virtual ~Player ();
@@ -159,6 +165,10 @@ private:
   void checkMirrors ();
 
 public:
+  
+  void setTimeAnchor(NclExecutionObject*);
+  void notifyTimeAnchorCallBack();
+
   virtual bool play ();
   virtual void stop ();
   virtual void abort ();
