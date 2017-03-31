@@ -123,7 +123,6 @@ public:
   bool textureUpdated;
 
   void createPipeline ();
-
   void run ();
 
 };
