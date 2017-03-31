@@ -321,9 +321,9 @@ public:
   void setSurface (SDLSurface* surface);
   SDLSurface* getSurface ();
   void flip ();
-  double getMediaTime ();
+  guint32 getMediaTime ();
   double getTotalMediaTime ();
-  void setMediaTime (double newTime);
+  void setMediaTime (guint32 newTime);
   bool setKeyHandler (bool isHandler);
   void setScope (const string &scope, short type, double begin = -1,
                  double end = -1, double outTransDur = -1);

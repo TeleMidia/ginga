@@ -380,6 +380,9 @@ NominalEventMonitor::run ()
               clog << "' EXPECTEDSLEEPTIME = '" << expectedSleepTime;
               clog << "' (" << this << ")" << endl;
              
+        //    while(true){
+        //        adapter->getPlayer ()->getMediaTime ();
+        //     } 
             
               if (running && !isDeleting)
                 {
@@ -413,7 +416,7 @@ NominalEventMonitor::run ()
                         {
                           // efetua a transicao no estado do evento
                           executionObject->updateTransitionTable (
-                              nextEntryTime,
+                              mediaTime,
                               adapter->getPlayer (),
                               ContentAnchor::CAT_TIME);
                         }
