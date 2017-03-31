@@ -1257,6 +1257,7 @@ AdapterFormatterPlayer::checkAnchorMonitor ()
       clog << "creating TIME NominalEventMonitor for '";
       clog << object->getId () << "'";
       clog << endl;
+      ((Player*)this->player)->setTimeAnchor(object);
       anchorMonitor = new NominalEventMonitor (object, this);
     }
   else
@@ -1283,7 +1284,8 @@ AdapterFormatterPlayer::checkAnchorMonitor ()
     {
       if (anchorMonitor == NULL)
         {
-          anchorMonitor = new NominalEventMonitor (object, this);
+           anchorMonitor = new NominalEventMonitor (object, this);
+            ((Player*)this->player)->setTimeAnchor(object);
         }
 
       anchorMonitor->setTimeBaseProvider (timeBaseProvider);
@@ -1296,6 +1298,7 @@ AdapterFormatterPlayer::checkAnchorMonitor ()
           && anchorMonitor == NULL)
         {
           anchorMonitor = new NominalEventMonitor (object, this);
+           ((Player*)this->player)->setTimeAnchor(object);
         }
     }
 /*

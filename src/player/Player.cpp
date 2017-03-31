@@ -55,10 +55,14 @@ Player::Player (const string &mrl)
   this->initPauseTime = 0;
   this->accTimePlaying = 0;
   this->accTimePaused = 0; 
+
+  Ginga_Display->registerTimeAnchorListener(this); 
 }
 
 Player::~Player ()
 {
+  Ginga_Display->unregisterTimeAnchorListener(this); 
+
   set<IPlayer *>::iterator i;
 
   this->status = SLEEPING;
@@ -396,8 +400,7 @@ Player::getMediaTime ()
       return this->accTimePlaying/1000;
     
   guint32 curTime = g_get_monotonic_time() - this->initStartTime;
-  g_debug("CUR-TIME: %d", (this->accTimePlaying + curTime - this->accTimePaused)/1000 );    
-   
+     
   return (this->accTimePlaying + curTime - this->accTimePaused)/1000;
 }
 
@@ -776,6 +779,45 @@ Player::setOutWindow (SDLWindow* windowId)
       surface->setParentWindow (windowId);
     }
   return true;
+}
+
+void
+Player::setTimeAnchor(NclExecutionObject* obj){
+   
+   g_debug("\n\n\n REGISTROU ALGUMA COISA \n\n\n");
+
+   this->nclExecutionObject = obj;
+}
+
+void 
+Player::notifyTimeAnchorCallBack(){
+             
+   if(this->status!=OCCURRING ||  this->nclExecutionObject==NULL) 
+      return;
+
+   g_debug("\n midia:  %s",mrl.c_str() );   
+   g_debug("lol - 1 - %p  m: %d",this->nclExecutionObject,getMediaTime() );
+   NclEventTransition *nextTransition = this->nclExecutionObject->getNextTransition ();
+   if(nextTransition==NULL)
+     return;
+
+   guint32 nTime = nextTransition->getTime();
+   guint32 mTime = getMediaTime();
+   g_debug("lol - 2 - n: %d  m: %d ",nTime, mTime );
+  
+   if( isinf(nTime) )  
+     delete this->nclExecutionObject;
+
+   if( mTime < nTime )
+     return;      
+
+   this->nclExecutionObject->updateTransitionTable (
+                    mTime,
+                    this,
+                    ContentAnchor::CAT_TIME);
+
+  
+ //  g_debug("\n %d \n",getMediaTime () );
 }
 
 GINGA_PLAYER_END

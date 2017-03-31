@@ -1288,7 +1288,6 @@ NclExecutionObject::getNextTransition ()
     {
       return NULL;
     }
-
   return transMan->getNextTransition (mainEvent);
 }
 

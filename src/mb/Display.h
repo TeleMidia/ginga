@@ -28,6 +28,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "IKeyInputEventListener.h"
 #include "IMouseEventListener.h"
 
+#include "player/Player.h"
+using namespace ::ginga::player;
+
 GINGA_MB_BEGIN
 
 // Type used for renderer job data.
@@ -49,6 +52,7 @@ private:
 
   set<IKeyInputEventListener*> keyEventListeners;  // key event listeners
   set<IMouseEventListener*> mouseEventListeners; // mouse event listeners
+  set<Player*> timeAnchorListeners; // time anchor listeners
 
   SDL_Window *screen;           // display screen
   GRecMutex renderer_mutex;     // sync access to renderer
@@ -90,16 +94,24 @@ public:
   
   void renderLoop (void);
 
+  
+  //listeners
   void registerKeyEventListener(IKeyInputEventListener*);
   void unregisterKeyEventListener(IKeyInputEventListener*);
   void postKeyInputEventListener(SDL_Keycode);       //gambi used by formatterFocusManager listener
 
   void registerMouseEventListener(IMouseEventListener*);
   void unregisterMouseEventListener(IMouseEventListener*);
+
+  void registerTimeAnchorListener(Player*);
+  void unregisterTimeAnchorListener(Player*);
 
 private:
   void notifyKeyEventListeners(SDL_EventType, SDL_Keycode);
   void notifyMouseEventListeners(SDL_EventType);
+  void notifyTimeAnchorListeners();
+
+
   // Let the clutter begin -------------------------------------------------
 
 private:

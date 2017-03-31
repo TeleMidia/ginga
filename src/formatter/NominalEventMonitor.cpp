@@ -415,10 +415,10 @@ NominalEventMonitor::run ()
                       if (!paused && time <= DEFAULT_ERROR)
                         {
                           // efetua a transicao no estado do evento
-                          executionObject->updateTransitionTable (
+                      /*    executionObject->updateTransitionTable (
                               mediaTime,
                               adapter->getPlayer (),
-                              ContentAnchor::CAT_TIME);
+                              ContentAnchor::CAT_TIME);   */
                         }
                     }
                 }
