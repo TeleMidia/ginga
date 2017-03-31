@@ -271,14 +271,14 @@ AVPlayer::getCurrentMediaTime ()
   return provider->getMediaTime ();
 }
 
-double
+guint32
 AVPlayer::getMediaTime ()
 {
   return getCurrentMediaTime ();
 }
 
 void
-AVPlayer::setMediaTime (double pos)
+AVPlayer::setMediaTime (guint32 pos)
 {
   if (status == OCCURRING)
     {

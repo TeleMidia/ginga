@@ -50,6 +50,11 @@ Player::Player (const string &mrl)
   this->outTransTime = -1;
   this->notifyContentUpdate = false;
   this->mirrorSrc = NULL;
+
+  this->initStartTime = 0;
+  this->initPauseTime = 0;
+  this->accTimePlaying = 0;
+  this->accTimePaused = 0; 
 }
 
 Player::~Player ()
@@ -78,12 +83,6 @@ Player::~Player ()
   mirrors.clear ();
 
   g_assert_null (outputWindow);
-  // if (Ginga_Display->hasWindow (outputWindow))
-  //   {
-  //     outputWindow->revertContent ();
-  //     delete outputWindow;
-  //     outputWindow = 0;
-  //   }
 
   if (Ginga_Display->hasSurface (surface))
     {
@@ -382,28 +381,24 @@ Player::getSurface ()
 }
 
 void
-Player::setMediaTime (double newTime)
+Player::setMediaTime (guint32 newTime)
 {
-  this->elapsedTime = newTime;
+  this->initStartTime = g_get_monotonic_time();
+  this->initPauseTime = 0;
+  this->accTimePlaying = newTime*1000;  //input is in mili but sdl is in micro, needs mult by 1000;
+  this->accTimePaused = 0; 
 }
 
-double
+guint32
 Player::getMediaTime ()
 {
-  double mediaTime;
-  mediaTime = 0;
-
   if (status == PAUSED)
-    {
-      mediaTime = elapsedTime;
-    }
-  else
-    {
-      mediaTime
-          = elapsedTime + xruntime_ms () - initTime - elapsedPause;
-    }
-
-  return (mediaTime / 1000);
+      return this->accTimePlaying/1000;
+    
+  guint32 curTime = g_get_monotonic_time() - this->initStartTime;
+  g_debug("CUR-TIME: %d", (this->accTimePlaying + curTime - this->accTimePaused)/1000 );    
+   
+  return (this->accTimePlaying + curTime - this->accTimePaused)/1000;
 }
 
 double
@@ -479,17 +474,8 @@ Player::play ()
 {
   checkMirrors ();
   this->forcedNaturalEnd = false;
+  this->initStartTime = g_get_monotonic_time();
   this->status = OCCURRING;
-  if (scopeInitTime > 0)
-    {
-      elapsedTime = scopeInitTime * 1000;
-    }
-  else
-    {
-      elapsedTime = 0;
-    }
-  elapsedPause = 0;
-  initTime = xruntime_ms ();
 
   return true;
 }
@@ -497,6 +483,11 @@ Player::play ()
 void
 Player::stop ()
 {
+  this->initStartTime = 0;
+  this->initPauseTime = 0;
+  this->accTimePlaying = 0;
+  this->accTimePaused = 0; 
+
   this->status = SLEEPING;
 }
 
@@ -509,16 +500,19 @@ Player::abort ()
 void
 Player::pause ()
 {
-  pauseTime = xruntime_ms ();
-  elapsedTime = elapsedTime + (pauseTime - initTime);
-  this->status = PAUSED;
+  this->accTimePlaying +=  (g_get_monotonic_time() - this->initStartTime);
+  this->initPauseTime = g_get_monotonic_time();
+   this->status = PAUSED;
 }
 
 void
 Player::resume ()
 {
-  initTime = xruntime_ms ();
-  elapsedPause = elapsedPause + (initTime - pauseTime);
+  this->initStartTime = g_get_monotonic_time();
+
+  if(this->initPauseTime > 0)
+      this->accTimePaused +=  (g_get_monotonic_time() - this->initPauseTime);
+
   this->status = OCCURRING;
 }
 

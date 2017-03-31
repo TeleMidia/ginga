@@ -73,7 +73,6 @@ protected:
   string mrl;
   SDLSurface *surface;
   SDLWindow *outputWindow;
-  double initTime, elapsedTime, elapsedPause, pauseTime;
   set<IPlayer *> referredPlayers;
   IPlayer *timeBasePlayer;
   bool presented;
@@ -88,6 +87,12 @@ protected:
   double outTransTime;
   IPlayer *mirrorSrc;
   set<IPlayer *> mirrors;
+
+  //time attr
+  guint32 initStartTime;
+  guint32 initPauseTime;
+  guint32 accTimePlaying;
+  guint32 accTimePaused; 
 
 public:
   Player (const string &mrl);
@@ -128,7 +133,7 @@ public:
   virtual void setSurface (SDLSurface* surface);
   virtual SDLSurface* getSurface ();
 
-  virtual void setMediaTime (double newTime);
+  virtual void setMediaTime (guint32 newTime);
   virtual int64_t
   getVPts ()
   {
@@ -137,9 +142,9 @@ public:
   };
 
 #if HAVE_CLOCKTIME
-  double getMediaTime ();
+  guint32 getMediaTime ();
 #else
-  virtual double getMediaTime ();
+  virtual guint32 getMediaTime ();
 #endif
 
   virtual double getTotalMediaTime ();

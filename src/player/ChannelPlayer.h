@@ -40,7 +40,7 @@ public:
   map<string, IPlayer *> *getPlayerMap ();
   IPlayer *getPlayer (const string &objectId);
   void select (IPlayer *selObject);
-  double getMediaTime ();
+  guint32 getMediaTime ();
 
 private:
   void setSurfacesParent (SDLWindow* parent);
