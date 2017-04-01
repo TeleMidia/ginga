@@ -799,13 +799,14 @@ Player::notifyTimeAnchorCallBack(){
 
    double nTime = nextTransition->getTime();
    guint32 mTime = getMediaTime();
- //  g_debug(" n: %f  m: %d ",nTime, mTime );
   
    if(isinf(nTime) ){  
    //  delete this->nclExecutionObject;
     // this->nclExecutionObject=NULL;
      return;
    }
+
+  // g_debug(" n: %f  m: %d ",nTime, mTime );
 
    if( mTime < nTime )
      return;      

@@ -122,7 +122,6 @@ src+= formatter/NclNodeNesting.cpp
 src+= formatter/NclPresentationEvent.cpp
 src+= formatter/NclSelectionEvent.cpp
 src+= formatter/NclSwitchEvent.cpp
-src+= formatter/NominalEventMonitor.cpp
 src+= formatter/PrefetchManager.cpp
 src+= formatter/PresentationContext.cpp
 src+= formatter/PrivateBaseContext.cpp
