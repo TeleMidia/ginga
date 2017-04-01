@@ -60,9 +60,9 @@ AdapterFormatterPlayer::~AdapterFormatterPlayer ()
   lockObject ();
   if (anchorMonitor != NULL)
     {
-      anchorMonitor->stopMonitor ();
-      delete anchorMonitor;
-      anchorMonitor = NULL;
+    //  anchorMonitor->stopMonitor ();
+    //  delete anchorMonitor;
+    //  anchorMonitor = NULL;
     }
 
   objDevice = getObjectDevice ();
@@ -1007,9 +1007,9 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
 
   if (anchorMonitor != NULL)
     {
-      anchorMonitor->stopMonitor ();
-      delete anchorMonitor;
-      anchorMonitor = NULL;
+    //  anchorMonitor->stopMonitor ();
+    //  delete anchorMonitor;
+    //  anchorMonitor = NULL;
     }
 
   if (event->instanceOf ("NclPresentationEvent"))
@@ -1231,26 +1231,31 @@ AdapterFormatterPlayer::getOutTransTime ()
 void
 AdapterFormatterPlayer::checkAnchorMonitor ()
 {
+  if (object == NULL || this->player==NULL)
+     return;
+
+  ((Player*)this->player)->setTimeAnchor(object);
+  
+  /*
   ITimeBaseProvider *timeBaseProvider = NULL;
   NclEventTransition *nextTransition;
   NodeEntity *dataObject;
 
   if (anchorMonitor != NULL)
     {
-      anchorMonitor->stopMonitor ();
-      delete anchorMonitor;
-      anchorMonitor = NULL;
+    //  anchorMonitor->stopMonitor ();
+    //  delete anchorMonitor;
+    //  anchorMonitor = NULL;
     }
 
   if (object != NULL)
     {
-      nextTransition = object->getNextTransition ();
+   //   nextTransition = object->getNextTransition ();
     }
   else
     {
       return;
-    }
-
+    } 
   if (nextTransition != NULL && !isinf (nextTransition->getTime ()))
     {
       clog << "AdapterFormatterPlayer::checkAnchorMonitor ";
@@ -1258,7 +1263,7 @@ AdapterFormatterPlayer::checkAnchorMonitor ()
       clog << object->getId () << "'";
       clog << endl;
       ((Player*)this->player)->setTimeAnchor(object);
-      anchorMonitor = new NominalEventMonitor (object, this);
+      //anchorMonitor = new NominalEventMonitor (object, this);
     }
   else
     {
@@ -1284,11 +1289,11 @@ AdapterFormatterPlayer::checkAnchorMonitor ()
     {
       if (anchorMonitor == NULL)
         {
-           anchorMonitor = new NominalEventMonitor (object, this);
+          // anchorMonitor = new NominalEventMonitor (object, this);
             ((Player*)this->player)->setTimeAnchor(object);
         }
 
-      anchorMonitor->setTimeBaseProvider (timeBaseProvider);
+     // anchorMonitor->setTimeBaseProvider (timeBaseProvider);
     }
 
   dataObject = (NodeEntity *)(object->getDataObject ()->getDataEntity ());
@@ -1297,11 +1302,11 @@ AdapterFormatterPlayer::checkAnchorMonitor ()
       if (((ContentNode *)dataObject)->isTimeNode ()
           && anchorMonitor == NULL)
         {
-          anchorMonitor = new NominalEventMonitor (object, this);
+        //  anchorMonitor = new NominalEventMonitor (object, this);
            ((Player*)this->player)->setTimeAnchor(object);
         }
     }
-/*
+
   if (im == NULL)
     { // player was recovered from manager gc
       im = Ginga_Display->getInputManager ();
@@ -1310,12 +1315,13 @@ AdapterFormatterPlayer::checkAnchorMonitor ()
   if (im != NULL)
     {
       im->addInputEventListener (this, object->getInputEvents ());
-    } */
+    } 
 
   if (anchorMonitor != NULL)
     {
-      anchorMonitor->startMonitor ();
-    }
+    //  anchorMonitor->startMonitor ();
+    } */
+
 }
 
 void
@@ -1444,7 +1450,7 @@ AdapterFormatterPlayer::stop ()
 
   if (anchorMonitor != NULL)
     {
-      anchorMonitor->stopMonitor ();
+   //   anchorMonitor->stopMonitor ();
     }
 
   if (player == NULL && object == NULL)
@@ -1529,7 +1535,7 @@ AdapterFormatterPlayer::pause ()
       player->pause ();
       if (anchorMonitor != NULL)
         {
-          anchorMonitor->pauseMonitor ();
+        //  anchorMonitor->pauseMonitor ();
         }
 
       player->notifyReferPlayers (EventUtil::TR_PAUSES);
@@ -1549,7 +1555,7 @@ AdapterFormatterPlayer::resume ()
       player->resume ();
       if (anchorMonitor != NULL)
         {
-          anchorMonitor->resumeMonitor ();
+        //  anchorMonitor->resumeMonitor ();
         }
 
       player->notifyReferPlayers (EventUtil::TR_RESUMES);
@@ -1569,7 +1575,7 @@ AdapterFormatterPlayer::abort ()
 
   if (anchorMonitor != NULL)
     {
-      anchorMonitor->stopMonitor ();
+    //  anchorMonitor->stopMonitor ();
     }
 
   if (player != NULL)
@@ -1625,9 +1631,9 @@ AdapterFormatterPlayer::checkRepeat (NclPresentationEvent *event)
       // clog << endl << "AdapterFormatterPlayer::checkRepeat";
       if (anchorMonitor != NULL)
         {
-          anchorMonitor->stopMonitor ();
-          delete anchorMonitor;
-          anchorMonitor = NULL;
+         // anchorMonitor->stopMonitor ();
+         // delete anchorMonitor;
+        //  anchorMonitor = NULL;
         }
 
       player->stop ();

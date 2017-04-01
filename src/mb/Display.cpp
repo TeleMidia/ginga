@@ -141,7 +141,7 @@ Display::renderLoop ()
   bool doquit = false;
 
   //fps control vars
-  gint32 curTime=0,preTime=SDL_GetTicks(),elapsedTime=0;
+  gint32 curTime=0,preTime=SDL_GetTicks(),elapsedTime=0,accTime=0;
 
   DisplayDebug* displayDebug = new DisplayDebug(this->width, this->height);
 
@@ -155,9 +155,15 @@ Display::renderLoop ()
         guint32 sleepTime = this-> frameTime - elapsedTime;
         elapsedTime = this-> frameTime;
         SDL_Delay(sleepTime);
+        accTime +=sleepTime;
       }
-      
-      notifyTimeAnchorListeners();
+      else 
+        accTime += elapsedTime;
+     
+      if(accTime >= 100){
+           notifyTimeAnchorListeners();
+           accTime=0;
+      }
 
       SDL_Event evt;
       GList *l;
@@ -969,7 +975,6 @@ Display::postKeyInputEventListener(SDL_Keycode key){
 
 void 
 Display::registerTimeAnchorListener(Player* obj){
-   g_debug("\n\n REGISTROU!!! \n\n");
    timeAnchorListeners.insert(obj);
 }
 
