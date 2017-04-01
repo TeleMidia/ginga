@@ -50,6 +50,7 @@ Player::Player (const string &mrl)
   this->outTransTime = -1;
   this->notifyContentUpdate = false;
   this->mirrorSrc = NULL;
+  this->nclExecutionObject = NULL;
 
   this->initStartTime = 0;
   this->initPauseTime = 0;
@@ -783,9 +784,6 @@ Player::setOutWindow (SDLWindow* windowId)
 
 void
 Player::setTimeAnchor(NclExecutionObject* obj){
-   
-   g_debug("\n\n\n REGISTROU ALGUMA COISA \n\n\n");
-
    this->nclExecutionObject = obj;
 }
 
@@ -795,29 +793,27 @@ Player::notifyTimeAnchorCallBack(){
    if(this->status!=OCCURRING ||  this->nclExecutionObject==NULL) 
       return;
 
-   g_debug("\n midia:  %s",mrl.c_str() );   
-   g_debug("lol - 1 - %p  m: %d",this->nclExecutionObject,getMediaTime() );
    NclEventTransition *nextTransition = this->nclExecutionObject->getNextTransition ();
    if(nextTransition==NULL)
      return;
 
-   guint32 nTime = nextTransition->getTime();
+   double nTime = nextTransition->getTime();
    guint32 mTime = getMediaTime();
-   g_debug("lol - 2 - n: %d  m: %d ",nTime, mTime );
+ //  g_debug(" n: %f  m: %d ",nTime, mTime );
   
-   if( isinf(nTime) )  
-     delete this->nclExecutionObject;
+   if(isinf(nTime) ){  
+   //  delete this->nclExecutionObject;
+    // this->nclExecutionObject=NULL;
+     return;
+   }
 
    if( mTime < nTime )
      return;      
 
    this->nclExecutionObject->updateTransitionTable (
-                    mTime,
-                    this,
-                    ContentAnchor::CAT_TIME);
-
-  
- //  g_debug("\n %d \n",getMediaTime () );
+                    mTime, this, ContentAnchor::CAT_TIME);
+   
+   delete nextTransition;
 }
 
 GINGA_PLAYER_END
