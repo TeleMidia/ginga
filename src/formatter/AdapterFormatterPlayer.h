@@ -52,7 +52,6 @@ using namespace ::ginga::ncl;
 #include "NclPresentationEvent.h"
 
 #include "IAdapterPlayer.h"
-#include "NominalEventMonitor.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -65,7 +64,6 @@ protected:
   static double eventTS;
 
   void *manager;
-  NominalEventMonitor *anchorMonitor;
   set<string> typeSet;
   NclExecutionObject *object;
   IPlayer *player;

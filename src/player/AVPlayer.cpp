@@ -274,7 +274,7 @@ AVPlayer::getCurrentMediaTime ()
 guint32
 AVPlayer::getMediaTime ()
 {
-  return getCurrentMediaTime ();
+  return getCurrentMediaTime ()*1000;
 }
 
 void
