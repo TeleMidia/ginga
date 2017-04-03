@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 // if the representation changes, update isUndefinedInstant method
-const double NclPresentationEvent::UNDEFINED_INSTANT = NAN;
+const double NclPresentationEvent::UNDEFINED_INSTANT = (double)NAN;
 
 NclPresentationEvent::NclPresentationEvent (const string &id,
                                             void *executionObject,

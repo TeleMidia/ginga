@@ -50,10 +50,20 @@ Player::Player (const string &mrl)
   this->outTransTime = -1;
   this->notifyContentUpdate = false;
   this->mirrorSrc = NULL;
+  this->nclExecutionObject = NULL;
+
+  this->initStartTime = 0;
+  this->initPauseTime = 0;
+  this->accTimePlaying = 0;
+  this->accTimePaused = 0; 
+
+  Ginga_Display->registerTimeAnchorListener(this); 
 }
 
 Player::~Player ()
 {
+  Ginga_Display->unregisterTimeAnchorListener(this); 
+
   set<IPlayer *>::iterator i;
 
   this->status = SLEEPING;
@@ -78,12 +88,6 @@ Player::~Player ()
   mirrors.clear ();
 
   g_assert_null (outputWindow);
-  // if (Ginga_Display->hasWindow (outputWindow))
-  //   {
-  //     outputWindow->revertContent ();
-  //     delete outputWindow;
-  //     outputWindow = 0;
-  //   }
 
   if (Ginga_Display->hasSurface (surface))
     {
@@ -382,28 +386,23 @@ Player::getSurface ()
 }
 
 void
-Player::setMediaTime (double newTime)
+Player::setMediaTime (guint32 newTime)
 {
-  this->elapsedTime = newTime;
+  this->initStartTime = (guint32)g_get_monotonic_time();
+  this->initPauseTime = 0;
+  this->accTimePlaying = newTime*1000;  //input is in mili but glib is in micro, needs mult by 1000;
+  this->accTimePaused = 0; 
 }
 
-double
+guint32
 Player::getMediaTime ()
 {
-  double mediaTime;
-  mediaTime = 0;
-
   if (status == PAUSED)
-    {
-      mediaTime = elapsedTime;
-    }
-  else
-    {
-      mediaTime
-          = elapsedTime + xruntime_ms () - initTime - elapsedPause;
-    }
-
-  return (mediaTime / 1000);
+      return this->accTimePlaying/1000;
+    
+  guint32 curTime = (guint32)g_get_monotonic_time() - this->initStartTime;
+     
+  return (this->accTimePlaying + curTime - this->accTimePaused)/1000;
 }
 
 double
@@ -479,17 +478,8 @@ Player::play ()
 {
   checkMirrors ();
   this->forcedNaturalEnd = false;
+  this->initStartTime = (guint32)g_get_monotonic_time();
   this->status = OCCURRING;
-  if (scopeInitTime > 0)
-    {
-      elapsedTime = scopeInitTime * 1000;
-    }
-  else
-    {
-      elapsedTime = 0;
-    }
-  elapsedPause = 0;
-  initTime = xruntime_ms ();
 
   return true;
 }
@@ -497,6 +487,11 @@ Player::play ()
 void
 Player::stop ()
 {
+  this->initStartTime = 0;
+  this->initPauseTime = 0;
+  this->accTimePlaying = 0;
+  this->accTimePaused = 0; 
+
   this->status = SLEEPING;
 }
 
@@ -509,16 +504,19 @@ Player::abort ()
 void
 Player::pause ()
 {
-  pauseTime = xruntime_ms ();
-  elapsedTime = elapsedTime + (pauseTime - initTime);
-  this->status = PAUSED;
+  this->accTimePlaying +=  ( (guint32)g_get_monotonic_time() - this->initStartTime);
+  this->initPauseTime = (guint32)g_get_monotonic_time();
+   this->status = PAUSED;
 }
 
 void
 Player::resume ()
 {
-  initTime = xruntime_ms ();
-  elapsedPause = elapsedPause + (initTime - pauseTime);
+  this->initStartTime = (guint32)g_get_monotonic_time();
+
+  if(this->initPauseTime > 0)
+      this->accTimePaused +=  ((guint32)g_get_monotonic_time() - this->initPauseTime);
+
   this->status = OCCURRING;
 }
 
@@ -782,6 +780,35 @@ Player::setOutWindow (SDLWindow* windowId)
       surface->setParentWindow (windowId);
     }
   return true;
+}
+
+void
+Player::setTimeAnchor(NclExecutionObject* obj){
+   this->nclExecutionObject = obj;
+}
+
+void 
+Player::notifyTimeAnchorCallBack(){
+             
+   if(this->status!=OCCURRING ||  this->nclExecutionObject==NULL) 
+      return;
+
+   NclEventTransition *nextTransition = this->nclExecutionObject->getNextTransition ();
+   if(nextTransition==NULL)
+     return;
+
+   double nTime = nextTransition->getTime();
+   guint32 mTime = getMediaTime();
+
+   g_debug(" n: %f  m: %d ",nTime, mTime );
+
+   if( mTime < nTime )
+     return;      
+
+   this->nclExecutionObject->updateTransitionTable (
+                    mTime, this, ContentAnchor::CAT_TIME);
+   
+   delete nextTransition;
 }
 
 GINGA_PLAYER_END

@@ -141,7 +141,7 @@ Display::renderLoop ()
   bool doquit = false;
 
   //fps control vars
-  gint32 curTime=0,preTime=SDL_GetTicks(),elapsedTime=0;
+  guint32 curTime=0,preTime=SDL_GetTicks(),elapsedTime=0,accTime=0;
 
   DisplayDebug* displayDebug = new DisplayDebug(this->width, this->height);
 
@@ -155,8 +155,16 @@ Display::renderLoop ()
         guint32 sleepTime = this-> frameTime - elapsedTime;
         elapsedTime = this-> frameTime;
         SDL_Delay(sleepTime);
+        accTime +=sleepTime;
       }
-      
+      else 
+        accTime += elapsedTime;
+     
+      if(accTime >= 100){
+           notifyTimeAnchorListeners();
+           accTime=0;
+      }
+
       SDL_Event evt;
       GList *l;
 
@@ -785,10 +793,7 @@ void
 Display::addUnderlyingSurface (SDL_Surface *uSur)
 {
   checkMutexInit ();
-
-    
   uSurPool.insert (uSur);
-   
 }
 
 SDL_Surface *
@@ -933,6 +938,13 @@ Display::notifyMouseEventListeners(SDL_EventType evtType){
           (*it)->mouseInputCallback (evtType, x, y);
 }
 
+void
+Display::notifyTimeAnchorListeners(){
+    set<Player*>::iterator it;
+    for (it=timeAnchorListeners.begin(); it!=timeAnchorListeners.end(); ++it)
+          (*it)->notifyTimeAnchorCallBack();
+}
+
 void 
 Display::registerKeyEventListener(IKeyInputEventListener* obj){
    keyEventListeners.insert(obj);
@@ -956,6 +968,16 @@ Display::unregisterMouseEventListener(IMouseEventListener* obj){
 void
 Display::postKeyInputEventListener(SDL_Keycode key){
    notifyKeyEventListeners(SDL_KEYUP, key);
+}
+
+void 
+Display::registerTimeAnchorListener(Player* obj){
+   timeAnchorListeners.insert(obj);
+}
+
+void 
+Display::unregisterTimeAnchorListener(Player* obj){
+   timeAnchorListeners.erase (obj);
 }
 
 GINGA_MB_END

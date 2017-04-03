@@ -23,6 +23,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
+#include "formatter/NclExecutionObject.h"
+using namespace ::ginga::formatter;
+
 #include "IPlayer.h"
 
 #ifndef HAVE_CLOCKTIME
@@ -73,7 +76,6 @@ protected:
   string mrl;
   SDLSurface *surface;
   SDLWindow *outputWindow;
-  double initTime, elapsedTime, elapsedPause, pauseTime;
   set<IPlayer *> referredPlayers;
   IPlayer *timeBasePlayer;
   bool presented;
@@ -88,6 +90,15 @@ protected:
   double outTransTime;
   IPlayer *mirrorSrc;
   set<IPlayer *> mirrors;
+
+  //time attr
+  guint32 initStartTime;
+  guint32 initPauseTime;
+  guint32 accTimePlaying;
+  guint32 accTimePaused; 
+
+  //time anchor 
+  NclExecutionObject* nclExecutionObject;
 
 public:
   Player (const string &mrl);
@@ -128,7 +139,7 @@ public:
   virtual void setSurface (SDLSurface* surface);
   virtual SDLSurface* getSurface ();
 
-  virtual void setMediaTime (double newTime);
+  virtual void setMediaTime (guint32 newTime);
   virtual int64_t
   getVPts ()
   {
@@ -137,9 +148,9 @@ public:
   };
 
 #if HAVE_CLOCKTIME
-  double getMediaTime ();
+  guint32 getMediaTime ();
 #else
-  virtual double getMediaTime ();
+  virtual guint32 getMediaTime ();
 #endif
 
   virtual double getTotalMediaTime ();
@@ -154,6 +165,10 @@ private:
   void checkMirrors ();
 
 public:
+  
+  void setTimeAnchor(NclExecutionObject*);
+  void notifyTimeAnchorCallBack();
+
   virtual bool play ();
   virtual void stop ();
   virtual void abort ();

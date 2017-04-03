@@ -3236,12 +3236,12 @@ FormatterMediator::flip ()
 }
 
 void
-FormatterMediator::setMediaTime (double newTime)
+FormatterMediator::setMediaTime (guint32 newTime)
 {
   Player::setMediaTime (newTime);
 }
 
-double
+guint32
 FormatterMediator::getMediaTime ()
 {
   return Player::getMediaTime ();

@@ -40,8 +40,8 @@ static gboolean
 opt_size (arg_unused (const gchar *opt), const gchar *arg,
           arg_unused (gpointer data), GError **err)
 {
-  gint64 width;
-  gint64 height;
+  guint64 width;
+  guint64 height;
   gchar *end;
 
   width = g_ascii_strtoull (arg, &end, 10);

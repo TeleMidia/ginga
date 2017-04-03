@@ -135,7 +135,7 @@ private:
 
 public:
   void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
-  void mouseInputCallback (SDL_EventType evtType, int x, int y);
+  void mouseInputCallback (arg_unused (SDL_EventType evtType), int x, int y);
 //  bool motionEventReceived (int x, int y, int z);
 };
 
