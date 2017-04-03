@@ -274,6 +274,7 @@ AVPlayer::getCurrentMediaTime ()
 double
 AVPlayer::getMediaTime ()
 {
+  clog << endl;
   return getCurrentMediaTime ();
 }
 
