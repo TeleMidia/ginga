@@ -1518,11 +1518,7 @@ void
 FormatterScheduler::initializeDefaultSettings ()
 {
   string value;
-  double alfa;
-
- // value = presContext->getPropertyValue (DEFAULT_FOCUS_BORDER_TRANSPARENCY);
-
-
+ 
   value = presContext->getPropertyValue (DEFAULT_FOCUS_BORDER_COLOR);
   if (value != "")
     {

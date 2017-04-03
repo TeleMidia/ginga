@@ -274,7 +274,7 @@ AVPlayer::getCurrentMediaTime ()
 guint32
 AVPlayer::getMediaTime ()
 {
-  return getCurrentMediaTime ()*1000;
+  return ((guint32)getCurrentMediaTime ())*1000;
 }
 
 void
@@ -326,7 +326,7 @@ AVPlayer::setScope (const string &scope, short type, double begin, double end,
     {
       if (scopeInitTime > 0)
         {
-          setMediaTime (scopeInitTime);
+          setMediaTime ((guint32)scopeInitTime);
         }
 
       if (scopeEndTime > 0)

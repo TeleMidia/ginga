@@ -162,7 +162,7 @@ NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   GstBuffer *buf;
   GstCaps *caps;
   guint8 *pixels;
-  guint stride;
+  gint stride;
   
   SDLWindow *window;
 
@@ -277,11 +277,11 @@ NewVideoPlayer::timeShift (arg_unused(const string &direction))
 guint32
 NewVideoPlayer::getMediaTime ()
 {
-  return GST_TIME_AS_SECONDS (gst_clock_get_time ( gst_element_get_clock (playbin) ));
+  return (guint32)GST_TIME_AS_SECONDS (gst_clock_get_time ( gst_element_get_clock (playbin) ));
 }
 
 void
-NewVideoPlayer::setMediaTime (arg_unused(double pos))
+NewVideoPlayer::setMediaTime (arg_unused(guint32 pos))
 {
 	TRACE ();
 }

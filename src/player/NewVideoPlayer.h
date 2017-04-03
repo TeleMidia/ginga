@@ -68,7 +68,7 @@ public:
   void timeShift (const string &direction);
 
   guint32 getMediaTime ();
-  void setMediaTime (double pos);
+  void setMediaTime (guint32 pos);
   void setStopTime (double pos);
   double getStopTime ();
   void setScope (const string &scope, short type = TYPE_PRESENTATION,
@@ -115,12 +115,12 @@ public:
   GstSample *sample;
 
   GstStateChangeReturn ret;  
-  GstBus *bus;
-  GstMessage *msg;
+ // GstBus *bus;
+ // GstMessage *msg;
 
   GstAppSinkCallbacks callbacks;
 
-  bool textureUpdated;
+ // bool textureUpdated;
 
   void createPipeline ();
   void run ();

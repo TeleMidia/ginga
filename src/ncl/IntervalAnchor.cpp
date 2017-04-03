@@ -24,7 +24,7 @@ using namespace ::ginga::util;
 GINGA_NCL_BEGIN
 
 // if the representation changes, update isObjectDuration method
-const double IntervalAnchor::OBJECT_DURATION = INFINITY;
+const double IntervalAnchor::OBJECT_DURATION = (double)INFINITY;
 
 IntervalAnchor::IntervalAnchor (const string &id, double begin, double end)
     : ContentAnchor (id)

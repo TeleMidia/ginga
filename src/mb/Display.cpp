@@ -141,7 +141,7 @@ Display::renderLoop ()
   bool doquit = false;
 
   //fps control vars
-  gint32 curTime=0,preTime=SDL_GetTicks(),elapsedTime=0,accTime=0;
+  guint32 curTime=0,preTime=SDL_GetTicks(),elapsedTime=0,accTime=0;
 
   DisplayDebug* displayDebug = new DisplayDebug(this->width, this->height);
 
@@ -793,10 +793,7 @@ void
 Display::addUnderlyingSurface (SDL_Surface *uSur)
 {
   checkMutexInit ();
-
-    
   uSurPool.insert (uSur);
-   
 }
 
 SDL_Surface *

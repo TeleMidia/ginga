@@ -71,7 +71,6 @@ src+= ctxmgmt/GingaUser.cpp
 src+= ctxmgmt/SystemInfo.cpp
 src+= formatter/AdapterAVPlayer.cpp
 src+= formatter/AdapterApplicationPlayer.cpp
-src+= formatter/AdapterChannelPlayer.cpp
 src+= formatter/AdapterFormatterPlayer.cpp
 src+= formatter/AdapterImagePlayer.cpp
 src+= formatter/AdapterLuaPlayer.cpp

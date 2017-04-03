@@ -1928,9 +1928,9 @@ SDL2ffmpeg::configure_audio_filters (const char *afilters,
 
   if (vs->audio_filter_src.channel_layout)
     {
-      snprintf (asrc_args + ret, sizeof (asrc_args) - ret,
-                ":channel_layout=0x%" G_GINT64_FORMAT,
-                vs->audio_filter_src.channel_layout);
+    //  snprintf (asrc_args + ret, sizeof (asrc_args) - ret,
+    //            ":channel_layout=0x%" G_GINT64_FORMAT,
+    //            vs->audio_filter_src.channel_layout);
     }
 
   ret = avfilter_graph_create_filter (
