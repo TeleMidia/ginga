@@ -91,8 +91,8 @@ private:
   double getCurrentMediaTime ();
 
 public:
-  double getMediaTime ();
-  void setMediaTime (double pos);
+  guint32 getMediaTime ();
+  void setMediaTime (guint32 pos);
   void setStopTime (double pos);
   double getStopTime ();
   void setScope (const string &scope, short type = TYPE_PRESENTATION,

@@ -70,6 +70,9 @@ Tuner::setLoopListener (ITunerListener *loopListener)
 void
 Tuner::keyInputCallback (SDL_EventType evtType, SDL_Keycode key){
 
+  if(evtType == SDL_KEYDOWN)return;
+
+
   map<int, NetworkInterface *>::iterator i;
 
 //  clog << "Tuner::keyEventReceived" << endl;

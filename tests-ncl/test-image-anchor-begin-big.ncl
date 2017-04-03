@@ -40,21 +40,39 @@
   </head>
   <body>
      <port id='start' component='text1'/>
-     <media id='text1' src='samples/text.txt' descriptor='desc' >
-         <area id="segText" begin="3s" />
-         <area id="segText2" begin="5s" />
+     <media id='text1' src='samples/gnu.png' descriptor='desc' >
+         <area id="segText" begin="3s" end="7s" />
+         <area id="segText2" begin="5s" end="10s" />
      </media>
     
-     <media id='text2' src='samples/text2.txt' descriptor='desc2' />
+     <media id='text2' src='samples/gnu.png' descriptor='desc2' >
+          <area id="segText" begin="6s" end="8s" />
+     </media>
      
     <link xconnector="onBeginStart">
         <bind role="onBegin" component="text1" interface="segText" />
         <bind role="start" component="text2"  />
      </link>
    
-   <link xconnector="onBeginStop">
+    <link xconnector="onBeginStop">
         <bind role="onBegin" component="text1" interface="segText2" />
         <bind role="stop" component="text2"  />
+    </link>
+
+     <link xconnector="onEndStart">
+        <bind role="onEnd" component="text1" interface="segText" />
+        <bind role="start" component="text2"  />
+     </link>
+
+
+    <link xconnector="onBeginStop">
+        <bind role="onBegin" component="text2" interface="segText" />
+        <bind role="stop" component="text1"  />
+    </link>
+
+    <link xconnector="onEndStart">
+        <bind role="onEnd" component="text2" interface="segText" />
+        <bind role="start" component="text1"  />
      </link>
 
   </body>

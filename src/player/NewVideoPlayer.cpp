@@ -32,9 +32,8 @@ GINGA_PLAYER_BEGIN
 NewVideoPlayer::NewVideoPlayer (const string &mrl) : Thread (), Player (mrl)
 {
 	//TRACE ();
-  texture = NULL; 
+  texture = NULL;  
   
-  this->status = SLEEPING;
   this->mutexInit ();
   this->condDisplayJobInit ();
   this->surface = new SDLSurface ();
@@ -281,11 +280,11 @@ NewVideoPlayer::timeShift (arg_unused(const string &direction))
 	TRACE ();
 }
 
-double
+guint32
 NewVideoPlayer::getMediaTime ()
 {
   GstClock *clock = gst_element_get_clock (playbin);
-  double time =  GST_TIME_AS_MSECONDS (gst_clock_get_time ( clock ));
+  guint32 time =  GST_TIME_AS_MSECONDS (gst_clock_get_time ( clock ));
   
   gst_object_unref (clock);
 
@@ -293,7 +292,7 @@ NewVideoPlayer::getMediaTime ()
 }
 
 void
-NewVideoPlayer::setMediaTime (arg_unused(double pos))
+NewVideoPlayer::setMediaTime (arg_unused(guint32 pos))
 {
 	TRACE ();
 }

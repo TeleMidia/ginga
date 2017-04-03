@@ -26,22 +26,22 @@ LayoutRegion::LayoutRegion (const string &id) : Entity (id)
   outputMapRegionId = "";
   outputMapRegion = NULL;
 
-  top = NAN;
+  top = (double)NAN;
   topPercentual = false;
 
-  left = NAN;
+  left = (double)NAN;
   leftPercentual = false;
 
-  bottom = NAN;
+  bottom = (double)NAN;
   bottomPercentual = false;
 
-  right = NAN;
+  right = (double)NAN;
   rightPercentual = false;
 
-  width = NAN;
+  width = (double)NAN;
   widthPercentual = false;
 
-  height = NAN;
+  height = (double)NAN;
   heightPercentual = false;
 
   zIndex = NULL;
@@ -1299,7 +1299,7 @@ LayoutRegion::getBottomInPixels ()
   double bottomInPixels;
   double t, h;
 
-  bottomInPixels = NAN;
+  bottomInPixels = (double)NAN;
 
   if (!isnan (height) && !isnan (top))
     {
@@ -1615,37 +1615,37 @@ LayoutRegion::setDecorated (bool decorated)
 void
 LayoutRegion::resetTop ()
 {
-  top = NAN;
+  top = (double)NAN;
 }
 
 void
 LayoutRegion::resetBottom ()
 {
-  bottom = NAN;
+  bottom = (double)NAN;
 }
 
 void
 LayoutRegion::resetRight ()
 {
-  right = NAN;
+  right = (double)NAN;
 }
 
 void
 LayoutRegion::resetLeft ()
 {
-  left = NAN;
+  left = (double)NAN;
 }
 
 void
 LayoutRegion::resetHeight ()
 {
-  height = NAN;
+  height = (double)NAN;
 }
 
 void
 LayoutRegion::resetWidth ()
 {
-  width = NAN;
+  width = (double)NAN;
 }
 
 void

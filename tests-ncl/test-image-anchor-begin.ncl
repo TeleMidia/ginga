@@ -40,12 +40,12 @@
   </head>
   <body>
      <port id='start' component='text1'/>
-     <media id='text1' src='samples/text.txt' descriptor='desc' >
+     <media id='text1' src='samples/gnu.png' descriptor='desc' >
          <area id="segText" begin="3s" />
          <area id="segText2" begin="5s" />
      </media>
     
-     <media id='text2' src='samples/text2.txt' descriptor='desc2' />
+     <media id='text2' src='samples/gnu.png' descriptor='desc2' />
      
     <link xconnector="onBeginStart">
         <bind role="onBegin" component="text1" interface="segText" />

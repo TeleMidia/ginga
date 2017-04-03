@@ -110,7 +110,7 @@ ChannelPlayer::select (IPlayer *selObject)
     }
 }
 
-double
+guint32
 ChannelPlayer::getMediaTime ()
 {
   return selectedPlayer->getMediaTime ();

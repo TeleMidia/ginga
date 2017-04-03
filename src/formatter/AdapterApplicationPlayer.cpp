@@ -200,13 +200,6 @@ AdapterApplicationPlayer::prepare (NclExecutionObject *object,
             }
         }
 
-      if (anchorMonitor != NULL)
-        {
-          anchorMonitor->stopMonitor ();
-          delete anchorMonitor;
-          anchorMonitor = NULL;
-        }
-
       if (player != NULL)
         {
           delete player;
@@ -375,12 +368,7 @@ AdapterApplicationPlayer::start ()
 
   clog << "AdapterApplicationPlayer::start ";
   clog << endl;
-/*
-  if (im != NULL && object != NULL)
-    {
-      im->addInputEventListener (this, object->getInputEvents ());
-    }
-*/
+
   if (player != NULL)
     {
       startSuccess = player->play ();
@@ -407,13 +395,7 @@ AdapterApplicationPlayer::start ()
 
       return startSuccess;
     }
-  else
-    { /*
-      if (im != NULL)
-        {
-          im->removeInputEventListener (this);
-        } */
-    }
+ 
   return false;
 }
 
@@ -631,16 +613,7 @@ AdapterApplicationPlayer::unprepare ()
 
   if (currentEvent == NULL)
     {
-    /*  if (im != NULL)
-        {
-          im->removeInputEventListener (this);
-          im = NULL;
-        } */
-
-      if (anchorMonitor != NULL)
-        {
-          anchorMonitor->stopMonitor ();
-        }
+    
 
       if (object != NULL)
         {
