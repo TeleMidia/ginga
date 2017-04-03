@@ -643,20 +643,6 @@ SDLSurface::blit (int x, int y, SDLSurface *src, int srcX, int srcY,
   Thread::mutexUnlock (&sMutex);
 }
 
-void
-SDLSurface::getStringExtents (const char *text, int *w, int *h)
-{
-  if (iFont != NULL)
-    {
-    //   ((IFontProvider*)iFont)->getStringExtents (text, w, h);
-    }
-  else
-    {
-      clog << "SDLSurface::getStringExtends Warning! ";
-      clog << "Can't get string info: ";
-      clog << "font provider is NULL" << endl;
-    }
-}
 
 void
 SDLSurface::setClip (int x, int y, int w, int h)

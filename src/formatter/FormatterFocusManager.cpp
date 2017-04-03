@@ -1191,10 +1191,8 @@ FormatterFocusManager::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
         }
 
       if (selectedObject != NULL && key == SDLK_BACKSPACE){
-          bool canBack = keyCodeBack ();
-          Thread::mutexUnlock (&mutexTable);
-
-         // return canBack;
+            keyCodeBack ();
+            Thread::mutexUnlock (&mutexTable);
             return;
         }
 
@@ -1232,7 +1230,7 @@ FormatterFocusManager::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
     {
       if (key == SDLK_BACKSPACE)
         {
-          bool canItBack = keyCodeBack ();
+           keyCodeBack ();
          // return canItBack;
            return;
         }
@@ -1283,7 +1281,7 @@ FormatterFocusManager::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
 }
 
 void 
-FormatterFocusManager::mouseInputCallback (SDL_EventType evtType, int x, int y){
+FormatterFocusManager::mouseInputCallback (arg_unused (SDL_EventType evtType), int x, int y){
 
   NclFormatterLayout *formatterLayout;
   NclExecutionObject *object;

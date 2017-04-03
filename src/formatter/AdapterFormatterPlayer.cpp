@@ -1184,7 +1184,7 @@ AdapterFormatterPlayer::prepareScope (double offset)
 
   if (offset > 0)
     {
-      player->setMediaTime (offset);
+      player->setMediaTime ( (guint32)offset);
     }
 }
 

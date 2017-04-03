@@ -115,7 +115,6 @@ public:
   void setColor (SDL_Color color);
   SDL_Color *getColor ();
   void setSurfaceFont (void *font);
-  void getStringExtents (const char *text, int *w, int *h);
   void flip ();
   void scale (double x, double y);
 

@@ -60,7 +60,7 @@ strUTCToSec (const string &utcV)
       break;
 
     default:
-      secs = INFINITY;
+      secs = (double)INFINITY;
     }
 
   delete params;
