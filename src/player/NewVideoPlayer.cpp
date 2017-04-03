@@ -108,8 +108,10 @@ void
 NewVideoPlayer::eosCB (arg_unused (GstAppSink *appsink), arg_unused(gpointer data))
 {
   g_print("eos NewVideoPlayer\n");
+  
+  NewVideoPlayer *player = (NewVideoPlayer *) data;
 
-    
+  player->eos ();
 }
 
 GstFlowReturn
@@ -151,7 +153,7 @@ NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
                                     SDL_Renderer *renderer)
 {
   
-  g_print ("%" G_GUINT64_FORMAT "\n" , GST_TIME_AS_MSECONDS (gst_clock_get_time ( gst_element_get_clock (playbin) )) );
+//  g_print ("%" G_GUINT64_FORMAT "\n" , GST_TIME_AS_MSECONDS (gst_clock_get_time ( gst_element_get_clock (playbin) )) );
   
 //  if( gst_clock_get_time ( gst_element_get_clock (playbin) ) > 3474088000) //Apagar
 //    return false;
@@ -162,7 +164,7 @@ NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   GstBuffer *buf;
   GstCaps *caps;
   guint8 *pixels;
-  gint stride;
+  guint stride;
   
   SDLWindow *window;
 
@@ -208,9 +210,13 @@ NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   
   this->unlock ();
 
-  if (GST_ELEMENT_CAST(playbin)->current_state == GST_STATE_PAUSED)
+  //if (GST_ELEMENT_CAST(playbin)->current_state == GST_STATE_PAUSED)
+  if (this->status == SLEEPING)
   {
-    this->condDisplayJobSignal ();
+    g_print("status: SLEEPING; return false;\n");
+    //SDL_DestroyTexture (texture);
+    //this->condDisplayJobSignal ();
+
     return false; //Remove job
   }
 
@@ -277,7 +283,12 @@ NewVideoPlayer::timeShift (arg_unused(const string &direction))
 guint32
 NewVideoPlayer::getMediaTime ()
 {
-  return (guint32)GST_TIME_AS_SECONDS (gst_clock_get_time ( gst_element_get_clock (playbin) ));
+  GstClock *clock = gst_element_get_clock (playbin);
+  guint32 time =  GST_TIME_AS_MSECONDS (gst_clock_get_time ( clock ));
+  
+  gst_object_unref (clock);
+
+  return time;
 }
 
 void
@@ -308,7 +319,7 @@ NewVideoPlayer::setScope (arg_unused(const string &scope), arg_unused(short type
 bool
 NewVideoPlayer::play ()
 {
-  Player::play();
+  Player::play ();
 
   ret = gst_element_set_state (playbin, GST_STATE_PLAYING);
   g_assert (ret != GST_STATE_CHANGE_FAILURE);
@@ -329,6 +340,8 @@ NewVideoPlayer::play ()
 void
 NewVideoPlayer::pause ()
 {
+  Player::pause ();
+
   ret = gst_element_set_state (playbin, GST_STATE_PAUSED);
   g_assert (ret != GST_STATE_CHANGE_FAILURE);
 
@@ -342,7 +355,7 @@ NewVideoPlayer::pause ()
 
 void
 NewVideoPlayer::stop ()
-{
+{ //precisa estar entre locks
   ret = gst_element_set_state (playbin, GST_STATE_NULL);
   g_assert (ret != GST_STATE_CHANGE_FAILURE);
 
@@ -362,10 +375,21 @@ NewVideoPlayer::stop ()
 void
 NewVideoPlayer::resume ()
 {
+  Player::resume ();
+
   if (GST_ELEMENT_CAST(playbin)->current_state == GST_STATE_PAUSED)
   {
     this->play ();
   }
+}
+
+void
+NewVideoPlayer::eos ()
+{
+  Player::stop ();
+
+  gst_object_unref (playbin);
+  gst_object_unref (bin);
 }
 
 string
