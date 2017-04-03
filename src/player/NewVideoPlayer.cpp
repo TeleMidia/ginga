@@ -274,7 +274,7 @@ NewVideoPlayer::timeShift (arg_unused(const string &direction))
 	TRACE ();
 }
 
-double
+guint32
 NewVideoPlayer::getMediaTime ()
 {
   return GST_TIME_AS_SECONDS (gst_clock_get_time ( gst_element_get_clock (playbin) ));

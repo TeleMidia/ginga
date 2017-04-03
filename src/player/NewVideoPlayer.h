@@ -67,7 +67,7 @@ public:
   int64_t getVPts ();
   void timeShift (const string &direction);
 
-  double getMediaTime ();
+  guint32 getMediaTime ();
   void setMediaTime (double pos);
   void setStopTime (double pos);
   double getStopTime ();
