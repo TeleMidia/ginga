@@ -800,7 +800,7 @@ Player::notifyTimeAnchorCallBack(){
    double nTime = nextTransition->getTime();
    guint32 mTime = getMediaTime();
 
-   g_debug(" n: %f  m: %d ",nTime, mTime );
+//   g_debug(" n: %f  m: %d ",nTime, mTime );
 
    if( mTime < nTime )
      return;      
