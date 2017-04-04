@@ -26,6 +26,7 @@ using namespace ::ginga::system;
 
 
 #include "player/IPlayer.h"
+#include "player/Player.h"
 using namespace ::ginga::player;
 
 #include "ncl/Animation.h"
@@ -67,6 +68,8 @@ using namespace ::ginga::ncl;
 
 #include "NclNodeNesting.h"
 
+
+
 GINGA_FORMATTER_BEGIN
 
 class NclExecutionObject
@@ -90,6 +93,8 @@ protected:
   bool deleting;
   bool isHandler;
   bool isHandling;
+
+  Player* player;
 
 private:
   map<Node *, Node *> nodeParentTable;
@@ -154,6 +159,9 @@ public:
   Node *getDataObject ();
   NclCascadingDescriptor *getDescriptor ();
   string getId ();
+
+  void notifyTimeAnchorCallBack();
+  void setPlayer(Player*);
 
   NclExecutionObject *getMirrorSrc ();
   void setMirrorSrc (NclExecutionObject *mirrorSrc);

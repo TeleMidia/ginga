@@ -28,8 +28,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "IKeyInputEventListener.h"
 #include "IMouseEventListener.h"
 
-#include "player/Player.h"
-using namespace ::ginga::player;
+#include "formatter/NclExecutionObject.h"
+using namespace ::ginga::formatter;
 
 GINGA_MB_BEGIN
 
@@ -52,7 +52,7 @@ private:
 
   set<IKeyInputEventListener*> keyEventListeners;  // key event listeners
   set<IMouseEventListener*> mouseEventListeners; // mouse event listeners
-  set<Player*> timeAnchorListeners; // time anchor listeners
+  set<NclExecutionObject*> timeAnchorListeners; // time anchor listeners
 
   SDL_Window *screen;           // display screen
   GRecMutex renderer_mutex;     // sync access to renderer
@@ -103,8 +103,8 @@ public:
   void registerMouseEventListener(IMouseEventListener*);
   void unregisterMouseEventListener(IMouseEventListener*);
 
-  void registerTimeAnchorListener(Player*);
-  void unregisterTimeAnchorListener(Player*);
+  void registerTimeAnchorListener(NclExecutionObject*);
+  void unregisterTimeAnchorListener(NclExecutionObject*);
 
 private:
   void notifyKeyEventListeners(SDL_EventType, SDL_Keycode);

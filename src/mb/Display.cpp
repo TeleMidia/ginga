@@ -940,7 +940,7 @@ Display::notifyMouseEventListeners(SDL_EventType evtType){
 
 void
 Display::notifyTimeAnchorListeners(){
-    set<Player*>::iterator it;
+    set<NclExecutionObject*>::iterator it;
     for (it=timeAnchorListeners.begin(); it!=timeAnchorListeners.end(); ++it)
           (*it)->notifyTimeAnchorCallBack();
 }
@@ -971,12 +971,15 @@ Display::postKeyInputEventListener(SDL_Keycode key){
 }
 
 void 
-Display::registerTimeAnchorListener(Player* obj){
+Display::registerTimeAnchorListener(NclExecutionObject* obj){
+   
+   g_debug("\n registrei!!!!! %s \n", obj->getId().c_str() );
+
    timeAnchorListeners.insert(obj);
 }
 
 void 
-Display::unregisterTimeAnchorListener(Player* obj){
+Display::unregisterTimeAnchorListener(NclExecutionObject* obj){
    timeAnchorListeners.erase (obj);
 }
 
