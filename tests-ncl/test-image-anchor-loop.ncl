@@ -41,8 +41,7 @@
   <body>
      <port id='start' component='text1'/>
      <media id='text1' src='samples/gnu.png' descriptor='desc' >
-         <area id="segText" begin="1s" end="7s" />
-         <area id="segText2" begin="5s" end="10s" />
+         <area id="segText" begin="2s" end="7s" />
      </media>
     
      <media id='text2' src='samples/vector.svg' descriptor='desc2' >
@@ -54,16 +53,10 @@
         <bind role="start" component="text2"  />
      </link>
    
-    <link xconnector="onBeginStop">
-        <bind role="onBegin" component="text1" interface="segText2" />
-        <bind role="stop" component="text2"  />
-    </link>
-
-     <link xconnector="onEndStart">
+     <link xconnector="onEndStop">
         <bind role="onEnd" component="text1" interface="segText" />
-        <bind role="start" component="text2"  />
+        <bind role="stop" component="text2"  />
      </link>
-
 
     <link xconnector="onBeginStop">
         <bind role="onBegin" component="text2" interface="segText" />

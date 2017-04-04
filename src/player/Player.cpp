@@ -50,19 +50,17 @@ Player::Player (const string &mrl)
   this->outTransTime = -1;
   this->notifyContentUpdate = false;
   this->mirrorSrc = NULL;
-  this->nclExecutionObject = NULL;
 
   this->initStartTime = 0;
   this->initPauseTime = 0;
   this->accTimePlaying = 0;
   this->accTimePaused = 0; 
 
-  Ginga_Display->registerTimeAnchorListener(this); 
+  
 }
 
 Player::~Player ()
 {
-  Ginga_Display->unregisterTimeAnchorListener(this); 
 
   set<IPlayer *>::iterator i;
 
@@ -493,6 +491,7 @@ Player::stop ()
   this->accTimePaused = 0; 
 
   this->status = SLEEPING;
+  
 }
 
 void
@@ -780,35 +779,6 @@ Player::setOutWindow (SDLWindow* windowId)
       surface->setParentWindow (windowId);
     }
   return true;
-}
-
-void
-Player::setTimeAnchor(NclExecutionObject* obj){
-   this->nclExecutionObject = obj;
-}
-
-void 
-Player::notifyTimeAnchorCallBack(){
-             
-   if(this->status!=OCCURRING ||  this->nclExecutionObject==NULL) 
-      return;
-
-   NclEventTransition *nextTransition = this->nclExecutionObject->getNextTransition ();
-   if(nextTransition==NULL)
-     return;
-
-   double nTime = nextTransition->getTime();
-   guint32 mTime = getMediaTime();
-
-//   g_debug(" n: %f  m: %d ",nTime, mTime );
-
-   if( mTime < nTime )
-     return;      
-
-   this->nclExecutionObject->updateTransitionTable (
-                    mTime, this, ContentAnchor::CAT_TIME);
-   
-   delete nextTransition;
 }
 
 GINGA_PLAYER_END

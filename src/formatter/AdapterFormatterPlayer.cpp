@@ -1217,11 +1217,10 @@ AdapterFormatterPlayer::getOutTransTime ()
 void
 AdapterFormatterPlayer::checkAnchorMonitor ()
 {
-  if (object == NULL || this->player==NULL)
-     return;
+   if (object == NULL || this->player==NULL)
+      return;
 
-  ((Player*)this->player)->setTimeAnchor(object);
-
+   object->setPlayer( (Player*)this->player );
 }
 
 void

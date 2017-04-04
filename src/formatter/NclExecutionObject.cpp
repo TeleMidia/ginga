@@ -24,6 +24,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclSwitchEvent.h"
 
+#include "mb/Display.h"
+using namespace ::ginga::mb;
+
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_FORMATTER_BEGIN
@@ -90,6 +93,7 @@ NclExecutionObject::NclExecutionObject (const string &id, Node *node,
                                         bool handling,
                                         INclLinkActionListener *seListener)
 {
+  Ginga_Display->registerTimeAnchorListener(this); 
   initializeExecutionObject (id, node, NULL, handling, seListener);
 }
 
@@ -98,6 +102,7 @@ NclExecutionObject::NclExecutionObject (const string &id, Node *node,
                                         bool handling,
                                         INclLinkActionListener *seListener)
 {
+  Ginga_Display->registerTimeAnchorListener(this); 
   initializeExecutionObject (id, node,
                              new NclCascadingDescriptor (descriptor),
                              handling, seListener);
@@ -108,11 +113,15 @@ NclExecutionObject::NclExecutionObject (const string &id, Node *node,
                                         bool handling,
                                         INclLinkActionListener *seListener)
 {
+  Ginga_Display->registerTimeAnchorListener(this); 
   initializeExecutionObject (id, node, descriptor, handling, seListener);
 }
 
 NclExecutionObject::~NclExecutionObject ()
 {
+  
+  Ginga_Display->unregisterTimeAnchorListener(this); 
+
   map<Node *, Node *>::iterator i;
   map<Node *, void *>::iterator j;
 
@@ -178,7 +187,7 @@ NclExecutionObject::initializeExecutionObject (
     }
 
   addInstance (this);
-
+  this->player = NULL;
   this->seListener = seListener;
   this->deleting = false;
   this->id = id;
@@ -1963,5 +1972,31 @@ NclExecutionObject::unlockParentTable ()
 {
   Thread::mutexUnlock (&mutexParentTable);
 }
+
+void
+NclExecutionObject::setPlayer(Player* p){
+   this->player = p;
+} 
+
+void 
+NclExecutionObject::notifyTimeAnchorCallBack(){
+   if(player == NULL)return;
+
+    NclEventTransition *nextTransition = getNextTransition ();
+   if(nextTransition==NULL)
+     return;
+  
+   double nTime = nextTransition->getTime();
+   double mTime = (double)this->player->getMediaTime();
+   
+   if( mTime < nTime )
+     return;    
+
+    g_debug("- N: %f  M: %f ",nTime,mTime);
+
+    updateTransitionTable (mTime, this->player, ContentAnchor::CAT_TIME);
+
+}
+
 
 GINGA_FORMATTER_END

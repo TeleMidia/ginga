@@ -44,7 +44,7 @@
          <area id="segText" end="4s" begin="2s" />
      </media>
     
-     <media id='text2' src='samples/bunny.ogg' descriptor='desc2' type='video/x-new-video-player' />
+     <media id='text2' src='samples/text.txt' descriptor='desc2' type='video/x-new-video-player' />
      
     <link xconnector="onEndStop">
         <bind role="onEnd" component="text1" interface="segText" />
