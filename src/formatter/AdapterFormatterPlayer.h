@@ -96,7 +96,6 @@ protected:
 public:
   int getObjectDevice ();
   virtual bool hasPrepared ();
-  bool setKeyHandler (bool isHandler);
 
 protected:
   double prepareProperties (NclExecutionObject *obj);

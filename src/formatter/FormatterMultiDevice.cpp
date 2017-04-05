@@ -594,7 +594,7 @@ FormatterMultiDevice::hideObject (NclExecutionObject *executionObject)
 void
 FormatterMultiDevice::renderFromUri (SDLWindow* win, const string &uri)
 {
-  SDLSurface* s;
+/*  SDLSurface* s;
   s = Ginga_Display->createRenderedSurfaceFromImageFile (uri.c_str ());
   SDL_Color c;
   c.r=0; c.g=0; c.b=0; c.a=0;
@@ -603,7 +603,7 @@ FormatterMultiDevice::renderFromUri (SDLWindow* win, const string &uri)
   win->renderFrom (s);
   win->show ();
   win->validate ();
-  delete s;
+  delete s; */
 }
 
 void

@@ -47,7 +47,7 @@ SDLSurface::~SDLSurface ()
   Thread::mutexLock (&pMutex);
 
   SDLWindow *w = (SDLWindow *)parent;
-  Ginga_Display->releaseSurface (this);
+ // Ginga_Display->releaseSurface (this);
 
   releaseChromaColor ();
   releaseBorderColor ();

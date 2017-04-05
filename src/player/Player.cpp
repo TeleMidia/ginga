@@ -87,11 +87,11 @@ Player::~Player ()
 
   g_assert_null (outputWindow);
 
-  if (Ginga_Display->hasSurface (surface))
+/*  if (Ginga_Display->hasSurface (surface))
     {
       delete surface;
       surface = 0;
-    }
+    } */
 
   Thread::mutexLock (&referM);
   referredPlayers.clear ();
@@ -409,16 +409,6 @@ Player::getTotalMediaTime ()
   return -1.0;
 }
 
-bool
-Player::setKeyHandler (bool isHandler)
-{
-  if (isHandler)
-    {
-      g_usleep (200000);
-    }
-  return false;
-}
-
 void
 Player::setScope (const string &scope, short type, double initTime, double endTime,
                   double outTransDur)
@@ -695,60 +685,6 @@ void
 Player::setImmediatelyStart (bool immediattelyStartVal)
 {
   this->immediatelyStartVar = immediattelyStartVal;
-}
-
-void
-Player::checkScopeTime ()
-{
-  pthread_t threadId_;
-
-  if (scopeInitTime >= 0 && scopeEndTime >= scopeInitTime)
-    {
-      pthread_create (&threadId_, 0, Player::scopeTimeHandler,
-                      (void *)this);
-
-      pthread_detach (threadId_);
-    }
-}
-
-void *
-Player::scopeTimeHandler (void *ptr)
-{
-  double expectedSleepTime;
-  Player *p = (Player *)ptr;
-
-  expectedSleepTime = (p->scopeEndTime
-                       - (p->scopeInitTime + (p->getMediaTime () / 1000)));
-
-  clog << "Player::scopeTimeHandler expectedSleepTime = '";
-  clog << expectedSleepTime << "'" << endl;
-
-  if (expectedSleepTime > 0)
-    {
-      if (p->outTransTime > 0.0)
-        {
-          expectedSleepTime
-              = (p->outTransTime
-                 - (p->scopeInitTime + (p->getMediaTime () / 1000)));
-        }
-
-      g_usleep ((gulong)(expectedSleepTime * 1000000));
-
-      if (p->outTransTime > 0.0)
-        {
-          p->notifyPlayerListeners (PL_NOTIFY_OUTTRANS);
-
-          expectedSleepTime
-              = (p->scopeEndTime
-                 - (p->scopeInitTime + (p->getMediaTime () / 1000)));
-
-          g_usleep ((gulong)(expectedSleepTime * 1000000));
-        }
-    }
-
-  p->forceNaturalEnd (true);
-
-  return ptr;
 }
 
 void

@@ -3223,7 +3223,7 @@ FormatterMediator::flip ()
 
   if (data->devClass == 0)
     {
-      if (surface != 0 && Ginga_Display->hasSurface (surface))
+    /*  if (surface != 0 && Ginga_Display->hasSurface (surface))
         {
           w = (SDLWindow*) surface->getParentWindow ();
           if (w != 0)
@@ -3232,6 +3232,7 @@ FormatterMediator::flip ()
               w->validate ();
             }
         }
+        */
     }
 }
 
@@ -3279,7 +3280,6 @@ FormatterMediator::play ()
     {
       Player::play ();
       documentStarted = startDocument (currentDocument->getId (), scope);
-      checkScopeTime ();
       return documentStarted;
     }
   else
