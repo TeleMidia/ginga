@@ -189,8 +189,6 @@ AU_CHECK_OPTIONAL_PKG([gstreamer], [build gstreamer support], [],
   gstreamer-app-1.0 >= gstreamer_required_version
 )
 
-AU_CHECK_OPTIONAL_PKG([multidevice], [build multidevice support], [],
- [MULTIDEVICE], [libjpeg libzip])
 
 AU_CHECK_OPTIONAL_PKG([libbpg], [build with libbpg BPG support], [],
  [LIBBPG], [libbpg >= libbpg_required_version])
@@ -232,12 +230,6 @@ AS_IF([test "$with_optional_$1" = yes],
 AM_CONDITIONAL([WITH_$3],
  [test "$with_optional_$1" = yes])])
 
-_MY_CHECK_OPTIONAL([berkelium], [build with Berkelium XHTML support],
- [BERKELIUM], [berkelium],
- [AC_HAVE_LIBRARY([berkelium],
-  [AC_CHECK_HEADER([berkelium/Berkelium.hpp],
-   [with_optional_berkelium=yes])])])
-
 _MY_CHECK_OPTIONAL([espeak], [build with Espeak ssml support],
  [ESPEAK], [libespeak],
  [AC_HAVE_LIBRARY([espeak],
@@ -268,7 +260,6 @@ AC_MSG_NOTICE([summary of main build options:
   warning flags:      ${WERROR_CFLAGS} ${WARN_CFLAGS}
   valgrind:           ${VALGRIND}
 
-  with berkelium:     ${with_berkelium_result}
   with espeak:        ${with_espeak_result}
   with gstreamer:     ${with_gstreamer_result}
   with libbpg:        ${with_libbpg_result}
@@ -277,5 +268,4 @@ AC_MSG_NOTICE([summary of main build options:
 
   with isdbt:         ${with_isdbt_result}
   with linuxdvb:      ${with_linuxdvb_result}
-  with multidevice:   ${with_multidevice_result}
 ])
