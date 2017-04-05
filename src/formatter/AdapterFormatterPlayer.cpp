@@ -298,21 +298,6 @@ AdapterFormatterPlayer::hasPrepared ()
   return isLocked;
 }
 
-bool
-AdapterFormatterPlayer::setKeyHandler (bool isHandler)
-{
-  if (player == NULL)
-    {
-      g_usleep (100000);
-    }
-
-  if (player == NULL)
-    {
-      return false;
-    }
-
-  return (player->setKeyHandler (isHandler) && isHandler);
-}
 
 double
 AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)

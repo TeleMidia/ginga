@@ -152,7 +152,6 @@ PLAYER_STATUS getMediaStatus();
 
   virtual double getTotalMediaTime ();
 
-  virtual bool setKeyHandler (bool isHandler);
   virtual void setScope (const string &scope, short type = TYPE_PRESENTATION,
                          double begin = -1, double end = -1,
                          double outTransDur = -1);
@@ -183,11 +182,8 @@ public:
   bool immediatelyStart ();
   void setImmediatelyStart (bool immediatelyStartVal);
 
-protected:
-  void checkScopeTime ();
-
-private:
-  static void *scopeTimeHandler (void *ptr);
+//private:
+ // static void *scopeTimeHandler (void *ptr);
 
 public:
   void forceNaturalEnd (bool forceIt);

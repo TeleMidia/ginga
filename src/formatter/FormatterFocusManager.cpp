@@ -118,10 +118,10 @@ FormatterFocusManager::~FormatterFocusManager ()
 
   if (hasInstance (parentManager, false))
     {
-      if (isHandler && !parentManager->setKeyHandler (true))
+    /*  if (isHandler && !parentManager->setKeyHandler (true))
         {
       
-        }
+        }  */
     }
   selectedObject = NULL;
 
@@ -1034,7 +1034,7 @@ FormatterFocusManager::enterSelection (AdapterFormatterPlayer *player)
 
       presContext->setPropertyValue ("service.currentKeyMaster", keyMaster);
 
-      newHandler = player->setKeyHandler (true);
+    //  newHandler = player->setKeyHandler (true);
 
       clog << "FormatterFocusManager::enterSelection(" << this << "): '";
       clog << keyMaster << "'" << endl;
@@ -1045,7 +1045,8 @@ FormatterFocusManager::enterSelection (AdapterFormatterPlayer *player)
       clog << this << ") can't enter selection" << endl;
     }
 
-  return newHandler;
+    return false;
+  //return newHandler;
 }
 
 void
@@ -1055,7 +1056,7 @@ FormatterFocusManager::exitSelection (AdapterFormatterPlayer *player)
 
   if (player != NULL)
     {
-      player->setKeyHandler (false);
+    //  player->setKeyHandler (false);
 
       presContext->setPropertyValue ("service.currentKeyMaster", "");
     }

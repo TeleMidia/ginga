@@ -49,8 +49,8 @@ NclFocusSourceManager::getFocusSourceComponent (const string &src)
               || extension == "bpg" || extension == "svg"
               || extension == "svgz" || extension == "webp")
             {
-              s = Ginga_Display->createRenderedSurfaceFromImageFile
-                (src.c_str ());
+             // s = Ginga_Display->createRenderedSurfaceFromImageFile
+             //   (src.c_str ());
 
               return s;
             }

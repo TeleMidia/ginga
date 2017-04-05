@@ -86,7 +86,7 @@ AdapterApplicationPlayer::checkPlayerSurface (NclExecutionObject *obj)
   LayoutRegion *ncmRegion;
   SDLSurface* wrapper;
   int w, h;
-
+/*
   if (player != NULL)
     {
       wrapper = player->getSurface ();
@@ -112,7 +112,7 @@ AdapterApplicationPlayer::checkPlayerSurface (NclExecutionObject *obj)
                 }
             }
         }
-    }
+    } */
 }
 
 void

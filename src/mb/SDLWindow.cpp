@@ -608,7 +608,7 @@ SDLWindow::createDrawDataList ()
 
   lockChilds ();
   if (childSurface != NULL
-      && Ginga_Display->hasSurface (childSurface))
+     /* && Ginga_Display->hasSurface (childSurface) */)
     {
       dd = ((SDLSurface *)childSurface)->createDrawDataList ();
     }
@@ -791,8 +791,8 @@ SDLWindow::renderFrom (SDLSurface *surface)
   if (!isMine (surface))
     {
       releaseWinISur ();
-      winISur = Ginga_Display->createSurface (
-          contentSurface->w, contentSurface->h);
+  //    winISur = Ginga_Display->createSurface (
+    //      contentSurface->w, contentSurface->h);
 
       winISur->blit (0, 0, surface);
       winISur->flip ();

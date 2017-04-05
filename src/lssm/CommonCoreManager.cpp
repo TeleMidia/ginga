@@ -174,14 +174,14 @@ CommonCoreManager::showTunningWindow (int x, int y,
     {
       tuningWindow = Ginga_Display->createWindow (x, y, w, h, -10.0);
 
-      s = Ginga_Display->createRenderedSurfaceFromImageFile (tunerImg.c_str ());
+   //   s = Ginga_Display->createRenderedSurfaceFromImageFile (tunerImg.c_str ());
 
       int cap = tuningWindow->getCap ("ALPHACHANNEL");
       tuningWindow->setCaps (cap);
 
       tuningWindow->draw ();
       tuningWindow->show ();
-      tuningWindow->renderFrom (s);
+    //  tuningWindow->renderFrom (s);
       tuningWindow->lowerToBottom ();
 
       delete s;
