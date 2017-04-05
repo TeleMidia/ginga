@@ -248,13 +248,6 @@ src+= system/Thread.cpp
 src+= util/Base64.cpp
 src+= util/functions.cpp
 
-if WITH_BERKELIUM
-AM_CXXFLAGS+= $(BERKELIUM_CFLAGS)
-AM_LDFLAGS+= $(BERKELIUM_LIBS)
-src+= formatter/AdapterBerkeliumPlayer.cpp
-src+= player/BerkeliumHandler.cpp
-src+= player/BerkeliumPlayer.cpp
-endif # WITH_BERKELIUM
 
 if WITH_ESPEAK
 AM_CXXFLAGS+= $(ESPEAK_CFLAGS)
@@ -382,23 +375,3 @@ AM_LDFLAGS+= $(LIBBPG_LIBS)
 src+= SDLBpgDecoder.cpp
 endif # WITH_LIBBPG
 
-if WITH_MULTIDEVICE
-AM_CXXFLAGS+= $(MULTIDEVICE_CFLAGS)
-AM_LDFLAGS+= $(MULTIDEVICE_LIBS)
-src+= formatter/FormatterActiveDevice.cpp
-src+= multidev/ActiveDeviceDomain.cpp
-src+= multidev/ActiveDeviceService.cpp
-src+= multidev/BaseDeviceDomain.cpp
-src+= multidev/BaseDeviceService.cpp
-src+= multidev/BroadcastDualSocketService.cpp
-src+= multidev/BroadcastSocketService.cpp
-src+= multidev/DeviceDomain.cpp
-src+= multidev/DeviceService.cpp
-src+= multidev/MulticastSocketService.cpp
-src+= multidev/NetworkUtil.cpp
-src+= multidev/RemoteDevice.cpp
-src+= multidev/RemoteDeviceManager.cpp
-src+= multidev/RemoteEventService.cpp
-src+= multidev/TcpClientConnection.cpp
-src+= multidev/TcpSocketService.cpp
-endif # WITH_MULTIDEVICE
