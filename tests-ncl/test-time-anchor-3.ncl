@@ -39,33 +39,24 @@
     </connectorBase>
   </head>
   <body>
-     <port id='start' component='text1'/>
-     <media id='text1' src='samples/gnu.png' descriptor='desc' >
-         <area id="segText" begin="2s" end="7s" />
+     <port id='start' component='img1'/>
+     <media id='img1' src='samples/gnu.png' descriptor='desc' >
+         <area id="segText" begin="2s" />
      </media>
     
-     <media id='text2' src='samples/vector.svg' descriptor='desc2' >
-          <area id="segText" begin="1s" end="8s" />
+     <media id='img2' src='samples/vector.svg' descriptor='desc2' >
+        <area id="segText" end="2s" />
      </media>
      
     <link xconnector="onBeginStart">
-        <bind role="onBegin" component="text1" interface="segText" />
-        <bind role="start" component="text2"  />
+        <bind role="onBegin" component="img1" interface="segText" />
+        <bind role="start" component="img2"  />
      </link>
    
+
      <link xconnector="onEndStop">
-        <bind role="onEnd" component="text1" interface="segText" />
-        <bind role="stop" component="text2"  />
-     </link>
-
-    <link xconnector="onBeginStop">
-        <bind role="onBegin" component="text2" interface="segText" />
-        <bind role="stop" component="text1"  />
-    </link>
-
-    <link xconnector="onEndStart">
-        <bind role="onEnd" component="text2" interface="segText" />
-        <bind role="start" component="text1"  />
+        <bind role="onEnd" component="img2" interface="segText" />
+        <bind role="stop" component="img1"  />
      </link>
 
   </body>

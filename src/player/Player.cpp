@@ -781,4 +781,9 @@ Player::setOutWindow (SDLWindow* windowId)
   return true;
 }
 
+PLAYER_STATUS 
+Player::getMediaStatus(){
+   return this->status;
+}
+
 GINGA_PLAYER_END

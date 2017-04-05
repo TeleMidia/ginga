@@ -142,6 +142,8 @@ public:
     return 0;
   };
 
+PLAYER_STATUS getMediaStatus();
+
 #if HAVE_CLOCKTIME
   guint32 getMediaTime ();
 #else
