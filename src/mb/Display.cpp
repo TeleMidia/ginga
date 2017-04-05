@@ -34,7 +34,6 @@ Display *_Ginga_Display = NULL;
 
 bool Display::mutexInitialized = false;
 set<SDL_Texture *> Display::uTexPool;
-set<SDL_Surface *> Display::uSurPool;
 
 
 // BEGIN SANITY ------------------------------------------------------------
@@ -585,118 +584,6 @@ Display::unlockSDL ()
 
 }
 
-/* interfacing output */
-
-SDLSurface *
-Display::createSurface ()
-{
-  return createSurfaceFrom (NULL);
-}
-
-SDLSurface *
-Display::createSurface (int w, int h)
-{
-  SDLSurface *iSur = NULL;
-  SDL_Surface *uSur = NULL;
-
-  lockSDL ();
-
-  uSur = createUnderlyingSurface (w, h);
-
-  iSur = new SDLSurface (uSur);
-
-  unlockSDL ();
-
-    
-  surfacePool.insert (iSur);
-   
-
-  return iSur;
-}
-
-SDLSurface *
-Display::createSurfaceFrom (void *uSur)
-{
-  SDLSurface *iSur = NULL;
-
-  lockSDL ();
-  if (uSur != NULL)
-    {
-      iSur = new SDLSurface (uSur);
-    }
-  else
-    {
-      iSur = new SDLSurface ();
-    }
-  unlockSDL ();
-
- 
-  surfacePool.insert (iSur);
- 
-
-  return iSur;
-}
-
-bool
-Display::hasSurface (SDLSurface *s)
-{
-  set<SDLSurface *>::iterator i;
-  bool hasSur = false;
-
-    
-  i = surfacePool.find (s);
-  if (i != surfacePool.end ())
-    {
-      hasSur = true;
-    }
-   
-
-  return hasSur;
-}
-
-bool
-Display::releaseSurface (SDLSurface *s)
-{
-  set<SDLSurface *>::iterator i;
-  bool released = false;
-
-  i = surfacePool.find (s);
-  if (i != surfacePool.end ())
-    {
-      surfacePool.erase (i);
-      released = true;
-    }
-
-
-  return released;
-}
-
-
-SDLSurface *
-Display::createRenderedSurfaceFromImageFile (const char *mrl)
-{
-  SDL_Surface *sfc;
-  SDLSurface *surface;
-  SDLWindow *window;
-
-  surface = Ginga_Display->createSurfaceFrom (NULL);
-  g_assert_nonnull (surface);
-
-  sfc = IMG_Load (mrl);
-  if (unlikely (sfc == NULL))
-    g_error ("cannot load image file %s: %s", mrl, IMG_GetError ());
-
-  g_assert_nonnull (surface);
-  surface->setContent (sfc);
-  Display::addUnderlyingSurface (sfc);
-
-  window = surface->getParentWindow ();
-  g_assert_null (window);
-
-  return surface;
-}
-
-
 SDL_Texture *
 Display::createTextureFromSurface (SDL_Renderer *renderer,
                                            SDL_Surface *surface)
@@ -793,7 +680,7 @@ void
 Display::addUnderlyingSurface (SDL_Surface *uSur)
 {
   checkMutexInit ();
-  uSurPool.insert (uSur);
+//  uSurPool.insert (uSur);
 }
 
 SDL_Surface *
@@ -819,7 +706,7 @@ Display::createUnderlyingSurface (int width, int height)
     
   if (newUSur != NULL)
     {
-      uSurPool.insert (newUSur);
+    //  uSurPool.insert (newUSur);
     }
   else
     {
@@ -870,7 +757,7 @@ Display::createUnderlyingSurfaceFromTexture (SDL_Texture *texture)
     
   if (uSur != NULL)
     {
-      uSurPool.insert (uSur);
+    //  uSurPool.insert (uSur);
     }
    
 
@@ -885,13 +772,13 @@ Display::hasUnderlyingSurface (SDL_Surface *uSur)
 
   checkMutexInit ();
 
-    
+    /*
   i = uSurPool.find (uSur);
   if (i != uSurPool.end ())
     {
       hasIt = true;
     }
-   
+   */
 
   return hasIt;
 }
@@ -905,7 +792,7 @@ Display::releaseUnderlyingSurface (SDL_Surface *uSur)
 
   lockSDL ();
     
-
+/*
   i = uSurPool.find (uSur);
   if (i != uSurPool.end ())
     {
@@ -913,7 +800,7 @@ Display::releaseUnderlyingSurface (SDL_Surface *uSur)
 
       SDL_FreeSurface (uSur);
     }
-
+*/
    
   unlockSDL ();
 }

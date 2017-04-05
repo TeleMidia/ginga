@@ -117,11 +117,6 @@ private:
 private:
   static bool mutexInitialized;
 
-  set<SDLSurface *> surfacePool;
-  set<IContinuousMediaProvider *> cmpPool;
-  set<IDiscreteMediaProvider *> dmpPool;
-
-  static set<SDL_Surface *> uSurPool;
   static set<SDL_Texture *> uTexPool;
   static map<int, map<double, set<SDLWindow *> *> *> renderMap;
   static set<IContinuousMediaProvider *> cmpRenderList;
@@ -132,17 +127,6 @@ private:
 public:
   static void lockSDL ();
   static void unlockSDL ();
-
-  /* interfacing output */
-public:
-  SDLSurface *createSurface ();
-  SDLSurface *createSurface (int w, int h);
-  SDLSurface *createSurfaceFrom (void *underlyingSurface);
-  bool hasSurface (SDLSurface *sur);
-  bool releaseSurface (SDLSurface *sur);
-
-  /* interfacing content */
-  SDLSurface *createRenderedSurfaceFromImageFile (const char *mrl);
 
 public:
   static SDL_Window *getUnderlyingWindow (SDLWindow* winId);

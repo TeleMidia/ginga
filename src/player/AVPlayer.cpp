@@ -200,7 +200,7 @@ AVPlayer::createFrame ()
       delete surface;
     }
 
-  surface = Ginga_Display->createSurface ();
+  surface =  new SDLSurface (NULL);
   if (win != 0 && mainAV)
     {
       surface->setParentWindow (win);
