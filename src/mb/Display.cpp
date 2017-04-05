@@ -972,9 +972,6 @@ Display::postKeyInputEventListener(SDL_Keycode key){
 
 void 
 Display::registerTimeAnchorListener(NclExecutionObject* obj){
-   
-   g_debug("\n registrei!!!!! %s \n", obj->getId().c_str() );
-
    timeAnchorListeners.insert(obj);
 }
 

@@ -1982,17 +1982,19 @@ void
 NclExecutionObject::notifyTimeAnchorCallBack(){
    if(player == NULL)return;
 
+   if(player->getMediaStatus()!=OCCURRING)return;
+
     NclEventTransition *nextTransition = getNextTransition ();
    if(nextTransition==NULL)
      return;
   
    double nTime = nextTransition->getTime();
    double mTime = (double)this->player->getMediaTime();
-   
+
+   // g_debug("- N: %f  M: %f ",nTime,mTime);
+
    if( mTime < nTime )
      return;    
-
-    g_debug("- N: %f  M: %f ",nTime,mTime);
 
     updateTransitionTable (mTime, this->player, ContentAnchor::CAT_TIME);
 
