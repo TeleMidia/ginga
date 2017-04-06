@@ -36,7 +36,7 @@ Player::Player (const string &mrl)
   this->mrl = mrl;
   this->outputWindow = 0;
   this->surface = 0;
-
+  this->window = NULL;
   this->notifying = false;
   this->presented = false;
   this->visible = true;
@@ -710,6 +710,8 @@ Player::isForcedNaturalEnd ()
 bool
 Player::setOutWindow (SDLWindow* windowId)
 {
+  this->window = windowId;
+
   if (surface != 0 && surface->getParentWindow () == 0)
     {
       surface->setParentWindow (windowId);

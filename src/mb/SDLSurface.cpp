@@ -552,7 +552,7 @@ SDLSurface::createSurface ()
       return NULL;
     }
 
-  sdlSurface = Display::createUnderlyingSurface (w, h);
+//  sdlSurface = Display::createUnderlyingSurface (w, h);
   if (sdlSurface == NULL)
     return NULL;
 

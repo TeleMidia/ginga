@@ -594,7 +594,7 @@ Display::createTextureFromSurface (SDL_Renderer *renderer,
 
   lockSDL ();
     
-
+/*
   if (Display::hasUnderlyingSurface (surface))
     {
       g_assert_nonnull (surface);
@@ -607,9 +607,9 @@ Display::createTextureFromSurface (SDL_Renderer *renderer,
       g_assert_nonnull (texture);
       uTexPool.insert (texture);
 
-      /* allowing alpha */
+      /* allowing alpha 
       g_assert (SDL_SetTextureBlendMode (texture, SDL_BLENDMODE_BLEND) == 0);
-    }
+    } */
 
    
   unlockSDL ();
@@ -676,134 +676,12 @@ Display::releaseTexture (SDL_Texture *texture)
   unlockSDL ();
 }
 
-void
-Display::addUnderlyingSurface (SDL_Surface *uSur)
-{
-  checkMutexInit ();
-//  uSurPool.insert (uSur);
-}
 
-SDL_Surface *
-Display::createUnderlyingSurface (int width, int height)
-{
-  SDL_Surface *newUSur = NULL;
-  Uint32 rmask, gmask, bmask, amask;
-  int bpp;
 
-  checkMutexInit ();
 
-  lockSDL ();
 
-  SDL_PixelFormatEnumToMasks (SDL_PIXELFORMAT_ARGB32, &bpp, &rmask, &gmask, &bmask,
-                              &amask);
 
-  newUSur = SDL_CreateRGBSurface (0, width, height, bpp, rmask, gmask,
-                                  bmask, amask);
 
-  SDL_SetColorKey (newUSur, 1, *((Uint8 *)newUSur->pixels));
-  unlockSDL ();
-
-    
-  if (newUSur != NULL)
-    {
-    //  uSurPool.insert (newUSur);
-    }
-  else
-    {
-      clog << "Display::createUnderlyingSurface SDL error: '";
-      clog << SDL_GetError () << "'" << endl;
-    }
-   
-
-  return newUSur;
-}
-
-SDL_Surface *
-Display::createUnderlyingSurfaceFromTexture (SDL_Texture *texture)
-{
-  SDL_Surface *uSur = NULL;
-  void *pixels;
-  int tpitch[3];
-  Uint32 rmask, gmask, bmask, amask, format;
-  int textureAccess, w, h, bpp;
-
-  lockSDL ();
-
-  SDL_QueryTexture (texture, &format, &textureAccess, &w, &h);
-  if (textureAccess & SDL_TEXTUREACCESS_STREAMING)
-    {
-      bool locked = true;
-
-      // trying to lock texture
-      if (SDL_LockTexture (texture, NULL, &pixels, &tpitch[0]) != 0)
-        {
-          locked = false;
-        }
-
-      SDL_PixelFormatEnumToMasks (SDL_PIXELFORMAT_ARGB32, &bpp, &rmask, &gmask,
-                                  &bmask, &amask);
-
-      uSur = SDL_CreateRGBSurfaceFrom (pixels, w, h, bpp, tpitch[0], rmask,
-                                       gmask, bmask, amask);
-
-      if (locked)
-        {
-          SDL_UnlockTexture (texture);
-        }
-    }
-
-  unlockSDL ();
-
-    
-  if (uSur != NULL)
-    {
-    //  uSurPool.insert (uSur);
-    }
-   
-
-  return uSur;
-}
-
-bool
-Display::hasUnderlyingSurface (SDL_Surface *uSur)
-{
-  set<SDL_Surface *>::iterator i;
-  bool hasIt = false;
-
-  checkMutexInit ();
-
-    /*
-  i = uSurPool.find (uSur);
-  if (i != uSurPool.end ())
-    {
-      hasIt = true;
-    }
-   */
-
-  return hasIt;
-}
-
-void
-Display::releaseUnderlyingSurface (SDL_Surface *uSur)
-{
-  set<SDL_Surface *>::iterator i;
-
-  checkMutexInit ();
-
-  lockSDL ();
-    
-/*
-  i = uSurPool.find (uSur);
-  if (i != uSurPool.end ())
-    {
-      uSurPool.erase (i);
-
-      SDL_FreeSurface (uSur);
-    }
-*/
-   
-  unlockSDL ();
-}
 
 void 
 Display::notifyKeyEventListeners(SDL_EventType evtType, SDL_Keycode key){

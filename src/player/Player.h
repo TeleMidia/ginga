@@ -73,6 +73,7 @@ protected:
 
   string mrl;
   SDLSurface *surface;
+  SDLWindow *window;
   SDLWindow *outputWindow;
   set<IPlayer *> referredPlayers;
   IPlayer *timeBasePlayer;

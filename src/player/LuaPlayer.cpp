@@ -93,15 +93,11 @@ bool
 LuaPlayer::displayJobCallback (arg_unused (DisplayJob *job),
                                SDL_Renderer *renderer)
 {
-  SDLSurface *wrapper;
-  SDLWindow *window;
-
   SDL_Rect rect;
   SDL_Surface *sfc;
-  // SDL_Surface *dest;
+
   SDL_Texture *texture;
-  // void *pixels;
-  // int stride;
+
   bool signal = false;
 
   this->lock ();
@@ -112,17 +108,10 @@ LuaPlayer::displayJobCallback (arg_unused (DisplayJob *job),
       return false;             // remove job
     }
 
-  wrapper = this->getSurface ();
-  g_assert_nonnull (wrapper);
-
-  window = wrapper->getParentWindow ();
-  g_assert_nonnull (window);
-
-  rect = window->getRect ();
+  rect = this->window->getRect ();
   g_assert (rect.w > 0 && rect.h > 0);
 
   ncluaw_cycle (this->nw);
-
 
 #if SDL_VERSION_ATLEAST(2,0,5)
   sfc = SDL_CreateRGBSurfaceWithFormat (0, rect.w, rect.h, 32,
@@ -136,21 +125,20 @@ LuaPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 #endif
 
   g_assert_nonnull (sfc);
-
   SDLx_LockSurface (sfc);
-
+  
   ncluaw_paint (nw, (guchar *) sfc->pixels, "ARGB32",
 
                 sfc->w, sfc->h, sfc->pitch);
   SDLx_UnlockSurface (sfc);
 
-  texture = window->getTexture ();
+  texture = this->window->getTexture ();
   if (unlikely (texture == NULL)) // first call
     {
       texture = SDL_CreateTextureFromSurface (renderer, sfc);
       g_assert_nonnull (texture);
       signal = true;
-    }
+    }  
 
   SDLx_LockSurface (sfc);
   SDL_UpdateTexture (texture, NULL, sfc->pixels, sfc->pitch);
@@ -158,7 +146,7 @@ LuaPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
   if (unlikely (signal))
     {
-      window->setTexture (texture);
+      this->window->setTexture (texture);
       g_debug ("first cycle");
       this->unlock ();
       this->condDisplayJobSignal ();
@@ -225,11 +213,7 @@ LuaPlayer::pause (void)
 bool
 LuaPlayer::play (void)
 {
-  SDLSurface *surface;
   char *errmsg;
-  int width;
-  int height;
-
   this->lock ();
   g_debug ("play scope %s", this->scope.c_str ());
   if (this->nw != NULL)
@@ -239,11 +223,11 @@ LuaPlayer::play (void)
       return true;
     }
 
-  surface = this->getSurface ();
-  g_assert_nonnull (surface);
-  surface->getSize (&width, &height);
+   SDL_Rect rect = this->window->getRect ();
+   g_assert (rect.w > 0 && rect.h > 0);
 
-  this->nw = ncluaw_open (this->mrl.c_str (), width, height, &errmsg);
+  this->nw = ncluaw_open (this->mrl.c_str (), rect.w, rect.h, &errmsg);
+  
   if (unlikely (this->nw == NULL))
     g_error ("cannot load NCLua file %s: %s", this->mrl.c_str (), errmsg);
 
@@ -251,6 +235,7 @@ LuaPlayer::play (void)
   evt_ncl_send_presentation (this->nw, "start", this->scope.c_str ());
 
   Ginga_Display->addJob (displayJobCallbackWrapper, this);
+
   g_debug ("waiting for first cycle");
   this->unlock ();
   this->condDisplayJobWait ();

@@ -38,7 +38,6 @@ bool
 SvgPlayer::displayJobCallback (arg_unused (DisplayJob *job),
                                  SDL_Renderer *renderer)
 {
-  SDLWindow *window;
 
   RsvgHandle* svg;
   RsvgDimensionData dim;
@@ -62,12 +61,7 @@ SvgPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
   rsvg_handle_get_dimensions (svg, &dim);
 
-  this->lock ();
-
-  window = this->surface->getParentWindow ();
-  g_assert_nonnull (window);
-
-  rect = window->getRect ();
+  rect = this->window->getRect ();
   g_assert (rect.w > 0 && rect.h > 0);
 
   scale = (dim.width > dim.height)
@@ -113,9 +107,8 @@ SvgPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
   SDL_FreeSurface (sfc);
 
-  window->setTexture (texture);
+  this->window->setTexture (texture);
 
-  this->unlock ();
   this->condDisplayJobSignal ();
   return false;                 // remove job
 }
@@ -127,7 +120,6 @@ SvgPlayer::SvgPlayer (const string &uri) : Player (uri)
 {
   this->mutexInit ();
   this->condDisplayJobInit ();
-  this->surface = new SDLSurface ();
 }
 
 SvgPlayer::~SvgPlayer (void)
