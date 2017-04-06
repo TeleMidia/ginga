@@ -142,19 +142,7 @@ private:
 public:
   static bool hasTexture (SDL_Texture *uTex);
   static void releaseTexture (SDL_Texture *uTex);
-
-  static void addUnderlyingSurface (SDL_Surface *uSur);
-  static SDL_Surface *createUnderlyingSurface (int width, int height);
-
-  static SDL_Surface *
-  createUnderlyingSurfaceFromTexture (SDL_Texture *texture);
-
-  static bool hasUnderlyingSurface (SDL_Surface *uSur);
-
   
-
-private:
-  static void releaseUnderlyingSurface (SDL_Surface *uSur);
 };
 
 // Global display.

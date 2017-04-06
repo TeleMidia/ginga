@@ -36,36 +36,22 @@ ImagePlayer::displayJobCallbackWrapper (DisplayJob *job,
 
 bool
 ImagePlayer::displayJobCallback (arg_unused (DisplayJob *job),
-                                 SDL_Renderer *renderer)
-{
-  SDL_Texture *texture;
-  SDLWindow *window;
+                                 SDL_Renderer *renderer){
+  if (this->window == NULL)
+       return true;
 
-  texture = IMG_LoadTexture (renderer, mrl.c_str ());
+  SDL_Texture * texture = IMG_LoadTexture (renderer, mrl.c_str ());
   if (unlikely (texture == NULL))
     g_error ("cannot load image file %s: %s", mrl.c_str (),
              IMG_GetError ());
 
+  this->window->setTexture (texture);
 
-  this->lock ();
-  window = surface->getParentWindow ();
-
-  if (window == NULL ){
-    this->unlock ();
-    return true;
-  }
-
-
-  g_assert_nonnull (window);
-  window->setTexture (texture);
-  this->unlock ();
   this->condDisplayJobSignal ();
   return false;                 // remove job
 }
-
 
 // Public methods.
-
 
 /**
  * Creates ImagePlayer for the given URI
@@ -74,7 +60,6 @@ ImagePlayer::ImagePlayer (const string &uri) : Player (uri)
 {
   this->mutexInit ();
   this->condDisplayJobInit ();
-  this->surface = new SDLSurface ();
 }
 
 /**

@@ -53,7 +53,6 @@ TextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
     if (err != NULL) g_error_free (err);
     g_assert_nonnull(contents);
 
-    SDLWindow *window;
     SDL_Texture *texture;
 
     SDL_Surface *sfc;
@@ -64,7 +63,7 @@ TextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
     int textAreaHeight;
 
     this->lock ();
-    SDL_Rect r = this->surface->getParentWindow()->getRect();
+    SDL_Rect r = this->window->getRect();
 
 #if SDL_VERSION_ATLEAST(2,0,5)
     sfc = SDL_CreateRGBSurfaceWithFormat (0, r.w,
@@ -144,11 +143,8 @@ TextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
     SDLx_UnlockSurface (sfc);
     SDL_FreeSurface(sfc);
      
-    this->lock ();
-    window = surface->getParentWindow ();
-    g_assert_nonnull (window);
-    window->setTexture (texture);
-    this->unlock ();
+    this->window->setTexture (texture);
+
     this->condDisplayJobSignal ();
     return false;                 // remove job
 }
@@ -171,7 +167,6 @@ TextPlayer::TextPlayer (const string &uri) : Player (uri)
 
   this->mutexInit ();
   this->condDisplayJobInit ();
-  this->surface = new SDLSurface ();
 }
 
 TextPlayer::~TextPlayer (void)

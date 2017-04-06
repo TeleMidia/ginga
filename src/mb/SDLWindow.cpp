@@ -677,71 +677,6 @@ SDLWindow::getContent ()
   return curSur;
 }
 
-#if 0
-void
-SDLWindow::setTexture (SDL_Texture *texture)
-{
-  lockTexture ();
-
-  if (this->texture == texture)
-    {
-      unlockTexture ();
-      return;
-    }
-
-  if (textureOwner && this->texture != NULL)
-    {
-    }
-
-  if (texture == NULL)
-    {
-      textureOwner = true;
-    }
-  else
-    {
-      textureOwner = false;
-    }
-
-  this->texture = texture;
-  unlockTexture ();
-}
-#endif
-
-#if 0
-SDL_Texture *
-SDLWindow::getTexture (SDL_Renderer *renderer)
-{
-  SDL_Texture *uTex;
-
-  lockTexture ();
-  if (renderer != NULL)
-    {
-      if (textureOwner && textureUpdate && texture != NULL)
-        {
-          Display::releaseTexture (texture);
-          textureUpdate = false;
-          texture = NULL;
-        }
-
-      if (texture == NULL)
-        {
-          lockSurface ();
-          if (curSur != NULL)
-            {
-              textureOwner = true;
-              texture = Display::createTextureFromSurface (renderer,
-                                                                   curSur);
-            }
-          unlockSurface ();
-        }
-    }
-
-  uTex = texture;
-  unlockTexture ();
-
-  return uTex;
-}
-#endif
 
 bool
 SDLWindow::isTextureOwner (SDL_Texture *texture)
@@ -833,8 +768,8 @@ SDLWindow::getDumpFileUri (int quality, arg_unused (int dumpW), arg_unused (int 
     }
   else if (texture != NULL)
     {
-      dumpUSur
-          = Display::createUnderlyingSurfaceFromTexture (texture);
+    //  dumpUSur
+     //     = Display::createUnderlyingSurfaceFromTexture (texture);
     }
   else
     {
