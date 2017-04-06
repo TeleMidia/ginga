@@ -66,7 +66,7 @@ add_executable(ginga
 
   ../src/formatter/AdapterAVPlayer.cpp
   ../src/formatter/AdapterApplicationPlayer.cpp
-  ../src/formatter/AdapterChannelPlayer.cpp
+#  ../src/formatter/AdapterChannelPlayer.cpp
   ../src/formatter/AdapterFormatterPlayer.cpp
   ../src/formatter/AdapterImagePlayer.cpp
   ../src/formatter/AdapterLuaPlayer.cpp
@@ -120,7 +120,6 @@ add_executable(ginga
   ../src/formatter/NclPresentationEvent.cpp
   ../src/formatter/NclSelectionEvent.cpp
   ../src/formatter/NclSwitchEvent.cpp
-  ../src/formatter/NominalEventMonitor.cpp
   ../src/formatter/PrefetchManager.cpp
   ../src/formatter/PresentationContext.cpp
   ../src/formatter/PrivateBaseContext.cpp
