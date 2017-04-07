@@ -356,8 +356,21 @@ NewVideoPlayer::pause ()
 void
 NewVideoPlayer::stop ()
 { //precisa estar entre locks
-  ret = gst_element_set_state (playbin, GST_STATE_NULL);
+  //ret = gst_element_set_state (playbin, GST_STATE_NULL);
+  if (this->status == SLEEPING){
+    return;
+  }
+  else if (this->status == OCCURRING)
+  {
+    ret = gst_element_change_state (playbin, GST_STATE_CHANGE_PLAYING_TO_PAUSED);  
+    g_assert (ret != GST_STATE_CHANGE_FAILURE);
+  }
+
+  ret = gst_element_change_state (playbin, GST_STATE_CHANGE_PAUSED_TO_READY);
   g_assert (ret != GST_STATE_CHANGE_FAILURE);
+
+  //ret = gst_element_change_state (playbin, GST_STATE_CHANGE_READY_TO_NULL);
+  //g_assert (ret != GST_STATE_CHANGE_FAILURE);
 
   GstStateChangeReturn retWait = gst_element_get_state (playbin, NULL, NULL, GST_CLOCK_TIME_NONE);
 
