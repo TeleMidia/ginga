@@ -52,9 +52,9 @@ GINGA_PLAYER_BEGIN
 class NewVideoPlayer : public Thread, public Player, public IProviderListener
 {
 public:
-  NewVideoPlayer (const string &mrl);
+  NewVideoPlayer (const string &mrl); //works
   virtual ~NewVideoPlayer ();
-  SDLSurface* getSurface ();
+  SDLSurface* getSurface (); //works
 
   void finished ();
   double getEndTime ();
@@ -67,30 +67,30 @@ public:
   int64_t getVPts ();
   void timeShift (const string &direction);
 
-  guint32 getMediaTime ();
+  guint32 getMediaTime (); //works
   void setMediaTime (guint32 pos);
   void setStopTime (double pos);
   double getStopTime ();
   void setScope (const string &scope, short type = TYPE_PRESENTATION,
                  double begin = -1, double end = -1,
                  double outTransDur = -1);
-  bool play ();
-  void pause ();
-  void stop ();
-  void resume ();
+  bool play (); //works
+  void pause (); //need test 
+  void stop (); //works
+  void resume (); //need test
 
   virtual string getPropertyValue (const string &name);
   virtual void setPropertyValue (const string &name, const string &value);
 
-  void addListener (IPlayerListener *listener);
+  void addListener (IPlayerListener *listener); //need test
   //void release ();
-  string getMrl ();
-  bool isPlaying ();
+  string getMrl (); //works
+  bool isPlaying (); //works
   bool isRunning ();
 
   //void setAVPid (int aPid, int vPid);
 
-  bool setOutWindow (SDLWindow* windowId);
+  bool setOutWindow (SDLWindow* windowId); //works
   
  
  private:  
@@ -98,13 +98,13 @@ public:
   GINGA_MUTEX_DEFN ();
   GINGA_COND_DEFN (DisplayJob);
 
-  static void eosCB (GstAppSink *, gpointer);
+  static void eosCB (GstAppSink *, gpointer); //works
   static GstFlowReturn newPrerollCB (GstAppSink *, gpointer);
-  static GstFlowReturn newSampleCB (GstAppSink *, gpointer);
+  static GstFlowReturn newSampleCB (GstAppSink *, gpointer); //works
 
   static bool displayJobCallbackWrapper (DisplayJob *,
-                                         SDL_Renderer *, void *);
-  bool displayJobCallback (DisplayJob *, SDL_Renderer *);
+                                         SDL_Renderer *, void *); //works
+  bool displayJobCallback (DisplayJob *, SDL_Renderer *); //works
 
   SDL_Texture *texture;
 
@@ -122,8 +122,8 @@ public:
 
  // bool textureUpdated;
 
-  void createPipeline ();
-  void eos();
+  void createPipeline (); //works
+  void eos(); //works
   void run ();
 
 };
