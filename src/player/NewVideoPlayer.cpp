@@ -319,6 +319,11 @@ NewVideoPlayer::setScope (arg_unused(const string &scope), arg_unused(short type
 bool
 NewVideoPlayer::play ()
 {
+  if (this->status == OCCURRING)
+  {
+    return true;
+  }
+  
   Player::play ();
 
   ret = gst_element_set_state (playbin, GST_STATE_PLAYING);
@@ -330,6 +335,7 @@ NewVideoPlayer::play ()
     Ginga_Display->addJob(displayJobCallbackWrapper, this);
     this->condDisplayJobWait (); 
     Thread::startThread ();
+    this->unlock ();
     return true;
   }
 
@@ -340,10 +346,20 @@ NewVideoPlayer::play ()
 void
 NewVideoPlayer::pause ()
 {
+  this->lock ();
+  if (this->status == SLEEPING || this->status == PAUSED)
+  {
+    this->unlock ();
+    return;
+  }
+
   Player::pause ();
 
-  ret = gst_element_set_state (playbin, GST_STATE_PAUSED);
+  ret = gst_element_change_state (playbin, GST_STATE_CHANGE_PLAYING_TO_PAUSED);  
   g_assert (ret != GST_STATE_CHANGE_FAILURE);
+
+  //ret = gst_element_set_state (playbin, GST_STATE_PAUSED);
+  //g_assert (ret != GST_STATE_CHANGE_FAILURE);
 
   GstStateChangeReturn retWait = gst_element_get_state (playbin, NULL, NULL, GST_CLOCK_TIME_NONE);
 
@@ -351,13 +367,17 @@ NewVideoPlayer::pause ()
   {
     g_print ("failed to pause the file\n");
   }
+  this->unlock ();
 }
 
 void
 NewVideoPlayer::stop ()
 { //precisa estar entre locks
   //ret = gst_element_set_state (playbin, GST_STATE_NULL);
-  if (this->status == SLEEPING){
+  this->lock ();
+  if (this->status == SLEEPING)
+  {
+    this->unlock ();
     return;
   }
   else if (this->status == OCCURRING)
@@ -383,6 +403,7 @@ NewVideoPlayer::stop ()
 
   gst_object_unref (playbin);
   gst_object_unref (bin);
+  this->unlock ();
 }
 
 void
