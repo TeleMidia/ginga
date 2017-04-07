@@ -171,7 +171,7 @@ NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   this->lock ();
   
   //g_assert_nonnull(surface);
-  if ( sample != NULL ){
+  if ( sample != NULL && this->status == OCCURRING ){
 
     window = surface->getParentWindow ();
     
@@ -206,6 +206,7 @@ NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
     gst_sample_unref (sample);
     sample = NULL;
+    //g_print ("Print\n");
   }
   
   this->unlock ();
@@ -213,8 +214,8 @@ NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   //if (GST_ELEMENT_CAST(playbin)->current_state == GST_STATE_PAUSED)
   if (this->status == SLEEPING)
   {
-    g_print("status: SLEEPING; return false;\n");
-    //SDL_DestroyTexture (texture);
+    g_print ("status: SLEEPING; return false;\n");
+
     //this->condDisplayJobSignal ();
 
     return false; //Remove job
@@ -233,12 +234,14 @@ void
 NewVideoPlayer::finished ()
 {
 	TRACE ();
+  g_print (">>-------------------- NewVideoPlayer:finished -------------------<<");  
 }
 
 double
 NewVideoPlayer::getEndTime ()
 {
 	TRACE ();
+  g_print (">>-------------------- NewVideoPlayer:getEndTime -------------------<<");
   return 0;
 }
 
@@ -264,6 +267,7 @@ double
 NewVideoPlayer::getTotalMediaTime ()
 {
 	g_debug ("%s", G_STRLOC);
+  g_print (">>-------------------- NewVideoPlayer:getTotalMediaTime -------------------<<");
   return 0;
 }
 
@@ -307,6 +311,7 @@ double
 NewVideoPlayer::getStopTime ()
 {
 	TRACE ();
+  g_print (">>-------------------- NewVideoPlayer:getStopTime -------------------<<");
   return 0;
 }
 
@@ -332,7 +337,7 @@ NewVideoPlayer::play ()
   GstStateChangeReturn retWait = gst_element_get_state (playbin, NULL, NULL, GST_CLOCK_TIME_NONE);
 
   if ( retWait == GST_STATE_CHANGE_SUCCESS ){
-    Ginga_Display->addJob(displayJobCallbackWrapper, this);
+    Ginga_Display->addJob (displayJobCallbackWrapper, this);
     this->condDisplayJobWait (); 
     Thread::startThread ();
     this->unlock ();
@@ -419,11 +424,20 @@ NewVideoPlayer::resume ()
 
 void
 NewVideoPlayer::eos ()
-{
+{ 
+  this->lock ();
   Player::stop ();
+
+  SDLWindow *window; 
+  window = surface->getParentWindow ();
+
+  texture = NULL;
+  window->setTexture (texture);
+  SDL_DestroyTexture (texture);
 
   gst_object_unref (playbin);
   gst_object_unref (bin);
+  this->unlock ();
 }
 
 string
@@ -468,13 +482,15 @@ NewVideoPlayer::isPlaying ()
 }
 
 bool
-NewVideoPlayer::setOutWindow (arg_unused(SDLWindow* windowId))
+NewVideoPlayer::setOutWindow (SDLWindow* windowId)
 {
   GstCaps *caps;
   GstStructure *st;
 
   if (surface != 0 && surface->getParentWindow () == 0){
-    surface->setParentWindow (windowId);
+    Player::setOutWindow (windowId);
+    
+    //surface->setParentWindow (windowId);
 
     st = gst_structure_new_empty ("video/x-raw");
     gst_structure_set (st, "format", G_TYPE_STRING, "ARGB",
