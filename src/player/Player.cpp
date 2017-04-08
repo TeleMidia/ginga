@@ -421,50 +421,9 @@ Player::setScope (const string &scope, short type, double initTime, double endTi
   this->outTransTime = outTransDur;
 }
 
-void
-Player::mirrorIt (Player *mirrorSrc, Player *mirror)
-{
-  SDLSurface* iSrcSur;
-  SDLWindow* iSrcWin;
-
-  SDLSurface* iSur;
-  SDLWindow* iWin;
-
-  if (mirrorSrc != NULL && mirror != NULL)
-    {
-      iSrcSur = mirrorSrc->getSurface ();
-      iSur = mirror->getSurface ();
-      if (iSrcSur != 0 && iSur != 0)
-        {
-          iSrcWin = iSrcSur->getParentWindow ();
-          iWin = iSur->getParentWindow ();
-          if (iSrcWin != 0 && iWin != 0)
-            {
-              iWin->setMirrorSrc (iSrcWin);
-            }
-        }
-    }
-}
-
-void
-Player::checkMirrors ()
-{
-  set<IPlayer *>::iterator i;
-
-  mirrorIt ((Player *)mirrorSrc, this);
-
-  i = mirrors.begin ();
-  while (i != mirrors.end ())
-    {
-      mirrorIt (this, (Player *)(*i));
-      ++i;
-    }
-}
-
 bool
 Player::play ()
 {
-  checkMirrors ();
   this->forcedNaturalEnd = false;
   this->initStartTime = (guint32)g_get_monotonic_time();
   this->status = OCCURRING;

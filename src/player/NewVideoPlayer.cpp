@@ -382,11 +382,10 @@ NewVideoPlayer::stop ()
 { //precisa estar entre locks
   //ret = gst_element_set_state (playbin, GST_STATE_NULL);
  
-  this->lock ();
+//  this->lock ();
   if (this->status == SLEEPING)
   {
-      return;
-    this->unlock ();
+ //   this->unlock ();
     return;
   }
   else if (this->status == OCCURRING)
@@ -411,7 +410,7 @@ NewVideoPlayer::stop ()
   Player::stop ();
   gst_object_unref (playbin);
   gst_object_unref (bin);
-  this->unlock ();
+//  this->unlock ();
 }
 
 void
@@ -428,21 +427,10 @@ NewVideoPlayer::resume ()
 void
 NewVideoPlayer::eos ()
 { 
-
-  //in this case is necesary call formatter controller to stop this object;
-  //dont destroy anything here, some external objects uses theses stuffs
-  //if u did it, the ginga will crash! 
-
- // this->lock ();
- // Player::stop ();
-  //SDLWindow *window; 
-  //window = surface->getParentWindow ();
-  //window->setTexture (texture);
-  //SDL_DestroyTexture (texture);
-
- // gst_object_unref (playbin);
- // gst_object_unref (bin);
-//  this->unlock ();
+  //this force onEnd event trigger
+  this->forceNaturalEnd(true);
+  
+  //Its necessary remove this object from Display`s displayjobCallBack to stop drawing the last frame
 }
 
 string
