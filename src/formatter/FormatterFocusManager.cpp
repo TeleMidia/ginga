@@ -719,11 +719,11 @@ FormatterFocusManager::recoveryDefaultState (NclExecutionObject *object)
   if (player != NULL)
     {
       fRegion = object->getDescriptor ()->getFormatterRegion ();
-      fRegion->setRenderedSurface (player->getPlayer ()->getSurface ());
-      fRegion->setFocus (false);
-      wId = fRegion->getOutputId ();
-      player->setOutputWindow (wId);
-      player->flip ();
+    //  fRegion->setRenderedSurface (player->getPlayer ()->getSurface ());
+    //  fRegion->setFocus (false);
+    //  wId = fRegion->getOutputId ();
+    //  player->setOutputWindow (wId);
+    //  player->flip ();
     }
 }
 

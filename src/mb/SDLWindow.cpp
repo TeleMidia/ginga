@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "SDLWindow.h"
 
-#include "SDLConvert.h"
 #include "Display.h"
 #include "SDLSurface.h"
 
@@ -115,7 +114,7 @@ SDLWindow::~SDLWindow ()
   lockChilds ();
   if (childSurface != NULL)
     {
-      childSurface->setParentWindow (NULL);
+    //  childSurface->setParentWindow (NULL);
     }
 
   unlockChilds ();
@@ -590,13 +589,13 @@ SDLWindow::unprotectedValidate ()
 {
   if (winISur != 0)
     {
-      winISur->flip ();
-      curSur = winISur->getContent ();
+     // winISur->flip ();
+     // curSur = winISur->getContent ();
       textureUpdate = true;
     }
   else if (childSurface != NULL)
     {
-      childSurface->flip ();
+    //  childSurface->flip ();
       textureUpdate = true;
     }
 }
@@ -610,7 +609,7 @@ SDLWindow::createDrawDataList ()
   if (childSurface != NULL
      /* && Ginga_Display->hasSurface (childSurface) */)
     {
-      dd = ((SDLSurface *)childSurface)->createDrawDataList ();
+     // dd = ((SDLSurface *)childSurface)->createDrawDataList ();
     }
   unlockChilds ();
 
@@ -695,7 +694,7 @@ SDLWindow::isMine (SDLSurface *surface)
 {
   bool itIs = false;
 
-  if (surface != NULL && surface->getContent () != NULL)
+  if (surface != NULL /* && surface->getContent () != NULL*/)
     {
       if (surface == winISur || surface == childSurface)
         {
@@ -712,7 +711,7 @@ SDLWindow::renderFrom (SDLSurface *surface)
   SDL_Surface *contentSurface;
 
   Thread::mutexLock (&rMutex);
-  contentSurface = surface->getContent ();
+ // contentSurface = surface->getContent ();
   if (contentSurface == NULL)
     {
       clog << "SDLWindow::renderFrom(" << this;
@@ -729,10 +728,10 @@ SDLWindow::renderFrom (SDLSurface *surface)
   //    winISur = Ginga_Display->createSurface (
     //      contentSurface->w, contentSurface->h);
 
-      winISur->blit (0, 0, surface);
-      winISur->flip ();
+     // winISur->blit (0, 0, surface);
+     // winISur->flip ();
 
-      curSur = winISur->getContent ();
+    //  curSur = winISur->getContent ();
       textureUpdate = true;
     }
   else
@@ -779,10 +778,10 @@ SDLWindow::getDumpFileUri (int quality, arg_unused (int dumpW), arg_unused (int 
 
   Display::lockSDL ();
   xstrassign (uri, "%s/dump_%p.jpg", g_get_tmp_dir (), (void *) this);
-  int ret
+ /* int ret
       = SDLConvert::convertSurfaceToJPEG (uri.c_str (), dumpUSur, quality);
   if (ret == -1)
-    uri = "";
+    uri = ""; */
     //Display::createReleaseContainer (dumpUSur, NULL, NULL);
   Display::unlockSDL ();
 

@@ -3201,7 +3201,7 @@ FormatterMediator::notifyPlayerListeners (short code, const string &paremeter,
 void
 FormatterMediator::setSurface (SDLSurface* surface)
 {
-  Player::setSurface (surface);
+  
 }
 
 SDLSurface*
@@ -3209,9 +3209,9 @@ FormatterMediator::getSurface ()
 {
   SDLSurface* s = 0;
 
-  s = Player::getSurface ();
-  s->clearContent ();
-  s->flip ();
+  //s = Player::getSurface ();
+  //s->clearContent ();
+  //s->flip ();
 
   return s;
 }

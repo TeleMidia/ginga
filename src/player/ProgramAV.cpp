@@ -103,10 +103,10 @@ ProgramAV::getSurface ()
 
   if (currentPlayer != NULL)
     {
-      pSur = currentPlayer->getSurface ();
+    //  pSur = currentPlayer->getSurface ();
       if (pSur != 0)
         {
-          pSur->setExternalHandler (true);
+        //  pSur->setExternalHandler (true);
         }
     }
 

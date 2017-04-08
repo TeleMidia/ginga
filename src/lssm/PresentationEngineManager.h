@@ -31,7 +31,6 @@ using namespace ::ginga::system;
 #include "mb/ICmdEventListener.h"
 using namespace ::ginga::mb;
 
-#include "player/ShowButton.h"
 #include "player/IPlayerListener.h"
 using namespace ::ginga::player;
 
@@ -82,8 +81,6 @@ private:
   int currentPrivateBaseId;
   static bool autoProcess;
   vector<string> commands;
-//  InputManager *im;
-  ShowButton *sb;
   string nclFile;
   string interfId;
 

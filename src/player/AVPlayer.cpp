@@ -76,7 +76,7 @@ AVPlayer::~AVPlayer ()
   Thread::mutexLock (&tMutex);
   if (surface != 0 && mainAV)
     {
-      surface->setParentWindow (0);
+    //  surface->setParentWindow (0);
     }
 
   if (mainAV)
@@ -113,7 +113,7 @@ AVPlayer::getSurface ()
         }
     }
 
-  return Player::getSurface ();
+  return new SDLSurface();
 }
 
 void
@@ -195,7 +195,7 @@ AVPlayer::createFrame ()
       clog << endl;
       if (mainAV)
         {
-          surface->setParentWindow (0);
+        //  surface->setParentWindow (0);
         }
       delete surface;
     }
@@ -203,7 +203,7 @@ AVPlayer::createFrame ()
   surface =  new SDLSurface (NULL);
   if (win != 0 && mainAV)
     {
-      surface->setParentWindow (win);
+     // surface->setParentWindow (win);
     }
 
   Thread::mutexUnlock (&tMutex);
@@ -610,9 +610,9 @@ AVPlayer::run ()
 
       this->surface = createFrame ();
 
-      if (this->win != 0 && surface->getParentWindow () == 0)
+      if (this->win != 0 /*&& surface->getParentWindow () == 0 */)
         {
-          surface->setParentWindow (win);
+        //  surface->setParentWindow (win);
         }
       provider->playOver (surface);
       checkVideoResizeEvent ();

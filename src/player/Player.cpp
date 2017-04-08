@@ -366,22 +366,6 @@ Player::ntsNotifyPlayerListeners (set<IPlayerListener *> *list,
     }
 }
 
-void
-Player::setSurface (SDLSurface* surface)
-{
-  if (this->surface != 0)
-    {
-      delete this->surface;
-      this->surface = 0;
-    }
-  this->surface = surface;
-}
-
-SDLSurface*
-Player::getSurface ()
-{
-  return surface;
-}
 
 void
 Player::setMediaTime (guint32 newTime)

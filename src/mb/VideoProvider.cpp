@@ -123,7 +123,7 @@ VideoProvider::playOver (SDLSurface* surface)
   SDLWindow* parentId;
   SDLWindow *parent;
 
-  parentId = surface->getParentWindow ();
+  //parentId = surface->getParentWindow ();
 
   if (parentId == 0)
     {

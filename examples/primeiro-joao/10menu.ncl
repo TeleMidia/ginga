@@ -52,7 +52,7 @@
   <body>
     <port id="entry" component="animation"/>
     <media id="background" src="media/background.png" descriptor="backgroundDesc"/>
-    <media id="animation" src="media/animGar.mp4" descriptor="screenDesc">
+    <media id="animation" src="media/animGar.mp4" descriptor="screenDesc" type='video/x-new-video-player'>
       <area id="segDrible" begin="12s"/>
       <area id="segPhoto" begin="41s"/>
       <area id="segIcon" begin="45s" end="51s"/>
