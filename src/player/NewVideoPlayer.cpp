@@ -32,11 +32,16 @@ GINGA_PLAYER_BEGIN
 NewVideoPlayer::NewVideoPlayer (const string &mrl) : Thread (), Player (mrl)
 {
 	//TRACE ();
-  texture = NULL;  
+  
+  this->texture = NULL;
+
+  this->playbin = NULL;
+  this->bin = NULL;
+  this->filter = NULL;
+  this->sample = NULL;
   
   this->mutexInit ();
   this->condDisplayJobInit ();
-  this->surface = new SDLSurface ();
   
   createPipeline ();
 }
@@ -158,28 +163,27 @@ NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 //  if( gst_clock_get_time ( gst_element_get_clock (playbin) ) > 3474088000) //Apagar
 //    return false;
 //    stop ();
-  
+
+  if(this->window==NULL)
+      return false;
+
   GstVideoFrame v_frame;
   GstVideoInfo v_info;
   GstBuffer *buf;
   GstCaps *caps;
   guint8 *pixels;
   guint stride;
-  
-  SDLWindow *window;
 
   this->lock ();
   
   //g_assert_nonnull(surface);
   if ( sample != NULL && this->status == OCCURRING ){
 
-    window = surface->getParentWindow ();
-    
     if (texture == NULL){
       texture = SDL_CreateTexture (renderer, SDL_PIXELFORMAT_ARGB32,
                                 SDL_TEXTUREACCESS_TARGET, 
-                                surface->getParentWindow ()->getRect().w,
-                                surface->getParentWindow ()->getRect().h);
+                                this->window->getRect().w,
+                                this->window->getRect().h);
       g_assert_nonnull (texture);
       
       this->condDisplayJobSignal ();
@@ -199,8 +203,7 @@ NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
     stride = GST_VIDEO_FRAME_PLANE_STRIDE (&v_frame, 0);
     g_assert (SDL_UpdateTexture(texture, NULL, pixels, stride) == 0);
   
-    g_assert_nonnull (window);
-    window->setTexture (texture);
+    this->window->setTexture (texture);
 
     gst_video_frame_unmap (&v_frame);
 
@@ -222,12 +225,6 @@ NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   }
 
   return true; //Keep job
-}
-
-SDLSurface*
-NewVideoPlayer::getSurface ()
-{
-	return this->surface;  
 }
 
 void
@@ -287,8 +284,13 @@ NewVideoPlayer::timeShift (arg_unused(const string &direction))
 guint32
 NewVideoPlayer::getMediaTime ()
 {
-  GstClock *clock = gst_element_get_clock (playbin);
-  guint32 time =  GST_TIME_AS_MSECONDS (gst_clock_get_time ( clock ));
+  if(this->playbin==NULL)
+      return 0;
+  GstClock *clock = gst_element_get_clock (this->playbin);
+  if(clock==NULL)
+     return 0;
+  guint32 time =  GST_TIME_AS_MSECONDS (gst_clock_get_time(clock)) 
+                - GST_TIME_AS_MSECONDS (gst_element_get_base_time(this->playbin));
   
   gst_object_unref (clock);
 
@@ -379,9 +381,11 @@ void
 NewVideoPlayer::stop ()
 { //precisa estar entre locks
   //ret = gst_element_set_state (playbin, GST_STATE_NULL);
+ 
   this->lock ();
   if (this->status == SLEEPING)
   {
+      return;
     this->unlock ();
     return;
   }
@@ -390,22 +394,21 @@ NewVideoPlayer::stop ()
     ret = gst_element_change_state (playbin, GST_STATE_CHANGE_PLAYING_TO_PAUSED);  
     g_assert (ret != GST_STATE_CHANGE_FAILURE);
   }
-
+ 
   ret = gst_element_change_state (playbin, GST_STATE_CHANGE_PAUSED_TO_READY);
   g_assert (ret != GST_STATE_CHANGE_FAILURE);
 
   //ret = gst_element_change_state (playbin, GST_STATE_CHANGE_READY_TO_NULL);
   //g_assert (ret != GST_STATE_CHANGE_FAILURE);
-
+  
   GstStateChangeReturn retWait = gst_element_get_state (playbin, NULL, NULL, GST_CLOCK_TIME_NONE);
 
   if ( retWait != GST_STATE_CHANGE_SUCCESS )
   {
     g_print ("failed to stop the file\n");
   } 
-
+ 
   Player::stop ();
-
   gst_object_unref (playbin);
   gst_object_unref (bin);
   this->unlock ();
@@ -425,19 +428,21 @@ NewVideoPlayer::resume ()
 void
 NewVideoPlayer::eos ()
 { 
-  this->lock ();
-  Player::stop ();
 
-  SDLWindow *window; 
-  window = surface->getParentWindow ();
+  //in this case is necesary call formatter controller to stop this object;
+  //dont destroy anything here, some external objects uses theses stuffs
+  //if u did it, the ginga will crash! 
 
-  texture = NULL;
-  window->setTexture (texture);
-  SDL_DestroyTexture (texture);
+ // this->lock ();
+ // Player::stop ();
+  //SDLWindow *window; 
+  //window = surface->getParentWindow ();
+  //window->setTexture (texture);
+  //SDL_DestroyTexture (texture);
 
-  gst_object_unref (playbin);
-  gst_object_unref (bin);
-  this->unlock ();
+ // gst_object_unref (playbin);
+ // gst_object_unref (bin);
+//  this->unlock ();
 }
 
 string
@@ -487,23 +492,20 @@ NewVideoPlayer::setOutWindow (SDLWindow* windowId)
   GstCaps *caps;
   GstStructure *st;
 
-  if (surface != 0 && surface->getParentWindow () == 0){
-    Player::setOutWindow (windowId);
-    
-    //surface->setParentWindow (windowId);
+  this->window = windowId;
 
-    st = gst_structure_new_empty ("video/x-raw");
-    gst_structure_set (st, "format", G_TYPE_STRING, "ARGB",
-                      "width", G_TYPE_INT, surface->getParentWindow ()->getRect().w,
-                      "height", G_TYPE_INT, surface->getParentWindow ()->getRect().h, 
+  st = gst_structure_new_empty ("video/x-raw");
+  gst_structure_set (st, "format", G_TYPE_STRING, "ARGB",
+                      "width", G_TYPE_INT, this->window->getRect().w,
+                      "height", G_TYPE_INT, this->window->getRect().h, 
                       NULL);
 
-    caps = gst_caps_new_full (st, NULL);
-    g_assert_nonnull (caps);
+  caps = gst_caps_new_full (st, NULL);
+  g_assert_nonnull (caps);
 
-    g_object_set (filter, "caps", caps, NULL);
-    gst_caps_unref (caps);
-  }
+  g_object_set (filter, "caps", caps, NULL);
+  gst_caps_unref (caps);
+  
 
 	return true;
 }

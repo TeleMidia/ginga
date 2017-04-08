@@ -40,7 +40,7 @@
   </head>
   <body>
      <port id='start' component='text1'/>
-     <media id='text1' src='samples/bunny.ogg' descriptor='desc' type='video/x-new-video-player'>
+     <media id='text1' src='samples/animGar.mp4' descriptor='desc' type='video/x-new-video-player'>
          <area id="segText" begin="3s" end="7s" />
          <area id="segText2" begin="5s" end="10s" />
      </media>
@@ -63,7 +63,6 @@
         <bind role="onEnd" component="text1" interface="segText" />
         <bind role="start" component="text2"  />
      </link>
-
 
     <link xconnector="onBeginStop">
         <bind role="onBegin" component="text2" interface="segText" />
