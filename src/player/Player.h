@@ -132,9 +132,6 @@ private:
                                         const string &value);
 
 public:
-  virtual void setSurface (SDLSurface* surface);
-  virtual SDLSurface* getSurface ();
-
   virtual void setMediaTime (guint32 newTime);
   virtual int64_t
   getVPts ()

@@ -41,8 +41,6 @@ using namespace ::ginga::ncl;
 #include "mb/Display.h"
 using namespace ::ginga::mb;
 
-#include "player/ShowButton.h"
-using namespace ::ginga::player;
 
 #include "system/GingaLocatorFactory.h"
 using namespace ::ginga::system;
@@ -128,7 +126,6 @@ PresentationEngineManager::PresentationEngineManager (
   this->timeBaseProvider = NULL;
  // this->im = Ginga_Display->getInputManager ();
   privateBaseManager = new PrivateBaseManager ();
-  this->sb = new ShowButton ();
 
   ContentTypeManager::getInstance ()->setMimeFile (string (GINGA_DATADIR)
                                                    + "mimetypes.ini");
@@ -456,11 +453,6 @@ PresentationEngineManager::close ()
   formattersToRelease.clear ();
   formatters.clear ();
 
-  if (sb != NULL)
-    {
-      delete sb;
-      sb = NULL;
-    }
   unlock ();
 }
 
@@ -1077,10 +1069,6 @@ PresentationEngineManager::checkStatus ()
   lock ();
   if (formatters.empty () && isLocalNcl)
     {
-      if (sb != NULL)
-        {
-          sb->stop ();
-        }
 
       g_usleep (50000);
 
@@ -1239,86 +1227,7 @@ PresentationEngineManager::eventReceived (void *ptr)
   clog << code << "'" << endl;
 
   delete (struct inputEventNotification *)ptr;
-/*
-  if (code == Key::KEY_QUIT)
-    {
-      cout << "PresentationEngineManager::eventReceived QUIT" << endl;
 
-      //p->sb->stop (); show button
-      p->setIsLocalNcl (true, NULL);
-      p->stopAllPresentations ();
-      g_mutex_lock (&p->quit_mutex);
-      p->quit = true;
-      g_cond_signal (&p->quit_cond);
-      g_mutex_unlock (&p->quit_mutex);
-    }
-  else if (parameter != "" && code == IPlayer::PL_NOTIFY_STOP)
-    {
-      clog << "PresentationEngineManager::eventReceived: NOTIFY_STOP";
-      clog << endl;
-
-      g_usleep (100000);
-      p->presentationCompleted (parameter);
-    }
-  else if (!p->disableFKeys
-           && (code == Key::KEY_POWER || code == Key::KEY_F10
-               || code == Key::KEY_STOP || code == Key::KEY_F11))
-    {
-      clog << "PresentationEngineManager::eventReceived: POWER_OFF";
-      clog << endl;
-
-      p->sb->stop ();
-      g_usleep (500000);
-
-      p->setIsLocalNcl (true, NULL);
-      p->stopAllPresentations ();
-      p->close ();
-      g_usleep (500000);
-      p->unlockConditionSatisfied ();
-    }
-  else if (code == Key::KEY_PRINTSCREEN || code == Key::KEY_SUPER)
-    {
-      p->getScreenShot ();
-    }
-  else if (!p->disableFKeys
-           && (code == Key::KEY_PAUSE || code == Key::KEY_F12))
-    {
-      clog << "PresentationEngineManager::eventReceived: PAUSE";
-      clog << endl;
-
-      p->sb->pause ();
-      p->pausePressed ();
-    }
-  else if (code == Key::KEY_PLUS_SIGN && cmds != NULL)
-    {
-      if (!cmds->empty () && !autoProcess)
-        {
-          string cmd = *(cmds->begin ());
-          clog << "RUNNING CURRENT COMMAND '" << cmd;
-          clog << "'" << endl;
-
-          p->readCommand (cmd);
-          cmds->erase (cmds->begin ());
-          cmds->push_back (cmd);
-        }
-      delete cmds;
-    }
-  else if (code == Key::KEY_GREATER_THAN_SIGN)
-    {
-      clog << ">> TIME SHIFT >>" << endl;
-      p->updateFormatters (UC_SHIFT, "forward");
-    }
-  else if (code == Key::KEY_LESS_THAN_SIGN)
-    {
-      clog << "<< TIME SHIFT <<" << endl;
-      p->updateFormatters (UC_SHIFT, "backward");
-    }
-  else if (code == Key::KEY_SMALL_W)
-    {
-      cout << "<< GINGA WINDOW DEBUG <<" << endl;
-      p->printGingaWindows ();
-    }
- */
   return NULL;
 }
 

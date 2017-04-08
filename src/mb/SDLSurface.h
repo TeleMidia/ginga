@@ -63,49 +63,8 @@ public:
   SDLSurface (void *underlyingSurface);
   virtual ~SDLSurface ();
 
-private:
-  void releasePendingSurface ();
-  bool createPendingSurface ();
-  void checkPendingSurface ();
-  void fill ();
-  void releaseChromaColor ();
-  void releaseBgColor ();
-  void releaseBorderColor ();
-  void releaseSurfaceColor ();
-
-  void releaseDrawData ();
-
-  void initialize ();
-
 public:
-  void takeOwnership ();
 
-  SDL_Surface *getPendingSurface ();
-
-  void setExternalHandler (bool extHandler);
-  bool hasExternalHandler ();
-
-  void addCaps (int caps);
-  void setCaps (int caps);
-  int getCap (const string &cap);
-  int getCaps ();
-  bool setParentWindow (SDLWindow *parentWindow);
-  SDLWindow *getParentWindow ();
-  SDL_Surface *getContent ();
-  void setContent (SDL_Surface *surface);
-  void clearContent ();
-  void clearSurface ();
-
-  vector<DrawData *> *createDrawDataList ();
-
-private:
-  void pushDrawData (int c1, int c2, int c3, int c4, short type);
-
-public:
-  void drawLine (int x1, int y1, int x2, int y2);
-  void drawRectangle (int x, int y, int w, int h);
-  void fillRectangle (int x, int y, int w, int h);
-  void drawString (int x, int y, const char *txt);
   void setChromaColor (SDL_Color color);
   SDL_Color *getChromaColor ();
   void setBorderColor (SDL_Color color);
@@ -115,20 +74,9 @@ public:
   void setColor (SDL_Color color);
   SDL_Color *getColor ();
   void setSurfaceFont (void *font);
-  void flip ();
-  void scale (double x, double y);
+  
 
-private:
-  void initContentSurface ();
-  SDL_Surface *createSurface ();
 
-public:
-  void blit (int x, int y, SDLSurface *src = NULL, int srcX = -1,
-             int srcY = -1, int srcW = -1, int srcH = -1);
-
-  void setClip (int x, int y, int w, int h);
-  void getSize (int *width, int *height);
-  string getDumpFileUri ();
 };
 
 GINGA_MB_END

@@ -127,11 +127,11 @@ ChannelPlayer::setSurfacesParent (SDLWindow* parent)
   while (players != objectMap->end ())
     {
       avPlayer = players->second;
-      s = ((Player *)avPlayer)->getSurface ();
-      if (s != 0 && s->getParentWindow () != parent)
+  //    s = ((Player *)avPlayer)->getSurface ();
+    /*  if (s != 0 && s->getParentWindow () != parent)
         {
-          s->setParentWindow (parent);
-        }
+       //   s->setParentWindow (parent);
+        } */
       ++players;
     }
   hasParent = true;
@@ -142,7 +142,7 @@ ChannelPlayer::getSurface ()
 {
   if (selectedPlayer != NULL)
     {
-      return ((Player *)selectedPlayer)->getSurface ();
+  //    return ((Player *)selectedPlayer)->getSurface ();
     }
   return 0;
 }
@@ -154,12 +154,12 @@ ChannelPlayer::play ()
 
   if (selectedPlayer != NULL)
     {
-      s = ((Player *)selectedPlayer)->getSurface ();
-      if (!hasParent && s != 0 && s->getParentWindow () != 0)
+     // s = ((Player *)selectedPlayer)->getSurface ();
+  /*    if (!hasParent && s != 0 && s->getParentWindow () != 0)
         {
           SDLWindow* parentWindow = s->getParentWindow ();
           setSurfacesParent (parentWindow);
-        }
+        } */
       selectedPlayer->play ();
     }
 

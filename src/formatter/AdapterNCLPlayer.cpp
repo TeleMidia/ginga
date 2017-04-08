@@ -123,11 +123,7 @@ AdapterNCLPlayer::createPlayer ()
 
       player = (INCLPlayer *)(new FormatterMediator (childData));
 
-  //    s = Ginga_Display->createSurface ();
-      int cap = s->getCap ("ALPHACHANNEL");
-      s->setCaps (cap);
 
-    //  ((INCLPlayer *)player)->setSurface (s);
       if (((INCLPlayer *)player)->setCurrentDocument (mrl) == NULL)
         {
           clog << "AdapterNCLPlayer::createPlayer Warning! ";

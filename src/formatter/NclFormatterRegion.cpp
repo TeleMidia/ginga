@@ -767,12 +767,12 @@ NclFormatterRegion::prepareOutputDisplay (SDLSurface* renderedSurface,
 
       this->renderedSurface = renderedSurface;
 
-      if (renderedSurface != 0
+    /*  if (renderedSurface != 0
           && renderedSurface->hasExternalHandler ())
         {
           externHandler = true;
           outputDisplay = renderedSurface->getParentWindow ();
-        }
+        } */
 
       if (!externHandler)
         {
@@ -806,20 +806,8 @@ NclFormatterRegion::prepareOutputDisplay (SDLSurface* renderedSurface,
         {
           outputDisplay->setCurrentTransparency ((guint8)(transparency * 255));
         }
-
-      int caps = outputDisplay->getCap ("ALPHACHANNEL");
-      if (!externHandler && renderedSurface != 0
-          && (caps & renderedSurface->getCaps ()))
-        {
-          outputDisplay->addCaps (caps);
-        }
-
       if (chromaKey != NULL)
         {
-          caps = outputDisplay->getCap ("NOSTRUCTURE");
-          outputDisplay->setCaps (caps);
-          outputDisplay->draw ();
-
           outputDisplay->setColorKey (*chromaKey);
         }
       else if (!externHandler)
@@ -835,11 +823,11 @@ NclFormatterRegion::prepareOutputDisplay (SDLSurface* renderedSurface,
 
   if (renderedSurface != 0 && !externHandler)
     {
-      if (renderedSurface->setParentWindow (
-                                      outputDisplay))
-        {
-          outputDisplay->renderFrom (renderedSurface);
-        }
+   //   if (renderedSurface->setParentWindow (
+     //                                 outputDisplay))
+     //   {
+     //     outputDisplay->renderFrom (renderedSurface);
+     //   }
     }
 
   unlock ();
@@ -1419,7 +1407,7 @@ NclFormatterRegion::unselect ()
       outputDisplay->setBorder (c, 0);
       if (renderedSurface != 0)
         {
-          renderedSurface->setParentWindow (outputDisplay);
+         // renderedSurface->setParentWindow (outputDisplay);
           outputDisplay->renderFrom (renderedSurface);
         }
       outputDisplay->validate ();
