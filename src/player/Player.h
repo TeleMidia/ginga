@@ -157,10 +157,6 @@ PLAYER_STATUS getMediaStatus();
                          double begin = -1, double end = -1,
                          double outTransDur = -1);
 
-private:
-  void mirrorIt (Player *mirrorSrc, Player *mirror);
-  void checkMirrors ();
-
 public:
 
   virtual bool play ();
