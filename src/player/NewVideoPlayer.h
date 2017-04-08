@@ -54,7 +54,6 @@ class NewVideoPlayer : public Thread, public Player, public IProviderListener
 public:
   NewVideoPlayer (const string &mrl); //works
   virtual ~NewVideoPlayer ();
-  SDLSurface* getSurface (); //works
 
   void finished ();
   double getEndTime ();

@@ -711,11 +711,6 @@ bool
 Player::setOutWindow (SDLWindow* windowId)
 {
   this->window = windowId;
-
-  if (surface != 0 && surface->getParentWindow () == 0)
-    {
-      surface->setParentWindow (windowId);
-    }
   return true;
 }
 

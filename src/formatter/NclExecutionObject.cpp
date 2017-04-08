@@ -1991,7 +1991,7 @@ NclExecutionObject::notifyTimeAnchorCallBack(){
    double nTime = nextTransition->getTime();
    double mTime = (double)this->player->getMediaTime();
 
-  //  g_debug("- N: %f  M: %f ",nTime,mTime);
+   // g_debug("- N: %f  M: %f ",nTime,mTime);
 
    if( mTime < nTime )
      return;    
