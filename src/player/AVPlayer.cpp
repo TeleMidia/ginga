@@ -74,10 +74,7 @@ AVPlayer::~AVPlayer ()
   unlockConditionSatisfied ();
 
   Thread::mutexLock (&tMutex);
-  if (surface != 0 && mainAV)
-    {
-    //  surface->setParentWindow (0);
-    }
+
 
   if (mainAV)
     {
@@ -101,20 +98,6 @@ AVPlayer::~AVPlayer ()
   Thread::mutexDestroy (&tMutex);
 }
 
-SDLSurface*
-AVPlayer::getSurface ()
-{
-  if (provider == 0)
-    {
-      createProvider ();
-      if (provider == 0)
-        {
-          clog << "AVPlayer::getSurface() can't create provider" << endl;
-        }
-    }
-
-  return new SDLSurface();
-}
 
 void
 AVPlayer::createProvider (void)
@@ -131,7 +114,7 @@ AVPlayer::createProvider (void)
   if (provider == 0 && (fileExists (mrl) || isRemote))
     {
       provider = Ginga_Display->createContinuousMediaProvider (mrl);
-      surface = createFrame ();
+    
     }
 
   Thread::mutexUnlock (&(pMutex));
@@ -183,33 +166,7 @@ AVPlayer::setSoundLevel (double level)
   // unlock();
 }
 
-SDLSurface*
-AVPlayer::createFrame ()
-{
-  // clog << "AVPlayer::createFrame()" << endl;
 
-  Thread::mutexLock (&tMutex);
-  if (surface != 0)
-    {
-      clog << "AVPlayer::createFrame Warning! surface != NULL";
-      clog << endl;
-      if (mainAV)
-        {
-        //  surface->setParentWindow (0);
-        }
-      delete surface;
-    }
-
-  surface =  new SDLSurface (NULL);
-  if (win != 0 && mainAV)
-    {
-     // surface->setParentWindow (win);
-    }
-
-  Thread::mutexUnlock (&tMutex);
-
-  return surface;
-}
 
 void
 AVPlayer::getOriginalResolution (int *width, int *height)
@@ -347,7 +304,7 @@ AVPlayer::play ()
 
   Player::play ();
   clog << "AVPlayer::play() calling provider play over" << endl;
-  provider->playOver (surface);
+//  provider->playOver (surface);
 
   if (!running)
     {
@@ -402,7 +359,7 @@ AVPlayer::resume ()
   setSoundLevel (soundLevel);
 
   Player::play ();
-  provider->resume (surface);
+ // provider->resume (surface);
 
   if (!running)
     {
@@ -579,11 +536,11 @@ AVPlayer::checkVideoResizeEvent ()
     {
       g_usleep (150000);
     }
-  hasEvent = provider->checkVideoResizeEvent (surface);
+//  hasEvent = provider->checkVideoResizeEvent (surface);
   setSoundLevel (this->soundLevel);
   if (hasEvent)
     {
-      provider->playOver (surface);
+     // provider->playOver (surface);
     }
 
   return hasEvent;
@@ -608,13 +565,13 @@ AVPlayer::run ()
 
       this->provider = Ginga_Display->createContinuousMediaProvider (mrl);
 
-      this->surface = createFrame ();
+   //   this->surface = createFrame ();
 
       if (this->win != 0 /*&& surface->getParentWindow () == 0 */)
         {
         //  surface->setParentWindow (win);
         }
-      provider->playOver (surface);
+     // provider->playOver (surface);
       checkVideoResizeEvent ();
       buffered = true;
 

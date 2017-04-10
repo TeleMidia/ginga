@@ -45,8 +45,7 @@ public:
 private:
   void setSurfacesParent (SDLWindow* parent);
 
-protected:
-  SDLSurface* getSurface ();
+
 
 public:
   bool play ();

@@ -121,7 +121,7 @@ ChannelPlayer::setSurfacesParent (SDLWindow* parent)
 {
   map<string, IPlayer *>::iterator players;
   IPlayer *avPlayer;
-  SDLSurface* s = 0;
+ // SDLSurface* s = 0;
 
   players = objectMap->begin ();
   while (players != objectMap->end ())
@@ -137,20 +137,11 @@ ChannelPlayer::setSurfacesParent (SDLWindow* parent)
   hasParent = true;
 }
 
-SDLSurface*
-ChannelPlayer::getSurface ()
-{
-  if (selectedPlayer != NULL)
-    {
-  //    return ((Player *)selectedPlayer)->getSurface ();
-    }
-  return 0;
-}
 
 bool
 ChannelPlayer::play ()
 {
-  SDLSurface* s;
+ // SDLSurface* s;
 
   if (selectedPlayer != NULL)
     {

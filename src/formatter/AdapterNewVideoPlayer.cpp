@@ -17,7 +17,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "AdapterNewVideoPlayer.h"
-#include "mb/SDLSurface.h"
 #include "player/NewVideoPlayer.h"
 
 GINGA_FORMATTER_BEGIN

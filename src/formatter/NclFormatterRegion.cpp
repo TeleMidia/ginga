@@ -40,7 +40,6 @@ NclFormatterRegion::NclFormatterRegion (const string &objectId, void *descriptor
   initializeNCMRegion ();
 
   this->outputDisplay = 0;
-  this->renderedSurface = 0;
   this->imVisible = false;
   this->externHandler = false;
   this->focusState = NclFormatterRegion::UNSELECTED;
@@ -246,11 +245,7 @@ NclFormatterRegion::initializeNCMRegion ()
     }
 }
 
-void
-NclFormatterRegion::setRenderedSurface (SDLSurface* iSur)
-{
-  this->renderedSurface = iSur;
-}
+
 
 void
 NclFormatterRegion::setZIndex (int zIndex)
@@ -270,8 +265,7 @@ NclFormatterRegion::setZIndex (int zIndex)
       layoutId = originalRegion->getId ();
 
       cvtZIndex = ((NclFormatterLayout *)layoutManager)
-                      ->refreshZIndex (this, layoutId, zIndex, plan,
-                                       renderedSurface);
+                      ->refreshZIndex (this, layoutId, zIndex, plan);
 
       if (outputDisplay != 0)
         {
@@ -615,14 +609,13 @@ NclFormatterRegion::getOutputId ()
 
 void
 NclFormatterRegion::meetComponent (arg_unused (int width), arg_unused (int height), arg_unused (int prefWidth),
-                                   arg_unused (int prefHeight), arg_unused (SDLSurface* component))
+                                   arg_unused (int prefHeight))
 {
 }
 
 void
 NclFormatterRegion::sliceComponent (arg_unused (int width), arg_unused (int height), arg_unused (int prefWidth),
-                                    arg_unused (int prefHeight),
-                                    arg_unused (SDLSurface* component))
+                                    arg_unused (int prefHeight))
 {
 }
 
@@ -719,8 +712,7 @@ NclFormatterRegion::getOriginalRegion ()
 }
 
 SDLWindow*
-NclFormatterRegion::prepareOutputDisplay (SDLSurface* renderedSurface,
-                                          double cvtIndex)
+NclFormatterRegion::prepareOutputDisplay (double cvtIndex)
 {
   lock ();
 
@@ -765,14 +757,7 @@ NclFormatterRegion::prepareOutputDisplay (SDLSurface* renderedSurface,
       if (height <= 0)
         height = 1;
 
-      this->renderedSurface = renderedSurface;
-
-    /*  if (renderedSurface != 0
-          && renderedSurface->hasExternalHandler ())
-        {
-          externHandler = true;
-          outputDisplay = renderedSurface->getParentWindow ();
-        } */
+    
 
       if (!externHandler)
         {
@@ -821,14 +806,7 @@ NclFormatterRegion::prepareOutputDisplay (SDLSurface* renderedSurface,
       clog << "window != NULL" << endl;
     }
 
-  if (renderedSurface != 0 && !externHandler)
-    {
-   //   if (renderedSurface->setParentWindow (
-     //                                 outputDisplay))
-     //   {
-     //     outputDisplay->renderFrom (renderedSurface);
-     //   }
-    }
+
 
   unlock ();
 
@@ -1058,9 +1036,6 @@ NclFormatterRegion::disposeOutputDisplay ()
         }
       outputDisplay = 0;
     }
-
-  // rendered surface is deleted by player
-  renderedSurface = 0;
 }
 
 void
@@ -1286,7 +1261,6 @@ NclFormatterRegion::getFocusState ()
 bool
 NclFormatterRegion::setSelection (bool selOn)
 {
-  SDLSurface* selSurface;
 
   if (selOn && focusState == NclFormatterRegion::SELECTED)
     {
@@ -1296,25 +1270,7 @@ NclFormatterRegion::setSelection (bool selOn)
   if (selOn)
     {
       focusState = NclFormatterRegion::SELECTED;
-      if (selComponentSrc != "")
-        {
-          lock ();
-
-          selSurface = NclFocusSourceManager::getFocusSourceComponent (selComponentSrc);
-
-          if (selSurface != 0)
-            {
-              if (outputDisplay != 0 && !externHandler)
-                {
-                  outputDisplay->renderFrom (
-                                        selSurface);
-                }
-
-              delete selSurface;
-            }
-          unlock ();
-        }
-
+    
       lock ();
       if (outputDisplay != 0 && !externHandler)
         {
@@ -1345,7 +1301,7 @@ NclFormatterRegion::setSelection (bool selOn)
 void
 NclFormatterRegion::setFocus (bool focusOn)
 {
-  SDLSurface* focusSurface;
+//  SDLSurface* focusSurface;
 
   if (focusOn)
     {
@@ -1354,19 +1310,16 @@ NclFormatterRegion::setFocus (bool focusOn)
       if (focusComponentSrc != "")
         {
           lock ();
-
-          focusSurface = NclFocusSourceManager::getFocusSourceComponent (
-              focusComponentSrc);
-
+/*
           if (focusSurface != 0)
             {
               if (outputDisplay != 0 && !externHandler)
                 {
-                  outputDisplay->renderFrom (
-                                        focusSurface);
+                //  outputDisplay->renderFrom (
+                //                        focusSurface);
                 }
               delete focusSurface;
-            }
+            }  */
           unlock ();
         }
 
@@ -1405,11 +1358,7 @@ NclFormatterRegion::unselect ()
     {
       SDL_Color c = {0, 0, 0, 0};
       outputDisplay->setBorder (c, 0);
-      if (renderedSurface != 0)
-        {
-         // renderedSurface->setParentWindow (outputDisplay);
-          outputDisplay->renderFrom (renderedSurface);
-        }
+     
       outputDisplay->validate ();
     }
   unlock ();

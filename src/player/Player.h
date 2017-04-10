@@ -72,7 +72,6 @@ protected:
   PLAYER_STATUS status;
 
   string mrl;
-  SDLSurface *surface;
   SDLWindow *window;
   SDLWindow *outputWindow;
   set<IPlayer *> referredPlayers;

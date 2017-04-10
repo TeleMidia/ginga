@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "AudioProvider.h"
 #include "Display.h"
-#include "SDLSurface.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
@@ -93,15 +92,7 @@ AudioProvider::setMediaTime (double pos)
     }
 }
 
-void
-AudioProvider::playOver (arg_unused (SDLSurface* surface))
-{
-  clog << "AudioProvider::playOver" << endl;
-  if (decoder != NULL)
-    {
-      decoder->play ();
-    }
-}
+
 
 void
 AudioProvider::pause ()
@@ -112,14 +103,7 @@ AudioProvider::pause ()
     }
 }
 
-void
-AudioProvider::resume (arg_unused (SDLSurface* surface))
-{
-  if (decoder != NULL)
-    {
-      decoder->resume ();
-    }
-}
+
 
 void
 AudioProvider::stop ()

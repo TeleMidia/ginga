@@ -318,8 +318,6 @@ public:
                               const string &paremeter,
                               short type,
                               const string &value);
-  void setSurface (SDLSurface* surface);
-  SDLSurface* getSurface ();
   void flip ();
   guint32 getMediaTime ();
   double getTotalMediaTime ();

@@ -40,7 +40,6 @@ public:
   static ProgramAV *getInstance ();
   void release ();
   int64_t getVPts ();
-  SDLSurface* getSurface ();
 
 private:
   void addPidName (const string &name, int pid);

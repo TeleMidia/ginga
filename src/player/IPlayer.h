@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define IPLAYER_H_
 
 #include "mb/SDLWindow.h"
-#include "mb/SDLSurface.h"
 using namespace ::ginga::mb;
 
 #include "IPlayerListener.h"

@@ -550,8 +550,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
                 {
                   winId = ((FormatterMultiDevice *)multiDevPres)
                               ->prepareFormatterRegion (
-                                  executionObject,
-                                  new SDLSurface());
+                                  executionObject);
 
                   player->setOutputWindow (winId);
                   player->flip ();
@@ -859,7 +858,7 @@ FormatterScheduler::runActionOverApplicationObject (
               winId
                   = ((FormatterMultiDevice *)multiDevPres)
                         ->prepareFormatterRegion (
-                            executionObject, new SDLSurface());
+                            executionObject);
 
               player->setOutputWindow (winId);
               if (player->getObjectDevice () == 0)

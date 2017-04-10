@@ -19,8 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "SDLWindow.h"
 
 #include "Display.h"
-#include "SDLSurface.h"
-
 
 #include "system/Thread.h"
 using namespace ::ginga::system;
@@ -108,19 +106,16 @@ SDLWindow::redraw (SDL_Renderer *renderer)
 
 SDLWindow::~SDLWindow ()
 {
-  vector<SDLSurface *>::iterator i;
+ // vector<SDLSurface *>::iterator i;
 
   _lock ();
   lockChilds ();
-  if (childSurface != NULL)
-    {
-    //  childSurface->setParentWindow (NULL);
-    }
+  
 
   unlockChilds ();
 
   lockSurface ();
-  curSur = NULL;
+  //curSur = NULL;
 
   releaseWinISur ();
 
@@ -167,8 +162,7 @@ SDLWindow::initialize (arg_unused (SDLWindow* parentWindowID),
                        double z)
 {
   this->texture = NULL;
-  this->winISur = 0;
-  this->curSur = NULL;
+ 
 
   this->textureUpdate = false;
   this->textureOwner = true;
@@ -186,7 +180,7 @@ SDLWindow::initialize (arg_unused (SDLWindow* parentWindowID),
   this->z = z;
   this->ghost = false;
   this->visible = false;
-  this->childSurface = NULL;
+ 
   this->fit = true;
   this->stretch = true;
   this->caps = 0;
@@ -208,11 +202,7 @@ SDLWindow::initialize (arg_unused (SDLWindow* parentWindowID),
 void
 SDLWindow::releaseWinISur ()
 {
-  if (winISur != 0)
-    {
-      delete winISur;
-      winISur = 0;
-    }
+
 }
 
 void
@@ -383,14 +373,7 @@ SDLWindow::revertContent ()
   unlockSurface ();
 }
 
-void
-SDLWindow::setChildSurface (SDLSurface *iSur)
-{
-  lockSurface ();
-  releaseWinISur ();
-  this->childSurface = iSur;
-  unlockSurface ();
-}
+
 
 int
 SDLWindow::getCap (arg_unused (const string &cap))
@@ -587,33 +570,7 @@ SDLWindow::validate ()
 void
 SDLWindow::unprotectedValidate ()
 {
-  if (winISur != 0)
-    {
-     // winISur->flip ();
-     // curSur = winISur->getContent ();
-      textureUpdate = true;
-    }
-  else if (childSurface != NULL)
-    {
-    //  childSurface->flip ();
-      textureUpdate = true;
-    }
-}
-
-vector<DrawData *> *
-SDLWindow::createDrawDataList ()
-{
-  vector<DrawData *> *dd = NULL;
-
-  lockChilds ();
-  if (childSurface != NULL
-     /* && Ginga_Display->hasSurface (childSurface) */)
-    {
-     // dd = ((SDLSurface *)childSurface)->createDrawDataList ();
-    }
-  unlockChilds ();
-
-  return dd;
+  
 }
 
 void
@@ -670,11 +627,6 @@ SDLWindow::setRenderedSurface (SDL_Surface *uSur)
   unlockSurface ();
 }
 
-SDL_Surface *
-SDLWindow::getContent ()
-{
-  return curSur;
-}
 
 
 bool
@@ -689,105 +641,10 @@ SDLWindow::isTextureOwner (SDL_Texture *texture)
   return itIs;
 }
 
-bool
-SDLWindow::isMine (SDLSurface *surface)
-{
-  bool itIs = false;
 
-  if (surface != NULL /* && surface->getContent () != NULL*/)
-    {
-      if (surface == winISur || surface == childSurface)
-        {
-          itIs = true;
-        }
-    }
 
-  return itIs;
-}
 
-void
-SDLWindow::renderFrom (SDLSurface *surface)
-{
-  SDL_Surface *contentSurface;
 
-  Thread::mutexLock (&rMutex);
- // contentSurface = surface->getContent ();
-  if (contentSurface == NULL)
-    {
-      clog << "SDLWindow::renderFrom(" << this;
-      clog << ") Warning! NULL underlying ";
-      clog << "surface!" << endl;
-      Thread::mutexUnlock (&rMutex);
-      return;
-    }
-
-  lockSurface ();
-  if (!isMine (surface))
-    {
-      releaseWinISur ();
-  //    winISur = Ginga_Display->createSurface (
-    //      contentSurface->w, contentSurface->h);
-
-     // winISur->blit (0, 0, surface);
-     // winISur->flip ();
-
-    //  curSur = winISur->getContent ();
-      textureUpdate = true;
-    }
-  else
-    {
-      curSur = contentSurface;
-      textureUpdate = true;
-    }
-  unlockSurface ();
-
-  Thread::mutexUnlock (&rMutex);
-}
-
-void
-SDLWindow::blit (arg_unused (SDLWindow *src))
-{
-}
-
-void
-SDLWindow::stretchBlit (arg_unused (SDLWindow *src))
-{
-}
-
-string
-SDLWindow::getDumpFileUri (int quality, arg_unused (int dumpW), arg_unused (int dumpH))
-{
-  string uri;
-  SDL_Surface *dumpUSur;
-
-  lockSurface ();
-  if (curSur != NULL)
-    {
-      dumpUSur = curSur;
-    }
-  else if (texture != NULL)
-    {
-    //  dumpUSur
-     //     = Display::createUnderlyingSurfaceFromTexture (texture);
-    }
-  else
-    {
-      unlockSurface ();
-      return "";
-    }
-
-  Display::lockSDL ();
-  xstrassign (uri, "%s/dump_%p.jpg", g_get_tmp_dir (), (void *) this);
- /* int ret
-      = SDLConvert::convertSurfaceToJPEG (uri.c_str (), dumpUSur, quality);
-  if (ret == -1)
-    uri = ""; */
-    //Display::createReleaseContainer (dumpUSur, NULL, NULL);
-  Display::unlockSDL ();
-
-  unlockSurface ();
-  return uri;
-}
 
 void
 SDLWindow::_lock ()

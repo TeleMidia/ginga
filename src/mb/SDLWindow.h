@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 
 #include "SDL.h"
-#include "SDLSurface.h"
 
 GINGA_MB_BEGIN
 
@@ -44,7 +43,7 @@ public:
 private:
   SDL_Surface *curSur;
 
-  SDLSurface* winISur;
+ 
 
   bool textureUpdate;
   bool textureOwner;
@@ -62,7 +61,7 @@ private:
   bool visible;
   bool ghost;
 
-  SDLSurface *childSurface;
+
   bool fit;
   bool stretch;
   int caps;
@@ -115,7 +114,6 @@ public:
   void getBorder (SDL_Color *, int *);
 
   void revertContent ();
-  void setChildSurface (SDLSurface *iSur);
   int getCap (const string &cap);
   void setCaps (int caps);
   void addCaps (int capability);
@@ -154,26 +152,22 @@ private:
   void unprotectedValidate ();
 
 public:
-  vector<DrawData *> *createDrawDataList ();
+
   void setStretch (bool stretchTo);
   bool getStretch ();
   void setFit (bool fitTo);
   bool getFit ();
   void clearContent ();
   void setRenderedSurface (SDL_Surface *uSur);
-  SDL_Surface *getContent ();
+
   bool isTextureOwner (SDL_Texture *texture);
 
-private:
-  bool isMine (SDLSurface *surface);
+
 
 public:
   void renderImgFile (const string &serializedImageUrl);
-  void renderFrom (SDLSurface *s);
 
-  void blit (SDLWindow *src);
-  void stretchBlit (SDLWindow *src);
-  string getDumpFileUri (int quality, int dumpW, int dumpH);
+
 
   void _lock ();
   void _unlock ();

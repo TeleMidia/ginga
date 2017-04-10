@@ -45,11 +45,7 @@ public:
   virtual void feedBuffers (){};
   void *getProviderContent ();
   virtual void setProviderContent (arg_unused (void *content)){};
-  virtual bool
-  checkVideoResizeEvent (arg_unused (SDLSurface* frame))
-  {
-    return false;
-  };
+
   double getTotalMediaTime ();
   double getSoundLevel ();
   virtual int64_t getVPts ();
@@ -57,8 +53,6 @@ public:
   void setMediaTime (double pos);
 
 public:
-  void playOver (SDLSurface* surface);
-  void resume (SDLSurface* surface);
   void pause ();
   void stop ();
   void setSoundLevel (double level);

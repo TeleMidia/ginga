@@ -82,8 +82,6 @@ public:
                                       const string &value)
       = 0;
 
-  virtual void setSurface (SDLSurface* surface) = 0;
-  virtual SDLSurface* getSurface () = 0;
   virtual int64_t
   getVPts ()
   {

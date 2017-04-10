@@ -25,8 +25,6 @@ using namespace ::ginga::util;
 using namespace ::ginga::system;
 
 #include "mb/IKeyInputEventListener.h"
-#include "mb/SDLSurface.h"
-using namespace ::ginga::mb;
 
 #include "player/IPlayer.h"
 using namespace ::ginga::player;

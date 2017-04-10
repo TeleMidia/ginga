@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "DisplayDebug.h"
 
 #include "AudioProvider.h"
-#include "SDLSurface.h"
 #include "VideoProvider.h"
 #include "SDLWindow.h"
 

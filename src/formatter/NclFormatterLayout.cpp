@@ -289,7 +289,6 @@ NclFormatterLayout::getSortedIds (vector<SDLWindow*> *sortedIds)
 
 SDLWindow*
 NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object,
-                                            SDLSurface* renderedSurface,
                                             string plan)
 {
   NclCascadingDescriptor *descriptor;
@@ -360,7 +359,7 @@ NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object,
   regionId = layoutRegion->getId ();
   zIndex = layoutRegion->getZIndex ();
 
-  windowId = addRegionOnMaps (object, region, renderedSurface, regionId,
+  windowId = addRegionOnMaps (object, region, regionId,
                               zIndex, plan, &cvtZIndex);
 
   clog << "NclFormatterLayout::prepareFormatterRegion deviceRegion class ";
@@ -373,15 +372,14 @@ NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object,
 double
 NclFormatterLayout::refreshZIndex (NclFormatterRegion *region,
                                    const string &layoutRegionId, int zIndex,
-                                   const string &plan,
-                                   SDLSurface* renderedSurface)
+                                   const string &plan)
 {
   NclExecutionObject *object;
   double cvtZIndex;
 
   object = removeFormatterRegionFromMaps (layoutRegionId, region);
 
-  addRegionOnMaps (object, region, renderedSurface, layoutRegionId, zIndex,
+  addRegionOnMaps (object, region, layoutRegionId, zIndex,
                    plan, &cvtZIndex);
 
   return cvtZIndex;
@@ -482,7 +480,6 @@ NclFormatterLayout::hideObject (NclExecutionObject *object)
 SDLWindow*
 NclFormatterLayout::addRegionOnMaps (NclExecutionObject *object,
                                      NclFormatterRegion *region,
-                                     SDLSurface* renderedSurface,
                                      string layoutRegionId, int zIndex,
                                      string plan, double *cvtZIndex)
 {
@@ -508,7 +505,7 @@ NclFormatterLayout::addRegionOnMaps (NclExecutionObject *object,
   if (windowId == 0)
     {
       windowId
-          = region->prepareOutputDisplay (renderedSurface, convertedZIndex);
+          = region->prepareOutputDisplay (convertedZIndex);
     }
   sortRegion (layoutRegionId, convertedZIndex, plan);
 

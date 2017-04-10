@@ -146,13 +146,13 @@ FormatterMultiDevice::printGingaWindows ()
   cout << (unsigned long)serialized;
   cout << "'" << endl;
 
-  serialized->getDumpFileUri (quality, dumpW, dumpH);
+  //serialized->getDumpFileUri (quality, dumpW, dumpH);
 
   cout << "BitMapScreen window Id = '";
   if (bitMapScreen != 0)
     {
       cout << (unsigned long)bitMapScreen << "'";
-      bitMapScreen->getDumpFileUri (quality, dumpW, dumpH);
+    //  bitMapScreen->getDumpFileUri (quality, dumpW, dumpH);
     }
   else
     {
@@ -185,7 +185,7 @@ FormatterMultiDevice::printGingaWindows ()
 
               if (iWin != 0)
                 {
-                  iWin->getDumpFileUri (quality, dumpW, dumpH);
+                //  iWin->getDumpFileUri (quality, dumpW, dumpH);
                 }
 
               cout << "'" << (unsigned long)(*j) << "' ";
@@ -315,7 +315,7 @@ FormatterMultiDevice::getFormatterLayout (
 
 SDLWindow*
 FormatterMultiDevice::prepareFormatterRegion (
-    NclExecutionObject *executionObject, SDLSurface* renderedSurface)
+    NclExecutionObject *executionObject)
 {
   NclFormatterLayout *layout;
   NclCascadingDescriptor *descriptor;
@@ -337,8 +337,7 @@ FormatterMultiDevice::prepareFormatterRegion (
               plan = descriptor->getFormatterRegion ()->getPlan ();
             }
 
-          windowId = layout->prepareFormatterRegion (executionObject,
-                                                     renderedSurface, plan);
+          windowId = layout->prepareFormatterRegion (executionObject,plan);
 
           if (bitMapScreen != 0)
             {

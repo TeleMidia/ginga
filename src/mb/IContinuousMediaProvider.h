@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef ICONTINUOUSMEDIAPROVIDER_H_
 #define ICONTINUOUSMEDIAPROVIDER_H_
 
-#include "SDLSurface.h"
 
 #include "IProviderListener.h"
 #include "IMediaProvider.h"
@@ -32,13 +31,13 @@ public:
   virtual bool hasVisual () = 0;
   virtual void setAVPid (int aPid, int vPid) = 0;
   virtual void feedBuffers () = 0;
-  virtual bool checkVideoResizeEvent (SDLSurface* frame) = 0;
+//  virtual bool checkVideoResizeEvent (SDLSurface* frame) = 0;
   virtual double getTotalMediaTime () = 0;
   virtual int64_t getVPts () = 0;
   virtual double getMediaTime () = 0;
   virtual void setMediaTime (double pos) = 0;
-  virtual void playOver (SDLSurface* surface) = 0;
-  virtual void resume (SDLSurface* surface) = 0;
+  //virtual void playOver (SDLSurface* surface) = 0;
+ // virtual void resume (SDLSurface* surface) = 0;
   virtual void pause () = 0;
   virtual void stop () = 0;
   virtual void setSoundLevel (double level) = 0;

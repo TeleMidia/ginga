@@ -96,22 +96,7 @@ ProgramAV::getVPts ()
   return 0;
 }
 
-SDLSurface*
-ProgramAV::getSurface ()
-{
-  SDLSurface* pSur = 0;
 
-  if (currentPlayer != NULL)
-    {
-    //  pSur = currentPlayer->getSurface ();
-      if (pSur != 0)
-        {
-        //  pSur->setExternalHandler (true);
-        }
-    }
-
-  return pSur;
-}
 
 void
 ProgramAV::addPidName (const string &name, int pid)

@@ -35,7 +35,6 @@ Player::Player (const string &mrl)
 
   this->mrl = mrl;
   this->outputWindow = 0;
-  this->surface = 0;
   this->window = NULL;
   this->notifying = false;
   this->presented = false;
