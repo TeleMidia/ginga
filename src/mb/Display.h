@@ -20,8 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-#include "IContinuousMediaProvider.h"
-#include "IDiscreteMediaProvider.h"
 #include "SDLWindow.h"
 
 #include "IKeyInputEventListener.h"
@@ -88,8 +86,6 @@ public:
   bool hasWindow (const SDLWindow *);
   void destroyWindow (SDLWindow *);
 
-  IContinuousMediaProvider *createContinuousMediaProvider (const string&);
-  void destroyContinuousMediaProvider (IContinuousMediaProvider *);
   
   void renderLoop (void);
 
@@ -118,7 +114,6 @@ private:
 
   static set<SDL_Texture *> uTexPool;
   static map<int, map<double, set<SDLWindow *> *> *> renderMap;
-  static set<IContinuousMediaProvider *> cmpRenderList;
 
 private:
   static void checkMutexInit ();

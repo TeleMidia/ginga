@@ -113,7 +113,7 @@ AVPlayer::createProvider (void)
 
   if (provider == 0 && (fileExists (mrl) || isRemote))
     {
-      provider = Ginga_Display->createContinuousMediaProvider (mrl);
+      
     
     }
 
@@ -458,7 +458,6 @@ AVPlayer::addListener (IPlayerListener *listener)
 void
 AVPlayer::release ()
 {
-  Ginga_Display->destroyContinuousMediaProvider ((IContinuousMediaProvider*)provider);
   provider = 0;
 }
 
@@ -563,7 +562,7 @@ AVPlayer::run ()
     {
       running = true;
 
-      this->provider = Ginga_Display->createContinuousMediaProvider (mrl);
+     
 
    //   this->surface = createFrame ();
 

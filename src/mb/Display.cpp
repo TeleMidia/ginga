@@ -19,8 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Display.h"
 #include "DisplayDebug.h"
 
-#include "AudioProvider.h"
-#include "VideoProvider.h"
 #include "SDLWindow.h"
 
 #include <cairo.h>
@@ -67,13 +65,7 @@ win_delete (SDLWindow *win)
   delete win;
 }
 
-// Deletes provider.
-static void
-prov_delete (gpointer p)
-{
-  IContinuousMediaProvider *prov = (IContinuousMediaProvider *) p;
-  delete prov;
-}
+
 
 
 // Private methods.
@@ -189,28 +181,7 @@ Display::renderLoop ()
             }
         }
 
-      this->lock ();            //  update providers
-      for (l = this->providers; l != NULL; l = l->next)
-        {
-          SDL_Texture *texture;
-          IContinuousMediaProvider *prov;
-          int width, height;
-
-          prov = (IContinuousMediaProvider *) l->data;
-          g_assert_nonnull (prov);
-          if (!prov->hasVisual ())
-            continue;
-
-          if (prov->getProviderContent () == NULL)
-            {
-              prov->getOriginalResolution (&width, &height);
-              texture = createTexture (this->renderer, width, height);
-              g_assert_nonnull (texture);
-              prov->setProviderContent (texture);
-            }
-          prov->refreshDR (NULL);
-        }
-      this->unlock ();
+    
 
       this->lock ();            // run jobs
       l = this->jobs;           // list may be modified while being iterated
@@ -337,7 +308,6 @@ Display::~Display ()
   g_list_free_full (this->jobs, (GDestroyNotify) job_delete);
   g_assert (g_list_length (this->textures) == 0);
   g_list_free_full (this->windows, (GDestroyNotify) win_delete);
-  g_list_free_full (this->providers, (GDestroyNotify) prov_delete);
   this->unlock ();
   this->mutexClear ();
  
@@ -530,30 +500,7 @@ Display::destroyWindow (SDLWindow *win)
   delete win;
 }
 
-/**
- * Creates managed continuous media provider to decode URI.
- */
-IContinuousMediaProvider *
-Display::createContinuousMediaProvider (const string &uri)
-{
-  IContinuousMediaProvider *prov;
 
-  prov = new VideoProvider (uri);
-  g_assert_nonnull (prov);
-  this->add (&this->providers, prov);
-  return prov;
-}
-
-/**
- * Destroys managed continuous media provider.
- */
-void
-Display::destroyContinuousMediaProvider (IContinuousMediaProvider *prov)
-{
-  g_assert_nonnull (prov);
-  this->remove (&this->providers, prov);
-  delete prov;
-}
 
 
 // END SANITY --------------------------------------------------------------
@@ -593,23 +540,6 @@ Display::createTextureFromSurface (SDL_Renderer *renderer,
 
   lockSDL ();
     
-/*
-  if (Display::hasUnderlyingSurface (surface))
-    {
-      g_assert_nonnull (surface);
-      texture = SDL_CreateTextureFromSurface (renderer, surface);
-      if (unlikely (texture == NULL))
-        {
-          g_error ("cannot create texture for surface %p: %s",
-                   surface, SDL_GetError ());
-        }
-      g_assert_nonnull (texture);
-      uTexPool.insert (texture);
-
-      /* allowing alpha 
-      g_assert (SDL_SetTextureBlendMode (texture, SDL_BLENDMODE_BLEND) == 0);
-    } */
-
    
   unlockSDL ();
 

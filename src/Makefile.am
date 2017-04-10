@@ -366,9 +366,3 @@ src+= isdbt-tuner/RingBuffer.cpp
 endif # WITH_LINUXDVB
 endif # WITH_ISDBT
 
-if WITH_LIBBPG
-AM_CXXFLAGS+= $(LIBBPG_CFLAGS)
-AM_LDFLAGS+= $(LIBBPG_LIBS)
-src+= SDLBpgDecoder.cpp
-endif # WITH_LIBBPG
-
