@@ -23,7 +23,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "IKeyInputEventListener.h"
 #include "IContinuousMediaProvider.h"
 #include "IDiscreteMediaProvider.h"
-#include "SDLSurface.h"
 #include "SDLWindow.h"
 
 GINGA_MB_BEGIN

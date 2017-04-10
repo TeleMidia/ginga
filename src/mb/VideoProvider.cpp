@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 
 #include "Display.h"
-#include "SDLSurface.h"
 #include "SDLWindow.h"
 
 GINGA_MB_BEGIN
@@ -77,11 +76,6 @@ VideoProvider::getVideoSurfaceDescription (arg_unused (void *dsc))
 {
 }
 
-bool
-VideoProvider::checkVideoResizeEvent (arg_unused (SDLSurface* frame))
-{
-  return false;
-}
 
 void
 VideoProvider::getOriginalResolution (int *width, int *height)
@@ -117,44 +111,9 @@ VideoProvider::setMediaTime (double pos)
   AudioProvider::setMediaTime (pos);
 }
 
-void
-VideoProvider::playOver (SDLSurface* surface)
-{
-  SDLWindow* parentId;
-  SDLWindow *parent;
 
-  //parentId = surface->getParentWindow ();
 
-  if (parentId == 0)
-    {
-      AudioProvider::playOver (surface);
-      return;
-    }
 
-  parent = parentId;
-
-  clog << "VideoProvider::playOver parent(" << parent << ")" << endl;
-  if (Ginga_Display->hasWindow (parentId))
-    {
-      win = parentId;
-      if (hasTex)
-        {
-          ((SDLWindow *)win)->setTexture (tex);
-          decoder->play ();
-        }
-    }
-  else
-    {
-      clog << "VideoProvider::playOver parent(" << parent << ") ";
-      clog << "Warning! hasWindow(parent) has returned false" << endl;
-    }
-}
-
-void
-VideoProvider::resume (SDLSurface* surface)
-{
-  AudioProvider::resume (surface);
-}
 
 void
 VideoProvider::pause ()

@@ -34,7 +34,7 @@ AdapterMirrorPlayer::createPlayer ()
   NclFormatterRegion *fRegion;
   NclCascadingDescriptor *descriptor;
   LayoutRegion *ncmRegion = NULL;
-  SDLSurface* mirrorSur;
+ 
 
   clog << "AdapterMirrorPlayer::createPlayer '" << mrl << "'" << endl;
 
@@ -62,11 +62,6 @@ AdapterMirrorPlayer::createPlayer ()
           if (fRegion != NULL)
             {
               ncmRegion = fRegion->getLayoutRegion ();
-           //   mirrorSur = Ginga_Display->createSurface (
-             //     ncmRegion->getWidthInPixels (),
-             //     ncmRegion->getHeightInPixels ());
-
-            //  player->setSurface (mirrorSur);
             }
         }
     }

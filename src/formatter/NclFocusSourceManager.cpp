@@ -28,7 +28,7 @@ using namespace ::ginga::player;
 using namespace ::ginga::util;
 
 GINGA_FORMATTER_BEGIN
-
+/*
 SDLSurface*
 NclFocusSourceManager::getFocusSourceComponent (const string &src)
 {
@@ -57,6 +57,6 @@ NclFocusSourceManager::getFocusSourceComponent (const string &src)
         }
     }
   return 0;
-}
+} */
 
 GINGA_FORMATTER_END

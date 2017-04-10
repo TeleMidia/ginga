@@ -135,7 +135,6 @@ src+= mb/Display.cpp
 src+= mb/DisplayDebug.cpp
 src+= mb/KeyMap.cpp
 src+= mb/SDL2ffmpeg.cpp
-src+= mb/SDLSurface.cpp
 src+= mb/SDLWindow.cpp
 src+= mb/VideoProvider.cpp
 src+= ncl/AbsoluteReferenceContent.cpp

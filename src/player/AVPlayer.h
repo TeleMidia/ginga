@@ -60,7 +60,6 @@ private:
 public:
   AVPlayer (const string &mrl);
   virtual ~AVPlayer ();
-  SDLSurface* getSurface ();
 
 private:
   void createProvider ();
@@ -79,7 +78,7 @@ public:
 
 private:
   void setSoundLevel (double level);
-  SDLSurface* createFrame ();
+ // SDLSurface* createFrame ();
 
 public:
   void getOriginalResolution (int *width, int *height);

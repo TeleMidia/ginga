@@ -40,7 +40,6 @@ AdapterNCLPlayer::createPlayer ()
   NclCascadingDescriptor *descriptor = NULL;
   string value;
   bool isPercent;
-  SDLSurface* s;
   NclPlayerData *childData, *playerData;
   PropertyAnchor *property;
 

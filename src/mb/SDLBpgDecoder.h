@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "SDLImageProvider.h"
 #include "SDLWindow.h"
-#include "SDLSurface.h"
 #include "Display.h"
 
 
@@ -32,7 +31,6 @@ public:
   string filePath;
   SDLBpgDecoder (const string &filename);
   ~SDLBpgDecoder ();
-  SDL_Surface *decode ();
 
 private:
 };

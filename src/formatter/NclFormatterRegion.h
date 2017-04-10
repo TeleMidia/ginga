@@ -52,8 +52,6 @@ private:
   bool externHandler;
   SDLWindow* outputDisplay;
 
-  SDLSurface* renderedSurface;
-
   bool imVisible;
 
   short focusState;
@@ -101,7 +99,6 @@ private:
   void initializeNCMRegion ();
 
 public:
-  void setRenderedSurface (SDLSurface* iSur);
 
   void setZIndex (int zIndex);
   int getZIndex ();
@@ -150,11 +147,9 @@ public:
   SDLWindow* getOutputId ();
 
 private:
-  void meetComponent (int width, int height, int prefWidth, int prefHeight,
-                      SDLSurface* component);
+  void meetComponent (int width, int height, int prefWidth, int prefHeight);
 
-  void sliceComponent (int width, int height, int prefWidth, int prefHeight,
-                       SDLSurface* component);
+  void sliceComponent (int width, int height, int prefWidth, int prefHeight);
 
   void updateCurrentComponentSize ();
 
@@ -169,8 +164,7 @@ public:
   LayoutRegion *getLayoutRegion ();
   LayoutRegion *getOriginalRegion ();
 
-  SDLWindow* prepareOutputDisplay (SDLSurface* renderedSurface,
-                                      double cvtIndex);
+  SDLWindow* prepareOutputDisplay (double cvtIndex);
 
   void showContent ();
   void hideContent ();

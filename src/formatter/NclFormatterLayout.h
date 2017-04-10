@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTERLAYOUT_H_
 #define FORMATTERLAYOUT_H_
 
-#include "mb/SDLSurface.h"
-using namespace ::ginga::mb;
-
 #include "ncl/LayoutRegion.h"
 using namespace ::ginga::ncl;
 
@@ -68,12 +65,10 @@ private:
 public:
   NclExecutionObject *getObject (int x, int y);
   SDLWindow* prepareFormatterRegion (NclExecutionObject *object,
-                                        SDLSurface* renderedSurface,
                                         string plan);
 
   double refreshZIndex (NclFormatterRegion *region, const string &layoutRegionId,
-                        int zIndex, const string &plan,
-                        SDLSurface* renderedSurface);
+                        int zIndex, const string &plan);
 
 private:
   void sortRegion (const string &regionId, double cvtIndex,
@@ -87,7 +82,6 @@ public:
 private:
   SDLWindow* addRegionOnMaps (NclExecutionObject *object,
                                  NclFormatterRegion *region,
-                                 SDLSurface* renderedSurface,
                                  string layoutRegionId, int zIndex,
                                  string plan, double *cvtZIndex);
 

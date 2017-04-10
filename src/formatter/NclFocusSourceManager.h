@@ -20,17 +20,15 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-#include "mb/SDLSurface.h"
-using namespace ::ginga::mb;
 
 GINGA_FORMATTER_BEGIN
-
+/*
 class NclFocusSourceManager
 {
 public:
   static SDLSurface* getFocusSourceComponent (const string &src);
 };
-
+*/
 GINGA_FORMATTER_END
 
 #endif /* FOCUS_SOURCE_MANAGER_H */

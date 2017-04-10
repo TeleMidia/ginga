@@ -84,35 +84,7 @@ AdapterApplicationPlayer::checkPlayerSurface (NclExecutionObject *obj)
   NclCascadingDescriptor *descriptor;
   NclFormatterRegion *fRegion;
   LayoutRegion *ncmRegion;
-  SDLSurface* wrapper;
   int w, h;
-/*
-  if (player != NULL)
-    {
-      wrapper = player->getSurface ();
-      if (wrapper == 0)
-        {
-          descriptor = obj->getDescriptor ();
-          if (descriptor != NULL)
-            {
-              fRegion = descriptor->getFormatterRegion ();
-              if (fRegion != NULL)
-                {
-                  ncmRegion = fRegion->getLayoutRegion ();
-                  if (ncmRegion != NULL)
-                    {
-                      w = ncmRegion->getWidthInPixels ();
-                      h = ncmRegion->getHeightInPixels ();
-                      if (w > 0 && h > 0)
-                        {
-                          wrapper = Ginga_Display->createSurface (w, h);
-                          player->setSurface (wrapper);
-                        }
-                    }
-                }
-            }
-        }
-    } */
 }
 
 void

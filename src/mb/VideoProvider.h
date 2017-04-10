@@ -48,7 +48,7 @@ private:
   void getVideoSurfaceDescription (void *dsc);
 
 public:
-  bool checkVideoResizeEvent (SDLSurface* frame);
+
 
   void getOriginalResolution (int *width, int *height);
   double getTotalMediaTime ();
@@ -56,9 +56,7 @@ public:
   double getMediaTime ();
   void setMediaTime (double pos);
 
-  void playOver (SDLSurface* surface);
 
-  void resume (SDLSurface* surface);
   void pause ();
   void stop ();
   void setSoundLevel (double level);

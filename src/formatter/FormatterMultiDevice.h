@@ -138,8 +138,7 @@ public:
   NclFormatterLayout *
   getFormatterLayout (NclCascadingDescriptor *descriptor,
                       NclExecutionObject *object);
-  SDLWindow* prepareFormatterRegion (NclExecutionObject *object,
-                                        SDLSurface* renderedSurface);
+  SDLWindow* prepareFormatterRegion (NclExecutionObject *object);
   void showObject (NclExecutionObject *executionObject);
   void hideObject (NclExecutionObject *executionObject);
 
