@@ -49,7 +49,7 @@ using namespace ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
-class NewVideoPlayer : public Thread, public Player, public IProviderListener
+class NewVideoPlayer : public Thread, public Player
 {
 public:
   NewVideoPlayer (const string &mrl); //works

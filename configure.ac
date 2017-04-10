@@ -78,13 +78,11 @@ AC_SUBST([XERCESC_REQUIRED_VERSION],     xercesc_required_version)
 # Optional dependencies version.
 m4_define([cairo_required_version],      [1.10.2])
 m4_define([expat_required_version],      [2.1])
-m4_define([libbpg_required_version],     [0.9.5])
 m4_define([librsvg_required_version],    [2.40.0])
 m4_define([libzip_required_version],     [0.11.2])
 m4_define([pango_required_version],      [1.30.0])
 AC_SUBST([CAIRO_REQUIRED_VERSION],       cairo_required_version)
 AC_SUBST([EXPAT_REQUIRED_VERSION],       expat_required_version)
-AC_SUBST([LIBBPG_REQUIRED_VERSION],      libbpg_required_version)
 AC_SUBST([LIBRSVG_REQUIRED_VERSION],     librsvg_required_version)
 AC_SUBST([LIBZIP_REQUIRED_VERSION],      libzip_required_version)
 AC_SUBST([PANGO_REQUIRED_VERSION],       pango_required_version)
@@ -190,9 +188,6 @@ AU_CHECK_OPTIONAL_PKG([gstreamer], [build gstreamer support], [],
 )
 
 
-AU_CHECK_OPTIONAL_PKG([libbpg], [build with libbpg BPG support], [],
- [LIBBPG], [libbpg >= libbpg_required_version])
-
 AU_CHECK_OPTIONAL_PKG([librsvg], [build with LibRsvg SVG support], [],
  [LIBRSVG],
  librsvg-2.0 >= librsvg_required_version[]dnl
@@ -262,7 +257,6 @@ AC_MSG_NOTICE([summary of main build options:
 
   with espeak:        ${with_espeak_result}
   with gstreamer:     ${with_gstreamer_result}
-  with libbpg:        ${with_libbpg_result}
   with librsvg:       ${with_librsvg_result}
   with pango:         ${with_pango_result}
 
