@@ -381,11 +381,20 @@ void
 NewVideoPlayer::stop ()
 { //precisa estar entre locks
   //ret = gst_element_set_state (playbin, GST_STATE_NULL);
- 
-//  this->lock ();
+  
+  this->lock ();
+  //when stops with natural end
+  if(forcedNaturalEnd){
+    Player::stop ();
+    gst_object_unref (playbin);
+    gst_object_unref (bin);
+    this->unlock ();
+    return;
+  }
+
   if (this->status == SLEEPING)
   {
- //   this->unlock ();
+    this->unlock ();
     return;
   }
   else if (this->status == OCCURRING)
@@ -410,7 +419,7 @@ NewVideoPlayer::stop ()
   Player::stop ();
   gst_object_unref (playbin);
   gst_object_unref (bin);
-//  this->unlock ();
+  this->unlock ();
 }
 
 void
@@ -430,7 +439,6 @@ NewVideoPlayer::eos ()
   //this force onEnd event trigger
   this->forceNaturalEnd(true);
   
-  //Its necessary remove this object from Display`s displayjobCallBack to stop drawing the last frame
 }
 
 string

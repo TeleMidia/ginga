@@ -559,7 +559,7 @@ Player::removeTimeReferPlayer (IPlayer *referPlayer)
 
 void
 Player::notifyReferPlayers (int transition)
-{
+{ 
   set<IPlayer *>::iterator i;
 
   Thread::mutexLock (&referM);
@@ -569,7 +569,7 @@ Player::notifyReferPlayers (int transition)
       (*i)->timebaseObjectTransitionCallback (transition);
       ++i;
     }
-  Thread::mutexUnlock (&referM);
+  Thread::mutexUnlock (&referM); 
 }
 
 void
