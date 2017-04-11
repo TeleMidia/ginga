@@ -53,6 +53,8 @@ typedef struct PendingNotification
 
   set<IPlayerListener *> *clone;
 } PendingNotification;
+
+
 class Player : public IPlayer
 {
 private:
@@ -95,6 +97,15 @@ protected:
   guint32 accTimePlaying;
   guint32 accTimePaused; 
 
+  //media attr
+  SDL_Texture *texture; //media texture
+  guint32 borderWidth;
+  SDL_Color bgColor; //background color
+  SDL_Color borderColor;
+  SDL_Rect rect; //draw area
+  double z;  //z-index
+  guint8 transparency; 
+
 public:
   Player (const string &mrl);
   virtual ~Player ();
@@ -115,12 +126,16 @@ public:
 
 private:
   void performLockedListenersRequest ();
+  
+public:
+  void redraw (SDL_Renderer*);
 
 public:
   void notifyPlayerListeners (short code,
                               const string &parameter = "",
                               short type = TYPE_PRESENTATION,
                               const string &value = "");
+                             
 
 private:
   static void *detachedNotifier (void *ptr);

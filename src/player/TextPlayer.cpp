@@ -63,11 +63,10 @@ TextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
     int textAreaHeight;
 
     this->lock ();
-    SDL_Rect r = this->window->getRect();
 
 #if SDL_VERSION_ATLEAST(2,0,5)
-    sfc = SDL_CreateRGBSurfaceWithFormat (0, r.w,
-                                           r.h,
+    sfc = SDL_CreateRGBSurfaceWithFormat (0, this->rect.w,
+                                           this->rect.h,
                                            32, SDL_PIXELFORMAT_ARGB8888);
 #else
     sfc = SDL_CreateRGBSurface (0, r.w, r.h, 32,
@@ -110,7 +109,7 @@ TextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
     else
         pango_layout_set_justify(layout, true);
 
-    pango_layout_set_width (layout,r.w*PANGO_SCALE);
+    pango_layout_set_width (layout,this->rect.w*PANGO_SCALE);
     pango_layout_set_wrap (layout,PANGO_WRAP_WORD);
     pango_layout_get_size (layout, NULL, &textAreaHeight);
     pango_font_description_free (desc);
@@ -123,8 +122,8 @@ TextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
     pango_cairo_update_layout (cr, layout);
 
     if(verticalAlign == "top") vAlign = 0;
-    else if(verticalAlign == "middle") vAlign = (r.h/2) - ( (textAreaHeight/PANGO_SCALE) /2);
-    else vAlign= r.h - (textAreaHeight/PANGO_SCALE);
+    else if(verticalAlign == "middle") vAlign = (this->rect.h/2) - ( (textAreaHeight/PANGO_SCALE) /2);
+    else vAlign= this->rect.h - (textAreaHeight/PANGO_SCALE);
 
     cairo_move_to (cr, 0, vAlign);
     pango_cairo_show_layout (cr, layout);
@@ -137,13 +136,13 @@ TextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
     cairo_surface_destroy (surface_c);
     g_free(contents);
 
-    texture = SDL_CreateTextureFromSurface (renderer, sfc);
-    g_assert_nonnull (texture);
+    this->texture = SDL_CreateTextureFromSurface (renderer, sfc);
+    g_assert_nonnull (this->texture);
     
     SDLx_UnlockSurface (sfc);
     SDL_FreeSurface(sfc);
      
-    this->window->setTexture (texture);
+   // this->window->setTexture (this->texture);
 
     this->condDisplayJobSignal ();
     return false;                 // remove job

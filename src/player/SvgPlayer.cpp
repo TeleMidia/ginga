@@ -47,9 +47,7 @@ SvgPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   int width;
   int height;
 
-  SDL_Rect rect;
   SDL_Surface *sfc;
-  SDL_Texture *texture;
 
   cairo_surface_t *cr_sfc;
   cairo_t *cr;
@@ -61,12 +59,11 @@ SvgPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
   rsvg_handle_get_dimensions (svg, &dim);
 
-  rect = this->window->getRect ();
-  g_assert (rect.w > 0 && rect.h > 0);
+  g_assert (this->rect.w > 0 && this->rect.h > 0);
 
   scale = (dim.width > dim.height)
-    ? (double) rect.w / dim.width
-    : (double) rect.h / dim.height;
+    ? (double) this->rect.w / dim.width
+    : (double) this->rect.h / dim.height;
 
   width = (int)(floor (dim.width * scale) + 1);
   height = (int)(floor (dim.height * scale) + 1);
@@ -102,12 +99,12 @@ SvgPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   cairo_destroy (cr);
   cairo_surface_destroy (cr_sfc);
 
-  texture = SDL_CreateTextureFromSurface (renderer, sfc);
-  g_assert_nonnull (texture);
+  this->texture = SDL_CreateTextureFromSurface (renderer, sfc);
+  g_assert_nonnull (this->texture);
 
   SDL_FreeSurface (sfc);
 
-  this->window->setTexture (texture);
+ // this->window->setTexture (texture);
 
   this->condDisplayJobSignal ();
   return false;                 // remove job

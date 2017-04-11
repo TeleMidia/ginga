@@ -179,12 +179,12 @@ NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   //g_assert_nonnull(surface);
   if ( sample != NULL && this->status == OCCURRING ){
 
-    if (texture == NULL){
-      texture = SDL_CreateTexture (renderer, SDL_PIXELFORMAT_ARGB32,
+    if (this->texture == NULL){
+      this->texture = SDL_CreateTexture (renderer, SDL_PIXELFORMAT_ARGB32,
                                 SDL_TEXTUREACCESS_TARGET, 
-                                this->window->getRect().w,
-                                this->window->getRect().h);
-      g_assert_nonnull (texture);
+                                this->rect.w,
+                                this->rect.h);
+      g_assert_nonnull (this->texture);
       
       this->condDisplayJobSignal ();
     }
@@ -201,9 +201,9 @@ NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
     pixels = (guint8 *) GST_VIDEO_FRAME_PLANE_DATA (&v_frame, 0);
     stride = GST_VIDEO_FRAME_PLANE_STRIDE (&v_frame, 0);
-    g_assert (SDL_UpdateTexture(texture, NULL, pixels, stride) == 0);
+    g_assert (SDL_UpdateTexture(this->texture, NULL, pixels, stride) == 0);
   
-    this->window->setTexture (texture);
+  //  this->window->setTexture (texture);
 
     gst_video_frame_unmap (&v_frame);
 
@@ -489,11 +489,12 @@ NewVideoPlayer::setOutWindow (SDLWindow* windowId)
   GstStructure *st;
 
   this->window = windowId;
+  this->rect = windowId->getRect();
 
   st = gst_structure_new_empty ("video/x-raw");
   gst_structure_set (st, "format", G_TYPE_STRING, "ARGB",
-                      "width", G_TYPE_INT, this->window->getRect().w,
-                      "height", G_TYPE_INT, this->window->getRect().h, 
+                      "width", G_TYPE_INT, this->rect.w,
+                      "height", G_TYPE_INT, this->rect.h, 
                       NULL);
 
   caps = gst_caps_new_full (st, NULL);

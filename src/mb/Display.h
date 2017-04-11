@@ -25,6 +25,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "IKeyInputEventListener.h"
 #include "IMouseEventListener.h"
 
+#include "player/Player.h"
+
 #include "formatter/NclExecutionObject.h"
 using namespace ::ginga::formatter;
 
@@ -46,6 +48,8 @@ private:
   int height;                   // display height in pixels
   bool fullscreen;              // true if full-screen mode is on
   guint32 frameTime;            //frame time rate
+  
+  set<Player*> players; 
 
   set<IKeyInputEventListener*> keyEventListeners;  // key event listeners
   set<IMouseEventListener*> mouseEventListeners; // mouse event listeners
@@ -89,15 +93,20 @@ public:
   
   void renderLoop (void);
 
-  
-  //listeners
+  //players
+  void registerPlayer(Player *);
+  void unregisterPlayer(Player *);
+
+  //key event listeners
   void registerKeyEventListener(IKeyInputEventListener*);
   void unregisterKeyEventListener(IKeyInputEventListener*);
   void postKeyInputEventListener(SDL_Keycode);       //gambi used by formatterFocusManager listener
-
+  
+  //mouse event listeners
   void registerMouseEventListener(IMouseEventListener*);
   void unregisterMouseEventListener(IMouseEventListener*);
-
+  
+  //time anchors listeners
   void registerTimeAnchorListener(NclExecutionObject*);
   void unregisterTimeAnchorListener(NclExecutionObject*);
 

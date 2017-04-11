@@ -105,8 +105,6 @@ public:
                                          SDL_Renderer *, void *); //works
   bool displayJobCallback (DisplayJob *, SDL_Renderer *); //works
 
-  SDL_Texture *texture;
-
   GstElement *playbin;
   GstElement *bin;
   GstElement *filter;

@@ -167,7 +167,7 @@ Display::renderLoop ()
                 break;
             case SDL_KEYUP:
                 this->notifyKeyEventListeners(SDL_KEYUP, evt.key.keysym.sym);
-                goto quit;
+             //   goto quit;
                 break;
             case SDL_MOUSEBUTTONUP:
                 this->notifyMouseEventListeners(SDL_MOUSEBUTTONUP);
@@ -175,7 +175,7 @@ Display::renderLoop ()
               // fall-through
             case SDL_QUIT:
               this->quit ();
-              goto quit;
+         //     goto quit;
             default:
               break;
             }
@@ -196,6 +196,16 @@ Display::renderLoop ()
         }
       this->unlock ();
 
+      
+      this->lock (); // redraw windows
+      SDL_SetRenderDrawColor (this->renderer, 255, 0, 255, 255);
+      SDL_RenderClear (this->renderer);
+      set<Player*>::iterator it;
+      for (it=players.begin(); it!=players.end(); ++it)
+          (*it)->redraw(renderer);
+       SDL_RenderPresent (this->renderer);
+      this->unlock ();
+/*
       this->lock ();            // redraw windows
       SDL_SetRenderDrawColor (this->renderer, 255, 0, 255, 255);
       SDL_RenderClear (this->renderer);
@@ -210,13 +220,14 @@ Display::renderLoop ()
       displayDebug->draw(this->renderer,elapsedTime);
       SDL_RenderPresent (this->renderer);
       this->unlock ();
-
+    
     quit:
       this->lock ();            // destroy dead textures
       g_list_free_full (this->textures,
                         (GDestroyNotify) SDL_DestroyTexture);
       this->textures = NULL;
-      this->unlock ();
+      this->unlock (); */
+
     }
     
   delete displayDebug;
@@ -605,12 +616,15 @@ Display::releaseTexture (SDL_Texture *texture)
   unlockSDL ();
 }
 
+void
+Display::registerPlayer(Player * obj){
+  players.insert(obj);
+}
 
-
-
-
-
-
+void
+Display::unregisterPlayer(Player *obj){
+  players.erase (obj);
+}
 
 void 
 Display::notifyKeyEventListeners(SDL_EventType evtType, SDL_Keycode key){

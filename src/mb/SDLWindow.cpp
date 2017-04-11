@@ -110,7 +110,6 @@ SDLWindow::~SDLWindow ()
 
   _lock ();
 
-  this->isWaiting = false;
   Thread::mutexDestroy (&cMutex);
   Thread::condDestroy (&cond);
 
@@ -129,16 +128,10 @@ SDLWindow::initialize (arg_unused (SDLWindow* parentWindowID),
                        double z)
 {
   this->texture = NULL;
- 
-
-  this->textureUpdate = false;
-  this->textureOwner = true;
 
   this->borderWidth = 0;
   this->bgColor = {0, 0, 0, 0};
   this->borderColor = {0, 0, 0, 0};
-  this->winColor = NULL;
-  this->colorKey = NULL;
 
   this->rect.x = x;
   this->rect.y = y;
@@ -148,16 +141,13 @@ SDLWindow::initialize (arg_unused (SDLWindow* parentWindowID),
   this->ghost = false;
   this->visible = false;
  
-  this->fit = true;
-  this->stretch = true;
-  this->caps = 0;
+
   this->transparencyValue = 0x00;
-  this->mirrorSrc = NULL;
+  
 
   Thread::mutexInit (&_mutex);
   Thread::mutexInit (&texMutex);
 
-  this->isWaiting = false;
   Thread::mutexInit (&cMutex);
   Thread::condInit (&cond, NULL);
 
@@ -205,39 +195,8 @@ SDLWindow::setRect (SDL_Rect r)
 }
 // SANITY END --------------------------------------------------------------
 
-void
-SDLWindow::setColorKey (SDL_Color color)
-{
- 
-  this->colorKey = new SDL_Color();
-  this->colorKey->r = color.r;
-  this->colorKey->g = color.g;
-  this->colorKey->b = color.b;
-  this->colorKey->a = color.a;
-}
 
-SDL_Color *
-SDLWindow::getColorKey ()
-{
-  return colorKey;
-}
 
-void
-SDLWindow::setWindowColor (SDL_Color color)
-{
-
-  this->winColor = new SDL_Color();
-  this->winColor->r = color.r;
-  this->winColor->g = color.g;
-  this->winColor->b = color.b;
-  this->winColor->a = color.a;
-}
-
-SDL_Color *
-SDLWindow::getWindowColor ()
-{
-  return winColor;
-}
 
 void
 SDLWindow::setBorder (SDL_Color c, int w)
