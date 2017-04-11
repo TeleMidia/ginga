@@ -45,13 +45,6 @@ FormatterBaseDevice::FormatterBaseDevice (DeviceLayout *deviceLayout,
                                  DV_QVGA_HEIGHT, -1.0);
 
   evs = new set<int>;
-//  evs->insert (Key::KEY_TAP);
-
-  //im->addInputEventListener (this, evs);
-
-  int caps = serialized->getCap ("ALPHACHANNEL");
-  serialized->setCaps (caps);
-  serialized->draw ();
 
 #if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
   if (rdm == NULL)

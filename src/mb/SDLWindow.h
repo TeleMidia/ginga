@@ -70,7 +70,6 @@ private:
   SDLWindow *mirrorSrc;
 
   pthread_mutex_t _mutex;    // external mutex
-  pthread_mutex_t mutexC;   // childs mutex
   pthread_mutex_t texMutex; // texture mutex
   pthread_mutex_t surMutex; // underlying surface mutex
 
@@ -83,11 +82,6 @@ private:
   void initialize (SDLWindow* parentWindowID,
                    int x, int y, int width, int height, double z);
 
-  void releaseWinISur ();
-  void releaseBGColor ();
-  void releaseWinColor ();
-  void releaseColorKey ();
-  void releaseBorderColor ();
 
 public:
 // SANITY BEGIN ------------------------------------------------------------
@@ -99,12 +93,6 @@ public:
   void setRect (SDL_Rect);
 // SANITY END --------------------------------------------------------------
 
-  void addMirror (SDLWindow *window);
-  bool removeMirror (SDLWindow *window);
-  void setMirrorSrc (SDLWindow *mirrorSrc);
-  SDLWindow *getMirrorSrc ();
-
-
   void setColorKey (SDL_Color color);
   SDL_Color *getColorKey ();
   void setWindowColor (SDL_Color color);
@@ -113,20 +101,11 @@ public:
   void setBorder (SDL_Color, int);
   void getBorder (SDL_Color *, int *);
 
-  void revertContent ();
-  int getCap (const string &cap);
-  void setCaps (int caps);
-  void addCaps (int capability);
-  int getCaps ();
-
-  void draw ();
+  
   void setBounds (int x, int y, int width, int height);
   void moveTo (int x, int y);
   void resize (int width, int height);
-  void raiseToTop ();
-  void lowerToBottom ();
-  void setCurrentTransparency (guint8 alpha);
-  guint8 getTransparencyValue ();
+
   SDLWindow* getId ();
   void show ();
   void hide ();
@@ -146,45 +125,13 @@ public:
   bool isGhostWindow ();
   void setGhostWindow (bool ghost);
   bool isVisible ();
-  void validate ();
-
-private:
-  void unprotectedValidate ();
-
-public:
-
-  void setStretch (bool stretchTo);
-  bool getStretch ();
-  void setFit (bool fitTo);
-  bool getFit ();
-  void clearContent ();
-  void setRenderedSurface (SDL_Surface *uSur);
-
-  bool isTextureOwner (SDL_Texture *texture);
-
 
 
 public:
-  void renderImgFile (const string &serializedImageUrl);
-
-
-
   void _lock ();
   void _unlock ();
 
-  void lockChilds ();
-  void unlockChilds ();
 
-  bool rendered ();
-
-private:
-  void waitRenderer ();
-
-  void lockTexture ();
-  void unlockTexture ();
-
-  void lockSurface ();
-  void unlockSurface ();
 };
 
 GINGA_MB_END

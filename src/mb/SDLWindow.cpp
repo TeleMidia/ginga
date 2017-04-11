@@ -109,39 +109,6 @@ SDLWindow::~SDLWindow ()
  // vector<SDLSurface *>::iterator i;
 
   _lock ();
-  lockChilds ();
-  
-
-  unlockChilds ();
-
-  lockSurface ();
-  //curSur = NULL;
-
-  releaseWinISur ();
-
-  set<SDLWindow *>::iterator j;
-  j = mirrors.begin ();
-  while (j != mirrors.end ())
-    {
-      (*j)->setMirrorSrc (NULL);
-      mirrors.erase (j);
-      j = mirrors.begin ();
-    }
-  mirrors.clear ();
-
-  if (mirrorSrc != NULL)
-    {
-      mirrorSrc->removeMirror (this);
-      mirrorSrc = NULL;
-    }
-  unlockSurface ();
-
-  releaseBGColor ();
-  releaseBorderColor ();
-  releaseWinColor ();
-  releaseColorKey ();
-
-  Thread::mutexDestroy (&mutexC);
 
   this->isWaiting = false;
   Thread::mutexDestroy (&cMutex);
@@ -188,9 +155,7 @@ SDLWindow::initialize (arg_unused (SDLWindow* parentWindowID),
   this->mirrorSrc = NULL;
 
   Thread::mutexInit (&_mutex);
-  Thread::mutexInit (&mutexC);
   Thread::mutexInit (&texMutex);
-  Thread::mutexInit (&surMutex, true);
 
   this->isWaiting = false;
   Thread::mutexInit (&cMutex);
@@ -199,85 +164,8 @@ SDLWindow::initialize (arg_unused (SDLWindow* parentWindowID),
   Thread::mutexInit (&rMutex);
 }
 
-void
-SDLWindow::releaseWinISur ()
-{
 
-}
 
-void
-SDLWindow::releaseBGColor ()
-{
-}
-
-void
-SDLWindow::releaseBorderColor ()
-{
-}
-
-void
-SDLWindow::releaseWinColor ()
-{
-  if (winColor != NULL)
-    {
-      delete winColor;
-      winColor = NULL;
-    }
-}
-
-void
-SDLWindow::releaseColorKey ()
-{
-  if (colorKey != NULL)
-    {
-      delete colorKey;
-      colorKey = NULL;
-    }
-}
-
-void
-SDLWindow::addMirror (SDLWindow *window)
-{
-  assert (window != this);
-  lockSurface ();
-  mirrors.insert (window);
-  unlockSurface ();
-}
-
-bool
-SDLWindow::removeMirror (SDLWindow *window)
-{
-  set<SDLWindow *>::iterator i;
-
-  lockSurface ();
-  i = mirrors.find (window);
-  if (i != mirrors.end ())
-    {
-      mirrors.erase (i);
-      unlockSurface ();
-      return true;
-    }
-  unlockSurface ();
-  return false;
-}
-
-void
-SDLWindow::setMirrorSrc (SDLWindow *mirrorSrc)
-{
-  lockSurface ();
-  this->mirrorSrc = mirrorSrc;
-  if (this->mirrorSrc != NULL)
-    {
-      this->mirrorSrc->addMirror (this);
-    }
-  unlockSurface ();
-}
-
-SDLWindow *
-SDLWindow::getMirrorSrc ()
-{
-  return mirrorSrc;
-}
 
 // SANITY BEGIN ------------------------------------------------------------
 double
@@ -320,7 +208,7 @@ SDLWindow::setRect (SDL_Rect r)
 void
 SDLWindow::setColorKey (SDL_Color color)
 {
-  releaseColorKey ();
+ 
   this->colorKey = new SDL_Color();
   this->colorKey->r = color.r;
   this->colorKey->g = color.g;
@@ -337,7 +225,7 @@ SDLWindow::getColorKey ()
 void
 SDLWindow::setWindowColor (SDL_Color color)
 {
-  releaseWinColor ();
+
   this->winColor = new SDL_Color();
   this->winColor->r = color.r;
   this->winColor->g = color.g;
@@ -365,44 +253,8 @@ SDLWindow::getBorder (SDL_Color *c, int *w)
   set_if_nonnull (w, this->borderWidth);
 }
 
-void
-SDLWindow::revertContent ()
-{
-  lockSurface ();
-  releaseWinISur ();
-  unlockSurface ();
-}
 
 
-
-int
-SDLWindow::getCap (arg_unused (const string &cap))
-{
-  return 0;
-}
-
-void
-SDLWindow::setCaps (int caps)
-{
-  this->caps = caps;
-}
-
-void
-SDLWindow::addCaps (int capability)
-{
-  this->caps = (this->caps | capability);
-}
-
-int
-SDLWindow::getCaps ()
-{
-  return caps;
-}
-
-void
-SDLWindow::draw ()
-{
-}
 
 void
 SDLWindow::setBounds (int posX, int posY, int w, int h)
@@ -427,47 +279,6 @@ SDLWindow::resize (int width, int height)
   this->rect.h = height;
 }
 
-void
-SDLWindow::raiseToTop ()
-{
-}
-
-void
-SDLWindow::lowerToBottom ()
-{
-}
-
-void
-SDLWindow::setCurrentTransparency (guint8 alpha)
-{
-  if (alpha != 255)
-    {
-      this->visible = true;
-    }
-  else
-    {
-      this->visible = false;
-    }
-
-  transparencyValue = alpha;
-
-  lockTexture ();
-  if (texture != NULL)
-    {
-      if (SDL_SetTextureAlphaMod (texture, (guint8)(255 - alpha)) < 0)
-        {
-          clog << "SDLWindow::setCurrentTransparency SDL error: '";
-          clog << SDL_GetError () << "'" << endl;
-        }
-    }
-  unlockTexture ();
-}
-
-guint8
-SDLWindow::getTransparencyValue ()
-{
-  return this->transparencyValue;
-}
 
 void
 SDLWindow::show ()
@@ -559,92 +370,6 @@ SDLWindow::isVisible ()
   return this->visible;
 }
 
-void
-SDLWindow::validate ()
-{
-  lockSurface ();
-  unprotectedValidate ();
-  unlockSurface ();
-}
-
-void
-SDLWindow::unprotectedValidate ()
-{
-  
-}
-
-void
-SDLWindow::setStretch (bool stretchTo)
-{
-  this->stretch = stretchTo;
-}
-
-bool
-SDLWindow::getStretch ()
-{
-  return this->stretch;
-}
-
-void
-SDLWindow::setFit (bool fitTo)
-{
-  this->fit = fitTo;
-}
-
-bool
-SDLWindow::getFit ()
-{
-  return this->fit;
-}
-
-void
-SDLWindow::clearContent ()
-{
-  lockSurface ();
-  if (curSur != NULL)
-    {
-      if (SDL_FillRect (curSur, NULL,
-                        SDL_MapRGBA (curSur->format, 0, 0, 0, 0))
-          < 0)
-        {
-          clog << "SDLWindow::clearContent SDL error: '";
-          clog << SDL_GetError () << "'" << endl;
-        }
-      textureUpdate = true;
-    }
-  unlockSurface ();
-}
-
-void
-SDLWindow::setRenderedSurface (SDL_Surface *uSur)
-{
-  lockSurface ();
-  curSur = uSur;
-  if (curSur != NULL)
-    {
-      textureUpdate = true;
-    }
-  unlockSurface ();
-}
-
-
-
-bool
-SDLWindow::isTextureOwner (SDL_Texture *texture)
-{
-  bool itIs = false;
-  if (texture != NULL && this->texture == texture && textureOwner)
-    {
-      itIs = true;
-    }
-
-  return itIs;
-}
-
-
-
-
-
 
 void
 SDLWindow::_lock ()
@@ -658,61 +383,7 @@ SDLWindow::_unlock ()
   Thread::mutexUnlock (&_mutex);
 }
 
-void
-SDLWindow::lockChilds ()
-{
-  Thread::mutexLock (&mutexC);
-}
 
-void
-SDLWindow::unlockChilds ()
-{
-  Thread::mutexUnlock (&mutexC);
-}
 
-bool
-SDLWindow::rendered ()
-{
-  if (isWaiting)
-    {
-      Thread::condSignal (&cond);
-      return true;
-    }
-  return false;
-}
-
-void
-SDLWindow::waitRenderer ()
-{
-  isWaiting = true;
-  Thread::mutexLock (&cMutex);
-  Thread::condWait (&cond, &cMutex);
-  isWaiting = false;
-  Thread::mutexUnlock (&cMutex);
-}
-
-void
-SDLWindow::lockTexture ()
-{
-  Thread::mutexLock (&texMutex);
-}
-
-void
-SDLWindow::unlockTexture ()
-{
-  Thread::mutexUnlock (&texMutex);
-}
-
-void
-SDLWindow::lockSurface ()
-{
-  Thread::mutexLock (&surMutex);
-}
-
-void
-SDLWindow::unlockSurface ()
-{
-  Thread::mutexUnlock (&surMutex);
-}
 
 GINGA_MB_END

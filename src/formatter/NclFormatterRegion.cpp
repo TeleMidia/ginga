@@ -787,18 +787,11 @@ NclFormatterRegion::prepareOutputDisplay (double cvtIndex)
         }
       unlockFocusInfo ();
 
-      if (!externHandler)
-        {
-          outputDisplay->setCurrentTransparency ((guint8)(transparency * 255));
-        }
       if (chromaKey != NULL)
         {
           outputDisplay->setColorKey (*chromaKey);
         }
-      else if (!externHandler)
-        {
-          outputDisplay->draw ();
-        }
+     
     }
   else
     {
@@ -1044,7 +1037,7 @@ NclFormatterRegion::toFront ()
   lock ();
   if (outputDisplay != 0 && !externHandler)
     {
-      outputDisplay->raiseToTop ();
+      
       unlock ();
       if (ncmRegion != NULL)
         {
@@ -1277,7 +1270,7 @@ NclFormatterRegion::setSelection (bool selOn)
           lockFocusInfo ();
           if (selComponentSrc == "")
             {
-              outputDisplay->validate ();
+             // outputDisplay->validate ();
             }
 
           if (selBorderColor != NULL)
@@ -1329,7 +1322,7 @@ NclFormatterRegion::setFocus (bool focusOn)
           lockFocusInfo ();
           if (focusComponentSrc == "")
             {
-              outputDisplay->validate ();
+             // outputDisplay->validate ();
             }
 
           if (focusBorderColor != NULL)
@@ -1359,7 +1352,7 @@ NclFormatterRegion::unselect ()
       SDL_Color c = {0, 0, 0, 0};
       outputDisplay->setBorder (c, 0);
      
-      outputDisplay->validate ();
+    //  outputDisplay->validate ();
     }
   unlock ();
 }
@@ -1404,9 +1397,6 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
   transitionDir = transition->getDirection ();
   startProgress = transition->getStartProgress ();
   endProgress = transition->getEndProgress ();
-
-  transparencyValue
-      = outputDisplay->getTransparencyValue ();
   initTime = xruntime_ms ();
 
   if (transitionSubType == Transition::SUBTYPE_BARWIPE_LEFTTORIGHT)
@@ -1416,8 +1406,6 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
           lock ();
           if (outputDisplay != 0)
             {
-              outputDisplay->setCurrentTransparency (
-                                                transparencyValue);
               outputDisplay->resize (1, height);
             }
           unlock ();
@@ -1475,7 +1463,7 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
           lock ();
           if (outputDisplay != 0)
             {
-              outputDisplay->validate ();
+            //  outputDisplay->validate ();
             }
           unlock ();
 
@@ -1526,8 +1514,6 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
           lock ();
           if (outputDisplay != 0)
             {
-              outputDisplay->setCurrentTransparency (
-                                                transparencyValue);
               if (width > 0)
                 {
                   outputDisplay->resize (width, 1);
@@ -1587,7 +1573,7 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
           lock ();
           if (outputDisplay != 0)
             {
-              outputDisplay->validate ();
+             // outputDisplay->validate ();
             }
           unlock ();
 
@@ -1638,7 +1624,7 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
           // outputDisplay->setStretch(true);
           outputDisplay->setBounds (x, y, width,
                                height);
-          outputDisplay->validate ();
+         // outputDisplay->validate ();
         }
     }
   unlock ();
@@ -1682,8 +1668,6 @@ NclFormatterRegion::fade (Transition *transition, bool isShowEffect)
       return;
     }
 
-  opacityValue
-      = (255 - outputDisplay->getTransparencyValue ());
   unlock ();
 
   transitionDur = transition->getDur ();
@@ -1715,7 +1699,7 @@ NclFormatterRegion::fade (Transition *transition, bool isShowEffect)
       lock ();
       if (outputDisplay != 0)
         {
-          outputDisplay->setCurrentTransparency ((guint8) (255 - i));
+          
         }
       else
         {
@@ -1845,11 +1829,6 @@ NclFormatterRegion::setTransparency (double transparency)
   else
     {
       this->transparency = transparency;
-    }
-
-  if (outputDisplay != 0 && !externHandler)
-    {
-      outputDisplay->setCurrentTransparency ((guint8)(this->transparency * 255));
     }
 
   unlock ();

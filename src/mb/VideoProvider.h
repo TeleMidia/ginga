@@ -60,7 +60,6 @@ public:
   void pause ();
   void stop ();
   void setSoundLevel (double level);
-  bool releaseAll ();
 
   void refreshDR (void *data);
 

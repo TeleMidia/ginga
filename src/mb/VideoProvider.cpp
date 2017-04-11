@@ -133,12 +133,6 @@ VideoProvider::setSoundLevel (double level)
   AudioProvider::setSoundLevel (level);
 }
 
-bool
-VideoProvider::releaseAll ()
-{
-  // TODO: release all structures
-  return false;
-}
 
 void
 VideoProvider::refreshDR (void *data)
