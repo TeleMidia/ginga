@@ -786,11 +786,6 @@ NclFormatterRegion::prepareOutputDisplay (double cvtIndex)
           outputDisplay->setBgColor (*bgColor);
         }
       unlockFocusInfo ();
-
-      if (chromaKey != NULL)
-        {
-          outputDisplay->setColorKey (*chromaKey);
-        }
      
     }
   else

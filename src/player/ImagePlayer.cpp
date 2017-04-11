@@ -40,12 +40,12 @@ ImagePlayer::displayJobCallback (arg_unused (DisplayJob *job),
   if (this->window == NULL)
        return true;
 
-  SDL_Texture * texture = IMG_LoadTexture (renderer, mrl.c_str ());
-  if (unlikely (texture == NULL))
+  this->texture = IMG_LoadTexture (renderer, mrl.c_str ());
+  if (unlikely (this->texture == NULL))
     g_error ("cannot load image file %s: %s", mrl.c_str (),
              IMG_GetError ());
 
-  this->window->setTexture (texture);
+  //this->window->setTexture (texture);
 
   this->condDisplayJobSignal ();
   return false;                 // remove job

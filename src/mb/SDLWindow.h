@@ -41,18 +41,10 @@ public:
 // END SANITY --------------------------------------------------------------
 
 private:
-  SDL_Surface *curSur;
-
  
-
-  bool textureUpdate;
-  bool textureOwner;
-
   int borderWidth;
   SDL_Color bgColor;
   SDL_Color borderColor;
-  SDL_Color *winColor;
-  SDL_Color *colorKey;
 
   SDL_Rect rect;
 
@@ -61,19 +53,10 @@ private:
   bool visible;
   bool ghost;
 
-
-  bool fit;
-  bool stretch;
-  int caps;
-
-  set<SDLWindow *> mirrors;
-  SDLWindow *mirrorSrc;
-
   pthread_mutex_t _mutex;    // external mutex
   pthread_mutex_t texMutex; // texture mutex
   pthread_mutex_t surMutex; // underlying surface mutex
 
-  bool isWaiting;
   pthread_mutex_t rMutex; // render mutex
   pthread_mutex_t cMutex; // condition mutex
   pthread_cond_t cond;
@@ -92,11 +75,6 @@ public:
   SDL_Rect getRect ();
   void setRect (SDL_Rect);
 // SANITY END --------------------------------------------------------------
-
-  void setColorKey (SDL_Color color);
-  SDL_Color *getColorKey ();
-  void setWindowColor (SDL_Color color);
-  SDL_Color *getWindowColor ();
 
   void setBorder (SDL_Color, int);
   void getBorder (SDL_Color *, int *);

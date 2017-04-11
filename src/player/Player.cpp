@@ -50,16 +50,26 @@ Player::Player (const string &mrl)
   this->notifyContentUpdate = false;
   this->mirrorSrc = NULL;
 
+  //time attr
   this->initStartTime = 0;
   this->initPauseTime = 0;
   this->accTimePlaying = 0;
   this->accTimePaused = 0; 
-
   
+  //media attr
+  this->texture = NULL; //media content
+  this->borderWidth = 0;
+  this->bgColor = {0, 0, 0, 0};
+  this->borderColor = {0, 0, 0, 0};
+  this->z = 0;
+  this->transparency = 0x00;
+
+  Ginga_Display->registerPlayer(this);
 }
 
 Player::~Player ()
 {
+  Ginga_Display->unregisterPlayer(this);
 
   set<IPlayer *>::iterator i;
 
@@ -85,12 +95,6 @@ Player::~Player ()
   mirrors.clear ();
 
   g_assert_null (outputWindow);
-
-/*  if (Ginga_Display->hasSurface (surface))
-    {
-      delete surface;
-      surface = 0;
-    } */
 
   Thread::mutexLock (&referM);
   referredPlayers.clear ();
@@ -474,7 +478,12 @@ Player::setPropertyValue (const string &name, const string &value)
           params = split (value, ",");
           if (params->size () == 4)
             {
-              outputWindow->setBounds (
+               this->rect.x = xstrto_int ((*params)[0]);
+               this->rect.y = xstrto_int ((*params)[1]);
+               this->rect.w = xstrto_int ((*params)[2]);
+               this->rect.h = xstrto_int ((*params)[3]);
+
+               outputWindow->setBounds (
                                    xstrto_int ((*params)[0]),
                                    xstrto_int ((*params)[1]),
                                    xstrto_int ((*params)[2]),
@@ -506,29 +515,31 @@ Player::setPropertyValue (const string &name, const string &value)
         }
       else if (name == "left")
         {
+          this->rect.x = xstrto_int (value);
           outputWindow->setX (
                           xstrto_int (value));
         }
       else if (name == "top")
         {
+          this->rect.y = xstrto_int (value);
           outputWindow->setY (
                           xstrto_int (value));
         }
       else if (name == "width")
         {
+          this->rect.w = xstrto_int (value);
           outputWindow->setW (
                           xstrto_int (value));
         }
       else if (name == "height")
         {
+          this->rect.h = xstrto_int (value);
           outputWindow->setH (
                           xstrto_int (value));
         }
-      else if (name == "transparency")
-        {
-        //  outputWindow->setCurrentTransparency (
-         //                                   xstrto_uint8 (value));
-        }
+      else if (name == "transparency"){
+          this->transparency = xstrto_uint8 (value);
+      }
     }
   properties[name] = value;
 }
@@ -652,6 +663,7 @@ Player::isForcedNaturalEnd ()
 bool
 Player::setOutWindow (SDLWindow* windowId)
 {
+  this->rect = windowId->getRect();
   this->window = windowId;
   return true;
 }
@@ -660,5 +672,18 @@ PLAYER_STATUS
 Player::getMediaStatus(){
    return this->status;
 }
+
+void
+Player::redraw(SDL_Renderer* renderer){
+   
+   if (this->texture != NULL)
+    {
+      //guint8 alpha = (guint8)(this->getAlpha() * 255);
+      SDLx_SetTextureAlphaMod (this->texture, 255);
+      SDLx_RenderCopy (renderer, this->texture, NULL, &rect);
+    }
+}
+
+
 
 GINGA_PLAYER_END
