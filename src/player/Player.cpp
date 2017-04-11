@@ -526,8 +526,8 @@ Player::setPropertyValue (const string &name, const string &value)
         }
       else if (name == "transparency")
         {
-          outputWindow->setCurrentTransparency (
-                                            xstrto_uint8 (value));
+        //  outputWindow->setCurrentTransparency (
+         //                                   xstrto_uint8 (value));
         }
     }
   properties[name] = value;

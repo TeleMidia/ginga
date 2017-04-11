@@ -74,9 +74,6 @@ FormatterMultiDevice::FormatterMultiDevice (DeviceLayout *deviceLayout,
                                                 defaultWidth,
                                                 defaultHeight, -1.0);
 
-  int caps = printScreen->getCap ("ALPHACHANNEL");
-  printScreen->setCaps (caps);
-  printScreen->draw ();
 
   Thread::mutexInit (&mutex, false);
   Thread::mutexInit (&lMutex, false);
@@ -402,11 +399,6 @@ FormatterMultiDevice::prepareFormatterRegion (
           clog << "' height = '" << bitMapRegion->getHeightInPixels ();
           clog << "' zIndex = '" << bitMapRegion->getZIndexValue ();
           clog << endl << endl;
-
-          int caps
-              = bitMapScreen->getCap ("ALPHACHANNEL");
-          bitMapScreen->setCaps (caps);
-          bitMapScreen->draw ();
         }
     }
 

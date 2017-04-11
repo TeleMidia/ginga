@@ -172,14 +172,7 @@ CommonCoreManager::showTunningWindow (int x, int y,
   if (fileExists (tunerImg))
     {
       tuningWindow = Ginga_Display->createWindow (x, y, w, h, -10.0);
-
-      int cap = tuningWindow->getCap ("ALPHACHANNEL");
-      tuningWindow->setCaps (cap);
-
-      tuningWindow->draw ();
       tuningWindow->show ();
-      tuningWindow->lowerToBottom ();
-
     }
 }
 
@@ -188,7 +181,6 @@ CommonCoreManager::releaseTunningWindow ()
 {
   if (tuningWindow != 0)
     {
-      tuningWindow->clearContent ();
       tuningWindow->hide ();
       delete tuningWindow;
     }

@@ -327,7 +327,7 @@ AVPlayer::pause ()
 
   if (outputWindow != 0)
     {
-      outputWindow->validate ();
+     // outputWindow->validate ();
     }
   provider->pause ();
 
@@ -411,10 +411,6 @@ AVPlayer::setPropertyValue (const string &name, const string &value)
                                                  xstrto_int ((*vals)[2]),
                                                  xstrto_int ((*vals)[3]), 1.0);
 
-              int caps = win->getCap ("NOSTRUCTURE")
-                         | win->getCap ("DOUBLEBUFFER");
-              win->setCaps (caps);
-              win->draw ();
             }
 
           delete vals;

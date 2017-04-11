@@ -79,7 +79,7 @@ FormatterActiveDevice::FormatterActiveDevice (DeviceLayout *deviceLayout,
 
       serialized->show ();
       serialized->renderFrom (s);
-      serialized->lowerToBottom ();
+   
 
       delete s;
       s = 0;
@@ -731,24 +731,6 @@ FormatterActiveDevice::handleTCPClient (TCPSocket *sock)
 
           serialized = Ginga_Display->createWindow (0, 0, DV_QVGA_WIDTH,
                                          DV_QVGA_HEIGHT, -1.0);
-
-          if (fileExists (img_reset))
-            {
-              s = Ginga_Display->createRenderedSurfaceFromImageFile (
-                  img_reset.c_str ());
-
-              int cap
-                  = serialized->getCap ("ALPHACHANNEL");
-              serialized->setCaps (cap);
-              serialized->draw ();
-
-              serialized->show ();
-              serialized->renderFrom (s);
-              serialized->lowerToBottom ();
-
-              delete s;
-              s = 0;
-            }
           break;
         }
 
