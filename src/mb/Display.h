@@ -64,7 +64,6 @@ private:
   GList *jobs;                  // list of jobs to be executed by renderer
   GList *textures;              // list of textures to be destructed
   GList *windows;               // list of windows to be redrawn
-  GList *providers;             // list of providers to be redrawn
 
   gpointer add (GList **, gpointer);
   gpointer remove (GList **, gpointer);
@@ -114,38 +113,7 @@ private:
   void notifyKeyEventListeners(SDL_EventType, SDL_Keycode);
   void notifyMouseEventListeners(SDL_EventType);
   void notifyTimeAnchorListeners();
-
-
-  // Let the clutter begin -------------------------------------------------
-
-private:
-  static bool mutexInitialized;
-
-  static set<SDL_Texture *> uTexPool;
-  static map<int, map<double, set<SDLWindow *> *> *> renderMap;
-
-private:
-  static void checkMutexInit ();
-
-public:
-  static void lockSDL ();
-  static void unlockSDL ();
-
-public:
-  static SDL_Window *getUnderlyingWindow (SDLWindow* winId);
-
-public:
-  /* CAUTION: call this method only from main SDL thread */
-  static SDL_Texture *createTextureFromSurface (SDL_Renderer *renderer,
-                                                SDL_Surface *surface);
-
-private:
-  static SDL_Texture *createTexture (SDL_Renderer *renderer, int w, int h);
-
-public:
-  static bool hasTexture (SDL_Texture *uTex);
-  static void releaseTexture (SDL_Texture *uTex);
-  
+    
 };
 
 // Global display.

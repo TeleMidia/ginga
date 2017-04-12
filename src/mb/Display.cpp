@@ -29,12 +29,6 @@ GINGA_MB_BEGIN
 // Global display; initialized by main().
 Display *_Ginga_Display = NULL;
 
-bool Display::mutexInitialized = false;
-set<SDL_Texture *> Display::uTexPool;
-
-
-// BEGIN SANITY ------------------------------------------------------------
-
 // Entry in display job list.
 struct _DisplayJob
 {
@@ -203,7 +197,8 @@ Display::renderLoop ()
       set<Player*>::iterator it;
       for (it=players.begin(); it!=players.end(); ++it)
           (*it)->redraw(renderer);
-       SDL_RenderPresent (this->renderer);
+      displayDebug->draw(this->renderer,elapsedTime);    
+      SDL_RenderPresent (this->renderer);
       this->unlock ();
 /*
       this->lock ();            // redraw windows
@@ -217,7 +212,7 @@ Display::renderLoop ()
           if (window->isVisible () && !window->isGhostWindow ())
             window->redraw (this->renderer);
         }
-      displayDebug->draw(this->renderer,elapsedTime);
+     
       SDL_RenderPresent (this->renderer);
       this->unlock ();
     
@@ -267,17 +262,12 @@ Display::Display (int width, int height, bool fullscreen, gdouble fps)
 
   this->renderer = NULL;
   this->screen = NULL;
- // this->im = NULL;
 
   this->_quit = false;
 
   this->jobs = NULL;
   this->textures = NULL;
-  this->windows = NULL;
-  this->providers = NULL;
-
-  checkMutexInit ();            // FIXME
-
+  this->windows = NULL; 
 
   //--
   g_assert (!SDL_WasInit (0));
@@ -509,111 +499,6 @@ Display::destroyWindow (SDLWindow *win)
     }
   this->remove (&this->windows, win);
   delete win;
-}
-
-
-
-
-// END SANITY --------------------------------------------------------------
-
-void
-Display::checkMutexInit ()
-{
-  if (!mutexInitialized)
-    {
-      mutexInitialized = true;
-
-    
-    }
-}
-
-void
-Display::lockSDL ()
-{
-  checkMutexInit ();
-
-}
-
-void
-Display::unlockSDL ()
-{
-  checkMutexInit ();
-
-}
-
-SDL_Texture *
-Display::createTextureFromSurface (SDL_Renderer *renderer,
-                                           SDL_Surface *surface)
-{
-  SDL_Texture *texture = NULL;
-
-  checkMutexInit ();
-
-  lockSDL ();
-    
-   
-  unlockSDL ();
-
-  return texture;
-}
-
-SDL_Texture *
-Display::createTexture (SDL_Renderer *renderer, int w, int h)
-{
-  SDL_Texture *texture;
-
-  lockSDL ();
-
-  texture = SDL_CreateTexture (renderer, SDL_PIXELFORMAT_ARGB32,
-                               SDL_TEXTUREACCESS_STREAMING, w, h);
-
-  // w > maxW || h > maxH || format is not supported
-  assert (texture != NULL);
-
-  /* allowing alpha */
-  g_assert (SDL_SetTextureBlendMode (texture, SDL_BLENDMODE_BLEND) == 0);
-
-  uTexPool.insert (texture);
-
-  unlockSDL ();
-
-  return texture;
-}
-
-bool
-Display::hasTexture (SDL_Texture *uTex)
-{
-  set<SDL_Texture *>::iterator i;
-  bool hasIt = false;
-
-  checkMutexInit ();
-
-  lockSDL ();
-  i = uTexPool.find (uTex);
-  if (i != uTexPool.end ())
-    {
-      hasIt = true;
-    }
-  unlockSDL ();
-
-  return hasIt;
-}
-
-void
-Display::releaseTexture (SDL_Texture *texture)
-{
-  set<SDL_Texture *>::iterator i;
-
-  checkMutexInit ();
-
-  lockSDL ();
-  i = uTexPool.find (texture);
-  if (i != uTexPool.end ())
-    {
-      uTexPool.erase (i);
-      SDL_DestroyTexture (texture);
-    }
-  unlockSDL ();
 }
 
 void
