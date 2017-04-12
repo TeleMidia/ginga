@@ -104,7 +104,7 @@ protected:
   SDL_Color borderColor;
   SDL_Rect rect; //draw area
   double z;  //z-index
-  guint8 transparency; 
+  guint8 alpha; 
 
 public:
   Player (const string &mrl);

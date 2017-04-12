@@ -62,7 +62,7 @@ Player::Player (const string &mrl)
   this->bgColor = {0, 0, 0, 0};
   this->borderColor = {0, 0, 0, 0};
   this->z = 0;
-  this->transparency = 0x00;
+  this->alpha = 255;
 
   Ginga_Display->registerPlayer(this);
 }
@@ -421,7 +421,7 @@ void
 Player::stop ()
 {
   Ginga_Display->unregisterPlayer(this);
-  
+
   this->initStartTime = 0;
   this->initPauseTime = 0;
   this->accTimePlaying = 0;
@@ -540,7 +540,10 @@ Player::setPropertyValue (const string &name, const string &value)
       //                    xstrto_int (value));
         }
       else if (name == "transparency"){
-          this->transparency = xstrto_uint8 (value);
+          if(xstrto_uint8 (value) <= 0)
+             this->alpha = 255;
+          else       
+             this->alpha = (guint8)(255 - ((((double)xstrto_uint8 (value)/100)*255)));
       }
     
   properties[name] = value;
@@ -676,13 +679,11 @@ Player::getMediaStatus(){
 }
 
 void
-Player::redraw(SDL_Renderer* renderer){
-   
-   if (this->texture != NULL)
-    {
-      //guint8 alpha = (guint8)(this->getAlpha() * 255);
-      SDLx_SetTextureAlphaMod (this->texture, 255);
-      SDLx_RenderCopy (renderer, this->texture, NULL, &rect);
+Player::redraw(SDL_Renderer* renderer){ 
+
+   if (this->texture != NULL){
+      SDLx_SetTextureAlphaMod (this->texture, this->alpha);
+      SDLx_RenderCopy (renderer, this->texture, NULL, &this->rect);
     }
 }
 
