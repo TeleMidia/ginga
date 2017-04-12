@@ -451,6 +451,7 @@ NewVideoPlayer::getPropertyValue (arg_unused(const string &name))
 void
 NewVideoPlayer::setPropertyValue (arg_unused(const string &name), arg_unused(const string &value))
 {
+  Player::setPropertyValue(name, value);
 	TRACE ();
 }
 
