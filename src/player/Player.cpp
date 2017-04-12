@@ -69,7 +69,6 @@ Player::Player (const string &mrl)
 
 Player::~Player ()
 {
-  Ginga_Display->unregisterPlayer(this);
 
   set<IPlayer *>::iterator i;
 
@@ -421,6 +420,8 @@ Player::play ()
 void
 Player::stop ()
 {
+  Ginga_Display->unregisterPlayer(this);
+  
   this->initStartTime = 0;
   this->initPauseTime = 0;
   this->accTimePlaying = 0;
@@ -469,10 +470,11 @@ Player::getPropertyValue (string const &name)
 void
 Player::setPropertyValue (const string &name, const string &value)
 {
+  if(!value.length())
+    return;
+
   vector<string> *params = NULL;
 
-  if (outputWindow != 0)
-    {
       if (name == "bounds")
         {
           params = split (value, ",");
@@ -483,11 +485,11 @@ Player::setPropertyValue (const string &name, const string &value)
                this->rect.w = xstrto_int ((*params)[2]);
                this->rect.h = xstrto_int ((*params)[3]);
 
-               outputWindow->setBounds (
+           /*    outputWindow->setBounds (
                                    xstrto_int ((*params)[0]),
                                    xstrto_int ((*params)[1]),
                                    xstrto_int ((*params)[2]),
-                                   xstrto_int ((*params)[3]));
+                                   xstrto_int ((*params)[3])); */
             }
           delete params;
         }
@@ -496,9 +498,9 @@ Player::setPropertyValue (const string &name, const string &value)
           params = split (value, ",");
           if (params->size () == 2)
             {
-              outputWindow->moveTo (
+           /*   outputWindow->moveTo (
                                 xstrto_int ((*params)[0]),
-                                xstrto_int ((*params)[1]));
+                                xstrto_int ((*params)[1])); */
             }
           delete params;
         }
@@ -507,40 +509,40 @@ Player::setPropertyValue (const string &name, const string &value)
           params = split (value, ",");
           if (params->size () == 2)
             {
-              outputWindow->resize (
+          /*    outputWindow->resize (
                                 xstrto_int ((*params)[0]),
-                                xstrto_int ((*params)[1]));
+                                xstrto_int ((*params)[1])); */
             }
           delete params;
         }
       else if (name == "left")
         {
           this->rect.x = xstrto_int (value);
-          outputWindow->setX (
-                          xstrto_int (value));
+      //    outputWindow->setX (
+      //                    xstrto_int (value));
         }
       else if (name == "top")
         {
           this->rect.y = xstrto_int (value);
-          outputWindow->setY (
-                          xstrto_int (value));
+      //    outputWindow->setY (
+      //                    xstrto_int (value));
         }
       else if (name == "width")
         {
           this->rect.w = xstrto_int (value);
-          outputWindow->setW (
-                          xstrto_int (value));
+      //    outputWindow->setW (
+      //                    xstrto_int (value));
         }
       else if (name == "height")
         {
           this->rect.h = xstrto_int (value);
-          outputWindow->setH (
-                          xstrto_int (value));
+      //    outputWindow->setH (
+      //                    xstrto_int (value));
         }
       else if (name == "transparency"){
           this->transparency = xstrto_uint8 (value);
       }
-    }
+    
   properties[name] = value;
 }
 
