@@ -22,6 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Player.h"
 
+#include "mb/IKeyInputEventListener.h"
 #include "mb/Display.h"
 using namespace ginga::mb;
 
@@ -77,24 +78,13 @@ public:
     virtual CefRefPtr<CefLoadHandler> GetLoadHandler();
     virtual CefRefPtr<CefRenderHandler> GetRenderHandler();
 
-    // TODO: OVERRIDE events function
-    //  - void OnAfterCreated(...);
-    //  - bool DoClose(...);
-    //  - void OnBeforeClose(...);
-    //  - void OnLoadEnd(...);
-    //  - bool OnLoadError(...);
-    //  - void OnLoadingStateChange(...);
-    //  - void OnLoadStart(...);
-    //  - bool closeAllowed() const;
-    //  - bool isLoaded() const;
-
 private:
     CefRefPtr<CefRenderHandler> _handler;
 
     IMPLEMENT_REFCOUNTING(GingaClient);
 };
 
-class HTMLPlayer : public Player
+class HTMLPlayer : public Player, IKeyInputEventListener
 {
 public:
   HTMLPlayer (const string &location);
@@ -109,6 +99,10 @@ private:
 
   static bool displayJobCallbackWrapper (DisplayJob *, SDL_Renderer *, void *);
   bool displayJobCallback (DisplayJob *, SDL_Renderer *);
+
+  void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
+
+  int getPlayerKey(SDL_Keycode key);
 
   CefRefPtr<GingaRenderHandler> _handler;
   CefRefPtr<GingaClient> _client;
