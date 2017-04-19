@@ -29,6 +29,7 @@ HTMLPlayer::HTMLPlayer (const string &location)
   _isPlaying = false;
 
   Ginga_Display->registerKeyEventListener(this);
+  Ginga_Display->registerMouseEventListener(this);
 }
 
 HTMLPlayer::~HTMLPlayer ()
@@ -122,6 +123,18 @@ void HTMLPlayer::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
   } 
 }
 
+void HTMLPlayer::mouseInputCallback (SDL_EventType evtType, int x, int y)
+{
+  if (evtType == SDL_MOUSEBUTTONUP || evtType == SDL_MOUSEBUTTONDOWN)
+  {
+    CefMouseEvent event;
+    event.x = x;
+    event.y = y;
+
+    _browser->GetHost()->SendMouseClickEvent(event, MBT_LEFT, 
+      (evtType == SDL_MOUSEBUTTONUP ? true : false), 1);
+  }
+}
 
 int HTMLPlayer::getPlayerKey(SDL_Keycode key)
 {
