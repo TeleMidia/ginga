@@ -50,9 +50,13 @@ void HTMLPlayer::stop ()
 {
   _isPlaying = false;
 
-  _handler = nullptr;
-  _client = nullptr;
+  _browser->GetHost()->CloseBrowser(true);
   _browser = nullptr;
+
+  _client = nullptr;
+  _handler = nullptr;
+
+  texture = NULL; 
 }
 
 bool HTMLPlayer::displayJobCallbackWrapper(DisplayJob* job, SDL_Renderer* renderer,  void* self)
@@ -64,7 +68,7 @@ bool HTMLPlayer::displayJobCallback (DisplayJob *job, SDL_Renderer *renderer)
 {
   if (_isPlaying)
   {
-    if (!_handler)
+    if (!_browser)
     {
       CefWindowInfo info;
       info.SetAsWindowless(0L, false);
@@ -103,36 +107,42 @@ bool HTMLPlayer::displayJobCallback (DisplayJob *job, SDL_Renderer *renderer)
 
 void HTMLPlayer::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
 {
-  if(evtType == SDL_KEYDOWN || evtType == SDL_KEYUP)
+  if (!_browser)
   {
-    CefKeyEvent event;
-    event.modifiers = 0; 
-    event.native_key_code = key;
-    event.windows_key_code = getPlayerKey(key);
-    event.unmodified_character = (char) event.windows_key_code;
-    event.character = event.unmodified_character;
-    event.type = (evtType == SDL_KEYDOWN ? KEYEVENT_RAWKEYDOWN : KEYEVENT_KEYUP);  
-
-    _browser->GetHost()->SendKeyEvent(event);
-
-    if (evtType == SDL_KEYDOWN)
+    if(evtType == SDL_KEYDOWN || evtType == SDL_KEYUP)
     {
-      event.type = KEYEVENT_CHAR;
+      CefKeyEvent event;
+      event.modifiers = 0; 
+      event.native_key_code = key;
+      event.windows_key_code = getPlayerKey(key);
+      event.unmodified_character = (char) event.windows_key_code;
+      event.character = event.unmodified_character;
+      event.type = (evtType == SDL_KEYDOWN ? KEYEVENT_RAWKEYDOWN : KEYEVENT_KEYUP);  
+
       _browser->GetHost()->SendKeyEvent(event);
-    }
-  } 
+
+      if (evtType == SDL_KEYDOWN)
+      {
+        event.type = KEYEVENT_CHAR;
+        _browser->GetHost()->SendKeyEvent(event);
+      }
+    } 
+  }
 }
 
 void HTMLPlayer::mouseInputCallback (SDL_EventType evtType, int x, int y)
 {
-  if (evtType == SDL_MOUSEBUTTONUP || evtType == SDL_MOUSEBUTTONDOWN)
+  if (!_browser)
   {
-    CefMouseEvent event;
-    event.x = x;
-    event.y = y;
+    if (evtType == SDL_MOUSEBUTTONUP || evtType == SDL_MOUSEBUTTONDOWN)
+    {
+      CefMouseEvent event;
+      event.x = x;
+      event.y = y;
 
-    _browser->GetHost()->SendMouseClickEvent(event, MBT_LEFT, 
-      (evtType == SDL_MOUSEBUTTONUP ? true : false), 1);
+      _browser->GetHost()->SendMouseClickEvent(event, MBT_LEFT, 
+        (evtType == SDL_MOUSEBUTTONUP ? true : false), 1);
+    }
   }
 }
 

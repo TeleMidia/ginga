@@ -226,5 +226,9 @@ main (int argc, char **argv)
 
   delete Ginga_Display;
 
+#if defined WITH_CEF 
+  CefShutdown();
+#endif;
+
   exit (EXIT_SUCCESS);
 }
