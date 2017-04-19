@@ -84,7 +84,7 @@ private:
     IMPLEMENT_REFCOUNTING(GingaClient);
 };
 
-class HTMLPlayer : public Player, IKeyInputEventListener
+class HTMLPlayer : public Player, IKeyInputEventListener, IMouseEventListener
 {
 public:
   HTMLPlayer (const string &location);
@@ -101,6 +101,7 @@ private:
   bool displayJobCallback (DisplayJob *, SDL_Renderer *);
 
   void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
+  void mouseInputCallback (SDL_EventType, int, int);
 
   int getPlayerKey(SDL_Keycode key);
 

@@ -163,6 +163,13 @@ Display::renderLoop ()
                 this->notifyKeyEventListeners(SDL_KEYUP, evt.key.keysym.sym);
              //   goto quit;
                 break;
+            // case SDL_MOUSEMOTION:
+            //     this->notifyMouseEventListeners(SDL_MOUSEMOTION);
+            //     break; 
+
+            case SDL_MOUSEBUTTONDOWN:
+                this->notifyMouseEventListeners(SDL_MOUSEBUTTONDOWN);
+                break; 
             case SDL_MOUSEBUTTONUP:
                 this->notifyMouseEventListeners(SDL_MOUSEBUTTONUP);
                 break;    
