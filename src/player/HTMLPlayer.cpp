@@ -22,8 +22,6 @@ GINGA_PLAYER_BEGIN
 HTMLPlayer::HTMLPlayer (const string &location) 
   : Player (location)
 {
-  surface = new SDLSurface();
-  
   _handler = nullptr;
   _client = nullptr;
   _browser = nullptr;
@@ -66,13 +64,9 @@ bool HTMLPlayer::displayJobCallback (DisplayJob *job, SDL_Renderer *renderer)
     if (!_handler)
     {
       CefWindowInfo info;
-      info.SetAsWindowless(NULL, false);
+      info.SetAsWindowless(0L, false);
 
       CefBrowserSettings settings;
-      // settings.file_access_from_file_urls_allowed = true;
-      // settings.web_security_disabled = true;
-
-      SDLWindow* window = surface->getParentWindow();
 
       _handler = new GingaRenderHandler(window->getRect().w, window->getRect().h, renderer);
       _client = new GingaClient(_handler);
@@ -93,7 +87,7 @@ bool HTMLPlayer::displayJobCallback (DisplayJob *job, SDL_Renderer *renderer)
       
       _browser = CefBrowserHost::CreateBrowserSync(info, _client.get(), URI.c_str(), settings, nullptr);
 
-      window->setTexture(_handler->getTexture());
+      texture = _handler->getTexture();
     }
 
     CefDoMessageLoopWork(); 
