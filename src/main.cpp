@@ -228,7 +228,7 @@ main (int argc, char **argv)
 
 #if defined WITH_CEF 
   CefShutdown();
-#endif;
-
+#endif
+  
   exit (EXIT_SUCCESS);
 }
