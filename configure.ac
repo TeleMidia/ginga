@@ -81,11 +81,13 @@ m4_define([expat_required_version],      [2.1])
 m4_define([librsvg_required_version],    [2.40.0])
 m4_define([libzip_required_version],     [0.11.2])
 m4_define([pango_required_version],      [1.30.0])
+m4_define([cef_required_version],        [3.0])
 AC_SUBST([CAIRO_REQUIRED_VERSION],       cairo_required_version)
 AC_SUBST([EXPAT_REQUIRED_VERSION],       expat_required_version)
 AC_SUBST([LIBRSVG_REQUIRED_VERSION],     librsvg_required_version)
 AC_SUBST([LIBZIP_REQUIRED_VERSION],      libzip_required_version)
 AC_SUBST([PANGO_REQUIRED_VERSION],       pango_required_version)
+AC_SUBST([CEF_REQUIRED_VERSION],       cef_required_version)
 
 # Compiler and tool checks.
 AC_PROG_CXX
@@ -200,6 +202,11 @@ AU_CHECK_OPTIONAL_PKG([pango], [build with Pango support], [],
  pangocairo >= pango_required_version
 )
 
+AU_CHECK_OPTIONAL_PKG([cef], [build with CEF support], [],
+ [CEF],
+ cef >= cef_required_version[]
+)
+
 # Optional dependencies that do not use pkg-config.
 #   $1: name;
 #   $2: description;
@@ -259,6 +266,7 @@ AC_MSG_NOTICE([summary of main build options:
   with gstreamer:     ${with_gstreamer_result}
   with librsvg:       ${with_librsvg_result}
   with pango:         ${with_pango_result}
+  with cef:           ${with_cef_result}
 
   with isdbt:         ${with_isdbt_result}
   with linuxdvb:      ${with_linuxdvb_result}
