@@ -270,15 +270,21 @@ src+= formatter/AdapterTextPlayer.cpp
 src+= player/TextPlayer.cpp
 endif # WITH_PANGO
 
-# TODO: if WITH_CEF
+# This should be remove after the 
+# personalized CEF packge (.deb) is created.
 #
 # Uncomment the lines bellow to 
 # build Ginga with Chromium (CEF) 
-# based HTML Player.
-#AM_CXXFLAGS+= -I../deps/cef -I../deps/cef/include
+# based HTML Player. 
+#AM_CXXFLAGS+= -I/<path>/<to>/<cef> -I/<path>/<to>/<cef>/include
 #AM_LDFLAGS+= -lcef -lcef_dll_wrapper
 #src+= formatter/AdapterHTMLPlayer.cpp
 #src+= player/HTMLPlayer.cpp
+
+if WITH_CEF
+src+= formatter/AdapterHTMLPlayer.cpp
+src+= player/HTMLPlayer.cpp
+endif # WITH_CEF
 
 if WITH_ISDBT
 AM_CPPFLAGS+=\

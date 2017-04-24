@@ -57,8 +57,9 @@ GINGA_BEGIN_DECLS
 
 #include <config.h>
 
-// TODO: This should be in config.h. Fix
-// this later.
+// This should be remove after the 
+// personalized CEF package (.deb) 
+// is created.
 //
 // Uncoment the line bellow to 
 // build Ginga with Chromium (CEF) 
