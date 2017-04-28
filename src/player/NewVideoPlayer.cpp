@@ -110,7 +110,7 @@ NewVideoPlayer::createPipeline ()
 }
 
 void 
-NewVideoPlayer::eosCB (arg_unused (GstAppSink *appsink), arg_unused(gpointer data))
+NewVideoPlayer::eosCB (arg_unused (GstAppSink *appsink), gpointer data)
 {
   g_print("eos NewVideoPlayer\n");
   
@@ -126,7 +126,7 @@ NewVideoPlayer::newPrerollCB (arg_unused (GstAppSink *appsink), arg_unused(gpoin
 }
 
 GstFlowReturn
-NewVideoPlayer::newSampleCB (arg_unused (GstAppSink *appsink), arg_unused(gpointer data))
+NewVideoPlayer::newSampleCB (GstAppSink *appsink, gpointer data)
 {
   NewVideoPlayer *player = (NewVideoPlayer *) data;
 
@@ -164,7 +164,7 @@ NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 //    return false;
 //    stop ();
 
-  if(this->window==NULL)
+  if( this->window == NULL )
       return false;
 
   GstVideoFrame v_frame;
@@ -286,11 +286,14 @@ NewVideoPlayer::getMediaTime ()
 {
   if(this->playbin==NULL)
       return 0;
+
   GstClock *clock = gst_element_get_clock (this->playbin);
+  
   if(clock==NULL)
      return 0;
+
   guint32 time =  GST_TIME_AS_MSECONDS (gst_clock_get_time(clock)) 
-                - GST_TIME_AS_MSECONDS (gst_element_get_base_time(this->playbin));
+                  - GST_TIME_AS_MSECONDS (gst_element_get_base_time(this->playbin));
   
   gst_object_unref (clock);
 
@@ -336,7 +339,10 @@ NewVideoPlayer::play ()
   ret = gst_element_set_state (playbin, GST_STATE_PLAYING);
   g_assert (ret != GST_STATE_CHANGE_FAILURE);
   
-  GstStateChangeReturn retWait = gst_element_get_state (playbin, NULL, NULL, GST_CLOCK_TIME_NONE);
+  GstStateChangeReturn retWait = gst_element_get_state (playbin, 
+                                                          NULL, 
+                                                          NULL,
+                                                          GST_CLOCK_TIME_NONE);
 
   if ( retWait == GST_STATE_CHANGE_SUCCESS ){
     Ginga_Display->addJob (displayJobCallbackWrapper, this);
@@ -379,12 +385,10 @@ NewVideoPlayer::pause ()
 
 void
 NewVideoPlayer::stop ()
-{ //precisa estar entre locks
-  //ret = gst_element_set_state (playbin, GST_STATE_NULL);
-  
+{   
   this->lock ();
   //when stops with natural end
-  if(forcedNaturalEnd){
+  if( forcedNaturalEnd ){
     Player::stop ();
     gst_object_unref (playbin);
     gst_object_unref (bin);
@@ -449,10 +453,9 @@ NewVideoPlayer::getPropertyValue (arg_unused(const string &name))
 }
 
 void
-NewVideoPlayer::setPropertyValue (arg_unused(const string &name), arg_unused(const string &value))
+NewVideoPlayer::setPropertyValue (const string &name, const string &value)
 {
   Player::setPropertyValue(name, value);
-	TRACE ();
 }
 
 void
@@ -503,7 +506,6 @@ NewVideoPlayer::setOutWindow (SDLWindow* windowId)
 
   g_object_set (filter, "caps", caps, NULL);
   gst_caps_unref (caps);
-  
 
 	return true;
 }

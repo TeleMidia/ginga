@@ -411,7 +411,7 @@ bool
 Player::play ()
 {
   this->forcedNaturalEnd = false;
-  this->initStartTime = (guint32)g_get_monotonic_time();
+  this->initStartTime = (guint32) g_get_monotonic_time();
   this->status = OCCURRING;
 
   return true;

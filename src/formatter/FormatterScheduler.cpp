@@ -1937,10 +1937,9 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
       switch (transition)
         {
         case EventUtil::TR_STARTS:
-          object = (NclExecutionObject *)(event->getExecutionObject ());
+          object = (NclExecutionObject *) (event->getExecutionObject ());
 
-          player
-              = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
+          player = (AdapterFormatterPlayer *) playerManager->getObjectPlayer (
                   object);
           if (player != NULL)
             {
@@ -2025,6 +2024,43 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
               }
             break;
           }
+
+        case EventUtil::TR_PAUSES:
+          {
+            /*object = (NclExecutionObject *) (event->getExecutionObject ());
+
+            player = (AdapterFormatterPlayer *) playerManager->getObjectPlayer (
+                  object);
+            if (player != NULL)
+              {
+                ((FormatterMultiDevice *)multiDevPres)->showObject (object);
+
+                focusManager->showObject (object);
+              }*/
+
+            clog << "PAUSES: ";
+            clog << endl;
+            break;
+          }
+
+        case EventUtil::TR_RESUMES:
+          {
+            /*object = (NclExecutionObject *) (event->getExecutionObject ());
+
+            player = (AdapterFormatterPlayer *) playerManager->getObjectPlayer (
+                  object);
+            if (player != NULL)
+              {
+                ((FormatterMultiDevice *)multiDevPres)->showObject (object);
+
+                focusManager->showObject (object);
+              }*/
+
+            clog << "RESUMES: ";
+            clog << endl;
+            break;
+          }
+
         default:
           g_assert_not_reached ();
         }
