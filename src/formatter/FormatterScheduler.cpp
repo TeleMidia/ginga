@@ -2026,37 +2026,15 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
           }
 
         case EventUtil::TR_PAUSES:
-          {
-            /*object = (NclExecutionObject *) (event->getExecutionObject ());
-
-            player = (AdapterFormatterPlayer *) playerManager->getObjectPlayer (
-                  object);
-            if (player != NULL)
-              {
-                ((FormatterMultiDevice *)multiDevPres)->showObject (object);
-
-                focusManager->showObject (object);
-              }*/
-
-            clog << "PAUSES: ";
+          {        
+            clog << "FormatterScheduler::eventStateChanged\nPAUSES:\n";
             clog << endl;
             break;
           }
 
         case EventUtil::TR_RESUMES:
-          {
-            /*object = (NclExecutionObject *) (event->getExecutionObject ());
-
-            player = (AdapterFormatterPlayer *) playerManager->getObjectPlayer (
-                  object);
-            if (player != NULL)
-              {
-                ((FormatterMultiDevice *)multiDevPres)->showObject (object);
-
-                focusManager->showObject (object);
-              }*/
-
-            clog << "RESUMES: ";
+          {           
+            clog << "FormatterScheduler::eventStateChanged\nRESUMES:\n";
             clog << endl;
             break;
           }
