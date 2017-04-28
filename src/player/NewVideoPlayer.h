@@ -123,6 +123,8 @@ public:
   void eos(); //works
   void run ();
 
+  void printPipelineState (); //works
+
 };
 
 GINGA_PLAYER_END

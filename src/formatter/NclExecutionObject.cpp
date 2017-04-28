@@ -1792,7 +1792,7 @@ NclExecutionObject::selectionEvent (SDL_Keycode key, double currentTime)
   double intervalBegin;
   double intervalEnd;
 
-   if ((!isHandling && !isHandler) || sleeping || paused)
+   if ((!isHandling && !isHandler) || sleeping /*|| paused*/)
     {
       clog << "NclExecutionObject::selectionEvent Can't receive event on '";
       clog << getId () << "': isHandling = '" << isHandling << "' ";
