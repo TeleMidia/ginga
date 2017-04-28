@@ -15,6 +15,17 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
+/**
+ * @file   HTMLPlayer.cpp
+ * @author Eduardo Cruz Araújo (edcaraujo@gmail.com)
+ * @date   April, 2017
+ *
+ * @brief  Source file of HTML player.
+ *
+ * This is the header file for the HTMLPlayer and others 
+ * related classes.
+ */
+
 #include "HTMLPlayer.h"
 
 GINGA_PLAYER_BEGIN
@@ -37,7 +48,8 @@ HTMLPlayer::~HTMLPlayer ()
   // TODO
 }
 
-bool HTMLPlayer::play ()
+bool 
+HTMLPlayer::play ()
 {
   _isPlaying = true;
 
@@ -46,7 +58,8 @@ bool HTMLPlayer::play ()
   return Player::play ();
 }
 
-void HTMLPlayer::stop ()
+void 
+HTMLPlayer::stop ()
 {
   _isPlaying = false;
 
@@ -59,12 +72,15 @@ void HTMLPlayer::stop ()
   texture = NULL; 
 }
 
-bool HTMLPlayer::displayJobCallbackWrapper(DisplayJob* job, SDL_Renderer* renderer,  void* self)
+bool 
+HTMLPlayer::displayJobCallbackWrapper(DisplayJob* job, SDL_Renderer* renderer,  
+                                                       void* self)
 {
   return ((HTMLPlayer*) self)->displayJobCallback(job, renderer);  
 }
 
-bool HTMLPlayer::displayJobCallback (DisplayJob *job, SDL_Renderer *renderer)
+bool 
+HTMLPlayer::displayJobCallback (DisplayJob *job, SDL_Renderer *renderer)
 {
   if (_isPlaying)
   {
@@ -75,8 +91,9 @@ bool HTMLPlayer::displayJobCallback (DisplayJob *job, SDL_Renderer *renderer)
 
       CefBrowserSettings settings;
 
-      _handler = new GingaRenderHandler(window->getRect().w, window->getRect().h, renderer);
-      _client = new GingaClient(_handler);
+      _handler = new GingaCefHandler(window->getRect().w, 
+                                     window->getRect().h, renderer);
+      _client = new GingaCefClient(_handler);
 
       string URI = "";
       
@@ -92,7 +109,11 @@ bool HTMLPlayer::displayJobCallback (DisplayJob *job, SDL_Renderer *renderer)
         }
       }
       
-      _browser = CefBrowserHost::CreateBrowserSync(info, _client.get(), URI.c_str(), settings, nullptr);
+      _browser = CefBrowserHost::CreateBrowserSync(info, 
+                                                   _client.get(), 
+                                                   URI.c_str(), 
+                                                   settings, 
+                                                   nullptr);
 
       texture = _handler->getTexture();
     }
@@ -105,9 +126,10 @@ bool HTMLPlayer::displayJobCallback (DisplayJob *job, SDL_Renderer *renderer)
   return false;
 }
 
-void HTMLPlayer::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
+void 
+HTMLPlayer::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
 {
-  if (!_browser)
+  if (_browser)
   {
     if(evtType == SDL_KEYDOWN || evtType == SDL_KEYUP)
     {
@@ -117,7 +139,8 @@ void HTMLPlayer::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
       event.windows_key_code = getPlayerKey(key);
       event.unmodified_character = (char) event.windows_key_code;
       event.character = event.unmodified_character;
-      event.type = (evtType == SDL_KEYDOWN ? KEYEVENT_RAWKEYDOWN : KEYEVENT_KEYUP);  
+      event.type = (evtType == SDL_KEYDOWN ? KEYEVENT_RAWKEYDOWN : 
+                                             KEYEVENT_KEYUP);  
 
       _browser->GetHost()->SendKeyEvent(event);
 
@@ -130,9 +153,10 @@ void HTMLPlayer::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
   }
 }
 
-void HTMLPlayer::mouseInputCallback (SDL_EventType evtType, int x, int y)
+void 
+HTMLPlayer::mouseInputCallback (SDL_EventType evtType, int x, int y)
 {
-  if (!_browser)
+  if (_browser)
   {
     if (evtType == SDL_MOUSEBUTTONUP || evtType == SDL_MOUSEBUTTONDOWN)
     {
@@ -146,7 +170,8 @@ void HTMLPlayer::mouseInputCallback (SDL_EventType evtType, int x, int y)
   }
 }
 
-int HTMLPlayer::getPlayerKey(SDL_Keycode key)
+int 
+HTMLPlayer::getPlayerKey(SDL_Keycode key)
 {
   int result = 0;
 
@@ -154,7 +179,8 @@ int HTMLPlayer::getPlayerKey(SDL_Keycode key)
   bool WITH_CAPSLOCK = false; 
   bool WITH_ALTGR = false;    
 
-  bool UPPERCASE = (WITH_CAPSLOCK && !WITH_SHIFT) || (WITH_SHIFT && !WITH_CAPSLOCK);
+  bool UPPERCASE = (WITH_CAPSLOCK && !WITH_SHIFT) || 
+                   (WITH_SHIFT && !WITH_CAPSLOCK);
 
   switch (key)
   {
@@ -301,63 +327,79 @@ int HTMLPlayer::getPlayerKey(SDL_Keycode key)
   return result;
 }
 
-GingaRenderHandler::GingaRenderHandler(int width, int height, SDL_Renderer* renderer)
+GingaCefHandler::GingaCefHandler(int width, int height, SDL_Renderer* renderer)
 {
   setWidth(width);
   setHeight(height);
   setRenderer(renderer);
 }
 
-GingaRenderHandler::~GingaRenderHandler()
+GingaCefHandler::~GingaCefHandler()
 {
   // TODO
 }
 
-int GingaRenderHandler::getWidth()
+int 
+GingaCefHandler::getWidth()
 {
   return _width;
 }
 
-void GingaRenderHandler::setWidth(int width)
+void 
+GingaCefHandler::setWidth(int width)
 {
   _width = width;
 }
 
-int GingaRenderHandler::getHeight()
+int 
+GingaCefHandler::getHeight()
 {
   return _height;
 }
 
-void GingaRenderHandler::setHeight(int height)
+void 
+GingaCefHandler::setHeight(int height)
 {
   _height = height;
 }
 
-SDL_Renderer* GingaRenderHandler::getRenderer()
+SDL_Renderer* 
+GingaCefHandler::getRenderer()
 {
   return _renderer;
 }
 
-void GingaRenderHandler::setRenderer(SDL_Renderer* renderer)
+void 
+GingaCefHandler::setRenderer(SDL_Renderer* renderer)
 {
   _renderer = renderer;
 
-  _texture = SDL_CreateTexture(_renderer, SDL_PIXELFORMAT_UNKNOWN, SDL_TEXTUREACCESS_STREAMING, _width, _height);
+  _texture = SDL_CreateTexture(_renderer, 
+                               SDL_PIXELFORMAT_UNKNOWN, 
+                               SDL_TEXTUREACCESS_STREAMING, 
+                               _width, _height);
 }
 
-SDL_Texture* GingaRenderHandler::getTexture()
+SDL_Texture* 
+GingaCefHandler::getTexture()
 {
   return _texture;
 }
 
-bool GingaRenderHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect)
+bool 
+GingaCefHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect)
 {
   rect = CefRect(0, 0, _width, _height);
 
   return true;
 }
 
-void GingaRenderHandler::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList &dirtyRects, const void * buffer, int w, int h)
+void 
+GingaCefHandler::OnPaint(CefRefPtr<CefBrowser> browser, 
+                         PaintElementType type, 
+                         const RectList &dirtyRects, 
+                         const void * buffer, 
+                         int w, int h)
 {
   if (_texture)
   {
@@ -370,27 +412,30 @@ void GingaRenderHandler::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType
   }
 }
 
-GingaClient::GingaClient(CefRefPtr<CefRenderHandler> handler)
+GingaCefClient::GingaCefClient(CefRefPtr<CefRenderHandler> handler)
 {
   _handler = handler;
 }
 
-GingaClient::~GingaClient()
+GingaCefClient::~GingaCefClient()
 {
-  // TODO
+  
 }
 
-CefRefPtr<CefLifeSpanHandler> GingaClient::GetLifeSpanHandler()
-{
-  return this;
-}
-
-CefRefPtr<CefLoadHandler> GingaClient::GetLoadHandler()
+CefRefPtr<CefLifeSpanHandler> 
+GingaCefClient::GetLifeSpanHandler()
 {
   return this;
 }
 
-CefRefPtr<CefRenderHandler> GingaClient::GetRenderHandler()
+CefRefPtr<CefLoadHandler> 
+GingaCefClient::GetLoadHandler()
+{
+  return this;
+}
+
+CefRefPtr<CefRenderHandler> 
+GingaCefClient::GetRenderHandler()
 {
   return _handler;
 }

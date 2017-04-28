@@ -15,6 +15,16 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
+/**
+ * @file   AdapterHTMLPlayer.h
+ * @author Eduardo Cruz Araújo (edcaraujo@gmail.com)
+ * @date   April, 2017
+ *
+ * @brief  Header file of HTML player adapter.
+ *
+ * This is the header file for the AdapterHTMLPlayer class.
+ */
+
 #ifndef ADAPTER_HTML_PLAYER_H
 #define ADAPTER_HTML_PLAYER_H
 
@@ -24,14 +34,40 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
+/**
+ *  @brief An adapter class for the HTML player.
+ * 
+ *  This class is responsible for create new instances of 
+ *  HTML players.
+ */ 
 class AdapterHTMLPlayer : public AdapterFormatterPlayer
 {
 public:
+  /**
+   * @brief Default constructor for AdapterHTMLPlayer.  
+   * 
+   * @return Nothing. 
+   */  
   AdapterHTMLPlayer ();
+
+  /**
+   * @brief Default destructor for AdapterHTMLPlayer.  
+   *
+   * @return Nothing. 
+   */ 
   virtual ~AdapterHTMLPlayer ();
 
 protected:
-  virtual void createPlayer ();
+  /**
+   * @brief Create a new instance of HTML player. 
+   *
+   * @return Nothing. 
+   *
+   * This method associate the new HTML player instance
+   * to the protected property **player** inherited from 
+   * AdapterFormatterPlayer class.
+   */ 
+  void createPlayer ();
 };
 
 GINGA_FORMATTER_END

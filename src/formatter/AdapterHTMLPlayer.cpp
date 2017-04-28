@@ -15,6 +15,16 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
+/**
+ * @file   AdapterHTMLPlayer.cpp
+ * @author Eduardo Cruz Araújo (edcaraujo@gmail.com)
+ * @date   April, 2017
+ *
+ * @brief  Source file of HTML player adapter.
+ *
+ * This is the source file for the AdapterHTMLPlayer class.
+ */
+
 #include "AdapterHTMLPlayer.h"
 
 #include "player/HTMLPlayer.h"
@@ -32,9 +42,11 @@ AdapterHTMLPlayer::~AdapterHTMLPlayer()
   
 }
 
-void AdapterHTMLPlayer::createPlayer()
+void 
+AdapterHTMLPlayer::createPlayer()
 {
   player = new HTMLPlayer(mrl);
+  
   AdapterFormatterPlayer::createPlayer();
 }
 
