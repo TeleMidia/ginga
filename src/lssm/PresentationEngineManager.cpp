@@ -679,15 +679,11 @@ PresentationEngineManager::startPresentationThread (){
     {
       if (!getNclPlayer (nclFile, &formatter))
         {
-          openNclFile (nclFile);
-          if (!getNclPlayer (nclFile, &formatter))
-            {
-              clog << "PresentationEngineManager::startPresentation ";
-              clog << "can't start! formatter for '" << nclFile;
-              clog << "' is NULL";
-              clog << endl;
-              return ;
-            }
+          clog << "PresentationEngineManager::startPresentation ";
+          clog << "can't start! formatter for '" << nclFile;
+          clog << "' is NULL";
+          clog << endl;
+          return ;
         }
 
       setTimeBaseInfo (formatter);
