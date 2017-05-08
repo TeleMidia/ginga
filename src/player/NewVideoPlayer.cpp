@@ -497,7 +497,7 @@ NewVideoPlayer::setOutWindow (SDLWindow* windowId)
   GstStructure *st;
 
   this->window = windowId;
-  if( windowId!=NULL) 
+  if(windowId!=NULL) {
       this->rect = windowId->getRect();
       this->z = windowId->getZ();
   }
