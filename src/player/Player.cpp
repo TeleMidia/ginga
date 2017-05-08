@@ -69,6 +69,7 @@ Player::Player (const string &mrl)
 
 Player::~Player ()
 {
+  Ginga_Display->unregisterPlayer(this);
 
   set<IPlayer *>::iterator i;
 
@@ -420,7 +421,6 @@ Player::play ()
 void
 Player::stop ()
 {
-  Ginga_Display->unregisterPlayer(this);
 
   this->initStartTime = 0;
   this->initPauseTime = 0;
@@ -668,8 +668,10 @@ Player::isForcedNaturalEnd ()
 bool
 Player::setOutWindow (SDLWindow* windowId)
 {
-  if( windowId!=NULL)  
+  if( windowId!=NULL){
       this->rect = windowId->getRect();
+      this->z = windowId->getZ();
+  }
 
   this->window = windowId;
   return true;
@@ -680,9 +682,14 @@ Player::getMediaStatus(){
    return this->status;
 }
 
+double
+Player::getZ(){
+  return this->z;
+}
+
 void
 Player::redraw(SDL_Renderer* renderer){ 
-
+   
    if (this->texture != NULL){
       SDLx_SetTextureAlphaMod (this->texture, this->alpha);
       SDLx_RenderCopy (renderer, this->texture, NULL, &this->rect);
