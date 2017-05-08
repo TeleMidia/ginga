@@ -25,18 +25,6 @@ button_DATA=\
   images/stopButton.png\
   $(NULL)
 
-# contextmanager
-contextmanager_DATA=\
-  contextmanager/users.ini\
-  contextmanager/contexts.ini\
-  $(NULL)
-
-# font
-font_DATA=\
-  fonts/decker.ttf\
-  fonts/vera.ttf\
-  $(NULL)
-
 # formatter
 formatterimg_DATA=\
   formatterimg/loading.png\

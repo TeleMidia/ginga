@@ -33,16 +33,9 @@ ContextManager *ContextManager::_instance = NULL;
 
 ContextManager::ContextManager ()
 {
-  usersUri = string (GINGA_CONTEXTMANAGER_DATADIR) + "users.ini";
-  contextsUri = string (GINGA_CONTEXTMANAGER_DATADIR) + "contexts.ini";
   curUserId = -1;
   systemInfo = new SystemInfo ();
-
-  initializeUsers ();
-  initializeContexts ();
-
   systemInfo->setSystemTable (getUserProfile (getCurrentUserId ()));
-
   Thread::mutexInit (&groupsMutex, false);
 }
 
@@ -66,230 +59,14 @@ ContextManager *
 ContextManager::getInstance ()
 {
   if (_instance == NULL)
-    {
-      _instance = new ContextManager ();
-    }
+    _instance = new ContextManager ();
 
   return _instance;
 }
 
 void
-ContextManager::initializeUsers ()
-{
-  GingaUser *newUser;
-  ifstream fis;
-  string line = "", name = "", location = "", passwd = "";
-  int id = -1, age = -1;
-  char genre = 'a';
-  bool validUser = false;
-  bool invalidUser = false;
-
-  fis.open (usersUri.c_str (), ifstream::in);
-
-  if (!fis.is_open ())
-    {
-      clog << "ContextManager::initializeUsers() Warning: can't open ";
-      clog << "config file '" << usersUri << "'" << endl;
-      return;
-    }
-
-  while (fis.good ())
-    {
-      if (line == "::")
-        {
-          fis >> line;
-          if (line == "=")
-            {
-              fis >> line;
-              curUserId = xstrto_int (line);
-            }
-          else
-            {
-              invalidUser = true;
-              clog << "ContextManager::initializeUsers ";
-              clog << "warning! currentUser token must to be ':: ='";
-              clog << endl;
-            }
-        }
-
-      if (line != "||")
-        {
-          fis >> line;
-        }
-      else
-        {
-          fis >> line;
-          if (line == "=")
-            {
-              fis >> line;
-              id = xstrto_int (line);
-              if (id >= 0)
-                {
-                  fis >> line;
-                  name = line;
-                  if (name != "")
-                    {
-                      fis >> line;
-                      passwd = line;
-                      if (passwd != "")
-                        {
-                          fis >> line;
-                          age = xstrto_int (line);
-                          if (age >= 0)
-                            {
-                              fis >> line;
-                              location = line;
-                              if (location != "")
-                                {
-                                  fis >> line;
-                                  if (line == "m" || line == "f")
-                                    {
-                                      genre = line[0];
-                                      validUser = true;
-                                      invalidUser = false;
-                                    }
-                                  else
-                                    {
-                                      invalidUser = true;
-                                      clog << "ContextManager::";
-                                      clog << "initializeUsers ";
-                                      clog << "warning! genre != m and f";
-                                      clog << endl;
-                                    }
-                                }
-                              else
-                                {
-                                  invalidUser = true;
-                                  clog << "ContextManager::";
-                                  clog << "initializeUsers ";
-                                  clog << "warning! NULL location";
-                                  clog << endl;
-                                }
-                            }
-                          else
-                            {
-                              invalidUser = true;
-                              clog << "ContextManager::initializeUsers ";
-                              clog << "warning! age < 0" << endl;
-                            }
-                        }
-                      else
-                        {
-                          invalidUser = true;
-                          clog << "ContextManager::initializeUsers ";
-                          clog << "warning! NULL passwd." << endl;
-                        }
-                    }
-                  else
-                    {
-                      invalidUser = true;
-                      clog << "ContextManager::initializeUsers warning! ";
-                      clog << "name == ''" << endl;
-                    }
-                }
-              else
-                {
-                  invalidUser = true;
-                  clog << "ContextManager::initializeUsers warning! ";
-                  clog << "token < 0" << endl;
-                }
-            }
-          else
-            {
-              invalidUser = true;
-              clog << "ContextManager::initializeUsers warning! ";
-              clog << "token != '='" << endl;
-            }
-        }
-
-      if (validUser)
-        {
-          validUser = false;
-          newUser = new GingaUser (id, name, passwd);
-          newUser->setUserAge (passwd, age);
-          newUser->setUserLocation (passwd, location);
-          newUser->setUserGenre (passwd, genre);
-
-          addUser (newUser);
-        }
-      else if (invalidUser)
-        {
-          clog << "ContextManager::initializeUsers warning! Invalid ";
-          clog << "user '" << curUserId << "'" << endl;
-        }
-    }
-
-  fis.close ();
-}
-
-void
-ContextManager::initializeContexts ()
-{
-  ifstream fis;
-  string line = "", key = "", value = "";
-  int id = -1;
-
-  fis.open (contextsUri.c_str (), ifstream::in);
-
-  if (!fis.is_open ())
-    {
-      clog << "ContextManager::initializeContexts() Warning: can't open ";
-      clog << "cfg file '" << contextsUri << "'" << endl;
-      return;
-    }
-
-  while (fis.good ())
-    {
-      if (line == "::")
-        {
-          fis >> line;
-          if (line == "=")
-            {
-              fis >> line;
-              curUserId = xstrto_int (line);
-            }
-        }
-
-      if (line != "||")
-        {
-          fis >> line;
-        }
-      else
-        {
-          fis >> line;
-          if (line == "=")
-            {
-              fis >> line;
-              id = xstrto_int (line);
-              if (id >= 0)
-                {
-                  while (fis.good ())
-                    {
-                      fis >> line;
-                      if (line == "||")
-                        {
-                          break;
-                        }
-
-                      key = line;
-                      fis >> line;
-                      if (line == "=")
-                        {
-                          fis >> line;
-                          value = line;
-                          addContextVar (id, key, value);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-  fis.close ();
-}
-
-void
-ContextManager::addContextVar (int userId, const string &varName, const string &varValue)
+ContextManager::addContextVar (int userId, const string &varName,
+                               const string &varValue)
 {
   map<int, map<string, string> *>::iterator i;
   map<string, string> *vars;
@@ -326,86 +103,9 @@ ContextManager::addUser (GingaUser *newUser)
 }
 
 void
-ContextManager::saveUsersAccounts ()
-{
-  FILE *fd;
-  map<int, GingaUser *>::iterator i;
-
-  remove (usersUri.c_str ());
-  fd = fopen (usersUri.c_str (), "w+b");
-  if (fd == 0)
-    return;
-
-  GingaUser::saveString (fd, ":: =");
-  GingaUser::saveString (fd, xstrbuild ("%d", curUserId));
-  GingaUser::saveString (fd, "\n");
-
-  i = users.begin ();
-  while (i != users.end ())
-    {
-      i->second->saveTo (fd);
-      GingaUser::saveString (fd, "\n");
-      ++i;
-    }
-
-  fclose (fd);
-}
-
-void
-ContextManager::saveUsersProfiles ()
-{
-  FILE *fd;
-  map<int, map<string, string> *>::iterator i;
-  string id;
-
-  remove (contextsUri.c_str ());
-  fd = fopen (contextsUri.c_str (), "w+b");
-  if (fd == NULL)
-    return;
-
-  GingaUser::saveString (fd, ":: =");
-  GingaUser::saveString (fd, xstrbuild ("%d", curUserId));
-  GingaUser::saveString (fd, "\n");
-
-  i = contexts.begin ();
-  while (i != contexts.end ())
-    {
-      saveProfile (fd, i->first, i->second);
-      ++i;
-    }
-
-  fclose (fd);
-}
-
-void
-ContextManager::saveProfile (FILE *fd, int userId,
-                             const map<string, string> *profile)
-{
-  string id;
-  map<string, string>::const_iterator i;
-
-  GingaUser::saveString (fd, "|| =");
-  GingaUser::saveString (fd, xstrbuild ("%d", userId));
-  GingaUser::saveString (fd, "\n");
-
-  i = profile->begin ();
-  while (i != profile->end ())
-    {
-      GingaUser::saveString (fd, i->first);
-      GingaUser::saveString (fd, "=");
-      GingaUser::saveString (fd, i->second);
-      GingaUser::saveString (fd, "\n");
-      ++i;
-    }
-}
-
-void
 ContextManager::setCurrentUserId (int userId)
 {
-  if (users.count (userId) != 0)
-    {
-      curUserId = userId;
-    }
+  curUserId = userId;
 }
 
 int
@@ -489,21 +189,6 @@ SystemInfo *
 ContextManager::getSystemInfo ()
 {
   return systemInfo;
-}
-
-void
-ContextManager::listUsersNicks ()
-{
-  map<int, GingaUser *>::iterator i;
-
-  clog << "ContextManager::listUsersNicks '";
-  i = users.begin ();
-  while (i != users.end ())
-    {
-      clog << i->second->getUserName () << "' ";
-      ++i;
-    }
-  clog << endl;
 }
 
 void

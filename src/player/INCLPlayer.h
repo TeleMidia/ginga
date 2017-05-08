@@ -64,7 +64,6 @@ public:
       = 0;
 
   virtual void setParentLayout (void *layout) = 0;
-  virtual string getScreenShot () = 0;
   virtual void *setCurrentDocument (const string &fName) = 0;
   virtual void setDepthLevel (int level) = 0;
   virtual int getDepthLevel () = 0;
