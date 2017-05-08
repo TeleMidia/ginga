@@ -34,7 +34,6 @@ protected:
 public:
   bool setAndLockCurrentEvent (NclFormatterEvent *event);
   void unlockCurrentEvent (NclFormatterEvent *event);
-  void flip ();
 };
 
 GINGA_FORMATTER_END

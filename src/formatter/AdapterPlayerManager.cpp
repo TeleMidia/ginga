@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "AdapterImagePlayer.h"
 #include "AdapterLuaPlayer.h"
-#include "AdapterMirrorPlayer.h"
 #include "AdapterNCLPlayer.h"
 #include "AdapterNewVideoPlayer.h"
 #include "AdapterSsmlPlayer.h"
@@ -212,35 +211,6 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
   content = entity->getContent ();
   g_assert_nonnull (content);
 
-/*
-  if (content->instanceOf ("ReferenceContent"))
-    {
-      string url;
-      char *scheme;
-
-      url = ((ReferenceContent *)(content))->getCompleteReferenceUrl ();
-      scheme = g_uri_parse_scheme (url.c_str ());
-      if (g_strcmp0 (scheme, "sbtvd-ts") == 0)
-        {
-          classname = "AdapterProgramAVPlayer";
-          adapter = AdapterProgramAVPlayer::getInstance ();
-          g_free (scheme);
-          goto done;
-        }
-      else if (g_strcmp0 (scheme, "ncl-mirror") == 0)
-        {
-          classname = "AdapterMirrorPlayer";
-          adapter = new AdapterMirrorPlayer ();
-          g_free (scheme);
-          goto done;
-        }
-      else
-        {
-          g_free (scheme);
-        }
-    }
-*/
-
   buf = ((ContentNode *)entity)->getNodeType ();
   mime = buf.c_str ();
   g_assert_nonnull (mime);
@@ -302,7 +272,6 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
       return NULL;
     }
 
-done:
   adapter->setAdapterManager (this);
   objectPlayers[id] = adapter;
   playerNames[adapter] = classname;

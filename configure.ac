@@ -67,12 +67,10 @@ AC_SUBST([XERCESC_REQUIRED_VERSION],     xercesc_required_version)
 m4_define([cairo_required_version],      [1.10.2])
 m4_define([cef_required_version],        [3.0])
 m4_define([librsvg_required_version],    [2.40.0])
-m4_define([libzip_required_version],     [0.11.2])
 m4_define([pango_required_version],      [1.30.0])
 AC_SUBST([CAIRO_REQUIRED_VERSION],       cairo_required_version)
 AC_SUBST([CEF_REQUIRED_VERSION],         cef_required_version)
 AC_SUBST([LIBRSVG_REQUIRED_VERSION],     librsvg_required_version)
-AC_SUBST([LIBZIP_REQUIRED_VERSION],      libzip_required_version)
 AC_SUBST([PANGO_REQUIRED_VERSION],       pango_required_version)
 
 # Compiler and tool checks.

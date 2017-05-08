@@ -154,7 +154,6 @@ public:
   static void release ();
 
   void setMirrorSrc (IPlayer *mirrorSrc);
-  void printGingaWindows ();
   set<string> *createPortIdList ();
   short getMappedInterfaceType (const string &portId);
 
@@ -318,7 +317,6 @@ public:
                               const string &paremeter,
                               short type,
                               const string &value);
-  void flip ();
   guint32 getMediaTime ();
   double getTotalMediaTime ();
   void setMediaTime (guint32 newTime);

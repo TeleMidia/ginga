@@ -132,7 +132,7 @@ CommonCoreManager::setInteractivityInfo (bool hasOCSupport)
 }
 
 void
-CommonCoreManager::removeOCFilterAfterMount (bool removeIt)
+CommonCoreManager::removeOCFilterAfterMount (arg_unused (bool removeIt))
 {
 #if WITH_ISDBT
   if (dataProcessor != NULL)
@@ -143,7 +143,7 @@ CommonCoreManager::removeOCFilterAfterMount (bool removeIt)
 }
 
 void
-CommonCoreManager::setTunerSpec (const string &tunerSpec)
+CommonCoreManager::setTunerSpec (arg_unused (const string &tunerSpec))
 {
 #if WITH_ISDBT
   string ni, ch;
@@ -183,25 +183,6 @@ CommonCoreManager::releaseTunningWindow ()
     }
 }
 
-IPlayer *
-CommonCoreManager::createMainAVPlayer (const string &dstUri,
-                                       int x, int y,
-                                       int w, int h)
-{
-#if 0
-  IPlayer *ipav;
-  string s;
-
-  ipav = ProgramAV::getInstance ();
-  xstrassign (s, "%d,%d,%d,%d", x, y, w, h);
-  ipav->setPropertyValue ("setBoundaries", s);
-  ipav->setPropertyValue ("createPlayer", "sbtvd-ts://" + dstUri);
-  ipav->setPropertyValue ("showPlayer", "sbtvd-ts://" + dstUri);
-
-  return ipav;
-#endif
-  return NULL;
-}
 
 void
 CommonCoreManager::tune ()
