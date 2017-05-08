@@ -48,46 +48,32 @@ AC_SUBST([mbdir], ['${pkgdatadir}'/mb/config])
 AC_SUBST([tunerdir], ['${pkgdatadir}'/tuner])
 
 # Required dependencies version.
-m4_define([avcodec_required_version],    [55.39.101])
-m4_define([avfilter_required_version],   [3.90.100])
-m4_define([avformat_required_version],   [55.19.104])
-m4_define([avutil_required_version],     [52.48.101])
 m4_define([curl_required_version],       [7.18])
 m4_define([glib_required_version],       [2.32.4])
 m4_define([gstreamer_required_version],  [1.8.0])
 m4_define([nclua_required_version],      [1.0])
 m4_define([sdl2_image_require_version],  [2.0])
 m4_define([sdl2_required_version],       [2.0])
-m4_define([swresample_required_version], [0.17.104])
-m4_define([swscale_required_version],    [2.5.101])
 m4_define([xercesc_required_version],    [2.7])
-AC_SUBST([AVCODEC_REQUIRED_VERSION],     avcodec_required_version)
-AC_SUBST([AVFILTER_REQUIRED_VERSION],    avfilter_required_version)
-AC_SUBST([AVFORMAT_REQUIRED_VERSION],    avformat_required_version)
-AC_SUBST([AVUTIL_REQUIRED_VERSION],      avutil_required_version)
 AC_SUBST([CURL_REQUIRED_VERSION],        curl_required_version)
 AC_SUBST([GLIB_REQUIRED_VERSION],        glib_required_version)
 AC_SUBST([GSTREAMER_REQUIRED_VERSION],   gstreamer_required_version)
 AC_SUBST([NCLUA_REQUIRED_VERSION],       nclua_required_version)
 AC_SUBST([SDL2_IMAGE_REQUIRE_VERSION],   sdl2_image_require_version)
 AC_SUBST([SDL2_REQUIRED_VERSION],        sdl2_required_version)
-AC_SUBST([SWRESAMPLE_REQUIRED_VERSION],  swresample_required_version)
-AC_SUBST([SWSCALE_REQUIRED_VERSION],     swscale_required_version)
 AC_SUBST([XERCESC_REQUIRED_VERSION],     xercesc_required_version)
 
 # Optional dependencies version.
 m4_define([cairo_required_version],      [1.10.2])
-m4_define([expat_required_version],      [2.1])
+m4_define([cef_required_version],        [3.0])
 m4_define([librsvg_required_version],    [2.40.0])
 m4_define([libzip_required_version],     [0.11.2])
 m4_define([pango_required_version],      [1.30.0])
-m4_define([cef_required_version],        [3.0])
 AC_SUBST([CAIRO_REQUIRED_VERSION],       cairo_required_version)
-AC_SUBST([EXPAT_REQUIRED_VERSION],       expat_required_version)
+AC_SUBST([CEF_REQUIRED_VERSION],         cef_required_version)
 AC_SUBST([LIBRSVG_REQUIRED_VERSION],     librsvg_required_version)
 AC_SUBST([LIBZIP_REQUIRED_VERSION],      libzip_required_version)
 AC_SUBST([PANGO_REQUIRED_VERSION],       pango_required_version)
-AC_SUBST([CEF_REQUIRED_VERSION],       cef_required_version)
 
 # Compiler and tool checks.
 AC_PROG_CXX
@@ -142,14 +128,6 @@ AC_CHECK_HEADER([net/if.h])
 AU_CHECK_PKG([CURL],
  [libcurl >= curl_required_version])
 
-AU_CHECK_PKG([FFMPEG],
- [libavcodec >= avcodec_required_version
-  libavformat >= avformat_required_version
-  libavutil >= avutil_required_version
-  libavfilter >= avfilter_required_version
-  libswresample >= swresample_required_version
-  libswscale >= swscale_required_version])
-
 AU_VERSION_BREAK([glib], glib_required_version)
 AU_CHECK_PKG([GLIB], [glib-2.0 >= glib_required_version],
  [AC_LANG_PROGRAM([[
@@ -178,9 +156,6 @@ AU_CHECK_PKG([XERCESC],
  [xerces-c >= xercesc_required_version])
 
 # Optional dependencies.
-AU_CHECK_OPTIONAL_PKG([isdbt], [build isdbt support], [],
- [ISDBT], [expat >= expat_required_version])
-
 AU_CHECK_OPTIONAL_PKG([gstreamer], [build gstreamer support], [],
   [GSTREAMER],
   gstreamer-1.0 >= gstreamer_required_version[]dnl
@@ -189,22 +164,19 @@ AU_CHECK_OPTIONAL_PKG([gstreamer], [build gstreamer support], [],
   gstreamer-app-1.0 >= gstreamer_required_version
 )
 
-
 AU_CHECK_OPTIONAL_PKG([librsvg], [build with LibRsvg SVG support], [],
  [LIBRSVG],
  librsvg-2.0 >= librsvg_required_version[]dnl
  cairo >= cairo_required_version
 )
 
-AU_CHECK_OPTIONAL_PKG([pango], [build with Pango support], [],
- [PANGO],
+AU_CHECK_OPTIONAL_PKG([pango], [build with Pango support], [], [PANGO],
  pango >= pango_required_version[]dnl
  pangocairo >= pango_required_version
 )
 
-AU_CHECK_OPTIONAL_PKG([cef], [build with CEF support], [],
- [CEF],
- cef >= cef_required_version[]
+AU_CHECK_OPTIONAL_PKG([cef], [build with CEF support], [], [CEF],
+ cef >= cef_required_version
 )
 
 # Optional dependencies that do not use pkg-config.
@@ -244,6 +216,10 @@ _MY_CHECK_OPTIONAL([linuxdvb], [build linuxdvb support],
  [AC_CHECK_HEADER([linux/dvb/frontend.h],
   [with_optional_linuxdvb=yes])])
 
+# Broken or legacy stuff.
+AM_CONDITIONAL([WITH_ISDBT], [0])
+AC_DEFINE([WITH_ISDBT], [0], [Broken or legacy.])
+
 # Epilogue.
 AC_CONFIG_FILES([
 Makefile
@@ -262,12 +238,10 @@ AC_MSG_NOTICE([summary of main build options:
   warning flags:      ${WERROR_CFLAGS} ${WARN_CFLAGS}
   valgrind:           ${VALGRIND}
 
+  with cef:           ${with_cef_result}
   with espeak:        ${with_espeak_result}
   with gstreamer:     ${with_gstreamer_result}
   with librsvg:       ${with_librsvg_result}
-  with pango:         ${with_pango_result}
-  with cef:           ${with_cef_result}
-
-  with isdbt:         ${with_isdbt_result}
   with linuxdvb:      ${with_linuxdvb_result}
+  with pango:         ${with_pango_result}
 ])

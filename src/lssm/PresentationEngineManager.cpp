@@ -206,7 +206,7 @@ PresentationEngineManager::getMappedInterfaceType (const string &nclFile,
 void
 PresentationEngineManager::autoMountOC (arg_unused (bool autoMountIt))
 {
-#ifdef WITH_ISDBT
+#if defined WITH_ISDBT && WITH_ISDBT
   ((DataWrapperListener *)dsmccListener)->autoMountOC (autoMountIt);
 #endif
 }
