@@ -217,7 +217,7 @@ CommonCoreManager::startPresentation ()
 {
 #if !defined WITH_ISDBT || WITH_ISDBT == 0
   return;
-#endif
+#else
   IPlayer *ipav = NULL;
   NclPlayerData *data = NULL;
   StcWrapper *sw = NULL;
@@ -310,6 +310,7 @@ CommonCoreManager::startPresentation ()
   ((IDemuxer *)demuxer)->processDemuxData ();
 
   clog << "lssm ccm::sp all done!" << endl;
+#endif
 }
 
 GINGA_LSSM_END
