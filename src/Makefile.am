@@ -193,7 +193,6 @@ src+= ncl/TransitionBase.cpp
 src+= ncl/TransitionUtil.cpp
 src+= ncl/TriggerExpression.cpp
 src+= ncl/ValueAssessment.cpp
-src+= nclconv/DOMTreeErrorReporter.cpp
 src+= nclconv/DocumentParser.cpp
 src+= nclconv/NclComponentsConverter.cpp
 src+= nclconv/NclComponentsParser.cpp
