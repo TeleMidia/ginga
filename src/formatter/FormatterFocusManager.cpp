@@ -26,11 +26,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/Display.h"
 using namespace ::ginga::mb;
 
-#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
-#include "multidev/DeviceDomain.h"
-using namespace ::ginga::multidev;
-#endif
-
 GINGA_FORMATTER_BEGIN
 
 bool FormatterFocusManager::init = false;
@@ -704,9 +699,7 @@ FormatterFocusManager::setFocus (NclCascadingDescriptor *descriptor)
 void
 FormatterFocusManager::recoveryDefaultState (NclExecutionObject *object)
 {
-  SDLWindow* wId;
   AdapterFormatterPlayer *player;
-  NclFormatterRegion *fRegion;
 
   if (object == NULL || object->getDescriptor () == NULL
       || object->getDescriptor ()->getFormatterRegion () == NULL)
@@ -718,7 +711,7 @@ FormatterFocusManager::recoveryDefaultState (NclExecutionObject *object)
       = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (object);
   if (player != NULL)
     {
-      fRegion = object->getDescriptor ()->getFormatterRegion ();
+      // fRegion = object->getDescriptor ()->getFormatterRegion ();
     //  fRegion->setRenderedSurface (player->getPlayer ()->getSurface ());
     //  fRegion->setFocus (false);
     //  wId = fRegion->getOutputId ();
@@ -1024,7 +1017,6 @@ FormatterFocusManager::keyCodeBack ()
 bool
 FormatterFocusManager::enterSelection (AdapterFormatterPlayer *player)
 {
-  bool newHandler = false;
   string keyMaster;
 
   if (player != NULL && selectedObject != NULL)

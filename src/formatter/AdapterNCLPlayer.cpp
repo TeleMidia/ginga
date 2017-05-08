@@ -122,7 +122,6 @@ AdapterNCLPlayer::createPlayer ()
 
       player = (INCLPlayer *)(new FormatterMediator (childData));
 
-
       if (((INCLPlayer *)player)->setCurrentDocument (mrl) == NULL)
         {
           clog << "AdapterNCLPlayer::createPlayer Warning! ";
@@ -217,15 +216,6 @@ AdapterNCLPlayer::unlockCurrentEvent (NclFormatterEvent *event)
       clog << "Handling events warning!" << endl;
     }
   unlockEvent ();
-}
-
-void
-AdapterNCLPlayer::flip ()
-{
-  if (player != NULL)
-    {
-      player->flip ();
-    }
 }
 
 GINGA_FORMATTER_END
