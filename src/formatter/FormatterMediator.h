@@ -164,7 +164,6 @@ public:
   void setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider);
 
   void setParentLayout (void *parentLayout);
-  string getScreenShot ();
 
   vector<string> *getCompileErrors ();
   void *setCurrentDocument (const string &fName);
