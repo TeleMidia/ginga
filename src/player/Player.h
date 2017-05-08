@@ -123,6 +123,7 @@ public:
   virtual void setNotifyContentUpdate (bool notify);
   virtual void addListener (IPlayerListener *listener);
   void removeListener (IPlayerListener *listener);
+  double getZ();
 
 private:
   void performLockedListenersRequest ();
