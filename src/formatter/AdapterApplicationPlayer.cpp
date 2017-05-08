@@ -79,15 +79,6 @@ AdapterApplicationPlayer::setNclEditListener (IPlayerListener *listener)
 }
 
 void
-AdapterApplicationPlayer::checkPlayerSurface (NclExecutionObject *obj)
-{
-  NclCascadingDescriptor *descriptor;
-  NclFormatterRegion *fRegion;
-  LayoutRegion *ncmRegion;
-  int w, h;
-}
-
-void
 AdapterApplicationPlayer::createPlayer ()
 {
   clog << "AdapterApplicationPlayer::createPlayer(" << this << ")";
@@ -180,7 +171,6 @@ AdapterApplicationPlayer::prepare (NclExecutionObject *object,
 
       explicitDur = prepareProperties (object);
       createPlayer ();
-      checkPlayerSurface (object);
     }
   else
     {

@@ -21,10 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterMediator.h"
 #include "FormatterBaseDevice.h"
 
-#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
-# include "FormatterActiveDevice.h"
-#endif
-
 #include "mb/Display.h"
 using namespace ::ginga::mb;
 
@@ -33,11 +29,7 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
-RemoteDeviceManager *FormatterMultiDevice::rdm = NULL;
-#else
 void *FormatterMultiDevice::rdm = NULL;
-#endif
 
 FormatterMultiDevice::FormatterMultiDevice (DeviceLayout *deviceLayout,
                                             int x, int y, int w, int h,
@@ -118,89 +110,6 @@ FormatterMultiDevice::~FormatterMultiDevice ()
   clog << "FormatterMultiDevice::~FormatterMultiDevice ";
   clog << "all done";
   clog << endl;
-}
-
-void
-FormatterMultiDevice::printGingaWindows ()
-{
-  string fileUri = "";
-  SDLWindow* iWin;
-  NclFormatterLayout *formatterLayout;
-
-  vector<SDLWindow*> sortedIds;
-  map<int, NclFormatterLayout *>::iterator i;
-  vector<SDLWindow*>::iterator j;
-
-  int quality = 100;
-  int dumpW = defaultWidth;
-  int dumpH = defaultHeight;
-
-  cout << "FormatterMultiDevice::printGingaWindows(" << this << ") ";
-  cout << "layout manager has '" << layoutManager.size ();
-  cout << "' layouts" << endl;
-
-  cout << "Serialized window Id = '";
-  cout << (unsigned long)serialized;
-  cout << "'" << endl;
-
-  //serialized->getDumpFileUri (quality, dumpW, dumpH);
-
-  cout << "BitMapScreen window Id = '";
-  if (bitMapScreen != 0)
-    {
-      cout << (unsigned long)bitMapScreen << "'";
-    //  bitMapScreen->getDumpFileUri (quality, dumpW, dumpH);
-    }
-  else
-    {
-      cout << "NULL'";
-    }
-  cout << endl;
-
-  i = layoutManager.begin ();
-  while (i != layoutManager.end ())
-    {
-      formatterLayout = i->second;
-
-      cout << "device '" << i->first << "' ";
-
-      formatterLayout->getSortedIds (&sortedIds);
-      if (!sortedIds.empty ())
-        {
-          if (i->first == 1)
-            {
-              quality = 45;
-              dumpW = (int)(480 / 1.8);
-              dumpH = (int)(320 / 1.8);
-            }
-
-          cout << "has the following : ";
-          j = sortedIds.begin ();
-          while (j != sortedIds.end ())
-            {
-              iWin = (*j);
-
-              if (iWin != 0)
-                {
-                //  iWin->getDumpFileUri (quality, dumpW, dumpH);
-                }
-
-              cout << "'" << (unsigned long)(*j) << "' ";
-              ++j;
-            }
-          cout << endl;
-        }
-      else
-        {
-          cout << "is empty " << endl;
-        }
-
-      sortedIds.clear ();
-      ++i;
-    }
-
-  cout << "FormatterMultiDevice::printGingaWindows all done";
-  cout << endl;
 }
 
 void
@@ -504,12 +413,6 @@ FormatterMultiDevice::showObject (NclExecutionObject *executionObject)
                       clog << "executionObject.RP = '";
                       clog << tempRelPath << "'" << endl;
                     }
-#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
-                  rdm->postEvent (
-                      devClass, DeviceDomain::FT_PRESENTATIONEVENT,
-                      deconst (char *, ("start::" + tempRelPath).c_str ()),
-                      (int)(("start::" + tempRelPath).size ()));
-#endif // WITH_MULTIDEVICE
                 }
             }
         }
@@ -570,31 +473,10 @@ FormatterMultiDevice::hideObject (NclExecutionObject *executionObject)
                           activeBaseUri.size () + 1,
                           url.size () - activeBaseUri.size ());
                     }
-#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
-                  rdm->postEvent (
-                      devClass, DeviceDomain::FT_PRESENTATIONEVENT,
-                      deconst (char *, ("stop::" + relativePath).c_str ()),
-                      (int)("stop::" + relativePath).size ());
-#endif // WITH_MULTIDEVICE
                 }
             }
         }
     }
-}
-
-void
-FormatterMultiDevice::renderFromUri (SDLWindow* win, const string &uri)
-{
-/*  SDLSurface* s;
-  s = Ginga_Display->createRenderedSurfaceFromImageFile (uri.c_str ());
-  SDL_Color c;
-  c.r=0; c.g=0; c.b=0; c.a=0;
-  win->setColorKey (c);
-  win->clearContent ();
-  win->renderFrom (s);
-  win->show ();
-  win->validate ();
-  delete s; */
 }
 
 void

@@ -50,11 +50,6 @@ formatterimg_DATA=\
   formatterimg/b8.png\
   $(NULL)
 
-formattermd_DATA=\
-  formattermd/active-device-reset.png\
-  formattermd/active-device.png\
-  $(NULL)
-
 # ini
 INTERNAL_DELIM= "/"
 FOREIGN_DELIM= "\\\\"

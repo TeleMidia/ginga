@@ -26,7 +26,6 @@ AM_CPPFLAGS=\
   -DGINGA_FONT_DATADIR='"$(fontdir)"'\
   -DGINGA_FORMATTER_DATADIR='"$(formatterdir)/"'\
   -DGINGA_FORMATTERIMG_DATADIR='"$(formatterimgdir)/"'\
-  -DGINGA_FORMATTERMD_DATADIR='"$(formattermddir)/"'\
   -DGINGA_MB_DATADIR='"$(mbdir)/"'\
   -DGINGA_TUNER_DATADIR='"$(tunerdir)/"'\
   $(NULL)
@@ -69,7 +68,6 @@ src+= formatter/AdapterApplicationPlayer.cpp
 src+= formatter/AdapterFormatterPlayer.cpp
 src+= formatter/AdapterImagePlayer.cpp
 src+= formatter/AdapterLuaPlayer.cpp
-src+= formatter/AdapterMirrorPlayer.cpp
 src+= formatter/AdapterNCLPlayer.cpp
 src+= formatter/AdapterPlayerManager.cpp
 src+= formatter/AnimationController.cpp

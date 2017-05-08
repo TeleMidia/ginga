@@ -81,17 +81,6 @@ PresentationContext::setPropertyValue (const string &property, const string &val
     {
       notifyObservers (&property);
     }
-
-  if (devListener != NULL)
-    {
-#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
-      // clog << "PresentationContext::set(devListener != NULL)" << endl;
-      int myDevClass = -1;
-      string evPayload = property + " = " + value;
-      devListener->receiveRemoteEvent (
-          myDevClass, DeviceDomain::FT_ATTRIBUTIONEVENT, evPayload);
-#endif // WITH_MULTIDEVICE
-    }
 }
 
 void
@@ -304,13 +293,5 @@ PresentationContext::receiveGlobalAttribution (const string &pName,
       globalVarListener->receiveGlobalAttribution (pName, value);
     }
 }
-
-#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
-void
-PresentationContext::setRemoteDeviceListener (IRemoteDeviceListener *rdl)
-{
-  devListener = rdl;
-}
-#endif
 
 GINGA_FORMATTER_END

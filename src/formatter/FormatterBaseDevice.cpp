@@ -34,7 +34,6 @@ FormatterBaseDevice::FormatterBaseDevice (DeviceLayout *deviceLayout,
     : FormatterMultiDevice (deviceLayout, x, y, w, h,
                             useMulticast, srvPort)
 {
-  set<int> *evs;
   string layoutName = deviceLayout->getLayoutName ();
 
   deviceClass = DeviceDomain::CT_BASE;
@@ -44,26 +43,6 @@ FormatterBaseDevice::FormatterBaseDevice (DeviceLayout *deviceLayout,
   serialized = Ginga_Display->createWindow (0, 0, DV_QVGA_WIDTH,
                                  DV_QVGA_HEIGHT, -1.0);
 
-  evs = new set<int>;
-
-#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
-  if (rdm == NULL)
-    {
-      rdm = RemoteDeviceManager::getInstance ();
-      if (!(layoutName.compare ("systemScreen(2)") == 0))
-        ((RemoteDeviceManager *)rdm)
-            ->setDeviceDomain (
-                new BaseDeviceDomain (useMulticast, srvPort));
-      else
-        ((RemoteDeviceManager *)rdm)
-            ->setDeviceDomain (
-                new ActiveDeviceDomain (useMulticast, srvPort));
-    }
-
-  rdm->setDeviceInfo (deviceClass, w, h, playerId);
-  rdm->addListener (this);
-#endif // WITH_MULTIDEVICE
-
   mainLayout = new NclFormatterLayout (x, y, w, h);
   mainLayout->getDeviceRegion ()->setDeviceClass (0, "");
   layoutManager[deviceClass] = mainLayout;
@@ -71,18 +50,6 @@ FormatterBaseDevice::FormatterBaseDevice (DeviceLayout *deviceLayout,
 
 FormatterBaseDevice::~FormatterBaseDevice ()
 {
- /* if (im != NULL)
-    {
-      im->removeInputEventListener (this);
-    }  */
-
-  if (rdm != NULL)
-    {
-#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
-      rdm->removeListener (this);
-#endif
-    }
-
   if (Ginga_Display->hasWindow (serialized))
     {
       Ginga_Display->destroyWindow (serialized);

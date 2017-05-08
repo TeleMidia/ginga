@@ -49,7 +49,6 @@ public:
 
   virtual void setMirrorSrc (IPlayer *mirrorSrc) = 0;
 
-  virtual void flip () = 0;
   virtual void setMrl (const string &mrl, bool visible = true) = 0;
   virtual void reset () = 0;
   virtual void rebase () = 0;
