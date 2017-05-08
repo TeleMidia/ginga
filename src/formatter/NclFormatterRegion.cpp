@@ -795,7 +795,6 @@ NclFormatterRegion::prepareOutputDisplay (double cvtIndex)
     }
 
 
-
   unlock ();
 
   return outputDisplay;

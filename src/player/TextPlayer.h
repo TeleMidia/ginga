@@ -31,7 +31,6 @@ class TextPlayer : public Player
 {
 private:
   SDL_Color fontColor;
-  SDL_Color bgColor;
   string fontFamily;
   string fontStyle;
   string fontSize;

@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
+#include "ginga-color-table.h"
 #include "Player.h"
 
 #include "mb/Display.h"
@@ -475,8 +476,7 @@ Player::setPropertyValue (const string &name, const string &value)
 
   vector<string> *params = NULL;
 
-      if (name == "bounds")
-        {
+      if (name == "bounds"){
           params = split (value, ",");
           if (params->size () == 4)
             {
@@ -484,28 +484,18 @@ Player::setPropertyValue (const string &name, const string &value)
                this->rect.y = xstrto_int ((*params)[1]);
                this->rect.w = xstrto_int ((*params)[2]);
                this->rect.h = xstrto_int ((*params)[3]);
-
-           /*    outputWindow->setBounds (
-                                   xstrto_int ((*params)[0]),
-                                   xstrto_int ((*params)[1]),
-                                   xstrto_int ((*params)[2]),
-                                   xstrto_int ((*params)[3])); */
             }
           delete params;
         }
-      else if (name == "location")
-        {
+      else if (name == "location"){
           params = split (value, ",");
           if (params->size () == 2)
             {
-           /*   outputWindow->moveTo (
-                                xstrto_int ((*params)[0]),
-                                xstrto_int ((*params)[1])); */
+       
             }
           delete params;
         }
-      else if (name == "size")
-        {
+      else if (name == "size") {
           params = split (value, ",");
           if (params->size () == 2)
             {
@@ -515,30 +505,24 @@ Player::setPropertyValue (const string &name, const string &value)
             }
           delete params;
         }
-      else if (name == "left")
-        {
+      else if (name == "left") {
           this->rect.x = xstrto_int (value);
-      //    outputWindow->setX (
-      //                    xstrto_int (value));
+     
         }
-      else if (name == "top")
-        {
+      else if (name == "top"){
           this->rect.y = xstrto_int (value);
-      //    outputWindow->setY (
-      //                    xstrto_int (value));
+     
         }
-      else if (name == "width")
-        {
+      else if (name == "width"){
           this->rect.w = xstrto_int (value);
-      //    outputWindow->setW (
-      //                    xstrto_int (value));
-        }
-      else if (name == "height")
-        {
+     
+      }
+      else if (name == "height"){
           this->rect.h = xstrto_int (value);
-      //    outputWindow->setH (
-      //                    xstrto_int (value));
-        }
+      }
+      else if(name == "backgroundColor" || name == "bgColor"){
+          ginga_color_input_to_sdl_color(value, &bgColor);
+      }
       else if (name == "transparency"){
           if(xstrto_uint8 (value) <= 0)
              this->alpha = 255;
@@ -671,6 +655,7 @@ Player::setOutWindow (SDLWindow* windowId)
   if( windowId!=NULL){
       this->rect = windowId->getRect();
       this->z = windowId->getZ();
+      windowId->getBorder(&this->bgColor,&this->borderWidth);
   }
 
   this->window = windowId;
@@ -689,11 +674,30 @@ Player::getZ(){
 
 void
 Player::redraw(SDL_Renderer* renderer){ 
-   
+    
+  if(this->window!=NULL)
+      this->window->getBorder(&this->borderColor,&this->borderWidth);
+
+   if (this->bgColor.a > 0){  // background color
+      SDLx_SetRenderDrawBlendMode (renderer, SDL_BLENDMODE_BLEND);
+      SDLx_SetRenderDrawColor (renderer, this->bgColor.r, this->bgColor.g, this->bgColor.b, this->bgColor.a);
+      SDLx_RenderFillRect (renderer, &this->rect);
+    } 
+
    if (this->texture != NULL){
       SDLx_SetTextureAlphaMod (this->texture, this->alpha);
       SDLx_RenderCopy (renderer, this->texture, NULL, &this->rect);
     }
+
+    if (this->borderWidth != 0){
+      if(this->borderWidth <0)
+        this->borderWidth*=-1;
+
+      SDLx_SetRenderDrawBlendMode (renderer, SDL_BLENDMODE_BLEND);
+      SDLx_SetRenderDrawColor (renderer, this->borderColor.r, this->borderColor.g, this->borderColor.b, 255);
+      SDLx_RenderDrawRect (renderer, &this->rect);
+    }
+
 }
 
 
