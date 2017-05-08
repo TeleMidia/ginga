@@ -46,7 +46,6 @@ public:
   void *parse (DOMElement *rootElement, const string &uri);
 
 protected:
-  virtual void setDependencies ();
   virtual void *parseRootElement (DOMElement *rootElement) = 0;
 
 private:

@@ -43,14 +43,6 @@ DocumentParser::~DocumentParser ()
       while (i != genericTable->end ())
         {
           table = (map<string, void *> *)(i->second);
-          /*
-          TODO: fix it
-          j = table->begin();
-          while (j != table->end()) {
-                  delete *j;
-                  ++j;
-          }*/
-
           delete table;
           table = NULL;
           ++i;
@@ -99,8 +91,6 @@ DocumentParser::parse (const string &_uri, const string &iUriD, const string &fU
       clog << "' (file not found)" << endl;
       return NULL;
     }
-
-  // elemento raiz
   rootElement = (DOMElement *)documentTree->getDocumentElement ();
 
   return parse (rootElement, uri);
@@ -109,6 +99,7 @@ DocumentParser::parse (const string &_uri, const string &iUriD, const string &fU
 void *
 DocumentParser::parse (DOMElement *rootElement, const string &_uri)
 {
+  void *root;
   string uri = _uri;
 
   if (!isXmlStr (uri))
@@ -128,22 +119,15 @@ DocumentParser::parse (DOMElement *rootElement, const string &_uri)
   if (!isXmlStr (uri))
     {
       setDocumentPath (getPath (uri) + iUriD);
-      clog << "PATH = [" << documentPath.c_str () << "]" << endl;
-
-      // TODO: generalizar isso para qualquer numero de NCLs
       setDocumentPath (documentPath);
     }
-  else
+
+  root = parseRootElement (rootElement);
+  if (unlikely (root == NULL))
     {
-      // TODO: set path of xml string
+      g_error ("%s: bad NCL document tree", uri.c_str ());
+      exit (EXIT_FAILURE);
     }
-
-  return parseRootElement (rootElement);
-}
-
-void
-DocumentParser::setDependencies ()
-{
 }
 
 string
