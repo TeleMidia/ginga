@@ -1383,6 +1383,7 @@ AdapterFormatterPlayer::stop ()
   if (player != NULL && player->isForcedNaturalEnd ())
     {
       player->forceNaturalEnd (false);
+      object->stop ();
       return unprepare ();
     }
   else if (object != NULL)
