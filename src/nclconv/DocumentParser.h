@@ -46,7 +46,6 @@ public:
   void *parse (DOMElement *rootElement, const string &uri);
 
 protected:
-  virtual void setDependencies ();
   virtual void *parseRootElement (DOMElement *rootElement) = 0;
 
 private:
@@ -69,8 +68,6 @@ public:
   DOMDocument *getDocumentTree ();
   void addObject (const string &tableName, const string &key, void *value);
   void *getObject (const string &tableName, const string &key);
-  void removeObject (const string &tableName, const string &key);
-  void addObjectGrouped (const string &tableName, const string &key, void *value);
   bool importDocument (DocumentParser *parser, const string &docLocation);
 };
 

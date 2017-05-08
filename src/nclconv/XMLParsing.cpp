@@ -20,123 +20,71 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 XMLParsing *XMLParsing::myInstance = NULL;
 
+void
+XMLParsing::warning (const SAXParseException &e)
+{
+  const char *file = XMLString::transcode (e.getSystemId ());
+  if (file == NULL || strlen (file) <= 0)
+    g_warning ("%s", XMLString::transcode (e.getMessage ()));
+  else
+    g_warning ("%s:%d.%d: %s", file,
+               e.getLineNumber (),
+               e.getColumnNumber (),
+               XMLString::transcode (e.getMessage ()));
+}
+
+void
+XMLParsing::error (const SAXParseException &e)
+{
+  const char *file = XMLString::transcode (e.getSystemId ());
+  if (file == NULL || strlen (file) <= 0)
+    g_error ("%s", XMLString::transcode (e.getMessage ()));
+  else
+    g_error ("%s:%d.%d: %s", file,
+             e.getLineNumber (),
+             e.getColumnNumber (),
+             XMLString::transcode (e.getMessage ()));
+  exit (EXIT_FAILURE);
+}
+
+void
+XMLParsing::fatalError (const SAXParseException &e)
+{
+  this->error (e);
+}
+
 XMLParsing::XMLParsing ()
 {
-  // initialize the XML library.
   XMLPlatformUtils::Initialize ();
 }
 
 XMLParsing::~XMLParsing ()
 {
-  // terminate the XML library.
   XMLPlatformUtils::Terminate ();
 }
 
 DOMNode *
 XMLParsing::parse (const string &src)
 {
-  bool bFailed = false;
-
   if (myInstance == NULL)
-    {
-      myInstance = new XMLParsing ();
-    }
+    myInstance = new XMLParsing ();
 
-  // create new parser instance.
   XercesDOMParser *parser = new XercesDOMParser ();
-  if (!parser)
+  g_assert_nonnull (parser);
+
+  parser->setValidationScheme (XercesDOMParser::Val_Auto);
+  parser->setDoNamespaces (false);
+  parser->setDoSchema (false);
+  parser->setErrorHandler (myInstance);
+  parser->setCreateEntityReferenceNodes (false);
+  LocalFileInputSource source (XMLString::transcode (src.c_str ()));
+  try
     {
-      return NULL;
+      parser->parse (source);
     }
-  else
+  catch (...)
     {
-      parser->setValidationScheme (XercesDOMParser::Val_Auto);
-      parser->setDoNamespaces (false);
-      parser->setDoSchema (false);
-
-      // skip this if you haven't written your own error
-      // reporter class.
-      DOMTreeErrorReporter *errReporter = new DOMTreeErrorReporter ();
-      parser->setErrorHandler (errReporter);
-      parser->setCreateEntityReferenceNodes (false);
-      try
-        {
-          if (src.find ("<") != std::string::npos)
-            {
-              MemBufInputSource xmlSource (
-                  deconst (XMLByte *, src.c_str ()), src.length (),
-                  XMLString::transcode ("xmlContent"));
-
-              parser->parse (xmlSource);
-            }
-          else
-            {
-              LocalFileInputSource source (
-                  XMLString::transcode (src.c_str ()));
-
-              parser->parse (source);
-            }
-
-          bFailed = parser->getErrorCount () != 0;
-          if (bFailed)
-            {
-              std::cerr << "Parsing " << src << std::endl;
-              std::cerr << " error count: ";
-              std::cerr << parser->getErrorCount () << std::endl;
-            }
-        }
-      catch (const DOMException &e)
-        {
-          std::cerr << "DOM Exception parsing ";
-          std::cerr << src;
-          std::cerr << " reports: ";
-
-          // was message provided?
-          if (e.msg)
-            {
-              // yes: display it as ascii.
-              char *strMsg = XMLString::transcode (e.msg);
-              std::cerr << strMsg << std::endl;
-              XMLString::release (&strMsg);
-            }
-          else
-            {
-              // no: just display the error code.
-              std::cerr << e.code << std::endl;
-            }
-
-          bFailed = true;
-        }
-      catch (const XMLException &e)
-        {
-          std::cerr << "XML Exception parsing ";
-          std::cerr << src;
-          std::cerr << " reports: ";
-          std::cerr << e.getMessage () << std::endl;
-          bFailed = true;
-        }
-      catch (const SAXException &e)
-        {
-          std::cerr << "SAX Exception parsing ";
-          std::cerr << src;
-          std::cerr << " reports: ";
-          std::cerr << e.getMessage () << std::endl;
-          bFailed = true;
-        }
-      catch (...)
-        {
-          std::cerr << "An exception parsing ";
-          std::cerr << src << std::endl;
-          bFailed = true;
-        }
-
-      // did the input document parse okay?
-      if (!bFailed)
-        {
-          DOMNode *pDoc = parser->getDocument ();
-          // insert code to do something with the DOM document here.
-          return pDoc;
-        }
-      return NULL;
+      g_assert_not_reached ();
     }
+  return parser->getDocument ();
 }

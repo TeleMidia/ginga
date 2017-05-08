@@ -17,12 +17,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
+#if defined WITH_CEF && WITH_CEF
+# include "cef_app.h"
+#endif
+
 #include "lssm/PresentationEngineManager.h"
 using namespace ::ginga::lssm;
-
-#if defined WITH_CEF 
-#include "cef_app.h"
-#endif
 
 /* Options: */
 #define OPTION_LINE "FILE"
@@ -34,7 +34,7 @@ static gboolean opt_fullscreen = FALSE; /* true if --fullscreen was given */
 static gboolean opt_scale = FALSE;      /* true if --scale was given */
 static gint opt_width = 800;            /* initial window width */
 static gint opt_height = 600;           /* initial window height */
-static gdouble opt_fps = 60;           /* initial FPS rate */
+static gdouble opt_fps = 60;            /* initial FPS rate */
 
 static gboolean
 opt_size (arg_unused (const gchar *opt), const gchar *arg,
@@ -113,32 +113,15 @@ main (int argc, char **argv)
   string file;
   PresentationEngineManager *pem;
 
-#if defined WITH_CEF 
-  
-  CefMainArgs args(argc, argv);
+#if defined WITH_CEF && WITH_CEF
+  CefMainArgs args (argc, argv);
   CefSettings settings;
-  
-  {
-    int result = CefExecuteProcess(args, nullptr, nullptr);
-    
-    if (result >= 0)
-    {
-      return result;
-    }
-    else if (result == -1)
-    {
-      // nothing todo  
-    }
-  }
+  int status = CefExecuteProcess (args, nullptr, nullptr);
+  if (status >= 0)
+    return status;
 
-  {
-    bool result = CefInitialize(args, settings, nullptr, nullptr);
-    
-    if (!result)
-    {
-        return -1;
-    }
-  }
+  if (unlikely (!CefInitialize (args, settings, nullptr, nullptr)))
+    exit (EXIT_FAILURE);
 
   file = string(argv[0]);
 
@@ -146,21 +129,21 @@ main (int argc, char **argv)
   string buffer = "";
 
   vector<string> list;
-  
+
   for(auto n:file)
   {
-    if(n != c) 
+    if(n != c)
     {
-      buffer += n; 
+      buffer += n;
     }
-    else if(n == c && buffer != "") 
-    { 
-      list.push_back(buffer); 
-      buffer = ""; 
+    else if(n == c && buffer != "")
+    {
+      list.push_back(buffer);
+      buffer = "";
     }
   }
 
-  if(buffer != "") 
+  if(buffer != "")
   {
     list.push_back(buffer);
   }
@@ -180,7 +163,7 @@ main (int argc, char **argv)
   g_option_context_add_main_entries (ctx, options, NULL);
   status = g_option_context_parse (ctx, &argc, &argv, &error);
   g_option_context_free (ctx);
- 
+
   if (unlikely (!status))
     {
       g_assert (error != NULL);
@@ -197,38 +180,39 @@ main (int argc, char **argv)
 
   file = string(argv[1]);
 
-#endif // WITH_CEF 
-  
-  _Ginga_Display = new ginga::mb::Display (opt_width, opt_height, opt_fullscreen, opt_fps);
+#endif // WITH_CEF
+
+  _Ginga_Display = new ginga::mb::Display (opt_width, opt_height,
+                                           opt_fullscreen, opt_fps);
   g_assert_nonnull (_Ginga_Display);
 
   pem = new PresentationEngineManager (0, 0, 0, opt_width, opt_height,
                                        true, false);
   g_assert_nonnull (pem);
+
   pem->setEmbedApp (false);
   pem->setExitOnEnd (false);
   pem->setDisableFKeys (false);
   pem->setInteractivityInfo (true);
   pem->setIsLocalNcl (true, NULL);
 
-  
   if (unlikely (!pem->openNclFile (file)))
     {
       print_error ("Cannot open NCL file: %s", file.c_str ());
       exit (EXIT_FAILURE);
     }
-  
-  //start presentation thread
-  pem->startPresentation (file, ""); 
 
-  //ginga render loop
+  // Start presentation thread.
+  pem->startPresentation (file, "");
+
+  // Start render loop.
   _Ginga_Display->renderLoop ();
 
   delete Ginga_Display;
 
-#if defined WITH_CEF 
-  CefShutdown();
+#if defined WITH_CEF
+  CefShutdown ();
 #endif
-  
+
   exit (EXIT_SUCCESS);
 }
