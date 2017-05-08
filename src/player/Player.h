@@ -99,7 +99,7 @@ protected:
 
   //media attr
   SDL_Texture *texture; //media texture
-  guint32 borderWidth;
+  int borderWidth;
   SDL_Color bgColor; //background color
   SDL_Color borderColor;
   SDL_Rect rect; //draw area
