@@ -141,25 +141,25 @@
     </connectorBase>
   </head>
   <body>
-    <!-- <port id='start1' component='audio'/> -->
+     <port id='start1' component='audio'/>
     <!-- <port id='start2' component='img'/> -->
     <!-- <port id='start3' component='img2'/> -->
-    <!-- <port id='start4' component='video'/> -->
-    <!-- <port id='start5' component='video2'/> -->
-    <port id='start6' component='video3'/>
+    <port id='start4' component='video'/>
+    <port id='start5' component='video2'/>
+    <!-- <port id='start6' component='video3'/> -->
     <!-- <port id='start7' component='audio'/> -->
     
-    <media id='audio' src='samples/bunny.mp3' descriptor='desc4'/>
+    <media id='audio' src='samples/bunny.mp3'/>
     
     <media id='img' src='samples/gnu.png' descriptor='desc4' />
     <media id='img2' src='samples/gnu.png' descriptor='desc5' />
     
-    <media id='video' src='samples/animGar.mp4' descriptor='desc' >
+    <media id='video' src='samples/bunny.ogg' descriptor='desc' >
       <area id='area1' begin='5s'/>
       <area id='area4' begin='10s'/>
     </media>
 
-    <media id='video2' src='samples/animGar.mp4' descriptor='desc2' >
+    <media id='video2' src='samples/small.mp4' descriptor='desc2' >
       <area id='area2' begin='2s'/>
       <area id='area5' begin='4s'/>
     </media>
@@ -171,7 +171,7 @@
     <!-- <link xconnector="onBeginStart">
       <bind role="onBegin" component="audio" />
       <bind role="start" component="video3" />
-    </link> -->
+    </link>
 
     <link xconnector="onEndStart">
       <bind role="onEnd" component="video2" />
@@ -183,7 +183,7 @@
         <bindParam name='keyCode' value='RED'/>        
       </bind>
       <bind role="stop" component="video2" />
-    </link>
+    </link> -->
 
   </body>
 </ncl>
