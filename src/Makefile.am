@@ -26,14 +26,12 @@ AM_CPPFLAGS=\
   -DGINGA_FONT_DATADIR='"$(fontdir)"'\
   -DGINGA_FORMATTER_DATADIR='"$(formatterdir)/"'\
   -DGINGA_FORMATTERIMG_DATADIR='"$(formatterimgdir)/"'\
-  -DGINGA_FORMATTERMD_DATADIR='"$(formattermddir)/"'\
   -DGINGA_MB_DATADIR='"$(mbdir)/"'\
   -DGINGA_TUNER_DATADIR='"$(tunerdir)/"'\
   $(NULL)
 
 AM_CXXFLAGS=\
   $(CURL_CFLAGS)\
-  $(FFMPEG_CFLAGS)\
   $(GLIB_CFLAGS)\
   $(JPEG_CFLAGS)\
   $(LIBRSVG_CFLAGS)\
@@ -41,7 +39,6 @@ AM_CXXFLAGS=\
   $(PANGO_CFLAGS)\
   $(PTHREAD_CFLAGS)\
   $(SDL2IMAGE_CFLAGS)\
-  $(SDL2TTF_CFLAGS)\
   $(SDL2_CFLAGS)\
   $(WARN_CFLAGS)\
   $(WERROR_CFLAGS)\
@@ -50,7 +47,6 @@ AM_CXXFLAGS=\
 
 AM_LDFLAGS= -R $(libdir) -rpath $(libdir)\
   $(CURL_LIBS)\
-  $(FFMPEG_LIBS)\
   $(GLIB_LIBS)\
   $(JPEG_LIBS)\
   $(LIBRSVG_LIBS)\
@@ -58,7 +54,6 @@ AM_LDFLAGS= -R $(libdir) -rpath $(libdir)\
   $(PANGO_LIBS)\
   $(PTHREAD_LIBS)\
   $(SDL2IMAGE_LIBS)\
-  $(SDL2TTF_LIBS)\
   $(SDL2_LIBS)\
   $(XERCESC_LIBS)\
   $(NULL)
@@ -73,7 +68,6 @@ src+= formatter/AdapterApplicationPlayer.cpp
 src+= formatter/AdapterFormatterPlayer.cpp
 src+= formatter/AdapterImagePlayer.cpp
 src+= formatter/AdapterLuaPlayer.cpp
-src+= formatter/AdapterMirrorPlayer.cpp
 src+= formatter/AdapterNCLPlayer.cpp
 src+= formatter/AdapterPlayerManager.cpp
 src+= formatter/AnimationController.cpp
@@ -128,13 +122,10 @@ src+= ic/CurlInteractiveChannel.cpp
 src+= ic/InteractiveChannelManager.cpp
 src+= lssm/CommonCoreManager.cpp
 src+= lssm/PresentationEngineManager.cpp
-src+= mb/AudioProvider.cpp
 src+= mb/Display.cpp
 src+= mb/DisplayDebug.cpp
 src+= mb/KeyMap.cpp
-src+= mb/SDL2ffmpeg.cpp
 src+= mb/SDLWindow.cpp
-src+= mb/VideoProvider.cpp
 src+= ncl/AbsoluteReferenceContent.cpp
 src+= ncl/Action.cpp
 src+= ncl/Anchor.cpp
