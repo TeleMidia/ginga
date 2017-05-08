@@ -84,13 +84,6 @@ NclConnectorsConverter::addImportBaseToConnectorBase (void *parentObject,
   // insert the imported base into the document connector base
   ((ConnectorBase *)parentObject)
       ->addBase (connectorBase, baseAlias, baseLocation);
-
-  /*
-   * Hashtable connBaseimports = new Hashtable();
-   * connBaseimports->put(baseAlias,baseLocation);
-   * getDocumentParser()->addObject("return","ConnectorImports",
-   * connBaseimports);
-   */
 }
 
 void *

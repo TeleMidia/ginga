@@ -20,20 +20,18 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 XERCES_CPP_NAMESPACE_USE
 
-#include "DOMTreeErrorReporter.h"
-#include "stdlib.h"
-
-// boilerplate DOM loading example.
-
-// singleton pattern
-class XMLParsing
+class XMLParsing : public ErrorHandler
 {
 private:
   XMLParsing ();
   static XMLParsing *myInstance;
 
 public:
-  static DOMNode *parse (const string &src);
+  void warning (const SAXParseException &);
+  void error (const SAXParseException &);
+  void fatalError (const SAXParseException &);
+  void resetErrors () {};
+  static DOMNode *parse (const string &);
   ~XMLParsing ();
 };
 
