@@ -54,7 +54,6 @@ public:
   virtual ~INCLPlayer (){};
 
   virtual void setMirrorSrc (IPlayer *mirrorSrc) = 0;
-  virtual void printGingaWindows () = 0;
   virtual set<string> *createPortIdList () = 0;
   virtual short getMappedInterfaceType (const string &portId) = 0;
 
@@ -129,10 +128,7 @@ public:
 
   /*Exclusive for Application Players*/
   virtual void setCurrentScope (const string &scopeId) = 0;
-  virtual void flip () = 0;
-
   virtual string getDepUris (vector<string> *uris, int targetDev = 0) = 0;
-
   virtual void timeShift (const string &direction) = 0;
 };
 

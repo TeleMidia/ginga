@@ -379,7 +379,7 @@ AS_IF([test "$au_check_optional_pkg_$4" = yes],
  [AS_TR_SH([with_$1_result])=yes
   AC_DEFINE([WITH_$4], [1], [Define to 1 if you have ]$5[.])],
  [AS_IF([test "][$][AS_TR_SH([with_$1])][" = check],
-   [AS_TR_SH([with_$1_result])='no	(requires: $5)'],
+   [AS_TR_SH([with_$1_result])='no	(requires: m4_chomp($5))'],
    [AS_TR_SH([with_$1_result])='no'])])
 AM_CONDITIONAL([WITH_]m4_toupper(AS_TR_SH([$1])),
  [test "$au_check_optional_pkg_$4" = yes])

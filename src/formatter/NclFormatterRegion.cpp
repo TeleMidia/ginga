@@ -1365,7 +1365,6 @@ NclFormatterRegion::barWipe (Transition *transition, bool isShowEffect)
   double time, initTime;
   int transitionSubType, initValue, endValue;
   double transitionDur, startProgress, endProgress;
-  guint8 transparencyValue;
   short transitionDir;
 
   lock ();
@@ -1645,9 +1644,9 @@ NclFormatterRegion::barWipeT (void *ptr)
 void
 NclFormatterRegion::fade (Transition *transition, bool isShowEffect)
 {
-  int i, factor = 1;
+  int factor = 1;
   double time, initTime, initValue, endValue, startProgress, endProgress;
-  int opacityValue;
+  int opacityValue = 1;
   double transitionDur;
 
   lock ();
@@ -1673,13 +1672,11 @@ NclFormatterRegion::fade (Transition *transition, bool isShowEffect)
     {
       initValue = opacityValue * startProgress;
       endValue = opacityValue * endProgress;
-      i = (int)(initValue + 1);
     }
   else
     {
       initValue = opacityValue * endProgress;
       endValue = opacityValue * startProgress;
-      i = (int)(initValue + 1);
     }
 
   initTime = xruntime_ms ();
@@ -1703,8 +1700,8 @@ NclFormatterRegion::fade (Transition *transition, bool isShowEffect)
         }
       unlock ();
 
-      i = (int) getNextStepValue (initValue, endValue, factor, time, initTime,
-                                  transitionDur, 0);
+      getNextStepValue (initValue, endValue, factor, time, initTime,
+                        transitionDur, 0);
 
       if ((abortTransitionIn && isShowEffect)
           || (abortTransitionOut && !isShowEffect))
