@@ -17,9 +17,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "PresentationEngineManager.h"
-
-#include "player/ProgramAV.h"
-#include "player/IProgramAV.h"
 #include "player/IApplicationPlayer.h"
 
 #if WITH_ISDBT

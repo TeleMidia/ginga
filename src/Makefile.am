@@ -69,7 +69,6 @@ src=
 src+= ctxmgmt/ContextManager.cpp
 src+= ctxmgmt/GingaUser.cpp
 src+= ctxmgmt/SystemInfo.cpp
-src+= formatter/AdapterAVPlayer.cpp
 src+= formatter/AdapterApplicationPlayer.cpp
 src+= formatter/AdapterFormatterPlayer.cpp
 src+= formatter/AdapterImagePlayer.cpp
@@ -77,7 +76,6 @@ src+= formatter/AdapterLuaPlayer.cpp
 src+= formatter/AdapterMirrorPlayer.cpp
 src+= formatter/AdapterNCLPlayer.cpp
 src+= formatter/AdapterPlayerManager.cpp
-src+= formatter/AdapterProgramAVPlayer.cpp
 src+= formatter/AnimationController.cpp
 src+= formatter/FormatterBaseDevice.cpp
 src+= formatter/FormatterConverter.cpp
@@ -231,12 +229,9 @@ src+= nclconv/NclStructureParser.cpp
 src+= nclconv/NclTransitionConverter.cpp
 src+= nclconv/NclTransitionParser.cpp
 src+= nclconv/XMLParsing.cpp
-src+= player/AVPlayer.cpp
-src+= player/ChannelPlayer.cpp
 src+= player/ImagePlayer.cpp
 src+= player/LuaPlayer.cpp
 src+= player/Player.cpp
-src+= player/ProgramAV.cpp
 src+= system/GingaLocatorFactory.cpp
 src+= system/PracticalSocket.cpp
 src+= system/Stc.cpp
@@ -244,7 +239,6 @@ src+= system/SystemCompat.cpp
 src+= system/Thread.cpp
 src+= util/Base64.cpp
 src+= util/functions.cpp
-
 
 if WITH_ESPEAK
 AM_CXXFLAGS+= $(ESPEAK_CFLAGS)
@@ -270,12 +264,12 @@ src+= formatter/AdapterTextPlayer.cpp
 src+= player/TextPlayer.cpp
 endif # WITH_PANGO
 
-# This should be remove after the 
+# This should be remove after the
 # personalized CEF packge (.deb) is created.
 #
-# Uncomment the lines bellow to 
-# build Ginga with Chromium (CEF) 
-# based HTML Player. 
+# Uncomment the lines bellow to
+# build Ginga with Chromium (CEF)
+# based HTML Player.
 #AM_CXXFLAGS+= -I/<path>/<to>/<cef> -I/<path>/<to>/<cef>/include
 #AM_LDFLAGS+= -lcef -lcef_dll_wrapper
 #src+= formatter/AdapterHTMLPlayer.cpp
@@ -371,4 +365,3 @@ src+= isdbt-tuner/ISDBTProvider.cpp
 src+= isdbt-tuner/RingBuffer.cpp
 endif # WITH_LINUXDVB
 endif # WITH_ISDBT
-

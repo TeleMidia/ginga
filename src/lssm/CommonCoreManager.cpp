@@ -39,11 +39,8 @@ using namespace ::ginga::tuner;
 #include "mb/SDLWindow.h"
 using namespace ::ginga::mb;
 
-#include "player/AVPlayer.h"
 #include "player/IPlayer.h"
-#include "player/IProgramAV.h"
 #include "player/ImagePlayer.h"
-#include "player/ProgramAV.h"
 using namespace ::ginga::player;
 
 #include "system/SystemCompat.h"
@@ -191,6 +188,7 @@ CommonCoreManager::createMainAVPlayer (const string &dstUri,
                                        int x, int y,
                                        int w, int h)
 {
+#if 0
   IPlayer *ipav;
   string s;
 
@@ -201,6 +199,8 @@ CommonCoreManager::createMainAVPlayer (const string &dstUri,
   ipav->setPropertyValue ("showPlayer", "sbtvd-ts://" + dstUri);
 
   return ipav;
+#endif
+  return NULL;
 }
 
 void
