@@ -261,8 +261,6 @@ FormatterMediator::FormatterMediator (NclPlayerData *pData)
   docCompiled = false;
 
   Thread::mutexInit (&pteMutex, true);
-
-  printData (data);
 }
 
 FormatterMediator::~FormatterMediator ()
@@ -478,23 +476,6 @@ FormatterMediator::setMrl (const string &mrl, bool visible)
 }
 
 void
-FormatterMediator::printData (NclPlayerData *data)
-{
-  clog << "FormatterMediator::printData(" << this << ")";
-  clog << " baseId: " << data->baseId;
-  clog << " playerId: " << data->playerId;
-  clog << " devClass: " << data->devClass;
-  clog << " x: " << data->x;
-  clog << " y: " << data->y;
-  clog << " w: " << data->w;
-  clog << " h: " << data->h;
-  clog << " enableGfx: " << data->enableGfx;
-  clog << " parentDocId: " << data->parentDocId;
-  clog << " docId: " << data->docId;
-  clog << endl;
-}
-
-void
 FormatterMediator::setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider)
 {
   playerManager->setTimeBaseProvider (timeBaseProvider);
@@ -515,18 +496,6 @@ FormatterMediator::setParentLayout (void *parentLayout)
       ((NclFormatterLayout *)parentLayout)
           ->addChild (data->baseId, mainLayout);
     }
-}
-
-string
-FormatterMediator::getScreenShot ()
-{
-  return multiDevice->getScreenShot ();
-}
-
-vector<string> *
-FormatterMediator::getCompileErrors ()
-{
-  return &compileErrors;
 }
 
 void *
