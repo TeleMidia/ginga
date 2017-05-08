@@ -1297,12 +1297,6 @@ PresentationEngineManager::updateFormatters (short command,
           formattersToRelease.insert (formatter);
           break;
 
-        case UC_PRINTSCREEN:
-          clog << "PRINTSCREEN" << endl;
-          formatter->getScreenShot ();
-          unlock ();
-          return;
-
         case UC_PAUSE:
           paused = true;
           formatter->pause ();
