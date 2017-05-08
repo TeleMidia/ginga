@@ -497,8 +497,10 @@ NewVideoPlayer::setOutWindow (SDLWindow* windowId)
   GstStructure *st;
 
   this->window = windowId;
-  if( windowId!=NULL)  
+  if( windowId!=NULL) {
       this->rect = windowId->getRect();
+      this->z = windowId->getZ();
+  }
 
   st = gst_structure_new_empty ("video/x-raw");
   gst_structure_set (st, "format", G_TYPE_STRING, "ARGB",

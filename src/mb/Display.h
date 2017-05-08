@@ -47,9 +47,7 @@ private:
   int width;                    // display width in pixels
   int height;                   // display height in pixels
   bool fullscreen;              // true if full-screen mode is on
-  guint32 frameTime;            //frame time rate
-  
-  set<Player*> players; 
+  guint32 frameTime;            //frame time rate 
 
   set<IKeyInputEventListener*> keyEventListeners;  // key event listeners
   set<IMouseEventListener*> mouseEventListeners; // mouse event listeners
@@ -64,6 +62,7 @@ private:
   GList *jobs;                  // list of jobs to be executed by renderer
   GList *textures;              // list of textures to be destructed
   GList *windows;               // list of windows to be redrawn
+  GList *players;
 
   gpointer add (GList **, gpointer);
   gpointer remove (GList **, gpointer);

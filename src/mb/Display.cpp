@@ -43,12 +43,12 @@ job_delete (DisplayJob *job)
   delete job;
 }
 
-// Compares the z-index of two windows.
+// Compares the z-index of two players.
 static gint
-win_cmp_z (SDLWindow *w1, SDLWindow *w2)
+win_cmp_z (Player *p1, Player *p2)
 {
-  double z1 = w1->getZ ();
-  double z2 = w2->getZ ();
+  double z1 = p1->getZ ();
+  double z2 = p2->getZ ();
   return (z1 < z2) ? -1 : (z1 > z2) ? 1 : 0;
 }
 
@@ -61,7 +61,6 @@ win_delete (SDLWindow *win)
 
 
 
-
 // Private methods.
 
 gpointer
@@ -83,7 +82,6 @@ gpointer
 Display::remove (GList **list, gpointer data)
 {
   GList *elt;
-
   this->lock ();
   elt = g_list_find (*list, data);
   if (unlikely (elt == NULL))
@@ -182,8 +180,6 @@ Display::renderLoop ()
             }
         }
 
-    
-
       this->lock ();            // run jobs
       l = this->jobs;           // list may be modified while being iterated
       while (l != NULL)
@@ -196,39 +192,32 @@ Display::renderLoop ()
           l = next;
         }
       this->unlock ();
-
-      
+    
       this->lock (); // redraw windows
       SDL_SetRenderDrawColor (this->renderer, 255, 0, 255, 255);
       SDL_RenderClear (this->renderer);
-      set<Player*>::iterator it;
-      for (it=players.begin(); it!=players.end(); ++it)
-          (*it)->redraw(renderer);
+      this->players = g_list_sort (this->players, (GCompareFunc) win_cmp_z);
+      l =  this->players;           
+      while (l != NULL)
+        {
+          GList *next = l->next;
+           Player* pl = (Player *) l->data;
+           if(!pl)
+              this->players = g_list_remove_link (this->players, l);
+           else 
+              pl->redraw(this->renderer);
+          l = next;
+      }
       displayDebug->draw(this->renderer,elapsedTime);    
       SDL_RenderPresent (this->renderer);
       this->unlock ();
-/*
-      this->lock ();            // redraw windows
-      SDL_SetRenderDrawColor (this->renderer, 255, 0, 255, 255);
-      SDL_RenderClear (this->renderer);
-      this->windows = g_list_sort (this->windows, (GCompareFunc) win_cmp_z);
-      for (l = this->windows; l != NULL; l = l->next)
-        {
-          SDLWindow * window = (SDLWindow *) l->data;
-          g_assert_nonnull (window);
-          if (window->isVisible () && !window->isGhostWindow ())
-            window->redraw (this->renderer);
-        }
-     
-      SDL_RenderPresent (this->renderer);
-      this->unlock ();
-    
+
     quit:
       this->lock ();            // destroy dead textures
       g_list_free_full (this->textures,
                         (GDestroyNotify) SDL_DestroyTexture);
       this->textures = NULL;
-      this->unlock (); */
+      this->unlock ();
 
     }
     
@@ -275,6 +264,7 @@ Display::Display (int width, int height, bool fullscreen, gdouble fps)
   this->jobs = NULL;
   this->textures = NULL;
   this->windows = NULL; 
+  this->players = NULL;
 
   //--
   g_assert (!SDL_WasInit (0));
@@ -510,12 +500,14 @@ Display::destroyWindow (SDLWindow *win)
 
 void
 Display::registerPlayer(Player * obj){
-  players.insert(obj);
+  g_assert_nonnull (obj);
+  this->add (&this-> players, obj);
 }
 
 void
 Display::unregisterPlayer(Player *obj){
-  players.erase (obj);
+  g_assert_nonnull (obj);
+  this->remove(&this-> players, obj);
 }
 
 void 
