@@ -23,11 +23,8 @@ GINGA_NCLCONV_BEGIN
 DocumentParser::DocumentParser ()
 {
   genericTable = new map<string, void *>;
-  // initialize();
-  // setDependencies();
   initializeUserCurrentPath ();
   documentTree = NULL;
-
   iUriD = "";
   fUriD = "";
 }
@@ -82,17 +79,10 @@ DocumentParser::parse (const string &_uri, const string &iUriD, const string &fU
       uri = absoluteFile (getDocumentPath (), uri);
     }
 
-  documentTree = (DOMDocument *)XMLParsing::parse (uri);
+  documentTree = (DOMDocument *) XMLParsing::parse (uri);
+  g_assert_nonnull (documentTree);
 
-  if (documentTree == NULL)
-    {
-      clog << "DocumentParser::parse ";
-      clog << "Error when parsing '" << uri.c_str ();
-      clog << "' (file not found)" << endl;
-      return NULL;
-    }
-  rootElement = (DOMElement *)documentTree->getDocumentElement ();
-
+  rootElement = (DOMElement *) documentTree->getDocumentElement ();
   return parse (rootElement, uri);
 }
 
@@ -266,7 +256,6 @@ DocumentParser::isXmlStr (const string &location)
 string
 DocumentParser::getAbsolutePath (const string &path)
 {
-  // uri_t* newUrl = NULL;
   string newPath = path;
 
   string::size_type pos;
@@ -330,7 +319,8 @@ DocumentParser::getDocumentTree ()
 }
 
 void
-DocumentParser::addObject (const string &tableName, const string &key, void *value)
+DocumentParser::addObject (const string &tableName,
+                           const string &key, void *value)
 {
   map<string, void *> *table;
   map<string, void *>::iterator i;
@@ -370,82 +360,6 @@ DocumentParser::getObject (const string &tableName, const string &key)
     }
 
   return NULL;
-}
-
-void
-DocumentParser::removeObject (const string &tableName, const string &key)
-{
-  map<string, void *> *table = NULL;
-  map<string, void *>::iterator i;
-
-  i = genericTable->find (tableName);
-  if (i != genericTable->end ())
-    {
-      table = (map<string, void *> *)i->second;
-    }
-
-  if (table == NULL)
-    {
-      clog << "DocumentParser::removeObject Warning! name '";
-      clog << tableName << "' not found " << endl;
-    }
-  else
-    {
-      i = table->find (key);
-      if (i != table->end ())
-        {
-          // delete i->second;
-          table->erase (i);
-          return;
-        }
-    }
-
-  clog << "DocumentParser::removeObject Warning! key '" << endl;
-  clog << key << "' not found" << endl;
-}
-
-void
-DocumentParser::addObjectGrouped (const string &tableName, const string &key, void *value)
-{
-  map<string, void *> *table = NULL;
-  map<string, void *>::iterator i;
-
-  vector<void *> *vec = NULL;
-
-  i = genericTable->find (tableName);
-  if (i != genericTable->end ())
-    {
-      table = (map<string, void *> *)i->second;
-    }
-
-  if (table != NULL)
-    {
-      i = table->find (tableName);
-      if (i != table->end ())
-        {
-          vec = (vector<void *> *)i->second;
-        }
-
-      if (vec != NULL)
-        {
-          vec->push_back (value);
-        }
-      else
-        {
-          vec = new vector<void *>;
-          vec->push_back (value);
-          (*table)[key] = vec;
-        }
-    }
-  else
-    {
-      vec = new vector<void *>;
-      table = new map<string, void *>;
-
-      vec->push_back (value);
-      (*table)[key] = vec;
-      (*genericTable)[tableName] = table;
-    }
 }
 
 bool

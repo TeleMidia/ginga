@@ -68,8 +68,6 @@ public:
   DOMDocument *getDocumentTree ();
   void addObject (const string &tableName, const string &key, void *value);
   void *getObject (const string &tableName, const string &key);
-  void removeObject (const string &tableName, const string &key);
-  void addObjectGrouped (const string &tableName, const string &key, void *value);
   bool importDocument (DocumentParser *parser, const string &docLocation);
 };
 
