@@ -504,7 +504,6 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
 
           return;
         }
-
       actionType = action->getType ();
       switch (actionType)
         {
@@ -513,6 +512,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
             {
               if (ruleAdapter->adaptDescriptor (executionObject))
                 {
+                  
                   descriptor = executionObject->getDescriptor ();
                   if (descriptor != NULL)
                     {
@@ -532,7 +532,6 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
                 {
                   multiDevPres->listenPlayer (playerContent);
                 }
-
               if (executionObject != NULL
                   && executionObject->getDescriptor () != NULL)
                 {
@@ -545,7 +544,6 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
                       setTimeBaseObject (executionObject, player, attValue);
                     }
                 }
-
               if (playerContent != NULL)
                 {
                   winId = ((FormatterMultiDevice *)multiDevPres)
@@ -555,7 +553,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
                   player->setOutputWindow (winId);
                   player->flip ();
                 }
-
+             
               event->addEventListener (this);
               Thread::mutexLock (&lMutex);
               listening.insert (event);
