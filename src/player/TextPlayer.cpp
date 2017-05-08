@@ -85,13 +85,6 @@ TextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
                                                 sfc->w, sfc->h, sfc->pitch);
     cr = cairo_create (surface_c);
     g_assert_nonnull (cr);
-    //background
-    cairo_set_source_rgba (cr,ginga_color_percent(bgColor.r),
-                              ginga_color_percent(bgColor.g),
-                              ginga_color_percent(bgColor.b),
-                              ginga_color_percent(bgColor.a));
-
-    cairo_paint (cr);
 
     // Create a PangoLayout, set the font face and text
     PangoLayout * layout = pango_cairo_create_layout (cr);
@@ -155,7 +148,6 @@ TextPlayer::TextPlayer (const string &uri) : Player (uri)
 {
   //defalts attr values
   ginga_color_input_to_sdl_color("#0", &fontColor); //black
-  ginga_color_input_to_sdl_color("#0000", &bgColor); //transparent
   fontFamily = "serif";
   fontStyle ="";
   fontSize ="18px";

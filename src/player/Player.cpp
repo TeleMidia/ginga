@@ -60,7 +60,7 @@ Player::Player (const string &mrl)
   //media attr
   this->texture = NULL; //media content
   this->borderWidth = 0;
-  this->bgColor = {0, 0, 0, 0};
+ // this->bgColor = {0, 0, 0, 0};
   this->borderColor = {0, 0, 0, 0};
   this->z = 0;
   this->alpha = 255;
@@ -521,7 +521,7 @@ Player::setPropertyValue (const string &name, const string &value)
           this->rect.h = xstrto_int (value);
       }
       else if(name == "backgroundColor" || name == "bgColor"){
-          ginga_color_input_to_sdl_color(value, &bgColor);
+          ginga_color_input_to_sdl_color(value, &this->bgColor);    
       }
       else if (name == "transparency"){
           if(xstrto_uint8 (value) <= 0)
@@ -655,7 +655,6 @@ Player::setOutWindow (SDLWindow* windowId)
   if( windowId!=NULL){
       this->rect = windowId->getRect();
       this->z = windowId->getZ();
-      windowId->getBorder(&this->bgColor,&this->borderWidth);
   }
 
   this->window = windowId;
@@ -678,7 +677,7 @@ Player::redraw(SDL_Renderer* renderer){
   if(this->window!=NULL)
       this->window->getBorder(&this->borderColor,&this->borderWidth);
 
-   if (this->bgColor.a > 0){  // background color
+   if (this->bgColor.a > 0){  // background color  
       SDLx_SetRenderDrawBlendMode (renderer, SDL_BLENDMODE_BLEND);
       SDLx_SetRenderDrawColor (renderer, this->bgColor.r, this->bgColor.g, this->bgColor.b, this->bgColor.a);
       SDLx_RenderFillRect (renderer, &this->rect);
