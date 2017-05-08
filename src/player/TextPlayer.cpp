@@ -191,9 +191,6 @@ TextPlayer::setPropertyValue (const string &name, const string &value){
   if(name == "fontColor"){
       ginga_color_input_to_sdl_color(value, &fontColor);
   }
-  else if(name == "backgroundColor"){
-      ginga_color_input_to_sdl_color(value, &bgColor);
-  }
   else if(name == "fontSize"){
          fontSize = value;
   }

@@ -201,6 +201,7 @@ SDLWindow::setRect (SDL_Rect r)
 void
 SDLWindow::setBorder (SDL_Color c, int w)
 {
+ // g_debug("\n\n BORDA SETADA : %d \n\n",w);
   borderWidth = w;
   borderColor = c;
 }
