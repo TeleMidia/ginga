@@ -39,11 +39,8 @@ using namespace ::ginga::tuner;
 #include "mb/SDLWindow.h"
 using namespace ::ginga::mb;
 
-#include "player/AVPlayer.h"
 #include "player/IPlayer.h"
-#include "player/IProgramAV.h"
 #include "player/ImagePlayer.h"
-#include "player/ProgramAV.h"
 using namespace ::ginga::player;
 
 #include "system/SystemCompat.h"
@@ -135,7 +132,7 @@ CommonCoreManager::setInteractivityInfo (bool hasOCSupport)
 }
 
 void
-CommonCoreManager::removeOCFilterAfterMount (bool removeIt)
+CommonCoreManager::removeOCFilterAfterMount (arg_unused (bool removeIt))
 {
 #if WITH_ISDBT
   if (dataProcessor != NULL)
@@ -146,7 +143,7 @@ CommonCoreManager::removeOCFilterAfterMount (bool removeIt)
 }
 
 void
-CommonCoreManager::setTunerSpec (const string &tunerSpec)
+CommonCoreManager::setTunerSpec (arg_unused (const string &tunerSpec))
 {
 #if WITH_ISDBT
   string ni, ch;
@@ -186,22 +183,6 @@ CommonCoreManager::releaseTunningWindow ()
     }
 }
 
-IPlayer *
-CommonCoreManager::createMainAVPlayer (const string &dstUri,
-                                       int x, int y,
-                                       int w, int h)
-{
-  IPlayer *ipav;
-  string s;
-
-  ipav = ProgramAV::getInstance ();
-  xstrassign (s, "%d,%d,%d,%d", x, y, w, h);
-  ipav->setPropertyValue ("setBoundaries", s);
-  ipav->setPropertyValue ("createPlayer", "sbtvd-ts://" + dstUri);
-  ipav->setPropertyValue ("showPlayer", "sbtvd-ts://" + dstUri);
-
-  return ipav;
-}
 
 void
 CommonCoreManager::tune ()
@@ -217,7 +198,7 @@ CommonCoreManager::startPresentation ()
 {
 #if !defined WITH_ISDBT || WITH_ISDBT == 0
   return;
-#endif
+#else
   IPlayer *ipav = NULL;
   NclPlayerData *data = NULL;
   StcWrapper *sw = NULL;
@@ -310,6 +291,7 @@ CommonCoreManager::startPresentation ()
   ((IDemuxer *)demuxer)->processDemuxData ();
 
   clog << "lssm ccm::sp all done!" << endl;
+#endif
 }
 
 GINGA_LSSM_END

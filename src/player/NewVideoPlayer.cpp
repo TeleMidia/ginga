@@ -351,7 +351,7 @@ NewVideoPlayer::play ()
     Ginga_Display->addJob (displayJobCallbackWrapper, this);
     this->condDisplayJobWait (); 
     Thread::startThread ();
-    this->unlock ();
+    //this->unlock ();
     return true;
   }
 
@@ -497,7 +497,7 @@ NewVideoPlayer::setOutWindow (SDLWindow* windowId)
   GstStructure *st;
 
   this->window = windowId;
-  if( windowId!=NULL) {
+  if( windowId!=NULL) 
       this->rect = windowId->getRect();
       this->z = windowId->getZ();
   }
@@ -513,6 +513,7 @@ NewVideoPlayer::setOutWindow (SDLWindow* windowId)
 
   g_object_set (filter, "caps", caps, NULL);
   gst_caps_unref (caps);
+  
 
 	return true;
 }

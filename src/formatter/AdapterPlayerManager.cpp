@@ -18,16 +18,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "AdapterPlayerManager.h"
 
-
-#include "AdapterChannelPlayer.h"
 #include "AdapterImagePlayer.h"
 #include "AdapterLuaPlayer.h"
-#include "AdapterMirrorPlayer.h"
 #include "AdapterNCLPlayer.h"
-#if defined WITH_GSTREAMER && WITH_GSTREAMER
-# include "AdapterNewVideoPlayer.h"
-#endif
-#include "AdapterProgramAVPlayer.h"
+#include "AdapterNewVideoPlayer.h"
 #include "AdapterSsmlPlayer.h"
 #if defined WITH_LIBRSVG && WITH_LIBRSVG
 # include "AdapterSvgPlayer.h"
@@ -35,8 +29,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #if defined WITH_PANGO && WITH_PANGO
 # include "AdapterTextPlayer.h"
 #endif
-
-#if defined WITH_CEF 
+#if defined WITH_CEF && WITH_CEF
 # include "AdapterHTMLPlayer.h"
 #endif
 
@@ -218,33 +211,6 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
   content = entity->getContent ();
   g_assert_nonnull (content);
 
-  if (content->instanceOf ("ReferenceContent"))
-    {
-      string url;
-      char *scheme;
-
-      url = ((ReferenceContent *)(content))->getCompleteReferenceUrl ();
-      scheme = g_uri_parse_scheme (url.c_str ());
-      if (g_strcmp0 (scheme, "sbtvd-ts") == 0)
-        {
-          classname = "AdapterProgramAVPlayer";
-          adapter = AdapterProgramAVPlayer::getInstance ();
-          g_free (scheme);
-          goto done;
-        }
-      else if (g_strcmp0 (scheme, "ncl-mirror") == 0)
-        {
-          classname = "AdapterMirrorPlayer";
-          adapter = new AdapterMirrorPlayer ();
-          g_free (scheme);
-          goto done;
-        }
-      else
-        {
-          g_free (scheme);
-        }
-    }
-
   buf = ((ContentNode *)entity)->getNodeType ();
   mime = buf.c_str ();
   g_assert_nonnull (mime);
@@ -273,13 +239,13 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
       classname = "AdapterImagePlayer";
       adapter = new AdapterImagePlayer ();
     }
-#if defined WITH_CEF 
+#if defined WITH_CEF &&  WITH_CEF
   else if (g_str_has_prefix (mime, "text/test-html"))
     {
       classname = "AdapterHTMLPlayer";
       adapter = new AdapterHTMLPlayer();
     }
-#endif 
+#endif
 #if defined WITH_PANGO && WITH_PANGO
   else if (streq (mime, "text/plain"))
     {
@@ -287,11 +253,6 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
       adapter = new AdapterTextPlayer ();
     }
 #endif
-  else if (g_strcmp0 (mime, "text/srt") == 0)
-    {
-      classname = "AdapterSubtitlePlayer";
-  //    adapter = new AdapterSubtitlePlayer ();
-    }
   else if (g_strcmp0 (mime, "application/x-ginga-NCLua") == 0
            || g_strcmp0 (mime, "application/x-ginga-EPGFactory") == 0)
     {
@@ -311,7 +272,6 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
       return NULL;
     }
 
-done:
   adapter->setAdapterManager (this);
   objectPlayers[id] = adapter;
   playerNames[adapter] = classname;

@@ -17,9 +17,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "PresentationEngineManager.h"
-
-#include "player/ProgramAV.h"
-#include "player/IProgramAV.h"
 #include "player/IApplicationPlayer.h"
 
 #if WITH_ISDBT
@@ -209,7 +206,7 @@ PresentationEngineManager::getMappedInterfaceType (const string &nclFile,
 void
 PresentationEngineManager::autoMountOC (arg_unused (bool autoMountIt))
 {
-#ifdef WITH_ISDBT
+#if defined WITH_ISDBT && WITH_ISDBT
   ((DataWrapperListener *)dsmccListener)->autoMountOC (autoMountIt);
 #endif
 }
@@ -239,26 +236,6 @@ PresentationEngineManager::setTimeBaseInfo (INCLPlayer *p)
     }
 }
 
-void
-PresentationEngineManager::printGingaWindows ()
-{
-  map<string, INCLPlayer *>::iterator i;
-  INCLPlayer *formatter;
-
-  cout << "PresentationEngineManager::printGingaWindows" << endl;
-  lock ();
-
-  i = formatters.begin ();
-  while (i != formatters.end ())
-    {
-      formatter = i->second;
-      formatter->printGingaWindows ();
-      ++i;
-    }
-
-  unlock ();
-}
-
 bool
 PresentationEngineManager::nclEdit (const string &nclEditApi)
 {
@@ -271,9 +248,10 @@ PresentationEngineManager::nclEdit (const string &nclEditApi)
 }
 
 bool
-PresentationEngineManager::editingCommand (const string &commandTag,
-                                           const string &commandPayload)
+PresentationEngineManager::editingCommand (arg_unused (const string &commandTag),
+                                           arg_unused (const string &commandPayload))
 {
+#if WITH_ISDBT
   vector<string> *args;
   vector<string>::iterator i;
   GingaLocatorFactory *glf = NULL;
@@ -282,7 +260,6 @@ PresentationEngineManager::editingCommand (const string &commandTag,
   string docIor, docUri, arg, uri, ior, uName;
   glf = GingaLocatorFactory::getInstance ();
 
-#if WITH_ISDBT
   args = split (commandPayload, ",");
   i = args->begin ();
   baseId = NCLEventDescriptor::extractMarks (*i);
@@ -415,7 +392,7 @@ PresentationEngineManager::editingCommand (const string &commandTag,
 }
 
 bool
-PresentationEngineManager::editingCommand (const string &editingCmd)
+PresentationEngineManager::editingCommand (arg_unused (const string &editingCmd))
 {
   string commandTag = "";
   string commandPayload = "";
@@ -1208,16 +1185,12 @@ void *
 PresentationEngineManager::eventReceived (void *ptr)
 {
   struct inputEventNotification *ev;
-  PresentationEngineManager *p;
   string parameter;
-  vector<string> *cmds;
 
   ev = (struct inputEventNotification *)ptr;
 
   const int code = ev->code;
-  p = ev->p;
   parameter = ev->parameter;
-  cmds = ev->cmds;
 
   clog << "PresentationEngineManager::eventReceived '";
   clog << code << "'" << endl;

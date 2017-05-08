@@ -28,10 +28,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/GingaLocatorFactory.h"
 using namespace ::ginga::system;
 
-#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
-#include "multidev/DeviceDomain.h"
-#endif
-
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_FORMATTER_BEGIN
@@ -403,15 +399,6 @@ void
 FormatterMediator::setMirrorSrc (IPlayer *mirrorSrc)
 {
   Player::setMirrorSrc (mirrorSrc);
-}
-
-void
-FormatterMediator::printGingaWindows ()
-{
-  if (multiDevice != NULL)
-    {
-      multiDevice->printGingaWindows ();
-    }
 }
 
 void
@@ -3196,26 +3183,6 @@ FormatterMediator::notifyPlayerListeners (short code, const string &paremeter,
                                           short type, const string &value)
 {
   Player::notifyPlayerListeners (code, paremeter, type, value);
-}
-
-void
-FormatterMediator::flip ()
-{
-  SDLWindow* w = 0;
-
-  if (data->devClass == 0)
-    {
-    /*  if (surface != 0 && Ginga_Display->hasSurface (surface))
-        {
-          w = (SDLWindow*) surface->getParentWindow ();
-          if (w != 0)
-            {
-              w->clearContent ();
-              w->validate ();
-            }
-        }
-        */
-    }
 }
 
 void
