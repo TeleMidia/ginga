@@ -37,6 +37,13 @@
         <simpleCondition role="onBegin"/>
         <simpleAction role="abort" max="unbounded" qualifier="par"/>
       </causalConnector>
+      <causalConnector id="onBeginSet">
+        <connectorParam name="var"/>
+        <simpleCondition role="onBegin"/>
+        <compoundAction operator="seq">
+          <simpleAction role="set" value="$var"/>
+        </compoundAction>
+      </causalConnector>
 
       <causalConnector id="onEndStart">
         <simpleCondition role="onEnd"/>
@@ -136,25 +143,35 @@
           <simpleAction role="abort" max="unbounded" qualifier="par"/>
         </compoundAction>
       </causalConnector>
-
+      
+      <causalConnector id="onKeySelectionSet">
+        <connectorParam name="var"/>
+        <connectorParam name="keyCode"/>
+        <simpleCondition role="onSelection" key="$keyCode"/>
+        <compoundAction operator="seq">
+          <simpleAction role="set" value="$var"/>
+        </compoundAction>
+      </causalConnector>
 
     </connectorBase>
   </head>
-  <body>
-     <port id='start1' component='audio'/>
+  <body>    
+    <port id='start1' component='audio'/>
     <!-- <port id='start2' component='img'/> -->
     <!-- <port id='start3' component='img2'/> -->
-    <port id='start4' component='video'/>
-    <port id='start5' component='video2'/>
+    <!-- <port id='start4' component='video'/> -->
+    <!-- <port id='start5' component='video2'/> -->
     <!-- <port id='start6' component='video3'/> -->
-    <!-- <port id='start7' component='audio'/> -->
-    
+    <!-- <port id='start7' component='audio2'/> -->
+
     <media id='audio' src='samples/bunny.mp3'/>
+    <media id='audio2' src='samples/arcade.mp3' />
     
     <media id='img' src='samples/gnu.png' descriptor='desc4' />
     <media id='img2' src='samples/gnu.png' descriptor='desc5' />
     
     <media id='video' src='samples/bunny.ogg' descriptor='desc' >
+      <property name='bounds'/>
       <area id='area1' begin='5s'/>
       <area id='area4' begin='10s'/>
     </media>
@@ -168,21 +185,40 @@
       <area id='area3' begin='2s'/>
     </media>
     
-    <!-- <link xconnector="onBeginStart">
+    <link xconnector="onBeginStart">
       <bind role="onBegin" component="audio" />
       <bind role="start" component="video3" />
-    </link>
-
-    <link xconnector="onEndStart">
-      <bind role="onEnd" component="video2" />
+      <bind role="start" component="img" />
+      <bind role="start" component="audio2" />
       <bind role="start" component="video" />
     </link>
+
+    <!-- <link xconnector="onEndAbort">
+      <bind role="onEnd" component="video2" />
+      <bind role="abort" component="video" />
+    </link> -->
  
-    <link xconnector="onKeySelectionStop">
-      <bind role='onSelection' component='video2'>
+    <!-- <link xconnector="onKeySelectionPause">
+      <bind role='onSelection' component='video'>
         <bindParam name='keyCode' value='RED'/>        
       </bind>
-      <bind role="stop" component="video2" />
+      <bind role="pause" component="video" />
+    </link> -->
+    
+    <!-- <link xconnector="onBeginSet">
+      <bind role='onBegin' component='video' interface='area1'/>
+      <bind role="set" component="video" interface="bounds">
+        <bindParam name="var" value="5%,6.67%,45%,45%"/>
+      </bind>
+    </link>
+    
+    <link xconnector="onKeySelectionSet">
+      <bind role='onSelection' component='img'>
+        <bindParam name='keyCode' value='RED'/>        
+      </bind>
+      <bind role="set" component="video" interface="bounds">
+        <bindParam name="var" value="50%,6.67%,45%,45%"/>
+      </bind>
     </link> -->
 
   </body>
