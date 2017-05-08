@@ -299,9 +299,10 @@ RuleAdapter::adaptDescriptor (NclExecutionObject *executionObject)
               adapted = true;
             }
         }
+         
       cascadingDescriptor->cascadeUnsolvedDescriptor ();
       unsolvedDescriptor = cascadingDescriptor->getUnsolvedDescriptor (j);
-    }
+    }  
   return adapted;
 }
 
