@@ -1,4 +1,5 @@
 *.a
+*.DS_Store
 *.bak
 *.core
 *.exe

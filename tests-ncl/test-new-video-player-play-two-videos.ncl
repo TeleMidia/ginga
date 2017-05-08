@@ -42,12 +42,12 @@
     <port id='start' component='video'/>
     <!-- <port id='start' component='video2'/> -->
     
-    <media id='video' src='samples/bunny.ogg' descriptor='desc' >
+    <media id='video' src='samples/animGar.mp4' descriptor='desc' >
       <area id='area1' begin='5s'/>
       <area id='area4' begin='10s'/>
     </media>
 
-    <media id='video2' src='samples/small.mp4' descriptor='desc2' >
+    <media id='video2' src='samples/animGar.mp4' descriptor='desc2' >
       <area id='area2' begin='2s'/>
     </media>
 

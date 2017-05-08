@@ -668,7 +668,9 @@ Player::isForcedNaturalEnd ()
 bool
 Player::setOutWindow (SDLWindow* windowId)
 {
-  this->rect = windowId->getRect();
+  if( windowId!=NULL)  
+      this->rect = windowId->getRect();
+
   this->window = windowId;
   return true;
 }
