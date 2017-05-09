@@ -595,6 +595,7 @@ NclEventTransitionManager::updateTransitionTable (
               if (ev == mainEvent && player != NULL)
                 {
                   player->setPresented (true);
+                  player->stop ();
                 }
 
               clog << "NclEventTransitionManager::updateTransitionTable ";

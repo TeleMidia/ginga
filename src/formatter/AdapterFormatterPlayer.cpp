@@ -40,7 +40,6 @@ AdapterFormatterPlayer::AdapterFormatterPlayer ()
   this->manager = NULL;
   this->object = NULL;
   this->player = NULL;
-  this->mirrorSrc = NULL;
   this->mrl = "";
   this->playerCompName = "";
   this->objectDevice = -1;

@@ -88,8 +88,6 @@ protected:
   double scopeInitTime;
   double scopeEndTime;
   double outTransTime;
-  IPlayer *mirrorSrc;
-  set<IPlayer *> mirrors;
 
   //time attr
   guint32 initStartTime;
@@ -111,7 +109,6 @@ public:
   virtual ~Player ();
 
 public:
-  virtual void flip (){};
   virtual void setMrl (const string &mrl, bool visible = true);
   virtual void reset (){};
   virtual void rebase (){};
