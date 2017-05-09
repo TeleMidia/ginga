@@ -148,7 +148,6 @@ public:
 
   static void release ();
 
-  void setMirrorSrc (IPlayer *mirrorSrc);
   set<string> *createPortIdList ();
   short getMappedInterfaceType (const string &portId);
 
