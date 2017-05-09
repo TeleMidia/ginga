@@ -1978,7 +1978,9 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
                                playerManager->getObjectPlayer (object);
                   if (player != NULL && player->getPlayer () != NULL)
                     {
-                      player->flip ();
+                      //dragon head
+                     // player->flip ();
+                     player->naturalEnd();
 
                       multiDevPres->stopListenPlayer (player->getPlayer ());
                     }
