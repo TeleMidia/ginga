@@ -288,40 +288,6 @@ FormatterConverter::addSameInstance (NclExecutionObject *executionObject,
 }
 
 void
-FormatterConverter::checkGradSameInstance (set<ReferNode *> *gradSame,
-                                           NclExecutionObject *object)
-{
-  clog << "FormatterConverter::checkGradSameInstance obj '";
-  clog << object->getId () << "'";
-
-  NclNodeNesting *entityPerspective;
-  NclNodeNesting *perspective;
-  NclNodeNesting *referPerspective;
-  set<ReferNode *>::iterator i;
-  NodeEntity *dataObject;
-
-  dataObject = (NodeEntity *)(object->getDataObject ());
-  perspective = object->getNodePerspective ();
-  clog << " objectPerspective = '" << perspective->getId () << "'";
-  clog << " with anchorNode = '";
-  clog << perspective->getAnchorNode ()->getId ();
-  clog << "' with entity = '" << dataObject->getId () << "' with";
-  entityPerspective = new NclNodeNesting (dataObject->getPerspective ());
-  clog << " perspective '" << entityPerspective->getId ();
-  i = gradSame->begin ();
-  while (i != gradSame->end ())
-    {
-      referPerspective = new NclNodeNesting ((*i)->getPerspective ());
-      clog << "', gradNode = '";
-      clog << (*i)->getId () << "' has perspective '";
-      clog << referPerspective->getId () << "' with anchorNode '";
-      clog << referPerspective->getAnchorNode ()->getId ();
-      ++i;
-    }
-  clog << "'" << endl;
-}
-
-void
 FormatterConverter::addExecutionObject (
     NclExecutionObject *executionObject,
     NclCompositeExecutionObject *parentObject, int depthLevel)
@@ -1196,28 +1162,6 @@ FormatterConverter::processLink (Link *ncmLink, Node *dataObject,
                           break;
                         }
                       ++i;
-                    }
-                }
-
-              if (!contains)
-                {
-                  sameInstances = nodeEntity->getGradSameInstances ();
-
-                  if (sameInstances != NULL)
-                    {
-                      i = sameInstances->begin ();
-                      while (i != sameInstances->end ())
-                        {
-                          contains
-                              = ((CausalLink *)ncmLink)
-                                    ->containsSourceNode (*i, descriptor);
-
-                          if (contains)
-                            {
-                              break;
-                            }
-                          ++i;
-                        }
                     }
                 }
             }

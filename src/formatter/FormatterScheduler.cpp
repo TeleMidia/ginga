@@ -363,25 +363,6 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
   dataObject
       = (NodeEntity *)(executionObject->getDataObject ()->getDataEntity ());
 
-  if (dataObject->instanceOf ("NodeEntity"))
-    {
-      set<ReferNode *> *gradSame;
-      set<ReferNode *>::iterator i;
-      gradSame = ((NodeEntity *)dataObject)->getGradSameInstances ();
-      if (gradSame != NULL)
-        {
-          ((FormatterConverter *)compiler)
-              ->checkGradSameInstance (gradSame, executionObject);
-
-          /*clog << "FormatterScheduler::runAction refer = '";
-          clog << dataObject->getId() << "' perspective = '";
-          clog << executionObject->getNodePerspective()->
-                          getHeadNode()->getId() << "'";
-
-          clog << endl;*/
-        }
-    }
-
   if (executionObject->instanceOf ("NclExecutionObjectSwitch")
       && event->instanceOf ("NclSwitchEvent"))
     {
