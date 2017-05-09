@@ -40,7 +40,6 @@ typedef struct
   double transparency;
   void *focusManager;
   void *privateBaseManager;
-  bool enableMulticast;
   ::ginga::player::IPlayerListener *editListener;
 } NclPlayerData;
 

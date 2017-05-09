@@ -438,7 +438,6 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
               playerContent = player->getPlayer ();
               if (playerContent != NULL)
                 {
-                  multiDevPres->listenPlayer (playerContent);
                 }
               if (executionObject != NULL
                   && executionObject->getDescriptor () != NULL)
@@ -722,7 +721,6 @@ FormatterScheduler::runActionOverApplicationObject (
           playerContent = player->getPlayer ();
           if (playerContent != NULL)
             {
-              multiDevPres->listenPlayer (playerContent);
             }
 
           if (executionObject->getDescriptor () != NULL)
@@ -1865,8 +1863,6 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
                                playerManager->getObjectPlayer (object);
                   if (player != NULL && player->getPlayer () != NULL)
                     {
-                      multiDevPres->stopListenPlayer (player->getPlayer ());
-
                     }
                 }
             }
@@ -1901,7 +1897,6 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
                 if (player != NULL && player->getPlayer () != NULL
                     && player->getObjectDevice () == 0)
                   {
-                    multiDevPres->stopListenPlayer (player->getPlayer ());
                   }
               }
             break;

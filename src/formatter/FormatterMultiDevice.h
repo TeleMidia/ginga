@@ -23,12 +23,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/Display.h"
 using namespace ::ginga::mb;
 
-#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
-#include "multidev/DeviceDomain.h"
-#include "multidev/RemoteDeviceManager.h"
-#include "multidev/IRemoteDeviceListener.h"
-using namespace ::ginga::multidev;
-#else
 class DeviceDomain
 {
 public:
@@ -45,7 +39,6 @@ public:
   static const int FT_ATTRIBUTIONEVENT = 5;
   static const int FT_PRESENTATIONEVENT = 6;
 };
-#endif // WITH_MULTIDEVICE
 
 #include "ncl/LayoutRegion.h"
 using namespace ::ginga::ncl;
@@ -67,46 +60,26 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::ncl;
 
 #include "player/IPlayer.h"
-#include "player/IPlayerListener.h"
 using namespace ::ginga::player;
 
 #include "PresentationContext.h"
 
 GINGA_FORMATTER_BEGIN
 
-#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
-class FormatterMultiDevice : public IPlayerListener,
-                             public IRemoteDeviceListener
+class FormatterMultiDevice
 {
-#else
-class FormatterMultiDevice : public IPlayerListener
-{
-#endif
 protected:
-//  InputManager *im;
   pthread_mutex_t mutex;
-
-#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
-  static RemoteDeviceManager *rdm;
-#else
-  static void *rdm;
-#endif
-
   DeviceLayout *deviceLayout;
   map<int, NclFormatterLayout *> layoutManager;
   vector<string> *activeUris;
   string activeBaseUri;
   NclFormatterLayout *mainLayout;
-  SDLWindow* serialized;
-  SDLWindow* printScreen;
-  SDLWindow* bitMapScreen;
   int xOffset;
   int yOffset;
   int defaultWidth;
   int defaultHeight;
   int deviceClass;
-  bool hasRemoteDevices;
-  bool enableMulticast;
   PresentationContext *presContext;
   void *focusManager;
   FormatterMultiDevice *parent;
@@ -117,22 +90,13 @@ protected:
 
 public:
   FormatterMultiDevice (DeviceLayout *deviceLayout,
-                        int x, int y, int w, int h, bool useMulticast,
-                        int srvPort);
+                        int x, int y, int w, int h);
   virtual ~FormatterMultiDevice ();
-  void printGingaWindows ();
-  void listenPlayer (IPlayer *player);
-  void stopListenPlayer (IPlayer *player);
   void setParent (FormatterMultiDevice *parent);
   void setPresentationContex (PresentationContext *presContext);
   void setFocusManager (void *focusManager);
   void *getMainLayout ();
   void *getFormatterLayout (int devClass);
-  string getScreenShot ();
-  string serializeScreen (int devClass, SDLWindow* mapWindow);
-
-protected:
-  virtual void postMediaContent (int destDevClass);
 
 public:
   NclFormatterLayout *
@@ -141,42 +105,6 @@ public:
   SDLWindow* prepareFormatterRegion (NclExecutionObject *object);
   void showObject (NclExecutionObject *executionObject);
   void hideObject (NclExecutionObject *executionObject);
-
-protected:
-  virtual bool newDeviceConnected (int newDevClass, int w, int h);
-  virtual void connectedToBaseDevice (unsigned int domainAddr) = 0;
-  virtual bool receiveRemoteEvent (int remoteDevClass, int eventType,
-                                   const string &eventContent);
-  virtual bool
-  receiveRemoteContent (arg_unused (int remoteDevClass),
-                        arg_unused (char *stream),
-                        arg_unused (int streamSize))
-  {
-    return false;
-  };
-  virtual bool
-  receiveRemoteContentInfo (arg_unused (const string &contentId),
-                            arg_unused (const string &contentUri))
-  {
-    return false;
-  };
-  void renderFromUri (SDLWindow* win, const string &uri);
-  void tapObject (int devClass, int x, int y);
-  virtual bool
-  receiveRemoteContent (arg_unused (int remoteDevClass),
-                        arg_unused (const string &contentUri))
-  {
-    return false;
-  };
-
-public:
-  void addActiveUris (const string &baseUri, vector<string> *uris);
-
-protected:
-  void updateStatus (short code,
-                     const string &parameter,
-                     short type,
-                     const string &value);
 };
 
 GINGA_FORMATTER_END

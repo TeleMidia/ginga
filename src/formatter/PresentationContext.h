@@ -29,11 +29,6 @@ using namespace ::ginga::ctxmgmt;
 
 #include "ginga.h"
 
-#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
-#include "multidev/DeviceDomain.h"
-using namespace ::ginga::multidev;
-#endif
-
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
@@ -41,11 +36,6 @@ using namespace ::ginga::system;
 
 #include "ctxmgmt/IContextListener.h"
 using namespace ::ginga::ctxmgmt;
-
-#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
-#include "multidev/DeviceDomain.h"
-using namespace ::ginga::multidev;
-#endif
 
 #include "math.h"
 
@@ -58,12 +48,7 @@ private:
   static ContextManager *contextManager;
   IContextListener *globalVarListener;
   pthread_mutex_t attrMutex;
-
-#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
-  IRemoteDeviceListener *devListener;
-#else
   void *devListener;
-#endif // WITH_MULTIDEVICE
 
 public:
   PresentationContext ();
@@ -84,10 +69,6 @@ public:
   void save ();
   void setGlobalVarListener (IContextListener *listener);
   void receiveGlobalAttribution (const string &pName, const string &value);
-
-#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
-  void setRemoteDeviceListener (IRemoteDeviceListener *rdl);
-#endif // WITH_MULTIDEVICE
 };
 
 GINGA_FORMATTER_END

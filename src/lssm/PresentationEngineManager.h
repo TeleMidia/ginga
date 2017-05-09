@@ -70,7 +70,6 @@ private:
   bool closed;
   bool hasTMPNotification;
   bool hasInteractivity;
-  bool enableMulticast;
   bool exitOnEnd;
   ITimeBaseProvider *timeBaseProvider;
   int currentPrivateBaseId;
@@ -83,8 +82,7 @@ private:
 
 public:
   PresentationEngineManager (int devClass, int xOffset, int yOffset,
-                             int width, int height, bool disableGfx,
-                             bool useMulticast);
+                             int width, int height, bool disableGfx);
   virtual ~PresentationEngineManager ();
   void setExitOnEnd (bool exitOnEnd);
   set<string> *createPortIdList (const string &nclFile);

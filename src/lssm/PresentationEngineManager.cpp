@@ -62,52 +62,24 @@ bool PresentationEngineManager::autoProcess = false;
 
 PresentationEngineManager::PresentationEngineManager (
     int devClass, int xOffset, int yOffset, int width, int height,
-    bool enableGfx, bool useMulticast)
+    bool enableGfx)
     : Thread ()
 {
   g_mutex_init (&this->quit_mutex);
   g_cond_init (&this->quit_cond);
 
-  x = 0;
-  if (xOffset > 0)
-    {
-      x = xOffset;
-    }
-
-  y = 0;
-  if (yOffset > 0)
-    {
-      y = yOffset;
-    }
-
-  enableMulticast = useMulticast;
+  x = CLAMP (xOffset, 0, width);
+  y = CLAMP (yOffset, 0, height);
 
   Ginga_Display->getSize (&w, &h);
-  if (width > 0 && (width < w || w == 0))
-    {
-      w = width;
-    }
-  if (height > 0 && (height < h || h == 0))
-    {
-      h = height;
-    }
-
-  if (h == 0 || w == 0)
-    {
-      clog << "PEM::PEM Warning! Trying to create an ";
-      clog << "invalid window" << endl;
-      w = 1;
-      h = 1;
-    }
+  w = CLAMP (w, 0, width);
+  h = CLAMP (h, 0, height);
+  g_assert (w > 0 && h > 0);
 
   this->devClass = devClass;
   this->enableGfx = enableGfx;
   this->dsmccListener = NULL;
   this->tuner = NULL;
-
-#ifdef DataWrapperListener_H_
-  this->dsmccListener = new DataWrapperListener (this);
-#endif
 
   this->exitOnEnd = false;
   this->paused = false;
@@ -247,7 +219,6 @@ PresentationEngineManager::createNclPlayer (const string &baseId,
       data->baseId = baseId;
       data->playerId = fname;
       data->privateBaseManager = privateBaseManager;
-      data->enableMulticast = enableMulticast;
       formatter = new FormatterMediator (data);
       formatter->setCurrentDocument (fname);
       formatter->addListener (this);
@@ -271,7 +242,6 @@ PresentationEngineManager::createNclPlayerData ()
   data->w = w;
   data->h = h;
   data->enableGfx = enableGfx;
-  data->enableMulticast = enableMulticast;
   data->parentDocId = "";
   data->nodeId = "";
   data->docId = "";

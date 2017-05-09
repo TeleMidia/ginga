@@ -95,14 +95,6 @@ GINGA_BEGIN_DECLS
 # endif
 #endif
 
-#if defined WITH_MULTIDEVICE && WITH_MULTIDEVICE
-GINGA_PRAGMA_DIAG_PUSH ()
-GINGA_PRAGMA_DIAG_IGNORE (-Wundef)
-# include <jerror.h>
-# include <jpeglib.h>
-GINGA_PRAGMA_DIAG_POP ()
-#endif
-
 #if defined WITH_LIBRSVG && WITH_LIBRSVG
 # include <cairo.h>
 # include <librsvg/rsvg.h>

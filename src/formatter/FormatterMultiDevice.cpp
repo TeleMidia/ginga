@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterMultiDevice.h"
 
 #include "FormatterMediator.h"
-#include "FormatterBaseDevice.h"
 
 #include "mb/Display.h"
 using namespace ::ginga::mb;
@@ -29,27 +28,20 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-void *FormatterMultiDevice::rdm = NULL;
-
 FormatterMultiDevice::FormatterMultiDevice (DeviceLayout *deviceLayout,
-                                            int x, int y, int w, int h,
-                                            bool useMulticast, arg_unused (int srvPort))
+                                            int x, int y, int w, int h)
 {
   this->xOffset = x;
   this->yOffset = y;
   this->defaultWidth = w;
   this->defaultHeight = h;
   this->deviceClass = -1;
-  this->hasRemoteDevices = false;
   this->deviceLayout = deviceLayout;
   this->activeBaseUri = "";
   this->activeUris = NULL;
-  this->bitMapScreen = 0;
-  this->serialized = 0;
   this->presContext = NULL;
   this->focusManager = NULL;
   this->parent = NULL;
-  this->enableMulticast = useMulticast;
 
   if (defaultWidth == 0)
     Ginga_Display->getSize (&defaultWidth, NULL);
@@ -57,15 +49,8 @@ FormatterMultiDevice::FormatterMultiDevice (DeviceLayout *deviceLayout,
   if (defaultHeight == 0)
     Ginga_Display->getSize (NULL, &defaultHeight);
 
-//  im = Ginga_Display->getInputManager ();
-
   int tmpw, tmph;
   Ginga_Display->getSize (&tmpw, &tmph);
- // im->setAxisValues ((int)(tmpw / 2), (int)(tmph / 2), 0);
-  printScreen = Ginga_Display->createWindow (0, 0,
-                                                defaultWidth,
-                                                defaultHeight, -1.0);
-
 
   Thread::mutexInit (&mutex, false);
   Thread::mutexInit (&lMutex, false);
@@ -100,41 +85,12 @@ FormatterMultiDevice::~FormatterMultiDevice ()
   Thread::mutexDestroy (&mutex);
   Thread::mutexDestroy (&lMutex);
 
-  /*if (im != NULL) {
-          clog << "FormatterMultiDevice::~FormatterMultiDevice ";
-          clog << "stop listening events";
-          clog << endl;
-          im->removeInputEventListener(this);
-  }*/
 
   clog << "FormatterMultiDevice::~FormatterMultiDevice ";
   clog << "all done";
   clog << endl;
 }
 
-void
-FormatterMultiDevice::listenPlayer (IPlayer *player)
-{
-  Thread::mutexLock (&lMutex);
-  listening.insert (player);
-  player->addListener (this);
-  Thread::mutexUnlock (&lMutex);
-}
-
-void
-FormatterMultiDevice::stopListenPlayer (IPlayer *player)
-{
-  set<IPlayer *>::iterator i;
-
-  Thread::mutexLock (&lMutex);
-  i = listening.find (player);
-  if (i != listening.end ())
-    {
-      listening.erase (i);
-      player->removeListener (this);
-    }
-  Thread::mutexUnlock (&lMutex);
-}
 
 void
 FormatterMultiDevice::setParent (FormatterMultiDevice *parent)
@@ -173,19 +129,6 @@ FormatterMultiDevice::getFormatterLayout (int devClass)
     }
 
   return NULL;
-}
-
-string G_GNUC_NORETURN
-FormatterMultiDevice::getScreenShot ()
-{
-  g_error ("screen-shot is not implemented");
-}
-
-void
-FormatterMultiDevice::postMediaContent (arg_unused (int destDevClass))
-{
-  Thread::mutexLock (&mutex);
-  Thread::mutexUnlock (&mutex);
 }
 
 NclFormatterLayout *
@@ -245,14 +188,6 @@ FormatterMultiDevice::prepareFormatterRegion (
 
           windowId = layout->prepareFormatterRegion (executionObject,plan);
 
-          if (bitMapScreen != 0)
-            {
-              /*clog << endl;
-              clog << "FormatterMultiDevice::prepareFormatterRegion ";
-              clog << "bitMapScreen != NULL" << endl;*/
-              return windowId;
-            }
-
           regionId = layout->getBitMapRegionId ();
           /*clog << endl;
           clog << "FormatterMultiDevice::prepareFormatterRegion map '";
@@ -289,25 +224,6 @@ FormatterMultiDevice::prepareFormatterRegion (
               clog << endl;
               return windowId;
             }
-
-          bitMapScreen = Ginga_Display->createWindow (
-              bitMapRegion->getAbsoluteLeft (),
-              bitMapRegion->getAbsoluteTop (),
-              bitMapRegion->getWidthInPixels (),
-              bitMapRegion->getHeightInPixels (),
-              bitMapRegion->getZIndexValue ());
-
-          clog << endl << endl;
-          clog << "FormatterMultiDevice::prepareFormatterRegion(";
-          clog << this << ") ";
-          clog << "BITMAPREGION '";
-          clog << regionId << "' left = '";
-          clog << bitMapRegion->getLeftInPixels ();
-          clog << "' top = '" << bitMapRegion->getTopInPixels ();
-          clog << "' width = '" << bitMapRegion->getWidthInPixels ();
-          clog << "' height = '" << bitMapRegion->getHeightInPixels ();
-          clog << "' zIndex = '" << bitMapRegion->getZIndexValue ();
-          clog << endl << endl;
         }
     }
 
@@ -327,10 +243,6 @@ FormatterMultiDevice::showObject (NclExecutionObject *executionObject)
   string relativePath;
   string tempRelPath;
   string value;
-  Content *content;
-
-  /*INCLSectionProcessor* nsp = NULL;
-  vector<StreamData*>* streams;*/
 
   descriptor = executionObject->getDescriptor ();
   if (descriptor != NULL)
@@ -360,61 +272,6 @@ FormatterMultiDevice::showObject (NclExecutionObject *executionObject)
             {
               layout->showObject (executionObject);
             }
-
-          if (hasRemoteDevices)
-            {
-              if (devClass == DeviceDomain::CT_ACTIVE)
-                {
-                  content
-                      = ((NodeEntity *)(executionObject->getDataObject ()
-                                            ->getDataEntity ()))
-                            ->getContent ();
-
-                  tempRelPath = "";
-
-                  if (content != NULL
-                      && content->instanceOf ("ReferenceContent"))
-                    {
-                      url = ((ReferenceContent *)content)
-                                ->getCompleteReferenceUrl ();
-
-                      clog << "FormatterMultiDevice::showObject ";
-                      clog << "executionObject.url = '" << url;
-                      clog << "'" << endl;
-
-                      clog << "FormatterMultiDevice::showObject ";
-                      clog << "executionObject.activeBaseUri = '";
-                      clog << activeBaseUri << "'" << endl;
-
-                      size_t pos
-                          = url.find_last_of (SystemCompat::getIUriD ());
-
-                      if (pos != string::npos)
-                        tempRelPath = url.substr (
-                            activeBaseUri.size (),
-                            url.size () - activeBaseUri.size ());
-                      else
-                        tempRelPath = url;
-
-                      // relativePath =
-                      // SystemCompat::convertRelativePath(tempRelPath);
-
-                      /*
-                      size_t pos =
-                      url.find_last_of(SystemCompat::getIUriD());
-                      if(pos != string::npos)
-                              relativePath = url.substr( pos + 1, url.size()
-                      -
-                      pos - 1 );
-                      else
-                              relativePath = url;
-                      */
-                      clog << "FormatterMultiDevice::showObject ";
-                      clog << "executionObject.RP = '";
-                      clog << tempRelPath << "'" << endl;
-                    }
-                }
-            }
         }
     }
 }
@@ -443,143 +300,8 @@ FormatterMultiDevice::hideObject (NclExecutionObject *executionObject)
             {
               layout->hideObject (executionObject);
             }
-
-          if (hasRemoteDevices)
-            {
-              if (devClass == DeviceDomain::CT_ACTIVE)
-                {
-                  Content *content;
-                  string relativePath = "";
-                  string url;
-
-                  content
-                      = ((NodeEntity *)(executionObject->getDataObject ()
-                                            ->getDataEntity ()))
-                            ->getContent ();
-
-                  if (content != NULL
-                      && content->instanceOf ("ReferenceContent"))
-                    {
-                      url = ((ReferenceContent *)content)
-                                ->getCompleteReferenceUrl ();
-
-                      /*clog << "FormatterMultiDevice::hideObject";
-                      clog << " executionObject.url = '" << url << "'";
-                      clog << " activeBaseUri = '" << activeBaseUri;
-                      clog << "'";
-                      clog << endl;*/
-
-                      relativePath = url.substr (
-                          activeBaseUri.size () + 1,
-                          url.size () - activeBaseUri.size ());
-                    }
-                }
-            }
         }
     }
-}
-
-void
-FormatterMultiDevice::tapObject (int devClass, int x, int y)
-{
-  NclFormatterLayout *layout;
-  NclExecutionObject *object;
-
-  if (layoutManager.count (devClass) != 0)
-    {
-      layout = layoutManager[devClass];
-
-      object = layout->getObject (x, y);
-      if (focusManager != NULL && object != NULL)
-        {
-          clog << "FormatterMultiDevice::tapObject '";
-          clog << object->getId () << "'" << endl;
-          ((FormatterFocusManager *)focusManager)
-              ->tapObject ((void *)object);
-        }
-      else
-        {
-          clog << "FormatterMultiDevice::tapObject can't ";
-          clog << "find object at '" << x << "' and '";
-          clog << y << "' coords" << endl;
-        }
-    }
-  else
-    {
-      clog << "FormatterMultiDevice::tapObject can't find layout of '";
-      clog << devClass << "' device class" << endl;
-    }
-}
-
-bool
-FormatterMultiDevice::newDeviceConnected (int newDevClass, int w, int h)
-{
-  bool isNewClass = false;
-
-  clog << "FormatterMultiDevice::newDeviceConnected class '";
-  clog << newDevClass << "', w = '" << w << "', h = '" << h << "'";
-  clog << endl;
-
-  if (presContext != NULL)
-    {
-      presContext->incPropertyValue (SYSTEM_DEVNUMBER
-                                     + xstrbuild ("(%d)", newDevClass));
-    }
-
-  if (!hasRemoteDevices)
-    {
-      hasRemoteDevices = true;
-    }
-
-  if (layoutManager.count (newDevClass) == 0)
-    {
-      layoutManager[newDevClass]
-          = new NclFormatterLayout (0, 0, w, h);
-
-      isNewClass = true;
-    }
-
-  if (newDevClass == DeviceDomain::CT_ACTIVE)
-    {
-      clog << "FormatterMulDevice::newDeviceConnected class = ";
-      clog << DeviceDomain::CT_ACTIVE << endl;
-    }
-  else
-    {
-      postMediaContent (newDevClass);
-    }
-
-  return isNewClass;
-}
-
-bool
-FormatterMultiDevice::receiveRemoteEvent (arg_unused (int remoteDevClass),
-                                          arg_unused (int eventType),
-                                          arg_unused (const string &eventContent))
-{
-  return true;
-}
-
-void
-FormatterMultiDevice::addActiveUris (const string &baseUri, vector<string> *uris)
-{
-  if (activeUris != NULL)
-    {
-      delete activeUris;
-    }
-
-  activeUris = uris;
-  activeBaseUri = baseUri;
-  clog << "FormatterMultiDevice::addActiveUris activeBaseUri=" << baseUri
-       << endl;
-}
-
-void
-FormatterMultiDevice::updateStatus (arg_unused (short code),
-                                    arg_unused (const string &parameter),
-                                    arg_unused (short type),
-                                    arg_unused (const string &value))
-{
 }
 
 GINGA_FORMATTER_END

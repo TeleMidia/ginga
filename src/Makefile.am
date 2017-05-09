@@ -218,7 +218,6 @@ src+= player/ImagePlayer.cpp
 src+= player/LuaPlayer.cpp
 src+= player/Player.cpp
 src+= system/GingaLocatorFactory.cpp
-src+= system/PracticalSocket.cpp
 src+= system/Stc.cpp
 src+= system/SystemCompat.cpp
 src+= system/Thread.cpp
