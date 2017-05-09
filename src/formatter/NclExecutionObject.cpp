@@ -204,7 +204,6 @@ NclExecutionObject::initializeExecutionObject (
   this->isLocked = false;
   this->isHandler = false;
   this->isHandling = handling;
-  this->mirrorSrc = NULL;
 
   this->transMan = new NclEventTransitionManager ();
 

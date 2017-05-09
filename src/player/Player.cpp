@@ -49,7 +49,6 @@ Player::Player (const string &mrl)
   this->scopeEndTime = -1;
   this->outTransTime = -1;
   this->notifyContentUpdate = false;
-  this->mirrorSrc = NULL;
 
   //time attr
   this->initStartTime = 0;

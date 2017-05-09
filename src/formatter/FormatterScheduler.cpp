@@ -445,7 +445,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
             {
               if (ruleAdapter->adaptDescriptor (executionObject))
                 {
-                  
+
                   descriptor = executionObject->getDescriptor ();
                   if (descriptor != NULL)
                     {
@@ -484,9 +484,8 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
                                   executionObject);
 
                   player->setOutputWindow (winId);
-                  player->flip ();
                 }
-             
+
               event->addEventListener (this);
               Thread::mutexLock (&lMutex);
               listening.insert (event);
@@ -774,7 +773,6 @@ FormatterScheduler::runActionOverApplicationObject (
               player->setOutputWindow (winId);
               if (player->getObjectDevice () == 0)
                 {
-                  player->flip ();
                 }
             }
         }
@@ -1428,7 +1426,7 @@ void
 FormatterScheduler::initializeDefaultSettings ()
 {
   string value;
- 
+
   value = presContext->getPropertyValue (DEFAULT_FOCUS_BORDER_COLOR);
   if (value != "")
     {
@@ -1893,7 +1891,7 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
                   if (player != NULL && player->getPlayer () != NULL)
                     {
                       multiDevPres->stopListenPlayer (player->getPlayer ());
-                     
+
                     }
                 }
             }
@@ -1928,8 +1926,6 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
                 if (player != NULL && player->getPlayer () != NULL
                     && player->getObjectDevice () == 0)
                   {
-                    player->flip ();
-
                     multiDevPres->stopListenPlayer (player->getPlayer ());
                   }
               }
@@ -1937,14 +1933,14 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
           }
 
         case EventUtil::TR_PAUSES:
-          {        
+          {
             clog << "FormatterScheduler::eventStateChanged\nPAUSES:\n";
             clog << endl;
             break;
           }
 
         case EventUtil::TR_RESUMES:
-          {           
+          {
             clog << "FormatterScheduler::eventStateChanged\nRESUMES:\n";
             clog << endl;
             break;
