@@ -110,29 +110,20 @@ PresentationEngineManager::PresentationEngineManager (
 #endif
 
   this->exitOnEnd = false;
-  this->disableFKeys = false;
-
   this->paused = false;
-  this->standAloneApp = true;
-  this->isLocalNcl = true;
   this->hasInteractivity = true;
   this->closed = false;
   this->hasTMPNotification = false;
-  this->isEmbedded = true;
   this->currentPrivateBaseId = -1;
   this->timeBaseProvider = NULL;
- // this->im = Ginga_Display->getInputManager ();
   privateBaseManager = new PrivateBaseManager ();
 
   ContentTypeManager::getInstance ()->setMimeFile (string (GINGA_DATADIR)
                                                    + "mimetypes.ini");
- // im->setCommandEventListener (this);
 }
 
 PresentationEngineManager::~PresentationEngineManager ()
 {
-  clog << "PresentationEngineManager::~PresentationEngineManager" << endl;
-
   quit = false;
   g_mutex_clear (&this->quit_mutex);
   g_cond_clear (&this->quit_cond);
@@ -161,12 +152,6 @@ void
 PresentationEngineManager::setExitOnEnd (bool exitOnEnd)
 {
   this->exitOnEnd = exitOnEnd;
-}
-
-void
-PresentationEngineManager::setDisableFKeys (bool disableFKeys)
-{
-  this->disableFKeys = disableFKeys;
 }
 
 set<string> *
@@ -204,14 +189,6 @@ PresentationEngineManager::getMappedInterfaceType (const string &nclFile,
 }
 
 void
-PresentationEngineManager::autoMountOC (arg_unused (bool autoMountIt))
-{
-#if defined WITH_ISDBT && WITH_ISDBT
-  ((DataWrapperListener *)dsmccListener)->autoMountOC (autoMountIt);
-#endif
-}
-
-void
 PresentationEngineManager::setCurrentPrivateBaseId (unsigned int baseId)
 {
   clog << "PresentationEngineManager::setCurrentPrivateBaseId '";
@@ -236,279 +213,15 @@ PresentationEngineManager::setTimeBaseInfo (INCLPlayer *p)
     }
 }
 
-bool
-PresentationEngineManager::nclEdit (const string &nclEditApi)
-{
-  string::size_type pos = nclEditApi.find_first_of (",");
-  string commandTag = xstrchomp (nclEditApi.substr (0, pos));
-
-  return editingCommand (
-      commandTag,
-      nclEditApi.substr (pos + 1, nclEditApi.length () - pos + 1));
-}
-
-bool
-PresentationEngineManager::editingCommand (arg_unused (const string &commandTag),
-                                           arg_unused (const string &commandPayload))
-{
-#if WITH_ISDBT
-  vector<string> *args;
-  vector<string>::iterator i;
-  GingaLocatorFactory *glf = NULL;
-  INCLPlayer *docPlayer = NULL;
-  string baseId, docId;
-  string docIor, docUri, arg, uri, ior, uName;
-  glf = GingaLocatorFactory::getInstance ();
-
-  args = split (commandPayload, ",");
-  i = args->begin ();
-  baseId = NCLEventDescriptor::extractMarks (*i);
-  ++i;
-
-  // parse command
-  if (commandTag == EC_OPEN_BASE)
-    {
-    }
-  else if (commandTag == EC_ACTIVATE_BASE)
-    {
-    }
-  else if (commandTag == EC_DEACTIVATE_BASE)
-    {
-    }
-  else if (commandTag == EC_SAVE_BASE)
-    {
-    }
-  else if (commandTag == EC_CLOSE_BASE)
-    {
-    }
-  else if (commandTag == EC_ADD_DOCUMENT)
-    {
-      clog << "PresentationEngineManager::editingCommand (addDocument)";
-      clog << endl;
-
-      docUri = "";
-      docIor = "";
-      while (i != args->end ())
-        {
-          if ((*i).find ("x-sbtvd://") != std::string::npos)
-            {
-              uri = NCLEventDescriptor::extractMarks (*i);
-              ++i;
-              ior = NCLEventDescriptor::extractMarks (*i);
-
-              if (uri.find ("x-sbtvd://") != std::string::npos)
-                {
-                  uri = uri.substr (uri.find ("x-sbtvd://") + 10,
-                                    uri.length ()
-                                        - (uri.find ("x-sbtvd://") + 10));
-                }
-
-              if (docUri == "")
-                {
-                  docUri = uri;
-                  docIor = ior;
-                }
-
-              clog << "PresentationEngineManager::editingCommand ";
-              clog << " command '" << arg << "' creating locator ";
-              clog << "uri '" << uri << "', ior '" << ior;
-              clog << "'" << endl;
-              if (glf != NULL)
-                {
-                  glf->createLocator (uri, ior);
-                }
-            }
-          else
-            {
-              uri = *i;
-              ior = uri;
-              if (docUri == "")
-                {
-                  docIor = uri;
-                  docUri = uri;
-                }
-            }
-
-          ++i;
-        }
-
-      if (docUri == docIor)
-        {
-          clog << "PresentationEngineManager::editingCommand";
-          clog << " calling addDocument '" << docUri;
-          clog << "' in private base '" << baseId;
-          clog << endl;
-
-          lock ();
-          docPlayer = createNclPlayer (baseId, docUri);
-          unlock ();
-        }
-      else
-        {
-          clog << "PresentationEngineManager::editingCommand calling ";
-          clog << "getLocation '" << docUri << "' for ior '";
-          clog << docIor << "'" << endl;
-
-          if (glf != NULL)
-            {
-              uri = glf->getLocation (docUri);
-              uName = glf->getName (docIor);
-              lock ();
-              docPlayer = createNclPlayer (baseId, uri + uName);
-              unlock ();
-            }
-        }
-    }
-  else if (commandTag == EC_DBG_START_PRESENTATION)
-    {
-      startPresentation (commandPayload, "");
-    }
-  else
-    {
-      // clog << "PresentationEngineManager::editingCommand not to base";
-      // clog << endl;
-
-      docId = NCLEventDescriptor::extractMarks (*i);
-      if (getNclPlayer (baseId, docId, &docPlayer))
-        {
-          if (commandTag == EC_START_DOCUMENT)
-            {
-              setTimeBaseInfo (docPlayer);
-            }
-          return docPlayer->editingCommand (commandTag, commandPayload);
-        }
-      else
-        {
-          clog << "PresentationEngineManager::editingCommand can't ";
-          clog << "find NCL player in base '" << baseId << "' for doc '";
-          clog << docId << "'";
-          clog << endl;
-        }
-    }
-
-#endif // WITH_ISDBT
-
-  return false;
-}
-
-bool
-PresentationEngineManager::editingCommand (arg_unused (const string &editingCmd))
-{
-  string commandTag = "";
-  string commandPayload = "";
-
-#if WITH_ISDBT
-  commandTag = NCLEventDescriptor::getCommandTag (editingCmd);
-  commandPayload = NCLEventDescriptor::getPrivateDataPayload (editingCmd);
-#endif
-
-  return editingCommand (commandTag, commandPayload);
-}
-
-void
-PresentationEngineManager::getScreenShot ()
-{
-  updateFormatters (UC_PRINTSCREEN);
-}
-
 void
 PresentationEngineManager::close ()
 {
   map<int, set<INCLPlayer *> *>::iterator i;
-
   closed = true;
-/*
-  if (im != NULL)
-    {
-      im->removeInputEventListener (this);
-      im->setCommandEventListener (NULL);
-      delete im;
-      im = NULL;
-    } */
-
   lock ();
   formattersToRelease.clear ();
   formatters.clear ();
-
   unlock ();
-}
-
-void
-PresentationEngineManager::registerKeys ()
-{ /*
-  set<int> *keys;
-
-  if (im == NULL)
-    {
-      return;
-    } 
-
-  keys = new set<int>;
-
-  keys->insert (Key::KEY_GREATER_THAN_SIGN);
-  keys->insert (Key::KEY_LESS_THAN_SIGN);
-
-  keys->insert (Key::KEY_SUPER);
-  keys->insert (Key::KEY_PRINTSCREEN);
-
-  keys->insert (Key::KEY_F10);
-  keys->insert (Key::KEY_POWER);
-
-  keys->insert (Key::KEY_F11);
-  keys->insert (Key::KEY_STOP);
-
-  keys->insert (Key::KEY_F12);
-  keys->insert (Key::KEY_PAUSE);
-
-#if WITH_ISDBT
-  this->tuner = NULL;
-  keys->insert (Key::KEY_PAGE_UP);
-  keys->insert (Key::KEY_PAGE_DOWN);
-  keys->insert (Key::KEY_CHANNEL_UP);
-  keys->insert (Key::KEY_CHANNEL_DOWN);
-#endif
-
-  if (!commands.empty ())
-    {
-      keys->insert (Key::KEY_PLUS_SIGN);
-    }
-
- // im->addInputEventListener (this, keys); */
-}
-
-bool
-PresentationEngineManager::getIsLocalNcl ()
-{
-  return this->isLocalNcl;
-}
-
-void
-PresentationEngineManager::setEmbedApp (bool isEmbedded)
-{
-  this->isEmbedded = isEmbedded;
-
-  if (!isEmbedded)
-    {
-      registerKeys ();
-    }
-  else
-    {
-    //  im->removeInputEventListener (this);
-    }
-}
-
-void
-PresentationEngineManager::setIsLocalNcl (bool isLocal, void *tuner)
-{
-  if (this->tuner != NULL && this->tuner != tuner)
-    {
-#if WITH_ISDBT
-      delete (Tuner *)(this->tuner);
-#endif
-    }
-
-  this->tuner = tuner;
-  this->isLocalNcl = isLocal;
 }
 
 void
@@ -537,11 +250,6 @@ PresentationEngineManager::createNclPlayer (const string &baseId,
       data->enableMulticast = enableMulticast;
       formatter = new FormatterMediator (data);
       formatter->setCurrentDocument (fname);
-      if (formatters.empty () && !isEmbedded)
-        {
-          registerKeys ();
-        }
-
       formatter->addListener (this);
       formatters[fname] = formatter;
     }
@@ -857,16 +565,6 @@ PresentationEngineManager::abortPresentation (const string &nclFile)
   return aborted;
 }
 
-void
-PresentationEngineManager::openNclDocument (const string &docUri,
-                                            int x, int y,
-                                            int w, int h)
-{
-  clog << "PresentationEngineManager::openNclDocument docUri '";
-  clog << docUri << "' x = '" << x << "', y = '" << y << "', w = '";
-  clog << w << "', h = '" << h << "'" << endl;
-}
-
 void *
 PresentationEngineManager::getDsmccListener ()
 {
@@ -876,7 +574,6 @@ PresentationEngineManager::getDsmccListener ()
 void
 PresentationEngineManager::pausePressed ()
 {
-  clog << "PresentationEngineManager::pausePressed" << endl;
   if (paused)
     {
       updateFormatters (UC_RESUME);
@@ -888,113 +585,15 @@ PresentationEngineManager::pausePressed ()
 }
 
 void
-PresentationEngineManager::setCmdFile (const string &cmdFile)
-{
-  ifstream fis;
-  string cmd;
-
-  clog << "PresentationEngineManager";
-  clog << "::setCmdFile" << endl;
-
-  autoProcess = false;
-
-  fis.open (cmdFile.c_str (), ifstream::in);
-  if (!fis.is_open ())
-    {
-      clog << "PresentationEngineManager";
-      clog << "::setCmdFile Warning! can't open '" << cmdFile;
-      clog << "'" << endl;
-      return;
-    }
-
-  commands.clear ();
-
-  while (fis.good ())
-    {
-      fis >> cmd;
-      if (cmd != "" && cmd.substr (0, 1) != "#")
-        {
-          commands.push_back (cmd);
-          if (cmd.find ("startPresentation") != std::string::npos)
-            {
-              autoProcess = true;
-              break;
-            }
-        }
-    }
-
-  if (autoProcess)
-    {
-      pthread_t autoCmdId_;
-      struct inputEventNotification *ev;
-
-      ev = new struct inputEventNotification;
-      ev->p = this;
-      ev->cmds = new vector<string> (commands);
-
-      pthread_create (&autoCmdId_, 0,
-                      PresentationEngineManager::processAutoCmd,
-                      (void *)ev);
-
-      pthread_detach (autoCmdId_);
-    }
-}
-
-void *
-PresentationEngineManager::processAutoCmd (void *ptr)
-{
-  struct inputEventNotification *ev;
-  PresentationEngineManager *p;
-  string cmd;
-  vector<string> *cmds;
-
-  ev = (struct inputEventNotification *)ptr;
-  p = ev->p;
-  cmds = ev->cmds;
-  delete ev;
-
-  clog << "PresentationEngineManager::processAutoCmd" << endl;
-
-  while (!cmds->empty ())
-    {
-      cmd = *(cmds->begin ());
-
-      clog << "PresentationEngineManager::processAutoCmd ";
-      clog << "RUNNING CURRENT COMMAND '" << cmd;
-      clog << "'" << endl;
-
-      p->readCommand (cmd);
-      if (cmd.find ("startPresentation") != std::string::npos)
-        {
-          break;
-        }
-      cmds->erase (cmds->begin ());
-    }
-
-  delete cmds;
-  clog << "PresentationEngineManager::processAutoCmd ";
-  clog << "ALL DONE" << endl;
-  return NULL;
-}
-
-void
 PresentationEngineManager::waitUnlockCondition ()
 {
-  clog << "PresentationEngineManager::waitUnlockCondition" << endl;
   Thread::waitForUnlockCondition ();
 }
 
 void
 PresentationEngineManager::presentationCompleted (const string &formatterId)
 {
-  clog << "PresentationEngineManager";
-  clog << "::presentationCompleted for '" << formatterId;
-  clog << "'" << endl;
-
-  if (!isEmbedded)
-    {
-      releaseFormatter (formatterId);
-    }
+  releaseFormatter (formatterId);
 }
 
 void
@@ -1098,54 +697,9 @@ PresentationEngineManager::updateStatus (short code,
         }
       break;
 
-    case IPlayer::PL_NOTIFY_NCLEDIT:
-      clog << "PresentationEngineManager::updateStatus";
-      clog << " NCLEDIT";
-      clog << endl;
-
-      nclEdit (parameter);
-      break;
-
     default:
       break;
     }
-}
-
-bool
-PresentationEngineManager::cmdEventReceived (const string &command,
-                                             const string &args)
-{
-  size_t token;
-  string nCmd;
-  string nArgs;
-
-  clog << "PresentationEngineManager::cmdEventReceived" << endl;
-  clog << "Command: " << command << endl;
-  clog << "Parameters: " << args << endl;
-  token = args.find_first_of (",");
-  if (token == std::string::npos)
-    {
-      nCmd = args;
-      nArgs = "";
-    }
-  else
-    {
-      nCmd = args.substr (0, token);
-      nArgs = args.substr (token + 1, args.length () - (token + 1));
-    }
-
-  if (command == "start")
-    {
-      if (openNclFile (nCmd))
-        {
-          startPresentation (nCmd, nArgs);
-        }
-    }
-  else if (command == "ncledit")
-    {
-      editingCommand (args);
-    }
-  return true;
 }
 
 void *
@@ -1165,83 +719,6 @@ PresentationEngineManager::eventReceived (void *ptr)
   delete (struct inputEventNotification *)ptr;
 
   return NULL;
-}
-
-void
-PresentationEngineManager::readCommand (const string &command)
-{
-  string cmdTag = "", cmdParams = "", editingCmd = "", cmdHeader = "";
-  vector<string> *params;
-  double delay;
-
-  clog << "PresentationEngineManager::readCommand";
-  clog << endl;
-
-  if (command.find ("startPresentation") != std::string::npos)
-    {
-      cmdParams = command.substr (command.find_first_of ("(") + 1,
-                                  command.length ()
-                                      - (command.find_first_of ("(") + 1));
-
-      cmdParams = cmdParams.substr (0, cmdParams.find_last_of (")"));
-
-#if WITH_ISDBT
-      clog << "PresentationEngineManager::readCommand checking tuner ...";
-      clog << endl;
-
-      while (!hasTMPNotification)
-        {
-          g_usleep (1000000);
-        }
-
-      clog << "PresentationEngineManager::readCommand tuner OK";
-      clog << endl;
-#endif
-
-      params = split (cmdParams, ",");
-      if (params->size () == 1)
-        {
-          editingCmd = (*params)[0];
-        }
-      else if (params->size () == 2)
-        {
-          delay = xstrtod (((*params)[0]));
-          if (delay > 0)
-            {
-              Thread::mSleep ((long int) delay);
-            }
-          editingCmd = (*params)[1];
-        }
-      delete params;
-      if (editingCmd != "")
-        {
-          startPresentation (editingCmd, "");
-        }
-    }
-  else if (command.find ("addDocument") != std::string::npos)
-    {
-      cmdTag = "5";
-    }
-  else if (command.find ("startDocument") != std::string::npos)
-    {
-      cmdTag = "7";
-    }
-
-  if (cmdTag != "" && command.find ("(") != std::string::npos)
-    {
-      cmdParams = command.substr (command.find_first_of ("(") + 1,
-                                  command.length ()
-                                      - (command.find_first_of ("(") + 1));
-
-      if (cmdParams.find (")") != std::string::npos)
-        {
-          cmdParams = cmdParams.substr (0, cmdParams.find_last_of (")"));
-          editingCmd = cmdTag + "1" + cmdParams;
-          cmdHeader = "02000000000";
-          // cmdHeader[10] = editingCmd.length ();
-          editingCommand (cmdHeader + editingCmd);
-        }
-    }
 }
 
 bool
@@ -1322,8 +799,6 @@ PresentationEngineManager::updateFormatters (short command,
 
   if (command == UC_STOP)
     {
-      clog << "PresentationEngineManager::updateFormatters";
-      clog << " UC_STOP" << endl;
       formatters.clear ();
       Thread::startThread ();
     }

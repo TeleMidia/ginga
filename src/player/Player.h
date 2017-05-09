@@ -104,16 +104,11 @@ protected:
   SDL_Color borderColor;
   SDL_Rect rect; //draw area
   double z;  //z-index
-  guint8 alpha; 
+  guint8 alpha;
 
 public:
   Player (const string &mrl);
   virtual ~Player ();
-  void setMirrorSrc (IPlayer *mirrorSrc);
-
-private:
-  void addMirror (IPlayer *mirror);
-  bool removeMirror (IPlayer *mirror);
 
 public:
   virtual void flip (){};

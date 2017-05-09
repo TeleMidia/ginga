@@ -190,11 +190,8 @@ main (int argc, char **argv)
                                        true, false);
   g_assert_nonnull (pem);
 
-  pem->setEmbedApp (false);
   pem->setExitOnEnd (false);
-  pem->setDisableFKeys (false);
   pem->setInteractivityInfo (true);
-  pem->setIsLocalNcl (true, NULL);
 
   if (unlikely (!pem->openNclFile (file)))
     {

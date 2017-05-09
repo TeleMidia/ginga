@@ -163,9 +163,6 @@ public:
   void notifyTimeAnchorCallBack();
   void setPlayer(Player*);
 
-  NclExecutionObject *getMirrorSrc ();
-  void setMirrorSrc (NclExecutionObject *mirrorSrc);
-
   void *getParentObject ();           // NclCompositeExecutionObject
   void *getParentObject (Node *node); // NclCompositeExecutionObject
   void addParentObject (void *parentObject, Node *parentNode);

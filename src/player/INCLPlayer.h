@@ -53,7 +53,6 @@ public:
 
   virtual ~INCLPlayer (){};
 
-  virtual void setMirrorSrc (IPlayer *mirrorSrc) = 0;
   virtual set<string> *createPortIdList () = 0;
   virtual short getMappedInterfaceType (const string &portId) = 0;
 

@@ -340,18 +340,6 @@ NclExecutionObject::getId ()
   return id;
 }
 
-NclExecutionObject *
-NclExecutionObject::getMirrorSrc ()
-{
-  return mirrorSrc;
-}
-
-void
-NclExecutionObject::setMirrorSrc (NclExecutionObject *mirrorSrc)
-{
-  this->mirrorSrc = mirrorSrc;
-}
-
 void *
 NclExecutionObject::getParentObject ()
 {
