@@ -464,18 +464,16 @@ Player::setPropertyValue (const string &name, const string &value)
                                 xstrto_int ((*params)[1])); */
             }
           delete params;
-        }
+      }
       else if (name == "left") {
           this->rect.x = xstrto_int (value);
      
-        }
+      }
       else if (name == "top"){
-          this->rect.y = xstrto_int (value);
-     
-        }
+          this->rect.y = xstrto_int (value);          
+      }
       else if (name == "width"){
           this->rect.w = xstrto_int (value);
-     
       }
       else if (name == "height"){
           this->rect.h = xstrto_int (value);
