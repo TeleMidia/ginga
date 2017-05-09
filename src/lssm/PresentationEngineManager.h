@@ -111,13 +111,11 @@ public:
 
 private:
   void close ();
-  void registerKeys ();
   void setTimeBaseInfo (INCLPlayer *nclPlayer);
 
 public:
   void getScreenShot ();
   bool getIsLocalNcl ();
-  void setEmbedApp (bool isEmbedded);
   void setIsLocalNcl (bool isLocal, void *tuner = NULL);
   void setInteractivityInfo (bool hasInt);
 
