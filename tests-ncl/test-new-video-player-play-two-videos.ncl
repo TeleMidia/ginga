@@ -156,13 +156,13 @@
     </connectorBase>
   </head>
   <body>    
-    <port id='start1' component='audio'/>
+    <!-- <port id='start1' component='audio'/> -->
     <!-- <port id='start2' component='img'/> -->
     <!-- <port id='start3' component='img2'/> -->
     <!-- <port id='start4' component='video'/> -->
     <!-- <port id='start5' component='video2'/> -->
     <!-- <port id='start6' component='video3'/> -->
-    <!-- <port id='start7' component='audio2'/> -->
+    <port id='start7' component='audio2'/>
 
     <media id='audio' src='samples/bunny.mp3'/>
     <media id='audio2' src='samples/arcade.mp3' />
@@ -185,25 +185,25 @@
       <area id='area3' begin='2s'/>
     </media>
     
-    <link xconnector="onBeginStart">
+    <!-- <link xconnector="onBeginStart">
       <bind role="onBegin" component="audio" />
       <bind role="start" component="video3" />
       <bind role="start" component="img" />
       <bind role="start" component="audio2" />
       <bind role="start" component="video" />
-    </link>
-
-    <!-- <link xconnector="onEndAbort">
-      <bind role="onEnd" component="video2" />
-      <bind role="abort" component="video" />
     </link> -->
+
+    <link xconnector="onEndStart">
+      <bind role="onEnd" component="audio2" />
+      <bind role="start" component="audio" />
+    </link>
  
-    <!-- <link xconnector="onKeySelectionPause">
-      <bind role='onSelection' component='video'>
+    <link xconnector="onKeySelectionStop">
+      <bind role='onSelection' component='audio2'>
         <bindParam name='keyCode' value='RED'/>        
       </bind>
-      <bind role="pause" component="video" />
-    </link> -->
+      <bind role="stop" component="audio2" />
+    </link>
     
     <!-- <link xconnector="onBeginSet">
       <bind role='onBegin' component='video' interface='area1'/>
