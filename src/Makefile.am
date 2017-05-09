@@ -31,9 +31,8 @@ AM_CPPFLAGS=\
   $(NULL)
 
 AM_CXXFLAGS=\
-  $(CURL_CFLAGS)\
+  $(CEF_CFLAGS)\
   $(GLIB_CFLAGS)\
-  $(JPEG_CFLAGS)\
   $(LIBRSVG_CFLAGS)\
   $(NCLUA_CFLAGS)\
   $(PANGO_CFLAGS)\
@@ -46,9 +45,8 @@ AM_CXXFLAGS=\
   $(NULL)
 
 AM_LDFLAGS= -R $(libdir) -rpath $(libdir)\
-  $(CURL_LIBS)\
+  $(CEF_LIBS)\
   $(GLIB_LIBS)\
-  $(JPEG_LIBS)\
   $(LIBRSVG_LIBS)\
   $(NCLUA_LIBS)\
   $(PANGO_LIBS)\
@@ -113,13 +111,10 @@ src+= formatter/NclNodeNesting.cpp
 src+= formatter/NclPresentationEvent.cpp
 src+= formatter/NclSelectionEvent.cpp
 src+= formatter/NclSwitchEvent.cpp
-src+= formatter/PrefetchManager.cpp
 src+= formatter/PresentationContext.cpp
 src+= formatter/PrivateBaseContext.cpp
 src+= formatter/PrivateBaseManager.cpp
 src+= formatter/RuleAdapter.cpp
-src+= ic/CurlInteractiveChannel.cpp
-src+= ic/InteractiveChannelManager.cpp
 src+= lssm/CommonCoreManager.cpp
 src+= lssm/PresentationEngineManager.cpp
 src+= mb/Display.cpp
@@ -227,7 +222,6 @@ src+= system/PracticalSocket.cpp
 src+= system/Stc.cpp
 src+= system/SystemCompat.cpp
 src+= system/Thread.cpp
-src+= util/Base64.cpp
 src+= util/functions.cpp
 
 if WITH_ESPEAK

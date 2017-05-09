@@ -91,8 +91,6 @@ using namespace ::ginga::ncl;
 
 #include "FormatterConverter.h"
 
-#include "PrefetchManager.h"
-
 #include "FormatterScheduler.h"
 #include "PrivateBaseManager.h"
 
@@ -129,7 +127,6 @@ private:
   NclDocument *currentDocument;
 
   PrivateBaseManager *privateBaseManager;
-  static PrefetchManager *pm;
   map<string, NclFormatterEvent *> documentEvents;
   map<string, vector<NclFormatterEvent *> *> documentEntryEvents;
   map<Port *, NclFormatterEvent *> portsToEntryEvents;
@@ -137,13 +134,11 @@ private:
   RuleAdapter *ruleAdapter;
   FormatterConverter *compiler;
   AdapterPlayerManager *playerManager;
-//  ITimeBaseProvider *timeBaseProvider;
   vector<string> compileErrors;
   DeviceLayout *deviceLayout;
   FormatterMultiDevice *multiDevice;
   PresentationContext *presContext;
   bool isEmbedded;
-  bool enablePrefetch;
   bool docCompiled;
   pthread_mutex_t pteMutex;
 
@@ -192,20 +187,6 @@ private:
 
   bool compileDocument (const string &documentId);
   bool prepareDocument (const string &documentId);
-
-  void solveRemoteDescriptorsUris (const string &docLocation,
-                                   vector<GenericDescriptor *> *descs,
-                                   bool isRemoteDoc);
-
-  void solveRemoteNodesUris (const string &docLocation, vector<Node *> *nodes,
-                             bool isRemoteDoc);
-
-  void solveRemoteNclDeps (const string &docLocation, bool isRemoteDoc);
-
-  void solveRemoteLuaDeps (const string &docLocation, const string &src,
-                           bool isRemoteDoc);
-
-  string solveRemoteSourceUri (const string &docLocation, const string &src);
 
   NclFormatterEvent *getEntryEvent (const string &interfaceId,
                                     vector<NclFormatterEvent *> *events);
