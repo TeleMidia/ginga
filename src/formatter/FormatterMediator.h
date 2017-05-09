@@ -359,9 +359,6 @@ private:
                             Node *node,
                             int targetDev = 0);
   string getBaseUri (const string &baseA, const string &baseB);
-
-public:
-  void timeShift (const string &direction);
 };
 
 GINGA_FORMATTER_END

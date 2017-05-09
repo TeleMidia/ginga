@@ -755,8 +755,7 @@ PresentationEngineManager::getNclPlayer (const string &baseId,
 }
 
 void
-PresentationEngineManager::updateFormatters (short command,
-                                             const string &parameter)
+PresentationEngineManager::updateFormatters (short command)
 {
   map<string, INCLPlayer *>::iterator i;
   INCLPlayer *formatter;
@@ -783,13 +782,6 @@ PresentationEngineManager::updateFormatters (short command,
           paused = false;
           formatter->resume ();
           break;
-
-        case UC_SHIFT:
-          clog << "PresentationEngineManager::updateFormatters";
-          clog << " shifting time" << endl;
-          formatter->timeShift (parameter);
-          unlock ();
-          return;
 
         default:
           break;

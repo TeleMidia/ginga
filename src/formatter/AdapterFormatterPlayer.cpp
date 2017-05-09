@@ -1832,16 +1832,6 @@ AdapterFormatterPlayer::setVisible (bool visible)
     }
 }
 
-void
-AdapterFormatterPlayer::timeShift (const string &direction)
-{
-  if (player == NULL)
-    {
-      return;
-    }
-  player->timeShift (direction);
-}
-
 bool
 AdapterFormatterPlayer::lockObject ()
 {

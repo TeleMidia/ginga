@@ -125,7 +125,6 @@ public:
   /*Exclusive for Application Players*/
   virtual void setCurrentScope (const string &scopeId) = 0;
   virtual string getDepUris (vector<string> *uris, int targetDev = 0) = 0;
-  virtual void timeShift (const string &direction) = 0;
 };
 
 GINGA_PLAYER_END

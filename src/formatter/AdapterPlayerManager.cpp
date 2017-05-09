@@ -416,23 +416,6 @@ AdapterPlayerManager::isEmbeddedAppMediaType (const string &mediaType)
 }
 
 void
-AdapterPlayerManager::timeShift (const string &direction)
-{
-  map<string, IAdapterPlayer *>::iterator i;
-  AdapterFormatterPlayer *player;
-
-  Thread::mutexLock (&mutexPlayer);
-  i = objectPlayers.begin ();
-  while (i != objectPlayers.end ())
-    {
-      player = (AdapterFormatterPlayer *)(i->second);
-      player->timeShift (direction);
-      ++i;
-    }
-  Thread::mutexUnlock (&mutexPlayer);
-}
-
-void
 AdapterPlayerManager::clearDeletePlayers ()
 {
   map<string, IAdapterPlayer *> dPlayers;
