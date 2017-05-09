@@ -106,8 +106,6 @@ NCLSectionProcessor::createDirectory (const string &newDir)
     {
       dir = dir + SystemCompat::getIUriD () + *i;
       g_mkdir (dir.c_str (), 0777);
-      // clog << "PrefetchManager::createDirectory '";
-      // clog << dir << "'" << endl;
       ++i;
     }
 
