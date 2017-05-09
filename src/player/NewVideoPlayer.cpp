@@ -32,6 +32,7 @@ GINGA_PLAYER_BEGIN
 NewVideoPlayer::NewVideoPlayer (const string &mrl) : Thread (), Player (mrl)
 {
 	//TRACE ();
+  this->soundLevel = 1.0; 
   
   this->texture = NULL;
 
@@ -309,13 +310,16 @@ NewVideoPlayer::play ()
   {
     return true;
   }
+
+  g_object_set (G_OBJECT (this->playbin), "volume", soundLevel, NULL);
   
   Player::play ();
 
   ret = gst_element_set_state (this->playbin, GST_STATE_PLAYING);
   g_assert (ret != GST_STATE_CHANGE_FAILURE);
 
-  g_debug ("\nNewVideoPlayer::play()\n"); 
+  //g_debug ("\nNewVideoPlayer::play()\n"); 
+  //clog << "\n\n\n>>NewVideoPlayer::play() - " << this->mrl << "\n\n\n" << endl;
   printPipelineState ();
   
   GstStateChangeReturn retWait = gst_element_get_state (this->playbin, 
@@ -395,7 +399,9 @@ NewVideoPlayer::stop ()
   //ret = gst_element_set_state (this->playbin, GST_STATE_NULL);
   g_assert (ret != GST_STATE_CHANGE_FAILURE);
   
-  g_debug ("\nNewVideoPlayer::stop()\n"); 
+  g_debug ("\nNewVideoPlayer::stop()\n");
+  //clog << "\n\n\n>>NewVideoPlayer::stop() - " << this->mrl << "\n\n\n" << endl;
+  
   printPipelineState ();
     
   GstStateChangeReturn retWait = gst_element_get_state (this->playbin, NULL, NULL, GST_CLOCK_TIME_NONE);
@@ -443,10 +449,10 @@ NewVideoPlayer::setPropertyValue (const string &name, const string &value)
 {
   if (!value.length())
     return;
-
+  //clog << "\n\n\n>>NewVideoPlayer::setPropertyValue() - soundLevel" << this->mrl << "\n\n\n" << endl;
   string newValue = value;
-  double soundLevel = 1.0;
   
+  //clog << "\n\n\n>>NewVideoPlayer::setProperty()\n\n\n" << endl;  
   if (name == "soundLevel")
   {
     if (isPercentualValue (newValue))
@@ -456,11 +462,12 @@ NewVideoPlayer::setPropertyValue (const string &name, const string &value)
     
     if (newValue != "")
     {
-      soundLevel = CLAMP (xstrtod (newValue),0,1);
+      this->soundLevel = CLAMP (xstrtod (newValue),0,1);
     }
-
-    g_debug ("NewVideoPlayer::setPropertyValue - soundLevel: %f\n",soundLevel);
-    g_object_set (G_OBJECT (this->playbin), "volume", soundLevel, NULL);
+    
+    //clog << "\n\n\n>>NewVideoPlayer::setPropertyValue() - soundLevel: " << this->soundLevel << "  " << this->mrl << "\n\n\n" << endl;
+    g_debug ("NewVideoPlayer::setPropertyValue - soundLevel: %f\n",this->soundLevel);
+    g_object_set (G_OBJECT (this->playbin), "volume", this->soundLevel, NULL);
   }
   
   Player::setPropertyValue(name, value);
