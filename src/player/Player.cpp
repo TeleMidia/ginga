@@ -82,19 +82,6 @@ Player::~Player ()
   Thread::mutexLock (&lockedListM);
   lockedListeners.clear ();
 
-  if (mirrorSrc != NULL)
-    {
-      ((Player *)mirrorSrc)->removeMirror (this);
-    }
-
-  i = mirrors.begin ();
-  while (i != mirrors.end ())
-    {
-      (*i)->setMirrorSrc (NULL);
-      ++i;
-    }
-  mirrors.clear ();
-
   g_assert_null (outputWindow);
 
   Thread::mutexLock (&referM);
@@ -114,33 +101,6 @@ Player::~Player ()
   Thread::mutexDestroy (&lockedListM);
   Thread::mutexDestroy (&listM);
   Thread::mutexDestroy (&pnMutex);
-}
-
-void
-Player::setMirrorSrc (IPlayer *mirrorSrc)
-{
-  this->mirrorSrc = mirrorSrc;
-}
-
-void
-Player::addMirror (IPlayer *mirror)
-{
-  this->mirrors.insert (mirror);
-}
-
-bool
-Player::removeMirror (IPlayer *mirror)
-{
-  set<IPlayer *>::iterator i;
-
-  i = mirrors.find (mirror);
-  if (i != mirrors.end ())
-    {
-      mirrors.erase (i);
-      return true;
-    }
-
-  return false;
 }
 
 void

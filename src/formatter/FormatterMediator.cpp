@@ -268,8 +268,6 @@ FormatterMediator::~FormatterMediator ()
 
   docCompiled = false;
 
-  release ();
-
   if (scheduler != NULL)
     {
       scheduler->removeSchedulerListener (this);
@@ -382,17 +380,6 @@ FormatterMediator::~FormatterMediator ()
       playerManager = NULL;
     }
   clog << "FormatterMediator::~FormatterMediator all done" << endl;
-}
-
-void
-FormatterMediator::setMirrorSrc (IPlayer *mirrorSrc)
-{
-  Player::setMirrorSrc (mirrorSrc);
-}
-
-void
-FormatterMediator::release ()
-{
 }
 
 set<string> *

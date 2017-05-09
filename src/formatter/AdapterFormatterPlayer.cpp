@@ -1298,10 +1298,6 @@ AdapterFormatterPlayer::start ()
 
       if (player != NULL)
         {
-          if (mirrorSrc != NULL)
-            {
-              player->setMirrorSrc (mirrorSrc);
-            }
           startSuccess = player->play ();
         }
 
