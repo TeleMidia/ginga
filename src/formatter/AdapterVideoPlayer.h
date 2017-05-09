@@ -15,30 +15,35 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga.h"
-#include "AdapterNewVideoPlayer.h"
-#include "player/NewVideoPlayer.h"
+#ifndef ADAPTER_NEW_VIDEO_PLAYER_H
+#define ADAPTER_NEW_VIDEO_PLAYER_H
+
+#include "NclExecutionObject.h"
+
+#include "NclAttributionEvent.h"
+#include "NclFormatterEvent.h"
+#include "NclPresentationEvent.h"
+#include "NclSelectionEvent.h"
+
+#include "ncl/NodeEntity.h"
+#include "ncl/ReferenceContent.h"
+using namespace ::ginga::ncl;
+
+#include "AdapterFormatterPlayer.h"
 
 GINGA_FORMATTER_BEGIN
 
-AdapterNewVideoPlayer::AdapterNewVideoPlayer () : AdapterFormatterPlayer ()
+class AdapterVideoPlayer : public AdapterFormatterPlayer
 {
-  typeSet.insert ("AdapterNewVideoPlayer");
-}
+public:
+  AdapterVideoPlayer ();
+  virtual ~AdapterVideoPlayer (){};
 
-void
-AdapterNewVideoPlayer::createPlayer ()
-{
-  player = new NewVideoPlayer (mrl);
-  AdapterFormatterPlayer::createPlayer ();
-
-  clog << "AdapaterNewVideoPlayer::createPlayer for '" << mrl << "'" << endl;
-}
-
-bool
-AdapterNewVideoPlayer::setPropertyValue (NclAttributionEvent *event, const string &value)
-{
-  return AdapterFormatterPlayer::setPropertyValue (event, value);
-}
+protected:
+  void createPlayer ();
+  bool setPropertyValue (NclAttributionEvent *event, const string &value);
+};
 
 GINGA_FORMATTER_END
+
+#endif /* ADAPTER_NEW_VIDEO_PLAYER_H */

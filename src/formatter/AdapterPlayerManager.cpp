@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AdapterImagePlayer.h"
 #include "AdapterLuaPlayer.h"
 #include "AdapterNCLPlayer.h"
-#include "AdapterNewVideoPlayer.h"
+#include "AdapterVideoPlayer.h"
 #include "AdapterSsmlPlayer.h"
 #if defined WITH_LIBRSVG && WITH_LIBRSVG
 # include "AdapterSvgPlayer.h"
@@ -223,8 +223,8 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
   else if (g_str_has_prefix (mime, "audio")
       || g_str_has_prefix (mime, "video"))
     {
-      classname = "AdapterNewVideoPlayer";
-      adapter = new AdapterNewVideoPlayer ();
+      classname = "AdapterVideoPlayer";
+      adapter = new AdapterVideoPlayer ();
     }
 #endif
 #if WITH_LIBRSVG && WITH_LIBRSVG

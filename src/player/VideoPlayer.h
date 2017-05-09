@@ -40,7 +40,7 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
 #include <gst/video/video.h>
 GINGA_PRAGMA_DIAG_POP ()
 
-//#include "ginga.h"  
+//#include "ginga.h"
 #include "Player.h"
 #include "mb/Display.h"
 #include "mb/SDLWindow.h"
@@ -49,11 +49,11 @@ using namespace ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
-class NewVideoPlayer : public Thread, public Player
+class VideoPlayer : public Thread, public Player
 {
 public:
-  NewVideoPlayer (const string &mrl); //works
-  virtual ~NewVideoPlayer ();
+  VideoPlayer (const string &mrl); //works
+  virtual ~VideoPlayer ();
 
   static void initializeAudio (int numArgs, char *args[]);
   static void releaseAudio ();
@@ -86,9 +86,9 @@ public:
   //void setAVPid (int aPid, int vPid);
 
   bool setOutWindow (SDLWindow* windowId); //works
-  
- 
- private:  
+
+
+ private:
 
   GINGA_MUTEX_DEFN ();
   GINGA_COND_DEFN (DisplayJob);
@@ -109,7 +109,7 @@ public:
 
   GstSample *sample;
 
-  GstStateChangeReturn ret;  
+  GstStateChangeReturn ret;
  // GstBus *bus;
  // GstMessage *msg;
 
