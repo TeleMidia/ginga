@@ -1878,6 +1878,7 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
 
               if (hideObj)
                 {
+                  //dragon head
                   clog << "FormatterScheduler::eventStateChanged '";
                   clog << event->getId ();
                   clog << "' STOPS: hideObject '" << object->getId ();
@@ -1891,11 +1892,8 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
                                playerManager->getObjectPlayer (object);
                   if (player != NULL && player->getPlayer () != NULL)
                     {
-                      //dragon head
-                     // player->flip ();
-                     player->naturalEnd();
-
                       multiDevPres->stopListenPlayer (player->getPlayer ());
+                     
                     }
                 }
             }
