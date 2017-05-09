@@ -96,8 +96,6 @@ LuaPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   SDL_Rect rect;
   SDL_Surface *sfc;
 
-  SDL_Texture *texture;
-
   bool signal = false;
 
   this->lock ();
@@ -132,21 +130,20 @@ LuaPlayer::displayJobCallback (arg_unused (DisplayJob *job),
                 sfc->w, sfc->h, sfc->pitch);
   SDLx_UnlockSurface (sfc);
 
-  texture = this->window->getTexture ();
-  if (unlikely (texture == NULL)) // first call
+  if (unlikely (this->texture == NULL)) // first call
     {
-      texture = SDL_CreateTextureFromSurface (renderer, sfc);
-      g_assert_nonnull (texture);
+      this->texture = SDL_CreateTextureFromSurface (renderer, sfc);
+      g_assert_nonnull (this->texture);
       signal = true;
     }  
 
   SDLx_LockSurface (sfc);
-  SDL_UpdateTexture (texture, NULL, sfc->pixels, sfc->pitch);
+  SDL_UpdateTexture (this->texture, NULL, sfc->pixels, sfc->pitch);
   SDLx_UnlockSurface (sfc);
 
   if (unlikely (signal))
     {
-      this->window->setTexture (texture);
+  //    this->window->setTexture (texture);
       g_debug ("first cycle");
       this->unlock ();
       this->condDisplayJobSignal ();

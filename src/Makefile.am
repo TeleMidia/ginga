@@ -31,6 +31,7 @@ AM_CPPFLAGS=\
   $(NULL)
 
 AM_CXXFLAGS=\
+  $(CEF_CFLAGS)\
   $(GLIB_CFLAGS)\
   $(LIBRSVG_CFLAGS)\
   $(NCLUA_CFLAGS)\
@@ -44,6 +45,7 @@ AM_CXXFLAGS=\
   $(NULL)
 
 AM_LDFLAGS= -R $(libdir) -rpath $(libdir)\
+  $(CEF_LIBS)\
   $(GLIB_LIBS)\
   $(LIBRSVG_LIBS)\
   $(NCLUA_LIBS)\
@@ -220,7 +222,6 @@ src+= system/PracticalSocket.cpp
 src+= system/Stc.cpp
 src+= system/SystemCompat.cpp
 src+= system/Thread.cpp
-src+= util/Base64.cpp
 src+= util/functions.cpp
 
 if WITH_ESPEAK
