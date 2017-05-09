@@ -433,68 +433,10 @@ PresentationEngineManager::close ()
   unlock ();
 }
 
-void
-PresentationEngineManager::registerKeys ()
-{ /*
-  set<int> *keys;
-
-  if (im == NULL)
-    {
-      return;
-    } 
-
-  keys = new set<int>;
-
-  keys->insert (Key::KEY_GREATER_THAN_SIGN);
-  keys->insert (Key::KEY_LESS_THAN_SIGN);
-
-  keys->insert (Key::KEY_SUPER);
-  keys->insert (Key::KEY_PRINTSCREEN);
-
-  keys->insert (Key::KEY_F10);
-  keys->insert (Key::KEY_POWER);
-
-  keys->insert (Key::KEY_F11);
-  keys->insert (Key::KEY_STOP);
-
-  keys->insert (Key::KEY_F12);
-  keys->insert (Key::KEY_PAUSE);
-
-#if WITH_ISDBT
-  this->tuner = NULL;
-  keys->insert (Key::KEY_PAGE_UP);
-  keys->insert (Key::KEY_PAGE_DOWN);
-  keys->insert (Key::KEY_CHANNEL_UP);
-  keys->insert (Key::KEY_CHANNEL_DOWN);
-#endif
-
-  if (!commands.empty ())
-    {
-      keys->insert (Key::KEY_PLUS_SIGN);
-    }
-
- // im->addInputEventListener (this, keys); */
-}
-
 bool
 PresentationEngineManager::getIsLocalNcl ()
 {
   return this->isLocalNcl;
-}
-
-void
-PresentationEngineManager::setEmbedApp (bool isEmbedded)
-{
-  this->isEmbedded = isEmbedded;
-
-  if (!isEmbedded)
-    {
-      registerKeys ();
-    }
-  else
-    {
-    //  im->removeInputEventListener (this);
-    }
 }
 
 void
@@ -537,11 +479,6 @@ PresentationEngineManager::createNclPlayer (const string &baseId,
       data->enableMulticast = enableMulticast;
       formatter = new FormatterMediator (data);
       formatter->setCurrentDocument (fname);
-      if (formatters.empty () && !isEmbedded)
-        {
-          registerKeys ();
-        }
-
       formatter->addListener (this);
       formatters[fname] = formatter;
     }
