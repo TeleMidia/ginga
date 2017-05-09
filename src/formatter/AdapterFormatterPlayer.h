@@ -83,8 +83,6 @@ public:
   virtual void setAdapterManager (void *manager);
 
   bool instanceOf (const string &s);
-  virtual void
-  setNclEditListener (arg_unused (IPlayerListener *listener)){};
   void setOutputWindow (SDLWindow* windowId);
 
 protected:

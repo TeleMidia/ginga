@@ -210,8 +210,6 @@ public:
 
   // Application player only.
   virtual void setCurrentScope (arg_unused (const string &scopeId)){};
-
-  virtual void timeShift (arg_unused (const string &direction)){};
 };
 
 struct notify
