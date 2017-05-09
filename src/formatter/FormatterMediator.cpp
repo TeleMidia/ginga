@@ -976,15 +976,8 @@ FormatterMediator::compileDocument (const string &documentId)
 bool
 FormatterMediator::prepareDocument (const string &documentId)
 {
-  NclDocument *doc;
   string src, docLocation;
-  bool isRemoteDoc;
-
-  DescriptorBase *db;
-  vector<GenericDescriptor *> *descs;
-
   ContextNode *body;
-  vector<Node *> *nodes;
 
   body = getDocumentContext (documentId);
   if (body == NULL)
@@ -1012,55 +1005,6 @@ FormatterMediator::prepareDocument (const string &documentId)
     }
 
   return true;
-}
-
-void
-FormatterMediator::solveRemoteDescriptorsUris (
-    const string &docLocation, vector<GenericDescriptor *> *descs,
-    arg_unused (bool isRemoteDoc))
-{
-  string src;
-  GenericDescriptor *desc;
-  vector<GenericDescriptor *>::iterator i;
-  FocusDecoration *fd;
-
-  i = descs->begin ();
-  while (i != descs->end ())
-    {
-      desc = *i;
-      if (desc->instanceOf ("Descriptor"))
-        {
-          fd = ((Descriptor *)desc)->getFocusDecoration ();
-        }
-      else
-        {
-          fd = NULL;
-        }
-
-      if (fd != NULL)
-        {
-          src = fd->getFocusSelSrc ();
-          clog << "FormatterMediator::solveRemoteDescriptorsUris old ";
-          clog << "focusSelSrc='" << src << "'" << endl;
-          if (src != "")
-            {
-              fd->setFocusSelSrc (src);
-            }
-          clog << "FormatterMediator::solveRemoteDescriptorsUris new ";
-          clog << "focusSelSrc='" << src << "'" << endl;
-
-          src = fd->getFocusSrc ();
-          clog << "FormatterMediator::solveRemoteDescriptorsUris old ";
-          clog << "focusSrc='" << src << "'" << endl;
-          if (src != "")
-            {
-              fd->setFocusSrc (src);
-            }
-          clog << "FormatterMediator::solveRemoteDescriptorsUris new ";
-          clog << "focusSrc='" << src << "'" << endl;
-        }
-      ++i;
-    }
 }
 
 NclFormatterEvent *
