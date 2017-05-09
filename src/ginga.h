@@ -57,15 +57,6 @@ GINGA_BEGIN_DECLS
 
 #include <config.h>
 
-// This should be remove after the 
-// personalized CEF package (.deb) 
-// is created.
-//
-// Uncoment the line bellow to 
-// build Ginga with Chromium (CEF) 
-// based HTML Player.
-// #define WITH_CEF
-
 // C library.
 #include <assert.h>
 #include <errno.h>
