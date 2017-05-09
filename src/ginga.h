@@ -133,14 +133,10 @@ GINGA_PRAGMA_DIAG_POP ()
 #define GINGA_DATAPROC_END    _GINGA_END
 #define GINGA_FORMATTER_BEGIN _GINGA_BEGIN (formatter)
 #define GINGA_FORMATTER_END   _GINGA_END
-#define GINGA_IC_BEGIN        _GINGA_BEGIN (ic)
-#define GINGA_IC_END          _GINGA_END
 #define GINGA_LSSM_BEGIN      _GINGA_BEGIN (lssm)
 #define GINGA_LSSM_END        _GINGA_END
 #define GINGA_MB_BEGIN        _GINGA_BEGIN (mb)
 #define GINGA_MB_END          _GINGA_END
-#define GINGA_MULTIDEV_BEGIN  _GINGA_BEGIN (multidev)
-#define GINGA_MULTIDEV_END    _GINGA_END
 #define GINGA_NCL_BEGIN       _GINGA_BEGIN (ncl)
 #define GINGA_NCL_END         _GINGA_END
 #define GINGA_NCLCONV_BEGIN   _GINGA_BEGIN (nclconv)
