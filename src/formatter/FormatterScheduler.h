@@ -124,9 +124,6 @@ private:
                           AdapterFormatterPlayer *objectPlayer,
                           string nodeId);
 
-  static void printAction (const string &action, NclLinkCondition *condition,
-                           NclLinkSimpleAction *linkAction);
-
 public:
   void scheduleAction (void *condition, void *action);
 
