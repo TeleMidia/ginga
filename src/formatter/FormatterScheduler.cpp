@@ -303,73 +303,6 @@ FormatterScheduler::setTimeBaseObject (NclExecutionObject *object,
 }
 
 void
-FormatterScheduler::printAction (const string &act,
-                                 NclLinkCondition *condition,
-                                 NclLinkSimpleAction *linkAction)
-{
-  NclExecutionObject *cndObject;
-  NclExecutionObject *object;
-  NclFormatterEvent *cndEvent;
-  NclFormatterEvent *event;
-  double delay;
-  Node *node;
-  Bind *bind;
-  string role;
-  string nodeId;
-  double specTime;
-  string action = act;
-
-  event = linkAction->getEvent ();
-  object = (NclExecutionObject *)event->getExecutionObject ();
-  node = object->getDataObject ();
-
-  if (node->instanceOf ("CompositeNode"))
-    {
-      return;
-    }
-
-  action = action + "::" + node->getId ();
-  if (condition != NULL
-      && condition->instanceOf ("NclLinkTransitionTriggerCondition"))
-    {
-      cndEvent
-          = ((NclLinkTransitionTriggerCondition *)condition)->getEvent ();
-      bind = ((NclLinkTransitionTriggerCondition *)condition)->getBind ();
-      role = bind->getRole ()->getLabel ();
-      cndObject = (NclExecutionObject *)cndEvent->getExecutionObject ();
-      nodeId = cndObject->getDataObject ()->getId ();
-      // nodeId    = bind->getNode()->getId();
-
-      delay = linkAction->getWaitDelay ();
-      specTime = 0;
-      if (role == "onBegin")
-        {
-          if (cndEvent->instanceOf ("NclPresentationEvent"))
-            {
-              specTime = ((NclPresentationEvent *)cndEvent)->getBegin ();
-            }
-        }
-      else if (role == "onEnd")
-        {
-          if (cndEvent->instanceOf ("NclPresentationEvent"))
-            {
-              specTime = ((NclPresentationEvent *)cndEvent)->getEnd ();
-            }
-        }
-
-      specTime = specTime + delay;
-      if (isinf (specTime))
-        {
-          specTime = -1;
-        }
-      action = action + "::" + role + "::" + nodeId;
-      action = action + "::" + xstrbuild ("%d", (int) specTime);
-    }
-
-  AdapterFormatterPlayer::printAction (action);
-}
-
-void
 FormatterScheduler::scheduleAction (void *condition, void *someAction)
 {
   pthread_mutex_lock (&mutexActions);
@@ -580,20 +513,11 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
                   Thread::mutexUnlock (&lMutex);
                 }
             }
-          else
-            {
-              time = xruntime_ms () - time;
-              printAction ("start", condition, action);
-            }
           break;
 
         case SimpleAction::ACT_PAUSE:
           if (!player->pause ())
             {
-            }
-          else
-            {
-              printAction ("pause", condition, action);
             }
           break;
 
@@ -601,19 +525,11 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
           if (!player->resume ())
             {
             }
-          else
-            {
-              printAction ("resume", condition, action);
-            }
           break;
 
         case SimpleAction::ACT_ABORT:
           if (!player->abort ())
             {
-            }
-          else
-            {
-              printAction ("abort", condition, action);
             }
           break;
 
@@ -621,11 +537,8 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
           if (!player->stop ())
             {
             }
-          else
-            {
-              printAction ("stop", condition, action);
-            }
           break;
+
         default:
           g_assert_not_reached ();
         }
