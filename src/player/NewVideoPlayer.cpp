@@ -112,7 +112,7 @@ NewVideoPlayer::createPipeline ()
 void 
 NewVideoPlayer::eosCB (arg_unused (GstAppSink *appsink), gpointer data)
 {
-  g_print("eos NewVideoPlayer\n");
+  g_debug ("eos NewVideoPlayer\n");
   
   NewVideoPlayer *player = (NewVideoPlayer *) data;
 
@@ -209,7 +209,6 @@ NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
     gst_sample_unref (sample);
     sample = NULL;
-    //g_print ("Print\n");
   }
   
   this->unlock ();
@@ -217,7 +216,7 @@ NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   //if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_PAUSED)
   if (this->status == SLEEPING)
   {
-    g_print ("status: SLEEPING; return false;\n");
+    g_debug ("status: SLEEPING; return false;\n");
 
     //this->condDisplayJobSignal ();
 
@@ -293,7 +292,7 @@ double
 NewVideoPlayer::getStopTime ()
 {
 	TRACE ();
-  g_print (">>-------------------- NewVideoPlayer:getStopTime -------------------<<");
+  g_debug (">>-------------------- NewVideoPlayer:getStopTime -------------------<<");
   return 0;
 }
 
@@ -316,7 +315,7 @@ NewVideoPlayer::play ()
   ret = gst_element_set_state (this->playbin, GST_STATE_PLAYING);
   g_assert (ret != GST_STATE_CHANGE_FAILURE);
 
-  g_print ("\nNewVideoPlayer::play()\n"); 
+  g_debug ("\nNewVideoPlayer::play()\n"); 
   printPipelineState ();
   
   GstStateChangeReturn retWait = gst_element_get_state (this->playbin, 
@@ -358,7 +357,7 @@ NewVideoPlayer::pause ()
   ret = gst_element_set_state (this->playbin, GST_STATE_PAUSED);  
   g_assert (ret != GST_STATE_CHANGE_FAILURE);
 
-  g_print ("\nNewVideoPlayer::pause()\n"); 
+  g_debug ("\nNewVideoPlayer::pause()\n"); 
   printPipelineState ();
 
   GstStateChangeReturn retWait = gst_element_get_state (this->playbin, NULL, NULL, GST_CLOCK_TIME_NONE);
@@ -396,7 +395,7 @@ NewVideoPlayer::stop ()
   //ret = gst_element_set_state (this->playbin, GST_STATE_NULL);
   g_assert (ret != GST_STATE_CHANGE_FAILURE);
   
-  g_print ("\nNewVideoPlayer::stop()\n"); 
+  g_debug ("\nNewVideoPlayer::stop()\n"); 
   printPipelineState ();
     
   GstStateChangeReturn retWait = gst_element_get_state (this->playbin, NULL, NULL, GST_CLOCK_TIME_NONE);
@@ -417,7 +416,7 @@ NewVideoPlayer::resume ()
 {
   Player::resume ();
 
-  g_print ("\nNewVideoPlayer::resume()\n");
+  g_debug ("\nNewVideoPlayer::resume()\n");
   printPipelineState ();
 
   if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_PAUSED)
@@ -460,7 +459,7 @@ NewVideoPlayer::setPropertyValue (const string &name, const string &value)
       soundLevel = CLAMP (xstrtod (newValue),0,1);
     }
 
-    //g_print (">>>>>>VOLUME: %f\n",soundLevel);
+    g_debug ("NewVideoPlayer::setPropertyValue - soundLevel: %f\n",soundLevel);
     g_object_set (G_OBJECT (this->playbin), "volume", soundLevel, NULL);
   }
   
@@ -544,19 +543,19 @@ void
 NewVideoPlayer::printPipelineState()
 {
   if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_PAUSED){
-    g_print ("PIPELINE::PAUSED\n");
+    g_debug ("PIPELINE::PAUSED\n");
   }
   else if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_PLAYING){
-    g_print ("PIPELINE::PLAYING\n");
+    g_debug ("PIPELINE::PLAYING\n");
   }
   else if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_READY){
-    g_print ("PIPELINE::READY\n");
+    g_debug ("PIPELINE::READY\n");
   }
   else if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_NULL){
-    g_print ("PIPELINE::NULL\n");    
+    g_debug ("PIPELINE::NULL\n");    
   }
   else if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_VOID_PENDING){
-    g_print ("PIPELINE::PENDING\n");
+    g_debug ("PIPELINE::PENDING\n");
   }
 }
 
