@@ -134,9 +134,6 @@ public:
       NclNodeNesting *perspective, GenericDescriptor *descriptor,
       int depthLevel);
 
-private:
-  void checkMirror (NclExecutionObject *object, int depthLevel);
-
 public:
   set<NclExecutionObject *> *getSettingNodeObjects ();
 
