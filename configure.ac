@@ -43,7 +43,6 @@ AC_SUBST([buttondir], ['${pkgdatadir}'/img/button])
 AC_SUBST([contextmanagerdir], ['${pkgdatadir}'/contextmanager])
 AC_SUBST([fontdir], ['${pkgdatadir}'/font])
 AC_SUBST([formatterimgdir], ['${pkgdatadir}'/img/roller])
-AC_SUBST([formattermddir], ['${pkgdatadir}'/md])
 AC_SUBST([mbdir], ['${pkgdatadir}'/mb/config])
 AC_SUBST([tunerdir], ['${pkgdatadir}'/tuner])
 
@@ -142,6 +141,7 @@ AX_PTHREAD([],
 
 AU_CHECK_PKG([SDL2],
  [sdl2 >= sdl2_required_version])
+
 AU_CHECK_PKG([SDL2IMAGE],
  [SDL2_image >= sdl2_image_require_version])
 
