@@ -82,8 +82,6 @@ public:
   virtual void notifyReferPlayers (int transition) = 0;
   virtual void timebaseObjectTransitionCallback (int transition) = 0;
   virtual void setTimeBasePlayer (IPlayer *timeBasePlayer) = 0;
-  virtual bool hasPresented () = 0;
-  virtual void setPresented (bool presented) = 0;
   virtual bool isVisible () = 0;
   virtual void setVisible (bool visible) = 0;
   virtual bool immediatelyStart () = 0;
