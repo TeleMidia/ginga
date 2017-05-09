@@ -91,8 +91,6 @@ using namespace ::ginga::ncl;
 
 #include "FormatterConverter.h"
 
-#include "PrefetchManager.h"
-
 #include "FormatterScheduler.h"
 #include "PrivateBaseManager.h"
 
@@ -129,7 +127,6 @@ private:
   NclDocument *currentDocument;
 
   PrivateBaseManager *privateBaseManager;
-  static PrefetchManager *pm;
   map<string, NclFormatterEvent *> documentEvents;
   map<string, vector<NclFormatterEvent *> *> documentEntryEvents;
   map<Port *, NclFormatterEvent *> portsToEntryEvents;
@@ -137,13 +134,11 @@ private:
   RuleAdapter *ruleAdapter;
   FormatterConverter *compiler;
   AdapterPlayerManager *playerManager;
-//  ITimeBaseProvider *timeBaseProvider;
   vector<string> compileErrors;
   DeviceLayout *deviceLayout;
   FormatterMultiDevice *multiDevice;
   PresentationContext *presContext;
   bool isEmbedded;
-  bool enablePrefetch;
   bool docCompiled;
   pthread_mutex_t pteMutex;
 
@@ -164,7 +159,6 @@ public:
   void setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider);
 
   void setParentLayout (void *parentLayout);
-  string getScreenShot ();
 
   vector<string> *getCompileErrors ();
   void *setCurrentDocument (const string &fName);

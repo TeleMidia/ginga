@@ -45,13 +45,9 @@ const string USER_LOCATION ("user.location");
 const string USER_GENRE ("user.genre");
 
 const string DEFAULT_FOCUS_BORDER_COLOR ("default.focusBorderColor");
-
 const string DEFAULT_SEL_BORDER_COLOR ("default.selBorderColor");
-
 const string DEFAULT_FOCUS_BORDER_WIDTH ("default.focusBorderWidth");
-
-const string
-    DEFAULT_FOCUS_BORDER_TRANSPARENCY ("default.focusBorderTransparency");
+const string DEFAULT_FOCUS_BORDER_TRANSPARENCY ("default.focusBorderTransparency");
 
 GINGA_FORMATTER_END
 

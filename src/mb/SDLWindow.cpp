@@ -68,41 +68,6 @@ SDLWindow::setTexture (SDL_Texture *texture)
   this->unlock ();
 }
 
-/**
- * Redraw window texture onto global display.
- */
-void
-SDLWindow::redraw (SDL_Renderer *renderer)
-{
-  SDL_Color c;
-  this->lock ();
-
-  c = this->bgColor;
-  if (c.a > 0)                  // background color
-    {
-      SDLx_SetRenderDrawBlendMode (renderer, SDL_BLENDMODE_BLEND);
-      SDLx_SetRenderDrawColor (renderer, c.r, c.g, c.b, c.a);
-      SDLx_RenderFillRect (renderer, &this->rect);
-    }
-
-  if (this->texture != NULL)
-    {
-      guint8 alpha = (guint8)(this->getAlpha() * 255);
-      SDLx_SetTextureAlphaMod (this->texture, alpha);
-      SDLx_RenderCopy (renderer, this->texture, NULL, &rect);
-    }
-
-  if (abs (this->borderWidth) > 0) // FIXME
-    {
-      c = this->borderColor;
-      SDLx_SetRenderDrawBlendMode (renderer, SDL_BLENDMODE_BLEND);
-      SDLx_SetRenderDrawColor (renderer, c.r, c.g, c.b, 255);
-      SDLx_RenderDrawRect (renderer, &this->rect);
-    }
-  this->unlock ();
-}
-
-// END SANITY --------------------------------------------------------------
 
 SDLWindow::~SDLWindow ()
 {
@@ -194,9 +159,6 @@ SDLWindow::setRect (SDL_Rect r)
   this->rect = r;
 }
 // SANITY END --------------------------------------------------------------
-
-
-
 
 void
 SDLWindow::setBorder (SDL_Color c, int w)

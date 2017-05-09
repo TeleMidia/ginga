@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "mb/Display.h"
 #include "system/GingaLocatorFactory.h"
-#include "PrefetchManager.h"
 #include "FormatterBaseDevice.h"
 
 #include "PresentationContext.h"
@@ -31,8 +30,6 @@ using namespace ::ginga::system;
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_FORMATTER_BEGIN
-
-PrefetchManager *FormatterMediator::pm = NULL;
 
 EntryEventListener::EntryEventListener (Player *player, const string &interfaceId)
 {
@@ -201,11 +198,6 @@ FormatterMediator::FormatterMediator (NclPlayerData *pData)
   this->currentFile = "";
   this->currentDocument = NULL;
 
-  if (pm == NULL)
-    {
-      pm = PrefetchManager::getInstance ();
-    }
-
   deviceLayout = new DeviceLayout (deviceName);
   deviceLayout->addDevice (deviceName, data->x, data->y, data->w, data->h);
 
@@ -257,12 +249,9 @@ FormatterMediator::FormatterMediator (NclPlayerData *pData)
   ((FormatterFocusManager *)(data->focusManager))
       ->setMotionBoundaries (data->x, data->y, data->w, data->h);
 
-  enablePrefetch = false;
   docCompiled = false;
 
   Thread::mutexInit (&pteMutex, true);
-
-  printData (data);
 }
 
 FormatterMediator::~FormatterMediator ()
@@ -404,11 +393,6 @@ FormatterMediator::setMirrorSrc (IPlayer *mirrorSrc)
 void
 FormatterMediator::release ()
 {
-  if (pm != NULL)
-    {
-      pm->release ();
-      pm = NULL;
-    }
 }
 
 set<string> *
@@ -478,23 +462,6 @@ FormatterMediator::setMrl (const string &mrl, bool visible)
 }
 
 void
-FormatterMediator::printData (NclPlayerData *data)
-{
-  clog << "FormatterMediator::printData(" << this << ")";
-  clog << " baseId: " << data->baseId;
-  clog << " playerId: " << data->playerId;
-  clog << " devClass: " << data->devClass;
-  clog << " x: " << data->x;
-  clog << " y: " << data->y;
-  clog << " w: " << data->w;
-  clog << " h: " << data->h;
-  clog << " enableGfx: " << data->enableGfx;
-  clog << " parentDocId: " << data->parentDocId;
-  clog << " docId: " << data->docId;
-  clog << endl;
-}
-
-void
 FormatterMediator::setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider)
 {
   playerManager->setTimeBaseProvider (timeBaseProvider);
@@ -515,18 +482,6 @@ FormatterMediator::setParentLayout (void *parentLayout)
       ((NclFormatterLayout *)parentLayout)
           ->addChild (data->baseId, mainLayout);
     }
-}
-
-string
-FormatterMediator::getScreenShot ()
-{
-  return multiDevice->getScreenShot ();
-}
-
-vector<string> *
-FormatterMediator::getCompileErrors ()
-{
-  return &compileErrors;
 }
 
 void *
@@ -552,38 +507,7 @@ FormatterMediator::setCurrentDocument (const string &fName)
       currentFile = SystemCompat::getUserCurrentPath () + fName;
     }
 
-  if (currentFile.length () > 7 && currentFile.substr (0, 7) == "http://")
-    {
-      if (pm == NULL)
-        {
-          clog << "FormatterMediator::setCurrentDocument ";
-          clog << "Warning! Can't solve remote NCL '" << currentFile;
-          clog << "': NULL prefecthManager";
-          clog << endl;
-          return NULL;
-        }
-
-      if (!pm->hasIChannel ())
-        {
-          clog << "FormatterMediator::setCurrentDocument ";
-          clog << "Warning! Can't solve remote NCL '" << currentFile;
-          clog << "': no channels found in prefecthManager";
-          clog << endl;
-          return NULL;
-        }
-
-      currentFile = pm->createDocumentPrefetcher (currentFile);
-      if (enablePrefetch)
-        {
-          solveRemoteNclDeps (currentFile, true);
-        }
-    }
-  else if (enablePrefetch)
-    {
-      solveRemoteNclDeps (currentFile, false);
-    }
-
-  currentDocument = (NclDocument *)addDocument (currentFile);
+  currentDocument = (NclDocument *) addDocument (currentFile);
 
   if (currentDocument != NULL)
     {
@@ -1063,9 +987,8 @@ FormatterMediator::prepareDocument (const string &documentId)
   vector<Node *> *nodes;
 
   body = getDocumentContext (documentId);
-  if (body == NULL || pm == NULL)
+  if (body == NULL)
     {
-      // document has no body
       clog << "FormatterMediator::prepareDocument warning! Doc '";
       clog << documentId;
       clog << "': without body!" << endl;
@@ -1086,50 +1009,6 @@ FormatterMediator::prepareDocument (const string &documentId)
   if (docLocation == "")
     {
       return false;
-    }
-
-  if (enablePrefetch)
-    {
-      isRemoteDoc = pm->hasRemoteLocation (docLocation);
-
-      // solving remote descriptors URIs
-      if (isEmbedded && documentId == data->docId)
-        {
-          doc = privateBaseManager->getEmbeddedDocument (
-              data->baseId, data->parentDocId, data->nodeId);
-        }
-      else
-        {
-          doc = privateBaseManager->getDocument (data->baseId, documentId);
-        }
-
-      if (doc != NULL)
-        {
-          db = doc->getDescriptorBase ();
-          if (db != NULL)
-            {
-              descs = db->getDescriptors ();
-              if (descs != NULL)
-                {
-                  solveRemoteDescriptorsUris (docLocation, descs,
-                                              isRemoteDoc);
-                }
-            }
-        }
-
-      // solving remote nodes URIs
-      // clog << "FormatterMediator::prepareDocument '" << docLocation;
-      // clog << "'" << endl;
-      nodes = body->getNodes ();
-      if (nodes != NULL)
-        {
-          solveRemoteNodesUris (docLocation, nodes, isRemoteDoc);
-        }
-
-      if (pm != NULL)
-        {
-          pm->getScheduledContents ();
-        }
     }
 
   return true;
@@ -1161,211 +1040,27 @@ FormatterMediator::solveRemoteDescriptorsUris (
       if (fd != NULL)
         {
           src = fd->getFocusSelSrc ();
-          // clog << "FormatterMediator::solveRemoteDescriptorsUris old ";
-          // clog << "focusSelSrc='" << src << "'" << endl;
+          clog << "FormatterMediator::solveRemoteDescriptorsUris old ";
+          clog << "focusSelSrc='" << src << "'" << endl;
           if (src != "")
             {
-              src = solveRemoteSourceUri (docLocation, src);
               fd->setFocusSelSrc (src);
             }
-          // clog << "FormatterMediator::solveRemoteDescriptorsUris new ";
-          // clog << "focusSelSrc='" << src << "'" << endl;
+          clog << "FormatterMediator::solveRemoteDescriptorsUris new ";
+          clog << "focusSelSrc='" << src << "'" << endl;
 
           src = fd->getFocusSrc ();
-          // clog << "FormatterMediator::solveRemoteDescriptorsUris old ";
-          // clog << "focusSrc='" << src << "'" << endl;
+          clog << "FormatterMediator::solveRemoteDescriptorsUris old ";
+          clog << "focusSrc='" << src << "'" << endl;
           if (src != "")
             {
-              src = solveRemoteSourceUri (docLocation, src);
               fd->setFocusSrc (src);
             }
-          // clog << "FormatterMediator::solveRemoteDescriptorsUris new ";
-          // clog << "focusSrc='" << src << "'" << endl;
+          clog << "FormatterMediator::solveRemoteDescriptorsUris new ";
+          clog << "focusSrc='" << src << "'" << endl;
         }
       ++i;
     }
-}
-
-void
-FormatterMediator::solveRemoteNodesUris (const string &docLocation,
-                                         vector<Node *> *nodes,
-                                         bool isRemoteDoc)
-{
-  CompositeNode *node;
-  vector<Node *> *childs;
-  vector<Node *>::iterator i;
-  Content *content;
-  string src, mime;
-  string::size_type mimePos;
-
-  i = nodes->begin ();
-  while (i != nodes->end ())
-    {
-      if ((*i)->instanceOf ("CompositeNode"))
-        {
-          node = (CompositeNode *)(*i);
-          childs = node->getNodes ();
-          if (childs != NULL)
-            {
-              solveRemoteNodesUris (docLocation, childs, isRemoteDoc);
-            }
-        }
-      else if ((*i)->getDataEntity ()->instanceOf ("NodeEntity"))
-        {
-          content = ((NodeEntity *)((*i)->getDataEntity ()))->getContent ();
-          if (content != NULL && content->instanceOf ("ReferenceContent"))
-            {
-              src = ((ReferenceContent *)content)
-                        ->getCompleteReferenceUrl ();
-
-              if (src != "" && src.find (".") != std::string::npos)
-                {
-                  mimePos = src.find_last_of (".") + 1;
-                  mime = src.substr (mimePos, src.length () - mimePos);
-
-                  if (mime.length () == 2 || mime.length () > 3
-                      || mime == "com" || mime == "org" || mime == "ht"
-                      || mime == "htm" || mime == "html" || mime == "xhtml")
-                    {
-                      if (src.substr (0, 1) == SystemCompat::getIUriD ())
-                        {
-                          src = SystemCompat::updatePath (src);
-                        }
-                    }
-                  else if (mime == "lua")
-                    {
-                      src = SystemCompat::updatePath (solveRemoteSourceUri (
-                          docLocation, SystemCompat::updatePath (src)));
-
-                      solveRemoteLuaDeps (docLocation, src, isRemoteDoc);
-                    }
-                  else
-                    {
-                      src = SystemCompat::updatePath (
-                          solveRemoteSourceUri (docLocation, src));
-                    }
-
-                  ((ReferenceContent *)content)->setReference (src);
-                }
-            }
-        }
-      ++i;
-    }
-}
-
-void
-FormatterMediator::solveRemoteNclDeps (const string &docLocation, bool isRemoteDoc)
-{
-  string docRoot, nclDep;
-  ifstream fis;
-
-  docRoot = docLocation.substr (
-      0, docLocation.find_last_of (SystemCompat::getIUriD ()));
-
-  fis.open (docLocation.c_str (), ifstream::in);
-  if (!fis.is_open ())
-    {
-      clog << "FormatterMediator::solveRemoteNclDeps Warning!";
-      clog << " Can't solve ncl";
-      clog << " deps on '" << docLocation << "'" << endl;
-      return;
-    }
-
-  while (fis.good ())
-    {
-      fis >> nclDep;
-      if (nclDep.find ("documentURI") != std::string::npos)
-        {
-          while (nclDep.find ("\"") == std::string::npos && fis.good ())
-            {
-              fis >> nclDep;
-            }
-
-          if (nclDep.find ("\"") != std::string::npos
-              && nclDep.find_first_of ("\"") != nclDep.find_last_of ("\""))
-            {
-              nclDep
-                  = nclDep.substr (nclDep.find_first_of ("\"") + 1,
-                                   nclDep.find_last_of ("\"")
-                                       - (nclDep.find_first_of ("\"") + 1));
-
-              if ((!isRemoteDoc
-                   && nclDep.find ("http://") == std::string::npos)
-                  || nclDep == "")
-                {
-                  continue;
-                }
-
-              nclDep = solveRemoteSourceUri (docLocation, nclDep);
-              if (pm != NULL)
-                {
-                  pm->getScheduledContent (nclDep);
-                }
-              else
-                {
-                  clog << "FormatterMediator::solveRemoteNclDeps";
-                  clog << " Warning! ";
-                  clog << "PrefetchManager is NULL" << endl;
-                  break;
-                }
-            }
-        }
-    }
-
-  fis.close ();
-}
-
-void
-FormatterMediator::solveRemoteLuaDeps (const string &docLocation, const string &src,
-                                       bool isRemoteDoc)
-{
-  string clientLuaDepsSrc, clientLuaDepsRoot, luaDep;
-  ifstream fis;
-
-  if (!isRemoteDoc && src.find ("http://") == std::string::npos)
-    {
-      return;
-    }
-
-  clientLuaDepsSrc = src.substr (0, src.find_last_of (".")) + ".deps";
-  clientLuaDepsSrc = solveRemoteSourceUri (docLocation, clientLuaDepsSrc);
-  clientLuaDepsRoot = clientLuaDepsSrc.substr (
-      0, clientLuaDepsSrc.find_last_of (SystemCompat::getIUriD ()));
-
-  if (pm != NULL)
-    {
-      pm->getScheduledContent (clientLuaDepsSrc);
-    }
-  else
-    {
-      clog << "FormatterMediator::solveRemoteLuaDeps";
-      clog << " Warning! PrefetchManager ";
-      clog << "is NULL" << endl;
-    }
-
-  fis.open (clientLuaDepsSrc.c_str (), ifstream::in);
-  if (!fis.is_open ())
-    {
-      clog << "FormatterMediator::solveRemoteLuaDeps";
-      clog << " Warning! Can't solve lua";
-      clog << " deps on '" << clientLuaDepsSrc << "'" << endl;
-      return;
-    }
-
-  while (fis.good ())
-    {
-      fis >> luaDep;
-      luaDep = clientLuaDepsRoot + SystemCompat::getIUriD () + luaDep;
-      solveRemoteSourceUri (docLocation, luaDep);
-    }
-
-  fis.close ();
-}
-
-string
-FormatterMediator::solveRemoteSourceUri (const string &localDocUri, const string &src)
-{
-  return pm->createSourcePrefetcher (localDocUri, src);
 }
 
 NclFormatterEvent *
@@ -1462,11 +1157,6 @@ FormatterMediator::stopDocument (const string &documentId)
   clog << "FormatterMediator::stopDocument from '";
   clog << documentId << "'" << endl;
 
-  if (pm != NULL)
-    {
-      pm->releaseContents ();
-    }
-
   if (documentEvents.count (documentId) == 0)
     {
       clog << "FormatterMediator::stopDocument can't stop document '";
@@ -1481,17 +1171,6 @@ FormatterMediator::stopDocument (const string &documentId)
       (NclExecutionObject *)documentEvent->getExecutionObject ());
 
   scheduler->stopDocument (documentEvent);
-
-  /*if (documentEvents != NULL && documentEvents.count(documentId) != 0) {
-          documentEvents.erase(documentEvents.find(documentId));
-  }
-
-  if (documentEntryEvents != NULL) {
-          if (documentEntryEvents.count(documentId) != 0) {
-                  documentEntryEvents.erase(
-                                  documentEntryEvents.find(documentId));
-          }
-  }*/
 
   return true;
 }

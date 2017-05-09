@@ -1110,39 +1110,6 @@ PresentationEngineManager::updateStatus (short code,
       break;
     }
 }
-/*
-bool
-PresentationEngineManager::userEventReceived (InputEvent *ev)
-{
-  struct inputEventNotification *evR;
-  int keyCode;
-
-  keyCode = ev->getKeyCode ();
-
-  clog << "PresentationEngineManager::userEventReceived" << endl;
-  evR = new struct inputEventNotification;
-  evR->p = this;
-  evR->parameter = "";
-  evR->code = keyCode;
-  if (!commands.empty ())
-    {
-      evR->cmds = new vector<string> (commands);
-    }
-  else
-    {
-      evR->cmds = NULL;
-    }
-
-#if 0
-  pthread_t notifyThreadId_;
-  pthread_create (&notifyThreadId_, 0,
-                  PresentationEngineManager::eventReceived, (void *)evR);
-
-  pthread_detach (notifyThreadId_);
-#endif
-  PresentationEngineManager::eventReceived ((void *)evR);
-  return true;
-} */
 
 bool
 PresentationEngineManager::cmdEventReceived (const string &command,
@@ -1329,12 +1296,6 @@ PresentationEngineManager::updateFormatters (short command,
           formatter->stop ();
           formattersToRelease.insert (formatter);
           break;
-
-        case UC_PRINTSCREEN:
-          clog << "PRINTSCREEN" << endl;
-          formatter->getScreenShot ();
-          unlock ();
-          return;
 
         case UC_PAUSE:
           paused = true;
