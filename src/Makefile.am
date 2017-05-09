@@ -234,8 +234,8 @@ endif # WITH_ESPEAK
 if WITH_GSTREAMER
 AM_CXXFLAGS+= $(GSTREAMER_CFLAGS)
 AM_LDFLAGS+= $(GSTREAMER_LIBS)
-src+= formatter/AdapterNewVideoPlayer.cpp
-src+= player/NewVideoPlayer.cpp
+src+= formatter/AdapterVideoPlayer.cpp
+src+= player/VideoPlayer.cpp
 endif # WITH_GSTREAMER
 
 if WITH_LIBRSVG

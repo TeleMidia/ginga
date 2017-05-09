@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 //#include "ginga.h"
-#include "NewVideoPlayer.h"
+#include "VideoPlayer.h"
 
 //#include "mb/Display.h"
 //#include "mb/SDLWindow.h"
@@ -29,7 +29,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
-NewVideoPlayer::NewVideoPlayer (const string &mrl) : Thread (), Player (mrl)
+VideoPlayer::VideoPlayer (const string &mrl) : Thread (), Player (mrl)
 {
 	//TRACE ();
   this->soundLevel = 1.0; 
@@ -47,14 +47,14 @@ NewVideoPlayer::NewVideoPlayer (const string &mrl) : Thread (), Player (mrl)
   createPipeline ();
 }
 
-NewVideoPlayer::~NewVideoPlayer ()
+VideoPlayer::~VideoPlayer ()
 {
   this->condDisplayJobClear ();
   this->mutexClear ();
 }
 
 void
-NewVideoPlayer::createPipeline ()
+VideoPlayer::createPipeline ()
 {
   GstElement *scale;
   GstElement *sink;
@@ -111,25 +111,25 @@ NewVideoPlayer::createPipeline ()
 }
 
 void 
-NewVideoPlayer::eosCB (arg_unused (GstAppSink *appsink), gpointer data)
+VideoPlayer::eosCB (arg_unused (GstAppSink *appsink), gpointer data)
 {
-  g_debug ("eos NewVideoPlayer\n");
+  g_debug ("eos VideoPlayer\n");
   
-  NewVideoPlayer *player = (NewVideoPlayer *) data;
+  VideoPlayer *player = (VideoPlayer *) data;
 
   player->eos ();
 }
 
 GstFlowReturn
-NewVideoPlayer::newPrerollCB (arg_unused (GstAppSink *appsink), arg_unused(gpointer data))
+VideoPlayer::newPrerollCB (arg_unused (GstAppSink *appsink), arg_unused(gpointer data))
 {
   return GST_FLOW_OK;
 }
 
 GstFlowReturn
-NewVideoPlayer::newSampleCB (GstAppSink *appsink, gpointer data)
+VideoPlayer::newSampleCB (GstAppSink *appsink, gpointer data)
 {
-  NewVideoPlayer *player = (NewVideoPlayer *) data;
+  VideoPlayer *player = (VideoPlayer *) data;
 
   player->lock();
   
@@ -147,15 +147,15 @@ NewVideoPlayer::newSampleCB (GstAppSink *appsink, gpointer data)
 }
   
 bool
-NewVideoPlayer::displayJobCallbackWrapper (DisplayJob *job,
+VideoPlayer::displayJobCallbackWrapper (DisplayJob *job,
                                            SDL_Renderer *renderer,
                                            void *self)
 {
-  return ((NewVideoPlayer *) self)->displayJobCallback (job, renderer);
+  return ((VideoPlayer *) self)->displayJobCallback (job, renderer);
 }
 
 bool
-NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
+VideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
                                     SDL_Renderer *renderer)
 {
   
@@ -228,38 +228,38 @@ NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 }
 
 void
-NewVideoPlayer::initializeAudio (arg_unused (int numArgs), arg_unused (char *args[]))
+VideoPlayer::initializeAudio (arg_unused (int numArgs), arg_unused (char *args[]))
 {
 	TRACE ();
 }
 
 void
-NewVideoPlayer::releaseAudio ()
+VideoPlayer::releaseAudio ()
 {
 	g_debug ("%s", G_STRLOC);
 }
 
 void
-NewVideoPlayer::getOriginalResolution (arg_unused(int *width), arg_unused(int *height))
+VideoPlayer::getOriginalResolution (arg_unused(int *width), arg_unused(int *height))
 {
 	g_debug ("%s", G_STRLOC);
 }
 
 int64_t
-NewVideoPlayer::getVPts ()
+VideoPlayer::getVPts ()
 {
 	g_debug ("%s", G_STRLOC);
   return 0;
 }
 
 void
-NewVideoPlayer::timeShift (arg_unused(const string &direction))
+VideoPlayer::timeShift (arg_unused(const string &direction))
 {
 	TRACE ();
 }
 
 guint32
-NewVideoPlayer::getMediaTime ()
+VideoPlayer::getMediaTime ()
 {
   if(this->playbin==NULL)
       return 0;
@@ -278,33 +278,33 @@ NewVideoPlayer::getMediaTime ()
 }
 
 void
-NewVideoPlayer::setMediaTime (arg_unused(guint32 pos))
+VideoPlayer::setMediaTime (arg_unused(guint32 pos))
 {
 	TRACE ();
 }
 
 void
-NewVideoPlayer::setStopTime (arg_unused(double pos))
+VideoPlayer::setStopTime (arg_unused(double pos))
 {
 	TRACE ();
 }
 
 double
-NewVideoPlayer::getStopTime ()
+VideoPlayer::getStopTime ()
 {
 	TRACE ();
-  g_debug (">>-------------------- NewVideoPlayer:getStopTime -------------------<<");
+  g_debug (">>-------------------- VideoPlayer:getStopTime -------------------<<");
   return 0;
 }
 
 void
-NewVideoPlayer::setScope (arg_unused(const string &scope), arg_unused(short type), arg_unused(double begin), arg_unused(double end),arg_unused(double outTransDur))
+VideoPlayer::setScope (arg_unused(const string &scope), arg_unused(short type), arg_unused(double begin), arg_unused(double end),arg_unused(double outTransDur))
 {
 	TRACE ();
 }
 
 bool
-NewVideoPlayer::play ()
+VideoPlayer::play ()
 {
   if ( GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_PLAYING )
   {
@@ -318,8 +318,8 @@ NewVideoPlayer::play ()
   ret = gst_element_set_state (this->playbin, GST_STATE_PLAYING);
   g_assert (ret != GST_STATE_CHANGE_FAILURE);
 
-  g_debug ("\nNewVideoPlayer::play()\n"); 
-  //clog << "\n\n\n>>NewVideoPlayer::play() - " << this->mrl << "\n\n\n" << endl;  
+  g_debug ("\nVideoPlayer::play()\n"); 
+  //clog << "\n\n\n>>VideoPlayer::play() - " << this->mrl << "\n\n\n" << endl;  
   printPipelineState ();
   
   GstStateChangeReturn retWait = gst_element_get_state (this->playbin, 
@@ -347,7 +347,7 @@ NewVideoPlayer::play ()
 }
 
 void
-NewVideoPlayer::pause ()
+VideoPlayer::pause ()
 {
   this->lock ();
   if ( GST_ELEMENT_CAST(this->playbin)->current_state != GST_STATE_PLAYING )
@@ -361,7 +361,7 @@ NewVideoPlayer::pause ()
   ret = gst_element_set_state (this->playbin, GST_STATE_PAUSED);  
   g_assert (ret != GST_STATE_CHANGE_FAILURE);
 
-  g_debug ("\nNewVideoPlayer::pause()\n"); 
+  g_debug ("\nVideoPlayer::pause()\n"); 
   printPipelineState ();
 
   GstStateChangeReturn retWait = gst_element_get_state (this->playbin, NULL, NULL, GST_CLOCK_TIME_NONE);
@@ -376,7 +376,7 @@ NewVideoPlayer::pause ()
 }
 
 void
-NewVideoPlayer::stop ()
+VideoPlayer::stop ()
 {   
   this->lock ();
   //when stops with natural end
@@ -399,8 +399,8 @@ NewVideoPlayer::stop ()
   //ret = gst_element_set_state (this->playbin, GST_STATE_NULL);
   g_assert (ret != GST_STATE_CHANGE_FAILURE);
   
-  g_debug ("\nNewVideoPlayer::stop()\n");
-  //clog << "\n\n\n>>NewVideoPlayer::stop() - " << this->mrl << "\n\n\n" << endl;
+  g_debug ("\nVideoPlayer::stop()\n");
+  //clog << "\n\n\n>>VideoPlayer::stop() - " << this->mrl << "\n\n\n" << endl;
   
   printPipelineState ();
     
@@ -418,11 +418,11 @@ NewVideoPlayer::stop ()
 }
 
 void
-NewVideoPlayer::resume ()
+VideoPlayer::resume ()
 {
   Player::resume ();
 
-  g_debug ("\nNewVideoPlayer::resume()\n");
+  g_debug ("\nVideoPlayer::resume()\n");
   printPipelineState ();
 
   if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_PAUSED)
@@ -432,27 +432,27 @@ NewVideoPlayer::resume ()
 }
 
 void
-NewVideoPlayer::eos ()
+VideoPlayer::eos ()
 { 
   //Here it is triggered onEnd condition
   this->forceNaturalEnd(true);
 }
 
 string
-NewVideoPlayer::getPropertyValue (const string &name)
+VideoPlayer::getPropertyValue (const string &name)
 {
   return Player::getPropertyValue(name);
 }
 
 void
-NewVideoPlayer::setPropertyValue (const string &name, const string &value)
+VideoPlayer::setPropertyValue (const string &name, const string &value)
 {
   if (!value.length())
     return;
-  //clog << "\n\n\n>>NewVideoPlayer::setPropertyValue() - soundLevel" << this->mrl << "\n\n\n" << endl;
+  //clog << "\n\n\n>>VideoPlayer::setPropertyValue() - soundLevel" << this->mrl << "\n\n\n" << endl;
   string newValue = value;
   
-  //clog << "\n\n\n>>NewVideoPlayer::setProperty()\n\n\n" << endl;  
+  //clog << "\n\n\n>>VideoPlayer::setProperty()\n\n\n" << endl;  
   if (name == "soundLevel")
   {
     if (isPercentualValue (newValue))
@@ -465,8 +465,8 @@ NewVideoPlayer::setPropertyValue (const string &name, const string &value)
       this->soundLevel = CLAMP (xstrtod (newValue),0,1);
     }
     
-    //clog << "\n\n\n>>NewVideoPlayer::setPropertyValue() - soundLevel: " << this->soundLevel << "  " << this->mrl << "\n\n\n" << endl;
-    g_debug ("NewVideoPlayer::setPropertyValue - soundLevel: %f\n",this->soundLevel);
+    //clog << "\n\n\n>>VideoPlayer::setPropertyValue() - soundLevel: " << this->soundLevel << "  " << this->mrl << "\n\n\n" << endl;
+    g_debug ("VideoPlayer::setPropertyValue - soundLevel: %f\n",this->soundLevel);
     g_object_set (G_OBJECT (this->playbin), "volume", this->soundLevel, NULL);
   }
   
@@ -474,25 +474,25 @@ NewVideoPlayer::setPropertyValue (const string &name, const string &value)
 }
 
 void
-NewVideoPlayer::addListener (IPlayerListener *listener)
+VideoPlayer::addListener (IPlayerListener *listener)
 {
   Player::addListener (listener);
 }
 
 //void
-//NewVideoPlayer::release ()
+//VideoPlayer::release ()
 //{
 //	TRACE ();
 //}
 
 string
-NewVideoPlayer::getMrl ()
+VideoPlayer::getMrl ()
 {
   return mrl;
 }
 
 bool
-NewVideoPlayer::isPlaying ()
+VideoPlayer::isPlaying ()
 {
   if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_PLAYING)
   {
@@ -502,7 +502,7 @@ NewVideoPlayer::isPlaying ()
 }
 
 bool
-NewVideoPlayer::setOutWindow (SDLWindow* windowId)
+VideoPlayer::setOutWindow (SDLWindow* windowId)
 {
   GstCaps *caps;
   GstStructure *st;
@@ -530,24 +530,24 @@ NewVideoPlayer::setOutWindow (SDLWindow* windowId)
 }
 
 /*void
-NewVideoPlayer::setAVPid (arg_unused(int aPid), arg_unused(int vPid))
+VideoPlayer::setAVPid (arg_unused(int aPid), arg_unused(int vPid))
 {
 	TRACE ();
 }*/
 
 bool
-NewVideoPlayer::isRunning ()
+VideoPlayer::isRunning ()
 {
   return this->isPlaying ();
 }
 
 void
-NewVideoPlayer::run ()
+VideoPlayer::run ()
 {
 }
 
 void
-NewVideoPlayer::printPipelineState()
+VideoPlayer::printPipelineState()
 {
   if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_PAUSED){
     g_debug ("PIPELINE::PAUSED\n");
