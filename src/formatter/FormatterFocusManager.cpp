@@ -57,7 +57,7 @@ FormatterFocusManager::FormatterFocusManager (
   if (strValue == "")
     {
       defaultFocusBorderColor = new SDL_Color();
-      ginga_hex_to_sdl_color( "#00F" , defaultFocusBorderColor); //blue
+      ginga_hex_to_sdl_color( "#00F" , defaultFocusBorderColor); // blue
     }
   else
     {
@@ -79,7 +79,7 @@ FormatterFocusManager::FormatterFocusManager (
   if (strValue == "")
     {
       defaultSelBorderColor = new SDL_Color();
-      ginga_hex_to_sdl_color( "#0F0" ,defaultSelBorderColor); //green
+      ginga_hex_to_sdl_color( "#0F0" ,defaultSelBorderColor); // green
     }
   else
     {
@@ -113,10 +113,6 @@ FormatterFocusManager::~FormatterFocusManager ()
 
   if (hasInstance (parentManager, false))
     {
-    /*  if (isHandler && !parentManager->setKeyHandler (true))
-        {
-      
-        }  */
     }
   selectedObject = NULL;
 
@@ -207,12 +203,6 @@ FormatterFocusManager::setKeyHandler (bool isHandler)
   NclCascadingDescriptor *dc;
   NclFormatterRegion *fr;
   string ix;
-
-  /*clog << "FormatterFocusManager::setKeyHandler(" << this << ")";
-  clog << " isHandler '" << isHandler << "'";
-  clog << " this->isHandler '" << this->isHandler << "'";
-  clog << " parentManager '" << parentManager << "'";
-  clog << endl;*/
 
   if (this->isHandler == isHandler)
     {

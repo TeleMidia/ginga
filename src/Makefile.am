@@ -31,9 +31,7 @@ AM_CPPFLAGS=\
   $(NULL)
 
 AM_CXXFLAGS=\
-  $(CURL_CFLAGS)\
   $(GLIB_CFLAGS)\
-  $(JPEG_CFLAGS)\
   $(LIBRSVG_CFLAGS)\
   $(NCLUA_CFLAGS)\
   $(PANGO_CFLAGS)\
@@ -46,9 +44,7 @@ AM_CXXFLAGS=\
   $(NULL)
 
 AM_LDFLAGS= -R $(libdir) -rpath $(libdir)\
-  $(CURL_LIBS)\
   $(GLIB_LIBS)\
-  $(JPEG_LIBS)\
   $(LIBRSVG_LIBS)\
   $(NCLUA_LIBS)\
   $(PANGO_LIBS)\
@@ -113,13 +109,10 @@ src+= formatter/NclNodeNesting.cpp
 src+= formatter/NclPresentationEvent.cpp
 src+= formatter/NclSelectionEvent.cpp
 src+= formatter/NclSwitchEvent.cpp
-src+= formatter/PrefetchManager.cpp
 src+= formatter/PresentationContext.cpp
 src+= formatter/PrivateBaseContext.cpp
 src+= formatter/PrivateBaseManager.cpp
 src+= formatter/RuleAdapter.cpp
-src+= ic/CurlInteractiveChannel.cpp
-src+= ic/InteractiveChannelManager.cpp
 src+= lssm/CommonCoreManager.cpp
 src+= lssm/PresentationEngineManager.cpp
 src+= mb/Display.cpp
@@ -193,7 +186,6 @@ src+= ncl/TransitionBase.cpp
 src+= ncl/TransitionUtil.cpp
 src+= ncl/TriggerExpression.cpp
 src+= ncl/ValueAssessment.cpp
-src+= nclconv/DOMTreeErrorReporter.cpp
 src+= nclconv/DocumentParser.cpp
 src+= nclconv/NclComponentsConverter.cpp
 src+= nclconv/NclComponentsParser.cpp

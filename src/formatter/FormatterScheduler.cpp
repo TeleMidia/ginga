@@ -1677,11 +1677,11 @@ FormatterScheduler::startDocument (NclFormatterEvent *documentEvent,
         }
     }
 
-  /*if (docEvents == 0) {
+  if (docEvents == 0) {
           clog << "FormatterScheduler::startDocument 0 events running";
           clog << " stopping document" << endl;
           stopDocument(documentEvent);
-  }*/
+  }
 
   clog << "FormatterScheduler::startDocument Through event '";
   clog << documentEvent->getId () << "' started '" << docEvents << "'";

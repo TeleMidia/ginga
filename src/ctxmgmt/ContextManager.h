@@ -32,7 +32,6 @@ private:
   map<int, GingaUser *> users;
   map<int, map<string, string> *> contexts;
   set<IContextListener *> ctxListeners;
-  string usersUri, contextsUri;
   int curUserId;
   SystemInfo *systemInfo;
   static ContextManager *_instance;
@@ -46,7 +45,6 @@ public:
 
 private:
   void initializeUsers ();
-  void initializeContexts ();
 
 public:
   void addContextVar (int userId, const string &varName, const string &varValue);

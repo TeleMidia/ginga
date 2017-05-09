@@ -48,14 +48,12 @@ AC_SUBST([mbdir], ['${pkgdatadir}'/mb/config])
 AC_SUBST([tunerdir], ['${pkgdatadir}'/tuner])
 
 # Required dependencies version.
-m4_define([curl_required_version],       [7.18])
 m4_define([glib_required_version],       [2.32.4])
 m4_define([gstreamer_required_version],  [1.8.0])
 m4_define([nclua_required_version],      [1.0])
 m4_define([sdl2_image_require_version],  [2.0])
 m4_define([sdl2_required_version],       [2.0])
 m4_define([xercesc_required_version],    [2.7])
-AC_SUBST([CURL_REQUIRED_VERSION],        curl_required_version)
 AC_SUBST([GLIB_REQUIRED_VERSION],        glib_required_version)
 AC_SUBST([GSTREAMER_REQUIRED_VERSION],   gstreamer_required_version)
 AC_SUBST([NCLUA_REQUIRED_VERSION],       nclua_required_version)
@@ -123,9 +121,6 @@ AC_CHECK_HEADER([sys/socket.h])
 AC_CHECK_HEADER([net/if.h])
 
 # Required dependencies.
-AU_CHECK_PKG([CURL],
- [libcurl >= curl_required_version])
-
 AU_VERSION_BREAK([glib], glib_required_version)
 AU_CHECK_PKG([GLIB], [glib-2.0 >= glib_required_version],
  [AC_LANG_PROGRAM([[

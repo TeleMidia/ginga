@@ -154,19 +154,12 @@ PresentationContext::getPropertyValue (const string &attributeId)
   Thread::mutexLock (&attrMutex);
   if (contextTable.count (attributeId) == 0)
     {
-      clog << "PresentationContext::getPropertyValue prop '";
-      clog << attributeId << "' has a NULL value" << endl;
       Thread::mutexUnlock (&attrMutex);
       return "";
     }
 
   propValue = contextTable[attributeId];
   Thread::mutexUnlock (&attrMutex);
-
-  clog << "PresentationContext::getPropertyValue prop '";
-  clog << attributeId << "' == '" << propValue;
-  clog << "'" << endl;
-
   return propValue;
 }
 
@@ -268,15 +261,6 @@ PresentationContext::initializeSystemValues ()
     }
 }
 
-void
-PresentationContext::save ()
-{
-  string property;
-  map<string, string>::iterator i;
-
-  // contextManager->saveUsersAccounts();
-  PresentationContext::contextManager->saveUsersProfiles ();
-}
 
 void
 PresentationContext::setGlobalVarListener (IContextListener *listener)
