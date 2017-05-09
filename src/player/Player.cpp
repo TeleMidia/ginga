@@ -49,7 +49,6 @@ Player::Player (const string &mrl)
   this->scopeEndTime = -1;
   this->outTransTime = -1;
   this->notifyContentUpdate = false;
-  this->mirrorSrc = NULL;
 
   //time attr
   this->initStartTime = 0;
@@ -549,18 +548,6 @@ Player::setTimeBasePlayer (IPlayer *timeBasePlayer)
       this->timeBasePlayer = timeBasePlayer;
       this->timeBasePlayer->addTimeReferPlayer (this);
     }
-}
-
-bool
-Player::hasPresented ()
-{
-  return presented;
-}
-
-void
-Player::setPresented (bool presented)
-{
-  this->presented = presented;
 }
 
 bool
