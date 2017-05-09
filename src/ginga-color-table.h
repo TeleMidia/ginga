@@ -233,8 +233,8 @@ ginga_color_hex_formatter(string hex){
    return hex.c_str();
 }
 
-/* Gets the matching SDL_Color to the given RGB or RGBA input (255,255,255 
-or 255,255,255,255).  If the input is valid and returns true, otherwise 
+/* Gets the matching SDL_Color to the given RGB or RGBA input (255,255,255
+or 255,255,255,255).  If the input is valid and returns true, otherwise
 returns false.  */
 static inline gboolean
 ginga_rgba_to_sdl_color(const string value,  SDL_Color *color){
@@ -254,8 +254,8 @@ ginga_rgba_to_sdl_color(const string value,  SDL_Color *color){
    return TRUE;
 }
 
-/* Gets the matching SDL_Color to the given RGB or RGBA text input [rgb(255,255,255) 
-or rgba(255,255,255,255)]. If the input is valid and returns true, otherwise 
+/* Gets the matching SDL_Color to the given RGB or RGBA text input [rgb(255,255,255)
+or rgba(255,255,255,255)]. If the input is valid and returns true, otherwise
 returns false.  */
 static inline gboolean
 ginga_rgbatext_to_sdl_color(const string value, SDL_Color *color){
@@ -350,7 +350,7 @@ ginga_color_input_to_sdl_color(const string value, SDL_Color *color){
    else  if(ginga_color_table_index (value.c_str(), &color->r, &color->g, &color->b ))  //by name
          return TRUE;
    else
-         return ginga_rgba_to_sdl_color(value, color);      
+         return ginga_rgba_to_sdl_color(value, color);
 }
 
 #endif /* GINGA_COLOR_TABLE_H */
