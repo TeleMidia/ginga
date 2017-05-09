@@ -673,7 +673,10 @@ Player::getZ(){
 
 void
 Player::redraw(SDL_Renderer* renderer){ 
-    
+
+  if(this->status == SLEEPING)
+   return;
+
   if(this->window!=NULL)
       this->window->getBorder(&this->borderColor,&this->borderWidth);
 
