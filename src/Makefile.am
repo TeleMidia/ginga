@@ -31,6 +31,7 @@ AM_CPPFLAGS=\
   $(NULL)
 
 AM_CXXFLAGS=\
+  $(CEF_CFLAGS)\
   $(GLIB_CFLAGS)\
   $(LIBRSVG_CFLAGS)\
   $(NCLUA_CFLAGS)\
@@ -44,6 +45,7 @@ AM_CXXFLAGS=\
   $(NULL)
 
 AM_LDFLAGS= -R $(libdir) -rpath $(libdir)\
+  $(CEF_LIBS)\
   $(GLIB_LIBS)\
   $(LIBRSVG_LIBS)\
   $(NCLUA_LIBS)\
