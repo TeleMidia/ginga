@@ -26,7 +26,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_MB_BEGIN
 
 DisplayDebug::DisplayDebug(int width, int height){
-   
+
     this->accTime = 1.0;
     this->totalTime = 0;
 
@@ -40,10 +40,10 @@ DisplayDebug::DisplayDebug(int width, int height){
     this->texture = NULL;
 
     //fps texture area
-    rect.w = 150; 
-    rect.h = 100; 
-    rect.x = this->width - rect.w;  
-    rect.y = this->height - rect.h; 
+    rect.w = 160;
+    rect.h = 26;
+    rect.x = this->width - rect.w;
+    rect.y = this->height - rect.h;
 
     Ginga_Display->registerKeyEventListener(this);
 }
@@ -54,7 +54,7 @@ DisplayDebug::~DisplayDebug(){
 }
 
 void
-DisplayDebug::keyInputCallback (SDL_EventType evtType, SDL_Keycode key){     
+DisplayDebug::keyInputCallback (SDL_EventType evtType, SDL_Keycode key){
     if(evtType == SDL_KEYDOWN &&  key == SDLK_d){
         this->isActive = !this->isActive;
         this->accTime=1.0;
@@ -62,91 +62,94 @@ DisplayDebug::keyInputCallback (SDL_EventType evtType, SDL_Keycode key){
 }
 
 void
-DisplayDebug::draw(SDL_Renderer * renderer, guint32 elapsedTime){
-    
-    if(!this->isActive)
-       return;
+DisplayDebug::draw(SDL_Renderer * renderer, guint32 elapsedTime)
+{
+  char *s;
 
-    this->accTime += elapsedTime;
+  if (!this->isActive)
+    return;
 
-    if(this->accTime >= 500){ //every 0.5s  
-        
-       this->totalTime = ((gdouble)g_get_monotonic_time()/G_USEC_PER_SEC) - iniTime;
-        
-        //update texture
-       SDL_DestroyTexture(this->texture);
-       this->texture = updateTexture(renderer, this->rect,
-                               g_strdup_printf("Res %dx%d\nTime %02d:%02d\n%d fps\n",
-                               this->width,
-                               this->height, 
-                               (guint)this->totalTime/60,
-                               ((guint)this->totalTime)%60,
-                               1000/elapsedTime
-                                ));
-       g_assert_nonnull (this->texture);
+  this->accTime += elapsedTime;
 
-       accTime=0; 
-     }
-    
-     SDL_RenderCopy(renderer, this->texture, NULL, &rect); 
-  
+  if (this->accTime < 250)
+    goto done;
+
+  this->totalTime = ((gdouble) g_get_monotonic_time()
+                     / G_USEC_PER_SEC) - iniTime;
+
+  SDL_DestroyTexture (this->texture);
+
+  s = g_strdup_printf
+    ("%dx%d %02u:%02u %ufps\n", this->width, this->height,
+     (guint)(this->totalTime / 60),
+     (guint)((guint) this->totalTime % 60),
+     (guint)(1000 / elapsedTime));
+
+  this->texture = updateTexture(renderer, this->rect, s);
+  g_assert_nonnull (this->texture);
+
+  g_free (s);
+  accTime = 0;
+
+done:
+  SDL_RenderCopy (renderer, this->texture, NULL, &rect);
+
 }
 
 SDL_Texture *
-DisplayDebug::updateTexture(SDL_Renderer * renderer, SDL_Rect rect, gchar * fps_str){
+DisplayDebug::updateTexture (SDL_Renderer *renderer,
+                             SDL_Rect rect, const gchar *fps_str)
+{
     SDL_Surface *sfc;
     cairo_t *cr;
     cairo_surface_t *surface_c;
 
 #if SDL_VERSION_ATLEAST(2,0,5)
-    sfc = SDL_CreateRGBSurfaceWithFormat (0, rect.w,
-                                           rect.h,
-                                           32, SDL_PIXELFORMAT_ARGB8888);
+    sfc = SDL_CreateRGBSurfaceWithFormat
+      (0, rect.w, rect.h, 32, SDL_PIXELFORMAT_ARGB8888);
 #else
     sfc = SDL_CreateRGBSurface (0, rect.w, rect.h, 32,
-                              0xff000000,
-                              0x00ff0000,
-                              0x0000ff00,
-                              0x000000ff); 
+                                0xff000000,
+                                0x00ff0000,
+                                0x0000ff00,
+                                0x000000ff);
 #endif
-
     g_assert_nonnull (sfc);
-   
+
     SDLx_LockSurface (sfc);
-    surface_c = cairo_image_surface_create_for_data ((guchar*) sfc->pixels,
-                                                CAIRO_FORMAT_ARGB32,
-                                                sfc->w, sfc->h, sfc->pitch);
+    surface_c = cairo_image_surface_create_for_data
+      ((guchar*) sfc->pixels, CAIRO_FORMAT_ARGB32, sfc->w, sfc->h, sfc->pitch);
+
     cr = cairo_create (surface_c);
     g_assert_nonnull (cr);
-    //background
-    cairo_set_source_rgba (cr,0,0,0,0.5);
 
+    cairo_set_source_rgba (cr, 0., 0., 0., .5);
     cairo_paint (cr);
+
     // Create a PangoLayout, set the font face and text
-    PangoLayout * layout = pango_cairo_create_layout (cr);
+    PangoLayout *layout = pango_cairo_create_layout (cr);
     pango_layout_set_text (layout, fps_str, -1);
-    PangoFontDescription *desc = pango_font_description_from_string ( "Arial 16px Bold" );
+    PangoFontDescription *desc = pango_font_description_from_string ( "Arial 16px" );
     pango_layout_set_font_description (layout, desc);
     pango_layout_set_alignment(layout,PANGO_ALIGN_CENTER);
     pango_layout_set_width (layout,rect.w*PANGO_SCALE);
     pango_layout_set_wrap (layout,PANGO_WRAP_WORD);
 
-    cairo_set_source_rgba (cr,1,1,1,10.5);
+    cairo_set_source_rgba (cr, 1., 1., 1.,10.5);
     pango_cairo_update_layout (cr, layout);
-    cairo_move_to (cr, 0,5);
+    cairo_move_to (cr, 0., 5.);
     pango_cairo_show_layout (cr, layout);
-    
+
     // free the layout object
     g_object_unref (layout);
     pango_font_description_free (desc);
     cairo_destroy (cr);
     cairo_surface_destroy (surface_c);
-    g_free(fps_str);
-   
+
     SDL_Texture * texture = SDL_CreateTextureFromSurface (renderer, sfc);
     SDLx_UnlockSurface (sfc);
     SDL_FreeSurface(sfc);
-    return texture; 
+    return texture;
 }
 
 GINGA_MB_END

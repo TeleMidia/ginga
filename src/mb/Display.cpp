@@ -212,7 +212,6 @@ Display::renderLoop ()
       SDL_RenderPresent (this->renderer);
       this->unlock ();
 
-    quit:
       this->lock ();            // destroy dead textures
       g_list_free_full (this->textures,
                         (GDestroyNotify) SDL_DestroyTexture);

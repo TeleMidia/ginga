@@ -53,8 +53,6 @@ TextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
     if (err != NULL) g_error_free (err);
     g_assert_nonnull(contents);
 
-    SDL_Texture *texture;
-
     SDL_Surface *sfc;
     cairo_t *cr;
     cairo_surface_t *surface_c;
