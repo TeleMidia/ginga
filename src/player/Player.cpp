@@ -60,7 +60,7 @@ Player::Player (const string &mrl)
   //media attr
   this->texture = NULL; //media content
   this->borderWidth = 0;
- // this->bgColor = {0, 0, 0, 0};
+  this->bgColor = {0, 0, 0, 0};
   this->borderColor = {0, 0, 0, 0};
   this->z = 0;
   this->alpha = 255;
@@ -691,10 +691,9 @@ Player::redraw(SDL_Renderer* renderer){
       SDLx_RenderCopy (renderer, this->texture, NULL, &this->rect);
     }
 
-    if (this->borderWidth != 0){
-      if(this->borderWidth <0)
-        this->borderWidth*=-1;
-
+    if (this->borderWidth < 0){    
+      this->borderWidth*=-1;
+  
       SDLx_SetRenderDrawBlendMode (renderer, SDL_BLENDMODE_BLEND);
       SDLx_SetRenderDrawColor (renderer, this->borderColor.r, this->borderColor.g, this->borderColor.b, 255);
       SDLx_RenderDrawRect (renderer, &this->rect);
