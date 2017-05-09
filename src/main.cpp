@@ -187,7 +187,7 @@ main (int argc, char **argv)
   g_assert_nonnull (_Ginga_Display);
 
   pem = new PresentationEngineManager (0, 0, 0, opt_width, opt_height,
-                                       true, false);
+                                       true);
   g_assert_nonnull (pem);
 
   pem->setExitOnEnd (false);

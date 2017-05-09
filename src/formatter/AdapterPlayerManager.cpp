@@ -348,7 +348,6 @@ AdapterPlayerManager::isEmbeddedApp (NodeEntity *dataObject)
     {
       mediaType = descriptor->getPlayerName ();
       if (mediaType == "AdapterLuaPlayer"
-          || mediaType == "AdapterBerkeliumPlayer"
           || mediaType == "AdapterNCLPlayer")
         {
           return true;

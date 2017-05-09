@@ -205,7 +205,7 @@ FormatterMediator::FormatterMediator (NclPlayerData *pData)
 
   multiDevice = new FormatterBaseDevice (
       deviceLayout, data->playerId, data->x, data->y,
-      data->w, data->h, data->enableMulticast, 22222);
+      data->w, data->h);
 
   multiDevice->setPresentationContex (presContext);
 
@@ -510,8 +510,6 @@ FormatterMediator::setCurrentDocument (const string &fName)
         {
           baseUri = "";
         }
-
-      multiDevice->addActiveUris (baseUri, uris);
 
       compileDocument (currentDocument->getId ());
     }

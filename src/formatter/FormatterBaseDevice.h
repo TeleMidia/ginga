@@ -27,29 +27,12 @@ class FormatterBaseDevice : public FormatterMultiDevice
 {
 public:
   FormatterBaseDevice (DeviceLayout *deviceLayout,
-                       string playerId, int x, int y, int w, int h,
-                       bool useMulticast, int srvPort);
+                       string playerId, int x, int y, int w, int h);
   virtual ~FormatterBaseDevice ();
 
 protected:
   bool newDeviceConnected (int newDevClass, int w, int h);
   void connectedToBaseDevice (arg_unused (unsigned int domainAddr)){};
-  bool receiveRemoteEvent (int remoteDevClass, int eventType,
-                           const string &eventContent);
-  bool
-  receiveRemoteContent (arg_unused (int remoteDevClass),
-                        arg_unused (char *stream),
-                        arg_unused (int streamSize))
-  {
-    return false;
-  };
-  bool
-  receiveRemoteContent (arg_unused (int remoteDevClass),
-                        arg_unused (const string &contentUri))
-  {
-    return false;
-  };
- 
 };
 
 GINGA_FORMATTER_END
