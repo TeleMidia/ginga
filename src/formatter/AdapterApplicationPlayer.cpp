@@ -100,16 +100,6 @@ AdapterApplicationPlayer::hasPrepared ()
       clog << player << "'" << endl;
       return false;
     }
-
-  presented = player->hasPresented ();
-  if (presented)
-    {
-      clog << "AdapterApplicationPlayer::hasPrepared(" << mrl;
-      clog << ") return false because";
-      clog << " presented is true" << endl;
-      return false;
-    }
-
   return true;
 }
 

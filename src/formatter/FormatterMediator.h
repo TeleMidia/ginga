@@ -318,8 +318,6 @@ public:
   void notifyReferPlayers (int transition);
   void timebaseObjectTransitionCallback (int transition);
   void setTimeBasePlayer (IPlayer *timeBasePlayer);
-  bool hasPresented ();
-  void setPresented (bool presented);
   bool isVisible ();
   void setVisible (bool visible);
   bool immediatelyStart ();

@@ -3018,18 +3018,6 @@ FormatterMediator::setTimeBasePlayer (IPlayer *timeBasePlayer)
 }
 
 bool
-FormatterMediator::hasPresented ()
-{
-  return Player::hasPresented ();
-}
-
-void
-FormatterMediator::setPresented (bool presented)
-{
-  Player::setPresented (presented);
-}
-
-bool
 FormatterMediator::isVisible ()
 {
   return Player::isVisible ();

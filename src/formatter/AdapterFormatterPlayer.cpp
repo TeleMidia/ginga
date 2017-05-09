@@ -40,7 +40,6 @@ AdapterFormatterPlayer::AdapterFormatterPlayer ()
   this->manager = NULL;
   this->object = NULL;
   this->player = NULL;
-  this->mirrorSrc = NULL;
   this->mrl = "";
   this->playerCompName = "";
   this->objectDevice = -1;
@@ -266,14 +265,6 @@ AdapterFormatterPlayer::hasPrepared ()
       clog << "AdapterFormatterPlayer::hasPrepared return false because";
       clog << " object = '" << object << "' and player = '";
       clog << player << "'" << endl;
-      return false;
-    }
-
-  presented = player->hasPresented ();
-  if (presented)
-    {
-      clog << "AdapterFormatterPlayer::hasPrepared return false because";
-      clog << " presented is true" << endl;
       return false;
     }
 
@@ -937,7 +928,9 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
     {
       if (player != NULL)
         {
-          if (player->hasPresented () || player->isForcedNaturalEnd ())
+          // if (player->hasPresented () ||
+
+          if (player->isForcedNaturalEnd ())
             {
               while (!lockObject ())
                 ;
