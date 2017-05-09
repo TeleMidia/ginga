@@ -114,8 +114,6 @@ public:
 
   void setDepthLevel (int level);
   int getDepthLevel ();
-  void checkGradSameInstance (set<ReferNode *> *gradSame,
-                              NclExecutionObject *object);
 
   NclCompositeExecutionObject *
   addSameInstance (NclExecutionObject *executionObject,
