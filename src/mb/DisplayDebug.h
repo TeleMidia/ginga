@@ -37,7 +37,7 @@ class DisplayDebug: public  IKeyInputEventListener{
    SDL_Rect rect;
    gboolean isActive;
    
-   SDL_Texture * updateTexture(SDL_Renderer * renderer, SDL_Rect rect,gchar * fps_str);
+   SDL_Texture * updateTexture(SDL_Renderer * renderer, SDL_Rect rect, const gchar * fps_str);
 
    public:
    DisplayDebug (int width, int height);

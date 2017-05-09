@@ -90,16 +90,8 @@ AdapterApplicationPlayer::createPlayer ()
 bool
 AdapterApplicationPlayer::hasPrepared ()
 {
-  bool presented;
-
   if (object == NULL || player == NULL)
-    {
-      clog << "AdapterApplicationPlayer::hasPrepared(" << mrl;
-      clog << ") return false because";
-      clog << " object = '" << object << "' and player = '";
-      clog << player << "'" << endl;
-      return false;
-    }
+    return false;
   return true;
 }
 

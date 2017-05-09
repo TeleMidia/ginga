@@ -118,6 +118,8 @@ DocumentParser::parse (DOMElement *rootElement, const string &_uri)
       g_error ("%s: bad NCL document tree", uri.c_str ());
       exit (EXIT_FAILURE);
     }
+
+  return root;
 }
 
 string

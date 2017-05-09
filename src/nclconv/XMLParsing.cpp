@@ -27,20 +27,20 @@ XMLParsing::warning (const SAXParseException &e)
   if (file == NULL || strlen (file) <= 0)
     g_warning ("%s", XMLString::transcode (e.getMessage ()));
   else
-    g_warning ("%s:%d.%d: %s", file,
+    g_warning ("%s:%lu.%lu: %s", file,
                e.getLineNumber (),
                e.getColumnNumber (),
                XMLString::transcode (e.getMessage ()));
 }
 
-void
+void G_GNUC_NORETURN
 XMLParsing::error (const SAXParseException &e)
 {
   const char *file = XMLString::transcode (e.getSystemId ());
   if (file == NULL || strlen (file) <= 0)
     g_error ("%s", XMLString::transcode (e.getMessage ()));
   else
-    g_error ("%s:%d.%d: %s", file,
+    g_error ("%s:%lu.%lu: %s", file,
              e.getLineNumber (),
              e.getColumnNumber (),
              XMLString::transcode (e.getMessage ()));

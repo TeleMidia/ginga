@@ -269,9 +269,9 @@ VideoPlayer::getMediaTime ()
   if(clock==NULL)
      return 0;
 
-  guint32 time =  GST_TIME_AS_MSECONDS (gst_clock_get_time(clock)) 
-                  - GST_TIME_AS_MSECONDS (gst_element_get_base_time(this->playbin));
-  
+  guint32 time = (guint32)(GST_TIME_AS_MSECONDS (gst_clock_get_time (clock))
+    - GST_TIME_AS_MSECONDS (gst_element_get_base_time (this->playbin)));
+
   gst_object_unref (clock);
 
   return time;

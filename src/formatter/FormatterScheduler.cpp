@@ -335,21 +335,18 @@ FormatterScheduler::runAction (NclLinkCondition *condition,
 
 void
 FormatterScheduler::runAction (NclFormatterEvent *event,
-                               NclLinkCondition *condition,
+                               arg_unused (NclLinkCondition *condition),
                                NclLinkSimpleAction *action)
 {
   NclExecutionObject *executionObject;
   NclCascadingDescriptor *descriptor;
   AdapterFormatterPlayer *player;
   IPlayer *playerContent;
-  NodeEntity *dataObject;
   short actionType;
   string attName;
   string attValue;
-  double time;
   SDLWindow* winId = 0;
 
-  time = xruntime_ms ();
   executionObject = (NclExecutionObject *)(event->getExecutionObject ());
 
   if (isDocumentRunning (event) && !executionObject->isCompiled ())
@@ -359,9 +356,6 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
               executionObject,
               ((FormatterConverter *)compiler)->getDepthLevel ());
     }
-
-  dataObject
-      = (NodeEntity *)(executionObject->getDataObject ()->getDataEntity ());
 
   if (executionObject->instanceOf ("NclExecutionObjectSwitch")
       && event->instanceOf ("NclSwitchEvent"))

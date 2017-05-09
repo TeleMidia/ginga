@@ -210,7 +210,7 @@ _MY_CHECK_OPTIONAL([linuxdvb], [build linuxdvb support],
   [with_optional_linuxdvb=yes])])
 
 # Broken or legacy stuff.
-AM_CONDITIONAL([WITH_ISDBT], [true])
+AM_CONDITIONAL([WITH_ISDBT], [false])
 AC_DEFINE([WITH_ISDBT], [0], [Broken or legacy.])
 
 # Epilogue.
