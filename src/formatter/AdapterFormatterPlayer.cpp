@@ -268,14 +268,6 @@ AdapterFormatterPlayer::hasPrepared ()
       return false;
     }
 
-  presented = player->hasPresented ();
-  if (presented)
-    {
-      clog << "AdapterFormatterPlayer::hasPrepared return false because";
-      clog << " presented is true" << endl;
-      return false;
-    }
-
   presented = player->isForcedNaturalEnd ();
   if (presented)
     {
@@ -936,7 +928,9 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
     {
       if (player != NULL)
         {
-          if (player->hasPresented () || player->isForcedNaturalEnd ())
+          // if (player->hasPresented () ||
+
+          if (player->isForcedNaturalEnd ())
             {
               while (!lockObject ())
                 ;

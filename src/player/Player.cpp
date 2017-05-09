@@ -553,18 +553,6 @@ Player::setTimeBasePlayer (IPlayer *timeBasePlayer)
 }
 
 bool
-Player::hasPresented ()
-{
-  return presented;
-}
-
-void
-Player::setPresented (bool presented)
-{
-  this->presented = presented;
-}
-
-bool
 Player::isVisible ()
 {
   return this->visible;
