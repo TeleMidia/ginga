@@ -156,10 +156,6 @@ private:
 protected:
   bool lockObject ();
   bool unlockObject ();
-
-public:
-  virtual void flip (){};
-  virtual void timeShift (const string &direction);
 };
 
 GINGA_FORMATTER_END

@@ -60,7 +60,6 @@ public:
 
   void getOriginalResolution (int *width, int *height);
   int64_t getVPts ();
-  void timeShift (const string &direction);
 
   guint32 getMediaTime (); //works
   void setMediaTime (guint32 pos);

@@ -3300,12 +3300,6 @@ FormatterMediator::getBaseUri (const string &baseA, const string &baseB)
   return base;
 }
 
-void
-FormatterMediator::timeShift (const string &direction)
-{
-  playerManager->timeShift (direction);
-}
-
 PresentationContext *
 FormatterMediator::getPresentationContext ()
 {

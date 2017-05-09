@@ -252,12 +252,6 @@ VideoPlayer::getVPts ()
   return 0;
 }
 
-void
-VideoPlayer::timeShift (arg_unused(const string &direction))
-{
-	TRACE ();
-}
-
 guint32
 VideoPlayer::getMediaTime ()
 {

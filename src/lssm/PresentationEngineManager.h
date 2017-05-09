@@ -143,7 +143,7 @@ private:
   static void *eventReceived (void *ptr);
   bool getNclPlayer (const string &docLocation, INCLPlayer **player);
   bool getNclPlayer (const string &baseId, const string &docId, INCLPlayer **p);
-  void updateFormatters (short command, const string &parameter = "");
+  void updateFormatters (short command);
   void run ();
 };
 
