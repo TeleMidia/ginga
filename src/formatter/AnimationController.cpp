@@ -28,6 +28,8 @@ AnimationController::AnimationController (NclExecutionObject *execObj,
                                           NclAttributionEvent *event,
                                           const string &value, Animation *anim)
 {
+  string by;
+
   this->execObj = execObj;
   this->pManager = pManager;
   this->player = player;
@@ -35,7 +37,10 @@ AnimationController::AnimationController (NclExecutionObject *execObj,
   this->params = split (xstrchomp (value), ",");
   this->propName = (event->getAnchor ())->getPropertyName ();
   this->duration = xstrtod (anim->getDuration ());
-  this->stepSize = xstrto_int (anim->getBy ());
+
+  by = anim->getBy ();
+  this->stepSize = (by == "indefinite") ? 5 : xstrto_int (by);
+
   this->targetRegion = NULL;
   this->previousValues = "";
 }
