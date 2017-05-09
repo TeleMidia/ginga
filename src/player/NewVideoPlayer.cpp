@@ -70,7 +70,7 @@ NewVideoPlayer::createPipeline ()
   uri = gst_filename_to_uri (mrl.c_str (), NULL);
   g_assert_nonnull (uri);
 
-  g_object_set (G_OBJECT (playbin), "uri", uri, NULL);
+  g_object_set (G_OBJECT (this->playbin), "uri", uri, NULL);
   g_free (uri);
 
   bin = gst_bin_new (NULL);
@@ -228,21 +228,6 @@ NewVideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 }
 
 void
-NewVideoPlayer::finished ()
-{
-	TRACE ();
-  g_print (">>-------------------- NewVideoPlayer:finished -------------------<<");  
-}
-
-double
-NewVideoPlayer::getEndTime ()
-{
-	TRACE ();
-  g_print (">>-------------------- NewVideoPlayer:getEndTime -------------------<<");
-  return 0;
-}
-
-void
 NewVideoPlayer::initializeAudio (arg_unused (int numArgs), arg_unused (char *args[]))
 {
 	TRACE ();
@@ -258,14 +243,6 @@ void
 NewVideoPlayer::getOriginalResolution (arg_unused(int *width), arg_unused(int *height))
 {
 	g_debug ("%s", G_STRLOC);
-}
-
-double
-NewVideoPlayer::getTotalMediaTime ()
-{
-	g_debug ("%s", G_STRLOC);
-  g_print (">>-------------------- NewVideoPlayer:getTotalMediaTime -------------------<<");
-  return 0;
 }
 
 int64_t
@@ -457,15 +434,36 @@ NewVideoPlayer::eos ()
 }
 
 string
-NewVideoPlayer::getPropertyValue (arg_unused(const string &name))
+NewVideoPlayer::getPropertyValue (const string &name)
 {
-	TRACE ();
-  return NULL;
+  return Player::getPropertyValue(name);
 }
 
 void
 NewVideoPlayer::setPropertyValue (const string &name, const string &value)
 {
+  if (!value.length())
+    return;
+
+  string newValue = value;
+  double soundLevel = 1.0;
+  
+  if (name == "soundLevel")
+  {
+    if (isPercentualValue (newValue))
+    {
+      xstrassign (newValue, "%d", (int) (getPercentualValue (newValue) / 100));
+    }
+    
+    if (newValue != "")
+    {
+      soundLevel = CLAMP (xstrtod (newValue),0,1);
+    }
+
+    //g_print (">>>>>>VOLUME: %f\n",soundLevel);
+    g_object_set (G_OBJECT (this->playbin), "volume", soundLevel, NULL);
+  }
+  
   Player::setPropertyValue(name, value);
 }
 
