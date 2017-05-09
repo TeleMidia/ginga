@@ -37,9 +37,6 @@ public:
   void setTexture (SDL_Texture *);
   SDL_Texture *getTexture ();
 
-  void redraw (SDL_Renderer *); // called only by the render thread
-// END SANITY --------------------------------------------------------------
-
 private:
  
   int borderWidth;
