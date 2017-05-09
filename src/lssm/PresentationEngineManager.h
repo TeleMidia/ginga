@@ -28,7 +28,6 @@ using namespace ::ginga::player;
 using namespace ::ginga::system;
 
 #include "mb/Display.h"
-#include "mb/ICmdEventListener.h"
 using namespace ::ginga::mb;
 
 #include "player/IPlayerListener.h"
@@ -40,7 +39,6 @@ using namespace ::ginga::formatter;
 GINGA_LSSM_BEGIN
 
 class PresentationEngineManager : public IPlayerListener,
-                                  public ICmdEventListener,
                                   public Thread
 {
 public:
@@ -66,8 +64,6 @@ private:
   set<INCLPlayer *> formattersToRelease;
   bool paused;
   string iconPath;
-  bool isEmbedded;
-  bool standAloneApp;
   bool isLocalNcl;
   void *dsmccListener;
   void *tuner;
@@ -76,7 +72,6 @@ private:
   bool hasInteractivity;
   bool enableMulticast;
   bool exitOnEnd;
-  bool disableFKeys;
   ITimeBaseProvider *timeBaseProvider;
   int currentPrivateBaseId;
   static bool autoProcess;
@@ -92,22 +87,12 @@ public:
                              bool useMulticast);
   virtual ~PresentationEngineManager ();
   void setExitOnEnd (bool exitOnEnd);
-  void setDisableFKeys (bool disableFKeys);
   set<string> *createPortIdList (const string &nclFile);
   short getMappedInterfaceType (const string &nclFile, const string &portId);
-  void autoMountOC (bool autoMountIt);
   void setCurrentPrivateBaseId (unsigned int baseId);
   void setTimeBaseProvider (ITimeBaseProvider *tmp);
 
   void startPresentationThread(void);
-
-private:
-  void printGingaWindows ();
-  bool nclEdit (const string &nclEditApi);
-  bool editingCommand (const string &commandTag, const string &commandPayload);
-
-public:
-  bool editingCommand (const string &editingCmd);
 
 private:
   void close ();
@@ -139,13 +124,11 @@ public:
   bool abortPresentation (const string &nclFile);
 
 private:
-  void openNclDocument (const string &docUri, int x, int y, int w, int h);
   void pausePressed ();
 
 public:
   void *getDsmccListener ();
   void setCmdFile (const string &cmdFile);
-  static void *processAutoCmd (void *ptr);
   void waitUnlockCondition ();
 
 private:
@@ -157,9 +140,7 @@ private:
                      short type,
                      const string &value);
 
-  bool cmdEventReceived (const string &command, const string &args);
   static void *eventReceived (void *ptr);
-  void readCommand (const string &command);
   bool getNclPlayer (const string &docLocation, INCLPlayer **player);
   bool getNclPlayer (const string &baseId, const string &docId, INCLPlayer **p);
   void updateFormatters (short command, const string &parameter = "");
