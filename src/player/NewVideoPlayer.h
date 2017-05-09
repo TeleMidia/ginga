@@ -75,7 +75,7 @@ public:
   void resume (); //works
 
   virtual string getPropertyValue (const string &name); //works
-  virtual void setPropertyValue (const string &name, const string &value);
+  virtual void setPropertyValue (const string &name, const string &value); //works
 
   void addListener (IPlayerListener *listener); //need test
   //void release ();
@@ -100,6 +100,8 @@ public:
   static bool displayJobCallbackWrapper (DisplayJob *,
                                          SDL_Renderer *, void *); //works
   bool displayJobCallback (DisplayJob *, SDL_Renderer *); //works
+
+  double soundLevel;
 
   GstElement *playbin;
   GstElement *bin;
