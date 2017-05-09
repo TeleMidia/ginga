@@ -245,7 +245,6 @@ FormatterMediator::FormatterMediator (NclPlayerData *pData)
   privateBaseManager = (PrivateBaseManager *)(data->privateBaseManager);
 
   privateBaseManager->createPrivateBase (data->baseId);
-  playerManager->setNclEditListener ((IPlayerListener *)data->editListener);
   ((FormatterFocusManager *)(data->focusManager))
       ->setMotionBoundaries (data->x, data->y, data->w, data->h);
 

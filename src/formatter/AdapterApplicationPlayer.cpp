@@ -73,12 +73,6 @@ AdapterApplicationPlayer::~AdapterApplicationPlayer ()
 }
 
 void
-AdapterApplicationPlayer::setNclEditListener (IPlayerListener *listener)
-{
-  this->editingCommandListener = listener;
-}
-
-void
 AdapterApplicationPlayer::createPlayer ()
 {
   clog << "AdapterApplicationPlayer::createPlayer(" << this << ")";

@@ -180,12 +180,6 @@ AdapterPlayerManager::clear ()
   Thread::mutexUnlock (&mutexPlayer);
 }
 
-void
-AdapterPlayerManager::setNclEditListener (IPlayerListener *listener)
-{
-  this->editingCommandListener = listener;
-}
-
 AdapterFormatterPlayer *
 AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
 {

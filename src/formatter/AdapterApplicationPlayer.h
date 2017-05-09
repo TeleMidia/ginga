@@ -53,8 +53,6 @@ public:
   AdapterApplicationPlayer ();
   virtual ~AdapterApplicationPlayer ();
 
-  void setNclEditListener (IPlayerListener *listener);
-
 protected:
   void checkPlayerSurface (NclExecutionObject *obj);
   virtual void createPlayer ();

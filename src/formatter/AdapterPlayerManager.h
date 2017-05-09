@@ -75,9 +75,6 @@ private:
   bool removePlayer (const string &objectId);
   void clear ();
 
-public:
-  void setNclEditListener (IPlayerListener *listener);
-
 private:
   AdapterFormatterPlayer *initializePlayer (NclExecutionObject *object);
 
@@ -92,9 +89,6 @@ public:
 
 private:
   static bool isEmbeddedAppMediaType (const string &mediaType);
-
-public:
-  void timeShift (const string &direction);
 
 protected:
   void clearDeletePlayers ();
