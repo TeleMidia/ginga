@@ -55,14 +55,10 @@ public:
   NewVideoPlayer (const string &mrl); //works
   virtual ~NewVideoPlayer ();
 
-  void finished ();
-  double getEndTime ();
-
   static void initializeAudio (int numArgs, char *args[]);
   static void releaseAudio ();
 
   void getOriginalResolution (int *width, int *height);
-  double getTotalMediaTime ();
   int64_t getVPts ();
   void timeShift (const string &direction);
 
@@ -74,18 +70,18 @@ public:
                  double begin = -1, double end = -1,
                  double outTransDur = -1);
   bool play (); //works
-  void pause (); //need test 
+  void pause (); //works
   void stop (); //works
-  void resume (); //need test
+  void resume (); //works
 
-  virtual string getPropertyValue (const string &name);
+  virtual string getPropertyValue (const string &name); //works
   virtual void setPropertyValue (const string &name, const string &value);
 
   void addListener (IPlayerListener *listener); //need test
   //void release ();
   string getMrl (); //works
   bool isPlaying (); //works
-  bool isRunning ();
+  bool isRunning (); //works
 
   //void setAVPid (int aPid, int vPid);
 
