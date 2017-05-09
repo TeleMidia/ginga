@@ -222,7 +222,6 @@ src+= system/PracticalSocket.cpp
 src+= system/Stc.cpp
 src+= system/SystemCompat.cpp
 src+= system/Thread.cpp
-src+= util/Base64.cpp
 src+= util/functions.cpp
 
 if WITH_ESPEAK
