@@ -202,7 +202,7 @@
       <bind role="set" component="photo" interface="top">
         <bindParam name="var" value="290"/>
         <bindParam name="delay" value="1s"/>
-        <bindParam name="duration" value="3s"/>
+        <!-- <bindParam name="duration" value="3s"/> -->
       </bind>
     </link>
     <link xconnector="conEx#onEndStop">

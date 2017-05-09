@@ -318,8 +318,8 @@ NewVideoPlayer::play ()
   ret = gst_element_set_state (this->playbin, GST_STATE_PLAYING);
   g_assert (ret != GST_STATE_CHANGE_FAILURE);
 
-  //g_debug ("\nNewVideoPlayer::play()\n"); 
-  //clog << "\n\n\n>>NewVideoPlayer::play() - " << this->mrl << "\n\n\n" << endl;
+  g_debug ("\nNewVideoPlayer::play()\n"); 
+  //clog << "\n\n\n>>NewVideoPlayer::play() - " << this->mrl << "\n\n\n" << endl;  
   printPipelineState ();
   
   GstStateChangeReturn retWait = gst_element_get_state (this->playbin, 
