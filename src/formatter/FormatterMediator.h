@@ -143,8 +143,8 @@ private:
   pthread_mutex_t pteMutex;
 
 public:
-  FormatterMediator (NclPlayerData *data);
-  virtual ~FormatterMediator ();
+  FormatterMediator ();
+  ~FormatterMediator ();
 
   static void release ();
 
@@ -154,7 +154,6 @@ public:
   void setMrl (const string &mrl, bool visible = true);
   void reset (){};
   void rebase (){};
-  void printData (NclPlayerData *data);
   void setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider);
 
   void setParentLayout (void *parentLayout);

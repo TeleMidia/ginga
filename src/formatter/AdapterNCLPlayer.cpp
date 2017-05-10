@@ -119,7 +119,7 @@ AdapterNCLPlayer::createPlayer ()
             }
         }
 
-      player = (INCLPlayer *)(new FormatterMediator (childData));
+      player = (INCLPlayer *)(new FormatterMediator ());
 
       if (((INCLPlayer *)player)->setCurrentDocument (mrl) == NULL)
         {
