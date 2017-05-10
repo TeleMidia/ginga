@@ -143,7 +143,6 @@ private:
   static void initializeGingaPrefix ();
   static void initializeGingaPath ();
   static void initializeUserCurrentPath ();
-  static void initializeGingaConfigFile ();
 
 public:
   /********
