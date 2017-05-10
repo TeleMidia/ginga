@@ -46,29 +46,8 @@ PresentationEngineManager::runThread ()
 
 PresentationEngineManager::PresentationEngineManager (const string &file)
 {
-  NclPlayerData *data;
-
-  data = new NclPlayerData;
-  g_assert_nonnull (data);
-
-  data->baseId = "-1";
-  data->devClass = 0;
-  data->docId = "";
-  data->focusManager = NULL;
-  data->nodeId = "";
-  data->parentDocId = "";
-  data->playerId = file;
-  data->transparency = 0;
-  data->x = 0;
-  data->y = 0;
-  Ginga_Display->getSize (&data->w, &data->h);
-
-  data->privateBaseManager = new PrivateBaseManager ();
-  g_assert_nonnull (data->privateBaseManager);
-
-  this->formatter = new FormatterMediator (data);
+  this->formatter = new FormatterMediator ();
   g_assert_nonnull (this->formatter);
-
   this->formatter->setCurrentDocument (file);
 }
 

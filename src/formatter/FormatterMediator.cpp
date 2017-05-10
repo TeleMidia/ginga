@@ -188,16 +188,29 @@ EntryEventListener::getPriorityType ()
   return PT_OBJECT;
 }
 
-FormatterMediator::FormatterMediator (NclPlayerData *pData)
-    : Player ("")
+FormatterMediator::FormatterMediator () : Player ("")
 {
-  string deviceName;
-  xstrassign (deviceName, "systemScreen(%d)", pData->devClass);
+  NclPlayerData *data;
 
-  this->data = pData;
+  data = new NclPlayerData;
+  data->baseId = "-1";
+  data->devClass = 0;
+  data->docId = "";
+  data->focusManager = NULL;
+  data->nodeId = "";
+  data->parentDocId = "";
+  data->playerId = "";
+  data->transparency = 0;
+  data->x = 0;
+  data->y = 0;
+  Ginga_Display->getSize (&data->w, &data->h);
+  data->privateBaseManager = new PrivateBaseManager ();
+  this->data = data;
+
   this->currentFile = "";
   this->currentDocument = NULL;
 
+  string deviceName = "systemScreen(0)";
   deviceLayout = new DeviceLayout (deviceName);
   deviceLayout->addDevice (deviceName, data->x, data->y, data->w, data->h);
 
