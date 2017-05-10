@@ -142,7 +142,6 @@ src+= ncl/ConnectorBase.cpp
 src+= ncl/Content.cpp
 src+= ncl/ContentAnchor.cpp
 src+= ncl/ContentNode.cpp
-src+= ncl/ContentTypeManager.cpp
 src+= ncl/ContextNode.cpp
 src+= ncl/Descriptor.cpp
 src+= ncl/DescriptorBase.cpp

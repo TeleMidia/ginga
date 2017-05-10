@@ -184,6 +184,29 @@ ginga_color_table_compar (const void *e1, const void *e2)
   return g_ascii_strcasecmp (c1->name, c2->name);
 }
 
+/* Gets the color value associated with the given name.  If NAME is in color
+   table, stores its color components into *R, *G, *B, and returns true,
+   otherwise returns false.  */
+static inline gboolean
+ginga_color_table_index (const char *name, guchar *r, guchar *g, guchar *b)
+{
+  GingaColorTable key;
+  GingaColorTable *match;
+
+  key.name = name;
+  match = (GingaColorTable *)
+    bsearch (&key, ginga_color_table, G_N_ELEMENTS (ginga_color_table),
+             sizeof (*ginga_color_table), ginga_color_table_compar);
+  if (match == NULL)
+    return FALSE;
+
+  *r = match->r;
+  *g = match->g;
+  *b = match->b;
+
+  return TRUE;
+}
+
 /* Formating of Hex Input to 8 bytes standard (#RRGGBBAA) */
 static inline const char *
 ginga_color_hex_formatter(string hex){
@@ -311,29 +334,6 @@ static inline double
 ginga_color_percent(guint c){
     if(c>0) return (double)c/255;
     else return 0;
-}
-
-/* Gets the color value associated with the given name.  If NAME is in color
-   table, stores its color components into *R, *G, *B, and returns true,
-   otherwise returns false.  */
-static inline gboolean
-ginga_color_table_index (const char *name, guchar *r, guchar *g, guchar *b)
-{
-  GingaColorTable key;
-  GingaColorTable *match;
-
-  key.name = name;
-  match = (GingaColorTable *)
-    bsearch (&key, ginga_color_table, G_N_ELEMENTS (ginga_color_table),
-             sizeof (*ginga_color_table), ginga_color_table_compar);
-  if (match == NULL)
-    return FALSE;
-
-  *r = match->r;
-  *g = match->g;
-  *b = match->b;
-
-  return TRUE;
 }
 
 /* Gets the matching SDL_Color to the given input.  If Value is a

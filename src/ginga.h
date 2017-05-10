@@ -382,7 +382,6 @@ xruntime ()
 // FIXME: Use gint64 and time in microseconds.
 #define xruntime_ms() (double)(xruntime () * 1000)
 
-
 
 // Auxiliary thread functions.
 

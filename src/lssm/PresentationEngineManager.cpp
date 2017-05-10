@@ -23,97 +23,65 @@ using namespace ::ginga::formatter;
 
 GINGA_LSSM_BEGIN
 
-PresentationEngineManager::PresentationEngineManager ()
-{
-  this->mutexInit ();
-  privateBaseManager = new PrivateBaseManager ();
-
-  ContentTypeManager::getInstance ()->setMimeFile (string (GINGA_DATADIR)
-                                                   + "mimetypes.ini");
-}
-
-PresentationEngineManager::~PresentationEngineManager ()
-{
-  this->mutexClear ();
-}
-
-INCLPlayer *
-PresentationEngineManager::createNclPlayer (const string &baseId,
-                                            const string &fname)
-{
-  NclPlayerData *data = NULL;
-  data = createNclPlayerData ();
-
-  data->devClass = 0;
-  data->baseId = baseId;
-  data->playerId = fname;
-  data->privateBaseManager = privateBaseManager;
-
-  this->formatter = new FormatterMediator (data);
-  this->formatter->setCurrentDocument (fname);
-  return this->formatter;
-}
-
-NclPlayerData *
-PresentationEngineManager::createNclPlayerData ()
-{
-  NclPlayerData *data = NULL;
-
-
-  data = new NclPlayerData;
-  data->baseId = "";
-  data->playerId = "";
-  data->x = 0;
-  data->y = 0;
-  Ginga_Display->getSize (&data->w, &data->h);
-  data->parentDocId = "";
-  data->nodeId = "";
-  data->docId = "";
-  data->transparency = 0;
-  data->focusManager = NULL;
-  data->privateBaseManager = NULL;
-  data->editListener = NULL;
-
-  return data;
-}
-
-bool
-PresentationEngineManager::openNclFile (const string &fname)
-{
-  INCLPlayer *formatter;
-
-  this->lock ();
-  formatter = createNclPlayer ("-1", fname);
-  this->unlock ();
-
-  return (formatter != NULL);
-}
-
-//--
+
+// Private methods.
 
 gpointer
-PresentationEngineManager::startPresentationThreadWrapper (gpointer data)
+PresentationEngineManager::runThreadWrapper (gpointer data)
 {
   g_assert_nonnull (data);
-  ((PresentationEngineManager *) data)->startPresentationThread();
+  ((PresentationEngineManager *) data)->runThread ();
   return NULL;
 }
 
 void
-PresentationEngineManager::startPresentationThread ()
+PresentationEngineManager::runThread ()
 {
   g_assert_nonnull (this->formatter);
   this->formatter->play ();
 }
 
-bool
-PresentationEngineManager::startPresentation (arg_unused (const string &nclFile),
-                                              arg_unused (const string &interfId))
+
+// Public methods.
+
+PresentationEngineManager::PresentationEngineManager (const string &file)
 {
-   g_thread_new ("startPresentation", startPresentationThreadWrapper, this);
+  NclPlayerData *data;
 
-   return TRUE;
+  data = new NclPlayerData;
+  g_assert_nonnull (data);
 
+  data->baseId = "-1";
+  data->devClass = 0;
+  data->docId = "";
+  data->focusManager = NULL;
+  data->nodeId = "";
+  data->parentDocId = "";
+  data->playerId = file;
+  data->transparency = 0;
+  data->x = 0;
+  data->y = 0;
+  Ginga_Display->getSize (&data->w, &data->h);
+
+  data->privateBaseManager = new PrivateBaseManager ();
+  g_assert_nonnull (data->privateBaseManager);
+
+  this->formatter = new FormatterMediator (data);
+  g_assert_nonnull (this->formatter);
+
+  this->formatter->setCurrentDocument (file);
+}
+
+PresentationEngineManager::~PresentationEngineManager ()
+{
+  g_assert_nonnull (this->formatter);
+  delete this->formatter;
+}
+
+void
+PresentationEngineManager::run ()
+{
+  g_thread_new ("PEM", runThreadWrapper, this);
 }
 
 GINGA_LSSM_END

@@ -38,21 +38,6 @@ formatterimg_DATA=\
   formatterimg/b8.png\
   $(NULL)
 
-# ini
-INTERNAL_DELIM= "/"
-FOREIGN_DELIM= "\\\\"
-INSTALL_PREFIX= "$(pkgdatadir)"
-FILES_PREFIX= "$(pkgdatadir)"
-
-pkgdata_DATA=\
-  ini/mimetypes.ini\
-  $(NULL)
-
-# mb
-mb_DATA=\
-  mb/input.cfg\
-  $(NULL)
-
 # tuner
 tuner_DATA=\
   tuner/tuner.ini\
