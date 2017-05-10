@@ -39,7 +39,7 @@ SDLWindow::SDLWindow (int x, int y, int z, int width, int height)
 {
   this->mutexInit ();
   this->texture = NULL;
-  initialize (0, x, y, width, height, (double) z);
+  initialize (0, x, y, width, height, z);
 }
 
 /**
@@ -90,7 +90,7 @@ SDLWindow::~SDLWindow ()
 void
 SDLWindow::initialize (arg_unused (SDLWindow* parentWindowID),
                        int x, int y, int w, int h,
-                       double z)
+                       int z)
 {
   this->texture = NULL;
 

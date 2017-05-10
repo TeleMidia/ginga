@@ -60,7 +60,7 @@ private:
 
 private:
   void initialize (SDLWindow* parentWindowID,
-                   int x, int y, int width, int height, double z);
+                   int x, int y, int width, int height, int z);
 
 
 public:

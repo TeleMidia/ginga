@@ -266,6 +266,7 @@ NclFormatterRegion::setZIndex (int zIndex)
 
       cvtZIndex = ((NclFormatterLayout *)layoutManager)
                       ->refreshZIndex (this, layoutId, zIndex, plan);
+      (void) cvtZIndex;
 
       if (outputDisplay != 0)
         {
