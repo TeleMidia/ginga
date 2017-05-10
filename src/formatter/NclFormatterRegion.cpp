@@ -269,7 +269,7 @@ NclFormatterRegion::setZIndex (int zIndex)
 
       if (outputDisplay != 0)
         {
-          outputDisplay->setZ (cvtZIndex);
+          outputDisplay->setZ (zIndex);
         }
 
       toFront ();
