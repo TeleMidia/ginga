@@ -35,7 +35,6 @@ public:
 private:
   void initializeClockSpeed ();
   string getValue (const string &attribute);
-  void printSysTable ();
 
 public:
   void setSystemTable (map<string, string> *sysTable);
