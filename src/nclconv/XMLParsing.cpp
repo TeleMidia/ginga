@@ -27,9 +27,9 @@ XMLParsing::warning (const SAXParseException &e)
   if (file == NULL || strlen (file) <= 0)
     g_warning ("%s", XMLString::transcode (e.getMessage ()));
   else
-    g_warning ("%s:%lu.%lu: %s", file,
-               e.getLineNumber (),
-               e.getColumnNumber (),
+    g_warning ("%s:%u.%u: %s", file,
+               (guint)e.getLineNumber (),
+               (guint)e.getColumnNumber (),
                XMLString::transcode (e.getMessage ()));
 }
 
@@ -40,9 +40,9 @@ XMLParsing::error (const SAXParseException &e)
   if (file == NULL || strlen (file) <= 0)
     g_error ("%s", XMLString::transcode (e.getMessage ()));
   else
-    g_error ("%s:%lu.%lu: %s", file,
-             e.getLineNumber (),
-             e.getColumnNumber (),
+    g_error ("%s:%u.%u: %s", file,
+             (guint)e.getLineNumber (),
+             (guint)e.getColumnNumber (),
              XMLString::transcode (e.getMessage ()));
   exit (EXIT_FAILURE);
 }
