@@ -186,12 +186,8 @@ main (int argc, char **argv)
                                            opt_fullscreen, opt_fps);
   g_assert_nonnull (_Ginga_Display);
 
-  pem = new PresentationEngineManager (0, 0, 0, opt_width, opt_height,
-                                       true);
+  pem = new PresentationEngineManager ();
   g_assert_nonnull (pem);
-
-  pem->setExitOnEnd (false);
-  pem->setInteractivityInfo (true);
 
   if (unlikely (!pem->openNclFile (file)))
     {
