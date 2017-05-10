@@ -120,26 +120,15 @@ NclComponentsConverter::addLinkToContext (void *parentObject,
               if (((Link *)childObject)->getNumRoleBinds (role)
                   < (unsigned int)min)
                 {
-                  clog << "NclComponentsConverter::addLinkToContext";
-                  clog << " role " << role->getLabel ().c_str ();
-                  clog << " with less than minimum binds." << endl;
-
-                  delete ((Link *)childObject);
-                  delete roles;
-
-                  return;
+                  syntax_error ("link: too few binds for role '%s': %d",
+                                role->getLabel ().c_str (), min);
                 }
               else if (max > 0
                        && ((Link *)childObject)->getNumRoleBinds (role)
                               > (unsigned int)max)
                 {
-                  clog << "NclComponentsConverter::addLinkToContext";
-                  clog << " role " << role->getLabel ().c_str ();
-                  clog << " with more than maximum binds." << endl;
-
-                  delete ((Link *)childObject);
-                  delete roles;
-
+                  syntax_error ("link: too many binds for role '%s': %d",
+                                role->getLabel ().c_str (), max);
                   return;
                 }
               ++i;
@@ -163,18 +152,13 @@ void
 NclComponentsConverter::addAnchorToMedia (ContentNode *contentNode,
                                           Anchor *anchor)
 {
-  if (contentNode->getAnchor (anchor->getId ()) != NULL)
+  if (unlikely (contentNode->getAnchor (anchor->getId ()) != NULL))
     {
-      clog << "NclComponentsConverter::addAnchorToMedia ";
-      clog << "There is another interface (area, attribute, etc.)";
-      clog << " with the same id (" << anchor->getId ().c_str ();
-      clog << ") defined for the" << contentNode->getId ().c_str ();
-      clog << " media element." << endl;
+      syntax_error ("media '%s': duplicated area '%s'",
+                    contentNode->getId ().c_str (),
+                    anchor->getId ().c_str ());
     }
-  else
-    {
-      contentNode->addAnchor (anchor);
-    }
+  contentNode->addAnchor (anchor);
 }
 
 void
@@ -202,23 +186,15 @@ NclComponentsConverter::createContext (DOMElement *parentElement,
   ContextNode *context;
   GenericDescriptor *descriptor;
 
-  if (!parentElement->hasAttribute (XMLString::transcode ("id")))
-    {
-      clog << "A context element was declared";
-      clog << " without an id attribute." << endl;
-      return NULL;
-    }
+  if (unlikely (!parentElement->hasAttribute (XMLString::transcode ("id"))))
+    syntax_error ("context: missing id");
 
   id = XMLString::transcode (
       parentElement->getAttribute (XMLString::transcode ("id")));
 
   node = ((NclDocumentConverter *)getDocumentParser ())->getNode (id);
-  if (node != NULL)
-    {
-      clog << "There is another node element previously declared with";
-      clog << " the same " << id.c_str () << " id." << endl;
-      return NULL;
-    }
+  if (unlikely (node != NULL))
+    syntax_error ("context '%s': duplicated id", id.c_str ());
 
   if (parentElement->hasAttribute (XMLString::transcode ("refer")))
     {
@@ -246,22 +222,16 @@ NclComponentsConverter::createContext (DOMElement *parentElement,
         }
       catch (...)
         {
-          clog << "The context element refers to " << attValue.c_str ();
-          clog << " object, which is not a context element." << endl;
-          return NULL;
+          syntax_error ("context '%s': bad refer '%s'", id.c_str (),
+                        attValue.c_str ());
         }
 
       node = new ReferNode (id);
       ((ReferNode *)node)->setReferredEntity (referNode);
 
-      //((NclDocumentConverter*)getDocumentParser())->
-      // addNode((NodeEntity*)node);
-
       return node;
     }
 
-  // retornar nova composicao ncm a partir do elemento xml que a
-  // representa em NCL
   context = new ContextNode (id);
 
   if (parentElement->hasAttribute (XMLString::transcode ("descriptor")))
@@ -280,13 +250,8 @@ NclComponentsConverter::createContext (DOMElement *parentElement,
         }
       else
         {
-          clog << "The context element with " << id.c_str ();
-          clog << " id attribute refers to a descriptor (";
-          clog << attValue.c_str () << ") that"
-               << " does not exist.";
-          clog << endl;
-          delete context;
-          return NULL;
+          syntax_error ("context '%s': bad descriptor '%s'", id.c_str (),
+                        attValue.c_str ());
         }
     }
 
@@ -297,7 +262,6 @@ void *
 NclComponentsConverter::posCompileContext (DOMElement *parentElement,
                                            void *parentObject)
 {
-  clog << "posCompileContext" << endl;
   DOMNodeList *elementNodeList;
   int i, size;
   DOMNode *node;
@@ -326,18 +290,6 @@ NclComponentsConverter::posCompileContext (DOMElement *parentElement,
                                 element->getAttribute (
                                     XMLString::transcode ("id"))));
 
-                  /*
-                   * This is an old version to get nested contexts.
-                   * Nested contexts' ids are not in
-                   * documentParser's genericTable.
-                  elementObject = ((NclDocumentConverter*)
-                                  getDocumentParser())->getNode(
-                                                  XMLString::transcode(
-                                                                  element->getAttribute(
-                                                                                  XMLString::transcode(
-                                                                                                  "id"))));
-                  */
-
                   try
                     {
                       if (((NodeEntity *)elementObject)
@@ -361,15 +313,14 @@ NclComponentsConverter::posCompileContext (DOMElement *parentElement,
                                       element->getAttribute (
                                           XMLString::transcode ("id"))));
 
-              if (elementObject == NULL)
+              if (unlikely (elementObject == NULL))
                 {
-                  clog << "NclComponentsConverter::posCompileContext ";
-                  clog << "Error can't find '";
-                  clog << XMLString::transcode (
-                      element->getAttribute (XMLString::transcode ("id")));
+                  syntax_error ("bad switch '%s'",
+                                string (XMLString::transcode
+                                        (element->getAttribute
+                                         (XMLString::transcode
+                                          ("id")))).c_str ());
 
-                  clog << "' (switch)";
-                  clog << endl;
                 }
               else if (((NodeEntity *)elementObject)
                            ->instanceOf ("SwitchNode"))
@@ -395,23 +346,15 @@ NclComponentsConverter::createMedia (DOMElement *parentElement,
   Entity *referNode;
   GenericDescriptor *descriptor;
 
-  if (!parentElement->hasAttribute (XMLString::transcode ("id")))
-    {
-      clog << "Error: a media element was declared without an id";
-      clog << " attribute." << endl;
-      return NULL;
-    }
+  if (unlikely (!parentElement->hasAttribute (XMLString::transcode ("id"))))
+    syntax_error ("media: missing id");
 
   id = XMLString::transcode (
       parentElement->getAttribute (XMLString::transcode ("id")));
 
   node = ((NclDocumentConverter *)getDocumentParser ())->getNode (id);
-  if (node != NULL)
-    {
-      clog << "There is another node element previously declared";
-      clog << " with the same " << id.c_str () << " id." << endl;
-      return NULL;
-    }
+  if (unlikely (node != NULL))
+    syntax_error ("media '%s': duplicated id", id.c_str ());
 
   if (parentElement->hasAttribute (XMLString::transcode ("refer")))
     {
@@ -426,7 +369,6 @@ NclComponentsConverter::createMedia (DOMElement *parentElement,
 
           if (referNode == NULL)
             {
-              // TODO: verificar se faz a mesma coisa da linha anterior
               document = (NclDocument *)(getDocumentParser ()->getObject (
                   "return", "document"));
 
@@ -440,10 +382,8 @@ NclComponentsConverter::createMedia (DOMElement *parentElement,
         }
       catch (...)
         {
-          clog << "The media element refers to ";
-          clog << attValue.c_str ();
-          clog << " object, which is not a media element." << endl;
-          return NULL;
+          syntax_error ("media '%s': bad refer '%s'",
+                        id.c_str (), attValue.c_str ());
         }
 
       node = new ReferNode (id);
@@ -461,7 +401,6 @@ NclComponentsConverter::createMedia (DOMElement *parentElement,
 
   node = new ContentNode (id, NULL, "");
 
-  // type of media object
   if (parentElement->hasAttribute (XMLString::transcode ("type")))
     {
       ((ContentNode *)node)
@@ -486,31 +425,14 @@ NclComponentsConverter::createMedia (DOMElement *parentElement,
               ((ContentNode *)node)
                   ->setContent (new AbsoluteReferenceContent (
                       getDocumentParser ()->getDocumentPath () +
-                      /*getDocumentParser()->getIUriD() +*/
                       src));
             }
         }
     }
 
-  // testar duracao implicita do no' de midia
-  /*
-   if (parentElement.hasAttribute("implicitDur")) {
-   String durStr = parentElement.getAttribute("implicitDur");
-   durStr = durStr.substring(0, durStr.length() - 1);
-   //converter duracao para double
-   long dur = (long)((new Double(durStr)).doubleValue() * 1000);
-   //recuperar ancora lambda do no' de midia
-   ILambdaAnchor anchor = (ILambdaAnchor)node.getAnchor(0);
-   //cast
-   IIntervalRegion region = (IIntervalRegion)anchor.getRegion();
-   //atribuir duracao implicita
-   region.setEnd(dur);
-   }
-   */
 
   if (parentElement->hasAttribute (XMLString::transcode ("descriptor")))
     {
-      // adicionar um descritor a um objeto de midia
       attValue = XMLString::transcode (parentElement->getAttribute (
           XMLString::transcode ("descriptor")));
 
@@ -524,18 +446,10 @@ NclComponentsConverter::createMedia (DOMElement *parentElement,
         }
       else
         {
-          clog << "The media element with " << id.c_str ();
-          clog << " id attribute refers to a descriptor (";
-          clog << attValue.c_str () << ") that does not exist." << endl;
-          delete node;
-          node = NULL;
-          return NULL;
+          syntax_error ("media '%s': bad descriptor '%s'",
+                        id.c_str (), attValue.c_str ());
         }
     }
-
-  //((NclDocumentConverter*)getDocumentParser())->addNode((NodeEntity*)node);
-
-  // retornar no' de midia
   return node;
 }
 

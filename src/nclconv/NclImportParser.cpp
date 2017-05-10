@@ -40,11 +40,7 @@ NclImportParser::parseImportedDocumentBase (DOMElement *parentElement,
 
   // pre-compile attributes
   parentObject = createImportedDocumentBase (parentElement, objGrandParent);
-
-  if (parentObject == NULL)
-    {
-      return NULL;
-    }
+  g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)

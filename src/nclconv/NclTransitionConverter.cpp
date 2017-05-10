@@ -55,32 +55,24 @@ NclTransitionConverter::createTransition (DOMElement *parentElement,
   double dur;
   SDL_Color *color;
 
-  if (!parentElement->hasAttribute (XMLString::transcode ("id")))
+  if (unlikely (!parentElement->hasAttribute (XMLString::transcode ("id"))))
+    syntax_error ("transition: missing id");
+
+  id = XMLString::transcode
+    (parentElement->getAttribute (XMLString::transcode ("id")));
+
+  if (unlikely (!parentElement->hasAttribute
+                (XMLString::transcode ("type"))))
     {
-      return NULL;
+      syntax_error ("transition '%s': missing type", id.c_str ());
     }
 
-  id = XMLString::transcode (
-      parentElement->getAttribute (XMLString::transcode ("id")));
+  attValue = XMLString::transcode
+    (parentElement->getAttribute (XMLString::transcode ("type")));
 
-  if (parentElement->hasAttribute (XMLString::transcode ("type")))
-    {
-      attValue = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("type")));
-
-      type = TransitionUtil::getTypeCode (attValue);
-      if (type < 0)
-        {
-          return NULL;
-        }
-    }
-  else
-    {
-      // type must be defined
-      clog << "NclTransitionConverter::createTransition warning!";
-      clog << " transition type must be defined" << endl;
-      return NULL;
-    }
+  type = TransitionUtil::getTypeCode (attValue);
+  if (unlikely (type < 0))
+    syntax_error ("transition '%s': bad type '%d'", id.c_str (), type);
 
   transition = new Transition (id, type);
 
@@ -216,8 +208,7 @@ NclTransitionConverter::addImportBaseToTransitionBase (void *parentObject,
     }
   catch (std::exception *exc)
     {
-      clog << "NclTransitionConverter::addImportBaseToTransitionBase";
-      clog << "Warning! exception '" << exc->what () << "'" << endl;
+      syntax_error ("importBase: bad transition base");
     }
 }
 

@@ -28,59 +28,41 @@ NclInterfacesConverter::NclInterfacesConverter (
 }
 
 void *
-NclInterfacesConverter::createPort (DOMElement *parentElement,
+NclInterfacesConverter::createPort (DOMElement *parent,
                                     void *objGrandParent)
 {
-  string id, attValue;
+  string id;
+  string attValue;
   Node *portNode;
   NodeEntity *portNodeEntity;
   InterfacePoint *portInterfacePoint = NULL;
   Port *port = NULL;
   CompositeNode *context = (CompositeNode *)objGrandParent;
 
-  if (!parentElement->hasAttribute (XMLString::transcode ("id")))
-    {
-      clog << "NclInterfacesConverter::createPort ";
-      clog << "Warning! A port element was declared without";
-      clog << " an id attribute." << endl;
-      return NULL;
-    }
+  if (unlikely (!parent->hasAttribute (XMLString::transcode ("id"))))
+    syntax_error ("port: missing id");
 
-  id = XMLString::transcode (
-      parentElement->getAttribute (XMLString::transcode ("id")));
+  id = XMLString::transcode (parent->getAttribute
+                             (XMLString::transcode ("id")));
 
-  if (context->getPort (id) != NULL)
-    {
-      clog << "NclInterfacesConverter::createPort ";
-      clog << "Warning! A port already exists with the same ";
-      clog << id << " id in " << context->getId ();
-      clog << " context" << endl;
-      return NULL;
-    }
+  if (unlikely (context->getPort (id) != NULL))
+    syntax_error ("port '%s': duplicated id", id.c_str ());
 
-  if (!parentElement->hasAttribute (XMLString::transcode ("component")))
-    {
-      clog << "NclInterfacesConverter::createPort ";
-      clog << "Warning! '" << id << "' port must refer";
-      clog << " a context component using component attribute.";
-      clog << endl;
-      return NULL;
-    }
+  if (!unlikely (parent->hasAttribute (XMLString::transcode ("component"))))
+    syntax_error ("port '%s': missing component", id.c_str ());
 
-  attValue = XMLString::transcode (
-      parentElement->getAttribute (XMLString::transcode ("component")));
+  attValue = XMLString::transcode (parent->getAttribute
+                                   (XMLString::transcode ("component")));
 
   portNode = context->getNode (attValue);
-  if (portNode == NULL)
+  if (unlikely (portNode == NULL))
     {
-      clog << "NclInterfacesConverter::createPort ";
-      clog << "Warning! Composition does not contain the referenced ";
-      clog << attValue << " component." << endl;
-      return NULL;
+      syntax_error ("port '%s': bad component '%s'", id.c_str (),
+                    attValue.c_str ());
     }
 
   portNodeEntity = (NodeEntity *)portNode->getDataEntity ();
-  if (!parentElement->hasAttribute (XMLString::transcode ("interface")))
+  if (!parent->hasAttribute (XMLString::transcode ("interface")))
     {
       if (portNode->instanceOf ("ReferNode")
           && ((ReferNode *)portNode)->getInstanceType () == "new")
@@ -95,24 +77,21 @@ NclInterfacesConverter::createPort (DOMElement *parentElement,
       else if (portNodeEntity->instanceOf ("Node"))
         {
           portInterfacePoint = portNodeEntity->getAnchor (0);
-          if (portInterfacePoint == NULL)
+          if (unlikely (portInterfacePoint == NULL))
             {
-              clog << "NclInterfacesConverter::createPort Warning!";
-              clog << " CAN'T FIND an interface for '";
-              clog << portNodeEntity->getId () << "'" << endl;
+              syntax_error ("port '%s': bad interface '%s'",
+                            id.c_str (), portNodeEntity->getId ().c_str ());
             }
         }
       else
         {
-          clog << "NclInterfacesConverter::createPort ";
-          clog << "Warning! Can't find interfaces for entity '";
-          clog << portNodeEntity->getId () << "'" << endl;
+          g_assert_not_reached ();
         }
     }
   else
     {
-      attValue = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("interface")));
+      attValue = XMLString::transcode
+        (parent->getAttribute (XMLString::transcode ("interface")));
 
       if (portNode->instanceOf ("ReferNode")
           && ((ReferNode *)portNode)->getInstanceType () == "new")
@@ -128,8 +107,6 @@ NclInterfacesConverter::createPort (DOMElement *parentElement,
         {
           if (portNodeEntity->instanceOf ("CompositeNode"))
             {
-              // the interface may refer to a composition port
-              // instead of an anchor
               portInterfacePoint
                   = ((CompositeNode *)portNodeEntity)->getPort (attValue);
             }
@@ -138,30 +115,14 @@ NclInterfacesConverter::createPort (DOMElement *parentElement,
               portInterfacePoint = portNode->getAnchor (attValue);
             }
         }
-
-      clog << "NclInterfacesConverter::createPort parentElement ";
-      clog << "hasAttribute with value '" << attValue << "'. ";
-      clog << "searching interface inside '" << portNodeEntity->getId ();
-      clog << "'";
-      if (portInterfacePoint != NULL)
-        {
-          clog << " found '" << portInterfacePoint->getId () << "'";
-        }
-
-      clog << endl;
     }
 
-  if (portInterfacePoint == NULL)
+  if (unlikely (portInterfacePoint == NULL))
     {
-      clog << "NclInterfacesConverter::createPort ";
-      clog << "The referenced " << portNode->getId ().c_str ();
-      clog << " component does not contain the referenced ";
-      clog << XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("interface")));
-
-      clog << " interface" << endl;
-
-      return NULL;
+      attValue = XMLString::transcode
+        (parent->getAttribute (XMLString::transcode ("interface")));
+      syntax_error ("port '%s': bad interface '%s'", id.c_str (),
+                    attValue.c_str ());
     }
 
   port = new Port (id, portNode, portInterfacePoint);
@@ -333,82 +294,69 @@ NclInterfacesConverter::createTemporalAnchor (DOMElement *areaElement)
 }
 
 void *
-NclInterfacesConverter::createProperty (DOMElement *parentElement,
+NclInterfacesConverter::createProperty (DOMElement *parent,
                                         arg_unused (void *objGrandParent))
 {
   string attributeName, attributeValue;
   PropertyAnchor *anchor;
 
-  if (!parentElement->hasAttribute (XMLString::transcode ("name")))
-    {
-      clog << "Error: a property element (";
-      clog << XMLString::transcode (parentElement->getTagName ());
-      clog << ") was declared without a name attribute." << endl;
-      return NULL;
-    }
+  if (unlikely (!parent->hasAttribute (XMLString::transcode ("name"))))
+    syntax_error ("property: missing name");
 
-  attributeName = XMLString::transcode (
-      parentElement->getAttribute (XMLString::transcode ("name")));
+  attributeName = XMLString::transcode
+    (parent->getAttribute (XMLString::transcode ("name")));
 
   anchor = new PropertyAnchor (attributeName);
-  if (parentElement->hasAttribute (XMLString::transcode ("value")))
+  if (parent->hasAttribute (XMLString::transcode ("value")))
     {
       attributeValue = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("value")));
-
+          parent->getAttribute (XMLString::transcode ("value")));
       anchor->setPropertyValue (attributeValue);
     }
   return anchor;
 }
 
 void *
-NclInterfacesConverter::createArea (DOMElement *parentElement,
+NclInterfacesConverter::createArea (DOMElement *parent,
                                     arg_unused (void *objGrandParent))
 {
   string anchorId;
   string position, anchorLabel;
   Anchor *anchor;
 
-  if (!parentElement->hasAttribute (XMLString::transcode ("id")))
-    {
-      clog << "A media interface element (";
-      clog << XMLString::transcode (parentElement->getTagName ());
-      clog << ") was declared without an id attribute" << endl;
-      return NULL;
-    }
+  if (unlikely (!parent->hasAttribute (XMLString::transcode ("id"))))
+    syntax_error ("area: missing id");
 
-  anchorId = XMLString::transcode (
-      parentElement->getAttribute (XMLString::transcode ("id")));
+  anchorId = XMLString::transcode
+    (parent->getAttribute (XMLString::transcode ("id")));
 
   anchor = NULL;
 
-  if (parentElement->hasAttribute (XMLString::transcode ("begin"))
-      || parentElement->hasAttribute (XMLString::transcode ("end"))
-      || parentElement->hasAttribute (XMLString::transcode ("first"))
-      || parentElement->hasAttribute (XMLString::transcode ("last")))
+  if (parent->hasAttribute (XMLString::transcode ("begin"))
+      || parent->hasAttribute (XMLString::transcode ("end"))
+      || parent->hasAttribute (XMLString::transcode ("first"))
+      || parent->hasAttribute (XMLString::transcode ("last")))
     {
-      anchor = createTemporalAnchor (parentElement);
-
-      // ancora textual
+      anchor = createTemporalAnchor (parent);
     }
-  else if (parentElement->hasAttribute (XMLString::transcode ("text")))
+  else if (parent->hasAttribute (XMLString::transcode ("text")))
     {
       position = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("position")));
+          parent->getAttribute (XMLString::transcode ("position")));
 
       anchor = new TextAnchor (
-          anchorId, XMLString::transcode (parentElement->getAttribute (
+          anchorId, XMLString::transcode (parent->getAttribute (
                         XMLString::transcode ("text"))),
-          atoi (position.c_str ()));
+          xstrto_int (position));
     }
-  else if (parentElement->hasAttribute (XMLString::transcode ("coords")))
+  else if (parent->hasAttribute (XMLString::transcode ("coords")))
     {
-      anchor = createSpatialAnchor (parentElement);
+      anchor = createSpatialAnchor (parent);
     }
-  else if (parentElement->hasAttribute (XMLString::transcode ("label")))
+  else if (parent->hasAttribute (XMLString::transcode ("label")))
     {
       anchorLabel = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("label")));
+          parent->getAttribute (XMLString::transcode ("label")));
 
       anchor = new LabeledAnchor (anchorId, anchorLabel);
     }
@@ -417,17 +365,13 @@ NclInterfacesConverter::createArea (DOMElement *parentElement,
       anchor = new LabeledAnchor (anchorId, anchorId);
     }
 
-  if (anchor == NULL)
-    {
-      clog << "NclInterfacesConverter::createArea Error" << endl;
-      return NULL;
-    }
+  g_assert_nonnull (anchor);
 
   return anchor;
 }
 
 void *
-NclInterfacesConverter::createMapping (DOMElement *parentElement,
+NclInterfacesConverter::createMapping (DOMElement *parent,
                                        void *objGrandParent)
 {
   DOMElement *switchElement;
@@ -438,7 +382,7 @@ NclInterfacesConverter::createMapping (DOMElement *parentElement,
   Port *port;
 
   switchElement
-      = (DOMElement *)parentElement->getParentNode ()->getParentNode ();
+      = (DOMElement *)parent->getParentNode ()->getParentNode ();
 
   switchNode
       = (SwitchNode *)((NclDocumentConverter *)getDocumentParser ())
@@ -446,57 +390,43 @@ NclInterfacesConverter::createMapping (DOMElement *parentElement,
                 switchElement->getAttribute (XMLString::transcode ("id"))));
 
   mappingNode = switchNode->getNode (XMLString::transcode (
-      parentElement->getAttribute (XMLString::transcode ("component"))));
+      parent->getAttribute (XMLString::transcode ("component"))));
 
-  if (mappingNode == NULL)
-    {
-      clog << "Error: a mapping element points to a node (";
-      clog << XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("component")));
-      clog << " not contained by the " << switchNode->getId ().c_str ();
-      clog << " switch" << endl;
-      return NULL;
-    }
+  if (unlikely (mappingNode == NULL))
+    syntax_error ("mapping: bad component '%s'",
+                  string (XMLString::transcode
+                          (parent->getAttribute
+                           (XMLString::transcode ("component")))).c_str ());
 
   mappingNodeEntity = (NodeEntity *)mappingNode->getDataEntity ();
-  if (parentElement->hasAttribute (XMLString::transcode ("interface")))
+  if (parent->hasAttribute (XMLString::transcode ("interface")))
     {
-      // tem-se o atributo, tentar pegar a ancora do document node
       interfacePoint = mappingNodeEntity->getAnchor (
-          XMLString::transcode (parentElement->getAttribute (
+          XMLString::transcode (parent->getAttribute (
               XMLString::transcode ("interface"))));
 
       if (interfacePoint == NULL)
         {
-          // ou o document node era um terminal node e nao
-          // possuia a ancora (erro), ou port indicava uma porta em uma
-          // composicao
           if (mappingNodeEntity->instanceOf ("CompositeNode"))
             {
               interfacePoint
                   = ((CompositeNode *)mappingNodeEntity)
                         ->getPort (XMLString::transcode (
-                            parentElement->getAttribute (
+                            parent->getAttribute (
                                 XMLString::transcode ("interface"))));
             }
         }
     }
   else
     {
-      // port element nao tem o atributo port, logo pegar a
-      // ancora lambda do no->
       interfacePoint = mappingNodeEntity->getAnchor (0);
     }
 
-  if (interfacePoint == NULL)
-    {
-      clog << "Error: a mapping element points to a node interface (";
-      clog << XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("interface")));
-      clog << " not contained by the " << mappingNode->getId ().c_str ();
-      clog << " node." << endl;
-      return NULL;
-    }
+  if (unlikely (interfacePoint == NULL))
+    syntax_error ("mapping: bad interface '%s'",
+                  string (XMLString::transcode
+                          (parent->getAttribute
+                           (XMLString::transcode ("interface")))).c_str ());
 
   port = new Port (((SwitchPort *)objGrandParent)->getId (), mappingNode,
                    interfacePoint);
@@ -505,7 +435,7 @@ NclInterfacesConverter::createMapping (DOMElement *parentElement,
 }
 
 void *
-NclInterfacesConverter::createSwitchPort (DOMElement *parentElement,
+NclInterfacesConverter::createSwitchPort (DOMElement *parent,
                                           void *objGrandParent)
 {
   SwitchNode *switchNode;
@@ -514,23 +444,14 @@ NclInterfacesConverter::createSwitchPort (DOMElement *parentElement,
 
   switchNode = (SwitchNode *)objGrandParent;
 
-  if (!parentElement->hasAttribute (XMLString::transcode ("id")))
-    {
-      clog << "Error: the switch port element was declared without an";
-      clog << " id attribute." << endl;
-      return NULL;
-    }
+  if (unlikely (!parent->hasAttribute (XMLString::transcode ("id"))))
+    syntax_error ("switchPort: missing id");
 
   id = XMLString::transcode (
-      parentElement->getAttribute (XMLString::transcode ("id")));
+      parent->getAttribute (XMLString::transcode ("id")));
 
-  if (switchNode->getPort (id) != NULL)
-    {
-      clog << "Error: a port already exists with the same ";
-      clog << id.c_str () << " id in ";
-      clog << switchNode->getId ().c_str () << " context" << endl;
-      return NULL;
-    }
+  if (unlikely (switchNode->getPort (id) != NULL))
+    syntax_error ("switchPort '%s': duplicated id", id.c_str ());
 
   switchPort = new SwitchPort (id, switchNode);
   return switchPort;

@@ -133,7 +133,6 @@ private:
   RuleAdapter *ruleAdapter;
   FormatterConverter *compiler;
   AdapterPlayerManager *playerManager;
-  vector<string> compileErrors;
   DeviceLayout *deviceLayout;
   FormatterMultiDevice *multiDevice;
   PresentationContext *presContext;
@@ -144,14 +143,7 @@ public:
   FormatterMediator ();
   ~FormatterMediator ();
 
-  static void release ();
-
-  set<string> *createPortIdList ();
-  short getMappedInterfaceType (const string &portId);
-
   void setMrl (const string &mrl, bool visible = true);
-  void reset (){};
-  void rebase (){};
   void setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider);
 
   void setParentLayout (void *parentLayout);
@@ -192,94 +184,6 @@ private:
   bool resumeDocument (const string &documentId);
   void presentationCompleted (NclFormatterEvent *documentEvent);
 
-private:
-  LayoutRegion *addRegion (const string &documentId, const string &regionBaseId,
-                           const string &regionId, const string &xmlRegion);
-
-  LayoutRegion *removeRegion (const string &documentId, const string &regionBaseId,
-                              const string &regionId);
-
-  RegionBase *addRegionBase (const string &documentId, const string &xmlRegionBase);
-  RegionBase *removeRegionBase (const string &documentId, const string &regionBaseId);
-
-  Rule *addRule (const string &documentId, const string &xmlRule);
-  Rule *removeRule (const string &documentId, const string &ruleId);
-  RuleBase *addRuleBase (const string &documentId, const string &xmlRuleBase);
-  RuleBase *removeRuleBase (const string &documentId, const string &ruleBaseId);
-  Transition *addTransition (const string &documentId, const string &xmlTransition);
-  Transition *removeTransition (const string &documentId, const string &transitionId);
-
-  TransitionBase *addTransitionBase (const string &documentId,
-                                     const string &xmlTransitionBase);
-
-  TransitionBase *removeTransitionBase (const string &documentId,
-                                        const string &transitionBaseId);
-
-  Connector *addConnector (const string &documentId, const string &xmlConnector);
-  Connector *removeConnector (const string &documentId, const string &connectorId);
-  ConnectorBase *addConnectorBase (const string &documentId,
-                                   const string &xmlConnectorBase);
-
-  ConnectorBase *removeConnectorBase (const string &documentId,
-                                      const string &connectorBaseId);
-
-  GenericDescriptor *addDescriptor (const string &documentId,
-                                    const string &xmlDescriptor);
-
-  GenericDescriptor *removeDescriptor (const string &documentId,
-                                       const string &descriptorId);
-
-  DescriptorBase *addDescriptorBase (const string &documentId,
-                                     const string &xmlDescriptorBase);
-
-  DescriptorBase *removeDescriptorBase (const string &documentId,
-                                        const string &descriptorBaseId);
-
-  Base *addImportBase (const string &documentId, const string &docBaseId,
-                       const string &xmlImportBase);
-
-  Base *removeImportBase (const string &documentId, const string &docBaseId,
-                          const string &documentURI);
-
-  NclDocument *addImportedDocumentBase (const string &documentId,
-                                        const string &xmlImportedDocumentBase);
-
-  NclDocument *removeImportedDocumentBase (const string &documentId,
-                                           const string &importedDocumentBaseId);
-
-  NclDocument *addImportNCL (const string &documentId, const string &xmlImportNCL);
-  NclDocument *removeImportNCL (const string &documentId, const string &documentURI);
-
-  void processInsertedReferNode (ReferNode *referNode);
-  void processInsertedComposition (CompositeNode *composition);
-
-  Node *addNode (const string &documentId, const string &compositeId, const string &xmlNode);
-
-  Node *removeNode (const string &documentId, const string &compositeId, const string &nodeId);
-
-  InterfacePoint *addInterface (const string &documentId, const string &nodeId,
-                                const string &xmlInterface);
-
-  void removeInterfaceMappings (Node *node, InterfacePoint *interfacePoint,
-                                CompositeNode *composition);
-
-  void removeInterfaceLinks (Node *node, InterfacePoint *interfacePoint,
-                             ContextNode *composition);
-
-  void removeInterface (Node *node, InterfacePoint *interfacePoint);
-
-  InterfacePoint *removeInterface (const string &documentId, const string &nodeId,
-                                   const string &interfaceId);
-
-  Link *addLink (const string &documentId, const string &compositeId, const string &xmlLink);
-
-  void removeLink (ContextNode *composition, Link *link);
-
-  Link *removeLink (const string &documentId, const string &compositeId, const string &linkId);
-
-  bool setPropertyValue (const string &documentId, const string &nodeId,
-                         const string &propertyId, const string &value);
-
 public:
   void setNotifyContentUpdate (arg_unused (bool notify)){};
   void addListener (IPlayerListener *listener);
@@ -318,12 +222,6 @@ public:
   bool isForcedNaturalEnd ();
   bool setOutWindow (SDLWindow* windowId);
 
-  // Channel player only.
-  IPlayer *
-  getSelectedPlayer ()
-  {
-    return NULL;
-  };
   void setPlayerMap (arg_unused (map<string, IPlayer *> *objs)){};
   map<string, IPlayer *> *
   getPlayerMap ()

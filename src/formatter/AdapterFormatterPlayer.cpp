@@ -115,14 +115,6 @@ AdapterFormatterPlayer::setOutputWindow (SDLWindow* windowId)
 }
 
 void
-AdapterFormatterPlayer::rebase ()
-{
-  player->reset ();
-  prepareScope (player->getMediaTime ());
-  player->rebase ();
-}
-
-void
 AdapterFormatterPlayer::createPlayer ()
 {
   vector<Anchor *> *anchors;
@@ -1773,7 +1765,6 @@ AdapterFormatterPlayer::updateStatus (short code,
                   && mainEvent->getCurrentState ()
                          != EventUtil::ST_SLEEPING)
                 {
-                  rebase ();
                   clog << "AdapterFormatterPlayer::updateStatus ";
                   clog << "process recovered";
                   clog << endl;

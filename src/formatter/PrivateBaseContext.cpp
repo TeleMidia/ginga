@@ -92,16 +92,7 @@ PrivateBaseContext::~PrivateBaseContext ()
 void
 PrivateBaseContext::createPrivateBase (const string &id)
 {
-  if (privateBase != NULL)
-    {
-      clog << "PrivateBaseContext::createPrivateBase Warning!";
-      clog << " trying to overwrite private base context with a ";
-      clog << " new private base '" << id << "'" << endl;
-      return;
-    }
-
-  clog << "PrivateBaseContext::createPrivateBase '" << id << "'";
-  clog << endl;
+  g_assert_null (privateBase);
   privateBase = new PrivateBase (id);
 }
 

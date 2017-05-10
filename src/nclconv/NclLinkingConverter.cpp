@@ -77,12 +77,10 @@ NclLinkingConverter::createBind (DOMElement *parentElement,
       anchorNode = (Node *)(composite->getNode (component));
     }
 
-  if (anchorNode == NULL)
+  if (unlikely (anchorNode == NULL))
     {
-      clog << "NclLinkingConverter::createBind Warning!";
-      clog << " anchorNode == NULL for component '" << component;
-      clog << "', return NULL" << endl;
-      return NULL;
+      syntax_error ("bind: bad interface for component '%s'",
+                    component.c_str ());
     }
 
   anchorNodeEntity = (NodeEntity *)(anchorNode->getDataEntity ());
@@ -155,20 +153,16 @@ NclLinkingConverter::createBind (DOMElement *parentElement,
         }
       else if (anchorNodeEntity->instanceOf ("Node"))
         {
-          // se nao houver interface, faz bind para a ancora lambda
           interfacePoint = anchorNodeEntity->getAnchor (0);
         }
       else
         {
-          clog << "NclLinkingConverter::createBind Warning!";
-          clog << " can't find interfaces for entity '";
-          clog << anchorNodeEntity->getId () << "'";
-          clog << endl;
+          syntax_error ("bind: bad interface for entity '%s'",
+                        anchorNodeEntity->getId ().c_str ());
         }
     }
   else
     {
-      // se nao houver interface, faz bind para a ancora lambda
       interfacePoint = anchorNode->getAnchor (0);
     }
 
@@ -201,8 +195,6 @@ NclLinkingConverter::createBind (DOMElement *parentElement,
           roleId = XMLString::transcode (
               parentElement->getAttribute (XMLString::transcode ("role")));
 
-          clog << "NclLinkingConverter::createBind FOUND GOT '";
-          clog << roleId << "'" << endl;
           assessment = new AttributeAssessment (roleId);
           assessment->setEventType (EventUtil::EVT_ATTRIBUTION);
           assessment->setAttributeType (EventUtil::ATT_NODE_PROPERTY);
@@ -236,10 +228,7 @@ NclLinkingConverter::createBind (DOMElement *parentElement,
         }
       else
         {
-          clog << "NclLinkingConverter::createBind Warning!";
-          clog << " can't find any role ";
-          clog << endl;
-          return NULL;
+          syntax_error ("bind: missing role");
         }
     }
 
@@ -255,7 +244,6 @@ NclLinkingConverter::createLink (DOMElement *parentElement,
   Link *link;
   string connectorId;
 
-  // obtendo o conector do link
   document = (NclDocument *)getDocumentParser ()->getObject ("return",
                                                              "document");
 
@@ -264,25 +252,14 @@ NclLinkingConverter::createLink (DOMElement *parentElement,
 
   connector = document->getConnector (connectorId);
 
-  if (connector == NULL)
+  if (unlikely (connector == NULL))
     {
-      // connector not found
-      clog << "NclLinkingConverter::createLink Warning!";
-      clog << " can't find connector '" << connectorId << "'";
-      clog << endl;
-      return NULL;
+      syntax_error ("link: bad xconnector '%s'", connectorId.c_str ());
     }
 
-  // criando o link
-  if (connector->instanceOf ("CausalConnector"))
-    {
-      link = new CausalLink (getId (parentElement), connector);
-    }
-  else
-    {
-      link = NULL;
-    }
+  g_assert (connector->instanceOf ("CausalConnector"));
 
+  link = new CausalLink (getId (parentElement), connector);
   composite = (CompositeNode *)objGrandParent;
   return link;
 }
@@ -328,9 +305,8 @@ NclLinkingConverter::getId (DOMElement *element)
     }
   else
     {
-      strRet = ""; //"NclLinkingConverterId" + idCount++;
+      strRet = "";
     }
-  clog << strRet.c_str () << endl;
   return strRet;
 }
 
