@@ -96,7 +96,7 @@ public:
 
 private:
   Parameter *getParameter (const string &paramName);
-  short convertActionType (const string &actionType);
+  SimpleActionType convertActionType (const string &actionType);
 
 public:
   static short convertEventState (const string &eventState);

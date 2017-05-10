@@ -2780,7 +2780,7 @@ FormatterMediator::setPropertyValue (const string &documentId, const string &nod
     }
 
   setAction = new NclLinkAssignmentAction ((NclAttributionEvent *)event,
-                                           SimpleAction::ACT_START, value);
+                                           ACT_START, value);
 
   ((INclLinkActionListener *)scheduler)->scheduleAction (setAction);
   return true;

@@ -114,14 +114,14 @@ SimpleAction::setRepeat (const string &newRepetitions)
   repeat = newRepetitions;
 }
 
-short
+SimpleActionType
 SimpleAction::getActionType ()
 {
   return actionType;
 }
 
 void
-SimpleAction::setActionType (short action)
+SimpleAction::setActionType (SimpleActionType action)
 {
   actionType = action;
 }

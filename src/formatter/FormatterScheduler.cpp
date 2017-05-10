@@ -339,13 +339,19 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
   NclCascadingDescriptor *descriptor;
   AdapterFormatterPlayer *player;
   IPlayer *playerContent;
-  short actionType;
+  SimpleActionType actionType;
   string attName;
   string attValue;
   SDLWindow* winId = 0;
 
   executionObject = (NclExecutionObject *)(event->getExecutionObject ());
+  g_assert_nonnull (executionObject);
 
+  g_debug ("running action '%s' over '%s'",
+           action->getTypeString ().c_str (),
+           event->getId ().c_str ());
+
+  g_assert (executionObject->isCompiled ());
   if (isDocumentRunning (event) && !executionObject->isCompiled ())
     {
       ((FormatterConverter *)compiler)
@@ -412,7 +418,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
       actionType = action->getType ();
       switch (actionType)
         {
-        case SimpleAction::ACT_START:
+        case ACT_START:
           if (!player->hasPrepared ())
             {
               if (ruleAdapter->adaptDescriptor (executionObject))
@@ -485,25 +491,25 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
             }
           break;
 
-        case SimpleAction::ACT_PAUSE:
+        case ACT_PAUSE:
           if (!player->pause ())
             {
             }
           break;
 
-        case SimpleAction::ACT_RESUME:
+        case ACT_RESUME:
           if (!player->resume ())
             {
             }
           break;
 
-        case SimpleAction::ACT_ABORT:
+        case ACT_ABORT:
           if (!player->abort ())
             {
             }
           break;
 
-        case SimpleAction::ACT_STOP:
+        case ACT_STOP:
           if (!player->stop ())
             {
             }
@@ -519,7 +525,7 @@ void
 FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
                                            NclLinkSimpleAction *action)
 {
-  short actionType;
+  SimpleActionType actionType;
   string propName, propValue;
 
   NodeEntity *dataObject;
@@ -585,8 +591,8 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
 
       switch (actionType)
         {
-        case SimpleAction::ACT_START:
-        case SimpleAction::ACT_SET:
+        case ACT_START:
+        case ACT_SET:
           clog << "FormatterScheduler::runActionOverProperty";
           clog << " over '" << event->getId () << "' for '";
           clog << executionObject->getId () << "' player '";
@@ -694,7 +700,7 @@ FormatterScheduler::runActionOverApplicationObject (
 
   switch (actionType)
     {
-    case SimpleAction::ACT_START:
+    case ACT_START:
       if (!player->hasPrepared ())
         {
           if (ruleAdapter->adaptDescriptor (executionObject))
@@ -797,7 +803,7 @@ FormatterScheduler::runActionOverApplicationObject (
       clog << endl;
       break;
 
-    case SimpleAction::ACT_PAUSE:
+    case ACT_PAUSE:
       if (((AdapterApplicationPlayer *)player)
               ->setAndLockCurrentEvent (event))
         {
@@ -807,7 +813,7 @@ FormatterScheduler::runActionOverApplicationObject (
 
       break;
 
-    case SimpleAction::ACT_RESUME:
+    case ACT_RESUME:
       if (((AdapterApplicationPlayer *)player)
               ->setAndLockCurrentEvent (event))
         {
@@ -817,7 +823,7 @@ FormatterScheduler::runActionOverApplicationObject (
 
       break;
 
-    case SimpleAction::ACT_ABORT:
+    case ACT_ABORT:
       if (((AdapterApplicationPlayer *)player)
               ->setAndLockCurrentEvent (event))
         {
@@ -827,7 +833,7 @@ FormatterScheduler::runActionOverApplicationObject (
 
       break;
 
-    case SimpleAction::ACT_STOP:
+    case ACT_STOP:
       if (((AdapterApplicationPlayer *)player)
               ->setAndLockCurrentEvent (event))
         {
@@ -872,8 +878,8 @@ FormatterScheduler::runActionOverComposition (
   clog << "action '" << action->getType () << "' over COMPOSITION '";
   clog << compositeObject->getId () << "'" << endl;
 
-  if (action->getType () == SimpleAction::ACT_START
-      || action->getType () == SimpleAction::ACT_SET)
+  if (action->getType () == ACT_START
+      || action->getType () == ACT_SET)
     {
       event = action->getEvent ();
       if (event != NULL)
@@ -1098,8 +1104,8 @@ FormatterScheduler::runActionOverComposition (
         }
 
       if ((eventType == EventUtil::EVT_PRESENTATION)
-          && (action->getType () == SimpleAction::ACT_STOP
-              || action->getType () == SimpleAction::ACT_ABORT))
+          && (action->getType () == ACT_STOP
+              || action->getType () == ACT_ABORT))
         {
           if (compositeObject->getWholeContentPresentationEvent () == event)
             {
@@ -1237,8 +1243,8 @@ FormatterScheduler::runActionOverSwitch (
       runSwitchEvent (switchObject, event, selectedObject, action);
     }
 
-  if (action->getType () == SimpleAction::ACT_STOP
-      || action->getType () == SimpleAction::ACT_ABORT)
+  if (action->getType () == ACT_STOP
+      || action->getType () == ACT_ABORT)
     {
       switchObject->select (NULL);
     }
@@ -1357,7 +1363,7 @@ FormatterScheduler::startEvent (NclFormatterEvent *event)
 {
   NclLinkSimpleAction *fakeAction;
 
-  fakeAction = new NclLinkSimpleAction (event, SimpleAction::ACT_START);
+  fakeAction = new NclLinkSimpleAction (event, ACT_START);
   runAction (fakeAction);
   delete fakeAction;
 }
@@ -1367,7 +1373,7 @@ FormatterScheduler::stopEvent (NclFormatterEvent *event)
 {
   NclLinkSimpleAction *fakeAction;
 
-  fakeAction = new NclLinkSimpleAction (event, SimpleAction::ACT_STOP);
+  fakeAction = new NclLinkSimpleAction (event, ACT_STOP);
   runAction (fakeAction);
   delete fakeAction;
 }
@@ -1377,7 +1383,7 @@ FormatterScheduler::pauseEvent (NclFormatterEvent *event)
 {
   NclLinkSimpleAction *fakeAction;
 
-  fakeAction = new NclLinkSimpleAction (event, SimpleAction::ACT_PAUSE);
+  fakeAction = new NclLinkSimpleAction (event, ACT_PAUSE);
   runAction (fakeAction);
   delete fakeAction;
 }
@@ -1387,7 +1393,7 @@ FormatterScheduler::resumeEvent (NclFormatterEvent *event)
 {
   NclLinkSimpleAction *fakeAction;
 
-  fakeAction = new NclLinkSimpleAction (event, SimpleAction::ACT_RESUME);
+  fakeAction = new NclLinkSimpleAction (event, ACT_RESUME);
   runAction (fakeAction);
   delete fakeAction;
 }
@@ -1997,7 +2003,7 @@ FormatterScheduler::receiveGlobalAttribution (const string &pName,
       if (event != NULL && event->instanceOf ("NclAttributionEvent"))
         {
           fakeAction = new NclLinkAssignmentAction (
-              event, SimpleAction::ACT_START, value);
+              event, ACT_START, value);
 
           runAction (fakeAction);
           delete fakeAction;

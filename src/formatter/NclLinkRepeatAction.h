@@ -34,7 +34,7 @@ private:
   virtual void run ();
 
 public:
-  NclLinkRepeatAction (NclFormatterEvent *event, short actionType);
+  NclLinkRepeatAction (NclFormatterEvent *, SimpleActionType);
   virtual ~NclLinkRepeatAction ();
   long getRepetitions ();
   double getRepetitionInterval ();

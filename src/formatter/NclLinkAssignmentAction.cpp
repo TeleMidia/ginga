@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 NclLinkAssignmentAction::NclLinkAssignmentAction (NclFormatterEvent *event,
-                                                  short actionType,
+                                                  SimpleActionType actionType,
                                                   string value)
     : NclLinkRepeatAction (event, actionType)
 {

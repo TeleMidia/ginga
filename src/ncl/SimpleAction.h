@@ -30,10 +30,20 @@ using namespace ::ginga::util;
 
 GINGA_NCL_BEGIN
 
+enum SimpleActionType
+{
+   ACT_START = 1,
+   ACT_PAUSE,
+   ACT_RESUME,
+   ACT_STOP,
+   ACT_ABORT,
+   ACT_SET,
+};
+
 class SimpleAction : public Action, public Role
 {
 private:
-  short actionType;
+  SimpleActionType actionType;
   short qualifier;
   string repeat;
   string repeatDelay;
@@ -41,12 +51,37 @@ private:
   Animation *animation;
 
 public:
-  static const short ACT_START = 1;
-  static const short ACT_PAUSE = 2;
-  static const short ACT_RESUME = 3;
-  static const short ACT_STOP = 4;
-  static const short ACT_ABORT = 5;
-  static const short ACT_SET = 6;
+  static string actionTypeToString (SimpleActionType t)
+  {
+    switch (t)
+      {
+      case ACT_START:
+        return "start";
+      case ACT_PAUSE:
+        return "pause";
+      case ACT_RESUME:
+        return "resume";
+      case ACT_STOP:
+        return "stop";
+      case ACT_ABORT:
+        return "abort";
+      case ACT_SET:
+        return "set";
+      default:
+        g_assert_not_reached ();
+      }
+  };
+
+  static SimpleActionType stringToActionType (const string &s)
+  {
+    if (s == "start")  return ACT_START;
+    if (s == "pause")  return ACT_PAUSE;
+    if (s == "resume") return ACT_RESUME;
+    if (s == "stop")   return ACT_STOP;
+    if (s == "abort")  return ACT_ABORT;
+    if (s == "set")    return ACT_SET;
+    g_assert_not_reached ();
+  }
 
   SimpleAction (const string &role);
   virtual ~SimpleAction ();
@@ -59,8 +94,8 @@ public:
   string getRepeatDelay ();
   void setRepeatDelay (const string &time);
   void setRepeat (const string &newRepetitions);
-  short getActionType ();
-  void setActionType (short action);
+  SimpleActionType getActionType ();
+  void setActionType (SimpleActionType action);
   string getValue ();
   void setValue (const string &value);
   Animation *getAnimation ();

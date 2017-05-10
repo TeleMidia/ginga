@@ -598,7 +598,7 @@ FormatterLinkConverter::createSimpleAction (
     NclCompositeExecutionObject *parentObject, int depthLevel)
 {
   NclFormatterEvent *event;
-  short actionType;
+  SimpleActionType actionType;
   short eventType = -1;
   NclLinkSimpleAction *action;
   Parameter *connParam;
@@ -648,8 +648,8 @@ FormatterLinkConverter::createSimpleAction (
 
   switch (actionType)
     {
-    case SimpleAction::ACT_START:
-    case SimpleAction::ACT_SET:
+    case ACT_START:
+    case ACT_SET:
       if (eventType == EventUtil::EVT_PRESENTATION)
         {
           action = new NclLinkRepeatAction (event, actionType);
@@ -803,10 +803,10 @@ FormatterLinkConverter::createSimpleAction (
         }
       break;
 
-    case SimpleAction::ACT_STOP:
-    case SimpleAction::ACT_PAUSE:
-    case SimpleAction::ACT_RESUME:
-    case SimpleAction::ACT_ABORT:
+    case ACT_STOP:
+    case ACT_PAUSE:
+    case ACT_RESUME:
+    case ACT_ABORT:
       action = new NclLinkSimpleAction (event, actionType);
       break;
 
