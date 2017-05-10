@@ -211,7 +211,6 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
   mime = buf.c_str ();
   g_assert_nonnull (mime);
 
-  g_debug ("mime %s", mime);
   if (false)
     {
     }
@@ -263,17 +262,13 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
     }
   else
     {
-      g_warning ("unknown mime \"%s\", skipping object id=%s", mime,
-                 id.c_str ());
+      g_warning ("adapter: unknown mime-type '%s'", mime);
       return NULL;
     }
 
   adapter->setAdapterManager (this);
   objectPlayers[id] = adapter;
   playerNames[adapter] = classname;
-
-  g_debug ("%s allocated for object id=%s) ", classname.c_str (),
-           id.c_str ());
 
   return (AdapterFormatterPlayer *)adapter;
 }
