@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
+#include "ginga-mime-table.h"
+
 #include "AdapterPlayerManager.h"
 
 #include "AdapterImagePlayer.h"
@@ -311,26 +313,9 @@ AdapterPlayerManager::getObjectPlayer (void *eObj)
 }
 
 string
-AdapterPlayerManager::getMimeTypeFromSchema (const string &url)
+AdapterPlayerManager::getMimeTypeFromSchema (arg_unused (const string &url))
 {
-  string mime = "";
-
-  if ((url.length () > 8 && url.substr (0, 8) == "https://")
-      || (url.length () > 7 && url.substr (0, 7) == "http://")
-      || (url.length () > 4 && url.substr (0, 4) == "www."))
-    {
-      clog << "AdapterPlayerManager::getMimeTypeFromSchema is ";
-      clog << "considering HTML MIME." << endl;
-
-      mime = ContentTypeManager::getInstance ()->getMimeType ("html");
-    }
-  else if ((url.length () > 6 && url.substr (0, 6) == "rtp://")
-           || (url.length () > 7 && url.substr (0, 7) == "rtsp://"))
-    {
-      mime = ContentTypeManager::getInstance ()->getMimeType ("mpg");
-    }
-
-  return mime;
+  return "";
 }
 
 bool
@@ -377,12 +362,15 @@ AdapterPlayerManager::isEmbeddedApp (NodeEntity *dataObject)
               pos = url.find_last_of (".");
               if (pos != std::string::npos)
                 {
-                  pos++;
-                  mediaType
-                      = ContentTypeManager::getInstance ()->getMimeType (
-                          url.substr (pos, url.length () - pos));
+                  gboolean status;
+                  const char *s;
+                  string extension;
+                  string mime;
 
-                  return isEmbeddedAppMediaType (mediaType);
+                  extension = url.substr (pos, url.length () - (pos + 1));
+                  status = ginga_mime_table_index (extension.c_str (), &s);
+                  mime = (likely (status)) ? string (s) : "";
+                  return isEmbeddedAppMediaType (mime);
                 }
             }
         }

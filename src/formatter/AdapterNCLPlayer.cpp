@@ -74,7 +74,6 @@ AdapterNCLPlayer::createPlayer ()
 
       childData->docId = "";
       childData->focusManager = playerData->focusManager;
-      childData->editListener = playerData->editListener;
 
       descriptor = object->getDescriptor ();
       if (descriptor != NULL)

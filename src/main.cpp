@@ -21,6 +21,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 # include "cef_app.h"
 #endif
 
+#include "mb/Display.h"
+using namespace ::ginga::mb;
+
 #include "lssm/PresentationEngineManager.h"
 using namespace ::ginga::lssm;
 
@@ -186,24 +189,21 @@ main (int argc, char **argv)
                                            opt_fullscreen, opt_fps);
   g_assert_nonnull (_Ginga_Display);
 
-  pem = new PresentationEngineManager ();
+  pem = new PresentationEngineManager (file);
   g_assert_nonnull (pem);
 
-  if (unlikely (!pem->openNclFile (file)))
-    {
-      print_error ("Cannot open NCL file: %s", file.c_str ());
-      exit (EXIT_FAILURE);
-    }
-
   // Start presentation thread.
-  pem->startPresentation (file, "");
+  pem->run ();
 
   // Start render loop.
   _Ginga_Display->renderLoop ();
 
   delete Ginga_Display;
 
-#if defined WITH_CEF
+  // FIXME: This causes the program to crash!
+  // delete pem;
+
+#if defined WITH_CEF && WITH_CEF
   CefShutdown ();
 #endif
 

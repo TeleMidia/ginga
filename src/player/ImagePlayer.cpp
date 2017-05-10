@@ -26,6 +26,7 @@ GINGA_PLAYER_BEGIN
 
 
 // Private methods.
+
 bool
 ImagePlayer::displayJobCallbackWrapper (DisplayJob *job,
                                         SDL_Renderer *renderer,
@@ -50,6 +51,7 @@ ImagePlayer::displayJobCallback (arg_unused (DisplayJob *job),
   this->condDisplayJobSignal ();
   return false;                 // remove job
 }
+
 
 // Public methods.
 

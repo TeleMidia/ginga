@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _REFERENCECONTENT_H_
 
 #include "Content.h"
-#include "ContentTypeManager.h"
 
 GINGA_NCL_BEGIN
 
