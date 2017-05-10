@@ -306,7 +306,8 @@ NclLinkCompoundAction::run ()
               action = (NclLinkAction *)(actions.at (i));
               action->setSatisfiedCondition (satisfiedCondition);
               Thread::mutexUnlock (&mutexActions);
-              action->startThread ();
+              // HELL: action->startThread ();
+              action->run ();
             }
           catch (std::out_of_range &e)
             {

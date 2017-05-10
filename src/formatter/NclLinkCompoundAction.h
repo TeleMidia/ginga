@@ -45,6 +45,7 @@ private:
 
   INclLinkActionListener *listener;
 
+public:
   virtual void run ();
 
 public:
