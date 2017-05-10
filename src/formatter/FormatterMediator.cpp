@@ -1838,10 +1838,6 @@ FormatterMediator::setPropertyValue (const string &documentId, const string &nod
   perspective = new NclNodeNesting (node->getPerspective ());
   try
     {
-      /*clog << "FormatterMediator::setPropertyValue '";
-      clog << " perspective = '" << perspective->getId() << "'";
-      clog << endl;*/
-
       executionObject = compiler->getExecutionObjectFromPerspective (
           perspective, NULL, compiler->getDepthLevel ());
     }

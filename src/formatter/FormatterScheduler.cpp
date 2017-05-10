@@ -339,7 +339,6 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
   NclCascadingDescriptor *descriptor;
   AdapterFormatterPlayer *player;
   IPlayer *playerContent;
-  SimpleActionType actionType;
   string attName;
   string attValue;
   SDLWindow* winId = 0;
@@ -347,177 +346,143 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
   executionObject = (NclExecutionObject *)(event->getExecutionObject ());
   g_assert_nonnull (executionObject);
 
-  g_debug ("running action '%s' over event '%s'",
+  g_debug ("scheduler: running action '%s' over event '%s'",
            action->getTypeString ().c_str (),
            event->getId ().c_str ());
 
   g_assert (executionObject->isCompiled ());
-  if (isDocumentRunning (event) && !executionObject->isCompiled ())
-    {
-      ((FormatterConverter *)compiler)
-          ->compileExecutionObjectLinks (
-              executionObject,
-              ((FormatterConverter *)compiler)->getDepthLevel ());
-    }
 
   if (executionObject->instanceOf ("NclExecutionObjectSwitch")
       && event->instanceOf ("NclSwitchEvent"))
     {
       runActionOverSwitch ((NclExecutionObjectSwitch *)executionObject,
                            (NclSwitchEvent *)event, action);
+      return;
     }
-  else if (executionObject->instanceOf ("NclCompositeExecutionObject")
-           && (executionObject->getDescriptor () == NULL
-               || executionObject->getDescriptor ()->getPlayerName ()
-                      == ""))
+
+  if (executionObject->instanceOf ("NclCompositeExecutionObject")
+      && (executionObject->getDescriptor () == NULL
+          || executionObject->getDescriptor ()->getPlayerName ()
+          == ""))
     {
-      clog << "FormatterScheduler::runAction event '";
-      clog << event->getId () << "' for '";
-      clog << executionObject->getId () << "' OVER COMPOSITION with ";
-      clog << "action event = '" << action->getEvent ()->getId () << "'";
-      clog << endl;
-      runActionOverComposition (
-          (NclCompositeExecutionObject *)executionObject, action);
+      runActionOverComposition
+        ((NclCompositeExecutionObject *)executionObject, action);
+      return;
     }
-  else if (event->instanceOf ("NclAttributionEvent"))
+
+  if (event->instanceOf ("NclAttributionEvent"))
     {
-      clog << "FormatterScheduler::runAction event '";
-      clog << event->getId () << "' for '";
-      clog << executionObject->getId () << "' OVER PROPERTY";
-      clog << endl;
       runActionOverProperty (event, action);
+      return;
     }
-  else
+
+  player = (AdapterFormatterPlayer *)
+    playerManager->getObjectPlayer (executionObject);
+
+  if (unlikely (player == NULL))
     {
-      clog << "FormatterScheduler::runAction ";
-      clog << "acquiring player for '" << executionObject->getId ();
-      clog << "' ";
-      player = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
-          executionObject);
-      if (player == NULL)
-        {
-          clog << "Player = NULL for ";
-          clog << executionObject->getId () << endl;
-          return;
-        }
+      g_warning ("scheduler: no player to decode '%s', skipping action",
+                 executionObject->getId ().c_str ());
+      return;
+    }
 
-      if (executionObject->instanceOf ("NclApplicationExecutionObject")
-          && !event->instanceOf ("NclAttributionEvent"))
-        {
-          clog << "FormatterScheduler::runAction event '";
-          clog << event->getId () << "' for '";
-          clog << executionObject->getId ();
-          clog << "' action '" << action->getType () << "'" << endl;
+  if (executionObject->instanceOf ("NclApplicationExecutionObject")
+      && !event->instanceOf ("NclAttributionEvent"))
+    {
+      runActionOverApplicationObject
+        ((NclApplicationExecutionObject *)executionObject, event,
+         player, action);
+      return;
+    }
 
-          runActionOverApplicationObject (
-              (NclApplicationExecutionObject *)executionObject, event,
-              player, action);
-
-          return;
-        }
-      actionType = action->getType ();
-      switch (actionType)
+  switch (action->getType ())
+    {
+    case ACT_START:
+      if (!player->hasPrepared ())
         {
-        case ACT_START:
-          if (!player->hasPrepared ())
+          if (ruleAdapter->adaptDescriptor (executionObject))
             {
-              if (ruleAdapter->adaptDescriptor (executionObject))
+              descriptor = executionObject->getDescriptor ();
+              if (descriptor != NULL)
                 {
-
-                  descriptor = executionObject->getDescriptor ();
-                  if (descriptor != NULL)
-                    {
-                      descriptor->setFormatterLayout (
-                          getFormatterLayout (descriptor, executionObject));
-                    }
+                  descriptor->setFormatterLayout
+                    (getFormatterLayout (descriptor, executionObject));
                 }
-
-              if (!player->prepare (executionObject,
-                                    (NclPresentationEvent *)event))
-                {
-                  return;
-                }
-
-              playerContent = player->getPlayer ();
-              if (playerContent != NULL)
-                {
-                }
-              if (executionObject != NULL
-                  && executionObject->getDescriptor () != NULL)
-                {
-                  // look for a reference time base player
-                  attValue = executionObject->getDescriptor ()
-                                 ->getParameterValue ("x-timeBaseObject");
-
-                  if (attValue != "")
-                    {
-                      setTimeBaseObject (executionObject, player, attValue);
-                    }
-                }
-              if (playerContent != NULL)
-                {
-                  winId = ((FormatterMultiDevice *)multiDevPres)
-                              ->prepareFormatterRegion (
-                                  executionObject);
-
-                  player->setOutputWindow (winId);
-                }
-
-              event->addEventListener (this);
-              Thread::mutexLock (&lMutex);
-              listening.insert (event);
-              Thread::mutexUnlock (&lMutex);
             }
 
-          if (!player->start ())
+          if (unlikely (!player->prepare (executionObject,
+                                          (NclPresentationEvent *)event)))
+            {
+              g_warning ("scheduler: failed to prepare player");
+              return;
+            }
+
+          playerContent = player->getPlayer ();
+          g_assert_nonnull (playerContent);
+
+          if (executionObject->getDescriptor () != NULL)
+            {
+              attValue = (executionObject->getDescriptor ())
+                ->getParameterValue ("x-timeBaseObject");
+              if (attValue != "")
+                {
+                  setTimeBaseObject (executionObject, player, attValue);
+                }
+            }
+
+          winId = ((FormatterMultiDevice *) multiDevPres)
+            ->prepareFormatterRegion (executionObject);
+
+          g_assert_nonnull (winId);
+          player->setOutputWindow (winId);
+
+          event->addEventListener (this);
+
+          Thread::mutexLock (&lMutex);
+          listening.insert (event);
+          Thread::mutexUnlock (&lMutex);
+        }
+
+      if (unlikely (!player->start ()))
+        {
+          g_warning ("scheduler: failed to start player");
+          if (event->getCurrentState () == EventUtil::ST_SLEEPING)
             {
               set<NclFormatterEvent *>::iterator it;
 
-              clog << "FormatterScheduler::runAction can't start '";
-              clog << executionObject->getId () << "'";
-              clog << endl;
+              event->removeEventListener (this);
 
-              if (event->getCurrentState () == EventUtil::ST_SLEEPING)
-                {
-                  event->removeEventListener (this);
-                  Thread::mutexLock (&lMutex);
-                  it = listening.find (event);
-                  if (it != listening.end ())
-                    {
-                      listening.erase (it);
-                    }
-                  Thread::mutexUnlock (&lMutex);
-                }
+              Thread::mutexLock (&lMutex);
+              it = listening.find (event);
+              if (it != listening.end ())
+                listening.erase (it);
+              Thread::mutexUnlock (&lMutex);
             }
-          break;
-
-        case ACT_PAUSE:
-          if (!player->pause ())
-            {
-            }
-          break;
-
-        case ACT_RESUME:
-          if (!player->resume ())
-            {
-            }
-          break;
-
-        case ACT_ABORT:
-          if (!player->abort ())
-            {
-            }
-          break;
-
-        case ACT_STOP:
-          if (!player->stop ())
-            {
-            }
-          break;
-
-        default:
-          g_assert_not_reached ();
         }
+      break;
+
+    case ACT_PAUSE:
+      if (unlikely (!player->pause ()))
+        g_warning ("scheduler: failed to pause player");
+      break;
+
+    case ACT_RESUME:
+      if (unlikely (!player->resume ()))
+        g_warning ("scheduler: failed to resume player");
+      break;
+
+    case ACT_ABORT:
+      if (unlikely (!player->abort ()))
+        g_warning ("scheduler: failed to abort player");
+      break;
+
+    case ACT_STOP:
+      if (unlikely (!player->stop ()))
+        g_warning ("scheduler: failed to stop player");
+      break;
+
+    default:
+      g_assert_not_reached ();
     }
 }
 
