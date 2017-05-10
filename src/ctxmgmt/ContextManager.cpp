@@ -92,13 +92,7 @@ ContextManager::addUser (GingaUser *newUser)
 
   id = newUser->getUserId ();
   if (users.count (id) != 0)
-    {
-      clog << "ContextManager::addUser Warning! ";
-      clog << "Trying to add the same user twice (id = '";
-      clog << id << "'" << endl;
-      return;
-    }
-
+    return;
   users[id] = newUser;
 }
 
@@ -121,12 +115,8 @@ ContextManager::getUser (int userId)
 
   i = users.find (userId);
   if (i != users.end ())
-    {
-      return i->second;
-    }
+    return i->second;
 
-  clog << "ContextManager::getUser Warning! can't find user '";
-  clog << userId << "'" << endl;
   return NULL;
 }
 
@@ -137,12 +127,8 @@ ContextManager::getUserMap (int userId)
 
   i = contexts.find (userId);
   if (i != contexts.end ())
-    {
       return i->second;
-    }
 
-  clog << "ContextManager::getUserProfile Warning! can't find profile ";
-  clog << "of user '" << userId << "'" << endl;
   return NULL;
 }
 
@@ -194,7 +180,6 @@ ContextManager::getSystemInfo ()
 void
 ContextManager::addContextListener (IContextListener *listener)
 {
-  clog << "ContextManager::addContextListener" << endl;
   Thread::mutexLock (&groupsMutex);
   ctxListeners.insert (listener);
   Thread::mutexUnlock (&groupsMutex);
@@ -205,13 +190,10 @@ ContextManager::removeContextListener (IContextListener *listener)
 {
   set<IContextListener *>::iterator i;
 
-  clog << "ContextManager::removeContextListener" << endl;
   Thread::mutexLock (&groupsMutex);
   i = ctxListeners.find (listener);
   if (i != ctxListeners.end ())
-    {
-      ctxListeners.erase (i);
-    }
+    ctxListeners.erase (i);
   Thread::mutexUnlock (&groupsMutex);
 }
 
@@ -219,9 +201,6 @@ void
 ContextManager::setGlobalVar (const string &varName, const string &varValue)
 {
   set<IContextListener *>::iterator i;
-
-  clog << "ContextManager::setGlobalVar(" << varName << ", ";
-  clog << varValue << ") " << endl;
 
   Thread::mutexLock (&groupsMutex);
   i = ctxListeners.begin ();
