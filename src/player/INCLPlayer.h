@@ -52,9 +52,6 @@ public:
 
   virtual ~INCLPlayer (){};
 
-  virtual set<string> *createPortIdList () = 0;
-  virtual short getMappedInterfaceType (const string &portId) = 0;
-
   virtual void setMrl (const string &mrl, bool visible = true) = 0;
   virtual void setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider)
       = 0;

@@ -389,65 +389,6 @@ FormatterMediator::~FormatterMediator ()
   clog << "FormatterMediator::~FormatterMediator all done" << endl;
 }
 
-set<string> *
-FormatterMediator::createPortIdList ()
-{
-  set<string> *portIds = NULL;
-  map<Port *, NclFormatterEvent *>::iterator i;
-
-  Thread::mutexLock (&pteMutex);
-  if (!portsToEntryEvents.empty ())
-    {
-      portIds = new set<string>;
-      i = portsToEntryEvents.begin ();
-      while (i != portsToEntryEvents.end ())
-        {
-          portIds->insert (i->first->getId ());
-          ++i;
-        }
-    }
-  Thread::mutexUnlock (&pteMutex);
-
-  return portIds;
-}
-
-short
-FormatterMediator::getMappedInterfaceType (const string &portId)
-{
-  short interfaceType = -1;
-  map<Port *, NclFormatterEvent *>::iterator i;
-
-  Thread::mutexLock (&pteMutex);
-  i = portsToEntryEvents.begin ();
-  while (i != portsToEntryEvents.end ())
-    {
-      if (i->first->getId () == portId)
-        {
-          if (i->second->instanceOf ("NclAttributionEvent"))
-            {
-              interfaceType = EventUtil::EVT_ATTRIBUTION;
-            }
-          else if (i->second->instanceOf ("NclPresentationEvent"))
-            {
-              interfaceType = EventUtil::EVT_PRESENTATION;
-            }
-          else if (i->second->instanceOf ("NclSelectionEvent"))
-            {
-              interfaceType = EventUtil::EVT_SELECTION;
-            }
-          else
-            {
-              interfaceType = EventUtil::EVT_COMPOSITION;
-            }
-
-          break;
-        }
-      ++i;
-    }
-  Thread::mutexUnlock (&pteMutex);
-  return interfaceType;
-}
-
 void
 FormatterMediator::setMrl (const string &mrl, bool visible)
 {
@@ -818,19 +759,6 @@ FormatterMediator::initializeSettingNodes (Node *node)
     }
 
   // clog << "FormatterScheduler::initializeSettingNodes all done" << endl;
-}
-
-vector<NclFormatterEvent *> *
-FormatterMediator::getDocumentEntryEvent (const string &documentId)
-{
-  if (documentEntryEvents.count (documentId) != 0)
-    {
-      return documentEntryEvents[documentId];
-    }
-  else
-    {
-      return NULL;
-    }
 }
 
 bool
