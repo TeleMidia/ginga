@@ -101,7 +101,7 @@ protected:
   SDL_Color bgColor; //background color
   SDL_Color borderColor;
   SDL_Rect rect; //draw area
-  double z;  //z-index
+  gint z;  //z-index
   guint8 alpha;
 
 public:
@@ -115,7 +115,7 @@ public:
   virtual void setNotifyContentUpdate (bool notify);
   virtual void addListener (IPlayerListener *listener);
   void removeListener (IPlayerListener *listener);
-  double getZ();
+  gint getZ();
 
 private:
   void performLockedListenersRequest ();

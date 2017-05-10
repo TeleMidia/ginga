@@ -600,6 +600,8 @@ Player::setOutWindow (SDLWindow* windowId)
   if( windowId!=NULL){
       this->rect = windowId->getRect();
       this->z = windowId->getZ();
+
+      g_debug("\n\nXXXXX - The z of: %s is %d \n\n",this->mrl.c_str(),this->z);
   }
 
   this->window = windowId;
@@ -611,7 +613,7 @@ Player::getMediaStatus(){
    return this->status;
 }
 
-double
+gint
 Player::getZ(){
   return this->z;
 }

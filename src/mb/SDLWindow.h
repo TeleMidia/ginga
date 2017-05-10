@@ -45,7 +45,7 @@ private:
 
   SDL_Rect rect;
 
-  double z;
+  gint z;
   guint8 transparencyValue;
   bool visible;
   bool ghost;
@@ -89,13 +89,13 @@ public:
   int getY ();
   int getW ();
   int getH ();
-  double getZ ();
+  gint getZ ();
 
   void setX (int x);
   void setY (int y);
   void setW (int w);
   void setH (int h);
-  void setZ (double z);
+  void setZ (gint z);
 
   bool isGhostWindow ();
   void setGhostWindow (bool ghost);
