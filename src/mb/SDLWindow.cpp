@@ -237,7 +237,7 @@ SDLWindow::getH ()
   return this->rect.h;
 }
 
-double
+gint
 SDLWindow::getZ ()
 {
   return z;
@@ -268,7 +268,7 @@ SDLWindow::setH (int h)
 }
 
 void
-SDLWindow::setZ (double z)
+SDLWindow::setZ (gint z)
 {
   this->z = z;
 }
