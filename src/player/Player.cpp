@@ -424,7 +424,7 @@ void
 Player::setPropertyValue (const string &name, const string &value)
 {
   if(!value.length())
-    return;
+    return; 
 
   vector<string> *params = NULL;
 
@@ -470,8 +470,10 @@ Player::setPropertyValue (const string &name, const string &value)
       else if (name == "height"){
           this->rect.h = xstrto_int (value);
       }
-      else if(name == "backgroundColor" || name == "bgColor"){
-          ginga_color_input_to_sdl_color(value, &this->bgColor);    
+      else if(name == "background" || name == "backgroundColor" || name == "bgColor"){
+          ginga_color_input_to_sdl_color(value, &this->bgColor);   
+
+          g_debug("\n\n print r:%d g:%d b:%d a:%d \n\n",this->bgColor.r,this->bgColor.g,this->bgColor.b,this->bgColor.a); 
       }
       else if (name == "transparency"){
           if(xstrto_uint8 (value) <= 0)
@@ -593,8 +595,6 @@ Player::setOutWindow (SDLWindow* windowId)
   if( windowId!=NULL){
       this->rect = windowId->getRect();
       this->z = windowId->getZ();
-
-      g_debug("\n\nXXXXX - The z of: %s is %d \n\n",this->mrl.c_str(),this->z);
   }
 
   this->window = windowId;
