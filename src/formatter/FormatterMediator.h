@@ -143,11 +143,7 @@ public:
   FormatterMediator ();
   ~FormatterMediator ();
 
-  set<string> *createPortIdList ();
-  short getMappedInterfaceType (const string &portId);
-
   void setMrl (const string &mrl, bool visible = true);
-  void reset (){};
   void setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider);
 
   void setParentLayout (void *parentLayout);
