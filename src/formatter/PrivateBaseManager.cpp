@@ -54,18 +54,10 @@ PrivateBaseManager::createPrivateBase (const string &id)
   PrivateBaseContext *privateBaseContext;
 
   lockTable ();
-  if (privateBases.count (id) == 0)
-    {
-      privateBaseContext = new PrivateBaseContext ();
-      privateBaseContext->createPrivateBase (id);
-      privateBases[id] = privateBaseContext;
-    }
-  else
-    {
-      clog << "PrivateBaseManager::createPrivateBase Warning! ";
-      clog << "Trying to overwrite the '" << id << "' private base";
-      clog << endl;
-    }
+  g_assert (privateBases.count (id) == 0);
+  privateBaseContext = new PrivateBaseContext ();
+  privateBaseContext->createPrivateBase (id);
+  privateBases[id] = privateBaseContext;
   unlockTable ();
 }
 
@@ -83,23 +75,6 @@ PrivateBaseManager::addDocument (const string &id, const string &location,
     }
 
   return document;
-}
-
-NclDocument *
-PrivateBaseManager::embedDocument (const string &id, const string &docId, const string &nodeId,
-                                   const string &location,
-                                   DeviceLayout *deviceLayout)
-{
-  PrivateBaseContext *privateBaseContext;
-
-  privateBaseContext = getPrivateBaseContext (id);
-  if (privateBaseContext != NULL)
-    {
-      return privateBaseContext->embedDocument (docId, nodeId, location,
-                                                deviceLayout);
-    }
-
-  return NULL;
 }
 
 void *
@@ -132,23 +107,6 @@ PrivateBaseManager::getDocumentLocation (const string &id, const string &docId)
   return "";
 }
 
-string
-PrivateBaseManager::getEmbeddedDocumentLocation (const string &id,
-                                                 const string &parentDocId,
-                                                 const string &nodeId)
-{
-  PrivateBaseContext *privateBaseContext;
-
-  privateBaseContext = getPrivateBaseContext (id);
-  if (privateBaseContext != NULL)
-    {
-      return privateBaseContext->getEmbeddedDocumentLocation (parentDocId,
-                                                              nodeId);
-    }
-
-  return "";
-}
-
 NclDocument *
 PrivateBaseManager::getDocument (const string &id, const string &docId)
 {
@@ -158,21 +116,6 @@ PrivateBaseManager::getDocument (const string &id, const string &docId)
   if (privateBaseContext != NULL)
     {
       return privateBaseContext->getDocument (docId);
-    }
-
-  return NULL;
-}
-
-NclDocument *
-PrivateBaseManager::getEmbeddedDocument (const string &id, const string &parentDocId,
-                                         const string &nodeId)
-{
-  PrivateBaseContext *privateBaseContext;
-
-  privateBaseContext = getPrivateBaseContext (id);
-  if (privateBaseContext != NULL)
-    {
-      return privateBaseContext->getEmbeddedDocument (parentDocId, nodeId);
     }
 
   return NULL;
@@ -201,23 +144,6 @@ PrivateBaseManager::removeDocument (const string &id, const string &docId)
   if (privateBaseContext != NULL)
     {
       return privateBaseContext->removeDocument (docId);
-    }
-
-  return NULL;
-}
-
-NclDocument *
-PrivateBaseManager::removeEmbeddedDocument (const string &baseId,
-                                            const string &parentDocId,
-                                            const string &nodeId)
-{
-  PrivateBaseContext *privateBaseContext;
-
-  privateBaseContext = getPrivateBaseContext (baseId);
-  if (privateBaseContext != NULL)
-    {
-      return privateBaseContext->removeEmbeddedDocument (parentDocId,
-                                                         nodeId);
     }
 
   return NULL;

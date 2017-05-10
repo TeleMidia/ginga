@@ -247,19 +247,12 @@ Player::notifyPlayerListeners (short code,
       return;
     }
 
-  if (code == PL_NOTIFY_NCLEDIT)
+  if (code == PL_NOTIFY_STOP)
     {
-      ntsNotifyPlayerListeners (&listeners, code, parameter, type, value);
+      presented = true;
     }
-  else
-    {
-      if (code == PL_NOTIFY_STOP)
-        {
-          presented = true;
-        }
 
-      ntsNotifyPlayerListeners (&listeners, code, parameter, type, value);
-    }
+  ntsNotifyPlayerListeners (&listeners, code, parameter, type, value);
 
   Thread::mutexLock (&pnMutex);
   if (!pendingNotifications.empty ())

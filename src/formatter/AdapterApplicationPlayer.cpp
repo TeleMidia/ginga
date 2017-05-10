@@ -736,53 +736,6 @@ AdapterApplicationPlayer::notificationHandler (short code, const string &_param,
       abortEvent (param, type);
       break;
 
-    case IPlayer::PL_NOTIFY_NCLEDIT:
-      if (editingCommandListener != NULL)
-        {
-          string cTag, bId, dId;
-          string::size_type pos;
-          NclPlayerData *pData
-              = ((AdapterPlayerManager *)manager)->getNclPlayerData ();
-
-          pos = param.find_first_of (",");
-          cTag = param.substr (0, pos);
-          param = param.substr (pos + 1, param.length () - pos + 1);
-
-          pos = param.find_first_of (",");
-          bId = xstrchomp (param.substr (0, pos));
-          param = param.substr (pos + 1, param.length () - pos + 1);
-
-          if (bId == "" || bId == "''")
-            {
-              bId = pData->baseId;
-            }
-
-          pos = param.find_first_of (",");
-          dId = xstrchomp (param.substr (0, pos));
-          param = param.substr (pos + 1, param.length () - pos + 1);
-
-          if (dId == "" || dId == "''")
-            {
-              dId = pData->docId;
-            }
-
-          param = cTag + "," + bId + "," + dId + "," + param;
-
-          clog << "AdapterApplicationPlayer::notificationHandler";
-          clog << " NCLEDIT newParam = '" << param << "'";
-          clog << endl;
-
-          editingCommandListener->updateStatus (code, param, type, value);
-        }
-      else
-        {
-          clog << "AdapterApplicationPlayer::notificationHandler";
-          clog << " NCLEDIT Warning! editing command listener is ";
-          clog << "NULL";
-          clog << endl;
-        }
-      break;
-
     default:
       clog << "AdapterApplicationPlayer::notificationHandler";
       clog << " Warning! Received an unknown notification";

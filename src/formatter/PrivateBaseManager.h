@@ -41,24 +41,15 @@ public:
   NclDocument *addDocument (const string &id, const string &location,
                             DeviceLayout *deviceLayout);
 
-  NclDocument *embedDocument (const string &id, const string &docId, const string &nodeId,
-                              const string &location, DeviceLayout *deviceLayout);
-
   void *addVisibleDocument (const string &id, const string &location,
                             DeviceLayout *deviceLayout);
 
   string getDocumentLocation (const string &id, const string &docId);
-  string getEmbeddedDocumentLocation (const string &baseId, const string &parentDocId,
-                                      const string &nodeId);
 
   NclDocument *getDocument (const string &id, const string &docId);
-  NclDocument *getEmbeddedDocument (const string &baseId, const string &parendDocId,
-                                    const string &nodeId);
 
   vector<NclDocument *> *getDocuments (const string &id);
   NclDocument *removeDocument (const string &id, const string &docId);
-  NclDocument *removeEmbeddedDocument (const string &baseId, const string &parentDocId,
-                                       const string &nodeId);
 
   LayoutRegion *addRegion (const string &id, const string &documentId,
                            const string &regionBaseId, const string &regionId,

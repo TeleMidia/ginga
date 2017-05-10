@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define FORMATTER_MEDIATOR_H
 
 #include "player/INCLPlayer.h"
-#include "player/IApplicationPlayer.h"
 #include "player/Player.h"
 using namespace ::ginga::player;
 
@@ -138,7 +137,6 @@ private:
   DeviceLayout *deviceLayout;
   FormatterMultiDevice *multiDevice;
   PresentationContext *presContext;
-  bool isEmbedded;
   bool docCompiled;
   pthread_mutex_t pteMutex;
 
@@ -158,7 +156,6 @@ public:
 
   void setParentLayout (void *parentLayout);
 
-  vector<string> *getCompileErrors ();
   void *setCurrentDocument (const string &fName);
 
 private:
@@ -194,10 +191,6 @@ private:
   bool pauseDocument (const string &documentId);
   bool resumeDocument (const string &documentId);
   void presentationCompleted (NclFormatterEvent *documentEvent);
-
-public:
-  bool nclEdit (const string &nclEditApi);
-  bool editingCommand (const string &commandTag, const string &privateDataPayload);
 
 private:
   LayoutRegion *addRegion (const string &documentId, const string &regionBaseId,
