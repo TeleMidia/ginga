@@ -31,7 +31,6 @@ void *
 NclLayoutParser::parseRegion (DOMElement *parentElement,
                               void *objGrandParent)
 {
-  clog << "parseRegion" << endl;
   void *parentObject;
   DOMNodeList *elementNodeList;
   DOMElement *element;
@@ -40,10 +39,7 @@ NclLayoutParser::parseRegion (DOMElement *parentElement,
   void *elementObject;
 
   parentObject = createRegion (parentElement, objGrandParent);
-  if (parentObject == NULL)
-    {
-      return NULL;
-    }
+  g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
@@ -53,9 +49,6 @@ NclLayoutParser::parseRegion (DOMElement *parentElement,
         {
           element = (DOMElement *)node;
           elementTagName = XMLString::transcode (element->getTagName ());
-          clog << ">>" << elementTagName.c_str () << ": ";
-          clog << XMLString::transcode (
-              element->getAttribute (XMLString::transcode ("id")));
 
           if (XMLString::compareIString (elementTagName.c_str (), "region")
               == 0)
@@ -76,7 +69,6 @@ void *
 NclLayoutParser::parseRegionBase (DOMElement *parentElement,
                                   void *objGrandParent)
 {
-  clog << "parseRegionBase" << endl;
   void *parentObject;
   DOMNodeList *elementNodeList;
   DOMElement *element;
@@ -85,10 +77,7 @@ NclLayoutParser::parseRegionBase (DOMElement *parentElement,
   void *elementObject;
 
   parentObject = createRegionBase (parentElement, objGrandParent);
-  if (parentObject == NULL)
-    {
-      return NULL;
-    }
+  g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
@@ -98,9 +87,6 @@ NclLayoutParser::parseRegionBase (DOMElement *parentElement,
         {
           element = (DOMElement *)node;
           elementTagName = XMLString::transcode (element->getTagName ());
-          clog << ">>" << elementTagName.c_str () << ": ";
-          clog << XMLString::transcode (
-              element->getAttribute (XMLString::transcode ("id")));
 
           if (XMLString::compareIString (elementTagName.c_str (),
                                          "importBase")

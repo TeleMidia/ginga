@@ -62,26 +62,21 @@ NclConnectorsConverter::addImportBaseToConnectorBase (void *parentObject,
   compiler = (NclDocumentConverter *)getDocumentParser ();
 
   importedDocument = compiler->importDocument (baseLocation);
-  if (importedDocument == NULL)
+  if (unlikely (importedDocument == NULL))
     {
-      clog << "NclConnectorsConverter::addImportBaseToConnectorBase ";
-      clog << "Warning! Can't import document location '";
-      clog << baseLocation << "' with alias '" << baseAlias << "'";
-      clog << endl;
-      return;
+      syntax_error ("importBase '%s': bad documentURI '%s'",
+                    baseAlias.c_str (),
+                    baseLocation.c_str ());
     }
 
   connectorBase = importedDocument->getConnectorBase ();
-  if (connectorBase == NULL)
+  if (unlikely (connectorBase == NULL))
     {
-      clog << "NclConnectorsConverter::addImportBaseToConnectorBase ";
-      clog << "Warning! Can't get connector base from imported ";
-      clog << baseLocation << "' with alias '" << baseAlias << "'";
-      clog << endl;
-      return;
+      syntax_error ("importBase '%s': no connector base in '%s'",
+                    baseAlias.c_str (),
+                    baseLocation.c_str ());
     }
 
-  // insert the imported base into the document connector base
   ((ConnectorBase *)parentObject)
       ->addBase (connectorBase, baseAlias, baseLocation);
 }
@@ -91,18 +86,8 @@ NclConnectorsConverter::createCausalConnector (DOMElement *parentElement,
                                                arg_unused (void *objGrandParent))
 {
   string connectorId = "";
-  /*
-   * if (connectorUri->equalsIgnoreCase("")) { //se nao tiver uma uri do
-   * arquivo do conector, atribuir somente o id
-   * do elemento conector como id do conector
-   * connectorId = parentElement->getAttribute("id"); connectorId =
-   * "#" + parentElement->getAttribute("id"); } else { //atribuir a id do
-   * conector como sendo a uri do seu arquivo
-   * connectorId = connectorUri;
-   */
   connectorId = XMLString::transcode (
       parentElement->getAttribute (XMLString::transcode ("id")));
-
   connector = new CausalConnector (connectorId);
   return connector;
 }
@@ -112,11 +97,8 @@ NclConnectorsConverter::createConnectorBase (DOMElement *parentElement,
                                              arg_unused (void *objGrandParent))
 {
   ConnectorBase *connBase;
-  // criar nova base de conectores com id gerado a partir do nome de seu
-  // elemento
   connBase = new ConnectorBase (XMLString::transcode (
       parentElement->getAttribute (XMLString::transcode ("id"))));
-
   return connBase;
 }
 
@@ -786,34 +768,6 @@ NclConnectorsConverter::addCompoundActionToCausalConnector (
     void *parentObject, void *childObject)
 {
   ((CausalConnector *)parentObject)->setAction ((Action *)childObject);
-}
-
-void
-NclConnectorsConverter::addAssessmentStatementToConstraintConnector (
-    arg_unused (void *parentObject), arg_unused (void *childObject))
-{
-}
-
-void
-NclConnectorsConverter::addCompoundStatementToConstraintConnector (
-    arg_unused (void *parentObject), arg_unused (void *childObject))
-{
-  // TODO Auto-generated method stub
-}
-
-void
-NclConnectorsConverter::addConstraintConnectorToConnectorBase (
-    arg_unused (void *parentObject), arg_unused (void *childObject))
-{
-  // TODO Auto-generated method stub
-}
-
-void *
-NclConnectorsConverter::createConstraintConnector (
-    arg_unused (DOMElement *parentElement), arg_unused (void *objGrandParent))
-{
-  // TODO Auto-generated method stub
-  return NULL;
 }
 
 GINGA_NCLCONV_END

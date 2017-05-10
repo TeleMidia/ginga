@@ -31,7 +31,6 @@ void *
 NclLinkingParser::parseBind (DOMElement *parentElement,
                              void *objGrandParent)
 {
-  clog << "parseBind" << endl;
   void *parentObject;
   DOMNodeList *elementNodeList;
   DOMElement *element;
@@ -40,10 +39,7 @@ NclLinkingParser::parseBind (DOMElement *parentElement,
   void *elementObject;
 
   parentObject = createBind (parentElement, objGrandParent);
-  if (parentObject == NULL)
-    {
-      return NULL;
-    }
+  g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
@@ -53,10 +49,6 @@ NclLinkingParser::parseBind (DOMElement *parentElement,
         {
           element = (DOMElement *)node;
           elementTagName = XMLString::transcode (element->getTagName ());
-          clog << ">>" << elementTagName.c_str () << ": ";
-          clog << XMLString::transcode (
-                      element->getAttribute (XMLString::transcode ("id")))
-               << endl;
 
           if (XMLString::compareIString (elementTagName.c_str (),
                                          "bindParam")
@@ -78,7 +70,6 @@ void *
 NclLinkingParser::parseLinkParam (DOMElement *parentElement,
                                   void *objGrandParent)
 {
-  clog << "parseLinkParam" << endl;
   return createLinkParam (parentElement, objGrandParent);
 }
 
@@ -86,7 +77,6 @@ void *
 NclLinkingParser::parseBindParam (DOMElement *parentElement,
                                   void *objGrandParent)
 {
-  clog << "parseBindParam" << endl;
   return createBindParam (parentElement, objGrandParent);
 }
 
@@ -94,7 +84,6 @@ void *
 NclLinkingParser::parseLink (DOMElement *parentElement,
                              void *objGrandParent)
 {
-  clog << "parseLink" << endl;
   void *parentObject;
   DOMNodeList *elementNodeList;
   DOMElement *element;
@@ -103,10 +92,7 @@ NclLinkingParser::parseLink (DOMElement *parentElement,
   void *elementObject;
 
   parentObject = createLink (parentElement, objGrandParent);
-  if (parentObject == NULL)
-    {
-      return NULL;
-    }
+  g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
@@ -116,10 +102,6 @@ NclLinkingParser::parseLink (DOMElement *parentElement,
         {
           element = (DOMElement *)node;
           elementTagName = XMLString::transcode (element->getTagName ());
-          clog << ">>" << elementTagName.c_str () << ": ";
-          clog << XMLString::transcode (
-                      element->getAttribute (XMLString::transcode ("id")))
-               << endl;
 
           if (XMLString::compareIString (elementTagName.c_str (),
                                          "linkParam")

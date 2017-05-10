@@ -30,7 +30,6 @@ void *
 NclMetainformationParser::parseMeta (DOMElement *parentElement,
                                      void *objGrandParent)
 {
-  clog << "parseMeta" << endl;
   return createMeta (parentElement, objGrandParent);
 }
 
@@ -38,7 +37,6 @@ void *
 NclMetainformationParser::parseMetadata (DOMElement *parentElement,
                                          void *objGrandParent)
 {
-  clog << "parseMetadata" << endl;
   return createMetadata (parentElement, objGrandParent);
 }
 

@@ -40,7 +40,7 @@ NclMetainformationConverter::createMeta (DOMElement *parentElement,
     }
   else
     {
-      return NULL;
+      syntax_error ("meta: missing name");
     }
 
   if (parentElement->hasAttribute (XMLString::transcode ("content")))
@@ -50,7 +50,7 @@ NclMetainformationConverter::createMeta (DOMElement *parentElement,
     }
   else
     {
-      return NULL;
+      syntax_error ("meta: missing content");
     }
 
   meta = new Meta (name, deconst (void *, content.c_str ()));
