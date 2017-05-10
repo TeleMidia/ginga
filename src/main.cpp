@@ -52,7 +52,7 @@ opt_size (arg_unused (const gchar *opt), const gchar *arg,
   if (*end != 'x')
     goto syntax_error;
 
-  height = g_ascii_strtoull (++end, NULL, 10);
+  height = g_ascii_strtoll (++end, NULL, 10);
   if (height == 0)
     goto syntax_error;
   opt_height = (gint) (CLAMP (height, 0, G_MAXINT));

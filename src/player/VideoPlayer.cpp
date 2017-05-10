@@ -201,8 +201,8 @@ VideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
     g_assert (gst_video_frame_map (&v_frame, &v_info, buf, GST_MAP_READ));
 
     pixels = (guint8 *) GST_VIDEO_FRAME_PLANE_DATA (&v_frame, 0);
-    stride = GST_VIDEO_FRAME_PLANE_STRIDE (&v_frame, 0);
-    g_assert (SDL_UpdateTexture(this->texture, NULL, pixels, stride) == 0);
+    stride = (guint) GST_VIDEO_FRAME_PLANE_STRIDE (&v_frame, 0);
+    g_assert (SDL_UpdateTexture(this->texture, NULL, pixels, (int) stride) == 0);
   
   //  this->window->setTexture (texture);
 
