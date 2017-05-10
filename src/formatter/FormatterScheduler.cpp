@@ -347,7 +347,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
   executionObject = (NclExecutionObject *)(event->getExecutionObject ());
   g_assert_nonnull (executionObject);
 
-  g_debug ("running action '%s' over '%s'",
+  g_debug ("running action '%s' over event '%s'",
            action->getTypeString ().c_str (),
            event->getId ().c_str ());
 

@@ -193,7 +193,7 @@ FormatterMediator::FormatterMediator () : Player ("")
   NclPlayerData *data;
 
   data = new NclPlayerData;
-  data->baseId = "-1";
+  data->baseId = "";
   data->devClass = 0;
   data->docId = "";
   data->focusManager = NULL;
