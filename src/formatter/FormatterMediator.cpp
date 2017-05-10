@@ -84,101 +84,101 @@ EntryEventListener::eventStateChanged (void *event, short transition,
   NclExecutionObject *obj;
   NclCompositeExecutionObject *cObj = NULL;
 
-  if (player != NULL)
+  if (unlikely (player != NULL))
+    return;
+
+  ev = (NclFormatterEvent *) event;
+  port = ((FormatterMediator *) player)->getPortFromEvent (ev);
+
+  if (unlikely (port == NULL))
+    return;
+
+  obj = (NclExecutionObject *)(ev->getExecutionObject ());
+  if (obj != NULL)
     {
-      ev = (NclFormatterEvent *)event;
-      port = ((FormatterMediator *)player)->getPortFromEvent (ev);
+      cObj = (NclCompositeExecutionObject *)obj->getParentObject ();
+    }
 
-      if (port != NULL)
+  eventType = ev->getEventType ();
+  if (eventType == EventUtil::EVT_ATTRIBUTION)
+    {
+      eventType = IPlayer::TYPE_ATTRIBUTION;
+      value = ((NclAttributionEvent *)ev)->getCurrentValue ();
+    }
+  else
+    {
+      eventType = IPlayer::TYPE_PRESENTATION;
+    }
+
+  interfaceId = port->getId ();
+
+  clog << "EntryEventListener::eventStateChanged ";
+  if (cObj != NULL)
+    {
+      clog << "parent id = '" << cObj->getId () << "' ";
+      clog << "parent is running = '" << cObj->isSleeping ();
+      clog << "' ";
+    }
+  clog << "interface id = '";
+  clog << interfaceId << "'";
+  clog << " events running = '" << eventsRunning;
+  clog << "'" << endl;
+
+  switch (transition)
+    {
+    case EventUtil::TR_STARTS:
+      player->notifyPlayerListeners (IPlayer::PL_NOTIFY_START,
+                                     interfaceId, eventType, value);
+
+      if (hasStartPoint && eventsRunning == 0)
         {
-          obj = (NclExecutionObject *)(ev->getExecutionObject ());
-          if (obj != NULL)
-            {
-              cObj = (NclCompositeExecutionObject *)obj->getParentObject ();
-            }
-
-          eventType = ev->getEventType ();
-          if (eventType == EventUtil::EVT_ATTRIBUTION)
-            {
-              eventType = IPlayer::TYPE_ATTRIBUTION;
-              value = ((NclAttributionEvent *)ev)->getCurrentValue ();
-            }
-          else
-            {
-              eventType = IPlayer::TYPE_PRESENTATION;
-            }
-
-          interfaceId = port->getId ();
-
-          clog << "EntryEventListener::eventStateChanged ";
-          if (cObj != NULL)
-            {
-              clog << "parent id = '" << cObj->getId () << "' ";
-              clog << "parent is running = '" << cObj->isSleeping ();
-              clog << "' ";
-            }
-          clog << "interface id = '";
-          clog << interfaceId << "'";
-          clog << " events running = '" << eventsRunning;
-          clog << "'" << endl;
-
-          switch (transition)
-            {
-            case EventUtil::TR_STARTS:
-              player->notifyPlayerListeners (IPlayer::PL_NOTIFY_START,
-                                             interfaceId, eventType, value);
-
-              if (hasStartPoint && eventsRunning == 0)
-                {
-                  player->notifyPlayerListeners (IPlayer::PL_NOTIFY_START,
-                                                 "", eventType, value);
-                }
-
-              eventsRunning++;
-              break;
-
-            case EventUtil::TR_PAUSES:
-              player->notifyPlayerListeners (IPlayer::PL_NOTIFY_PAUSE,
-                                             interfaceId, eventType, value);
-
-              break;
-
-            case EventUtil::TR_RESUMES:
-              player->notifyPlayerListeners (IPlayer::PL_NOTIFY_RESUME,
-                                             interfaceId, eventType, value);
-
-              break;
-
-            case EventUtil::TR_STOPS:
-              player->notifyPlayerListeners (IPlayer::PL_NOTIFY_STOP,
-                                             interfaceId, eventType, value);
-
-              if (hasStartPoint && eventsRunning == 1)
-                {
-                  player->notifyPlayerListeners (IPlayer::PL_NOTIFY_STOP,
-                                                 "", eventType, value);
-                }
-
-              eventsRunning--;
-              break;
-
-            case EventUtil::TR_ABORTS:
-              player->notifyPlayerListeners (IPlayer::PL_NOTIFY_ABORT,
-                                             interfaceId, eventType, value);
-
-              if (hasStartPoint && eventsRunning == 1)
-                {
-                  player->notifyPlayerListeners (IPlayer::PL_NOTIFY_ABORT,
-                                                 "", eventType, value);
-                }
-
-              eventsRunning--;
-              break;
-
-            default:
-              break;
-            }
+          player->notifyPlayerListeners (IPlayer::PL_NOTIFY_START,
+                                         "", eventType, value);
         }
+
+      eventsRunning++;
+      break;
+
+    case EventUtil::TR_PAUSES:
+      player->notifyPlayerListeners (IPlayer::PL_NOTIFY_PAUSE,
+                                     interfaceId, eventType, value);
+
+      break;
+
+    case EventUtil::TR_RESUMES:
+      player->notifyPlayerListeners (IPlayer::PL_NOTIFY_RESUME,
+                                     interfaceId, eventType, value);
+
+      break;
+
+    case EventUtil::TR_STOPS:
+      player->notifyPlayerListeners (IPlayer::PL_NOTIFY_STOP,
+                                     interfaceId, eventType, value);
+
+      if (hasStartPoint && eventsRunning == 1)
+        {
+          player->notifyPlayerListeners (IPlayer::PL_NOTIFY_STOP,
+                                         "", eventType, value);
+        }
+
+      eventsRunning--;
+      break;
+
+    case EventUtil::TR_ABORTS:
+      player->notifyPlayerListeners (IPlayer::PL_NOTIFY_ABORT,
+                                     interfaceId, eventType, value);
+
+      if (hasStartPoint && eventsRunning == 1)
+        {
+          player->notifyPlayerListeners (IPlayer::PL_NOTIFY_ABORT,
+                                         "", eventType, value);
+        }
+
+      eventsRunning--;
+      break;
+
+    default:
+      break;
     }
 }
 
