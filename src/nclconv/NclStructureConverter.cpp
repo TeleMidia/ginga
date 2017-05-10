@@ -94,9 +94,6 @@ NclStructureConverter::addTransitionBaseToHead (arg_unused (void *parentObject),
 
   document = (NclDocument *)(getDocumentParser ()->getObject ("return",
                                                               "document"));
-
-  clog << "NclStructureConverter::addTransitionBaseToHead ";
-  clog << "setTransitionBase" << endl;
   document->setTransitionBase ((TransitionBase *)childObject);
 }
 
@@ -223,13 +220,8 @@ NclStructureConverter::solveNodeReferences (CompositeNode *composition)
                         }
                       else
                         {
-                          clog << "NclStructureConverter::";
-                          clog << "solveNodeReferences ";
-                          clog << "The media element '";
-                          clog << node->getId () << "' refers to '";
-                          clog << referredNode->getId ().c_str ();
-                          clog << "' object, which was not declared";
-                          clog << " before" << endl;
+                          syntax_error ("media: bad refer '%s'",
+                                        referredNode->getId ().c_str ());
                         }
                     }
                 }

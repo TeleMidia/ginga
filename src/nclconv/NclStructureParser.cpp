@@ -40,10 +40,7 @@ NclStructureParser::parseBody (DOMElement *parentElement,
   void *elementObject;
 
   parentObject = createBody (parentElement, objGrandParent);
-  if (parentObject == NULL)
-    {
-      return NULL;
-    }
+  g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
   size = (int) elementNodeList->getLength ();
@@ -133,10 +130,7 @@ NclStructureParser::parseHead (DOMElement *parentElement,
   void *elementObject = NULL;
 
   parentObject = createHead (parentElement, objGrandParent);
-  if (parentObject == NULL)
-    {
-      return NULL;
-    }
+  g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
   size = (int) elementNodeList->getLength ();
@@ -208,8 +202,6 @@ NclStructureParser::parseHead (DOMElement *parentElement,
                  XMLString::transcode ("transitionBase"))
                  == 0)
         {
-          clog << "NclStructureParser::parseHead ";
-          clog << "transitionBase i = '" << i << "'" << endl;
           elementObject = getTransitionParser ()->parseTransitionBase (
               (DOMElement *)node, parentObject);
 
@@ -314,10 +306,7 @@ NclStructureParser::parseNcl (DOMElement *parentElement,
   void *elementObject = NULL;
 
   parentObject = createNcl (parentElement, objGrandParent);
-  if (parentObject == NULL)
-    {
-      return NULL;
-    }
+  g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
   size = (int) elementNodeList->getLength ();

@@ -31,7 +31,6 @@ void *
 NclConnectorsParser::parseSimpleCondition (DOMElement *parentElement,
                                            void *objGrandParent)
 {
-  clog << "parseSimpleCondition" << endl;
   return createSimpleCondition (parentElement, objGrandParent);
 }
 
@@ -39,7 +38,6 @@ void *
 NclConnectorsParser::parseCompoundCondition (DOMElement *parentElement,
                                              void *objGrandParent)
 {
-  clog << "parseCompoundCondition" << endl;
   void *parentObject = NULL;
   DOMNodeList *elementNodeList;
   DOMElement *element;
@@ -48,10 +46,7 @@ NclConnectorsParser::parseCompoundCondition (DOMElement *parentElement,
   void *elementObject = NULL;
 
   parentObject = createCompoundCondition (parentElement, objGrandParent);
-  if (parentObject == NULL)
-    {
-      return NULL;
-    }
+  g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
@@ -61,10 +56,6 @@ NclConnectorsParser::parseCompoundCondition (DOMElement *parentElement,
         {
           element = (DOMElement *)node;
           elementTagName = XMLString::transcode (element->getTagName ());
-          clog << ">>" << elementTagName.c_str () << ": ";
-          clog << XMLString::transcode (
-                      element->getAttribute (XMLString::transcode ("id")))
-               << endl;
 
           if (XMLString::compareIString (elementTagName.c_str (),
                                          "simpleCondition")
@@ -126,7 +117,6 @@ void *
 NclConnectorsParser::parseAssessmentStatement (DOMElement *parentElement,
                                                void *objGrandParent)
 {
-  clog << "parseAssessmentStatement" << endl;
   void *parentObject = NULL;
   DOMNodeList *elementNodeList;
   DOMElement *element;
@@ -135,10 +125,7 @@ NclConnectorsParser::parseAssessmentStatement (DOMElement *parentElement,
   void *elementObject = NULL;
 
   parentObject = createAssessmentStatement (parentElement, objGrandParent);
-  if (parentObject == NULL)
-    {
-      return NULL;
-    }
+  g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
@@ -182,7 +169,6 @@ void *
 NclConnectorsParser::parseAttributeAssessment (DOMElement *parentElement,
                                                void *objGrandParent)
 {
-  clog << "parseAttributeAssessment" << endl;
   return createAttributeAssessment (parentElement, objGrandParent);
 }
 
@@ -190,7 +176,6 @@ void *
 NclConnectorsParser::parseValueAssessment (DOMElement *parentElement,
                                            void *objGrandParent)
 {
-  clog << "parseValueAssessment" << endl;
   return createValueAssessment (parentElement, objGrandParent);
 }
 
@@ -198,7 +183,6 @@ void *
 NclConnectorsParser::parseCompoundStatement (DOMElement *parentElement,
                                              void *objGrandParent)
 {
-  clog << "parseCompoundStatement" << endl;
   void *parentObject = NULL;
   DOMNodeList *elementNodeList;
   DOMElement *element;
@@ -207,10 +191,7 @@ NclConnectorsParser::parseCompoundStatement (DOMElement *parentElement,
   void *elementObject = NULL;
 
   parentObject = createCompoundStatement (parentElement, objGrandParent);
-  if (parentObject == NULL)
-    {
-      return NULL;
-    }
+  g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
@@ -220,11 +201,6 @@ NclConnectorsParser::parseCompoundStatement (DOMElement *parentElement,
         {
           element = (DOMElement *)node;
           elementTagName = XMLString::transcode (element->getTagName ());
-          clog << ">>" << elementTagName.c_str () << ": ";
-          clog << XMLString::transcode (
-                      element->getAttribute (XMLString::transcode ("id")))
-               << endl;
-
           if (XMLString::compareIString (elementTagName.c_str (),
                                          "assessmentStatement")
               == 0)
@@ -261,7 +237,6 @@ void *
 NclConnectorsParser::parseSimpleAction (DOMElement *parentElement,
                                         void *objGrandParent)
 {
-  clog << "parseSimpleAction" << endl;
   return createSimpleAction (parentElement, objGrandParent);
 }
 
@@ -269,7 +244,6 @@ void *
 NclConnectorsParser::parseCompoundAction (DOMElement *parentElement,
                                           void *objGrandParent)
 {
-  clog << "parseCompoundAction" << endl;
   void *parentObject = NULL;
   DOMNodeList *elementNodeList;
   DOMElement *element;
@@ -278,10 +252,7 @@ NclConnectorsParser::parseCompoundAction (DOMElement *parentElement,
   void *elementObject = NULL;
 
   parentObject = createCompoundAction (parentElement, objGrandParent);
-  if (parentObject == NULL)
-    {
-      return NULL;
-    }
+  g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
@@ -291,11 +262,6 @@ NclConnectorsParser::parseCompoundAction (DOMElement *parentElement,
         {
           element = (DOMElement *)node;
           elementTagName = XMLString::transcode (element->getTagName ());
-          clog << ">>" << elementTagName.c_str () << ": ";
-          clog << XMLString::transcode (
-                      element->getAttribute (XMLString::transcode ("id")))
-               << endl;
-
           if (XMLString::compareIString (elementTagName.c_str (),
                                          "simpleAction")
               == 0)
@@ -328,7 +294,6 @@ void *
 NclConnectorsParser::parseConnectorParam (DOMElement *parentElement,
                                           void *objGrandParent)
 {
-  clog << "parseConnectorParam" << endl;
   return createConnectorParam (parentElement, objGrandParent);
 }
 
@@ -336,7 +301,6 @@ void *
 NclConnectorsParser::parseCausalConnector (DOMElement *parentElement,
                                            void *objGrandParent)
 {
-  clog << "parseCausalConnector" << endl;
   void *parentObject = NULL;
   DOMNodeList *elementNodeList;
   DOMElement *element;
@@ -347,10 +311,7 @@ NclConnectorsParser::parseCausalConnector (DOMElement *parentElement,
   // pre-compile attributes
 
   parentObject = createCausalConnector (parentElement, objGrandParent);
-  if (parentObject == NULL)
-    {
-      return NULL;
-    }
+  g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
@@ -360,10 +321,6 @@ NclConnectorsParser::parseCausalConnector (DOMElement *parentElement,
         {
           element = (DOMElement *)node;
           elementTagName = XMLString::transcode (element->getTagName ());
-          clog << ">>" << elementTagName.c_str () << ": ";
-          clog << XMLString::transcode (
-                      element->getAttribute (XMLString::transcode ("id")))
-               << endl;
 
           if (XMLString::compareIString (elementTagName.c_str (),
                                          "simpleCondition")
@@ -436,7 +393,6 @@ void *
 NclConnectorsParser::parseConnectorBase (DOMElement *parentElement,
                                          void *objGrandParent)
 {
-  clog << "parseConnectorBase" << endl;
   void *parentObject = NULL;
   DOMNodeList *elementNodeList;
   DOMElement *element;
@@ -445,10 +401,7 @@ NclConnectorsParser::parseConnectorBase (DOMElement *parentElement,
   void *elementObject = NULL;
 
   parentObject = createConnectorBase (parentElement, objGrandParent);
-  if (parentObject == NULL)
-    {
-      return NULL;
-    }
+  g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
@@ -458,11 +411,6 @@ NclConnectorsParser::parseConnectorBase (DOMElement *parentElement,
         {
           element = (DOMElement *)node;
           elementTagName = XMLString::transcode (element->getTagName ());
-          clog << ">>" << elementTagName.c_str () << ": ";
-          clog << XMLString::transcode (
-                      element->getAttribute (XMLString::transcode ("id")))
-               << endl;
-
           if (XMLString::compareIString (elementTagName.c_str (),
                                          "importBase")
               == 0)

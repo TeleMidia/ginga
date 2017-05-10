@@ -169,6 +169,9 @@ GINGA_PRAGMA_DIAG_POP ()
 #define pointerof(p)    ((void *)((ptrdiff_t)(p)))
 #define streq(a,b)      (g_strcmp0 ((a),(b)) == 0)
 
+#define syntax_error(fmt, ...)\
+  g_error ("syntax error: " fmt, ## __VA_ARGS__)
+
 
 // Auxiliary number functions.
 

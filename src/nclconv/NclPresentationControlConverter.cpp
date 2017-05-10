@@ -154,26 +154,15 @@ NclPresentationControlConverter::createSwitch (DOMElement *parentElement,
   NclDocument *document;
   SwitchNode *switchNode;
 
-  if (!parentElement->hasAttribute (XMLString::transcode ("id")))
-    {
-      clog << "NclPresentationControlConverter::createSwitch ";
-      clog << "Error: a switch element was declared without an";
-      clog << " id attribute." << endl;
-      return NULL;
-    }
+  if (unlikely (!parentElement->hasAttribute (XMLString::transcode ("id"))))
+    syntax_error ("switch: missing id");
 
   id = XMLString::transcode (
       parentElement->getAttribute (XMLString::transcode ("id")));
 
   node = ((NclDocumentConverter *)getDocumentParser ())->getNode (id);
-  if (node != NULL)
-    {
-      clog << "NclPresentationControlConverter::createSwitch ";
-      clog << "Error: there is another node element previously";
-      clog << " declared with the same " << id.c_str ();
-      clog << " id." << endl;
-      return NULL;
-    }
+  if (unlikely (node != NULL))
+    syntax_error ("switch '%s': duplicated id", id.c_str ());
 
   if (parentElement->hasAttribute (XMLString::transcode ("refer")))
     {
@@ -201,11 +190,8 @@ NclPresentationControlConverter::createSwitch (DOMElement *parentElement,
         }
       catch (...)
         {
-          clog << "NclPresentationControlConverter::createSwitch ";
-          clog << "Error: the switch element refers to ";
-          clog << attValue;
-          clog << " object, which is not a switch element" << endl;
-          return NULL;
+          syntax_error ("switch '%s': bad refer '%s'",
+                        id.c_str (), attValue.c_str ());
         }
 
       node = new ReferNode (id);
@@ -612,7 +598,6 @@ void *
 NclPresentationControlConverter::posCompileSwitch (
     DOMElement *parentElement, void *parentObject)
 {
-  clog << "posCompileSwitch" << endl;
   DOMNodeList *elementNodeList;
   int i, size;
   DOMNode *node;
@@ -655,15 +640,13 @@ NclPresentationControlConverter::posCompileSwitch (
                                       element->getAttribute (
                                           XMLString::transcode ("id"))));
 
-              if (elementObject == NULL)
+              if (unlikely (elementObject == NULL))
                 {
-                  clog << "NclPresentationControlConverter::";
-                  clog << "posCompileSwitch Error can't find '";
-                  clog << XMLString::transcode (
-                      element->getAttribute (XMLString::transcode ("id")));
-
-                  clog << "' (switch)";
-                  clog << endl;
+                  syntax_error ("node '%s' should be a switch",
+                                string (XMLString::transcode
+                                        (element->getAttribute
+                                         (XMLString::transcode
+                                          ("id")))).c_str ());
                 }
               else if (elementObject->instanceOf ("SwitchNode"))
                 {

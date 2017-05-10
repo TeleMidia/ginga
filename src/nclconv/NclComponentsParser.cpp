@@ -31,7 +31,6 @@ void *
 NclComponentsParser::parseMedia (DOMElement *parentElement,
                                  void *objGrandParent)
 {
-  clog << "parseMedia" << endl;
   void *parentObject;
   DOMNodeList *elementNodeList;
   int i, size;
@@ -41,10 +40,7 @@ NclComponentsParser::parseMedia (DOMElement *parentElement,
   void *elementObject = NULL;
 
   parentObject = createMedia (parentElement, objGrandParent);
-  if (parentObject == NULL)
-    {
-      return NULL;
-    }
+  g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
   size = (int) elementNodeList->getLength ();
@@ -99,10 +95,7 @@ NclComponentsParser::parseContext (DOMElement *parentElement,
   void *elementObject = NULL;
 
   parentObject = createContext (parentElement, objGrandParent);
-  if (parentObject == NULL)
-    {
-      return NULL;
-    }
+  g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
   size = (int) elementNodeList->getLength ();
@@ -173,7 +166,6 @@ void *
 NclComponentsParser::posCompileContext (DOMElement *parentElement,
                                         void *parentObject)
 {
-  clog << "posCompileContext" << endl;
   DOMNodeList *elementNodeList;
   int i, size;
   DOMNode *node;

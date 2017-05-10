@@ -33,7 +33,6 @@ void *
 NclPresentationSpecificationParser::parseDescriptor (
     DOMElement *parentElement, void *objGrandParent)
 {
-  clog << "parseDescriptor" << endl;
   void *parentObject;
   DOMNodeList *elementNodeList;
   DOMElement *element;
@@ -42,10 +41,7 @@ NclPresentationSpecificationParser::parseDescriptor (
   void *elementObject;
 
   parentObject = createDescriptor (parentElement, objGrandParent);
-  if (parentObject == NULL)
-    {
-      return NULL;
-    }
+  g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
@@ -55,11 +51,6 @@ NclPresentationSpecificationParser::parseDescriptor (
         {
           element = (DOMElement *)node;
           elementTagName = XMLString::transcode (element->getTagName ());
-          clog << ">>" << elementTagName.c_str () << ": ";
-          clog << XMLString::transcode (
-                      element->getAttribute (XMLString::transcode ("id")))
-               << endl;
-
           if (XMLString::compareIString (elementTagName.c_str (),
                                          "descriptorParam")
               == 0)
@@ -82,7 +73,6 @@ void *
 NclPresentationSpecificationParser::parseDescriptorBase (
     DOMElement *parentElement, void *objGrandParent)
 {
-  clog << "parseDescriptorBase" << endl;
   void *parentObject;
   DOMNodeList *elementNodeList;
   DOMElement *element;
@@ -91,10 +81,7 @@ NclPresentationSpecificationParser::parseDescriptorBase (
   void *elementObject;
 
   parentObject = createDescriptorBase (parentElement, objGrandParent);
-  if (parentObject == NULL)
-    {
-      return NULL;
-    }
+  g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
@@ -104,10 +91,6 @@ NclPresentationSpecificationParser::parseDescriptorBase (
         {
           element = (DOMElement *)node;
           elementTagName = XMLString::transcode (element->getTagName ());
-          clog << ">>" << elementTagName.c_str () << ": ";
-          clog << XMLString::transcode (
-                      element->getAttribute (XMLString::transcode ("id")))
-               << endl;
 
           if (XMLString::compareIString (elementTagName.c_str (),
                                          "importBase")
@@ -158,7 +141,6 @@ void *
 NclPresentationSpecificationParser::parseDescriptorBind (
     DOMElement *parentElement, void *objGrandParent)
 {
-  clog << "parseDescriptorBind" << endl;
   return createDescriptorBind (parentElement, objGrandParent);
 }
 
@@ -166,7 +148,6 @@ void *
 NclPresentationSpecificationParser::parseDescriptorParam (
     DOMElement *parentElement, void *objGrandParent)
 {
-  clog << "parseDescriptorParam" << endl;
   return createDescriptorParam (parentElement, objGrandParent);
 }
 

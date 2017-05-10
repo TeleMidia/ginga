@@ -117,13 +117,6 @@ public:
   void addCompoundConditionToCausalConnector (void *parent, void *child);
   void addSimpleActionToCausalConnector (void *parent, void *child);
   void addCompoundActionToCausalConnector (void *parent, void *child);
-  void addAssessmentStatementToConstraintConnector (void *parent,
-                                                    void *child);
-  void addCompoundStatementToConstraintConnector (void *parent,
-                                                  void *child);
-  void addConstraintConnectorToConnectorBase (void *parent, void *child);
-  void *createConstraintConnector (DOMElement *parentElement,
-                                   void *objGrandParent);
 };
 
 GINGA_NCLCONV_END
