@@ -92,7 +92,6 @@ static GOptionEntry options[] = {
 
 /* Error handling: */
 #define usage_error(format, ...) _error (TRUE, format, ## __VA_ARGS__)
-#define print_error(format, ...) _error (FALSE, format, ## __VA_ARGS__)
 
 static G_GNUC_PRINTF (2,3) void
 _error (gboolean try_help, const gchar *format, ...)
