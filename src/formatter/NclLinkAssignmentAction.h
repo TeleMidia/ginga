@@ -31,7 +31,8 @@ private:
   Animation *animation;
 
 public:
-  NclLinkAssignmentAction (NclFormatterEvent *event, short actionType,
+  NclLinkAssignmentAction (NclFormatterEvent *event,
+                           SimpleActionType actionType,
                            string value);
 
   virtual ~NclLinkAssignmentAction ();

@@ -454,7 +454,7 @@ NclConnectorsConverter::createSimpleAction (DOMElement *parentElement,
 
   // animation
   if (actionExpression->getEventType () == EventUtil::EVT_ATTRIBUTION
-      && actionExpression->getActionType () == SimpleAction::ACT_START)
+      && actionExpression->getActionType () == ACT_START)
     {
       Animation *animation = NULL;
       string durVal = "";
@@ -646,28 +646,10 @@ NclConnectorsConverter::getParameter (const string &paramName)
   return (Parameter *)(connector->getParameter (paramName));
 }
 
-short
-NclConnectorsConverter::convertActionType (const string &actionType)
+SimpleActionType
+NclConnectorsConverter::convertActionType (const string &s)
 {
-  if (actionType == "start")
-    return SimpleAction::ACT_START;
-
-  else if (actionType == "stop")
-    return SimpleAction::ACT_STOP;
-
-  else if (actionType == "set")
-    return SimpleAction::ACT_SET;
-
-  else if (actionType == "pause")
-    return SimpleAction::ACT_PAUSE;
-
-  else if (actionType == "resume")
-    return SimpleAction::ACT_RESUME;
-
-  else if (actionType == "abort")
-    return SimpleAction::ACT_ABORT;
-
-  return -1;
+  return SimpleAction::stringToActionType (s);
 }
 
 short

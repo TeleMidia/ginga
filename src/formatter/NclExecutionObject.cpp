@@ -1895,8 +1895,7 @@ NclExecutionObject::selectionEvent (SDL_Keycode key, double currentTime)
           clog << " calling scheduler to execute fake action";
           clog << endl;
 
-          fakeAct = new NclLinkSimpleAction (selectionEvent,
-                                             SimpleAction::ACT_START);
+          fakeAct = new NclLinkSimpleAction (selectionEvent, ACT_START);
 
           seListener->scheduleAction (fakeAct);
         }
