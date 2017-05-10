@@ -87,7 +87,8 @@ NclLinkTriggerCondition::conditionSatisfied (arg_unused (void *condition))
 {
   if (delay > 0)
     {
-      Thread::startThread ();
+      // HELL: Thread::startThread ();
+      this->run ();
     }
   else
     {

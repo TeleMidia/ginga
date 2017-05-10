@@ -41,7 +41,7 @@ private:
 
   pthread_attr_t tattr;
 
-protected:
+public:
   virtual void run () = 0;
 
 private:

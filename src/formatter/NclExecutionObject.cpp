@@ -1898,7 +1898,7 @@ NclExecutionObject::selectionEvent (SDL_Keycode key, double currentTime)
           fakeAct = new NclLinkSimpleAction (selectionEvent,
                                              SimpleAction::ACT_START);
 
-          seListener->scheduleAction (NULL, fakeAct);
+          seListener->scheduleAction (fakeAct);
         }
 
       ++i;

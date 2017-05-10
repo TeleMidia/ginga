@@ -128,25 +128,16 @@ NclLinkSimpleAction::run ()
 
   if (listener != NULL)
     {
-      listener->scheduleAction (satisfiedCondition, (void *)this);
+      g_assert_nonnull (satisfiedCondition);
+      listener->scheduleAction ((void *)this);
     }
 
   if (actionType == SimpleAction::ACT_START)
     {
-      /*clog << "NclLinkSimpleAction::run notify action INIT ";
-      if (event != NULL) {
-              clog << "'" << event->getId() << "'";
-      }
-      clog << endl;*/
       notifyProgressionListeners (true);
     }
   else
     {
-      /*clog << "NclLinkSimpleAction::run notify action END ";
-      if (event != NULL) {
-              clog << "'" << event->getId() << "'";
-      }
-      clog << endl;*/
       notifyProgressionListeners (false);
     }
 }

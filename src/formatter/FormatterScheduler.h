@@ -125,13 +125,12 @@ private:
                           string nodeId);
 
 public:
-  void scheduleAction (void *condition, void *action);
+  void scheduleAction (void *action);
 
 private:
-  void runAction (NclLinkCondition *condition, NclLinkSimpleAction *action);
+  void runAction (NclLinkSimpleAction *action);
 
-  void runAction (NclFormatterEvent *event, NclLinkCondition *condition,
-                  NclLinkSimpleAction *action);
+  void runAction (NclFormatterEvent *event, NclLinkSimpleAction *action);
 
   void runActionOverProperty (NclFormatterEvent *event,
                               NclLinkSimpleAction *action);

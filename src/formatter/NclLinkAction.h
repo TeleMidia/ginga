@@ -69,7 +69,7 @@ public:
   void setSatisfiedCondition (void *satisfiedCondition);
   void run (void *satisfiedCondition);
 
-protected:
+public:
   virtual void run ();
 
 private:

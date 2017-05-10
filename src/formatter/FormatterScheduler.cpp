@@ -303,12 +303,11 @@ FormatterScheduler::setTimeBaseObject (NclExecutionObject *object,
 }
 
 void
-FormatterScheduler::scheduleAction (void *condition, void *someAction)
+FormatterScheduler::scheduleAction (void *someAction)
 {
   pthread_mutex_lock (&mutexActions);
   assert (someAction != NULL);
-  runAction ((NclLinkCondition *)condition,
-             (NclLinkSimpleAction *)someAction);
+  runAction ((NclLinkSimpleAction *)someAction);
 
   pthread_mutex_unlock (&mutexActions);
 
@@ -316,8 +315,7 @@ FormatterScheduler::scheduleAction (void *condition, void *someAction)
 }
 
 void
-FormatterScheduler::runAction (NclLinkCondition *condition,
-                               NclLinkSimpleAction *action)
+FormatterScheduler::runAction (NclLinkSimpleAction *action)
 {
   NclFormatterEvent *event = action->getEvent ();
 
@@ -330,12 +328,11 @@ FormatterScheduler::runAction (NclLinkCondition *condition,
       return;
     }
 
-  runAction (event, condition, action);
+  runAction (event, action);
 }
 
 void
 FormatterScheduler::runAction (NclFormatterEvent *event,
-                               arg_unused (NclLinkCondition *condition),
                                NclLinkSimpleAction *action)
 {
   NclExecutionObject *executionObject;
@@ -975,7 +972,7 @@ FormatterScheduler::runActionOverComposition (
                   childEvent = childObject->getEventFromAnchorId (propName);
                   if (childEvent != NULL)
                     { // attribution with transition
-                      runAction (childEvent, NULL, action);
+                      runAction (childEvent, action);
                     }
                   else
                     { // force attribution
@@ -1086,7 +1083,7 @@ FormatterScheduler::runActionOverComposition (
 
           for (i = 0; i < size; i++)
             {
-              runAction ((*events)[i], NULL, action);
+              runAction ((*events)[i], action);
             }
           delete events;
           events = NULL;
@@ -1200,7 +1197,7 @@ FormatterScheduler::runActionOverComposition (
       size = (int) events->size ();
       for (i = 0; i < size; i++)
         {
-          runAction ((*events)[i], NULL, action);
+          runAction ((*events)[i], action);
         }
 
       delete events;
@@ -1233,7 +1230,7 @@ FormatterScheduler::runActionOverSwitch (
   selectedEvent = event->getMappedEvent ();
   if (selectedEvent != NULL)
     {
-      runAction (selectedEvent, NULL, action);
+      runAction (selectedEvent, action);
     }
   else
     {
@@ -1311,7 +1308,7 @@ FormatterScheduler::runSwitchEvent (NclExecutionObjectSwitch *switchObject,
     {
       switchEvent->setMappedEvent (selectedEvent);
 
-      runAction (selectedEvent, NULL, action);
+      runAction (selectedEvent, action);
     }
 }
 
@@ -1361,7 +1358,7 @@ FormatterScheduler::startEvent (NclFormatterEvent *event)
   NclLinkSimpleAction *fakeAction;
 
   fakeAction = new NclLinkSimpleAction (event, SimpleAction::ACT_START);
-  runAction (NULL, fakeAction);
+  runAction (fakeAction);
   delete fakeAction;
 }
 
@@ -1371,7 +1368,7 @@ FormatterScheduler::stopEvent (NclFormatterEvent *event)
   NclLinkSimpleAction *fakeAction;
 
   fakeAction = new NclLinkSimpleAction (event, SimpleAction::ACT_STOP);
-  runAction (NULL, fakeAction);
+  runAction (fakeAction);
   delete fakeAction;
 }
 
@@ -1381,7 +1378,7 @@ FormatterScheduler::pauseEvent (NclFormatterEvent *event)
   NclLinkSimpleAction *fakeAction;
 
   fakeAction = new NclLinkSimpleAction (event, SimpleAction::ACT_PAUSE);
-  runAction (NULL, fakeAction);
+  runAction (fakeAction);
   delete fakeAction;
 }
 
@@ -1391,7 +1388,7 @@ FormatterScheduler::resumeEvent (NclFormatterEvent *event)
   NclLinkSimpleAction *fakeAction;
 
   fakeAction = new NclLinkSimpleAction (event, SimpleAction::ACT_RESUME);
-  runAction (NULL, fakeAction);
+  runAction (fakeAction);
   delete fakeAction;
 }
 
@@ -2002,7 +1999,7 @@ FormatterScheduler::receiveGlobalAttribution (const string &pName,
           fakeAction = new NclLinkAssignmentAction (
               event, SimpleAction::ACT_START, value);
 
-          runAction (NULL, fakeAction);
+          runAction (fakeAction);
           delete fakeAction;
           return;
         }

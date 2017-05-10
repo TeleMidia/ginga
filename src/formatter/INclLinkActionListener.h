@@ -25,7 +25,7 @@ class INclLinkActionListener
 public:
   virtual ~INclLinkActionListener (){};
 
-  virtual void scheduleAction (void *condition, void *action) = 0;
+  virtual void scheduleAction (void *action) = 0;
   virtual void addAction (void *action) = 0;
   virtual void removeAction (void *action) = 0;
 };
