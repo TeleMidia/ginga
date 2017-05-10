@@ -65,9 +65,6 @@ public:
   virtual void *setCurrentDocument (const string &fName) = 0;
   virtual void setDepthLevel (int level) = 0;
   virtual int getDepthLevel () = 0;
-  virtual bool editingCommand (const string &commandTag,
-                               const string &editingCommand)
-      = 0;
 
   virtual void setNotifyContentUpdate (bool notify) = 0;
   virtual void addListener (IPlayerListener *listener) = 0;
