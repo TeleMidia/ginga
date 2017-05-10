@@ -32,7 +32,7 @@ class NclLinkSimpleAction : public NclLinkAction
 {
 protected:
   NclFormatterEvent *event;
-  short actionType;
+  SimpleActionType actionType;
 
 private:
   INclLinkActionListener *listener;
@@ -41,10 +41,11 @@ protected:
   virtual void run ();
 
 public:
-  NclLinkSimpleAction (NclFormatterEvent *event, short type);
+  NclLinkSimpleAction (NclFormatterEvent *event, SimpleActionType type);
   virtual ~NclLinkSimpleAction ();
   NclFormatterEvent *getEvent ();
-  short getType ();
+  SimpleActionType getType ();
+  string getTypeString ();
   void setSimpleActionListener (INclLinkActionListener *listener);
   virtual vector<NclFormatterEvent *> *getEvents ();
   virtual vector<NclLinkAction *> *getImplicitRefRoleActions ();

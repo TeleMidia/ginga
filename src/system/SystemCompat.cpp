@@ -43,7 +43,6 @@ SystemCompat::checkValues ()
       initializeGingaPath ();
       initializeGingaPrefix ();
       initializeUserCurrentPath ();
-      initializeGingaConfigFile ();
     }
 }
 
@@ -51,100 +50,6 @@ void
 SystemCompat::initializeGingaPrefix ()
 {
   SystemCompat::gingaPrefix = "";
-}
-
-void
-SystemCompat::initializeGingaConfigFile ()
-{
-  ifstream fis;
-  string line, key, partial, value;
-
-#if defined(_MSC_VER)
-  filesPref = gingaCurrentPath + "files\\";
-  installPref = gingaCurrentPath;
-
-  pathD = ";";
-  iUriD = "\\";
-  fUriD = "/";
-
-  return;
-#else
-  string gingaini = "";
-
-  fis.open (gingaini.c_str (), ifstream::in);
-
-  if (!fis.is_open ())
-    {
-      clog << "SystemCompat::initializeGingaConfigFile ";
-      clog << "Warning! Can't open input file: '" << gingaini;
-      clog << "' loading default configuration!" << endl;
-
-      gingaCurrentPath = gingaPrefix + iUriD + "bin" + iUriD;
-      installPref = gingaPrefix;
-      filesPref = gingaPrefix + iUriD + "etc" + iUriD + "ginga" + iUriD
-                  + "files" + iUriD;
-
-      return;
-    }
-
-  value = "";
-
-  while (fis.good ())
-    {
-      getline (fis, line);
-      if (line.find ("#") == std::string::npos
-          && (line.find ("=") != std::string::npos || value != ""))
-        {
-          if (value == "")
-            {
-              key = line.substr (0, line.find_last_of ("="));
-              partial = line.substr ((line.find_first_of ("=") + 1),
-                                     line.length ()
-                                         - (line.find_first_of ("=") + 1));
-            }
-          else
-            {
-              partial = line;
-            }
-
-          value = value + partial;
-
-          if (value.substr (value.length () - 1, 1) == "\"")
-            {
-              if (key == "system.internal.delimiter")
-                {
-                  iUriD = value.substr (1, value.length () - 2);
-                }
-              else if (key == "system.foreign.delimiter")
-                {
-                  fUriD = value.substr (1, value.length () - 2);
-                }
-              else if (key == "system.files.prefix")
-                {
-                  filesPref = value.substr (1, value.length () - 2);
-                }
-              else if (key == "system.install.prefix")
-                {
-                  installPref = value.substr (1, value.length () - 2);
-                }
-
-              value = "";
-            }
-          else
-            {
-              value = value + " ";
-            }
-        }
-
-      clog << "SystemCompat::initializeGingaConfigFile " << endl;
-      clog << "line    = '" << line << "'" << endl;
-      clog << "key     = '" << key << "'" << endl;
-      clog << "partial = '" << partial << "'" << endl;
-      clog << "value   = '" << value << "'" << endl;
-    }
-
-  fis.close ();
-#endif
 }
 
 void
