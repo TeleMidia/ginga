@@ -500,7 +500,7 @@ Display::destroyWindow (SDLWindow *win)
 void
 Display::registerPlayer(Player * obj){
   g_assert_nonnull (obj);
-  this->add (&this-> players, obj);
+  this->add (&this->players, obj);
 }
 
 void
