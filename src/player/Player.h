@@ -110,8 +110,6 @@ public:
 
 public:
   virtual void setMrl (const string &mrl, bool visible = true);
-  virtual void reset (){};
-  virtual void rebase (){};
   virtual void setNotifyContentUpdate (bool notify);
   virtual void addListener (IPlayerListener *listener);
   void removeListener (IPlayerListener *listener);
