@@ -113,7 +113,6 @@ _error (gboolean try_help, const gchar *format, ...)
 int
 main (int argc, char **argv)
 {
-  string file;
   PresentationEngineManager *pem;
 
 #if defined WITH_CEF && WITH_CEF
@@ -181,15 +180,13 @@ main (int argc, char **argv)
       exit (EXIT_FAILURE);
     }
 
-  file = string(argv[1]);
-
 #endif // WITH_CEF
 
   _Ginga_Display = new ginga::mb::Display (opt_width, opt_height,
                                            opt_fullscreen, opt_fps);
   g_assert_nonnull (_Ginga_Display);
 
-  pem = new PresentationEngineManager (file);
+  pem = new PresentationEngineManager (string (argv[1]));
   g_assert_nonnull (pem);
 
   // Start presentation thread.
