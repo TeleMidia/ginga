@@ -86,7 +86,6 @@ public:
   void setOutputWindow (SDLWindow* windowId);
 
 protected:
-  virtual void rebase ();
   virtual void createPlayer ();
 
 public:

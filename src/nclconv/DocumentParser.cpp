@@ -378,10 +378,6 @@ DocumentParser::importDocument (DocumentParser *parser, const string &docLocatio
       uri = docLocation;
     }
 
-  clog << "DocumentParser::importDocument from location '";
-  clog << docLocation << "' translated uri = '";
-  clog << uri << "'" << endl;
-
   parser->parse (uri, iUriD, fUriD);
 
   return true;

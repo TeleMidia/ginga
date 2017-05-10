@@ -31,9 +31,6 @@ void *
 NclInterfacesParser::parseSwitchPort (DOMElement *parentElement,
                                       void *objGrandParent)
 {
-  // Element: mapping.
-  //  Content of: switchPort,
-  clog << "parseSwitchPort" << endl;
   void *parentObject;
   DOMNodeList *elementNodeList;
   DOMElement *element;
@@ -42,12 +39,8 @@ NclInterfacesParser::parseSwitchPort (DOMElement *parentElement,
   void *elementObject;
 
   parentObject = createSwitchPort (parentElement, objGrandParent);
-  if (parentObject == NULL)
-    {
-      clog << "create SwitchPort error for '";
-      clog << "'" << elementTagName.c_str () << "'" << endl;
-      return NULL;
-    }
+  if (unlikely (parentObject == NULL))
+    syntax_error ("switchPort: bad parent '%s'", elementTagName.c_str ());
 
   elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
@@ -57,10 +50,6 @@ NclInterfacesParser::parseSwitchPort (DOMElement *parentElement,
         {
           element = (DOMElement *)node;
           elementTagName = XMLString::transcode (element->getTagName ());
-          clog << ">>" << elementTagName.c_str () << ": ";
-          clog << XMLString::transcode (
-                      element->getAttribute (XMLString::transcode ("id")))
-               << endl;
 
           if (XMLString::compareIString (elementTagName.c_str (), "mapping")
               == 0)
@@ -81,7 +70,6 @@ void *
 NclInterfacesParser::parseMapping (DOMElement *parentElement,
                                    void *objGrandParent)
 {
-  clog << "parseMapping" << endl;
   return createMapping (parentElement, objGrandParent);
 }
 
@@ -89,7 +77,6 @@ void *
 NclInterfacesParser::parseArea (DOMElement *parentElement,
                                 void *objGrandParent)
 {
-  clog << "parseArea" << endl;
   return createArea (parentElement, objGrandParent);
 }
 
@@ -97,7 +84,6 @@ void *
 NclInterfacesParser::parseProperty (DOMElement *parentElement,
                                     void *objGrandParent)
 {
-  clog << "parseProperty" << endl;
   return createProperty (parentElement, objGrandParent);
 }
 
@@ -105,7 +91,6 @@ void *
 NclInterfacesParser::parsePort (DOMElement *parentElement,
                                 void *objGrandParent)
 {
-  clog << "parsePort" << endl;
   return createPort (parentElement, objGrandParent);
 }
 

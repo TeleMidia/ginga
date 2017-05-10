@@ -52,12 +52,7 @@ public:
 
   virtual ~INCLPlayer (){};
 
-  virtual set<string> *createPortIdList () = 0;
-  virtual short getMappedInterfaceType (const string &portId) = 0;
-
   virtual void setMrl (const string &mrl, bool visible = true) = 0;
-  virtual void reset () = 0;
-  virtual void rebase () = 0;
   virtual void setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider)
       = 0;
 
@@ -110,13 +105,6 @@ public:
   virtual void forceNaturalEnd (bool forceIt) = 0;
   virtual bool isForcedNaturalEnd () = 0;
   virtual bool setOutWindow (SDLWindow* windowId) = 0;
-
-  /*Exclusive for ChannelPlayer*/
-  virtual IPlayer *getSelectedPlayer () = 0;
-  virtual void setPlayerMap (map<string, IPlayer *> *objs) = 0;
-  virtual map<string, IPlayer *> *getPlayerMap () = 0;
-  virtual IPlayer *getPlayer (const string &objectId) = 0;
-  virtual void select (IPlayer *selObject) = 0;
 
   /*Exclusive for Application Players*/
   virtual void setCurrentScope (const string &scopeId) = 0;

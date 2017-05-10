@@ -203,10 +203,6 @@ NclDocumentConverter::importDocument (string &docLocation)
         }
     }
 
-  clog << "NclDocumentConverter::importDocument location '";
-  clog << docLocation << "' translated URI = '" << uri << "'";
-  clog << endl;
-
   docLocation = uri;
   return (NclDocument *)(privateBaseContext->addVisibleDocument (
       uri, deviceLayout));
@@ -359,7 +355,7 @@ NclDocumentConverter::parseRootElement (DOMElement *rootElement)
         }
       else
         {
-          return NULL;
+          syntax_error ("unknown root element '%s'", elementName.c_str ());
         }
     }
   else
@@ -367,7 +363,7 @@ NclDocumentConverter::parseRootElement (DOMElement *rootElement)
       return NclDocumentParser::parseRootElement (rootElement);
     }
 
-  return NULL;
+  g_assert_not_reached ();
 }
 
 GINGA_NCLCONV_END

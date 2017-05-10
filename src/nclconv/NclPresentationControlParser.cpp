@@ -33,7 +33,6 @@ void *
 NclPresentationControlParser::parseBindRule (DOMElement *parentElement,
                                              void *objGrandParent)
 {
-  clog << "parseBindRule" << endl;
   return createBindRule (parentElement, objGrandParent);
 }
 
@@ -41,7 +40,6 @@ void *
 NclPresentationControlParser::parseRuleBase (DOMElement *parentElement,
                                              void *objGrandParent)
 {
-  clog << "parseRuleBase" << endl;
   void *parentObject;
   DOMNodeList *elementNodeList;
   DOMElement *element;
@@ -50,10 +48,7 @@ NclPresentationControlParser::parseRuleBase (DOMElement *parentElement,
   void *elementObject;
 
   parentObject = createRuleBase (parentElement, objGrandParent);
-  if (parentObject == NULL)
-    {
-      return NULL;
-    }
+  g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
@@ -63,10 +58,6 @@ NclPresentationControlParser::parseRuleBase (DOMElement *parentElement,
         {
           element = (DOMElement *)node;
           elementTagName = XMLString::transcode (element->getTagName ());
-          clog << ">>" << elementTagName.c_str () << ": ";
-          clog << XMLString::transcode (
-                      element->getAttribute (XMLString::transcode ("id")))
-               << endl;
 
           if (XMLString::compareIString (elementTagName.c_str (),
                                          "importBase")
@@ -110,7 +101,6 @@ void *
 NclPresentationControlParser::parseRule (DOMElement *parentElement,
                                          void *objGrandParent)
 {
-  clog << "parseRule" << endl;
   return createRule (parentElement, objGrandParent);
 }
 
@@ -127,13 +117,11 @@ NclPresentationControlParser::parseSwitch (DOMElement *parentElement,
   void *elementObject;
 
   parentObject = createSwitch (parentElement, objGrandParent);
-  if (parentObject == NULL)
+  if (unlikely (parentObject == NULL))
     {
-      clog << "NclPresentationControlParser::parseSwitch(";
-      clog << parentElement->getNodeName () << ") ";
-      clog << "Warning! ";
-      clog << "Can't create switch" << endl;
-      return NULL;
+      syntax_error ("switch: bad parent '%s'",
+                    string (XMLString::transcode
+                            (parentElement->getNodeName ())).c_str ());
     }
 
   elementNodeList = parentElement->getChildNodes ();
@@ -227,7 +215,6 @@ void *
 NclPresentationControlParser::posCompileSwitch (DOMElement *parentElement,
                                                 void *parentObject)
 {
-  clog << "posCompileSwitch" << endl;
   DOMNodeList *elementNodeList;
   int i, size;
   DOMNode *node;
@@ -261,7 +248,6 @@ void *
 NclPresentationControlParser::parseDefaultComponent (
     DOMElement *parentElement, void *objGrandParent)
 {
-  clog << "parseDefaultComponent" << endl;
   return createDefaultComponent (parentElement, objGrandParent);
 }
 
@@ -269,7 +255,6 @@ void *
 NclPresentationControlParser::parseDefaultDescriptor (
     DOMElement *parentElement, void *objGrandParent)
 {
-  clog << "parseDefaultDescriptor" << endl;
   return createDefaultDescriptor (parentElement, objGrandParent);
 }
 
@@ -277,7 +262,6 @@ void *
 NclPresentationControlParser::parseCompositeRule (DOMElement *parentElement,
                                                   void *objGrandParent)
 {
-  clog << "parseCompositeRule" << endl;
   void *parentObject;
   DOMNodeList *elementNodeList;
   DOMElement *element;
@@ -286,10 +270,7 @@ NclPresentationControlParser::parseCompositeRule (DOMElement *parentElement,
   void *elementObject;
 
   parentObject = createCompositeRule (parentElement, objGrandParent);
-  if (parentObject == NULL)
-    {
-      return NULL;
-    }
+  g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
@@ -299,10 +280,6 @@ NclPresentationControlParser::parseCompositeRule (DOMElement *parentElement,
         {
           element = (DOMElement *)node;
           elementTagName = XMLString::transcode (element->getTagName ());
-          clog << ">>" << elementTagName.c_str () << ": ";
-          clog << XMLString::transcode (
-                      element->getAttribute (XMLString::transcode ("id")))
-               << endl;
 
           if (XMLString::compareIString (elementTagName.c_str (), "rule")
               == 0)
@@ -334,7 +311,6 @@ void *
 NclPresentationControlParser::parseDescriptorSwitch (
     DOMElement *parentElement, void *objGrandParent)
 {
-  clog << "parseDescriptorSwitch" << endl;
   void *parentObject;
   DOMNodeList *elementNodeList;
   int i, size;
@@ -344,10 +320,7 @@ NclPresentationControlParser::parseDescriptorSwitch (
   void *elementObject;
 
   parentObject = createDescriptorSwitch (parentElement, objGrandParent);
-  if (parentObject == NULL)
-    {
-      return NULL;
-    }
+  g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
   size = (int) elementNodeList->getLength ();

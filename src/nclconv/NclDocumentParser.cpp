@@ -220,18 +220,12 @@ void *
 NclDocumentParser::parseRootElement (DOMElement *rootElement)
 {
   string tagName;
+
   tagName = XMLString::transcode (rootElement->getTagName ());
-  if (tagName == "ncl")
-    {
-      return getStructureParser ()->parseNcl (rootElement, NULL);
-    }
-  else
-    {
-      clog << "NclDocumentParser::parseRootElement Warning!";
-      clog << " Trying to parse a non NCL document. rootElement";
-      clog << "->getTagName = '" << tagName.c_str () << "'" << endl;
-      return NULL;
-    }
+  if (unlikely (tagName != "ncl"))
+    syntax_error ("bad root element '%s'", tagName.c_str ());
+
+  return getStructureParser ()->parseNcl (rootElement, NULL);
 }
 
 GINGA_NCLCONV_END
