@@ -61,19 +61,6 @@ fail:
 }
 
 void
-SystemInfo::printSysTable ()
-{
-  map<string, string>::iterator i;
-  clog << "SystemInfo::printSysTable " << endl;
-  i = sysTable->begin ();
-  while (i != sysTable->end ())
-    {
-      clog << "'" << i->first << "' = '" << i->second << "'" << endl;
-      ++i;
-    }
-}
-
-void
 SystemInfo::setSystemTable (map<string, string> *t)
 {
   if (this->sysTable != NULL)

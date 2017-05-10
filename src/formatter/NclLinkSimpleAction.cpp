@@ -22,12 +22,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 NclLinkSimpleAction::NclLinkSimpleAction (NclFormatterEvent *event,
-                                          short type)
+                                          SimpleActionType type)
     : NclLinkAction ()
 {
   this->event = event;
-  actionType = type;
-  listener = NULL;
+  this->actionType = type;
+  this->listener = NULL;
 
   typeSet.insert ("NclLinkSimpleAction");
 }
@@ -50,10 +50,16 @@ NclLinkSimpleAction::getEvent ()
   return event;
 }
 
-short
+SimpleActionType
 NclLinkSimpleAction::getType ()
 {
   return actionType;
+}
+
+string
+NclLinkSimpleAction::getTypeString ()
+{
+  return SimpleAction::actionTypeToString (this->actionType);
 }
 
 void
@@ -132,7 +138,7 @@ NclLinkSimpleAction::run ()
       listener->scheduleAction ((void *)this);
     }
 
-  if (actionType == SimpleAction::ACT_START)
+  if (actionType == ACT_START)
     {
       notifyProgressionListeners (true);
     }
