@@ -36,7 +36,6 @@ NclDocumentConverter::NclDocumentConverter () : NclDocumentParser ()
   this->parentObject = NULL;
   this->privateBaseContext = NULL;
   this->ownManager = false;
-  this->parseEntityVar = false;
 }
 
 NclDocumentConverter::~NclDocumentConverter ()
@@ -174,168 +173,16 @@ NclDocument *
 NclDocumentConverter::importDocument (string &path)
 {
   if (!xpathisabs (path))
-    path = xpathbuildabs (this->documentPath, path);
+    path = xpathbuildabs (this->getDirName (), path);
 
   return (NclDocument *)(privateBaseContext
                          ->addVisibleDocument (path, deviceLayout));
 }
 
 void *
-NclDocumentConverter::parseEntity (const string &entityLocation,
-                                   NclDocument *document, void *parent)
-{
-  void *entity;
-
-  parseEntityVar = true;
-  parentObject = parent;
-  addObject ("return", "document", document);
-  entity = parse (entityLocation);
-  parseEntityVar = false;
-  return entity;
-}
-
-void *
 NclDocumentConverter::parseRootElement (DOMElement *rootElement)
 {
-  string elementName;
-  void *object;
-
-  if (parseEntityVar)
-    {
-      elementName = XMLString::transcode (rootElement->getTagName ());
-      if (elementName == "region")
-        {
-          return getLayoutParser ()->parseRegion (rootElement,
-                                                  parentObject);
-        }
-      else if (elementName == "regionBase")
-        {
-          return getLayoutParser ()->parseRegionBase (rootElement,
-                                                      parentObject);
-        }
-      else if (elementName == "transition")
-        {
-          return getTransitionParser ()->parseTransition (rootElement,
-                                                          parentObject);
-        }
-      else if (elementName == "transitionBase")
-        {
-          return getTransitionParser ()->parseTransitionBase (rootElement,
-                                                              parentObject);
-        }
-      else if (elementName == "rule")
-        {
-          return getPresentationControlParser ()->parseRule (rootElement,
-                                                             parentObject);
-        }
-      else if (elementName == "compositeRule")
-        {
-          return getPresentationControlParser ()->parseRule (rootElement,
-                                                             parentObject);
-        }
-      else if (elementName == "ruleBase")
-        {
-          return getPresentationControlParser ()->parseRuleBase (
-              rootElement, parentObject);
-        }
-      else if (elementName == "causalConnector")
-        {
-          return getConnectorsParser ()->parseCausalConnector (
-              rootElement, parentObject);
-        }
-      else if (elementName == "connectorBase")
-        {
-          return getConnectorsParser ()->parseConnectorBase (rootElement,
-                                                             parentObject);
-        }
-      else if (elementName == "descriptor")
-        {
-          return getPresentationSpecificationParser ()->parseDescriptor (
-              rootElement, parentObject);
-        }
-      else if (elementName == "descriptorSwitch")
-        {
-          return getPresentationControlParser ()->parseDescriptorSwitch (
-              rootElement, parentObject);
-        }
-      else if (elementName == "descriptorBase")
-        {
-          return getPresentationSpecificationParser ()
-              ->parseDescriptorBase (rootElement, parentObject);
-        }
-      else if (elementName == "importBase")
-        {
-          return getImportParser ()->parseImportBase (rootElement,
-                                                      parentObject);
-        }
-      else if (elementName == "importedDocumentBase")
-        {
-          return getImportParser ()->parseImportedDocumentBase (
-              rootElement, parentObject);
-        }
-      else if (elementName == "importNCL")
-        {
-          return getImportParser ()->parseImportNCL (rootElement,
-                                                     parentObject);
-        }
-      else if (elementName == "media")
-        {
-          return getComponentsParser ()->parseMedia (rootElement,
-                                                     parentObject);
-        }
-      else if (elementName == "context")
-        {
-          object = getComponentsParser ()->parseContext (rootElement,
-                                                         parentObject);
-
-          getComponentsParser ()->posCompileContext (rootElement, object);
-          return object;
-        }
-      else if (elementName == "switch")
-        {
-          object = getPresentationControlParser ()->parseSwitch (
-              rootElement, parentObject);
-
-          getPresentationControlParser ()->posCompileSwitch (rootElement,
-                                                             object);
-
-          return object;
-        }
-      else if (elementName == "link")
-        {
-          return getLinkingParser ()->parseLink (rootElement, parentObject);
-        }
-      else if (elementName == "area")
-        {
-          return getInterfacesParser ()->parseArea (rootElement,
-                                                    parentObject);
-        }
-      else if (elementName == "property")
-        {
-          return getInterfacesParser ()->parseProperty (rootElement,
-                                                        parentObject);
-        }
-      else if (elementName == "port")
-        {
-          return getInterfacesParser ()->parsePort (rootElement,
-                                                    parentObject);
-        }
-      else if (elementName == "switchPort")
-        {
-          return getInterfacesParser ()->parseSwitchPort (rootElement,
-                                                          parentObject);
-        }
-      else
-        {
-          syntax_error ("unknown root element '%s'", elementName.c_str ());
-        }
-    }
-  else
-    {
-      return NclDocumentParser::parseRootElement (rootElement);
-    }
-
-  g_assert_not_reached ();
+  return NclDocumentParser::parseRootElement (rootElement);
 }
 
 GINGA_NCLCONV_END

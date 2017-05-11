@@ -417,7 +417,7 @@ NclComponentsConverter::createMedia (DOMElement *parentElement,
         syntax_error ("media '%s': missing src", id.c_str ());
 
       if (!xpathisabs (src))
-        src = xpathbuildabs (getDocumentParser ()->getDocumentPath (), src);
+        src = xpathbuildabs (getDocumentParser ()->getDirName (), src);
 
       ((ContentNode *)node)->setContent
         (new AbsoluteReferenceContent (src));

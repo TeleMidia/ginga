@@ -26,9 +26,11 @@ GINGA_NCLCONV_BEGIN
 class DocumentParser
 {
 protected:
-  string documentPath;
-  string documentUri;
-  DOMDocument *documentTree;
+  DOMDocument *document;        // current document
+  string path;                  // document's absolute path
+  string dirname;               // directory part of document's path
+
+  // FIXME: Remove this.
   map<string, void *> *genericTable;
 
 public:
@@ -46,10 +48,10 @@ protected:
   virtual void *parseRootElement (DOMElement *rootElement) = 0;
 
 public:
-  string getDocumentUri ();
-  string getDocumentPath ();
-  void setDocumentPath (const string &path);
-  DOMDocument *getDocumentTree ();
+  string getPath ();
+  string getDirName ();
+  DOMDocument *getDocument ();
+
   void addObject (const string &tableName, const string &key, void *value);
   void *getObject (const string &tableName, const string &key);
   bool importDocument (DocumentParser *parser, const string &docLocation);
