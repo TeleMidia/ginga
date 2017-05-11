@@ -31,9 +31,6 @@ using namespace ::ginga::ncl;
 #include "NclCascadingDescriptor.h"
 #include "NclExecutionObject.h"
 
-#include "system/ITimeBaseProvider.h"
-using namespace ::ginga::system;
-
 #include "player/INCLPlayer.h"
 using namespace ::ginga::player;
 
@@ -53,7 +50,6 @@ private:
   IPlayerListener *editingCommandListener;
   IAdapterPlayer *epgFactoryAdapter;
   bool running;
-  ITimeBaseProvider *timeBaseProvider;
   NclPlayerData *nclPlayerData;
   pthread_mutex_t mutexPlayer;
 
@@ -62,8 +58,6 @@ public:
   virtual ~AdapterPlayerManager ();
   bool hasPlayer (IAdapterPlayer *player);
   NclPlayerData *getNclPlayerData ();
-  void setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider);
-  ITimeBaseProvider *getTimeBaseProvider ();
   void setVisible (const string &objectId, const string &visible,
                    NclAttributionEvent *event);
   bool removePlayer (void *object);

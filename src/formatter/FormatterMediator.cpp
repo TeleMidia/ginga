@@ -19,13 +19,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterMediator.h"
 
 #include "mb/Display.h"
-#include "system/GingaLocatorFactory.h"
 #include "FormatterBaseDevice.h"
 
 #include "PresentationContext.h"
-
-#include "system/GingaLocatorFactory.h"
-using namespace ::ginga::system;
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
@@ -394,12 +390,6 @@ FormatterMediator::setMrl (const string &mrl, bool visible)
 {
   this->mrl = mrl;
   this->visible = visible;
-}
-
-void
-FormatterMediator::setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider)
-{
-  playerManager->setTimeBaseProvider (timeBaseProvider);
 }
 
 void

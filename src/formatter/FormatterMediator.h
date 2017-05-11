@@ -141,8 +141,6 @@ public:
   ~FormatterMediator ();
 
   void setMrl (const string &mrl, bool visible = true);
-  void setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider);
-
   void setParentLayout (void *parentLayout);
 
   void *setCurrentDocument (const string &fName);

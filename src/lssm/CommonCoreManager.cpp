@@ -34,11 +34,6 @@ GINGA_LSSM_BEGIN
 CommonCoreManager::CommonCoreManager ()
 {
   tuningWindow = 0;
-  tuner = NULL;
-  demuxer = NULL;
-  dataProcessor = NULL;
-  ccUser = NULL;
-  nptProvider = NULL;
   ocDelay = 0;
   hasOCSupport = true;
   pem = NULL;
@@ -53,70 +48,6 @@ void
 CommonCoreManager::addPEM (PresentationEngineManager *pem)
 {
   this->pem = pem;
-}
-
-void
-CommonCoreManager::enableNPTPrinter (bool enableNPTPrinter)
-{
-  nptPrinter = enableNPTPrinter;
-}
-
-void
-CommonCoreManager::setOCDelay (double ocDelay)
-{
-  this->ocDelay = ocDelay;
-}
-
-void
-CommonCoreManager::setInteractivityInfo (bool hasOCSupport)
-{
-  this->hasOCSupport = hasOCSupport;
-}
-
-void
-CommonCoreManager::removeOCFilterAfterMount (arg_unused (bool removeIt))
-{
-}
-
-void
-CommonCoreManager::setTunerSpec (arg_unused (const string &tunerSpec))
-{
-}
-
-void
-CommonCoreManager::showTunningWindow (int x, int y,
-                                      int w, int h)
-{
-  string tunerImg = "";
-
-  tunerImg = string (GINGA_TUNER_DATADIR) + "tuning.png";
-  if (fileExists (tunerImg))
-    {
-      tuningWindow = Ginga_Display->createWindow (x, y, w, h, -10.0);
-      tuningWindow->show ();
-    }
-}
-
-void
-CommonCoreManager::releaseTunningWindow ()
-{
-  if (tuningWindow != 0)
-    {
-      tuningWindow->hide ();
-      delete tuningWindow;
-    }
-}
-
-
-void
-CommonCoreManager::tune ()
-{
-}
-
-void
-CommonCoreManager::startPresentation ()
-{
-  return;
 }
 
 GINGA_LSSM_END

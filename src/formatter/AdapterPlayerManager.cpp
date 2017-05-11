@@ -43,7 +43,6 @@ AdapterPlayerManager::AdapterPlayerManager (NclPlayerData *data) : Thread ()
 
   editingCommandListener = NULL;
   epgFactoryAdapter = NULL;
-  timeBaseProvider = NULL;
 
   Thread::mutexInit (&mutexPlayer, false);
 
@@ -86,19 +85,6 @@ NclPlayerData *
 AdapterPlayerManager::getNclPlayerData ()
 {
   return nclPlayerData;
-}
-
-void
-AdapterPlayerManager::setTimeBaseProvider (
-    ITimeBaseProvider *timeBaseProvider)
-{
-  this->timeBaseProvider = timeBaseProvider;
-}
-
-ITimeBaseProvider *
-AdapterPlayerManager::getTimeBaseProvider ()
-{
-  return timeBaseProvider;
 }
 
 void
