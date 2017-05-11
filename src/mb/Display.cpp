@@ -135,7 +135,7 @@ Display::renderLoop ()
 
       if(elapsedTime < this->frameTime ){
         guint32 sleepTime = this-> frameTime - elapsedTime;
-        elapsedTime = this-> frameTime;
+        elapsedTime = this->frameTime;
         SDL_Delay(sleepTime);
         accTime +=sleepTime;
       }
@@ -250,7 +250,8 @@ Display::Display (int width, int height, bool fullscreen, gdouble fps)
   this->height = height;
   this->fullscreen = fullscreen;
   
-  if(fps> 0) //controlled fps 
+  this->fps = fps;
+  if(this->fps> 0) //controlled fps 
     this->frameTime = (guint32)(1000/fps);
   else //go horse fps
     this->frameTime=0;
@@ -308,6 +309,11 @@ Display::~Display ()
   this->unlock ();
   this->mutexClear ();
  
+}
+
+gint32 
+Display::getFps(){
+  return this->fps;
 }
 
 /**

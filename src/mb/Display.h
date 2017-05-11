@@ -48,6 +48,7 @@ private:
   int height;                   // display height in pixels
   bool fullscreen;              // true if full-screen mode is on
   guint32 frameTime;            //frame time rate
+  gint32 fps;
 
   set<IKeyInputEventListener*> keyEventListeners;  // key event listeners
   set<IMouseEventListener*> mouseEventListeners; // mouse event listeners
@@ -73,6 +74,7 @@ public:
 
   void getSize (int *, int *);
   void setSize (int, int);
+  gint32 getFps();
   bool getFullscreen ();
   void setFullscreen (bool);
 
