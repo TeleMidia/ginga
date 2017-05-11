@@ -199,7 +199,7 @@ NclNodeNesting::insertAnchorNode (Node *node)
   nodeId = node->getId ();
   if (nodes->size () > 0)
     {
-      id = id + SystemCompat::getIUriD () + nodeId;
+      id = id + "/" + nodeId;
     }
   else
     {
@@ -222,7 +222,7 @@ NclNodeNesting::insertHeadNode (Node *node)
 
   if (nodes->size () > 0)
     {
-      id = node->getId () + SystemCompat::getIUriD () + id;
+      id = node->getId () + "/" + id;
     }
   else
     {

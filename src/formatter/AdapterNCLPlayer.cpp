@@ -64,7 +64,7 @@ AdapterNCLPlayer::createPlayer ()
       childData->devClass = playerData->devClass;
       childData->transparency = playerData->transparency;
       childData->baseId = playerData->baseId;
-      childData->privateBaseManager = playerData->privateBaseManager;
+      childData->privateBaseContext = playerData->privateBaseContext;
       childData->playerId = object->getId ();
       childData->enableGfx = false;
       childData->parentDocId = playerData->docId;

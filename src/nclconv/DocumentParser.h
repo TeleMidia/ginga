@@ -27,10 +27,7 @@ class DocumentParser
 {
 protected:
   string documentPath;
-  string userCurrentPath;
   string documentUri;
-  string iUriD;
-  string fUriD;
   DOMDocument *documentTree;
   map<string, void *> *genericTable;
 
@@ -42,26 +39,13 @@ protected:
   virtual void initialize () = 0;
 
 public:
-  void *parse (const string &uri, const string &iUriD, const string &fUriD);
+  void *parse (const string &uri);
   void *parse (DOMElement *rootElement, const string &uri);
 
 protected:
   virtual void *parseRootElement (DOMElement *rootElement) = 0;
 
-private:
-  void initializeUserCurrentPath ();
-  string absoluteFile (const string &basePath, const string &filename);
-  string getPath (const string &filename);
-
 public:
-  string getIUriD ();
-  string getFUriD ();
-  string getUserCurrentPath ();
-  bool checkUriPrefix (const string &uri);
-  bool isAbsolutePath (const string &path);
-  bool isXmlStr (const string &location);
-
-  string getAbsolutePath (const string &path);
   string getDocumentUri ();
   string getDocumentPath ();
   void setDocumentPath (const string &path);

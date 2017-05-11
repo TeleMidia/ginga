@@ -109,13 +109,12 @@ NclDocumentConverter::~NclDocumentConverter ()
 }
 
 void
-NclDocumentConverter::setConverterInfo (IPrivateBaseContext *pbc,
+NclDocumentConverter::setConverterInfo (PrivateBaseContext *pbc,
                                         DeviceLayout *deviceLayout)
 {
   setDeviceLayout (deviceLayout);
   this->privateBaseContext = pbc;
 
-  setDocumentPath (getUserCurrentPath () + getIUriD ());
   initialize ();
   setDependencies ();
 }
@@ -165,47 +164,20 @@ NclDocumentConverter::removeNode (arg_unused (Node *node))
   return true;
 }
 
-IPrivateBaseContext *
+PrivateBaseContext *
 NclDocumentConverter::getPrivateBaseContext ()
 {
   return privateBaseContext;
 }
 
 NclDocument *
-NclDocumentConverter::importDocument (string &docLocation)
+NclDocumentConverter::importDocument (string &path)
 {
-  string uri;
-  string::size_type pos;
+  if (!xpathisabs (path))
+    path = xpathbuildabs (this->documentPath, path);
 
-  uri = docLocation;
-  while (true)
-    {
-      pos = uri.find_first_of (getFUriD ());
-      if (pos == string::npos)
-        {
-          break;
-        }
-      uri.replace (pos, 1, iUriD);
-    }
-
-  if (!isAbsolutePath (uri))
-    {
-      if (uri.find_first_of (getIUriD ()) == std::string::npos)
-        {
-          uri = getAbsolutePath (uri) + getIUriD () + uri;
-        }
-      else
-        {
-          uri = getAbsolutePath (uri)
-                + uri.substr (uri.find_last_of (getIUriD ()),
-                              uri.length ()
-                                  - uri.find_last_of (getIUriD ()));
-        }
-    }
-
-  docLocation = uri;
-  return (NclDocument *)(privateBaseContext->addVisibleDocument (
-      uri, deviceLayout));
+  return (NclDocument *)(privateBaseContext
+                         ->addVisibleDocument (path, deviceLayout));
 }
 
 void *
@@ -217,7 +189,7 @@ NclDocumentConverter::parseEntity (const string &entityLocation,
   parseEntityVar = true;
   parentObject = parent;
   addObject ("return", "document", document);
-  entity = parse (entityLocation, iUriD, fUriD);
+  entity = parse (entityLocation);
   parseEntityVar = false;
   return entity;
 }

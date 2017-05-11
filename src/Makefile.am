@@ -113,7 +113,6 @@ src+= formatter/NclSelectionEvent.cpp
 src+= formatter/NclSwitchEvent.cpp
 src+= formatter/PresentationContext.cpp
 src+= formatter/PrivateBaseContext.cpp
-src+= formatter/PrivateBaseManager.cpp
 src+= formatter/RuleAdapter.cpp
 src+= lssm/CommonCoreManager.cpp
 src+= lssm/PresentationEngineManager.cpp

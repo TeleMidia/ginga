@@ -27,20 +27,19 @@ using namespace ::ginga::ncl;
 #include "NclDocumentParser.h"
 
 #include "ncl/NclDocument.h"
-#include "ncl/IPrivateBaseContext.h"
 using namespace ::ginga::ncl;
 
-#include "IDocumentConverter.h"
+#include "formatter/PrivateBaseContext.h"
+using namespace ::ginga::formatter;
 
 XERCES_CPP_NAMESPACE_USE
 
 GINGA_NCLCONV_BEGIN
 
-class NclDocumentConverter : public IDocumentConverter,
-                             public NclDocumentParser
+class NclDocumentConverter : public NclDocumentParser
 {
 private:
-  IPrivateBaseContext *privateBaseContext;
+  PrivateBaseContext *privateBaseContext;
   bool ownManager;
 
   bool parseEntityVar;
@@ -50,7 +49,7 @@ public:
   NclDocumentConverter ();
   virtual ~NclDocumentConverter ();
 
-  void setConverterInfo (IPrivateBaseContext *pbc,
+  void setConverterInfo (PrivateBaseContext *pbc,
                          DeviceLayout *deviceLayout);
 
 protected:
@@ -62,7 +61,7 @@ public:
   string getAttribute (void *element, const string &attribute);
   Node *getNode (const string &id);
   bool removeNode (Node *node);
-  IPrivateBaseContext *getPrivateBaseContext ();
+  PrivateBaseContext *getPrivateBaseContext ();
   NclDocument *importDocument (string &docLocation);
   void *parseEntity (const string &entityLocation, NclDocument *document,
                      void *parent);
@@ -74,9 +73,9 @@ public:
   }
 
   void *
-  parse (const string &uri, const string &iUriD, const string &fUriD)
+  parse (const string &uri)
   {
-    return DocumentParser::parse (uri, iUriD, fUriD);
+    return DocumentParser::parse (uri);
   }
 };
 

@@ -124,7 +124,7 @@ LuaPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
   g_assert_nonnull (sfc);
   SDLx_LockSurface (sfc);
-  
+
   ncluaw_paint (nw, (guchar *) sfc->pixels, "ARGB32",
 
                 sfc->w, sfc->h, sfc->pitch);
@@ -135,7 +135,7 @@ LuaPlayer::displayJobCallback (arg_unused (DisplayJob *job),
       this->texture = SDL_CreateTextureFromSurface (renderer, sfc);
       g_assert_nonnull (this->texture);
       signal = true;
-    }  
+    }
 
   SDLx_LockSurface (sfc);
   SDL_UpdateTexture (this->texture, NULL, sfc->pixels, sfc->pitch);
@@ -143,7 +143,6 @@ LuaPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
   if (unlikely (signal))
     {
-  //    this->window->setTexture (texture);
       g_debug ("first cycle");
       this->unlock ();
       this->condDisplayJobSignal ();
@@ -176,7 +175,7 @@ LuaPlayer::LuaPlayer (const string &mrl) : Player (mrl)
   this->hasExecuted = false;
   this->isKeyHandler = false;
   this->scope = "";
-  
+
   Ginga_Display->registerKeyEventListener(this);
 }
 
@@ -224,7 +223,7 @@ LuaPlayer::play (void)
    g_assert (rect.w > 0 && rect.h > 0);
 
   this->nw = ncluaw_open (this->mrl.c_str (), rect.w, rect.h, &errmsg);
-  
+
   if (unlikely (this->nw == NULL))
     g_error ("cannot load NCLua file %s: %s", this->mrl.c_str (), errmsg);
 
@@ -324,7 +323,7 @@ LuaPlayer::setPropertyValue (const string &name, const string &value)
 
 void
 LuaPlayer::keyInputCallback (SDL_EventType evtType, SDL_Keycode key){
-  
+
   this->lock ();
 
   if (this->nw == NULL)
@@ -334,7 +333,7 @@ LuaPlayer::keyInputCallback (SDL_EventType evtType, SDL_Keycode key){
      string evt="release";
      if(evtType == SDL_KEYDOWN)
             evt="press";
-     
+
      evt_key_send (this->nw, evt.c_str(), convertSdl2GingaKey(key).c_str() );
   }
 
