@@ -129,22 +129,6 @@ localSplit (const string &str, const string &delimiter)
   return splited;
 }
 
-gdouble 
-cvtTimeIntToDouble(guint32 value){
-  return ((gdouble)value)/1000;
-}
-
-gdouble 
-getAnimationVelocity(gdouble initPos, gdouble finalPos, gdouble duration){
-  if(duration <= 0)
-    return -1;
-
-  gdouble distance = finalPos - initPos;
-  if(distance < 0)distance*=-1;
-  
-  return distance/duration;   
-}
-
 vector<string> *
 split (const string &str, const string &delimiter, const string &pos_delimiter)
 {

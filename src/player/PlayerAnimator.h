@@ -39,6 +39,10 @@ class PlayerAnimator
    private:
    GList *properties; 
    void updatePosition(SDL_Rect* rect, ANIM_PROPERTY* pr);
+   void calculePosition(gint32 * value, ANIM_PROPERTY* pr,gint32 dir);
+   bool calculeVelocity(gint32 * value, ANIM_PROPERTY* pr);
+   gdouble cvtTimeIntToDouble(guint32 value);
+   gdouble getAnimationVelocity(gdouble initPos, gdouble finalPos, gdouble duration);
 };
 
 #endif /* PLAYER_ANIMATOR_H */
