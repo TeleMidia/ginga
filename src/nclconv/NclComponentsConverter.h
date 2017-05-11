@@ -57,8 +57,6 @@ using namespace ::ginga::ncl;
 #include "NclInterfacesConverter.h"
 #include "NclPresentationControlConverter.h"
 
-XERCES_CPP_NAMESPACE_USE
-
 GINGA_NCLCONV_BEGIN
 
 class NclComponentsConverter : public NclComponentsParser

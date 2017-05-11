@@ -63,16 +63,8 @@ NclStructureConverter::addDescriptorBaseToHead (arg_unused (void *parentObject),
                                                 void *childObject)
 {
   NclDocument *document;
-  document = (NclDocument *)getDocumentParser ()->getObject ("return",
-                                                             "document");
-
+  document = getDocumentParser ()->getNclDocument ();
   document->setDescriptorBase ((DescriptorBase *)childObject);
-}
-
-void
-NclStructureConverter::addHeadToNcl (arg_unused (void *parentObject), arg_unused (void *childObject))
-{
-  // nothing to do
 }
 
 void
@@ -80,9 +72,7 @@ NclStructureConverter::addRegionBaseToHead (arg_unused (void *parentObject),
                                             void *childObject)
 {
   NclDocument *document;
-  document = (NclDocument *)getDocumentParser ()->getObject ("return",
-                                                             "document");
-
+  document = getDocumentParser ()->getNclDocument ();
   document->addRegionBase ((RegionBase *)childObject);
 }
 
@@ -92,8 +82,7 @@ NclStructureConverter::addTransitionBaseToHead (arg_unused (void *parentObject),
 {
   NclDocument *document;
 
-  document = (NclDocument *)(getDocumentParser ()->getObject ("return",
-                                                              "document"));
+  document = getDocumentParser ()->getNclDocument ();
   document->setTransitionBase ((TransitionBase *)childObject);
 }
 
@@ -115,9 +104,7 @@ NclStructureConverter::addRuleBaseToHead (arg_unused (void *parentObject),
                                           void *childObject)
 {
   NclDocument *document;
-  document = (NclDocument *)getDocumentParser ()->getObject ("return",
-                                                             "document");
-
+  document = getDocumentParser ()->getNclDocument ();
   document->setRuleBase ((RuleBase *)childObject);
 }
 
@@ -126,9 +113,7 @@ NclStructureConverter::addConnectorBaseToHead (arg_unused (void *parentObject),
                                                void *childObject)
 {
   NclDocument *document;
-  document = (NclDocument *)getDocumentParser ()->getObject ("return",
-                                                             "document");
-
+  document = getDocumentParser ()->getNclDocument ();
   document->setConnectorBase ((ConnectorBase *)childObject);
 }
 
@@ -142,9 +127,7 @@ NclStructureConverter::createBody (DOMElement *parentElement,
   NclDocument *document;
   ContextNode *context;
 
-  document = (NclDocument *)getDocumentParser ()->getObject ("return",
-                                                             "document");
-
+  document = getDocumentParser ()->getNclDocument ();
   if (!parentElement->hasAttribute (XMLString::transcode ("id")))
     {
       parentElement->setAttribute (
@@ -268,12 +251,10 @@ NclStructureConverter::createNcl (DOMElement *parentElement,
     }
 
   if (docName == "")
-    {
-      docName = "nclDocument";
-    }
+    docName = "ncl";
 
   document = new NclDocument (docName, documentParser->getPath ());
-  getDocumentParser ()->addObject ("return", "document", document);
+  documentParser->setNclDocument (document);
   return document;
 }
 
@@ -288,9 +269,7 @@ NclStructureConverter::addMetaToHead (arg_unused (void *parentObject), void *chi
 {
   NclDocument *document;
 
-  document = (NclDocument *)getDocumentParser ()->getObject ("return",
-                                                             "document");
-
+  document = getDocumentParser ()->getNclDocument ();
   document->addMetainformation ((Meta *)childObject);
 }
 
@@ -300,9 +279,7 @@ NclStructureConverter::addMetadataToHead (arg_unused (void *parentObject),
 {
   NclDocument *document;
 
-  document = (NclDocument *)getDocumentParser ()->getObject ("return",
-                                                             "document");
-
+  document = getDocumentParser ()->getNclDocument ();
   document->addMetadata ((Metadata *)childObject);
 }
 

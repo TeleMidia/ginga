@@ -21,8 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ModuleParser.h"
 #include "DocumentParser.h"
 
-XERCES_CPP_NAMESPACE_USE
-
 #include "NclTransitionParser.h"
 #include "NclPresentationSpecificationParser.h"
 #include "NclComponentsParser.h"
@@ -111,8 +109,6 @@ public:
 
   virtual void *createNcl (DOMElement *parentElement, void *objGrandParent)
       = 0;
-
-  virtual void addHeadToNcl (void *parentObject, void *childObject) = 0;
 
   virtual void addBodyToNcl (void *parentObject, void *childObject) = 0;
 

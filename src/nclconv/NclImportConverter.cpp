@@ -45,9 +45,7 @@ NclImportConverter::addImportNCLToImportedDocumentBase (arg_unused (void *parent
   importedDocument = compiler->importDocument (docLocation);
   if (importedDocument != NULL)
     {
-      thisDocument = (NclDocument *)getDocumentParser ()->getObject (
-          "return", "document");
-
+      thisDocument = getDocumentParser ()->getNclDocument ();
       thisDocument->addDocument (importedDocument, docAlias, docLocation);
     }
 }

@@ -116,9 +116,7 @@ NclPresentationSpecConverter::addImportBaseToDescriptorBase (
 
   // importing descriptor bases implies importing region, rule, and cost
   // function bases in order to maintain reference consistency
-  thisDocument = (NclDocument *)getDocumentParser ()->getObject (
-      "return", "document");
-
+  thisDocument = getDocumentParser ()->getNclDocument ();
   regionBase = thisDocument->getRegionBase (0);
   if (regionBase == NULL)
     {
@@ -199,8 +197,7 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
   descriptor = new Descriptor (XMLString::transcode (
       parentElement->getAttribute (XMLString::transcode ("id"))));
 
-  document = (NclDocument *)getDocumentParser ()->getObject ("return",
-                                                             "document");
+  document = getDocumentParser ()->getNclDocument ();
 
   // atributo region
   if (parentElement->hasAttribute (XMLString::transcode ("region")))
