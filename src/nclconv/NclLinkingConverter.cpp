@@ -169,9 +169,7 @@ NclLinkingConverter::createBind (DOMElement *parentElement,
   // atribui o bind ao elo (link)
   if (parentElement->hasAttribute (XMLString::transcode ("descriptor")))
     {
-      document = (NclDocument *)getDocumentParser ()->getObject (
-          "return", "document");
-
+      document = getDocumentParser ()->getNclDocument ();
       descriptor = document->getDescriptor (
           XMLString::transcode (parentElement->getAttribute (
               XMLString::transcode ("descriptor"))));
@@ -244,14 +242,11 @@ NclLinkingConverter::createLink (DOMElement *parentElement,
   Link *link;
   string connectorId;
 
-  document = (NclDocument *)getDocumentParser ()->getObject ("return",
-                                                             "document");
-
+  document = getDocumentParser ()->getNclDocument ();
   connectorId = XMLString::transcode (
       parentElement->getAttribute (XMLString::transcode ("xconnector")));
 
   connector = document->getConnector (connectorId);
-
   if (unlikely (connector == NULL))
     {
       syntax_error ("link: bad xconnector '%s'", connectorId.c_str ());

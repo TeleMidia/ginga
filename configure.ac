@@ -204,15 +204,6 @@ _MY_CHECK_OPTIONAL([espeak], [build with Espeak ssml support],
    [with_optional_espeak=yes; ESPEAK_LIBS=-lespeak])])])
 AC_SUBST([ESPEAK_LIBS])
 
-_MY_CHECK_OPTIONAL([linuxdvb], [build linuxdvb support],
- [LINUXDVB], [linux dvb],
- [AC_CHECK_HEADER([linux/dvb/frontend.h],
-  [with_optional_linuxdvb=yes])])
-
-# Broken or legacy stuff.
-AM_CONDITIONAL([WITH_ISDBT], [false])
-AC_DEFINE([WITH_ISDBT], [0], [Broken or legacy.])
-
 # Epilogue.
 AC_CONFIG_FILES([
 Makefile
@@ -235,6 +226,5 @@ AC_MSG_NOTICE([summary of main build options:
   with espeak:        ${with_espeak_result}
   with gstreamer:     ${with_gstreamer_result}
   with librsvg:       ${with_librsvg_result}
-  with linuxdvb:      ${with_linuxdvb_result}
   with pango:         ${with_pango_result}
 ])

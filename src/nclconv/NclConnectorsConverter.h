@@ -52,8 +52,6 @@ using namespace ::ginga::ncl;
 
 #include "NclConnectorsParser.h"
 
-XERCES_CPP_NAMESPACE_USE;
-
 GINGA_NCLCONV_BEGIN
 
 class NclConnectorsConverter : public NclConnectorsParser

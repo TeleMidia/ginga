@@ -33,8 +33,6 @@ using namespace ::ginga::ncl;
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-XERCES_CPP_NAMESPACE_USE
-
 GINGA_NCLCONV_BEGIN
 
 class NclTransitionConverter : public NclTransitionParser

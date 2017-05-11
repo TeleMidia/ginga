@@ -21,8 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ModuleParser.h"
 #include "DocumentParser.h"
 
-XERCES_CPP_NAMESPACE_USE
-
 #include "NclPresentationSpecificationParser.h"
 #include "NclInterfacesParser.h"
 #include "NclImportParser.h"

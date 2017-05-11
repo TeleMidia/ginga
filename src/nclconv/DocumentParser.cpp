@@ -22,52 +22,11 @@ GINGA_NCLCONV_BEGIN
 
 DocumentParser::DocumentParser ()
 {
-  this->genericTable = new map<string, void *>;
-  this->document = NULL;
+  this->ncl = NULL;
 }
 
 DocumentParser::~DocumentParser ()
 {
-  map<string, void *> *table;
-  map<string, void *>::iterator i;
-
-  if (genericTable != NULL)
-    {
-      i = genericTable->begin ();
-      while (i != genericTable->end ())
-        {
-          table = (map<string, void *> *)(i->second);
-          delete table;
-          table = NULL;
-          ++i;
-        }
-
-      delete genericTable;
-      genericTable = NULL;
-    }
-
-  if (this->document != NULL)
-    delete this->document;
-}
-
-void *
-DocumentParser::parse (const string &path)
-{
-  void *result;
-  DOMElement *elt;
-
-  this->path = xpathmakeabs (path);
-  this->dirname = xpathdirname (path);
-  this->document = (DOMDocument *) XMLParsing::parse (path);
-  g_assert_nonnull (document);
-
-  elt = (DOMElement *) this->document->getDocumentElement ();
-  g_assert_nonnull (elt);
-
-  result = parseRootElement (elt);
-  g_assert_nonnull (result);
-
-  return result;
 }
 
 string
@@ -82,67 +41,96 @@ DocumentParser::getPath ()
   return this->path;
 }
 
-DOMDocument *
-DocumentParser::getDocument ()
+NclDocument *
+DocumentParser::getNclDocument ()
 {
-  return this->document;
+  return this->ncl;
 }
 
 void
-DocumentParser::addObject (const string &tableName,
-                           const string &key, void *value)
+DocumentParser::setNclDocument (NclDocument *ncl)
 {
-  map<string, void *> *table;
-  map<string, void *>::iterator i;
-
-  i = genericTable->find (tableName);
-  if (i != genericTable->end ())
-    {
-      table = (map<string, void *> *)i->second;
-      (*table)[key] = value;
-      return;
-    }
-
-  table = new map<string, void *>;
-  (*table)[key] = value;
-  (*genericTable)[tableName] = table;
+  this->ncl = ncl;
 }
 
-void *
-DocumentParser::getObject (const string &tableName, const string &key)
+void
+DocumentParser::warning (const SAXParseException &e)
 {
-  map<string, void *> *table = NULL;
-  map<string, void *>::iterator i;
-
-  i = genericTable->find (tableName);
-  if (i != genericTable->end ())
-    {
-      table = (map<string, void *> *)i->second;
-    }
-
-  if (table != NULL)
-    {
-      i = table->find (key);
-      if (i != table->end ())
-        {
-          return i->second;
-        }
-    }
-
-  return NULL;
+  const char *file = XMLString::transcode (e.getSystemId ());
+  if (file == NULL || strlen (file) <= 0)
+    g_warning ("%s", XMLString::transcode (e.getMessage ()));
+  else
+    g_warning ("%s:%u.%u: %s", file,
+               (guint)e.getLineNumber (),
+               (guint)e.getColumnNumber (),
+               XMLString::transcode (e.getMessage ()));
 }
 
-bool
-DocumentParser::importDocument (DocumentParser *parser, const string &path)
+void G_GNUC_NORETURN
+DocumentParser::error (const SAXParseException &e)
 {
-  string abspath;
+  const char *file = XMLString::transcode (e.getSystemId ());
+  if (file == NULL || strlen (file) <= 0)
+    g_error ("%s", XMLString::transcode (e.getMessage ()));
+  else
+    g_error ("%s:%u.%u: %s", file,
+             (guint)e.getLineNumber (),
+             (guint)e.getColumnNumber (),
+             XMLString::transcode (e.getMessage ()));
+  exit (EXIT_FAILURE);
+}
 
-  if (!xpathisabs (path))
-    abspath = xpathbuildabs (getDirName (), path);
+void
+DocumentParser::fatalError (const SAXParseException &e)
+{
+  this->error (e);
+}
 
-  parser->parse (abspath);
+NclDocument *
+DocumentParser::parse (const string &path)
+{
+  DOMDocument *dom;
+  DOMElement *elt;
+  XercesDOMParser *parser;
 
-  return true;
+  this->path = xpathmakeabs (path);
+  this->dirname = xpathdirname (path);
+
+  XMLPlatformUtils::Initialize ();
+  parser = new XercesDOMParser ();
+  g_assert_nonnull (parser);
+
+  parser->setValidationScheme (XercesDOMParser::Val_Auto);
+  parser->setDoNamespaces (false);
+  parser->setDoSchema (false);
+  parser->setErrorHandler (this);
+  parser->setCreateEntityReferenceNodes (false);
+
+  LocalFileInputSource src (XMLString::transcode (path.c_str ()));
+  try
+    {
+      parser->parse (src);
+    }
+  catch (...)
+    {
+      g_assert_not_reached ();
+    }
+
+  dom = parser->getDocument ();
+  g_assert_nonnull (dom);
+
+  elt = (DOMElement *) dom->getDocumentElement ();
+  g_assert_nonnull (elt);
+
+  this->ncl = (NclDocument *) parseRootElement (elt);
+  g_assert_nonnull (this->ncl);
+
+  delete parser;
+
+  // FIXME: Should we call this?
+  //XMLPlatformUtils::Terminate ();
+
+  return this->ncl;
 }
 
 GINGA_NCLCONV_END

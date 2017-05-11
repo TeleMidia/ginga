@@ -40,11 +40,6 @@ GINGA_FORMATTER_BEGIN
 AdapterPlayerManager::AdapterPlayerManager (NclPlayerData *data) : Thread ()
 {
   nclPlayerData = data;
-
-  editingCommandListener = NULL;
-  epgFactoryAdapter = NULL;
-  timeBaseProvider = NULL;
-
   Thread::mutexInit (&mutexPlayer, false);
 
   running = true;
@@ -86,19 +81,6 @@ NclPlayerData *
 AdapterPlayerManager::getNclPlayerData ()
 {
   return nclPlayerData;
-}
-
-void
-AdapterPlayerManager::setTimeBaseProvider (
-    ITimeBaseProvider *timeBaseProvider)
-{
-  this->timeBaseProvider = timeBaseProvider;
-}
-
-ITimeBaseProvider *
-AdapterPlayerManager::getTimeBaseProvider ()
-{
-  return timeBaseProvider;
 }
 
 void
@@ -248,8 +230,7 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
       adapter = new AdapterTextPlayer ();
     }
 #endif
-  else if (g_strcmp0 (mime, "application/x-ginga-NCLua") == 0
-           || g_strcmp0 (mime, "application/x-ginga-EPGFactory") == 0)
+  else if (g_strcmp0 (mime, "application/x-ginga-NCLua") == 0)
     {
       classname = "AdapterLuaPlayer";
       adapter = new AdapterLuaPlayer ();

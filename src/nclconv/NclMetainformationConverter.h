@@ -26,8 +26,6 @@ using namespace ::ginga::ncl;
 
 #include "NclMetainformationParser.h"
 
-XERCES_CPP_NAMESPACE_USE
-
 GINGA_NCLCONV_BEGIN
 
 class NclMetainformationConverter : public NclMetainformationParser

@@ -26,17 +26,7 @@ AdapterLuaPlayer::AdapterLuaPlayer () : AdapterApplicationPlayer () {}
 void
 AdapterLuaPlayer::createPlayer ()
 {
-  if (fileExists (mrl))
-    {
-      player = new LuaPlayer (mrl.c_str ());
-    }
-  else
-    {
-      player = NULL;
-      clog << "AdapterLuaPlayer::createPlayer Warning! ";
-      clog << "file not found: '" << mrl.c_str () << "'" << endl;
-    }
-
+  player = new LuaPlayer (mrl.c_str ());
   AdapterApplicationPlayer::createPlayer ();
 }
 

@@ -77,15 +77,6 @@ GINGA_BEGIN_DECLS
 # include <espeak/speak_lib.h>
 #endif
 
-#if defined WITH_ISDBT && WITH_ISDBT
-# include <expat.h>
-# if defined WITH_LINUXDVB && WITH_LINUXDVB
-#  include <linux/dvb/version.h>
-#  include <linux/dvb/frontend.h>
-#  include <linux/dvb/dmx.h>
-# endif
-#endif
-
 #if defined WITH_LIBRSVG && WITH_LIBRSVG
 # include <cairo.h>
 # include <librsvg/rsvg.h>
@@ -133,8 +124,6 @@ GINGA_PRAGMA_DIAG_POP ()
 #define GINGA_DATAPROC_END    _GINGA_END
 #define GINGA_FORMATTER_BEGIN _GINGA_BEGIN (formatter)
 #define GINGA_FORMATTER_END   _GINGA_END
-#define GINGA_LSSM_BEGIN      _GINGA_BEGIN (lssm)
-#define GINGA_LSSM_END        _GINGA_END
 #define GINGA_MB_BEGIN        _GINGA_BEGIN (mb)
 #define GINGA_MB_END          _GINGA_END
 #define GINGA_NCL_BEGIN       _GINGA_BEGIN (ncl)

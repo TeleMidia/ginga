@@ -45,8 +45,6 @@ using namespace ::ginga::ncl;
 #include "NclPresentationControlConverter.h"
 #include "NclConnectorsConverter.h"
 
-XERCES_CPP_NAMESPACE_USE
-
 GINGA_NCLCONV_BEGIN
 
 class NclStructureConverter : public NclStructureParser
@@ -61,7 +59,6 @@ public:
   virtual void addDescriptorBaseToHead (void *parentObject,
                                         void *childObject);
 
-  virtual void addHeadToNcl (void *parentObject, void *childObject);
   virtual void addRegionBaseToHead (void *parentObject, void *childObject);
 
   virtual void addTransitionBaseToHead (void *parentObject,

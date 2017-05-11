@@ -209,9 +209,7 @@ NclComponentsConverter::createContext (DOMElement *parentElement,
 
           if (referNode == NULL)
             {
-              document = (NclDocument *)(getDocumentParser ()->getObject (
-                  "return", "document"));
-
+              document = getDocumentParser ()->getNclDocument ();
               referNode = (ContextNode *)(document->getNode (attValue));
               if (referNode == NULL)
                 {
@@ -240,9 +238,7 @@ NclComponentsConverter::createContext (DOMElement *parentElement,
       attValue = XMLString::transcode (parentElement->getAttribute (
           XMLString::transcode ("descriptor")));
 
-      document = (NclDocument *)(getDocumentParser ()->getObject (
-          "return", "document"));
-
+      document = getDocumentParser ()->getNclDocument ();
       descriptor = document->getDescriptor (attValue);
       if (descriptor != NULL)
         {
@@ -369,9 +365,7 @@ NclComponentsConverter::createMedia (DOMElement *parentElement,
 
           if (referNode == NULL)
             {
-              document = (NclDocument *)(getDocumentParser ()->getObject (
-                  "return", "document"));
-
+              document = getDocumentParser ()->getNclDocument ();
               referNode = (ContentNode *)document->getNode (attValue);
               if (referNode == NULL)
                 {
@@ -428,9 +422,7 @@ NclComponentsConverter::createMedia (DOMElement *parentElement,
       attValue = XMLString::transcode (parentElement->getAttribute (
           XMLString::transcode ("descriptor")));
 
-      document = (NclDocument *)getDocumentParser ()->getObject (
-          "return", "document");
-
+      document = getDocumentParser ()->getNclDocument ();
       descriptor = document->getDescriptor (attValue);
       if (descriptor != NULL)
         {
