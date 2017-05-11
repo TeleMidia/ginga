@@ -66,7 +66,6 @@ AdapterNCLPlayer::createPlayer ()
       childData->baseId = playerData->baseId;
       childData->privateBaseContext = playerData->privateBaseContext;
       childData->playerId = object->getId ();
-      childData->enableGfx = false;
       childData->parentDocId = playerData->docId;
       childData->nodeId
           = ((NodeEntity *)(object->getDataObject ()->getDataEntity ()))
