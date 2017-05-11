@@ -28,8 +28,6 @@ using namespace ::ginga::ncl;
 
 #include "NclDocumentConverter.h"
 
-XERCES_CPP_NAMESPACE_USE;
-
 GINGA_NCLCONV_BEGIN
 
 class NclImportConverter : public NclImportParser

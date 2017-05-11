@@ -35,9 +35,6 @@ public:
 
   virtual ~ModuleParser () {}
 
-  /**
-   * @return Returns the documentParser.
-   */
   DocumentParser *
   getDocumentParser ()
   {

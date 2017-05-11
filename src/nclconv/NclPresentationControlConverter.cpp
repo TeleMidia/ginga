@@ -177,9 +177,7 @@ NclPresentationControlConverter::createSwitch (DOMElement *parentElement,
 
           if (referNode == NULL)
             {
-              document = (NclDocument *)getDocumentParser ()->getObject (
-                  "return", "document");
-
+              document = getDocumentParser ()->getNclDocument ();
               referNode = (SwitchNode *)document->getNode (attValue);
               if (referNode == NULL)
                 {
@@ -364,9 +362,7 @@ NclPresentationControlConverter::addBindRuleToDescriptorSwitch (
       return;
     }
 
-  document = (NclDocument *)getDocumentParser ()->getObject ("return",
-                                                             "document");
-
+  document = getDocumentParser ()->getNclDocument ();
   ncmRule = document->getRule (XMLString::transcode (
       bindRule->getAttribute (XMLString::transcode ("rule"))));
 
@@ -413,9 +409,7 @@ NclPresentationControlConverter::addBindRuleToSwitch (void *parentObject,
       return;
     }
 
-  document = (NclDocument *)getDocumentParser ()->getObject ("return",
-                                                             "document");
-
+  document = getDocumentParser ()->getNclDocument ();
   ncmRule = document->getRule (XMLString::transcode (
       bindRule->getAttribute (XMLString::transcode ("rule"))));
 

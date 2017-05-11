@@ -94,7 +94,7 @@ PrivateBaseContext::compileDocument (const string &location,
   compiler->setConverterInfo (this, deviceLayout);
   compiler->parse (docUrl);
 
-  document = (NclDocument *)(compiler->getObject ("return", "document"));
+  document = compiler->getNclDocument ();
 
   delete compiler;
   compiler = NULL;

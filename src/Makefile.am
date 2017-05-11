@@ -211,12 +211,9 @@ src+= nclconv/NclStructureConverter.cpp
 src+= nclconv/NclStructureParser.cpp
 src+= nclconv/NclTransitionConverter.cpp
 src+= nclconv/NclTransitionParser.cpp
-src+= nclconv/XMLParsing.cpp
 src+= player/ImagePlayer.cpp
 src+= player/LuaPlayer.cpp
 src+= player/Player.cpp
-# src+= system/GingaLocatorFactory.cpp
-# src+= system/Stc.cpp
 src+= system/Thread.cpp
 src+= util/functions.cpp
 

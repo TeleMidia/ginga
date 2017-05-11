@@ -323,7 +323,7 @@ NclStructureParser::parseNcl (DOMElement *parentElement,
           ;
           if (elementObject != NULL)
             {
-              addHeadToNcl (parentObject, elementObject);
+              //addHeadToNcl (parentObject, elementObject);
               break;
             }
         }

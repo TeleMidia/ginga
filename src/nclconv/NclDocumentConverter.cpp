@@ -151,8 +151,7 @@ NclDocumentConverter::getNode (const string &nodeId)
 {
   NclDocument *document;
 
-  document
-      = (NclDocument *)NclDocumentParser::getObject ("return", "document");
+  document = NclDocumentParser::getNclDocument ();
 
   return document->getNode (nodeId);
 }

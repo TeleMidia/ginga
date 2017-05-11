@@ -32,8 +32,6 @@ using namespace ::ginga::ncl;
 #include "formatter/PrivateBaseContext.h"
 using namespace ::ginga::formatter;
 
-XERCES_CPP_NAMESPACE_USE
-
 GINGA_NCLCONV_BEGIN
 
 class NclDocumentConverter : public NclDocumentParser
@@ -62,11 +60,6 @@ public:
   bool removeNode (Node *node);
   PrivateBaseContext *getPrivateBaseContext ();
   NclDocument *importDocument (string &docLocation);
-  void *
-  getObject (const string &tableName, const string &key)
-  {
-    return DocumentParser::getObject (tableName, key);
-  }
 
   void *
   parse (const string &uri)

@@ -35,8 +35,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/NclDocument.h"
 using namespace ::ginga::ncl;
 
-XERCES_CPP_NAMESPACE_USE
-
 GINGA_NCLCONV_BEGIN
 
 class NclDocumentParser : public DocumentParser
