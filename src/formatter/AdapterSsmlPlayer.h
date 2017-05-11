@@ -20,9 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "AdapterFormatterPlayer.h"
 
-#include "system/SystemCompat.h"
-using namespace ::ginga::system;
-
 GINGA_FORMATTER_BEGIN
 
 class AdapterSsmlPlayer : public AdapterFormatterPlayer

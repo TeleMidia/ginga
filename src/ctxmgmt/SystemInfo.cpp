@@ -24,9 +24,6 @@ using namespace ::ginga::util;
 #include "mb/Display.h"
 using namespace ::ginga::mb;
 
-#include "system/SystemCompat.h"
-using namespace ::ginga::system;
-
 GINGA_CTXMGMT_BEGIN
 
 SystemInfo::SystemInfo ()

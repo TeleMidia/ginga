@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define PLAYER_H
 
 #include "system/GingaLocatorFactory.h"
-#include "system/SystemCompat.h"
 #include "system/Thread.h"
 using namespace ::ginga::system;
 

@@ -247,9 +247,9 @@ NclNodeNesting::removeAnchorNode ()
   nodes->erase (nodes->end () - 1);
   Thread::mutexUnlock (&mutexNodes);
 
-  if (id.find (SystemCompat::getIUriD ()) != std::string::npos)
+  if (id.find ("/") != std::string::npos)
     {
-      id = id.substr (0, id.find_last_of (SystemCompat::getIUriD ()));
+      id = id.substr (0, id.find_last_of ("/"));
     }
 
   return true;
@@ -269,9 +269,9 @@ NclNodeNesting::removeHeadNode ()
   nodes->erase (nodes->begin ());
   Thread::mutexUnlock (&mutexNodes);
 
-  if (id.find (SystemCompat::getIUriD ()) != std::string::npos)
+  if (id.find ("/") != std::string::npos)
     {
-      id = id.substr (0, id.find_last_of (SystemCompat::getIUriD ()));
+      id = id.substr (0, id.find_last_of ("/"));
     }
 
   return true;

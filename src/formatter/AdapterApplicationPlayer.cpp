@@ -126,11 +126,6 @@ AdapterApplicationPlayer::prepare (NclExecutionObject *object,
             {
               this->mrl = ((ReferenceContent *)content)
                               ->getCompleteReferenceUrl ();
-
-              // FIXME: What is this?
-              // xstrreplaceall ( this->mrl,
-              //                  SystemCompat::getFUriD (),
-              //                  SystemCompat::getIUriD () );
             }
           else
             {

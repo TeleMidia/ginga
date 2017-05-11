@@ -259,7 +259,7 @@ FormatterConverter::addSameInstance (NclExecutionObject *executionObject,
           if (desc != NULL)
             {
               objectId
-                  = (referPerspective->getId () + SystemCompat::getIUriD ()
+                  = (referPerspective->getId () + "/"
                      + executionObject->getDescriptor ()->getId ());
             }
           else
@@ -452,7 +452,7 @@ FormatterConverter::compileExecutionObjectLinks (
 NclExecutionObject *
 FormatterConverter::getExecutionObjectFromPerspective (
     NclNodeNesting *perspective, GenericDescriptor *descriptor,
-    int depthLevel) 
+    int depthLevel)
 {
   map<string, NclExecutionObject *>::iterator i;
   NclCascadingDescriptor *cascadingDescriptor = NULL;
@@ -462,7 +462,7 @@ FormatterConverter::getExecutionObjectFromPerspective (
   NclExecutionObject *executionObject;
   // Node* selectedNode;
 
-  id = perspective->getId () + SystemCompat::getIUriD ();
+  id = perspective->getId () + "/";
   cascadingDescriptor = getCascadingDescriptor (perspective, descriptor);
   if (cascadingDescriptor != NULL)
     {
@@ -718,7 +718,7 @@ FormatterConverter::createMultichannelObject (
 
           perspective->insertAnchorNode (node);
 
-          id = perspective->getId () + SystemCompat::getIUriD ();
+          id = perspective->getId () + "/";
           cascadingDescriptor = getCascadingDescriptor (perspective, NULL);
 
           if (cascadingDescriptor != NULL)
@@ -1354,7 +1354,7 @@ FormatterConverter::processExecutionObjectSwitch (
   selectedPerspective = switchObject->getNodePerspective ();
   selectedPerspective->insertAnchorNode (selectedNode);
 
-  id = selectedPerspective->getId () + SystemCompat::getIUriD ();
+  id = selectedPerspective->getId () + "/";
 
   descriptor = FormatterConverter::getCascadingDescriptor (
       selectedPerspective, NULL);
@@ -1629,7 +1629,7 @@ FormatterConverter::removeExecutionObject (
   executionObject->removeNode (referNode);
   referPerspective = new NclNodeNesting (referNode->getPerspective ());
   string objectId;
-  objectId = referPerspective->getId () + SystemCompat::getIUriD ()
+  objectId = referPerspective->getId () + "/"
              + executionObject->getDescriptor ()->getId ();
 
   delete referPerspective;
@@ -1715,7 +1715,7 @@ FormatterConverter::hasExecutionObject (Node *node,
   nodes = node->getPerspective ();
   perspective = new NclNodeNesting (nodes);
   delete nodes;
-  id = perspective->getId () + SystemCompat::getIUriD ();
+  id = perspective->getId () + "/";
   cascadingDescriptor = getCascadingDescriptor (perspective, descriptor);
   if (cascadingDescriptor != NULL)
     {

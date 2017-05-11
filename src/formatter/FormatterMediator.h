@@ -36,9 +36,6 @@ using namespace ::ginga::ncl;
 #include "ncl/InterfacePoint.h"
 using namespace ::ginga::ncl;
 
-#include "system/SystemCompat.h"
-using namespace ::ginga::system;
-
 #include "ncl/Rule.h"
 using namespace ::ginga::ncl;
 

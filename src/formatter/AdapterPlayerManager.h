@@ -21,9 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "util/functions.h"
 using namespace ::ginga::util;
 
-#include "system/SystemCompat.h"
-using namespace ::ginga::system;
-
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
