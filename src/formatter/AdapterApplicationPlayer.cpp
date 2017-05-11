@@ -32,7 +32,6 @@ AdapterApplicationPlayer::AdapterApplicationPlayer ()
   Thread::mutexInit (&eventsMutex, false);
 
   currentEvent = NULL;
-  editingCommandListener = NULL;
   running = false;
   isDeleting = false;
 
@@ -61,8 +60,6 @@ AdapterApplicationPlayer::~AdapterApplicationPlayer ()
   notes.clear ();
   unlock ();
 
-  editingCommandListener = NULL;
-
   lockPreparedEvents ();
   preparedEvents.clear ();
   unlockPreparedEvents ();
@@ -75,9 +72,6 @@ AdapterApplicationPlayer::~AdapterApplicationPlayer ()
 void
 AdapterApplicationPlayer::createPlayer ()
 {
-  clog << "AdapterApplicationPlayer::createPlayer(" << this << ")";
-  clog << endl;
-
   AdapterFormatterPlayer::createPlayer ();
 }
 

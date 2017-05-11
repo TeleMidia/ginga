@@ -40,10 +40,6 @@ GINGA_FORMATTER_BEGIN
 AdapterPlayerManager::AdapterPlayerManager (NclPlayerData *data) : Thread ()
 {
   nclPlayerData = data;
-
-  editingCommandListener = NULL;
-  epgFactoryAdapter = NULL;
-
   Thread::mutexInit (&mutexPlayer, false);
 
   running = true;
@@ -234,8 +230,7 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
       adapter = new AdapterTextPlayer ();
     }
 #endif
-  else if (g_strcmp0 (mime, "application/x-ginga-NCLua") == 0
-           || g_strcmp0 (mime, "application/x-ginga-EPGFactory") == 0)
+  else if (g_strcmp0 (mime, "application/x-ginga-NCLua") == 0)
     {
       classname = "AdapterLuaPlayer";
       adapter = new AdapterLuaPlayer ();
