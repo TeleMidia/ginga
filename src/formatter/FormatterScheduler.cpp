@@ -433,7 +433,9 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
           winId = ((FormatterMultiDevice *) multiDevPres)
             ->prepareFormatterRegion (executionObject);
 
-          g_assert_nonnull (winId);
+          // FIXME: Sometimes winId is NULL!
+          // g_assert_nonnull (winId);
+
           player->setOutputWindow (winId);
 
           event->addEventListener (this);
