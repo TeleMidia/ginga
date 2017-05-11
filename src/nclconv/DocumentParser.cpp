@@ -22,8 +22,8 @@ GINGA_NCLCONV_BEGIN
 
 DocumentParser::DocumentParser ()
 {
-  genericTable = new map<string, void *>;
-  documentTree = NULL;
+  this->genericTable = new map<string, void *>;
+  this->document = NULL;
 }
 
 DocumentParser::~DocumentParser ()
@@ -46,54 +46,46 @@ DocumentParser::~DocumentParser ()
       genericTable = NULL;
     }
 
-  if (documentTree != NULL)
-    {
-      delete documentTree;
-      documentTree = NULL;
-    }
+  if (this->document != NULL)
+    delete this->document;
 }
 
 void *
 DocumentParser::parse (const string &path)
 {
-  DOMElement *rootElement;
+  void *result;
+  DOMElement *elt;
 
-  documentTree = (DOMDocument *) XMLParsing::parse (path);
-  g_assert_nonnull (documentTree);
+  this->path = xpathmakeabs (path);
+  this->dirname = xpathdirname (path);
+  this->document = (DOMDocument *) XMLParsing::parse (path);
+  g_assert_nonnull (document);
 
-  rootElement = (DOMElement *) documentTree->getDocumentElement ();
-  return parse (rootElement, path);
-}
+  elt = (DOMElement *) this->document->getDocumentElement ();
+  g_assert_nonnull (elt);
 
-void *
-DocumentParser::parse (DOMElement *rootElement, const string &path)
-{
-  void *root;
+  result = parseRootElement (elt);
+  g_assert_nonnull (result);
 
-  this->documentUri = path;
-  this->documentPath = xpathdirname (path);
-  root = parseRootElement (rootElement);
-  g_assert_nonnull (root);
-
-  return root;
+  return result;
 }
 
 string
-DocumentParser::getDocumentPath ()
+DocumentParser::getDirName ()
 {
-  return documentPath;
+  return this->dirname;
 }
 
 string
-DocumentParser::getDocumentUri ()
+DocumentParser::getPath ()
 {
-  return documentUri;
+  return this->path;
 }
 
 DOMDocument *
-DocumentParser::getDocumentTree ()
+DocumentParser::getDocument ()
 {
-  return documentTree;
+  return this->document;
 }
 
 void
@@ -146,7 +138,7 @@ DocumentParser::importDocument (DocumentParser *parser, const string &path)
   string abspath;
 
   if (!xpathisabs (path))
-    abspath = xpathbuildabs (getDocumentPath (), path);
+    abspath = xpathbuildabs (getDirName (), path);
 
   parser->parse (abspath);
 

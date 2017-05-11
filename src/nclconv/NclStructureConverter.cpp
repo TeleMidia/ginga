@@ -272,7 +272,7 @@ NclStructureConverter::createNcl (DOMElement *parentElement,
       docName = "nclDocument";
     }
 
-  document = new NclDocument (docName, documentParser->getDocumentUri ());
+  document = new NclDocument (docName, documentParser->getPath ());
   getDocumentParser ()->addObject ("return", "document", document);
   return document;
 }

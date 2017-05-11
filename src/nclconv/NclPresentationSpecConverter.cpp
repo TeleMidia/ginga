@@ -290,7 +290,7 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
           parentElement->getAttribute (XMLString::transcode ("focusSrc")));
 
       if (!xpathisabs (src))
-        src = xpathbuildabs (getDocumentParser ()->getDocumentPath (), src);
+        src = xpathbuildabs (getDocumentParser ()->getDirName (), src);
 
       focusDecoration->setFocusSrc (src);
     }
@@ -332,7 +332,7 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
           XMLString::transcode ("focusSelSrc")));
 
       if (!xpathisabs (src))
-        src = xpathbuildabs (getDocumentParser ()->getDocumentPath (), src);
+        src = xpathbuildabs (getDocumentParser ()->getDirName (), src);
 
       focusDecoration->setFocusSelSrc (src);
     }

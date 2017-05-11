@@ -42,7 +42,6 @@ private:
   PrivateBaseContext *privateBaseContext;
   bool ownManager;
 
-  bool parseEntityVar;
   void *parentObject;
 
 public:
@@ -63,9 +62,6 @@ public:
   bool removeNode (Node *node);
   PrivateBaseContext *getPrivateBaseContext ();
   NclDocument *importDocument (string &docLocation);
-  void *parseEntity (const string &entityLocation, NclDocument *document,
-                     void *parent);
-
   void *
   getObject (const string &tableName, const string &key)
   {
