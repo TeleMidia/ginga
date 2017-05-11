@@ -77,15 +77,6 @@ GINGA_BEGIN_DECLS
 # include <espeak/speak_lib.h>
 #endif
 
-#if defined WITH_ISDBT && WITH_ISDBT
-# include <expat.h>
-# if defined WITH_LINUXDVB && WITH_LINUXDVB
-#  include <linux/dvb/version.h>
-#  include <linux/dvb/frontend.h>
-#  include <linux/dvb/dmx.h>
-# endif
-#endif
-
 #if defined WITH_LIBRSVG && WITH_LIBRSVG
 # include <cairo.h>
 # include <librsvg/rsvg.h>
