@@ -64,6 +64,8 @@ Player::Player (const string &mrl)
   this->z = 0;
   this->alpha = 255;
 
+  animator = new PlayerAnimator();
+
   Ginga_Display->registerPlayer(this);
 }
 
@@ -611,11 +613,18 @@ Player::getZ(){
   return this->z;
 }
 
+void 
+Player::setAnimatorProperties(string dur, string name, string value){
+    animator->addProperty(dur,name,value);
+}
+
 void
 Player::redraw(SDL_Renderer* renderer){ 
 
   if(this->status == SLEEPING)
    return;
+
+  animator->update(&this->rect);
 
   if(this->window!=NULL)
       this->window->getBorder(&this->borderColor,&this->borderWidth);
