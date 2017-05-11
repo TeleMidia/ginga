@@ -33,14 +33,12 @@ typedef struct
   int y;
   int w;
   int h;
-  bool enableGfx;
   string parentDocId;
   string nodeId;
   string docId;
   double transparency;
   void *focusManager;
   void *privateBaseContext;
-  ::ginga::player::IPlayerListener *editListener;
 } NclPlayerData;
 
 GINGA_PLAYER_BEGIN
