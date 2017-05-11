@@ -51,92 +51,84 @@ AdapterNCLPlayer::createPlayer ()
     }
 
   player = NULL;
-  if (fileExists (mrl))
+  playerCompName = "Formatter";
+  playerData = ((AdapterPlayerManager *)manager)->getNclPlayerData ();
+
+  childData = new NclPlayerData;
+  childData->x = 0;
+  childData->y = 0;
+  childData->w = 0;
+  childData->h = 0;
+  childData->devClass = playerData->devClass;
+  childData->transparency = playerData->transparency;
+  childData->baseId = playerData->baseId;
+  childData->privateBaseContext = playerData->privateBaseContext;
+  childData->playerId = object->getId ();
+  childData->parentDocId = playerData->docId;
+  childData->nodeId
+    = ((NodeEntity *)(object->getDataObject ()->getDataEntity ()))
+    ->getId ();
+
+  childData->docId = "";
+  childData->focusManager = playerData->focusManager;
+
+  descriptor = object->getDescriptor ();
+  if (descriptor != NULL)
     {
-      playerCompName = "Formatter";
-      playerData = ((AdapterPlayerManager *)manager)->getNclPlayerData ();
+      region = descriptor->getFormatterRegion ();
+    }
 
-      childData = new NclPlayerData;
-      childData->x = 0;
-      childData->y = 0;
-      childData->w = 0;
-      childData->h = 0;
-      childData->devClass = playerData->devClass;
-      childData->transparency = playerData->transparency;
-      childData->baseId = playerData->baseId;
-      childData->privateBaseContext = playerData->privateBaseContext;
-      childData->playerId = object->getId ();
-      childData->parentDocId = playerData->docId;
-      childData->nodeId
-          = ((NodeEntity *)(object->getDataObject ()->getDataEntity ()))
-                ->getId ();
+  if (region != NULL)
+    {
+      ncmRegion = region->getLayoutRegion ();
+      childData->x = (int)(ncmRegion->getAbsoluteLeft ());
+      childData->y = (int)(ncmRegion->getAbsoluteTop ());
+      childData->w = (int)(ncmRegion->getWidthInPixels ());
+      childData->h = (int)(ncmRegion->getHeightInPixels ());
+      childData->devClass = ncmRegion->getDeviceClass ();
 
-      childData->docId = "";
-      childData->focusManager = playerData->focusManager;
-
-      descriptor = object->getDescriptor ();
-      if (descriptor != NULL)
+      property = object->getNCMProperty ("transparency");
+      if (property != NULL)
         {
-          region = descriptor->getFormatterRegion ();
+          value = property->getPropertyValue ();
+        }
+      else
+        {
+          value = descriptor->getParameterValue ("transparency");
         }
 
-      if (region != NULL)
+      if (value != "")
         {
-          ncmRegion = region->getLayoutRegion ();
-          childData->x = (int)(ncmRegion->getAbsoluteLeft ());
-          childData->y = (int)(ncmRegion->getAbsoluteTop ());
-          childData->w = (int)(ncmRegion->getWidthInPixels ());
-          childData->h = (int)(ncmRegion->getHeightInPixels ());
-          childData->devClass = ncmRegion->getDeviceClass ();
+          double transpValue;
+          double parentOpacity = (1 - playerData->transparency);
 
-          property = object->getNCMProperty ("transparency");
-          if (property != NULL)
+          value = cvtPercentual (value, &isPercent);
+          transpValue = xstrtod (value);
+          if (isPercent)
             {
-              value = property->getPropertyValue ();
-            }
-          else
-            {
-              value = descriptor->getParameterValue ("transparency");
+              transpValue = transpValue / 100;
             }
 
-          if (value != "")
-            {
-              double transpValue;
-              double parentOpacity = (1 - playerData->transparency);
+          transpValue
+            = (1 - (parentOpacity - (parentOpacity * transpValue)));
 
-              value = cvtPercentual (value, &isPercent);
-              transpValue = xstrtod (value);
-              if (isPercent)
-                {
-                  transpValue = transpValue / 100;
-                }
-
-              transpValue
-                  = (1 - (parentOpacity - (parentOpacity * transpValue)));
-
-              childData->transparency = transpValue;
-            }
-        }
-
-      player = (INCLPlayer *)(new FormatterMediator ());
-
-      if (((INCLPlayer *)player)->setCurrentDocument (mrl) == NULL)
-        {
-          clog << "AdapterNCLPlayer::createPlayer Warning! ";
-          clog << "can't set '" << mrl << "' as document";
-          clog << endl;
-        }
-
-      if (region != NULL)
-        {
-          ((INCLPlayer *)player)
-              ->setParentLayout (region->getLayoutManager ());
+          childData->transparency = transpValue;
         }
     }
-  else
+
+  player = (INCLPlayer *)(new FormatterMediator ());
+
+  if (((INCLPlayer *)player)->setCurrentDocument (mrl) == NULL)
     {
       clog << "AdapterNCLPlayer::createPlayer Warning! ";
-      clog << "file not found: '" << mrl << "'" << endl;
+      clog << "can't set '" << mrl << "' as document";
+      clog << endl;
+    }
+
+  if (region != NULL)
+    {
+      ((INCLPlayer *)player)
+        ->setParentLayout (region->getLayoutManager ());
     }
 
   AdapterApplicationPlayer::createPlayer ();
