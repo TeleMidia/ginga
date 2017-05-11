@@ -19,42 +19,37 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define DOCUMENT_PARSER_H
 
 #include "ginga.h"
-#include "XMLParsing.h"
+
+#include "ncl/NclDocument.h"
+using namespace ::ginga::ncl;
 
 GINGA_NCLCONV_BEGIN
 
-class DocumentParser
+class DocumentParser : public ErrorHandler
 {
 protected:
-  DOMDocument *document;        // current document
+  NclDocument *ncl;             // NCL document
   string path;                  // document's absolute path
   string dirname;               // directory part of document's path
 
-  // FIXME: Remove this.
-  map<string, void *> *genericTable;
+  virtual void initialize () = 0;
+  virtual void *parseRootElement (DOMElement *rootElement) = 0;
 
 public:
   DocumentParser ();
   virtual ~DocumentParser ();
 
-protected:
-  virtual void initialize () = 0;
-
-public:
-  void *parse (const string &uri);
-  void *parse (DOMElement *rootElement, const string &uri);
-
-protected:
-  virtual void *parseRootElement (DOMElement *rootElement) = 0;
-
-public:
   string getPath ();
   string getDirName ();
-  DOMDocument *getDocument ();
+  void setNclDocument (NclDocument *);
+  NclDocument *getNclDocument ();
 
-  void addObject (const string &tableName, const string &key, void *value);
-  void *getObject (const string &tableName, const string &key);
-  bool importDocument (DocumentParser *parser, const string &docLocation);
+  void warning (const SAXParseException &);
+  void error (const SAXParseException &);
+  void fatalError (const SAXParseException &);
+  void resetErrors () {};
+
+  NclDocument *parse (const string &);
 };
 
 GINGA_NCLCONV_END

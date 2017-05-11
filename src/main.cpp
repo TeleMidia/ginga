@@ -21,11 +21,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 # include "cef_app.h"
 #endif
 
+#include "formatter/FormatterMediator.h"
+using namespace ::ginga::formatter;
+
 #include "mb/Display.h"
 using namespace ::ginga::mb;
-
-#include "lssm/PresentationEngineManager.h"
-using namespace ::ginga::lssm;
 
 /* Options: */
 #define OPTION_LINE "FILE"
@@ -109,10 +109,19 @@ _error (gboolean try_help, const gchar *format, ...)
     g_fprintf (stderr, "Try '%s --help' for more information.\n", me);
 }
 
+/* Runs the formatter loop.  */
+static gpointer
+formatter_loop (gpointer data)
+{
+  FormatterMediator *formatter = (FormatterMediator *) data;
+  formatter->play ();
+  return NULL;
+}
+
 int
 main (int argc, char **argv)
 {
-  PresentationEngineManager *pem;
+  FormatterMediator *formatter;
 
 #if defined WITH_CEF && WITH_CEF
   CefMainArgs args (argc, argv);
@@ -185,11 +194,11 @@ main (int argc, char **argv)
                                            opt_fullscreen, opt_fps);
   g_assert_nonnull (_Ginga_Display);
 
-  pem = new PresentationEngineManager (string (argv[1]));
-  g_assert_nonnull (pem);
+  formatter = new FormatterMediator ();
+  formatter->setCurrentDocument (string (argv[1]));
 
-  // Start presentation thread.
-  pem->run ();
+  // Start formatter loop.
+  g_thread_new ("formatter", formatter_loop, formatter);
 
   // Start render loop.
   _Ginga_Display->renderLoop ();
@@ -197,7 +206,7 @@ main (int argc, char **argv)
   delete Ginga_Display;
 
   // FIXME: This causes the program to crash!
-  // delete pem;
+  // delete formatter;
 
 #if defined WITH_CEF && WITH_CEF
   CefShutdown ();

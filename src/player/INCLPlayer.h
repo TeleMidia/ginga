@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _INCLPlayer_H_
 #define _INCLPlayer_H_
 
-#include "system/ITimeBaseProvider.h"
-using namespace ::ginga::system;
-
 #include "IPlayer.h"
 #include "IPlayerListener.h"
 
@@ -51,8 +48,6 @@ public:
   virtual ~INCLPlayer (){};
 
   virtual void setMrl (const string &mrl, bool visible = true) = 0;
-  virtual void setTimeBaseProvider (ITimeBaseProvider *timeBaseProvider)
-      = 0;
 
   virtual void setParentLayout (void *layout) = 0;
   virtual void *setCurrentDocument (const string &fName) = 0;

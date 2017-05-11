@@ -48,8 +48,6 @@ using namespace ::ginga::ncl;
 
 #include "NclConnectorsConverter.h"
 
-XERCES_CPP_NAMESPACE_USE
-
 GINGA_NCLCONV_BEGIN
 
 class NclLinkingConverter : public NclLinkingParser

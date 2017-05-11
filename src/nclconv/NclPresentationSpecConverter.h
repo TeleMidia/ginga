@@ -53,8 +53,6 @@ using namespace ::ginga::ncl;
 #include "NclImportConverter.h"
 #include "NclPresentationControlConverter.h"
 
-XERCES_CPP_NAMESPACE_USE
-
 GINGA_NCLCONV_BEGIN
 
 class NclPresentationSpecConverter

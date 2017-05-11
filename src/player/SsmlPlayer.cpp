@@ -54,13 +54,6 @@ SsmlPlayer::setFile (const string &mrl)
 {
   clog << "SsmlPlayer::setFile!! " << endl;
 
-  if (mrl == "" || !fileExists (mrl))
-    {
-      clog << "SsmlPlayer::setFile Warning! File not found: '";
-      clog << mrl << "'" << endl;
-      return;
-    }
-
   if (mrl.length () > 5)
     {
       string fileType;
