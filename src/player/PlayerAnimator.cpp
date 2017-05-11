@@ -83,137 +83,92 @@ PlayerAnimator::update(SDL_Rect* rect){
    }
 }
 
+gdouble 
+PlayerAnimator::cvtTimeIntToDouble(guint32 value){
+  return ((gdouble)value)/1000;
+}
+
+gdouble 
+PlayerAnimator::getAnimationVelocity(gdouble initPos, gdouble finalPos, gdouble duration){
+  if(duration <= 0)
+    return 0;
+
+  gdouble distance = finalPos - initPos;
+  if(distance < 0)distance*=-1;
+  
+  return distance/duration;   
+}
+
+bool
+PlayerAnimator::calculeVelocity(gint32 * value, ANIM_PROPERTY* pr){
+   pr->velocity = getAnimationVelocity((gdouble)*value, pr->targetValue, pr->duration);
+   pr->curValue = (gdouble)*value;
+   if((guint32)pr->velocity == 0){
+      *value = (guint32)pr->targetValue; 
+      this->properties = g_list_remove(this->properties, pr);
+      free(pr);
+      return false;
+   }
+   return true;
+}
+
+void
+PlayerAnimator::calculePosition(gint32 * value, ANIM_PROPERTY* pr, gint32 dir){ //S = So + vt
+     pr->curValue = pr->curValue + (dir * (pr->velocity * (1.0/(gdouble)Ginga_Display->getFps())));
+     *value = (guint32)pr->curValue; 
+     if( (dir > 0 && *value >= pr->targetValue) || (dir < 0 && *value <= pr->targetValue) ){
+        *value = (guint32)pr->targetValue; 
+        this->properties = g_list_remove(this->properties, pr);
+        free(pr);
+     }
+}
+
 void
 PlayerAnimator::updatePosition(SDL_Rect* rect, ANIM_PROPERTY* pr){
     if(pr == NULL || rect == NULL)
       return;
   
    if(pr->name == "top"){ 
-       if(pr->velocity <=0){
-            pr->velocity = getAnimationVelocity((gdouble)rect->y, pr->targetValue, pr->duration);
-            pr->curValue = (gdouble)rect->y;
-       }
-       if(pr->velocity ==0){
-          rect->y = (guint32)pr->targetValue; 
-          this->properties = g_list_remove(this->properties, pr);
-          free(pr);
-          return;
-       }
-       else if(rect->y < pr->targetValue){ 
-          pr->curValue = pr->curValue + (pr->velocity * (1.0/(gdouble)Ginga_Display->getFps()));
-          rect->y = (guint32)pr->curValue; 
-          if(rect->y >= pr->targetValue){
-               rect->y = (guint32)pr->targetValue; 
-               this->properties = g_list_remove(this->properties, pr);
-               free(pr);
-          }
-       }
-       else if(rect->y > pr->targetValue){
-          pr->curValue = pr->curValue - (pr->velocity * (1.0/(gdouble)Ginga_Display->getFps()));
-          rect->y = (guint32)pr->curValue; 
-          if(rect->y <= pr->targetValue){
-               rect->y = (guint32)pr->targetValue; 
-               this->properties = g_list_remove(this->properties, pr);
-               free(pr);
-          }
-       }
+       if(pr->velocity <=0)
+           if(!calculeVelocity(&rect->y,pr))
+              return;
+
+       if(rect->y < pr->targetValue)
+          calculePosition(&rect->y,pr,1);
+       else if(rect->y > pr->targetValue)
+          calculePosition(&rect->y,pr,-1);
    }
    else if(pr->name == "left"){
-      
-       if(pr->velocity <=0){
-            pr->velocity = getAnimationVelocity((gdouble)rect->x, pr->targetValue, pr->duration);
-            pr->curValue = (gdouble)rect->x;
-       }
-       if(pr->velocity ==0){
-          rect->x = (guint32)pr->targetValue; 
-          this->properties = g_list_remove(this->properties, pr);
-          free(pr);
-          return;
-       }
-       else if(rect->x < pr->targetValue){ //S = So + vt
-          pr->curValue = pr->curValue + (pr->velocity * (1.0/(gdouble)Ginga_Display->getFps()));
-          rect->x = (guint32)pr->curValue; 
-          if(rect->x >= pr->targetValue){
-               rect->x = (guint32)pr->targetValue; 
-               this->properties = g_list_remove(this->properties, pr);
-               free(pr);
-          }
-       }
-       else if(rect->x > pr->targetValue){
-          pr->curValue = pr->curValue - (pr->velocity * (1.0/(gdouble)Ginga_Display->getFps()));
-          rect->x = (guint32)pr->curValue; 
-          if(rect->x <= pr->targetValue){
-               rect->x = (guint32)pr->targetValue; 
-               this->properties = g_list_remove(this->properties, pr);
-               free(pr);
-          }
-       }
+      if(pr->velocity <=0)
+           if(!calculeVelocity(&rect->x,pr))
+              return;
+
+       if(rect->x < pr->targetValue)
+          calculePosition(&rect->x,pr,1);
+       else if(rect->x > pr->targetValue)
+          calculePosition(&rect->x,pr,-1);
    }
    else if(pr->name == "width"){
-      
-       if(pr->velocity <=0){
-            pr->velocity = getAnimationVelocity((gdouble)rect->w, pr->targetValue, pr->duration);
-            pr->curValue = (gdouble)rect->w;
-       }
-       if(pr->velocity ==0){
-          rect->w = (guint32)pr->targetValue; 
-          this->properties = g_list_remove(this->properties, pr);
-          free(pr);
-          return;
-       }
-       else if(rect->w < pr->targetValue){ //S = So + vt
-          pr->curValue = pr->curValue + (pr->velocity * (1.0/(gdouble)Ginga_Display->getFps()));
-          rect->w = (guint32)pr->curValue; 
-          if(rect->w >= pr->targetValue){
-               rect->w = (guint32)pr->targetValue; 
-               this->properties = g_list_remove(this->properties, pr);
-               free(pr);
-          }
-       }
-       else if(rect->w > pr->targetValue){
-          pr->curValue = pr->curValue - (pr->velocity * (1.0/(gdouble)Ginga_Display->getFps()));
-          rect->w = (guint32)pr->curValue; 
-          if(rect->w <= pr->targetValue){
-               rect->w = (guint32)pr->targetValue; 
-               this->properties = g_list_remove(this->properties, pr);
-               free(pr);
-          }
-       }
+      if(pr->velocity <=0)
+           if(!calculeVelocity(&rect->w,pr))
+              return;
+
+       if(rect->w < pr->targetValue)
+          calculePosition(&rect->w,pr,1);
+       else if(rect->w > pr->targetValue)
+          calculePosition(&rect->w,pr,-1);
    }
    else if(pr->name == "height"){
-      
-       if(pr->velocity <=0){
-            pr->velocity = getAnimationVelocity((gdouble)rect->h, pr->targetValue, pr->duration);
-            pr->curValue = (gdouble)rect->h;
-       }
-       if(pr->velocity ==0){
-          rect->h = (guint32)pr->targetValue; 
-          this->properties = g_list_remove(this->properties, pr);
-          free(pr);
-          return;
-       }
-       else if(rect->h < pr->targetValue){ //S = So + vt
-          pr->curValue = pr->curValue + (pr->velocity * (1.0/(gdouble)Ginga_Display->getFps()));
-          rect->h = (guint32)pr->curValue; 
-          if(rect->h >= pr->targetValue){
-               rect->h = (guint32)pr->targetValue; 
-               this->properties = g_list_remove(this->properties, pr);
-               free(pr);
-          }
-       }
-       else if(rect->h > pr->targetValue){
-          pr->curValue = pr->curValue - (pr->velocity * (1.0/(gdouble)Ginga_Display->getFps()));
-          rect->h = (guint32)pr->curValue; 
-          if(rect->h <= pr->targetValue){
-               rect->h = (guint32)pr->targetValue; 
-               this->properties = g_list_remove(this->properties, pr);
-               free(pr);
-          }
-       }
+      if(pr->velocity <=0)
+           if(!calculeVelocity(&rect->h,pr))
+              return;
+
+       if(rect->h < pr->targetValue)
+          calculePosition(&rect->h,pr,1);
+       else if(rect->h > pr->targetValue)
+          calculePosition(&rect->h,pr,-1);
    }
    
-  
-
  //   g_debug("\n\n inside::: %f %s %f \n\n",pr->duration,pr->name.c_str(),pr->targetValue);
     
 }
