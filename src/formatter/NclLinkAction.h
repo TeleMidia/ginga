@@ -26,9 +26,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
-#include "system/SystemCompat.h"
-using namespace ::ginga::system;
-
 GINGA_FORMATTER_BEGIN
 
 class NclLinkAction : public Thread

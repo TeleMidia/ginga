@@ -15,10 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef __THREAD_H__
-#define __THREAD_H__
-
-#include "SystemCompat.h"
+#ifndef _THREAD_H_
+#define _THREAD_H_
 
 GINGA_SYSTEM_BEGIN
 
@@ -79,4 +77,4 @@ public:
 
 GINGA_SYSTEM_END
 
-#endif //__THREAD_H__
+#endif // _THREAD_H_

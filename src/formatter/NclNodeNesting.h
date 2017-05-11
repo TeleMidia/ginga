@@ -24,9 +24,6 @@ using namespace ::ginga::system;
 #include "ncl/Node.h"
 using namespace ::ginga::ncl;
 
-#include "system/SystemCompat.h"
-using namespace ::ginga::system;
-
 GINGA_FORMATTER_BEGIN
 
 class NclNodeNesting

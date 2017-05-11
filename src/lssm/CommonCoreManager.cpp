@@ -43,9 +43,6 @@ using namespace ::ginga::mb;
 #include "player/ImagePlayer.h"
 using namespace ::ginga::player;
 
-#include "system/SystemCompat.h"
-using namespace ::ginga::system;
-
 #include "util/functions.h"
 using namespace ::ginga::util;
 
