@@ -34,35 +34,39 @@ PlayerAnimator::~PlayerAnimator (){
 void
 PlayerAnimator::addProperty(string dur, string name, string value){
     
-   GList* l =  this->properties;           
-   while (l != NULL){
-     GList *next = l->next;
-     ANIM_PROPERTY* pr = (ANIM_PROPERTY*)l->data;
-     if(!pr)
-     this->properties = g_list_remove_link (this->properties, l);
-    else {
-       if(pr->name == name){
-           pr->velocity = 0;
-           pr->duration = xstrtod(dur);
-           if(isPercentualValue (value))
-             pr->targetValue = getPercentualValue (value);
-           else 
-             pr->targetValue = xstrtod (value);
-           return;  
-       }
-    }      
-    l = next;
-   }
+  // GList* l =  this->properties;           
+  // while (l != NULL)
+  //   {
+  //     GList *next = l->next;
+  //     ANIM_PROPERTY* pr = (ANIM_PROPERTY*)l->data;
+  //     if(!pr)
+  //       {
+  //         this->properties = g_list_remove_link (this->properties, l);
+  //       }
+  //     else
+  //       {
+  //         if(pr->name == name){
+  //           pr->velocity = 0;
+  //           pr->duration = xstrtod(dur);
+  //           if(isPercentualValue (value))
+  //             pr->targetValue = getPercentualValue (value);
+  //           else
+  //             pr->targetValue = xstrtod (value);
+  //           return;
+  //         }
+  //       }
+  //     l = next;
+  //   }
 
-  ANIM_PROPERTY* pr = (ANIM_PROPERTY*)malloc(sizeof(ANIM_PROPERTY));
+  ANIM_PROPERTY* pr = new ANIM_PROPERTY;
   pr->name = name;
   pr->duration = xstrtod(dur);
   pr->curValue = 0;
   pr->velocity = 0;
   if(isPercentualValue (value))
-     pr->targetValue = getPercentualValue (value);
-  else 
-     pr->targetValue = xstrtod (value);
+    pr->targetValue = getPercentualValue (value);
+  else
+    pr->targetValue = xstrtod (value);
 
   this->properties = g_list_insert(this->properties, pr,-1);
 }
@@ -106,7 +110,7 @@ PlayerAnimator::calculeVelocity(gint32 * value, ANIM_PROPERTY* pr){
    if((guint32)pr->velocity == 0){
       *value = (guint32)pr->targetValue; 
       this->properties = g_list_remove(this->properties, pr);
-      free(pr);
+      delete pr;
       return false;
    }
    return true;

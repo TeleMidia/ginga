@@ -214,21 +214,6 @@ isPercentualValue (const string &value)
     return false;
 }
 
-bool
-isDirectory (const char *path)
-{
-  struct stat f_stat;
-  stat (path, &f_stat);
-
-  if (f_stat.st_mode & S_IFREG)
-    return false;
-
-  if (f_stat.st_mode & S_IFDIR)
-    return true;
-
-  return false;
-}
-
 // factor is not in use. It will be removed.
 double
 getNextStepValue (double initValue,

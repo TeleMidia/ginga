@@ -311,7 +311,7 @@ Display::~Display ()
  
 }
 
-gint32 
+double
 Display::getFps(){
   return this->fps;
 }
