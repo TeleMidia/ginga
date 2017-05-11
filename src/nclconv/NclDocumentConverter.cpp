@@ -171,7 +171,7 @@ NclDocumentConverter::getPrivateBaseContext ()
 NclDocument *
 NclDocumentConverter::importDocument (string &path)
 {
-  if (!xpathisabs (path))
+  if (!xpathisuri (path) && !xpathisabs (path))
     path = xpathbuildabs (this->getDirName (), path);
 
   return (NclDocument *)(privateBaseContext

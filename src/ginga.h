@@ -387,6 +387,14 @@ xpathisabs (const string &path)
   return g_path_is_absolute (path.c_str ());
 }
 
+// Returns true if path is an URI.
+static inline bool
+xpathisuri (const string &path)
+{
+  gchar * dup  = g_uri_parse_scheme (path.c_str ());
+  return (dup == NULL) ? false : (g_free (dup), true);
+}
+
 // Makes path absolute.
 static inline string
 xpathmakeabs (string path)
