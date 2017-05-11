@@ -22,8 +22,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
-
 #include "IPlayer.h"
+#include "PlayerAnimator.h"
 
 #ifndef HAVE_CLOCKTIME
 #define HAVE_CLOCKTIME 1
@@ -75,6 +75,7 @@ protected:
   string mrl;
   SDLWindow *window;
   SDLWindow *outputWindow;
+  PlayerAnimator* animator;
   set<IPlayer *> referredPlayers;
   IPlayer *timeBasePlayer;
   bool presented;
@@ -113,6 +114,7 @@ public:
   virtual void addListener (IPlayerListener *listener);
   void removeListener (IPlayerListener *listener);
   gint getZ();
+  void setAnimatorProperties(string dur, string name, string value);
 
 private:
   void performLockedListenersRequest ();

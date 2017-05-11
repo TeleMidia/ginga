@@ -72,8 +72,6 @@ using namespace ::ginga::ncl;
 
 #include "IFormatterSchedulerListener.h"
 
-#include "AnimationController.h"
-
 GINGA_FORMATTER_BEGIN
 
 class FormatterScheduler : public INclLinkActionListener,

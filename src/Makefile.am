@@ -68,7 +68,6 @@ src+= formatter/AdapterImagePlayer.cpp
 src+= formatter/AdapterLuaPlayer.cpp
 src+= formatter/AdapterNCLPlayer.cpp
 src+= formatter/AdapterPlayerManager.cpp
-src+= formatter/AnimationController.cpp
 src+= formatter/FormatterBaseDevice.cpp
 src+= formatter/FormatterConverter.cpp
 src+= formatter/FormatterFocusManager.cpp
@@ -214,6 +213,7 @@ src+= nclconv/NclTransitionParser.cpp
 src+= player/ImagePlayer.cpp
 src+= player/LuaPlayer.cpp
 src+= player/Player.cpp
+src+= player/PlayerAnimator.cpp
 src+= system/Thread.cpp
 src+= util/functions.cpp
 

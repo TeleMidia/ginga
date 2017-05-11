@@ -33,6 +33,10 @@ string cvtPercentual (const string &value, bool *isPercentual);
 bool isPercentualValue (const string &value);
 double getPercentualValue (const string &value);
 
+gdouble cvtTimeIntToDouble(guint32 value);
+
+gdouble getAnimationVelocity(gdouble initPos, gdouble finalPos, gdouble duration);
+
 vector<string> *
 split (const string &str, const string &token, const string &pos_delimiter="");
 

@@ -596,6 +596,7 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
 
           if (anim != NULL)
             {
+              //dragon fang
               string durVal, byVal;
 
               durVal = anim->getDuration ();
@@ -612,12 +613,11 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
                       byVal, (NclAttributionEvent *)event));
                 }
 
-              AnimationController::startAnimation (
-                  executionObject, playerManager, player,
-                  (NclAttributionEvent *)event, propValue, anim);
-
               anim->setDuration (durVal);
               anim->setBy (byVal);
+           
+              ((Player*)player->getPlayer())->setAnimatorProperties(durVal,((NclAttributionEvent *)
+                                               event)->getAnchor ()->getPropertyName (),propValue);                                 
             }
           else if (player != NULL && player->hasPrepared ())
             {
