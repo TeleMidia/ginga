@@ -39,7 +39,7 @@ typedef struct
   string docId;
   double transparency;
   void *focusManager;
-  void *privateBaseManager;
+  void *privateBaseContext;
   ::ginga::player::IPlayerListener *editListener;
 } NclPlayerData;
 

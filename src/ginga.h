@@ -371,6 +371,66 @@ xstrreplaceall (string &str, const string &find_what,
 
 // Auxiliary system functions.
 
+// Returns the basename of path.
+static inline string
+xpathbasename (string path)
+{
+  gchar *dir = g_path_get_basename (path.c_str ());
+  path.assign (dir);
+  g_free (dir);
+  return path;
+}
+
+// Returns the dirname of path.
+static inline string
+xpathdirname (string path)
+{
+  gchar *dir = g_path_get_dirname (path.c_str ());
+  path.assign (dir);
+  g_free (dir);
+  return path;
+}
+
+// Returns true if path is absolute.
+static inline bool
+xpathisabs (const string &path)
+{
+  return g_path_is_absolute (path.c_str ());
+}
+
+// Makes path absolute.
+static inline string
+xpathmakeabs (string path)
+{
+  if (!xpathisabs (path))
+    {
+      gchar *cwd = g_get_current_dir ();
+      gchar *dup = g_build_filename (cwd, path.c_str (), NULL);
+      g_free (cwd);
+      path.assign (dup);
+      g_free (dup);
+    }
+  return path;
+}
+
+// Builds a path.
+static inline string
+xpathbuild (const string &a, const string &b)
+{
+  string path;
+  gchar *dup = g_build_filename (a.c_str (), b.c_str (), NULL);
+  path.assign (dup);
+  g_free (dup);
+  return path;
+}
+
+// Builds an absolute path.
+static inline string
+xpathbuildabs (const string &a, const string &b)
+{
+  return xpathmakeabs (xpathbuild (a, b));
+}
+
 // Returns the running time in microseconds.
 static inline gint64
 xruntime ()

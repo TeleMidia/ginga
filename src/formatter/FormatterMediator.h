@@ -91,7 +91,7 @@ using namespace ::ginga::ncl;
 #include "FormatterConverter.h"
 
 #include "FormatterScheduler.h"
-#include "PrivateBaseManager.h"
+#include "PrivateBaseContext.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -125,7 +125,7 @@ private:
   string currentFile;
   NclDocument *currentDocument;
 
-  PrivateBaseManager *privateBaseManager;
+  PrivateBaseContext *privateBaseContext;
   map<string, NclFormatterEvent *> documentEvents;
   map<string, vector<NclFormatterEvent *> *> documentEntryEvents;
   map<Port *, NclFormatterEvent *> portsToEntryEvents;

@@ -204,7 +204,7 @@ FormatterMediator::FormatterMediator () : Player ("")
   data->x = 0;
   data->y = 0;
   Ginga_Display->getSize (&data->w, &data->h);
-  data->privateBaseManager = new PrivateBaseManager ();
+  data->privateBaseContext = new PrivateBaseContext ();
   this->data = data;
 
   this->currentFile = "";
@@ -252,9 +252,9 @@ FormatterMediator::FormatterMediator () : Player ("")
 
   entryEventListener = NULL;
 
-  privateBaseManager = (PrivateBaseManager *)(data->privateBaseManager);
+  privateBaseContext = (PrivateBaseContext *)(data->privateBaseContext);
 
-  privateBaseManager->createPrivateBase (data->baseId);
+  privateBaseContext->createPrivateBase (data->baseId);
   ((FormatterFocusManager *)(data->focusManager))
       ->setMotionBoundaries (data->x, data->y, data->w, data->h);
 
@@ -420,48 +420,12 @@ FormatterMediator::setParentLayout (void *parentLayout)
 }
 
 void *
-FormatterMediator::setCurrentDocument (const string &fName)
+FormatterMediator::setCurrentDocument (const string &file)
 {
-  vector<string> *uris;
-  string baseUri;
-
-  if (currentDocument != NULL)
-    {
-      clog << "FormatterMediator::setCurrentDocument currentDocument ";
-      clog << "!= NULL";
-      clog << endl;
-      return NULL;
-    }
-
-  if (SystemCompat::isAbsolutePath (fName))
-    {
-      currentFile = fName;
-    }
-  else
-    {
-      currentFile = SystemCompat::getUserCurrentPath () + fName;
-    }
-
+  g_assert_null (currentDocument);
+  this->currentFile = xpathmakeabs (file);
   currentDocument = (NclDocument *) addDocument (currentFile);
-
-  if (currentDocument != NULL)
-    {
-      uris = new vector<string>;
-      baseUri = getActiveUris (uris);
-
-      std::string::size_type pos
-          = currentFile.rfind (SystemCompat::getIUriD ());
-      if (pos != string::npos)
-        {
-          baseUri = currentFile.substr (0, pos + 1);
-        }
-      else
-        {
-          baseUri = "";
-        }
-
-      compileDocument (currentDocument->getId ());
-    }
+  g_assert_nonnull (currentDocument);
 
   return currentDocument;
 }
@@ -471,8 +435,7 @@ FormatterMediator::addDocument (const string &docLocation)
 {
   NclDocument *addedDoc = NULL;
 
-  addedDoc = privateBaseManager->addDocument (data->baseId, docLocation,
-                                              deviceLayout);
+  addedDoc = privateBaseContext->addDocument (docLocation, deviceLayout);
   g_assert_nonnull (addedDoc);
 
   data->docId = addedDoc->getId ();
@@ -491,8 +454,7 @@ FormatterMediator::removeDocument (const string &documentId)
       stopDocument (documentId);
     }
 
-  document
-    = privateBaseManager->removeDocument (data->baseId, documentId);
+  document = privateBaseContext->removeDocument (documentId);
   g_assert_nonnull (document);
   delete document;
   return true;
@@ -508,8 +470,7 @@ FormatterMediator::getDocumentContext (const string &documentId)
       return NULL;
     }
 
-  nclDocument
-    = privateBaseManager->getDocument (data->baseId, documentId);
+  nclDocument = privateBaseContext->getDocument (documentId);
   g_assert_nonnull (nclDocument);
   return nclDocument->getBody ();
 }
@@ -649,8 +610,8 @@ FormatterMediator::processDocument (const string &documentId, const string &inte
       return NULL;
     }
 
-  contextPerspective = new NclNodeNesting (
-      privateBaseManager->getPrivateBase (data->baseId));
+  contextPerspective = new NclNodeNesting
+    (privateBaseContext->getPrivateBase ());
 
   contextPerspective->insertAnchorNode (context);
 
@@ -828,8 +789,7 @@ FormatterMediator::prepareDocument (const string &documentId)
       return false;
     }
 
-  docLocation = privateBaseManager->getDocumentLocation (data->baseId,
-                                                         documentId);
+  docLocation = privateBaseContext->getDocumentLocation (documentId);
   if (docLocation == "")
       return false;
   return true;

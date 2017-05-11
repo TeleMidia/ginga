@@ -127,11 +127,10 @@ AdapterApplicationPlayer::prepare (NclExecutionObject *object,
               this->mrl = ((ReferenceContent *)content)
                               ->getCompleteReferenceUrl ();
 
-              // Update the url with the iUriD separation path
-              // FIXME: This code is here and in FomatterPlayerAdapter.cpp
-              xstrreplaceall ( this->mrl,
-                               SystemCompat::getFUriD (),
-                               SystemCompat::getIUriD () );
+              // FIXME: What is this?
+              // xstrreplaceall ( this->mrl,
+              //                  SystemCompat::getFUriD (),
+              //                  SystemCompat::getIUriD () );
             }
           else
             {

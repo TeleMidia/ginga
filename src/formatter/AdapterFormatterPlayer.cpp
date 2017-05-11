@@ -958,7 +958,7 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
           this->mrl
               = ((ReferenceContent *)content)->getCompleteReferenceUrl ();
 
-          this->mrl = SystemCompat::updatePath (this->mrl);
+          // this->mrl = SystemCompat::updatePath (this->mrl);
         }
       else
         {

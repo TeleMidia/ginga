@@ -289,15 +289,10 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
       src = XMLString::transcode (
           parentElement->getAttribute (XMLString::transcode ("focusSrc")));
 
-      if (getDocumentParser ()->isAbsolutePath (src))
-        {
-          focusDecoration->setFocusSrc (src);
-        }
-      else
-        {
-          focusDecoration->setFocusSrc (
-              getDocumentParser ()->getDocumentPath () + src);
-        }
+      if (!xpathisabs (src))
+        src = xpathbuildabs (getDocumentParser ()->getDocumentPath (), src);
+
+      focusDecoration->setFocusSrc (src);
     }
 
   if (parentElement->hasAttribute (
@@ -336,23 +331,20 @@ NclPresentationSpecConverter::createDescriptor (DOMElement *parentElement,
       src = XMLString::transcode (parentElement->getAttribute (
           XMLString::transcode ("focusSelSrc")));
 
-      if (getDocumentParser ()->isAbsolutePath (src))
-        {
-          focusDecoration->setFocusSelSrc (src);
-        }
-      else
-        {
-          focusDecoration->setFocusSelSrc (
-              getDocumentParser ()->getDocumentPath () + src);
-        }
+      if (!xpathisabs (src))
+        src = xpathbuildabs (getDocumentParser ()->getDocumentPath (), src);
+
+      focusDecoration->setFocusSelSrc (src);
     }
 
   if (parentElement->hasAttribute (XMLString::transcode ("selBorderColor")))
     {
       color = new SDL_Color ();
-      ginga_color_input_to_sdl_color( XMLString::transcode (parentElement->getAttribute (
-          XMLString::transcode ("selBorderColor"))) ,color);
-       focusDecoration->setSelBorderColor ( color );      
+      ginga_color_input_to_sdl_color (XMLString::transcode
+                                      (parentElement->getAttribute
+                                       (XMLString::transcode
+                                        ("selBorderColor"))) ,color);
+      focusDecoration->setSelBorderColor ( color );
     }
 
   if (parentElement->hasAttribute (XMLString::transcode ("transIn")))

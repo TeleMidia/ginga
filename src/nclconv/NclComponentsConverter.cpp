@@ -413,23 +413,15 @@ NclComponentsConverter::createMedia (DOMElement *parentElement,
       string src = XMLString::transcode (
           parentElement->getAttribute (XMLString::transcode ("src")));
 
-      if (src != "")
-        {
-          if (getDocumentParser ()->isAbsolutePath (src))
-            {
-              ((ContentNode *)node)
-                  ->setContent (new AbsoluteReferenceContent (src));
-            }
-          else
-            {
-              ((ContentNode *)node)
-                  ->setContent (new AbsoluteReferenceContent (
-                      getDocumentParser ()->getDocumentPath () +
-                      src));
-            }
-        }
-    }
+      if (unlikely (src == ""))
+        syntax_error ("media '%s': missing src", id.c_str ());
 
+      if (!xpathisabs (src))
+        src = xpathbuildabs (getDocumentParser ()->getDocumentPath (), src);
+
+      ((ContentNode *)node)->setContent
+        (new AbsoluteReferenceContent (src));
+    }
 
   if (parentElement->hasAttribute (XMLString::transcode ("descriptor")))
     {
