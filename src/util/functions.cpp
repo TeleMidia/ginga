@@ -231,48 +231,6 @@ isPercentualValue (const string &value)
 }
 
 bool
-fileExists (const string &fileName)
-{
-  if (fileName == "")
-    {
-      clog << "fileExists is false: null entry" << endl;
-      return false;
-    }
-
-  try
-    {
-      if (fileName.find ("<") != std::string::npos)
-        {
-          return true;
-        }
-
-#if defined(_MSC_VER)
-      if (_access (fileName.c_str (), 0) == 0)
-        {
-          return true;
-        }
-#else
-      if (access (fileName.c_str (), (int)F_OK) == 0)
-        {
-          return true;
-        }
-#endif
-
-      clog << "fileExists is false: can't access '";
-      clog << fileName << "'" << endl;
-      return false;
-    }
-  catch (...)
-    {
-      clog << "util::functions fileExits exception" << endl;
-    }
-
-  clog << "fileExists is false: exception for '";
-  clog << fileName << "'" << endl;
-  return false;
-}
-
-bool
 isDirectory (const char *path)
 {
   struct stat f_stat;

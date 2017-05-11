@@ -40,10 +40,6 @@ gdouble getAnimationVelocity(gdouble initPos, gdouble finalPos, gdouble duration
 vector<string> *
 split (const string &str, const string &token, const string &pos_delimiter="");
 
-// filesystem
-bool fileExists (const string &filename);
-bool isDirectory (const char *path);
-
 // misc
 double
 getNextStepValue (double currentStepValue, double value, int factor,
