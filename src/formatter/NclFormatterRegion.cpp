@@ -218,26 +218,6 @@ NclFormatterRegion::initializeNCMRegion ()
   if (originalRegion != NULL)
     {
       ncmRegion = originalRegion->cloneRegion ();
-
-      /*if (originalRegion->isLeftPercentual() ||
-                      originalRegion->isTopPercentual() ||
-                      originalRegion->isWidthPercentual() ||
-                      originalRegion->isHeightPercentual()) {
-              left   = originalRegion->getAbsoluteLeft();
-              top    = originalRegion->getAbsoluteTop();
-              width  = originalRegion->getWidthInPixels();
-              height = originalRegion->getHeightInPixels();
-
-              originalRegion->resetLeft();
-              originalRegion->resetTop();
-              originalRegion->resetWidth();
-              originalRegion->resetHeight();
-
-              originalRegion->setLeft(left, false);
-              originalRegion->setTop(top, false);
-              originalRegion->setWidth(width, false);
-              originalRegion->setHeight(height, false);
-      }*/
     }
   else
     {

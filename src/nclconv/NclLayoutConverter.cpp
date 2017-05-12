@@ -150,7 +150,7 @@ NclLayoutConverter::createRegion (DOMElement *parentElement,
         {
           if (xstrispercent (attribute))
             {
-              percentValue = getPercentualValue (attribute);
+              percentValue = getPercentValue (attribute);
               ncmRegion->setLeft (percentValue, true);
             }
           else
@@ -170,7 +170,7 @@ NclLayoutConverter::createRegion (DOMElement *parentElement,
 
       if (xstrispercent (attribute))
         {
-          percentValue = getPercentualValue (attribute);
+          percentValue = getPercentValue (attribute);
           ncmRegion->setRight (percentValue, true);
         }
       else
@@ -187,7 +187,7 @@ NclLayoutConverter::createRegion (DOMElement *parentElement,
 
       if (xstrispercent (attribute))
         {
-          percentValue = getPercentualValue (attribute);
+          percentValue = getPercentValue (attribute);
           ncmRegion->setTop (percentValue, true);
         }
       else
@@ -204,7 +204,7 @@ NclLayoutConverter::createRegion (DOMElement *parentElement,
 
       if (xstrispercent (attribute))
         {
-          percentValue = getPercentualValue (attribute);
+          percentValue = getPercentValue (attribute);
           ncmRegion->setBottom (percentValue, true);
         }
       else
@@ -221,7 +221,7 @@ NclLayoutConverter::createRegion (DOMElement *parentElement,
 
       if (xstrispercent (attribute))
         {
-          percentValue = getPercentualValue (attribute);
+          percentValue = getPercentValue (attribute);
           ncmRegion->setWidth (percentValue, true);
         }
       else
@@ -238,7 +238,7 @@ NclLayoutConverter::createRegion (DOMElement *parentElement,
 
       if (xstrispercent (attribute))
         {
-          percentValue = getPercentualValue (attribute);
+          percentValue = getPercentValue (attribute);
           ncmRegion->setHeight (percentValue, true);
         }
       else
@@ -259,7 +259,7 @@ NclLayoutConverter::createRegion (DOMElement *parentElement,
 }
 
 double
-NclLayoutConverter::getPercentualValue (const string &value)
+NclLayoutConverter::getPercentValue (const string &value)
 {
   return xstrtodorpercent (value) * 100.;
 }

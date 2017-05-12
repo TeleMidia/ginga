@@ -48,8 +48,8 @@ PlayerAnimator::addProperty(string dur, string name, string value){
   //         if(pr->name == name){
   //           pr->velocity = 0;
   //           pr->duration = xstrtod(dur);
-  //           if(isPercentualValue (value))
-  //             pr->targetValue = getPercentualValue (value);
+  //           if(isPercentValue (value))
+  //             pr->targetValue = getPercentValue (value);
   //           else
   //             pr->targetValue = xstrtod (value);
   //           return;

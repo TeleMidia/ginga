@@ -35,17 +35,17 @@ protected:
   LayoutRegion *outputMapRegion;
 
   double left;
-  bool leftPercentual;
+  bool leftPercent;
   double top;
-  bool topPercentual;
+  bool topPercent;
   double right;
-  bool rightPercentual;
+  bool rightPercent;
   double bottom;
-  bool bottomPercentual;
+  bool bottomPercent;
   double width;
-  bool widthPercentual;
+  bool widthPercent;
   double height;
-  bool heightPercentual;
+  bool heightPercent;
 
   double *zIndex;
   map<string, LayoutRegion *> regions;
@@ -85,12 +85,12 @@ public:
   virtual double getWidth ();
   virtual int getZIndex ();
   virtual int getZIndexValue ();
-  virtual bool isBottomPercentual ();
-  virtual bool isHeightPercentual ();
-  virtual bool isLeftPercentual ();
-  virtual bool isRightPercentual ();
-  virtual bool isTopPercentual ();
-  virtual bool isWidthPercentual ();
+  virtual bool isBottomPercent ();
+  virtual bool isHeightPercent ();
+  virtual bool isLeftPercent ();
+  virtual bool isRightPercent ();
+  virtual bool isTopPercent ();
+  virtual bool isWidthPercent ();
   virtual string toString ();
 
 private:
@@ -105,18 +105,18 @@ private:
   virtual double getDeviceHeightInPixels ();
 
 public:
-  virtual bool setBottom (double newBottom, bool isPercentual);
-  virtual bool setTargetBottom (double newBottom, bool isPercentual);
-  virtual bool setHeight (double newHeight, bool isPercentual);
-  virtual bool setTargetHeight (double newHeight, bool isPercentual);
-  virtual bool setLeft (double newLeft, bool isPercentual);
-  virtual bool setTargetLeft (double newLeft, bool isPercentual);
-  virtual bool setRight (double newRight, bool isPercentual);
-  virtual bool setTargetRight (double newRight, bool isPercentual);
-  virtual bool setTop (double newTop, bool isPercentual);
-  virtual bool setTargetTop (double newTop, bool isPercentual);
-  virtual bool setWidth (double newWidth, bool isPercentual);
-  virtual bool setTargetWidth (double newWidth, bool isPercentual);
+  virtual bool setBottom (double newBottom, bool isPercent);
+  virtual bool setTargetBottom (double newBottom, bool isPercent);
+  virtual bool setHeight (double newHeight, bool isPercent);
+  virtual bool setTargetHeight (double newHeight, bool isPercent);
+  virtual bool setLeft (double newLeft, bool isPercent);
+  virtual bool setTargetLeft (double newLeft, bool isPercent);
+  virtual bool setRight (double newRight, bool isPercent);
+  virtual bool setTargetRight (double newRight, bool isPercent);
+  virtual bool setTop (double newTop, bool isPercent);
+  virtual bool setTargetTop (double newTop, bool isPercent);
+  virtual bool setWidth (double newWidth, bool isPercent);
+  virtual bool setTargetWidth (double newWidth, bool isPercent);
 
   virtual void validateTarget ();
 
@@ -157,8 +157,8 @@ public:
   virtual bool intersects (int x, int y);
 
 private:
-  double getPercentualValue (const string &value);
-  bool isPercentualValue (const string &value);
+  double getPercentValue (const string &value);
+  bool isPercentValue (const string &value);
   void lock ();
   void unlock ();
 };

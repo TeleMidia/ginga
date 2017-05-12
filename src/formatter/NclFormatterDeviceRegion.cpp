@@ -260,37 +260,37 @@ NclFormatterDeviceRegion::getZIndexValue ()
 }
 
 bool
-NclFormatterDeviceRegion::isBottomPercentual ()
+NclFormatterDeviceRegion::isBottomPercent ()
 {
   return false;
 }
 
 bool
-NclFormatterDeviceRegion::isHeightPercentual ()
+NclFormatterDeviceRegion::isHeightPercent ()
 {
   return false;
 }
 
 bool
-NclFormatterDeviceRegion::isLeftPercentual ()
+NclFormatterDeviceRegion::isLeftPercent ()
 {
   return false;
 }
 
 bool
-NclFormatterDeviceRegion::isRightPercentual ()
+NclFormatterDeviceRegion::isRightPercent ()
 {
   return false;
 }
 
 bool
-NclFormatterDeviceRegion::isTopPercentual ()
+NclFormatterDeviceRegion::isTopPercent ()
 {
   return false;
 }
 
 bool
-NclFormatterDeviceRegion::isWidthPercentual ()
+NclFormatterDeviceRegion::isWidthPercent ()
 {
   return false;
 }
@@ -355,27 +355,27 @@ NclFormatterDeviceRegion::setBackgroundColor (arg_unused (SDL_Color *newBackgrou
 }
 
 bool
-NclFormatterDeviceRegion::setBottom (arg_unused (double newBottom), arg_unused (bool isPercentual))
+NclFormatterDeviceRegion::setBottom (arg_unused (double newBottom), arg_unused (bool isPercent))
 {
   return false;
 }
 
 bool
-NclFormatterDeviceRegion::setHeight (double newHeight, arg_unused (bool isPercentual))
+NclFormatterDeviceRegion::setHeight (double newHeight, arg_unused (bool isPercent))
 {
   this->height = (int) newHeight;
   return true;
 }
 
 bool
-NclFormatterDeviceRegion::setLeft (double newLeft, arg_unused (bool isPercentual))
+NclFormatterDeviceRegion::setLeft (double newLeft, arg_unused (bool isPercent))
 {
   this->left = (int) newLeft;
   return true;
 }
 
 bool
-NclFormatterDeviceRegion::setRight (arg_unused (double newRight), arg_unused (bool isPercentual))
+NclFormatterDeviceRegion::setRight (arg_unused (double newRight), arg_unused (bool isPercent))
 {
   return false;
 }
@@ -386,14 +386,14 @@ NclFormatterDeviceRegion::setTitle (arg_unused (const string &newTitle))
 }
 
 bool
-NclFormatterDeviceRegion::setTop (double newTop, arg_unused (bool isPercentual))
+NclFormatterDeviceRegion::setTop (double newTop, arg_unused (bool isPercent))
 {
   this->top = (int)newTop;
   return true;
 }
 
 bool
-NclFormatterDeviceRegion::setWidth (double newWidth, arg_unused (bool isPercentual))
+NclFormatterDeviceRegion::setWidth (double newWidth, arg_unused (bool isPercent))
 {
   this->width = (int)newWidth;
   return true;
