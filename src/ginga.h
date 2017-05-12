@@ -232,7 +232,7 @@ xstrtod (const string &s)
   static inline g##Type                                 \
   xstrto_##Type (const string &s, guint8 base=10)       \
   {                                                     \
-    gint64 x;                                           \
+    gint64 x=0;                                         \
     g_assert (_xstrtoll (s, &x, base));                 \
     return (g##Type)(CLAMP (x, Typemin, Typemax));      \
   }
@@ -245,7 +245,7 @@ _GINGA_XSTRTO_DEFN  (int64,  G_MININT64,  G_MAXINT64)
   static inline g##Type                                 \
   xstrto_##Type (const string &s, guint8 base=10)       \
   {                                                     \
-    guint64 x;                                          \
+    guint64 x=0;                                        \
     g_assert (_xstrtoull (s, &x, base));                \
     return (g##Type)(MIN (x, Typemax));                 \
   }
