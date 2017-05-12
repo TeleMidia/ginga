@@ -20,13 +20,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-typedef struct{
-  string name;   
+typedef struct
+{
+  string name;
   gdouble duration;
   gdouble velocity;
   gdouble targetValue;
   gdouble curValue;  
-}ANIM_PROPERTY;
+} ANIM_PROPERTY;
 
 class PlayerAnimator
 {
@@ -43,7 +44,10 @@ class PlayerAnimator
    void calculePosition(gint32 * value, ANIM_PROPERTY* pr,gint32 dir);
    bool calculeVelocity(gint32 * value, ANIM_PROPERTY* pr);
    gdouble cvtTimeIntToDouble(guint32 value);
-   gdouble getAnimationVelocity(gdouble initPos, gdouble finalPos, gdouble duration);
+   gdouble getAnimationVelocity(gdouble initPos,
+                                gdouble finalPos,
+                                gdouble duration);
+
 };
 
 #endif /* PLAYER_ANIMATOR_H */
