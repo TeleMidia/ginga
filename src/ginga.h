@@ -120,8 +120,6 @@ GINGA_PRAGMA_DIAG_POP ()
 #define _GINGA_END            _GINGA_NS_END _GINGA_NS_END
 #define GINGA_CTXMGMT_BEGIN   _GINGA_BEGIN (ctxmgmt)
 #define GINGA_CTXMGMT_END     _GINGA_END
-#define GINGA_DATAPROC_BEGIN  _GINGA_BEGIN (dataproc)
-#define GINGA_DATAPROC_END    _GINGA_END
 #define GINGA_FORMATTER_BEGIN _GINGA_BEGIN (formatter)
 #define GINGA_FORMATTER_END   _GINGA_END
 #define GINGA_MB_BEGIN        _GINGA_BEGIN (mb)
@@ -134,10 +132,6 @@ GINGA_PRAGMA_DIAG_POP ()
 #define GINGA_PLAYER_END      _GINGA_END
 #define GINGA_SYSTEM_BEGIN    _GINGA_BEGIN (system)
 #define GINGA_SYSTEM_END      _GINGA_END
-#define GINGA_TSPARSER_BEGIN  _GINGA_BEGIN (tsparser)
-#define GINGA_TSPARSER_END    _GINGA_END
-#define GINGA_TUNER_BEGIN     _GINGA_BEGIN (tuner)
-#define GINGA_TUNER_END       _GINGA_END
 #define GINGA_UTIL_BEGIN      _GINGA_BEGIN (util)
 #define GINGA_UTIL_END        _GINGA_END
 
@@ -259,6 +253,32 @@ _GINGA_XSTRTO_DEFN  (int64,  G_MININT64,  G_MAXINT64)
 _GINGA_XSTRTOU_DEFN (uint,   G_MAXUINT)
 _GINGA_XSTRTOU_DEFN (uint8,  G_MAXUINT8)
 _GINGA_XSTRTOU_DEFN (uint64, G_MAXUINT64)
+
+// Checks if string is of the form "\s*\d+%.*".
+static inline bool
+xstrispercent (const string &s)
+{
+  gchar *end;
+  return (g_strtod (s.c_str (), &end), *end == '%');
+}
+
+// Converts a string (number or percentage) to a number.
+static inline gdouble
+xstrtodorpercent (const string &s, bool *perc=NULL)
+{
+  gchar *end;
+  gdouble x = g_strtod (s.c_str (), &end);
+  if (*end == '%')
+    {
+      set_if_nonnull (perc, true);
+      return x / 100.;
+    }
+  else
+    {
+      set_if_nonnull (perc, false);
+      return x;
+    }
+}
 
 // Compares two strings ignoring case.
 static inline int

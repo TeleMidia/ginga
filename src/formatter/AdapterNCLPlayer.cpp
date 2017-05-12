@@ -102,12 +102,7 @@ AdapterNCLPlayer::createPlayer ()
           double transpValue;
           double parentOpacity = (1 - playerData->transparency);
 
-          value = cvtPercentual (value, &isPercent);
-          transpValue = xstrtod (value);
-          if (isPercent)
-            {
-              transpValue = transpValue / 100;
-            }
+          transpValue = xstrtodorpercent (value, &isPercent);
 
           transpValue
             = (1 - (parentOpacity - (parentOpacity * transpValue)));

@@ -24,7 +24,7 @@ using namespace ::ginga::util;
 using namespace ::ginga::mb;
 
 PlayerAnimator::PlayerAnimator (){
-   this->properties = NULL; 
+   this->properties = NULL;
 }
 
 PlayerAnimator::~PlayerAnimator (){
@@ -33,8 +33,8 @@ PlayerAnimator::~PlayerAnimator (){
 
 void
 PlayerAnimator::addProperty(string dur, string name, string value){
-    
-  // GList* l =  this->properties;           
+
+  // GList* l =  this->properties;
   // while (l != NULL)
   //   {
   //     GList *next = l->next;
@@ -63,17 +63,17 @@ PlayerAnimator::addProperty(string dur, string name, string value){
   pr->duration = xstrtod(dur);
   pr->curValue = 0;
   pr->velocity = 0;
-  if(isPercentualValue (value))
-    pr->targetValue = getPercentualValue (value);
+  if (xstrispercent (value))
+    pr->targetValue = xstrtodorpercent (value) * 100.;
   else
     pr->targetValue = xstrtod (value);
 
-  this->properties = g_list_insert(this->properties, pr,-1);
+  this->properties = g_list_insert (this->properties, pr,-1);
 }
 
 void
 PlayerAnimator::update(SDL_Rect* rect){
-   GList* l =  this->properties;           
+   GList* l =  this->properties;
    while (l != NULL){
      GList *next = l->next;
      ANIM_PROPERTY* pr = (ANIM_PROPERTY*)l->data;
@@ -87,20 +87,20 @@ PlayerAnimator::update(SDL_Rect* rect){
    }
 }
 
-gdouble 
+gdouble
 PlayerAnimator::cvtTimeIntToDouble(guint32 value){
   return ((gdouble)value)/1000;
 }
 
-gdouble 
+gdouble
 PlayerAnimator::getAnimationVelocity(gdouble initPos, gdouble finalPos, gdouble duration){
   if(duration <= 0)
     return 0;
 
   gdouble distance = finalPos - initPos;
   if(distance < 0)distance*=-1;
-  
-  return distance/duration;   
+
+  return distance/duration;
 }
 
 bool
@@ -108,7 +108,7 @@ PlayerAnimator::calculeVelocity(gint32 * value, ANIM_PROPERTY* pr){
    pr->velocity = getAnimationVelocity((gdouble)*value, pr->targetValue, pr->duration);
    pr->curValue = (gdouble)*value;
    if((guint32)pr->velocity == 0){
-      *value = (guint32)pr->targetValue; 
+      *value = (guint32)pr->targetValue;
       this->properties = g_list_remove(this->properties, pr);
       delete pr;
       return false;
@@ -119,9 +119,9 @@ PlayerAnimator::calculeVelocity(gint32 * value, ANIM_PROPERTY* pr){
 void
 PlayerAnimator::calculePosition(gint32 * value, ANIM_PROPERTY* pr, gint32 dir){ //S = So + vt
      pr->curValue = pr->curValue + (dir * (pr->velocity * (1.0/(gdouble)Ginga_Display->getFps())));
-     *value = (guint32)pr->curValue; 
+     *value = (guint32)pr->curValue;
      if( (dir > 0 && *value >= pr->targetValue) || (dir < 0 && *value <= pr->targetValue) ){
-        *value = (guint32)pr->targetValue; 
+        *value = (guint32)pr->targetValue;
         this->properties = g_list_remove(this->properties, pr);
         free(pr);
      }
@@ -131,8 +131,8 @@ void
 PlayerAnimator::updatePosition(SDL_Rect* rect, ANIM_PROPERTY* pr){
     if(pr == NULL || rect == NULL)
       return;
-  
-   if(pr->name == "top"){ 
+
+   if(pr->name == "top"){
        if(pr->velocity <=0)
            if(!calculeVelocity(&rect->y,pr))
               return;
@@ -172,8 +172,7 @@ PlayerAnimator::updatePosition(SDL_Rect* rect, ANIM_PROPERTY* pr){
        else if(rect->h > pr->targetValue)
           calculePosition(&rect->h,pr,-1);
    }
-   
- //   g_debug("\n\n inside::: %f %s %f \n\n",pr->duration,pr->name.c_str(),pr->targetValue);
-    
-}
 
+ //   g_debug("\n\n inside::: %f %s %f \n\n",pr->duration,pr->name.c_str(),pr->targetValue);
+
+}
