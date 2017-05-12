@@ -23,14 +23,6 @@ find_package(RSVG REQUIRED)
 find_package(FFmpeg REQUIRED)
 find_package(GStreamer REQUIRED)
 
-set (CEF_ROOT "${CMAKE_SOURCE_DIR}/../deps/cef")
-set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CEF_ROOT}/cmake")
-find_package(CEF REQUIRED)
-add_subdirectory(${CEF_LIBCEF_DLL_WRAPPER_PATH} libcef_dll_wrapper)
-# Logical target used to link the libcef library.
-ADD_LOGICAL_TARGET("libcef_lib" "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
-SET_CEF_TARGET_OUT_DIR()
-
 #add_definitions(-DPACKAGE_VERSION="1.0")
 #add_definitions(-DWITH_ISDBT=0)
 #add_definitions(-DWITH_LINUXDVB)
@@ -64,6 +56,28 @@ ExternalProject_Get_Property(nclua_build install_dir)
 set(NCLUA_INCLUDE_DIRS "${install_dir}/include")
 link_directories("${install_dir}/lib")
 #end NCLUA
+
+ExternalProject_Add(libcef_build
+  URL "http://opensource.spotify.com/cefbuilds/cef_binary_3.3029.1617.gaf831b6_linux64.tar.bz2"
+
+  UPDATE_COMMAND ""
+  PATCH_COMMAND ""
+
+  BUILD_COMMAND ""
+  CONFIGURE_COMMAND ""
+  INSTALL_COMMAND ""
+)
+ExternalProject_Get_Property(libcef_build source_dir)
+
+set (CEF_ROOT "${source_dir}")
+set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CEF_ROOT}/cmake")
+find_package(CEF REQUIRED)
+list(REMOVE_ITEM CEF_CXX_COMPILER_FLAGS -fno-exceptions -fno-rtti)
+add_subdirectory(${CEF_LIBCEF_DLL_WRAPPER_PATH} libcef_dll_wrapper)
+
+# Logical target used to link the libcef library.
+ADD_LOGICAL_TARGET("libcef_lib" "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
+SET_CEF_TARGET_OUT_DIR()
 
 add_executable(ginga
   ../src/ginga.h
@@ -253,7 +267,7 @@ add_executable(ginga
   ../src/main.cpp
 )
 
-add_dependencies(ginga nclua_build)
+add_dependencies(ginga nclua_build libcef_build)
 
 target_include_directories(ginga PRIVATE
   ../src
