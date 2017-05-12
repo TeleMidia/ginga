@@ -424,44 +424,44 @@ NclCascadingDescriptor::updateRegion (void *formatterLayout, const string &name,
                                       const string &v)
 {
   vector<string> *params;
-  bool isPercentual;
+  bool isPercent;
   string value = v;
 
   if (name == "left")
     {
       createDummyRegion (formatterLayout);
-      region->setLeft (xstrtodorpercent (value, &isPercentual),
-                       isPercentual);
+      region->setLeft (xstrtodorpercent (value, &isPercent),
+                       isPercent);
     }
   else if (name == "top")
     {
       createDummyRegion (formatterLayout);
-      region->setTop (xstrtodorpercent (value, &isPercentual),
-                      isPercentual);
+      region->setTop (xstrtodorpercent (value, &isPercent),
+                      isPercent);
     }
   else if (name == "width")
     {
       createDummyRegion (formatterLayout);
-      region->setWidth (xstrtodorpercent (value, &isPercentual),
-                        isPercentual);
+      region->setWidth (xstrtodorpercent (value, &isPercent),
+                        isPercent);
     }
   else if (name == "height")
     {
       createDummyRegion (formatterLayout);
-      region->setHeight (xstrtodorpercent (value, &isPercentual),
-                         isPercentual);
+      region->setHeight (xstrtodorpercent (value, &isPercent),
+                         isPercent);
     }
   else if (name == "bottom")
     {
       createDummyRegion (formatterLayout);
-      region->setBottom (xstrtodorpercent (value, &isPercentual),
-                         isPercentual);
+      region->setBottom (xstrtodorpercent (value, &isPercent),
+                         isPercent);
     }
   else if (name == "right")
     {
       createDummyRegion (formatterLayout);
-      region->setRight (xstrtodorpercent (value, &isPercentual),
-                        isPercentual);
+      region->setRight (xstrtodorpercent (value, &isPercent),
+                        isPercent);
     }
   else if (name == "zIndex")
     {
@@ -476,14 +476,14 @@ NclCascadingDescriptor::updateRegion (void *formatterLayout, const string &name,
         {
           if (region != NULL)
             {
-              region->setLeft (xstrtodorpercent ((*params)[0], &isPercentual),
-                               isPercentual);
-              region->setTop (xstrtodorpercent ((*params)[1], &isPercentual),
-                              isPercentual);
-              region->setWidth (xstrtodorpercent ((*params)[2], &isPercentual),
-                                isPercentual);
-              region->setHeight (xstrtodorpercent ((*params)[3], &isPercentual),
-                                 isPercentual);
+              region->setLeft (xstrtodorpercent ((*params)[0], &isPercent),
+                               isPercent);
+              region->setTop (xstrtodorpercent ((*params)[1], &isPercent),
+                              isPercent);
+              region->setWidth (xstrtodorpercent ((*params)[2], &isPercent),
+                                isPercent);
+              region->setHeight (xstrtodorpercent ((*params)[3], &isPercent),
+                                 isPercent);
             }
         }
       delete params;
@@ -496,10 +496,10 @@ NclCascadingDescriptor::updateRegion (void *formatterLayout, const string &name,
         {
           if (region != NULL)
             {
-              region->setLeft (xstrtodorpercent ((*params)[0], &isPercentual),
-                               isPercentual);
-              region->setTop (xstrtodorpercent ((*params)[1], &isPercentual),
-                              isPercentual);
+              region->setLeft (xstrtodorpercent ((*params)[0], &isPercent),
+                               isPercent);
+              region->setTop (xstrtodorpercent ((*params)[1], &isPercent),
+                              isPercent);
             }
         }
       delete params;
@@ -512,10 +512,10 @@ NclCascadingDescriptor::updateRegion (void *formatterLayout, const string &name,
         {
           if (region != NULL)
             {
-              region->setWidth (xstrtodorpercent ((*params)[0], &isPercentual),
-                                isPercentual);
-              region->setHeight (xstrtodorpercent ((*params)[1], &isPercentual),
-                                 isPercentual);
+              region->setWidth (xstrtodorpercent ((*params)[0], &isPercent),
+                                isPercent);
+              region->setHeight (xstrtodorpercent ((*params)[1], &isPercent),
+                                 isPercent);
             }
         }
       delete params;

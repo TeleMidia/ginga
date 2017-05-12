@@ -27,22 +27,22 @@ LayoutRegion::LayoutRegion (const string &id) : Entity (id)
   outputMapRegion = NULL;
 
   top = (double)NAN;
-  topPercentual = false;
+  topPercent = false;
 
   left = (double)NAN;
-  leftPercentual = false;
+  leftPercent = false;
 
   bottom = (double)NAN;
-  bottomPercentual = false;
+  bottomPercent = false;
 
   right = (double)NAN;
-  rightPercentual = false;
+  rightPercent = false;
 
   width = (double)NAN;
-  widthPercentual = false;
+  widthPercent = false;
 
   height = (double)NAN;
-  heightPercentual = false;
+  heightPercent = false;
 
   zIndex = NULL;
 
@@ -149,32 +149,32 @@ LayoutRegion::cloneRegion ()
 
   if (!isnan (getBottom ()))
     {
-      cloneRegion->setBottom (getBottom (), isBottomPercentual ());
+      cloneRegion->setBottom (getBottom (), isBottomPercent ());
     }
 
   if (!isnan (getLeft ()))
     {
-      cloneRegion->setLeft (getLeft (), isLeftPercentual ());
+      cloneRegion->setLeft (getLeft (), isLeftPercent ());
     }
 
   if (!isnan (getTop ()))
     {
-      cloneRegion->setTop (getTop (), isTopPercentual ());
+      cloneRegion->setTop (getTop (), isTopPercent ());
     }
 
   if (!isnan (getRight ()))
     {
-      cloneRegion->setRight (getRight (), isRightPercentual ());
+      cloneRegion->setRight (getRight (), isRightPercent ());
     }
 
   if (!isnan (getWidth ()))
     {
-      cloneRegion->setWidth (getWidth (), isWidthPercentual ());
+      cloneRegion->setWidth (getWidth (), isWidthPercent ());
     }
 
   if (!isnan (getHeight ()))
     {
-      cloneRegion->setHeight (getHeight (), isHeightPercentual ());
+      cloneRegion->setHeight (getHeight (), isHeightPercent ());
     }
 
   cloneRegion->setZIndex (getZIndex ());
@@ -261,10 +261,10 @@ LayoutRegion::compareWidthSize (const string &w)
   int newW;
 
   oldW = getWidthInPixels ();
-  if (isPercentualValue (w))
+  if (xstrispercent (w))
     {
       newW = (int)((getParent ()->getWidthInPixels ()
-                    * getPercentualValue (w))
+                    * getPercentValue (w))
                    / 100);
     }
   else
@@ -293,10 +293,10 @@ LayoutRegion::compareHeightSize (const string &h)
   int newH;
 
   oldH = getHeightInPixels ();
-  if (isPercentualValue (h))
+  if (xstrispercent (h))
     {
       newH = (int)((getParent ()->getHeightInPixels ()
-                    * getPercentualValue (h))
+                    * getPercentValue (h))
                    / 100);
     }
   else
@@ -481,39 +481,39 @@ LayoutRegion::getZIndexValue ()
 }
 
 bool
-LayoutRegion::isBottomPercentual ()
+LayoutRegion::isBottomPercent ()
 {
-  return bottomPercentual;
+  return bottomPercent;
 }
 
 bool
-LayoutRegion::isHeightPercentual ()
+LayoutRegion::isHeightPercent ()
 {
-  return heightPercentual;
+  return heightPercent;
 }
 
 bool
-LayoutRegion::isLeftPercentual ()
+LayoutRegion::isLeftPercent ()
 {
-  return leftPercentual;
+  return leftPercent;
 }
 
 bool
-LayoutRegion::isRightPercentual ()
+LayoutRegion::isRightPercent ()
 {
-  return rightPercentual;
+  return rightPercent;
 }
 
 bool
-LayoutRegion::isTopPercentual ()
+LayoutRegion::isTopPercent ()
 {
-  return topPercentual;
+  return topPercent;
 }
 
 bool
-LayoutRegion::isWidthPercentual ()
+LayoutRegion::isWidthPercent ()
 {
-  return widthPercentual;
+  return widthPercent;
 }
 
 string
@@ -624,7 +624,7 @@ LayoutRegion::getDeviceHeightInPixels ()
 }
 
 bool
-LayoutRegion::setBottom (double newBottom, bool isPercentual)
+LayoutRegion::setBottom (double newBottom, bool isPercent)
 {
   if (newBottom < 0 || isnan (newBottom))
     {
@@ -634,7 +634,7 @@ LayoutRegion::setBottom (double newBottom, bool isPercentual)
     }
 
   bottom = newBottom;
-  bottomPercentual = isPercentual;
+  bottomPercent = isPercent;
   if (parent != NULL)
     {
       if ((getTopInPixels () + getHeightInPixels ())
@@ -642,7 +642,7 @@ LayoutRegion::setBottom (double newBottom, bool isPercentual)
         {
           // since the region will stay outside the parent edges, the
           // bottom is set to the maximum value allowed
-          if (isPercentual)
+          if (isPercent)
             {
               bottom = 1.0;
             }
@@ -658,7 +658,7 @@ LayoutRegion::setBottom (double newBottom, bool isPercentual)
 }
 
 bool
-LayoutRegion::setTargetBottom (double newBottom, bool isPercentual)
+LayoutRegion::setTargetBottom (double newBottom, bool isPercent)
 {
   double tBottom;
   double deviceHeight;
@@ -672,7 +672,7 @@ LayoutRegion::setTargetBottom (double newBottom, bool isPercentual)
     }
 
   deviceHeight = getDeviceHeightInPixels ();
-  if (isPercentual)
+  if (isPercent)
     {
       // tBottom = (newBottom * getHeightInPixels()) / 100;
       tBottom = (newBottom * deviceHeight) / 100;
@@ -690,7 +690,7 @@ LayoutRegion::setTargetBottom (double newBottom, bool isPercentual)
     }
 
   bottom = tBottom;
-  bottomPercentual = false;
+  bottomPercent = false;
 
   setTargetTop (deviceHeight - (tBottom + currentHeight), false);
 
@@ -698,7 +698,7 @@ LayoutRegion::setTargetBottom (double newBottom, bool isPercentual)
 }
 
 bool
-LayoutRegion::setHeight (double newHeight, bool isPercentual)
+LayoutRegion::setHeight (double newHeight, bool isPercent)
 {
   if (newHeight < 0 || isnan (newHeight))
     {
@@ -708,7 +708,7 @@ LayoutRegion::setHeight (double newHeight, bool isPercentual)
     }
 
   height = newHeight;
-  heightPercentual = isPercentual;
+  heightPercent = isPercent;
 
   if (parent != NULL)
     {
@@ -717,7 +717,7 @@ LayoutRegion::setHeight (double newHeight, bool isPercentual)
         {
           // since the region will stay outside the parent edges, the
           // top is set to the maximum value allowed
-          if (isPercentual)
+          if (isPercent)
             {
               height = (parent->getHeightInPixels () - getTopInPixels ())
                        / parent->getHeightInPixels ();
@@ -735,7 +735,7 @@ LayoutRegion::setHeight (double newHeight, bool isPercentual)
 }
 
 bool
-LayoutRegion::setTargetHeight (double newHeight, bool isPercentual)
+LayoutRegion::setTargetHeight (double newHeight, bool isPercent)
 {
   double tHeight;
 
@@ -746,7 +746,7 @@ LayoutRegion::setTargetHeight (double newHeight, bool isPercentual)
       return false;
     }
 
-  if (isPercentual)
+  if (isPercent)
     {
       // tHeight = (newHeight * getHeightInPixels()) / 100;
       tHeight = (newHeight * getDeviceHeightInPixels ()) / 100;
@@ -757,13 +757,13 @@ LayoutRegion::setTargetHeight (double newHeight, bool isPercentual)
     }
 
   height = tHeight;
-  heightPercentual = false;
+  heightPercent = false;
 
   return true;
 }
 
 bool
-LayoutRegion::setLeft (double newLeft, bool isPercentual)
+LayoutRegion::setLeft (double newLeft, bool isPercent)
 {
   if ((newLeft < 0) || (isnan (newLeft)))
     {
@@ -773,7 +773,7 @@ LayoutRegion::setLeft (double newLeft, bool isPercentual)
     }
 
   this->left = newLeft;
-  leftPercentual = isPercentual;
+  leftPercent = isPercent;
 
   if (parent != NULL)
     {
@@ -782,7 +782,7 @@ LayoutRegion::setLeft (double newLeft, bool isPercentual)
         {
           // since the region will stay outside the parent edges, the
           // left is set to the maximum value allowed
-          if (isPercentual)
+          if (isPercent)
             {
               left = (double)((parent->getWidthInPixels ()
                                - getWidthInPixels ())
@@ -802,7 +802,7 @@ LayoutRegion::setLeft (double newLeft, bool isPercentual)
 }
 
 bool
-LayoutRegion::setTargetLeft (double newLeft, bool isPercentual)
+LayoutRegion::setTargetLeft (double newLeft, bool isPercent)
 {
   double tLeft;
 
@@ -813,7 +813,7 @@ LayoutRegion::setTargetLeft (double newLeft, bool isPercentual)
       return false;
     }
 
-  if (isPercentual)
+  if (isPercent)
     {
       // tLeft = (newLeft * getWidthInPixels()) / 100;
       tLeft = (newLeft * getDeviceWidthInPixels ()) / 100;
@@ -824,13 +824,13 @@ LayoutRegion::setTargetLeft (double newLeft, bool isPercentual)
     }
 
   left = tLeft;
-  leftPercentual = false;
+  leftPercent = false;
 
   return true;
 }
 
 bool
-LayoutRegion::setRight (double newRight, bool isPercentual)
+LayoutRegion::setRight (double newRight, bool isPercent)
 {
   if (newRight < 0 || isnan (newRight))
     {
@@ -840,7 +840,7 @@ LayoutRegion::setRight (double newRight, bool isPercentual)
     }
 
   right = newRight;
-  rightPercentual = isPercentual;
+  rightPercent = isPercent;
 
   if (parent != NULL)
     {
@@ -849,7 +849,7 @@ LayoutRegion::setRight (double newRight, bool isPercentual)
         {
           // since the region will stay outside the parent edges, the
           // right is set to the maximum value allowed
-          if (isPercentual)
+          if (isPercent)
             {
               right = 1.0;
             }
@@ -865,7 +865,7 @@ LayoutRegion::setRight (double newRight, bool isPercentual)
 }
 
 bool
-LayoutRegion::setTargetRight (double newRight, bool isPercentual)
+LayoutRegion::setTargetRight (double newRight, bool isPercent)
 {
   double tRight;
   double deviceWidth;
@@ -879,7 +879,7 @@ LayoutRegion::setTargetRight (double newRight, bool isPercentual)
     }
 
   deviceWidth = getDeviceWidthInPixels ();
-  if (isPercentual)
+  if (isPercent)
     {
       // tRight = (newRight * getWidthInPixels()) / 100;
       tRight = (newRight * deviceWidth) / 100;
@@ -897,7 +897,7 @@ LayoutRegion::setTargetRight (double newRight, bool isPercentual)
     }
 
   right = tRight;
-  rightPercentual = false;
+  rightPercent = false;
 
   setTargetLeft (deviceWidth - (tRight + currentWidth), false);
 
@@ -905,7 +905,7 @@ LayoutRegion::setTargetRight (double newRight, bool isPercentual)
 }
 
 bool
-LayoutRegion::setTop (double newTop, bool isPercentual)
+LayoutRegion::setTop (double newTop, bool isPercent)
 {
   if (newTop < 0 || isnan (newTop))
     {
@@ -915,7 +915,7 @@ LayoutRegion::setTop (double newTop, bool isPercentual)
     }
 
   top = newTop;
-  topPercentual = isPercentual;
+  topPercent = isPercent;
 
   if (parent != NULL)
     {
@@ -924,7 +924,7 @@ LayoutRegion::setTop (double newTop, bool isPercentual)
         {
           // since the region will stay outside the parent edges, the
           // top is set to the maximum value allowed
-          if (isPercentual)
+          if (isPercent)
             {
               top = (double)((double)(parent->getHeightInPixels ()
                                       - getHeightInPixels ())
@@ -942,7 +942,7 @@ LayoutRegion::setTop (double newTop, bool isPercentual)
 }
 
 bool
-LayoutRegion::setTargetTop (double newTop, bool isPercentual)
+LayoutRegion::setTargetTop (double newTop, bool isPercent)
 {
   double tTop;
 
@@ -953,7 +953,7 @@ LayoutRegion::setTargetTop (double newTop, bool isPercentual)
       return false;
     }
 
-  if (isPercentual)
+  if (isPercent)
     {
       // tTop = (newTop * getHeightInPixels()) / 100;
       tTop = (newTop * getDeviceHeightInPixels ()) / 100;
@@ -964,13 +964,13 @@ LayoutRegion::setTargetTop (double newTop, bool isPercentual)
     }
 
   top = tTop;
-  topPercentual = false;
+  topPercent = false;
 
   return true;
 }
 
 bool
-LayoutRegion::setWidth (double newWidth, bool isPercentual)
+LayoutRegion::setWidth (double newWidth, bool isPercent)
 {
   if (newWidth < 0 || isnan (newWidth))
     {
@@ -981,7 +981,7 @@ LayoutRegion::setWidth (double newWidth, bool isPercentual)
     }
 
   width = newWidth;
-  widthPercentual = isPercentual;
+  widthPercent = isPercent;
 
   if (parent != NULL)
     {
@@ -990,7 +990,7 @@ LayoutRegion::setWidth (double newWidth, bool isPercentual)
         {
           // since the region will stay outside the parent edges, the
           // top is set to the maximum value allowed
-          if (isPercentual)
+          if (isPercent)
             {
               width = ((double)(parent->getWidthInPixels ())
                        - (double)getLeftInPixels ())
@@ -1007,7 +1007,7 @@ LayoutRegion::setWidth (double newWidth, bool isPercentual)
 }
 
 bool
-LayoutRegion::setTargetWidth (double newWidth, bool isPercentual)
+LayoutRegion::setTargetWidth (double newWidth, bool isPercent)
 {
   double tWidth;
 
@@ -1019,7 +1019,7 @@ LayoutRegion::setTargetWidth (double newWidth, bool isPercentual)
       return false;
     }
 
-  if (isPercentual)
+  if (isPercent)
     {
       // tWidth = (newWidth * getWidthInPixels()) / 100;
       tWidth = (newWidth * getDeviceWidthInPixels ()) / 100;
@@ -1030,7 +1030,7 @@ LayoutRegion::setTargetWidth (double newWidth, bool isPercentual)
     }
 
   width = tWidth;
-  widthPercentual = false;
+  widthPercent = false;
 
   return true;
 }
@@ -1046,7 +1046,7 @@ LayoutRegion::validateTarget ()
       if (getTopInPixels () < deviceLayout->getTopInPixels ())
         {
           top = deviceLayout->getTopInPixels ();
-          topPercentual = false;
+          topPercent = false;
         }
 
       if ((getTopInPixels () + getHeightInPixels ())
@@ -1056,13 +1056,13 @@ LayoutRegion::validateTarget ()
           // bottom is set to the minimum value allowed
           height = (deviceLayout->getHeightInPixels () - getTopInPixels ());
 
-          heightPercentual = false;
+          heightPercent = false;
         }
 
       if (getLeftInPixels () < deviceLayout->getLeftInPixels ())
         {
           left = deviceLayout->getLeftInPixels ();
-          leftPercentual = false;
+          leftPercent = false;
         }
 
       if ((getLeftInPixels () + getWidthInPixels ())
@@ -1073,7 +1073,7 @@ LayoutRegion::validateTarget ()
           width = (deviceLayout->getWidthInPixels ()
                    - deviceLayout->getLeftInPixels ());
 
-          widthPercentual = false;
+          widthPercent = false;
         }
 
       /*cout << "LayoutRegion::validateTarget(" << getId() << ") ";
@@ -1246,7 +1246,7 @@ LayoutRegion::getTopInPixels ()
   if (!isnan (top))
     {
       // top was defined
-      if (isTopPercentual () && parent != NULL)
+      if (isTopPercent () && parent != NULL)
         {
           return (int)((top * parent->getHeightInPixels ()) / 100);
         }
@@ -1258,7 +1258,7 @@ LayoutRegion::getTopInPixels ()
   else if ((!isnan (height)) && (!isnan (bottom)))
     {
       // top is based on height and bottom
-      if (isHeightPercentual () && parent != NULL)
+      if (isHeightPercent () && parent != NULL)
         {
           h = (int)((height * parent->getHeightInPixels ()) / 100);
         }
@@ -1269,7 +1269,7 @@ LayoutRegion::getTopInPixels ()
 
       if (parent != NULL)
         {
-          if (isBottomPercentual ())
+          if (isBottomPercent ())
             {
               b = (int)(((100 - bottom) * parent->getHeightInPixels ())
                         / 100);
@@ -1305,7 +1305,7 @@ LayoutRegion::getBottomInPixels ()
     {
       // bottom is based on height and top, independent
       // of bottom definition
-      if (isTopPercentual () && parent != NULL)
+      if (isTopPercent () && parent != NULL)
         {
           t = (int)(((double)top * parent->getHeightInPixels ()) / 100);
         }
@@ -1314,7 +1314,7 @@ LayoutRegion::getBottomInPixels ()
           t = top;
         }
 
-      if (isHeightPercentual () && parent != NULL)
+      if (isHeightPercent () && parent != NULL)
         {
           h = (int)(((double)height * parent->getHeightInPixels ()) / 100);
         }
@@ -1327,7 +1327,7 @@ LayoutRegion::getBottomInPixels ()
   else if (!isnan (bottom))
     {
       // bottom is based on its own value
-      if (isBottomPercentual () && parent != NULL)
+      if (isBottomPercent () && parent != NULL)
         {
           bottomInPixels
               = (int)(((100 - bottom) * parent->getHeightInPixels ())
@@ -1355,7 +1355,7 @@ LayoutRegion::getRightInPixels ()
     {
       // right is based on width and left, independent of right
       // definition
-      if (isLeftPercentual () && parent != NULL)
+      if (isLeftPercent () && parent != NULL)
         {
           l = (int)(((double)left * parent->getWidthInPixels ()) / 100);
         }
@@ -1364,7 +1364,7 @@ LayoutRegion::getRightInPixels ()
           l = left;
         }
 
-      if (isWidthPercentual () && parent != NULL)
+      if (isWidthPercent () && parent != NULL)
         {
           w = (int)(((double)width * parent->getWidthInPixels ()) / 100);
         }
@@ -1377,7 +1377,7 @@ LayoutRegion::getRightInPixels ()
   else if (!isnan (right))
     {
       // right is based on its own value
-      if (isRightPercentual () && parent != NULL)
+      if (isRightPercent () && parent != NULL)
         {
           return (int)(((100 - right) * parent->getWidthInPixels ()) / 100);
         }
@@ -1401,7 +1401,7 @@ LayoutRegion::getLeftInPixels ()
   if (!isnan (left))
     {
       // left was defined
-      if (isLeftPercentual () && parent != NULL)
+      if (isLeftPercent () && parent != NULL)
         {
           return (int)((left * parent->getWidthInPixels ()) / 100);
         }
@@ -1413,7 +1413,7 @@ LayoutRegion::getLeftInPixels ()
   else if (!isnan (width) && !isnan (right))
     {
       // left is based on width and right
-      if (isWidthPercentual () && parent != NULL)
+      if (isWidthPercent () && parent != NULL)
         {
           w = (int)((width * parent->getWidthInPixels ()) / 100);
         }
@@ -1424,7 +1424,7 @@ LayoutRegion::getLeftInPixels ()
 
       if (parent != NULL)
         {
-          if (isRightPercentual ())
+          if (isRightPercent ())
             {
               r = (int)(((100 - right) * parent->getWidthInPixels ())
                         / 100);
@@ -1456,7 +1456,7 @@ LayoutRegion::getHeightInPixels ()
 
   if (!isnan (getHeight ()))
     {
-      if (isHeightPercentual () && parent != NULL)
+      if (isHeightPercent () && parent != NULL)
         {
           return (int)((getHeight () * parent->getHeightInPixels ()) / 100);
         }
@@ -1478,7 +1478,7 @@ LayoutRegion::getHeightInPixels ()
         {
           // height is based on top and bottom, independent of
           // height definition
-          if (isTopPercentual () && parent != NULL)
+          if (isTopPercent () && parent != NULL)
             {
               t = (int)((getTop () * parent->getHeightInPixels ()) / 100);
             }
@@ -1490,7 +1490,7 @@ LayoutRegion::getHeightInPixels ()
 
       if (!isnan (getBottom ()) && parent != NULL)
         {
-          if (isBottomPercentual ())
+          if (isBottomPercent ())
             {
               b = (int)(((100 - getBottom ())
                          * parent->getHeightInPixels ())
@@ -1521,7 +1521,7 @@ LayoutRegion::getWidthInPixels ()
 
   if (!(isnan (getWidth ())))
     {
-      if (isWidthPercentual () && parent != NULL)
+      if (isWidthPercent () && parent != NULL)
         {
           return (int)((width * parent->getWidthInPixels ()) / 100);
         }
@@ -1541,7 +1541,7 @@ LayoutRegion::getWidthInPixels ()
 
       if (!(isnan (getLeft ())))
         {
-          if (isLeftPercentual () && parent != NULL)
+          if (isLeftPercent () && parent != NULL)
             {
               l = (int)((getLeft () * parent->getWidthInPixels ()) / 100);
             }
@@ -1553,7 +1553,7 @@ LayoutRegion::getWidthInPixels ()
 
       if (!(isnan (getRight ())) && parent != NULL)
         {
-          if (isRightPercentual ())
+          if (isRightPercent ())
             {
               r = (int)(((100 - getRight ()) * parent->getWidthInPixels ())
                         / 100);
@@ -1703,12 +1703,12 @@ LayoutRegion::getAbsoluteTop ()
 }
 
 double
-LayoutRegion::getPercentualValue (const string &value)
+LayoutRegion::getPercentValue (const string &value)
 {
   string actualValue;
   double floatValue;
 
-  // retirar o caracter percentual da string
+  // retirar o caracter percent da string
   actualValue = value.substr (0, value.length () - 1);
   // converter para double
   floatValue = xstrtod (actualValue);
@@ -1720,17 +1720,8 @@ LayoutRegion::getPercentualValue (const string &value)
   // se maior que 100, retornar 100
   // floatValue = 100;
 
-  // retornar valor percentual
+  // retornar valor percent
   return floatValue;
-}
-
-bool
-LayoutRegion::isPercentualValue (const string &value)
-{
-  if (value.substr (value.length () - 1, 1) == "%")
-    return true;
-  else
-    return false;
 }
 
 bool

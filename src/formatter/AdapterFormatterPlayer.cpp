@@ -298,7 +298,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
   Node *ncmNode;
   double transpValue = -1;
   double parentOpacity = -1;
-  bool isPercentual;
+  bool isPercent;
   double explicitDur = -1;
 
   string left = "", top = "", width = "", height = "";
@@ -418,7 +418,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                 }
               else if (name == "transparency")
                 {
-                  transpValue = xstrtodorpercent (value, &isPercentual);
+                  transpValue = xstrtodorpercent (value, &isPercent);
                   parentOpacity = (1
                                    - ((AdapterPlayerManager *)manager)
                                          ->getNclPlayerData ()
@@ -623,7 +623,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                     }
                   else if (name == "transparency")
                     {
-                      transpValue = xstrtodorpercent (value, &isPercentual);
+                      transpValue = xstrtodorpercent (value, &isPercent);
                       parentOpacity = (1
                                        - ((AdapterPlayerManager *)manager)
                                              ->getNclPlayerData ()
@@ -786,38 +786,38 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
 
   if (left != "")
     {
-      region->setLeft (xstrtodorpercent (value, &isPercentual),
-                       isPercentual);
+      region->setLeft (xstrtodorpercent (value, &isPercent),
+                       isPercent);
     }
 
   if (top != "")
     {
-      region->setTop (xstrtodorpercent (value, &isPercentual),
-                      isPercentual);
+      region->setTop (xstrtodorpercent (value, &isPercent),
+                      isPercent);
     }
 
   if (width != "")
     {
-      region->setWidth (xstrtodorpercent (value, &isPercentual),
-                        isPercentual);
+      region->setWidth (xstrtodorpercent (value, &isPercent),
+                        isPercent);
     }
 
   if (height != "")
     {
-      region->setHeight (xstrtodorpercent (value, &isPercentual),
-                         isPercentual);
+      region->setHeight (xstrtodorpercent (value, &isPercent),
+                         isPercent);
     }
 
   if (bottom != "")
     {
-      region->setBottom (xstrtodorpercent (value, &isPercentual),
-                         isPercentual);
+      region->setBottom (xstrtodorpercent (value, &isPercent),
+                         isPercent);
     }
 
   if (right != "")
     {
-      region->setRight (xstrtodorpercent (value, &isPercentual),
-                        isPercentual);
+      region->setRight (xstrtodorpercent (value, &isPercent),
+                        isPercent);
     }
 
   if (plan == "" && mrl.find ("sbtvd-ts://") != std::string::npos)
@@ -1535,12 +1535,12 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
         {
           if (propName == "transparency")
             {
-              bool isPercentual;
+              bool isPercent;
               double transpValue, parentOpacity;
               NclFormatterRegion *fRegion;
               NclCascadingDescriptor *descriptor;
 
-              transpValue = xstrtodorpercent (value, &isPercentual);
+              transpValue = xstrtodorpercent (value, &isPercent);
               parentOpacity = (1
                                - ((AdapterPlayerManager *)manager)
                                      ->getNclPlayerData ()
