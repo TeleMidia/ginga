@@ -57,8 +57,8 @@ set(NCLUA_INCLUDE_DIRS "${install_dir}/include")
 link_directories("${install_dir}/lib")
 #end NCLUA
 
-set(CEF_VERSION cef_binary_3.3029.1617.gaf831b6_linux64)
-set(CEF_SHA1 SHA1=2dfc50694467df96113e270619835e14390575de)
+set(CEF_VERSION cef_binary_3.3029.1619.geeeb5d7_linux64_minimal)
+set(CEF_SHA1 f809ce65b0b532fcbba6cec5f0e60f731fd3cbbd)
 set(CEF_FILE ${CEF_VERSION}.tar.bz2)
 set(CEF_URL http://opensource.spotify.com/cefbuilds/${CEF_FILE})
 set(CEF_LOCAL_PATH ${CMAKE_BINARY_DIR}/3rdparty)
@@ -67,7 +67,9 @@ set(CEF_LOCAL_FILE ${CMAKE_BINARY_DIR}/3rdparty/${CEF_FILE}.tar.gz)
 # Download chromium embedded files
 if (NOT EXISTS "${CEF_LOCAL_FILE}")
   message(STATUS "-- Downloading chromium embedded binary package...")
-  file(DOWNLOAD ${CEF_URL} ${CEF_LOCAL_FILE} SAH1=${CEF_SAH1} SHOW_PROGRESS)
+  file(DOWNLOAD ${CEF_URL} ${CEF_LOCAL_FILE}
+       EXPECTED_HASH SHA1=${CEF_SHA1}
+       SHOW_PROGRESS)
 
   message(STATUS "-- Extracting chromium embedded files...")
   execute_process(
@@ -77,7 +79,6 @@ if (NOT EXISTS "${CEF_LOCAL_FILE}")
 endif()
 
 set(CEF_ROOT "${CEF_LOCAL_PATH}/${CEF_VERSION}/")
-message (WARNING ${CEF_ROOT})
 find_package(CEF REQUIRED)
 add_definitions(-DWITH_CEF=1)
 add_subdirectory(${CEF_ROOT}/libcef_dll libcef_dll_bin)
