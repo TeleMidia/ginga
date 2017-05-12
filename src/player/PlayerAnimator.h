@@ -35,12 +35,13 @@ class PlayerAnimator
    PlayerAnimator();
    ~PlayerAnimator();
    void addProperty(string dur, string name, string value);
-   void update(SDL_Rect* rect);
+   void update(SDL_Rect* rect, guint8* alpha);
 
    private:
    GList *properties; 
    void updateList(string dur, string name, string value);
    void updatePosition(SDL_Rect* rect, ANIM_PROPERTY* pr);
+   void updateColor(guint8* alpha, ANIM_PROPERTY* pr);
    void calculePosition(gint32 * value, ANIM_PROPERTY* pr,gint32 dir);
    bool calculeVelocity(gint32 * value, ANIM_PROPERTY* pr);
    gdouble cvtTimeIntToDouble(guint32 value);

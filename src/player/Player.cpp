@@ -624,14 +624,14 @@ Player::redraw(SDL_Renderer* renderer){
   if(this->status == SLEEPING)
    return;
 
-  animator->update(&this->rect);
+  animator->update(&this->rect,&this->alpha);
 
   if(this->window!=NULL)
       this->window->getBorder(&this->borderColor,&this->borderWidth);
 
    if (this->bgColor.a > 0){  // background color  
       SDLx_SetRenderDrawBlendMode (renderer, SDL_BLENDMODE_BLEND);
-      SDLx_SetRenderDrawColor (renderer, this->bgColor.r, this->bgColor.g, this->bgColor.b, this->bgColor.a);
+      SDLx_SetRenderDrawColor (renderer, this->bgColor.r, this->bgColor.g, this->bgColor.b, this->alpha);
       SDLx_RenderFillRect (renderer, &this->rect);
     } 
 
