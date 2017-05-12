@@ -181,7 +181,6 @@ if test "$with_cef" != no ; then
   AC_SUBST(CEF_PATH)
   AC_SUBST(CEF_CFLAGS)
   AC_SUBST(CEF_LIBS)
-  AC_MSG_NOTICE([AQUI])
   AC_DEFINE([WITH_CEF], [1], [Use libcef.])
 fi
 
