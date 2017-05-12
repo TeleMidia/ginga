@@ -38,6 +38,7 @@ class PlayerAnimator
 
    private:
    GList *properties; 
+   void updateList(string dur, string name, string value);
    void updatePosition(SDL_Rect* rect, ANIM_PROPERTY* pr);
    void calculePosition(gint32 * value, ANIM_PROPERTY* pr,gint32 dir);
    bool calculeVelocity(gint32 * value, ANIM_PROPERTY* pr);
