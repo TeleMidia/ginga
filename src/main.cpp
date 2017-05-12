@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 
 #if defined WITH_CEF && WITH_CEF
-# include "cef_app.h"
+#include "cef_app.h"
 #endif
 
 #include "formatter/FormatterMediator.h"

@@ -57,15 +57,22 @@ PlayerAnimator::updateList(string dur, string name, string value){
    pr->curValue = 0;
    pr->velocity = 0;
    if (xstrispercent (value))
-     pr->targetValue = xstrtodorpercent (value) * 100.;
+     if(name == "transparency")
+       pr->targetValue = xstrtodorpercent (value) * 255.;
+     else
+       pr->targetValue = xstrtodorpercent (value) * 100.;
    else
-     pr->targetValue = xstrtod (value);
+     if(name == "transparency"){
+       pr->targetValue = xstrtod (value) * 255.;
+     }
+     else 
+       pr->targetValue = xstrtod (value);
 
    this->properties = g_list_insert (this->properties, pr,-1);
 }
 
 void
-PlayerAnimator::update(SDL_Rect* rect)
+PlayerAnimator::update(SDL_Rect* rect, guint8* alpha)
 {
   GList* l =  this->properties;
   while (l != NULL)
@@ -83,6 +90,9 @@ PlayerAnimator::update(SDL_Rect* rect)
               pr->name == "height")
       {
         updatePosition(rect, pr);
+      }
+      else if(pr->name == "transparency"){
+        updateColor(alpha, pr);
       }
     }
 
@@ -103,11 +113,15 @@ PlayerAnimator::getAnimationVelocity( gdouble initPos,
 {
   if(duration <= 0)
     return 0;
+  
+ // g_debug("iPos: %f fPos: %f \n", initPos, finalPos);  
 
   gdouble distance = finalPos - initPos;
 
   if(distance < 0)
     distance*=-1;
+
+ // g_debug("distance: %f velocity: %f \n", distance, (distance / duration) );  
 
   return distance / duration;
 }
@@ -119,7 +133,7 @@ PlayerAnimator::calculeVelocity(gint32 * value, ANIM_PROPERTY* pr)
                                         pr->targetValue,
                                         pr->duration );
    pr->curValue = (gdouble)*value;
-
+   
    if((guint32)pr->velocity == 0)
    {
       *value = (guint32)pr->targetValue;
@@ -144,6 +158,26 @@ PlayerAnimator::calculePosition(gint32 * value, ANIM_PROPERTY* pr, gint32 dir)
     this->properties = g_list_remove(this->properties, pr);
     free(pr);
   }
+}
+
+void
+PlayerAnimator::updateColor(guint8* alpha, ANIM_PROPERTY* pr)
+{
+    if(alpha == NULL)
+     return;
+   
+    if(pr->name == "transparency")
+    {
+      if(pr->velocity <=0)
+        if(!calculeVelocity( (gint32*)alpha, pr))
+          return;
+
+      if( (gdouble)(*alpha) < pr->targetValue)
+        calculePosition( (gint32*)alpha, pr, 1);
+      else if( (gdouble)(*alpha) > pr->targetValue)
+        calculePosition( (gint32*)alpha, pr, -1);  
+    } 
+
 }
 
 void
