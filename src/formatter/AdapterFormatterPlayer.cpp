@@ -298,7 +298,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
   Node *ncmNode;
   double transpValue = -1;
   double parentOpacity = -1;
-  bool isPercent;
+  bool isPercent = false;
   double explicitDur = -1;
 
   string left = "", top = "", width = "", height = "";

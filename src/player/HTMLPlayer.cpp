@@ -177,7 +177,6 @@ HTMLPlayer::getPlayerKey(SDL_Keycode key)
 
   bool WITH_SHIFT = false;    
   bool WITH_CAPSLOCK = false; 
-  bool WITH_ALTGR = false;    
 
   bool UPPERCASE = (WITH_CAPSLOCK && !WITH_SHIFT) || 
                    (WITH_SHIFT && !WITH_CAPSLOCK);
