@@ -253,4 +253,15 @@ endif # WITH_PANGO
 if WITH_CEF
 src+= formatter/AdapterHTMLPlayer.cpp
 src+= player/HTMLPlayer.cpp
+
+cef_filesdir=$(prefix)/bin/
+cef_files_DATA=$(CEF_PATH)/Release/natives_blob.bin \
+  $(CEF_PATH)/Release/snapshot_blob.bin \
+  $(CEF_PATH)/Release/libcef.so \
+  $(CEF_PATH)/Resources/icudtl.dat \
+  $(CEF_PATH)/Resources/cef.pak \
+  $(CEF_PATH)/Resources/cef_100_percent.pak \
+  $(CEF_PATH)/Resources/cef_200_percent.pak \
+  $(CEF_PATH)/Resources/cef_extensions.pak \
+  $(NULL)
 endif # WITH_CEF
