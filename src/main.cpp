@@ -122,7 +122,7 @@ int
 main (int argc, char **argv)
 {
   FormatterMediator *formatter;
-  int ginga_argc = 1;
+  int ginga_argc = argc;
   char **ginga_argv = g_strdupv(argv);
 
 #if defined WITH_CEF && WITH_CEF
