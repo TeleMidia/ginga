@@ -424,7 +424,7 @@ NclCascadingDescriptor::updateRegion (void *formatterLayout, const string &name,
                                       const string &v)
 {
   vector<string> *params;
-  bool isPercent;
+  bool isPercent = false;
   string value = v;
 
   if (name == "left")
