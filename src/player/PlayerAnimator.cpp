@@ -34,46 +34,34 @@ PlayerAnimator::~PlayerAnimator ()
 }
 
 void
-PlayerAnimator::addProperty( const string &dur,
-                             const string &name,
-                             const string &value )
-{
-  // GList* l =  this->properties;
-  // while (l != NULL)
-  //   {
-  //     GList *next = l->next;
-  //     ANIM_PROPERTY* pr = (ANIM_PROPERTY*)l->data;
-  //     if(!pr)
-  //       {
-  //         this->properties = g_list_remove_link (this->properties, l);
-  //       }
-  //     else
-  //       {
-  //         if(pr->name == name){
-  //           pr->velocity = 0;
-  //           pr->duration = xstrtod(dur);
-  //           if(isPercentValue (value))
-  //             pr->targetValue = getPercentValue (value);
-  //           else
-  //             pr->targetValue = xstrtod (value);
-  //           return;
-  //         }
-  //       }
-  //     l = next;
-  //   }
+PlayerAnimator::addProperty(string dur, string name, string value){
+   if(name == "bounds"){
+     vector<string> *params = split(value, ",");
+     if(params->size () == 4){
+       updateList(dur,"left",(*params)[0]);
+       updateList(dur,"top",(*params)[1]);
+       updateList(dur,"width",(*params)[2]);
+       updateList(dur,"height",(*params)[3]);
+     }
+   }
+   else
+     updateList(dur, name, value);
+}
 
-  ANIM_PROPERTY* pr = new ANIM_PROPERTY;
-  pr->name = name;
-  pr->duration = xstrtod(dur);
-  pr->curValue = 0;
-  pr->velocity = 0;
+void 
+PlayerAnimator::updateList(string dur, string name, string value){
 
-  if (xstrispercent (value))
-    pr->targetValue = xstrtodorpercent (value) * 100.0;
-  else
-    pr->targetValue = xstrtod (value);
+   ANIM_PROPERTY* pr = new ANIM_PROPERTY;
+   pr->name = name;
+   pr->duration = xstrtod(dur);
+   pr->curValue = 0;
+   pr->velocity = 0;
+   if (xstrispercent (value))
+     pr->targetValue = xstrtodorpercent (value) * 100.;
+   else
+     pr->targetValue = xstrtod (value);
 
-  this->properties = g_list_insert (this->properties, pr, -1);
+   this->properties = g_list_insert (this->properties, pr,-1);
 }
 
 void
