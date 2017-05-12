@@ -52,7 +52,7 @@ AdapterFormatterPlayer::AdapterFormatterPlayer ()
 AdapterFormatterPlayer::~AdapterFormatterPlayer ()
 {
   int objDevice;
-  
+
   Ginga_Display->unregisterKeyEventListener(this);
 
   lockObject ();
@@ -418,13 +418,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                 }
               else if (name == "transparency")
                 {
-                  value = cvtPercentual (value, &isPercentual);
-                  transpValue = xstrtod (value);
-                  if (isPercentual)
-                    {
-                      transpValue = transpValue / 100;
-                    }
-
+                  transpValue = xstrtodorpercent (value, &isPercentual);
                   parentOpacity = (1
                                    - ((AdapterPlayerManager *)manager)
                                          ->getNclPlayerData ()
@@ -432,12 +426,6 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
 
                   transpValue = (1 - (parentOpacity
                                       - (parentOpacity * transpValue)));
-
-                  clog << "AdapterFormatterPlayer::prepareProperties";
-                  clog << " parent opacity is '" << parentOpacity;
-                  clog << "' original transparency property is '";
-                  clog << value << "' new value is '";
-                  clog << transpValue << "'" << endl;
 
                   if (fRegion != NULL)
                     {
@@ -465,7 +453,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                   if (fRegion != NULL)
                     {
                       SDL_Color *c = new SDL_Color();
-                      ginga_color_input_to_sdl_color(value,c); 
+                      ginga_color_input_to_sdl_color(value,c);
                       fRegion->setFocusBorderColor(c);
                     }
                 }
@@ -489,7 +477,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                   if (fRegion != NULL)
                     {
                       SDL_Color *c = new SDL_Color();
-                      ginga_color_input_to_sdl_color(value,c); 
+                      ginga_color_input_to_sdl_color(value,c);
                       fRegion->setSelBorderColor (c);
                     }
                 }
@@ -635,13 +623,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                     }
                   else if (name == "transparency")
                     {
-                      value = cvtPercentual (value, &isPercentual);
-                      transpValue = xstrtod (value);
-                      if (isPercentual)
-                        {
-                          transpValue = transpValue / 100;
-                        }
-
+                      transpValue = xstrtodorpercent (value, &isPercentual);
                       parentOpacity = (1
                                        - ((AdapterPlayerManager *)manager)
                                              ->getNclPlayerData ()
@@ -649,12 +631,6 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
 
                       transpValue = (1 - (parentOpacity
                                           - (parentOpacity * transpValue)));
-
-                      clog << "AdapterFormatterPlayer::prepareProperties";
-                      clog << " parent opacity is '" << parentOpacity;
-                      clog << "' original transparency property is '";
-                      clog << value << "' new value is '";
-                      clog << transpValue << "'" << endl;
 
                       if (fRegion != NULL)
                         {
@@ -672,8 +648,8 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                           else
                             {
                               SDL_Color *bg = new SDL_Color();
-                              ginga_color_input_to_sdl_color(value,bg); 
-                              fRegion->setBackgroundColor (bg);      
+                              ginga_color_input_to_sdl_color(value,bg);
+                              fRegion->setBackgroundColor (bg);
                             }
                         }
                     }
@@ -810,38 +786,38 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
 
   if (left != "")
     {
-      value = cvtPercentual (left, &isPercentual);
-      region->setLeft (xstrtod (value), isPercentual);
+      region->setLeft (xstrtodorpercent (value, &isPercentual),
+                       isPercentual);
     }
 
   if (top != "")
     {
-      value = cvtPercentual (top, &isPercentual);
-      region->setTop (xstrtod (value), isPercentual);
+      region->setTop (xstrtodorpercent (value, &isPercentual),
+                      isPercentual);
     }
 
   if (width != "")
     {
-      value = cvtPercentual (width, &isPercentual);
-      region->setWidth (xstrtod (value), isPercentual);
+      region->setWidth (xstrtodorpercent (value, &isPercentual),
+                        isPercentual);
     }
 
   if (height != "")
     {
-      value = cvtPercentual (height, &isPercentual);
-      region->setHeight (xstrtod (value), isPercentual);
+      region->setHeight (xstrtodorpercent (value, &isPercentual),
+                         isPercentual);
     }
 
   if (bottom != "")
     {
-      value = cvtPercentual (bottom, &isPercentual);
-      region->setBottom (xstrtod (value), isPercentual);
+      region->setBottom (xstrtodorpercent (value, &isPercentual),
+                         isPercentual);
     }
 
   if (right != "")
     {
-      value = cvtPercentual (right, &isPercentual);
-      region->setRight (xstrtod (value), isPercentual);
+      region->setRight (xstrtodorpercent (value, &isPercentual),
+                        isPercentual);
     }
 
   if (plan == "" && mrl.find ("sbtvd-ts://") != std::string::npos)
@@ -1313,11 +1289,11 @@ AdapterFormatterPlayer::stop ()
   NclFormatterEvent *mainEvent = NULL;
   vector<NclFormatterEvent *> *events = NULL;
 
-  
+
 
   if (player == NULL && object == NULL)
     {
-    
+
       unlockObject ();
       return false;
     }
@@ -1383,7 +1359,7 @@ AdapterFormatterPlayer::pause ()
   if (object != NULL && player != NULL && object->pause ())
     {
       player->pause ();
-     
+
       player->notifyReferPlayers (EventUtil::TR_PAUSES);
       return true;
     }
@@ -1564,13 +1540,7 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
               NclFormatterRegion *fRegion;
               NclCascadingDescriptor *descriptor;
 
-              value = cvtPercentual (value, &isPercentual);
-              transpValue = xstrtod (value);
-              if (isPercentual)
-                {
-                  transpValue = transpValue / 100;
-                }
-
+              transpValue = xstrtodorpercent (value, &isPercentual);
               parentOpacity = (1
                                - ((AdapterPlayerManager *)manager)
                                      ->getNclPlayerData ()
@@ -1780,10 +1750,10 @@ AdapterFormatterPlayer::updateStatus (short code,
 
 //dragon head
 void
-AdapterFormatterPlayer::keyInputCallback (SDL_EventType evtType, SDL_Keycode key){     
-    
+AdapterFormatterPlayer::keyInputCallback (SDL_EventType evtType, SDL_Keycode key){
+
    if(evtType == SDL_KEYDOWN)
-      return; 
+      return;
   /*
   if (xruntime_ms () - eventTS < 300){
       return;

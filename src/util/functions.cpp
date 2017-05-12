@@ -69,22 +69,6 @@ strUTCToSec (const string &utcV)
   return secs;
 }
 
-string
-cvtPercentual (const string &value, bool *isPercentual)
-{
-  string newValue;
-
-  newValue = value;
-  *isPercentual = false;
-
-  if (value.find ("%") != std::string::npos)
-    {
-      *isPercentual = true;
-      newValue = value.substr (0, value.length () - 1);
-    }
-
-  return newValue;
-}
 
 static vector<string> *
 localSplit (const string &str, const string &delimiter)
@@ -176,79 +160,6 @@ split (const string &str, const string &delimiter, const string &pos_delimiter)
     splited->push_back (str.substr (pos));
 
   return splited;
-}
-
-double
-getPercentualValue (const string &value)
-{
-  string actualValue;
-  double floatValue;
-
-  // retirar o caracter percentual da string
-  actualValue = value.substr (0, (value.length () - 1));
-  // converter para double
-  floatValue = xstrtod (actualValue);
-
-  // se menor que zero, retornar zero
-  if (floatValue < 0)
-    floatValue = 0;
-  // else if (floatValue > 100)
-  // se maior que 100, retornar 100
-  // floatValue = 100;
-
-  // retornar valor percentual
-  return floatValue;
-}
-
-/**
- * Testa se uma string indica um valor percentual
- * @param value string com um valor
- * @return true se o valor e' percentual; false caso contrario.
- */
-bool
-isPercentualValue (const string &value)
-{
-  if (value.find_last_of ("%") == (value.length () - 1))
-    return true;
-  else
-    return false;
-}
-
-// factor is not in use. It will be removed.
-double
-getNextStepValue (double initValue,
-                  double target,
-                  arg_unused (int factor),
-                  double time,
-                  double initTime, double dur, int durStep)
-{
-  int numSteps;
-  double stepSize, nextStepValue;
-
-  // rg
-  if (durStep <= 0)
-    { // durStep is negative or not defined
-      nextStepValue
-          = initValue
-            + ((double)(target - initValue) / dur) * (time - initTime);
-    }
-  else if (dur <= 0)
-    {
-      return target;
-    }
-  else
-    {
-      numSteps = (int) (dur / (durStep * 1000));
-      stepSize = (target - initValue) / numSteps;
-
-      // clog << floor((time-initTime)/(durStep*1000)) << endl;
-      // clog << stepSize << endl << endl;
-      nextStepValue
-          = initValue
-            + (int)((int)((time - initTime) / (durStep * 1000)) * stepSize);
-    }
-
-  return nextStepValue;
 }
 
 GINGA_UTIL_END

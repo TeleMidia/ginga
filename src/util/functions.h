@@ -28,18 +28,9 @@ GINGA_UTIL_BEGIN
 
 // string
 double strUTCToSec (const string &utcValue);
-string cvtPercentual (const string &value, bool *isPercentual);
-
-bool isPercentualValue (const string &value);
-double getPercentualValue (const string &value);
 
 vector<string> *
 split (const string &str, const string &token, const string &pos_delimiter="");
-
-// misc
-double
-getNextStepValue (double currentStepValue, double value, int factor,
-                  double time, double initTime, double dur, int stepSize);
 
 GINGA_UTIL_END
 

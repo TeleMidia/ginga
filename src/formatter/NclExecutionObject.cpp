@@ -1560,76 +1560,32 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
     {
       if (left != "")
         {
-          if (isPercentualValue (left))
-            {
-              ncmRegion->setTargetLeft (getPercentualValue (left), true);
-            }
-          else
-            {
-              ncmRegion->setTargetLeft (xstrtod (left), false);
-            }
+          ncmRegion->setTargetLeft (xstrtodorpercent (left), true);
         }
 
       if (top != "")
         {
-          if (isPercentualValue (top))
-            {
-              ncmRegion->setTargetTop (getPercentualValue (top), true);
-            }
-          else
-            {
-              ncmRegion->setTargetTop (xstrtod (top), false);
-            }
+          ncmRegion->setTargetTop (xstrtodorpercent (top), true);
         }
 
       if (width != "")
         {
-          if (isPercentualValue (width))
-            {
-              ncmRegion->setTargetWidth (getPercentualValue (width), true);
-            }
-          else
-            {
-              ncmRegion->setTargetWidth (xstrtod (width), false);
-            }
+          ncmRegion->setTargetWidth (xstrtodorpercent (width), true);
         }
 
       if (height != "")
         {
-          if (isPercentualValue (height))
-            {
-              ncmRegion->setTargetHeight (getPercentualValue (height),
-                                          true);
-            }
-          else
-            {
-              ncmRegion->setTargetHeight (xstrtod (height), false);
-            }
+          ncmRegion->setTargetHeight (xstrtodorpercent (height), true);
         }
 
       if (bottom != "")
         {
-          if (isPercentualValue (bottom))
-            {
-              ncmRegion->setTargetBottom (getPercentualValue (bottom),
-                                          true);
-            }
-          else
-            {
-              ncmRegion->setTargetBottom (xstrtod (bottom), false);
-            }
+          ncmRegion->setTargetBottom (xstrtodorpercent (bottom), true);
         }
 
       if (right != "")
         {
-          if (isPercentualValue (right))
-            {
-              ncmRegion->setTargetRight (getPercentualValue (right), true);
-            }
-          else
-            {
-              ncmRegion->setTargetRight (xstrtod (right), false);
-            }
+          ncmRegion->setTargetRight (xstrtodorpercent (right), true);
         }
 
       // set the values

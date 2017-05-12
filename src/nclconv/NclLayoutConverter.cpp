@@ -148,7 +148,7 @@ NclLayoutConverter::createRegion (DOMElement *parentElement,
 
       if (attribute != "")
         {
-          if (isPercentualValue (attribute))
+          if (xstrispercent (attribute))
             {
               percentValue = getPercentualValue (attribute);
               ncmRegion->setLeft (percentValue, true);
@@ -168,7 +168,7 @@ NclLayoutConverter::createRegion (DOMElement *parentElement,
       attribute = XMLString::transcode (
           parentElement->getAttribute (XMLString::transcode ("right")));
 
-      if (isPercentualValue (attribute))
+      if (xstrispercent (attribute))
         {
           percentValue = getPercentualValue (attribute);
           ncmRegion->setRight (percentValue, true);
@@ -185,7 +185,7 @@ NclLayoutConverter::createRegion (DOMElement *parentElement,
       attribute = XMLString::transcode (
           parentElement->getAttribute (XMLString::transcode ("top")));
 
-      if (isPercentualValue (attribute))
+      if (xstrispercent (attribute))
         {
           percentValue = getPercentualValue (attribute);
           ncmRegion->setTop (percentValue, true);
@@ -202,7 +202,7 @@ NclLayoutConverter::createRegion (DOMElement *parentElement,
       attribute = XMLString::transcode (
           parentElement->getAttribute (XMLString::transcode ("bottom")));
 
-      if (isPercentualValue (attribute))
+      if (xstrispercent (attribute))
         {
           percentValue = getPercentualValue (attribute);
           ncmRegion->setBottom (percentValue, true);
@@ -219,7 +219,7 @@ NclLayoutConverter::createRegion (DOMElement *parentElement,
       attribute = XMLString::transcode (
           parentElement->getAttribute (XMLString::transcode ("width")));
 
-      if (isPercentualValue (attribute))
+      if (xstrispercent (attribute))
         {
           percentValue = getPercentualValue (attribute);
           ncmRegion->setWidth (percentValue, true);
@@ -236,7 +236,7 @@ NclLayoutConverter::createRegion (DOMElement *parentElement,
       attribute = XMLString::transcode (
           parentElement->getAttribute (XMLString::transcode ("height")));
 
-      if (isPercentualValue (attribute))
+      if (xstrispercent (attribute))
         {
           percentValue = getPercentualValue (attribute);
           ncmRegion->setHeight (percentValue, true);
@@ -247,116 +247,27 @@ NclLayoutConverter::createRegion (DOMElement *parentElement,
         }
     }
 
-  // atributo: zIndex
   if (parentElement->hasAttribute (XMLString::transcode ("zIndex")))
     {
       attribute = XMLString::transcode (
           parentElement->getAttribute (XMLString::transcode ("zIndex")));
 
-      ncmRegion->setZIndex (atoi (attribute.c_str ()));
+      ncmRegion->setZIndex (xstrto_int (attribute));
     }
 
-  // atributo movable
-  if (parentElement->hasAttribute (XMLString::transcode ("movable")))
-    {
-      attribute = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("movable")));
-
-      if (XMLString::compareIString (attribute.c_str (), "false") == 0)
-        {
-          ncmRegion->setMovable (false);
-        }
-      else
-        {
-          ncmRegion->setMovable (true);
-        }
-    }
-
-  // atributo resizable
-  if (parentElement->hasAttribute (XMLString::transcode ("resizable")))
-    {
-      attribute = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("resizable")));
-
-      if (XMLString::compareIString (attribute.c_str (), "false") == 0)
-        {
-          ncmRegion->setResizable (false);
-        }
-      else
-        {
-          ncmRegion->setResizable (true);
-        }
-    }
-
-  // atributo decorated
-  if (parentElement->hasAttribute (XMLString::transcode ("decorated")))
-    {
-      attribute = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("decorated")));
-
-      if (XMLString::compareIString (attribute.c_str (), "false") == 0)
-        {
-          ncmRegion->setDecorated (false);
-        }
-      else
-        {
-          ncmRegion->setDecorated (true);
-        }
-    }
-
-  // retorna regiao
   return ncmRegion;
 }
 
 double
 NclLayoutConverter::getPercentualValue (const string &value)
 {
-  string actualValue;
-  double floatValue;
-
-  // retirar o caracter percentual da string
-  actualValue = value.substr (0, value.length () - 1);
-  // converter para double
-  floatValue = xstrtod (actualValue);
-
-  // se menor que zero, retornar zero
-  if (floatValue < 0)
-    floatValue = 0;
-  // else if (floatValue > 100)
-  // se maior que 100, retornar 100
-  // floatValue = 100;
-
-  // retornar valor percentual
-  return floatValue;
+  return xstrtodorpercent (value) * 100.;
 }
 
 int
 NclLayoutConverter::getPixelValue (const string &value)
 {
-  string actualValue;
-
-  if (value.length () > 2 && value.substr (value.length () - 2, 2) == "px")
-    {
-      // string indica que o valor e' em pixel
-      actualValue = value.substr (0, value.length () - 2);
-    }
-  else
-    {
-      // string simplesmente indicao o valor
-      actualValue = value;
-    }
-
-  // converter para inteiro e retornar
-  return atoi (actualValue.c_str ());
-}
-
-bool
-NclLayoutConverter::isPercentualValue (const string &value)
-{
-  if (value[value.length () - 1] == '%')
-    return true;
-  else
-    return false;
+  return xstrto_int (value);
 }
 
 GINGA_NCLCONV_END
