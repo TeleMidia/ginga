@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.2)
 project(ginga)
 
+add_definitions( -fexceptions )
+
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -21,7 +23,13 @@ find_package(RSVG REQUIRED)
 find_package(FFmpeg REQUIRED)
 find_package(GStreamer REQUIRED)
 
-find_package(LinuxDVB)
+set (CEF_ROOT "${CMAKE_SOURCE_DIR}/../deps/cef")
+set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CEF_ROOT}/cmake")
+find_package(CEF REQUIRED)
+add_subdirectory(${CEF_LIBCEF_DLL_WRAPPER_PATH} libcef_dll_wrapper)
+# Logical target used to link the libcef library.
+ADD_LOGICAL_TARGET("libcef_lib" "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
+SET_CEF_TARGET_OUT_DIR()
 
 #add_definitions(-DPACKAGE_VERSION="1.0")
 #add_definitions(-DWITH_ISDBT=0)
@@ -63,21 +71,12 @@ add_executable(ginga
   ../src/ctxmgmt/ContextManager.cpp
   ../src/ctxmgmt/GingaUser.cpp
   ../src/ctxmgmt/SystemInfo.cpp
-
-  ../src/formatter/AdapterAVPlayer.cpp
   ../src/formatter/AdapterApplicationPlayer.cpp
-#  ../src/formatter/AdapterChannelPlayer.cpp
   ../src/formatter/AdapterFormatterPlayer.cpp
   ../src/formatter/AdapterImagePlayer.cpp
   ../src/formatter/AdapterLuaPlayer.cpp
-  ../src/formatter/AdapterMirrorPlayer.cpp
   ../src/formatter/AdapterNCLPlayer.cpp
-  ../src/formatter/AdapterNewVideoPlayer.cpp
-  ../src/formatter/AdapterSvgPlayer.cpp
-  ../src/formatter/AdapterTextPlayer.cpp
   ../src/formatter/AdapterPlayerManager.cpp
-  ../src/formatter/AdapterProgramAVPlayer.cpp
-  ../src/formatter/AnimationController.cpp
   ../src/formatter/FormatterBaseDevice.cpp
   ../src/formatter/FormatterConverter.cpp
   ../src/formatter/FormatterFocusManager.cpp
@@ -120,28 +119,13 @@ add_executable(ginga
   ../src/formatter/NclPresentationEvent.cpp
   ../src/formatter/NclSelectionEvent.cpp
   ../src/formatter/NclSwitchEvent.cpp
-  ../src/formatter/PrefetchManager.cpp
   ../src/formatter/PresentationContext.cpp
   ../src/formatter/PrivateBaseContext.cpp
-  ../src/formatter/PrivateBaseManager.cpp
   ../src/formatter/RuleAdapter.cpp
-
-  ../src/ic/CurlInteractiveChannel.cpp
-  ../src/ic/InteractiveChannelManager.cpp
-
-  ../src/lssm/CommonCoreManager.cpp
-  ../src/lssm/PresentationEngineManager.cpp
-
-  ../src/mb/AudioProvider.cpp
   ../src/mb/Display.cpp
   ../src/mb/DisplayDebug.cpp
   ../src/mb/KeyMap.cpp
-  ../src/mb/SDL2ffmpeg.cpp
-  ../src/mb/SDLConvert.cpp
-  ../src/mb/SDLSurface.cpp
   ../src/mb/SDLWindow.cpp
-  ../src/mb/VideoProvider.cpp
-
   ../src/ncl/AbsoluteReferenceContent.cpp
   ../src/ncl/Action.cpp
   ../src/ncl/Anchor.cpp
@@ -163,7 +147,6 @@ add_executable(ginga
   ../src/ncl/Content.cpp
   ../src/ncl/ContentAnchor.cpp
   ../src/ncl/ContentNode.cpp
-  ../src/ncl/ContentTypeManager.cpp
   ../src/ncl/ContextNode.cpp
   ../src/ncl/Descriptor.cpp
   ../src/ncl/DescriptorBase.cpp
@@ -209,8 +192,6 @@ add_executable(ginga
   ../src/ncl/TransitionUtil.cpp
   ../src/ncl/TriggerExpression.cpp
   ../src/ncl/ValueAssessment.cpp
-
-  ../src/nclconv/DOMTreeErrorReporter.cpp
   ../src/nclconv/DocumentParser.cpp
   ../src/nclconv/NclComponentsConverter.cpp
   ../src/nclconv/NclComponentsParser.cpp
@@ -236,126 +217,38 @@ add_executable(ginga
   ../src/nclconv/NclStructureParser.cpp
   ../src/nclconv/NclTransitionConverter.cpp
   ../src/nclconv/NclTransitionParser.cpp
-  ../src/nclconv/XMLParsing.cpp
-
-  ../src/player/AVPlayer.cpp
-  ../src/player/ChannelPlayer.cpp
   ../src/player/ImagePlayer.cpp
   ../src/player/LuaPlayer.cpp
-  ../src/player/NewVideoPlayer.cpp
-  ../src/player/SvgPlayer.cpp
-  ../src/player/TextPlayer.cpp
   ../src/player/Player.cpp
-  ../src/player/ProgramAV.cpp
-  ../src/player/ShowButton.cpp
-
-  ../src/system/GingaLocatorFactory.cpp
-  ../src/system/PracticalSocket.cpp
-  ../src/system/Stc.cpp
-  ../src/system/SystemCompat.cpp
+  ../src/player/PlayerAnimator.cpp
   ../src/system/Thread.cpp
-
-  ../src/util/Base64.cpp
   ../src/util/functions.cpp
 
-#  WITH_ISDBT
-  ../src/lssm/DataWrapperListener.cpp
-  ../src/lssm/StcWrapper.cpp
-  ../src/isdbt-dataproc/DataProcessor.cpp
-  ../src/isdbt-dataproc/DsmccBinding.cpp
-  ../src/isdbt-dataproc/DsmccBiop.cpp
-  ../src/isdbt-dataproc/DsmccCrc.cpp
-  ../src/isdbt-dataproc/DsmccDownloadDataBlock.cpp
-  ../src/isdbt-dataproc/DsmccDownloadInfoIndication.cpp
-  ../src/isdbt-dataproc/DsmccDownloadServerInitiate.cpp
-  ../src/isdbt-dataproc/DsmccIor.cpp
-  ../src/isdbt-dataproc/DsmccMessageHeader.cpp
-  ../src/isdbt-dataproc/DsmccMessageProcessor.cpp
-  ../src/isdbt-dataproc/DsmccModule.cpp
-  ../src/isdbt-dataproc/DsmccMpegDescriptor.cpp
-  ../src/isdbt-dataproc/DsmccNPTEndpoint.cpp
-  ../src/isdbt-dataproc/DsmccNPTProcessor.cpp
-  ../src/isdbt-dataproc/DsmccNPTReference.cpp
-  ../src/isdbt-dataproc/DsmccObject.cpp
-  ../src/isdbt-dataproc/DsmccObjectProcessor.cpp
-  ../src/isdbt-dataproc/DsmccSectionPayload.cpp
-  ../src/isdbt-dataproc/DsmccServiceDomain.cpp
-  ../src/isdbt-dataproc/DsmccStreamEvent.cpp
-  ../src/isdbt-dataproc/DsmccStreamMode.cpp
-  ../src/isdbt-dataproc/DsmccTimeBaseClock.cpp
-  ../src/isdbt-dataproc/EPGProcessor.cpp
-  ../src/isdbt-dataproc/FilterManager.cpp
-  ../src/isdbt-dataproc/NCLDataFile.cpp
-  ../src/isdbt-dataproc/NCLEventDescriptor.cpp
-  ../src/isdbt-dataproc/NCLMetadata.cpp
-  ../src/isdbt-dataproc/NCLMetadataParser.cpp
-  ../src/isdbt-dataproc/NCLSectionProcessor.cpp
-  ../src/isdbt-dataproc/SectionFilter.cpp
-  ../src/isdbt-tsparser/AIT.cpp
-  ../src/isdbt-tsparser/Application.cpp
-  ../src/isdbt-tsparser/ApplicationDescriptor.cpp
-  ../src/isdbt-tsparser/ApplicationLocationDescriptor.cpp
-  ../src/isdbt-tsparser/ApplicationNameDescriptor.cpp
-  ../src/isdbt-tsparser/AudioComponentDescriptor.cpp
-  ../src/isdbt-tsparser/ComponentDescriptor.cpp
-  ../src/isdbt-tsparser/ContentAvailabilityDescriptor.cpp
-  ../src/isdbt-tsparser/ContentDescriptor.cpp
-  ../src/isdbt-tsparser/DataContentDescriptor.cpp
-  ../src/isdbt-tsparser/Demuxer.cpp
-  ../src/isdbt-tsparser/DigitalCCDescriptor.cpp
-  ../src/isdbt-tsparser/EventInfo.cpp
-  ../src/isdbt-tsparser/ExtendedEventDescriptor.cpp
-  ../src/isdbt-tsparser/FrontendFilter.cpp
-  ../src/isdbt-tsparser/LocalTimeOffsetDescriptor.cpp
-  ../src/isdbt-tsparser/LogoTransmissionDescriptor.cpp
-  ../src/isdbt-tsparser/PSIFilter.cpp
-  ../src/isdbt-tsparser/ParentalRatingDescriptor.cpp
-  ../src/isdbt-tsparser/Pat.cpp
-  ../src/isdbt-tsparser/PesFilter.cpp
-  ../src/isdbt-tsparser/PipeFilter.cpp
-  ../src/isdbt-tsparser/Pmt.cpp
-  ../src/isdbt-tsparser/PrefetchDescriptor.cpp
-  ../src/isdbt-tsparser/SeriesDescriptor.cpp
-  ../src/isdbt-tsparser/ServiceDescriptor.cpp
-  ../src/isdbt-tsparser/ServiceInfo.cpp
-  ../src/isdbt-tsparser/ShortEventDescriptor.cpp
-  ../src/isdbt-tsparser/StreamIdentifierDescriptor.cpp
-  ../src/isdbt-tsparser/TOT.cpp
-  ../src/isdbt-tsparser/TSAdaptationField.cpp
-  ../src/isdbt-tsparser/TSPacket.cpp
-  ../src/isdbt-tsparser/TransportProtocolDescriptor.cpp
-  ../src/isdbt-tsparser/TransportSection.cpp
+#if WITH_ESPEAK
+#  ../src/formatter/AdapterSsmlPlayer.cpp
+#  ../src/player/SsmlPlayer.cpp
+# WITH_ESPEAK
 
-  ../src/isdbt-tuner/Channel.cpp
-  ../src/isdbt-tuner/FileSystemProvider.cpp
-  ../src/isdbt-tuner/MulticastProvider.cpp
-  ../src/isdbt-tuner/NetworkInterface.cpp
-  ../src/isdbt-tuner/NetworkProvider.cpp
-  ../src/isdbt-tuner/Tuner.cpp
+#if WITH_GSTREAMER
+  ../src/formatter/AdapterVideoPlayer.cpp
+  ../src/player/VideoPlayer.cpp
+# WITH_GSTREAMER
 
-#  WITH_MULTIDEVICE
-  #../src/formatter/FormatterActiveDevice.cpp
-  #../src/multidev/ActiveDeviceDomain.cpp
-  #../src/multidev/ActiveDeviceService.cpp
-  #../src/multidev/BaseDeviceDomain.cpp
-  #../src/multidev/BaseDeviceService.cpp
-  #../src/multidev/BroadcastDualSocketService.cpp
-  #../src/multidev/BroadcastSocketService.cpp
-  #../src/multidev/DeviceDomain.cpp
-  #../src/multidev/DeviceService.cpp
-  #../src/multidev/MulticastSocketService.cpp
-  #../src/multidev/NetworkUtil.cpp
-  #../src/multidev/RemoteDevice.cpp
-  #../src/multidev/RemoteDeviceManager.cpp
-  #../src/multidev/RemoteEventService.cpp
-  #../src/multidev/TcpClientConnection.cpp
-  #../src/multidev/TcpSocketService.cpp
+#if WITH_LIBRSVG
+  ../src/formatter/AdapterSvgPlayer.cpp
+  ../src/player/SvgPlayer.cpp
+#WITH_LIBRSVG
 
-# WITH_LINUXDVB
-  ../src/isdbt-tuner/ISDBTFrontend.cpp
-  ../src/isdbt-tuner/ISDBTProvider.cpp
-  ../src/isdbt-tuner/RingBuffer.cpp
-  
+#if WITH_PANGO
+  ../src/formatter/AdapterTextPlayer.cpp
+  ../src/player/TextPlayer.cpp
+# WITH_PANGO
+
+#if WITH_CEF
+  ../src/formatter/AdapterHTMLPlayer.cpp
+  ../src/player/HTMLPlayer.cpp
+# WITH_CEF
+
 #  main
   ../src/main.cpp
 )
@@ -381,6 +274,7 @@ target_include_directories(ginga PRIVATE
   ${LinuxDVB_INCLUDE_DIRS}
 
   ${NCLUA_INCLUDE_DIRS}
+  "${CEF_ROOT}/include"
 )
 
 target_link_libraries(ginga PRIVATE
@@ -409,6 +303,10 @@ target_link_libraries(ginga PRIVATE
   ${RSVG_LIBRARIES}
 
   nclua
+
+  libcef_lib
+  libcef_dll_wrapper
+  ${CEF_STANDARD_LIBS}
 )
 
 # Copy datafiles to build dir
@@ -418,3 +316,11 @@ add_custom_target(copy-data-files ALL
 )
 
 configure_file(${CMAKE_SOURCE_DIR}/config.h.in config.h)
+
+# Copy binary and resource files to the target output directory.
+COPY_FILES(ginga "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
+COPY_FILES(ginga "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${CEF_TARGET_OUT_DIR}")
+
+# Set SUID permissions on the chrome-sandbox target.
+SET_LINUX_SUID_PERMISSIONS(ginga "${CEF_TARGET_OUT_DIR}/chrome-sandbox")
+
