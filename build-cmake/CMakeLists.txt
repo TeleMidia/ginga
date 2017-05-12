@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 project(ginga)
 
-add_definitions( -fexceptions )
-
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -47,6 +45,8 @@ ExternalProject_Add(nclua_build
   GIT_TAG master
   UPDATE_COMMAND ""
 
+  PREFIX ${CMAKE_CURRENT_BINARY_DIR}/3rdparty/nclua
+
   CONFIGURE_COMMAND <SOURCE_DIR>/bootstrap && <SOURCE_DIR>/configure --prefix=<INSTALL_DIR> --without-nclua-gst
   BUILD_COMMAND make
   INSTALL_COMMAND make install
@@ -57,23 +57,30 @@ set(NCLUA_INCLUDE_DIRS "${install_dir}/include")
 link_directories("${install_dir}/lib")
 #end NCLUA
 
-ExternalProject_Add(libcef_build
-  URL "http://opensource.spotify.com/cefbuilds/cef_binary_3.3029.1617.gaf831b6_linux64.tar.bz2"
+set(CEF_VERSION cef_binary_3.3029.1617.gaf831b6_linux64)
+set(CEF_SHA1 SHA1=2dfc50694467df96113e270619835e14390575de)
+set(CEF_FILE ${CEF_VERSION}.tar.bz2)
+set(CEF_URL http://opensource.spotify.com/cefbuilds/${CEF_FILE})
+set(CEF_LOCAL_PATH ${CMAKE_BINARY_DIR}/3rdparty)
+set(CEF_LOCAL_FILE ${CMAKE_BINARY_DIR}/3rdparty/${CEF_FILE}.tar.gz)
 
-  UPDATE_COMMAND ""
-  PATCH_COMMAND ""
+# Download chromium embedded files
+if (NOT EXISTS "${CEF_LOCAL_FILE}")
+  message(STATUS "-- Downloading chromium embedded binary package...")
+  file(DOWNLOAD ${CEF_URL} ${CEF_LOCAL_FILE} SAH1=${CEF_SAH1} SHOW_PROGRESS)
 
-  BUILD_COMMAND ""
-  CONFIGURE_COMMAND ""
-  INSTALL_COMMAND ""
-)
-ExternalProject_Get_Property(libcef_build source_dir)
+  message(STATUS "-- Extracting chromium embedded files...")
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -E tar xzf ${CEF_LOCAL_FILE}
+    WORKING_DIRECTORY ${CEF_LOCAL_PATH}
+  )
+endif()
 
-set (CEF_ROOT "${source_dir}")
-set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CEF_ROOT}/cmake")
+set(CEF_ROOT "${CEF_LOCAL_PATH}/${CEF_VERSION}/")
+message (WARNING ${CEF_ROOT})
 find_package(CEF REQUIRED)
-list(REMOVE_ITEM CEF_CXX_COMPILER_FLAGS -fno-exceptions -fno-rtti)
-add_subdirectory(${CEF_LIBCEF_DLL_WRAPPER_PATH} libcef_dll_wrapper)
+add_definitions(-DWITH_CEF=1)
+add_subdirectory(${CEF_ROOT}/libcef_dll libcef_dll_bin)
 
 # Logical target used to link the libcef library.
 ADD_LOGICAL_TARGET("libcef_lib" "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
@@ -267,7 +274,7 @@ add_executable(ginga
   ../src/main.cpp
 )
 
-add_dependencies(ginga nclua_build libcef_build)
+add_dependencies(ginga nclua_build)
 
 target_include_directories(ginga PRIVATE
   ../src
@@ -288,7 +295,8 @@ target_include_directories(ginga PRIVATE
   ${LinuxDVB_INCLUDE_DIRS}
 
   ${NCLUA_INCLUDE_DIRS}
-  "${CEF_ROOT}/include"
+  ${CEF_ROOT}
+  ${CEF_ROOT}/include
 )
 
 target_link_libraries(ginga PRIVATE
@@ -329,12 +337,17 @@ add_custom_target(copy-data-files ALL
     copy_directory ${CMAKE_SOURCE_DIR}/../data ${CMAKE_BINARY_DIR}/data
 )
 
-configure_file(${CMAKE_SOURCE_DIR}/config.h.in config.h)
+# Set rpath so that libraries can be placed next to the executable.
+set_target_properties(ginga PROPERTIES INSTALL_RPATH "$ORIGIN")
+set_target_properties(ginga PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
+set_target_properties(ginga PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CEF_TARGET_OUT_DIR})
 
 # Copy binary and resource files to the target output directory.
 COPY_FILES(ginga "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
 COPY_FILES(ginga "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${CEF_TARGET_OUT_DIR}")
 
 # Set SUID permissions on the chrome-sandbox target.
-SET_LINUX_SUID_PERMISSIONS(ginga "${CEF_TARGET_OUT_DIR}/chrome-sandbox")
+# SET_LINUX_SUID_PERMISSIONS(ginga "${CEF_TARGET_OUT_DIR}/chrome-sandbox")
+
+configure_file(${CMAKE_SOURCE_DIR}/config.h.in config.h)
 
