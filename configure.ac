@@ -66,7 +66,7 @@ m4_define([cef_required_version],        [3.0])
 m4_define([librsvg_required_version],    [2.40.0])
 m4_define([pango_required_version],      [1.30.0])
 AC_SUBST([CAIRO_REQUIRED_VERSION],       cairo_required_version)
-AC_SUBST([CEF_REQUIRED_VERSION],         cef_required_version)
+#AC_SUBST([CEF_REQUIRED_VERSION],         cef_required_version)
 AC_SUBST([LIBRSVG_REQUIRED_VERSION],     librsvg_required_version)
 AC_SUBST([PANGO_REQUIRED_VERSION],       pango_required_version)
 
@@ -168,9 +168,28 @@ AU_CHECK_OPTIONAL_PKG([pango], [build with Pango support], [], [PANGO],
  pangocairo >= pango_required_version
 )
 
-AU_CHECK_OPTIONAL_PKG([cef], [build with CEF support], [], [CEF],
- cef >= cef_required_version
+AC_ARG_WITH([cef],
+  AS_HELP_STRING([--with-cef],
+    [Build with chromium embedded for HTML rendering])
 )
+
+if test "$with_cef" != no ; then
+  # extend the compiler and linker flags according to the path set
+  CEF_PATH="$with_cef"
+  CEF_CFLAGS="-I$with_cef -I$with_cef/include"
+  CEF_LIBS="-L$with_cef/Release/ -lcef $with_cef/_build/libcef_dll_wrapper/libcef_dll_wrapper.a"
+  AC_SUBST(CEF_PATH)
+  AC_SUBST(CEF_CFLAGS)
+  AC_SUBST(CEF_LIBS)
+  AC_MSG_NOTICE([AQUI])
+  AC_DEFINE([WITH_CEF], [1], [Use libcef.])
+fi
+
+AM_CONDITIONAL([WITH_CEF], [test "$with_cef" != no])
+
+#AU_CHECK_OPTIONAL_PKG([cef], [build with CEF support], [], [CEF],
+# cef >= cef_required_version
+#)
 
 # Optional dependencies that do not use pkg-config.
 #   $1: name;
@@ -222,7 +241,7 @@ AC_MSG_NOTICE([summary of main build options:
   warning flags:      ${WERROR_CFLAGS} ${WARN_CFLAGS}
   valgrind:           ${VALGRIND}
 
-  with cef:           ${with_cef_result}
+  with cef:           ${with_cef}
   with espeak:        ${with_espeak_result}
   with gstreamer:     ${with_gstreamer_result}
   with librsvg:       ${with_librsvg_result}
