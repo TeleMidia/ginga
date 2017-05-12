@@ -20,29 +20,32 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-typedef struct{
-  string name;   
+typedef struct
+{
+  string name;
   gdouble duration;
   gdouble velocity;
   gdouble targetValue;
   gdouble curValue;  
-}ANIM_PROPERTY;
+} ANIM_PROPERTY;
 
 class PlayerAnimator
 {
-  public:  
-   PlayerAnimator();
-   ~PlayerAnimator();
-   void addProperty(string dur, string name, string value);
-   void update(SDL_Rect* rect);
+public:
+  PlayerAnimator();
+  ~PlayerAnimator();
+  void addProperty(const string &dur, const string &name, const string &value);
+  void update(SDL_Rect* rect);
 
-   private:
-   GList *properties; 
-   void updatePosition(SDL_Rect* rect, ANIM_PROPERTY* pr);
-   void calculePosition(gint32 * value, ANIM_PROPERTY* pr,gint32 dir);
-   bool calculeVelocity(gint32 * value, ANIM_PROPERTY* pr);
-   gdouble cvtTimeIntToDouble(guint32 value);
-   gdouble getAnimationVelocity(gdouble initPos, gdouble finalPos, gdouble duration);
+private:
+  GList *properties;
+  void updatePosition(SDL_Rect* rect, ANIM_PROPERTY* pr);
+  void calculePosition(gint32* value, ANIM_PROPERTY* pr, gint32 dir);
+  bool calculeVelocity(gint32* value, ANIM_PROPERTY* pr);
+  gdouble cvtTimeIntToDouble(guint32 value);
+  gdouble getAnimationVelocity( gdouble initPos,
+                                gdouble finalPos,
+                                gdouble duration );
 };
 
 #endif /* PLAYER_ANIMATOR_H */
