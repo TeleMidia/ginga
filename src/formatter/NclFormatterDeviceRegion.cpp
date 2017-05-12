@@ -92,7 +92,7 @@ NclFormatterDeviceRegion::compareWidthSize (const string &w)
 {
   int newW;
 
-  newW = atoi (w.c_str ());
+  newW = xstrto_int (w);
   if (newW == width)
     {
       return 0;
@@ -112,7 +112,7 @@ NclFormatterDeviceRegion::compareHeightSize (const string &h)
 {
   int newH;
 
-  newH = atoi (h.c_str ());
+  newH = xstrto_int (h);
   if (newH == height)
     {
       return 0;
