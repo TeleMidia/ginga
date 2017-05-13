@@ -239,29 +239,18 @@ src+= formatter/AdapterTextPlayer.cpp
 src+= player/TextPlayer.cpp
 endif # WITH_PANGO
 
-# This should be remove after the
-# personalized CEF packge (.deb) is created.
-#
-# Uncomment the lines bellow to
-# build Ginga with Chromium (CEF)
-# based HTML Player.
-#AM_CXXFLAGS+= -I/<path>/<to>/<cef> -I/<path>/<to>/<cef>/include
-#AM_LDFLAGS+= -lcef -lcef_dll_wrapper
-#src+= formatter/AdapterHTMLPlayer.cpp
-#src+= player/HTMLPlayer.cpp
-
 if WITH_CEF
 src+= formatter/AdapterHTMLPlayer.cpp
 src+= player/HTMLPlayer.cpp
-
-cef_filesdir=$(prefix)/bin/
-cef_files_DATA=$(CEF_PATH)/Release/natives_blob.bin \
-  $(CEF_PATH)/Release/snapshot_blob.bin \
-  $(CEF_PATH)/Release/libcef.so \
-  $(CEF_PATH)/Resources/icudtl.dat \
-  $(CEF_PATH)/Resources/cef.pak \
-  $(CEF_PATH)/Resources/cef_100_percent.pak \
-  $(CEF_PATH)/Resources/cef_200_percent.pak \
-  $(CEF_PATH)/Resources/cef_extensions.pak \
+cef_filesdir= $(bindir)
+cef_files_DATA=\
+  $(cef_dir)/Release/natives_blob.bin\
+  $(cef_dir)/Release/snapshot_blob.bin\
+  $(cef_dir)/Release/libcef.so\
+  $(cef_dir)/Resources/icudtl.dat\
+  $(cef_dir)/Resources/cef.pak\
+  $(cef_dir)/Resources/cef_100_percent.pak\
+  $(cef_dir)/Resources/cef_200_percent.pak\
+  $(cef_dir)/Resources/cef_extensions.pak\
   $(NULL)
 endif # WITH_CEF
