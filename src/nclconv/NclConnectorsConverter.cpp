@@ -137,7 +137,7 @@ NclConnectorsConverter::compileRoleInformation (Role *role,
       attValue = XMLString::transcode (
           parentElement->getAttribute (XMLString::transcode ("min")));
 
-      ((Role *)role)->setMinCon ((atoi (attValue.c_str ())));
+      ((Role *)role)->setMinCon ((xstrto_int (attValue)));
     }
 
   if (parentElement->hasAttribute (XMLString::transcode ("max")))
@@ -151,7 +151,7 @@ NclConnectorsConverter::compileRoleInformation (Role *role,
         }
       else
         {
-          ((Role *)role)->setMaxCon (atoi (attValue.c_str ()));
+          ((Role *)role)->setMaxCon (xstrto_int (attValue));
         }
     }
 }

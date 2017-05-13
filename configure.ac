@@ -115,10 +115,6 @@ AS_IF([test "$enable_nclua_trace" = yes],
  [AC_DEFINE([LUAPLAYER_ENABLE_TRACE], [1],
   [Define to 1 to trace NCLua calls.])])
 
-# Headers.
-AC_CHECK_HEADER([sys/socket.h])
-AC_CHECK_HEADER([net/if.h])
-
 # Required dependencies.
 AU_VERSION_BREAK([glib], glib_required_version)
 AU_CHECK_PKG([GLIB], [glib-2.0 >= glib_required_version],
@@ -149,7 +145,7 @@ AU_CHECK_PKG([XERCESC],
  [xerces-c >= xercesc_required_version])
 
 # Optional dependencies.
-AU_CHECK_OPTIONAL_PKG([gstreamer], [build gstreamer support], [],
+AU_CHECK_OPTIONAL_PKG([gstreamer], [build with Gstreamer support], [],
   [GSTREAMER],
   gstreamer-1.0 >= gstreamer_required_version[]dnl
   gstreamer-video-1.0 >= gstreamer_required_version[]dnl
@@ -157,7 +153,7 @@ AU_CHECK_OPTIONAL_PKG([gstreamer], [build gstreamer support], [],
   gstreamer-app-1.0 >= gstreamer_required_version
 )
 
-AU_CHECK_OPTIONAL_PKG([librsvg], [build with LibRsvg SVG support], [],
+AU_CHECK_OPTIONAL_PKG([librsvg], [build with LibRsvg support], [],
  [LIBRSVG],
  librsvg-2.0 >= librsvg_required_version[]dnl
  cairo >= cairo_required_version
@@ -167,28 +163,6 @@ AU_CHECK_OPTIONAL_PKG([pango], [build with Pango support], [], [PANGO],
  pango >= pango_required_version[]dnl
  pangocairo >= pango_required_version
 )
-
-AC_ARG_WITH([cef],
-  AS_HELP_STRING([--with-cef],
-    [Build with chromium embedded for HTML rendering])
-)
-
-if test "$with_cef" != no ; then
-  # extend the compiler and linker flags according to the path set
-  CEF_PATH="$with_cef"
-  CEF_CFLAGS="-I$with_cef -I$with_cef/include"
-  CEF_LIBS="-L$with_cef/Release/ -lcef $with_cef/_build/libcef_dll_wrapper/libcef_dll_wrapper.a"
-  AC_SUBST(CEF_PATH)
-  AC_SUBST(CEF_CFLAGS)
-  AC_SUBST(CEF_LIBS)
-  AC_DEFINE([WITH_CEF], [1], [Use libcef.])
-fi
-
-AM_CONDITIONAL([WITH_CEF], [test "$with_cef" != no])
-
-#AU_CHECK_OPTIONAL_PKG([cef], [build with CEF support], [], [CEF],
-# cef >= cef_required_version
-#)
 
 # Optional dependencies that do not use pkg-config.
 #   $1: name;
@@ -222,6 +196,36 @@ _MY_CHECK_OPTIONAL([espeak], [build with Espeak ssml support],
    [with_optional_espeak=yes; ESPEAK_LIBS=-lespeak])])])
 AC_SUBST([ESPEAK_LIBS])
 
+AC_ARG_WITH([cef],
+ [AS_HELP_STRING([--with-cef=DIR],
+   [build with Chromium embedded at DIR])])
+AS_IF([test -n "$with_cef"],
+ [cef_dir=$with_cef
+  AS_IF([test -d "$with_cef"], [],
+   [AC_MSG_FAILURE([--with-cef was given a bad directory: $with_cef])])
+  with_cef=yes
+  with_cef_result="yes	($cef_dir)"
+  CEF_CFLAGS="-I$cef_dir -I$cef_dir/include"
+  CEF_LIBS="-L$cef_dir/Release -lcef"
+  CEF_LIBS="$CEF_LIBS $cef_dir/libcef_dll_wrapper/libcef_dll_wrapper.a"
+  AU_LANG_CPLUSPLUS([$CEF_CFLAGS], [$CEF_CFLAGS], [$CEF_LIBS],
+   [AC_CHECK_HEADER([cef_app.h], [],
+     [AC_MSG_FAILURE([cef_app.h is missing])])
+    AC_LINK_IFELSE(
+     [AC_LANG_PROGRAM([[#include <cef_app.h>]],
+       [[CefMainArgs args (0, NULL);]])],
+     [],
+     [AC_MSG_FAILURE([cannot link to libcef])])])
+  AC_SUBST([CEF_CFLAGS])
+  AC_SUBST([CEF_LIBS])
+  AC_DEFINE([WITH_CEF], [1], [Define to 1 if you have libcef.])],
+ [cef_dir=""
+  with_cef=no
+  with_cef_result='no	(requires: cef)'
+  AC_DEFINE([WITH_CEF], [0], [Define to 1 if you have libcef.])])
+AC_SUBST([cef_dir])
+AM_CONDITIONAL([WITH_CEF], [test "$with_cef" = yes])
+
 # Epilogue.
 AC_CONFIG_FILES([
 Makefile
@@ -240,7 +244,7 @@ AC_MSG_NOTICE([summary of main build options:
   warning flags:      ${WERROR_CFLAGS} ${WARN_CFLAGS}
   valgrind:           ${VALGRIND}
 
-  with cef:           ${with_cef}
+  with cef:           ${with_cef_result}
   with espeak:        ${with_espeak_result}
   with gstreamer:     ${with_gstreamer_result}
   with librsvg:       ${with_librsvg_result}

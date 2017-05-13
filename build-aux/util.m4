@@ -206,7 +206,7 @@ AC_ARG_WITH(AS_TR_SH([$1]),
 #
 AC_DEFUN([AU_CHECK_MACROS_H],[dnl
 AC_REQUIRE([AC_CHECK_LIBM])
-AU_LANG_C([], [$LIBM],
+AU_LANG_C([], [], [$LIBM],
  [AC_CHECK_FUNCS([lround round])])])
 
 # AU_CHECK_LUA([MIN-VERSION], [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
@@ -284,7 +284,7 @@ dnl Try the standard '-llua'.
   au_check_lua_continue=no
   LUA_CFLAGS=""
   LUA_LIBS="-llua $LIBS"
-  AU_LANG_C([$LUA_CFLAGS], [$LUA_LIBS],
+  AU_LANG_C([$LUA_CFLAGS], [$LUA_CFLAGS], [$LUA_LIBS],
    [AC_COMPILE_IFELSE(
      [AC_LANG_PROGRAM([[
 #include <lua.h>
@@ -303,7 +303,7 @@ dnl Try to find the actual version of the library we are using.
 AS_IF([test "$au_check_lua_continue" = yes],
  [AC_MSG_CHECKING([the exact version of the lua we're using])
   AS_UNSET([au_lua_version])
-  AU_LANG_C([$LUA_CFLAGS], [$LUA_LIBS],
+  AU_LANG_C([$LUA_CFLAGS], [$LUA_CFLAGS], [$LUA_LIBS],
    [AC_RUN_IFELSE(
      [AC_LANG_PROGRAM([[
 #include <lua.h>
@@ -402,7 +402,7 @@ AM_CONDITIONAL([WITH_$4],
 #
 AC_DEFUN([AU_CHECK_PKG],[dnl
 AC_REQUIRE([PKG_PROG_PKG_CONFIG])
-PKG_CHECK_MODULES([$1], [$2],
+PKG_CHECK_MODULES([$1], [m4_chomp($2)],
  [au_check_pkg_continue=yes],
   m4_ifnblank([$5], [au_check_pkg_continue=no]))
 AS_IF([test "$au_check_pkg_continue" = no],
@@ -411,7 +411,7 @@ dnl Try compile.
 m4_ifblank([$3], [:],
  [AS_IF([test "$au_check_pkg_continue" = yes],
    [AC_MSG_CHECKING([if we can build a program using $1])
-    AU_LANG_C([$][$1_CFLAGS], [$][$1_LIBS],
+    AU_LANG_C([$][$1_CFLAGS], [$][$1_CFLAGS], [$][$1_LIBS],
      [AC_COMPILE_IFELSE([$3],
      [au_check_pkg_continue=yes],
      [au_check_pkg_continue=no])])
@@ -423,7 +423,7 @@ dnl Try link.
 m4_ifblank([$4], [:],
  [AS_IF([test "$au_check_pkg_continue" = yes],
    [AC_MSG_CHECKING([if we can link a program to $1])
-    AU_LANG_C([$][$1_CLFAGS], [$][$1_LIBS],
+    AU_LANG_C([$][$1_CFLAGS], [$][$1_CLFAGS], [$][$1_LIBS],
      [AC_LINK_IFELSE([$4],
        [au_check_pkg_continue=yes],
        [au_check_pkg_continue=no])])
@@ -495,18 +495,36 @@ m4_define([$1][_version_minor],
 m4_define([$1][_version_micro],
   m4_default(au_version_micro($1_version_string), [0]))])
 
-# AU_LANG_C([CFLAGS], [LIBS], [TEXT])
-# -----------------------------------
-# Appends the given values to CFLAGS an LIBS and expands TEXT.
+# AU_LANG_C([CPPFLAGS], [CFLAGS], [LIBS], [TEXT])
+# -----------------------------------------------
+# Appends the given values to CPPFLAGs, CFLAGS, and LIBS and expands TEXT.
 # Then restores CFLAGS and LIBS to their previous values.
 #
 AC_DEFUN([AU_LANG_C],[dnl
 AC_LANG_PUSH([C])
-m4_ifnblank([$1], [AU_VAR_PUSH([CFLAGS], [$1])])
-m4_ifnblank([$2], [AU_VAR_PUSH([LIBS], [$2])])
-$3
+m4_ifnblank([$1], [AU_VAR_PUSH([CPPFLAGS], [$1])])
+m4_ifnblank([$2], [AU_VAR_PUSH([CFLAGS], [$2])])
+m4_ifnblank([$3], [AU_VAR_PUSH([LIBS], [$3])])
+$4
+m4_ifnblank([$1], [AU_VAR_POP([CPPFLAGS])])
 m4_ifnblank([$1], [AU_VAR_POP([CFLAGS])])
 m4_ifnblank([$1], [AU_VAR_POP([LIBS])])
+AC_LANG_POP])
+
+# AU_LANG_CPLUSPLUS([CPPFLAGS], [CXXFLAGS], [LIBS], [TEXT])
+# ---------------------------------------------------------
+# Appends the given values to CPPFLAGS, CXXFLAGS and LIBS and expands TEXT.
+# Then restores CXXFLAGS and LIBS to their previous values.
+#
+AC_DEFUN([AU_LANG_CPLUSPLUS],[dnl
+AC_LANG_PUSH([C++])
+m4_ifnblank([$1], [AU_VAR_PUSH([CPPFLAGS], [$1])])
+m4_ifnblank([$2], [AU_VAR_PUSH([CXXFLAGS], [$2])])
+m4_ifnblank([$3], [AU_VAR_PUSH([LIBS], [$3])])
+$4
+m4_ifnblank([$1], [AU_VAR_POP([CPPFLAGS])])
+m4_ifnblank([$2], [AU_VAR_POP([CXXFLAGS])])
+m4_ifnblank([$3], [AU_VAR_POP([LIBS])])
 AC_LANG_POP])
 
 # AU_LIBTOOL_MODULE_LDFLAGS
