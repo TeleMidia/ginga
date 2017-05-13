@@ -473,9 +473,7 @@ Player::setPropertyValue (const string &name, const string &value)
           this->rect.h = xstrto_int (value);
       }
       else if(name == "background" || name == "backgroundColor" || name == "bgColor"){
-          ginga_color_input_to_sdl_color(value, &this->bgColor);   
-
-          g_debug("\n\n print r:%d g:%d b:%d a:%d \n\n",this->bgColor.r,this->bgColor.g,this->bgColor.b,this->bgColor.a); 
+          ginga_color_input_to_sdl_color(value, &this->bgColor);    
       }
       else if (name == "transparency"){
           if(xstrto_uint8 (value) <= 0)
@@ -624,7 +622,7 @@ Player::redraw(SDL_Renderer* renderer){
   if(this->status == SLEEPING)
    return;
 
-  animator->update(&this->rect,&this->alpha);
+  animator->update(&this->rect, &this->bgColor.r, &this->bgColor.g, &this->bgColor.b, &this->alpha);
 
   if(this->window!=NULL)
       this->window->getBorder(&this->borderColor,&this->borderWidth);
