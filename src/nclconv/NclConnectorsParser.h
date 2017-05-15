@@ -41,10 +41,7 @@ private:
 public:
   NclConnectorsParser (NclDocumentParser *documentParser);
 
-  void *parseSimpleCondition (DOMElement *parentElement,
-                              void *objGrandParent);
-
-  void *createSimpleCondition (DOMElement *parentElement, void *objGrandParent);
+  void *parseSimpleCondition (DOMElement *parentElement, void *objGrandParent);
 
   void *parseCompoundCondition (DOMElement *parentElement,
                                 void *objGrandParent);
@@ -79,14 +76,7 @@ public:
   void *parseAttributeAssessment (DOMElement *parentElement,
                                   void *objGrandParent);
 
-  void *createAttributeAssessment (DOMElement *parentElement,
-                                   void *objGrandParent);
-
-  void *parseValueAssessment (DOMElement *parentElement,
-                              void *objGrandParent);
-
-  void *createValueAssessment (DOMElement *parentElement,
-                               void *objGrandParent);
+  void *parseValueAssessment (DOMElement *parentElement, void *objGrandParent);
 
   void *parseCompoundStatement (DOMElement *parentElement,
                                 void *objGrandParent);
@@ -101,7 +91,6 @@ public:
                                                 void *childObject);
 
   void *parseSimpleAction (DOMElement *parentElement, void *objGrandParent);
-  void *createSimpleAction (DOMElement *parentElement, void *objGrandParent);
 
   void *parseCompoundAction (DOMElement *parentElement, void *objGrandParent);
   void *createCompoundAction (DOMElement *parentElement, void *objGrandParent);
@@ -112,13 +101,9 @@ public:
   void addCompoundActionToCompoundAction (void *parentObject,
                                           void *childObject);
 
-  void *parseConnectorParam (DOMElement *parentElement,
-                             void *objGrandParent);
+  void *parseConnectorParam (DOMElement *parentElement, void *objGrandParent);
 
-  void *createConnectorParam (DOMElement *parentElement, void *objGrandParent);
-
-  void *parseCausalConnector (DOMElement *parentElement,
-                              void *objGrandParent);
+  void *parseCausalConnector (DOMElement *parentElement, void *objGrandParent);
 
   void *createCausalConnector (DOMElement *parentElement, void *objGrandParent);
 
