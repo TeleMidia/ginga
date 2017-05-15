@@ -214,7 +214,6 @@ add_executable(ginga
   ../src/ncl/TransitionUtil.cpp
   ../src/ncl/TriggerExpression.cpp
   ../src/ncl/ValueAssessment.cpp
-  ../src/nclconv/NclComponentsConverter.cpp
   ../src/nclconv/NclComponentsParser.cpp
   ../src/nclconv/NclConnectorsParser.cpp
   ../src/nclconv/NclDocumentConverter.cpp
