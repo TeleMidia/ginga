@@ -20,6 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclComponentsConverter.h"
 
+#include "NclDocumentConverter.h"
+
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_NCLCONV_BEGIN

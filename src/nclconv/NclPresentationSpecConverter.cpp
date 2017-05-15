@@ -18,8 +18,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "ginga-color-table.h"
 #include "NclPresentationSpecConverter.h"
-#include "NclImportConverter.h"
 #include "NclPresentationControlConverter.h"
+
+#include "NclDocumentConverter.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 

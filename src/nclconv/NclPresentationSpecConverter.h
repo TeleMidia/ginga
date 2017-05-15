@@ -50,7 +50,6 @@ using namespace ::ginga::ncl;
 
 #include "NclPresentationSpecificationParser.h"
 
-#include "NclImportConverter.h"
 #include "NclPresentationControlConverter.h"
 
 GINGA_NCLCONV_BEGIN
