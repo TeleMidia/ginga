@@ -41,7 +41,10 @@ NclTransitionParser::parseTransitionBase (DOMElement *parentElement,
   string elementTagName;
   void *elementObject;
 
-  parentObject = createTransitionBase (parentElement, objGrandParent);
+  parentObject = new TransitionBase (
+              XMLString::transcode (
+                    parentElement->getAttribute (XMLString::transcode ("id"))));
+
   g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
@@ -85,43 +88,7 @@ NclTransitionParser::parseTransitionBase (DOMElement *parentElement,
 
 void *
 NclTransitionParser::parseTransition (DOMElement *parentElement,
-                                      void *objGrandParent)
-{
-  return createTransition (parentElement, objGrandParent);
-}
-
-NclImportParser *
-NclTransitionParser::getImportParser ()
-{
-  return importParser;
-}
-
-void
-NclTransitionParser::setImportParser (NclImportParser *importParser)
-{
-  this->importParser = importParser;
-}
-
-
-
-void
-NclTransitionParser::addTransitionToTransitionBase (void *parentObject,
-                                                    void *childObject)
-{
-  ((TransitionBase *)parentObject)->addTransition ((Transition *)childObject);
-}
-
-void *
-NclTransitionParser::createTransitionBase (DOMElement *parentElement,
-                                           arg_unused (void *objGrandParent))
-{
-  return new TransitionBase (XMLString::transcode (
-      parentElement->getAttribute (XMLString::transcode ("id"))));
-}
-
-void *
-NclTransitionParser::createTransition (DOMElement *parentElement,
-                                       arg_unused (void *objGrandParent))
+                                      arg_unused (void *objGrandParent))
 {
   Transition *transition;
   string id, attValue;
@@ -242,6 +209,27 @@ NclTransitionParser::createTransition (DOMElement *parentElement,
     }
 
   return transition;
+}
+
+NclImportParser *
+NclTransitionParser::getImportParser ()
+{
+  return importParser;
+}
+
+void
+NclTransitionParser::setImportParser (NclImportParser *importParser)
+{
+  this->importParser = importParser;
+}
+
+
+
+void
+NclTransitionParser::addTransitionToTransitionBase (void *parentObject,
+                                                    void *childObject)
+{
+  ((TransitionBase *)parentObject)->addTransition ((Transition *)childObject);
 }
 
 void

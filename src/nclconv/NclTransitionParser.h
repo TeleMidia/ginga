@@ -36,22 +36,13 @@ private:
 public:
   NclTransitionParser (NclDocumentParser *documentParser);
 
-  void *parseTransitionBase (DOMElement *parentElement,
-                             void *objGrandParent);
-
-  virtual void *createTransitionBase (DOMElement *parentElement,
-                                      void *objGrandParent);
-
-  virtual void addImportBaseToTransitionBase (void *parentObject,
-                                              void *childObject);
-
-  virtual void addTransitionToTransitionBase (void *parentObject,
-                                              void *childObject);
+  void *parseTransitionBase (DOMElement *parentElement, void *objGrandParent);
 
   void *parseTransition (DOMElement *parentElement, void *objGrandParent);
 
-  virtual void *createTransition (DOMElement *parentElement,
-                                  void *objGrandParent);
+  void addImportBaseToTransitionBase (void *parentObject, void *childObject);
+
+  void addTransitionToTransitionBase (void *parentObject, void *childObject);
 
   NclImportParser *getImportParser ();
   void setImportParser (NclImportParser *importParser);
