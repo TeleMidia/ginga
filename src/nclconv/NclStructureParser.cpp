@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "NclStructureParser.h"
 
+#include "NclComponentsConverter.h"
+
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_NCLCONV_BEGIN
@@ -55,8 +57,7 @@ NclStructureParser::parseBody (DOMElement *parentElement,
           if (XMLString::compareIString (elementTagName.c_str (), "media")
               == 0)
             {
-              elementObject = getComponentsParser ()->parseMedia (
-                  element, parentObject);
+              elementObject = getComponentsParser()->parseMedia (element, parentObject);
 
               if (elementObject != NULL)
                 {
@@ -67,8 +68,7 @@ NclStructureParser::parseBody (DOMElement *parentElement,
                                               "context")
                    == 0)
             {
-              elementObject = getComponentsParser ()->parseContext (
-                  element, parentObject);
+              elementObject = getComponentsParser()->parseContext (element, parentObject);
 
               if (elementObject != NULL)
                 {
@@ -109,14 +109,6 @@ NclStructureParser::parseBody (DOMElement *parentElement,
     }
 
   return parentObject;
-}
-
-void *
-NclStructureParser::posCompileBody (DOMElement *parentElement,
-                                    void *parentObject)
-{
-  return getComponentsParser ()->posCompileContext (parentElement,
-                                                    parentObject);
 }
 
 void *
@@ -475,6 +467,258 @@ NclStructureParser::setMetainformationParser (
     NclMetainformationParser *metainformationParser)
 {
   this->metainformationParser = metainformationParser;
+}
+
+void
+NclStructureParser::addBodyToNcl (arg_unused (void *parentObject), arg_unused (void *childObject))
+{
+}
+
+void
+NclStructureParser::addPortToBody (void *parentObject, void *childObject)
+{
+  getComponentsParser ()->addPortToContext (parentObject, childObject);
+}
+
+void
+NclStructureParser::addPropertyToBody (void *parentObject, void *childObject)
+{
+  getComponentsParser ()->addPropertyToContext (parentObject, childObject);
+}
+
+void
+NclStructureParser::addContextToBody (void *parentObject, void *childObject)
+{
+  getComponentsParser ()->addContextToContext (parentObject, childObject);
+}
+
+void
+NclStructureParser::addSwitchToBody (void *parentObject, void *childObject)
+{
+  getComponentsParser ()->addSwitchToContext (parentObject, childObject);
+}
+
+void
+NclStructureParser::addDescriptorBaseToHead (arg_unused (void *parentObject),
+                                                void *childObject)
+{
+  NclDocument *document;
+  document = getDocumentParser ()->getNclDocument ();
+  document->setDescriptorBase ((DescriptorBase *)childObject);
+}
+
+void
+NclStructureParser::addRegionBaseToHead (arg_unused (void *parentObject),
+                                            void *childObject)
+{
+  NclDocument *document;
+  document = getDocumentParser ()->getNclDocument ();
+  document->addRegionBase ((RegionBase *)childObject);
+}
+
+void
+NclStructureParser::addTransitionBaseToHead (arg_unused (void *parentObject),
+                                                void *childObject)
+{
+  NclDocument *document;
+
+  document = getDocumentParser ()->getNclDocument ();
+  document->setTransitionBase ((TransitionBase *)childObject);
+}
+
+void
+NclStructureParser::addLinkToBody (void *parentObject, void *childObject)
+{
+  getComponentsParser ()->addLinkToContext (parentObject, childObject);
+}
+
+void
+NclStructureParser::addMediaToBody (void *parentObject, void *childObject)
+{
+  getComponentsParser ()->addMediaToContext (parentObject, childObject);
+}
+
+void
+NclStructureParser::addRuleBaseToHead (arg_unused (void *parentObject),
+                                       void *childObject)
+{
+  NclDocument *document = getDocumentParser ()->getNclDocument ();
+  document->setRuleBase ((RuleBase *)childObject);
+}
+
+void
+NclStructureParser::addConnectorBaseToHead (arg_unused (void *parentObject),
+                                            void *childObject)
+{
+  NclDocument *document = getDocumentParser ()->getNclDocument ();
+  document->setConnectorBase ((ConnectorBase *)childObject);
+}
+
+void *
+NclStructureParser::createBody (DOMElement *parentElement,
+                                void *objGrandParent)
+{
+  // criar composicao a partir do elemento body do documento ncl
+  // fazer uso do nome da composicao body que foi atribuido pelo
+  // compilador
+  NclDocument *document;
+  ContextNode *context;
+
+  document = getDocumentParser ()->getNclDocument ();
+  if (!parentElement->hasAttribute (XMLString::transcode ("id")))
+    {
+      parentElement->setAttribute (
+          XMLString::transcode ("id"),
+          XMLString::transcode (document->getId ().c_str ()));
+
+      context = (ContextNode *)((NclComponentsConverter *)
+                                    getComponentsParser ())
+                    ->createContext (parentElement, objGrandParent);
+
+      parentElement->removeAttribute (XMLString::transcode ("id"));
+    }
+  else
+    {
+      context = (ContextNode *)((NclComponentsConverter *)
+                                    getComponentsParser ())
+                    ->createContext (parentElement, objGrandParent);
+    }
+  document->setBody (context);
+  return context;
+}
+
+void
+NclStructureParser::solveNodeReferences (CompositeNode *composition)
+{
+  Node *node;
+  NodeEntity *nodeEntity;
+  Entity *referredNode;
+  vector<Node *> *nodes;
+  vector<Node *>::iterator it;
+  bool deleteNodes = false;
+
+  if (composition->instanceOf ("SwitchNode"))
+    {
+      deleteNodes = true;
+      nodes = ((NclPresentationControlConverter *)
+                   getPresentationControlParser ())
+                  ->getSwitchConstituents ((SwitchNode *)composition);
+    }
+  else
+    {
+      nodes = composition->getNodes ();
+    }
+
+  if (nodes == NULL)
+    {
+      return;
+    }
+
+  for (it = nodes->begin (); it != nodes->end (); ++it)
+    {
+      node = *it;
+      if (node != NULL)
+        {
+          if (node->instanceOf ("ReferNode"))
+            {
+              referredNode = ((ReferNode *)node)->getReferredEntity ();
+              if (referredNode != NULL)
+                {
+                  if (referredNode->instanceOf ("ReferredNode"))
+                    {
+                      nodeEntity
+                          = (NodeEntity *)(((NclDocumentConverter *)
+                                                getDocumentParser ())
+                                               ->getNode (
+                                                   referredNode->getId ()));
+
+                      if (nodeEntity != NULL)
+                        {
+                          ((ReferNode *)node)
+                              ->setReferredEntity (
+                                  nodeEntity->getDataEntity ());
+                        }
+                      else
+                        {
+                          syntax_error ("media: bad refer '%s'",
+                                        referredNode->getId ().c_str ());
+                        }
+                    }
+                }
+            }
+          else if (node->instanceOf ("CompositeNode"))
+            {
+              solveNodeReferences ((CompositeNode *)node);
+            }
+        }
+    }
+
+  if (deleteNodes)
+    {
+      delete nodes;
+    }
+}
+
+void *
+NclStructureParser::posCompileBody (DOMElement *parentElement,
+                                       void *parentObject)
+{
+  solveNodeReferences ((CompositeNode *)parentObject);
+
+  return getComponentsParser ()->posCompileContext (parentElement,
+                                                    parentObject);
+}
+
+void *
+NclStructureParser::createHead (DOMElement *parentElement,
+                                arg_unused (void *objGrandParent))
+{
+  return parentElement;
+}
+
+void *
+NclStructureParser::createNcl (DOMElement *parentElement,
+                               arg_unused (void *objGrandParent))
+{
+  string docName;
+  NclDocument *document;
+
+  if (parentElement->hasAttribute (XMLString::transcode ("id")))
+    {
+      docName = XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("id")));
+    }
+
+  if (docName == "")
+    docName = "ncl";
+
+  document = new NclDocument (docName, documentParser->getPath ());
+  documentParser->setNclDocument (document);
+  return document;
+}
+
+void
+NclStructureParser::addImportedDocumentBaseToHead (arg_unused (void *parentObject),
+                                                   arg_unused (void *childObject))
+{
+}
+
+void
+NclStructureParser::addMetaToHead (arg_unused (void *parentObject),
+                                   void *childObject)
+{
+  NclDocument *document;
+
+  document = getDocumentParser ()->getNclDocument ();
+  document->addMetainformation ((Meta *)childObject);
+}
+
+void
+NclStructureParser::addMetadataToHead (arg_unused (void *parentObject),
+                                       void *childObject)
+{
+  NclDocument *document = getDocumentParser ()->getNclDocument ();
+  document->addMetadata ((Metadata *)childObject);
 }
 
 GINGA_NCLCONV_END
