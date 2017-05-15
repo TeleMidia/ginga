@@ -225,7 +225,6 @@ add_executable(ginga
   ../src/nclconv/NclLinkingConverter.cpp
   ../src/nclconv/NclLinkingParser.cpp
   ../src/nclconv/NclMetainformationParser.cpp
-  ../src/nclconv/NclPresentationControlConverter.cpp
   ../src/nclconv/NclPresentationControlParser.cpp
   ../src/nclconv/NclPresentationSpecificationParser.cpp
   ../src/nclconv/NclStructureParser.cpp
