@@ -18,6 +18,22 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NCLPRESENTATIONSPECIFICATIONPARSER_H_
 #define NCLPRESENTATIONSPECIFICATIONPARSER_H_
 
+#include "ncl/Parameter.h"
+#include "ncl/GenericDescriptor.h"
+#include "ncl/Descriptor.h"
+#include "ncl/DescriptorBase.h"
+#include "ncl/Rule.h"
+#include "ncl/RuleBase.h"
+#include "ncl/LayoutRegion.h"
+#include "ncl/RegionBase.h"
+#include "ncl/NclDocument.h"
+#include "ncl/FocusDecoration.h"
+#include "ncl/KeyNavigation.h"
+#include "ncl/Transition.h"
+#include "ncl/TransitionBase.h"
+using namespace ::ginga::ncl;
+
+
 #include "ModuleParser.h"
 #include "NclDocumentParser.h"
 
@@ -31,49 +47,32 @@ private:
   NclImportParser *importParser;
   void *presentationControlParser;
 
+  DeviceLayout *deviceLayout;
+
 public:
-  NclPresentationSpecificationParser (NclDocumentParser *documentParser);
+  NclPresentationSpecificationParser (NclDocumentParser *documentParser,
+                                      DeviceLayout *deviceLayout);
+
   void *parseDescriptor (DOMElement *parentElement, void *objGrandParent);
-  virtual void *createDescriptor (DOMElement *parentElement,
-                                  void *objGrandParent)
-      = 0;
+  void *createDescriptor (DOMElement *parentElement, void *objGrandParent);
 
-  virtual void addDescriptorParamToDescriptor (void *parentObject,
-                                               void *childObject)
-      = 0;
+  void addDescriptorParamToDescriptor (void *parentObject, void *childObject);
 
-  void *parseDescriptorBase (DOMElement *parentElement,
-                             void *objGrandParent);
+  void *parseDescriptorBase (DOMElement *parentElement, void *objGrandParent);
+  void *createDescriptorBase (DOMElement *parentElement, void *objGrandParent);
 
-  virtual void *createDescriptorBase (DOMElement *parentElement,
-                                      void *objGrandParent)
-      = 0;
+  void addImportBaseToDescriptorBase (void *parentObject, void *childObject);
 
-  virtual void addImportBaseToDescriptorBase (void *parentObject,
-                                              void *childObject)
-      = 0;
+  void addDescriptorSwitchToDescriptorBase (void *parentObject,
+                                            void *childObject);
 
-  virtual void addDescriptorSwitchToDescriptorBase (void *parentObject,
-                                                    void *childObject)
-      = 0;
+  void addDescriptorToDescriptorBase (void *parentObject, void *childObject);
 
-  virtual void addDescriptorToDescriptorBase (void *parentObject,
-                                              void *childObject)
-      = 0;
+  void *parseDescriptorBind (DOMElement *parentElement, void *objGrandParent);
+  void *createDescriptorBind (DOMElement *parentElement, void *objGrandParent);
 
-  void *parseDescriptorBind (DOMElement *parentElement,
-                             void *objGrandParent);
-
-  virtual void *createDescriptorBind (DOMElement *parentElement,
-                                      void *objGrandParent)
-      = 0;
-
-  void *parseDescriptorParam (DOMElement *parentElement,
-                              void *objGrandParent);
-
-  virtual void *createDescriptorParam (DOMElement *parentElement,
-                                       void *objGrandParent)
-      = 0;
+  void *parseDescriptorParam (DOMElement *parentElement, void *objGrandParent);
+  void *createDescriptorParam (DOMElement *parentElement, void *objGrandParent);
 
   NclImportParser *getImportParser ();
   void setImportParser (NclImportParser *importParser);
