@@ -32,8 +32,6 @@ using namespace ::ginga::ncl;
 
 #include "NclLayoutParser.h"
 
-#include "NclImportConverter.h"
-
 GINGA_NCLCONV_BEGIN
 
 class NclLayoutConverter : public NclLayoutParser

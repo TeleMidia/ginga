@@ -54,7 +54,6 @@ using namespace ::ginga::ncl;
 
 #include "NclPresentationSpecConverter.h"
 #include "NclLinkingConverter.h"
-#include "NclInterfacesConverter.h"
 #include "NclPresentationControlConverter.h"
 
 GINGA_NCLCONV_BEGIN

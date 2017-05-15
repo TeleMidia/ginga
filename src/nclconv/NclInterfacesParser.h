@@ -21,6 +21,22 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ModuleParser.h"
 #include "NclDocumentParser.h"
 
+#include "ncl/Anchor.h"
+#include "ncl/PropertyAnchor.h"
+#include "ncl/IntervalAnchor.h"
+#include "ncl/LabeledAnchor.h"
+#include "ncl/RectangleSpatialAnchor.h"
+#include "ncl/RelativeTimeIntervalAnchor.h"
+#include "ncl/SampleIntervalAnchor.h"
+#include "ncl/SpatialAnchor.h"
+#include "ncl/TextAnchor.h"
+#include "ncl/SwitchNode.h"
+#include "ncl/SwitchPort.h"
+#include "ncl/Port.h"
+#include "ncl/CompositeNode.h"
+#include "ncl/NodeEntity.h"
+using namespace ::ginga::ncl;
+
 GINGA_NCLCONV_BEGIN
 
 class NclInterfacesParser : public ModuleParser
@@ -28,32 +44,26 @@ class NclInterfacesParser : public ModuleParser
 public:
   NclInterfacesParser (NclDocumentParser *documentParser);
   void *parseSwitchPort (DOMElement *parentElement, void *objGrandParent);
-  virtual void *createSwitchPort (DOMElement *parentElement,
-                                  void *objGrandParent)
-      = 0;
+  void *createSwitchPort (DOMElement *parentElement, void *objGrandParent);
 
-  virtual void addMappingToSwitchPort (void *parentObject,
-                                       void *childObject)
-      = 0;
+  void addMappingToSwitchPort (void *parentObject, void *childObject);
 
-  virtual void *createArea (DOMElement *parentElement, void *objGrandParent)
-      = 0;
+  void *createArea (DOMElement *parentElement, void *objGrandParent);
 
-  virtual void *createProperty (DOMElement *parentElement,
-                                void *objGrandParent)
-      = 0;
+  void *createProperty (DOMElement *parentElement, void *objGrandParent);
 
-  virtual void *createPort (DOMElement *parentElement, void *objGrandParent)
-      = 0;
+  void *createPort (DOMElement *parentElement, void *objGrandParent);
 
   void *parseMapping (DOMElement *parentElement, void *objGrandParent);
-  virtual void *createMapping (DOMElement *parentElement,
-                               void *objGrandParent)
-      = 0;
+  void *createMapping (DOMElement *parentElement, void *objGrandParent);
 
   void *parseArea (DOMElement *parentElement, void *objGrandParent);
   void *parseProperty (DOMElement *parentElement, void *objGrandParent);
   void *parsePort (DOMElement *parentElement, void *objGrandParent);
+
+private:
+  SpatialAnchor *createSpatialAnchor (DOMElement *areaElement);
+  IntervalAnchor *createTemporalAnchor (DOMElement *areaElement);
 };
 
 GINGA_NCLCONV_END

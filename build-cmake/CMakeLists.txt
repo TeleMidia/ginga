@@ -221,7 +221,6 @@ add_executable(ginga
   ../src/nclconv/NclDocumentConverter.cpp
   ../src/nclconv/NclDocumentParser.cpp
   ../src/nclconv/NclImportParser.cpp
-  ../src/nclconv/NclInterfacesConverter.cpp
   ../src/nclconv/NclInterfacesParser.cpp
   ../src/nclconv/NclLayoutConverter.cpp
   ../src/nclconv/NclLayoutParser.cpp

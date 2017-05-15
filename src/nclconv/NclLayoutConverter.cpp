@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "NclLayoutConverter.h"
 
+#include "NclDocumentConverter.h"
+
 GINGA_NCLCONV_BEGIN
 
 NclLayoutConverter::NclLayoutConverter (NclDocumentParser *documentParser,
