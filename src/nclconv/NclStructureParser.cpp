@@ -602,9 +602,8 @@ NclStructureParser::solveNodeReferences (CompositeNode *composition)
   if (composition->instanceOf ("SwitchNode"))
     {
       deleteNodes = true;
-      nodes = ((NclPresentationControlConverter *)
-                   getPresentationControlParser ())
-                  ->getSwitchConstituents ((SwitchNode *)composition);
+      nodes = getPresentationControlParser ()
+                ->getSwitchConstituents ((SwitchNode *)composition);
     }
   else
     {

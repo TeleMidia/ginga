@@ -18,6 +18,21 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NCLPRESENTATIONCONTROLPARSER_H_
 #define NCLPRESENTATIONCONTROLPARSER_H_
 
+#include "ncl/ReferNode.h"
+#include "ncl/ReferredNode.h"
+#include "ncl/Descriptor.h"
+#include "ncl/DescriptorSwitch.h"
+#include "ncl/SwitchNode.h"
+#include "ncl/CompositeRule.h"
+#include "ncl/SimpleRule.h"
+#include "ncl/Rule.h"
+#include "ncl/RuleBase.h"
+#include "ncl/Port.h"
+#include "ncl/Comparator.h"
+#include "ncl/NclDocument.h"
+using namespace ::ginga::ncl;
+
+
 #include "ModuleParser.h"
 #include "NclDocumentParser.h"
 
@@ -29,6 +44,26 @@ GINGA_NCLCONV_BEGIN
 
 class NclPresentationControlParser : public ModuleParser
 {
+  // tabelas com componentes e regras de cada switch
+  // para reusar logica
+  // 1 copiar tabelas abaixo e inicializar
+  // 2 copiar os metodos:
+  // addBindRuleGroupToContentControlGroup,
+  // addCompositionContentGroupToContentControlGroup
+  // addMediaContentGroupToContentControlGroup
+  // createBindRuleGroup
+  // addContentControlGroupToContentControlGroup
+  // posCreateContentControlGroup
+  // addDescriptorGroupToDescriptorSwitchGroup
+  // addBindRuleGroupToDescriptorSwitchGroup
+  // 3 adicionar posCreateDescriptorSwitchGroup no
+  // createDescriptorSwitchGroup
+  // 3 adicionar posCreateContentControlGroup no createContentControlGroup
+  // 4 copiar adaptando posCompileContentControlGroup
+  // 4 copiar adaptando posCompileDescriptorSwitchGroup
+private:
+  map<string, map<string, NodeEntity *> *> *switchConstituents;
+
 private:
   NclPresentationSpecificationParser *presentationSpecificationParser;
   void *componentsParser;
@@ -37,106 +72,76 @@ private:
 
 public:
   NclPresentationControlParser (NclDocumentParser *documentParser);
+  virtual ~NclPresentationControlParser();
 
   void *parseBindRule (DOMElement *parentElement, void *objGrandParent);
   virtual void *createBindRule (DOMElement *parentElement,
-                                void *objGrandParent)
-      = 0;
+                                void *objGrandParent);
 
   void *parseRuleBase (DOMElement *parentElement, void *objGrandParent);
-  virtual void *createRuleBase (DOMElement *parentElement,
-                                void *objGrandParent)
-      = 0;
+  void *createRuleBase (DOMElement *parentElement, void *objGrandParent);
 
-  virtual void addImportBaseToRuleBase (void *parentObject,
-                                        void *childObject)
-      = 0;
+  void addImportBaseToRuleBase (void *parentObject, void *childObject);
 
-  virtual void addRuleToRuleBase (void *parentObject, void *childObject)
-      = 0;
+  void addRuleToRuleBase (void *parentObject, void *childObject);
 
-  virtual void addCompositeRuleToRuleBase (void *parentObject,
-                                           void *childObject)
-      = 0;
+  void addCompositeRuleToRuleBase (void *parentObject, void *childObject);
 
   void *parseRule (DOMElement *parentElement, void *objGrandParent);
-  virtual void *createRule (DOMElement *parentElement, void *objGrandParent)
-      = 0;
+  void *createRule (DOMElement *parentElement, void *objGrandParent);
 
   void *parseSwitch (DOMElement *parentElement, void *objGrandParent);
-  virtual void *posCompileSwitch (DOMElement *parentElement,
-                                  void *parentObject);
+  void *posCompileSwitch (DOMElement *parentElement, void *parentObject);
+  void *posCompileSwitch2 (DOMElement *parentElement, void *parentObject);
 
   void *parseDefaultComponent (DOMElement *parentElement,
                                void *objGrandParent);
 
-  virtual void *createDefaultComponent (DOMElement *parentElement,
-                                        void *objGrandParent)
-      = 0;
+  void *createDefaultComponent (DOMElement *parentElement,
+                                void *objGrandParent);
 
-  virtual void addDefaultComponentToSwitch (void *parentObject,
-                                            void *childObject)
-      = 0;
+  void addDefaultComponentToSwitch (void *parentObject, void *childObject);
 
   void *parseDefaultDescriptor (DOMElement *parentElement,
                                 void *objGrandParent);
 
-  virtual void *createDefaultDescriptor (DOMElement *parentElement,
-                                         void *objGrandParent)
-      = 0;
+  void *createDefaultDescriptor (DOMElement *parentElement,
+                                 void *objGrandParent);
 
-  virtual void addDefaultDescriptorToDescriptorSwitch (void *parentObject,
-                                                       void *childObject)
-      = 0;
+  void addDefaultDescriptorToDescriptorSwitch (void *parentObject,
+                                               void *childObject);
 
-  virtual void *createSwitch (DOMElement *parentElement,
-                              void *objGrandParent)
-      = 0;
+  void *createSwitch (DOMElement *parentElement, void *objGrandParent);
 
-  virtual void addSwitchPortToSwitch (void *parentObject, void *childObject)
-      = 0;
+  void addSwitchPortToSwitch (void *parentObject, void *childObject);
 
-  virtual void addMediaToSwitch (void *parentObject, void *childObject) = 0;
-  virtual void addContextToSwitch (void *parentObject, void *childObject)
-      = 0;
+  void addMediaToSwitch (void *parentObject, void *childObject);
 
-  virtual void addSwitchToSwitch (void *parentObject, void *childObject)
-      = 0;
+  void addContextToSwitch (void *parentObject, void *childObject);
 
-  virtual void addBindRuleToSwitch (void *parentObject, void *childObject)
-      = 0;
+  void addSwitchToSwitch (void *parentObject, void *childObject);
 
-  virtual void addUnmappedNodesToSwitch (void *parentObject) = 0;
+  void addBindRuleToSwitch (void *parentObject, void *childObject);
 
-  void *parseCompositeRule (DOMElement *parentElement,
-                            void *objGrandParent);
+  void addUnmappedNodesToSwitch (void *parentObject);
 
-  virtual void *createCompositeRule (DOMElement *parentElement,
-                                     void *objGrandParent)
-      = 0;
+  void *parseCompositeRule (DOMElement *parentElement, void *objGrandParent);
 
-  virtual void addRuleToCompositeRule (void *parentObject,
-                                       void *childObject)
-      = 0;
+  void *createCompositeRule (DOMElement *parentElement, void *objGrandParent);
 
-  virtual void addCompositeRuleToCompositeRule (void *parentObject,
-                                                void *childObject)
-      = 0;
+  void addRuleToCompositeRule (void *parentObject, void *childObject);
+
+  void addCompositeRuleToCompositeRule (void *parentObject, void *childObject);
 
   void *parseDescriptorSwitch (DOMElement *parentElement,
                                void *objGrandParent);
 
-  virtual void *createDescriptorSwitch (DOMElement *parentElement,
-                                        void *objGrandParent)
-      = 0;
+  void *createDescriptorSwitch (DOMElement *parentElement,
+                                void *objGrandParent);
 
-  virtual void addBindRuleToDescriptorSwitch (void *parentObject,
-                                              void *childObject)
-      = 0;
+  void addBindRuleToDescriptorSwitch (void *parentObject, void *childObject);
 
-  virtual void addDescriptorToDescriptorSwitch (void *parentObject,
-                                                void *childObject)
-      = 0;
+  void addDescriptorToDescriptorSwitch (void *parentObject, void *childObject);
 
   NclPresentationSpecificationParser *getPresentationSpecificationParser ();
 
@@ -149,6 +154,12 @@ public:
   void setInterfacesParser (NclInterfacesParser *interfacesParser);
   NclImportParser *getImportParser ();
   void setImportParser (NclImportParser *importParser);
+
+  vector<Node *> *getSwitchConstituents (SwitchNode *switchNode);
+
+private:
+  void addNodeToSwitch (SwitchNode *switchNode, NodeEntity *node);
+  short convertComparator (const string &comparator);
 };
 
 GINGA_NCLCONV_END
