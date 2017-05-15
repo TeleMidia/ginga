@@ -27,10 +27,9 @@ class NclMetainformationParser : public ModuleParser
 {
 public:
   NclMetainformationParser (NclDocumentParser *documentParser);
+
   void *parseMeta (DOMElement *parentElement, void *objGrandParent);
-  void *createMeta (DOMElement *parentElement, void *objGrandParent);
   void *parseMetadata (DOMElement *parentElement, void *objGrandParent);
-  void *createMetadata (DOMElement *parentElement, void *objGrandParent);
 };
 
 GINGA_NCLCONV_END
