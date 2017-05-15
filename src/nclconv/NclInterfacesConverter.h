@@ -38,7 +38,7 @@ using namespace ::ginga::ncl;
 #include "ncl/NodeEntity.h"
 using namespace ::ginga::ncl;
 
-#include "DocumentParser.h"
+#include "NclDocumentParser.h"
 
 #include "NclInterfacesParser.h"
 
@@ -50,7 +50,7 @@ GINGA_NCLCONV_BEGIN
 class NclInterfacesConverter : public NclInterfacesParser
 {
 public:
-  NclInterfacesConverter (DocumentParser *documentParser);
+  NclInterfacesConverter (NclDocumentParser *documentParser);
   void *createPort (DOMElement *parentElement, void *objGrandParent);
 
 private:

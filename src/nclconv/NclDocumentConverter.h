@@ -21,9 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/Node.h"
 using namespace ::ginga::ncl;
 
-#include "DocumentParser.h"
 #include "ModuleParser.h"
-
 #include "NclDocumentParser.h"
 
 #include "ncl/NclDocument.h"
@@ -64,7 +62,7 @@ public:
   void *
   parse (const string &uri)
   {
-    return DocumentParser::parse (uri);
+    return NclDocumentParser::parse (uri);
   }
 };
 

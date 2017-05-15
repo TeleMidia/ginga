@@ -19,14 +19,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NCLMETAINFORMATIONPARSER_H_
 
 #include "ModuleParser.h"
-#include "DocumentParser.h"
+#include "NclDocumentParser.h"
 
 GINGA_NCLCONV_BEGIN
 
 class NclMetainformationParser : public ModuleParser
 {
 public:
-  NclMetainformationParser (DocumentParser *documentParser);
+  NclMetainformationParser (NclDocumentParser *documentParser);
   void *parseMeta (DOMElement *parentElement, void *objGrandParent);
 
   virtual void *createMeta (DOMElement *parentElement, void *objGrandParent)

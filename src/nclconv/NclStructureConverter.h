@@ -32,7 +32,7 @@ using namespace ::ginga::ncl;
 #include "ncl/ContextNode.h"
 using namespace ::ginga::ncl;
 
-#include "DocumentParser.h"
+#include "NclDocumentParser.h"
 #include "ModuleParser.h"
 
 #include "NclStructureParser.h"
@@ -50,7 +50,7 @@ GINGA_NCLCONV_BEGIN
 class NclStructureConverter : public NclStructureParser
 {
 public:
-  NclStructureConverter (DocumentParser *documentParser);
+  NclStructureConverter (NclDocumentParser *documentParser);
   virtual void addBodyToNcl (void *parentObject, void *childObject);
   virtual void addPortToBody (void *parentObject, void *childObject);
   virtual void addPropertyToBody (void *parentObject, void *childObject);

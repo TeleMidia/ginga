@@ -48,7 +48,7 @@ using namespace ::ginga::util;
 #include "ncl/NclDocument.h"
 using namespace ::ginga::ncl;
 
-#include "DocumentParser.h"
+#include "NclDocumentParser.h"
 
 #include "NclConnectorsParser.h"
 
@@ -60,7 +60,7 @@ private:
   Connector *connector;
 
 public:
-  NclConnectorsConverter (DocumentParser *documentParser);
+  NclConnectorsConverter (NclDocumentParser *documentParser);
   void addCausalConnectorToConnectorBase (void *parent, void *child);
   void addConnectorParamToCausalConnector (void *parent, void *child);
   void addImportBaseToConnectorBase (void *parent, void *child);

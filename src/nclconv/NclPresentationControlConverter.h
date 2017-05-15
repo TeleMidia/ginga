@@ -43,7 +43,7 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::ncl;
 
 #include "ModuleParser.h"
-#include "DocumentParser.h"
+#include "NclDocumentParser.h"
 
 #include "NclPresentationControlParser.h"
 
@@ -75,7 +75,7 @@ private:
   map<string, map<string, NodeEntity *> *> *switchConstituents;
 
 public:
-  NclPresentationControlConverter (DocumentParser *documentParser);
+  NclPresentationControlConverter (NclDocumentParser *documentParser);
   virtual ~NclPresentationControlConverter ();
 
   vector<Node *> *getSwitchConstituents (SwitchNode *switchNode);

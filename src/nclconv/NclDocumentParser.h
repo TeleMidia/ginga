@@ -18,28 +18,30 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NCLDOCUMENTPARSER_H_
 #define NCLDOCUMENTPARSER_H_
 
-#include "DocumentParser.h"
-
-#include "NclConnectorsParser.h"
-#include "NclImportParser.h"
-#include "NclTransitionParser.h"
-#include "NclPresentationControlParser.h"
-#include "NclComponentsParser.h"
-#include "NclStructureParser.h"
-#include "NclPresentationSpecificationParser.h"
-#include "NclLayoutParser.h"
-#include "NclInterfacesParser.h"
-#include "NclLinkingParser.h"
-#include "NclMetainformationParser.h"
-
 #include "ncl/NclDocument.h"
 using namespace ::ginga::ncl;
 
 GINGA_NCLCONV_BEGIN
 
-class NclDocumentParser : public DocumentParser
+class NclConnectorsParser;
+class NclImportParser;
+class NclTransitionParser;
+class NclPresentationControlParser;
+class NclComponentsParser;
+class NclStructureParser;
+class NclPresentationSpecificationParser;
+class NclLayoutParser;
+class NclInterfacesParser;
+class NclLinkingParser;
+class NclMetainformationParser;
+
+class NclDocumentParser : public ErrorHandler
 {
 protected:
+  NclDocument *ncl;             // NCL document
+  string path;                  // document's absolute path
+  string dirname;               // directory part of document's path
+
   NclConnectorsParser *connectorsParser;
   NclImportParser *importParser;
   NclTransitionParser *transitionParser;
@@ -95,6 +97,19 @@ public:
 protected:
   virtual void *parseRootElement (DOMElement *rootElement);
   virtual void initialize () = 0;
+
+public:
+  string getPath ();
+  string getDirName ();
+  void setNclDocument (NclDocument *);
+  NclDocument *getNclDocument ();
+
+  void warning (const SAXParseException &);
+  void error (const SAXParseException &);
+  void fatalError (const SAXParseException &);
+  void resetErrors () {};
+
+  NclDocument *parse (const string &);
 };
 
 GINGA_NCLCONV_END

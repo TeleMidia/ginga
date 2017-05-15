@@ -47,8 +47,8 @@ using namespace ::ginga::ncl;
 #include "ncl/NclDocument.h"
 using namespace ::ginga::ncl;
 
-#include "DocumentParser.h"
 #include "ModuleParser.h"
+#include "NclDocumentParser.h"
 
 #include "NclComponentsParser.h"
 
@@ -84,7 +84,7 @@ class NclComponentsConverter : public NclComponentsParser
    */
 
 public:
-  NclComponentsConverter (DocumentParser *documentParser);
+  NclComponentsConverter (NclDocumentParser *documentParser);
   void addPortToContext (void *parentObject, void *childObject);
   void addPropertyToContext (void *parentObject, void *childObject);
   void addContextToContext (void *parentObject, void *childObject);

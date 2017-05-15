@@ -22,7 +22,7 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_NCLCONV_BEGIN
 
-NclStructureParser::NclStructureParser (DocumentParser *documentParser)
+NclStructureParser::NclStructureParser (NclDocumentParser *documentParser)
     : ModuleParser (documentParser)
 {
 }

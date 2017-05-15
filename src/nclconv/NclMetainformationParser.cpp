@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NCLCONV_BEGIN
 
 NclMetainformationParser::NclMetainformationParser (
-    DocumentParser *documentParser)
+    NclDocumentParser *documentParser)
     : ModuleParser (documentParser)
 {
 }

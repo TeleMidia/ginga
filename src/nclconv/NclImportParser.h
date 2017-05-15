@@ -19,14 +19,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NCLIMPORTPARSER_H_
 
 #include "ModuleParser.h"
-#include "DocumentParser.h"
 
 GINGA_NCLCONV_BEGIN
 
 class NclImportParser : public ModuleParser
 {
 public:
-  NclImportParser (DocumentParser *documentParser);
+  NclImportParser (NclDocumentParser *documentParser);
 
   void *parseImportedDocumentBase (DOMElement *parentElement,
                                    void *objGrandParent);

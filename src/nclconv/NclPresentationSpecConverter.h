@@ -45,7 +45,7 @@ using namespace ::ginga::ncl;
 #include "ncl/TransitionBase.h"
 using namespace ::ginga::ncl;
 
-#include "DocumentParser.h"
+#include "NclDocumentParser.h"
 #include "ModuleParser.h"
 
 #include "NclPresentationSpecificationParser.h"
@@ -62,7 +62,7 @@ private:
   DeviceLayout *deviceLayout;
 
 public:
-  NclPresentationSpecConverter (DocumentParser *documentParser,
+  NclPresentationSpecConverter (NclDocumentParser *documentParser,
                                 DeviceLayout *deviceLayout);
 
   void addDescriptorToDescriptorBase (void *parentObject,

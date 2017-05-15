@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NCLPRESENTATIONSPECIFICATIONPARSER_H_
 
 #include "ModuleParser.h"
-#include "DocumentParser.h"
+#include "NclDocumentParser.h"
 
 #include "NclImportParser.h"
 
@@ -32,7 +32,7 @@ private:
   void *presentationControlParser;
 
 public:
-  NclPresentationSpecificationParser (DocumentParser *documentParser);
+  NclPresentationSpecificationParser (NclDocumentParser *documentParser);
   void *parseDescriptor (DOMElement *parentElement, void *objGrandParent);
   virtual void *createDescriptor (DOMElement *parentElement,
                                   void *objGrandParent)

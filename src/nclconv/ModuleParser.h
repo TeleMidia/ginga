@@ -18,24 +18,24 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef ModuleParser_H
 #define ModuleParser_H
 
-#include "DocumentParser.h"
-
 GINGA_NCLCONV_BEGIN
+
+class NclDocumentParser;
 
 class ModuleParser
 {
 protected:
-  DocumentParser *documentParser;
+  NclDocumentParser *documentParser;
 
 public:
-  ModuleParser (DocumentParser *paramdocumentCompiler)
+  ModuleParser (NclDocumentParser *paramdocumentCompiler)
   {
     documentParser = paramdocumentCompiler;
   }
 
   virtual ~ModuleParser () {}
 
-  DocumentParser *
+  NclDocumentParser *
   getDocumentParser ()
   {
     return documentParser;

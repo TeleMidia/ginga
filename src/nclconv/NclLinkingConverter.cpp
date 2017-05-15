@@ -21,8 +21,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NCLCONV_BEGIN
 
 NclLinkingConverter::NclLinkingConverter (
-    DocumentParser *documentParser, arg_unused (NclConnectorsConverter *connCompiler))
-    : NclLinkingParser (documentParser)
+    NclDocumentParser *documentParser,
+    arg_unused (NclConnectorsConverter *connCompiler))
+  : NclLinkingParser (documentParser)
 {
 }
 

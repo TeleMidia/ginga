@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NCLSTRUCTUREPARSER_H_
 
 #include "ModuleParser.h"
-#include "DocumentParser.h"
+#include "NclDocumentParser.h"
 
 #include "NclTransitionParser.h"
 #include "NclPresentationSpecificationParser.h"
@@ -50,7 +50,7 @@ protected:
   NclMetainformationParser *metainformationParser;
 
 public:
-  NclStructureParser (DocumentParser *documentParser);
+  NclStructureParser (NclDocumentParser *documentParser);
 
   virtual void *parseBody (DOMElement *parentElement, void *objGrandParent);
 

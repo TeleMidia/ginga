@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NCLCONNECTORSPARSER_H_
 
 #include "ModuleParser.h"
-#include "DocumentParser.h"
 
 #include "NclImportParser.h"
 
@@ -32,7 +31,7 @@ private:
   NclImportParser *importParser;
 
 public:
-  NclConnectorsParser (DocumentParser *documentParser);
+  NclConnectorsParser (NclDocumentParser *documentParser);
 
   void *parseSimpleCondition (DOMElement *parentElement,
                               void *objGrandParent);

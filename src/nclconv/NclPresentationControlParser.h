@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NCLPRESENTATIONCONTROLPARSER_H_
 
 #include "ModuleParser.h"
-#include "DocumentParser.h"
+#include "NclDocumentParser.h"
 
 #include "NclPresentationSpecificationParser.h"
 #include "NclInterfacesParser.h"
@@ -36,7 +36,7 @@ private:
   NclImportParser *importParser;
 
 public:
-  NclPresentationControlParser (DocumentParser *documentParser);
+  NclPresentationControlParser (NclDocumentParser *documentParser);
 
   void *parseBindRule (DOMElement *parentElement, void *objGrandParent);
   virtual void *createBindRule (DOMElement *parentElement,

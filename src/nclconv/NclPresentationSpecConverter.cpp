@@ -26,7 +26,7 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 GINGA_NCLCONV_BEGIN
 
 NclPresentationSpecConverter::NclPresentationSpecConverter (
-    DocumentParser *documentParser, DeviceLayout *deviceLayout)
+    NclDocumentParser *documentParser, DeviceLayout *deviceLayout)
     : NclPresentationSpecificationParser (documentParser)
 {
   this->deviceLayout = deviceLayout;
