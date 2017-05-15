@@ -21,6 +21,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/NclDocument.h"
 using namespace ::ginga::ncl;
 
+#include "formatter/PrivateBaseContext.h" //FIXME: This is an architectural problem!
+using namespace ::ginga::formatter;
+
 GINGA_NCLCONV_BEGIN
 
 class NclConnectorsParser;
@@ -37,6 +40,13 @@ class NclMetainformationParser;
 
 class NclDocumentParser : public ErrorHandler
 {
+
+private:
+  PrivateBaseContext *privateBaseContext;
+  bool ownManager;
+
+  void *parentObject;
+
 protected:
   NclDocument *ncl;             // NCL document
   string path;                  // document's absolute path
@@ -60,6 +70,13 @@ public:
   virtual ~NclDocumentParser ();
 
   void setDeviceLayout (DeviceLayout *deviceLayout);
+
+  void setConverterInfo (PrivateBaseContext *pbc, DeviceLayout *deviceLayout);
+  string getAttribute (void *element, const string &attribute);
+  Node *getNode (const string &id);
+  bool removeNode (Node *node);
+  PrivateBaseContext *getPrivateBaseContext ();
+  NclDocument *importDocument (string &docLocation);
 
 protected:
   void setDependencies ();
@@ -95,8 +112,8 @@ public:
   void setLinkingParser (NclLinkingParser *linkingParser);
 
 protected:
-  virtual void *parseRootElement (DOMElement *rootElement);
-  virtual void initialize () = 0;
+  void *parseRootElement (DOMElement *rootElement);
+  void initialize ();
 
 public:
   string getPath ();

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "NclComponentsParser.h"
 
-#include "NclDocumentConverter.h"
+#include "NclDocumentParser.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
@@ -422,7 +422,7 @@ NclComponentsParser::createContext (DOMElement *parentElement,
   id = XMLString::transcode (
       parentElement->getAttribute (XMLString::transcode ("id")));
 
-  node = ((NclDocumentConverter *)getDocumentParser ())->getNode (id);
+  node = getDocumentParser ()->getNode (id);
   if (unlikely (node != NULL))
     syntax_error ("context '%s': duplicated id", id.c_str ());
 
@@ -433,9 +433,7 @@ NclComponentsParser::createContext (DOMElement *parentElement,
 
       try
         {
-          referNode = (ContextNode *)((NclDocumentConverter *)
-                                          getDocumentParser ())
-                          ->getNode (attValue);
+          referNode = (ContextNode *)getDocumentParser ()->getNode (attValue);
 
           if (referNode == NULL)
             {
@@ -534,8 +532,8 @@ NclComponentsParser::posCompileContext (DOMElement *parentElement,
                                               "switch")
                    == 0)
             {
-              elementObject = ((NclDocumentConverter *)getDocumentParser ())
-                                  ->getNode (XMLString::transcode (
+              elementObject = getDocumentParser ()
+                                ->getNode (XMLString::transcode (
                                       element->getAttribute (
                                           XMLString::transcode ("id"))));
 
@@ -577,7 +575,7 @@ NclComponentsParser::createMedia (DOMElement *parentElement,
   id = XMLString::transcode (
       parentElement->getAttribute (XMLString::transcode ("id")));
 
-  node = ((NclDocumentConverter *)getDocumentParser ())->getNode (id);
+  node = getDocumentParser ()->getNode (id);
   if (unlikely (node != NULL))
     syntax_error ("media '%s': duplicated id", id.c_str ());
 
@@ -588,9 +586,7 @@ NclComponentsParser::createMedia (DOMElement *parentElement,
 
       try
         {
-          referNode = (ContentNode *)((NclDocumentConverter *)
-                                          getDocumentParser ())
-                          ->getNode (attValue);
+          referNode = (ContentNode *) getDocumentParser ()->getNode (attValue);
 
           if (referNode == NULL)
             {

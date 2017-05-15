@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclPresentationControlParser.h"
 #include "NclComponentsParser.h"
 
-#include "NclDocumentConverter.h"
+#include "NclDocumentParser.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
@@ -569,7 +569,7 @@ NclPresentationControlParser::createSwitch (DOMElement *parentElement,
   id = XMLString::transcode (
       parentElement->getAttribute (XMLString::transcode ("id")));
 
-  node = ((NclDocumentConverter *)getDocumentParser ())->getNode (id);
+  node = getDocumentParser ()->getNode (id);
   if (unlikely (node != NULL))
     syntax_error ("switch '%s': duplicated id", id.c_str ());
 
@@ -581,8 +581,7 @@ NclPresentationControlParser::createSwitch (DOMElement *parentElement,
       try
         {
           referNode
-              = (SwitchNode *)((NclDocumentConverter *)getDocumentParser ())
-                    ->getNode (attValue);
+              = (SwitchNode *) getDocumentParser ()->getNode (attValue);
 
           if (referNode == NULL)
             {
@@ -700,7 +699,7 @@ NclPresentationControlParser::addImportBaseToRuleBase (
     void *parentObject, void *childObject)
 {
   string baseAlias, baseLocation;
-  NclDocumentConverter *compiler;
+  NclDocumentParser *compiler;
   NclDocument *importedDocument;
   RuleBase *createdBase;
 
@@ -713,7 +712,7 @@ NclPresentationControlParser::addImportBaseToRuleBase (
       ((DOMElement *)childObject)
           ->getAttribute (XMLString::transcode ("documentURI")));
 
-  compiler = (NclDocumentConverter *)getDocumentParser ();
+  compiler = getDocumentParser ();
   importedDocument = compiler->importDocument (baseLocation);
   if (importedDocument == NULL)
     {
@@ -1022,8 +1021,7 @@ NclPresentationControlParser::posCompileSwitch (
               == 0)
             {
               elementObject
-                  = (Node *)(((NclDocumentConverter *)getDocumentParser ())
-                                 ->getNode (XMLString::transcode (
+                  = (Node *)(getDocumentParser ()->getNode (XMLString::transcode (
                                      element->getAttribute (
                                          XMLString::transcode ("id")))));
 
@@ -1038,7 +1036,7 @@ NclPresentationControlParser::posCompileSwitch (
                                               "switch")
                    == 0)
             {
-              elementObject = ((NclDocumentConverter *)getDocumentParser ())
+              elementObject = getDocumentParser ()
                                   ->getNode (XMLString::transcode (
                                       element->getAttribute (
                                           XMLString::transcode ("id"))));
