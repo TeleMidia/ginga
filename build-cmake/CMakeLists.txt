@@ -220,7 +220,6 @@ add_executable(ginga
   ../src/nclconv/NclConnectorsParser.cpp
   ../src/nclconv/NclDocumentConverter.cpp
   ../src/nclconv/NclDocumentParser.cpp
-  ../src/nclconv/NclImportConverter.cpp
   ../src/nclconv/NclImportParser.cpp
   ../src/nclconv/NclInterfacesConverter.cpp
   ../src/nclconv/NclInterfacesParser.cpp
@@ -234,7 +233,6 @@ add_executable(ginga
   ../src/nclconv/NclPresentationControlParser.cpp
   ../src/nclconv/NclPresentationSpecConverter.cpp
   ../src/nclconv/NclPresentationSpecificationParser.cpp
-  ../src/nclconv/NclStructureConverter.cpp
   ../src/nclconv/NclStructureParser.cpp
   ../src/nclconv/NclTransitionConverter.cpp
   ../src/nclconv/NclTransitionParser.cpp

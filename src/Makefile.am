@@ -189,7 +189,6 @@ src+= nclconv/NclConnectorsConverter.cpp
 src+= nclconv/NclConnectorsParser.cpp
 src+= nclconv/NclDocumentConverter.cpp
 src+= nclconv/NclDocumentParser.cpp
-src+= nclconv/NclImportConverter.cpp
 src+= nclconv/NclImportParser.cpp
 src+= nclconv/NclInterfacesConverter.cpp
 src+= nclconv/NclInterfacesParser.cpp
