@@ -21,13 +21,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclImportConverter.h"
 #include "NclPresentationControlConverter.h"
 #include "NclComponentsConverter.h"
-#include "NclStructureConverter.h"
 #include "NclPresentationSpecConverter.h"
 #include "NclLayoutConverter.h"
 #include "NclInterfacesConverter.h"
 #include "NclLinkingConverter.h"
 #include "NclTransitionConverter.h"
 #include "NclMetainformationConverter.h"
+
+#include "NclStructureParser.h"
 
 GINGA_NCLCONV_BEGIN
 
@@ -124,7 +125,7 @@ NclDocumentConverter::initialize ()
   presentationSpecificationParser
       = new NclPresentationSpecConverter (this, deviceLayout);
 
-  structureParser = new NclStructureConverter (this);
+  structureParser = new NclStructureParser (this);
   componentsParser = new NclComponentsConverter (this);
   connectorsParser = new NclConnectorsConverter (this);
   linkingParser = new NclLinkingConverter (

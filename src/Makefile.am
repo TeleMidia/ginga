@@ -203,7 +203,6 @@ src+= nclconv/NclPresentationControlConverter.cpp
 src+= nclconv/NclPresentationControlParser.cpp
 src+= nclconv/NclPresentationSpecConverter.cpp
 src+= nclconv/NclPresentationSpecificationParser.cpp
-src+= nclconv/NclStructureConverter.cpp
 src+= nclconv/NclStructureParser.cpp
 src+= nclconv/NclTransitionConverter.cpp
 src+= nclconv/NclTransitionParser.cpp
