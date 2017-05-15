@@ -40,4 +40,45 @@ NclMetainformationParser::parseMetadata (DOMElement *parentElement,
   return createMetadata (parentElement, objGrandParent);
 }
 
+void *
+NclMetainformationParser::createMeta (DOMElement *parentElement,
+                                         arg_unused (void *objGrandParent))
+{
+  string name, content;
+  Meta *meta;
+
+  if (parentElement->hasAttribute (XMLString::transcode ("name")))
+    {
+      name = XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("name")));
+    }
+  else
+    {
+      syntax_error ("meta: missing name");
+    }
+
+  if (parentElement->hasAttribute (XMLString::transcode ("content")))
+    {
+      content = XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("content")));
+    }
+  else
+    {
+      syntax_error ("meta: missing content");
+    }
+
+  meta = new Meta (name, deconst (void *, content.c_str ()));
+  return (void *)meta;
+}
+
+void *
+NclMetainformationParser::createMetadata (arg_unused (DOMElement *parentElement),
+                                             arg_unused (void *objGrandParent))
+{
+  Metadata *metadata;
+
+  metadata = new Metadata ();
+  return (void *)metadata;
+}
+
 GINGA_NCLCONV_END
