@@ -232,7 +232,6 @@ add_executable(ginga
   ../src/nclconv/NclPresentationSpecConverter.cpp
   ../src/nclconv/NclPresentationSpecificationParser.cpp
   ../src/nclconv/NclStructureParser.cpp
-  ../src/nclconv/NclTransitionConverter.cpp
   ../src/nclconv/NclTransitionParser.cpp
   ../src/player/ImagePlayer.cpp
   ../src/player/LuaPlayer.cpp
