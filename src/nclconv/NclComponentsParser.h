@@ -18,6 +18,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NCLCOMPONENTSPARSER_H_
 #define NCLCOMPONENTSPARSER_H_
 
+#include "ncl/AbsoluteReferenceContent.h"
+#include "ncl/ContentNode.h"
+using namespace ::ginga::ncl;
+
 #include "ModuleParser.h"
 
 #include "NclPresentationSpecificationParser.h"
@@ -40,34 +44,26 @@ public:
   NclComponentsParser (NclDocumentParser *PARSERS_EXPORT);
 
   void *parseMedia (DOMElement *parentElement, void *objGrandParent);
-  virtual void *createMedia (DOMElement *parentElement,
-                             void *objGrandParent)
-      = 0;
+  void *createMedia (DOMElement *parentElement, void *objGrandParent);
 
-  virtual void addAreaToMedia (void *parentObject, void *childObject) = 0;
-  virtual void addPropertyToMedia (void *parentObject, void *childObject)
-      = 0;
+  void addAreaToMedia (void *parentObject, void *childObject);
+  void addPropertyToMedia (void *parentObject, void *childObject);
 
   void *parseContext (DOMElement *parentElement, void *objGrandParent);
-  virtual void *posCompileContext (DOMElement *parentElement,
-                                   void *parentObject);
+  void *posCompileContext2 (DOMElement *parentElement, void *parentObject);
+  void *posCompileContext (DOMElement *parentElement, void *parentObject);
 
-  virtual void *createContext (DOMElement *parentElement,
-                               void *objGrandParent)
-      = 0;
+  void *createContext (DOMElement *parentElement, void *objGrandParent);
 
-  virtual void addPortToContext (void *parentObject, void *childObject) = 0;
-  virtual void addPropertyToContext (void *parentObject, void *childObject)
-      = 0;
+  void addPortToContext (void *parentObject, void *childObject);
 
-  virtual void addMediaToContext (void *parentObject, void *childObject)
-      = 0;
-  virtual void addContextToContext (void *parentObject, void *childObject)
-      = 0;
+  void addPropertyToContext (void *parentObject, void *childObject);
 
-  virtual void addLinkToContext (void *parentObject, void *childObject) = 0;
-  virtual void addSwitchToContext (void *parentObject, void *childObject)
-      = 0;
+  void addMediaToContext (void *parentObject, void *childObject);
+  void addContextToContext (void *parentObject, void *childObject);
+
+  void addLinkToContext (void *parentObject, void *childObject);
+  void addSwitchToContext (void *parentObject, void *childObject);
 
   NclPresentationSpecificationParser *getPresentationSpecificationParser ();
 
@@ -81,6 +77,11 @@ public:
   NclPresentationControlParser *getPresentationControlParser ();
   void setPresentationControlParser (
       NclPresentationControlParser *presentationControlParser);
+
+private:
+  void addNodeToContext (ContextNode *contextNode, NodeEntity *node);
+  void addAnchorToMedia (ContentNode *contentNode, Anchor *anchor);
+
 };
 
 GINGA_NCLCONV_END

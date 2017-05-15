@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "NclStructureParser.h"
 
-#include "NclComponentsConverter.h"
+#include "NclComponentsParser.h"
 
 #include "NclDocumentConverter.h"
 
@@ -573,16 +573,14 @@ NclStructureParser::createBody (DOMElement *parentElement,
           XMLString::transcode ("id"),
           XMLString::transcode (document->getId ().c_str ()));
 
-      context = (ContextNode *)((NclComponentsConverter *)
-                                    getComponentsParser ())
+      context = (ContextNode *) getComponentsParser ()
                     ->createContext (parentElement, objGrandParent);
 
       parentElement->removeAttribute (XMLString::transcode ("id"));
     }
   else
     {
-      context = (ContextNode *)((NclComponentsConverter *)
-                                    getComponentsParser ())
+      context = (ContextNode *)getComponentsParser ()
                     ->createContext (parentElement, objGrandParent);
     }
   document->setBody (context);
