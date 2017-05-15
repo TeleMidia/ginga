@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "NclInterfacesParser.h"
 
-#include "NclDocumentConverter.h"
+#include "NclDocumentParser.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
@@ -452,8 +452,7 @@ NclInterfacesParser::createMapping (DOMElement *parent,
       = (DOMElement *)parent->getParentNode ()->getParentNode ();
 
   switchNode
-      = (SwitchNode *)((NclDocumentConverter *)getDocumentParser ())
-            ->getNode (XMLString::transcode (
+      = (SwitchNode *)getDocumentParser ()->getNode (XMLString::transcode (
                 switchElement->getAttribute (XMLString::transcode ("id"))));
 
   mappingNode = switchNode->getNode (XMLString::transcode (

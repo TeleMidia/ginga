@@ -46,9 +46,80 @@ NclDocumentParser::NclDocumentParser ()
   this->importParser = NULL;
   this->metainformationParser = NULL;
   this->transitionParser = NULL;
+
+  this->parentObject = NULL;
+  this->privateBaseContext = NULL;
+  this->ownManager = false;
 }
 
-NclDocumentParser::~NclDocumentParser () {}
+NclDocumentParser::~NclDocumentParser ()
+{
+  if (presentationSpecificationParser != NULL)
+    {
+      delete presentationSpecificationParser;
+      presentationSpecificationParser = NULL;
+    }
+
+  if (structureParser != NULL)
+    {
+      delete structureParser;
+      structureParser = NULL;
+    }
+
+  if (componentsParser != NULL)
+    {
+      delete componentsParser;
+      componentsParser = NULL;
+    }
+
+  if (connectorsParser != NULL)
+    {
+      delete connectorsParser;
+      connectorsParser = NULL;
+    }
+
+  if (linkingParser != NULL)
+    {
+      delete linkingParser;
+      linkingParser = NULL;
+    }
+
+  if (interfacesParser != NULL)
+    {
+      delete interfacesParser;
+      interfacesParser = NULL;
+    }
+
+  if (layoutParser != NULL)
+    {
+      delete layoutParser;
+      layoutParser = NULL;
+    }
+
+  if (transitionParser != NULL)
+    {
+      delete transitionParser;
+      transitionParser = NULL;
+    }
+
+  if (presentationControlParser != NULL)
+    {
+      delete presentationControlParser;
+      presentationControlParser = NULL;
+    }
+
+  if (importParser != NULL)
+    {
+      delete importParser;
+      importParser = NULL;
+    }
+
+  if (metainformationParser != NULL)
+    {
+      delete metainformationParser;
+      metainformationParser = NULL;
+    }
+}
 
 void
 NclDocumentParser::setDeviceLayout (DeviceLayout *deviceLayout)
@@ -344,4 +415,75 @@ NclDocumentParser::parse (const string &path)
 
   return this->ncl;
 }
+
+void
+NclDocumentParser::setConverterInfo (PrivateBaseContext *pbc,
+                                     DeviceLayout *deviceLayout)
+{
+  setDeviceLayout (deviceLayout);
+  this->privateBaseContext = pbc;
+
+  initialize ();
+  setDependencies ();
+}
+
+void
+NclDocumentParser::initialize ()
+{
+  presentationSpecificationParser
+      = new NclPresentationSpecificationParser(this, deviceLayout);
+
+  structureParser = new NclStructureParser (this);
+  componentsParser = new NclComponentsParser (this);
+  connectorsParser = new NclConnectorsParser (this);
+  linkingParser = new NclLinkingParser (this, connectorsParser);
+
+  interfacesParser = new NclInterfacesParser (this);
+  layoutParser = new NclLayoutParser (this, deviceLayout);
+  transitionParser = new NclTransitionParser (this);
+  presentationControlParser = new NclPresentationControlParser (this);
+  importParser = new NclImportParser (this);
+  metainformationParser = new NclMetainformationParser (this);
+}
+
+string
+NclDocumentParser::getAttribute (void *element, const string &attribute)
+{
+  return XMLString::transcode (
+      ((DOMElement *)element)
+          ->getAttribute (XMLString::transcode (attribute.c_str ())));
+}
+
+Node *
+NclDocumentParser::getNode (const string &nodeId)
+{
+  NclDocument *document;
+
+  document = NclDocumentParser::getNclDocument ();
+
+  return document->getNode (nodeId);
+}
+
+bool
+NclDocumentParser::removeNode (arg_unused (Node *node))
+{
+  return true;
+}
+
+PrivateBaseContext *
+NclDocumentParser::getPrivateBaseContext ()
+{
+  return privateBaseContext;
+}
+
+NclDocument *
+NclDocumentParser::importDocument (string &path)
+{
+  if (!xpathisuri (path) && !xpathisabs (path))
+    path = xpathbuildabs (this->getDirName (), path);
+
+  return (NclDocument *)(privateBaseContext
+                         ->addVisibleDocument (path, deviceLayout));
+}
+
 GINGA_NCLCONV_END

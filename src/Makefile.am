@@ -185,7 +185,6 @@ src+= ncl/TriggerExpression.cpp
 src+= ncl/ValueAssessment.cpp
 src+= nclconv/NclComponentsParser.cpp
 src+= nclconv/NclConnectorsParser.cpp
-src+= nclconv/NclDocumentConverter.cpp
 src+= nclconv/NclDocumentParser.cpp
 src+= nclconv/NclImportParser.cpp
 src+= nclconv/NclInterfacesParser.cpp

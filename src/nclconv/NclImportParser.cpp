@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "NclImportParser.h"
-#include "NclDocumentConverter.h"
+#include "NclDocumentParser.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
@@ -87,7 +87,7 @@ NclImportParser::addImportNCLToImportedDocumentBase (arg_unused (void *parentObj
                                                         void *childObject)
 {
   string docAlias, docLocation;
-  NclDocumentConverter *compiler;
+  NclDocumentParser *compiler;
   NclDocument *thisDocument, *importedDocument;
 
   docAlias = XMLString::transcode (
@@ -98,7 +98,7 @@ NclImportParser::addImportNCLToImportedDocumentBase (arg_unused (void *parentObj
       ((DOMElement *)childObject)
           ->getAttribute (XMLString::transcode ("documentURI")));
 
-  compiler = (NclDocumentConverter *)getDocumentParser ();
+  compiler = getDocumentParser ();
   importedDocument = compiler->importDocument (docLocation);
   if (importedDocument != NULL)
     {

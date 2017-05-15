@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "NclLayoutParser.h"
 
-#include "NclDocumentConverter.h"
+#include "NclDocumentParser.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
@@ -140,7 +140,7 @@ NclLayoutParser::addImportBaseToRegionBase (void *parentObject,
   map<int, RegionBase *> *bases;
   map<int, RegionBase *>::iterator i;
   string baseAlias, baseLocation;
-  NclDocumentConverter *compiler;
+  NclDocumentParser *compiler;
   NclDocument *importedDocument;
 
   // get the external base alias and location
@@ -152,7 +152,7 @@ NclLayoutParser::addImportBaseToRegionBase (void *parentObject,
       ((DOMElement *)childObject)
           ->getAttribute (XMLString::transcode ("documentURI")));
 
-  compiler = (NclDocumentConverter *)getDocumentParser ();
+  compiler = getDocumentParser ();
   importedDocument = compiler->importDocument (baseLocation);
   if (importedDocument == NULL)
     {

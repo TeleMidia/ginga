@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclComponentsParser.h"
 
-#include "NclDocumentConverter.h"
+#include "NclDocumentParser.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
@@ -626,9 +626,7 @@ NclStructureParser::solveNodeReferences (CompositeNode *composition)
                   if (referredNode->instanceOf ("ReferredNode"))
                     {
                       nodeEntity
-                          = (NodeEntity *)(((NclDocumentConverter *)
-                                                getDocumentParser ())
-                                               ->getNode (
+                          = (NodeEntity *)(getDocumentParser ()->getNode (
                                                    referredNode->getId ()));
 
                       if (nodeEntity != NULL)

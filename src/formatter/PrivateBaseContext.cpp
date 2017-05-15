@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-#include "nclconv/NclDocumentConverter.h"
+#include "nclconv/NclDocumentParser.h"
 using namespace ::ginga::nclconv;
 
 #include "PrivateBaseContext.h"
@@ -85,11 +85,11 @@ NclDocument *
 PrivateBaseContext::compileDocument (const string &location,
                                      DeviceLayout *deviceLayout)
 {
-  NclDocumentConverter *compiler = NULL;
+  NclDocumentParser *compiler = NULL;
   NclDocument *document = NULL;
   string docUrl = location;
 
-  compiler = new NclDocumentConverter ();
+  compiler = new NclDocumentParser ();
 
   compiler->setConverterInfo (this, deviceLayout);
   compiler->parse (docUrl);
