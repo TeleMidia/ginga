@@ -22,7 +22,7 @@ GINGA_NCLCONV_BEGIN
 
 NclLinkingConverter::NclLinkingConverter (
     NclDocumentParser *documentParser,
-    arg_unused (NclConnectorsConverter *connCompiler))
+    arg_unused (NclConnectorsParser *connCompiler))
   : NclLinkingParser (documentParser)
 {
 }

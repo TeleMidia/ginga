@@ -216,7 +216,6 @@ add_executable(ginga
   ../src/ncl/ValueAssessment.cpp
   ../src/nclconv/NclComponentsConverter.cpp
   ../src/nclconv/NclComponentsParser.cpp
-  ../src/nclconv/NclConnectorsConverter.cpp
   ../src/nclconv/NclConnectorsParser.cpp
   ../src/nclconv/NclDocumentConverter.cpp
   ../src/nclconv/NclDocumentParser.cpp

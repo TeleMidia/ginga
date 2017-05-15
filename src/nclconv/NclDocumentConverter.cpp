@@ -17,7 +17,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "NclDocumentConverter.h"
-#include "NclConnectorsConverter.h"
 #include "NclPresentationControlConverter.h"
 #include "NclComponentsConverter.h"
 #include "NclPresentationSpecConverter.h"
@@ -30,6 +29,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclInterfacesParser.h"
 #include "NclMetainformationParser.h"
 #include "NclTransitionParser.h"
+#include "NclConnectorsParser.h"
 
 GINGA_NCLCONV_BEGIN
 
@@ -128,9 +128,8 @@ NclDocumentConverter::initialize ()
 
   structureParser = new NclStructureParser (this);
   componentsParser = new NclComponentsConverter (this);
-  connectorsParser = new NclConnectorsConverter (this);
-  linkingParser = new NclLinkingConverter (
-      this, (NclConnectorsConverter *)connectorsParser);
+  connectorsParser = new NclConnectorsParser (this);
+  linkingParser = new NclLinkingConverter (this, connectorsParser);
 
   interfacesParser = new NclInterfacesParser (this);
   layoutParser = new NclLayoutConverter (this, deviceLayout);
