@@ -17,6 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "NclImportParser.h"
+#include "NclDocumentConverter.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
@@ -79,6 +80,51 @@ NclImportParser::parseImportBase (DOMElement *parentElement,
                                   void *objGrandParent)
 {
   return createImportBase (parentElement, objGrandParent);
+}
+
+void
+NclImportParser::addImportNCLToImportedDocumentBase (arg_unused (void *parentObject),
+                                                        void *childObject)
+{
+  string docAlias, docLocation;
+  NclDocumentConverter *compiler;
+  NclDocument *thisDocument, *importedDocument;
+
+  docAlias = XMLString::transcode (
+      ((DOMElement *)childObject)
+          ->getAttribute (XMLString::transcode ("alias")));
+
+  docLocation = XMLString::transcode (
+      ((DOMElement *)childObject)
+          ->getAttribute (XMLString::transcode ("documentURI")));
+
+  compiler = (NclDocumentConverter *)getDocumentParser ();
+  importedDocument = compiler->importDocument (docLocation);
+  if (importedDocument != NULL)
+    {
+      thisDocument = getDocumentParser ()->getNclDocument ();
+      thisDocument->addDocument (importedDocument, docAlias, docLocation);
+    }
+}
+
+void *
+NclImportParser::createImportBase (DOMElement *parentElement,
+                                      arg_unused (void *objGrandParent))
+{
+  return parentElement;
+}
+
+void *
+NclImportParser::createImportNCL (DOMElement *parentElement,
+                                     arg_unused (void *objGrandParent))
+{
+  return parentElement;
+}
+void *
+NclImportParser::createImportedDocumentBase (DOMElement *parentElement,
+                                                arg_unused (void *objGrandParent))
+{
+  return parentElement;
 }
 
 GINGA_NCLCONV_END

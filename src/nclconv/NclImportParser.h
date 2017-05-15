@@ -29,24 +29,18 @@ public:
 
   void *parseImportedDocumentBase (DOMElement *parentElement,
                                    void *objGrandParent);
-
-  virtual void *createImportedDocumentBase (DOMElement *parentElement,
-                                            void *objGrandParent)
-      = 0;
+  void *createImportedDocumentBase (DOMElement *parentElement,
+                                    void *objGrandParent);
 
   void *parseImportNCL (DOMElement *parentElement, void *objGrandParent);
-  virtual void *createImportNCL (DOMElement *parentElement,
-                                 void *objGrandParent)
-      = 0;
+  void *createImportNCL (DOMElement *parentElement, void *objGrandParent);
 
-  virtual void addImportNCLToImportedDocumentBase (void *parentObject,
-                                                   void *childObject)
-      = 0;
+  void addImportNCLToImportedDocumentBase (void *parentObject,
+                                           void *childObject);
 
   void *parseImportBase (DOMElement *parentElement, void *objGrandParent);
-  virtual void *createImportBase (DOMElement *parentElement,
-                                  void *objGrandParent)
-      = 0;
+  void *createImportBase (DOMElement *parentElement, void *objGrandParent);
+
 };
 
 GINGA_NCLCONV_END
