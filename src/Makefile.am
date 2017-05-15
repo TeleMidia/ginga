@@ -191,7 +191,6 @@ src+= nclconv/NclDocumentParser.cpp
 src+= nclconv/NclImportParser.cpp
 src+= nclconv/NclInterfacesParser.cpp
 src+= nclconv/NclLayoutParser.cpp
-src+= nclconv/NclLinkingConverter.cpp
 src+= nclconv/NclLinkingParser.cpp
 src+= nclconv/NclMetainformationParser.cpp
 src+= nclconv/NclPresentationControlParser.cpp
