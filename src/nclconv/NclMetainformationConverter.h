@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/Metadata.h"
 using namespace ::ginga::ncl;
 
-#include "DocumentParser.h"
+#include "NclDocumentParser.h"
 
 #include "NclMetainformationParser.h"
 
@@ -31,7 +31,7 @@ GINGA_NCLCONV_BEGIN
 class NclMetainformationConverter : public NclMetainformationParser
 {
 public:
-  NclMetainformationConverter (DocumentParser *documentParser);
+  NclMetainformationConverter (NclDocumentParser *documentParser);
   void *createMeta (DOMElement *parentElement, void *objGrandParent);
 
   void *createMetadata (DOMElement *parentElement, void *objGrandParent);

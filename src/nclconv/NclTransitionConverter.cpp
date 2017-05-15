@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NCLCONV_BEGIN
 
 NclTransitionConverter::NclTransitionConverter (
-    DocumentParser *documentParser)
+    NclDocumentParser *documentParser)
     : NclTransitionParser (documentParser)
 {
 }

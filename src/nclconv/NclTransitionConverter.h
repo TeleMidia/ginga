@@ -26,7 +26,7 @@ using namespace ::ginga::ncl;
 #include "ncl/TransitionUtil.h"
 using namespace ::ginga::ncl;
 
-#include "DocumentParser.h"
+#include "NclDocumentParser.h"
 
 #include "NclTransitionParser.h"
 
@@ -38,7 +38,7 @@ GINGA_NCLCONV_BEGIN
 class NclTransitionConverter : public NclTransitionParser
 {
 public:
-  NclTransitionConverter (DocumentParser *documentParser);
+  NclTransitionConverter (NclDocumentParser *documentParser);
   void addTransitionToTransitionBase (void *parentObject,
                                       void *childObject);
 

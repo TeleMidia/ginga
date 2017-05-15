@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/NclDocument.h"
 using namespace ::ginga::ncl;
 
-#include "DocumentParser.h"
+#include "NclDocumentParser.h"
 #include "ModuleParser.h"
 
 #include "NclImportParser.h"
@@ -33,7 +33,7 @@ GINGA_NCLCONV_BEGIN
 class NclImportConverter : public NclImportParser
 {
 public:
-  NclImportConverter (DocumentParser *documentParser);
+  NclImportConverter (NclDocumentParser *documentParser);
   void addImportNCLToImportedDocumentBase (void *parentObject,
                                            void *childObject);
 

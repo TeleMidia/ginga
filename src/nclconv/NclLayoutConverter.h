@@ -27,7 +27,7 @@ using namespace ::ginga::ncl;
 #include "ncl/NclDocument.h"
 using namespace ::ginga::ncl;
 
-#include "DocumentParser.h"
+#include "NclDocumentParser.h"
 #include "ModuleParser.h"
 
 #include "NclLayoutParser.h"
@@ -42,7 +42,7 @@ private:
   DeviceLayout *deviceLayout;
 
 public:
-  NclLayoutConverter (DocumentParser *documentParser,
+  NclLayoutConverter (NclDocumentParser *documentParser,
                       DeviceLayout *deviceLayout);
 
   void addImportBaseToRegionBase (void *parentObject, void *childObject);

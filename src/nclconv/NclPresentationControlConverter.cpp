@@ -23,7 +23,7 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 GINGA_NCLCONV_BEGIN
 
 NclPresentationControlConverter::NclPresentationControlConverter (
-    DocumentParser *documentParser)
+    NclDocumentParser *documentParser)
     : NclPresentationControlParser (documentParser)
 {
   switchConstituents = new map<string, map<string, NodeEntity *> *>;

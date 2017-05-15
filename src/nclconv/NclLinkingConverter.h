@@ -41,11 +41,10 @@ using namespace ::ginga::ncl;
 #include "ncl/NclDocument.h"
 using namespace ::ginga::ncl;
 
-#include "DocumentParser.h"
+#include "NclDocumentParser.h"
 #include "ModuleParser.h"
 
 #include "NclLinkingParser.h"
-
 #include "NclConnectorsConverter.h"
 
 GINGA_NCLCONV_BEGIN
@@ -57,7 +56,7 @@ private:
   CompositeNode *composite;
 
 public:
-  NclLinkingConverter (DocumentParser *documentParser,
+  NclLinkingConverter (NclDocumentParser *documentParser,
                        NclConnectorsConverter *connCompiler);
 
   void addBindToLink (void *parentObject, void *childObject);

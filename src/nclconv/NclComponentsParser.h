@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NCLCOMPONENTSPARSER_H_
 
 #include "ModuleParser.h"
-#include "DocumentParser.h"
 
 #include "NclPresentationSpecificationParser.h"
 #include "NclLinkingParser.h"
@@ -38,7 +37,7 @@ private:
   NclPresentationControlParser *presentationControlParser;
 
 public:
-  NclComponentsParser (DocumentParser *documentParser);
+  NclComponentsParser (NclDocumentParser *PARSERS_EXPORT);
 
   void *parseMedia (DOMElement *parentElement, void *objGrandParent);
   virtual void *createMedia (DOMElement *parentElement,

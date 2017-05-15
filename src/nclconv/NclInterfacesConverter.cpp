@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NCLCONV_BEGIN
 
 NclInterfacesConverter::NclInterfacesConverter (
-    DocumentParser *documentParser)
+    NclDocumentParser *documentParser)
     : NclInterfacesParser (documentParser)
 {
 }

@@ -19,14 +19,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NCLLINKINGPARSER_H_
 
 #include "ModuleParser.h"
-#include "DocumentParser.h"
+#include "NclDocumentParser.h"
 
 GINGA_NCLCONV_BEGIN
 
 class NclLinkingParser : public ModuleParser
 {
 public:
-  NclLinkingParser (DocumentParser *documentParser);
+  NclLinkingParser (NclDocumentParser *documentParser);
   void *parseBind (DOMElement *parentElement, void *objGrandParent);
   virtual void *createBind (DOMElement *parentElement, void *objGrandParent)
       = 0;

@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCLCONV_BEGIN
 
-NclImportConverter::NclImportConverter (DocumentParser *documentParser)
+NclImportConverter::NclImportConverter (NclDocumentParser *documentParser)
     : NclImportParser (documentParser)
 {
 }

@@ -214,7 +214,6 @@ add_executable(ginga
   ../src/ncl/TransitionUtil.cpp
   ../src/ncl/TriggerExpression.cpp
   ../src/ncl/ValueAssessment.cpp
-  ../src/nclconv/DocumentParser.cpp
   ../src/nclconv/NclComponentsConverter.cpp
   ../src/nclconv/NclComponentsParser.cpp
   ../src/nclconv/NclConnectorsConverter.cpp
@@ -351,4 +350,11 @@ COPY_FILES(ginga "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${CEF_TARGET_OUT
 # SET_LINUX_SUID_PERMISSIONS(ginga "${CEF_TARGET_OUT_DIR}/chrome-sandbox")
 
 configure_file(${CMAKE_SOURCE_DIR}/config.h.in config.h)
+
+set (CPACK_PACKAGE_NAME ginga-idtv)
+set (CPACK_PACKAGE_CONTACT robertogerson@telemidia.puc-rio.br)
+
+install (DIRECTORY Release/ DESTINATION bin)
+install(TARGETS ginga DESTINATION bin)
+include (CPack)
 

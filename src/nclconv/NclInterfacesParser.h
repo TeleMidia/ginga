@@ -19,14 +19,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NCLINTERFACESPARSER_H_
 
 #include "ModuleParser.h"
-#include "DocumentParser.h"
+#include "NclDocumentParser.h"
 
 GINGA_NCLCONV_BEGIN
 
 class NclInterfacesParser : public ModuleParser
 {
 public:
-  NclInterfacesParser (DocumentParser *documentParser);
+  NclInterfacesParser (NclDocumentParser *documentParser);
   void *parseSwitchPort (DOMElement *parentElement, void *objGrandParent);
   virtual void *createSwitchPort (DOMElement *parentElement,
                                   void *objGrandParent)
