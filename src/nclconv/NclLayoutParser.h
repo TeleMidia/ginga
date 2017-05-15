@@ -31,29 +31,31 @@ private:
   // Ref Classes
   NclImportParser *importParser;
 
+  DeviceLayout *deviceLayout;
+
 public:
-  NclLayoutParser (NclDocumentParser *documentParser);
+  NclLayoutParser (NclDocumentParser *documentParser,
+                   DeviceLayout *deviceLayout);
+
   void *parseRegion (DOMElement *parentElement, void *objGrandParent);
-  virtual void *createRegion (DOMElement *parentElement,
-                              void *objGrandParent)
-      = 0;
+  void *createRegion (DOMElement *parentElement, void *objGrandParent);
 
-  virtual void addRegionToRegion (void *parentObject, void *childObject)
-      = 0;
+  void addRegionToRegion (void *parentObject, void *childObject);
+
   void *parseRegionBase (DOMElement *parentElement, void *objGrandParent);
-  virtual void *createRegionBase (DOMElement *parentElement,
-                                  void *objGrandParent)
-      = 0;
+  void *createRegionBase (DOMElement *parentElement, void *objGrandParent);
 
-  virtual void addImportBaseToRegionBase (void *parentObject,
-                                          void *childObject)
-      = 0;
+  void addImportBaseToRegionBase (void *parentObject, void *childObject);
 
-  virtual void addRegionToRegionBase (void *parentObject, void *childObject)
-      = 0;
+  void addRegionToRegionBase (void *parentObject, void *childObject);
 
   NclImportParser *getImportParser ();
   void setImportParser (NclImportParser *importParser);
+
+private:
+  double getPercentValue (const string &value);
+  int getPixelValue (const string &value);
+  bool isPercentValue (const string &value);
 };
 
 GINGA_NCLCONV_END
