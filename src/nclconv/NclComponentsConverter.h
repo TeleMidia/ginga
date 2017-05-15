@@ -52,8 +52,6 @@ using namespace ::ginga::ncl;
 
 #include "NclComponentsParser.h"
 
-#include "NclLinkingConverter.h"
-
 GINGA_NCLCONV_BEGIN
 
 class NclComponentsConverter : public NclComponentsParser
