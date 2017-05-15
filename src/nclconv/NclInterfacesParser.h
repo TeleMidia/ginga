@@ -48,15 +48,8 @@ public:
 
   void addMappingToSwitchPort (void *parentObject, void *childObject);
 
-  void *createArea (DOMElement *parentElement, void *objGrandParent);
-
-  void *createProperty (DOMElement *parentElement, void *objGrandParent);
-
   void *createPort (DOMElement *parentElement, void *objGrandParent);
-
   void *parseMapping (DOMElement *parentElement, void *objGrandParent);
-  void *createMapping (DOMElement *parentElement, void *objGrandParent);
-
   void *parseArea (DOMElement *parentElement, void *objGrandParent);
   void *parseProperty (DOMElement *parentElement, void *objGrandParent);
   void *parsePort (DOMElement *parentElement, void *objGrandParent);

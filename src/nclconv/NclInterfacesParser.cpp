@@ -69,35 +69,149 @@ NclInterfacesParser::parseSwitchPort (DOMElement *parentElement,
 }
 
 void *
-NclInterfacesParser::parseMapping (DOMElement *parentElement,
+NclInterfacesParser::parseMapping (DOMElement *parent,
                                    void *objGrandParent)
 {
-  return createMapping (parentElement, objGrandParent);
+  DOMElement *switchElement;
+  SwitchNode *switchNode;
+  NodeEntity *mappingNodeEntity;
+  Node *mappingNode;
+  InterfacePoint *interfacePoint;
+  Port *port;
+
+  switchElement
+      = (DOMElement *)parent->getParentNode ()->getParentNode ();
+
+  switchNode
+      = (SwitchNode *)getDocumentParser ()->getNode (XMLString::transcode (
+                switchElement->getAttribute (XMLString::transcode ("id"))));
+
+  mappingNode = switchNode->getNode (XMLString::transcode (
+      parent->getAttribute (XMLString::transcode ("component"))));
+
+  if (unlikely (mappingNode == NULL))
+    syntax_error ("mapping: bad component '%s'",
+                  string (XMLString::transcode
+                          (parent->getAttribute
+                           (XMLString::transcode ("component")))).c_str ());
+
+  mappingNodeEntity = (NodeEntity *)mappingNode->getDataEntity ();
+  if (parent->hasAttribute (XMLString::transcode ("interface")))
+    {
+      interfacePoint = mappingNodeEntity->getAnchor (
+          XMLString::transcode (parent->getAttribute (
+              XMLString::transcode ("interface"))));
+
+      if (interfacePoint == NULL)
+        {
+          if (mappingNodeEntity->instanceOf ("CompositeNode"))
+            {
+              interfacePoint
+                  = ((CompositeNode *)mappingNodeEntity)
+                        ->getPort (XMLString::transcode (
+                            parent->getAttribute (
+                                XMLString::transcode ("interface"))));
+            }
+        }
+    }
+  else
+    {
+      interfacePoint = mappingNodeEntity->getAnchor (0);
+    }
+
+  if (unlikely (interfacePoint == NULL))
+    syntax_error ("mapping: bad interface '%s'",
+                  string (XMLString::transcode
+                          (parent->getAttribute
+                           (XMLString::transcode ("interface")))).c_str ());
+
+  port = new Port (((SwitchPort *)objGrandParent)->getId (), mappingNode,
+                   interfacePoint);
+
+  return port;
 }
 
 void *
-NclInterfacesParser::parseArea (DOMElement *parentElement,
+NclInterfacesParser::parseArea (DOMElement *parent,
                                 void *objGrandParent)
 {
-  return createArea (parentElement, objGrandParent);
+  string anchorId;
+  string position, anchorLabel;
+  Anchor *anchor;
+
+  if (unlikely (!parent->hasAttribute (XMLString::transcode ("id"))))
+    syntax_error ("area: missing id");
+
+  anchorId = XMLString::transcode
+    (parent->getAttribute (XMLString::transcode ("id")));
+
+  anchor = NULL;
+
+  if (parent->hasAttribute (XMLString::transcode ("begin"))
+      || parent->hasAttribute (XMLString::transcode ("end"))
+      || parent->hasAttribute (XMLString::transcode ("first"))
+      || parent->hasAttribute (XMLString::transcode ("last")))
+    {
+      anchor = createTemporalAnchor (parent);
+    }
+  else if (parent->hasAttribute (XMLString::transcode ("text")))
+    {
+      position = XMLString::transcode (
+          parent->getAttribute (XMLString::transcode ("position")));
+
+      anchor = new TextAnchor (
+          anchorId, XMLString::transcode (parent->getAttribute (
+                        XMLString::transcode ("text"))),
+          xstrto_int (position));
+    }
+  else if (parent->hasAttribute (XMLString::transcode ("coords")))
+    {
+      anchor = createSpatialAnchor (parent);
+    }
+  else if (parent->hasAttribute (XMLString::transcode ("label")))
+    {
+      anchorLabel = XMLString::transcode (
+          parent->getAttribute (XMLString::transcode ("label")));
+
+      anchor = new LabeledAnchor (anchorId, anchorLabel);
+    }
+  else
+    {
+      anchor = new LabeledAnchor (anchorId, anchorId);
+    }
+
+  g_assert_nonnull (anchor);
+
+  return anchor;
 }
 
 void *
-NclInterfacesParser::parseProperty (DOMElement *parentElement,
+NclInterfacesParser::parseProperty (DOMElement *parent,
                                     void *objGrandParent)
 {
-  return createProperty (parentElement, objGrandParent);
+  string attributeName, attributeValue;
+  PropertyAnchor *anchor;
+
+  if (unlikely (!parent->hasAttribute (XMLString::transcode ("name"))))
+    syntax_error ("property: missing name");
+
+  attributeName = XMLString::transcode
+    (parent->getAttribute (XMLString::transcode ("name")));
+
+  anchor = new PropertyAnchor (attributeName);
+  if (parent->hasAttribute (XMLString::transcode ("value")))
+    {
+      attributeValue = XMLString::transcode (
+          parent->getAttribute (XMLString::transcode ("value")));
+      anchor->setPropertyValue (attributeValue);
+    }
+
+  return anchor;
 }
 
 void *
-NclInterfacesParser::parsePort (DOMElement *parentElement,
+NclInterfacesParser::parsePort (DOMElement *parent,
                                 void *objGrandParent)
-{
-  return createPort (parentElement, objGrandParent);
-}
-
-void *
-NclInterfacesParser::createPort (DOMElement *parent, void *objGrandParent)
 {
   string id, attValue;
   Node *portNode;
@@ -358,146 +472,6 @@ NclInterfacesParser::createTemporalAnchor (DOMElement *areaElement)
     }
 
   return anchor;
-}
-
-void *
-NclInterfacesParser::createProperty (DOMElement *parent,
-                                     arg_unused (void *objGrandParent))
-{
-  string attributeName, attributeValue;
-  PropertyAnchor *anchor;
-
-  if (unlikely (!parent->hasAttribute (XMLString::transcode ("name"))))
-    syntax_error ("property: missing name");
-
-  attributeName = XMLString::transcode
-    (parent->getAttribute (XMLString::transcode ("name")));
-
-  anchor = new PropertyAnchor (attributeName);
-  if (parent->hasAttribute (XMLString::transcode ("value")))
-    {
-      attributeValue = XMLString::transcode (
-          parent->getAttribute (XMLString::transcode ("value")));
-      anchor->setPropertyValue (attributeValue);
-    }
-  return anchor;
-}
-
-void *
-NclInterfacesParser::createArea (DOMElement *parent,
-                                 arg_unused (void *objGrandParent))
-{
-  string anchorId;
-  string position, anchorLabel;
-  Anchor *anchor;
-
-  if (unlikely (!parent->hasAttribute (XMLString::transcode ("id"))))
-    syntax_error ("area: missing id");
-
-  anchorId = XMLString::transcode
-    (parent->getAttribute (XMLString::transcode ("id")));
-
-  anchor = NULL;
-
-  if (parent->hasAttribute (XMLString::transcode ("begin"))
-      || parent->hasAttribute (XMLString::transcode ("end"))
-      || parent->hasAttribute (XMLString::transcode ("first"))
-      || parent->hasAttribute (XMLString::transcode ("last")))
-    {
-      anchor = createTemporalAnchor (parent);
-    }
-  else if (parent->hasAttribute (XMLString::transcode ("text")))
-    {
-      position = XMLString::transcode (
-          parent->getAttribute (XMLString::transcode ("position")));
-
-      anchor = new TextAnchor (
-          anchorId, XMLString::transcode (parent->getAttribute (
-                        XMLString::transcode ("text"))),
-          xstrto_int (position));
-    }
-  else if (parent->hasAttribute (XMLString::transcode ("coords")))
-    {
-      anchor = createSpatialAnchor (parent);
-    }
-  else if (parent->hasAttribute (XMLString::transcode ("label")))
-    {
-      anchorLabel = XMLString::transcode (
-          parent->getAttribute (XMLString::transcode ("label")));
-
-      anchor = new LabeledAnchor (anchorId, anchorLabel);
-    }
-  else
-    {
-      anchor = new LabeledAnchor (anchorId, anchorId);
-    }
-
-  g_assert_nonnull (anchor);
-
-  return anchor;
-}
-
-void *
-NclInterfacesParser::createMapping (DOMElement *parent,
-                                       void *objGrandParent)
-{
-  DOMElement *switchElement;
-  SwitchNode *switchNode;
-  NodeEntity *mappingNodeEntity;
-  Node *mappingNode;
-  InterfacePoint *interfacePoint;
-  Port *port;
-
-  switchElement
-      = (DOMElement *)parent->getParentNode ()->getParentNode ();
-
-  switchNode
-      = (SwitchNode *)getDocumentParser ()->getNode (XMLString::transcode (
-                switchElement->getAttribute (XMLString::transcode ("id"))));
-
-  mappingNode = switchNode->getNode (XMLString::transcode (
-      parent->getAttribute (XMLString::transcode ("component"))));
-
-  if (unlikely (mappingNode == NULL))
-    syntax_error ("mapping: bad component '%s'",
-                  string (XMLString::transcode
-                          (parent->getAttribute
-                           (XMLString::transcode ("component")))).c_str ());
-
-  mappingNodeEntity = (NodeEntity *)mappingNode->getDataEntity ();
-  if (parent->hasAttribute (XMLString::transcode ("interface")))
-    {
-      interfacePoint = mappingNodeEntity->getAnchor (
-          XMLString::transcode (parent->getAttribute (
-              XMLString::transcode ("interface"))));
-
-      if (interfacePoint == NULL)
-        {
-          if (mappingNodeEntity->instanceOf ("CompositeNode"))
-            {
-              interfacePoint
-                  = ((CompositeNode *)mappingNodeEntity)
-                        ->getPort (XMLString::transcode (
-                            parent->getAttribute (
-                                XMLString::transcode ("interface"))));
-            }
-        }
-    }
-  else
-    {
-      interfacePoint = mappingNodeEntity->getAnchor (0);
-    }
-
-  if (unlikely (interfacePoint == NULL))
-    syntax_error ("mapping: bad interface '%s'",
-                  string (XMLString::transcode
-                          (parent->getAttribute
-                           (XMLString::transcode ("interface")))).c_str ());
-
-  port = new Port (((SwitchPort *)objGrandParent)->getId (), mappingNode,
-                   interfacePoint);
-
-  return port;
 }
 
 void *
