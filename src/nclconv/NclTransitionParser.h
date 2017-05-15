@@ -23,6 +23,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclImportParser.h"
 
+#include "ncl/TransitionUtil.h"
+using namespace ::ginga::ncl;
+
 GINGA_NCLCONV_BEGIN
 
 class NclTransitionParser : public ModuleParser
@@ -37,22 +40,18 @@ public:
                              void *objGrandParent);
 
   virtual void *createTransitionBase (DOMElement *parentElement,
-                                      void *objGrandParent)
-      = 0;
+                                      void *objGrandParent);
 
   virtual void addImportBaseToTransitionBase (void *parentObject,
-                                              void *childObject)
-      = 0;
+                                              void *childObject);
 
   virtual void addTransitionToTransitionBase (void *parentObject,
-                                              void *childObject)
-      = 0;
+                                              void *childObject);
 
   void *parseTransition (DOMElement *parentElement, void *objGrandParent);
 
   virtual void *createTransition (DOMElement *parentElement,
-                                  void *objGrandParent)
-      = 0;
+                                  void *objGrandParent);
 
   NclImportParser *getImportParser ();
   void setImportParser (NclImportParser *importParser);
