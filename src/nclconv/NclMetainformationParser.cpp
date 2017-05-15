@@ -28,21 +28,7 @@ NclMetainformationParser::NclMetainformationParser (
 
 void *
 NclMetainformationParser::parseMeta (DOMElement *parentElement,
-                                     void *objGrandParent)
-{
-  return createMeta (parentElement, objGrandParent);
-}
-
-void *
-NclMetainformationParser::parseMetadata (DOMElement *parentElement,
-                                         void *objGrandParent)
-{
-  return createMetadata (parentElement, objGrandParent);
-}
-
-void *
-NclMetainformationParser::createMeta (DOMElement *parentElement,
-                                         arg_unused (void *objGrandParent))
+                                     arg_unused (void *objGrandParent))
 {
   string name, content;
   Meta *meta;
@@ -72,8 +58,8 @@ NclMetainformationParser::createMeta (DOMElement *parentElement,
 }
 
 void *
-NclMetainformationParser::createMetadata (arg_unused (DOMElement *parentElement),
-                                             arg_unused (void *objGrandParent))
+NclMetainformationParser::parseMetadata (arg_unused (DOMElement *parentElement),
+                                         arg_unused (void *objGrandParent) )
 {
   Metadata *metadata;
 
