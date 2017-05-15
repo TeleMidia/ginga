@@ -45,7 +45,7 @@ using namespace ::ginga::ncl;
 #include "ModuleParser.h"
 
 #include "NclLinkingParser.h"
-#include "NclConnectorsConverter.h"
+#include "NclConnectorsParser.h"
 
 GINGA_NCLCONV_BEGIN
 
@@ -57,7 +57,7 @@ private:
 
 public:
   NclLinkingConverter (NclDocumentParser *documentParser,
-                       NclConnectorsConverter *connCompiler);
+                       NclConnectorsParser *connCompiler);
 
   void addBindToLink (void *parentObject, void *childObject);
   void addBindParamToBind (void *parentObject, void *childObject);
