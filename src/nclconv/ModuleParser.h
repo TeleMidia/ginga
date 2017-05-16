@@ -20,25 +20,21 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCLCONV_BEGIN
 
-class NclDocumentParser;
+class NclParser;
 
 class ModuleParser
 {
 protected:
-  NclDocumentParser *_documentParser;
+  NclParser *_nclParser;
 
 public:
-  ModuleParser (NclDocumentParser *paramdocumentCompiler)
-  {
-    _documentParser = paramdocumentCompiler;
-  }
+  ModuleParser (NclParser *nclParser) : _nclParser(nclParser) { }
+  virtual ~ModuleParser () { }
 
-  virtual ~ModuleParser () {}
-
-  NclDocumentParser *
-  getDocumentParser ()
+  NclParser *
+  getNclParser ()
   {
-    return _documentParser;
+    return _nclParser;
   }
 };
 

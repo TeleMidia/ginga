@@ -38,7 +38,7 @@ class NclInterfacesParser;
 class NclLinkingParser;
 class NclMetainformationParser;
 
-class NclDocumentParser : public ErrorHandler
+class NclParser : public ErrorHandler
 {
 
 private:
@@ -66,8 +66,8 @@ protected:
   DeviceLayout *deviceLayout;
 
 public:
-  NclDocumentParser (PrivateBaseContext *pbc, DeviceLayout *deviceLayout);
-  virtual ~NclDocumentParser ();
+  NclParser (PrivateBaseContext *pbc, DeviceLayout *deviceLayout);
+  virtual ~NclParser ();
 
   string getTagname (const DOMElement *element);
   string getAttribute (const DOMElement *element, const string &attribute);

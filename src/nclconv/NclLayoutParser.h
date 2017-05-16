@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NCLLAYOUTPARSER_H_
 
 #include "ModuleParser.h"
-#include "NclDocumentParser.h"
+#include "NclParser.h"
 
 #include "NclImportParser.h"
 
@@ -31,8 +31,7 @@ private:
   DeviceLayout *deviceLayout;
 
 public:
-  NclLayoutParser (NclDocumentParser *documentParser,
-                   DeviceLayout *deviceLayout);
+  NclLayoutParser (NclParser *nclParser, DeviceLayout *deviceLayout);
 
   LayoutRegion *parseRegion (DOMElement *parentElement);
   LayoutRegion *createRegion (DOMElement *parentElement);

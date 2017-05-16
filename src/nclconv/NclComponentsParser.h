@@ -34,7 +34,7 @@ GINGA_NCLCONV_BEGIN
 class NclComponentsParser : public ModuleParser
 {
 public:
-  NclComponentsParser (NclDocumentParser *PARSERS_EXPORT);
+  NclComponentsParser (NclParser *PARSERS_EXPORT);
 
   Node *parseMedia (DOMElement *parentElement);
   Node *createMedia (DOMElement *parentElement);

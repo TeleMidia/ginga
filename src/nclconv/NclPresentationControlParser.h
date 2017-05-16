@@ -34,7 +34,7 @@ using namespace ::ginga::ncl;
 
 
 #include "ModuleParser.h"
-#include "NclDocumentParser.h"
+#include "NclParser.h"
 
 #include "NclPresentationSpecificationParser.h"
 #include "NclInterfacesParser.h"
@@ -65,7 +65,7 @@ private:
   map<string, map<string, NodeEntity *> *> *switchConstituents;
 
 public:
-  NclPresentationControlParser (NclDocumentParser *documentParser);
+  NclPresentationControlParser (NclParser *nclParser);
   virtual ~NclPresentationControlParser();
 
   DOMElement *parseBindRule (DOMElement *parentElement);

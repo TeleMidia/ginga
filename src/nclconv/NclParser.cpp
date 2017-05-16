@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "NclDocumentParser.h"
+#include "NclParser.h"
 
 #include "NclConnectorsParser.h"
 #include "NclImportParser.h"
@@ -32,8 +32,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCLCONV_BEGIN
 
-NclDocumentParser::NclDocumentParser (PrivateBaseContext *pbc,
-                                      DeviceLayout *deviceLayout)
+NclParser::NclParser (PrivateBaseContext *pbc, DeviceLayout *deviceLayout)
 {
   this->parentObject = nullptr;
   this->privateBaseContext = nullptr;
@@ -45,7 +44,7 @@ NclDocumentParser::NclDocumentParser (PrivateBaseContext *pbc,
   init ();
 }
 
-NclDocumentParser::~NclDocumentParser ()
+NclParser::~NclParser ()
 {
   delete presentationSpecificationParser;
   delete structureParser;
@@ -61,73 +60,73 @@ NclDocumentParser::~NclDocumentParser ()
 }
 
 NclTransitionParser *
-NclDocumentParser::getTransitionParser ()
+NclParser::getTransitionParser ()
 {
   return transitionParser;
 }
 
 NclConnectorsParser *
-NclDocumentParser::getConnectorsParser ()
+NclParser::getConnectorsParser ()
 {
   return connectorsParser;
 }
 
 NclImportParser *
-NclDocumentParser::getImportParser ()
+NclParser::getImportParser ()
 {
   return importParser;
 }
 
 NclPresentationControlParser *
-NclDocumentParser::getPresentationControlParser ()
+NclParser::getPresentationControlParser ()
 {
   return presentationControlParser;
 }
 
 NclComponentsParser *
-NclDocumentParser::getComponentsParser ()
+NclParser::getComponentsParser ()
 {
   return componentsParser;
 }
 
 NclStructureParser *
-NclDocumentParser::getStructureParser ()
+NclParser::getStructureParser ()
 {
   return structureParser;
 }
 
 NclPresentationSpecificationParser *
-NclDocumentParser::getPresentationSpecificationParser ()
+NclParser::getPresentationSpecificationParser ()
 {
   return presentationSpecificationParser;
 }
 
 NclLayoutParser *
-NclDocumentParser::getLayoutParser ()
+NclParser::getLayoutParser ()
 {
   return layoutParser;
 }
 
 NclInterfacesParser *
-NclDocumentParser::getInterfacesParser ()
+NclParser::getInterfacesParser ()
 {
   return interfacesParser;
 }
 
 NclMetainformationParser *
-NclDocumentParser::getMetainformationParser ()
+NclParser::getMetainformationParser ()
 {
   return metainformationParser;
 }
 
 NclLinkingParser *
-NclDocumentParser::getLinkingParser ()
+NclParser::getLinkingParser ()
 {
   return linkingParser;
 }
 
 NclDocument *
-NclDocumentParser::parseRootElement (DOMElement *rootElement)
+NclParser::parseRootElement (DOMElement *rootElement)
 {
   string tagName = getTagname(rootElement);
   if (unlikely (tagName != "ncl"))
@@ -138,31 +137,31 @@ NclDocumentParser::parseRootElement (DOMElement *rootElement)
 
 
 string
-NclDocumentParser::getDirName ()
+NclParser::getDirName ()
 {
   return this->dirname;
 }
 
 string
-NclDocumentParser::getPath ()
+NclParser::getPath ()
 {
   return this->path;
 }
 
 NclDocument *
-NclDocumentParser::getNclDocument ()
+NclParser::getNclDocument ()
 {
   return this->ncl;
 }
 
 void
-NclDocumentParser::setNclDocument (NclDocument *ncl)
+NclParser::setNclDocument (NclDocument *ncl)
 {
   this->ncl = ncl;
 }
 
 void
-NclDocumentParser::warning (const SAXParseException &e)
+NclParser::warning (const SAXParseException &e)
 {
   const char *file = XMLString::transcode (e.getSystemId ());
   if (file == NULL || strlen (file) <= 0)
@@ -175,7 +174,7 @@ NclDocumentParser::warning (const SAXParseException &e)
 }
 
 void G_GNUC_NORETURN
-NclDocumentParser::error (const SAXParseException &e)
+NclParser::error (const SAXParseException &e)
 {
   const char *file = XMLString::transcode (e.getSystemId ());
   if (file == NULL || strlen (file) <= 0)
@@ -189,13 +188,13 @@ NclDocumentParser::error (const SAXParseException &e)
 }
 
 void
-NclDocumentParser::fatalError (const SAXParseException &e)
+NclParser::fatalError (const SAXParseException &e)
 {
   this->error (e);
 }
 
 NclDocument *
-NclDocumentParser::parse (const string &path)
+NclParser::parse (const string &path)
 {
   DOMDocument *dom;
   DOMElement *elt;
@@ -244,7 +243,7 @@ NclDocumentParser::parse (const string &path)
 }
 
 void
-NclDocumentParser::init ()
+NclParser::init ()
 {
   presentationSpecificationParser
       = new NclPresentationSpecificationParser(this, deviceLayout);
@@ -263,7 +262,7 @@ NclDocumentParser::init ()
 }
 
 string
-NclDocumentParser::getTagname(const DOMElement *element)
+NclParser::getTagname(const DOMElement *element)
 {
   char *tagname = XMLString::transcode (element->getTagName ());
   string tagname_str (tagname);
@@ -273,7 +272,7 @@ NclDocumentParser::getTagname(const DOMElement *element)
 }
 
 string
-NclDocumentParser::getAttribute (const DOMElement *element, const string &attr)
+NclParser::getAttribute (const DOMElement *element, const string &attr)
 {
   XMLCh *attr_xmlch = XMLString::transcode(attr.c_str());
   char *attr_value_ch =  XMLString::transcode(element->getAttribute (attr_xmlch));
@@ -286,7 +285,7 @@ NclDocumentParser::getAttribute (const DOMElement *element, const string &attr)
 }
 
 bool
-NclDocumentParser::hasAttribute (const DOMElement *element, const string &attr)
+NclParser::hasAttribute (const DOMElement *element, const string &attr)
 {
   XMLCh *attr_xmlch = XMLString::transcode(attr.c_str());
   bool result = element->hasAttribute(attr_xmlch);
@@ -296,23 +295,23 @@ NclDocumentParser::hasAttribute (const DOMElement *element, const string &attr)
 }
 
 Node *
-NclDocumentParser::getNode (const string &nodeId)
+NclParser::getNode (const string &nodeId)
 {
   NclDocument *document;
 
-  document = NclDocumentParser::getNclDocument ();
+  document = NclParser::getNclDocument ();
 
   return document->getNode (nodeId);
 }
 
 PrivateBaseContext *
-NclDocumentParser::getPrivateBaseContext ()
+NclParser::getPrivateBaseContext ()
 {
   return privateBaseContext;
 }
 
 NclDocument *
-NclDocumentParser::importDocument (string &path)
+NclParser::importDocument (string &path)
 {
   if (!xpathisuri (path) && !xpathisabs (path))
     path = xpathbuildabs (this->getDirName (), path);

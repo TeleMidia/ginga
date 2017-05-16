@@ -18,15 +18,15 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "NclLayoutParser.h"
 
-#include "NclDocumentParser.h"
+#include "NclParser.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_NCLCONV_BEGIN
 
-NclLayoutParser::NclLayoutParser (NclDocumentParser *documentParser,
+NclLayoutParser::NclLayoutParser (NclParser *nclParser,
                                   DeviceLayout *deviceLayout)
-    : ModuleParser (documentParser)
+    : ModuleParser (nclParser)
 {
   this->deviceLayout = deviceLayout;
 }
@@ -44,7 +44,7 @@ NclLayoutParser::parseRegion (DOMElement *parentElement)
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           DOMElement *element = (DOMElement *)node;
-          string tagname = _documentParser->getTagname(element);
+          string tagname = _nclParser->getTagname(element);
 
           if (XMLString::compareIString (tagname.c_str (), "region")
               == 0)
@@ -74,12 +74,12 @@ NclLayoutParser::parseRegionBase (DOMElement *parentElement)
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           DOMElement *element = (DOMElement *)node;
-          string tagname = _documentParser->getTagname(element);
+          string tagname = _nclParser->getTagname(element);
 
           if (XMLString::compareIString (tagname.c_str (), "importBase") == 0)
             {
               DOMElement *elementObject =
-                  _documentParser->getImportParser ()->
+                  _nclParser->getImportParser ()->
                     parseImportBase (element);
 
               if (elementObject)
@@ -108,16 +108,16 @@ NclLayoutParser::addImportBaseToRegionBase (RegionBase *regionBase,
   map<int, RegionBase *> *bases;
   map<int, RegionBase *>::iterator i;
   string baseAlias, baseLocation;
-  NclDocumentParser *compiler;
+  NclParser *compiler;
   NclDocument *importedDocument;
 
   // get the external base alias and location
-  baseAlias = _documentParser->getAttribute((DOMElement *)childObject, "alias");
+  baseAlias = _nclParser->getAttribute((DOMElement *)childObject, "alias");
 
-  baseLocation = _documentParser->getAttribute((DOMElement *)childObject,
+  baseLocation = _nclParser->getAttribute((DOMElement *)childObject,
                                                "documentURI");
 
-  compiler = getDocumentParser ();
+  compiler = getNclParser ();
   importedDocument = compiler->importDocument (baseLocation);
   if (importedDocument == NULL)
     {
@@ -158,21 +158,21 @@ NclLayoutParser::createRegionBase (DOMElement *parentElement)
 {
   RegionBase *regionBase;
 
-  regionBase = new RegionBase (_documentParser->getAttribute(parentElement, "id"),
+  regionBase = new RegionBase (_nclParser->getAttribute(parentElement, "id"),
                            deviceLayout);
 
   // device attribute
-  if (_documentParser->hasAttribute(parentElement, "device"))
+  if (_nclParser->hasAttribute(parentElement, "device"))
     {
       string mapId = "";
       // region for output bit map attribute
-      if (_documentParser->hasAttribute(parentElement, "region"))
+      if (_nclParser->hasAttribute(parentElement, "region"))
         {
-          mapId = _documentParser->getAttribute(parentElement, "region");
+          mapId = _nclParser->getAttribute(parentElement, "region");
         }
 
       regionBase->setDevice (
-            _documentParser->getAttribute(parentElement, "device"), mapId);
+            _nclParser->getAttribute(parentElement, "device"), mapId);
     }
   else
     {
@@ -185,20 +185,20 @@ NclLayoutParser::createRegionBase (DOMElement *parentElement)
 LayoutRegion *
 NclLayoutParser::createRegion (DOMElement *parentElement)
 {
-  string attribute = _documentParser->getAttribute(parentElement, "id");
+  string attribute = _nclParser->getAttribute(parentElement, "id");
   LayoutRegion *ncmRegion = new LayoutRegion (attribute);
 
   // title
-  if (_documentParser->hasAttribute(parentElement, "title"))
+  if (_nclParser->hasAttribute(parentElement, "title"))
     {
       ncmRegion->setTitle (
-            _documentParser->getAttribute(parentElement, "title"));
+            _nclParser->getAttribute(parentElement, "title"));
     }
 
   // left
-  if (_documentParser->hasAttribute(parentElement, "left"))
+  if (_nclParser->hasAttribute(parentElement, "left"))
     {
-      attribute = _documentParser->getAttribute(parentElement, "left");
+      attribute = _nclParser->getAttribute(parentElement, "left");
 
       if (attribute != "")
         {
@@ -214,9 +214,9 @@ NclLayoutParser::createRegion (DOMElement *parentElement)
     }
 
   // right
-  if (_documentParser->hasAttribute(parentElement, "right"))
+  if (_nclParser->hasAttribute(parentElement, "right"))
     {
-      attribute = _documentParser->getAttribute(parentElement, "right");
+      attribute = _nclParser->getAttribute(parentElement, "right");
 
       if (xstrispercent (attribute))
         {
@@ -229,9 +229,9 @@ NclLayoutParser::createRegion (DOMElement *parentElement)
     }
 
   // top
-  if (_documentParser->hasAttribute(parentElement, "top"))
+  if (_nclParser->hasAttribute(parentElement, "top"))
     {
-      attribute = _documentParser->getAttribute(parentElement, "top");
+      attribute = _nclParser->getAttribute(parentElement, "top");
 
       if (xstrispercent (attribute))
         {
@@ -244,9 +244,9 @@ NclLayoutParser::createRegion (DOMElement *parentElement)
     }
 
   // bottom
-  if (_documentParser->hasAttribute(parentElement, "bottom"))
+  if (_nclParser->hasAttribute(parentElement, "bottom"))
     {
-      attribute = _documentParser->getAttribute(parentElement, "bottom");
+      attribute = _nclParser->getAttribute(parentElement, "bottom");
 
       if (xstrispercent (attribute))
         {
@@ -259,9 +259,9 @@ NclLayoutParser::createRegion (DOMElement *parentElement)
     }
 
   // width
-  if (_documentParser->hasAttribute(parentElement, "width"))
+  if (_nclParser->hasAttribute(parentElement, "width"))
     {
-      attribute = _documentParser->getAttribute(parentElement,"width");
+      attribute = _nclParser->getAttribute(parentElement,"width");
 
       if (xstrispercent (attribute))
         {
@@ -274,9 +274,9 @@ NclLayoutParser::createRegion (DOMElement *parentElement)
     }
 
   // height
-  if (_documentParser->hasAttribute(parentElement, "height"))
+  if (_nclParser->hasAttribute(parentElement, "height"))
     {
-      attribute = _documentParser->getAttribute(parentElement, "height");
+      attribute = _nclParser->getAttribute(parentElement, "height");
 
       if (xstrispercent (attribute))
         {
@@ -288,9 +288,9 @@ NclLayoutParser::createRegion (DOMElement *parentElement)
         }
     }
 
-  if (_documentParser->hasAttribute(parentElement, "zIndex"))
+  if (_nclParser->hasAttribute(parentElement, "zIndex"))
     {
-      attribute = _documentParser->getAttribute(parentElement, "zIndex");
+      attribute = _nclParser->getAttribute(parentElement, "zIndex");
 
       ncmRegion->setZIndex (xstrto_int (attribute));
     }

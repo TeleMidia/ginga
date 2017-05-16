@@ -38,7 +38,7 @@ private:
   Connector *connector;
 
 public:
-  NclConnectorsParser (NclDocumentParser *documentParser);
+  NclConnectorsParser (NclParser *nclParser);
 
   void *parseSimpleCondition (DOMElement *parentElement, void *objGrandParent);
 

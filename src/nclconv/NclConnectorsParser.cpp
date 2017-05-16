@@ -17,14 +17,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclConnectorsParser.h"
 
-#include "NclDocumentParser.h"
+#include "NclParser.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_NCLCONV_BEGIN
 
-NclConnectorsParser::NclConnectorsParser (NclDocumentParser *documentParser)
-    : ModuleParser (documentParser)
+NclConnectorsParser::NclConnectorsParser (NclParser *nclParser)
+    : ModuleParser (nclParser)
 {
 }
 
@@ -35,16 +35,16 @@ NclConnectorsParser::parseSimpleCondition (DOMElement *parentElement,
   SimpleCondition *conditionExpression;
   string attValue, roleLabel;
 
-  roleLabel = _documentParser->getAttribute(parentElement, "role");
+  roleLabel = _nclParser->getAttribute(parentElement, "role");
 
   conditionExpression = new SimpleCondition (roleLabel);
 
   compileRoleInformation (conditionExpression, parentElement);
 
   // transition
-  if (_documentParser->hasAttribute(parentElement, "transition"))
+  if (_nclParser->hasAttribute(parentElement, "transition"))
     {
-      attValue = _documentParser->getAttribute(parentElement, "transition");
+      attValue = _nclParser->getAttribute(parentElement, "transition");
 
       conditionExpression->setTransition (
           EventUtil::getTransitionCode (attValue));
@@ -53,19 +53,19 @@ NclConnectorsParser::parseSimpleCondition (DOMElement *parentElement,
   // parametro
   if (conditionExpression->getEventType () == EventUtil::EVT_SELECTION)
     {
-      if (_documentParser->hasAttribute(parentElement, "key"))
+      if (_nclParser->hasAttribute(parentElement, "key"))
 
         {
-          attValue = _documentParser->getAttribute(parentElement, "key");
+          attValue = _nclParser->getAttribute(parentElement, "key");
 
           conditionExpression->setKey (attValue);
         }
     }
 
   // qualifier
-  if (_documentParser->hasAttribute(parentElement, "qualifier"))
+  if (_nclParser->hasAttribute(parentElement, "qualifier"))
     {
-      attValue = _documentParser->getAttribute(parentElement, "qualifier");
+      attValue = _nclParser->getAttribute(parentElement, "qualifier");
 
       if (attValue == "or")
         {
@@ -78,9 +78,9 @@ NclConnectorsParser::parseSimpleCondition (DOMElement *parentElement,
     }
 
   // testar delay
-  if (_documentParser->hasAttribute(parentElement, "delay"))
+  if (_nclParser->hasAttribute(parentElement, "delay"))
     {
-      attValue = _documentParser->getAttribute(parentElement, "delay");
+      attValue = _nclParser->getAttribute(parentElement, "delay");
 
       if (attValue[0] == '$')
         {
@@ -121,7 +121,7 @@ NclConnectorsParser::parseCompoundCondition (DOMElement *parentElement,
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           element = (DOMElement *)node;
-          string tagname = _documentParser->getTagname(element);
+          string tagname = _nclParser->getTagname(element);
 
           if (XMLString::compareIString (tagname.c_str (), "simpleCondition")
               == 0)
@@ -199,7 +199,7 @@ NclConnectorsParser::parseAssessmentStatement (DOMElement *parentElement,
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           element = (DOMElement *)node;
-          string tagname = _documentParser->getTagname(element);
+          string tagname = _nclParser->getTagname(element);
           if (XMLString::compareIString (tagname.c_str (),
                                          "attributeAssessment")
               == 0)
@@ -237,22 +237,22 @@ NclConnectorsParser::parseAttributeAssessment (DOMElement *parentElement,
   AttributeAssessment *attributeAssessment;
   string attValue;
 
-  string roleLabel = _documentParser->getAttribute(parentElement, "role");
+  string roleLabel = _nclParser->getAttribute(parentElement, "role");
 
   attributeAssessment = new AttributeAssessment (roleLabel);
 
   // event type
-  if (_documentParser->hasAttribute(parentElement, "eventType"))
+  if (_nclParser->hasAttribute(parentElement, "eventType"))
     {
-      attValue = _documentParser->getAttribute(parentElement, "eventType");
+      attValue = _nclParser->getAttribute(parentElement, "eventType");
 
       attributeAssessment->setEventType (EventUtil::getTypeCode (attValue));
     }
 
   // event type
-  if (_documentParser->hasAttribute(parentElement, "attributeType"))
+  if (_nclParser->hasAttribute(parentElement, "attributeType"))
     {
-      attValue = _documentParser->getAttribute(parentElement, "attributeType");
+      attValue = _nclParser->getAttribute(parentElement, "attributeType");
 
       attributeAssessment->setAttributeType (
           EventUtil::getAttributeTypeCode (attValue));
@@ -261,18 +261,18 @@ NclConnectorsParser::parseAttributeAssessment (DOMElement *parentElement,
   // parameter
   if (attributeAssessment->getEventType () == EventUtil::EVT_SELECTION)
     {
-      if (_documentParser->hasAttribute(parentElement, "key"))
+      if (_nclParser->hasAttribute(parentElement, "key"))
         {
-          attValue = _documentParser->getAttribute(parentElement, "key");
+          attValue = _nclParser->getAttribute(parentElement, "key");
 
           attributeAssessment->setKey (attValue);
         }
     }
 
   // testing offset
-  if (_documentParser->hasAttribute(parentElement, "offset"))
+  if (_nclParser->hasAttribute(parentElement, "offset"))
     {
-      attValue = _documentParser->getAttribute(parentElement, "offset");
+      attValue = _nclParser->getAttribute(parentElement, "offset");
 
       attributeAssessment->setOffset (attValue);
     }
@@ -284,7 +284,7 @@ void *
 NclConnectorsParser::parseValueAssessment (DOMElement *parentElement,
                                            arg_unused(void *objGrandParent))
 {
-  string attValue = _documentParser->getAttribute(parentElement, "value");
+  string attValue = _nclParser->getAttribute(parentElement, "value");
 
   return new ValueAssessment (attValue);
 }
@@ -310,7 +310,7 @@ NclConnectorsParser::parseCompoundStatement (DOMElement *parentElement,
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           element = (DOMElement *)node;
-          string tagname = _documentParser->getTagname(element);
+          string tagname = _nclParser->getTagname(element);
           if (XMLString::compareIString (tagname.c_str (),
                                          "assessmentStatement")
               == 0)
@@ -350,21 +350,21 @@ NclConnectorsParser::parseSimpleAction (DOMElement *parentElement,
   SimpleAction *actionExpression;
   string attValue;
 
-  attValue = _documentParser->getAttribute(parentElement, "role");
+  attValue = _nclParser->getAttribute(parentElement, "role");
 
   actionExpression = new SimpleAction (attValue);
 
   // transition
-  if (_documentParser->hasAttribute(parentElement, "actionType"))
+  if (_nclParser->hasAttribute(parentElement, "actionType"))
     {
-      attValue = _documentParser->getAttribute(parentElement, "actionType");
+      attValue = _nclParser->getAttribute(parentElement, "actionType");
 
       actionExpression->setActionType (convertActionType (attValue));
     }
 
-  if (_documentParser->hasAttribute(parentElement, "eventType"))
+  if (_nclParser->hasAttribute(parentElement, "eventType"))
     {
-      attValue = _documentParser->getAttribute(parentElement, "eventType");
+      attValue = _nclParser->getAttribute(parentElement, "eventType");
 
       actionExpression->setEventType (EventUtil::getTypeCode (attValue));
     }
@@ -377,14 +377,14 @@ NclConnectorsParser::parseSimpleAction (DOMElement *parentElement,
       string durVal = "";
       string byVal = "";
 
-      if (_documentParser->hasAttribute(parentElement, "duration"))
+      if (_nclParser->hasAttribute(parentElement, "duration"))
         {
-          durVal = _documentParser->getAttribute(parentElement, "duration");
+          durVal = _nclParser->getAttribute(parentElement, "duration");
         }
 
-      if (_documentParser->hasAttribute(parentElement, "by"))
+      if (_nclParser->hasAttribute(parentElement, "by"))
         {
-          byVal = _documentParser->getAttribute(parentElement, "by");
+          byVal = _nclParser->getAttribute(parentElement, "by");
         }
 
       if (durVal != "" || byVal != "")
@@ -426,9 +426,9 @@ NclConnectorsParser::parseSimpleAction (DOMElement *parentElement,
 
   compileRoleInformation (actionExpression, parentElement);
 
-  if (_documentParser->hasAttribute(parentElement, "qualifier"))
+  if (_nclParser->hasAttribute(parentElement, "qualifier"))
     {
-      string qualifier = _documentParser->getAttribute(parentElement,
+      string qualifier = _nclParser->getAttribute(parentElement,
                                                        "qualifier");
 
       if (XMLString::compareIString (qualifier.c_str(), "seq") == 0)
@@ -442,9 +442,9 @@ NclConnectorsParser::parseSimpleAction (DOMElement *parentElement,
     }
 
   // testing delay
-  if (_documentParser->hasAttribute(parentElement, "delay"))
+  if (_nclParser->hasAttribute(parentElement, "delay"))
     {
-      attValue = _documentParser->getAttribute(parentElement, "delay");
+      attValue = _nclParser->getAttribute(parentElement, "delay");
 
       if (attValue[0] == '$')
         {
@@ -460,9 +460,9 @@ NclConnectorsParser::parseSimpleAction (DOMElement *parentElement,
     }
 
   //  testing repeatDelay
-  if (_documentParser->hasAttribute(parentElement, "repeatDelay"))
+  if (_nclParser->hasAttribute(parentElement, "repeatDelay"))
     {
-      attValue = _documentParser->getAttribute(parentElement, "repeatDelay");
+      attValue = _nclParser->getAttribute(parentElement, "repeatDelay");
 
       actionExpression->setDelay (attValue);
       if (attValue[0] == '$')
@@ -479,9 +479,9 @@ NclConnectorsParser::parseSimpleAction (DOMElement *parentElement,
     }
 
   // repeat
-  if (_documentParser->hasAttribute(parentElement, "repeat"))
+  if (_nclParser->hasAttribute(parentElement, "repeat"))
     {
-      attValue = _documentParser->getAttribute(parentElement, "repeat");
+      attValue = _nclParser->getAttribute(parentElement, "repeat");
 
       if (XMLString::compareIString (attValue.c_str (), "indefinite") == 0)
         {
@@ -495,9 +495,9 @@ NclConnectorsParser::parseSimpleAction (DOMElement *parentElement,
     }
 
   // testing value
-  if (_documentParser->hasAttribute(parentElement, "value"))
+  if (_nclParser->hasAttribute(parentElement, "value"))
     {
-      attValue = _documentParser->getAttribute(parentElement, "value");
+      attValue = _nclParser->getAttribute(parentElement, "value");
 
       actionExpression->setValue (attValue);
     }
@@ -526,7 +526,7 @@ NclConnectorsParser::parseCompoundAction (DOMElement *parentElement,
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           element = (DOMElement *)node;
-          string tagname = _documentParser->getTagname(element);
+          string tagname = _nclParser->getTagname(element);
           if (XMLString::compareIString (tagname.c_str (), "simpleAction")
               == 0)
             {
@@ -560,8 +560,8 @@ NclConnectorsParser::parseConnectorParam (DOMElement *parentElement,
 {
   Parameter *parameter;
   parameter = new Parameter (
-        _documentParser->getAttribute(parentElement, "name"),
-        _documentParser->getAttribute(parentElement, "type") );
+        _nclParser->getAttribute(parentElement, "name"),
+        _nclParser->getAttribute(parentElement, "type") );
 
   return parameter;
 }
@@ -588,7 +588,7 @@ NclConnectorsParser::parseCausalConnector (DOMElement *parentElement,
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           element = (DOMElement *)node;
-          string tagname = _documentParser->getTagname(element);
+          string tagname = _nclParser->getTagname(element);
 
           if (XMLString::compareIString (tagname.c_str (), "simpleCondition")
               == 0)
@@ -675,12 +675,12 @@ NclConnectorsParser::parseConnectorBase (DOMElement *parentElement,
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           element = (DOMElement *)node;
-          string elementTagName = _documentParser->getTagname(element);
+          string elementTagName = _nclParser->getTagname(element);
 
           if (XMLString::compareIString (elementTagName.c_str (), "importBase")
               == 0)
             {
-              elementObject = _documentParser->getImportParser ()
+              elementObject = _nclParser->getImportParser ()
                       ->parseImportBase (element);
 
               if (elementObject != NULL)
@@ -724,16 +724,16 @@ NclConnectorsParser::addImportBaseToConnectorBase (void *parentObject,
                                                    void *childObject)
 {
   string baseAlias, baseLocation;
-  NclDocumentParser *compiler;
+  NclParser *compiler;
   NclDocument *importedDocument;
   ConnectorBase *connectorBase;
 
   // get the external base alias and location
-  baseAlias = _documentParser->getAttribute((DOMElement *)childObject, "alias");
-  baseLocation = _documentParser->getAttribute((DOMElement *)childObject,
+  baseAlias = _nclParser->getAttribute((DOMElement *)childObject, "alias");
+  baseLocation = _nclParser->getAttribute((DOMElement *)childObject,
                                                "documentURI");
 
-  compiler = getDocumentParser ();
+  compiler = getNclParser ();
 
   importedDocument = compiler->importDocument (baseLocation);
   if (unlikely (importedDocument == NULL))
@@ -760,7 +760,7 @@ NclConnectorsParser::createCausalConnector (DOMElement *parentElement,
                                             arg_unused (void *objGrandParent))
 {
   string connectorId = "";
-  connectorId = _documentParser->getAttribute(parentElement, "id");
+  connectorId = _nclParser->getAttribute(parentElement, "id");
   connector = new CausalConnector (connectorId);
   return connector;
 }
@@ -770,7 +770,7 @@ NclConnectorsParser::createConnectorBase (DOMElement *parentElement,
                                           arg_unused (void *objGrandParent))
 {
   ConnectorBase *connBase;
-  string connBaseId= _documentParser->getAttribute(parentElement, "id");
+  string connBaseId= _nclParser->getAttribute(parentElement, "id");
   connBase = new ConnectorBase (connBaseId);
   return connBase;
 }
@@ -781,22 +781,22 @@ NclConnectorsParser::compileRoleInformation (Role *role,
 {
   string attValue;
   // event type
-  if (_documentParser->hasAttribute(parentElement, "eventType"))
+  if (_nclParser->hasAttribute(parentElement, "eventType"))
     {
-      attValue = _documentParser->getAttribute(parentElement, "eventType");
+      attValue = _nclParser->getAttribute(parentElement, "eventType");
       role->setEventType (EventUtil::getTypeCode (attValue));
     }
 
   //  cardinality
-  if (_documentParser->hasAttribute(parentElement, "min"))
+  if (_nclParser->hasAttribute(parentElement, "min"))
     {
-      attValue = _documentParser->getAttribute(parentElement, "min");
+      attValue = _nclParser->getAttribute(parentElement, "min");
       ((Role *)role)->setMinCon ((xstrto_int (attValue)));
     }
 
-  if (_documentParser->hasAttribute(parentElement, "max"))
+  if (_nclParser->hasAttribute(parentElement, "max"))
     {
-      attValue = _documentParser->getAttribute(parentElement,"max");
+      attValue = _nclParser->getAttribute(parentElement,"max");
 
       if (XMLString::compareIString (attValue.c_str (), "unbounded") == 0)
         {
@@ -818,7 +818,7 @@ NclConnectorsParser::createCompoundCondition (DOMElement *parentElement,
 
   conditionExpression = new CompoundCondition ();
 
-  string op = _documentParser->getAttribute(parentElement, "operator");
+  string op = _nclParser->getAttribute(parentElement, "operator");
 
   if (XMLString::compareIString (op.c_str(), "and") == 0)
     {
@@ -830,9 +830,9 @@ NclConnectorsParser::createCompoundCondition (DOMElement *parentElement,
     }
 
   //  testar delay
-  if (_documentParser->hasAttribute(parentElement, "delay"))
+  if (_nclParser->hasAttribute(parentElement, "delay"))
     {
-      attValue = _documentParser->getAttribute(parentElement, "delay");
+      attValue = _nclParser->getAttribute(parentElement, "delay");
 
       if (attValue[0] == '$')
         {
@@ -859,9 +859,9 @@ NclConnectorsParser::createAssessmentStatement (
   AssessmentStatement *assessmentStatement;
   string attValue;
 
-  if (_documentParser->hasAttribute(parentElement, "comparator"))
+  if (_nclParser->hasAttribute(parentElement, "comparator"))
     {
-      attValue = _documentParser->getAttribute(parentElement, "comparator");
+      attValue = _nclParser->getAttribute(parentElement, "comparator");
 
       assessmentStatement
           = new AssessmentStatement (Comparator::fromString (attValue));
@@ -880,7 +880,7 @@ NclConnectorsParser::createCompoundStatement (DOMElement *parentElement,
 {
   CompoundStatement *compoundStatement = new CompoundStatement ();
 
-  string op = _documentParser->getAttribute(parentElement, "operator");
+  string op = _nclParser->getAttribute(parentElement, "operator");
   if (XMLString::compareIString (op.c_str(), "and") == 0)
     {
       compoundStatement->setOperator (CompoundStatement::OP_AND);
@@ -891,10 +891,10 @@ NclConnectorsParser::createCompoundStatement (DOMElement *parentElement,
     }
 
   // testing isNegated
-  if (_documentParser->hasAttribute(parentElement, "isNegated"))
+  if (_nclParser->hasAttribute(parentElement, "isNegated"))
     {
       string attValue =
-          _documentParser->getAttribute(parentElement, "isNegated");
+          _nclParser->getAttribute(parentElement, "isNegated");
 
       compoundStatement->setNegated (
           XMLString::compareIString (attValue.c_str (), "true") == 0);
@@ -908,7 +908,7 @@ NclConnectorsParser::createCompoundAction (DOMElement *parentElement,
                                            arg_unused (void *objGrandParent))
 {
   CompoundAction *actionExpression = new CompoundAction ();
-  string op = _documentParser->getAttribute(parentElement, "operator");;
+  string op = _nclParser->getAttribute(parentElement, "operator");;
 
   if (XMLString::compareIString (op.c_str(), "seq") == 0)
     {
@@ -920,9 +920,9 @@ NclConnectorsParser::createCompoundAction (DOMElement *parentElement,
     }
 
   //  testar delay
-  if (_documentParser->hasAttribute(parentElement, "delay"))
+  if (_nclParser->hasAttribute(parentElement, "delay"))
     {
-      string attValue = _documentParser->getAttribute(parentElement, "delay");
+      string attValue = _nclParser->getAttribute(parentElement, "delay");
 
       if (attValue[0] == '$')
         {

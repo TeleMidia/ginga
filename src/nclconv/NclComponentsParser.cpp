@@ -18,14 +18,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "NclComponentsParser.h"
 
-#include "NclDocumentParser.h"
+#include "NclParser.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_NCLCONV_BEGIN
 
-NclComponentsParser::NclComponentsParser (NclDocumentParser *parser)
-    : ModuleParser (parser)
+NclComponentsParser::NclComponentsParser (NclParser *nclParser)
+    : ModuleParser (nclParser)
 {
 }
 
@@ -51,11 +51,11 @@ NclComponentsParser::parseMedia (DOMElement *parentElement)
         {
           element = (DOMElement *)node;
 
-          string tagname = _documentParser->getTagname(element);
+          string tagname = _nclParser->getTagname(element);
 
           if (XMLString::compareIString (tagname.c_str(), "area") == 0)
             {
-              Anchor *area = _documentParser->getInterfacesParser ()
+              Anchor *area = _nclParser->getInterfacesParser ()
                       ->parseArea (element, media);
 
               if (area)
@@ -66,7 +66,7 @@ NclComponentsParser::parseMedia (DOMElement *parentElement)
           else if (XMLString::compareIString (tagname.c_str(), "property")
                    == 0)
             {
-              PropertyAnchor *prop = _documentParser->getInterfacesParser ()
+              PropertyAnchor *prop = _nclParser->getInterfacesParser ()
                       ->parseProperty (element, media);
 
               if (prop)
@@ -101,7 +101,7 @@ NclComponentsParser::parseContext (DOMElement *parentElement)
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           element = (DOMElement *) node;
-          string tagname = _documentParser->getTagname(element);
+          string tagname = _nclParser->getTagname(element);
           if (XMLString::compareIString (tagname.c_str(), "media") == 0)
             {
               Node *media = parseMedia (element);
@@ -121,7 +121,7 @@ NclComponentsParser::parseContext (DOMElement *parentElement)
           else if (XMLString::compareIString (tagname.c_str(), "switch") == 0)
             {
               Node *switch_node =
-                      _documentParser->getPresentationControlParser ()
+                      _nclParser->getPresentationControlParser ()
                         ->parseSwitch (element);
 
               if (switch_node)
@@ -137,10 +137,10 @@ NclComponentsParser::parseContext (DOMElement *parentElement)
       node = elementNodeList->item (i);
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
       {
-        string tagname = _documentParser->getTagname((DOMElement *)node);
+        string tagname = _nclParser->getTagname((DOMElement *)node);
         if(XMLString::compareIString (tagname.c_str(), "property") == 0)
         {
-          PropertyAnchor *prop = _documentParser->getInterfacesParser ()
+          PropertyAnchor *prop = _nclParser->getInterfacesParser ()
                   ->parseProperty ((DOMElement *)node, context);
 
           if (prop)
@@ -170,10 +170,10 @@ NclComponentsParser::posCompileContext2 (DOMElement *parentElement,
       node = elementNodeList->item (i);
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          string tagname = _documentParser->getTagname((DOMElement *)node);
+          string tagname = _nclParser->getTagname((DOMElement *)node);
           if (XMLString::compareIString (tagname.c_str(), "link") == 0)
             {
-              elementObject = _documentParser->getLinkingParser ()
+              elementObject = _nclParser->getLinkingParser ()
                     ->parseLink ((DOMElement *)node, parentObject);
 
               if (elementObject != NULL)
@@ -189,10 +189,10 @@ NclComponentsParser::posCompileContext2 (DOMElement *parentElement,
       node = elementNodeList->item (i);
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          string tagname = _documentParser->getTagname((DOMElement *)node);
+          string tagname = _nclParser->getTagname((DOMElement *)node);
           if (XMLString::compareIString (tagname.c_str(), "port") == 0)
             {
-              elementObject = _documentParser->getInterfacesParser ()
+              elementObject = _nclParser->getInterfacesParser ()
                       ->parsePort ((DOMElement *)node, parentObject);
 
               if (elementObject != NULL)
@@ -355,25 +355,25 @@ NclComponentsParser::createContext (DOMElement *parentElement)
   ContextNode *context;
   GenericDescriptor *descriptor;
 
-  if (unlikely (!_documentParser->hasAttribute(parentElement, "id")))
+  if (unlikely (!_nclParser->hasAttribute(parentElement, "id")))
     syntax_error ("context: missing id");
 
-  id = _documentParser->getAttribute(parentElement, "id");
+  id = _nclParser->getAttribute(parentElement, "id");
 
-  node = getDocumentParser ()->getNode (id);
+  node = getNclParser ()->getNode (id);
   if (unlikely (node != NULL))
     syntax_error ("context '%s': duplicated id", id.c_str ());
 
-  if (_documentParser->hasAttribute (parentElement, "refer"))
+  if (_nclParser->hasAttribute (parentElement, "refer"))
     {
-      attValue = _documentParser->getAttribute(parentElement, "refer");
+      attValue = _nclParser->getAttribute(parentElement, "refer");
       try
         {
-          referNode = (ContextNode *)getDocumentParser ()->getNode (attValue);
+          referNode = (ContextNode *)getNclParser ()->getNode (attValue);
 
           if (referNode == NULL)
             {
-              document = getDocumentParser ()->getNclDocument ();
+              document = getNclParser ()->getNclDocument ();
               referNode = (ContextNode *)(document->getNode (attValue));
               if (referNode == NULL)
                 {
@@ -396,12 +396,12 @@ NclComponentsParser::createContext (DOMElement *parentElement)
 
   context = new ContextNode (id);
 
-  if (_documentParser->hasAttribute (parentElement, "descriptor"))
+  if (_nclParser->hasAttribute (parentElement, "descriptor"))
     {
       // adicionar um descritor a um objeto de midia
-      attValue = _documentParser->getAttribute(parentElement, "descriptor");
+      attValue = _nclParser->getAttribute(parentElement, "descriptor");
 
-      document = getDocumentParser ()->getNclDocument ();
+      document = getNclParser ()->getNclDocument ();
       descriptor = document->getDescriptor (attValue);
       if (descriptor != NULL)
         {
@@ -436,12 +436,12 @@ NclComponentsParser::posCompileContext (DOMElement *parentElement,
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           element = (DOMElement *)node;
-          string tagname = _documentParser->getTagname(element);
+          string tagname = _nclParser->getTagname(element);
           if (XMLString::compareIString (tagname.c_str(), "context") == 0)
             {
               if (parentObject != NULL)
                 {
-                  string id = _documentParser->getAttribute(element, "id");
+                  string id = _nclParser->getAttribute(element, "id");
                   elementObject
                       = ((ContextNode *)parentObject)->getNode (id);
 
@@ -460,8 +460,8 @@ NclComponentsParser::posCompileContext (DOMElement *parentElement,
             }
           else if (XMLString::compareIString (tagname.c_str(), "switch") == 0)
             {
-              string id = _documentParser->getAttribute(element, "id");
-              elementObject = getDocumentParser ()->getNode (id);
+              string id = _nclParser->getAttribute(element, "id");
+              elementObject = getNclParser ()->getNode (id);
 
               if (unlikely (elementObject == NULL))
                 {
@@ -471,7 +471,7 @@ NclComponentsParser::posCompileContext (DOMElement *parentElement,
               else if (((NodeEntity *)elementObject)
                            ->instanceOf ("SwitchNode"))
                 {
-                  _documentParser->getPresentationControlParser ()
+                  _nclParser->getPresentationControlParser ()
                           ->posCompileSwitch (element, elementObject);
                 }
             }
@@ -490,26 +490,26 @@ NclComponentsParser::createMedia (DOMElement *parentElement)
   Entity *referNode;
   GenericDescriptor *descriptor;
 
-  if (unlikely (!_documentParser->hasAttribute(parentElement, "id")))
+  if (unlikely (!_nclParser->hasAttribute(parentElement, "id")))
     syntax_error ("media: missing id");
 
-  id = _documentParser->getAttribute(parentElement, "id");
+  id = _nclParser->getAttribute(parentElement, "id");
 
-  node = getDocumentParser ()->getNode (id);
+  node = getNclParser ()->getNode (id);
   if (unlikely (node != NULL))
     syntax_error ("media '%s': duplicated id", id.c_str ());
 
-  if (_documentParser->hasAttribute(parentElement, "refer"))
+  if (_nclParser->hasAttribute(parentElement, "refer"))
     {
-      attValue = _documentParser->getAttribute(parentElement, "refer");
+      attValue = _nclParser->getAttribute(parentElement, "refer");
 
       try
         {
-          referNode = (ContentNode *) getDocumentParser ()->getNode (attValue);
+          referNode = (ContentNode *) getNclParser ()->getNode (attValue);
 
           if (referNode == NULL)
             {
-              document = getDocumentParser ()->getNclDocument ();
+              document = getNclParser ()->getNclDocument ();
               referNode = (ContentNode *)document->getNode (attValue);
               if (referNode == NULL)
                 {
@@ -525,9 +525,9 @@ NclComponentsParser::createMedia (DOMElement *parentElement)
         }
 
       node = new ReferNode (id);
-      if (_documentParser->hasAttribute(parentElement, "instance"))
+      if (_nclParser->hasAttribute(parentElement, "instance"))
         {
-          attValue = _documentParser->getAttribute(parentElement, "instance");
+          attValue = _nclParser->getAttribute(parentElement, "instance");
 
           ((ReferNode *)node)->setInstanceType (attValue);
         }
@@ -538,30 +538,30 @@ NclComponentsParser::createMedia (DOMElement *parentElement)
 
   node = new ContentNode (id, NULL, "");
 
-  if (_documentParser->hasAttribute(parentElement, "type"))
+  if (_nclParser->hasAttribute(parentElement, "type"))
     {
-      string type = _documentParser->getAttribute(parentElement, "type");
+      string type = _nclParser->getAttribute(parentElement, "type");
       ((ContentNode *)node)->setNodeType (type);
     }
 
-  if (_documentParser->hasAttribute(parentElement, "src"))
+  if (_nclParser->hasAttribute(parentElement, "src"))
     {
-      string src = _documentParser->getAttribute(parentElement, "src");
+      string src = _nclParser->getAttribute(parentElement, "src");
 
       if (unlikely (src == ""))
         syntax_error ("media '%s': missing src", id.c_str ());
 
       if (!xpathisuri (src) && !xpathisabs (src))
-        src = xpathbuildabs (getDocumentParser ()->getDirName (), src);
+        src = xpathbuildabs (getNclParser ()->getDirName (), src);
 
       ((ContentNode *)node)->setContent (new AbsoluteReferenceContent (src));
     }
 
-  if (_documentParser->hasAttribute(parentElement, "descriptor"))
+  if (_nclParser->hasAttribute(parentElement, "descriptor"))
     {
-      attValue = _documentParser->getAttribute(parentElement, "descriptor");
+      attValue = _nclParser->getAttribute(parentElement, "descriptor");
 
-      document = getDocumentParser ()->getNclDocument ();
+      document = getNclParser ()->getNclDocument ();
       descriptor = document->getDescriptor (attValue);
       if (descriptor != NULL)
         {
