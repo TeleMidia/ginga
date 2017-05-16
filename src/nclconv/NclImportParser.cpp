@@ -41,7 +41,7 @@ NclImportParser::parseImportedDocumentBase (DOMElement *parentElement)
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           DOMElement *element = (DOMElement *)node;
-          string tagname = XMLString::transcode (element->getTagName ());
+          string tagname = _documentParser->getTagname(element);
           if (XMLString::compareIString (tagname.c_str (), "importNCL") == 0)
             {
               DOMElement *elementObject = parseImportNCL (element);
@@ -73,11 +73,9 @@ NclImportParser::addImportNCLToImportedDocumentBase (DOMElement *childObject)
   NclDocumentParser *compiler;
   NclDocument *thisDocument, *importedDocument;
 
-  docAlias = XMLString::transcode (
-      childObject->getAttribute (XMLString::transcode ("alias")));
+  docAlias = _documentParser->getAttribute(childObject, "alias");
 
-  docLocation = XMLString::transcode (
-      childObject->getAttribute (XMLString::transcode ("documentURI")));
+  docLocation = _documentParser->getAttribute(childObject, "documentURI");
 
   compiler = getDocumentParser ();
   importedDocument = compiler->importDocument (docLocation);

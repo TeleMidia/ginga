@@ -69,9 +69,11 @@ public:
   NclDocumentParser (PrivateBaseContext *pbc, DeviceLayout *deviceLayout);
   virtual ~NclDocumentParser ();
 
-  string getAttribute (void *element, const string &attribute);
+  string getTagname (const DOMElement *element);
+  string getAttribute (const DOMElement *element, const string &attribute);
+  bool hasAttribute (const DOMElement *element, const string &attribute);
+
   Node *getNode (const string &id);
-  bool removeNode (Node *node);
   PrivateBaseContext *getPrivateBaseContext ();
   NclDocument *importDocument (string &docLocation);
 

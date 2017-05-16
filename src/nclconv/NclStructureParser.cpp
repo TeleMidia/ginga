@@ -32,9 +32,9 @@ NclStructureParser::NclStructureParser (NclDocumentParser *documentParser)
 }
 
 ContextNode *
-NclStructureParser::parseBody (DOMElement *parentElement, NclDocument *nclDoc)
+NclStructureParser::parseBody (DOMElement *parentElement)
 {
-  ContextNode *body = createBody (parentElement, nclDoc);
+  ContextNode *body = createBody (parentElement);
   g_assert_nonnull (body);
 
   DOMNodeList *elementNodeList = parentElement->getChildNodes ();
@@ -46,7 +46,7 @@ NclStructureParser::parseBody (DOMElement *parentElement, NclDocument *nclDoc)
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           DOMElement *element = (DOMElement *)node;
-          string tagname = XMLString::transcode (element->getTagName ());
+          string tagname = _documentParser->getTagname(element);
           if (XMLString::compareIString (tagname.c_str (), "media") == 0)
             {
               Node *media = _documentParser->getComponentsParser()
@@ -270,7 +270,7 @@ NclStructureParser::parseHead (DOMElement *parentElement)
     }
 }
 
-NclDocument*
+NclDocument *
 NclStructureParser::parseNcl (DOMElement *parentElement)
 {
   NclDocument* parentObject = createNcl (parentElement);
@@ -299,7 +299,7 @@ NclStructureParser::parseNcl (DOMElement *parentElement)
                                         XMLString::transcode ("body"))
                  == 0)
         {
-          ContextNode *body = parseBody ((DOMElement *)node, parentObject);
+          ContextNode *body = parseBody ((DOMElement *)node);
           if (body)
             {
               posCompileBody ((DOMElement *)node, body);
@@ -313,8 +313,7 @@ NclStructureParser::parseNcl (DOMElement *parentElement)
 }
 
 ContextNode *
-NclStructureParser::createBody (DOMElement *parentElement,
-                                void *objGrandParent)
+NclStructureParser::createBody (DOMElement *parentElement)
 {
   // criar composicao a partir do elemento body do documento ncl
   // fazer uso do nome da composicao body que foi atribuido pelo

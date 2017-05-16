@@ -50,9 +50,10 @@ NclComponentsParser::parseMedia (DOMElement *parentElement)
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           element = (DOMElement *)node;
-          string tagname = XMLString::transcode (element->getTagName ());
 
-          if (XMLString::compareIString (tagname.c_str (), "area") == 0)
+          string tagname = _documentParser->getTagname(element);
+
+          if (XMLString::compareIString (tagname.c_str(), "area") == 0)
             {
               Anchor *area = _documentParser->getInterfacesParser ()
                       ->parseArea (element, media);
@@ -62,7 +63,7 @@ NclComponentsParser::parseMedia (DOMElement *parentElement)
                   addAreaToMedia ((ContentNode*)media, area);
                 }
             }
-          else if (XMLString::compareIString (tagname.c_str (), "property")
+          else if (XMLString::compareIString (tagname.c_str(), "property")
                    == 0)
             {
               PropertyAnchor *prop = _documentParser->getInterfacesParser ()
@@ -87,7 +88,6 @@ NclComponentsParser::parseContext (DOMElement *parentElement)
   int i, size;
   DOMNode *node;
   DOMElement *element;
-  string elementTagName;
 
   context = createContext (parentElement);
   g_assert_nonnull (context);
@@ -100,10 +100,9 @@ NclComponentsParser::parseContext (DOMElement *parentElement)
       node = elementNodeList->item (i);
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          element = (DOMElement *)node;
-          elementTagName = XMLString::transcode (element->getTagName ());
-          if (XMLString::compareIString (elementTagName.c_str (), "media")
-              == 0)
+          element = (DOMElement *) node;
+          string tagname = _documentParser->getTagname(element);
+          if (XMLString::compareIString (tagname.c_str(), "media") == 0)
             {
               Node *media = parseMedia (element);
               if (media)
@@ -111,9 +110,7 @@ NclComponentsParser::parseContext (DOMElement *parentElement)
                   addMediaToContext (context, media);
                 }
             }
-          else if (XMLString::compareIString (elementTagName.c_str (),
-                                              "context")
-                   == 0)
+          else if (XMLString::compareIString (tagname.c_str(), "context") == 0)
             {
               Node *child_context = parseContext (element);
               if (child_context)
@@ -121,9 +118,7 @@ NclComponentsParser::parseContext (DOMElement *parentElement)
                   addContextToContext (context, child_context);
                 }
             }
-          else if (XMLString::compareIString (elementTagName.c_str (),
-                                              "switch")
-                   == 0)
+          else if (XMLString::compareIString (tagname.c_str(), "switch") == 0)
             {
               Node *switch_node =
                       _documentParser->getPresentationControlParser ()
@@ -140,10 +135,10 @@ NclComponentsParser::parseContext (DOMElement *parentElement)
   for (i = 0; i < size; i++)
     {
       node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE
-          && XMLString::compareIString (((DOMElement *)node)->getTagName (),
-                                        XMLString::transcode ("property"))
-                 == 0)
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      {
+        string tagname = _documentParser->getTagname((DOMElement *)node);
+        if(XMLString::compareIString (tagname.c_str(), "property") == 0)
         {
           PropertyAnchor *prop = _documentParser->getInterfacesParser ()
                   ->parseProperty ((DOMElement *)node, context);
@@ -153,6 +148,7 @@ NclComponentsParser::parseContext (DOMElement *parentElement)
               addPropertyToContext (context, prop);
             }
         }
+      }
     }
 
   return context;
@@ -162,28 +158,28 @@ void *
 NclComponentsParser::posCompileContext2 (DOMElement *parentElement,
                                          void *parentObject)
 {
-  DOMNodeList *elementNodeList;
   int i, size;
   DOMNode *node;
   void *elementObject;
 
-  elementNodeList = parentElement->getChildNodes ();
+  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
   size = (int) elementNodeList->getLength ();
 
   for (i = 0; i < size; i++)
     {
       node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE
-          && XMLString::compareIString (((DOMElement *)node)->getTagName (),
-                                        XMLString::transcode ("link"))
-                 == 0)
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          elementObject = _documentParser->getLinkingParser ()
-                  ->parseLink ((DOMElement *)node, parentObject);
-
-          if (elementObject != NULL)
+          string tagname = _documentParser->getTagname((DOMElement *)node);
+          if (XMLString::compareIString (tagname.c_str(), "link") == 0)
             {
-              addLinkToContext (parentObject, elementObject);
+              elementObject = _documentParser->getLinkingParser ()
+                    ->parseLink ((DOMElement *)node, parentObject);
+
+              if (elementObject != NULL)
+                {
+                  addLinkToContext (parentObject, elementObject);
+                }
             }
         }
     }
@@ -191,23 +187,25 @@ NclComponentsParser::posCompileContext2 (DOMElement *parentElement,
   for (i = 0; i < size; i++)
     {
       node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE
-          && XMLString::compareIString (((DOMElement *)node)->getTagName (),
-                                        XMLString::transcode ("port"))
-                 == 0)
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          elementObject = _documentParser->getInterfacesParser ()
-                  ->parsePort ((DOMElement *)node, parentObject);
-
-          if (elementObject != NULL)
+          string tagname = _documentParser->getTagname((DOMElement *)node);
+          if (XMLString::compareIString (tagname.c_str(), "port") == 0)
             {
-              addPortToContext (parentObject, elementObject);
+              elementObject = _documentParser->getInterfacesParser ()
+                      ->parsePort ((DOMElement *)node, parentObject);
+
+              if (elementObject != NULL)
+                {
+                  addPortToContext (parentObject, elementObject);
+                }
             }
         }
-    }
+      }
 
   return parentObject;
 }
+
 void
 NclComponentsParser::addPortToContext (void *parentObject, void *childObject)
 {
@@ -357,21 +355,18 @@ NclComponentsParser::createContext (DOMElement *parentElement)
   ContextNode *context;
   GenericDescriptor *descriptor;
 
-  if (unlikely (!parentElement->hasAttribute (XMLString::transcode ("id"))))
+  if (unlikely (!_documentParser->hasAttribute(parentElement, "id")))
     syntax_error ("context: missing id");
 
-  id = XMLString::transcode (
-      parentElement->getAttribute (XMLString::transcode ("id")));
+  id = _documentParser->getAttribute(parentElement, "id");
 
   node = getDocumentParser ()->getNode (id);
   if (unlikely (node != NULL))
     syntax_error ("context '%s': duplicated id", id.c_str ());
 
-  if (parentElement->hasAttribute (XMLString::transcode ("refer")))
+  if (_documentParser->hasAttribute (parentElement, "refer"))
     {
-      attValue = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("refer")));
-
+      attValue = _documentParser->getAttribute(parentElement, "refer");
       try
         {
           referNode = (ContextNode *)getDocumentParser ()->getNode (attValue);
@@ -401,11 +396,10 @@ NclComponentsParser::createContext (DOMElement *parentElement)
 
   context = new ContextNode (id);
 
-  if (parentElement->hasAttribute (XMLString::transcode ("descriptor")))
+  if (_documentParser->hasAttribute (parentElement, "descriptor"))
     {
       // adicionar um descritor a um objeto de midia
-      attValue = XMLString::transcode (parentElement->getAttribute (
-          XMLString::transcode ("descriptor")));
+      attValue = _documentParser->getAttribute(parentElement, "descriptor");
 
       document = getDocumentParser ()->getNclDocument ();
       descriptor = document->getDescriptor (attValue);
@@ -431,7 +425,6 @@ NclComponentsParser::posCompileContext (DOMElement *parentElement,
   int i, size;
   DOMNode *node;
   DOMElement *element;
-  string elementTagName;
   void *elementObject;
 
   elementNodeList = parentElement->getChildNodes ();
@@ -443,22 +436,18 @@ NclComponentsParser::posCompileContext (DOMElement *parentElement,
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           element = (DOMElement *)node;
-          elementTagName = XMLString::transcode (element->getTagName ());
-          if (XMLString::compareIString (elementTagName.c_str (), "context")
-              == 0)
+          string tagname = _documentParser->getTagname(element);
+          if (XMLString::compareIString (tagname.c_str(), "context") == 0)
             {
               if (parentObject != NULL)
                 {
+                  string id = _documentParser->getAttribute(element, "id");
                   elementObject
-                      = ((ContextNode *)parentObject)
-                            ->getNode (XMLString::transcode (
-                                element->getAttribute (
-                                    XMLString::transcode ("id"))));
+                      = ((ContextNode *)parentObject)->getNode (id);
 
                   try
                     {
-                      if (((NodeEntity *)elementObject)
-                              ->instanceOf ("ContextNode"))
+                      if (((NodeEntity *)elementObject)->instanceOf ("ContextNode"))
                         {
                           posCompileContext (element, elementObject);
                         }
@@ -469,22 +458,14 @@ NclComponentsParser::posCompileContext (DOMElement *parentElement,
                     }
                 }
             }
-          else if (XMLString::compareIString (elementTagName.c_str (),
-                                              "switch")
-                   == 0)
+          else if (XMLString::compareIString (tagname.c_str(), "switch") == 0)
             {
-              elementObject = getDocumentParser ()
-                                ->getNode (XMLString::transcode (
-                                      element->getAttribute (
-                                          XMLString::transcode ("id"))));
+              string id = _documentParser->getAttribute(element, "id");
+              elementObject = getDocumentParser ()->getNode (id);
 
               if (unlikely (elementObject == NULL))
                 {
-                  syntax_error ("bad switch '%s'",
-                                string (XMLString::transcode
-                                        (element->getAttribute
-                                         (XMLString::transcode
-                                          ("id")))).c_str ());
+                  syntax_error ("bad switch '%s'", id.c_str ());
 
                 }
               else if (((NodeEntity *)elementObject)
@@ -509,20 +490,18 @@ NclComponentsParser::createMedia (DOMElement *parentElement)
   Entity *referNode;
   GenericDescriptor *descriptor;
 
-  if (unlikely (!parentElement->hasAttribute (XMLString::transcode ("id"))))
+  if (unlikely (!_documentParser->hasAttribute(parentElement, "id")))
     syntax_error ("media: missing id");
 
-  id = XMLString::transcode (
-      parentElement->getAttribute (XMLString::transcode ("id")));
+  id = _documentParser->getAttribute(parentElement, "id");
 
   node = getDocumentParser ()->getNode (id);
   if (unlikely (node != NULL))
     syntax_error ("media '%s': duplicated id", id.c_str ());
 
-  if (parentElement->hasAttribute (XMLString::transcode ("refer")))
+  if (_documentParser->hasAttribute(parentElement, "refer"))
     {
-      attValue = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("refer")));
+      attValue = _documentParser->getAttribute(parentElement, "refer");
 
       try
         {
@@ -546,10 +525,9 @@ NclComponentsParser::createMedia (DOMElement *parentElement)
         }
 
       node = new ReferNode (id);
-      if (parentElement->hasAttribute (XMLString::transcode ("instance")))
+      if (_documentParser->hasAttribute(parentElement, "instance"))
         {
-          attValue = XMLString::transcode (parentElement->getAttribute (
-              XMLString::transcode ("instance")));
+          attValue = _documentParser->getAttribute(parentElement, "instance");
 
           ((ReferNode *)node)->setInstanceType (attValue);
         }
@@ -560,17 +538,15 @@ NclComponentsParser::createMedia (DOMElement *parentElement)
 
   node = new ContentNode (id, NULL, "");
 
-  if (parentElement->hasAttribute (XMLString::transcode ("type")))
+  if (_documentParser->hasAttribute(parentElement, "type"))
     {
-      ((ContentNode *)node)
-          ->setNodeType (XMLString::transcode (
-              parentElement->getAttribute (XMLString::transcode ("type"))));
+      string type = _documentParser->getAttribute(parentElement, "type");
+      ((ContentNode *)node)->setNodeType (type);
     }
 
-  if (parentElement->hasAttribute (XMLString::transcode ("src")))
+  if (_documentParser->hasAttribute(parentElement, "src"))
     {
-      string src = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("src")));
+      string src = _documentParser->getAttribute(parentElement, "src");
 
       if (unlikely (src == ""))
         syntax_error ("media '%s': missing src", id.c_str ());
@@ -578,14 +554,12 @@ NclComponentsParser::createMedia (DOMElement *parentElement)
       if (!xpathisuri (src) && !xpathisabs (src))
         src = xpathbuildabs (getDocumentParser ()->getDirName (), src);
 
-      ((ContentNode *)node)->setContent
-        (new AbsoluteReferenceContent (src));
+      ((ContentNode *)node)->setContent (new AbsoluteReferenceContent (src));
     }
 
-  if (parentElement->hasAttribute (XMLString::transcode ("descriptor")))
+  if (_documentParser->hasAttribute(parentElement, "descriptor"))
     {
-      attValue = XMLString::transcode (parentElement->getAttribute (
-          XMLString::transcode ("descriptor")));
+      attValue = _documentParser->getAttribute(parentElement, "descriptor");
 
       document = getDocumentParser ()->getNclDocument ();
       descriptor = document->getDescriptor (attValue);

@@ -106,8 +106,10 @@ NclPresentationControlParser::parseRule (DOMElement *parentElement,
   SimpleRule *simplePresentationRule;
   short ruleOp;
 
-  ruleOp = convertComparator (XMLString::transcode (
-      parentElement->getAttribute (XMLString::transcode ("comparator"))));
+  ruleOp = Comparator::fromString(
+              (XMLString::transcode (
+                   parentElement->getAttribute (
+                       XMLString::transcode ("comparator")))));
 
   char *var = XMLString::transcode (
       parentElement->getAttribute (XMLString::transcode ("var")));
@@ -321,11 +323,11 @@ NclPresentationControlParser::parseCompositeRule (DOMElement *parentElement,
   return parentObject;
 }
 
-void *
+DescriptorSwitch *
 NclPresentationControlParser::parseDescriptorSwitch (
     DOMElement *parentElement, void *objGrandParent)
 {
-  void *parentObject;
+  DescriptorSwitch *parentObject;
   DOMNodeList *elementNodeList;
   int i, size;
   DOMElement *element;
@@ -347,13 +349,13 @@ NclPresentationControlParser::parseDescriptorSwitch (
                                         XMLString::transcode ("descriptor"))
                  == 0)
         {
-          elementObject
+          Descriptor* desc
               = _documentParser->getPresentationSpecificationParser ()
-                  ->parseDescriptor ((DOMElement *)node, parentObject);
+                  ->parseDescriptor ((DOMElement *)node);
 
-          if (elementObject != NULL)
+          if (desc)
             {
-              addDescriptorToDescriptorSwitch (parentObject, elementObject);
+              addDescriptorToDescriptorSwitch (parentObject, desc);
             }
         }
     }
@@ -580,7 +582,7 @@ NclPresentationControlParser::createRuleBase (DOMElement *parentElement)
   return ruleBase;
 }
 
-void *
+DescriptorSwitch *
 NclPresentationControlParser::createDescriptorSwitch (
     DOMElement *parentElement, arg_unused (void *objGrandParent))
 {
@@ -962,30 +964,6 @@ NclPresentationControlParser::posCompileSwitch (
 
   return NclPresentationControlParser::posCompileSwitch2 (parentElement,
                                                           parentObject);
-}
-
-short
-NclPresentationControlParser::convertComparator (const string &comparator)
-{
-  if (comparator == "eq")
-    return Comparator::CMP_EQ;
-
-  else if (comparator == "ne")
-    return Comparator::CMP_NE;
-
-  else if (comparator == "gt")
-    return Comparator::CMP_GT;
-
-  else if (comparator == "lt")
-    return Comparator::CMP_LT;
-
-  else if (comparator == "ge")
-    return Comparator::CMP_GTE;
-
-  else if (comparator == "le")
-    return Comparator::CMP_LTE;
-
-  return -1;
 }
 
 GINGA_NCLCONV_END
