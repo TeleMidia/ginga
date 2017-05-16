@@ -41,7 +41,7 @@ public:
 
   ContextNode *parseBody ( DOMElement *parentElement, NclDocument *nclDoc );
 
-  void *posCompileBody (DOMElement *parentElement, ContextNode *parentObject);
+  void *posCompileBody (DOMElement *parentElement, ContextNode *body);
 
   ContextNode *createBody (DOMElement *parentElement, void *objGrandParent);
 
@@ -49,9 +49,9 @@ public:
 
   void addImportedDocumentBaseToHead (void *parentObject, void *childObject);
 
-  NclDocument *parseNcl (DOMElement *parentElement, void *objGrandParent);
+  NclDocument *parseNcl (DOMElement *parentElement);
 
-  NclDocument *createNcl (DOMElement *parentElement, void *objGrandParent);
+  NclDocument *createNcl (DOMElement *parentElement);
 
 private:
   void solveNodeReferences (CompositeNode *composition);

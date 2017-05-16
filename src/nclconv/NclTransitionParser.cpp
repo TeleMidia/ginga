@@ -33,58 +33,47 @@ NclTransitionParser::NclTransitionParser (NclDocumentParser *documentParser)
 TransitionBase *
 NclTransitionParser::parseTransitionBase (DOMElement *parentElement)
 {
-  TransitionBase *parentObject;
-  DOMNodeList *elementNodeList;
-  DOMElement *element;
-  DOMNode *node;
-  string elementTagName;
-  void *elementObject;
-
-  parentObject = new TransitionBase (
-              XMLString::transcode (
+  TransitionBase *transBase = new TransitionBase (
+                XMLString::transcode (
                     parentElement->getAttribute (XMLString::transcode ("id"))));
+  g_assert_nonnull (transBase);
 
-  g_assert_nonnull (parentObject);
-
-  elementNodeList = parentElement->getChildNodes ();
+  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
     {
-      node = elementNodeList->item (i);
+      DOMNode *node = elementNodeList->item (i);
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          element = (DOMElement *)node;
-          elementTagName = XMLString::transcode (element->getTagName ());
+          DOMElement *element = (DOMElement *)node;
+          string tagname = XMLString::transcode (element->getTagName ());
 
-          if (XMLString::compareIString (elementTagName.c_str (), "importBase")
-              == 0)
+          if (XMLString::compareIString (tagname.c_str (), "importBase") == 0)
             {
-              elementObject = _documentParser->getImportParser ()
-                      ->parseImportBase (element, parentObject);
+              DOMElement *elementObject = _documentParser->getImportParser ()
+                      ->parseImportBase (element);
 
               if (elementObject != NULL)
                 {
-                  addImportBaseToTransitionBase (parentObject, elementObject);
+                  addImportBaseToTransitionBase (transBase, elementObject);
                 }
             }
-          else if (XMLString::compareIString (elementTagName.c_str (),
-                                              "transition")
+          else if (XMLString::compareIString (tagname.c_str (), "transition")
                    == 0)
             {
-              elementObject = parseTransition (element, parentObject);
-              if (elementObject != NULL)
+              Transition *trans = parseTransition (element);
+              if (trans)
                 {
-                  addTransitionToTransitionBase (parentObject, elementObject);
+                  transBase->addTransition (trans);
                 }
             }
         }
     }
 
-  return parentObject;
+  return transBase;
 }
 
-void *
-NclTransitionParser::parseTransition (DOMElement *parentElement,
-                                      arg_unused (void *objGrandParent))
+Transition *
+NclTransitionParser::parseTransition (DOMElement *parentElement)
 {
   Transition *transition;
   string id, attValue;
@@ -99,8 +88,7 @@ NclTransitionParser::parseTransition (DOMElement *parentElement,
   id = XMLString::transcode
     (parentElement->getAttribute (XMLString::transcode ("id")));
 
-  if (unlikely (!parentElement->hasAttribute
-                (XMLString::transcode ("type"))))
+  if (unlikely (!parentElement->hasAttribute (XMLString::transcode ("type"))))
     {
       syntax_error ("transition '%s': missing type", id.c_str ());
     }
@@ -208,15 +196,8 @@ NclTransitionParser::parseTransition (DOMElement *parentElement,
 }
 
 void
-NclTransitionParser::addTransitionToTransitionBase (void *parentObject,
-                                                    void *childObject)
-{
-  ((TransitionBase *)parentObject)->addTransition ((Transition *)childObject);
-}
-
-void
-NclTransitionParser::addImportBaseToTransitionBase (void *parentObject,
-                                                    void *childObject)
+NclTransitionParser::addImportBaseToTransitionBase (TransitionBase *transBase,
+                                                    DOMElement *element)
 {
   string baseAlias, baseLocation;
   NclDocumentParser *compiler;
@@ -225,12 +206,10 @@ NclTransitionParser::addImportBaseToTransitionBase (void *parentObject,
 
   // get the external base alias and location
   baseAlias = XMLString::transcode (
-      ((DOMElement *)childObject)
-          ->getAttribute (XMLString::transcode ("alias")));
+      element->getAttribute (XMLString::transcode ("alias")));
 
   baseLocation = XMLString::transcode (
-      ((DOMElement *)childObject)
-          ->getAttribute (XMLString::transcode ("documentURI")));
+      element->getAttribute (XMLString::transcode ("documentURI")));
 
   compiler = getDocumentParser ();
   importedDocument = compiler->importDocument (baseLocation);
@@ -248,8 +227,7 @@ NclTransitionParser::addImportBaseToTransitionBase (void *parentObject,
   // insert the imported base into the document region base
   try
     {
-      ((TransitionBase *)parentObject)
-          ->addBase (createdBase, baseAlias, baseLocation);
+      transBase->addBase (createdBase, baseAlias, baseLocation);
     }
   catch (std::exception *exc)
     {

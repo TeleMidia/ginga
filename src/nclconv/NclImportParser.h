@@ -27,15 +27,13 @@ class NclImportParser : public ModuleParser
 public:
   NclImportParser (NclDocumentParser *documentParser);
 
-  void *parseImportedDocumentBase (DOMElement *parentElement,
-                                   void *objGrandParent);
+  void parseImportedDocumentBase (DOMElement *parentElement);
 
-  void *parseImportNCL (DOMElement *parentElement, void *objGrandParent);
+  DOMElement *parseImportNCL (DOMElement *parentElement);
 
-  void addImportNCLToImportedDocumentBase (void *parentObject,
-                                           void *childObject);
+  void addImportNCLToImportedDocumentBase (DOMElement *childObject);
 
-  void *parseImportBase (DOMElement *parentElement, void *objGrandParent);
+  DOMElement *parseImportBase (DOMElement *parentElement);
 
 };
 

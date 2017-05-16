@@ -35,11 +35,10 @@ public:
 
   TransitionBase *parseTransitionBase (DOMElement *parentElement);
 
-  void *parseTransition (DOMElement *parentElement, void *objGrandParent);
+  Transition *parseTransition (DOMElement *parentElement);
 
-  void addImportBaseToTransitionBase (void *parentObject, void *childObject);
-
-  void addTransitionToTransitionBase (void *parentObject, void *childObject);
+  void addImportBaseToTransitionBase (TransitionBase *transBase,
+                                      DOMElement *childObject);
 };
 
 GINGA_NCLCONV_END

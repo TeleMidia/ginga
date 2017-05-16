@@ -42,11 +42,11 @@ public:
   void addAreaToMedia (ContentNode *media, Anchor *area);
   void addPropertyToMedia (ContentNode *media, Anchor *property);
 
-  Node *parseContext (DOMElement *parentElement, void *objGrandParent);
+  Node *parseContext (DOMElement *parentElement);
   void *posCompileContext2 (DOMElement *parentElement, void *parentObject);
   void *posCompileContext (DOMElement *parentElement, void *parentObject);
 
-  Node *createContext (DOMElement *parentElement, void *objGrandParent);
+  Node *createContext (DOMElement *parentElement);
 
   void addPortToContext (void *parentObject, void *childObject);
 

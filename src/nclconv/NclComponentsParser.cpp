@@ -80,8 +80,7 @@ NclComponentsParser::parseMedia (DOMElement *parentElement)
 }
 
 Node *
-NclComponentsParser::parseContext (DOMElement *parentElement,
-                                   void *objGrandParent)
+NclComponentsParser::parseContext (DOMElement *parentElement)
 {
   Node *context;
   DOMNodeList *elementNodeList;
@@ -90,7 +89,7 @@ NclComponentsParser::parseContext (DOMElement *parentElement,
   DOMElement *element;
   string elementTagName;
 
-  context = createContext (parentElement, objGrandParent);
+  context = createContext (parentElement);
   g_assert_nonnull (context);
 
   elementNodeList = parentElement->getChildNodes ();
@@ -116,7 +115,7 @@ NclComponentsParser::parseContext (DOMElement *parentElement,
                                               "context")
                    == 0)
             {
-              Node *child_context = parseContext (element, context);
+              Node *child_context = parseContext (element);
               if (child_context)
                 {
                   addContextToContext (context, child_context);
@@ -128,7 +127,7 @@ NclComponentsParser::parseContext (DOMElement *parentElement,
             {
               Node *switch_node =
                       _documentParser->getPresentationControlParser ()
-                        ->parseSwitch (element, context);
+                        ->parseSwitch (element);
 
               if (switch_node)
                 {
@@ -349,8 +348,7 @@ NclComponentsParser::addPropertyToMedia (ContentNode *media, Anchor *property)
 }
 
 Node *
-NclComponentsParser::createContext (DOMElement *parentElement,
-                                    arg_unused (void *objGrandParent))
+NclComponentsParser::createContext (DOMElement *parentElement)
 {
   NclDocument *document;
   string id, attValue;
