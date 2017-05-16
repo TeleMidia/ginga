@@ -30,15 +30,13 @@ NclComponentsParser::NclComponentsParser (NclDocumentParser *parser)
 }
 
 Node *
-NclComponentsParser::parseMedia (DOMElement *parentElement,
-                                 void *objGrandParent)
+NclComponentsParser::parseMedia (DOMElement *parentElement)
 {
   Node *media;
   DOMNodeList *elementNodeList;
   int i, size;
   DOMNode *node;
   DOMElement *element;
-  string elementTagName;
 
   media = createMedia (parentElement);
   g_assert_nonnull (media);
@@ -52,27 +50,25 @@ NclComponentsParser::parseMedia (DOMElement *parentElement,
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           element = (DOMElement *)node;
-          elementTagName = XMLString::transcode (element->getTagName ());
+          string tagname = XMLString::transcode (element->getTagName ());
 
-          if (XMLString::compareIString (elementTagName.c_str (), "area")
-              == 0)
+          if (XMLString::compareIString (tagname.c_str (), "area") == 0)
             {
               Anchor *area = _documentParser->getInterfacesParser ()
                       ->parseArea (element, media);
 
-              if (area != NULL)
+              if (area)
                 {
                   addAreaToMedia ((ContentNode*)media, area);
                 }
             }
-          else if (XMLString::compareIString (elementTagName.c_str (),
-                                              "property")
+          else if (XMLString::compareIString (tagname.c_str (), "property")
                    == 0)
             {
               PropertyAnchor *prop = _documentParser->getInterfacesParser ()
                       ->parseProperty (element, media);
 
-              if (prop != NULL)
+              if (prop)
                 {
                   addPropertyToMedia ((ContentNode *)media, prop);
                 }
@@ -83,7 +79,7 @@ NclComponentsParser::parseMedia (DOMElement *parentElement,
   return media;
 }
 
-void *
+Node *
 NclComponentsParser::parseContext (DOMElement *parentElement,
                                    void *objGrandParent)
 {
@@ -93,7 +89,6 @@ NclComponentsParser::parseContext (DOMElement *parentElement,
   DOMNode *node;
   DOMElement *element;
   string elementTagName;
-  void *elementObject = NULL;
 
   context = createContext (parentElement, objGrandParent);
   g_assert_nonnull (context);
@@ -111,8 +106,8 @@ NclComponentsParser::parseContext (DOMElement *parentElement,
           if (XMLString::compareIString (elementTagName.c_str (), "media")
               == 0)
             {
-              Node *media = parseMedia (element, context);
-              if (media != NULL)
+              Node *media = parseMedia (element);
+              if (media)
                 {
                   addMediaToContext (context, media);
                 }
@@ -121,22 +116,23 @@ NclComponentsParser::parseContext (DOMElement *parentElement,
                                               "context")
                    == 0)
             {
-              elementObject = parseContext (element, context);
-              if (elementObject != NULL)
+              Node *child_context = parseContext (element, context);
+              if (child_context)
                 {
-                  addContextToContext (context, elementObject);
+                  addContextToContext (context, child_context);
                 }
             }
           else if (XMLString::compareIString (elementTagName.c_str (),
                                               "switch")
                    == 0)
             {
-              elementObject = _documentParser->getPresentationControlParser ()
-                      ->parseSwitch (element, context);
+              Node *switch_node =
+                      _documentParser->getPresentationControlParser ()
+                        ->parseSwitch (element, context);
 
-              if (elementObject != NULL)
+              if (switch_node)
                 {
-                  addSwitchToContext (context, elementObject);
+                  addSwitchToContext (context, switch_node);
                 }
             }
         }
@@ -153,7 +149,7 @@ NclComponentsParser::parseContext (DOMElement *parentElement,
           PropertyAnchor *prop = _documentParser->getInterfacesParser ()
                   ->parseProperty ((DOMElement *)node, context);
 
-          if (elementObject != NULL)
+          if (prop)
             {
               addPropertyToContext (context, prop);
             }
