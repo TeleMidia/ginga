@@ -30,8 +30,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclLinkingParser.h"
 #include "NclMetainformationParser.h"
 
-#include <pugixml.hpp>
-
 GINGA_NCLCONV_BEGIN
 
 NclDocumentParser::NclDocumentParser (PrivateBaseContext *pbc,
