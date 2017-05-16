@@ -32,66 +32,33 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCLCONV_BEGIN
 
-NclDocumentParser::NclDocumentParser ()
+NclDocumentParser::NclDocumentParser (PrivateBaseContext *pbc,
+                                      DeviceLayout *deviceLayout)
 {
-  this->deviceLayout = nullptr;
-  this->presentationSpecificationParser = nullptr;
-  this->structureParser = nullptr;
-  this->componentsParser = nullptr;
-  this->connectorsParser = nullptr;
-  this->linkingParser = nullptr;
-  this->interfacesParser = nullptr;
-  this->layoutParser = nullptr;
-  this->presentationControlParser = nullptr;
-  this->importParser = nullptr;
-  this->metainformationParser = nullptr;
-  this->transitionParser = nullptr;
-
   this->parentObject = nullptr;
   this->privateBaseContext = nullptr;
   this->ownManager = false;
+
+  this->privateBaseContext = pbc;
+  this->deviceLayout = deviceLayout;
+
+  init ();
+  setDependencies ();
 }
 
 NclDocumentParser::~NclDocumentParser ()
 {
-  if (presentationSpecificationParser != nullptr)
-    delete presentationSpecificationParser;
-
-  if (structureParser != nullptr)
-    delete structureParser;
-
-  if (componentsParser != nullptr)
-    delete componentsParser;
-
-  if (connectorsParser != nullptr)
-    delete connectorsParser;
-
-  if (linkingParser != nullptr)
-    delete linkingParser;
-
-  if (interfacesParser != nullptr)
-    delete interfacesParser;
-
-  if (layoutParser != nullptr)
-    delete layoutParser;
-
-  if (transitionParser != nullptr)
-    delete transitionParser;
-
-  if (presentationControlParser != nullptr)
-    delete presentationControlParser;
-
-  if (importParser != nullptr)
-    delete importParser;
-
-  if (metainformationParser != nullptr)
-    delete metainformationParser;
-}
-
-void
-NclDocumentParser::setDeviceLayout (DeviceLayout *deviceLayout)
-{
-  this->deviceLayout = deviceLayout;
+  delete presentationSpecificationParser;
+  delete structureParser;
+  delete componentsParser;
+  delete connectorsParser;
+  delete linkingParser;
+  delete interfacesParser;
+  delete layoutParser;
+  delete transitionParser;
+  delete presentationControlParser;
+  delete importParser;
+  delete metainformationParser;
 }
 
 void
@@ -315,17 +282,6 @@ NclDocumentParser::parse (const string &path)
   // XMLPlatformUtils::Terminate ();
 
   return this->ncl;
-}
-
-void
-NclDocumentParser::setConverterInfo (PrivateBaseContext *pbc,
-                                     DeviceLayout *deviceLayout)
-{
-  setDeviceLayout (deviceLayout);
-  this->privateBaseContext = pbc;
-
-  init ();
-  setDependencies ();
 }
 
 void
