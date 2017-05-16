@@ -55,10 +55,8 @@ public:
 
   void addDescriptorParamToDescriptor (void *parentObject, void *childObject);
 
-  DescriptorBase *parseDescriptorBase (DOMElement *parentElement,
-                                       void *objGrandParent);
-  DescriptorBase *createDescriptorBase (DOMElement *parentElement,
-                                        void *objGrandParent);
+  DescriptorBase *parseDescriptorBase (DOMElement *parentElement);
+  DescriptorBase *createDescriptorBase (DOMElement *parentElement);
 
   void addImportBaseToDescriptorBase (void *parentObject, void *childObject);
 

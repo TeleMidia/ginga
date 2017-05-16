@@ -39,8 +39,8 @@ public:
 
   void addRegionToRegion (void *parentObject, void *childObject);
 
-  RegionBase *parseRegionBase (DOMElement *parentElement, void *objGrandParent);
-  RegionBase *createRegionBase (DOMElement *parentElement, void *objGrandParent);
+  RegionBase *parseRegionBase (DOMElement *parentElement);
+  RegionBase *createRegionBase (DOMElement *parentElement);
 
   void addImportBaseToRegionBase (void *parentObject, void *childObject);
 

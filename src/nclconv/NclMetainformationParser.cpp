@@ -27,8 +27,7 @@ NclMetainformationParser::NclMetainformationParser (
 }
 
 Meta *
-NclMetainformationParser::parseMeta (DOMElement *parentElement,
-                                     arg_unused (void *objGrandParent))
+NclMetainformationParser::parseMeta (DOMElement *parentElement)
 {
   string name, content;
 
@@ -56,8 +55,7 @@ NclMetainformationParser::parseMeta (DOMElement *parentElement,
 }
 
 Metadata *
-NclMetainformationParser::parseMetadata (arg_unused (DOMElement *parentElement),
-                                         arg_unused (void *objGrandParent) )
+NclMetainformationParser::parseMetadata (arg_unused (DOMElement *parentElement))
 {
   return new Metadata ();
 }
