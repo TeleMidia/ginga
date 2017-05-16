@@ -31,8 +31,7 @@ NclTransitionParser::NclTransitionParser (NclDocumentParser *documentParser)
 }
 
 TransitionBase *
-NclTransitionParser::parseTransitionBase (DOMElement *parentElement,
-                                          arg_unused(void *objGrandParent))
+NclTransitionParser::parseTransitionBase (DOMElement *parentElement)
 {
   TransitionBase *parentObject;
   DOMNodeList *elementNodeList;

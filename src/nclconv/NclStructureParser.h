@@ -39,8 +39,7 @@ class NclStructureParser : public ModuleParser
 public:
   NclStructureParser (NclDocumentParser *documentParser);
 
-  ContextNode *parseBody ( DOMElement *parentElement,
-                           NclDocument *objGrandParent );
+  ContextNode *parseBody ( DOMElement *parentElement, NclDocument *nclDoc );
 
   void *posCompileBody (DOMElement *parentElement, ContextNode *parentObject);
 
@@ -48,21 +47,11 @@ public:
 
   void parseHead (DOMElement *parentElement);
 
-  void addRegionBaseToHead (RegionBase *regBase);
-
-  void addDescriptorBaseToHead (DescriptorBase *descBase);
-
-  void addTransitionBaseToHead (TransitionBase *transBase);
-
-  void addRuleBaseToHead (RuleBase *ruleBase);
-
   void addImportedDocumentBaseToHead (void *parentObject, void *childObject);
 
   NclDocument *parseNcl (DOMElement *parentElement, void *objGrandParent);
 
   NclDocument *createNcl (DOMElement *parentElement, void *objGrandParent);
-
-  void addBodyToNcl (void *parentObject, void *childObject);
 
 private:
   void solveNodeReferences (CompositeNode *composition);

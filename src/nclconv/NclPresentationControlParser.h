@@ -70,8 +70,8 @@ public:
 
   void *parseBindRule (DOMElement *parentElement, void *objGrandParent);
 
-  RuleBase *parseRuleBase (DOMElement *parentElement, void *objGrandParent);
-  RuleBase *createRuleBase (DOMElement *parentElement, void *objGrandParent);
+  RuleBase *parseRuleBase (DOMElement *parentElement);
+  RuleBase *createRuleBase (DOMElement *parentElement);
 
   void addImportBaseToRuleBase (void *parentObject, void *childObject);
 

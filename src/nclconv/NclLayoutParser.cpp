@@ -70,8 +70,7 @@ NclLayoutParser::parseRegion (DOMElement *parentElement,
 }
 
 RegionBase *
-NclLayoutParser::parseRegionBase (DOMElement *parentElement,
-                                  void *objGrandParent)
+NclLayoutParser::parseRegionBase (DOMElement *parentElement)
 {
   RegionBase *parentObject;
   DOMNodeList *elementNodeList;
@@ -80,7 +79,7 @@ NclLayoutParser::parseRegionBase (DOMElement *parentElement,
   string elementTagName;
   void *elementObject;
 
-  parentObject = createRegionBase (parentElement, objGrandParent);
+  parentObject = createRegionBase (parentElement);
   g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
@@ -178,8 +177,7 @@ NclLayoutParser::addRegionToRegionBase (void *parentObject,
 }
 
 RegionBase *
-NclLayoutParser::createRegionBase (DOMElement *parentElement,
-                                   arg_unused (void *objGrandParent))
+NclLayoutParser::createRegionBase (DOMElement *parentElement)
 {
   RegionBase *layout;
   string mapId = "";

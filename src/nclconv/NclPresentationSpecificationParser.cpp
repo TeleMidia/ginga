@@ -76,7 +76,7 @@ NclPresentationSpecificationParser::parseDescriptor (
 
 DescriptorBase *
 NclPresentationSpecificationParser::parseDescriptorBase (
-    DOMElement *parentElement, void *objGrandParent)
+    DOMElement *parentElement)
 {
   DescriptorBase *parentObject;
   DOMNodeList *elementNodeList;
@@ -85,7 +85,7 @@ NclPresentationSpecificationParser::parseDescriptorBase (
   string elementTagName;
   void *elementObject;
 
-  parentObject = createDescriptorBase (parentElement, objGrandParent);
+  parentObject = createDescriptorBase (parentElement);
   g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
@@ -274,7 +274,7 @@ NclPresentationSpecificationParser::addImportBaseToDescriptorBase (
 
 DescriptorBase *
 NclPresentationSpecificationParser::createDescriptorBase (
-    DOMElement *parentElement, arg_unused (void *objGrandParent))
+        DOMElement *parentElement)
 {
   DescriptorBase *descBase;
   // criar nova base de conectores com id gerado a partir do nome de seu

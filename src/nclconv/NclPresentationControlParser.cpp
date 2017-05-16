@@ -40,8 +40,7 @@ NclPresentationControlParser::parseBindRule (DOMElement *parentElement,
 }
 
 RuleBase *
-NclPresentationControlParser::parseRuleBase (DOMElement *parentElement,
-                                             void *objGrandParent)
+NclPresentationControlParser::parseRuleBase (DOMElement *parentElement)
 {
   RuleBase *parentObject;
   DOMNodeList *elementNodeList;
@@ -50,7 +49,7 @@ NclPresentationControlParser::parseRuleBase (DOMElement *parentElement,
   string elementTagName;
   void *elementObject;
 
-  parentObject = createRuleBase (parentElement, objGrandParent);
+  parentObject = createRuleBase (parentElement);
   g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
@@ -580,8 +579,7 @@ NclPresentationControlParser::createSwitch (DOMElement *parentElement,
 }
 
 RuleBase *
-NclPresentationControlParser::createRuleBase (DOMElement *parentElement,
-                                              arg_unused (void *objGrandParent))
+NclPresentationControlParser::createRuleBase (DOMElement *parentElement)
 {
   RuleBase *ruleBase;
   ruleBase = new RuleBase (XMLString::transcode (
