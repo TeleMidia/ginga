@@ -34,7 +34,7 @@ TransitionBase *
 NclTransitionParser::parseTransitionBase (DOMElement *parentElement)
 {
   TransitionBase *transBase = new TransitionBase (
-        _nclParser->getAttribute(parentElement, "id") );
+        dom_element_get_attr(parentElement, "id") );
   g_assert_nonnull (transBase);
 
   DOMNodeList *elementNodeList = parentElement->getChildNodes ();
@@ -44,7 +44,7 @@ NclTransitionParser::parseTransitionBase (DOMElement *parentElement)
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           DOMElement *element = (DOMElement *)node;
-          string tagname = _nclParser->getTagname(element);
+          string tagname = dom_element_tagname(element);
 
           if (XMLString::compareIString (tagname.c_str(), "importBase") == 0)
             {
@@ -81,17 +81,17 @@ NclTransitionParser::parseTransition (DOMElement *parentElement)
   double dur;
   SDL_Color *color;
 
-  if (unlikely (!_nclParser->hasAttribute(parentElement, "id")))
+  if (unlikely (!dom_element_has_attr(parentElement, "id")))
     syntax_error ("transition: missing id");
 
-  id = _nclParser->getAttribute(parentElement, "id");
+  id = dom_element_get_attr(parentElement, "id");
 
-  if (unlikely (!_nclParser->hasAttribute(parentElement, "type")))
+  if (unlikely (!dom_element_has_attr(parentElement, "type")))
     {
       syntax_error ("transition '%s': missing type", id.c_str ());
     }
 
-  attValue = _nclParser->getAttribute(parentElement, "type");
+  attValue = dom_element_get_attr(parentElement, "type");
   type = TransitionUtil::getTypeCode (attValue);
 
   if (unlikely (type < 0))
@@ -99,9 +99,9 @@ NclTransitionParser::parseTransition (DOMElement *parentElement)
 
   transition = new Transition (id, type);
 
-  if (_nclParser->hasAttribute(parentElement, "subtype"))
+  if (dom_element_has_attr(parentElement, "subtype"))
     {
-      attValue = _nclParser->getAttribute(parentElement, "subtype");
+      attValue = dom_element_get_attr(parentElement, "subtype");
 
       subtype = TransitionUtil::getSubtypeCode (type, attValue);
       if (subtype >= 0)
@@ -110,31 +110,31 @@ NclTransitionParser::parseTransition (DOMElement *parentElement)
         }
     }
 
-  if (_nclParser->hasAttribute(parentElement, "dur"))
+  if (dom_element_has_attr(parentElement, "dur"))
     {
-      attValue = _nclParser->getAttribute(parentElement, "dur");
+      attValue = dom_element_get_attr(parentElement, "dur");
 
       dur = xstrtod (attValue.substr (0, attValue.length () - 1));
       transition->setDur (dur * 1000);
     }
 
-  if (_nclParser->hasAttribute(parentElement, "startProgress"))
+  if (dom_element_has_attr(parentElement, "startProgress"))
     {
-      attValue = _nclParser->getAttribute(parentElement, "startProgress");
+      attValue = dom_element_get_attr(parentElement, "startProgress");
 
       transition->setStartProgress (xstrtod (attValue));
     }
 
-  if (_nclParser->hasAttribute(parentElement, "endProgress"))
+  if (dom_element_has_attr(parentElement, "endProgress"))
     {
-      attValue = _nclParser->getAttribute(parentElement, "endProgress");
+      attValue = dom_element_get_attr(parentElement, "endProgress");
 
       transition->setEndProgress (xstrtod (attValue));
     }
 
-  if (_nclParser->hasAttribute(parentElement, "direction"))
+  if (dom_element_has_attr(parentElement, "direction"))
     {
-      attValue = _nclParser->getAttribute(parentElement, "direction");
+      attValue = dom_element_get_attr(parentElement, "direction");
 
       direction = TransitionUtil::getDirectionCode (attValue);
       if (direction >= 0)
@@ -143,40 +143,40 @@ NclTransitionParser::parseTransition (DOMElement *parentElement)
         }
     }
 
-  if (_nclParser->hasAttribute(parentElement, "fadeColor"))
+  if (dom_element_has_attr(parentElement, "fadeColor"))
     {
       color = new SDL_Color ();
       ginga_color_input_to_sdl_color(
-            _nclParser->getAttribute(parentElement, "fadeColor"), color);
+            dom_element_get_attr(parentElement, "fadeColor"), color);
       transition->setFadeColor (color);
     }
 
-  if (_nclParser->hasAttribute(parentElement, "horzRepeat"))
+  if (dom_element_has_attr(parentElement, "horzRepeat"))
     {
-      attValue = _nclParser->getAttribute(parentElement, "horzRepeat");
+      attValue = dom_element_get_attr(parentElement, "horzRepeat");
 
       transition->setHorzRepeat (xstrto_int (attValue));
     }
 
-  if (_nclParser->hasAttribute(parentElement, "vertRepeat"))
+  if (dom_element_has_attr(parentElement, "vertRepeat"))
     {
-      attValue = _nclParser->getAttribute(parentElement, "vertRepeat");
+      attValue = dom_element_get_attr(parentElement, "vertRepeat");
 
       transition->setVertRepeat (xstrto_int (attValue));
     }
 
-  if (_nclParser->hasAttribute(parentElement, "borderWidth"))
+  if (dom_element_has_attr(parentElement, "borderWidth"))
     {
-      attValue = _nclParser->getAttribute(parentElement, "borderWidth");
+      attValue = dom_element_get_attr(parentElement, "borderWidth");
 
       transition->setBorderWidth (xstrto_int (attValue));
     }
 
-  if (_nclParser->hasAttribute(parentElement, "borderColor"))
+  if (dom_element_has_attr(parentElement, "borderColor"))
     {
       color = new SDL_Color ();
       ginga_color_input_to_sdl_color(
-            _nclParser->getAttribute(parentElement, "borderColor"),
+            dom_element_get_attr(parentElement, "borderColor"),
                   color);
       transition->setBorderColor (color);
     }
@@ -194,9 +194,9 @@ NclTransitionParser::addImportBaseToTransitionBase (TransitionBase *transBase,
   TransitionBase *createdBase;
 
   // get the external base alias and location
-  baseAlias = _nclParser->getAttribute(element, "alias");
+  baseAlias = dom_element_get_attr(element, "alias");
 
-  baseLocation = _nclParser->getAttribute(element, "documentURI");
+  baseLocation = dom_element_get_attr(element, "documentURI");
 
   compiler = getNclParser ();
   importedDocument = compiler->importDocument (baseLocation);

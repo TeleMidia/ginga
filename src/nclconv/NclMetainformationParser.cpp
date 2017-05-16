@@ -30,18 +30,18 @@ NclMetainformationParser::parseMeta (DOMElement *parentElement)
 {
   string name, content;
 
-  if (_nclParser->hasAttribute(parentElement, "name"))
+  if (dom_element_has_attr(parentElement, "name"))
     {
-      name = _nclParser->getAttribute(parentElement, "name");
+      name = dom_element_get_attr(parentElement, "name");
     }
   else
     {
       syntax_error ("meta: missing name");
     }
 
-  if (_nclParser->hasAttribute(parentElement, "content"))
+  if (dom_element_has_attr(parentElement, "content"))
     {
-      content = _nclParser->getAttribute(parentElement, "content");
+      content = dom_element_get_attr(parentElement, "content");
     }
   else
     {

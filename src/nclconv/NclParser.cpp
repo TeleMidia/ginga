@@ -128,7 +128,7 @@ NclParser::getLinkingParser ()
 NclDocument *
 NclParser::parseRootElement (DOMElement *rootElement)
 {
-  string tagName = getTagname(rootElement);
+  string tagName = dom_element_tagname(rootElement);
   if (unlikely (tagName != "ncl"))
     syntax_error ("bad root element '%s'", tagName.c_str ());
 
@@ -259,39 +259,6 @@ NclParser::init ()
   presentationControlParser = new NclPresentationControlParser (this);
   importParser = new NclImportParser (this);
   metainformationParser = new NclMetainformationParser (this);
-}
-
-string
-NclParser::getTagname(const DOMElement *element)
-{
-  char *tagname = XMLString::transcode (element->getTagName ());
-  string tagname_str (tagname);
-  XMLString::release(&tagname);
-
-  return tagname_str;
-}
-
-string
-NclParser::getAttribute (const DOMElement *element, const string &attr)
-{
-  XMLCh *attr_xmlch = XMLString::transcode(attr.c_str());
-  char *attr_value_ch =  XMLString::transcode(element->getAttribute (attr_xmlch));
-  string attr_value_str(attr_value_ch);
-
-  XMLString::release(&attr_xmlch);
-  XMLString::release(&attr_value_ch);
-
-  return attr_value_str;
-}
-
-bool
-NclParser::hasAttribute (const DOMElement *element, const string &attr)
-{
-  XMLCh *attr_xmlch = XMLString::transcode(attr.c_str());
-  bool result = element->hasAttribute(attr_xmlch);
-  XMLString::release(&attr_xmlch);
-
-  return result;
 }
 
 Node *
