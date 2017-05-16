@@ -135,7 +135,7 @@ NclDocumentParser::parseRootElement (DOMElement *rootElement)
   if (unlikely (tagName != "ncl"))
     syntax_error ("bad root element '%s'", tagName.c_str ());
 
-  return getStructureParser ()->parseNcl (rootElement, NULL);
+  return getStructureParser ()->parseNcl (rootElement);
 }
 
 

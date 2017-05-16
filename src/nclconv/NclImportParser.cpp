@@ -28,75 +28,56 @@ NclImportParser::NclImportParser (NclDocumentParser *documentParser)
 {
 }
 
-void *
-NclImportParser::parseImportedDocumentBase (DOMElement *parentElement,
-                                            void *objGrandParent)
+void
+NclImportParser::parseImportedDocumentBase (DOMElement *parentElement)
 {
-  void *parentObject;
-  DOMNodeList *elementNodeList;
-  DOMElement *element;
-  DOMNode *node;
-  string elementTagName;
-  void *elementObject;
-
   // pre-compile attributes
-  parentObject = parentElement;
-  g_assert_nonnull (parentObject);
+  g_assert_nonnull (parentElement);
 
-  elementNodeList = parentElement->getChildNodes ();
+  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
     {
-      node = elementNodeList->item (i);
+      DOMNode *node = elementNodeList->item (i);
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          element = (DOMElement *)node;
-          elementTagName = XMLString::transcode (element->getTagName ());
-          if (XMLString::compareIString (elementTagName.c_str (),
-                                         "importNCL")
-              == 0)
+          DOMElement *element = (DOMElement *)node;
+          string tagname = XMLString::transcode (element->getTagName ());
+          if (XMLString::compareIString (tagname.c_str (), "importNCL") == 0)
             {
-              elementObject = parseImportNCL (element, parentObject);
-              if (elementObject != NULL)
+              DOMElement *elementObject = parseImportNCL (element);
+              if (elementObject)
                 {
-                  addImportNCLToImportedDocumentBase (parentObject,
-                                                      elementObject);
+                  addImportNCLToImportedDocumentBase (elementObject);
                 }
             }
         }
     }
-
-  return parentObject;
 }
 
-void *
-NclImportParser::parseImportNCL (DOMElement *parentElement,
-                                 arg_unused (void *objGrandParent))
+DOMElement *
+NclImportParser::parseImportNCL (DOMElement *parentElement)
 {
   return parentElement; // ???
 }
 
-void *
-NclImportParser::parseImportBase (DOMElement *parentElement,
-                                  arg_unused (void *objGrandParent))
+DOMElement *
+NclImportParser::parseImportBase (DOMElement *parentElement)
 {
   return parentElement;
 }
 
 void
-NclImportParser::addImportNCLToImportedDocumentBase (arg_unused (void *parentObject),
-                                                        void *childObject)
+NclImportParser::addImportNCLToImportedDocumentBase (DOMElement *childObject)
 {
   string docAlias, docLocation;
   NclDocumentParser *compiler;
   NclDocument *thisDocument, *importedDocument;
 
   docAlias = XMLString::transcode (
-      ((DOMElement *)childObject)
-          ->getAttribute (XMLString::transcode ("alias")));
+      childObject->getAttribute (XMLString::transcode ("alias")));
 
   docLocation = XMLString::transcode (
-      ((DOMElement *)childObject)
-          ->getAttribute (XMLString::transcode ("documentURI")));
+      childObject->getAttribute (XMLString::transcode ("documentURI")));
 
   compiler = getDocumentParser ();
   importedDocument = compiler->importDocument (docLocation);

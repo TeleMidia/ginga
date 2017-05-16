@@ -66,7 +66,7 @@ NclPresentationControlParser::parseRuleBase (DOMElement *parentElement)
               == 0)
             {
               elementObject = _documentParser->getImportParser ()
-                      ->parseImportBase (element, parentObject);
+                      ->parseImportBase (element);
 
               if (elementObject != NULL)
                 {
@@ -126,18 +126,17 @@ NclPresentationControlParser::parseRule (DOMElement *parentElement,
 }
 
 Node *
-NclPresentationControlParser::parseSwitch (DOMElement *parentElement,
-                                           void *objGrandParent)
+NclPresentationControlParser::parseSwitch (DOMElement *parentElement)
 {
   Node *switch_node;
   DOMNodeList *elementNodeList;
   int i, size;
   DOMNode *node;
   DOMElement *element;
-  string elementTagName;
+  string tagname;
   void *elementObject;
 
-  switch_node = createSwitch (parentElement, objGrandParent);
+  switch_node = createSwitch (parentElement);
   if (unlikely (switch_node == NULL))
     {
       syntax_error ("switch: bad parent '%s'",
@@ -154,37 +153,32 @@ NclPresentationControlParser::parseSwitch (DOMElement *parentElement,
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           element = (DOMElement *)node;
-          elementTagName = XMLString::transcode (element->getTagName ());
-          if (XMLString::compareIString (elementTagName.c_str (), "media")
-              == 0)
+          tagname = XMLString::transcode (element->getTagName ());
+          if (XMLString::compareIString (tagname.c_str (), "media") == 0)
             {
-              elementObject
-                  = _documentParser->getComponentsParser ()
-                      ->parseMedia (element);
+              Node *media = _documentParser->getComponentsParser ()
+                              ->parseMedia (element);
 
-              if (elementObject != NULL)
+              if (media)
                 {
-                  addMediaToSwitch (switch_node, elementObject);
+                  addMediaToSwitch (switch_node, media);
                 }
             }
-          else if (XMLString::compareIString (elementTagName.c_str (),
-                                              "context")
-                   == 0)
+          else if (XMLString::compareIString (tagname.c_str (), "context") == 0)
             {
-              elementObject
-                  = _documentParser->getComponentsParser ()
-                        ->parseContext (element, switch_node);
+              Node *ctx = _documentParser->getComponentsParser ()
+                      ->parseContext (element);
 
-              if (elementObject != NULL)
+              if (ctx)
                 {
-                  addContextToSwitch (switch_node, elementObject);
+                  addContextToSwitch (switch_node, ctx);
                 }
             }
-          else if (XMLString::compareIString (elementTagName.c_str (),
+          else if (XMLString::compareIString (tagname.c_str (),
                                               "switch")
                    == 0)
             {
-              elementObject = parseSwitch (element, switch_node);
+              elementObject = parseSwitch (element);
               if (elementObject != NULL)
                 {
                   addSwitchToSwitch (switch_node, elementObject);
@@ -199,9 +193,8 @@ NclPresentationControlParser::parseSwitch (DOMElement *parentElement,
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           element = (DOMElement *)node;
-          elementTagName = XMLString::transcode (element->getTagName ());
-          if (XMLString::compareIString (elementTagName.c_str (),
-                                         "bindRule")
+          tagname = XMLString::transcode (element->getTagName ());
+          if (XMLString::compareIString (tagname.c_str (), "bindRule")
               == 0)
             {
               elementObject
@@ -212,7 +205,7 @@ NclPresentationControlParser::parseSwitch (DOMElement *parentElement,
                   addBindRuleToSwitch (switch_node, elementObject);
                 }
             }
-          else if (XMLString::compareIString (elementTagName.c_str (),
+          else if (XMLString::compareIString (tagname.c_str (),
                                               "defaultComponent")
                    == 0)
             {
@@ -518,8 +511,7 @@ NclPresentationControlParser::createCompositeRule (
 }
 
 Node *
-NclPresentationControlParser::createSwitch (DOMElement *parentElement,
-                                            arg_unused (void *objGrandParent))
+NclPresentationControlParser::createSwitch (DOMElement *parentElement)
 {
   string id;
   Node *node;

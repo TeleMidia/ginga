@@ -81,7 +81,7 @@ public:
 
   void *parseRule (DOMElement *parentElement, void *objGrandParent);
 
-  Node *parseSwitch (DOMElement *parentElement, void *objGrandParent);
+  Node *parseSwitch (DOMElement *parentElement);
   void *posCompileSwitch (DOMElement *parentElement, void *parentObject);
   void *posCompileSwitch2 (DOMElement *parentElement, void *parentObject);
 
@@ -96,7 +96,7 @@ public:
   void addDefaultDescriptorToDescriptorSwitch (void *parentObject,
                                                void *childObject);
 
-  Node *createSwitch (DOMElement *parentElement, void *objGrandParent);
+  Node *createSwitch (DOMElement *parentElement);
 
   void addSwitchPortToSwitch (void *parentObject, void *childObject);
 

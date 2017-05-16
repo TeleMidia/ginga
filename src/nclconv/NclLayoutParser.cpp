@@ -96,7 +96,7 @@ NclLayoutParser::parseRegionBase (DOMElement *parentElement)
               == 0)
             {
               elementObject = _documentParser->getImportParser ()->
-                      parseImportBase (element, parentObject);
+                      parseImportBase (element);
 
               if (elementObject != NULL)
                 {

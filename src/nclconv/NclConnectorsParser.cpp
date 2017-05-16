@@ -712,12 +712,11 @@ NclConnectorsParser::parseConnectorBase (DOMElement *parentElement,
               == 0)
             {
               elementObject = _documentParser->getImportParser ()
-                      ->parseImportBase (element, parentObject);
+                      ->parseImportBase (element);
 
               if (elementObject != NULL)
                 {
-                  addImportBaseToConnectorBase (parentObject,
-                                                elementObject);
+                  addImportBaseToConnectorBase (parentObject, elementObject);
                 }
             }
           else if (XMLString::compareIString (elementTagName.c_str (),
