@@ -72,8 +72,6 @@ public:
 
   void *parseHead (DOMElement *parentElement, void *objGrandParent);
 
-  void *createHead (DOMElement *parentElement, void *objGrandParent);
-
   void addRegionBaseToHead (void *parentObject, void *childObject);
 
   void addDescriptorBaseToHead (void *parentObject, void *childObject);

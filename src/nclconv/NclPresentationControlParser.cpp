@@ -34,9 +34,9 @@ NclPresentationControlParser::NclPresentationControlParser (
 
 void *
 NclPresentationControlParser::parseBindRule (DOMElement *parentElement,
-                                             void *objGrandParent)
+                                             arg_unused(void *objGrandParent))
 {
-  return createBindRule (parentElement, objGrandParent);
+  return parentElement; // ?
 }
 
 void *
@@ -102,9 +102,28 @@ NclPresentationControlParser::parseRuleBase (DOMElement *parentElement,
 
 void *
 NclPresentationControlParser::parseRule (DOMElement *parentElement,
-                                         void *objGrandParent)
+                                         arg_unused(void *objGrandParent))
 {
-  return createRule (parentElement, objGrandParent);
+  SimpleRule *simplePresentationRule;
+  short ruleOp;
+
+  ruleOp = convertComparator (XMLString::transcode (
+      parentElement->getAttribute (XMLString::transcode ("comparator"))));
+
+  char *var = XMLString::transcode (
+      parentElement->getAttribute (XMLString::transcode ("var")));
+
+  char *value = XMLString::transcode (
+      parentElement->getAttribute (XMLString::transcode ("value")));
+
+  XMLString::trim (var);
+  XMLString::trim (value);
+  simplePresentationRule
+      = new SimpleRule (XMLString::transcode (parentElement->getAttribute (
+                            XMLString::transcode ("id"))),
+                        var, ruleOp, value);
+
+  return simplePresentationRule;
 }
 
 void *
@@ -248,17 +267,17 @@ NclPresentationControlParser::posCompileSwitch2 (DOMElement *parentElement,
 }
 
 void *
-NclPresentationControlParser::parseDefaultComponent (
-    DOMElement *parentElement, void *objGrandParent)
+NclPresentationControlParser::parseDefaultComponent (DOMElement *parentElement,
+                                               arg_unused(void *objGrandParent))
 {
-  return createDefaultComponent (parentElement, objGrandParent);
+  return parentElement; // ?
 }
 
 void *
-NclPresentationControlParser::parseDefaultDescriptor (
-    DOMElement *parentElement, void *objGrandParent)
+NclPresentationControlParser::parseDefaultDescriptor (DOMElement *parentElement,
+                                               arg_unused(void *objGrandParent))
 {
-  return createDefaultDescriptor (parentElement, objGrandParent);
+  return parentElement; // ?
 }
 
 void *
@@ -625,32 +644,6 @@ NclPresentationControlParser::createRuleBase (DOMElement *parentElement,
 }
 
 void *
-NclPresentationControlParser::createRule (DOMElement *parentElement,
-                                          arg_unused (void *objGrandParent))
-{
-  SimpleRule *simplePresentationRule;
-  short ruleOp;
-
-  ruleOp = convertComparator (XMLString::transcode (
-      parentElement->getAttribute (XMLString::transcode ("comparator"))));
-
-  char *var = XMLString::transcode (
-      parentElement->getAttribute (XMLString::transcode ("var")));
-
-  char *value = XMLString::transcode (
-      parentElement->getAttribute (XMLString::transcode ("value")));
-
-  XMLString::trim (var);
-  XMLString::trim (value);
-  simplePresentationRule
-      = new SimpleRule (XMLString::transcode (parentElement->getAttribute (
-                            XMLString::transcode ("id"))),
-                        var, ruleOp, value);
-
-  return simplePresentationRule;
-}
-
-void *
 NclPresentationControlParser::createDescriptorSwitch (
     DOMElement *parentElement, arg_unused (void *objGrandParent))
 {
@@ -973,27 +966,6 @@ NclPresentationControlParser::addNodeToSwitch (SwitchNode *switchNode,
     {
       (*nodes)[node->getId ()] = node;
     }
-}
-
-void *
-NclPresentationControlParser::createBindRule (DOMElement *parentElement,
-                                              arg_unused (void *objGrandParent))
-{
-  return parentElement;
-}
-
-void *
-NclPresentationControlParser::createDefaultComponent (
-    DOMElement *parentElement, arg_unused (void *objGrandParent))
-{
-  return parentElement;
-}
-
-void *
-NclPresentationControlParser::createDefaultDescriptor (
-    DOMElement *parentElement, arg_unused (void *objGrandParent))
-{
-  return parentElement;
 }
 
 void *

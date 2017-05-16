@@ -69,10 +69,8 @@ public:
   void addDescriptorToDescriptorBase (void *parentObject, void *childObject);
 
   void *parseDescriptorBind (DOMElement *parentElement, void *objGrandParent);
-  void *createDescriptorBind (DOMElement *parentElement, void *objGrandParent);
 
   void *parseDescriptorParam (DOMElement *parentElement, void *objGrandParent);
-  void *createDescriptorParam (DOMElement *parentElement, void *objGrandParent);
 
   NclImportParser *getImportParser ();
   void setImportParser (NclImportParser *importParser);

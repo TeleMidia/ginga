@@ -50,10 +50,7 @@ public:
   void addBindParamToBind (void *parentObject, void *childObject);
 
   void *parseLinkParam (DOMElement *parentElement, void *objGrandParent);
-  void *createLinkParam (DOMElement *parentElement, void *objGrandParent);
-
   void *parseBindParam (DOMElement *parentElement, void *objGrandParent);
-  void *createBindParam (DOMElement *parentElement, void *objGrandParent);
 
   void *parseLink (DOMElement *parentElement, void *objGrandParent);
   void *createLink (DOMElement *parentElement, void *objGrandParent);

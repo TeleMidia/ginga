@@ -411,7 +411,7 @@ NclDocumentParser::parse (const string &path)
   delete parser;
 
   // FIXME: Should we call this?
-  //XMLPlatformUtils::Terminate ();
+  // XMLPlatformUtils::Terminate ();
 
   return this->ncl;
 }

@@ -29,17 +29,13 @@ public:
 
   void *parseImportedDocumentBase (DOMElement *parentElement,
                                    void *objGrandParent);
-  void *createImportedDocumentBase (DOMElement *parentElement,
-                                    void *objGrandParent);
 
   void *parseImportNCL (DOMElement *parentElement, void *objGrandParent);
-  void *createImportNCL (DOMElement *parentElement, void *objGrandParent);
 
   void addImportNCLToImportedDocumentBase (void *parentObject,
                                            void *childObject);
 
   void *parseImportBase (DOMElement *parentElement, void *objGrandParent);
-  void *createImportBase (DOMElement *parentElement, void *objGrandParent);
 
 };
 
