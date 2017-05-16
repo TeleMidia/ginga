@@ -30,6 +30,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclLinkingParser.h"
 #include "NclMetainformationParser.h"
 
+#include <pugixml.hpp>
+
 GINGA_NCLCONV_BEGIN
 
 NclDocumentParser::NclDocumentParser (PrivateBaseContext *pbc,
@@ -129,9 +131,7 @@ NclDocumentParser::getLinkingParser ()
 NclDocument *
 NclDocumentParser::parseRootElement (DOMElement *rootElement)
 {
-  string tagName;
-
-  tagName = XMLString::transcode (rootElement->getTagName ());
+  string tagName = getTagname(rootElement);
   if (unlikely (tagName != "ncl"))
     syntax_error ("bad root element '%s'", tagName.c_str ());
 
@@ -216,10 +216,12 @@ NclDocumentParser::parse (const string &path)
   parser->setErrorHandler (this);
   parser->setCreateEntityReferenceNodes (false);
 
-  LocalFileInputSource src (XMLString::transcode (path.c_str ()));
+  XMLCh *path_xmlch = XMLString::transcode (path.c_str ());
+  LocalFileInputSource src (path_xmlch);
   try
     {
       parser->parse (src);
+      XMLString::release(&path_xmlch);
     }
   catch (...)
     {
@@ -263,11 +265,36 @@ NclDocumentParser::init ()
 }
 
 string
-NclDocumentParser::getAttribute (void *element, const string &attribute)
+NclDocumentParser::getTagname(const DOMElement *element)
 {
-  return XMLString::transcode (
-      ((DOMElement *)element)
-          ->getAttribute (XMLString::transcode (attribute.c_str ())));
+  char *tagname = XMLString::transcode (element->getTagName ());
+  string tagname_str (tagname);
+  XMLString::release(&tagname);
+
+  return tagname_str;
+}
+
+string
+NclDocumentParser::getAttribute (const DOMElement *element, const string &attr)
+{
+  XMLCh *attr_xmlch = XMLString::transcode(attr.c_str());
+  char *attr_value_ch =  XMLString::transcode(element->getAttribute (attr_xmlch));
+  string attr_value_str(attr_value_ch);
+
+  XMLString::release(&attr_xmlch);
+  XMLString::release(&attr_value_ch);
+
+  return attr_value_str;
+}
+
+bool
+NclDocumentParser::hasAttribute (const DOMElement *element, const string &attr)
+{
+  XMLCh *attr_xmlch = XMLString::transcode(attr.c_str());
+  bool result = element->hasAttribute(attr_xmlch);
+  XMLString::release(&attr_xmlch);
+
+  return result;
 }
 
 Node *
@@ -278,12 +305,6 @@ NclDocumentParser::getNode (const string &nodeId)
   document = NclDocumentParser::getNclDocument ();
 
   return document->getNode (nodeId);
-}
-
-bool
-NclDocumentParser::removeNode (arg_unused (Node *node))
-{
-  return true;
 }
 
 PrivateBaseContext *

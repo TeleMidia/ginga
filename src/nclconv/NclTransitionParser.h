@@ -37,8 +37,7 @@ public:
 
   Transition *parseTransition (DOMElement *parentElement);
 
-  void addImportBaseToTransitionBase (TransitionBase *transBase,
-                                      DOMElement *childObject);
+  void addImportBaseToTransitionBase (TransitionBase *, DOMElement *);
 };
 
 GINGA_NCLCONV_END

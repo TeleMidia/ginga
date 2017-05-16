@@ -118,10 +118,10 @@ public:
 
   void addCompositeRuleToCompositeRule (void *parentObject, void *childObject);
 
-  void *parseDescriptorSwitch (DOMElement *parentElement,
+  DescriptorSwitch *parseDescriptorSwitch (DOMElement *parentElement,
                                void *objGrandParent);
 
-  void *createDescriptorSwitch (DOMElement *parentElement,
+  DescriptorSwitch *createDescriptorSwitch (DOMElement *parentElement,
                                 void *objGrandParent);
 
   void addBindRuleToDescriptorSwitch (void *parentObject, void *childObject);
@@ -132,7 +132,6 @@ public:
 
 private:
   void addNodeToSwitch (SwitchNode *switchNode, NodeEntity *node);
-  short convertComparator (const string &comparator);
 };
 
 GINGA_NCLCONV_END

@@ -34,150 +34,126 @@ NclPresentationSpecificationParser::NclPresentationSpecificationParser (
   this->deviceLayout = deviceLayout;
 }
 
-void *
-NclPresentationSpecificationParser::parseDescriptor (
-    DOMElement *parentElement, void *objGrandParent)
+Descriptor *
+NclPresentationSpecificationParser::parseDescriptor (DOMElement *parentElement)
 {
-  void *parentObject;
-  DOMNodeList *elementNodeList;
-  DOMElement *element;
-  DOMNode *node;
-  string elementTagName;
-  void *elementObject;
+  Descriptor *descriptor = createDescriptor (parentElement);
+  g_assert_nonnull (descriptor);
 
-  parentObject = createDescriptor (parentElement, objGrandParent);
-  g_assert_nonnull (parentObject);
-
-  elementNodeList = parentElement->getChildNodes ();
+  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
     {
-      node = elementNodeList->item (i);
+      DOMNode *node = elementNodeList->item (i);
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          element = (DOMElement *)node;
-          elementTagName = XMLString::transcode (element->getTagName ());
-          if (XMLString::compareIString (elementTagName.c_str (),
-                                         "descriptorParam")
+          DOMElement *element = (DOMElement *)node;
+          string tagname = XMLString::transcode (element->getTagName ());
+          if (XMLString::compareIString (tagname.c_str (), "descriptorParam")
               == 0)
             {
-              elementObject = parseDescriptorParam (element, parentObject);
+              DOMElement *elementObject = parseDescriptorParam (element);
 
               if (elementObject != NULL)
                 {
-                  addDescriptorParamToDescriptor (parentObject,
-                                                  elementObject);
+                  addDescriptorParamToDescriptor (descriptor, elementObject);
                 }
             }
         }
     }
 
-  return parentObject;
+  return descriptor;
 }
 
 DescriptorBase *
 NclPresentationSpecificationParser::parseDescriptorBase (
     DOMElement *parentElement)
 {
-  DescriptorBase *parentObject;
-  DOMNodeList *elementNodeList;
   DOMElement *element;
-  DOMNode *node;
-  string elementTagName;
   void *elementObject;
 
-  parentObject = createDescriptorBase (parentElement);
-  g_assert_nonnull (parentObject);
+  DescriptorBase *descBase = createDescriptorBase (parentElement);
+  g_assert_nonnull (descBase);
 
-  elementNodeList = parentElement->getChildNodes ();
+  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
     {
-      node = elementNodeList->item (i);
+      DOMNode *node = elementNodeList->item (i);
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           element = (DOMElement *)node;
-          elementTagName = XMLString::transcode (element->getTagName ());
+          string tagname = XMLString::transcode (element->getTagName ());
 
-          if (XMLString::compareIString (elementTagName.c_str (),
-                                         "importBase")
-              == 0)
+          if (XMLString::compareIString (tagname.c_str (), "importBase") == 0)
             {
               elementObject = _documentParser->getImportParser ()
                       ->parseImportBase (element);
 
               if (elementObject != NULL)
                 {
-                  addImportBaseToDescriptorBase (parentObject,
+                  addImportBaseToDescriptorBase (descBase,
                                                  elementObject);
                 }
             }
-          else if (XMLString::compareIString (elementTagName.c_str (),
+          else if (XMLString::compareIString (tagname.c_str (),
                                               "descriptorSwitch")
                    == 0)
             {
-              elementObject
+              DescriptorSwitch *descSwitch
                   = _documentParser->getPresentationControlParser ()
-                        ->parseDescriptorSwitch (element, parentObject);
+                        ->parseDescriptorSwitch (element, descBase);
 
-              if (elementObject != NULL)
+              if (descSwitch)
                 {
-                  addDescriptorSwitchToDescriptorBase (parentObject,
-                                                       elementObject);
+                  addDescriptorSwitchToDescriptorBase (descBase, descSwitch);
                 }
             }
-          else if (XMLString::compareIString (elementTagName.c_str (),
-                                              "descriptor")
+          else if (XMLString::compareIString (tagname.c_str (), "descriptor")
                    == 0)
             {
-              elementObject = parseDescriptor (element, parentObject);
-              if (elementObject != NULL)
+              Descriptor *desc = parseDescriptor (element);
+              if (desc)
                 {
-                  addDescriptorToDescriptorBase (parentObject,
-                                                 elementObject);
+                  addDescriptorToDescriptorBase (descBase, desc);
                 }
             }
         }
     }
 
-  return parentObject;
+  return descBase;
 }
 
 void *
 NclPresentationSpecificationParser::parseDescriptorBind (
-    DOMElement *parentElement, arg_unused(void *objGrandParent))
+    DOMElement *parentElement)
 {
   return parentElement;
 }
 
-void *
+DOMElement *
 NclPresentationSpecificationParser::parseDescriptorParam (
-    DOMElement *parentElement, arg_unused(void *objGrandParent))
+    DOMElement *parentElement)
 {
   return parentElement;
 }
 
 void
 NclPresentationSpecificationParser::addDescriptorToDescriptorBase (
-    void *parentObject, void *childObject)
+    DescriptorBase *descBase, GenericDescriptor *desc)
 {
-  ((DescriptorBase *)parentObject)
-      ->addDescriptor ((GenericDescriptor *)childObject);
+  descBase->addDescriptor (desc);
 }
 
 void
 NclPresentationSpecificationParser::addDescriptorSwitchToDescriptorBase (
-    void *parentObject, void *childObject)
+    DescriptorBase *descBase, GenericDescriptor *desc)
 {
-  ((DescriptorBase *)parentObject)
-      ->addDescriptor ((GenericDescriptor *)childObject);
+  descBase->addDescriptor (desc);
 }
 
 void
 NclPresentationSpecificationParser::addDescriptorParamToDescriptor (
-    void *parentObject, void *childObject)
+    Descriptor *descriptor, DOMElement *param)
 {
-  // cast para descritor
-  Descriptor *descriptor = (Descriptor *)parentObject;
-  DOMElement *param = (DOMElement *)childObject;
   // recuperar nome e valor da variavel
   string paramName = XMLString::transcode (
       param->getAttribute (XMLString::transcode ("name")));
@@ -285,9 +261,8 @@ NclPresentationSpecificationParser::createDescriptorBase (
   return descBase;
 }
 
-void *
-NclPresentationSpecificationParser::createDescriptor (DOMElement *parentElement,
-                                              arg_unused (void *objGrandParent))
+Descriptor *
+NclPresentationSpecificationParser::createDescriptor (DOMElement *parentElement)
 {
   Descriptor *descriptor;
   NclDocument *document;

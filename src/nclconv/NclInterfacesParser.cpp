@@ -34,30 +34,25 @@ NclInterfacesParser::parseSwitchPort (DOMElement *parentElement,
                                       void *objGrandParent)
 {
   void *parentObject;
-  DOMNodeList *elementNodeList;
-  DOMElement *element;
-  DOMNode *node;
-  string elementTagName;
-  void *elementObject;
 
   parentObject = createSwitchPort (parentElement, objGrandParent);
   if (unlikely (parentObject == NULL))
-    syntax_error ("switchPort: bad parent '%s'", elementTagName.c_str ());
+    syntax_error ("switchPort: bad parent '%s'",
+                  XMLString::transcode(parentElement->getTagName()));
 
-  elementNodeList = parentElement->getChildNodes ();
+  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
     {
-      node = elementNodeList->item (i);
+      DOMNode *node = elementNodeList->item (i);
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          element = (DOMElement *)node;
-          elementTagName = XMLString::transcode (element->getTagName ());
+          DOMElement *element = (DOMElement *)node;
+          string tagname = _documentParser->getTagname(element);
 
-          if (XMLString::compareIString (elementTagName.c_str (), "mapping")
-              == 0)
+          if (XMLString::compareIString (tagname.c_str (), "mapping") == 0)
             {
-              elementObject = parseMapping (element, parentObject);
-              if (elementObject != NULL)
+              void *elementObject = parseMapping (element, parentObject);
+              if (elementObject)
                 {
                   addMappingToSwitchPort (parentObject, elementObject);
                 }
@@ -79,38 +74,31 @@ NclInterfacesParser::parseMapping (DOMElement *parent,
   InterfacePoint *interfacePoint;
   Port *port;
 
-  switchElement
-      = (DOMElement *)parent->getParentNode ()->getParentNode ();
+  switchElement = (DOMElement *)parent->getParentNode ()->getParentNode ();
 
-  switchNode
-      = (SwitchNode *)getDocumentParser ()->getNode (XMLString::transcode (
-                switchElement->getAttribute (XMLString::transcode ("id"))));
+  string id = _documentParser->getAttribute(switchElement, "id");
+  string component = _documentParser->getAttribute(parent, "component");
 
-  mappingNode = switchNode->getNode (XMLString::transcode (
-      parent->getAttribute (XMLString::transcode ("component"))));
+  switchNode = (SwitchNode *)getDocumentParser ()->getNode (id);
+  mappingNode = switchNode->getNode (component);
 
   if (unlikely (mappingNode == NULL))
-    syntax_error ("mapping: bad component '%s'",
-                  string (XMLString::transcode
-                          (parent->getAttribute
-                           (XMLString::transcode ("component")))).c_str ());
+    syntax_error ("mapping: bad component '%s'", component.c_str ());
 
   mappingNodeEntity = (NodeEntity *)mappingNode->getDataEntity ();
-  if (parent->hasAttribute (XMLString::transcode ("interface")))
+
+  string interface;
+  if (_documentParser->hasAttribute(parent, "interface"))
     {
-      interfacePoint = mappingNodeEntity->getAnchor (
-          XMLString::transcode (parent->getAttribute (
-              XMLString::transcode ("interface"))));
+      interface = _documentParser->getAttribute(parent, "interface");
+      interfacePoint = mappingNodeEntity->getAnchor (interface);
 
       if (interfacePoint == NULL)
         {
           if (mappingNodeEntity->instanceOf ("CompositeNode"))
             {
               interfacePoint
-                  = ((CompositeNode *)mappingNodeEntity)
-                        ->getPort (XMLString::transcode (
-                            parent->getAttribute (
-                                XMLString::transcode ("interface"))));
+                  = ((CompositeNode *)mappingNodeEntity)->getPort (interface);
             }
         }
     }
@@ -120,10 +108,7 @@ NclInterfacesParser::parseMapping (DOMElement *parent,
     }
 
   if (unlikely (interfacePoint == NULL))
-    syntax_error ("mapping: bad interface '%s'",
-                  string (XMLString::transcode
-                          (parent->getAttribute
-                           (XMLString::transcode ("interface")))).c_str ());
+    syntax_error ("mapping: bad interface '%s'", interface);
 
   port = new Port (((SwitchPort *)objGrandParent)->getId (), mappingNode,
                    interfacePoint);
@@ -139,39 +124,35 @@ NclInterfacesParser::parseArea (DOMElement *parent,
   string position, anchorLabel;
   Anchor *anchor;
 
-  if (unlikely (!parent->hasAttribute (XMLString::transcode ("id"))))
+  if (unlikely (!_documentParser->hasAttribute(parent, "id")))
     syntax_error ("area: missing id");
 
-  anchorId = XMLString::transcode
-    (parent->getAttribute (XMLString::transcode ("id")));
+  anchorId = _documentParser->getAttribute(parent, "id");
 
   anchor = NULL;
 
-  if (parent->hasAttribute (XMLString::transcode ("begin"))
-      || parent->hasAttribute (XMLString::transcode ("end"))
-      || parent->hasAttribute (XMLString::transcode ("first"))
-      || parent->hasAttribute (XMLString::transcode ("last")))
+  if (_documentParser->hasAttribute(parent, "begin")
+      || _documentParser->hasAttribute(parent, "end")
+      || _documentParser->hasAttribute(parent, "first")
+      || _documentParser->hasAttribute(parent, "last"))
     {
       anchor = createTemporalAnchor (parent);
     }
-  else if (parent->hasAttribute (XMLString::transcode ("text")))
+  else if (_documentParser->hasAttribute (parent, "text"))
     {
-      position = XMLString::transcode (
-          parent->getAttribute (XMLString::transcode ("position")));
+      position = _documentParser->getAttribute(parent, "position");
 
       anchor = new TextAnchor (
-          anchorId, XMLString::transcode (parent->getAttribute (
-                        XMLString::transcode ("text"))),
+          anchorId, _documentParser->getAttribute(parent, "text"),
           xstrto_int (position));
     }
-  else if (parent->hasAttribute (XMLString::transcode ("coords")))
+  else if (_documentParser->hasAttribute(parent, "coords"))
     {
       anchor = createSpatialAnchor (parent);
     }
-  else if (parent->hasAttribute (XMLString::transcode ("label")))
+  else if (_documentParser->hasAttribute(parent, "label"))
     {
-      anchorLabel = XMLString::transcode (
-          parent->getAttribute (XMLString::transcode ("label")));
+      anchorLabel = _documentParser->getAttribute(parent, "label");
 
       anchor = new LabeledAnchor (anchorId, anchorLabel);
     }
@@ -192,17 +173,15 @@ NclInterfacesParser::parseProperty (DOMElement *parent,
   string attributeName, attributeValue;
   PropertyAnchor *anchor;
 
-  if (unlikely (!parent->hasAttribute (XMLString::transcode ("name"))))
+  if (unlikely (!_documentParser->hasAttribute(parent, "name")))
     syntax_error ("property: missing name");
 
-  attributeName = XMLString::transcode
-    (parent->getAttribute (XMLString::transcode ("name")));
+  attributeName = _documentParser->getAttribute(parent, "name");
 
   anchor = new PropertyAnchor (attributeName);
-  if (parent->hasAttribute (XMLString::transcode ("value")))
+  if (_documentParser->hasAttribute (parent, "value"))
     {
-      attributeValue = XMLString::transcode (
-          parent->getAttribute (XMLString::transcode ("value")));
+      attributeValue = _documentParser->getAttribute(parent, "value");
       anchor->setPropertyValue (attributeValue);
     }
 
@@ -220,20 +199,18 @@ NclInterfacesParser::parsePort (DOMElement *parent,
   Port *port = NULL;
   CompositeNode *context = (CompositeNode *)objGrandParent;
 
-  if (unlikely (!parent->hasAttribute (XMLString::transcode ("id"))))
+  if (unlikely (!_documentParser->hasAttribute(parent, "id")))
     syntax_error ("port: missing id");
 
-  id = XMLString::transcode (parent->getAttribute
-                             (XMLString::transcode ("id")));
+  id = _documentParser->getAttribute(parent, "id");
 
   if (unlikely (context->getPort (id) != NULL))
     syntax_error ("port '%s': duplicated id", id.c_str ());
 
-  if (!unlikely (parent->hasAttribute (XMLString::transcode ("component"))))
+  if (!unlikely (_documentParser->hasAttribute (parent, "component")))
     syntax_error ("port '%s': missing component", id.c_str ());
 
-  attValue = XMLString::transcode (parent->getAttribute
-                                   (XMLString::transcode ("component")));
+  attValue = _documentParser->getAttribute(parent, "component");
 
   portNode = context->getNode (attValue);
   if (unlikely (portNode == NULL))
@@ -243,7 +220,7 @@ NclInterfacesParser::parsePort (DOMElement *parent,
     }
 
   portNodeEntity = (NodeEntity *)portNode->getDataEntity ();
-  if (!parent->hasAttribute (XMLString::transcode ("interface")))
+  if (!_documentParser->hasAttribute(parent, "interface"))
     {
       if (portNode->instanceOf ("ReferNode")
           && ((ReferNode *)portNode)->getInstanceType () == "new")
@@ -271,8 +248,7 @@ NclInterfacesParser::parsePort (DOMElement *parent,
     }
   else
     {
-      attValue = XMLString::transcode
-        (parent->getAttribute (XMLString::transcode ("interface")));
+      attValue = _documentParser->getAttribute(parent, "interface");
 
       if (portNode->instanceOf ("ReferNode")
           && ((ReferNode *)portNode)->getInstanceType () == "new")
@@ -300,8 +276,7 @@ NclInterfacesParser::parsePort (DOMElement *parent,
 
   if (unlikely (portInterfacePoint == NULL))
     {
-      attValue = XMLString::transcode
-        (parent->getAttribute (XMLString::transcode ("interface")));
+      attValue = _documentParser->getAttribute(parent, "interface");
       syntax_error ("port '%s': bad interface '%s'", id.c_str (),
                     attValue.c_str ());
     }
@@ -316,15 +291,13 @@ NclInterfacesParser::createSpatialAnchor (DOMElement *areaElement)
   SpatialAnchor *anchor = NULL;
   string coords, shape;
 
-  if (areaElement->hasAttribute (XMLString::transcode ("coords")))
+  if (_documentParser->hasAttribute(areaElement, "coords"))
     {
-      coords = XMLString::transcode (
-          areaElement->getAttribute (XMLString::transcode ("coords")));
+      coords = _documentParser->getAttribute(areaElement, "coords");
 
-      if (areaElement->hasAttribute (XMLString::transcode ("shape")))
+      if (_documentParser->hasAttribute(areaElement, "shape"))
         {
-          shape = XMLString::transcode (
-              areaElement->getAttribute (XMLString::transcode ("shape")));
+          shape = _documentParser->getAttribute(areaElement, "shape");
         }
       else
         {
@@ -336,9 +309,8 @@ NclInterfacesParser::createSpatialAnchor (DOMElement *areaElement)
           long int x1, y1, x2, y2;
           sscanf (coords.c_str (), "%ld,%ld,%ld,%ld", &x1, &y1, &x2, &y2);
           anchor = new RectangleSpatialAnchor (
-              XMLString::transcode (
-                  areaElement->getAttribute (XMLString::transcode ("id"))),
-              x1, y1, x2 - x1, y2 - y1);
+                _documentParser->getAttribute(areaElement, "id"),
+                x1, y1, x2 - x1, y2 - y1);
         }
       else if (shape == "circle")
         {
@@ -360,13 +332,12 @@ NclInterfacesParser::createTemporalAnchor (DOMElement *areaElement)
   double begVal, endVal;
   short firstSyntax, lastSyntax;
 
-  if (areaElement->hasAttribute (XMLString::transcode ("begin"))
-      || areaElement->hasAttribute (XMLString::transcode ("end")))
+  if (_documentParser->hasAttribute(areaElement, "begin")
+      || _documentParser->hasAttribute(areaElement, "end"))
     {
-      if (areaElement->hasAttribute (XMLString::transcode ("begin")))
+      if (_documentParser->hasAttribute(areaElement ,"begin"))
         {
-          begin = XMLString::transcode (
-              areaElement->getAttribute (XMLString::transcode ("begin")));
+          begin = _documentParser->getAttribute(areaElement, "begin");
 
           begVal = ::ginga::util::strUTCToSec (begin) * 1000;
         }
@@ -375,10 +346,9 @@ NclInterfacesParser::createTemporalAnchor (DOMElement *areaElement)
           begVal = 0;
         }
 
-      if (areaElement->hasAttribute (XMLString::transcode ("end")))
+      if (_documentParser->hasAttribute(areaElement, "end"))
         {
-          end = XMLString::transcode (
-              areaElement->getAttribute (XMLString::transcode ("end")));
+          end = _documentParser->getAttribute(areaElement, "end");
 
           endVal = ::ginga::util::strUTCToSec (end) * 1000;
         }
@@ -390,25 +360,23 @@ NclInterfacesParser::createTemporalAnchor (DOMElement *areaElement)
       if (xnumeq (endVal, IntervalAnchor::OBJECT_DURATION) || endVal > begVal)
         {
           anchor = new RelativeTimeIntervalAnchor (
-              XMLString::transcode (
-                  areaElement->getAttribute (XMLString::transcode ("id"))),
+              _documentParser->getAttribute(areaElement, "id"),
               begVal, endVal);
         }
     }
 
   // region delimeted through sample identifications
-  if (areaElement->hasAttribute (XMLString::transcode ("first"))
-      || areaElement->hasAttribute (XMLString::transcode ("last")))
+  if (_documentParser->hasAttribute(areaElement, "first")
+      || _documentParser->hasAttribute(areaElement, "last"))
     {
       begVal = 0;
       endVal = IntervalAnchor::OBJECT_DURATION;
       firstSyntax = ContentAnchor::CAT_NPT;
       lastSyntax = ContentAnchor::CAT_NPT;
 
-      if (areaElement->hasAttribute (XMLString::transcode ("first")))
+      if (_documentParser->hasAttribute(areaElement, "first"))
         {
-          begin = XMLString::transcode (
-              areaElement->getAttribute (XMLString::transcode ("first")));
+          begin = _documentParser->getAttribute(areaElement, "first");
 
           if (begin.find ("s") != std::string::npos)
             {
@@ -431,10 +399,9 @@ NclInterfacesParser::createTemporalAnchor (DOMElement *areaElement)
             }
         }
 
-      if (areaElement->hasAttribute (XMLString::transcode ("last")))
+      if (_documentParser->hasAttribute(areaElement, "last"))
         {
-          end = XMLString::transcode (
-              areaElement->getAttribute (XMLString::transcode ("last")));
+          end = _documentParser->getAttribute(areaElement, "last");
 
           if (end.find ("s") != std::string::npos)
             {
@@ -458,8 +425,7 @@ NclInterfacesParser::createTemporalAnchor (DOMElement *areaElement)
         }
 
       anchor = new SampleIntervalAnchor (
-          XMLString::transcode (
-              areaElement->getAttribute (XMLString::transcode ("id"))),
+            _documentParser->getAttribute(areaElement, "id"),
           begVal, endVal);
 
       ((SampleIntervalAnchor *)anchor)
@@ -484,11 +450,10 @@ NclInterfacesParser::createSwitchPort (DOMElement *parent,
 
   switchNode = (SwitchNode *)objGrandParent;
 
-  if (unlikely (!parent->hasAttribute (XMLString::transcode ("id"))))
+  if (unlikely (!_documentParser->hasAttribute(parent, "id")))
     syntax_error ("switchPort: missing id");
 
-  id = XMLString::transcode (
-      parent->getAttribute (XMLString::transcode ("id")));
+  id = _documentParser->getAttribute(parent, "id");
 
   if (unlikely (switchNode->getPort (id) != NULL))
     syntax_error ("switchPort '%s': duplicated id", id.c_str ());
