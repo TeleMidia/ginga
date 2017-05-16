@@ -28,7 +28,11 @@ protected:
   NclParser *_nclParser;
 
 public:
-  ModuleParser (NclParser *nclParser) : _nclParser(nclParser) { }
+  ModuleParser (NclParser *nclParser)
+  {
+    this->_nclParser = nclParser;
+  }
+
   virtual ~ModuleParser () { }
 
   NclParser *

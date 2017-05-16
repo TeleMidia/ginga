@@ -51,7 +51,7 @@ NclComponentsParser::parseMedia (DOMElement *parentElement)
         {
           element = (DOMElement *)node;
 
-          string tagname = _nclParser->getTagname(element);
+          string tagname = dom_element_tagname(element);
 
           if (XMLString::compareIString (tagname.c_str(), "area") == 0)
             {
@@ -101,7 +101,7 @@ NclComponentsParser::parseContext (DOMElement *parentElement)
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           element = (DOMElement *) node;
-          string tagname = _nclParser->getTagname(element);
+          string tagname = dom_element_tagname(element);
           if (XMLString::compareIString (tagname.c_str(), "media") == 0)
             {
               Node *media = parseMedia (element);
@@ -137,7 +137,7 @@ NclComponentsParser::parseContext (DOMElement *parentElement)
       node = elementNodeList->item (i);
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
       {
-        string tagname = _nclParser->getTagname((DOMElement *)node);
+        string tagname = dom_element_tagname((DOMElement *)node);
         if(XMLString::compareIString (tagname.c_str(), "property") == 0)
         {
           PropertyAnchor *prop = _nclParser->getInterfacesParser ()
@@ -170,7 +170,7 @@ NclComponentsParser::posCompileContext2 (DOMElement *parentElement,
       node = elementNodeList->item (i);
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          string tagname = _nclParser->getTagname((DOMElement *)node);
+          string tagname = dom_element_tagname((DOMElement *)node);
           if (XMLString::compareIString (tagname.c_str(), "link") == 0)
             {
               elementObject = _nclParser->getLinkingParser ()
@@ -189,7 +189,7 @@ NclComponentsParser::posCompileContext2 (DOMElement *parentElement,
       node = elementNodeList->item (i);
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          string tagname = _nclParser->getTagname((DOMElement *)node);
+          string tagname = dom_element_tagname((DOMElement *)node);
           if (XMLString::compareIString (tagname.c_str(), "port") == 0)
             {
               elementObject = _nclParser->getInterfacesParser ()
@@ -355,18 +355,18 @@ NclComponentsParser::createContext (DOMElement *parentElement)
   ContextNode *context;
   GenericDescriptor *descriptor;
 
-  if (unlikely (!_nclParser->hasAttribute(parentElement, "id")))
+  if (unlikely (!dom_element_has_attr(parentElement, "id")))
     syntax_error ("context: missing id");
 
-  id = _nclParser->getAttribute(parentElement, "id");
+  id = dom_element_get_attr(parentElement, "id");
 
   node = getNclParser ()->getNode (id);
   if (unlikely (node != NULL))
     syntax_error ("context '%s': duplicated id", id.c_str ());
 
-  if (_nclParser->hasAttribute (parentElement, "refer"))
+  if (dom_element_has_attr (parentElement, "refer"))
     {
-      attValue = _nclParser->getAttribute(parentElement, "refer");
+      attValue = dom_element_get_attr(parentElement, "refer");
       try
         {
           referNode = (ContextNode *)getNclParser ()->getNode (attValue);
@@ -396,10 +396,10 @@ NclComponentsParser::createContext (DOMElement *parentElement)
 
   context = new ContextNode (id);
 
-  if (_nclParser->hasAttribute (parentElement, "descriptor"))
+  if (dom_element_has_attr (parentElement, "descriptor"))
     {
       // adicionar um descritor a um objeto de midia
-      attValue = _nclParser->getAttribute(parentElement, "descriptor");
+      attValue = dom_element_get_attr(parentElement, "descriptor");
 
       document = getNclParser ()->getNclDocument ();
       descriptor = document->getDescriptor (attValue);
@@ -436,12 +436,12 @@ NclComponentsParser::posCompileContext (DOMElement *parentElement,
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           element = (DOMElement *)node;
-          string tagname = _nclParser->getTagname(element);
+          string tagname = dom_element_tagname(element);
           if (XMLString::compareIString (tagname.c_str(), "context") == 0)
             {
               if (parentObject != NULL)
                 {
-                  string id = _nclParser->getAttribute(element, "id");
+                  string id = dom_element_get_attr(element, "id");
                   elementObject
                       = ((ContextNode *)parentObject)->getNode (id);
 
@@ -460,7 +460,7 @@ NclComponentsParser::posCompileContext (DOMElement *parentElement,
             }
           else if (XMLString::compareIString (tagname.c_str(), "switch") == 0)
             {
-              string id = _nclParser->getAttribute(element, "id");
+              string id = dom_element_get_attr(element, "id");
               elementObject = getNclParser ()->getNode (id);
 
               if (unlikely (elementObject == NULL))
@@ -490,18 +490,18 @@ NclComponentsParser::createMedia (DOMElement *parentElement)
   Entity *referNode;
   GenericDescriptor *descriptor;
 
-  if (unlikely (!_nclParser->hasAttribute(parentElement, "id")))
+  if (unlikely (!dom_element_has_attr(parentElement, "id")))
     syntax_error ("media: missing id");
 
-  id = _nclParser->getAttribute(parentElement, "id");
+  id = dom_element_get_attr(parentElement, "id");
 
   node = getNclParser ()->getNode (id);
   if (unlikely (node != NULL))
     syntax_error ("media '%s': duplicated id", id.c_str ());
 
-  if (_nclParser->hasAttribute(parentElement, "refer"))
+  if (dom_element_has_attr(parentElement, "refer"))
     {
-      attValue = _nclParser->getAttribute(parentElement, "refer");
+      attValue = dom_element_get_attr(parentElement, "refer");
 
       try
         {
@@ -525,9 +525,9 @@ NclComponentsParser::createMedia (DOMElement *parentElement)
         }
 
       node = new ReferNode (id);
-      if (_nclParser->hasAttribute(parentElement, "instance"))
+      if (dom_element_has_attr(parentElement, "instance"))
         {
-          attValue = _nclParser->getAttribute(parentElement, "instance");
+          attValue = dom_element_get_attr(parentElement, "instance");
 
           ((ReferNode *)node)->setInstanceType (attValue);
         }
@@ -538,15 +538,15 @@ NclComponentsParser::createMedia (DOMElement *parentElement)
 
   node = new ContentNode (id, NULL, "");
 
-  if (_nclParser->hasAttribute(parentElement, "type"))
+  if (dom_element_has_attr(parentElement, "type"))
     {
-      string type = _nclParser->getAttribute(parentElement, "type");
+      string type = dom_element_get_attr(parentElement, "type");
       ((ContentNode *)node)->setNodeType (type);
     }
 
-  if (_nclParser->hasAttribute(parentElement, "src"))
+  if (dom_element_has_attr(parentElement, "src"))
     {
-      string src = _nclParser->getAttribute(parentElement, "src");
+      string src = dom_element_get_attr(parentElement, "src");
 
       if (unlikely (src == ""))
         syntax_error ("media '%s': missing src", id.c_str ());
@@ -557,9 +557,9 @@ NclComponentsParser::createMedia (DOMElement *parentElement)
       ((ContentNode *)node)->setContent (new AbsoluteReferenceContent (src));
     }
 
-  if (_nclParser->hasAttribute(parentElement, "descriptor"))
+  if (dom_element_has_attr(parentElement, "descriptor"))
     {
-      attValue = _nclParser->getAttribute(parentElement, "descriptor");
+      attValue = dom_element_get_attr(parentElement, "descriptor");
 
       document = getNclParser ()->getNclDocument ();
       descriptor = document->getDescriptor (attValue);

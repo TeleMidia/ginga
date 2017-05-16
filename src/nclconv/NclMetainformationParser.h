@@ -26,7 +26,7 @@ GINGA_NCLCONV_BEGIN
 class NclMetainformationParser : public ModuleParser
 {
 public:
-  NclMetainformationParser (NclParser *documentParser);
+  NclMetainformationParser (NclParser *nclParser);
 
   Meta *parseMeta (DOMElement *parentElement);
   Metadata *parseMetadata (DOMElement *parentElement);

@@ -38,6 +38,50 @@ class NclInterfacesParser;
 class NclLinkingParser;
 class NclMetainformationParser;
 
+
+// Get the DOMElement tagname as a std::string and free resources allocated by
+// Xerces
+inline string
+dom_element_tagname (const DOMElement *el)
+{
+  char *tagname = XMLString::transcode (el->getTagName ());
+  string tagname_str (tagname);
+  XMLString::release(&tagname);
+
+  return tagname_str;
+}
+
+// Leak free check if DOMElement* has an attribute
+inline bool
+dom_element_has_attr (const DOMElement *el, const string &attr)
+{
+  XMLCh *attr_xmlch = XMLString::transcode(attr.c_str());
+  bool result = el->hasAttribute(attr_xmlch);
+  XMLString::release(&attr_xmlch);
+
+  return result;
+}
+
+// Get the value of an attribute of DOMElement* as a std::string and free
+// resources allocated by Xerces
+inline string
+dom_element_get_attr (const DOMElement *element, const string &attr)
+{
+  XMLCh *attr_xmlch = XMLString::transcode(attr.c_str());
+  char *attr_value_ch =  XMLString::transcode(element->getAttribute (attr_xmlch));
+  string attr_value_str(attr_value_ch);
+
+  XMLString::release(&attr_xmlch);
+  XMLString::release(&attr_value_ch);
+
+  return attr_value_str;
+}
+
+#define FOR_EACH_DOM_ELEM_CHILD(X, Y) \
+  for ( X = Y->getFirstElementChild(); \
+        X != nullptr; \
+        X = X->getNextElementSibling() )
+
 class NclParser : public ErrorHandler
 {
 
@@ -68,10 +112,6 @@ protected:
 public:
   NclParser (PrivateBaseContext *pbc, DeviceLayout *deviceLayout);
   virtual ~NclParser ();
-
-  string getTagname (const DOMElement *element);
-  string getAttribute (const DOMElement *element, const string &attribute);
-  bool hasAttribute (const DOMElement *element, const string &attribute);
 
   Node *getNode (const string &id);
   PrivateBaseContext *getPrivateBaseContext ();
