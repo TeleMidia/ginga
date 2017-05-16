@@ -58,18 +58,6 @@ public:
 
   void *createBody (DOMElement *parentElement, void *objGrandParent);
 
-  void addPropertyToBody (void *parentObject, void *childObject);
-
-  void addPortToBody (void *parentObject, void *childObject);
-
-  void addMediaToBody (void *parentObject, void *childObject);
-
-  void addContextToBody (void *parentObject, void *childObject);
-
-  void addSwitchToBody (void *parentObject, void *childObject);
-
-  void addLinkToBody (void *parentObject, void *childObject);
-
   void *parseHead (DOMElement *parentElement, void *objGrandParent);
 
   void addRegionBaseToHead (void *parentObject, void *childObject);

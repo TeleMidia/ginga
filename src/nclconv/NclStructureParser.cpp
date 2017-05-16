@@ -63,7 +63,8 @@ NclStructureParser::parseBody (DOMElement *parentElement,
 
               if (elementObject != NULL)
                 {
-                  addMediaToBody (parentObject, elementObject);
+                  // add media to body
+                  getComponentsParser ()->addMediaToContext (parentObject, elementObject);
                 }
             }
           else if (XMLString::compareIString (elementTagName.c_str (),
@@ -74,7 +75,8 @@ NclStructureParser::parseBody (DOMElement *parentElement,
 
               if (elementObject != NULL)
                 {
-                  addContextToBody (parentObject, elementObject);
+                  // add context to body
+                  getComponentsParser ()->addContextToContext (parentObject, elementObject);
                 }
             }
           else if (XMLString::compareIString (elementTagName.c_str (),
@@ -86,7 +88,8 @@ NclStructureParser::parseBody (DOMElement *parentElement,
 
               if (elementObject != NULL)
                 {
-                  addSwitchToBody (parentObject, elementObject);
+                  // add switch to body
+                  getComponentsParser ()->addSwitchToContext (parentObject, elementObject);
                 }
             }
         }
@@ -105,7 +108,9 @@ NclStructureParser::parseBody (DOMElement *parentElement,
 
           if (elementObject != NULL)
             {
-              addPropertyToBody (parentObject, elementObject);
+              // add property to body
+              getComponentsParser ()->addPropertyToContext (parentObject,
+                                                            elementObject);
             }
         }
     }
@@ -472,34 +477,10 @@ NclStructureParser::setMetainformationParser (
 }
 
 void
-NclStructureParser::addBodyToNcl (arg_unused (void *parentObject),
-                                  arg_unused (void *childObject))
+NclStructureParser::addBodyToNcl (arg_unused (void *parentObject),arg_unused (void *childObject))
 {
 }
 
-void
-NclStructureParser::addPortToBody (void *parentObject, void *childObject)
-{
-  getComponentsParser ()->addPortToContext (parentObject, childObject);
-}
-
-void
-NclStructureParser::addPropertyToBody (void *parentObject, void *childObject)
-{
-  getComponentsParser ()->addPropertyToContext (parentObject, childObject);
-}
-
-void
-NclStructureParser::addContextToBody (void *parentObject, void *childObject)
-{
-  getComponentsParser ()->addContextToContext (parentObject, childObject);
-}
-
-void
-NclStructureParser::addSwitchToBody (void *parentObject, void *childObject)
-{
-  getComponentsParser ()->addSwitchToContext (parentObject, childObject);
-}
 
 void
 NclStructureParser::addDescriptorBaseToHead (arg_unused (void *parentObject),
@@ -528,19 +509,6 @@ NclStructureParser::addTransitionBaseToHead (arg_unused (void *parentObject),
   document = getDocumentParser ()->getNclDocument ();
   document->setTransitionBase ((TransitionBase *)childObject);
 }
-
-void
-NclStructureParser::addLinkToBody (void *parentObject, void *childObject)
-{
-  getComponentsParser ()->addLinkToContext (parentObject, childObject);
-}
-
-void
-NclStructureParser::addMediaToBody (void *parentObject, void *childObject)
-{
-  getComponentsParser ()->addMediaToContext (parentObject, childObject);
-}
-
 void
 NclStructureParser::addRuleBaseToHead (arg_unused (void *parentObject),
                                        void *childObject)
