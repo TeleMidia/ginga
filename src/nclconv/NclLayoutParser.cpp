@@ -31,97 +31,79 @@ NclLayoutParser::NclLayoutParser (NclDocumentParser *documentParser,
   this->deviceLayout = deviceLayout;
 }
 
-void *
-NclLayoutParser::parseRegion (DOMElement *parentElement,
-                              void *objGrandParent)
+LayoutRegion *
+NclLayoutParser::parseRegion (DOMElement *parentElement)
 {
-  void *parentObject;
-  DOMNodeList *elementNodeList;
-  DOMElement *element;
-  DOMNode *node;
-  string elementTagName;
-  void *elementObject;
+  LayoutRegion *region = createRegion (parentElement);
+  g_assert_nonnull (region);
 
-  parentObject = createRegion (parentElement, objGrandParent);
-  g_assert_nonnull (parentObject);
-
-  elementNodeList = parentElement->getChildNodes ();
+  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
     {
-      node = elementNodeList->item (i);
+      DOMNode *node = elementNodeList->item (i);
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          element = (DOMElement *)node;
-          elementTagName = XMLString::transcode (element->getTagName ());
+          DOMElement *element = (DOMElement *)node;
+          string tagname = _documentParser->getTagname(element);
 
-          if (XMLString::compareIString (elementTagName.c_str (), "region")
+          if (XMLString::compareIString (tagname.c_str (), "region")
               == 0)
             {
-              elementObject = parseRegion (element, parentObject);
-              if (elementObject != NULL)
+              LayoutRegion *child_region = parseRegion (element);
+              if (child_region)
                 {
-                  addRegionToRegion (parentObject, elementObject);
+                  addRegionToRegion (region, child_region);
                 }
             }
         }
     }
 
-  return parentObject;
+  return region;
 }
 
 RegionBase *
 NclLayoutParser::parseRegionBase (DOMElement *parentElement)
 {
-  RegionBase *parentObject;
-  DOMNodeList *elementNodeList;
-  DOMElement *element;
-  DOMNode *node;
-  string elementTagName;
-  void *elementObject;
+  RegionBase *regionBase = createRegionBase (parentElement);
+  g_assert_nonnull (regionBase);
 
-  parentObject = createRegionBase (parentElement);
-  g_assert_nonnull (parentObject);
-
-  elementNodeList = parentElement->getChildNodes ();
+  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
     {
-      node = elementNodeList->item (i);
+      DOMNode *node = elementNodeList->item (i);
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          element = (DOMElement *)node;
-          elementTagName = XMLString::transcode (element->getTagName ());
+          DOMElement *element = (DOMElement *)node;
+          string tagname = _documentParser->getTagname(element);
 
-          if (XMLString::compareIString (elementTagName.c_str (),
-                                         "importBase")
-              == 0)
+          if (XMLString::compareIString (tagname.c_str (), "importBase") == 0)
             {
-              elementObject = _documentParser->getImportParser ()->
-                      parseImportBase (element);
+              DOMElement *elementObject =
+                  _documentParser->getImportParser ()->
+                    parseImportBase (element);
 
-              if (elementObject != NULL)
+              if (elementObject)
                 {
-                  addImportBaseToRegionBase (parentObject, elementObject);
+                  addImportBaseToRegionBase (regionBase, elementObject);
                 }
             }
-          else if (XMLString::compareIString (elementTagName.c_str (),
-                                              "region")
-                   == 0)
+          else if (XMLString::compareIString (tagname.c_str (), "region") == 0)
             {
-              elementObject = parseRegion (element, parentObject);
-              if (elementObject != NULL)
+              LayoutRegion *region = parseRegion (element);
+              if (region)
                 {
-                  addRegionToRegionBase (parentObject, elementObject);
+                  addRegionToRegionBase (regionBase, region);
                 }
             }
         }
     }
 
-  return parentObject;
+  return regionBase;
 }
 
 void
-NclLayoutParser::addImportBaseToRegionBase (void *parentObject,
-                                            void *childObject)
+NclLayoutParser::addImportBaseToRegionBase (RegionBase *regionBase,
+                                            DOMElement *childObject)
 {
   map<int, RegionBase *> *bases;
   map<int, RegionBase *>::iterator i;
@@ -130,13 +112,10 @@ NclLayoutParser::addImportBaseToRegionBase (void *parentObject,
   NclDocument *importedDocument;
 
   // get the external base alias and location
-  baseAlias = XMLString::transcode (
-      ((DOMElement *)childObject)
-          ->getAttribute (XMLString::transcode ("alias")));
+  baseAlias = _documentParser->getAttribute((DOMElement *)childObject, "alias");
 
-  baseLocation = XMLString::transcode (
-      ((DOMElement *)childObject)
-          ->getAttribute (XMLString::transcode ("documentURI")));
+  baseLocation = _documentParser->getAttribute((DOMElement *)childObject,
+                                               "documentURI");
 
   compiler = getDocumentParser ();
   importedDocument = compiler->importDocument (baseLocation);
@@ -155,113 +134,93 @@ NclLayoutParser::addImportBaseToRegionBase (void *parentObject,
   i = bases->begin ();
   while (i != bases->end ())
     {
-      ((RegionBase *)parentObject)
-          ->addBase (i->second, baseAlias, baseLocation);
+      regionBase->addBase (i->second, baseAlias, baseLocation);
       ++i;
     }
 }
 
 void
-NclLayoutParser::addRegionToRegion (void *parentObject,
-                                    void *childObject)
+NclLayoutParser::addRegionToRegion (LayoutRegion *parentRegion,
+                                    LayoutRegion *childRegion)
 {
-  ((LayoutRegion *)parentObject)->addRegion ((LayoutRegion *)childObject);
+  parentRegion->addRegion (childRegion);
 }
 
 void
-NclLayoutParser::addRegionToRegionBase (void *parentObject,
-                                        void *childObject)
+NclLayoutParser::addRegionToRegionBase (RegionBase *parentRegion,
+                                        LayoutRegion *childRegion)
 {
-  RegionBase *layout = (RegionBase *)parentObject;
-  layout->addRegion ((LayoutRegion *)childObject);
+  parentRegion->addRegion (childRegion);
 }
 
 RegionBase *
 NclLayoutParser::createRegionBase (DOMElement *parentElement)
 {
-  RegionBase *layout;
-  string mapId = "";
+  RegionBase *regionBase;
 
-  layout = new RegionBase (XMLString::transcode (parentElement->getAttribute (
-                           XMLString::transcode ("id"))),
-
-                        deviceLayout);
+  regionBase = new RegionBase (_documentParser->getAttribute(parentElement, "id"),
+                           deviceLayout);
 
   // device attribute
-  if (parentElement->hasAttribute (XMLString::transcode ("device")))
+  if (_documentParser->hasAttribute(parentElement, "device"))
     {
+      string mapId = "";
       // region for output bit map attribute
-      if (parentElement->hasAttribute (XMLString::transcode ("region")))
+      if (_documentParser->hasAttribute(parentElement, "region"))
         {
-          mapId = XMLString::transcode (parentElement->getAttribute (
-              XMLString::transcode ("region")));
+          mapId = _documentParser->getAttribute(parentElement, "region");
         }
 
-      layout->setDevice (XMLString::transcode (parentElement->getAttribute (
-                             XMLString::transcode ("device"))),
-                         mapId);
+      regionBase->setDevice (
+            _documentParser->getAttribute(parentElement, "device"), mapId);
     }
   else
     {
-      layout->setDevice (deviceLayout->getLayoutName (), "");
+      regionBase->setDevice (deviceLayout->getLayoutName (), "");
     }
 
-  return layout;
+  return regionBase;
 }
 
-void *
-NclLayoutParser::createRegion (DOMElement *parentElement,
-                               arg_unused (void *objGrandParent))
+LayoutRegion *
+NclLayoutParser::createRegion (DOMElement *parentElement)
 {
-  LayoutRegion *ncmRegion;
-  string attribute;
-  double percentValue;
+  string attribute = _documentParser->getAttribute(parentElement, "id");
+  LayoutRegion *ncmRegion = new LayoutRegion (attribute);
 
-  attribute = XMLString::transcode (
-      parentElement->getAttribute (XMLString::transcode ("id")));
-
-  // cria nova regiao
-  ncmRegion = new LayoutRegion (attribute);
-
-  // atributo title
-  if (parentElement->hasAttribute (XMLString::transcode ("title")))
+  // title
+  if (_documentParser->hasAttribute(parentElement, "title"))
     {
-      ncmRegion->setTitle (XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("title"))));
+      ncmRegion->setTitle (
+            _documentParser->getAttribute(parentElement, "title"));
     }
 
-  // atributo: left
-  if (parentElement->hasAttribute (XMLString::transcode ("left")))
+  // left
+  if (_documentParser->hasAttribute(parentElement, "left"))
     {
-      attribute = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("left")));
+      attribute = _documentParser->getAttribute(parentElement, "left");
 
       if (attribute != "")
         {
           if (xstrispercent (attribute))
             {
-              percentValue = getPercentValue (attribute);
-              ncmRegion->setLeft (percentValue, true);
+              ncmRegion->setLeft (getPercentValue (attribute), true);
             }
           else
             {
-              double pixelValue;
-              pixelValue = getPixelValue (attribute);
-              ncmRegion->setLeft (pixelValue, false);
+              ncmRegion->setLeft (getPixelValue (attribute), false);
             }
         }
     }
 
-  // atributo: right
-  if (parentElement->hasAttribute (XMLString::transcode ("right")))
+  // right
+  if (_documentParser->hasAttribute(parentElement, "right"))
     {
-      attribute = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("right")));
+      attribute = _documentParser->getAttribute(parentElement, "right");
 
       if (xstrispercent (attribute))
         {
-          percentValue = getPercentValue (attribute);
-          ncmRegion->setRight (percentValue, true);
+          ncmRegion->setRight (getPercentValue (attribute), true);
         }
       else
         {
@@ -269,16 +228,14 @@ NclLayoutParser::createRegion (DOMElement *parentElement,
         }
     }
 
-  // atributo: top
-  if (parentElement->hasAttribute (XMLString::transcode ("top")))
+  // top
+  if (_documentParser->hasAttribute(parentElement, "top"))
     {
-      attribute = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("top")));
+      attribute = _documentParser->getAttribute(parentElement, "top");
 
       if (xstrispercent (attribute))
         {
-          percentValue = getPercentValue (attribute);
-          ncmRegion->setTop (percentValue, true);
+          ncmRegion->setTop (getPercentValue (attribute), true);
         }
       else
         {
@@ -286,16 +243,14 @@ NclLayoutParser::createRegion (DOMElement *parentElement,
         }
     }
 
-  // atributo: bottom
-  if (parentElement->hasAttribute (XMLString::transcode ("bottom")))
+  // bottom
+  if (_documentParser->hasAttribute(parentElement, "bottom"))
     {
-      attribute = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("bottom")));
+      attribute = _documentParser->getAttribute(parentElement, "bottom");
 
       if (xstrispercent (attribute))
         {
-          percentValue = getPercentValue (attribute);
-          ncmRegion->setBottom (percentValue, true);
+          ncmRegion->setBottom (getPercentValue (attribute), true);
         }
       else
         {
@@ -303,16 +258,14 @@ NclLayoutParser::createRegion (DOMElement *parentElement,
         }
     }
 
-  // atributo: width
-  if (parentElement->hasAttribute (XMLString::transcode ("width")))
+  // width
+  if (_documentParser->hasAttribute(parentElement, "width"))
     {
-      attribute = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("width")));
+      attribute = _documentParser->getAttribute(parentElement,"width");
 
       if (xstrispercent (attribute))
         {
-          percentValue = getPercentValue (attribute);
-          ncmRegion->setWidth (percentValue, true);
+          ncmRegion->setWidth (getPercentValue (attribute), true);
         }
       else
         {
@@ -320,16 +273,14 @@ NclLayoutParser::createRegion (DOMElement *parentElement,
         }
     }
 
-  // atributo: height
-  if (parentElement->hasAttribute (XMLString::transcode ("height")))
+  // height
+  if (_documentParser->hasAttribute(parentElement, "height"))
     {
-      attribute = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("height")));
+      attribute = _documentParser->getAttribute(parentElement, "height");
 
       if (xstrispercent (attribute))
         {
-          percentValue = getPercentValue (attribute);
-          ncmRegion->setHeight (percentValue, true);
+          ncmRegion->setHeight (getPercentValue (attribute), true);
         }
       else
         {
@@ -337,10 +288,9 @@ NclLayoutParser::createRegion (DOMElement *parentElement,
         }
     }
 
-  if (parentElement->hasAttribute (XMLString::transcode ("zIndex")))
+  if (_documentParser->hasAttribute(parentElement, "zIndex"))
     {
-      attribute = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("zIndex")));
+      attribute = _documentParser->getAttribute(parentElement, "zIndex");
 
       ncmRegion->setZIndex (xstrto_int (attribute));
     }

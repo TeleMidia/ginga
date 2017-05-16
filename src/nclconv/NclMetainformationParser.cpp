@@ -31,20 +31,18 @@ NclMetainformationParser::parseMeta (DOMElement *parentElement)
 {
   string name, content;
 
-  if (parentElement->hasAttribute (XMLString::transcode ("name")))
+  if (_documentParser->hasAttribute(parentElement, "name"))
     {
-      name = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("name")));
+      name = _documentParser->getAttribute(parentElement, "name");
     }
   else
     {
       syntax_error ("meta: missing name");
     }
 
-  if (parentElement->hasAttribute (XMLString::transcode ("content")))
+  if (_documentParser->hasAttribute(parentElement, "content"))
     {
-      content = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("content")));
+      content = _documentParser->getAttribute(parentElement, "content");
     }
   else
     {

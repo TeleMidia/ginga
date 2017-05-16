@@ -37,8 +37,10 @@ NclInterfacesParser::parseSwitchPort (DOMElement *parentElement,
 
   parentObject = createSwitchPort (parentElement, objGrandParent);
   if (unlikely (parentObject == NULL))
-    syntax_error ("switchPort: bad parent '%s'",
-                  XMLString::transcode(parentElement->getTagName()));
+    {
+      string tagname = _documentParser->getTagname(parentElement);
+      syntax_error ("switchPort: bad parent '%s'", tagname.c_str());
+    }
 
   DOMNodeList *elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)

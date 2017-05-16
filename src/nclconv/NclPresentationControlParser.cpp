@@ -32,9 +32,8 @@ NclPresentationControlParser::NclPresentationControlParser (
   this->switchConstituents = new map<string, map<string, NodeEntity *> *>;
 }
 
-void *
-NclPresentationControlParser::parseBindRule (DOMElement *parentElement,
-                                             arg_unused(void *objGrandParent))
+DOMElement *
+NclPresentationControlParser::parseBindRule (DOMElement *parentElement)
 {
   return parentElement; // ?
 }
@@ -42,86 +41,64 @@ NclPresentationControlParser::parseBindRule (DOMElement *parentElement,
 RuleBase *
 NclPresentationControlParser::parseRuleBase (DOMElement *parentElement)
 {
-  RuleBase *parentObject;
-  DOMNodeList *elementNodeList;
-  DOMElement *element;
-  DOMNode *node;
-  string elementTagName;
-  void *elementObject;
+  RuleBase *ruleBase = createRuleBase (parentElement);
+  g_assert_nonnull (ruleBase);
 
-  parentObject = createRuleBase (parentElement);
-  g_assert_nonnull (parentObject);
-
-  elementNodeList = parentElement->getChildNodes ();
+  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
     {
-      node = elementNodeList->item (i);
+      DOMNode *node = elementNodeList->item (i);
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          element = (DOMElement *)node;
-          elementTagName = XMLString::transcode (element->getTagName ());
+          DOMElement *element = (DOMElement *)node;
+          string tagname = _documentParser->getTagname(element);
 
-          if (XMLString::compareIString (elementTagName.c_str (),
-                                         "importBase")
-              == 0)
+          if (XMLString::compareIString (tagname.c_str (), "importBase") == 0)
             {
-              elementObject = _documentParser->getImportParser ()
+              DOMElement *elementObject = _documentParser->getImportParser ()
                       ->parseImportBase (element);
 
-              if (elementObject != NULL)
+              if (elementObject)
                 {
-                  addImportBaseToRuleBase (parentObject, elementObject);
+                  addImportBaseToRuleBase (ruleBase, elementObject);
                 }
             }
-          else if (XMLString::compareIString (elementTagName.c_str (),
-                                              "rule")
-                   == 0)
+          else if (XMLString::compareIString (tagname.c_str (), "rule") == 0)
             {
-              elementObject = parseRule (element, parentObject);
-              if (elementObject != NULL)
+              SimpleRule *rule = parseRule (element);
+              if (rule)
                 {
-                  addRuleToRuleBase (parentObject, elementObject);
+                  addRuleToRuleBase (ruleBase, rule);
                 }
             }
-          else if (XMLString::compareIString (elementTagName.c_str (),
-                                              "compositeRule")
+          else if (XMLString::compareIString (tagname.c_str (), "compositeRule")
                    == 0)
             {
-              elementObject = parseCompositeRule (element, parentObject);
-              if (elementObject != NULL)
+              CompositeRule *compositeRule = parseCompositeRule (element);
+              if (compositeRule)
                 {
-                  addCompositeRuleToRuleBase (parentObject, elementObject);
+                  addCompositeRuleToRuleBase (ruleBase, compositeRule);
                 }
             }
         }
     }
 
-  return parentObject;
+  return ruleBase;
 }
 
-void *
-NclPresentationControlParser::parseRule (DOMElement *parentElement,
-                                         arg_unused(void *objGrandParent))
+SimpleRule *
+NclPresentationControlParser::parseRule (DOMElement *parentElement)
 {
-  SimpleRule *simplePresentationRule;
-  short ruleOp;
+  short ruleOp = Comparator::fromString(
+        _documentParser->getAttribute(parentElement, "comparator") );
 
-  ruleOp = Comparator::fromString(
-              (XMLString::transcode (
-                   parentElement->getAttribute (
-                       XMLString::transcode ("comparator")))));
+  string var = _documentParser->getAttribute(parentElement, "var");
+  string value = _documentParser->getAttribute(parentElement, "value");
 
-  char *var = XMLString::transcode (
-      parentElement->getAttribute (XMLString::transcode ("var")));
-
-  char *value = XMLString::transcode (
-      parentElement->getAttribute (XMLString::transcode ("value")));
-
-  XMLString::trim (var);
-  XMLString::trim (value);
-  simplePresentationRule
-      = new SimpleRule (XMLString::transcode (parentElement->getAttribute (
-                            XMLString::transcode ("id"))),
+//  XMLString::trim (var);
+//  XMLString::trim (value);
+  SimpleRule *simplePresentationRule
+      = new SimpleRule ( _documentParser->getAttribute(parentElement, "id"),
                         var, ruleOp, value);
 
   return simplePresentationRule;
@@ -130,15 +107,7 @@ NclPresentationControlParser::parseRule (DOMElement *parentElement,
 Node *
 NclPresentationControlParser::parseSwitch (DOMElement *parentElement)
 {
-  Node *switch_node;
-  DOMNodeList *elementNodeList;
-  int i, size;
-  DOMNode *node;
-  DOMElement *element;
-  string tagname;
-  void *elementObject;
-
-  switch_node = createSwitch (parentElement);
+  Node *switch_node = createSwitch (parentElement);
   if (unlikely (switch_node == NULL))
     {
       syntax_error ("switch: bad parent '%s'",
@@ -146,16 +115,16 @@ NclPresentationControlParser::parseSwitch (DOMElement *parentElement)
                             (parentElement->getNodeName ())).c_str ());
     }
 
-  elementNodeList = parentElement->getChildNodes ();
-  size = (int) elementNodeList->getLength ();
+  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
+  int size = (int) elementNodeList->getLength ();
 
-  for (i = 0; i < size; i++)
+  for (int i = 0; i < size; i++)
     {
-      node = elementNodeList->item (i);
+      DOMNode *node = elementNodeList->item (i);
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          element = (DOMElement *)node;
-          tagname = XMLString::transcode (element->getTagName ());
+          DOMElement *element = (DOMElement *)node;
+          string tagname = _documentParser->getTagname(element);
           if (XMLString::compareIString (tagname.c_str (), "media") == 0)
             {
               Node *media = _documentParser->getComponentsParser ()
@@ -169,19 +138,17 @@ NclPresentationControlParser::parseSwitch (DOMElement *parentElement)
           else if (XMLString::compareIString (tagname.c_str (), "context") == 0)
             {
               Node *ctx = _documentParser->getComponentsParser ()
-                      ->parseContext (element);
+                  ->parseContext (element);
 
               if (ctx)
                 {
                   addContextToSwitch (switch_node, ctx);
                 }
             }
-          else if (XMLString::compareIString (tagname.c_str (),
-                                              "switch")
-                   == 0)
+          else if (XMLString::compareIString (tagname.c_str (), "switch") == 0)
             {
-              elementObject = parseSwitch (element);
-              if (elementObject != NULL)
+              Node *elementObject = parseSwitch (element);
+              if (elementObject)
                 {
                   addSwitchToSwitch (switch_node, elementObject);
                 }
@@ -189,32 +156,32 @@ NclPresentationControlParser::parseSwitch (DOMElement *parentElement)
         }
     }
 
-  for (i = 0; i < size; i++)
+  for (int i = 0; i < size; i++)
     {
-      node = elementNodeList->item (i);
+      DOMNode *node = elementNodeList->item (i);
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          element = (DOMElement *)node;
-          tagname = XMLString::transcode (element->getTagName ());
-          if (XMLString::compareIString (tagname.c_str (), "bindRule")
-              == 0)
-            {
-              elementObject
-                  = parseBindRule ((DOMElement *)node, switch_node);
+          DOMElement *element = (DOMElement *)node;
+          string tagname = _documentParser->getTagname(element);
 
-              if (elementObject != NULL)
+          if (XMLString::compareIString (tagname.c_str (), "bindRule") == 0)
+            {
+              DOMElement *elementObject = parseBindRule ((DOMElement *)node);
+
+              if (elementObject)
                 {
-                  addBindRuleToSwitch (switch_node, elementObject);
+                  addBindRuleToSwitch ((SwitchNode *)switch_node,
+                                       elementObject);
                 }
             }
           else if (XMLString::compareIString (tagname.c_str (),
                                               "defaultComponent")
                    == 0)
             {
-              elementObject = parseDefaultComponent ((DOMElement *)node,
-                                                     switch_node);
+              DOMElement *elementObject =
+                  parseDefaultComponent ((DOMElement *)node);
 
-              if (elementObject != NULL)
+              if (elementObject)
                 {
                   addDefaultComponentToSwitch (switch_node, elementObject);
                 }
@@ -231,172 +198,150 @@ void *
 NclPresentationControlParser::posCompileSwitch2 (DOMElement *parentElement,
                                                  void *parentObject)
 {
-  DOMNodeList *elementNodeList;
-  int i, size;
-  DOMNode *node;
-  void *elementObject;
+  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
+  int size = (int) elementNodeList->getLength ();
 
-  elementNodeList = parentElement->getChildNodes ();
-  size = (int) elementNodeList->getLength ();
-
-  for (i = 0; i < size; i++)
+  for (int i = 0; i < size; i++)
     {
-      node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE
-          && XMLString::compareIString (((DOMElement *)node)->getTagName (),
-                                        XMLString::transcode ("switchPort"))
-                 == 0)
-        {
-          elementObject = _documentParser->getInterfacesParser ()
-                  ->parseSwitchPort ((DOMElement *)node, parentObject);
-
-          if (elementObject != NULL)
-            {
-              addSwitchPortToSwitch (parentObject, elementObject);
-            }
-        }
-    }
-
-  return parentObject;
-}
-
-void *
-NclPresentationControlParser::parseDefaultComponent (DOMElement *parentElement,
-                                               arg_unused(void *objGrandParent))
-{
-  return parentElement; // ?
-}
-
-void *
-NclPresentationControlParser::parseDefaultDescriptor (DOMElement *parentElement,
-                                               arg_unused(void *objGrandParent))
-{
-  return parentElement; // ?
-}
-
-void *
-NclPresentationControlParser::parseCompositeRule (DOMElement *parentElement,
-                                                  void *objGrandParent)
-{
-  void *parentObject;
-  DOMNodeList *elementNodeList;
-  DOMElement *element;
-  DOMNode *node;
-  string elementTagName;
-  void *elementObject;
-
-  parentObject = createCompositeRule (parentElement, objGrandParent);
-  g_assert_nonnull (parentObject);
-
-  elementNodeList = parentElement->getChildNodes ();
-  for (int i = 0; i < (int)elementNodeList->getLength (); i++)
-    {
-      node = elementNodeList->item (i);
+      DOMNode *node = elementNodeList->item (i);
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          element = (DOMElement *)node;
-          elementTagName = XMLString::transcode (element->getTagName ());
+          DOMElement *element = (DOMElement *)node;
+          string tagname = _documentParser->getTagname(element);
+          if (XMLString::compareIString (tagname.c_str(), "switchPort") == 0)
+            {
+              void *elementObject = _documentParser->getInterfacesParser ()
+                  ->parseSwitchPort ((DOMElement *)node, parentObject);
 
-          if (XMLString::compareIString (elementTagName.c_str (), "rule")
-              == 0)
-            {
-              elementObject = parseRule (element, parentObject);
-              if (elementObject != NULL)
+              if (elementObject)
                 {
-                  addRuleToCompositeRule (parentObject, elementObject);
-                }
-            }
-          else if (XMLString::compareIString (elementTagName.c_str (),
-                                              "compositeRule")
-                   == 0)
-            {
-              elementObject = parseCompositeRule (element, parentObject);
-              if (elementObject != NULL)
-                {
-                  addCompositeRuleToCompositeRule (parentObject,
-                                                   elementObject);
+                  addSwitchPortToSwitch (parentObject, elementObject);
                 }
             }
         }
     }
 
   return parentObject;
+}
+
+DOMElement *
+NclPresentationControlParser::parseDefaultComponent (DOMElement *parentElement)
+{
+  return parentElement; // ?
+}
+
+DOMElement *
+NclPresentationControlParser::parseDefaultDescriptor (DOMElement *parentElement)
+{
+  return parentElement; // ?
+}
+
+CompositeRule *
+NclPresentationControlParser::parseCompositeRule (DOMElement *parentElement)
+{
+  CompositeRule *compositeRule = createCompositeRule (parentElement);
+  g_assert_nonnull (compositeRule);
+
+  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
+  for (int i = 0; i < (int)elementNodeList->getLength (); i++)
+    {
+      DOMNode *node = elementNodeList->item (i);
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+        {
+          DOMElement *element = (DOMElement *)node;
+          string tagname = _documentParser->getTagname(element);
+
+          if (XMLString::compareIString (tagname.c_str (), "rule")
+              == 0)
+            {
+              SimpleRule *rule = parseRule (element);
+              if (rule)
+                {
+                  addRuleToCompositeRule (compositeRule, rule);
+                }
+            }
+          else if (XMLString::compareIString (tagname.c_str (), "compositeRule")
+                   == 0)
+            {
+              CompositeRule *child_compositeRule = parseCompositeRule (element);
+
+              if (child_compositeRule)
+                {
+                  addCompositeRuleToCompositeRule (compositeRule,
+                                                   child_compositeRule);
+                }
+            }
+        }
+    }
+
+  return compositeRule;
 }
 
 DescriptorSwitch *
-NclPresentationControlParser::parseDescriptorSwitch (
-    DOMElement *parentElement, void *objGrandParent)
+NclPresentationControlParser::parseDescriptorSwitch (DOMElement *parentElement)
 {
-  DescriptorSwitch *parentObject;
-  DOMNodeList *elementNodeList;
-  int i, size;
-  DOMElement *element;
-  DOMNode *node;
-  string elementTagName;
-  void *elementObject;
+  DescriptorSwitch *descriptorSwitch = createDescriptorSwitch (parentElement);
+  g_assert_nonnull (descriptorSwitch);
 
-  parentObject = createDescriptorSwitch (parentElement, objGrandParent);
-  g_assert_nonnull (parentObject);
+  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
+  int size = (int) elementNodeList->getLength ();
 
-  elementNodeList = parentElement->getChildNodes ();
-  size = (int) elementNodeList->getLength ();
-
-  for (i = 0; i < size; i++)
+  for (int i = 0; i < size; i++)
     {
-      node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE
-          && XMLString::compareIString (((DOMElement *)node)->getTagName (),
-                                        XMLString::transcode ("descriptor"))
-                 == 0)
+      DOMNode *node = elementNodeList->item (i);
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          Descriptor* desc
-              = _documentParser->getPresentationSpecificationParser ()
-                  ->parseDescriptor ((DOMElement *)node);
+          DOMElement *element = (DOMElement *)node;
+          string tagname = _documentParser->getTagname(element);
 
-          if (desc)
+          if (XMLString::compareIString (tagname.c_str(), "descriptor") == 0)
             {
-              addDescriptorToDescriptorSwitch (parentObject, desc);
+              Descriptor* desc
+                  = _documentParser->getPresentationSpecificationParser ()
+                      ->parseDescriptor ((DOMElement *)node);
+
+              if (desc)
+                {
+                  addDescriptorToDescriptorSwitch (descriptorSwitch, desc);
+                }
             }
         }
     }
 
-  for (i = 0; i < size; i++)
+  for (int i = 0; i < size; i++)
     {
-      node = elementNodeList->item (i);
+      DOMNode *node = elementNodeList->item (i);
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          element = (DOMElement *)node;
-          elementTagName = XMLString::transcode (element->getTagName ());
-          if (XMLString::compareIString (elementTagName.c_str (),
-                                         "bindRule")
-              == 0)
+          DOMElement *element = (DOMElement *)node;
+          string tagname = _documentParser->getTagname(element);
+          if (XMLString::compareIString (tagname.c_str (), "bindRule") == 0)
             {
-              elementObject
-                  = parseBindRule ((DOMElement *)node, parentObject);
+              DOMElement *elementObject = parseBindRule ((DOMElement *)node);
 
-              if (elementObject != NULL)
+              if (elementObject)
                 {
-                  addBindRuleToDescriptorSwitch (parentObject,
+                  addBindRuleToDescriptorSwitch (descriptorSwitch,
                                                  elementObject);
                 }
             }
-          else if (XMLString::compareIString (elementTagName.c_str (),
+          else if (XMLString::compareIString (tagname.c_str (),
                                               "defaultDescriptor")
                    == 0)
             {
-              elementObject = parseDefaultDescriptor ((DOMElement *)node,
-                                                      parentObject);
+              DOMElement *elementObject =
+                  parseDefaultDescriptor ((DOMElement *)node);
 
-              if (elementObject != NULL)
+              if (elementObject)
                 {
-                  addDefaultDescriptorToDescriptorSwitch (parentObject,
+                  addDefaultDescriptorToDescriptorSwitch (descriptorSwitch,
                                                           elementObject);
                 }
             }
         }
     }
 
-  return parentObject;
+  return descriptorSwitch;
 }
 
 NclPresentationControlParser::~NclPresentationControlParser ()
@@ -479,35 +424,25 @@ NclPresentationControlParser::addSwitchPortToSwitch (void *parentObject,
   ((SwitchNode *)parentObject)->addPort ((Port *)childObject);
 }
 
-void *
-NclPresentationControlParser::createCompositeRule (
-    DOMElement *parentElement, arg_unused (void *objGrandParent))
+CompositeRule *
+NclPresentationControlParser::createCompositeRule (DOMElement *parentElement)
 {
   CompositeRule *compositePresentationRule;
   short ruleOp = CompositeRule::OP_AND;
 
-  if (XMLString::compareIString (
-          XMLString::transcode (parentElement->getAttribute (
-              XMLString::transcode ("operator"))),
-          "and")
-      == 0)
+  string op = _documentParser->getAttribute(parentElement, "operator");
+  if (XMLString::compareIString (op.c_str(), "and") == 0)
     {
       ruleOp = CompositeRule::OP_AND;
     }
-  else if (XMLString::compareIString (
-               XMLString::transcode (parentElement->getAttribute (
-                   XMLString::transcode ("operator"))),
-               "or")
-           == 0)
+  else if (XMLString::compareIString (op.c_str(), "or") == 0)
     {
       ruleOp = CompositeRule::OP_OR;
     }
 
-  // cria regra composta
   compositePresentationRule = new CompositeRule (
-      XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("id"))),
-      ruleOp);
+        _documentParser->getAttribute(parentElement, "id"),
+        ruleOp);
 
   return compositePresentationRule;
 }
@@ -522,20 +457,18 @@ NclPresentationControlParser::createSwitch (DOMElement *parentElement)
   NclDocument *document;
   SwitchNode *switchNode;
 
-  if (unlikely (!parentElement->hasAttribute (XMLString::transcode ("id"))))
+  if (unlikely (!_documentParser->hasAttribute(parentElement, "id")))
     syntax_error ("switch: missing id");
 
-  id = XMLString::transcode (
-      parentElement->getAttribute (XMLString::transcode ("id")));
+  id = _documentParser->getAttribute(parentElement, "id");
 
   node = getDocumentParser ()->getNode (id);
   if (unlikely (node != NULL))
     syntax_error ("switch '%s': duplicated id", id.c_str ());
 
-  if (parentElement->hasAttribute (XMLString::transcode ("refer")))
+  if (_documentParser->hasAttribute(parentElement, "refer"))
     {
-      attValue = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("refer")));
+      attValue =  _documentParser->getAttribute(parentElement, "refer");
 
       try
         {
@@ -576,19 +509,16 @@ RuleBase *
 NclPresentationControlParser::createRuleBase (DOMElement *parentElement)
 {
   RuleBase *ruleBase;
-  ruleBase = new RuleBase (XMLString::transcode (
-      parentElement->getAttribute (XMLString::transcode ("id"))));
+  ruleBase = new RuleBase (_documentParser->getAttribute(parentElement, "id"));
 
   return ruleBase;
 }
 
 DescriptorSwitch *
-NclPresentationControlParser::createDescriptorSwitch (
-    DOMElement *parentElement, arg_unused (void *objGrandParent))
+NclPresentationControlParser::createDescriptorSwitch (DOMElement *parentElement)
 {
-  DescriptorSwitch *descriptorSwitch
-      = new DescriptorSwitch (XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("id"))));
+  DescriptorSwitch *descriptorSwitch =
+      new DescriptorSwitch (_documentParser->getAttribute(parentElement, "id"));
 
   // vetores para conter componentes e regras do switch
   (*switchConstituents)[descriptorSwitch->getId ()]
@@ -635,14 +565,10 @@ NclPresentationControlParser::addImportBaseToRuleBase (
   NclDocument *importedDocument;
   RuleBase *createdBase;
 
-  // apanha o alias a localizacao da base
-  baseAlias = XMLString::transcode (
-      ((DOMElement *)childObject)
-          ->getAttribute (XMLString::transcode ("alias")));
+  baseAlias = _documentParser->getAttribute((DOMElement *)childObject, "alias");
 
-  baseLocation = XMLString::transcode (
-      ((DOMElement *)childObject)
-          ->getAttribute (XMLString::transcode ("documentURI")));
+  baseLocation =
+      _documentParser->getAttribute((DOMElement *)childObject, "documentURI");
 
   compiler = getDocumentParser ();
   importedDocument = compiler->importDocument (baseLocation);
@@ -687,15 +613,13 @@ NclPresentationControlParser::addBindRuleToDescriptorSwitch (
       return;
     }
   descriptors = (*switchConstituents)[descriptorSwitch->getId ()];
-  if (descriptors->count (XMLString::transcode (
-          bindRule->getAttribute (XMLString::transcode ("constituent"))))
-      == 0)
+  string constituent = _documentParser->getAttribute(bindRule, "constituent");
+  if (descriptors->count (constituent) == 0)
     {
       return;
     }
 
-  descriptor = (GenericDescriptor *)(*descriptors)[XMLString::transcode (
-      bindRule->getAttribute (XMLString::transcode ("constituent")))];
+  descriptor = (GenericDescriptor *)(*descriptors)[constituent];
 
   if (descriptor == NULL)
     {
@@ -703,8 +627,7 @@ NclPresentationControlParser::addBindRuleToDescriptorSwitch (
     }
 
   document = getDocumentParser ()->getNclDocument ();
-  ncmRule = document->getRule (XMLString::transcode (
-      bindRule->getAttribute (XMLString::transcode ("rule"))));
+  ncmRule = document->getRule (_documentParser->getAttribute(bindRule, "rule"));
 
   if (ncmRule == NULL)
     {
@@ -715,18 +638,13 @@ NclPresentationControlParser::addBindRuleToDescriptorSwitch (
 }
 
 void
-NclPresentationControlParser::addBindRuleToSwitch (void *parentObject,
-                                                      void *childObject)
+NclPresentationControlParser::addBindRuleToSwitch ( SwitchNode *switchNode,
+                                                    DOMElement *bindRule)
 {
-  SwitchNode *switchNode;
-  DOMElement *bindRule;
   map<string, NodeEntity *> *nodes;
   Node *node;
   NclDocument *document;
   Rule *ncmRule;
-
-  switchNode = (SwitchNode *)parentObject;
-  bindRule = (DOMElement *)childObject;
 
   if (switchConstituents->count (switchNode->getId ()) == 0)
     {
@@ -734,15 +652,14 @@ NclPresentationControlParser::addBindRuleToSwitch (void *parentObject,
     }
 
   nodes = (*switchConstituents)[switchNode->getId ()];
-  if (nodes->count (XMLString::transcode (
-          bindRule->getAttribute (XMLString::transcode ("constituent"))))
+  if (nodes->count (_documentParser->getAttribute(bindRule, "constituent"))
       == 0)
     {
       return;
     }
 
-  node = (NodeEntity *)(*nodes)[XMLString::transcode (
-      bindRule->getAttribute (XMLString::transcode ("constituent")))];
+  node = (NodeEntity *)(*nodes)[
+      _documentParser->getAttribute(bindRule, "constituent") ];
 
   if (node == NULL)
     {
@@ -750,8 +667,7 @@ NclPresentationControlParser::addBindRuleToSwitch (void *parentObject,
     }
 
   document = getDocumentParser ()->getNclDocument ();
-  ncmRule = document->getRule (XMLString::transcode (
-      bindRule->getAttribute (XMLString::transcode ("rule"))));
+  ncmRule = document->getRule (_documentParser->getAttribute(bindRule, "rule"));
 
   if (ncmRule == NULL)
     {
@@ -806,15 +722,14 @@ NclPresentationControlParser::addDefaultComponentToSwitch (
     }
 
   nodes = (*switchConstituents)[switchNode->getId ()];
-  if (nodes->count (XMLString::transcode (defaultComponent->getAttribute (
-          XMLString::transcode ("component"))))
-      == 0)
+  string component =
+      _documentParser->getAttribute(defaultComponent, "component");
+  if (nodes->count (component) == 0)
     {
       return;
     }
 
-  node = (NodeEntity *)(*nodes)[XMLString::transcode (
-      defaultComponent->getAttribute (XMLString::transcode ("component")))];
+  node = (NodeEntity *)(*nodes)[component];
 
   if (node == NULL)
     {
@@ -843,16 +758,14 @@ NclPresentationControlParser::addDefaultDescriptorToDescriptorSwitch (
 
   descriptors = (*switchConstituents)[descriptorSwitch->getId ()];
   if (descriptors->count (
-          XMLString::transcode (defaultDescriptor->getAttribute (
-              XMLString::transcode ("descriptor"))))
+        _documentParser->getAttribute(defaultDescriptor, "descriptor"))
       == 0)
     {
       return;
     }
 
-  descriptor = (GenericDescriptor *)(*descriptors)[XMLString::transcode (
-      defaultDescriptor->getAttribute (
-          XMLString::transcode ("descriptor")))];
+  descriptor = (GenericDescriptor *)(*descriptors)[
+      _documentParser->getAttribute(defaultDescriptor, "descriptor") ];
 
   if (descriptor == NULL)
     {
@@ -906,30 +819,21 @@ void *
 NclPresentationControlParser::posCompileSwitch (
     DOMElement *parentElement, void *parentObject)
 {
-  DOMNodeList *elementNodeList;
-  int i, size;
-  DOMNode *node;
-  DOMElement *element;
-  string elementTagName;
-  Node *elementObject;
+  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
+  int size = (int) elementNodeList->getLength ();
 
-  elementNodeList = parentElement->getChildNodes ();
-  size = (int) elementNodeList->getLength ();
-
-  for (i = 0; i < size; i++)
+  for (int i = 0; i < size; i++)
     {
-      node = elementNodeList->item (i);
+      DOMNode *node = elementNodeList->item (i);
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          element = (DOMElement *)node;
-          elementTagName = XMLString::transcode (element->getTagName ());
-          if (XMLString::compareIString (elementTagName.c_str (), "context")
-              == 0)
+          DOMElement *element = (DOMElement *)node;
+          string tagname = _documentParser->getTagname(element);
+          if (XMLString::compareIString (tagname.c_str (), "context") == 0)
             {
-              elementObject
-                  = (Node *)(getDocumentParser ()->getNode (XMLString::transcode (
-                                     element->getAttribute (
-                                         XMLString::transcode ("id")))));
+             Node *elementObject
+                  = (Node *)(getDocumentParser ()->getNode (
+                               _documentParser->getAttribute(element, "id")));
 
               if (elementObject->instanceOf ("ContextNode"))
                 {
@@ -937,22 +841,16 @@ NclPresentationControlParser::posCompileSwitch (
                           ->posCompileContext (element, elementObject);
                 }
             }
-          else if (XMLString::compareIString (elementTagName.c_str (),
-                                              "switch")
+          else if (XMLString::compareIString (tagname.c_str (), "switch")
                    == 0)
             {
-              elementObject = getDocumentParser ()
-                                  ->getNode (XMLString::transcode (
-                                      element->getAttribute (
-                                          XMLString::transcode ("id"))));
+              Node * elementObject = getDocumentParser ()
+                  ->getNode ( _documentParser->getAttribute(element, "id") );
 
               if (unlikely (elementObject == NULL))
                 {
                   syntax_error ("node '%s' should be a switch",
-                                string (XMLString::transcode
-                                        (element->getAttribute
-                                         (XMLString::transcode
-                                          ("id")))).c_str ());
+                         _documentParser->getAttribute(element, "id").c_str ());
                 }
               else if (elementObject->instanceOf ("SwitchNode"))
                 {

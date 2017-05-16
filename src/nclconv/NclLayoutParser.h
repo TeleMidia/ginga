@@ -34,17 +34,20 @@ public:
   NclLayoutParser (NclDocumentParser *documentParser,
                    DeviceLayout *deviceLayout);
 
-  void *parseRegion (DOMElement *parentElement, void *objGrandParent);
-  void *createRegion (DOMElement *parentElement, void *objGrandParent);
+  LayoutRegion *parseRegion (DOMElement *parentElement);
+  LayoutRegion *createRegion (DOMElement *parentElement);
 
-  void addRegionToRegion (void *parentObject, void *childObject);
+  void addRegionToRegion (LayoutRegion *parentObject,
+                          LayoutRegion *childObject);
 
   RegionBase *parseRegionBase (DOMElement *parentElement);
   RegionBase *createRegionBase (DOMElement *parentElement);
 
-  void addImportBaseToRegionBase (void *parentObject, void *childObject);
+  void addImportBaseToRegionBase (RegionBase *parentObject,
+                                  DOMElement *childObject);
 
-  void addRegionToRegionBase (void *parentObject, void *childObject);
+  void addRegionToRegionBase (RegionBase *parentObject,
+                              LayoutRegion *childObject);
 
 private:
   double getPercentValue (const string &value);

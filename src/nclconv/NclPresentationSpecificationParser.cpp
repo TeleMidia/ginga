@@ -47,7 +47,7 @@ NclPresentationSpecificationParser::parseDescriptor (DOMElement *parentElement)
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           DOMElement *element = (DOMElement *)node;
-          string tagname = XMLString::transcode (element->getTagName ());
+          string tagname = _documentParser->getTagname(element);
           if (XMLString::compareIString (tagname.c_str (), "descriptorParam")
               == 0)
             {
@@ -81,7 +81,7 @@ NclPresentationSpecificationParser::parseDescriptorBase (
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           element = (DOMElement *)node;
-          string tagname = XMLString::transcode (element->getTagName ());
+          string tagname = _documentParser->getTagname(element);
 
           if (XMLString::compareIString (tagname.c_str (), "importBase") == 0)
             {
@@ -100,7 +100,7 @@ NclPresentationSpecificationParser::parseDescriptorBase (
             {
               DescriptorSwitch *descSwitch
                   = _documentParser->getPresentationControlParser ()
-                        ->parseDescriptorSwitch (element, descBase);
+                      ->parseDescriptorSwitch (element);
 
               if (descSwitch)
                 {
@@ -155,11 +155,8 @@ NclPresentationSpecificationParser::addDescriptorParamToDescriptor (
     Descriptor *descriptor, DOMElement *param)
 {
   // recuperar nome e valor da variavel
-  string paramName = XMLString::transcode (
-      param->getAttribute (XMLString::transcode ("name")));
-
-  string paramValue = XMLString::transcode (
-      param->getAttribute (XMLString::transcode ("value")));
+  string paramName = _documentParser->getAttribute(param, "name");
+  string paramValue = _documentParser->getAttribute(param, "value");
 
   // adicionar variavel ao descritor
   Parameter *descParam = new Parameter (paramName, paramValue);
@@ -182,13 +179,10 @@ NclPresentationSpecificationParser::addImportBaseToDescriptorBase (
   RuleBase *ruleBase;
 
   // get the external base alias and location
-  baseAlias = XMLString::transcode (
-      ((DOMElement *)childObject)
-          ->getAttribute (XMLString::transcode ("alias")));
+  baseAlias = _documentParser->getAttribute((DOMElement *)childObject, "alias");
 
-  baseLocation = XMLString::transcode (
-      ((DOMElement *)childObject)
-          ->getAttribute (XMLString::transcode ("documentURI")));
+  baseLocation = _documentParser->getAttribute((DOMElement *)childObject,
+                                               "documentURI");
 
   compiler = getDocumentParser ();
   importedDocument = compiler->importDocument (baseLocation);
@@ -253,10 +247,11 @@ NclPresentationSpecificationParser::createDescriptorBase (
         DOMElement *parentElement)
 {
   DescriptorBase *descBase;
+
   // criar nova base de conectores com id gerado a partir do nome de seu
   // elemento
-  descBase = new DescriptorBase (XMLString::transcode (
-      parentElement->getAttribute (XMLString::transcode ("id"))));
+  descBase = new DescriptorBase (
+        _documentParser->getAttribute(parentElement ,"id") );
 
   return descBase;
 }
@@ -278,38 +273,36 @@ NclPresentationSpecificationParser::createDescriptor (DOMElement *parentElement)
   Transition *transition;
 
   // cria descritor
-  descriptor = new Descriptor (XMLString::transcode (
-      parentElement->getAttribute (XMLString::transcode ("id"))));
+  descriptor = new Descriptor (
+        _documentParser->getAttribute(parentElement, "id"));
 
   document = getDocumentParser ()->getNclDocument ();
 
-  // atributo region
-  if (parentElement->hasAttribute (XMLString::transcode ("region")))
+  // region
+  if (_documentParser->hasAttribute(parentElement, "region"))
     {
-      region = document->getRegion (XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("region"))));
+      region = document->getRegion (
+            _documentParser->getAttribute(parentElement, "region") );
 
-      if (region != NULL)
+      if (region)
         {
           descriptor->setRegion (region);
         }
     }
 
-  // atributo explicitDur
-  if (parentElement->hasAttribute (XMLString::transcode ("explicitDur")))
+  // explicitDur
+  if (_documentParser->hasAttribute(parentElement, "explicitDur"))
     {
-      string durStr = XMLString::transcode (parentElement->getAttribute (
-          XMLString::transcode ("explicitDur")));
+      string durStr =
+          _documentParser->getAttribute(parentElement, "explicitDur");
 
       descriptor->setExplicitDuration (::ginga::util::strUTCToSec (durStr)
                                        * 1000);
     }
 
-  if (parentElement->hasAttribute (XMLString::transcode ("freeze")))
+  if (_documentParser->hasAttribute(parentElement,"freeze"))
     {
-      string freeze;
-      freeze = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("freeze")));
+      string freeze = _documentParser->getAttribute(parentElement,"freeze");
 
       if (freeze == "true")
         {
@@ -322,53 +315,50 @@ NclPresentationSpecificationParser::createDescriptor (DOMElement *parentElement)
     }
 
   // atributo player
-  if (parentElement->hasAttribute (XMLString::transcode ("player")))
+  if (_documentParser->hasAttribute(parentElement, "player"))
     {
-      descriptor->setPlayerName (XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("player"))));
+      descriptor->setPlayerName (
+            _documentParser->getAttribute(parentElement, "player") );
     }
 
   // key navigation attributes
   keyNavigation = new KeyNavigation ();
   descriptor->setKeyNavigation (keyNavigation);
-  if (parentElement->hasAttribute (XMLString::transcode ("focusIndex")))
+  if (_documentParser->hasAttribute(parentElement, "focusIndex"))
     {
       keyNavigation->setFocusIndex (
-          XMLString::transcode (parentElement->getAttribute (
-              XMLString::transcode ("focusIndex"))));
+          _documentParser->getAttribute(parentElement,"focusIndex"));
     }
 
-  if (parentElement->hasAttribute (XMLString::transcode ("moveUp")))
+  if (_documentParser->hasAttribute(parentElement, "moveUp"))
     {
-      keyNavigation->setMoveUp (XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("moveUp"))));
+      keyNavigation->setMoveUp (
+            _documentParser->getAttribute(parentElement,"moveUp") );
     }
 
-  if (parentElement->hasAttribute (XMLString::transcode ("moveDown")))
+  if (_documentParser->hasAttribute(parentElement, "moveDown"))
     {
-      keyNavigation->setMoveDown (XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("moveDown"))));
+      keyNavigation->setMoveDown (
+            _documentParser->getAttribute(parentElement,"moveDown") );
     }
 
-  if (parentElement->hasAttribute (XMLString::transcode ("moveLeft")))
+  if (_documentParser->hasAttribute(parentElement, "moveLeft"))
     {
-      keyNavigation->setMoveLeft (XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("moveLeft"))));
+      keyNavigation->setMoveLeft (
+            _documentParser->getAttribute(parentElement, "moveLeft") );
     }
 
-  if (parentElement->hasAttribute (XMLString::transcode ("moveRight")))
+  if (_documentParser->hasAttribute(parentElement, "moveRight"))
     {
       keyNavigation->setMoveRight (
-          XMLString::transcode (parentElement->getAttribute (
-              XMLString::transcode ("moveRight"))));
+          _documentParser->getAttribute(parentElement, "moveRight") );
     }
 
   focusDecoration = new FocusDecoration ();
   descriptor->setFocusDecoration (focusDecoration);
-  if (parentElement->hasAttribute (XMLString::transcode ("focusSrc")))
+  if (_documentParser->hasAttribute (parentElement, "focusSrc"))
     {
-      src = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("focusSrc")));
+      src = _documentParser->getAttribute (parentElement, "focusSrc");
 
       if (!xpathisuri (src) && !xpathisabs (src))
         src = xpathbuildabs (getDocumentParser ()->getDirName (), src);
@@ -376,41 +366,37 @@ NclPresentationSpecificationParser::createDescriptor (DOMElement *parentElement)
       focusDecoration->setFocusSrc (src);
     }
 
-  if (parentElement->hasAttribute (
-          XMLString::transcode ("focusBorderColor")))
+  if (_documentParser->hasAttribute (parentElement, "focusBorderColor"))
     {
       color = new SDL_Color ();
-      ginga_color_input_to_sdl_color( XMLString::transcode (parentElement->getAttribute (
-          XMLString::transcode ("focusBorderColor"))) ,color);
+      ginga_color_input_to_sdl_color(
+            _documentParser->getAttribute (parentElement, "focusBorderColor"),
+            color);
+
       focusDecoration->setFocusBorderColor ( color );
     }
 
-  if (parentElement->hasAttribute (
-          XMLString::transcode ("focusBorderWidth")))
+  if (_documentParser->hasAttribute (parentElement, "focusBorderWidth"))
     {
       int w;
       w = xstrto_int (
-          XMLString::transcode (parentElement->getAttribute (
-              XMLString::transcode ("focusBorderWidth"))));
-
+          _documentParser->getAttribute (parentElement, "focusBorderWidth") );
       focusDecoration->setFocusBorderWidth (w);
     }
 
-  if (parentElement->hasAttribute (
-          XMLString::transcode ("focusBorderTransparency")))
+  if (_documentParser->hasAttribute (parentElement, "focusBorderTransparency"))
     {
       double alpha;
       alpha = xstrtod (
-          XMLString::transcode (parentElement->getAttribute (
-              XMLString::transcode ("focusBorderTransparency"))));
+          _documentParser->getAttribute (parentElement,
+                                         "focusBorderTransparency"));
 
       focusDecoration->setFocusBorderTransparency (alpha);
     }
 
-  if (parentElement->hasAttribute (XMLString::transcode ("focusSelSrc")))
+  if (_documentParser->hasAttribute (parentElement, "focusSelSrc"))
     {
-      src = XMLString::transcode (parentElement->getAttribute (
-          XMLString::transcode ("focusSelSrc")));
+      src = _documentParser->getAttribute (parentElement, "focusSelSrc");
 
       if (!xpathisuri (src) && !xpathisabs (src))
         src = xpathbuildabs (getDocumentParser ()->getDirName (), src);
@@ -418,24 +404,22 @@ NclPresentationSpecificationParser::createDescriptor (DOMElement *parentElement)
       focusDecoration->setFocusSelSrc (src);
     }
 
-  if (parentElement->hasAttribute (XMLString::transcode ("selBorderColor")))
+  if (_documentParser->hasAttribute (parentElement, "selBorderColor"))
     {
       color = new SDL_Color ();
-      ginga_color_input_to_sdl_color (XMLString::transcode
-                                      (parentElement->getAttribute
-                                       (XMLString::transcode
-                                        ("selBorderColor"))) ,color);
+      ginga_color_input_to_sdl_color (
+            _documentParser->getAttribute (parentElement, "selBorderColor"),
+            color );
       focusDecoration->setSelBorderColor ( color );
     }
 
-  if (parentElement->hasAttribute (XMLString::transcode ("transIn")))
+  if (_documentParser->hasAttribute (parentElement, "transIn"))
     {
       transitionBase = document->getTransitionBase ();
       if (transitionBase != NULL)
         {
           string trimValue, value;
-          attValue = XMLString::transcode (parentElement->getAttribute (
-              XMLString::transcode ("transIn")));
+          attValue = _documentParser->getAttribute (parentElement, "transIn");
 
           transIds = split (attValue, ";");
           if (!transIds->empty ())
@@ -448,6 +432,7 @@ NclPresentationSpecificationParser::createDescriptor (DOMElement *parentElement)
                   value = (*it);
                   trimValue = xstrchomp (value);
                   *it = trimValue;
+
                   transition = transitionBase->getTransition (trimValue);
                   if (transition != NULL)
                     {
@@ -463,14 +448,13 @@ NclPresentationSpecificationParser::createDescriptor (DOMElement *parentElement)
         }
     }
 
-  if (parentElement->hasAttribute (XMLString::transcode ("transOut")))
+  if (_documentParser->hasAttribute (parentElement, "transOut"))
     {
       transitionBase = document->getTransitionBase ();
       if (transitionBase != NULL)
         {
           string trimValue, value;
-          attValue = XMLString::transcode (parentElement->getAttribute (
-              XMLString::transcode ("transOut")));
+          attValue = _documentParser->getAttribute(parentElement, "transOut");
 
           transIds = split (attValue, ";");
           if (!transIds->empty ())

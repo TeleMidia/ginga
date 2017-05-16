@@ -28,127 +28,99 @@ NclLinkingParser::NclLinkingParser (NclDocumentParser *documentParser,
 {
 }
 
-void *
+Bind *
 NclLinkingParser::parseBind (DOMElement *parentElement,
-                             void *objGrandParent)
+                             Link *objGrandParent)
 {
-  void *parentObject;
-  DOMNodeList *elementNodeList;
-  DOMElement *element;
-  DOMNode *node;
-  string elementTagName;
-  void *elementObject;
+  Bind *bind = createBind (parentElement, objGrandParent);
+  g_assert_nonnull (bind);
 
-  parentObject = createBind (parentElement, objGrandParent);
-  g_assert_nonnull (parentObject);
-
-  elementNodeList = parentElement->getChildNodes ();
+  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
     {
-      node = elementNodeList->item (i);
+      DOMNode *node = elementNodeList->item (i);
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          element = (DOMElement *)node;
-          elementTagName = XMLString::transcode (element->getTagName ());
+          DOMElement *element = (DOMElement *)node;
+          string tagname = _documentParser->getTagname(element);
 
-          if (XMLString::compareIString (elementTagName.c_str (),
-                                         "bindParam")
-              == 0)
+          if (XMLString::compareIString (tagname.c_str (), "bindParam") == 0)
             {
-              elementObject = parseBindParam (element, parentObject);
-              if (elementObject != NULL)
+              Parameter *param = parseBindParam (element);
+              if (param)
                 {
-                  addBindParamToBind (parentObject, elementObject);
+                  addBindParamToBind (bind, param);
                 }
             }
         }
     }
 
-  return parentObject;
+  return bind;
 }
 
-void *
-NclLinkingParser::parseLinkParam (DOMElement *parentElement,
-                                  arg_unused (void *objGrandParent))
+Parameter *
+NclLinkingParser::parseLinkParam (DOMElement *parentElement)
 {
-  Parameter *parameter;
-  parameter = new Parameter (
-      XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("name"))),
+  Parameter *param;
+  param = new Parameter (
+      _documentParser->getAttribute(parentElement, "name"),
+      _documentParser->getAttribute(parentElement, "value") );
 
-      XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("value"))));
-
-  return parameter;
+  return param;
 }
 
-void *
-NclLinkingParser::parseBindParam (DOMElement *parentElement,
-                                  arg_unused(void *objGrandParent))
+Parameter *
+NclLinkingParser::parseBindParam (DOMElement *parentElement)
 {
-  Parameter *parameter;
-  parameter = new Parameter (
-      XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("name"))),
+  Parameter *param;
+  param = new Parameter (
+      _documentParser->getAttribute(parentElement, "name"),
+      _documentParser->getAttribute(parentElement, "value") );
 
-      XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("value"))));
-
-  return parameter;
+  return param;
 }
 
-void *
+Link *
 NclLinkingParser::parseLink (DOMElement *parentElement,
                              void *objGrandParent)
 {
-  void *parentObject;
-  DOMNodeList *elementNodeList;
-  DOMElement *element;
-  DOMNode *node;
-  string elementTagName;
-  void *elementObject;
+  Link *link = createLink (parentElement, objGrandParent);
+  g_assert_nonnull (link);
 
-  parentObject = createLink (parentElement, objGrandParent);
-  g_assert_nonnull (parentObject);
-
-  elementNodeList = parentElement->getChildNodes ();
+  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
   for (int i = 0; i < (int)elementNodeList->getLength (); i++)
     {
-      node = elementNodeList->item (i);
+      DOMNode *node = elementNodeList->item (i);
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          element = (DOMElement *)node;
-          elementTagName = XMLString::transcode (element->getTagName ());
+          DOMElement *element = (DOMElement *)node;
+          string tagname = _documentParser->getTagname(element);
 
-          if (XMLString::compareIString (elementTagName.c_str (),
-                                         "linkParam")
-              == 0)
+          if (XMLString::compareIString (tagname.c_str (), "linkParam") == 0)
             {
-              elementObject = parseLinkParam (element, parentObject);
-              if (elementObject != NULL)
+              Parameter *param = parseLinkParam (element);
+              if (param)
                 {
-                  addLinkParamToLink (parentObject, elementObject);
+                  addLinkParamToLink (link, param);
                 }
             }
-          else if (XMLString::compareIString (elementTagName.c_str (),
-                                              "bind")
-                   == 0)
+          else if (XMLString::compareIString (tagname.c_str (), "bind") == 0)
             {
-              elementObject = parseBind (element, parentObject);
-              if (elementObject != NULL)
+              Bind *bind = parseBind (element, link);
+              if (bind)
                 {
-                  addBindToLink (parentObject, elementObject);
+                  addBindToLink (link, bind);
                 }
             }
         }
     }
 
-  return parentObject;
+  return link;
 }
 
 
 void
-NclLinkingParser::addBindToLink (arg_unused (void *parentObject), arg_unused (void *childObject))
+NclLinkingParser::addBindToLink (arg_unused (Link *parentObject), arg_unused (Bind *childObject))
 {
   // nothing to do, since to be created the bind needs to be associated
   // with
@@ -156,22 +128,21 @@ NclLinkingParser::addBindToLink (arg_unused (void *parentObject), arg_unused (vo
 }
 
 void
-NclLinkingParser::addBindParamToBind (void *parentObject,
-                                         void *childObject)
+NclLinkingParser::addBindParamToBind (Bind *parentObject,
+                                      Parameter *childObject)
 {
-  ((Bind *)parentObject)->addParameter ((Parameter *)childObject);
+  parentObject->addParameter (childObject);
 }
 
 void
-NclLinkingParser::addLinkParamToLink (void *parentObject,
-                                         void *childObject)
+NclLinkingParser::addLinkParamToLink (Link *parentObject,
+                                      Parameter *childObject)
 {
-  ((Link *)parentObject)->addParameter ((Parameter *)childObject);
+  parentObject->addParameter (childObject);
 }
 
-void *
-NclLinkingParser::createBind (DOMElement *parentElement,
-                                 void *objGrandParent)
+Bind *
+NclLinkingParser::createBind (DOMElement *parentElement, Link *objGrandParent)
 {
   string component, roleId, interfaceId;
   Role *role;
@@ -183,19 +154,18 @@ NclLinkingParser::createBind (DOMElement *parentElement,
   set<ReferNode *> *sInsts;
   set<ReferNode *>::iterator i;
 
-  role = connector->getRole (XMLString::transcode (
-      parentElement->getAttribute (XMLString::transcode ("role"))));
+  role = _connector->getRole (
+        _documentParser->getAttribute(parentElement, "role"));
 
-  component = XMLString::transcode (
-      parentElement->getAttribute (XMLString::transcode ("component")));
+  component = _documentParser->getAttribute(parentElement, "component");
 
-  if (composite->getId () == component)
+  if (_composite->getId () == component)
     {
-      anchorNode = (Node *)composite;
+      anchorNode = (Node *)_composite;
     }
   else
     {
-      anchorNode = (Node *)(composite->getNode (component));
+      anchorNode = (Node *)(_composite->getNode (component));
     }
 
   if (unlikely (anchorNode == NULL))
@@ -206,10 +176,9 @@ NclLinkingParser::createBind (DOMElement *parentElement,
 
   anchorNodeEntity = (NodeEntity *)(anchorNode->getDataEntity ());
 
-  if (parentElement->hasAttribute (XMLString::transcode ("interface")))
+  if (_documentParser->hasAttribute(parentElement, "interface"))
     {
-      interfaceId = XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("interface")));
+      interfaceId = _documentParser->getAttribute(parentElement, "interface");
 
       if (anchorNodeEntity == NULL)
         {
@@ -288,12 +257,11 @@ NclLinkingParser::createBind (DOMElement *parentElement,
     }
 
   // atribui o bind ao elo (link)
-  if (parentElement->hasAttribute (XMLString::transcode ("descriptor")))
+  if (_documentParser->hasAttribute(parentElement, "descriptor"))
     {
       document = getDocumentParser ()->getNclDocument ();
       descriptor = document->getDescriptor (
-          XMLString::transcode (parentElement->getAttribute (
-              XMLString::transcode ("descriptor"))));
+            _documentParser->getAttribute(parentElement, "descriptor") );
     }
   else
     {
@@ -303,7 +271,7 @@ NclLinkingParser::createBind (DOMElement *parentElement,
   if (role == NULL)
     {
       // &got
-      if (parentElement->hasAttribute (XMLString::transcode ("role")))
+      if (_documentParser->hasAttribute(parentElement, "role"))
         {
           ConditionExpression *condition;
           CompoundCondition *compoundCondition;
@@ -311,8 +279,7 @@ NclLinkingParser::createBind (DOMElement *parentElement,
           AttributeAssessment *assessment;
           ValueAssessment *otherAssessment;
 
-          roleId = XMLString::transcode (
-              parentElement->getAttribute (XMLString::transcode ("role")));
+          roleId = _documentParser->getAttribute(parentElement, "role");
 
           assessment = new AttributeAssessment (roleId);
           assessment->setEventType (EventUtil::EVT_ATTRIBUTION);
@@ -327,7 +294,7 @@ NclLinkingParser::createBind (DOMElement *parentElement,
           statement->setOtherAssessment (otherAssessment);
 
           condition
-              = ((CausalConnector *)connector)->getConditionExpression ();
+              = ((CausalConnector *)_connector)->getConditionExpression ();
 
           if (condition->instanceOf ("CompoundCondition"))
             {
@@ -339,7 +306,7 @@ NclLinkingParser::createBind (DOMElement *parentElement,
               compoundCondition = new CompoundCondition (
                   condition, statement, CompoundCondition::OP_OR);
 
-              ((CausalConnector *)connector)
+              ((CausalConnector *)_connector)
                   ->setConditionExpression (
                       (ConditionExpression *)compoundCondition);
             }
@@ -351,32 +318,29 @@ NclLinkingParser::createBind (DOMElement *parentElement,
         }
     }
 
-  return ((Link *)objGrandParent)
-      ->bind (anchorNode, interfacePoint, descriptor, role->getLabel ());
+  return objGrandParent->bind (
+        anchorNode, interfacePoint, descriptor, role->getLabel () );
 }
 
-void *
+Link *
 NclLinkingParser::createLink (DOMElement *parentElement,
                               void *objGrandParent)
 {
-  NclDocument *document;
-  Link *link;
-  string connectorId;
+  NclDocument *document = getDocumentParser ()->getNclDocument ();
+  string connectorId =
+      _documentParser->getAttribute(parentElement, "xconnector");
 
-  document = getDocumentParser ()->getNclDocument ();
-  connectorId = XMLString::transcode (
-      parentElement->getAttribute (XMLString::transcode ("xconnector")));
-
-  connector = document->getConnector (connectorId);
-  if (unlikely (connector == NULL))
+  _connector = document->getConnector (connectorId);
+  if (unlikely (_connector == NULL))
     {
       syntax_error ("link: bad xconnector '%s'", connectorId.c_str ());
     }
 
-  g_assert (connector->instanceOf ("CausalConnector"));
+  g_assert (_connector->instanceOf ("CausalConnector"));
 
-  link = new CausalLink (getId (parentElement), connector);
-  composite = (CompositeNode *)objGrandParent;
+  Link *link = new CausalLink (getId (parentElement), _connector);
+  _composite = (CompositeNode *) objGrandParent;
+
   return link;
 }
 
@@ -384,10 +348,9 @@ string
 NclLinkingParser::getId (DOMElement *element)
 {
   string strRet = "";
-  if (element->hasAttribute (XMLString::transcode ("id")))
+  if (_documentParser->hasAttribute (element, "id"))
     {
-      strRet = XMLString::transcode (
-          element->getAttribute (XMLString::transcode ("id")));
+      strRet = _documentParser->getAttribute (element, "id");
     }
   else
     {

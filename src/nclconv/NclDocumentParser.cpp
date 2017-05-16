@@ -318,7 +318,7 @@ NclDocumentParser::importDocument (string &path)
     path = xpathbuildabs (this->getDirName (), path);
 
   return (NclDocument *)(privateBaseContext
-                         ->addVisibleDocument (path, deviceLayout));
+                          ->addVisibleDocument (path, deviceLayout));
 }
 
 GINGA_NCLCONV_END
