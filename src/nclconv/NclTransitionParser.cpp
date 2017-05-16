@@ -60,8 +60,8 @@ NclTransitionParser::parseTransitionBase (DOMElement *parentElement,
                                          "importBase")
               == 0)
             {
-              elementObject = getImportParser ()->parseImportBase (
-                  element, parentObject);
+              elementObject = _documentParser->getImportParser ()
+                      ->parseImportBase (element, parentObject);
 
               if (elementObject != NULL)
                 {
@@ -210,20 +210,6 @@ NclTransitionParser::parseTransition (DOMElement *parentElement,
 
   return transition;
 }
-
-NclImportParser *
-NclTransitionParser::getImportParser ()
-{
-  return importParser;
-}
-
-void
-NclTransitionParser::setImportParser (NclImportParser *importParser)
-{
-  this->importParser = importParser;
-}
-
-
 
 void
 NclTransitionParser::addTransitionToTransitionBase (void *parentObject,

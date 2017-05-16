@@ -85,19 +85,9 @@ NclDocument *
 PrivateBaseContext::compileDocument (const string &location,
                                      DeviceLayout *deviceLayout)
 {
-  NclDocumentParser *compiler = NULL;
-  NclDocument *document = NULL;
-  string docUrl = location;
-
-  compiler = new NclDocumentParser ();
-
-  compiler->setConverterInfo (this, deviceLayout);
-  compiler->parse (docUrl);
-
-  document = compiler->getNclDocument ();
-
-  delete compiler;
-  compiler = NULL;
+  NclDocumentParser compiler(this, deviceLayout);
+  string docUrl (location);
+  NclDocument *document = compiler.parse (docUrl);
 
   layoutsGB.insert (deviceLayout);
 
@@ -250,7 +240,8 @@ PrivateBaseContext::getDocuments ()
 }
 
 void
-PrivateBaseContext::removeDocumentBase (arg_unused (NclDocument *document), Base *base)
+PrivateBaseContext::removeDocumentBase (arg_unused (NclDocument *document),
+                                        Base *base)
 {
   vector<Base *> *bases;
   vector<Base *>::iterator i;

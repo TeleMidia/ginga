@@ -64,12 +64,6 @@ class NclPresentationControlParser : public ModuleParser
 private:
   map<string, map<string, NodeEntity *> *> *switchConstituents;
 
-private:
-  NclPresentationSpecificationParser *presentationSpecificationParser;
-  void *componentsParser;
-  NclInterfacesParser *interfacesParser;
-  NclImportParser *importParser;
-
 public:
   NclPresentationControlParser (NclDocumentParser *documentParser);
   virtual ~NclPresentationControlParser();
@@ -133,18 +127,6 @@ public:
   void addBindRuleToDescriptorSwitch (void *parentObject, void *childObject);
 
   void addDescriptorToDescriptorSwitch (void *parentObject, void *childObject);
-
-  NclPresentationSpecificationParser *getPresentationSpecificationParser ();
-
-  void setPresentationSpecificationParser (
-      NclPresentationSpecificationParser *presentationSpecificationParser);
-
-  void *getComponentsParser ();
-  void setComponentsParser (void *componentsParser);
-  NclInterfacesParser *getInterfacesParser ();
-  void setInterfacesParser (NclInterfacesParser *interfacesParser);
-  NclImportParser *getImportParser ();
-  void setImportParser (NclImportParser *importParser);
 
   vector<Node *> *getSwitchConstituents (SwitchNode *switchNode);
 

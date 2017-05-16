@@ -101,8 +101,8 @@ NclPresentationSpecificationParser::parseDescriptorBase (
                                          "importBase")
               == 0)
             {
-              elementObject = getImportParser ()->parseImportBase (
-                  element, parentObject);
+              elementObject = _documentParser->getImportParser ()
+                      ->parseImportBase (element, parentObject);
 
               if (elementObject != NULL)
                 {
@@ -115,8 +115,7 @@ NclPresentationSpecificationParser::parseDescriptorBase (
                    == 0)
             {
               elementObject
-                  = ((NclPresentationControlParser *)
-                         getPresentationControlParser ())
+                  = _documentParser->getPresentationControlParser ()
                         ->parseDescriptorSwitch (element, parentObject);
 
               if (elementObject != NULL)
@@ -155,34 +154,6 @@ NclPresentationSpecificationParser::parseDescriptorParam (
 {
   return parentElement;
 }
-
-NclImportParser *
-NclPresentationSpecificationParser::getImportParser ()
-{
-  return importParser;
-}
-
-void
-NclPresentationSpecificationParser::setImportParser (
-    NclImportParser *importParser)
-{
-  this->importParser = importParser;
-}
-
-void *
-NclPresentationSpecificationParser::getPresentationControlParser ()
-{
-  return presentationControlParser;
-}
-
-void
-NclPresentationSpecificationParser::setPresentationControlParser (
-    void *presentationControlParser)
-{
-  this->presentationControlParser = presentationControlParser;
-}
-
-
 
 void
 NclPresentationSpecificationParser::addDescriptorToDescriptorBase (

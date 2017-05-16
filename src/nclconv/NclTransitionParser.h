@@ -30,9 +30,6 @@ GINGA_NCLCONV_BEGIN
 
 class NclTransitionParser : public ModuleParser
 {
-private:
-  NclImportParser *importParser;
-
 public:
   NclTransitionParser (NclDocumentParser *documentParser);
 
@@ -43,9 +40,6 @@ public:
   void addImportBaseToTransitionBase (void *parentObject, void *childObject);
 
   void addTransitionToTransitionBase (void *parentObject, void *childObject);
-
-  NclImportParser *getImportParser ();
-  void setImportParser (NclImportParser *importParser);
 };
 
 GINGA_NCLCONV_END

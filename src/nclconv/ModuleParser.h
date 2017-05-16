@@ -25,12 +25,12 @@ class NclDocumentParser;
 class ModuleParser
 {
 protected:
-  NclDocumentParser *documentParser;
+  NclDocumentParser *_documentParser;
 
 public:
   ModuleParser (NclDocumentParser *paramdocumentCompiler)
   {
-    documentParser = paramdocumentCompiler;
+    _documentParser = paramdocumentCompiler;
   }
 
   virtual ~ModuleParser () {}
@@ -38,7 +38,7 @@ public:
   NclDocumentParser *
   getDocumentParser ()
   {
-    return documentParser;
+    return _documentParser;
   }
 };
 
