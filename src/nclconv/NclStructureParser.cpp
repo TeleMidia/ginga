@@ -38,12 +38,9 @@ NclStructureParser::parseBody (DOMElement *parentElement,
   DOMNodeList *elementNodeList;
   int i, size;
   DOMNode *node;
-  DOMElement *element;
-  string elementTagName;
-  void *elementObject;
 
-  ContextNode *parentObject = createBody (parentElement, objGrandParent);
-  g_assert_nonnull (parentObject);
+  ContextNode *body = createBody (parentElement, objGrandParent);
+  g_assert_nonnull (body);
 
   elementNodeList = parentElement->getChildNodes ();
   size = (int) elementNodeList->getLength ();
@@ -53,47 +50,42 @@ NclStructureParser::parseBody (DOMElement *parentElement,
       node = elementNodeList->item (i);
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          element = (DOMElement *)node;
-          elementTagName = XMLString::transcode (element->getTagName ());
-          if (XMLString::compareIString (elementTagName.c_str (), "media")
-              == 0)
+          DOMElement *element = (DOMElement *)node;
+          string tagname = XMLString::transcode (element->getTagName ());
+          if (XMLString::compareIString (tagname.c_str (), "media") == 0)
             {
-              elementObject = _documentParser->getComponentsParser()
-                      ->parseMedia (element, parentObject);
+              Node *media = _documentParser->getComponentsParser()
+                      ->parseMedia (element);
 
-              if (elementObject != NULL)
+              if (media)
                 {
                   // add media to body
                   _documentParser->getComponentsParser ()
-                          ->addMediaToContext (parentObject, elementObject);
+                          ->addMediaToContext (body, media);
                 }
             }
-          else if (XMLString::compareIString (elementTagName.c_str (),
-                                              "context")
-                   == 0)
+          else if (XMLString::compareIString (tagname.c_str (), "context") == 0)
             {
-              elementObject = _documentParser->getComponentsParser()
-                      ->parseContext (element, parentObject);
+              Node *child_context = _documentParser->getComponentsParser()
+                      ->parseContext (element, body);
 
-              if (elementObject != NULL)
+              if (child_context)
                 {
                   // add context to body
                   _documentParser->getComponentsParser ()
-                          ->addContextToContext (parentObject, elementObject);
+                          ->addContextToContext (body, child_context);
                 }
             }
-          else if (XMLString::compareIString (elementTagName.c_str (),
-                                              "switch")
-                   == 0)
+          else if (XMLString::compareIString (tagname.c_str (), "switch") == 0)
             {
-              elementObject = _documentParser->getPresentationControlParser ()
-                      ->parseSwitch (element, parentObject);
+              Node *switch_node = _documentParser->getPresentationControlParser ()
+                      ->parseSwitch (element, body);
 
-              if (elementObject != NULL)
+              if (switch_node)
                 {
                   // add switch to body
                   _documentParser->getComponentsParser ()
-                          ->addSwitchToContext (parentObject, elementObject);
+                          ->addSwitchToContext (body, switch_node);
                 }
             }
         }
@@ -107,19 +99,19 @@ NclStructureParser::parseBody (DOMElement *parentElement,
                                         XMLString::transcode ("property"))
                  == 0)
         {
-          elementObject = _documentParser->getInterfacesParser ()
-                  ->parseProperty ((DOMElement *)node, parentObject);
+          PropertyAnchor *prop = _documentParser->getInterfacesParser ()
+                  ->parseProperty ((DOMElement *)node, body);
 
-          if (elementObject != NULL)
+          if (prop)
             {
               // add property to body
               _documentParser->getComponentsParser ()
-                      ->addPropertyToContext (parentObject, elementObject);
+                      ->addPropertyToContext (body, prop);
             }
         }
     }
 
-  return parentObject;
+  return body;
 }
 
 void

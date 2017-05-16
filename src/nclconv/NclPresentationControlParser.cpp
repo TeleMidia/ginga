@@ -126,11 +126,11 @@ NclPresentationControlParser::parseRule (DOMElement *parentElement,
   return simplePresentationRule;
 }
 
-void *
+Node *
 NclPresentationControlParser::parseSwitch (DOMElement *parentElement,
                                            void *objGrandParent)
 {
-  void *parentObject;
+  Node *switch_node;
   DOMNodeList *elementNodeList;
   int i, size;
   DOMNode *node;
@@ -138,8 +138,8 @@ NclPresentationControlParser::parseSwitch (DOMElement *parentElement,
   string elementTagName;
   void *elementObject;
 
-  parentObject = createSwitch (parentElement, objGrandParent);
-  if (unlikely (parentObject == NULL))
+  switch_node = createSwitch (parentElement, objGrandParent);
+  if (unlikely (switch_node == NULL))
     {
       syntax_error ("switch: bad parent '%s'",
                     string (XMLString::transcode
@@ -161,11 +161,11 @@ NclPresentationControlParser::parseSwitch (DOMElement *parentElement,
             {
               elementObject
                   = _documentParser->getComponentsParser ()
-                        ->parseMedia (element, parentObject);
+                      ->parseMedia (element);
 
               if (elementObject != NULL)
                 {
-                  addMediaToSwitch (parentObject, elementObject);
+                  addMediaToSwitch (switch_node, elementObject);
                 }
             }
           else if (XMLString::compareIString (elementTagName.c_str (),
@@ -174,21 +174,21 @@ NclPresentationControlParser::parseSwitch (DOMElement *parentElement,
             {
               elementObject
                   = _documentParser->getComponentsParser ()
-                        ->parseContext (element, parentObject);
+                        ->parseContext (element, switch_node);
 
               if (elementObject != NULL)
                 {
-                  addContextToSwitch (parentObject, elementObject);
+                  addContextToSwitch (switch_node, elementObject);
                 }
             }
           else if (XMLString::compareIString (elementTagName.c_str (),
                                               "switch")
                    == 0)
             {
-              elementObject = parseSwitch (element, parentObject);
+              elementObject = parseSwitch (element, switch_node);
               if (elementObject != NULL)
                 {
-                  addSwitchToSwitch (parentObject, elementObject);
+                  addSwitchToSwitch (switch_node, elementObject);
                 }
             }
         }
@@ -206,11 +206,11 @@ NclPresentationControlParser::parseSwitch (DOMElement *parentElement,
               == 0)
             {
               elementObject
-                  = parseBindRule ((DOMElement *)node, parentObject);
+                  = parseBindRule ((DOMElement *)node, switch_node);
 
               if (elementObject != NULL)
                 {
-                  addBindRuleToSwitch (parentObject, elementObject);
+                  addBindRuleToSwitch (switch_node, elementObject);
                 }
             }
           else if (XMLString::compareIString (elementTagName.c_str (),
@@ -218,19 +218,19 @@ NclPresentationControlParser::parseSwitch (DOMElement *parentElement,
                    == 0)
             {
               elementObject = parseDefaultComponent ((DOMElement *)node,
-                                                     parentObject);
+                                                     switch_node);
 
               if (elementObject != NULL)
                 {
-                  addDefaultComponentToSwitch (parentObject, elementObject);
+                  addDefaultComponentToSwitch (switch_node, elementObject);
                 }
             }
         }
     }
 
-  addUnmappedNodesToSwitch (parentObject);
+  addUnmappedNodesToSwitch ((SwitchNode *)switch_node);
 
-  return parentObject;
+  return switch_node;
 }
 
 void *
@@ -518,7 +518,7 @@ NclPresentationControlParser::createCompositeRule (
   return compositePresentationRule;
 }
 
-void *
+Node *
 NclPresentationControlParser::createSwitch (DOMElement *parentElement,
                                             arg_unused (void *objGrandParent))
 {
@@ -770,15 +770,10 @@ NclPresentationControlParser::addBindRuleToSwitch (void *parentObject,
 }
 
 void
-NclPresentationControlParser::addUnmappedNodesToSwitch (
-    void *parentObject)
+NclPresentationControlParser::addUnmappedNodesToSwitch (SwitchNode *switchNode)
 {
-  SwitchNode *switchNode;
-
   map<string, NodeEntity *> *nodes;
   map<string, NodeEntity *>::iterator i;
-
-  switchNode = (SwitchNode *)parentObject;
 
   if (switchConstituents->count (switchNode->getId ()) == 0)
     {
