@@ -44,9 +44,6 @@ GINGA_NCLCONV_BEGIN
 class NclPresentationSpecificationParser : public ModuleParser
 {
 private:
-  NclImportParser *importParser;
-  void *presentationControlParser;
-
   DeviceLayout *deviceLayout;
 
 public:
@@ -71,11 +68,6 @@ public:
   void *parseDescriptorBind (DOMElement *parentElement, void *objGrandParent);
 
   void *parseDescriptorParam (DOMElement *parentElement, void *objGrandParent);
-
-  NclImportParser *getImportParser ();
-  void setImportParser (NclImportParser *importParser);
-  void *getPresentationControlParser ();
-  void setPresentationControlParser (void *presentationControlParser);
 };
 
 GINGA_NCLCONV_END

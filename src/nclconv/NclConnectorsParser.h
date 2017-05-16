@@ -35,7 +35,6 @@ class NclConnectorsParser : public ModuleParser
 {
   // Ref Classes
 private:
-  NclImportParser *importParser;
   Connector *connector;
 
 public:
@@ -129,9 +128,6 @@ public:
 
   void addCausalConnectorToConnectorBase (void *parentObject,
                                           void *childObject);
-
-  NclImportParser *getImportParser ();
-  void setImportParser (NclImportParser *importParser);
 
   static short convertEventState (const string &eventState);
 

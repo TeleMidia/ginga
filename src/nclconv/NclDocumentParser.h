@@ -75,9 +75,6 @@ public:
   PrivateBaseContext *getPrivateBaseContext ();
   NclDocument *importDocument (string &docLocation);
 
-protected:
-  void setDependencies ();
-
 public:
   NclTransitionParser *getTransitionParser ();
   NclConnectorsParser *getConnectorsParser ();

@@ -36,19 +36,6 @@ GINGA_NCLCONV_BEGIN
 
 class NclStructureParser : public ModuleParser
 {
-protected:
-  NclTransitionParser *transitionParser;
-  NclPresentationSpecificationParser *presentationSpecificationParser;
-
-  NclComponentsParser *componentsParser;
-  NclLinkingParser *linkingParser;
-  NclLayoutParser *layoutParser;
-  NclInterfacesParser *interfacesParser;
-  NclPresentationControlParser *presentationControlParser;
-  NclConnectorsParser *connectorsParser;
-  NclImportParser *importParser;
-  NclMetainformationParser *metainformationParser;
-
 public:
   NclStructureParser (NclDocumentParser *documentParser);
 
@@ -81,35 +68,6 @@ public:
   void *createNcl (DOMElement *parentElement, void *objGrandParent);
 
   void addBodyToNcl (void *parentObject, void *childObject);
-
-  NclTransitionParser *getTransitionParser ();
-  void setTransitionParser (NclTransitionParser *transitionParser);
-
-  NclPresentationSpecificationParser *getPresentationSpecificationParser ();
-
-  void setPresentationSpecificationParser (
-      NclPresentationSpecificationParser *presentationSpecificationParser);
-
-  NclComponentsParser *getComponentsParser ();
-  void setComponentsParser (NclComponentsParser *componentsParser);
-  NclLinkingParser *getLinkingParser ();
-  void setLinkingParser (NclLinkingParser *linkingParser);
-  NclLayoutParser *getLayoutParser ();
-  void setLayoutParser (NclLayoutParser *layoutParser);
-  NclMetainformationParser *getMetainformationParser ();
-  NclInterfacesParser *getInterfacesParser ();
-  void setInterfacesParser (NclInterfacesParser *interfacesParser);
-  NclPresentationControlParser *getPresentationControlParser ();
-
-  void setPresentationControlParser (
-      NclPresentationControlParser *presentationControlParser);
-
-  NclConnectorsParser *getConnectorsParser ();
-  void setConnectorsParser (NclConnectorsParser *connectorsParser);
-  NclImportParser *getImportParser ();
-  void setImportParser (NclImportParser *importParser);
-  void setMetainformationParser (
-      NclMetainformationParser *metainformationParser);
 
 private:
   void solveNodeReferences (CompositeNode *composition);

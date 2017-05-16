@@ -58,8 +58,8 @@ NclComponentsParser::parseMedia (DOMElement *parentElement,
           if (XMLString::compareIString (elementTagName.c_str (), "area")
               == 0)
             {
-              elementObject = getInterfacesParser ()->parseArea (
-                  element, parentObject);
+              elementObject = _documentParser->getInterfacesParser ()
+                      ->parseArea (element, parentObject);
 
               if (elementObject != NULL)
                 {
@@ -70,8 +70,8 @@ NclComponentsParser::parseMedia (DOMElement *parentElement,
                                               "property")
                    == 0)
             {
-              elementObject = getInterfacesParser ()->parseProperty (
-                  element, parentObject);
+              elementObject = _documentParser->getInterfacesParser ()
+                      ->parseProperty (element, parentObject);
 
               if (elementObject != NULL)
                 {
@@ -132,8 +132,8 @@ NclComponentsParser::parseContext (DOMElement *parentElement,
                                               "switch")
                    == 0)
             {
-              elementObject = getPresentationControlParser ()->parseSwitch (
-                  element, parentObject);
+              elementObject = _documentParser->getPresentationControlParser ()
+                      ->parseSwitch (element, parentObject);
 
               if (elementObject != NULL)
                 {
@@ -151,8 +151,8 @@ NclComponentsParser::parseContext (DOMElement *parentElement,
                                         XMLString::transcode ("property"))
                  == 0)
         {
-          elementObject = getInterfacesParser ()->parseProperty (
-              (DOMElement *)node, parentObject);
+          elementObject = _documentParser->getInterfacesParser ()
+                  ->parseProperty ((DOMElement *)node, parentObject);
 
           if (elementObject != NULL)
             {
@@ -184,8 +184,8 @@ NclComponentsParser::posCompileContext2 (DOMElement *parentElement,
                                         XMLString::transcode ("link"))
                  == 0)
         {
-          elementObject = getLinkingParser ()->parseLink (
-              (DOMElement *)node, parentObject);
+          elementObject = _documentParser->getLinkingParser ()
+                  ->parseLink ((DOMElement *)node, parentObject);
 
           if (elementObject != NULL)
             {
@@ -202,8 +202,8 @@ NclComponentsParser::posCompileContext2 (DOMElement *parentElement,
                                         XMLString::transcode ("port"))
                  == 0)
         {
-          elementObject = getInterfacesParser ()->parsePort (
-              (DOMElement *)node, parentObject);
+          elementObject = _documentParser->getInterfacesParser ()
+                  ->parsePort ((DOMElement *)node, parentObject);
 
           if (elementObject != NULL)
             {
@@ -214,58 +214,6 @@ NclComponentsParser::posCompileContext2 (DOMElement *parentElement,
 
   return parentObject;
 }
-
-NclPresentationSpecificationParser *
-NclComponentsParser::getPresentationSpecificationParser ()
-{
-  return presentationSpecificationParser;
-}
-
-void
-NclComponentsParser::setPresentationSpecificationParser (
-    NclPresentationSpecificationParser *presentationSpecificationParser)
-{
-  this->presentationSpecificationParser = presentationSpecificationParser;
-}
-
-NclLinkingParser *
-NclComponentsParser::getLinkingParser ()
-{
-  return linkingParser;
-}
-
-void
-NclComponentsParser::setLinkingParser (NclLinkingParser *linkingParser)
-{
-  this->linkingParser = linkingParser;
-}
-
-NclInterfacesParser *
-NclComponentsParser::getInterfacesParser ()
-{
-  return interfacesParser;
-}
-
-void
-NclComponentsParser::setInterfacesParser (
-    NclInterfacesParser *interfacesParser)
-{
-  this->interfacesParser = interfacesParser;
-}
-
-NclPresentationControlParser *
-NclComponentsParser::getPresentationControlParser ()
-{
-  return presentationControlParser;
-}
-
-void
-NclComponentsParser::setPresentationControlParser (
-    NclPresentationControlParser *presentationControlParser)
-{
-  this->presentationControlParser = presentationControlParser;
-}
-
 void
 NclComponentsParser::addPortToContext (void *parentObject, void *childObject)
 {
@@ -549,8 +497,8 @@ NclComponentsParser::posCompileContext (DOMElement *parentElement,
               else if (((NodeEntity *)elementObject)
                            ->instanceOf ("SwitchNode"))
                 {
-                  getPresentationControlParser ()->posCompileSwitch (
-                      element, elementObject);
+                  _documentParser->getPresentationControlParser ()
+                          ->posCompileSwitch (element, elementObject);
                 }
             }
         }

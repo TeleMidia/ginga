@@ -59,37 +59,42 @@ NclStructureParser::parseBody (DOMElement *parentElement,
           if (XMLString::compareIString (elementTagName.c_str (), "media")
               == 0)
             {
-              elementObject = getComponentsParser()->parseMedia (element, parentObject);
+              elementObject = _documentParser->getComponentsParser()
+                      ->parseMedia (element, parentObject);
 
               if (elementObject != NULL)
                 {
                   // add media to body
-                  getComponentsParser ()->addMediaToContext (parentObject, elementObject);
+                  _documentParser->getComponentsParser ()
+                          ->addMediaToContext (parentObject, elementObject);
                 }
             }
           else if (XMLString::compareIString (elementTagName.c_str (),
                                               "context")
                    == 0)
             {
-              elementObject = getComponentsParser()->parseContext (element, parentObject);
+              elementObject = _documentParser->getComponentsParser()
+                      ->parseContext (element, parentObject);
 
               if (elementObject != NULL)
                 {
                   // add context to body
-                  getComponentsParser ()->addContextToContext (parentObject, elementObject);
+                  _documentParser->getComponentsParser ()
+                          ->addContextToContext (parentObject, elementObject);
                 }
             }
           else if (XMLString::compareIString (elementTagName.c_str (),
                                               "switch")
                    == 0)
             {
-              elementObject = getPresentationControlParser ()->parseSwitch (
-                  element, parentObject);
+              elementObject = _documentParser->getPresentationControlParser ()
+                      ->parseSwitch (element, parentObject);
 
               if (elementObject != NULL)
                 {
                   // add switch to body
-                  getComponentsParser ()->addSwitchToContext (parentObject, elementObject);
+                  _documentParser->getComponentsParser ()
+                          ->addSwitchToContext (parentObject, elementObject);
                 }
             }
         }
@@ -103,14 +108,14 @@ NclStructureParser::parseBody (DOMElement *parentElement,
                                         XMLString::transcode ("property"))
                  == 0)
         {
-          elementObject = getInterfacesParser ()->parseProperty (
-              (DOMElement *)node, parentObject);
+          elementObject = _documentParser->getInterfacesParser ()
+                  ->parseProperty ((DOMElement *)node, parentObject);
 
           if (elementObject != NULL)
             {
               // add property to body
-              getComponentsParser ()->addPropertyToContext (parentObject,
-                                                            elementObject);
+              _documentParser->getComponentsParser ()
+                      ->addPropertyToContext (parentObject, elementObject);
             }
         }
     }
@@ -143,8 +148,8 @@ NclStructureParser::parseHead (DOMElement *parentElement,
                  XMLString::transcode ("importedDocumentBase"))
                  == 0)
         {
-          elementObject = getImportParser ()->parseImportedDocumentBase (
-              (DOMElement *)node, parentObject);
+          elementObject = _documentParser->getImportParser ()
+                  ->parseImportedDocumentBase ((DOMElement *)node, parentObject);
 
           if (elementObject != NULL)
             {
@@ -163,8 +168,8 @@ NclStructureParser::parseHead (DOMElement *parentElement,
                                         XMLString::transcode ("regionBase"))
                  == 0)
         {
-          elementObject = getLayoutParser ()->parseRegionBase (
-              (DOMElement *)node, parentObject);
+          elementObject = _documentParser->getLayoutParser ()
+                  ->parseRegionBase ((DOMElement *)node, parentObject);
 
           if (elementObject != NULL)
             {
@@ -181,8 +186,8 @@ NclStructureParser::parseHead (DOMElement *parentElement,
                                         XMLString::transcode ("ruleBase"))
                  == 0)
         {
-          elementObject = getPresentationControlParser ()->parseRuleBase (
-              (DOMElement *)node, parentObject);
+          elementObject = _documentParser->getPresentationControlParser ()
+                  ->parseRuleBase ((DOMElement *)node, parentObject);
 
           if (elementObject != NULL)
             {
@@ -201,8 +206,8 @@ NclStructureParser::parseHead (DOMElement *parentElement,
                  XMLString::transcode ("transitionBase"))
                  == 0)
         {
-          elementObject = getTransitionParser ()->parseTransitionBase (
-              (DOMElement *)node, parentObject);
+          elementObject = _documentParser->getTransitionParser ()
+                  ->parseTransitionBase ((DOMElement *)node, parentObject);
 
           if (elementObject != NULL)
             {
@@ -222,8 +227,8 @@ NclStructureParser::parseHead (DOMElement *parentElement,
                  == 0)
         {
           elementObject
-              = getPresentationSpecificationParser ()->parseDescriptorBase (
-                  (DOMElement *)node, parentObject);
+              = _documentParser->getPresentationSpecificationParser ()
+                  ->parseDescriptorBase ((DOMElement *)node, parentObject);
 
           if (elementObject != NULL)
             {
@@ -242,8 +247,8 @@ NclStructureParser::parseHead (DOMElement *parentElement,
                  XMLString::transcode ("connectorBase"))
                  == 0)
         {
-          elementObject = getConnectorsParser ()->parseConnectorBase (
-              (DOMElement *)node, parentObject);
+          elementObject = _documentParser->getConnectorsParser ()
+                  ->parseConnectorBase ((DOMElement *)node, parentObject);
 
           if (elementObject != NULL)
             {
@@ -261,8 +266,8 @@ NclStructureParser::parseHead (DOMElement *parentElement,
                                         XMLString::transcode ("meta"))
                  == 0)
         {
-          elementObject = getMetainformationParser ()->parseMeta (
-              (DOMElement *)node, parentObject);
+          elementObject = _documentParser->getMetainformationParser ()
+                  ->parseMeta ((DOMElement *)node, parentObject);
 
           if (elementObject != NULL)
             {
@@ -280,8 +285,8 @@ NclStructureParser::parseHead (DOMElement *parentElement,
                                         XMLString::transcode ("metadata"))
                  == 0)
         {
-          elementObject = getMetainformationParser ()->parseMetadata (
-              (DOMElement *)node, parentObject);
+          elementObject = _documentParser->getMetainformationParser ()
+                  ->parseMetadata ((DOMElement *)node, parentObject);
 
           if (elementObject != NULL)
             {
@@ -348,136 +353,9 @@ NclStructureParser::parseNcl (DOMElement *parentElement,
 
   return parentObject;
 }
-
-NclTransitionParser *
-NclStructureParser::getTransitionParser ()
-{
-  return transitionParser;
-}
-
 void
-NclStructureParser::setTransitionParser (
-    NclTransitionParser *transitionParser)
-{
-  this->transitionParser = transitionParser;
-}
-
-NclPresentationSpecificationParser *
-NclStructureParser::getPresentationSpecificationParser ()
-{
-  return presentationSpecificationParser;
-}
-
-void
-NclStructureParser::setPresentationSpecificationParser (
-    NclPresentationSpecificationParser *presentationSpecificationParser)
-{
-  this->presentationSpecificationParser = presentationSpecificationParser;
-}
-
-NclComponentsParser *
-NclStructureParser::getComponentsParser ()
-{
-  return componentsParser;
-}
-
-void
-NclStructureParser::setComponentsParser (
-    NclComponentsParser *componentsParser)
-{
-  this->componentsParser = componentsParser;
-}
-
-NclLinkingParser *
-NclStructureParser::getLinkingParser ()
-{
-  return linkingParser;
-}
-
-void
-NclStructureParser::setLinkingParser (NclLinkingParser *linkingParser)
-{
-  this->linkingParser = linkingParser;
-}
-
-NclLayoutParser *
-NclStructureParser::getLayoutParser ()
-{
-  return layoutParser;
-}
-
-void
-NclStructureParser::setLayoutParser (NclLayoutParser *layoutParser)
-{
-  this->layoutParser = layoutParser;
-}
-
-NclMetainformationParser *
-NclStructureParser::getMetainformationParser ()
-{
-  return metainformationParser;
-}
-
-NclInterfacesParser *
-NclStructureParser::getInterfacesParser ()
-{
-  return interfacesParser;
-}
-
-void
-NclStructureParser::setInterfacesParser (
-    NclInterfacesParser *interfacesParser)
-{
-  this->interfacesParser = interfacesParser;
-}
-
-NclPresentationControlParser *
-NclStructureParser::getPresentationControlParser ()
-{
-  return presentationControlParser;
-}
-
-void
-NclStructureParser::setPresentationControlParser (
-    NclPresentationControlParser *presentationControlParser)
-{
-  this->presentationControlParser = presentationControlParser;
-}
-
-NclConnectorsParser *
-NclStructureParser::getConnectorsParser ()
-{
-  return connectorsParser;
-}
-
-void
-NclStructureParser::setConnectorsParser (
-    NclConnectorsParser *connectorsParser)
-{
-  this->connectorsParser = connectorsParser;
-}
-
-NclImportParser *
-NclStructureParser::getImportParser ()
-{
-  return importParser;
-}
-
-void
-NclStructureParser::setImportParser (NclImportParser *importParser)
-{
-  this->importParser = importParser;
-}
-
-void
-NclStructureParser::setMetainformationParser (
-    NclMetainformationParser *metainformationParser)
-{
-  this->metainformationParser = metainformationParser;
-}
-
-void
-NclStructureParser::addBodyToNcl (arg_unused (void *parentObject),arg_unused (void *childObject))
+NclStructureParser::addBodyToNcl (arg_unused (void *parentObject),
+                                  arg_unused (void *childObject))
 {
 }
 
@@ -542,14 +420,14 @@ NclStructureParser::createBody (DOMElement *parentElement,
           XMLString::transcode ("id"),
           XMLString::transcode (document->getId ().c_str ()));
 
-      context = (ContextNode *) getComponentsParser ()
+      context = (ContextNode *) _documentParser->getComponentsParser ()
                     ->createContext (parentElement, objGrandParent);
 
       parentElement->removeAttribute (XMLString::transcode ("id"));
     }
   else
     {
-      context = (ContextNode *)getComponentsParser ()
+      context = (ContextNode *)_documentParser->getComponentsParser ()
                     ->createContext (parentElement, objGrandParent);
     }
   document->setBody (context);
@@ -569,7 +447,7 @@ NclStructureParser::solveNodeReferences (CompositeNode *composition)
   if (composition->instanceOf ("SwitchNode"))
     {
       deleteNodes = true;
-      nodes = getPresentationControlParser ()
+      nodes = _documentParser->getPresentationControlParser ()
                 ->getSwitchConstituents ((SwitchNode *)composition);
     }
   else
@@ -631,8 +509,8 @@ NclStructureParser::posCompileBody (DOMElement *parentElement,
 {
   solveNodeReferences ((CompositeNode *)parentObject);
 
-  return getComponentsParser ()->posCompileContext (parentElement,
-                                                    parentObject);
+  return _documentParser->getComponentsParser ()
+          ->posCompileContext (parentElement, parentObject);
 }
 
 void *
@@ -651,8 +529,8 @@ NclStructureParser::createNcl (DOMElement *parentElement,
   if (docName == "")
     docName = "ncl";
 
-  document = new NclDocument (docName, documentParser->getPath ());
-  documentParser->setNclDocument (document);
+  document = new NclDocument (docName, _documentParser->getPath ());
+  _documentParser->setNclDocument (document);
   return document;
 }
 

@@ -28,9 +28,6 @@ GINGA_NCLCONV_BEGIN
 class NclLayoutParser : public ModuleParser
 {
 private:
-  // Ref Classes
-  NclImportParser *importParser;
-
   DeviceLayout *deviceLayout;
 
 public:
@@ -48,9 +45,6 @@ public:
   void addImportBaseToRegionBase (void *parentObject, void *childObject);
 
   void addRegionToRegionBase (void *parentObject, void *childObject);
-
-  NclImportParser *getImportParser ();
-  void setImportParser (NclImportParser *importParser);
 
 private:
   double getPercentValue (const string &value);

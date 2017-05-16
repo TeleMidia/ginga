@@ -33,13 +33,6 @@ GINGA_NCLCONV_BEGIN
 
 class NclComponentsParser : public ModuleParser
 {
-  // Ref Classes
-private:
-  NclPresentationSpecificationParser *presentationSpecificationParser;
-  NclLinkingParser *linkingParser;
-  NclInterfacesParser *interfacesParser;
-  NclPresentationControlParser *presentationControlParser;
-
 public:
   NclComponentsParser (NclDocumentParser *PARSERS_EXPORT);
 
@@ -64,19 +57,6 @@ public:
 
   void addLinkToContext (void *parentObject, void *childObject);
   void addSwitchToContext (void *parentObject, void *childObject);
-
-  NclPresentationSpecificationParser *getPresentationSpecificationParser ();
-
-  void setPresentationSpecificationParser (
-      NclPresentationSpecificationParser *presentationSpecificationParser);
-
-  NclLinkingParser *getLinkingParser ();
-  void setLinkingParser (NclLinkingParser *linkingParser);
-  NclInterfacesParser *getInterfacesParser ();
-  void setInterfacesParser (NclInterfacesParser *interfacesParser);
-  NclPresentationControlParser *getPresentationControlParser ();
-  void setPresentationControlParser (
-      NclPresentationControlParser *presentationControlParser);
 
 private:
   void addNodeToContext (ContextNode *contextNode, NodeEntity *node);

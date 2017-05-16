@@ -43,7 +43,6 @@ NclDocumentParser::NclDocumentParser (PrivateBaseContext *pbc,
   this->deviceLayout = deviceLayout;
 
   init ();
-  setDependencies ();
 }
 
 NclDocumentParser::~NclDocumentParser ()
@@ -59,46 +58,6 @@ NclDocumentParser::~NclDocumentParser ()
   delete presentationControlParser;
   delete importParser;
   delete metainformationParser;
-}
-
-void
-NclDocumentParser::setDependencies ()
-{
-  getConnectorsParser ()->setImportParser (importParser);
-  getPresentationControlParser ()->setPresentationSpecificationParser (
-      presentationSpecificationParser);
-
-  getPresentationControlParser ()->setComponentsParser (componentsParser);
-  getPresentationControlParser ()->setInterfacesParser (interfacesParser);
-  getPresentationControlParser ()->setImportParser (importParser);
-  getComponentsParser ()->setPresentationSpecificationParser (
-      presentationSpecificationParser);
-
-  getComponentsParser ()->setLinkingParser (linkingParser);
-  getComponentsParser ()->setInterfacesParser (interfacesParser);
-  getComponentsParser ()->setPresentationControlParser (
-      presentationControlParser);
-
-  getStructureParser ()->setPresentationSpecificationParser (
-      presentationSpecificationParser);
-
-  getStructureParser ()->setComponentsParser (componentsParser);
-  getStructureParser ()->setLinkingParser (linkingParser);
-  getStructureParser ()->setLayoutParser (layoutParser);
-  getStructureParser ()->setInterfacesParser (interfacesParser);
-  getStructureParser ()->setPresentationControlParser (
-      presentationControlParser);
-
-  getStructureParser ()->setConnectorsParser (connectorsParser);
-  getStructureParser ()->setImportParser (importParser);
-  getStructureParser ()->setTransitionParser (transitionParser);
-  getStructureParser ()->setMetainformationParser (metainformationParser);
-  getPresentationSpecificationParser ()->setImportParser (importParser);
-  getPresentationSpecificationParser ()->setPresentationControlParser (
-      presentationControlParser);
-
-  getLayoutParser ()->setImportParser (importParser);
-  getTransitionParser ()->setImportParser (importParser);
 }
 
 NclTransitionParser *
