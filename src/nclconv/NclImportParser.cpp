@@ -40,7 +40,7 @@ NclImportParser::parseImportedDocumentBase (DOMElement *parentElement,
   void *elementObject;
 
   // pre-compile attributes
-  parentObject = createImportedDocumentBase (parentElement, objGrandParent);
+  parentObject = parentElement;
   g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
@@ -70,16 +70,16 @@ NclImportParser::parseImportedDocumentBase (DOMElement *parentElement,
 
 void *
 NclImportParser::parseImportNCL (DOMElement *parentElement,
-                                 void *objGrandParent)
+                                 arg_unused (void *objGrandParent))
 {
-  return createImportNCL (parentElement, objGrandParent);
+  return parentElement; // ???
 }
 
 void *
 NclImportParser::parseImportBase (DOMElement *parentElement,
-                                  void *objGrandParent)
+                                  arg_unused (void *objGrandParent))
 {
-  return createImportBase (parentElement, objGrandParent);
+  return parentElement;
 }
 
 void
@@ -105,26 +105,6 @@ NclImportParser::addImportNCLToImportedDocumentBase (arg_unused (void *parentObj
       thisDocument = getDocumentParser ()->getNclDocument ();
       thisDocument->addDocument (importedDocument, docAlias, docLocation);
     }
-}
-
-void *
-NclImportParser::createImportBase (DOMElement *parentElement,
-                                      arg_unused (void *objGrandParent))
-{
-  return parentElement;
-}
-
-void *
-NclImportParser::createImportNCL (DOMElement *parentElement,
-                                     arg_unused (void *objGrandParent))
-{
-  return parentElement;
-}
-void *
-NclImportParser::createImportedDocumentBase (DOMElement *parentElement,
-                                                arg_unused (void *objGrandParent))
-{
-  return parentElement;
 }
 
 GINGA_NCLCONV_END

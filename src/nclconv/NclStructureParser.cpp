@@ -115,7 +115,7 @@ NclStructureParser::parseBody (DOMElement *parentElement,
 
 void *
 NclStructureParser::parseHead (DOMElement *parentElement,
-                               void *objGrandParent)
+                               arg_unused(void *objGrandParent))
 {
   void *parentObject = NULL;
   DOMNodeList *elementNodeList;
@@ -123,7 +123,7 @@ NclStructureParser::parseHead (DOMElement *parentElement,
   DOMNode *node;
   void *elementObject = NULL;
 
-  parentObject = createHead (parentElement, objGrandParent);
+  parentObject = parentElement;
   g_assert_nonnull (parentObject);
 
   elementNodeList = parentElement->getChildNodes ();
@@ -472,7 +472,8 @@ NclStructureParser::setMetainformationParser (
 }
 
 void
-NclStructureParser::addBodyToNcl (arg_unused (void *parentObject), arg_unused (void *childObject))
+NclStructureParser::addBodyToNcl (arg_unused (void *parentObject),
+                                  arg_unused (void *childObject))
 {
 }
 
@@ -664,13 +665,6 @@ NclStructureParser::posCompileBody (DOMElement *parentElement,
 
   return getComponentsParser ()->posCompileContext (parentElement,
                                                     parentObject);
-}
-
-void *
-NclStructureParser::createHead (DOMElement *parentElement,
-                                arg_unused (void *objGrandParent))
-{
-  return parentElement;
 }
 
 void *

@@ -144,16 +144,16 @@ NclPresentationSpecificationParser::parseDescriptorBase (
 
 void *
 NclPresentationSpecificationParser::parseDescriptorBind (
-    DOMElement *parentElement, void *objGrandParent)
+    DOMElement *parentElement, arg_unused(void *objGrandParent))
 {
-  return createDescriptorBind (parentElement, objGrandParent);
+  return parentElement;
 }
 
 void *
 NclPresentationSpecificationParser::parseDescriptorParam (
-    DOMElement *parentElement, void *objGrandParent)
+    DOMElement *parentElement, arg_unused(void *objGrandParent))
 {
-  return createDescriptorParam (parentElement, objGrandParent);
+  return parentElement;
 }
 
 NclImportParser *
@@ -302,20 +302,6 @@ NclPresentationSpecificationParser::addImportBaseToDescriptorBase (
 }
 
 void *
-NclPresentationSpecificationParser::createDescriptorParam (
-    DOMElement *parentElement, arg_unused (void *objGrandParent))
-{
-  return parentElement;
-}
-
-void *
-NclPresentationSpecificationParser::createDescriptorBind (
-    DOMElement *parentElement, arg_unused (void *objGrandParent))
-{
-  return parentElement;
-}
-
-void *
 NclPresentationSpecificationParser::createDescriptorBase (
     DOMElement *parentElement, arg_unused (void *objGrandParent))
 {
@@ -330,7 +316,7 @@ NclPresentationSpecificationParser::createDescriptorBase (
 
 void *
 NclPresentationSpecificationParser::createDescriptor (DOMElement *parentElement,
-                                                arg_unused (void *objGrandParent))
+                                              arg_unused (void *objGrandParent))
 {
   Descriptor *descriptor;
   NclDocument *document;

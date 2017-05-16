@@ -75,8 +75,6 @@ public:
   virtual ~NclPresentationControlParser();
 
   void *parseBindRule (DOMElement *parentElement, void *objGrandParent);
-  virtual void *createBindRule (DOMElement *parentElement,
-                                void *objGrandParent);
 
   void *parseRuleBase (DOMElement *parentElement, void *objGrandParent);
   void *createRuleBase (DOMElement *parentElement, void *objGrandParent);
@@ -88,7 +86,6 @@ public:
   void addCompositeRuleToRuleBase (void *parentObject, void *childObject);
 
   void *parseRule (DOMElement *parentElement, void *objGrandParent);
-  void *createRule (DOMElement *parentElement, void *objGrandParent);
 
   void *parseSwitch (DOMElement *parentElement, void *objGrandParent);
   void *posCompileSwitch (DOMElement *parentElement, void *parentObject);
@@ -97,16 +94,10 @@ public:
   void *parseDefaultComponent (DOMElement *parentElement,
                                void *objGrandParent);
 
-  void *createDefaultComponent (DOMElement *parentElement,
-                                void *objGrandParent);
-
   void addDefaultComponentToSwitch (void *parentObject, void *childObject);
 
   void *parseDefaultDescriptor (DOMElement *parentElement,
                                 void *objGrandParent);
-
-  void *createDefaultDescriptor (DOMElement *parentElement,
-                                 void *objGrandParent);
 
   void addDefaultDescriptorToDescriptorSwitch (void *parentObject,
                                                void *childObject);

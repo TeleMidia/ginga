@@ -69,16 +69,32 @@ NclLinkingParser::parseBind (DOMElement *parentElement,
 
 void *
 NclLinkingParser::parseLinkParam (DOMElement *parentElement,
-                                  void *objGrandParent)
+                                  arg_unused (void *objGrandParent))
 {
-  return createLinkParam (parentElement, objGrandParent);
+  Parameter *parameter;
+  parameter = new Parameter (
+      XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("name"))),
+
+      XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("value"))));
+
+  return parameter;
 }
 
 void *
 NclLinkingParser::parseBindParam (DOMElement *parentElement,
-                                  void *objGrandParent)
+                                  arg_unused(void *objGrandParent))
 {
-  return createBindParam (parentElement, objGrandParent);
+  Parameter *parameter;
+  parameter = new Parameter (
+      XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("name"))),
+
+      XMLString::transcode (
+          parentElement->getAttribute (XMLString::transcode ("value"))));
+
+  return parameter;
 }
 
 void *
@@ -362,36 +378,6 @@ NclLinkingParser::createLink (DOMElement *parentElement,
   link = new CausalLink (getId (parentElement), connector);
   composite = (CompositeNode *)objGrandParent;
   return link;
-}
-
-void *
-NclLinkingParser::createBindParam (DOMElement *parentElement,
-                                   arg_unused (void *objGrandParent))
-{
-  Parameter *parameter;
-  parameter = new Parameter (
-      XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("name"))),
-
-      XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("value"))));
-
-  return parameter;
-}
-
-void *
-NclLinkingParser::createLinkParam (DOMElement *parentElement,
-                                   arg_unused (void *objGrandParent))
-{
-  Parameter *parameter;
-  parameter = new Parameter (
-      XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("name"))),
-
-      XMLString::transcode (
-          parentElement->getAttribute (XMLString::transcode ("value"))));
-
-  return parameter;
 }
 
 string
