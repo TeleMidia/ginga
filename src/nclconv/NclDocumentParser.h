@@ -66,12 +66,9 @@ protected:
   DeviceLayout *deviceLayout;
 
 public:
-  NclDocumentParser ();
+  NclDocumentParser (PrivateBaseContext *pbc, DeviceLayout *deviceLayout);
   virtual ~NclDocumentParser ();
 
-  void setDeviceLayout (DeviceLayout *deviceLayout);
-
-  void setConverterInfo (PrivateBaseContext *pbc, DeviceLayout *deviceLayout);
   string getAttribute (void *element, const string &attribute);
   Node *getNode (const string &id);
   bool removeNode (Node *node);
