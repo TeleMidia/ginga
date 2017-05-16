@@ -33,7 +33,8 @@ class NclTransitionParser : public ModuleParser
 public:
   NclTransitionParser (NclDocumentParser *documentParser);
 
-  void *parseTransitionBase (DOMElement *parentElement, void *objGrandParent);
+  TransitionBase *parseTransitionBase (DOMElement *parentElement,
+                                       void *objGrandParent);
 
   void *parseTransition (DOMElement *parentElement, void *objGrandParent);
 

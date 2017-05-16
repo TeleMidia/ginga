@@ -29,20 +29,19 @@ NclComponentsParser::NclComponentsParser (NclDocumentParser *parser)
 {
 }
 
-void *
+Node *
 NclComponentsParser::parseMedia (DOMElement *parentElement,
                                  void *objGrandParent)
 {
-  void *parentObject;
+  Node *media;
   DOMNodeList *elementNodeList;
   int i, size;
   DOMNode *node;
   DOMElement *element;
   string elementTagName;
-  void *elementObject = NULL;
 
-  parentObject = createMedia (parentElement, objGrandParent);
-  g_assert_nonnull (parentObject);
+  media = createMedia (parentElement);
+  g_assert_nonnull (media);
 
   elementNodeList = parentElement->getChildNodes ();
   size = (int) elementNodeList->getLength ();
@@ -58,37 +57,37 @@ NclComponentsParser::parseMedia (DOMElement *parentElement,
           if (XMLString::compareIString (elementTagName.c_str (), "area")
               == 0)
             {
-              elementObject = _documentParser->getInterfacesParser ()
-                      ->parseArea (element, parentObject);
+              Anchor *area = _documentParser->getInterfacesParser ()
+                      ->parseArea (element, media);
 
-              if (elementObject != NULL)
+              if (area != NULL)
                 {
-                  addAreaToMedia (parentObject, elementObject);
+                  addAreaToMedia ((ContentNode*)media, area);
                 }
             }
           else if (XMLString::compareIString (elementTagName.c_str (),
                                               "property")
                    == 0)
             {
-              elementObject = _documentParser->getInterfacesParser ()
-                      ->parseProperty (element, parentObject);
+              PropertyAnchor *prop = _documentParser->getInterfacesParser ()
+                      ->parseProperty (element, media);
 
-              if (elementObject != NULL)
+              if (prop != NULL)
                 {
-                  addPropertyToMedia (parentObject, elementObject);
+                  addPropertyToMedia ((ContentNode *)media, prop);
                 }
             }
         }
     }
 
-  return parentObject;
+  return media;
 }
 
 void *
 NclComponentsParser::parseContext (DOMElement *parentElement,
                                    void *objGrandParent)
 {
-  void *parentObject;
+  Node *context;
   DOMNodeList *elementNodeList;
   int i, size;
   DOMNode *node;
@@ -96,8 +95,8 @@ NclComponentsParser::parseContext (DOMElement *parentElement,
   string elementTagName;
   void *elementObject = NULL;
 
-  parentObject = createContext (parentElement, objGrandParent);
-  g_assert_nonnull (parentObject);
+  context = createContext (parentElement, objGrandParent);
+  g_assert_nonnull (context);
 
   elementNodeList = parentElement->getChildNodes ();
   size = (int) elementNodeList->getLength ();
@@ -112,20 +111,20 @@ NclComponentsParser::parseContext (DOMElement *parentElement,
           if (XMLString::compareIString (elementTagName.c_str (), "media")
               == 0)
             {
-              elementObject = parseMedia (element, parentObject);
-              if (elementObject != NULL)
+              Node *media = parseMedia (element, context);
+              if (media != NULL)
                 {
-                  addMediaToContext (parentObject, elementObject);
+                  addMediaToContext (context, media);
                 }
             }
           else if (XMLString::compareIString (elementTagName.c_str (),
                                               "context")
                    == 0)
             {
-              elementObject = parseContext (element, parentObject);
+              elementObject = parseContext (element, context);
               if (elementObject != NULL)
                 {
-                  addContextToContext (parentObject, elementObject);
+                  addContextToContext (context, elementObject);
                 }
             }
           else if (XMLString::compareIString (elementTagName.c_str (),
@@ -133,11 +132,11 @@ NclComponentsParser::parseContext (DOMElement *parentElement,
                    == 0)
             {
               elementObject = _documentParser->getPresentationControlParser ()
-                      ->parseSwitch (element, parentObject);
+                      ->parseSwitch (element, context);
 
               if (elementObject != NULL)
                 {
-                  addSwitchToContext (parentObject, elementObject);
+                  addSwitchToContext (context, elementObject);
                 }
             }
         }
@@ -151,17 +150,17 @@ NclComponentsParser::parseContext (DOMElement *parentElement,
                                         XMLString::transcode ("property"))
                  == 0)
         {
-          elementObject = _documentParser->getInterfacesParser ()
-                  ->parseProperty ((DOMElement *)node, parentObject);
+          PropertyAnchor *prop = _documentParser->getInterfacesParser ()
+                  ->parseProperty ((DOMElement *)node, context);
 
           if (elementObject != NULL)
             {
-              addPropertyToContext (parentObject, elementObject);
+              addPropertyToContext (context, prop);
             }
         }
     }
 
-  return parentObject;
+  return context;
 }
 
 void *
@@ -342,18 +341,18 @@ NclComponentsParser::addAnchorToMedia (ContentNode *contentNode, Anchor *anchor)
 }
 
 void
-NclComponentsParser::addAreaToMedia (void *parentObject, void *childObject)
+NclComponentsParser::addAreaToMedia (ContentNode *media, Anchor *area)
 {
-  addAnchorToMedia ((ContentNode *)parentObject, (Anchor *)childObject);
+  addAnchorToMedia (media, area);
 }
 
 void
-NclComponentsParser::addPropertyToMedia (void *parentObject, void *childObject)
+NclComponentsParser::addPropertyToMedia (ContentNode *media, Anchor *property)
 {
-  addAnchorToMedia ((ContentNode *)parentObject, (Anchor *)childObject);
+  addAnchorToMedia (media, property);
 }
 
-void *
+Node *
 NclComponentsParser::createContext (DOMElement *parentElement,
                                     arg_unused (void *objGrandParent))
 {
@@ -507,9 +506,8 @@ NclComponentsParser::posCompileContext (DOMElement *parentElement,
   return posCompileContext2 (parentElement, parentObject);
 }
 
-void *
-NclComponentsParser::createMedia (DOMElement *parentElement,
-                                  arg_unused (void *objGrandParent))
+Node *
+NclComponentsParser::createMedia (DOMElement *parentElement)
 {
   string attValue, id;
   NclDocument *document;

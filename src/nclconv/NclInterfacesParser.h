@@ -50,8 +50,8 @@ public:
 
   void *createPort (DOMElement *parentElement, void *objGrandParent);
   void *parseMapping (DOMElement *parentElement, void *objGrandParent);
-  void *parseArea (DOMElement *parentElement, void *objGrandParent);
-  void *parseProperty (DOMElement *parentElement, void *objGrandParent);
+  Anchor *parseArea (DOMElement *parentElement, void *objGrandParent);
+  PropertyAnchor *parseProperty (DOMElement *parentElement, Node *objGrandParent);
   void *parsePort (DOMElement *parentElement, void *objGrandParent);
 
 private:

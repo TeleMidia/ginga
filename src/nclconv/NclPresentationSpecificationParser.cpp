@@ -74,11 +74,11 @@ NclPresentationSpecificationParser::parseDescriptor (
   return parentObject;
 }
 
-void *
+DescriptorBase *
 NclPresentationSpecificationParser::parseDescriptorBase (
     DOMElement *parentElement, void *objGrandParent)
 {
-  void *parentObject;
+  DescriptorBase *parentObject;
   DOMNodeList *elementNodeList;
   DOMElement *element;
   DOMNode *node;
@@ -272,7 +272,7 @@ NclPresentationSpecificationParser::addImportBaseToDescriptorBase (
     }
 }
 
-void *
+DescriptorBase *
 NclPresentationSpecificationParser::createDescriptorBase (
     DOMElement *parentElement, arg_unused (void *objGrandParent))
 {

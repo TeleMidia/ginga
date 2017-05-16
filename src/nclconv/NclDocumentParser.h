@@ -89,7 +89,7 @@ public:
   NclLinkingParser *getLinkingParser ();
 
 protected:
-  void *parseRootElement (DOMElement *rootElement);
+  NclDocument *parseRootElement (DOMElement *rootElement);
   void init ();
 
 public:

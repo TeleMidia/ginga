@@ -126,7 +126,7 @@ NclDocumentParser::getLinkingParser ()
   return linkingParser;
 }
 
-void *
+NclDocument *
 NclDocumentParser::parseRootElement (DOMElement *rootElement)
 {
   string tagName;

@@ -120,9 +120,11 @@ public:
   void addConnectorParamToCausalConnector (void *parentObject,
                                            void *childObject);
 
-  void *parseConnectorBase (DOMElement *parentElement, void *objGrandParent);
+  ConnectorBase *parseConnectorBase (DOMElement *parentElement,
+                                     void *objGrandParent);
 
-  void *createConnectorBase (DOMElement *parentElement, void *objGrandParent);
+  ConnectorBase *createConnectorBase (DOMElement *parentElement,
+                                      void *objGrandParent);
 
   void addImportBaseToConnectorBase (void *parentObject, void *childObject);
 

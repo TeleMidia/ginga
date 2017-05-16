@@ -26,12 +26,11 @@ NclMetainformationParser::NclMetainformationParser (
 {
 }
 
-void *
+Meta *
 NclMetainformationParser::parseMeta (DOMElement *parentElement,
                                      arg_unused (void *objGrandParent))
 {
   string name, content;
-  Meta *meta;
 
   if (parentElement->hasAttribute (XMLString::transcode ("name")))
     {
@@ -53,18 +52,14 @@ NclMetainformationParser::parseMeta (DOMElement *parentElement,
       syntax_error ("meta: missing content");
     }
 
-  meta = new Meta (name, deconst (void *, content.c_str ()));
-  return (void *)meta;
+  return new Meta (name, deconst (void *, content.c_str ()));
 }
 
-void *
+Metadata *
 NclMetainformationParser::parseMetadata (arg_unused (DOMElement *parentElement),
                                          arg_unused (void *objGrandParent) )
 {
-  Metadata *metadata;
-
-  metadata = new Metadata ();
-  return (void *)metadata;
+  return new Metadata ();
 }
 
 GINGA_NCLCONV_END

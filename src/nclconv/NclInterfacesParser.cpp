@@ -131,7 +131,7 @@ NclInterfacesParser::parseMapping (DOMElement *parent,
   return port;
 }
 
-void *
+Anchor *
 NclInterfacesParser::parseArea (DOMElement *parent,
                                 void *objGrandParent)
 {
@@ -185,9 +185,9 @@ NclInterfacesParser::parseArea (DOMElement *parent,
   return anchor;
 }
 
-void *
+PropertyAnchor *
 NclInterfacesParser::parseProperty (DOMElement *parent,
-                                    void *objGrandParent)
+                                    Node *objGrandParent)
 {
   string attributeName, attributeValue;
   PropertyAnchor *anchor;

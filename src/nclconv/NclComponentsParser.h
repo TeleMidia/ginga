@@ -36,17 +36,17 @@ class NclComponentsParser : public ModuleParser
 public:
   NclComponentsParser (NclDocumentParser *PARSERS_EXPORT);
 
-  void *parseMedia (DOMElement *parentElement, void *objGrandParent);
-  void *createMedia (DOMElement *parentElement, void *objGrandParent);
+  Node *parseMedia (DOMElement *parentElement, void *objGrandParent);
+  Node *createMedia (DOMElement *parentElement);
 
-  void addAreaToMedia (void *parentObject, void *childObject);
-  void addPropertyToMedia (void *parentObject, void *childObject);
+  void addAreaToMedia (ContentNode *media, Anchor *area);
+  void addPropertyToMedia (ContentNode *media, Anchor *property);
 
   void *parseContext (DOMElement *parentElement, void *objGrandParent);
   void *posCompileContext2 (DOMElement *parentElement, void *parentObject);
   void *posCompileContext (DOMElement *parentElement, void *parentObject);
 
-  void *createContext (DOMElement *parentElement, void *objGrandParent);
+  Node *createContext (DOMElement *parentElement, void *objGrandParent);
 
   void addPortToContext (void *parentObject, void *childObject);
 
