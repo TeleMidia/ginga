@@ -32,29 +32,18 @@ NclLayoutParser::NclLayoutParser (NclParser *nclParser,
 }
 
 LayoutRegion *
-NclLayoutParser::parseRegion (DOMElement *parentElement)
+NclLayoutParser::parseRegion (DOMElement *region_element)
 {
-  LayoutRegion *region = createRegion (parentElement);
+  LayoutRegion *region = createRegion (region_element);
   g_assert_nonnull (region);
 
-  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
-  for (int i = 0; i < (int)elementNodeList->getLength (); i++)
+  for (DOMElement *child:
+       dom_element_children_by_tagname(region_element, "region"))
     {
-      DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      LayoutRegion *child_region = parseRegion (child);
+      if (child_region)
         {
-          DOMElement *element = (DOMElement *)node;
-          string tagname = dom_element_tagname(element);
-
-          if (XMLString::compareIString (tagname.c_str (), "region")
-              == 0)
-            {
-              LayoutRegion *child_region = parseRegion (element);
-              if (child_region)
-                {
-                  addRegionToRegion (region, child_region);
-                }
-            }
+          addRegionToRegion (region, child_region);
         }
     }
 
@@ -62,38 +51,29 @@ NclLayoutParser::parseRegion (DOMElement *parentElement)
 }
 
 RegionBase *
-NclLayoutParser::parseRegionBase (DOMElement *parentElement)
+NclLayoutParser::parseRegionBase (DOMElement *regionBase_element)
 {
-  RegionBase *regionBase = createRegionBase (parentElement);
+  RegionBase *regionBase = createRegionBase (regionBase_element);
   g_assert_nonnull (regionBase);
 
-  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
-  for (int i = 0; i < (int)elementNodeList->getLength (); i++)
+  for (DOMElement *child:
+       dom_element_children(regionBase_element) )
     {
-      DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      if (dom_element_tagname(child) == "importBase")
         {
-          DOMElement *element = (DOMElement *)node;
-          string tagname = dom_element_tagname(element);
-
-          if (XMLString::compareIString (tagname.c_str (), "importBase") == 0)
+          DOMElement *elementObject = _nclParser->getImportParser ()->
+              parseImportBase (child);
+          if (elementObject)
             {
-              DOMElement *elementObject =
-                  _nclParser->getImportParser ()->
-                    parseImportBase (element);
-
-              if (elementObject)
-                {
-                  addImportBaseToRegionBase (regionBase, elementObject);
-                }
+              addImportBaseToRegionBase (regionBase, elementObject);
             }
-          else if (XMLString::compareIString (tagname.c_str (), "region") == 0)
+        }
+      else if (dom_element_tagname(child) == "region")
+        {
+          LayoutRegion *region = parseRegion (child);
+          if (region)
             {
-              LayoutRegion *region = parseRegion (element);
-              if (region)
-                {
-                  addRegionToRegionBase (regionBase, region);
-                }
+              addRegionToRegionBase (regionBase, region);
             }
         }
     }

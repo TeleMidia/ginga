@@ -37,8 +37,7 @@ NclStructureParser::parseBody (DOMElement *body_element)
   ContextNode *body = createBody (body_element);
   g_assert_nonnull (body);
 
-  DOMElement *child;
-  FOR_EACH_DOM_ELEM_CHILD(child, body_element)
+  for (DOMElement *child : dom_element_children(body_element) )
     {
       if (dom_element_tagname(child) == "media")
         {
@@ -75,19 +74,15 @@ NclStructureParser::parseBody (DOMElement *body_element)
         }
     }
 
-  FOR_EACH_DOM_ELEM_CHILD(child, body_element)
+  for (DOMElement *child :
+       dom_element_children_by_tagname(body_element, "property") )
     {
-      if(dom_element_tagname(child) == "property")
+      PropertyAnchor *prop = _nclParser->getInterfacesParser ()
+          ->parseProperty (child, body);
+      if (prop)
         {
-          PropertyAnchor *prop = _nclParser->getInterfacesParser ()
-              ->parseProperty (child, body);
-
-          if (prop)
-            {
-              // add property to body
-              _nclParser->getComponentsParser ()
-                  ->addPropertyToContext (body, prop);
-            }
+          // add property to body
+          _nclParser->getComponentsParser ()->addPropertyToContext (body, prop);
         }
     }
 
@@ -98,116 +93,95 @@ void
 NclStructureParser::parseHead (DOMElement *head_element)
 {
   NclDocument *nclDoc = getNclParser()->getNclDocument();
-
-  cout << this << " " << nclDoc << endl;
   g_assert_nonnull (nclDoc);
 
-  DOMElement *child;
-  FOR_EACH_DOM_ELEM_CHILD(child, head_element)
+  for (DOMElement *child :
+       dom_element_children_by_tagname(head_element,"importedDocumentBase") )
     {
-      if (dom_element_tagname(child) ==  "importedDocumentBase")
+      _nclParser->getImportParser ()->parseImportedDocumentBase (child);
+    }
+
+  for (DOMElement *child :
+       dom_element_children_by_tagname(head_element, "regionBase") )
+    {
+      RegionBase *regionBase = _nclParser->getLayoutParser ()
+          ->parseRegionBase (child);
+
+      if (regionBase)
         {
-          _nclParser->getImportParser ()->parseImportedDocumentBase (child);
+          nclDoc->addRegionBase(regionBase);
         }
     }
 
-  FOR_EACH_DOM_ELEM_CHILD(child, head_element)
+  for (DOMElement *child :
+       dom_element_children_by_tagname(head_element, "ruleBase") )
     {
-      if(dom_element_tagname(child) == "regionBase")
+      RuleBase *ruleBase = _nclParser->getPresentationControlParser ()
+          ->parseRuleBase (child);
+      if (ruleBase)
         {
-          RegionBase *regionBase = _nclParser->getLayoutParser ()
-              ->parseRegionBase (child);
-
-          if (regionBase)
-            {
-              nclDoc->addRegionBase(regionBase);
-            }
+          nclDoc->setRuleBase (ruleBase);
+          break;
         }
     }
 
-  FOR_EACH_DOM_ELEM_CHILD(child, head_element)
+  for (DOMElement *child :
+       dom_element_children_by_tagname(head_element, "transitionBase") )
     {
-      if (dom_element_tagname(child) == "ruleBase")
+      TransitionBase *transBase = _nclParser->getTransitionParser ()
+          ->parseTransitionBase (child);
+      if (transBase)
         {
-          RuleBase *ruleBase = _nclParser->getPresentationControlParser ()
-                    ->parseRuleBase (child);
-          if (ruleBase)
-            {
-              nclDoc->setRuleBase (ruleBase);
-              break;
-            }
+          nclDoc->setTransitionBase (transBase);
+          break;
         }
     }
 
-  FOR_EACH_DOM_ELEM_CHILD(child, head_element)
+  for (DOMElement *child :
+       dom_element_children_by_tagname(head_element, "descriptorBase") )
     {
-      if (dom_element_tagname(child) == "transitionBase")
+      DescriptorBase *descBase =
+          _nclParser->getPresentationSpecificationParser ()
+          ->parseDescriptorBase (child);
+      if (descBase)
         {
-          TransitionBase *transBase = _nclParser->getTransitionParser ()
-                ->parseTransitionBase (child);
-          if (transBase)
-            {
-              nclDoc->setTransitionBase (transBase);
-              break;
-            }
+          nclDoc->setDescriptorBase (descBase);
+          break;
         }
     }
 
-  FOR_EACH_DOM_ELEM_CHILD(child, head_element)
+  for (DOMElement *child :
+       dom_element_children_by_tagname(head_element, "connectorBase") )
     {
-      if (dom_element_tagname(child) == "descriptorBase")
+      ConnectorBase *connBase = _nclParser->getConnectorsParser ()
+          ->parseConnectorBase (child, nclDoc);
+      if (connBase)
         {
-          DescriptorBase *descBase =
-              _nclParser->getPresentationSpecificationParser ()
-              ->parseDescriptorBase (child);
-
-          if (descBase)
-            {
-              nclDoc->setDescriptorBase (descBase);
-              break;
-            }
+          nclDoc->setConnectorBase(connBase);
+          break;
         }
     }
 
-  FOR_EACH_DOM_ELEM_CHILD(child, head_element)
+  for (DOMElement *child :
+       dom_element_children_by_tagname(head_element, "meta") )
     {
-      if (dom_element_tagname(child) == "connectorBase")
+      Meta *meta = _nclParser->getMetainformationParser ()->parseMeta (child);
+      if (meta)
         {
-          ConnectorBase *connBase = _nclParser->getConnectorsParser ()
-              ->parseConnectorBase (child, nclDoc);
-          if (connBase)
-            {
-              nclDoc->setConnectorBase(connBase);
-              break;
-            }
+          nclDoc->addMetainformation (meta);
+          break;
         }
     }
 
-  FOR_EACH_DOM_ELEM_CHILD(child, head_element)
+  for (DOMElement *child :
+       dom_element_children_by_tagname(head_element, "metadata") )
     {
-      if (dom_element_tagname(child) == "meta")
+      Metadata *metadata = _nclParser->getMetainformationParser ()
+          ->parseMetadata (child);
+      if (metadata)
         {
-          Meta *meta = _nclParser->getMetainformationParser ()
-              ->parseMeta (child);
-          if (meta)
-            {
-              nclDoc->addMetainformation (meta);
-              break;
-            }
-        }
-    }
-
-  FOR_EACH_DOM_ELEM_CHILD(child, head_element)
-    {
-      if (dom_element_tagname(child)  == "metadata")
-        {
-          Metadata *metadata = _nclParser->getMetainformationParser ()
-              ->parseMetadata (child);
-          if (metadata)
-            {
-              nclDoc->addMetadata (metadata);
-              break;
-            }
+          nclDoc->addMetadata (metadata);
+          break;
         }
     }
 }
@@ -218,26 +192,21 @@ NclStructureParser::parseNcl (DOMElement *ncl_element)
   NclDocument* parentObject = createNcl (ncl_element);
   g_assert_nonnull (parentObject);
 
-  DOMElement *child;
-  FOR_EACH_DOM_ELEM_CHILD(child, ncl_element)
+  for (DOMElement *child :
+       dom_element_children_by_tagname(ncl_element, "head") )
     {
-      if (dom_element_tagname(child) == "head")
-        {
-          parseHead (child);
-        }
+      parseHead (child);
     }
 
-  FOR_EACH_DOM_ELEM_CHILD(child, ncl_element)
+  for (DOMElement *child :
+       dom_element_children_by_tagname(ncl_element, "body") )
     {
-      if (dom_element_tagname(child) == "body")
+      ContextNode *body = parseBody (child);
+      if (body)
         {
-          ContextNode *body = parseBody (child);
-          if (body)
-            {
-              posCompileBody (child, body);
-              // addBodyToNcl (parentObject, body);
-              break;
-            }
+          posCompileBody (child, body);
+          // addBodyToNcl (parentObject, body);
+          break;
         }
     }
 

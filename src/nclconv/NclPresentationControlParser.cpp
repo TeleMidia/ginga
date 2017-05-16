@@ -211,7 +211,7 @@ NclPresentationControlParser::posCompileSwitch2 (DOMElement *parentElement,
           if (XMLString::compareIString (tagname.c_str(), "switchPort") == 0)
             {
               void *elementObject = _nclParser->getInterfacesParser ()
-                  ->parseSwitchPort ((DOMElement *)node, parentObject);
+                  ->parseSwitchPort (element, (SwitchNode*) parentObject);
 
               if (elementObject)
                 {

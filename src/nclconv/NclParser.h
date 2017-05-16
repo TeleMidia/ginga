@@ -24,6 +24,9 @@ using namespace ::ginga::ncl;
 #include "formatter/PrivateBaseContext.h" //FIXME: This is an architectural problem!
 using namespace ::ginga::formatter;
 
+#include <vector>
+using namespace std;
+
 GINGA_NCLCONV_BEGIN
 
 class NclConnectorsParser;
@@ -41,7 +44,7 @@ class NclMetainformationParser;
 
 // Get the DOMElement tagname as a std::string and free resources allocated by
 // Xerces
-inline string
+static string
 dom_element_tagname (const DOMElement *el)
 {
   char *tagname = XMLString::transcode (el->getTagName ());
@@ -52,7 +55,7 @@ dom_element_tagname (const DOMElement *el)
 }
 
 // Leak free check if DOMElement* has an attribute
-inline bool
+static bool
 dom_element_has_attr (const DOMElement *el, const string &attr)
 {
   XMLCh *attr_xmlch = XMLString::transcode(attr.c_str());
@@ -64,7 +67,7 @@ dom_element_has_attr (const DOMElement *el, const string &attr)
 
 // Get the value of an attribute of DOMElement* as a std::string and free
 // resources allocated by Xerces
-inline string
+static string
 dom_element_get_attr (const DOMElement *element, const string &attr)
 {
   XMLCh *attr_xmlch = XMLString::transcode(attr.c_str());
@@ -81,6 +84,57 @@ dom_element_get_attr (const DOMElement *element, const string &attr)
   for ( X = Y->getFirstElementChild(); \
         X != nullptr; \
         X = X->getNextElementSibling() )
+
+static vector <DOMElement *>
+dom_element_children(DOMElement *el)
+{
+  vector <DOMElement *> vet;
+
+  DOMElement *child;
+  FOR_EACH_DOM_ELEM_CHILD(child, el)
+    {
+      vet.push_back(child);
+    }
+
+  return vet;
+}
+
+
+static vector <DOMElement *>
+dom_element_children_by_tagname(DOMElement *el, const string &tagname)
+{
+  vector <DOMElement *> vet;
+
+  DOMElement *child;
+  FOR_EACH_DOM_ELEM_CHILD(child, el)
+    {
+      if (dom_element_tagname(child) == tagname)
+        {
+          vet.push_back(child);
+        }
+    }
+
+  return vet;
+}
+
+static vector <DOMElement *>
+dom_element_children_by_tagnames(DOMElement *el, const vector<string> &tagnames)
+{
+  vector <DOMElement *> vet;
+
+  DOMElement *child;
+  FOR_EACH_DOM_ELEM_CHILD(child, el)
+    {
+      if (std::find(tagnames.begin(), tagnames.end(), dom_element_tagname(child))
+          != tagnames.end() )
+        {
+          vet.push_back(child);
+        }
+    }
+
+  return vet;
+}
+
 
 class NclParser : public ErrorHandler
 {

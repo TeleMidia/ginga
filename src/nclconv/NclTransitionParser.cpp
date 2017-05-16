@@ -31,39 +31,31 @@ NclTransitionParser::NclTransitionParser (NclParser *nclParser)
 }
 
 TransitionBase *
-NclTransitionParser::parseTransitionBase (DOMElement *parentElement)
+NclTransitionParser::parseTransitionBase (DOMElement *transBase_element)
 {
   TransitionBase *transBase = new TransitionBase (
-        dom_element_get_attr(parentElement, "id") );
+        dom_element_get_attr(transBase_element, "id") );
   g_assert_nonnull (transBase);
 
-  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
-  for (int i = 0; i < (int)elementNodeList->getLength (); i++)
+
+  for(DOMElement *child: dom_element_children(transBase_element))
     {
-      DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      if (dom_element_tagname(child) == "importBase")
         {
-          DOMElement *element = (DOMElement *)node;
-          string tagname = dom_element_tagname(element);
+          DOMElement *newel = _nclParser->getImportParser ()
+              ->parseImportBase (child);
 
-          if (XMLString::compareIString (tagname.c_str(), "importBase") == 0)
+          if (newel)
             {
-              DOMElement *elementObject = _nclParser->getImportParser ()
-                      ->parseImportBase (element);
-
-              if (elementObject != NULL)
-                {
-                  addImportBaseToTransitionBase (transBase, elementObject);
-                }
+              addImportBaseToTransitionBase (transBase, newel);
             }
-          else if (XMLString::compareIString (tagname.c_str(), "transition")
-                   == 0)
+        }
+      else if (dom_element_tagname(child) == "transition")
+        {
+          Transition *trans = parseTransition (child);
+          if (trans)
             {
-              Transition *trans = parseTransition (element);
-              if (trans)
-                {
-                  transBase->addTransition (trans);
-                }
+              transBase->addTransition (trans);
             }
         }
     }
@@ -195,7 +187,6 @@ NclTransitionParser::addImportBaseToTransitionBase (TransitionBase *transBase,
 
   // get the external base alias and location
   baseAlias = dom_element_get_attr(element, "alias");
-
   baseLocation = dom_element_get_attr(element, "documentURI");
 
   compiler = getNclParser ();
