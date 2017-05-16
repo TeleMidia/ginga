@@ -84,36 +84,19 @@ protected:
 public:
   NclTransitionParser *getTransitionParser ();
   NclConnectorsParser *getConnectorsParser ();
-  void setConnectorsParser (NclConnectorsParser *connectorsParser);
   NclImportParser *getImportParser ();
-  void setBaseReuseParser (NclImportParser *importParser);
   NclPresentationControlParser *getPresentationControlParser ();
-  void setPresentationControlParser (
-      NclPresentationControlParser *presentationControlParser);
-
   NclComponentsParser *getComponentsParser ();
-  void setComponentsParser (NclComponentsParser *componentsParser);
   NclStructureParser *getStructureParser ();
-  void setStructureParser (NclStructureParser *structureParser);
   NclPresentationSpecificationParser *getPresentationSpecificationParser ();
-
-  void setPresentationSpecificationParser (
-      NclPresentationSpecificationParser *presentationSpecificationParser);
-
   NclLayoutParser *getLayoutParser ();
-  void setLayoutParser (NclLayoutParser *layoutParser);
   NclInterfacesParser *getInterfacesParser ();
-  void setInterfacesParser (NclInterfacesParser *interfacesParser);
   NclMetainformationParser *getMetainformationParser ();
-  void setMetainformationParser (
-      NclMetainformationParser *metainformationParser);
-
   NclLinkingParser *getLinkingParser ();
-  void setLinkingParser (NclLinkingParser *linkingParser);
 
 protected:
   void *parseRootElement (DOMElement *rootElement);
-  void initialize ();
+  void init ();
 
 public:
   string getPath ();

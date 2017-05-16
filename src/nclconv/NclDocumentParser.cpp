@@ -34,91 +34,58 @@ GINGA_NCLCONV_BEGIN
 
 NclDocumentParser::NclDocumentParser ()
 {
-  this->deviceLayout = NULL;
-  this->presentationSpecificationParser = NULL;
-  this->structureParser = NULL;
-  this->componentsParser = NULL;
-  this->connectorsParser = NULL;
-  this->linkingParser = NULL;
-  this->interfacesParser = NULL;
-  this->layoutParser = NULL;
-  this->presentationControlParser = NULL;
-  this->importParser = NULL;
-  this->metainformationParser = NULL;
-  this->transitionParser = NULL;
+  this->deviceLayout = nullptr;
+  this->presentationSpecificationParser = nullptr;
+  this->structureParser = nullptr;
+  this->componentsParser = nullptr;
+  this->connectorsParser = nullptr;
+  this->linkingParser = nullptr;
+  this->interfacesParser = nullptr;
+  this->layoutParser = nullptr;
+  this->presentationControlParser = nullptr;
+  this->importParser = nullptr;
+  this->metainformationParser = nullptr;
+  this->transitionParser = nullptr;
 
-  this->parentObject = NULL;
-  this->privateBaseContext = NULL;
+  this->parentObject = nullptr;
+  this->privateBaseContext = nullptr;
   this->ownManager = false;
 }
 
 NclDocumentParser::~NclDocumentParser ()
 {
-  if (presentationSpecificationParser != NULL)
-    {
-      delete presentationSpecificationParser;
-      presentationSpecificationParser = NULL;
-    }
+  if (presentationSpecificationParser != nullptr)
+    delete presentationSpecificationParser;
 
-  if (structureParser != NULL)
-    {
-      delete structureParser;
-      structureParser = NULL;
-    }
+  if (structureParser != nullptr)
+    delete structureParser;
 
-  if (componentsParser != NULL)
-    {
-      delete componentsParser;
-      componentsParser = NULL;
-    }
+  if (componentsParser != nullptr)
+    delete componentsParser;
 
-  if (connectorsParser != NULL)
-    {
-      delete connectorsParser;
-      connectorsParser = NULL;
-    }
+  if (connectorsParser != nullptr)
+    delete connectorsParser;
 
-  if (linkingParser != NULL)
-    {
-      delete linkingParser;
-      linkingParser = NULL;
-    }
+  if (linkingParser != nullptr)
+    delete linkingParser;
 
-  if (interfacesParser != NULL)
-    {
-      delete interfacesParser;
-      interfacesParser = NULL;
-    }
+  if (interfacesParser != nullptr)
+    delete interfacesParser;
 
-  if (layoutParser != NULL)
-    {
-      delete layoutParser;
-      layoutParser = NULL;
-    }
+  if (layoutParser != nullptr)
+    delete layoutParser;
 
-  if (transitionParser != NULL)
-    {
-      delete transitionParser;
-      transitionParser = NULL;
-    }
+  if (transitionParser != nullptr)
+    delete transitionParser;
 
-  if (presentationControlParser != NULL)
-    {
-      delete presentationControlParser;
-      presentationControlParser = NULL;
-    }
+  if (presentationControlParser != nullptr)
+    delete presentationControlParser;
 
-  if (importParser != NULL)
-    {
-      delete importParser;
-      importParser = NULL;
-    }
+  if (importParser != nullptr)
+    delete importParser;
 
-  if (metainformationParser != NULL)
-    {
-      delete metainformationParser;
-      metainformationParser = NULL;
-    }
+  if (metainformationParser != nullptr)
+    delete metainformationParser;
 }
 
 void
@@ -179,23 +146,10 @@ NclDocumentParser::getConnectorsParser ()
   return connectorsParser;
 }
 
-void
-NclDocumentParser::setConnectorsParser (
-    NclConnectorsParser *connectorsParser)
-{
-  this->connectorsParser = connectorsParser;
-}
-
 NclImportParser *
 NclDocumentParser::getImportParser ()
 {
   return importParser;
-}
-
-void
-NclDocumentParser::setBaseReuseParser (NclImportParser *importParser)
-{
-  this->importParser = importParser;
 }
 
 NclPresentationControlParser *
@@ -204,24 +158,10 @@ NclDocumentParser::getPresentationControlParser ()
   return presentationControlParser;
 }
 
-void
-NclDocumentParser::setPresentationControlParser (
-    NclPresentationControlParser *presentationControlParser)
-{
-  this->presentationControlParser = presentationControlParser;
-}
-
 NclComponentsParser *
 NclDocumentParser::getComponentsParser ()
 {
   return componentsParser;
-}
-
-void
-NclDocumentParser::setComponentsParser (
-    NclComponentsParser *componentsParser)
-{
-  this->componentsParser = componentsParser;
 }
 
 NclStructureParser *
@@ -230,23 +170,10 @@ NclDocumentParser::getStructureParser ()
   return structureParser;
 }
 
-void
-NclDocumentParser::setStructureParser (NclStructureParser *structureParser)
-{
-  this->structureParser = structureParser;
-}
-
 NclPresentationSpecificationParser *
 NclDocumentParser::getPresentationSpecificationParser ()
 {
   return presentationSpecificationParser;
-}
-
-void
-NclDocumentParser::setPresentationSpecificationParser (
-    NclPresentationSpecificationParser *presentationSpecificationParser)
-{
-  this->presentationSpecificationParser = presentationSpecificationParser;
 }
 
 NclLayoutParser *
@@ -255,23 +182,10 @@ NclDocumentParser::getLayoutParser ()
   return layoutParser;
 }
 
-void
-NclDocumentParser::setLayoutParser (NclLayoutParser *layoutParser)
-{
-  this->layoutParser = layoutParser;
-}
-
 NclInterfacesParser *
 NclDocumentParser::getInterfacesParser ()
 {
   return interfacesParser;
-}
-
-void
-NclDocumentParser::setInterfacesParser (
-    NclInterfacesParser *interfacesParser)
-{
-  this->interfacesParser = interfacesParser;
 }
 
 NclMetainformationParser *
@@ -280,23 +194,10 @@ NclDocumentParser::getMetainformationParser ()
   return metainformationParser;
 }
 
-void
-NclDocumentParser::setMetainformationParser (
-    NclMetainformationParser *metainformationParser)
-{
-  this->metainformationParser = metainformationParser;
-}
-
 NclLinkingParser *
 NclDocumentParser::getLinkingParser ()
 {
   return linkingParser;
-}
-
-void
-NclDocumentParser::setLinkingParser (NclLinkingParser *linkingParser)
-{
-  this->linkingParser = linkingParser;
 }
 
 void *
@@ -423,12 +324,12 @@ NclDocumentParser::setConverterInfo (PrivateBaseContext *pbc,
   setDeviceLayout (deviceLayout);
   this->privateBaseContext = pbc;
 
-  initialize ();
+  init ();
   setDependencies ();
 }
 
 void
-NclDocumentParser::initialize ()
+NclDocumentParser::init ()
 {
   presentationSpecificationParser
       = new NclPresentationSpecificationParser(this, deviceLayout);
