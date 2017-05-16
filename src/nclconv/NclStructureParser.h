@@ -39,33 +39,28 @@ class NclStructureParser : public ModuleParser
 public:
   NclStructureParser (NclDocumentParser *documentParser);
 
-  void *parseBody (DOMElement *parentElement, void *objGrandParent);
+  ContextNode *parseBody ( DOMElement *parentElement,
+                           NclDocument *objGrandParent );
 
-  void *posCompileBody (DOMElement *parentElement, void *parentObject);
+  void *posCompileBody (DOMElement *parentElement, ContextNode *parentObject);
 
-  void *createBody (DOMElement *parentElement, void *objGrandParent);
+  ContextNode *createBody (DOMElement *parentElement, void *objGrandParent);
 
-  void *parseHead (DOMElement *parentElement, void *objGrandParent);
+  void parseHead (DOMElement *parentElement);
 
-  void addRegionBaseToHead (void *parentObject, void *childObject);
+  void addRegionBaseToHead (RegionBase *regBase);
 
-  void addDescriptorBaseToHead (void *parentObject, void *childObject);
+  void addDescriptorBaseToHead (DescriptorBase *descBase);
 
-  void addTransitionBaseToHead (void *parentObject, void *childObject);
+  void addTransitionBaseToHead (TransitionBase *transBase);
 
-  void addRuleBaseToHead (void *parentObject, void *childObject);
-
-  void addConnectorBaseToHead (void *parentObject, void *childObject);
+  void addRuleBaseToHead (RuleBase *ruleBase);
 
   void addImportedDocumentBaseToHead (void *parentObject, void *childObject);
 
-  void addMetaToHead (void *parentObject, void *childObject);
+  NclDocument *parseNcl (DOMElement *parentElement, void *objGrandParent);
 
-  void addMetadataToHead (void *parentObject, void *childObject);
-
-  void *parseNcl (DOMElement *parentElement, void *objGrandParent);
-
-  void *createNcl (DOMElement *parentElement, void *objGrandParent);
+  NclDocument *createNcl (DOMElement *parentElement, void *objGrandParent);
 
   void addBodyToNcl (void *parentObject, void *childObject);
 

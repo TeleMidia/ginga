@@ -39,11 +39,11 @@ NclPresentationControlParser::parseBindRule (DOMElement *parentElement,
   return parentElement; // ?
 }
 
-void *
+RuleBase *
 NclPresentationControlParser::parseRuleBase (DOMElement *parentElement,
                                              void *objGrandParent)
 {
-  void *parentObject;
+  RuleBase *parentObject;
   DOMNodeList *elementNodeList;
   DOMElement *element;
   DOMNode *node;
@@ -579,7 +579,7 @@ NclPresentationControlParser::createSwitch (DOMElement *parentElement,
   return switchNode;
 }
 
-void *
+RuleBase *
 NclPresentationControlParser::createRuleBase (DOMElement *parentElement,
                                               arg_unused (void *objGrandParent))
 {

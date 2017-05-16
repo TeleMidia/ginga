@@ -30,11 +30,11 @@ NclTransitionParser::NclTransitionParser (NclDocumentParser *documentParser)
 {
 }
 
-void *
+TransitionBase *
 NclTransitionParser::parseTransitionBase (DOMElement *parentElement,
                                           arg_unused(void *objGrandParent))
 {
-  void *parentObject;
+  TransitionBase *parentObject;
   DOMNodeList *elementNodeList;
   DOMElement *element;
   DOMNode *node;
@@ -56,8 +56,7 @@ NclTransitionParser::parseTransitionBase (DOMElement *parentElement,
           element = (DOMElement *)node;
           elementTagName = XMLString::transcode (element->getTagName ());
 
-          if (XMLString::compareIString (elementTagName.c_str (),
-                                         "importBase")
+          if (XMLString::compareIString (elementTagName.c_str (), "importBase")
               == 0)
             {
               elementObject = _documentParser->getImportParser ()
@@ -65,8 +64,7 @@ NclTransitionParser::parseTransitionBase (DOMElement *parentElement,
 
               if (elementObject != NULL)
                 {
-                  addImportBaseToTransitionBase (parentObject,
-                                                 elementObject);
+                  addImportBaseToTransitionBase (parentObject, elementObject);
                 }
             }
           else if (XMLString::compareIString (elementTagName.c_str (),
@@ -76,8 +74,7 @@ NclTransitionParser::parseTransitionBase (DOMElement *parentElement,
               elementObject = parseTransition (element, parentObject);
               if (elementObject != NULL)
                 {
-                  addTransitionToTransitionBase (parentObject,
-                                                 elementObject);
+                  addTransitionToTransitionBase (parentObject, elementObject);
                 }
             }
         }

@@ -685,11 +685,11 @@ NclConnectorsParser::parseCausalConnector (DOMElement *parentElement,
   return parentObject;
 }
 
-void *
+ConnectorBase *
 NclConnectorsParser::parseConnectorBase (DOMElement *parentElement,
                                          void *objGrandParent)
 {
-  void *parentObject = NULL;
+  ConnectorBase *parentObject = NULL;
   DOMNodeList *elementNodeList;
   DOMElement *element;
   DOMNode *node;
@@ -802,9 +802,9 @@ NclConnectorsParser::createCausalConnector (DOMElement *parentElement,
   return connector;
 }
 
-void *
+ConnectorBase *
 NclConnectorsParser::createConnectorBase (DOMElement *parentElement,
-                                             arg_unused (void *objGrandParent))
+                                           arg_unused (void *objGrandParent))
 {
   ConnectorBase *connBase;
   connBase = new ConnectorBase (XMLString::transcode (

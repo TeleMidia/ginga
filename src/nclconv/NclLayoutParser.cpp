@@ -69,11 +69,11 @@ NclLayoutParser::parseRegion (DOMElement *parentElement,
   return parentObject;
 }
 
-void *
+RegionBase *
 NclLayoutParser::parseRegionBase (DOMElement *parentElement,
                                   void *objGrandParent)
 {
-  void *parentObject;
+  RegionBase *parentObject;
   DOMNodeList *elementNodeList;
   DOMElement *element;
   DOMNode *node;
@@ -177,16 +177,15 @@ NclLayoutParser::addRegionToRegionBase (void *parentObject,
   layout->addRegion ((LayoutRegion *)childObject);
 }
 
-void *
+RegionBase *
 NclLayoutParser::createRegionBase (DOMElement *parentElement,
                                    arg_unused (void *objGrandParent))
 {
   RegionBase *layout;
   string mapId = "";
 
-  layout
-      = new RegionBase (XMLString::transcode (parentElement->getAttribute (
-                            XMLString::transcode ("id"))),
+  layout = new RegionBase (XMLString::transcode (parentElement->getAttribute (
+                           XMLString::transcode ("id"))),
 
                         deviceLayout);
 
