@@ -34,22 +34,13 @@ NclImportParser::parseImportedDocumentBase (DOMElement *parentElement)
   // pre-compile attributes
   g_assert_nonnull (parentElement);
 
-  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
-  for (int i = 0; i < (int)elementNodeList->getLength (); i++)
+  for (DOMElement *child:
+       dom_element_children_by_tagname(parentElement, "importNCL"))
     {
-      DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      DOMElement *newEl = parseImportNCL (child);
+      if (newEl)
         {
-          DOMElement *element = (DOMElement *)node;
-          string tagname = dom_element_tagname(element);
-          if (XMLString::compareIString (tagname.c_str (), "importNCL") == 0)
-            {
-              DOMElement *elementObject = parseImportNCL (element);
-              if (elementObject)
-                {
-                  addImportNCLToImportedDocumentBase (elementObject);
-                }
-            }
+          addImportNCLToImportedDocumentBase (newEl);
         }
     }
 }
@@ -63,7 +54,7 @@ NclImportParser::parseImportNCL (DOMElement *parentElement)
 DOMElement *
 NclImportParser::parseImportBase (DOMElement *parentElement)
 {
-  return parentElement;
+  return parentElement; // ???
 }
 
 void

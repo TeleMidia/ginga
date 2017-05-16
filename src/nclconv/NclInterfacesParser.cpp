@@ -29,45 +29,33 @@ NclInterfacesParser::NclInterfacesParser (NclParser *nclParser)
 {
 }
 
-void *
+SwitchPort *
 NclInterfacesParser::parseSwitchPort (DOMElement *parentElement,
-                                      void *objGrandParent)
+                                      SwitchNode *objGrandParent)
 {
-  void *parentObject;
+  SwitchPort *parentObject = createSwitchPort (parentElement, objGrandParent);
 
-  parentObject = createSwitchPort (parentElement, objGrandParent);
   if (unlikely (parentObject == NULL))
     {
-      string tagname = dom_element_tagname(parentElement);
-      syntax_error ("switchPort: bad parent '%s'", tagname.c_str());
+      syntax_error ("switchPort: bad parent '%s'",
+                    dom_element_tagname(parentElement).c_str());
     }
 
-  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
-  for (int i = 0; i < (int)elementNodeList->getLength (); i++)
-    {
-      DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
-        {
-          DOMElement *element = (DOMElement *)node;
-          string tagname = dom_element_tagname(element);
-
-          if (XMLString::compareIString (tagname.c_str (), "mapping") == 0)
-            {
-              void *elementObject = parseMapping (element, parentObject);
-              if (elementObject)
-                {
-                  addMappingToSwitchPort (parentObject, elementObject);
-                }
-            }
-        }
-    }
+    for(DOMElement *child:
+        dom_element_children_by_tagname(parentElement, "mapping"))
+      {
+        Port *elementObject = parseMapping (child, parentObject);
+        if (elementObject)
+          {
+            addMappingToSwitchPort (parentObject, elementObject);
+          }
+      }
 
   return parentObject;
 }
 
-void *
-NclInterfacesParser::parseMapping (DOMElement *parent,
-                                   void *objGrandParent)
+Port *
+NclInterfacesParser::parseMapping (DOMElement *parent, SwitchPort *switchPort)
 {
   DOMElement *switchElement;
   SwitchNode *switchNode;
@@ -112,8 +100,7 @@ NclInterfacesParser::parseMapping (DOMElement *parent,
   if (unlikely (interfacePoint == NULL))
     syntax_error ("mapping: bad interface '%s'", interface);
 
-  port = new Port (((SwitchPort *)objGrandParent)->getId (), mappingNode,
-                   interfacePoint);
+  port = new Port (switchPort->getId (), mappingNode, interfacePoint);
 
   return port;
 }
@@ -442,15 +429,12 @@ NclInterfacesParser::createTemporalAnchor (DOMElement *areaElement)
   return anchor;
 }
 
-void *
+SwitchPort *
 NclInterfacesParser::createSwitchPort (DOMElement *parent,
-                                       void *objGrandParent)
+                                       SwitchNode *switchNode)
 {
-  SwitchNode *switchNode;
   SwitchPort *switchPort;
   string id;
-
-  switchNode = (SwitchNode *)objGrandParent;
 
   if (unlikely (!dom_element_has_attr(parent, "id")))
     syntax_error ("switchPort: missing id");
@@ -465,10 +449,10 @@ NclInterfacesParser::createSwitchPort (DOMElement *parent,
 }
 
 void
-NclInterfacesParser::addMappingToSwitchPort (void *parentObject,
-                                             void *childObject)
+NclInterfacesParser::addMappingToSwitchPort (SwitchPort *parentObject,
+                                             Port *childObject)
 {
-  ((SwitchPort *)parentObject)->addPort ((Port *)childObject);
+  parentObject->addPort (childObject);
 }
 
 GINGA_NCLCONV_END
