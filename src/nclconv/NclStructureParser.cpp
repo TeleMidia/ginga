@@ -90,22 +90,24 @@ NclStructureParser::parseBody (DOMElement *parentElement)
   for (int i = 0; i < size; i++)
     {
       DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE
-          && XMLString::compareIString (((DOMElement *)node)->getTagName (),
-                                        XMLString::transcode ("property"))
-                 == 0)
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          PropertyAnchor *prop = _documentParser->getInterfacesParser ()
+          DOMElement *element = (DOMElement *) node;
+          string tagname = _documentParser->getTagname(element);
+          if(XMLString::compareIString (tagname.c_str(), "property") == 0)
+            {
+              PropertyAnchor *prop = _documentParser->getInterfacesParser ()
                   ->parseProperty ((DOMElement *)node, body);
 
-          if (prop)
-            {
-              // add property to body
-              _documentParser->getComponentsParser ()
+              if (prop)
+                {
+                  // add property to body
+                  _documentParser->getComponentsParser ()
                       ->addPropertyToContext (body, prop);
+                }
             }
         }
-    }
+      }
 
   return body;
 }
@@ -122,31 +124,37 @@ NclStructureParser::parseHead (DOMElement *parentElement)
   for (int i = 0; i < size; i++)
     {
       DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE
-          && XMLString::compareIString (
-                 ((DOMElement *)node)->getTagName (),
-                 XMLString::transcode ("importedDocumentBase"))
-                 == 0)
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          _documentParser->getImportParser ()
-                 ->parseImportedDocumentBase ((DOMElement *)node);
+          DOMElement *element = (DOMElement *)node;
+          string tagname = _documentParser->getTagname(element);
+          if (XMLString::compareIString (tagname.c_str(),
+                                         "importedDocumentBase")
+                 == 0)
+            {
+              _documentParser->getImportParser ()
+                  ->parseImportedDocumentBase ((DOMElement *)node);
+            }
         }
     }
 
   for (int i = 0; i < size; i++)
     {
       DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE
-          && XMLString::compareIString (((DOMElement *)node)->getTagName (),
-                                        XMLString::transcode ("regionBase"))
-                 == 0)
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          RegionBase *regionBase = _documentParser->getLayoutParser ()
+          DOMElement *element = (DOMElement *)node;
+          string tagname = _documentParser->getTagname(element);
+
+          if( XMLString::compareIString (tagname.c_str(), "regionBase") == 0)
+            {
+              RegionBase *regionBase = _documentParser->getLayoutParser ()
                   ->parseRegionBase ((DOMElement *)node);
 
-          if (regionBase)
-            {
-              nclDoc->addRegionBase(regionBase);
+              if (regionBase)
+                {
+                  nclDoc->addRegionBase(regionBase);
+                }
             }
         }
     }
@@ -154,18 +162,22 @@ NclStructureParser::parseHead (DOMElement *parentElement)
   for (int i = 0; i < size; i++)
     {
       DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE
-          && XMLString::compareIString (((DOMElement *)node)->getTagName (),
-                                        XMLString::transcode ("ruleBase"))
-                 == 0)
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          RuleBase *ruleBase = _documentParser->getPresentationControlParser ()
-                  ->parseRuleBase ((DOMElement *)node);
+          DOMElement *element = (DOMElement *)node;
+          string tagname = _documentParser->getTagname(element);
 
-          if (ruleBase)
+          if (XMLString::compareIString (tagname.c_str(), "ruleBase") == 0)
             {
-              nclDoc->setRuleBase (ruleBase);
-              break;
+              RuleBase *ruleBase =
+                  _documentParser->getPresentationControlParser ()
+                    ->parseRuleBase (element);
+
+              if (ruleBase)
+                {
+                  nclDoc->setRuleBase (ruleBase);
+                  break;
+                }
             }
         }
     }
@@ -173,19 +185,23 @@ NclStructureParser::parseHead (DOMElement *parentElement)
   for (int i = 0; i < size; i++)
     {
       DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE
-          && XMLString::compareIString (
-                 ((DOMElement *)node)->getTagName (),
-                 XMLString::transcode ("transitionBase"))
-                 == 0)
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          TransitionBase *transBase = _documentParser->getTransitionParser ()
-                  ->parseTransitionBase ((DOMElement *)node);
+          DOMElement *element = (DOMElement *)node;
+          string tagname = _documentParser->getTagname(element);
 
-          if (transBase)
+          if (XMLString::compareIString (tagname.c_str(), "transitionBase")
+              == 0)
             {
-              nclDoc->setTransitionBase (transBase);
-              break;
+              TransitionBase *transBase =
+                  _documentParser->getTransitionParser ()
+                    ->parseTransitionBase (element);
+
+              if (transBase)
+                {
+                  nclDoc->setTransitionBase (transBase);
+                  break;
+                }
             }
         }
     }
@@ -193,20 +209,22 @@ NclStructureParser::parseHead (DOMElement *parentElement)
   for (int i = 0; i < size; i++)
     {
       DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE
-          && XMLString::compareIString (
-                 ((DOMElement *)node)->getTagName (),
-                 XMLString::transcode ("descriptorBase"))
-                 == 0)
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          DescriptorBase *descBase
-              = _documentParser->getPresentationSpecificationParser ()
-                  ->parseDescriptorBase ((DOMElement *)node);
+          DOMElement *element = (DOMElement *)node;
+          string tagname = _documentParser->getTagname(element);
 
-          if (descBase)
+          if (XMLString::compareIString (tagname.c_str(), "descriptorBase")
+              == 0)
             {
-              nclDoc->setDescriptorBase (descBase);
-              break;
+              DescriptorBase *descBase =
+                  _documentParser->getPresentationSpecificationParser ()
+                    ->parseDescriptorBase (element);
+              if (descBase)
+                {
+                  nclDoc->setDescriptorBase (descBase);
+                  break;
+                }
             }
         }
     }
@@ -214,19 +232,21 @@ NclStructureParser::parseHead (DOMElement *parentElement)
   for (int i = 0; i < size; i++)
     {
       DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE
-          && XMLString::compareIString (
-                 ((DOMElement *)node)->getTagName (),
-                 XMLString::transcode ("connectorBase"))
-                 == 0)
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          ConnectorBase *connBase = _documentParser->getConnectorsParser ()
-                  ->parseConnectorBase ((DOMElement *)node, nclDoc);
+          DOMElement *element = (DOMElement *)node;
+          string tagname = _documentParser->getTagname(element);
 
-          if (connBase != NULL)
+          if (XMLString::compareIString (tagname.c_str(), "connectorBase") == 0)
             {
-              nclDoc->setConnectorBase(connBase);
-              break;
+              ConnectorBase *connBase = _documentParser->getConnectorsParser ()
+                  ->parseConnectorBase (element, nclDoc);
+
+              if (connBase)
+                {
+                  nclDoc->setConnectorBase(connBase);
+                  break;
+                }
             }
         }
     }
@@ -234,18 +254,22 @@ NclStructureParser::parseHead (DOMElement *parentElement)
   for (int i = 0; i < size; i++)
     {
       DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE
-          && XMLString::compareIString (((DOMElement *)node)->getTagName (),
-                                        XMLString::transcode ("meta"))
-                 == 0)
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          Meta *meta = _documentParser->getMetainformationParser ()
-                  ->parseMeta ((DOMElement *)node);
+          DOMElement *element = (DOMElement *)node;
+          string tagname = _documentParser->getTagname(element);
 
-          if (meta != NULL)
+          if (XMLString::compareIString (tagname.c_str(), "meta") == 0)
             {
-              nclDoc->addMetainformation (meta);
-              break;
+              Meta *meta =
+                  _documentParser->getMetainformationParser ()
+                    ->parseMeta (element);
+
+              if (meta)
+                {
+                  nclDoc->addMetainformation (meta);
+                  break;
+                }
             }
         }
     }
@@ -253,18 +277,21 @@ NclStructureParser::parseHead (DOMElement *parentElement)
   for (int i = 0; i < size; i++)
     {
       DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE
-          && XMLString::compareIString (((DOMElement *)node)->getTagName (),
-                                        XMLString::transcode ("metadata"))
-                 == 0)
+      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
-          Metadata *metadata = _documentParser->getMetainformationParser ()
+          DOMElement *element = (DOMElement*)node;
+          string tagname = _documentParser->getTagname(element);
+
+          if (XMLString::compareIString (tagname.c_str(), "metadata") == 0)
+            {
+              Metadata *metadata = _documentParser->getMetainformationParser ()
                   ->parseMetadata ((DOMElement *)node);
 
-          if (metadata)
-            {
-              nclDoc->addMetadata (metadata);
-              break;
+              if (metadata)
+                {
+                  nclDoc->addMetadata (metadata);
+                  break;
+                }
             }
         }
     }

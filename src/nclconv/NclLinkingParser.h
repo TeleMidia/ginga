@@ -44,24 +44,24 @@ public:
   NclLinkingParser (NclDocumentParser *documentParser,
                     NclConnectorsParser *connCompiler);
 
-  void *parseBind (DOMElement *parentElement, void *objGrandParent);
-  void *createBind (DOMElement *parentElement, void *objGrandParent);
+  Bind *parseBind (DOMElement *parentElement, Link *objGrandParent);
+  Bind *createBind (DOMElement *parentElement, Link *objGrandParent);
 
-  void addBindParamToBind (void *parentObject, void *childObject);
+  void addBindParamToBind (Bind *parentObject, Parameter *childObject);
 
-  void *parseLinkParam (DOMElement *parentElement, void *objGrandParent);
-  void *parseBindParam (DOMElement *parentElement, void *objGrandParent);
+  Parameter *parseLinkParam (DOMElement *parentElement);
+  Parameter *parseBindParam (DOMElement *parentElement);
 
-  void *parseLink (DOMElement *parentElement, void *objGrandParent);
-  void *createLink (DOMElement *parentElement, void *objGrandParent);
+  Link *parseLink (DOMElement *parentElement, void *objGrandParent);
+  Link *createLink (DOMElement *parentElement, void *objGrandParent);
 
-  void addLinkParamToLink (void *parentObject, void *childObject);
+  void addLinkParamToLink (Link *parentObject, Parameter *childObject);
 
-  void addBindToLink (void *parentObject, void *childObject);
+  void addBindToLink (Link *parentObject, Bind *childObject);
 
 private:
-  Connector *connector;
-  CompositeNode *composite;
+  Connector *_connector;
+  CompositeNode *_composite;
 
   string getId (DOMElement *element);
 };

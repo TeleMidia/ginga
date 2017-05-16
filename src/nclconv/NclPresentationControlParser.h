@@ -68,7 +68,7 @@ public:
   NclPresentationControlParser (NclDocumentParser *documentParser);
   virtual ~NclPresentationControlParser();
 
-  void *parseBindRule (DOMElement *parentElement, void *objGrandParent);
+  DOMElement *parseBindRule (DOMElement *parentElement);
 
   RuleBase *parseRuleBase (DOMElement *parentElement);
   RuleBase *createRuleBase (DOMElement *parentElement);
@@ -79,19 +79,17 @@ public:
 
   void addCompositeRuleToRuleBase (void *parentObject, void *childObject);
 
-  void *parseRule (DOMElement *parentElement, void *objGrandParent);
+  SimpleRule *parseRule (DOMElement *parentElement);
 
   Node *parseSwitch (DOMElement *parentElement);
   void *posCompileSwitch (DOMElement *parentElement, void *parentObject);
   void *posCompileSwitch2 (DOMElement *parentElement, void *parentObject);
 
-  void *parseDefaultComponent (DOMElement *parentElement,
-                               void *objGrandParent);
+  DOMElement *parseDefaultComponent (DOMElement *parentElement);
 
   void addDefaultComponentToSwitch (void *parentObject, void *childObject);
 
-  void *parseDefaultDescriptor (DOMElement *parentElement,
-                                void *objGrandParent);
+  DOMElement *parseDefaultDescriptor (DOMElement *parentElement);
 
   void addDefaultDescriptorToDescriptorSwitch (void *parentObject,
                                                void *childObject);
@@ -106,23 +104,20 @@ public:
 
   void addSwitchToSwitch (void *parentObject, void *childObject);
 
-  void addBindRuleToSwitch (void *parentObject, void *childObject);
+  void addBindRuleToSwitch (SwitchNode *parentObject, DOMElement *childObject);
 
   void addUnmappedNodesToSwitch (SwitchNode *switchNode);
 
-  void *parseCompositeRule (DOMElement *parentElement, void *objGrandParent);
-
-  void *createCompositeRule (DOMElement *parentElement, void *objGrandParent);
+  CompositeRule *parseCompositeRule (DOMElement *parentElement);
+  CompositeRule *createCompositeRule (DOMElement *parentElement);
 
   void addRuleToCompositeRule (void *parentObject, void *childObject);
 
   void addCompositeRuleToCompositeRule (void *parentObject, void *childObject);
 
-  DescriptorSwitch *parseDescriptorSwitch (DOMElement *parentElement,
-                               void *objGrandParent);
+  DescriptorSwitch *parseDescriptorSwitch (DOMElement *parentElement);
 
-  DescriptorSwitch *createDescriptorSwitch (DOMElement *parentElement,
-                                void *objGrandParent);
+  DescriptorSwitch *createDescriptorSwitch (DOMElement *parentElement);
 
   void addBindRuleToDescriptorSwitch (void *parentObject, void *childObject);
 
