@@ -216,12 +216,12 @@ add_executable(ginga
   ../src/ncl/ValueAssessment.cpp
   ../src/nclconv/NclComponentsParser.cpp
   ../src/nclconv/NclConnectorsParser.cpp
-  ../src/nclconv/NclDocumentParser.cpp
   ../src/nclconv/NclImportParser.cpp
   ../src/nclconv/NclInterfacesParser.cpp
   ../src/nclconv/NclLayoutParser.cpp
   ../src/nclconv/NclLinkingParser.cpp
   ../src/nclconv/NclMetainformationParser.cpp
+  ../src/nclconv/NclParser.cpp
   ../src/nclconv/NclPresentationControlParser.cpp
   ../src/nclconv/NclPresentationSpecificationParser.cpp
   ../src/nclconv/NclStructureParser.cpp

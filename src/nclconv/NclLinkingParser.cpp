@@ -22,9 +22,9 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_NCLCONV_BEGIN
 
-NclLinkingParser::NclLinkingParser (NclDocumentParser *documentParser,
+NclLinkingParser::NclLinkingParser (NclParser *nclParser,
                                   arg_unused(NclConnectorsParser *connCompiler))
-    : ModuleParser (documentParser)
+    : ModuleParser (nclParser)
 {
 }
 
@@ -42,7 +42,7 @@ NclLinkingParser::parseBind (DOMElement *parentElement,
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           DOMElement *element = (DOMElement *)node;
-          string tagname = _documentParser->getTagname(element);
+          string tagname = _nclParser->getTagname(element);
 
           if (XMLString::compareIString (tagname.c_str (), "bindParam") == 0)
             {
@@ -63,8 +63,8 @@ NclLinkingParser::parseLinkParam (DOMElement *parentElement)
 {
   Parameter *param;
   param = new Parameter (
-      _documentParser->getAttribute(parentElement, "name"),
-      _documentParser->getAttribute(parentElement, "value") );
+      _nclParser->getAttribute(parentElement, "name"),
+      _nclParser->getAttribute(parentElement, "value") );
 
   return param;
 }
@@ -74,8 +74,8 @@ NclLinkingParser::parseBindParam (DOMElement *parentElement)
 {
   Parameter *param;
   param = new Parameter (
-      _documentParser->getAttribute(parentElement, "name"),
-      _documentParser->getAttribute(parentElement, "value") );
+      _nclParser->getAttribute(parentElement, "name"),
+      _nclParser->getAttribute(parentElement, "value") );
 
   return param;
 }
@@ -94,7 +94,7 @@ NclLinkingParser::parseLink (DOMElement *parentElement,
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           DOMElement *element = (DOMElement *)node;
-          string tagname = _documentParser->getTagname(element);
+          string tagname = _nclParser->getTagname(element);
 
           if (XMLString::compareIString (tagname.c_str (), "linkParam") == 0)
             {
@@ -155,9 +155,9 @@ NclLinkingParser::createBind (DOMElement *parentElement, Link *objGrandParent)
   set<ReferNode *>::iterator i;
 
   role = _connector->getRole (
-        _documentParser->getAttribute(parentElement, "role"));
+        _nclParser->getAttribute(parentElement, "role"));
 
-  component = _documentParser->getAttribute(parentElement, "component");
+  component = _nclParser->getAttribute(parentElement, "component");
 
   if (_composite->getId () == component)
     {
@@ -176,9 +176,9 @@ NclLinkingParser::createBind (DOMElement *parentElement, Link *objGrandParent)
 
   anchorNodeEntity = (NodeEntity *)(anchorNode->getDataEntity ());
 
-  if (_documentParser->hasAttribute(parentElement, "interface"))
+  if (_nclParser->hasAttribute(parentElement, "interface"))
     {
-      interfaceId = _documentParser->getAttribute(parentElement, "interface");
+      interfaceId = _nclParser->getAttribute(parentElement, "interface");
 
       if (anchorNodeEntity == NULL)
         {
@@ -257,11 +257,11 @@ NclLinkingParser::createBind (DOMElement *parentElement, Link *objGrandParent)
     }
 
   // atribui o bind ao elo (link)
-  if (_documentParser->hasAttribute(parentElement, "descriptor"))
+  if (_nclParser->hasAttribute(parentElement, "descriptor"))
     {
-      document = getDocumentParser ()->getNclDocument ();
+      document = getNclParser ()->getNclDocument ();
       descriptor = document->getDescriptor (
-            _documentParser->getAttribute(parentElement, "descriptor") );
+            _nclParser->getAttribute(parentElement, "descriptor") );
     }
   else
     {
@@ -271,7 +271,7 @@ NclLinkingParser::createBind (DOMElement *parentElement, Link *objGrandParent)
   if (role == NULL)
     {
       // &got
-      if (_documentParser->hasAttribute(parentElement, "role"))
+      if (_nclParser->hasAttribute(parentElement, "role"))
         {
           ConditionExpression *condition;
           CompoundCondition *compoundCondition;
@@ -279,7 +279,7 @@ NclLinkingParser::createBind (DOMElement *parentElement, Link *objGrandParent)
           AttributeAssessment *assessment;
           ValueAssessment *otherAssessment;
 
-          roleId = _documentParser->getAttribute(parentElement, "role");
+          roleId = _nclParser->getAttribute(parentElement, "role");
 
           assessment = new AttributeAssessment (roleId);
           assessment->setEventType (EventUtil::EVT_ATTRIBUTION);
@@ -326,9 +326,9 @@ Link *
 NclLinkingParser::createLink (DOMElement *parentElement,
                               void *objGrandParent)
 {
-  NclDocument *document = getDocumentParser ()->getNclDocument ();
+  NclDocument *document = getNclParser ()->getNclDocument ();
   string connectorId =
-      _documentParser->getAttribute(parentElement, "xconnector");
+      _nclParser->getAttribute(parentElement, "xconnector");
 
   _connector = document->getConnector (connectorId);
   if (unlikely (_connector == NULL))
@@ -348,9 +348,9 @@ string
 NclLinkingParser::getId (DOMElement *element)
 {
   string strRet = "";
-  if (_documentParser->hasAttribute (element, "id"))
+  if (_nclParser->hasAttribute (element, "id"))
     {
-      strRet = _documentParser->getAttribute (element, "id");
+      strRet = _nclParser->getAttribute (element, "id");
     }
   else
     {

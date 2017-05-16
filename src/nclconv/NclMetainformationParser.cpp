@@ -20,9 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCLCONV_BEGIN
 
-NclMetainformationParser::NclMetainformationParser (
-    NclDocumentParser *documentParser)
-    : ModuleParser (documentParser)
+NclMetainformationParser::NclMetainformationParser (NclParser *nclParser)
+    : ModuleParser (nclParser)
 {
 }
 
@@ -31,18 +30,18 @@ NclMetainformationParser::parseMeta (DOMElement *parentElement)
 {
   string name, content;
 
-  if (_documentParser->hasAttribute(parentElement, "name"))
+  if (_nclParser->hasAttribute(parentElement, "name"))
     {
-      name = _documentParser->getAttribute(parentElement, "name");
+      name = _nclParser->getAttribute(parentElement, "name");
     }
   else
     {
       syntax_error ("meta: missing name");
     }
 
-  if (_documentParser->hasAttribute(parentElement, "content"))
+  if (_nclParser->hasAttribute(parentElement, "content"))
     {
-      content = _documentParser->getAttribute(parentElement, "content");
+      content = _nclParser->getAttribute(parentElement, "content");
     }
   else
     {

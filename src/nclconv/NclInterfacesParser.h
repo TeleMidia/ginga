@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NCLINTERFACESPARSER_H_
 
 #include "ModuleParser.h"
-#include "NclDocumentParser.h"
+#include "NclParser.h"
 
 #include "ncl/Anchor.h"
 #include "ncl/PropertyAnchor.h"
@@ -42,7 +42,7 @@ GINGA_NCLCONV_BEGIN
 class NclInterfacesParser : public ModuleParser
 {
 public:
-  NclInterfacesParser (NclDocumentParser *documentParser);
+  NclInterfacesParser (NclParser *nclParser);
   void *parseSwitchPort (DOMElement *parentElement, void *objGrandParent);
   void *createSwitchPort (DOMElement *parentElement, void *objGrandParent);
 

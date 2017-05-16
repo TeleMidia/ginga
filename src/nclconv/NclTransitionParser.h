@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NCLTRANSITIONPARSER_H_
 
 #include "ModuleParser.h"
-#include "NclDocumentParser.h"
+#include "NclParser.h"
 
 #include "NclImportParser.h"
 
@@ -31,7 +31,7 @@ GINGA_NCLCONV_BEGIN
 class NclTransitionParser : public ModuleParser
 {
 public:
-  NclTransitionParser (NclDocumentParser *documentParser);
+  NclTransitionParser (NclParser *nclParse);
 
   TransitionBase *parseTransitionBase (DOMElement *parentElement);
 

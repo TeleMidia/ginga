@@ -17,14 +17,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "NclImportParser.h"
-#include "NclDocumentParser.h"
+#include "NclParser.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_NCLCONV_BEGIN
 
-NclImportParser::NclImportParser (NclDocumentParser *documentParser)
-    : ModuleParser (documentParser)
+NclImportParser::NclImportParser (NclParser *nclParser)
+    : ModuleParser (nclParser)
 {
 }
 
@@ -41,7 +41,7 @@ NclImportParser::parseImportedDocumentBase (DOMElement *parentElement)
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           DOMElement *element = (DOMElement *)node;
-          string tagname = _documentParser->getTagname(element);
+          string tagname = _nclParser->getTagname(element);
           if (XMLString::compareIString (tagname.c_str (), "importNCL") == 0)
             {
               DOMElement *elementObject = parseImportNCL (element);
@@ -70,18 +70,18 @@ void
 NclImportParser::addImportNCLToImportedDocumentBase (DOMElement *childObject)
 {
   string docAlias, docLocation;
-  NclDocumentParser *compiler;
+  NclParser *compiler;
   NclDocument *thisDocument, *importedDocument;
 
-  docAlias = _documentParser->getAttribute(childObject, "alias");
+  docAlias = _nclParser->getAttribute(childObject, "alias");
 
-  docLocation = _documentParser->getAttribute(childObject, "documentURI");
+  docLocation = _nclParser->getAttribute(childObject, "documentURI");
 
-  compiler = getDocumentParser ();
+  compiler = getNclParser ();
   importedDocument = compiler->importDocument (docLocation);
   if (importedDocument != NULL)
     {
-      thisDocument = getDocumentParser ()->getNclDocument ();
+      thisDocument = getNclParser ()->getNclDocument ();
       thisDocument->addDocument (importedDocument, docAlias, docLocation);
     }
 }

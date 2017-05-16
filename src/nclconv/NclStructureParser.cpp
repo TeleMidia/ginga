@@ -20,14 +20,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclComponentsParser.h"
 
-#include "NclDocumentParser.h"
+#include "NclParser.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_NCLCONV_BEGIN
 
-NclStructureParser::NclStructureParser (NclDocumentParser *documentParser)
-    : ModuleParser (documentParser)
+NclStructureParser::NclStructureParser (NclParser *nclParser)
+    : ModuleParser (nclParser)
 {
 }
 
@@ -46,41 +46,41 @@ NclStructureParser::parseBody (DOMElement *parentElement)
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           DOMElement *element = (DOMElement *)node;
-          string tagname = _documentParser->getTagname(element);
+          string tagname = _nclParser->getTagname(element);
           if (XMLString::compareIString (tagname.c_str (), "media") == 0)
             {
-              Node *media = _documentParser->getComponentsParser()
+              Node *media = _nclParser->getComponentsParser()
                       ->parseMedia (element);
 
               if (media)
                 {
                   // add media to body
-                  _documentParser->getComponentsParser ()
+                  _nclParser->getComponentsParser ()
                           ->addMediaToContext (body, media);
                 }
             }
           else if (XMLString::compareIString (tagname.c_str (), "context") == 0)
             {
-              Node *child_context = _documentParser->getComponentsParser()
+              Node *child_context = _nclParser->getComponentsParser()
                       ->parseContext (element);
 
               if (child_context)
                 {
                   // add context to body
-                  _documentParser->getComponentsParser ()
+                  _nclParser->getComponentsParser ()
                           ->addContextToContext (body, child_context);
                 }
             }
           else if (XMLString::compareIString (tagname.c_str (), "switch") == 0)
             {
               Node *switch_node =
-                      _documentParser->getPresentationControlParser ()
+                      _nclParser->getPresentationControlParser ()
                         ->parseSwitch (element);
 
               if (switch_node)
                 {
                   // add switch to body
-                  _documentParser->getComponentsParser ()
+                  _nclParser->getComponentsParser ()
                           ->addSwitchToContext (body, switch_node);
                 }
             }
@@ -93,16 +93,16 @@ NclStructureParser::parseBody (DOMElement *parentElement)
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           DOMElement *element = (DOMElement *) node;
-          string tagname = _documentParser->getTagname(element);
+          string tagname = _nclParser->getTagname(element);
           if(XMLString::compareIString (tagname.c_str(), "property") == 0)
             {
-              PropertyAnchor *prop = _documentParser->getInterfacesParser ()
+              PropertyAnchor *prop = _nclParser->getInterfacesParser ()
                   ->parseProperty ((DOMElement *)node, body);
 
               if (prop)
                 {
                   // add property to body
-                  _documentParser->getComponentsParser ()
+                  _nclParser->getComponentsParser ()
                       ->addPropertyToContext (body, prop);
                 }
             }
@@ -113,185 +113,141 @@ NclStructureParser::parseBody (DOMElement *parentElement)
 }
 
 void
-NclStructureParser::parseHead (DOMElement *parentElement)
+NclStructureParser::parseHead (DOMElement *head_element)
 {
-  NclDocument *nclDoc = getDocumentParser()->getNclDocument();
+  NclDocument *nclDoc = getNclParser()->getNclDocument();
   g_assert_nonnull (nclDoc);
 
-  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
-  int size = (int) elementNodeList->getLength ();
-
-  for (int i = 0; i < size; i++)
+  for (DOMElement *child = head_element->getFirstElementChild();
+       child != nullptr;
+       child = child->getNextElementSibling())
     {
-      DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      string tagname = _nclParser->getTagname(child);
+      if (XMLString::compareIString (tagname.c_str(), "importedDocumentBase")
+          == 0)
         {
-          DOMElement *element = (DOMElement *)node;
-          string tagname = _documentParser->getTagname(element);
-          if (XMLString::compareIString (tagname.c_str(),
-                                         "importedDocumentBase")
-                 == 0)
+          _nclParser->getImportParser ()
+              ->parseImportedDocumentBase (child);
+        }
+    }
+
+  for (DOMElement *child = head_element->getFirstElementChild();
+       child != nullptr;
+       child = child->getNextElementSibling())
+    {
+      string tagname = _nclParser->getTagname(child);
+      if( XMLString::compareIString (tagname.c_str(), "regionBase") == 0)
+        {
+          RegionBase *regionBase = _nclParser->getLayoutParser ()
+              ->parseRegionBase (child);
+
+          if (regionBase)
             {
-              _documentParser->getImportParser ()
-                  ->parseImportedDocumentBase ((DOMElement *)node);
+              nclDoc->addRegionBase(regionBase);
             }
         }
     }
 
-  for (int i = 0; i < size; i++)
+  for (DOMElement *child = head_element->getFirstElementChild();
+       child != nullptr;
+       child = child->getNextElementSibling())
     {
-      DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      string tagname = _nclParser->getTagname(child);
+      if (XMLString::compareIString (tagname.c_str(), "ruleBase") == 0)
         {
-          DOMElement *element = (DOMElement *)node;
-          string tagname = _documentParser->getTagname(element);
-
-          if( XMLString::compareIString (tagname.c_str(), "regionBase") == 0)
+          RuleBase *ruleBase = _nclParser->getPresentationControlParser ()
+                    ->parseRuleBase (child);
+          if (ruleBase)
             {
-              RegionBase *regionBase = _documentParser->getLayoutParser ()
-                  ->parseRegionBase ((DOMElement *)node);
-
-              if (regionBase)
-                {
-                  nclDoc->addRegionBase(regionBase);
-                }
+              nclDoc->setRuleBase (ruleBase);
+              break;
             }
         }
     }
 
-  for (int i = 0; i < size; i++)
+  for (DOMElement *child = head_element->getFirstElementChild();
+       child != nullptr;
+       child = child->getNextElementSibling())
     {
-      DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      string tagname = _nclParser->getTagname(child);
+      if (XMLString::compareIString (tagname.c_str(), "transitionBase") == 0)
         {
-          DOMElement *element = (DOMElement *)node;
-          string tagname = _documentParser->getTagname(element);
-
-          if (XMLString::compareIString (tagname.c_str(), "ruleBase") == 0)
+          TransitionBase *transBase =
+              _nclParser->getTransitionParser ()
+                ->parseTransitionBase (child);
+          if (transBase)
             {
-              RuleBase *ruleBase =
-                  _documentParser->getPresentationControlParser ()
-                    ->parseRuleBase (element);
-
-              if (ruleBase)
-                {
-                  nclDoc->setRuleBase (ruleBase);
-                  break;
-                }
+              nclDoc->setTransitionBase (transBase);
+              break;
             }
         }
     }
 
-  for (int i = 0; i < size; i++)
+  for (DOMElement *child = head_element->getFirstElementChild();
+       child != nullptr;
+       child = child->getNextElementSibling())
     {
-      DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      string tagname = _nclParser->getTagname(child);
+      if (XMLString::compareIString (tagname.c_str(), "descriptorBase") == 0)
         {
-          DOMElement *element = (DOMElement *)node;
-          string tagname = _documentParser->getTagname(element);
-
-          if (XMLString::compareIString (tagname.c_str(), "transitionBase")
-              == 0)
+          DescriptorBase *descBase =
+              _nclParser->getPresentationSpecificationParser ()
+                ->parseDescriptorBase (child);
+          if (descBase)
             {
-              TransitionBase *transBase =
-                  _documentParser->getTransitionParser ()
-                    ->parseTransitionBase (element);
-
-              if (transBase)
-                {
-                  nclDoc->setTransitionBase (transBase);
-                  break;
-                }
+              nclDoc->setDescriptorBase (descBase);
+              break;
             }
         }
     }
 
-  for (int i = 0; i < size; i++)
+  for (DOMElement *child = head_element->getFirstElementChild();
+       child != nullptr;
+       child = child->getNextElementSibling())
     {
-      DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      string tagname = _nclParser->getTagname(child);
+      if (XMLString::compareIString (tagname.c_str(), "connectorBase") == 0)
         {
-          DOMElement *element = (DOMElement *)node;
-          string tagname = _documentParser->getTagname(element);
-
-          if (XMLString::compareIString (tagname.c_str(), "descriptorBase")
-              == 0)
+          ConnectorBase *connBase = _nclParser->getConnectorsParser ()
+              ->parseConnectorBase (child, nclDoc);
+          if (connBase)
             {
-              DescriptorBase *descBase =
-                  _documentParser->getPresentationSpecificationParser ()
-                    ->parseDescriptorBase (element);
-              if (descBase)
-                {
-                  nclDoc->setDescriptorBase (descBase);
-                  break;
-                }
+              nclDoc->setConnectorBase(connBase);
+              break;
             }
         }
     }
 
-  for (int i = 0; i < size; i++)
+  for (DOMElement *child = head_element->getFirstElementChild();
+       child != nullptr;
+       child = child->getNextElementSibling())
     {
-      DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      string tagname = _nclParser->getTagname(child);
+      if (XMLString::compareIString (tagname.c_str(), "meta") == 0)
         {
-          DOMElement *element = (DOMElement *)node;
-          string tagname = _documentParser->getTagname(element);
-
-          if (XMLString::compareIString (tagname.c_str(), "connectorBase") == 0)
+          Meta *meta = _nclParser->getMetainformationParser ()
+              ->parseMeta (child);
+          if (meta)
             {
-              ConnectorBase *connBase = _documentParser->getConnectorsParser ()
-                  ->parseConnectorBase (element, nclDoc);
-
-              if (connBase)
-                {
-                  nclDoc->setConnectorBase(connBase);
-                  break;
-                }
+              nclDoc->addMetainformation (meta);
+              break;
             }
         }
     }
 
-  for (int i = 0; i < size; i++)
+  for (DOMElement *child = head_element->getFirstElementChild();
+       child != nullptr;
+       child = child->getNextElementSibling())
     {
-      DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      string tagname = _nclParser->getTagname(child);
+      if (XMLString::compareIString (tagname.c_str(), "metadata") == 0)
         {
-          DOMElement *element = (DOMElement *)node;
-          string tagname = _documentParser->getTagname(element);
-
-          if (XMLString::compareIString (tagname.c_str(), "meta") == 0)
+          Metadata *metadata = _nclParser->getMetainformationParser ()
+              ->parseMetadata (child);
+          if (metadata)
             {
-              Meta *meta =
-                  _documentParser->getMetainformationParser ()
-                    ->parseMeta (element);
-
-              if (meta)
-                {
-                  nclDoc->addMetainformation (meta);
-                  break;
-                }
-            }
-        }
-    }
-
-  for (int i = 0; i < size; i++)
-    {
-      DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
-        {
-          DOMElement *element = (DOMElement*)node;
-          string tagname = _documentParser->getTagname(element);
-
-          if (XMLString::compareIString (tagname.c_str(), "metadata") == 0)
-            {
-              Metadata *metadata = _documentParser->getMetainformationParser ()
-                  ->parseMetadata ((DOMElement *)node);
-
-              if (metadata)
-                {
-                  nclDoc->addMetadata (metadata);
-                  break;
-                }
+              nclDoc->addMetadata (metadata);
+              break;
             }
         }
     }
@@ -348,21 +304,21 @@ NclStructureParser::createBody (DOMElement *parentElement)
   NclDocument *document;
   ContextNode *context;
 
-  document = getDocumentParser ()->getNclDocument ();
+  document = getNclParser ()->getNclDocument ();
   if (!parentElement->hasAttribute (XMLString::transcode ("id")))
     {
       parentElement->setAttribute (
           XMLString::transcode ("id"),
           XMLString::transcode (document->getId ().c_str ()));
 
-      context = (ContextNode *) _documentParser->getComponentsParser ()
+      context = (ContextNode *) _nclParser->getComponentsParser ()
                     ->createContext (parentElement);
 
       parentElement->removeAttribute (XMLString::transcode ("id"));
     }
   else
     {
-      context = (ContextNode *)_documentParser->getComponentsParser ()
+      context = (ContextNode *)_nclParser->getComponentsParser ()
                     ->createContext (parentElement);
     }
 
@@ -382,7 +338,7 @@ NclStructureParser::solveNodeReferences (CompositeNode *composition)
   if (composition->instanceOf ("SwitchNode"))
     {
       deleteNodes = true;
-      nodes = _documentParser->getPresentationControlParser ()
+      nodes = _nclParser->getPresentationControlParser ()
                 ->getSwitchConstituents ((SwitchNode *)composition);
     }
   else
@@ -406,7 +362,7 @@ NclStructureParser::solveNodeReferences (CompositeNode *composition)
               {
                 if (referredNode->instanceOf ("ReferredNode"))
                   {
-                    nodeEntity = (NodeEntity *)(getDocumentParser ()->getNode (
+                    nodeEntity = (NodeEntity *)(getNclParser ()->getNode (
                                                     referredNode->getId ()));
 
                     if (nodeEntity)
@@ -442,7 +398,7 @@ NclStructureParser::posCompileBody (DOMElement *parentElement,
 {
   solveNodeReferences (body);
 
-  return _documentParser->getComponentsParser ()
+  return _nclParser->getComponentsParser ()
           ->posCompileContext (parentElement, body);
 }
 
@@ -461,8 +417,8 @@ NclStructureParser::createNcl (DOMElement *parentElement)
   if (docName == "")
     docName = "ncl";
 
-  document = new NclDocument (docName, _documentParser->getPath ());
-  _documentParser->setNclDocument (document);
+  document = new NclDocument (docName, _nclParser->getPath ());
+  _nclParser->setNclDocument (document);
 
   return document;
 }

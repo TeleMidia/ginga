@@ -35,7 +35,7 @@ using namespace ::ginga::ncl;
 
 
 #include "ModuleParser.h"
-#include "NclDocumentParser.h"
+#include "NclParser.h"
 
 #include "NclImportParser.h"
 
@@ -47,7 +47,7 @@ private:
   DeviceLayout *deviceLayout;
 
 public:
-  NclPresentationSpecificationParser (NclDocumentParser *documentParser,
+  NclPresentationSpecificationParser (NclParser *nclParser,
                                       DeviceLayout *deviceLayout);
 
   Descriptor *parseDescriptor (DOMElement *parentElement);

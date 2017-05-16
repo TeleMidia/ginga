@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NCLSTRUCTUREPARSER_H_
 
 #include "ModuleParser.h"
-#include "NclDocumentParser.h"
+#include "NclParser.h"
 
 #include "NclTransitionParser.h"
 #include "NclPresentationSpecificationParser.h"
@@ -37,7 +37,7 @@ GINGA_NCLCONV_BEGIN
 class NclStructureParser : public ModuleParser
 {
 public:
-  NclStructureParser (NclDocumentParser *documentParser);
+  NclStructureParser (NclParser *nclParser);
 
   NclDocument *parseNcl (DOMElement *parentElement);
   NclDocument *createNcl (DOMElement *parentElement);

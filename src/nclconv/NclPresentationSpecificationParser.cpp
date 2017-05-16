@@ -21,15 +21,15 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclPresentationSpecificationParser.h"
 #include "NclPresentationControlParser.h"
 
-#include "NclDocumentParser.h"
+#include "NclParser.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_NCLCONV_BEGIN
 
 NclPresentationSpecificationParser::NclPresentationSpecificationParser (
-    NclDocumentParser *documentParser, DeviceLayout *deviceLayout)
-    : ModuleParser (documentParser)
+    NclParser *nclParser, DeviceLayout *deviceLayout)
+    : ModuleParser (nclParser)
 {
   this->deviceLayout = deviceLayout;
 }
@@ -47,7 +47,7 @@ NclPresentationSpecificationParser::parseDescriptor (DOMElement *parentElement)
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           DOMElement *element = (DOMElement *)node;
-          string tagname = _documentParser->getTagname(element);
+          string tagname = _nclParser->getTagname(element);
           if (XMLString::compareIString (tagname.c_str (), "descriptorParam")
               == 0)
             {
@@ -81,11 +81,11 @@ NclPresentationSpecificationParser::parseDescriptorBase (
       if (node->getNodeType () == DOMNode::ELEMENT_NODE)
         {
           element = (DOMElement *)node;
-          string tagname = _documentParser->getTagname(element);
+          string tagname = _nclParser->getTagname(element);
 
           if (XMLString::compareIString (tagname.c_str (), "importBase") == 0)
             {
-              elementObject = _documentParser->getImportParser ()
+              elementObject = _nclParser->getImportParser ()
                       ->parseImportBase (element);
 
               if (elementObject != NULL)
@@ -99,7 +99,7 @@ NclPresentationSpecificationParser::parseDescriptorBase (
                    == 0)
             {
               DescriptorSwitch *descSwitch
-                  = _documentParser->getPresentationControlParser ()
+                  = _nclParser->getPresentationControlParser ()
                       ->parseDescriptorSwitch (element);
 
               if (descSwitch)
@@ -155,8 +155,8 @@ NclPresentationSpecificationParser::addDescriptorParamToDescriptor (
     Descriptor *descriptor, DOMElement *param)
 {
   // recuperar nome e valor da variavel
-  string paramName = _documentParser->getAttribute(param, "name");
-  string paramValue = _documentParser->getAttribute(param, "value");
+  string paramName = _nclParser->getAttribute(param, "name");
+  string paramValue = _nclParser->getAttribute(param, "value");
 
   // adicionar variavel ao descritor
   Parameter *descParam = new Parameter (paramName, paramValue);
@@ -168,7 +168,7 @@ NclPresentationSpecificationParser::addImportBaseToDescriptorBase (
     void *parentObject, void *childObject)
 {
   string baseAlias, baseLocation;
-  NclDocumentParser *compiler;
+  NclParser *compiler;
   NclDocument *importedDocument, *thisDocument;
   DescriptorBase *descriptorBase;
   RegionBase *regionBase;
@@ -179,12 +179,12 @@ NclPresentationSpecificationParser::addImportBaseToDescriptorBase (
   RuleBase *ruleBase;
 
   // get the external base alias and location
-  baseAlias = _documentParser->getAttribute((DOMElement *)childObject, "alias");
+  baseAlias = _nclParser->getAttribute((DOMElement *)childObject, "alias");
 
-  baseLocation = _documentParser->getAttribute((DOMElement *)childObject,
+  baseLocation = _nclParser->getAttribute((DOMElement *)childObject,
                                                "documentURI");
 
-  compiler = getDocumentParser ();
+  compiler = getNclParser ();
   importedDocument = compiler->importDocument (baseLocation);
   if (importedDocument == NULL)
     {
@@ -209,7 +209,7 @@ NclPresentationSpecificationParser::addImportBaseToDescriptorBase (
 
   // importing descriptor bases implies importing region, rule, and cost
   // function bases in order to maintain reference consistency
-  thisDocument = getDocumentParser ()->getNclDocument ();
+  thisDocument = getNclParser ()->getNclDocument ();
   regionBase = thisDocument->getRegionBase (0);
   if (regionBase == NULL)
     {
@@ -251,7 +251,7 @@ NclPresentationSpecificationParser::createDescriptorBase (
   // criar nova base de conectores com id gerado a partir do nome de seu
   // elemento
   descBase = new DescriptorBase (
-        _documentParser->getAttribute(parentElement ,"id") );
+        _nclParser->getAttribute(parentElement ,"id") );
 
   return descBase;
 }
@@ -274,15 +274,15 @@ NclPresentationSpecificationParser::createDescriptor (DOMElement *parentElement)
 
   // cria descritor
   descriptor = new Descriptor (
-        _documentParser->getAttribute(parentElement, "id"));
+        _nclParser->getAttribute(parentElement, "id"));
 
-  document = getDocumentParser ()->getNclDocument ();
+  document = getNclParser ()->getNclDocument ();
 
   // region
-  if (_documentParser->hasAttribute(parentElement, "region"))
+  if (_nclParser->hasAttribute(parentElement, "region"))
     {
       region = document->getRegion (
-            _documentParser->getAttribute(parentElement, "region") );
+            _nclParser->getAttribute(parentElement, "region") );
 
       if (region)
         {
@@ -291,18 +291,18 @@ NclPresentationSpecificationParser::createDescriptor (DOMElement *parentElement)
     }
 
   // explicitDur
-  if (_documentParser->hasAttribute(parentElement, "explicitDur"))
+  if (_nclParser->hasAttribute(parentElement, "explicitDur"))
     {
       string durStr =
-          _documentParser->getAttribute(parentElement, "explicitDur");
+          _nclParser->getAttribute(parentElement, "explicitDur");
 
       descriptor->setExplicitDuration (::ginga::util::strUTCToSec (durStr)
                                        * 1000);
     }
 
-  if (_documentParser->hasAttribute(parentElement,"freeze"))
+  if (_nclParser->hasAttribute(parentElement,"freeze"))
     {
-      string freeze = _documentParser->getAttribute(parentElement,"freeze");
+      string freeze = _nclParser->getAttribute(parentElement,"freeze");
 
       if (freeze == "true")
         {
@@ -315,111 +315,111 @@ NclPresentationSpecificationParser::createDescriptor (DOMElement *parentElement)
     }
 
   // atributo player
-  if (_documentParser->hasAttribute(parentElement, "player"))
+  if (_nclParser->hasAttribute(parentElement, "player"))
     {
       descriptor->setPlayerName (
-            _documentParser->getAttribute(parentElement, "player") );
+            _nclParser->getAttribute(parentElement, "player") );
     }
 
   // key navigation attributes
   keyNavigation = new KeyNavigation ();
   descriptor->setKeyNavigation (keyNavigation);
-  if (_documentParser->hasAttribute(parentElement, "focusIndex"))
+  if (_nclParser->hasAttribute(parentElement, "focusIndex"))
     {
       keyNavigation->setFocusIndex (
-          _documentParser->getAttribute(parentElement,"focusIndex"));
+          _nclParser->getAttribute(parentElement,"focusIndex"));
     }
 
-  if (_documentParser->hasAttribute(parentElement, "moveUp"))
+  if (_nclParser->hasAttribute(parentElement, "moveUp"))
     {
       keyNavigation->setMoveUp (
-            _documentParser->getAttribute(parentElement,"moveUp") );
+            _nclParser->getAttribute(parentElement,"moveUp") );
     }
 
-  if (_documentParser->hasAttribute(parentElement, "moveDown"))
+  if (_nclParser->hasAttribute(parentElement, "moveDown"))
     {
       keyNavigation->setMoveDown (
-            _documentParser->getAttribute(parentElement,"moveDown") );
+            _nclParser->getAttribute(parentElement,"moveDown") );
     }
 
-  if (_documentParser->hasAttribute(parentElement, "moveLeft"))
+  if (_nclParser->hasAttribute(parentElement, "moveLeft"))
     {
       keyNavigation->setMoveLeft (
-            _documentParser->getAttribute(parentElement, "moveLeft") );
+            _nclParser->getAttribute(parentElement, "moveLeft") );
     }
 
-  if (_documentParser->hasAttribute(parentElement, "moveRight"))
+  if (_nclParser->hasAttribute(parentElement, "moveRight"))
     {
       keyNavigation->setMoveRight (
-          _documentParser->getAttribute(parentElement, "moveRight") );
+          _nclParser->getAttribute(parentElement, "moveRight") );
     }
 
   focusDecoration = new FocusDecoration ();
   descriptor->setFocusDecoration (focusDecoration);
-  if (_documentParser->hasAttribute (parentElement, "focusSrc"))
+  if (_nclParser->hasAttribute (parentElement, "focusSrc"))
     {
-      src = _documentParser->getAttribute (parentElement, "focusSrc");
+      src = _nclParser->getAttribute (parentElement, "focusSrc");
 
       if (!xpathisuri (src) && !xpathisabs (src))
-        src = xpathbuildabs (getDocumentParser ()->getDirName (), src);
+        src = xpathbuildabs (getNclParser ()->getDirName (), src);
 
       focusDecoration->setFocusSrc (src);
     }
 
-  if (_documentParser->hasAttribute (parentElement, "focusBorderColor"))
+  if (_nclParser->hasAttribute (parentElement, "focusBorderColor"))
     {
       color = new SDL_Color ();
       ginga_color_input_to_sdl_color(
-            _documentParser->getAttribute (parentElement, "focusBorderColor"),
+            _nclParser->getAttribute (parentElement, "focusBorderColor"),
             color);
 
       focusDecoration->setFocusBorderColor ( color );
     }
 
-  if (_documentParser->hasAttribute (parentElement, "focusBorderWidth"))
+  if (_nclParser->hasAttribute (parentElement, "focusBorderWidth"))
     {
       int w;
       w = xstrto_int (
-          _documentParser->getAttribute (parentElement, "focusBorderWidth") );
+          _nclParser->getAttribute (parentElement, "focusBorderWidth") );
       focusDecoration->setFocusBorderWidth (w);
     }
 
-  if (_documentParser->hasAttribute (parentElement, "focusBorderTransparency"))
+  if (_nclParser->hasAttribute (parentElement, "focusBorderTransparency"))
     {
       double alpha;
       alpha = xstrtod (
-          _documentParser->getAttribute (parentElement,
+          _nclParser->getAttribute (parentElement,
                                          "focusBorderTransparency"));
 
       focusDecoration->setFocusBorderTransparency (alpha);
     }
 
-  if (_documentParser->hasAttribute (parentElement, "focusSelSrc"))
+  if (_nclParser->hasAttribute (parentElement, "focusSelSrc"))
     {
-      src = _documentParser->getAttribute (parentElement, "focusSelSrc");
+      src = _nclParser->getAttribute (parentElement, "focusSelSrc");
 
       if (!xpathisuri (src) && !xpathisabs (src))
-        src = xpathbuildabs (getDocumentParser ()->getDirName (), src);
+        src = xpathbuildabs (getNclParser ()->getDirName (), src);
 
       focusDecoration->setFocusSelSrc (src);
     }
 
-  if (_documentParser->hasAttribute (parentElement, "selBorderColor"))
+  if (_nclParser->hasAttribute (parentElement, "selBorderColor"))
     {
       color = new SDL_Color ();
       ginga_color_input_to_sdl_color (
-            _documentParser->getAttribute (parentElement, "selBorderColor"),
+            _nclParser->getAttribute (parentElement, "selBorderColor"),
             color );
       focusDecoration->setSelBorderColor ( color );
     }
 
-  if (_documentParser->hasAttribute (parentElement, "transIn"))
+  if (_nclParser->hasAttribute (parentElement, "transIn"))
     {
       transitionBase = document->getTransitionBase ();
       if (transitionBase != NULL)
         {
           string trimValue, value;
-          attValue = _documentParser->getAttribute (parentElement, "transIn");
+          attValue = _nclParser->getAttribute (parentElement, "transIn");
 
           transIds = split (attValue, ";");
           if (!transIds->empty ())
@@ -448,13 +448,13 @@ NclPresentationSpecificationParser::createDescriptor (DOMElement *parentElement)
         }
     }
 
-  if (_documentParser->hasAttribute (parentElement, "transOut"))
+  if (_nclParser->hasAttribute (parentElement, "transOut"))
     {
       transitionBase = document->getTransitionBase ();
       if (transitionBase != NULL)
         {
           string trimValue, value;
-          attValue = _documentParser->getAttribute(parentElement, "transOut");
+          attValue = _nclParser->getAttribute(parentElement, "transOut");
 
           transIds = split (attValue, ";");
           if (!transIds->empty ())
