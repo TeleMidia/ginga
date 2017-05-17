@@ -195,8 +195,7 @@ NclPresentationSpecificationParser::addImportBaseToDescriptorBase (
     {
       try
         {
-          thisDocument->getRuleBase ()->addBase (ruleBase, baseAlias,
-                                                 baseLocation);
+          thisDocument->getRuleBase ()->addBase (ruleBase, baseAlias, baseLocation);
         }
       catch (...)
         {

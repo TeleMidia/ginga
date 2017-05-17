@@ -31,7 +31,6 @@ NclImportParser::NclImportParser (NclParser *nclParser)
 void
 NclImportParser::parseImportedDocumentBase (DOMElement *parentElement)
 {
-  // pre-compile attributes
   g_assert_nonnull (parentElement);
 
   for (DOMElement *child:
@@ -61,15 +60,12 @@ void
 NclImportParser::addImportNCLToImportedDocumentBase (DOMElement *childObject)
 {
   string docAlias, docLocation;
-  NclParser *compiler;
   NclDocument *thisDocument, *importedDocument;
 
   docAlias = dom_element_get_attr(childObject, "alias");
-
   docLocation = dom_element_get_attr(childObject, "documentURI");
 
-  compiler = getNclParser ();
-  importedDocument = compiler->importDocument (docLocation);
+  importedDocument = getNclParser ()->importDocument (docLocation);
   if (importedDocument != NULL)
     {
       thisDocument = getNclParser ()->getNclDocument ();

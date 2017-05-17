@@ -101,7 +101,7 @@ NclStructureParser::parseHead (DOMElement *head_element)
   g_assert_nonnull (nclDoc);
 
   for (DOMElement *child :
-       dom_element_children_by_tagname(head_element,"importedDocumentBase") )
+       dom_element_children_by_tagname(head_element, "importedDocumentBase") )
     {
       _nclParser->getImportParser ()->parseImportedDocumentBase (child);
     }
@@ -214,7 +214,8 @@ NclStructureParser::parseNcl (DOMElement *ncl_element)
         }
     }
 
-  // FIXME: what if there are other children (different from <head> and <body>
+  // syntax_warn/err:
+  // what if there are other children (different from <head> and <body>)
 
   return parentObject;
 }
@@ -336,18 +337,16 @@ NclStructureParser::createNcl (DOMElement *parentElement)
   string docName;
   NclDocument *document;
 
-  if (dom_element_has_attr(parentElement, "id"))
-    {
-      docName = dom_element_get_attr(parentElement, "id");
-    }
+  docName = dom_element_get_attr (parentElement, "id");
 
   if (docName == "")
     docName = "ncl";
 
   document = new NclDocument (docName, getNclParser()->getPath ());
   g_assert_nonnull (document);
+
   getNclParser()->setNclDocument (document);
-  g_assert_nonnull (getNclParser()->getNclDocument());
+
   return document;
 }
 

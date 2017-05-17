@@ -28,29 +28,27 @@ NclLinkingParser::NclLinkingParser (NclParser *nclParser)
 }
 
 Bind *
-NclLinkingParser::parseBind (DOMElement *parentElement,
-                             Link *objGrandParent)
+NclLinkingParser::parseBind (DOMElement *bind_element, Link *link)
 {
-  Bind *bind = createBind (parentElement, objGrandParent);
+  Bind *bind = createBind (bind_element, link);
   g_assert_nonnull (bind);
 
-  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
-  for (int i = 0; i < (int)elementNodeList->getLength (); i++)
+  for (DOMElement *child: dom_element_children (bind_element))
     {
-      DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      string tagname = dom_element_tagname(child);
+      if (tagname == "bindParam")
         {
-          DOMElement *element = (DOMElement *)node;
-          string tagname = dom_element_tagname(element);
-
-          if (XMLString::compareIString (tagname.c_str (), "bindParam") == 0)
+          Parameter *param = parseLinkOrBindParam (child);
+          if (param)
             {
-              Parameter *param = parseBindParam (element);
-              if (param)
-                {
-                  addBindParamToBind (bind, param);
-                }
+              bind->addParameter (param);
             }
+        }
+      else
+        {
+          syntax_warning( "'%s' is not known as child of 'bind'."
+                          " It will be ignored.",
+                          tagname.c_str() );
         }
     }
 
@@ -58,18 +56,7 @@ NclLinkingParser::parseBind (DOMElement *parentElement,
 }
 
 Parameter *
-NclLinkingParser::parseLinkParam (DOMElement *parentElement)
-{
-  Parameter *param;
-  param = new Parameter (
-      dom_element_get_attr(parentElement, "name"),
-      dom_element_get_attr(parentElement, "value") );
-
-  return param;
-}
-
-Parameter *
-NclLinkingParser::parseBindParam (DOMElement *parentElement)
+NclLinkingParser::parseLinkOrBindParam (DOMElement *parentElement)
 {
   Parameter *param;
   param = new Parameter (
@@ -80,68 +67,45 @@ NclLinkingParser::parseBindParam (DOMElement *parentElement)
 }
 
 Link *
-NclLinkingParser::parseLink (DOMElement *parentElement,
-                             void *objGrandParent)
+NclLinkingParser::parseLink (DOMElement *link_element,
+                             CompositeNode *objGrandParent)
 {
-  Link *link = createLink (parentElement, objGrandParent);
+  Link *link = createLink (link_element, objGrandParent);
   g_assert_nonnull (link);
 
-  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
-  for (int i = 0; i < (int)elementNodeList->getLength (); i++)
+  for (DOMElement *child: dom_element_children(link_element))
     {
-      DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      string tagname = dom_element_tagname(child);
+      if (tagname == "linkParam")
         {
-          DOMElement *element = (DOMElement *)node;
-          string tagname = dom_element_tagname(element);
-
-          if (XMLString::compareIString (tagname.c_str (), "linkParam") == 0)
+          Parameter *param = parseLinkOrBindParam(child);
+          if (param)
             {
-              Parameter *param = parseLinkParam (element);
-              if (param)
-                {
-                  addLinkParamToLink (link, param);
-                }
+              link->addParameter (param);
             }
-          else if (XMLString::compareIString (tagname.c_str (), "bind") == 0)
+        }
+      else if (tagname == "bind")
+        {
+          Bind *bind = parseBind (child, link);
+          if (bind)
             {
-              Bind *bind = parseBind (element, link);
-              if (bind)
-                {
-                  addBindToLink (link, bind);
-                }
+              // nothing to do, since to be created the bind needs to be
+              // associated with its link
             }
+        }
+      else
+        {
+          syntax_warning( "'%s' is not known as child of 'link'."
+                          " It will be ignored.",
+                          tagname.c_str() );
         }
     }
 
   return link;
 }
 
-
-void
-NclLinkingParser::addBindToLink (arg_unused (Link *parentObject), arg_unused (Bind *childObject))
-{
-  // nothing to do, since to be created the bind needs to be associated
-  // with
-  // its link
-}
-
-void
-NclLinkingParser::addBindParamToBind (Bind *parentObject,
-                                      Parameter *childObject)
-{
-  parentObject->addParameter (childObject);
-}
-
-void
-NclLinkingParser::addLinkParamToLink (Link *parentObject,
-                                      Parameter *childObject)
-{
-  parentObject->addParameter (childObject);
-}
-
 Bind *
-NclLinkingParser::createBind (DOMElement *parentElement, Link *objGrandParent)
+NclLinkingParser::createBind (DOMElement *bind_element, Link *link)
 {
   string component, roleId, interfaceId;
   Role *role;
@@ -153,10 +117,8 @@ NclLinkingParser::createBind (DOMElement *parentElement, Link *objGrandParent)
   set<ReferNode *> *sInsts;
   set<ReferNode *>::iterator i;
 
-  role = _connector->getRole (
-        dom_element_get_attr(parentElement, "role"));
-
-  component = dom_element_get_attr(parentElement, "component");
+  role = _connector->getRole (dom_element_get_attr(bind_element, "role"));
+  component = dom_element_get_attr(bind_element, "component");
 
   if (_composite->getId () == component)
     {
@@ -175,9 +137,9 @@ NclLinkingParser::createBind (DOMElement *parentElement, Link *objGrandParent)
 
   anchorNodeEntity = (NodeEntity *)(anchorNode->getDataEntity ());
 
-  if (dom_element_has_attr(parentElement, "interface"))
+  if (dom_element_has_attr(bind_element, "interface"))
     {
-      interfaceId = dom_element_get_attr(parentElement, "interface");
+      interfaceId = dom_element_get_attr(bind_element, "interface");
 
       if (anchorNodeEntity == NULL)
         {
@@ -256,11 +218,11 @@ NclLinkingParser::createBind (DOMElement *parentElement, Link *objGrandParent)
     }
 
   // atribui o bind ao elo (link)
-  if (dom_element_has_attr(parentElement, "descriptor"))
+  if (dom_element_has_attr(bind_element, "descriptor"))
     {
       document = getNclParser ()->getNclDocument ();
       descriptor = document->getDescriptor (
-            dom_element_get_attr(parentElement, "descriptor") );
+            dom_element_get_attr(bind_element, "descriptor") );
     }
   else
     {
@@ -270,7 +232,7 @@ NclLinkingParser::createBind (DOMElement *parentElement, Link *objGrandParent)
   if (role == NULL)
     {
       // &got
-      if (dom_element_has_attr(parentElement, "role"))
+      if (dom_element_has_attr(bind_element, "role"))
         {
           ConditionExpression *condition;
           CompoundCondition *compoundCondition;
@@ -278,7 +240,7 @@ NclLinkingParser::createBind (DOMElement *parentElement, Link *objGrandParent)
           AttributeAssessment *assessment;
           ValueAssessment *otherAssessment;
 
-          roleId = dom_element_get_attr(parentElement, "role");
+          roleId = dom_element_get_attr(bind_element, "role");
 
           assessment = new AttributeAssessment (roleId);
           assessment->setEventType (EventUtil::EVT_ATTRIBUTION);
@@ -317,13 +279,13 @@ NclLinkingParser::createBind (DOMElement *parentElement, Link *objGrandParent)
         }
     }
 
-  return objGrandParent->bind (
+  return link->bind (
         anchorNode, interfacePoint, descriptor, role->getLabel () );
 }
 
 Link *
 NclLinkingParser::createLink (DOMElement *parentElement,
-                              void *objGrandParent)
+                              CompositeNode *objGrandParent)
 {
   NclDocument *document = getNclParser ()->getNclDocument ();
   string connectorId =
@@ -338,7 +300,7 @@ NclLinkingParser::createLink (DOMElement *parentElement,
   g_assert (_connector->instanceOf ("CausalConnector"));
 
   Link *link = new CausalLink (getId (parentElement), _connector);
-  _composite = (CompositeNode *) objGrandParent;
+  _composite = objGrandParent;
 
   return link;
 }
@@ -351,10 +313,7 @@ NclLinkingParser::getId (DOMElement *element)
     {
       strRet = dom_element_get_attr (element, "id");
     }
-  else
-    {
-      strRet = "";
-    }
+
   return strRet;
 }
 
