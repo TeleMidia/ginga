@@ -37,7 +37,7 @@ GINGA_NCLCONV_BEGIN
 class NclStructureParser : public ModuleParser
 {
 public:
-  NclStructureParser (NclParser *nclParser);
+  explicit NclStructureParser (NclParser *nclParser);
 
   NclDocument *parseNcl (DOMElement *parentElement);
   NclDocument *createNcl (DOMElement *parentElement);

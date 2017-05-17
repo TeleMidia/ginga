@@ -42,7 +42,7 @@ GINGA_NCLCONV_BEGIN
 class NclInterfacesParser : public ModuleParser
 {
 public:
-  NclInterfacesParser (NclParser *nclParser);
+  explicit NclInterfacesParser (NclParser *nclParser);
 
   SwitchPort *parseSwitchPort (DOMElement *parentElement,
                                SwitchNode *objGrandParent);

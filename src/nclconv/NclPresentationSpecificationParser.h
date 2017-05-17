@@ -47,27 +47,21 @@ private:
   DeviceLayout *deviceLayout;
 
 public:
-  NclPresentationSpecificationParser (NclParser *nclParser,
-                                      DeviceLayout *deviceLayout);
+  explicit NclPresentationSpecificationParser (NclParser *nclParser,
+                                               DeviceLayout *deviceLayout);
 
-  Descriptor *parseDescriptor (DOMElement *parentElement);
-  Descriptor *createDescriptor (DOMElement *parentElement);
+  Descriptor *parseDescriptor (DOMElement *descriptor_element);
+  Descriptor *createDescriptor (DOMElement *descriptor_element);
 
-  DescriptorBase *parseDescriptorBase (DOMElement *parentElement);
-  DescriptorBase *createDescriptorBase (DOMElement *parentElement);
+  DescriptorBase *parseDescriptorBase (DOMElement *descriptorBase_element);
+  DescriptorBase *createDescriptorBase (DOMElement *descriptorBase_element);
 
-  void addImportBaseToDescriptorBase (void *parentObject, void *childObject);
+  void addImportBaseToDescriptorBase (DescriptorBase *descriptorBase,
+                                      DOMElement *childObject);
 
-  void addDescriptorSwitchToDescriptorBase (DescriptorBase *descBase,
-                                            GenericDescriptor *desc);
-
-  void addDescriptorToDescriptorBase (DescriptorBase *parentObject,
-                                      GenericDescriptor *childObject);
-
-  void *parseDescriptorBind (DOMElement *parentElement);
+  DOMElement *parseDescriptorBind (DOMElement *parentElement);
 
   DOMElement *parseDescriptorParam (DOMElement *parentElement);
-  void addDescriptorParamToDescriptor (Descriptor *desc, DOMElement *param);
 };
 
 GINGA_NCLCONV_END

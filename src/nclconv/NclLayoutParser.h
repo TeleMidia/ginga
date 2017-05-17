@@ -31,7 +31,7 @@ private:
   DeviceLayout *deviceLayout;
 
 public:
-  NclLayoutParser (NclParser *nclParser, DeviceLayout *deviceLayout);
+  explicit NclLayoutParser (NclParser *nclParser, DeviceLayout *deviceLayout);
 
   LayoutRegion *parseRegion (DOMElement *parentElement);
   LayoutRegion *createRegion (DOMElement *parentElement);

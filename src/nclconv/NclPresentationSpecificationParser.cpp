@@ -35,29 +35,31 @@ NclPresentationSpecificationParser::NclPresentationSpecificationParser (
 }
 
 Descriptor *
-NclPresentationSpecificationParser::parseDescriptor (DOMElement *parentElement)
+NclPresentationSpecificationParser::parseDescriptor (
+    DOMElement *descriptor_element)
 {
-  Descriptor *descriptor = createDescriptor (parentElement);
+  Descriptor *descriptor = createDescriptor (descriptor_element);
   g_assert_nonnull (descriptor);
 
-  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
-  for (int i = 0; i < (int)elementNodeList->getLength (); i++)
+  for(DOMElement *child: dom_element_children(descriptor_element))
     {
-      DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      string tagname = dom_element_tagname(child);
+      if (tagname == "descriptorParam")
         {
-          DOMElement *element = (DOMElement *)node;
-          string tagname = dom_element_tagname(element);
-          if (XMLString::compareIString (tagname.c_str (), "descriptorParam")
-              == 0)
+          DOMElement *descParam = parseDescriptorParam (child);
+          if (descParam)
             {
-              DOMElement *elementObject = parseDescriptorParam (element);
+              string pName = dom_element_get_attr(descParam, "name");
+              string pValue = dom_element_get_attr(descParam, "value");
 
-              if (elementObject != NULL)
-                {
-                  addDescriptorParamToDescriptor (descriptor, elementObject);
-                }
+              descriptor->addParameter (new Parameter (pName, pValue));
             }
+        }
+      else
+        {
+          syntax_warning( "'%s' is not known as child of 'descriptor'."
+                          " It will be ignored.",
+                          tagname.c_str() );
         }
     }
 
@@ -66,63 +68,53 @@ NclPresentationSpecificationParser::parseDescriptor (DOMElement *parentElement)
 
 DescriptorBase *
 NclPresentationSpecificationParser::parseDescriptorBase (
-    DOMElement *parentElement)
+    DOMElement *descriptorBase_element)
 {
-  DOMElement *element;
-  void *elementObject;
-
-  DescriptorBase *descBase = createDescriptorBase (parentElement);
+  DescriptorBase *descBase = createDescriptorBase (descriptorBase_element);
   g_assert_nonnull (descBase);
 
-  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
-  for (int i = 0; i < (int)elementNodeList->getLength (); i++)
+  for (DOMElement *child: dom_element_children(descriptorBase_element))
     {
-      DOMNode *node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      string tagname = dom_element_tagname(child);
+      if (tagname == "importBase")
         {
-          element = (DOMElement *)node;
-          string tagname = dom_element_tagname(element);
-
-          if (XMLString::compareIString (tagname.c_str (), "importBase") == 0)
+          DOMElement *elementObject = _nclParser->getImportParser ()
+              ->parseImportBase (child);
+          if (elementObject)
             {
-              elementObject = _nclParser->getImportParser ()
-                      ->parseImportBase (element);
-
-              if (elementObject != NULL)
-                {
-                  addImportBaseToDescriptorBase (descBase,
-                                                 elementObject);
-                }
+              addImportBaseToDescriptorBase (descBase, elementObject);
             }
-          else if (XMLString::compareIString (tagname.c_str (),
-                                              "descriptorSwitch")
-                   == 0)
+        }
+      else if (tagname == "descriptorSwitch")
+        {
+          DescriptorSwitch *descSwitch =
+              _nclParser->getPresentationControlParser ()
+              ->parseDescriptorSwitch (child);
+          if (descSwitch)
             {
-              DescriptorSwitch *descSwitch
-                  = _nclParser->getPresentationControlParser ()
-                      ->parseDescriptorSwitch (element);
-
-              if (descSwitch)
-                {
-                  addDescriptorSwitchToDescriptorBase (descBase, descSwitch);
-                }
+              descBase->addDescriptor (descSwitch);
             }
-          else if (XMLString::compareIString (tagname.c_str (), "descriptor")
-                   == 0)
+        }
+      else if (tagname == "descriptor")
+        {
+          Descriptor *desc = parseDescriptor (child);
+          if (desc)
             {
-              Descriptor *desc = parseDescriptor (element);
-              if (desc)
-                {
-                  addDescriptorToDescriptorBase (descBase, desc);
-                }
+              descBase->addDescriptor (desc);
             }
+        }
+      else
+        {
+          syntax_warning( "'%s' is not known as child of 'descriptorBase'."
+                          " It will be ignored.",
+                          tagname.c_str() );
         }
     }
 
   return descBase;
 }
 
-void *
+DOMElement *
 NclPresentationSpecificationParser::parseDescriptorBind (
     DOMElement *parentElement)
 {
@@ -137,40 +129,13 @@ NclPresentationSpecificationParser::parseDescriptorParam (
 }
 
 void
-NclPresentationSpecificationParser::addDescriptorToDescriptorBase (
-    DescriptorBase *descBase, GenericDescriptor *desc)
-{
-  descBase->addDescriptor (desc);
-}
-
-void
-NclPresentationSpecificationParser::addDescriptorSwitchToDescriptorBase (
-    DescriptorBase *descBase, GenericDescriptor *desc)
-{
-  descBase->addDescriptor (desc);
-}
-
-void
-NclPresentationSpecificationParser::addDescriptorParamToDescriptor (
-    Descriptor *descriptor, DOMElement *param)
-{
-  // recuperar nome e valor da variavel
-  string paramName = dom_element_get_attr(param, "name");
-  string paramValue = dom_element_get_attr(param, "value");
-
-  // adicionar variavel ao descritor
-  Parameter *descParam = new Parameter (paramName, paramValue);
-  descriptor->addParameter (descParam);
-}
-
-void
 NclPresentationSpecificationParser::addImportBaseToDescriptorBase (
-    void *parentObject, void *childObject)
+    DescriptorBase *descriptorBase, DOMElement *childObject)
 {
   string baseAlias, baseLocation;
   NclParser *compiler;
   NclDocument *importedDocument, *thisDocument;
-  DescriptorBase *descriptorBase;
+  DescriptorBase *importedDescriptorBase;
   RegionBase *regionBase;
 
   map<int, RegionBase *> *regionBases;
@@ -179,10 +144,8 @@ NclPresentationSpecificationParser::addImportBaseToDescriptorBase (
   RuleBase *ruleBase;
 
   // get the external base alias and location
-  baseAlias = dom_element_get_attr((DOMElement *)childObject, "alias");
-
-  baseLocation = dom_element_get_attr((DOMElement *)childObject,
-                                               "documentURI");
+  baseAlias = dom_element_get_attr(childObject, "alias");
+  baseLocation = dom_element_get_attr(childObject, "documentURI");
 
   compiler = getNclParser ();
   importedDocument = compiler->importDocument (baseLocation);
@@ -191,8 +154,8 @@ NclPresentationSpecificationParser::addImportBaseToDescriptorBase (
       return;
     }
 
-  descriptorBase = importedDocument->getDescriptorBase ();
-  if (descriptorBase == NULL)
+  importedDescriptorBase = importedDocument->getDescriptorBase ();
+  if (importedDescriptorBase == NULL)
     {
       return;
     }
@@ -200,8 +163,7 @@ NclPresentationSpecificationParser::addImportBaseToDescriptorBase (
   // insert the imported base into the document descriptor base
   try
     {
-      ((DescriptorBase *)parentObject)
-          ->addBase (descriptorBase, baseAlias, baseLocation);
+      descriptorBase->addBase (importedDescriptorBase, baseAlias, baseLocation);
     }
   catch (...)
     {
@@ -244,20 +206,15 @@ NclPresentationSpecificationParser::addImportBaseToDescriptorBase (
 
 DescriptorBase *
 NclPresentationSpecificationParser::createDescriptorBase (
-        DOMElement *parentElement)
+        DOMElement *descriptorBase_element)
 {
-  DescriptorBase *descBase;
-
-  // criar nova base de conectores com id gerado a partir do nome de seu
-  // elemento
-  descBase = new DescriptorBase (
-        dom_element_get_attr(parentElement ,"id") );
-
-  return descBase;
+  return new DescriptorBase (
+        dom_element_get_attr(descriptorBase_element ,"id") );
 }
 
 Descriptor *
-NclPresentationSpecificationParser::createDescriptor (DOMElement *parentElement)
+NclPresentationSpecificationParser::createDescriptor (
+    DOMElement *descriptor_element)
 {
   Descriptor *descriptor;
   NclDocument *document;
@@ -273,16 +230,15 @@ NclPresentationSpecificationParser::createDescriptor (DOMElement *parentElement)
   Transition *transition;
 
   // cria descritor
-  descriptor = new Descriptor (
-        dom_element_get_attr(parentElement, "id"));
+  descriptor = new Descriptor (dom_element_get_attr(descriptor_element, "id"));
 
   document = getNclParser ()->getNclDocument ();
 
   // region
-  if (dom_element_has_attr(parentElement, "region"))
+  if (dom_element_has_attr(descriptor_element, "region"))
     {
       region = document->getRegion (
-            dom_element_get_attr(parentElement, "region") );
+            dom_element_get_attr(descriptor_element, "region") );
 
       if (region)
         {
@@ -291,18 +247,18 @@ NclPresentationSpecificationParser::createDescriptor (DOMElement *parentElement)
     }
 
   // explicitDur
-  if (dom_element_has_attr(parentElement, "explicitDur"))
+  if (dom_element_has_attr(descriptor_element, "explicitDur"))
     {
       string durStr =
-          dom_element_get_attr(parentElement, "explicitDur");
+          dom_element_get_attr(descriptor_element, "explicitDur");
 
       descriptor->setExplicitDuration (::ginga::util::strUTCToSec (durStr)
                                        * 1000);
     }
 
-  if (dom_element_has_attr(parentElement,"freeze"))
+  if (dom_element_has_attr(descriptor_element,"freeze"))
     {
-      string freeze = dom_element_get_attr(parentElement,"freeze");
+      string freeze = dom_element_get_attr(descriptor_element,"freeze");
 
       if (freeze == "true")
         {
@@ -315,50 +271,50 @@ NclPresentationSpecificationParser::createDescriptor (DOMElement *parentElement)
     }
 
   // atributo player
-  if (dom_element_has_attr(parentElement, "player"))
+  if (dom_element_has_attr(descriptor_element, "player"))
     {
       descriptor->setPlayerName (
-            dom_element_get_attr(parentElement, "player") );
+            dom_element_get_attr(descriptor_element, "player") );
     }
 
   // key navigation attributes
   keyNavigation = new KeyNavigation ();
   descriptor->setKeyNavigation (keyNavigation);
-  if (dom_element_has_attr(parentElement, "focusIndex"))
+  if (dom_element_has_attr(descriptor_element, "focusIndex"))
     {
       keyNavigation->setFocusIndex (
-          dom_element_get_attr(parentElement,"focusIndex"));
+          dom_element_get_attr(descriptor_element,"focusIndex"));
     }
 
-  if (dom_element_has_attr(parentElement, "moveUp"))
+  if (dom_element_has_attr(descriptor_element, "moveUp"))
     {
       keyNavigation->setMoveUp (
-            dom_element_get_attr(parentElement,"moveUp") );
+            dom_element_get_attr(descriptor_element,"moveUp") );
     }
 
-  if (dom_element_has_attr(parentElement, "moveDown"))
+  if (dom_element_has_attr(descriptor_element, "moveDown"))
     {
       keyNavigation->setMoveDown (
-            dom_element_get_attr(parentElement,"moveDown") );
+            dom_element_get_attr(descriptor_element,"moveDown") );
     }
 
-  if (dom_element_has_attr(parentElement, "moveLeft"))
+  if (dom_element_has_attr(descriptor_element, "moveLeft"))
     {
       keyNavigation->setMoveLeft (
-            dom_element_get_attr(parentElement, "moveLeft") );
+            dom_element_get_attr(descriptor_element, "moveLeft") );
     }
 
-  if (dom_element_has_attr(parentElement, "moveRight"))
+  if (dom_element_has_attr(descriptor_element, "moveRight"))
     {
       keyNavigation->setMoveRight (
-          dom_element_get_attr(parentElement, "moveRight") );
+          dom_element_get_attr(descriptor_element, "moveRight") );
     }
 
   focusDecoration = new FocusDecoration ();
   descriptor->setFocusDecoration (focusDecoration);
-  if (dom_element_has_attr (parentElement, "focusSrc"))
+  if (dom_element_has_attr (descriptor_element, "focusSrc"))
     {
-      src = dom_element_get_attr (parentElement, "focusSrc");
+      src = dom_element_get_attr (descriptor_element, "focusSrc");
 
       if (!xpathisuri (src) && !xpathisabs (src))
         src = xpathbuildabs (getNclParser ()->getDirName (), src);
@@ -366,37 +322,37 @@ NclPresentationSpecificationParser::createDescriptor (DOMElement *parentElement)
       focusDecoration->setFocusSrc (src);
     }
 
-  if (dom_element_has_attr (parentElement, "focusBorderColor"))
+  if (dom_element_has_attr (descriptor_element, "focusBorderColor"))
     {
       color = new SDL_Color ();
       ginga_color_input_to_sdl_color(
-            dom_element_get_attr (parentElement, "focusBorderColor"),
+            dom_element_get_attr (descriptor_element, "focusBorderColor"),
             color);
 
       focusDecoration->setFocusBorderColor ( color );
     }
 
-  if (dom_element_has_attr (parentElement, "focusBorderWidth"))
+  if (dom_element_has_attr (descriptor_element, "focusBorderWidth"))
     {
       int w;
       w = xstrto_int (
-          dom_element_get_attr (parentElement, "focusBorderWidth") );
+          dom_element_get_attr (descriptor_element, "focusBorderWidth") );
       focusDecoration->setFocusBorderWidth (w);
     }
 
-  if (dom_element_has_attr (parentElement, "focusBorderTransparency"))
+  if (dom_element_has_attr (descriptor_element, "focusBorderTransparency"))
     {
       double alpha;
       alpha = xstrtod (
-          dom_element_get_attr (parentElement,
+          dom_element_get_attr (descriptor_element,
                                          "focusBorderTransparency"));
 
       focusDecoration->setFocusBorderTransparency (alpha);
     }
 
-  if (dom_element_has_attr (parentElement, "focusSelSrc"))
+  if (dom_element_has_attr (descriptor_element, "focusSelSrc"))
     {
-      src = dom_element_get_attr (parentElement, "focusSelSrc");
+      src = dom_element_get_attr (descriptor_element, "focusSelSrc");
 
       if (!xpathisuri (src) && !xpathisabs (src))
         src = xpathbuildabs (getNclParser ()->getDirName (), src);
@@ -404,22 +360,22 @@ NclPresentationSpecificationParser::createDescriptor (DOMElement *parentElement)
       focusDecoration->setFocusSelSrc (src);
     }
 
-  if (dom_element_has_attr (parentElement, "selBorderColor"))
+  if (dom_element_has_attr (descriptor_element, "selBorderColor"))
     {
       color = new SDL_Color ();
       ginga_color_input_to_sdl_color (
-            dom_element_get_attr (parentElement, "selBorderColor"),
+            dom_element_get_attr (descriptor_element, "selBorderColor"),
             color );
       focusDecoration->setSelBorderColor ( color );
     }
 
-  if (dom_element_has_attr (parentElement, "transIn"))
+  if (dom_element_has_attr (descriptor_element, "transIn"))
     {
       transitionBase = document->getTransitionBase ();
       if (transitionBase != NULL)
         {
           string trimValue, value;
-          attValue = dom_element_get_attr (parentElement, "transIn");
+          attValue = dom_element_get_attr (descriptor_element, "transIn");
 
           transIds = split (attValue, ";");
           if (!transIds->empty ())
@@ -448,13 +404,13 @@ NclPresentationSpecificationParser::createDescriptor (DOMElement *parentElement)
         }
     }
 
-  if (dom_element_has_attr (parentElement, "transOut"))
+  if (dom_element_has_attr (descriptor_element, "transOut"))
     {
       transitionBase = document->getTransitionBase ();
       if (transitionBase != NULL)
         {
           string trimValue, value;
-          attValue = dom_element_get_attr(parentElement, "transOut");
+          attValue = dom_element_get_attr(descriptor_element, "transOut");
 
           transIds = split (attValue, ";");
           if (!transIds->empty ())

@@ -162,7 +162,7 @@ protected:
   DeviceLayout *deviceLayout;
 
 public:
-  NclParser (PrivateBaseContext *pbc, DeviceLayout *deviceLayout);
+  explicit NclParser (PrivateBaseContext *pbc, DeviceLayout *deviceLayout);
   virtual ~NclParser ();
 
   Node *getNode (const string &id);
