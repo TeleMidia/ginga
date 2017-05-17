@@ -40,7 +40,8 @@ NclTransitionParser::parseTransitionBase (DOMElement *transBase_element)
 
   for(DOMElement *child: dom_element_children(transBase_element))
     {
-      if (dom_element_tagname(child) == "importBase")
+      string tagname = dom_element_tagname(child);
+      if (tagname == "importBase")
         {
           DOMElement *newel = _nclParser->getImportParser ()
               ->parseImportBase (child);
@@ -50,13 +51,19 @@ NclTransitionParser::parseTransitionBase (DOMElement *transBase_element)
               addImportBaseToTransitionBase (transBase, newel);
             }
         }
-      else if (dom_element_tagname(child) == "transition")
+      else if (tagname == "transition")
         {
           Transition *trans = parseTransition (child);
           if (trans)
             {
               transBase->addTransition (trans);
             }
+        }
+      else
+        {
+          syntax_warning( "'%s' is not known as child of '%s'. "
+                          "It will be ignored.",
+                          tagname.c_str() );
         }
     }
 
@@ -146,14 +153,12 @@ NclTransitionParser::parseTransition (DOMElement *parentElement)
   if (dom_element_has_attr(parentElement, "horzRepeat"))
     {
       attValue = dom_element_get_attr(parentElement, "horzRepeat");
-
       transition->setHorzRepeat (xstrto_int (attValue));
     }
 
   if (dom_element_has_attr(parentElement, "vertRepeat"))
     {
       attValue = dom_element_get_attr(parentElement, "vertRepeat");
-
       transition->setVertRepeat (xstrto_int (attValue));
     }
 

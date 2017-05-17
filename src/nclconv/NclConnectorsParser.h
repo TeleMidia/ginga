@@ -40,71 +40,64 @@ private:
 public:
   NclConnectorsParser (NclParser *nclParser);
 
-  void *parseSimpleCondition (DOMElement *parentElement, void *objGrandParent);
+  SimpleCondition *parseSimpleCondition (DOMElement *simpleCond_element);
 
-  void *parseCompoundCondition (DOMElement *parentElement,
-                                void *objGrandParent);
+  SimpleAction *parseSimpleAction (DOMElement *simpleAction_element);
 
-  void *createCompoundCondition (DOMElement *parentElement,
-                                 void *objGrandParent);
+  CompoundCondition *parseCompoundCondition (DOMElement *compoundCond_element);
+  CompoundCondition *createCompoundCondition (DOMElement *compoundCond_element);
 
-  void addSimpleConditionToCompoundCondition (void *parentObject,
-                                              void *childObject);
+  AssessmentStatement *parseAssessmentStatement (DOMElement *parentElement);
+  AssessmentStatement *createAssessmentStatement (DOMElement *parentElement);
 
-  void addCompoundConditionToCompoundCondition (void *parentObject,
-                                                void *childObject);
+  AttributeAssessment *parseAttributeAssessment (DOMElement *parentElement);
 
-  void addAssessmentStatementToCompoundCondition (void *parentObject,
-                                                  void *childObject);
+  ValueAssessment *parseValueAssessment (DOMElement *parentElement);
 
-  void addCompoundStatementToCompoundCondition (void *parentObject,
-                                                void *childObject);
+  CompoundStatement *parseCompoundStatement (DOMElement *parentElement);
+  CompoundStatement *createCompoundStatement (DOMElement *parentElement);
 
-  void *parseAssessmentStatement (DOMElement *parentElement,
-                                  void *objGrandParent);
+  CompoundAction *parseCompoundAction (DOMElement *parentElement);
+  CompoundAction *createCompoundAction (DOMElement *compoundAction_element);
 
-  void *createAssessmentStatement (DOMElement *parentElement,
-                                   void *objGrandParent);
-
-  void addAttributeAssessmentToAssessmentStatement (void *parentObject,
-                                                    void *childObject);
-
-  void addValueAssessmentToAssessmentStatement (void *parentObject,
-                                                void *childObject);
-
-  void *parseAttributeAssessment (DOMElement *parentElement,
-                                  void *objGrandParent);
-
-  void *parseValueAssessment (DOMElement *parentElement, void *objGrandParent);
-
-  void *parseCompoundStatement (DOMElement *parentElement,
-                                void *objGrandParent);
-
-  void *createCompoundStatement (DOMElement *parentElement,
-                                 void *objGrandParent);
-
-  void addAssessmentStatementToCompoundStatement (void *parentObject,
-                                                  void *childObject);
-
-  void addCompoundStatementToCompoundStatement (void *parentObject,
-                                                void *childObject);
-
-  void *parseSimpleAction (DOMElement *parentElement, void *objGrandParent);
-
-  void *parseCompoundAction (DOMElement *parentElement, void *objGrandParent);
-  void *createCompoundAction (DOMElement *parentElement, void *objGrandParent);
+  ConnectorBase *parseConnectorBase (DOMElement *parentElement);
+  ConnectorBase *createConnectorBase (DOMElement *parentElement);
 
 
-  void addSimpleActionToCompoundAction (void *parentObject, void *childObject);
+  // util
+  void addSimpleConditionToCompoundCondition (CompoundCondition *compoundCond,
+                                              ConditionExpression *condExp);
+
+  void addCompoundConditionToCompoundCondition (CompoundCondition *compoundCond,
+                                                ConditionExpression *condExp);
+
+  void addAssessmentStatementToCompoundCondition (CompoundCondition *compoundCond,
+                                                  ConditionExpression *condExp);
+
+  void addCompoundStatementToCompoundCondition (CompoundCondition *compoundCond,
+                                                ConditionExpression *condExp);
+
+  void addAttributeAssessmentToAssessmentStatement (
+      AssessmentStatement *parentObject, AttributeAssessment *childObject);
+
+  void addValueAssessmentToAssessmentStatement (AssessmentStatement *parentObject,
+                                                ValueAssessment *childObject);
+  void addAssessmentStatementToCompoundStatement (CompoundStatement *parentObject,
+                                                  Statement *childObject);
+
+  void addCompoundStatementToCompoundStatement (CompoundStatement *parentObject,
+                                                Statement *childObject);
+
+  void addSimpleActionToCompoundAction (CompoundAction *compoundAction,
+                                        Action *action);
 
   void addCompoundActionToCompoundAction (void *parentObject,
                                           void *childObject);
 
-  void *parseConnectorParam (DOMElement *parentElement, void *objGrandParent);
+  Parameter *parseConnectorParam (DOMElement *parentElement);
 
-  void *parseCausalConnector (DOMElement *parentElement, void *objGrandParent);
-
-  void *createCausalConnector (DOMElement *parentElement, void *objGrandParent);
+  CausalConnector *parseCausalConnector (DOMElement *parentElement);
+  CausalConnector *createCausalConnector (DOMElement *causalConnector_element);
 
   void addSimpleConditionToCausalConnector (void *parentObject,
                                             void *childObject);
@@ -117,19 +110,14 @@ public:
   void addCompoundActionToCausalConnector (void *parentObject,
                                            void *childObject);
 
-  void addConnectorParamToCausalConnector (void *parentObject,
-                                           void *childObject);
+  void addConnectorParamToCausalConnector (Connector *connector,
+                                           Parameter *param);
 
-  ConnectorBase *parseConnectorBase (DOMElement *parentElement,
-                                     void *objGrandParent);
+  void addImportBaseToConnectorBase (ConnectorBase *connectorBase,
+                                     DOMElement *childObject);
 
-  ConnectorBase *createConnectorBase (DOMElement *parentElement,
-                                      void *objGrandParent);
-
-  void addImportBaseToConnectorBase (void *parentObject, void *childObject);
-
-  void addCausalConnectorToConnectorBase (void *parentObject,
-                                          void *childObject);
+  void addCausalConnectorToConnectorBase (ConnectorBase *connectorBase,
+                                          Connector *connector);
 
   static short convertEventState (const string &eventState);
 

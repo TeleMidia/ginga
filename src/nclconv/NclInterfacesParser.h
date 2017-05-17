@@ -56,7 +56,7 @@ public:
   Port *parseMapping (DOMElement *parentElement, SwitchPort *objGrandParent);
   Anchor *parseArea (DOMElement *parentElement, void *objGrandParent);
   PropertyAnchor *parseProperty (DOMElement *parentElement, Node *objGrandParent);
-  void *parsePort (DOMElement *parentElement, void *objGrandParent);
+  Port *parsePort (DOMElement *parentElement, void *objGrandParent);
 
 private:
   SpatialAnchor *createSpatialAnchor (DOMElement *areaElement);

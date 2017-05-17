@@ -34,14 +34,26 @@ GINGA_NCLCONV_BEGIN
 
 NclParser::NclParser (PrivateBaseContext *pbc, DeviceLayout *deviceLayout)
 {
-  this->parentObject = nullptr;
   this->privateBaseContext = nullptr;
   this->ownManager = false;
 
   this->privateBaseContext = pbc;
   this->deviceLayout = deviceLayout;
 
-  init ();
+  this->presentationSpecificationParser
+      = new NclPresentationSpecificationParser(this, deviceLayout);
+
+  this->structureParser = new NclStructureParser (this);
+  this->componentsParser = new NclComponentsParser (this);
+  this->connectorsParser = new NclConnectorsParser (this);
+  this->linkingParser = new NclLinkingParser (this);
+
+  this->interfacesParser = new NclInterfacesParser (this);
+  this->layoutParser = new NclLayoutParser (this, deviceLayout);
+  this->transitionParser = new NclTransitionParser (this);
+  this->presentationControlParser = new NclPresentationControlParser (this);
+  this->importParser = new NclImportParser (this);
+  this->metainformationParser = new NclMetainformationParser (this);
 }
 
 NclParser::~NclParser ()
@@ -134,7 +146,6 @@ NclParser::parseRootElement (DOMElement *rootElement)
 
   return getStructureParser ()->parseNcl (rootElement);
 }
-
 
 string
 NclParser::getDirName ()
@@ -242,33 +253,13 @@ NclParser::parse (const string &path)
   return this->ncl;
 }
 
-void
-NclParser::init ()
-{
-  presentationSpecificationParser
-      = new NclPresentationSpecificationParser(this, deviceLayout);
-
-  structureParser = new NclStructureParser (this);
-  componentsParser = new NclComponentsParser (this);
-  connectorsParser = new NclConnectorsParser (this);
-  linkingParser = new NclLinkingParser (this, connectorsParser);
-
-  interfacesParser = new NclInterfacesParser (this);
-  layoutParser = new NclLayoutParser (this, deviceLayout);
-  transitionParser = new NclTransitionParser (this);
-  presentationControlParser = new NclPresentationControlParser (this);
-  importParser = new NclImportParser (this);
-  metainformationParser = new NclMetainformationParser (this);
-}
-
 Node *
 NclParser::getNode (const string &nodeId)
 {
-  NclDocument *document;
+  NclDocument *doc = NclParser::getNclDocument ();
+  g_assert_nonnull(doc);
 
-  document = NclParser::getNclDocument ();
-
-  return document->getNode (nodeId);
+  return doc->getNode (nodeId);
 }
 
 PrivateBaseContext *
