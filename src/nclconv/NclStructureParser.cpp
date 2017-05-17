@@ -39,7 +39,8 @@ NclStructureParser::parseBody (DOMElement *body_element)
 
   for (DOMElement *child : dom_element_children(body_element) )
     {
-      if (dom_element_tagname(child) == "media")
+      string tagname = dom_element_tagname(child);
+      if ( tagname == "media")
         {
           Node *media = _nclParser->getComponentsParser()->parseMedia (child);
           if (media)
@@ -49,7 +50,7 @@ NclStructureParser::parseBody (DOMElement *body_element)
                   ->addMediaToContext (body, media);
             }
         }
-      else if (dom_element_tagname(child) == "context")
+      else if (tagname == "context")
         {
           Node *child_context = _nclParser->getComponentsParser()
               ->parseContext (child);
@@ -60,7 +61,7 @@ NclStructureParser::parseBody (DOMElement *body_element)
                   ->addContextToContext (body, child_context);
             }
         }
-      else if (dom_element_tagname(child) == "switch")
+      else if (tagname == "switch")
         {
           Node *switch_node = _nclParser->getPresentationControlParser ()
               ->parseSwitch (child);

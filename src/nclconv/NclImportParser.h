@@ -25,7 +25,7 @@ GINGA_NCLCONV_BEGIN
 class NclImportParser : public ModuleParser
 {
 public:
-  NclImportParser (NclParser *nclParser);
+  explicit NclImportParser (NclParser *nclParser);
 
   void parseImportedDocumentBase (DOMElement *parentElement);
 

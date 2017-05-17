@@ -67,8 +67,7 @@ NclComponentsParser::parseContext (DOMElement *parentElement)
   Node *context = createContext (parentElement);
   g_assert_nonnull (context);
 
-  for (DOMElement *element:
-       dom_element_children(parentElement))
+  for (DOMElement *element: dom_element_children (parentElement))
     {
       string tagname = dom_element_tagname(element);
       if (tagname == "media")
@@ -96,11 +95,15 @@ NclComponentsParser::parseContext (DOMElement *parentElement)
               addSwitchToContext (context, switch_node);
             }
         }
+      else
+        {
+          // syntax warning ?
+        }
     }
 
 
   for (DOMElement *element:
-       dom_element_children_by_tagname(parentElement, "property"))
+       dom_element_children_by_tagname (parentElement, "property"))
     {
       PropertyAnchor *prop = _nclParser->getInterfacesParser ()
           ->parseProperty (element, context);
@@ -115,13 +118,13 @@ NclComponentsParser::parseContext (DOMElement *parentElement)
 }
 
 void *
-NclComponentsParser::posCompileContext2 (DOMElement *parentElement,
-                                         void *parentObject)
+NclComponentsParser::posCompileContext2 (DOMElement *context_element,
+                                         ContextNode *parentObject)
 {
-  for(DOMElement *element:
-      dom_element_children_by_tagname(parentElement, "link"))
+  for(DOMElement *child:
+      dom_element_children_by_tagname (context_element, "link"))
     {
-      Link *link = _nclParser->getLinkingParser ()->parseLink (element,
+      Link *link = _nclParser->getLinkingParser ()->parseLink (child,
                                                                parentObject);
       if (link)
         {
@@ -129,12 +132,11 @@ NclComponentsParser::posCompileContext2 (DOMElement *parentElement,
         }
     }
 
-  for(DOMElement *element:
-      dom_element_children_by_tagname(parentElement, "port"))
+  for(DOMElement *child:
+      dom_element_children_by_tagname (context_element, "port"))
     {
-      Port *port = _nclParser->getInterfacesParser () ->parsePort (element,
+      Port *port = _nclParser->getInterfacesParser () ->parsePort (child,
                                                                   parentObject);
-
       if (port)
         {
           addPortToContext (parentObject, port);
@@ -144,115 +146,97 @@ NclComponentsParser::posCompileContext2 (DOMElement *parentElement,
 }
 
 void
-NclComponentsParser::addPortToContext (void *parentObject, void *childObject)
+NclComponentsParser::addPortToContext (Entity *context, Port *port)
 {
-  if (((Entity *)parentObject)->instanceOf ("ContextNode"))
+  if (context->instanceOf ("ContextNode"))
     {
-      ((ContextNode *)parentObject)->addPort ((Port *)childObject);
+      ((ContextNode*)context)->addPort (port);
     }
 }
 
 void
-NclComponentsParser::addPropertyToContext (void *parentObject,
-                                           void *childObject)
+NclComponentsParser::addPropertyToContext (Entity *context,
+                                           Anchor *property)
 {
-  if (((Entity *)parentObject)->instanceOf ("ContextNode"))
+  if (context->instanceOf ("ContextNode"))
     {
-      ((ContextNode *)parentObject)->addAnchor ((Anchor *)childObject);
+      ((ContextNode *)context)->addAnchor (property);
     }
-  else if (((Entity *)parentObject)->instanceOf ("ReferNode"))
+  else if (context->instanceOf ("ReferNode"))
     {
-      ((ReferNode *)parentObject)->addAnchor ((Anchor *)childObject);
+      ((ReferNode *)context)->addAnchor (property);
     }
 }
 
 void
-NclComponentsParser::addContextToContext (void *parentObject, void *childObject)
+NclComponentsParser::addContextToContext (Entity *context, Node *child_context)
 {
-  if (((Entity *)parentObject)->instanceOf ("ContextNode"))
+  if (context->instanceOf ("ContextNode"))
     {
       // adicionar composicao aa composicao
-      addNodeToContext ((ContextNode *)parentObject,
-                        (NodeEntity *)childObject);
+      addNodeToContext ((ContextNode *)context, child_context);
     }
 }
 
 void
-NclComponentsParser::addSwitchToContext (void *parentObject, void *childObject)
+NclComponentsParser::addSwitchToContext (Entity *context, Node *switchNode)
 {
-  if (((Entity *)parentObject)->instanceOf ("ContextNode"))
+  if (context->instanceOf ("ContextNode"))
     {
       // adicionar switch aa composicao
-      addNodeToContext ((ContextNode *)parentObject,
-                        (NodeEntity *)childObject);
+      addNodeToContext ((ContextNode *)context, switchNode);
     }
 }
 
 void
-NclComponentsParser::addMediaToContext (void *parentObject, void *childObject)
+NclComponentsParser::addMediaToContext (Entity *context, Node *media)
 {
-  if (((Entity *)parentObject)->instanceOf ("ContextNode"))
+  if (context->instanceOf ("ContextNode"))
     {
       // adicionar media aa composicao
-      addNodeToContext ((ContextNode *)parentObject,
-                        (NodeEntity *)childObject);
+      addNodeToContext ((ContextNode *)context, media);
     }
 }
 
 void
-NclComponentsParser::addLinkToContext (void *parentObject, void *childObject)
+NclComponentsParser::addLinkToContext (ContextNode *context, Link *link)
 {
-  int min;
-  int max;
-  Role *role;
-  vector<Role *>::iterator i;
+  unsigned int min, max;
 
-  if (((Entity *)parentObject)->instanceOf ("ContextNode"))
+  if (context->instanceOf ("ContextNode")) //There is no other possibility!!
     {
-      vector<Role *> *roles;
-
-      roles = ((Link *)childObject)->getConnector ()->getRoles ();
+      vector<Role *> *roles = link->getConnector ()->getRoles ();
       if (roles != NULL)
         {
-          i = roles->begin ();
-          while (i != roles->end ())
+          for (Role *role: *roles)
             {
-              role = *i;
-              // if (role->instanteOf("CardinalityRole") {
               min = role->getMinCon ();
               max = role->getMaxCon ();
 
-              /*} else {
-                      min = 1;
-                      max = 1;
-              }*/
-
-              if (((Link *)childObject)->getNumRoleBinds (role)
-                  < (unsigned int)min)
+              if (link->getNumRoleBinds (role) < min)
                 {
                   syntax_error ("link: too few binds for role '%s': %d",
                                 role->getLabel ().c_str (), min);
                 }
               else if (max > 0
-                       && ((Link *)childObject)->getNumRoleBinds (role)
-                              > (unsigned int)max)
+                       && (link->getNumRoleBinds (role) > max))
                 {
                   syntax_error ("link: too many binds for role '%s': %d",
                                 role->getLabel ().c_str (), max);
                   return;
                 }
-              ++i;
-            }
-          delete roles;
-        }
 
-      ((ContextNode *)parentObject)->addLink ((Link *)childObject);
+            }
+        }
+      delete roles;
+
+      context->addLink (link);
     }
 }
 
 void
 NclComponentsParser::addNodeToContext (ContextNode *contextNode,
-                                       NodeEntity *node)
+                                       Node *node)
 {
   // adicionar um noh aa composicao
   contextNode->addNode (node);
@@ -356,66 +340,45 @@ NclComponentsParser::createContext (DOMElement *parentElement)
 
 void *
 NclComponentsParser::posCompileContext (DOMElement *parentElement,
-                                        void *parentObject)
+                                        ContextNode *context)
 {
-  DOMNodeList *elementNodeList;
-  int i, size;
-  DOMNode *node;
-  DOMElement *element;
-  void *elementObject;
-
-  elementNodeList = parentElement->getChildNodes ();
-  size = (int) elementNodeList->getLength ();
-
-  for (i = 0; i < size; i++)
+  for(DOMElement *element: dom_element_children(parentElement))
     {
-      node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      string tagname = dom_element_tagname(element);
+      if (tagname == "context")
         {
-          element = (DOMElement *)node;
-          string tagname = dom_element_tagname(element);
-          if (XMLString::compareIString (tagname.c_str(), "context") == 0)
-            {
-              if (parentObject != NULL)
-                {
-                  string id = dom_element_get_attr(element, "id");
-                  elementObject
-                      = ((ContextNode *)parentObject)->getNode (id);
-
-                  try
-                    {
-                      if (((NodeEntity *)elementObject)->instanceOf ("ContextNode"))
-                        {
-                          posCompileContext (element, elementObject);
-                        }
-                    }
-                  catch (...)
-                    {
-                      // treating error with the <NodeEntity*> casting
-                    }
-                }
-            }
-          else if (XMLString::compareIString (tagname.c_str(), "switch") == 0)
+          if (context != NULL)
             {
               string id = dom_element_get_attr(element, "id");
-              elementObject = getNclParser ()->getNode (id);
+              Node *node = context->getNode (id);
 
-              if (unlikely (elementObject == NULL))
+              if (unlikely (node == NULL))
                 {
-                  syntax_error ("bad switch '%s'", id.c_str ());
-
+                  syntax_error ("bad context '%s'", id.c_str ());
                 }
-              else if (((NodeEntity *)elementObject)
-                           ->instanceOf ("SwitchNode"))
+              else if (node->instanceOf ("ContextNode"))
                 {
-                  _nclParser->getPresentationControlParser ()
-                          ->posCompileSwitch (element, elementObject);
+                  posCompileContext (element, (ContextNode*)node);
                 }
+            }
+        }
+      else if (tagname == "switch")
+        {
+          string id = dom_element_get_attr(element, "id");
+          Node *node = getNclParser ()->getNode (id);
+          if (unlikely (node == NULL))
+            {
+              syntax_error ("bad switch '%s'", id.c_str ());
+            }
+          else if (node->instanceOf ("SwitchNode"))
+            {
+              _nclParser->getPresentationControlParser()->
+                  posCompileSwitch (element, (SwitchNode*)node);
             }
         }
     }
 
-  return posCompileContext2 (parentElement, parentObject);
+  return posCompileContext2 (parentElement, context);
 }
 
 Node *

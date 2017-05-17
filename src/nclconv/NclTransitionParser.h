@@ -31,7 +31,7 @@ GINGA_NCLCONV_BEGIN
 class NclTransitionParser : public ModuleParser
 {
 public:
-  NclTransitionParser (NclParser *nclParse);
+  explicit NclTransitionParser (NclParser *nclParse);
 
   TransitionBase *parseTransitionBase (DOMElement *parentElement);
 

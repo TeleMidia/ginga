@@ -34,7 +34,7 @@ GINGA_NCLCONV_BEGIN
 class NclComponentsParser : public ModuleParser
 {
 public:
-  NclComponentsParser (NclParser *PARSERS_EXPORT);
+  explicit NclComponentsParser (NclParser *nclparser);
 
   Node *parseMedia (DOMElement *parentElement);
   Node *createMedia (DOMElement *parentElement);
@@ -43,24 +43,22 @@ public:
   void addPropertyToMedia (ContentNode *media, Anchor *property);
 
   Node *parseContext (DOMElement *parentElement);
-  void *posCompileContext2 (DOMElement *parentElement, void *parentObject);
-  void *posCompileContext (DOMElement *parentElement, void *parentObject);
+  void *posCompileContext2 (DOMElement *context_element, ContextNode *context);
+  void *posCompileContext (DOMElement *parentElement, ContextNode *parentObject);
 
   Node *createContext (DOMElement *parentElement);
 
-  void addPortToContext (void *parentObject, void *childObject);
 
-  void addPropertyToContext (void *parentObject, void *childObject);
-
-  void addMediaToContext (void *parentObject, void *childObject);
-  void addContextToContext (void *parentObject, void *childObject);
-
-  void addLinkToContext (void *parentObject, void *childObject);
-  void addSwitchToContext (void *parentObject, void *childObject);
+  void addMediaToContext (Entity *parentObject, Node *childObject);
+  void addContextToContext (Entity *parentObject, Node *childObject);
+  void addSwitchToContext (Entity *parentObject, Node *childObject);
+  void addPropertyToContext (Entity *parentObject, Anchor *childObject);
 
 private:
-  void addNodeToContext (ContextNode *contextNode, NodeEntity *node);
+  void addLinkToContext (ContextNode *context, Link *link);
+  void addNodeToContext (ContextNode *contextNode, Node *node);
   void addAnchorToMedia (ContentNode *contentNode, Anchor *anchor);
+  void addPortToContext (Entity *parentObject, Port *childObject);
 
 };
 
