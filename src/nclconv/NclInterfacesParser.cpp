@@ -177,7 +177,7 @@ NclInterfacesParser::parseProperty (DOMElement *parent,
   return anchor;
 }
 
-void *
+Port *
 NclInterfacesParser::parsePort (DOMElement *parent,
                                 void *objGrandParent)
 {

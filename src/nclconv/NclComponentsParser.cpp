@@ -32,47 +32,28 @@ NclComponentsParser::NclComponentsParser (NclParser *nclParser)
 Node *
 NclComponentsParser::parseMedia (DOMElement *parentElement)
 {
-  Node *media;
-  DOMNodeList *elementNodeList;
-  int i, size;
-  DOMNode *node;
-  DOMElement *element;
-
-  media = createMedia (parentElement);
+  Node *media = createMedia (parentElement);
   g_assert_nonnull (media);
 
-  elementNodeList = parentElement->getChildNodes ();
-  size = (int) elementNodeList->getLength ();
-
-  for (i = 0; i < size; i++)
+  for (DOMElement *element:
+       dom_element_children(parentElement))
     {
-      node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      if (dom_element_tagname(element) == "area")
         {
-          element = (DOMElement *)node;
-
-          string tagname = dom_element_tagname(element);
-
-          if (XMLString::compareIString (tagname.c_str(), "area") == 0)
+          Anchor *area = _nclParser->getInterfacesParser ()
+              ->parseArea (element, media);
+          if (area)
             {
-              Anchor *area = _nclParser->getInterfacesParser ()
-                      ->parseArea (element, media);
-
-              if (area)
-                {
-                  addAreaToMedia ((ContentNode*)media, area);
-                }
+              addAreaToMedia ((ContentNode*)media, area);
             }
-          else if (XMLString::compareIString (tagname.c_str(), "property")
-                   == 0)
+        }
+      else if (dom_element_tagname(element) == "property")
+        {
+          PropertyAnchor *prop = _nclParser->getInterfacesParser ()
+              ->parseProperty (element, media);
+          if (prop)
             {
-              PropertyAnchor *prop = _nclParser->getInterfacesParser ()
-                      ->parseProperty (element, media);
-
-              if (prop)
-                {
-                  addPropertyToMedia ((ContentNode *)media, prop);
-                }
+              addPropertyToMedia ((ContentNode *)media, prop);
             }
         }
     }
@@ -83,72 +64,51 @@ NclComponentsParser::parseMedia (DOMElement *parentElement)
 Node *
 NclComponentsParser::parseContext (DOMElement *parentElement)
 {
-  Node *context;
-  DOMNodeList *elementNodeList;
-  int i, size;
-  DOMNode *node;
-  DOMElement *element;
-
-  context = createContext (parentElement);
+  Node *context = createContext (parentElement);
   g_assert_nonnull (context);
 
-  elementNodeList = parentElement->getChildNodes ();
-  size = (int) elementNodeList->getLength ();
-
-  for (i = 0; i < size; i++)
+  for (DOMElement *element:
+       dom_element_children(parentElement))
     {
-      node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      string tagname = dom_element_tagname(element);
+      if (tagname == "media")
         {
-          element = (DOMElement *) node;
-          string tagname = dom_element_tagname(element);
-          if (XMLString::compareIString (tagname.c_str(), "media") == 0)
+          Node *media = parseMedia (element);
+          if (media)
             {
-              Node *media = parseMedia (element);
-              if (media)
-                {
-                  addMediaToContext (context, media);
-                }
+              addMediaToContext (context, media);
             }
-          else if (XMLString::compareIString (tagname.c_str(), "context") == 0)
+        }
+      else if (tagname == "context")
+        {
+          Node *child_context = parseContext (element);
+          if (child_context)
             {
-              Node *child_context = parseContext (element);
-              if (child_context)
-                {
-                  addContextToContext (context, child_context);
-                }
+              addContextToContext (context, child_context);
             }
-          else if (XMLString::compareIString (tagname.c_str(), "switch") == 0)
-            {
-              Node *switch_node =
-                      _nclParser->getPresentationControlParser ()
+        }
+      else if (tagname == "switch")
+        {
+          Node *switch_node = _nclParser->getPresentationControlParser ()
                         ->parseSwitch (element);
-
-              if (switch_node)
-                {
-                  addSwitchToContext (context, switch_node);
-                }
+          if (switch_node)
+            {
+              addSwitchToContext (context, switch_node);
             }
         }
     }
 
-  for (i = 0; i < size; i++)
-    {
-      node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
-      {
-        string tagname = dom_element_tagname((DOMElement *)node);
-        if(XMLString::compareIString (tagname.c_str(), "property") == 0)
-        {
-          PropertyAnchor *prop = _nclParser->getInterfacesParser ()
-                  ->parseProperty ((DOMElement *)node, context);
 
-          if (prop)
-            {
-              addPropertyToContext (context, prop);
-            }
+  for (DOMElement *element:
+       dom_element_children_by_tagname(parentElement, "property"))
+    {
+      PropertyAnchor *prop = _nclParser->getInterfacesParser ()
+          ->parseProperty (element, context);
+
+      if (prop)
+        {
+          addPropertyToContext (context, prop);
         }
-      }
     }
 
   return context;
@@ -158,51 +118,28 @@ void *
 NclComponentsParser::posCompileContext2 (DOMElement *parentElement,
                                          void *parentObject)
 {
-  int i, size;
-  DOMNode *node;
-  void *elementObject;
-
-  DOMNodeList *elementNodeList = parentElement->getChildNodes ();
-  size = (int) elementNodeList->getLength ();
-
-  for (i = 0; i < size; i++)
+  for(DOMElement *element:
+      dom_element_children_by_tagname(parentElement, "link"))
     {
-      node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      Link *link = _nclParser->getLinkingParser ()->parseLink (element,
+                                                               parentObject);
+      if (link)
         {
-          string tagname = dom_element_tagname((DOMElement *)node);
-          if (XMLString::compareIString (tagname.c_str(), "link") == 0)
-            {
-              elementObject = _nclParser->getLinkingParser ()
-                    ->parseLink ((DOMElement *)node, parentObject);
-
-              if (elementObject != NULL)
-                {
-                  addLinkToContext (parentObject, elementObject);
-                }
-            }
+          addLinkToContext (parentObject, link);
         }
     }
 
-  for (i = 0; i < size; i++)
+  for(DOMElement *element:
+      dom_element_children_by_tagname(parentElement, "port"))
     {
-      node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      Port *port = _nclParser->getInterfacesParser () ->parsePort (element,
+                                                                  parentObject);
+
+      if (port)
         {
-          string tagname = dom_element_tagname((DOMElement *)node);
-          if (XMLString::compareIString (tagname.c_str(), "port") == 0)
-            {
-              elementObject = _nclParser->getInterfacesParser ()
-                      ->parsePort ((DOMElement *)node, parentObject);
-
-              if (elementObject != NULL)
-                {
-                  addPortToContext (parentObject, elementObject);
-                }
-            }
+          addPortToContext (parentObject, port);
         }
-      }
-
+    }
   return parentObject;
 }
 

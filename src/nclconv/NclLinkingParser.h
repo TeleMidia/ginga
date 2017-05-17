@@ -41,7 +41,7 @@ GINGA_NCLCONV_BEGIN
 class NclLinkingParser : public ModuleParser
 {
 public:
-  NclLinkingParser (NclParser *nclParser, NclConnectorsParser *connCompiler);
+  NclLinkingParser (NclParser *nclParser);
 
   Bind *parseBind (DOMElement *parentElement, Link *objGrandParent);
   Bind *createBind (DOMElement *parentElement, Link *objGrandParent);

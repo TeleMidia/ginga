@@ -620,7 +620,6 @@ NclPresentationControlParser::addBindRuleToDescriptorSwitch (
     }
 
   descriptor = (GenericDescriptor *)(*descriptors)[constituent];
-
   if (descriptor == NULL)
     {
       return;
@@ -628,7 +627,6 @@ NclPresentationControlParser::addBindRuleToDescriptorSwitch (
 
   document = getNclParser ()->getNclDocument ();
   ncmRule = document->getRule (dom_element_get_attr(bindRule, "rule"));
-
   if (ncmRule == NULL)
     {
       return;

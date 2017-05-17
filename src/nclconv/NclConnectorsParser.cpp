@@ -28,44 +28,43 @@ NclConnectorsParser::NclConnectorsParser (NclParser *nclParser)
 {
 }
 
-void *
-NclConnectorsParser::parseSimpleCondition (DOMElement *parentElement,
-                                           void *objGrandParent)
+SimpleCondition *
+NclConnectorsParser::parseSimpleCondition (DOMElement *simpleCond_element)
 {
   SimpleCondition *conditionExpression;
   string attValue, roleLabel;
 
-  roleLabel = dom_element_get_attr(parentElement, "role");
+  roleLabel = dom_element_get_attr(simpleCond_element, "role");
 
   conditionExpression = new SimpleCondition (roleLabel);
 
-  compileRoleInformation (conditionExpression, parentElement);
+  compileRoleInformation (conditionExpression, simpleCond_element);
 
   // transition
-  if (dom_element_has_attr(parentElement, "transition"))
+  if (dom_element_has_attr(simpleCond_element, "transition"))
     {
-      attValue = dom_element_get_attr(parentElement, "transition");
+      attValue = dom_element_get_attr(simpleCond_element, "transition");
 
       conditionExpression->setTransition (
-          EventUtil::getTransitionCode (attValue));
+            EventUtil::getTransitionCode (attValue));
     }
 
-  // parametro
+  // param
   if (conditionExpression->getEventType () == EventUtil::EVT_SELECTION)
     {
-      if (dom_element_has_attr(parentElement, "key"))
+      if (dom_element_has_attr(simpleCond_element, "key"))
 
         {
-          attValue = dom_element_get_attr(parentElement, "key");
+          attValue = dom_element_get_attr(simpleCond_element, "key");
 
           conditionExpression->setKey (attValue);
         }
     }
 
   // qualifier
-  if (dom_element_has_attr(parentElement, "qualifier"))
+  if (dom_element_has_attr(simpleCond_element, "qualifier"))
     {
-      attValue = dom_element_get_attr(parentElement, "qualifier");
+      attValue = dom_element_get_attr(simpleCond_element, "qualifier");
 
       if (attValue == "or")
         {
@@ -77,10 +76,10 @@ NclConnectorsParser::parseSimpleCondition (DOMElement *parentElement,
         }
     }
 
-  // testar delay
-  if (dom_element_has_attr(parentElement, "delay"))
+  // delay
+  if (dom_element_has_attr(simpleCond_element, "delay"))
     {
-      attValue = dom_element_get_attr(parentElement, "delay");
+      attValue = dom_element_get_attr(simpleCond_element, "delay");
 
       if (attValue[0] == '$')
         {
@@ -100,139 +99,110 @@ NclConnectorsParser::parseSimpleCondition (DOMElement *parentElement,
   return conditionExpression;
 }
 
-void *
-NclConnectorsParser::parseCompoundCondition (DOMElement *parentElement,
-                                             arg_unused(void *objGrandParent))
+CompoundCondition *
+NclConnectorsParser::parseCompoundCondition (DOMElement *compoundCond_element)
 {
-  void *parentObject = NULL;
-  DOMNodeList *elementNodeList;
-  DOMElement *element;
-  DOMNode *node;
-  string elementTagName = "";
-  void *elementObject = NULL;
+  CompoundCondition *compoundCond =
+      createCompoundCondition (compoundCond_element);
+  g_assert_nonnull (compoundCond);
 
-  parentObject = createCompoundCondition (parentElement, objGrandParent);
-  g_assert_nonnull (parentObject);
-
-  elementNodeList = parentElement->getChildNodes ();
-  for (int i = 0; i < (int)elementNodeList->getLength (); i++)
+  for ( DOMElement *child: dom_element_children(compoundCond_element) )
     {
-      node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      string tagname = dom_element_tagname(child);
+
+      if ( tagname == "simpleCondition")
         {
-          element = (DOMElement *)node;
-          string tagname = dom_element_tagname(element);
-
-          if (XMLString::compareIString (tagname.c_str (), "simpleCondition")
-              == 0)
+          SimpleCondition *simpleCond = parseSimpleCondition (child);
+          if (simpleCond)
             {
-              elementObject = parseSimpleCondition (element, parentObject);
-              if (elementObject != NULL)
-                {
-                  addSimpleConditionToCompoundCondition (parentObject,
-                                                         elementObject);
-                }
+              addSimpleConditionToCompoundCondition (compoundCond, simpleCond);
             }
-          else if (XMLString::compareIString (tagname.c_str (),
-                                              "assessmentStatement")
-                   == 0)
-            {
-              elementObject
-                  = parseAssessmentStatement (element, parentObject);
+        }
+      else if ( tagname == "assessmentStatement" )
+        {
+          AssessmentStatement *elementObj = parseAssessmentStatement (child);
 
-              if (elementObject != NULL)
-                {
-                  addAssessmentStatementToCompoundCondition (parentObject,
-                                                             elementObject);
-                }
-            }
-          else if (XMLString::compareIString (elementTagName.c_str (),
-                                              "compoundCondition")
-                   == 0)
+          if (elementObj)
             {
-              elementObject
-                  = parseCompoundCondition (element, parentObject);
-
-              if (elementObject != NULL)
-                {
-                  addCompoundConditionToCompoundCondition (parentObject,
-                                                           elementObject);
-                }
+              addAssessmentStatementToCompoundCondition (compoundCond,
+                                                         elementObj);
             }
-          else if (XMLString::compareIString (elementTagName.c_str (),
-                                              "compoundStatement")
-                   == 0)
+        }
+      else if ( tagname == "compoundCondition")
+        {
+          CompoundCondition *compoundCond_child =
+              parseCompoundCondition (child);
+
+          if (compoundCond_child)
             {
-              elementObject
-                  = parseCompoundStatement (element, parentObject);
-
-              if (elementObject != NULL)
-                {
-                  addCompoundStatementToCompoundCondition (parentObject,
-                                                           elementObject);
-                }
+              addCompoundConditionToCompoundCondition (compoundCond,
+                                                       compoundCond_child);
             }
+        }
+      else if ( tagname ==  "compoundStatement")
+        {
+          CompoundStatement *compoundStatement = parseCompoundStatement (child);
+
+          if (compoundStatement)
+            {
+              addCompoundStatementToCompoundCondition (compoundCond,
+                                                       compoundStatement);
+            }
+        }
+      else
+        {
+          syntax_warning( "'%s' is not known as child of 'compoundCondition'."
+                          " It will be ignored.",
+                          tagname.c_str() );
         }
     }
 
-  return parentObject;
+  return compoundCond;
 }
 
-void *
-NclConnectorsParser::parseAssessmentStatement (DOMElement *parentElement,
-                                               void *objGrandParent)
+AssessmentStatement *
+NclConnectorsParser::parseAssessmentStatement (
+    DOMElement *assessmentStatement_element)
 {
-  void *parentObject = NULL;
-  DOMNodeList *elementNodeList;
-  DOMElement *element;
-  DOMNode *node;
-  string elementTagName = "";
-  void *elementObject = NULL;
+  AssessmentStatement *assessmentStatement =
+      createAssessmentStatement (assessmentStatement_element);
+  g_assert_nonnull (assessmentStatement);
 
-  parentObject = createAssessmentStatement (parentElement, objGrandParent);
-  g_assert_nonnull (parentObject);
-
-  elementNodeList = parentElement->getChildNodes ();
-  for (int i = 0; i < (int)elementNodeList->getLength (); i++)
+  for ( DOMElement *child: dom_element_children(assessmentStatement_element) )
     {
-      node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      string tagname = dom_element_tagname(child);
+      if (tagname == "attributeAssessment")
         {
-          element = (DOMElement *)node;
-          string tagname = dom_element_tagname(element);
-          if (XMLString::compareIString (tagname.c_str (),
-                                         "attributeAssessment")
-              == 0)
+          AttributeAssessment *attributeAssessment =
+              parseAttributeAssessment (child);
+          if (attributeAssessment)
             {
-              elementObject
-                  = parseAttributeAssessment (element, parentObject);
-
-              if (elementObject != NULL)
-                {
-                  addAttributeAssessmentToAssessmentStatement (
-                      parentObject, elementObject);
-                }
+              addAttributeAssessmentToAssessmentStatement (assessmentStatement,
+                                                           attributeAssessment);
             }
-          else if (XMLString::compareIString (tagname.c_str (),
-                                              "valueAssessment")
-                   == 0)
+        }
+      else if (tagname == "valueAssessment")
+        {
+          ValueAssessment *elementObj = parseValueAssessment (child);
+          if (elementObj)
             {
-              elementObject = parseValueAssessment (element, parentObject);
-              if (elementObject != NULL)
-                {
-                  addValueAssessmentToAssessmentStatement (parentObject,
-                                                           elementObject);
-                }
+              addValueAssessmentToAssessmentStatement (assessmentStatement,
+                                                       elementObj);
             }
+        }
+      else
+        {
+          syntax_warning( "'%s' is not known as child of 'assessmentStatement'."
+                          " It will be ignored.",
+                          tagname.c_str() );
         }
     }
 
-  return parentObject;
+  return assessmentStatement;
 }
 
-void *
-NclConnectorsParser::parseAttributeAssessment (DOMElement *parentElement,
-                                              arg_unused (void *objGrandParent))
+AttributeAssessment *
+NclConnectorsParser::parseAttributeAssessment (DOMElement *parentElement)
 {
   AttributeAssessment *attributeAssessment;
   string attValue;
@@ -280,91 +250,78 @@ NclConnectorsParser::parseAttributeAssessment (DOMElement *parentElement,
   return attributeAssessment;
 }
 
-void *
-NclConnectorsParser::parseValueAssessment (DOMElement *parentElement,
-                                           arg_unused(void *objGrandParent))
+ValueAssessment *
+NclConnectorsParser::parseValueAssessment (DOMElement *parentElement)
 {
   string attValue = dom_element_get_attr(parentElement, "value");
 
   return new ValueAssessment (attValue);
 }
 
-void *
-NclConnectorsParser::parseCompoundStatement (DOMElement *parentElement,
-                                             void *objGrandParent)
+CompoundStatement *
+NclConnectorsParser::parseCompoundStatement (
+    DOMElement *compoundStatement_element)
 {
-  void *parentObject = NULL;
-  DOMNodeList *elementNodeList;
-  DOMElement *element;
-  DOMNode *node;
-  string elementTagName = "";
-  void *elementObject = NULL;
+  CompoundStatement *compoundStatement =
+      createCompoundStatement (compoundStatement_element);
+  g_assert_nonnull (compoundStatement);
 
-  parentObject = createCompoundStatement (parentElement, objGrandParent);
-  g_assert_nonnull (parentObject);
-
-  elementNodeList = parentElement->getChildNodes ();
-  for (int i = 0; i < (int)elementNodeList->getLength (); i++)
+  for ( DOMElement *child: dom_element_children(compoundStatement_element) )
     {
-      node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      string tagname = dom_element_tagname(child);
+
+      if (tagname == "assessmentStatement")
         {
-          element = (DOMElement *)node;
-          string tagname = dom_element_tagname(element);
-          if (XMLString::compareIString (tagname.c_str (),
-                                         "assessmentStatement")
-              == 0)
+          AssessmentStatement *assessmentStatement =
+              parseAssessmentStatement (child);
+          if (assessmentStatement)
             {
-              elementObject
-                  = parseAssessmentStatement (element, parentObject);
-
-              if (elementObject != NULL)
-                {
-                  addAssessmentStatementToCompoundStatement (parentObject,
-                                                             elementObject);
-                }
+              addAssessmentStatementToCompoundStatement (compoundStatement,
+                                                         assessmentStatement);
             }
-          else if (XMLString::compareIString (elementTagName.c_str (),
-                                              "compoundStatement")
-                   == 0)
+        }
+      else if (tagname == "compoundStatement")
+        {
+          CompoundStatement *compoundStatement_child =
+              parseCompoundStatement (child);
+          if (compoundStatement_child)
             {
-              elementObject
-                  = parseCompoundStatement (element, parentObject);
-
-              if (elementObject != NULL)
-                {
-                  addCompoundStatementToCompoundStatement (parentObject,
-                                                           elementObject);
-                }
+              addCompoundStatementToCompoundStatement (compoundStatement,
+                                                       compoundStatement_child);
             }
+        }
+      else
+        {
+          syntax_warning( "'%s' is not known as child of 'compoundStatement'."
+                          " It will be ignored.",
+                          tagname.c_str() );
         }
     }
 
-  return parentObject;
+  return compoundStatement;
 }
 
-void *
-NclConnectorsParser::parseSimpleAction (DOMElement *parentElement,
-                                        arg_unused (void *objGrandParent))
+SimpleAction *
+NclConnectorsParser::parseSimpleAction (DOMElement *simpleAction_element)
 {
   SimpleAction *actionExpression;
   string attValue;
 
-  attValue = dom_element_get_attr(parentElement, "role");
+  attValue = dom_element_get_attr(simpleAction_element, "role");
 
   actionExpression = new SimpleAction (attValue);
 
   // transition
-  if (dom_element_has_attr(parentElement, "actionType"))
+  if (dom_element_has_attr(simpleAction_element, "actionType"))
     {
-      attValue = dom_element_get_attr(parentElement, "actionType");
+      attValue = dom_element_get_attr(simpleAction_element, "actionType");
 
       actionExpression->setActionType (convertActionType (attValue));
     }
 
-  if (dom_element_has_attr(parentElement, "eventType"))
+  if (dom_element_has_attr(simpleAction_element, "eventType"))
     {
-      attValue = dom_element_get_attr(parentElement, "eventType");
+      attValue = dom_element_get_attr(simpleAction_element, "eventType");
 
       actionExpression->setEventType (EventUtil::getTypeCode (attValue));
     }
@@ -377,14 +334,14 @@ NclConnectorsParser::parseSimpleAction (DOMElement *parentElement,
       string durVal = "";
       string byVal = "";
 
-      if (dom_element_has_attr(parentElement, "duration"))
+      if (dom_element_has_attr(simpleAction_element, "duration"))
         {
-          durVal = dom_element_get_attr(parentElement, "duration");
+          durVal = dom_element_get_attr(simpleAction_element, "duration");
         }
 
-      if (dom_element_has_attr(parentElement, "by"))
+      if (dom_element_has_attr(simpleAction_element, "by"))
         {
-          byVal = dom_element_get_attr(parentElement, "by");
+          byVal = dom_element_get_attr(simpleAction_element, "by");
         }
 
       if (durVal != "" || byVal != "")
@@ -424,14 +381,14 @@ NclConnectorsParser::parseSimpleAction (DOMElement *parentElement,
       actionExpression->setAnimation (animation);
     }
 
-  compileRoleInformation (actionExpression, parentElement);
+  compileRoleInformation (actionExpression, simpleAction_element);
 
-  if (dom_element_has_attr(parentElement, "qualifier"))
+  if (dom_element_has_attr(simpleAction_element, "qualifier"))
     {
-      string qualifier = dom_element_get_attr(parentElement,
-                                                       "qualifier");
+      string qualifier = dom_element_get_attr(simpleAction_element,
+                                              "qualifier");
 
-      if (XMLString::compareIString (qualifier.c_str(), "seq") == 0)
+      if (qualifier == "seq")
         {
           actionExpression->setQualifier (CompoundAction::OP_SEQ);
         }
@@ -442,9 +399,9 @@ NclConnectorsParser::parseSimpleAction (DOMElement *parentElement,
     }
 
   // testing delay
-  if (dom_element_has_attr(parentElement, "delay"))
+  if (dom_element_has_attr(simpleAction_element, "delay"))
     {
-      attValue = dom_element_get_attr(parentElement, "delay");
+      attValue = dom_element_get_attr(simpleAction_element, "delay");
 
       if (attValue[0] == '$')
         {
@@ -460,9 +417,9 @@ NclConnectorsParser::parseSimpleAction (DOMElement *parentElement,
     }
 
   //  testing repeatDelay
-  if (dom_element_has_attr(parentElement, "repeatDelay"))
+  if (dom_element_has_attr(simpleAction_element, "repeatDelay"))
     {
-      attValue = dom_element_get_attr(parentElement, "repeatDelay");
+      attValue = dom_element_get_attr(simpleAction_element, "repeatDelay");
 
       actionExpression->setDelay (attValue);
       if (attValue[0] == '$')
@@ -479,11 +436,11 @@ NclConnectorsParser::parseSimpleAction (DOMElement *parentElement,
     }
 
   // repeat
-  if (dom_element_has_attr(parentElement, "repeat"))
+  if (dom_element_has_attr(simpleAction_element, "repeat"))
     {
-      attValue = dom_element_get_attr(parentElement, "repeat");
+      attValue = dom_element_get_attr(simpleAction_element, "repeat");
 
-      if (XMLString::compareIString (attValue.c_str (), "indefinite") == 0)
+      if (attValue == "indefinite")
         {
           // This is insane :@
           actionExpression->setRepeat (xstrbuild ("%d", 2 ^ 30));
@@ -495,9 +452,9 @@ NclConnectorsParser::parseSimpleAction (DOMElement *parentElement,
     }
 
   // testing value
-  if (dom_element_has_attr(parentElement, "value"))
+  if (dom_element_has_attr(simpleAction_element, "value"))
     {
-      attValue = dom_element_get_attr(parentElement, "value");
+      attValue = dom_element_get_attr(simpleAction_element, "value");
 
       actionExpression->setValue (attValue);
     }
@@ -506,57 +463,45 @@ NclConnectorsParser::parseSimpleAction (DOMElement *parentElement,
   return actionExpression;
 }
 
-void *
-NclConnectorsParser::parseCompoundAction (DOMElement *parentElement,
-                                          void *objGrandParent)
+CompoundAction *
+NclConnectorsParser::parseCompoundAction (DOMElement *compoundAction_element)
 {
-  void *parentObject = NULL;
-  DOMNodeList *elementNodeList;
-  DOMElement *element;
-  DOMNode *node;
-  void *elementObject = NULL;
+  CompoundAction *compoundAction =
+      createCompoundAction (compoundAction_element);
+  g_assert_nonnull (compoundAction);
 
-  parentObject = createCompoundAction (parentElement, objGrandParent);
-  g_assert_nonnull (parentObject);
-
-  elementNodeList = parentElement->getChildNodes ();
-  for (int i = 0; i < (int)elementNodeList->getLength (); i++)
+  for (DOMElement *child: dom_element_children(compoundAction_element))
     {
-      node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      string tagname = dom_element_tagname(child);
+      if (tagname == "simpleAction")
         {
-          element = (DOMElement *)node;
-          string tagname = dom_element_tagname(element);
-          if (XMLString::compareIString (tagname.c_str (), "simpleAction")
-              == 0)
+          SimpleAction *simpleAction = parseSimpleAction (child);
+          if (simpleAction)
             {
-              elementObject = parseSimpleAction (element, parentObject);
-              if (elementObject != NULL)
-                {
-                  addSimpleActionToCompoundAction (parentObject,
-                                                   elementObject);
-                }
+              addSimpleActionToCompoundAction (compoundAction, simpleAction);
             }
-          else if (XMLString::compareIString (tagname.c_str (),
-                                              "compoundAction")
-                   == 0)
+        }
+      else if (tagname == "compoundAction")
+        {
+          CompoundAction *elementObject = parseCompoundAction (child);
+          if (elementObject)
             {
-              elementObject = parseCompoundAction (element, parentObject);
-              if (elementObject != NULL)
-                {
-                  addCompoundActionToCompoundAction (parentObject,
-                                                     elementObject);
-                }
+              addCompoundActionToCompoundAction (compoundAction, elementObject);
             }
+        }
+      else
+        {
+          syntax_warning( "'%s' is not known as child of 'compoundAction'."
+                          " It will be ignored.",
+                          tagname.c_str() );
         }
     }
 
-  return parentObject;
+  return compoundAction;
 }
 
-void *
-NclConnectorsParser::parseConnectorParam (DOMElement *parentElement,
-                                          void *objGrandParent)
+Parameter *
+NclConnectorsParser::parseConnectorParam (DOMElement *parentElement)
 {
   Parameter *parameter;
   parameter = new Parameter (
@@ -566,172 +511,140 @@ NclConnectorsParser::parseConnectorParam (DOMElement *parentElement,
   return parameter;
 }
 
-void *
-NclConnectorsParser::parseCausalConnector (DOMElement *parentElement,
-                                           void *objGrandParent)
+CausalConnector *
+NclConnectorsParser::parseCausalConnector (DOMElement *causalConnector_element)
 {
-  void *parentObject = NULL;
-  DOMNodeList *elementNodeList;
-  DOMElement *element;
-  DOMNode *node;
-  void *elementObject = NULL;
-
   // pre-compile attributes
+  CausalConnector *causalConnector =
+      createCausalConnector (causalConnector_element);
+  g_assert_nonnull (causalConnector);
 
-  parentObject = createCausalConnector (parentElement, objGrandParent);
-  g_assert_nonnull (parentObject);
-
-  elementNodeList = parentElement->getChildNodes ();
-  for (int i = 0; i < (int)elementNodeList->getLength (); i++)
+  for (DOMElement *child: dom_element_children(causalConnector_element) )
     {
-      node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      string tagname = dom_element_tagname(child);
+
+      if (tagname == "simpleCondition")
         {
-          element = (DOMElement *)node;
-          string tagname = dom_element_tagname(element);
+          SimpleCondition *simpleCondition = parseSimpleCondition (child);
 
-          if (XMLString::compareIString (tagname.c_str (), "simpleCondition")
-              == 0)
+          if (simpleCondition)
             {
-              elementObject = parseSimpleCondition (element, parentObject);
-
-              if (elementObject != NULL)
-                {
-                  addSimpleConditionToCausalConnector (parentObject,
-                                                       elementObject);
-                }
+              addSimpleConditionToCausalConnector (causalConnector, simpleCondition);
             }
-          else if (XMLString::compareIString (tagname.c_str (), "simpleAction")
-                   == 0)
+        }
+      else if (tagname == "simpleAction")
+        {
+          SimpleAction *simpleAction = parseSimpleAction (child);
+
+          if (simpleAction)
             {
-              elementObject = parseSimpleAction (element, parentObject);
-
-              if (elementObject != NULL)
-                {
-                  addSimpleActionToCausalConnector (parentObject,
-                                                    elementObject);
-                }
+              addSimpleActionToCausalConnector (causalConnector, simpleAction);
             }
-          else if (XMLString::compareIString (tagname.c_str (),
-                                              "compoundAction")
-                   == 0)
+        }
+      else if (tagname == "compoundAction")
+        {
+          CompoundAction *compoundAction = parseCompoundAction (child);
+
+          if (compoundAction)
             {
-              elementObject = parseCompoundAction (element, parentObject);
-
-              if (elementObject != NULL)
-                {
-                  addCompoundActionToCausalConnector (parentObject,
-                                                      elementObject);
-                }
+              addCompoundActionToCausalConnector (causalConnector, compoundAction);
             }
-          else if (XMLString::compareIString (tagname.c_str (),
-                                              "connectorParam")
-                   == 0)
+        }
+      else if (tagname == "connectorParam")
+        {
+          Parameter *param = parseConnectorParam (child);
+
+          if (param)
             {
-              elementObject = parseConnectorParam (element, parentObject);
-
-              if (elementObject != NULL)
-                {
-                  addConnectorParamToCausalConnector (parentObject,
-                                                      elementObject);
-                }
+              addConnectorParamToCausalConnector (causalConnector, param);
             }
-          else if (XMLString::compareIString (tagname.c_str (),
-                                              "compoundCondition")
-                   == 0)
+        }
+      else if (tagname == "compoundCondition")
+        {
+          CompoundCondition *compoundCond = parseCompoundCondition (child);
+
+          if (compoundCond)
             {
-              elementObject
-                  = parseCompoundCondition (element, parentObject);
-
-              if (elementObject != NULL)
-                {
-                  addCompoundConditionToCausalConnector (parentObject,
-                                                         elementObject);
-                }
+              addCompoundConditionToCausalConnector (causalConnector,
+                                                     compoundCond);
             }
+        }
+      else
+        {
+          syntax_warning( "'%s' is not known as child of 'causalConnector'."
+                          " It will be ignored.",
+                          tagname.c_str() );
         }
     }
 
-  return parentObject;
+  return causalConnector;
 }
 
 ConnectorBase *
-NclConnectorsParser::parseConnectorBase (DOMElement *parentElement,
-                                         void *objGrandParent)
+NclConnectorsParser::parseConnectorBase (DOMElement *connectorBase_element)
 {
-  ConnectorBase *parentObject = NULL;
-  DOMNodeList *elementNodeList;
-  DOMElement *element;
-  DOMNode *node;
-  void *elementObject = NULL;
+  ConnectorBase *connectorBase =
+      createConnectorBase (connectorBase_element);
+  g_assert_nonnull (connectorBase);
 
-  parentObject = createConnectorBase (parentElement, objGrandParent);
-  g_assert_nonnull (parentObject);
-
-  elementNodeList = parentElement->getChildNodes ();
-  for (int i = 0; i < (int)elementNodeList->getLength (); i++)
+  for (DOMElement *child: dom_element_children(connectorBase_element))
     {
-      node = elementNodeList->item (i);
-      if (node->getNodeType () == DOMNode::ELEMENT_NODE)
+      string tagname = dom_element_tagname(child);
+      if (tagname == "importBase")
         {
-          element = (DOMElement *)node;
-          string elementTagName = dom_element_tagname(element);
-
-          if (XMLString::compareIString (elementTagName.c_str (), "importBase")
-              == 0)
+          DOMElement *importBase_element =
+              _nclParser->getImportParser ()->parseImportBase (child);
+          if (importBase_element)
             {
-              elementObject = _nclParser->getImportParser ()
-                      ->parseImportBase (element);
-
-              if (elementObject != NULL)
-                {
-                  addImportBaseToConnectorBase (parentObject, elementObject);
-                }
+              addImportBaseToConnectorBase (connectorBase, importBase_element);
             }
-          else if (XMLString::compareIString (elementTagName.c_str (),
-                                              "causalConnector")
-                   == 0)
+        }
+      else if (tagname ==  "causalConnector")
+        {
+          CausalConnector *causalConnector = parseCausalConnector (child);
+          if (causalConnector)
             {
-              elementObject = parseCausalConnector (element, parentObject);
-              if (elementObject != NULL)
-                {
-                  addCausalConnectorToConnectorBase (parentObject,
-                                                     elementObject);
-                }
+              addCausalConnectorToConnectorBase (connectorBase,
+                                                 causalConnector);
             }
+        }
+      else
+        {
+          syntax_warning( "'%s' is not known as child of 'connectorBase'."
+                          " It will be ignored.",
+                          tagname.c_str() );
         }
     }
 
-  return parentObject;
+  return connectorBase;
 }
 
 void
 NclConnectorsParser::addCausalConnectorToConnectorBase (
-    void *parentObject, void *childObject)
+    ConnectorBase *connectorBase, Connector *causalConnector)
 {
-  ((ConnectorBase *)parentObject)->addConnector ((Connector *)childObject);
+  connectorBase->addConnector (causalConnector);
 }
 
 void
 NclConnectorsParser::addConnectorParamToCausalConnector (
-    void *parentObject, void *childObject)
+    Connector *connector, Parameter *param)
 {
-  ((Connector *)parentObject)->addParameter ((Parameter *)childObject);
+  connector->addParameter (param);
 }
 
 void
-NclConnectorsParser::addImportBaseToConnectorBase (void *parentObject,
-                                                   void *childObject)
+NclConnectorsParser::addImportBaseToConnectorBase (ConnectorBase *connectorBase,
+                                                   DOMElement *childObject)
 {
   string baseAlias, baseLocation;
   NclParser *compiler;
   NclDocument *importedDocument;
-  ConnectorBase *connectorBase;
+  ConnectorBase *importedConnectorBase;
 
   // get the external base alias and location
-  baseAlias = dom_element_get_attr((DOMElement *)childObject, "alias");
-  baseLocation = dom_element_get_attr((DOMElement *)childObject,
-                                               "documentURI");
+  baseAlias = dom_element_get_attr(childObject, "alias");
+  baseLocation = dom_element_get_attr(childObject, "documentURI");
 
   compiler = getNclParser ();
 
@@ -743,31 +656,30 @@ NclConnectorsParser::addImportBaseToConnectorBase (void *parentObject,
                     baseLocation.c_str ());
     }
 
-  connectorBase = importedDocument->getConnectorBase ();
-  if (unlikely (connectorBase == NULL))
+  importedConnectorBase = importedDocument->getConnectorBase ();
+  if (unlikely (importedConnectorBase == NULL))
     {
       syntax_error ("importBase '%s': no connector base in '%s'",
                     baseAlias.c_str (),
                     baseLocation.c_str ());
     }
 
-  ((ConnectorBase *)parentObject)
-      ->addBase (connectorBase, baseAlias, baseLocation);
+  connectorBase->addBase (importedConnectorBase, baseAlias, baseLocation);
 }
 
-void *
-NclConnectorsParser::createCausalConnector (DOMElement *parentElement,
-                                            arg_unused (void *objGrandParent))
+CausalConnector *
+NclConnectorsParser::createCausalConnector (DOMElement *causalConnector_element)
 {
-  string connectorId = "";
-  connectorId = dom_element_get_attr(parentElement, "id");
-  connector = new CausalConnector (connectorId);
-  return connector;
+  string connectorId = dom_element_get_attr(causalConnector_element, "id");
+  CausalConnector *causalConn = new CausalConnector (connectorId);
+
+  this->connector = causalConn;
+
+  return causalConn;
 }
 
 ConnectorBase *
-NclConnectorsParser::createConnectorBase (DOMElement *parentElement,
-                                          arg_unused (void *objGrandParent))
+NclConnectorsParser::createConnectorBase (DOMElement *parentElement)
 {
   ConnectorBase *connBase;
   string connBaseId= dom_element_get_attr(parentElement, "id");
@@ -777,50 +689,49 @@ NclConnectorsParser::createConnectorBase (DOMElement *parentElement,
 
 void
 NclConnectorsParser::compileRoleInformation (Role *role,
-                                             DOMElement *parentElement)
+                                             DOMElement *role_element)
 {
   string attValue;
   // event type
-  if (dom_element_has_attr(parentElement, "eventType"))
+  if (dom_element_has_attr(role_element, "eventType"))
     {
-      attValue = dom_element_get_attr(parentElement, "eventType");
+      attValue = dom_element_get_attr(role_element, "eventType");
       role->setEventType (EventUtil::getTypeCode (attValue));
     }
 
   //  cardinality
-  if (dom_element_has_attr(parentElement, "min"))
+  if (dom_element_has_attr(role_element, "min"))
     {
-      attValue = dom_element_get_attr(parentElement, "min");
-      ((Role *)role)->setMinCon ((xstrto_int (attValue)));
+      attValue = dom_element_get_attr(role_element, "min");
+      role->setMinCon ((xstrto_int (attValue)));
     }
 
-  if (dom_element_has_attr(parentElement, "max"))
+  if (dom_element_has_attr(role_element, "max"))
     {
-      attValue = dom_element_get_attr(parentElement,"max");
+      attValue = dom_element_get_attr(role_element,"max");
 
-      if (XMLString::compareIString (attValue.c_str (), "unbounded") == 0)
+      if (attValue == "unbounded")
         {
-          ((Role *)role)->setMaxCon (Role::UNBOUNDED);
+          role->setMaxCon (Role::UNBOUNDED);
         }
       else
         {
-          ((Role *)role)->setMaxCon (xstrto_int (attValue));
+          role->setMaxCon (xstrto_int (attValue));
         }
     }
 }
 
-void *
-NclConnectorsParser::createCompoundCondition (DOMElement *parentElement,
-                                              arg_unused (void *objGrandParent))
+CompoundCondition *
+NclConnectorsParser::createCompoundCondition (DOMElement *compoundCond_element)
 {
   CompoundCondition *conditionExpression;
   string attValue;
 
   conditionExpression = new CompoundCondition ();
 
-  string op = dom_element_get_attr(parentElement, "operator");
+  string op = dom_element_get_attr(compoundCond_element, "operator");
 
-  if (XMLString::compareIString (op.c_str(), "and") == 0)
+  if (op == "and")
     {
       conditionExpression->setOperator (CompoundCondition::OP_AND);
     }
@@ -829,10 +740,10 @@ NclConnectorsParser::createCompoundCondition (DOMElement *parentElement,
       conditionExpression->setOperator (CompoundCondition::OP_OR);
     }
 
-  //  testar delay
-  if (dom_element_has_attr(parentElement, "delay"))
+  // delay
+  if (dom_element_has_attr(compoundCond_element, "delay"))
     {
-      attValue = dom_element_get_attr(parentElement, "delay");
+      attValue = dom_element_get_attr(compoundCond_element, "delay");
 
       if (attValue[0] == '$')
         {
@@ -852,9 +763,8 @@ NclConnectorsParser::createCompoundCondition (DOMElement *parentElement,
 }
 
 
-void *
-NclConnectorsParser::createAssessmentStatement (
-    DOMElement *parentElement, arg_unused (void *objGrandParent))
+AssessmentStatement *
+NclConnectorsParser::createAssessmentStatement (DOMElement *parentElement)
 {
   AssessmentStatement *assessmentStatement;
   string attValue;
@@ -874,14 +784,13 @@ NclConnectorsParser::createAssessmentStatement (
   return assessmentStatement;
 }
 
-void *
-NclConnectorsParser::createCompoundStatement (DOMElement *parentElement,
-                                              arg_unused (void *objGrandParent))
+CompoundStatement *
+NclConnectorsParser::createCompoundStatement (DOMElement *parentElement)
 {
   CompoundStatement *compoundStatement = new CompoundStatement ();
 
   string op = dom_element_get_attr(parentElement, "operator");
-  if (XMLString::compareIString (op.c_str(), "and") == 0)
+  if (op == "and")
     {
       compoundStatement->setOperator (CompoundStatement::OP_AND);
     }
@@ -896,21 +805,19 @@ NclConnectorsParser::createCompoundStatement (DOMElement *parentElement,
       string attValue =
           dom_element_get_attr(parentElement, "isNegated");
 
-      compoundStatement->setNegated (
-          XMLString::compareIString (attValue.c_str (), "true") == 0);
+      compoundStatement->setNegated (attValue == "true");
     }
 
   return compoundStatement;
 }
 
-void *
-NclConnectorsParser::createCompoundAction (DOMElement *parentElement,
-                                           arg_unused (void *objGrandParent))
+CompoundAction *
+NclConnectorsParser::createCompoundAction (DOMElement *compoundAction_element)
 {
   CompoundAction *actionExpression = new CompoundAction ();
-  string op = dom_element_get_attr(parentElement, "operator");;
+  string op = dom_element_get_attr(compoundAction_element, "operator");;
 
-  if (XMLString::compareIString (op.c_str(), "seq") == 0)
+  if (op == "seq")
     {
       actionExpression->setOperator (CompoundAction::OP_SEQ);
     }
@@ -920,9 +827,9 @@ NclConnectorsParser::createCompoundAction (DOMElement *parentElement,
     }
 
   //  testar delay
-  if (dom_element_has_attr(parentElement, "delay"))
+  if (dom_element_has_attr(compoundAction_element, "delay"))
     {
-      string attValue = dom_element_get_attr(parentElement, "delay");
+      string attValue = dom_element_get_attr(compoundAction_element, "delay");
 
       if (attValue[0] == '$')
         {
@@ -973,82 +880,73 @@ NclConnectorsParser::convertEventState (const string &eventState)
 
 void
 NclConnectorsParser::addSimpleConditionToCompoundCondition (
-    void *parentObject, void *childObject)
+    CompoundCondition *compoundCond, ConditionExpression *condExp)
 {
-  ((CompoundCondition *)parentObject)
-      ->addConditionExpression ((ConditionExpression *)childObject);
+  compoundCond->addConditionExpression (condExp);
 }
 
 void
 NclConnectorsParser::addCompoundConditionToCompoundCondition (
-    void *parentObject, void *childObject)
+    CompoundCondition *compoundCond, ConditionExpression *condExp)
 {
-  ((CompoundCondition *)parentObject)
-      ->addConditionExpression ((ConditionExpression *)childObject);
+  compoundCond->addConditionExpression (condExp);
 }
 
 void
 NclConnectorsParser::addAssessmentStatementToCompoundCondition (
-    void *parentObject, void *childObject)
+    CompoundCondition *compoundCond, ConditionExpression *condExp)
 {
-  ((CompoundCondition *)parentObject)
-      ->addConditionExpression ((ConditionExpression *)childObject);
+  compoundCond->addConditionExpression (condExp);
 }
 
 void
 NclConnectorsParser::addCompoundStatementToCompoundCondition (
-    void *parentObject, void *childObject)
+    CompoundCondition *compoundCond, ConditionExpression *condExp)
 {
-  ((CompoundCondition *)parentObject)
-      ->addConditionExpression ((ConditionExpression *)childObject);
+  compoundCond->addConditionExpression (condExp);
 }
 
 void
 NclConnectorsParser::addAttributeAssessmentToAssessmentStatement (
-    void *parentObject, void *childObject)
+    AssessmentStatement *asssessmentStatement,
+    AttributeAssessment *attributeAssessment)
 {
-  AssessmentStatement *statement;
-
-  statement = (AssessmentStatement *)parentObject;
-  if (statement->getMainAssessment () == NULL)
+  if (asssessmentStatement->getMainAssessment () == NULL)
     {
-      statement->setMainAssessment ((AttributeAssessment *)childObject);
+      asssessmentStatement->setMainAssessment (attributeAssessment);
     }
   else
     {
-      statement->setOtherAssessment ((AttributeAssessment *)childObject);
+      asssessmentStatement->setOtherAssessment (attributeAssessment);
     }
 }
 
 void
 NclConnectorsParser::addValueAssessmentToAssessmentStatement (
-    void *parentObject, void *childObject)
+    AssessmentStatement *parentObject, ValueAssessment *childObject)
 {
-  ((AssessmentStatement *)parentObject)
-      ->setOtherAssessment ((ValueAssessment *)childObject);
+  parentObject->setOtherAssessment (childObject);
 }
 
 void
 NclConnectorsParser::addAssessmentStatementToCompoundStatement (
-    void *parentObject, void *childObject)
+    CompoundStatement *compoundStatement, Statement *statement)
 {
-  ((CompoundStatement *)parentObject)
-      ->addStatement ((Statement *)childObject);
+  compoundStatement->addStatement (statement);
 }
 
 void
 NclConnectorsParser::addCompoundStatementToCompoundStatement (
-    void *parentObject, void *childObject)
+    CompoundStatement *compoundStatement, Statement *statement)
 {
-  ((CompoundStatement *)parentObject)
-      ->addStatement ((Statement *)childObject);
+  compoundStatement->addStatement (statement);
 }
 
 void
-NclConnectorsParser::addSimpleActionToCompoundAction (void *parentObject,
-                                                      void *childObject)
+NclConnectorsParser::addSimpleActionToCompoundAction (CompoundAction *compoundAction,
+                                                      Action *action)
 {
-  ((CompoundAction *)parentObject)->addAction ((Action *)childObject);
+  compoundAction->addAction (action);
 }
 
 void

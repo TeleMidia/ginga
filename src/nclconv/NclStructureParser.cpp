@@ -72,6 +72,10 @@ NclStructureParser::parseBody (DOMElement *body_element)
                   ->addSwitchToContext (body, switch_node);
             }
         }
+      else
+        {
+           // syntax_warning ?
+        }
     }
 
   for (DOMElement *child :
@@ -106,7 +110,6 @@ NclStructureParser::parseHead (DOMElement *head_element)
     {
       RegionBase *regionBase = _nclParser->getLayoutParser ()
           ->parseRegionBase (child);
-
       if (regionBase)
         {
           nclDoc->addRegionBase(regionBase);
@@ -154,7 +157,7 @@ NclStructureParser::parseHead (DOMElement *head_element)
        dom_element_children_by_tagname(head_element, "connectorBase") )
     {
       ConnectorBase *connBase = _nclParser->getConnectorsParser ()
-          ->parseConnectorBase (child, nclDoc);
+          ->parseConnectorBase (child);
       if (connBase)
         {
           nclDoc->setConnectorBase(connBase);
@@ -210,6 +213,8 @@ NclStructureParser::parseNcl (DOMElement *ncl_element)
         }
     }
 
+  // FIXME: what if there are other children (different from <head> and <body>
+
   return parentObject;
 }
 
@@ -225,14 +230,18 @@ NclStructureParser::createBody (DOMElement *body_element)
   document = getNclParser ()->getNclDocument ();
   if (!dom_element_has_attr(body_element, "id"))
     {
-      body_element->setAttribute (
-          XMLString::transcode ("id"),
-          XMLString::transcode (document->getId ().c_str ()));
+      XMLCh *attr_name = XMLString::transcode ("id");
+      XMLCh *attr_value = XMLString::transcode(document->getId ().c_str ());
+
+      body_element->setAttribute (attr_name, attr_value);
 
       context = (ContextNode *)
           _nclParser->getComponentsParser ()->createContext (body_element);
 
-      body_element->removeAttribute (XMLString::transcode ("id"));
+      body_element->removeAttribute (attr_name);
+
+      XMLString::release(&attr_name);
+      XMLString::release(&attr_value);
     }
   else
     {

@@ -155,6 +155,9 @@ GINGA_PRAGMA_DIAG_POP ()
 #define syntax_error(fmt, ...)\
   g_error ("syntax error: " fmt, ## __VA_ARGS__)
 
+#define syntax_warning(fmt, ...)\
+  g_warning ("syntax warn: " fmt, ## __VA_ARGS__)
+
 
 // Auxiliary number functions.
 

@@ -143,8 +143,6 @@ private:
   PrivateBaseContext *privateBaseContext;
   bool ownManager;
 
-  void *parentObject;
-
 protected:
   NclDocument *ncl;             // NCL document
   string path;                  // document's absolute path
@@ -186,8 +184,6 @@ public:
 
 protected:
   NclDocument *parseRootElement (DOMElement *rootElement);
-  void init ();
-
 public:
   string getPath ();
   string getDirName ();
