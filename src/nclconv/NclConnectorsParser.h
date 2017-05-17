@@ -47,21 +47,26 @@ public:
   CompoundCondition *parseCompoundCondition (DOMElement *compoundCond_element);
   CompoundCondition *createCompoundCondition (DOMElement *compoundCond_element);
 
-  AssessmentStatement *parseAssessmentStatement (DOMElement *parentElement);
-  AssessmentStatement *createAssessmentStatement (DOMElement *parentElement);
+  AssessmentStatement *parseAssessmentStatement (DOMElement *assessmentStatement_element);
+  AssessmentStatement *createAssessmentStatement (DOMElement *assessmentStatement_element);
 
-  AttributeAssessment *parseAttributeAssessment (DOMElement *parentElement);
+  AttributeAssessment *parseAttributeAssessment (DOMElement *attributeAssessment_element);
 
-  ValueAssessment *parseValueAssessment (DOMElement *parentElement);
+  ValueAssessment *parseValueAssessment (DOMElement *valueAssessment_element);
 
-  CompoundStatement *parseCompoundStatement (DOMElement *parentElement);
-  CompoundStatement *createCompoundStatement (DOMElement *parentElement);
+  CompoundStatement *parseCompoundStatement (DOMElement *compoundStatement_element);
+  CompoundStatement *createCompoundStatement (DOMElement *compoundStatement_element);
 
-  CompoundAction *parseCompoundAction (DOMElement *parentElement);
+  CompoundAction *parseCompoundAction (DOMElement *compoundAction_element);
   CompoundAction *createCompoundAction (DOMElement *compoundAction_element);
 
-  ConnectorBase *parseConnectorBase (DOMElement *parentElement);
-  ConnectorBase *createConnectorBase (DOMElement *parentElement);
+  ConnectorBase *parseConnectorBase (DOMElement *connBase_element);
+  ConnectorBase *createConnectorBase (DOMElement *connBase_element);
+
+  Parameter *parseConnectorParam (DOMElement *connectorParam_element);
+
+  CausalConnector *parseCausalConnector (DOMElement *causalConnector_element);
+  CausalConnector *createCausalConnector (DOMElement *causalConnector_element);
 
 
   // util
@@ -91,24 +96,20 @@ public:
   void addSimpleActionToCompoundAction (CompoundAction *compoundAction,
                                         Action *action);
 
-  void addCompoundActionToCompoundAction (void *parentObject,
-                                          void *childObject);
+  void addCompoundActionToCompoundAction (CompoundAction *compoundAction,
+                                          Action *action);
 
-  Parameter *parseConnectorParam (DOMElement *parentElement);
+  void addSimpleConditionToCausalConnector (CausalConnector *causalConnector,
+                                            ConditionExpression *condExp);
 
-  CausalConnector *parseCausalConnector (DOMElement *parentElement);
-  CausalConnector *createCausalConnector (DOMElement *causalConnector_element);
+  void addCompoundConditionToCausalConnector (CausalConnector *causalConnector,
+                                              ConditionExpression *condExp);
 
-  void addSimpleConditionToCausalConnector (void *parentObject,
-                                            void *childObject);
+  void addSimpleActionToCausalConnector (CausalConnector *causalConnector,
+                                         Action *action);
 
-  void addCompoundConditionToCausalConnector (void *parentObject,
-                                              void *childObject);
-
-  void addSimpleActionToCausalConnector (void *parentObject, void *childObject);
-
-  void addCompoundActionToCausalConnector (void *parentObject,
-                                           void *childObject);
+  void addCompoundActionToCausalConnector (CausalConnector *causalConnector,
+                                           Action *action);
 
   void addConnectorParamToCausalConnector (Connector *connector,
                                            Parameter *param);
