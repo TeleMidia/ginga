@@ -347,7 +347,7 @@ ginga_color_percent(guint c){
  value is a COLOR NAME the function calls 'ginga_color_table_index'. Return true if
  the input is valid, otherwise returns false. */
 static inline gboolean
-ginga_color_input_to_sdl_color(const string value, SDL_Color *color){
+ginga_color_input_to_sdl_color(const string &value, SDL_Color *color){
    if(value[0] == '#') //by hex
          return ginga_hex_to_sdl_color(value, color);
    else if(value.substr (0,3)=="rgb") //by rgbatxt
