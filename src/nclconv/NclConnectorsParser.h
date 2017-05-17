@@ -38,7 +38,7 @@ private:
   Connector *connector;
 
 public:
-  NclConnectorsParser (NclParser *nclParser);
+  explicit NclConnectorsParser (NclParser *nclParser);
 
   SimpleCondition *parseSimpleCondition (DOMElement *simpleCond_element);
 
@@ -68,64 +68,14 @@ public:
   CausalConnector *parseCausalConnector (DOMElement *causalConnector_element);
   CausalConnector *createCausalConnector (DOMElement *causalConnector_element);
 
-
-  // util
-  void addSimpleConditionToCompoundCondition (CompoundCondition *compoundCond,
-                                              ConditionExpression *condExp);
-
-  void addCompoundConditionToCompoundCondition (CompoundCondition *compoundCond,
-                                                ConditionExpression *condExp);
-
-  void addAssessmentStatementToCompoundCondition (CompoundCondition *compoundCond,
-                                                  ConditionExpression *condExp);
-
-  void addCompoundStatementToCompoundCondition (CompoundCondition *compoundCond,
-                                                ConditionExpression *condExp);
+private:
+  void compileRoleInformation (Role *role, DOMElement *parentElement);
 
   void addAttributeAssessmentToAssessmentStatement (
       AssessmentStatement *parentObject, AttributeAssessment *childObject);
 
-  void addValueAssessmentToAssessmentStatement (AssessmentStatement *parentObject,
-                                                ValueAssessment *childObject);
-  void addAssessmentStatementToCompoundStatement (CompoundStatement *parentObject,
-                                                  Statement *childObject);
-
-  void addCompoundStatementToCompoundStatement (CompoundStatement *parentObject,
-                                                Statement *childObject);
-
-  void addSimpleActionToCompoundAction (CompoundAction *compoundAction,
-                                        Action *action);
-
-  void addCompoundActionToCompoundAction (CompoundAction *compoundAction,
-                                          Action *action);
-
-  void addSimpleConditionToCausalConnector (CausalConnector *causalConnector,
-                                            ConditionExpression *condExp);
-
-  void addCompoundConditionToCausalConnector (CausalConnector *causalConnector,
-                                              ConditionExpression *condExp);
-
-  void addSimpleActionToCausalConnector (CausalConnector *causalConnector,
-                                         Action *action);
-
-  void addCompoundActionToCausalConnector (CausalConnector *causalConnector,
-                                           Action *action);
-
-  void addConnectorParamToCausalConnector (Connector *connector,
-                                           Parameter *param);
-
   void addImportBaseToConnectorBase (ConnectorBase *connectorBase,
                                      DOMElement *childObject);
-
-  void addCausalConnectorToConnectorBase (ConnectorBase *connectorBase,
-                                          Connector *connector);
-
-  static short convertEventState (const string &eventState);
-
-private:
-  void compileRoleInformation (Role *role, DOMElement *parentElement);
-  Parameter *getParameter (const string &paramName);
-  SimpleActionType convertActionType (const string &actionType);
 };
 
 GINGA_NCLCONV_END
