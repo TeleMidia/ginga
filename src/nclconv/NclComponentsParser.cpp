@@ -201,31 +201,26 @@ NclComponentsParser::addMediaToContext (Entity *context, Node *media)
 void
 NclComponentsParser::addLinkToContext (ContextNode *context, Link *link)
 {
-  unsigned int min, max;
-
   if (context->instanceOf ("ContextNode")) //There is no other possibility!!
     {
       vector<Role *> *roles = link->getConnector ()->getRoles ();
-      if (roles != NULL)
+      g_assert_nonnull(roles);
+
+      for (Role *role: *roles)
         {
-          for (Role *role: *roles)
+          unsigned int min = role->getMinCon ();
+          unsigned int max = role->getMaxCon ();
+
+          if (link->getNumRoleBinds (role) < min)
             {
-              min = role->getMinCon ();
-              max = role->getMaxCon ();
-
-              if (link->getNumRoleBinds (role) < min)
-                {
-                  syntax_error ("link: too few binds for role '%s': %d",
-                                role->getLabel ().c_str (), min);
-                }
-              else if (max > 0
-                       && (link->getNumRoleBinds (role) > max))
-                {
-                  syntax_error ("link: too many binds for role '%s': %d",
-                                role->getLabel ().c_str (), max);
-                  return;
-                }
-
+              syntax_error ("link: too few binds for role '%s': %d",
+                            role->getLabel ().c_str (), min);
+            }
+          else if (max > 0 && (link->getNumRoleBinds (role) > max))
+            {
+              syntax_error ("link: too many binds for role '%s': %d",
+                            role->getLabel ().c_str (), max);
+              return;
             }
         }
       delete roles;

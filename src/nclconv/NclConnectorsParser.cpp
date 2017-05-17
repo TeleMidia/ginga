@@ -56,7 +56,6 @@ NclConnectorsParser::parseSimpleCondition (DOMElement *simpleCond_element)
 
         {
           attValue = dom_element_get_attr(simpleCond_element, "key");
-
           conditionExpression->setKey (attValue);
         }
     }
@@ -781,9 +780,7 @@ NclConnectorsParser::createCompoundStatement (DOMElement *parentElement)
   // testing isNegated
   if (dom_element_has_attr(parentElement, "isNegated"))
     {
-      string attValue =
-          dom_element_get_attr(parentElement, "isNegated");
-
+      string attValue = dom_element_get_attr(parentElement, "isNegated");
       compoundStatement->setNegated (attValue == "true");
     }
 

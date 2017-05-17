@@ -33,25 +33,14 @@ private:
 public:
   explicit NclLayoutParser (NclParser *nclParser, DeviceLayout *deviceLayout);
 
-  LayoutRegion *parseRegion (DOMElement *parentElement);
-  LayoutRegion *createRegion (DOMElement *parentElement);
+  LayoutRegion *parseRegion (DOMElement *region_element);
+  LayoutRegion *createRegion (DOMElement *region_element);
 
-  void addRegionToRegion (LayoutRegion *parentObject,
-                          LayoutRegion *childObject);
+  RegionBase *parseRegionBase (DOMElement *regionBase_element);
+  RegionBase *createRegionBase (DOMElement *regionBase_element);
 
-  RegionBase *parseRegionBase (DOMElement *parentElement);
-  RegionBase *createRegionBase (DOMElement *parentElement);
-
-  void addImportBaseToRegionBase (RegionBase *parentObject,
-                                  DOMElement *childObject);
-
-  void addRegionToRegionBase (RegionBase *parentObject,
-                              LayoutRegion *childObject);
-
-private:
-  double getPercentValue (const string &value);
-  int getPixelValue (const string &value);
-  bool isPercentValue (const string &value);
+  void addImportBaseToRegionBase (RegionBase *regionBase,
+                                  DOMElement *importBase_element);
 };
 
 GINGA_NCLCONV_END

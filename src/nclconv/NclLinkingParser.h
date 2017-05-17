@@ -46,17 +46,10 @@ public:
   Bind *parseBind (DOMElement *parentElement, Link *objGrandParent);
   Bind *createBind (DOMElement *parentElement, Link *objGrandParent);
 
-  void addBindParamToBind (Bind *parentObject, Parameter *childObject);
+  Parameter *parseLinkOrBindParam (DOMElement *parentElement);
 
-  Parameter *parseLinkParam (DOMElement *parentElement);
-  Parameter *parseBindParam (DOMElement *parentElement);
-
-  Link *parseLink (DOMElement *parentElement, void *objGrandParent);
-  Link *createLink (DOMElement *parentElement, void *objGrandParent);
-
-  void addLinkParamToLink (Link *parentObject, Parameter *childObject);
-
-  void addBindToLink (Link *parentObject, Bind *childObject);
+  Link *parseLink (DOMElement *parentElement, CompositeNode *objGrandParent);
+  Link *createLink (DOMElement *parentElement, CompositeNode *objGrandParent);
 
 private:
   Connector *_connector;

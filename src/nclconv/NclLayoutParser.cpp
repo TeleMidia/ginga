@@ -24,6 +24,20 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_NCLCONV_BEGIN
 
+#define CHECK_REGION_ATTR_AND_SET(DOMELEMENT,DOMATRR,REGIONATTRFUNC) \
+  if (dom_element_has_attr(DOMELEMENT, DOMATRR)) \
+    { \
+      string attr = dom_element_get_attr(DOMELEMENT, DOMATRR); \
+      if (xstrispercent (attr)) \
+        { \
+          REGIONATTRFUNC (xstrtodorpercent (attr) * 100., true); \
+        } \
+      else \
+        { \
+          REGIONATTRFUNC (xstrto_int (attr), false); \
+        } \
+    }
+
 NclLayoutParser::NclLayoutParser (NclParser *nclParser,
                                   DeviceLayout *deviceLayout)
     : ModuleParser (nclParser)
@@ -43,7 +57,7 @@ NclLayoutParser::parseRegion (DOMElement *region_element)
       LayoutRegion *child_region = parseRegion (child);
       if (child_region)
         {
-          addRegionToRegion (region, child_region);
+          region->addRegion (child_region);
         }
     }
 
@@ -59,22 +73,29 @@ NclLayoutParser::parseRegionBase (DOMElement *regionBase_element)
   for (DOMElement *child:
        dom_element_children(regionBase_element) )
     {
-      if (dom_element_tagname(child) == "importBase")
+      string tagname = dom_element_tagname(child);
+      if (tagname == "importBase")
         {
-          DOMElement *elementObject = _nclParser->getImportParser ()->
-              parseImportBase (child);
-          if (elementObject)
+          DOMElement *importBase_element
+              = _nclParser->getImportParser ()->parseImportBase (child);
+          if (importBase_element)
             {
-              addImportBaseToRegionBase (regionBase, elementObject);
+              addImportBaseToRegionBase (regionBase, importBase_element);
             }
         }
-      else if (dom_element_tagname(child) == "region")
+      else if (tagname == "region")
         {
           LayoutRegion *region = parseRegion (child);
           if (region)
             {
-              addRegionToRegionBase (regionBase, region);
+              regionBase->addRegion (region);
             }
+        }
+      else
+        {
+          syntax_warning( "'%s' is not known as child of 'regionBase'."
+                          " It will be ignored.",
+                          tagname.c_str() );
         }
     }
 
@@ -83,22 +104,18 @@ NclLayoutParser::parseRegionBase (DOMElement *regionBase_element)
 
 void
 NclLayoutParser::addImportBaseToRegionBase (RegionBase *regionBase,
-                                            DOMElement *childObject)
+                                            DOMElement *importBase_element)
 {
   map<int, RegionBase *> *bases;
   map<int, RegionBase *>::iterator i;
   string baseAlias, baseLocation;
-  NclParser *compiler;
   NclDocument *importedDocument;
 
   // get the external base alias and location
-  baseAlias = dom_element_get_attr((DOMElement *)childObject, "alias");
+  baseAlias = dom_element_get_attr(importBase_element, "alias");
+  baseLocation = dom_element_get_attr(importBase_element, "documentURI");
 
-  baseLocation = dom_element_get_attr((DOMElement *)childObject,
-                                               "documentURI");
-
-  compiler = getNclParser ();
-  importedDocument = compiler->importDocument (baseLocation);
+  importedDocument = getNclParser ()->importDocument (baseLocation);
   if (importedDocument == NULL)
     {
       return;
@@ -117,20 +134,6 @@ NclLayoutParser::addImportBaseToRegionBase (RegionBase *regionBase,
       regionBase->addBase (i->second, baseAlias, baseLocation);
       ++i;
     }
-}
-
-void
-NclLayoutParser::addRegionToRegion (LayoutRegion *parentRegion,
-                                    LayoutRegion *childRegion)
-{
-  parentRegion->addRegion (childRegion);
-}
-
-void
-NclLayoutParser::addRegionToRegionBase (RegionBase *parentRegion,
-                                        LayoutRegion *childRegion)
-{
-  parentRegion->addRegion (childRegion);
 }
 
 RegionBase *
@@ -163,131 +166,25 @@ NclLayoutParser::createRegionBase (DOMElement *parentElement)
 }
 
 LayoutRegion *
-NclLayoutParser::createRegion (DOMElement *parentElement)
+NclLayoutParser::createRegion (DOMElement *region_element)
 {
-  string attribute = dom_element_get_attr(parentElement, "id");
-  LayoutRegion *ncmRegion = new LayoutRegion (attribute);
+  string attr = dom_element_get_attr(region_element, "id");
+  LayoutRegion *ncmRegion = new LayoutRegion (attr);
 
-  // title
-  if (dom_element_has_attr(parentElement, "title"))
-    {
-      ncmRegion->setTitle (
-            dom_element_get_attr(parentElement, "title"));
-    }
+  if(dom_element_try_get_attr(attr, region_element, "title"))
+    ncmRegion->setTitle(attr);
 
-  // left
-  if (dom_element_has_attr(parentElement, "left"))
-    {
-      attribute = dom_element_get_attr(parentElement, "left");
+  CHECK_REGION_ATTR_AND_SET (region_element, "left", ncmRegion->setLeft)
+  CHECK_REGION_ATTR_AND_SET (region_element, "right", ncmRegion->setRight)
+  CHECK_REGION_ATTR_AND_SET (region_element, "top", ncmRegion->setTop)
+  CHECK_REGION_ATTR_AND_SET (region_element, "bottom", ncmRegion->setBottom)
+  CHECK_REGION_ATTR_AND_SET (region_element, "width", ncmRegion->setWidth)
+  CHECK_REGION_ATTR_AND_SET (region_element, "height", ncmRegion->setHeight)
 
-      if (attribute != "")
-        {
-          if (xstrispercent (attribute))
-            {
-              ncmRegion->setLeft (getPercentValue (attribute), true);
-            }
-          else
-            {
-              ncmRegion->setLeft (getPixelValue (attribute), false);
-            }
-        }
-    }
-
-  // right
-  if (dom_element_has_attr(parentElement, "right"))
-    {
-      attribute = dom_element_get_attr(parentElement, "right");
-
-      if (xstrispercent (attribute))
-        {
-          ncmRegion->setRight (getPercentValue (attribute), true);
-        }
-      else
-        {
-          ncmRegion->setRight (getPixelValue (attribute), false);
-        }
-    }
-
-  // top
-  if (dom_element_has_attr(parentElement, "top"))
-    {
-      attribute = dom_element_get_attr(parentElement, "top");
-
-      if (xstrispercent (attribute))
-        {
-          ncmRegion->setTop (getPercentValue (attribute), true);
-        }
-      else
-        {
-          ncmRegion->setTop (getPixelValue (attribute), false);
-        }
-    }
-
-  // bottom
-  if (dom_element_has_attr(parentElement, "bottom"))
-    {
-      attribute = dom_element_get_attr(parentElement, "bottom");
-
-      if (xstrispercent (attribute))
-        {
-          ncmRegion->setBottom (getPercentValue (attribute), true);
-        }
-      else
-        {
-          ncmRegion->setBottom (getPixelValue (attribute), false);
-        }
-    }
-
-  // width
-  if (dom_element_has_attr(parentElement, "width"))
-    {
-      attribute = dom_element_get_attr(parentElement,"width");
-
-      if (xstrispercent (attribute))
-        {
-          ncmRegion->setWidth (getPercentValue (attribute), true);
-        }
-      else
-        {
-          ncmRegion->setWidth (getPixelValue (attribute), false);
-        }
-    }
-
-  // height
-  if (dom_element_has_attr(parentElement, "height"))
-    {
-      attribute = dom_element_get_attr(parentElement, "height");
-
-      if (xstrispercent (attribute))
-        {
-          ncmRegion->setHeight (getPercentValue (attribute), true);
-        }
-      else
-        {
-          ncmRegion->setHeight (getPixelValue (attribute), false);
-        }
-    }
-
-  if (dom_element_has_attr(parentElement, "zIndex"))
-    {
-      attribute = dom_element_get_attr(parentElement, "zIndex");
-
-      ncmRegion->setZIndex (xstrto_int (attribute));
-    }
+  if(dom_element_try_get_attr(attr, region_element, "zIndex"))
+      ncmRegion->setZIndex(xstrto_int(attr));
 
   return ncmRegion;
-}
-
-double
-NclLayoutParser::getPercentValue (const string &value)
-{
-  return xstrtodorpercent (value) * 100.;
-}
-
-int
-NclLayoutParser::getPixelValue (const string &value)
-{
-  return xstrto_int (value);
 }
 
 GINGA_NCLCONV_END

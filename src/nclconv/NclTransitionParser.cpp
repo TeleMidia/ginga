@@ -61,7 +61,7 @@ NclTransitionParser::parseTransitionBase (DOMElement *transBase_element)
         }
       else
         {
-          syntax_warning( "'%s' is not known as child of '%s'. "
+          syntax_warning( "'%s' is not known as child of 'transitionBase'. "
                           "It will be ignored.",
                           tagname.c_str() );
         }
@@ -107,6 +107,10 @@ NclTransitionParser::parseTransition (DOMElement *parentElement)
         {
           transition->setSubtype (subtype);
         }
+      else
+        {
+          syntax_error ("transition: bad subtype");
+        }
     }
 
   if (dom_element_has_attr(parentElement, "dur"))
@@ -139,6 +143,10 @@ NclTransitionParser::parseTransition (DOMElement *parentElement)
       if (direction >= 0)
         {
           transition->setDirection (direction);
+        }
+      else
+        {
+          syntax_error ("transition: bad direction value");
         }
     }
 
@@ -186,36 +194,30 @@ NclTransitionParser::addImportBaseToTransitionBase (TransitionBase *transBase,
                                                     DOMElement *element)
 {
   string baseAlias, baseLocation;
-  NclParser *compiler;
   NclDocument *importedDocument;
-  TransitionBase *createdBase;
+  TransitionBase *importedTransitionBase;
 
   // get the external base alias and location
   baseAlias = dom_element_get_attr(element, "alias");
   baseLocation = dom_element_get_attr(element, "documentURI");
 
-  compiler = getNclParser ();
-  importedDocument = compiler->importDocument (baseLocation);
-  if (importedDocument == NULL)
+  importedDocument = getNclParser ()->importDocument (baseLocation);
+  if (unlikely (importedDocument == NULL))
     {
-      return;
+      syntax_error ("importBase '%s': bad documentURI '%s'",
+                    baseAlias.c_str (),
+                    baseLocation.c_str ());
     }
 
-  createdBase = importedDocument->getTransitionBase ();
-  if (createdBase == NULL)
+  importedTransitionBase = importedDocument->getTransitionBase ();
+  if (unlikely (importedTransitionBase == NULL))
     {
-      return;
+      syntax_error ("importBase '%s': no transition base in '%s'",
+                    baseAlias.c_str (),
+                    baseLocation.c_str ());
     }
 
-  // insert the imported base into the document region base
-  try
-    {
-      transBase->addBase (createdBase, baseAlias, baseLocation);
-    }
-  catch (std::exception *exc)
-    {
-      syntax_error ("importBase: bad transition base");
-    }
+  transBase->addBase (importedTransitionBase, baseAlias, baseLocation);
 }
 
 GINGA_NCLCONV_END

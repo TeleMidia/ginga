@@ -39,9 +39,6 @@ public:
   Node *parseMedia (DOMElement *parentElement);
   Node *createMedia (DOMElement *parentElement);
 
-  void addAreaToMedia (ContentNode *media, Anchor *area);
-  void addPropertyToMedia (ContentNode *media, Anchor *property);
-
   Node *parseContext (DOMElement *parentElement);
   void *posCompileContext2 (DOMElement *context_element, ContextNode *context);
   void *posCompileContext (DOMElement *parentElement, ContextNode *parentObject);
@@ -59,6 +56,9 @@ private:
   void addNodeToContext (ContextNode *contextNode, Node *node);
   void addAnchorToMedia (ContentNode *contentNode, Anchor *anchor);
   void addPortToContext (Entity *parentObject, Port *childObject);
+
+  void addAreaToMedia (ContentNode *media, Anchor *area);
+  void addPropertyToMedia (ContentNode *media, Anchor *property);
 
 };
 
