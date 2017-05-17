@@ -115,17 +115,16 @@ NclConnectorsParser::parseCompoundCondition (DOMElement *compoundCond_element)
           SimpleCondition *simpleCond = parseSimpleCondition (child);
           if (simpleCond)
             {
-              addSimpleConditionToCompoundCondition (compoundCond, simpleCond);
+              compoundCond->addConditionExpression (simpleCond);
             }
         }
       else if ( tagname == "assessmentStatement" )
         {
-          AssessmentStatement *elementObj = parseAssessmentStatement (child);
+          AssessmentStatement *assessmentStatement = parseAssessmentStatement (child);
 
-          if (elementObj)
+          if (assessmentStatement)
             {
-              addAssessmentStatementToCompoundCondition (compoundCond,
-                                                         elementObj);
+              compoundCond->addConditionExpression (assessmentStatement);
             }
         }
       else if ( tagname == "compoundCondition")
@@ -135,8 +134,7 @@ NclConnectorsParser::parseCompoundCondition (DOMElement *compoundCond_element)
 
           if (compoundCond_child)
             {
-              addCompoundConditionToCompoundCondition (compoundCond,
-                                                       compoundCond_child);
+              compoundCond->addConditionExpression (compoundCond_child);
             }
         }
       else if ( tagname ==  "compoundStatement")
@@ -145,8 +143,7 @@ NclConnectorsParser::parseCompoundCondition (DOMElement *compoundCond_element)
 
           if (compoundStatement)
             {
-              addCompoundStatementToCompoundCondition (compoundCond,
-                                                       compoundStatement);
+              compoundCond->addConditionExpression (compoundStatement);
             }
         }
       else
@@ -183,11 +180,10 @@ NclConnectorsParser::parseAssessmentStatement (
         }
       else if (tagname == "valueAssessment")
         {
-          ValueAssessment *elementObj = parseValueAssessment (child);
-          if (elementObj)
+          ValueAssessment *valueAssessment = parseValueAssessment (child);
+          if (valueAssessment)
             {
-              addValueAssessmentToAssessmentStatement (assessmentStatement,
-                                                       elementObj);
+              assessmentStatement->setOtherAssessment (valueAssessment);
             }
         }
       else
@@ -276,8 +272,7 @@ NclConnectorsParser::parseCompoundStatement (
               parseAssessmentStatement (child);
           if (assessmentStatement)
             {
-              addAssessmentStatementToCompoundStatement (compoundStatement,
-                                                         assessmentStatement);
+              compoundStatement->addStatement (assessmentStatement);
             }
         }
       else if (tagname == "compoundStatement")
@@ -286,8 +281,7 @@ NclConnectorsParser::parseCompoundStatement (
               parseCompoundStatement (child);
           if (compoundStatement_child)
             {
-              addCompoundStatementToCompoundStatement (compoundStatement,
-                                                       compoundStatement_child);
+              compoundStatement->addStatement (compoundStatement_child);
             }
         }
       else
@@ -316,7 +310,8 @@ NclConnectorsParser::parseSimpleAction (DOMElement *simpleAction_element)
     {
       attValue = dom_element_get_attr(simpleAction_element, "actionType");
 
-      actionExpression->setActionType (convertActionType (attValue));
+      actionExpression->setActionType (
+            SimpleAction::stringToActionType (attValue) );
     }
 
   if (dom_element_has_attr(simpleAction_element, "eventType"))
@@ -478,15 +473,15 @@ NclConnectorsParser::parseCompoundAction (DOMElement *compoundAction_element)
           SimpleAction *simpleAction = parseSimpleAction (child);
           if (simpleAction)
             {
-              addSimpleActionToCompoundAction (compoundAction, simpleAction);
+              compoundAction->addAction (simpleAction);
             }
         }
       else if (tagname == "compoundAction")
         {
-          CompoundAction *elementObject = parseCompoundAction (child);
-          if (elementObject)
+          CompoundAction *compoundAction_child = parseCompoundAction (child);
+          if (compoundAction_child)
             {
-              addCompoundActionToCompoundAction (compoundAction, elementObject);
+              compoundAction->addAction (compoundAction_child);
             }
         }
       else
@@ -529,7 +524,7 @@ NclConnectorsParser::parseCausalConnector (DOMElement *causalConnector_element)
 
           if (simpleCondition)
             {
-              addSimpleConditionToCausalConnector (causalConnector, simpleCondition);
+              causalConnector->setConditionExpression (simpleCondition);
             }
         }
       else if (tagname == "simpleAction")
@@ -538,7 +533,7 @@ NclConnectorsParser::parseCausalConnector (DOMElement *causalConnector_element)
 
           if (simpleAction)
             {
-              addSimpleActionToCausalConnector (causalConnector, simpleAction);
+              causalConnector->setAction (simpleAction);
             }
         }
       else if (tagname == "compoundAction")
@@ -547,7 +542,7 @@ NclConnectorsParser::parseCausalConnector (DOMElement *causalConnector_element)
 
           if (compoundAction)
             {
-              addCompoundActionToCausalConnector (causalConnector, compoundAction);
+              causalConnector->setAction (compoundAction);
             }
         }
       else if (tagname == "connectorParam")
@@ -556,7 +551,7 @@ NclConnectorsParser::parseCausalConnector (DOMElement *causalConnector_element)
 
           if (param)
             {
-              addConnectorParamToCausalConnector (causalConnector, param);
+              connector->addParameter (param);
             }
         }
       else if (tagname == "compoundCondition")
@@ -565,8 +560,7 @@ NclConnectorsParser::parseCausalConnector (DOMElement *causalConnector_element)
 
           if (compoundCond)
             {
-              addCompoundConditionToCausalConnector (causalConnector,
-                                                     compoundCond);
+              causalConnector->setConditionExpression (compoundCond);
             }
         }
       else
@@ -604,8 +598,7 @@ NclConnectorsParser::parseConnectorBase (DOMElement *connectorBase_element)
           CausalConnector *causalConnector = parseCausalConnector (child);
           if (causalConnector)
             {
-              addCausalConnectorToConnectorBase (connectorBase,
-                                                 causalConnector);
+              connectorBase->addConnector (causalConnector);
             }
         }
       else
@@ -617,20 +610,6 @@ NclConnectorsParser::parseConnectorBase (DOMElement *connectorBase_element)
     }
 
   return connectorBase;
-}
-
-void
-NclConnectorsParser::addCausalConnectorToConnectorBase (
-    ConnectorBase *connectorBase, Connector *causalConnector)
-{
-  connectorBase->addConnector (causalConnector);
-}
-
-void
-NclConnectorsParser::addConnectorParamToCausalConnector (
-    Connector *connector, Parameter *param)
-{
-  connector->addParameter (param);
 }
 
 void
@@ -847,65 +826,6 @@ NclConnectorsParser::createCompoundAction (DOMElement *compoundAction_element)
   return actionExpression;
 }
 
-Parameter *
-NclConnectorsParser::getParameter (const string &paramName)
-{
-  return (Parameter *)(connector->getParameter (paramName));
-}
-
-SimpleActionType
-NclConnectorsParser::convertActionType (const string &s)
-{
-  return SimpleAction::stringToActionType (s);
-}
-
-short
-NclConnectorsParser::convertEventState (const string &eventState)
-{
-  if (eventState == "occurring")
-    {
-      return EventUtil::ST_OCCURRING;
-    }
-  else if (eventState == "paused")
-    {
-      return EventUtil::ST_PAUSED;
-    }
-  else if (eventState == "sleeping")
-    {
-      return EventUtil::ST_SLEEPING;
-    }
-
-  return -1;
-}
-
-void
-NclConnectorsParser::addSimpleConditionToCompoundCondition (
-    CompoundCondition *compoundCond, ConditionExpression *condExp)
-{
-  compoundCond->addConditionExpression (condExp);
-}
-
-void
-NclConnectorsParser::addCompoundConditionToCompoundCondition (
-    CompoundCondition *compoundCond, ConditionExpression *condExp)
-{
-  compoundCond->addConditionExpression (condExp);
-}
-
-void
-NclConnectorsParser::addAssessmentStatementToCompoundCondition (
-    CompoundCondition *compoundCond, ConditionExpression *condExp)
-{
-  compoundCond->addConditionExpression (condExp);
-}
-
-void
-NclConnectorsParser::addCompoundStatementToCompoundCondition (
-    CompoundCondition *compoundCond, ConditionExpression *condExp)
-{
-  compoundCond->addConditionExpression (condExp);
-}
-
 void
 NclConnectorsParser::addAttributeAssessmentToAssessmentStatement (
     AssessmentStatement *asssessmentStatement,
@@ -919,69 +839,6 @@ NclConnectorsParser::addAttributeAssessmentToAssessmentStatement (
     {
       asssessmentStatement->setOtherAssessment (attributeAssessment);
     }
-}
-
-void
-NclConnectorsParser::addValueAssessmentToAssessmentStatement (
-    AssessmentStatement *parentObject, ValueAssessment *childObject)
-{
-  parentObject->setOtherAssessment (childObject);
-}
-
-void
-NclConnectorsParser::addAssessmentStatementToCompoundStatement (
-    CompoundStatement *compoundStatement, Statement *statement)
-{
-  compoundStatement->addStatement (statement);
-}
-
-void
-NclConnectorsParser::addCompoundStatementToCompoundStatement (
-    CompoundStatement *compoundStatement, Statement *statement)
-{
-  compoundStatement->addStatement (statement);
-}
-
-void
-NclConnectorsParser::addSimpleActionToCompoundAction (CompoundAction *compoundAction,
-                                                      Action *action)
-{
-  compoundAction->addAction (action);
-}
-
-void
-NclConnectorsParser::addCompoundActionToCompoundAction (
-    CompoundAction *compoundAction, Action *action)
-{
-  compoundAction->addAction (action);
-}
-
-void
-NclConnectorsParser::addSimpleConditionToCausalConnector (
-    CausalConnector *causalConnector, ConditionExpression *condExp)
-{
-  causalConnector->setConditionExpression (condExp);
-}
-
-void
-NclConnectorsParser::addCompoundConditionToCausalConnector (
-    CausalConnector *causalConnector, ConditionExpression *condExp)
-{
-  causalConnector->setConditionExpression (condExp);
-}
-
-void
-NclConnectorsParser::addSimpleActionToCausalConnector (
-    CausalConnector *causalConnector, Action *action)
-{
-  causalConnector->setAction (action);
-}
-
-void
-NclConnectorsParser::addCompoundActionToCausalConnector (
-    CausalConnector *causalConnector, Action *action)
-{
-  causalConnector->setAction (action);
 }
 
 GINGA_NCLCONV_END
