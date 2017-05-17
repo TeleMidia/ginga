@@ -202,27 +202,27 @@ NclConnectorsParser::parseAssessmentStatement (
 }
 
 AttributeAssessment *
-NclConnectorsParser::parseAttributeAssessment (DOMElement *parentElement)
+NclConnectorsParser::parseAttributeAssessment (DOMElement *attributeAssessment_element)
 {
   AttributeAssessment *attributeAssessment;
   string attValue;
 
-  string roleLabel = dom_element_get_attr(parentElement, "role");
+  string roleLabel = dom_element_get_attr(attributeAssessment_element, "role");
 
   attributeAssessment = new AttributeAssessment (roleLabel);
 
   // event type
-  if (dom_element_has_attr(parentElement, "eventType"))
+  if (dom_element_has_attr(attributeAssessment_element, "eventType"))
     {
-      attValue = dom_element_get_attr(parentElement, "eventType");
+      attValue = dom_element_get_attr(attributeAssessment_element, "eventType");
 
       attributeAssessment->setEventType (EventUtil::getTypeCode (attValue));
     }
 
   // event type
-  if (dom_element_has_attr(parentElement, "attributeType"))
+  if (dom_element_has_attr(attributeAssessment_element, "attributeType"))
     {
-      attValue = dom_element_get_attr(parentElement, "attributeType");
+      attValue = dom_element_get_attr(attributeAssessment_element, "attributeType");
 
       attributeAssessment->setAttributeType (
           EventUtil::getAttributeTypeCode (attValue));
@@ -231,18 +231,18 @@ NclConnectorsParser::parseAttributeAssessment (DOMElement *parentElement)
   // parameter
   if (attributeAssessment->getEventType () == EventUtil::EVT_SELECTION)
     {
-      if (dom_element_has_attr(parentElement, "key"))
+      if (dom_element_has_attr(attributeAssessment_element, "key"))
         {
-          attValue = dom_element_get_attr(parentElement, "key");
+          attValue = dom_element_get_attr(attributeAssessment_element, "key");
 
           attributeAssessment->setKey (attValue);
         }
     }
 
   // testing offset
-  if (dom_element_has_attr(parentElement, "offset"))
+  if (dom_element_has_attr(attributeAssessment_element, "offset"))
     {
-      attValue = dom_element_get_attr(parentElement, "offset");
+      attValue = dom_element_get_attr(attributeAssessment_element, "offset");
 
       attributeAssessment->setOffset (attValue);
     }
@@ -251,9 +251,9 @@ NclConnectorsParser::parseAttributeAssessment (DOMElement *parentElement)
 }
 
 ValueAssessment *
-NclConnectorsParser::parseValueAssessment (DOMElement *parentElement)
+NclConnectorsParser::parseValueAssessment (DOMElement *valueAssessment_element)
 {
-  string attValue = dom_element_get_attr(parentElement, "value");
+  string attValue = dom_element_get_attr(valueAssessment_element, "value");
 
   return new ValueAssessment (attValue);
 }
@@ -501,12 +501,12 @@ NclConnectorsParser::parseCompoundAction (DOMElement *compoundAction_element)
 }
 
 Parameter *
-NclConnectorsParser::parseConnectorParam (DOMElement *parentElement)
+NclConnectorsParser::parseConnectorParam (DOMElement *connectorParam_element)
 {
   Parameter *parameter;
   parameter = new Parameter (
-        dom_element_get_attr(parentElement, "name"),
-        dom_element_get_attr(parentElement, "type") );
+        dom_element_get_attr(connectorParam_element, "name"),
+        dom_element_get_attr(connectorParam_element, "type") );
 
   return parameter;
 }
@@ -764,14 +764,14 @@ NclConnectorsParser::createCompoundCondition (DOMElement *compoundCond_element)
 
 
 AssessmentStatement *
-NclConnectorsParser::createAssessmentStatement (DOMElement *parentElement)
+NclConnectorsParser::createAssessmentStatement (DOMElement *assessmentStatement_element)
 {
   AssessmentStatement *assessmentStatement;
   string attValue;
 
-  if (dom_element_has_attr(parentElement, "comparator"))
+  if (dom_element_has_attr(assessmentStatement_element, "comparator"))
     {
-      attValue = dom_element_get_attr(parentElement, "comparator");
+      attValue = dom_element_get_attr(assessmentStatement_element, "comparator");
 
       assessmentStatement
           = new AssessmentStatement (Comparator::fromString (attValue));
@@ -951,39 +951,37 @@ NclConnectorsParser::addSimpleActionToCompoundAction (CompoundAction *compoundAc
 
 void
 NclConnectorsParser::addCompoundActionToCompoundAction (
-    void *parentObject, void *childObject)
+    CompoundAction *compoundAction, Action *action)
 {
-  ((CompoundAction *)parentObject)->addAction ((Action *)childObject);
+  compoundAction->addAction (action);
 }
 
 void
 NclConnectorsParser::addSimpleConditionToCausalConnector (
-    void *parentObject, void *childObject)
+    CausalConnector *causalConnector, ConditionExpression *condExp)
 {
-  ((CausalConnector *)parentObject)
-      ->setConditionExpression ((ConditionExpression *)childObject);
+  causalConnector->setConditionExpression (condExp);
 }
 
 void
 NclConnectorsParser::addCompoundConditionToCausalConnector (
-    void *parentObject, void *childObject)
+    CausalConnector *causalConnector, ConditionExpression *condExp)
 {
-  ((CausalConnector *)parentObject)
-      ->setConditionExpression ((ConditionExpression *)childObject);
+  causalConnector->setConditionExpression (condExp);
 }
 
 void
 NclConnectorsParser::addSimpleActionToCausalConnector (
-    void *parentObject, void *childObject)
+    CausalConnector *causalConnector, Action *action)
 {
-  ((CausalConnector *)parentObject)->setAction ((Action *)childObject);
+  causalConnector->setAction (action);
 }
 
 void
 NclConnectorsParser::addCompoundActionToCausalConnector (
-    void *parentObject, void *childObject)
+    CausalConnector *causalConnector, Action *action)
 {
-  ((CausalConnector *)parentObject)->setAction ((Action *)childObject);
+  causalConnector->setAction (action);
 }
 
 GINGA_NCLCONV_END
