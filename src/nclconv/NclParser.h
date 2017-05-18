@@ -93,7 +93,8 @@ dom_element_try_get_attr (string &gotAttr,
   if (element->hasAttribute(attr_xmlch))
     {
       has_attr = true;
-      char *attr_value_ch = XMLString::transcode(element->getAttribute (attr_xmlch));
+      char *attr_value_ch =
+          XMLString::transcode(element->getAttribute (attr_xmlch));
       gotAttr = attr_value_ch;
       XMLString::release(&attr_value_ch);
     }
@@ -144,7 +145,6 @@ dom_element_children(DOMElement *el)
 
   return vet;
 }
-
 
 static vector <DOMElement *>
 dom_element_children_by_tagname(DOMElement *el, const string &tagname)
@@ -229,11 +229,13 @@ public:
 
 protected:
   NclDocument *parseRootElement (DOMElement *rootElement);
+
 public:
   string getPath ();
   string getDirName ();
   void setNclDocument (NclDocument *);
   NclDocument *getNclDocument ();
+  DeviceLayout *getDeviceLayout();
 
   void warning (const SAXParseException &);
   void error (const SAXParseException &);
