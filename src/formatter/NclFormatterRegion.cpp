@@ -86,28 +86,27 @@ NclFormatterRegion::NclFormatterRegion (const string &objectId, void *descriptor
       else
         {
           SDL_Color *bg = NULL;
-          vector<string> *params = NULL;
+          vector<string> params;
 
           params = split (xstrchomp (value), ",");
-          if (params->size () == 3)
+          if (params.size () == 3)
             {
               bg = new SDL_Color();
-              bg->r =  xstrto_uint8 ((*params)[0]);
-              bg->g =  xstrto_uint8 ((*params)[1]);
-              bg->b =  xstrto_uint8 ((*params)[2]); 
+              bg->r =  xstrto_uint8 (params[0]);
+              bg->g =  xstrto_uint8 (params[1]);
+              bg->b =  xstrto_uint8 (params[2]);
               bg->a = 255;              
               setBackgroundColor (bg);
             }
-          else if (params->size () == 4)
+          else if (params.size () == 4)
             {
               bg = new SDL_Color();
-              bg->r =  xstrto_uint8 ((*params)[0]);
-              bg->g =  xstrto_uint8 ((*params)[1]);
-              bg->b =  xstrto_uint8 ((*params)[2]); 
-              bg->a =  xstrto_uint8 ((*params)[3]);      
+              bg->r =  xstrto_uint8 (params[0]);
+              bg->g =  xstrto_uint8 (params[1]);
+              bg->b =  xstrto_uint8 (params[2]);
+              bg->a =  xstrto_uint8 (params[3]);
               setBackgroundColor (bg);
             }
-          delete params;
         }
     }
 

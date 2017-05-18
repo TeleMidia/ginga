@@ -288,7 +288,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
   NclCascadingDescriptor *descriptor;
   LayoutRegion *region = NULL;
   PropertyAnchor *property;
-  vector<string> *params;
+  vector<string> params;
   vector<Parameter *> *descParams;
   vector<Parameter *>::iterator i;
   vector<PropertyAnchor *> *anchors;
@@ -385,36 +385,31 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
               else if (name == "bounds")
                 {
                   params = split (xstrchomp (value), ",");
-                  if (params->size () == 4)
+                  if (params.size () == 4)
                     {
-                      left = (*params)[0];
-                      top = (*params)[1];
-                      width = (*params)[2];
-                      height = (*params)[3];
+                      left = params[0];
+                      top = params[1];
+                      width = params[2];
+                      height = params[3];
                     }
-
-                  delete params;
                 }
               else if (name == "location")
                 {
                   params = split (xstrchomp (value), ",");
-                  if (params->size () == 2)
+                  if (params.size () == 2)
                     {
-                      left = (*params)[0];
-                      top = (*params)[1];
+                      left = params[0];
+                      top = params[1];
                     }
-
-                  delete params;
                 }
               else if (name == "size")
                 {
                   params = split (xstrchomp (value), ",");
-                  if (params->size () == 2)
+                  if (params.size () == 2)
                     {
-                      width = (*params)[0];
-                      height = (*params)[1];
+                      width = params[0];
+                      height = params[1];
                     }
-                  delete params;
                 }
               else if (name == "transparency")
                 {
@@ -590,36 +585,31 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                   else if (name == "bounds")
                     {
                       params = split (xstrchomp (value), ",");
-                      if (params->size () == 4)
+                      if (params.size () == 4)
                         {
-                          left = (*params)[0];
-                          top = (*params)[1];
-                          width = (*params)[2];
-                          height = (*params)[3];
+                          left = params[0];
+                          top = params[1];
+                          width = params[2];
+                          height = params[3];
                         }
-
-                      delete params;
                     }
                   else if (name == "location")
                     {
                       params = split (xstrchomp (value), ",");
-                      if (params->size () == 2)
+                      if (params.size () == 2)
                         {
-                          left = (*params)[0];
-                          top = (*params)[1];
+                          left = params[0];
+                          top = params[1];
                         }
-
-                      delete params;
                     }
                   else if (name == "size")
                     {
                       params = split (xstrchomp (value), ",");
-                      if (params->size () == 2)
+                      if (params.size () == 2)
                         {
-                          width = (*params)[0];
-                          height = (*params)[1];
+                          width = params[0];
+                          height = params[1];
                         }
-                      delete params;
                     }
                   else if (name == "transparency")
                     {

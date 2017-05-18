@@ -1445,7 +1445,7 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
   NclFormatterRegion *region = NULL;
   LayoutRegion *ncmRegion = NULL;
   bool hasProp = true;
-  vector<string> *params;
+  vector<string> params;
   string left = "", top = "";
   string width = "", height = "";
   string right = "", bottom = "";
@@ -1491,10 +1491,10 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
 
   if (propName == "size")
     {
-      if (params->size () == 2)
+      if (params.size () == 2)
         {
-          width = (*params)[0];
-          height = (*params)[1];
+          width = params[0];
+          height = params[1];
         }
       else
         {
@@ -1503,10 +1503,10 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
     }
   else if (propName == "location")
     {
-      if (params->size () == 2)
+      if (params.size () == 2)
         {
-          left = (*params)[0];
-          top = (*params)[1];
+          left = params[0];
+          top = params[1];
         }
       else
         {
@@ -1515,12 +1515,12 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
     }
   else if (propName == "bounds")
     {
-      if (params->size () == 4)
+      if (params.size () == 4)
         {
-          left = (*params)[0];
-          top = (*params)[1];
-          width = (*params)[2];
-          height = (*params)[3];
+          left = params[0];
+          top = params[1];
+          width = params[2];
+          height = params[3];
         }
       else
         {
@@ -1529,27 +1529,27 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
     }
   else if (propName == "left")
     {
-      left = (*params)[0];
+      left = params[0];
     }
   else if (propName == "top")
     {
-      top = (*params)[0];
+      top = params[0];
     }
   else if (propName == "width")
     {
-      width = (*params)[0];
+      width = params[0];
     }
   else if (propName == "height")
     {
-      height = (*params)[0];
+      height = params[0];
     }
   else if (propName == "bottom")
     {
-      bottom = (*params)[0];
+      bottom = params[0];
     }
   else if (propName == "right")
     {
-      right = (*params)[0];
+      right = params[0];
     }
   else
     {
@@ -1593,14 +1593,10 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
 
       region->updateRegionBounds ();
       unlock ();
-      delete params;
-      params = NULL;
+
       return true;
     }
   unlock ();
-
-  delete params;
-  params = NULL;
 
   return false;
 }
