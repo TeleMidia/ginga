@@ -78,9 +78,8 @@ NclInterfacesParser::parseMapping (DOMElement *parent, SwitchPort *switchPort)
   mappingNodeEntity = (NodeEntity *)mappingNode->getDataEntity (); // FIXME: this is not safe!
 
   string interface;
-  if (dom_element_has_attr(parent, "interface"))
+  if (dom_element_try_get_attr(interface, parent, "interface"))
     {
-      interface = dom_element_get_attr(parent, "interface");
       interfacePoint = mappingNodeEntity->getAnchor (interface);
 
       if (interfacePoint == NULL)

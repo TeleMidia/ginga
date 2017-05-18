@@ -137,10 +137,8 @@ NclLinkingParser::createBind (DOMElement *bind_element, Link *link)
 
   anchorNodeEntity = (NodeEntity *)(anchorNode->getDataEntity ());
 
-  if (dom_element_has_attr(bind_element, "interface"))
+  if (dom_element_try_get_attr(interfaceId, bind_element, "interface"))
     {
-      interfaceId = dom_element_get_attr(bind_element, "interface");
-
       if (anchorNodeEntity == NULL)
         {
           interfacePoint = NULL;

@@ -134,33 +134,6 @@ NclComponentsParser::parseContext (DOMElement *parentElement)
   return context;
 }
 
-void *
-NclComponentsParser::posCompileContext2 (DOMElement *context_element,
-                                         ContextNode *context)
-{
-  for(DOMElement *child:
-      dom_element_children_by_tagname (context_element, "link"))
-    {
-      Link *link = _nclParser->getLinkingParser ()->parseLink (child, context);
-      if (link)
-        {
-          addLinkToContext (context, link);
-        }
-    }
-
-  for(DOMElement *child:
-      dom_element_children_by_tagname (context_element, "port"))
-    {
-      Port *port = _nclParser->getInterfacesParser () ->parsePort (child,
-                                                                   context);
-      if (port)
-        {
-          context->addPort (port);
-        }
-    }
-  return context;
-}
-
 void
 NclComponentsParser::addPropertyToContext (Entity *context, Anchor *property)
 {
@@ -316,18 +289,18 @@ NclComponentsParser::createContext (DOMElement *parentElement)
   return context;
 }
 
-void *
-NclComponentsParser::posCompileContext (DOMElement *parentElement,
+ContextNode *
+NclComponentsParser::posCompileContext (DOMElement *context_element,
                                         ContextNode *context)
 {
   g_assert_nonnull(context);
 
-  for(DOMElement *element: dom_element_children(parentElement))
+  for(DOMElement *child: dom_element_children(context_element))
     {
-      string tagname = dom_element_tagname(element);
+      string tagname = dom_element_tagname(child);
       if (tagname == "context")
         {
-          string id = dom_element_get_attr(element, "id");
+          string id = dom_element_get_attr(child, "id");
           Node *node = context->getNode (id);
 
           if (unlikely (node == NULL))
@@ -336,12 +309,12 @@ NclComponentsParser::posCompileContext (DOMElement *parentElement,
             }
           else if (node->instanceOf ("ContextNode"))
             {
-              posCompileContext (element, (ContextNode*)node);
+              posCompileContext (child, (ContextNode*)node);
             }
         }
       else if (tagname == "switch")
         {
-          string id = dom_element_get_attr(element, "id");
+          string id = dom_element_get_attr(child, "id");
           Node *node = getNclParser ()->getNode (id);
           if (unlikely (node == NULL))
             {
@@ -350,12 +323,33 @@ NclComponentsParser::posCompileContext (DOMElement *parentElement,
           else if (node->instanceOf ("SwitchNode"))
             {
               _nclParser->getPresentationControlParser()->
-                  posCompileSwitch (element, (SwitchNode*)node);
+                  posCompileSwitch (child, (SwitchNode*)node);
             }
         }
     }
 
-  return posCompileContext2 (parentElement, context);
+  for(DOMElement *child:
+      dom_element_children_by_tagname (context_element, "link"))
+    {
+      Link *link = _nclParser->getLinkingParser ()->parseLink (child, context);
+      if (link)
+        {
+          addLinkToContext (context, link);
+        }
+    }
+
+  for(DOMElement *child:
+      dom_element_children_by_tagname (context_element, "port"))
+    {
+      Port *port = _nclParser->getInterfacesParser () ->parsePort (child,
+                                                                   context);
+      if (port)
+        {
+          context->addPort (port);
+        }
+    }
+  return context;
+
 }
 
 Node *
@@ -398,10 +392,8 @@ NclComponentsParser::createMedia (DOMElement *parentElement)
       }
 
       node = new ReferNode (id);
-      if (dom_element_has_attr(parentElement, "instance"))
+      if (dom_element_try_get_attr(attValue, parentElement, "instance"))
         {
-          attValue = dom_element_get_attr(parentElement, "instance");
-
           ((ReferNode *)node)->setInstanceType (attValue);
         }
       ((ReferNode *)node)->setReferredEntity (referNode);
