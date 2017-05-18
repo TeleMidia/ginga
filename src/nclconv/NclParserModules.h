@@ -85,8 +85,7 @@ public:
   Node *createMedia (DOMElement *parentElement);
 
   Node *parseContext (DOMElement *parentElement);
-  ContextNode *posCompileContext (DOMElement *context_element,
-                                  ContextNode *context);
+  ContextNode *posCompileContext (DOMElement *ctx_element, ContextNode *ctx);
 
   Node *createContext (DOMElement *parentElement);
 
@@ -103,10 +102,10 @@ PARSER_MODULE_END
 
 PARSER_MODULE_BEGIN (NclImportParser)
 public:
-  void parseImportedDocumentBase (DOMElement *parentElement);
-  DOMElement *parseImportNCL (DOMElement *parentElement);
+  void parseImportedDocumentBase (DOMElement *importedDocBase_element);
 
-  DOMElement *parseImportBase (DOMElement *parentElement);
+  DOMElement *parseImportNCL (DOMElement *importNCL_element);
+  DOMElement *parseImportBase (DOMElement *importBase_element);
 
   void addImportNCLToImportedDocumentBase (DOMElement *childObject);
 PARSER_MODULE_END
@@ -119,8 +118,8 @@ PARSER_MODULE_END
 
 PARSER_MODULE_BEGIN (NclTransitionParser)
 public:
-  TransitionBase *parseTransitionBase (DOMElement *parentElement);
-  Transition *parseTransition (DOMElement *parentElement);
+  TransitionBase *parseTransitionBase (DOMElement *transitionBase_element);
+  Transition *parseTransition (DOMElement *transitionBase_element);
 
   void addImportBaseToTransitionBase (TransitionBase *, DOMElement *);
 PARSER_MODULE_END
@@ -203,8 +202,8 @@ public:
   Link *createLink (DOMElement *link_element, CompositeNode *compositeNode);
 
 private:
-  Connector *_connector;
-  CompositeNode *_composite;
+  Connector *_connector = NULL;
+  CompositeNode *_composite = NULL;
 PARSER_MODULE_END
 
 PARSER_MODULE_BEGIN (NclPresentationControlParser)
@@ -263,9 +262,9 @@ public:
   void addImportBaseToDescriptorBase (DescriptorBase *descriptorBase,
                                       DOMElement *childObject);
 
-  DOMElement *parseDescriptorBind (DOMElement *parentElement);
+  DOMElement *parseDescriptorBind (DOMElement *descriptorBind_element);
 
-  DOMElement *parseDescriptorParam (DOMElement *parentElement);
+  DOMElement *parseDescriptorParam (DOMElement *descriptorParam_element);
 PARSER_MODULE_END
 
 GINGA_NCLCONV_END
