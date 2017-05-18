@@ -471,7 +471,7 @@ NclCascadingDescriptor::updateRegion (void *formatterLayout, const string &name,
   else if (name == "bounds")
     {
       createDummyRegion (formatterLayout);
-      params = split (xstrchomp (value), ",");
+      params = split (xstrchomp (value), ',');
       if (params.size () == 4)
         {
           if (region != NULL)
@@ -490,7 +490,7 @@ NclCascadingDescriptor::updateRegion (void *formatterLayout, const string &name,
   else if (name == "location")
     {
       createDummyRegion (formatterLayout);
-      params = split (xstrchomp (value), ",");
+      params = split (xstrchomp (value), ',');
       if (params.size () == 4)
         {
           if (region != NULL)
@@ -505,7 +505,7 @@ NclCascadingDescriptor::updateRegion (void *formatterLayout, const string &name,
   else if (name == "size")
     {
       createDummyRegion (formatterLayout);
-      params = split (xstrchomp (value), ",");
+      params = split (xstrchomp (value), ',');
       if (params.size () == 4)
         {
           if (region != NULL)

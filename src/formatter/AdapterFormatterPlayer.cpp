@@ -384,7 +384,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                 }
               else if (name == "bounds")
                 {
-                  params = split (xstrchomp (value), ",");
+                  params = split (xstrchomp (value), ',');
                   if (params.size () == 4)
                     {
                       left = params[0];
@@ -395,7 +395,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                 }
               else if (name == "location")
                 {
-                  params = split (xstrchomp (value), ",");
+                  params = split (xstrchomp (value), ',');
                   if (params.size () == 2)
                     {
                       left = params[0];
@@ -404,7 +404,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                 }
               else if (name == "size")
                 {
-                  params = split (xstrchomp (value), ",");
+                  params = split (xstrchomp (value), ',');
                   if (params.size () == 2)
                     {
                       width = params[0];
@@ -584,7 +584,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                     }
                   else if (name == "bounds")
                     {
-                      params = split (xstrchomp (value), ",");
+                      params = split (xstrchomp (value), ',');
                       if (params.size () == 4)
                         {
                           left = params[0];
@@ -595,7 +595,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                     }
                   else if (name == "location")
                     {
-                      params = split (xstrchomp (value), ",");
+                      params = split (xstrchomp (value), ',');
                       if (params.size () == 2)
                         {
                           left = params[0];
@@ -604,7 +604,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                     }
                   else if (name == "size")
                     {
-                      params = split (xstrchomp (value), ",");
+                      params = split (xstrchomp (value), ',');
                       if (params.size () == 2)
                         {
                           width = params[0];

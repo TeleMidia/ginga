@@ -36,7 +36,7 @@ strUTCToSec (const string &utcV)
   double secs = 0;
   vector<string> params;
 
-  params = split (utcValue, ":");
+  params = split (utcValue, ':');
   switch (params.size ())
     {
     case 1:
@@ -66,93 +66,19 @@ strUTCToSec (const string &utcV)
   return secs;
 }
 
-
-static vector<string>
-localSplit (const string &str, const string &delimiter)
-{
-  vector<string> splited;
-  string::size_type lastPos, curPos;
-
-  if (str == "")
-    {
-      return splited;
-    }
-
-  if (str.find_first_of (delimiter) == std::string::npos)
-    {
-      splited.push_back (str);
-      return splited;
-    }
-
-  lastPos = str.find_first_not_of (delimiter, 0);
-
-  if (lastPos != string::npos)
-    {
-      curPos = str.find_first_of (delimiter, lastPos);
-      while (string::npos != curPos)
-        {
-          splited.push_back (str.substr (lastPos, curPos - lastPos));
-          lastPos = str.find_first_not_of (delimiter, curPos);
-          if (lastPos == string::npos)
-            {
-              break;
-            }
-          curPos = str.find_first_of (delimiter, lastPos);
-          if (curPos == string::npos)
-            {
-              splited.push_back (str.substr (lastPos, str.length () - lastPos));
-            }
-        }
-    }
-  return splited;
-}
-
 vector<string>
-split (const string &str, const string &delimiter, const string &pos_delimiter)
+split(const string &s, char delim)
 {
-  vector<string> splited;
-  string::size_type pos = 0;
-  string::size_type lastPos = 0;
+  vector<string> internal;
+  stringstream ss (s);
+  string tok;
 
-  if (pos_delimiter == "")
+  while(getline (ss, tok, delim))
     {
-      return localSplit (str, delimiter);
+      internal.push_back(tok);
     }
 
-  while (string::npos != lastPos)
-    {
-      if (str.find_first_of (pos_delimiter, pos) == pos)
-        {
-          lastPos = str.find_last_of (pos_delimiter);
-          if (string::npos != lastPos)
-            {
-              splited.push_back (str.substr (pos + 1, lastPos - pos - 1));
-              lastPos = str.find_first_of (delimiter, lastPos);
-              if (string::npos == lastPos)
-                pos = lastPos;
-              else
-                pos = lastPos + 1;
-            }
-          else
-            {
-              return splited;
-            }
-        }
-      else
-        {
-          lastPos = str.find_first_of (delimiter, pos);
-          if (string::npos != lastPos)
-            {
-              splited.push_back (str.substr (pos, lastPos - pos));
-              pos = lastPos + 1;
-            }
-        }
-    }
-
-  if (string::npos != pos)
-    splited.push_back (str.substr (pos));
-
-  return splited;
+  return internal;
 }
 
 GINGA_UTIL_END

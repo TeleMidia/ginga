@@ -88,7 +88,7 @@ NclFormatterRegion::NclFormatterRegion (const string &objectId, void *descriptor
           SDL_Color *bg = NULL;
           vector<string> params;
 
-          params = split (xstrchomp (value), ",");
+          params = split (xstrchomp (value), ',');
           if (params.size () == 3)
             {
               bg = new SDL_Color();

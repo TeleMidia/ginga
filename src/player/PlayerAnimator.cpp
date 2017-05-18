@@ -42,7 +42,7 @@ PlayerAnimator::addProperty(const string &dur,
 {
   if(name == "bounds")
     {
-      vector<string> params = split(value, ",");
+      vector<string> params = split(value, ',');
       if(params.size () == 4)
         {
           updateList(dur, "left", params[0]);
