@@ -3092,14 +3092,9 @@ NclPresentationSpecificationParser::parseDescriptor (
       string tagname = dom_element_tagname(child);
       if (tagname == "descriptorParam")
         {
-          DOMElement *descParam = parseDescriptorParam (child);
-          if (descParam)
-            {
-              string pName = dom_element_get_attr(descParam, "name");
-              string pValue = dom_element_get_attr(descParam, "value");
-
-              descriptor->addParameter (new Parameter (pName, pValue));
-            }
+          string pName = dom_element_get_attr(child, "name");
+          string pValue = dom_element_get_attr(child, "value");
+          descriptor->addParameter (new Parameter (pName, pValue));
         }
       else
         {
@@ -3153,20 +3148,6 @@ NclPresentationSpecificationParser::parseDescriptorBase (
     }
 
   return descBase;
-}
-
-DOMElement *
-NclPresentationSpecificationParser::parseDescriptorBind (
-    DOMElement *descBind_element)
-{
-  return descBind_element;
-}
-
-DOMElement *
-NclPresentationSpecificationParser::parseDescriptorParam (
-    DOMElement *descParam_element)
-{
-  return descParam_element;
 }
 
 void

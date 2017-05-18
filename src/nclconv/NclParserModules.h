@@ -250,10 +250,6 @@ public:
 
   void addImportBaseToDescriptorBase (DescriptorBase *descriptorBase,
                                       DOMElement *childObject);
-
-  DOMElement *parseDescriptorBind (DOMElement *descriptorBind_element);
-
-  DOMElement *parseDescriptorParam (DOMElement *descriptorParam_element);
 PARSER_MODULE_END
 
 GINGA_NCLCONV_END
