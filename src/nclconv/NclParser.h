@@ -102,6 +102,30 @@ dom_element_try_get_attr (string &gotAttr,
   return has_attr;
 }
 
+// Sets the value of an attribute of DOMElement* free resources allocated by
+// Xerces.
+static void
+dom_element_set_attr (DOMElement *element,
+                      const string &attr, const string &value)
+{
+  XMLCh *attr_name = XMLString::transcode (attr.c_str());
+  XMLCh *attr_value = XMLString::transcode(value.c_str ());
+
+  element->setAttribute(attr_name, attr_value);
+
+  XMLString::release(&attr_name);
+  XMLString::release(&attr_value);
+}
+
+// Removes the atribute from DOMElement *
+static void
+dom_element_remove_attr (DOMElement *element, const string &attr)
+{
+  XMLCh *attr_name = XMLString::transcode (attr.c_str());
+  element->removeAttribute(attr_name);
+  XMLString::release(&attr_name);
+}
+
 #define FOR_EACH_DOM_ELEM_CHILD(X, Y) \
   for ( X = Y->getFirstElementChild(); \
         X != nullptr; \

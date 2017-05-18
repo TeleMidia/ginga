@@ -62,7 +62,7 @@ class NclPresentationControlParser : public ModuleParser
   // 4 copiar adaptando posCompileContentControlGroup
   // 4 copiar adaptando posCompileDescriptorSwitchGroup
 private:
-  map<string, map<string, Node *> *> *switchConstituents;
+  map<string, map<string, Node *> *> switchConstituents;
 
 public:
   explicit NclPresentationControlParser (NclParser *nclParser);
@@ -73,20 +73,20 @@ public:
   RuleBase *parseRuleBase (DOMElement *parentElement);
   RuleBase *createRuleBase (DOMElement *parentElement);
 
-  void addImportBaseToRuleBase (RuleBase *parentObject,
-                                DOMElement *childObject);
+  void addImportBaseToRuleBase (RuleBase *ruleBase,
+                                DOMElement *importBase_element);
 
   SimpleRule *parseRule (DOMElement *parentElement);
 
   Node *parseSwitch (DOMElement *parentElement);
   void *posCompileSwitch (DOMElement *parentElement, SwitchNode *parentObject);
-  void *posCompileSwitch2 (DOMElement *switch_element, SwitchNode *switchNode);
 
   DOMElement *parseDefaultComponent (DOMElement *parentElement);
 
   DOMElement *parseDefaultDescriptor (DOMElement *parentElement);
 
   Node *createSwitch (DOMElement *parentElement);
+
   CompositeRule *parseCompositeRule (DOMElement *parentElement);
   CompositeRule *createCompositeRule (DOMElement *parentElement);
 
@@ -99,12 +99,14 @@ private:
   void addNodeToSwitch (Node *switchNode, Node *node);
   void addBindRuleToSwitch (SwitchNode *parentObject, DOMElement *childObject);
   void addUnmappedNodesToSwitch (SwitchNode *switchNode);
-  void addRuleToCompositeRule (void *parentObject, void *childObject);
-  void addCompositeRuleToCompositeRule (void *parentObject, void *childObject);
-  void addDefaultDescriptorToDescriptorSwitch (DescriptorSwitch *descriptorSwitch, DOMElement *defaultDescriptor);
-  void addDefaultComponentToSwitch (SwitchNode *switchNode, DOMElement *defaultComponent);
-  void addBindRuleToDescriptorSwitch (void *parentObject, void *childObject);
-  void addDescriptorToDescriptorSwitch (void *parentObject, void *childObject);
+  void addDefaultDescriptorToDescriptorSwitch (DescriptorSwitch *descriptorSwitch,
+                                               DOMElement *defaultDescriptor);
+  void addDefaultComponentToSwitch (SwitchNode *switchNode,
+                                    DOMElement *defaultComponent);
+  void addBindRuleToDescriptorSwitch (DescriptorSwitch *descriptorSwitch,
+                                      DOMElement *bindRule_element);
+  void addDescriptorToDescriptorSwitch (DescriptorSwitch *descriptorSwitch,
+                                        GenericDescriptor *descriptor);
 };
 
 GINGA_NCLCONV_END

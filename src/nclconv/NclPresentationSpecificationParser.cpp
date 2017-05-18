@@ -161,13 +161,7 @@ NclPresentationSpecificationParser::addImportBaseToDescriptorBase (
     }
 
   // insert the imported base into the document descriptor base
-  try
-    {
-      descriptorBase->addBase (importedDescriptorBase, baseAlias, baseLocation);
-    }
-  catch (...)
-    {
-    }
+  descriptorBase->addBase (importedDescriptorBase, baseAlias, baseLocation);
 
   // importing descriptor bases implies importing region, rule, and cost
   // function bases in order to maintain reference consistency
@@ -193,13 +187,7 @@ NclPresentationSpecificationParser::addImportBaseToDescriptorBase (
   ruleBase = importedDocument->getRuleBase ();
   if (ruleBase != NULL)
     {
-      try
-        {
-          thisDocument->getRuleBase ()->addBase (ruleBase, baseAlias, baseLocation);
-        }
-      catch (...)
-        {
-        }
+      thisDocument->getRuleBase ()->addBase (ruleBase, baseAlias, baseLocation);
     }
 }
 
@@ -234,32 +222,31 @@ NclPresentationSpecificationParser::createDescriptor (
   document = getNclParser ()->getNclDocument ();
 
   // region
-  if (dom_element_has_attr(descriptor_element, "region"))
+  if (dom_element_try_get_attr(attValue, descriptor_element, "region"))
     {
-      region = document->getRegion (
-            dom_element_get_attr(descriptor_element, "region") );
+      region = document->getRegion (attValue);
 
       if (region)
         {
           descriptor->setRegion (region);
         }
+      else
+        {
+          syntax_error ("descriptor: bad region for descritor '%s'",
+                        descriptor->getId());
+        }
     }
 
   // explicitDur
-  if (dom_element_has_attr(descriptor_element, "explicitDur"))
+  if (dom_element_try_get_attr(attValue, descriptor_element, "explicitDur"))
     {
-      string durStr =
-          dom_element_get_attr(descriptor_element, "explicitDur");
-
-      descriptor->setExplicitDuration (::ginga::util::strUTCToSec (durStr)
+      descriptor->setExplicitDuration (::ginga::util::strUTCToSec (attValue)
                                        * 1000);
     }
 
-  if (dom_element_has_attr(descriptor_element,"freeze"))
+  if (dom_element_try_get_attr(attValue, descriptor_element,"freeze"))
     {
-      string freeze = dom_element_get_attr(descriptor_element,"freeze");
-
-      if (freeze == "true")
+      if (attValue == "true")
         {
           descriptor->setFreeze (true);
         }
@@ -269,112 +256,93 @@ NclPresentationSpecificationParser::createDescriptor (
         }
     }
 
-  // atributo player
-  if (dom_element_has_attr(descriptor_element, "player"))
+  // player
+  if (dom_element_try_get_attr(attValue, descriptor_element, "player"))
     {
-      descriptor->setPlayerName (
-            dom_element_get_attr(descriptor_element, "player") );
+      descriptor->setPlayerName (attValue);
     }
 
   // key navigation attributes
   keyNavigation = new KeyNavigation ();
   descriptor->setKeyNavigation (keyNavigation);
-  if (dom_element_has_attr(descriptor_element, "focusIndex"))
+  if (dom_element_try_get_attr(attValue, descriptor_element, "focusIndex"))
     {
-      keyNavigation->setFocusIndex (
-          dom_element_get_attr(descriptor_element,"focusIndex"));
+      keyNavigation->setFocusIndex (attValue);
     }
 
-  if (dom_element_has_attr(descriptor_element, "moveUp"))
+  if (dom_element_try_get_attr(attValue, descriptor_element, "moveUp"))
     {
-      keyNavigation->setMoveUp (
-            dom_element_get_attr(descriptor_element,"moveUp") );
+      keyNavigation->setMoveUp (attValue);
     }
 
-  if (dom_element_has_attr(descriptor_element, "moveDown"))
+  if (dom_element_try_get_attr(attValue, descriptor_element, "moveDown"))
     {
-      keyNavigation->setMoveDown (
-            dom_element_get_attr(descriptor_element,"moveDown") );
+      keyNavigation->setMoveDown (attValue);
     }
 
-  if (dom_element_has_attr(descriptor_element, "moveLeft"))
+  if (dom_element_try_get_attr(attValue, descriptor_element, "moveLeft"))
     {
-      keyNavigation->setMoveLeft (
-            dom_element_get_attr(descriptor_element, "moveLeft") );
+      keyNavigation->setMoveLeft (attValue);
     }
 
-  if (dom_element_has_attr(descriptor_element, "moveRight"))
+  if (dom_element_try_get_attr(attValue, descriptor_element, "moveRight"))
     {
-      keyNavigation->setMoveRight (
-          dom_element_get_attr(descriptor_element, "moveRight") );
+      keyNavigation->setMoveRight (attValue);
     }
 
   focusDecoration = new FocusDecoration ();
   descriptor->setFocusDecoration (focusDecoration);
-  if (dom_element_has_attr (descriptor_element, "focusSrc"))
+  if (dom_element_try_get_attr(src, descriptor_element, "focusSrc"))
     {
-      src = dom_element_get_attr (descriptor_element, "focusSrc");
-
       if (!xpathisuri (src) && !xpathisabs (src))
         src = xpathbuildabs (getNclParser ()->getDirName (), src);
 
       focusDecoration->setFocusSrc (src);
     }
 
-  if (dom_element_has_attr (descriptor_element, "focusBorderColor"))
+  if (dom_element_try_get_attr(attValue, descriptor_element, "focusBorderColor"))
     {
       color = new SDL_Color ();
-      ginga_color_input_to_sdl_color(
-            dom_element_get_attr (descriptor_element, "focusBorderColor"),
-            color);
+      ginga_color_input_to_sdl_color(attValue, color);
 
       focusDecoration->setFocusBorderColor ( color );
     }
 
-  if (dom_element_has_attr (descriptor_element, "focusBorderWidth"))
+  if (dom_element_try_get_attr(attValue, descriptor_element, "focusBorderWidth"))
     {
       int w;
-      w = xstrto_int (
-          dom_element_get_attr (descriptor_element, "focusBorderWidth") );
+      w = xstrto_int (attValue);
       focusDecoration->setFocusBorderWidth (w);
     }
 
-  if (dom_element_has_attr (descriptor_element, "focusBorderTransparency"))
+  if (dom_element_try_get_attr(attValue, descriptor_element, "focusBorderTransparency"))
     {
       double alpha;
-      alpha = xstrtod (
-          dom_element_get_attr (descriptor_element,
-                                         "focusBorderTransparency"));
-
+      alpha = xstrtod (attValue);
       focusDecoration->setFocusBorderTransparency (alpha);
     }
 
-  if (dom_element_has_attr (descriptor_element, "focusSelSrc"))
+  if (dom_element_try_get_attr(src, descriptor_element, "focusSelSrc"))
     {
-      src = dom_element_get_attr (descriptor_element, "focusSelSrc");
-
       if (!xpathisuri (src) && !xpathisabs (src))
         src = xpathbuildabs (getNclParser ()->getDirName (), src);
 
       focusDecoration->setFocusSelSrc (src);
     }
 
-  if (dom_element_has_attr (descriptor_element, "selBorderColor"))
+  if (dom_element_try_get_attr(attValue, descriptor_element, "selBorderColor"))
     {
       color = new SDL_Color ();
-      ginga_color_input_to_sdl_color (
-            dom_element_get_attr (descriptor_element, "selBorderColor"),
-            color );
+      ginga_color_input_to_sdl_color (attValue, color );
       focusDecoration->setSelBorderColor ( color );
     }
 
-  if (dom_element_has_attr (descriptor_element, "transIn"))
+  if (dom_element_try_get_attr(attValue, descriptor_element, "transIn"))
     {
       transitionBase = document->getTransitionBase ();
       if (transitionBase != NULL)
         {
           string trimValue, value;
-          attValue = dom_element_get_attr (descriptor_element, "transIn");
 
           transIds = split (attValue, ";");
           if (!transIds->empty ())
@@ -403,13 +371,12 @@ NclPresentationSpecificationParser::createDescriptor (
         }
     }
 
-  if (dom_element_has_attr (descriptor_element, "transOut"))
+  if (dom_element_try_get_attr(attValue, descriptor_element, "transOut"))
     {
       transitionBase = document->getTransitionBase ();
       if (transitionBase != NULL)
         {
           string trimValue, value;
-          attValue = dom_element_get_attr(descriptor_element, "transOut");
 
           transIds = split (attValue, ";");
           if (!transIds->empty ())
@@ -434,6 +401,5 @@ NclPresentationSpecificationParser::createDescriptor (
 
   return descriptor;
 }
-
 
 GINGA_NCLCONV_END

@@ -29,7 +29,7 @@ NclPresentationControlParser::NclPresentationControlParser (
     NclParser *nclParser)
     : ModuleParser (nclParser)
 {
-  this->switchConstituents = new map<string, map<string, Node *> *>;
+
 }
 
 DOMElement *
@@ -91,12 +91,11 @@ NclPresentationControlParser::parseRule (DOMElement *parentElement)
 
   string var = dom_element_get_attr(parentElement, "var");
   string value = dom_element_get_attr(parentElement, "value");
+  string id = dom_element_get_attr(parentElement, "id");
 
 //  XMLString::trim (var);
 //  XMLString::trim (value);
-  SimpleRule *simplePresentationRule
-      = new SimpleRule ( dom_element_get_attr(parentElement, "id"),
-                        var, ruleOp, value);
+  SimpleRule *simplePresentationRule = new SimpleRule ( id, var, ruleOp, value);
 
   return simplePresentationRule;
 }
@@ -173,30 +172,6 @@ NclPresentationControlParser::parseSwitch (DOMElement *switch_element)
   return switch_node;
 }
 
-void *
-NclPresentationControlParser::posCompileSwitch2 (DOMElement *switch_element,
-                                                 SwitchNode *switchNode)
-{
-  for (DOMElement *child: dom_element_children(switch_element))
-    {
-      string tagname = dom_element_tagname(child);
-      if (tagname == "switchPort")
-        {
-          SwitchPort *switchPort = _nclParser->getInterfacesParser ()
-              ->parseSwitchPort (child, switchNode);
-          if (switchPort)
-            {
-              switchNode->addPort (switchPort);
-            }
-        }
-      else
-        {
-          // syntax warning ?
-        }
-    }
-
-  return switchNode;
-}
 
 DOMElement *
 NclPresentationControlParser::parseDefaultComponent (DOMElement *parentElement)
@@ -302,16 +277,9 @@ NclPresentationControlParser::~NclPresentationControlParser ()
 {
   map<string, map<string, Node *> *>::iterator i;
 
-  if (switchConstituents != NULL)
+  for(auto i : switchConstituents)
     {
-      i = switchConstituents->begin ();
-      while (i != switchConstituents->end ())
-        {
-          delete i->second;
-          ++i;
-        }
-      delete switchConstituents;
-      switchConstituents = NULL;
+      delete i.second;
     }
 }
 
@@ -319,14 +287,13 @@ vector<Node *> *
 NclPresentationControlParser::getSwitchConstituents (SwitchNode *switchNode)
 {
   map<string, map<string, Node *> *>::iterator i;
-
   map<string, Node *> *hTable;
   map<string, Node *>::iterator j;
 
   vector<Node *> *ret = new vector<Node *>;
 
-  i = switchConstituents->find (switchNode->getId ());
-  if (i != switchConstituents->end ())
+  i = switchConstituents.find (switchNode->getId ());
+  if (i != switchConstituents.end ())
     {
       hTable = i->second;
 
@@ -366,7 +333,7 @@ NclPresentationControlParser::createCompositeRule (DOMElement *parentElement)
 }
 
 Node *
-NclPresentationControlParser::createSwitch (DOMElement *parentElement)
+NclPresentationControlParser::createSwitch (DOMElement *switch_element)
 {
   string id;
   Node *node;
@@ -375,19 +342,17 @@ NclPresentationControlParser::createSwitch (DOMElement *parentElement)
   NclDocument *document;
   SwitchNode *switchNode;
 
-  if (unlikely (!dom_element_has_attr(parentElement, "id")))
+  if (unlikely (!dom_element_has_attr(switch_element, "id")))
     syntax_error ("switch: missing id");
 
-  id = dom_element_get_attr(parentElement, "id");
+  id = dom_element_get_attr(switch_element, "id");
 
   node = getNclParser ()->getNode (id);
   if (unlikely (node != NULL))
     syntax_error ("switch '%s': duplicated id", id.c_str ());
 
-  if (dom_element_has_attr(parentElement, "refer"))
+  if (dom_element_try_get_attr(attValue, switch_element, "refer"))
     {
-      attValue =  dom_element_get_attr(parentElement, "refer");
-
       try
         {
           referNode
@@ -400,7 +365,7 @@ NclPresentationControlParser::createSwitch (DOMElement *parentElement)
               if (referNode == NULL)
                 {
                   referNode
-                      = new ReferredNode (attValue, (void *)parentElement);
+                      = new ReferredNode (attValue, (void *)switch_element);
                 }
             }
         }
@@ -417,8 +382,7 @@ NclPresentationControlParser::createSwitch (DOMElement *parentElement)
     }
 
   switchNode = new SwitchNode (id);
-  (*switchConstituents)[switchNode->getId ()]
-      = new map<string, Node *>;
+  switchConstituents[switchNode->getId ()] = new map<string, Node *>;
 
   return switchNode;
 }
@@ -439,33 +403,25 @@ NclPresentationControlParser::createDescriptorSwitch (DOMElement *parentElement)
       new DescriptorSwitch (dom_element_get_attr(parentElement, "id"));
 
   // vetores para conter componentes e regras do switch
-  (*switchConstituents)[descriptorSwitch->getId ()]
-      = new map<string, Node *>;
+  switchConstituents[descriptorSwitch->getId ()] = new map<string, Node *>;
 
   return descriptorSwitch;
 }
 
 void
 NclPresentationControlParser::addDescriptorToDescriptorSwitch (
-    void *parentObject, void *childObject)
+    DescriptorSwitch *descriptorSwitch, GenericDescriptor *descriptor)
 {
   map<string, Node *> *descriptors;
   try
     {
-      if (switchConstituents->count (
-              ((DescriptorSwitch *)parentObject)->getId ())
-          != 0)
+      if (switchConstituents.count (descriptorSwitch->getId ()) != 0)
         {
-          descriptors
-              = (*switchConstituents)[((DescriptorSwitch *)parentObject)
-                                          ->getId ()];
+          descriptors = switchConstituents[descriptorSwitch->getId ()];
 
-          if (descriptors->count (
-                  ((GenericDescriptor *)childObject)->getId ())
-              == 0)
+          if (descriptors->count (descriptor->getId ()) == 0)
             {
-              (*descriptors)[((GenericDescriptor *)childObject)->getId ()]
-                  = (NodeEntity *)childObject;
+              (*descriptors)[descriptor->getId ()] = (NodeEntity *)descriptor;
             }
         }
     }
@@ -476,55 +432,39 @@ NclPresentationControlParser::addDescriptorToDescriptorSwitch (
 
 void
 NclPresentationControlParser::addImportBaseToRuleBase (
-    RuleBase *ruleBase, DOMElement *childObject)
+    RuleBase *ruleBase, DOMElement *importBase_element)
 {
   string baseAlias, baseLocation;
-  NclParser *compiler;
   NclDocument *importedDocument;
   RuleBase *importedRuleBase;
 
-  baseAlias = dom_element_get_attr(childObject, "alias");
+  baseAlias = dom_element_get_attr(importBase_element, "alias");
+  baseLocation = dom_element_get_attr(importBase_element, "documentURI");
 
-  baseLocation =
-      dom_element_get_attr(childObject, "documentURI");
-
-  compiler = getNclParser ();
-  importedDocument = compiler->importDocument (baseLocation);
+  importedDocument = getNclParser ()->importDocument (baseLocation);
   g_assert_nonnull(importedDocument);
 
   importedRuleBase = importedDocument->getRuleBase ();
   g_assert_nonnull(importedRuleBase);
 
-  // insere a base compilada na base do documento
-  try
-    {
-      ruleBase->addBase (importedRuleBase, baseAlias, baseLocation);
-    }
-  catch (...)
-    {
-    }
+  ruleBase->addBase (importedRuleBase, baseAlias, baseLocation);
 }
 
 void
 NclPresentationControlParser::addBindRuleToDescriptorSwitch (
-    void *parentObject, void *childObject)
+    DescriptorSwitch *descriptorSwitch, DOMElement *bindRule_element)
 {
-  DescriptorSwitch *descriptorSwitch;
-  DOMElement *bindRule;
   map<string, Node *> *descriptors;
   GenericDescriptor *descriptor;
   NclDocument *document;
   Rule *ncmRule;
 
-  descriptorSwitch = (DescriptorSwitch *)parentObject;
-  bindRule = (DOMElement *)childObject;
-
-  if (switchConstituents->count (descriptorSwitch->getId ()) == 0)
+  if (switchConstituents.count (descriptorSwitch->getId ()) == 0)
     {
       return;
     }
-  descriptors = (*switchConstituents)[descriptorSwitch->getId ()];
-  string constituent = dom_element_get_attr(bindRule, "constituent");
+  descriptors = switchConstituents[descriptorSwitch->getId ()];
+  string constituent = dom_element_get_attr(bindRule_element, "constituent");
   if (descriptors->count (constituent) == 0)
     {
       return;
@@ -537,7 +477,7 @@ NclPresentationControlParser::addBindRuleToDescriptorSwitch (
     }
 
   document = getNclParser ()->getNclDocument ();
-  ncmRule = document->getRule (dom_element_get_attr(bindRule, "rule"));
+  ncmRule = document->getRule (dom_element_get_attr(bindRule_element, "rule"));
   if (ncmRule == NULL)
     {
       return;
@@ -555,12 +495,12 @@ NclPresentationControlParser::addBindRuleToSwitch ( SwitchNode *switchNode,
   NclDocument *document;
   Rule *ncmRule;
 
-  if (switchConstituents->count (switchNode->getId ()) == 0)
+  if (switchConstituents.count (switchNode->getId ()) == 0)
     {
       return;
     }
 
-  nodes = (*switchConstituents)[switchNode->getId ()];
+  nodes = switchConstituents[switchNode->getId ()];
   if (nodes->count (dom_element_get_attr(bindRule, "constituent"))
       == 0)
     {
@@ -591,12 +531,12 @@ NclPresentationControlParser::addUnmappedNodesToSwitch (SwitchNode *switchNode)
   map<string, Node *> *nodes;
   map<string, Node *>::iterator i;
 
-  if (switchConstituents->count (switchNode->getId ()) == 0)
+  if (switchConstituents.count (switchNode->getId ()) == 0)
     {
       return;
     }
 
-  nodes = (*switchConstituents)[switchNode->getId ()];
+  nodes = switchConstituents[switchNode->getId ()];
   i = nodes->begin ();
   while (i != nodes->end ())
     {
@@ -619,12 +559,12 @@ NclPresentationControlParser::addDefaultComponentToSwitch (
   map<string, Node *> *nodes;
   Node *node;
 
-  if (switchConstituents->count (switchNode->getId ()) == 0)
+  if (switchConstituents.count (switchNode->getId ()) == 0)
     {
       return;
     }
 
-  nodes = (*switchConstituents)[switchNode->getId ()];
+  nodes = switchConstituents[switchNode->getId ()];
   string component = dom_element_get_attr(defaultComponent, "component");
   if (nodes->count (component) == 0)
     {
@@ -648,12 +588,12 @@ NclPresentationControlParser::addDefaultDescriptorToDescriptorSwitch (
   map<string, Node *> *descriptors;
   GenericDescriptor *descriptor;
 
-  if (switchConstituents->count (descriptorSwitch->getId ()) == 0)
+  if (switchConstituents.count (descriptorSwitch->getId ()) == 0)
     {
       return;
     }
 
-  descriptors = (*switchConstituents)[descriptorSwitch->getId ()];
+  descriptors = switchConstituents[descriptorSwitch->getId ()];
   if (descriptors->count (
         dom_element_get_attr(defaultDescriptor, "descriptor"))
       == 0)
@@ -677,12 +617,12 @@ NclPresentationControlParser::addNodeToSwitch ( Node *switchNode, Node *node)
 {
   map<string, Node *> *nodes;
 
-  if (switchConstituents->count (switchNode->getId ()) == 0)
+  if (switchConstituents.count (switchNode->getId ()) == 0)
     {
-      (*switchConstituents)[switchNode->getId ()] = new map<string, Node *>();
+      switchConstituents[switchNode->getId ()] = new map<string, Node *>();
     }
 
-  nodes = (*switchConstituents)[switchNode->getId ()];
+  nodes = switchConstituents[switchNode->getId ()];
   if (nodes->count (node->getId ()) == 0)
     {
       (*nodes)[node->getId ()] = node;
@@ -724,7 +664,25 @@ NclPresentationControlParser::posCompileSwitch (
         }
     }
 
-  return posCompileSwitch2 (switchElement, switchNode);
+  for (DOMElement *child: dom_element_children(switchElement))
+    {
+      string tagname = dom_element_tagname(child);
+      if (tagname == "switchPort")
+        {
+          SwitchPort *switchPort = _nclParser->getInterfacesParser ()
+              ->parseSwitchPort (child, switchNode);
+          if (switchPort)
+            {
+              switchNode->addPort (switchPort);
+            }
+        }
+      else
+        {
+          // syntax warning ?
+        }
+    }
+
+  return switchNode;
 }
 
 GINGA_NCLCONV_END

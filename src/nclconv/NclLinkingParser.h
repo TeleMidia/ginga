@@ -43,19 +43,17 @@ class NclLinkingParser : public ModuleParser
 public:
   explicit NclLinkingParser (NclParser *nclParser);
 
-  Bind *parseBind (DOMElement *parentElement, Link *objGrandParent);
-  Bind *createBind (DOMElement *parentElement, Link *objGrandParent);
+  Bind *parseBind (DOMElement *parentElement, Link *link);
+  Bind *createBind (DOMElement *parentElement, Link *link);
 
   Parameter *parseLinkOrBindParam (DOMElement *parentElement);
 
-  Link *parseLink (DOMElement *parentElement, CompositeNode *objGrandParent);
-  Link *createLink (DOMElement *parentElement, CompositeNode *objGrandParent);
+  Link *parseLink (DOMElement *link_element, CompositeNode *compositeNode);
+  Link *createLink (DOMElement *link_element, CompositeNode *compositeNode);
 
 private:
   Connector *_connector;
   CompositeNode *_composite;
-
-  string getId (DOMElement *element);
 };
 
 GINGA_NCLCONV_END

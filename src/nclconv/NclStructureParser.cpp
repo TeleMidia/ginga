@@ -83,7 +83,7 @@ NclStructureParser::parseBody (DOMElement *body_element)
        dom_element_children_by_tagname(body_element, "property") )
     {
       PropertyAnchor *prop = _nclParser->getInterfacesParser ()
-          ->parseProperty (child, body);
+          ->parseProperty (child);
       if (prop)
         {
           // add property to body
@@ -232,18 +232,12 @@ NclStructureParser::createBody (DOMElement *body_element)
   document = getNclParser ()->getNclDocument ();
   if (!dom_element_has_attr(body_element, "id"))
     {
-      XMLCh *attr_name = XMLString::transcode ("id");
-      XMLCh *attr_value = XMLString::transcode(document->getId ().c_str ());
-
-      body_element->setAttribute (attr_name, attr_value);
+      dom_element_set_attr (body_element, "id", document->getId());
 
       context = (ContextNode *)
           _nclParser->getComponentsParser ()->createContext (body_element);
 
-      body_element->removeAttribute (attr_name);
-
-      XMLString::release(&attr_name);
-      XMLString::release(&attr_value);
+      dom_element_remove_attr (body_element, "id");
     }
   else
     {

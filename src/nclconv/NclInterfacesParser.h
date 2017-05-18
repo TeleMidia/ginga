@@ -44,19 +44,15 @@ class NclInterfacesParser : public ModuleParser
 public:
   explicit NclInterfacesParser (NclParser *nclParser);
 
-  SwitchPort *parseSwitchPort (DOMElement *parentElement,
-                               SwitchNode *objGrandParent);
+  SwitchPort *parseSwitchPort (DOMElement *switchPort_element,
+                               SwitchNode *switchNode);
+  SwitchPort *createSwitchPort (DOMElement *switchPort_element,
+                                SwitchNode *switchNode);
 
-  SwitchPort *createSwitchPort (DOMElement *parentElement,
-                                SwitchNode *objGrandParent);
-
-  void addMappingToSwitchPort (SwitchPort *parentObject, Port *childObject);
-
-  void *createPort (DOMElement *parentElement, void *objGrandParent);
-  Port *parseMapping (DOMElement *parentElement, SwitchPort *objGrandParent);
-  Anchor *parseArea (DOMElement *parentElement, void *objGrandParent);
-  PropertyAnchor *parseProperty (DOMElement *parentElement, Node *objGrandParent);
-  Port *parsePort (DOMElement *parentElement, void *objGrandParent);
+  Port *parseMapping (DOMElement *parentElement, SwitchPort *switchPort);
+  Anchor *parseArea (DOMElement *parentElement);
+  PropertyAnchor *parseProperty (DOMElement *parentElement);
+  Port *parsePort (DOMElement *parentElement, CompositeNode *objGrandParent);
 
 private:
   SpatialAnchor *createSpatialAnchor (DOMElement *areaElement);

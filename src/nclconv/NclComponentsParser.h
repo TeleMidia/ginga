@@ -45,7 +45,6 @@ public:
 
   Node *createContext (DOMElement *parentElement);
 
-
   void addMediaToContext (Entity *parentObject, Node *childObject);
   void addContextToContext (Entity *parentObject, Node *childObject);
   void addSwitchToContext (Entity *parentObject, Node *childObject);
@@ -55,10 +54,6 @@ private:
   void addLinkToContext (ContextNode *context, Link *link);
   void addNodeToContext (ContextNode *contextNode, Node *node);
   void addAnchorToMedia (ContentNode *contentNode, Anchor *anchor);
-  void addPortToContext (Entity *parentObject, Port *childObject);
-
-  void addAreaToMedia (ContentNode *media, Anchor *area);
-  void addPropertyToMedia (ContentNode *media, Anchor *property);
 
 };
 
