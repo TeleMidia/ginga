@@ -204,8 +204,6 @@ PARSER_MODULE_BEGIN (NclPresentationControlParser)
 public:
   virtual ~NclPresentationControlParser();
 
-  DOMElement *parseBindRule (DOMElement *bindRule_element);
-
   RuleBase *parseRuleBase (DOMElement *parentElement);
   RuleBase *createRuleBase (DOMElement *parentElement);
 
@@ -215,9 +213,6 @@ public:
 
   Node *parseSwitch (DOMElement *parentElement);
   void *posCompileSwitch (DOMElement *parentElement, SwitchNode *parentObject);
-
-  DOMElement *parseDefaultComponent (DOMElement *parentElement);
-  DOMElement *parseDefaultDescriptor (DOMElement *parentElement);
 
   Node *createSwitch (DOMElement *parentElement);
 
