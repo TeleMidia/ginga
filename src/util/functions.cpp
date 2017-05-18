@@ -34,10 +34,10 @@ strUTCToSec (const string &utcV)
 {
   string utcValue = utcV;
   double secs = 0;
-  vector<string> *params;
+  vector<string> params;
 
   params = split (utcValue, ":");
-  switch (params->size ())
+  switch (params.size ())
     {
     case 1:
       if (utcValue.find ("s") != std::string::npos)
@@ -49,34 +49,29 @@ strUTCToSec (const string &utcV)
       break;
 
     case 2:
-      secs = 60 * xstrtod ((*params)[0])
-             + xstrtod ((*params)[1]);
+      secs = 60 * xstrtod (params[0])
+             + xstrtod (params[1]);
       break;
 
     case 3:
-      secs = 3600 * xstrtod ((*params)[0])
-             + 60 * xstrtod ((*params)[1])
-             + xstrtod ((*params)[2]);
+      secs = 3600 * xstrtod (params[0])
+             + 60 * xstrtod (params[1])
+             + xstrtod (params[2]);
       break;
 
     default:
       secs = (double)INFINITY;
     }
 
-  delete params;
-  params = NULL;
-
   return secs;
 }
 
 
-static vector<string> *
+static vector<string>
 localSplit (const string &str, const string &delimiter)
 {
-  vector<string> *splited;
+  vector<string> splited;
   string::size_type lastPos, curPos;
-
-  splited = new vector<string>;
 
   if (str == "")
     {
@@ -85,7 +80,7 @@ localSplit (const string &str, const string &delimiter)
 
   if (str.find_first_of (delimiter) == std::string::npos)
     {
-      splited->push_back (str);
+      splited.push_back (str);
       return splited;
     }
 
@@ -96,7 +91,7 @@ localSplit (const string &str, const string &delimiter)
       curPos = str.find_first_of (delimiter, lastPos);
       while (string::npos != curPos)
         {
-          splited->push_back (str.substr (lastPos, curPos - lastPos));
+          splited.push_back (str.substr (lastPos, curPos - lastPos));
           lastPos = str.find_first_not_of (delimiter, curPos);
           if (lastPos == string::npos)
             {
@@ -105,19 +100,17 @@ localSplit (const string &str, const string &delimiter)
           curPos = str.find_first_of (delimiter, lastPos);
           if (curPos == string::npos)
             {
-              splited->push_back (
-                  str.substr (lastPos, str.length () - lastPos));
+              splited.push_back (str.substr (lastPos, str.length () - lastPos));
             }
         }
     }
   return splited;
 }
 
-vector<string> *
+vector<string>
 split (const string &str, const string &delimiter, const string &pos_delimiter)
 {
-  vector<string> *splited;
-  splited = new vector<string>;
+  vector<string> splited;
   string::size_type pos = 0;
   string::size_type lastPos = 0;
 
@@ -133,7 +126,7 @@ split (const string &str, const string &delimiter, const string &pos_delimiter)
           lastPos = str.find_last_of (pos_delimiter);
           if (string::npos != lastPos)
             {
-              splited->push_back (str.substr (pos + 1, lastPos - pos - 1));
+              splited.push_back (str.substr (pos + 1, lastPos - pos - 1));
               lastPos = str.find_first_of (delimiter, lastPos);
               if (string::npos == lastPos)
                 pos = lastPos;
@@ -150,14 +143,14 @@ split (const string &str, const string &delimiter, const string &pos_delimiter)
           lastPos = str.find_first_of (delimiter, pos);
           if (string::npos != lastPos)
             {
-              splited->push_back (str.substr (pos, lastPos - pos));
+              splited.push_back (str.substr (pos, lastPos - pos));
               pos = lastPos + 1;
             }
         }
     }
 
   if (string::npos != pos)
-    splited->push_back (str.substr (pos));
+    splited.push_back (str.substr (pos));
 
   return splited;
 }

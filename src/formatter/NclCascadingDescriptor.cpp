@@ -423,7 +423,7 @@ void
 NclCascadingDescriptor::updateRegion (void *formatterLayout, const string &name,
                                       const string &v)
 {
-  vector<string> *params;
+  vector<string> params;
   bool isPercent = false;
   string value = v;
 
@@ -472,53 +472,50 @@ NclCascadingDescriptor::updateRegion (void *formatterLayout, const string &name,
     {
       createDummyRegion (formatterLayout);
       params = split (xstrchomp (value), ",");
-      if (params->size () == 4)
+      if (params.size () == 4)
         {
           if (region != NULL)
             {
-              region->setLeft (xstrtodorpercent ((*params)[0], &isPercent),
+              region->setLeft (xstrtodorpercent (params[0], &isPercent),
                                isPercent);
-              region->setTop (xstrtodorpercent ((*params)[1], &isPercent),
+              region->setTop (xstrtodorpercent (params[1], &isPercent),
                               isPercent);
-              region->setWidth (xstrtodorpercent ((*params)[2], &isPercent),
+              region->setWidth (xstrtodorpercent (params[2], &isPercent),
                                 isPercent);
-              region->setHeight (xstrtodorpercent ((*params)[3], &isPercent),
+              region->setHeight (xstrtodorpercent (params[3], &isPercent),
                                  isPercent);
             }
         }
-      delete params;
     }
   else if (name == "location")
     {
       createDummyRegion (formatterLayout);
       params = split (xstrchomp (value), ",");
-      if (params->size () == 4)
+      if (params.size () == 4)
         {
           if (region != NULL)
             {
-              region->setLeft (xstrtodorpercent ((*params)[0], &isPercent),
+              region->setLeft (xstrtodorpercent (params[0], &isPercent),
                                isPercent);
-              region->setTop (xstrtodorpercent ((*params)[1], &isPercent),
+              region->setTop (xstrtodorpercent (params[1], &isPercent),
                               isPercent);
             }
         }
-      delete params;
     }
   else if (name == "size")
     {
       createDummyRegion (formatterLayout);
       params = split (xstrchomp (value), ",");
-      if (params->size () == 4)
+      if (params.size () == 4)
         {
           if (region != NULL)
             {
-              region->setWidth (xstrtodorpercent ((*params)[0], &isPercent),
+              region->setWidth (xstrtodorpercent (params[0], &isPercent),
                                 isPercent);
-              region->setHeight (xstrtodorpercent ((*params)[1], &isPercent),
+              region->setHeight (xstrtodorpercent (params[1], &isPercent),
                                  isPercent);
             }
         }
-      delete params;
     }
 }
 

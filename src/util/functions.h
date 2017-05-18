@@ -29,7 +29,7 @@ GINGA_UTIL_BEGIN
 // string
 double strUTCToSec (const string &utcValue);
 
-vector<string> *
+vector<string>
 split (const string &str, const string &token, const string &pos_delimiter="");
 
 GINGA_UTIL_END

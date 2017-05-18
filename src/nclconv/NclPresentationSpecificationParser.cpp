@@ -211,8 +211,7 @@ NclPresentationSpecificationParser::createDescriptor (
   FocusDecoration *focusDecoration;
   SDL_Color *color;
   string attValue;
-  vector<string> *transIds;
-  unsigned int i;
+  vector<string> transIds;
   TransitionBase *transitionBase;
   Transition *transition;
 
@@ -342,32 +341,16 @@ NclPresentationSpecificationParser::createDescriptor (
       transitionBase = document->getTransitionBase ();
       if (transitionBase != NULL)
         {
-          string trimValue, value;
-
           transIds = split (attValue, ";");
-          if (!transIds->empty ())
+          for (int i = 0; i < transIds.size(); i++)
             {
-              vector<string>::iterator it;
-              it = transIds->begin ();
-              int j = 0;
-              while (it != transIds->end ())
+              transition =
+                  transitionBase->getTransition (xstrchomp (transIds[i]));
+              if (transition != NULL)
                 {
-                  value = (*it);
-                  trimValue = xstrchomp (value);
-                  *it = trimValue;
-
-                  transition = transitionBase->getTransition (trimValue);
-                  if (transition != NULL)
-                    {
-                      descriptor->addInputTransition (transition, j);
-                    }
-                  ++it;
-                  j++;
+                  descriptor->addInputTransition (transition, i);
                 }
             }
-
-          delete transIds;
-          transIds = NULL;
         }
     }
 
@@ -376,26 +359,16 @@ NclPresentationSpecificationParser::createDescriptor (
       transitionBase = document->getTransitionBase ();
       if (transitionBase != NULL)
         {
-          string trimValue, value;
-
           transIds = split (attValue, ";");
-          if (!transIds->empty ())
+          for (int i = 0; i < transIds.size(); i++)
             {
-              for (i = 0; i < transIds->size (); i++)
+              transition =
+                  transitionBase->getTransition (xstrchomp (transIds[i]));
+              if (transition != NULL)
                 {
-                  value = (*transIds)[i];
-                  trimValue = xstrchomp (value);
-                  (*transIds)[i] = trimValue;
-                  transition = transitionBase->getTransition (trimValue);
-                  if (transition != NULL)
-                    {
-                      descriptor->addOutputTransition (transition, i);
-                    }
+                  descriptor->addOutputTransition(transition, i);
                 }
             }
-
-          delete transIds;
-          transIds = NULL;
         }
     }
 

@@ -42,13 +42,13 @@ PlayerAnimator::addProperty(const string &dur,
 {
   if(name == "bounds")
     {
-      vector<string> *params = split(value, ",");
-      if(params->size () == 4)
+      vector<string> params = split(value, ",");
+      if(params.size () == 4)
         {
-          updateList(dur, "left", (*params)[0]);
-          updateList(dur, "top", (*params)[1]);
-          updateList(dur, "width", (*params)[2]);
-          updateList(dur, "height", (*params)[3]);
+          updateList(dur, "left", params[0]);
+          updateList(dur, "top", params[1]);
+          updateList(dur, "width", params[2]);
+          updateList(dur, "height", params[3]);
         }
     }
    else if(name == "background" || name == "bgColor")

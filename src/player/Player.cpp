@@ -428,36 +428,33 @@ Player::setPropertyValue (const string &name, const string &value)
   if(!value.length())
     return; 
 
-  vector<string> *params = NULL;
+  vector<string> params;
 
       if (name == "bounds"){
           params = split (value, ",");
-          if (params->size () == 4)
+          if (params.size () == 4)
             {
-               this->rect.x = xstrto_int ((*params)[0]);
-               this->rect.y = xstrto_int ((*params)[1]);
-               this->rect.w = xstrto_int ((*params)[2]);
-               this->rect.h = xstrto_int ((*params)[3]);
+               this->rect.x = xstrto_int (params[0]);
+               this->rect.y = xstrto_int (params[1]);
+               this->rect.w = xstrto_int (params[2]);
+               this->rect.h = xstrto_int (params[3]);
             }
-          delete params;
         }
       else if (name == "location"){
           params = split (value, ",");
-          if (params->size () == 2)
+          if (params.size () == 2)
             {
        
             }
-          delete params;
         }
       else if (name == "size") {
           params = split (value, ",");
-          if (params->size () == 2)
+          if (params.size () == 2)
             {
           /*    outputWindow->resize (
                                 xstrto_int ((*params)[0]),
                                 xstrto_int ((*params)[1])); */
             }
-          delete params;
       }
       else if (name == "left") {
           this->rect.x = xstrto_int (value);
