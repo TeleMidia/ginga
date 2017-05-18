@@ -18,17 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "NclParser.h"
 
-#include "NclConnectorsParser.h"
-#include "NclImportParser.h"
-#include "NclTransitionParser.h"
-#include "NclPresentationControlParser.h"
-#include "NclComponentsParser.h"
-#include "NclStructureParser.h"
-#include "NclPresentationSpecificationParser.h"
-#include "NclLayoutParser.h"
-#include "NclInterfacesParser.h"
-#include "NclLinkingParser.h"
-#include "NclMetainformationParser.h"
+#include "NclParserModules.h"
 
 GINGA_NCLCONV_BEGIN
 
@@ -40,8 +30,7 @@ NclParser::NclParser (PrivateBaseContext *pbc, DeviceLayout *deviceLayout)
   this->privateBaseContext = pbc;
   this->deviceLayout = deviceLayout;
 
-  this->presentationSpecificationParser
-      = new NclPresentationSpecificationParser(this, deviceLayout);
+  this->presentationSpecificationParser = new NclPresentationSpecificationParser(this);
 
   this->structureParser = new NclStructureParser (this);
   this->componentsParser = new NclComponentsParser (this);
@@ -49,7 +38,7 @@ NclParser::NclParser (PrivateBaseContext *pbc, DeviceLayout *deviceLayout)
   this->linkingParser = new NclLinkingParser (this);
 
   this->interfacesParser = new NclInterfacesParser (this);
-  this->layoutParser = new NclLayoutParser (this, deviceLayout);
+  this->layoutParser = new NclLayoutParser (this);
   this->transitionParser = new NclTransitionParser (this);
   this->presentationControlParser = new NclPresentationControlParser (this);
   this->importParser = new NclImportParser (this);
@@ -169,6 +158,12 @@ void
 NclParser::setNclDocument (NclDocument *ncl)
 {
   this->ncl = ncl;
+}
+
+DeviceLayout *
+NclParser::getDeviceLayout()
+{
+  return this->deviceLayout;
 }
 
 void

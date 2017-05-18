@@ -214,18 +214,8 @@ add_executable(ginga
   ../src/ncl/TransitionUtil.cpp
   ../src/ncl/TriggerExpression.cpp
   ../src/ncl/ValueAssessment.cpp
-  ../src/nclconv/NclComponentsParser.cpp
-  ../src/nclconv/NclConnectorsParser.cpp
-  ../src/nclconv/NclImportParser.cpp
-  ../src/nclconv/NclInterfacesParser.cpp
-  ../src/nclconv/NclLayoutParser.cpp
-  ../src/nclconv/NclLinkingParser.cpp
-  ../src/nclconv/NclMetainformationParser.cpp
+  ../src/nclconv/NclParserModules.cpp
   ../src/nclconv/NclParser.cpp
-  ../src/nclconv/NclPresentationControlParser.cpp
-  ../src/nclconv/NclPresentationSpecificationParser.cpp
-  ../src/nclconv/NclStructureParser.cpp
-  ../src/nclconv/NclTransitionParser.cpp
   ../src/player/ImagePlayer.cpp
   ../src/player/LuaPlayer.cpp
   ../src/player/Player.cpp
