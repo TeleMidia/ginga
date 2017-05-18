@@ -2472,13 +2472,6 @@ NclLinkingParser::createLink (DOMElement *link_element,
   return link;
 }
 
-
-DOMElement *
-NclPresentationControlParser::parseBindRule (DOMElement *bindRule_element)
-{
-  return bindRule_element; // ?
-}
-
 RuleBase *
 NclPresentationControlParser::parseRuleBase (DOMElement *ruleBase_element)
 {
@@ -2585,39 +2578,17 @@ NclPresentationControlParser::parseSwitch (DOMElement *switch_element)
         string tagname = dom_element_tagname(child);
         if (tagname == "bindRule")
           {
-            DOMElement *bindRule = parseBindRule (child);
-            if (bindRule)
-              {
-                addBindRuleToSwitch ((SwitchNode *)switch_node, bindRule);
-              }
+            addBindRuleToSwitch ((SwitchNode *)switch_node, child);
           }
         else if (tagname == "defaultComponent")
           {
-            DOMElement *defaultComponent = parseDefaultComponent (child);
-            if (defaultComponent)
-              {
-                addDefaultComponentToSwitch ((SwitchNode*)switch_node,
-                                              defaultComponent);
-              }
+            addDefaultComponentToSwitch ((SwitchNode*)switch_node, child);
           }
       }
 
   addUnmappedNodesToSwitch ((SwitchNode *)switch_node);
 
   return switch_node;
-}
-
-
-DOMElement *
-NclPresentationControlParser::parseDefaultComponent (DOMElement *parentElement)
-{
-  return parentElement; // ?
-}
-
-DOMElement *
-NclPresentationControlParser::parseDefaultDescriptor (DOMElement *parentElement)
-{
-  return parentElement; // ?
 }
 
 CompositeRule *
@@ -2688,20 +2659,11 @@ NclPresentationControlParser::parseDescriptorSwitch (
       string tagname = dom_element_tagname(child);
       if (tagname == "bindRule")
         {
-          DOMElement *bindRule = parseBindRule (child);
-          if (bindRule)
-            {
-              addBindRuleToDescriptorSwitch (descriptorSwitch, bindRule);
-            }
+          addBindRuleToDescriptorSwitch (descriptorSwitch, child);
         }
       else if (tagname == "defaultDescriptor")
         {
-          DOMElement *defaultDescriptor = parseDefaultDescriptor (child);
-          if (defaultDescriptor)
-            {
-              addDefaultDescriptorToDescriptorSwitch (descriptorSwitch,
-                                                      defaultDescriptor);
-            }
+          addDefaultDescriptorToDescriptorSwitch (descriptorSwitch, child);
         }
     }
 
