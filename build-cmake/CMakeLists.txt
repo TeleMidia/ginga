@@ -214,7 +214,6 @@ add_executable(ginga
   ../src/ncl/TransitionUtil.cpp
   ../src/ncl/TriggerExpression.cpp
   ../src/ncl/ValueAssessment.cpp
-  ../src/nclconv/NclParserModules.cpp
   ../src/nclconv/NclParser.cpp
   ../src/player/ImagePlayer.cpp
   ../src/player/LuaPlayer.cpp

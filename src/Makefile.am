@@ -184,7 +184,6 @@ src+= ncl/TransitionUtil.cpp
 src+= ncl/TriggerExpression.cpp
 src+= ncl/ValueAssessment.cpp
 src+= nclconv/NclParser.cpp
-src+= nclconv/NclParserModules.cpp
 src+= player/ImagePlayer.cpp
 src+= player/LuaPlayer.cpp
 src+= player/Player.cpp

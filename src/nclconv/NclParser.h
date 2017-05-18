@@ -19,15 +19,31 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define NCLDOCUMENTPARSER_H_
 
 #include "ncl/NclDocument.h"
-using namespace ::ginga::ncl;
+#include "ncl/TransitionUtil.h"
+#include "ncl/Rule.h"
+#include "ncl/SimpleRule.h"
+#include "ncl/CompositeRule.h"
+#include "ncl/ContentNode.h"
+#include "ncl/AbsoluteReferenceContent.h"
+#include "ncl/CausalConnector.h"
+#include "ncl/ValueAssessment.h"
+#include "ncl/SwitchNode.h"
+#include "ncl/SpatialAnchor.h"
+#include "ncl/TextAnchor.h"
+#include "ncl/LabeledAnchor.h"
+#include "ncl/SampleIntervalAnchor.h"
+#include "ncl/RectangleSpatialAnchor.h"
+#include "ncl/CausalLink.h"
+#include "ncl/ReferredNode.h"
+#include "ncl/Comparator.h"
+#include "ncl/Descriptor.h"
+using namespace ginga::ncl;
 
 #include "formatter/PrivateBaseContext.h" //FIXME: This is an architectural problem!
 using namespace ::ginga::formatter;
 
 #include <vector>
 using namespace std;
-
-#include "NclParserModules.h"
 
 GINGA_NCLCONV_BEGIN
 
@@ -172,29 +188,6 @@ dom_element_children_by_tagnames(DOMElement *el, const vector<string> &tagnames)
 
 class NclParser : public ErrorHandler
 {
-
-private:
-  PrivateBaseContext *_privateBaseContext;
-  bool _ownManager;
-
-protected:
-  NclDocument *_ncl;             // NCL document
-  string _path;                  // document's absolute path
-  string _dirname;               // directory part of document's path
-
-  NclConnectorsParser _connectorsParser;
-  NclImportParser _importParser;
-  NclTransitionParser _transitionParser;
-  NclPresentationControlParser _presentationControlParser;
-  NclComponentsParser _componentsParser;
-  NclStructureParser _structureParser;
-  NclPresentationSpecificationParser _presentationSpecificationParser;
-  NclLayoutParser _layoutParser;
-  NclInterfacesParser _interfacesParser;
-  NclLinkingParser _linkingParser;
-  NclMetainformationParser _metainformationParser;
-  DeviceLayout *_deviceLayout;
-
 public:
   explicit NclParser (PrivateBaseContext *pbc, DeviceLayout *deviceLayout);
   virtual ~NclParser ();
@@ -203,23 +196,6 @@ public:
   PrivateBaseContext *getPrivateBaseContext ();
   NclDocument *importDocument (string &docLocation);
 
-public:
-  NclTransitionParser &getTransitionParser ();
-  NclConnectorsParser &getConnectorsParser ();
-  NclImportParser &getImportParser ();
-  NclPresentationControlParser &getPresentationControlParser ();
-  NclComponentsParser &getComponentsParser ();
-  NclStructureParser &getStructureParser ();
-  NclPresentationSpecificationParser &getPresentationSpecificationParser ();
-  NclLayoutParser &getLayoutParser ();
-  NclInterfacesParser &getInterfacesParser ();
-  NclMetainformationParser &getMetainformationParser ();
-  NclLinkingParser &getLinkingParser ();
-
-protected:
-  NclDocument *parseRootElement (DOMElement *rootElement);
-
-public:
   string getPath ();
   string getDirName ();
   void setNclDocument (NclDocument *);
@@ -232,6 +208,151 @@ public:
   void resetErrors () {};
 
   NclDocument *parse (const string &);
+
+
+protected:
+  NclDocument *_ncl;             // NCL document
+  string _path;                  // document's absolute path
+  string _dirname;               // directory part of document's path
+
+  DeviceLayout *_deviceLayout;
+
+  NclDocument *parseRootElement (DOMElement *rootElement);
+
+private:
+  PrivateBaseContext *_privateBaseContext;
+  bool _ownManager;
+
+
+// STRUCTURE
+public:
+  NclDocument *parseNcl (DOMElement *parentElement);
+  NclDocument *createNcl (DOMElement *parentElement);
+  void parseHead (DOMElement *parentElement);
+  ContextNode *parseBody (DOMElement *parentElement);
+  ContextNode *createBody (DOMElement *parentElement);
+  void *posCompileBody (DOMElement *parentElement, ContextNode *body);
+private:
+  void solveNodeReferences (CompositeNode *composition);
+
+// COMPONENTS
+public:
+  Node *parseMedia (DOMElement *parentElement);
+  Node *createMedia (DOMElement *parentElement);
+  Node *parseContext (DOMElement *parentElement);
+  ContextNode *posCompileContext (DOMElement *ctx_element, ContextNode *ctx);
+  Node *createContext (DOMElement *parentElement);
+  void addNodeToContext (Entity *contextNode, Node *node);
+  void addNodeToContext (ContextNode *contextNode, Node *node);
+  void addPropertyToContext (Entity *parentObject, Anchor *childObject);
+private:
+  void addLinkToContext (ContextNode *context, Link *link);
+  void addAnchorToMedia (ContentNode *contentNode, Anchor *anchor);
+
+// IMPORT
+public:
+  void parseImportedDocumentBase (DOMElement *importedDocBase_element);
+  void addImportNCLToImportedDocumentBase (DOMElement *childObject);
+
+// META INFORMATION
+public:
+  Meta *parseMeta (DOMElement *parentElement);
+  Metadata *parseMetadata (DOMElement *parentElement);
+
+// TRANSITION
+public:
+  TransitionBase *parseTransitionBase (DOMElement *transitionBase_element);
+  Transition *parseTransition (DOMElement *transitionBase_element);
+  void addImportBaseToTransitionBase (TransitionBase *, DOMElement *);
+
+// CONNECTORS
+public:
+  SimpleCondition *parseSimpleCondition (DOMElement *simpleCond_element);
+  SimpleAction *parseSimpleAction (DOMElement *simpleAction_element);
+  CompoundCondition *parseCompoundCondition (DOMElement *compoundCond_element);
+  CompoundCondition *createCompoundCondition (DOMElement *compoundCond_element);
+  AssessmentStatement *parseAssessmentStatement (DOMElement *assessmentStatement_element);
+  AssessmentStatement *createAssessmentStatement (DOMElement *assessmentStatement_element);
+  AttributeAssessment *parseAttributeAssessment (DOMElement *attributeAssessment_element);
+  ValueAssessment *parseValueAssessment (DOMElement *valueAssessment_element);
+  CompoundStatement *parseCompoundStatement (DOMElement *compoundStatement_element);
+  CompoundStatement *createCompoundStatement (DOMElement *compoundStatement_element);
+  CompoundAction *parseCompoundAction (DOMElement *compoundAction_element);
+  CompoundAction *createCompoundAction (DOMElement *compoundAction_element);
+  ConnectorBase *parseConnectorBase (DOMElement *connBase_element);
+  ConnectorBase *createConnectorBase (DOMElement *connBase_element);
+  Parameter *parseConnectorParam (DOMElement *connectorParam_element);
+  CausalConnector *parseCausalConnector (DOMElement *causalConnector_element);
+  CausalConnector *createCausalConnector (DOMElement *causalConnector_element);
+private:
+  Connector *_connector;
+  void compileRoleInformation (Role *role, DOMElement *parentElement);
+  void addAttributeAssessmentToAssessmentStatement (AssessmentStatement *parentObject, AttributeAssessment *childObject);
+  void addImportBaseToConnectorBase (ConnectorBase *connectorBase, DOMElement *childObject);
+
+// INTERFACES
+public:
+  SwitchPort *parseSwitchPort (DOMElement *switchPort_element, SwitchNode *switchNode);
+  SwitchPort *createSwitchPort (DOMElement *switchPort_element, SwitchNode *switchNode);
+  Port *parseMapping (DOMElement *parentElement, SwitchPort *switchPort);
+  Anchor *parseArea (DOMElement *parentElement);
+  PropertyAnchor *parseProperty (DOMElement *parentElement);
+  Port *parsePort (DOMElement *parentElement, CompositeNode *objGrandParent);
+private:
+  SpatialAnchor *createSpatialAnchor (DOMElement *areaElement);
+  IntervalAnchor *createTemporalAnchor (DOMElement *areaElement);
+
+// LAYOUT
+public:
+  LayoutRegion *parseRegion (DOMElement *region_element);
+  LayoutRegion *createRegion (DOMElement *region_element);
+  RegionBase *parseRegionBase (DOMElement *regionBase_element);
+  RegionBase *createRegionBase (DOMElement *regionBase_element);
+  void addImportBaseToRegionBase (RegionBase *regionBase, DOMElement *importBase_element);
+
+// LINKING
+public:
+  Bind *parseBind (DOMElement *parentElement, Link *link);
+  Bind *createBind (DOMElement *parentElement, Link *link);
+  Parameter *parseLinkOrBindParam (DOMElement *parentElement);
+  Link *parseLink (DOMElement *link_element, CompositeNode *compositeNode);
+  Link *createLink (DOMElement *link_element, CompositeNode *compositeNode);
+private:
+  Connector *_connectorLinkParsing = nullptr;
+  CompositeNode *_composite = nullptr;
+
+// PRESENTATION CONTROL
+public:
+  RuleBase *parseRuleBase (DOMElement *parentElement);
+  RuleBase *createRuleBase (DOMElement *parentElement);
+  void addImportBaseToRuleBase (RuleBase *ruleBase, DOMElement *importBase_element);
+  SimpleRule *parseRule (DOMElement *parentElement);
+  Node *parseSwitch (DOMElement *parentElement);
+  void *posCompileSwitch (DOMElement *parentElement, SwitchNode *parentObject);
+  Node *createSwitch (DOMElement *parentElement);
+  CompositeRule *parseCompositeRule (DOMElement *parentElement);
+  CompositeRule *createCompositeRule (DOMElement *parentElement);
+  DescriptorSwitch *parseDescriptorSwitch (DOMElement *parentElement);
+  DescriptorSwitch *createDescriptorSwitch (DOMElement *parentElement);
+  vector<Node *> *getSwitchConstituents (SwitchNode *switchNode);
+private:
+  map<string, map<string, Node *> *> _switchConstituents;
+  void addNodeToSwitch (Node *switchNode, Node *node);
+  void addBindRuleToSwitch (SwitchNode *parentObject, DOMElement *childObject);
+  void addUnmappedNodesToSwitch (SwitchNode *switchNode);
+  void addDefaultDescriptorToDescriptorSwitch (DescriptorSwitch *descriptorSwitch, DOMElement *defaultDescriptor);
+  void addDefaultComponentToSwitch (SwitchNode *switchNode, DOMElement *defaultComponent);
+  void addBindRuleToDescriptorSwitch (DescriptorSwitch *descriptorSwitch, DOMElement *bindRule_element);
+  void addDescriptorToDescriptorSwitch (DescriptorSwitch *descriptorSwitch, GenericDescriptor *descriptor);
+
+// PRESENTATION SPECIFICATION
+public:
+  Descriptor *parseDescriptor (DOMElement *descriptor_element);
+  Descriptor *createDescriptor (DOMElement *descriptor_element);
+  DescriptorBase *parseDescriptorBase (DOMElement *descriptorBase_element);
+  DescriptorBase *createDescriptorBase (DOMElement *descriptorBase_element);
+  void addImportBaseToDescriptorBase (DescriptorBase *descriptorBase, DOMElement *childObject);
+
 };
 
 GINGA_NCLCONV_END
