@@ -89,24 +89,18 @@ public:
 
   Node *createContext (DOMElement *parentElement);
 
-  void addMediaToContext (Entity *parentObject, Node *childObject);
-  void addContextToContext (Entity *parentObject, Node *childObject);
-  void addSwitchToContext (Entity *parentObject, Node *childObject);
+  void addNodeToContext (Entity *contextNode, Node *node);
+  void addNodeToContext (ContextNode *contextNode, Node *node);
   void addPropertyToContext (Entity *parentObject, Anchor *childObject);
 
 private:
   void addLinkToContext (ContextNode *context, Link *link);
-  void addNodeToContext (ContextNode *contextNode, Node *node);
   void addAnchorToMedia (ContentNode *contentNode, Anchor *anchor);
 PARSER_MODULE_END
 
 PARSER_MODULE_BEGIN (NclImportParser)
 public:
   void parseImportedDocumentBase (DOMElement *importedDocBase_element);
-
-  DOMElement *parseImportNCL (DOMElement *importNCL_element);
-  DOMElement *parseImportBase (DOMElement *importBase_element);
-
   void addImportNCLToImportedDocumentBase (DOMElement *childObject);
 PARSER_MODULE_END
 

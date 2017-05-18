@@ -35,40 +35,27 @@ NclStructureParser::parseBody (DOMElement *body_element)
   for (DOMElement *child : dom_element_children(body_element) )
     {
       string tagname = dom_element_tagname(child);
-      if ( tagname == "media")
+      Node *node = nullptr;
+      if ( tagname == "media") // node will be a media
         {
-          Node *media = _nclParser->getComponentsParser().parseMedia (child);
-          if (media)
-            {
-              // add media to body
-              _nclParser->getComponentsParser ().addMediaToContext (body, media);
-            }
+          node = _nclParser->getComponentsParser().parseMedia (child);
         }
-      else if (tagname == "context")
+      else if (tagname == "context") // node will be a nested context
         {
-          Node *child_context
-              = _nclParser->getComponentsParser().parseContext (child);
-          if (child_context)
-            {
-              // add context to body
-              _nclParser->getComponentsParser ().addContextToContext (body, child_context);
-            }
-        }
-      else if (tagname == "switch")
-        {
-          Node *switch_node
-              = _nclParser->getPresentationControlParser ().parseSwitch (child);
 
-          if (switch_node)
-            {
-              // add switch to body
-              _nclParser->getComponentsParser ().addSwitchToContext (body, switch_node);
-            }
+          node = _nclParser->getComponentsParser().parseContext (child);
+        }
+      else if (tagname == "switch") // node will be a nested switch
+        {
+          node = _nclParser->getPresentationControlParser ().parseSwitch (child);
         }
       else
         {
            // syntax_warning ?
         }
+
+      if (node) // media, context or switch was created then we should add it to the body
+        _nclParser->getComponentsParser().addNodeToContext(body, node);
     }
 
   for (DOMElement *child :
@@ -334,13 +321,12 @@ NclStructureParser::createNcl (DOMElement *parentElement)
 
 
 Node *
-NclComponentsParser::parseMedia (DOMElement *parentElement)
+NclComponentsParser::parseMedia (DOMElement *media_element)
 {
-  Node *media = createMedia (parentElement);
+  Node *media = createMedia (media_element);
   g_assert_nonnull (media);
 
-  for (DOMElement *child:
-       dom_element_children(parentElement))
+  for (DOMElement *child: dom_element_children(media_element))
     {
       string tagname = dom_element_tagname(child);
       if (tagname == "area")
@@ -388,37 +374,30 @@ NclComponentsParser::parseContext (DOMElement *parentElement)
   Node *context = createContext (parentElement);
   g_assert_nonnull (context);
 
-  for (DOMElement *element: dom_element_children (parentElement))
+  for (DOMElement *child: dom_element_children (parentElement))
     {
-      string tagname = dom_element_tagname(element);
+      string tagname = dom_element_tagname(child);
+      Node *node = nullptr;
       if (tagname == "media")
         {
-          Node *media = parseMedia (element);
-          if (media)
-            {
-              addMediaToContext (context, media);
-            }
+          node = parseMedia (child);
         }
       else if (tagname == "context")
         {
-          Node *child_context = parseContext (element);
-          if (child_context)
-            {
-              addContextToContext (context, child_context);
-            }
+          node = parseContext (child);
         }
       else if (tagname == "switch")
         {
-          Node *switch_node = _nclParser->getPresentationControlParser ()
-                        .parseSwitch (element);
-          if (switch_node)
-            {
-              addSwitchToContext (context, switch_node);
-            }
+          node = _nclParser->getPresentationControlParser ().parseSwitch (child);
         }
       else
         {
           // syntax warning ?
+        }
+
+      if (node) // a media, context or switch was created so we need to add it to the current context
+        {
+          addNodeToContext (context, node);
         }
     }
 
@@ -452,29 +431,19 @@ NclComponentsParser::addPropertyToContext (Entity *context, Anchor *property)
 }
 
 void
-NclComponentsParser::addContextToContext (Entity *context, Node *child_context)
+NclComponentsParser::addNodeToContext (ContextNode *contextNode,
+                                       Node *node)
 {
-  if (context->instanceOf ("ContextNode"))
-    {
-      addNodeToContext ((ContextNode *)context, child_context);
-    }
+  // adicionar um noh aa composicao
+  contextNode->addNode (node);
 }
 
 void
-NclComponentsParser::addSwitchToContext (Entity *context, Node *switchNode)
+NclComponentsParser::addNodeToContext (Entity *context, Node *node)
 {
   if (context->instanceOf ("ContextNode"))
     {
-      addNodeToContext ((ContextNode *)context, switchNode);
-    }
-}
-
-void
-NclComponentsParser::addMediaToContext (Entity *context, Node *media)
-{
-  if (context->instanceOf ("ContextNode"))
-    {
-      addNodeToContext ((ContextNode *)context, media);
+      addNodeToContext ((ContextNode *)context, node);
     }
 }
 
@@ -504,14 +473,6 @@ NclComponentsParser::addLinkToContext (ContextNode *context, Link *link)
 
   delete roles;
   context->addLink (link);
-}
-
-void
-NclComponentsParser::addNodeToContext (ContextNode *contextNode,
-                                       Node *node)
-{
-  // adicionar um noh aa composicao
-  contextNode->addNode (node);
 }
 
 void
@@ -748,24 +709,8 @@ NclImportParser::parseImportedDocumentBase (DOMElement *parentElement)
   for (DOMElement *child:
        dom_element_children_by_tagname(parentElement, "importNCL"))
     {
-      DOMElement *newEl = parseImportNCL (child);
-      if (newEl)
-        {
-          addImportNCLToImportedDocumentBase (newEl);
-        }
+      addImportNCLToImportedDocumentBase (child);
     }
-}
-
-DOMElement *
-NclImportParser::parseImportNCL (DOMElement *parentElement)
-{
-  return parentElement; // ???
-}
-
-DOMElement *
-NclImportParser::parseImportBase (DOMElement *parentElement)
-{
-  return parentElement; // ???
 }
 
 void
@@ -798,13 +743,7 @@ NclTransitionParser::parseTransitionBase (DOMElement *transBase_element)
       string tagname = dom_element_tagname(child);
       if (tagname == "importBase")
         {
-          DOMElement *newel = _nclParser->getImportParser ()
-              .parseImportBase (child);
-
-          if (newel)
-            {
-              addImportBaseToTransitionBase (transBase, newel);
-            }
+          addImportBaseToTransitionBase (transBase, child);
         }
       else if (tagname == "transition")
         {
@@ -1498,12 +1437,7 @@ NclConnectorsParser::parseConnectorBase (DOMElement *connectorBase_element)
       string tagname = dom_element_tagname(child);
       if (tagname == "importBase")
         {
-          DOMElement *importBase_element =
-              _nclParser->getImportParser ().parseImportBase (child);
-          if (importBase_element)
-            {
-              addImportBaseToConnectorBase (connectorBase, importBase_element);
-            }
+          addImportBaseToConnectorBase (connectorBase, child);
         }
       else if (tagname ==  "causalConnector")
         {
@@ -2163,12 +2097,7 @@ NclLayoutParser::parseRegionBase (DOMElement *regionBase_element)
       string tagname = dom_element_tagname(child);
       if (tagname == "importBase")
         {
-          DOMElement *importBase_element
-              = _nclParser->getImportParser ().parseImportBase (child);
-          if (importBase_element)
-            {
-              addImportBaseToRegionBase (regionBase, importBase_element);
-            }
+          addImportBaseToRegionBase (regionBase, child);
         }
       else if (tagname == "region")
         {
@@ -2412,21 +2341,18 @@ NclLinkingParser::createBind (DOMElement *bind_element, Link *link)
           else
             {
               interfacePoint = anchorNode->getAnchor (interfaceId);
-
               if (interfacePoint == NULL)
                 {
                   sInsts = anchorNodeEntity->getInstSameInstances ();
                   if (sInsts != NULL)
                     {
-                      i = sInsts->begin ();
-                      while (i != sInsts->end ())
+                      for (i = sInsts->begin (); i != sInsts->end (); ++i)
                         {
                           interfacePoint = (*i)->getAnchor (interfaceId);
                           if (interfacePoint != NULL)
                             {
                               break;
                             }
-                          ++i;
                         }
                     }
                 }
@@ -2564,12 +2490,7 @@ NclPresentationControlParser::parseRuleBase (DOMElement *ruleBase_element)
       string tagname = dom_element_tagname(child);
       if ( tagname == "importBase")
         {
-          DOMElement *elementObject
-              = _nclParser->getImportParser ().parseImportBase (child);
-          if (elementObject)
-            {
-              addImportBaseToRuleBase (ruleBase, elementObject);
-            }
+          addImportBaseToRuleBase (ruleBase, child);
         }
       else if (tagname == "rule")
         {
@@ -3174,6 +3095,10 @@ NclPresentationControlParser::posCompileSwitch (
               posCompileSwitch (child, (SwitchNode*)node);
             }
         }
+      else
+        {
+          // syntax_err/warn ??
+        }
     }
 
   for (DOMElement *child: dom_element_children(switchElement))
@@ -3237,12 +3162,7 @@ NclPresentationSpecificationParser::parseDescriptorBase (
       string tagname = dom_element_tagname(child);
       if (tagname == "importBase")
         {
-          DOMElement *elementObject = _nclParser->getImportParser ()
-              .parseImportBase (child);
-          if (elementObject)
-            {
-              addImportBaseToDescriptorBase (descBase, elementObject);
-            }
+          addImportBaseToDescriptorBase (descBase, child);
         }
       else if (tagname == "descriptorSwitch")
         {
@@ -3363,7 +3283,7 @@ NclPresentationSpecificationParser::createDescriptor (
     DOMElement *descriptor_element)
 {
   Descriptor *descriptor;
-  NclDocument *document;
+  NclDocument *nclDoc;
   LayoutRegion *region;
   KeyNavigation *keyNavigation;
   string src;
@@ -3374,12 +3294,12 @@ NclPresentationSpecificationParser::createDescriptor (
 
   descriptor = new Descriptor (dom_element_get_attr(descriptor_element, "id"));
 
-  document = getNclParser ()->getNclDocument ();
+  nclDoc = getNclParser ()->getNclDocument ();
 
   // region
   if (dom_element_try_get_attr(attValue, descriptor_element, "region"))
     {
-      region = document->getRegion (attValue);
+      region = nclDoc->getRegion (attValue);
 
       if (region)
         {
@@ -3494,7 +3414,7 @@ NclPresentationSpecificationParser::createDescriptor (
 
   if (dom_element_try_get_attr(attValue, descriptor_element, "transIn"))
     {
-      if(transitionBase = document->getTransitionBase ())
+      if((transitionBase = nclDoc->getTransitionBase ()))
         {
           vector<string> transIds = split (attValue, ";");
           for (uint i = 0; i < transIds.size(); i++)
@@ -3516,7 +3436,7 @@ NclPresentationSpecificationParser::createDescriptor (
 
   if (dom_element_try_get_attr(attValue, descriptor_element, "transOut"))
     {
-      if(transitionBase = document->getTransitionBase ())
+      if((transitionBase = nclDoc->getTransitionBase ()))
         {
           vector<string> transIds = split (attValue, ";");
           for (uint i = 0; i < transIds.size(); i++)
