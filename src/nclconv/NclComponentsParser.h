@@ -40,8 +40,8 @@ public:
   Node *createMedia (DOMElement *parentElement);
 
   Node *parseContext (DOMElement *parentElement);
-  void *posCompileContext2 (DOMElement *context_element, ContextNode *context);
-  void *posCompileContext (DOMElement *parentElement, ContextNode *parentObject);
+  ContextNode *posCompileContext (DOMElement *context_element,
+                                  ContextNode *context);
 
   Node *createContext (DOMElement *parentElement);
 
