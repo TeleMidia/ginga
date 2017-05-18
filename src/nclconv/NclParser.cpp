@@ -14,116 +14,96 @@ License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
-
-#include "ginga.h"
 #include "NclParser.h"
 
+#include "ginga.h"
 #include "NclParserModules.h"
 
 GINGA_NCLCONV_BEGIN
 
-NclParser::NclParser (PrivateBaseContext *pbc, DeviceLayout *deviceLayout)
+NclParser::NclParser (PrivateBaseContext *pbc, DeviceLayout *deviceLayout) :
+  _presentationSpecificationParser(this), _structureParser(this),
+  _componentsParser(this), _connectorsParser(this), _linkingParser(this),
+  _interfacesParser(this), _layoutParser(this), _transitionParser(this),
+  _presentationControlParser(this), _importParser(this),
+  _metainformationParser(this)
 {
-  this->privateBaseContext = nullptr;
-  this->ownManager = false;
+  this->_privateBaseContext = nullptr;
+  this->_ownManager = false;
 
-  this->privateBaseContext = pbc;
-  this->deviceLayout = deviceLayout;
-
-  this->presentationSpecificationParser = new NclPresentationSpecificationParser(this);
-
-  this->structureParser = new NclStructureParser (this);
-  this->componentsParser = new NclComponentsParser (this);
-  this->connectorsParser = new NclConnectorsParser (this);
-  this->linkingParser = new NclLinkingParser (this);
-
-  this->interfacesParser = new NclInterfacesParser (this);
-  this->layoutParser = new NclLayoutParser (this);
-  this->transitionParser = new NclTransitionParser (this);
-  this->presentationControlParser = new NclPresentationControlParser (this);
-  this->importParser = new NclImportParser (this);
-  this->metainformationParser = new NclMetainformationParser (this);
+  this->_privateBaseContext = pbc;
+  this->_deviceLayout = deviceLayout;
 }
 
 NclParser::~NclParser ()
 {
-  delete presentationSpecificationParser;
-  delete structureParser;
-  delete componentsParser;
-  delete connectorsParser;
-  delete linkingParser;
-  delete interfacesParser;
-  delete layoutParser;
-  delete transitionParser;
-  delete presentationControlParser;
-  delete importParser;
-  delete metainformationParser;
+
 }
 
-NclTransitionParser *
+NclTransitionParser &
 NclParser::getTransitionParser ()
 {
-  return transitionParser;
+  return _transitionParser;
 }
 
-NclConnectorsParser *
+NclConnectorsParser &
 NclParser::getConnectorsParser ()
 {
-  return connectorsParser;
+  return _connectorsParser;
 }
 
-NclImportParser *
+NclImportParser &
 NclParser::getImportParser ()
 {
-  return importParser;
+  return _importParser;
 }
 
-NclPresentationControlParser *
+NclPresentationControlParser &
 NclParser::getPresentationControlParser ()
 {
-  return presentationControlParser;
+  return _presentationControlParser;
 }
 
-NclComponentsParser *
+NclComponentsParser &
 NclParser::getComponentsParser ()
 {
-  return componentsParser;
+  return _componentsParser;
 }
 
-NclStructureParser *
+NclStructureParser &
 NclParser::getStructureParser ()
 {
-  return structureParser;
+  return _structureParser;
 }
 
-NclPresentationSpecificationParser *
+NclPresentationSpecificationParser &
 NclParser::getPresentationSpecificationParser ()
 {
-  return presentationSpecificationParser;
+  return _presentationSpecificationParser;
 }
 
-NclLayoutParser *
+NclLayoutParser &
 NclParser::getLayoutParser ()
 {
-  return layoutParser;
+  return _layoutParser;
 }
 
-NclInterfacesParser *
+NclInterfacesParser &
 NclParser::getInterfacesParser ()
 {
-  return interfacesParser;
+  return _interfacesParser;
 }
 
-NclMetainformationParser *
+NclMetainformationParser &
 NclParser::getMetainformationParser ()
 {
-  return metainformationParser;
+  return _metainformationParser;
 }
 
-NclLinkingParser *
+NclLinkingParser &
 NclParser::getLinkingParser ()
 {
-  return linkingParser;
+  return _linkingParser;
 }
 
 NclDocument *
@@ -133,37 +113,37 @@ NclParser::parseRootElement (DOMElement *rootElement)
   if (unlikely (tagName != "ncl"))
     syntax_error ("bad root element '%s'", tagName.c_str ());
 
-  return getStructureParser ()->parseNcl (rootElement);
+  return getStructureParser ().parseNcl (rootElement);
 }
 
 string
 NclParser::getDirName ()
 {
-  return this->dirname;
+  return this->_dirname;
 }
 
 string
 NclParser::getPath ()
 {
-  return this->path;
+  return this->_path;
 }
 
 NclDocument *
 NclParser::getNclDocument ()
 {
-  return this->ncl;
+  return this->_ncl;
 }
 
 void
 NclParser::setNclDocument (NclDocument *ncl)
 {
-  this->ncl = ncl;
+  this->_ncl = ncl;
 }
 
 DeviceLayout *
 NclParser::getDeviceLayout()
 {
-  return this->deviceLayout;
+  return this->_deviceLayout;
 }
 
 void
@@ -213,8 +193,8 @@ NclParser::parse (const string &path)
   DOMElement *elt;
   XercesDOMParser *parser;
 
-  this->path = xpathmakeabs (path);
-  this->dirname = xpathdirname (path);
+  this->_path = xpathmakeabs (path);
+  this->_dirname = xpathdirname (path);
 
   XMLPlatformUtils::Initialize ();
   parser = new XercesDOMParser ();
@@ -244,15 +224,15 @@ NclParser::parse (const string &path)
   elt = (DOMElement *) dom->getDocumentElement ();
   g_assert_nonnull (elt);
 
-  this->ncl = (NclDocument *) parseRootElement (elt);
-  g_assert_nonnull (this->ncl);
+  this->_ncl = (NclDocument *) parseRootElement (elt);
+  g_assert_nonnull (this->_ncl);
 
   delete parser;
 
   // FIXME: Should we call this?
   // XMLPlatformUtils::Terminate ();
 
-  return this->ncl;
+  return this->_ncl;
 }
 
 Node *
@@ -267,7 +247,7 @@ NclParser::getNode (const string &nodeId)
 PrivateBaseContext *
 NclParser::getPrivateBaseContext ()
 {
-  return privateBaseContext;
+  return _privateBaseContext;
 }
 
 NclDocument *
@@ -276,8 +256,8 @@ NclParser::importDocument (string &path)
   if (!xpathisuri (path) && !xpathisabs (path))
     path = xpathbuildabs (this->getDirName (), path);
 
-  return (NclDocument *)(privateBaseContext
-                          ->addVisibleDocument (path, deviceLayout));
+  return (NclDocument *)(_privateBaseContext
+                          ->addVisibleDocument (path, _deviceLayout));
 }
 
 GINGA_NCLCONV_END

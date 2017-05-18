@@ -27,20 +27,9 @@ using namespace ::ginga::formatter;
 #include <vector>
 using namespace std;
 
+#include "NclParserModules.h"
+
 GINGA_NCLCONV_BEGIN
-
-class NclConnectorsParser;
-class NclImportParser;
-class NclTransitionParser;
-class NclPresentationControlParser;
-class NclComponentsParser;
-class NclStructureParser;
-class NclPresentationSpecificationParser;
-class NclLayoutParser;
-class NclInterfacesParser;
-class NclLinkingParser;
-class NclMetainformationParser;
-
 
 // Get the DOMElement tagname as a std::string and free resources allocated by
 // Xerces
@@ -185,26 +174,26 @@ class NclParser : public ErrorHandler
 {
 
 private:
-  PrivateBaseContext *privateBaseContext;
-  bool ownManager;
+  PrivateBaseContext *_privateBaseContext;
+  bool _ownManager;
 
 protected:
-  NclDocument *ncl;             // NCL document
-  string path;                  // document's absolute path
-  string dirname;               // directory part of document's path
+  NclDocument *_ncl;             // NCL document
+  string _path;                  // document's absolute path
+  string _dirname;               // directory part of document's path
 
-  NclConnectorsParser *connectorsParser;
-  NclImportParser *importParser;
-  NclTransitionParser *transitionParser;
-  NclPresentationControlParser *presentationControlParser;
-  NclComponentsParser *componentsParser;
-  NclStructureParser *structureParser;
-  NclPresentationSpecificationParser *presentationSpecificationParser;
-  NclLayoutParser *layoutParser;
-  NclInterfacesParser *interfacesParser;
-  NclLinkingParser *linkingParser;
-  NclMetainformationParser *metainformationParser;
-  DeviceLayout *deviceLayout;
+  NclConnectorsParser _connectorsParser;
+  NclImportParser _importParser;
+  NclTransitionParser _transitionParser;
+  NclPresentationControlParser _presentationControlParser;
+  NclComponentsParser _componentsParser;
+  NclStructureParser _structureParser;
+  NclPresentationSpecificationParser _presentationSpecificationParser;
+  NclLayoutParser _layoutParser;
+  NclInterfacesParser _interfacesParser;
+  NclLinkingParser _linkingParser;
+  NclMetainformationParser _metainformationParser;
+  DeviceLayout *_deviceLayout;
 
 public:
   explicit NclParser (PrivateBaseContext *pbc, DeviceLayout *deviceLayout);
@@ -215,17 +204,17 @@ public:
   NclDocument *importDocument (string &docLocation);
 
 public:
-  NclTransitionParser *getTransitionParser ();
-  NclConnectorsParser *getConnectorsParser ();
-  NclImportParser *getImportParser ();
-  NclPresentationControlParser *getPresentationControlParser ();
-  NclComponentsParser *getComponentsParser ();
-  NclStructureParser *getStructureParser ();
-  NclPresentationSpecificationParser *getPresentationSpecificationParser ();
-  NclLayoutParser *getLayoutParser ();
-  NclInterfacesParser *getInterfacesParser ();
-  NclMetainformationParser *getMetainformationParser ();
-  NclLinkingParser *getLinkingParser ();
+  NclTransitionParser &getTransitionParser ();
+  NclConnectorsParser &getConnectorsParser ();
+  NclImportParser &getImportParser ();
+  NclPresentationControlParser &getPresentationControlParser ();
+  NclComponentsParser &getComponentsParser ();
+  NclStructureParser &getStructureParser ();
+  NclPresentationSpecificationParser &getPresentationSpecificationParser ();
+  NclLayoutParser &getLayoutParser ();
+  NclInterfacesParser &getInterfacesParser ();
+  NclMetainformationParser &getMetainformationParser ();
+  NclLinkingParser &getLinkingParser ();
 
 protected:
   NclDocument *parseRootElement (DOMElement *rootElement);
