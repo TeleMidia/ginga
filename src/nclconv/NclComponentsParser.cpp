@@ -35,26 +35,43 @@ NclComponentsParser::parseMedia (DOMElement *parentElement)
   Node *media = createMedia (parentElement);
   g_assert_nonnull (media);
 
-  for (DOMElement *element:
+  for (DOMElement *child:
        dom_element_children(parentElement))
     {
-      if (dom_element_tagname(element) == "area")
+      string tagname = dom_element_tagname(child);
+      if (tagname == "area")
         {
           Anchor *area = _nclParser->getInterfacesParser ()
-              ->parseArea (element, media);
+              ->parseArea (child);
           if (area)
             {
-              addAreaToMedia ((ContentNode*)media, area);
+              if (media->instanceOf("ContentNode"))
+                // createMedia can also return a ReferNode in which case the
+                // following should be skipped
+                {
+                  addAnchorToMedia ((ContentNode*)media, area);
+                }
             }
         }
-      else if (dom_element_tagname(element) == "property")
+      else if (tagname == "property")
         {
           PropertyAnchor *prop = _nclParser->getInterfacesParser ()
-              ->parseProperty (element, media);
+              ->parseProperty (child);
           if (prop)
             {
-              addPropertyToMedia ((ContentNode *)media, prop);
+              if (media->instanceOf("ContentNode"))
+                // createMedia can also return a ReferNode in which case the
+                // following should be skipped
+                {
+                  addAnchorToMedia ((ContentNode*)media, prop);
+                }
             }
+        }
+      else
+        {
+          syntax_warning( "'%s' is not known as child of 'media'."
+                          " It will be ignored.",
+                          tagname.c_str() );
         }
     }
 
@@ -106,7 +123,7 @@ NclComponentsParser::parseContext (DOMElement *parentElement)
        dom_element_children_by_tagname (parentElement, "property"))
     {
       PropertyAnchor *prop = _nclParser->getInterfacesParser ()
-          ->parseProperty (element, context);
+          ->parseProperty (element);
 
       if (prop)
         {
@@ -119,16 +136,15 @@ NclComponentsParser::parseContext (DOMElement *parentElement)
 
 void *
 NclComponentsParser::posCompileContext2 (DOMElement *context_element,
-                                         ContextNode *parentObject)
+                                         ContextNode *context)
 {
   for(DOMElement *child:
       dom_element_children_by_tagname (context_element, "link"))
     {
-      Link *link = _nclParser->getLinkingParser ()->parseLink (child,
-                                                               parentObject);
+      Link *link = _nclParser->getLinkingParser ()->parseLink (child, context);
       if (link)
         {
-          addLinkToContext (parentObject, link);
+          addLinkToContext (context, link);
         }
     }
 
@@ -136,27 +152,17 @@ NclComponentsParser::posCompileContext2 (DOMElement *context_element,
       dom_element_children_by_tagname (context_element, "port"))
     {
       Port *port = _nclParser->getInterfacesParser () ->parsePort (child,
-                                                                  parentObject);
+                                                                   context);
       if (port)
         {
-          addPortToContext (parentObject, port);
+          context->addPort (port);
         }
     }
-  return parentObject;
+  return context;
 }
 
 void
-NclComponentsParser::addPortToContext (Entity *context, Port *port)
-{
-  if (context->instanceOf ("ContextNode"))
-    {
-      ((ContextNode*)context)->addPort (port);
-    }
-}
-
-void
-NclComponentsParser::addPropertyToContext (Entity *context,
-                                           Anchor *property)
+NclComponentsParser::addPropertyToContext (Entity *context, Anchor *property)
 {
   if (context->instanceOf ("ContextNode"))
     {
@@ -173,7 +179,6 @@ NclComponentsParser::addContextToContext (Entity *context, Node *child_context)
 {
   if (context->instanceOf ("ContextNode"))
     {
-      // adicionar composicao aa composicao
       addNodeToContext ((ContextNode *)context, child_context);
     }
 }
@@ -183,7 +188,6 @@ NclComponentsParser::addSwitchToContext (Entity *context, Node *switchNode)
 {
   if (context->instanceOf ("ContextNode"))
     {
-      // adicionar switch aa composicao
       addNodeToContext ((ContextNode *)context, switchNode);
     }
 }
@@ -193,7 +197,6 @@ NclComponentsParser::addMediaToContext (Entity *context, Node *media)
 {
   if (context->instanceOf ("ContextNode"))
     {
-      // adicionar media aa composicao
       addNodeToContext ((ContextNode *)context, media);
     }
 }
@@ -201,32 +204,29 @@ NclComponentsParser::addMediaToContext (Entity *context, Node *media)
 void
 NclComponentsParser::addLinkToContext (ContextNode *context, Link *link)
 {
-  if (context->instanceOf ("ContextNode")) //There is no other possibility!!
+  vector<Role *> *roles = link->getConnector ()->getRoles ();
+  g_assert_nonnull(roles);
+
+  for (Role *role: *roles)
     {
-      vector<Role *> *roles = link->getConnector ()->getRoles ();
-      g_assert_nonnull(roles);
+      unsigned int min = role->getMinCon ();
+      unsigned int max = role->getMaxCon ();
 
-      for (Role *role: *roles)
+      if (link->getNumRoleBinds (role) < min)
         {
-          unsigned int min = role->getMinCon ();
-          unsigned int max = role->getMaxCon ();
-
-          if (link->getNumRoleBinds (role) < min)
-            {
-              syntax_error ("link: too few binds for role '%s': %d",
-                            role->getLabel ().c_str (), min);
-            }
-          else if (max > 0 && (link->getNumRoleBinds (role) > max))
-            {
-              syntax_error ("link: too many binds for role '%s': %d",
-                            role->getLabel ().c_str (), max);
-              return;
-            }
+          syntax_error ("link: too few binds for role '%s': %d",
+                        role->getLabel ().c_str (), min);
         }
-      delete roles;
-
-      context->addLink (link);
+      else if (max > 0 && (link->getNumRoleBinds (role) > max))
+        {
+          syntax_error ("link: too many binds for role '%s': %d",
+                        role->getLabel ().c_str (), max);
+          return;
+        }
     }
+
+  delete roles;
+  context->addLink (link);
 }
 
 void
@@ -246,19 +246,8 @@ NclComponentsParser::addAnchorToMedia (ContentNode *contentNode, Anchor *anchor)
                     contentNode->getId ().c_str (),
                     anchor->getId ().c_str ());
     }
+
   contentNode->addAnchor (anchor);
-}
-
-void
-NclComponentsParser::addAreaToMedia (ContentNode *media, Anchor *area)
-{
-  addAnchorToMedia (media, area);
-}
-
-void
-NclComponentsParser::addPropertyToMedia (ContentNode *media, Anchor *property)
-{
-  addAnchorToMedia (media, property);
 }
 
 Node *
@@ -280,29 +269,26 @@ NclComponentsParser::createContext (DOMElement *parentElement)
   if (unlikely (node != NULL))
     syntax_error ("context '%s': duplicated id", id.c_str ());
 
-  if (dom_element_has_attr (parentElement, "refer"))
+  if (dom_element_try_get_attr(attValue, parentElement, "refer"))
     {
-      attValue = dom_element_get_attr(parentElement, "refer");
       try
-        {
-          referNode = (ContextNode *)getNclParser ()->getNode (attValue);
-
-          if (referNode == NULL)
-            {
-              document = getNclParser ()->getNclDocument ();
-              referNode = (ContextNode *)(document->getNode (attValue));
-              if (referNode == NULL)
-                {
-                  referNode = (Entity *)(new ReferredNode (
-                      attValue, (void *)parentElement));
-                }
-            }
-        }
+      {
+        referNode = (ContextNode *)getNclParser ()->getNode (attValue);
+        if (referNode == NULL)
+          {
+            document = getNclParser ()->getNclDocument ();
+            referNode = (ContextNode *)(document->getNode (attValue));
+            if (referNode == NULL)
+              {
+                referNode = (Entity *)(new ReferredNode (attValue, (void *)parentElement));
+              }
+          }
+      }
       catch (...)
-        {
-          syntax_error ("context '%s': bad refer '%s'", id.c_str (),
-                        attValue.c_str ());
-        }
+      {
+        syntax_error ("context '%s': bad refer '%s'",
+                      id.c_str (), attValue.c_str ());
+      }
 
       node = new ReferNode (id);
       ((ReferNode *)node)->setReferredEntity (referNode);
@@ -311,12 +297,9 @@ NclComponentsParser::createContext (DOMElement *parentElement)
     }
 
   context = new ContextNode (id);
-
-  if (dom_element_has_attr (parentElement, "descriptor"))
+  if (dom_element_try_get_attr(attValue, parentElement, "descriptor"))
     {
       // adicionar um descritor a um objeto de midia
-      attValue = dom_element_get_attr(parentElement, "descriptor");
-
       document = getNclParser ()->getNclDocument ();
       descriptor = document->getDescriptor (attValue);
       if (descriptor != NULL)
@@ -337,24 +320,23 @@ void *
 NclComponentsParser::posCompileContext (DOMElement *parentElement,
                                         ContextNode *context)
 {
+  g_assert_nonnull(context);
+
   for(DOMElement *element: dom_element_children(parentElement))
     {
       string tagname = dom_element_tagname(element);
       if (tagname == "context")
         {
-          if (context != NULL)
-            {
-              string id = dom_element_get_attr(element, "id");
-              Node *node = context->getNode (id);
+          string id = dom_element_get_attr(element, "id");
+          Node *node = context->getNode (id);
 
-              if (unlikely (node == NULL))
-                {
-                  syntax_error ("bad context '%s'", id.c_str ());
-                }
-              else if (node->instanceOf ("ContextNode"))
-                {
-                  posCompileContext (element, (ContextNode*)node);
-                }
+          if (unlikely (node == NULL))
+            {
+              syntax_error ("bad context '%s'", id.c_str ());
+            }
+          else if (node->instanceOf ("ContextNode"))
+            {
+              posCompileContext (element, (ContextNode*)node);
             }
         }
       else if (tagname == "switch")
@@ -394,30 +376,26 @@ NclComponentsParser::createMedia (DOMElement *parentElement)
   if (unlikely (node != NULL))
     syntax_error ("media '%s': duplicated id", id.c_str ());
 
-  if (dom_element_has_attr(parentElement, "refer"))
+  if (dom_element_try_get_attr(attValue, parentElement, "refer"))
     {
-      attValue = dom_element_get_attr(parentElement, "refer");
-
       try
-        {
-          referNode = (ContentNode *) getNclParser ()->getNode (attValue);
-
-          if (referNode == NULL)
-            {
-              document = getNclParser ()->getNclDocument ();
-              referNode = (ContentNode *)document->getNode (attValue);
-              if (referNode == NULL)
-                {
-                  referNode
-                      = new ReferredNode (attValue, (void *)parentElement);
-                }
-            }
-        }
+      {
+        referNode = (ContentNode *) getNclParser ()->getNode (attValue);
+        if (referNode == NULL)
+          {
+            document = getNclParser ()->getNclDocument ();
+            referNode = (ContentNode *)document->getNode (attValue);
+            if (referNode == NULL)
+              {
+                referNode = new ReferredNode (attValue, (void *)parentElement);
+              }
+          }
+      }
       catch (...)
-        {
-          syntax_error ("media '%s': bad refer '%s'",
-                        id.c_str (), attValue.c_str ());
-        }
+      {
+        syntax_error ("media '%s': bad refer '%s'",
+                      id.c_str (), attValue.c_str ());
+      }
 
       node = new ReferNode (id);
       if (dom_element_has_attr(parentElement, "instance"))
@@ -433,29 +411,24 @@ NclComponentsParser::createMedia (DOMElement *parentElement)
 
   node = new ContentNode (id, NULL, "");
 
-  if (dom_element_has_attr(parentElement, "type"))
+  if (dom_element_try_get_attr(attValue, parentElement, "type"))
     {
-      string type = dom_element_get_attr(parentElement, "type");
-      ((ContentNode *)node)->setNodeType (type);
+      ((ContentNode *)node)->setNodeType (attValue);
     }
 
-  if (dom_element_has_attr(parentElement, "src"))
+  if (dom_element_try_get_attr(attValue, parentElement, "src"))
     {
-      string src = dom_element_get_attr(parentElement, "src");
-
-      if (unlikely (src == ""))
+      if (unlikely (attValue == ""))
         syntax_error ("media '%s': missing src", id.c_str ());
 
-      if (!xpathisuri (src) && !xpathisabs (src))
-        src = xpathbuildabs (getNclParser ()->getDirName (), src);
+      if (!xpathisuri (attValue) && !xpathisabs (attValue))
+        attValue = xpathbuildabs (getNclParser ()->getDirName (), attValue);
 
-      ((ContentNode *)node)->setContent (new AbsoluteReferenceContent (src));
+      ((ContentNode *)node)->setContent (new AbsoluteReferenceContent (attValue));
     }
 
-  if (dom_element_has_attr(parentElement, "descriptor"))
+  if (dom_element_try_get_attr(attValue, parentElement, "descriptor"))
     {
-      attValue = dom_element_get_attr(parentElement, "descriptor");
-
       document = getNclParser ()->getNclDocument ();
       descriptor = document->getDescriptor (attValue);
       if (descriptor != NULL)
@@ -470,6 +443,5 @@ NclComponentsParser::createMedia (DOMElement *parentElement)
     }
   return node;
 }
-
 
 GINGA_NCLCONV_END

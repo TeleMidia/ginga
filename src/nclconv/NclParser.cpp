@@ -174,27 +174,34 @@ NclParser::setNclDocument (NclDocument *ncl)
 void
 NclParser::warning (const SAXParseException &e)
 {
-  const char *file = XMLString::transcode (e.getSystemId ());
+  char *file = XMLString::transcode (e.getSystemId ());
+  char *errMsg = XMLString::transcode (e.getMessage ());
   if (file == NULL || strlen (file) <= 0)
-    g_warning ("%s", XMLString::transcode (e.getMessage ()));
+    g_warning ("%s", errMsg);
   else
     g_warning ("%s:%u.%u: %s", file,
                (guint)e.getLineNumber (),
                (guint)e.getColumnNumber (),
-               XMLString::transcode (e.getMessage ()));
+               errMsg);
+  XMLString::release(&file);
 }
 
 void G_GNUC_NORETURN
 NclParser::error (const SAXParseException &e)
 {
-  const char *file = XMLString::transcode (e.getSystemId ());
+  char *file = XMLString::transcode (e.getSystemId ());
+  char *errMsg = XMLString::transcode (e.getMessage ());
   if (file == NULL || strlen (file) <= 0)
-    g_error ("%s", XMLString::transcode (e.getMessage ()));
+    g_error ("%s", errMsg);
   else
     g_error ("%s:%u.%u: %s", file,
              (guint)e.getLineNumber (),
              (guint)e.getColumnNumber (),
-             XMLString::transcode (e.getMessage ()));
+             errMsg);
+
+  XMLString::release(&file);
+  XMLString::release(&errMsg);
+
   exit (EXIT_FAILURE);
 }
 
@@ -256,7 +263,7 @@ NclParser::parse (const string &path)
 Node *
 NclParser::getNode (const string &nodeId)
 {
-  NclDocument *doc = NclParser::getNclDocument ();
+  NclDocument *doc = getNclDocument ();
   g_assert_nonnull(doc);
 
   return doc->getNode (nodeId);

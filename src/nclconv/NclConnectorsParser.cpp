@@ -41,10 +41,8 @@ NclConnectorsParser::parseSimpleCondition (DOMElement *simpleCond_element)
   compileRoleInformation (conditionExpression, simpleCond_element);
 
   // transition
-  if (dom_element_has_attr(simpleCond_element, "transition"))
+  if (dom_element_try_get_attr(attValue, simpleCond_element, "transition"))
     {
-      attValue = dom_element_get_attr(simpleCond_element, "transition");
-
       conditionExpression->setTransition (
             EventUtil::getTransitionCode (attValue));
     }
@@ -52,19 +50,15 @@ NclConnectorsParser::parseSimpleCondition (DOMElement *simpleCond_element)
   // param
   if (conditionExpression->getEventType () == EventUtil::EVT_SELECTION)
     {
-      if (dom_element_has_attr(simpleCond_element, "key"))
-
+      if (dom_element_try_get_attr(attValue, simpleCond_element, "key"))
         {
-          attValue = dom_element_get_attr(simpleCond_element, "key");
           conditionExpression->setKey (attValue);
         }
     }
 
   // qualifier
-  if (dom_element_has_attr(simpleCond_element, "qualifier"))
+  if (dom_element_try_get_attr(attValue, simpleCond_element, "qualifier"))
     {
-      attValue = dom_element_get_attr(simpleCond_element, "qualifier");
-
       if (attValue == "or")
         {
           conditionExpression->setQualifier (CompoundCondition::OP_OR);
@@ -76,10 +70,8 @@ NclConnectorsParser::parseSimpleCondition (DOMElement *simpleCond_element)
     }
 
   // delay
-  if (dom_element_has_attr(simpleCond_element, "delay"))
+  if (dom_element_try_get_attr(attValue, simpleCond_element, "delay"))
     {
-      attValue = dom_element_get_attr(simpleCond_element, "delay");
-
       if (attValue[0] == '$')
         {
           conditionExpression->setDelay (attValue);
@@ -119,7 +111,8 @@ NclConnectorsParser::parseCompoundCondition (DOMElement *compoundCond_element)
         }
       else if ( tagname == "assessmentStatement" )
         {
-          AssessmentStatement *assessmentStatement = parseAssessmentStatement (child);
+          AssessmentStatement *assessmentStatement =
+              parseAssessmentStatement (child);
 
           if (assessmentStatement)
             {
@@ -197,7 +190,8 @@ NclConnectorsParser::parseAssessmentStatement (
 }
 
 AttributeAssessment *
-NclConnectorsParser::parseAttributeAssessment (DOMElement *attributeAssessment_element)
+NclConnectorsParser::parseAttributeAssessment (
+    DOMElement *attributeAssessment_element)
 {
   AttributeAssessment *attributeAssessment;
   string attValue;
@@ -207,38 +201,30 @@ NclConnectorsParser::parseAttributeAssessment (DOMElement *attributeAssessment_e
   attributeAssessment = new AttributeAssessment (roleLabel);
 
   // event type
-  if (dom_element_has_attr(attributeAssessment_element, "eventType"))
+  if (dom_element_try_get_attr(attValue, attributeAssessment_element, "eventType"))
     {
-      attValue = dom_element_get_attr(attributeAssessment_element, "eventType");
-
       attributeAssessment->setEventType (EventUtil::getTypeCode (attValue));
     }
 
   // event type
-  if (dom_element_has_attr(attributeAssessment_element, "attributeType"))
+  if (dom_element_try_get_attr(attValue, attributeAssessment_element, "attributeType"))
     {
-      attValue = dom_element_get_attr(attributeAssessment_element, "attributeType");
-
       attributeAssessment->setAttributeType (
-          EventUtil::getAttributeTypeCode (attValue));
+            EventUtil::getAttributeTypeCode (attValue));
     }
 
   // parameter
   if (attributeAssessment->getEventType () == EventUtil::EVT_SELECTION)
     {
-      if (dom_element_has_attr(attributeAssessment_element, "key"))
+      if (dom_element_try_get_attr(attValue, attributeAssessment_element, "key"))
         {
-          attValue = dom_element_get_attr(attributeAssessment_element, "key");
-
           attributeAssessment->setKey (attValue);
         }
     }
 
   // testing offset
-  if (dom_element_has_attr(attributeAssessment_element, "offset"))
+  if (dom_element_try_get_attr(attValue, attributeAssessment_element, "offset"))
     {
-      attValue = dom_element_get_attr(attributeAssessment_element, "offset");
-
       attributeAssessment->setOffset (attValue);
     }
 
@@ -305,18 +291,14 @@ NclConnectorsParser::parseSimpleAction (DOMElement *simpleAction_element)
   actionExpression = new SimpleAction (attValue);
 
   // transition
-  if (dom_element_has_attr(simpleAction_element, "actionType"))
+  if (dom_element_try_get_attr(attValue, simpleAction_element, "actionType"))
     {
-      attValue = dom_element_get_attr(simpleAction_element, "actionType");
-
       actionExpression->setActionType (
             SimpleAction::stringToActionType (attValue) );
     }
 
-  if (dom_element_has_attr(simpleAction_element, "eventType"))
+  if (dom_element_try_get_attr(attValue, simpleAction_element, "eventType"))
     {
-      attValue = dom_element_get_attr(simpleAction_element, "eventType");
-
       actionExpression->setEventType (EventUtil::getTypeCode (attValue));
     }
 
@@ -328,15 +310,8 @@ NclConnectorsParser::parseSimpleAction (DOMElement *simpleAction_element)
       string durVal = "";
       string byVal = "";
 
-      if (dom_element_has_attr(simpleAction_element, "duration"))
-        {
-          durVal = dom_element_get_attr(simpleAction_element, "duration");
-        }
-
-      if (dom_element_has_attr(simpleAction_element, "by"))
-        {
-          byVal = dom_element_get_attr(simpleAction_element, "by");
-        }
+      durVal = dom_element_get_attr(simpleAction_element, "duration");
+      byVal = dom_element_get_attr(simpleAction_element, "by");
 
       if (durVal != "" || byVal != "")
         {
@@ -377,12 +352,9 @@ NclConnectorsParser::parseSimpleAction (DOMElement *simpleAction_element)
 
   compileRoleInformation (actionExpression, simpleAction_element);
 
-  if (dom_element_has_attr(simpleAction_element, "qualifier"))
+  if (dom_element_try_get_attr(attValue, simpleAction_element, "qualifier"))
     {
-      string qualifier = dom_element_get_attr(simpleAction_element,
-                                              "qualifier");
-
-      if (qualifier == "seq")
+      if (attValue == "seq")
         {
           actionExpression->setQualifier (CompoundAction::OP_SEQ);
         }
@@ -393,10 +365,8 @@ NclConnectorsParser::parseSimpleAction (DOMElement *simpleAction_element)
     }
 
   // testing delay
-  if (dom_element_has_attr(simpleAction_element, "delay"))
+  if (dom_element_try_get_attr(attValue, simpleAction_element, "delay"))
     {
-      attValue = dom_element_get_attr(simpleAction_element, "delay");
-
       if (attValue[0] == '$')
         {
           actionExpression->setDelay (attValue);
@@ -411,11 +381,9 @@ NclConnectorsParser::parseSimpleAction (DOMElement *simpleAction_element)
     }
 
   //  testing repeatDelay
-  if (dom_element_has_attr(simpleAction_element, "repeatDelay"))
+  if (dom_element_try_get_attr(attValue, simpleAction_element, "repeatDelay"))
     {
-      attValue = dom_element_get_attr(simpleAction_element, "repeatDelay");
-
-      actionExpression->setDelay (attValue);
+      actionExpression->setDelay (attValue);  // is that right ?
       if (attValue[0] == '$')
         {
           actionExpression->setDelay (attValue);
@@ -430,10 +398,8 @@ NclConnectorsParser::parseSimpleAction (DOMElement *simpleAction_element)
     }
 
   // repeat
-  if (dom_element_has_attr(simpleAction_element, "repeat"))
+  if (dom_element_try_get_attr(attValue, simpleAction_element, "repeat"))
     {
-      attValue = dom_element_get_attr(simpleAction_element, "repeat");
-
       if (attValue == "indefinite")
         {
           // This is insane :@
@@ -446,10 +412,8 @@ NclConnectorsParser::parseSimpleAction (DOMElement *simpleAction_element)
     }
 
   // testing value
-  if (dom_element_has_attr(simpleAction_element, "value"))
+  if (dom_element_try_get_attr(attValue, simpleAction_element, "value"))
     {
-      attValue = dom_element_get_attr(simpleAction_element, "value");
-
       actionExpression->setValue (attValue);
     }
 
@@ -616,7 +580,6 @@ NclConnectorsParser::addImportBaseToConnectorBase (ConnectorBase *connectorBase,
                                                    DOMElement *childObject)
 {
   string baseAlias, baseLocation;
-  NclParser *compiler;
   NclDocument *importedDocument;
   ConnectorBase *importedConnectorBase;
 
@@ -624,9 +587,7 @@ NclConnectorsParser::addImportBaseToConnectorBase (ConnectorBase *connectorBase,
   baseAlias = dom_element_get_attr(childObject, "alias");
   baseLocation = dom_element_get_attr(childObject, "documentURI");
 
-  compiler = getNclParser ();
-
-  importedDocument = compiler->importDocument (baseLocation);
+  importedDocument = getNclParser ()->importDocument (baseLocation);
   if (unlikely (importedDocument == NULL))
     {
       syntax_error ("importBase '%s': bad documentURI '%s'",
@@ -660,7 +621,7 @@ ConnectorBase *
 NclConnectorsParser::createConnectorBase (DOMElement *parentElement)
 {
   ConnectorBase *connBase;
-  string connBaseId= dom_element_get_attr(parentElement, "id");
+  string connBaseId = dom_element_get_attr(parentElement, "id");
   connBase = new ConnectorBase (connBaseId);
   return connBase;
 }
@@ -671,23 +632,19 @@ NclConnectorsParser::compileRoleInformation (Role *role,
 {
   string attValue;
   // event type
-  if (dom_element_has_attr(role_element, "eventType"))
+  if (dom_element_try_get_attr(attValue, role_element, "eventType"))
     {
-      attValue = dom_element_get_attr(role_element, "eventType");
       role->setEventType (EventUtil::getTypeCode (attValue));
     }
 
   //  cardinality
-  if (dom_element_has_attr(role_element, "min"))
+  if (dom_element_try_get_attr(attValue, role_element, "min"))
     {
-      attValue = dom_element_get_attr(role_element, "min");
       role->setMinCon ((xstrto_int (attValue)));
     }
 
-  if (dom_element_has_attr(role_element, "max"))
+  if (dom_element_try_get_attr(attValue, role_element, "max"))
     {
-      attValue = dom_element_get_attr(role_element,"max");
-
       if (attValue == "unbounded")
         {
           role->setMaxCon (Role::UNBOUNDED);
@@ -719,10 +676,8 @@ NclConnectorsParser::createCompoundCondition (DOMElement *compoundCond_element)
     }
 
   // delay
-  if (dom_element_has_attr(compoundCond_element, "delay"))
+  if (dom_element_try_get_attr(attValue, compoundCond_element, "delay"))
     {
-      attValue = dom_element_get_attr(compoundCond_element, "delay");
-
       if (attValue[0] == '$')
         {
           conditionExpression->setDelay (attValue);
@@ -742,15 +697,14 @@ NclConnectorsParser::createCompoundCondition (DOMElement *compoundCond_element)
 
 
 AssessmentStatement *
-NclConnectorsParser::createAssessmentStatement (DOMElement *assessmentStatement_element)
+NclConnectorsParser::createAssessmentStatement (
+    DOMElement *assessmentStatement_element)
 {
   AssessmentStatement *assessmentStatement;
   string attValue;
 
-  if (dom_element_has_attr(assessmentStatement_element, "comparator"))
+  if (dom_element_try_get_attr(attValue, assessmentStatement_element, "comparator"))
     {
-      attValue = dom_element_get_attr(assessmentStatement_element, "comparator");
-
       assessmentStatement
           = new AssessmentStatement (Comparator::fromString (attValue));
     }
@@ -765,10 +719,11 @@ NclConnectorsParser::createAssessmentStatement (DOMElement *assessmentStatement_
 CompoundStatement *
 NclConnectorsParser::createCompoundStatement (DOMElement *parentElement)
 {
+  string attValue;
   CompoundStatement *compoundStatement = new CompoundStatement ();
 
-  string op = dom_element_get_attr(parentElement, "operator");
-  if (op == "and")
+  attValue = dom_element_get_attr(parentElement, "operator");
+  if (attValue == "and")
     {
       compoundStatement->setOperator (CompoundStatement::OP_AND);
     }
@@ -778,9 +733,8 @@ NclConnectorsParser::createCompoundStatement (DOMElement *parentElement)
     }
 
   // testing isNegated
-  if (dom_element_has_attr(parentElement, "isNegated"))
+  if (dom_element_try_get_attr(attValue, parentElement, "isNegated"))
     {
-      string attValue = dom_element_get_attr(parentElement, "isNegated");
       compoundStatement->setNegated (attValue == "true");
     }
 
@@ -790,10 +744,11 @@ NclConnectorsParser::createCompoundStatement (DOMElement *parentElement)
 CompoundAction *
 NclConnectorsParser::createCompoundAction (DOMElement *compoundAction_element)
 {
+  string attValue;
   CompoundAction *actionExpression = new CompoundAction ();
-  string op = dom_element_get_attr(compoundAction_element, "operator");;
 
-  if (op == "seq")
+  attValue = dom_element_get_attr(compoundAction_element, "operator");
+  if (attValue == "seq")
     {
       actionExpression->setOperator (CompoundAction::OP_SEQ);
     }
@@ -803,10 +758,8 @@ NclConnectorsParser::createCompoundAction (DOMElement *compoundAction_element)
     }
 
   //  testar delay
-  if (dom_element_has_attr(compoundAction_element, "delay"))
+  if (dom_element_try_get_attr(attValue, compoundAction_element, "delay"))
     {
-      string attValue = dom_element_get_attr(compoundAction_element, "delay");
-
       if (attValue[0] == '$')
         {
           actionExpression->setDelay (attValue);

@@ -139,23 +139,17 @@ NclLayoutParser::addImportBaseToRegionBase (RegionBase *regionBase,
 RegionBase *
 NclLayoutParser::createRegionBase (DOMElement *parentElement)
 {
+  string device;
   RegionBase *regionBase;
 
   regionBase = new RegionBase (dom_element_get_attr(parentElement, "id"),
                            deviceLayout);
 
   // device attribute
-  if (dom_element_has_attr(parentElement, "device"))
+  if (dom_element_try_get_attr(device, parentElement, "device"))
     {
-      string mapId = "";
-      // region for output bit map attribute
-      if (dom_element_has_attr(parentElement, "region"))
-        {
-          mapId = dom_element_get_attr(parentElement, "region");
-        }
-
-      regionBase->setDevice (
-            dom_element_get_attr(parentElement, "device"), mapId);
+      string mapId = dom_element_get_attr(parentElement, "region");
+      regionBase->setDevice (device , mapId);
     }
   else
     {

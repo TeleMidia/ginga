@@ -26,24 +26,16 @@ NclMetainformationParser::NclMetainformationParser (NclParser *nclParser)
 }
 
 Meta *
-NclMetainformationParser::parseMeta (DOMElement *parentElement)
+NclMetainformationParser::parseMeta (DOMElement *meta_element)
 {
   string name, content;
 
-  if (dom_element_has_attr(parentElement, "name"))
-    {
-      name = dom_element_get_attr(parentElement, "name");
-    }
-  else
+  if (!dom_element_try_get_attr(name, meta_element, "name"))
     {
       syntax_error ("meta: missing name");
     }
 
-  if (dom_element_has_attr(parentElement, "content"))
-    {
-      content = dom_element_get_attr(parentElement, "content");
-    }
-  else
+  if (!dom_element_try_get_attr(content, meta_element, "content"))
     {
       syntax_error ("meta: missing content");
     }

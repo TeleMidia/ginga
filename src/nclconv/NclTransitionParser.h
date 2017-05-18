@@ -34,7 +34,6 @@ public:
   explicit NclTransitionParser (NclParser *nclParse);
 
   TransitionBase *parseTransitionBase (DOMElement *parentElement);
-
   Transition *parseTransition (DOMElement *parentElement);
 
   void addImportBaseToTransitionBase (TransitionBase *, DOMElement *);

@@ -68,9 +68,9 @@ NclLinkingParser::parseLinkOrBindParam (DOMElement *parentElement)
 
 Link *
 NclLinkingParser::parseLink (DOMElement *link_element,
-                             CompositeNode *objGrandParent)
+                             CompositeNode *compositeNode)
 {
-  Link *link = createLink (link_element, objGrandParent);
+  Link *link = createLink (link_element, compositeNode);
   g_assert_nonnull (link);
 
   for (DOMElement *child: dom_element_children(link_element))
@@ -232,15 +232,13 @@ NclLinkingParser::createBind (DOMElement *bind_element, Link *link)
   if (role == NULL)
     {
       // &got
-      if (dom_element_has_attr(bind_element, "role"))
+      if (dom_element_try_get_attr(roleId, bind_element, "role"))
         {
           ConditionExpression *condition;
           CompoundCondition *compoundCondition;
           AssessmentStatement *statement;
           AttributeAssessment *assessment;
           ValueAssessment *otherAssessment;
-
-          roleId = dom_element_get_attr(bind_element, "role");
 
           assessment = new AttributeAssessment (roleId);
           assessment->setEventType (EventUtil::EVT_ATTRIBUTION);
@@ -279,17 +277,16 @@ NclLinkingParser::createBind (DOMElement *bind_element, Link *link)
         }
     }
 
-  return link->bind (
-        anchorNode, interfacePoint, descriptor, role->getLabel () );
+  return link->bind (anchorNode, interfacePoint, descriptor, role->getLabel ());
 }
 
 Link *
-NclLinkingParser::createLink (DOMElement *parentElement,
-                              CompositeNode *objGrandParent)
+NclLinkingParser::createLink (DOMElement *link_element,
+                              CompositeNode *compositeNode)
 {
   NclDocument *document = getNclParser ()->getNclDocument ();
   string connectorId =
-      dom_element_get_attr(parentElement, "xconnector");
+      dom_element_get_attr(link_element, "xconnector");
 
   _connector = document->getConnector (connectorId);
   if (unlikely (_connector == NULL))
@@ -299,23 +296,11 @@ NclLinkingParser::createLink (DOMElement *parentElement,
 
   g_assert (_connector->instanceOf ("CausalConnector"));
 
-  Link *link = new CausalLink (getId (parentElement), _connector);
-  _composite = objGrandParent;
+  Link *link = new CausalLink (dom_element_get_attr (link_element, "id"),
+                               _connector);
+  _composite = compositeNode;
 
   return link;
 }
-
-string
-NclLinkingParser::getId (DOMElement *element)
-{
-  string strRet = "";
-  if (dom_element_has_attr (element, "id"))
-    {
-      strRet = dom_element_get_attr (element, "id");
-    }
-
-  return strRet;
-}
-
 
 GINGA_NCLCONV_END
