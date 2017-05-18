@@ -431,7 +431,7 @@ Player::setPropertyValue (const string &name, const string &value)
   vector<string> params;
 
       if (name == "bounds"){
-          params = split (value, ",");
+          params = split (value, ',');
           if (params.size () == 4)
             {
                this->rect.x = xstrto_int (params[0]);
@@ -441,14 +441,14 @@ Player::setPropertyValue (const string &name, const string &value)
             }
         }
       else if (name == "location"){
-          params = split (value, ",");
+          params = split (value, ',');
           if (params.size () == 2)
             {
        
             }
         }
       else if (name == "size") {
-          params = split (value, ",");
+          params = split (value, ',');
           if (params.size () == 2)
             {
           /*    outputWindow->resize (

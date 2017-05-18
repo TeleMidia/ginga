@@ -1487,7 +1487,7 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
       return true;
     }
 
-  params = split (xstrchomp (value), ",");
+  params = split (xstrchomp (value), ',');
 
   if (propName == "size")
     {
