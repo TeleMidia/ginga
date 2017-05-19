@@ -37,8 +37,8 @@ VideoPlayer::VideoPlayer (const string &mrl) : Thread (), Player (mrl)
   this->texture = NULL;
 
   this->playbin = NULL;
-  this->bin = NULL;
-  this->filter = NULL;
+  this->binVideo = NULL;
+  this->filterVideo = NULL;
   this->sample = NULL;
 
   this->mutexInit ();
@@ -57,9 +57,13 @@ void
 VideoPlayer::createPipeline ()
 {
   GstElement *scale;
-  GstElement *sink;
+  GstElement *sinkVideo;
 
-  GstPad *pad;
+  //GstElement *convertAudio;
+  //GstElement *sinkAudio;
+
+  GstPad *padVideo;
+  //GstPad *padAudio;
 
   char *uri;
 
@@ -74,34 +78,66 @@ VideoPlayer::createPipeline ()
   g_object_set (G_OBJECT (this->playbin), "uri", uri, NULL);
   g_free (uri);
 
-  bin = gst_bin_new (NULL);
-  g_assert_nonnull (bin);
+  
+  this->binVideo = gst_bin_new (NULL);
+  g_assert_nonnull (this->binVideo);
 
-  filter = gst_element_factory_make ("capsfilter", NULL);
-  g_assert_nonnull (filter);
+  this->filterVideo = gst_element_factory_make ("capsfilter", NULL);
+  g_assert_nonnull (this->filterVideo);
 
   scale = gst_element_factory_make ("videoscale", NULL);
   g_assert_nonnull (scale);
 
-  sink = gst_element_factory_make ("appsink", NULL);
-  g_assert_nonnull (sink);
+  sinkVideo = gst_element_factory_make ("appsink", NULL);
+  g_assert_nonnull (sinkVideo);
 
-  g_assert (gst_bin_add (GST_BIN (bin), filter));
-  g_assert (gst_bin_add (GST_BIN (bin), scale));
-  g_assert (gst_bin_add (GST_BIN (bin), sink));
+  g_assert (gst_bin_add (GST_BIN (this->binVideo), this->filterVideo));
+  g_assert (gst_bin_add (GST_BIN (this->binVideo), scale));
+  g_assert (gst_bin_add (GST_BIN (this->binVideo), sinkVideo));
 
-  g_assert (gst_element_link (filter, scale));
-  g_assert (gst_element_link (scale, sink));
+  g_assert (gst_element_link (this->filterVideo, scale));
+  g_assert (gst_element_link (scale, sinkVideo));
 
-  pad = gst_element_get_static_pad (filter, "sink");
-  gst_element_add_pad (bin, gst_ghost_pad_new ("sink", pad));
+  padVideo = gst_element_get_static_pad (this->filterVideo, "sink");
+  gst_element_add_pad (this->binVideo, gst_ghost_pad_new ("sink", padVideo));
+  
+  //TODO 
+  //audio filter to handle properties
+  /*this->binAudio = gst_bin_new (NULL);
+  g_assert_nonnull (this->binAudio);
 
-  g_object_set (G_OBJECT (this->playbin), "video-sink", bin, NULL);
+  this->filterAudio = gst_element_factory_make ("capsfilter", NULL);
+  g_assert_nonnull (this->filterAudio); 
+
+  this->audiopanorama = gst_element_factory_make ("audiopanorama", NULL);
+  g_assert_nonnull (this->audiopanorama);
+
+  convertAudio = gst_element_factory_make ("audioconvert", NULL);
+  g_assert_nonnull (convertAudio);
+
+  sinkAudio = gst_element_factory_make ("autoaudiosink", NULL);
+  g_assert_nonnull (sinkAudio);
+
+  g_assert (gst_bin_add (GST_BIN (this->binAudio), this->filterAudio));
+  g_assert (gst_bin_add (GST_BIN (this->binAudio), this->audiopanorama));
+  g_assert (gst_bin_add (GST_BIN (this->binAudio), convertAudio));
+  g_assert (gst_bin_add (GST_BIN (this->binVideo), sinkAudio));
+
+  g_assert (gst_element_link (this->filterAudio, this->audiopanorama));
+  g_assert (gst_element_link (this->audiopanorama, convertAudio));
+  g_assert (gst_element_link (convertAudio, sinkAudio));
+
+  padAudio = gst_element_get_static_pad (this->filterAudio, "sink");
+  gst_element_add_pad (this->binAudio, gst_ghost_pad_new ("sink", padAudio));*/
+
+
+  g_object_set (G_OBJECT (this->playbin), "video-sink", this->binVideo, NULL);
+  //g_object_set (G_OBJECT (this->playbin), "audio-sink", this->binAudio, NULL);
 
   callbacks.eos = eosCB;
   callbacks.new_preroll = newPrerollCB;
   callbacks.new_sample = newSampleCB;
-  gst_app_sink_set_callbacks (GST_APP_SINK (sink), &callbacks, this, NULL);
+  gst_app_sink_set_callbacks (GST_APP_SINK (sinkVideo), &callbacks, this, NULL);
 
 //  bus = gst_element_get_bus (this->playbin);
 //  msg = gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE,
@@ -133,7 +169,8 @@ VideoPlayer::newSampleCB (GstAppSink *appsink, gpointer data)
 
   player->lock();
 
-  if ( player->sample != NULL ){
+  if ( player->sample != NULL )
+  {
     gst_sample_unref (player->sample);
     player->sample = NULL;
   }
@@ -178,9 +215,10 @@ VideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   this->lock ();
 
   //g_assert_nonnull(surface);
-  if ( sample != NULL && this->status == OCCURRING ){
-
-    if (this->texture == NULL){
+  if ( this->sample != NULL && this->status == OCCURRING )
+  {
+    if (this->texture == NULL)
+    {
       this->texture = SDL_CreateTexture (renderer, SDL_PIXELFORMAT_ARGB32,
                                 SDL_TEXTUREACCESS_TARGET,
                                 this->rect.w,
@@ -191,10 +229,10 @@ VideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
     }
 
 
-    buf = gst_sample_get_buffer (sample);
+    buf = gst_sample_get_buffer (this->sample);
     g_assert_nonnull (buf);
 
-    caps = gst_sample_get_caps (sample);
+    caps = gst_sample_get_caps (this->sample);
     g_assert_nonnull (caps);
 
     g_assert (gst_video_info_from_caps(&v_info, caps));
@@ -208,8 +246,8 @@ VideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
     gst_video_frame_unmap (&v_frame);
 
-    gst_sample_unref (sample);
-    sample = NULL;
+    gst_sample_unref (this->sample);
+    this->sample = NULL;
   }
 
   this->unlock ();
@@ -225,31 +263,6 @@ VideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   }
 
   return true; //Keep job
-}
-
-void
-VideoPlayer::initializeAudio (arg_unused (int numArgs), arg_unused (char *args[]))
-{
-	TRACE ();
-}
-
-void
-VideoPlayer::releaseAudio ()
-{
-	g_debug ("%s", G_STRLOC);
-}
-
-void
-VideoPlayer::getOriginalResolution (arg_unused(int *width), arg_unused(int *height))
-{
-	g_debug ("%s", G_STRLOC);
-}
-
-int64_t
-VideoPlayer::getVPts ()
-{
-	g_debug ("%s", G_STRLOC);
-  return 0;
 }
 
 guint32
@@ -277,26 +290,6 @@ VideoPlayer::setMediaTime (arg_unused(guint32 pos))
 	TRACE ();
 }
 
-void
-VideoPlayer::setStopTime (arg_unused(double pos))
-{
-	TRACE ();
-}
-
-double
-VideoPlayer::getStopTime ()
-{
-	TRACE ();
-  g_debug (">>-------------------- VideoPlayer:getStopTime -------------------<<");
-  return 0;
-}
-
-void
-VideoPlayer::setScope (arg_unused(const string &scope), arg_unused(short type), arg_unused(double begin), arg_unused(double end),arg_unused(double outTransDur))
-{
-	TRACE ();
-}
-
 bool
 VideoPlayer::play ()
 {
@@ -305,12 +298,12 @@ VideoPlayer::play ()
     return true;
   }
 
-  g_object_set (G_OBJECT (this->playbin), "volume", soundLevel, NULL);
+  g_object_set (G_OBJECT (this->playbin), "volume", this->soundLevel, NULL);
 
   Player::play ();
 
-  ret = gst_element_set_state (this->playbin, GST_STATE_PLAYING);
-  g_assert (ret != GST_STATE_CHANGE_FAILURE);
+  this->ret = gst_element_set_state (this->playbin, GST_STATE_PLAYING);
+  g_assert (this->ret != GST_STATE_CHANGE_FAILURE);
 
   g_debug ("\nVideoPlayer::play()\n");
   //clog << "\n\n\n>>VideoPlayer::play() - " << this->mrl << "\n\n\n" << endl;
@@ -326,8 +319,10 @@ VideoPlayer::play ()
   g_object_get (this->playbin, "n-audio", &n_audio, NULL); //Number of audio streams
   g_debug ("%d video stream(s), %d audio stream(s)", n_video, n_audio);
 
-  if ( retWait == GST_STATE_CHANGE_SUCCESS ){
-    if ( n_video > 0 ){
+  if ( retWait == GST_STATE_CHANGE_SUCCESS )
+  {
+    if ( n_video > 0 )
+    {
       Ginga_Display->addJob (displayJobCallbackWrapper, this);
       this->condDisplayJobWait ();
       Thread::startThread ();
@@ -352,8 +347,8 @@ VideoPlayer::pause ()
 
   Player::pause ();
 
-  ret = gst_element_set_state (this->playbin, GST_STATE_PAUSED);
-  g_assert (ret != GST_STATE_CHANGE_FAILURE);
+  this->ret = gst_element_set_state (this->playbin, GST_STATE_PAUSED);
+  g_assert (this->ret != GST_STATE_CHANGE_FAILURE);
 
   g_debug ("\nVideoPlayer::pause()\n");
   printPipelineState ();
@@ -374,10 +369,11 @@ VideoPlayer::stop ()
 {
   this->lock ();
   //when stops with natural end
-  if( forcedNaturalEnd ){
+  if( forcedNaturalEnd )
+  {
     Player::stop ();
     gst_object_unref (this->playbin);
-    gst_object_unref (bin);
+    gst_object_unref (this->binVideo);
     this->unlock ();
     return;
   }
@@ -389,9 +385,9 @@ VideoPlayer::stop ()
     return;
   }
 
-  ret = gst_element_set_state (this->playbin, GST_STATE_READY);
-  //ret = gst_element_set_state (this->playbin, GST_STATE_NULL);
-  g_assert (ret != GST_STATE_CHANGE_FAILURE);
+  this->ret = gst_element_set_state (this->playbin, GST_STATE_READY);
+  //this->ret = gst_element_set_state (this->playbin, GST_STATE_NULL);
+  g_assert (this->ret != GST_STATE_CHANGE_FAILURE);
 
   g_debug ("\nVideoPlayer::stop()\n");
   //clog << "\n\n\n>>VideoPlayer::stop() - " << this->mrl << "\n\n\n" << endl;
@@ -407,7 +403,7 @@ VideoPlayer::stop ()
 
   Player::stop ();
   gst_object_unref (this->playbin);
-  gst_object_unref (bin);
+  gst_object_unref (this->binVideo);
   this->unlock ();
 }
 
@@ -445,12 +441,17 @@ VideoPlayer::setPropertyValue (const string &name, const string &value)
     return;
 
   if (name == "soundLevel")
-    {
+  {
       this->soundLevel = xstrtodorpercent (value);
       g_debug ("video: setting soundLevel to %f\n", this->soundLevel);
       g_object_set (G_OBJECT (this->playbin), "volume",
                     this->soundLevel, NULL);
-    }
+  }
+  
+  //TODO
+  //balanceLevel (Gstreamer audiopanorama)
+  //trebleLevel
+  //bassLevel
 
   Player::setPropertyValue (name, value);
 }
@@ -464,7 +465,7 @@ VideoPlayer::addListener (IPlayerListener *listener)
 string
 VideoPlayer::getMrl ()
 {
-  return mrl;
+  return this->mrl;
 }
 
 bool
@@ -481,7 +482,8 @@ VideoPlayer::setOutWindow (SDLWindow* windowId)
   GstStructure *st;
 
   this->window = windowId;
-  if(windowId!=NULL) {
+  if(windowId!=NULL) 
+  {
       this->rect = windowId->getRect();
       this->z = windowId->getZ();
   }
@@ -495,18 +497,11 @@ VideoPlayer::setOutWindow (SDLWindow* windowId)
   caps = gst_caps_new_full (st, NULL);
   g_assert_nonnull (caps);
 
-  g_object_set (filter, "caps", caps, NULL);
+  g_object_set (this->filterVideo, "caps", caps, NULL);
   gst_caps_unref (caps);
-
 
 	return true;
 }
-
-/*void
-VideoPlayer::setAVPid (arg_unused(int aPid), arg_unused(int vPid))
-{
-	TRACE ();
-}*/
 
 bool
 VideoPlayer::isRunning ()
@@ -522,19 +517,24 @@ VideoPlayer::run ()
 void
 VideoPlayer::printPipelineState()
 {
-  if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_PAUSED){
+  if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_PAUSED)
+  {
     g_debug ("PIPELINE::PAUSED\n");
   }
-  else if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_PLAYING){
+  else if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_PLAYING)
+  {
     g_debug ("PIPELINE::PLAYING\n");
   }
-  else if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_READY){
+  else if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_READY)
+  {
     g_debug ("PIPELINE::READY\n");
   }
-  else if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_NULL){
+  else if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_NULL)
+  {
     g_debug ("PIPELINE::NULL\n");
   }
-  else if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_VOID_PENDING){
+  else if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_VOID_PENDING)
+  {
     g_debug ("PIPELINE::PENDING\n");
   }
 }

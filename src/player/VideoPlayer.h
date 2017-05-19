@@ -55,19 +55,9 @@ public:
   VideoPlayer (const string &mrl); //works
   virtual ~VideoPlayer ();
 
-  static void initializeAudio (int numArgs, char *args[]);
-  static void releaseAudio ();
-
-  void getOriginalResolution (int *width, int *height);
-  int64_t getVPts ();
-
   guint32 getMediaTime (); //works
   void setMediaTime (guint32 pos);
-  void setStopTime (double pos);
-  double getStopTime ();
-  void setScope (const string &scope, short type = TYPE_PRESENTATION,
-                 double begin = -1, double end = -1,
-                 double outTransDur = -1);
+  
   bool play (); //works
   void pause (); //works
   void stop (); //works
@@ -81,8 +71,6 @@ public:
   string getMrl (); //works
   bool isPlaying (); //works
   bool isRunning (); //works
-
-  //void setAVPid (int aPid, int vPid);
 
   bool setOutWindow (SDLWindow* windowId); //works
 
@@ -103,8 +91,13 @@ public:
   double soundLevel;
 
   GstElement *playbin;
-  GstElement *bin;
-  GstElement *filter;
+
+  GstElement *binVideo;
+  GstElement *filterVideo;
+
+  //GstElement *binAudio;
+  //GstElement *filterAudio;
+  //GstElement *audiopanorama;
 
   GstSample *sample;
 
