@@ -37,44 +37,21 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-AdapterPlayerManager::AdapterPlayerManager (NclPlayerData *data) : Thread ()
+AdapterPlayerManager::AdapterPlayerManager (NclPlayerData *data)
 {
   nclPlayerData = data;
-  Thread::mutexInit (&mutexPlayer, false);
-
-  running = true;
-  startThread ();
 }
 
 AdapterPlayerManager::~AdapterPlayerManager ()
 {
-  isDeleting = true;
-  running = false;
-  unlockConditionSatisfied ();
-
   clear ();
   clearDeletePlayers ();
-
-  Thread::mutexLock (&mutexPlayer);
-  Thread::mutexUnlock (&mutexPlayer);
-  Thread::mutexDestroy (&mutexPlayer);
-
-  clog << "AdapterPlayerManager::~AdapterPlayerManager all done" << endl;
 }
 
 bool
 AdapterPlayerManager::hasPlayer (IAdapterPlayer *player)
 {
-  bool hasInstance = false;
-
-  Thread::mutexLock (&mutexPlayer);
-  if (playerNames.find (player) != playerNames.end ())
-    {
-      hasInstance = true;
-    }
-  Thread::mutexUnlock (&mutexPlayer);
-
-  return hasInstance;
+  return playerNames.find (player) != playerNames.end ();
 }
 
 NclPlayerData *
@@ -84,13 +61,13 @@ AdapterPlayerManager::getNclPlayerData ()
 }
 
 void
-AdapterPlayerManager::setVisible (const string &objectId, const string &visible,
+AdapterPlayerManager::setVisible (const string &objectId,
+                                  const string &visible,
                                   NclAttributionEvent *event)
 {
   map<string, IAdapterPlayer *>::iterator i;
   AdapterFormatterPlayer *player;
 
-  Thread::mutexLock (&mutexPlayer);
   i = objectPlayers.find (objectId);
   if (i != objectPlayers.end ())
     {
@@ -98,7 +75,6 @@ AdapterPlayerManager::setVisible (const string &objectId, const string &visible,
       player->setPropertyValue (event, visible);
       event->stop ();
     }
-  Thread::mutexUnlock (&mutexPlayer);
 }
 
 bool
@@ -109,13 +85,11 @@ AdapterPlayerManager::removePlayer (void *exObject)
   string objId;
 
   object = (NclExecutionObject *)exObject;
-  Thread::mutexLock (&mutexPlayer);
   if (NclExecutionObject::hasInstance (object, false))
     {
       objId = object->getId ();
       removed = removePlayer (objId);
     }
-  Thread::mutexUnlock (&mutexPlayer);
 
   return removed;
 }
@@ -130,12 +104,8 @@ AdapterPlayerManager::removePlayer (const string &objectId)
   if (i != objectPlayers.end ())
     {
       player = (AdapterFormatterPlayer *)(i->second);
-      if (!player->instanceOf ("AdapterProgramAVPlayer"))
-        {
-          deletePlayers[objectId] = player;
-        }
+      deletePlayers[objectId] = player;
       objectPlayers.erase (i);
-      unlockConditionSatisfied ();
       return true;
     }
 
@@ -147,7 +117,6 @@ AdapterPlayerManager::clear ()
 {
   map<string, IAdapterPlayer *>::iterator i;
 
-  Thread::mutexLock (&mutexPlayer);
   i = objectPlayers.begin ();
   while (i != objectPlayers.end ())
     {
@@ -161,7 +130,6 @@ AdapterPlayerManager::clear ()
         }
     }
   objectPlayers.clear ();
-  Thread::mutexUnlock (&mutexPlayer);
 }
 
 AdapterFormatterPlayer *
@@ -262,7 +230,6 @@ AdapterPlayerManager::getObjectPlayer (void *eObj)
   string objId;
   NclExecutionObject *execObj = (NclExecutionObject *)eObj;
 
-  Thread::mutexLock (&mutexPlayer);
   objId = execObj->getId ();
   i = objectPlayers.find (objId);
   if (i == objectPlayers.end ())
@@ -283,7 +250,6 @@ AdapterPlayerManager::getObjectPlayer (void *eObj)
     {
       player = (AdapterFormatterPlayer *)(i->second);
     }
-  Thread::mutexUnlock (&mutexPlayer);
 
   return player;
 }
@@ -382,7 +348,6 @@ AdapterPlayerManager::clearDeletePlayers ()
   IAdapterPlayer *player;
   string playerClassName = "";
 
-  Thread::mutexLock (&mutexPlayer);
   i = deletePlayers.begin ();
   while (i != deletePlayers.end ())
     {
@@ -403,7 +368,6 @@ AdapterPlayerManager::clearDeletePlayers ()
       ++i;
     }
   deletePlayers.clear ();
-  Thread::mutexUnlock (&mutexPlayer);
 
   i = dPlayers.begin ();
   while (i != dPlayers.end ())
@@ -415,47 +379,6 @@ AdapterPlayerManager::clearDeletePlayers ()
 
       ++i;
     }
-}
-
-void
-AdapterPlayerManager::run ()
-{
-  set<IAdapterPlayer *>::iterator i;
-
-  while (running)
-    {
-      if (!isDeleting)
-        {
-          Thread::mutexLock (&mutexPlayer);
-          if (deletePlayers.empty ())
-            {
-              Thread::mutexUnlock (&mutexPlayer);
-              waitForUnlockCondition ();
-            }
-          else
-            {
-              Thread::mutexUnlock (&mutexPlayer);
-            }
-        }
-
-      if (!running)
-        {
-          return;
-        }
-
-      if (isDeleting)
-        {
-          break;
-        }
-
-      Thread::mSleep (1000);
-      if (running)
-        {
-          clearDeletePlayers ();
-        }
-    }
-
-  clog << "AdapterPlayerManager::run all done" << endl;
 }
 
 GINGA_FORMATTER_END
