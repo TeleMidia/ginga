@@ -14,18 +14,20 @@ License for more details.
 
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
-#include "NclParser.h"
 
 #include "ginga.h"
 #include "ginga-color-table.h"
 
+#include "NclParser.h"
+
 GINGA_NCLCONV_BEGIN
 
-// dom_element_* functions are internal functions that safely wraps Xerces calls
+// dom_element_* functions are internal functions that safely wraps Xerces
+// calls.
 
-// Get the DOMElement tagname as a std::string and free resources allocated by
-// Xerces
-string
+// Gets the DOMElement tagname as a std::string and free resources allocated
+// by Xerces.
+static string
 dom_element_tagname (const DOMElement *el)
 {
   char *tagname = XMLString::transcode (el->getTagName ());
@@ -35,8 +37,8 @@ dom_element_tagname (const DOMElement *el)
   return tagname_str;
 }
 
-// Leak free check if DOMElement* has an attribute
-bool
+// Checks if DOMElement* has an attribute.
+static bool
 dom_element_has_attr (const DOMElement *el, const string &attr)
 {
   XMLCh *attr_xmlch = XMLString::transcode(attr.c_str());
@@ -49,7 +51,7 @@ dom_element_has_attr (const DOMElement *el, const string &attr)
 // Gets the value of an attribute of DOMElement* as a std::string and free
 // resources allocated by Xerces.  Similar to Xerces, it returns an empty
 // string if there is no attribute.
-string
+static string
 dom_element_get_attr (const DOMElement *element, const string &attr)
 {
   XMLCh *attr_xmlch = XMLString::transcode(attr.c_str());
@@ -62,9 +64,9 @@ dom_element_get_attr (const DOMElement *element, const string &attr)
   return attr_value_str;
 }
 
-// If attribute exists in DOMElement *, gets its value in gotAttr variable and
-// returns true.  Otherwise, does not change gotAttr and returns false.
-bool
+// If attribute exists in DOMElement *, gets its value in gotAttr variable
+// and returns true.  Otherwise, does not change gotAttr and returns false.
+static bool
 dom_element_try_get_attr (string &gotAttr,
                           const DOMElement *element,
                           const string &attr)
@@ -86,7 +88,7 @@ dom_element_try_get_attr (string &gotAttr,
 
 // Sets the value of an attribute of DOMElement* free resources allocated by
 // Xerces.
-void
+static void
 dom_element_set_attr (DOMElement *element,
                       const string &attr, const string &value)
 {
@@ -100,7 +102,7 @@ dom_element_set_attr (DOMElement *element,
 }
 
 // Removes the atribute from DOMElement *
-void
+static void
 dom_element_remove_attr (DOMElement *element, const string &attr)
 {
   XMLCh *attr_name = XMLString::transcode (attr.c_str());
@@ -113,7 +115,7 @@ dom_element_remove_attr (DOMElement *element, const string &attr)
         X != nullptr; \
         X = X->getNextElementSibling() )
 
-vector <DOMElement *>
+static vector <DOMElement *>
 dom_element_children(DOMElement *el)
 {
   vector <DOMElement *> vet;
@@ -127,7 +129,7 @@ dom_element_children(DOMElement *el)
   return vet;
 }
 
-vector <DOMElement *>
+static vector <DOMElement *>
 dom_element_children_by_tagname(DOMElement *el, const string &tagname)
 {
   vector <DOMElement *> vet;
@@ -144,8 +146,9 @@ dom_element_children_by_tagname(DOMElement *el, const string &tagname)
   return vet;
 }
 
-static vector <DOMElement *>
-dom_element_children_by_tagnames(DOMElement *el, const vector<string> &tagnames)
+static G_GNUC_UNUSED vector <DOMElement *>
+dom_element_children_by_tagnames (DOMElement *el,
+                                  const vector<string> &tagnames)
 {
   vector <DOMElement *> vet;
 
@@ -756,12 +759,12 @@ NclParser::addLinkToContext (ContextNode *context, Link *link)
 
       if (link->getNumRoleBinds (role) < min)
         {
-          syntax_error ("link: too few binds for role '%s': %d",
+          syntax_error ("link: too few binds for role '%s': %u",
                         role->getLabel ().c_str (), min);
         }
       else if (max > 0 && (link->getNumRoleBinds (role) > max))
         {
-          syntax_error ("link: too many binds for role '%s': %d",
+          syntax_error ("link: too many binds for role '%s': %u",
                         role->getLabel ().c_str (), max);
           return;
         }
@@ -2457,9 +2460,9 @@ NclParser::createRegionBase (DOMElement *parentElement)
   return regionBase;
 }
 
-
-void set_perc_or_px (DOMElement *el, const string &att, LayoutRegion *region,
-                     bool (LayoutRegion::*setF)(double x, bool y))
+static void
+set_perc_or_px (DOMElement *el, const string &att, LayoutRegion *region,
+                bool (LayoutRegion::*setF)(double x, bool y))
 {
   string att_value;
   if (dom_element_try_get_attr(att_value, el, att))
