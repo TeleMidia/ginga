@@ -39,7 +39,7 @@ using namespace ::ginga::player;
 
 GINGA_FORMATTER_BEGIN
 
-class AdapterPlayerManager : public Thread
+class AdapterPlayerManager
 {
 private:
   map<string, IAdapterPlayer *> objectPlayers;
@@ -49,9 +49,7 @@ private:
   map<string, string> playerTable;
   IPlayerListener *editingCommandListener;
   IAdapterPlayer *epgFactoryAdapter;
-  bool running;
   NclPlayerData *nclPlayerData;
-  pthread_mutex_t mutexPlayer;
 
 public:
   AdapterPlayerManager (NclPlayerData *nclPlayerData);
@@ -83,7 +81,6 @@ private:
 
 protected:
   void clearDeletePlayers ();
-  void run ();
 };
 
 GINGA_FORMATTER_END

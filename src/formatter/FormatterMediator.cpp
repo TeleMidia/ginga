@@ -1006,18 +1006,9 @@ FormatterMediator::setScope (const string &scope, short type, double initTime,
 bool
 FormatterMediator::play ()
 {
-  bool documentStarted;
-
-  if (currentDocument != NULL)
-    {
-      Player::play ();
-      documentStarted = startDocument (currentDocument->getId (), scope);
-      return documentStarted;
-    }
-  else
-    {
-      return false;
-    }
+  g_assert_nonnull (currentDocument);
+  Player::play ();
+  return startDocument (currentDocument->getId (), scope);
 }
 
 void

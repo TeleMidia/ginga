@@ -123,7 +123,7 @@ main (int argc, char **argv)
 {
   FormatterMediator *formatter;
   int ginga_argc = argc;
-  char **ginga_argv = g_strdupv(argv);
+  char **ginga_argv = g_strdupv (argv);
 
 #if defined WITH_CEF && WITH_CEF
   CefMainArgs args (argc, argv);
@@ -147,7 +147,6 @@ main (int argc, char **argv)
   g_option_context_set_description (ctx, OPTION_DESC);
   g_option_context_add_main_entries (ctx, options, NULL);
   status = g_option_context_parse (ctx, &ginga_argc, &ginga_argv, &error);
-
   g_option_context_free (ctx);
 
   if (unlikely (!status))
@@ -166,27 +165,20 @@ main (int argc, char **argv)
 
   _Ginga_Display = new ginga::mb::Display (opt_width, opt_height,
                                            opt_fullscreen, opt_fps);
-  g_assert_nonnull (_Ginga_Display);
-
   formatter = new FormatterMediator ();
-  formatter->setCurrentDocument (string(ginga_argv[1]));
+  formatter->setCurrentDocument (string (ginga_argv[1]));
+  g_strfreev (ginga_argv);
 
-  // Start formatter loop.
   g_thread_new ("formatter", formatter_loop, formatter);
-
-  // Start render loop.
   _Ginga_Display->renderLoop ();
 
   delete Ginga_Display;
-
   // FIXME: This causes the program to crash!
   // delete formatter;
 
 #if defined WITH_CEF && WITH_CEF
   CefShutdown ();
 #endif
-
-  g_strfreev(ginga_argv); // free ginga arguments
 
   exit (EXIT_SUCCESS);
 }
