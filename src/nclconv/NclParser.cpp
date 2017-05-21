@@ -1499,6 +1499,7 @@ NclParser::parseSimpleAction (DOMElement *simpleAction_element)
 
       if (durVal != "" || byVal != "")
         {
+          double d;
           animation = new Animation ();
 
           if (durVal[0] == '$')
@@ -1507,27 +1508,16 @@ NclParser::parseSimpleAction (DOMElement *simpleAction_element)
             }
           else
             {
-              if (durVal.find ("s") != std::string::npos)
-                {
-                  animation->setDuration (xstrbuild ("%d", xstrtoint (durVal.substr (0, durVal.length () - 1), 10)));
-                }
-              else
-                {
-                  animation->setDuration (xstrbuild ("%d", (xstrtoint (durVal, 10))));
-                }
+              animation->setDuration (xstrbuild ("%d", (int) xstrtimetod (durVal)));
             }
 
-          if (byVal.find ("s") != std::string::npos)
+          if (_xstrtimetod (byVal, &d))
             {
-              animation->setBy (xstrbuild ("%d", (xstrtoint (byVal.substr (0, byVal.length () - 1), 10))));
+              animation->setBy (xstrbuild ("%d", (int) d));
             }
           else
             {
-              guint64 i;
-              if (_xstrtoull (byVal, &i, 10))
-                animation->setBy (xstrbuild ("%u", (guint) i));
-              else
-                animation->setBy ("indefinite"); // default
+              animation->setBy ("indefinite"); // default
             }
         }
 
@@ -2252,7 +2242,7 @@ NclParser::createTemporalAnchor (DOMElement *areaElement)
     {
       if (dom_element_try_get_attr(begin, areaElement ,"begin"))
         {
-          begVal = ::ginga::util::strUTCToSec (begin) * 1000;
+          begVal = xstrtimetod (begin) * 100;
         }
       else
         {
@@ -2261,7 +2251,7 @@ NclParser::createTemporalAnchor (DOMElement *areaElement)
 
       if (dom_element_try_get_attr(end, areaElement, "end"))
         {
-          endVal = ::ginga::util::strUTCToSec (end) * 1000;
+          endVal = xstrtimetod (end) * 1000;
         }
       else
         {
@@ -3534,8 +3524,7 @@ NclParser::createDescriptor (DOMElement *descriptor_element)
   // explicitDur
   if (dom_element_try_get_attr(attValue, descriptor_element, "explicitDur"))
     {
-      descriptor->setExplicitDuration (::ginga::util::strUTCToSec (attValue)
-                                       * 1000);
+      descriptor->setExplicitDuration (xstrtimetod (attValue) * 1000);
     }
 
   if (dom_element_try_get_attr(attValue, descriptor_element,"freeze"))

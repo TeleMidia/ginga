@@ -26,9 +26,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_UTIL_BEGIN
 
-// string
-double strUTCToSec (const string &utcValue);
-
 vector<string>
 split (const string &str, char token);
 
