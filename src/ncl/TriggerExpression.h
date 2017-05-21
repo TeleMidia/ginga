@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef TRIGGEREXPRESSION_H_
 #define TRIGGEREXPRESSION_H_
 
-#include "util/functions.h"
-using namespace ::ginga::util;
-
 #include "ConditionExpression.h"
 
 GINGA_NCL_BEGIN

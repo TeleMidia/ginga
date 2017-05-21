@@ -294,6 +294,20 @@ xstrreplaceall (string &str, const string &find_what,
     }
 }
 
+// Splits strings according to delimiter.
+vector<string>
+xstrsplit (const string &s, char delim)
+{
+  vector<string> result;
+  stringstream ss (s);
+  string tok;
+
+  while(getline (ss, tok, delim))
+    result.push_back (tok);
+
+  return result;
+}
+
 
 // Paths -------------------------------------------------------------------
 

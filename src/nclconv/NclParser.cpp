@@ -3622,7 +3622,7 @@ NclParser::createDescriptor (DOMElement *descriptor_element)
     {
       if((transitionBase = nclDoc->getTransitionBase ()))
         {
-          vector<string> transIds = split (attValue, ';');
+          vector<string> transIds = xstrsplit (attValue, ';');
           for (uint i = 0; i < transIds.size(); i++)
             {
               Transition *transition
@@ -3644,7 +3644,7 @@ NclParser::createDescriptor (DOMElement *descriptor_element)
     {
       if((transitionBase = nclDoc->getTransitionBase ()))
         {
-          vector<string> transIds = split (attValue, ';');
+          vector<string> transIds = xstrsplit (attValue, ';');
           for (uint i = 0; i < transIds.size(); i++)
             {
               Transition *transition

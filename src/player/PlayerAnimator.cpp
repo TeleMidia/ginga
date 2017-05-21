@@ -15,12 +15,9 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "PlayerAnimator.h"
-
+#include "ginga.h"
 #include "ginga-color-table.h"
-
-#include "util/functions.h"
-using namespace ::ginga::util;
+#include "PlayerAnimator.h"
 
 #include "mb/Display.h"
 using namespace ::ginga::mb;
@@ -42,29 +39,31 @@ PlayerAnimator::addProperty(const string &dur,
 {
   if(name == "bounds")
     {
-      vector<string> params = split(value, ',');
+      vector<string> params = xstrsplit (value, ',');
       if(params.size () == 4)
         {
-          updateList(dur, "left", params[0]);
-          updateList(dur, "top", params[1]);
-          updateList(dur, "width", params[2]);
-          updateList(dur, "height", params[3]);
+          updateList (dur, "left", params[0]);
+          updateList (dur, "top", params[1]);
+          updateList (dur, "width", params[2]);
+          updateList (dur, "height", params[3]);
         }
     }
    else if(name == "background" || name == "bgColor")
     {
       SDL_Color color;
-      ginga_color_input_to_sdl_color(value, &color);
-      updateList(dur,"red", to_string(color.r));
-      updateList(dur,"green", to_string(color.g));
-      updateList(dur,"blue", to_string(color.b));
+      ginga_color_input_to_sdl_color (value, &color);
+      updateList (dur, "red", to_string (color.r));
+      updateList (dur, "green", to_string (color.g));
+      updateList (dur, "blue", to_string (color.b));
     }
   else
-    updateList(dur, name, value);
+    {
+      updateList (dur, name, value);
+    }
 
 }
 
-void 
+void
 PlayerAnimator::updateList(const string &dur,
                            const string &name,
                            const string &value)
@@ -135,7 +134,7 @@ PlayerAnimator::getAnimationVelocity( gdouble initPos,
 {
   if(duration <= 0)
     return 0;
-  
+
   // g_debug("iPos: %f fPos: %f \n", initPos, finalPos);
 
   gdouble distance = finalPos - initPos;
@@ -217,7 +216,7 @@ PlayerAnimator::calculeColor(guint8* value, ANIM_PROPERTY* pr, gint32 dir)
 }
 
 void
-PlayerAnimator::updateColor(guint8* red, guint8* green, 
+PlayerAnimator::updateColor(guint8* red, guint8* green,
                             guint8* blue, guint8* alpha,
                             ANIM_PROPERTY* pr)
 {

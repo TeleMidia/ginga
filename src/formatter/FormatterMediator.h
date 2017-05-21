@@ -58,9 +58,6 @@ using namespace ::ginga::ncl;
 #include "ncl/ReferNode.h"
 using namespace ::ginga::ncl;
 
-#include "util/functions.h"
-using namespace ::ginga::util;
-
 #include "ncl/Base.h"
 #include "ncl/NclDocument.h"
 #include "ncl/ConnectorBase.h"

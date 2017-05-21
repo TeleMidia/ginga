@@ -20,8 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-#include "util/functions.h"
-
 #include "NclCascadingDescriptor.h"
 #include "NclExecutionObject.h"
 

@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _SIMPLECONDITION_H_
 #define _SIMPLECONDITION_H_
 
-#include "util/functions.h"
-using namespace ::ginga::util;
-
 #include "EventUtil.h"
 #include "TriggerExpression.h"
 #include "Role.h"

@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _SWITCHNODE_H_
 #define _SWITCHNODE_H_
 
-#include "util/functions.h"
-using namespace ::ginga::util;
-
 #include "ContextNode.h"
 #include "CompositeNode.h"
 #include "NodeEntity.h"

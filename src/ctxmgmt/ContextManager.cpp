@@ -24,9 +24,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
-#include "util/functions.h"
-using namespace ::ginga::util;
-
 GINGA_CTXMGMT_BEGIN
 
 ContextManager *ContextManager::_instance = NULL;

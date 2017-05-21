@@ -1487,14 +1487,14 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
       return true;
     }
 
-  params = split (xstrchomp (value), ',');
+  params = xstrsplit (xstrchomp (value), ',');
 
   if (propName == "size")
     {
       if (params.size () == 2)
         {
-          width = params[0];
-          height = params[1];
+          width = xstrchomp (params[0]);
+          height = xstrchomp (params[1]);
         }
       else
         {

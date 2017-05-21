@@ -20,11 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Entity.h"
 
-#include "util/functions.h"
-using namespace ::ginga::util;
-
-//#include <limits>
-
 GINGA_NCL_BEGIN
 
 class LayoutRegion : public Entity

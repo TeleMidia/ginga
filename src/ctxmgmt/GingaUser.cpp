@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "GingaUser.h"
 
-#include "util/functions.h"
-using namespace ::ginga::util;
-
 GINGA_CTXMGMT_BEGIN
 
 GingaUser::GingaUser (int id, const string &name, const string &passwd)

@@ -24,10 +24,8 @@ using namespace ::ginga::mb;
 #include "player/IPlayer.h"
 using namespace ::ginga::player;
 
-#include "util/functions.h"
-using namespace ::ginga::util;
-
 GINGA_FORMATTER_BEGIN
+
 /*
 SDLSurface*
 NclFocusSourceManager::getFocusSourceComponent (const string &src)

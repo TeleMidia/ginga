@@ -22,9 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/Display.h"
 using namespace ::ginga::mb;
 
-#include "util/functions.h"
-using namespace ::ginga::util;
-
 GINGA_PLAYER_BEGIN
 
 Player::Player (const string &mrl)
@@ -425,58 +422,58 @@ Player::getPropertyValue (string const &name)
 void
 Player::setPropertyValue (const string &name, const string &value)
 {
-  if(!value.length())
-    return; 
-
   vector<string> params;
 
-      if (name == "bounds"){
-          params = split (value, ',');
-          if (params.size () == 4)
-            {
-               this->rect.x = xstrtoint (params[0], 10);
-               this->rect.y = xstrtoint (params[1], 10);
-               this->rect.w = xstrtoint (params[2], 10);
-               this->rect.h = xstrtoint (params[3], 10);
-            }
+  if (!value.length ())
+    return;
+
+  if (name == "bounds")
+    {
+      params = xstrsplit (value, ',');
+      if (params.size () == 4)
+        {
+          this->rect.x = xstrtoint (params[0], 10);
+          this->rect.y = xstrtoint (params[1], 10);
+          this->rect.w = xstrtoint (params[2], 10);
+          this->rect.h = xstrtoint (params[3], 10);
         }
-      else if (name == "location"){
-          params = split (value, ',');
-          if (params.size () == 2)
-            {
-            }
-        }
-      else if (name == "size") {
-          params = split (value, ',');
-          if (params.size () == 2)
-            {
-              /*    outputWindow->resize (
-                    xstrto_int ((*params)[0]),
-                    xstrto_int ((*params)[1])); */
-            }
-      }
-      else if (name == "left") {
-          this->rect.x = xstrtoint (value, 10);
-      }
-      else if (name == "top"){
-          this->rect.y = xstrtoint (value, 10);
-      }
-      else if (name == "width"){
-          this->rect.w = xstrtoint (value, 10);
-      }
-      else if (name == "height"){
-          this->rect.h = xstrtoint (value, 10);
-      }
-      else if(name == "background" || name == "backgroundColor" || name == "bgColor"){
-          ginga_color_input_to_sdl_color(value, &this->bgColor);    
-      }
-      else if (name == "transparency"){
-          if(xstrtouint8 (value, 10) <= 0)
-             this->alpha = 255;
-          else       
-             this->alpha = (guint8)(255 - (((xstrtod (value)/100)*255)));
-      }
-    
+    }
+  else if (name == "location")
+    {
+      g_assert_not_reached ();
+    }
+  else if (name == "size")
+    {
+      g_assert_not_reached ();
+    }
+  else if (name == "left")
+    {
+      this->rect.x = xstrtoint (value, 10);
+    }
+  else if (name == "top")
+    {
+      this->rect.y = xstrtoint (value, 10);
+    }
+  else if (name == "width")
+    {
+      this->rect.w = xstrtoint (value, 10);
+    }
+  else if (name == "height")
+    {
+      this->rect.h = xstrtoint (value, 10);
+    }
+  else if(name == "background" || name == "backgroundColor"
+          || name == "bgColor")
+    {
+      ginga_color_input_to_sdl_color(value, &this->bgColor);
+    }
+  else if (name == "transparency")
+    {
+      if(xstrtouint8 (value, 10) <= 0)
+        this->alpha = 255;
+      else
+        this->alpha = (guint8)(255 - (((xstrtod (value)/100)*255)));
+    }
   properties[name] = value;
 }
 
