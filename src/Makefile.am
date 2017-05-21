@@ -19,17 +19,6 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 MAINTAINERCLEANFILES+= config.h.in
 
-AM_CPPFLAGS=\
-  -DGINGA_DATADIR='"$(pkgdatadir)/"'\
-  -DGINGA_BUTTON_DATADIR='"$(buttondir)/"'\
-  -DGINGA_CONTEXTMANAGER_DATADIR='"$(contextmanagerdir)/"'\
-  -DGINGA_FONT_DATADIR='"$(fontdir)"'\
-  -DGINGA_FORMATTER_DATADIR='"$(formatterdir)/"'\
-  -DGINGA_FORMATTERIMG_DATADIR='"$(formatterimgdir)/"'\
-  -DGINGA_MB_DATADIR='"$(mbdir)/"'\
-  -DGINGA_TUNER_DATADIR='"$(tunerdir)/"'\
-  $(NULL)
-
 AM_CXXFLAGS=\
   $(CEF_CFLAGS)\
   $(GLIB_CFLAGS)\

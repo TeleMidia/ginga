@@ -38,14 +38,6 @@ LT_INIT([win32-dll])
 # Ginga version.
 AC_DEFINE_UNQUOTED([VERSION], ["$PACKAGE_VERSION"], [Ginga version.])
 
-# Data directories.
-AC_SUBST([buttondir], ['${pkgdatadir}'/img/button])
-AC_SUBST([contextmanagerdir], ['${pkgdatadir}'/contextmanager])
-AC_SUBST([fontdir], ['${pkgdatadir}'/font])
-AC_SUBST([formatterimgdir], ['${pkgdatadir}'/img/roller])
-AC_SUBST([mbdir], ['${pkgdatadir}'/mb/config])
-AC_SUBST([tunerdir], ['${pkgdatadir}'/tuner])
-
 # Required dependencies version.
 m4_define([glib_required_version],       [2.32.4])
 m4_define([gstreamer_required_version],  [1.8.0])
@@ -229,7 +221,6 @@ AM_CONDITIONAL([WITH_CEF], [test "$with_cef" = yes])
 # Epilogue.
 AC_CONFIG_FILES([
 Makefile
-data/Makefile
 src/Makefile
 ])
 
