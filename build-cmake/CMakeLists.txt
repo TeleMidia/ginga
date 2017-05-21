@@ -18,7 +18,6 @@ find_package(Cairo REQUIRED)
 find_package(Pango REQUIRED)
 find_package(GDKPixBuf REQUIRED)
 find_package(RSVG REQUIRED)
-find_package(FFmpeg REQUIRED)
 find_package(GStreamer REQUIRED)
 
 #add_definitions(-DPACKAGE_VERSION="1.0")
@@ -141,6 +140,7 @@ add_executable(ginga
   ../src/formatter/NclPresentationEvent.cpp
   ../src/formatter/NclSelectionEvent.cpp
   ../src/formatter/NclSwitchEvent.cpp
+  ../src/formatter/Parser.cpp
   ../src/formatter/PresentationContext.cpp
   ../src/formatter/PrivateBaseContext.cpp
   ../src/formatter/RuleAdapter.cpp
@@ -214,13 +214,12 @@ add_executable(ginga
   ../src/ncl/TransitionUtil.cpp
   ../src/ncl/TriggerExpression.cpp
   ../src/ncl/ValueAssessment.cpp
-  ../src/nclconv/NclParser.cpp
   ../src/player/ImagePlayer.cpp
   ../src/player/LuaPlayer.cpp
   ../src/player/Player.cpp
   ../src/player/PlayerAnimator.cpp
   ../src/system/Thread.cpp
-  ../src/util/functions.cpp
+  ../src/common.cpp
 
 #if WITH_ESPEAK
 #  ../src/formatter/AdapterSsmlPlayer.cpp
@@ -281,11 +280,6 @@ target_link_libraries(ginga PRIVATE
 
   XercesC::XercesC
   expat
-
-  ${FFMPEG_LIBRARIES}
-  swresample
-  swscale
-  avfilter
 
   ${SDL2_LIBRARY}
   ${SDL2_IMAGE_LIBRARIES}
