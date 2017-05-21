@@ -20,11 +20,6 @@ find_package(GDKPixBuf REQUIRED)
 find_package(RSVG REQUIRED)
 find_package(GStreamer REQUIRED)
 
-#add_definitions(-DPACKAGE_VERSION="1.0")
-#add_definitions(-DWITH_ISDBT=0)
-#add_definitions(-DWITH_LINUXDVB)
-#add_definitions(-DWITH_MULTIDEVICE)
-
 add_definitions(-DGINGA_DATADIR="${CMAKE_BINARY_DIR}/data/ini/")
 add_definitions(-DGINGA_BUTTON_DATADIR="${CMAKE_BINARY_DIR}/data/img/button/")
 add_definitions(-DGINGA_CONTEXTMANAGER_DATADIR="${CMAKE_BINARY_DIR}/data/contextmanager/")
@@ -56,37 +51,45 @@ set(NCLUA_INCLUDE_DIRS "${install_dir}/include")
 link_directories("${install_dir}/lib")
 #end NCLUA
 
-set(CEF_VERSION cef_binary_3.3029.1619.geeeb5d7_linux64_minimal)
-set(CEF_SHA1 f809ce65b0b532fcbba6cec5f0e60f731fd3cbbd)
-set(CEF_FILE ${CEF_VERSION}.tar.bz2)
-set(CEF_URL http://opensource.spotify.com/cefbuilds/${CEF_FILE})
-set(CEF_LOCAL_PATH ${CMAKE_BINARY_DIR}/3rdparty)
-set(CEF_LOCAL_FILE ${CMAKE_BINARY_DIR}/3rdparty/${CEF_FILE}.tar.gz)
+option (WITH_CEF "Build with chromium embedded support" ON)
 
-# Download chromium embedded files
-if (NOT EXISTS "${CEF_LOCAL_FILE}")
-  message(STATUS "-- Downloading chromium embedded binary package...")
-  file(DOWNLOAD ${CEF_URL} ${CEF_LOCAL_FILE}
-       EXPECTED_HASH SHA1=${CEF_SHA1}
-       SHOW_PROGRESS)
+if (WITH_CEF) # Download, link, build with CEF
+  set(CEF_VERSION cef_binary_3.3029.1619.geeeb5d7_linux64_minimal)
+  set(CEF_SHA1 f809ce65b0b532fcbba6cec5f0e60f731fd3cbbd)
+  set(CEF_FILE ${CEF_VERSION}.tar.bz2)
+  set(CEF_URL http://opensource.spotify.com/cefbuilds/${CEF_FILE})
+  set(CEF_LOCAL_PATH ${CMAKE_BINARY_DIR}/3rdparty)
+  set(CEF_LOCAL_FILE ${CMAKE_BINARY_DIR}/3rdparty/${CEF_FILE}.tar.gz)
 
-  message(STATUS "-- Extracting chromium embedded files...")
-  execute_process(
-    COMMAND ${CMAKE_COMMAND} -E tar xzf ${CEF_LOCAL_FILE}
-    WORKING_DIRECTORY ${CEF_LOCAL_PATH}
-  )
+  # Download chromium embedded files
+  if (NOT EXISTS "${CEF_LOCAL_FILE}")
+    message(STATUS "-- Downloading chromium embedded binary package...")
+    file(DOWNLOAD ${CEF_URL} ${CEF_LOCAL_FILE}
+         EXPECTED_HASH SHA1=${CEF_SHA1}
+         SHOW_PROGRESS)
+
+    message(STATUS "-- Extracting chromium embedded files...")
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E tar xzf ${CEF_LOCAL_FILE}
+      WORKING_DIRECTORY ${CEF_LOCAL_PATH}
+    )
+  endif()
+
+  set(CEF_ROOT "${CEF_LOCAL_PATH}/${CEF_VERSION}/")
+  find_package(CEF REQUIRED)
+  add_definitions(-DWITH_CEF=1)
+  add_subdirectory(${CEF_ROOT}/libcef_dll libcef_dll_bin)
+
+  # Logical target used to link the libcef library.
+  ADD_LOGICAL_TARGET("libcef_lib" "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
+  SET (CEF_TARGET_OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/bin/")
+
+else()
+  add_definitions(-DWITH_CEF=0)
+
 endif()
 
-set(CEF_ROOT "${CEF_LOCAL_PATH}/${CEF_VERSION}/")
-find_package(CEF REQUIRED)
-add_definitions(-DWITH_CEF=1)
-add_subdirectory(${CEF_ROOT}/libcef_dll libcef_dll_bin)
-
-# Logical target used to link the libcef library.
-ADD_LOGICAL_TARGET("libcef_lib" "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
-SET_CEF_TARGET_OUT_DIR()
-
-add_executable(ginga
+set (GINGA_SOURCES
   ../src/ginga.h
 
   ../src/ctxmgmt/ContextManager.cpp
@@ -241,18 +244,11 @@ add_executable(ginga
   ../src/player/TextPlayer.cpp
 # WITH_PANGO
 
-#if WITH_CEF
-  ../src/formatter/AdapterHTMLPlayer.cpp
-  ../src/player/HTMLPlayer.cpp
-# WITH_CEF
-
 #  main
   ../src/main.cpp
 )
 
-add_dependencies(ginga nclua_build)
-
-target_include_directories(ginga PRIVATE
+set (GINGA_INCLUDE_DIRS
   ../src
 
   ${CMAKE_BINARY_DIR}
@@ -271,11 +267,9 @@ target_include_directories(ginga PRIVATE
   ${LinuxDVB_INCLUDE_DIRS}
 
   ${NCLUA_INCLUDE_DIRS}
-  ${CEF_ROOT}
-  ${CEF_ROOT}/include
 )
 
-target_link_libraries(ginga PRIVATE
+set (GINGA_LIBS
   pthread
 
   XercesC::XercesC
@@ -296,11 +290,28 @@ target_link_libraries(ginga PRIVATE
   ${RSVG_LIBRARIES}
 
   nclua
-
-  libcef_lib
-  libcef_dll_wrapper
-  ${CEF_STANDARD_LIBS}
 )
+
+if (WITH_CEF)
+  list (APPEND GINGA_SOURCES
+    ../src/formatter/AdapterHTMLPlayer.cpp
+    ../src/player/HTMLPlayer.cpp
+  )
+  list (APPEND GINGA_INCLUDE_DIRS
+    ${CEF_ROOT}
+    ${CEF_ROOT}/include
+  )
+  list (APPEND GINGA_LIBS
+    libcef_lib
+    libcef_dll_wrapper
+    ${CEF_STANDARD_LIBS}
+  )
+endif()
+
+add_executable(ginga ${GINGA_SOURCES})
+add_dependencies(ginga nclua_build)
+target_include_directories(ginga PRIVATE ${GINGA_INCLUDE_DIRS})
+target_link_libraries(ginga PRIVATE ${GINGA_LIBS})
 
 # Copy datafiles to build dir
 add_custom_target(copy-data-files ALL
@@ -311,17 +322,36 @@ add_custom_target(copy-data-files ALL
 # Set rpath so that libraries can be placed next to the executable.
 set_target_properties(ginga PROPERTIES INSTALL_RPATH "$ORIGIN")
 set_target_properties(ginga PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
-set_target_properties(ginga PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CEF_TARGET_OUT_DIR})
+set_target_properties(ginga PROPERTIES RUNTIME_OUTPUT_DIRECTORY bin/)
 
-# Copy binary and resource files to the target output directory.
-COPY_FILES(ginga "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
-COPY_FILES(ginga "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${CEF_TARGET_OUT_DIR}")
+if (WITH_CEF)
+  # Copy binary and resource files to the target output directory.
+  COPY_FILES(ginga "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
+  COPY_FILES(ginga "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${CEF_TARGET_OUT_DIR}")
 
-# Set SUID permissions on the chrome-sandbox target.
-# SET_LINUX_SUID_PERMISSIONS(ginga "${CEF_TARGET_OUT_DIR}/chrome-sandbox")
+  # Set SUID permissions on the chrome-sandbox target.
+  # SET_LINUX_SUID_PERMISSIONS(ginga "${CEF_TARGET_OUT_DIR}/chrome-sandbox")
+endif()
 
 configure_file(${CMAKE_SOURCE_DIR}/config.h.in config.h)
 
+message ( "
+---
+summary of main build options:
+
+Install location variables which can be set by the user:
+version:		${VERSION}
+install prefix:		${CMAKE_INSTALL_PREFIX}
+CMAKE_SYSTEM_NAME:	${CMAKE_SYSTEM_NAME}
+CMAKE_BUILD_TYPE:	${CMAKE_BUILD_TYPE}
+CMAKE_C_COMPILER:	${CMAKE_CXX_COMPILER}
+CMAKE_CXX_FLAGS:	${CMAKE_CXX_FLAGS}
+
+Optional dependencies:
+with cef:		${WITH_CEF}
+")
+
+ 
 set (CPACK_PACKAGE_NAME ginga-idtv)
 set (CPACK_PACKAGE_CONTACT robertogerson@telemidia.puc-rio.br)
 
