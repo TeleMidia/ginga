@@ -1,3 +1,12 @@
+<p>
+<a href="#">
+  <img src="https://semaphoreci.com/api/v1/projects/067d8fed-5ecc-4408-b10a-20e615756bf2/1327970/shields_badge.svg" alt="Build Status (Ubuntu 14.04)" title="Build Status (Ubuntu 14.04)">
+</a>
+<a href="#">
+    <img src="https://api.shippable.com/projects/5921c85dcd31f20600ac4a6e/badge?branch=master" alt="Build Status (Ubuntu 16.04)" title="Build Status (Ubuntu 16.04)">
+</a>
+</p>
+
 # Ginga
 
 The iTV middleware.
