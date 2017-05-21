@@ -17,8 +17,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-#include "nclconv/NclParser.h"
-using namespace ::ginga::nclconv;
+#include "formatter/Parser.h"
+using namespace ::ginga::formatter;
 
 #include "PrivateBaseContext.h"
 
