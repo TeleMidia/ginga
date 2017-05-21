@@ -271,7 +271,9 @@ Display::Display (int width, int height, bool fullscreen, gdouble fps)
   if (unlikely (SDL_Init (0) != 0))
     g_critical ("cannot initialize SDL: %s", SDL_GetError ());
 
+#if SDL_VERSION_ATLEAST(2,0,4)
   SDL_SetHint (SDL_HINT_NO_SIGNAL_HANDLERS, "1");
+#endif
   SDL_SetHint (SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
   this->lock ();
