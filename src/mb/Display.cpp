@@ -139,9 +139,9 @@ Display::renderLoop ()
         SDL_Delay(sleepTime);
         accTime +=sleepTime;
       }
-      else 
+      else
         accTime += elapsedTime;
-     
+
       if(accTime >= 100){
            notifyTimeAnchorListeners();
            accTime=0;
@@ -163,14 +163,14 @@ Display::renderLoop ()
                 break;
             // case SDL_MOUSEMOTION:
             //     this->notifyMouseEventListeners(SDL_MOUSEMOTION);
-            //     break; 
+            //     break;
 
             case SDL_MOUSEBUTTONDOWN:
                 this->notifyMouseEventListeners(SDL_MOUSEBUTTONDOWN);
-                break; 
+                break;
             case SDL_MOUSEBUTTONUP:
                 this->notifyMouseEventListeners(SDL_MOUSEBUTTONUP);
-                break;    
+                break;
               // fall-through
             case SDL_QUIT:
               this->quit ();
@@ -192,23 +192,23 @@ Display::renderLoop ()
           l = next;
         }
       this->unlock ();
-    
+
       this->lock (); // redraw windows
       SDL_SetRenderDrawColor (this->renderer, 255, 0, 255, 255);
       SDL_RenderClear (this->renderer);
       this->players = g_list_sort (this->players, (GCompareFunc) win_cmp_z);
-      l =  this->players;           
+      l =  this->players;
       while (l != NULL)
         {
           GList *next = l->next;
            Player* pl = (Player *) l->data;
            if(!pl)
               this->players = g_list_remove_link (this->players, l);
-           else 
+           else
               pl->redraw(this->renderer);
           l = next;
       }
-      displayDebug->draw(this->renderer,elapsedTime);    
+      displayDebug->draw(this->renderer,elapsedTime);
       SDL_RenderPresent (this->renderer);
       this->unlock ();
 
@@ -219,7 +219,7 @@ Display::renderLoop ()
       this->unlock ();
 
     }
-    
+
   delete displayDebug;
 
   if (doquit)
@@ -228,9 +228,8 @@ Display::renderLoop ()
   doquit = true;
   this->lock ();
   this->unlock ();
-//  goto quit;
 
-  beach:
+ beach:
   this->lock ();
   SDL_Quit ();
   this->unlock ();
@@ -244,29 +243,22 @@ Display::renderLoop ()
  */
 Display::Display (int width, int height, bool fullscreen, gdouble fps)
 {
-  this->mutexInit ();
+  guint flags;
 
+  this->mutexInit ();
   this->width = width;
   this->height = height;
   this->fullscreen = fullscreen;
-  
   this->fps = fps;
-  if(this->fps> 0) //controlled fps 
-    this->frameTime = (guint32)(1000/fps);
-  else //go horse fps
-    this->frameTime=0;
-
-  this->renderer = NULL;
-  this->screen = NULL;
+  this->frameTime = (fps > 0) ? (guint32)(1000 / fps) : 0;
 
   this->_quit = false;
 
   this->jobs = NULL;
   this->textures = NULL;
-  this->windows = NULL; 
+  this->windows = NULL;
   this->players = NULL;
 
-  //--
   g_assert (!SDL_WasInit (0));
   if (unlikely (SDL_Init (0) != 0))
     g_critical ("cannot initialize SDL: %s", SDL_GetError ());
@@ -274,21 +266,16 @@ Display::Display (int width, int height, bool fullscreen, gdouble fps)
   SDL_SetHint (SDL_HINT_NO_SIGNAL_HANDLERS, "1");
   SDL_SetHint (SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
-  this->lock ();
-  guint flags = SDL_WINDOW_SHOWN;
+  flags = SDL_WINDOW_SHOWN;
   if (this->fullscreen)
     flags |= SDL_WINDOW_FULLSCREEN;
 
-  g_assert_null (this->screen);
-  g_assert_null (this->renderer);
- 
-  SDL_Init(SDL_INIT_VIDEO); 
+  this->screen = SDL_CreateWindow ("ginga", 0, 0, width, height, flags);
+  g_assert_nonnull (this->screen);
 
-  this->screen = SDL_CreateWindow("ginga",0,0, this->width, this->height, flags);
-  this->renderer = SDL_CreateRenderer( this->screen , -1, SDL_RENDERER_PRESENTVSYNC);
-                               
-  this->unlock ();
- 
+  this->renderer = SDL_CreateRenderer (this->screen, -1,
+                                       SDL_RENDERER_PRESENTVSYNC);
+  g_assert_nonnull (this->renderer);
 }
 
 /**
@@ -297,7 +284,7 @@ Display::Display (int width, int height, bool fullscreen, gdouble fps)
 Display::~Display ()
 {
   this->quit ();
- 
+
 
   this->lock ();
   SDL_DestroyRenderer (this->renderer);
@@ -308,7 +295,7 @@ Display::~Display ()
   g_list_free_full (this->windows, (GDestroyNotify) win_delete);
   this->unlock ();
   this->mutexClear ();
- 
+
 }
 
 double
@@ -336,7 +323,7 @@ Display::setSize (int width, int height)
 {
   this->lock ();
   SDL_SetWindowSize (this->screen, width, height); // don't return a status
-  
+
   this->width = width;
   this->height = height;
   this->unlock ();
@@ -515,7 +502,7 @@ Display::unregisterPlayer(Player *obj){
   this->remove(&this-> players, obj);
 }
 
-void 
+void
 Display::notifyKeyEventListeners(SDL_EventType evtType, SDL_Keycode key){
    if(key == SDLK_ESCAPE){
      this->quit();
@@ -542,12 +529,12 @@ Display::notifyTimeAnchorListeners(){
           (*it)->notifyTimeAnchorCallBack();
 }
 
-void 
+void
 Display::registerKeyEventListener(IKeyInputEventListener* obj){
    keyEventListeners.insert(obj);
 }
 
-void 
+void
 Display::registerMouseEventListener(IMouseEventListener* obj){
    mouseEventListeners.insert(obj);
 }
@@ -557,7 +544,7 @@ Display::unregisterKeyEventListener(IKeyInputEventListener* obj){
    keyEventListeners.erase (obj);
 }
 
-void 
+void
 Display::unregisterMouseEventListener(IMouseEventListener* obj){
    mouseEventListeners.erase (obj);
 }
@@ -567,12 +554,12 @@ Display::postKeyInputEventListener(SDL_Keycode key){
    notifyKeyEventListeners(SDL_KEYUP, key);
 }
 
-void 
+void
 Display::registerTimeAnchorListener(NclExecutionObject* obj){
    timeAnchorListeners.insert(obj);
 }
 
-void 
+void
 Display::unregisterTimeAnchorListener(NclExecutionObject* obj){
    timeAnchorListeners.erase (obj);
 }
