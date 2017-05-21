@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef NCLDOCUMENTPARSER_H_
-#define NCLDOCUMENTPARSER_H_
+#ifndef PARSER_H
+#define PARSER_H
 
 GINGA_PRAGMA_DIAG_PUSH ()
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
@@ -59,7 +59,7 @@ using namespace ::ginga::formatter;
 #include <vector>
 using namespace std;
 
-GINGA_NCLCONV_BEGIN
+GINGA_FORMATTER_BEGIN
 
 class NclParser : public ErrorHandler
 {
@@ -226,6 +226,6 @@ private:
 
 };
 
-GINGA_NCLCONV_END
+GINGA_FORMATTER_END
 
-#endif /*NCLDOCUMENTPARSER_H_*/
+#endif /*PARSER_H*/

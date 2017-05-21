@@ -111,8 +111,6 @@ using namespace std;
 #define GINGA_MB_END          _GINGA_END
 #define GINGA_NCL_BEGIN       _GINGA_BEGIN (ncl)
 #define GINGA_NCL_END         _GINGA_END
-#define GINGA_NCLCONV_BEGIN   _GINGA_BEGIN (nclconv)
-#define GINGA_NCLCONV_END     _GINGA_END
 #define GINGA_PLAYER_BEGIN    _GINGA_BEGIN (player)
 #define GINGA_PLAYER_END      _GINGA_END
 #define GINGA_SYSTEM_BEGIN    _GINGA_BEGIN (system)

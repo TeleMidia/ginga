@@ -17,9 +17,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "ginga-color-table.h"
-#include "NclParser.h"
+#include "Parser.h"
 
-GINGA_NCLCONV_BEGIN
+GINGA_FORMATTER_BEGIN
 
 // dom_element_* functions are internal functions that safely wraps Xerces
 // calls.
@@ -3665,4 +3665,4 @@ NclParser::createDescriptor (DOMElement *descriptor_element)
   return descriptor;
 }
 
-GINGA_NCLCONV_END
+GINGA_FORMATTER_END
