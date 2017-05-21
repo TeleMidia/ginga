@@ -1154,43 +1154,6 @@ AdapterFormatterPlayer::checkAnchorMonitor ()
    object->setPlayer( (Player*)this->player );
 }
 
-void
-AdapterFormatterPlayer::printAction (const string &act,
-                                     NclExecutionObject *object)
-{
-  string action = act;
-
-  NclFormatterEvent *event;
-
-  if (object->instanceOf ("NclApplicationExecutionObject"))
-    {
-      event = ((NclApplicationExecutionObject *)object)->getCurrentEvent ();
-    }
-  else
-    {
-      event = object->getMainEvent ();
-    }
-
-  if (event == NULL)
-    {
-      return;
-    }
-
-  action = action + "::" + object->getDataObject ()->getId ();
-
-  printAction (action);
-}
-
-void
-AdapterFormatterPlayer::printAction (const string &command)
-{
-  // notifying GingaGUI
-  // cmd means a command to an embeddor process
-  // 0 means successful status message
-  //
-  cout << "cmd::0::" << command << endl;
-}
-
 bool
 AdapterFormatterPlayer::start ()
 {
@@ -1410,7 +1373,6 @@ AdapterFormatterPlayer::naturalEnd ()
         }
     }
 
-  printAction ("stop", object);
   stop ();
 }
 

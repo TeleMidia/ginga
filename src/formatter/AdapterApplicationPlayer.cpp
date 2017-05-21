@@ -315,8 +315,6 @@ AdapterApplicationPlayer::start ()
       else
         {
           checkAnchorMonitor ();
-
-          AdapterFormatterPlayer::printAction ("start", object);
         }
 
       return startSuccess;
@@ -351,7 +349,6 @@ AdapterApplicationPlayer::stop ()
         {
           player->stop ();
           player->notifyReferPlayers (EventUtil::TR_STOPS);
-          AdapterFormatterPlayer::printAction ("stop", object);
         }
 
       i = preparedEvents.begin ();
@@ -419,8 +416,6 @@ AdapterApplicationPlayer::pause ()
         {
           player->pause ();
           player->notifyReferPlayers (EventUtil::TR_PAUSES);
-
-          AdapterFormatterPlayer::printAction ("pause", object);
         }
       return true;
     }
@@ -439,8 +434,6 @@ AdapterApplicationPlayer::resume ()
         {
           player->resume ();
           player->notifyReferPlayers (EventUtil::TR_RESUMES);
-
-          AdapterFormatterPlayer::printAction ("resume", object);
         }
       return true;
     }
@@ -469,8 +462,6 @@ AdapterApplicationPlayer::abort ()
 
       player->stop ();
       player->notifyReferPlayers (EventUtil::TR_ABORTS);
-
-      AdapterFormatterPlayer::printAction ("abort", object);
 
       lockPreparedEvents ();
       i = preparedEvents.begin ();
@@ -623,7 +614,6 @@ AdapterApplicationPlayer::naturalEnd ()
         {
           unlockPreparedEvents ();
           event->stop ();
-          AdapterFormatterPlayer::printAction ("stop", object);
           unprepare ();
           return;
         }
@@ -636,7 +626,6 @@ AdapterApplicationPlayer::naturalEnd ()
     {
       clog << "AdapterApplicationPlayer::naturalEnd call unprepare";
       clog << endl;
-      AdapterFormatterPlayer::printAction ("stop", object);
       unprepare ();
     }
 }
