@@ -134,9 +134,6 @@ private:
 public:
   FormatterMediator ();
   ~FormatterMediator ();
-
-  // void setMrl (const string &mrl, bool visible = true);
-  // void setParentLayout (void *parentLayout);
   void *addDocument (const string &file);
 
 private:
@@ -144,9 +141,6 @@ private:
   ContextNode *getDocumentContext (const string &documentId);
 
 public:
-  // void setDepthLevel (int level);
-  // int getDepthLevel ();
-
   Port *getPortFromEvent (NclFormatterEvent *event);
 
 private:
@@ -166,77 +160,14 @@ private:
   NclFormatterEvent *getEntryEvent (const string &interfaceId,
                                     vector<NclFormatterEvent *> *events);
 
-  bool startDocument (const string &documentId, const string &interfaceId);
-  bool stopDocument (const string &documentId);
-  bool pauseDocument (const string &documentId);
-  bool resumeDocument (const string &documentId);
   void presentationCompleted (NclFormatterEvent *documentEvent);
 
 public:
-  // void setNotifyContentUpdate (arg_unused (bool notify)){};
-  // void addListener (IPlayerListener *listener);
-  // void removeListener (IPlayerListener *listener);
-  // void notifyPlayerListeners (short code,
-  //                             const string &paremeter,
-  //                             short type,
-  //                             const string &value);
-  // guint32 getMediaTime ();
-  // double getTotalMediaTime ();
-  // void setMediaTime (guint32 newTime);
-  // bool setKeyHandler (bool isHandler);
-  // void setScope (const string &scope, short type, double begin = -1,
-  //                double end = -1, double outTransDur = -1);
-
   bool play ();
   void stop ();
   void abort ();
   void pause ();
   void resume ();
-
-  string getPropertyValue (const string &name);
-  void setPropertyValue (const string &name, const string &value);
-
-  void setReferenceTimePlayer (IPlayer *player);
-  void addTimeReferPlayer (IPlayer *referPlayer);
-  void removeTimeReferPlayer (IPlayer *referPlayer);
-  void notifyReferPlayers (int transition);
-  void timebaseObjectTransitionCallback (int transition);
-  void setTimeBasePlayer (IPlayer *timeBasePlayer);
-  bool isVisible ();
-  void setVisible (bool visible);
-  bool immediatelyStart ();
-  void setImmediatelyStart (bool immediatelyStartVal);
-  void forceNaturalEnd (bool forceIt);
-  bool isForcedNaturalEnd ();
-  // bool setOutWindow (SDLWindow* windowId);
-
-  // void setPlayerMap (arg_unused (map<string, IPlayer *> *objs)){};
-  // map<string, IPlayer *> *
-  // getPlayerMap ()
-  // {
-  //   return NULL;
-  // };
-  // IPlayer *
-  // getPlayer (arg_unused (const string &objectId))
-  // {
-  //   return NULL;
-  // };
-  // void select (arg_unused (IPlayer *selObject)){};
-
-  // Application player only.
-  // void setCurrentScope (const string &scopeId);
-  // string getActiveUris (vector<string> *uris);
-  // string getDepUris (vector<string> *uris, int targetDev = 0);
-  // PresentationContext *getPresentationContext ();
-
-// private:
-  // string getDepUrisFromNodes (vector<string> *uris,
-  //                             vector<Node *> *nodes,
-  //                             int targetDev = 0);
-  // string getDepUriFromNode (vector<string> *uris,
-  //                           Node *node,
-  //                           int targetDev = 0);
-  // string getBaseUri (const string &baseA, const string &baseB);
 };
 
 GINGA_FORMATTER_END

@@ -385,30 +385,6 @@ FormatterMediator::~FormatterMediator ()
   clog << "FormatterMediator::~FormatterMediator all done" << endl;
 }
 
-// void
-// FormatterMediator::setMrl (const string &mrl, bool visible)
-// {
-//   this->mrl = mrl;
-//   this->visible = visible;
-// }
-
-// void
-// FormatterMediator::setParentLayout (void *parentLayout)
-// {
-//   NclFormatterLayout *mainLayout;
-
-//   clog << "FormatterMediator::setParentLayout in '" << data->playerId;
-//   clog << "'" << endl;
-
-//   if (multiDevice != NULL && parentLayout != NULL
-//       && multiDevice->getMainLayout () != NULL)
-//     {
-//       mainLayout = (NclFormatterLayout *)(multiDevice->getMainLayout ());
-//       ((NclFormatterLayout *)parentLayout)
-//           ->addChild (data->baseId, mainLayout);
-//     }
-// }
-
 void *
 FormatterMediator::addDocument (const string &file)
 {
@@ -430,7 +406,7 @@ FormatterMediator::removeDocument (const string &documentId)
 
   if (documentEvents.count (documentId) != 0)
     {
-      stopDocument (documentId);
+      this->stop ();
     }
 
   document = privateBaseContext->removeDocument (documentId);
@@ -453,18 +429,6 @@ FormatterMediator::getDocumentContext (const string &documentId)
   g_assert_nonnull (nclDocument);
   return nclDocument->getBody ();
 }
-
-// void
-// FormatterMediator::setDepthLevel (int level)
-// {
-//   compiler->setDepthLevel (level);
-// }
-
-// int
-// FormatterMediator::getDepthLevel ()
-// {
-//   return compiler->getDepthLevel ();
-// }
 
 Port *
 FormatterMediator::getPortFromEvent (NclFormatterEvent *event)
@@ -806,120 +770,6 @@ FormatterMediator::getEntryEvent (const string &interfaceId,
   return entryEvent;
 }
 
-bool
-FormatterMediator::startDocument (const string &documentId, const string &interfaceId)
-{
-  vector<NclFormatterEvent *> *entryEvents;
-  vector<NclFormatterEvent *> filteredEvents;
-  NclFormatterEvent *documentEvent;
-  NclFormatterEvent *entryEvent;
-
-  if (!docCompiled)
-    {
-      compileDocument (documentId);
-    }
-
-  if (docCompiled)
-    {
-      if (documentEvents.count (documentId) != 0)
-        {
-          documentEvent = documentEvents[documentId];
-          entryEvents = documentEntryEvents[documentId];
-
-          if (interfaceId == "")
-            {
-              AdapterFormatterPlayer::printAction ("startApp::"
-                                                   + documentId);
-
-              scheduler->startDocument (documentEvent, entryEvents);
-            }
-          else
-            {
-              entryEvent = getEntryEvent (interfaceId, entryEvents);
-              if (entryEvent == NULL)
-                {
-                  return false;
-                }
-
-              filteredEvents.push_back (entryEvent);
-
-              AdapterFormatterPlayer::printAction ("startApp::"
-                                                   + documentId);
-
-              scheduler->startDocument (documentEvent, &filteredEvents);
-            }
-
-          return true;
-        }
-    }
-
-  clog << "FormatterMediator::startDocument return false for ";
-  clog << "document ID = '" << documentId << "' interface ID = '";
-  clog << interfaceId << "'" << endl;
-
-  return false;
-}
-
-bool
-FormatterMediator::stopDocument (const string &documentId)
-{
-  NclFormatterEvent *documentEvent;
-
-  clog << "FormatterMediator::stopDocument from '";
-  clog << documentId << "'" << endl;
-
-  if (documentEvents.count (documentId) == 0)
-    {
-      clog << "FormatterMediator::stopDocument can't stop document '";
-      clog << documentId << "'" << endl;
-      return false;
-    }
-
-  documentEvent = documentEvents[documentId];
-
-  AdapterFormatterPlayer::printAction (
-      "stopApp",
-      (NclExecutionObject *)documentEvent->getExecutionObject ());
-
-  scheduler->stopDocument (documentEvent);
-
-  return true;
-}
-
-bool
-FormatterMediator::pauseDocument (const string &documentId)
-{
-  NclFormatterEvent *documentEvent;
-
-  if (documentEvents.count (documentId) == 0)
-    {
-      return false;
-    }
-
-  clog << "FormatterMediator::pauseDocument '" << documentId << "'";
-  clog << endl;
-  documentEvent = documentEvents[documentId];
-  scheduler->pauseDocument (documentEvent);
-  return true;
-}
-
-bool
-FormatterMediator::resumeDocument (const string &documentId)
-{
-  NclFormatterEvent *documentEvent;
-
-  if (documentEvents.count (documentId) == 0)
-    {
-      return false;
-    }
-
-  clog << "FormatterMediator::resumeDocument '" << documentId << "'";
-  clog << endl;
-  documentEvent = documentEvents[documentId];
-  scheduler->resumeDocument (documentEvent);
-  return true;
-}
-
 void
 FormatterMediator::presentationCompleted (arg_unused (NclFormatterEvent *documentEvent))
 {
@@ -941,522 +791,78 @@ FormatterMediator::presentationCompleted (arg_unused (NclFormatterEvent *documen
                                  TYPE_PRESENTATION);
 }
 
-// void
-// FormatterMediator::addListener (IPlayerListener *listener)
-// {
-//   Player::addListener (listener);
-// }
-
-// void
-// FormatterMediator::removeListener (IPlayerListener *listener)
-// {
-//   Player::removeListener (listener);
-// }
-
-// void
-// FormatterMediator::notifyPlayerListeners (short code, const string &paremeter,
-//                                           short type, const string &value)
-// {
-//   Player::notifyPlayerListeners (code, paremeter, type, value);
-// }
-
-// void
-// FormatterMediator::setMediaTime (guint32 newTime)
-// {
-//   Player::setMediaTime (newTime);
-// }
-
-// guint32
-// FormatterMediator::getMediaTime ()
-// {
-//   return Player::getMediaTime ();
-// }
-
-// double
-// FormatterMediator::getTotalMediaTime ()
-// {
-//   return Player::getTotalMediaTime ();
-// }
-
-// bool
-// FormatterMediator::setKeyHandler (bool isHandler)
-// {
-//   scheduler->setKeyHandler (isHandler);
-//   return isHandler;
-// }
-
-// void
-// FormatterMediator::setScope (const string &scope, short type, double initTime,
-//                              double endTime, double outTransDur)
-// {
-//   Player::setScope (scope, type, initTime, endTime, outTransDur);
-// }
-
 bool
 FormatterMediator::play ()
 {
-  g_assert_nonnull (currentDocument);
+  NclFormatterEvent *docevt;
+  vector<NclFormatterEvent *> *evts;
+  string id;
+
+  g_assert_nonnull (this->currentDocument);
+  id = currentDocument->getId ();
+
+  g_assert (!this->docCompiled);
+  compileDocument (id);
+
   Player::play ();
-  return startDocument (currentDocument->getId (), scope);
+
+  g_assert (documentEvents.count (id) > 0);
+  docevt = this->documentEvents[id];
+  g_assert_nonnull (docevt);
+
+  evts = this->documentEntryEvents[id];
+  g_assert_nonnull (evts);
+
+  scheduler->startDocument (docevt, evts);
+  return true;
 }
 
 void
 FormatterMediator::stop ()
 {
-  if (currentDocument != NULL)
-    {
-      Player::stop ();
-      stopDocument (currentDocument->getId ());
-    }
+  NclFormatterEvent *evt;
+
+  g_assert_nonnull (this->currentDocument);
+  Player::stop ();
+
+  g_assert_nonnull (evt);
+  this->scheduler->stopDocument (evt);
 }
 
 void
 FormatterMediator::abort ()
 {
-  stop ();
+  this->stop ();
 }
 
 void
 FormatterMediator::pause ()
 {
-  if (currentDocument != NULL)
-    {
-      Player::pause ();
-      pauseDocument (currentDocument->getId ());
-    }
+  NclFormatterEvent *evt;
+  string id;
+
+  g_assert_nonnull (this->currentDocument);
+  Player::pause ();
+
+  id = currentDocument->getId ();
+  evt = documentEvents[id];
+  g_assert_nonnull (evt);
+  this->scheduler->pauseDocument (evt);
 }
 
 void
 FormatterMediator::resume ()
 {
-  if (currentDocument != NULL)
-    {
-      Player::resume ();
-      resumeDocument (currentDocument->getId ());
-    }
+  NclFormatterEvent *evt;
+  string id;
+
+  g_assert_nonnull (this->currentDocument);
+  Player::resume ();
+
+  id = currentDocument->getId ();
+  evt = documentEvents[id];
+  g_assert_nonnull (evt);
+  this->scheduler->resumeDocument (evt);
 }
-
-string
-FormatterMediator::getPropertyValue (const string &name)
-{
-  map<Port *, NclFormatterEvent *>::iterator i;
-  NclFormatterEvent *portEvent = NULL;
-  string value = "";
-
-  Thread::mutexLock (&pteMutex);
-  i = portsToEntryEvents.begin ();
-  while (i != portsToEntryEvents.end ())
-    {
-      if (i->first->getId () == name)
-        {
-          portEvent = i->second;
-          break;
-        }
-      ++i;
-    }
-  Thread::mutexUnlock (&pteMutex);
-
-  if (portEvent != NULL && portEvent->instanceOf ("NclAttributionEvent"))
-    {
-      value = ((NclAttributionEvent *)portEvent)->getCurrentValue ();
-    }
-  else
-    {
-      value = Player::getPropertyValue (name);
-    }
-
-  return value;
-}
-
-void
-FormatterMediator::setPropertyValue (const string &name, const string &value)
-{
-  INclAttributeValueMaintainer *valueMaintainer;
-  PropertyAnchor *anchor;
-
-  map<Port *, NclFormatterEvent *>::iterator i;
-  NclFormatterEvent *portEvent = NULL;
-
-  Thread::mutexLock (&pteMutex);
-  i = portsToEntryEvents.begin ();
-  while (i != portsToEntryEvents.end ())
-    {
-      if (i->first->getId () == name)
-        {
-          portEvent = i->second;
-          break;
-        }
-      ++i;
-    }
-  Thread::mutexUnlock (&pteMutex);
-
-  if (portEvent != NULL && portEvent->instanceOf ("NclAttributionEvent"))
-    {
-      if (portEvent->getCurrentState () == EventUtil::ST_SLEEPING)
-        {
-          valueMaintainer
-              = ((NclAttributionEvent *)portEvent)->getValueMaintainer ();
-
-          anchor = ((NclAttributionEvent *)portEvent)->getAnchor ();
-
-          portEvent->start ();
-          if (valueMaintainer != NULL && anchor != NULL)
-            {
-              valueMaintainer->setPropertyValue (anchor->getId (), value);
-            }
-
-          ((NclAttributionEvent *)portEvent)->setValue (value);
-          portEvent->stop ();
-
-          if (value
-              != ((NclAttributionEvent *)portEvent)->getCurrentValue ())
-            {
-              clog << "FormatterMediator::setPropertyValue Warning! ";
-              clog << "Attributed value = '" << value << "'";
-              clog << "BUT current value = '";
-              clog
-                  << ((NclAttributionEvent *)portEvent)->getCurrentValue ();
-              clog << "'";
-              clog << endl;
-            }
-        }
-      else
-        {
-          clog << "FormatterMediator::setPropertyValue Warning! ";
-          clog << "Trying to perform an attribution in an event ";
-          clog << "that is not sleeping: " << name << endl;
-          return;
-        }
-    }
-  else
-    {
-      Player::setPropertyValue (name, value);
-    }
-}
-
-void
-FormatterMediator::setReferenceTimePlayer (IPlayer *player)
-{
-  Player::setReferenceTimePlayer (player);
-}
-
-void
-FormatterMediator::addTimeReferPlayer (IPlayer *referPlayer)
-{
-  Player::addTimeReferPlayer (referPlayer);
-}
-
-void
-FormatterMediator::removeTimeReferPlayer (IPlayer *referPlayer)
-{
-  Player::removeTimeReferPlayer (referPlayer);
-}
-
-void
-FormatterMediator::notifyReferPlayers (int transition)
-{
-  Player::notifyReferPlayers (transition);
-}
-
-void
-FormatterMediator::timebaseObjectTransitionCallback (int transition)
-{
-  Player::timebaseObjectTransitionCallback (transition);
-}
-
-void
-FormatterMediator::setTimeBasePlayer (IPlayer *timeBasePlayer)
-{
-  Player::setTimeBasePlayer (timeBasePlayer);
-}
-
-bool
-FormatterMediator::isVisible ()
-{
-  return Player::isVisible ();
-}
-
-void
-FormatterMediator::setVisible (bool visible)
-{
-  set<NclExecutionObject *>::iterator i;
-  set<NclExecutionObject *> *objects;
-  NclExecutionObject *object;
-  string strVisible = "true";
-  NclFormatterEvent *event = NULL;
-  PropertyAnchor *property = NULL;
-  bool fakeEvent = false;
-
-  if (!visible)
-    {
-      strVisible = "false";
-    }
-
-  objects = compiler->getRunningObjects ();
-  i = objects->begin ();
-  while (i != objects->end ())
-    {
-      object = *i;
-      event = object->getEventFromAnchorId ("visible");
-      if (event == NULL)
-        {
-          property = new PropertyAnchor ("visible");
-          property->setPropertyValue (strVisible);
-          event = new NclAttributionEvent ("visible", object, property,
-                                           presContext);
-
-          fakeEvent = true;
-        }
-      else
-        {
-          fakeEvent = false;
-        }
-
-      if (event->instanceOf ("NclAttributionEvent"))
-        {
-          playerManager->setVisible (object->getId (), strVisible,
-                                     (NclAttributionEvent *)event);
-        }
-
-      if (fakeEvent)
-        {
-          delete event;
-          delete property;
-        }
-      ++i;
-    }
-  Player::setVisible (visible);
-
-  delete objects;
-}
-
-bool
-FormatterMediator::immediatelyStart ()
-{
-  return Player::immediatelyStart ();
-}
-
-void
-FormatterMediator::setImmediatelyStart (bool immediatelyStartVal)
-{
-  Player::setImmediatelyStart (immediatelyStartVal);
-}
-
-void
-FormatterMediator::forceNaturalEnd (bool forceIt)
-{
-  clog << "FormatterMediator::forceNaturalEnd" << endl;
-  if (forceIt)
-    {
-      stopDocument (currentDocument->getId ());
-    }
-}
-
-bool
-FormatterMediator::isForcedNaturalEnd ()
-{
-  return Player::isForcedNaturalEnd ();
-}
-
-// bool
-// FormatterMediator::setOutWindow (SDLWindow* windowId)
-// {
-//   return Player::setOutWindow (windowId);
-// }
-
-// void
-// FormatterMediator::setCurrentScope (const string &scopeId)
-// {
-//   Player::setScope (scopeId);
-// }
-
-// string
-// FormatterMediator::getActiveUris (vector<string> *uris)
-// {
-//   return getDepUris (uris, 2);
-// }
-
-// string
-// FormatterMediator::getDepUris (vector<string> *uris, int targetDev)
-// {
-//   CompositeNode *node;
-//   ContextNode *parent;
-//   ContextNode *body;
-//   vector<Node *> *nodes;
-//   vector<Node *> *childs;
-//   vector<Node *>::iterator i;
-//   string baseUri = "", childBaseUri = "";
-
-//   if (currentDocument == NULL)
-//     {
-//       return "";
-//     }
-
-//   body = currentDocument->getBody ();
-//   nodes = body->getNodes ();
-//   if (nodes == NULL)
-//     {
-//       return "";
-//     }
-
-//   i = nodes->begin ();
-//   while (i != nodes->end ())
-//     {
-//       if ((*i)->instanceOf ("ContextNode"))
-//         {
-//           parent = (ContextNode *)(*i);
-//           childs = parent->getNodes ();
-//           if (childs != NULL)
-//             {
-//               childBaseUri = getDepUrisFromNodes (uris, childs, targetDev);
-//               baseUri = getBaseUri (childBaseUri, baseUri);
-//             }
-//         }
-//       else if ((*i)->instanceOf ("CompositeNode"))
-//         {
-//           node = (CompositeNode *)(*i);
-//           childs = node->getNodes ();
-//           if (childs != NULL)
-//             {
-//               childBaseUri = getDepUrisFromNodes (uris, childs, targetDev);
-//               baseUri = getBaseUri (childBaseUri, baseUri);
-//             }
-//         }
-//       else
-//         {
-//           childBaseUri = getDepUriFromNode (uris, *i, targetDev);
-//           baseUri = getBaseUri (childBaseUri, baseUri);
-//         }
-//       ++i;
-//     }
-
-//   return baseUri;
-// }
-
-// string
-// FormatterMediator::getDepUrisFromNodes (vector<string> *uris,
-//                                         vector<Node *> *nodes,
-//                                         int targetDev)
-// {
-//   CompositeNode *node;
-//   ContextNode *parent;
-//   vector<Node *> *childs;
-//   vector<Node *>::iterator i;
-//   string baseUri = "", childBaseUri = "";
-
-//   i = nodes->begin ();
-//   while (i != nodes->end ())
-//     {
-//       if ((*i)->instanceOf ("ContextNode"))
-//         {
-//           parent = (ContextNode *)(*i);
-//           childs = parent->getNodes ();
-//           if (childs != NULL)
-//             {
-//               childBaseUri = getDepUrisFromNodes (uris, childs, targetDev);
-//               baseUri = getBaseUri (childBaseUri, baseUri);
-//             }
-//         }
-//       else if ((*i)->instanceOf ("CompositeNode"))
-//         {
-//           node = (CompositeNode *)(*i);
-//           childs = node->getNodes ();
-//           if (childs != NULL)
-//             {
-//               childBaseUri = getDepUrisFromNodes (uris, childs, targetDev);
-//               baseUri = getBaseUri (childBaseUri, baseUri);
-//             }
-//         }
-//       else
-//         {
-//           childBaseUri = getDepUriFromNode (uris, *i, targetDev);
-//           baseUri = getBaseUri (childBaseUri, baseUri);
-//         }
-//       ++i;
-//     }
-
-//   return baseUri;
-// }
-
-// string
-// FormatterMediator::getDepUriFromNode (vector<string> *uris, Node *node,
-//                                       int targetDev)
-// {
-//   GenericDescriptor *descriptor;
-//   LayoutRegion *ncmRegion;
-//   NodeEntity *nodeEntity;
-//   Content *content;
-//   string src = "";
-
-//   if (!node->getDataEntity ()->instanceOf ("NodeEntity"))
-//     {
-//       return "";
-//     }
-
-//   content = ((NodeEntity *)(node->getDataEntity ()))->getContent ();
-//   if (content != NULL && content->instanceOf ("ReferenceContent"))
-//     {
-//       src = ((ReferenceContent *)content)->getCompleteReferenceUrl ();
-//       if (src != "")
-//         {
-//           if (targetDev == 0)
-//             {
-//               uris->push_back (src);
-//             }
-//           else
-//             {
-//               nodeEntity = ((NodeEntity *)node->getDataEntity ());
-//               descriptor = nodeEntity->getDescriptor ();
-//               if (descriptor != NULL
-//                   && !(descriptor->instanceOf ("DescriptorSwitch")))
-//                 {
-//                   clog << "FormatterMediator::getDepUriFromNode ";
-//                   clog << "checking descriptor '";
-//                   clog << ((Descriptor *)descriptor)->getId ();
-//                   clog << "'" << endl;
-//                   // TODO: find descriptor switch urls
-//                   ncmRegion = ((Descriptor *)descriptor)->getRegion ();
-//                   if (ncmRegion != NULL
-//                       && ncmRegion->getDeviceClass () == targetDev)
-//                     {
-//                       uris->push_back (src);
-//                     }
-//                 }
-//             }
-//         }
-//     }
-
-//   return src;
-// }
-
-// string
-// FormatterMediator::getBaseUri (const string &baseA, const string &baseB)
-// {
-//   string base = "";
-
-//   if (baseA == "")
-//     {
-//       base = baseB;
-//     }
-//   else if (baseB != "")
-//     {
-//       if (baseB.length () < baseA.length ())
-//         {
-//           base = baseB;
-//         }
-//     }
-//   else
-//     {
-//       base = baseA;
-//     }
-
-//   return base;
-// }
-
-// PresentationContext *
-// FormatterMediator::getPresentationContext ()
-// {
-//   return presContext;
-// }
 
 GINGA_FORMATTER_END
