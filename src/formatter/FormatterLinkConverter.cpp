@@ -677,12 +677,12 @@ FormatterLinkConverter::createSimpleAction (
                 }
               else
                 {
-                  repeat = xstrto_int (param->getValue ());
+                  repeat = xstrtoint (param->getValue (), 10);
                 }
             }
           else
             {
-              repeat = xstrto_int (paramValue);
+              repeat = xstrtoint (paramValue, 10);
             }
 
           ((NclLinkRepeatAction *)action)->setRepetitions (repeat);

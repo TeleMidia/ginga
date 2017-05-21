@@ -270,11 +270,11 @@ ginga_rgba_to_sdl_color(const string value,  SDL_Color *color){
    if(g_strv_length(pixels) < 3 )
          return FALSE;
 
-   color->r = xstrto_uint8 (pixels[0]);
-   color->g = xstrto_uint8 (pixels[1]);
-   color->b = xstrto_uint8 (pixels[2]);
+   color->r = xstrtouint8 (pixels[0], 10);
+   color->g = xstrtouint8 (pixels[1], 10);
+   color->b = xstrtouint8 (pixels[2], 10);
    if(pixels[3] != NULL)
-     color->a = xstrto_uint8 (pixels[3]);
+     color->a = xstrtouint8 (pixels[3], 10);
    else
      color->a=255;
 
@@ -294,11 +294,11 @@ ginga_rgbatext_to_sdl_color(const string value, SDL_Color *color){
    if(g_strv_length(pixels) < 3 )
          return FALSE;
 
-   color->r = xstrto_uint8 (pixels[0]);
-   color->g = xstrto_uint8 (pixels[1]);
-   color->b = xstrto_uint8 (pixels[2]);
+   color->r = xstrtouint8 (pixels[0], 10);
+   color->g = xstrtouint8 (pixels[1], 10);
+   color->b = xstrtouint8 (pixels[2], 10);
    if(pixels[3] != NULL)
-     color->a = xstrto_uint8 (pixels[3]);
+     color->a = xstrtouint8 (pixels[3], 10);
    else
      color->a=255;
 

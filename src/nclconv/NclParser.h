@@ -18,6 +18,20 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NCLDOCUMENTPARSER_H_
 #define NCLDOCUMENTPARSER_H_
 
+GINGA_PRAGMA_DIAG_PUSH ()
+GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
+GINGA_PRAGMA_DIAG_IGNORE (-Wundef)
+#include <xercesc/dom/DOM.hpp>
+#include <xercesc/framework/LocalFileInputSource.hpp>
+#include <xercesc/framework/MemBufInputSource.hpp>
+#include <xercesc/parsers/XercesDOMParser.hpp>
+#include <xercesc/sax/ErrorHandler.hpp>
+#include <xercesc/sax/SAXException.hpp>
+#include <xercesc/sax/SAXParseException.hpp>
+#include <xercesc/util/XercesDefs.hpp>
+XERCES_CPP_NAMESPACE_USE
+GINGA_PRAGMA_DIAG_POP ()
+
 #include "ncl/NclDocument.h"
 #include "ncl/TransitionUtil.h"
 #include "ncl/Rule.h"

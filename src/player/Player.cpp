@@ -434,49 +434,47 @@ Player::setPropertyValue (const string &name, const string &value)
           params = split (value, ',');
           if (params.size () == 4)
             {
-               this->rect.x = xstrto_int (params[0]);
-               this->rect.y = xstrto_int (params[1]);
-               this->rect.w = xstrto_int (params[2]);
-               this->rect.h = xstrto_int (params[3]);
+               this->rect.x = xstrtoint (params[0], 10);
+               this->rect.y = xstrtoint (params[1], 10);
+               this->rect.w = xstrtoint (params[2], 10);
+               this->rect.h = xstrtoint (params[3], 10);
             }
         }
       else if (name == "location"){
           params = split (value, ',');
           if (params.size () == 2)
             {
-       
             }
         }
       else if (name == "size") {
           params = split (value, ',');
           if (params.size () == 2)
             {
-          /*    outputWindow->resize (
-                                xstrto_int ((*params)[0]),
-                                xstrto_int ((*params)[1])); */
+              /*    outputWindow->resize (
+                    xstrto_int ((*params)[0]),
+                    xstrto_int ((*params)[1])); */
             }
       }
       else if (name == "left") {
-          this->rect.x = xstrto_int (value);
-     
+          this->rect.x = xstrtoint (value, 10);
       }
       else if (name == "top"){
-          this->rect.y = xstrto_int (value);          
+          this->rect.y = xstrtoint (value, 10);
       }
       else if (name == "width"){
-          this->rect.w = xstrto_int (value);
+          this->rect.w = xstrtoint (value, 10);
       }
       else if (name == "height"){
-          this->rect.h = xstrto_int (value);
+          this->rect.h = xstrtoint (value, 10);
       }
       else if(name == "background" || name == "backgroundColor" || name == "bgColor"){
           ginga_color_input_to_sdl_color(value, &this->bgColor);    
       }
       else if (name == "transparency"){
-          if(xstrto_uint8 (value) <= 0)
+          if(xstrtouint8 (value, 10) <= 0)
              this->alpha = 255;
           else       
-             this->alpha = (guint8)(255 - ((((double)xstrto_uint8 (value)/100)*255)));
+             this->alpha = (guint8)(255 - (((xstrtod (value)/100)*255)));
       }
     
   properties[name] = value;

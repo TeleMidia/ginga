@@ -442,7 +442,7 @@ VideoPlayer::setPropertyValue (const string &name, const string &value)
 
   if (name == "soundLevel")
   {
-      this->soundLevel = xstrtodorpercent (value);
+      this->soundLevel = xstrtodorpercent (value, NULL);
       g_debug ("video: setting soundLevel to %f\n", this->soundLevel);
       g_object_set (G_OBJECT (this->playbin), "volume",
                     this->soundLevel, NULL);

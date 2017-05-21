@@ -269,7 +269,7 @@ LayoutRegion::compareWidthSize (const string &w)
     }
   else
     {
-      newW = xstrto_int (w.c_str ());
+      newW = xstrtoint (w.c_str (), 10);
     }
 
   if (newW == oldW)
@@ -301,7 +301,7 @@ LayoutRegion::compareHeightSize (const string &h)
     }
   else
     {
-      newH = xstrto_int (h.c_str ());
+      newH = xstrtoint (h.c_str (), 10);
     }
   if (newH == oldH)
     {

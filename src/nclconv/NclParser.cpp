@@ -17,7 +17,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "ginga-color-table.h"
-
 #include "NclParser.h"
 
 GINGA_NCLCONV_BEGIN
@@ -1161,17 +1160,17 @@ NclParser::parseTransition (DOMElement *transition_element)
 
   if (dom_element_try_get_attr(attValue, transition_element, "horzRepeat"))
     {
-      transition->setHorzRepeat (xstrto_int (attValue));
+      transition->setHorzRepeat (xstrtoint (attValue, 10));
     }
 
   if (dom_element_try_get_attr(attValue, transition_element, "vertRepeat"))
     {
-      transition->setVertRepeat (xstrto_int (attValue));
+      transition->setVertRepeat (xstrtoint (attValue, 10));
     }
 
   if (dom_element_try_get_attr(attValue, transition_element, "borderWidth"))
     {
-      transition->setBorderWidth (xstrto_int (attValue));
+      transition->setBorderWidth (xstrtoint (attValue, 10));
     }
 
   if (dom_element_try_get_attr(attValue, transition_element, "borderColor"))
@@ -1510,22 +1509,22 @@ NclParser::parseSimpleAction (DOMElement *simpleAction_element)
             {
               if (durVal.find ("s") != std::string::npos)
                 {
-                  animation->setDuration (xstrbuild ("%d", xstrto_int (durVal.substr (0, durVal.length () - 1))));
+                  animation->setDuration (xstrbuild ("%d", xstrtoint (durVal.substr (0, durVal.length () - 1), 10)));
                 }
               else
                 {
-                  animation->setDuration (xstrbuild ("%d", (xstrto_int (durVal))));
+                  animation->setDuration (xstrbuild ("%d", (xstrtoint (durVal, 10))));
                 }
             }
 
           if (byVal.find ("s") != std::string::npos)
             {
-              animation->setBy (xstrbuild ("%d", (xstrto_int (byVal.substr (0, byVal.length () - 1)))));
+              animation->setBy (xstrbuild ("%d", (xstrtoint (byVal.substr (0, byVal.length () - 1), 10))));
             }
           else
             {
               guint64 i;
-              if (_xstrtoull (byVal, &i))
+              if (_xstrtoull (byVal, &i, 10))
                 animation->setBy (xstrbuild ("%u", (guint) i));
               else
                 animation->setBy ("indefinite"); // default
@@ -1559,8 +1558,8 @@ NclParser::parseSimpleAction (DOMElement *simpleAction_element)
       else
         {
           actionExpression->setDelay (
-              xstrbuild ("%d", (xstrto_int (
-                        attValue.substr (0, attValue.length () - 1))
+              xstrbuild ("%d", (xstrtoint (
+                        attValue.substr (0, attValue.length () - 1), 10)
                     * 1000)));
         }
     }
@@ -1576,8 +1575,8 @@ NclParser::parseSimpleAction (DOMElement *simpleAction_element)
       else
         {
           actionExpression->setDelay (
-              xstrbuild ("%d", (xstrto_int (
-                        attValue.substr (0, attValue.length () - 1))
+              xstrbuild ("%d", (xstrtoint (
+                        attValue.substr (0, attValue.length () - 1), 10)
                     * 1000)));
         }
     }
@@ -1817,7 +1816,7 @@ NclParser::compileRoleInformation (Role *role, DOMElement *role_element)
   //  cardinality
   if (dom_element_try_get_attr(attValue, role_element, "min"))
     {
-      role->setMinCon ((xstrto_int (attValue)));
+      role->setMinCon ((xstrtoint (attValue, 10)));
     }
 
   if (dom_element_try_get_attr(attValue, role_element, "max"))
@@ -1828,7 +1827,7 @@ NclParser::compileRoleInformation (Role *role, DOMElement *role_element)
         }
       else
         {
-          role->setMaxCon (xstrto_int (attValue));
+          role->setMaxCon (xstrtoint (attValue, 10));
         }
     }
 }
@@ -1943,8 +1942,8 @@ NclParser::createCompoundAction (DOMElement *compoundAction_element)
       else
         {
           actionExpression->setDelay (
-              xstrbuild ("%d", (xstrto_int (
-                        attValue.substr (0, attValue.length () - 1))
+              xstrbuild ("%d", (xstrtoint (
+                        attValue.substr (0, attValue.length () - 1), 10)
                     * 1000)));
         }
     }
@@ -2070,7 +2069,7 @@ NclParser::parseArea (DOMElement *parent)
 
       anchor = new TextAnchor (
           anchorId, dom_element_get_attr(parent, "text"),
-          xstrto_int (position));
+          xstrtoint (position, 10));
     }
   else if (dom_element_has_attr(parent, "coords"))
     {
@@ -2468,9 +2467,9 @@ set_perc_or_px (DOMElement *el, const string &att, LayoutRegion *region,
   if (dom_element_try_get_attr(att_value, el, att))
     {
       if (xstrispercent(att_value))
-        ((region)->*setF)(xstrtodorpercent (att_value) * 100., true);
+        ((region)->*setF)(xstrtodorpercent (att_value, NULL) * 100., true);
       else
-        ((region)->*setF)(xstrto_int (att_value), false);
+        ((region)->*setF)(xstrtoint (att_value, 10), false);
     }
 }
 
@@ -2491,7 +2490,7 @@ NclParser::createRegion (DOMElement *region_element)
   set_perc_or_px(region_element, "height", ncmRegion, &LayoutRegion::setHeight);
 
   if(dom_element_try_get_attr(attr, region_element, "zIndex"))
-      ncmRegion->setZIndex(xstrto_int(attr));
+      ncmRegion->setZIndex (xstrtoint (attr, 10));
 
   return ncmRegion;
 }
@@ -3605,9 +3604,7 @@ NclParser::createDescriptor (DOMElement *descriptor_element)
 
   if (dom_element_try_get_attr(attValue, descriptor_element, "focusBorderWidth"))
     {
-      int w;
-      w = xstrto_int (attValue);
-      focusDecoration->setFocusBorderWidth (w);
+      focusDecoration->setFocusBorderWidth (xstrtoint (attValue, 10));
     }
 
   if (dom_element_try_get_attr(attValue, descriptor_element, "focusBorderTransparency"))

@@ -76,9 +76,9 @@ PlayerAnimator::updateList(const string &dur,
   pr->velocity = 0;
   if (xstrispercent (value))
     if(name == "transparency")
-      pr->targetValue = xstrtodorpercent (value) * 255.;
+      pr->targetValue = xstrtodorpercent (value, NULL) * 255.;
     else
-      pr->targetValue = xstrtodorpercent (value) * 100.;
+      pr->targetValue = xstrtodorpercent (value, NULL) * 100.;
   else
     if(name == "transparency"){
         pr->targetValue = xstrtod (value) * 255.;
