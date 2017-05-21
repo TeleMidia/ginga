@@ -105,10 +105,6 @@ public:
   double getOutTransTime ();
   void checkAnchorMonitor ();
 
-  static void printAction (const string &action, NclExecutionObject *object);
-
-  static void printAction (const string &command);
-
 public:
   virtual bool start ();
   virtual bool stop ();

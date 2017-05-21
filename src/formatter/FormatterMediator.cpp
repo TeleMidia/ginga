@@ -18,12 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "FormatterMediator.h"
 
-#include "mb/Display.h"
 #include "FormatterBaseDevice.h"
-
 #include "PresentationContext.h"
-
-GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_FORMATTER_BEGIN
 
@@ -784,8 +780,6 @@ FormatterMediator::presentationCompleted (arg_unused (NclFormatterEvent *documen
 
   documentEvents.clear ();
   documentEntryEvents.clear ();
-
-  AdapterFormatterPlayer::printAction ("stopApp::" + data->docId);
 
   Player::notifyPlayerListeners (PL_NOTIFY_STOP, data->playerId,
                                  TYPE_PRESENTATION);
