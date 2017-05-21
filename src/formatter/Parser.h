@@ -53,9 +53,6 @@ GINGA_PRAGMA_DIAG_POP ()
 #include "ncl/Descriptor.h"
 using namespace ginga::ncl;
 
-#include "formatter/PrivateBaseContext.h"
-using namespace ::ginga::formatter;
-
 #include <vector>
 using namespace std;
 
@@ -64,11 +61,10 @@ GINGA_FORMATTER_BEGIN
 class NclParser : public ErrorHandler
 {
 public:
-  explicit NclParser (PrivateBaseContext *pbc, DeviceLayout *deviceLayout);
+  explicit NclParser (DeviceLayout *deviceLayout);
   virtual ~NclParser ();
 
   Node *getNode (const string &id);
-  PrivateBaseContext *getPrivateBaseContext ();
   NclDocument *importDocument (string &docLocation);
 
   string getPath ();
@@ -89,8 +85,6 @@ private:
   string _path;                  // document's absolute path
   string _dirname;               // directory part of document's path
   DeviceLayout *_deviceLayout;
-
-  PrivateBaseContext *_privateBaseContext;
   bool _ownManager;
 
   NclDocument *parseRootElement (DOMElement *rootElement);

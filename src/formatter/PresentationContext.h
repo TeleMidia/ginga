@@ -35,8 +35,6 @@ using namespace ::ginga::system;
 #include "ctxmgmt/IContextListener.h"
 using namespace ::ginga::ctxmgmt;
 
-#include "math.h"
-
 GINGA_FORMATTER_BEGIN
 
 class PresentationContext : public Observable, public IContextListener
