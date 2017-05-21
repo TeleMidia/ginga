@@ -384,31 +384,31 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                 }
               else if (name == "bounds")
                 {
-                  params = split (xstrchomp (value), ',');
+                  params = xstrsplit (xstrchomp (value), ',');
                   if (params.size () == 4)
                     {
-                      left = params[0];
-                      top = params[1];
-                      width = params[2];
-                      height = params[3];
+                      left = xstrchomp (params[0]);
+                      top = xstrchomp (params[1]);
+                      width = xstrchomp (params[2]);
+                      height = xstrchomp (params[3]);
                     }
                 }
               else if (name == "location")
                 {
-                  params = split (xstrchomp (value), ',');
+                  params = xstrsplit (xstrchomp (value), ',');
                   if (params.size () == 2)
                     {
-                      left = params[0];
-                      top = params[1];
+                      left = xstrchomp (params[0]);
+                      top = xstrchomp (params[1]);
                     }
                 }
               else if (name == "size")
                 {
-                  params = split (xstrchomp (value), ',');
+                  params = xstrsplit (xstrchomp (value), ',');
                   if (params.size () == 2)
                     {
-                      width = params[0];
-                      height = params[1];
+                      width = xstrchomp (params[0]);
+                      height = xstrchomp (params[1]);
                     }
                 }
               else if (name == "transparency")
@@ -581,18 +581,18 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                     }
                   else if (name == "bounds")
                     {
-                      params = split (xstrchomp (value), ',');
+                      params = xstrsplit (xstrchomp (value), ',');
                       if (params.size () == 4)
                         {
-                          left = params[0];
-                          top = params[1];
-                          width = params[2];
-                          height = params[3];
+                          left = xstrchomp (params[0]);
+                          top = xstrchomp (params[1]);
+                          width = xstrchomp (params[2]);
+                          height = xstrchomp (params[3]);
                         }
                     }
                   else if (name == "location")
                     {
-                      params = split (xstrchomp (value), ',');
+                      params = xstrsplit (xstrchomp (value), ',');
                       if (params.size () == 2)
                         {
                           left = params[0];
@@ -601,7 +601,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                     }
                   else if (name == "size")
                     {
-                      params = split (xstrchomp (value), ',');
+                      params = xstrsplit (xstrchomp (value), ',');
                       if (params.size () == 2)
                         {
                           width = params[0];

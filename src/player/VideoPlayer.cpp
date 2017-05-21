@@ -15,17 +15,10 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-//#include "ginga.h"
+#include "ginga.h"
 #include "VideoPlayer.h"
 
-//#include "mb/Display.h"
-//#include "mb/SDLWindow.h"
-
 #define TRACE() g_debug ("%s",G_STRFUNC);
-
-
-//#include "util/functions.h"
-//using namespace ::ginga::util;
 
 GINGA_PLAYER_BEGIN
 

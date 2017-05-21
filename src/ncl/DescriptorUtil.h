@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef DESCRIPTORUTIL_H_
 #define DESCRIPTORUTIL_H_
 
-#include "util/functions.h"
-using namespace ::ginga::util;
-
 #include "Descriptor.h"
 
 GINGA_NCL_BEGIN

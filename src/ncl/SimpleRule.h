@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _SIMPLERULE_H_
 #define _SIMPLERULE_H_
 
-#include "util/functions.h"
-using namespace ::ginga::util;
-
 #include "Rule.h"
 
 GINGA_NCL_BEGIN

@@ -18,10 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTERREGION_H_
 #define FORMATTERREGION_H_
 
-//#include "util/Color.h"
-#include "util/functions.h"
-using namespace ::ginga::util;
-
 #include "ncl/LayoutRegion.h"
 using namespace ::ginga::ncl;
 

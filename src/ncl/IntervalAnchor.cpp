@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "IntervalAnchor.h"
 
-#include "util/functions.h"
-using namespace ::ginga::util;
-
 GINGA_NCL_BEGIN
 
 // if the representation changes, update isObjectDuration method

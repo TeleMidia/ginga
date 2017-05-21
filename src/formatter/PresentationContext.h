@@ -19,8 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _PRESENTATIONCONTEXT_H_
 
 #include "util/Observable.h"
-
-#include "util/functions.h"
 using namespace ::ginga::util;
 
 #include "ctxmgmt/ContextManager.h"

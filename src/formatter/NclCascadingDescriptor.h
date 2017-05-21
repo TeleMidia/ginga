@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _CASCADINGDESCRIPTOR_H_
 #define _CASCADINGDESCRIPTOR_H_
 
-#include "util/functions.h"
-//#include "util/Color.h"
-
 #include "ncl/Parameter.h"
 using namespace ::ginga::ncl;
 

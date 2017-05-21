@@ -227,6 +227,7 @@ string xstrup (string);
 string xstrdown (string);
 string xstrchomp (string);
 void xstrreplaceall (string &, const string &, const string &);
+vector<string> xstrsplit (const string &, char);
 
 // Path functions.
 string xpathbasename (string);

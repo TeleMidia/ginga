@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _DESCRIPTOR_H_
 #define _DESCRIPTOR_H_
 
-#include "util/functions.h"
-using namespace ::ginga::util;
-
 #include "Entity.h"
 #include "Parameter.h"
 

@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _COMPOUNDSTATEMENT_H_
 #define _COMPOUNDSTATEMENT_H_
 
-#include "util/functions.h"
-using namespace ::ginga::util;
-
 #include "Statement.h"
 #include "AssessmentStatement.h"
 #include "Role.h"

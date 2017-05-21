@@ -18,12 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _EXECUTIONOBJECT_H_
 #define _EXECUTIONOBJECT_H_
 
-#include "util/functions.h"
-using namespace ::ginga::util;
-
 #include "system/Thread.h"
 using namespace ::ginga::system;
-
 
 #include "player/IPlayer.h"
 #include "player/Player.h"

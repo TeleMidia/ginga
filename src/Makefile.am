@@ -189,7 +189,6 @@ src+= player/LuaPlayer.cpp
 src+= player/Player.cpp
 src+= player/PlayerAnimator.cpp
 src+= system/Thread.cpp
-src+= util/functions.cpp
 
 if WITH_ESPEAK
 AM_CXXFLAGS+= $(ESPEAK_CFLAGS)
