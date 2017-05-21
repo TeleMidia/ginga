@@ -213,6 +213,9 @@ guint xstrtouint (const string &, guint8);
 guint8 xstrtouint8 (const string &, guint8);
 guint64 xstrtouint64 (const string &, guint8);
 
+bool _xstrtimetod (const string &, double *);
+double xstrtimetod (const string &);
+
 bool xstrispercent (const string &);
 gdouble xstrtodorpercent (const string &, bool *);
 

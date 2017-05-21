@@ -325,7 +325,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
       if (property != NULL)
         {
           value = property->getPropertyValue ();
-          explicitDur = ::ginga::util::strUTCToSec (value) * 1000;
+          explicitDur = xstrtimetod (value) * 1000;
         }
 
       return explicitDur;
@@ -352,7 +352,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
             {
               if (name == "explicitDur")
                 {
-                  explicitDur = ::ginga::util::strUTCToSec (value) * 1000;
+                  explicitDur = xstrtimetod (value) * 1000;
                 }
               else if (name == "left")
                 {
@@ -549,8 +549,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                 {
                   if (name == "explicitDur")
                     {
-                      explicitDur
-                          = ::ginga::util::strUTCToSec (value) * 1000;
+                      explicitDur = xstrtimetod (value) * 1000;
                     }
                   else if (name == "left")
                     {

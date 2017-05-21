@@ -134,7 +134,7 @@ xstrispercent (const string &s)
   return (g_strtod (s.c_str (), &end), *end == '%');
 }
 
-// Converts a string (number or percentage) to a number.
+// Converts a number or percentage string to a number.
 gdouble
 xstrtodorpercent (const string &s, bool *perc)
 {
@@ -150,6 +150,54 @@ xstrtodorpercent (const string &s, bool *perc)
       set_if_nonnull (perc, false);
       return x;
     }
+}
+
+// Converts a time string to a number in seconds.
+// The following formats are supported: "NNs" or "NN:NN:NN".
+bool
+_xstrtimetod (const string &s, double *sec)
+{
+  gchar *dup;
+  gchar *end;
+  gdouble x;
+
+  dup = g_strdup (s.c_str ());
+  g_strchomp (dup);
+
+  x = g_strtod (dup, &end);
+  if (*end == '\0' || streq (end, "s"))
+    goto beach;
+
+  if (*end != ':')
+    goto fail;
+
+  end++;
+  x = 3600 * x + 60 * g_strtod (end, &end);
+  if (*end != ':')
+    goto fail;
+
+  end++;
+  x += g_strtod (end, &end);
+  if (*end != '\0')
+    goto fail;
+
+ beach:
+  g_free (dup);
+  set_if_nonnull (sec, x);
+  return true;
+
+ fail:
+  g_free (dup);
+  return false;
+}
+
+// Asserted version of the previous function.
+double
+xstrtimetod (const string &s)
+{
+  double d;
+  g_assert (_xstrtimetod (s, &d));
+  return d;
 }
 
 // Compares two strings ignoring case.
