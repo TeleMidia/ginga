@@ -19,13 +19,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define DISPLAY_H
 
 #include "ginga.h"
-
 #include "SDLWindow.h"
 
 #include "IKeyInputEventListener.h"
 #include "IMouseEventListener.h"
 
 #include "player/Player.h"
+using namespace ::ginga::player;
 
 #include "formatter/NclExecutionObject.h"
 using namespace ::ginga::formatter;
@@ -47,22 +47,22 @@ private:
   int width;                    // display width in pixels
   int height;                   // display height in pixels
   bool fullscreen;              // true if full-screen mode is on
-  guint32 frameTime;            // frame time rate
-  double fps;
 
-  set<IKeyInputEventListener*> keyEventListeners;  // key event listeners
-  set<IMouseEventListener*> mouseEventListeners; // mouse event listeners
-  set<NclExecutionObject*> timeAnchorListeners; // time anchor listeners
+  double fps;                   // maximum frame-rate
+  guint32 frameTime;            // maximum frame time
+  bool _quit;                   // true if render thread should quit
+
+  set<IKeyInputEventListener*> keyEventListeners; // key event listeners
+  set<IMouseEventListener*> mouseEventListeners;  // mouse event listeners
+  set<NclExecutionObject*> timeAnchorListeners;   // time anchor listeners
 
   SDL_Window *screen;           // display screen
   SDL_Renderer *renderer;       // display renderer
 
-  bool _quit;                   // true if render thread should quit
-
   GList *jobs;                  // list of jobs to be executed by renderer
+  GList *players;               // list of players to be ticked
   GList *textures;              // list of textures to be destructed
   GList *windows;               // list of windows to be redrawn
-  GList *players;
 
   gpointer add (GList **, gpointer);
   gpointer remove (GList **, gpointer);
@@ -89,26 +89,25 @@ public:
   bool hasWindow (const SDLWindow *);
   void destroyWindow (SDLWindow *);
 
-
   void renderLoop (void);
 
-  //players
+  // players
   void registerPlayer(Player *);
   void unregisterPlayer(Player *);
 
-  //key event listeners
+  // key event listeners
   void registerKeyEventListener(IKeyInputEventListener*);
   void unregisterKeyEventListener(IKeyInputEventListener*);
-  void postKeyInputEventListener(SDL_Keycode);       //gambi used by formatterFocusManager listener
+  void postKeyInputEventListener(SDL_Keycode); // gambi used by formatterFocusManager listener
 
-  //mouse event listeners
+  // mouse event listeners
   void registerMouseEventListener(IMouseEventListener*);
   void unregisterMouseEventListener(IMouseEventListener*);
 
-  //time anchors listeners
+  // time anchors listeners
   void registerTimeAnchorListener(NclExecutionObject*);
   void unregisterTimeAnchorListener(NclExecutionObject*);
-
+
 private:
   void notifyKeyEventListeners(SDL_EventType, SDL_Keycode);
   void notifyMouseEventListeners(SDL_EventType);
