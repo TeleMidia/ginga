@@ -272,7 +272,7 @@ set (GINGA_INCLUDE_DIRS
 set (GINGA_LIBS
   pthread
 
-  XercesC::XercesC
+  ${XercesC_LIBRARIES}
   expat
 
   ${SDL2_LIBRARY}
