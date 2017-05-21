@@ -101,7 +101,6 @@ src+= formatter/NclSelectionEvent.cpp
 src+= formatter/NclSwitchEvent.cpp
 src+= formatter/Parser.cpp
 src+= formatter/PresentationContext.cpp
-src+= formatter/PrivateBaseContext.cpp
 src+= formatter/RuleAdapter.cpp
 src+= mb/Display.cpp
 src+= mb/DisplayDebug.cpp

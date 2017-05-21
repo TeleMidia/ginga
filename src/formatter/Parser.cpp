@@ -164,13 +164,10 @@ dom_element_children_by_tagnames (DOMElement *el,
   return vet;
 }
 
-NclParser::NclParser (PrivateBaseContext *pbc, DeviceLayout *deviceLayout)
+NclParser::NclParser (DeviceLayout *deviceLayout)
 {
-  g_assert_nonnull(pbc);
   g_assert_nonnull(deviceLayout);
-
   this->_ownManager = false;
-  this->_privateBaseContext = pbc;
   this->_deviceLayout = deviceLayout;
 }
 
@@ -320,20 +317,18 @@ NclParser::getNode (const string &nodeId)
   return doc->getNode (nodeId);
 }
 
-PrivateBaseContext *
-NclParser::getPrivateBaseContext ()
-{
-  return _privateBaseContext;
-}
-
 NclDocument *
 NclParser::importDocument (string &path)
 {
+  NclParser compiler (this->_deviceLayout);
+
   if (!xpathisuri (path) && !xpathisabs (path))
     path = xpathbuildabs (this->getDirName (), path);
 
-  return (NclDocument *)(_privateBaseContext
-                          ->addVisibleDocument (path, _deviceLayout));
+  return compiler.parse (path);
+
+  // return (NclDocument *)(_privateBaseContext
+  //                         ->addVisibleDocument (path, _deviceLayout));
 }
 
 

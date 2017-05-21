@@ -80,11 +80,8 @@ using namespace ::ginga::ncl;
 #include "NclLinkAssignmentAction.h"
 
 #include "RuleAdapter.h"
-
 #include "FormatterConverter.h"
-
 #include "FormatterScheduler.h"
-#include "PrivateBaseContext.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -117,7 +114,6 @@ private:
   string currentFile;
   NclDocument *currentDocument;
 
-  PrivateBaseContext *privateBaseContext;
   map<string, NclFormatterEvent *> documentEvents;
   map<string, vector<NclFormatterEvent *> *> documentEntryEvents;
   map<Port *, NclFormatterEvent *> portsToEntryEvents;
@@ -137,7 +133,7 @@ public:
   void *addDocument (const string &file);
 
 private:
-  bool removeDocument (const string &documentId);
+  bool removeDocument ();
   ContextNode *getDocumentContext (const string &documentId);
 
 public:
@@ -155,7 +151,6 @@ private:
   vector<NclFormatterEvent *> *getDocumentEntryEvent (const string &documentId);
 
   bool compileDocument (const string &documentId);
-  bool prepareDocument (const string &documentId);
 
   NclFormatterEvent *getEntryEvent (const string &interfaceId,
                                     vector<NclFormatterEvent *> *events);

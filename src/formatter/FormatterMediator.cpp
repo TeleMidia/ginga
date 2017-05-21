@@ -20,6 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "FormatterBaseDevice.h"
 #include "PresentationContext.h"
+#include "Parser.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -196,7 +197,6 @@ FormatterMediator::FormatterMediator () : Player ("")
   data->x = 0;
   data->y = 0;
   Ginga_Display->getSize (&data->w, &data->h);
-  data->privateBaseContext = new PrivateBaseContext ();
   this->data = data;
 
   this->currentFile = "";
@@ -244,9 +244,6 @@ FormatterMediator::FormatterMediator () : Player ("")
 
   entryEventListener = NULL;
 
-  privateBaseContext = (PrivateBaseContext *)(data->privateBaseContext);
-
-  privateBaseContext->createPrivateBase (data->baseId);
   ((FormatterFocusManager *)(data->focusManager))
       ->setMotionBoundaries (data->x, data->y, data->w, data->h);
 
@@ -296,7 +293,7 @@ FormatterMediator::~FormatterMediator ()
               compiler->removeExecutionObject (bodyObject);
             }
         }
-      if (!removeDocument (docId))
+      if (!removeDocument ())
         {
           clog << "FormatterMediator::~FormatterMediator Warning! Can't";
           clog << " remove document '" << docId << "'";
@@ -384,46 +381,29 @@ FormatterMediator::~FormatterMediator ()
 void *
 FormatterMediator::addDocument (const string &file)
 {
-  this->currentFile = xpathmakeabs (file);
-  this->currentDocument = privateBaseContext->addDocument
-    (file, this->deviceLayout);
-  g_assert_nonnull (this->currentDocument);
+  NclParser compiler (this->deviceLayout);
 
-  this->data->docId = this->currentDocument->getId ();
-  g_assert (prepareDocument (this->currentDocument->getId ()));
+  this->currentFile = xpathmakeabs (file);
+  this->currentDocument = compiler.parse (file);
+  g_assert_nonnull (this->currentDocument);
 
   return this->currentDocument;
 }
 
 bool
-FormatterMediator::removeDocument (const string &documentId)
+FormatterMediator::removeDocument ()
 {
-  NclDocument *document;
-
-  if (documentEvents.count (documentId) != 0)
-    {
-      this->stop ();
-    }
-
-  document = privateBaseContext->removeDocument (documentId);
-  g_assert_nonnull (document);
-  delete document;
+  this->stop ();
+  g_assert_nonnull (this->currentDocument);
+  delete this->currentDocument;
   return true;
 }
 
 ContextNode *
-FormatterMediator::getDocumentContext (const string &documentId)
+FormatterMediator::getDocumentContext (arg_unused (const string &documentId))
 {
-  NclDocument *nclDocument;
-
-  if (documentEvents.count (documentId) != 0)
-    {
-      return NULL;
-    }
-
-  nclDocument = privateBaseContext->getDocument (documentId);
-  g_assert_nonnull (nclDocument);
-  return nclDocument->getBody ();
+  g_assert_nonnull (this->currentDocument);
+  return this->currentDocument->getBody ();
 }
 
 Port *
@@ -550,7 +530,7 @@ FormatterMediator::processDocument (const string &documentId, const string &inte
     }
 
   contextPerspective = new NclNodeNesting
-    (privateBaseContext->getPrivateBase ());
+    ();
 
   contextPerspective->insertAnchorNode (context);
 
@@ -606,8 +586,6 @@ FormatterMediator::initializeSettingNodes (Node *node)
   NclExecutionObject *object;
   NodeEntity *nodeEntity;
 
-  // clog << "FormatterScheduler::initializeSettingNodes" << endl;
-
   if (!node->instanceOf ("CompositeNode"))
     {
       clog << "FormatterMediator::initializeSettingNodes return";
@@ -657,8 +635,6 @@ FormatterMediator::initializeSettingNodes (Node *node)
           ++i;
         }
     }
-
-  // clog << "FormatterScheduler::initializeSettingNodes all done" << endl;
 }
 
 bool
@@ -710,27 +686,6 @@ FormatterMediator::compileDocument (const string &documentId)
     }
 
   docCompiled = true;
-  return true;
-}
-
-bool
-FormatterMediator::prepareDocument (const string &documentId)
-{
-  string src, docLocation;
-  ContextNode *body;
-
-  body = getDocumentContext (documentId);
-  if (body == NULL)
-    {
-      clog << "FormatterMediator::prepareDocument warning! Doc '";
-      clog << documentId;
-      clog << "': without body!" << endl;
-      return false;
-    }
-
-  docLocation = privateBaseContext->getDocumentLocation (documentId);
-  if (docLocation == "")
-      return false;
   return true;
 }
 
