@@ -166,7 +166,7 @@ main (int argc, char **argv)
   _Ginga_Display = new ginga::mb::Display (opt_width, opt_height,
                                            opt_fullscreen, opt_fps);
   formatter = new FormatterMediator ();
-  formatter->setCurrentDocument (string (ginga_argv[1]));
+  formatter->addDocument (string (ginga_argv[1]));
   g_strfreev (ginga_argv);
 
   g_thread_new ("formatter", formatter_loop, formatter);

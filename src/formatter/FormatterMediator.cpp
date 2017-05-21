@@ -385,53 +385,42 @@ FormatterMediator::~FormatterMediator ()
   clog << "FormatterMediator::~FormatterMediator all done" << endl;
 }
 
-void
-FormatterMediator::setMrl (const string &mrl, bool visible)
-{
-  this->mrl = mrl;
-  this->visible = visible;
-}
+// void
+// FormatterMediator::setMrl (const string &mrl, bool visible)
+// {
+//   this->mrl = mrl;
+//   this->visible = visible;
+// }
 
-void
-FormatterMediator::setParentLayout (void *parentLayout)
-{
-  NclFormatterLayout *mainLayout;
+// void
+// FormatterMediator::setParentLayout (void *parentLayout)
+// {
+//   NclFormatterLayout *mainLayout;
 
-  clog << "FormatterMediator::setParentLayout in '" << data->playerId;
-  clog << "'" << endl;
+//   clog << "FormatterMediator::setParentLayout in '" << data->playerId;
+//   clog << "'" << endl;
 
-  if (multiDevice != NULL && parentLayout != NULL
-      && multiDevice->getMainLayout () != NULL)
-    {
-      mainLayout = (NclFormatterLayout *)(multiDevice->getMainLayout ());
-      ((NclFormatterLayout *)parentLayout)
-          ->addChild (data->baseId, mainLayout);
-    }
-}
+//   if (multiDevice != NULL && parentLayout != NULL
+//       && multiDevice->getMainLayout () != NULL)
+//     {
+//       mainLayout = (NclFormatterLayout *)(multiDevice->getMainLayout ());
+//       ((NclFormatterLayout *)parentLayout)
+//           ->addChild (data->baseId, mainLayout);
+//     }
+// }
 
 void *
-FormatterMediator::setCurrentDocument (const string &file)
+FormatterMediator::addDocument (const string &file)
 {
-  g_assert_null (currentDocument);
   this->currentFile = xpathmakeabs (file);
-  currentDocument = (NclDocument *) addDocument (currentFile);
-  g_assert_nonnull (currentDocument);
+  this->currentDocument = privateBaseContext->addDocument
+    (file, this->deviceLayout);
+  g_assert_nonnull (this->currentDocument);
 
-  return currentDocument;
-}
+  this->data->docId = this->currentDocument->getId ();
+  g_assert (prepareDocument (this->currentDocument->getId ()));
 
-void *
-FormatterMediator::addDocument (const string &docLocation)
-{
-  NclDocument *addedDoc = NULL;
-
-  addedDoc = privateBaseContext->addDocument (docLocation, deviceLayout);
-  g_assert_nonnull (addedDoc);
-
-  data->docId = addedDoc->getId ();
-
-  g_assert (prepareDocument (addedDoc->getId ()));
-  return addedDoc;
+  return this->currentDocument;
 }
 
 bool
@@ -465,17 +454,17 @@ FormatterMediator::getDocumentContext (const string &documentId)
   return nclDocument->getBody ();
 }
 
-void
-FormatterMediator::setDepthLevel (int level)
-{
-  compiler->setDepthLevel (level);
-}
+// void
+// FormatterMediator::setDepthLevel (int level)
+// {
+//   compiler->setDepthLevel (level);
+// }
 
-int
-FormatterMediator::getDepthLevel ()
-{
-  return compiler->getDepthLevel ();
-}
+// int
+// FormatterMediator::getDepthLevel ()
+// {
+//   return compiler->getDepthLevel ();
+// }
 
 Port *
 FormatterMediator::getPortFromEvent (NclFormatterEvent *event)
@@ -952,56 +941,56 @@ FormatterMediator::presentationCompleted (arg_unused (NclFormatterEvent *documen
                                  TYPE_PRESENTATION);
 }
 
-void
-FormatterMediator::addListener (IPlayerListener *listener)
-{
-  Player::addListener (listener);
-}
+// void
+// FormatterMediator::addListener (IPlayerListener *listener)
+// {
+//   Player::addListener (listener);
+// }
 
-void
-FormatterMediator::removeListener (IPlayerListener *listener)
-{
-  Player::removeListener (listener);
-}
+// void
+// FormatterMediator::removeListener (IPlayerListener *listener)
+// {
+//   Player::removeListener (listener);
+// }
 
-void
-FormatterMediator::notifyPlayerListeners (short code, const string &paremeter,
-                                          short type, const string &value)
-{
-  Player::notifyPlayerListeners (code, paremeter, type, value);
-}
+// void
+// FormatterMediator::notifyPlayerListeners (short code, const string &paremeter,
+//                                           short type, const string &value)
+// {
+//   Player::notifyPlayerListeners (code, paremeter, type, value);
+// }
 
-void
-FormatterMediator::setMediaTime (guint32 newTime)
-{
-  Player::setMediaTime (newTime);
-}
+// void
+// FormatterMediator::setMediaTime (guint32 newTime)
+// {
+//   Player::setMediaTime (newTime);
+// }
 
-guint32
-FormatterMediator::getMediaTime ()
-{
-  return Player::getMediaTime ();
-}
+// guint32
+// FormatterMediator::getMediaTime ()
+// {
+//   return Player::getMediaTime ();
+// }
 
-double
-FormatterMediator::getTotalMediaTime ()
-{
-  return Player::getTotalMediaTime ();
-}
+// double
+// FormatterMediator::getTotalMediaTime ()
+// {
+//   return Player::getTotalMediaTime ();
+// }
 
-bool
-FormatterMediator::setKeyHandler (bool isHandler)
-{
-  scheduler->setKeyHandler (isHandler);
-  return isHandler;
-}
+// bool
+// FormatterMediator::setKeyHandler (bool isHandler)
+// {
+//   scheduler->setKeyHandler (isHandler);
+//   return isHandler;
+// }
 
-void
-FormatterMediator::setScope (const string &scope, short type, double initTime,
-                             double endTime, double outTransDur)
-{
-  Player::setScope (scope, type, initTime, endTime, outTransDur);
-}
+// void
+// FormatterMediator::setScope (const string &scope, short type, double initTime,
+//                              double endTime, double outTransDur)
+// {
+//   Player::setScope (scope, type, initTime, endTime, outTransDur);
+// }
 
 bool
 FormatterMediator::play ()
@@ -1269,205 +1258,205 @@ FormatterMediator::isForcedNaturalEnd ()
   return Player::isForcedNaturalEnd ();
 }
 
-bool
-FormatterMediator::setOutWindow (SDLWindow* windowId)
-{
-  return Player::setOutWindow (windowId);
-}
+// bool
+// FormatterMediator::setOutWindow (SDLWindow* windowId)
+// {
+//   return Player::setOutWindow (windowId);
+// }
 
-void
-FormatterMediator::setCurrentScope (const string &scopeId)
-{
-  Player::setScope (scopeId);
-}
+// void
+// FormatterMediator::setCurrentScope (const string &scopeId)
+// {
+//   Player::setScope (scopeId);
+// }
 
-string
-FormatterMediator::getActiveUris (vector<string> *uris)
-{
-  return getDepUris (uris, 2);
-}
+// string
+// FormatterMediator::getActiveUris (vector<string> *uris)
+// {
+//   return getDepUris (uris, 2);
+// }
 
-string
-FormatterMediator::getDepUris (vector<string> *uris, int targetDev)
-{
-  CompositeNode *node;
-  ContextNode *parent;
-  ContextNode *body;
-  vector<Node *> *nodes;
-  vector<Node *> *childs;
-  vector<Node *>::iterator i;
-  string baseUri = "", childBaseUri = "";
+// string
+// FormatterMediator::getDepUris (vector<string> *uris, int targetDev)
+// {
+//   CompositeNode *node;
+//   ContextNode *parent;
+//   ContextNode *body;
+//   vector<Node *> *nodes;
+//   vector<Node *> *childs;
+//   vector<Node *>::iterator i;
+//   string baseUri = "", childBaseUri = "";
 
-  if (currentDocument == NULL)
-    {
-      return "";
-    }
+//   if (currentDocument == NULL)
+//     {
+//       return "";
+//     }
 
-  body = currentDocument->getBody ();
-  nodes = body->getNodes ();
-  if (nodes == NULL)
-    {
-      return "";
-    }
+//   body = currentDocument->getBody ();
+//   nodes = body->getNodes ();
+//   if (nodes == NULL)
+//     {
+//       return "";
+//     }
 
-  i = nodes->begin ();
-  while (i != nodes->end ())
-    {
-      if ((*i)->instanceOf ("ContextNode"))
-        {
-          parent = (ContextNode *)(*i);
-          childs = parent->getNodes ();
-          if (childs != NULL)
-            {
-              childBaseUri = getDepUrisFromNodes (uris, childs, targetDev);
-              baseUri = getBaseUri (childBaseUri, baseUri);
-            }
-        }
-      else if ((*i)->instanceOf ("CompositeNode"))
-        {
-          node = (CompositeNode *)(*i);
-          childs = node->getNodes ();
-          if (childs != NULL)
-            {
-              childBaseUri = getDepUrisFromNodes (uris, childs, targetDev);
-              baseUri = getBaseUri (childBaseUri, baseUri);
-            }
-        }
-      else
-        {
-          childBaseUri = getDepUriFromNode (uris, *i, targetDev);
-          baseUri = getBaseUri (childBaseUri, baseUri);
-        }
-      ++i;
-    }
+//   i = nodes->begin ();
+//   while (i != nodes->end ())
+//     {
+//       if ((*i)->instanceOf ("ContextNode"))
+//         {
+//           parent = (ContextNode *)(*i);
+//           childs = parent->getNodes ();
+//           if (childs != NULL)
+//             {
+//               childBaseUri = getDepUrisFromNodes (uris, childs, targetDev);
+//               baseUri = getBaseUri (childBaseUri, baseUri);
+//             }
+//         }
+//       else if ((*i)->instanceOf ("CompositeNode"))
+//         {
+//           node = (CompositeNode *)(*i);
+//           childs = node->getNodes ();
+//           if (childs != NULL)
+//             {
+//               childBaseUri = getDepUrisFromNodes (uris, childs, targetDev);
+//               baseUri = getBaseUri (childBaseUri, baseUri);
+//             }
+//         }
+//       else
+//         {
+//           childBaseUri = getDepUriFromNode (uris, *i, targetDev);
+//           baseUri = getBaseUri (childBaseUri, baseUri);
+//         }
+//       ++i;
+//     }
 
-  return baseUri;
-}
+//   return baseUri;
+// }
 
-string
-FormatterMediator::getDepUrisFromNodes (vector<string> *uris,
-                                        vector<Node *> *nodes,
-                                        int targetDev)
-{
-  CompositeNode *node;
-  ContextNode *parent;
-  vector<Node *> *childs;
-  vector<Node *>::iterator i;
-  string baseUri = "", childBaseUri = "";
+// string
+// FormatterMediator::getDepUrisFromNodes (vector<string> *uris,
+//                                         vector<Node *> *nodes,
+//                                         int targetDev)
+// {
+//   CompositeNode *node;
+//   ContextNode *parent;
+//   vector<Node *> *childs;
+//   vector<Node *>::iterator i;
+//   string baseUri = "", childBaseUri = "";
 
-  i = nodes->begin ();
-  while (i != nodes->end ())
-    {
-      if ((*i)->instanceOf ("ContextNode"))
-        {
-          parent = (ContextNode *)(*i);
-          childs = parent->getNodes ();
-          if (childs != NULL)
-            {
-              childBaseUri = getDepUrisFromNodes (uris, childs, targetDev);
-              baseUri = getBaseUri (childBaseUri, baseUri);
-            }
-        }
-      else if ((*i)->instanceOf ("CompositeNode"))
-        {
-          node = (CompositeNode *)(*i);
-          childs = node->getNodes ();
-          if (childs != NULL)
-            {
-              childBaseUri = getDepUrisFromNodes (uris, childs, targetDev);
-              baseUri = getBaseUri (childBaseUri, baseUri);
-            }
-        }
-      else
-        {
-          childBaseUri = getDepUriFromNode (uris, *i, targetDev);
-          baseUri = getBaseUri (childBaseUri, baseUri);
-        }
-      ++i;
-    }
+//   i = nodes->begin ();
+//   while (i != nodes->end ())
+//     {
+//       if ((*i)->instanceOf ("ContextNode"))
+//         {
+//           parent = (ContextNode *)(*i);
+//           childs = parent->getNodes ();
+//           if (childs != NULL)
+//             {
+//               childBaseUri = getDepUrisFromNodes (uris, childs, targetDev);
+//               baseUri = getBaseUri (childBaseUri, baseUri);
+//             }
+//         }
+//       else if ((*i)->instanceOf ("CompositeNode"))
+//         {
+//           node = (CompositeNode *)(*i);
+//           childs = node->getNodes ();
+//           if (childs != NULL)
+//             {
+//               childBaseUri = getDepUrisFromNodes (uris, childs, targetDev);
+//               baseUri = getBaseUri (childBaseUri, baseUri);
+//             }
+//         }
+//       else
+//         {
+//           childBaseUri = getDepUriFromNode (uris, *i, targetDev);
+//           baseUri = getBaseUri (childBaseUri, baseUri);
+//         }
+//       ++i;
+//     }
 
-  return baseUri;
-}
+//   return baseUri;
+// }
 
-string
-FormatterMediator::getDepUriFromNode (vector<string> *uris, Node *node,
-                                      int targetDev)
-{
-  GenericDescriptor *descriptor;
-  LayoutRegion *ncmRegion;
-  NodeEntity *nodeEntity;
-  Content *content;
-  string src = "";
+// string
+// FormatterMediator::getDepUriFromNode (vector<string> *uris, Node *node,
+//                                       int targetDev)
+// {
+//   GenericDescriptor *descriptor;
+//   LayoutRegion *ncmRegion;
+//   NodeEntity *nodeEntity;
+//   Content *content;
+//   string src = "";
 
-  if (!node->getDataEntity ()->instanceOf ("NodeEntity"))
-    {
-      return "";
-    }
+//   if (!node->getDataEntity ()->instanceOf ("NodeEntity"))
+//     {
+//       return "";
+//     }
 
-  content = ((NodeEntity *)(node->getDataEntity ()))->getContent ();
-  if (content != NULL && content->instanceOf ("ReferenceContent"))
-    {
-      src = ((ReferenceContent *)content)->getCompleteReferenceUrl ();
-      if (src != "")
-        {
-          if (targetDev == 0)
-            {
-              uris->push_back (src);
-            }
-          else
-            {
-              nodeEntity = ((NodeEntity *)node->getDataEntity ());
-              descriptor = nodeEntity->getDescriptor ();
-              if (descriptor != NULL
-                  && !(descriptor->instanceOf ("DescriptorSwitch")))
-                {
-                  clog << "FormatterMediator::getDepUriFromNode ";
-                  clog << "checking descriptor '";
-                  clog << ((Descriptor *)descriptor)->getId ();
-                  clog << "'" << endl;
-                  // TODO: find descriptor switch urls
-                  ncmRegion = ((Descriptor *)descriptor)->getRegion ();
-                  if (ncmRegion != NULL
-                      && ncmRegion->getDeviceClass () == targetDev)
-                    {
-                      uris->push_back (src);
-                    }
-                }
-            }
-        }
-    }
+//   content = ((NodeEntity *)(node->getDataEntity ()))->getContent ();
+//   if (content != NULL && content->instanceOf ("ReferenceContent"))
+//     {
+//       src = ((ReferenceContent *)content)->getCompleteReferenceUrl ();
+//       if (src != "")
+//         {
+//           if (targetDev == 0)
+//             {
+//               uris->push_back (src);
+//             }
+//           else
+//             {
+//               nodeEntity = ((NodeEntity *)node->getDataEntity ());
+//               descriptor = nodeEntity->getDescriptor ();
+//               if (descriptor != NULL
+//                   && !(descriptor->instanceOf ("DescriptorSwitch")))
+//                 {
+//                   clog << "FormatterMediator::getDepUriFromNode ";
+//                   clog << "checking descriptor '";
+//                   clog << ((Descriptor *)descriptor)->getId ();
+//                   clog << "'" << endl;
+//                   // TODO: find descriptor switch urls
+//                   ncmRegion = ((Descriptor *)descriptor)->getRegion ();
+//                   if (ncmRegion != NULL
+//                       && ncmRegion->getDeviceClass () == targetDev)
+//                     {
+//                       uris->push_back (src);
+//                     }
+//                 }
+//             }
+//         }
+//     }
 
-  return src;
-}
+//   return src;
+// }
 
-string
-FormatterMediator::getBaseUri (const string &baseA, const string &baseB)
-{
-  string base = "";
+// string
+// FormatterMediator::getBaseUri (const string &baseA, const string &baseB)
+// {
+//   string base = "";
 
-  if (baseA == "")
-    {
-      base = baseB;
-    }
-  else if (baseB != "")
-    {
-      if (baseB.length () < baseA.length ())
-        {
-          base = baseB;
-        }
-    }
-  else
-    {
-      base = baseA;
-    }
+//   if (baseA == "")
+//     {
+//       base = baseB;
+//     }
+//   else if (baseB != "")
+//     {
+//       if (baseB.length () < baseA.length ())
+//         {
+//           base = baseB;
+//         }
+//     }
+//   else
+//     {
+//       base = baseA;
+//     }
 
-  return base;
-}
+//   return base;
+// }
 
-PresentationContext *
-FormatterMediator::getPresentationContext ()
-{
-  return presContext;
-}
+// PresentationContext *
+// FormatterMediator::getPresentationContext ()
+// {
+//   return presContext;
+// }
 
 GINGA_FORMATTER_END

@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTER_MEDIATOR_H
 #define FORMATTER_MEDIATOR_H
 
-#include "player/INCLPlayer.h"
 #include "player/Player.h"
 using namespace ::ginga::player;
 
@@ -109,8 +108,7 @@ public:
   short getPriorityType ();
 };
 
-class FormatterMediator : public INCLPlayer,
-                          public Player,
+class FormatterMediator : public Player,
                           public IFormatterSchedulerListener
 {
 private:
@@ -137,19 +135,17 @@ public:
   FormatterMediator ();
   ~FormatterMediator ();
 
-  void setMrl (const string &mrl, bool visible = true);
-  void setParentLayout (void *parentLayout);
-
-  void *setCurrentDocument (const string &fName);
+  // void setMrl (const string &mrl, bool visible = true);
+  // void setParentLayout (void *parentLayout);
+  void *addDocument (const string &file);
 
 private:
-  virtual void *addDocument (const string &fName);
   bool removeDocument (const string &documentId);
   ContextNode *getDocumentContext (const string &documentId);
 
 public:
-  void setDepthLevel (int level);
-  int getDepthLevel ();
+  // void setDepthLevel (int level);
+  // int getDepthLevel ();
 
   Port *getPortFromEvent (NclFormatterEvent *event);
 
@@ -177,19 +173,19 @@ private:
   void presentationCompleted (NclFormatterEvent *documentEvent);
 
 public:
-  void setNotifyContentUpdate (arg_unused (bool notify)){};
-  void addListener (IPlayerListener *listener);
-  void removeListener (IPlayerListener *listener);
-  void notifyPlayerListeners (short code,
-                              const string &paremeter,
-                              short type,
-                              const string &value);
-  guint32 getMediaTime ();
-  double getTotalMediaTime ();
-  void setMediaTime (guint32 newTime);
-  bool setKeyHandler (bool isHandler);
-  void setScope (const string &scope, short type, double begin = -1,
-                 double end = -1, double outTransDur = -1);
+  // void setNotifyContentUpdate (arg_unused (bool notify)){};
+  // void addListener (IPlayerListener *listener);
+  // void removeListener (IPlayerListener *listener);
+  // void notifyPlayerListeners (short code,
+  //                             const string &paremeter,
+  //                             short type,
+  //                             const string &value);
+  // guint32 getMediaTime ();
+  // double getTotalMediaTime ();
+  // void setMediaTime (guint32 newTime);
+  // bool setKeyHandler (bool isHandler);
+  // void setScope (const string &scope, short type, double begin = -1,
+  //                double end = -1, double outTransDur = -1);
 
   bool play ();
   void stop ();
@@ -212,35 +208,35 @@ public:
   void setImmediatelyStart (bool immediatelyStartVal);
   void forceNaturalEnd (bool forceIt);
   bool isForcedNaturalEnd ();
-  bool setOutWindow (SDLWindow* windowId);
+  // bool setOutWindow (SDLWindow* windowId);
 
-  void setPlayerMap (arg_unused (map<string, IPlayer *> *objs)){};
-  map<string, IPlayer *> *
-  getPlayerMap ()
-  {
-    return NULL;
-  };
-  IPlayer *
-  getPlayer (arg_unused (const string &objectId))
-  {
-    return NULL;
-  };
-  void select (arg_unused (IPlayer *selObject)){};
+  // void setPlayerMap (arg_unused (map<string, IPlayer *> *objs)){};
+  // map<string, IPlayer *> *
+  // getPlayerMap ()
+  // {
+  //   return NULL;
+  // };
+  // IPlayer *
+  // getPlayer (arg_unused (const string &objectId))
+  // {
+  //   return NULL;
+  // };
+  // void select (arg_unused (IPlayer *selObject)){};
 
   // Application player only.
-  void setCurrentScope (const string &scopeId);
-  string getActiveUris (vector<string> *uris);
-  string getDepUris (vector<string> *uris, int targetDev = 0);
-  PresentationContext *getPresentationContext ();
+  // void setCurrentScope (const string &scopeId);
+  // string getActiveUris (vector<string> *uris);
+  // string getDepUris (vector<string> *uris, int targetDev = 0);
+  // PresentationContext *getPresentationContext ();
 
-private:
-  string getDepUrisFromNodes (vector<string> *uris,
-                              vector<Node *> *nodes,
-                              int targetDev = 0);
-  string getDepUriFromNode (vector<string> *uris,
-                            Node *node,
-                            int targetDev = 0);
-  string getBaseUri (const string &baseA, const string &baseB);
+// private:
+  // string getDepUrisFromNodes (vector<string> *uris,
+  //                             vector<Node *> *nodes,
+  //                             int targetDev = 0);
+  // string getDepUriFromNode (vector<string> *uris,
+  //                           Node *node,
+  //                           int targetDev = 0);
+  // string getBaseUri (const string &baseA, const string &baseB);
 };
 
 GINGA_FORMATTER_END
