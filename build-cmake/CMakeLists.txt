@@ -339,7 +339,6 @@ message ( "
 ---
 summary of main build options:
 
-Install location variables which can be set by the user:
 version:		${VERSION}
 install prefix:		${CMAKE_INSTALL_PREFIX}
 CMAKE_SYSTEM_NAME:	${CMAKE_SYSTEM_NAME}
