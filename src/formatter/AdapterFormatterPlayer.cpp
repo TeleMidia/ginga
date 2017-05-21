@@ -380,7 +380,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                 }
               else if (name == "zIndex")
                 {
-                  region->setZIndex (xstrto_int (value));
+                  region->setZIndex (xstrtoint (value, 10));
                 }
               else if (name == "bounds")
                 {
@@ -456,8 +456,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                 {
                   if (fRegion != NULL)
                     {
-                      fRegion->setFocusBorderWidth (
-                          xstrto_int (value));
+                      fRegion->setFocusBorderWidth (xstrtoint (value, 10));
                     }
                 }
               else if (name == "focusComponentSrc")
@@ -480,8 +479,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                 {
                   if (fRegion != NULL)
                     {
-                      fRegion->setSelBorderWidth (
-                          xstrto_int (value));
+                      fRegion->setSelBorderWidth (xstrtoint (value, 10));
                     }
                 }
               else if (name == "selComponentSrc")
@@ -580,7 +578,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                     }
                   else if (name == "zIndex")
                     {
-                      region->setZIndex (xstrto_int (value));
+                      region->setZIndex (xstrtoint (value, 10));
                     }
                   else if (name == "bounds")
                     {
@@ -663,8 +661,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                     {
                       if (fRegion != NULL)
                         {
-                          fRegion->setFocusBorderWidth (
-                              xstrto_int (value));
+                          fRegion->setFocusBorderWidth (xstrtoint (value, 10));
                         }
                     }
                   else if (name == "focusComponentSrc")
@@ -687,8 +684,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                     {
                       if (fRegion != NULL)
                         {
-                          fRegion->setSelBorderWidth (
-                              xstrto_int (value));
+                          fRegion->setSelBorderWidth (xstrtoint (value, 10));
                         }
                     }
                   else if (name == "selComponentSrc")
@@ -1758,7 +1754,7 @@ AdapterFormatterPlayer::keyInputCallback (SDL_EventType evtType, SDL_Keycode key
       clog << endl;
       if (player->isVisible ())
         {
-          eventTS = xruntime_ms ();
+          eventTS = (double) xruntime_ms ();
           object->selectionEvent (key, player->getMediaTime () * 1000);
         }
     }

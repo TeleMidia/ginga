@@ -466,7 +466,7 @@ NclCascadingDescriptor::updateRegion (void *formatterLayout, const string &name,
   else if (name == "zIndex")
     {
       createDummyRegion (formatterLayout);
-      region->setZIndex (xstrto_int (value));
+      region->setZIndex (xstrtoint (value, 10));
     }
   else if (name == "bounds")
     {

@@ -92,19 +92,19 @@ NclFormatterRegion::NclFormatterRegion (const string &objectId, void *descriptor
           if (params.size () == 3)
             {
               bg = new SDL_Color();
-              bg->r =  xstrto_uint8 (params[0]);
-              bg->g =  xstrto_uint8 (params[1]);
-              bg->b =  xstrto_uint8 (params[2]);
-              bg->a = 255;              
+              bg->r =  xstrtouint8 (params[0], 10);
+              bg->g =  xstrtouint8 (params[1], 10);
+              bg->b =  xstrtouint8 (params[2], 10);
+              bg->a = 255;
               setBackgroundColor (bg);
             }
           else if (params.size () == 4)
             {
               bg = new SDL_Color();
-              bg->r =  xstrto_uint8 (params[0]);
-              bg->g =  xstrto_uint8 (params[1]);
-              bg->b =  xstrto_uint8 (params[2]);
-              bg->a =  xstrto_uint8 (params[3]);
+              bg->r =  xstrtouint8 (params[0], 10);
+              bg->g =  xstrtouint8 (params[1], 10);
+              bg->b =  xstrtouint8 (params[2], 10);
+              bg->a =  xstrtouint8 (params[3], 10);
               setBackgroundColor (bg);
             }
         }

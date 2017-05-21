@@ -98,24 +98,9 @@ GINGA_END_DECLS
 #include <vector>
 using namespace std;
 
-// External C++ libraries.
-GINGA_PRAGMA_DIAG_PUSH ()
-GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
-GINGA_PRAGMA_DIAG_IGNORE (-Wundef)
-#include <xercesc/dom/DOM.hpp>
-#include <xercesc/framework/LocalFileInputSource.hpp>
-#include <xercesc/framework/MemBufInputSource.hpp>
-#include <xercesc/parsers/XercesDOMParser.hpp>
-#include <xercesc/sax/ErrorHandler.hpp>
-#include <xercesc/sax/SAXException.hpp>
-#include <xercesc/sax/SAXParseException.hpp>
-#include <xercesc/util/XercesDefs.hpp>
-XERCES_CPP_NAMESPACE_USE
-GINGA_PRAGMA_DIAG_POP ()
-
 // Namespaces.
-#define _GINGA_NS_BEGIN(t)      namespace t {/*}*/
-#define _GINGA_NS_END                     /*{*/}
+#define _GINGA_NS_BEGIN(t)     namespace t {/*}*/
+#define _GINGA_NS_END                    /*{*/}
 #define _GINGA_BEGIN(t)       _GINGA_NS_BEGIN (ginga) _GINGA_NS_BEGIN (t)
 #define _GINGA_END            _GINGA_NS_END _GINGA_NS_END
 #define GINGA_CTXMGMT_BEGIN   _GINGA_BEGIN (ctxmgmt)
@@ -156,319 +141,9 @@ GINGA_PRAGMA_DIAG_POP ()
   g_error ("syntax error: " fmt, ## __VA_ARGS__)
 
 #define syntax_warning(fmt, ...)\
-  g_warning ("syntax warn: " fmt, ## __VA_ARGS__)
+  g_warning ("syntax warning: " fmt, ## __VA_ARGS__)
 
-
-// Auxiliary number functions.
-
-// Tests whether two floating-point numbers are equal.
-static bool G_GNUC_UNUSED
-xnumeq (double x, double y, double epsilon=.0000001)
-{
-  return ABS (x - y) <= epsilon;
-}
-
-
-// Auxiliary string functions.
-
-// Converts string to double.
-static inline bool
-_xstrtod (const string &s, double *dp)
-{
-  const gchar *c_str;
-  gchar *endptr;
-  double d;
-
-  c_str = s.c_str ();
-  d = g_ascii_strtod (c_str, &endptr);
-  if (endptr == c_str)
-    return false;
-
-  set_if_nonnull (dp, d);
-  return true;
-}
-
-// Converts string to gint64.
-static inline bool
-_xstrtoll (const string &s, gint64 *ip, guint base=10)
-{
-  const gchar *c_str;
-  gchar *endptr;
-  gint64 i;
-
-  c_str = s.c_str ();
-  i = g_ascii_strtoll (c_str, &endptr, base);
-  if (endptr == c_str)
-    return false;
-
-  set_if_nonnull (ip, i);
-  return true;
-}
-
-// Converts string to guint64.
-static inline bool
-_xstrtoull (const string &s, guint64 *ip, guint base=10)
-{
-  const gchar *c_str;
-  gchar *endptr;
-  guint64 u;
-
-  c_str = s.c_str ();
-  u = g_ascii_strtoull (c_str, &endptr, base);
-  if (endptr == c_str)
-    return false;
-
-  set_if_nonnull (ip, u);
-  return true;
-}
-
-// Asserted wrappers for _xstrtod, _xstrtoll, and _xstrtoull.
-static inline double
-xstrtod (const string &s)
-{
-  double d;
-  g_assert (_xstrtod (s, &d));
-  return d;
-}
-
-#define _GINGA_XSTRTO_DEFN(Type, Typemin, Typemax)      \
-  static inline g##Type                                 \
-  xstrto_##Type (const string &s, guint8 base=10)       \
-  {                                                     \
-    gint64 x=0;                                         \
-    g_assert (_xstrtoll (s, &x, base));                 \
-    return (g##Type)(CLAMP (x, Typemin, Typemax));      \
-  }
-
-_GINGA_XSTRTO_DEFN  (int,    G_MININT,    G_MAXINT)
-_GINGA_XSTRTO_DEFN  (int8,   G_MININT8,   G_MAXINT8)
-_GINGA_XSTRTO_DEFN  (int64,  G_MININT64,  G_MAXINT64)
-
-#define _GINGA_XSTRTOU_DEFN(Type, Typemax)              \
-  static inline g##Type                                 \
-  xstrto_##Type (const string &s, guint8 base=10)       \
-  {                                                     \
-    guint64 x=0;                                        \
-    g_assert (_xstrtoull (s, &x, base));                \
-    return (g##Type)(MIN (x, Typemax));                 \
-  }
-
-_GINGA_XSTRTOU_DEFN (uint,   G_MAXUINT)
-_GINGA_XSTRTOU_DEFN (uint8,  G_MAXUINT8)
-_GINGA_XSTRTOU_DEFN (uint64, G_MAXUINT64)
-
-// Checks if string is of the form "\s*\d+%.*".
-static inline bool
-xstrispercent (const string &s)
-{
-  gchar *end;
-  return (g_strtod (s.c_str (), &end), *end == '%');
-}
-
-// Converts a string (number or percentage) to a number.
-static inline gdouble
-xstrtodorpercent (const string &s, bool *perc=NULL)
-{
-  gchar *end;
-  gdouble x = g_strtod (s.c_str (), &end);
-  if (*end == '%')
-    {
-      set_if_nonnull (perc, true);
-      return x / 100.;
-    }
-  else
-    {
-      set_if_nonnull (perc, false);
-      return x;
-    }
-}
-
-// Compares two strings ignoring case.
-static inline int
-xstrcasecmp (const string &s1, const string &s2)
-{
-  return g_ascii_strcasecmp (s1.c_str (), s2.c_str ());
-}
-
-// Tests whether two strings are equal ignoring case.
-#define xstrcaseeq(s1, s2) (xstrcasecmp ((s1), (s2)) == 0)
-
-// Assigns format to string.
-static inline int G_GNUC_PRINTF (2,3)
-xstrassign (string &s, const char *format, ...)
-{
-  va_list args;
-  char *c_str = NULL;
-  int n;
-
-  va_start (args, format);
-  n = g_vasprintf (&c_str, format, args);
-  va_end (args);
-
-  g_assert (n >= 0);
-  g_assert_nonnull (c_str);
-  s.assign (c_str);
-  g_free (c_str);
-
-  return n;
-}
-
-// Builds string from format.
-static inline string G_GNUC_PRINTF (1,2)
-xstrbuild (const char *format, ...)
-{
-  va_list args;
-  char *c_str = NULL;
-  int n;
-  string s;
-
-  va_start (args, format);
-  n = g_vasprintf (&c_str, format, args);
-  va_end (args);
-
-  g_assert (n >= 0);
-  g_assert_nonnull (c_str);
-  s.assign (c_str);
-  g_free (c_str);
-
-  return s;
-}
-
-// Converts string to uppercase.
-static inline string
-xstrup (string s)
-{
-  gchar *dup = g_ascii_strup (s.c_str (), (gssize) s.size ());
-  s.assign (dup);
-  free (dup);
-  return s;
-}
-
-// Converts string to lowercase.
-static inline string
-xstrdown (string s)
-{
-  gchar *dup = g_ascii_strdown (s.c_str (), (gssize) s.size ());
-  s.assign (dup);
-  free (dup);
-  return s;
-}
-
-// Removes leading and trailing whitespace from string.
-static inline string
-xstrchomp (string s)
-{
-  gchar *dup = g_strdup (s.c_str ());
-  g_strchomp (dup);
-  s.assign (dup);
-  g_free (dup);
-  return s;
-}
-
-// Replaces all the occurences of <find_what> in the string <str> with the
-// string <replace_with>
-static inline void
-xstrreplaceall (string &str, const string &find_what,
-                const string &replace_with)
-{
-  string::size_type pos = 0;
-  while ((pos = str.find (find_what, pos)) != string::npos)
-    {
-      str.erase (pos, find_what.length ());
-      str.insert (pos, replace_with);
-      pos += replace_with.length ();
-    }
-}
-
-
-// Auxiliary system functions.
-
-// Returns the basename of path.
-static inline string
-xpathbasename (string path)
-{
-  gchar *dir = g_path_get_basename (path.c_str ());
-  path.assign (dir);
-  g_free (dir);
-  return path;
-}
-
-// Returns the dirname of path.
-static inline string
-xpathdirname (string path)
-{
-  gchar *dir = g_path_get_dirname (path.c_str ());
-  path.assign (dir);
-  g_free (dir);
-  return path;
-}
-
-// Returns true if path is absolute.
-static inline bool
-xpathisabs (const string &path)
-{
-  return g_path_is_absolute (path.c_str ());
-}
-
-// Returns true if path is an URI.
-static inline bool
-xpathisuri (const string &path)
-{
-  gchar * dup  = g_uri_parse_scheme (path.c_str ());
-  return (dup == NULL) ? false : (g_free (dup), true);
-}
-
-// Makes path absolute.
-static inline string
-xpathmakeabs (string path)
-{
-  if (!xpathisabs (path))
-    {
-      gchar *cwd = g_get_current_dir ();
-      gchar *dup = g_build_filename (cwd, path.c_str (), NULL);
-      g_free (cwd);
-      path.assign (dup);
-      g_free (dup);
-    }
-  return path;
-}
-
-// Builds a path.
-static inline string
-xpathbuild (const string &a, const string &b)
-{
-  string path;
-  gchar *dup = g_build_filename (a.c_str (), b.c_str (), NULL);
-  path.assign (dup);
-  g_free (dup);
-  return path;
-}
-
-// Builds an absolute path.
-static inline string
-xpathbuildabs (const string &a, const string &b)
-{
-  return xpathmakeabs (xpathbuild (a, b));
-}
-
-// Returns the running time in microseconds.
-static inline gint64
-xruntime ()
-{
-  static gint64 t0 = -1;
-  if (unlikely (t0 < 0))
-      t0 = g_get_monotonic_time ();
-  return g_get_monotonic_time () - t0;
-}
-
-// Returns the running time in milliseconds.
-// FIXME: Use gint64 and time in microseconds.
-#define xruntime_ms() (double)(xruntime () * 1000)
-
-
-// Auxiliary thread functions.
-
-// Defines object mutex.
+// Thread macros.
 #define GINGA_MUTEX_DEFN()                      \
   GRecMutex mutex;                              \
   void inline mutexInit ()                      \
@@ -520,5 +195,43 @@ xruntime ()
     this->cond##Name##_done = false;                            \
     g_mutex_unlock (&this->mutex##Name);                        \
   }
+
+// Misc functions.
+bool xnumeq (double, double);
+gint64 xruntime ();
+#define xruntime_ms() (xruntime () * 1000)
+
+// String functions.
+bool _xstrtod (const string &, double *);
+bool _xstrtoll (const string &, gint64 *, guint);
+bool _xstrtoull (const string &s, guint64 *, guint);
+double xstrtod (const string &);
+gint xstrtoint (const string &, guint8);
+gint8 xstrtoint8 (const string &, guint8);
+gint64 xstrtoint64 (const string &, guint8);
+guint xstrtouint (const string &, guint8);
+guint8 xstrtouint8 (const string &, guint8);
+guint64 xstrtouint64 (const string &, guint8);
+
+bool xstrispercent (const string &);
+gdouble xstrtodorpercent (const string &, bool *);
+
+int xstrcasecmp (const string &, const string &);
+#define xstrcaseeq(s1, s2) (xstrcasecmp ((s1), (s2)) == 0)
+int G_GNUC_PRINTF (2,3) xstrassign (string &, const char *, ...);
+string G_GNUC_PRINTF (1,2) xstrbuild (const char *, ...);
+string xstrup (string);
+string xstrdown (string);
+string xstrchomp (string);
+void xstrreplaceall (string &, const string &, const string &);
+
+// Path functions.
+string xpathbasename (string);
+string xpathdirname (string);
+bool xpathisabs (const string &);
+bool xpathisuri (const string &);
+string xpathmakeabs (string);
+string xpathbuild (const string &, const string &);
+string xpathbuildabs (const string &, const string &);
 
 #endif /* GINGA_H */

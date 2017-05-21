@@ -72,7 +72,7 @@ FormatterFocusManager::FormatterFocusManager (
     }
   else
     {
-      defaultFocusBorderWidth = xstrto_int (strValue);
+      defaultFocusBorderWidth = xstrtoint (strValue, 10);
     }
 
   strValue = presContext->getPropertyValue (DEFAULT_SEL_BORDER_COLOR);

@@ -656,7 +656,7 @@ FormatterScheduler::runActionOverApplicationObject (
 
   string attValue, attName;
 
-  double time = xruntime_ms ();
+  double time = (double) xruntime_ms ();
   int actionType = action->getType ();
   SDLWindow* winId = 0;
 
@@ -763,7 +763,7 @@ FormatterScheduler::runActionOverApplicationObject (
           ((AdapterApplicationPlayer *)player)->unlockCurrentEvent (event);
         }
 
-      time = xruntime_ms () - time;
+      time = (double) xruntime_ms () - time;
       clog << "FormatterScheduler::runActionOverApp takes '";
       clog << time << "' ms to start '";
       clog << executionObject->getId () << "'";
@@ -1381,7 +1381,7 @@ FormatterScheduler::initializeDefaultSettings ()
   value = presContext->getPropertyValue (DEFAULT_FOCUS_BORDER_WIDTH);
   if (value != "")
     {
-      focusManager->setDefaultFocusBorderWidth (xstrto_int (value));
+      focusManager->setDefaultFocusBorderWidth (xstrtoint (value, 10));
     }
 
   value = presContext->getPropertyValue (DEFAULT_SEL_BORDER_COLOR);

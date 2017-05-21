@@ -1482,7 +1482,7 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
 
   if (propName == "zIndex")
     {
-      region->setZIndex (xstrto_int (value));
+      region->setZIndex (xstrtoint (value, 10));
       unlock ();
       return true;
     }
@@ -1560,32 +1560,32 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
     {
       if (left != "")
         {
-          ncmRegion->setTargetLeft (xstrtodorpercent (left), true);
+          ncmRegion->setTargetLeft (xstrtodorpercent (left, NULL), true);
         }
 
       if (top != "")
         {
-          ncmRegion->setTargetTop (xstrtodorpercent (top), true);
+          ncmRegion->setTargetTop (xstrtodorpercent (top, NULL), true);
         }
 
       if (width != "")
         {
-          ncmRegion->setTargetWidth (xstrtodorpercent (width), true);
+          ncmRegion->setTargetWidth (xstrtodorpercent (width, NULL), true);
         }
 
       if (height != "")
         {
-          ncmRegion->setTargetHeight (xstrtodorpercent (height), true);
+          ncmRegion->setTargetHeight (xstrtodorpercent (height, NULL), true);
         }
 
       if (bottom != "")
         {
-          ncmRegion->setTargetBottom (xstrtodorpercent (bottom), true);
+          ncmRegion->setTargetBottom (xstrtodorpercent (bottom, NULL), true);
         }
 
       if (right != "")
         {
-          ncmRegion->setTargetRight (xstrtodorpercent (right), true);
+          ncmRegion->setTargetRight (xstrtodorpercent (right, NULL), true);
         }
 
       // set the values
