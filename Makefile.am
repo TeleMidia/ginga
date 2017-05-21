@@ -19,7 +19,7 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 
 ACLOCAL_AMFLAGS= -I build-aux ${ACLOCAL_FLAGS}
-SUBDIRS= data src
+SUBDIRS= src
 
 MAINTAINERCLEANFILES+=\
   INSTALL\
