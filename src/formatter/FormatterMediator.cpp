@@ -770,10 +770,13 @@ void
 FormatterMediator::stop ()
 {
   NclFormatterEvent *evt;
+  string id;
 
   g_assert_nonnull (this->currentDocument);
   Player::stop ();
 
+  id = currentDocument->getId ();
+  evt = documentEvents[id];
   g_assert_nonnull (evt);
   this->scheduler->stopDocument (evt);
 }
