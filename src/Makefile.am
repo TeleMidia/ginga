@@ -17,7 +17,7 @@
 # along with Ginga.  If not, see <http://www.gnu.org/licenses/>.
 
 include $(top_srcdir)/build-aux/Makefile.am.common
-MAINTAINERCLEANFILES+= config.h.in
+MAINTAINERCLEANFILES+= config.h.in config.h.in~
 
 AM_CXXFLAGS=\
   $(CEF_CFLAGS)\
