@@ -634,9 +634,8 @@ NclCascadingDescriptor::getRepetitions ()
 vector<Parameter *> *
 NclCascadingDescriptor::getParameters ()
 {
-  vector<Parameter *> *params;
-  params = new vector<Parameter *>;
   Parameter *parameter;
+  vector<Parameter *> *params = new vector<Parameter *>;
 
   map<string, string>::iterator it;
 

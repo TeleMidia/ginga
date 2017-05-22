@@ -57,9 +57,8 @@ public:
   AdapterFormatterPlayer ();
   virtual ~AdapterFormatterPlayer ();
 
-  virtual void setAdapterManager (AdapterPlayerManager *_manager);
+  void setAdapterManager (AdapterPlayerManager *manager);
 
-  bool instanceOf (const string &s);
   void setOutputWindow (SDLWindow* windowId);
 
   int getObjectDevice ();
@@ -67,7 +66,6 @@ public:
 
   virtual bool prepare (NclExecutionObject *obj, NclFormatterEvent *mainEvent);
 
-  double getOutTransTime ();
   void checkAnchorMonitor ();
 
   virtual bool start ();
@@ -82,7 +80,7 @@ public:
   virtual bool setPropertyValue (NclAttributionEvent *evt, const string &value);
   void setPropertyValue (const string &name, const string &value);
 
-  string getPropertyValue (void *event);
+  string getPropertyValue (NclAttributionEvent *event);
   virtual string getPropertyValue (const string &name);
 
   double getObjectExpectedDuration ();
@@ -98,13 +96,11 @@ public:
   virtual void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
 
 protected:
-  static double eventTS;
+  static double _eventTS;
 
   AdapterPlayerManager *_manager;
-  set<string> _typeSet;
   NclExecutionObject *_object;
-  IPlayer *_player, *_mirrorSrc;
-  string _playerCompName;
+  IPlayer *_player;
   string _mrl;
   int _objectDevice;
 
