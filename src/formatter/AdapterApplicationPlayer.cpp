@@ -534,7 +534,7 @@ AdapterApplicationPlayer::unprepare ()
 
       if (object != NULL)
         {
-          ((AdapterPlayerManager *)manager)->removePlayer (object);
+          manager->removePlayer (object);
           object->unprepare ();
         }
 
@@ -558,7 +558,7 @@ AdapterApplicationPlayer::unprepare ()
       if (object != NULL)
         {
           object->unprepare ();
-          ((AdapterPlayerManager *)manager)->removePlayer (object);
+          manager->removePlayer (object);
         }
 
       preparedEvents.clear ();
