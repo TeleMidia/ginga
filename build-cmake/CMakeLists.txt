@@ -329,7 +329,7 @@ if (WITH_CEF)
   COPY_FILES(ginga "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "${CEF_TARGET_OUT_DIR}")
 
   # Set SUID permissions on the chrome-sandbox target.
-  # SET_LINUX_SUID_PERMISSIONS(ginga "${CEF_TARGET_OUT_DIR}/chrome-sandbox")
+  SET_LINUX_SUID_PERMISSIONS(ginga "${CEF_TARGET_OUT_DIR}/chrome-sandbox")
 endif()
 
 configure_file(${CMAKE_SOURCE_DIR}/config.h.in config.h)
