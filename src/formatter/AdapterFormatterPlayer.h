@@ -50,7 +50,7 @@ GINGA_FORMATTER_BEGIN
 class AdapterFormatterPlayer : public IAdapterPlayer,
                                public IPlayerListener,
                                public INclAttributeValueMaintainer,
-                               IKeyInputEventListener
+                               public IKeyInputEventListener
 {
 protected:
   static double eventTS;
@@ -135,7 +135,7 @@ public:
                              short type = 10,
                              const string &value = "");
 
-  void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
+  virtual void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
 
 private:
   void setVisible (bool visible);
