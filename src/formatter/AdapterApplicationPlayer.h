@@ -58,7 +58,7 @@ protected:
   virtual void createPlayer ();
 
   virtual bool hasPrepared ();
-  virtual bool prepare (NclExecutionObject *object,
+  virtual bool prepare (NclExecutionObject *_object,
                         NclFormatterEvent *mainEvent);
 
 private:

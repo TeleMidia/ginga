@@ -27,7 +27,7 @@ GINGA_FORMATTER_BEGIN
 AdapterApplicationPlayer::AdapterApplicationPlayer ()
     : AdapterFormatterPlayer ()
 {
-  typeSet.insert ("AdapterApplicationPlayer");
+  _typeSet.insert ("AdapterApplicationPlayer");
   Thread::mutexInit (&eventMutex, false);
   Thread::mutexInit (&eventsMutex, false);
 
@@ -64,7 +64,7 @@ AdapterApplicationPlayer::~AdapterApplicationPlayer ()
   preparedEvents.clear ();
   unlockPreparedEvents ();
   currentEvent = NULL;
-  object = NULL;
+  _object = NULL;
   Thread::mutexDestroy (&eventMutex);
   Thread::mutexDestroy (&eventsMutex);
 }
@@ -78,7 +78,7 @@ AdapterApplicationPlayer::createPlayer ()
 bool
 AdapterApplicationPlayer::hasPrepared ()
 {
-  if (object == NULL || player == NULL)
+  if (_object == NULL || _player == NULL)
     return false;
   return true;
 }
@@ -99,18 +99,18 @@ AdapterApplicationPlayer::prepare (NclExecutionObject *object,
       return false;
     }
 
-  if (this->object != object)
+  if (this->_object != object)
     {
       lockPreparedEvents ();
       preparedEvents.clear ();
       unlockPreparedEvents ();
 
       lockObject ();
-      this->object = object;
+      this->_object = object;
       unlockObject ();
 
-      if (this->object->getDataObject () != NULL
-          && this->object->getDataObject ()->getDataEntity () != NULL)
+      if (this->_object->getDataObject () != NULL
+          && this->_object->getDataObject ()->getDataEntity () != NULL)
         {
           content
               = ((NodeEntity *)(object->getDataObject ()->getDataEntity ()))
@@ -118,19 +118,19 @@ AdapterApplicationPlayer::prepare (NclExecutionObject *object,
 
           if (content != NULL && content->instanceOf ("ReferenceContent"))
             {
-              this->mrl = ((ReferenceContent *)content)
+              this->_mrl = ((ReferenceContent *)content)
                               ->getCompleteReferenceUrl ();
             }
           else
             {
-              this->mrl = "";
+              this->_mrl = "";
             }
         }
 
-      if (player != NULL)
+      if (_player != NULL)
         {
-          delete player;
-          player = NULL;
+          delete _player;
+          _player = NULL;
         }
 
       explicitDur = prepareProperties (object);
@@ -196,7 +196,7 @@ AdapterApplicationPlayer::prepare (NclExecutionObject *object,
 
   if (event->getCurrentState () == EventUtil::ST_SLEEPING)
     {
-      if (!this->object->prepare (event, 0))
+      if (!this->_object->prepare (event, 0))
         {
           return false;
         }
@@ -221,18 +221,18 @@ AdapterApplicationPlayer::prepare (NclFormatterEvent *event)
   NclCascadingDescriptor *descriptor;
   LayoutRegion *region;
 
-  descriptor = object->getDescriptor ();
+  descriptor = _object->getDescriptor ();
   if (descriptor != NULL)
     {
       region = descriptor->getRegion ();
       // the player has NULL address if it is a remote one
-      if (region != NULL && player != NULL)
+      if (region != NULL && _player != NULL)
         {
-          player->setNotifyContentUpdate (region->getDeviceClass () == 1);
+          _player->setNotifyContentUpdate (region->getDeviceClass () == 1);
         }
     }
 
-  if (player != NULL && event->instanceOf ("NclAnchorEvent"))
+  if (_player != NULL && event->instanceOf ("NclAnchorEvent"))
     {
       if ((((NclAnchorEvent *)event)->getAnchor ())
               ->instanceOf ("LambdaAnchor"))
@@ -241,7 +241,7 @@ AdapterApplicationPlayer::prepare (NclFormatterEvent *event)
 
           if (duration < IntervalAnchor::OBJECT_DURATION)
             {
-              player->setScope ("", IPlayer::TYPE_PRESENTATION, 0.0,
+              _player->setScope ("", IPlayer::TYPE_PRESENTATION, 0.0,
                                 duration / 1000);
             }
         }
@@ -251,7 +251,7 @@ AdapterApplicationPlayer::prepare (NclFormatterEvent *event)
           intervalAnchor
               = (IntervalAnchor *)(((NclAnchorEvent *)event)->getAnchor ());
 
-          player->setScope (
+          _player->setScope (
               ((NclAnchorEvent *)event)->getAnchor ()->getId (),
               IPlayer::TYPE_PRESENTATION,
               (intervalAnchor->getBegin () / 1000),
@@ -262,19 +262,19 @@ AdapterApplicationPlayer::prepare (NclFormatterEvent *event)
         {
           duration = ((NclPresentationEvent *)event)->getDuration ();
 
-          clog << "AdapterApplicationPlayer::prepare '" << object->getId ();
+          clog << "AdapterApplicationPlayer::prepare '" << _object->getId ();
           clog << "' with dur = '" << duration << "'" << endl;
 
           if (isnan (duration))
             {
-              player->setScope (
+              _player->setScope (
                   ((LabeledAnchor *)((NclAnchorEvent *)event)->getAnchor ())
                       ->getLabel (),
                   IPlayer::TYPE_PRESENTATION);
             }
           else
             {
-              player->setScope (
+              _player->setScope (
                   ((LabeledAnchor *)((NclAnchorEvent *)event)->getAnchor ())
                       ->getLabel (),
                   IPlayer::TYPE_PRESENTATION, 0.0, duration / 1000);
@@ -295,20 +295,20 @@ AdapterApplicationPlayer::start ()
   clog << "AdapterApplicationPlayer::start ";
   clog << endl;
 
-  if (player != NULL)
+  if (_player != NULL)
     {
-      startSuccess = player->play ();
+      startSuccess = _player->play ();
     }
-  if ((startSuccess) || (objectDevice == 2))
+  if ((startSuccess) || (_objectDevice == 2))
     { // DeviceDomain::CT_ACTIVE
       // clog << "AdapterApplicationPlayer::play objectDevice" <<
       // objectDevice
       // << endl;
-      if (object != NULL && !object->start ())
+      if (_object != NULL && !_object->start ())
         {
-          if (player != NULL)
+          if (_player != NULL)
             {
-              player->stop ();
+              _player->stop ();
             }
           startSuccess = false;
         }
@@ -345,10 +345,10 @@ AdapterApplicationPlayer::stop ()
 
       lockPreparedEvents ();
       if (currentEvent->getCurrentState () != EventUtil::ST_SLEEPING
-          && player != NULL)
+          && _player != NULL)
         {
-          player->stop ();
-          player->notifyReferPlayers (EventUtil::TR_STOPS);
+          _player->stop ();
+          _player->notifyReferPlayers (EventUtil::TR_STOPS);
         }
 
       i = preparedEvents.begin ();
@@ -373,16 +373,16 @@ AdapterApplicationPlayer::stop ()
 
       unlockPreparedEvents ();
     }
-  else if (player != NULL && !player->isForcedNaturalEnd ())
+  else if (_player != NULL && !_player->isForcedNaturalEnd ())
     {
       clog << "AdapterApplicationPlayer::stop calling stop player";
       clog << endl;
 
-      player->stop ();
-      player->notifyReferPlayers (EventUtil::TR_STOPS);
+      _player->stop ();
+      _player->notifyReferPlayers (EventUtil::TR_STOPS);
     }
 
-  if (object != NULL && object->stop ())
+  if (_object != NULL && _object->stop ())
     {
       clog << "AdapterApplicationPlayer::stop calling unprepare";
       clog << endl;
@@ -401,7 +401,7 @@ AdapterApplicationPlayer::stop ()
     {
       clog << "AdapterApplicationPlayer::stop(" << this;
       clog << ") Can't stop an already stopped object = '";
-      clog << object << "'. mrl = '" << mrl << "' device class = '";
+      clog << _object << "'. mrl = '" << _mrl << "' device class = '";
       clog << getObjectDevice () << "'" << endl;
     }
   return false;
@@ -410,12 +410,12 @@ AdapterApplicationPlayer::stop ()
 bool
 AdapterApplicationPlayer::pause ()
 {
-  if (object != NULL && object->pause ())
+  if (_object != NULL && _object->pause ())
     {
-      if (player != NULL)
+      if (_player != NULL)
         {
-          player->pause ();
-          player->notifyReferPlayers (EventUtil::TR_PAUSES);
+          _player->pause ();
+          _player->notifyReferPlayers (EventUtil::TR_PAUSES);
         }
       return true;
     }
@@ -428,12 +428,12 @@ AdapterApplicationPlayer::pause ()
 bool
 AdapterApplicationPlayer::resume ()
 {
-  if (object != NULL && object->resume ())
+  if (_object != NULL && _object->resume ())
     {
-      if (player != NULL)
+      if (_player != NULL)
         {
-          player->resume ();
-          player->notifyReferPlayers (EventUtil::TR_RESUMES);
+          _player->resume ();
+          _player->notifyReferPlayers (EventUtil::TR_RESUMES);
         }
       return true;
     }
@@ -460,8 +460,8 @@ AdapterApplicationPlayer::abort ()
     {
       clog << "AdapterApplicationPlayer::abort ALL" << endl;
 
-      player->stop ();
-      player->notifyReferPlayers (EventUtil::TR_ABORTS);
+      _player->stop ();
+      _player->notifyReferPlayers (EventUtil::TR_ABORTS);
 
       lockPreparedEvents ();
       i = preparedEvents.begin ();
@@ -486,16 +486,16 @@ AdapterApplicationPlayer::abort ()
 
       unlockPreparedEvents ();
     }
-  else if (player != NULL && !player->isForcedNaturalEnd ())
+  else if (_player != NULL && !_player->isForcedNaturalEnd ())
     {
       clog << "AdapterApplicationPlayer::abort calling stop player";
       clog << endl;
 
-      player->stop ();
-      player->notifyReferPlayers (EventUtil::TR_ABORTS);
+      _player->stop ();
+      _player->notifyReferPlayers (EventUtil::TR_ABORTS);
     }
 
-  if (object != NULL && object->abort ())
+  if (_object != NULL && _object->abort ())
     {
       clog << "AdapterApplicationPlayer::abort calling unprepare";
       clog << endl;
@@ -514,7 +514,7 @@ AdapterApplicationPlayer::abort ()
     {
       clog << "AdapterApplicationPlayer::abort(" << this;
       clog << ") Can't abort an already sleeping object = '";
-      clog << object << "'. mrl = '" << mrl << "' device class = '";
+      clog << _object << "'. mrl = '" << _mrl << "' device class = '";
       clog << getObjectDevice () << "'" << endl;
     }
   return false;
@@ -532,10 +532,10 @@ AdapterApplicationPlayer::unprepare ()
     {
     
 
-      if (object != NULL)
+      if (_object != NULL)
         {
-          manager->removePlayer (object);
-          object->unprepare ();
+          _manager->removePlayer (_object);
+          _object->unprepare ();
         }
 
       return true;
@@ -555,21 +555,21 @@ AdapterApplicationPlayer::unprepare ()
   if (preparedEvents.count (currentEvent->getId ()) != 0
       && preparedEvents.size () == 1)
     {
-      if (object != NULL)
+      if (_object != NULL)
         {
-          object->unprepare ();
-          manager->removePlayer (object);
+          _object->unprepare ();
+          _manager->removePlayer (_object);
         }
 
       preparedEvents.clear ();
 
-      object = NULL;
+      _object = NULL;
     }
   else
     {
-      if (object != NULL)
+      if (_object != NULL)
         {
-          object->unprepare ();
+          _object->unprepare ();
         }
 
       i = preparedEvents.find (currentEvent->getId ());
@@ -596,9 +596,9 @@ AdapterApplicationPlayer::naturalEnd ()
   clog << "AdapterApplicationPlayer::naturalEnd ";
   clog << endl;
 
-  if (player != NULL)
+  if (_player != NULL)
     {
-      player->notifyReferPlayers (EventUtil::TR_STOPS);
+      _player->notifyReferPlayers (EventUtil::TR_STOPS);
     }
 
   lockPreparedEvents ();
@@ -622,7 +622,7 @@ AdapterApplicationPlayer::naturalEnd ()
 
   unlockPreparedEvents ();
 
-  if (object != NULL && object->stop ())
+  if (_object != NULL && _object->stop ())
     {
       clog << "AdapterApplicationPlayer::naturalEnd call unprepare";
       clog << endl;
@@ -752,7 +752,7 @@ AdapterApplicationPlayer::run ()
         }
       unlock ();
 
-      if (object == NULL)
+      if (_object == NULL)
         {
           break;
         }
@@ -807,10 +807,10 @@ AdapterApplicationPlayer::startEvent (const string &anchorId, short type,
   NclFormatterEvent *event;
   bool fakeStart = false;
 
-  event = object->getEventFromAnchorId (anchorId);
+  event = _object->getEventFromAnchorId (anchorId);
   if (checkEvent (event, type))
     {
-      if (prepare (object, event))
+      if (prepare (_object, event))
         {
           /*clog << "AdapterApplicationPlayer::startEvent '";
           clog << event->getId() << "' with anchorId = '";
@@ -820,7 +820,7 @@ AdapterApplicationPlayer::startEvent (const string &anchorId, short type,
             {
               if (type == IPlayer::TYPE_PRESENTATION)
                 {
-                  fakeStart = object->start ();
+                  fakeStart = _object->start ();
                   unlockCurrentEvent (event);
                 }
               else
@@ -855,7 +855,7 @@ AdapterApplicationPlayer::startEvent (const string &anchorId, short type,
     {
       clog << "AdapterApplicationPlayer::startEvent event not found '";
       clog << anchorId;
-      clog << "' in object '" << object->getId ();
+      clog << "' in object '" << _object->getId ();
       clog << endl;
     }
 
@@ -868,7 +868,7 @@ AdapterApplicationPlayer::stopEvent (const string &anchorId, short type,
 {
   NclFormatterEvent *event;
 
-  if (object->getId () == anchorId)
+  if (_object->getId () == anchorId)
     {
       clog << "AdapterApplicationPlayer::stopEvent ";
       clog << " considering anchor '";
@@ -877,7 +877,7 @@ AdapterApplicationPlayer::stopEvent (const string &anchorId, short type,
       return false;
     }
 
-  event = object->getEventFromAnchorId (anchorId);
+  event = _object->getEventFromAnchorId (anchorId);
   if (checkEvent (event, type))
     {
       clog << "AdapterApplicationPlayer::stopEvent '";
@@ -890,7 +890,7 @@ AdapterApplicationPlayer::stopEvent (const string &anchorId, short type,
         {
           if (type == IPlayer::TYPE_PRESENTATION)
             {
-              if (object->stop ())
+              if (_object->stop ())
                 {
                   unprepare ();
                   unlockCurrentEvent (event);
@@ -939,12 +939,12 @@ AdapterApplicationPlayer::abortEvent (const string &anchorId, short type)
   NclFormatterEvent *event;
   string cvt_id = anchorId;
 
-  if (object->getId () == anchorId)
+  if (_object->getId () == anchorId)
     {
       cvt_id = "";
     }
 
-  event = object->getEventFromAnchorId (cvt_id);
+  event = _object->getEventFromAnchorId (cvt_id);
   if (checkEvent (event, type))
     {
       clog << "AdapterApplicationPlayer::abortEvent '";
@@ -957,7 +957,7 @@ AdapterApplicationPlayer::abortEvent (const string &anchorId, short type)
         {
           if (type == IPlayer::TYPE_PRESENTATION)
             {
-              if (object->abort ())
+              if (_object->abort ())
                 {
                   unprepare ();
                   unlockCurrentEvent (event);
@@ -1005,12 +1005,12 @@ AdapterApplicationPlayer::pauseEvent (const string &anchorId, short type)
   NclFormatterEvent *event;
   string cvt_id = anchorId;
 
-  if (object->getId () == anchorId)
+  if (_object->getId () == anchorId)
     {
       cvt_id = "";
     }
 
-  event = object->getEventFromAnchorId (cvt_id);
+  event = _object->getEventFromAnchorId (cvt_id);
   if (checkEvent (event, type))
     {
       clog << "AdapterApplicationPlayer::pauseEvent '";
@@ -1023,7 +1023,7 @@ AdapterApplicationPlayer::pauseEvent (const string &anchorId, short type)
         {
           if (type == IPlayer::TYPE_PRESENTATION)
             {
-              if (object->pause ())
+              if (_object->pause ())
                 {
                   unlockCurrentEvent (event);
                   return true;
@@ -1056,12 +1056,12 @@ AdapterApplicationPlayer::resumeEvent (const string &anchorId, short type)
   NclFormatterEvent *event;
   string cvt_id = anchorId;
 
-  if (object->getId () == anchorId)
+  if (_object->getId () == anchorId)
     {
       cvt_id = "";
     }
 
-  event = object->getEventFromAnchorId (cvt_id);
+  event = _object->getEventFromAnchorId (cvt_id);
   if (checkEvent (event, type))
     {
       clog << "AdapterApplicationPlayer::resumeEvent '";
@@ -1074,7 +1074,7 @@ AdapterApplicationPlayer::resumeEvent (const string &anchorId, short type)
         {
           if (type == IPlayer::TYPE_PRESENTATION)
             {
-              if (object->resume ())
+              if (_object->resume ())
                 {
                   unlockCurrentEvent (event);
                   return true;

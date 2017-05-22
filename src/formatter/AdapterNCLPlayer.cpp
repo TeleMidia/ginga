@@ -29,7 +29,7 @@ GINGA_FORMATTER_BEGIN
 
 AdapterNCLPlayer::AdapterNCLPlayer () : AdapterApplicationPlayer ()
 {
-  typeSet.insert ("AdapterNCLPlayer");
+  _typeSet.insert ("AdapterNCLPlayer");
 }
 
 void
@@ -50,9 +50,9 @@ AdapterNCLPlayer::createPlayer ()
       return;
     }
 
-  player = NULL;
-  playerCompName = "Formatter";
-  playerData = manager->getNclPlayerData ();
+  _player = NULL;
+  _playerCompName = "Formatter";
+  playerData = _manager->getNclPlayerData ();
 
   childData = new NclPlayerData;
   childData->x = 0;
@@ -63,16 +63,16 @@ AdapterNCLPlayer::createPlayer ()
   childData->transparency = playerData->transparency;
   childData->baseId = playerData->baseId;
   childData->privateBaseContext = playerData->privateBaseContext;
-  childData->playerId = object->getId ();
+  childData->playerId = _object->getId ();
   childData->parentDocId = playerData->docId;
   childData->nodeId
-    = ((NodeEntity *)(object->getDataObject ()->getDataEntity ()))
+    = ((NodeEntity *)(_object->getDataObject ()->getDataEntity ()))
     ->getId ();
 
   childData->docId = "";
   childData->focusManager = playerData->focusManager;
 
-  descriptor = object->getDescriptor ();
+  descriptor = _object->getDescriptor ();
   if (descriptor != NULL)
     {
       region = descriptor->getFormatterRegion ();
@@ -87,7 +87,7 @@ AdapterNCLPlayer::createPlayer ()
       childData->h = (int)(ncmRegion->getHeightInPixels ());
       childData->devClass = ncmRegion->getDeviceClass ();
 
-      property = object->getNCMProperty ("transparency");
+      property = _object->getNCMProperty ("transparency");
       if (property != NULL)
         {
           value = property->getPropertyValue ();
@@ -111,18 +111,18 @@ AdapterNCLPlayer::createPlayer ()
         }
     }
 
-  player = (INCLPlayer *)(new FormatterMediator ());
+  _player = (INCLPlayer *)(new FormatterMediator ());
 
-  if (((INCLPlayer *)player)->setCurrentDocument (mrl) == NULL)
+  if (((INCLPlayer *)_player)->setCurrentDocument (_mrl) == NULL)
     {
       clog << "AdapterNCLPlayer::createPlayer Warning! ";
-      clog << "can't set '" << mrl << "' as document";
+      clog << "can't set '" << _mrl << "' as document";
       clog << endl;
     }
 
   if (region != NULL)
     {
-      ((INCLPlayer *)player)
+      ((INCLPlayer *)_player)
         ->setParentLayout (region->getLayoutManager ());
     }
 
@@ -155,12 +155,12 @@ AdapterNCLPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
         }
 
       currentEvent = event;
-      ((NclApplicationExecutionObject *)object)
+      ((NclApplicationExecutionObject *)_object)
           ->setCurrentEvent (currentEvent);
 
-      if (player != NULL)
+      if (_player != NULL)
         {
-          player->setCurrentScope (interfaceId);
+          _player->setCurrentScope (interfaceId);
         }
     }
   else if (event->instanceOf ("NclAttributionEvent"))
@@ -169,18 +169,18 @@ AdapterNCLPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
                         ->getAnchor ()
                         ->getPropertyName ();
 
-      if (player != NULL)
+      if (_player != NULL)
         {
-          player->setScope (interfaceId, IPlayer::TYPE_ATTRIBUTION);
+          _player->setScope (interfaceId, IPlayer::TYPE_ATTRIBUTION);
         }
 
       currentEvent = event;
-      ((NclApplicationExecutionObject *)object)
+      ((NclApplicationExecutionObject *)_object)
           ->setCurrentEvent (currentEvent);
 
-      if (player != NULL)
+      if (_player != NULL)
         {
-          player->setCurrentScope (interfaceId);
+          _player->setCurrentScope (interfaceId);
         }
     }
   else

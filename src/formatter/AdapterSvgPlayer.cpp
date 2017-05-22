@@ -26,7 +26,7 @@ AdapterSvgPlayer::AdapterSvgPlayer () : AdapterFormatterPlayer () {}
 void
 AdapterSvgPlayer::createPlayer ()
 {
-  player = new SvgPlayer (mrl);
+  _player = new SvgPlayer (_mrl);
   AdapterFormatterPlayer::createPlayer ();
 }
 

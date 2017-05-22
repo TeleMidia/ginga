@@ -26,7 +26,7 @@ AdapterTextPlayer::AdapterTextPlayer () : AdapterFormatterPlayer () {}
 void
 AdapterTextPlayer::createPlayer ()
 {
-  player = new TextPlayer (mrl);
+  _player = new TextPlayer (_mrl);
   AdapterFormatterPlayer::createPlayer ();
 }
 
