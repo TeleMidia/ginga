@@ -29,7 +29,6 @@ GINGA_FORMATTER_BEGIN
 
 AdapterNCLPlayer::AdapterNCLPlayer () : AdapterApplicationPlayer ()
 {
-  _typeSet.insert ("AdapterNCLPlayer");
 }
 
 void
@@ -51,7 +50,6 @@ AdapterNCLPlayer::createPlayer ()
     }
 
   _player = NULL;
-  _playerCompName = "Formatter";
   playerData = _manager->getNclPlayerData ();
 
   childData = new NclPlayerData;

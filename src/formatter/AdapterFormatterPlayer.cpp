@@ -31,17 +31,14 @@ using namespace ::ginga::player;
 
 GINGA_FORMATTER_BEGIN
 
-double AdapterFormatterPlayer::eventTS = 0;
+double AdapterFormatterPlayer::_eventTS = 0;
 
 AdapterFormatterPlayer::AdapterFormatterPlayer ()
 {
-  _typeSet.insert ("AdapterFormatterPlayer");
-
   this->_manager = nullptr;
   this->_object = nullptr;
   this->_player = nullptr;
   this->_mrl = "";
-  this->_playerCompName = "";
   this->_objectDevice = -1;
   this->_outTransDur = 0;
   this->_outTransTime = -1.0;
@@ -87,19 +84,6 @@ AdapterFormatterPlayer::setAdapterManager (AdapterPlayerManager *manager)
   Ginga_Display->registerKeyEventListener(this);
 }
 
-bool
-AdapterFormatterPlayer::instanceOf (const string &s)
-{
-  if (!_typeSet.empty ())
-    {
-      return (_typeSet.find (s) != _typeSet.end ());
-    }
-  else
-    {
-      return false;
-    }
-}
-
 void
 AdapterFormatterPlayer::setOutputWindow (SDLWindow* windowId)
 {
@@ -118,14 +102,12 @@ void
 AdapterFormatterPlayer::createPlayer ()
 {
   vector<Anchor *> *anchors;
-  vector<Anchor *>::iterator i;
 
   vector<NclFormatterEvent *> *events;
   vector<NclFormatterEvent *>::iterator j;
 
   NclCascadingDescriptor *descriptor;
   vector<Parameter *> *descParams;
-  vector<Parameter *>::iterator it;
 
   NodeEntity *dataObject;
   PropertyAnchor *property;
@@ -137,47 +119,31 @@ AdapterFormatterPlayer::createPlayer ()
 
   _player->addListener (this);
 
-  if (_object == nullptr)
-    {
-      return;
-    }
+  g_assert_nonnull (_object);
 
   descriptor = _object->getDescriptor ();
   if (descriptor != nullptr)
     {
       descParams = descriptor->getParameters ();
-      if (descParams != nullptr)
+      for (Parameter *param: *descParams)
         {
-          Parameter *param;
-
-          it = descParams->begin ();
-          while (it != descParams->end ())
-            {
-              param = (*it);
-
-              _player->setPropertyValue (param->getName (),
-                                        param->getValue ());
-
-              ++it;
-            }
-
-          delete descParams;
+          _player->setPropertyValue (param->getName (), param->getValue ());
         }
+      delete descParams;
     }
 
-  dataObject = (NodeEntity *)(_object->getDataObject ());
+  dataObject = dynamic_cast <NodeEntity *> (_object->getDataObject ());
+  g_assert_nonnull (dataObject);
   if (dataObject->instanceOf ("ContentNode"))
     {
       anchors = ((ContentNode *)dataObject)->getAnchors ();
       if (anchors != nullptr)
         {
-          i = anchors->begin ();
-          while (i != anchors->end ())
+          for (Anchor *anchor: *anchors)
             {
-              if ((*i)->instanceOf ("PropertyAnchor"))
+              property = dynamic_cast <PropertyAnchor *> (anchor);
+              if (property)
                 {
-                  property = ((PropertyAnchor *)(*i));
-
                   clog << "AdapterFormatterPlayer::createPlayer for '";
                   clog << _mrl;
                   clog << "' set property '";
@@ -188,7 +154,6 @@ AdapterFormatterPlayer::createPlayer ()
                   _player->setPropertyValue (property->getPropertyName (),
                                             property->getPropertyValue ());
                 }
-              ++i;
             }
         }
     }
@@ -534,9 +499,9 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
       j = anchors->begin ();
       while (j != anchors->end ())
         {
-          if ((*j)->instanceOf ("PropertyAnchor"))
+          property = dynamic_cast <PropertyAnchor *> (*j);
+          if (property)
             {
-              property = ((PropertyAnchor *)(*j));
               name = property->getPropertyName ();
               value = property->getPropertyValue ();
 
@@ -771,32 +736,27 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
 
   if (left != "")
     {
-      region->setLeft (xstrtodorpercent (value, &isPercent),
-                       isPercent);
+      region->setLeft (xstrtodorpercent (value, &isPercent), isPercent);
     }
 
   if (top != "")
     {
-      region->setTop (xstrtodorpercent (value, &isPercent),
-                      isPercent);
+      region->setTop (xstrtodorpercent (value, &isPercent), isPercent);
     }
 
   if (width != "")
     {
-      region->setWidth (xstrtodorpercent (value, &isPercent),
-                        isPercent);
+      region->setWidth (xstrtodorpercent (value, &isPercent), isPercent);
     }
 
   if (height != "")
     {
-      region->setHeight (xstrtodorpercent (value, &isPercent),
-                         isPercent);
+      region->setHeight (xstrtodorpercent (value, &isPercent), isPercent);
     }
 
   if (bottom != "")
     {
-      region->setBottom (xstrtodorpercent (value, &isPercent),
-                         isPercent);
+      region->setBottom (xstrtodorpercent (value, &isPercent), isPercent);
     }
 
   if (right != "")
@@ -1138,12 +1098,6 @@ AdapterFormatterPlayer::getOutTransDur ()
   return outTransDur;
 }
 
-double
-AdapterFormatterPlayer::getOutTransTime ()
-{
-  return _outTransTime;
-}
-
 void
 AdapterFormatterPlayer::checkAnchorMonitor ()
 {
@@ -1435,6 +1389,7 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
       clog << "AdapterFormatterPlayer::setPropertyValue Warning!";
       clog << " cant set property '" << event->getId ();
       clog << "' value = '" << value << "' object = '";
+
       if (_object != nullptr)
         {
           clog << _object->getId ();
@@ -1452,21 +1407,15 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
   propName = (event->getAnchor ())->getPropertyName ();
   if (propName == "visible")
     {
-      if (value == "false")
-        {
-          setVisible (false);
-        }
-      else if (value == "true")
-        {
-          setVisible (true);
-        }
+      setVisible (value == "true");
     }
   else
     {
-      if (this->instanceOf ("AdapterApplicationPlayer"))
+      AdapterApplicationPlayer *adapterAppPlayer =
+          dynamic_cast <AdapterApplicationPlayer *> (this);
+      if(adapterAppPlayer)
         {
-          if (!((AdapterApplicationPlayer *)this)
-                   ->setAndLockCurrentEvent (event))
+          if (!adapterAppPlayer->setAndLockCurrentEvent (event))
             {
               return false;
             }
@@ -1514,9 +1463,9 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
           _player->setPropertyValue (propName, value);
         }
 
-      if (this->instanceOf ("AdapterApplicationPlayer"))
+      if (adapterAppPlayer)
         {
-          ((AdapterApplicationPlayer *)this)->unlockCurrentEvent (event);
+          adapterAppPlayer->unlockCurrentEvent (event);
         }
     }
 
@@ -1538,7 +1487,7 @@ AdapterFormatterPlayer::setPropertyValue (const string &name, const string &valu
 }
 
 string
-AdapterFormatterPlayer::getPropertyValue (void *event)
+AdapterFormatterPlayer::getPropertyValue (NclAttributionEvent *event)
 {
   string value = "";
   string name;
@@ -1548,7 +1497,7 @@ AdapterFormatterPlayer::getPropertyValue (void *event)
       return "";
     }
 
-  name = ((NclAttributionEvent *)event)->getAnchor ()->getPropertyName ();
+  name = event->getAnchor ()->getPropertyName ();
   value = getPropertyValue (name);
 
   return value;
@@ -1712,9 +1661,10 @@ AdapterFormatterPlayer::keyInputCallback (SDL_EventType evtType, SDL_Keycode key
       clog << "' event key code = '" << key ;
       clog << "'";
       clog << endl;
+
       if (_player->isVisible ())
         {
-          eventTS = (double) xruntime_ms ();
+          _eventTS = (double) xruntime_ms ();
           _object->selectionEvent (key, _player->getMediaTime () * 1000);
         }
     }

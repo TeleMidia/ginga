@@ -41,13 +41,14 @@ public:
   AdapterPlayerManager (NclPlayerData *data);
   virtual ~AdapterPlayerManager ();
 
-  bool hasPlayer (AdapterFormatterPlayer *player);
+  AdapterFormatterPlayer *getObjectPlayer (NclExecutionObject *execObj);
   NclPlayerData *getNclPlayerData ();
   void setVisible (const string &objId,
                    const string &visible,
                    NclAttributionEvent *event);
+
+  bool hasPlayer (AdapterFormatterPlayer *player);
   bool removePlayer (NclExecutionObject *object);
-  AdapterFormatterPlayer *getObjectPlayer (NclExecutionObject *execObj);
   static bool isEmbeddedApp (NodeEntity *dataObject);
 
 private:

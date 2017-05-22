@@ -27,7 +27,6 @@ GINGA_FORMATTER_BEGIN
 AdapterApplicationPlayer::AdapterApplicationPlayer ()
     : AdapterFormatterPlayer ()
 {
-  _typeSet.insert ("AdapterApplicationPlayer");
   Thread::mutexInit (&eventMutex, false);
   Thread::mutexInit (&eventsMutex, false);
 

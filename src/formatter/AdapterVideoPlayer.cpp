@@ -23,7 +23,6 @@ GINGA_FORMATTER_BEGIN
 
 AdapterVideoPlayer::AdapterVideoPlayer () : AdapterFormatterPlayer ()
 {
-  _typeSet.insert ("AdapterVideoPlayer");
 }
 
 void
