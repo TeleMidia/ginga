@@ -207,13 +207,14 @@ src+= formatter/AdapterHTMLPlayer.cpp
 src+= player/HTMLPlayer.cpp
 cef_filesdir= $(bindir)
 cef_files_DATA=\
+  $(cef_dir)/Release/chrome-sandbox\
+  $(cef_dir)/Release/libcef.so\
   $(cef_dir)/Release/natives_blob.bin\
   $(cef_dir)/Release/snapshot_blob.bin\
-  $(cef_dir)/Release/libcef.so\
-  $(cef_dir)/Resources/icudtl.dat\
   $(cef_dir)/Resources/cef.pak\
   $(cef_dir)/Resources/cef_100_percent.pak\
   $(cef_dir)/Resources/cef_200_percent.pak\
   $(cef_dir)/Resources/cef_extensions.pak\
+  $(cef_dir)/Resources/icudtl.dat\
   $(NULL)
 endif # WITH_CEF
