@@ -18,7 +18,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 
 #if defined WITH_CEF && WITH_CEF
+GINGA_PRAGMA_DIAG_PUSH ()
+GINGA_PRAGMA_DIAG_IGNORE (-Wunused-parameter)
+GINGA_PRAGMA_DIAG_IGNORE (-Wunused-const-variable)
 #include "cef_app.h"
+GINGA_PRAGMA_DIAG_POP ()
 #endif
 
 #include "formatter/FormatterMediator.h"
