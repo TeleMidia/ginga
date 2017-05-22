@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
  *
  * @brief  Header file of HTML player.
  *
- * This is the header file for the HTMLPlayer and others 
+ * This is the header file for the HTMLPlayer and others
  * related classes.
  */
 
@@ -37,69 +37,73 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/Display.h"
 using namespace ginga::mb;
 
+GINGA_PRAGMA_DIAG_PUSH ()
+GINGA_PRAGMA_DIAG_IGNORE (-Wunused-parameter)
+GINGA_PRAGMA_DIAG_IGNORE (-Wunused-const-variable)
 #include <cef_app.h>
 #include <cef_client.h>
 #include <cef_render_handler.h>
 #include <cef_life_span_handler.h>
 #include <cef_load_handler.h>
 #include <wrapper/cef_helpers.h>
+GINGA_PRAGMA_DIAG_POP ()
 
 GINGA_PLAYER_BEGIN
 
 /**
  * @brief A render handler class of CEF for Ginga.
- * 
- * This class is responsible for copying the page load result 
- * to a local SDL texture. 
- */ 
+ *
+ * This class is responsible for copying the page load result
+ * to a local SDL texture.
+ */
 class GingaCefHandler : public CefRenderHandler
 {
 public:
   /**
-   * @brief Default constructor for GingaCefHandler. 
-   *  
+   * @brief Default constructor for GingaCefHandler.
+   *
    * @param width The window width.
    * @param height The window height.
    * @param renderer The renderer.
-   * @return Nothing. 
-   */ 
+   * @return Nothing.
+   */
   GingaCefHandler(int width, int height, SDL_Renderer* renderer);
 
   /**
    * @brief Default destructor for GingaCefHandler.
    *
-   * @return Nothing. 
-   */ 
+   * @return Nothing.
+   */
   virtual ~GingaCefHandler();
- 
+
   /**
-   * @brief Return the current window width. 
-   *  
-   * @return The current window width. 
-   */ 
+   * @brief Return the current window width.
+   *
+   * @return The current window width.
+   */
   int getWidth();
 
   /**
-   * @brief Set the current window width. 
-   *  
-   * @return Nothing. 
+   * @brief Set the current window width.
+   *
+   * @return Nothing.
    * @see setHeight(), setRenderer() and getTexture().
    *
    * The window width is used to create the local texture.
-   */ 
+   */
   void setWidth(int width);
 
   /**
-   * @brief Return the current window height. 
-   *  
+   * @brief Return the current window height.
+   *
    * @return The current window height.
    */
   int getHeight();
 
   /**
-   * @brief Set the current window height. 
-   *  
-   * @return Nothing. 
+   * @brief Set the current window height.
+   *
+   * @return Nothing.
    * @see setWidth(), setRenderer() and getTexture().
    *
    * The window height is used to create the local texture.
@@ -107,84 +111,84 @@ public:
   void setHeight(int height);
 
   /**
-   * @brief Return the current renderer. 
-   *  
-   * @return The current renderer. 
+   * @brief Return the current renderer.
+   *
+   * @return The current renderer.
    */
   SDL_Renderer* getRenderer();
 
   /**
-   * @brief Set the current renderer. 
-   *  
-   * @return Nothing. 
+   * @brief Set the current renderer.
+   *
+   * @return Nothing.
    * @see setWidth(), setHeight() and getTexture().
    *
-   * This method also create a new instance of the local texture based on the 
+   * This method also create a new instance of the local texture based on the
    * width and height values and the renderer itself.
    */
   void setRenderer(SDL_Renderer* renderer);
 
   /**
-   * @brief Return the local texture. 
-   *  
-   * @return The texture. 
+   * @brief Return the local texture.
+   *
+   * @return The texture.
    */
   SDL_Texture* getTexture();
 
   /**
-   * @brief Set the view rectangle. 
+   * @brief Set the view rectangle.
    *
-   * @param browser A browser instance.  
+   * @param browser A browser instance.
    * @param rect The view rectangle to be set.
-   * @return The rectangle status. 
+   * @return The rectangle status.
    *
-   * "Called to retrieve the view rectangle which is relative to screen 
-   * c\oordinates. Return **true** if the rectangle was provided." 
+   * "Called to retrieve the view rectangle which is relative to screen
+   * c\oordinates. Return **true** if the rectangle was provided."
    * (copying from CEF documentation).
    */
   bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect);
 
   /**
-   * @brief Paint an element. 
+   * @brief Paint an element.
    *
-   * @param browser A browser instance.  
+   * @param browser A browser instance.
    * @param type The element type (view or widget).
    * @param dirtyRects Set of rectangle that need to be repainted.
    * @param buffer The pixel data of whole image.
    * @param width The image width.
    * @param height The image height.
-   * @return Nothing. 
+   * @return Nothing.
    *
-   * "Called when an element should be painted." 
+   * "Called when an element should be painted."
    * (copying from CEF documentation).
    */
-  void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, 
-                                              const RectList &dirtyRects, 
-                                              const void * buffer, 
+  void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
+                                              const RectList &dirtyRects,
+                                              const void * buffer,
                                               int width, int height);
 
 private:
-  /** 
+  /**
    * @brief Keep the current window width.
-   */ 
+   */
   int _width;
 
-  /** 
+  /**
    * @brief Keep the current window height.
-   */ 
+   */
   int _height;
 
-  /** 
+  /**
    * @brief Keep the local texture.
    */
   SDL_Texture* _texture;
 
-  /** 
+  /**
    * @brief Keep the current renderer.
    */
   SDL_Renderer* _renderer;//
-  
-  /** 
+
+  /**
    * @brief Provides atomic refcounting implementation.
    *
    * This a MACRO defined by CEF.
@@ -194,9 +198,9 @@ private:
 
 /**
  * @brief A client class of CEF for Ginga.
- * 
- * This class is responsible for setting the handlers used by the browser. 
- */ 
+ *
+ * This class is responsible for setting the handlers used by the browser.
+ */
 class GingaCefClient :
   public CefClient,
   public CefLifeSpanHandler,
@@ -204,25 +208,25 @@ class GingaCefClient :
 {
 public:
   /**
-   * @brief Default constructor for GingaCefClient. 
-   *  
+   * @brief Default constructor for GingaCefClient.
+   *
    * @param handler A render handler.
-   * @return Nothing. 
-   */ 
+   * @return Nothing.
+   */
   GingaCefClient(CefRefPtr<CefRenderHandler> handler);
 
   /**
    * @brief Default destructor for GingaCefClient.
    *
-   * @return Nothing. 
-   */ 
+   * @return Nothing.
+   */
   virtual ~GingaCefClient();
 
   /**
    * @brief Return the handler for browser life span events.
    *
-   * @return The handler for browser life span events. 
-   */ 
+   * @return The handler for browser life span events.
+   */
   virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler();
 
   /**
@@ -240,12 +244,12 @@ public:
   virtual CefRefPtr<CefRenderHandler> GetRenderHandler();
 
 private:
-  /** 
+  /**
    * @brief Keep the current render handler.
    */
   CefRefPtr<CefRenderHandler> _handler;
 
-  /** 
+  /**
    * @brief Provides atomic refcounting implementation.
    *
    * This a MACRO defined by CEF.
@@ -267,24 +271,24 @@ class HTMLPlayer :
 {
 public:
   /**
-   * @brief Default constructor for HTMLPlayer. 
-   * 
+   * @brief Default constructor for HTMLPlayer.
+   *
    * @param location An URI for the HTML file.
-   * @return Nothing. 
-   */ 
+   * @return Nothing.
+   */
   HTMLPlayer (const string &location);
 
   /**
    * @brief Default destructor for HTMLPlayer.
    *
-   * @return Nothing. 
-   */ 
+   * @return Nothing.
+   */
   virtual ~HTMLPlayer ();
 
   /**
    * @brief Start the presentation.
    *
-   * @return Nothing. 
+   * @return Nothing.
    * @see displayJobCallbackWrapper() and displayJobCallback().
    *
    * This method adds a new **display job** to start the presentation.
@@ -294,11 +298,11 @@ public:
   /**
    * @brief Stop the presentation.
    *
-   * @return Nothing. 
+   * @return Nothing.
    * @see displayJobCallbackWrapper() and displayJobCallback().
-   * 
+   *
    * This method stop the presentation by finishing the **display job** and
-   * cleaning the screen. 
+   * cleaning the screen.
    */
   virtual void stop ();
 
@@ -323,13 +327,13 @@ private:
    * @param job The job data.
    * @param renderer The renderer.
    * @param seft The object instance.
-   * @return **false** if the job could be removed from the execution list and 
+   * @return **false** if the job could be removed from the execution list and
    *         **true** otherwise.
    * @see displayJobCallback() and play().
    *
    * Actually, this is just a wrapper to displayJobCallback().
    */
-  static bool displayJobCallbackWrapper (DisplayJob *job, 
+  static bool displayJobCallbackWrapper (DisplayJob *job,
                                          SDL_Renderer *renderer, void* self);
 
   /**
@@ -337,13 +341,13 @@ private:
    *
    * @param job The job data.
    * @param renderer The renderer.
-   * @return **false** if the job could be removed from the execution list and 
+   * @return **false** if the job could be removed from the execution list and
    *         **true** otherwise.
    * @see displayJobCallbackWrapper(), play() and stop().
    *
-   * This method create a new browser and load the page to be render in the 
+   * This method create a new browser and load the page to be render in the
    * screen. In case the browser already exist, just process the browser events
-   * and update the screen. Return **false** only when stop() is called. 
+   * and update the screen. Return **false** only when stop() is called.
    */
   bool displayJobCallback (DisplayJob *job, SDL_Renderer *renderer);
 
@@ -355,8 +359,8 @@ private:
    * @return Nothing.
    * @see getPlayerKey().
    *
-   * This method translate the key code captured by SDL in the event to the 
-   * CEF code style and forward the events to the active browser. 
+   * This method translate the key code captured by SDL in the event to the
+   * CEF code style and forward the events to the active browser.
    */
   void keyInputCallback (SDL_EventType type, SDL_Keycode key);
 
@@ -368,7 +372,7 @@ private:
    * @param y The Y coordinate, relative to window.
    * @return Nothing.
    *
-   * This method forward the events captured by SDL to the active browser. 
+   * This method forward the events captured by SDL to the active browser.
    */
   void mouseInputCallback (SDL_EventType type, int x, int y);
 
@@ -380,27 +384,27 @@ private:
    */
   int getPlayerKey(SDL_Keycode key);
 
-  /** 
-   * @brief Keep the active handler instance, needed to create a new 
-   *   client instance. 
-   */ 
+  /**
+   * @brief Keep the active handler instance, needed to create a new
+   *   client instance.
+   */
   CefRefPtr<GingaCefHandler> _handler;
-  
-  /** 
-   * @brief Keep the active client instance, needed to create a new 
-   *   browser instance. 
+
+  /**
+   * @brief Keep the active client instance, needed to create a new
+   *   browser instance.
    */
   CefRefPtr<GingaCefClient> _client;
-  
-  /** 
-   * @brief Keep the active browser instance. 
-   */
-  CefRefPtr<CefBrowser> _browser; 
 
-  /** 
+  /**
+   * @brief Keep the active browser instance.
+   */
+  CefRefPtr<CefBrowser> _browser;
+
+  /**
    * @brief Keep execution player status.
    */
-  bool _isPlaying; 
+  bool _isPlaying;
 };
 
 GINGA_PLAYER_END
