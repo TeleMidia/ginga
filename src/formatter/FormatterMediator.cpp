@@ -399,13 +399,6 @@ FormatterMediator::removeDocument ()
   return true;
 }
 
-ContextNode *
-FormatterMediator::getDocumentContext (arg_unused (const string &documentId))
-{
-  g_assert_nonnull (this->currentDocument);
-  return this->currentDocument->getBody ();
-}
-
 Port *
 FormatterMediator::getPortFromEvent (NclFormatterEvent *event)
 {
@@ -507,7 +500,7 @@ FormatterMediator::processDocument (const string &documentId, const string &inte
   port = NULL;
 
   // look for the entry point perspective
-  context = getDocumentContext (documentId);
+  context = this->currentDocument->getBody ();
   if (context == NULL || !context->instanceOf ("CompositeNode"))
     {
       // document has no body
