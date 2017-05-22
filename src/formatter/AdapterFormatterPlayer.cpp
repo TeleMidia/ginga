@@ -37,9 +37,9 @@ AdapterFormatterPlayer::AdapterFormatterPlayer ()
 {
   typeSet.insert ("AdapterFormatterPlayer");
 
-  this->manager = NULL;
-  this->object = NULL;
-  this->player = NULL;
+  this->manager = nullptr;
+  this->object = nullptr;
+  this->player = nullptr;
   this->mrl = "";
   this->playerCompName = "";
   this->objectDevice = -1;
@@ -81,7 +81,7 @@ AdapterFormatterPlayer::~AdapterFormatterPlayer ()
 }
 
 void
-AdapterFormatterPlayer::setAdapterManager (void *manager)
+AdapterFormatterPlayer::setAdapterManager (AdapterPlayerManager *manager)
 {
   this->manager = manager;
   Ginga_Display->registerKeyEventListener(this);
@@ -415,7 +415,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                 {
                   transpValue = xstrtodorpercent (value, &isPercent);
                   parentOpacity = (1
-                                   - ((AdapterPlayerManager *)manager)
+                                   - manager
                                          ->getNclPlayerData ()
                                          ->transparency);
 
@@ -612,7 +612,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                     {
                       transpValue = xstrtodorpercent (value, &isPercent);
                       parentOpacity = (1
-                                       - ((AdapterPlayerManager *)manager)
+                                       - manager
                                              ->getNclPlayerData ()
                                              ->transparency);
 
@@ -823,9 +823,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
   if (transpValue < 0.
       && descriptor->getParameterValue ("transparency") == "")
     {
-      transpValue = ((AdapterPlayerManager *)manager)
-                        ->getNclPlayerData ()
-                        ->transparency;
+      transpValue = manager->getNclPlayerData ()->transparency;
 
       if (fRegion != NULL)
         {
@@ -1411,7 +1409,7 @@ AdapterFormatterPlayer::unprepare ()
       return stop ();
     }
 
-  ((AdapterPlayerManager *)manager)->removePlayer (object);
+  manager->removePlayer (object);
 
   if (NclExecutionObject::hasInstance (object, false))
     {
@@ -1489,7 +1487,7 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
 
               transpValue = xstrtodorpercent (value, &isPercent);
               parentOpacity = (1
-                               - ((AdapterPlayerManager *)manager)
+                               - manager
                                      ->getNclPlayerData ()
                                      ->transparency);
 

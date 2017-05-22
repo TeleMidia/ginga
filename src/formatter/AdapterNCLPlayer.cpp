@@ -52,7 +52,7 @@ AdapterNCLPlayer::createPlayer ()
 
   player = NULL;
   playerCompName = "Formatter";
-  playerData = ((AdapterPlayerManager *)manager)->getNclPlayerData ();
+  playerData = manager->getNclPlayerData ();
 
   childData = new NclPlayerData;
   childData->x = 0;
