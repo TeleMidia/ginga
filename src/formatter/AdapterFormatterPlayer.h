@@ -43,14 +43,12 @@ using namespace ::ginga::ncl;
 #include "NclFormatterEvent.h"
 #include "NclPresentationEvent.h"
 
-#include "IAdapterPlayer.h"
-
 GINGA_FORMATTER_BEGIN
 
-class AdapterFormatterPlayer : public IAdapterPlayer,
-                               public IPlayerListener,
-                               public INclAttributeValueMaintainer,
-                               IKeyInputEventListener
+class AdapterFormatterPlayer :
+    public IPlayerListener,
+    public INclAttributeValueMaintainer,
+    public IKeyInputEventListener
 {
 protected:
   static double eventTS;
@@ -118,7 +116,8 @@ private:
 
 public:
   virtual bool unprepare ();
-  virtual bool setPropertyValue (NclAttributionEvent *event, const string &value);
+  virtual bool setPropertyValue (NclAttributionEvent *event,
+                                 const string &value);
 
   void setPropertyValue (const string &name, const string &value);
 
@@ -135,7 +134,7 @@ public:
                              short type = 10,
                              const string &value = "");
 
-  void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
+  virtual void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
 
 private:
   void setVisible (bool visible);

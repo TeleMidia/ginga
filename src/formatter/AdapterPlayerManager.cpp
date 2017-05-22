@@ -49,7 +49,7 @@ AdapterPlayerManager::~AdapterPlayerManager ()
 }
 
 bool
-AdapterPlayerManager::hasPlayer (IAdapterPlayer *player)
+AdapterPlayerManager::hasPlayer (AdapterFormatterPlayer *player)
 {
   return playerNames.find (player) != playerNames.end ();
 }
@@ -65,7 +65,7 @@ AdapterPlayerManager::setVisible (const string &objectId,
                                   const string &visible,
                                   NclAttributionEvent *event)
 {
-  map<string, IAdapterPlayer *>::iterator i;
+  map<string, AdapterFormatterPlayer *>::iterator i;
   AdapterFormatterPlayer *player;
 
   i = objectPlayers.find (objectId);
@@ -97,7 +97,7 @@ AdapterPlayerManager::removePlayer (void *exObject)
 bool
 AdapterPlayerManager::removePlayer (const string &objectId)
 {
-  map<string, IAdapterPlayer *>::iterator i;
+  map<string, AdapterFormatterPlayer *>::iterator i;
   AdapterFormatterPlayer *player;
 
   i = objectPlayers.find (objectId);
@@ -115,7 +115,7 @@ AdapterPlayerManager::removePlayer (const string &objectId)
 void
 AdapterPlayerManager::clear ()
 {
-  map<string, IAdapterPlayer *>::iterator i;
+  map<string, AdapterFormatterPlayer *>::iterator i;
 
   i = objectPlayers.begin ();
   while (i != objectPlayers.end ())
@@ -142,7 +142,7 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
   const char *mime;
 
   string classname;
-  IAdapterPlayer *adapter = NULL;
+  AdapterFormatterPlayer *adapter = NULL;
 
   g_assert_nonnull (object);
   id = object->getId ();
@@ -225,7 +225,7 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
 void *
 AdapterPlayerManager::getObjectPlayer (void *eObj)
 {
-  map<string, IAdapterPlayer *>::iterator i;
+  map<string, AdapterFormatterPlayer *>::iterator i;
   AdapterFormatterPlayer *player;
   string objId;
   NclExecutionObject *execObj = (NclExecutionObject *)eObj;
@@ -341,11 +341,11 @@ AdapterPlayerManager::isEmbeddedAppMediaType (const string &mediaType)
 void
 AdapterPlayerManager::clearDeletePlayers ()
 {
-  map<string, IAdapterPlayer *> dPlayers;
+  map<string, AdapterFormatterPlayer *> dPlayers;
 
-  map<string, IAdapterPlayer *>::iterator i;
-  map<IAdapterPlayer *, string>::iterator j;
-  IAdapterPlayer *player;
+  map<string, AdapterFormatterPlayer *>::iterator i;
+  map<AdapterFormatterPlayer *, string>::iterator j;
+  AdapterFormatterPlayer *player;
   string playerClassName = "";
 
   i = deletePlayers.begin ();
