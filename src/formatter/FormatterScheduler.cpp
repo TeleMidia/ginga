@@ -1460,48 +1460,13 @@ FormatterScheduler::startDocument (NclFormatterEvent *documentEvent,
   int i, size;
   NclFormatterEvent *event;
 
-  if (documentEvent == NULL || entryEvents == NULL)
-    {
-      clog << "FormatterScheduler::startDocument Warning! ";
-      clog << "documentEvent == NULL || entryEvents == NULL" << endl;
-      return;
-    }
-
-  if (entryEvents->empty ())
-    {
-      clog << "FormatterScheduler::startDocument Warning! ";
-      clog << "entryEvents is empty" << endl;
-      return;
-    }
-
-  if (isDocumentRunning (documentEvent))
-    {
-      size = (int) entryEvents->size ();
-      for (i = 0; i < size; i++)
-        {
-          event = (*entryEvents)[i];
-
-          if (event->getCurrentState () == EventUtil::ST_SLEEPING)
-            {
-              startEvent (event);
-            }
-        }
-      return;
-    }
+  g_assert_nonnull (documentEvent);
+  g_assert_nonnull (entryEvents);
+  g_assert (!entryEvents->empty ());
+  g_assert (!isDocumentRunning (documentEvent));
+  g_assert (documentEvents.size () == 0);
 
   Thread::mutexLock (&mutexD);
-  for (it = documentEvents.begin (); it != documentEvents.end (); ++it)
-    {
-      if (*it == documentEvent)
-        {
-          clog << "FormatterScheduler::startDocument Warning! ";
-          clog << "Can't start document through event '";
-          clog << documentEvent->getId () << "'" << endl;
-
-          Thread::mutexUnlock (&mutexD);
-          return;
-        }
-    }
 
   clog << "FormatterScheduler::startDocument Through event '";
   clog << documentEvent->getId () << "'" << endl;
