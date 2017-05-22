@@ -34,7 +34,7 @@ GINGA_FORMATTER_BEGIN
 AdapterHTMLPlayer::AdapterHTMLPlayer () 
   : AdapterFormatterPlayer ()
 {
-  typeSet.insert ("AdapterHTMLPlayer");
+  _typeSet.insert ("AdapterHTMLPlayer");
 }
 
 AdapterHTMLPlayer::~AdapterHTMLPlayer() 
@@ -45,7 +45,7 @@ AdapterHTMLPlayer::~AdapterHTMLPlayer()
 void 
 AdapterHTMLPlayer::createPlayer()
 {
-  player = new HTMLPlayer(mrl);
+  _player = new HTMLPlayer(_mrl);
   
   AdapterFormatterPlayer::createPlayer();
 }

@@ -26,7 +26,7 @@ AdapterLuaPlayer::AdapterLuaPlayer () : AdapterApplicationPlayer () {}
 void
 AdapterLuaPlayer::createPlayer ()
 {
-  player = new LuaPlayer (mrl.c_str ());
+  _player = new LuaPlayer (_mrl.c_str ());
   AdapterApplicationPlayer::createPlayer ();
 }
 
@@ -56,10 +56,10 @@ AdapterLuaPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
         }
 
       currentEvent = event;
-      ((NclApplicationExecutionObject *)object)
+      ((NclApplicationExecutionObject *)_object)
           ->setCurrentEvent (currentEvent);
 
-      player->setCurrentScope (interfaceId);
+      _player->setCurrentScope (interfaceId);
     }
   else if (event->instanceOf ("NclAttributionEvent"))
     {
@@ -67,13 +67,13 @@ AdapterLuaPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
                         ->getAnchor ()
                         ->getPropertyName ();
 
-      player->setScope (interfaceId, IPlayer::TYPE_ATTRIBUTION);
+      _player->setScope (interfaceId, IPlayer::TYPE_ATTRIBUTION);
 
       currentEvent = event;
-      ((NclApplicationExecutionObject *)object)
+      ((NclApplicationExecutionObject *)_object)
           ->setCurrentEvent (currentEvent);
 
-      player->setCurrentScope (interfaceId);
+      _player->setCurrentScope (interfaceId);
     }
   else
     {

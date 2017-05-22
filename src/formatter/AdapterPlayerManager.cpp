@@ -39,7 +39,7 @@ GINGA_FORMATTER_BEGIN
 
 AdapterPlayerManager::AdapterPlayerManager (NclPlayerData *data)
 {
-  nclPlayerData = data;
+  _nclPlayerData = data;
 }
 
 AdapterPlayerManager::~AdapterPlayerManager ()
@@ -51,13 +51,13 @@ AdapterPlayerManager::~AdapterPlayerManager ()
 bool
 AdapterPlayerManager::hasPlayer (AdapterFormatterPlayer *player)
 {
-  return playerNames.find (player) != playerNames.end ();
+  return _playerNames.find (player) != _playerNames.end ();
 }
 
 NclPlayerData *
 AdapterPlayerManager::getNclPlayerData ()
 {
-  return nclPlayerData;
+  return _nclPlayerData;
 }
 
 void
@@ -66,28 +66,24 @@ AdapterPlayerManager::setVisible (const string &objectId,
                                   NclAttributionEvent *event)
 {
   map<string, AdapterFormatterPlayer *>::iterator i;
-  AdapterFormatterPlayer *player;
 
-  i = objectPlayers.find (objectId);
-  if (i != objectPlayers.end ())
+  i = _objectPlayers.find (objectId);
+  if (i != _objectPlayers.end ())
     {
-      player = (AdapterFormatterPlayer *)(i->second);
+      AdapterFormatterPlayer *player = i->second;
       player->setPropertyValue (event, visible);
       event->stop ();
     }
 }
 
 bool
-AdapterPlayerManager::removePlayer (void *exObject)
+AdapterPlayerManager::removePlayer (NclExecutionObject *exObject)
 {
-  NclExecutionObject *object;
   bool removed = false;
-  string objId;
 
-  object = (NclExecutionObject *)exObject;
-  if (NclExecutionObject::hasInstance (object, false))
+  if (NclExecutionObject::hasInstance (exObject, false))
     {
-      objId = object->getId ();
+      string objId = exObject->getId ();
       removed = removePlayer (objId);
     }
 
@@ -98,14 +94,12 @@ bool
 AdapterPlayerManager::removePlayer (const string &objectId)
 {
   map<string, AdapterFormatterPlayer *>::iterator i;
-  AdapterFormatterPlayer *player;
 
-  i = objectPlayers.find (objectId);
-  if (i != objectPlayers.end ())
+  i = _objectPlayers.find (objectId);
+  if (i != _objectPlayers.end ())
     {
-      player = (AdapterFormatterPlayer *)(i->second);
-      deletePlayers[objectId] = player;
-      objectPlayers.erase (i);
+      _deletePlayers[objectId] = i->second;
+      _objectPlayers.erase (i);
       return true;
     }
 
@@ -117,19 +111,19 @@ AdapterPlayerManager::clear ()
 {
   map<string, AdapterFormatterPlayer *>::iterator i;
 
-  i = objectPlayers.begin ();
-  while (i != objectPlayers.end ())
+  i = _objectPlayers.begin ();
+  while (i != _objectPlayers.end ())
     {
       if (removePlayer (i->first))
         {
-          i = objectPlayers.begin ();
+          i = _objectPlayers.begin ();
         }
       else
         {
           ++i;
         }
     }
-  objectPlayers.clear ();
+  _objectPlayers.clear ();
 }
 
 AdapterFormatterPlayer *
@@ -216,48 +210,41 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
     }
 
   adapter->setAdapterManager (this);
-  objectPlayers[id] = adapter;
-  playerNames[adapter] = classname;
+  _objectPlayers[id] = adapter;
+  _playerNames[adapter] = classname;
 
-  return (AdapterFormatterPlayer *)adapter;
+  return adapter;
 }
 
-void *
-AdapterPlayerManager::getObjectPlayer (void *eObj)
+AdapterFormatterPlayer *
+AdapterPlayerManager::getObjectPlayer (NclExecutionObject *execObj)
 {
   map<string, AdapterFormatterPlayer *>::iterator i;
   AdapterFormatterPlayer *player;
   string objId;
-  NclExecutionObject *execObj = (NclExecutionObject *)eObj;
 
   objId = execObj->getId ();
-  i = objectPlayers.find (objId);
-  if (i == objectPlayers.end ())
+  i = _objectPlayers.find (objId);
+  if (i == _objectPlayers.end ())
     {
-      i = deletePlayers.find (objId);
-      if (i == deletePlayers.end ())
+      i = _deletePlayers.find (objId);
+      if (i == _deletePlayers.end ())
         {
           player = initializePlayer (execObj);
         }
       else
         {
-          player = (AdapterFormatterPlayer *)(i->second);
-          deletePlayers.erase (i);
-          objectPlayers[objId] = player;
+          player = i->second;
+          _deletePlayers.erase (i);
+          _objectPlayers[objId] = player;
         }
     }
   else
     {
-      player = (AdapterFormatterPlayer *)(i->second);
+      player = i->second;
     }
 
   return player;
-}
-
-string
-AdapterPlayerManager::getMimeTypeFromSchema (arg_unused (const string &url))
-{
-  return "";
 }
 
 bool
@@ -348,16 +335,16 @@ AdapterPlayerManager::clearDeletePlayers ()
   AdapterFormatterPlayer *player;
   string playerClassName = "";
 
-  i = deletePlayers.begin ();
-  while (i != deletePlayers.end ())
+  i = _deletePlayers.begin ();
+  while (i != _deletePlayers.end ())
     {
       player = i->second;
 
-      j = playerNames.find (player);
-      if (j != playerNames.end ())
+      j = _playerNames.find (player);
+      if (j != _playerNames.end ())
         {
           playerClassName = j->second;
-          playerNames.erase (j);
+          _playerNames.erase (j);
         }
 
       if (((AdapterFormatterPlayer *)player)->getObjectDevice () == 0)
@@ -367,7 +354,7 @@ AdapterPlayerManager::clearDeletePlayers ()
 
       ++i;
     }
-  deletePlayers.clear ();
+  _deletePlayers.clear ();
 
   i = dPlayers.begin ();
   while (i != dPlayers.end ())

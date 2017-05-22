@@ -37,45 +37,30 @@ GINGA_FORMATTER_BEGIN
 
 class AdapterPlayerManager
 {
-private:
-  map<string, AdapterFormatterPlayer *> objectPlayers;
-  map<string, AdapterFormatterPlayer *> deletePlayers;
-  map<AdapterFormatterPlayer *, string> playerNames;
-  map<string, string> mimeDefaultTable;
-  map<string, string> playerTable;
-  IPlayerListener *editingCommandListener;
-  AdapterFormatterPlayer *epgFactoryAdapter;
-  NclPlayerData *nclPlayerData;
-
 public:
-  AdapterPlayerManager (NclPlayerData *nclPlayerData);
+  AdapterPlayerManager (NclPlayerData *data);
   virtual ~AdapterPlayerManager ();
+
   bool hasPlayer (AdapterFormatterPlayer *player);
   NclPlayerData *getNclPlayerData ();
-  void setVisible (const string &objectId, const string &visible,
+  void setVisible (const string &objId,
+                   const string &visible,
                    NclAttributionEvent *event);
-  bool removePlayer (void *object);
-
-private:
-  bool removePlayer (const string &objectId);
-  void clear ();
-
-private:
-  AdapterFormatterPlayer *initializePlayer (NclExecutionObject *object);
-
-public:
-  void *getObjectPlayer (void *execObj);
-
-private:
-  string getMimeTypeFromSchema (const string &url);
-
-public:
+  bool removePlayer (NclExecutionObject *object);
+  AdapterFormatterPlayer *getObjectPlayer (NclExecutionObject *execObj);
   static bool isEmbeddedApp (NodeEntity *dataObject);
 
 private:
+  map<string, AdapterFormatterPlayer *> _objectPlayers;
+  map<string, AdapterFormatterPlayer *> _deletePlayers;
+  map<AdapterFormatterPlayer *, string> _playerNames;
+  NclPlayerData *_nclPlayerData;
+
+  AdapterFormatterPlayer *initializePlayer (NclExecutionObject *object);
   static bool isEmbeddedAppMediaType (const string &mediaType);
 
-protected:
+  bool removePlayer (const string &objectId);
+  void clear ();
   void clearDeletePlayers ();
 };
 

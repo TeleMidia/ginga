@@ -35,18 +35,18 @@ double AdapterFormatterPlayer::eventTS = 0;
 
 AdapterFormatterPlayer::AdapterFormatterPlayer ()
 {
-  typeSet.insert ("AdapterFormatterPlayer");
+  _typeSet.insert ("AdapterFormatterPlayer");
 
-  this->manager = nullptr;
-  this->object = nullptr;
-  this->player = nullptr;
-  this->mrl = "";
-  this->playerCompName = "";
-  this->objectDevice = -1;
-  this->outTransDur = 0;
-  this->outTransTime = -1.0;
-  this->isLocked = false;
-  Thread::mutexInit (&objectMutex, false);
+  this->_manager = nullptr;
+  this->_object = nullptr;
+  this->_player = nullptr;
+  this->_mrl = "";
+  this->_playerCompName = "";
+  this->_objectDevice = -1;
+  this->_outTransDur = 0;
+  this->_outTransTime = -1.0;
+  this->_isLocked = false;
+  Thread::mutexInit (&_objectMutex, false);
 }
 
 AdapterFormatterPlayer::~AdapterFormatterPlayer ()
@@ -59,40 +59,40 @@ AdapterFormatterPlayer::~AdapterFormatterPlayer ()
 
   objDevice = getObjectDevice ();
 
-  if (object != NULL)
+  if (_object != nullptr)
     {
-      object = NULL;
+      _object = nullptr;
     }
 
-  if (player != NULL)
+  if (_player != nullptr)
     {
-      player->removeListener (this);
-      player->stop ();
+      _player->removeListener (this);
+      _player->stop ();
       if (objDevice == 0)
         {
-          delete player;
+          delete _player;
         }
-      player = NULL;
+      _player = nullptr;
     }
 
   unlockObject ();
 
-  Thread::mutexDestroy (&objectMutex);
+  Thread::mutexDestroy (&_objectMutex);
 }
 
 void
 AdapterFormatterPlayer::setAdapterManager (AdapterPlayerManager *manager)
 {
-  this->manager = manager;
+  this->_manager = manager;
   Ginga_Display->registerKeyEventListener(this);
 }
 
 bool
 AdapterFormatterPlayer::instanceOf (const string &s)
 {
-  if (!typeSet.empty ())
+  if (!_typeSet.empty ())
     {
-      return (typeSet.find (s) != typeSet.end ());
+      return (_typeSet.find (s) != _typeSet.end ());
     }
   else
     {
@@ -103,14 +103,14 @@ AdapterFormatterPlayer::instanceOf (const string &s)
 void
 AdapterFormatterPlayer::setOutputWindow (SDLWindow* windowId)
 {
-  if (player != NULL)
+  if (_player != nullptr)
     {
-      player->setOutWindow (windowId);
+      _player->setOutWindow (windowId);
     }
   else
     {
       clog << "AdapterFormatterPlayer::setOutputWindow Warning!";
-      clog << " Player is NULL" << endl;
+      clog << " Player is nullptr" << endl;
     }
 }
 
@@ -130,23 +130,23 @@ AdapterFormatterPlayer::createPlayer ()
   NodeEntity *dataObject;
   PropertyAnchor *property;
 
-  if (player == NULL)
+  if (_player == nullptr)
     {
-      player = new Player (mrl);
+      _player = new Player (_mrl);
     }
 
-  player->addListener (this);
+  _player->addListener (this);
 
-  if (object == NULL)
+  if (_object == nullptr)
     {
       return;
     }
 
-  descriptor = object->getDescriptor ();
-  if (descriptor != NULL)
+  descriptor = _object->getDescriptor ();
+  if (descriptor != nullptr)
     {
       descParams = descriptor->getParameters ();
-      if (descParams != NULL)
+      if (descParams != nullptr)
         {
           Parameter *param;
 
@@ -155,7 +155,7 @@ AdapterFormatterPlayer::createPlayer ()
             {
               param = (*it);
 
-              player->setPropertyValue (param->getName (),
+              _player->setPropertyValue (param->getName (),
                                         param->getValue ());
 
               ++it;
@@ -165,11 +165,11 @@ AdapterFormatterPlayer::createPlayer ()
         }
     }
 
-  dataObject = (NodeEntity *)(object->getDataObject ());
+  dataObject = (NodeEntity *)(_object->getDataObject ());
   if (dataObject->instanceOf ("ContentNode"))
     {
       anchors = ((ContentNode *)dataObject)->getAnchors ();
-      if (anchors != NULL)
+      if (anchors != nullptr)
         {
           i = anchors->begin ();
           while (i != anchors->end ())
@@ -179,13 +179,13 @@ AdapterFormatterPlayer::createPlayer ()
                   property = ((PropertyAnchor *)(*i));
 
                   clog << "AdapterFormatterPlayer::createPlayer for '";
-                  clog << mrl;
+                  clog << _mrl;
                   clog << "' set property '";
                   clog << property->getPropertyName ();
                   clog << "' value '" << property->getPropertyValue ();
                   clog << "'" << endl;
 
-                  player->setPropertyValue (property->getPropertyName (),
+                  _player->setPropertyValue (property->getPropertyName (),
                                             property->getPropertyValue ());
                 }
               ++i;
@@ -193,13 +193,13 @@ AdapterFormatterPlayer::createPlayer ()
         }
     }
 
-  events = object->getEvents ();
-  if (events != NULL)
+  events = _object->getEvents ();
+  if (events != nullptr)
     {
       j = events->begin ();
       while (j != events->end ())
         {
-          if (*j != NULL && (*j)->instanceOf ("NclAttributionEvent"))
+          if (*j != nullptr && (*j)->instanceOf ("NclAttributionEvent"))
             {
               property = ((NclAttributionEvent *)*j)->getAnchor ();
               ((NclAttributionEvent *)(*j))->setValueMaintainer (this);
@@ -207,37 +207,37 @@ AdapterFormatterPlayer::createPlayer ()
           ++j;
         }
       delete events;
-      events = NULL;
+      events = nullptr;
     }
 
-  objectDevice = getObjectDevice ();
+  _objectDevice = getObjectDevice ();
 
-  clog << "AdapterFormatterPlayer::createPlayer for '" << mrl;
-  clog << "' object = '" << object->getId () << "'";
-  clog << " objectDevice = '" << objectDevice << "'" << endl;
+  clog << "AdapterFormatterPlayer::createPlayer for '" << _mrl;
+  clog << "' object = '" << _object->getId () << "'";
+  clog << " objectDevice = '" << _objectDevice << "'" << endl;
 }
 
 int
 AdapterFormatterPlayer::getObjectDevice ()
 {
   NclCascadingDescriptor *descriptor;
-  LayoutRegion *ncmRegion = NULL;
+  LayoutRegion *ncmRegion = nullptr;
 
-  if (objectDevice > -1)
+  if (_objectDevice > -1)
     {
-      return objectDevice;
+      return _objectDevice;
     }
 
-  if (object != NULL)
+  if (_object != nullptr)
     {
-      descriptor = object->getDescriptor ();
-      if (descriptor != NULL)
+      descriptor = _object->getDescriptor ();
+      if (descriptor != nullptr)
         {
           ncmRegion = descriptor->getRegion ();
-          if (ncmRegion != NULL)
+          if (ncmRegion != nullptr)
             {
-              objectDevice = ncmRegion->getDeviceClass ();
-              return objectDevice;
+              _objectDevice = ncmRegion->getDeviceClass ();
+              return _objectDevice;
             }
         }
     }
@@ -252,15 +252,15 @@ AdapterFormatterPlayer::hasPrepared ()
   NclFormatterEvent *mEv;
   short st;
 
-  if (object == NULL || player == NULL)
+  if (_object == nullptr || _player == nullptr)
     {
       clog << "AdapterFormatterPlayer::hasPrepared return false because";
-      clog << " object = '" << object << "' and player = '";
-      clog << player << "'" << endl;
+      clog << " object = '" << _object << "' and player = '";
+      clog << _player << "'" << endl;
       return false;
     }
 
-  presented = player->isForcedNaturalEnd ();
+  presented = _player->isForcedNaturalEnd ();
   if (presented)
     {
       clog << "AdapterFormatterPlayer::hasPrepared return false because";
@@ -268,8 +268,8 @@ AdapterFormatterPlayer::hasPrepared ()
       return false;
     }
 
-  mEv = object->getMainEvent ();
-  if (mEv != NULL && !object->instanceOf ("NclApplicationExecutionObject"))
+  mEv = _object->getMainEvent ();
+  if (mEv != nullptr && !_object->instanceOf ("NclApplicationExecutionObject"))
     {
       st = mEv->getCurrentState ();
       if (st != EventUtil::ST_SLEEPING)
@@ -278,7 +278,7 @@ AdapterFormatterPlayer::hasPrepared ()
         }
     }
 
-  return isLocked;
+  return _isLocked;
 }
 
 
@@ -286,7 +286,7 @@ double
 AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
 {
   NclCascadingDescriptor *descriptor;
-  LayoutRegion *region = NULL;
+  LayoutRegion *region = nullptr;
   PropertyAnchor *property;
   vector<string> params;
   vector<Parameter *> *descParams;
@@ -294,7 +294,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
   vector<PropertyAnchor *> *anchors;
   vector<PropertyAnchor *>::iterator j;
   string name, value;
-  NclFormatterRegion *fRegion = NULL;
+  NclFormatterRegion *fRegion = nullptr;
   Node *ncmNode;
   double transpValue = -1;
   double parentOpacity = -1;
@@ -306,23 +306,23 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
   string plan = "";
 
   descriptor = obj->getDescriptor ();
-  if (descriptor != NULL)
+  if (descriptor != nullptr)
     {
       fRegion = descriptor->getFormatterRegion ();
-      if (fRegion != NULL)
+      if (fRegion != nullptr)
         {
           region = fRegion->getLayoutRegion ();
         }
       else
         {
-          region = NULL;
+          region = nullptr;
         }
     }
 
-  if (region == NULL)
+  if (region == nullptr)
     {
       property = obj->getNCMProperty ("explicitDur");
-      if (property != NULL)
+      if (property != nullptr)
         {
           value = property->getPropertyValue ();
           explicitDur = xstrtimetod (value) * 1000;
@@ -332,7 +332,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
     }
 
   descParams = descriptor->getParameters ();
-  if (descParams != NULL)
+  if (descParams != nullptr)
     {
       Parameter *param;
 
@@ -344,7 +344,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
           value = param->getValue ();
 
           clog << "AdapterFormatterPlayer::prepareProperties(";
-          clog << mrl << ") param '" << name << "' with value '";
+          clog << _mrl << ") param '" << name << "' with value '";
           clog << value << "'";
           clog << endl;
 
@@ -415,21 +415,21 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                 {
                   transpValue = xstrtodorpercent (value, &isPercent);
                   parentOpacity = (1
-                                   - manager
+                                   - _manager
                                          ->getNclPlayerData ()
                                          ->transparency);
 
                   transpValue = (1 - (parentOpacity
                                       - (parentOpacity * transpValue)));
 
-                  if (fRegion != NULL)
+                  if (fRegion != nullptr)
                     {
                       fRegion->setTransparency (transpValue);
                     }
                 }
               else if (name == "background")
                 {
-                  if (fRegion != NULL)
+                  if (fRegion != nullptr)
                     {
                       SDL_Color *bg = new SDL_Color();
                       ginga_color_input_to_sdl_color(value,bg);
@@ -438,14 +438,14 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                 }
               else if (name == "focusIndex")
                 {
-                  if (fRegion != NULL)
+                  if (fRegion != nullptr)
                     {
                       fRegion->setFocusIndex (value);
                     }
                 }
               else if (name == "focusBorderColor")
                 {
-                  if (fRegion != NULL)
+                  if (fRegion != nullptr)
                     {
                       SDL_Color *c = new SDL_Color();
                       ginga_color_input_to_sdl_color(value,c);
@@ -454,21 +454,21 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                 }
               else if (name == "focusBorderWidth")
                 {
-                  if (fRegion != NULL)
+                  if (fRegion != nullptr)
                     {
                       fRegion->setFocusBorderWidth (xstrtoint (value, 10));
                     }
                 }
               else if (name == "focusComponentSrc")
                 {
-                  if (fRegion != NULL)
+                  if (fRegion != nullptr)
                     {
                       fRegion->setFocusComponentSrc (value);
                     }
                 }
               else if (name == "selBorderColor")
                 {
-                  if (fRegion != NULL)
+                  if (fRegion != nullptr)
                     {
                       SDL_Color *c = new SDL_Color();
                       ginga_color_input_to_sdl_color(value,c);
@@ -477,42 +477,42 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                 }
               else if (name == "selBorderWidth")
                 {
-                  if (fRegion != NULL)
+                  if (fRegion != nullptr)
                     {
                       fRegion->setSelBorderWidth (xstrtoint (value, 10));
                     }
                 }
               else if (name == "selComponentSrc")
                 {
-                  if (fRegion != NULL)
+                  if (fRegion != nullptr)
                     {
                       fRegion->setSelComponentSrc (value);
                     }
                 }
               else if (name == "moveUp")
                 {
-                  if (fRegion != NULL)
+                  if (fRegion != nullptr)
                     {
                       fRegion->setMoveUp (value);
                     }
                 }
               else if (name == "moveDown")
                 {
-                  if (fRegion != NULL)
+                  if (fRegion != nullptr)
                     {
                       fRegion->setMoveDown (value);
                     }
                 }
               else if (name == "moveLeft")
                 {
-                  if (fRegion != NULL)
+                  if (fRegion != nullptr)
                     {
                       fRegion->setMoveLeft (value);
                     }
                 }
               else if (name == "moveRight")
                 {
-                  if (fRegion != NULL)
+                  if (fRegion != nullptr)
                     {
                       fRegion->setMoveRight (value);
                     }
@@ -529,7 +529,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
 
   ncmNode = obj->getDataObject ();
   anchors = ((Node *)ncmNode)->getOriginalPropertyAnchors ();
-  if (anchors != NULL)
+  if (anchors != nullptr)
     {
       j = anchors->begin ();
       while (j != anchors->end ())
@@ -541,7 +541,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
               value = property->getPropertyValue ();
 
               clog << "AdapterFormatterPlayer::prepareProperties(";
-              clog << mrl << ") property '" << name << "' with value '";
+              clog << _mrl << ") property '" << name << "' with value '";
               clog << value << "'";
               clog << endl;
 
@@ -612,21 +612,21 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                     {
                       transpValue = xstrtodorpercent (value, &isPercent);
                       parentOpacity = (1
-                                       - manager
+                                       - _manager
                                              ->getNclPlayerData ()
                                              ->transparency);
 
                       transpValue = (1 - (parentOpacity
                                           - (parentOpacity * transpValue)));
 
-                      if (fRegion != NULL)
+                      if (fRegion != nullptr)
                         {
                           fRegion->setTransparency (transpValue);
                         }
                     }
                   else if (name == "background")
                     {
-                      if (fRegion != NULL)
+                      if (fRegion != nullptr)
                         {
                           if (value.find (",") == std::string::npos)
                             {
@@ -642,14 +642,14 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                     }
                   else if (name == "focusIndex")
                     {
-                      if (fRegion != NULL)
+                      if (fRegion != nullptr)
                         {
                           fRegion->setFocusIndex (value);
                         }
                     }
                   else if (name == "focusBorderColor")
                     {
-                      if (fRegion != NULL)
+                      if (fRegion != nullptr)
                         {
                           SDL_Color *c = new SDL_Color();
                           ginga_color_input_to_sdl_color(value,c);
@@ -658,21 +658,21 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                     }
                   else if (name == "focusBorderWidth")
                     {
-                      if (fRegion != NULL)
+                      if (fRegion != nullptr)
                         {
                           fRegion->setFocusBorderWidth (xstrtoint (value, 10));
                         }
                     }
                   else if (name == "focusComponentSrc")
                     {
-                      if (fRegion != NULL)
+                      if (fRegion != nullptr)
                         {
                           fRegion->setFocusComponentSrc (value);
                         }
                     }
                   else if (name == "selBorderColor")
                     {
-                      if (fRegion != NULL)
+                      if (fRegion != nullptr)
                         {
                           SDL_Color *c = new SDL_Color();
                           ginga_color_input_to_sdl_color(value,c);
@@ -681,42 +681,42 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                     }
                   else if (name == "selBorderWidth")
                     {
-                      if (fRegion != NULL)
+                      if (fRegion != nullptr)
                         {
                           fRegion->setSelBorderWidth (xstrtoint (value, 10));
                         }
                     }
                   else if (name == "selComponentSrc")
                     {
-                      if (fRegion != NULL)
+                      if (fRegion != nullptr)
                         {
                           fRegion->setSelComponentSrc (value);
                         }
                     }
                   else if (name == "moveUp")
                     {
-                      if (fRegion != NULL)
+                      if (fRegion != nullptr)
                         {
                           fRegion->setMoveUp (value);
                         }
                     }
                   else if (name == "moveDown")
                     {
-                      if (fRegion != NULL)
+                      if (fRegion != nullptr)
                         {
                           fRegion->setMoveDown (value);
                         }
                     }
                   else if (name == "moveLeft")
                     {
-                      if (fRegion != NULL)
+                      if (fRegion != nullptr)
                         {
                           fRegion->setMoveLeft (value);
                         }
                     }
                   else if (name == "moveRight")
                     {
-                      if (fRegion != NULL)
+                      if (fRegion != nullptr)
                         {
                           fRegion->setMoveRight (value);
                         }
@@ -805,7 +805,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                         isPercent);
     }
 
-  if (plan == "" && mrl.find ("sbtvd-ts://") != std::string::npos)
+  if (plan == "" && _mrl.find ("sbtvd-ts://") != std::string::npos)
     {
       plan = "video";
     }
@@ -815,7 +815,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
       plan = "graphic";
     }
 
-  if (fRegion != NULL)
+  if (fRegion != nullptr)
     {
       fRegion->setPlan (plan);
     }
@@ -823,9 +823,9 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
   if (transpValue < 0.
       && descriptor->getParameterValue ("transparency") == "")
     {
-      transpValue = manager->getNclPlayerData ()->transparency;
+      transpValue = _manager->getNclPlayerData ()->transparency;
 
-      if (fRegion != NULL)
+      if (fRegion != nullptr)
         {
           fRegion->setTransparency (transpValue);
         }
@@ -835,15 +835,16 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
 }
 
 void
-AdapterFormatterPlayer::updatePlayerProperties (arg_unused (NclExecutionObject *obj))
+AdapterFormatterPlayer::updatePlayerProperties (
+    arg_unused (NclExecutionObject *obj))
 {
   NclCascadingDescriptor *descriptor;
   string value;
 
-  if (object != NULL)
+  if (_object != nullptr)
     {
-      descriptor = object->getDescriptor ();
-      if (descriptor != NULL)
+      descriptor = _object->getDescriptor ();
+      if (descriptor != nullptr)
         {
           value = descriptor->getParameterValue ("soundLevel");
           if (value == "")
@@ -851,9 +852,9 @@ AdapterFormatterPlayer::updatePlayerProperties (arg_unused (NclExecutionObject *
               value = "1.0";
             }
 
-          if (player != NULL)
+          if (_player != nullptr)
             {
-              player->setPropertyValue ("soundLevel", value);
+              _player->setPropertyValue ("soundLevel", value);
             }
         }
     }
@@ -877,11 +878,11 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
 
   if (!lockObject ())
     {
-      if (player != NULL)
+      if (_player != nullptr)
         {
           // if (player->hasPresented () ||
 
-          if (player->isForcedNaturalEnd ())
+          if (_player->isForcedNaturalEnd ())
             {
               while (!lockObject ())
                 ;
@@ -895,33 +896,33 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
         }
     }
 
-  if (object == NULL)
+  if (object == nullptr)
     {
       clog << "AdapterFormatterPlayer::prepare Warning! ";
-      clog << "Trying to prepare a NULL object." << endl;
+      clog << "Trying to prepare a nullptr object." << endl;
       unlockObject ();
       return false;
     }
 
-  this->object = object;
+  this->_object = object;
   descriptor = object->getDescriptor ();
   dataObject = (NodeEntity *)(object->getDataObject ());
 
-  if (dataObject != NULL && dataObject->getDataEntity () != NULL)
+  if (dataObject != nullptr && dataObject->getDataEntity () != nullptr)
     {
       content
           = ((NodeEntity *)(dataObject->getDataEntity ()))->getContent ();
 
-      if (content != NULL && content->instanceOf ("ReferenceContent"))
+      if (content != nullptr && content->instanceOf ("ReferenceContent"))
         {
-          this->mrl
+          this->_mrl
               = ((ReferenceContent *)content)->getCompleteReferenceUrl ();
 
           // this->mrl = SystemCompat::updatePath (this->mrl);
         }
       else
         {
-          this->mrl = "";
+          this->_mrl = "";
         }
     }
 
@@ -932,7 +933,7 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
       double duration = ((NclPresentationEvent *)event)->getDuration ();
       bool infDur = (isnan (duration) || isinf (duration));
 
-      if (descriptor != NULL && explicitDur < 0)
+      if (descriptor != nullptr && explicitDur < 0)
         {
           explicitDur = descriptor->getExplicitDuration ();
         }
@@ -989,31 +990,31 @@ AdapterFormatterPlayer::prepare ()
   NclCascadingDescriptor *descriptor;
   LayoutRegion *region;
 
-  if (object == NULL)
+  if (_object == nullptr)
     {
       return;
     }
 
-  if (player == NULL)
+  if (_player == nullptr)
     {
       return;
     }
 
-  descriptor = object->getDescriptor ();
-  if (descriptor != NULL)
+  descriptor = _object->getDescriptor ();
+  if (descriptor != nullptr)
     {
       region = descriptor->getRegion ();
-      if (region != NULL)
+      if (region != nullptr)
         {
-          player->setNotifyContentUpdate (region->getDeviceClass () == 1);
+          _player->setNotifyContentUpdate (region->getDeviceClass () == 1);
         }
     }
 
   prepareScope ();
 
-  if (player->immediatelyStart ())
+  if (_player->immediatelyStart ())
     {
-      player->setImmediatelyStart (false);
+      _player->setImmediatelyStart (false);
       start ();
     }
 }
@@ -1027,7 +1028,7 @@ AdapterFormatterPlayer::prepareScope (double offset)
   double initTime = 0;
   IntervalAnchor *intervalAnchor;
 
-  mainEvent = (NclPresentationEvent *)(object->getMainEvent ());
+  mainEvent = (NclPresentationEvent *)(_object->getMainEvent ());
   if (mainEvent->instanceOf ("NclPresentationEvent"))
     {
       if ((mainEvent->getAnchor ())->instanceOf ("LambdaAnchor"))
@@ -1039,32 +1040,32 @@ AdapterFormatterPlayer::prepareScope (double offset)
               initTime = offset;
             }
 
-          outTransDur = getOutTransDur ();
-          if (outTransDur > 0.0)
+          _outTransDur = getOutTransDur ();
+          if (_outTransDur > 0.0)
             {
-              playerDur = player->getTotalMediaTime ();
+              playerDur = _player->getTotalMediaTime ();
               if (isinf (duration) && playerDur > 0.0)
                 {
                   duration = playerDur * 1000;
                 }
 
-              outTransTime = duration - outTransDur;
-              if (outTransTime <= 0.0)
+              _outTransTime = duration - _outTransDur;
+              if (_outTransTime <= 0.0)
                 {
-                  outTransTime = 0.1;
+                  _outTransTime = 0.1;
                 }
             }
 
           if (duration < IntervalAnchor::OBJECT_DURATION)
             {
-              player->setScope (mainEvent->getAnchor ()->getId (),
+              _player->setScope (mainEvent->getAnchor ()->getId (),
                                 IPlayer::TYPE_PRESENTATION, initTime,
-                                duration / 1000, outTransTime);
+                                duration / 1000, _outTransTime);
             }
           else
             {
-              outTransDur = -1.0;
-              player->setScope (mainEvent->getAnchor ()->getId (),
+              _outTransDur = -1.0;
+              _player->setScope (mainEvent->getAnchor ()->getId (),
                                 IPlayer::TYPE_PRESENTATION, initTime);
             }
         }
@@ -1079,33 +1080,33 @@ AdapterFormatterPlayer::prepareScope (double offset)
 
           duration = intervalAnchor->getEnd ();
 
-          outTransDur = getOutTransDur ();
-          if (outTransDur > 0.0)
+          _outTransDur = getOutTransDur ();
+          if (_outTransDur > 0.0)
             {
-              playerDur = player->getTotalMediaTime ();
+              playerDur = _player->getTotalMediaTime ();
               if (isinf (duration) && playerDur > 0.0)
                 {
                   duration = playerDur * 1000;
                 }
 
-              outTransTime = duration - outTransDur;
-              if (outTransTime <= 0.0)
+              _outTransTime = duration - _outTransDur;
+              if (_outTransTime <= 0.0)
                 {
-                  outTransTime = 0.1;
+                  _outTransTime = 0.1;
                 }
             }
 
           if (duration < IntervalAnchor::OBJECT_DURATION)
             {
-              player->setScope (mainEvent->getAnchor ()->getId (),
+              _player->setScope (mainEvent->getAnchor ()->getId (),
                                 IPlayer::TYPE_PRESENTATION, initTime,
                                 (intervalAnchor->getEnd () / 1000),
-                                outTransTime);
+                                _outTransTime);
             }
           else
             {
-              outTransDur = -1.0;
-              player->setScope (mainEvent->getAnchor ()->getId (),
+              _outTransDur = -1.0;
+              _player->setScope (mainEvent->getAnchor ()->getId (),
                                 IPlayer::TYPE_PRESENTATION, initTime);
             }
         }
@@ -1113,7 +1114,7 @@ AdapterFormatterPlayer::prepareScope (double offset)
 
   if (offset > 0)
     {
-      player->setMediaTime ( (guint32)offset);
+      _player->setMediaTime ( (guint32)offset);
     }
 }
 
@@ -1124,11 +1125,11 @@ AdapterFormatterPlayer::getOutTransDur ()
   NclFormatterRegion *fRegion;
   double outTransDur = 0.0;
 
-  descriptor = object->getDescriptor ();
-  if (descriptor != NULL)
+  descriptor = _object->getDescriptor ();
+  if (descriptor != nullptr)
     {
       fRegion = descriptor->getFormatterRegion ();
-      if (fRegion != NULL)
+      if (fRegion != nullptr)
         {
           outTransDur = fRegion->getOutTransDur ();
         }
@@ -1140,39 +1141,39 @@ AdapterFormatterPlayer::getOutTransDur ()
 double
 AdapterFormatterPlayer::getOutTransTime ()
 {
-  return outTransTime;
+  return _outTransTime;
 }
 
 void
 AdapterFormatterPlayer::checkAnchorMonitor ()
 {
-   if (object == NULL || this->player==NULL)
+   if (_object == nullptr || this->_player == nullptr)
       return;
 
-   object->setPlayer( (Player*)this->player );
+   _object->setPlayer( (Player*)this->_player );
 }
 
 bool
 AdapterFormatterPlayer::start ()
 {
   NclCascadingDescriptor *descriptor;
-  LayoutRegion *ncmRegion = NULL;
+  LayoutRegion *ncmRegion = nullptr;
   string paramValue;
   NclFormatterEvent *objEv;
 
-  assert (object != NULL);
+  assert (_object != nullptr);
 
-  if (!object->isSleeping ())
+  if (!_object->isSleeping ())
     {
-      clog << "AdapterFormatterPlayer::start(" << object->getId ();
+      clog << "AdapterFormatterPlayer::start(" << _object->getId ();
       clog << ") is occurring or paused" << endl;
       return false;
     }
 
   /*clog << "AdapterFormatterPlayer::start(" << object->getId();
   clog << ")" << endl;*/
-  descriptor = object->getDescriptor ();
-  if (descriptor != NULL)
+  descriptor = _object->getDescriptor ();
+  if (descriptor != nullptr)
     {
       paramValue = descriptor->getParameterValue ("visible");
       if (paramValue == "false")
@@ -1185,13 +1186,13 @@ AdapterFormatterPlayer::start ()
         }
 
       ncmRegion = descriptor->getRegion ();
-      if (ncmRegion != NULL && ncmRegion->getDeviceClass () == 2)
+      if (ncmRegion != nullptr && ncmRegion->getDeviceClass () == 2)
         {
-          objEv = object->getMainEvent ();
-          if (objEv != NULL)
+          objEv = _object->getMainEvent ();
+          if (objEv != nullptr)
             {
               clog << "AdapterFormatterPlayer::start(";
-              clog << object->getId ();
+              clog << _object->getId ();
               clog << ") ACTIVE CLASS" << endl;
               objEv->start ();
             }
@@ -1199,22 +1200,22 @@ AdapterFormatterPlayer::start ()
         }
     }
 
-  if (object != NULL)
+  if (_object != nullptr)
     {
       bool startSuccess = false;
 
-      if (player != NULL)
+      if (_player != nullptr)
         {
-          startSuccess = player->play ();
+          startSuccess = _player->play ();
         }
 
       if (startSuccess)
         {
-          if (!object->start ())
+          if (!_object->start ())
             {
-              if (player != NULL)
+              if (_player != nullptr)
                 {
-                  player->stop ();
+                  _player->stop ();
                 }
               startSuccess = false;
             }
@@ -1232,24 +1233,24 @@ AdapterFormatterPlayer::start ()
 bool
 AdapterFormatterPlayer::stop ()
 {
-  NclFormatterEvent *mainEvent = NULL;
-  vector<NclFormatterEvent *> *events = NULL;
+  NclFormatterEvent *mainEvent = nullptr;
+  vector<NclFormatterEvent *> *events = nullptr;
 
 
 
-  if (player == NULL && object == NULL)
+  if (_player == nullptr && _object == nullptr)
     {
 
       unlockObject ();
       return false;
     }
-  else if (object != NULL)
+  else if (_object != nullptr)
     {
-      mainEvent = object->getMainEvent ();
-      events = object->getEvents ();
+      mainEvent = _object->getMainEvent ();
+      events = _object->getEvents ();
     }
 
-  if (mainEvent != NULL && mainEvent->instanceOf ("NclPresentationEvent"))
+  if (mainEvent != nullptr && mainEvent->instanceOf ("NclPresentationEvent"))
     {
       if (checkRepeat ((NclPresentationEvent *)mainEvent))
         {
@@ -1257,15 +1258,15 @@ AdapterFormatterPlayer::stop ()
         }
     }
 
-  if (events != NULL)
+  if (events != nullptr)
     {
       vector<NclFormatterEvent *>::iterator i;
       i = events->begin ();
       while (i != events->end ())
         {
-          if (*i != NULL && (*i)->instanceOf ("NclAttributionEvent"))
+          if (*i != nullptr && (*i)->instanceOf ("NclAttributionEvent"))
             {
-              ((NclAttributionEvent *)(*i))->setValueMaintainer (NULL);
+              ((NclAttributionEvent *)(*i))->setValueMaintainer (nullptr);
             }
 
           if (i != events->end ())
@@ -1274,24 +1275,24 @@ AdapterFormatterPlayer::stop ()
             }
         }
       delete events;
-      events = NULL;
+      events = nullptr;
     }
 
-  if (player != NULL)
+  if (_player != nullptr)
     {
-      player->stop ();
-      player->notifyReferPlayers (EventUtil::TR_STOPS);
+      _player->stop ();
+      _player->notifyReferPlayers (EventUtil::TR_STOPS);
     }
 
-  if (player != NULL && player->isForcedNaturalEnd ())
+  if (_player != nullptr && _player->isForcedNaturalEnd ())
     {
-      player->forceNaturalEnd (false);
-      object->stop ();
+      _player->forceNaturalEnd (false);
+      _object->stop ();
       return unprepare ();
     }
-  else if (object != NULL)
+  else if (_object != nullptr)
     {
-      object->stop ();
+      _object->stop ();
       unprepare ();
       return true;
     }
@@ -1302,11 +1303,11 @@ AdapterFormatterPlayer::stop ()
 bool
 AdapterFormatterPlayer::pause ()
 {
-  if (object != NULL && player != NULL && object->pause ())
+  if (_object != nullptr && _player != nullptr && _object->pause ())
     {
-      player->pause ();
+      _player->pause ();
 
-      player->notifyReferPlayers (EventUtil::TR_PAUSES);
+      _player->notifyReferPlayers (EventUtil::TR_PAUSES);
       return true;
     }
   else
@@ -1318,10 +1319,10 @@ AdapterFormatterPlayer::pause ()
 bool
 AdapterFormatterPlayer::resume ()
 {
-  if (object != NULL && player != NULL && object->resume ())
+  if (_object != nullptr && _player != nullptr && _object->resume ())
     {
-      player->resume ();
-      player->notifyReferPlayers (EventUtil::TR_RESUMES);
+      _player->resume ();
+      _player->notifyReferPlayers (EventUtil::TR_RESUMES);
       return true;
     }
   return false;
@@ -1330,17 +1331,17 @@ AdapterFormatterPlayer::resume ()
 bool
 AdapterFormatterPlayer::abort ()
 {
-  if (player != NULL)
+  if (_player != nullptr)
     {
-      player->stop ();
-      player->notifyReferPlayers (EventUtil::TR_ABORTS);
+      _player->stop ();
+      _player->notifyReferPlayers (EventUtil::TR_ABORTS);
     }
 
-  if (object != NULL)
+  if (_object != nullptr)
     {
-      if (!object->isSleeping ())
+      if (!_object->isSleeping ())
         {
-          object->abort ();
+          _object->abort ();
           unprepare ();
           return true;
         }
@@ -1355,16 +1356,16 @@ AdapterFormatterPlayer::naturalEnd ()
 {
   bool freeze;
 
-  if (object == NULL || player == NULL)
+  if (_object == nullptr || _player == nullptr)
     {
       unlockObject ();
       return;
     }
 
   // if freeze is true the natural end is not performed
-  if (object->getDescriptor () != NULL)
+  if (_object->getDescriptor () != nullptr)
     {
-      freeze = object->getDescriptor ()->getFreeze ();
+      freeze = _object->getDescriptor ()->getFreeze ();
       if (freeze)
         {
           return;
@@ -1379,17 +1380,17 @@ AdapterFormatterPlayer::checkRepeat (NclPresentationEvent *event)
 {
   if (event->getRepetitions () > 1)
     {
-      player->stop ();
-      player->notifyReferPlayers (EventUtil::TR_STOPS);
+      _player->stop ();
+      _player->notifyReferPlayers (EventUtil::TR_STOPS);
 
-      if (object != NULL)
+      if (_object != nullptr)
         {
           // clog << "'" << object->getId() << "'";
-          object->stop ();
+          _object->stop ();
         }
       // clog << endl << endl;
 
-      player->setImmediatelyStart (true);
+      _player->setImmediatelyStart (true);
       prepare ();
       return true;
     }
@@ -1400,23 +1401,23 @@ AdapterFormatterPlayer::checkRepeat (NclPresentationEvent *event)
 bool
 AdapterFormatterPlayer::unprepare ()
 {
-  if (object != NULL && object->getMainEvent () != NULL
-      && (object->getMainEvent ()->getCurrentState ()
+  if (_object != nullptr && _object->getMainEvent () != nullptr
+      && (_object->getMainEvent ()->getCurrentState ()
               == EventUtil::ST_OCCURRING
-          || object->getMainEvent ()->getCurrentState ()
+          || _object->getMainEvent ()->getCurrentState ()
                  == EventUtil::ST_PAUSED))
     {
       return stop ();
     }
 
-  manager->removePlayer (object);
+  _manager->removePlayer (_object);
 
-  if (NclExecutionObject::hasInstance (object, false))
+  if (NclExecutionObject::hasInstance (_object, false))
     {
-      object->unprepare ();
+      _object->unprepare ();
     }
 
-  object = NULL;
+  _object = nullptr;
   unlockObject ();
 
   return true;
@@ -1429,21 +1430,21 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
   string propName;
   string value = v;
 
-  if (player == NULL || object == NULL)
+  if (_player == nullptr || _object == nullptr)
     {
       clog << "AdapterFormatterPlayer::setPropertyValue Warning!";
       clog << " cant set property '" << event->getId ();
       clog << "' value = '" << value << "' object = '";
-      if (object != NULL)
+      if (_object != nullptr)
         {
-          clog << object->getId ();
+          clog << _object->getId ();
         }
       else
         {
-          clog << object;
+          clog << _object;
         }
       clog << "' player = '";
-      clog << player << "' for '" << mrl << "'" << endl;
+      clog << _player << "' for '" << _mrl << "'" << endl;
 
       return false;
     }
@@ -1471,10 +1472,10 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
             }
         }
 
-      if (object->setPropertyValue (event, value))
+      if (_object->setPropertyValue (event, value))
         {
-          player->setPropertyValue (propName,
-                                    object->getPropertyValue (propName));
+          _player->setPropertyValue (propName,
+                                    _object->getPropertyValue (propName));
         }
       else
         {
@@ -1487,7 +1488,7 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
 
               transpValue = xstrtodorpercent (value, &isPercent);
               parentOpacity = (1
-                               - manager
+                               - _manager
                                      ->getNclPlayerData ()
                                      ->transparency);
 
@@ -1500,17 +1501,17 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
               clog << value << "' new value is '";
               clog << transpValue << "'" << endl;
 
-              descriptor = object->getDescriptor ();
-              if (descriptor != NULL)
+              descriptor = _object->getDescriptor ();
+              if (descriptor != nullptr)
                 {
                   fRegion = descriptor->getFormatterRegion ();
-                  if (fRegion != NULL)
+                  if (fRegion != nullptr)
                     {
                       fRegion->setTransparency (transpValue);
                     }
                 }
             }
-          player->setPropertyValue (propName, value);
+          _player->setPropertyValue (propName, value);
         }
 
       if (this->instanceOf ("AdapterApplicationPlayer"))
@@ -1525,14 +1526,14 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
 void
 AdapterFormatterPlayer::setPropertyValue (const string &name, const string &value)
 {
-  if (player != NULL)
+  if (_player != nullptr)
     {
       clog << "AdapterFormatterPlayer::setPropertyValue name = '";
       clog << name << "' value = '" << value << "' to player ";
-      clog << " address '" << player << "'";
+      clog << " address '" << _player << "'";
       clog << endl;
 
-      player->setPropertyValue (name, value);
+      _player->setPropertyValue (name, value);
     }
 }
 
@@ -1542,7 +1543,7 @@ AdapterFormatterPlayer::getPropertyValue (void *event)
   string value = "";
   string name;
 
-  if (event == NULL)
+  if (event == nullptr)
     {
       return "";
     }
@@ -1558,14 +1559,14 @@ AdapterFormatterPlayer::getPropertyValue (const string &name)
 {
   string value = "";
 
-  if (player != NULL)
+  if (_player != nullptr)
     {
-      value = player->getPropertyValue (name);
+      value = _player->getPropertyValue (name);
     }
 
-  if (value == "" && object != NULL)
+  if (value == "" && _object != nullptr)
     {
-      value = object->getPropertyValue (name);
+      value = _object->getPropertyValue (name);
     }
 
   clog << "AdapterFormatterPlayer::getPropertyValue name = '";
@@ -1588,10 +1589,10 @@ AdapterFormatterPlayer::updateObjectExpectedDuration ()
   double duration;
   double implicitDur;
 
-  wholeContentEvent = object->getWholeContentPresentationEvent ();
+  wholeContentEvent = _object->getWholeContentPresentationEvent ();
   duration = wholeContentEvent->getDuration ();
-  if ((object->getDescriptor () == NULL)
-      || (isnan ((object->getDescriptor ())->getExplicitDuration ()))
+  if ((_object->getDescriptor () == nullptr)
+      || (isnan ((_object->getDescriptor ())->getExplicitDuration ()))
       || (duration < 0) || (isnan (duration)))
     {
       implicitDur = getObjectExpectedDuration ();
@@ -1605,9 +1606,9 @@ AdapterFormatterPlayer::updateObjectExpectedDuration ()
 double
 AdapterFormatterPlayer::getMediaTime ()
 {
-  if (player != NULL)
+  if (_player != nullptr)
     {
-      return player->getMediaTime ();
+      return _player->getMediaTime ();
     }
   return 0;
 }
@@ -1615,7 +1616,7 @@ AdapterFormatterPlayer::getMediaTime ()
 IPlayer *
 AdapterFormatterPlayer::getPlayer ()
 {
-  return player;
+  return _player;
 }
 
 void
@@ -1624,10 +1625,10 @@ AdapterFormatterPlayer::setTimeBasePlayer (
 {
   IPlayer *timePlayer;
   timePlayer = timeBasePlayerAdapter->getPlayer ();
-  if (timePlayer != NULL)
+  if (timePlayer != nullptr)
     {
-      player->setReferenceTimePlayer (timePlayer);
-      player->setTimeBasePlayer (timePlayer);
+      _player->setReferenceTimePlayer (timePlayer);
+      _player->setTimeBasePlayer (timePlayer);
     }
 }
 
@@ -1642,18 +1643,18 @@ AdapterFormatterPlayer::updateStatus (short code,
   switch (code)
     {
     case IPlayer::PL_NOTIFY_OUTTRANS:
-      if (outTransDur > 0.0)
+      if (_outTransDur > 0.0)
         {
           NclCascadingDescriptor *descriptor;
           NclFormatterRegion *fRegion;
 
-          outTransDur = -1.0;
-          outTransTime = -1.0;
-          descriptor = object->getDescriptor ();
-          if (descriptor != NULL)
+          _outTransDur = -1.0;
+          _outTransTime = -1.0;
+          descriptor = _object->getDescriptor ();
+          if (descriptor != nullptr)
             {
               fRegion = descriptor->getFormatterRegion ();
-              if (fRegion != NULL)
+              if (fRegion != nullptr)
                 {
                   clog << "AdapterFormatterPlayer::";
                   clog << "updateStatus transition" << endl;
@@ -1664,7 +1665,7 @@ AdapterFormatterPlayer::updateStatus (short code,
       break;
 
     case IPlayer::PL_NOTIFY_STOP:
-      if (object != NULL)
+      if (_object != nullptr)
         {
           if (type == IPlayer::TYPE_PRESENTATION)
             {
@@ -1675,8 +1676,8 @@ AdapterFormatterPlayer::updateStatus (short code,
             }
           else if (type == IPlayer::TYPE_SIGNAL)
             {
-              mainEvent = object->getMainEvent ();
-              if (mainEvent != NULL
+              mainEvent = _object->getMainEvent ();
+              if (mainEvent != nullptr
                   && mainEvent->getCurrentState ()
                          != EventUtil::ST_SLEEPING)
                 {
@@ -1704,17 +1705,17 @@ AdapterFormatterPlayer::keyInputCallback (SDL_EventType evtType, SDL_Keycode key
       return;
   } */
 
-  if (object != NULL && player != NULL)
+  if (_object != nullptr && _player != nullptr)
     {
       clog << "AdapterFormatterPlayer::keyEventReceived for '";
-      clog << mrl << "' player visibility = '" << player->isVisible ();
+      clog << _mrl << "' player visibility = '" << _player->isVisible ();
       clog << "' event key code = '" << key ;
       clog << "'";
       clog << endl;
-      if (player->isVisible ())
+      if (_player->isVisible ())
         {
           eventTS = (double) xruntime_ms ();
-          object->selectionEvent (key, player->getMediaTime () * 1000);
+          _object->selectionEvent (key, _player->getMediaTime () * 1000);
         }
     }
 
@@ -1726,14 +1727,14 @@ AdapterFormatterPlayer::setVisible (bool visible)
   NclCascadingDescriptor *descriptor;
   NclFormatterRegion *region;
 
-  descriptor = object->getDescriptor ();
-  if (descriptor != NULL)
+  descriptor = _object->getDescriptor ();
+  if (descriptor != nullptr)
     {
       region = descriptor->getFormatterRegion ();
-      if (region != NULL)
+      if (region != nullptr)
         {
           region->setRegionVisibility (visible);
-          player->setVisible (visible);
+          _player->setVisible (visible);
         }
     }
 }
@@ -1741,24 +1742,24 @@ AdapterFormatterPlayer::setVisible (bool visible)
 bool
 AdapterFormatterPlayer::lockObject ()
 {
-  if (isLocked)
+  if (_isLocked)
     {
       return false;
     }
-  isLocked = true;
-  Thread::mutexLock (&objectMutex);
+  _isLocked = true;
+  Thread::mutexLock (&_objectMutex);
   return true;
 }
 
 bool
 AdapterFormatterPlayer::unlockObject ()
 {
-  if (!isLocked)
+  if (!_isLocked)
     {
       return false;
     }
-  Thread::mutexUnlock (&objectMutex);
-  isLocked = false;
+  Thread::mutexUnlock (&_objectMutex);
+  _isLocked = false;
   return true;
 }
 

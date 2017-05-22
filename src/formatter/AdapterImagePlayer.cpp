@@ -26,7 +26,7 @@ AdapterImagePlayer::AdapterImagePlayer () : AdapterFormatterPlayer () {}
 void
 AdapterImagePlayer::createPlayer ()
 {
-  player = new ImagePlayer (mrl);
+  _player = new ImagePlayer (_mrl);
   AdapterFormatterPlayer::createPlayer ();
 }
 

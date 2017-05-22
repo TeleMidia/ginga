@@ -23,16 +23,16 @@ GINGA_FORMATTER_BEGIN
 
 AdapterVideoPlayer::AdapterVideoPlayer () : AdapterFormatterPlayer ()
 {
-  typeSet.insert ("AdapterVideoPlayer");
+  _typeSet.insert ("AdapterVideoPlayer");
 }
 
 void
 AdapterVideoPlayer::createPlayer ()
 {
-  player = new VideoPlayer (mrl);
+  _player = new VideoPlayer (_mrl);
   AdapterFormatterPlayer::createPlayer ();
 
-  clog << "AdapaterVideoPlayer::createPlayer for '" << mrl << "'" << endl;
+  clog << "AdapaterVideoPlayer::createPlayer for '" << _mrl << "'" << endl;
 }
 
 bool

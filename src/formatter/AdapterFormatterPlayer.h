@@ -57,7 +57,7 @@ public:
   AdapterFormatterPlayer ();
   virtual ~AdapterFormatterPlayer ();
 
-  virtual void setAdapterManager (AdapterPlayerManager *manager);
+  virtual void setAdapterManager (AdapterPlayerManager *_manager);
 
   bool instanceOf (const string &s);
   void setOutputWindow (SDLWindow* windowId);
@@ -100,14 +100,13 @@ public:
 protected:
   static double eventTS;
 
-  AdapterPlayerManager *manager;
-  set<string> typeSet;
-  NclExecutionObject *object;
-  IPlayer *player;
-  IPlayer *mirrorSrc;
-  string playerCompName;
-  string mrl;
-  int objectDevice;
+  AdapterPlayerManager *_manager;
+  set<string> _typeSet;
+  NclExecutionObject *_object;
+  IPlayer *_player, *_mirrorSrc;
+  string _playerCompName;
+  string _mrl;
+  int _objectDevice;
 
   virtual void createPlayer ();
   double prepareProperties (NclExecutionObject *obj);
@@ -118,10 +117,10 @@ protected:
   bool unlockObject ();
 
 private:
-  double outTransDur;
-  double outTransTime;
-  bool isLocked;
-  pthread_mutex_t objectMutex;
+  double _outTransDur;
+  double _outTransTime;
+  bool _isLocked;
+  pthread_mutex_t _objectMutex;
 
   double getOutTransDur ();
   bool checkRepeat (NclPresentationEvent *mainEvent);
