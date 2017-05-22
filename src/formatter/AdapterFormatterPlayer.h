@@ -45,65 +45,31 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
+class AdapterPlayerManager;
+
 class AdapterFormatterPlayer :
     public IPlayerListener,
     public INclAttributeValueMaintainer,
     public IKeyInputEventListener
 {
-protected:
-  static double eventTS;
-
-  void *manager;
-  set<string> typeSet;
-  NclExecutionObject *object;
-  IPlayer *player;
-  IPlayer *mirrorSrc;
-  string playerCompName;
-  string mrl;
-  int objectDevice;
-
-private:
-  double outTransDur;
-  double outTransTime;
-  bool isLocked;
-  pthread_mutex_t objectMutex;
 
 public:
   AdapterFormatterPlayer ();
   virtual ~AdapterFormatterPlayer ();
 
-  virtual void setAdapterManager (void *manager);
+  virtual void setAdapterManager (AdapterPlayerManager *manager);
 
   bool instanceOf (const string &s);
   void setOutputWindow (SDLWindow* windowId);
 
-protected:
-  virtual void createPlayer ();
-
-public:
   int getObjectDevice ();
   virtual bool hasPrepared ();
 
-protected:
-  double prepareProperties (NclExecutionObject *obj);
-  void updatePlayerProperties (NclExecutionObject *obj);
+  virtual bool prepare (NclExecutionObject *obj, NclFormatterEvent *mainEvent);
 
-public:
-  virtual bool prepare (NclExecutionObject *object,
-                        NclFormatterEvent *mainEvent);
-
-protected:
-  void prepare ();
-  virtual void prepareScope (double offset = -1);
-
-private:
-  double getOutTransDur ();
-
-public:
   double getOutTransTime ();
   void checkAnchorMonitor ();
 
-public:
   virtual bool start ();
   virtual bool stop ();
   virtual bool pause ();
@@ -111,14 +77,9 @@ public:
   virtual bool abort ();
   virtual void naturalEnd ();
 
-private:
-  bool checkRepeat (NclPresentationEvent *mainEvent);
-
-public:
   virtual bool unprepare ();
-  virtual bool setPropertyValue (NclAttributionEvent *event,
-                                 const string &value);
 
+  virtual bool setPropertyValue (NclAttributionEvent *evt, const string &value);
   void setPropertyValue (const string &name, const string &value);
 
   string getPropertyValue (void *event);
@@ -136,12 +97,35 @@ public:
 
   virtual void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
 
-private:
-  void setVisible (bool visible);
-
 protected:
+  static double eventTS;
+
+  AdapterPlayerManager *manager;
+  set<string> typeSet;
+  NclExecutionObject *object;
+  IPlayer *player;
+  IPlayer *mirrorSrc;
+  string playerCompName;
+  string mrl;
+  int objectDevice;
+
+  virtual void createPlayer ();
+  double prepareProperties (NclExecutionObject *obj);
+  void updatePlayerProperties (NclExecutionObject *obj);
+  void prepare ();
+  virtual void prepareScope (double offset = -1);
   bool lockObject ();
   bool unlockObject ();
+
+private:
+  double outTransDur;
+  double outTransTime;
+  bool isLocked;
+  pthread_mutex_t objectMutex;
+
+  double getOutTransDur ();
+  bool checkRepeat (NclPresentationEvent *mainEvent);
+  void setVisible (bool visible);
 };
 
 GINGA_FORMATTER_END
