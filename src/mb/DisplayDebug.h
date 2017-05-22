@@ -25,30 +25,30 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_MB_BEGIN
 
-class DisplayDebug: public  IKeyInputEventListener{
+class DisplayDebug: public IKeyInputEventListener
+{
+private:
+  int width;
+  int height;
+  gdouble iniTime;
+  guint32 accTime;
+  gdouble totalTime;
+  SDL_Texture* texture;
+  SDL_Rect rect;
+  gboolean isActive;
    
-   private:
-   int width;
-   int height;
-   gdouble iniTime;
-   guint32 accTime;
-   gdouble totalTime;
-   SDL_Texture* texture;
-   SDL_Rect rect;
-   gboolean isActive;
-   
-   SDL_Texture * updateTexture(SDL_Renderer * renderer, SDL_Rect rect, const gchar * fps_str);
+  SDL_Texture * updateTexture(SDL_Renderer *renderer,
+                              SDL_Rect rect,
+                              const gchar *fps_str);
 
-   public:
-   DisplayDebug (int width, int height);
-   ~DisplayDebug ();
+public:
+  DisplayDebug (int width, int height);
+  ~DisplayDebug ();
 
-   void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
-   void update(gdouble elapsedTime);
-   void draw(SDL_Renderer* renderer, guint32 elapsedTime);
-
+  void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
+  void update(gdouble elapsedTime);
+  void draw(SDL_Renderer* renderer, guint32 elapsedTime);
 };
-
 
 GINGA_MB_END
 

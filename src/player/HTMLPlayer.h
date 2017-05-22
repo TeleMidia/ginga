@@ -260,7 +260,10 @@ private:
  * Chromium Embedded Framework (CEF) together with SDL to render 
  * the result in the screen. 
  */ 
-class HTMLPlayer : public Player, IKeyInputEventListener, IMouseEventListener
+class HTMLPlayer :
+    public Player,
+    public IKeyInputEventListener,
+    public IMouseEventListener
 {
 public:
   /**
