@@ -19,6 +19,7 @@ find_package(Pango REQUIRED)
 find_package(GDKPixBuf REQUIRED)
 find_package(RSVG REQUIRED)
 find_package(GStreamer REQUIRED)
+add_definitions(-DWITH_GSTREAMER=1)
 
 add_definitions(-DGINGA_DATADIR="${CMAKE_BINARY_DIR}/data/ini/")
 add_definitions(-DGINGA_BUTTON_DATADIR="${CMAKE_BINARY_DIR}/data/img/button/")
