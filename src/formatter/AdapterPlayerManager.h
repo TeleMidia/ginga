@@ -32,26 +32,25 @@ using namespace ::ginga::ncl;
 using namespace ::ginga::player;
 
 #include "AdapterFormatterPlayer.h"
-#include "IAdapterPlayer.h"
 
 GINGA_FORMATTER_BEGIN
 
 class AdapterPlayerManager
 {
 private:
-  map<string, IAdapterPlayer *> objectPlayers;
-  map<string, IAdapterPlayer *> deletePlayers;
-  map<IAdapterPlayer *, string> playerNames;
+  map<string, AdapterFormatterPlayer *> objectPlayers;
+  map<string, AdapterFormatterPlayer *> deletePlayers;
+  map<AdapterFormatterPlayer *, string> playerNames;
   map<string, string> mimeDefaultTable;
   map<string, string> playerTable;
   IPlayerListener *editingCommandListener;
-  IAdapterPlayer *epgFactoryAdapter;
+  AdapterFormatterPlayer *epgFactoryAdapter;
   NclPlayerData *nclPlayerData;
 
 public:
   AdapterPlayerManager (NclPlayerData *nclPlayerData);
   virtual ~AdapterPlayerManager ();
-  bool hasPlayer (IAdapterPlayer *player);
+  bool hasPlayer (AdapterFormatterPlayer *player);
   NclPlayerData *getNclPlayerData ();
   void setVisible (const string &objectId, const string &visible,
                    NclAttributionEvent *event);
