@@ -412,7 +412,7 @@ FormatterMediator::getPortFromEvent (NclFormatterEvent *event)
   ContextNode *context;
   Port *port = NULL;
   Anchor *anchor;
-  int i, size;
+  guint i, size;
   map<Port *, NclFormatterEvent *>::iterator j;
 
   if (event->instanceOf ("NclAnchorEvent"))
@@ -453,7 +453,7 @@ vector<Port *> *
 FormatterMediator::getContextPorts (ContextNode *context,
                                     const string &interfaceId)
 {
-  int i, size;
+  guint i, size;
   InterfacePoint *entryPoint;
   Port *port;
   vector<Port *> *ports = new vector<Port *>;
@@ -500,7 +500,7 @@ FormatterMediator::processDocument (const string &documentId, const string &inte
   vector<Port *> *ports = NULL;
   ContextNode *context;
   Port *port;
-  int i, size;
+  guint i, size;
   NclNodeNesting *contextPerspective;
   NclFormatterEvent *event;
 
@@ -529,8 +529,7 @@ FormatterMediator::processDocument (const string &documentId, const string &inte
       return NULL;
     }
 
-  contextPerspective = new NclNodeNesting
-    ();
+  contextPerspective = new NclNodeNesting ();
 
   contextPerspective->insertAnchorNode (context);
 
@@ -540,7 +539,7 @@ FormatterMediator::processDocument (const string &documentId, const string &inte
     }
 
   entryEvents = new vector<NclFormatterEvent *>;
-  size = (int) ports->size ();
+  size = (guint) ports->size ();
   for (i = 0; i < size; i++)
     {
       port = (*ports)[i];

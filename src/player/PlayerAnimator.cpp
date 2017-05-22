@@ -157,7 +157,7 @@ PlayerAnimator::calculeVelocity(gint32 * value, ANIM_PROPERTY* pr)
 
   if((guint32)pr->velocity == 0)
     {
-      *value = (guint32)pr->targetValue;
+      *value = (gint32)pr->targetValue;
       this->properties = g_list_remove(this->properties, pr);
       delete pr;
       return false;
@@ -188,12 +188,12 @@ PlayerAnimator::calculePosition(gint32 * value, ANIM_PROPERTY* pr, gint32 dir)
 { //S = So + vt
   pr->curValue = pr->curValue +
       (dir * (pr->velocity * (1.0/(gdouble)Ginga_Display->getFps())));
-  *value = (guint32)pr->curValue;
+  *value = (gint32)pr->curValue;
 
   if( (dir > 0 && *value >= pr->targetValue) ||
       (dir < 0 && *value <= pr->targetValue) )
     {
-      *value = (guint32)pr->targetValue;
+      *value = (gint32)pr->targetValue;
       this->properties = g_list_remove(this->properties, pr);
       free(pr);
     }
