@@ -134,7 +134,6 @@ public:
 
 private:
   bool removeDocument ();
-  ContextNode *getDocumentContext (const string &documentId);
 
 public:
   Port *getPortFromEvent (NclFormatterEvent *event);
