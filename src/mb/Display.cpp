@@ -506,10 +506,12 @@ Display::unregisterPlayer(Player *obj){
 
 void
 Display::notifyKeyEventListeners(SDL_EventType evtType, SDL_Keycode key){
-   if(key == SDLK_ESCAPE){
-     this->quit();
-     return;
-   }
+   if(key == SDLK_ESCAPE)
+     {
+      this->quit();
+      return;
+     }
+
    set<IKeyInputEventListener*>::iterator it;
    for (it=keyEventListeners.begin(); it!=keyEventListeners.end(); ++it)
           (*it)->keyInputCallback(evtType, key);

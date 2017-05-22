@@ -26,7 +26,9 @@ using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
-class LuaPlayer : public Player, IKeyInputEventListener
+class LuaPlayer :
+    public Player,
+    public IKeyInputEventListener
 {
 private:
   GINGA_MUTEX_DEFN ();

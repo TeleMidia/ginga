@@ -42,7 +42,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-class FormatterFocusManager : public IMouseEventListener, IKeyInputEventListener
+class FormatterFocusManager :
+    public IMouseEventListener,
+    public IKeyInputEventListener
 {
 private:
 //  InputManager *im;

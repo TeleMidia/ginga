@@ -259,12 +259,15 @@ private:
 
 /**
  * @brief A player class for HTML.
- *
- * This class is responsible to present HTML pages. The player use the
- * Chromium Embedded Framework (CEF) together with SDL to render
- * the result in the screen.
- */
-class HTMLPlayer : public Player, IKeyInputEventListener, IMouseEventListener
+ * 
+ * This class is responsible to present HTML pages. The player use the 
+ * Chromium Embedded Framework (CEF) together with SDL to render 
+ * the result in the screen. 
+ */ 
+class HTMLPlayer :
+    public Player,
+    public IKeyInputEventListener,
+    public IMouseEventListener
 {
 public:
   /**
