@@ -139,12 +139,6 @@ public:
   Port *getPortFromEvent (NclFormatterEvent *event);
 
 private:
-  vector<Port *> *getContextPorts (ContextNode *context,
-                                   const string &interfaceId);
-
-  vector<NclFormatterEvent *> *processDocument (const string &documentId,
-                                                const string &interfaceId);
-
   void initializeSettingNodes (Node *node);
 
   vector<NclFormatterEvent *> *getDocumentEntryEvent (const string &documentId);

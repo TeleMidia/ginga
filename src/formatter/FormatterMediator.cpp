@@ -442,133 +442,6 @@ FormatterMediator::getPortFromEvent (NclFormatterEvent *event)
   return NULL;
 }
 
-vector<Port *> *
-FormatterMediator::getContextPorts (ContextNode *context,
-                                    const string &interfaceId)
-{
-  guint i, size;
-  InterfacePoint *entryPoint;
-  Port *port;
-  vector<Port *> *ports = new vector<Port *>;
-
-  if (interfaceId == "")
-    {
-      size = context->getNumPorts ();
-
-      for (i = 0; i < size; i++)
-        {
-          port = context->getPort (i);
-          if (port != NULL)
-            {
-              entryPoint = port->getEndInterfacePoint ();
-
-              if (entryPoint != NULL)
-                {
-                  if (entryPoint->instanceOf ("ContentAnchor")
-                      || entryPoint->instanceOf ("LabeledAnchor")
-                      || entryPoint->instanceOf ("PropertyAnchor"))
-                    {
-                      ports->push_back (port);
-                    }
-                }
-            }
-        }
-    }
-  else
-    {
-      port = context->getPort (interfaceId);
-      if (port != NULL)
-        {
-          ports->push_back (port);
-        }
-    }
-
-  return ports;
-}
-
-vector<NclFormatterEvent *> *
-FormatterMediator::processDocument (const string &documentId, const string &interfaceId)
-{
-  vector<NclFormatterEvent *> *entryEvents;
-  vector<Port *> *ports = NULL;
-  ContextNode *context;
-  Port *port;
-  guint i, size;
-  NclNodeNesting *contextPerspective;
-  NclFormatterEvent *event;
-
-  port = NULL;
-
-  // look for the entry point perspective
-  context = this->currentDocument->getBody ();
-  if (context == NULL || !context->instanceOf ("CompositeNode"))
-    {
-      // document has no body
-      clog << "FormatterMediator::processDocument warning! Doc '";
-      clog << documentId;
-      clog << "': without body!" << endl;
-      return NULL;
-    }
-
-  ports = getContextPorts (context, "");
-
-  if (ports->empty ())
-    {
-      // interfaceId not found
-      clog << "FormatterMediator::processDocument warning! Doc '";
-      clog << documentId;
-      clog << "': without interfaces" << endl;
-      delete ports;
-      return NULL;
-    }
-
-  contextPerspective = new NclNodeNesting ();
-
-  contextPerspective->insertAnchorNode (context);
-
-  if (entryEventListener == NULL)
-    {
-      entryEventListener = new EntryEventListener (this, interfaceId);
-    }
-
-  entryEvents = new vector<NclFormatterEvent *>;
-  size = (guint) ports->size ();
-  for (i = 0; i < size; i++)
-    {
-      port = (*ports)[i];
-
-      event = compiler->insertContext (contextPerspective, port);
-      if (event != NULL)
-        {
-          if (port->getId () == interfaceId || interfaceId == "")
-            {
-              Thread::mutexLock (&pteMutex);
-              portsToEntryEvents[port] = event;
-              Thread::mutexUnlock (&pteMutex);
-              entryEvents->push_back (event);
-            }
-
-          entryEventListener->listenEvent (event);
-        }
-    }
-
-  delete ports;
-  delete contextPerspective;
-
-  if (entryEvents->empty ())
-    {
-      clog << "FormatterMediator::processDocument warning! Doc '";
-      clog << documentId;
-      clog << "': without entry events" << endl;
-
-      delete entryEvents;
-      return NULL;
-    }
-
-  initializeSettingNodes (context);
-  return entryEvents;
-}
-
 void
 FormatterMediator::initializeSettingNodes (Node *node)
 {
@@ -630,52 +503,92 @@ FormatterMediator::initializeSettingNodes (Node *node)
 }
 
 bool
-FormatterMediator::compileDocument (const string &documentId)
+FormatterMediator::compileDocument (const string &id)
 {
-  vector<NclFormatterEvent *> *entryEvents;
-  map<string, NclFormatterEvent *>::iterator i;
-  vector<NclFormatterEvent *>::iterator j, k;
-  NclFormatterEvent *event;
-  NclExecutionObject *executionObject;
-  NclCompositeExecutionObject *parentObject;
-  NclFormatterEvent *documentEvent;
+  vector<NclFormatterEvent *> *events;
+  vector<Port *> *ports;
+  ContextNode *body;
+  NclNodeNesting *persp;
 
-  i = documentEvents.find (documentId);
-  if (i == documentEvents.end ())
+  NclFormatterEvent *evt;
+  NclExecutionObject *execobj;
+  NclCompositeExecutionObject *parent;
+
+
+  g_assert (this->documentEvents.count (id) == 0);
+
+  body = this->currentDocument->getBody ();
+  if (unlikely (body == NULL))
+    syntax_error ("document has no body");
+
+  // Get Ports.
+  ports = new vector<Port *>;
+  for (guint i = 0; i < body->getNumPorts (); i++)
     {
-      entryEvents = processDocument (documentId, "");
-      if (entryEvents == NULL)
-        {
-          return false;
-        }
+      Port *port;
+      InterfacePoint *ip;
 
-      event = (*entryEvents)[0];
-      executionObject
-          = (NclExecutionObject *)(event->getExecutionObject ());
-      parentObject
-          = (NclCompositeExecutionObject *)(executionObject
-                                                ->getParentObject ());
+      port = body->getPort (i);
+      g_assert_nonnull (port);
 
-      if (parentObject != NULL)
-        {
-          while (parentObject->getParentObject () != NULL)
-            {
-              executionObject = parentObject;
-              parentObject = (NclCompositeExecutionObject
-                                  *)(parentObject->getParentObject ());
-            }
+      ip = port->getEndInterfacePoint ();
+      g_assert_nonnull (ip);
+      g_assert (ip->instanceOf ("ContentAnchor")
+                || ip->instanceOf ("LabeledAnchor")
+                || ip->instanceOf ("PropertyAnchor"));
 
-          documentEvent
-              = executionObject->getWholeContentPresentationEvent ();
-        }
-      else
-        {
-          documentEvent = event;
-        }
-
-      documentEvents[documentId] = documentEvent;
-      documentEntryEvents[documentId] = entryEvents;
+      ports->push_back (port);
     }
+
+  if (ports->empty ())
+    {
+      g_warning ("document has no ports");
+      delete ports;
+      return true;
+    }
+
+  g_assert_null (this->entryEventListener);
+  this->entryEventListener = new EntryEventListener (this, "");
+
+  persp = new NclNodeNesting ();
+  persp->insertAnchorNode (body);
+
+  // Get port events.
+  events = new vector<NclFormatterEvent *>;
+  for (guint i = 0; i < ports->size (); i++)
+    {
+      Port *port;
+
+      port = ports->at (i);
+      g_assert_nonnull (port);
+
+      evt = compiler->insertContext (persp, port);
+      g_assert_nonnull (evt);
+
+      Thread::mutexLock (&pteMutex);
+      this->portsToEntryEvents[port] = evt;
+      Thread::mutexUnlock (&pteMutex);
+
+      events->push_back (evt);
+      this->entryEventListener->listenEvent (evt);
+    }
+
+  delete ports;
+  delete persp;
+
+  g_assert (!events->empty ());
+  initializeSettingNodes (body);
+
+  evt = events->at (0);
+
+  execobj = (NclExecutionObject *)(evt->getExecutionObject ());
+  g_assert_nonnull (execobj);
+
+  parent = (NclCompositeExecutionObject *)(execobj->getParentObject ());
+  g_assert_nonnull (parent);
+
+  this->documentEvents[id] = evt;
+  this->documentEntryEvents[id] = events;
 
   docCompiled = true;
   return true;
@@ -747,7 +660,13 @@ FormatterMediator::play ()
 
   Player::play ();
 
-  g_assert (documentEvents.count (id) > 0);
+  if (unlikely (this->documentEvents.count (id) == 0))
+    {
+      Player::stop ();
+      return true;
+    }
+
+  g_assert (this->documentEvents.count (id) > 0);
   docevt = this->documentEvents[id];
   g_assert_nonnull (docevt);
 

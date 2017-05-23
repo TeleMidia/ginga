@@ -124,7 +124,6 @@ Display::renderLoop ()
 
   //fps control vars
   guint32 curTime=0,preTime=SDL_GetTicks(),elapsedTime=0,accTime=0;
-
   DisplayDebug* displayDebug = new DisplayDebug(this->width, this->height);
 
   while (!this->hasQuitted())   // render loop
@@ -133,19 +132,23 @@ Display::renderLoop ()
       elapsedTime = curTime - preTime;
       preTime = curTime;
 
-      if(elapsedTime < this->frameTime ){
-        guint32 sleepTime = this-> frameTime - elapsedTime;
-        elapsedTime = this->frameTime;
-        SDL_Delay(sleepTime);
-        accTime +=sleepTime;
-      }
+      if (elapsedTime < this->frameTime)
+        {
+          guint32 sleepTime = this-> frameTime - elapsedTime;
+          elapsedTime = this->frameTime;
+          SDL_Delay(sleepTime);
+          accTime +=sleepTime;
+        }
       else
-        accTime += elapsedTime;
+        {
+          accTime += elapsedTime;
+        }
 
-      if(accTime >= 100){
-           notifyTimeAnchorListeners();
-           accTime=0;
-      }
+      if (accTime >= 100)
+        {
+          notifyTimeAnchorListeners();
+          accTime=0;
+        }
 
       SDL_Event evt;
       GList *l;
@@ -155,26 +158,22 @@ Display::renderLoop ()
           switch (evt.type)
             {
             case SDL_KEYDOWN:
-                this->notifyKeyEventListeners(SDL_KEYDOWN, evt.key.keysym.sym);
-                break;
+              this->notifyKeyEventListeners (SDL_KEYDOWN,
+                                             evt.key.keysym.sym);
+              break;
             case SDL_KEYUP:
-                this->notifyKeyEventListeners(SDL_KEYUP, evt.key.keysym.sym);
-             //   goto quit;
-                break;
-            // case SDL_MOUSEMOTION:
-            //     this->notifyMouseEventListeners(SDL_MOUSEMOTION);
-            //     break;
-
+              this->notifyKeyEventListeners (SDL_KEYUP,
+                                             evt.key.keysym.sym);
+              break;
             case SDL_MOUSEBUTTONDOWN:
-                this->notifyMouseEventListeners(SDL_MOUSEBUTTONDOWN);
-                break;
+              this->notifyMouseEventListeners (SDL_MOUSEBUTTONDOWN);
+              break;
             case SDL_MOUSEBUTTONUP:
-                this->notifyMouseEventListeners(SDL_MOUSEBUTTONUP);
-                break;
-              // fall-through
+              this->notifyMouseEventListeners (SDL_MOUSEBUTTONUP);
+              break;
             case SDL_QUIT:
               this->quit ();
-         //     goto quit;
+              break;
             default:
               break;
             }
@@ -193,21 +192,22 @@ Display::renderLoop ()
         }
       this->unlock ();
 
-      this->lock (); // redraw windows
+      this->lock ();            // redraw windows
       SDL_SetRenderDrawColor (this->renderer, 255, 0, 255, 255);
       SDL_RenderClear (this->renderer);
+
       this->players = g_list_sort (this->players, (GCompareFunc) win_cmp_z);
       l =  this->players;
       while (l != NULL)
         {
           GList *next = l->next;
-           Player* pl = (Player *) l->data;
-           if(!pl)
-              this->players = g_list_remove_link (this->players, l);
-           else
-              pl->redraw(this->renderer);
+          Player *pl = (Player *) l->data;
+          if (pl == NULL)
+            this->players = g_list_remove_link (this->players, l);
+          else
+            pl->redraw (this->renderer);
           l = next;
-      }
+        }
       displayDebug->draw(this->renderer,elapsedTime);
       SDL_RenderPresent (this->renderer);
       this->unlock ();
