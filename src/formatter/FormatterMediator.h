@@ -85,31 +85,9 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-class EntryEventListener : public INclEventListener
+class FormatterMediator : public IFormatterSchedulerListener
 {
 private:
-  Player *player;
-  set<NclFormatterEvent *> events;
-  int eventsRunning;
-  bool hasStartPoint;
-  pthread_mutex_t evMutex;
-
-public:
-  EntryEventListener (Player *player, const string &interfaceId);
-  virtual ~EntryEventListener ();
-
-  virtual void listenEvent (NclFormatterEvent *event);
-  virtual void eventStateChanged (void *event, short transition,
-                                  short previousState);
-
-  short getPriorityType ();
-};
-
-class FormatterMediator : public Player,
-                          public IFormatterSchedulerListener
-{
-private:
-  EntryEventListener *entryEventListener;
   NclPlayerData *data;
   string currentFile;
   NclDocument *currentDocument;
@@ -153,9 +131,6 @@ private:
 public:
   bool play ();
   void stop ();
-  void abort ();
-  void pause ();
-  void resume ();
 };
 
 GINGA_FORMATTER_END
