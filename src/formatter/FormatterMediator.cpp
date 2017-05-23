@@ -24,164 +24,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-EntryEventListener::EntryEventListener (Player *player, const string &interfaceId)
-{
-  this->player = player;
-  hasStartPoint = interfaceId != "";
-  eventsRunning = 0;
-
-  Thread::mutexInit (&evMutex, false);
-}
-
-EntryEventListener::~EntryEventListener ()
-{
-  set<NclFormatterEvent *>::iterator i;
-
-  player = NULL;
-
-  Thread::mutexLock (&evMutex);
-  i = events.begin ();
-  while (i != events.end ())
-    {
-      if (NclFormatterEvent::hasInstance (*i, false))
-        {
-          (*i)->removeEventListener (this);
-        }
-      ++i;
-    }
-
-  events.clear ();
-  Thread::mutexUnlock (&evMutex);
-
-  Thread::mutexDestroy (&evMutex);
-}
-
-void
-EntryEventListener::listenEvent (NclFormatterEvent *event)
-{
-  Thread::mutexLock (&evMutex);
-  events.insert (event);
-  Thread::mutexUnlock (&evMutex);
-  event->addEventListener (this);
-}
-
-void
-EntryEventListener::eventStateChanged (void *event, short transition,
-                                       arg_unused (short previousState))
-{
-  string interfaceId;
-  Port *port;
-  short eventType;
-  string value = "";
-  NclFormatterEvent *ev;
-  NclExecutionObject *obj;
-  NclCompositeExecutionObject *cObj = NULL;
-
-  if (unlikely (player != NULL))
-    return;
-
-  ev = (NclFormatterEvent *) event;
-  port = ((FormatterMediator *) player)->getPortFromEvent (ev);
-
-  if (unlikely (port == NULL))
-    return;
-
-  obj = (NclExecutionObject *)(ev->getExecutionObject ());
-  if (obj != NULL)
-    {
-      cObj = (NclCompositeExecutionObject *)obj->getParentObject ();
-    }
-
-  eventType = ev->getEventType ();
-  if (eventType == EventUtil::EVT_ATTRIBUTION)
-    {
-      eventType = IPlayer::TYPE_ATTRIBUTION;
-      value = ((NclAttributionEvent *)ev)->getCurrentValue ();
-    }
-  else
-    {
-      eventType = IPlayer::TYPE_PRESENTATION;
-    }
-
-  interfaceId = port->getId ();
-
-  clog << "EntryEventListener::eventStateChanged ";
-  if (cObj != NULL)
-    {
-      clog << "parent id = '" << cObj->getId () << "' ";
-      clog << "parent is running = '" << cObj->isSleeping ();
-      clog << "' ";
-    }
-  clog << "interface id = '";
-  clog << interfaceId << "'";
-  clog << " events running = '" << eventsRunning;
-  clog << "'" << endl;
-
-  switch (transition)
-    {
-    case EventUtil::TR_STARTS:
-      player->notifyPlayerListeners (IPlayer::PL_NOTIFY_START,
-                                     interfaceId, eventType, value);
-
-      if (hasStartPoint && eventsRunning == 0)
-        {
-          player->notifyPlayerListeners (IPlayer::PL_NOTIFY_START,
-                                         "", eventType, value);
-        }
-
-      eventsRunning++;
-      break;
-
-    case EventUtil::TR_PAUSES:
-      player->notifyPlayerListeners (IPlayer::PL_NOTIFY_PAUSE,
-                                     interfaceId, eventType, value);
-
-      break;
-
-    case EventUtil::TR_RESUMES:
-      player->notifyPlayerListeners (IPlayer::PL_NOTIFY_RESUME,
-                                     interfaceId, eventType, value);
-
-      break;
-
-    case EventUtil::TR_STOPS:
-      player->notifyPlayerListeners (IPlayer::PL_NOTIFY_STOP,
-                                     interfaceId, eventType, value);
-
-      if (hasStartPoint && eventsRunning == 1)
-        {
-          player->notifyPlayerListeners (IPlayer::PL_NOTIFY_STOP,
-                                         "", eventType, value);
-        }
-
-      eventsRunning--;
-      break;
-
-    case EventUtil::TR_ABORTS:
-      player->notifyPlayerListeners (IPlayer::PL_NOTIFY_ABORT,
-                                     interfaceId, eventType, value);
-
-      if (hasStartPoint && eventsRunning == 1)
-        {
-          player->notifyPlayerListeners (IPlayer::PL_NOTIFY_ABORT,
-                                         "", eventType, value);
-        }
-
-      eventsRunning--;
-      break;
-
-    default:
-      break;
-    }
-}
-
-short
-EntryEventListener::getPriorityType ()
-{
-  return PT_OBJECT;
-}
-
-FormatterMediator::FormatterMediator () : Player ("")
+FormatterMediator::FormatterMediator ()
 {
   NclPlayerData *data;
 
@@ -238,8 +81,6 @@ FormatterMediator::FormatterMediator () : Player ("")
   documentEntryEvents.clear ();
   portsToEntryEvents.clear ();
 
-  entryEventListener = NULL;
-
   ((FormatterFocusManager *)(data->focusManager))
       ->setMotionBoundaries (data->w, data->h);
 
@@ -265,12 +106,6 @@ FormatterMediator::~FormatterMediator ()
   if (scheduler != NULL)
     {
       scheduler->removeSchedulerListener (this);
-    }
-
-  if (entryEventListener != NULL)
-    {
-      delete entryEventListener;
-      entryEventListener = NULL;
     }
 
   if (currentDocument != NULL)
@@ -542,9 +377,6 @@ FormatterMediator::compileDocument (const string &id)
       return true;
     }
 
-  g_assert_null (this->entryEventListener);
-  this->entryEventListener = new EntryEventListener (this, "");
-
   persp = new NclNodeNesting ();
   persp->insertAnchorNode (body);
 
@@ -565,7 +397,7 @@ FormatterMediator::compileDocument (const string &id)
       Thread::mutexUnlock (&pteMutex);
 
       events->push_back (evt);
-      this->entryEventListener->listenEvent (evt);
+      // this->entryEventListener->listenEvent (evt);
     }
 
   delete ports;
@@ -627,17 +459,9 @@ FormatterMediator::presentationCompleted (arg_unused (NclFormatterEvent *documen
   string documentId;
   map<string, NclFormatterEvent *>::iterator i;
 
-  clog << "FormatterMediator::presentationCompleted for '";
-  clog << data->playerId;
-  clog << "'" << endl;
-
   docCompiled = false;
-
   documentEvents.clear ();
   documentEntryEvents.clear ();
-
-  Player::notifyPlayerListeners (PL_NOTIFY_STOP, data->playerId,
-                                 TYPE_PRESENTATION);
 }
 
 bool
@@ -653,13 +477,9 @@ FormatterMediator::play ()
   g_assert (!this->docCompiled);
   compileDocument (id);
 
-  Player::play ();
 
   if (unlikely (this->documentEvents.count (id) == 0))
-    {
-      Player::stop ();
-      return true;
-    }
+    return true;
 
   g_assert (this->documentEvents.count (id) > 0);
   docevt = this->documentEvents[id];
@@ -679,48 +499,12 @@ FormatterMediator::stop ()
   string id;
 
   g_assert_nonnull (this->currentDocument);
-  Player::stop ();
+  // Player::stop ();
 
   id = currentDocument->getId ();
   evt = documentEvents[id];
   g_assert_nonnull (evt);
   this->scheduler->stopDocument (evt);
-}
-
-void
-FormatterMediator::abort ()
-{
-  this->stop ();
-}
-
-void
-FormatterMediator::pause ()
-{
-  NclFormatterEvent *evt;
-  string id;
-
-  g_assert_nonnull (this->currentDocument);
-  Player::pause ();
-
-  id = currentDocument->getId ();
-  evt = documentEvents[id];
-  g_assert_nonnull (evt);
-  this->scheduler->pauseDocument (evt);
-}
-
-void
-FormatterMediator::resume ()
-{
-  NclFormatterEvent *evt;
-  string id;
-
-  g_assert_nonnull (this->currentDocument);
-  Player::resume ();
-
-  id = currentDocument->getId ();
-  evt = documentEvents[id];
-  g_assert_nonnull (evt);
-  this->scheduler->resumeDocument (evt);
 }
 
 GINGA_FORMATTER_END

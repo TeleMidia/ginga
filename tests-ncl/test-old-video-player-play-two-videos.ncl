@@ -11,7 +11,7 @@
   </head>
   <body>
     <port id='start' component='video'/>
-    <port id='start' component='video2'/>    
+    <port id='start2' component='video2'/>
     <media id='video' src='samples/bunny.ogg' descriptor='desc' />
     <media id='video2' src='samples/animGar.mp4' descriptor='desc2' />
   </body>
