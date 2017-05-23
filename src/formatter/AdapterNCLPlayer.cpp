@@ -55,8 +55,6 @@ AdapterNCLPlayer::createPlayer ()
   playerData = _manager->getNclPlayerData ();
 
   childData = new NclPlayerData;
-  childData->x = 0;
-  childData->y = 0;
   childData->w = 0;
   childData->h = 0;
   childData->devClass = playerData->devClass;
@@ -81,8 +79,6 @@ AdapterNCLPlayer::createPlayer ()
   if (region != NULL)
     {
       ncmRegion = region->getLayoutRegion ();
-      childData->x = (int)(ncmRegion->getAbsoluteLeft ());
-      childData->y = (int)(ncmRegion->getAbsoluteTop ());
       childData->w = (int)(ncmRegion->getWidthInPixels ());
       childData->h = (int)(ncmRegion->getHeightInPixels ());
       childData->devClass = ncmRegion->getDeviceClass ();

@@ -26,8 +26,7 @@ GINGA_FORMATTER_BEGIN
 class FormatterBaseDevice : public FormatterMultiDevice
 {
 public:
-  FormatterBaseDevice (DeviceLayout *deviceLayout,
-                       string playerId, int x, int y, int w, int h);
+  FormatterBaseDevice (DeviceLayout *deviceLayout, int w, int h);
   virtual ~FormatterBaseDevice ();
 
 protected:

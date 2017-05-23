@@ -60,12 +60,6 @@ RegionBase::createDeviceRegion ()
   deviceProperty = deviceLayout->getDeviceProperty (device);
   if (deviceProperty != NULL)
     {
-      deviceRegion->setLeft ((double)(deviceProperty->getDeviceLeft ()),
-                             false);
-
-      deviceRegion->setTop ((double)(deviceProperty->getDeviceTop ()),
-                            false);
-
       deviceRegion->setWidth ((double)(deviceProperty->getDeviceWidth ()),
                               false);
 

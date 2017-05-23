@@ -29,10 +29,8 @@ using namespace ::ginga::ncl;
 GINGA_FORMATTER_BEGIN
 
 FormatterMultiDevice::FormatterMultiDevice (DeviceLayout *deviceLayout,
-                                            int x, int y, int w, int h)
+                                            int w, int h)
 {
-  this->xOffset = x;
-  this->yOffset = y;
   this->defaultWidth = w;
   this->defaultHeight = h;
   this->deviceClass = -1;
