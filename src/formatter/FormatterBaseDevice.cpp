@@ -26,18 +26,17 @@ using namespace ::ginga::ncl;
 GINGA_FORMATTER_BEGIN
 
 FormatterBaseDevice::FormatterBaseDevice (DeviceLayout *deviceLayout,
-                                          arg_unused (string) playerId, int x, int y,
                                           int w, int h)
 
-    : FormatterMultiDevice (deviceLayout, x, y, w, h)
+    : FormatterMultiDevice (deviceLayout, w, h)
 {
   string layoutName = deviceLayout->getLayoutName ();
 
   deviceClass = DeviceDomain::CT_BASE;
-  deviceLayout->addDevice ("systemScreen(1)", 0, 0, DV_QVGA_WIDTH,
+  deviceLayout->addDevice ("systemScreen(1)", DV_QVGA_WIDTH,
                            DV_QVGA_HEIGHT);
 
-  mainLayout = new NclFormatterLayout (x, y, w, h);
+  mainLayout = new NclFormatterLayout (w, h);
   mainLayout->getDeviceRegion ()->setDeviceClass (0, "");
   layoutManager[deviceClass] = mainLayout;
 }

@@ -23,50 +23,18 @@ GINGA_NCL_BEGIN
 class DeviceProperty
 {
 private:
-  int left;
-  int top;
   int width;
   int height;
 
 public:
-  DeviceProperty () {initialize (0, 0, 0, 0); }
-  DeviceProperty (int x, int y, int w, int h) {initialize (x, y, w, h); }
-  virtual ~DeviceProperty () {}
-
-private:
-  void
-  initialize (int x, int y, int w, int h)
+  DeviceProperty (int w, int h)
   {
-    this->left = x;
-    this->top = y;
     this->width = w;
     this->height = h;
   }
+  virtual ~DeviceProperty () {}
 
 public:
-  void
-  setDeviceLeft (int left)
-  {
-    this->left = left;
-  }
-
-  int
-  getDeviceLeft ()
-  {
-    return this->left;
-  }
-
-  void
-  setDeviceTop (int top)
-  {
-    this->top = top;
-  }
-
-  int
-  getDeviceTop ()
-  {
-    return this->top;
-  }
 
   void
   setDeviceWidth (int width)
@@ -103,7 +71,7 @@ public:
   DeviceLayout (const string &layoutName);
   virtual ~DeviceLayout ();
   string getLayoutName ();
-  void addDevice (const string &name, int x, int y, int width, int height);
+  void addDevice (const string &name, int width, int height);
   DeviceProperty *getDeviceProperty (const string &name);
 };
 

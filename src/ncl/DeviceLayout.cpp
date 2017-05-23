@@ -46,21 +46,18 @@ DeviceLayout::getLayoutName ()
 }
 
 void
-DeviceLayout::addDevice (const string &name, int x, int y, int width, int height)
+DeviceLayout::addDevice (const string &name, int width, int height)
 {
   DeviceProperty *device;
 
   if (devices->count (name) == 0)
     {
-      device = new DeviceProperty (x, y, width, height);
+      device = new DeviceProperty (width, height);
       (*devices)[name] = device;
     }
   else
     {
       device = (*devices)[name];
-
-      device->setDeviceLeft (x);
-      device->setDeviceTop (y);
       device->setDeviceWidth (width);
       device->setDeviceHeight (height);
     }

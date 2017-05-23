@@ -194,8 +194,6 @@ FormatterMediator::FormatterMediator () : Player ("")
   data->parentDocId = "";
   data->playerId = "";
   data->transparency = 0;
-  data->x = 0;
-  data->y = 0;
   Ginga_Display->getSize (&data->w, &data->h);
   this->data = data;
 
@@ -204,13 +202,11 @@ FormatterMediator::FormatterMediator () : Player ("")
 
   string deviceName = "systemScreen(0)";
   deviceLayout = new DeviceLayout (deviceName);
-  deviceLayout->addDevice (deviceName, data->x, data->y, data->w, data->h);
+  deviceLayout->addDevice (deviceName, data->w, data->h);
 
   presContext = new PresentationContext ();
 
-  multiDevice = new FormatterBaseDevice (
-      deviceLayout, data->playerId, data->x, data->y,
-      data->w, data->h);
+  multiDevice = new FormatterBaseDevice (deviceLayout, data->w, data->h);
 
   multiDevice->setPresentationContex (presContext);
 
@@ -245,7 +241,7 @@ FormatterMediator::FormatterMediator () : Player ("")
   entryEventListener = NULL;
 
   ((FormatterFocusManager *)(data->focusManager))
-      ->setMotionBoundaries (data->x, data->y, data->w, data->h);
+      ->setMotionBoundaries (data->w, data->h);
 
   docCompiled = false;
 
