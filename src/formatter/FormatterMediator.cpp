@@ -397,7 +397,6 @@ FormatterMediator::compileDocument (const string &id)
       Thread::mutexUnlock (&pteMutex);
 
       events->push_back (evt);
-      // this->entryEventListener->listenEvent (evt);
     }
 
   delete ports;
@@ -476,7 +475,6 @@ FormatterMediator::play ()
 
   g_assert (!this->docCompiled);
   compileDocument (id);
-
 
   if (unlikely (this->documentEvents.count (id) == 0))
     return true;

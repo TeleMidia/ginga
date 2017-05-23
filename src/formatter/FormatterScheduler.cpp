@@ -200,109 +200,6 @@ FormatterScheduler::isDocumentRunning (NclFormatterEvent *event)
 }
 
 void
-FormatterScheduler::setTimeBaseObject (NclExecutionObject *object,
-                                       AdapterFormatterPlayer *objectPlayer,
-                                       string nodeId)
-{
-  NclExecutionObject *documentObject;
-  NclExecutionObject *parentObject;
-  NclExecutionObject *timeBaseObject;
-
-  Node *documentNode;
-  Node *compositeNode;
-  Node *timeBaseNode;
-  NclNodeNesting *perspective;
-  NclNodeNesting *compositePerspective;
-  AdapterFormatterPlayer *timeBasePlayer;
-
-  if (nodeId.find_last_of ('#') != std::string::npos)
-    {
-      return;
-    }
-
-  documentObject = object;
-  parentObject = (NclExecutionObject *)(documentObject->getParentObject ());
-  if (parentObject != NULL)
-    {
-      while (parentObject->getParentObject () != NULL)
-        {
-          documentObject = parentObject;
-          if (documentObject->getDataObject ()->instanceOf ("ReferNode"))
-            {
-              break;
-            }
-          parentObject
-              = (NclExecutionObject *)(documentObject->getParentObject ());
-        }
-    }
-
-  if (documentObject == NULL || documentObject->getDataObject () == NULL)
-    {
-      return;
-    }
-
-  documentNode = documentObject->getDataObject ();
-  if (documentNode->instanceOf ("ReferNode"))
-    {
-      compositeNode
-          = (NodeEntity *)((ReferNode *)documentNode)->getReferredEntity ();
-    }
-  else
-    {
-      compositeNode = documentNode;
-    }
-
-  if (compositeNode == NULL
-      || !(compositeNode->instanceOf ("CompositeNode")))
-    {
-      return;
-    }
-
-  timeBaseNode
-      = ((CompositeNode *)compositeNode)->recursivelyGetNode (nodeId);
-
-  if (timeBaseNode == NULL || !(timeBaseNode->instanceOf ("ContentNode")))
-    {
-      return;
-    }
-
-  perspective = new NclNodeNesting (timeBaseNode->getPerspective ());
-  if (documentNode->instanceOf ("ReferNode"))
-    {
-      perspective->removeHeadNode ();
-      compositePerspective
-          = new NclNodeNesting (documentNode->getPerspective ());
-
-      compositePerspective->append (perspective);
-      perspective = compositePerspective;
-    }
-
-  try
-    {
-      timeBaseObject
-          = ((FormatterConverter *)compiler)
-                ->getExecutionObjectFromPerspective (
-                    perspective, NULL,
-                    ((FormatterConverter *)compiler)->getDepthLevel ());
-
-      if (timeBaseObject != NULL)
-        {
-          timeBasePlayer
-              = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
-                  timeBaseObject);
-          if (timeBasePlayer != NULL)
-            {
-              objectPlayer->setTimeBasePlayer (timeBasePlayer);
-            }
-        }
-    }
-  catch (exception *exc)
-    {
-      return;
-    }
-}
-
-void
 FormatterScheduler::scheduleAction (void *someAction)
 {
   pthread_mutex_lock (&mutexActions);
@@ -419,16 +316,6 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
 
           playerContent = player->getPlayer ();
           g_assert_nonnull (playerContent);
-
-          if (executionObject->getDescriptor () != NULL)
-            {
-              attValue = (executionObject->getDescriptor ())
-                ->getParameterValue ("x-timeBaseObject");
-              if (attValue != "")
-                {
-                  setTimeBaseObject (executionObject, player, attValue);
-                }
-            }
 
           winId = ((FormatterMultiDevice *) multiDevPres)
             ->prepareFormatterRegion (executionObject);
@@ -693,18 +580,6 @@ FormatterScheduler::runActionOverApplicationObject (
             {
             }
 
-          if (executionObject->getDescriptor () != NULL)
-            {
-              // look for a reference time base player
-              attValue
-                  = executionObject->getDescriptor ()->getParameterValue (
-                      "x-timeBaseObject");
-
-              if (attValue != "")
-                {
-                  setTimeBaseObject (executionObject, player, attValue);
-                }
-            }
 
           if (playerContent != NULL)
             {
