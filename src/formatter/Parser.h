@@ -150,7 +150,6 @@ private:
   CausalConnector *parseCausalConnector (DOMElement *causalConnector_element);
   CausalConnector *createCausalConnector (DOMElement *causalConnector_element);
 
-  Connector *_connector;
   void compileRoleInformation (Role *role, DOMElement *parentElement);
   void addAttributeAssessmentToAssessmentStatement (AssessmentStatement *parentObject, AttributeAssessment *childObject);
   void addImportBaseToConnectorBase (ConnectorBase *connectorBase, DOMElement *childObject);
