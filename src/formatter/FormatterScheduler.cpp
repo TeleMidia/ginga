@@ -409,11 +409,6 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
       event->start ();
       ((NclAttributionEvent *)event)->setValue (propValue);
 
-      /*clog << "FormatterScheduler::runActionOverProperty settingnode";
-      clog << " evId '" << event->getId() << "' for '";
-      clog << executionObject->getId() << "' propName '";
-      clog << porpName << "', propValue '" << propValue << "'" << endl;*/
-
       if (propName == "service.currentFocus")
         {
           focusManager->setFocus (propValue);
@@ -502,9 +497,11 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
 
               anim->setDuration (durVal);
               anim->setBy (byVal);
-           
-              ((Player*)player->getPlayer())->setAnimatorProperties(durVal,((NclAttributionEvent *)
-                                               event)->getAnchor ()->getPropertyName (),propValue);                                 
+
+              ((Player*)player->getPlayer())->
+                setAnimatorProperties(durVal,((NclAttributionEvent *)event)
+                                      ->getAnchor ()
+                                      ->getPropertyName (),propValue);
             }
           else if (player != NULL && player->hasPrepared ())
             {
@@ -767,13 +764,6 @@ FormatterScheduler::runActionOverComposition (
           propName = attrEvent->getAnchor ()->getPropertyName ();
           propValue = ((NclLinkAssignmentAction *)action)->getValue ();
           event = compositeObject->getEventFromAnchorId (propName);
-
-          /*clog << "FormatterScheduler::runActionOverComposition ";
-          clog << "Run SET action over COMPOSITION '";
-          clog << compositeObject->getId() << "' event '";
-          clog << propName << "' value '";
-          clog << propValue << "'";
-          clog << endl;*/
 
           if (event != NULL)
             {
