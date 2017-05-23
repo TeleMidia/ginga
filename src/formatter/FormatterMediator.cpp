@@ -514,7 +514,6 @@ FormatterMediator::compileDocument (const string &id)
   NclExecutionObject *execobj;
   NclCompositeExecutionObject *parent;
 
-
   g_assert (this->documentEvents.count (id) == 0);
 
   body = this->currentDocument->getBody ();
