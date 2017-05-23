@@ -748,8 +748,8 @@ NclParser::addLinkToContext (ContextNode *context, Link *link)
 
   for (Role *role: *roles)
     {
-      unsigned int min = role->getMinCon ();
-      unsigned int max = role->getMaxCon ();
+      unsigned int min = (unsigned int) role->getMinCon ();
+      unsigned int max = (unsigned int) role->getMaxCon ();
 
       if (link->getNumRoleBinds (role) < min)
         {
@@ -3618,13 +3618,13 @@ NclParser::createDescriptor (DOMElement *descriptor_element)
       if((transitionBase = nclDoc->getTransitionBase ()))
         {
           vector<string> transIds = xstrsplit (attValue, ';');
-          for (uint i = 0; i < transIds.size(); i++)
+          for (guint i = 0; i < transIds.size(); i++)
             {
               Transition *transition
                   = transitionBase->getTransition (xstrchomp (transIds[i]));
               if (transition)
                 {
-                  descriptor->addInputTransition (transition, i);
+                  descriptor->addInputTransition (transition, (int) i);
                 }
               else
                 {
@@ -3640,13 +3640,13 @@ NclParser::createDescriptor (DOMElement *descriptor_element)
       if((transitionBase = nclDoc->getTransitionBase ()))
         {
           vector<string> transIds = xstrsplit (attValue, ';');
-          for (uint i = 0; i < transIds.size(); i++)
+          for (guint i = 0; i < transIds.size(); i++)
             {
               Transition *transition
                   = transitionBase->getTransition (xstrchomp (transIds[i]));
               if (transition)
                 {
-                  descriptor->addOutputTransition(transition, i);
+                  descriptor->addOutputTransition(transition, (int) i);
                 }
               else
                 {
