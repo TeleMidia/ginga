@@ -79,134 +79,14 @@ FormatterMediator::FormatterMediator ()
 
   documentEvents.clear ();
   documentEntryEvents.clear ();
-  portsToEntryEvents.clear ();
 
   ((FormatterFocusManager *)(data->focusManager))
       ->setMotionBoundaries (data->w, data->h);
 
-  docCompiled = false;
-
-  Thread::mutexInit (&pteMutex, true);
 }
 
 FormatterMediator::~FormatterMediator ()
 {
-  string docId = "";
-  NclExecutionObject *bodyObject;
-  map<string, NclFormatterEvent *>::iterator i;
-  map<string, vector<NclFormatterEvent *> *>::iterator j;
-  vector<NclFormatterEvent *>::iterator k;
-
-  clog << "FormatterMediator::~FormatterMediator '";
-  clog << data->playerId << "'";
-  clog << endl;
-
-  docCompiled = false;
-
-  if (scheduler != NULL)
-    {
-      scheduler->removeSchedulerListener (this);
-    }
-
-  if (currentDocument != NULL)
-    {
-      docId = currentDocument->getId ();
-      if (compiler != NULL)
-        {
-          bodyObject = compiler->getObjectFromNodeId (docId);
-          if (bodyObject == NULL)
-            {
-              bodyObject = compiler->getObjectFromNodeId (
-                  currentDocument->getBody ()->getId ());
-            }
-          if (bodyObject != NULL)
-            {
-              compiler->removeExecutionObject (bodyObject);
-            }
-        }
-      if (!removeDocument ())
-        {
-          clog << "FormatterMediator::~FormatterMediator Warning! Can't";
-          clog << " remove document '" << docId << "'";
-          clog << endl;
-        }
-      currentDocument = NULL;
-    }
-
-  i = documentEvents.begin ();
-  while (i != documentEvents.end ())
-    {
-      delete i->second;
-      ++i;
-    }
-  documentEvents.clear ();
-
-  j = documentEntryEvents.begin ();
-  while (j != documentEntryEvents.end ())
-    {
-      k = j->second->begin ();
-      while (k != j->second->end ())
-        {
-          delete *k;
-          ++k;
-        }
-      delete j->second;
-      ++j;
-    }
-  documentEntryEvents.clear ();
-
-  Thread::mutexLock (&pteMutex);
-  portsToEntryEvents.clear ();
-  Thread::mutexUnlock (&pteMutex);
-
-  if (ruleAdapter != NULL)
-    {
-      delete ruleAdapter;
-      ruleAdapter = NULL;
-    }
-
-  if (scheduler != NULL)
-    {
-      delete scheduler;
-      scheduler = NULL;
-    }
-
-  if (compiler != NULL)
-    {
-      delete compiler;
-      compiler = NULL;
-    }
-
-  if (data != NULL)
-    {
-      delete data;
-      data = NULL;
-    }
-
-  if (deviceLayout != NULL)
-    {
-      delete deviceLayout;
-      deviceLayout = NULL;
-    }
-
-  if (multiDevice != NULL)
-    {
-      delete multiDevice;
-      multiDevice = NULL;
-    }
-
-  if (presContext != NULL)
-    {
-      delete presContext;
-      presContext = NULL;
-    }
-
-  if (playerManager != NULL)
-    {
-      delete playerManager;
-      playerManager = NULL;
-    }
-  clog << "FormatterMediator::~FormatterMediator all done" << endl;
 }
 
 void *
@@ -219,58 +99,6 @@ FormatterMediator::addDocument (const string &file)
   g_assert_nonnull (this->currentDocument);
 
   return this->currentDocument;
-}
-
-bool
-FormatterMediator::removeDocument ()
-{
-  this->stop ();
-  g_assert_nonnull (this->currentDocument);
-  delete this->currentDocument;
-  return true;
-}
-
-Port *
-FormatterMediator::getPortFromEvent (NclFormatterEvent *event)
-{
-  ContextNode *context;
-  Port *port = NULL;
-  Anchor *anchor;
-  guint i, size;
-  map<Port *, NclFormatterEvent *>::iterator j;
-
-  if (event->instanceOf ("NclAnchorEvent"))
-    {
-      anchor = ((NclAnchorEvent *)event)->getAnchor ();
-      context = currentDocument->getBody ();
-      size = context->getNumPorts ();
-
-      for (i = 0; i < size; i++)
-        {
-          port = context->getPort (i);
-          if (anchor == port->getEndInterfacePoint ())
-            {
-              return port;
-            }
-        }
-    }
-  else
-    {
-      Thread::mutexLock (&pteMutex);
-      j = portsToEntryEvents.begin ();
-      while (j != portsToEntryEvents.end ())
-        {
-          if (j->second == event)
-            {
-              Thread::mutexUnlock (&pteMutex);
-              return j->first;
-            }
-          ++j;
-        }
-      Thread::mutexUnlock (&pteMutex);
-    }
-
-  return NULL;
 }
 
 void
@@ -392,10 +220,6 @@ FormatterMediator::compileDocument (const string &id)
       evt = compiler->insertContext (persp, port);
       g_assert_nonnull (evt);
 
-      Thread::mutexLock (&pteMutex);
-      this->portsToEntryEvents[port] = evt;
-      Thread::mutexUnlock (&pteMutex);
-
       events->push_back (evt);
     }
 
@@ -416,40 +240,7 @@ FormatterMediator::compileDocument (const string &id)
   this->documentEvents[id] = evt;
   this->documentEntryEvents[id] = events;
 
-  docCompiled = true;
   return true;
-}
-
-NclFormatterEvent *
-FormatterMediator::getEntryEvent (const string &interfaceId,
-                                  vector<NclFormatterEvent *> *events)
-{
-  map<Port *, NclFormatterEvent *>::iterator i;
-  vector<NclFormatterEvent *>::iterator j;
-  NclFormatterEvent *entryEvent = NULL;
-
-  Thread::mutexLock (&pteMutex);
-  i = portsToEntryEvents.begin ();
-  while (i != portsToEntryEvents.end ())
-    {
-      if (i->first->getId () == interfaceId)
-        {
-          j = events->begin ();
-          while (j != events->end ())
-            {
-              if (i->second == (*j))
-                {
-                  entryEvent = i->second;
-                  break;
-                }
-              ++j;
-            }
-        }
-      ++i;
-    }
-  Thread::mutexUnlock (&pteMutex);
-
-  return entryEvent;
 }
 
 void
@@ -458,7 +249,6 @@ FormatterMediator::presentationCompleted (arg_unused (NclFormatterEvent *documen
   string documentId;
   map<string, NclFormatterEvent *>::iterator i;
 
-  docCompiled = false;
   documentEvents.clear ();
   documentEntryEvents.clear ();
 }
@@ -473,7 +263,6 @@ FormatterMediator::play ()
   g_assert_nonnull (this->currentDocument);
   id = currentDocument->getId ();
 
-  g_assert (!this->docCompiled);
   compileDocument (id);
 
   if (unlikely (this->documentEvents.count (id) == 0))

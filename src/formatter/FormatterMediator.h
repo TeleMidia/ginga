@@ -18,70 +18,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTER_MEDIATOR_H
 #define FORMATTER_MEDIATOR_H
 
-#include "player/Player.h"
-using namespace ::ginga::player;
-
-#include "ncl/ContextNode.h"
-#include "ncl/CompositeNode.h"
-#include "ncl/ContentNode.h"
-#include "ncl/Node.h"
-#include "ncl/NodeEntity.h"
-using namespace ::ginga::ncl;
-
-#include "ncl/Anchor.h"
-#include "ncl/PropertyAnchor.h"
-#include "ncl/Port.h"
-#include "ncl/SwitchPort.h"
-#include "ncl/InterfacePoint.h"
-using namespace ::ginga::ncl;
-
-#include "ncl/Rule.h"
-using namespace ::ginga::ncl;
-
-#include "ncl/GenericDescriptor.h"
-using namespace ::ginga::ncl;
-
-#include "ncl/Bind.h"
-#include "ncl/CausalLink.h"
-#include "ncl/Link.h"
-using namespace ::ginga::ncl;
-
-#include "ncl/EventUtil.h"
-#include "ncl/SimpleAction.h"
-#include "ncl/Connector.h"
-using namespace ::ginga::ncl;
-
-#include "ncl/LayoutRegion.h"
-using namespace ::ginga::ncl;
-
-#include "ncl/ReferNode.h"
-using namespace ::ginga::ncl;
-
-#include "ncl/Base.h"
-#include "ncl/NclDocument.h"
-#include "ncl/ConnectorBase.h"
-#include "ncl/DescriptorBase.h"
-#include "ncl/RegionBase.h"
-#include "ncl/RuleBase.h"
-using namespace ::ginga::ncl;
-
-#include "ncl/Transition.h"
-#include "ncl/TransitionBase.h"
-using namespace ::ginga::ncl;
-
-#include "NclCompositeExecutionObject.h"
-#include "NclExecutionObject.h"
-#include "NclNodeNesting.h"
-
-#include "NclFormatterEvent.h"
-#include "NclAttributionEvent.h"
-
-#include "INclLinkActionListener.h"
-#include "NclLinkAssignmentAction.h"
-
-#include "RuleAdapter.h"
 #include "FormatterConverter.h"
 #include "FormatterScheduler.h"
+#include "NclExecutionObject.h"
+
+#include "ncl/NclDocument.h"
+using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
@@ -94,7 +36,6 @@ private:
 
   map<string, NclFormatterEvent *> documentEvents;
   map<string, vector<NclFormatterEvent *> *> documentEntryEvents;
-  map<Port *, NclFormatterEvent *> portsToEntryEvents;
   FormatterScheduler *scheduler;
   RuleAdapter *ruleAdapter;
   FormatterConverter *compiler;
@@ -102,33 +43,16 @@ private:
   DeviceLayout *deviceLayout;
   FormatterMultiDevice *multiDevice;
   PresentationContext *presContext;
-  bool docCompiled;
-  pthread_mutex_t pteMutex;
+
+private:
+  void initializeSettingNodes (Node *node);
+  bool compileDocument (const string &documentId);
+  void presentationCompleted (NclFormatterEvent *documentEvent);
 
 public:
   FormatterMediator ();
   ~FormatterMediator ();
   void *addDocument (const string &file);
-
-private:
-  bool removeDocument ();
-
-public:
-  Port *getPortFromEvent (NclFormatterEvent *event);
-
-private:
-  void initializeSettingNodes (Node *node);
-
-  vector<NclFormatterEvent *> *getDocumentEntryEvent (const string &documentId);
-
-  bool compileDocument (const string &documentId);
-
-  NclFormatterEvent *getEntryEvent (const string &interfaceId,
-                                    vector<NclFormatterEvent *> *events);
-
-  void presentationCompleted (NclFormatterEvent *documentEvent);
-
-public:
   bool play ();
   void stop ();
 };
