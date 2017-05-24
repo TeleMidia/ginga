@@ -388,8 +388,6 @@ FormatterConverter::addExecutionObject (
               descriptor, executionObject)));
     }
 
-  g_assert (descriptor != NULL && descriptor->getPlayerName () != "");
-
   if (depthLevel != 0)
     {
       if (depthLevel > 0)
