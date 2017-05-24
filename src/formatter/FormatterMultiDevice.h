@@ -89,8 +89,7 @@ protected:
   static const int DV_QVGA_HEIGHT = 320;
 
 public:
-  FormatterMultiDevice (DeviceLayout *deviceLayout,
-                        int x, int y, int w, int h);
+  FormatterMultiDevice (DeviceLayout *deviceLayout, int w, int h);
   virtual ~FormatterMultiDevice ();
   void setParent (FormatterMultiDevice *parent);
   void setPresentationContex (PresentationContext *presContext);

@@ -47,8 +47,6 @@ FormatterFocusManager::FormatterFocusManager (
   objectToSelect = "";
   isHandler = false;
   parentManager = NULL;
-  xOffset = 0;
-  yOffset = 0;
   width = 0;
   height = 0;
   focusHandlerTS = 0;
@@ -1066,10 +1064,8 @@ FormatterFocusManager::setDefaultSelBorderColor (SDL_Color *color)
 }
 
 void
-FormatterFocusManager::setMotionBoundaries (int x, int y, int w, int h)
+FormatterFocusManager::setMotionBoundaries (int w, int h)
 {
-  xOffset = x;
-  yOffset = y;
   width = w;
   height = h;
 }
@@ -1270,12 +1266,11 @@ FormatterFocusManager::mouseInputCallback (arg_unused (SDL_EventType evtType), i
           = (NclFormatterLayout *)(multiDevice->getMainLayout ());
       if (formatterLayout != NULL)
         {
-          if ((x < xOffset || x > xOffset + width) || y < yOffset
-              || y > yOffset + height)
+          if ((x < 0 || x > width) || y < 0 || y > height)
             {
               return;
             }
-  
+
           object = formatterLayout->getObject (x, y);
           if (object != NULL && object->getDescriptor () != NULL)
             {

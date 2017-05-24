@@ -63,8 +63,6 @@ private:
   FormatterMultiDevice *multiDevice;
   INclLinkActionListener *settingActions;
 
-  int xOffset;
-  int yOffset;
   int width;
   int height;
 
@@ -128,7 +126,7 @@ public:
   void setDefaultFocusBorderWidth (int width);
   void setDefaultSelBorderColor (SDL_Color *color);
 
-  void setMotionBoundaries (int x, int y, int w, int h);
+  void setMotionBoundaries (int w, int h);
 
 private:
   void changeSettingState (const string &name, const string &act);
@@ -136,7 +134,6 @@ private:
 public:
   void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
   void mouseInputCallback (arg_unused (SDL_EventType evtType), int x, int y);
-//  bool motionEventReceived (int x, int y, int z);
 };
 
 GINGA_FORMATTER_END

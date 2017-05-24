@@ -118,10 +118,6 @@ public:
 private:
   bool isDocumentRunning (NclFormatterEvent *event);
 
-  void setTimeBaseObject (NclExecutionObject *object,
-                          AdapterFormatterPlayer *objectPlayer,
-                          string nodeId);
-
 public:
   void scheduleAction (void *action);
 
