@@ -61,7 +61,6 @@ public:
 
   void setOutputWindow (SDLWindow* windowId);
 
-  int getObjectDevice ();
   virtual bool hasPrepared ();
 
   virtual bool prepare (NclExecutionObject *obj, NclFormatterEvent *mainEvent);
@@ -102,7 +101,6 @@ protected:
   NclExecutionObject *_object;
   IPlayer *_player;
   string _mrl;
-  int _objectDevice;
 
   virtual void createPlayer ();
   double prepareProperties (NclExecutionObject *obj);

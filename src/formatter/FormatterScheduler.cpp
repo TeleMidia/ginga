@@ -586,9 +586,6 @@ FormatterScheduler::runActionOverApplicationObject (
                             executionObject);
 
               player->setOutputWindow (winId);
-              if (player->getObjectDevice () == 0)
-                {
-                }
             }
         }
       else
@@ -1694,8 +1691,7 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
 
                 player = (AdapterFormatterPlayer *)
                   playerManager->getObjectPlayer (object);
-                if (player != NULL && player->getPlayer () != NULL
-                    && player->getObjectDevice () == 0)
+                if (player != NULL && player->getPlayer () != NULL)
                   {
                   }
               }
