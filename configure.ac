@@ -95,6 +95,7 @@ nw="$nw -Woverride-init"                 # invalid in C++
 nw="$nw -Wpointer-sign"                  # invalid in C++
 nw="$nw -Wpointer-to-int-cast"           # invalid in C++
 nw="$nw -Wstrict-prototypes"             # invalid in C++
+nw="$nw -Wfloat-conversion"              # too many warnings
 nw="$nw -Wpragmas"                       # too many warnings
 nw="$nw -Wshadow"                        # too many warnings
 nw="$nw -Wsign-compare"                  # too many warnings

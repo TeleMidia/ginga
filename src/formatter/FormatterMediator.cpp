@@ -286,7 +286,6 @@ FormatterMediator::stop ()
   string id;
 
   g_assert_nonnull (this->currentDocument);
-  // Player::stop ();
 
   id = currentDocument->getId ();
   evt = documentEvents[id];
