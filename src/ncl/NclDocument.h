@@ -22,6 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "RuleBase.h"
 
 #include "ContextNode.h"
+#include "ContentNode.h"
 #include "Node.h"
 #include "NodeEntity.h"
 
@@ -105,6 +106,7 @@ public:
   map<int, RegionBase *> *getRegionBases ();
   Rule *getRule (const string &ruleId);
   RuleBase *getRuleBase ();
+  ContentNode *getSettingsNode ();
   bool removeDocument (NclDocument *document);
   void setConnectorBase (ConnectorBase *connectorBase);
   void setTransitionBase (TransitionBase *transitionBase);

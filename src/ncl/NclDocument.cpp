@@ -516,6 +516,47 @@ NclDocument::getRuleBase ()
   return ruleBase;
 }
 
+ContentNode *
+NclDocument::getSettingsNode ()
+{
+  ContextNode *body;
+  vector<Node *> *nodes;
+  vector<Node *> compositions;
+  vector<Node *>::iterator i;
+
+  body = this->getBody ();
+  g_assert_nonnull (body);
+
+  compositions.push_back (body);
+
+ next:
+  g_assert (compositions.size () > 0);
+  nodes = ((CompositeNode *)(compositions.back ()))->getNodes ();
+  g_assert_nonnull (nodes);
+  compositions.pop_back ();
+
+  for (i = nodes->begin (); i != nodes->end (); i++)
+    {
+      NodeEntity *node = (NodeEntity *)((*i)->getDataEntity ());
+      g_assert_nonnull (node);
+
+      if (node->instanceOf ("ContentNode")
+          &&((ContentNode *) node)->isSettingNode ())
+        {
+          return (ContentNode *) node; // found
+        }
+
+      if (node->instanceOf ("CompositeNode"))
+        {
+          compositions.push_back (node);
+        }
+    }
+  if (compositions.size () > 0)
+    goto next;
+
+  return NULL;
+}
+
 bool
 NclDocument::removeDocument (NclDocument *document)
 {
