@@ -20,11 +20,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
+class NclAttributionEvent;
+
 class INclAttributeValueMaintainer
 {
 public:
   virtual ~INclAttributeValueMaintainer (){};
-  virtual string getPropertyValue (void *attributeEvent) = 0;
+  virtual string getPropertyValue (NclAttributionEvent *attributeEvent) = 0;
   virtual void setPropertyValue (const string &name, const string &value) = 0;
 };
 

@@ -29,7 +29,6 @@ GINGA_FORMATTER_BEGIN
 AdapterApplicationPlayer::AdapterApplicationPlayer ()
     : AdapterFormatterPlayer ()
 {
-  _typeSet.insert ("AdapterApplicationPlayer");
   Thread::mutexInit (&eventMutex, false);
   Thread::mutexInit (&eventsMutex, false);
 
@@ -301,11 +300,8 @@ AdapterApplicationPlayer::start ()
     {
       startSuccess = _player->play ();
     }
-  if ((startSuccess) || (_objectDevice == 2))
-    { // DeviceDomain::CT_ACTIVE
-      // clog << "AdapterApplicationPlayer::play objectDevice" <<
-      // objectDevice
-      // << endl;
+  if (startSuccess)
+    {
       if (_object != NULL && !_object->start ())
         {
           if (_player != NULL)
@@ -403,8 +399,7 @@ AdapterApplicationPlayer::stop ()
     {
       clog << "AdapterApplicationPlayer::stop(" << this;
       clog << ") Can't stop an already stopped object = '";
-      clog << _object << "'. mrl = '" << _mrl << "' device class = '";
-      clog << getObjectDevice () << "'" << endl;
+      clog << _object << "'. mrl = '" << _mrl << endl;
     }
   return false;
 }
@@ -516,8 +511,7 @@ AdapterApplicationPlayer::abort ()
     {
       clog << "AdapterApplicationPlayer::abort(" << this;
       clog << ") Can't abort an already sleeping object = '";
-      clog << _object << "'. mrl = '" << _mrl << "' device class = '";
-      clog << getObjectDevice () << "'" << endl;
+      clog << _object << "'. mrl = '" << _mrl << endl;
     }
   return false;
 }

@@ -632,19 +632,14 @@ NclCascadingDescriptor::getRepetitions ()
   return repetitions;
 }
 
-vector<Parameter *> *
+vector<Parameter>
 NclCascadingDescriptor::getParameters ()
 {
-  vector<Parameter *> *params;
-  params = new vector<Parameter *>;
-  Parameter *parameter;
+  vector<Parameter> params;
 
-  map<string, string>::iterator it;
-
-  for (it = parameters.begin (); it != parameters.end (); ++it)
+  for (auto p: parameters)
     {
-      parameter = new Parameter (it->first, it->second);
-      params->push_back (parameter);
+      params.emplace_back (p.first, p.second);
     }
   return params;
 }

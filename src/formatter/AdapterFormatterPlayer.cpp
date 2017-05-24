@@ -33,18 +33,14 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-conversion)
 
 GINGA_FORMATTER_BEGIN
 
-double AdapterFormatterPlayer::eventTS = 0;
+double AdapterFormatterPlayer::_eventTS = 0;
 
 AdapterFormatterPlayer::AdapterFormatterPlayer ()
 {
-  _typeSet.insert ("AdapterFormatterPlayer");
-
   this->_manager = nullptr;
   this->_object = nullptr;
   this->_player = nullptr;
   this->_mrl = "";
-  this->_playerCompName = "";
-  this->_objectDevice = -1;
   this->_outTransDur = 0;
   this->_outTransTime = -1.0;
   this->_isLocked = false;
@@ -53,13 +49,9 @@ AdapterFormatterPlayer::AdapterFormatterPlayer ()
 
 AdapterFormatterPlayer::~AdapterFormatterPlayer ()
 {
-  int objDevice;
-
   Ginga_Display->unregisterKeyEventListener(this);
 
   lockObject ();
-
-  objDevice = getObjectDevice ();
 
   if (_object != nullptr)
     {
@@ -70,10 +62,7 @@ AdapterFormatterPlayer::~AdapterFormatterPlayer ()
     {
       _player->removeListener (this);
       _player->stop ();
-      if (objDevice == 0)
-        {
-          delete _player;
-        }
+      delete _player;
       _player = nullptr;
     }
 
@@ -87,19 +76,6 @@ AdapterFormatterPlayer::setAdapterManager (AdapterPlayerManager *manager)
 {
   this->_manager = manager;
   Ginga_Display->registerKeyEventListener(this);
-}
-
-bool
-AdapterFormatterPlayer::instanceOf (const string &s)
-{
-  if (!_typeSet.empty ())
-    {
-      return (_typeSet.find (s) != _typeSet.end ());
-    }
-  else
-    {
-      return false;
-    }
 }
 
 void
@@ -120,14 +96,10 @@ void
 AdapterFormatterPlayer::createPlayer ()
 {
   vector<Anchor *> *anchors;
-  vector<Anchor *>::iterator i;
 
   vector<NclFormatterEvent *> *events;
-  vector<NclFormatterEvent *>::iterator j;
 
   NclCascadingDescriptor *descriptor;
-  vector<Parameter *> *descParams;
-  vector<Parameter *>::iterator it;
 
   NodeEntity *dataObject;
   PropertyAnchor *property;
@@ -139,47 +111,29 @@ AdapterFormatterPlayer::createPlayer ()
 
   _player->addListener (this);
 
-  if (_object == nullptr)
-    {
-      return;
-    }
+  g_assert_nonnull (_object);
 
   descriptor = _object->getDescriptor ();
-  if (descriptor != nullptr)
+  if (descriptor)
     {
-      descParams = descriptor->getParameters ();
-      if (descParams != nullptr)
+      for (Parameter &param: descriptor->getParameters ())
         {
-          Parameter *param;
-
-          it = descParams->begin ();
-          while (it != descParams->end ())
-            {
-              param = (*it);
-
-              _player->setPropertyValue (param->getName (),
-                                        param->getValue ());
-
-              ++it;
-            }
-
-          delete descParams;
+          _player->setPropertyValue (param.getName (), param.getValue ());
         }
     }
 
-  dataObject = (NodeEntity *)(_object->getDataObject ());
+  dataObject = dynamic_cast <NodeEntity *> (_object->getDataObject ());
+  g_assert_nonnull (dataObject);
   if (dataObject->instanceOf ("ContentNode"))
     {
       anchors = ((ContentNode *)dataObject)->getAnchors ();
       if (anchors != nullptr)
         {
-          i = anchors->begin ();
-          while (i != anchors->end ())
+          for (Anchor *anchor: *anchors)
             {
-              if ((*i)->instanceOf ("PropertyAnchor"))
+              property = dynamic_cast <PropertyAnchor *> (anchor);
+              if (property)
                 {
-                  property = ((PropertyAnchor *)(*i));
-
                   clog << "AdapterFormatterPlayer::createPlayer for '";
                   clog << _mrl;
                   clog << "' set property '";
@@ -190,7 +144,6 @@ AdapterFormatterPlayer::createPlayer ()
                   _player->setPropertyValue (property->getPropertyName (),
                                             property->getPropertyValue ());
                 }
-              ++i;
             }
         }
     }
@@ -198,53 +151,20 @@ AdapterFormatterPlayer::createPlayer ()
   events = _object->getEvents ();
   if (events != nullptr)
     {
-      j = events->begin ();
-      while (j != events->end ())
+      for (NclFormatterEvent *evt: *events)
         {
-          if (*j != nullptr && (*j)->instanceOf ("NclAttributionEvent"))
+          if (evt != nullptr && evt->instanceOf ("NclAttributionEvent"))
             {
-              property = ((NclAttributionEvent *)*j)->getAnchor ();
-              ((NclAttributionEvent *)(*j))->setValueMaintainer (this);
+              property = ((NclAttributionEvent *)evt)->getAnchor ();
+              ((NclAttributionEvent *)evt)->setValueMaintainer (this);
             }
-          ++j;
         }
       delete events;
       events = nullptr;
     }
 
-  _objectDevice = getObjectDevice ();
-
   clog << "AdapterFormatterPlayer::createPlayer for '" << _mrl;
-  clog << "' object = '" << _object->getId () << "'";
-  clog << " objectDevice = '" << _objectDevice << "'" << endl;
-}
-
-int
-AdapterFormatterPlayer::getObjectDevice ()
-{
-  NclCascadingDescriptor *descriptor;
-  LayoutRegion *ncmRegion = nullptr;
-
-  if (_objectDevice > -1)
-    {
-      return _objectDevice;
-    }
-
-  if (_object != nullptr)
-    {
-      descriptor = _object->getDescriptor ();
-      if (descriptor != nullptr)
-        {
-          ncmRegion = descriptor->getRegion ();
-          if (ncmRegion != nullptr)
-            {
-              _objectDevice = ncmRegion->getDeviceClass ();
-              return _objectDevice;
-            }
-        }
-    }
-
-  return 0;
+  clog << "' object = '" << _object->getId () << "'" << endl;
 }
 
 bool
@@ -289,12 +209,8 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
 {
   NclCascadingDescriptor *descriptor;
   LayoutRegion *region = nullptr;
-  PropertyAnchor *property;
   vector<string> params;
-  vector<Parameter *> *descParams;
-  vector<Parameter *>::iterator i;
   vector<PropertyAnchor *> *anchors;
-  vector<PropertyAnchor *>::iterator j;
   string name, value;
   NclFormatterRegion *fRegion = nullptr;
   Node *ncmNode;
@@ -303,8 +219,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
   bool isPercent = false;
   double explicitDur = -1;
 
-  string left = "", top = "", width = "", height = "";
-  string bottom = "", right = "";
+  string left = "", top = "", width = "", height = "", bottom = "", right = "";
   string plan = "";
 
   descriptor = obj->getDescriptor ();
@@ -323,7 +238,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
 
   if (region == nullptr)
     {
-      property = obj->getNCMProperty ("explicitDur");
+      PropertyAnchor *property = obj->getNCMProperty ("explicitDur");
       if (property != nullptr)
         {
           value = property->getPropertyValue ();
@@ -333,403 +248,203 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
       return explicitDur;
     }
 
-  descParams = descriptor->getParameters ();
-  if (descParams != nullptr)
+  map <string, string> properties;
+  // get the properties from the descriptor
+  for (Parameter &param : descriptor->getParameters())
     {
-      Parameter *param;
-
-      i = descParams->begin ();
-      while (i != descParams->end ())
-        {
-          param = (*i);
-          name = param->getName ();
-          value = param->getValue ();
-
-          clog << "AdapterFormatterPlayer::prepareProperties(";
-          clog << _mrl << ") param '" << name << "' with value '";
-          clog << value << "'";
-          clog << endl;
-
-          if (value != "")
-            {
-              if (name == "explicitDur")
-                {
-                  explicitDur = xstrtimetod (value) * 1000;
-                }
-              else if (name == "left")
-                {
-                  left = value;
-                }
-              else if (name == "top")
-                {
-                  top = value;
-                }
-              else if (name == "width")
-                {
-                  width = value;
-                }
-              else if (name == "height")
-                {
-                  height = value;
-                }
-              else if (name == "bottom")
-                {
-                  bottom = value;
-                }
-              else if (name == "right")
-                {
-                  right = value;
-                }
-              else if (name == "zIndex")
-                {
-                  region->setZIndex (xstrtoint (value, 10));
-                }
-              else if (name == "bounds")
-                {
-                  params = xstrsplit (xstrchomp (value), ',');
-                  if (params.size () == 4)
-                    {
-                      left = xstrchomp (params[0]);
-                      top = xstrchomp (params[1]);
-                      width = xstrchomp (params[2]);
-                      height = xstrchomp (params[3]);
-                    }
-                }
-              else if (name == "location")
-                {
-                  params = xstrsplit (xstrchomp (value), ',');
-                  if (params.size () == 2)
-                    {
-                      left = xstrchomp (params[0]);
-                      top = xstrchomp (params[1]);
-                    }
-                }
-              else if (name == "size")
-                {
-                  params = xstrsplit (xstrchomp (value), ',');
-                  if (params.size () == 2)
-                    {
-                      width = xstrchomp (params[0]);
-                      height = xstrchomp (params[1]);
-                    }
-                }
-              else if (name == "transparency")
-                {
-                  transpValue = xstrtodorpercent (value, &isPercent);
-                  parentOpacity = (1
-                                   - _manager
-                                         ->getNclPlayerData ()
-                                         ->transparency);
-
-                  transpValue = (1 - (parentOpacity
-                                      - (parentOpacity * transpValue)));
-
-                  if (fRegion != nullptr)
-                    {
-                      fRegion->setTransparency (transpValue);
-                    }
-                }
-              else if (name == "background")
-                {
-                  if (fRegion != nullptr)
-                    {
-                      SDL_Color *bg = new SDL_Color();
-                      ginga_color_input_to_sdl_color(value,bg);
-                      fRegion->setBackgroundColor (bg);
-                    }
-                }
-              else if (name == "focusIndex")
-                {
-                  if (fRegion != nullptr)
-                    {
-                      fRegion->setFocusIndex (value);
-                    }
-                }
-              else if (name == "focusBorderColor")
-                {
-                  if (fRegion != nullptr)
-                    {
-                      SDL_Color *c = new SDL_Color();
-                      ginga_color_input_to_sdl_color(value,c);
-                      fRegion->setFocusBorderColor(c);
-                    }
-                }
-              else if (name == "focusBorderWidth")
-                {
-                  if (fRegion != nullptr)
-                    {
-                      fRegion->setFocusBorderWidth (xstrtoint (value, 10));
-                    }
-                }
-              else if (name == "focusComponentSrc")
-                {
-                  if (fRegion != nullptr)
-                    {
-                      fRegion->setFocusComponentSrc (value);
-                    }
-                }
-              else if (name == "selBorderColor")
-                {
-                  if (fRegion != nullptr)
-                    {
-                      SDL_Color *c = new SDL_Color();
-                      ginga_color_input_to_sdl_color(value,c);
-                      fRegion->setSelBorderColor (c);
-                    }
-                }
-              else if (name == "selBorderWidth")
-                {
-                  if (fRegion != nullptr)
-                    {
-                      fRegion->setSelBorderWidth (xstrtoint (value, 10));
-                    }
-                }
-              else if (name == "selComponentSrc")
-                {
-                  if (fRegion != nullptr)
-                    {
-                      fRegion->setSelComponentSrc (value);
-                    }
-                }
-              else if (name == "moveUp")
-                {
-                  if (fRegion != nullptr)
-                    {
-                      fRegion->setMoveUp (value);
-                    }
-                }
-              else if (name == "moveDown")
-                {
-                  if (fRegion != nullptr)
-                    {
-                      fRegion->setMoveDown (value);
-                    }
-                }
-              else if (name == "moveLeft")
-                {
-                  if (fRegion != nullptr)
-                    {
-                      fRegion->setMoveLeft (value);
-                    }
-                }
-              else if (name == "moveRight")
-                {
-                  if (fRegion != nullptr)
-                    {
-                      fRegion->setMoveRight (value);
-                    }
-                }
-              else if (name == "plan")
-                {
-                  plan = value;
-                }
-            }
-          ++i;
-        }
-      delete descParams;
+      properties[param.getName()] = param.getValue();
     }
 
+  //get the properties from the object
   ncmNode = obj->getDataObject ();
   anchors = ((Node *)ncmNode)->getOriginalPropertyAnchors ();
-  if (anchors != nullptr)
+  g_assert_nonnull (anchors);
+  for (PropertyAnchor *property : *anchors)
     {
-      j = anchors->begin ();
-      while (j != anchors->end ())
+      properties[property->getPropertyName()] = property->getPropertyValue();
+    }
+
+  for (auto it: properties)
+    {
+      name = it.first;
+      value = it.second;
+
+      g_debug ( "Prepare property: name=%s, value=%s.",
+                name.c_str(), value.c_str());
+
+      if (value != "")
         {
-          if ((*j)->instanceOf ("PropertyAnchor"))
+          if (name == "explicitDur")
             {
-              property = ((PropertyAnchor *)(*j));
-              name = property->getPropertyName ();
-              value = property->getPropertyValue ();
-
-              clog << "AdapterFormatterPlayer::prepareProperties(";
-              clog << _mrl << ") property '" << name << "' with value '";
-              clog << value << "'";
-              clog << endl;
-
-              if (value != "")
+              explicitDur = xstrtimetod (value) * 1000;
+            }
+          else if (name == "left")
+            {
+              left = value;
+            }
+          else if (name == "top")
+            {
+              top = value;
+            }
+          else if (name == "width")
+            {
+              width = value;
+            }
+          else if (name == "height")
+            {
+              height = value;
+            }
+          else if (name == "bottom")
+            {
+              bottom = value;
+            }
+          else if (name == "right")
+            {
+              right = value;
+            }
+          else if (name == "zIndex")
+            {
+              region->setZIndex (xstrtoint (value, 10));
+            }
+          else if (name == "bounds")
+            {
+              params = xstrsplit (xstrchomp (value), ',');
+              if (params.size () == 4)
                 {
-                  if (name == "explicitDur")
-                    {
-                      explicitDur = xstrtimetod (value) * 1000;
-                    }
-                  else if (name == "left")
-                    {
-                      left = value;
-                    }
-                  else if (name == "top")
-                    {
-                      top = value;
-                    }
-                  else if (name == "width")
-                    {
-                      width = value;
-                    }
-                  else if (name == "height")
-                    {
-                      height = value;
-                    }
-                  else if (name == "bottom")
-                    {
-                      bottom = value;
-                    }
-                  else if (name == "right")
-                    {
-                      right = value;
-                    }
-                  else if (name == "zIndex")
-                    {
-                      region->setZIndex (xstrtoint (value, 10));
-                    }
-                  else if (name == "bounds")
-                    {
-                      params = xstrsplit (xstrchomp (value), ',');
-                      if (params.size () == 4)
-                        {
-                          left = xstrchomp (params[0]);
-                          top = xstrchomp (params[1]);
-                          width = xstrchomp (params[2]);
-                          height = xstrchomp (params[3]);
-                        }
-                    }
-                  else if (name == "location")
-                    {
-                      params = xstrsplit (xstrchomp (value), ',');
-                      if (params.size () == 2)
-                        {
-                          left = params[0];
-                          top = params[1];
-                        }
-                    }
-                  else if (name == "size")
-                    {
-                      params = xstrsplit (xstrchomp (value), ',');
-                      if (params.size () == 2)
-                        {
-                          width = params[0];
-                          height = params[1];
-                        }
-                    }
-                  else if (name == "transparency")
-                    {
-                      transpValue = xstrtodorpercent (value, &isPercent);
-                      parentOpacity = (1
-                                       - _manager
-                                             ->getNclPlayerData ()
-                                             ->transparency);
-
-                      transpValue = (1 - (parentOpacity
-                                          - (parentOpacity * transpValue)));
-
-                      if (fRegion != nullptr)
-                        {
-                          fRegion->setTransparency (transpValue);
-                        }
-                    }
-                  else if (name == "background")
-                    {
-                      if (fRegion != nullptr)
-                        {
-                          if (value.find (",") == std::string::npos)
-                            {
-                              fRegion->setBackgroundColor (value);
-                            }
-                          else
-                            {
-                              SDL_Color *bg = new SDL_Color();
-                              ginga_color_input_to_sdl_color(value,bg);
-                              fRegion->setBackgroundColor (bg);
-                            }
-                        }
-                    }
-                  else if (name == "focusIndex")
-                    {
-                      if (fRegion != nullptr)
-                        {
-                          fRegion->setFocusIndex (value);
-                        }
-                    }
-                  else if (name == "focusBorderColor")
-                    {
-                      if (fRegion != nullptr)
-                        {
-                          SDL_Color *c = new SDL_Color();
-                          ginga_color_input_to_sdl_color(value,c);
-                          fRegion->setFocusBorderColor(c);
-                        }
-                    }
-                  else if (name == "focusBorderWidth")
-                    {
-                      if (fRegion != nullptr)
-                        {
-                          fRegion->setFocusBorderWidth (xstrtoint (value, 10));
-                        }
-                    }
-                  else if (name == "focusComponentSrc")
-                    {
-                      if (fRegion != nullptr)
-                        {
-                          fRegion->setFocusComponentSrc (value);
-                        }
-                    }
-                  else if (name == "selBorderColor")
-                    {
-                      if (fRegion != nullptr)
-                        {
-                          SDL_Color *c = new SDL_Color();
-                          ginga_color_input_to_sdl_color(value,c);
-                          fRegion->setSelBorderColor(c);
-                        }
-                    }
-                  else if (name == "selBorderWidth")
-                    {
-                      if (fRegion != nullptr)
-                        {
-                          fRegion->setSelBorderWidth (xstrtoint (value, 10));
-                        }
-                    }
-                  else if (name == "selComponentSrc")
-                    {
-                      if (fRegion != nullptr)
-                        {
-                          fRegion->setSelComponentSrc (value);
-                        }
-                    }
-                  else if (name == "moveUp")
-                    {
-                      if (fRegion != nullptr)
-                        {
-                          fRegion->setMoveUp (value);
-                        }
-                    }
-                  else if (name == "moveDown")
-                    {
-                      if (fRegion != nullptr)
-                        {
-                          fRegion->setMoveDown (value);
-                        }
-                    }
-                  else if (name == "moveLeft")
-                    {
-                      if (fRegion != nullptr)
-                        {
-                          fRegion->setMoveLeft (value);
-                        }
-                    }
-                  else if (name == "moveRight")
-                    {
-                      if (fRegion != nullptr)
-                        {
-                          fRegion->setMoveRight (value);
-                        }
-                    }
-                  else if (name == "plan")
-                    {
-                      plan = value;
-                    }
+                  left = xstrchomp (params[0]);
+                  top = xstrchomp (params[1]);
+                  width = xstrchomp (params[2]);
+                  height = xstrchomp (params[3]);
                 }
             }
-          ++j;
+          else if (name == "location")
+            {
+              params = xstrsplit (xstrchomp (value), ',');
+              if (params.size () == 2)
+                {
+                  left = xstrchomp (params[0]);
+                  top = xstrchomp (params[1]);
+                }
+            }
+          else if (name == "size")
+            {
+              params = xstrsplit (xstrchomp (value), ',');
+              if (params.size () == 2)
+                {
+                  width = xstrchomp (params[0]);
+                  height = xstrchomp (params[1]);
+                }
+            }
+          else if (name == "transparency")
+            {
+              transpValue = xstrtodorpercent (value, &isPercent);
+              parentOpacity = (1
+                               - _manager
+                                     ->getNclPlayerData ()
+                                     ->transparency);
+
+              transpValue = (1 - (parentOpacity
+                                  - (parentOpacity * transpValue)));
+
+              if (fRegion != nullptr)
+                {
+                  fRegion->setTransparency (transpValue);
+                }
+            }
+          else if (name == "background")
+            {
+              if (fRegion != nullptr)
+                {
+                  SDL_Color *bg = new SDL_Color();
+                  ginga_color_input_to_sdl_color(value,bg);
+                  fRegion->setBackgroundColor (bg);
+                }
+            }
+          else if (name == "focusIndex")
+            {
+              if (fRegion != nullptr)
+                {
+                  fRegion->setFocusIndex (value);
+                }
+            }
+          else if (name == "focusBorderColor")
+            {
+              if (fRegion != nullptr)
+                {
+                  SDL_Color *c = new SDL_Color();
+                  ginga_color_input_to_sdl_color(value,c);
+                  fRegion->setFocusBorderColor(c);
+                }
+            }
+          else if (name == "focusBorderWidth")
+            {
+              if (fRegion != nullptr)
+                {
+                  fRegion->setFocusBorderWidth (xstrtoint (value, 10));
+                }
+            }
+          else if (name == "focusComponentSrc")
+            {
+              if (fRegion != nullptr)
+                {
+                  fRegion->setFocusComponentSrc (value);
+                }
+            }
+          else if (name == "selBorderColor")
+            {
+              if (fRegion != nullptr)
+                {
+                  SDL_Color *c = new SDL_Color();
+                  ginga_color_input_to_sdl_color(value,c);
+                  fRegion->setSelBorderColor (c);
+                }
+            }
+          else if (name == "selBorderWidth")
+            {
+              if (fRegion != nullptr)
+                {
+                  fRegion->setSelBorderWidth (xstrtoint (value, 10));
+                }
+            }
+          else if (name == "selComponentSrc")
+            {
+              if (fRegion != nullptr)
+                {
+                  fRegion->setSelComponentSrc (value);
+                }
+            }
+          else if (name == "moveUp")
+            {
+              if (fRegion != nullptr)
+                {
+                  fRegion->setMoveUp (value);
+                }
+            }
+          else if (name == "moveDown")
+            {
+              if (fRegion != nullptr)
+                {
+                  fRegion->setMoveDown (value);
+                }
+            }
+          else if (name == "moveLeft")
+            {
+              if (fRegion != nullptr)
+                {
+                  fRegion->setMoveLeft (value);
+                }
+            }
+          else if (name == "moveRight")
+            {
+              if (fRegion != nullptr)
+                {
+                  fRegion->setMoveRight (value);
+                }
+            }
+          else if (name == "plan")
+            {
+              plan = value;
+            }
         }
     }
 
@@ -915,14 +630,15 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
 
   this->_object = object;
   descriptor = object->getDescriptor ();
-  dataObject = (NodeEntity *)(object->getDataObject ());
+  dataObject = dynamic_cast<NodeEntity *>(object->getDataObject ());
 
-  if (dataObject != nullptr && dataObject->getDataEntity () != nullptr)
+  if (dataObject
+      &&  dataObject->getDataEntity () != nullptr)
     {
-      content
-          = ((NodeEntity *)(dataObject->getDataEntity ()))->getContent ();
+      content = dynamic_cast<NodeEntity *> (dataObject->getDataEntity ())->getContent();
 
-      if (content != nullptr && content->instanceOf ("ReferenceContent"))
+      if (content
+          && content->instanceOf ("ReferenceContent"))
         {
           this->_mrl
               = ((ReferenceContent *)content)->getCompleteReferenceUrl ();
@@ -999,12 +715,9 @@ AdapterFormatterPlayer::prepare ()
   NclCascadingDescriptor *descriptor;
   LayoutRegion *region;
 
-  if (_object == nullptr)
-    {
-      return;
-    }
-
-  if (_player == nullptr)
+  g_assert_nonnull (_object);
+  g_assert_nonnull (_player);
+  if (_object == nullptr || _player == nullptr)
     {
       return;
     }
@@ -1147,12 +860,6 @@ AdapterFormatterPlayer::getOutTransDur ()
   return outTransDur;
 }
 
-double
-AdapterFormatterPlayer::getOutTransTime ()
-{
-  return _outTransTime;
-}
-
 void
 AdapterFormatterPlayer::checkAnchorMonitor ()
 {
@@ -1179,8 +886,6 @@ AdapterFormatterPlayer::start ()
       return false;
     }
 
-  /*clog << "AdapterFormatterPlayer::start(" << object->getId();
-  clog << ")" << endl;*/
   descriptor = _object->getDescriptor ();
   if (descriptor != nullptr)
     {
@@ -1245,11 +950,8 @@ AdapterFormatterPlayer::stop ()
   NclFormatterEvent *mainEvent = nullptr;
   vector<NclFormatterEvent *> *events = nullptr;
 
-
-
   if (_player == nullptr && _object == nullptr)
     {
-
       unlockObject ();
       return false;
     }
@@ -1444,6 +1146,7 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
       clog << "AdapterFormatterPlayer::setPropertyValue Warning!";
       clog << " cant set property '" << event->getId ();
       clog << "' value = '" << value << "' object = '";
+
       if (_object != nullptr)
         {
           clog << _object->getId ();
@@ -1461,21 +1164,15 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
   propName = (event->getAnchor ())->getPropertyName ();
   if (propName == "visible")
     {
-      if (value == "false")
-        {
-          setVisible (false);
-        }
-      else if (value == "true")
-        {
-          setVisible (true);
-        }
+      setVisible (value == "true");
     }
   else
     {
-      if (this->instanceOf ("AdapterApplicationPlayer"))
+      AdapterApplicationPlayer *adapterAppPlayer =
+          dynamic_cast <AdapterApplicationPlayer *> (this);
+      if(adapterAppPlayer)
         {
-          if (!((AdapterApplicationPlayer *)this)
-                   ->setAndLockCurrentEvent (event))
+          if (!adapterAppPlayer->setAndLockCurrentEvent (event))
             {
               return false;
             }
@@ -1523,9 +1220,9 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
           _player->setPropertyValue (propName, value);
         }
 
-      if (this->instanceOf ("AdapterApplicationPlayer"))
+      if (adapterAppPlayer)
         {
-          ((AdapterApplicationPlayer *)this)->unlockCurrentEvent (event);
+          adapterAppPlayer->unlockCurrentEvent (event);
         }
     }
 
@@ -1547,7 +1244,7 @@ AdapterFormatterPlayer::setPropertyValue (const string &name, const string &valu
 }
 
 string
-AdapterFormatterPlayer::getPropertyValue (void *event)
+AdapterFormatterPlayer::getPropertyValue (NclAttributionEvent *event)
 {
   string value = "";
   string name;
@@ -1557,7 +1254,7 @@ AdapterFormatterPlayer::getPropertyValue (void *event)
       return "";
     }
 
-  name = ((NclAttributionEvent *)event)->getAnchor ()->getPropertyName ();
+  name = event->getAnchor ()->getPropertyName ();
   value = getPropertyValue (name);
 
   return value;
@@ -1721,9 +1418,10 @@ AdapterFormatterPlayer::keyInputCallback (SDL_EventType evtType, SDL_Keycode key
       clog << "' event key code = '" << key ;
       clog << "'";
       clog << endl;
+
       if (_player->isVisible ())
         {
-          eventTS = (double) xruntime_ms ();
+          _eventTS = (double) xruntime_ms ();
           _object->selectionEvent (key, _player->getMediaTime () * 1000);
         }
     }
