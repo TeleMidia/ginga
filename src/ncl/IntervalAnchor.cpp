@@ -18,6 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "IntervalAnchor.h"
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-conversion)
+
 GINGA_NCL_BEGIN
 
 // if the representation changes, update isObjectDuration method

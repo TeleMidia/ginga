@@ -29,6 +29,8 @@ using namespace ::ginga::mb;
 #include "player/Player.h"
 using namespace ::ginga::player;
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-conversion)
+
 GINGA_FORMATTER_BEGIN
 
 double AdapterFormatterPlayer::eventTS = 0;

@@ -26,6 +26,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/Display.h"
 using namespace ::ginga::mb;
 
+GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-conversion)
+
 GINGA_FORMATTER_BEGIN
 
 bool FormatterFocusManager::init = false;
