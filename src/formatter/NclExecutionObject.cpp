@@ -646,17 +646,10 @@ NclExecutionObject::getEvent (const string &id)
 vector<NclFormatterEvent *> *
 NclExecutionObject::getEvents ()
 {
-  vector<NclFormatterEvent *> *eventsVector = NULL;
   map<string, NclFormatterEvent *>::iterator i;
+  vector<NclFormatterEvent *> *eventsVector = new vector<NclFormatterEvent *>();
 
   lockEvents ();
-  if (events.empty ())
-    {
-      unlockEvents ();
-      return NULL;
-    }
-
-  eventsVector = new vector<NclFormatterEvent *>;
   for (i = events.begin (); i != events.end (); ++i)
     {
       eventsVector->push_back (i->second);
