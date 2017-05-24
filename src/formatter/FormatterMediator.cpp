@@ -61,7 +61,7 @@ FormatterMediator::FormatterMediator ()
   scheduler = new FormatterScheduler (playerManager, ruleAdapter,
                                       multiDevice, compiler);
 
-  scheduler->addSchedulerListener (this);
+  //scheduler->addSchedulerListener (this);
   compiler->setScheduler (scheduler);
   compiler->setLinkActionListener (scheduler);
 
@@ -101,72 +101,13 @@ FormatterMediator::addDocument (const string &file)
   return this->currentDocument;
 }
 
-void
-FormatterMediator::initializeSettingNodes (Node *node)
-{
-  vector<Node *> *nodes;
-  vector<Node *>::iterator i;
-  NclNodeNesting *perspective;
-  NclExecutionObject *object;
-  NodeEntity *nodeEntity;
-
-  if (!node->instanceOf ("CompositeNode"))
-    {
-      clog << "FormatterMediator::initializeSettingNodes return";
-      clog << endl;
-      return;
-    }
-
-  nodes = ((CompositeNode *)node)->getNodes ();
-  if (nodes != NULL)
-    {
-      i = nodes->begin ();
-      while (i != nodes->end ())
-        {
-          nodeEntity = (NodeEntity *)((*i)->getDataEntity ());
-          clog << "FormatterMediator::initializeSettingNodes checking '";
-          clog << nodeEntity->getId () << "'";
-          clog << endl;
-
-          if (nodeEntity->instanceOf ("ContentNode"))
-            {
-              if (((ContentNode *)nodeEntity)->isSettingNode ())
-                {
-                  perspective
-                    = new NclNodeNesting ((*i)->getPerspective ());
-
-                  object = ((FormatterConverter *)compiler)
-                               ->getExecutionObjectFromPerspective (
-                                   perspective, NULL,
-                                   ((FormatterConverter *)compiler)
-                                       ->getDepthLevel ());
-
-                  if (object != NULL)
-                    {
-                      clog << "FormatterMediator::";
-                      clog << "initializeSettingNodes ";
-                      clog << "created setting node '" << object->getId ();
-                      clog << "'" << endl;
-                    }
-
-                  delete perspective;
-                }
-            }
-          else if (nodeEntity->instanceOf ("CompositeNode"))
-            {
-              initializeSettingNodes (nodeEntity);
-            }
-          ++i;
-        }
-    }
-}
-
 bool
 FormatterMediator::compileDocument (const string &id)
 {
   vector<NclFormatterEvent *> *events;
   vector<Port *> *ports;
   ContextNode *body;
+  ContentNode *settings;
   NclNodeNesting *persp;
 
   NclFormatterEvent *evt;
@@ -217,7 +158,7 @@ FormatterMediator::compileDocument (const string &id)
       port = ports->at (i);
       g_assert_nonnull (port);
 
-      evt = compiler->insertContext (persp, port);
+      evt = this->compiler->insertContext (persp, port);
       g_assert_nonnull (evt);
 
       events->push_back (evt);
@@ -226,10 +167,23 @@ FormatterMediator::compileDocument (const string &id)
   delete ports;
   delete persp;
 
-  g_assert (!events->empty ());
-  initializeSettingNodes (body);
+  // Create execution object for settings.
+  settings = this->currentDocument->getSettingsNode ();
+  if (settings != NULL)
+    {
+      int depth;
 
+      persp = new NclNodeNesting (settings->getPerspective ());
+      depth = this->compiler->getDepthLevel ();
+
+      execobj = this->compiler
+        ->getExecutionObjectFromPerspective (persp, NULL, depth);
+      g_assert_nonnull (execobj);
+    }
+
+  g_assert (!events->empty ());
   evt = events->at (0);
+  g_assert_nonnull (evt);
 
   execobj = (NclExecutionObject *)(evt->getExecutionObject ());
   g_assert_nonnull (execobj);
@@ -241,16 +195,6 @@ FormatterMediator::compileDocument (const string &id)
   this->documentEntryEvents[id] = events;
 
   return true;
-}
-
-void
-FormatterMediator::presentationCompleted (arg_unused (NclFormatterEvent *documentEvent))
-{
-  string documentId;
-  map<string, NclFormatterEvent *>::iterator i;
-
-  documentEvents.clear ();
-  documentEntryEvents.clear ();
 }
 
 bool
@@ -286,7 +230,6 @@ FormatterMediator::stop ()
   string id;
 
   g_assert_nonnull (this->currentDocument);
-  // Player::stop ();
 
   id = currentDocument->getId ();
   evt = documentEvents[id];

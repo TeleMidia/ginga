@@ -27,7 +27,7 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-class FormatterMediator : public IFormatterSchedulerListener
+class FormatterMediator
 {
 private:
   NclPlayerData *data;
@@ -45,9 +45,7 @@ private:
   PresentationContext *presContext;
 
 private:
-  void initializeSettingNodes (Node *node);
   bool compileDocument (const string &documentId);
-  void presentationCompleted (NclFormatterEvent *documentEvent);
 
 public:
   FormatterMediator ();
