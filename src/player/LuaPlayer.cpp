@@ -145,7 +145,6 @@ LuaPlayer::displayJobCallback (arg_unused (DisplayJob *job),
     {
       g_debug ("first cycle");
       this->unlock ();
-      this->condDisplayJobSignal ();
       return true;              // keep job
     }
   else
@@ -170,7 +169,6 @@ LuaPlayer::LuaPlayer (const string &mrl) : Player (mrl)
   g_free (dir);
 
   this->mutexInit ();
-  this->condDisplayJobInit ();
   this->nw = NULL;              // created by start ()
   this->hasExecuted = false;
   this->isKeyHandler = false;
@@ -182,7 +180,6 @@ LuaPlayer::LuaPlayer (const string &mrl) : Player (mrl)
 LuaPlayer::~LuaPlayer (void)
 {
   this->stop ();
-  this->condDisplayJobClear ();
   this->mutexClear ();
 }
 
@@ -227,14 +224,12 @@ LuaPlayer::play (void)
   if (unlikely (this->nw == NULL))
     g_error ("cannot load NCLua file %s: %s", this->mrl.c_str (), errmsg);
 
-//  this->im->addApplicationInputEventListener (this);
   evt_ncl_send_presentation (this->nw, "start", this->scope.c_str ());
 
   Ginga_Display->addJob (displayJobCallbackWrapper, this);
 
   g_debug ("waiting for first cycle");
   this->unlock ();
-  this->condDisplayJobWait ();
 
   Player::play ();
   return true;

@@ -27,6 +27,7 @@ GINGA_FORMATTER_BEGIN
 FormatterMediator::FormatterMediator ()
 {
   NclPlayerData *data;
+  string id;
 
   data = new NclPlayerData;
   data->baseId = "";
@@ -61,7 +62,6 @@ FormatterMediator::FormatterMediator ()
   scheduler = new FormatterScheduler (playerManager, ruleAdapter,
                                       multiDevice, compiler);
 
-  //scheduler->addSchedulerListener (this);
   compiler->setScheduler (scheduler);
   compiler->setLinkActionListener (scheduler);
 
@@ -85,37 +85,28 @@ FormatterMediator::FormatterMediator ()
 
 }
 
-FormatterMediator::~FormatterMediator ()
+bool
+FormatterMediator::play (const string &file)
 {
-}
+  string id;
+  ContextNode *body;
 
-void *
-FormatterMediator::addDocument (const string &file)
-{
+  vector<Port *> *ports;
+  vector<NclFormatterEvent *> *events;
+
+  NclNodeNesting *persp;
+  NclFormatterEvent *evt;
+
+  NclExecutionObject *execobj;
+  NclCompositeExecutionObject *parent;
+
+  // Parse document.
   NclParser compiler (this->deviceLayout);
-
   this->currentFile = xpathmakeabs (file);
   this->currentDocument = compiler.parse (file);
   g_assert_nonnull (this->currentDocument);
 
-  return this->currentDocument;
-}
-
-bool
-FormatterMediator::compileDocument (const string &id)
-{
-  vector<NclFormatterEvent *> *events;
-  vector<Port *> *ports;
-  ContextNode *body;
-  ContentNode *settings;
-  NclNodeNesting *persp;
-
-  NclFormatterEvent *evt;
-  NclExecutionObject *execobj;
-  NclCompositeExecutionObject *parent;
-
-  g_assert (this->documentEvents.count (id) == 0);
-
+  id = this->currentDocument->getId ();
   body = this->currentDocument->getBody ();
   if (unlikely (body == NULL))
     syntax_error ("document has no body");
@@ -168,18 +159,25 @@ FormatterMediator::compileDocument (const string &id)
   delete persp;
 
   // Create execution object for settings.
-  settings = this->currentDocument->getSettingsNode ();
-  if (settings != NULL)
+  vector <Node *> *settings = this->currentDocument->getSettingsNodes ();
+  g_assert_nonnull (settings);
+  for (guint i = 0; i < settings->size (); i++)
     {
       int depth;
 
-      persp = new NclNodeNesting (settings->getPerspective ());
+      persp = new NclNodeNesting ((settings->at (i))->getPerspective ());
       depth = this->compiler->getDepthLevel ();
 
       execobj = this->compiler
         ->getExecutionObjectFromPerspective (persp, NULL, depth);
       g_assert_nonnull (execobj);
+
+      g_debug ("execution object %p for settings %s",
+               execobj, persp->toString ().c_str ());
+
+      delete persp;
     }
+  delete settings;
 
   g_assert (!events->empty ());
   evt = events->at (0);
@@ -194,47 +192,9 @@ FormatterMediator::compileDocument (const string &id)
   this->documentEvents[id] = evt;
   this->documentEntryEvents[id] = events;
 
+  scheduler->startDocument (evt, events);
+
   return true;
-}
-
-bool
-FormatterMediator::play ()
-{
-  NclFormatterEvent *docevt;
-  vector<NclFormatterEvent *> *evts;
-  string id;
-
-  g_assert_nonnull (this->currentDocument);
-  id = currentDocument->getId ();
-
-  compileDocument (id);
-
-  if (unlikely (this->documentEvents.count (id) == 0))
-    return true;
-
-  g_assert (this->documentEvents.count (id) > 0);
-  docevt = this->documentEvents[id];
-  g_assert_nonnull (docevt);
-
-  evts = this->documentEntryEvents[id];
-  g_assert_nonnull (evts);
-
-  scheduler->startDocument (docevt, evts);
-  return true;
-}
-
-void
-FormatterMediator::stop ()
-{
-  NclFormatterEvent *evt;
-  string id;
-
-  g_assert_nonnull (this->currentDocument);
-
-  id = currentDocument->getId ();
-  evt = documentEvents[id];
-  g_assert_nonnull (evt);
-  this->scheduler->stopDocument (evt);
 }
 
 GINGA_FORMATTER_END

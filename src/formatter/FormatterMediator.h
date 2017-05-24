@@ -44,15 +44,10 @@ private:
   FormatterMultiDevice *multiDevice;
   PresentationContext *presContext;
 
-private:
-  bool compileDocument (const string &documentId);
-
 public:
   FormatterMediator ();
   ~FormatterMediator ();
-  void *addDocument (const string &file);
-  bool play ();
-  void stop ();
+  bool play (const string &file);
 };
 
 GINGA_FORMATTER_END

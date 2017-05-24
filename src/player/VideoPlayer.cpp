@@ -24,25 +24,18 @@ GINGA_PLAYER_BEGIN
 
 VideoPlayer::VideoPlayer (const string &mrl) : Thread (), Player (mrl)
 {
-	//TRACE ();
   this->soundLevel = 1.0;
-
   this->texture = NULL;
-
   this->playbin = NULL;
   this->binVideo = NULL;
   this->filterVideo = NULL;
   this->sample = NULL;
-
   this->mutexInit ();
-  this->condDisplayJobInit ();
-
   createPipeline ();
 }
 
 VideoPlayer::~VideoPlayer ()
 {
-  this->condDisplayJobClear ();
   this->mutexClear ();
 }
 
@@ -52,11 +45,7 @@ VideoPlayer::createPipeline ()
   GstElement *scale;
   GstElement *sinkVideo;
 
-  //GstElement *convertAudio;
-  //GstElement *sinkAudio;
-
   GstPad *padVideo;
-  //GstPad *padAudio;
 
   char *uri;
 
@@ -71,7 +60,6 @@ VideoPlayer::createPipeline ()
   g_object_set (G_OBJECT (this->playbin), "uri", uri, NULL);
   g_free (uri);
 
-  
   this->binVideo = gst_bin_new (NULL);
   g_assert_nonnull (this->binVideo);
 
@@ -93,14 +81,14 @@ VideoPlayer::createPipeline ()
 
   padVideo = gst_element_get_static_pad (this->filterVideo, "sink");
   gst_element_add_pad (this->binVideo, gst_ghost_pad_new ("sink", padVideo));
-  
-  //TODO 
+
+  //TODO
   //audio filter to handle properties
   /*this->binAudio = gst_bin_new (NULL);
   g_assert_nonnull (this->binAudio);
 
   this->filterAudio = gst_element_factory_make ("capsfilter", NULL);
-  g_assert_nonnull (this->filterAudio); 
+  g_assert_nonnull (this->filterAudio);
 
   this->audiopanorama = gst_element_factory_make ("audiopanorama", NULL);
   g_assert_nonnull (this->audiopanorama);
@@ -132,11 +120,11 @@ VideoPlayer::createPipeline ()
   callbacks.new_sample = newSampleCB;
   gst_app_sink_set_callbacks (GST_APP_SINK (sinkVideo), &callbacks, this, NULL);
 
-//  bus = gst_element_get_bus (this->playbin);
-//  msg = gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE,
-//                                    (GstMessageType)(GST_MESSAGE_ERROR | GST_MESSAGE_EOS));
-//  gst_object_unref (this->playbin);
-//  gst_object_unref (bin);
+  //  bus = gst_element_get_bus (this->playbin);
+  //  msg = gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE,
+  //                                    (GstMessageType)(GST_MESSAGE_ERROR | GST_MESSAGE_EOS));
+  //  gst_object_unref (this->playbin);
+  //  gst_object_unref (bin);
 }
 
 void
@@ -218,7 +206,7 @@ VideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
                                 this->rect.h);
       g_assert_nonnull (this->texture);
 
-      this->condDisplayJobSignal ();
+      //this->condDisplayJobSignal ();
     }
 
 
@@ -317,7 +305,7 @@ VideoPlayer::play ()
     if ( n_video > 0 )
     {
       Ginga_Display->addJob (displayJobCallbackWrapper, this);
-      this->condDisplayJobWait ();
+      //this->condDisplayJobWait ();
       Thread::startThread ();
       //this->unlock ();
     }
@@ -440,7 +428,7 @@ VideoPlayer::setPropertyValue (const string &name, const string &value)
       g_object_set (G_OBJECT (this->playbin), "volume",
                     this->soundLevel, NULL);
   }
-  
+
   //TODO
   //balanceLevel (Gstreamer audiopanorama)
   //trebleLevel
@@ -475,7 +463,7 @@ VideoPlayer::setOutWindow (SDLWindow* windowId)
   GstStructure *st;
 
   this->window = windowId;
-  if(windowId!=NULL) 
+  if(windowId!=NULL)
   {
       this->rect = windowId->getRect();
       this->z = windowId->getZ();

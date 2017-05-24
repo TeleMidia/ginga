@@ -28,8 +28,6 @@ class ImagePlayer : public Player
 {
 private:
   GINGA_MUTEX_DEFN ();
-  GINGA_COND_DEFN (DisplayJob);
-
   static bool displayJobCallbackWrapper (DisplayJob *,
                                          SDL_Renderer *, void *);
   bool displayJobCallback (DisplayJob *, SDL_Renderer *);

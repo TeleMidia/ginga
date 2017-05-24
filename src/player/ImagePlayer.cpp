@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "mb/Display.h"
 #include "mb/SDLWindow.h"
-//using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
@@ -43,44 +42,31 @@ ImagePlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
   this->texture = IMG_LoadTexture (renderer, mrl.c_str ());
   if (unlikely (this->texture == NULL))
-    g_error ("cannot load image file %s: %s", mrl.c_str (),
-             IMG_GetError ());
+    {
+      g_error ("cannot load image file %s: %s", mrl.c_str (),
+               IMG_GetError ());
+    }
 
-  //this->window->setTexture (texture);
-
-  this->condDisplayJobSignal ();
   return false;                 // remove job
 }
 
 
 // Public methods.
 
-/**
- * Creates ImagePlayer for the given URI
- */
 ImagePlayer::ImagePlayer (const string &uri) : Player (uri)
 {
   this->mutexInit ();
-  this->condDisplayJobInit ();
 }
 
-/**
- * Destroys ImagePlayer.
- */
 ImagePlayer::~ImagePlayer (void)
 {
-  this->condDisplayJobClear ();
   this->mutexClear ();
 }
 
-/**
- * Present player content.
- */
 bool
 ImagePlayer::play ()
 {
   Ginga_Display->addJob (displayJobCallbackWrapper, this);
-  this->condDisplayJobWait ();
   return Player::play ();
 }
 

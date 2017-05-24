@@ -773,46 +773,53 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
 
   if (left != "")
     {
-      region->setLeft (xstrtodorpercent (value, &isPercent),
-                       isPercent);
+      double x = xstrtodorpercent (value, &isPercent);
+      if (isPercent)
+        x *= 100;
+      region->setLeft (x, isPercent);
     }
 
   if (top != "")
     {
-      region->setTop (xstrtodorpercent (value, &isPercent),
-                      isPercent);
+      double x = xstrtodorpercent (value, &isPercent);
+      if (isPercent)
+        x *= 100;
+      region->setTop (x, isPercent);
     }
 
   if (width != "")
     {
-      region->setWidth (xstrtodorpercent (value, &isPercent),
-                        isPercent);
+      double x = xstrtodorpercent (value, &isPercent);
+      if (isPercent)
+        x *= 100;
+      region->setWidth (x, isPercent);
     }
 
   if (height != "")
     {
-      region->setHeight (xstrtodorpercent (value, &isPercent),
-                         isPercent);
+      double x = xstrtodorpercent (value, &isPercent);
+      if (isPercent)
+        x *= 100;
+      region->setHeight (x, isPercent);
     }
 
   if (bottom != "")
     {
-      region->setBottom (xstrtodorpercent (value, &isPercent),
-                         isPercent);
+      double x = xstrtodorpercent (value, &isPercent);
+      if (isPercent)
+        x *= 100;
+      region->setBottom (x, isPercent);
     }
 
   if (right != "")
     {
-      region->setRight (xstrtodorpercent (value, &isPercent),
-                        isPercent);
+      double x = xstrtodorpercent (value, &isPercent);
+      if (isPercent)
+        x *= 100;
+      region->setRight (x, isPercent);
     }
 
-  if (plan == "" && _mrl.find ("sbtvd-ts://") != std::string::npos)
-    {
-      plan = "video";
-    }
-
-  if (plan == "")
+   if (plan == "")
     {
       plan = "graphic";
     }

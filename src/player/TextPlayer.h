@@ -30,6 +30,8 @@ GINGA_PLAYER_BEGIN
 class TextPlayer : public Player
 {
 private:
+  GINGA_MUTEX_DEFN ();
+
   SDL_Color fontColor;
   string fontFamily;
   string fontStyle;
@@ -38,9 +40,6 @@ private:
   string fontWeight;
   string textAlign;
   string verticalAlign;
-
-  GINGA_MUTEX_DEFN ();
-  GINGA_COND_DEFN (DisplayJob);
 
   static bool displayJobCallbackWrapper (DisplayJob *,
                                          SDL_Renderer *, void *);

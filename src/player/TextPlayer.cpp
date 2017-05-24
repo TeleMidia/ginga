@@ -71,7 +71,7 @@ TextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
                               0xff000000,
                               0x00ff0000,
                               0x0000ff00,
-                              0x000000ff); 
+                              0x000000ff);
 #endif
 
     g_assert_nonnull (sfc);
@@ -118,8 +118,8 @@ TextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
     cairo_move_to (cr, 0, vAlign);
     pango_cairo_show_layout (cr, layout);
-    
-    
+
+
 
     // free the layout object
     g_object_unref (layout);
@@ -129,13 +129,13 @@ TextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
     this->texture = SDL_CreateTextureFromSurface (renderer, sfc);
     g_assert_nonnull (this->texture);
-    
+
     SDLx_UnlockSurface (sfc);
     SDL_FreeSurface(sfc);
-     
+
    // this->window->setTexture (this->texture);
 
-    this->condDisplayJobSignal ();
+    //this->condDisplayJobSignal ();
     return false;                 // remove job
 }
 
@@ -153,14 +153,11 @@ TextPlayer::TextPlayer (const string &uri) : Player (uri)
   fontWeight="";
   textAlign="left";
   verticalAlign="top";
-
   this->mutexInit ();
-  this->condDisplayJobInit ();
 }
 
 TextPlayer::~TextPlayer (void)
 {
-  this->condDisplayJobClear ();
   this->mutexClear ();
 }
 
@@ -169,7 +166,7 @@ TextPlayer::play ()
 {
 
   Ginga_Display->addJob (displayJobCallbackWrapper, this);
-  this->condDisplayJobWait ();
+  //this->condDisplayJobWait ();
   return Player::play ();
 }
 
@@ -210,7 +207,7 @@ TextPlayer::setPropertyValue (const string &name, const string &value){
 
   if(status!=OCCURRING)return;
   Ginga_Display->addJob (displayJobCallbackWrapper, this);
-  this->condDisplayJobWait ();
+  //this->condDisplayJobWait ();
 }
 
 GINGA_PLAYER_END

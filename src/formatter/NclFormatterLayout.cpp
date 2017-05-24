@@ -128,6 +128,8 @@ void
 NclFormatterLayout::createDeviceRegion (int w, int h)
 {
   deviceRegion = new NclFormatterDeviceRegion ("defaultScreenFormatter");
+  deviceRegion->setTop (0, false);
+  deviceRegion->setLeft (0, false);
   deviceRegion->setWidth (w, false);
   deviceRegion->setHeight (h, false);
 }

@@ -617,7 +617,6 @@ void
 NclFormatterDeviceRegion::dispose ()
 {
   removeRegions ();
-  // sortedRegions = NULL;
 }
 
 string
@@ -630,18 +629,6 @@ void
 NclFormatterDeviceRegion::setId (const string &id)
 {
   this->id = id;
-}
-
-Entity *
-NclFormatterDeviceRegion::getDataEntity ()
-{
-  return NULL;
-}
-
-int
-NclFormatterDeviceRegion::compareTo (arg_unused (void *arg0))
-{
-  return 0;
 }
 
 GINGA_FORMATTER_END
