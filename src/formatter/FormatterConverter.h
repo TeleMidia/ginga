@@ -146,10 +146,6 @@ public:
                                int ncmEventType, const string &key);
 
 private:
-  void
-  createMultichannelObject (NclCompositeExecutionObject *compositeObject,
-                            int depthLevel);
-
   NclExecutionObject *
   createExecutionObject (const string &id, NclNodeNesting *perspective,
                          NclCascadingDescriptor *descriptor,

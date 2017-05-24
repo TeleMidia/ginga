@@ -388,20 +388,7 @@ FormatterConverter::addExecutionObject (
               descriptor, executionObject)));
     }
 
-  if (descriptor != NULL && descriptor->getPlayerName () != ""
-      && ((descriptor->getPlayerName () == "VideoChannelPlayerAdapter")
-          || (descriptor->getPlayerName () == "AudioChannelPlayerAdapter")
-          || (descriptor->getPlayerName ()
-              == "JmfVideoChannelPlayerAdapter")
-          || (descriptor->getPlayerName ()
-              == "JmfAudioChannelPlayerAdapter")
-          || (descriptor->getPlayerName () == "QtVideoChannelPlayerAdapter")
-          || (descriptor->getPlayerName ()
-              == "QtAudioChannelPlayerAdapter")))
-    {
-      createMultichannelObject (
-          (NclCompositeExecutionObject *)executionObject, depthLevel);
-    }
+  g_assert (descriptor != NULL && descriptor->getPlayerName () != "");
 
   if (depthLevel != 0)
     {
@@ -690,57 +677,6 @@ FormatterConverter::getEvent (NclExecutionObject *executionObject,
     }
 
   return event;
-}
-
-void
-FormatterConverter::createMultichannelObject (
-    NclCompositeExecutionObject *compositeObject, int depthLevel)
-{
-  CompositeNode *compositeNode;
-  vector<Node *> *nodes;
-  Node *node;
-  NclNodeNesting *perspective;
-  string id;
-  NclCascadingDescriptor *cascadingDescriptor;
-  NclExecutionObject *childObject;
-
-  compositeNode = (CompositeNode *)compositeObject->getDataObject ();
-  nodes = compositeNode->getNodes ();
-  if (nodes != NULL)
-    {
-      vector<Node *>::iterator i;
-      i = nodes->begin ();
-      while (i != nodes->end ())
-        {
-          node = *i;
-          perspective
-              = new NclNodeNesting (compositeObject->getNodePerspective ());
-
-          perspective->insertAnchorNode (node);
-
-          id = perspective->getId () + "/";
-          cascadingDescriptor = getCascadingDescriptor (perspective, NULL);
-
-          if (cascadingDescriptor != NULL)
-            {
-              id += cascadingDescriptor->getId ();
-            }
-
-          childObject = createExecutionObject (
-              id, perspective, cascadingDescriptor, depthLevel);
-
-          if (childObject != NULL)
-            {
-              getEvent (childObject, ((NodeEntity *)node->getDataEntity ())
-                                         ->getLambdaAnchor (),
-                        EventUtil::EVT_PRESENTATION, "");
-
-              addExecutionObject (childObject, compositeObject, depthLevel);
-            }
-
-          ++i;
-        }
-    }
 }
 
 NclExecutionObject *
