@@ -31,29 +31,25 @@ typedef struct
 
 class PlayerAnimator
 {
-  public:  
-   PlayerAnimator();
-   ~PlayerAnimator();
-   void addProperty(const string &dur, const string &name, const string &value);
-   void update(SDL_Rect* rect, guint8* red, 
-               guint8* green,guint8* blue, 
-               guint8* alpha);
+public:
+  PlayerAnimator();
+  ~PlayerAnimator();
+  void addProperty(const string &dur, const string &name, const string &value);
+  void update(SDL_Rect* rect, guint8* r, guint8* g, guint8* b, guint8* alpha);
 
-   private:
-   GList *properties; 
-   void updateList(const string &dur, const string &name, const string &value);
-   void updatePosition(SDL_Rect* rect, ANIM_PROPERTY* pr);
-   void updateColor(guint8* alpha,  guint8* red, 
-                    guint8* green,guint8* blue,
-                    ANIM_PROPERTY* pr);
-   void calculePosition(gint32* value, ANIM_PROPERTY* pr,gint32 dir);
-   void calculeColor(guint8* value, ANIM_PROPERTY* pr,gint32 dir);
-   bool calculeVelocity(gint32* value, ANIM_PROPERTY* pr);
-   bool calculeVelocity(guint8* value, ANIM_PROPERTY* pr);
-   gdouble cvtTimeIntToDouble(guint32 value);
-   gdouble getAnimationVelocity(gdouble initPos,
-                                gdouble finalPos,
-                                gdouble duration);
+private:
+  GList *properties;
+  void updateList(const string &dur, const string &name, const string &value);
+  void updatePosition(SDL_Rect* rect, ANIM_PROPERTY* pr);
+  void updateColor(guint8* alpha,  guint8* red,
+                   guint8* green,guint8* blue,
+                   ANIM_PROPERTY* pr);
+  void calculatePosition(gint32* value, ANIM_PROPERTY* pr,gint32 dir);
+  void calculateColor(guint8* value, ANIM_PROPERTY* pr,gint32 dir);
+  bool calculateVelocity(gint32* value, ANIM_PROPERTY* pr);
+  bool calculateVelocity(guint8* value, ANIM_PROPERTY* pr);
+  gdouble cvtTimeIntToDouble(guint32 value);
+  gdouble getAnimationVelocity(gdouble initPos, gdouble finalPos, gdouble dur);
 
 };
 
