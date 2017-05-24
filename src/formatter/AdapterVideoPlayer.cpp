@@ -23,7 +23,6 @@ GINGA_FORMATTER_BEGIN
 
 AdapterVideoPlayer::AdapterVideoPlayer () : AdapterFormatterPlayer ()
 {
-  _typeSet.insert ("AdapterVideoPlayer");
 }
 
 void
@@ -33,12 +32,6 @@ AdapterVideoPlayer::createPlayer ()
   AdapterFormatterPlayer::createPlayer ();
 
   clog << "AdapaterVideoPlayer::createPlayer for '" << _mrl << "'" << endl;
-}
-
-bool
-AdapterVideoPlayer::setPropertyValue (NclAttributionEvent *event, const string &value)
-{
-  return AdapterFormatterPlayer::setPropertyValue (event, value);
 }
 
 GINGA_FORMATTER_END
