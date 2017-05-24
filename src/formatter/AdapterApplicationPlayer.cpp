@@ -29,11 +29,11 @@ GINGA_FORMATTER_BEGIN
 AdapterApplicationPlayer::AdapterApplicationPlayer ()
     : AdapterFormatterPlayer ()
 {
-  Thread::mutexInit (&eventMutex, false);
-  Thread::mutexInit (&eventsMutex, false);
+  Thread::mutexInit (&_eventMutex, false);
+  Thread::mutexInit (&_eventsMutex, false);
 
-  currentEvent = NULL;
-  running = false;
+  _currentEvent = NULL;
+  _running = false;
   isDeleting = false;
 
   clog << "AdapterApplicationPlayer::AdapterApplicationPlayer(" << this;
@@ -48,26 +48,26 @@ AdapterApplicationPlayer::~AdapterApplicationPlayer ()
   clog << ")" << endl;
 
   isDeleting = true;
-  running = false;
+  _running = false;
   unlockConditionSatisfied ();
 
   lock ();
-  i = notes.begin ();
-  while (i != notes.end ())
+  i = _notes.begin ();
+  while (i != _notes.end ())
     {
       delete (*i);
       ++i;
     }
-  notes.clear ();
+  _notes.clear ();
   unlock ();
 
   lockPreparedEvents ();
-  preparedEvents.clear ();
+  _preparedEvents.clear ();
   unlockPreparedEvents ();
-  currentEvent = NULL;
+  _currentEvent = NULL;
   _object = NULL;
-  Thread::mutexDestroy (&eventMutex);
-  Thread::mutexDestroy (&eventsMutex);
+  Thread::mutexDestroy (&_eventMutex);
+  Thread::mutexDestroy (&_eventsMutex);
 }
 
 void
@@ -103,7 +103,7 @@ AdapterApplicationPlayer::prepare (NclExecutionObject *object,
   if (this->_object != object)
     {
       lockPreparedEvents ();
-      preparedEvents.clear ();
+      _preparedEvents.clear ();
       unlockPreparedEvents ();
 
       lockObject ();
@@ -284,7 +284,7 @@ AdapterApplicationPlayer::prepare (NclFormatterEvent *event)
     }
 
   lockPreparedEvents ();
-  preparedEvents[event->getId ()] = event;
+  _preparedEvents[event->getId ()] = event;
   unlockPreparedEvents ();
 }
 
@@ -328,9 +328,9 @@ AdapterApplicationPlayer::stop ()
   NclFormatterEvent *event;
   bool stopLambda = false;
 
-  if (currentEvent != NULL && currentEvent->instanceOf ("NclAnchorEvent")
-      && ((NclAnchorEvent *)currentEvent)->getAnchor () != NULL
-      && ((NclAnchorEvent *)currentEvent)
+  if (_currentEvent != NULL && _currentEvent->instanceOf ("NclAnchorEvent")
+      && ((NclAnchorEvent *)_currentEvent)->getAnchor () != NULL
+      && ((NclAnchorEvent *)_currentEvent)
              ->getAnchor ()
              ->instanceOf ("LambdaAnchor"))
     {
@@ -342,22 +342,22 @@ AdapterApplicationPlayer::stop ()
       clog << "AdapterApplicationPlayer::stop ALL" << endl;
 
       lockPreparedEvents ();
-      if (currentEvent->getCurrentState () != EventUtil::ST_SLEEPING
+      if (_currentEvent->getCurrentState () != EventUtil::ST_SLEEPING
           && _player != NULL)
         {
           _player->stop ();
           _player->notifyReferPlayers (EventUtil::TR_STOPS);
         }
 
-      i = preparedEvents.begin ();
-      while (i != preparedEvents.end ())
+      i = _preparedEvents.begin ();
+      while (i != _preparedEvents.end ())
         {
           event = i->second;
-          if (event != currentEvent
+          if (event != _currentEvent
               && event->getCurrentState () != EventUtil::ST_SLEEPING)
             {
-              preparedEvents.erase (i);
-              i = preparedEvents.begin ();
+              _preparedEvents.erase (i);
+              i = _preparedEvents.begin ();
 
               clog << "AdapterApplicationPlayer::stop ALL forcing '";
               clog << event->getId () << "' to stop" << endl;
@@ -389,10 +389,10 @@ AdapterApplicationPlayer::stop ()
       return true;
     }
 
-  if (stopLambda && !currentEvent->stop ())
+  if (stopLambda && !_currentEvent->stop ())
     {
       clog << "AdapterApplicationPlayer::stop '";
-      clog << currentEvent->getId () << "' is already sleeping";
+      clog << _currentEvent->getId () << "' is already sleeping";
       clog << endl;
     }
   else
@@ -444,9 +444,9 @@ AdapterApplicationPlayer::abort ()
   NclFormatterEvent *event;
   bool abortLambda = false;
 
-  if (currentEvent != NULL && currentEvent->instanceOf ("NclAnchorEvent")
-      && ((NclAnchorEvent *)currentEvent)->getAnchor () != NULL
-      && ((NclAnchorEvent *)currentEvent)
+  if (_currentEvent != NULL && _currentEvent->instanceOf ("NclAnchorEvent")
+      && ((NclAnchorEvent *)_currentEvent)->getAnchor () != NULL
+      && ((NclAnchorEvent *)_currentEvent)
              ->getAnchor ()
              ->instanceOf ("LambdaAnchor"))
     {
@@ -461,15 +461,15 @@ AdapterApplicationPlayer::abort ()
       _player->notifyReferPlayers (EventUtil::TR_ABORTS);
 
       lockPreparedEvents ();
-      i = preparedEvents.begin ();
-      while (i != preparedEvents.end ())
+      i = _preparedEvents.begin ();
+      while (i != _preparedEvents.end ())
         {
           event = i->second;
-          if (event != currentEvent
+          if (event != _currentEvent
               && event->getCurrentState () != EventUtil::ST_SLEEPING)
             {
-              preparedEvents.erase (i);
-              i = preparedEvents.begin ();
+              _preparedEvents.erase (i);
+              i = _preparedEvents.begin ();
 
               clog << "AdapterApplicationPlayer::abort ALL forcing '";
               clog << event->getId () << "' to abort" << endl;
@@ -501,10 +501,10 @@ AdapterApplicationPlayer::abort ()
       return true;
     }
 
-  if (abortLambda && !currentEvent->abort ())
+  if (abortLambda && !_currentEvent->abort ())
     {
       clog << "AdapterApplicationPlayer::abort '";
-      clog << currentEvent->getId () << "' is already sleeping";
+      clog << _currentEvent->getId () << "' is already sleeping";
       clog << endl;
     }
   else
@@ -524,7 +524,7 @@ AdapterApplicationPlayer::unprepare ()
   clog << "AdapterApplicationPlayer::unprepare ";
   clog << endl;
 
-  if (currentEvent == NULL)
+  if (_currentEvent == NULL)
     {
     
 
@@ -537,19 +537,19 @@ AdapterApplicationPlayer::unprepare ()
       return true;
     }
 
-  if (currentEvent->getCurrentState () == EventUtil::ST_OCCURRING
-      || currentEvent->getCurrentState () == EventUtil::ST_PAUSED)
+  if (_currentEvent->getCurrentState () == EventUtil::ST_OCCURRING
+      || _currentEvent->getCurrentState () == EventUtil::ST_PAUSED)
     {
       clog << "AdapterApplicationPlayer::unprepare stopping ";
-      clog << "current event '" << currentEvent->getId () << "'";
+      clog << "current event '" << _currentEvent->getId () << "'";
       clog << endl;
 
-      currentEvent->stop ();
+      _currentEvent->stop ();
     }
 
   lockPreparedEvents ();
-  if (preparedEvents.count (currentEvent->getId ()) != 0
-      && preparedEvents.size () == 1)
+  if (_preparedEvents.count (_currentEvent->getId ()) != 0
+      && _preparedEvents.size () == 1)
     {
       if (_object != NULL)
         {
@@ -557,7 +557,7 @@ AdapterApplicationPlayer::unprepare ()
           _manager->removePlayer (_object);
         }
 
-      preparedEvents.clear ();
+      _preparedEvents.clear ();
 
       _object = NULL;
     }
@@ -568,14 +568,14 @@ AdapterApplicationPlayer::unprepare ()
           _object->unprepare ();
         }
 
-      i = preparedEvents.find (currentEvent->getId ());
-      if (i != preparedEvents.end ())
+      i = _preparedEvents.find (_currentEvent->getId ());
+      if (i != _preparedEvents.end ())
         {
-          preparedEvents.erase (i);
+          _preparedEvents.erase (i);
         }
 
       clog << "AdapterApplicationPlayer::unprepare I still have '";
-      clog << preparedEvents.size () << "' prepared events" << endl;
+      clog << _preparedEvents.size () << "' prepared events" << endl;
     }
 
   unlockPreparedEvents ();
@@ -598,8 +598,8 @@ AdapterApplicationPlayer::naturalEnd ()
     }
 
   lockPreparedEvents ();
-  i = preparedEvents.begin ();
-  while (i != preparedEvents.end ())
+  i = _preparedEvents.begin ();
+  while (i != _preparedEvents.end ())
     {
       event = i->second;
       if (event != NULL && event->instanceOf ("NclAnchorEvent")
@@ -641,13 +641,13 @@ AdapterApplicationPlayer::updateStatus (short code,
   data->type = type;
   data->value = value;
 
-  if (!running)
+  if (!_running)
     {
-      running = true;
+      _running = true;
       Thread::startThread ();
     }
 
-  notes.push_back (data);
+  _notes.push_back (data);
 
   unlock ();
 
@@ -726,12 +726,12 @@ AdapterApplicationPlayer::run ()
   string value;
   ApplicationStatus *data;
 
-  while (running)
+  while (_running)
     {
       lock ();
-      if (!notes.empty ())
+      if (!_notes.empty ())
         {
-          data = *notes.begin ();
+          data = *_notes.begin ();
 
           code = data->code;
           param = data->param;
@@ -740,7 +740,7 @@ AdapterApplicationPlayer::run ()
 
           delete data;
           data = NULL;
-          notes.erase (notes.begin ());
+          _notes.erase (_notes.begin ());
         }
       else
         {
@@ -761,7 +761,7 @@ AdapterApplicationPlayer::run ()
       code = -1;
 
       lock ();
-      if (notes.empty () && running && !isDeleting)
+      if (_notes.empty () && _running && !isDeleting)
         {
           unlock ();
           waitForUnlockCondition ();
@@ -1100,25 +1100,25 @@ AdapterApplicationPlayer::resumeEvent (const string &anchorId, short type)
 void
 AdapterApplicationPlayer::lockEvent ()
 {
-  Thread::mutexLock (&eventMutex);
+  Thread::mutexLock (&_eventMutex);
 }
 
 void
 AdapterApplicationPlayer::unlockEvent ()
 {
-  Thread::mutexUnlock (&eventMutex);
+  Thread::mutexUnlock (&_eventMutex);
 }
 
 void
 AdapterApplicationPlayer::lockPreparedEvents ()
 {
-  Thread::mutexLock (&eventsMutex);
+  Thread::mutexLock (&_eventsMutex);
 }
 
 void
 AdapterApplicationPlayer::unlockPreparedEvents ()
 {
-  Thread::mutexUnlock (&eventsMutex);
+  Thread::mutexUnlock (&_eventsMutex);
 }
 
 GINGA_FORMATTER_END

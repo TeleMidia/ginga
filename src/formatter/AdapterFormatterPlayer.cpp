@@ -33,8 +33,6 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-conversion)
 
 GINGA_FORMATTER_BEGIN
 
-double AdapterFormatterPlayer::_eventTS = 0;
-
 AdapterFormatterPlayer::AdapterFormatterPlayer ()
 {
   this->_manager = nullptr;
@@ -49,8 +47,6 @@ AdapterFormatterPlayer::AdapterFormatterPlayer ()
 
 AdapterFormatterPlayer::~AdapterFormatterPlayer ()
 {
-  Ginga_Display->unregisterKeyEventListener(this);
-
   lockObject ();
 
   if (_object != nullptr)
@@ -128,8 +124,8 @@ AdapterFormatterPlayer::createPlayer ()
                        property->getPropertyValue().c_str(),
                        _mrl.c_str());
 
-              _player->setPropertyValue(property->getPropertyName(),
-                                        property->getPropertyValue());
+              _player->setPropertyValue (property->getPropertyName(),
+                                         property->getPropertyValue());
             }
         }
     }
@@ -162,22 +158,24 @@ AdapterFormatterPlayer::hasPrepared ()
 
   if (_object == nullptr || _player == nullptr)
     {
-      clog << "AdapterFormatterPlayer::hasPrepared return false because";
-      clog << " object = '" << _object << "' and player = '";
-      clog << _player << "'" << endl;
+      g_debug ("AdapterFormatterPlayer::hasPrepared returns false because"
+               " object = '%p' and player = '%p'",
+               _object, _player);
       return false;
     }
 
   presented = _player->isForcedNaturalEnd ();
   if (presented)
     {
-      clog << "AdapterFormatterPlayer::hasPrepared return false because";
-      clog << " a natural end was forced" << endl;
+      g_debug ("AdapterFormatterPlayer::hasPrepared return false because"
+               " a natural end was forced");
       return false;
     }
 
   mEv = _object->getMainEvent ();
-  if (mEv != nullptr && !_object->instanceOf ("NclApplicationExecutionObject"))
+  NclApplicationExecutionObject *appExeObj =
+      dynamic_cast <NclApplicationExecutionObject *> (_object);
+  if (mEv != nullptr && (appExeObj == nullptr))
     {
       st = mEv->getCurrentState ();
       if (st != EventUtil::ST_SLEEPING)
@@ -847,6 +845,7 @@ AdapterFormatterPlayer::start ()
   string paramValue;
 
   g_assert_nonnull (_object);
+  g_assert_nonnull (_player);
 
   if (!_object->isSleeping ())
     {
@@ -870,63 +869,44 @@ AdapterFormatterPlayer::start ()
         }
     }
 
-  if (_object != nullptr)
+  bool startSuccess = _player->play ();
+
+  if (startSuccess)
     {
-      bool startSuccess = false;
-
-      if (_player != nullptr)
+      if (!_object->start ())
         {
-          startSuccess = _player->play ();
+          _player->stop ();
+          startSuccess = false;
         }
-
-      if (startSuccess)
+      else
         {
-          if (!_object->start ())
-            {
-              if (_player != nullptr)
-                {
-                  _player->stop ();
-                }
-              startSuccess = false;
-            }
-          else
-            {
-              checkAnchorMonitor ();
-            }
+          checkAnchorMonitor ();
         }
-
-      return startSuccess;
     }
-  return false;
+
+  return startSuccess;
 }
 
 bool
 AdapterFormatterPlayer::stop ()
 {
+  g_assert_nonnull (_object);
+  g_assert_nonnull (_player);
+
   NclFormatterEvent *mainEvent = nullptr;
   vector<NclFormatterEvent *> *events = nullptr;
 
-  if (_player == nullptr && _object == nullptr)
-    {
-      unlockObject ();
-      return false;
-    }
-  else if (_object != nullptr)
-    {
-      mainEvent = _object->getMainEvent ();
-      events = _object->getEvents ();
-    }
+  mainEvent = _object->getMainEvent ();
+  events = _object->getEvents ();
 
   if (mainEvent != nullptr)
     {
       NclPresentationEvent *presentationEvt
           = dynamic_cast <NclPresentationEvent *> (mainEvent);
-      if (presentationEvt)
+
+      if ( presentationEvt && checkRepeat(presentationEvt) )
         {
-          if (checkRepeat (presentationEvt))
-          {
             return true;
-          }
         }
     }
 
@@ -943,7 +923,6 @@ AdapterFormatterPlayer::stop ()
         }
     }
 
-  g_assert_nonnull(_player);
   _player->stop ();
   _player->notifyReferPlayers (EventUtil::TR_STOPS);
 
@@ -953,7 +932,7 @@ AdapterFormatterPlayer::stop ()
       _object->stop ();
       return unprepare ();
     }
-  else if (_object != nullptr)
+  else
     {
       _object->stop ();
       unprepare ();
@@ -968,6 +947,7 @@ AdapterFormatterPlayer::pause ()
 {
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
+
   if (_object->pause ())
     {
       _player->pause ();
@@ -998,20 +978,17 @@ AdapterFormatterPlayer::resume ()
 bool
 AdapterFormatterPlayer::abort ()
 {
-  if (_player != nullptr)
-    {
-      _player->stop ();
-      _player->notifyReferPlayers (EventUtil::TR_ABORTS);
-    }
+  g_assert_nonnull (_object);
+  g_assert_nonnull (_player);
 
-  if (_object != nullptr)
+  _player->stop ();
+  _player->notifyReferPlayers (EventUtil::TR_ABORTS);
+
+  if (!_object->isSleeping ())
     {
-      if (!_object->isSleeping ())
-        {
-          _object->abort ();
-          unprepare ();
-          return true;
-        }
+      _object->abort ();
+      unprepare ();
+      return true;
     }
 
   unlockObject ();
@@ -1021,11 +998,8 @@ AdapterFormatterPlayer::abort ()
 void
 AdapterFormatterPlayer::naturalEnd ()
 {
-  if (_object == nullptr || _player == nullptr)
-    {
-      unlockObject ();
-      return;
-    }
+  g_assert_nonnull (_object);
+  g_assert_nonnull (_player);
 
   // if freeze is true the natural end is not performed
   if (_object->getDescriptor () != nullptr)
@@ -1043,6 +1017,8 @@ AdapterFormatterPlayer::naturalEnd ()
 bool
 AdapterFormatterPlayer::checkRepeat (NclPresentationEvent *event)
 {
+  g_assert_nonnull (_player);
+
   if (event->getRepetitions () > 1)
     {
       _player->stop ();
@@ -1064,7 +1040,8 @@ AdapterFormatterPlayer::checkRepeat (NclPresentationEvent *event)
 bool
 AdapterFormatterPlayer::unprepare ()
 {
-  if (_object != nullptr && _object->getMainEvent () != nullptr
+  g_assert_nonnull (_object);
+  if (_object->getMainEvent () != nullptr
       && (_object->getMainEvent ()->getCurrentState ()
               == EventUtil::ST_OCCURRING
           || _object->getMainEvent ()->getCurrentState ()
@@ -1074,6 +1051,7 @@ AdapterFormatterPlayer::unprepare ()
     }
 
   _manager->removePlayer (_object);
+  Ginga_Display->unregisterKeyEventListener(this);
 
   if (NclExecutionObject::hasInstance (_object, false))
     {
@@ -1217,6 +1195,7 @@ AdapterFormatterPlayer::updateObjectExpectedDuration ()
       || (duration < 0) || (isnan (duration)))
     {
       implicitDur = IntervalAnchor::OBJECT_DURATION;
+
       IntervalAnchor *intervalAnchor
           = dynamic_cast <IntervalAnchor *> (wholeContentEvent->getAnchor ());
       g_assert_nonnull(intervalAnchor);
@@ -1237,19 +1216,6 @@ IPlayer *
 AdapterFormatterPlayer::getPlayer ()
 {
   return _player;
-}
-
-void
-AdapterFormatterPlayer::setTimeBasePlayer (
-    AdapterFormatterPlayer *timeBasePlayerAdapter)
-{
-  IPlayer *timePlayer;
-  timePlayer = timeBasePlayerAdapter->getPlayer ();
-  if (timePlayer != nullptr)
-    {
-      _player->setReferenceTimePlayer (timePlayer);
-      _player->setTimeBasePlayer (timePlayer);
-    }
 }
 
 void
@@ -1313,30 +1279,32 @@ AdapterFormatterPlayer::updateStatus (short code,
 
 //dragon head
 void
-AdapterFormatterPlayer::keyInputCallback (SDL_EventType evtType, SDL_Keycode key){
-
-   if(evtType == SDL_KEYDOWN)
-      return;
+AdapterFormatterPlayer::keyInputCallback (SDL_EventType evtType,
+                                          SDL_Keycode key)
+{
+  if(evtType == SDL_KEYDOWN)
+    return;
   /*
   if (xruntime_ms () - eventTS < 300){
       return;
   } */
 
-  if (_object != nullptr && _player != nullptr)
+  cout << "keyEventReceived for '%s'" << _mrl.c_str() << endl;
+
+  g_assert_nonnull (_object);
+  g_assert_nonnull (_player);
+
+  g_debug ("keyEventReceived for '%s' player visibility = '%d' "
+           "event keycode='%d'",
+           _mrl.c_str(),
+           _player->isVisible(),
+           key);
+
+  if (_player->isVisible ())
     {
-      clog << "AdapterFormatterPlayer::keyEventReceived for '";
-      clog << _mrl << "' player visibility = '" << _player->isVisible ();
-      clog << "' event key code = '" << key ;
-      clog << "'";
-      clog << endl;
-
-      if (_player->isVisible ())
-        {
-          _eventTS = (double) xruntime_ms ();
-          _object->selectionEvent (key, _player->getMediaTime () * 1000);
-        }
+//      _eventTS = (double) xruntime_ms ();
+      _object->selectionEvent (key, _player->getMediaTime () * 1000);
     }
-
 }
 
 void
