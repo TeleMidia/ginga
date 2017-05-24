@@ -104,7 +104,7 @@ protected:
 
   virtual void createPlayer ();
   double prepareProperties (NclExecutionObject *obj);
-  void updatePlayerProperties (NclExecutionObject *obj);
+  void updatePlayerProperties ();
   void prepare ();
   virtual void prepareScope (double offset = -1);
   bool lockObject ();

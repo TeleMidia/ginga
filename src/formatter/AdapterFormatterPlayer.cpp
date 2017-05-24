@@ -62,6 +62,7 @@ AdapterFormatterPlayer::~AdapterFormatterPlayer ()
     {
       _player->removeListener (this);
       _player->stop ();
+
       delete _player;
       _player = nullptr;
     }
@@ -81,26 +82,16 @@ AdapterFormatterPlayer::setAdapterManager (AdapterPlayerManager *manager)
 void
 AdapterFormatterPlayer::setOutputWindow (SDLWindow* windowId)
 {
-  if (_player != nullptr)
-    {
-      _player->setOutWindow (windowId);
-    }
-  else
-    {
-      clog << "AdapterFormatterPlayer::setOutputWindow Warning!";
-      clog << " Player is nullptr" << endl;
-    }
+  g_assert_nonnull (_player);
+
+  _player->setOutWindow (windowId);
 }
 
 void
 AdapterFormatterPlayer::createPlayer ()
 {
-  vector<Anchor *> *anchors;
-
   vector<NclFormatterEvent *> *events;
-
   NclCascadingDescriptor *descriptor;
-
   NodeEntity *dataObject;
   PropertyAnchor *property;
 
@@ -112,7 +103,6 @@ AdapterFormatterPlayer::createPlayer ()
   _player->addListener (this);
 
   g_assert_nonnull (_object);
-
   descriptor = _object->getDescriptor ();
   if (descriptor)
     {
@@ -124,47 +114,43 @@ AdapterFormatterPlayer::createPlayer ()
 
   dataObject = dynamic_cast <NodeEntity *> (_object->getDataObject ());
   g_assert_nonnull (dataObject);
-  if (dataObject->instanceOf ("ContentNode"))
-    {
-      anchors = ((ContentNode *)dataObject)->getAnchors ();
-      if (anchors != nullptr)
-        {
-          for (Anchor *anchor: *anchors)
-            {
-              property = dynamic_cast <PropertyAnchor *> (anchor);
-              if (property)
-                {
-                  clog << "AdapterFormatterPlayer::createPlayer for '";
-                  clog << _mrl;
-                  clog << "' set property '";
-                  clog << property->getPropertyName ();
-                  clog << "' value '" << property->getPropertyValue ();
-                  clog << "'" << endl;
 
-                  _player->setPropertyValue (property->getPropertyName (),
-                                            property->getPropertyValue ());
-                }
+  ContentNode *contentNode = dynamic_cast <ContentNode *> (dataObject);
+  if (contentNode)
+    {
+      for (Anchor *anchor: *(contentNode->getAnchors ()))
+        {
+          property = dynamic_cast <PropertyAnchor *> (anchor);
+          if (property)
+            {
+              g_debug ("set property %s=%s for %s",
+                       property->getPropertyName().c_str(),
+                       property->getPropertyValue().c_str(),
+                       _mrl.c_str());
+
+              _player->setPropertyValue(property->getPropertyName(),
+                                        property->getPropertyValue());
             }
         }
     }
 
   events = _object->getEvents ();
-  if (events != nullptr)
+  for (NclFormatterEvent *evt: *events)
     {
-      for (NclFormatterEvent *evt: *events)
+      g_assert_nonnull (evt);
+      NclAttributionEvent *attributionEvt
+          = dynamic_cast <NclAttributionEvent *> (evt);
+      if (attributionEvt)
         {
-          if (evt != nullptr && evt->instanceOf ("NclAttributionEvent"))
-            {
-              property = ((NclAttributionEvent *)evt)->getAnchor ();
-              ((NclAttributionEvent *)evt)->setValueMaintainer (this);
-            }
+          property = attributionEvt->getAnchor ();
+          attributionEvt->setValueMaintainer (this);
         }
-      delete events;
-      events = nullptr;
     }
+  delete events;
 
-  clog << "AdapterFormatterPlayer::createPlayer for '" << _mrl;
-  clog << "' object = '" << _object->getId () << "'" << endl;
+  g_debug ("Create player for '%s' object = '%s'",
+           _mrl.c_str(),
+           _object->getId().c_str());
 }
 
 bool
@@ -555,12 +541,16 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
         }
     }
 
+  if (descriptor != nullptr && explicitDur < 0)
+    {
+      explicitDur = descriptor->getExplicitDuration ();
+    }
+
   return explicitDur;
 }
 
 void
-AdapterFormatterPlayer::updatePlayerProperties (
-    arg_unused (NclExecutionObject *obj))
+AdapterFormatterPlayer::updatePlayerProperties ()
 {
   NclCascadingDescriptor *descriptor;
   string value;
@@ -589,61 +579,51 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
                                  NclFormatterEvent *event)
 {
   Content *content;
-  NclCascadingDescriptor *descriptor;
   double explicitDur = -1;
   NodeEntity *dataObject;
 
+  g_assert_nonnull(object);
+
   if (hasPrepared ())
     {
-      clog << "AdapterFormatterPlayer::prepare returns false, ";
-      clog << "because player is already prepared" << endl;
+      g_debug ("AdapterFormatterPlayer::prepare returns false, because the"
+               "player is already prepared.");
       return false;
     }
 
   if (!lockObject ())
     {
-      if (_player != nullptr)
+      g_assert_nonnull (_player);
+      if (_player->isForcedNaturalEnd ())
         {
-          // if (player->hasPresented () ||
-
-          if (_player->isForcedNaturalEnd ())
-            {
-              while (!lockObject ())
-                ;
-            }
-          else
-            {
-              clog << "AdapterFormatterPlayer::prepare returns false, ";
-              clog << "because object is locked" << endl;
-              return false;
-            }
+          while (!lockObject ())
+            ;
+        }
+      else
+        {
+          g_debug ("AdapterFormatterPlayer::prepare returns false because the"
+                   "object is locked");
+          return false;
         }
     }
 
-  if (object == nullptr)
-    {
-      clog << "AdapterFormatterPlayer::prepare Warning! ";
-      clog << "Trying to prepare a nullptr object." << endl;
-      unlockObject ();
-      return false;
-    }
-
   this->_object = object;
-  descriptor = object->getDescriptor ();
   dataObject = dynamic_cast<NodeEntity *>(object->getDataObject ());
 
   if (dataObject
       &&  dataObject->getDataEntity () != nullptr)
     {
-      content = dynamic_cast<NodeEntity *> (dataObject->getDataEntity ())->getContent();
+      content
+          = dynamic_cast<NodeEntity *> (dataObject->getDataEntity ())->getContent();
 
-      if (content
-          && content->instanceOf ("ReferenceContent"))
+      if (content)
         {
-          this->_mrl
-              = ((ReferenceContent *)content)->getCompleteReferenceUrl ();
-
-          // this->mrl = SystemCompat::updatePath (this->mrl);
+          ReferenceContent *referContent
+              = dynamic_cast <ReferenceContent *>(content);
+          if (referContent)
+            {
+              this->_mrl = referContent->getCompleteReferenceUrl ();
+            }
         }
       else
         {
@@ -653,21 +633,17 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
 
   explicitDur = prepareProperties (object);
 
-  if (event->instanceOf ("NclPresentationEvent"))
+  NclPresentationEvent *presentationEvent =
+      dynamic_cast <NclPresentationEvent *> (event);
+  if (presentationEvent)
     {
-      double duration = ((NclPresentationEvent *)event)->getDuration ();
+      double duration = presentationEvent->getDuration ();
       bool infDur = (isnan (duration) || isinf (duration));
-
-      if (descriptor != nullptr && explicitDur < 0)
-        {
-          explicitDur = descriptor->getExplicitDuration ();
-        }
 
       if (!infDur && duration <= 0 && explicitDur <= 0)
         {
-          clog << "AdapterFormatterPlayer::prepare '";
-          clog << object->getId () << "' Warning! Can't prepare an ";
-          clog << "object with an event duration <= 0" << endl;
+          g_warning ("Can't prepare an object (%s) with an event duration <= 0",
+                     object->getId().c_str());
           return false;
         }
 
@@ -680,23 +656,22 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
           // the object. For instance: start an interface with
           // begin = 4s and explicit duration = 5s => new duration
           // will be 1s
-          ((NclPresentationEvent *)event)->setEnd (explicitDur);
+          presentationEvent->setEnd (explicitDur);
           object->addEvent (event);
 
-          clog << "AdapterFormatterPlayer::prepare '";
-          clog << object->getId () << "' ";
-          clog << "with explicitDur = '";
-          clog << explicitDur << "' object duration was '";
-          clog << duration << "'. Updated info: event begin = '";
-          clog << ((NclPresentationEvent *)event)->getBegin () << "'";
-          clog << " event end = '";
-          clog << ((NclPresentationEvent *)event)->getEnd () << "'";
-          clog << endl;
+          g_debug ("Object '%s' with explicitDur = '%f' object duration was"
+                   "'%f'. Updated info: event begin=%f, event end=%f.",
+                   object->getId ().c_str(),
+                   explicitDur,
+                   duration,
+                   presentationEvent->getBegin(),
+                   presentationEvent->getEnd());
         }
     }
 
   createPlayer ();
-  updatePlayerProperties (object);
+  updatePlayerProperties ();
+
   if (event->getCurrentState () == EventUtil::ST_SLEEPING)
     {
       object->prepare ((NclPresentationEvent *)event, 0);
@@ -717,10 +692,6 @@ AdapterFormatterPlayer::prepare ()
 
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
-  if (_object == nullptr || _player == nullptr)
-    {
-      return;
-    }
 
   descriptor = _object->getDescriptor ();
   if (descriptor != nullptr)
@@ -750,10 +721,10 @@ AdapterFormatterPlayer::prepareScope (double offset)
   double initTime = 0;
   IntervalAnchor *intervalAnchor;
 
-  mainEvent = (NclPresentationEvent *)(_object->getMainEvent ());
-  if (mainEvent->instanceOf ("NclPresentationEvent"))
+  mainEvent = dynamic_cast <NclPresentationEvent *>(_object->getMainEvent ());
+  if (mainEvent)
     {
-      if ((mainEvent->getAnchor ())->instanceOf ("LambdaAnchor"))
+      if (mainEvent->getAnchor ()->instanceOf ("LambdaAnchor"))
         {
           duration = mainEvent->getDuration ();
 
@@ -791,7 +762,7 @@ AdapterFormatterPlayer::prepareScope (double offset)
                                 IPlayer::TYPE_PRESENTATION, initTime);
             }
         }
-      else if (((mainEvent->getAnchor ()))->instanceOf ("IntervalAnchor"))
+      else if (mainEvent->getAnchor ()->instanceOf ("IntervalAnchor"))
         {
           intervalAnchor = (IntervalAnchor *)(mainEvent->getAnchor ());
           initTime = (intervalAnchor->getBegin () / 1000);
@@ -863,26 +834,25 @@ AdapterFormatterPlayer::getOutTransDur ()
 void
 AdapterFormatterPlayer::checkAnchorMonitor ()
 {
-   if (_object == nullptr || this->_player == nullptr)
-      return;
+  g_assert_nonnull (_object);
+  g_assert_nonnull (_player);
 
-   _object->setPlayer( (Player*)this->_player );
+  _object->setPlayer( (Player*)this->_player );
 }
 
 bool
 AdapterFormatterPlayer::start ()
 {
   NclCascadingDescriptor *descriptor;
-  LayoutRegion *ncmRegion = nullptr;
   string paramValue;
-  NclFormatterEvent *objEv;
 
-  assert (_object != nullptr);
+  g_assert_nonnull (_object);
 
   if (!_object->isSleeping ())
     {
-      clog << "AdapterFormatterPlayer::start(" << _object->getId ();
-      clog << ") is occurring or paused" << endl;
+      g_debug ("AdapterFormatterPlayer::start(%s) is occurring or paused.",
+               _object->getId ().c_str());
+
       return false;
     }
 
@@ -897,20 +867,6 @@ AdapterFormatterPlayer::start ()
       else if (paramValue == "true")
         {
           setVisible (true);
-        }
-
-      ncmRegion = descriptor->getRegion ();
-      if (ncmRegion != nullptr && ncmRegion->getDeviceClass () == 2)
-        {
-          objEv = _object->getMainEvent ();
-          if (objEv != nullptr)
-            {
-              clog << "AdapterFormatterPlayer::start(";
-              clog << _object->getId ();
-              clog << ") ACTIVE CLASS" << endl;
-              objEv->start ();
-            }
-          return true;
         }
     }
 
@@ -961,41 +917,37 @@ AdapterFormatterPlayer::stop ()
       events = _object->getEvents ();
     }
 
-  if (mainEvent != nullptr && mainEvent->instanceOf ("NclPresentationEvent"))
+  if (mainEvent != nullptr)
     {
-      if (checkRepeat ((NclPresentationEvent *)mainEvent))
+      NclPresentationEvent *presentationEvt
+          = dynamic_cast <NclPresentationEvent *> (mainEvent);
+      if (presentationEvt)
         {
-          return true;
+          if (checkRepeat (presentationEvt))
+          {
+            return true;
+          }
         }
     }
 
-  if (events != nullptr)
+  g_assert_nonnull (events);
+  for (NclFormatterEvent *evt: *events)
     {
-      vector<NclFormatterEvent *>::iterator i;
-      i = events->begin ();
-      while (i != events->end ())
+      g_assert_nonnull(evt);
+      NclAttributionEvent *attributionEvt
+          = dynamic_cast <NclAttributionEvent *> (evt);
+
+      if (attributionEvt)
         {
-          if (*i != nullptr && (*i)->instanceOf ("NclAttributionEvent"))
-            {
-              ((NclAttributionEvent *)(*i))->setValueMaintainer (nullptr);
-            }
-
-          if (i != events->end ())
-            {
-              ++i;
-            }
+          attributionEvt->setValueMaintainer (nullptr);
         }
-      delete events;
-      events = nullptr;
     }
 
-  if (_player != nullptr)
-    {
-      _player->stop ();
-      _player->notifyReferPlayers (EventUtil::TR_STOPS);
-    }
+  g_assert_nonnull(_player);
+  _player->stop ();
+  _player->notifyReferPlayers (EventUtil::TR_STOPS);
 
-  if (_player != nullptr && _player->isForcedNaturalEnd ())
+  if (_player->isForcedNaturalEnd ())
     {
       _player->forceNaturalEnd (false);
       _object->stop ();
@@ -1014,11 +966,13 @@ AdapterFormatterPlayer::stop ()
 bool
 AdapterFormatterPlayer::pause ()
 {
-  if (_object != nullptr && _player != nullptr && _object->pause ())
+  g_assert_nonnull (_object);
+  g_assert_nonnull (_player);
+  if (_object->pause ())
     {
       _player->pause ();
-
       _player->notifyReferPlayers (EventUtil::TR_PAUSES);
+
       return true;
     }
   else
@@ -1030,7 +984,9 @@ AdapterFormatterPlayer::pause ()
 bool
 AdapterFormatterPlayer::resume ()
 {
-  if (_object != nullptr && _player != nullptr && _object->resume ())
+  g_assert_nonnull (_object);
+  g_assert_nonnull (_player);
+  if (_object->resume ())
     {
       _player->resume ();
       _player->notifyReferPlayers (EventUtil::TR_RESUMES);
@@ -1065,8 +1021,6 @@ AdapterFormatterPlayer::abort ()
 void
 AdapterFormatterPlayer::naturalEnd ()
 {
-  bool freeze;
-
   if (_object == nullptr || _player == nullptr)
     {
       unlockObject ();
@@ -1076,7 +1030,7 @@ AdapterFormatterPlayer::naturalEnd ()
   // if freeze is true the natural end is not performed
   if (_object->getDescriptor () != nullptr)
     {
-      freeze = _object->getDescriptor ()->getFreeze ();
+      bool freeze = _object->getDescriptor ()->getFreeze ();
       if (freeze)
         {
           return;
@@ -1096,10 +1050,8 @@ AdapterFormatterPlayer::checkRepeat (NclPresentationEvent *event)
 
       if (_object != nullptr)
         {
-          // clog << "'" << object->getId() << "'";
           _object->stop ();
         }
-      // clog << endl << endl;
 
       _player->setImmediatelyStart (true);
       prepare ();
@@ -1141,27 +1093,10 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
   string propName;
   string value = v;
 
-  if (_player == nullptr || _object == nullptr)
-    {
-      clog << "AdapterFormatterPlayer::setPropertyValue Warning!";
-      clog << " cant set property '" << event->getId ();
-      clog << "' value = '" << value << "' object = '";
+  g_assert_nonnull (_player);
+  g_assert_nonnull (_object);
 
-      if (_object != nullptr)
-        {
-          clog << _object->getId ();
-        }
-      else
-        {
-          clog << _object;
-        }
-      clog << "' player = '";
-      clog << _player << "' for '" << _mrl << "'" << endl;
-
-      return false;
-    }
-
-  propName = (event->getAnchor ())->getPropertyName ();
+  propName = event->getAnchor ()->getPropertyName ();
   if (propName == "visible")
     {
       setVisible (value == "true");
@@ -1201,12 +1136,6 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
               transpValue
                   = (1 - (parentOpacity - (parentOpacity * transpValue)));
 
-              clog << "AdapterFormatterPlayer::setPropertyValue ";
-              clog << "parent opacity is '" << parentOpacity;
-              clog << "' original transparency property is '";
-              clog << value << "' new value is '";
-              clog << transpValue << "'" << endl;
-
               descriptor = _object->getDescriptor ();
               if (descriptor != nullptr)
                 {
@@ -1230,32 +1159,26 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
 }
 
 void
-AdapterFormatterPlayer::setPropertyValue (const string &name, const string &value)
+AdapterFormatterPlayer::setPropertyValue (const string &name,
+                                          const string &value)
 {
-  if (_player != nullptr)
-    {
-      clog << "AdapterFormatterPlayer::setPropertyValue name = '";
-      clog << name << "' value = '" << value << "' to player ";
-      clog << " address '" << _player << "'";
-      clog << endl;
+  g_assert_nonnull (_player);
+  g_debug ("AdapterFormatterPlayer::setPropertyValue name = '%s' value='%s' "
+           "address=%p.",
+           name.c_str(),
+           value.c_str(),
+           _player);
 
-      _player->setPropertyValue (name, value);
-    }
+  _player->setPropertyValue (name, value);
 }
 
 string
 AdapterFormatterPlayer::getPropertyValue (NclAttributionEvent *event)
 {
-  string value = "";
-  string name;
+  g_assert_nonnull (event);
 
-  if (event == nullptr)
-    {
-      return "";
-    }
-
-  name = event->getAnchor ()->getPropertyName ();
-  value = getPropertyValue (name);
+  string name = event->getAnchor ()->getPropertyName ();
+  string value = getPropertyValue (name);
 
   return value;
 }
@@ -1265,27 +1188,19 @@ AdapterFormatterPlayer::getPropertyValue (const string &name)
 {
   string value = "";
 
-  if (_player != nullptr)
-    {
-      value = _player->getPropertyValue (name);
-    }
+  g_assert_nonnull (_player);
+  g_assert_nonnull (_object);
 
-  if (value == "" && _object != nullptr)
+  value = _player->getPropertyValue (name);
+  if (value == "")
     {
       value = _object->getPropertyValue (name);
     }
 
-  clog << "AdapterFormatterPlayer::getPropertyValue name = '";
-  clog << name << "' value = '" << value << "'";
-  clog << endl;
+  g_debug ("getPropertyValue name = '%s', value = '%s'",
+           name.c_str(), value.c_str());
 
   return value;
-}
-
-double
-AdapterFormatterPlayer::getObjectExpectedDuration ()
-{
-  return IntervalAnchor::OBJECT_DURATION;
 }
 
 void
@@ -1301,9 +1216,11 @@ AdapterFormatterPlayer::updateObjectExpectedDuration ()
       || (isnan ((_object->getDescriptor ())->getExplicitDuration ()))
       || (duration < 0) || (isnan (duration)))
     {
-      implicitDur = getObjectExpectedDuration ();
-      ((IntervalAnchor *)wholeContentEvent->getAnchor ())
-          ->setEnd (implicitDur);
+      implicitDur = IntervalAnchor::OBJECT_DURATION;
+      IntervalAnchor *intervalAnchor
+          = dynamic_cast <IntervalAnchor *> (wholeContentEvent->getAnchor ());
+      g_assert_nonnull(intervalAnchor);
+      intervalAnchor->setEnd (implicitDur);
 
       wholeContentEvent->setDuration (implicitDur);
     }
@@ -1312,11 +1229,8 @@ AdapterFormatterPlayer::updateObjectExpectedDuration ()
 double
 AdapterFormatterPlayer::getMediaTime ()
 {
-  if (_player != nullptr)
-    {
-      return _player->getMediaTime ();
-    }
-  return 0;
+  g_assert_nonnull(_player);
+  return _player->getMediaTime ();
 }
 
 IPlayer *
@@ -1362,8 +1276,7 @@ AdapterFormatterPlayer::updateStatus (short code,
               fRegion = descriptor->getFormatterRegion ();
               if (fRegion != nullptr)
                 {
-                  clog << "AdapterFormatterPlayer::";
-                  clog << "updateStatus transition" << endl;
+                  g_debug ("AdapterFormatterPlayer::updateStatus transition");
                   fRegion->performOutTrans ();
                 }
             }
@@ -1387,9 +1300,7 @@ AdapterFormatterPlayer::updateStatus (short code,
                   && mainEvent->getCurrentState ()
                          != EventUtil::ST_SLEEPING)
                 {
-                  clog << "AdapterFormatterPlayer::updateStatus ";
-                  clog << "process recovered";
-                  clog << endl;
+                  g_debug("AdapterFormatterPlayer::updateStatus process.");
                 }
             }
         }
