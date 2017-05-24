@@ -105,7 +105,7 @@ private:
 public:
   void setFormatterLayout (void *formatterLayout);
   long getRepetitions ();
-  vector<Parameter *> *getParameters ();
+  vector<Parameter> getParameters ();
   string getParameterValue (const string &paramName);
   vector<GenericDescriptor *> *getNcmDescriptors ();
   SDL_Color *getFocusBorderColor ();
