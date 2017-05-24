@@ -29,7 +29,7 @@ PlayerAnimator::PlayerAnimator ()
 
 PlayerAnimator::~PlayerAnimator ()
 {
-
+  g_list_free(properties);
 }
 
 void
@@ -148,7 +148,7 @@ PlayerAnimator::getAnimationVelocity( gdouble initPos,
 }
 
 bool
-PlayerAnimator::calculeVelocity(gint32 * value, ANIM_PROPERTY* pr)
+PlayerAnimator::calculateVelocity(gint32 * value, ANIM_PROPERTY* pr)
 {
   pr->velocity = getAnimationVelocity( (gdouble)*value,
                                        pr->targetValue,
@@ -166,7 +166,7 @@ PlayerAnimator::calculeVelocity(gint32 * value, ANIM_PROPERTY* pr)
 }
 
 bool
-PlayerAnimator::calculeVelocity(guint8 * value, ANIM_PROPERTY* pr)
+PlayerAnimator::calculateVelocity(guint8 * value, ANIM_PROPERTY* pr)
 {
   pr->velocity = getAnimationVelocity( (gdouble)*value,
                                        pr->targetValue,
@@ -184,7 +184,7 @@ PlayerAnimator::calculeVelocity(guint8 * value, ANIM_PROPERTY* pr)
 }
 
 void
-PlayerAnimator::calculePosition(gint32 * value, ANIM_PROPERTY* pr, gint32 dir)
+PlayerAnimator::calculatePosition(gint32 * value, ANIM_PROPERTY* pr, gint32 dir)
 { //S = So + vt
   pr->curValue = pr->curValue +
       (dir * (pr->velocity * (1.0/(gdouble)Ginga_Display->getFps())));
@@ -200,7 +200,7 @@ PlayerAnimator::calculePosition(gint32 * value, ANIM_PROPERTY* pr, gint32 dir)
 }
 
 void
-PlayerAnimator::calculeColor(guint8* value, ANIM_PROPERTY* pr, gint32 dir)
+PlayerAnimator::calculateColor(guint8* value, ANIM_PROPERTY* pr, gint32 dir)
 { //S = So + vt
   pr->curValue = pr->curValue +
       (dir * (pr->velocity * (1.0/(gdouble)Ginga_Display->getFps())));
@@ -226,46 +226,46 @@ PlayerAnimator::updateColor(guint8* red, guint8* green,
   if(pr->name == "transparency")
     {
       if(pr->velocity <=0)
-        if(!calculeVelocity(alpha, pr))
+        if(!calculateVelocity(alpha, pr))
           return;
 
       if( (gdouble)(*alpha) < pr->targetValue)
-        calculeColor(alpha, pr, 1);
+        calculateColor(alpha, pr, 1);
       else if( (gdouble)(*alpha) > pr->targetValue)
-        calculeColor(alpha, pr, -1);
+        calculateColor(alpha, pr, -1);
     }
   else if(pr->name == "red")
     {
       if(pr->velocity <=0)
-        if(!calculeVelocity(red, pr))
+        if(!calculateVelocity(red, pr))
           return;
 
       if( (gdouble)(*red) < pr->targetValue)
-        calculeColor(red, pr, 1);
+        calculateColor(red, pr, 1);
       else if( (gdouble)(*red) > pr->targetValue)
-        calculeColor(red, pr, -1);
+        calculateColor(red, pr, -1);
     }
   else if(pr->name == "green")
     {
       if(pr->velocity <=0)
-        if(!calculeVelocity(green, pr))
+        if(!calculateVelocity(green, pr))
           return;
 
       if( (gdouble)(*green) < pr->targetValue)
-        calculeColor(green, pr, 1);
+        calculateColor(green, pr, 1);
       else if( (gdouble)(*green) > pr->targetValue)
-        calculeColor(green, pr, -1);
+        calculateColor(green, pr, -1);
     }
   else if(pr->name == "blue")
     {
       if(pr->velocity <=0)
-        if(!calculeVelocity(blue, pr))
+        if(!calculateVelocity(blue, pr))
           return;
 
       if( (gdouble)(*blue) < pr->targetValue)
-        calculeColor(blue, pr, 1);
+        calculateColor(blue, pr, 1);
       else if( (gdouble)(*blue) > pr->targetValue)
-        calculeColor(blue, pr, -1);
+        calculateColor(blue, pr, -1);
     }
 }
 
@@ -277,47 +277,47 @@ PlayerAnimator::updatePosition(SDL_Rect* rect, ANIM_PROPERTY* pr)
 
   if(pr->name == "top")
     {
-      if(pr->velocity <=0)
-        if(!calculeVelocity(&rect->y, pr))
+      if(pr->velocity <= 0)
+        if(!calculateVelocity(&rect->y, pr))
           return;
 
       if(rect->y < pr->targetValue)
-        calculePosition(&rect->y, pr, 1);
+        calculatePosition(&rect->y, pr, 1);
       else if(rect->y > pr->targetValue)
-        calculePosition(&rect->y, pr, -1);
+        calculatePosition(&rect->y, pr, -1);
     }
   else if(pr->name == "left")
     {
       if(pr->velocity <= 0)
-        if(!calculeVelocity(&rect->x, pr))
+        if(!calculateVelocity(&rect->x, pr))
           return;
 
       if(rect->x < pr->targetValue)
-        calculePosition(&rect->x, pr, 1);
+        calculatePosition(&rect->x, pr, 1);
       else if(rect->x > pr->targetValue)
-        calculePosition(&rect->x, pr, -1);
+        calculatePosition(&rect->x, pr, -1);
     }
   else if(pr->name == "width")
     {
       if(pr->velocity <=0)
-        if(!calculeVelocity(&rect->w, pr))
+        if(!calculateVelocity(&rect->w, pr))
           return;
 
       if(rect->w < pr->targetValue)
-        calculePosition(&rect->w, pr, 1);
+        calculatePosition(&rect->w, pr, 1);
       else if(rect->w > pr->targetValue)
-        calculePosition(&rect->w, pr, -1);
+        calculatePosition(&rect->w, pr, -1);
     }
   else if(pr->name == "height")
     {
       if(pr->velocity <=0)
-        if(!calculeVelocity(&rect->h, pr))
+        if(!calculateVelocity(&rect->h, pr))
           return;
 
       if(rect->h < pr->targetValue)
-        calculePosition(&rect->h, pr, 1);
+        calculatePosition(&rect->h, pr, 1);
       else if(rect->h > pr->targetValue)
-        calculePosition(&rect->h, pr, -1);
+        calculatePosition(&rect->h, pr, -1);
     }
 
   // g_debug("\n\n inside::: %f %s %f \n\n",
