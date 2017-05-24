@@ -347,10 +347,7 @@ AdapterPlayerManager::clearDeletePlayers ()
           _playerNames.erase (j);
         }
 
-      if (((AdapterFormatterPlayer *)player)->getObjectDevice () == 0)
-        {
-          dPlayers[playerClassName] = player;
-        }
+      dPlayers[playerClassName] = player;
 
       ++i;
     }

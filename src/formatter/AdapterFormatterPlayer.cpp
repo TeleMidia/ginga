@@ -39,7 +39,6 @@ AdapterFormatterPlayer::AdapterFormatterPlayer ()
   this->_object = nullptr;
   this->_player = nullptr;
   this->_mrl = "";
-  this->_objectDevice = -1;
   this->_outTransDur = 0;
   this->_outTransTime = -1.0;
   this->_isLocked = false;
@@ -48,13 +47,9 @@ AdapterFormatterPlayer::AdapterFormatterPlayer ()
 
 AdapterFormatterPlayer::~AdapterFormatterPlayer ()
 {
-  int objDevice;
-
   Ginga_Display->unregisterKeyEventListener(this);
 
   lockObject ();
-
-  objDevice = getObjectDevice ();
 
   if (_object != nullptr)
     {
@@ -166,39 +161,8 @@ AdapterFormatterPlayer::createPlayer ()
       events = nullptr;
     }
 
-  _objectDevice = getObjectDevice ();
-
   clog << "AdapterFormatterPlayer::createPlayer for '" << _mrl;
-  clog << "' object = '" << _object->getId () << "'";
-  clog << " objectDevice = '" << _objectDevice << "'" << endl;
-}
-
-int
-AdapterFormatterPlayer::getObjectDevice ()
-{
-  NclCascadingDescriptor *descriptor;
-  LayoutRegion *ncmRegion = nullptr;
-
-  if (_objectDevice > -1)
-    {
-      return _objectDevice;
-    }
-
-  if (_object != nullptr)
-    {
-      descriptor = _object->getDescriptor ();
-      if (descriptor != nullptr)
-        {
-          ncmRegion = descriptor->getRegion ();
-          if (ncmRegion != nullptr)
-            {
-              _objectDevice = ncmRegion->getDeviceClass ();
-              return _objectDevice;
-            }
-        }
-    }
-
-  return 0;
+  clog << "' object = '" << _object->getId () << "'" << endl;
 }
 
 bool

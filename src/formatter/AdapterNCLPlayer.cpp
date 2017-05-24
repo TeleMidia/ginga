@@ -42,13 +42,6 @@ AdapterNCLPlayer::createPlayer ()
   NclPlayerData *childData, *playerData;
   PropertyAnchor *property;
 
-  if (getObjectDevice () == 2)
-    {
-      clog << "AdapterNCLPlayer::createPlayer ";
-      clog << " remote handler" << endl;
-      return;
-    }
-
   _player = NULL;
   playerData = _manager->getNclPlayerData ();
 
