@@ -44,7 +44,7 @@ private:
   pthread_mutex_t mutex;
 
 public:
-  NclFormatterLayout (int x, int y, int w, int h);
+  NclFormatterLayout (int w, int h);
   virtual ~NclFormatterLayout ();
   LayoutRegion *getDeviceRegion ();
   void addChild (const string &objectId, NclFormatterLayout *child);
@@ -60,7 +60,7 @@ public:
   void getSortedIds (vector<SDLWindow*> *sortedIds);
 
 private:
-  void createDeviceRegion (int x, int y, int w, int h);
+  void createDeviceRegion (int w, int h);
 
 public:
   NclExecutionObject *getObject (int x, int y);

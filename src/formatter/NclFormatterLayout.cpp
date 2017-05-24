@@ -20,13 +20,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclFormatterLayout::NclFormatterLayout (int x, int y, int w, int h)
+NclFormatterLayout::NclFormatterLayout (int w, int h)
 {
   deviceRegion = NULL;
 
   typeSet.insert ("NclFormatterLayout");
   Thread::mutexInit (&mutex, false);
-  createDeviceRegion (x, y, w, h);
+  createDeviceRegion (w, h);
 }
 
 NclFormatterLayout::~NclFormatterLayout ()
@@ -125,11 +125,9 @@ NclFormatterLayout::printObjectMap ()
 }
 
 void
-NclFormatterLayout::createDeviceRegion (int x, int y, int w, int h)
+NclFormatterLayout::createDeviceRegion (int w, int h)
 {
   deviceRegion = new NclFormatterDeviceRegion ("defaultScreenFormatter");
-  deviceRegion->setLeft (x, false);
-  deviceRegion->setTop (y, false);
   deviceRegion->setWidth (w, false);
   deviceRegion->setHeight (h, false);
 }
