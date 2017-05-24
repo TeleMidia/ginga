@@ -109,8 +109,6 @@ public:
   void dispose ();
   string getId ();
   void setId (const string &id);
-  Entity *getDataEntity ();
-  int compareTo (void *arg0);
 };
 
 GINGA_FORMATTER_END

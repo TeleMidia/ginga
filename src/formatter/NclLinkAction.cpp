@@ -92,7 +92,7 @@ NclLinkAction::run ()
     {
       clog << "NclLinkAction::run uSleeping '" << delay * 1000 << "'"
            << endl;
-      g_usleep ((long)(delay * 1000));
+      //g_usleep ((long)(delay * 1000));
     }
 }
 

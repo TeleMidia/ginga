@@ -32,14 +32,10 @@ class LuaPlayer :
 {
 private:
   GINGA_MUTEX_DEFN ();
-  GINGA_COND_DEFN (DisplayJob);
-
   ncluaw_t *nw;          // the NCLua state
   bool hasExecuted;      // true if script was executed
   bool isKeyHandler;     // true if player has the focus
   string scope;          // the label of the active anchor
-//  InputManager *im;
-
   static bool displayJobCallbackWrapper (DisplayJob *,
                                          SDL_Renderer *, void *);
   bool displayJobCallback (DisplayJob *, SDL_Renderer *);

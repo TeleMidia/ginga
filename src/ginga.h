@@ -161,39 +161,6 @@ using namespace std;
     g_rec_mutex_unlock (&this->mutex);          \
   }
 
-// Defines object wait condition with the given name.
-#define GINGA_COND_DEFN(Name)                                   \
-  GCond cond##Name;                                             \
-  GMutex mutex##Name;                                           \
-  bool cond##Name##_done;                                       \
-  void cond##Name##Init (void)                                  \
-  {                                                             \
-    g_mutex_init (&this->mutex##Name);                          \
-    g_cond_init (&this->cond##Name);                            \
-    this->cond##Name##_done = false;                            \
-  }                                                             \
-  void cond##Name##Clear (void)                                 \
-  {                                                             \
-    g_mutex_clear (&this->mutex##Name);                         \
-    g_cond_clear (&this->cond##Name);                           \
-    this->cond##Name##_done = false;                            \
-  }                                                             \
-  void cond##Name##Signal (void)                                \
-  {                                                             \
-    g_mutex_lock (&this->mutex##Name);                          \
-    this->cond##Name##_done = true;                             \
-    g_cond_signal (&this->cond##Name);                          \
-    g_mutex_unlock (&this->mutex##Name);                        \
-  }                                                             \
-  void cond##Name##Wait (void)                                  \
-  {                                                             \
-    g_mutex_lock (&this->mutex##Name);                          \
-    while (!this->cond##Name##_done)                            \
-      g_cond_wait (&this->cond##Name, &this->mutex##Name);      \
-    this->cond##Name##_done = false;                            \
-    g_mutex_unlock (&this->mutex##Name);                        \
-  }
-
 // Misc functions.
 bool xnumeq (double, double);
 gint64 xruntime ();

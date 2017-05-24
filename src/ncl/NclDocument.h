@@ -106,7 +106,7 @@ public:
   map<int, RegionBase *> *getRegionBases ();
   Rule *getRule (const string &ruleId);
   RuleBase *getRuleBase ();
-  ContentNode *getSettingsNode ();
+  vector<Node *> *getSettingsNodes ();
   bool removeDocument (NclDocument *document);
   void setConnectorBase (ConnectorBase *connectorBase);
   void setTransitionBase (TransitionBase *transitionBase);

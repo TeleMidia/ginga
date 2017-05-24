@@ -93,9 +93,9 @@ SvgPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
   cairo_scale (cr, scale, scale);
   rsvg_handle_render_cairo (svg, cr);
-  
+
   SDLx_UnlockSurface (sfc);
-  
+
   cairo_destroy (cr);
   cairo_surface_destroy (cr_sfc);
 
@@ -104,9 +104,6 @@ SvgPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
   SDL_FreeSurface (sfc);
 
- // this->window->setTexture (texture);
-
-  this->condDisplayJobSignal ();
   return false;                 // remove job
 }
 
@@ -116,12 +113,10 @@ SvgPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 SvgPlayer::SvgPlayer (const string &uri) : Player (uri)
 {
   this->mutexInit ();
-  this->condDisplayJobInit ();
 }
 
 SvgPlayer::~SvgPlayer (void)
 {
-  this->condDisplayJobClear ();
   this->mutexClear ();
 }
 
@@ -129,16 +124,19 @@ bool
 SvgPlayer::play ()
 {
   Ginga_Display->addJob (displayJobCallbackWrapper, this);
-  this->condDisplayJobWait ();
+  //this->condDisplayJobWait ();
   return Player::play ();
 }
 
 void
-SvgPlayer::setPropertyValue (const string &name, const string &value){
-  Player::setPropertyValue(name,value);
-  if(status!=OCCURRING)return;
+SvgPlayer::setPropertyValue (const string &name, const string &value)
+{
+  Player::setPropertyValue (name, value);
+  if (status != OCCURRING)
+    return;
+
   Ginga_Display->addJob (displayJobCallbackWrapper, this);
-  this->condDisplayJobWait ();
+  //this->condDisplayJobWait ();
 }
 
 GINGA_PLAYER_END

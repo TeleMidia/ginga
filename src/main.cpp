@@ -113,21 +113,13 @@ _error (gboolean try_help, const gchar *format, ...)
     g_fprintf (stderr, "Try '%s --help' for more information.\n", me);
 }
 
-/* Runs the formatter loop.  */
-static gpointer
-formatter_loop (gpointer data)
-{
-  FormatterMediator *formatter = (FormatterMediator *) data;
-  formatter->play ();
-  return NULL;
-}
-
 int
 main (int argc, char **argv)
 {
   FormatterMediator *formatter;
   int ginga_argc = argc;
   char **ginga_argv = g_strdupv (argv);
+  string file;
 
 #if defined WITH_CEF && WITH_CEF
   CefMainArgs args (argc, argv);
@@ -167,13 +159,14 @@ main (int argc, char **argv)
       exit (EXIT_FAILURE);
     }
 
+  file = string (ginga_argv[1]);
+  g_strfreev (ginga_argv);
+
   _Ginga_Display = new ginga::mb::Display (opt_width, opt_height,
                                            opt_fullscreen, opt_fps);
   formatter = new FormatterMediator ();
-  formatter->addDocument (string (ginga_argv[1]));
-  g_strfreev (ginga_argv);
 
-  g_thread_new ("formatter", formatter_loop, formatter);
+  formatter->play (file);
   _Ginga_Display->renderLoop ();
 
   delete Ginga_Display;

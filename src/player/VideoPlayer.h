@@ -76,10 +76,7 @@ public:
 
 
  private:
-
   GINGA_MUTEX_DEFN ();
-  GINGA_COND_DEFN (DisplayJob);
-
   static void eosCB (GstAppSink *, gpointer); //works
   static GstFlowReturn newPrerollCB (GstAppSink *, gpointer);
   static GstFlowReturn newSampleCB (GstAppSink *, gpointer); //works

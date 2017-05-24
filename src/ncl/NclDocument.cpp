@@ -516,37 +516,45 @@ NclDocument::getRuleBase ()
   return ruleBase;
 }
 
-ContentNode *
-NclDocument::getSettingsNode ()
+/**
+ * @return A vector containing all settings nodes in document.
+ */
+vector<Node *> *
+NclDocument::getSettingsNodes ()
 {
   ContextNode *body;
+  list<Node *> compositions;
+
   vector<Node *> *nodes;
-  vector<Node *> compositions;
-  vector<Node *>::iterator i;
+  vector<Node *> *settings;
 
   body = this->getBody ();
   g_assert_nonnull (body);
 
+  settings = new vector<Node *>;
   compositions.push_back (body);
 
  next:
   g_assert (compositions.size () > 0);
-  nodes = ((CompositeNode *)(compositions.back ()))->getNodes ();
+  nodes = ((CompositeNode *)(compositions.front ()))->getNodes ();
   g_assert_nonnull (nodes);
-  compositions.pop_back ();
+  compositions.pop_front ();
 
-  for (i = nodes->begin (); i != nodes->end (); i++)
+  for (guint i = 0; i < nodes->size (); i++)
     {
-      NodeEntity *node = (NodeEntity *)((*i)->getDataEntity ());
+      NodeEntity *node = (NodeEntity *)((nodes->at (i))->getDataEntity ());
       g_assert_nonnull (node);
 
       if (node->instanceOf ("ContentNode")
-          &&((ContentNode *) node)->isSettingNode ())
+          && ((ContentNode *) node)->isSettingNode ())
         {
-          return (ContentNode *) node; // found
+          //
+          // WARNING: For some obscure reason, we have to store the Node,
+          // not the EntityNode.
+          //
+          settings->push_back (nodes->at (i)); // found
         }
-
-      if (node->instanceOf ("CompositeNode"))
+      else if (node->instanceOf ("CompositeNode"))
         {
           compositions.push_back (node);
         }
@@ -554,7 +562,7 @@ NclDocument::getSettingsNode ()
   if (compositions.size () > 0)
     goto next;
 
-  return NULL;
+  return settings;
 }
 
 bool
