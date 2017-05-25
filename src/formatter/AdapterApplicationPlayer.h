@@ -43,10 +43,10 @@ public:
   explicit AdapterApplicationPlayer (AdapterPlayerManager *manager);
   virtual ~AdapterApplicationPlayer ();
 
-  virtual bool start ();
+//  virtual bool start ();
   virtual bool stop ();
-  virtual bool pause ();
-  virtual bool resume ();
+//  virtual bool pause ();
+//  virtual bool resume ();
   virtual bool abort ();
 
   virtual void naturalEnd ();
@@ -61,14 +61,12 @@ public:
   void run ();
 
   virtual bool setAndLockCurrentEvent (NclFormatterEvent *event) = 0;
-  virtual void unlockCurrentEvent (NclFormatterEvent *event) = 0;
+  virtual void unlockCurrentEvent (NclFormatterEvent *event);
 
 protected:
   vector<ApplicationStatus *> _notes;
   map<string, NclFormatterEvent *> _preparedEvents;
   NclFormatterEvent *_currentEvent;
-
-  void checkPlayerSurface (NclExecutionObject *obj);
 
   virtual bool hasPrepared ();
   virtual bool prepare (NclExecutionObject *_object,

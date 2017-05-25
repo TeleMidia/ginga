@@ -33,7 +33,6 @@ protected:
 
 public:
   bool setAndLockCurrentEvent (NclFormatterEvent *event);
-  void unlockCurrentEvent (NclFormatterEvent *event);
 };
 
 GINGA_FORMATTER_END
