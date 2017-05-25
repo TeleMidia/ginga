@@ -58,7 +58,6 @@ private:
   void createDeviceRegion (int w, int h);
 
 public:
-  NclExecutionObject *getObject (int x, int y);
   SDLWindow* prepareFormatterRegion (NclExecutionObject *object,
                                         string plan);
 
