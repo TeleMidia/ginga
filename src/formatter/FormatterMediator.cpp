@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "FormatterMediator.h"
 
-#include "FormatterBaseDevice.h"
+#include "FormatterMultiDevice.h"
 #include "PresentationContext.h"
 #include "Parser.h"
 
@@ -48,7 +48,7 @@ FormatterMediator::FormatterMediator ()
 
   presContext = new PresentationContext ();
 
-  multiDevice = new FormatterBaseDevice (data->w, data->h);
+  multiDevice = new FormatterMultiDevice (data->w, data->h);
 
   multiDevice->setPresentationContex (presContext);
 
@@ -65,8 +65,6 @@ FormatterMediator::FormatterMediator ()
 
   if (data->focusManager != NULL)
     {
-      scheduler->getFocusManager ()->setParent (
-          (FormatterFocusManager *)(data->focusManager));
     }
   else
     {
@@ -77,9 +75,6 @@ FormatterMediator::FormatterMediator ()
 
   documentEvents.clear ();
   documentEntryEvents.clear ();
-
-  ((FormatterFocusManager *)(data->focusManager))
-      ->setMotionBoundaries (data->w, data->h);
 
 }
 

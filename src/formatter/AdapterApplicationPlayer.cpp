@@ -219,19 +219,6 @@ AdapterApplicationPlayer::prepare (NclFormatterEvent *event)
 {
   double duration;
   IntervalAnchor *intervalAnchor;
-  NclCascadingDescriptor *descriptor;
-  LayoutRegion *region;
-
-  descriptor = _object->getDescriptor ();
-  if (descriptor != NULL)
-    {
-      region = descriptor->getRegion ();
-      // the player has NULL address if it is a remote one
-      if (region != NULL && _player != NULL)
-        {
-          _player->setNotifyContentUpdate (region->getDeviceClass () == 1);
-        }
-    }
 
   if (_player != NULL && event->instanceOf ("NclAnchorEvent"))
     {

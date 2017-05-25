@@ -72,7 +72,7 @@ AdapterNCLPlayer::createPlayer ()
       ncmRegion = region->getLayoutRegion ();
       childData->w = (int)(ncmRegion->getWidthInPixels ());
       childData->h = (int)(ncmRegion->getHeightInPixels ());
-      childData->devClass = ncmRegion->getDeviceClass ();
+      childData->devClass = -1;
 
       property = _object->getNCMProperty ("transparency");
       if (property != NULL)
