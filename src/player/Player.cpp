@@ -168,16 +168,13 @@ Player::removeListener (IPlayerListener *listener)
 void
 Player::performLockedListenersRequest ()
 {
-  LockedPlayerListener *lpl;
-  vector<LockedPlayerListener *>::iterator i;
   IPlayerListener *listener;
   set<IPlayerListener *>::iterator j;
 
   Thread::mutexLock (&lockedListM);
-  i = lockedListeners.begin ();
-  while (i != lockedListeners.end ())
+
+  for (auto lpl : lockedListeners)
     {
-      lpl = *i;
       listener = lpl->l;
 
       if (lpl->isAdd)
@@ -192,9 +189,7 @@ Player::performLockedListenersRequest ()
               listeners.erase (j);
             }
         }
-
       delete lpl;
-      ++i;
     }
 
   lockedListeners.clear ();
@@ -349,7 +344,10 @@ Player::getTotalMediaTime ()
 }
 
 void
-Player::setScope (const string &scope, short type, double initTime, double endTime,
+Player::setScope (const string &scope,
+                  short type,
+                  double initTime,
+                  double endTime,
                   double outTransDur)
 {
   clog << "Player::setScope '" << scope << "'" << endl;
@@ -604,42 +602,53 @@ Player::getZ(){
 }
 
 void 
-Player::setAnimatorProperties(string dur, string name, string value){
-    animator->addProperty(dur,name,value);
+Player::setAnimatorProperties(string dur, string name, string value)
+{
+  animator->addProperty(dur,name,value);
 }
 
 void
-Player::redraw(SDL_Renderer* renderer){ 
-
+Player::redraw(SDL_Renderer* renderer)
+{
   if(this->status == SLEEPING)
-   return;
+    return;
 
-  animator->update(&this->rect, &this->bgColor.r, &this->bgColor.g, &this->bgColor.b, &this->alpha);
+  animator->update(&this->rect,
+                   &this->bgColor.r,
+                   &this->bgColor.g,
+                   &this->bgColor.b,
+                   &this->alpha);
 
   if(this->window!=NULL)
-      this->window->getBorder(&this->borderColor,&this->borderWidth);
+    this->window->getBorder(&this->borderColor,&this->borderWidth);
 
-   if (this->bgColor.a > 0){  // background color  
+  if (this->bgColor.a > 0)
+    {  // background color
       SDLx_SetRenderDrawBlendMode (renderer, SDL_BLENDMODE_BLEND);
-      SDLx_SetRenderDrawColor (renderer, this->bgColor.r, this->bgColor.g, this->bgColor.b, this->alpha);
+      SDLx_SetRenderDrawColor (renderer,
+                               this->bgColor.r,
+                               this->bgColor.g,
+                               this->bgColor.b,
+                               this->alpha);
       SDLx_RenderFillRect (renderer, &this->rect);
-    } 
+    }
 
-   if (this->texture != NULL){
+  if (this->texture != NULL){
       SDLx_SetTextureAlphaMod (this->texture, this->alpha);
       SDLx_RenderCopy (renderer, this->texture, NULL, &this->rect);
     }
 
-    if (this->borderWidth < 0){    
+  if (this->borderWidth < 0)
+    {
       this->borderWidth*=-1;
-  
+
       SDLx_SetRenderDrawBlendMode (renderer, SDL_BLENDMODE_BLEND);
-      SDLx_SetRenderDrawColor (renderer, this->borderColor.r, this->borderColor.g, this->borderColor.b, 255);
+      SDLx_SetRenderDrawColor (renderer,
+                               this->borderColor.r,
+                               this->borderColor.g,
+                               this->borderColor.b, 255);
       SDLx_RenderDrawRect (renderer, &this->rect);
     }
-
 }
-
-
 
 GINGA_PLAYER_END
