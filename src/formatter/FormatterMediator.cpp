@@ -45,12 +45,10 @@ FormatterMediator::FormatterMediator ()
   this->currentDocument = NULL;
 
   string deviceName = "systemScreen(0)";
-  deviceLayout = new DeviceLayout (deviceName);
-  deviceLayout->addDevice (deviceName, data->w, data->h);
 
   presContext = new PresentationContext ();
 
-  multiDevice = new FormatterBaseDevice (deviceLayout, data->w, data->h);
+  multiDevice = new FormatterBaseDevice (data->w, data->h);
 
   multiDevice->setPresentationContex (presContext);
 
@@ -101,7 +99,7 @@ FormatterMediator::play (const string &file)
   NclCompositeExecutionObject *parent;
 
   // Parse document.
-  NclParser compiler (this->deviceLayout);
+  NclParser compiler;
   this->currentFile = xpathmakeabs (file);
   this->currentDocument = compiler.parse (file);
   g_assert_nonnull (this->currentDocument);

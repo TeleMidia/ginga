@@ -57,9 +57,8 @@ SvgPlayer::displayJobCallback (arg_unused (DisplayJob *job),
     g_error ("cannot load SVG file %s: %s",
              this->mrl.c_str (), error->message);
 
-  rsvg_handle_get_dimensions (svg, &dim);
-
   g_assert (this->rect.w > 0 && this->rect.h > 0);
+  rsvg_handle_get_dimensions (svg, &dim);
 
   scale = (dim.width > dim.height)
     ? (double) this->rect.w / dim.width

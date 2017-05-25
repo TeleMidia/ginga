@@ -21,22 +21,17 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Base.h"
 
 #include "LayoutRegion.h"
-#include "DeviceLayout.h"
 
 GINGA_NCL_BEGIN
 
 class RegionBase : public Base
 {
 private:
-  string device;
-  int deviceClass;
-  string outputMapRegionId;
   map<string, LayoutRegion *> regions;
   LayoutRegion *deviceRegion;
-  DeviceLayout *deviceLayout;
 
 public:
-  RegionBase (const string &id, DeviceLayout *deviceLayout);
+  RegionBase (const string &id);
   virtual ~RegionBase ();
 
 private:

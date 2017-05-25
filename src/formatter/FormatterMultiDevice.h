@@ -56,9 +56,6 @@ using namespace ::ginga::ncl;
 
 #include "ContextBase.h"
 
-#include "ncl/DeviceLayout.h"
-using namespace ::ginga::ncl;
-
 #include "player/IPlayer.h"
 using namespace ::ginga::player;
 
@@ -70,7 +67,8 @@ class FormatterMultiDevice
 {
 protected:
   pthread_mutex_t mutex;
-  DeviceLayout *deviceLayout;
+  int width;
+  int height;
   map<int, NclFormatterLayout *> layoutManager;
   vector<string> *activeUris;
   string activeBaseUri;
@@ -89,7 +87,7 @@ protected:
   static const int DV_QVGA_HEIGHT = 320;
 
 public:
-  FormatterMultiDevice (DeviceLayout *deviceLayout, int w, int h);
+  FormatterMultiDevice (int w, int h);
   virtual ~FormatterMultiDevice ();
   void setParent (FormatterMultiDevice *parent);
   void setPresentationContex (PresentationContext *presContext);

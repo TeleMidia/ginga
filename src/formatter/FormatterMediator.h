@@ -40,7 +40,6 @@ private:
   RuleAdapter *ruleAdapter;
   FormatterConverter *compiler;
   AdapterPlayerManager *playerManager;
-  DeviceLayout *deviceLayout;
   FormatterMultiDevice *multiDevice;
   PresentationContext *presContext;
 
