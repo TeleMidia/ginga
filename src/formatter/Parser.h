@@ -61,8 +61,8 @@ GINGA_FORMATTER_BEGIN
 class NclParser : public ErrorHandler
 {
 public:
-  explicit NclParser (DeviceLayout *deviceLayout);
-  virtual ~NclParser ();
+  NclParser ();
+  ~NclParser ();
 
   Node *getNode (const string &id);
   NclDocument *importDocument (string &docLocation);
@@ -71,7 +71,6 @@ public:
   string getDirName ();
   void setNclDocument (NclDocument *);
   NclDocument *getNclDocument ();
-  DeviceLayout *getDeviceLayout();
 
   void warning (const SAXParseException &);
   void error (const SAXParseException &);
@@ -84,7 +83,6 @@ private:
   NclDocument *_ncl;             // NCL document
   string _path;                  // document's absolute path
   string _dirname;               // directory part of document's path
-  DeviceLayout *_deviceLayout;
   bool _ownManager;
 
   NclDocument *parseRootElement (DOMElement *rootElement);

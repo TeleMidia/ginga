@@ -23,18 +23,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/Display.h"
 using namespace ::ginga::mb;
 
-#include "ncl/DeviceLayout.h"
-using namespace ::ginga::ncl;
-
 GINGA_FORMATTER_BEGIN
 
-FormatterMultiDevice::FormatterMultiDevice (DeviceLayout *deviceLayout,
-                                            int w, int h)
+FormatterMultiDevice::FormatterMultiDevice (int w, int h)
 {
   this->defaultWidth = w;
   this->defaultHeight = h;
   this->deviceClass = -1;
-  this->deviceLayout = deviceLayout;
   this->activeBaseUri = "";
   this->activeUris = NULL;
   this->presContext = NULL;
@@ -135,7 +130,6 @@ FormatterMultiDevice::getFormatterLayout (
 {
   map<int, NclFormatterLayout *>::iterator i;
   LayoutRegion *region;
-  int devClass;
 
   region = descriptor->getRegion ();
   if (region == NULL)
@@ -155,8 +149,7 @@ FormatterMultiDevice::getFormatterLayout (
         }
     }
 
-  devClass = region->getDeviceClass ();
-  i = layoutManager.find (devClass);
+  i = layoutManager.find (0);
   return i->second;
 }
 

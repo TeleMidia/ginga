@@ -78,7 +78,7 @@ bool
 NclDocument::addDocument (NclDocument *document, const string &alias,
                           const string &location)
 {
-  assert (document != NULL);
+  g_assert (document != NULL);
 
   if (documentAliases.find (alias) != documentAliases.end ()
       || documentLocations.find (location) != documentLocations.end ())
@@ -639,23 +639,8 @@ NclDocument::setId (const string &id)
 void
 NclDocument::addRegionBase (RegionBase *regionBase)
 {
-  map<int, RegionBase *>::iterator i;
-  int dClass;
-
-  assert (regionBase != NULL);
-
-  dClass = regionBase->getDeviceClass ();
-  i = regionBases.find (dClass);
-  if (i != regionBases.end ())
-    {
-      clog << "NclDocument::addRegionBase Warning! Trying to add the ";
-      clog << "same regionBase deviceClass = '" << dClass << "'";
-      clog << " regionBase twice." << endl;
-    }
-  else
-    {
-      regionBases[dClass] = regionBase;
-    }
+  g_assert (regionBase != NULL);
+  regionBases[0] = regionBase;
 }
 
 void
@@ -667,7 +652,7 @@ NclDocument::setRuleBase (RuleBase *ruleBase)
 void
 NclDocument::addMetainformation (Meta *meta)
 {
-  assert (meta != NULL);
+  g_assert (meta != NULL);
 
   metainformationList.push_back (meta);
 }
@@ -675,7 +660,7 @@ NclDocument::addMetainformation (Meta *meta)
 void
 NclDocument::addMetadata (Metadata *metadata)
 {
-  assert (metadata != NULL);
+  g_assert (metadata != NULL);
 
   metadataList.push_back (metadata);
 }
@@ -714,7 +699,7 @@ NclDocument::removeMetainformation (Meta *meta)
 {
   vector<Meta *>::iterator i;
 
-  assert (meta != NULL);
+  g_assert (meta != NULL);
 
   i = metainformationList.begin ();
   while (i != metainformationList.end ())
@@ -737,7 +722,7 @@ NclDocument::removeMetadata (Metadata *metadata)
 {
   vector<Metadata *>::iterator i;
 
-  assert (metadata != NULL);
+  g_assert (metadata != NULL);
 
   i = metadataList.begin ();
   while (i != metadataList.end ())

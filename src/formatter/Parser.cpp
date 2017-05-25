@@ -164,19 +164,15 @@ dom_element_children_by_tagnames (DOMElement *el,
   return vet;
 }
 
-NclParser::NclParser (DeviceLayout *deviceLayout)
+NclParser::NclParser ()
 {
-  g_assert_nonnull(deviceLayout);
   this->_ownManager = false;
-  this->_deviceLayout = deviceLayout;
 }
 
 NclParser::~NclParser ()
 {
-  for(auto i : _switchConstituents)
-    {
-      delete i.second;
-    }
+  for (auto i : _switchConstituents)
+    delete i.second;
 }
 
 NclDocument *
@@ -212,13 +208,6 @@ NclParser::setNclDocument (NclDocument *ncl)
 {
   this->_ncl = ncl;
 }
-
-DeviceLayout *
-NclParser::getDeviceLayout()
-{
-  return this->_deviceLayout;
-}
-
 void
 NclParser::warning (const SAXParseException &e)
 {
@@ -320,7 +309,7 @@ NclParser::getNode (const string &nodeId)
 NclDocument *
 NclParser::importDocument (string &path)
 {
-  NclParser compiler (this->_deviceLayout);
+  NclParser compiler;
 
   if (!xpathisuri (path) && !xpathisabs (path))
     path = xpathbuildabs (this->getDirName (), path);
@@ -2422,25 +2411,11 @@ NclParser::addImportBaseToRegionBase (RegionBase *regionBase,
 }
 
 RegionBase *
-NclParser::createRegionBase (DOMElement *parentElement)
+NclParser::createRegionBase (DOMElement *elt)
 {
-  string device;
   RegionBase *regionBase;
 
-  regionBase = new RegionBase (dom_element_get_attr(parentElement, "id"),
-                               getDeviceLayout());
-
-  // device attribute
-  if (dom_element_try_get_attr(device, parentElement, "device"))
-    {
-      string mapId = dom_element_get_attr(parentElement, "region");
-      regionBase->setDevice (device , mapId);
-    }
-  else
-    {
-      regionBase->setDevice (getDeviceLayout()->getLayoutName (), "");
-    }
-
+  regionBase = new RegionBase (dom_element_get_attr (elt, "id"));
   return regionBase;
 }
 
@@ -2459,25 +2434,25 @@ set_perc_or_px (DOMElement *el, const string &att, LayoutRegion *region,
 }
 
 LayoutRegion *
-NclParser::createRegion (DOMElement *region_element)
+NclParser::createRegion (DOMElement *elt)
 {
-  string attr = dom_element_get_attr(region_element, "id");
-  LayoutRegion *ncmRegion = new LayoutRegion (attr);
+  string attr = dom_element_get_attr (elt, "id");
+  LayoutRegion *region = new LayoutRegion (attr);
 
-  if(dom_element_try_get_attr(attr, region_element, "title"))
-    ncmRegion->setTitle(attr);
+  if(dom_element_try_get_attr(attr, elt, "title"))
+    region->setTitle(attr);
 
-  set_perc_or_px(region_element, "left", ncmRegion, &LayoutRegion::setLeft);
-  set_perc_or_px(region_element, "right", ncmRegion, &LayoutRegion::setRight);
-  set_perc_or_px(region_element, "top", ncmRegion, &LayoutRegion::setTop);
-  set_perc_or_px(region_element, "bottom", ncmRegion, &LayoutRegion::setBottom);
-  set_perc_or_px(region_element, "width", ncmRegion, &LayoutRegion::setWidth);
-  set_perc_or_px(region_element, "height", ncmRegion, &LayoutRegion::setHeight);
+  set_perc_or_px (elt, "left", region, &LayoutRegion::setLeft);
+  set_perc_or_px (elt, "right", region, &LayoutRegion::setRight);
+  set_perc_or_px (elt, "top", region, &LayoutRegion::setTop);
+  set_perc_or_px (elt, "bottom", region, &LayoutRegion::setBottom);
+  set_perc_or_px (elt, "width", region, &LayoutRegion::setWidth);
+  set_perc_or_px (elt, "height", region, &LayoutRegion::setHeight);
 
-  if(dom_element_try_get_attr(attr, region_element, "zIndex"))
-      ncmRegion->setZIndex (xstrtoint (attr, 10));
+  if(dom_element_try_get_attr(attr, elt, "zIndex"))
+      region->setZIndex (xstrtoint (attr, 10));
 
-  return ncmRegion;
+  return region;
 }
 
 // LINKING
@@ -3453,7 +3428,7 @@ NclParser::addImportBaseToDescriptorBase (
   regionBase = thisDocument->getRegionBase (0);
   if (regionBase == NULL)
     {
-      regionBase = new RegionBase ("dummy", this->getDeviceLayout());
+      regionBase = new RegionBase ("dummy");
       thisDocument->addRegionBase (regionBase);
     }
 

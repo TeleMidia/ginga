@@ -20,14 +20,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-RegionBase::RegionBase (const string &id, DeviceLayout *deviceLayout) : Base (id)
+RegionBase::RegionBase (const string &id) : Base (id)
 {
-  this->deviceLayout = deviceLayout;
-  this->device = "";
-  this->deviceClass = -1;
-  this->outputMapRegionId = "";
-  this->deviceRegion = NULL;
-
+  deviceRegion = new LayoutRegion ("");
+  deviceRegion->setTop (0, false);
+  deviceRegion->setLeft (0, false);
+  deviceRegion->setWidth (800, false);
+  deviceRegion->setHeight (600, false);
   typeSet.insert ("RegionBase");
 }
 
@@ -42,50 +41,6 @@ RegionBase::~RegionBase ()
       delete deviceRegion;
       deviceRegion = NULL;
     }
-
-  if (deviceLayout != NULL)
-    {
-      // deviceLayout is deleted outside ncl30 scope
-      deviceLayout = NULL;
-    }
-}
-
-void
-RegionBase::createDeviceRegion ()
-{
-  DeviceProperty *deviceProperty;
-
-  deviceRegion = new LayoutRegion (device);
-
-  deviceProperty = deviceLayout->getDeviceProperty (device);
-  if (deviceProperty != NULL)
-    {
-      deviceRegion->setWidth ((double)(deviceProperty->getDeviceWidth ()),
-                              false);
-
-      deviceRegion->setHeight ((double)(deviceProperty->getDeviceHeight ()),
-                               false);
-    }
-  else
-    {
-      clog << "RegionBase::createDeviceRegion '" << deviceClass << "'";
-      clog << " Warning! Can't find device properties" << endl;
-
-      deviceRegion->setTop (0, false);
-      deviceRegion->setLeft (0, false);
-      deviceRegion->setWidth (800, false);
-      deviceRegion->setHeight (600, false);
-    }
-  /*
-                  clog << endl << endl;
-                  clog << "RegionBase::createDeviceRegion '" << deviceClass
-     <<
-     "'";
-                  clog << " and mapId '" << outputMapRegionId << "'" <<
-     endl;
-                  clog << endl << endl;*/
-
-  deviceRegion->setDeviceClass (deviceClass, outputMapRegionId);
 }
 
 bool
@@ -95,33 +50,20 @@ RegionBase::addRegion (LayoutRegion *region)
   string regId;
 
   regId = region->getId ();
-  /*clog << "RegionBase::addRegion Add region '" << regId;
-  clog << "'" << endl;*/
-
   i = regions.find (regId);
-  if (i != regions.end ())
-    {
-      clog << "RegionBase::addRegion Warning! Trying to add a region ";
-      clog << "with id '" << regId << "' twice" << endl;
-      return false;
-    }
-  else
-    {
-      deviceRegion->addRegion (region);
-      region->setParent (deviceRegion);
-      regions[regId] = region;
-      return true;
-    }
+  g_assert (i == regions.end ());
+
+  deviceRegion->addRegion (region);
+  region->setParent (deviceRegion);
+  regions[regId] = region;
+  return true;
 }
 
 bool
 RegionBase::addBase (Base *base, const string &alias, const string &location)
 {
-  if (base->instanceOf ("RegionBase"))
-    {
-      return Base::addBase (base, alias, location);
-    }
-  return false;
+  g_assert (base->instanceOf ("RegionBase"));
+  return Base::addBase (base, alias, location);
 }
 
 LayoutRegion *
@@ -147,23 +89,6 @@ RegionBase::getRegionLocally (const string &regionId)
       ++childRegions;
     }
   return NULL;
-}
-
-string
-RegionBase::getOutputMapRegionId ()
-{
-  return outputMapRegionId;
-}
-
-void
-RegionBase::setOutputMapRegion (LayoutRegion *outputMapRegion)
-{
-  map<string, LayoutRegion *>::iterator i;
-
-  for (i = regions.begin (); i != regions.end (); ++i)
-    {
-      i->second->setOutputMapRegion (outputMapRegion);
-    }
 }
 
 LayoutRegion *
@@ -226,46 +151,6 @@ RegionBase::removeRegion (LayoutRegion *region)
         }
     }
   return false;
-}
-
-string
-RegionBase::getDevice ()
-{
-  return device;
-}
-
-void
-RegionBase::setDevice (const string &device, const string &regionId)
-{
-  this->device = device;
-
-  if (deviceRegion != NULL)
-    {
-      delete deviceRegion;
-      deviceRegion = NULL;
-    }
-
-  if (device == "systemScreen(0)")
-    {
-      deviceClass = 0;
-    }
-  else if (device == "systemScreen(1)")
-    {
-      deviceClass = 1;
-    }
-  else if (device == "systemScreen(2)")
-    {
-      deviceClass = 2;
-    }
-
-  outputMapRegionId = regionId;
-  createDeviceRegion ();
-}
-
-int
-RegionBase::getDeviceClass ()
-{
-  return deviceClass;
 }
 
 void
