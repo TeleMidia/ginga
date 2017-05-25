@@ -39,22 +39,35 @@ class AdapterApplicationPlayer :
     public AdapterFormatterPlayer,
     public Thread
 {
-private:
-  IPlayerListener *editingCommandListener;
-  pthread_mutex_t eventMutex;
-  pthread_mutex_t eventsMutex;
-  bool running;
-
-protected:
-  vector<ApplicationStatus *> notes;
-  map<string, NclFormatterEvent *> preparedEvents;
-  NclFormatterEvent *currentEvent;
-
 public:
   AdapterApplicationPlayer ();
   virtual ~AdapterApplicationPlayer ();
 
+  virtual bool start ();
+  virtual bool stop ();
+  virtual bool pause ();
+  virtual bool resume ();
+  virtual bool abort ();
+
+  virtual void naturalEnd ();
+  virtual void updateStatus (short code,
+                             const string &parameter = "",
+                             short type = 10,
+                             const string &value = "");
+
+  void notificationHandler (short code, const string &parameter, short type,
+                            const string &value);
+
+  void run ();
+
+  virtual bool setAndLockCurrentEvent (NclFormatterEvent *event) = 0;
+  virtual void unlockCurrentEvent (NclFormatterEvent *event) = 0;
+
 protected:
+  vector<ApplicationStatus *> _notes;
+  map<string, NclFormatterEvent *> _preparedEvents;
+  NclFormatterEvent *_currentEvent;
+
   void checkPlayerSurface (NclExecutionObject *obj);
   virtual void createPlayer ();
 
@@ -62,40 +75,6 @@ protected:
   virtual bool prepare (NclExecutionObject *_object,
                         NclFormatterEvent *mainEvent);
 
-private:
-  void prepare (NclFormatterEvent *event);
-
-public:
-  virtual bool start ();
-  virtual bool stop ();
-  virtual bool pause ();
-  virtual bool resume ();
-  virtual bool abort ();
-
-private:
-  virtual bool unprepare ();
-
-public:
-  virtual void naturalEnd ();
-  virtual void updateStatus (short code,
-                             const string &parameter = "",
-                             short type = 10,
-                             const string &value = "");
-
-private:
-  void notificationHandler (short code, const string &parameter, short type,
-                            const string &value);
-
-  void run ();
-
-public:
-  virtual bool setAndLockCurrentEvent (NclFormatterEvent *event) = 0;
-  virtual void unlockCurrentEvent (NclFormatterEvent *event) = 0;
-
-private:
-  bool checkEvent (NclFormatterEvent *event, short type);
-
-protected:
   bool startEvent (const string &anchorId, short type, const string &value);
   bool stopEvent (const string &anchorId, short type, const string &value);
   bool abortEvent (const string &anchorId, short type);
@@ -108,8 +87,16 @@ protected:
   void lockPreparedEvents ();
   void unlockPreparedEvents ();
 
-public:
-  virtual void flip (){};
+private:
+  IPlayerListener *_editingCommandListener;
+  pthread_mutex_t _eventMutex;
+  pthread_mutex_t _eventsMutex;
+  bool _running;
+
+  void prepare (NclFormatterEvent *event);
+  virtual bool unprepare ();
+  bool checkEvent (NclFormatterEvent *event, short type);
+
 };
 
 GINGA_FORMATTER_END

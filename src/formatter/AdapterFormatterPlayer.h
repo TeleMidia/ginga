@@ -82,11 +82,9 @@ public:
   string getPropertyValue (NclAttributionEvent *event);
   virtual string getPropertyValue (const string &name);
 
-  double getObjectExpectedDuration ();
   void updateObjectExpectedDuration ();
   double getMediaTime ();
   IPlayer *getPlayer ();
-  void setTimeBasePlayer (AdapterFormatterPlayer *timeBasePlayer);
   virtual void updateStatus (short code,
                              const string &parameter = "",
                              short type = 10,
@@ -95,7 +93,6 @@ public:
   virtual void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
 
 protected:
-  static double _eventTS;
 
   AdapterPlayerManager *_manager;
   NclExecutionObject *_object;
@@ -104,7 +101,7 @@ protected:
 
   virtual void createPlayer ();
   double prepareProperties (NclExecutionObject *obj);
-  void updatePlayerProperties (NclExecutionObject *obj);
+  void updatePlayerProperties ();
   void prepare ();
   virtual void prepareScope (double offset = -1);
   bool lockObject ();

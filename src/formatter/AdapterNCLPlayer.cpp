@@ -122,7 +122,7 @@ AdapterNCLPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
   string interfaceId;
 
   lockEvent ();
-  if (preparedEvents.count (event->getId ()) != 0
+  if (_preparedEvents.count (event->getId ()) != 0
       && !event->instanceOf ("NclSelectionEvent")
       && event->instanceOf ("NclAnchorEvent"))
     {
@@ -141,9 +141,9 @@ AdapterNCLPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
           interfaceId = "";
         }
 
-      currentEvent = event;
+      _currentEvent = event;
       ((NclApplicationExecutionObject *)_object)
-          ->setCurrentEvent (currentEvent);
+          ->setCurrentEvent (_currentEvent);
 
       if (_player != NULL)
         {
@@ -161,9 +161,9 @@ AdapterNCLPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
           _player->setScope (interfaceId, IPlayer::TYPE_ATTRIBUTION);
         }
 
-      currentEvent = event;
+      _currentEvent = event;
       ((NclApplicationExecutionObject *)_object)
-          ->setCurrentEvent (currentEvent);
+          ->setCurrentEvent (_currentEvent);
 
       if (_player != NULL)
         {
@@ -182,7 +182,7 @@ AdapterNCLPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
 void
 AdapterNCLPlayer::unlockCurrentEvent (NclFormatterEvent *event)
 {
-  if (event != currentEvent)
+  if (event != _currentEvent)
     {
       clog << "AdapterNCLPlayer::unlockCurrentEvent ";
       clog << "Handling events warning!" << endl;
