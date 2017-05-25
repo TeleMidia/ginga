@@ -587,11 +587,6 @@ NclCascadingDescriptor::createDummyRegion (void *formatterLayout)
 
       if (deviceRegion != NULL)
         {
-          clog << "NclCascadingDescriptor::createDummyRegion with device ";
-          clog << "class = '" << deviceRegion->getDeviceClass () << "' ";
-          clog << "inside deviceRegion '" << deviceRegion->getId ();
-          clog << "'" << endl;
-
           region = new LayoutRegion ("dummyRegion" + xstrbuild ("%d", dummyCount));
           dummyCount++;
 

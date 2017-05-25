@@ -1552,39 +1552,7 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
 
   if (hasProp)
     {
-      if (left != "")
-        {
-          ncmRegion->setTargetLeft (xstrtodorpercent (left, NULL), true);
-        }
-
-      if (top != "")
-        {
-          ncmRegion->setTargetTop (xstrtodorpercent (top, NULL), true);
-        }
-
-      if (width != "")
-        {
-          ncmRegion->setTargetWidth (xstrtodorpercent (width, NULL), true);
-        }
-
-      if (height != "")
-        {
-          ncmRegion->setTargetHeight (xstrtodorpercent (height, NULL), true);
-        }
-
-      if (bottom != "")
-        {
-          ncmRegion->setTargetBottom (xstrtodorpercent (bottom, NULL), true);
-        }
-
-      if (right != "")
-        {
-          ncmRegion->setTargetRight (xstrtodorpercent (right, NULL), true);
-        }
-
       // set the values
-      ncmRegion->validateTarget ();
-
       region->updateRegionBounds ();
       unlock ();
 

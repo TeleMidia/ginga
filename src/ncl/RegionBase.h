@@ -45,8 +45,6 @@ private:
   LayoutRegion *getRegionLocally (const string &regionId);
 
 public:
-  string getOutputMapRegionId ();
-  void setOutputMapRegion (LayoutRegion *outputMapRegion);
   LayoutRegion *getRegion (const string &regionId);
   vector<LayoutRegion *> *getRegions ();
   bool removeRegion (LayoutRegion *region);
