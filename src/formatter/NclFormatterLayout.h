@@ -30,9 +30,6 @@ GINGA_FORMATTER_BEGIN
 
 class NclFormatterLayout
 {
-protected:
-  set<string> typeSet;
-
 private:
   map<string, NclFormatterLayout *> flChilds;
   LayoutRegion *deviceRegion;
@@ -45,8 +42,6 @@ public:
   NclFormatterLayout (int w, int h);
   virtual ~NclFormatterLayout ();
   LayoutRegion *getDeviceRegion ();
-  void addChild (const string &objectId, NclFormatterLayout *child);
-  NclFormatterLayout *getChild (const string &objectId);
   LayoutRegion *getNcmRegion (const string &regionId);
 
 private:
@@ -77,9 +72,6 @@ private:
                                  NclFormatterRegion *formatterRegion);
 
 public:
-  set<NclFormatterRegion *> *
-  getFormatterRegionsFromNcmRegion (const string &regionId);
-
   void clear ();
 
 private:

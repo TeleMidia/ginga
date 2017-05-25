@@ -24,7 +24,6 @@ NclFormatterLayout::NclFormatterLayout (int w, int h)
 {
   deviceRegion = NULL;
 
-  typeSet.insert ("NclFormatterLayout");
   Thread::mutexInit (&mutex, false);
   createDeviceRegion (w, h);
 }
@@ -45,27 +44,6 @@ NclFormatterLayout::getDeviceRegion ()
 {
   return this->deviceRegion;
 }
-
-void
-NclFormatterLayout::addChild (const string &objectId, NclFormatterLayout *child)
-{
-  flChilds[objectId] = child;
-}
-
-NclFormatterLayout *
-NclFormatterLayout::getChild (const string &objectId)
-{
-  map<string, NclFormatterLayout *>::iterator i;
-
-  i = flChilds.find (objectId);
-  if (i != flChilds.end ())
-    {
-      return i->second;
-    }
-
-  return NULL;
-}
-
 
 LayoutRegion *
 NclFormatterLayout::getNcmRegion (const string &regionId)
@@ -334,23 +312,6 @@ NclFormatterLayout::removeFormatterRegionFromMaps (
   unlock ();
 
   return myObject;
-}
-
-set<NclFormatterRegion *> *
-NclFormatterLayout::getFormatterRegionsFromNcmRegion (const string &regionId)
-{
-  set<NclFormatterRegion *> *regions;
-
-  lock ();
-  if (regionMap.count (regionId) == 0)
-    {
-      unlock ();
-      return NULL;
-    }
-
-  regions = new set<NclFormatterRegion *> (*(regionMap[regionId]));
-  unlock ();
-  return regions;
 }
 
 void
