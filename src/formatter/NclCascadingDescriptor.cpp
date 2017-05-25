@@ -23,6 +23,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/NodeEntity.h"
 using namespace ::ginga::ncl;
 
+#include "mb/Display.h"
+using namespace ::ginga::mb;
+
 #include "NclExecutionObject.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-conversion)
@@ -607,12 +610,26 @@ NclCascadingDescriptor::createDummyRegion (void *formatterLayout)
 void
 NclCascadingDescriptor::setFormatterLayout (void *formatterLayout)
 {
+  if (formatterLayout == NULL)
+    {
+      int w, h;
+      Ginga_Display->getSize (&w, &h);
+      formatterLayout = new NclFormatterLayout (w, h);
+      g_assert_nonnull (formatterLayout);
+    }
+
   if (region == NULL)
     {
-      clog << "NclCascadingDescriptor::setFormatterRegion Warning!";
-      clog << " region == NULL";
-      clog << endl;
-      return;
+      LayoutRegion *parent;
+      this->region = new LayoutRegion ("");
+      g_assert (this->region->setLeft (0., true));
+      g_assert (this->region->setRight (0., true));
+      g_assert (this->region->setWidth (100., true));
+      g_assert (this->region->setHeight (100., true));
+      parent = ((NclFormatterLayout *) formatterLayout)->getDeviceRegion ();
+
+      g_assert_nonnull (parent);
+      this->region->setParent (parent);
     }
 
   if (this->formatterRegion != NULL)

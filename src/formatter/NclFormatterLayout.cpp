@@ -44,7 +44,7 @@ NclFormatterLayout::~NclFormatterLayout ()
 LayoutRegion *
 NclFormatterLayout::getDeviceRegion ()
 {
-  return deviceRegion;
+  return this->deviceRegion;
 }
 
 void
@@ -93,41 +93,9 @@ NclFormatterLayout::getNcmRegion (const string &regionId)
 }
 
 void
-NclFormatterLayout::printRegionMap ()
-{
-  map<string, set<NclFormatterRegion *> *>::iterator i;
-
-  cout << "NclFormatterLayout::printRegionMap: | '";
-
-  i = regionMap.begin ();
-  while (i != regionMap.end ())
-    {
-      cout << i->first << "' ";
-      ++i;
-    }
-  cout << "|" << endl;
-}
-
-void
-NclFormatterLayout::printObjectMap ()
-{
-  map<NclFormatterRegion *, NclExecutionObject *>::iterator i;
-
-  cout << "NclFormatterLayout::printObjectMap: | '";
-
-  i = objectMap.begin ();
-  while (i != objectMap.end ())
-    {
-      cout << i->second->getId () << "' ";
-      ++i;
-    }
-  cout << "|" << endl;
-}
-
-void
 NclFormatterLayout::createDeviceRegion (int w, int h)
 {
-  deviceRegion = new NclFormatterDeviceRegion ("defaultScreenFormatter");
+  deviceRegion = new LayoutRegion ("defaultScreenFormatter");
   deviceRegion->setTop (0, false);
   deviceRegion->setLeft (0, false);
   deviceRegion->setWidth (w, false);
@@ -187,58 +155,6 @@ NclFormatterLayout::getObject (int x, int y)
   unlock ();
   return object;
 }
-
-/*bool NclFormatterLayout::getScreenShot(SDLWindow* region) {
-        map<string, set<NclFormatterRegion*>*>::iterator i;
-        set<NclFormatterRegion*>::iterator j;
-        vector<string>::iterator k;
-        map<NclFormatterRegion*, NclExecutionObject*>::iterator l;
-        map<string, NclFormatterLayout*>::iterator m;
-
-        set<NclFormatterRegion*>* formRegions = NULL;
-        NclFormatterRegion* formatterRegion;
-        SDLWindow* formWindow = NULL;
-
-        lock();
-        k = sortedRegions.begin();
-        while (k != sortedRegions.end()) {
-                i = regionMap.find(*k);
-                if (i != regionMap.end()) {
-                        formRegions = i->second;
-                        j = formRegions->begin();
-                        while (j != formRegions->end()) {
-                                formatterRegion = (*j);
-                                formWindow =
-formatterRegion->getODContentPane();
-                                if (formWindow != NULL) {
-                                        if (childs != NULL) {
-                                                l =
-objectMap.find(formatterRegion);
-                                                if (l != objectMap.end()) {
-                                                        m =
-childs->find(l->second->getId());
-                                                        if (m !=
-childs->end())
-{
-                                                                m->second->getScreenShot(formWindow);
-                                                                formWindow->validate();
-                                                                unlock();
-                                                                return
-false;
-                                                        }
-                                                }
-                                        }
-                                        region->blit(formWindow);
-                                }
-                                ++j;
-                        }
-                }
-                ++k;
-        }
-
-        unlock();
-        return true;
-}*/
 
 void
 NclFormatterLayout::getSortedIds (vector<SDLWindow*> *sortedIds)
