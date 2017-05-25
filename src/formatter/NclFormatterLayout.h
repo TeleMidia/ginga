@@ -25,7 +25,6 @@ using namespace ::ginga::ncl;
 #include "NclExecutionObject.h"
 
 #include "NclFormatterRegion.h"
-#include "NclFormatterDeviceRegion.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -51,10 +50,6 @@ public:
   NclFormatterLayout *getChild (const string &objectId);
   string getBitMapRegionId ();
   LayoutRegion *getNcmRegion (const string &regionId);
-
-private:
-  void printRegionMap ();
-  void printObjectMap ();
 
 public:
   void getSortedIds (vector<SDLWindow*> *sortedIds);

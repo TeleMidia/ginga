@@ -27,7 +27,6 @@ FormatterBaseDevice::FormatterBaseDevice (int w, int h)
     : FormatterMultiDevice (w, h)
 {
   mainLayout = new NclFormatterLayout (w, h);
-  mainLayout->getDeviceRegion ()->setDeviceClass (0, "");
   layoutManager[0] = mainLayout;
 }
 
