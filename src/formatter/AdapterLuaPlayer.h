@@ -28,9 +28,6 @@ public:
   explicit AdapterLuaPlayer (AdapterPlayerManager *mngr);
   virtual ~AdapterLuaPlayer (){}
 
-protected:
-  void createPlayer ();
-
 public:
   bool setAndLockCurrentEvent (NclFormatterEvent *event);
   void unlockCurrentEvent (NclFormatterEvent *event);

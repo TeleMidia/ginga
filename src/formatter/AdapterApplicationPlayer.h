@@ -69,7 +69,6 @@ protected:
   NclFormatterEvent *_currentEvent;
 
   void checkPlayerSurface (NclExecutionObject *obj);
-  virtual void createPlayer ();
 
   virtual bool hasPrepared ();
   virtual bool prepare (NclExecutionObject *_object,

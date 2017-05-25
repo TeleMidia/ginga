@@ -68,12 +68,6 @@ AdapterApplicationPlayer::~AdapterApplicationPlayer ()
   Thread::mutexDestroy (&_eventsMutex);
 }
 
-void
-AdapterApplicationPlayer::createPlayer ()
-{
-  AdapterFormatterPlayer::createPlayer ();
-}
-
 bool
 AdapterApplicationPlayer::hasPrepared ()
 {
