@@ -251,8 +251,6 @@ NclFormatterRegion::setZIndex (int zIndex)
         {
           outputDisplay->setZ (zIndex);
         }
-
-      toFront ();
     }
 }
 
@@ -668,17 +666,6 @@ NclFormatterRegion::sizeRegion ()
   unlock ();
 }
 
-bool
-NclFormatterRegion::intersects (int x, int y)
-{
-  if (ncmRegion != NULL)
-    {
-      return ncmRegion->intersects (x, y);
-    }
-
-  return false;
-}
-
 LayoutRegion *
 NclFormatterRegion::getLayoutRegion ()
 {
@@ -801,8 +788,6 @@ NclFormatterRegion::showContent ()
               transitionType = transition->getType ();
               if (transitionType == Transition::TYPE_FADE)
                 {
-                  toFront ();
-
                   // fade(transition, true);
                   t = new TransInfo;
                   t->fr = this;
@@ -818,8 +803,6 @@ NclFormatterRegion::showContent ()
                 }
               else if (transitionType == Transition::TYPE_BARWIPE)
                 {
-                  toFront ();
-
                   // barWipe(transition, true);
                   t = new TransInfo;
                   t->fr = this;
@@ -836,7 +819,6 @@ NclFormatterRegion::showContent ()
             }
         }
 
-      toFront ();
       unlockTransition ();
       setRegionVisibility (true);
       /*clog << "NclFormatterRegion::showContent '" << desc->getId();
@@ -993,203 +975,6 @@ NclFormatterRegion::disposeOutputDisplay ()
           Ginga_Display->destroyWindow (outputDisplay);
         }
       outputDisplay = 0;
-    }
-}
-
-void
-NclFormatterRegion::toFront ()
-{
-  lock ();
-  if (outputDisplay != 0 && !externHandler)
-    {
-      
-      unlock ();
-      if (ncmRegion != NULL)
-        {
-          bringChildrenToFront (ncmRegion);
-        }
-      bringSiblingToFront (this);
-    }
-  else
-    {
-      unlock ();
-    }
-}
-
-void
-NclFormatterRegion::bringChildrenToFront (LayoutRegion *parentRegion)
-{
-  vector<LayoutRegion *> *regions = NULL;
-  vector<LayoutRegion *>::iterator i;
-  set<NclFormatterRegion *> *formRegions = NULL;
-  set<NclFormatterRegion *>::iterator j;
-  LayoutRegion *layoutRegion;
-  NclFormatterRegion *region;
-
-  if (parentRegion != NULL)
-    {
-      regions = parentRegion->getRegionsSortedByZIndex ();
-    }
-
-  // clog << endl << endl << endl;
-  // clog << "DEBUG REGIONS SORTED BY ZINDEX parentID: ";
-  // clog << parentRegion->getId() << endl;
-  // i = regions->begin();
-  // while (i != regions->end()) {
-  //	clog << "region: " << (*i)->getId();
-  //	clog << "zindex: " << (*i)->getZIndex();
-  //	++i;
-  //}
-  // clog << endl << endl << endl;
-
-  if (regions != NULL)
-    {
-      i = regions->begin ();
-      while (i != regions->end ())
-        {
-          layoutRegion = *i;
-
-          if (layoutRegion != NULL)
-            {
-              bringChildrenToFront (layoutRegion);
-              formRegions = ((NclFormatterLayout *)layoutManager)
-                                ->getFormatterRegionsFromNcmRegion (
-                                    layoutRegion->getId ());
-
-              if (formRegions != NULL)
-                {
-                  j = formRegions->begin ();
-                  while (j != formRegions->end ())
-                    {
-                      region = *j;
-                      if (region != NULL)
-                        {
-                          region->toFront ();
-                        }
-                      else
-                        {
-                          clog << "NclFormatterRegion::";
-                          clog << "bringChildrenToFront";
-                          clog << " Warning! region == NULL";
-                        }
-
-                      ++j;
-                    }
-
-                  delete formRegions;
-                  formRegions = NULL;
-                }
-            }
-          ++i;
-        }
-
-      delete regions;
-    }
-}
-
-void
-NclFormatterRegion::traverseFormatterRegions (LayoutRegion *region,
-                                              LayoutRegion *baseRegion)
-{
-  LayoutRegion *auxRegion;
-  set<NclFormatterRegion *> *formRegions;
-  NclFormatterRegion *formRegion;
-  set<NclFormatterRegion *>::iterator it;
-
-  formRegions = ((NclFormatterLayout *)layoutManager)
-                    ->getFormatterRegionsFromNcmRegion (region->getId ());
-
-  if (formRegions != NULL)
-    {
-      it = formRegions->begin ();
-      while (it != formRegions->end ())
-        {
-          formRegion = *it;
-          if (formRegion != NULL)
-            {
-              auxRegion = formRegion->getLayoutRegion ();
-              if (ncmRegion != NULL)
-                {
-                  if (ncmRegion->intersects (auxRegion)
-                      && ncmRegion != auxRegion)
-                    {
-                      formRegion->toFront ();
-                    }
-                }
-            }
-          else
-            {
-              clog << "NclFormatterRegion::traverseFormatterRegion";
-              clog << " Warning! formRegion == NULL" << endl;
-            }
-
-          // clog << "NclFormatterRegion::traverseFormatterRegion toFront =
-          // ";
-          // clog << "'" << formRegion->getLayoutRegion()->getId();
-          // clog << "'" << endl;
-
-          ++it;
-        }
-      delete formRegions;
-      formRegions = NULL;
-    }
-  else
-    {
-      bringHideWindowToFront (baseRegion, region);
-    }
-}
-
-void
-NclFormatterRegion::bringHideWindowToFront (LayoutRegion *baseRegion,
-                                            LayoutRegion *hideRegion)
-{
-  vector<LayoutRegion *> *regions;
-  LayoutRegion *region;
-  vector<LayoutRegion *>::iterator it;
-
-  if (ncmRegion->intersects (hideRegion) && ncmRegion != hideRegion)
-    {
-      regions = hideRegion->getRegions ();
-      if (regions != NULL)
-        {
-          for (it = regions->begin (); it != regions->end (); ++it)
-            {
-              region = *it;
-              traverseFormatterRegions (region, baseRegion);
-            }
-        }
-      delete regions;
-      regions = NULL;
-    }
-}
-
-void
-NclFormatterRegion::bringSiblingToFront (NclFormatterRegion *region)
-{
-  LayoutRegion *layoutRegion, *parentRegion, *baseRegion, *siblingRegion;
-  vector<LayoutRegion *> *regions;
-  vector<LayoutRegion *>::iterator it;
-
-  layoutRegion = region->getOriginalRegion ();
-  if (layoutRegion == NULL)
-    {
-      return;
-    }
-  parentRegion = layoutRegion->getParent ();
-  baseRegion = layoutRegion;
-
-  while (parentRegion != NULL)
-    {
-      regions = parentRegion->getRegionsOverRegion (baseRegion);
-      for (it = regions->begin (); it != regions->end (); ++it)
-        {
-          siblingRegion = *it;
-          traverseFormatterRegions (siblingRegion, layoutRegion);
-        }
-      baseRegion = parentRegion;
-      delete regions;
-      regions = NULL;
-      parentRegion = parentRegion->getParent ();
     }
 }
 

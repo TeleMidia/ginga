@@ -130,8 +130,6 @@ public:
   virtual void resetZIndex ();
   virtual int getAbsoluteLeft ();
   virtual int getAbsoluteTop ();
-  virtual bool intersects (LayoutRegion *r);
-  virtual bool intersects (int x, int y);
 
 private:
   double getPercentValue (const string &value);

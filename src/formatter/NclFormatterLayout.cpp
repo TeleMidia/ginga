@@ -102,60 +102,6 @@ NclFormatterLayout::createDeviceRegion (int w, int h)
   deviceRegion->setHeight (h, false);
 }
 
-NclExecutionObject *
-NclFormatterLayout::getObject (int x, int y)
-{
-  map<string, set<NclFormatterRegion *> *>::iterator i;
-
-  NclFormatterRegion *formRegion = NULL;
-  set<NclFormatterRegion *> *formRegions = NULL;
-  set<NclFormatterRegion *>::iterator j;
-
-  map<NclFormatterRegion *, NclExecutionObject *>::iterator k;
-
-  LayoutRegion *currentRegion = NULL;
-  LayoutRegion *region = NULL;
-  NclExecutionObject *object = NULL;
-
-  lock ();
-  i = regionMap.begin ();
-  while (i != regionMap.end ())
-    {
-      formRegions = i->second;
-      j = formRegions->begin ();
-      while (j != formRegions->end ())
-        {
-          formRegion = *j;
-          k = objectMap.find (formRegion);
-          if (formRegion->intersects (x, y) && k != objectMap.end ())
-            {
-              if (object == NULL)
-                {
-                  region = k->first->getLayoutRegion ();
-                  object = k->second;
-                }
-              else
-                {
-                  currentRegion = formRegion->getLayoutRegion ();
-                  if (currentRegion != NULL && region != NULL)
-                    {
-                      if (currentRegion->getZIndex ()
-                          > region->getZIndex ())
-                        {
-                          region = currentRegion;
-                          object = k->second;
-                        }
-                    }
-                }
-            }
-          ++j;
-        }
-      ++i;
-    }
-  unlock ();
-  return object;
-}
-
 void
 NclFormatterLayout::getSortedIds (vector<SDLWindow*> *sortedIds)
 {

@@ -1550,36 +1550,11 @@ LayoutRegion::getPercentValue (const string &value)
   string actualValue;
   double floatValue;
 
-  // retirar o caracter percent da string
   actualValue = value.substr (0, value.length () - 1);
-  // converter para double
   floatValue = xstrtod (actualValue);
-
-  // se menor que zero, retornar zero
   if (floatValue < 0)
     floatValue = 0;
-  // else if (floatValue > 100)
-  // se maior que 100, retornar 100
-  // floatValue = 100;
-
-  // retornar valor percent
   return floatValue;
-}
-
-bool
-LayoutRegion::intersects (LayoutRegion *r)
-{
-  return !(r->left > left + width || r->left + r->width < left
-           || r->top > top + height || r->top + r->height < top);
-}
-
-bool
-LayoutRegion::intersects (int x, int y)
-{
-  return !(x > getAbsoluteLeft () + getWidthInPixels ()
-           || x < getAbsoluteLeft ()
-           || y > getAbsoluteTop () + getHeightInPixels ()
-           || y < getAbsoluteTop ());
 }
 
 void

@@ -156,7 +156,6 @@ private:
   void sizeRegion ();
 
 public:
-  bool intersects (int x, int y);
   LayoutRegion *getLayoutRegion ();
   LayoutRegion *getOriginalRegion ();
 
@@ -172,19 +171,6 @@ public:
 
 private:
   void disposeOutputDisplay ();
-
-public:
-  void toFront ();
-
-private:
-  void bringChildrenToFront (LayoutRegion *parentRegion);
-  void traverseFormatterRegions (LayoutRegion *region,
-                                 LayoutRegion *baseRegion);
-
-  void bringHideWindowToFront (LayoutRegion *baseRegion,
-                               LayoutRegion *hideRegion);
-
-  void bringSiblingToFront (NclFormatterRegion *region);
 
 public:
   void setGhostRegion (bool ghost);
