@@ -118,8 +118,6 @@ FormatterMultiDevice::prepareFormatterRegion (
   SDLWindow* windowId = 0;
 
   map<int, NclFormatterLayout *>::iterator i;
-  LayoutRegion *bitMapRegion;
-  LayoutRegion *ncmRegion;
 
   descriptor = executionObject->getDescriptor ();
   if (descriptor != NULL)
@@ -133,26 +131,8 @@ FormatterMultiDevice::prepareFormatterRegion (
             }
 
           windowId = layout->prepareFormatterRegion (executionObject,plan);
-          regionId = layout->getBitMapRegionId ();
-          if (regionId == "")
-            {
-              return windowId;
-            }
 
           layout = this->layoutManager;
-          ncmRegion = layout->getDeviceRegion ();
-
-          bitMapRegion = ncmRegion->getOutputMapRegion ();
-          if (bitMapRegion == NULL)
-            {
-              clog << endl;
-              clog << "FormatterMultiDevice::prepareFormatterRegion(";
-              clog << this << ") ";
-              clog << "CANT FIND bitMapRegion";
-              clog << " for id '" << regionId << "' devClass = '";
-              clog << endl;
-              return windowId;
-            }
         }
     }
 

@@ -48,7 +48,6 @@ public:
   LayoutRegion *getDeviceRegion ();
   void addChild (const string &objectId, NclFormatterLayout *child);
   NclFormatterLayout *getChild (const string &objectId);
-  string getBitMapRegionId ();
   LayoutRegion *getNcmRegion (const string &regionId);
 
 public:

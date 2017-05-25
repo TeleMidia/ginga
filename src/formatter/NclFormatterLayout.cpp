@@ -67,15 +67,6 @@ NclFormatterLayout::getChild (const string &objectId)
   return NULL;
 }
 
-string
-NclFormatterLayout::getBitMapRegionId ()
-{
-  if (deviceRegion != NULL)
-    {
-      return deviceRegion->getOutputMapRegionId ();
-    }
-  return "";
-}
 
 LayoutRegion *
 NclFormatterLayout::getNcmRegion (const string &regionId)
@@ -162,7 +153,7 @@ NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object,
   vector<LayoutRegion *> *childs;
   vector<LayoutRegion *>::iterator i;
 
-  int devClass, zIndex;
+  int zIndex;
   double cvtZIndex;
   SDLWindow* windowId = 0;
 
@@ -207,13 +198,6 @@ NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object,
         }
       delete childs;
 
-      devClass = grandParent->getDeviceClass ();
-      if (devClass >= 0)
-        {
-          mapId = grandParent->getOutputMapRegionId ();
-          deviceRegion->setDeviceClass (devClass, mapId);
-        }
-
       deviceRegion->addRegion (parent);
       parent->setParent (deviceRegion);
     }
@@ -223,10 +207,6 @@ NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object,
 
   windowId = addRegionOnMaps (object, region, regionId,
                               zIndex, plan, &cvtZIndex);
-
-  clog << "NclFormatterLayout::prepareFormatterRegion deviceRegion class ";
-  clog << "is '" << deviceRegion->getDeviceClass () << "'";
-  clog << endl;
 
   return windowId;
 }
