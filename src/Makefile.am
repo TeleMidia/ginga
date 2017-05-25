@@ -53,7 +53,6 @@ src+= ctxmgmt/GingaUser.cpp
 src+= ctxmgmt/SystemInfo.cpp
 src+= formatter/AdapterApplicationPlayer.cpp
 src+= formatter/AdapterFormatterPlayer.cpp
-src+= formatter/AdapterImagePlayer.cpp
 src+= formatter/AdapterLuaPlayer.cpp
 src+= formatter/AdapterNCLPlayer.cpp
 src+= formatter/AdapterPlayerManager.cpp
@@ -180,29 +179,24 @@ src+= system/Thread.cpp
 if WITH_ESPEAK
 AM_CXXFLAGS+= $(ESPEAK_CFLAGS)
 AM_LDFLAGS+= $(ESPEAK_LIBS)
-src+= formatter/AdapterSsmlPlayer.cpp
 src+= player/SsmlPlayer.cpp
 endif # WITH_ESPEAK
 
 if WITH_GSTREAMER
 AM_CXXFLAGS+= $(GSTREAMER_CFLAGS)
 AM_LDFLAGS+= $(GSTREAMER_LIBS)
-src+= formatter/AdapterVideoPlayer.cpp
 src+= player/VideoPlayer.cpp
 endif # WITH_GSTREAMER
 
 if WITH_LIBRSVG
-src+= formatter/AdapterSvgPlayer.cpp
 src+= player/SvgPlayer.cpp
 endif #WITH_LIBRSVG
 
 if WITH_PANGO
-src+= formatter/AdapterTextPlayer.cpp
 src+= player/TextPlayer.cpp
 endif # WITH_PANGO
 
 if WITH_CEF
-src+= formatter/AdapterHTMLPlayer.cpp
 src+= player/HTMLPlayer.cpp
 cef_filesdir= $(bindir)
 cef_files_DATA=\

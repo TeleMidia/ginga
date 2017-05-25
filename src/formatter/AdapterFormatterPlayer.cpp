@@ -29,13 +29,27 @@ using namespace ::ginga::mb;
 #include "player/Player.h"
 using namespace ::ginga::player;
 
+#include "player/ImagePlayer.h"
+#include "player/LuaPlayer.h"
+#include "player/VideoPlayer.h"
+#include "player/SsmlPlayer.h"
+#if defined WITH_LIBRSVG && WITH_LIBRSVG
+# include "player/SvgPlayer.h"
+#endif
+#if defined WITH_PANGO && WITH_PANGO
+# include "player/TextPlayer.h"
+#endif
+#if defined WITH_CEF && WITH_CEF
+# include "player/HTMLPlayer.h"
+#endif
+
 GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-conversion)
 
 GINGA_FORMATTER_BEGIN
 
-AdapterFormatterPlayer::AdapterFormatterPlayer ()
+AdapterFormatterPlayer::AdapterFormatterPlayer (AdapterPlayerManager *manager)
 {
-  this->_manager = nullptr;
+  this->_manager = manager;
   this->_object = nullptr;
   this->_player = nullptr;
   this->_mrl = "";
@@ -43,6 +57,8 @@ AdapterFormatterPlayer::AdapterFormatterPlayer ()
   this->_outTransTime = -1.0;
   this->_isLocked = false;
   Thread::mutexInit (&_objectMutex, false);
+
+  Ginga_Display->registerKeyEventListener(this);
 }
 
 AdapterFormatterPlayer::~AdapterFormatterPlayer ()
@@ -69,13 +85,6 @@ AdapterFormatterPlayer::~AdapterFormatterPlayer ()
 }
 
 void
-AdapterFormatterPlayer::setAdapterManager (AdapterPlayerManager *manager)
-{
-  this->_manager = manager;
-  Ginga_Display->registerKeyEventListener(this);
-}
-
-void
 AdapterFormatterPlayer::setOutputWindow (SDLWindow* windowId)
 {
   g_assert_nonnull (_player);
@@ -90,15 +99,59 @@ AdapterFormatterPlayer::createPlayer ()
   NclCascadingDescriptor *descriptor;
   NodeEntity *dataObject;
   PropertyAnchor *property;
+  g_assert_nonnull (_object);
+
+  NodeEntity *entity = (NodeEntity *)(_object->getDataObject ()->getDataEntity ());
+  g_assert_nonnull (entity);
+  g_assert (entity->instanceOf ("ContentNode"));
+
+  Content *content = entity->getContent ();
+  g_assert_nonnull (content);
+
+  string buf = ((ContentNode *)entity)->getNodeType ();
+  const char *mime = buf.c_str ();
+  g_assert_nonnull (mime);
 
   if (_player == nullptr)
     {
-      _player = new Player (_mrl);
+#if defined WITH_GSTREAMER && WITH_GSTREAMER
+      if (g_str_has_prefix (mime, "audio")
+          || g_str_has_prefix (mime, "video"))
+        {
+          _player = new VideoPlayer (_mrl);
+        }
+#endif
+#if WITH_LIBRSVG && WITH_LIBRSVG
+      else if (g_str_has_prefix (mime, "image/svg"))
+        {
+          _player = new SvgPlayer (_mrl);
+        }
+#endif
+      else if (g_str_has_prefix (mime, "image"))
+        {
+          _player = new ImagePlayer (_mrl);
+        }
+#if defined WITH_CEF &&  WITH_CEF
+      else if (g_str_has_prefix (mime, "text/test-html"))
+        {
+          _player = new HTMLPlayer (_mrl);
+        }
+#endif
+#if defined WITH_PANGO && WITH_PANGO
+      else if (streq (mime, "text/plain"))
+        {
+          _player = new TextPlayer (_mrl);
+        }
+#endif
+      else
+        {
+          _player = new Player (_mrl);
+          g_warning ("adapter: unknown mime-type '%s'", mime);
+        }
     }
 
   _player->addListener (this);
 
-  g_assert_nonnull (_object);
   descriptor = _object->getDescriptor ();
   if (descriptor)
     {
@@ -726,7 +779,7 @@ AdapterFormatterPlayer::prepareScope (double offset)
         {
           duration = mainEvent->getDuration ();
 
-          if (offset > 0)
+          if (offset > 0.0)
             {
               initTime = offset;
             }

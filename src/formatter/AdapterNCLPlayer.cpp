@@ -27,7 +27,8 @@ using namespace ::ginga::mb;
 
 GINGA_FORMATTER_BEGIN
 
-AdapterNCLPlayer::AdapterNCLPlayer () : AdapterApplicationPlayer ()
+AdapterNCLPlayer::AdapterNCLPlayer (AdapterPlayerManager *mngr)
+  : AdapterApplicationPlayer (mngr)
 {
 }
 

@@ -54,18 +54,13 @@ class AdapterFormatterPlayer :
 {
 
 public:
-  AdapterFormatterPlayer ();
+  explicit AdapterFormatterPlayer (AdapterPlayerManager *manager);
   virtual ~AdapterFormatterPlayer ();
-
-  void setAdapterManager (AdapterPlayerManager *manager);
 
   void setOutputWindow (SDLWindow* windowId);
 
-  virtual bool hasPrepared ();
-
   virtual bool prepare (NclExecutionObject *obj, NclFormatterEvent *mainEvent);
-
-  void checkAnchorMonitor ();
+  virtual bool hasPrepared ();
 
   virtual bool start ();
   virtual bool stop ();
@@ -79,10 +74,9 @@ public:
   virtual bool setPropertyValue (NclAttributionEvent *evt, const string &value);
   void setPropertyValue (const string &name, const string &value);
 
-  string getPropertyValue (NclAttributionEvent *event);
   virtual string getPropertyValue (const string &name);
+  string getPropertyValue (NclAttributionEvent *event);
 
-  void updateObjectExpectedDuration ();
   double getMediaTime ();
   IPlayer *getPlayer ();
   virtual void updateStatus (short code,
@@ -93,7 +87,6 @@ public:
   virtual void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
 
 protected:
-
   AdapterPlayerManager *_manager;
   NclExecutionObject *_object;
   IPlayer *_player;
@@ -106,6 +99,9 @@ protected:
   virtual void prepareScope (double offset = -1);
   bool lockObject ();
   bool unlockObject ();
+
+  void checkAnchorMonitor ();
+  void updateObjectExpectedDuration ();
 
 private:
   double _outTransDur;

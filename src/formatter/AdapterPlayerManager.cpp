@@ -20,20 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "AdapterPlayerManager.h"
 
-#include "AdapterImagePlayer.h"
 #include "AdapterLuaPlayer.h"
 #include "AdapterNCLPlayer.h"
-#include "AdapterVideoPlayer.h"
-#include "AdapterSsmlPlayer.h"
-#if defined WITH_LIBRSVG && WITH_LIBRSVG
-# include "AdapterSvgPlayer.h"
-#endif
-#if defined WITH_PANGO && WITH_PANGO
-# include "AdapterTextPlayer.h"
-#endif
-#if defined WITH_CEF && WITH_CEF
-# include "AdapterHTMLPlayer.h"
-#endif
 
 GINGA_FORMATTER_BEGIN
 
@@ -48,32 +36,10 @@ AdapterPlayerManager::~AdapterPlayerManager ()
   clearDeletePlayers ();
 }
 
-bool
-AdapterPlayerManager::hasPlayer (AdapterFormatterPlayer *player)
-{
-  return _playerNames.find (player) != _playerNames.end ();
-}
-
 NclPlayerData *
 AdapterPlayerManager::getNclPlayerData ()
 {
   return _nclPlayerData;
-}
-
-void
-AdapterPlayerManager::setVisible (const string &objectId,
-                                  const string &visible,
-                                  NclAttributionEvent *event)
-{
-  map<string, AdapterFormatterPlayer *>::iterator i;
-
-  i = _objectPlayers.find (objectId);
-  if (i != _objectPlayers.end ())
-    {
-      AdapterFormatterPlayer *player = i->second;
-      player->setPropertyValue (event, visible);
-      event->stop ();
-    }
 }
 
 bool
@@ -135,7 +101,6 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
   string buf;
   const char *mime;
 
-  string classname;
   AdapterFormatterPlayer *adapter = NULL;
 
   g_assert_nonnull (object);
@@ -158,60 +123,22 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
   if (false)
     {
     }
-#if defined WITH_GSTREAMER && WITH_GSTREAMER
-  else if (g_str_has_prefix (mime, "audio")
-      || g_str_has_prefix (mime, "video"))
+
+  if (g_strcmp0 (mime, "application/x-ginga-NCLua") == 0)
     {
-      classname = "AdapterVideoPlayer";
-      adapter = new AdapterVideoPlayer ();
-    }
-#endif
-#if WITH_LIBRSVG && WITH_LIBRSVG
-  else if (g_str_has_prefix (mime, "image/svg"))
-    {
-      classname = "AdapterSvgPlayer";
-      adapter = new AdapterSvgPlayer ();
-    }
-#endif
-  else if (g_str_has_prefix (mime, "image"))
-    {
-      classname = "AdapterImagePlayer";
-      adapter = new AdapterImagePlayer ();
-    }
-#if defined WITH_CEF &&  WITH_CEF
-  else if (g_str_has_prefix (mime, "text/test-html"))
-    {
-      classname = "AdapterHTMLPlayer";
-      adapter = new AdapterHTMLPlayer();
-    }
-#endif
-#if defined WITH_PANGO && WITH_PANGO
-  else if (streq (mime, "text/plain"))
-    {
-      classname = "AdapterPlayer";
-      adapter = new AdapterTextPlayer ();
-    }
-#endif
-  else if (g_strcmp0 (mime, "application/x-ginga-NCLua") == 0)
-    {
-      classname = "AdapterLuaPlayer";
-      adapter = new AdapterLuaPlayer ();
+      adapter = new AdapterLuaPlayer (this);
     }
   else if (g_strcmp0 (mime, "application/x-ncl-ncl") == 0
            || g_strcmp0 (mime, "application/x-ginga-ncl") == 0)
     {
-      classname = "AdapterNCLPlayer";
-      adapter = new AdapterNCLPlayer ();
+      adapter = new AdapterNCLPlayer (this);
     }
   else
     {
-      g_warning ("adapter: unknown mime-type '%s'", mime);
-      return NULL;
+      adapter = new AdapterFormatterPlayer (this);
     }
 
-  adapter->setAdapterManager (this);
   _objectPlayers[id] = adapter;
-  _playerNames[adapter] = classname;
 
   return adapter;
 }
@@ -329,39 +256,20 @@ void
 AdapterPlayerManager::clearDeletePlayers ()
 {
   map<string, AdapterFormatterPlayer *> dPlayers;
-
-  map<string, AdapterFormatterPlayer *>::iterator i;
-  map<AdapterFormatterPlayer *, string>::iterator j;
-  AdapterFormatterPlayer *player;
+  AdapterFormatterPlayer *adapter;
   string playerClassName = "";
 
-  i = _deletePlayers.begin ();
-  while (i != _deletePlayers.end ())
+  for (auto it: _deletePlayers)
     {
-      player = i->second;
-
-      j = _playerNames.find (player);
-      if (j != _playerNames.end ())
-        {
-          playerClassName = j->second;
-          _playerNames.erase (j);
-        }
-
-      dPlayers[playerClassName] = player;
-
-      ++i;
+      adapter = it.second;
+      dPlayers[playerClassName] = adapter;
     }
   _deletePlayers.clear ();
 
-  i = dPlayers.begin ();
-  while (i != dPlayers.end ())
+  for (auto it: dPlayers)
     {
-      player = i->second;
-      playerClassName = i->first;
-
-      delete player;
-
-      ++i;
+      adapter = it.second;
+      delete adapter;
     }
 }
 
