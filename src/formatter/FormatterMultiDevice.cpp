@@ -73,38 +73,9 @@ FormatterMultiDevice::setFocusManager (void *focusManager)
   this->focusManager = focusManager;
 }
 
-void *
-FormatterMultiDevice::getMainLayout ()
-{
-  return mainLayout;
-}
-
-void *
+NclFormatterLayout *
 FormatterMultiDevice::getFormatterLayout ()
 {
-  return this->layoutManager;
-}
-
-NclFormatterLayout *
-FormatterMultiDevice::getFormatterLayout (
-    NclCascadingDescriptor *descriptor, NclExecutionObject *object)
-{
-  map<int, NclFormatterLayout *>::iterator i;
-  LayoutRegion *region;
-
-  region = descriptor->getRegion ();
-  if (region == NULL)
-    {
-      region = descriptor->getRegion (layoutManager, object);
-      if (region == NULL)
-        {
-          clog << "FormatterMultiDevice::getFormatterLayout ";
-          clog << "region is NULL";
-          clog << endl;
-          return NULL;
-        }
-    }
-
   return this->layoutManager;
 }
 
@@ -122,7 +93,7 @@ FormatterMultiDevice::prepareFormatterRegion (
   descriptor = executionObject->getDescriptor ();
   if (descriptor != NULL)
     {
-      layout = getFormatterLayout (descriptor, executionObject);
+      layout = getFormatterLayout ();
       if (layout != NULL)
         {
           if (descriptor->getFormatterRegion () != NULL)
@@ -151,7 +122,7 @@ FormatterMultiDevice::showObject (NclExecutionObject *executionObject)
   if (descriptor != NULL)
     {
       region = descriptor->getRegion ();
-      layout = getFormatterLayout (descriptor, executionObject);
+      layout = getFormatterLayout ();
       if (region != NULL && layout != NULL)
         {
           fRegion = descriptor->getFormatterRegion ();
@@ -179,7 +150,7 @@ FormatterMultiDevice::hideObject (NclExecutionObject *executionObject)
   if (descriptor != NULL)
     {
       region = descriptor->getRegion ();
-      layout = getFormatterLayout (descriptor, executionObject);
+      layout = getFormatterLayout ();
       if (region != NULL && layout != NULL)
         {
               layout->hideObject (executionObject);
