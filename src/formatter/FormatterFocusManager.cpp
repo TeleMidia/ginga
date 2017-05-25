@@ -42,7 +42,6 @@ FormatterFocusManager::FormatterFocusManager (
   string strValue;
 
   Ginga_Display->registerKeyEventListener(this);
-  Ginga_Display->registerMouseEventListener(this);
 
   focusTable = new map<string, set<NclExecutionObject *> *>;
   currentFocus = "";
@@ -51,7 +50,6 @@ FormatterFocusManager::FormatterFocusManager (
   parentManager = NULL;
   width = 0;
   height = 0;
-  focusHandlerTS = 0;
 
   strValue = presContext->getPropertyValue (DEFAULT_FOCUS_BORDER_COLOR);
   if (strValue == "")
@@ -177,17 +175,6 @@ FormatterFocusManager::hasInstance (FormatterFocusManager *instance,
   Thread::mutexUnlock (&iMutex);
 
   return find;
-}
-
-void
-FormatterFocusManager::setParent (FormatterFocusManager *parent)
-{
-  parentManager = parent;
-
-  if (parentManager != NULL)
-    {
-      multiDevice->setParent (parentManager->multiDevice);
-    }
 }
 
 bool
@@ -363,7 +350,6 @@ void
 FormatterFocusManager::resetKeyMaster ()
 {
   NclCascadingDescriptor *desc;
-  AdapterFormatterPlayer *player = NULL;
 
   if (selectedObject != NULL)
     {
@@ -376,70 +362,6 @@ FormatterFocusManager::resetKeyMaster ()
         }
 
       recoveryDefaultState (selectedObject);
-
-      player = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
-          selectedObject);
-      exitSelection (player);
-    }
-}
-
-void
-FormatterFocusManager::tapObject (void *executionObject)
-{
-  NclExecutionObject *object = (NclExecutionObject *)executionObject;
-  NclCascadingDescriptor *ds = NULL;
-  NclFormatterRegion *fr = NULL;
-
-  if (object->isSleeping ())
-    {
-      object = this->getObjectFromFocusIndex (currentFocus);
-      if (object == NULL)
-        {
-          clog << "FormatterFocusManager::tapObject invalid object";
-          clog << endl;
-          return;
-        }
-    }
-
-  ds = object->getDescriptor ();
-  if (ds != NULL)
-    {
-      fr = ds->getFormatterRegion ();
-    }
-
-  clog << "FormatterFocusManager::tapObject " << endl;
-
-  if (isHandler)
-    {
-      if (fr != NULL && fr->isVisible ())
-        {
-          if (fr->getFocusIndex () != "")
-            {
-              setFocus (fr->getFocusIndex ());
-            }
-
-          if (fr->setSelection (true))
-            {
-              if (!keyCodeOk (object))
-                {
-                   Ginga_Display->postKeyInputEventListener(SDLK_BACKSPACE);
-                }
-            }
-        }
-      else
-        {
-          clog << "FormatterFocusManager::tapObject can't tap '";
-          clog << object->getId ();
-          clog << "': !visible (FR = " << fr << ")" << endl;
-        }
-    }
-  else
-    {
-      clog << "FormatterFocusManager::tapObject can't ";
-      clog << " select '";
-      clog << object->getId ();
-      clog << "' focus manager is handling = '" << isHandler;
-      clog << "'" << endl;
     }
 }
 
@@ -529,7 +451,6 @@ FormatterFocusManager::setKeyMaster (const string &mediaId)
   player = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
       selectedObject);
 
-  enterSelection (player);
   nextObject->selectionEvent (0,
                               player->getMediaTime () * 1000);
 
@@ -711,7 +632,6 @@ FormatterFocusManager::showObject (NclExecutionObject *object)
   NclFormatterRegion *fr = NULL;
   string focusIndex, auxIndex;
   string paramValue, mediaId;
-  AdapterFormatterPlayer *player;
   Node *ncmNode;
   vector<string>::iterator i;
 
@@ -824,9 +744,6 @@ FormatterFocusManager::showObject (NclExecutionObject *object)
 
               selectedObject = object;
               selectedObject->setHandler (true);
-              player = (AdapterFormatterPlayer *)
-                           playerManager->getObjectPlayer (selectedObject);
-              enterSelection (player);
             }
         }
     }
@@ -837,7 +754,6 @@ FormatterFocusManager::hideObject (NclExecutionObject *object)
 {
   string focusIndex = "", ix;
   NclFormatterRegion *fr;
-  AdapterFormatterPlayer *player;
   map<string, set<NclExecutionObject *> *>::iterator i;
 
   if (object == NULL || object->getDescriptor () == NULL)
@@ -860,10 +776,6 @@ FormatterFocusManager::hideObject (NclExecutionObject *object)
       if (fr != NULL && fr->getFocusState () == NclFormatterRegion::SELECTED
           && selectedObject == object)
         {
-          player
-              = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
-                  selectedObject);
-          exitSelection (player);
           // region->setSelection(false);
           // recoveryDefaultState(selectedObject);
           selectedObject = NULL;
@@ -890,154 +802,6 @@ FormatterFocusManager::hideObject (NclExecutionObject *object)
     }
 }
 
-bool
-FormatterFocusManager::keyCodeOk (NclExecutionObject *currentObject)
-{
-  AdapterFormatterPlayer *player;
-  bool isHandling = false;
-  /*
-                  clog << "FormatterFocusManager::keyCodeOk(" << this <<
-     ")";
-                  clog << " this->isHandler '" << this->isHandler << "'";
-                  clog << " parentManager '" << parentManager << "'";
-                  clog << " lastHandler '" << lastHandler << "'";
-                  clog << endl;
- */
-
-  if (currentObject != selectedObject)
-    {
-      if (selectedObject != NULL)
-        {
-          clog << "FormatterFocusManager::keyCodeOk Warning! ";
-          clog << "selecting an object with another selected." << endl;
-          selectedObject->setHandler (false);
-        }
-    }
-
-  selectedObject = currentObject;
-  selectedObject->setHandler (true);
-  player = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
-      selectedObject);
-
-  changeSettingState ("service.currentKeyMaster", "start");
-  isHandling = enterSelection (player);
-
-  if (selectedObject != NULL)
-    {
-      clog << "FormatterFocusManager::keyCodeOk ";
-      clog << "selecting '" << selectedObject->getId () << "'" << endl;
-      selectedObject->selectionEvent (0,
-                                      player->getMediaTime () * 1000);
-    }
-
-  changeSettingState ("service.currentKeyMaster", "stop");
-
-  return isHandling;
-}
-
-bool
-FormatterFocusManager::keyCodeBack ()
-{
-  NclCascadingDescriptor *selectedDescriptor;
-  NclFormatterRegion *fr = NULL;
-  AdapterFormatterPlayer *player;
-  string ix;
-  /*
-                  clog << "FormatterFocusManager::keyCodeBack(" << this <<
-     ")";
-                  clog << " this->isHandler '" << this->isHandler << "'";
-                  clog << " parentManager '" << parentManager << "'";
-                  clog << " lastHandler '" << lastHandler << "'";
-                  clog << endl;
-    }
-  */
-  if (selectedObject == NULL)
-    {
-      clog << "FormatterFocusManager::keyCodeBack NULL selObject";
-      clog << endl;
-      return false;
-    }
-
-  selectedObject->setHandler (false);
-  selectedDescriptor = selectedObject->getDescriptor ();
-  if (selectedDescriptor == NULL)
-    {
-      clog << "FormatterFocusManager::keyCodeBack NULL selDescriptor";
-      clog << endl;
-      return false;
-    }
-
-  fr = selectedDescriptor->getFormatterRegion ();
-  if (fr == NULL)
-    {
-      clog << "FormatterFocusManager::keyCodeBack NULL formatterRegion";
-      clog << endl;
-      return false;
-    }
-
-  ix = fr->getFocusIndex ();
-  fr->setSelection (false);
-
-  Thread::mutexLock (&mutexFocus);
-  if (ix != "" && ix == currentFocus)
-    {
-      fr->setFocus (true);
-    }
-
-  if (selectedObject != NULL)
-    {
-      player = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
-          selectedObject);
-      changeSettingState ("service.currentKeyMaster", "start");
-      exitSelection (player);
-      changeSettingState ("service.currentKeyMaster", "stop");
-      selectedObject = NULL;
-    }
-  Thread::mutexUnlock (&mutexFocus);
-
-  return false;
-}
-
-bool
-FormatterFocusManager::enterSelection (AdapterFormatterPlayer *player)
-{
-  string keyMaster;
-
-  if (player != NULL && selectedObject != NULL)
-    {
-      keyMaster
-          = (selectedObject->getDataObject ()->getDataEntity ()->getId ());
-
-      presContext->setPropertyValue ("service.currentKeyMaster", keyMaster);
-
-    //  newHandler = player->setKeyHandler (true);
-
-      clog << "FormatterFocusManager::enterSelection(" << this << "): '";
-      clog << keyMaster << "'" << endl;
-    }
-  else
-    {
-      clog << "FormatterFocusManager::enterSelection(";
-      clog << this << ") can't enter selection" << endl;
-    }
-
-    return false;
-  //return newHandler;
-}
-
-void
-FormatterFocusManager::exitSelection (AdapterFormatterPlayer *player)
-{
-  clog << "FormatterFocusManager::exitSelection(" << this << ")" << endl;
-
-  if (player != NULL)
-    {
-    //  player->setKeyHandler (false);
-
-      presContext->setPropertyValue ("service.currentKeyMaster", "");
-    }
-}
- 
 
 void
 FormatterFocusManager::setDefaultFocusBorderColor (SDL_Color *color)
@@ -1063,13 +827,6 @@ FormatterFocusManager::setDefaultSelBorderColor (SDL_Color *color)
       delete defaultSelBorderColor;
     }
   defaultSelBorderColor = color;
-}
-
-void
-FormatterFocusManager::setMotionBoundaries (int w, int h)
-{
-  width = w;
-  height = h;
 }
 
 void
@@ -1145,16 +902,6 @@ FormatterFocusManager::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
 
   Thread::mutexLock (&mutexTable);
 
-  // if (xruntime_ms () - focusHandlerTS < 300
-  //     && key != SDLK_BACKSPACE)
-  //   {
-  //     Thread::mutexUnlock (&mutexTable);
-  //    // return true;
-  //    return;
-  //   }
-
-  // focusHandlerTS = xruntime_ms ();
-
   i = focusTable->find (currentFocus);
   if (i == focusTable->end ())
     {
@@ -1166,7 +913,6 @@ FormatterFocusManager::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
         }
 
       if (selectedObject != NULL && key == SDLK_BACKSPACE){
-            keyCodeBack ();
             Thread::mutexUnlock (&mutexTable);
             return;
         }
@@ -1205,8 +951,6 @@ FormatterFocusManager::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
     {
       if (key == SDLK_BACKSPACE)
         {
-           keyCodeBack ();
-         // return canItBack;
            return;
         }
     }
@@ -1240,9 +984,6 @@ FormatterFocusManager::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
     }
   else if (key == SDLK_RETURN)
     {
-    //  userEvent->setKeyCode (Key::KEY_NULL);
-      tapObject (currentObject);
-
       return ;
     }
 
@@ -1255,43 +996,5 @@ FormatterFocusManager::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
 
 }
 
-void 
-FormatterFocusManager::mouseInputCallback (arg_unused (SDL_EventType evtType), int x, int y){
-
-  NclFormatterLayout *formatterLayout;
-  NclExecutionObject *object;
-  string objectFocusIndex;
-
-  if (isHandler)
-    {
-      formatterLayout
-          = (NclFormatterLayout *)(multiDevice->getMainLayout ());
-      if (formatterLayout != NULL)
-        {
-          if ((x < 0 || x > width) || y < 0 || y > height)
-            {
-              return;
-            }
-
-          object = formatterLayout->getObject (x, y);
-          if (object != NULL && object->getDescriptor () != NULL)
-            {
-              NclFormatterRegion *fr;
-              fr = object->getDescriptor ()->getFormatterRegion ();
-
-              if (fr != NULL)
-                {
-                  objectFocusIndex = fr->getFocusIndex ();
-                  if (objectFocusIndex != ""
-                      && objectFocusIndex != currentFocus)
-                    {
-                       setFocus (objectFocusIndex);
-                       tapObject (object);
-                    }
-                }
-            }
-        }
-    }
-}
 
 GINGA_FORMATTER_END
