@@ -30,13 +30,8 @@ GINGA_FORMATTER_BEGIN
 
 class NclFormatterLayout
 {
-protected:
-  set<string> typeSet;
-
 private:
-  map<string, NclFormatterLayout *> flChilds;
   LayoutRegion *deviceRegion;
-  vector<string> sortedRegions;
   map<string, double> regionZIndex;
   map<string, set<NclFormatterRegion *> *> regionMap;
   map<NclFormatterRegion *, NclExecutionObject *> objectMap;
@@ -46,19 +41,11 @@ public:
   NclFormatterLayout (int w, int h);
   virtual ~NclFormatterLayout ();
   LayoutRegion *getDeviceRegion ();
-  void addChild (const string &objectId, NclFormatterLayout *child);
-  NclFormatterLayout *getChild (const string &objectId);
-  string getBitMapRegionId ();
-  LayoutRegion *getNcmRegion (const string &regionId);
-
-public:
-  void getSortedIds (vector<SDLWindow*> *sortedIds);
 
 private:
   void createDeviceRegion (int w, int h);
 
 public:
-  NclExecutionObject *getObject (int x, int y);
   SDLWindow* prepareFormatterRegion (NclExecutionObject *object,
                                         string plan);
 
@@ -66,8 +53,6 @@ public:
                         int zIndex, const string &plan);
 
 private:
-  void sortRegion (const string &regionId, double cvtIndex,
-                   const string &plan);
   double convertZIndex (int zIndex, const string &plan);
 
 public:
@@ -85,9 +70,6 @@ private:
                                  NclFormatterRegion *formatterRegion);
 
 public:
-  set<NclFormatterRegion *> *
-  getFormatterRegionsFromNcmRegion (const string &regionId);
-
   void clear ();
 
 private:

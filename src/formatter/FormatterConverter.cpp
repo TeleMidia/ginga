@@ -384,8 +384,7 @@ FormatterConverter::addExecutionObject (
   if (descriptor != NULL)
     {
       descriptor->setFormatterLayout (
-          (NclFormatterLayout *)(scheduler->getFormatterLayout (
-              descriptor, executionObject)));
+          (NclFormatterLayout *)(scheduler->getFormatterLayout ()));
     }
 
   if (depthLevel != 0)

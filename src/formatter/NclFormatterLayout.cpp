@@ -24,7 +24,6 @@ NclFormatterLayout::NclFormatterLayout (int w, int h)
 {
   deviceRegion = NULL;
 
-  typeSet.insert ("NclFormatterLayout");
   Thread::mutexInit (&mutex, false);
   createDeviceRegion (w, h);
 }
@@ -33,11 +32,9 @@ NclFormatterLayout::~NclFormatterLayout ()
 {
   clear ();
   lock ();
-  sortedRegions.clear ();
   regionMap.clear ();
   regionZIndex.clear ();
   objectMap.clear ();
-  flChilds.clear ();
   unlock ();
 }
 
@@ -48,51 +45,6 @@ NclFormatterLayout::getDeviceRegion ()
 }
 
 void
-NclFormatterLayout::addChild (const string &objectId, NclFormatterLayout *child)
-{
-  flChilds[objectId] = child;
-}
-
-NclFormatterLayout *
-NclFormatterLayout::getChild (const string &objectId)
-{
-  map<string, NclFormatterLayout *>::iterator i;
-
-  i = flChilds.find (objectId);
-  if (i != flChilds.end ())
-    {
-      return i->second;
-    }
-
-  return NULL;
-}
-
-string
-NclFormatterLayout::getBitMapRegionId ()
-{
-  if (deviceRegion != NULL)
-    {
-      return deviceRegion->getOutputMapRegionId ();
-    }
-  return "";
-}
-
-LayoutRegion *
-NclFormatterLayout::getNcmRegion (const string &regionId)
-{
-  if (deviceRegion != NULL)
-    {
-      return deviceRegion->getRegionRecursively (regionId);
-    }
-  else
-    {
-      clog << "NclFormatterLayout::getNcmRegion device region is NULL";
-      clog << endl;
-    }
-  return NULL;
-}
-
-void
 NclFormatterLayout::createDeviceRegion (int w, int h)
 {
   deviceRegion = new LayoutRegion ("defaultScreenFormatter");
@@ -100,107 +52,6 @@ NclFormatterLayout::createDeviceRegion (int w, int h)
   deviceRegion->setLeft (0, false);
   deviceRegion->setWidth (w, false);
   deviceRegion->setHeight (h, false);
-}
-
-NclExecutionObject *
-NclFormatterLayout::getObject (int x, int y)
-{
-  map<string, set<NclFormatterRegion *> *>::iterator i;
-
-  NclFormatterRegion *formRegion = NULL;
-  set<NclFormatterRegion *> *formRegions = NULL;
-  set<NclFormatterRegion *>::iterator j;
-
-  map<NclFormatterRegion *, NclExecutionObject *>::iterator k;
-
-  LayoutRegion *currentRegion = NULL;
-  LayoutRegion *region = NULL;
-  NclExecutionObject *object = NULL;
-
-  lock ();
-  i = regionMap.begin ();
-  while (i != regionMap.end ())
-    {
-      formRegions = i->second;
-      j = formRegions->begin ();
-      while (j != formRegions->end ())
-        {
-          formRegion = *j;
-          k = objectMap.find (formRegion);
-          if (formRegion->intersects (x, y) && k != objectMap.end ())
-            {
-              if (object == NULL)
-                {
-                  region = k->first->getLayoutRegion ();
-                  object = k->second;
-                }
-              else
-                {
-                  currentRegion = formRegion->getLayoutRegion ();
-                  if (currentRegion != NULL && region != NULL)
-                    {
-                      if (currentRegion->getZIndex ()
-                          > region->getZIndex ())
-                        {
-                          region = currentRegion;
-                          object = k->second;
-                        }
-                    }
-                }
-            }
-          ++j;
-        }
-      ++i;
-    }
-  unlock ();
-  return object;
-}
-
-void
-NclFormatterLayout::getSortedIds (vector<SDLWindow*> *sortedIds)
-{
-  map<string, set<NclFormatterRegion *> *>::iterator i;
-  set<NclFormatterRegion *>::iterator j;
-  vector<string>::iterator k;
-  map<NclFormatterRegion *, NclExecutionObject *>::iterator l;
-  map<string, NclFormatterLayout *>::iterator m;
-
-  set<NclFormatterRegion *> *formRegions = NULL;
-  NclFormatterRegion *formatterRegion;
-  SDLWindow* outputId;
-
-  lock ();
-  k = sortedRegions.begin ();
-  while (k != sortedRegions.end ())
-    {
-      i = regionMap.find (*k);
-      if (i != regionMap.end ())
-        {
-          formRegions = i->second;
-          j = formRegions->begin ();
-          while (j != formRegions->end ())
-            {
-              formatterRegion = (*j);
-              outputId = formatterRegion->getOutputId ();
-              if (outputId != 0)
-                {
-                  sortedIds->push_back (outputId);
-                  l = objectMap.find (formatterRegion);
-                  if (l != objectMap.end ())
-                    {
-                      m = flChilds.find (l->second->getId ());
-                      if (m != flChilds.end ())
-                        {
-                          m->second->getSortedIds (sortedIds);
-                        }
-                    }
-                }
-              ++j;
-            }
-        }
-      ++k;
-    }
-  unlock ();
 }
 
 SDLWindow*
@@ -216,7 +67,7 @@ NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object,
   vector<LayoutRegion *> *childs;
   vector<LayoutRegion *>::iterator i;
 
-  int devClass, zIndex;
+  int zIndex;
   double cvtZIndex;
   SDLWindow* windowId = 0;
 
@@ -261,13 +112,6 @@ NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object,
         }
       delete childs;
 
-      devClass = grandParent->getDeviceClass ();
-      if (devClass >= 0)
-        {
-          mapId = grandParent->getOutputMapRegionId ();
-          deviceRegion->setDeviceClass (devClass, mapId);
-        }
-
       deviceRegion->addRegion (parent);
       parent->setParent (deviceRegion);
     }
@@ -277,10 +121,6 @@ NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object,
 
   windowId = addRegionOnMaps (object, region, regionId,
                               zIndex, plan, &cvtZIndex);
-
-  clog << "NclFormatterLayout::prepareFormatterRegion deviceRegion class ";
-  clog << "is '" << deviceRegion->getDeviceClass () << "'";
-  clog << endl;
 
   return windowId;
 }
@@ -299,30 +139,6 @@ NclFormatterLayout::refreshZIndex (NclFormatterRegion *region,
                    plan, &cvtZIndex);
 
   return cvtZIndex;
-}
-
-void
-NclFormatterLayout::sortRegion (const string &regionId, double cvtIndex,
-                                arg_unused (const string &plan))
-{
-  vector<string>::iterator i;
-  map<string, double>::iterator j;
-
-  i = sortedRegions.begin ();
-  while (i != sortedRegions.end ())
-    {
-      j = regionZIndex.find (*i);
-      if (j != regionZIndex.end ())
-        {
-          if (cvtIndex <= j->second)
-            {
-              break;
-            }
-        }
-      ++i;
-    }
-
-  sortedRegions.insert (i, regionId);
 }
 
 double
@@ -423,8 +239,6 @@ NclFormatterLayout::addRegionOnMaps (NclExecutionObject *object,
       windowId
           = region->prepareOutputDisplay (convertedZIndex);
     }
-  sortRegion (layoutRegionId, convertedZIndex, plan);
-
   objectMap[region] = object;
 
   *cvtZIndex = convertedZIndex;
@@ -468,18 +282,6 @@ NclFormatterLayout::removeFormatterRegionFromMaps (
                       regionZIndex.erase (l);
                     }
 
-                  m = sortedRegions.begin ();
-                  while (m != sortedRegions.end ())
-                    {
-                      if (layoutRegionId == *m)
-                        {
-                          m = sortedRegions.erase (m);
-                        }
-                      else
-                        {
-                          ++m;
-                        }
-                    }
                 }
             }
 
@@ -494,23 +296,6 @@ NclFormatterLayout::removeFormatterRegionFromMaps (
   unlock ();
 
   return myObject;
-}
-
-set<NclFormatterRegion *> *
-NclFormatterLayout::getFormatterRegionsFromNcmRegion (const string &regionId)
-{
-  set<NclFormatterRegion *> *regions;
-
-  lock ();
-  if (regionMap.count (regionId) == 0)
-    {
-      unlock ();
-      return NULL;
-    }
-
-  regions = new set<NclFormatterRegion *> (*(regionMap[regionId]));
-  unlock ();
-  return regions;
 }
 
 void
@@ -540,7 +325,6 @@ NclFormatterLayout::clear ()
 
   regionZIndex.clear ();
   objectMap.clear ();
-  sortedRegions.clear ();
   unlock ();
 
   deviceRegion->removeRegions ();

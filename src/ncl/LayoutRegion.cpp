@@ -24,10 +24,6 @@ GINGA_NCL_BEGIN
 
 LayoutRegion::LayoutRegion (const string &id) : Entity (id)
 {
-  title = "";
-  outputMapRegionId = "";
-  outputMapRegion = NULL;
-
   top = (double)NAN;
   topPercent = false;
 
@@ -48,14 +44,7 @@ LayoutRegion::LayoutRegion (const string &id) : Entity (id)
 
   zIndex = NULL;
 
-  movable = false;
-  resizable = false;
-  decorated = false;
-
-  devClass = -1;
-
   parent = NULL;
-  pthread_mutex_init (&mutex, NULL);
 }
 
 LayoutRegion::~LayoutRegion ()
@@ -63,7 +52,6 @@ LayoutRegion::~LayoutRegion ()
   LayoutRegion *region;
   map<string, LayoutRegion *>::iterator i;
 
-  lock ();
   Entity::hasInstance (this, true);
 
   if (parent != NULL)
@@ -87,50 +75,29 @@ LayoutRegion::~LayoutRegion ()
     }
 
   regions.clear ();
-  sorted.clear ();
 
   if (zIndex != NULL)
     {
       delete zIndex;
       zIndex = NULL;
     }
-
-  unlock ();
-  pthread_mutex_destroy (&mutex);
 }
 
 void
 LayoutRegion::addRegion (LayoutRegion *region)
 {
-  int zIndexVal;
   vector<LayoutRegion *>::iterator i;
   string regId;
 
   regId = region->getId ();
 
-  lock ();
   if (regions.count (regId) != 0)
     {
-      unlock ();
       return;
     }
 
   regions[regId] = region;
   region->setParent (this);
-
-  zIndexVal = region->getZIndexValue ();
-  i = sorted.begin ();
-  while (i != sorted.end ())
-    {
-      if (zIndexVal <= (*i)->getZIndexValue ())
-        {
-          break;
-        }
-      ++i;
-    }
-
-  sorted.insert (i, region);
-  unlock ();
 }
 
 LayoutRegion *
@@ -146,8 +113,6 @@ LayoutRegion::cloneRegion ()
     {
       cloneRegion->setParent (getParent ());
     }
-
-  cloneRegion->setTitle (getTitle ());
 
   if (!isnan (getBottom ()))
     {
@@ -181,10 +146,6 @@ LayoutRegion::cloneRegion ()
 
   cloneRegion->setZIndex (getZIndex ());
 
-  cloneRegion->setDecorated (isDecorated ());
-  cloneRegion->setMovable (isMovable ());
-  cloneRegion->setResizable (isResizable ());
-
   childRegions = getRegions ();
   if (childRegions == NULL)
     {
@@ -192,131 +153,16 @@ LayoutRegion::cloneRegion ()
       return NULL;
     }
 
-  lock ();
   vector<LayoutRegion *>::iterator it;
   for (it = childRegions->begin (); it != childRegions->end (); ++it)
     {
       childRegion = (*it)->cloneRegion ();
       cloneRegion->addRegion (childRegion);
     }
-  unlock ();
   delete childRegions;
   childRegions = NULL;
 
   return cloneRegion;
-}
-
-LayoutRegion *
-LayoutRegion::copyRegion ()
-{
-  LayoutRegion *cloneRegion;
-
-  cloneRegion = new LayoutRegion (getId ());
-
-  cloneRegion->setTitle (getTitle ());
-
-  if (!isnan (getBottom ()))
-    {
-      cloneRegion->setBottom (getBottomInPixels (), false);
-    }
-
-  if (!isnan (getLeft ()))
-    {
-      cloneRegion->setLeft (getAbsoluteLeft (), false);
-    }
-
-  if (!isnan (getTop ()))
-    {
-      cloneRegion->setTop (getAbsoluteTop (), false);
-    }
-
-  if (!isnan (getRight ()))
-    {
-      cloneRegion->setRight (getRightInPixels (), false);
-    }
-
-  if (!isnan (getWidth ()))
-    {
-      cloneRegion->setWidth (getWidthInPixels (), false);
-    }
-
-  if (!isnan (getHeight ()))
-    {
-      cloneRegion->setHeight (getHeightInPixels (), false);
-    }
-
-  cloneRegion->setZIndex (getZIndex ());
-
-  cloneRegion->setDecorated (isDecorated ());
-  cloneRegion->setMovable (isMovable ());
-  cloneRegion->setResizable (isResizable ());
-
-  cloneRegion->setParent (getDeviceLayout ());
-
-  return cloneRegion;
-}
-
-int
-LayoutRegion::compareWidthSize (const string &w)
-{
-  int oldW;
-  int newW;
-
-  oldW = getWidthInPixels ();
-  if (xstrispercent (w))
-    {
-      newW = (int)((getParent ()->getWidthInPixels ()
-                    * getPercentValue (w))
-                   / 100);
-    }
-  else
-    {
-      newW = xstrtoint (w.c_str (), 10);
-    }
-
-  if (newW == oldW)
-    {
-      return 0;
-    }
-  else if (newW > oldW)
-    {
-      return 1;
-    }
-  else
-    {
-      return -1;
-    }
-}
-
-int
-LayoutRegion::compareHeightSize (const string &h)
-{
-  int oldH;
-  int newH;
-
-  oldH = getHeightInPixels ();
-  if (xstrispercent (h))
-    {
-      newH = (int)((getParent ()->getHeightInPixels ()
-                    * getPercentValue (h))
-                   / 100);
-    }
-  else
-    {
-      newH = xstrtoint (h.c_str (), 10);
-    }
-  if (newH == oldH)
-    {
-      return 0;
-    }
-  else if (newH > oldH)
-    {
-      return 1;
-    }
-  else
-    {
-      return -1;
-    }
 }
 
 double
@@ -349,12 +195,9 @@ LayoutRegion::getRegion (const string &id)
   map<string, LayoutRegion *>::iterator i;
   LayoutRegion *someRegion;
 
-  lock ();
   i = regions.find (id);
   if (i == regions.end ())
     {
-      unlock ();
-
       if (id == getId ())
         {
           return this;
@@ -364,7 +207,6 @@ LayoutRegion::getRegion (const string &id)
     }
 
   someRegion = i->second;
-  unlock ();
 
   return someRegion;
 }
@@ -398,50 +240,17 @@ LayoutRegion::getRegionRecursively (const string &id)
   return NULL;
 }
 
-void
-LayoutRegion::printRegionIdsRecursively ()
-{
-  map<string, LayoutRegion *>::iterator i;
-
-  cout << "Region '" << getId () << "' has: ";
-
-  i = regions.begin ();
-  while (i != regions.end ())
-    {
-      cout << "'" << i->first << "' ";
-
-      ++i;
-    }
-
-  cout << endl;
-
-  i = regions.begin ();
-  while (i != regions.end ())
-    {
-      i->second->printRegionIdsRecursively ();
-      ++i;
-    }
-}
-
 vector<LayoutRegion *> *
 LayoutRegion::getRegions ()
 {
   map<string, LayoutRegion *>::iterator i;
   vector<LayoutRegion *> *childRegions;
-  lock ();
   childRegions = new vector<LayoutRegion *>;
   for (i = regions.begin (); i != regions.end (); ++i)
     {
       childRegions->push_back (i->second);
     }
-  unlock ();
   return childRegions;
-}
-
-string
-LayoutRegion::getTitle ()
-{
-  return title;
 }
 
 double
@@ -518,44 +327,20 @@ LayoutRegion::isWidthPercent ()
   return widthPercent;
 }
 
-string
-LayoutRegion::toString ()
-{
-  string str;
-  map<string, LayoutRegion *>::iterator i;
-  LayoutRegion *region;
-
-  str = "id: " + getId () + " title: " + title + '\n';
-  clog << "LayoutRegion::toString(" << this << ")" << endl;
-  lock ();
-  i = regions.begin ();
-  while (i != regions.end ())
-    {
-      region = i->second;
-      str = str + region->toString ();
-      ++i;
-    }
-  unlock ();
-  return str + '\n';
-}
-
 bool
 LayoutRegion::removeRegion (LayoutRegion *region)
 {
   map<string, LayoutRegion *>::iterator i;
   LayoutRegion *childRegion;
 
-  lock ();
   if (regions.count (region->getId ()) != 0)
     {
       i = regions.find (region->getId ());
       childRegion = i->second;
       childRegion->setParent (NULL);
       regions.erase (i);
-      unlock ();
       return true;
     }
-  unlock ();
   return false;
 }
 
@@ -565,7 +350,6 @@ LayoutRegion::removeRegions ()
   map<string, LayoutRegion *>::iterator i;
   LayoutRegion *region;
 
-  lock ();
   i = regions.begin ();
   while (i != regions.end ())
     {
@@ -578,51 +362,6 @@ LayoutRegion::removeRegions ()
       ++i;
     }
   regions.clear ();
-  unlock ();
-}
-
-LayoutRegion *
-LayoutRegion::getDeviceLayout ()
-{
-  LayoutRegion *device;
-
-  if (parent == NULL)
-    {
-      device = this;
-    }
-  else
-    {
-      device = parent;
-    }
-
-  while (device->getParent () != NULL)
-    {
-      device = device->getParent ();
-    }
-
-  return device;
-}
-
-double
-LayoutRegion::getDeviceWidthInPixels ()
-{
-  LayoutRegion *device = getDeviceLayout ();
-
-  clog << "LayoutRegion::getDeviceWidthInPixels: '";
-  clog << device->getWidthInPixels () << "'" << endl;
-
-  return device->getWidthInPixels ();
-}
-
-double
-LayoutRegion::getDeviceHeightInPixels ()
-{
-  LayoutRegion *device = getDeviceLayout ();
-
-  clog << "LayoutRegion::getDeviceHeightInPixels: '";
-  clog << device->getHeightInPixels () << "'" << endl;
-
-  return device->getHeightInPixels ();
 }
 
 bool
@@ -659,45 +398,6 @@ LayoutRegion::setBottom (double newBottom, bool isPercent)
   return true;
 }
 
-bool
-LayoutRegion::setTargetBottom (double newBottom, bool isPercent)
-{
-  double tBottom;
-  double deviceHeight;
-  double currentHeight;
-
-  if (newBottom < 0)
-    {
-      clog << "LayoutRegion::setTargetBottom Warning! Trying ";
-      clog << "to set an invalid bottom value: " << newBottom << endl;
-      return false;
-    }
-
-  deviceHeight = getDeviceHeightInPixels ();
-  if (isPercent)
-    {
-      // tBottom = (newBottom * getHeightInPixels()) / 100;
-      tBottom = (newBottom * deviceHeight) / 100;
-    }
-  else
-    {
-      tBottom = newBottom;
-    }
-
-  currentHeight = getHeightInPixels ();
-
-  if (tBottom + currentHeight > deviceHeight)
-    {
-      tBottom = deviceHeight - currentHeight;
-    }
-
-  bottom = tBottom;
-  bottomPercent = false;
-
-  setTargetTop (deviceHeight - (tBottom + currentHeight), false);
-
-  return true;
-}
 
 bool
 LayoutRegion::setHeight (double newHeight, bool isPercent)
@@ -732,34 +432,6 @@ LayoutRegion::setHeight (double newHeight, bool isPercent)
           return false;
         }
     }
-
-  return true;
-}
-
-bool
-LayoutRegion::setTargetHeight (double newHeight, bool isPercent)
-{
-  double tHeight;
-
-  if (newHeight < 0)
-    {
-      clog << "LayoutRegion::setTargetHeight Warning! Trying ";
-      clog << "to set an invalid height value: " << newHeight << endl;
-      return false;
-    }
-
-  if (isPercent)
-    {
-      // tHeight = (newHeight * getHeightInPixels()) / 100;
-      tHeight = (newHeight * getDeviceHeightInPixels ()) / 100;
-    }
-  else
-    {
-      tHeight = newHeight;
-    }
-
-  height = tHeight;
-  heightPercent = false;
 
   return true;
 }
@@ -804,34 +476,6 @@ LayoutRegion::setLeft (double newLeft, bool isPercent)
 }
 
 bool
-LayoutRegion::setTargetLeft (double newLeft, bool isPercent)
-{
-  double tLeft;
-
-  if (newLeft < 0)
-    {
-      clog << "LayoutRegion::setTargetLeft Warning! Trying ";
-      clog << "to set an invalid left value: " << newLeft << endl;
-      return false;
-    }
-
-  if (isPercent)
-    {
-      // tLeft = (newLeft * getWidthInPixels()) / 100;
-      tLeft = (newLeft * getDeviceWidthInPixels ()) / 100;
-    }
-  else
-    {
-      tLeft = newLeft;
-    }
-
-  left = tLeft;
-  leftPercent = false;
-
-  return true;
-}
-
-bool
 LayoutRegion::setRight (double newRight, bool isPercent)
 {
   if (newRight < 0 || isnan (newRight))
@@ -862,46 +506,6 @@ LayoutRegion::setRight (double newRight, bool isPercent)
           return false;
         }
     }
-
-  return true;
-}
-
-bool
-LayoutRegion::setTargetRight (double newRight, bool isPercent)
-{
-  double tRight;
-  double deviceWidth;
-  double currentWidth;
-
-  if (newRight < 0)
-    {
-      clog << "LayoutRegion::setTargetRight Warning! Trying ";
-      clog << "to set an invalid right value: " << newRight << endl;
-      return false;
-    }
-
-  deviceWidth = getDeviceWidthInPixels ();
-  if (isPercent)
-    {
-      // tRight = (newRight * getWidthInPixels()) / 100;
-      tRight = (newRight * deviceWidth) / 100;
-    }
-  else
-    {
-      tRight = newRight;
-    }
-
-  currentWidth = getWidthInPixels ();
-
-  if (tRight + currentWidth > deviceWidth)
-    {
-      tRight = deviceWidth - currentWidth;
-    }
-
-  right = tRight;
-  rightPercent = false;
-
-  setTargetLeft (deviceWidth - (tRight + currentWidth), false);
 
   return true;
 }
@@ -944,34 +548,6 @@ LayoutRegion::setTop (double newTop, bool isPercent)
 }
 
 bool
-LayoutRegion::setTargetTop (double newTop, bool isPercent)
-{
-  double tTop;
-
-  if (newTop < 0 || isnan (newTop))
-    {
-      clog << "LayoutRegion::setTop Warning! Trying ";
-      clog << "to set an invalid top value: " << newTop << endl;
-      return false;
-    }
-
-  if (isPercent)
-    {
-      // tTop = (newTop * getHeightInPixels()) / 100;
-      tTop = (newTop * getDeviceHeightInPixels ()) / 100;
-    }
-  else
-    {
-      tTop = newTop;
-    }
-
-  top = tTop;
-  topPercent = false;
-
-  return true;
-}
-
-bool
 LayoutRegion::setWidth (double newWidth, bool isPercent)
 {
   if (newWidth < 0 || isnan (newWidth))
@@ -1008,95 +584,6 @@ LayoutRegion::setWidth (double newWidth, bool isPercent)
   return true;
 }
 
-bool
-LayoutRegion::setTargetWidth (double newWidth, bool isPercent)
-{
-  double tWidth;
-
-  if (newWidth <= 0)
-    {
-      clog << "LayoutRegion::setTargetWidth Warning! Trying ";
-      clog << "to set an invalid width value: " << newWidth;
-      clog << endl;
-      return false;
-    }
-
-  if (isPercent)
-    {
-      // tWidth = (newWidth * getWidthInPixels()) / 100;
-      tWidth = (newWidth * getDeviceWidthInPixels ()) / 100;
-    }
-  else
-    {
-      tWidth = newWidth;
-    }
-
-  width = tWidth;
-  widthPercent = false;
-
-  return true;
-}
-
-void
-LayoutRegion::validateTarget ()
-{
-  LayoutRegion *deviceLayout;
-
-  deviceLayout = getDeviceLayout ();
-  if (deviceLayout != NULL)
-    {
-      if (getTopInPixels () < deviceLayout->getTopInPixels ())
-        {
-          top = deviceLayout->getTopInPixels ();
-          topPercent = false;
-        }
-
-      if ((getTopInPixels () + getHeightInPixels ())
-          > deviceLayout->getHeightInPixels ())
-        {
-          // since the region will stay outside the device edges, the
-          // bottom is set to the minimum value allowed
-          height = (deviceLayout->getHeightInPixels () - getTopInPixels ());
-
-          heightPercent = false;
-        }
-
-      if (getLeftInPixels () < deviceLayout->getLeftInPixels ())
-        {
-          left = deviceLayout->getLeftInPixels ();
-          leftPercent = false;
-        }
-
-      if ((getLeftInPixels () + getWidthInPixels ())
-          > deviceLayout->getWidthInPixels ())
-        {
-          // since the region will stay outside the parent edges, the
-          // left is set to the maximum value allowed
-          width = (deviceLayout->getWidthInPixels ()
-                   - deviceLayout->getLeftInPixels ());
-
-          widthPercent = false;
-        }
-
-      /*cout << "LayoutRegion::validateTarget(" << getId() << ") ";
-      cout << " To:" << endl;
-      cout << " Left:   " << left << endl;
-      cout << " Top:    " << top << endl;
-      cout << " Width:  " << width << endl;
-      cout << " Height: " << height << endl;*/
-    }
-  else
-    {
-      clog << "LayoutRegion::validateTarget(" << getId () << ") ";
-      clog << " Warning! Can't find device layout" << endl;
-    }
-}
-
-void
-LayoutRegion::setTitle (const string &newTitle)
-{
-  title = newTitle;
-}
 
 void
 LayoutRegion::setZIndex (int newZIndex)
@@ -1108,43 +595,6 @@ LayoutRegion::setZIndex (int newZIndex)
   *zIndex = newZIndex;
 }
 
-vector<LayoutRegion *> *
-LayoutRegion::getRegionsSortedByZIndex ()
-{
-  vector<LayoutRegion *> *sortedRegions;
-  lock ();
-  sortedRegions = new vector<LayoutRegion *> (sorted);
-  unlock ();
-  return sortedRegions;
-}
-
-vector<LayoutRegion *> *
-LayoutRegion::getRegionsOverRegion (LayoutRegion *region)
-{
-  vector<LayoutRegion *> *allRegions;
-  vector<LayoutRegion *>::iterator i;
-  vector<LayoutRegion *> *frontRegions;
-  LayoutRegion *childRegion;
-
-  frontRegions = new vector<LayoutRegion *>;
-  allRegions = getRegionsSortedByZIndex ();
-
-  i = allRegions->begin ();
-  while (i != allRegions->end ())
-    {
-      childRegion = *i;
-      if (childRegion->getZIndexValue () > region->getZIndexValue ())
-        {
-          frontRegions->insert (frontRegions->begin (), childRegion);
-        }
-      ++i;
-    }
-  delete allRegions;
-  allRegions = NULL;
-
-  return frontRegions;
-}
-
 LayoutRegion *
 LayoutRegion::getParent ()
 {
@@ -1152,92 +602,9 @@ LayoutRegion::getParent ()
 }
 
 void
-LayoutRegion::setDeviceClass (int deviceClass, const string &mapId)
-{
-  bool changed = false;
-
-  if (deviceClass != this->devClass && deviceClass >= 0)
-    {
-      this->devClass = deviceClass;
-      changed = true;
-    }
-
-  if (outputMapRegionId == "")
-    {
-      this->outputMapRegionId = mapId;
-      changed = true;
-    }
-
-  if (changed)
-    {
-      refreshDeviceClassRegions ();
-    }
-}
-
-int
-LayoutRegion::getDeviceClass ()
-{
-  return devClass;
-}
-
-void
-LayoutRegion::setOutputMapRegion (LayoutRegion *outMapRegion)
-{
-  this->outputMapRegion = outMapRegion;
-}
-
-LayoutRegion *
-LayoutRegion::getOutputMapRegion ()
-{
-  return outputMapRegion;
-}
-
-string
-LayoutRegion::getOutputMapRegionId ()
-{
-  return outputMapRegionId;
-}
-
-void
 LayoutRegion::setParent (LayoutRegion *parent)
 {
-  int dClass;
-  string mapId;
-
-  lock ();
   this->parent = parent;
-
-  if (parent != NULL)
-    {
-      if (parent->getOutputMapRegion () == NULL && outputMapRegion != NULL)
-        {
-          parent->setOutputMapRegion (outputMapRegion);
-        }
-
-      dClass = parent->getDeviceClass ();
-      mapId = parent->getOutputMapRegionId ();
-      if (dClass >= 0)
-        {
-          setDeviceClass (dClass, mapId);
-        }
-    }
-  unlock ();
-}
-
-void
-LayoutRegion::refreshDeviceClassRegions ()
-{
-  map<string, LayoutRegion *>::iterator i;
-
-  i = regions.begin ();
-  while (i != regions.end ())
-    {
-      if (i->second != this)
-        {
-          i->second->setDeviceClass (devClass, outputMapRegionId);
-        }
-      ++i;
-    }
 }
 
 int
@@ -1578,42 +945,6 @@ LayoutRegion::getWidthInPixels ()
   return 0;
 }
 
-bool
-LayoutRegion::isMovable ()
-{
-  return movable;
-}
-
-bool
-LayoutRegion::isResizable ()
-{
-  return resizable;
-}
-
-bool
-LayoutRegion::isDecorated ()
-{
-  return decorated;
-}
-
-void
-LayoutRegion::setMovable (bool movable)
-{
-  this->movable = movable;
-}
-
-void
-LayoutRegion::setResizable (bool resizable)
-{
-  this->resizable = resizable;
-}
-
-void
-LayoutRegion::setDecorated (bool decorated)
-{
-  this->decorated = decorated;
-}
-
 void
 LayoutRegion::resetTop ()
 {
@@ -1660,24 +991,6 @@ LayoutRegion::resetZIndex ()
     }
 }
 
-void
-LayoutRegion::resetDecorated ()
-{
-  decorated = false;
-}
-
-void
-LayoutRegion::resetMovable ()
-{
-  movable = false;
-}
-
-void
-LayoutRegion::resetResizable ()
-{
-  resizable = false;
-}
-
 int
 LayoutRegion::getAbsoluteLeft ()
 {
@@ -1702,56 +1015,6 @@ LayoutRegion::getAbsoluteTop ()
     {
       return getTopInPixels ();
     }
-}
-
-double
-LayoutRegion::getPercentValue (const string &value)
-{
-  string actualValue;
-  double floatValue;
-
-  // retirar o caracter percent da string
-  actualValue = value.substr (0, value.length () - 1);
-  // converter para double
-  floatValue = xstrtod (actualValue);
-
-  // se menor que zero, retornar zero
-  if (floatValue < 0)
-    floatValue = 0;
-  // else if (floatValue > 100)
-  // se maior que 100, retornar 100
-  // floatValue = 100;
-
-  // retornar valor percent
-  return floatValue;
-}
-
-bool
-LayoutRegion::intersects (LayoutRegion *r)
-{
-  return !(r->left > left + width || r->left + r->width < left
-           || r->top > top + height || r->top + r->height < top);
-}
-
-bool
-LayoutRegion::intersects (int x, int y)
-{
-  return !(x > getAbsoluteLeft () + getWidthInPixels ()
-           || x < getAbsoluteLeft ()
-           || y > getAbsoluteTop () + getHeightInPixels ()
-           || y < getAbsoluteTop ());
-}
-
-void
-LayoutRegion::lock ()
-{
-  pthread_mutex_lock (&mutex);
-}
-
-void
-LayoutRegion::unlock ()
-{
-  pthread_mutex_unlock (&mutex);
 }
 
 GINGA_NCL_END

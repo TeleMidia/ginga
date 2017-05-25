@@ -146,11 +146,9 @@ FormatterScheduler::getFocusManager ()
 }
 
 void *
-FormatterScheduler::getFormatterLayout (void *descriptor, void *object)
+FormatterScheduler::getFormatterLayout ()
 {
-  return ((FormatterMultiDevice *)multiDevPres)
-      ->getFormatterLayout ((NclCascadingDescriptor *)descriptor,
-                            (NclExecutionObject *)object);
+  return ((FormatterMultiDevice *)multiDevPres)->getFormatterLayout ();
 }
 
 bool
@@ -302,8 +300,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
               descriptor = executionObject->getDescriptor ();
               if (descriptor != NULL)
                 {
-                  descriptor->setFormatterLayout
-                    (getFormatterLayout (descriptor, executionObject));
+                  descriptor->setFormatterLayout(getFormatterLayout ());
                 }
             }
 
@@ -559,8 +556,7 @@ FormatterScheduler::runActionOverApplicationObject (
               descriptor = executionObject->getDescriptor ();
               if (descriptor != NULL)
                 {
-                  descriptor->setFormatterLayout (
-                      getFormatterLayout (descriptor, executionObject));
+                  descriptor->setFormatterLayout (getFormatterLayout ());
                 }
             }
 

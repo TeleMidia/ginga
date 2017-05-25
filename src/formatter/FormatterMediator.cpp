@@ -50,8 +50,6 @@ FormatterMediator::FormatterMediator ()
 
   multiDevice = new FormatterMultiDevice (data->w, data->h);
 
-  multiDevice->setPresentationContex (presContext);
-
   playerManager = new AdapterPlayerManager (data);
 
   ruleAdapter = new RuleAdapter (presContext);
