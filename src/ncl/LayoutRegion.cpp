@@ -47,10 +47,6 @@ LayoutRegion::LayoutRegion (const string &id) : Entity (id)
 
   zIndex = NULL;
 
-  movable = false;
-  resizable = false;
-  decorated = false;
-
   devClass = -1;
 
   parent = NULL;
@@ -178,10 +174,6 @@ LayoutRegion::cloneRegion ()
 
   cloneRegion->setZIndex (getZIndex ());
 
-  cloneRegion->setDecorated (isDecorated ());
-  cloneRegion->setMovable (isMovable ());
-  cloneRegion->setResizable (isResizable ());
-
   childRegions = getRegions ();
   if (childRegions == NULL)
     {
@@ -240,10 +232,6 @@ LayoutRegion::copyRegion ()
     }
 
   cloneRegion->setZIndex (getZIndex ());
-
-  cloneRegion->setDecorated (isDecorated ());
-  cloneRegion->setMovable (isMovable ());
-  cloneRegion->setResizable (isResizable ());
 
   cloneRegion->setParent (getDeviceLayout ());
 
@@ -1005,61 +993,6 @@ LayoutRegion::setTargetWidth (double newWidth, bool isPercent)
 }
 
 void
-LayoutRegion::validateTarget ()
-{
-  LayoutRegion *deviceLayout;
-
-  deviceLayout = getDeviceLayout ();
-  if (deviceLayout != NULL)
-    {
-      if (getTopInPixels () < deviceLayout->getTopInPixels ())
-        {
-          top = deviceLayout->getTopInPixels ();
-          topPercent = false;
-        }
-
-      if ((getTopInPixels () + getHeightInPixels ())
-          > deviceLayout->getHeightInPixels ())
-        {
-          // since the region will stay outside the device edges, the
-          // bottom is set to the minimum value allowed
-          height = (deviceLayout->getHeightInPixels () - getTopInPixels ());
-
-          heightPercent = false;
-        }
-
-      if (getLeftInPixels () < deviceLayout->getLeftInPixels ())
-        {
-          left = deviceLayout->getLeftInPixels ();
-          leftPercent = false;
-        }
-
-      if ((getLeftInPixels () + getWidthInPixels ())
-          > deviceLayout->getWidthInPixels ())
-        {
-          // since the region will stay outside the parent edges, the
-          // left is set to the maximum value allowed
-          width = (deviceLayout->getWidthInPixels ()
-                   - deviceLayout->getLeftInPixels ());
-
-          widthPercent = false;
-        }
-
-      /*cout << "LayoutRegion::validateTarget(" << getId() << ") ";
-      cout << " To:" << endl;
-      cout << " Left:   " << left << endl;
-      cout << " Top:    " << top << endl;
-      cout << " Width:  " << width << endl;
-      cout << " Height: " << height << endl;*/
-    }
-  else
-    {
-      clog << "LayoutRegion::validateTarget(" << getId () << ") ";
-      clog << " Warning! Can't find device layout" << endl;
-    }
-}
-
-void
 LayoutRegion::setZIndex (int newZIndex)
 {
   if (zIndex == NULL)
@@ -1539,42 +1472,6 @@ LayoutRegion::getWidthInPixels ()
   return 0;
 }
 
-bool
-LayoutRegion::isMovable ()
-{
-  return movable;
-}
-
-bool
-LayoutRegion::isResizable ()
-{
-  return resizable;
-}
-
-bool
-LayoutRegion::isDecorated ()
-{
-  return decorated;
-}
-
-void
-LayoutRegion::setMovable (bool movable)
-{
-  this->movable = movable;
-}
-
-void
-LayoutRegion::setResizable (bool resizable)
-{
-  this->resizable = resizable;
-}
-
-void
-LayoutRegion::setDecorated (bool decorated)
-{
-  this->decorated = decorated;
-}
-
 void
 LayoutRegion::resetTop ()
 {
@@ -1619,24 +1516,6 @@ LayoutRegion::resetZIndex ()
       delete zIndex;
       zIndex = NULL;
     }
-}
-
-void
-LayoutRegion::resetDecorated ()
-{
-  decorated = false;
-}
-
-void
-LayoutRegion::resetMovable ()
-{
-  movable = false;
-}
-
-void
-LayoutRegion::resetResizable ()
-{
-  resizable = false;
 }
 
 int
