@@ -77,7 +77,6 @@ LayoutRegion::~LayoutRegion ()
     }
 
   regions.clear ();
-  sorted.clear ();
 
   if (zIndex != NULL)
     {
@@ -92,7 +91,6 @@ LayoutRegion::~LayoutRegion ()
 void
 LayoutRegion::addRegion (LayoutRegion *region)
 {
-  int zIndexVal;
   vector<LayoutRegion *>::iterator i;
   string regId;
 
@@ -107,19 +105,6 @@ LayoutRegion::addRegion (LayoutRegion *region)
 
   regions[regId] = region;
   region->setParent (this);
-
-  zIndexVal = region->getZIndexValue ();
-  i = sorted.begin ();
-  while (i != sorted.end ())
-    {
-      if (zIndexVal <= (*i)->getZIndexValue ())
-        {
-          break;
-        }
-      ++i;
-    }
-
-  sorted.insert (i, region);
   unlock ();
 }
 
@@ -186,49 +171,6 @@ LayoutRegion::cloneRegion ()
   unlock ();
   delete childRegions;
   childRegions = NULL;
-
-  return cloneRegion;
-}
-
-LayoutRegion *
-LayoutRegion::copyRegion ()
-{
-  LayoutRegion *cloneRegion;
-
-  cloneRegion = new LayoutRegion (getId ());
-  if (!isnan (getBottom ()))
-    {
-      cloneRegion->setBottom (getBottomInPixels (), false);
-    }
-
-  if (!isnan (getLeft ()))
-    {
-      cloneRegion->setLeft (getAbsoluteLeft (), false);
-    }
-
-  if (!isnan (getTop ()))
-    {
-      cloneRegion->setTop (getAbsoluteTop (), false);
-    }
-
-  if (!isnan (getRight ()))
-    {
-      cloneRegion->setRight (getRightInPixels (), false);
-    }
-
-  if (!isnan (getWidth ()))
-    {
-      cloneRegion->setWidth (getWidthInPixels (), false);
-    }
-
-  if (!isnan (getHeight ()))
-    {
-      cloneRegion->setHeight (getHeightInPixels (), false);
-    }
-
-  cloneRegion->setZIndex (getZIndex ());
-
-  cloneRegion->setParent (getDeviceLayout ());
 
   return cloneRegion;
 }
@@ -696,16 +638,6 @@ LayoutRegion::setZIndex (int newZIndex)
   *zIndex = newZIndex;
 }
 
-vector<LayoutRegion *> *
-LayoutRegion::getRegionsSortedByZIndex ()
-{
-  vector<LayoutRegion *> *sortedRegions;
-  lock ();
-  sortedRegions = new vector<LayoutRegion *> (sorted);
-  unlock ();
-  return sortedRegions;
-}
-
 LayoutRegion *
 LayoutRegion::getParent ()
 {
@@ -1128,19 +1060,6 @@ LayoutRegion::getAbsoluteTop ()
     {
       return getTopInPixels ();
     }
-}
-
-double
-LayoutRegion::getPercentValue (const string &value)
-{
-  string actualValue;
-  double floatValue;
-
-  actualValue = value.substr (0, value.length () - 1);
-  floatValue = xstrtod (actualValue);
-  if (floatValue < 0)
-    floatValue = 0;
-  return floatValue;
 }
 
 void
