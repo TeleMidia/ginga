@@ -23,7 +23,7 @@ GINGA_SYSTEM_BEGIN
 class Thread
 {
 protected:
-  bool isDeleting;
+  bool _isDeleting;
 
   GRecMutex threadMutex;
 

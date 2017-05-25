@@ -43,7 +43,7 @@ NclLinkTriggerCondition::NclLinkTriggerCondition ()
 
 NclLinkTriggerCondition::~NclLinkTriggerCondition ()
 {
-  isDeleting = true;
+  _isDeleting = true;
 
   Thread::mutexLock (&sMutex);
   listener = NULL;
@@ -113,7 +113,7 @@ NclLinkTriggerCondition::notifyConditionObservers (short status)
       pthread_attr_setdetachstate (&t_attr, PTHREAD_CREATE_DETACHED);
       pthread_attr_setscope (&t_attr, PTHREAD_SCOPE_SYSTEM);
 
-      if (isDeleting)
+      if (_isDeleting)
         {
           Thread::mutexUnlock (&sMutex);
           return;
@@ -155,7 +155,7 @@ NclLinkTriggerCondition::notificationThread (arg_unused (void *ptr))
           status = data->status;
           condition = data->condition;
 
-          if (((NclLinkTriggerCondition *)condition)->isDeleting)
+          if (((NclLinkTriggerCondition *)condition)->_isDeleting)
             {
               delete data;
               Thread::mutexUnlock (&sMutex);

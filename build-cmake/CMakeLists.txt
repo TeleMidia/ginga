@@ -98,7 +98,6 @@ set (GINGA_SOURCES
   ../src/ctxmgmt/SystemInfo.cpp
   ../src/formatter/AdapterApplicationPlayer.cpp
   ../src/formatter/AdapterFormatterPlayer.cpp
-  ../src/formatter/AdapterImagePlayer.cpp
   ../src/formatter/AdapterLuaPlayer.cpp
   ../src/formatter/AdapterNCLPlayer.cpp
   ../src/formatter/AdapterPlayerManager.cpp
@@ -176,7 +175,6 @@ set (GINGA_SOURCES
   ../src/ncl/Descriptor.cpp
   ../src/ncl/DescriptorBase.cpp
   ../src/ncl/DescriptorSwitch.cpp
-  ../src/ncl/DeviceLayout.cpp
   ../src/ncl/Entity.cpp
   ../src/ncl/EventUtil.cpp
   ../src/ncl/FocusDecoration.cpp
@@ -225,22 +223,18 @@ set (GINGA_SOURCES
   ../src/common.cpp
 
 #if WITH_ESPEAK
-#  ../src/formatter/AdapterSsmlPlayer.cpp
-#  ../src/player/SsmlPlayer.cpp
+# ../src/player/SsmlPlayer.cpp
 # WITH_ESPEAK
 
 #if WITH_GSTREAMER
-  ../src/formatter/AdapterVideoPlayer.cpp
   ../src/player/VideoPlayer.cpp
 # WITH_GSTREAMER
 
 #if WITH_LIBRSVG
-  ../src/formatter/AdapterSvgPlayer.cpp
   ../src/player/SvgPlayer.cpp
 #WITH_LIBRSVG
 
 #if WITH_PANGO
-  ../src/formatter/AdapterTextPlayer.cpp
   ../src/player/TextPlayer.cpp
 # WITH_PANGO
 
@@ -294,7 +288,6 @@ set (GINGA_LIBS
 
 if (WITH_CEF)
   list (APPEND GINGA_SOURCES
-    ../src/formatter/AdapterHTMLPlayer.cpp
     ../src/player/HTMLPlayer.cpp
   )
   list (APPEND GINGA_INCLUDE_DIRS
