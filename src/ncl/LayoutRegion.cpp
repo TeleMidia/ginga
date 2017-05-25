@@ -45,7 +45,6 @@ LayoutRegion::LayoutRegion (const string &id) : Entity (id)
   zIndex = NULL;
 
   parent = NULL;
-  pthread_mutex_init (&mutex, NULL);
 }
 
 LayoutRegion::~LayoutRegion ()
@@ -53,7 +52,6 @@ LayoutRegion::~LayoutRegion ()
   LayoutRegion *region;
   map<string, LayoutRegion *>::iterator i;
 
-  lock ();
   Entity::hasInstance (this, true);
 
   if (parent != NULL)
@@ -83,9 +81,6 @@ LayoutRegion::~LayoutRegion ()
       delete zIndex;
       zIndex = NULL;
     }
-
-  unlock ();
-  pthread_mutex_destroy (&mutex);
 }
 
 void
@@ -96,16 +91,13 @@ LayoutRegion::addRegion (LayoutRegion *region)
 
   regId = region->getId ();
 
-  lock ();
   if (regions.count (regId) != 0)
     {
-      unlock ();
       return;
     }
 
   regions[regId] = region;
   region->setParent (this);
-  unlock ();
 }
 
 LayoutRegion *
@@ -161,14 +153,12 @@ LayoutRegion::cloneRegion ()
       return NULL;
     }
 
-  lock ();
   vector<LayoutRegion *>::iterator it;
   for (it = childRegions->begin (); it != childRegions->end (); ++it)
     {
       childRegion = (*it)->cloneRegion ();
       cloneRegion->addRegion (childRegion);
     }
-  unlock ();
   delete childRegions;
   childRegions = NULL;
 
@@ -205,12 +195,9 @@ LayoutRegion::getRegion (const string &id)
   map<string, LayoutRegion *>::iterator i;
   LayoutRegion *someRegion;
 
-  lock ();
   i = regions.find (id);
   if (i == regions.end ())
     {
-      unlock ();
-
       if (id == getId ())
         {
           return this;
@@ -220,7 +207,6 @@ LayoutRegion::getRegion (const string &id)
     }
 
   someRegion = i->second;
-  unlock ();
 
   return someRegion;
 }
@@ -259,13 +245,11 @@ LayoutRegion::getRegions ()
 {
   map<string, LayoutRegion *>::iterator i;
   vector<LayoutRegion *> *childRegions;
-  lock ();
   childRegions = new vector<LayoutRegion *>;
   for (i = regions.begin (); i != regions.end (); ++i)
     {
       childRegions->push_back (i->second);
     }
-  unlock ();
   return childRegions;
 }
 
@@ -349,17 +333,14 @@ LayoutRegion::removeRegion (LayoutRegion *region)
   map<string, LayoutRegion *>::iterator i;
   LayoutRegion *childRegion;
 
-  lock ();
   if (regions.count (region->getId ()) != 0)
     {
       i = regions.find (region->getId ());
       childRegion = i->second;
       childRegion->setParent (NULL);
       regions.erase (i);
-      unlock ();
       return true;
     }
-  unlock ();
   return false;
 }
 
@@ -369,7 +350,6 @@ LayoutRegion::removeRegions ()
   map<string, LayoutRegion *>::iterator i;
   LayoutRegion *region;
 
-  lock ();
   i = regions.begin ();
   while (i != regions.end ())
     {
@@ -382,29 +362,6 @@ LayoutRegion::removeRegions ()
       ++i;
     }
   regions.clear ();
-  unlock ();
-}
-
-LayoutRegion *
-LayoutRegion::getDeviceLayout ()
-{
-  LayoutRegion *device;
-
-  if (parent == NULL)
-    {
-      device = this;
-    }
-  else
-    {
-      device = parent;
-    }
-
-  while (device->getParent () != NULL)
-    {
-      device = device->getParent ();
-    }
-
-  return device;
 }
 
 bool
@@ -647,9 +604,7 @@ LayoutRegion::getParent ()
 void
 LayoutRegion::setParent (LayoutRegion *parent)
 {
-  lock ();
   this->parent = parent;
-  unlock ();
 }
 
 int
@@ -1060,18 +1015,6 @@ LayoutRegion::getAbsoluteTop ()
     {
       return getTopInPixels ();
     }
-}
-
-void
-LayoutRegion::lock ()
-{
-  pthread_mutex_lock (&mutex);
-}
-
-void
-LayoutRegion::unlock ()
-{
-  pthread_mutex_unlock (&mutex);
 }
 
 GINGA_NCL_END

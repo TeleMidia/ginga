@@ -67,15 +67,7 @@ class FormatterMultiDevice
 {
 protected:
   pthread_mutex_t mutex;
-  int width;
-  int height;
   NclFormatterLayout *layoutManager;
-  string activeBaseUri;
-  int xOffset;
-  int yOffset;
-  int defaultWidth;
-  int defaultHeight;
-  PresentationContext *presContext;
   void *focusManager;
 
 public:

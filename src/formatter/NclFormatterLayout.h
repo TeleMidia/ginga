@@ -31,7 +31,6 @@ GINGA_FORMATTER_BEGIN
 class NclFormatterLayout
 {
 private:
-  map<string, NclFormatterLayout *> flChilds;
   LayoutRegion *deviceRegion;
   map<string, double> regionZIndex;
   map<string, set<NclFormatterRegion *> *> regionMap;
@@ -42,7 +41,6 @@ public:
   NclFormatterLayout (int w, int h);
   virtual ~NclFormatterLayout ();
   LayoutRegion *getDeviceRegion ();
-  LayoutRegion *getNcmRegion (const string &regionId);
 
 private:
   void createDeviceRegion (int w, int h);

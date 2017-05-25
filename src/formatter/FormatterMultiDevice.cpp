@@ -27,44 +27,14 @@ GINGA_FORMATTER_BEGIN
 
 FormatterMultiDevice::FormatterMultiDevice (int w, int h)
 {
-  this->defaultWidth = w;
-  this->defaultHeight = h;
-  this->activeBaseUri = "";
-  this->presContext = NULL;
   this->focusManager = NULL;
-
-  if (defaultWidth == 0)
-    Ginga_Display->getSize (&defaultWidth, NULL);
-
-  if (defaultHeight == 0)
-    Ginga_Display->getSize (NULL, &defaultHeight);
-
-  int tmpw, tmph;
-  Ginga_Display->getSize (&tmpw, &tmph);
-
   this->layoutManager= new NclFormatterLayout (w, h);
-
   Thread::mutexInit (&mutex, false);
 }
 
 FormatterMultiDevice::~FormatterMultiDevice ()
 {
-  set<IPlayer *>::iterator i;
-
-  presContext = NULL;
-
   Thread::mutexDestroy (&mutex);
-
-  clog << "FormatterMultiDevice::~FormatterMultiDevice ";
-  clog << "all done";
-  clog << endl;
-}
-
-void
-FormatterMultiDevice::setPresentationContex (
-    PresentationContext *presContext)
-{
-  this->presContext = presContext;
 }
 
 void
@@ -101,7 +71,7 @@ FormatterMultiDevice::prepareFormatterRegion (
               plan = descriptor->getFormatterRegion ()->getPlan ();
             }
 
-          windowId = layout->prepareFormatterRegion (executionObject,plan);
+          windowId = layout->prepareFormatterRegion (executionObject, plan);
 
           layout = this->layoutManager;
         }

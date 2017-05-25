@@ -41,7 +41,6 @@ private:
   double *zIndex;
   map<string, LayoutRegion *> regions;
   LayoutRegion *parent;
-  pthread_mutex_t mutex;
 
 public:
   LayoutRegion (const string &id);
@@ -72,11 +71,6 @@ private:
 
 public:
   virtual void removeRegions ();
-
-private:
-  virtual LayoutRegion *getDeviceLayout ();
-
-public:
   virtual bool setBottom (double newBottom, bool isPercent);
   virtual bool setHeight (double newHeight, bool isPercent);
   virtual bool setLeft (double newLeft, bool isPercent);
@@ -102,10 +96,6 @@ public:
   virtual void resetZIndex ();
   virtual int getAbsoluteLeft ();
   virtual int getAbsoluteTop ();
-
-private:
-  void lock ();
-  void unlock ();
 };
 
 GINGA_NCL_END

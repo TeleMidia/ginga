@@ -432,28 +432,6 @@ NclParser::parseHead (DOMElement *head_element)
           break;
         }
     }
-
-  for (DOMElement *child :
-       dom_element_children_by_tagname(head_element, "meta") )
-    {
-      Meta *meta = parseMeta (child);
-      if (meta)
-        {
-          nclDoc->addMetainformation (meta);
-          break;
-        }
-    }
-
-  for (DOMElement *child :
-       dom_element_children_by_tagname(head_element, "metadata") )
-    {
-      Metadata *metadata = parseMetadata (child);
-      if (metadata)
-        {
-          nclDoc->addMetadata (metadata);
-          break;
-        }
-    }
 }
 
 NclDocument *
@@ -1008,31 +986,6 @@ NclParser::addImportNCLToImportedDocumentBase (DOMElement *importNCL_element)
       thisDocument = this->getNclDocument ();
       thisDocument->addDocument (importedDocument, docAlias, docLocation);
     }
-}
-
-// META INFORMATION
-Meta *
-NclParser::parseMeta (DOMElement *meta_element)
-{
-  string name, content;
-
-  if (!dom_element_try_get_attr(name, meta_element, "name"))
-    {
-      syntax_error ("meta: missing name");
-    }
-
-  if (!dom_element_try_get_attr(content, meta_element, "content"))
-    {
-      syntax_error ("meta: missing content");
-    }
-
-  return new Meta (name, deconst (void *, content.c_str ()));
-}
-
-Metadata *
-NclParser::parseMetadata (arg_unused (DOMElement *parentElement))
-{
-  return new Metadata ();
 }
 
 // TRANSITION

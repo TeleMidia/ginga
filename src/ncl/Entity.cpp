@@ -21,36 +21,21 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NCL_BEGIN
 
 set<Entity *> Entity::instances;
-pthread_mutex_t Entity::iMutex;
-bool Entity::initMutex = false;
 
 Entity::Entity (const string &id)
 {
   this->id = id;
   typeSet.insert ("Entity");
-
-  if (!initMutex)
-    {
-      initMutex = true;
-      pthread_mutex_init (&iMutex, NULL);
-    }
-
-  pthread_mutex_lock (&iMutex);
   instances.insert (this);
-  pthread_mutex_unlock (&iMutex);
 }
 
 Entity::~Entity ()
 {
   set<Entity *>::iterator i;
 
-  pthread_mutex_lock (&iMutex);
   i = instances.find (this);
   if (i != instances.end ())
-    {
-      instances.erase (i);
-    }
-  pthread_mutex_unlock (&iMutex);
+    instances.erase (i);
 }
 
 bool
@@ -59,12 +44,6 @@ Entity::hasInstance (Entity *instance, bool eraseFromList)
   set<Entity *>::iterator i;
   bool hasEntity = false;
 
-  if (!initMutex)
-    {
-      return false;
-    }
-
-  pthread_mutex_lock (&iMutex);
   i = instances.find (instance);
   if (i != instances.end ())
     {
@@ -74,22 +53,8 @@ Entity::hasInstance (Entity *instance, bool eraseFromList)
         }
       hasEntity = true;
     }
-  pthread_mutex_unlock (&iMutex);
 
   return hasEntity;
-}
-
-void
-Entity::printHierarchy ()
-{
-  set<string>::iterator i;
-
-  i = typeSet.begin ();
-  while (i != typeSet.end ())
-    {
-      clog << *i << " ";
-      ++i;
-    }
 }
 
 bool
@@ -97,25 +62,10 @@ Entity::instanceOf (const string &s)
 {
   if (!typeSet.empty ())
     {
-      /*
-      set<string>::iterator it;
-      clog << "Entity instanceOf for '" << s << ";
-      clog << "' with the following set:" << endl;
-      for(it = typeSet.begin(); it != typeSet.end(); ++it) {
-              clog << "[" << *it << "] ";
-      }
-      clog << ((typeSet.find(s) != typeSet.end()) ? "true" : "false");
-      clog << endl;
-       */
-
       return (typeSet.find (s) != typeSet.end ());
     }
   else
     {
-      /*
-      clog << "Entity instanceOf for " << s << " has an empty set";
-      clog << endl;
-      */
       return false;
     }
 }
@@ -147,13 +97,6 @@ Entity::compareTo (Entity *otherEntity)
     }
 }
 
-/*bool Entity::equals(Entity* otherEntity) {
-        string otherId;
-
-        otherId = (static_cast<Entity*>(otherEntity))->getId();
-        return (id.compare(otherId) == 0);
-}*/
-
 string
 Entity::getId ()
 {
@@ -164,12 +107,6 @@ void
 Entity::setId (const string &someId)
 {
   id = someId;
-}
-
-string
-Entity::toString ()
-{
-  return id;
 }
 
 Entity *
