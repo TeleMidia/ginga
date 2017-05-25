@@ -101,7 +101,6 @@ set (GINGA_SOURCES
   ../src/formatter/AdapterLuaPlayer.cpp
   ../src/formatter/AdapterNCLPlayer.cpp
   ../src/formatter/AdapterPlayerManager.cpp
-  ../src/formatter/FormatterBaseDevice.cpp
   ../src/formatter/FormatterConverter.cpp
   ../src/formatter/FormatterFocusManager.cpp
   ../src/formatter/FormatterLinkConverter.cpp
