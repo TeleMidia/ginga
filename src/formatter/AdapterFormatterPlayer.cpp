@@ -685,21 +685,9 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
 void
 AdapterFormatterPlayer::prepare ()
 {
-  NclCascadingDescriptor *descriptor;
-  LayoutRegion *region;
-
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
 
-  descriptor = _object->getDescriptor ();
-  if (descriptor != nullptr)
-    {
-      region = descriptor->getRegion ();
-      if (region != nullptr)
-        {
-          _player->setNotifyContentUpdate (region->getDeviceClass () == 1);
-        }
-    }
 
   prepareScope ();
 
@@ -1284,10 +1272,6 @@ AdapterFormatterPlayer::keyInputCallback (SDL_EventType evtType,
 {
   if(evtType == SDL_KEYDOWN)
     return;
-  /*
-  if (xruntime_ms () - eventTS < 300){
-      return;
-  } */
 
   cout << "keyEventReceived for '%s'" << _mrl.c_str() << endl;
 
@@ -1301,10 +1285,7 @@ AdapterFormatterPlayer::keyInputCallback (SDL_EventType evtType,
            key);
 
   if (_player->isVisible ())
-    {
-//      _eventTS = (double) xruntime_ms ();
-      _object->selectionEvent (key, _player->getMediaTime () * 1000);
-    }
+    _object->selectionEvent (key, _player->getMediaTime () * 1000);
 }
 
 void

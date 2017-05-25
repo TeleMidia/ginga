@@ -69,31 +69,23 @@ protected:
   pthread_mutex_t mutex;
   int width;
   int height;
-  map<int, NclFormatterLayout *> layoutManager;
-  vector<string> *activeUris;
+  NclFormatterLayout *layoutManager;
   string activeBaseUri;
   NclFormatterLayout *mainLayout;
   int xOffset;
   int yOffset;
   int defaultWidth;
   int defaultHeight;
-  int deviceClass;
   PresentationContext *presContext;
   void *focusManager;
-  FormatterMultiDevice *parent;
-  set<IPlayer *> listening;
-  pthread_mutex_t lMutex;
-  static const int DV_QVGA_WIDTH = 480;
-  static const int DV_QVGA_HEIGHT = 320;
 
 public:
   FormatterMultiDevice (int w, int h);
   virtual ~FormatterMultiDevice ();
-  void setParent (FormatterMultiDevice *parent);
   void setPresentationContex (PresentationContext *presContext);
   void setFocusManager (void *focusManager);
   void *getMainLayout ();
-  void *getFormatterLayout (int devClass);
+  void *getFormatterLayout ();
 
 public:
   NclFormatterLayout *

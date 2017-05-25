@@ -29,12 +29,9 @@ FormatterMultiDevice::FormatterMultiDevice (int w, int h)
 {
   this->defaultWidth = w;
   this->defaultHeight = h;
-  this->deviceClass = -1;
   this->activeBaseUri = "";
-  this->activeUris = NULL;
   this->presContext = NULL;
   this->focusManager = NULL;
-  this->parent = NULL;
 
   if (defaultWidth == 0)
     Ginga_Display->getSize (&defaultWidth, NULL);
@@ -45,8 +42,9 @@ FormatterMultiDevice::FormatterMultiDevice (int w, int h)
   int tmpw, tmph;
   Ginga_Display->getSize (&tmpw, &tmph);
 
+  this->layoutManager= new NclFormatterLayout (w, h);
+
   Thread::mutexInit (&mutex, false);
-  Thread::mutexInit (&lMutex, false);
 }
 
 FormatterMultiDevice::~FormatterMultiDevice ()
@@ -55,40 +53,11 @@ FormatterMultiDevice::~FormatterMultiDevice ()
 
   presContext = NULL;
 
-  clog << "FormatterMultiDevice::~FormatterMultiDevice ";
-  clog << "checking listening list";
-  clog << endl;
-
-  if (!listening.empty ())
-    {
-      Thread::mutexLock (&lMutex);
-      /*			i = listening.begin();
-                              while (i != listening.end()) {
-                                      (*i)->removeListener(this);
-                                      ++i;
-                              }*/
-      listening.clear ();
-      Thread::mutexUnlock (&lMutex);
-    }
-
-  clog << "FormatterMultiDevice::~FormatterMultiDevice ";
-  clog << "destroying mutexes";
-  clog << endl;
-
   Thread::mutexDestroy (&mutex);
-  Thread::mutexDestroy (&lMutex);
-
 
   clog << "FormatterMultiDevice::~FormatterMultiDevice ";
   clog << "all done";
   clog << endl;
-}
-
-
-void
-FormatterMultiDevice::setParent (FormatterMultiDevice *parent)
-{
-  this->parent = (FormatterMultiDevice *)parent;
 }
 
 void
@@ -111,17 +80,9 @@ FormatterMultiDevice::getMainLayout ()
 }
 
 void *
-FormatterMultiDevice::getFormatterLayout (int devClass)
+FormatterMultiDevice::getFormatterLayout ()
 {
-  map<int, NclFormatterLayout *>::iterator i;
-
-  i = layoutManager.find (devClass);
-  if (i != layoutManager.end ())
-    {
-      return i->second;
-    }
-
-  return NULL;
+  return this->layoutManager;
 }
 
 NclFormatterLayout *
@@ -134,12 +95,7 @@ FormatterMultiDevice::getFormatterLayout (
   region = descriptor->getRegion ();
   if (region == NULL)
     {
-      if (layoutManager.count (this->deviceClass) != 0)
-        {
-          region = descriptor->getRegion (layoutManager[this->deviceClass],
-                                          object);
-        }
-
+      region = descriptor->getRegion (layoutManager, object);
       if (region == NULL)
         {
           clog << "FormatterMultiDevice::getFormatterLayout ";
@@ -149,8 +105,7 @@ FormatterMultiDevice::getFormatterLayout (
         }
     }
 
-  i = layoutManager.find (0);
-  return i->second;
+  return this->layoutManager;
 }
 
 SDLWindow*
@@ -178,29 +133,13 @@ FormatterMultiDevice::prepareFormatterRegion (
             }
 
           windowId = layout->prepareFormatterRegion (executionObject,plan);
-
           regionId = layout->getBitMapRegionId ();
-          /*clog << endl;
-          clog << "FormatterMultiDevice::prepareFormatterRegion map '";
-          clog << regionId << "'" << endl;*/
-
           if (regionId == "")
             {
               return windowId;
             }
 
-          i = layoutManager.find (1);
-          if (i == layoutManager.end ())
-            {
-              /*clog << endl;
-              clog << "FormatterMultiDevice::prepareFormatterRegion ";
-              clog << "CANT FIND devClass '" << deviceClass << "'";
-              clog << endl;*/
-              return windowId;
-            }
-
-          layout = i->second;
-
+          layout = this->layoutManager;
           ncmRegion = layout->getDeviceRegion ();
 
           bitMapRegion = ncmRegion->getOutputMapRegion ();
@@ -211,7 +150,6 @@ FormatterMultiDevice::prepareFormatterRegion (
               clog << this << ") ";
               clog << "CANT FIND bitMapRegion";
               clog << " for id '" << regionId << "' devClass = '";
-              clog << deviceClass << "'" << endl;
               clog << endl;
               return windowId;
             }
@@ -228,12 +166,6 @@ FormatterMultiDevice::showObject (NclExecutionObject *executionObject)
   NclCascadingDescriptor *descriptor;
   NclFormatterRegion *fRegion;
   LayoutRegion *region;
-  int devClass;
-  string fileUri;
-  string url;
-  string relativePath;
-  string tempRelPath;
-  string value;
 
   descriptor = executionObject->getDescriptor ();
   if (descriptor != NULL)
@@ -242,27 +174,12 @@ FormatterMultiDevice::showObject (NclExecutionObject *executionObject)
       layout = getFormatterLayout (descriptor, executionObject);
       if (region != NULL && layout != NULL)
         {
-          devClass = region->getDeviceClass ();
-
-          clog << "FormatterMultiDevice::showObject '";
-          clog << executionObject->getId () << "' class '";
-          clog << devClass << "'" << endl;
-
           fRegion = descriptor->getFormatterRegion ();
-          if (devClass != DeviceDomain::CT_BASE)
+          if (fRegion != NULL)
             {
-              clog << "FormatterMultiDevice::showObject as base" << endl;
-
-              if (fRegion != NULL)
-                {
-                  fRegion->setGhostRegion (true);
-                }
+              fRegion->setGhostRegion (true);
             }
-
-          if (devClass != DeviceDomain::CT_ACTIVE)
-            {
-              layout->showObject (executionObject);
-            }
+          layout->showObject (executionObject);
         }
     }
 }
@@ -273,7 +190,6 @@ FormatterMultiDevice::hideObject (NclExecutionObject *executionObject)
   NclFormatterLayout *layout;
   NclCascadingDescriptor *descriptor;
   LayoutRegion *region;
-  int devClass;
   string fileUri;
 
   clog << "FormatterMultiDevice::hideObject '";
@@ -286,11 +202,7 @@ FormatterMultiDevice::hideObject (NclExecutionObject *executionObject)
       layout = getFormatterLayout (descriptor, executionObject);
       if (region != NULL && layout != NULL)
         {
-          devClass = region->getDeviceClass ();
-          if (devClass != DeviceDomain::CT_ACTIVE)
-            {
               layout->hideObject (executionObject);
-            }
         }
     }
 }

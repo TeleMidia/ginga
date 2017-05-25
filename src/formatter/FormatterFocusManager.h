@@ -37,17 +37,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "FormatterMultiDevice.h"
 
-#include "mb/IMouseEventListener.h"
 #include "mb/IKeyInputEventListener.h"
 
 GINGA_FORMATTER_BEGIN
 
-class FormatterFocusManager :
-    public IMouseEventListener,
-    public IKeyInputEventListener
+class FormatterFocusManager : public IKeyInputEventListener
 {
 private:
-//  InputManager *im;
   PresentationContext *presContext;
   map<string, set<NclExecutionObject *> *> *focusTable;
   bool isHandler;
@@ -65,8 +61,6 @@ private:
 
   int width;
   int height;
-
-  double focusHandlerTS;
 
   void *converter;
   pthread_mutex_t mutexFocus;
@@ -90,7 +84,6 @@ private:
   static bool hasInstance (FormatterFocusManager *instance, bool remove);
 
 public:
-  void setParent (FormatterFocusManager *parent);
   bool isKeyHandler ();
   bool setKeyHandler (bool isHandler);
 
@@ -99,7 +92,6 @@ private:
   void resetKeyMaster ();
 
 public:
-  void tapObject (void *executionObject);
   void setKeyMaster (const string &mediaId);
   void setFocus (const string &focusIndex);
 
@@ -116,24 +108,17 @@ private:
   void insertObject (NclExecutionObject *object, const string &focusIndex);
   void removeObject (NclExecutionObject *object, const string &focusIndex);
 
-  bool keyCodeOk (NclExecutionObject *currentObject);
-  bool keyCodeBack ();
-  bool enterSelection (AdapterFormatterPlayer *player);
-  void exitSelection (AdapterFormatterPlayer *player);
 
 public:
   void setDefaultFocusBorderColor (SDL_Color *color);
   void setDefaultFocusBorderWidth (int width);
   void setDefaultSelBorderColor (SDL_Color *color);
 
-  void setMotionBoundaries (int w, int h);
-
 private:
   void changeSettingState (const string &name, const string &act);
 
 public:
   void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
-  void mouseInputCallback (arg_unused (SDL_EventType evtType), int x, int y);
 };
 
 GINGA_FORMATTER_END
