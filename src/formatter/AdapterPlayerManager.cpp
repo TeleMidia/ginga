@@ -120,10 +120,6 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
   mime = buf.c_str ();
   g_assert_nonnull (mime);
 
-  if (false)
-    {
-    }
-
   if (g_strcmp0 (mime, "application/x-ginga-NCLua") == 0)
     {
       adapter = new AdapterLuaPlayer (this);

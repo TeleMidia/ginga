@@ -101,7 +101,8 @@ AdapterFormatterPlayer::createPlayer ()
   PropertyAnchor *property;
   g_assert_nonnull (_object);
 
-  NodeEntity *entity = (NodeEntity *)(_object->getDataObject ()->getDataEntity ());
+  NodeEntity *entity
+      = dynamic_cast<NodeEntity *>(_object->getDataObject ()->getDataEntity ());
   g_assert_nonnull (entity);
   g_assert (entity->instanceOf ("ContentNode"));
 
@@ -143,6 +144,10 @@ AdapterFormatterPlayer::createPlayer ()
           _player = new TextPlayer (_mrl);
         }
 #endif
+      else if (g_strcmp0 (mime, "application/x-ginga-NCLua") == 0)
+        {
+          _player = new LuaPlayer (_mrl);
+        }
       else
         {
           _player = new Player (_mrl);
@@ -239,7 +244,6 @@ AdapterFormatterPlayer::hasPrepared ()
 
   return _isLocked;
 }
-
 
 double
 AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)

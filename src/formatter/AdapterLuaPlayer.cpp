@@ -24,13 +24,6 @@ GINGA_FORMATTER_BEGIN
 AdapterLuaPlayer::AdapterLuaPlayer (AdapterPlayerManager *mngr)
   : AdapterApplicationPlayer (mngr) {}
 
-void
-AdapterLuaPlayer::createPlayer ()
-{
-  _player = new LuaPlayer (_mrl.c_str ());
-  AdapterApplicationPlayer::createPlayer ();
-}
-
 bool
 AdapterLuaPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
 {
