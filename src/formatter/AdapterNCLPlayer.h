@@ -25,8 +25,8 @@ GINGA_FORMATTER_BEGIN
 class AdapterNCLPlayer : public AdapterApplicationPlayer
 {
 public:
-  AdapterNCLPlayer ();
-  virtual ~AdapterNCLPlayer (){};
+  explicit AdapterNCLPlayer (AdapterPlayerManager *mng);
+  virtual ~AdapterNCLPlayer (){}
 
 protected:
   void createPlayer ();

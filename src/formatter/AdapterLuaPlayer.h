@@ -25,8 +25,8 @@ GINGA_FORMATTER_BEGIN
 class AdapterLuaPlayer : public AdapterApplicationPlayer
 {
 public:
-  AdapterLuaPlayer ();
-  virtual ~AdapterLuaPlayer (){};
+  explicit AdapterLuaPlayer (AdapterPlayerManager *mngr);
+  virtual ~AdapterLuaPlayer (){}
 
 protected:
   void createPlayer ();

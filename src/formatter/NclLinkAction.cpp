@@ -31,7 +31,7 @@ NclLinkAction::NclLinkAction (double delay) : Thread ()
 
 NclLinkAction::~NclLinkAction ()
 {
-  isDeleting = true;
+  _isDeleting = true;
 
   Thread::mutexLock (&plMutex);
   if (progressionListeners != NULL)
@@ -120,7 +120,7 @@ NclLinkAction::addActionProgressionListener (
 
   if (tryLock ())
     {
-      if (progressionListeners != NULL && !isDeleting)
+      if (progressionListeners != NULL && !_isDeleting)
         {
           i = progressionListeners->begin ();
           while (i != progressionListeners->end ())
@@ -149,7 +149,7 @@ NclLinkAction::removeActionProgressionListener (
 
   if (tryLock ())
     {
-      if (progressionListeners != NULL && !isDeleting)
+      if (progressionListeners != NULL && !_isDeleting)
         {
           for (i = progressionListeners->begin ();
                i != progressionListeners->end (); ++i)
@@ -174,7 +174,7 @@ NclLinkAction::notifyProgressionListeners (bool start)
 
   if (tryLock ())
     {
-      if (progressionListeners != NULL && !isDeleting)
+      if (progressionListeners != NULL && !_isDeleting)
         {
           notifyList = new vector<NclLinkActionProgressionListener *> (
               *progressionListeners);
@@ -186,7 +186,7 @@ NclLinkAction::notifyProgressionListeners (bool start)
             {
               listener = (*notifyList)[i];
               listener->actionProcessed (start);
-              if (isDeleting)
+              if (_isDeleting)
                 {
                   break;
                 }
@@ -203,7 +203,7 @@ NclLinkAction::notifyProgressionListeners (bool start)
 bool
 NclLinkAction::tryLock ()
 {
-  if (isDeleting)
+  if (_isDeleting)
     {
       return false;
     }

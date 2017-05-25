@@ -24,7 +24,7 @@ GINGA_SYSTEM_BEGIN
 
 Thread::Thread ()
 {
-  isDeleting = false;
+  _isDeleting = false;
 
   g_rec_mutex_init (&threadMutex);
 
@@ -43,7 +43,7 @@ Thread::Thread ()
 
 Thread::~Thread ()
 {
-  isDeleting = true;
+  _isDeleting = true;
 
   unlockConditionSatisfied ();
   Thread::condSignal (&threadFlagCVLockUntilSignal);
@@ -69,7 +69,7 @@ Thread::~Thread ()
 void *
 Thread::function (void *ptr)
 {
-  if (ptr == NULL || static_cast<Thread *> (ptr)->isDeleting)
+  if (ptr == NULL || static_cast<Thread *> (ptr)->_isDeleting)
     return NULL;
 
   static_cast<Thread *> (ptr)->run ();
@@ -80,7 +80,7 @@ Thread::function (void *ptr)
 void
 Thread::startThread ()
 {
-  if (isDeleting)
+  if (_isDeleting)
     return;
 
   Thread::mutexLock (&threadIdMutex);
