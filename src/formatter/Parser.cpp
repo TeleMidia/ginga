@@ -2439,9 +2439,6 @@ NclParser::createRegion (DOMElement *elt)
   string attr = dom_element_get_attr (elt, "id");
   LayoutRegion *region = new LayoutRegion (attr);
 
-  if(dom_element_try_get_attr(attr, elt, "title"))
-    region->setTitle(attr);
-
   set_perc_or_px (elt, "left", region, &LayoutRegion::setLeft);
   set_perc_or_px (elt, "right", region, &LayoutRegion::setRight);
   set_perc_or_px (elt, "top", region, &LayoutRegion::setTop);

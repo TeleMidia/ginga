@@ -24,8 +24,7 @@ GINGA_NCL_BEGIN
 
 class LayoutRegion : public Entity
 {
-protected:
-  string title;
+private:
   string outputMapRegionId;
   LayoutRegion *outputMapRegion;
 
@@ -75,7 +74,6 @@ public:
   virtual LayoutRegion *getRegionRecursively (const string &id);
   void printRegionIdsRecursively ();
   virtual vector<LayoutRegion *> *getRegions ();
-  virtual string getTitle ();
   virtual double getTop ();
   virtual double getWidth ();
   virtual int getZIndex ();
@@ -86,7 +84,6 @@ public:
   virtual bool isRightPercent ();
   virtual bool isTopPercent ();
   virtual bool isWidthPercent ();
-  virtual string toString ();
 
 private:
   virtual bool removeRegion (LayoutRegion *region);
@@ -115,7 +112,6 @@ public:
 
   virtual void validateTarget ();
 
-  virtual void setTitle (const string &newTitle);
   virtual void setZIndex (int newZIndex);
   virtual vector<LayoutRegion *> *getRegionsSortedByZIndex ();
   virtual vector<LayoutRegion *> *
