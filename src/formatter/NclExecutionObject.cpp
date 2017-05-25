@@ -773,21 +773,18 @@ NclExecutionObject::updateEventDuration (NclPresentationEvent *event)
 
   if (descriptor != NULL)
     {
-      if (descriptor->instanceOf ("NclCascadingDescriptor"))
+      if (!isnan (descriptor->getExplicitDuration ())
+          && event == wholeContent)
         {
-          if (!isnan (descriptor->getExplicitDuration ())
-              && event == wholeContent)
-            {
-              duration = descriptor->getExplicitDuration ();
-            }
-          else if (event->getDuration () > 0)
-            {
-              duration = event->getDuration ();
-            }
-          else
-            {
-              duration = 0;
-            }
+          duration = descriptor->getExplicitDuration ();
+        }
+      else if (event->getDuration () > 0)
+        {
+          duration = event->getDuration ();
+        }
+      else
+        {
+          duration = 0;
         }
     }
   else

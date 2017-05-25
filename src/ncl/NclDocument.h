@@ -58,8 +58,6 @@ private:
   map<int, RegionBase *> regionBases;
   RuleBase *ruleBase;
   TransitionBase *transitionBase;
-  vector<Meta *> metainformationList;
-  vector<Metadata *> metadataList;
 
   string docLocation;
   NclDocument *parentDocument;
@@ -117,15 +115,7 @@ public:
   void setId (const string &id);
   void addRegionBase (RegionBase *regionBase);
   void setRuleBase (RuleBase *ruleBase);
-  void addMetainformation (Meta *meta);
-  void addMetadata (Metadata *metadata);
-  vector<Meta *> *getMetainformation ();
-  vector<Metadata *> *getMetadata ();
   void removeRegionBase (const string &regionBaseId);
-  void removeMetainformation (Meta *meta);
-  void removeMetadata (Metadata *metadata);
-  void removeAllMetainformation ();
-  void removeAllMetadata ();
 };
 
 GINGA_NCL_END

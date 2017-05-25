@@ -27,44 +27,14 @@ GINGA_FORMATTER_BEGIN
 
 FormatterMultiDevice::FormatterMultiDevice (int w, int h)
 {
-  this->defaultWidth = w;
-  this->defaultHeight = h;
-  this->activeBaseUri = "";
-  this->presContext = NULL;
   this->focusManager = NULL;
-
-  if (defaultWidth == 0)
-    Ginga_Display->getSize (&defaultWidth, NULL);
-
-  if (defaultHeight == 0)
-    Ginga_Display->getSize (NULL, &defaultHeight);
-
-  int tmpw, tmph;
-  Ginga_Display->getSize (&tmpw, &tmph);
-
   this->layoutManager= new NclFormatterLayout (w, h);
-
   Thread::mutexInit (&mutex, false);
 }
 
 FormatterMultiDevice::~FormatterMultiDevice ()
 {
-  set<IPlayer *>::iterator i;
-
-  presContext = NULL;
-
   Thread::mutexDestroy (&mutex);
-
-  clog << "FormatterMultiDevice::~FormatterMultiDevice ";
-  clog << "all done";
-  clog << endl;
-}
-
-void
-FormatterMultiDevice::setPresentationContex (
-    PresentationContext *presContext)
-{
-  this->presContext = presContext;
 }
 
 void
@@ -73,38 +43,9 @@ FormatterMultiDevice::setFocusManager (void *focusManager)
   this->focusManager = focusManager;
 }
 
-void *
-FormatterMultiDevice::getMainLayout ()
-{
-  return mainLayout;
-}
-
-void *
+NclFormatterLayout *
 FormatterMultiDevice::getFormatterLayout ()
 {
-  return this->layoutManager;
-}
-
-NclFormatterLayout *
-FormatterMultiDevice::getFormatterLayout (
-    NclCascadingDescriptor *descriptor, NclExecutionObject *object)
-{
-  map<int, NclFormatterLayout *>::iterator i;
-  LayoutRegion *region;
-
-  region = descriptor->getRegion ();
-  if (region == NULL)
-    {
-      region = descriptor->getRegion (layoutManager, object);
-      if (region == NULL)
-        {
-          clog << "FormatterMultiDevice::getFormatterLayout ";
-          clog << "region is NULL";
-          clog << endl;
-          return NULL;
-        }
-    }
-
   return this->layoutManager;
 }
 
@@ -118,13 +59,11 @@ FormatterMultiDevice::prepareFormatterRegion (
   SDLWindow* windowId = 0;
 
   map<int, NclFormatterLayout *>::iterator i;
-  LayoutRegion *bitMapRegion;
-  LayoutRegion *ncmRegion;
 
   descriptor = executionObject->getDescriptor ();
   if (descriptor != NULL)
     {
-      layout = getFormatterLayout (descriptor, executionObject);
+      layout = getFormatterLayout ();
       if (layout != NULL)
         {
           if (descriptor->getFormatterRegion () != NULL)
@@ -132,27 +71,9 @@ FormatterMultiDevice::prepareFormatterRegion (
               plan = descriptor->getFormatterRegion ()->getPlan ();
             }
 
-          windowId = layout->prepareFormatterRegion (executionObject,plan);
-          regionId = layout->getBitMapRegionId ();
-          if (regionId == "")
-            {
-              return windowId;
-            }
+          windowId = layout->prepareFormatterRegion (executionObject, plan);
 
           layout = this->layoutManager;
-          ncmRegion = layout->getDeviceRegion ();
-
-          bitMapRegion = ncmRegion->getOutputMapRegion ();
-          if (bitMapRegion == NULL)
-            {
-              clog << endl;
-              clog << "FormatterMultiDevice::prepareFormatterRegion(";
-              clog << this << ") ";
-              clog << "CANT FIND bitMapRegion";
-              clog << " for id '" << regionId << "' devClass = '";
-              clog << endl;
-              return windowId;
-            }
         }
     }
 
@@ -171,7 +92,7 @@ FormatterMultiDevice::showObject (NclExecutionObject *executionObject)
   if (descriptor != NULL)
     {
       region = descriptor->getRegion ();
-      layout = getFormatterLayout (descriptor, executionObject);
+      layout = getFormatterLayout ();
       if (region != NULL && layout != NULL)
         {
           fRegion = descriptor->getFormatterRegion ();
@@ -199,7 +120,7 @@ FormatterMultiDevice::hideObject (NclExecutionObject *executionObject)
   if (descriptor != NULL)
     {
       region = descriptor->getRegion ();
-      layout = getFormatterLayout (descriptor, executionObject);
+      layout = getFormatterLayout ();
       if (region != NULL && layout != NULL)
         {
               layout->hideObject (executionObject);

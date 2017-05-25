@@ -67,16 +67,7 @@ class FormatterMultiDevice
 {
 protected:
   pthread_mutex_t mutex;
-  int width;
-  int height;
   NclFormatterLayout *layoutManager;
-  string activeBaseUri;
-  NclFormatterLayout *mainLayout;
-  int xOffset;
-  int yOffset;
-  int defaultWidth;
-  int defaultHeight;
-  PresentationContext *presContext;
   void *focusManager;
 
 public:
@@ -84,13 +75,9 @@ public:
   virtual ~FormatterMultiDevice ();
   void setPresentationContex (PresentationContext *presContext);
   void setFocusManager (void *focusManager);
-  void *getMainLayout ();
-  void *getFormatterLayout ();
 
 public:
-  NclFormatterLayout *
-  getFormatterLayout (NclCascadingDescriptor *descriptor,
-                      NclExecutionObject *object);
+  NclFormatterLayout *getFormatterLayout ();
   SDLWindow* prepareFormatterRegion (NclExecutionObject *object);
   void showObject (NclExecutionObject *executionObject);
   void hideObject (NclExecutionObject *executionObject);

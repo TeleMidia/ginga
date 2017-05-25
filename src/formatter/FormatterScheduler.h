@@ -113,7 +113,7 @@ public:
 
   bool setKeyHandler (bool isHandler);
   FormatterFocusManager *getFocusManager ();
-  void *getFormatterLayout (void *descriptor, void *object);
+  void *getFormatterLayout ();
 
 private:
   bool isDocumentRunning (NclFormatterEvent *event);
