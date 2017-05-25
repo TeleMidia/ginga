@@ -91,15 +91,7 @@ public:
   bool getFreeze ();
   string getPlayerName ();
   LayoutRegion *getRegion ();
-  LayoutRegion *getRegion (void *formatterLayout, void *object);
   NclFormatterRegion *getFormatterRegion ();
-
-private:
-  void updateRegion (void *formatterLayout, const string &name,
-                     const string &value);
-
-  void createDummyRegion (void *formatterLayout, void *executionObject);
-  void createDummyRegion (void *formatterLayout);
 
 public:
   void setFormatterLayout (void *formatterLayout);
