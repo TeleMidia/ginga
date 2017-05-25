@@ -24,9 +24,6 @@ GINGA_NCL_BEGIN
 
 LayoutRegion::LayoutRegion (const string &id) : Entity (id)
 {
-  outputMapRegionId = "";
-  outputMapRegion = NULL;
-
   top = (double)NAN;
   topPercent = false;
 
@@ -46,8 +43,6 @@ LayoutRegion::LayoutRegion (const string &id) : Entity (id)
   heightPercent = false;
 
   zIndex = NULL;
-
-  devClass = -1;
 
   parent = NULL;
   pthread_mutex_init (&mutex, NULL);
@@ -1021,66 +1016,10 @@ LayoutRegion::getParent ()
 }
 
 void
-LayoutRegion::setDeviceClass (int deviceClass, const string &mapId)
-{
-  if (deviceClass != this->devClass && deviceClass >= 0)
-    {
-      this->devClass = deviceClass;
-    }
-
-  if (outputMapRegionId == "")
-    {
-      this->outputMapRegionId = mapId;
-    }
-}
-
-int
-LayoutRegion::getDeviceClass ()
-{
-  return devClass;
-}
-
-void
-LayoutRegion::setOutputMapRegion (LayoutRegion *outMapRegion)
-{
-  this->outputMapRegion = outMapRegion;
-}
-
-LayoutRegion *
-LayoutRegion::getOutputMapRegion ()
-{
-  return outputMapRegion;
-}
-
-string
-LayoutRegion::getOutputMapRegionId ()
-{
-  return outputMapRegionId;
-}
-
-void
 LayoutRegion::setParent (LayoutRegion *parent)
 {
-  int dClass;
-  string mapId;
-
   lock ();
   this->parent = parent;
-
-  if (parent != NULL)
-    {
-      if (parent->getOutputMapRegion () == NULL && outputMapRegion != NULL)
-        {
-          parent->setOutputMapRegion (outputMapRegion);
-        }
-
-      dClass = parent->getDeviceClass ();
-      mapId = parent->getOutputMapRegionId ();
-      if (dClass >= 0)
-        {
-          setDeviceClass (dClass, mapId);
-        }
-    }
   unlock ();
 }
 

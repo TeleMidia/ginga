@@ -25,9 +25,6 @@ GINGA_NCL_BEGIN
 class LayoutRegion : public Entity
 {
 private:
-  string outputMapRegionId;
-  LayoutRegion *outputMapRegion;
-
   double left;
   bool leftPercent;
   double top;
@@ -45,17 +42,11 @@ private:
   map<string, LayoutRegion *> regions;
   vector<LayoutRegion *> sorted;
   LayoutRegion *parent;
-  int devClass;
   pthread_mutex_t mutex;
 
 public:
   LayoutRegion (const string &id);
   virtual ~LayoutRegion ();
-  virtual void setOutputMapRegion (LayoutRegion *outMapRegion);
-  virtual LayoutRegion *getOutputMapRegion ();
-  virtual string getOutputMapRegionId ();
-  virtual void setDeviceClass (int deviceClass, const string &mapId);
-  virtual int getDeviceClass ();
   virtual void addRegion (LayoutRegion *region);
   virtual LayoutRegion *cloneRegion ();
 
