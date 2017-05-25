@@ -180,15 +180,4 @@ AdapterNCLPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
   return true;
 }
 
-void
-AdapterNCLPlayer::unlockCurrentEvent (NclFormatterEvent *event)
-{
-  if (event != _currentEvent)
-    {
-      clog << "AdapterNCLPlayer::unlockCurrentEvent ";
-      clog << "Handling events warning!" << endl;
-    }
-  unlockEvent ();
-}
-
 GINGA_FORMATTER_END

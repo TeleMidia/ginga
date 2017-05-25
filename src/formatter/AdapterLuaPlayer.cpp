@@ -81,21 +81,4 @@ AdapterLuaPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
   return true;
 }
 
-void
-AdapterLuaPlayer::unlockCurrentEvent (NclFormatterEvent *event)
-{
-  if (event != _currentEvent)
-    {
-      clog << "AdapterLuaPlayer::unlockCurrentEvent ";
-      clog << "Handling events Warning: currentEvent = '";
-      if (_currentEvent != NULL)
-        {
-          clog << _currentEvent->getId ();
-        }
-      clog << "' event requested to unlock = '" << event->getId ();
-      clog << "'" << endl;
-    }
-  unlockEvent ();
-}
-
 GINGA_FORMATTER_END

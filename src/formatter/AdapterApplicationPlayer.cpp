@@ -40,21 +40,14 @@ AdapterApplicationPlayer::AdapterApplicationPlayer (AdapterPlayerManager *mngr)
 
 AdapterApplicationPlayer::~AdapterApplicationPlayer ()
 {
-  vector<ApplicationStatus *>::iterator i;
-
-  clog << "AdapterApplicationPlayer::AdapterApplicationPlayer(" << this;
-  clog << ")" << endl;
-
   _isDeleting = true;
   _running = false;
   unlockConditionSatisfied ();
 
   lock ();
-  i = _notes.begin ();
-  while (i != _notes.end ())
+  for(auto status: _notes)
     {
-      delete (*i);
-      ++i;
+      delete status;
     }
   _notes.clear ();
   unlock ();
@@ -73,6 +66,7 @@ AdapterApplicationPlayer::hasPrepared ()
 {
   if (_object == NULL || _player == NULL)
     return false;
+
   return true;
 }
 
@@ -81,14 +75,11 @@ AdapterApplicationPlayer::prepare (NclExecutionObject *object,
                                    NclFormatterEvent *event)
 {
   Content *content;
-  NclCascadingDescriptor *descriptor;
   double explicitDur;
 
   if (object == NULL)
     {
-      clog << "AdapterApplicationPlayer::prepare(";
-      clog << this << ") Warning! Can't prepare NULL object" << endl;
-
+      g_warning ("Can't prepare a NULL object.");
       return false;
     }
 
@@ -102,22 +93,24 @@ AdapterApplicationPlayer::prepare (NclExecutionObject *object,
       this->_object = object;
       unlockObject ();
 
-      if (this->_object->getDataObject () != NULL
-          && this->_object->getDataObject ()->getDataEntity () != NULL)
-        {
-          content
-              = ((NodeEntity *)(object->getDataObject ()->getDataEntity ()))
-                    ->getContent ();
+      g_assert_nonnull (_object);
+      g_assert_nonnull (_object->getDataObject());
+      g_assert_nonnull (_object->getDataObject()->getDataEntity());
 
-          if (content != NULL && content->instanceOf ("ReferenceContent"))
-            {
-              this->_mrl = ((ReferenceContent *)content)
-                              ->getCompleteReferenceUrl ();
-            }
-          else
-            {
-              this->_mrl = "";
-            }
+      NodeEntity *nodeEntity
+          = dynamic_cast <NodeEntity *> (object->getDataObject()->getDataEntity());
+      g_assert_nonnull (nodeEntity);
+
+      content = nodeEntity->getContent ();
+      ReferenceContent *referContent
+          = dynamic_cast <ReferenceContent *> (content);
+      if (content && referContent)
+        {
+          this->_mrl = referContent->getCompleteReferenceUrl ();
+        }
+      else
+        {
+          this->_mrl = "";
         }
 
       if (_player != NULL)
@@ -134,25 +127,17 @@ AdapterApplicationPlayer::prepare (NclExecutionObject *object,
       explicitDur = prepareProperties (object);
     }
 
-  if (event->instanceOf ("NclPresentationEvent"))
+  NclPresentationEvent *presentationEvt =
+      dynamic_cast <NclPresentationEvent *>(event);
+  if (presentationEvt)
     {
-      double duration = ((NclPresentationEvent *)event)->getDuration ();
+      double duration = presentationEvt->getDuration ();
       bool infDur = (isnan (duration) || isinf (duration));
-
-      if (explicitDur < 0)
-        {
-          descriptor = object->getDescriptor ();
-          if (descriptor != NULL)
-            {
-              explicitDur = descriptor->getExplicitDuration ();
-            }
-        }
 
       if (!infDur && duration <= 0 && explicitDur <= 0)
         {
-          clog << "AdapterFormatterPlayer::prepare '";
-          clog << object->getId () << "' Warning! Can't prepare an ";
-          clog << "object with an event duration <= 0" << endl;
+          g_warning ("Can't prepare an object (%s) with an event duration <= 0",
+                     object->getId().c_str());
 
           return false;
         }
@@ -166,7 +151,7 @@ AdapterApplicationPlayer::prepare (NclExecutionObject *object,
           // the object. Which means: start an interface with
           // begin = 4s an explicit duration = 5s => new duration
           // will be 1s
-          ((NclPresentationEvent *)event)->setEnd (explicitDur);
+          presentationEvt->setEnd (explicitDur);
 
           /*
            * Adding event in object even though the it is added inside
@@ -175,15 +160,13 @@ AdapterApplicationPlayer::prepare (NclExecutionObject *object,
            */
           object->addEvent (event);
 
-          clog << "AdapterApplicationPlayer::prepare '";
-          clog << object->getId () << "' ";
-          clog << "with explicitDur = '";
-          clog << explicitDur << "' object duration was '";
-          clog << duration << "'. Updated info: event begin = '";
-          clog << ((NclPresentationEvent *)event)->getBegin () << "'";
-          clog << " event end = '";
-          clog << ((NclPresentationEvent *)event)->getEnd () << "'";
-          clog << endl;
+          g_debug ("Object '%s' with explicitDur = '%f' object duration was"
+                   "'%f'. Updated info: event begin=%f, event end=%f.",
+                   object->getId ().c_str(),
+                   explicitDur,
+                   duration,
+                   presentationEvt->getBegin(),
+                   presentationEvt->getEnd());
         }
     }
 
@@ -199,9 +182,6 @@ AdapterApplicationPlayer::prepare (NclExecutionObject *object,
     }
   else
     {
-      clog << "AdapterApplicationPlayer::prepare event '";
-      clog << event->getId () << "' is not sleeping!" << endl;
-
       return false;
     }
 }
@@ -210,54 +190,55 @@ void
 AdapterApplicationPlayer::prepare (NclFormatterEvent *event)
 {
   double duration;
-  IntervalAnchor *intervalAnchor;
 
-  if (_player != NULL && event->instanceOf ("NclAnchorEvent"))
+  NclAnchorEvent *anchorEvent = dynamic_cast <NclAnchorEvent *> (event);
+  if (anchorEvent)
     {
-      if ((((NclAnchorEvent *)event)->getAnchor ())
-              ->instanceOf ("LambdaAnchor"))
+      if (anchorEvent->getAnchor ()->instanceOf ("LambdaAnchor"))
         {
-          duration = ((NclPresentationEvent *)event)->getDuration ();
+          NclPresentationEvent *presentationEvt = dynamic_cast <NclPresentationEvent*> (event);
+          g_assert_nonnull (presentationEvt);
+          duration = presentationEvt->getDuration ();
 
           if (duration < IntervalAnchor::OBJECT_DURATION)
             {
-              _player->setScope ("", IPlayer::TYPE_PRESENTATION, 0.0,
-                                duration / 1000);
+              _player->setScope ("",
+                                 IPlayer::TYPE_PRESENTATION,
+                                 0.0,
+                                 duration / 1000);
             }
         }
-      else if (((((NclAnchorEvent *)event)->getAnchor ()))
-                   ->instanceOf ("IntervalAnchor"))
+      else if (anchorEvent->getAnchor ()->instanceOf ("IntervalAnchor"))
         {
-          intervalAnchor
-              = (IntervalAnchor *)(((NclAnchorEvent *)event)->getAnchor ());
+          IntervalAnchor *intervalAnchor
+              = dynamic_cast<IntervalAnchor *>(anchorEvent->getAnchor ());
+          g_assert_nonnull (intervalAnchor);
 
           _player->setScope (
-              ((NclAnchorEvent *)event)->getAnchor ()->getId (),
+              anchorEvent->getAnchor ()->getId (),
               IPlayer::TYPE_PRESENTATION,
-              (intervalAnchor->getBegin () / 1000),
-              (intervalAnchor->getEnd () / 1000));
+              (intervalAnchor->getBegin () / 1000.0),
+              (intervalAnchor->getEnd () / 1000.0));
         }
-      else if (((((NclAnchorEvent *)event)->getAnchor ()))
-                   ->instanceOf ("LabeledAnchor"))
+      else if (anchorEvent->getAnchor ()->instanceOf ("LabeledAnchor"))
         {
-          duration = ((NclPresentationEvent *)event)->getDuration ();
-
-          clog << "AdapterApplicationPlayer::prepare '" << _object->getId ();
-          clog << "' with dur = '" << duration << "'" << endl;
+          NclPresentationEvent *presentationEvt = dynamic_cast <NclPresentationEvent*> (event);
+          g_assert_nonnull (presentationEvt);
+          duration = presentationEvt->getDuration ();
+          LabeledAnchor *labeledAnchor = dynamic_cast <LabeledAnchor *> (anchorEvent->getAnchor());
+          g_assert_nonnull (labeledAnchor);
 
           if (isnan (duration))
             {
               _player->setScope (
-                  ((LabeledAnchor *)((NclAnchorEvent *)event)->getAnchor ())
-                      ->getLabel (),
+                  labeledAnchor->getLabel (),
                   IPlayer::TYPE_PRESENTATION);
             }
           else
             {
               _player->setScope (
-                  ((LabeledAnchor *)((NclAnchorEvent *)event)->getAnchor ())
-                      ->getLabel (),
-                  IPlayer::TYPE_PRESENTATION, 0.0, duration / 1000);
+                  labeledAnchor->getLabel (),
+                  IPlayer::TYPE_PRESENTATION, 0.0, duration / 1000.0);
             }
         }
     }
@@ -268,61 +249,30 @@ AdapterApplicationPlayer::prepare (NclFormatterEvent *event)
 }
 
 bool
-AdapterApplicationPlayer::start ()
-{
-  bool startSuccess = false;
-
-  clog << "AdapterApplicationPlayer::start ";
-  clog << endl;
-
-  if (_player != NULL)
-    {
-      startSuccess = _player->play ();
-    }
-  if (startSuccess)
-    {
-      if (_object != NULL && !_object->start ())
-        {
-          if (_player != NULL)
-            {
-              _player->stop ();
-            }
-          startSuccess = false;
-        }
-      else
-        {
-          checkAnchorMonitor ();
-        }
-
-      return startSuccess;
-    }
- 
-  return false;
-}
-
-bool
 AdapterApplicationPlayer::stop ()
 {
   map<string, NclFormatterEvent *>::iterator i;
   NclFormatterEvent *event;
   bool stopLambda = false;
 
-  if (_currentEvent != NULL && _currentEvent->instanceOf ("NclAnchorEvent")
-      && ((NclAnchorEvent *)_currentEvent)->getAnchor () != NULL
-      && ((NclAnchorEvent *)_currentEvent)
-             ->getAnchor ()
-             ->instanceOf ("LambdaAnchor"))
+  g_assert_nonnull (_player);
+  g_assert_nonnull (_object);
+
+  if (_currentEvent != NULL)
     {
-      stopLambda = true;
+      NclAnchorEvent *anchorEvt = dynamic_cast <NclAnchorEvent *>(_currentEvent);
+      if(anchorEvt && anchorEvt->getAnchor() != NULL && anchorEvt->getAnchor()->instanceOf("LambdaAnchor"))
+        {
+          stopLambda = true;
+        }
     }
 
   if (stopLambda)
     {
-      clog << "AdapterApplicationPlayer::stop ALL" << endl;
+      g_debug ("AdapterApplicationPlayer::stop ALL");
 
       lockPreparedEvents ();
-      if (_currentEvent->getCurrentState () != EventUtil::ST_SLEEPING
-          && _player != NULL)
+      if (_currentEvent->getCurrentState () != EventUtil::ST_SLEEPING)
         {
           _player->stop ();
           _player->notifyReferPlayers (EventUtil::TR_STOPS);
@@ -338,8 +288,10 @@ AdapterApplicationPlayer::stop ()
               _preparedEvents.erase (i);
               i = _preparedEvents.begin ();
 
-              clog << "AdapterApplicationPlayer::stop ALL forcing '";
-              clog << event->getId () << "' to stop" << endl;
+              g_debug ("AdapterApplicationPlayer::stop ALL forcing '%s' to "
+                       "stop",
+                       event->getId().c_str());
+
               event->stop ();
             }
           else
@@ -350,68 +302,27 @@ AdapterApplicationPlayer::stop ()
 
       unlockPreparedEvents ();
     }
-  else if (_player != NULL && !_player->isForcedNaturalEnd ())
+  else if (!_player->isForcedNaturalEnd ())
     {
-      clog << "AdapterApplicationPlayer::stop calling stop player";
-      clog << endl;
-
       _player->stop ();
       _player->notifyReferPlayers (EventUtil::TR_STOPS);
     }
 
-  if (_object != NULL && _object->stop ())
+  if (_object->stop ())
     {
-      clog << "AdapterApplicationPlayer::stop calling unprepare";
-      clog << endl;
-
       unprepare ();
       return true;
     }
 
   if (stopLambda && !_currentEvent->stop ())
     {
-      clog << "AdapterApplicationPlayer::stop '";
-      clog << _currentEvent->getId () << "' is already sleeping";
-      clog << endl;
+      g_warning ("AdapterApplicationPlayer::stop '%s' is already sleeping",
+                 _currentEvent->getId ().c_str());
     }
   else
     {
-      clog << "AdapterApplicationPlayer::stop(" << this;
-      clog << ") Can't stop an already stopped object = '";
-      clog << _object << "'. mrl = '" << _mrl << endl;
-    }
-  return false;
-}
-
-bool
-AdapterApplicationPlayer::pause ()
-{
-  if (_object != NULL && _object->pause ())
-    {
-      if (_player != NULL)
-        {
-          _player->pause ();
-          _player->notifyReferPlayers (EventUtil::TR_PAUSES);
-        }
-      return true;
-    }
-  else
-    {
-      return false;
-    }
-}
-
-bool
-AdapterApplicationPlayer::resume ()
-{
-  if (_object != NULL && _object->resume ())
-    {
-      if (_player != NULL)
-        {
-          _player->resume ();
-          _player->notifyReferPlayers (EventUtil::TR_RESUMES);
-        }
-      return true;
+      g_warning ("Can't stop an already stopped object. mrl = '%s' ",
+                 _mrl.c_str());
     }
   return false;
 }
@@ -423,18 +334,21 @@ AdapterApplicationPlayer::abort ()
   NclFormatterEvent *event;
   bool abortLambda = false;
 
-  if (_currentEvent != NULL && _currentEvent->instanceOf ("NclAnchorEvent")
-      && ((NclAnchorEvent *)_currentEvent)->getAnchor () != NULL
-      && ((NclAnchorEvent *)_currentEvent)
-             ->getAnchor ()
-             ->instanceOf ("LambdaAnchor"))
+  g_assert_nonnull (_player);
+  g_assert_nonnull (_object);
+
+  if (_currentEvent != NULL)
     {
-      abortLambda = true;
+      NclAnchorEvent *anchorEvt = dynamic_cast <NclAnchorEvent *>(_currentEvent);
+      if(anchorEvt && anchorEvt->getAnchor() != NULL && anchorEvt->getAnchor()->instanceOf("LambdaAnchor"))
+        {
+          abortLambda = true;
+        }
     }
 
   if (abortLambda)
     {
-      clog << "AdapterApplicationPlayer::abort ALL" << endl;
+      g_debug ("AdapterApplicationPlayer::abort ALL");
 
       _player->stop ();
       _player->notifyReferPlayers (EventUtil::TR_ABORTS);
@@ -450,8 +364,9 @@ AdapterApplicationPlayer::abort ()
               _preparedEvents.erase (i);
               i = _preparedEvents.begin ();
 
-              clog << "AdapterApplicationPlayer::abort ALL forcing '";
-              clog << event->getId () << "' to abort" << endl;
+              g_debug ("AdapterApplicationPlayer::abort ALL forcing '%s' to "
+                       "abort",
+                       event->getId().c_str());
               event->abort ();
             }
           else
@@ -462,35 +377,27 @@ AdapterApplicationPlayer::abort ()
 
       unlockPreparedEvents ();
     }
-  else if (_player != NULL && !_player->isForcedNaturalEnd ())
+  else if (!_player->isForcedNaturalEnd ())
     {
-      clog << "AdapterApplicationPlayer::abort calling stop player";
-      clog << endl;
-
       _player->stop ();
       _player->notifyReferPlayers (EventUtil::TR_ABORTS);
     }
 
-  if (_object != NULL && _object->abort ())
+  if (_object->abort ())
     {
-      clog << "AdapterApplicationPlayer::abort calling unprepare";
-      clog << endl;
-
       unprepare ();
       return true;
     }
 
   if (abortLambda && !_currentEvent->abort ())
     {
-      clog << "AdapterApplicationPlayer::abort '";
-      clog << _currentEvent->getId () << "' is already sleeping";
-      clog << endl;
+      g_debug ("Trying to abort '%s', but it is already sleeping",
+               _currentEvent->getId ().c_str());
     }
   else
     {
-      clog << "AdapterApplicationPlayer::abort(" << this;
-      clog << ") Can't abort an already sleeping object = '";
-      clog << _object << "'. mrl = '" << _mrl << endl;
+      g_debug ("an't abort an already sleeping object = '%p' mrl = '%s'",
+               _object, _mrl.c_str());
     }
   return false;
 }
@@ -499,9 +406,6 @@ bool
 AdapterApplicationPlayer::unprepare ()
 {
   map<string, NclFormatterEvent *>::iterator i;
-
-  clog << "AdapterApplicationPlayer::unprepare ";
-  clog << endl;
 
   if (_currentEvent == NULL)
     {
@@ -571,10 +475,8 @@ AdapterApplicationPlayer::naturalEnd ()
   clog << "AdapterApplicationPlayer::naturalEnd ";
   clog << endl;
 
-  if (_player != NULL)
-    {
-      _player->notifyReferPlayers (EventUtil::TR_STOPS);
-    }
+  g_assert_nonnull (_player);
+  _player->notifyReferPlayers (EventUtil::TR_STOPS);
 
   lockPreparedEvents ();
   i = _preparedEvents.begin ();
@@ -597,7 +499,8 @@ AdapterApplicationPlayer::naturalEnd ()
 
   unlockPreparedEvents ();
 
-  if (_object != NULL && _object->stop ())
+  g_assert_nonnull (_object);
+  if (_object->stop ())
     {
       clog << "AdapterApplicationPlayer::naturalEnd call unprepare";
       clog << endl;
@@ -758,21 +661,14 @@ AdapterApplicationPlayer::checkEvent (NclFormatterEvent *event, short type)
   bool isPresentation;
   bool isAttribution;
 
-  if (event != NULL)
-    {
-      isPresentation = event->instanceOf ("NclPresentationEvent")
-                       && type == IPlayer::TYPE_PRESENTATION;
+  g_assert_nonnull (event);
+  isPresentation = event->instanceOf ("NclPresentationEvent")
+      && type == IPlayer::TYPE_PRESENTATION;
 
-      isAttribution = event->instanceOf ("NclAttributionEvent")
-                      && type == IPlayer::TYPE_ATTRIBUTION;
+  isAttribution = event->instanceOf ("NclAttributionEvent")
+      && type == IPlayer::TYPE_ATTRIBUTION;
 
-      if (isPresentation || isAttribution)
-        {
-          return true;
-        }
-    }
-
-  return false;
+  return (isPresentation || isAttribution);
 }
 
 bool
@@ -1074,6 +970,22 @@ AdapterApplicationPlayer::resumeEvent (const string &anchorId, short type)
     }
 
   return false;
+}
+
+void
+AdapterApplicationPlayer::unlockCurrentEvent (NclFormatterEvent *event)
+{
+  if (event != _currentEvent)
+    {
+      clog << "AdapterNCLPlayer::unlockCurrentEvent ";
+      clog << "Handling events warning!";
+      if (_currentEvent != NULL)
+        {
+          clog << _currentEvent->getId ();
+        }
+      clog << endl;
+    }
+  unlockEvent ();
 }
 
 void

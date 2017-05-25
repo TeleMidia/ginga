@@ -56,6 +56,7 @@ AdapterFormatterPlayer::AdapterFormatterPlayer (AdapterPlayerManager *manager)
   this->_outTransDur = 0;
   this->_outTransTime = -1.0;
   this->_isLocked = false;
+
   Thread::mutexInit (&_objectMutex, false);
 
   Ginga_Display->registerKeyEventListener(this);
@@ -729,7 +730,7 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
 
   if (event->getCurrentState () == EventUtil::ST_SLEEPING)
     {
-      object->prepare ((NclPresentationEvent *)event, 0);
+      object->prepare (event, 0);
       prepare ();
       return true;
     }
@@ -744,7 +745,6 @@ AdapterFormatterPlayer::prepare ()
 {
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
-
 
   prepareScope ();
 
