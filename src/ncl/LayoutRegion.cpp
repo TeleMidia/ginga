@@ -24,7 +24,6 @@ GINGA_NCL_BEGIN
 
 LayoutRegion::LayoutRegion (const string &id) : Entity (id)
 {
-  title = "";
   outputMapRegionId = "";
   outputMapRegion = NULL;
 
@@ -147,8 +146,6 @@ LayoutRegion::cloneRegion ()
       cloneRegion->setParent (getParent ());
     }
 
-  cloneRegion->setTitle (getTitle ());
-
   if (!isnan (getBottom ()))
     {
       cloneRegion->setBottom (getBottom (), isBottomPercent ());
@@ -212,9 +209,6 @@ LayoutRegion::copyRegion ()
   LayoutRegion *cloneRegion;
 
   cloneRegion = new LayoutRegion (getId ());
-
-  cloneRegion->setTitle (getTitle ());
-
   if (!isnan (getBottom ()))
     {
       cloneRegion->setBottom (getBottomInPixels (), false);
@@ -438,12 +432,6 @@ LayoutRegion::getRegions ()
   return childRegions;
 }
 
-string
-LayoutRegion::getTitle ()
-{
-  return title;
-}
-
 double
 LayoutRegion::getTop ()
 {
@@ -516,27 +504,6 @@ bool
 LayoutRegion::isWidthPercent ()
 {
   return widthPercent;
-}
-
-string
-LayoutRegion::toString ()
-{
-  string str;
-  map<string, LayoutRegion *>::iterator i;
-  LayoutRegion *region;
-
-  str = "id: " + getId () + " title: " + title + '\n';
-  clog << "LayoutRegion::toString(" << this << ")" << endl;
-  lock ();
-  i = regions.begin ();
-  while (i != regions.end ())
-    {
-      region = i->second;
-      str = str + region->toString ();
-      ++i;
-    }
-  unlock ();
-  return str + '\n';
 }
 
 bool
@@ -1090,12 +1057,6 @@ LayoutRegion::validateTarget ()
       clog << "LayoutRegion::validateTarget(" << getId () << ") ";
       clog << " Warning! Can't find device layout" << endl;
     }
-}
-
-void
-LayoutRegion::setTitle (const string &newTitle)
-{
-  title = newTitle;
 }
 
 void

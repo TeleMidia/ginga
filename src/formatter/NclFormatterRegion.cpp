@@ -710,15 +710,6 @@ NclFormatterRegion::prepareOutputDisplay (double cvtIndex)
         }
       else
         {
-          if (ncmRegion->getTitle () == "")
-            {
-              title = objectId;
-            }
-          else
-            {
-              title = ncmRegion->getTitle ();
-            }
-
           left = ncmRegion->getAbsoluteLeft ();
           top = ncmRegion->getAbsoluteTop ();
           width = ncmRegion->getWidthInPixels ();
