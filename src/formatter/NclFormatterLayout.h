@@ -36,7 +36,6 @@ protected:
 private:
   map<string, NclFormatterLayout *> flChilds;
   LayoutRegion *deviceRegion;
-  vector<string> sortedRegions;
   map<string, double> regionZIndex;
   map<string, set<NclFormatterRegion *> *> regionMap;
   map<NclFormatterRegion *, NclExecutionObject *> objectMap;
@@ -50,9 +49,6 @@ public:
   NclFormatterLayout *getChild (const string &objectId);
   LayoutRegion *getNcmRegion (const string &regionId);
 
-public:
-  void getSortedIds (vector<SDLWindow*> *sortedIds);
-
 private:
   void createDeviceRegion (int w, int h);
 
@@ -64,8 +60,6 @@ public:
                         int zIndex, const string &plan);
 
 private:
-  void sortRegion (const string &regionId, double cvtIndex,
-                   const string &plan);
   double convertZIndex (int zIndex, const string &plan);
 
 public:
