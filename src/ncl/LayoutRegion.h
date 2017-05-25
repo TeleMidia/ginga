@@ -40,7 +40,6 @@ private:
 
   double *zIndex;
   map<string, LayoutRegion *> regions;
-  vector<LayoutRegion *> sorted;
   LayoutRegion *parent;
   pthread_mutex_t mutex;
 
@@ -49,8 +48,6 @@ public:
   virtual ~LayoutRegion ();
   virtual void addRegion (LayoutRegion *region);
   virtual LayoutRegion *cloneRegion ();
-
-  virtual LayoutRegion *copyRegion ();
 
   virtual double getBottom ();
   virtual double getHeight ();
@@ -86,9 +83,7 @@ public:
   virtual bool setRight (double newRight, bool isPercent);
   virtual bool setTop (double newTop, bool isPercent);
   virtual bool setWidth (double newWidth, bool isPercent);
-
   virtual void setZIndex (int newZIndex);
-  virtual vector<LayoutRegion *> *getRegionsSortedByZIndex ();
 
   virtual LayoutRegion *getParent ();
   virtual void setParent (LayoutRegion *parent);
@@ -109,8 +104,6 @@ public:
   virtual int getAbsoluteTop ();
 
 private:
-  double getPercentValue (const string &value);
-  bool isPercentValue (const string &value);
   void lock ();
   void unlock ();
 };
