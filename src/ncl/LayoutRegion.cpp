@@ -380,31 +380,6 @@ LayoutRegion::getRegionRecursively (const string &id)
   return NULL;
 }
 
-void
-LayoutRegion::printRegionIdsRecursively ()
-{
-  map<string, LayoutRegion *>::iterator i;
-
-  cout << "Region '" << getId () << "' has: ";
-
-  i = regions.begin ();
-  while (i != regions.end ())
-    {
-      cout << "'" << i->first << "' ";
-
-      ++i;
-    }
-
-  cout << endl;
-
-  i = regions.begin ();
-  while (i != regions.end ())
-    {
-      i->second->printRegionIdsRecursively ();
-      ++i;
-    }
-}
-
 vector<LayoutRegion *> *
 LayoutRegion::getRegions ()
 {
@@ -1048,23 +1023,14 @@ LayoutRegion::getParent ()
 void
 LayoutRegion::setDeviceClass (int deviceClass, const string &mapId)
 {
-  bool changed = false;
-
   if (deviceClass != this->devClass && deviceClass >= 0)
     {
       this->devClass = deviceClass;
-      changed = true;
     }
 
   if (outputMapRegionId == "")
     {
       this->outputMapRegionId = mapId;
-      changed = true;
-    }
-
-  if (changed)
-    {
-      refreshDeviceClassRegions ();
     }
 }
 
@@ -1116,22 +1082,6 @@ LayoutRegion::setParent (LayoutRegion *parent)
         }
     }
   unlock ();
-}
-
-void
-LayoutRegion::refreshDeviceClassRegions ()
-{
-  map<string, LayoutRegion *>::iterator i;
-
-  i = regions.begin ();
-  while (i != regions.end ())
-    {
-      if (i->second != this)
-        {
-          i->second->setDeviceClass (devClass, outputMapRegionId);
-        }
-      ++i;
-    }
 }
 
 int

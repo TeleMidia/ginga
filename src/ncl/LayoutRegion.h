@@ -69,7 +69,6 @@ public:
   virtual double getRight ();
   virtual LayoutRegion *getRegion (const string &id);
   virtual LayoutRegion *getRegionRecursively (const string &id);
-  void printRegionIdsRecursively ();
   virtual vector<LayoutRegion *> *getRegions ();
   virtual double getTop ();
   virtual double getWidth ();
@@ -114,7 +113,6 @@ public:
 
   virtual LayoutRegion *getParent ();
   virtual void setParent (LayoutRegion *parent);
-  virtual void refreshDeviceClassRegions ();
   virtual int getTopInPixels ();
   virtual int getBottomInPixels ();
   virtual int getRightInPixels ();
