@@ -154,22 +154,6 @@ NclDocument::clearDocument ()
         }
       body = NULL;
     }
-
-  k = metainformationList.begin ();
-  while (k != metainformationList.end ())
-    {
-      delete *k;
-      ++k;
-    }
-  metainformationList.clear ();
-
-  l = metadataList.begin ();
-  while (l != metadataList.end ())
-    {
-      delete *l;
-      ++l;
-    }
-  metadataList.clear ();
 }
 
 Connector *
@@ -650,34 +634,6 @@ NclDocument::setRuleBase (RuleBase *ruleBase)
 }
 
 void
-NclDocument::addMetainformation (Meta *meta)
-{
-  g_assert (meta != NULL);
-
-  metainformationList.push_back (meta);
-}
-
-void
-NclDocument::addMetadata (Metadata *metadata)
-{
-  g_assert (metadata != NULL);
-
-  metadataList.push_back (metadata);
-}
-
-vector<Meta *> *
-NclDocument::getMetainformation ()
-{
-  return &metainformationList;
-}
-
-vector<Metadata *> *
-NclDocument::getMetadata ()
-{
-  return &metadataList;
-}
-
-void
 NclDocument::removeRegionBase (const string &regionBaseId)
 {
   map<int, RegionBase *>::iterator i;
@@ -692,64 +648,6 @@ NclDocument::removeRegionBase (const string &regionBaseId)
         }
       ++i;
     }
-}
-
-void
-NclDocument::removeMetainformation (Meta *meta)
-{
-  vector<Meta *>::iterator i;
-
-  g_assert (meta != NULL);
-
-  i = metainformationList.begin ();
-  while (i != metainformationList.end ())
-    {
-      if (*i == meta)
-        {
-          metainformationList.erase (i);
-          break;
-        }
-
-      if (i != metainformationList.end ())
-        {
-          ++i;
-        }
-    }
-}
-
-void
-NclDocument::removeMetadata (Metadata *metadata)
-{
-  vector<Metadata *>::iterator i;
-
-  g_assert (metadata != NULL);
-
-  i = metadataList.begin ();
-  while (i != metadataList.end ())
-    {
-      if (*i == metadata)
-        {
-          metadataList.erase (i);
-          break;
-        }
-
-      if (i != metadataList.end ())
-        {
-          ++i;
-        }
-    }
-}
-
-void
-NclDocument::removeAllMetainformation ()
-{
-  metainformationList.clear ();
-}
-
-void
-NclDocument::removeAllMetadata ()
-{
-  metadataList.clear ();
 }
 
 GINGA_NCL_END

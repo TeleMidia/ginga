@@ -35,7 +35,6 @@ NclFormatterLayout::~NclFormatterLayout ()
   regionMap.clear ();
   regionZIndex.clear ();
   objectMap.clear ();
-  flChilds.clear ();
   unlock ();
 }
 
@@ -43,21 +42,6 @@ LayoutRegion *
 NclFormatterLayout::getDeviceRegion ()
 {
   return this->deviceRegion;
-}
-
-LayoutRegion *
-NclFormatterLayout::getNcmRegion (const string &regionId)
-{
-  if (deviceRegion != NULL)
-    {
-      return deviceRegion->getRegionRecursively (regionId);
-    }
-  else
-    {
-      clog << "NclFormatterLayout::getNcmRegion device region is NULL";
-      clog << endl;
-    }
-  return NULL;
 }
 
 void

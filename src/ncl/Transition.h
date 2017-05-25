@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef TRANSITION_H_
 #define TRANSITION_H_
 
-//using namespace ginga::util;
-
 #include "Entity.h"
 
 GINGA_NCL_BEGIN

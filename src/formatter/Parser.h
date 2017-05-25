@@ -117,11 +117,6 @@ private:
   void parseImportedDocumentBase (DOMElement *importedDocBase_element);
   void addImportNCLToImportedDocumentBase (DOMElement *childObject);
 
-// META INFORMATION
-private:
-  Meta *parseMeta (DOMElement *parentElement);
-  Metadata *parseMetadata (DOMElement *parentElement);
-
 // TRANSITION
 private:
   TransitionBase *parseTransitionBase (DOMElement *transitionBase_element);
