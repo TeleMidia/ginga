@@ -36,7 +36,7 @@ AdapterLuaPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
   string interfaceId;
 
   lockEvent ();
-  if (preparedEvents.count (event->getId ()) != 0
+  if (_preparedEvents.count (event->getId ()) != 0
       && !event->instanceOf ("NclSelectionEvent")
       && event->instanceOf ("NclAnchorEvent"))
     {
@@ -55,9 +55,9 @@ AdapterLuaPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
           interfaceId = "";
         }
 
-      currentEvent = event;
+      _currentEvent = event;
       ((NclApplicationExecutionObject *)_object)
-          ->setCurrentEvent (currentEvent);
+          ->setCurrentEvent (_currentEvent);
 
       _player->setCurrentScope (interfaceId);
     }
@@ -69,9 +69,9 @@ AdapterLuaPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
 
       _player->setScope (interfaceId, IPlayer::TYPE_ATTRIBUTION);
 
-      currentEvent = event;
+      _currentEvent = event;
       ((NclApplicationExecutionObject *)_object)
-          ->setCurrentEvent (currentEvent);
+          ->setCurrentEvent (_currentEvent);
 
       _player->setCurrentScope (interfaceId);
     }
@@ -90,13 +90,13 @@ AdapterLuaPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
 void
 AdapterLuaPlayer::unlockCurrentEvent (NclFormatterEvent *event)
 {
-  if (event != currentEvent)
+  if (event != _currentEvent)
     {
       clog << "AdapterLuaPlayer::unlockCurrentEvent ";
       clog << "Handling events Warning: currentEvent = '";
-      if (currentEvent != NULL)
+      if (_currentEvent != NULL)
         {
-          clog << currentEvent->getId ();
+          clog << _currentEvent->getId ();
         }
       clog << "' event requested to unlock = '" << event->getId ();
       clog << "'" << endl;
