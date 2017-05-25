@@ -233,69 +233,6 @@ LayoutRegion::copyRegion ()
   return cloneRegion;
 }
 
-int
-LayoutRegion::compareWidthSize (const string &w)
-{
-  int oldW;
-  int newW;
-
-  oldW = getWidthInPixels ();
-  if (xstrispercent (w))
-    {
-      newW = (int)((getParent ()->getWidthInPixels ()
-                    * getPercentValue (w))
-                   / 100);
-    }
-  else
-    {
-      newW = xstrtoint (w.c_str (), 10);
-    }
-
-  if (newW == oldW)
-    {
-      return 0;
-    }
-  else if (newW > oldW)
-    {
-      return 1;
-    }
-  else
-    {
-      return -1;
-    }
-}
-
-int
-LayoutRegion::compareHeightSize (const string &h)
-{
-  int oldH;
-  int newH;
-
-  oldH = getHeightInPixels ();
-  if (xstrispercent (h))
-    {
-      newH = (int)((getParent ()->getHeightInPixels ()
-                    * getPercentValue (h))
-                   / 100);
-    }
-  else
-    {
-      newH = xstrtoint (h.c_str (), 10);
-    }
-  if (newH == oldH)
-    {
-      return 0;
-    }
-  else if (newH > oldH)
-    {
-      return 1;
-    }
-  else
-    {
-      return -1;
-    }
-}
-
 double
 LayoutRegion::getBottom ()
 {
@@ -528,28 +465,6 @@ LayoutRegion::getDeviceLayout ()
   return device;
 }
 
-double
-LayoutRegion::getDeviceWidthInPixels ()
-{
-  LayoutRegion *device = getDeviceLayout ();
-
-  clog << "LayoutRegion::getDeviceWidthInPixels: '";
-  clog << device->getWidthInPixels () << "'" << endl;
-
-  return device->getWidthInPixels ();
-}
-
-double
-LayoutRegion::getDeviceHeightInPixels ()
-{
-  LayoutRegion *device = getDeviceLayout ();
-
-  clog << "LayoutRegion::getDeviceHeightInPixels: '";
-  clog << device->getHeightInPixels () << "'" << endl;
-
-  return device->getHeightInPixels ();
-}
-
 bool
 LayoutRegion::setBottom (double newBottom, bool isPercent)
 {
@@ -584,45 +499,6 @@ LayoutRegion::setBottom (double newBottom, bool isPercent)
   return true;
 }
 
-bool
-LayoutRegion::setTargetBottom (double newBottom, bool isPercent)
-{
-  double tBottom;
-  double deviceHeight;
-  double currentHeight;
-
-  if (newBottom < 0)
-    {
-      clog << "LayoutRegion::setTargetBottom Warning! Trying ";
-      clog << "to set an invalid bottom value: " << newBottom << endl;
-      return false;
-    }
-
-  deviceHeight = getDeviceHeightInPixels ();
-  if (isPercent)
-    {
-      // tBottom = (newBottom * getHeightInPixels()) / 100;
-      tBottom = (newBottom * deviceHeight) / 100;
-    }
-  else
-    {
-      tBottom = newBottom;
-    }
-
-  currentHeight = getHeightInPixels ();
-
-  if (tBottom + currentHeight > deviceHeight)
-    {
-      tBottom = deviceHeight - currentHeight;
-    }
-
-  bottom = tBottom;
-  bottomPercent = false;
-
-  setTargetTop (deviceHeight - (tBottom + currentHeight), false);
-
-  return true;
-}
 
 bool
 LayoutRegion::setHeight (double newHeight, bool isPercent)
@@ -657,34 +533,6 @@ LayoutRegion::setHeight (double newHeight, bool isPercent)
           return false;
         }
     }
-
-  return true;
-}
-
-bool
-LayoutRegion::setTargetHeight (double newHeight, bool isPercent)
-{
-  double tHeight;
-
-  if (newHeight < 0)
-    {
-      clog << "LayoutRegion::setTargetHeight Warning! Trying ";
-      clog << "to set an invalid height value: " << newHeight << endl;
-      return false;
-    }
-
-  if (isPercent)
-    {
-      // tHeight = (newHeight * getHeightInPixels()) / 100;
-      tHeight = (newHeight * getDeviceHeightInPixels ()) / 100;
-    }
-  else
-    {
-      tHeight = newHeight;
-    }
-
-  height = tHeight;
-  heightPercent = false;
 
   return true;
 }
@@ -729,34 +577,6 @@ LayoutRegion::setLeft (double newLeft, bool isPercent)
 }
 
 bool
-LayoutRegion::setTargetLeft (double newLeft, bool isPercent)
-{
-  double tLeft;
-
-  if (newLeft < 0)
-    {
-      clog << "LayoutRegion::setTargetLeft Warning! Trying ";
-      clog << "to set an invalid left value: " << newLeft << endl;
-      return false;
-    }
-
-  if (isPercent)
-    {
-      // tLeft = (newLeft * getWidthInPixels()) / 100;
-      tLeft = (newLeft * getDeviceWidthInPixels ()) / 100;
-    }
-  else
-    {
-      tLeft = newLeft;
-    }
-
-  left = tLeft;
-  leftPercent = false;
-
-  return true;
-}
-
-bool
 LayoutRegion::setRight (double newRight, bool isPercent)
 {
   if (newRight < 0 || isnan (newRight))
@@ -787,46 +607,6 @@ LayoutRegion::setRight (double newRight, bool isPercent)
           return false;
         }
     }
-
-  return true;
-}
-
-bool
-LayoutRegion::setTargetRight (double newRight, bool isPercent)
-{
-  double tRight;
-  double deviceWidth;
-  double currentWidth;
-
-  if (newRight < 0)
-    {
-      clog << "LayoutRegion::setTargetRight Warning! Trying ";
-      clog << "to set an invalid right value: " << newRight << endl;
-      return false;
-    }
-
-  deviceWidth = getDeviceWidthInPixels ();
-  if (isPercent)
-    {
-      // tRight = (newRight * getWidthInPixels()) / 100;
-      tRight = (newRight * deviceWidth) / 100;
-    }
-  else
-    {
-      tRight = newRight;
-    }
-
-  currentWidth = getWidthInPixels ();
-
-  if (tRight + currentWidth > deviceWidth)
-    {
-      tRight = deviceWidth - currentWidth;
-    }
-
-  right = tRight;
-  rightPercent = false;
-
-  setTargetLeft (deviceWidth - (tRight + currentWidth), false);
 
   return true;
 }
@@ -869,34 +649,6 @@ LayoutRegion::setTop (double newTop, bool isPercent)
 }
 
 bool
-LayoutRegion::setTargetTop (double newTop, bool isPercent)
-{
-  double tTop;
-
-  if (newTop < 0 || isnan (newTop))
-    {
-      clog << "LayoutRegion::setTop Warning! Trying ";
-      clog << "to set an invalid top value: " << newTop << endl;
-      return false;
-    }
-
-  if (isPercent)
-    {
-      // tTop = (newTop * getHeightInPixels()) / 100;
-      tTop = (newTop * getDeviceHeightInPixels ()) / 100;
-    }
-  else
-    {
-      tTop = newTop;
-    }
-
-  top = tTop;
-  topPercent = false;
-
-  return true;
-}
-
-bool
 LayoutRegion::setWidth (double newWidth, bool isPercent)
 {
   if (newWidth < 0 || isnan (newWidth))
@@ -933,34 +685,6 @@ LayoutRegion::setWidth (double newWidth, bool isPercent)
   return true;
 }
 
-bool
-LayoutRegion::setTargetWidth (double newWidth, bool isPercent)
-{
-  double tWidth;
-
-  if (newWidth <= 0)
-    {
-      clog << "LayoutRegion::setTargetWidth Warning! Trying ";
-      clog << "to set an invalid width value: " << newWidth;
-      clog << endl;
-      return false;
-    }
-
-  if (isPercent)
-    {
-      // tWidth = (newWidth * getWidthInPixels()) / 100;
-      tWidth = (newWidth * getDeviceWidthInPixels ()) / 100;
-    }
-  else
-    {
-      tWidth = newWidth;
-    }
-
-  width = tWidth;
-  widthPercent = false;
-
-  return true;
-}
 
 void
 LayoutRegion::setZIndex (int newZIndex)
@@ -980,33 +704,6 @@ LayoutRegion::getRegionsSortedByZIndex ()
   sortedRegions = new vector<LayoutRegion *> (sorted);
   unlock ();
   return sortedRegions;
-}
-
-vector<LayoutRegion *> *
-LayoutRegion::getRegionsOverRegion (LayoutRegion *region)
-{
-  vector<LayoutRegion *> *allRegions;
-  vector<LayoutRegion *>::iterator i;
-  vector<LayoutRegion *> *frontRegions;
-  LayoutRegion *childRegion;
-
-  frontRegions = new vector<LayoutRegion *>;
-  allRegions = getRegionsSortedByZIndex ();
-
-  i = allRegions->begin ();
-  while (i != allRegions->end ())
-    {
-      childRegion = *i;
-      if (childRegion->getZIndexValue () > region->getZIndexValue ())
-        {
-          frontRegions->insert (frontRegions->begin (), childRegion);
-        }
-      ++i;
-    }
-  delete allRegions;
-  allRegions = NULL;
-
-  return frontRegions;
 }
 
 LayoutRegion *
