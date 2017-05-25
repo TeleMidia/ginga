@@ -26,18 +26,16 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-conversion)
 
 GINGA_FORMATTER_BEGIN
 
-AdapterApplicationPlayer::AdapterApplicationPlayer ()
-    : AdapterFormatterPlayer ()
+AdapterApplicationPlayer::AdapterApplicationPlayer (AdapterPlayerManager *mngr)
+    : AdapterFormatterPlayer (mngr)
 {
   Thread::mutexInit (&_eventMutex, false);
   Thread::mutexInit (&_eventsMutex, false);
 
   _currentEvent = NULL;
   _running = false;
-  isDeleting = false;
+  _isDeleting = false;
 
-  clog << "AdapterApplicationPlayer::AdapterApplicationPlayer(" << this;
-  clog << ")" << endl;
 }
 
 AdapterApplicationPlayer::~AdapterApplicationPlayer ()
@@ -47,7 +45,7 @@ AdapterApplicationPlayer::~AdapterApplicationPlayer ()
   clog << "AdapterApplicationPlayer::AdapterApplicationPlayer(" << this;
   clog << ")" << endl;
 
-  isDeleting = true;
+  _isDeleting = true;
   _running = false;
   unlockConditionSatisfied ();
 
@@ -748,7 +746,7 @@ AdapterApplicationPlayer::run ()
       code = -1;
 
       lock ();
-      if (_notes.empty () && _running && !isDeleting)
+      if (_notes.empty () && _running && !_isDeleting)
         {
           unlock ();
           waitForUnlockCondition ();

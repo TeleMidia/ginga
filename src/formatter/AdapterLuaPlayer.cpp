@@ -21,7 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-AdapterLuaPlayer::AdapterLuaPlayer () : AdapterApplicationPlayer () {}
+AdapterLuaPlayer::AdapterLuaPlayer (AdapterPlayerManager *mngr)
+  : AdapterApplicationPlayer (mngr) {}
 
 void
 AdapterLuaPlayer::createPlayer ()

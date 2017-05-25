@@ -30,7 +30,8 @@ using namespace ::ginga::system;
 
 GINGA_PLAYER_BEGIN
 
-enum PLAYER_STATUS{
+enum PLAYER_STATUS
+{
   SLEEPING,
   OCCURRING,
   PAUSED

@@ -40,7 +40,7 @@ class AdapterApplicationPlayer :
     public Thread
 {
 public:
-  AdapterApplicationPlayer ();
+  explicit AdapterApplicationPlayer (AdapterPlayerManager *manager);
   virtual ~AdapterApplicationPlayer ();
 
   virtual bool start ();

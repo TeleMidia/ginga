@@ -43,18 +43,13 @@ public:
 
   AdapterFormatterPlayer *getObjectPlayer (NclExecutionObject *execObj);
   NclPlayerData *getNclPlayerData ();
-  void setVisible (const string &objId,
-                   const string &visible,
-                   NclAttributionEvent *event);
 
-  bool hasPlayer (AdapterFormatterPlayer *player);
   bool removePlayer (NclExecutionObject *object);
   static bool isEmbeddedApp (NodeEntity *dataObject);
 
 private:
   map<string, AdapterFormatterPlayer *> _objectPlayers;
   map<string, AdapterFormatterPlayer *> _deletePlayers;
-  map<AdapterFormatterPlayer *, string> _playerNames;
   NclPlayerData *_nclPlayerData;
 
   AdapterFormatterPlayer *initializePlayer (NclExecutionObject *object);

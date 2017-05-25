@@ -38,7 +38,7 @@ NclLinkCompoundAction::~NclLinkCompoundAction ()
   vector<NclLinkAction *>::iterator i;
   NclLinkAction *action;
 
-  isDeleting = true;
+  _isDeleting = true;
 
   // clog << "NclLinkCompoundAction::~NclLinkCompoundAction" << endl;
   Thread::mutexLock (&mutexActions);
