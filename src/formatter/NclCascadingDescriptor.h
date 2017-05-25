@@ -81,7 +81,6 @@ protected:
   void initializeCascadingDescriptor ();
 
 public:
-  bool instanceOf (const string &s);
   string getId ();
   bool isLastDescriptor (GenericDescriptor *descriptor);
   void cascade (GenericDescriptor *preferredDescriptor);

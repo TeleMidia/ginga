@@ -147,15 +147,6 @@ NclCascadingDescriptor::initializeCascadingDescriptor ()
   outputTransitions = new vector<Transition *>;
 }
 
-bool
-NclCascadingDescriptor::instanceOf (const string &s)
-{
-  if (typeSet.empty ())
-    return false;
-  else
-    return (typeSet.find (s) != typeSet.end ());
-}
-
 string
 NclCascadingDescriptor::getId ()
 {
