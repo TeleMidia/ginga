@@ -60,7 +60,7 @@ AdapterApplicationPlayer::hasPrepared ()
 
 bool
 AdapterApplicationPlayer::prepare (NclExecutionObject *object,
-                                   NclFormatterEvent *event)
+                                   NclPresentationEvent *event)
 {
   Content *content;
   double explicitDur;
@@ -509,7 +509,7 @@ AdapterApplicationPlayer::startEvent (const string &anchorId, short type,
   event = _object->getEventFromAnchorId (anchorId);
   if (checkEvent (event, type))
     {
-      if (prepare (_object, event))
+      if (prepare (_object, (NclPresentationEvent *) event))
         {
           if (setAndLockCurrentEvent (event))
             {
