@@ -24,13 +24,6 @@ Parameter::Parameter (const string &n, const string &v)
 {
   name = n;
   value = v;
-  typeSet.insert ("Parameter");
-}
-
-bool
-Parameter::instanceOf (const string &s)
-{
-  return typeSet.count (s) == 1;
 }
 
 string

@@ -85,7 +85,6 @@ protected:
   void unlockPreparedEvents ();
 
 private:
-  IPlayerListener *_editingCommandListener;
   pthread_mutex_t _eventMutex;
   pthread_mutex_t _eventsMutex;
   bool _running;
