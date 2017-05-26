@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _FORMATTERSCHEDULER_H_
-#define _FORMATTERSCHEDULER_H_
+#ifndef FORMATTER_SCHEDULER_H
+#define FORMATTER_SCHEDULER_H
 
 #include "NclExecutionObject.h"
 #include "NclNodeNesting.h"
@@ -67,8 +67,6 @@ using namespace ::ginga::ncl;
 
 #include "FormatterMultiDevice.h"
 
-#include "IFormatterSchedulerListener.h"
-
 GINGA_FORMATTER_BEGIN
 
 class FormatterScheduler : public INclLinkActionListener,
@@ -82,7 +80,6 @@ private:
   FormatterFocusManager *focusManager;
   void *compiler; // FormatterConverter*
 
-  vector<IFormatterSchedulerListener *> schedulerListeners;
   vector<NclFormatterEvent *> documentEvents;
   map<NclFormatterEvent *, bool> documentStatus;
   set<void *> actions;
@@ -92,7 +89,6 @@ private:
   set<string> typeSet;
   pthread_mutex_t mutexD;
   pthread_mutex_t mutexActions;
-
   set<NclFormatterEvent *> listening;
   pthread_mutex_t lMutex;
 
@@ -165,18 +161,10 @@ private:
 
 public:
   void stopDocument (NclFormatterEvent *documentEvent);
-  void pauseDocument (NclFormatterEvent *documentEvent);
-  void resumeDocument (NclFormatterEvent *documentEvent);
-  void stopAllDocuments ();
-  void pauseAllDocuments ();
-  void resumeAllDocuments ();
   void eventStateChanged (void *someEvent, short transition,
                           short previousState);
-
-  void addSchedulerListener (IFormatterSchedulerListener *listener);
-  void removeSchedulerListener (IFormatterSchedulerListener *listener);
 };
 
 GINGA_FORMATTER_END
 
-#endif //_FORMATTERSCHEDULER_H_
+#endif // FORMATTER_SCHEDULER_H
