@@ -326,7 +326,7 @@ private:
    *
    * @param job The job data.
    * @param renderer The renderer.
-   * @param seft The object instance.
+   * @param self The object instance.
    * @return **false** if the job could be removed from the execution list and
    *         **true** otherwise.
    * @see displayJobCallback() and play().

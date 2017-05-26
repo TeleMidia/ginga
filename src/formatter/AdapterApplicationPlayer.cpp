@@ -711,9 +711,9 @@ AdapterApplicationPlayer::startEvent (const string &anchorId, short type,
         }
       else
         {
-          g_warning ("Can't prepare '%s' form anchor id = '5s'",
+          g_warning ("Can't prepare '%s' form anchor id = '%s'",
                      event->getId().c_str(),
-                     anchorId.c_str());
+                     anchorId.c_str ());
         }
     }
   else

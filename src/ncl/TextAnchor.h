@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define TEXTANCHOR_H_
 
 #include "Entity.h"
-
 #include "Anchor.h"
 
 GINGA_NCL_BEGIN
@@ -27,25 +26,10 @@ GINGA_NCL_BEGIN
 class TextAnchor : public Anchor
 {
 protected:
-  /**
-  * The text of this region.
-  */
   string text;
-
-  /**
-  * The position of the text of this region.
-  */
   long position;
 
 public:
-  /**
-  * Class constructor.
-  *
-  * @param t region text.
-  * @param p region position.
-  * @param s true if the text of this region is case sensitive
-  * and false otherwise.
-  */
   TextAnchor (const string &id, const string &t, long p);
   long getPosition ();
   string getText ();
