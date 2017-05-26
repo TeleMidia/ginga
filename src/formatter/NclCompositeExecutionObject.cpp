@@ -46,11 +46,6 @@ NclCompositeExecutionObject::~NclCompositeExecutionObject ()
   removeInstance (this);
   deleting = true;
 
-  if (running)
-    {
-      Thread::mSleep (mSleepTime);
-    }
-
   destroyEvents ();
 
   pthread_mutex_lock (&stlMutex);
