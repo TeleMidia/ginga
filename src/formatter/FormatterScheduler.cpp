@@ -35,10 +35,9 @@ FormatterScheduler::FormatterScheduler ()
 
   this->presContext = new PresentationContext ();
   this->ruleAdapter = new RuleAdapter (presContext);
-  this->compiler = new FormatterConverter (ruleAdapter);
-  this->compiler->setLinkActionListener (this);
-  this->compiler->setScheduler (this);
   this->layout = new NclFormatterLayout (w, h);
+  this->compiler = new FormatterConverter (this->layout, this->ruleAdapter);
+  this->compiler->setLinkActionListener (this);
   this->playerManager = new AdapterPlayerManager ();
   this->focusManager = new FormatterFocusManager
     (this->playerManager, this->presContext, this,

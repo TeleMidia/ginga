@@ -78,10 +78,12 @@ using namespace ::ginga::ncl;
 #include "RuleAdapter.h"
 
 #include "AdapterPlayerManager.h"
-#include "FormatterScheduler.h"
 
 GINGA_FORMATTER_BEGIN
+
+class FormatterLinkConverter;
 class FormatterScheduler;
+
 class FormatterConverter : public INclEventListener
 {
 private:
@@ -89,8 +91,8 @@ private:
   map<string, NclExecutionObject *> executionObjects;
   set<NclFormatterEvent *> listening;
   set<NclExecutionObject *> settingObjects;
-  void *linkCompiler; // FormatterLinkConverter*
-  FormatterScheduler *scheduler;
+  FormatterLinkConverter *linkCompiler;
+  NclFormatterLayout *layout;
   INclLinkActionListener *actionListener;
   RuleAdapter *ruleAdapter;
   pthread_mutex_t objectsMutex;
@@ -98,7 +100,7 @@ private:
   bool handling;
 
 public:
-  FormatterConverter (RuleAdapter *ruleAdapter);
+  FormatterConverter (NclFormatterLayout *, RuleAdapter *);
   virtual ~FormatterConverter ();
 
   void executionObjectReleased (const string &objectId);
@@ -106,7 +108,6 @@ public:
   void setHandlingStatus (bool hanling);
   NclExecutionObject *getObjectFromNodeId (const string &id);
 
-  void setScheduler (void *scheduler);
   void setLinkActionListener (INclLinkActionListener *actionListener);
 
   NclCompositeExecutionObject *
