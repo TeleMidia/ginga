@@ -28,7 +28,7 @@ using namespace ::ginga::system;
 
 GINGA_FORMATTER_BEGIN
 
-class NclLinkAction : public Thread
+class NclLinkAction
 {
 protected:
   set<string> typeSet;

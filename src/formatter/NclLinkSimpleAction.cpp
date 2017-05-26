@@ -23,7 +23,7 @@ GINGA_FORMATTER_BEGIN
 
 NclLinkSimpleAction::NclLinkSimpleAction (NclFormatterEvent *event,
                                           SimpleActionType type)
-    : NclLinkAction ()
+    : NclLinkAction (0.)
 {
   this->event = event;
   this->actionType = type;

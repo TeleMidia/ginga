@@ -22,17 +22,13 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_FORMATTER_BEGIN
 
-NclLinkAction::NclLinkAction () : Thread () { initLinkAction (0.0); }
-
-NclLinkAction::NclLinkAction (double delay) : Thread ()
+NclLinkAction::NclLinkAction (double delay)
 {
   initLinkAction (delay);
 }
 
 NclLinkAction::~NclLinkAction ()
 {
-  _isDeleting = true;
-
   Thread::mutexLock (&plMutex);
   if (progressionListeners != NULL)
     {
@@ -120,7 +116,7 @@ NclLinkAction::addActionProgressionListener (
 
   if (tryLock ())
     {
-      if (progressionListeners != NULL && !_isDeleting)
+      if (progressionListeners != NULL)
         {
           i = progressionListeners->begin ();
           while (i != progressionListeners->end ())
@@ -149,7 +145,7 @@ NclLinkAction::removeActionProgressionListener (
 
   if (tryLock ())
     {
-      if (progressionListeners != NULL && !_isDeleting)
+      if (progressionListeners != NULL)
         {
           for (i = progressionListeners->begin ();
                i != progressionListeners->end (); ++i)
@@ -174,7 +170,7 @@ NclLinkAction::notifyProgressionListeners (bool start)
 
   if (tryLock ())
     {
-      if (progressionListeners != NULL && !_isDeleting)
+      if (progressionListeners != NULL)
         {
           notifyList = new vector<NclLinkActionProgressionListener *> (
               *progressionListeners);
@@ -186,10 +182,6 @@ NclLinkAction::notifyProgressionListeners (bool start)
             {
               listener = (*notifyList)[i];
               listener->actionProcessed (start);
-              if (_isDeleting)
-                {
-                  break;
-                }
             }
           delete notifyList;
         }
@@ -203,11 +195,6 @@ NclLinkAction::notifyProgressionListeners (bool start)
 bool
 NclLinkAction::tryLock ()
 {
-  if (_isDeleting)
-    {
-      return false;
-    }
-
   Thread::mutexLock (&plMutex);
   return true;
 }

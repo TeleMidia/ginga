@@ -22,7 +22,7 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_FORMATTER_BEGIN
 
-NclLinkCompoundAction::NclLinkCompoundAction (short op) : NclLinkAction ()
+NclLinkCompoundAction::NclLinkCompoundAction (short op) : NclLinkAction (0.)
 {
   this->op = op;
   hasStart = false;
@@ -37,8 +37,6 @@ NclLinkCompoundAction::~NclLinkCompoundAction ()
 {
   vector<NclLinkAction *>::iterator i;
   NclLinkAction *action;
-
-  _isDeleting = true;
 
   // clog << "NclLinkCompoundAction::~NclLinkCompoundAction" << endl;
   Thread::mutexLock (&mutexActions);
