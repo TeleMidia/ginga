@@ -40,9 +40,6 @@ using namespace ::ginga::ncl;
 #include "ncl/PropertyAnchor.h"
 using namespace ::ginga::ncl;
 
-#include "ncl/LayoutRegion.h"
-using namespace ::ginga::ncl;
-
 #include "ncl/EventUtil.h"
 using namespace ::ginga::ncl;
 

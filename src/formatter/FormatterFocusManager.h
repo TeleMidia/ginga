@@ -35,8 +35,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AdapterFormatterPlayer.h"
 #include "AdapterPlayerManager.h"
 
-#include "FormatterMultiDevice.h"
-
 #include "mb/IKeyInputEventListener.h"
 
 GINGA_FORMATTER_BEGIN
@@ -56,7 +54,6 @@ private:
   SDL_Color *defaultSelBorderColor;
   AdapterPlayerManager *playerManager;
   FormatterFocusManager *parentManager;
-  FormatterMultiDevice *multiDevice;
   INclLinkActionListener *settingActions;
 
   int width;
@@ -73,7 +70,6 @@ private:
 public:
   FormatterFocusManager (AdapterPlayerManager *playerManager,
                          PresentationContext *presContext,
-                         FormatterMultiDevice *multiDevice,
                          INclLinkActionListener *settingActions,
                          void *converter);
 
