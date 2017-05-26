@@ -32,8 +32,6 @@ NclLinkAssignmentAction::NclLinkAssignmentAction (NclFormatterEvent *event,
 
 NclLinkAssignmentAction::~NclLinkAssignmentAction ()
 {
-  _isDeleting = true;
-
   if (animation != NULL)
     {
       delete animation;

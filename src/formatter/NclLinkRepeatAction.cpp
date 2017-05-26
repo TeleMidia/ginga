@@ -32,9 +32,6 @@ NclLinkRepeatAction::NclLinkRepeatAction (NclFormatterEvent *event,
 
 NclLinkRepeatAction::~NclLinkRepeatAction ()
 {
-  _isDeleting = true;
-
-  // clog << "NclLinkRepeatAction::~NclLinkRepeatAction" << endl;
 }
 
 long
