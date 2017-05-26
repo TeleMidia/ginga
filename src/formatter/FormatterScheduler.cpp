@@ -35,7 +35,6 @@ FormatterScheduler::FormatterScheduler ()
 
   this->presContext = new PresentationContext ();
   this->ruleAdapter = new RuleAdapter (presContext);
-  this->presContext = ruleAdapter->getPresentationContext ();
   this->compiler = new FormatterConverter (ruleAdapter);
   this->compiler->setLinkActionListener (this);
   this->compiler->setScheduler (this);
