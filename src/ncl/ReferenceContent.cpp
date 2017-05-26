@@ -21,13 +21,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-ReferenceContent::ReferenceContent () : Content ()
+ReferenceContent::ReferenceContent () : Content ("")
 {
   reference = "";
   typeSet.insert ("ReferenceContent");
 }
 
-ReferenceContent::ReferenceContent (const string &ref) : Content ()
+ReferenceContent::ReferenceContent (const string &ref) : Content ("")
 {
   setReference (ref);
   typeSet.insert ("ReferenceContent");

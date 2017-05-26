@@ -20,17 +20,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-Content::Content (const string &someType, int someSize)
+Content::Content (const string &someType)
 {
   type = someType;
-  size = someSize;
-  typeSet.insert ("Content");
-}
-
-Content::Content ()
-{
-  type = "";
-  size = -1;
   typeSet.insert ("Content");
 }
 
@@ -39,34 +31,16 @@ Content::~Content () {}
 bool
 Content::instanceOf (const string &s)
 {
-  /*clog << "Content instanceOf for " << s << " with the following set:" <<
-  endl;
-  for(set<string>::iterator it = typeSet.begin(); it!=typeSet.end(); it++) {
-          clog << "[" << *it << "] ";
-  }
-  clog << ((typeSet.find(s) != typeSet.end()) ? "true" : "false") << endl;*/
   if (typeSet.empty ())
     return false;
   else
     return (typeSet.find (s) != typeSet.end ());
 }
 
-int
-Content::getSize ()
-{
-  return size;
-}
-
 string
 Content::getType ()
 {
   return type;
-}
-
-void
-Content::setSize (int someSize)
-{
-  size = someSize;
 }
 
 void
