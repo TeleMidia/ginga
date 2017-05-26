@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
-VideoPlayer::VideoPlayer (const string &mrl) : Thread (), Player (mrl)
+VideoPlayer::VideoPlayer (const string &mrl) : Player (mrl)
 {
   this->soundLevel = 1.0;
   this->texture = NULL;
@@ -305,9 +305,6 @@ VideoPlayer::play ()
     if ( n_video > 0 )
     {
       Ginga_Display->addJob (displayJobCallbackWrapper, this);
-      //this->condDisplayJobWait ();
-      Thread::startThread ();
-      //this->unlock ();
     }
     return true;
   }
@@ -488,11 +485,6 @@ bool
 VideoPlayer::isRunning ()
 {
   return this->isPlaying ();
-}
-
-void
-VideoPlayer::run ()
-{
 }
 
 void
