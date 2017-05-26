@@ -23,11 +23,12 @@ GINGA_FORMATTER_BEGIN
 
 int FormatterConverter::dummyCount = 0;
 
-FormatterConverter::FormatterConverter (RuleAdapter *ruleAdapter)
+FormatterConverter::FormatterConverter (NclFormatterLayout *layout,
+                                        RuleAdapter *ruleAdapter)
 {
-  linkCompiler = (void *)(new FormatterLinkConverter (this));
+  linkCompiler = new FormatterLinkConverter (this);
 
-  this->scheduler = NULL;
+  this->layout = layout;
   this->actionListener = NULL;
   this->ruleAdapter = ruleAdapter;
   this->handling = false;
@@ -55,8 +56,8 @@ FormatterConverter::~FormatterConverter ()
   Thread::mutexUnlock (&lMutex);
   Thread::mutexDestroy (&lMutex);
 
-  ruleAdapter = NULL;
-  scheduler = NULL;
+  this->ruleAdapter = NULL;
+  this->layout = NULL;
 
   Thread::mutexLock (&objectsMutex);
   i = executionObjects.begin ();
@@ -79,7 +80,7 @@ FormatterConverter::~FormatterConverter ()
 
   if (linkCompiler != NULL)
     {
-      delete (FormatterLinkConverter *)linkCompiler;
+      delete linkCompiler;
       linkCompiler = NULL;
     }
 
@@ -185,12 +186,6 @@ FormatterConverter::getObjectFromNodeId (const string &id)
   clog << "Warning! cannot find object '" << id << "'";
   clog << endl;
   return NULL;
-}
-
-void
-FormatterConverter::setScheduler (void *scheduler)
-{
-  this->scheduler = (FormatterScheduler *)scheduler;
 }
 
 void
@@ -369,10 +364,7 @@ FormatterConverter::addExecutionObject (
 
   descriptor = executionObject->getDescriptor ();
   if (descriptor != NULL)
-    {
-      descriptor->setFormatterLayout (
-          (NclFormatterLayout *)(scheduler->getFormatterLayout ()));
-    }
+    descriptor->setFormatterLayout (this->layout);
 
   compileExecutionObjectLinks (executionObject);
 }
@@ -1074,10 +1066,8 @@ FormatterConverter::processLink (Link *ncmLink, Node *dataObject,
             {
               // compile causal link
               parentObject->removeLinkUncompiled (ncmLink);
-              formatterLink
-                  = ((FormatterLinkConverter *)linkCompiler)
-                        ->createCausalLink ((CausalLink *)ncmLink,
-                                            parentObject);
+              formatterLink = linkCompiler->createCausalLink
+                ((CausalLink *)ncmLink, parentObject);
 
               if (formatterLink != NULL)
                 {
@@ -1675,8 +1665,8 @@ FormatterConverter::addCausalLink (ContextNode *context, CausalLink *link)
             {
               // compile causal link
               contextObject->removeLinkUncompiled (link);
-              formatterLink = ((FormatterLinkConverter *)linkCompiler)
-                                  ->createCausalLink (link, contextObject);
+              formatterLink = linkCompiler->createCausalLink
+                (link, contextObject);
 
               if (formatterLink != NULL)
                 {
