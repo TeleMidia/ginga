@@ -47,7 +47,7 @@ protected:
 
   virtual bool hasPrepared ();
   virtual bool prepare (NclExecutionObject *_object,
-                        NclFormatterEvent *mainEvent);
+                        NclPresentationEvent *mainEvent);
 
   bool startEvent (const string &anchorId, short type, const string &value);
   bool stopEvent (const string &anchorId, short type, const string &value);
