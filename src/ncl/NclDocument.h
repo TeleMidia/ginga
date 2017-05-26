@@ -38,9 +38,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Transition.h"
 #include "TransitionBase.h"
 
-#include "Meta.h"
-#include "Metadata.h"
-
 #include "Base.h"
 
 GINGA_NCL_BEGIN

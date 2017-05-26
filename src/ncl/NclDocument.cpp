@@ -98,8 +98,6 @@ NclDocument::clearDocument ()
 {
   vector<NclDocument *>::iterator i;
   map<int, RegionBase *>::iterator j;
-  vector<Meta *>::iterator k;
-  vector<Metadata *>::iterator l;
 
   id = "";
 

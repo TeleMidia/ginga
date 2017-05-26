@@ -44,8 +44,7 @@ GINGA_FORMATTER_BEGIN
 
 class NclCompositeExecutionObject : public NclExecutionObject,
                                     public NclLinkListener,
-                                    public INclEventListener,
-                                    public Thread
+                                    public INclEventListener
 {
 private:
   static const short mSleepTime = 800;
@@ -62,7 +61,6 @@ private:
   map<string, NclExecutionObject *> execObjList;
 
   pthread_mutex_t compositeMutex;
-  //pthread_mutex_t parentMutex;
   pthread_mutex_t stlMutex;
 
 public:
