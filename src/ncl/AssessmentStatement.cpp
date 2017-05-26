@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-AssessmentStatement::AssessmentStatement (short comp) : Statement ()
+AssessmentStatement::AssessmentStatement (Comparator::Op comp) : Statement ()
 {
   comparator = comp;
   mainAssessment = NULL;
@@ -67,14 +67,14 @@ AssessmentStatement::setOtherAssessment (Assessment *assessment)
   this->otherAssessment = assessment;
 }
 
-short
+Comparator::Op
 AssessmentStatement::getComparator ()
 {
   return comparator;
 }
 
 void
-AssessmentStatement::setComparator (short comp)
+AssessmentStatement::setComparator (Comparator::Op comp)
 {
   comparator = comp;
 }

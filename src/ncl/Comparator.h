@@ -25,15 +25,18 @@ GINGA_NCL_BEGIN
 class Comparator
 {
 public:
-  static const short CMP_EQ = 0;
-  static const short CMP_NE = 1;
-  static const short CMP_LT = 2;
-  static const short CMP_LTE = 3;
-  static const short CMP_GT = 4;
-  static const short CMP_GTE = 5;
-  static bool evaluate (const string &first, const string &second, short comparator);
-  static bool evaluate (double first, double second, short comparator);
-  static short fromString (const string &comp);
+  enum Op
+    {
+     CMP_EQ,
+     CMP_NE,
+     CMP_LT,
+     CMP_LTE,
+     CMP_GT,
+     CMP_GTE
+    };
+  static bool evaluate (const string &, const string &, Op);
+  static bool evaluate (double first, double second, Op);
+  static Op fromString (const string &comp);
 };
 
 GINGA_NCL_END

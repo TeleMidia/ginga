@@ -15,34 +15,35 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _ASSESSMENTSTATEMENT_H_
-#define _ASSESSMENTSTATEMENT_H_
+#ifndef ASSESSMENT_STATEMENT_H
+#define ASSESSMENT_STATEMENT_H
 
 #include "Assessment.h"
 #include "AttributeAssessment.h"
 #include "Statement.h"
+#include "Comparator.h"
 
 GINGA_NCL_BEGIN
 
 class AssessmentStatement : public Statement
 {
 private:
-  short comparator;
+  Comparator::Op comparator;
   AttributeAssessment *mainAssessment;
   Assessment *otherAssessment;
 
 public:
-  AssessmentStatement (short comp);
+  AssessmentStatement (Comparator::Op comp);
   virtual ~AssessmentStatement ();
   AttributeAssessment *getMainAssessment ();
   void setMainAssessment (AttributeAssessment *assessment);
   Assessment *getOtherAssessment ();
   void setOtherAssessment (Assessment *assessment);
-  short getComparator ();
-  void setComparator (short comp);
+  Comparator::Op getComparator ();
+  void setComparator (Comparator::Op comp);
   vector<Role *> *getRoles ();
 };
 
 GINGA_NCL_END
 
-#endif //_ASSESSMENTSTATEMENT_H_
+#endif // ASSESSMENT_STATEMENT_H

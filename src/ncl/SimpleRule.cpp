@@ -20,7 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-SimpleRule::SimpleRule (const string &id, const string &attr, short op, const string &val)
+SimpleRule::SimpleRule (const string &id, const string &attr,
+                        Comparator::Op op, const string &val)
     : Rule (id)
 {
   attribute = attr;
@@ -35,7 +36,7 @@ SimpleRule::getAttribute ()
   return attribute;
 }
 
-short
+Comparator::Op
 SimpleRule::getOperator ()
 {
   return ruleOperator;
@@ -48,11 +49,8 @@ SimpleRule::getValue ()
 }
 
 void
-SimpleRule::setOperator (short newOp)
+SimpleRule::setOperator (Comparator::Op newOp)
 {
-  if (newOp < 0 || newOp > 5)
-    newOp = 0;
-
   ruleOperator = newOp;
 }
 

@@ -2669,20 +2669,15 @@ NclParser::parseRuleBase (DOMElement *ruleBase_element)
 }
 
 SimpleRule *
-NclParser::parseRule (DOMElement *parentElement)
+NclParser::parseRule (DOMElement *elt)
 {
-  short ruleOp = Comparator::fromString(
-        dom_element_get_attr(parentElement, "comparator") );
+  string var = dom_element_get_attr (elt, "var");
+  string value = dom_element_get_attr (elt, "value");
+  string id = dom_element_get_attr (elt, "id");
+  Comparator::Op ruleOp = Comparator::fromString
+    (dom_element_get_attr (elt, "comparator"));
 
-  string var = dom_element_get_attr(parentElement, "var");
-  string value = dom_element_get_attr(parentElement, "value");
-  string id = dom_element_get_attr(parentElement, "id");
-
-//  XMLString::trim (var);
-//  XMLString::trim (value);
-  SimpleRule *simplePresentationRule = new SimpleRule ( id, var, ruleOp, value);
-
-  return simplePresentationRule;
+  return new SimpleRule (id, var, ruleOp, value);
 }
 
 Node *
