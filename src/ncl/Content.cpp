@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-Content::Content (const string &someType, long someSize)
+Content::Content (const string &someType, int someSize)
 {
   type = someType;
   size = someSize;
@@ -51,7 +51,7 @@ Content::instanceOf (const string &s)
     return (typeSet.find (s) != typeSet.end ());
 }
 
-long
+int
 Content::getSize ()
 {
   return size;
@@ -64,7 +64,7 @@ Content::getType ()
 }
 
 void
-Content::setSize (long someSize)
+Content::setSize (int someSize)
 {
   size = someSize;
 }

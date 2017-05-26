@@ -26,17 +26,17 @@ class Content
 {
 protected:
   string type;
-  long size;
+  int size;
   set<string> typeSet;
 
 public:
-  Content (const string &someType, long someSize);
+  Content (const string &someType, int someSize);
   Content ();
   virtual ~Content ();
   bool instanceOf (const string &s);
-  virtual long getSize (void);
+  virtual int getSize (void);
   virtual string getType (void);
-  virtual void setSize (long someSize);
+  virtual void setSize (int someSize);
   virtual void setType (const string &someType);
 };
 

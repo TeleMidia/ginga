@@ -2148,8 +2148,8 @@ NclParser::createSpatialAnchor (DOMElement *areaElement)
 
       if (shape == "rect" || shape == "default")
         {
-          long int x1, y1, x2, y2;
-          sscanf (coords.c_str (), "%ld,%ld,%ld,%ld", &x1, &y1, &x2, &y2);
+          int x1, y1, x2, y2;
+          sscanf (coords.c_str (), "%d,%d,%d,%d", &x1, &y1, &x2, &y2);
           anchor = new RectangleSpatialAnchor (
                 dom_element_get_attr(areaElement, "id"),
                 x1, y1, x2 - x1, y2 - y1);

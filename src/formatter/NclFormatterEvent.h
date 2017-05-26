@@ -33,7 +33,7 @@ protected:
   string id;
   short currentState;
   short previousState;
-  long occurrences;
+  int occurrences;
   NclExecutionObject *executionObject;
   set<INclEventListener *> listeners;
   set<string> typeSet;
@@ -96,7 +96,7 @@ public:
   NclExecutionObject *getExecutionObject ();
   void setExecutionObject (NclExecutionObject *object);
   string getId ();
-  long getOccurrences ();
+  int getOccurrences ();
   static string getStateName (short state);
 };
 

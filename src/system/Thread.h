@@ -50,8 +50,8 @@ public:
   Thread ();
   virtual ~Thread ();
   virtual void startThread ();
-  bool sleep (long int seconds);
-  bool mSleep (long int milliseconds);
+  bool sleep (int seconds);
+  bool mSleep (guint64 milliseconds);
   void lock ();
   void unlock ();
   void waitForUnlockCondition ();

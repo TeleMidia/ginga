@@ -51,7 +51,7 @@ protected:
   double explicitDuration;
   string presentationTool;
   bool freeze;
-  long repetitions;
+  int repetitions;
   LayoutRegion *region;
   map<string, Parameter *> parameters;
 
@@ -67,13 +67,13 @@ public:
   string getPlayerName ();
 
   LayoutRegion *getRegion ();
-  long getRepetitions ();
+  int getRepetitions ();
   bool isFreeze ();
   void setFreeze (bool freeze);
   void setExplicitDuration (double d);
   void setPlayerName (const string &name);
   void setRegion (LayoutRegion *region);
-  void setRepetitions (long r);
+  void setRepetitions (int r);
   void addParameter (Parameter *parameter);
   vector<Parameter *> *getParameters ();
   Parameter *getParameter (const string &paramName);

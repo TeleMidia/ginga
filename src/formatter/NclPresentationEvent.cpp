@@ -75,7 +75,7 @@ NclPresentationEvent::getRepetitionInterval ()
   return repetitionInterval;
 }
 
-long
+int
 NclPresentationEvent::getRepetitions ()
 {
   return (numPresentations - 1);
@@ -112,7 +112,7 @@ NclPresentationEvent::setEnd (double e)
 }
 
 void
-NclPresentationEvent::setRepetitionSettings (long repetitions,
+NclPresentationEvent::setRepetitionSettings (int repetitions,
                                              double repetitionInterval)
 {
   if (repetitions >= 0)

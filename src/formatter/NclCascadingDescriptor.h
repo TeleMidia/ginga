@@ -55,7 +55,7 @@ private:
   map<string, string> parameters;
   double explicitDuration;
   string playerName;
-  long repetitions;
+  int repetitions;
   bool freeze;
   LayoutRegion *region;
   NclFormatterRegion *formatterRegion;
@@ -95,7 +95,7 @@ public:
 
 public:
   void setFormatterLayout (void *formatterLayout);
-  long getRepetitions ();
+  int getRepetitions ();
   vector<Parameter> getParameters ();
   string getParameterValue (const string &paramName);
   vector<GenericDescriptor *> *getNcmDescriptors ();

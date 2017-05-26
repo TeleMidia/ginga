@@ -82,7 +82,7 @@ Descriptor::getRegion ()
   return region;
 }
 
-long
+int
 Descriptor::getRepetitions ()
 {
   return repetitions;
@@ -119,7 +119,7 @@ Descriptor::setRegion (LayoutRegion *someRegion)
 }
 
 void
-Descriptor::setRepetitions (long r)
+Descriptor::setRepetitions (int r)
 {
   repetitions = r;
 }
