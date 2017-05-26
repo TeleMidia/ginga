@@ -138,7 +138,6 @@ src+= ncl/Node.cpp
 src+= ncl/NodeEntity.cpp
 src+= ncl/Parameter.cpp
 src+= ncl/Port.cpp
-src+= ncl/PrivateBase.cpp
 src+= ncl/PropertyAnchor.cpp
 src+= ncl/RectangleSpatialAnchor.cpp
 src+= ncl/ReferNode.cpp
