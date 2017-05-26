@@ -15,32 +15,19 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef NEW_VIDEO_PLAYER_H
-#define NEW_VIDEO_PLAYER_H
+#ifndef VIDEO_PLAYER_H
+#define VIDEO_PLAYER_H
 
 #include "ginga.h"
-
-//#include "system/Thread.h"
-//using namespace ginga::system;
-
-//#ifdef IPROVIDERLISTENER
-//#undef IPROVIDERLISTENER
-//#endif
-
-//#include "mb/IContinuousMediaProvider.h"
-//#include "mb/SDLWindow.h"
-//#include "mb/IProviderListener.h"
 
 GINGA_PRAGMA_DIAG_PUSH ()
 GINGA_PRAGMA_DIAG_IGNORE (-Wcast-qual)
 GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
-#include <glib.h>
 #include <gst/gst.h>
 #include <gst/app/gstappsink.h>
 #include <gst/video/video.h>
 GINGA_PRAGMA_DIAG_POP ()
 
-//#include "ginga.h"
 #include "Player.h"
 #include "mb/Display.h"
 #include "mb/SDLWindow.h"
@@ -49,7 +36,7 @@ using namespace ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
-class VideoPlayer : public Thread, public Player
+class VideoPlayer : public Player
 {
 public:
   VideoPlayer (const string &mrl); //works
@@ -57,7 +44,7 @@ public:
 
   guint32 getMediaTime (); //works
   void setMediaTime (guint32 pos);
-  
+
   bool play (); //works
   void pause (); //works
   void stop (); //works
@@ -116,4 +103,4 @@ public:
 
 GINGA_PLAYER_END
 
-#endif /* NEW_VIDEO_PLAYER_H */
+#endif /* VIDEO_PLAYER_H */
