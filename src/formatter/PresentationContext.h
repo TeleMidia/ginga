@@ -30,19 +30,14 @@ using namespace ::ginga::ctxmgmt;
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
-#include "ctxmgmt/IContextListener.h"
-using namespace ::ginga::ctxmgmt;
-
 GINGA_FORMATTER_BEGIN
 
-class PresentationContext : public Observable, public IContextListener
+class PresentationContext : public Observable
 {
 private:
   map<string, string> contextTable;
   static ContextManager *contextManager;
-  IContextListener *globalVarListener;
   pthread_mutex_t attrMutex;
-  void *devListener;
 
 public:
   PresentationContext ();
@@ -58,11 +53,6 @@ private:
   void initializeUserContext ();
   void initializeUserInfo (int currentUserId);
   void initializeSystemValues ();
-
-public:
-  void save ();
-  void setGlobalVarListener (IContextListener *listener);
-  void receiveGlobalAttribution (const string &pName, const string &value);
 };
 
 GINGA_FORMATTER_END
