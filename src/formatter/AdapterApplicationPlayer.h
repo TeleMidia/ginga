@@ -27,14 +27,6 @@ using namespace ::ginga::player;
 
 GINGA_FORMATTER_BEGIN
 
-typedef struct
-{
-  short code;
-  string param;
-  short type;
-  string value;
-} ApplicationStatus;
-
 class AdapterApplicationPlayer :
     public AdapterFormatterPlayer
 {
@@ -46,21 +38,10 @@ public:
   virtual bool abort ();
 
   virtual void naturalEnd ();
-  virtual void updateStatus (short code,
-                             const string &parameter = "",
-                             short type = 10,
-                             const string &value = "");
-
-  void notificationHandler (short code, const string &parameter, short type,
-                            const string &value);
-
-  void run ();
-
   bool setAndLockCurrentEvent (NclFormatterEvent *event);
   void unlockCurrentEvent (NclFormatterEvent *event);
 
 protected:
-  vector<ApplicationStatus *> _notes;
   map<string, NclFormatterEvent *> _preparedEvents;
   NclFormatterEvent *_currentEvent;
 
