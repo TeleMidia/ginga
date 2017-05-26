@@ -78,11 +78,10 @@ using namespace ::ginga::ncl;
 #include "RuleAdapter.h"
 
 #include "AdapterPlayerManager.h"
-
 #include "FormatterScheduler.h"
 
 GINGA_FORMATTER_BEGIN
-
+class FormatterScheduler;
 class FormatterConverter : public INclEventListener
 {
 private:

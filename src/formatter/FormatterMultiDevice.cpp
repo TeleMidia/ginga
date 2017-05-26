@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "FormatterMultiDevice.h"
 
-#include "FormatterMediator.h"
-
 #include "mb/Display.h"
 using namespace ::ginga::mb;
 

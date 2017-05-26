@@ -18,56 +18,21 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTER_SCHEDULER_H
 #define FORMATTER_SCHEDULER_H
 
-#include "NclExecutionObject.h"
-#include "NclNodeNesting.h"
-#include "NclCompositeExecutionObject.h"
-
-#include "NclExecutionObjectSwitch.h"
-#include "NclSwitchEvent.h"
-
-#include "NclAttributionEvent.h"
-#include "INclEventListener.h"
-#include "NclFormatterEvent.h"
-#include "NclPresentationEvent.h"
-
-#include "NclLinkAssignmentAction.h"
-#include "NclLinkSimpleAction.h"
-
-#include "NclFormatterLayout.h"
-
-#include "RuleAdapter.h"
-#include "PresentationContext.h"
-
 #include "AdapterApplicationPlayer.h"
-
 #include "AdapterFormatterPlayer.h"
 #include "AdapterPlayerManager.h"
-
-#include "ncl/SimpleAction.h"
-#include "ncl/EventUtil.h"
-using namespace ::ginga::ncl;
-
-#include "ncl/CompositeNode.h"
-#include "ncl/ContentNode.h"
-#include "ncl/Node.h"
-#include "ncl/NodeEntity.h"
-using namespace ::ginga::ncl;
-
-#include "ncl/Port.h"
-#include "ncl/Anchor.h"
-#include "ncl/ContentAnchor.h"
-#include "ncl/PropertyAnchor.h"
-#include "ncl/SwitchPort.h"
-using namespace ::ginga::ncl;
-
-#include "ncl/ReferNode.h"
-using namespace ::ginga::ncl;
-
+#include "FormatterConverter.h"
 #include "FormatterFocusManager.h"
-
 #include "FormatterMultiDevice.h"
+#include "NclLinkAssignmentAction.h"
+#include "RuleAdapter.h"
+
+#include "ncl/NclDocument.h"
+using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
+
+class FormatterConverter;
 
 class FormatterScheduler : public INclLinkActionListener,
                            public INclEventListener
@@ -76,27 +41,29 @@ private:
   RuleAdapter *ruleAdapter;
   AdapterPlayerManager *playerManager;
   PresentationContext *presContext;
-  FormatterMultiDevice *multiDevPres;
+  FormatterMultiDevice *multiDevice;
   FormatterFocusManager *focusManager;
-  void *compiler; // FormatterConverter*
+  FormatterConverter *compiler;
 
+  string file;
+  NclDocument *doc;
   vector<NclFormatterEvent *> documentEvents;
   map<NclFormatterEvent *, bool> documentStatus;
   set<void *> actions;
 
   bool running;
 
-  set<string> typeSet;
   pthread_mutex_t mutexD;
   pthread_mutex_t mutexActions;
   set<NclFormatterEvent *> listening;
   pthread_mutex_t lMutex;
 
 public:
-  FormatterScheduler (AdapterPlayerManager *playerManager,
-                      RuleAdapter *ruleAdapter,
-                      FormatterMultiDevice *multiDevice,
-                      void *compiler); // FormatterConverter
+  FormatterScheduler ();
+  // FormatterScheduler (AdapterPlayerManager *playerManager,
+  //                     RuleAdapter *ruleAdapter,
+  //                     FormatterMultiDevice *multiDevice,
+  //                     void *compiler); // FormatterConverter
 
   virtual ~FormatterScheduler ();
 
@@ -105,7 +72,7 @@ public:
 
   bool setKeyHandler (bool isHandler);
   FormatterFocusManager *getFocusManager ();
-  void *getFormatterLayout ();
+  NclFormatterLayout *getFormatterLayout ();
 
 private:
   bool isDocumentRunning (NclFormatterEvent *event);
@@ -153,11 +120,7 @@ private:
   void initializeDocumentSettings (Node *node);
 
 public:
-  void startDocument (NclFormatterEvent *documentEvent,
-                      vector<NclFormatterEvent *> *entryEvents);
-
-private:
-  void removeDocument (NclFormatterEvent *documentEvent);
+  void startDocument (const string &);
 
 public:
   void stopDocument (NclFormatterEvent *documentEvent);

@@ -19,9 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga-mime-table.h"
 
 #include "AdapterPlayerManager.h"
-
 #include "AdapterLuaPlayer.h"
-#include "AdapterNCLPlayer.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -123,11 +121,6 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
   if (g_strcmp0 (mime, "application/x-ginga-NCLua") == 0)
     {
       adapter = new AdapterLuaPlayer (this);
-    }
-  else if (g_strcmp0 (mime, "application/x-ncl-ncl") == 0
-           || g_strcmp0 (mime, "application/x-ginga-ncl") == 0)
-    {
-      adapter = new AdapterNCLPlayer (this);
     }
   else
     {
