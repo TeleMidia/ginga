@@ -81,7 +81,6 @@ using namespace ::ginga::ncl;
 
 #include "FormatterScheduler.h"
 
-
 GINGA_FORMATTER_BEGIN
 
 class FormatterConverter : public INclEventListener
@@ -214,7 +213,6 @@ public:
   void eventStateChanged (void *someEvent, short transition,
                           short previousState);
 
-  short getPriorityType ();
   void reset ();
 };
 

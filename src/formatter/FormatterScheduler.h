@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _FORMATTERSCHEDULER_H_
 #define _FORMATTERSCHEDULER_H_
 
-#include "ctxmgmt/IContextListener.h"
-using namespace ::ginga::ctxmgmt;
-
 #include "NclExecutionObject.h"
 #include "NclNodeNesting.h"
 #include "NclCompositeExecutionObject.h"
@@ -75,8 +72,7 @@ using namespace ::ginga::ncl;
 GINGA_FORMATTER_BEGIN
 
 class FormatterScheduler : public INclLinkActionListener,
-                           public INclEventListener,
-                           public IContextListener
+                           public INclEventListener
 {
 private:
   RuleAdapter *ruleAdapter;
@@ -84,8 +80,8 @@ private:
   PresentationContext *presContext;
   FormatterMultiDevice *multiDevPres;
   FormatterFocusManager *focusManager;
-
   void *compiler; // FormatterConverter*
+
   vector<IFormatterSchedulerListener *> schedulerListeners;
   vector<NclFormatterEvent *> documentEvents;
   map<NclFormatterEvent *, bool> documentStatus;
@@ -177,10 +173,8 @@ public:
   void eventStateChanged (void *someEvent, short transition,
                           short previousState);
 
-  short getPriorityType ();
   void addSchedulerListener (IFormatterSchedulerListener *listener);
   void removeSchedulerListener (IFormatterSchedulerListener *listener);
-  void receiveGlobalAttribution (const string &pName, const string &value);
 };
 
 GINGA_FORMATTER_END

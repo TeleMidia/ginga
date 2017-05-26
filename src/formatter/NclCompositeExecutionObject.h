@@ -103,8 +103,6 @@ public:
   void eventStateChanged (void *event, short transition,
                           short previousState);
 
-  short getPriorityType ();
-
   void linkEvaluationStarted (NclFormatterCausalLink *link);
   void linkEvaluationFinished (NclFormatterCausalLink *link, bool start);
 

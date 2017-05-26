@@ -27,18 +27,13 @@ GINGA_FORMATTER_BEGIN
 
 class NclFormatterEvent
 {
-private:
-  static const short ST_ABORTED = 50;
-
 protected:
   string id;
   short currentState;
   short previousState;
   long occurrences;
   void *executionObject;
-  set<INclEventListener *> coreListeners;
-  set<INclEventListener *> linksListeners;
-  set<INclEventListener *> objectsListeners;
+  set<INclEventListener *> listeners;
   set<string> typeSet;
   bool deleting;
   short eventType;

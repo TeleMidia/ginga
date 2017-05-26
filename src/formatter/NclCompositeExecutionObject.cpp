@@ -679,12 +679,6 @@ NclCompositeExecutionObject::eventStateChanged (void *changedEvent,
     }
 }
 
-short
-NclCompositeExecutionObject::getPriorityType ()
-{
-  return INclEventListener::PT_OBJECT;
-}
-
 void
 NclCompositeExecutionObject::linkEvaluationStarted (
     NclFormatterCausalLink *link)

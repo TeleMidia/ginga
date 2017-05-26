@@ -15,27 +15,17 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _IEVENTLISTENER_H_
-#define _IEVENTLISTENER_H_
+#ifndef I_EVENT_LISTENER_H
+#define I_EVENT_LISTENER_H
 
 GINGA_FORMATTER_BEGIN
 
 class INclEventListener
 {
 public:
-  // PRIORITY TYPE FOR NOTIFICATIONS
-  static const short PT_CORE = 0;
-  static const short PT_LINK = 1;
-  static const short PT_OBJECT = 2;
-
-  virtual ~INclEventListener (){};
-  virtual void eventStateChanged (void *event, short transition,
-                                  short previousState)
-      = 0;
-
-  virtual short getPriorityType () = 0;
+  virtual void eventStateChanged (void *, short, short) = 0;
 };
 
 GINGA_FORMATTER_END
 
-#endif //_IEVENTLISTENER_H_
+#endif // I_EVENT_LISTENER_H
