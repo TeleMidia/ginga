@@ -189,12 +189,8 @@ AdapterApplicationPlayer::prepare (NclFormatterEvent *event)
           duration = presentationEvt->getDuration ();
 
           if (duration < IntervalAnchor::OBJECT_DURATION)
-            {
-              _player->setScope ("",
-                                 IPlayer::TYPE_PRESENTATION,
-                                 0.0,
-                                 duration / 1000);
-            }
+            _player->setScope ("", Player::PL_TYPE_PRESENTATION, 0.,
+                               duration/1000);
         }
       else if (anchorEvent->getAnchor ()->instanceOf ("IntervalAnchor"))
         {
@@ -204,7 +200,7 @@ AdapterApplicationPlayer::prepare (NclFormatterEvent *event)
 
           _player->setScope (
               anchorEvent->getAnchor ()->getId (),
-              IPlayer::TYPE_PRESENTATION,
+              Player::PL_TYPE_PRESENTATION,
               (intervalAnchor->getBegin () / 1000.0),
               (intervalAnchor->getEnd () / 1000.0));
         }
@@ -220,13 +216,13 @@ AdapterApplicationPlayer::prepare (NclFormatterEvent *event)
             {
               _player->setScope (
                   labeledAnchor->getLabel (),
-                  IPlayer::TYPE_PRESENTATION);
+                  Player::PL_TYPE_PRESENTATION);
             }
           else
             {
               _player->setScope (
                   labeledAnchor->getLabel (),
-                  IPlayer::TYPE_PRESENTATION, 0.0, duration / 1000.0);
+                  Player::PL_TYPE_PRESENTATION, 0.0, duration / 1000.0);
             }
         }
     }
@@ -495,10 +491,10 @@ AdapterApplicationPlayer::checkEvent (NclFormatterEvent *event, short type)
 
   g_assert_nonnull (event);
   isPresentation = event->instanceOf ("NclPresentationEvent")
-      && type == IPlayer::TYPE_PRESENTATION;
+      && type == Player::PL_TYPE_PRESENTATION;
 
   isAttribution = event->instanceOf ("NclAttributionEvent")
-      && type == IPlayer::TYPE_ATTRIBUTION;
+      && type == Player::PL_TYPE_ATTRIBUTION;
 
   return (isPresentation || isAttribution);
 }
@@ -517,7 +513,7 @@ AdapterApplicationPlayer::startEvent (const string &anchorId, short type,
         {
           if (setAndLockCurrentEvent (event))
             {
-              if (type == IPlayer::TYPE_PRESENTATION)
+              if (type == Player::PL_TYPE_PRESENTATION)
                 {
                   fakeStart = _object->start ();
                   unlockCurrentEvent (event);
@@ -527,19 +523,6 @@ AdapterApplicationPlayer::startEvent (const string &anchorId, short type,
                   fakeStart = event->start ();
                   ((NclAttributionEvent *)event)->setValue (value);
                   unlockCurrentEvent (event);
-
-                  /*if (hasPrepared()) {
-                          setPropertyValue(
-                                          (NclAttributionEvent*)event,
-                  value);
-
-                          player->setPropertyValue(anchorId, value);
-
-                  } else {
-                          object->setPropertyValue(
-                                          (NclAttributionEvent*)event,
-                  value);
-                  }*/
                 }
             }
         }
@@ -580,7 +563,7 @@ AdapterApplicationPlayer::stopEvent (const string &anchorId, short type,
     {
       if (setAndLockCurrentEvent (event))
         {
-          if (type == IPlayer::TYPE_PRESENTATION)
+          if (type == Player::PL_TYPE_PRESENTATION)
             {
               if (_object->stop ())
                 {
@@ -640,7 +623,7 @@ AdapterApplicationPlayer::abortEvent (const string &anchorId, short type)
     {
       if (setAndLockCurrentEvent (event))
         {
-          if (type == IPlayer::TYPE_PRESENTATION)
+          if (type == Player::PL_TYPE_PRESENTATION)
             {
               if (_object->abort ())
                 {
@@ -699,7 +682,7 @@ AdapterApplicationPlayer::pauseEvent (const string &anchorId, short type)
     {
       if (setAndLockCurrentEvent (event))
         {
-          if (type == IPlayer::TYPE_PRESENTATION)
+          if (type == Player::PL_TYPE_PRESENTATION)
             {
               if (_object->pause ())
                 {
@@ -743,7 +726,7 @@ AdapterApplicationPlayer::resumeEvent (const string &anchorId, short type)
     {
       if (setAndLockCurrentEvent (event))
         {
-          if (type == IPlayer::TYPE_PRESENTATION)
+          if (type == Player::PL_TYPE_PRESENTATION)
             {
               if (_object->resume ())
                 {
@@ -830,7 +813,7 @@ AdapterApplicationPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
                         ->getAnchor ()
                         ->getPropertyName ();
 
-      _player->setScope (interfaceId, IPlayer::TYPE_ATTRIBUTION);
+      _player->setScope (interfaceId, Player::PL_TYPE_ATTRIBUTION);
 
       _currentEvent = event;
       ((NclApplicationExecutionObject *)_object)

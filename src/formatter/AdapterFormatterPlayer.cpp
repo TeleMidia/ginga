@@ -784,14 +784,14 @@ AdapterFormatterPlayer::prepareScope (double offset)
           if (duration < IntervalAnchor::OBJECT_DURATION)
             {
               _player->setScope (mainEvent->getAnchor ()->getId (),
-                                IPlayer::TYPE_PRESENTATION, initTime,
+                                Player::PL_TYPE_PRESENTATION, initTime,
                                 duration / 1000, _outTransTime);
             }
           else
             {
               _outTransDur = -1.0;
               _player->setScope (mainEvent->getAnchor ()->getId (),
-                                IPlayer::TYPE_PRESENTATION, initTime);
+                                Player::PL_TYPE_PRESENTATION, initTime);
             }
         }
       else if (mainEvent->getAnchor ()->instanceOf ("IntervalAnchor"))
@@ -824,7 +824,7 @@ AdapterFormatterPlayer::prepareScope (double offset)
           if (duration < IntervalAnchor::OBJECT_DURATION)
             {
               _player->setScope (mainEvent->getAnchor ()->getId (),
-                                IPlayer::TYPE_PRESENTATION, initTime,
+                                Player::PL_TYPE_PRESENTATION, initTime,
                                 (intervalAnchor->getEnd () / 1000),
                                 _outTransTime);
             }
@@ -832,7 +832,7 @@ AdapterFormatterPlayer::prepareScope (double offset)
             {
               _outTransDur = -1.0;
               _player->setScope (mainEvent->getAnchor ()->getId (),
-                                IPlayer::TYPE_PRESENTATION, initTime);
+                                Player::PL_TYPE_PRESENTATION, initTime);
             }
         }
     }
@@ -1231,7 +1231,7 @@ AdapterFormatterPlayer::getMediaTime ()
   return _player->getMediaTime ();
 }
 
-IPlayer *
+Player *
 AdapterFormatterPlayer::getPlayer ()
 {
   return _player;
@@ -1243,11 +1243,9 @@ AdapterFormatterPlayer::updateStatus (short code,
                                       short type,
                                       arg_unused (const string &value))
 {
-  NclFormatterEvent *mainEvent;
-
   switch (code)
     {
-    case IPlayer::PL_NOTIFY_OUTTRANS:
+    case Player::PL_NOTIFY_OUTTRANS:
       if (_outTransDur > 0.0)
         {
           NclCascadingDescriptor *descriptor;
@@ -1268,24 +1266,14 @@ AdapterFormatterPlayer::updateStatus (short code,
         }
       break;
 
-    case IPlayer::PL_NOTIFY_STOP:
+    case Player::PL_NOTIFY_STOP:
       if (_object != nullptr)
         {
-          if (type == IPlayer::TYPE_PRESENTATION)
+          if (type == Player::PL_TYPE_PRESENTATION)
             {
               if (parameter == "")
                 {
                   naturalEnd ();
-                }
-            }
-          else if (type == IPlayer::TYPE_SIGNAL)
-            {
-              mainEvent = _object->getMainEvent ();
-              if (mainEvent != nullptr
-                  && mainEvent->getCurrentState ()
-                         != EventUtil::ST_SLEEPING)
-                {
-                  g_debug("AdapterFormatterPlayer::updateStatus process.");
                 }
             }
         }

@@ -20,9 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "mb/IKeyInputEventListener.h"
 
-#include "player/IPlayer.h"
-using namespace ::ginga::player;
-
 #include "ncl/Content.h"
 #include "ncl/ContentNode.h"
 #include "ncl/NodeEntity.h"
@@ -78,7 +75,7 @@ public:
   string getPropertyValue (NclAttributionEvent *event);
 
   double getMediaTime ();
-  IPlayer *getPlayer ();
+  Player *getPlayer ();
   virtual void updateStatus (short code,
                              const string &parameter = "",
                              short type = 10,
@@ -89,7 +86,7 @@ public:
 protected:
   AdapterPlayerManager *_manager;
   NclExecutionObject *_object;
-  IPlayer *_player;
+  Player *_player;
   string _mrl;
 
   virtual void createPlayer ();

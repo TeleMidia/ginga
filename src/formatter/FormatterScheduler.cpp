@@ -167,7 +167,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
   NclExecutionObject *executionObject;
   NclCascadingDescriptor *descriptor;
   AdapterFormatterPlayer *player;
-  IPlayer *playerContent;
+  Player *playerContent;
   string attName;
   string attValue;
   SDLWindow* winId = 0;
@@ -454,7 +454,7 @@ FormatterScheduler::runActionOverApplicationObject (
     NclLinkSimpleAction *action)
 {
   NclCascadingDescriptor *descriptor;
-  IPlayer *playerContent;
+  Player *playerContent;
 
   string attValue, attName;
 

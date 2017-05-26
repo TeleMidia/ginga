@@ -33,10 +33,10 @@ Player::Player (const string &mrl)
   this->notifying = false;
   this->presented = false;
   this->visible = true;
-  this->status = SLEEPING;
+  this->status = PL_SLEEPING;
   this->forcedNaturalEnd = false;
   this->scope = "";
-  this->scopeType = -1;
+  this->scopeType = PL_TYPE_PRESENTATION;
   this->scopeInitTime = -1;
   this->scopeEndTime = -1;
   this->outTransTime = -1;
@@ -64,9 +64,9 @@ Player::~Player ()
 {
   Ginga_Display->unregisterPlayer(this);
 
-  set<IPlayer *>::iterator i;
+  set<Player *>::iterator i;
 
-  this->status = SLEEPING;
+  this->status = PL_SLEEPING;
 
   Thread::mutexLock (&listM);
   listeners.clear ();
@@ -114,7 +114,7 @@ Player::removeListener (IPlayerListener *listener)
 void
 Player::notifyPlayerListeners (short code,
                                const string &parameter,
-                               short type,
+                               PlayerEventType type,
                                const string &value)
 {
   string p;
@@ -147,7 +147,7 @@ void
 Player::ntsNotifyPlayerListeners (set<IPlayerListener *> *list,
                                   short code,
                                   const string &parameter,
-                                  short type,
+                                  PlayerEventType type,
                                   const string &value)
 {
   set<IPlayerListener *>::iterator i;
@@ -176,11 +176,10 @@ Player::setMediaTime (guint32 newTime)
 guint32
 Player::getMediaTime ()
 {
-  if (status == PAUSED)
+  if (status == PL_PAUSED)
       return this->accTimePlaying/1000;
 
-  guint32 curTime = (guint32)g_get_monotonic_time() - this->initStartTime;
-
+  guint32 curTime = (guint32) g_get_monotonic_time() - this->initStartTime;
   return (this->accTimePlaying + curTime - this->accTimePaused)/1000;
 }
 
@@ -192,7 +191,7 @@ Player::getTotalMediaTime ()
 
 void
 Player::setScope (const string &scope,
-                  short type,
+                  PlayerEventType type,
                   double initTime,
                   double endTime,
                   double outTransDur)
@@ -210,7 +209,7 @@ Player::play ()
 {
   this->forcedNaturalEnd = false;
   this->initStartTime = (guint32) g_get_monotonic_time();
-  this->status = OCCURRING;
+  this->status = PL_OCCURRING;
 
   return true;
 }
@@ -223,9 +222,7 @@ Player::stop ()
   this->initPauseTime = 0;
   this->accTimePlaying = 0;
   this->accTimePaused = 0;
-
-  this->status = SLEEPING;
-
+  this->status = PL_SLEEPING;
 }
 
 void
@@ -237,9 +234,9 @@ Player::abort ()
 void
 Player::pause ()
 {
-  this->accTimePlaying +=  ( (guint32)g_get_monotonic_time() - this->initStartTime);
+  this->accTimePlaying +=  ((guint32)g_get_monotonic_time() - this->initStartTime);
   this->initPauseTime = (guint32)g_get_monotonic_time();
-   this->status = PAUSED;
+   this->status = PL_PAUSED;
 }
 
 void
@@ -250,7 +247,7 @@ Player::resume ()
   if(this->initPauseTime > 0)
       this->accTimePaused +=  ((guint32)g_get_monotonic_time() - this->initPauseTime);
 
-  this->status = OCCURRING;
+  this->status = PL_OCCURRING;
 }
 
 string
@@ -339,18 +336,14 @@ Player::forceNaturalEnd (bool forceIt)
 {
   forcedNaturalEnd = forceIt;
   if (forceIt)
-    {
-      notifyPlayerListeners (PL_NOTIFY_STOP);
-    }
+    notifyPlayerListeners (PL_NOTIFY_STOP, "", PL_TYPE_PRESENTATION, "");
 }
 
 bool
 Player::isForcedNaturalEnd ()
 {
   if (mrl == "")
-    {
-      return false;
-    }
+    return false;
   return forcedNaturalEnd;
 }
 
@@ -366,13 +359,15 @@ Player::setOutWindow (SDLWindow* windowId)
   return true;
 }
 
-PLAYER_STATUS
-Player::getMediaStatus(){
+Player::PlayerStatus
+Player::getMediaStatus ()
+{
    return this->status;
 }
 
 gint
-Player::getZ(){
+Player::getZ ()
+{
   return this->z;
 }
 
@@ -385,7 +380,7 @@ Player::setAnimatorProperties(string dur, string name, string value)
 void
 Player::redraw(SDL_Renderer* renderer)
 {
-  if(this->status == SLEEPING)
+  if(this->status == PL_SLEEPING)
     return;
 
   animator->update(&this->rect,

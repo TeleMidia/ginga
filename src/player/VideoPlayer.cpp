@@ -196,7 +196,7 @@ VideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   this->lock ();
 
   //g_assert_nonnull(surface);
-  if ( this->sample != NULL && this->status == OCCURRING )
+  if (this->sample != NULL && this->status == PL_OCCURRING)
   {
     if (this->texture == NULL)
     {
@@ -233,13 +233,9 @@ VideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
   this->unlock ();
 
-  //if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_PAUSED)
-  if (this->status == SLEEPING)
+  if (this->status == PL_SLEEPING)
   {
     g_debug ("status: SLEEPING; return false;\n");
-
-    //this->condDisplayJobSignal ();
-
     return false; //Remove job
   }
 

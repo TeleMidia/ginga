@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/Display.h"
 using namespace ::ginga::mb;
 
-#include "player/IPlayer.h"
+#include "player/Player.h"
 using namespace ::ginga::player;
 
 GINGA_FORMATTER_BEGIN

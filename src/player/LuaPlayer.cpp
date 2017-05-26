@@ -32,18 +32,18 @@ typedef struct
 
 static G_GNUC_UNUSED const evt_map_t evt_map_ncl_type[] = {
   // KEEP THIS SORTED ALPHABETICALLY
-  { "attribution", (void *)Player::TYPE_ATTRIBUTION },
-  { "presentation", (void *)Player::TYPE_PRESENTATION },
-  { "selection", (void *)Player::TYPE_SELECTION },
+  { "attribution", (void *) Player::PL_TYPE_ATTRIBUTION },
+  { "presentation", (void *) Player::PL_TYPE_PRESENTATION },
+  { "selection", (void *) Player::PL_TYPE_SELECTION },
 };
 
 static G_GNUC_UNUSED const evt_map_t evt_map_ncl_action[] = {
   // KEEP THIS SORTED ALPHABETICALLY
-  { "abort", (void *)Player::PL_NOTIFY_ABORT },
-  { "pause", (void *)Player::PL_NOTIFY_PAUSE },
-  { "resume", (void *)Player::PL_NOTIFY_RESUME },
-  { "start", (void *)Player::PL_NOTIFY_START },
-  { "stop", (void *)Player::PL_NOTIFY_STOP },
+  { "abort", (void *) Player::PL_NOTIFY_ABORT },
+  { "pause", (void *) Player::PL_NOTIFY_PAUSE },
+  { "resume", (void *) Player::PL_NOTIFY_RESUME },
+  { "start", (void *) Player::PL_NOTIFY_START },
+  { "stop", (void *) Player::PL_NOTIFY_STOP },
 };
 
 static int
@@ -305,7 +305,7 @@ LuaPlayer::setPropertyValue (const string &name, const string &value)
   // need to work around this bogus behavior, since it is the play()
   // call that creates the NCLua engine.
 
-  if (this->nw != NULL && this->status == OCCURRING)
+  if (this->nw != NULL && this->status == PL_OCCURRING)
     {
       const char *k = name.c_str ();
       const char *v = value.c_str ();

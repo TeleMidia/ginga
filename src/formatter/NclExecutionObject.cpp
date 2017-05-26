@@ -94,7 +94,7 @@ NclExecutionObject::NclExecutionObject (const string &id, Node *node,
                                         bool handling,
                                         INclLinkActionListener *seListener)
 {
-  Ginga_Display->registerTimeAnchorListener(this); 
+  Ginga_Display->registerTimeAnchorListener(this);
   initializeExecutionObject (id, node, NULL, handling, seListener);
 }
 
@@ -103,7 +103,7 @@ NclExecutionObject::NclExecutionObject (const string &id, Node *node,
                                         bool handling,
                                         INclLinkActionListener *seListener)
 {
-  Ginga_Display->registerTimeAnchorListener(this); 
+  Ginga_Display->registerTimeAnchorListener(this);
   initializeExecutionObject (id, node,
                              new NclCascadingDescriptor (descriptor),
                              handling, seListener);
@@ -114,14 +114,14 @@ NclExecutionObject::NclExecutionObject (const string &id, Node *node,
                                         bool handling,
                                         INclLinkActionListener *seListener)
 {
-  Ginga_Display->registerTimeAnchorListener(this); 
+  Ginga_Display->registerTimeAnchorListener(this);
   initializeExecutionObject (id, node, descriptor, handling, seListener);
 }
 
 NclExecutionObject::~NclExecutionObject ()
 {
-  
-  Ginga_Display->unregisterTimeAnchorListener(this); 
+
+  Ginga_Display->unregisterTimeAnchorListener(this);
 
   map<Node *, Node *>::iterator i;
   map<Node *, void *>::iterator j;
@@ -1243,7 +1243,7 @@ NclExecutionObject::timeBaseNaturalEnd (int64_t timeValue,
 }
 
 void
-NclExecutionObject::updateTransitionTable (double value, IPlayer *player,
+NclExecutionObject::updateTransitionTable (double value, Player *player,
                                            short int transType)
 {
   transMan->updateTransitionTable (value, player, mainEvent, transType);
@@ -1674,9 +1674,9 @@ NclExecutionObject::setHandler (bool isHandler)
 //dragon head
 bool
 NclExecutionObject::selectionEvent (SDL_Keycode key, double currentTime)
-{ 
+{
   string selCode;
-  string keyString = convertSdl2GingaKey(key); 
+  string keyString = convertSdl2GingaKey(key);
   NclSelectionEvent *selectionEvent;
   IntervalAnchor *intervalAnchor;
   NclFormatterEvent *expectedEvent;
@@ -1719,7 +1719,7 @@ NclExecutionObject::selectionEvent (SDL_Keycode key, double currentTime)
       clog << "NclExecutionObject::selectionEvent(" << id << ") event '";
       clog << selectionEvent->getId () << "' has selCode = '" << selCode;
       clog << "' (looking for key code '" << keyString << "'" << endl;
-     
+
      if ( !keyString.compare(selCode) )
         {
           if (selectionEvent->getAnchor ()->instanceOf ("LambdaAnchor"))
@@ -1788,7 +1788,7 @@ NclExecutionObject::selectionEvent (SDL_Keycode key, double currentTime)
                   clog << anchorId << "'" << endl;
                 }
             }
-        } 
+        }
       ++i;
     }
 
@@ -1817,7 +1817,7 @@ NclExecutionObject::selectionEvent (SDL_Keycode key, double currentTime)
   delete selectedEvents;
   selectedEvents = NULL;
 
-  return selected; 
+  return selected;
 }
 
 
@@ -1873,27 +1873,29 @@ NclExecutionObject::unlockParentTable ()
 void
 NclExecutionObject::setPlayer(Player* p){
    this->player = p;
-} 
+}
 
-void 
-NclExecutionObject::notifyTimeAnchorCallBack(){
-   if(player == NULL)return;
+void
+NclExecutionObject::notifyTimeAnchorCallBack()
+{
+  NclEventTransition *nextTransition;
+  if (player == NULL)
+    return;
 
-   if(player->getMediaStatus()!=OCCURRING)return;
+  if (player->getMediaStatus() != Player::PL_OCCURRING)
+    return;
 
-    NclEventTransition *nextTransition = getNextTransition ();
-   if(nextTransition==NULL)
-     return;
-  
-   double nTime = nextTransition->getTime();
-   double mTime = (double)this->player->getMediaTime();
+  nextTransition = getNextTransition ();
+  if (nextTransition == NULL)
+    return;
 
-   // g_debug("- N: %f  M: %f ",nTime,mTime);
+  double nTime = nextTransition->getTime();
+  double mTime = (double) this->player->getMediaTime();
 
-   if( mTime < nTime )
-     return;    
+  if (mTime < nTime )
+    return;
 
-    updateTransitionTable (mTime, this->player, ContentAnchor::CAT_TIME);
+  updateTransitionTable (mTime, this->player, ContentAnchor::CAT_TIME);
 
 }
 

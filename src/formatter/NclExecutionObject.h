@@ -21,7 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
-#include "player/IPlayer.h"
 #include "player/Player.h"
 using namespace ::ginga::player;
 
@@ -199,7 +198,7 @@ public:
   virtual bool start ();
 
   void timeBaseNaturalEnd (int64_t timeValue, short int transType);
-  void updateTransitionTable (double value, IPlayer *player,
+  void updateTransitionTable (double value, Player *player,
                               short int transType);
 
   void resetTransitionEvents (short int transType);
