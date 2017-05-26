@@ -56,7 +56,7 @@ public:
 
   void setOutputWindow (SDLWindow* windowId);
 
-  virtual bool prepare (NclExecutionObject *obj, NclFormatterEvent *mainEvent);
+  virtual bool prepare (NclExecutionObject *, NclPresentationEvent *);
   virtual bool hasPrepared ();
 
   virtual bool start ();
