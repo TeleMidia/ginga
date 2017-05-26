@@ -742,12 +742,6 @@ AdapterFormatterPlayer::prepare ()
   g_assert_nonnull (_player);
 
   prepareScope ();
-
-  if (_player->immediatelyStart ())
-    {
-      _player->setImmediatelyStart (false);
-      start ();
-    }
 }
 
 void
@@ -1069,7 +1063,6 @@ AdapterFormatterPlayer::checkRepeat (NclPresentationEvent *event)
           _object->stop ();
         }
 
-      _player->setImmediatelyStart (true);
       prepare ();
       return true;
     }

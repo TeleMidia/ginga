@@ -18,15 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "system/Thread.h"
-using namespace ::ginga::system;
-
 #include "IPlayer.h"
 #include "PlayerAnimator.h"
-
-#ifndef HAVE_CLOCKTIME
-#define HAVE_CLOCKTIME 1
-#endif
 
 GINGA_PLAYER_BEGIN
 
@@ -43,31 +36,18 @@ typedef struct LockedPlayerLitenerAction
   bool isAdd;
 } LockedPlayerListener;
 
-typedef struct PendingNotification
-{
-  short code;
-  string parameter;
-  short type;
-  string value;
-
-  set<IPlayerListener *> *clone;
-} PendingNotification;
-
-
 class Player : public IPlayer
 {
 private:
   pthread_mutex_t listM;
   pthread_mutex_t lockedListM;
   pthread_mutex_t referM;
-  pthread_mutex_t pnMutex;
 
   bool notifying;
 
   map<string, string> properties;
   set<IPlayerListener *> listeners;
   vector<LockedPlayerListener *> lockedListeners;
-  vector<PendingNotification *> pendingNotifications;
 
 protected:
   PLAYER_STATUS status;
@@ -80,28 +60,26 @@ protected:
   IPlayer *timeBasePlayer;
   bool presented;
   bool visible;
-  bool immediatelyStartVar;
   bool forcedNaturalEnd;
-  bool notifyContentUpdate;
   string scope;
   short scopeType;
   double scopeInitTime;
   double scopeEndTime;
   double outTransTime;
 
-  //time attr
+  // Time attributes.
   guint32 initStartTime;
   guint32 initPauseTime;
   guint32 accTimePlaying;
-  guint32 accTimePaused; 
+  guint32 accTimePaused;
 
-  //media attr
-  SDL_Texture *texture; //media texture
+  // Media attributes.
+  SDL_Texture *texture;         // media texture
   int borderWidth;
-  SDL_Color bgColor; //background color
+  SDL_Color bgColor;            // background color
   SDL_Color borderColor;
-  SDL_Rect rect; //draw area
-  gint z;  //z-index
+  SDL_Rect rect;                // draw area
+  gint z;                       // z-index
   guint8 alpha;
 
 public:
@@ -110,7 +88,6 @@ public:
 
 public:
   virtual void setMrl (const string &mrl, bool visible = true);
-  virtual void setNotifyContentUpdate (bool notify);
   virtual void addListener (IPlayerListener *listener);
   void removeListener (IPlayerListener *listener);
   gint getZ();
@@ -118,7 +95,7 @@ public:
 
 private:
   void performLockedListenersRequest ();
-  
+
 public:
   void redraw (SDL_Renderer*);
 
@@ -127,10 +104,9 @@ public:
                               const string &parameter = "",
                               short type = TYPE_PRESENTATION,
                               const string &value = "");
-                             
+
 
 private:
-  static void *detachedNotifier (void *ptr);
   static void ntsNotifyPlayerListeners (set<IPlayerListener *> *list,
                                         short code,
                                         const string &parameter,
@@ -139,21 +115,10 @@ private:
 
 public:
   virtual void setMediaTime (guint32 newTime);
-  virtual int64_t
-  getVPts ()
-  {
-    clog << "Player::getVPts return 0" << endl;
-    return 0;
-  };
 
 PLAYER_STATUS getMediaStatus();
 
-#if HAVE_CLOCKTIME
   guint32 getMediaTime ();
-#else
-  virtual guint32 getMediaTime ();
-#endif
-
   virtual double getTotalMediaTime ();
 
   virtual void setScope (const string &scope, short type = TYPE_PRESENTATION,
@@ -177,35 +142,11 @@ public:
   void setTimeBasePlayer (IPlayer *timeBasePlayer);
   bool isVisible ();
   void setVisible (bool visible);
-  bool immediatelyStart ();
-  void setImmediatelyStart (bool immediatelyStartVal);
-
-//private:
- // static void *scopeTimeHandler (void *ptr);
 
 public:
   void forceNaturalEnd (bool forceIt);
   bool isForcedNaturalEnd ();
   virtual bool setOutWindow (SDLWindow* windowId);
-
-  // Channel player only.
-  virtual IPlayer *
-  getSelectedPlayer ()
-  {
-    return NULL;
-  };
-  virtual void setPlayerMap (arg_unused (map<string, IPlayer *> *objs)){};
-  virtual map<string, IPlayer *> *
-  getPlayerMap ()
-  {
-    return NULL;
-  };
-  virtual IPlayer *
-  getPlayer (arg_unused (const string &objectId))
-  {
-    return NULL;
-  };
-  virtual void select (arg_unused (IPlayer *selObject)){};
 
   // Application player only.
   virtual void setCurrentScope (arg_unused (const string &scopeId)){};

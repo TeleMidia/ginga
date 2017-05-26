@@ -29,7 +29,6 @@ Player::Player (const string &mrl)
   Thread::mutexInit (&listM, false);
   Thread::mutexInit (&lockedListM, false);
   Thread::mutexInit (&referM, false);
-  Thread::mutexInit (&pnMutex, false);
 
   this->mrl = mrl;
   this->outputWindow = 0;
@@ -37,7 +36,6 @@ Player::Player (const string &mrl)
   this->notifying = false;
   this->presented = false;
   this->visible = true;
-  this->immediatelyStartVar = false;
   this->status = SLEEPING;
   this->forcedNaturalEnd = false;
   this->scope = "";
@@ -45,7 +43,6 @@ Player::Player (const string &mrl)
   this->scopeInitTime = -1;
   this->scopeEndTime = -1;
   this->outTransTime = -1;
-  this->notifyContentUpdate = false;
 
   //time attr
   this->initStartTime = 0;
@@ -87,18 +84,13 @@ Player::~Player ()
 
   properties.clear ();
 
-  Thread::mutexLock (&pnMutex);
-  pendingNotifications.clear ();
-
   Thread::mutexUnlock (&referM);
   Thread::mutexUnlock (&lockedListM);
   Thread::mutexUnlock (&listM);
-  Thread::mutexUnlock (&pnMutex);
 
   Thread::mutexDestroy (&referM);
   Thread::mutexDestroy (&lockedListM);
   Thread::mutexDestroy (&listM);
-  Thread::mutexDestroy (&pnMutex);
 }
 
 void
@@ -106,12 +98,6 @@ Player::setMrl (const string &mrl, bool visible)
 {
   this->mrl = mrl;
   this->visible = visible;
-}
-
-void
-Player::setNotifyContentUpdate (bool notify)
-{
-  this->notifyContentUpdate = notify;
 }
 
 void
@@ -202,27 +188,8 @@ Player::notifyPlayerListeners (short code,
                                short type,
                                const string &value)
 {
-  PendingNotification *pn;
-  vector<PendingNotification *>::iterator i;
-
   string p;
   string v;
-  set<IPlayerListener *> *clone = NULL;
-
-  if (notifying)
-    {
-      Thread::mutexLock (&pnMutex);
-      pn = new PendingNotification;
-      pn->code = code;
-      pn->parameter = parameter;
-      pn->type = type;
-      pn->value = value;
-
-      pendingNotifications.push_back (pn);
-      Thread::mutexUnlock (&pnMutex);
-
-      return;
-    }
 
   notifying = true;
   Thread::mutexLock (&listM);
@@ -247,53 +214,6 @@ Player::notifyPlayerListeners (short code,
     }
 
   ntsNotifyPlayerListeners (&listeners, code, parameter, type, value);
-
-  Thread::mutexLock (&pnMutex);
-  if (!pendingNotifications.empty ())
-    {
-      clone = new set<IPlayerListener *> (listeners);
-    }
-
-  Thread::mutexUnlock (&listM);
-  notifying = false;
-
-  if (clone != NULL && !clone->empty ())
-    {
-      i = pendingNotifications.begin ();
-      while (i != pendingNotifications.end ())
-        {
-          (*i)->clone = new set<IPlayerListener *> (*clone);
-
-          pthread_t tId;
-          pthread_attr_t tattr;
-
-          pthread_attr_init (&tattr);
-          pthread_attr_setdetachstate (&tattr, PTHREAD_CREATE_DETACHED);
-          pthread_attr_setscope (&tattr, PTHREAD_SCOPE_SYSTEM);
-
-          pthread_create (&tId, &tattr, Player::detachedNotifier, (*i));
-          pthread_detach (tId);
-
-          ++i;
-        }
-      pendingNotifications.clear ();
-      delete clone;
-    }
-  Thread::mutexUnlock (&pnMutex);
-}
-
-void *
-Player::detachedNotifier (void *ptr)
-{
-  PendingNotification *pn = (PendingNotification *)ptr;
-
-  ntsNotifyPlayerListeners (pn->clone, pn->code, pn->parameter, pn->type,
-                            pn->value);
-
-  delete pn->clone;
-  delete pn;
-
-  return NULL;
 }
 
 void
@@ -545,18 +465,6 @@ void
 Player::setVisible (bool visible)
 {
   this->visible = visible;
-}
-
-bool
-Player::immediatelyStart ()
-{
-  return immediatelyStartVar;
-}
-
-void
-Player::setImmediatelyStart (bool immediattelyStartVal)
-{
-  this->immediatelyStartVar = immediattelyStartVal;
 }
 
 void
