@@ -291,18 +291,6 @@ FormatterConverter::addExecutionObject (
 
   dataObject = (NodeEntity *)(executionObject->getDataObject ());
 
-  /*clog << endl;
-  clog << "FormatterConverter::addExecutionObject '";
-  clog << executionObject->getId() << "' in parent '";
-  if (parentObject != NULL) {
-          clog << parentObject->getId() << "'";
-  } else {
-          clog << "NULL'";
-  }
-  clog << " and dataObject '" << dataObject->getId() << "':";
-  dataObject->printHierarchy();
-  clog << endl;*/
-
   if (dataObject->instanceOf ("ContentNode")
       && ((ContentNode *)dataObject)->isSettingNode ())
     {
@@ -377,10 +365,6 @@ FormatterConverter::compileExecutionObjectLinks (
   vector<Node *>::iterator i;
   Node *node;
 
-  /*clog << "FormatterConverter::compileExecutionObjectLinks";
-  clog << " EO " << executionObject->getId().c_str();
-  clog << " depth " << depthLevel << endl;*/
-
   nodes = executionObject->getNodes ();
   if (nodes != NULL)
     {
@@ -391,7 +375,7 @@ FormatterConverter::compileExecutionObjectLinks (
           compileExecutionObjectLinks (
               executionObject, node,
               (NclCompositeExecutionObject *)(executionObject
-                                                  ->getParentObject (node)));
+                                              ->getParentObject (node)));
 
           ++i;
         }
@@ -1741,22 +1725,11 @@ FormatterConverter::eventStateChanged (void *someEvent, short transition,
       if (transition == EventUtil::TR_STOPS
           || transition == EventUtil::TR_ABORTS)
         {
-          /*
-          removeExecutionObject(
-                          ((NclExecutionObjectSwitch*)executionObject)->
-                          getSelectedObject());
-          */
           ((NclExecutionObjectSwitch *)executionObject)->select (NULL);
-          // removeExecutionObject(executionObject);
         }
     }
   else if (executionObject->instanceOf ("NclCompositeExecutionObject"))
     {
-      /*clog << "FormatterConverter::eventStateChanged CEO = '";
-      clog << executionObject->getId() << "' transition '";
-      clog << transition << "' starts=>'" << EventUtil::TR_STARTS;
-      clog << "'" << endl;*/
-
       if (transition == EventUtil::TR_STOPS
           || transition == EventUtil::TR_ABORTS)
         {

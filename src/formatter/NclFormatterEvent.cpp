@@ -27,7 +27,8 @@ set<NclFormatterEvent *> NclFormatterEvent::instances;
 bool NclFormatterEvent::init = false;
 pthread_mutex_t NclFormatterEvent::iMutex;
 
-NclFormatterEvent::NclFormatterEvent (const string &id, void *execObject)
+NclFormatterEvent::NclFormatterEvent (const string &id,
+                                      NclExecutionObject *execObject)
 {
   this->id = id;
   currentState = EventUtil::ST_SLEEPING;
@@ -438,14 +439,14 @@ NclFormatterEvent::getTransistion (short previousState, short newState)
   return -1;
 }
 
-void *
+NclExecutionObject *
 NclFormatterEvent::getExecutionObject ()
 {
   return executionObject;
 }
 
 void
-NclFormatterEvent::setExecutionObject (void *object)
+NclFormatterEvent::setExecutionObject (NclExecutionObject *object)
 {
   executionObject = object;
 }

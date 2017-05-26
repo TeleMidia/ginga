@@ -25,6 +25,8 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
+class NclExecutionObject;
+
 class NclFormatterEvent
 {
 protected:
@@ -32,7 +34,7 @@ protected:
   short currentState;
   short previousState;
   long occurrences;
-  void *executionObject;
+  NclExecutionObject *executionObject;
   set<INclEventListener *> listeners;
   set<string> typeSet;
   bool deleting;
@@ -44,7 +46,7 @@ protected:
   static pthread_mutex_t iMutex;
 
 public:
-  NclFormatterEvent (const string &id, void *executionObject);
+  NclFormatterEvent (const string &id, NclExecutionObject *);
   virtual ~NclFormatterEvent ();
 
 private:
@@ -91,8 +93,8 @@ public:
   short getPreviousState ();
   static short getTransistion (short previousState, short newState);
 
-  void *getExecutionObject ();
-  void setExecutionObject (void *object);
+  NclExecutionObject *getExecutionObject ();
+  void setExecutionObject (NclExecutionObject *object);
   string getId ();
   long getOccurrences ();
   static string getStateName (short state);

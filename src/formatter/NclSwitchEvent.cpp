@@ -20,7 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclSwitchEvent::NclSwitchEvent (const string &id, void *executionObjectSwitch,
+NclSwitchEvent::NclSwitchEvent (const string &id,
+                                NclExecutionObject *executionObjectSwitch,
                                 InterfacePoint *interfacePoint,
                                 int eventType, const string &key)
     : NclFormatterEvent (id, executionObjectSwitch)

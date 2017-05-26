@@ -44,18 +44,15 @@ private:
   PresentationContext *presContext;
   RuleAdapter *ruleAdapter;
 
-  string file;
-  NclDocument *doc;
-  vector<NclFormatterEvent *> documentEvents;
-  map<NclFormatterEvent *, bool> documentStatus;
-  set<void *> actions;
+  string file;                        // NCL file path
+  NclDocument *doc;                   // NCL document tree
+  vector<NclFormatterEvent *> events; // document events
+  set<void *> actions;                // document actions
 
   bool running;
 
   pthread_mutex_t mutexD;
   pthread_mutex_t mutexActions;
-  set<NclFormatterEvent *> listening;
-  pthread_mutex_t lMutex;
 
 public:
   FormatterScheduler ();
@@ -77,13 +74,10 @@ public:
 
   void startDocument (const string &);
 
-  void stopDocument (NclFormatterEvent *documentEvent);
   void eventStateChanged (void *someEvent, short transition,
                           short previousState);
 
 private:
-  bool isDocumentRunning (NclFormatterEvent *event);
-
   void runAction (NclLinkSimpleAction *action);
 
   void runAction (NclFormatterEvent *event, NclLinkSimpleAction *action);

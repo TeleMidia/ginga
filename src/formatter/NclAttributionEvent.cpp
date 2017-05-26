@@ -26,7 +26,8 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-NclAttributionEvent::NclAttributionEvent (const string &id, void *executionObject,
+NclAttributionEvent::NclAttributionEvent (const string &id,
+                                          NclExecutionObject *executionObject,
                                           PropertyAnchor *anchor,
                                           PresentationContext *presContext)
     : NclFormatterEvent (id, executionObject)

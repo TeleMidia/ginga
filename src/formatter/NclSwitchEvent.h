@@ -35,7 +35,7 @@ private:
 
 public:
   NclSwitchEvent (const string &id,
-                  void *executionObjectSwitch, // NclExecutionObjectSwitch
+                  NclExecutionObject *executionObjectSwitch,
                   InterfacePoint *interfacePoint, int eventType,
                   const string &key);
 

@@ -20,7 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclSelectionEvent::NclSelectionEvent (const string &id, void *executionObject,
+NclSelectionEvent::NclSelectionEvent (const string &id,
+                                      NclExecutionObject *executionObject,
                                       ContentAnchor *anchor)
     : NclAnchorEvent (id, executionObject, anchor)
 {
