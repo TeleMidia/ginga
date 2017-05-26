@@ -30,8 +30,6 @@ using namespace ::ginga::ctxmgmt;
 #include "system/Thread.h"
 using namespace ::ginga::system;
 
-#include "ContextBase.h"
-
 #include "ctxmgmt/IContextListener.h"
 using namespace ::ginga::ctxmgmt;
 

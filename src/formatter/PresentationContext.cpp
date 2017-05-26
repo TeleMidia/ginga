@@ -199,9 +199,9 @@ PresentationContext::initializeUserInfo (int currentUserId)
   if (user == NULL)
     return;                     // nothing to do
 
-  xstrassign (contextTable[USER_AGE], "%d", user->getUserAge ());
-  contextTable[USER_LOCATION] = user->getUserLocation ();
-  contextTable[USER_GENRE] = user->getUserGenre ();
+  xstrassign (contextTable["user.age"], "%d", user->getUserAge ());
+  contextTable["user.location"] = user->getUserLocation ();
+  contextTable["user.genre"] = user->getUserGenre ();
 }
 
 void
@@ -213,51 +213,51 @@ PresentationContext::initializeSystemValues ()
   // clog << "PresentationContext::initializeSystemValues " << endl;
   si = PresentationContext::contextManager->getSystemInfo ();
 
-  contextTable[SYSTEM_LANGUAGE] = si->getSystemLanguage ();
-  contextTable[SYSTEM_CAPTION] = si->getCaptionLanguage ();
-  contextTable[SYSTEM_SUBTITLE] = si->getSubtitleLanguage ();
-  xstrassign (contextTable[SYSTEM_RETURN_BIT_RATE], "%d", (int) si->getReturnBitRate ());
+  contextTable["system.language"] = si->getSystemLanguage ();
+  contextTable["system.caption"] = si->getCaptionLanguage ();
+  contextTable["system.subtitle"] = si->getSubtitleLanguage ();
+  xstrassign (contextTable["system.returnBitRate"], "%d", (int) si->getReturnBitRate ());
 
   si->getScreenSize (&w, &h);
-  xstrassign (contextTable[SYSTEM_SCREEN_SIZE], "%d,%d", w, h);
+  xstrassign (contextTable["system.screenSize"], "%d,%d", w, h);
 
   si->getScreenGraphicSize (&w, &h);
-  xstrassign (contextTable[SYSTEM_SCREEN_GRAPHIC_SIZE], "%d,%d", w, h);
-  contextTable[SYSTEM_AUDIO_TYPE] = si->getAudioType ();
-  xstrassign (contextTable[SYSTEM_CPU], "%d", (int) si->getCPUClock ());
-  xstrassign (contextTable[SYSTEM_MEMORY], "%d", (int) si->getMemorySize ());
-  contextTable[SYSTEM_OPERATING_SYSTEM] = "";
+  xstrassign (contextTable["system.screenGraphicSize"], "%d,%d", w, h);
+  contextTable["system.audioType"] = si->getAudioType ();
+  xstrassign (contextTable["system.CPU"], "%d", (int) si->getCPUClock ());
+  xstrassign (contextTable["system.memory"], "%d", (int) si->getMemorySize ());
+  contextTable["system.operatingSystem"] = "";
 
-  contextTable[SYSTEM_DEVNUMBER + "(0)"] = "0";
-  contextTable[SYSTEM_DEVNUMBER + "(1)"] = "0";
-  contextTable[SYSTEM_DEVNUMBER + "(2)"] = "0";
+  contextTable["system.devNumber(0)"] = "0";
+  contextTable["system.devNumber(1)"] = "0";
+  contextTable["system.devNumber(2)"] = "0";
 
-  contextTable[SYSTEM_CLASSTYPE + "(0)"] = "base";
-  contextTable[SYSTEM_CLASSTYPE + "(2)"] = "active";
+  contextTable["system.classType(0)"] = "base";
+  contextTable["system.classType(2)"] = "active";
 
-  contextTable[SYSTEM_INFO + "(0)"] = "0";
-  contextTable[SYSTEM_INFO + "(2)"] = "2";
+  contextTable["system.info(0)"] = "0";
+  contextTable["system.info(2)"] = "2";
 
-  contextTable[SYSTEM_CLASS_NUMBER] = "3";
+  contextTable["system.classNumber"] = "3";
 
-  if (contextTable.count (DEFAULT_FOCUS_BORDER_COLOR) == 0)
+  if (contextTable.count ("default.focusBorderColor") == 0)
     {
-      contextTable[DEFAULT_FOCUS_BORDER_COLOR] = "blue";
+      contextTable["DEFAULT_FOCUS_BORDER_COLOR"] = "blue";
     }
 
-  if (contextTable.count (DEFAULT_SEL_BORDER_COLOR) == 0)
+  if (contextTable.count ("default.selBorderColor") == 0)
     {
-      contextTable[DEFAULT_SEL_BORDER_COLOR] = "green";
+      contextTable["default.selBorderColor"] = "green";
     }
 
-  if (contextTable.count (DEFAULT_FOCUS_BORDER_WIDTH) == 0)
+  if (contextTable.count ("default.focusBorderWidth") == 0)
     {
-      contextTable[DEFAULT_FOCUS_BORDER_WIDTH] = "3";
+      contextTable["default.focusBorderWidth"] = "3";
     }
 
-  if (contextTable.count (DEFAULT_FOCUS_BORDER_TRANSPARENCY) == 0)
+  if (contextTable.count ("default.focusBorderTransparency") == 0)
     {
-      contextTable[DEFAULT_FOCUS_BORDER_TRANSPARENCY] = "0";
+      contextTable["default.focusBorderTransparency"] = "0";
     }
 }
 
