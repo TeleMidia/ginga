@@ -1216,7 +1216,7 @@ FormatterScheduler::initializeDefaultSettings ()
 {
   string value;
 
-  value = presContext->getPropertyValue (DEFAULT_FOCUS_BORDER_COLOR);
+  value = presContext->getPropertyValue ("system.defaultFocusBorderColor");
   if (value != "")
     {
       SDL_Color *c = new SDL_Color();
@@ -1224,13 +1224,13 @@ FormatterScheduler::initializeDefaultSettings ()
       focusManager->setDefaultFocusBorderColor(c);
     }
 
-  value = presContext->getPropertyValue (DEFAULT_FOCUS_BORDER_WIDTH);
+  value = presContext->getPropertyValue ("system.defaultFocusBorderWidth");
   if (value != "")
     {
       focusManager->setDefaultFocusBorderWidth (xstrtoint (value, 10));
     }
 
-  value = presContext->getPropertyValue (DEFAULT_SEL_BORDER_COLOR);
+  value = presContext->getPropertyValue ("system.defaultSelBorderColor");
   if (value != "")
     {
       SDL_Color *c = new SDL_Color();

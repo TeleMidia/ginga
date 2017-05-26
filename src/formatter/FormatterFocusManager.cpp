@@ -50,7 +50,7 @@ FormatterFocusManager::FormatterFocusManager (
   width = 0;
   height = 0;
 
-  strValue = presContext->getPropertyValue (DEFAULT_FOCUS_BORDER_COLOR);
+  strValue = presContext->getPropertyValue ("system.focusBorderColor");
   if (strValue == "")
     {
       defaultFocusBorderColor = new SDL_Color();
@@ -62,7 +62,7 @@ FormatterFocusManager::FormatterFocusManager (
       ginga_color_input_to_sdl_color( strValue, defaultFocusBorderColor);
     }
 
-  strValue = presContext->getPropertyValue (DEFAULT_FOCUS_BORDER_WIDTH);
+  strValue = presContext->getPropertyValue ("system.defaultFocusBorderWidth");
   if (strValue == "")
     {
       defaultFocusBorderWidth = 1;
@@ -72,7 +72,7 @@ FormatterFocusManager::FormatterFocusManager (
       defaultFocusBorderWidth = xstrtoint (strValue, 10);
     }
 
-  strValue = presContext->getPropertyValue (DEFAULT_SEL_BORDER_COLOR);
+  strValue = presContext->getPropertyValue ("system.defaultSelBorderColor");
   if (strValue == "")
     {
       defaultSelBorderColor = new SDL_Color();
