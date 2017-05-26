@@ -27,7 +27,6 @@ GINGA_PLAYER_BEGIN
 Player::Player (const string &mrl)
 {
   Thread::mutexInit (&listM, false);
-  Thread::mutexInit (&lockedListM, false);
 
   this->mrl = mrl;
   this->window = NULL;
@@ -72,14 +71,8 @@ Player::~Player ()
   Thread::mutexLock (&listM);
   listeners.clear ();
 
-  Thread::mutexLock (&lockedListM);
-  lockedListeners.clear ();
-
   properties.clear ();
-
-  Thread::mutexUnlock (&lockedListM);
   Thread::mutexUnlock (&listM);
-  Thread::mutexDestroy (&lockedListM);
   Thread::mutexDestroy (&listM);
 }
 
@@ -93,17 +86,17 @@ Player::setMrl (const string &mrl, bool visible)
 void
 Player::addListener (IPlayerListener *listener)
 {
-  LockedPlayerListener *lpl = NULL;
+  // LockedPlayerListener *lpl = NULL;
 
   if (notifying)
     {
-      Thread::mutexLock (&lockedListM);
-      lpl = new LockedPlayerListener;
-      lpl->isAdd = true;
-      lpl->l = listener;
+      // Thread::mutexLock (&lockedListM);
+      // lpl = new LockedPlayerListener;
+      // lpl->isAdd = true;
+      // lpl->l = listener;
 
-      lockedListeners.push_back (lpl);
-      Thread::mutexUnlock (&lockedListM);
+      // lockedListeners.push_back (lpl);
+      // Thread::mutexUnlock (&lockedListM);
     }
   else
     {
@@ -116,20 +109,9 @@ Player::addListener (IPlayerListener *listener)
 void
 Player::removeListener (IPlayerListener *listener)
 {
-  LockedPlayerListener *lpl = NULL;
   set<IPlayerListener *>::iterator i;
 
-  if (notifying)
-    {
-      Thread::mutexLock (&lockedListM);
-      lpl = new LockedPlayerListener;
-      lpl->isAdd = false;
-      lpl->l = listener;
-
-      lockedListeners.push_back (lpl);
-      Thread::mutexUnlock (&lockedListM);
-    }
-  else
+  if (!notifying)
     {
       Thread::mutexLock (&listM);
       i = listeners.find (listener);

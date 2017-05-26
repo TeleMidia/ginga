@@ -30,23 +30,14 @@ enum PLAYER_STATUS
   PAUSED
 };
 
-typedef struct LockedPlayerLitenerAction
-{
-  ::ginga::player::IPlayerListener *l;
-  bool isAdd;
-} LockedPlayerListener;
-
 class Player : public IPlayer
 {
 private:
   pthread_mutex_t listM;
-  pthread_mutex_t lockedListM;
-
   bool notifying;
 
   map<string, string> properties;
   set<IPlayerListener *> listeners;
-  vector<LockedPlayerListener *> lockedListeners;
 
 protected:
   PLAYER_STATUS status;
