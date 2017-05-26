@@ -1127,91 +1127,6 @@ FormatterScheduler::resumeEvent (NclFormatterEvent *event)
 }
 
 void
-FormatterScheduler::initializeDefaultSettings ()
-{
-  string value;
-
-  value = presContext->getPropertyValue ("system.defaultFocusBorderColor");
-  if (value != "")
-    {
-      SDL_Color *c = new SDL_Color();
-      ginga_color_input_to_sdl_color(value,c);
-      focusManager->setDefaultFocusBorderColor(c);
-    }
-
-  value = presContext->getPropertyValue ("system.defaultFocusBorderWidth");
-  if (value != "")
-    {
-      focusManager->setDefaultFocusBorderWidth (xstrtoint (value, 10));
-    }
-
-  value = presContext->getPropertyValue ("system.defaultSelBorderColor");
-  if (value != "")
-    {
-      SDL_Color *c = new SDL_Color();
-       ginga_color_input_to_sdl_color(value,c);
-      focusManager->setDefaultSelBorderColor(c);
-    }
-}
-
-void
-FormatterScheduler::initializeDocumentSettings (Node *node)
-{
-  string value;
-  vector<Anchor *> *anchors;
-  vector<Anchor *>::iterator i;
-  vector<Node *> *nodes;
-  vector<Node *>::iterator j;
-  Anchor *anchor;
-  PropertyAnchor *attributeAnchor;
-
-  if (node->instanceOf ("ContentNode"))
-    {
-      if (((ContentNode *)node)->isSettingNode ())
-        {
-          anchors = ((ContentNode *)node)->getAnchors ();
-          if (anchors != NULL)
-            {
-              i = anchors->begin ();
-              while (i != anchors->end ())
-                {
-                  anchor = (*i);
-                  if (anchor->instanceOf ("PropertyAnchor"))
-                    {
-                      attributeAnchor = (PropertyAnchor *)anchor;
-                      value = attributeAnchor->getPropertyValue ();
-                      if (value != "")
-                        {
-                          presContext->setPropertyValue (
-                              attributeAnchor->getPropertyName (), value);
-                        }
-                    }
-                  ++i;
-                }
-            }
-        }
-    }
-  else if (node->instanceOf ("CompositeNode"))
-    {
-      nodes = ((CompositeNode *)node)->getNodes ();
-      if (nodes != NULL)
-        {
-          j = nodes->begin ();
-          while (j != nodes->end ())
-            {
-              initializeDocumentSettings (*j);
-              ++j;
-            }
-        }
-    }
-  else if (node->instanceOf ("ReferNode"))
-    {
-      initializeDocumentSettings (
-          (NodeEntity *)((ReferNode *)node)->getDataEntity ());
-    }
-}
-
-void
 FormatterScheduler::startDocument (const string &file)
 {
   string id;
@@ -1284,20 +1199,39 @@ FormatterScheduler::startDocument (const string &file)
   delete ports;
   delete persp;
 
-  // Create execution object for settings.
+  // Create execution object for settings and initializes it.
   vector <Node *> *settings = this->doc->getSettingsNodes ();
   g_assert_nonnull (settings);
   for (guint i = 0; i < settings->size (); i++)
     {
+      ContentNode *content;
+
       persp = new NclNodeNesting ((settings->at (i))->getPerspective ());
       execobj = this->compiler
         ->getExecutionObjectFromPerspective (persp, NULL);
       g_assert_nonnull (execobj);
 
-      g_debug ("execution object %p for settings %s",
-               execobj, persp->toString ().c_str ());
-
+      g_debug ("settings: processing '%s'", persp->toString ().c_str ());
       delete persp;
+
+      content = (ContentNode *)(settings->at (i));
+      for (auto anchor: *(content->getAnchors ()))
+        {
+          PropertyAnchor *prop;
+          string name;
+          string value;
+
+          if (!anchor->instanceOf ("PropertyAnchor"))
+            continue;           // nothing to do
+
+          prop = (PropertyAnchor *) anchor;
+          name = prop->getPropertyName ();
+          value = prop->getPropertyValue ();
+          if (value == "")
+            continue;           // nothing to do
+
+          g_debug ("settings: set %s='%s'", name.c_str (), value.c_str ());
+        }
     }
   delete settings;
 
@@ -1305,22 +1239,14 @@ FormatterScheduler::startDocument (const string &file)
   evt = entryevts->at (0);
   g_assert_nonnull (evt);
 
-  execobj = (NclExecutionObject *)(evt->getExecutionObject ());
+  execobj = evt->getExecutionObject ();
   g_assert_nonnull (execobj);
 
   parent = (NclCompositeExecutionObject *)(execobj->getParentObject ());
   g_assert_nonnull (parent);
 
-  Thread::mutexLock (&mutexD);
-
   evt->addEventListener (this);
   events.push_back (evt);
-
-  execobj = evt->getExecutionObject ();
-  g_assert_nonnull (execobj);
-
-  initializeDocumentSettings (execobj->getDataObject ());
-  initializeDefaultSettings ();
 
   for (guint i = 0; i < entryevts->size (); i++)
     {
