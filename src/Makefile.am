@@ -58,7 +58,6 @@ src+= formatter/AdapterPlayerManager.cpp
 src+= formatter/FormatterConverter.cpp
 src+= formatter/FormatterFocusManager.cpp
 src+= formatter/FormatterLinkConverter.cpp
-src+= formatter/FormatterMultiDevice.cpp
 src+= formatter/FormatterScheduler.cpp
 src+= formatter/NclAnchorEvent.cpp
 src+= formatter/NclApplicationExecutionObject.cpp

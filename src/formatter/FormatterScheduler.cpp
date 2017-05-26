@@ -22,6 +22,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FormatterConverter.h"
 #include "Parser.h"
 
+#include "mb/Display.h"
+
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_FORMATTER_BEGIN
@@ -37,12 +39,12 @@ FormatterScheduler::FormatterScheduler ()
   this->compiler = new FormatterConverter (ruleAdapter);
   this->compiler->setLinkActionListener (this);
   this->compiler->setScheduler (this);
-  this->multiDevice = new FormatterMultiDevice (w, h);
+  //this->multiDevice = new FormatterMultiDevice (w, h);
+  this->layout = new NclFormatterLayout (w, h);
   this->playerManager = new AdapterPlayerManager ();
   this->focusManager = new FormatterFocusManager
-    (this->playerManager, this->presContext, this->multiDevice, this,
+    (this->playerManager, this->presContext, this,
      (FormatterConverter *) this->compiler);
-  this->multiDevice->setFocusManager (this->focusManager);
 
   this->focusManager->setKeyHandler (true);
   this->running = false;
@@ -143,7 +145,7 @@ FormatterScheduler::getFocusManager ()
 NclFormatterLayout *
 FormatterScheduler::getFormatterLayout ()
 {
-  return multiDevice->getFormatterLayout ();
+  return this->layout;
 }
 
 bool
@@ -309,7 +311,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
           playerContent = player->getPlayer ();
           g_assert_nonnull (playerContent);
 
-          winId = multiDevice->prepareFormatterRegion (executionObject);
+          winId = this->prepareFormatterRegion (executionObject);
 
           // FIXME: Sometimes winId is NULL!
           // g_assert_nonnull (winId);
@@ -570,7 +572,7 @@ FormatterScheduler::runActionOverApplicationObject (
 
           if (playerContent != NULL)
             {
-              winId = multiDevice->prepareFormatterRegion (executionObject);
+              winId = this->prepareFormatterRegion (executionObject);
 
               player->setOutputWindow (winId);
             }
@@ -1542,7 +1544,7 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
                   object);
           if (player != NULL)
             {
-              multiDevice->showObject (object);
+              this->showObject (object);
 
               focusManager->showObject (object);
             }
@@ -1572,8 +1574,8 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
                   clog << "' STOPS: hideObject '" << object->getId ();
                   clog << endl;
 
-                  focusManager->hideObject (object);
-                  multiDevice->hideObject (object);
+                  this->focusManager->hideObject (object);
+                  this->hideObject (object);
 
                   player = (AdapterFormatterPlayer *)
                                playerManager->getObjectPlayer (object);
@@ -1605,8 +1607,8 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
                 clog << "' ABORTS: hideObject '" << object->getId ();
                 clog << endl;
 
-                focusManager->hideObject (object);
-                multiDevice->hideObject (object);
+                this->focusManager->hideObject (object);
+                this->hideObject (object);
 
                 player = (AdapterFormatterPlayer *)
                   playerManager->getObjectPlayer (object);
@@ -1633,6 +1635,74 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
 
         default:
           g_assert_not_reached ();
+        }
+    }
+}
+
+SDLWindow*
+FormatterScheduler::prepareFormatterRegion (
+    NclExecutionObject *executionObject)
+{
+  NclCascadingDescriptor *descriptor;
+  string regionId, plan = "";
+  SDLWindow* windowId = 0;
+
+  map<int, NclFormatterLayout *>::iterator i;
+
+  descriptor = executionObject->getDescriptor ();
+  if (descriptor != NULL)
+    {
+      if (descriptor->getFormatterRegion () != NULL)
+        {
+          plan = descriptor->getFormatterRegion ()->getPlan ();
+        }
+      windowId = layout->prepareFormatterRegion (executionObject, plan);
+    }
+
+  return windowId;
+}
+
+void
+FormatterScheduler::showObject (NclExecutionObject *executionObject)
+{
+  NclFormatterLayout *layout;
+  NclCascadingDescriptor *descriptor;
+  NclFormatterRegion *fRegion;
+  LayoutRegion *region;
+
+  descriptor = executionObject->getDescriptor ();
+  if (descriptor != NULL)
+    {
+      region = descriptor->getRegion ();
+      layout = getFormatterLayout ();
+      if (region != NULL && layout != NULL)
+        {
+          fRegion = descriptor->getFormatterRegion ();
+          if (fRegion != NULL)
+            {
+              fRegion->setGhostRegion (true);
+            }
+          layout->showObject (executionObject);
+        }
+    }
+}
+
+void
+FormatterScheduler::hideObject (NclExecutionObject *executionObject)
+{
+  NclFormatterLayout *layout;
+  NclCascadingDescriptor *descriptor;
+  LayoutRegion *region;
+  string fileUri;
+
+  descriptor = executionObject->getDescriptor ();
+  if (descriptor != NULL)
+    {
+      region = descriptor->getRegion ();
+      layout = getFormatterLayout ();
+      if (region != NULL && layout != NULL)
+        {
+              layout->hideObject (executionObject);
         }
     }
 }

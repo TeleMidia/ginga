@@ -23,7 +23,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AdapterPlayerManager.h"
 #include "FormatterConverter.h"
 #include "FormatterFocusManager.h"
-#include "FormatterMultiDevice.h"
 #include "NclLinkAssignmentAction.h"
 #include "RuleAdapter.h"
 
@@ -38,12 +37,12 @@ class FormatterScheduler : public INclLinkActionListener,
                            public INclEventListener
 {
 private:
-  RuleAdapter *ruleAdapter;
   AdapterPlayerManager *playerManager;
-  PresentationContext *presContext;
-  FormatterMultiDevice *multiDevice;
-  FormatterFocusManager *focusManager;
   FormatterConverter *compiler;
+  FormatterFocusManager *focusManager;
+  NclFormatterLayout *layout;
+  PresentationContext *presContext;
+  RuleAdapter *ruleAdapter;
 
   string file;
   NclDocument *doc;
@@ -60,11 +59,6 @@ private:
 
 public:
   FormatterScheduler ();
-  // FormatterScheduler (AdapterPlayerManager *playerManager,
-  //                     RuleAdapter *ruleAdapter,
-  //                     FormatterMultiDevice *multiDevice,
-  //                     void *compiler); // FormatterConverter
-
   virtual ~FormatterScheduler ();
 
   void addAction (void *action);
@@ -126,6 +120,12 @@ public:
   void stopDocument (NclFormatterEvent *documentEvent);
   void eventStateChanged (void *someEvent, short transition,
                           short previousState);
+
+private:
+  SDLWindow*
+  prepareFormatterRegion (NclExecutionObject *);
+  void showObject (NclExecutionObject *);
+  void hideObject (NclExecutionObject *executionObject);
 };
 
 GINGA_FORMATTER_END

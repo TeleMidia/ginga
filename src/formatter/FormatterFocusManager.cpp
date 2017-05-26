@@ -36,7 +36,6 @@ pthread_mutex_t FormatterFocusManager::iMutex;
 
 FormatterFocusManager::FormatterFocusManager (
     AdapterPlayerManager *playerManager, PresentationContext *presContext,
-    FormatterMultiDevice *multiDevice,
     INclLinkActionListener *settingActions, void *converter)
 {
   string strValue;
@@ -88,7 +87,6 @@ FormatterFocusManager::FormatterFocusManager (
   this->presContext = presContext;
   this->selectedObject = NULL;
   this->playerManager = playerManager;
-  this->multiDevice = multiDevice;
   this->converter = converter;
   this->settingActions = settingActions;
 
