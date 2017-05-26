@@ -71,13 +71,6 @@ public:
 
   virtual string getPropertyValue (const string &name) = 0;
   virtual void setPropertyValue (const string &name, const string &value) = 0;
-
-  virtual void setReferenceTimePlayer (IPlayer *player) = 0;
-  virtual void addTimeReferPlayer (IPlayer *referPlayer) = 0;
-  virtual void removeTimeReferPlayer (IPlayer *referPlayer) = 0;
-  virtual void notifyReferPlayers (int transition) = 0;
-  virtual void timebaseObjectTransitionCallback (int transition) = 0;
-  virtual void setTimeBasePlayer (IPlayer *timeBasePlayer) = 0;
   virtual bool isVisible () = 0;
   virtual void setVisible (bool visible) = 0;
   virtual void forceNaturalEnd (bool forceIt) = 0;

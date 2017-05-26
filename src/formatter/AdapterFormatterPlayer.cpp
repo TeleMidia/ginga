@@ -958,7 +958,6 @@ AdapterFormatterPlayer::stop ()
     }
 
   _player->stop ();
-  _player->notifyReferPlayers (EventUtil::TR_STOPS);
 
   if (_player->isForcedNaturalEnd ())
     {
@@ -985,8 +984,6 @@ AdapterFormatterPlayer::pause ()
   if (_object->pause ())
     {
       _player->pause ();
-      _player->notifyReferPlayers (EventUtil::TR_PAUSES);
-
       return true;
     }
   else
@@ -1003,7 +1000,6 @@ AdapterFormatterPlayer::resume ()
   if (_object->resume ())
     {
       _player->resume ();
-      _player->notifyReferPlayers (EventUtil::TR_RESUMES);
       return true;
     }
   return false;
@@ -1016,8 +1012,6 @@ AdapterFormatterPlayer::abort ()
   g_assert_nonnull (_player);
 
   _player->stop ();
-  _player->notifyReferPlayers (EventUtil::TR_ABORTS);
-
   if (!_object->isSleeping ())
     {
       _object->abort ();
@@ -1056,12 +1050,8 @@ AdapterFormatterPlayer::checkRepeat (NclPresentationEvent *event)
   if (event->getRepetitions () > 1)
     {
       _player->stop ();
-      _player->notifyReferPlayers (EventUtil::TR_STOPS);
-
       if (_object != nullptr)
-        {
-          _object->stop ();
-        }
+        _object->stop ();
 
       prepare ();
       return true;
