@@ -51,6 +51,8 @@
 /data/Makefile
 /data/Makefile.in
 /data/ini/ginga.ini
+/doc/Doxyfile
+/doc/html
 /libtool
 /src/Makefile
 /src/Makefile.in
