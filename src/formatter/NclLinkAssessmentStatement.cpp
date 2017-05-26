@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 NclLinkAssessmentStatement::NclLinkAssessmentStatement (
-    short comparator, NclLinkAttributeAssessment *mainAssessment,
+    Comparator::Op comparator, NclLinkAttributeAssessment *mainAssessment,
     NclLinkAssessment *otherAssessment)
     : NclLinkStatement ()
 {
@@ -63,14 +63,14 @@ NclLinkAssessmentStatement::getEvents ()
   return events;
 }
 
-short
+Comparator::Op
 NclLinkAssessmentStatement::getComparator ()
 {
   return comparator;
 }
 
 void
-NclLinkAssessmentStatement::setComparator (short comp)
+NclLinkAssessmentStatement::setComparator (Comparator::Op comp)
 {
   comparator = comp;
 }
@@ -105,17 +105,7 @@ bool
 NclLinkAssessmentStatement::evaluate ()
 {
   if (mainAssessment == NULL || otherAssessment == NULL)
-    {
-      return false;
-    }
-
-  clog << "NclLinkAssessmentStatement::evaluate() ";
-  clog << "mainAssessment(" << mainAssessment << ") = '";
-  clog << mainAssessment->getValue () << "' ";
-  clog << "otherAssessment(" << otherAssessment << ") = '";
-  clog << otherAssessment->getValue () << "' comparator = '";
-  clog << comparator << "'";
-  clog << endl;
+    return false;
 
   return Comparator::evaluate (mainAssessment->getValue (),
                                otherAssessment->getValue (), comparator);

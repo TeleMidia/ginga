@@ -15,10 +15,11 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _SIMPLERULE_H_
-#define _SIMPLERULE_H_
+#ifndef SIMPLE_RULE_H
+#define SIMPLE_RULE_H
 
 #include "Rule.h"
+#include "Comparator.h"
 
 GINGA_NCL_BEGIN
 
@@ -26,21 +27,22 @@ class SimpleRule : public Rule
 {
 private:
   string attribute;
-  short ruleOperator;
+  Comparator::Op ruleOperator;
   string value;
 
 public:
-  SimpleRule (const string &id, const string &attr, short op, const string &val);
+  SimpleRule (const string &id, const string &attr, Comparator::Op op,
+              const string &val);
 
   virtual ~SimpleRule (){};
   string getAttribute ();
-  short getOperator ();
+  Comparator::Op getOperator ();
   string getValue ();
-  void setOperator (short newOp);
+  void setOperator (Comparator::Op newOp);
   void setValue (const string &newValue);
   void setAttribute (const string &someAttribute);
 };
 
 GINGA_NCL_END
 
-#endif //_SIMPLERULE_H_
+#endif // SIMPLE_RULE_H

@@ -389,7 +389,7 @@ bool
 RuleAdapter::evaluateSimpleRule (SimpleRule *rule)
 {
   string attribute;
-  short op;
+  Comparator::Op op;
   string ruleValue;
   string attributeValue;
 
@@ -397,11 +397,6 @@ RuleAdapter::evaluateSimpleRule (SimpleRule *rule)
   attributeValue = presContext->getPropertyValue (attribute);
 
   ruleValue = rule->getValue ();
-
-  clog << "RuleAdapter::evaluateSimpleRule '";
-  clog << attribute << "' == '" << attributeValue;
-  clog << "' considering rule value == '" << ruleValue << "'";
-  clog << endl;
 
   if (attributeValue == "")
     {

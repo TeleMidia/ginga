@@ -32,21 +32,21 @@ GINGA_FORMATTER_BEGIN
 class NclLinkAssessmentStatement : public NclLinkStatement
 {
 protected:
-  short comparator;
+  Comparator::Op comparator;
   NclLinkAssessment *otherAssessment;
 
 private:
   NclLinkAssessment *mainAssessment;
 
 public:
-  NclLinkAssessmentStatement (short comparator,
+  NclLinkAssessmentStatement (Comparator::Op comparator,
                               NclLinkAttributeAssessment *mainAssessment,
                               NclLinkAssessment *otherAssessment);
 
   virtual ~NclLinkAssessmentStatement ();
   vector<NclFormatterEvent *> *getEvents ();
-  short getComparator ();
-  void setComparator (short comp);
+  Comparator::Op getComparator ();
+  void setComparator (Comparator::Op comp);
   NclLinkAssessment *getMainAssessment ();
   void setMainAssessment (NclLinkAssessment *assessment);
   NclLinkAssessment *getOtherAssessment ();
