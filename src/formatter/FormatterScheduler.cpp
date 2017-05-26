@@ -105,7 +105,6 @@ FormatterScheduler::~FormatterScheduler ()
       focusManager = NULL;
     }
 
-  schedulerListeners.clear ();
   compiler = NULL;
   documentEvents.clear ();
   documentStatus.clear ();
@@ -1403,8 +1402,6 @@ void
 FormatterScheduler::stopDocument (NclFormatterEvent *documentEvent)
 {
   NclExecutionObject *executionObject;
-  vector<IFormatterSchedulerListener *>::iterator i;
-  IFormatterSchedulerListener *listener;
 
   clog << "FormatterScheduler::stopDocument through '";
   clog << documentEvent->getId () << "'" << endl;
@@ -1431,16 +1428,6 @@ FormatterScheduler::stopDocument (NclFormatterEvent *documentEvent)
       // since it can be started again
       // removeDocument(documentEvent);
       stopEvent (documentEvent);
-
-      i = schedulerListeners.begin ();
-      while (i != schedulerListeners.end ())
-        {
-          listener = *i;
-          listener->presentationCompleted (documentEvent);
-
-          schedulerListeners.erase (i);
-          i = schedulerListeners.begin ();
-        }
     }
   else
     {
@@ -1450,106 +1437,12 @@ FormatterScheduler::stopDocument (NclFormatterEvent *documentEvent)
 }
 
 void
-FormatterScheduler::pauseDocument (NclFormatterEvent *documentEvent)
-{
-  vector<NclFormatterEvent *>::iterator i;
-  for (i = documentEvents.begin (); i != documentEvents.end (); ++i)
-    {
-      if (*i == documentEvent)
-        {
-          Thread::mutexLock (&mutexD);
-          documentStatus[documentEvent] = false;
-          Thread::mutexUnlock (&mutexD);
-          pauseEvent (documentEvent);
-          break;
-        }
-    }
-}
-
-void
-FormatterScheduler::resumeDocument (NclFormatterEvent *documentEvent)
-{
-  bool contains;
-  contains = false;
-  vector<NclFormatterEvent *>::iterator i;
-  for (i = documentEvents.begin (); i != documentEvents.end (); ++i)
-    {
-      if (*i == documentEvent)
-        {
-          contains = true;
-          break;
-        }
-    }
-
-  if (contains)
-    {
-      resumeEvent (documentEvent);
-      Thread::mutexLock (&mutexD);
-      documentStatus[documentEvent] = true;
-      Thread::mutexUnlock (&mutexD);
-    }
-}
-
-void
-FormatterScheduler::stopAllDocuments ()
-{
-  int i, size;
-  vector<NclFormatterEvent *> *auxDocEventList;
-  NclFormatterEvent *documentEvent;
-
-  if (!documentEvents.empty ())
-    {
-      auxDocEventList = new vector<NclFormatterEvent *> (documentEvents);
-
-      size = (int) auxDocEventList->size ();
-      for (i = 0; i < size; i++)
-        {
-          documentEvent = (*auxDocEventList)[i];
-          stopDocument (documentEvent);
-        }
-
-      auxDocEventList->clear ();
-      delete auxDocEventList;
-      auxDocEventList = NULL;
-    }
-}
-
-void
-FormatterScheduler::pauseAllDocuments ()
-{
-  int i, size;
-  NclFormatterEvent *documentEvent;
-
-  if (!documentEvents.empty ())
-    {
-      size = (int) documentEvents.size ();
-      for (i = 0; i < size; i++)
-        {
-          documentEvent = documentEvents[i];
-          pauseDocument (documentEvent);
-        }
-    }
-}
-
-void
-FormatterScheduler::resumeAllDocuments ()
-{
-  if (documentEvents.empty ())
-    return;                     // nothing to do
-
-  for (size_t i = 0; i < documentEvents.size (); i++)
-    resumeDocument (documentEvents[i]);
-}
-
-void
 FormatterScheduler::eventStateChanged (void *someEvent, short transition,
                                        arg_unused (short previousState))
 {
   NclExecutionObject *object;
   AdapterFormatterPlayer *player;
-  vector<IFormatterSchedulerListener *>::iterator i;
   vector<NclFormatterEvent *>::iterator it;
-  IFormatterSchedulerListener *listener;
   NclFormatterEvent *event;
   bool contains;
   bool hasOther;
@@ -1586,15 +1479,6 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
           if (!hasOther)
             {
               documentEvents.clear ();
-
-              i = schedulerListeners.begin ();
-              while (i != schedulerListeners.end ())
-                {
-                  listener = *i;
-                  listener->presentationCompleted (event);
-
-                  ++i;
-                }
 
               // we can't remove the document,
               // since it can be started again
@@ -1708,43 +1592,6 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
 
         default:
           g_assert_not_reached ();
-        }
-    }
-}
-
-void
-FormatterScheduler::addSchedulerListener (
-    IFormatterSchedulerListener *listener)
-{
-  bool contains;
-  contains = false;
-  vector<IFormatterSchedulerListener *>::iterator i;
-  for (i = schedulerListeners.begin (); i != schedulerListeners.end (); ++i)
-    {
-      if (*i == listener)
-        {
-          contains = true;
-          break;
-        }
-    }
-
-  if (!contains)
-    {
-      schedulerListeners.push_back (listener);
-    }
-}
-
-void
-FormatterScheduler::removeSchedulerListener (
-    IFormatterSchedulerListener *listener)
-{
-  vector<IFormatterSchedulerListener *>::iterator i;
-  for (i = schedulerListeners.begin (); i != schedulerListeners.end (); ++i)
-    {
-      if (*i == listener)
-        {
-          schedulerListeners.erase (i);
-          return;
         }
     }
 }
