@@ -187,12 +187,7 @@ NclFormatterEvent::destroyListeners ()
 {
   Thread::mutexLock (&mutex);
   this->executionObject = NULL;
-
-  // TODO, avoid to leave a link bind with an inconsistent event
-  coreListeners.clear ();
-  linksListeners.clear ();
-  objectsListeners.clear ();
-
+  listeners.clear ();
   Thread::mutexUnlock (&mutex);
 }
 
@@ -205,28 +200,8 @@ NclFormatterEvent::setId (const string &id)
 void
 NclFormatterEvent::addEventListener (INclEventListener *listener)
 {
-  short pType = listener->getPriorityType ();
-
   Thread::mutexLock (&mutex);
-
-  switch (pType)
-    {
-    case INclEventListener::PT_CORE:
-      coreListeners.insert (listener);
-      break;
-
-    case INclEventListener::PT_LINK:
-      linksListeners.insert (listener);
-      break;
-
-    case INclEventListener::PT_OBJECT:
-      objectsListeners.insert (listener);
-      break;
-
-    default:
-      g_assert_not_reached ();
-    }
-
+  this->listeners.insert (listener);
   Thread::mutexUnlock (&mutex);
 }
 
@@ -234,9 +209,7 @@ bool
 NclFormatterEvent::containsEventListener (INclEventListener *listener)
 {
   Thread::mutexLock (&mutex);
-  if (coreListeners.count (listener) != 0
-      || linksListeners.count (listener) != 0
-      || objectsListeners.count (listener) != 0)
+  if (listeners.count (listener) != 0)
     {
       Thread::mutexUnlock (&mutex);
       return true;
@@ -251,24 +224,11 @@ NclFormatterEvent::removeEventListener (INclEventListener *listener)
   set<INclEventListener *>::iterator i;
 
   Thread::mutexLock (&mutex);
-  i = coreListeners.find (listener);
-  if (i != coreListeners.end ())
+  i = listeners.find (listener);
+  if (i != listeners.end ())
     {
-      coreListeners.erase (i);
+      listeners.erase (i);
     }
-
-  i = linksListeners.find (listener);
-  if (i != linksListeners.end ())
-    {
-      linksListeners.erase (i);
-    }
-
-  i = objectsListeners.find (listener);
-  if (i != objectsListeners.end ())
-    {
-      objectsListeners.erase (i);
-    }
-
   Thread::mutexUnlock (&mutex);
 }
 
@@ -288,7 +248,7 @@ NclFormatterEvent::getNewState (short transition)
       return EventUtil::ST_PAUSED;
 
     case EventUtil::TR_ABORTS:
-      return ST_ABORTED;
+      return EventUtil::ST_SLEEPING;
 
     default:
       return -1;
@@ -308,7 +268,7 @@ NclFormatterEvent::abort ()
     {
     case EventUtil::ST_OCCURRING:
     case EventUtil::ST_PAUSED:
-      return changeState (ST_ABORTED, EventUtil::TR_ABORTS);
+      return changeState (EventUtil::ST_SLEEPING, EventUtil::TR_ABORTS);
 
     default:
       return false;
@@ -377,7 +337,6 @@ bool
 NclFormatterEvent::changeState (short newState, short transition)
 {
   set<INclEventListener *>::iterator i;
-  set<INclEventListener *> *coreClone, *linkClone, *objectClone;
 
   Thread::mutexLock (&mutex);
 
@@ -395,14 +354,11 @@ NclFormatterEvent::changeState (short newState, short transition)
       return false;
     }
 
-  coreClone = new set<INclEventListener *> (coreListeners);
-  linkClone = new set<INclEventListener *> (linksListeners);
-  objectClone = new set<INclEventListener *> (objectsListeners);
-
+  set<INclEventListener *> *clone = new set<INclEventListener *> (listeners);
   Thread::mutexUnlock (&mutex);
 
-  i = coreClone->begin ();
-  while (i != coreClone->end ())
+  i = clone->begin ();
+  while (i != clone->end ())
     {
       if (deleting)
         {
@@ -417,54 +373,9 @@ NclFormatterEvent::changeState (short newState, short transition)
       ++i;
     }
 
-  i = linkClone->begin ();
-  while (i != linkClone->end ())
-    {
-      if (deleting)
-        {
-          break;
-        }
-
-      if (*i != NULL)
-        {
-          ((INclEventListener *)(*i))
-              ->eventStateChanged ((void *)this, transition, previousState);
-        }
-      ++i;
-    }
-
-  i = objectClone->begin ();
-  while (i != objectClone->end ())
-    {
-      if (deleting)
-        {
-          break;
-        }
-
-      if (*i != NULL)
-        {
-          ((INclEventListener *)(*i))
-              ->eventStateChanged ((void *)this, transition, previousState);
-        }
-      ++i;
-    }
-
-  coreClone->clear ();
-  delete coreClone;
-  coreClone = NULL;
-
-  linkClone->clear ();
-  delete linkClone;
-  linkClone = NULL;
-
-  objectClone->clear ();
-  delete objectClone;
-  objectClone = NULL;
-
-  if (currentState == ST_ABORTED)
-    {
-      currentState = EventUtil::ST_SLEEPING;
-    }
+  clone->clear ();
+  delete clone;
+  clone = NULL;
 
   return true;
 }
@@ -503,8 +414,6 @@ NclFormatterEvent::getTransistion (short previousState, short newState)
           return EventUtil::TR_STOPS;
         case EventUtil::ST_PAUSED:
           return EventUtil::TR_PAUSES;
-        case ST_ABORTED:
-          return EventUtil::TR_ABORTS;
         default:
           return -1;
         }
@@ -517,8 +426,6 @@ NclFormatterEvent::getTransistion (short previousState, short newState)
           return EventUtil::TR_RESUMES;
         case EventUtil::ST_SLEEPING:
           return EventUtil::TR_STOPS;
-        case ST_ABORTED:
-          return EventUtil::TR_ABORTS;
         default:
           return -1;
         }

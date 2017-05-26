@@ -48,7 +48,6 @@ public:
   virtual void eventStateChanged (void *event, short transition,
                                   short previousState);
 
-  short getPriorityType ();
   NclFormatterEvent *getEvent ();
   short getTransition ();
   virtual vector<NclFormatterEvent *> *getEvents ();

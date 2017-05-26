@@ -1811,12 +1811,6 @@ FormatterConverter::eventStateChanged (void *someEvent, short transition,
     }
 }
 
-short
-FormatterConverter::getPriorityType ()
-{
-  return INclEventListener::PT_CORE;
-}
-
 void
 FormatterConverter::reset ()
 {

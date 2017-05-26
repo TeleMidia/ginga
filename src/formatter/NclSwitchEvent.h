@@ -48,8 +48,6 @@ public:
   NclFormatterEvent *getMappedEvent ();
   virtual void eventStateChanged (void *event, short transition,
                                   short previousState);
-
-  short getPriorityType ();
 };
 
 GINGA_FORMATTER_END

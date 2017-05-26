@@ -76,12 +76,6 @@ NclLinkTransitionTriggerCondition::eventStateChanged (arg_unused (void *someEven
     }
 }
 
-short
-NclLinkTransitionTriggerCondition::getPriorityType ()
-{
-  return INclEventListener::PT_LINK;
-}
-
 NclFormatterEvent *
 NclLinkTransitionTriggerCondition::getEvent ()
 {

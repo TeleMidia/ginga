@@ -46,8 +46,6 @@ FormatterScheduler::FormatterScheduler (AdapterPlayerManager *playerManager,
       this->playerManager, presContext, multiDevPres, this,
       (FormatterConverter *)compiler);
 
-  this->presContext->setGlobalVarListener (this);
-
   this->multiDevPres->setFocusManager (this->focusManager);
 
   Thread::mutexInit (&mutexD, true);
@@ -1714,12 +1712,6 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
     }
 }
 
-short
-FormatterScheduler::getPriorityType ()
-{
-  return INclEventListener::PT_CORE;
-}
-
 void
 FormatterScheduler::addSchedulerListener (
     IFormatterSchedulerListener *listener)
@@ -1755,66 +1747,6 @@ FormatterScheduler::removeSchedulerListener (
           return;
         }
     }
-}
-
-void
-FormatterScheduler::receiveGlobalAttribution (const string &pName,
-                                              const string &value)
-{
-  set<NclExecutionObject *> *objs;
-  set<NclExecutionObject *>::iterator i;
-
-  set<string> *names;
-  set<string>::iterator j;
-
-  NclExecutionObject *object;
-  NclFormatterEvent *event;
-  NclLinkSimpleAction *fakeAction;
-
-  clog << "FormatterScheduler::receiveGlobalAttribution ";
-  clog << "prop = '" << pName << "', value = '" << value;
-  clog << "'" << endl;
-
-  objs = ((FormatterConverter *)compiler)->getSettingNodeObjects ();
-  if (objs == NULL || objs->empty ())
-    {
-      clog << "FormatterScheduler::receiveGlobalAttribution ";
-      clog << "there is 0 setting objects" << endl;
-      return;
-    }
-
-  // call runAction
-  i = objs->begin ();
-  while (i != objs->end ())
-    {
-      object = *i;
-      event = object->getEventFromAnchorId (pName);
-      if (event != NULL && event->instanceOf ("NclAttributionEvent"))
-        {
-          fakeAction = new NclLinkAssignmentAction (
-              event, ACT_START, value);
-
-          runAction (fakeAction);
-          delete fakeAction;
-          return;
-        }
-
-      clog << "FormatterScheduler::receiveGlobalAttribution ";
-      clog << "can't find anchor with name = '" << pName;
-      clog << "' inside object '" << object->getId () << "'";
-      clog << endl;
-
-      ++i;
-    }
-
-  names = presContext->getPropertyNames ();
-  j = names->find (pName);
-  if (j != names->end ())
-    {
-      presContext->setPropertyValue (pName, value);
-    }
-
-  delete names;
 }
 
 GINGA_FORMATTER_END

@@ -88,10 +88,4 @@ NclSwitchEvent::eventStateChanged (arg_unused (void *someEvent), short transitio
   changeState (getNewState (transition), transition);
 }
 
-short
-NclSwitchEvent::getPriorityType ()
-{
-  return INclEventListener::PT_LINK;
-}
-
 GINGA_FORMATTER_END
