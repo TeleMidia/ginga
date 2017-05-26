@@ -32,7 +32,6 @@ using namespace ::ginga::player;
 #include "player/ImagePlayer.h"
 #include "player/LuaPlayer.h"
 #include "player/VideoPlayer.h"
-#include "player/SsmlPlayer.h"
 #if defined WITH_LIBRSVG && WITH_LIBRSVG
 # include "player/SvgPlayer.h"
 #endif

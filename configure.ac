@@ -157,38 +157,6 @@ AU_CHECK_OPTIONAL_PKG([pango], [build with Pango support], [], [PANGO],
  pangocairo >= pango_required_version
 )
 
-# Optional dependencies that do not use pkg-config.
-#   $1: name;
-#   $2: description;
-#   $3: prefix;
-#   $4: requires message;
-#   $5: check (must set "with_optional_$1" to yes if successful)
-#
-AC_DEFUN([_MY_CHECK_OPTIONAL],[dnl
-AU_ARG_WITH([$1], [$2])
-with_optional_$1=no
-AS_IF([test "$with_$1" != no],
- [$5
-  AS_IF([test "$with_optional_$1" = no],
-   [AS_IF([test "$with_$1" = yes],
-    [_AU_ERROR_REQ([--with-$1 requires $4])])])])
-AS_IF([test "$with_optional_$1" = yes],
- [with_$1_result=yes
-  AC_DEFINE([WITH_$3], [1], [Define to 1 if you have ]$4[.])],
- [AS_IF([test "$with_$1" = check],
-  [with_$1_result='no	(requires: $4)'],
-  [with_$1_result='no'])
-  AC_DEFINE([WITH_$3], [0], [Define to 1 if you have ]$4[.])])
-AM_CONDITIONAL([WITH_$3],
- [test "$with_optional_$1" = yes])])
-
-_MY_CHECK_OPTIONAL([espeak], [build with Espeak ssml support],
- [ESPEAK], [libespeak],
- [AC_HAVE_LIBRARY([espeak],
-  [AC_CHECK_HEADER([espeak/speak_lib.h],
-   [with_optional_espeak=yes; ESPEAK_LIBS=-lespeak])])])
-AC_SUBST([ESPEAK_LIBS])
-
 AC_ARG_WITH([cef],
  [AS_HELP_STRING([--with-cef=DIR],
    [build with Chromium embedded at DIR])])
@@ -237,7 +205,6 @@ AC_MSG_NOTICE([summary of main build options:
   valgrind:           ${VALGRIND}
 
   with cef:           ${with_cef_result}
-  with espeak:        ${with_espeak_result}
   with gstreamer:     ${with_gstreamer_result}
   with librsvg:       ${with_librsvg_result}
   with pango:         ${with_pango_result}
