@@ -88,8 +88,7 @@ public:
 
   NclFormatterCausalLink *
   createCausalLink (CausalLink *ncmLink,
-                    NclCompositeExecutionObject *parentObject,
-                    int depthLevel);
+                    NclCompositeExecutionObject *parentObject);
 
 private:
   void setImplicitRefAssessment (const string &roleId, CausalLink *ncmLink,
@@ -97,54 +96,47 @@ private:
 
   NclLinkAction *createAction (Action *actionExpression,
                                CausalLink *ncmLink,
-                               NclCompositeExecutionObject *parentObject,
-                               int depthLevel);
+                               NclCompositeExecutionObject *parentObject);
 
   NclLinkCondition *
   createCondition (ConditionExpression *ncmExpression, CausalLink *ncmLink,
-                   NclCompositeExecutionObject *parentObject,
-                   int depthLevel);
+                   NclCompositeExecutionObject *parentObject);
 
   NclLinkCompoundTriggerCondition *createCompoundTriggerCondition (
       short op, double delay,
       vector<ConditionExpression *> *ncmChildConditions,
-      CausalLink *ncmLink, NclCompositeExecutionObject *parentObject,
-      int depthLevel);
+      CausalLink *ncmLink, NclCompositeExecutionObject *parentObject);
 
   NclLinkCondition *createCondition (
       TriggerExpression *triggerExpression, CausalLink *ncmLink,
-      NclCompositeExecutionObject *parentObject, int depthLevel);
+      NclCompositeExecutionObject *parentObject);
 
   NclLinkAssessmentStatement *createAssessmentStatement (
       AssessmentStatement *assessmentStatement, Bind *bind, Link *ncmLink,
-      NclCompositeExecutionObject *parentObject, int depthLevel);
+      NclCompositeExecutionObject *parentObject);
 
   NclLinkStatement *
   createStatement (Statement *statementExpression, Link *ncmLink,
-                   NclCompositeExecutionObject *parentObject,
-                   int depthLevel);
+                   NclCompositeExecutionObject *parentObject);
 
   NclLinkAttributeAssessment *createAttributeAssessment (
       AttributeAssessment *attributeAssessment, Bind *bind, Link *ncmLink,
-      NclCompositeExecutionObject *parentObject, int depthLevel);
+      NclCompositeExecutionObject *parentObject);
 
   NclLinkSimpleAction *
   createSimpleAction (SimpleAction *sae, Bind *bind, Link *ncmLink,
-                      NclCompositeExecutionObject *parentObject,
-                      int depthLevel);
+                      NclCompositeExecutionObject *parentObject);
 
   NclLinkCompoundAction *createCompoundAction (
       short op, double delay, vector<Action *> *ncmChildActions,
-      CausalLink *ncmLink, NclCompositeExecutionObject *parentObject,
-      int depthLevel);
+      CausalLink *ncmLink, NclCompositeExecutionObject *parentObject);
 
   NclLinkTriggerCondition *createSimpleCondition (
       SimpleCondition *condition, Bind *bind, Link *ncmLink,
-      NclCompositeExecutionObject *parentObject, int depthLevel);
+      NclCompositeExecutionObject *parentObject);
 
   NclFormatterEvent *createEvent (Bind *bind, Link *ncmLink,
-                                  NclCompositeExecutionObject *parentObject,
-                                  int depthLevel);
+                                  NclCompositeExecutionObject *parentObject);
 
   double getDelayParameter (Link *ncmLink, Parameter *connParam,
                             Bind *ncmBind);

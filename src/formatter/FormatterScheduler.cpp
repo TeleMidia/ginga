@@ -848,9 +848,7 @@ FormatterScheduler::runActionOverComposition (
                 {
                   childObject = ((FormatterConverter *)compiler)
                                     ->getExecutionObjectFromPerspective (
-                                        perspective, NULL,
-                                        ((FormatterConverter *)compiler)
-                                            ->getDepthLevel ());
+                                        perspective, NULL);
 
                   if (childObject != NULL
                       && port->getEndInterfacePoint () != NULL
@@ -979,8 +977,7 @@ FormatterScheduler::runActionOverComposition (
               = (NclCompositeExecutionObject *)((FormatterConverter *)
                                                     compiler)
                     ->getExecutionObjectFromPerspective (
-                        compositionPerspective, NULL,
-                        ((FormatterConverter *)compiler)->getDepthLevel ());
+                        compositionPerspective, NULL);
 
           delete compositionPerspective;
 
@@ -1106,9 +1103,7 @@ FormatterScheduler::runSwitchEvent (NclExecutionObjectSwitch *switchObject,
                 {
                   endPointObject = ((FormatterConverter *)compiler)
                                        ->getExecutionObjectFromPerspective (
-                                           nodePerspective, NULL,
-                                           ((FormatterConverter *)compiler)
-                                               ->getDepthLevel ());
+                                           nodePerspective, NULL);
 
                   if (endPointObject != NULL)
                     {
