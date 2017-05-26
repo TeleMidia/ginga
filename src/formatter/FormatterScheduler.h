@@ -106,9 +106,6 @@ private:
   string solveImplicitRefAssessment (const string &propValue,
                                      NclAttributionEvent *event);
 
-  void initializeDefaultSettings ();
-  void initializeDocumentSettings (Node *node);
-
   SDLWindow*
   prepareFormatterRegion (NclExecutionObject *);
   void showObject (NclExecutionObject *);
