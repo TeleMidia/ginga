@@ -148,20 +148,4 @@ CompoundAction::getRoles ()
   return roles;
 }
 
-string
-CompoundAction::toString ()
-{
-  vector<Action *>::iterator i;
-  Action *action;
-  string actionStr;
-
-  actionStr = "";
-  for (i = actions->begin (); i != actions->end (); i++)
-    {
-      action = (*i);
-      actionStr += (action->toString ());
-    }
-  return actionStr;
-}
-
 GINGA_NCL_END

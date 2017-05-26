@@ -30,11 +30,6 @@ protected:
 public:
   Assessment () {typeSet.insert ("Assessment"); };
   virtual ~Assessment () {typeSet.clear (); };
-  virtual string
-  toString ()
-  {
-    return "";
-  };
   virtual bool
   instanceOf (const string &type)
   {

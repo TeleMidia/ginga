@@ -163,7 +163,6 @@ public:
 
   void setDescriptor (NclCascadingDescriptor *cascadingDescriptor);
   void setDescriptor (GenericDescriptor *descriptor);
-  string toString ();
   virtual bool addEvent (NclFormatterEvent *event);
   void addPresentationEvent (NclPresentationEvent *event);
   int compareTo (NclExecutionObject *object);

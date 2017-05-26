@@ -276,28 +276,6 @@ Link::isMultiPoint ()
     return false;
 }
 
-string
-Link::toString ()
-{
-  string linkStr;
-  vector<Bind *>::iterator iterator;
-  Bind *bind;
-
-  linkStr = (getId ()) + "\n" + ((this->getConnector ())->getId ()) + "\n";
-
-  iterator = binds->begin ();
-  while (iterator++ != binds->end ())
-    {
-      bind = (*iterator);
-      linkStr += ((bind->getRole ())->getLabel ()) + " "
-                 + ((bind->getNode ())->getId ()) + " "
-                 + ((bind->getInterfacePoint ())->getId ()) + "\n"
-                 + ((bind->getRole ())->getLabel ());
-      ++iterator;
-    }
-  return linkStr;
-}
-
 void
 Link::setConnector (Connector *connector)
 {

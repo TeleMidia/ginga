@@ -42,7 +42,6 @@ public:
   void setKey (const string &key);
   string getOffset ();
   void setOffset (const string &offset);
-  string toString ();
   bool
   instanceOf (const string &type)
   {

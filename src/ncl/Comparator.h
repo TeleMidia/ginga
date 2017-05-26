@@ -33,7 +33,6 @@ public:
   static const short CMP_GTE = 5;
   static bool evaluate (const string &first, const string &second, short comparator);
   static bool evaluate (double first, double second, short comparator);
-  static string toString (short comparator);
   static short fromString (const string &comp);
 };
 

@@ -68,7 +68,6 @@ public:
   unsigned int getNumRoleBinds (Role *role);
   vector<Bind *> *getRoleBinds (Role *role);
   bool isMultiPoint ();
-  string toString ();
   void setConnector (Connector *connector);
   bool unBind (Bind *bind);
   void addParameter (Parameter *parameter);

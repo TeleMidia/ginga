@@ -81,10 +81,4 @@ AttributeAssessment::setOffset (const string &offset)
   this->offset = offset;
 }
 
-string
-AttributeAssessment::toString ()
-{
-  return xstrbuild ("%d", attributeType);
-}
-
 GINGA_NCL_END

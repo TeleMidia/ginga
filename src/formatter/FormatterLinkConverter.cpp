@@ -102,7 +102,6 @@ FormatterLinkConverter::createCausalLink (
       clog << " cannot create formatter link inside '";
       clog << parentObject->getId () << "' from ncmlinkId '";
       clog << ncmLink->getId () << "' with a NULL action (";
-      clog << "actionExpression '" << actionExpression->toString ();
       clog << endl;
       return NULL;
     }

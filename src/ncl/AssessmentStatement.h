@@ -41,8 +41,6 @@ public:
   short getComparator ();
   void setComparator (short comp);
   vector<Role *> *getRoles ();
-
-  string toString ();
 };
 
 GINGA_NCL_END

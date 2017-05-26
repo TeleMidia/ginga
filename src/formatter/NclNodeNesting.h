@@ -58,7 +58,6 @@ public:
   bool removeHeadNode ();
   string getId ();
   NclNodeNesting *copy ();
-  string toString ();
 };
 
 GINGA_FORMATTER_END

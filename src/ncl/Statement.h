@@ -27,12 +27,6 @@ class Statement : public ConditionExpression
 public:
   Statement () : ConditionExpression () {typeSet.insert ("Statement"); };
   virtual ~Statement () {typeSet.clear (); };
-  virtual string
-  toString ()
-  {
-    return "";
-  };
-
   virtual bool
   instanceOf (const string &type)
   {

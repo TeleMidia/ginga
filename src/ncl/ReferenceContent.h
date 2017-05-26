@@ -26,7 +26,7 @@ class ReferenceContent : public Content
 {
 protected:
   string reference;
-  // string url;
+
 public:
   ReferenceContent ();
   ReferenceContent (const string &ref);
