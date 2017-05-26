@@ -38,7 +38,6 @@ public:
   string getValue ();
   void setOperator (short newOp);
   void setValue (const string &newValue);
-  string toString ();
   void setAttribute (const string &someAttribute);
 };
 

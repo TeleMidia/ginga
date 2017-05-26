@@ -46,7 +46,6 @@ public:
   void addAction (Action *action);
   void removeAction (Action *action);
   vector<Role *> *getRoles ();
-  string toString ();
   bool
   instanceOf (const string &type)
   {

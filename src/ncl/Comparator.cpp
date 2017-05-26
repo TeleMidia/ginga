@@ -129,34 +129,6 @@ Comparator::evaluate (double first, double second, short comparator)
     }
 }
 
-string
-Comparator::toString (short comparator)
-{
-  switch (comparator)
-    {
-    case Comparator::CMP_EQ:
-      return "eq";
-
-    case Comparator::CMP_NE:
-      return "ne";
-
-    case Comparator::CMP_GT:
-      return "gt";
-
-    case Comparator::CMP_GTE:
-      return "gte";
-
-    case Comparator::CMP_LT:
-      return "lt";
-
-    case Comparator::CMP_LTE:
-      return "lte";
-
-    default:
-      return "eq";
-    }
-}
-
 short
 Comparator::fromString (const string &comp)
 {

@@ -36,11 +36,6 @@ public:
   virtual ~Action (){};
   string getDelay ();
   void setDelay (const string &dur);
-  virtual string
-  toString ()
-  {
-    return "";
-  };
   virtual bool
   instanceOf (const string &type)
   {

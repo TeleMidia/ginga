@@ -102,28 +102,6 @@ CompositeRule::removeRule (Rule *rule)
   return false;
 }
 
-string
-CompositeRule::toString ()
-{
-  string result;
-  vector<Rule *>::iterator ruleIterator;
-  Rule *rule;
-
-  result = "(";
-
-  for (ruleIterator = rules->begin (); ruleIterator != rules->end ();
-       ++ruleIterator)
-    {
-      rule = (Rule *)(*ruleIterator);
-      result = result + (rule->getId ()) + " " + opStr + " ";
-    }
-
-  if ((result.length () - opStr.length () - 2) > 0)
-    result = result.substr (0, result.length () - opStr.length () - 2);
-
-  return result + ")";
-}
-
 void
 CompositeRule::setOperator (short op)
 {

@@ -112,13 +112,6 @@ Bind::setParameterValue (const string &propertyLabel, Parameter *propertyValue)
   return (*parameters)[propertyLabel] = propertyValue;
 }
 
-string
-Bind::toString ()
-{
-  return (getRole ()->getLabel () + '/' + getNode ()->getId () + '/'
-          + getInterfacePoint ()->getId ());
-}
-
 void
 Bind::addParameter (Parameter *parameter)
 {

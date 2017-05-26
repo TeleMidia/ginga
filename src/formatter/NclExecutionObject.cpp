@@ -428,12 +428,6 @@ NclExecutionObject::setDescriptor (GenericDescriptor *descriptor)
   this->descriptor = cascade;
 }
 
-string
-NclExecutionObject::toString ()
-{
-  return id;
-}
-
 bool
 NclExecutionObject::addEvent (NclFormatterEvent *event)
 {

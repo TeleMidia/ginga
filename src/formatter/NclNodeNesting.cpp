@@ -289,10 +289,4 @@ NclNodeNesting::copy ()
   return new NclNodeNesting (this);
 }
 
-string
-NclNodeNesting::toString ()
-{
-  return id;
-}
-
 GINGA_FORMATTER_END

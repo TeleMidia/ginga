@@ -1170,7 +1170,7 @@ FormatterScheduler::startDocument (const string &file)
       execobj = this->compiler->getExecutionObjectFromPerspective (persp, NULL);
       g_assert_nonnull (execobj);
 
-      g_debug ("settings: processing '%s'", persp->toString ().c_str ());
+      g_debug ("settings: processing '%s'", persp->getId ().c_str ());
       delete persp;
 
       content = (ContentNode *) node;

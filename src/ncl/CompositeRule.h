@@ -43,7 +43,6 @@ public:
   unsigned int getNumRules ();
   short getOperator ();
   bool removeRule (Rule *rule);
-  string toString ();
   void setOperator (short op);
 };
 

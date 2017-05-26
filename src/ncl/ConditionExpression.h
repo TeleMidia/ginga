@@ -35,12 +35,6 @@ public:
   {
     return typeSet.count (type);
   }
-
-  virtual string
-  toString ()
-  {
-    return "";
-  };
 };
 
 GINGA_NCL_END

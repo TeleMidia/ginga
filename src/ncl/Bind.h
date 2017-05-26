@@ -62,7 +62,6 @@ public:
   Parameter *setParameterValue (const string &propertyLabel,
                                 Parameter *propertyValue);
 
-  string toString ();
   void addParameter (Parameter *parameter);
   vector<Parameter *> *getParameters ();
   Parameter *getParameter (const string &name);

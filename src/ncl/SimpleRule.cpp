@@ -62,14 +62,6 @@ SimpleRule::setValue (const string &newValue)
   value = newValue;
 }
 
-string
-SimpleRule::toString ()
-{
-  ostringstream os;
-  os << ruleOperator;
-  return attribute + " " + os.str () + " " + value;
-}
-
 void
 SimpleRule::setAttribute (const string &someAttribute)
 {

@@ -93,12 +93,4 @@ AssessmentStatement::getRoles ()
   return roles;
 }
 
-string
-AssessmentStatement::toString ()
-{
-  return "Role = " + getMainAssessment ()->toString () + "\n"
-         + "Comparator = " + xstrbuild ("%d", getComparator ()) + "\n" + " "
-         + getOtherAssessment ()->toString ();
-}
-
 GINGA_NCL_END
