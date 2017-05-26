@@ -28,18 +28,8 @@ GINGA_FORMATTER_BEGIN
 
 FormatterScheduler::FormatterScheduler ()
 {
-  NclPlayerData *data;
-
-  data = new NclPlayerData;
-  data->baseId = "";
-  data->devClass = 0;
-  data->docId = "";
-  data->focusManager = NULL;
-  data->nodeId = "";
-  data->parentDocId = "";
-  data->playerId = "";
-  data->transparency = 0;
-  Ginga_Display->getSize (&data->w, &data->h);
+  int w, h;
+  Ginga_Display->getSize (&w, &h);
 
   this->presContext = new PresentationContext ();
   this->ruleAdapter = new RuleAdapter (presContext);
@@ -47,8 +37,8 @@ FormatterScheduler::FormatterScheduler ()
   this->compiler = new FormatterConverter (ruleAdapter);
   this->compiler->setLinkActionListener (this);
   this->compiler->setScheduler (this);
-  this->multiDevice = new FormatterMultiDevice (data->w, data->h);
-  this->playerManager = new AdapterPlayerManager (data);
+  this->multiDevice = new FormatterMultiDevice (w, h);
+  this->playerManager = new AdapterPlayerManager ();
   this->focusManager = new FormatterFocusManager
     (this->playerManager, this->presContext, this->multiDevice, this,
      (FormatterConverter *) this->compiler);
