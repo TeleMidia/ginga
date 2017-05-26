@@ -26,8 +26,6 @@ class Parameter
 {
 public:
   Parameter (const string &n, const string &v);
-  virtual ~Parameter (){};
-  bool instanceOf (const string &s);
   string getName ();
   string getValue ();
   void setName (const string &n);
@@ -35,7 +33,6 @@ public:
 
 protected:
   string name;
-  set<string> typeSet;
 
 private:
   string value;
