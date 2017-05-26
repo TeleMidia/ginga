@@ -269,7 +269,6 @@ AdapterApplicationPlayer::stop ()
       if (_currentEvent->getCurrentState () != EventUtil::ST_SLEEPING)
         {
           _player->stop ();
-          _player->notifyReferPlayers (EventUtil::TR_STOPS);
         }
 
       i = _preparedEvents.begin ();
@@ -299,7 +298,6 @@ AdapterApplicationPlayer::stop ()
   else if (!_player->isForcedNaturalEnd ())
     {
       _player->stop ();
-      _player->notifyReferPlayers (EventUtil::TR_STOPS);
     }
 
   if (_object->stop ())
@@ -345,7 +343,6 @@ AdapterApplicationPlayer::abort ()
       g_debug ("AdapterApplicationPlayer::abort ALL");
 
       _player->stop ();
-      _player->notifyReferPlayers (EventUtil::TR_ABORTS);
 
       lockPreparedEvents ();
       i = _preparedEvents.begin ();
@@ -374,7 +371,6 @@ AdapterApplicationPlayer::abort ()
   else if (!_player->isForcedNaturalEnd ())
     {
       _player->stop ();
-      _player->notifyReferPlayers (EventUtil::TR_ABORTS);
     }
 
   if (_object->abort ())
@@ -470,7 +466,6 @@ AdapterApplicationPlayer::naturalEnd ()
   clog << endl;
 
   g_assert_nonnull (_player);
-  _player->notifyReferPlayers (EventUtil::TR_STOPS);
 
   lockPreparedEvents ();
   i = _preparedEvents.begin ();

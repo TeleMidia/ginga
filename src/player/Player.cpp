@@ -28,10 +28,8 @@ Player::Player (const string &mrl)
 {
   Thread::mutexInit (&listM, false);
   Thread::mutexInit (&lockedListM, false);
-  Thread::mutexInit (&referM, false);
 
   this->mrl = mrl;
-  this->outputWindow = 0;
   this->window = NULL;
   this->notifying = false;
   this->presented = false;
@@ -48,8 +46,8 @@ Player::Player (const string &mrl)
   this->initStartTime = 0;
   this->initPauseTime = 0;
   this->accTimePlaying = 0;
-  this->accTimePaused = 0; 
-  
+  this->accTimePaused = 0;
+
   //media attr
   this->texture = NULL; //media content
   this->borderWidth = 0;
@@ -77,18 +75,10 @@ Player::~Player ()
   Thread::mutexLock (&lockedListM);
   lockedListeners.clear ();
 
-  g_assert_null (outputWindow);
-
-  Thread::mutexLock (&referM);
-  referredPlayers.clear ();
-
   properties.clear ();
 
-  Thread::mutexUnlock (&referM);
   Thread::mutexUnlock (&lockedListM);
   Thread::mutexUnlock (&listM);
-
-  Thread::mutexDestroy (&referM);
   Thread::mutexDestroy (&lockedListM);
   Thread::mutexDestroy (&listM);
 }
@@ -152,37 +142,6 @@ Player::removeListener (IPlayerListener *listener)
 }
 
 void
-Player::performLockedListenersRequest ()
-{
-  IPlayerListener *listener;
-  set<IPlayerListener *>::iterator j;
-
-  Thread::mutexLock (&lockedListM);
-
-  for (auto lpl : lockedListeners)
-    {
-      listener = lpl->l;
-
-      if (lpl->isAdd)
-        {
-          listeners.insert (listener);
-        }
-      else
-        {
-          j = listeners.find (listener);
-          if (j != listeners.end ())
-            {
-              listeners.erase (j);
-            }
-        }
-      delete lpl;
-    }
-
-  lockedListeners.clear ();
-  Thread::mutexUnlock (&lockedListM);
-}
-
-void
 Player::notifyPlayerListeners (short code,
                                const string &parameter,
                                short type,
@@ -194,8 +153,6 @@ Player::notifyPlayerListeners (short code,
   notifying = true;
   Thread::mutexLock (&listM);
   notifying = true;
-
-  performLockedListenersRequest ();
 
   if (listeners.empty ())
     {
@@ -243,7 +200,7 @@ Player::setMediaTime (guint32 newTime)
   this->initStartTime = (guint32)g_get_monotonic_time();
   this->initPauseTime = 0;
   this->accTimePlaying = newTime*1000;  //input is in mili but glib is in micro, needs mult by 1000;
-  this->accTimePaused = 0; 
+  this->accTimePaused = 0;
 }
 
 guint32
@@ -251,9 +208,9 @@ Player::getMediaTime ()
 {
   if (status == PAUSED)
       return this->accTimePlaying/1000;
-    
+
   guint32 curTime = (guint32)g_get_monotonic_time() - this->initStartTime;
-     
+
   return (this->accTimePlaying + curTime - this->accTimePaused)/1000;
 }
 
@@ -295,10 +252,10 @@ Player::stop ()
   this->initStartTime = 0;
   this->initPauseTime = 0;
   this->accTimePlaying = 0;
-  this->accTimePaused = 0; 
+  this->accTimePaused = 0;
 
   this->status = SLEEPING;
-  
+
 }
 
 void
@@ -395,66 +352,6 @@ Player::setPropertyValue (const string &name, const string &value)
   properties[name] = value;
 }
 
-void
-Player::addTimeReferPlayer (IPlayer *referPlayer)
-{
-  Thread::mutexLock (&referM);
-  referredPlayers.insert (referPlayer);
-  Thread::mutexUnlock (&referM);
-}
-
-void
-Player::removeTimeReferPlayer (IPlayer *referPlayer)
-{
-  set<IPlayer *>::iterator i;
-
-  Thread::mutexLock (&referM);
-  i = referredPlayers.find (referPlayer);
-  if (i != referredPlayers.end ())
-    {
-      referredPlayers.erase (i);
-      Thread::mutexUnlock (&referM);
-      return;
-    }
-  Thread::mutexUnlock (&referM);
-}
-
-void
-Player::notifyReferPlayers (int transition)
-{ 
-  set<IPlayer *>::iterator i;
-
-  Thread::mutexLock (&referM);
-  i = referredPlayers.begin ();
-  while (i != referredPlayers.end ())
-    {
-      (*i)->timebaseObjectTransitionCallback (transition);
-      ++i;
-    }
-  Thread::mutexUnlock (&referM); 
-}
-
-void
-Player::timebaseObjectTransitionCallback (int transition)
-{
-  if (transition == PL_NOTIFY_STOP)
-    {
-      setReferenceTimePlayer (NULL);
-      stop ();
-    }
-}
-
-void
-Player::setTimeBasePlayer (IPlayer *timeBasePlayer)
-{
-  clog << "Player::setTimeBasePlayer" << endl;
-  if (timeBasePlayer != NULL)
-    {
-      this->timeBasePlayer = timeBasePlayer;
-      this->timeBasePlayer->addTimeReferPlayer (this);
-    }
-}
-
 bool
 Player::isVisible ()
 {
@@ -499,7 +396,7 @@ Player::setOutWindow (SDLWindow* windowId)
   return true;
 }
 
-PLAYER_STATUS 
+PLAYER_STATUS
 Player::getMediaStatus(){
    return this->status;
 }
@@ -509,7 +406,7 @@ Player::getZ(){
   return this->z;
 }
 
-void 
+void
 Player::setAnimatorProperties(string dur, string name, string value)
 {
   animator->addProperty(dur,name,value);

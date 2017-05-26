@@ -41,7 +41,6 @@ class Player : public IPlayer
 private:
   pthread_mutex_t listM;
   pthread_mutex_t lockedListM;
-  pthread_mutex_t referM;
 
   bool notifying;
 
@@ -54,10 +53,7 @@ protected:
 
   string mrl;
   SDLWindow *window;
-  SDLWindow *outputWindow;
   PlayerAnimator* animator;
-  set<IPlayer *> referredPlayers;
-  IPlayer *timeBasePlayer;
   bool presented;
   bool visible;
   bool forcedNaturalEnd;
@@ -90,11 +86,8 @@ public:
   virtual void setMrl (const string &mrl, bool visible = true);
   virtual void addListener (IPlayerListener *listener);
   void removeListener (IPlayerListener *listener);
-  gint getZ();
-  void setAnimatorProperties(string dur, string name, string value);
-
-private:
-  void performLockedListenersRequest ();
+  gint getZ ();
+  void setAnimatorProperties (string dur, string name, string value);
 
 public:
   void redraw (SDL_Renderer*);
@@ -134,12 +127,6 @@ public:
   virtual void resume ();
   virtual string getPropertyValue (const string &name);
   virtual void setPropertyValue (const string &name, const string &value);
-  virtual void setReferenceTimePlayer (arg_unused (IPlayer *player)){};
-  void addTimeReferPlayer (IPlayer *referPlayer);
-  void removeTimeReferPlayer (IPlayer *referPlayer);
-  void notifyReferPlayers (int transition);
-  void timebaseObjectTransitionCallback (int transition);
-  void setTimeBasePlayer (IPlayer *timeBasePlayer);
   bool isVisible ();
   void setVisible (bool visible);
 
@@ -150,14 +137,6 @@ public:
 
   // Application player only.
   virtual void setCurrentScope (arg_unused (const string &scopeId)){};
-};
-
-struct notify
-{
-  IPlayerListener *listener;
-  short code;
-  string param;
-  short type;
 };
 
 GINGA_PLAYER_END
