@@ -45,7 +45,6 @@ GINGA_PRAGMA_DIAG_POP ()
 #include "ncl/SpatialAnchor.h"
 #include "ncl/TextAnchor.h"
 #include "ncl/LabeledAnchor.h"
-#include "ncl/SampleIntervalAnchor.h"
 #include "ncl/RectangleSpatialAnchor.h"
 #include "ncl/CausalLink.h"
 #include "ncl/ReferredNode.h"

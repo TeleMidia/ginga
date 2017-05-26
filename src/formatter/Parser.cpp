@@ -2172,7 +2172,6 @@ NclParser::createTemporalAnchor (DOMElement *areaElement)
   IntervalAnchor *anchor = NULL;
   string begin, end;
   double begVal, endVal;
-  short firstSyntax, lastSyntax;
 
   if (dom_element_has_attr(areaElement, "begin")
       || dom_element_has_attr(areaElement, "end"))
@@ -2203,60 +2202,11 @@ NclParser::createTemporalAnchor (DOMElement *areaElement)
         }
     }
 
-  // region delimeted through sample identifications
-  if (dom_element_has_attr(areaElement, "first")
-      || dom_element_has_attr(areaElement, "last"))
+  // Region delimeted through sample identifications
+  if (dom_element_has_attr (areaElement, "first")
+      || dom_element_has_attr (areaElement, "last"))
     {
-      begVal = 0;
-      endVal = IntervalAnchor::OBJECT_DURATION;
-      firstSyntax = ContentAnchor::CAT_NPT;
-      lastSyntax = ContentAnchor::CAT_NPT;
-
-      if (dom_element_try_get_attr(begin, areaElement, "first"))
-        {
-          if (begin.find ("s") != std::string::npos)
-            {
-              firstSyntax = ContentAnchor::CAT_SAMPLES;
-              begVal = xstrtod (begin.substr (0, begin.length () - 1));
-            }
-          else if (begin.find ("f") != std::string::npos)
-            {
-              firstSyntax = ContentAnchor::CAT_FRAMES;
-              begVal = xstrtod (begin.substr (0, begin.length () - 1));
-            }
-          else if (begin.find ("npt") != std::string::npos
-                   || begin.find ("NPT") != std::string::npos)
-            {
-              firstSyntax = ContentAnchor::CAT_NPT;
-              begVal = xstrtod (begin.substr (0, begin.length () - 3));
-            }
-        }
-
-      if (dom_element_try_get_attr(end, areaElement, "last"))
-        {
-          if (end.find ("s") != std::string::npos)
-            {
-              lastSyntax = ContentAnchor::CAT_SAMPLES;
-              endVal = xstrtod (end.substr (0, end.length () - 1));
-            }
-          else if (end.find ("f") != std::string::npos)
-            {
-              lastSyntax = ContentAnchor::CAT_FRAMES;
-              endVal = xstrtod (end.substr (0, end.length () - 1));
-            }
-          else if (end.find ("npt") != std::string::npos
-                   || end.find ("NPT") != std::string::npos)
-            {
-              lastSyntax = ContentAnchor::CAT_NPT;
-              endVal = xstrtod (end.substr (0, end.length () - 3));
-            }
-        }
-
-      anchor = new SampleIntervalAnchor (
-            dom_element_get_attr(areaElement, "id"), begVal, endVal);
-
-      ((SampleIntervalAnchor *)anchor)
-          ->setValueSyntax (firstSyntax, lastSyntax);
+      syntax_warning ("first/last interval anchors are not supported");
     }
 
   if (anchor)
