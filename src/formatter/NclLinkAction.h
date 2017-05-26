@@ -20,11 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclFormatterEvent.h"
 #include "NclAttributionEvent.h"
-
 #include "NclLinkActionProgressionListener.h"
-
-#include "system/Thread.h"
-using namespace ::ginga::system;
 
 GINGA_FORMATTER_BEGIN
 

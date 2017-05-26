@@ -34,23 +34,17 @@ AdapterApplicationPlayer::AdapterApplicationPlayer (AdapterPlayerManager *mngr)
 
   _currentEvent = NULL;
   _running = false;
-  _isDeleting = false;
 
 }
 
 AdapterApplicationPlayer::~AdapterApplicationPlayer ()
 {
-  _isDeleting = true;
   _running = false;
-  unlockConditionSatisfied ();
-
-  lock ();
   for(auto status: _notes)
     {
       delete status;
     }
   _notes.clear ();
-  unlock ();
 
   lockPreparedEvents ();
   _preparedEvents.clear ();
@@ -514,7 +508,6 @@ AdapterApplicationPlayer::updateStatus (short code,
 {
   ApplicationStatus *data;
 
-  lock ();
   data = new ApplicationStatus;
   data->code = code;
   data->param = param;
@@ -524,14 +517,11 @@ AdapterApplicationPlayer::updateStatus (short code,
   if (!_running)
     {
       _running = true;
-      Thread::startThread ();
+      //Thread::startThread ();
+      run ();
     }
 
   _notes.push_back (data);
-
-  unlock ();
-
-  unlockConditionSatisfied ();
 }
 
 void
@@ -608,7 +598,6 @@ AdapterApplicationPlayer::run ()
 
   while (_running)
     {
-      lock ();
       if (!_notes.empty ())
         {
           data = *_notes.begin ();
@@ -626,7 +615,6 @@ AdapterApplicationPlayer::run ()
         {
           code = -1;
         }
-      unlock ();
 
       if (_object == NULL)
         {
@@ -639,17 +627,6 @@ AdapterApplicationPlayer::run ()
         }
 
       code = -1;
-
-      lock ();
-      if (_notes.empty () && _running && !_isDeleting)
-        {
-          unlock ();
-          waitForUnlockCondition ();
-        }
-      else
-        {
-          unlock ();
-        }
     }
 }
 
