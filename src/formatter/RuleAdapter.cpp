@@ -25,7 +25,6 @@ GINGA_FORMATTER_BEGIN
 RuleAdapter::RuleAdapter (PresentationContext *presContext)
 {
   this->presContext = presContext;
-  this->presContext->addObserver (this);
 
   ruleListenMap = new map<string, vector<Rule *> *>;
   entityListenMap = new map<Rule *, vector<NclExecutionObjectSwitch *> *>;
@@ -35,10 +34,7 @@ RuleAdapter::RuleAdapter (PresentationContext *presContext)
 RuleAdapter::~RuleAdapter ()
 {
   if (presContext != NULL)
-    {
-      presContext->removeObserver (this);
-      presContext = NULL;
-    }
+    presContext = NULL;
 
   reset ();
 
@@ -445,61 +441,6 @@ RuleAdapter::evaluateSimpleRule (SimpleRule *rule)
 
     default:
       return Comparator::evaluate (attributeValue, ruleValue, op);
-    }
-}
-
-void
-RuleAdapter::update (arg_unused (void *arg0), const void *arg1)
-{
-  string arg;
-  arg = *((const string *)(arg1));
-
-  vector<Rule *> *ruleVector = NULL;
-  map<string, vector<Rule *> *>::iterator i;
-  for (i = ruleListenMap->begin (); i != ruleListenMap->end (); ++i)
-    {
-      if (i->first == arg)
-        {
-          ruleVector = i->second;
-        }
-    }
-
-  if (ruleVector == NULL)
-    {
-      return;
-    }
-
-  vector<Rule *>::iterator ruleIter;
-  vector<NclExecutionObjectSwitch *>::iterator objIter;
-
-  Rule *rule;
-  NclExecutionObjectSwitch *object;
-
-  for (ruleIter = ruleVector->begin (); ruleIter != ruleVector->end ();
-       ++ruleIter)
-    {
-      rule = (Rule *)(*ruleIter);
-
-      if (entityListenMap->count (rule) != 0)
-        {
-          vector<NclExecutionObjectSwitch *> *objectVector;
-          objectVector = ((*entityListenMap)[rule]);
-
-          for (objIter = objectVector->begin ();
-               objIter != objectVector->end (); ++objIter)
-            {
-              object = (*objIter);
-              if (object->instanceOf ("NclExecutionObjectSwitch"))
-                {
-                  adapt (object, true);
-                }
-              else
-                {
-                  // TODO: precisa pensar melhor como adaptar
-                  // descritores dinamicamente.
-                }
-            }
-        }
     }
 }
 

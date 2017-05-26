@@ -48,7 +48,7 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-class RuleAdapter : public Observer
+class RuleAdapter
 {
 private:
   PresentationContext *presContext;
@@ -78,9 +78,6 @@ public:
 private:
   bool evaluateCompositeRule (CompositeRule *rule);
   bool evaluateSimpleRule (SimpleRule *rule);
-
-public:
-  virtual void update (void *arg0, const void *arg1);
 };
 
 GINGA_FORMATTER_END
