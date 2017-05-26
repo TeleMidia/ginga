@@ -22,9 +22,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-RectangleSpatialAnchor::RectangleSpatialAnchor (const string &id, long left,
-                                                long top, long width,
-                                                long height)
+RectangleSpatialAnchor::RectangleSpatialAnchor (const string &id, int left,
+                                                int top, int width,
+                                                int height)
     : SpatialAnchor (id)
 {
   this->left = left;
@@ -34,33 +34,33 @@ RectangleSpatialAnchor::RectangleSpatialAnchor (const string &id, long left,
   typeSet.insert ("RectangleSpatialAnchor");
 }
 
-long
+int
 RectangleSpatialAnchor::getLeft ()
 {
   return left;
 }
 
-long
+int
 RectangleSpatialAnchor::getTop ()
 {
   return top;
 }
 
-long
+int
 RectangleSpatialAnchor::getWidth ()
 {
   return width;
 }
 
-long
+int
 RectangleSpatialAnchor::getHeight ()
 {
   return height;
 }
 
 void
-RectangleSpatialAnchor::setArea (long left, long top, long width,
-                                 long height)
+RectangleSpatialAnchor::setArea (int left, int top, int width,
+                                 int height)
 {
   this->left = left;
   this->top = top;

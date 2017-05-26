@@ -27,13 +27,13 @@ class TextAnchor : public Anchor
 {
 protected:
   string text;
-  long position;
+  int position;
 
 public:
-  TextAnchor (const string &id, const string &t, long p);
-  long getPosition ();
+  TextAnchor (const string &id, const string &t, int p);
+  int getPosition ();
   string getText ();
-  void setPosition (long p);
+  void setPosition (int p);
   void setText (const string &t);
 };
 

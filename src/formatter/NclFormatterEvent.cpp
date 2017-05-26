@@ -457,7 +457,7 @@ NclFormatterEvent::getId ()
   return id;
 }
 
-long
+int
 NclFormatterEvent::getOccurrences ()
 {
   return occurrences;

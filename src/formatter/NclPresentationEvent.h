@@ -34,7 +34,7 @@ private:
   double begin;
   double end;
   double duration;
-  long numPresentations;
+  int numPresentations;
   double repetitionInterval;
 
 public:
@@ -45,10 +45,10 @@ public:
   bool stop ();
   double getDuration ();
   double getRepetitionInterval ();
-  long getRepetitions ();
+  int getRepetitions ();
   void setDuration (double dur);
   void setEnd (double e);
-  void setRepetitionSettings (long repetitions, double repetitionInterval);
+  void setRepetitionSettings (int repetitions, double repetitionInterval);
   double getBegin ();
   double getEnd ();
   void incrementOccurrences ();

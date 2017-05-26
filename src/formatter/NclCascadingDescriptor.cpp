@@ -439,7 +439,7 @@ NclCascadingDescriptor::setFormatterLayout (void *formatterLayout)
   formatterRegion = new NclFormatterRegion (id, this, formatterLayout);
 }
 
-long
+int
 NclCascadingDescriptor::getRepetitions ()
 {
   return repetitions;

@@ -34,7 +34,7 @@ NclLinkRepeatAction::~NclLinkRepeatAction ()
 {
 }
 
-long
+int
 NclLinkRepeatAction::getRepetitions ()
 {
   return repetitions;
@@ -47,7 +47,7 @@ NclLinkRepeatAction::getRepetitionInterval ()
 }
 
 void
-NclLinkRepeatAction::setRepetitions (long repetitions)
+NclLinkRepeatAction::setRepetitions (int repetitions)
 {
   this->repetitions = repetitions;
 }

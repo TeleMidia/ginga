@@ -90,14 +90,14 @@ Thread::startThread ()
 }
 
 bool
-Thread::sleep (long int s)
+Thread::sleep (int s)
 {
   g_usleep (s * 1000000);
   return true;
 }
 
 bool
-Thread::mSleep (long int ms)
+Thread::mSleep (guint64 ms)
 {
   g_usleep (ms * 1000);
   return true;
