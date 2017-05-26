@@ -502,8 +502,6 @@ AdapterApplicationPlayer::naturalEnd ()
   g_assert_nonnull (_object);
   if (_object->stop ())
     {
-      clog << "AdapterApplicationPlayer::naturalEnd call unprepare";
-      clog << endl;
       unprepare ();
     }
 }
@@ -683,10 +681,6 @@ AdapterApplicationPlayer::startEvent (const string &anchorId, short type,
     {
       if (prepare (_object, event))
         {
-          /*clog << "AdapterApplicationPlayer::startEvent '";
-          clog << event->getId() << "' with anchorId = '";
-          clog << anchorId << "'" << endl;*/
-
           if (setAndLockCurrentEvent (event))
             {
               if (type == IPlayer::TYPE_PRESENTATION)
@@ -717,17 +711,16 @@ AdapterApplicationPlayer::startEvent (const string &anchorId, short type,
         }
       else
         {
-          clog << "AdapterApplicationPlayer::startEvent can't ";
-          clog << "prepare '" << event->getId () << "' from ";
-          clog << "anchor ID = '" << anchorId << "'" << endl;
+          g_warning ("Can't prepare '%s' form anchor id = '5s'",
+                     event->getId().c_str(),
+                     anchorId.c_str());
         }
     }
   else
     {
-      clog << "AdapterApplicationPlayer::startEvent event not found '";
-      clog << anchorId;
-      clog << "' in object '" << _object->getId ();
-      clog << endl;
+      g_warning ("Event not found '%s' in object '%s'",
+                 anchorId.c_str(),
+                 _object->getId().c_str());
     }
 
   return fakeStart;
@@ -751,12 +744,6 @@ AdapterApplicationPlayer::stopEvent (const string &anchorId, short type,
   event = _object->getEventFromAnchorId (anchorId);
   if (checkEvent (event, type))
     {
-      clog << "AdapterApplicationPlayer::stopEvent '";
-      clog << event->getId ();
-      clog << "' from anchorId = '";
-      clog << anchorId << "' calling setAndLockCurrentEvent";
-      clog << endl;
-
       if (setAndLockCurrentEvent (event))
         {
           if (type == IPlayer::TYPE_PRESENTATION)
@@ -796,9 +783,8 @@ AdapterApplicationPlayer::stopEvent (const string &anchorId, short type,
     }
   else
     {
-      clog << "AdapterApplicationPlayer::stopEvent can't stop event";
-      clog << "'" << anchorId << "'";
-      clog << endl;
+      g_warning ("Can't stop event '%s'",
+                 anchorId.c_str());
     }
 
   return false;
@@ -818,12 +804,6 @@ AdapterApplicationPlayer::abortEvent (const string &anchorId, short type)
   event = _object->getEventFromAnchorId (cvt_id);
   if (checkEvent (event, type))
     {
-      clog << "AdapterApplicationPlayer::abortEvent '";
-      clog << event->getId ();
-      clog << "' from anchorId = '";
-      clog << anchorId << "' calling setAndLockCurrentEvent";
-      clog << endl;
-
       if (setAndLockCurrentEvent (event))
         {
           if (type == IPlayer::TYPE_PRESENTATION)
@@ -862,9 +842,8 @@ AdapterApplicationPlayer::abortEvent (const string &anchorId, short type)
     }
   else
     {
-      clog << "AdapterApplicationPlayer::abortEvent can't abort event";
-      clog << "'" << anchorId << "'";
-      clog << endl;
+      g_warning ("Can't abort event '%s'",
+                 anchorId.c_str());
     }
 
   return false;
@@ -884,12 +863,6 @@ AdapterApplicationPlayer::pauseEvent (const string &anchorId, short type)
   event = _object->getEventFromAnchorId (cvt_id);
   if (checkEvent (event, type))
     {
-      clog << "AdapterApplicationPlayer::pauseEvent '";
-      clog << event->getId ();
-      clog << "' from anchorId = '";
-      clog << anchorId << "' calling setAndLockCurrentEvent";
-      clog << endl;
-
       if (setAndLockCurrentEvent (event))
         {
           if (type == IPlayer::TYPE_PRESENTATION)
@@ -913,9 +886,8 @@ AdapterApplicationPlayer::pauseEvent (const string &anchorId, short type)
     }
   else
     {
-      clog << "AdapterApplicationPlayer::pauseEvent can't pause event";
-      clog << "'" << anchorId << "'";
-      clog << endl;
+      g_warning ("Can't pause event '%s'",
+                 anchorId.c_str());
     }
 
   return false;
@@ -935,12 +907,6 @@ AdapterApplicationPlayer::resumeEvent (const string &anchorId, short type)
   event = _object->getEventFromAnchorId (cvt_id);
   if (checkEvent (event, type))
     {
-      clog << "AdapterApplicationPlayer::resumeEvent '";
-      clog << event->getId ();
-      clog << "' from anchorId = '";
-      clog << anchorId << "' calling setAndLockCurrentEvent";
-      clog << endl;
-
       if (setAndLockCurrentEvent (event))
         {
           if (type == IPlayer::TYPE_PRESENTATION)
@@ -964,9 +930,8 @@ AdapterApplicationPlayer::resumeEvent (const string &anchorId, short type)
     }
   else
     {
-      clog << "AdapterApplicationPlayer::resumeEvent can't resume event";
-      clog << "'" << anchorId << "'";
-      clog << endl;
+      g_warning ("Can't resume event '%s'",
+                 anchorId.c_str());
     }
 
   return false;
@@ -977,15 +942,78 @@ AdapterApplicationPlayer::unlockCurrentEvent (NclFormatterEvent *event)
 {
   if (event != _currentEvent)
     {
-      clog << "AdapterNCLPlayer::unlockCurrentEvent ";
-      clog << "Handling events warning!";
+      string id = "";
+
       if (_currentEvent != NULL)
         {
-          clog << _currentEvent->getId ();
+          id = _currentEvent->getId ();
         }
-      clog << endl;
+      g_warning ("Handling events warning! id = '%s'",
+                 id.c_str());
     }
   unlockEvent ();
+}
+
+bool
+AdapterApplicationPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
+{
+  string interfaceId;
+
+  lockEvent ();
+  if (_preparedEvents.count (event->getId ()) != 0
+      && !event->instanceOf ("NclSelectionEvent")
+      && event->instanceOf ("NclAnchorEvent"))
+    {
+      NclAnchorEvent *anchorEvent = dynamic_cast <NclAnchorEvent *> (event);
+      g_assert_nonnull (anchorEvent);
+      interfaceId = anchorEvent->getAnchor ()->getId ();
+
+      LabeledAnchor *labeledAnchor
+          = dynamic_cast<LabeledAnchor *> (anchorEvent->getAnchor());
+      LambdaAnchor *lambdaAnchor
+          = dynamic_cast<LambdaAnchor *> (anchorEvent->getAnchor());
+
+      if (labeledAnchor)
+        {
+          interfaceId = labeledAnchor->getLabel();
+        }
+      else if(lambdaAnchor)
+        {
+          interfaceId = "";
+        }
+
+      _currentEvent = event;
+      NclApplicationExecutionObject *appObject =
+          dynamic_cast <NclApplicationExecutionObject *> (_object);
+      g_assert_nonnull (appObject);
+      appObject->setCurrentEvent (_currentEvent);
+
+      _player->setCurrentScope (interfaceId);
+    }
+  else if (event->instanceOf ("NclAttributionEvent"))
+    {
+      interfaceId = ((NclAttributionEvent *)event)
+                        ->getAnchor ()
+                        ->getPropertyName ();
+
+      _player->setScope (interfaceId, IPlayer::TYPE_ATTRIBUTION);
+
+      _currentEvent = event;
+      ((NclApplicationExecutionObject *)_object)
+          ->setCurrentEvent (_currentEvent);
+
+      _player->setCurrentScope (interfaceId);
+    }
+  else
+    {
+      g_warning ("Event '%s' isn't prepared",
+                 event->getId ().c_str() );
+
+      unlockEvent ();
+      return false;
+    }
+
+  return true;
 }
 
 void

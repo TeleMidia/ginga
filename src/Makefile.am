@@ -53,7 +53,6 @@ src+= ctxmgmt/GingaUser.cpp
 src+= ctxmgmt/SystemInfo.cpp
 src+= formatter/AdapterApplicationPlayer.cpp
 src+= formatter/AdapterFormatterPlayer.cpp
-src+= formatter/AdapterLuaPlayer.cpp
 src+= formatter/AdapterPlayerManager.cpp
 src+= formatter/FormatterConverter.cpp
 src+= formatter/FormatterFocusManager.cpp

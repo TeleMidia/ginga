@@ -60,8 +60,8 @@ public:
 
   void run ();
 
-  virtual bool setAndLockCurrentEvent (NclFormatterEvent *event) = 0;
-  virtual void unlockCurrentEvent (NclFormatterEvent *event);
+  bool setAndLockCurrentEvent (NclFormatterEvent *event);
+  void unlockCurrentEvent (NclFormatterEvent *event);
 
 protected:
   vector<ApplicationStatus *> _notes;
