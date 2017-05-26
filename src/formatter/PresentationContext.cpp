@@ -26,8 +26,6 @@ ContextManager *PresentationContext::contextManager = NULL;
 
 PresentationContext::PresentationContext ()
 {
-  createObserversVector ();
-
   if (contextManager == NULL)
     {
       PresentationContext::contextManager = ContextManager::getInstance ();
@@ -69,11 +67,6 @@ PresentationContext::setPropertyValue (const string &property, const string &val
 
   contextTable[property] = value;
   Thread::mutexUnlock (&attrMutex);
-
-  if ((value != "") && (value != oldValue))
-    {
-      notifyObservers (&property);
-    }
 }
 
 void
@@ -95,10 +88,7 @@ PresentationContext::incPropertyValue (const string &propertyName)
 
   xstrassign (newValue, "%d", (int) (xstrtod (oldValue) + 1));
   if ((newValue != "") && (newValue != oldValue))
-    {
-      contextTable[propertyName] = newValue;
-      notifyObservers (&propertyName);
-    }
+    contextTable[propertyName] = newValue;
 }
 
 void
@@ -120,10 +110,7 @@ PresentationContext::decPropertyValue (const string &propertyName)
 
   xstrassign (newValue, "%d", (int) (xstrtod (oldValue) - 1));
   if ((newValue != "") && (newValue != oldValue))
-    {
-      contextTable[propertyName] = newValue;
-      notifyObservers (&propertyName);
-    }
+    contextTable[propertyName] = newValue;
 }
 
 set<string> *

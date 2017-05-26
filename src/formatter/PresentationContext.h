@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _PRESENTATIONCONTEXT_H_
 #define _PRESENTATIONCONTEXT_H_
 
-#include "util/Observable.h"
-using namespace ::ginga::util;
-
 #include "ctxmgmt/ContextManager.h"
 #include "ctxmgmt/SystemInfo.h"
 using namespace ::ginga::ctxmgmt;
@@ -32,7 +29,7 @@ using namespace ::ginga::system;
 
 GINGA_FORMATTER_BEGIN
 
-class PresentationContext : public Observable
+class PresentationContext
 {
 private:
   map<string, string> contextTable;
