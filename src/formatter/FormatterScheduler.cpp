@@ -17,37 +17,45 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "ginga-color-table.h"
-#include "FormatterConverter.h"
-
-#include "NclLinkTransitionTriggerCondition.h"
-
-#include "FormatterMultiDevice.h"
 #include "FormatterScheduler.h"
 
-#include "ncl/EventUtil.h"
-using namespace ::ginga::ncl;
+#include "FormatterConverter.h"
+#include "Parser.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_FORMATTER_BEGIN
 
-FormatterScheduler::FormatterScheduler (AdapterPlayerManager *playerManager,
-                                        RuleAdapter *ruleAdapter,
-                                        FormatterMultiDevice *multiDevice,
-                                        void *compiler)
+FormatterScheduler::FormatterScheduler ()
 {
-  this->playerManager = playerManager;
-  this->ruleAdapter = ruleAdapter;
+  NclPlayerData *data;
+
+  data = new NclPlayerData;
+  data->baseId = "";
+  data->devClass = 0;
+  data->docId = "";
+  data->focusManager = NULL;
+  data->nodeId = "";
+  data->parentDocId = "";
+  data->playerId = "";
+  data->transparency = 0;
+  Ginga_Display->getSize (&data->w, &data->h);
+
+  this->presContext = new PresentationContext ();
+  this->ruleAdapter = new RuleAdapter (presContext);
   this->presContext = ruleAdapter->getPresentationContext ();
-  this->multiDevPres = multiDevice;
-  this->compiler = compiler;
+  this->compiler = new FormatterConverter (ruleAdapter);
+  this->compiler->setLinkActionListener (this);
+  this->compiler->setScheduler (this);
+  this->multiDevice = new FormatterMultiDevice (data->w, data->h);
+  this->playerManager = new AdapterPlayerManager (data);
+  this->focusManager = new FormatterFocusManager
+    (this->playerManager, this->presContext, this->multiDevice, this,
+     (FormatterConverter *) this->compiler);
+  this->multiDevice->setFocusManager (this->focusManager);
+
+  this->focusManager->setKeyHandler (true);
   this->running = false;
-  this->focusManager = new FormatterFocusManager (
-      this->playerManager, presContext, multiDevPres, this,
-      (FormatterConverter *)compiler);
-
-  this->multiDevPres->setFocusManager (this->focusManager);
-
   Thread::mutexInit (&mutexD, true);
   Thread::mutexInit (&mutexActions, true);
   Thread::mutexInit (&lMutex, true);
@@ -142,10 +150,10 @@ FormatterScheduler::getFocusManager ()
   return focusManager;
 }
 
-void *
+NclFormatterLayout *
 FormatterScheduler::getFormatterLayout ()
 {
-  return ((FormatterMultiDevice *)multiDevPres)->getFormatterLayout ();
+  return multiDevice->getFormatterLayout ();
 }
 
 bool
@@ -311,8 +319,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
           playerContent = player->getPlayer ();
           g_assert_nonnull (playerContent);
 
-          winId = ((FormatterMultiDevice *) multiDevPres)
-            ->prepareFormatterRegion (executionObject);
+          winId = multiDevice->prepareFormatterRegion (executionObject);
 
           // FIXME: Sometimes winId is NULL!
           // g_assert_nonnull (winId);
@@ -573,10 +580,7 @@ FormatterScheduler::runActionOverApplicationObject (
 
           if (playerContent != NULL)
             {
-              winId
-                  = ((FormatterMultiDevice *)multiDevPres)
-                        ->prepareFormatterRegion (
-                            executionObject);
+              winId = multiDevice->prepareFormatterRegion (executionObject);
 
               player->setOutputWindow (winId);
             }
@@ -1301,43 +1305,132 @@ FormatterScheduler::initializeDocumentSettings (Node *node)
 }
 
 void
-FormatterScheduler::startDocument (NclFormatterEvent *documentEvent,
-                                   vector<NclFormatterEvent *> *entryEvents)
+FormatterScheduler::startDocument (const string &file)
 {
-  NclExecutionObject *object;
-  vector<NclFormatterEvent *>::iterator it;
-  int docEvents = 0;
-  int i, size;
-  NclFormatterEvent *event;
+  string id;
+  ContextNode *body;
 
-  g_assert_nonnull (documentEvent);
-  g_assert_nonnull (entryEvents);
-  g_assert (!entryEvents->empty ());
-  g_assert (!isDocumentRunning (documentEvent));
-  g_assert (documentEvents.size () == 0);
+  vector<Port *> *ports;
+  vector<NclFormatterEvent *> *events;
+
+  NclNodeNesting *persp;
+  NclFormatterEvent *evt;
+
+  NclExecutionObject *execobj;
+  NclCompositeExecutionObject *parent;
+
+  // Parse document.
+  NclParser compiler;
+  this->file = xpathmakeabs (file);
+  this->doc = compiler.parse (file);
+  g_assert_nonnull (this->doc);
+
+  id = this->doc->getId ();
+  body = this->doc->getBody ();
+  if (unlikely (body == NULL))
+    syntax_error ("document has no body");
+
+  // Get Ports.
+  ports = new vector<Port *>;
+  for (guint i = 0; i < body->getNumPorts (); i++)
+    {
+      Port *port;
+      InterfacePoint *ip;
+
+      port = body->getPort (i);
+      g_assert_nonnull (port);
+
+      ip = port->getEndInterfacePoint ();
+      g_assert_nonnull (ip);
+      g_assert (ip->instanceOf ("ContentAnchor")
+                || ip->instanceOf ("LabeledAnchor")
+                || ip->instanceOf ("PropertyAnchor"));
+
+      ports->push_back (port);
+    }
+
+  if (ports->empty ())
+    {
+      g_warning ("document has no ports");
+      delete ports;
+      return;
+    }
+
+  persp = new NclNodeNesting ();
+  persp->insertAnchorNode (body);
+
+  // Get port events.
+  events = new vector<NclFormatterEvent *>;
+  for (guint i = 0; i < ports->size (); i++)
+    {
+      Port *port;
+
+      port = ports->at (i);
+      g_assert_nonnull (port);
+
+      evt = this->compiler->insertContext (persp, port);
+      g_assert_nonnull (evt);
+
+      events->push_back (evt);
+    }
+
+  delete ports;
+  delete persp;
+
+  // Create execution object for settings.
+  vector <Node *> *settings = this->doc->getSettingsNodes ();
+  g_assert_nonnull (settings);
+  for (guint i = 0; i < settings->size (); i++)
+    {
+      persp = new NclNodeNesting ((settings->at (i))->getPerspective ());
+      execobj = this->compiler
+        ->getExecutionObjectFromPerspective (persp, NULL);
+      g_assert_nonnull (execobj);
+
+      g_debug ("execution object %p for settings %s",
+               execobj, persp->toString ().c_str ());
+
+      delete persp;
+    }
+  delete settings;
+
+  g_assert (!events->empty ());
+  evt = events->at (0);
+  g_assert_nonnull (evt);
+
+  execobj = (NclExecutionObject *)(evt->getExecutionObject ());
+  g_assert_nonnull (execobj);
+
+  parent = (NclCompositeExecutionObject *)(execobj->getParentObject ());
+  g_assert_nonnull (parent);
+
+  g_assert_nonnull (evt);
+  g_assert_nonnull (events);
+  g_assert (!events->empty ());
+  g_assert (!isDocumentRunning (evt));
 
   Thread::mutexLock (&mutexD);
 
   clog << "FormatterScheduler::startDocument Through event '";
-  clog << documentEvent->getId () << "'" << endl;
-  documentEvent->addEventListener (this);
-  documentEvents.push_back (documentEvent);
+  clog << evt->getId () << "'" << endl;
+  evt->addEventListener (this);
+  documentEvents.push_back (evt);
 
   Thread::mutexLock (&lMutex);
-  listening.insert (documentEvent);
+  listening.insert (evt);
   Thread::mutexUnlock (&lMutex);
 
-  documentStatus[documentEvent] = true;
+  documentStatus[evt] = true;
   Thread::mutexUnlock (&mutexD);
 
-  object = (NclExecutionObject *)(documentEvent->getExecutionObject ());
-  initializeDocumentSettings (object->getDataObject ());
+  execobj = (NclExecutionObject *)(evt->getExecutionObject ());
+  initializeDocumentSettings (execobj->getDataObject ());
   initializeDefaultSettings ();
 
-  size = (int) entryEvents->size ();
-  for (i = 0; i < size; i++)
+  int docEvents = 0;
+  for (guint i = 0; i < events->size (); i++)
     {
-      event = (*entryEvents)[i];
+      NclFormatterEvent *event = events->at (i);
 
       startEvent (event);
       if (event->getCurrentState () != EventUtil::ST_SLEEPING)
@@ -1349,48 +1442,12 @@ FormatterScheduler::startDocument (NclFormatterEvent *documentEvent,
   if (docEvents == 0) {
           clog << "FormatterScheduler::startDocument 0 events running";
           clog << " stopping document" << endl;
-          stopDocument(documentEvent);
+          stopDocument(evt);
   }
 
   clog << "FormatterScheduler::startDocument Through event '";
-  clog << documentEvent->getId () << "' started '" << docEvents << "'";
+  clog << evt->getId () << "' started '" << docEvents << "'";
   clog << " events" << endl;
-}
-
-void
-FormatterScheduler::removeDocument (NclFormatterEvent *documentEvent)
-{
-  NclExecutionObject *obj;
-  vector<NclFormatterEvent *>::iterator i;
-  map<NclFormatterEvent *, bool>::iterator j;
-
-  // TODO: do a better way to remove documents (see lockComposite)
-  obj = (NclExecutionObject *)(documentEvent->getExecutionObject ());
-
-  clog << "FormatterScheduler::removeDocument through '";
-  clog << obj->getId () << "'" << endl;
-
-  if (compiler != NULL && obj != NULL)
-    {
-      ((FormatterConverter *)compiler)->removeExecutionObject (obj);
-    }
-
-  Thread::mutexLock (&mutexD);
-  for (i = documentEvents.begin (); i != documentEvents.end (); ++i)
-    {
-      if (*i == documentEvent)
-        {
-          documentEvents.erase (i);
-          break;
-        }
-    }
-
-  j = documentStatus.find (documentEvent);
-  if (j != documentStatus.end ())
-    {
-      documentStatus.erase (j);
-    }
-  Thread::mutexUnlock (&mutexD);
 }
 
 void
@@ -1495,7 +1552,7 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
                   object);
           if (player != NULL)
             {
-              ((FormatterMultiDevice *)multiDevPres)->showObject (object);
+              multiDevice->showObject (object);
 
               focusManager->showObject (object);
             }
@@ -1526,8 +1583,7 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
                   clog << endl;
 
                   focusManager->hideObject (object);
-                  ((FormatterMultiDevice *)multiDevPres)
-                      ->hideObject (object);
+                  multiDevice->hideObject (object);
 
                   player = (AdapterFormatterPlayer *)
                                playerManager->getObjectPlayer (object);
@@ -1560,7 +1616,7 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
                 clog << endl;
 
                 focusManager->hideObject (object);
-                ((FormatterMultiDevice *)multiDevPres)->hideObject (object);
+                multiDevice->hideObject (object);
 
                 player = (AdapterFormatterPlayer *)
                   playerManager->getObjectPlayer (object);
