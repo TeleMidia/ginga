@@ -154,13 +154,9 @@ FormatterMediator::play (const string &file)
   g_assert_nonnull (settings);
   for (guint i = 0; i < settings->size (); i++)
     {
-      int depth;
-
       persp = new NclNodeNesting ((settings->at (i))->getPerspective ());
-      depth = this->compiler->getDepthLevel ();
-
       execobj = this->compiler
-        ->getExecutionObjectFromPerspective (persp, NULL, depth);
+        ->getExecutionObjectFromPerspective (persp, NULL);
       g_assert_nonnull (execobj);
 
       g_debug ("execution object %p for settings %s",

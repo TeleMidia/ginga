@@ -32,8 +32,7 @@ FormatterLinkConverter::~FormatterLinkConverter () { compiler = NULL; }
 
 NclFormatterCausalLink *
 FormatterLinkConverter::createCausalLink (
-    CausalLink *ncmLink, NclCompositeExecutionObject *parentObject,
-    int depthLevel)
+    CausalLink *ncmLink, NclCompositeExecutionObject *parentObject)
 {
   CausalConnector *connector;
   ConditionExpression *conditionExpression;
@@ -75,7 +74,7 @@ FormatterLinkConverter::createCausalLink (
   conditionExpression = connector->getConditionExpression ();
   formatterCondition
       = createCondition ((TriggerExpression *)conditionExpression, ncmLink,
-                         parentObject, depthLevel);
+                         parentObject);
 
   if (formatterCondition == NULL
       || !(formatterCondition->instanceOf ("NclLinkTriggerCondition")))
@@ -95,7 +94,7 @@ FormatterLinkConverter::createCausalLink (
   // compile link action
   actionExpression = connector->getAction ();
   formatterAction
-      = createAction (actionExpression, ncmLink, parentObject, depthLevel);
+      = createAction (actionExpression, ncmLink, parentObject);
 
   if (formatterAction == NULL)
     {
@@ -206,7 +205,7 @@ FormatterLinkConverter::setImplicitRefAssessment (const string &roleId,
                   clog << endl;*/
 
                   refObject = compiler->getExecutionObjectFromPerspective (
-                      refPerspective, (*i)->getDescriptor (), 1);
+                      refPerspective, (*i)->getDescriptor ());
 
                   delete refPerspective;
 
@@ -228,7 +227,7 @@ FormatterLinkConverter::setImplicitRefAssessment (const string &roleId,
 NclLinkAction *
 FormatterLinkConverter::createAction (
     Action *actionExpression, CausalLink *ncmLink,
-    NclCompositeExecutionObject *parentObject, int depthLevel)
+    NclCompositeExecutionObject *parentObject)
 {
   double delay;
   SimpleAction *sae;
@@ -256,7 +255,7 @@ FormatterLinkConverter::createAction (
           if (size == 1)
             {
               return createSimpleAction (sae, (*binds)[0], ncmLink,
-                                         parentObject, depthLevel);
+                                         parentObject);
             }
           else if (size > 1)
             {
@@ -266,7 +265,7 @@ FormatterLinkConverter::createAction (
               for (i = 0; i < size; i++)
                 {
                   simpleAction = createSimpleAction (
-                      sae, (*binds)[i], ncmLink, parentObject, depthLevel);
+                      sae, (*binds)[i], ncmLink, parentObject);
 
                   if (simpleAction == NULL)
                     {
@@ -298,7 +297,7 @@ FormatterLinkConverter::createAction (
       cae = (CompoundAction *)actionExpression;
       return createCompoundAction (cae->getOperator (), delay,
                                    cae->getActions (), ncmLink,
-                                   parentObject, depthLevel);
+                                   parentObject);
     }
 
   clog << "FormatterLinkConverter::createAction ";
@@ -310,17 +309,17 @@ FormatterLinkConverter::createAction (
 NclLinkCondition *
 FormatterLinkConverter::createCondition (
     ConditionExpression *ncmExpression, CausalLink *ncmLink,
-    NclCompositeExecutionObject *parentObject, int depthLevel)
+    NclCompositeExecutionObject *parentObject)
 {
   if (ncmExpression->instanceOf ("TriggerExpression"))
     {
       return createCondition ((TriggerExpression *)ncmExpression, ncmLink,
-                              parentObject, depthLevel);
+                              parentObject);
     }
   else
     { // IStatement
       return createStatement ((Statement *)ncmExpression, ncmLink,
-                              parentObject, depthLevel);
+                              parentObject);
     }
 }
 
@@ -328,7 +327,7 @@ NclLinkCompoundTriggerCondition *
 FormatterLinkConverter::createCompoundTriggerCondition (
     short op, double delay,
     vector<ConditionExpression *> *ncmChildConditions, CausalLink *ncmLink,
-    NclCompositeExecutionObject *parentObject, int depthLevel)
+    NclCompositeExecutionObject *parentObject)
 {
   NclLinkCompoundTriggerCondition *condition;
   ConditionExpression *ncmChildCondition;
@@ -356,7 +355,7 @@ FormatterLinkConverter::createCompoundTriggerCondition (
         {
           ncmChildCondition = (*i);
           childCondition = createCondition (ncmChildCondition, ncmLink,
-                                            parentObject, depthLevel);
+                                            parentObject);
 
           condition->addCondition (childCondition);
           ++i;
@@ -369,7 +368,7 @@ FormatterLinkConverter::createCompoundTriggerCondition (
 NclLinkCondition *
 FormatterLinkConverter::createCondition (
     TriggerExpression *condition, CausalLink *ncmLink,
-    NclCompositeExecutionObject *parentObject, int depthLevel)
+    NclCompositeExecutionObject *parentObject)
 {
   double delay;
   SimpleCondition *ste;
@@ -390,7 +389,7 @@ FormatterLinkConverter::createCondition (
           if (size == 1)
             {
               return createSimpleCondition (ste, (*binds)[0], ncmLink,
-                                            parentObject, depthLevel);
+                                            parentObject);
             }
           else if (size > 1)
             {
@@ -408,7 +407,7 @@ FormatterLinkConverter::createCondition (
               for (i = 0; i < size; i++)
                 {
                   simpleCondition = createSimpleCondition (
-                      ste, (*binds)[i], ncmLink, parentObject, depthLevel);
+                      ste, (*binds)[i], ncmLink, parentObject);
 
                   compoundCondition->addCondition (simpleCondition);
                 }
@@ -431,7 +430,7 @@ FormatterLinkConverter::createCondition (
       cte = (CompoundCondition *)condition;
       return createCompoundTriggerCondition (cte->getOperator (), delay,
                                              cte->getConditions (), ncmLink,
-                                             parentObject, depthLevel);
+                                             parentObject);
     }
 
   clog << "FormatterLinkConverter::createCondition ";
@@ -443,7 +442,7 @@ FormatterLinkConverter::createCondition (
 NclLinkAssessmentStatement *
 FormatterLinkConverter::createAssessmentStatement (
     AssessmentStatement *assessmentStatement, Bind *bind, Link *ncmLink,
-    NclCompositeExecutionObject *parentObject, int depthLevel)
+    NclCompositeExecutionObject *parentObject)
 {
   NclLinkAttributeAssessment *mainAssessment;
   NclLinkAssessment *otherAssessment;
@@ -456,7 +455,7 @@ FormatterLinkConverter::createAssessmentStatement (
 
   mainAssessment = createAttributeAssessment (
       assessmentStatement->getMainAssessment (), bind, ncmLink,
-      parentObject, depthLevel);
+      parentObject);
 
   if (assessmentStatement->getOtherAssessment ()->instanceOf (
           "ValueAssessment"))
@@ -493,12 +492,12 @@ FormatterLinkConverter::createAssessmentStatement (
       if (otherBinds != NULL && !otherBinds->empty ())
         {
           otherAssessment = createAttributeAssessment (
-              aa, (*otherBinds)[0], ncmLink, parentObject, depthLevel);
+              aa, (*otherBinds)[0], ncmLink, parentObject);
         }
       else
         {
           otherAssessment = createAttributeAssessment (
-              aa, NULL, ncmLink, parentObject, depthLevel);
+              aa, NULL, ncmLink, parentObject);
         }
     }
   statement = new NclLinkAssessmentStatement (
@@ -511,7 +510,7 @@ FormatterLinkConverter::createAssessmentStatement (
 NclLinkStatement *
 FormatterLinkConverter::createStatement (
     Statement *statementExpression, Link *ncmLink,
-    NclCompositeExecutionObject *parentObject, int depthLevel)
+    NclCompositeExecutionObject *parentObject)
 {
   AssessmentStatement *as;
   CompoundStatement *cs;
@@ -533,7 +532,7 @@ FormatterLinkConverter::createStatement (
           if (size == 1)
             {
               statement = createAssessmentStatement (
-                  as, (*binds)[0], ncmLink, parentObject, depthLevel);
+                  as, (*binds)[0], ncmLink, parentObject);
             }
           else
             {
@@ -567,7 +566,7 @@ FormatterLinkConverter::createStatement (
             {
               ncmChildStatement = (*i);
               childStatement = createStatement (ncmChildStatement, ncmLink,
-                                                parentObject, depthLevel);
+                                                parentObject);
 
               ((NclLinkCompoundStatement *)statement)
                   ->addStatement (childStatement);
@@ -583,11 +582,11 @@ FormatterLinkConverter::createStatement (
 NclLinkAttributeAssessment *
 FormatterLinkConverter::createAttributeAssessment (
     AttributeAssessment *attributeAssessment, Bind *bind, Link *ncmLink,
-    NclCompositeExecutionObject *parentObject, int depthLevel)
+    NclCompositeExecutionObject *parentObject)
 {
   NclFormatterEvent *event;
 
-  event = createEvent (bind, ncmLink, parentObject, depthLevel);
+  event = createEvent (bind, ncmLink, parentObject);
   return new NclLinkAttributeAssessment (
       event, attributeAssessment->getAttributeType ());
 }
@@ -595,7 +594,7 @@ FormatterLinkConverter::createAttributeAssessment (
 NclLinkSimpleAction *
 FormatterLinkConverter::createSimpleAction (
     SimpleAction *sae, Bind *bind, Link *ncmLink,
-    NclCompositeExecutionObject *parentObject, int depthLevel)
+    NclCompositeExecutionObject *parentObject)
 {
   NclFormatterEvent *event;
   SimpleActionType actionType;
@@ -613,31 +612,13 @@ FormatterLinkConverter::createSimpleAction (
   newAnimation = new Animation ();
   isUsing = false;
   action = NULL;
-  event = createEvent (bind, ncmLink, parentObject, depthLevel);
+  event = createEvent (bind, ncmLink, parentObject);
 
   actionType = sae->getActionType ();
   if (event != NULL)
     {
       eventType = bind->getRole ()->getEventType ();
       event->setEventType (eventType);
-      /*
-      if (event->instanceOf("NclPresentationEvent")) {
-              eventType = EventUtil::EVT_PRESENTATION;
-
-      } else if (event->instanceOf("NclAttributionEvent")) {
-              eventType = EventUtil::EVT_ATTRIBUTION;
-
-      } else if (event->instanceOf("NclSwitchEvent")) {
-              eventType = bind->getRole()->getEventType();
-
-      } else {
-              clog << "FormatterLinkConverter::createSimpleAction Warning!
-      ";
-              clog << "Event isn't presentation neither attribution ";
-              clog << "bind role event type is '";
-              clog << bind->getRole()->getEventType() << "'";
-              clog << endl;
-      }*/
     }
   else
     {
@@ -836,8 +817,7 @@ FormatterLinkConverter::createSimpleAction (
 NclLinkCompoundAction *
 FormatterLinkConverter::createCompoundAction (
     short op, double delay, vector<Action *> *ncmChildActions,
-    CausalLink *ncmLink, NclCompositeExecutionObject *parentObject,
-    int depthLevel)
+    CausalLink *ncmLink, NclCompositeExecutionObject *parentObject)
 {
   NclLinkCompoundAction *action;
   Action *ncmChildAction;
@@ -856,8 +836,7 @@ FormatterLinkConverter::createCompoundAction (
       while (i != ncmChildActions->end ())
         {
           ncmChildAction = (*i);
-          childAction = createAction (ncmChildAction, ncmLink, parentObject,
-                                      depthLevel);
+          childAction = createAction (ncmChildAction, ncmLink, parentObject);
 
           if (childAction != NULL)
             {
@@ -890,14 +869,14 @@ FormatterLinkConverter::createCompoundAction (
 NclLinkTriggerCondition *
 FormatterLinkConverter::createSimpleCondition (
     SimpleCondition *simpleCondition, Bind *bind, Link *ncmLink,
-    NclCompositeExecutionObject *parentObject, int depthLevel)
+    NclCompositeExecutionObject *parentObject)
 {
   NclFormatterEvent *event;
   double delay;
   string delayObject;
   NclLinkTriggerCondition *condition;
 
-  event = createEvent (bind, ncmLink, parentObject, depthLevel);
+  event = createEvent (bind, ncmLink, parentObject);
   condition = new NclLinkTransitionTriggerCondition (
       event, simpleCondition->getTransition (), bind);
 
@@ -912,8 +891,7 @@ FormatterLinkConverter::createSimpleCondition (
 
 NclFormatterEvent *
 FormatterLinkConverter::createEvent (
-    Bind *bind, Link *ncmLink, NclCompositeExecutionObject *parentObject,
-    int depthLevel)
+    Bind *bind, Link *ncmLink, NclCompositeExecutionObject *parentObject)
 {
   NclNodeNesting *endPointNodeSequence;
   NclNodeNesting *endPointPerspective;
@@ -946,16 +924,8 @@ FormatterLinkConverter::createEvent (
 
   try
     {
-      /*clog << "FormatterLinkConverter::createEvent '";
-      clog << " perspective = '" << endPointPerspective->getId() << "'";
-      if (bind->getDescriptor() != NULL) {
-              clog << " descriptor = '" << bind->getDescriptor()->getId();
-              clog << "'";
-      }
-      clog << endl;*/
-
       executionObject = compiler->getExecutionObjectFromPerspective (
-          endPointPerspective, bind->getDescriptor (), depthLevel);
+          endPointPerspective, bind->getDescriptor ());
 
       if (executionObject == NULL)
         {

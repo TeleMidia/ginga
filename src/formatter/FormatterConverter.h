@@ -86,7 +86,6 @@ GINGA_FORMATTER_BEGIN
 class FormatterConverter : public INclEventListener
 {
 private:
-  int depthLevel;
   static int dummyCount;
   map<string, NclExecutionObject *> executionObjects;
   set<NclFormatterEvent *> listening;
@@ -111,33 +110,26 @@ public:
   void setScheduler (void *scheduler);
   void setLinkActionListener (INclLinkActionListener *actionListener);
 
-  void setDepthLevel (int level);
-  int getDepthLevel ();
-
   NclCompositeExecutionObject *
   addSameInstance (NclExecutionObject *executionObject,
                    ReferNode *referNode);
 
 private:
   void addExecutionObject (NclExecutionObject *executionObject,
-                           NclCompositeExecutionObject *parentObject,
-                           int depthLevel);
+                           NclCompositeExecutionObject *parentObject);
 
 public:
-  void compileExecutionObjectLinks (NclExecutionObject *executionObject,
-                                    int depthLevel);
+  void compileExecutionObjectLinks (NclExecutionObject *executionObject);
 
   NclExecutionObject *getExecutionObjectFromPerspective (
-      NclNodeNesting *perspective, GenericDescriptor *descriptor,
-      int depthLevel);
+      NclNodeNesting *perspective, GenericDescriptor *descriptor);
 
 public:
   set<NclExecutionObject *> *getSettingNodeObjects ();
 
 private:
   NclCompositeExecutionObject *getParentExecutionObject (
-      NclNodeNesting *perspective,
-      int depthLevel);
+      NclNodeNesting *perspective);
 
 public:
   NclFormatterEvent *getEvent (NclExecutionObject *executionObject,
@@ -147,8 +139,7 @@ public:
 private:
   NclExecutionObject *
   createExecutionObject (const string &id, NclNodeNesting *perspective,
-                         NclCascadingDescriptor *descriptor,
-                         int depthLevel);
+                         NclCascadingDescriptor *descriptor);
 
   static bool hasDescriptorPropName (const string &name);
 
@@ -174,7 +165,7 @@ private:
 public:
   void compileExecutionObjectLinks (
       NclExecutionObject *executionObject, Node *dataObject,
-      NclCompositeExecutionObject *parentObject, int depthLevel);
+      NclCompositeExecutionObject *parentObject);
 
 private:
   void setActionListener (NclLinkAction *action);
@@ -184,8 +175,7 @@ public:
   processExecutionObjectSwitch (NclExecutionObjectSwitch *switchObject);
 
 private:
-  void resolveSwitchEvents (NclExecutionObjectSwitch *switchObject,
-                            int depthLevel);
+  void resolveSwitchEvents (NclExecutionObjectSwitch *switchObject);
 
   NclFormatterEvent *insertNode (NclNodeNesting *perspective,
                                  InterfacePoint *interfacePoint,
