@@ -627,7 +627,7 @@ AdapterFormatterPlayer::updatePlayerProperties ()
 
 bool
 AdapterFormatterPlayer::prepare (NclExecutionObject *object,
-                                 NclFormatterEvent *event)
+                                 NclPresentationEvent *event)
 {
   Content *content;
   double explicitDur = -1;

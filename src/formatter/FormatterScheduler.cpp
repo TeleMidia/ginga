@@ -164,38 +164,38 @@ void
 FormatterScheduler::runAction (NclFormatterEvent *event,
                                NclLinkSimpleAction *action)
 {
-  NclExecutionObject *executionObject;
+  NclExecutionObject *obj;
   NclCascadingDescriptor *descriptor;
   AdapterFormatterPlayer *player;
   Player *playerContent;
   string attName;
   string attValue;
-  SDLWindow* winId = 0;
+  SDLWindow* win = NULL;
 
-  executionObject = (NclExecutionObject *)(event->getExecutionObject ());
-  g_assert_nonnull (executionObject);
+  obj = (NclExecutionObject *)(event->getExecutionObject ());
+  g_assert_nonnull (obj);
 
   g_debug ("scheduler: running action '%s' over event '%s'",
            action->getTypeString ().c_str (),
            event->getId ().c_str ());
 
-  g_assert (executionObject->isCompiled ());
+  g_assert (obj->isCompiled ());
 
-  if (executionObject->instanceOf ("NclExecutionObjectSwitch")
+  if (obj->instanceOf ("NclExecutionObjectSwitch")
       && event->instanceOf ("NclSwitchEvent"))
     {
-      runActionOverSwitch ((NclExecutionObjectSwitch *)executionObject,
+      runActionOverSwitch ((NclExecutionObjectSwitch *)obj,
                            (NclSwitchEvent *)event, action);
       return;
     }
 
-  if (executionObject->instanceOf ("NclCompositeExecutionObject")
-      && (executionObject->getDescriptor () == NULL
-          || executionObject->getDescriptor ()->getPlayerName ()
+  if (obj->instanceOf ("NclCompositeExecutionObject")
+      && (obj->getDescriptor () == NULL
+          || obj->getDescriptor ()->getPlayerName ()
           == ""))
     {
       runActionOverComposition
-        ((NclCompositeExecutionObject *)executionObject, action);
+        ((NclCompositeExecutionObject *)obj, action);
       return;
     }
 
@@ -205,21 +205,20 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
       return;
     }
 
-  player = (AdapterFormatterPlayer *)
-    playerManager->getObjectPlayer (executionObject);
+  player = this->playerManager->getObjectPlayer (obj);
 
   if (unlikely (player == NULL))
     {
       g_warning ("scheduler: no player to decode '%s', skipping action",
-                 executionObject->getId ().c_str ());
+                 obj->getId ().c_str ());
       return;
     }
 
-  if (executionObject->instanceOf ("NclApplicationExecutionObject")
+  if (obj->instanceOf ("NclApplicationExecutionObject")
       && !event->instanceOf ("NclAttributionEvent"))
     {
       runActionOverApplicationObject
-        ((NclApplicationExecutionObject *)executionObject, event,
+        ((NclApplicationExecutionObject *)obj, event,
          player, action);
       return;
     }
@@ -229,17 +228,15 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
     case ACT_START:
       if (!player->hasPrepared ())
         {
-          if (ruleAdapter->adaptDescriptor (executionObject))
+          if (ruleAdapter->adaptDescriptor (obj))
             {
-              descriptor = executionObject->getDescriptor ();
+              descriptor = obj->getDescriptor ();
               if (descriptor != NULL)
-                {
-                  descriptor->setFormatterLayout(getFormatterLayout ());
-                }
+                descriptor->setFormatterLayout(getFormatterLayout ());
             }
 
-          if (unlikely (!player->prepare (executionObject,
-                                          (NclPresentationEvent *)event)))
+          if (unlikely (!player->prepare (obj,
+                                          (NclPresentationEvent *) event)))
             {
               g_warning ("scheduler: failed to prepare player");
               return;
@@ -248,12 +245,12 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
           playerContent = player->getPlayer ();
           g_assert_nonnull (playerContent);
 
-          winId = this->prepareFormatterRegion (executionObject);
+          win = this->prepareFormatterRegion (obj);
 
-          // FIXME: Sometimes winId is NULL!
-          // g_assert_nonnull (winId);
+          // FIXME: Sometimes win is NULL!
+          // g_assert_nonnull (win);
 
-          player->setOutputWindow (winId);
+          player->setOutputWindow (win);
           event->addEventListener (this);
         }
 
@@ -460,7 +457,7 @@ FormatterScheduler::runActionOverApplicationObject (
 
   double time = (double) xruntime_ms ();
   int actionType = action->getType ();
-  SDLWindow* winId = 0;
+  SDLWindow * win = NULL;
 
   clog << "FormatterScheduler::";
   clog << "runActionOverApplicationObject ACTION = '";
@@ -487,7 +484,7 @@ FormatterScheduler::runActionOverApplicationObject (
           clog << "' call player->prepare1";
           clog << endl;
 
-          player->prepare (executionObject, event);
+          player->prepare (executionObject, (NclPresentationEvent *) event);
 
           playerContent = player->getPlayer ();
           if (playerContent != NULL)
@@ -497,9 +494,8 @@ FormatterScheduler::runActionOverApplicationObject (
 
           if (playerContent != NULL)
             {
-              winId = this->prepareFormatterRegion (executionObject);
-
-              player->setOutputWindow (winId);
+              win = this->prepareFormatterRegion (executionObject);
+              player->setOutputWindow (win);
             }
         }
       else
@@ -510,7 +506,7 @@ FormatterScheduler::runActionOverApplicationObject (
           clog << "' call player->prepare2";
           clog << endl;
 
-          player->prepare (executionObject, event);
+          player->prepare (executionObject, (NclPresentationEvent *) event);
         }
 
       event->addEventListener (this);

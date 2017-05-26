@@ -169,7 +169,7 @@ NclLinkTriggerCondition::notificationThread (arg_unused (void *ptr))
           switch (status)
             {
             case NclLinkTriggerListener::CONDITION_SATISFIED:
-              listener->conditionSatisfied ((void *)condition);
+              listener->conditionSatisfied ((void *) condition);
               break;
 
             case NclLinkTriggerListener::EVALUATION_STARTED:
