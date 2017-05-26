@@ -68,13 +68,22 @@ public:
   FormatterFocusManager *getFocusManager ();
   NclFormatterLayout *getFormatterLayout ();
 
+  void scheduleAction (void *action);
+
+  void startEvent (NclFormatterEvent *event);
+  void stopEvent (NclFormatterEvent *event);
+  void pauseEvent (NclFormatterEvent *event);
+  void resumeEvent (NclFormatterEvent *event);
+
+  void startDocument (const string &);
+
+  void stopDocument (NclFormatterEvent *documentEvent);
+  void eventStateChanged (void *someEvent, short transition,
+                          short previousState);
+
 private:
   bool isDocumentRunning (NclFormatterEvent *event);
 
-public:
-  void scheduleAction (void *action);
-
-private:
   void runAction (NclLinkSimpleAction *action);
 
   void runAction (NclFormatterEvent *event, NclLinkSimpleAction *action);
@@ -103,25 +112,9 @@ private:
   string solveImplicitRefAssessment (const string &propValue,
                                      NclAttributionEvent *event);
 
-public:
-  void startEvent (NclFormatterEvent *event);
-  void stopEvent (NclFormatterEvent *event);
-  void pauseEvent (NclFormatterEvent *event);
-  void resumeEvent (NclFormatterEvent *event);
-
-private:
   void initializeDefaultSettings ();
   void initializeDocumentSettings (Node *node);
 
-public:
-  void startDocument (const string &);
-
-public:
-  void stopDocument (NclFormatterEvent *documentEvent);
-  void eventStateChanged (void *someEvent, short transition,
-                          short previousState);
-
-private:
   SDLWindow*
   prepareFormatterRegion (NclExecutionObject *);
   void showObject (NclExecutionObject *);
