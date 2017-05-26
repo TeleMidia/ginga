@@ -40,12 +40,6 @@ AdapterApplicationPlayer::AdapterApplicationPlayer (AdapterPlayerManager *mngr)
 AdapterApplicationPlayer::~AdapterApplicationPlayer ()
 {
   _running = false;
-  for(auto status: _notes)
-    {
-      delete status;
-    }
-  _notes.clear ();
-
   lockPreparedEvents ();
   _preparedEvents.clear ();
   unlockPreparedEvents ();
@@ -399,8 +393,6 @@ AdapterApplicationPlayer::unprepare ()
 
   if (_currentEvent == NULL)
     {
-    
-
       if (_object != NULL)
         {
           _manager->removePlayer (_object);
@@ -492,136 +484,6 @@ AdapterApplicationPlayer::naturalEnd ()
   if (_object->stop ())
     {
       unprepare ();
-    }
-}
-
-void
-AdapterApplicationPlayer::updateStatus (short code,
-                                        const string &param,
-                                        short type,
-                                        const string &value)
-{
-  ApplicationStatus *data;
-
-  data = new ApplicationStatus;
-  data->code = code;
-  data->param = param;
-  data->type = type;
-  data->value = value;
-
-  if (!_running)
-    {
-      _running = true;
-      //Thread::startThread ();
-      run ();
-    }
-
-  _notes.push_back (data);
-}
-
-void
-AdapterApplicationPlayer::notificationHandler (short code, const string &_param,
-                                               short type, const string &value)
-{
-  string param = _param;
-
-  clog << "AdapterApplicationPlayer::notificationHandler";
-  clog << " with code = '" << code << "' param = '";
-  clog << param << "'";
-  clog << " type = '" << type << "' and value = '";
-  clog << value << "'";
-  clog << endl;
-
-  switch (code)
-    {
-    case IPlayer::PL_NOTIFY_START:
-      clog << "AdapterApplicationPlayer::notificationHandler";
-      clog << " call startEvent '" << param << "'";
-      clog << " type '" << type << "'";
-      clog << endl;
-
-      startEvent (param, type, value);
-      break;
-
-    case IPlayer::PL_NOTIFY_PAUSE:
-      pauseEvent (param, type);
-      break;
-
-    case IPlayer::PL_NOTIFY_RESUME:
-      resumeEvent (param, type);
-      break;
-
-    case IPlayer::PL_NOTIFY_STOP:
-      if (param == "")
-        {
-          clog << "AdapterApplicationPlayer::notificationHandler";
-          clog << " call naturalEnd '" << param << "'";
-          clog << " type '" << type << "'";
-          clog << endl;
-          naturalEnd ();
-        }
-      else
-        {
-          clog << "AdapterApplicationPlayer::notificationHandler";
-          clog << " call stopEvent '" << param << "'";
-          clog << " type '" << type << "'";
-          clog << endl;
-          stopEvent (param, type, value);
-        }
-      break;
-
-    case IPlayer::PL_NOTIFY_ABORT:
-      abortEvent (param, type);
-      break;
-
-    default:
-      clog << "AdapterApplicationPlayer::notificationHandler";
-      clog << " Warning! Received an unknown notification";
-      clog << endl;
-      break;
-    }
-}
-
-void
-AdapterApplicationPlayer::run ()
-{
-  short code = 0;
-  string param;
-  short type;
-  string value;
-  ApplicationStatus *data;
-
-  while (_running)
-    {
-      if (!_notes.empty ())
-        {
-          data = *_notes.begin ();
-
-          code = data->code;
-          param = data->param;
-          type = data->type;
-          value = data->value;
-
-          delete data;
-          data = NULL;
-          _notes.erase (_notes.begin ());
-        }
-      else
-        {
-          code = -1;
-        }
-
-      if (_object == NULL)
-        {
-          break;
-        }
-
-      if (code >= 0)
-        {
-          notificationHandler (code, param, type, value);
-        }
-
-      code = -1;
     }
 }
 
