@@ -40,10 +40,6 @@ using namespace ::ginga::ncl;
 #include "ncl/Node.h"
 using namespace ::ginga::ncl;
 
-#include "util/Observer.h"
-
-#include "math.h"
-
 #include "PresentationContext.h"
 
 GINGA_FORMATTER_BEGIN
