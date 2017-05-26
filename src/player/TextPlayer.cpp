@@ -205,9 +205,9 @@ TextPlayer::setPropertyValue (const string &name, const string &value){
             fontVariant = value;
   }
 
-  if(status!=OCCURRING)return;
+  if (status != PL_OCCURRING)
+    return;
   Ginga_Display->addJob (displayJobCallbackWrapper, this);
-  //this->condDisplayJobWait ();
 }
 
 GINGA_PLAYER_END

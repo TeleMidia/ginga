@@ -18,8 +18,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef EventTransitionManager_H_
 #define EventTransitionManager_H_
 
-#include "system/Thread.h"
-using namespace ::ginga::system;
+#include "NclPresentationEvent.h"
+#include "NclBeginEventTransition.h"
+#include "NclEndEventTransition.h"
 
 #include "ncl/RelativeTimeIntervalAnchor.h"
 using namespace ::ginga::ncl;
@@ -27,13 +28,8 @@ using namespace ::ginga::ncl;
 #include "ncl/EventUtil.h"
 using namespace ::ginga::ncl;
 
-#include "player/IPlayer.h"
+#include "player/Player.h"
 using namespace ::ginga::player;
-
-#include "NclPresentationEvent.h"
-
-#include "NclBeginEventTransition.h"
-#include "NclEndEventTransition.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -72,7 +68,7 @@ public:
   void timeBaseNaturalEnd (int64_t timeValue, NclFormatterEvent *mainEvent,
                            short int transType);
 
-  void updateTransitionTable (double timeValue, IPlayer *player,
+  void updateTransitionTable (double timeValue, Player *player,
                               NclFormatterEvent *mainEvent,
                               short int transType);
 

@@ -18,20 +18,45 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "IPlayer.h"
+#include "IPlayerListener.h"
 #include "PlayerAnimator.h"
+
+#include "mb/SDLWindow.h"
+using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
-enum PLAYER_STATUS
+class Player
 {
-  SLEEPING,
-  OCCURRING,
-  PAUSED
-};
 
-class Player : public IPlayer
-{
+public:
+
+  enum PlayerStatus
+    {
+     PL_SLEEPING = 1,
+     PL_OCCURRING,
+     PL_PAUSED,
+    };
+
+  enum PlayerNotify
+    {
+     PL_NOTIFY_START = 1,
+     PL_NOTIFY_PAUSE,
+     PL_NOTIFY_RESUME,
+     PL_NOTIFY_STOP,
+     PL_NOTIFY_ABORT,
+     PL_NOTIFY_NCLEDIT,
+     PL_NOTIFY_UPDATECONTENT,
+     PL_NOTIFY_OUTTRANS,
+    };
+
+  enum PlayerEventType
+    {
+     PL_TYPE_PRESENTATION = 10,
+     PL_TYPE_ATTRIBUTION,
+     PL_TYPE_SELECTION
+    };
+
 private:
   pthread_mutex_t listM;
   bool notifying;
@@ -40,16 +65,15 @@ private:
   set<IPlayerListener *> listeners;
 
 protected:
-  PLAYER_STATUS status;
-
+  PlayerStatus status;
   string mrl;
   SDLWindow *window;
   PlayerAnimator* animator;
   bool presented;
   bool visible;
   bool forcedNaturalEnd;
+  PlayerEventType scopeType;
   string scope;
-  short scopeType;
   double scopeInitTime;
   double scopeEndTime;
   double outTransTime;
@@ -85,27 +109,27 @@ public:
 
 public:
   void notifyPlayerListeners (short code,
-                              const string &parameter = "",
-                              short type = TYPE_PRESENTATION,
-                              const string &value = "");
-
+                              const string &parameter,
+                              PlayerEventType type,
+                              const string &value);
 
 private:
   static void ntsNotifyPlayerListeners (set<IPlayerListener *> *list,
                                         short code,
                                         const string &parameter,
-                                        short type,
+                                        PlayerEventType type,
                                         const string &value);
 
 public:
   virtual void setMediaTime (guint32 newTime);
 
-PLAYER_STATUS getMediaStatus();
+  PlayerStatus getMediaStatus();
 
   guint32 getMediaTime ();
   virtual double getTotalMediaTime ();
 
-  virtual void setScope (const string &scope, short type = TYPE_PRESENTATION,
+  virtual void setScope (const string &scope,
+                         PlayerEventType type = PL_TYPE_PRESENTATION,
                          double begin = -1, double end = -1,
                          double outTransDur = -1);
 

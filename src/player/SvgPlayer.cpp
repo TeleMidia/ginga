@@ -131,11 +131,9 @@ void
 SvgPlayer::setPropertyValue (const string &name, const string &value)
 {
   Player::setPropertyValue (name, value);
-  if (status != OCCURRING)
+  if (status != PL_OCCURRING)
     return;
-
   Ginga_Display->addJob (displayJobCallbackWrapper, this);
-  //this->condDisplayJobWait ();
 }
 
 GINGA_PLAYER_END

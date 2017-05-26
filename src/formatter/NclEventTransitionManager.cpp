@@ -18,6 +18,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "NclEventTransitionManager.h"
 
+#include "system/Thread.h"
+using namespace ::ginga::system;
+
 GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-conversion)
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
@@ -542,7 +545,7 @@ NclEventTransitionManager::timeBaseNaturalEnd (int64_t timeValue,
 
 void
 NclEventTransitionManager::updateTransitionTable (
-    double value, IPlayer *player, NclFormatterEvent *mainEvent,
+    double value, Player *player, NclFormatterEvent *mainEvent,
     short int transType)
 {
   NclEventTransition *transition;
