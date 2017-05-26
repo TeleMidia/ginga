@@ -73,10 +73,6 @@ GINGA_BEGIN_DECLS
 #include <ncluaw.h>
 #include "ginga-sdlx.h"
 
-#if defined WITH_ESPEAK && WITH_ESPEAK
-# include <espeak/speak_lib.h>
-#endif
-
 #if defined WITH_LIBRSVG && WITH_LIBRSVG
 # include <cairo.h>
 # include <librsvg/rsvg.h>

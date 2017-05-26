@@ -170,12 +170,6 @@ src+= player/Player.cpp
 src+= player/PlayerAnimator.cpp
 src+= system/Thread.cpp
 
-if WITH_ESPEAK
-AM_CXXFLAGS+= $(ESPEAK_CFLAGS)
-AM_LDFLAGS+= $(ESPEAK_LIBS)
-src+= player/SsmlPlayer.cpp
-endif # WITH_ESPEAK
-
 if WITH_GSTREAMER
 AM_CXXFLAGS+= $(GSTREAMER_CFLAGS)
 AM_LDFLAGS+= $(GSTREAMER_LIBS)
