@@ -34,7 +34,8 @@ private:
   string selectionCode;
 
 public:
-  NclSelectionEvent (const string &id, void *executionObject,
+  NclSelectionEvent (const string &id,
+                     NclExecutionObject *executionObject,
                      ContentAnchor *anchor);
   virtual ~NclSelectionEvent ();
   bool start ();

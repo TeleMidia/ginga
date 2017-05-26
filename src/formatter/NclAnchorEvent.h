@@ -25,13 +25,15 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
+class NclExecutionObject;
+
 class NclAnchorEvent : public NclFormatterEvent
 {
 protected:
   ContentAnchor *anchor;
 
 public:
-  NclAnchorEvent (const string &id, void *executionObject, ContentAnchor *anchor);
+  NclAnchorEvent (const string &id, NclExecutionObject *, ContentAnchor *);
 
   virtual ~NclAnchorEvent ();
 

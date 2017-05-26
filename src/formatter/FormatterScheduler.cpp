@@ -47,7 +47,6 @@ FormatterScheduler::FormatterScheduler ()
   this->running = false;
   Thread::mutexInit (&mutexD, true);
   Thread::mutexInit (&mutexActions, true);
-  Thread::mutexInit (&lMutex, true);
 }
 
 FormatterScheduler::~FormatterScheduler ()
@@ -61,21 +60,8 @@ FormatterScheduler::~FormatterScheduler ()
 
   running = false;
 
-  Thread::mutexLock (&lMutex);
   Thread::mutexLock (&mutexD);
   Thread::mutexLock (&mutexActions);
-
-  j = listening.begin ();
-  while (j != listening.end ())
-    {
-      if (NclFormatterEvent::hasInstance ((*j), false))
-        {
-          (*j)->removeEventListener (this);
-        }
-      ++j;
-    }
-  Thread::mutexUnlock (&lMutex);
-  Thread::mutexDestroy (&lMutex);
 
   i = actions.begin ();
   while (i != actions.end ())
@@ -98,8 +84,7 @@ FormatterScheduler::~FormatterScheduler ()
     }
 
   compiler = NULL;
-  documentEvents.clear ();
-  documentStatus.clear ();
+  events.clear ();
 
   Thread::mutexUnlock (&mutexD);
   Thread::mutexDestroy (&mutexD);
@@ -144,46 +129,6 @@ bool
 FormatterScheduler::setKeyHandler (bool isHandler)
 {
   return focusManager->setKeyHandler (isHandler);
-}
-
-bool
-FormatterScheduler::isDocumentRunning (NclFormatterEvent *event)
-{
-  NclExecutionObject *executionObject;
-  NclCompositeExecutionObject *parentObject;
-  NclFormatterEvent *documentEvent;
-
-  executionObject = (NclExecutionObject *)(event->getExecutionObject ());
-  parentObject = (NclCompositeExecutionObject *)(executionObject
-                                                     ->getParentObject ());
-
-  if (parentObject != NULL)
-    {
-      while (parentObject->getParentObject () != NULL)
-        {
-          executionObject = (NclExecutionObject *)(parentObject);
-          parentObject
-              = (NclCompositeExecutionObject *)(parentObject
-                                                    ->getParentObject ());
-        }
-
-      documentEvent = executionObject->getWholeContentPresentationEvent ();
-    }
-  else
-    {
-      documentEvent = event;
-    }
-
-  Thread::mutexLock (&mutexD);
-  if (documentStatus.count (documentEvent) != 0)
-    {
-      bool eventStatus = documentStatus[documentEvent];
-      Thread::mutexUnlock (&mutexD);
-      return eventStatus;
-    }
-
-  Thread::mutexUnlock (&mutexD);
-  return false;
 }
 
 void
@@ -309,12 +254,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
           // g_assert_nonnull (winId);
 
           player->setOutputWindow (winId);
-
           event->addEventListener (this);
-
-          Thread::mutexLock (&lMutex);
-          listening.insert (event);
-          Thread::mutexUnlock (&lMutex);
         }
 
       if (unlikely (!player->start ()))
@@ -323,14 +263,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
           if (event->getCurrentState () == EventUtil::ST_SLEEPING)
             {
               set<NclFormatterEvent *>::iterator it;
-
               event->removeEventListener (this);
-
-              Thread::mutexLock (&lMutex);
-              it = listening.find (event);
-              if (it != listening.end ())
-                listening.erase (it);
-              Thread::mutexUnlock (&lMutex);
             }
         }
       break;
@@ -581,9 +514,6 @@ FormatterScheduler::runActionOverApplicationObject (
         }
 
       event->addEventListener (this);
-      Thread::mutexLock (&lMutex);
-      listening.insert (event);
-      Thread::mutexUnlock (&lMutex);
       if (((AdapterApplicationPlayer *)player)
               ->setAndLockCurrentEvent (event))
         {
@@ -600,13 +530,6 @@ FormatterScheduler::runActionOverApplicationObject (
               if (event->getCurrentState () == EventUtil::ST_SLEEPING)
                 {
                   event->removeEventListener (this);
-                  Thread::mutexLock (&lMutex);
-                  it = listening.find (event);
-                  if (it != listening.end ())
-                    {
-                      listening.erase (it);
-                    }
-                  Thread::mutexUnlock (&lMutex);
                 }
             }
 
@@ -1295,7 +1218,7 @@ FormatterScheduler::startDocument (const string &file)
   ContextNode *body;
 
   vector<Port *> *ports;
-  vector<NclFormatterEvent *> *events;
+  vector<NclFormatterEvent *> *entryevts;
 
   NclNodeNesting *persp;
   NclFormatterEvent *evt;
@@ -1344,7 +1267,7 @@ FormatterScheduler::startDocument (const string &file)
   persp->insertAnchorNode (body);
 
   // Get port events.
-  events = new vector<NclFormatterEvent *>;
+  entryevts = new vector<NclFormatterEvent *>;
   for (guint i = 0; i < ports->size (); i++)
     {
       Port *port;
@@ -1355,7 +1278,7 @@ FormatterScheduler::startDocument (const string &file)
       evt = this->compiler->insertContext (persp, port);
       g_assert_nonnull (evt);
 
-      events->push_back (evt);
+      entryevts->push_back (evt);
     }
 
   delete ports;
@@ -1378,8 +1301,8 @@ FormatterScheduler::startDocument (const string &file)
     }
   delete settings;
 
-  g_assert (!events->empty ());
-  evt = events->at (0);
+  g_assert (!entryevts->empty ());
+  evt = entryevts->at (0);
   g_assert_nonnull (evt);
 
   execobj = (NclExecutionObject *)(evt->getExecutionObject ());
@@ -1388,87 +1311,21 @@ FormatterScheduler::startDocument (const string &file)
   parent = (NclCompositeExecutionObject *)(execobj->getParentObject ());
   g_assert_nonnull (parent);
 
-  g_assert_nonnull (evt);
-  g_assert_nonnull (events);
-  g_assert (!events->empty ());
-  g_assert (!isDocumentRunning (evt));
-
   Thread::mutexLock (&mutexD);
 
-  clog << "FormatterScheduler::startDocument Through event '";
-  clog << evt->getId () << "'" << endl;
   evt->addEventListener (this);
-  documentEvents.push_back (evt);
+  events.push_back (evt);
 
-  Thread::mutexLock (&lMutex);
-  listening.insert (evt);
-  Thread::mutexUnlock (&lMutex);
+  execobj = evt->getExecutionObject ();
+  g_assert_nonnull (execobj);
 
-  documentStatus[evt] = true;
-  Thread::mutexUnlock (&mutexD);
-
-  execobj = (NclExecutionObject *)(evt->getExecutionObject ());
   initializeDocumentSettings (execobj->getDataObject ());
   initializeDefaultSettings ();
 
-  int docEvents = 0;
-  for (guint i = 0; i < events->size (); i++)
+  for (guint i = 0; i < entryevts->size (); i++)
     {
-      NclFormatterEvent *event = events->at (i);
-
+      NclFormatterEvent *event = entryevts->at (i);
       startEvent (event);
-      if (event->getCurrentState () != EventUtil::ST_SLEEPING)
-        {
-          docEvents++;
-        }
-    }
-
-  if (docEvents == 0) {
-          clog << "FormatterScheduler::startDocument 0 events running";
-          clog << " stopping document" << endl;
-          stopDocument(evt);
-  }
-
-  clog << "FormatterScheduler::startDocument Through event '";
-  clog << evt->getId () << "' started '" << docEvents << "'";
-  clog << " events" << endl;
-}
-
-void
-FormatterScheduler::stopDocument (NclFormatterEvent *documentEvent)
-{
-  NclExecutionObject *executionObject;
-
-  clog << "FormatterScheduler::stopDocument through '";
-  clog << documentEvent->getId () << "'" << endl;
-
-  Thread::mutexLock (&mutexD);
-  if (documentStatus.count (documentEvent) != 0)
-    {
-      documentEvent->removeEventListener (this);
-      documentStatus[documentEvent] = false;
-
-      documentEvents.clear ();
-      Thread::mutexUnlock (&mutexD);
-
-      executionObject
-          = (NclExecutionObject *)(documentEvent->getExecutionObject ());
-
-      if (executionObject->instanceOf ("NclCompositeExecutionObject"))
-        {
-          ((NclCompositeExecutionObject *)executionObject)
-              ->setAllLinksAsUncompiled (true);
-        }
-
-      // we can't remove the document,
-      // since it can be started again
-      // removeDocument(documentEvent);
-      stopEvent (documentEvent);
-    }
-  else
-    {
-      documentEvents.clear ();
-      Thread::mutexUnlock (&mutexD);
     }
 }
 
@@ -1492,8 +1349,8 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
   hasOther = false;
   contains = false;
 
-  it = documentEvents.begin ();
-  while (it != documentEvents.end ())
+  it = events.begin ();
+  while (it != events.end ())
     {
       if (*it == event)
         {
@@ -1514,7 +1371,7 @@ FormatterScheduler::eventStateChanged (void *someEvent, short transition,
         case EventUtil::TR_ABORTS:
           if (!hasOther)
             {
-              documentEvents.clear ();
+              events.clear ();
 
               // we can't remove the document,
               // since it can be started again

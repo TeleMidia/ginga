@@ -28,6 +28,8 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
+class NclExecutionObject;
+
 class NclAttributionEvent : public NclFormatterEvent
 {
 private:
@@ -40,9 +42,9 @@ protected:
   PresentationContext *presContext;
 
 public:
-  NclAttributionEvent (const string &id, void *executionObject,
-                       PropertyAnchor *anchor,
-                       PresentationContext *presContext);
+  NclAttributionEvent (const string &id, NclExecutionObject *,
+                       PropertyAnchor *,
+                       PresentationContext *);
 
   virtual ~NclAttributionEvent ();
   PropertyAnchor *getAnchor ();

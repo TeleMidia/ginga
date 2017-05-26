@@ -27,7 +27,7 @@ GINGA_FORMATTER_BEGIN
 const double NclPresentationEvent::UNDEFINED_INSTANT = (double)NAN;
 
 NclPresentationEvent::NclPresentationEvent (const string &id,
-                                            void *executionObject,
+                                            NclExecutionObject *executionObject,
                                             ContentAnchor *anchor)
     : NclAnchorEvent (id, executionObject, anchor)
 {
