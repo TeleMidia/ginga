@@ -48,7 +48,6 @@ public:
   virtual ~IPlayer (){};
 
   virtual void setMrl (const string &mrl, bool visible = true) = 0;
-  virtual void setNotifyContentUpdate (bool notify) = 0;
   virtual void addListener (IPlayerListener *listener) = 0;
   virtual void removeListener (IPlayerListener *listener) = 0;
   virtual void notifyPlayerListeners (short code,
@@ -57,7 +56,6 @@ public:
                                       const string &value)
       = 0;
 
-  virtual int64_t getVPts () = 0;
   virtual guint32 getMediaTime () = 0;
   virtual double getTotalMediaTime () = 0;
   virtual void setMediaTime (guint32 newTime) = 0;
@@ -82,8 +80,6 @@ public:
   virtual void setTimeBasePlayer (IPlayer *timeBasePlayer) = 0;
   virtual bool isVisible () = 0;
   virtual void setVisible (bool visible) = 0;
-  virtual bool immediatelyStart () = 0;
-  virtual void setImmediatelyStart (bool immediatelyStartVal) = 0;
   virtual void forceNaturalEnd (bool forceIt) = 0;
   virtual bool isForcedNaturalEnd () = 0;
   virtual bool setOutWindow (SDLWindow* windowId) = 0;
