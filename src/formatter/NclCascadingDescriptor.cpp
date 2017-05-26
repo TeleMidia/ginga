@@ -422,7 +422,7 @@ NclCascadingDescriptor::setFormatterLayout (void *formatterLayout)
       g_assert (this->region->setRight (0., true));
       g_assert (this->region->setWidth (100., true));
       g_assert (this->region->setHeight (100., true));
-      parent = ((NclFormatterLayout *) formatterLayout)->getDeviceRegion ();
+      parent = ((NclFormatterLayout *) formatterLayout)->getRegion ();
 
       g_assert_nonnull (parent);
       this->region->setParent (parent);

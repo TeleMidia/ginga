@@ -22,10 +22,10 @@ GINGA_FORMATTER_BEGIN
 
 NclFormatterLayout::NclFormatterLayout (int w, int h)
 {
-  deviceRegion = NULL;
+  region = NULL;
 
   Thread::mutexInit (&mutex, false);
-  createDeviceRegion (w, h);
+  createRegion (w, h);
 }
 
 NclFormatterLayout::~NclFormatterLayout ()
@@ -39,19 +39,19 @@ NclFormatterLayout::~NclFormatterLayout ()
 }
 
 LayoutRegion *
-NclFormatterLayout::getDeviceRegion ()
+NclFormatterLayout::getRegion ()
 {
-  return this->deviceRegion;
+  return this->region;
 }
 
 void
-NclFormatterLayout::createDeviceRegion (int w, int h)
+NclFormatterLayout::createRegion (int w, int h)
 {
-  deviceRegion = new LayoutRegion ("defaultScreenFormatter");
-  deviceRegion->setTop (0, false);
-  deviceRegion->setLeft (0, false);
-  deviceRegion->setWidth (w, false);
-  deviceRegion->setHeight (h, false);
+  region = new LayoutRegion ("defaultScreenFormatter");
+  region->setTop (0, false);
+  region->setLeft (0, false);
+  region->setWidth (w, false);
+  region->setHeight (h, false);
 }
 
 SDLWindow*
@@ -59,7 +59,7 @@ NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object,
                                             string plan)
 {
   NclCascadingDescriptor *descriptor;
-  NclFormatterRegion *region;
+  NclFormatterRegion *fregion;
 
   LayoutRegion *layoutRegion, *parent, *grandParent;
   string regionId, mapId;
@@ -84,11 +84,11 @@ NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object,
   clog << endl;
 
   descriptor = object->getDescriptor ();
-  region = descriptor->getFormatterRegion ();
-  layoutRegion = region->getOriginalRegion ();
+  fregion = descriptor->getFormatterRegion ();
+  layoutRegion = fregion->getOriginalRegion ();
 
   // every presented object has a region root
-  // the formatter device region
+  // the formatter region
   parent = layoutRegion;
   grandParent = layoutRegion->getParent ();
   if (grandParent != NULL)
@@ -100,26 +100,26 @@ NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object,
         }
     }
 
-  if (grandParent != deviceRegion && grandParent != NULL)
+  if (grandParent != region && grandParent != NULL)
     {
       childs = grandParent->getRegions ();
       i = childs->begin ();
       while (i != childs->end ())
         {
-          deviceRegion->addRegion (*i);
-          (*i)->setParent (deviceRegion);
+          region->addRegion (*i);
+          (*i)->setParent (region);
           ++i;
         }
       delete childs;
 
-      deviceRegion->addRegion (parent);
-      parent->setParent (deviceRegion);
+      region->addRegion (parent);
+      parent->setParent (region);
     }
 
   regionId = layoutRegion->getId ();
   zIndex = layoutRegion->getZIndex ();
 
-  windowId = addRegionOnMaps (object, region, regionId,
+  windowId = addRegionOnMaps (object, fregion, regionId,
                               zIndex, plan, &cvtZIndex);
 
   return windowId;
@@ -327,7 +327,7 @@ NclFormatterLayout::clear ()
   objectMap.clear ();
   unlock ();
 
-  deviceRegion->removeRegions ();
+  region->removeRegions ();
 }
 
 void

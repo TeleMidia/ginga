@@ -39,7 +39,6 @@ FormatterScheduler::FormatterScheduler ()
   this->compiler = new FormatterConverter (ruleAdapter);
   this->compiler->setLinkActionListener (this);
   this->compiler->setScheduler (this);
-  //this->multiDevice = new FormatterMultiDevice (w, h);
   this->layout = new NclFormatterLayout (w, h);
   this->playerManager = new AdapterPlayerManager ();
   this->focusManager = new FormatterFocusManager
