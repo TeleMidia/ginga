@@ -60,7 +60,6 @@ short int
 NclEventTransitionManager::getType (NclPresentationEvent *event)
 {
   ContentAnchor *anchor;
-  short int valueSyntax;
 
   anchor = event->getAnchor ();
   if (anchor->instanceOf ("RelativeTimeIntervalAnchor")
@@ -68,13 +67,6 @@ NclEventTransitionManager::getType (NclPresentationEvent *event)
       || anchor->instanceOf ("LabeledAnchor"))
     {
       return ContentAnchor::CAT_TIME;
-    }
-  else if (anchor->instanceOf ("SampleIntervalAnchor"))
-    {
-      ((SampleIntervalAnchor *)anchor)
-          ->getValueSyntax (&valueSyntax, &valueSyntax);
-
-      return valueSyntax;
     }
   else
     {

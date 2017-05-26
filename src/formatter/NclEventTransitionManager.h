@@ -22,7 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::system;
 
 #include "ncl/RelativeTimeIntervalAnchor.h"
-#include "ncl/SampleIntervalAnchor.h"
 using namespace ::ginga::ncl;
 
 #include "ncl/EventUtil.h"

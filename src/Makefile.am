@@ -148,7 +148,6 @@ src+= ncl/RelativeTimeIntervalAnchor.cpp
 src+= ncl/Role.cpp
 src+= ncl/Rule.cpp
 src+= ncl/RuleBase.cpp
-src+= ncl/SampleIntervalAnchor.cpp
 src+= ncl/SimpleAction.cpp
 src+= ncl/SimpleCondition.cpp
 src+= ncl/SimpleRule.cpp
