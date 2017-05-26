@@ -21,7 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 
 #include "GingaUser.h"
-#include "IContextListener.h"
 #include "SystemInfo.h"
 
 GINGA_CTXMGMT_BEGIN
@@ -31,7 +30,6 @@ class ContextManager
 private:
   map<int, GingaUser *> users;
   map<int, map<string, string> *> contexts;
-  set<IContextListener *> ctxListeners;
   int curUserId;
   SystemInfo *systemInfo;
   static ContextManager *_instance;
@@ -51,9 +49,6 @@ public:
   void addUser (GingaUser *newUser); // fixme: should be const GingaUser*
   void saveUsersAccounts ();
   void saveUsersProfiles ();
-  void addContextListener (IContextListener *listener); // fixme: should be const GingaUser*
-  void removeContextListener (IContextListener *listener); // fixme: should be const GingaUser*
-  void setGlobalVar (const string &varName, const string &varValue);
 
 private:
   void saveProfile (FILE *fd, int userId, const map<string, string> *profile);

@@ -33,21 +33,14 @@ PresentationContext::PresentationContext ()
       PresentationContext::contextManager = ContextManager::getInstance ();
     }
 
-  contextManager->addContextListener (this);
-
   initializeUserContext ();
   initializeSystemValues ();
-
-  globalVarListener = NULL;
-  devListener = NULL;
 
   Thread::mutexInit (&attrMutex, false);
 }
 
 PresentationContext::~PresentationContext ()
 {
-  contextManager->removeContextListener (this);
-
   contextTable.clear ();
 }
 
@@ -258,23 +251,6 @@ PresentationContext::initializeSystemValues ()
   if (contextTable.count ("default.focusBorderTransparency") == 0)
     {
       contextTable["default.focusBorderTransparency"] = "0";
-    }
-}
-
-
-void
-PresentationContext::setGlobalVarListener (IContextListener *listener)
-{
-  globalVarListener = listener;
-}
-
-void
-PresentationContext::receiveGlobalAttribution (const string &pName,
-                                               const string &value)
-{
-  if (globalVarListener != NULL)
-    {
-      globalVarListener->receiveGlobalAttribution (pName, value);
     }
 }
 

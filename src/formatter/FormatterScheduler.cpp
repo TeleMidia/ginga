@@ -91,11 +91,6 @@ FormatterScheduler::~FormatterScheduler ()
   Thread::mutexUnlock (&mutexActions);
   Thread::mutexDestroy (&mutexActions);
 
-  if (presContext != NULL)
-    {
-      this->presContext->setGlobalVarListener (NULL);
-    }
-
   ruleAdapter = NULL;
   presContext = NULL;
 

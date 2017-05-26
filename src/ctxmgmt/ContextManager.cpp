@@ -39,7 +39,6 @@ ContextManager::ContextManager ()
 ContextManager::~ContextManager ()
 {
   map<int, GingaUser *>::iterator i;
-  set<IContextListener *>::iterator j;
 
   Thread::mutexLock (&groupsMutex);
   i = users.begin ();
@@ -172,41 +171,6 @@ SystemInfo *
 ContextManager::getSystemInfo ()
 {
   return systemInfo;
-}
-
-void
-ContextManager::addContextListener (IContextListener *listener)
-{
-  Thread::mutexLock (&groupsMutex);
-  ctxListeners.insert (listener);
-  Thread::mutexUnlock (&groupsMutex);
-}
-
-void
-ContextManager::removeContextListener (IContextListener *listener)
-{
-  set<IContextListener *>::iterator i;
-
-  Thread::mutexLock (&groupsMutex);
-  i = ctxListeners.find (listener);
-  if (i != ctxListeners.end ())
-    ctxListeners.erase (i);
-  Thread::mutexUnlock (&groupsMutex);
-}
-
-void
-ContextManager::setGlobalVar (const string &varName, const string &varValue)
-{
-  set<IContextListener *>::iterator i;
-
-  Thread::mutexLock (&groupsMutex);
-  i = ctxListeners.begin ();
-  while (i != ctxListeners.end ())
-    {
-      (*i)->receiveGlobalAttribution (varName, varValue);
-      ++i;
-    }
-  Thread::mutexUnlock (&groupsMutex);
 }
 
 GINGA_CTXMGMT_END
