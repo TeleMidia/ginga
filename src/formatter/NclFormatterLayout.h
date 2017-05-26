@@ -31,7 +31,7 @@ GINGA_FORMATTER_BEGIN
 class NclFormatterLayout
 {
 private:
-  LayoutRegion *deviceRegion;
+  LayoutRegion *region;
   map<string, double> regionZIndex;
   map<string, set<NclFormatterRegion *> *> regionMap;
   map<NclFormatterRegion *, NclExecutionObject *> objectMap;
@@ -40,10 +40,10 @@ private:
 public:
   NclFormatterLayout (int w, int h);
   virtual ~NclFormatterLayout ();
-  LayoutRegion *getDeviceRegion ();
+  LayoutRegion *getRegion ();
 
 private:
-  void createDeviceRegion (int w, int h);
+  void createRegion (int w, int h);
 
 public:
   SDLWindow* prepareFormatterRegion (NclExecutionObject *object,
