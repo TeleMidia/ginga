@@ -36,17 +36,13 @@ typedef struct
 } ApplicationStatus;
 
 class AdapterApplicationPlayer :
-    public AdapterFormatterPlayer,
-    public Thread
+    public AdapterFormatterPlayer
 {
 public:
   explicit AdapterApplicationPlayer (AdapterPlayerManager *manager);
   virtual ~AdapterApplicationPlayer ();
 
-//  virtual bool start ();
   virtual bool stop ();
-//  virtual bool pause ();
-//  virtual bool resume ();
   virtual bool abort ();
 
   virtual void naturalEnd ();
