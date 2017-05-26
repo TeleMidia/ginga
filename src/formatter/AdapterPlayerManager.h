@@ -15,42 +15,27 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _PLAYERADAPTERMANAGER_H_
-#define _PLAYERADAPTERMANAGER_H_
-
-#include "system/Thread.h"
-using namespace ::ginga::system;
-
-#include "ncl/NodeEntity.h"
-#include "ncl/ContentNode.h"
-using namespace ::ginga::ncl;
-
-#include "NclCascadingDescriptor.h"
-#include "NclExecutionObject.h"
-
-#include "player/INCLPlayer.h"
-using namespace ::ginga::player;
+#ifndef ADAPTER_PLAYER_MANAGER_H
+#define ADAPTER_PLAYER_MANAGER_H
 
 #include "AdapterFormatterPlayer.h"
+#include "NclExecutionObject.h"
 
 GINGA_FORMATTER_BEGIN
 
 class AdapterPlayerManager
 {
 public:
-  AdapterPlayerManager (NclPlayerData *data);
+  AdapterPlayerManager ();
   virtual ~AdapterPlayerManager ();
 
   AdapterFormatterPlayer *getObjectPlayer (NclExecutionObject *execObj);
-  NclPlayerData *getNclPlayerData ();
-
   bool removePlayer (NclExecutionObject *object);
   static bool isEmbeddedApp (NodeEntity *dataObject);
 
 private:
   map<string, AdapterFormatterPlayer *> _objectPlayers;
   map<string, AdapterFormatterPlayer *> _deletePlayers;
-  NclPlayerData *_nclPlayerData;
 
   AdapterFormatterPlayer *initializePlayer (NclExecutionObject *object);
   static bool isEmbeddedAppMediaType (const string &mediaType);
@@ -62,4 +47,4 @@ private:
 
 GINGA_FORMATTER_END
 
-#endif //_PLAYERADAPTERMANAGER_H_
+#endif // ADAPTER_PLAYER_MANAGER_H

@@ -380,11 +380,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
           else if (name == "transparency")
             {
               transpValue = xstrtodorpercent (value, &isPercent);
-              parentOpacity = (1
-                               - _manager
-                                     ->getNclPlayerData ()
-                                     ->transparency);
-
+              parentOpacity = 1;
               transpValue = (1 - (parentOpacity
                                   - (parentOpacity * transpValue)));
 
@@ -589,7 +585,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
   if (transpValue < 0.
       && descriptor->getParameterValue ("transparency") == "")
     {
-      transpValue = _manager->getNclPlayerData ()->transparency;
+      transpValue = 1.;
 
       if (fRegion != nullptr)
         {
@@ -1151,11 +1147,7 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
               NclCascadingDescriptor *descriptor;
 
               transpValue = xstrtodorpercent (value, &isPercent);
-              parentOpacity = (1
-                               - _manager
-                                     ->getNclPlayerData ()
-                                     ->transparency);
-
+              parentOpacity = 1;
               transpValue
                   = (1 - (parentOpacity - (parentOpacity * transpValue)));
 

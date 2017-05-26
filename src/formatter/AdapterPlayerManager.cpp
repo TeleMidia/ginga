@@ -23,21 +23,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-AdapterPlayerManager::AdapterPlayerManager (NclPlayerData *data)
+AdapterPlayerManager::AdapterPlayerManager ()
 {
-  _nclPlayerData = data;
 }
 
 AdapterPlayerManager::~AdapterPlayerManager ()
 {
   clear ();
   clearDeletePlayers ();
-}
-
-NclPlayerData *
-AdapterPlayerManager::getNclPlayerData ()
-{
-  return _nclPlayerData;
 }
 
 bool
