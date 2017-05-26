@@ -1131,15 +1131,8 @@ FormatterScheduler::startDocument (const string &file)
 {
   string id;
   ContextNode *body;
-
-  vector<Port *> *ports;
   vector<NclFormatterEvent *> *entryevts;
-
   NclNodeNesting *persp;
-  NclFormatterEvent *evt;
-
-  NclExecutionObject *execobj;
-  NclCompositeExecutionObject *parent;
 
   // Parse document.
   NclParser compiler;
@@ -1152,70 +1145,40 @@ FormatterScheduler::startDocument (const string &file)
   if (unlikely (body == NULL))
     syntax_error ("document has no body");
 
-  // Get Ports.
-  ports = new vector<Port *>;
-  for (guint i = 0; i < body->getNumPorts (); i++)
+  // Get entry events (i.e., those mapped by ports).
+  persp = new NclNodeNesting ();
+  persp->insertAnchorNode (body);
+  entryevts = new vector<NclFormatterEvent *>;
+  for (auto port: *body->getPorts ())
     {
-      Port *port;
-      InterfacePoint *ip;
-
-      port = body->getPort (i);
-      g_assert_nonnull (port);
-
-      ip = port->getEndInterfacePoint ();
-      g_assert_nonnull (ip);
-      g_assert (ip->instanceOf ("ContentAnchor")
-                || ip->instanceOf ("LabeledAnchor")
-                || ip->instanceOf ("PropertyAnchor"));
-
-      ports->push_back (port);
+      NclFormatterEvent *evt = this->compiler->insertContext (persp, port);
+      g_assert_nonnull (evt);
+      entryevts->push_back (evt);
     }
+  delete persp;
 
-  if (ports->empty ())
+  if (unlikely (entryevts->empty ()))
     {
       g_warning ("document has no ports");
-      delete ports;
       return;
     }
 
-  persp = new NclNodeNesting ();
-  persp->insertAnchorNode (body);
-
-  // Get port events.
-  entryevts = new vector<NclFormatterEvent *>;
-  for (guint i = 0; i < ports->size (); i++)
-    {
-      Port *port;
-
-      port = ports->at (i);
-      g_assert_nonnull (port);
-
-      evt = this->compiler->insertContext (persp, port);
-      g_assert_nonnull (evt);
-
-      entryevts->push_back (evt);
-    }
-
-  delete ports;
-  delete persp;
-
-  // Create execution object for settings and initializes it.
+  // Create execution object for settings and initialize it.
   vector <Node *> *settings = this->doc->getSettingsNodes ();
-  g_assert_nonnull (settings);
-  for (guint i = 0; i < settings->size (); i++)
+  for (auto node: *settings)
     {
       ContentNode *content;
+      NclExecutionObject *execobj;
 
-      persp = new NclNodeNesting ((settings->at (i))->getPerspective ());
-      execobj = this->compiler
-        ->getExecutionObjectFromPerspective (persp, NULL);
+      persp = new NclNodeNesting (node->getPerspective ());
+      execobj = this->compiler->getExecutionObjectFromPerspective (persp, NULL);
       g_assert_nonnull (execobj);
 
       g_debug ("settings: processing '%s'", persp->toString ().c_str ());
       delete persp;
 
-      content = (ContentNode *)(settings->at (i));
-      for (auto anchor: *(content->getAnchors ()))
+      content = (ContentNode *) node;
+      for (auto anchor: *content->getAnchors ())
         {
           PropertyAnchor *prop;
           string name;
@@ -1231,28 +1194,19 @@ FormatterScheduler::startDocument (const string &file)
             continue;           // nothing to do
 
           g_debug ("settings: set %s='%s'", name.c_str (), value.c_str ());
+          this->presContext->setPropertyValue (name, value);
         }
     }
   delete settings;
 
-  g_assert (!entryevts->empty ());
-  evt = entryevts->at (0);
-  g_assert_nonnull (evt);
-
-  execobj = evt->getExecutionObject ();
-  g_assert_nonnull (execobj);
-
-  parent = (NclCompositeExecutionObject *)(execobj->getParentObject ());
-  g_assert_nonnull (parent);
-
-  evt->addEventListener (this);
-  events.push_back (evt);
-
-  for (guint i = 0; i < entryevts->size (); i++)
+  // Start entry events.
+  for (auto event: *entryevts)
     {
-      NclFormatterEvent *event = entryevts->at (i);
-      startEvent (event);
+      event->addEventListener (this);
+      this->events.push_back (event);
+      this->startEvent (event);
     }
+  delete entryevts;
 }
 
 void
