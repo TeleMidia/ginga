@@ -86,19 +86,7 @@ Player::setMrl (const string &mrl, bool visible)
 void
 Player::addListener (IPlayerListener *listener)
 {
-  // LockedPlayerListener *lpl = NULL;
-
-  if (notifying)
-    {
-      // Thread::mutexLock (&lockedListM);
-      // lpl = new LockedPlayerListener;
-      // lpl->isAdd = true;
-      // lpl->l = listener;
-
-      // lockedListeners.push_back (lpl);
-      // Thread::mutexUnlock (&lockedListM);
-    }
-  else
+  if (!notifying)
     {
       Thread::mutexLock (&listM);
       listeners.insert (listener);
