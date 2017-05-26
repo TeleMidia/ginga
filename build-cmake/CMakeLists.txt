@@ -98,14 +98,10 @@ set (GINGA_SOURCES
   ../src/ctxmgmt/SystemInfo.cpp
   ../src/formatter/AdapterApplicationPlayer.cpp
   ../src/formatter/AdapterFormatterPlayer.cpp
-  ../src/formatter/AdapterLuaPlayer.cpp
-  ../src/formatter/AdapterNCLPlayer.cpp
   ../src/formatter/AdapterPlayerManager.cpp
   ../src/formatter/FormatterConverter.cpp
   ../src/formatter/FormatterFocusManager.cpp
   ../src/formatter/FormatterLinkConverter.cpp
-  ../src/formatter/FormatterMediator.cpp
-  ../src/formatter/FormatterMultiDevice.cpp
   ../src/formatter/FormatterScheduler.cpp
   ../src/formatter/NclAnchorEvent.cpp
   ../src/formatter/NclApplicationExecutionObject.cpp
