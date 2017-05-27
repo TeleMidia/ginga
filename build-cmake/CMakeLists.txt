@@ -178,14 +178,11 @@ set (GINGA_SOURCES
   ../src/ncl/LambdaAnchor.cpp
   ../src/ncl/LayoutRegion.cpp
   ../src/ncl/Link.cpp
-  ../src/ncl/Meta.cpp
-  ../src/ncl/Metadata.cpp
   ../src/ncl/NclDocument.cpp
   ../src/ncl/Node.cpp
   ../src/ncl/NodeEntity.cpp
   ../src/ncl/Parameter.cpp
   ../src/ncl/Port.cpp
-  ../src/ncl/PrivateBase.cpp
   ../src/ncl/PropertyAnchor.cpp
   ../src/ncl/RectangleSpatialAnchor.cpp
   ../src/ncl/ReferNode.cpp
@@ -196,7 +193,6 @@ set (GINGA_SOURCES
   ../src/ncl/Role.cpp
   ../src/ncl/Rule.cpp
   ../src/ncl/RuleBase.cpp
-  ../src/ncl/SampleIntervalAnchor.cpp
   ../src/ncl/SimpleAction.cpp
   ../src/ncl/SimpleCondition.cpp
   ../src/ncl/SimpleRule.cpp
@@ -325,9 +321,13 @@ configure_file(${CMAKE_SOURCE_DIR}/config.h.in config.h)
 # add a target to generate API documentation with Doxygen
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
+  set (top_builddir ${CMAKE_CURRENT_BINARY_DIR})
+  set (top_srcdir ${CMAKE_CURRENT_SOURCE_DIR}/..)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../doc/Doxyfile.in
+                 ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile @ONLY)
   add_custom_target(doc
-    ${DOXYGEN_EXECUTABLE} ${CMAKE_SOURCE_DIR}/../contrib/Doxyfile
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    ${DOXYGEN_EXECUTABLE} ${CMAKE_BINARY_DIR}/doc/Doxyfile
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc
     COMMENT "Generating API documentation with Doxygen" VERBATIM
   )
 endif(DOXYGEN_FOUND)
