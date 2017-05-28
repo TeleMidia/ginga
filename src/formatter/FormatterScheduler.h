@@ -47,7 +47,7 @@ private:
   string file;                        // NCL file path
   NclDocument *doc;                   // NCL document tree
   vector<NclFormatterEvent *> events; // document events
-  set<void *> actions;                // document actions
+  set<NclLinkSimpleAction *> actions;                // document actions
 
   bool running;
 
@@ -58,14 +58,14 @@ public:
   FormatterScheduler ();
   virtual ~FormatterScheduler ();
 
-  void addAction (void *action);
-  void removeAction (void *action);
+  void addAction (NclLinkSimpleAction *action);
+  void removeAction (NclLinkSimpleAction *action);
 
   bool setKeyHandler (bool isHandler);
   FormatterFocusManager *getFocusManager ();
   NclFormatterLayout *getFormatterLayout ();
 
-  void scheduleAction (void *action);
+  void scheduleAction (NclLinkSimpleAction *action);
 
   void startEvent (NclFormatterEvent *event);
   void stopEvent (NclFormatterEvent *event);
