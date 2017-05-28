@@ -46,8 +46,8 @@ public:
   string getKey ();
   void setMappedEvent (NclFormatterEvent *event);
   NclFormatterEvent *getMappedEvent ();
-  virtual void eventStateChanged (void *event, short transition,
-                                  short previousState);
+  virtual void eventStateChanged (NclFormatterEvent *event, short transition,
+                                  short previousState) override;
 };
 
 GINGA_FORMATTER_END

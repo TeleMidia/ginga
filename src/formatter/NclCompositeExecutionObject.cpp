@@ -546,7 +546,7 @@ NclCompositeExecutionObject::unsetParentsAsListeners ()
 }
 
 void
-NclCompositeExecutionObject::eventStateChanged (void *changedEvent,
+NclCompositeExecutionObject::eventStateChanged (NclFormatterEvent *changedEvent,
                                                 short transition,
                                                 short previousState)
 {

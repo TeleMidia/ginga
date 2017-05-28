@@ -36,7 +36,7 @@ pthread_mutex_t FormatterFocusManager::iMutex;
 
 FormatterFocusManager::FormatterFocusManager (
     AdapterPlayerManager *playerManager, PresentationContext *presContext,
-    INclLinkActionListener *settingActions, void *converter)
+    INclLinkActionListener *settingActions, FormatterConverter *converter)
 {
   string strValue;
 
@@ -257,7 +257,7 @@ FormatterFocusManager::setKeyHandler (bool isHandler)
 void
 FormatterFocusManager::setHandlingObjects (bool isHandling)
 {
-  ((FormatterConverter *)converter)->setHandlingStatus (isHandling);
+  this->converter->setHandlingStatus (isHandling);
 }
 
 NclExecutionObject *
@@ -385,8 +385,7 @@ FormatterFocusManager::setKeyMaster (const string &mediaId)
       return;
     }
 
-  nextObject
-      = ((FormatterConverter *)converter)->getObjectFromNodeId (mediaId);
+  nextObject = converter->getObjectFromNodeId (mediaId);
 
   if (nextObject == NULL)
     {
@@ -835,8 +834,7 @@ FormatterFocusManager::changeSettingState (const string &name, const string &act
   NclFormatterEvent *event;
   string keyM;
 
-  settingObjects
-      = ((FormatterConverter *)converter)->getSettingNodeObjects ();
+  settingObjects = converter->getSettingNodeObjects ();
 
   /*clog << "FormatterFocusManager::changeSettingState number of ";
   clog << "settings objects: '" << settingObjects->size() << "'";

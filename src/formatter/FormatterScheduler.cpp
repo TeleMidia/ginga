@@ -1206,17 +1206,15 @@ FormatterScheduler::startDocument (const string &file)
 }
 
 void
-FormatterScheduler::eventStateChanged (void *someEvent, short transition,
+FormatterScheduler::eventStateChanged (NclFormatterEvent *event,
+                                       short transition,
                                        arg_unused (short previousState))
 {
   NclExecutionObject *object;
   AdapterFormatterPlayer *player;
   vector<NclFormatterEvent *>::iterator it;
-  NclFormatterEvent *event;
   bool contains;
   bool hasOther;
-
-  event = (NclFormatterEvent *)someEvent;
 
   clog << "FormatterScheduler::eventStateChanged '";
   clog << event->getId () << "' transition '" << transition;

@@ -200,8 +200,8 @@ public:
   NclFormatterCausalLink *addCausalLink (ContextNode *context,
                                          CausalLink *link);
 
-  void eventStateChanged (void *someEvent, short transition,
-                          short previousState);
+  void eventStateChanged (NclFormatterEvent *someEvent, short transition,
+                          short previousState) override;
 
   void reset ();
 };

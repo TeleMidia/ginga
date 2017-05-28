@@ -39,6 +39,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
+class FormatterConverter;
+
 class FormatterFocusManager : public IKeyInputEventListener
 {
 private:
@@ -59,7 +61,7 @@ private:
   int width;
   int height;
 
-  void *converter;
+  FormatterConverter *converter;
   pthread_mutex_t mutexFocus;
   pthread_mutex_t mutexTable;
 
@@ -71,7 +73,7 @@ public:
   FormatterFocusManager (AdapterPlayerManager *playerManager,
                          PresentationContext *presContext,
                          INclLinkActionListener *settingActions,
-                         void *converter);
+                         FormatterConverter *converter);
 
   virtual ~FormatterFocusManager ();
 
