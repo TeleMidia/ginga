@@ -67,7 +67,7 @@ public:
 private:
   void unprepareEvents ();
   void removeEventListeners ();
-  void removeParentObject (Node *parentNode, void *parentObject);
+  void removeParentObject (Node *parentNode, NclCompositeExecutionObject *parentObject);
   void removeParentListenersFromEvent (NclFormatterEvent *event);
   void lockEvents ();
   void unlockEvents ();

@@ -135,7 +135,7 @@ NclLinkSimpleAction::run ()
   if (listener != NULL)
     {
       g_assert_nonnull (satisfiedCondition);
-      listener->scheduleAction ((void *)this);
+      listener->scheduleAction (this);
     }
 
   if (actionType == ACT_START)

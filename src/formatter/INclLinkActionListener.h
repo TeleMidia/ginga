@@ -20,14 +20,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
+class NclLinkSimpleAction;
+
 class INclLinkActionListener
 {
 public:
   virtual ~INclLinkActionListener (){};
 
-  virtual void scheduleAction (void *action) = 0;
-  virtual void addAction (void *action) = 0;
-  virtual void removeAction (void *action) = 0;
+  virtual void scheduleAction (NclLinkSimpleAction *action) = 0;
+  virtual void addAction (NclLinkSimpleAction *action) = 0;
+  virtual void removeAction (NclLinkSimpleAction *action) = 0;
 };
 
 GINGA_FORMATTER_END

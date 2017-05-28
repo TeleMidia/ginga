@@ -51,8 +51,7 @@ FormatterScheduler::FormatterScheduler ()
 
 FormatterScheduler::~FormatterScheduler ()
 {
-  set<void *>::iterator i;
-  set<NclFormatterEvent *>::iterator j;
+  set<NclLinkSimpleAction *>::iterator i;
   NclLinkSimpleAction *action;
 
   clog << "FormatterScheduler::~FormatterScheduler(" << this << ")";
@@ -66,7 +65,7 @@ FormatterScheduler::~FormatterScheduler ()
   i = actions.begin ();
   while (i != actions.end ())
     {
-      action = (NclLinkSimpleAction *)(*i);
+      action = (*i);
       action->setSimpleActionListener (NULL);
       ++i;
     }
@@ -91,7 +90,7 @@ FormatterScheduler::~FormatterScheduler ()
 }
 
 void
-FormatterScheduler::addAction (void *action)
+FormatterScheduler::addAction (NclLinkSimpleAction *action)
 {
   Thread::mutexLock (&mutexActions);
   actions.insert (action);
@@ -99,10 +98,9 @@ FormatterScheduler::addAction (void *action)
 }
 
 void
-FormatterScheduler::removeAction (void *action)
+FormatterScheduler::removeAction (NclLinkSimpleAction *action)
 {
-  set<void *>::iterator i;
-  vector<NclLinkSimpleAction *>::iterator j;
+  set<NclLinkSimpleAction *>::iterator i;
 
   Thread::mutexLock (&mutexActions);
   i = actions.find (action);
@@ -132,11 +130,11 @@ FormatterScheduler::setKeyHandler (bool isHandler)
 }
 
 void
-FormatterScheduler::scheduleAction (void *someAction)
+FormatterScheduler::scheduleAction (NclLinkSimpleAction *action)
 {
   pthread_mutex_lock (&mutexActions);
-  assert (someAction != NULL);
-  runAction ((NclLinkSimpleAction *)someAction);
+  assert (action != NULL);
+  runAction (action);
 
   pthread_mutex_unlock (&mutexActions);
 

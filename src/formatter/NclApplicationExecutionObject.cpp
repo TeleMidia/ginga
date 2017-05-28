@@ -690,9 +690,8 @@ NclApplicationExecutionObject::removeEventListeners ()
 
 void
 NclApplicationExecutionObject::removeParentObject (Node *parentNode,
-                                                   void *parentObject)
+                                                   NclCompositeExecutionObject *parentObject)
 {
-  map<Node *, void *>::iterator i;
   map<string, NclFormatterEvent *>::iterator j;
 
   lockEvents ();
