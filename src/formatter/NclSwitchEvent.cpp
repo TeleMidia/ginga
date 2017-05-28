@@ -83,7 +83,8 @@ NclSwitchEvent::getMappedEvent ()
 }
 
 void
-NclSwitchEvent::eventStateChanged (arg_unused (void *someEvent), short transition,
+NclSwitchEvent::eventStateChanged (arg_unused (NclFormatterEvent *someEvent),
+                                   short transition,
                                    arg_unused (short previousState))
 {
   changeState (getNewState (transition), transition);

@@ -369,7 +369,7 @@ NclFormatterEvent::changeState (short newState, short transition)
       if (*i != NULL)
         {
           ((INclEventListener *)(*i))
-              ->eventStateChanged ((void *)this, transition, previousState);
+              ->eventStateChanged (this, transition, previousState);
         }
       ++i;
     }

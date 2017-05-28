@@ -74,8 +74,8 @@ public:
 
   void startDocument (const string &);
 
-  void eventStateChanged (void *someEvent, short transition,
-                          short previousState);
+  void eventStateChanged (NclFormatterEvent *someEvent, short transition,
+                          short previousState) override;
 
 private:
   void runAction (NclLinkSimpleAction *action);

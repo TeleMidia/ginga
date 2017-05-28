@@ -98,8 +98,8 @@ public:
   void setAllLinksAsUncompiled (bool isRecursive);
   void setParentsAsListeners ();
   void unsetParentsAsListeners ();
-  void eventStateChanged (void *event, short transition,
-                          short previousState);
+  void eventStateChanged (NclFormatterEvent *event, short transition,
+                          short previousState) override;
 
   void linkEvaluationStarted (NclFormatterCausalLink *link);
   void linkEvaluationFinished (NclFormatterCausalLink *link, bool start);

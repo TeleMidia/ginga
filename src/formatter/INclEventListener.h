@@ -20,10 +20,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
+class NclFormatterEvent;
+
 class INclEventListener
 {
 public:
-  virtual void eventStateChanged (void *, short, short) = 0;
+  virtual void eventStateChanged (NclFormatterEvent *, short, short) = 0;
 };
 
 GINGA_FORMATTER_END

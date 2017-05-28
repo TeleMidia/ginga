@@ -1675,16 +1675,15 @@ FormatterConverter::addCausalLink (ContextNode *context, CausalLink *link)
 }
 
 void
-FormatterConverter::eventStateChanged (void *someEvent, short transition,
+FormatterConverter::eventStateChanged (NclFormatterEvent *event,
+                                       short transition,
                                        arg_unused (short previousState))
 {
   NclExecutionObject *executionObject;
-  NclFormatterEvent *event;
   vector<NclFormatterEvent *> *evs;
   vector<NclFormatterEvent *>::iterator i;
   NclFormatterEvent *ev;
 
-  event = (NclFormatterEvent *)someEvent;
   executionObject = (NclExecutionObject *)(event->getExecutionObject ());
 
   if (executionObject->instanceOf ("NclExecutionObjectSwitch"))
