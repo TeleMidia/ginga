@@ -30,8 +30,9 @@ using namespace ::ginga::mb;
 
 GINGA_FORMATTER_BEGIN
 
-NclFormatterRegion::NclFormatterRegion (const string &objectId, void *descriptor,
-                                        void *layoutManager)
+NclFormatterRegion::NclFormatterRegion (const string &objectId,
+                                        NclCascadingDescriptor *descriptor,
+                                        NclFormatterLayout *layoutManager)
 {
   this->layoutManager = layoutManager;
   this->objectId = objectId;
@@ -69,13 +70,10 @@ NclFormatterRegion::NclFormatterRegion (const string &objectId, void *descriptor
 
   // TODO: look for descriptor parameters overriding region attributes
   string value;
-  value = ((NclCascadingDescriptor *)descriptor)
-              ->getParameterValue ("transparency");
-
+  value = descriptor->getParameterValue ("transparency");
   this->setTransparency (value);
 
-  value = ((NclCascadingDescriptor *)descriptor)
-              ->getParameterValue ("background");
+  value = descriptor->getParameterValue ("background");
 
   if (xstrchomp (value) != "")
     {
@@ -110,42 +108,36 @@ NclFormatterRegion::NclFormatterRegion (const string &objectId, void *descriptor
         }
     }
 
-  value = ((NclCascadingDescriptor *)descriptor)->getParameterValue ("fit");
+  value = descriptor->getParameterValue ("fit");
 
   this->setFit (value);
 
-  value = ((NclCascadingDescriptor *)descriptor)
-              ->getParameterValue ("scroll");
+  value = descriptor->getParameterValue ("scroll");
 
   this->setScroll (value);
 
-  value = ((NclCascadingDescriptor *)descriptor)
-              ->getParameterValue ("chromakey");
+  value = descriptor->getParameterValue ("chromakey");
 
   this->setChromaKey (value);
 
-  value = ((NclCascadingDescriptor *)descriptor)
-              ->getParameterValue ("rgbChromakey");
+  value = descriptor->getParameterValue ("rgbChromakey");
 
   if (value == "")
     {
-      value = ((NclCascadingDescriptor *)descriptor)
-                  ->getParameterValue ("x-rgbChromakey");
+      value = descriptor->getParameterValue ("x-rgbChromakey");
     }
 
   this->setRgbChromaKey (value);
 
   // TODO: methods setTransIn and setTransOut
-  value = ((NclCascadingDescriptor *)descriptor)
-              ->getParameterValue ("transitionIn");
+  value = descriptor->getParameterValue ("transitionIn");
 
   if (value != "")
     {
       transitionIn = value;
     }
 
-  value = ((NclCascadingDescriptor *)descriptor)
-              ->getParameterValue ("transitionOut");
+  value = descriptor->getParameterValue ("transitionOut");
 
   if (value != "")
     {
@@ -211,7 +203,7 @@ NclFormatterRegion::initializeNCMRegion ()
 
   if (descriptor != NULL)
     {
-      originalRegion = ((NclCascadingDescriptor *)descriptor)->getRegion ();
+      originalRegion = descriptor->getRegion ();
     }
 
   if (originalRegion != NULL)
@@ -243,8 +235,7 @@ NclFormatterRegion::setZIndex (int zIndex)
     {
       layoutId = originalRegion->getId ();
 
-      cvtZIndex = ((NclFormatterLayout *)layoutManager)
-                      ->refreshZIndex (this, layoutId, zIndex, plan);
+      cvtZIndex = layoutManager->refreshZIndex (this, layoutId, zIndex, plan);
       (void) cvtZIndex;
 
       if (outputDisplay != 0)
@@ -297,7 +288,7 @@ NclFormatterRegion::getFocusIndex ()
     }
   else if (descriptor != NULL)
     {
-      return ((NclCascadingDescriptor *)descriptor)->getFocusIndex ();
+      return descriptor->getFocusIndex ();
     }
 
   return "";
@@ -318,7 +309,7 @@ NclFormatterRegion::getMoveUp ()
     }
   else if (descriptor != NULL)
     {
-      return ((NclCascadingDescriptor *)descriptor)->getMoveUp ();
+      return descriptor->getMoveUp ();
     }
 
   return "";
@@ -339,7 +330,7 @@ NclFormatterRegion::getMoveDown ()
     }
   else if (descriptor != NULL)
     {
-      return ((NclCascadingDescriptor *)descriptor)->getMoveDown ();
+      return descriptor->getMoveDown ();
     }
 
   return "";
@@ -360,7 +351,7 @@ NclFormatterRegion::getMoveLeft ()
     }
   else if (descriptor != NULL)
     {
-      return ((NclCascadingDescriptor *)descriptor)->getMoveLeft ();
+      return descriptor->getMoveLeft ();
     }
 
   return "";
@@ -381,7 +372,7 @@ NclFormatterRegion::getMoveRight ()
     }
   else if (descriptor != NULL)
     {
-      return ((NclCascadingDescriptor *)descriptor)->getMoveRight ();
+      return descriptor->getMoveRight ();
     }
 
   return "";
@@ -423,7 +414,7 @@ NclFormatterRegion::getFocusBorderColor ()
   else if (descriptor != NULL)
     {
       bColor
-          = ((NclCascadingDescriptor *)descriptor)->getFocusBorderColor ();
+          = descriptor->getFocusBorderColor ();
     }
   unlockFocusInfo ();
 
@@ -445,7 +436,7 @@ NclFormatterRegion::getFocusBorderWidth ()
     }
   else if (descriptor != NULL)
     {
-      return ((NclCascadingDescriptor *)descriptor)->getFocusBorderWidth ();
+      return descriptor->getFocusBorderWidth ();
     }
 
   return 0;
@@ -466,7 +457,7 @@ NclFormatterRegion::getFocusComponentSrc ()
     }
   else if (descriptor != NULL)
     {
-      return ((NclCascadingDescriptor *)descriptor)->getFocusSrc ();
+      return descriptor->getFocusSrc ();
     }
 
   return "";
@@ -508,7 +499,7 @@ NclFormatterRegion::getSelBorderColor ()
     }
   else if (descriptor != NULL)
     {
-      sColor = ((NclCascadingDescriptor *)descriptor)->getSelBorderColor ();
+      sColor = descriptor->getSelBorderColor ();
     }
 
   unlockFocusInfo ();
@@ -531,7 +522,7 @@ NclFormatterRegion::getSelBorderWidth ()
     }
   else if (descriptor != NULL)
     {
-      return ((NclCascadingDescriptor *)descriptor)->getSelBorderWidth ();
+      return descriptor->getSelBorderWidth ();
     }
 
   return 0;
@@ -552,7 +543,7 @@ NclFormatterRegion::getSelComponentSrc ()
     }
   else if (descriptor != NULL)
     {
-      return ((NclCascadingDescriptor *)descriptor)->getSelectionSrc ();
+      return descriptor->getSelectionSrc ();
     }
 
   return "";
@@ -586,13 +577,17 @@ NclFormatterRegion::getOutputId ()
 }
 
 void
-NclFormatterRegion::meetComponent (arg_unused (int width), arg_unused (int height), arg_unused (int prefWidth),
+NclFormatterRegion::meetComponent (arg_unused (int width),
+                                   arg_unused (int height),
+                                   arg_unused (int prefWidth),
                                    arg_unused (int prefHeight))
 {
 }
 
 void
-NclFormatterRegion::sliceComponent (arg_unused (int width), arg_unused (int height), arg_unused (int prefWidth),
+NclFormatterRegion::sliceComponent (arg_unused (int width),
+                                    arg_unused (int height),
+                                    arg_unused (int prefWidth),
                                     arg_unused (int prefHeight))
 {
 }
@@ -639,12 +634,6 @@ NclFormatterRegion::sizeRegion ()
       width = ncmRegion->getWidthInPixels ();
       height = ncmRegion->getHeightInPixels ();
     }
-
-  /*clog << "NclFormatterRegion::sizeRegion windowAdd = '" << outputDisplay;
-  clog << "' x = '" << left;
-  clog << "' y = '" << top;
-  clog << "' w = '" << width;
-  clog << "' h = '" << height << "'" << endl;*/
 
   if (left < 0)
     left = 0;
@@ -723,24 +712,9 @@ NclFormatterRegion::prepareOutputDisplay (double cvtIndex)
             ->createWindow (left, top, width, height, (int)cvtIndex);
         }
 
-      clog << "NclFormatterRegion::prepareOutputDisplay '" << outputDisplay;
-      clog << "' created with ";
-      clog << "left   = '" << left << "' ";
-      clog << "top    = '" << top << "' ";
-      clog << "width  = '" << width << "' ";
-      clog << "height = '" << height << "' ";
-      clog << endl;
-
       lockFocusInfo ();
       if (bgColor != NULL)
         {
-          clog << "NclFormatterRegion::prepareOutputDisplay bg color ";
-
-          clog << "r = '" << bgColor->r << "', ";
-          clog << "g = '" << bgColor->g << "' and ";
-          clog << "b = '" << bgColor->b << "' ";
-          clog << endl;
-
           outputDisplay->setBgColor (*bgColor);
         }
       unlockFocusInfo ();
@@ -748,10 +722,8 @@ NclFormatterRegion::prepareOutputDisplay (double cvtIndex)
     }
   else
     {
-      clog << "NclFormatterRegion::prepareOutputDisplay Warning!";
-      clog << "window != NULL" << endl;
+      g_warning ("NclFormatterRegion::prepareOutputDisplay: window != NULL");
     }
-
 
   unlock ();
 
@@ -762,7 +734,6 @@ void
 NclFormatterRegion::showContent ()
 {
   string value;
-  NclCascadingDescriptor *desc;
   int transitionType;
   unsigned int i;
   vector<Transition *> *transitions;
@@ -771,14 +742,13 @@ NclFormatterRegion::showContent ()
   pthread_t threadId_;
 
   lockTransition ();
-  desc = ((NclCascadingDescriptor *)descriptor);
-  value = desc->getParameterValue ("visible");
+  value = descriptor->getParameterValue ("visible");
   abortTransitionIn = false;
   abortTransitionOut = true;
   if (value != "false")
     {
       imVisible = true;
-      transitions = desc->getInputTransitions ();
+      transitions = descriptor->getInputTransitions ();
 
       if (!transitions->empty ())
         {
@@ -821,8 +791,6 @@ NclFormatterRegion::showContent ()
 
       unlockTransition ();
       setRegionVisibility (true);
-      /*clog << "NclFormatterRegion::showContent '" << desc->getId();
-      clog << "'" << endl;*/
     }
   else
     {
@@ -900,8 +868,7 @@ NclFormatterRegion::getOutTransDur ()
 
   lockTransition ();
 
-  transitions
-      = ((NclCascadingDescriptor *)descriptor)->getOutputTransitions ();
+  transitions = descriptor->getOutputTransitions ();
 
   if (!transitions->empty ())
     {
@@ -1251,11 +1218,11 @@ NclFormatterRegion::setChromaKey (const string &value)
     {
       if (value == "black")
         {
-             ginga_color_input_to_sdl_color( "#0", this->chromaKey);
+          ginga_color_input_to_sdl_color( "#0", this->chromaKey);
         }
       else
         {
-             ginga_color_input_to_sdl_color( value, this->chromaKey);
+          ginga_color_input_to_sdl_color( value, this->chromaKey);
         }
     }
 }

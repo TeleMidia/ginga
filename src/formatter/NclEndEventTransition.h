@@ -24,18 +24,20 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
+class NclBeginEventTransition;
+
 class NclEndEventTransition : public NclEventTransition
 {
 private:
-  void *beginTransition; // NclBeginEventTransition
+  NclBeginEventTransition *beginTransition;
 
 public:
   NclEndEventTransition (double time, NclPresentationEvent *event,
-                         void *transition); // NclBeginEventTransition
+                         NclBeginEventTransition *transition);
 
   virtual ~NclEndEventTransition ();
 
-  void *getBeginTransition (); // NclBeginEventTransition
+  NclBeginEventTransition *getBeginTransition ();
 };
 
 GINGA_FORMATTER_END

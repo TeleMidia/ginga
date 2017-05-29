@@ -188,7 +188,7 @@ NclApplicationExecutionObject::prepare (NclFormatterEvent *event,
                                         double offsetTime)
 {
   int size;
-  map<Node *, void *>::iterator i;
+  map<Node *, NclCompositeExecutionObject *>::iterator i;
   double startTime = 0;
   ContentAnchor *contentAnchor;
   NclFormatterEvent *auxEvent;
@@ -225,9 +225,7 @@ NclApplicationExecutionObject::prepare (NclFormatterEvent *event,
           while (i != parentTable.end ())
             {
               // register parent as a mainEvent listener
-              event->addEventListener (
-                  (INclEventListener *)(NclCompositeExecutionObject *)
-                      i->second);
+              event->addEventListener (i->second);
 
               ++i;
             }
@@ -257,13 +255,11 @@ NclApplicationExecutionObject::prepare (NclFormatterEvent *event,
   while (i != parentTable.end ())
     {
       // register parent as a currentEvent listener
-      event->addEventListener (
-          (INclEventListener *)(NclCompositeExecutionObject *)i->second);
+      event->addEventListener (i->second);
       ++i;
     }
 
-  transMan->prepare (event == wholeContent, startTime,
-                     ContentAnchor::CAT_TIME);
+  transMan->prepare (event == wholeContent, startTime, ContentAnchor::CAT_TIME);
 
   size = (int) otherEvents.size ();
   for (j = 0; j < size; j++)
@@ -603,7 +599,7 @@ NclApplicationExecutionObject::resume ()
 bool
 NclApplicationExecutionObject::unprepare ()
 {
-  map<Node *, void *>::iterator i;
+  map<Node *, NclCompositeExecutionObject *>::iterator i;
   map<string, NclFormatterEvent *>::iterator j;
 
   // clog << "NclApplicationExecutionObject::unprepare(" << id << ")" <<
@@ -697,15 +693,13 @@ NclApplicationExecutionObject::removeParentObject (Node *parentNode,
   lockEvents ();
   if (mainEvent != NULL)
     {
-      mainEvent->removeEventListener (
-          (NclCompositeExecutionObject *)parentObject);
+      mainEvent->removeEventListener (parentObject);
     }
 
   j = preparedEvents.begin ();
   while (j != preparedEvents.end ())
     {
-      j->second->removeEventListener (
-          (NclCompositeExecutionObject *)parentObject);
+      j->second->removeEventListener (parentObject);
 
       ++j;
     }
@@ -718,13 +712,13 @@ void
 NclApplicationExecutionObject::removeParentListenersFromEvent (
     NclFormatterEvent *event)
 {
-  map<Node *, void *>::iterator i;
+  map<Node *, NclCompositeExecutionObject *>::iterator i;
   NclCompositeExecutionObject *parentObject;
 
   i = parentTable.begin ();
   while (i != parentTable.end ())
     {
-      parentObject = (NclCompositeExecutionObject *)(i->second);
+      parentObject = i->second;
       // unregister parent as a currentEvent listener
       event->removeEventListener (parentObject);
       ++i;

@@ -60,9 +60,9 @@ using namespace ::ginga::ncl;
 
 #include "NclNodeNesting.h"
 
-
-
 GINGA_FORMATTER_BEGIN
+
+class NclCompositeExecutionObject;
 
 class NclExecutionObject
 {
@@ -92,7 +92,7 @@ private:
   map<Node *, Node *> nodeParentTable;
 
 protected:
-  map<Node *, void *> parentTable; // CompositionExecutionObject
+  map<Node *, NclCompositeExecutionObject *> parentTable;
   bool visible;
 
 private:
@@ -121,8 +121,10 @@ public:
   NclExecutionObject (const string &id, Node *node, bool handling,
                       INclLinkActionListener *seListener);
 
-  NclExecutionObject (const string &id, Node *node, GenericDescriptor *descriptor,
-                      bool handling, INclLinkActionListener *seListener);
+  NclExecutionObject (const string &id, Node *node,
+                      GenericDescriptor *descriptor,
+                      bool handling,
+                      INclLinkActionListener *seListener);
 
   NclExecutionObject (const string &id, Node *node,
                       NclCascadingDescriptor *descriptor, bool handling,
@@ -155,11 +157,15 @@ public:
   void notifyTimeAnchorCallBack();
   void setPlayer(Player*);
 
-  void *getParentObject ();           // NclCompositeExecutionObject
-  void *getParentObject (Node *node); // NclCompositeExecutionObject
-  void addParentObject (void *parentObject, Node *parentNode);
-  void addParentObject (Node *node, void *parentObject, Node *parentNode);
-  virtual void removeParentObject (Node *parentNode, void *parentObject);
+  NclCompositeExecutionObject *getParentObject ();
+  NclCompositeExecutionObject *getParentObject (Node *node);
+  void addParentObject (NclCompositeExecutionObject *parentObject,
+                        Node *parentNode);
+  void addParentObject (Node *node,
+                        NclCompositeExecutionObject *parentObject,
+                        Node *parentNode);
+  virtual void removeParentObject (Node *parentNode,
+                                   NclCompositeExecutionObject *parentObject);
 
   void setDescriptor (NclCascadingDescriptor *cascadingDescriptor);
   void setDescriptor (GenericDescriptor *descriptor);

@@ -124,7 +124,7 @@ NclExecutionObject::~NclExecutionObject ()
   Ginga_Display->unregisterTimeAnchorListener(this);
 
   map<Node *, Node *>::iterator i;
-  map<Node *, void *>::iterator j;
+  map<Node *, NclCompositeExecutionObject *>::iterator j;
 
   Node *parentNode;
   NclCompositeExecutionObject *parentObject;
@@ -151,7 +151,7 @@ NclExecutionObject::~NclExecutionObject ()
       j = parentTable.find (parentNode);
       if (j != parentTable.end ())
         {
-          parentObject = (NclCompositeExecutionObject *)(j->second);
+          parentObject = j->second;
 
           parentObject->removeExecutionObject (this);
         }
@@ -260,7 +260,7 @@ void
 NclExecutionObject::removeParentListenersFromEvent (
     NclFormatterEvent *event)
 {
-  map<Node *, void *>::iterator i;
+  map<Node *, NclCompositeExecutionObject *>::iterator i;
   NclCompositeExecutionObject *parentObject;
 
   if (NclFormatterEvent::hasInstance (event, false))
@@ -340,20 +340,20 @@ NclExecutionObject::getId ()
   return id;
 }
 
-void *
+NclCompositeExecutionObject *
 NclExecutionObject::getParentObject ()
 {
   return getParentObject (dataObject);
 }
 
-void *
+NclCompositeExecutionObject *
 NclExecutionObject::getParentObject (Node *node)
 {
   Node *parentNode;
-  void *parentObj = NULL;
+  NclCompositeExecutionObject *parentObj = NULL;
 
   map<Node *, Node *>::iterator i;
-  map<Node *, void *>::iterator j;
+  map<Node *, NclCompositeExecutionObject *>::iterator j;
 
   lockParentTable ();
   i = nodeParentTable.find (node);
@@ -372,13 +372,15 @@ NclExecutionObject::getParentObject (Node *node)
 }
 
 void
-NclExecutionObject::addParentObject (void *parentObject, Node *parentNode)
+NclExecutionObject::addParentObject (NclCompositeExecutionObject *parentObject,
+                                     Node *parentNode)
 {
   addParentObject (dataObject, parentObject, parentNode);
 }
 
 void
-NclExecutionObject::addParentObject (Node *node, void *parentObject,
+NclExecutionObject::addParentObject (Node *node,
+                                     NclCompositeExecutionObject *parentObject,
                                      Node *parentNode)
 {
   lockParentTable ();
@@ -389,9 +391,9 @@ NclExecutionObject::addParentObject (Node *node, void *parentObject,
 
 void
 NclExecutionObject::removeParentObject (Node *parentNode,
-                                        void *parentObject)
+                                        NclCompositeExecutionObject *parentObject)
 {
-  map<Node *, void *>::iterator i;
+  map<Node *, NclCompositeExecutionObject *>::iterator i;
 
   lockParentTable ();
   i = parentTable.find (parentNode);
@@ -399,8 +401,7 @@ NclExecutionObject::removeParentObject (Node *parentNode,
     {
       if (wholeContent != NULL)
         {
-          wholeContent->removeEventListener (
-              (NclCompositeExecutionObject *)parentObject);
+          wholeContent->removeEventListener (parentObject);
         }
       parentTable.erase (i);
     }
@@ -878,7 +879,7 @@ NclExecutionObject::removeNode (Node *node)
 {
   Node *parentNode;
   map<Node *, Node *>::iterator i;
-  map<Node *, void *>::iterator j;
+  map<Node *, NclCompositeExecutionObject *>::iterator j;
 
   if (node != dataObject)
     {
@@ -965,7 +966,7 @@ NclExecutionObject::getNodePerspective (Node *node)
   Node *parentNode;
   NclNodeNesting *perspective;
   NclCompositeExecutionObject *parentObject;
-  map<Node *, void *>::iterator i;
+  map<Node *, NclCompositeExecutionObject *>::iterator i;
 
   lockParentTable ();
   if (nodeParentTable.count (node) == 0)
@@ -1015,7 +1016,7 @@ NclExecutionObject::getObjectPerspective (Node *node)
   vector<NclExecutionObject *> *perspective = NULL;
   NclCompositeExecutionObject *parentObject;
   map<Node *, Node *>::iterator i;
-  map<Node *, void *>::iterator j;
+  map<Node *, NclCompositeExecutionObject *>::iterator j;
 
   lockParentTable ();
   i = nodeParentTable.find (node);
@@ -1037,7 +1038,7 @@ NclExecutionObject::getObjectPerspective (Node *node)
       j = parentTable.find (parentNode);
       if (j != parentTable.end ())
         {
-          parentObject = (NclCompositeExecutionObject *)(j->second);
+          parentObject = j->second;
 
           perspective = parentObject->getObjectPerspective (parentNode);
         }
@@ -1086,7 +1087,7 @@ bool
 NclExecutionObject::prepare (NclFormatterEvent *event, double offsetTime)
 {
   int size;
-  map<Node *, void *>::iterator i;
+  map<Node *, NclCompositeExecutionObject *>::iterator i;
   double startTime = 0;
   ContentAnchor *contentAnchor;
   NclFormatterEvent *auxEvent;
@@ -1129,8 +1130,7 @@ NclExecutionObject::prepare (NclFormatterEvent *event, double offsetTime)
             {
               clog << "NclExecutionObject::prepare(" << id << ") call ";
               clog << "addEventListener '" << i->second << "' or '";
-              clog << (INclEventListener *)(NclCompositeExecutionObject *)
-                          i->second;
+              clog << i->second;
               clog << "'" << endl;
               // register parent as a mainEvent listener
               mainEvent->addEventListener (
@@ -1160,11 +1160,10 @@ NclExecutionObject::prepare (NclFormatterEvent *event, double offsetTime)
     {
       clog << "NclExecutionObject::prepare(" << id << ") 2nd call ";
       clog << "addEventListener '" << i->second << "' or '";
-      clog << (INclEventListener *)(NclCompositeExecutionObject *)i->second;
+      clog << i->second;
       clog << "'" << endl;
       // register parent as a mainEvent listener
-      mainEvent->addEventListener (
-          (INclEventListener *)(NclCompositeExecutionObject *)i->second);
+      mainEvent->addEventListener (i->second);
       ++i;
     }
   unlockParentTable ();

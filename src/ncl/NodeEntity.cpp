@@ -152,11 +152,6 @@ NodeEntity::removeAnchor (Anchor *anchor)
 set<ReferNode *> *
 NodeEntity::getInstSameInstances ()
 {
-  if (instSameInstances.empty ())
-    {
-      return NULL;
-    }
-
   return &instSameInstances;
 }
 
