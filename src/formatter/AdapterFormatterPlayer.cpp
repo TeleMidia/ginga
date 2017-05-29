@@ -809,7 +809,7 @@ AdapterFormatterPlayer::checkAnchorMonitor ()
 {
   g_assert_nonnull (this->_object);
   g_assert_nonnull (this->_player);
-  _object->setPlayer ((Player*) this->_player);
+  _object->setPlayer (this->_player);
 }
 
 bool
