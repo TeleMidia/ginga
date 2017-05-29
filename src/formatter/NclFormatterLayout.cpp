@@ -206,7 +206,6 @@ NclFormatterLayout::hideObject (NclExecutionObject *object)
   layoutRegion = region->getLayoutRegion ();
   regionId = layoutRegion->getId ();
 
-  // removeFormatterRegionFromMaps(regionId, region);
 }
 
 SDLWindow*

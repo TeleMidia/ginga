@@ -804,14 +804,6 @@ AdapterFormatterPlayer::prepareScope (double offset)
     }
 }
 
-void
-AdapterFormatterPlayer::checkAnchorMonitor ()
-{
-  g_assert_nonnull (this->_object);
-  g_assert_nonnull (this->_player);
-  _object->setPlayer ((Player*) this->_player);
-}
-
 bool
 AdapterFormatterPlayer::start ()
 {
@@ -854,7 +846,7 @@ AdapterFormatterPlayer::start ()
         }
       else
         {
-          checkAnchorMonitor ();
+          _object->setPlayer ((Player *) this->_player);
         }
     }
 
