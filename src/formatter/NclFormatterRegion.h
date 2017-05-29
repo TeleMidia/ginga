@@ -82,8 +82,6 @@ private:
   string moveLeft;
   string moveRight;
 
-  string plan;
-
 public:
   static const short UNSELECTED = 0;
   static const short FOCUSED = 1;
@@ -102,9 +100,6 @@ public:
 
   void setZIndex (int zIndex);
   int getZIndex ();
-
-  void setPlan (const string &plan);
-  string getPlan ();
 
   void setFocusIndex (const string &focusIndex);
   string getFocusIndex ();
@@ -145,13 +140,6 @@ public:
 
   SDLWindow* getOutputId ();
 
-private:
-  void meetComponent (int width, int height, int prefWidth, int prefHeight);
-
-  void sliceComponent (int width, int height, int prefWidth, int prefHeight);
-
-  void updateCurrentComponentSize ();
-
 public:
   void updateRegionBounds ();
 
@@ -166,9 +154,6 @@ public:
 
   void showContent ();
   void hideContent ();
-
-  void performOutTrans ();
-  double getOutTransDur ();
 
   void setRegionVisibility (bool visible);
 

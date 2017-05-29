@@ -61,7 +61,6 @@ NclFormatterRegion::NclFormatterRegion (const string &objectId,
   this->moveDown = "";
   this->moveLeft = "";
   this->moveRight = "";
-  this->plan = "";
   this->zIndex = -1;
 
   Thread::mutexInit (&mutex);
@@ -216,32 +215,22 @@ NclFormatterRegion::initializeNCMRegion ()
     }
 }
 
-
-
 void
 NclFormatterRegion::setZIndex (int zIndex)
 {
   string layoutId;
-  double cvtZIndex;
 
   this->zIndex = zIndex;
 
   if (ncmRegion != NULL)
-    {
-      ncmRegion->setZIndex (zIndex);
-    }
+    ncmRegion->setZIndex (zIndex);
 
   if (originalRegion != NULL && layoutManager != NULL)
     {
       layoutId = originalRegion->getId ();
-
-      cvtZIndex = layoutManager->refreshZIndex (this, layoutId, zIndex, plan);
-      (void) cvtZIndex;
-
-      if (outputDisplay != 0)
-        {
-          outputDisplay->setZ (zIndex);
-        }
+      layoutManager->refreshZIndex (this, zIndex);
+      if (outputDisplay != NULL)
+        outputDisplay->setZ (zIndex);
     }
 }
 
@@ -249,28 +238,6 @@ int
 NclFormatterRegion::getZIndex ()
 {
   return zIndex;
-}
-
-void
-NclFormatterRegion::setPlan (const string &plan)
-{
-  if (this->plan != plan)
-    {
-      this->plan = plan;
-
-      if (zIndex < 0)
-        {
-          zIndex = ncmRegion->getZIndexValue ();
-        }
-
-      setZIndex (this->zIndex);
-    }
-}
-
-string
-NclFormatterRegion::getPlan ()
-{
-  return plan;
 }
 
 void
@@ -570,26 +537,6 @@ NclFormatterRegion::getOutputId ()
   return outputDisplay;
 }
 
-void
-NclFormatterRegion::meetComponent (arg_unused (int width),
-                                   arg_unused (int height),
-                                   arg_unused (int prefWidth),
-                                   arg_unused (int prefHeight))
-{
-}
-
-void
-NclFormatterRegion::sliceComponent (arg_unused (int width),
-                                    arg_unused (int height),
-                                    arg_unused (int prefWidth),
-                                    arg_unused (int prefHeight))
-{
-}
-
-void
-NclFormatterRegion::updateCurrentComponentSize ()
-{
-}
 
 void
 NclFormatterRegion::updateRegionBounds ()
@@ -802,93 +749,6 @@ NclFormatterRegion::hideContent ()
   lock ();
   disposeOutputDisplay ();
   unlock ();
-}
-
-void
-NclFormatterRegion::performOutTrans ()
-{
-  vector<Transition *> *transitions;
-  unsigned int i;
-  Transition *transition;
-  int transitionType;
-  bool currentVisibility;
-
-  abortTransitionIn = true;
-  abortTransitionOut = false;
-  focusState = NclFormatterRegion::UNSELECTED;
-
-  lockTransition ();
-
-  currentVisibility = imVisible;
-  if (currentVisibility)
-    {
-      transitions
-          = ((NclCascadingDescriptor *)descriptor)->getOutputTransitions ();
-
-      if (!transitions->empty ())
-        {
-          for (i = 0; i < transitions->size (); i++)
-            {
-              transition = (*transitions)[i];
-              transitionType = transition->getType ();
-              if (transitionType == Transition::TYPE_FADE)
-                {
-                  // hide with fade transition type
-                  fade (transition, false);
-                  unlockTransition ();
-                  return;
-                }
-              else if (transitionType == Transition::TYPE_BARWIPE)
-                {
-                  // hide with bar wipe transition type
-                  barWipe (transition, false);
-                  unlockTransition ();
-                  return;
-                }
-            }
-        }
-    }
-
-  unlockTransition ();
-}
-
-double
-NclFormatterRegion::getOutTransDur ()
-{
-  vector<Transition *> *transitions;
-  unsigned int i;
-  Transition *transition;
-  int transitionType;
-
-  lockTransition ();
-
-  transitions = descriptor->getOutputTransitions ();
-
-  if (!transitions->empty ())
-    {
-      for (i = 0; i < transitions->size (); i++)
-        {
-          transition = (*transitions)[i];
-          transitionType = transition->getType ();
-
-          switch (transitionType)
-            {
-            case Transition::TYPE_FADE:
-              unlockTransition ();
-              return transition->getDur ();
-
-            case Transition::TYPE_BARWIPE:
-              unlockTransition ();
-              return transition->getDur ();
-
-            default:
-              g_assert_not_reached ();
-            }
-        }
-    }
-
-  unlockTransition ();
-  return 0.0;
 }
 
 void

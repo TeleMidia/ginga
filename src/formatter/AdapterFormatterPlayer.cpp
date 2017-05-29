@@ -259,7 +259,6 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
   double explicitDur = -1;
 
   string left = "", top = "", width = "", height = "", bottom = "", right = "";
-  string plan = "";
 
   descriptor = obj->getDescriptor ();
   if (descriptor != nullptr)
@@ -476,10 +475,6 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                   fRegion->setMoveRight (value);
                 }
             }
-          else if (name == "plan")
-            {
-              plan = value;
-            }
         }
     }
 
@@ -567,16 +562,6 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
       if (isPercent)
         x *= 100;
       region->setRight (x, isPercent);
-    }
-
-   if (plan == "")
-    {
-      plan = "graphic";
-    }
-
-  if (fRegion != nullptr)
-    {
-      fRegion->setPlan (plan);
     }
 
   if (transpValue < 0.
@@ -804,14 +789,6 @@ AdapterFormatterPlayer::prepareScope (double offset)
     }
 }
 
-void
-AdapterFormatterPlayer::checkAnchorMonitor ()
-{
-  g_assert_nonnull (this->_object);
-  g_assert_nonnull (this->_player);
-  _object->setPlayer (this->_player);
-}
-
 bool
 AdapterFormatterPlayer::start ()
 {
@@ -854,7 +831,7 @@ AdapterFormatterPlayer::start ()
         }
       else
         {
-          checkAnchorMonitor ();
+          _object->setPlayer ((Player *) this->_player);
         }
     }
 
