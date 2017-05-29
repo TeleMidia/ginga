@@ -216,32 +216,22 @@ NclFormatterRegion::initializeNCMRegion ()
     }
 }
 
-
-
 void
 NclFormatterRegion::setZIndex (int zIndex)
 {
   string layoutId;
-  double cvtZIndex;
 
   this->zIndex = zIndex;
 
   if (ncmRegion != NULL)
-    {
-      ncmRegion->setZIndex (zIndex);
-    }
+    ncmRegion->setZIndex (zIndex);
 
   if (originalRegion != NULL && layoutManager != NULL)
     {
       layoutId = originalRegion->getId ();
-
-      cvtZIndex = layoutManager->refreshZIndex (this, layoutId, zIndex, plan);
-      (void) cvtZIndex;
-
-      if (outputDisplay != 0)
-        {
-          outputDisplay->setZ (zIndex);
-        }
+      layoutManager->refreshZIndex (this, zIndex);
+      if (outputDisplay != NULL)
+        outputDisplay->setZ (zIndex);
     }
 }
 

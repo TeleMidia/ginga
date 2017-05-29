@@ -32,10 +32,6 @@ class NclFormatterLayout
 {
 private:
   LayoutRegion *region;
-  map<string, double> regionZIndex;
-  map<string, set<NclFormatterRegion *> *> regionMap;
-  map<NclFormatterRegion *, NclExecutionObject *> objectMap;
-  pthread_mutex_t mutex;
 
 public:
   NclFormatterLayout (int w, int h);
@@ -46,35 +42,15 @@ private:
   void createRegion (int w, int h);
 
 public:
-  SDLWindow* prepareFormatterRegion (NclExecutionObject *object,
-                                        string plan);
+  SDLWindow* prepareFormatterRegion (NclExecutionObject *object);
 
-  double refreshZIndex (NclFormatterRegion *region, const string &layoutRegionId,
-                        int zIndex, const string &plan);
+  void refreshZIndex (NclFormatterRegion *region, int zIndex);
 
-private:
-  double convertZIndex (int zIndex, const string &plan);
-
-public:
   void showObject (NclExecutionObject *object);
   void hideObject (NclExecutionObject *object);
 
 private:
-  SDLWindow* addRegionOnMaps (NclExecutionObject *object,
-                                 NclFormatterRegion *region,
-                                 string layoutRegionId, int zIndex,
-                                 string plan, double *cvtZIndex);
-
-  NclExecutionObject *
-  removeFormatterRegionFromMaps (const string &layoutRegionId,
-                                 NclFormatterRegion *formatterRegion);
-
-public:
-  void clear ();
-
-private:
-  void lock ();
-  void unlock ();
+  SDLWindow* addRegionOnMaps (NclFormatterRegion *region, int zIndex);
 };
 
 GINGA_FORMATTER_END
