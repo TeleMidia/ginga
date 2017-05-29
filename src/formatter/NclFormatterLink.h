@@ -23,16 +23,18 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
+class NclCompositeExecutionObject;
+
 class NclFormatterLink
 {
 protected:
   Link *ncmLink;
   bool suspend;
-  void *parentObject; // NclCompositeExecutionObject
+  NclCompositeExecutionObject *parentObject;
   set<string> typeSet;
 
 public:
-  NclFormatterLink (Link *ncmLink, void *parentObject);
+  NclFormatterLink (Link *ncmLink, NclCompositeExecutionObject *parentObject);
   virtual ~NclFormatterLink ();
 
   void suspendLinkEvaluation (bool suspend);

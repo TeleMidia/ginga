@@ -83,7 +83,7 @@ NclLinkTriggerCondition::setDelay (double delay)
 }
 
 void
-NclLinkTriggerCondition::conditionSatisfied (arg_unused (void *condition))
+NclLinkTriggerCondition::conditionSatisfied (arg_unused (NclLinkCondition *condition))
 {
   if (delay > 0)
     {
@@ -169,7 +169,7 @@ NclLinkTriggerCondition::notificationThread (arg_unused (void *ptr))
           switch (status)
             {
             case NclLinkTriggerListener::CONDITION_SATISFIED:
-              listener->conditionSatisfied ((void *) condition);
+              listener->conditionSatisfied (condition);
               break;
 
             case NclLinkTriggerListener::EVALUATION_STARTED:

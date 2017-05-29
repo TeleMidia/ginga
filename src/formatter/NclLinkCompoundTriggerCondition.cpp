@@ -101,7 +101,7 @@ NclLinkCompoundTriggerCondition::getEvents ()
 }
 
 void
-NclLinkCompoundTriggerCondition::conditionSatisfied (void *condition)
+NclLinkCompoundTriggerCondition::conditionSatisfied (NclLinkCondition *condition)
 {
   /*int i, size;
   NclLinkCondition *childCondition;

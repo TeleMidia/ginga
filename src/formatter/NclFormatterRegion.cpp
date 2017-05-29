@@ -564,12 +564,6 @@ NclFormatterRegion::setFocusInfo (SDL_Color *focusBorderColor,
   setSelComponentSrc (selComponentSrc);
 }
 
-void *
-NclFormatterRegion::getLayoutManager ()
-{
-  return layoutManager;
-}
-
 SDLWindow*
 NclFormatterRegion::getOutputId ()
 {

@@ -31,6 +31,8 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
+class NclCompositeExecutionObject;
+
 class NclFormatterCausalLink : public NclFormatterLink,
                                public NclLinkTriggerListener,
                                public NclLinkActionProgressionListener
@@ -42,13 +44,13 @@ private:
 public:
   NclFormatterCausalLink (NclLinkTriggerCondition *condition,
                           NclLinkAction *action, Link *ncmLink,
-                          void *parentObject);
+                          NclCompositeExecutionObject *parentObject);
 
   virtual ~NclFormatterCausalLink ();
 
   NclLinkAction *getAction ();
   NclLinkTriggerCondition *getTriggerCondition ();
-  void conditionSatisfied (void *condition);
+  void conditionSatisfied (NclLinkCondition *condition);
   virtual vector<NclFormatterEvent *> *getEvents ();
   void evaluationStarted ();
   void evaluationEnded ();

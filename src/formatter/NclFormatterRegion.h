@@ -143,7 +143,6 @@ public:
                      const string &focusComponentSrc, SDL_Color *selBorderColor,
                      int selBorderWidth, const string &selComponentSrc);
 
-  void *getLayoutManager ();
   SDLWindow* getOutputId ();
 
 private:
