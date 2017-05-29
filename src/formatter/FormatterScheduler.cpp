@@ -52,7 +52,6 @@ FormatterScheduler::FormatterScheduler ()
 FormatterScheduler::~FormatterScheduler ()
 {
   set<NclLinkSimpleAction *>::iterator i;
-  NclLinkSimpleAction *action;
 
   clog << "FormatterScheduler::~FormatterScheduler(" << this << ")";
   clog << endl;
@@ -62,14 +61,10 @@ FormatterScheduler::~FormatterScheduler ()
   Thread::mutexLock (&mutexD);
   Thread::mutexLock (&mutexActions);
 
-  i = actions.begin ();
-  while (i != actions.end ())
-    {
-      action = (*i);
-      action->setSimpleActionListener (NULL);
-      ++i;
-    }
-  actions.clear ();
+  for (auto action: this->actions)
+    action->setSimpleActionListener (NULL);
+  this->actions.clear ();
+
   Thread::mutexUnlock (&mutexActions);
   Thread::mutexDestroy (&mutexActions);
 
@@ -256,10 +251,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
         {
           g_warning ("scheduler: failed to start player");
           if (event->getCurrentState () == EventUtil::ST_SLEEPING)
-            {
-              set<NclFormatterEvent *>::iterator it;
-              event->removeEventListener (this);
-            }
+            event->removeEventListener (this);
         }
       break;
 
@@ -518,13 +510,9 @@ FormatterScheduler::runActionOverApplicationObject (
               clog << executionObject->getId () << "'";
               clog << endl;
 
-              set<NclFormatterEvent *>::iterator it;
-
               // checking if player failed to start
               if (event->getCurrentState () == EventUtil::ST_SLEEPING)
-                {
-                  event->removeEventListener (this);
-                }
+                event->removeEventListener (this);
             }
 
           ((AdapterApplicationPlayer *)player)->unlockCurrentEvent (event);
@@ -1221,18 +1209,16 @@ FormatterScheduler::eventStateChanged (NclFormatterEvent *event,
   hasOther = false;
   contains = false;
 
-  it = events.begin ();
-  while (it != events.end ())
+  for (auto evt: this->events)
     {
-      if (*it == event)
+      if (evt == event)
         {
           contains = true;
         }
-      else if ((*it)->getCurrentState () != EventUtil::ST_SLEEPING)
+      else if (evt->getCurrentState () != EventUtil::ST_SLEEPING)
         {
           hasOther = true;
         }
-      ++it;
     }
 
   if (contains)
@@ -1333,9 +1319,6 @@ FormatterScheduler::eventStateChanged (NclFormatterEvent *event,
 
                 player = (AdapterFormatterPlayer *)
                   playerManager->getObjectPlayer (object);
-                if (player != NULL && player->getPlayer () != NULL)
-                  {
-                  }
               }
             break;
           }
@@ -1415,7 +1398,7 @@ FormatterScheduler::hideObject (NclExecutionObject *executionObject)
       layout = getFormatterLayout ();
       if (region != NULL && layout != NULL)
         {
-              layout->hideObject (executionObject);
+          layout->hideObject (executionObject);
         }
     }
 }
