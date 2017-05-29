@@ -96,8 +96,6 @@ protected:
   virtual void prepareScope (double offset = -1);
   bool lockObject ();
   bool unlockObject ();
-
-  void checkAnchorMonitor ();
   void updateObjectExpectedDuration ();
 
 private:
