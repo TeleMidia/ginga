@@ -560,26 +560,6 @@ NclFormatterRegion::getOutputId ()
   return outputDisplay;
 }
 
-void
-NclFormatterRegion::meetComponent (arg_unused (int width),
-                                   arg_unused (int height),
-                                   arg_unused (int prefWidth),
-                                   arg_unused (int prefHeight))
-{
-}
-
-void
-NclFormatterRegion::sliceComponent (arg_unused (int width),
-                                    arg_unused (int height),
-                                    arg_unused (int prefWidth),
-                                    arg_unused (int prefHeight))
-{
-}
-
-void
-NclFormatterRegion::updateCurrentComponentSize ()
-{
-}
 
 void
 NclFormatterRegion::updateRegionBounds ()
@@ -792,93 +772,6 @@ NclFormatterRegion::hideContent ()
   lock ();
   disposeOutputDisplay ();
   unlock ();
-}
-
-void
-NclFormatterRegion::performOutTrans ()
-{
-  vector<Transition *> *transitions;
-  unsigned int i;
-  Transition *transition;
-  int transitionType;
-  bool currentVisibility;
-
-  abortTransitionIn = true;
-  abortTransitionOut = false;
-  focusState = NclFormatterRegion::UNSELECTED;
-
-  lockTransition ();
-
-  currentVisibility = imVisible;
-  if (currentVisibility)
-    {
-      transitions
-          = ((NclCascadingDescriptor *)descriptor)->getOutputTransitions ();
-
-      if (!transitions->empty ())
-        {
-          for (i = 0; i < transitions->size (); i++)
-            {
-              transition = (*transitions)[i];
-              transitionType = transition->getType ();
-              if (transitionType == Transition::TYPE_FADE)
-                {
-                  // hide with fade transition type
-                  fade (transition, false);
-                  unlockTransition ();
-                  return;
-                }
-              else if (transitionType == Transition::TYPE_BARWIPE)
-                {
-                  // hide with bar wipe transition type
-                  barWipe (transition, false);
-                  unlockTransition ();
-                  return;
-                }
-            }
-        }
-    }
-
-  unlockTransition ();
-}
-
-double
-NclFormatterRegion::getOutTransDur ()
-{
-  vector<Transition *> *transitions;
-  unsigned int i;
-  Transition *transition;
-  int transitionType;
-
-  lockTransition ();
-
-  transitions = descriptor->getOutputTransitions ();
-
-  if (!transitions->empty ())
-    {
-      for (i = 0; i < transitions->size (); i++)
-        {
-          transition = (*transitions)[i];
-          transitionType = transition->getType ();
-
-          switch (transitionType)
-            {
-            case Transition::TYPE_FADE:
-              unlockTransition ();
-              return transition->getDur ();
-
-            case Transition::TYPE_BARWIPE:
-              unlockTransition ();
-              return transition->getDur ();
-
-            default:
-              g_assert_not_reached ();
-            }
-        }
-    }
-
-  unlockTransition ();
-  return 0.0;
 }
 
 void
