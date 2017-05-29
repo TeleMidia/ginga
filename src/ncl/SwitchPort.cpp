@@ -17,11 +17,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "SwitchPort.h"
+#include "SwitchNode.h"
 
 GINGA_NCL_BEGIN
 
-SwitchPort::SwitchPort (const string &id, void *switchNode)
-    : Port (id, (Node *)switchNode, NULL)
+SwitchPort::SwitchPort (const string &id, SwitchNode *switchNode)
+    : Port (id, switchNode, NULL)
 {
   portList = new vector<Port *>;
   typeSet.insert ("SwitchPort");

@@ -93,7 +93,7 @@ private:
   void parseHead (DOMElement *parentElement);
   ContextNode *parseBody (DOMElement *parentElement);
   ContextNode *createBody (DOMElement *parentElement);
-  void *posCompileBody (DOMElement *parentElement, ContextNode *body);
+  ContextNode *posCompileBody (DOMElement *parentElement, ContextNode *body);
 
   void solveNodeReferences (CompositeNode *composition);
 
@@ -184,7 +184,7 @@ private:
   void addImportBaseToRuleBase (RuleBase *ruleBase, DOMElement *importBase_element);
   SimpleRule *parseRule (DOMElement *parentElement);
   Node *parseSwitch (DOMElement *parentElement);
-  void *posCompileSwitch (DOMElement *parentElement, SwitchNode *parentObject);
+  SwitchNode *posCompileSwitch (DOMElement *parentElement, SwitchNode *parentObject);
   Node *createSwitch (DOMElement *parentElement);
   CompositeRule *parseCompositeRule (DOMElement *parentElement);
   CompositeRule *createCompositeRule (DOMElement *parentElement);

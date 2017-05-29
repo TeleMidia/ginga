@@ -25,13 +25,15 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
+class SwitchNode;
+
 class SwitchPort : public Port
 {
 private:
   vector<Port *> *portList;
 
 public:
-  SwitchPort (const string &id, void *switchNode);
+  SwitchPort (const string &id, SwitchNode *switchNode);
   virtual ~SwitchPort ();
   bool addPort (Port *port);
   bool containsMap (Node *node);
