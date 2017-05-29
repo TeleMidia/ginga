@@ -28,9 +28,7 @@ GINGA_PLAYER_BEGIN
 
 class Player
 {
-
 public:
-
   enum PlayerStatus
     {
      PL_SLEEPING = 1,
@@ -45,9 +43,6 @@ public:
      PL_NOTIFY_RESUME,
      PL_NOTIFY_STOP,
      PL_NOTIFY_ABORT,
-     PL_NOTIFY_NCLEDIT,
-     PL_NOTIFY_UPDATECONTENT,
-     PL_NOTIFY_OUTTRANS,
     };
 
   enum PlayerEventType
@@ -68,7 +63,7 @@ protected:
   PlayerStatus status;
   string mrl;
   SDLWindow *window;
-  PlayerAnimator* animator;
+  PlayerAnimator *animator;
   bool presented;
   bool visible;
   bool forcedNaturalEnd;
@@ -76,7 +71,6 @@ protected:
   string scope;
   double scopeInitTime;
   double scopeEndTime;
-  double outTransTime;
 
   // Time attributes.
   guint32 initStartTime;
@@ -112,14 +106,6 @@ public:
                               const string &parameter,
                               PlayerEventType type,
                               const string &value);
-
-private:
-  static void ntsNotifyPlayerListeners (set<IPlayerListener *> *list,
-                                        short code,
-                                        const string &parameter,
-                                        PlayerEventType type,
-                                        const string &value);
-
 public:
   virtual void setMediaTime (guint32 newTime);
 
@@ -130,9 +116,7 @@ public:
 
   virtual void setScope (const string &scope,
                          PlayerEventType type = PL_TYPE_PRESENTATION,
-                         double begin = -1, double end = -1,
-                         double outTransDur = -1);
-
+                         double begin = -1, double end = -1);
 public:
 
   virtual bool play ();

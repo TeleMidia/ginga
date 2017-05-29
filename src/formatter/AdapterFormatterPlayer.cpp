@@ -52,8 +52,6 @@ AdapterFormatterPlayer::AdapterFormatterPlayer (AdapterPlayerManager *manager)
   this->_object = nullptr;
   this->_player = nullptr;
   this->_mrl = "";
-  this->_outTransDur = 0;
-  this->_outTransTime = -1.0;
   this->_isLocked = false;
 
   Thread::mutexInit (&_objectMutex, false);
@@ -749,7 +747,6 @@ AdapterFormatterPlayer::prepareScope (double offset)
 {
   NclPresentationEvent *mainEvent;
   double duration;
-  double playerDur;
   double initTime = 0;
   IntervalAnchor *intervalAnchor;
 
@@ -765,31 +762,14 @@ AdapterFormatterPlayer::prepareScope (double offset)
               initTime = offset;
             }
 
-          _outTransDur = getOutTransDur ();
-          if (_outTransDur > 0.0)
-            {
-              playerDur = _player->getTotalMediaTime ();
-              if (isinf (duration) && playerDur > 0.0)
-                {
-                  duration = playerDur * 1000;
-                }
-
-              _outTransTime = duration - _outTransDur;
-              if (_outTransTime <= 0.0)
-                {
-                  _outTransTime = 0.1;
-                }
-            }
-
           if (duration < IntervalAnchor::OBJECT_DURATION)
             {
               _player->setScope (mainEvent->getAnchor ()->getId (),
                                 Player::PL_TYPE_PRESENTATION, initTime,
-                                duration / 1000, _outTransTime);
+                                duration / 1000);
             }
           else
             {
-              _outTransDur = -1.0;
               _player->setScope (mainEvent->getAnchor ()->getId (),
                                 Player::PL_TYPE_PRESENTATION, initTime);
             }
@@ -804,35 +784,16 @@ AdapterFormatterPlayer::prepareScope (double offset)
             }
 
           duration = intervalAnchor->getEnd ();
-
-          _outTransDur = getOutTransDur ();
-          if (_outTransDur > 0.0)
-            {
-              playerDur = _player->getTotalMediaTime ();
-              if (isinf (duration) && playerDur > 0.0)
-                {
-                  duration = playerDur * 1000;
-                }
-
-              _outTransTime = duration - _outTransDur;
-              if (_outTransTime <= 0.0)
-                {
-                  _outTransTime = 0.1;
-                }
-            }
-
           if (duration < IntervalAnchor::OBJECT_DURATION)
             {
               _player->setScope (mainEvent->getAnchor ()->getId (),
                                 Player::PL_TYPE_PRESENTATION, initTime,
-                                (intervalAnchor->getEnd () / 1000),
-                                _outTransTime);
+                                (intervalAnchor->getEnd () / 1000));
             }
           else
             {
-              _outTransDur = -1.0;
               _player->setScope (mainEvent->getAnchor ()->getId (),
-                                Player::PL_TYPE_PRESENTATION, initTime);
+                                Player::PL_TYPE_PRESENTATION);
             }
         }
     }
@@ -843,33 +804,12 @@ AdapterFormatterPlayer::prepareScope (double offset)
     }
 }
 
-double
-AdapterFormatterPlayer::getOutTransDur ()
-{
-  NclCascadingDescriptor *descriptor;
-  NclFormatterRegion *fRegion;
-  double outTransDur = 0.0;
-
-  descriptor = _object->getDescriptor ();
-  if (descriptor != nullptr)
-    {
-      fRegion = descriptor->getFormatterRegion ();
-      if (fRegion != nullptr)
-        {
-          outTransDur = fRegion->getOutTransDur ();
-        }
-    }
-
-  return outTransDur;
-}
-
 void
 AdapterFormatterPlayer::checkAnchorMonitor ()
 {
-  g_assert_nonnull (_object);
-  g_assert_nonnull (_player);
-
-  _object->setPlayer( (Player*)this->_player );
+  g_assert_nonnull (this->_object);
+  g_assert_nonnull (this->_player);
+  _object->setPlayer ((Player*) this->_player);
 }
 
 bool
@@ -1245,27 +1185,6 @@ AdapterFormatterPlayer::updateStatus (short code,
 {
   switch (code)
     {
-    case Player::PL_NOTIFY_OUTTRANS:
-      if (_outTransDur > 0.0)
-        {
-          NclCascadingDescriptor *descriptor;
-          NclFormatterRegion *fRegion;
-
-          _outTransDur = -1.0;
-          _outTransTime = -1.0;
-          descriptor = _object->getDescriptor ();
-          if (descriptor != nullptr)
-            {
-              fRegion = descriptor->getFormatterRegion ();
-              if (fRegion != nullptr)
-                {
-                  g_debug ("AdapterFormatterPlayer::updateStatus transition");
-                  fRegion->performOutTrans ();
-                }
-            }
-        }
-      break;
-
     case Player::PL_NOTIFY_STOP:
       if (_object != nullptr)
         {

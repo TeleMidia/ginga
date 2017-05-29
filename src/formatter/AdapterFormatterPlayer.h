@@ -101,12 +101,9 @@ protected:
   void updateObjectExpectedDuration ();
 
 private:
-  double _outTransDur;
-  double _outTransTime;
   bool _isLocked;
   pthread_mutex_t _objectMutex;
 
-  double getOutTransDur ();
   bool checkRepeat (NclPresentationEvent *mainEvent);
   void setVisible (bool visible);
 };
