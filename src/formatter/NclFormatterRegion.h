@@ -82,8 +82,6 @@ private:
   string moveLeft;
   string moveRight;
 
-  string plan;
-
 public:
   static const short UNSELECTED = 0;
   static const short FOCUSED = 1;
@@ -102,9 +100,6 @@ public:
 
   void setZIndex (int zIndex);
   int getZIndex ();
-
-  void setPlan (const string &plan);
-  string getPlan ();
 
   void setFocusIndex (const string &focusIndex);
   string getFocusIndex ();

@@ -1365,7 +1365,7 @@ FormatterScheduler::prepareFormatterRegion (
     NclExecutionObject *executionObject)
 {
   NclCascadingDescriptor *descriptor;
-  string regionId, plan = "";
+  string regionId;
   SDLWindow* windowId = 0;
 
   descriptor = executionObject->getDescriptor ();
