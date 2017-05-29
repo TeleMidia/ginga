@@ -1368,17 +1368,9 @@ FormatterScheduler::prepareFormatterRegion (
   string regionId, plan = "";
   SDLWindow* windowId = 0;
 
-  map<int, NclFormatterLayout *>::iterator i;
-
   descriptor = executionObject->getDescriptor ();
   if (descriptor != NULL)
-    {
-      if (descriptor->getFormatterRegion () != NULL)
-        {
-          plan = descriptor->getFormatterRegion ()->getPlan ();
-        }
-      windowId = layout->prepareFormatterRegion (executionObject, plan);
-    }
+    windowId = layout->prepareFormatterRegion (executionObject);
 
   return windowId;
 }
