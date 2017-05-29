@@ -78,13 +78,14 @@ NclLinkAndCompoundTriggerCondition::addCondition (
 }
 
 void
-NclLinkAndCompoundTriggerCondition::conditionSatisfied (void *condition)
+NclLinkAndCompoundTriggerCondition::conditionSatisfied (
+    NclLinkCondition *condition)
 {
   vector<NclLinkCondition *>::iterator i;
   i = unsatisfiedConditions.begin ();
   while (i != unsatisfiedConditions.end ())
     {
-      if ((*i) == (NclLinkCondition *)condition)
+      if ((*i) == condition)
         {
           unsatisfiedConditions.erase (i);
           if (unsatisfiedConditions.empty ())

@@ -20,7 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclFormatterLink::NclFormatterLink (Link *ncmLink, void *parentObject)
+NclFormatterLink::NclFormatterLink (Link *ncmLink,
+                                    NclCompositeExecutionObject *parentObject)
 {
   typeSet.insert ("NclFormatterLink");
 

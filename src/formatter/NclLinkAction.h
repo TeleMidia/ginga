@@ -24,11 +24,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
+class NclLinkCondition;
+
 class NclLinkAction
 {
 protected:
   set<string> typeSet;
-  void *satisfiedCondition;
+  NclLinkCondition *satisfiedCondition;
 
 private:
   double delay;
@@ -59,8 +61,8 @@ public:
   virtual vector<NclFormatterEvent *> *getEvents () = 0;
   virtual vector<NclLinkAction *> *getImplicitRefRoleActions () = 0;
 
-  void setSatisfiedCondition (void *satisfiedCondition);
-  void run (void *satisfiedCondition);
+  void setSatisfiedCondition (NclLinkCondition *satisfiedCondition);
+  void run (NclLinkCondition *satisfiedCondition);
 
 public:
   virtual void run ();

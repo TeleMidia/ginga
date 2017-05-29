@@ -58,7 +58,7 @@ public:
   NclLinkTriggerListener *getTriggerListener ();
   double getDelay ();
   void setDelay (double delay);
-  virtual void conditionSatisfied (void *condition);
+  virtual void conditionSatisfied (NclLinkCondition *condition);
 
 private:
   static void *notificationThread (void *ptr);

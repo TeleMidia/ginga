@@ -24,7 +24,7 @@ GINGA_FORMATTER_BEGIN
 
 NclFormatterCausalLink::NclFormatterCausalLink (
     NclLinkTriggerCondition *condition, NclLinkAction *action,
-    Link *ncmLink, void *parentObject)
+    Link *ncmLink, NclCompositeExecutionObject *parentObject)
     : NclFormatterLink (ncmLink, parentObject)
 {
   typeSet.insert ("NclFormatterCausalLink");
@@ -70,7 +70,7 @@ NclFormatterCausalLink::getTriggerCondition ()
 }
 
 void
-NclFormatterCausalLink::conditionSatisfied (void *condition)
+NclFormatterCausalLink::conditionSatisfied (NclLinkCondition *condition)
 {
   if (!suspend)
     {
@@ -121,8 +121,7 @@ NclFormatterCausalLink::evaluationStarted ()
   /*clog << endl;
   clog << "NclFormatterCausalLink::evaluationStarted(" << ncmLink->getId();
   clog << ")" << endl << endl;*/
-  ((NclCompositeExecutionObject *)parentObject)
-      ->linkEvaluationStarted (this);
+  parentObject->linkEvaluationStarted (this);
 }
 
 void
@@ -131,8 +130,7 @@ NclFormatterCausalLink::evaluationEnded ()
   /*clog << endl;
   clog << "NclFormatterCausalLink::evaluationEnded(" << ncmLink->getId();
   clog << ")" << endl << endl;*/
-  ((NclCompositeExecutionObject *)parentObject)
-      ->linkEvaluationFinished (this, false);
+  parentObject->linkEvaluationFinished (this, false);
 }
 
 void
@@ -146,8 +144,7 @@ NclFormatterCausalLink::actionProcessed (bool start)
           clog << "nostart:" << ncmLink->getId();
   }
   clog << ")" << endl << endl;*/
-  ((NclCompositeExecutionObject *)parentObject)
-      ->linkEvaluationFinished (this, start);
+  parentObject->linkEvaluationFinished (this, start);
 }
 
 GINGA_FORMATTER_END

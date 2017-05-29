@@ -20,6 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
+class NclLinkCondition;
+
 class NclLinkTriggerListener
 {
 public:
@@ -27,7 +29,7 @@ public:
   static const short EVALUATION_STARTED = 1;
   static const short EVALUATION_ENDED = 2;
   virtual ~NclLinkTriggerListener (){};
-  virtual void conditionSatisfied (void *condition) = 0;
+  virtual void conditionSatisfied (NclLinkCondition *condition) = 0;
   virtual void evaluationStarted () = 0;
   virtual void evaluationEnded () = 0;
 };

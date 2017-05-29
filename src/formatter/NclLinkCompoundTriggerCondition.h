@@ -37,7 +37,7 @@ public:
   NclLinkCompoundTriggerCondition ();
   virtual ~NclLinkCompoundTriggerCondition ();
   virtual void addCondition (NclLinkCondition *condition);
-  virtual void conditionSatisfied (void *condition);
+  virtual void conditionSatisfied (NclLinkCondition *condition);
   virtual vector<NclFormatterEvent *> *getEvents ();
 
   void evaluationStarted ();

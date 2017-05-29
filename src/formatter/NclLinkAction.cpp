@@ -69,13 +69,13 @@ NclLinkAction::getWaitDelay ()
 }
 
 void
-NclLinkAction::setSatisfiedCondition (void *satisfiedCondition)
+NclLinkAction::setSatisfiedCondition (NclLinkCondition *satisfiedCondition)
 {
   this->satisfiedCondition = satisfiedCondition;
 }
 
 void
-NclLinkAction::run (void *satisfiedCondition)
+NclLinkAction::run (NclLinkCondition *satisfiedCondition)
 {
   this->satisfiedCondition = satisfiedCondition;
   run ();
