@@ -77,7 +77,7 @@ NclCompositeExecutionObject::~NclCompositeExecutionObject ()
       object = j->second;
       if (object != this && hasInstance (object, false))
         {
-          object->removeParentObject (dataObject, (void *)this);
+          object->removeParentObject (dataObject, this);
         }
       ++j;
     }
@@ -192,7 +192,7 @@ NclCompositeExecutionObject::addExecutionObject (NclExecutionObject *obj)
   execObjList[objId] = obj;
   unlockComposite ();
 
-  obj->addParentObject ((void *)this, getDataObject ());
+  obj->addParentObject (this, getDataObject ());
   return true;
 }
 
@@ -501,7 +501,7 @@ NclCompositeExecutionObject::setAllLinksAsUncompiled (bool isRecursive)
 void
 NclCompositeExecutionObject::setParentsAsListeners ()
 {
-  map<Node *, void *>::iterator i;
+  map<Node *, NclCompositeExecutionObject *>::iterator i;
 
   lockSTL ();
   i = parentTable.begin ();
@@ -509,8 +509,7 @@ NclCompositeExecutionObject::setParentsAsListeners ()
     {
       if (NclFormatterEvent::hasInstance (wholeContent, false))
         {
-          wholeContent->addEventListener (
-              (NclCompositeExecutionObject *)i->second);
+          wholeContent->addEventListener (i->second);
         }
       ++i;
     }
@@ -520,7 +519,7 @@ NclCompositeExecutionObject::setParentsAsListeners ()
 void
 NclCompositeExecutionObject::unsetParentsAsListeners ()
 {
-  map<Node *, void *>::iterator i;
+  map<Node *,NclCompositeExecutionObject *>::iterator i;
 
   if (deleting)
     {

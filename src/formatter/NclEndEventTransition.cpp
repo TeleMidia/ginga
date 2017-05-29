@@ -23,17 +23,17 @@ GINGA_FORMATTER_BEGIN
 
 NclEndEventTransition::NclEndEventTransition (double time,
                                               NclPresentationEvent *event,
-                                              void *transition)
+                                              NclBeginEventTransition *trans)
     : NclEventTransition (time, event)
 {
   typeSet.insert ("NclEndEventTransition");
-  beginTransition = transition;
-  ((NclBeginEventTransition *)beginTransition)->setEndTransition (this);
+  beginTransition = trans;
+  beginTransition->setEndTransition (this);
 }
 
 NclEndEventTransition::~NclEndEventTransition () {}
 
-void *
+NclBeginEventTransition *
 NclEndEventTransition::getBeginTransition ()
 {
   return beginTransition;

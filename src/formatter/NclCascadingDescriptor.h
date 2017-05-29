@@ -94,7 +94,7 @@ public:
   NclFormatterRegion *getFormatterRegion ();
 
 public:
-  void setFormatterLayout (void *formatterLayout);
+  void setFormatterLayout (NclFormatterLayout *formatterLayout);
   int getRepetitions ();
   vector<Parameter> getParameters ();
   string getParameterValue (const string &paramName);
