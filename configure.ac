@@ -80,6 +80,7 @@ nw="$nw -Wdeclaration-after-statement"   # invalid in C++
 nw="$nw -Wdesignated-init"               # invalid in C++
 nw="$nw -Wdiscarded-array-qualifiers"    # invalid in C++
 nw="$nw -Wdiscarded-qualifiers"          # invalid in C++
+nw="$nw -Wduplicate-decl-specifier"      # invalid in C++
 nw="$nw -Wimplicit"                      # invalid in C++
 nw="$nw -Wimplicit-function-declaration" # invalid in C++
 nw="$nw -Wimplicit-int"                  # invalid in C++
