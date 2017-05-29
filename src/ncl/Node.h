@@ -24,10 +24,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
+class CompositeNode;
+
 class Node : public Entity
 {
 private:
-  void *parentNode;
+  CompositeNode *parentNode;
 
 protected:
   vector<Anchor *> anchorList;
@@ -42,8 +44,8 @@ private:
 
 public:
   void copyProperties (Node *node);
-  void setParentComposition (void *composition);
-  void *getParentComposition ();
+  void setParentComposition (CompositeNode *composition);
+  CompositeNode *getParentComposition ();
   vector<Node *> *getPerspective ();
   virtual bool addAnchor (Anchor *anchor);
   virtual bool addAnchor (int index, Anchor *anchor);

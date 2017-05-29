@@ -98,7 +98,7 @@ Node::copyProperties (Node *node)
     }
 }
 
-void *
+CompositeNode *
 Node::getParentComposition ()
 {
   return parentNode;
@@ -122,12 +122,12 @@ Node::getPerspective ()
 }
 
 void
-Node::setParentComposition (void *composition)
+Node::setParentComposition (CompositeNode *composition)
 {
   if (composition == NULL
-      || ((CompositeNode *)composition)->getNode (getId ()) != NULL)
+      || composition->getNode (getId ()) != NULL)
     {
-      this->parentNode = (CompositeNode *)composition;
+      this->parentNode = composition;
     }
 }
 

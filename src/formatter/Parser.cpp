@@ -555,7 +555,7 @@ NclParser::solveNodeReferences (CompositeNode *composition)
     }
 }
 
-void *
+ContextNode *
 NclParser::posCompileBody (DOMElement *parentElement,
                                     ContextNode *body)
 {
@@ -650,7 +650,7 @@ NclParser::parseContext (DOMElement *parentElement)
         }
       else if (tagname == "switch")
         {
-          node = this->parseSwitch (child);
+          node = parseSwitch (child);
         }
       else
         {
@@ -664,10 +664,10 @@ NclParser::parseContext (DOMElement *parentElement)
     }
 
 
-  for (DOMElement *element:
+  for (DOMElement *child:
        dom_element_children_by_tagname (parentElement, "property"))
     {
-      PropertyAnchor *prop = this->parseProperty (element);
+      PropertyAnchor *prop = this->parseProperty (child);
 
       if (prop)
         {
@@ -694,7 +694,6 @@ NclParser::addPropertyToContext (Entity *context, Anchor *property)
 void
 NclParser::addNodeToContext (ContextNode *contextNode, Node *node)
 {
-  // adicionar um noh aa composicao
   contextNode->addNode (node);
 }
 
@@ -749,36 +748,35 @@ NclParser::addAnchorToMedia (ContentNode *contentNode, Anchor *anchor)
 }
 
 Node *
-NclParser::createContext (DOMElement *parentElement)
+NclParser::createContext (DOMElement *context_element)
 {
-  NclDocument *document;
   string id, attValue;
   Node *node;
   Entity *referNode = NULL;
   ContextNode *context;
   GenericDescriptor *descriptor;
 
-  if (unlikely (!dom_element_has_attr(parentElement, "id")))
+  if (unlikely (!dom_element_has_attr(context_element, "id")))
     syntax_error ("context: missing id");
 
-  id = dom_element_get_attr(parentElement, "id");
+  id = dom_element_get_attr(context_element, "id");
 
   node = this->getNode (id);
   if (unlikely (node != NULL))
     syntax_error ("context '%s': duplicated id", id.c_str ());
 
-  if (dom_element_try_get_attr(attValue, parentElement, "refer"))
+  if (dom_element_try_get_attr(attValue, context_element, "refer"))
     {
       try
       {
         referNode = (ContextNode *)this->getNode (attValue);
         if (referNode)
           {
-            document = this->getNclDocument ();
-            referNode = (ContextNode *)(document->getNode (attValue));
+            referNode = (ContextNode *)(getNclDocument ()->getNode (attValue));
             if (referNode == NULL)
               {
-                referNode = (Entity *)(new ReferredNode (attValue, (void *)parentElement));
+                referNode = (Entity *)(new ReferredNode (attValue,
+                                                      (void *)context_element));
               }
           }
       }
@@ -795,11 +793,10 @@ NclParser::createContext (DOMElement *parentElement)
     }
 
   context = new ContextNode (id);
-  if (dom_element_try_get_attr(attValue, parentElement, "descriptor"))
+  if (dom_element_try_get_attr(attValue, context_element, "descriptor"))
     {
       // adicionar um descritor a um objeto de midia
-      document = this->getNclDocument ();
-      descriptor = document->getDescriptor (attValue);
+      descriptor = getNclDocument ()->getDescriptor (attValue);
       if (descriptor != NULL)
         {
           context->setDescriptor (descriptor);
@@ -819,12 +816,12 @@ NclParser::posCompileContext (DOMElement *context_element, ContextNode *context)
 {
   g_assert_nonnull(context);
 
-  for(DOMElement *child: dom_element_children(context_element))
+  for(DOMElement *child: dom_element_children (context_element))
     {
       string tagname = dom_element_tagname(child);
       if (tagname == "context")
         {
-          string id = dom_element_get_attr(child, "id");
+          string id = dom_element_get_attr (child, "id");
           Node *node = context->getNode (id);
 
           if (unlikely (node == NULL))
@@ -840,6 +837,7 @@ NclParser::posCompileContext (DOMElement *context_element, ContextNode *context)
         {
           string id = dom_element_get_attr(child, "id");
           Node *node = this->getNode (id);
+
           if (unlikely (node == NULL))
             {
               syntax_error ("bad switch '%s'", id.c_str ());
@@ -875,35 +873,33 @@ NclParser::posCompileContext (DOMElement *context_element, ContextNode *context)
 }
 
 Node *
-NclParser::createMedia (DOMElement *parentElement)
+NclParser::createMedia (DOMElement *media_element)
 {
   string attValue, id;
-  NclDocument *document;
   Node *node;
   Entity *referNode;
   GenericDescriptor *descriptor;
 
-  if (unlikely (!dom_element_has_attr(parentElement, "id")))
+  if (unlikely (!dom_element_has_attr(media_element, "id")))
     syntax_error ("media: missing id");
 
-  id = dom_element_get_attr(parentElement, "id");
+  id = dom_element_get_attr(media_element, "id");
 
   node = this->getNode (id);
   if (unlikely (node != NULL))
     syntax_error ("media '%s': duplicated id", id.c_str ());
 
-  if (dom_element_try_get_attr(attValue, parentElement, "refer"))
+  if (dom_element_try_get_attr(attValue, media_element, "refer"))
     {
       try
       {
         referNode = (ContentNode *) this->getNode (attValue);
         if (referNode == NULL)
           {
-            document = this->getNclDocument ();
-            referNode = (ContentNode *)document->getNode (attValue);
+            referNode = (ContentNode *)getNclDocument ()->getNode (attValue);
             if (referNode == NULL)
               {
-                referNode = new ReferredNode (attValue, (void *)parentElement);
+                referNode = new ReferredNode (attValue, (void *)media_element);
               }
           }
       }
@@ -914,7 +910,7 @@ NclParser::createMedia (DOMElement *parentElement)
       }
 
       node = new ReferNode (id);
-      if (dom_element_try_get_attr(attValue, parentElement, "instance"))
+      if (dom_element_try_get_attr(attValue, media_element, "instance"))
         {
           ((ReferNode *)node)->setInstanceType (attValue);
         }
@@ -925,12 +921,12 @@ NclParser::createMedia (DOMElement *parentElement)
 
   node = new ContentNode (id, NULL, "");
 
-  if (dom_element_try_get_attr(attValue, parentElement, "type"))
+  if (dom_element_try_get_attr(attValue, media_element, "type"))
     {
       ((ContentNode *)node)->setNodeType (attValue);
     }
 
-  if (dom_element_try_get_attr(attValue, parentElement, "src"))
+  if (dom_element_try_get_attr(attValue, media_element, "src"))
     {
       if (unlikely (attValue == ""))
         syntax_error ("media '%s': missing src", id.c_str ());
@@ -938,13 +934,13 @@ NclParser::createMedia (DOMElement *parentElement)
       if (!xpathisuri (attValue) && !xpathisabs (attValue))
         attValue = xpathbuildabs (this->getDirName (), attValue);
 
-      ((ContentNode *)node)->setContent (new AbsoluteReferenceContent (attValue));
+      ((ContentNode *)node)->setContent (
+            new AbsoluteReferenceContent (attValue));
     }
 
-  if (dom_element_try_get_attr(attValue, parentElement, "descriptor"))
+  if (dom_element_try_get_attr(attValue, media_element, "descriptor"))
     {
-      document = this->getNclDocument ();
-      descriptor = document->getDescriptor (attValue);
+      descriptor = getNclDocument ()->getDescriptor (attValue);
       if (descriptor != NULL)
         {
           ((ContentNode *)node)->setDescriptor (descriptor);
@@ -960,14 +956,23 @@ NclParser::createMedia (DOMElement *parentElement)
 
 // IMPORT
 void
-NclParser::parseImportedDocumentBase (DOMElement *parentElement)
+NclParser::parseImportedDocumentBase (DOMElement *importedDocumentBase_element)
 {
-  g_assert_nonnull (parentElement);
+  g_assert_nonnull (importedDocumentBase_element);
 
-  for (DOMElement *child:
-       dom_element_children_by_tagname(parentElement, "importNCL"))
+  for (DOMElement *child: dom_element_children(importedDocumentBase_element))
     {
-      addImportNCLToImportedDocumentBase (child);
+      string tagname = dom_element_tagname(importedDocumentBase_element);
+      if (tagname == "importNCL")
+        {
+          addImportNCLToImportedDocumentBase (child);
+        }
+      else
+        {
+          syntax_warning( "'%s' is not known as child of 'importedDocumentBase'. "
+                          "It will be ignored.",
+                          tagname.c_str() );
+        }
     }
 }
 
@@ -1235,12 +1240,10 @@ NclParser::parseCompoundCondition (DOMElement *compoundCond_element)
         }
       else if ( tagname == "assessmentStatement" )
         {
-          AssessmentStatement *assessmentStatement =
-              parseAssessmentStatement (child);
-
-          if (assessmentStatement)
+          AssessmentStatement *assStatement = parseAssessmentStatement (child);
+          if (assStatement)
             {
-              compoundCond->addConditionExpression (assessmentStatement);
+              compoundCond->addConditionExpression (assStatement);
             }
         }
       else if ( tagname == "compoundCondition")
@@ -1276,21 +1279,20 @@ NclParser::parseCompoundCondition (DOMElement *compoundCond_element)
 AssessmentStatement *
 NclParser::parseAssessmentStatement (DOMElement *assessmentStatement_element)
 {
-  AssessmentStatement *assessmentStatement =
+  AssessmentStatement *assStatement =
       createAssessmentStatement (assessmentStatement_element);
-  g_assert_nonnull (assessmentStatement);
+  g_assert_nonnull (assStatement);
 
   for ( DOMElement *child: dom_element_children(assessmentStatement_element) )
     {
       string tagname = dom_element_tagname(child);
       if (tagname == "attributeAssessment")
         {
-          AttributeAssessment *attributeAssessment =
-              parseAttributeAssessment (child);
-          if (attributeAssessment)
+          AttributeAssessment *attrStatement = parseAttributeAssessment (child);
+          if (attrStatement)
             {
-              addAttributeAssessmentToAssessmentStatement (assessmentStatement,
-                                                           attributeAssessment);
+              addAttributeAssessmentToAssessmentStatement (assStatement,
+                                                           attrStatement);
             }
         }
       else if (tagname == "valueAssessment")
@@ -1298,7 +1300,7 @@ NclParser::parseAssessmentStatement (DOMElement *assessmentStatement_element)
           ValueAssessment *valueAssessment = parseValueAssessment (child);
           if (valueAssessment)
             {
-              assessmentStatement->setOtherAssessment (valueAssessment);
+              assStatement->setOtherAssessment (valueAssessment);
             }
         }
       else
@@ -1309,48 +1311,48 @@ NclParser::parseAssessmentStatement (DOMElement *assessmentStatement_element)
         }
     }
 
-  return assessmentStatement;
+  return assStatement;
 }
 
 AttributeAssessment *
 NclParser::parseAttributeAssessment (DOMElement *attributeAssessment_element)
 {
-  AttributeAssessment *attributeAssessment;
+  AttributeAssessment *attrAssessment;
   string attValue;
 
   string roleLabel = dom_element_get_attr(attributeAssessment_element, "role");
 
-  attributeAssessment = new AttributeAssessment (roleLabel);
+  attrAssessment = new AttributeAssessment (roleLabel);
 
   // event type
   if (dom_element_try_get_attr(attValue, attributeAssessment_element, "eventType"))
     {
-      attributeAssessment->setEventType (EventUtil::getTypeCode (attValue));
+      attrAssessment->setEventType (EventUtil::getTypeCode (attValue));
     }
 
   // event type
   if (dom_element_try_get_attr(attValue, attributeAssessment_element, "attributeType"))
     {
-      attributeAssessment->setAttributeType (
+      attrAssessment->setAttributeType (
             EventUtil::getAttributeTypeCode (attValue));
     }
 
   // parameter
-  if (attributeAssessment->getEventType () == EventUtil::EVT_SELECTION)
+  if (attrAssessment->getEventType () == EventUtil::EVT_SELECTION)
     {
       if (dom_element_try_get_attr(attValue, attributeAssessment_element, "key"))
         {
-          attributeAssessment->setKey (attValue);
+          attrAssessment->setKey (attValue);
         }
     }
 
   // testing offset
   if (dom_element_try_get_attr(attValue, attributeAssessment_element, "offset"))
     {
-      attributeAssessment->setOffset (attValue);
+      attrAssessment->setOffset (attValue);
     }
 
-  return attributeAssessment;
+  return attrAssessment;
 }
 
 ValueAssessment *
@@ -1374,11 +1376,10 @@ NclParser::parseCompoundStatement (DOMElement *compoundStatement_element)
 
       if (tagname == "assessmentStatement")
         {
-          AssessmentStatement *assessmentStatement =
-              parseAssessmentStatement (child);
-          if (assessmentStatement)
+          AssessmentStatement *assStatement = parseAssessmentStatement (child);
+          if (assStatement)
             {
-              compoundStatement->addStatement (assessmentStatement);
+              compoundStatement->addStatement (assStatement);
             }
         }
       else if (tagname == "compoundStatement")
@@ -1611,7 +1612,6 @@ NclParser::parseCausalConnector (DOMElement *causalConnector_element)
       else if (tagname == "compoundAction")
         {
           CompoundAction *compoundAction = parseCompoundAction (child);
-
           if (compoundAction)
             {
               causalConnector->setAction (compoundAction);
@@ -1620,7 +1620,6 @@ NclParser::parseCausalConnector (DOMElement *causalConnector_element)
       else if (tagname == "connectorParam")
         {
           Parameter *param = parseConnectorParam (child);
-
           if (param)
             {
               causalConnector->addParameter (param);
@@ -1629,7 +1628,6 @@ NclParser::parseCausalConnector (DOMElement *causalConnector_element)
       else if (tagname == "compoundCondition")
         {
           CompoundCondition *compoundCond = parseCompoundCondition (child);
-
           if (compoundCond)
             {
               causalConnector->setConditionExpression (compoundCond);
@@ -1647,25 +1645,24 @@ NclParser::parseCausalConnector (DOMElement *causalConnector_element)
 }
 
 ConnectorBase *
-NclParser::parseConnectorBase (DOMElement *connectorBase_element)
+NclParser::parseConnectorBase (DOMElement *connBase_element)
 {
-  ConnectorBase *connectorBase =
-      createConnectorBase (connectorBase_element);
-  g_assert_nonnull (connectorBase);
+  ConnectorBase *connBase = createConnectorBase (connBase_element);
+  g_assert_nonnull (connBase);
 
-  for (DOMElement *child: dom_element_children(connectorBase_element))
+  for (DOMElement *child: dom_element_children(connBase_element))
     {
       string tagname = dom_element_tagname(child);
       if (tagname == "importBase")
         {
-          addImportBaseToConnectorBase (connectorBase, child);
+          addImportBaseToConnectorBase (connBase, child);
         }
       else if (tagname ==  "causalConnector")
         {
           CausalConnector *causalConnector = parseCausalConnector (child);
           if (causalConnector)
             {
-              connectorBase->addConnector (causalConnector);
+              connBase->addConnector (causalConnector);
             }
         }
       else
@@ -1676,20 +1673,20 @@ NclParser::parseConnectorBase (DOMElement *connectorBase_element)
         }
     }
 
-  return connectorBase;
+  return connBase;
 }
 
 void
-NclParser::addImportBaseToConnectorBase (ConnectorBase *connectorBase,
-                                         DOMElement *childObject)
+NclParser::addImportBaseToConnectorBase (ConnectorBase *connBase,
+                                         DOMElement *importBase_element)
 {
   string baseAlias, baseLocation;
   NclDocument *importedDocument;
   ConnectorBase *importedConnectorBase;
 
   // get the external base alias and location
-  baseAlias = dom_element_get_attr(childObject, "alias");
-  baseLocation = dom_element_get_attr(childObject, "documentURI");
+  baseAlias = dom_element_get_attr(importBase_element, "alias");
+  baseLocation = dom_element_get_attr(importBase_element, "documentURI");
 
   importedDocument = this->importDocument (baseLocation);
   if (unlikely (importedDocument == NULL))
@@ -1707,7 +1704,7 @@ NclParser::addImportBaseToConnectorBase (ConnectorBase *connectorBase,
                     baseLocation.c_str ());
     }
 
-  connectorBase->addBase (importedConnectorBase, baseAlias, baseLocation);
+  connBase->addBase (importedConnectorBase, baseAlias, baseLocation);
 }
 
 CausalConnector *
@@ -1800,31 +1797,31 @@ NclParser::createCompoundCondition (DOMElement *compoundCond_element)
 
 
 AssessmentStatement *
-NclParser::createAssessmentStatement (DOMElement *assessmentStatement_element)
+NclParser::createAssessmentStatement (DOMElement *assStatement_element)
 {
-  AssessmentStatement *assessmentStatement;
+  AssessmentStatement *assStatement;
   string attValue;
 
-  if (dom_element_try_get_attr(attValue, assessmentStatement_element, "comparator"))
+  if (dom_element_try_get_attr(attValue, assStatement_element, "comparator"))
     {
-      assessmentStatement
+      assStatement
           = new AssessmentStatement (Comparator::fromString (attValue));
     }
   else
     {
-      assessmentStatement = new AssessmentStatement (Comparator::CMP_EQ);
+      assStatement = new AssessmentStatement (Comparator::CMP_EQ);
     }
 
-  return assessmentStatement;
+  return assStatement;
 }
 
 CompoundStatement *
-NclParser::createCompoundStatement (DOMElement *parentElement)
+NclParser::createCompoundStatement (DOMElement *compoundStatement_element)
 {
   string attValue;
   CompoundStatement *compoundStatement = new CompoundStatement ();
 
-  attValue = dom_element_get_attr(parentElement, "operator");
+  attValue = dom_element_get_attr(compoundStatement_element, "operator");
   if (attValue == "and")
     {
       compoundStatement->setOperator (CompoundStatement::OP_AND);
@@ -1835,7 +1832,7 @@ NclParser::createCompoundStatement (DOMElement *parentElement)
     }
 
   // testing isNegated
-  if (dom_element_try_get_attr(attValue, parentElement, "isNegated"))
+  if (dom_element_try_get_attr(attValue, compoundStatement_element, "isNegated"))
     {
       compoundStatement->setNegated (attValue == "true");
     }
@@ -1859,7 +1856,7 @@ NclParser::createCompoundAction (DOMElement *compoundAction_element)
       actionExpression->setOperator (CompoundAction::OP_PAR);
     }
 
-  //  testar delay
+  //  delay
   if (dom_element_try_get_attr(attValue, compoundAction_element, "delay"))
     {
       if (attValue[0] == '$')
@@ -1880,23 +1877,23 @@ NclParser::createCompoundAction (DOMElement *compoundAction_element)
 
 void
 NclParser::addAttributeAssessmentToAssessmentStatement (
-    AssessmentStatement *asssessmentStatement,
-    AttributeAssessment *attributeAssessment)
+    AssessmentStatement *assStatement,
+    AttributeAssessment *attrStatement)
 {
-  if (asssessmentStatement->getMainAssessment () == NULL)
+  if (assStatement->getMainAssessment () == NULL)
     {
-      asssessmentStatement->setMainAssessment (attributeAssessment);
+      assStatement->setMainAssessment (attrStatement);
     }
   else
     {
-      asssessmentStatement->setOtherAssessment (attributeAssessment);
+      assStatement->setOtherAssessment (attrStatement);
     }
 }
 
 // INTERFACES
 SwitchPort *
 NclParser::parseSwitchPort (DOMElement *switchPort_element,
-                                      SwitchNode *switchNode)
+                            SwitchNode *switchNode)
 {
   SwitchPort *switchPort = createSwitchPort (switchPort_element, switchNode);
 
@@ -1934,7 +1931,7 @@ NclParser::parseMapping (DOMElement *parent, SwitchPort *switchPort)
   string id = dom_element_get_attr(switchElement, "id");
   string component = dom_element_get_attr(parent, "component");
 
-  switchNode = (SwitchNode *)this->getNode (id); // FIXME: not safe!
+  switchNode = (SwitchNode *)this->getNode (id); // FIXME: this is not safe!
   mappingNode = switchNode->getNode (component);
 
   if (unlikely (mappingNode == NULL))
@@ -2336,6 +2333,13 @@ set_perc_or_px (DOMElement *el, const string &att, LayoutRegion *region,
     }
 }
 
+#define call_with_attr_if_has(DOMEL,DOMATTR,OBJ,SETFUNC) \
+  if(dom_element_has_attr(DOMEL,DOMATTR)) \
+    { \
+      string attrV = dom_element_get_attr(DOMEL,DOMATTR); \
+      OBJ -> SETFUNC (attrV); \
+    }
+
 LayoutRegion *
 NclParser::createRegion (DOMElement *elt)
 {
@@ -2443,8 +2447,6 @@ NclParser::createBind (DOMElement *bind_element, Link *link)
   InterfacePoint *interfacePoint = NULL;
   NclDocument *document;
   GenericDescriptor *descriptor;
-  set<ReferNode *> *sInsts;
-  set<ReferNode *>::iterator i;
 
   role = _connectorLinkParsing->getRole (dom_element_get_attr(bind_element, "role"));
   component = dom_element_get_attr(bind_element, "component");
@@ -2498,16 +2500,13 @@ NclParser::createBind (DOMElement *bind_element, Link *link)
               interfacePoint = anchorNode->getAnchor (interfaceId);
               if (interfacePoint == NULL)
                 {
-                  sInsts = anchorNodeEntity->getInstSameInstances ();
-                  if (sInsts != NULL)
+                  for (ReferNode *referNode:
+                       *anchorNodeEntity->getInstSameInstances())
                     {
-                      for (i = sInsts->begin (); i != sInsts->end (); ++i)
+                      interfacePoint = referNode->getAnchor (interfaceId);
+                      if (interfacePoint != NULL)
                         {
-                          interfacePoint = (*i)->getAnchor (interfaceId);
-                          if (interfacePoint != NULL)
-                            {
-                              break;
-                            }
+                          break;
                         }
                     }
                 }
@@ -2874,7 +2873,6 @@ NclParser::createSwitch (DOMElement *switch_element)
   Node *node;
   string attValue;
   Entity *referNode;
-  NclDocument *document;
   SwitchNode *switchNode;
 
   if (unlikely (!dom_element_has_attr(switch_element, "id")))
@@ -2890,13 +2888,11 @@ NclParser::createSwitch (DOMElement *switch_element)
     {
       try
         {
-          referNode
-              = (SwitchNode *) this->getNode (attValue);
+          referNode = (SwitchNode *) this->getNode (attValue);
 
           if (referNode == NULL)
             {
-              document = this->getNclDocument ();
-              referNode = (SwitchNode *)document->getNode (attValue);
+              referNode = (SwitchNode *)getNclDocument ()->getNode (attValue);
               if (referNode == NULL)
                 {
                   referNode
@@ -2923,10 +2919,10 @@ NclParser::createSwitch (DOMElement *switch_element)
 }
 
 RuleBase *
-NclParser::createRuleBase (DOMElement *parentElement)
+NclParser::createRuleBase (DOMElement *ruleBase_element)
 {
-  RuleBase *ruleBase;
-  ruleBase = new RuleBase (dom_element_get_attr(parentElement, "id"));
+  RuleBase *ruleBase
+      = new RuleBase (dom_element_get_attr(ruleBase_element, "id"));
 
   return ruleBase;
 }
@@ -3022,8 +3018,7 @@ NclParser::addBindRuleToDescriptorSwitch (
 }
 
 void
-NclParser::addBindRuleToSwitch ( SwitchNode *switchNode,
-                                                    DOMElement *bindRule)
+NclParser::addBindRuleToSwitch (SwitchNode *switchNode, DOMElement *bindRule)
 {
   map<string, Node *> *nodes;
   Node *node;
@@ -3164,7 +3159,7 @@ NclParser::addNodeToSwitch ( Node *switchNode, Node *node)
     }
 }
 
-void *
+SwitchNode *
 NclParser::posCompileSwitch (
     DOMElement *switchElement, SwitchNode *switchNode)
 {
@@ -3363,7 +3358,6 @@ NclParser::createDescriptor (DOMElement *descriptor_element)
   FocusDecoration *focusDecoration;
   SDL_Color *color;
   string attValue;
-  TransitionBase *transitionBase;
 
   descriptor = new Descriptor (dom_element_get_attr(descriptor_element, "id"));
 
@@ -3412,31 +3406,23 @@ NclParser::createDescriptor (DOMElement *descriptor_element)
 
   // key navigation attributes
   keyNavigation = new KeyNavigation ();
-  descriptor->setKeyNavigation (keyNavigation);
-  if (dom_element_try_get_attr(attValue, descriptor_element, "focusIndex"))
-    {
-      keyNavigation->setFocusIndex (attValue);
-    }
+  descriptor->setKeyNavigation (keyNavigation); 
 
-  if (dom_element_try_get_attr(attValue, descriptor_element, "moveUp"))
-    {
-      keyNavigation->setMoveUp (attValue);
-    }
+  // a lambda to check the existence of an attribute and set the keyNavigation
+  typedef void (KeyNavigation::*memberf_pointer)(const string &);
+  map<string, memberf_pointer> to_call = {
+    {"focusIndex", &KeyNavigation::setFocusIndex},
+    {"moveUp",     &KeyNavigation::setMoveUp},
+    {"moveDown",   &KeyNavigation::setMoveDown},
+    {"moveLeft",   &KeyNavigation::setMoveLeft},
+    {"moveRight",  &KeyNavigation::setMoveRight},
+  };
 
-  if (dom_element_try_get_attr(attValue, descriptor_element, "moveDown"))
-    {
-      keyNavigation->setMoveDown (attValue);
-    }
-
-  if (dom_element_try_get_attr(attValue, descriptor_element, "moveLeft"))
-    {
-      keyNavigation->setMoveLeft (attValue);
-    }
-
-  if (dom_element_try_get_attr(attValue, descriptor_element, "moveRight"))
-    {
-      keyNavigation->setMoveRight (attValue);
-    }
+  for(auto a: to_call)
+    if (dom_element_try_get_attr(attValue, descriptor_element, a.first))
+        {
+          (keyNavigation->* to_call[a.first]) (attValue);
+        }
 
   focusDecoration = new FocusDecoration ();
   descriptor->setFocusDecoration (focusDecoration);
@@ -3483,49 +3469,40 @@ NclParser::createDescriptor (DOMElement *descriptor_element)
       focusDecoration->setSelBorderColor ( color );
     }
 
-  if (dom_element_try_get_attr(attValue, descriptor_element, "transIn"))
+  // a lambda to parse the transIn/transOut attribute value and add input output
+  // transitions to descriptor
+  auto parse_transInOut = [&] (const string &transInOut)
     {
-      if((transitionBase = nclDoc->getTransitionBase ()))
-        {
-          vector<string> transIds = xstrsplit (attValue, ';');
-          for (guint i = 0; i < transIds.size(); i++)
-            {
-              Transition *transition
-                  = transitionBase->getTransition (xstrchomp (transIds[i]));
-              if (transition)
-                {
-                  descriptor->addInputTransition (transition, (int) i);
-                }
-              else
-                {
-                  syntax_error ( "transition: bad transOut '%s'",
-                                  transIds[i].c_str () );
-                }
-            }
-        }
-    }
+      if (dom_element_try_get_attr(attValue, descriptor_element, transInOut))
+      {
+        TransitionBase *transBase = nclDoc->getTransitionBase ();
+        if((transBase))
+          {
+            vector<string> transIds = xstrsplit (attValue, ';');
+            for (uint i = 0; i < transIds.size(); i++)
+              {
+                Transition *trans
+                    = transBase->getTransition (xstrchomp (transIds[i]));
+                if (trans)
+                  {
+                    if (transInOut == "transIn")
+                      descriptor->addInputTransition (trans, i);
+                    else if (transInOut == "transOut")
+                      descriptor->addOutputTransition(trans, i);
+                  }
+                else
+                  {
+                    syntax_error ( "transition: bad %s '%s'",
+                                   transInOut.c_str(),
+                                   transIds[i].c_str () );
+                  }
+              }
+          }
+      }
+    };
 
-  if (dom_element_try_get_attr(attValue, descriptor_element, "transOut"))
-    {
-      if((transitionBase = nclDoc->getTransitionBase ()))
-        {
-          vector<string> transIds = xstrsplit (attValue, ';');
-          for (guint i = 0; i < transIds.size(); i++)
-            {
-              Transition *transition
-                  = transitionBase->getTransition (xstrchomp (transIds[i]));
-              if (transition)
-                {
-                  descriptor->addOutputTransition(transition, (int) i);
-                }
-              else
-                {
-                  syntax_error ( "transition: bad transOut '%s'",
-                                  transIds[i].c_str () );
-                }
-            }
-        }
-    }
+  parse_transInOut ("transIn");  //call the above lambda for transIn attr
+  parse_transInOut ("transOut"); //call the above lambda for transOut attr
 
   return descriptor;
 }
