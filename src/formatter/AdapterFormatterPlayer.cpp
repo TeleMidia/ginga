@@ -831,7 +831,7 @@ AdapterFormatterPlayer::start ()
         }
       else
         {
-          _object->setPlayer ((Player *) this->_player);
+          _object->setPlayer (this->_player);
         }
     }
 
