@@ -61,7 +61,6 @@ NclFormatterRegion::NclFormatterRegion (const string &objectId,
   this->moveDown = "";
   this->moveLeft = "";
   this->moveRight = "";
-  this->plan = "";
   this->zIndex = -1;
 
   Thread::mutexInit (&mutex);
@@ -239,28 +238,6 @@ int
 NclFormatterRegion::getZIndex ()
 {
   return zIndex;
-}
-
-void
-NclFormatterRegion::setPlan (const string &plan)
-{
-  if (this->plan != plan)
-    {
-      this->plan = plan;
-
-      if (zIndex < 0)
-        {
-          zIndex = ncmRegion->getZIndexValue ();
-        }
-
-      setZIndex (this->zIndex);
-    }
-}
-
-string
-NclFormatterRegion::getPlan ()
-{
-  return plan;
 }
 
 void
