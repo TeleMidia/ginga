@@ -39,7 +39,6 @@ Player::Player (const string &mrl)
   this->scopeType = PL_TYPE_PRESENTATION;
   this->scopeInitTime = -1;
   this->scopeEndTime = -1;
-  this->outTransTime = -1;
 
   //time attr
   this->initStartTime = 0;
@@ -120,49 +119,22 @@ Player::notifyPlayerListeners (short code,
   string p;
   string v;
 
-  notifying = true;
   Thread::mutexLock (&listM);
-  notifying = true;
+  this->notifying = true;
+
+  if (code == PL_NOTIFY_STOP)
+    this->presented = true;
 
   if (listeners.empty ())
     {
-      if (code == PL_NOTIFY_STOP)
-        {
-          presented = true;
-        }
       Thread::mutexUnlock (&listM);
-      notifying = false;
+      this->notifying = false;
       return;
     }
 
-  if (code == PL_NOTIFY_STOP)
-    {
-      presented = true;
-    }
-
-  ntsNotifyPlayerListeners (&listeners, code, parameter, type, value);
+  for (auto i: this->listeners)
+    i->updateStatus (code, parameter, type, value);
 }
-
-void
-Player::ntsNotifyPlayerListeners (set<IPlayerListener *> *list,
-                                  short code,
-                                  const string &parameter,
-                                  PlayerEventType type,
-                                  const string &value)
-{
-  set<IPlayerListener *>::iterator i;
-
-  i = list->begin ();
-  while (i != list->end ())
-    {
-      if ((*i) != NULL)
-        {
-          (*i)->updateStatus (code, parameter, type, value);
-        }
-      ++i;
-    }
-}
-
 
 void
 Player::setMediaTime (guint32 newTime)
@@ -193,15 +165,13 @@ void
 Player::setScope (const string &scope,
                   PlayerEventType type,
                   double initTime,
-                  double endTime,
-                  double outTransDur)
+                  double endTime)
 {
   clog << "Player::setScope '" << scope << "'" << endl;
   this->scope = scope;
   this->scopeType = type;
   this->scopeInitTime = initTime;
   this->scopeEndTime = endTime;
-  this->outTransTime = outTransDur;
 }
 
 bool
@@ -383,11 +353,8 @@ Player::redraw(SDL_Renderer* renderer)
   if(this->status == PL_SLEEPING)
     return;
 
-  animator->update(&this->rect,
-                   &this->bgColor.r,
-                   &this->bgColor.g,
-                   &this->bgColor.b,
-                   &this->alpha);
+  animator->update
+    (&this->rect, &this->bgColor.r, &this->bgColor.g, &this->bgColor.b, &this->alpha);
 
   if(this->window!=NULL)
     this->window->getBorder(&this->borderColor,&this->borderWidth);
