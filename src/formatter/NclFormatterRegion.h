@@ -145,13 +145,6 @@ public:
 
   SDLWindow* getOutputId ();
 
-private:
-  void meetComponent (int width, int height, int prefWidth, int prefHeight);
-
-  void sliceComponent (int width, int height, int prefWidth, int prefHeight);
-
-  void updateCurrentComponentSize ();
-
 public:
   void updateRegionBounds ();
 
@@ -166,9 +159,6 @@ public:
 
   void showContent ();
   void hideContent ();
-
-  void performOutTrans ();
-  double getOutTransDur ();
 
   void setRegionVisibility (bool visible);
 
