@@ -26,18 +26,19 @@ GINGA_PLAYER_BEGIN
 
 class SvgPlayer : public Player
 {
+public:
+  explicit SvgPlayer (const string &mrl);
+  virtual ~SvgPlayer (void);
+
+  bool play (void) override;
+  void setPropertyValue (const string &name, const string &value) override;
+
 private:
   GINGA_MUTEX_DEFN ();
   static bool displayJobCallbackWrapper (DisplayJob *,
                                          SDL_Renderer *, void *);
   bool displayJobCallback (DisplayJob *, SDL_Renderer *);
   SDL_Texture* decode( SDL_Renderer *renderer);
-
-public:
-  SvgPlayer (const string &mrl);
-  ~SvgPlayer (void);
-  bool play (void);
-  void setPropertyValue (const string &name, const string &value);
 };
 
 GINGA_PLAYER_END

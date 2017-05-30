@@ -26,16 +26,16 @@ GINGA_PLAYER_BEGIN
 
 class ImagePlayer : public Player
 {
+public:
+  explicit ImagePlayer (const string &mrl);
+  virtual ~ImagePlayer (void);
+  bool play (void) override;
+
 private:
-  GINGA_MUTEX_DEFN ();
+  GINGA_MUTEX_DEFN ()
   static bool displayJobCallbackWrapper (DisplayJob *,
                                          SDL_Renderer *, void *);
   bool displayJobCallback (DisplayJob *, SDL_Renderer *);
-
-public:
-  ImagePlayer (const string &mrl);
-  ~ImagePlayer (void);
-  bool play (void);
 };
 
 GINGA_PLAYER_END

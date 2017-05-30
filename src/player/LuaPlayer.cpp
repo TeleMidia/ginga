@@ -99,7 +99,7 @@ LuaPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   bool signal = false;
 
   this->lock ();
-  if (this->nw == NULL)
+  if (this->_nw == NULL)
     {
       g_debug ("last cycle");
       this->unlock ();
@@ -109,7 +109,7 @@ LuaPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   rect = this->window->getRect ();
   g_assert (rect.w > 0 && rect.h > 0);
 
-  ncluaw_cycle (this->nw);
+  ncluaw_cycle (this->_nw);
 
 #if SDL_VERSION_ATLEAST(2,0,5)
   sfc = SDL_CreateRGBSurfaceWithFormat (0, rect.w, rect.h, 32,
@@ -125,7 +125,7 @@ LuaPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   g_assert_nonnull (sfc);
   SDLx_LockSurface (sfc);
 
-  ncluaw_paint (nw, (guchar *) sfc->pixels, "ARGB32",
+  ncluaw_paint (_nw, (guchar *) sfc->pixels, "ARGB32",
 
                 sfc->w, sfc->h, sfc->pitch);
   SDLx_UnlockSurface (sfc);
@@ -169,10 +169,10 @@ LuaPlayer::LuaPlayer (const string &mrl) : Player (mrl)
   g_free (dir);
 
   this->mutexInit ();
-  this->nw = NULL;              // created by start ()
-  this->hasExecuted = false;
-  this->isKeyHandler = false;
-  this->scope = "";
+  this->_nw = NULL;              // created by start ()
+  this->_hasExecuted = false;
+  this->_isKeyHandler = false;
+  this->_scope = "";
 
   Ginga_Display->registerKeyEventListener(this);
 }
@@ -187,8 +187,8 @@ void
 LuaPlayer::abort (void)
 {
   this->lock ();
-  g_debug ("abort scope %s", this->scope.c_str ());
-  evt_ncl_send_presentation (this->nw, "abort", this->scope.c_str ());
+  g_debug ("abort scope %s", this->_scope.c_str ());
+  evt_ncl_send_presentation (this->_nw, "abort", this->_scope.c_str ());
   this->unlock ();
   this->stop ();
 }
@@ -197,8 +197,8 @@ void
 LuaPlayer::pause (void)
 {
   this->lock ();
-  g_debug ("pause scope %s", this->scope.c_str ());
-  evt_ncl_send_presentation (this->nw, "pause", this->scope.c_str ());
+  g_debug ("pause scope %s", this->_scope.c_str ());
+  evt_ncl_send_presentation (this->_nw, "pause", this->_scope.c_str ());
   this->unlock ();
   Player::pause ();
 }
@@ -208,8 +208,8 @@ LuaPlayer::play (void)
 {
   char *errmsg;
   this->lock ();
-  g_debug ("play scope %s", this->scope.c_str ());
-  if (this->nw != NULL)
+  g_debug ("play scope %s", this->_scope.c_str ());
+  if (this->_nw != NULL)
     {
       this->unlock ();
       Player::play ();
@@ -219,12 +219,12 @@ LuaPlayer::play (void)
    SDL_Rect rect = this->window->getRect ();
    g_assert (rect.w > 0 && rect.h > 0);
 
-  this->nw = ncluaw_open (this->mrl.c_str (), rect.w, rect.h, &errmsg);
+  this->_nw = ncluaw_open (this->mrl.c_str (), rect.w, rect.h, &errmsg);
 
-  if (unlikely (this->nw == NULL))
+  if (unlikely (this->_nw == NULL))
     g_error ("cannot load NCLua file %s: %s", this->mrl.c_str (), errmsg);
 
-  evt_ncl_send_presentation (this->nw, "start", this->scope.c_str ());
+  evt_ncl_send_presentation (this->_nw, "start", this->_scope.c_str ());
 
   Ginga_Display->addJob (displayJobCallbackWrapper, this);
 
@@ -239,8 +239,8 @@ void
 LuaPlayer::resume (void)
 {
   this->lock ();
-  g_debug ("resume scope %s", this->scope.c_str ());
-  evt_ncl_send_presentation (this->nw, "resume", this->scope.c_str ());
+  g_debug ("resume scope %s", this->_scope.c_str ());
+  evt_ncl_send_presentation (this->_nw, "resume", this->_scope.c_str ());
   this->unlock ();
   Player::resume ();
 }
@@ -249,18 +249,18 @@ void
 LuaPlayer::stop (void)
 {
   this->lock ();
-  g_debug ("stop scope %s", this->scope.c_str ());
+  g_debug ("stop scope %s", this->_scope.c_str ());
 
-  if (this->nw == NULL)
+  if (this->_nw == NULL)
     goto done;
 
-  evt_ncl_send_presentation (this->nw, "stop", this->scope.c_str ());
-  ncluaw_cycle (this->nw);
-  ncluaw_close (this->nw);
-  this->nw = NULL;
+  evt_ncl_send_presentation (this->_nw, "stop", this->_scope.c_str ());
+  ncluaw_cycle (this->_nw);
+  ncluaw_close (this->_nw);
+  this->_nw = NULL;
  // this->im->removeApplicationInputEventListener (this);
   this->forcedNaturalEnd = true;
-  this->hasExecuted = true;
+  this->_hasExecuted = true;
  done:
   this->unlock ();
   Player::stop ();
@@ -272,7 +272,7 @@ LuaPlayer::hasPresented (void)
   bool hasExecuted;
 
   this->lock ();
-  hasExecuted = this->hasExecuted;
+  hasExecuted = this->_hasExecuted;
   this->unlock ();
 
   return hasExecuted;
@@ -282,7 +282,7 @@ void
 LuaPlayer::setCurrentScope (const string &name)
 {
   this->lock ();
-  this->scope = name;
+  this->_scope = name;
   this->unlock ();
 }
 
@@ -290,7 +290,7 @@ bool
 LuaPlayer::setKeyHandler (bool b)
 {
   this->lock ();
-  this->isKeyHandler = b;
+  this->_isKeyHandler = b;
   this->unlock ();
   return b;
 }
@@ -305,12 +305,12 @@ LuaPlayer::setPropertyValue (const string &name, const string &value)
   // need to work around this bogus behavior, since it is the play()
   // call that creates the NCLua engine.
 
-  if (this->nw != NULL && this->status == PL_OCCURRING)
+  if (this->_nw != NULL && this->status == PL_OCCURRING)
     {
       const char *k = name.c_str ();
       const char *v = value.c_str ();
-      evt_ncl_send_attribution (this->nw, "start", k, v);
-      evt_ncl_send_attribution (this->nw, "stop", k, v);
+      evt_ncl_send_attribution (this->_nw, "start", k, v);
+      evt_ncl_send_attribution (this->_nw, "stop", k, v);
     }
   Player::setPropertyValue (name, value);
   this->unlock ();
@@ -321,7 +321,7 @@ LuaPlayer::keyInputCallback (SDL_EventType evtType, SDL_Keycode key){
 
   this->lock ();
 
-  if (this->nw == NULL)
+  if (this->_nw == NULL)
     goto tail;
 
   if(evtType == SDL_KEYDOWN || evtType == SDL_KEYUP){
@@ -329,7 +329,7 @@ LuaPlayer::keyInputCallback (SDL_EventType evtType, SDL_Keycode key){
      if(evtType == SDL_KEYDOWN)
             evt="press";
 
-     evt_key_send (this->nw, evt.c_str(), convertSdl2GingaKey(key).c_str() );
+     evt_key_send (this->_nw, evt.c_str(), convertSdl2GingaKey(key).c_str() );
   }
 
   tail:
