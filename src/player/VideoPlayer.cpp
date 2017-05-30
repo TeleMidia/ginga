@@ -166,8 +166,8 @@ VideoPlayer::newSampleCB (GstAppSink *appsink, gpointer data)
 
 bool
 VideoPlayer::displayJobCallbackWrapper (DisplayJob *job,
-                                           SDL_Renderer *renderer,
-                                           void *self)
+                                        SDL_Renderer *renderer,
+                                        void *self)
 {
   return ((VideoPlayer *) self)->displayJobCallback (job, renderer);
 }

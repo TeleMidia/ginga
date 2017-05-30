@@ -358,7 +358,7 @@ Player::redraw(SDL_Renderer* renderer)
     (&this->rect, &this->bgColor.r, &this->bgColor.g, &this->bgColor.b, &this->alpha);
 
   if(this->window!=NULL)
-    this->window->getBorder(&this->borderColor,&this->borderWidth);
+    this->window->getBorder(&this->borderColor, &this->borderWidth);
 
   if (this->bgColor.a > 0)
     {  // background color
@@ -371,7 +371,8 @@ Player::redraw(SDL_Renderer* renderer)
       SDLx_RenderFillRect (renderer, &this->rect);
     }
 
-  if (this->texture != NULL){
+  if (this->texture != NULL)
+    {
       SDLx_SetTextureAlphaMod (this->texture, this->alpha);
       SDLx_RenderCopy (renderer, this->texture, NULL, &this->rect);
     }

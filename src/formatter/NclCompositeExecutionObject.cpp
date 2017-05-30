@@ -809,7 +809,6 @@ NclCompositeExecutionObject::listRunningObjects ()
 {
   map<string, NclExecutionObject *>::iterator i;
   vector<NclFormatterEvent *>::iterator j;
-  vector<NclFormatterEvent *> *events;
   NclExecutionObject *object;
   NclFormatterEvent *event;
 
@@ -819,21 +818,16 @@ NclCompositeExecutionObject::listRunningObjects ()
   while (i != execObjList.end ())
     {
       object = i->second;
-      events = object->getEvents ();
-      if (events != NULL)
+      vector<NclFormatterEvent *> events = object->getEvents ();
+      j = events.begin ();
+      while (j != events.end ())
         {
-          j = events->begin ();
-          while (j != events->end ())
+          event = *j;
+          if (event->getCurrentState () != EventUtil::ST_SLEEPING)
             {
-              event = *j;
-              if (event->getCurrentState () != EventUtil::ST_SLEEPING)
-                {
-                  clog << "'" << i->first << "', ";
-                }
-              ++j;
+              clog << "'" << i->first << "', ";
             }
-          delete events;
-          events = NULL;
+          ++j;
         }
       ++i;
     }

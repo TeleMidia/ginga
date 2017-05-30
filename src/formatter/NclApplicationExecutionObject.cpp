@@ -407,7 +407,6 @@ NclApplicationExecutionObject::stop ()
 bool
 NclApplicationExecutionObject::abort ()
 {
-  vector<NclFormatterEvent *> *evs;
   vector<NclFormatterEvent *>::iterator i;
   NclFormatterEvent *ev;
   ContentAnchor *contentAnchor;
@@ -426,43 +425,38 @@ NclApplicationExecutionObject::abort ()
 
   if (currentEvent == wholeContent)
     {
-      evs = getEvents ();
-      if (evs != NULL)
+      vector<NclFormatterEvent *> evs = getEvents ();
+      i = evs.begin ();
+      while (i != evs.end ())
         {
-          i = evs->begin ();
-          while (i != evs->end ())
+          ev = (*i);
+
+          if (ev->instanceOf ("NclAnchorEvent"))
             {
-              ev = (*i);
-
-              if (ev->instanceOf ("NclAnchorEvent"))
+              contentAnchor = ((NclAnchorEvent *)ev)->getAnchor ();
+              if (contentAnchor != NULL
+                  && contentAnchor->instanceOf ("LabeledAnchor"))
                 {
-                  contentAnchor = ((NclAnchorEvent *)ev)->getAnchor ();
-                  if (contentAnchor != NULL
-                      && contentAnchor->instanceOf ("LabeledAnchor"))
-                    {
-                      isLabeled = true;
+                  isLabeled = true;
 
-                      clog
-                          << "NclApplicationExecutionObject::abort event '";
-                      clog << contentAnchor->getId () << "'" << endl;
-                      ev->abort ();
-                    }
-                }
-
-              if (!isLabeled && ev->instanceOf ("NclPresentationEvent"))
-                {
-                  endTime = ((NclPresentationEvent *)ev)->getEnd ();
+                  clog
+                      << "NclApplicationExecutionObject::abort event '";
+                  clog << contentAnchor->getId () << "'" << endl;
                   ev->abort ();
-                  if (endTime > 0)
-                    {
-                      transMan->abort (endTime, true);
-                    }
                 }
-
-              ++i;
             }
-          delete evs;
-          evs = NULL;
+
+          if (!isLabeled && ev->instanceOf ("NclPresentationEvent"))
+            {
+              endTime = ((NclPresentationEvent *)ev)->getEnd ();
+              ev->abort ();
+              if (endTime > 0)
+                {
+                  transMan->abort (endTime, true);
+                }
+            }
+
+          ++i;
         }
       transMan->resetTimeIndex ();
       pauseCount = 0;
@@ -501,7 +495,6 @@ bool
 NclApplicationExecutionObject::pause ()
 {
   NclFormatterEvent *ev;
-  vector<NclFormatterEvent *> *evs;
   vector<NclFormatterEvent *>::iterator i;
 
   lockEvents ();
@@ -516,24 +509,19 @@ NclApplicationExecutionObject::pause ()
 
   if (currentEvent == wholeContent)
     {
-      evs = getEvents ();
-      if (evs != NULL)
+      vector<NclFormatterEvent *> evs = getEvents ();
+      if (pauseCount == 0)
         {
-          if (pauseCount == 0)
+          i = evs.begin ();
+          while (i != evs.end ())
             {
-              i = evs->begin ();
-              while (i != evs->end ())
+              ev = *i;
+              if (ev->getCurrentState () == EventUtil::ST_OCCURRING)
                 {
-                  ev = *i;
-                  if (ev->getCurrentState () == EventUtil::ST_OCCURRING)
-                    {
-                      ev->pause ();
-                    }
-                  ++i;
+                  ev->pause ();
                 }
+              ++i;
             }
-          delete evs;
-          evs = NULL;
         }
 
       pauseCount++;
@@ -550,7 +538,6 @@ bool
 NclApplicationExecutionObject::resume ()
 {
   NclFormatterEvent *event;
-  vector<NclFormatterEvent *> *evs;
   vector<NclFormatterEvent *>::iterator i;
 
   if (currentEvent == wholeContent)
@@ -568,24 +555,19 @@ NclApplicationExecutionObject::resume ()
             }
         }
 
-      evs = getEvents ();
-      if (evs != NULL)
+      vector<NclFormatterEvent *> evs = getEvents ();
+      if (pauseCount == 0)
         {
-          if (pauseCount == 0)
+          i = evs.begin ();
+          while (i != evs.end ())
             {
-              i = evs->begin ();
-              while (i != evs->end ())
+              event = *i;
+              if (event->getCurrentState () == EventUtil::ST_PAUSED)
                 {
-                  event = *i;
-                  if (event->getCurrentState () == EventUtil::ST_PAUSED)
-                    {
-                      event->resume ();
-                    }
-                  ++i;
+                  event->resume ();
                 }
+              ++i;
             }
-          delete evs;
-          evs = NULL;
         }
     }
   else if (currentEvent->getCurrentState () == EventUtil::ST_PAUSED)
@@ -641,24 +623,19 @@ void
 NclApplicationExecutionObject::unprepareEvents ()
 {
   NclFormatterEvent *event;
-  vector<NclFormatterEvent *> *evs;
+
   vector<NclFormatterEvent *>::iterator i;
 
-  evs = getEvents ();
-  if (evs != NULL)
+  vector<NclFormatterEvent *> evs = getEvents ();
+  i = evs.begin ();
+  while (i != evs.end ())
     {
-      i = evs->begin ();
-      while (i != evs->end ())
+      event = *i;
+      if (event->getCurrentState () != EventUtil::ST_SLEEPING)
         {
-          event = *i;
-          if (event->getCurrentState () != EventUtil::ST_SLEEPING)
-            {
-              event->stop ();
-            }
-          ++i;
+          event->stop ();
         }
-      delete evs;
-      evs = NULL;
+      ++i;
     }
 }
 
@@ -666,21 +643,16 @@ void
 NclApplicationExecutionObject::removeEventListeners ()
 {
   NclFormatterEvent *event;
-  vector<NclFormatterEvent *> *evs;
+
   vector<NclFormatterEvent *>::iterator i;
 
-  evs = getEvents ();
-  if (evs != NULL)
+  vector<NclFormatterEvent *> evs = getEvents ();
+  i = evs.begin ();
+  while (i != evs.end ())
     {
-      i = evs->begin ();
-      while (i != evs->end ())
-        {
-          event = *i;
-          removeParentListenersFromEvent (event);
-          ++i;
-        }
-      delete evs;
-      evs = NULL;
+      event = *i;
+      removeParentListenersFromEvent (event);
+      ++i;
     }
 }
 
