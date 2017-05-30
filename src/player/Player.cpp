@@ -26,11 +26,11 @@ GINGA_PLAYER_BEGIN
 
 Player::Player (const string &mrl)
 {
-  Thread::mutexInit (&listM, false);
+  Thread::mutexInit (&_listM, false);
 
   this->mrl = mrl;
   this->window = NULL;
-  this->notifying = false;
+  this->_notifying = false;
   this->presented = false;
   this->visible = true;
   this->status = PL_SLEEPING;
@@ -67,12 +67,12 @@ Player::~Player ()
 
   this->status = PL_SLEEPING;
 
-  Thread::mutexLock (&listM);
-  listeners.clear ();
+  Thread::mutexLock (&_listM);
+  _listeners.clear ();
 
-  properties.clear ();
-  Thread::mutexUnlock (&listM);
-  Thread::mutexDestroy (&listM);
+  _properties.clear ();
+  Thread::mutexUnlock (&_listM);
+  Thread::mutexDestroy (&_listM);
 }
 
 void
@@ -85,11 +85,11 @@ Player::setMrl (const string &mrl, bool visible)
 void
 Player::addListener (IPlayerListener *listener)
 {
-  if (!notifying)
+  if (!_notifying)
     {
-      Thread::mutexLock (&listM);
-      listeners.insert (listener);
-      Thread::mutexUnlock (&listM);
+      Thread::mutexLock (&_listM);
+      _listeners.insert (listener);
+      Thread::mutexUnlock (&_listM);
     }
 }
 
@@ -98,15 +98,15 @@ Player::removeListener (IPlayerListener *listener)
 {
   set<IPlayerListener *>::iterator i;
 
-  if (!notifying)
+  if (!_notifying)
     {
-      Thread::mutexLock (&listM);
-      i = listeners.find (listener);
-      if (i != listeners.end ())
+      Thread::mutexLock (&_listM);
+      i = _listeners.find (listener);
+      if (i != _listeners.end ())
         {
-          listeners.erase (i);
+          _listeners.erase (i);
         }
-      Thread::mutexUnlock (&listM);
+      Thread::mutexUnlock (&_listM);
     }
 }
 
@@ -119,20 +119,20 @@ Player::notifyPlayerListeners (short code,
   string p;
   string v;
 
-  Thread::mutexLock (&listM);
-  this->notifying = true;
+  Thread::mutexLock (&_listM);
+  this->_notifying = true;
 
   if (code == PL_NOTIFY_STOP)
     this->presented = true;
 
-  if (listeners.empty ())
+  if (_listeners.empty ())
     {
-      Thread::mutexUnlock (&listM);
-      this->notifying = false;
+      Thread::mutexUnlock (&_listM);
+      this->_notifying = false;
       return;
     }
 
-  for (auto i: this->listeners)
+  for (auto i: this->_listeners)
     i->updateStatus (code, parameter, type, value);
 }
 
@@ -223,9 +223,9 @@ Player::resume ()
 string
 Player::getPropertyValue (string const &name)
 {
-  if (properties.count (name) != 0)
+  if (_properties.count (name) != 0)
     {
-      return properties[name];
+      return _properties[name];
     }
 
   return "";
@@ -286,7 +286,7 @@ Player::setPropertyValue (const string &name, const string &value)
       else
         this->alpha = (guint8)(255 - (((xstrtod (value)/100)*255)));
     }
-  properties[name] = value;
+  _properties[name] = value;
 }
 
 bool
