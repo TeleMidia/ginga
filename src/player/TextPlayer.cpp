@@ -87,15 +87,15 @@ TextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
     // Create a PangoLayout, set the font face and text
     PangoLayout * layout = pango_cairo_create_layout (cr);
     pango_layout_set_text (layout,  contents, -1);
-    string fontDescription = fontFamily+" "+fontWeight+" "+fontStyle+" "+fontSize;
+    string fontDescription = _fontFamily+" "+_fontWeight+" "+_fontStyle+" "+_fontSize;
     PangoFontDescription *desc = pango_font_description_from_string ( fontDescription.c_str() );
     pango_layout_set_font_description (layout, desc);
 
-    if(textAlign == "left")
+    if(_textAlign == "left")
         pango_layout_set_alignment(layout,PANGO_ALIGN_LEFT);
-    else if(textAlign == "center")
+    else if(_textAlign == "center")
         pango_layout_set_alignment(layout,PANGO_ALIGN_CENTER);
-    else if(textAlign == "right")
+    else if(_textAlign == "right")
         pango_layout_set_alignment(layout,PANGO_ALIGN_RIGHT);
     else
         pango_layout_set_justify(layout, true);
@@ -105,15 +105,15 @@ TextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
     pango_layout_get_size (layout, NULL, &textAreaHeight);
     pango_font_description_free (desc);
 
-    cairo_set_source_rgba (cr, ginga_color_percent(fontColor.r),
-                               ginga_color_percent(fontColor.g),
-                               ginga_color_percent(fontColor.b),
-                               ginga_color_percent(fontColor.a));
+    cairo_set_source_rgba (cr, ginga_color_percent(_fontColor.r),
+                               ginga_color_percent(_fontColor.g),
+                               ginga_color_percent(_fontColor.b),
+                               ginga_color_percent(_fontColor.a));
 
     pango_cairo_update_layout (cr, layout);
 
-    if(verticalAlign == "top") vAlign = 0;
-    else if(verticalAlign == "middle") vAlign = (this->rect.h/2) - ( (textAreaHeight/PANGO_SCALE) /2);
+    if(_verticalAlign == "top") vAlign = 0;
+    else if(_verticalAlign == "middle") vAlign = (this->rect.h/2) - ( (textAreaHeight/PANGO_SCALE) /2);
     else vAlign= this->rect.h - (textAreaHeight/PANGO_SCALE);
 
     cairo_move_to (cr, 0, vAlign);
@@ -145,14 +145,14 @@ TextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 TextPlayer::TextPlayer (const string &uri) : Player (uri)
 {
   //defalts attr values
-  ginga_color_input_to_sdl_color("#0", &fontColor); //black
-  fontFamily = "serif";
-  fontStyle ="";
-  fontSize ="18px";
-  fontVariant="";
-  fontWeight="";
-  textAlign="left";
-  verticalAlign="top";
+  ginga_color_input_to_sdl_color("#0", &_fontColor); //black
+  _fontFamily = "serif";
+  _fontStyle ="";
+  _fontSize ="18px";
+  _fontVariant="";
+  _fontWeight="";
+  _textAlign="left";
+  _verticalAlign="top";
   this->mutexInit ();
 }
 
@@ -176,33 +176,33 @@ TextPlayer::setPropertyValue (const string &name, const string &value){
    Player::setPropertyValue(name,value);
 
   if(name == "fontColor"){
-      ginga_color_input_to_sdl_color(value, &fontColor);
+      ginga_color_input_to_sdl_color(value, &_fontColor);
   }
   else if(name == "fontSize"){
-         fontSize = value;
+         _fontSize = value;
   }
   else if(name == "textAlign"){
          if(value == "left" || value == "right" || value == "center" || value == "justify" )
-            textAlign = value;
+            _textAlign = value;
   }
   else if(name == "verticalAlign"){
          if(value == "top" || value == "middle" || value == "bottom" )
-            verticalAlign = value;
+            _verticalAlign = value;
   }
   else if(name == "fontStyle"){
          if(value == "italic")
-            fontStyle = value;
+            _fontStyle = value;
   }
   else if(name == "fontWeight"){
          if(value == "bold")
-            fontWeight = value;
+            _fontWeight = value;
   }
   else if(name == "fontFamily"){
-         fontFamily = value;
+         _fontFamily = value;
   }
   else if(name == "fontVariant"){
          if(value == "small-caps")
-            fontVariant = value;
+            _fontVariant = value;
   }
 
   if (status != PL_OCCURRING)
