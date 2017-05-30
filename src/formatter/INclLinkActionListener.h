@@ -15,18 +15,15 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _ILINKACTIONLISTENER_H_
-#define _ILINKACTIONLISTENER_H_
+#ifndef I_LINK_ACTION_LISTENER_H
+#define I_LINK_ACTION_LISTENER_H
 
 GINGA_FORMATTER_BEGIN
 
 class NclLinkSimpleAction;
-
 class INclLinkActionListener
 {
 public:
-  virtual ~INclLinkActionListener (){};
-
   virtual void scheduleAction (NclLinkSimpleAction *action) = 0;
   virtual void addAction (NclLinkSimpleAction *action) = 0;
   virtual void removeAction (NclLinkSimpleAction *action) = 0;
@@ -34,4 +31,4 @@ public:
 
 GINGA_FORMATTER_END
 
-#endif //_ILINKACTIONLISTENER_H_
+#endif // I_LINK_ACTION_LISTENER_H

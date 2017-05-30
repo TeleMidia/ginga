@@ -58,14 +58,13 @@ public:
   FormatterScheduler ();
   virtual ~FormatterScheduler ();
 
-  void addAction (NclLinkSimpleAction *action);
-  void removeAction (NclLinkSimpleAction *action);
+  void addAction (NclLinkSimpleAction *) override;
+  void removeAction (NclLinkSimpleAction *) override;
+  void scheduleAction (NclLinkSimpleAction *) override;
 
   bool setKeyHandler (bool isHandler);
   FormatterFocusManager *getFocusManager ();
   NclFormatterLayout *getFormatterLayout ();
-
-  void scheduleAction (NclLinkSimpleAction *action);
 
   void startEvent (NclFormatterEvent *event);
   void stopEvent (NclFormatterEvent *event);

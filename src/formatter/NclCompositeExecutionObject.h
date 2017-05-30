@@ -97,14 +97,13 @@ public:
   void removeNcmLink (Link *ncmLink);
   void setAllLinksAsUncompiled (bool isRecursive);
   void setParentsAsListeners ();
-  void unsetParentsAsListeners ();
+  void unsetParentsAsListeners () override;
   void eventStateChanged (NclFormatterEvent *event, short transition,
                           short previousState) override;
 
-  void linkEvaluationStarted (NclFormatterCausalLink *link);
-  void linkEvaluationFinished (NclFormatterCausalLink *link, bool start);
-
-  bool setPropertyValue (NclAttributionEvent *event, const string &value);
+  void linkEvaluationStarted (NclFormatterCausalLink *link) override;
+  void linkEvaluationFinished (NclFormatterCausalLink *, bool) override;
+  bool setPropertyValue (NclAttributionEvent *, const string &) override;
 
 private:
   void checkLinkConditions ();
