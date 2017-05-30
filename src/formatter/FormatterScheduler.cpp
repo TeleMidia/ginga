@@ -153,14 +153,12 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
   NclCascadingDescriptor *descriptor;
   AdapterFormatterPlayer *player;
   Player *playerContent;
-  string attName;
-  string attValue;
   SDLWindow* win = NULL;
 
-  obj = (NclExecutionObject *)(event->getExecutionObject ());
+  obj = event->getExecutionObject ();
   g_assert_nonnull (obj);
 
-  g_debug ("scheduler: running action '%s' over event '%s'",
+  g_warning ("scheduler: running action '%s' over event '%s'",
            action->getTypeString ().c_str (),
            event->getId ().c_str ());
 
@@ -204,7 +202,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
     {
       runActionOverApplicationObject
         ((NclApplicationExecutionObject *)obj, event,
-         player, action);
+         (AdapterApplicationPlayer *)player, action);
       return;
     }
 
@@ -428,26 +426,22 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
 void
 FormatterScheduler::runActionOverApplicationObject (
     NclApplicationExecutionObject *executionObject,
-    NclFormatterEvent *event, AdapterFormatterPlayer *player,
+    NclFormatterEvent *event, AdapterApplicationPlayer *player,
     NclLinkSimpleAction *action)
 {
   NclCascadingDescriptor *descriptor;
   Player *playerContent;
 
-  string attValue, attName;
-
   double time = (double) xruntime_ms ();
   int actionType = action->getType ();
   SDLWindow * win = NULL;
 
-  clog << "FormatterScheduler::";
-  clog << "runActionOverApplicationObject ACTION = '";
-  clog << actionType << "' event = '" << event->getId ();
-  clog << "'" << endl;
-
   switch (actionType)
     {
     case ACT_START:
+      g_warning ("runActionOverApplicationObject START '%s'",
+                 event->getId().c_str());
+
       if (!player->hasPrepared ())
         {
           if (ruleAdapter->adaptDescriptor (executionObject))
@@ -457,17 +451,12 @@ FormatterScheduler::runActionOverApplicationObject (
                 descriptor->setFormatterLayout ();
             }
 
-          clog << "FormatterScheduler::";
-          clog << "runActionOverApplicationObject ";
-          clog << "START '" << event->getId ();
-          clog << "' call player->prepare1";
-          clog << endl;
-
           player->prepare (executionObject, (NclPresentationEvent *) event);
 
           playerContent = player->getPlayer ();
           if (playerContent != NULL)
             {
+
             }
 
 
@@ -479,77 +468,63 @@ FormatterScheduler::runActionOverApplicationObject (
         }
       else
         {
-          clog << "FormatterScheduler::";
-          clog << "runActionOverApplicationObject ";
-          clog << "START '" << event->getId ();
-          clog << "' call player->prepare2";
-          clog << endl;
-
           player->prepare (executionObject, (NclPresentationEvent *) event);
         }
 
       event->addEventListener (this);
-      if (((AdapterApplicationPlayer *)player)
-              ->setAndLockCurrentEvent (event))
+      if (player->setAndLockCurrentEvent (event))
         {
           if (!player->start ())
             {
-              clog << "FormatterScheduler::";
-              clog << "runActionOverApplicationObject can't start '";
-              clog << executionObject->getId () << "'";
-              clog << endl;
+              g_warning ("can't start '%s'",
+                         executionObject->getId().c_str());
 
               // checking if player failed to start
               if (event->getCurrentState () == EventUtil::ST_SLEEPING)
                 event->removeEventListener (this);
             }
 
-          ((AdapterApplicationPlayer *)player)->unlockCurrentEvent (event);
+          player->unlockCurrentEvent (event);
         }
 
       time = (double) xruntime_ms () - time;
-      clog << "FormatterScheduler::runActionOverApp takes '";
-      clog << time << "' ms to start '";
-      clog << executionObject->getId () << "'";
-      clog << endl;
+      g_warning ("runActionOverApp '%s' took '%fms' to start",
+                 executionObject->getId().c_str(),
+                 time);
       break;
 
     case ACT_PAUSE:
-      if (((AdapterApplicationPlayer *)player)
-              ->setAndLockCurrentEvent (event))
+      if (player->setAndLockCurrentEvent (event))
         {
           player->pause ();
-          ((AdapterApplicationPlayer *)player)->unlockCurrentEvent (event);
+          player->unlockCurrentEvent (event);
         }
 
       break;
 
     case ACT_RESUME:
-      if (((AdapterApplicationPlayer *)player)
-              ->setAndLockCurrentEvent (event))
+      if (player->setAndLockCurrentEvent (event))
         {
           player->resume ();
-          ((AdapterApplicationPlayer *)player)->unlockCurrentEvent (event);
+          player->unlockCurrentEvent (event);
         }
 
       break;
 
     case ACT_ABORT:
-      if (((AdapterApplicationPlayer *)player)
-              ->setAndLockCurrentEvent (event))
+      if (player->setAndLockCurrentEvent (event))
         {
           player->abort ();
-          ((AdapterApplicationPlayer *)player)->unlockCurrentEvent (event);
+          player->unlockCurrentEvent (event);
         }
 
       break;
 
     case ACT_STOP:
-      if (((AdapterApplicationPlayer *)player)
-              ->setAndLockCurrentEvent (event))
+      if (player->setAndLockCurrentEvent (event))
         {
           player->stop ();
-          ((AdapterApplicationPlayer *)player)->unlockCurrentEvent (event);
+          player->unlockCurrentEvent (event);
         }
 
       break;
@@ -1233,7 +1208,7 @@ FormatterScheduler::eventStateChanged (NclFormatterEvent *event,
       switch (transition)
         {
         case EventUtil::TR_STARTS:
-          object = (NclExecutionObject *) (event->getExecutionObject ());
+          object = event->getExecutionObject ();
 
           player = playerManager->getObjectPlayer (object);
           if (player != NULL)
@@ -1249,7 +1224,7 @@ FormatterScheduler::eventStateChanged (NclFormatterEvent *event,
             {
               bool hideObj = true;
               event->removeEventListener (this);
-              object = (NclExecutionObject *)(event->getExecutionObject ());
+              object = event->getExecutionObject ();
 
               if (object->instanceOf ("NclApplicationExecutionObject"))
                 {
@@ -1272,7 +1247,8 @@ FormatterScheduler::eventStateChanged (NclFormatterEvent *event,
                   this->hideObject (object);
 
                   player = playerManager->getObjectPlayer (object);
-                  if (player != NULL && player->getPlayer () != NULL)
+                  if (player != NULL
+                      && player->getPlayer () != NULL)
                     {
                     }
                 }
