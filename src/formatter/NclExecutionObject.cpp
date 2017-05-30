@@ -927,17 +927,12 @@ NclExecutionObject::getNodes ()
   return nodes;
 }
 
-vector<Anchor *> *
+const vector<Anchor *> &
 NclExecutionObject::getNCMAnchors ()
 {
-  vector<Anchor *> *anchors = NULL;
+  g_assert_nonnull (dataObject);
 
-  if (dataObject != NULL)
-    {
-      anchors = dataObject->getAnchors ();
-    }
-
-  return anchors;
+  return dataObject->getAnchors ();
 }
 
 PropertyAnchor *

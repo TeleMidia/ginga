@@ -169,7 +169,7 @@ AdapterFormatterPlayer::createPlayer ()
   ContentNode *contentNode = dynamic_cast <ContentNode *> (dataObject);
   if (contentNode)
     {
-      for (Anchor *anchor: *(contentNode->getAnchors ()))
+      for (Anchor *anchor: contentNode->getAnchors ())
         {
           property = dynamic_cast <PropertyAnchor *> (anchor);
           if (property)
@@ -1088,15 +1088,12 @@ AdapterFormatterPlayer::updateStatus (short code,
     }
 }
 
-//dragon head
 void
 AdapterFormatterPlayer::keyInputCallback (SDL_EventType evtType,
                                           SDL_Keycode key)
 {
   if(evtType == SDL_KEYDOWN)
     return;
-
-  cout << "keyEventReceived for '%s'" << _mrl.c_str() << endl;
 
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);

@@ -210,10 +210,10 @@ Node::getAnchor (int index)
     }
 }
 
-vector<Anchor *> *
+const vector<Anchor *> &
 Node::getAnchors ()
 {
-  return &anchorList;
+  return this->anchorList;
 }
 
 vector<PropertyAnchor *> *
