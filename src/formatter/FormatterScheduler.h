@@ -105,10 +105,9 @@ private:
   string solveImplicitRefAssessment (const string &propValue,
                                      NclAttributionEvent *event);
 
-  SDLWindow*
-  prepareFormatterRegion (NclExecutionObject *);
+  SDLWindow *prepareFormatterRegion (NclExecutionObject *);
   void showObject (NclExecutionObject *);
-  void hideObject (NclExecutionObject *executionObject);
+  void hideObject (NclExecutionObject *);
 };
 
 GINGA_FORMATTER_END
