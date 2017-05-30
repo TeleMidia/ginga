@@ -1287,7 +1287,7 @@ FormatterConverter::resolveSwitchEvents (
   NclExecutionObject *endPointObject;
   Node *selectedNode;
   NodeEntity *selectedNodeEntity;
-  vector<NclFormatterEvent *> *events;
+  vector<NclFormatterEvent *> events;
   vector<NclFormatterEvent *>::iterator i;
   NclSwitchEvent *switchEvent;
   InterfacePoint *interfacePoint;
@@ -1313,10 +1313,10 @@ FormatterConverter::resolveSwitchEvents (
   selectedNode = selectedObject->getDataObject ();
   selectedNodeEntity = (NodeEntity *)(selectedNode->getDataEntity ());
   events = switchObject->getEvents ();
-  if (events != NULL && !events->empty ())
+  if (!events.empty ())
     {
-      i = events->begin ();
-      while (i != events->end ())
+      i = events.begin ();
+      while (i != events.end ())
         {
           mappedEvent = NULL;
           switchEvent = (NclSwitchEvent *)(*i);
@@ -1400,8 +1400,6 @@ FormatterConverter::resolveSwitchEvents (
 
           ++i;
         }
-      delete events;
-      events = NULL;
     }
   else
     {
@@ -1680,7 +1678,7 @@ FormatterConverter::eventStateChanged (NclFormatterEvent *event,
                                        arg_unused (short previousState))
 {
   NclExecutionObject *executionObject;
-  vector<NclFormatterEvent *> *evs;
+  vector<NclFormatterEvent *> evs;
   vector<NclFormatterEvent *>::iterator i;
   NclFormatterEvent *ev;
 
@@ -1692,8 +1690,8 @@ FormatterConverter::eventStateChanged (NclFormatterEvent *event,
         {
           evs = ((NclExecutionObjectSwitch *)executionObject)->getEvents ();
 
-          i = evs->begin ();
-          while (i != evs->end ())
+          i = evs.begin ();
+          while (i != evs.end ())
             {
               if ((*i)->instanceOf ("NclSwitchEvent"))
                 {
@@ -1717,8 +1715,6 @@ FormatterConverter::eventStateChanged (NclFormatterEvent *event,
                 }
               ++i;
             }
-
-          delete evs;
         }
 
       if (transition == EventUtil::TR_STOPS

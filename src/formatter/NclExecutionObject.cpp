@@ -638,18 +638,17 @@ NclExecutionObject::getEvent (const string &id)
   return NULL;
 }
 
-vector<NclFormatterEvent *> *
+vector<NclFormatterEvent *>
 NclExecutionObject::getEvents ()
 {
-  map<string, NclFormatterEvent *>::iterator i;
-  vector<NclFormatterEvent *> *eventsVector = new vector<NclFormatterEvent *>();
-
   lockEvents ();
-  for (i = events.begin (); i != events.end (); ++i)
+  vector<NclFormatterEvent *> eventsVector;
+  for (const auto &i : events)
     {
-      eventsVector->push_back (i->second);
+      eventsVector.push_back (i.second);
     }
   unlockEvents ();
+
 
   return eventsVector;
 }
@@ -1343,7 +1342,6 @@ bool
 NclExecutionObject::pause ()
 {
   NclFormatterEvent *event;
-  vector<NclFormatterEvent *> *evs;
   vector<NclFormatterEvent *>::iterator i;
 
   // clog << "NclExecutionObject::pause(" << id << ")" << endl;
@@ -1352,24 +1350,19 @@ NclExecutionObject::pause ()
       return false;
     }
 
-  evs = getEvents ();
-  if (evs != NULL)
+  vector<NclFormatterEvent *> evs = getEvents ();
+  if (pauseCount == 0)
     {
-      if (pauseCount == 0)
+      i = evs.begin ();
+      while (i != evs.end ())
         {
-          i = evs->begin ();
-          while (i != evs->end ())
+          event = *i;
+          if (event->getCurrentState () == EventUtil::ST_OCCURRING)
             {
-              event = *i;
-              if (event->getCurrentState () == EventUtil::ST_OCCURRING)
-                {
-                  event->pause ();
-                }
-              ++i;
+              event->pause ();
             }
+          ++i;
         }
-      delete evs;
-      evs = NULL;
     }
 
   pauseCount++;
@@ -1380,7 +1373,6 @@ bool
 NclExecutionObject::resume ()
 {
   NclFormatterEvent *event;
-  vector<NclFormatterEvent *> *evs;
   vector<NclFormatterEvent *>::iterator i;
 
   // clog << "NclExecutionObject::resume(" << id << ")" << endl;
@@ -1397,24 +1389,19 @@ NclExecutionObject::resume ()
         }
     }
 
-  evs = getEvents ();
-  if (evs != NULL)
+  vector<NclFormatterEvent *> evs = getEvents ();
+  if (pauseCount == 0)
     {
-      if (pauseCount == 0)
+      i = evs.begin ();
+      while (i != evs.end ())
         {
-          i = evs->begin ();
-          while (i != evs->end ())
+          event = *i;
+          if (event->getCurrentState () == EventUtil::ST_PAUSED)
             {
-              event = *i;
-              if (event->getCurrentState () == EventUtil::ST_PAUSED)
-                {
-                  event->resume ();
-                }
-              ++i;
+              event->resume ();
             }
+          ++i;
         }
-      delete evs;
-      evs = NULL;
     }
 
   return true;

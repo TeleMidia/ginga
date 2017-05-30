@@ -38,7 +38,6 @@ NclExecutionObjectSwitch::getSelectedObject ()
 void
 NclExecutionObjectSwitch::select (NclExecutionObject *executionObject)
 {
-  vector<NclFormatterEvent *> *eventsVector;
   vector<NclFormatterEvent *>::iterator i;
   NclSwitchEvent *switchEvent;
 
@@ -53,18 +52,13 @@ NclExecutionObjectSwitch::select (NclExecutionObject *executionObject)
   else
     {
       selectedObject = NULL;
-      eventsVector = getEvents ();
-      if (eventsVector != NULL)
+      vector<NclFormatterEvent *> eventsVector = getEvents ();
+      i = eventsVector.begin ();
+      while (i != eventsVector.end ())
         {
-          i = eventsVector->begin ();
-          while (i != eventsVector->end ())
-            {
-              switchEvent = (NclSwitchEvent *)(*i);
-              switchEvent->setMappedEvent (NULL);
-              ++i;
-            }
-          delete eventsVector;
-          eventsVector = NULL;
+          switchEvent = (NclSwitchEvent *)(*i);
+          switchEvent->setMappedEvent (NULL);
+          ++i;
         }
     }
 }
