@@ -39,7 +39,7 @@ using namespace ginga::mb;
 
 GINGA_PRAGMA_DIAG_PUSH ()
 GINGA_PRAGMA_DIAG_IGNORE (-Wunused-parameter)
-GINGA_PRAGMA_DIAG_IGNORE (-Wunused-const-variable)
+// GINGA_PRAGMA_DIAG_IGNORE (-Wunused-const-variable)
 #include <cef_app.h>
 #include <cef_client.h>
 #include <cef_render_handler.h>
@@ -276,7 +276,7 @@ public:
    * @param location An URI for the HTML file.
    * @return Nothing.
    */
-  HTMLPlayer (const string &location);
+  explicit HTMLPlayer (const string &location);
 
   /**
    * @brief Default destructor for HTMLPlayer.
@@ -293,7 +293,7 @@ public:
    *
    * This method adds a new **display job** to start the presentation.
    */
-  virtual bool play ();
+  virtual bool play () override;
 
   /**
    * @brief Stop the presentation.
@@ -304,7 +304,7 @@ public:
    * This method stop the presentation by finishing the **display job** and
    * cleaning the screen.
    */
-  virtual void stop ();
+  virtual void stop () override;
 
 private:
   /**
@@ -312,14 +312,7 @@ private:
    *
    * This MACRO is defined in src/ginga.h.
    */
-  GINGA_MUTEX_DEFN ();
-
-  /**
-   * @brief Defines wait condition methods for **DisplayJob**.
-   *
-   * This MACRO is defined in src/ginga.h.
-   */
-  GINGA_COND_DEFN (DisplayJob);
+  GINGA_MUTEX_DEFN ()
 
   /**
    * @brief Defines the job actions to be executed by the renderer.

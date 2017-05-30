@@ -52,12 +52,52 @@ public:
      PL_TYPE_SELECTION
     };
 
-private:
-  pthread_mutex_t listM;
-  bool notifying;
+public:
+  Player (const string &mrl);
+  virtual ~Player ();
 
-  map<string, string> properties;
-  set<IPlayerListener *> listeners;
+  virtual void setMrl (const string &mrl, bool visible = true);
+  virtual void addListener (IPlayerListener *listener);
+  void removeListener (IPlayerListener *listener);
+  void getZ (int *, int *);
+  void setAnimatorProperties (string dur, string name, string value);
+
+  void redraw (SDL_Renderer*);
+
+  void notifyPlayerListeners (short code,
+                              const string &parameter,
+                              PlayerEventType type,
+                              const string &value);
+
+  virtual void setMediaTime (guint32 newTime);
+
+  PlayerStatus getMediaStatus();
+
+  guint32 getMediaTime ();
+  virtual double getTotalMediaTime ();
+
+  virtual void setScope (const string &scope,
+                         PlayerEventType type = PL_TYPE_PRESENTATION,
+                         double begin = -1, double end = -1);
+
+  virtual bool play ();
+  virtual void stop ();
+  virtual void abort ();
+  virtual void pause ();
+  virtual void resume ();
+  virtual string getPropertyValue (const string &name);
+  virtual void setPropertyValue (const string &name, const string &value);
+
+  bool isVisible ();
+  void setVisible (bool visible);
+
+public:
+  void forceNaturalEnd (bool forceIt);
+  bool isForcedNaturalEnd ();
+  virtual void setOutWindow (SDLWindow *);
+
+  // Application player only.
+  virtual void setCurrentScope (arg_unused (const string &scopeId)) {}
 
 protected:
   PlayerStatus status;
@@ -88,55 +128,12 @@ protected:
   int zorder;
   guint8 alpha;
 
-public:
-  Player (const string &mrl);
-  virtual ~Player ();
+private:
+  pthread_mutex_t _listM;
+  bool _notifying;
 
-public:
-  virtual void setMrl (const string &mrl, bool visible = true);
-  virtual void addListener (IPlayerListener *listener);
-  void removeListener (IPlayerListener *listener);
-  void getZ (int *, int *);
-  void setAnimatorProperties (string dur, string name, string value);
-
-public:
-  void redraw (SDL_Renderer*);
-
-public:
-  void notifyPlayerListeners (short code,
-                              const string &parameter,
-                              PlayerEventType type,
-                              const string &value);
-public:
-  virtual void setMediaTime (guint32 newTime);
-
-  PlayerStatus getMediaStatus();
-
-  guint32 getMediaTime ();
-  virtual double getTotalMediaTime ();
-
-  virtual void setScope (const string &scope,
-                         PlayerEventType type = PL_TYPE_PRESENTATION,
-                         double begin = -1, double end = -1);
-public:
-
-  virtual bool play ();
-  virtual void stop ();
-  virtual void abort ();
-  virtual void pause ();
-  virtual void resume ();
-  virtual string getPropertyValue (const string &name);
-  virtual void setPropertyValue (const string &name, const string &value);
-  bool isVisible ();
-  void setVisible (bool visible);
-
-public:
-  void forceNaturalEnd (bool forceIt);
-  bool isForcedNaturalEnd ();
-  virtual void setOutWindow (SDLWindow *);
-
-  // Application player only.
-  virtual void setCurrentScope (arg_unused (const string &scopeId)){};
+  map<string, string> _properties;
+  set<IPlayerListener *> _listeners;
 };
 
 GINGA_PLAYER_END
