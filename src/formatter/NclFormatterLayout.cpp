@@ -22,8 +22,12 @@ GINGA_FORMATTER_BEGIN
 
 NclFormatterLayout::NclFormatterLayout (int w, int h)
 {
-  region = NULL;
-  createRegion (w, h);
+  region = new LayoutRegion ("defaultScreenFormatter");
+  region->setTop (0, false);
+  region->setLeft (0, false);
+  region->setWidth (w, false);
+  region->setHeight (h, false);
+
 }
 
 NclFormatterLayout::~NclFormatterLayout ()
@@ -36,22 +40,11 @@ NclFormatterLayout::getRegion ()
   return this->region;
 }
 
-void
-NclFormatterLayout::createRegion (int w, int h)
-{
-  region = new LayoutRegion ("defaultScreenFormatter");
-  region->setTop (0, false);
-  region->setLeft (0, false);
-  region->setWidth (w, false);
-  region->setHeight (h, false);
-}
-
 SDLWindow*
 NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object)
 {
   NclCascadingDescriptor *descriptor;
   NclFormatterRegion *fregion;
-//  LayoutRegion *layoutRegion, *parent, *grandParent;
 
   g_assert_nonnull (object);
 
@@ -61,40 +54,7 @@ NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object)
   fregion = descriptor->getFormatterRegion ();
   g_assert_nonnull (fregion);
 
-  //layoutRegion = fregion->getOriginalRegion ();
-  return fregion->prepareOutputDisplay (0);
-
-#if 0
-  parent = layoutRegion;
-  grandParent = parent->getParent ();
-  while (grandParent != NULL && grandParent->getParent () != NULL)
-    {
-      parent = grandParent;
-      grandParent = grandParent->getParent ();
-    }
-
-  if (grandParent != this->region && grandParent != NULL)
-    {
-      vector <LayoutRegion *> *children = grandParent->getRegions ();
-      for (auto child: *children)
-        {
-          region->addRegion (child);
-          child->setParent (region);
-        }
-      delete children;
-
-      region->addRegion (parent);
-      parent->setParent (region);
-    }
-
-  return addRegionOnMaps (fregion, layoutRegion->getZIndex ());
-#endif
-}
-
-void
-NclFormatterLayout::refreshZIndex (NclFormatterRegion *region, int z)
-{
-  addRegionOnMaps (region, z);
+  return fregion->prepareOutputDisplay ();
 }
 
 void
@@ -140,16 +100,6 @@ NclFormatterLayout::hideObject (NclExecutionObject *object)
   layoutRegion = region->getLayoutRegion ();
   regionId = layoutRegion->getId ();
 
-}
-
-SDLWindow *
-NclFormatterLayout::addRegionOnMaps (NclFormatterRegion *region, int z)
-{
-  SDLWindow *win;
-  win = region->getOutputId ();
-  if (win == NULL)
-    win = region->prepareOutputDisplay ((double) z);
-  return win;
 }
 
 GINGA_FORMATTER_END

@@ -25,10 +25,6 @@ using namespace ::ginga::ncl;
 #include "ncl/DescriptorUtil.h"
 using namespace ::ginga::ncl;
 
-#include "ncl/Transition.h"
-#include "ncl/TransitionUtil.h"
-using namespace ::ginga::ncl;
-
 #include "mb/SDLWindow.h"
 using namespace ::ginga::mb;
 
@@ -46,9 +42,7 @@ private:
   NclCascadingDescriptor *descriptor;
 
   string objectId;
-  LayoutRegion *ncmRegion;
-  LayoutRegion *originalRegion;
-  bool externHandler;
+  LayoutRegion *region;
   SDLWindow *win;
 
   bool imVisible;
@@ -65,16 +59,6 @@ private:
 
   SDL_Color *bgColor;
   double transparency;
-  short fit;
-  short scroll;
-  SDL_Color *chromaKey;
-  string transitionIn;
-  string transitionOut;
-  bool abortTransitionIn;
-  bool abortTransitionOut;
-  pthread_mutex_t mutex;
-  pthread_mutex_t mutexT;
-  pthread_mutex_t mutexFI;
 
   string focusIndex;
   string moveUp;
@@ -92,11 +76,6 @@ public:
                       NclFormatterLayout *layoutManager);
 
   virtual ~NclFormatterRegion ();
-
-private:
-  void initializeNCMRegion ();
-
-public:
 
   void setZIndex (int zIndex);
   int getZIndex ();
@@ -149,8 +128,7 @@ private:
 public:
   LayoutRegion *getLayoutRegion ();
   LayoutRegion *getOriginalRegion ();
-
-  SDLWindow* prepareOutputDisplay (double cvtIndex);
+  SDLWindow* prepareOutputDisplay ();
 
   void showContent ();
   void hideContent ();
@@ -175,24 +153,6 @@ public:
   void setTransparency (double transparency);
   void setBackgroundColor (const string &color);
   void setBackgroundColor (SDL_Color *color);
-  void setChromaKey (const string &value);
-  void setRgbChromaKey (const string &value);
-  void setFit (const string &value);
-  void setFit (short value);
-  void setScroll (const string &value);
-  void setScroll (short value);
-
-private:
-  void barWipe (Transition *transition, bool isShowEffect);
-  static void *barWipeT (void *ptr);
-  void fade (Transition *transition, bool isShowEffect);
-  static void *fadeT (void *ptr);
-  void lock ();
-  void unlock ();
-  void lockTransition ();
-  void unlockTransition ();
-  void lockFocusInfo ();
-  void unlockFocusInfo ();
 };
 
 typedef struct

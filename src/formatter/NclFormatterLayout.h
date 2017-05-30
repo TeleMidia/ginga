@@ -38,19 +38,10 @@ public:
   virtual ~NclFormatterLayout ();
   LayoutRegion *getRegion ();
 
-private:
-  void createRegion (int w, int h);
-
 public:
-  SDLWindow* prepareFormatterRegion (NclExecutionObject *object);
-
-  void refreshZIndex (NclFormatterRegion *region, int zIndex);
-
+  SDLWindow *prepareFormatterRegion (NclExecutionObject *object);
   void showObject (NclExecutionObject *object);
   void hideObject (NclExecutionObject *object);
-
-private:
-  SDLWindow* addRegionOnMaps (NclFormatterRegion *region, int zIndex);
 };
 
 GINGA_FORMATTER_END
