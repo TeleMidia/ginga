@@ -39,8 +39,7 @@ FormatterScheduler::FormatterScheduler ()
   this->compiler->setLinkActionListener (this);
   this->playerManager = new AdapterPlayerManager ();
   this->focusManager = new FormatterFocusManager
-    (this->playerManager, this->presContext, this,
-     (FormatterConverter *) this->compiler);
+    (this->playerManager, this->presContext, this, this->compiler);
 
   this->focusManager->setKeyHandler (true);
   this->running = false;
@@ -332,8 +331,7 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
           anim = NULL;
         }
 
-      player = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
-          executionObject);
+      player = playerManager->getObjectPlayer (executionObject);
       actionType = action->getType ();
 
       switch (actionType)
@@ -688,8 +686,7 @@ FormatterScheduler::runActionOverComposition (
                     }
                   else
                     { // force attribution
-                      pAdapter = (AdapterFormatterPlayer *)playerManager
-                                     ->getObjectPlayer (childObject);
+                      pAdapter = playerManager->getObjectPlayer (childObject);
 
                       if (pAdapter != NULL)
                         {
@@ -1151,7 +1148,7 @@ FormatterScheduler::startDocument (const string &file)
       delete persp;
 
       content = (ContentNode *) node;
-      for (auto anchor: *content->getAnchors ())
+      for (auto anchor: content->getAnchors ())
         {
           PropertyAnchor *prop;
           string name;
@@ -1238,8 +1235,7 @@ FormatterScheduler::eventStateChanged (NclFormatterEvent *event,
         case EventUtil::TR_STARTS:
           object = (NclExecutionObject *) (event->getExecutionObject ());
 
-          player = (AdapterFormatterPlayer *) playerManager->getObjectPlayer (
-                  object);
+          player = playerManager->getObjectPlayer (object);
           if (player != NULL)
             {
               this->showObject (object);
@@ -1275,8 +1271,7 @@ FormatterScheduler::eventStateChanged (NclFormatterEvent *event,
                   this->focusManager->hideObject (object);
                   this->hideObject (object);
 
-                  player = (AdapterFormatterPlayer *)
-                               playerManager->getObjectPlayer (object);
+                  player = playerManager->getObjectPlayer (object);
                   if (player != NULL && player->getPlayer () != NULL)
                     {
                     }
@@ -1308,8 +1303,7 @@ FormatterScheduler::eventStateChanged (NclFormatterEvent *event,
                 this->focusManager->hideObject (object);
                 this->hideObject (object);
 
-                player = (AdapterFormatterPlayer *)
-                  playerManager->getObjectPlayer (object);
+                player = playerManager->getObjectPlayer (object);
               }
             break;
           }

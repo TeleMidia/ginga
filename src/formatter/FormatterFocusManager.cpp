@@ -444,8 +444,7 @@ FormatterFocusManager::setKeyMaster (const string &mediaId)
   // selecting new object
   selectedObject = nextObject;
   selectedObject->setHandler (true);
-  player = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (
-      selectedObject);
+  player = playerManager->getObjectPlayer (selectedObject);
 
   nextObject->selectionEvent (0,
                               player->getMediaTime () * 1000);
@@ -614,8 +613,7 @@ FormatterFocusManager::recoveryDefaultState (NclExecutionObject *object)
       return;
     }
 
-  player
-      = (AdapterFormatterPlayer *)playerManager->getObjectPlayer (object);
+  player = playerManager->getObjectPlayer (object);
   if (player != NULL)
     {
     }
