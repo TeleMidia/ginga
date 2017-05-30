@@ -406,13 +406,7 @@ void
 NclCascadingDescriptor::setFormatterLayout ()
 {
   if (region == NULL)
-    {
       this->region = new LayoutRegion ("");
-      g_assert (this->region->setLeft (0., true));
-      g_assert (this->region->setRight (0., true));
-      g_assert (this->region->setWidth (100., true));
-      g_assert (this->region->setHeight (100., true));
-    }
 
   if (this->formatterRegion != NULL)
     delete this->formatterRegion;

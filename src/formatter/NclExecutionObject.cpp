@@ -1561,32 +1561,32 @@ NclExecutionObject::getPropertyValue (const string &param)
   double current = 0.0;
   if (param == "left")
     {
-      current = ncmRegion->getLeftInPixels ();
+      current = ncmRegion->getLeft ();
       xstrassign (value, "%d", (int) current);
     }
   else if (param == "top")
     {
-      current = ncmRegion->getTopInPixels ();
+      current = ncmRegion->getTop ();
       xstrassign (value, "%d", (int) current);
     }
   else if (param == "width")
     {
-      current = ncmRegion->getWidthInPixels ();
+      current = ncmRegion->getWidth ();
       xstrassign (value, "%d", (int) current);
     }
   else if (param == "height")
     {
-      current = ncmRegion->getHeightInPixels ();
+      current = ncmRegion->getHeight ();
       xstrassign (value, "%d", (int) current);
     }
   else if (param == "bottom")
     {
-      current = ncmRegion->getBottomInPixels ();
+      current = ncmRegion->getBottom ();
       xstrassign (value, "%d", (int) current);
     }
   else if (param == "right")
     {
-      current = ncmRegion->getRightInPixels ();
+      current = ncmRegion->getRight ();
       xstrassign (value, "%d", (int) current);
     }
   else if (param == "transparency")
@@ -1597,22 +1597,22 @@ NclExecutionObject::getPropertyValue (const string &param)
   else if (param == "bounds")
     {
       xstrassign (value, "%d,%d,%d,%d",
-                  ncmRegion->getLeftInPixels (),
-                  ncmRegion->getTopInPixels (),
-                  ncmRegion->getWidthInPixels (),
-                  ncmRegion->getHeightInPixels ());
+                  ncmRegion->getLeft (),
+                  ncmRegion->getTop (),
+                  ncmRegion->getWidth (),
+                  ncmRegion->getHeight ());
     }
   else if (param == "location")
     {
       xstrassign (value, "%d,%d",
-                  ncmRegion->getLeftInPixels (),
-                  ncmRegion->getTopInPixels ());
+                  ncmRegion->getLeft (),
+                  ncmRegion->getTop ());
     }
   else if (param == "size")
     {
       xstrassign (value, "%d,%d",
-                  ncmRegion->getWidthInPixels (),
-                  ncmRegion->getHeightInPixels ());
+                  ncmRegion->getWidth (),
+                  ncmRegion->getHeight ());
     }
 
   return value;

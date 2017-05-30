@@ -23,10 +23,6 @@ GINGA_NCL_BEGIN
 RegionBase::RegionBase (const string &id) : Base (id)
 {
   deviceRegion = new LayoutRegion ("");
-  deviceRegion->setTop (0, false);
-  deviceRegion->setLeft (0, false);
-  deviceRegion->setWidth (800, false);
-  deviceRegion->setHeight (600, false);
   typeSet.insert ("RegionBase");
 }
 
@@ -51,10 +47,9 @@ RegionBase::addRegion (LayoutRegion *region)
 
   regId = region->getId ();
   i = regions.find (regId);
-  g_assert (i == regions.end ());
+  if (i != regions.end ())
+    return false;               // duplicated id
 
-  deviceRegion->addRegion (region);
-  region->setParent (deviceRegion);
   regions[regId] = region;
   return true;
 }
@@ -71,7 +66,6 @@ RegionBase::getRegionLocally (const string &regionId)
 {
   map<string, LayoutRegion *>::iterator childRegions;
   LayoutRegion *region;
-  LayoutRegion *auxRegion;
 
   childRegions = regions.begin ();
   while (childRegions != regions.end ())
@@ -80,11 +74,6 @@ RegionBase::getRegionLocally (const string &regionId)
       if (region->getId () == regionId)
         {
           return region;
-        }
-      auxRegion = region->getRegionRecursively (regionId);
-      if (auxRegion != NULL)
-        {
-          return auxRegion;
         }
       ++childRegions;
     }

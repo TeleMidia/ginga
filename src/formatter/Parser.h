@@ -160,7 +160,7 @@ private:
 
 // LAYOUT
 private:
-  LayoutRegion *parseRegion (DOMElement *, LayoutRegion *);
+  LayoutRegion *parseRegion (DOMElement *, LayoutRegion *, RegionBase *);
   LayoutRegion *createRegion (DOMElement *, LayoutRegion *);
   RegionBase *parseRegionBase (DOMElement *);
   RegionBase *createRegionBase (DOMElement *);

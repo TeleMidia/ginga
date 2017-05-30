@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _LAYOUTREGION_H_
-#define _LAYOUTREGION_H_
+#ifndef REGION_H
+#define REGION_H
 
 #include "Entity.h"
 
@@ -30,86 +30,22 @@ private:
   int zorder;                   // z-order
 
 public:
+  LayoutRegion (const string &id);
+  virtual ~LayoutRegion ();
   void setRect (SDL_Rect);
   SDL_Rect getRect ();
   void setZ (int, int);
   void getZ (int *, int *);
   void dump ();
 
-private:
-  double left;
-  bool leftPercent;
-  double top;
-  bool topPercent;
-  double right;
-  bool rightPercent;
-  double bottom;
-  bool bottomPercent;
-  double width;
-  bool widthPercent;
-  double height;
-  bool heightPercent;
-
-  double *zIndex;
-  map<string, LayoutRegion *> regions;
-  LayoutRegion *parent;
-
-public:
-  LayoutRegion (const string &id);
-  virtual ~LayoutRegion ();
-  virtual void addRegion (LayoutRegion *region);
-  virtual LayoutRegion *cloneRegion ();
-
-  virtual double getBottom ();
-  virtual double getHeight ();
-  virtual double getLeft ();
-  virtual double getRight ();
-  virtual LayoutRegion *getRegion (const string &id);
-  virtual LayoutRegion *getRegionRecursively (const string &id);
-  virtual vector<LayoutRegion *> *getRegions ();
-  virtual double getTop ();
-  virtual double getWidth ();
-  virtual int getZIndex ();
-  virtual int getZIndexValue ();
-  virtual bool isBottomPercent ();
-  virtual bool isHeightPercent ();
-  virtual bool isLeftPercent ();
-  virtual bool isRightPercent ();
-  virtual bool isTopPercent ();
-  virtual bool isWidthPercent ();
-
-private:
-  virtual bool removeRegion (LayoutRegion *region);
-
-public:
-  virtual void removeRegions ();
-  virtual bool setBottom (double newBottom, bool isPercent);
-  virtual bool setHeight (double newHeight, bool isPercent);
-  virtual bool setLeft (double newLeft, bool isPercent);
-  virtual bool setRight (double newRight, bool isPercent);
-  virtual bool setTop (double newTop, bool isPercent);
-  virtual bool setWidth (double newWidth, bool isPercent);
-  virtual void setZIndex (int newZIndex);
-
-  virtual LayoutRegion *getParent ();
-  virtual void setParent (LayoutRegion *parent);
-  virtual int getTopInPixels ();
-  virtual int getBottomInPixels ();
-  virtual int getRightInPixels ();
-  virtual int getLeftInPixels ();
-  virtual int getHeightInPixels ();
-  virtual int getWidthInPixels ();
-  virtual void resetTop ();
-  virtual void resetBottom ();
-  virtual void resetRight ();
-  virtual void resetLeft ();
-  virtual void resetHeight ();
-  virtual void resetWidth ();
-  virtual void resetZIndex ();
-  virtual int getAbsoluteLeft ();
-  virtual int getAbsoluteTop ();
+  int getLeft ();
+  int getTop ();
+  int getRight ();
+  int getBottom ();
+  int getWidth ();
+  int getHeight ();
 };
 
 GINGA_NCL_END
 
-#endif //_LAYOUTREGION_H_
+#endif // REGION_H
