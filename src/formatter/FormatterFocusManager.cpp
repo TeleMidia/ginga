@@ -21,7 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "FormatterConverter.h"
 #include "FormatterScheduler.h"
-#include "NclFormatterLayout.h"
 
 #include "mb/Display.h"
 using namespace ::ginga::mb;

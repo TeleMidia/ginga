@@ -68,7 +68,6 @@ using namespace ::ginga::ncl;
 #include "INclLinkActionListener.h"
 
 #include "NclCascadingDescriptor.h"
-#include "NclFormatterLayout.h"
 
 #include "NclCompositeExecutionObject.h"
 #include "NclApplicationExecutionObject.h"
@@ -92,7 +91,6 @@ private:
   set<NclFormatterEvent *> listening;
   set<NclExecutionObject *> settingObjects;
   FormatterLinkConverter *linkCompiler;
-  NclFormatterLayout *layout;
   INclLinkActionListener *actionListener;
   RuleAdapter *ruleAdapter;
   pthread_mutex_t objectsMutex;
@@ -100,7 +98,7 @@ private:
   bool handling;
 
 public:
-  FormatterConverter (NclFormatterLayout *, RuleAdapter *);
+  FormatterConverter (RuleAdapter *);
   virtual ~FormatterConverter ();
 
   void executionObjectReleased (const string &objectId);

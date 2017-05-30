@@ -35,8 +35,7 @@ FormatterScheduler::FormatterScheduler ()
 
   this->presContext = new PresentationContext ();
   this->ruleAdapter = new RuleAdapter (presContext);
-  this->layout = new NclFormatterLayout (w, h);
-  this->compiler = new FormatterConverter (this->layout, this->ruleAdapter);
+  this->compiler = new FormatterConverter (this->ruleAdapter);
   this->compiler->setLinkActionListener (this);
   this->playerManager = new AdapterPlayerManager ();
   this->focusManager = new FormatterFocusManager
@@ -110,12 +109,6 @@ FormatterFocusManager *
 FormatterScheduler::getFocusManager ()
 {
   return focusManager;
-}
-
-NclFormatterLayout *
-FormatterScheduler::getFormatterLayout ()
-{
-  return this->layout;
 }
 
 bool
@@ -225,7 +218,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
             {
               descriptor = obj->getDescriptor ();
               if (descriptor != NULL)
-                descriptor->setFormatterLayout(getFormatterLayout ());
+                descriptor->setFormatterLayout();
             }
 
           if (unlikely (!player->prepare (obj,
@@ -463,9 +456,7 @@ FormatterScheduler::runActionOverApplicationObject (
             {
               descriptor = executionObject->getDescriptor ();
               if (descriptor != NULL)
-                {
-                  descriptor->setFormatterLayout (getFormatterLayout ());
-                }
+                descriptor->setFormatterLayout ();
             }
 
           clog << "FormatterScheduler::";

@@ -40,7 +40,6 @@ private:
   AdapterPlayerManager *playerManager;
   FormatterConverter *compiler;
   FormatterFocusManager *focusManager;
-  NclFormatterLayout *layout;
   PresentationContext *presContext;
   RuleAdapter *ruleAdapter;
 
@@ -64,7 +63,6 @@ public:
 
   bool setKeyHandler (bool isHandler);
   FormatterFocusManager *getFocusManager ();
-  NclFormatterLayout *getFormatterLayout ();
 
   void startEvent (NclFormatterEvent *event);
   void stopEvent (NclFormatterEvent *event);

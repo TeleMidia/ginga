@@ -23,12 +23,10 @@ GINGA_FORMATTER_BEGIN
 
 int FormatterConverter::dummyCount = 0;
 
-FormatterConverter::FormatterConverter (NclFormatterLayout *layout,
-                                        RuleAdapter *ruleAdapter)
+FormatterConverter::FormatterConverter (RuleAdapter *ruleAdapter)
 {
   linkCompiler = new FormatterLinkConverter (this);
 
-  this->layout = layout;
   this->actionListener = NULL;
   this->ruleAdapter = ruleAdapter;
   this->handling = false;
@@ -57,7 +55,6 @@ FormatterConverter::~FormatterConverter ()
   Thread::mutexDestroy (&lMutex);
 
   this->ruleAdapter = NULL;
-  this->layout = NULL;
 
   Thread::mutexLock (&objectsMutex);
   i = executionObjects.begin ();
@@ -352,7 +349,7 @@ FormatterConverter::addExecutionObject (
 
   descriptor = executionObject->getDescriptor ();
   if (descriptor != NULL)
-    descriptor->setFormatterLayout (this->layout);
+    descriptor->setFormatterLayout ();
 
   compileExecutionObjectLinks (executionObject);
 }

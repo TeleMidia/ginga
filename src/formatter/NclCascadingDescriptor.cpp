@@ -17,7 +17,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "NclCascadingDescriptor.h"
-#include "NclFormatterLayout.h"
 
 #include "ncl/ContentNode.h"
 #include "ncl/NodeEntity.h"
@@ -404,39 +403,21 @@ NclCascadingDescriptor::getFormatterRegion ()
 }
 
 void
-NclCascadingDescriptor::setFormatterLayout (NclFormatterLayout *formatterLayout)
+NclCascadingDescriptor::setFormatterLayout ()
 {
-  if (formatterLayout == NULL)
-    {
-      int w, h;
-      Ginga_Display->getSize (&w, &h);
-      formatterLayout = new NclFormatterLayout (w, h);
-      g_assert_nonnull (formatterLayout);
-    }
-
   if (region == NULL)
     {
-      LayoutRegion *parent;
       this->region = new LayoutRegion ("");
       g_assert (this->region->setLeft (0., true));
       g_assert (this->region->setRight (0., true));
       g_assert (this->region->setWidth (100., true));
       g_assert (this->region->setHeight (100., true));
-      parent = formatterLayout->getRegion ();
-
-      g_assert_nonnull (parent);
-      this->region->setParent (parent);
     }
 
   if (this->formatterRegion != NULL)
-    {
-      /*
-       * occurs only for DescriptorSwitch or after an object "restart"
-       */
-      delete this->formatterRegion;
-    }
+    delete this->formatterRegion;
 
-  formatterRegion = new NclFormatterRegion (id, this, formatterLayout);
+  this->formatterRegion = new NclFormatterRegion (id, this);
 }
 
 int
