@@ -52,7 +52,7 @@ public:
   Anchor *getAnchor (const string &anchorId);
   Anchor *getAnchor (int index);
 
-  vector<Anchor *> *getAnchors ();
+  const vector<Anchor *> &getAnchors ();
   vector<PropertyAnchor *> *getOriginalPropertyAnchors ();
 
   PropertyAnchor *getPropertyAnchor (const string &propertyName);

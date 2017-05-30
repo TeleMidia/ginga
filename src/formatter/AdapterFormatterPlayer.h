@@ -54,10 +54,9 @@ public:
   explicit AdapterFormatterPlayer (AdapterPlayerManager *manager);
   virtual ~AdapterFormatterPlayer ();
 
-  void setOutputWindow (SDLWindow* windowId);
-
   virtual bool prepare (NclExecutionObject *, NclPresentationEvent *);
   virtual bool hasPrepared ();
+  virtual bool unprepare ();
 
   virtual bool start ();
   virtual bool stop ();
@@ -66,22 +65,22 @@ public:
   virtual bool abort ();
   virtual void naturalEnd ();
 
-  virtual bool unprepare ();
-
   virtual bool setPropertyValue (NclAttributionEvent *evt, const string &value);
   void setPropertyValue (const string &name, const string &value);
 
   virtual string getPropertyValue (const string &name);
   string getPropertyValue (NclAttributionEvent *event);
 
-  double getMediaTime ();
-  Player *getPlayer ();
   virtual void updateStatus (short code,
                              const string &parameter = "",
                              short type = 10,
                              const string &value = "");
 
   virtual void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
+
+  double getMediaTime ();
+  Player *getPlayer ();
+  void setOutputWindow (SDLWindow* windowId);
 
 protected:
   AdapterPlayerManager *_manager;
@@ -90,10 +89,11 @@ protected:
   string _mrl;
 
   virtual void createPlayer ();
+  virtual void prepareScope (double offset = -1);
+
   double prepareProperties (NclExecutionObject *obj);
   void updatePlayerProperties ();
   void prepare ();
-  virtual void prepareScope (double offset = -1);
   bool lockObject ();
   bool unlockObject ();
   void updateObjectExpectedDuration ();
