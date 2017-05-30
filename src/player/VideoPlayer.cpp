@@ -449,7 +449,7 @@ VideoPlayer::isPlaying ()
   return elt->current_state == GST_STATE_PLAYING;
 }
 
-bool
+void
 VideoPlayer::setOutWindow (SDLWindow* windowId)
 {
   GstCaps *caps;
@@ -459,7 +459,7 @@ VideoPlayer::setOutWindow (SDLWindow* windowId)
   if(windowId!=NULL)
   {
       this->rect = windowId->getRect();
-      this->z = windowId->getZ();
+      windowId->getZ (&this->z, &this->zorder);
   }
 
   st = gst_structure_new_empty ("video/x-raw");
@@ -473,8 +473,6 @@ VideoPlayer::setOutWindow (SDLWindow* windowId)
 
   g_object_set (this->filterVideo, "caps", caps, NULL);
   gst_caps_unref (caps);
-
-	return true;
 }
 
 bool

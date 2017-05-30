@@ -84,7 +84,8 @@ protected:
   SDL_Color bgColor;            // background color
   SDL_Color borderColor;
   SDL_Rect rect;                // draw area
-  gint z;                       // z-index
+  int z;                        // z-index
+  int zorder;
   guint8 alpha;
 
 public:
@@ -95,7 +96,7 @@ public:
   virtual void setMrl (const string &mrl, bool visible = true);
   virtual void addListener (IPlayerListener *listener);
   void removeListener (IPlayerListener *listener);
-  gint getZ ();
+  void getZ (int *, int *);
   void setAnimatorProperties (string dur, string name, string value);
 
 public:
@@ -132,7 +133,7 @@ public:
 public:
   void forceNaturalEnd (bool forceIt);
   bool isForcedNaturalEnd ();
-  virtual bool setOutWindow (SDLWindow* windowId);
+  virtual void setOutWindow (SDLWindow *);
 
   // Application player only.
   virtual void setCurrentScope (arg_unused (const string &scopeId)){};

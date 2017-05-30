@@ -25,6 +25,18 @@ GINGA_NCL_BEGIN
 class LayoutRegion : public Entity
 {
 private:
+  SDL_Rect rect;                // x, y, w, h in pixels
+  int z;                        // z-index
+  int zorder;                   // z-order
+
+public:
+  void setRect (SDL_Rect);
+  SDL_Rect getRect ();
+  void setZ (int, int);
+  void getZ (int *, int *);
+  void dump ();
+
+private:
   double left;
   bool leftPercent;
   double top;

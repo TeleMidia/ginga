@@ -25,7 +25,7 @@ GINGA_MB_BEGIN
 
 // Public methods.
 
-SDLWindow::SDLWindow (int x, int y, int z, int w, int h)
+SDLWindow::SDLWindow (int x, int y, int w, int h, int z, int zorder)
 {
   this->mutexInit ();
   this->texture = NULL;
@@ -37,6 +37,7 @@ SDLWindow::SDLWindow (int x, int y, int z, int w, int h)
   this->rect.w = w;
   this->rect.h = h;
   this->z = z;
+  this->zorder = zorder;
   this->ghost = false;
   this->visible = false;
   this->transparencyValue = 0;
@@ -178,10 +179,11 @@ SDLWindow::getH ()
   return this->rect.h;
 }
 
-gint
-SDLWindow::getZ ()
+void
+SDLWindow::getZ (int *z, int *zorder)
 {
-  return z;
+  set_if_nonnull (z, this->z);
+  set_if_nonnull (zorder, this->zorder);
 }
 
 void

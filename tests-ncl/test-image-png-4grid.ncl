@@ -3,8 +3,8 @@
   <regionBase>
     <region id='reg1' top='0%' left='0%' width='50%' height='50%'/>
     <region id='reg2' top='0%' left='50%' width='50%' height='50%'/>
-    <region id='reg3' top='50%' left='0%' width='50%' height='50%'/>
-    <region id='reg4' top='50%' left='50%' width='50%' height='50%'/>
+    <region id='reg3' bottom='0%' right='0%' width='50%' height='50%'/>
+    <region id='reg4' bottom='0%' right='50%' width='50%' height='50%'/>
   </regionBase>
   <descriptorBase>
     <descriptor id='desc1' region='reg1'/>
@@ -22,14 +22,8 @@
   <context id='ctx'>
     <port id='start3' component='img3'/>
     <port id='start4' component='img4'/>
-    <media id='img3' src='samples/gnu.png' descriptor='desc3'>
-    </media>
-    <media id='img4' src='samples/vector.svg'>
-      <property name='top' value='0%'/>
-      <property name='left' value='0%'/>
-      <property name='width' value='50%'/>
-      <property name='height' value='50%'/>
-    </media>
+    <media id='img3' src='samples/gnu.png' descriptor='desc3'/>
+    <media id='img4' src='samples/gnu.png' descriptor='desc4'/>
   </context>
 </body>
 </ncl>

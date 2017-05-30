@@ -49,7 +49,7 @@ private:
   LayoutRegion *ncmRegion;
   LayoutRegion *originalRegion;
   bool externHandler;
-  SDLWindow* outputDisplay;
+  SDLWindow *win;
 
   bool imVisible;
 
