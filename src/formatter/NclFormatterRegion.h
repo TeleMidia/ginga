@@ -32,13 +32,11 @@ using namespace ::ginga::mb;
 
 GINGA_FORMATTER_BEGIN
 
-class NclFormatterLayout;
 class NclCascadingDescriptor;
 
 class NclFormatterRegion
 {
 private:
-  NclFormatterLayout *layoutManager;
   NclCascadingDescriptor *descriptor;
 
   string objectId;
@@ -70,10 +68,7 @@ public:
   static const short UNSELECTED = 0;
   static const short FOCUSED = 1;
   static const short SELECTED = 2;
-
-  NclFormatterRegion (const string &objectId,
-                      NclCascadingDescriptor *descriptor,
-                      NclFormatterLayout *layoutManager);
+  NclFormatterRegion (const string &, NclCascadingDescriptor *);
 
   virtual ~NclFormatterRegion ();
 

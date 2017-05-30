@@ -41,7 +41,6 @@ using namespace ::ginga::ncl;
 #include "NclFormatterRegion.h"
 
 GINGA_FORMATTER_BEGIN
-
 class NclCascadingDescriptor
 {
 protected:
@@ -94,7 +93,7 @@ public:
   NclFormatterRegion *getFormatterRegion ();
 
 public:
-  void setFormatterLayout (NclFormatterLayout *formatterLayout);
+  void setFormatterLayout ();
   int getRepetitions ();
   vector<Parameter> getParameters ();
   string getParameterValue (const string &paramName);

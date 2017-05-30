@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclFormatterRegion.h"
 
 #include "NclCascadingDescriptor.h"
-#include "NclFormatterLayout.h"
 
 #include "mb/Display.h"
 using namespace ::ginga::mb;
@@ -28,10 +27,8 @@ using namespace ::ginga::mb;
 GINGA_FORMATTER_BEGIN
 
 NclFormatterRegion::NclFormatterRegion (const string &objectId,
-                                        NclCascadingDescriptor *descriptor,
-                                        NclFormatterLayout *layoutManager)
+                                        NclCascadingDescriptor *descriptor)
 {
-  this->layoutManager = layoutManager;
   this->objectId = objectId;
   this->descriptor = descriptor;
 
@@ -99,7 +96,6 @@ NclFormatterRegion::NclFormatterRegion (const string &objectId,
 
 NclFormatterRegion::~NclFormatterRegion ()
 {
-  layoutManager = NULL;
   descriptor = NULL;
 
   region = NULL;
@@ -139,7 +135,7 @@ NclFormatterRegion::setZIndex (int zIndex)
   if (region != NULL)
     region->setZIndex (zIndex);
 
-  if (region != NULL && layoutManager != NULL)
+  if (region != NULL)
     {
       layoutId = region->getId ();
       if (win != NULL)
