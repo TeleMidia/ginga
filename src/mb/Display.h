@@ -85,7 +85,7 @@ public:
   bool removeJob (DisplayJob *);
   void destroyTexture (SDL_Texture *);
 
-  SDLWindow *createWindow (int, int, int, int, int);
+  SDLWindow *createWindow (int, int, int, int, int, int);
   bool hasWindow (const SDLWindow *);
   void destroyWindow (SDLWindow *);
 

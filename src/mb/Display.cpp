@@ -47,9 +47,18 @@ job_delete (DisplayJob *job)
 static gint
 win_cmp_z (Player *p1, Player *p2)
 {
-  double z1 = p1->getZ ();
-  double z2 = p2->getZ ();
-  return (z1 < z2) ? -1 : (z1 > z2) ? 1 : 0;
+  int z1, zo1, z2, zo2;
+  p1->getZ (&z1, &zo1);
+  p2->getZ (&z2, &zo2);
+  if (z1 < z2)
+    return -1;
+  if (z1 > z2)
+    return 1;
+  if (zo1 < zo2)
+    return -1;
+  if (zo1 > zo2)
+    return 1;
+  return 0;
 }
 
 // Deletes window.
@@ -452,11 +461,11 @@ Display::destroyTexture (SDL_Texture *texture)
  * Creates managed window with the given position, dimensions, and z-index.
  */
 SDLWindow *
-Display::createWindow (int x, int y, int w, int h, int z)
+Display::createWindow (int x, int y, int w, int h, int z, int zorder)
 {
   SDLWindow *win;
 
-  win = new SDLWindow (x, y, z, w, h);
+  win = new SDLWindow (x, y, w, h, z, zorder);
   g_assert_nonnull (win);
   this->add (&this->windows, win);
 

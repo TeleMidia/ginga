@@ -51,7 +51,7 @@ NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object)
 {
   NclCascadingDescriptor *descriptor;
   NclFormatterRegion *fregion;
-  LayoutRegion *layoutRegion, *parent, *grandParent;
+//  LayoutRegion *layoutRegion, *parent, *grandParent;
 
   g_assert_nonnull (object);
 
@@ -61,8 +61,10 @@ NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object)
   fregion = descriptor->getFormatterRegion ();
   g_assert_nonnull (fregion);
 
-  layoutRegion = fregion->getOriginalRegion ();
+  //layoutRegion = fregion->getOriginalRegion ();
+  return fregion->prepareOutputDisplay (0);
 
+#if 0
   parent = layoutRegion;
   grandParent = parent->getParent ();
   while (grandParent != NULL && grandParent->getParent () != NULL)
@@ -86,6 +88,7 @@ NclFormatterLayout::prepareFormatterRegion (NclExecutionObject *object)
     }
 
   return addRegionOnMaps (fregion, layoutRegion->getZIndex ());
+#endif
 }
 
 void

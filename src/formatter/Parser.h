@@ -160,11 +160,11 @@ private:
 
 // LAYOUT
 private:
-  LayoutRegion *parseRegion (DOMElement *region_element);
-  LayoutRegion *createRegion (DOMElement *region_element);
-  RegionBase *parseRegionBase (DOMElement *regionBase_element);
-  RegionBase *createRegionBase (DOMElement *regionBase_element);
-  void addImportBaseToRegionBase (RegionBase *regionBase, DOMElement *importBase_element);
+  LayoutRegion *parseRegion (DOMElement *, LayoutRegion *);
+  LayoutRegion *createRegion (DOMElement *, LayoutRegion *);
+  RegionBase *parseRegionBase (DOMElement *);
+  RegionBase *createRegionBase (DOMElement *);
+  void addImportBaseToRegionBase (RegionBase *, DOMElement *);
 
 // LINKING
 private:

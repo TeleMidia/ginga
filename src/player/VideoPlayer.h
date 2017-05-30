@@ -59,7 +59,7 @@ public:
   bool isPlaying (); //works
   bool isRunning (); //works
 
-  bool setOutWindow (SDLWindow* windowId); //works
+  void setOutWindow (SDLWindow *); //works
 
 
  private:

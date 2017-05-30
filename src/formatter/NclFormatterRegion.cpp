@@ -40,7 +40,7 @@ NclFormatterRegion::NclFormatterRegion (const string &objectId,
 
   initializeNCMRegion ();
 
-  this->outputDisplay = 0;
+  this->win = 0;
   this->imVisible = false;
   this->externHandler = false;
   this->focusState = NclFormatterRegion::UNSELECTED;
@@ -207,7 +207,8 @@ NclFormatterRegion::initializeNCMRegion ()
 
   if (originalRegion != NULL)
     {
-      ncmRegion = originalRegion->cloneRegion ();
+      //ncmRegion = originalRegion->cloneRegion ();
+      ncmRegion = originalRegion;
     }
   else
     {
@@ -229,8 +230,8 @@ NclFormatterRegion::setZIndex (int zIndex)
     {
       layoutId = originalRegion->getId ();
       layoutManager->refreshZIndex (this, zIndex);
-      if (outputDisplay != NULL)
-        outputDisplay->setZ (zIndex);
+      if (win != NULL)
+        win->setZ (zIndex);
     }
 }
 
@@ -531,10 +532,10 @@ NclFormatterRegion::setFocusInfo (SDL_Color *focusBorderColor,
   setSelComponentSrc (selComponentSrc);
 }
 
-SDLWindow*
+SDLWindow *
 NclFormatterRegion::getOutputId ()
 {
-  return outputDisplay;
+  return this->win;
 }
 
 
@@ -589,9 +590,9 @@ NclFormatterRegion::sizeRegion ()
     height = 1;
 
   lock ();
-  if (outputDisplay != 0)
+  if (this->win != 0)
     {
-      outputDisplay->setBounds (left, top, width, height);
+      this->win->setBounds (left, top, width, height);
     }
   unlock ();
 }
@@ -608,79 +609,26 @@ NclFormatterRegion::getOriginalRegion ()
   return originalRegion;
 }
 
-SDLWindow*
-NclFormatterRegion::prepareOutputDisplay (double cvtIndex)
+SDLWindow *
+NclFormatterRegion::prepareOutputDisplay (arg_unused (double cvtIndex))
 {
-  lock ();
+  SDL_Rect r;
+  int z, zorder;
 
-  if (outputDisplay == 0)
-    {
-      string title;
-      int left = 0;
-      int top = 0;
-      int width = 0;
-      int height = 0;
+  g_assert_null (this->win);
+  g_assert_nonnull (this->ncmRegion);
 
-      if (ncmRegion == NULL)
-        {
-          title = objectId;
-        }
-      else
-        {
-          left = ncmRegion->getAbsoluteLeft ();
-          top = ncmRegion->getAbsoluteTop ();
-          width = ncmRegion->getWidthInPixels ();
-          height = ncmRegion->getHeightInPixels ();
-        }
+  r = ncmRegion->getRect ();
+  ncmRegion->getZ (&z, &zorder);
 
-      if (left < 0)
-        left = 0;
-
-      if (top < 0)
-        top = 0;
-
-      if (width <= 0)
-        width = 1;
-
-      if (height <= 0)
-        height = 1;
-
-    
-
-      if (!externHandler)
-        {
-          outputDisplay = Ginga_Display
-            ->createWindow (left, top, width, height, (int)cvtIndex);
-        }
-
-      lockFocusInfo ();
-      if (bgColor != NULL)
-        {
-          outputDisplay->setBgColor (*bgColor);
-        }
-      unlockFocusInfo ();
-     
-    }
-  else
-    {
-      g_warning ("NclFormatterRegion::prepareOutputDisplay: window != NULL");
-    }
-
-  unlock ();
-
-  return outputDisplay;
+  this->win = Ginga_Display->createWindow (r.x, r.y, r.w, r.h, z, zorder);
+  return this->win;
 }
 
 void
 NclFormatterRegion::showContent ()
 {
   string value;
-  int transitionType;
-  unsigned int i;
-  vector<Transition *> *transitions;
-  Transition *transition;
-  TransInfo *t;
-  pthread_t threadId_;
 
   lockTransition ();
   value = descriptor->getParameterValue ("visible");
@@ -689,47 +637,6 @@ NclFormatterRegion::showContent ()
   if (value != "false")
     {
       imVisible = true;
-      transitions = descriptor->getInputTransitions ();
-
-      if (!transitions->empty ())
-        {
-          for (i = 0; i < transitions->size (); i++)
-            {
-              transition = (*transitions)[i];
-              transitionType = transition->getType ();
-              if (transitionType == Transition::TYPE_FADE)
-                {
-                  // fade(transition, true);
-                  t = new TransInfo;
-                  t->fr = this;
-                  t->t = transition;
-
-                  // show with fade transition type
-                  pthread_create (&threadId_, 0, NclFormatterRegion::fadeT,
-                                  (void *)t);
-
-                  pthread_detach (threadId_);
-                  unlockTransition ();
-                  return;
-                }
-              else if (transitionType == Transition::TYPE_BARWIPE)
-                {
-                  // barWipe(transition, true);
-                  t = new TransInfo;
-                  t->fr = this;
-                  t->t = transition;
-
-                  // show with barwipe transition type
-                  pthread_create (&threadId_, 0,
-                                  NclFormatterRegion::barWipeT, (void *)t);
-
-                  pthread_detach (threadId_);
-                  unlockTransition ();
-                  return;
-                }
-            }
-        }
-
       unlockTransition ();
       setRegionVisibility (true);
     }
@@ -761,25 +668,25 @@ NclFormatterRegion::setRegionVisibility (bool visible)
       return;
     }
 
-  if (outputDisplay != 0)
+  if (this->win != 0)
     {
       if (!visible)
         {
           clog << "NclFormatterRegion::setRegionVisibility (" << this;
           clog << ") object '" << objectId << "' display '";
-          clog << outputDisplay;
+          clog << this->win;
           clog << "' HIDE" << endl;
 
-          outputDisplay->hide ();
+          this->win->hide ();
         }
       else
         {
           clog << "NclFormatterRegion::setRegionVisibility (" << this;
           clog << ") object '" << objectId << "' display '";
-          clog << outputDisplay;
+          clog << this->win;
           clog << "' SHOW" << endl;
 
-          outputDisplay->show ();
+          this->win->show ();
         }
     }
   imVisible = visible;
@@ -789,13 +696,13 @@ NclFormatterRegion::setRegionVisibility (bool visible)
 void
 NclFormatterRegion::disposeOutputDisplay ()
 {
-  if (outputDisplay != 0)
+  if (this->win != 0)
     {
       if (!externHandler)
         {
-          Ginga_Display->destroyWindow (outputDisplay);
+          Ginga_Display->destroyWindow (this->win);
         }
-      outputDisplay = 0;
+      this->win = 0;
     }
 }
 
@@ -803,9 +710,9 @@ void
 NclFormatterRegion::setGhostRegion (bool ghost)
 {
   lock ();
-  if (outputDisplay != 0 && !externHandler)
+  if (this->win != 0 && !externHandler)
     {
-      outputDisplay->setGhostWindow (ghost);
+      this->win->setGhostWindow (ghost);
     }
   unlock ();
 }
@@ -836,17 +743,17 @@ NclFormatterRegion::setSelection (bool selOn)
       focusState = NclFormatterRegion::SELECTED;
     
       lock ();
-      if (outputDisplay != 0 && !externHandler)
+      if (this->win != 0 && !externHandler)
         {
           lockFocusInfo ();
           if (selComponentSrc == "")
             {
-             // outputDisplay->validate ();
+             // this->win->validate ();
             }
 
           if (selBorderColor != NULL)
             {
-              outputDisplay->setBorder (*selBorderColor,
+              this->win->setBorder (*selBorderColor,
                   selBorderWidth);
             }
 
@@ -877,9 +784,9 @@ NclFormatterRegion::setFocus (bool focusOn)
 /*
           if (focusSurface != 0)
             {
-              if (outputDisplay != 0 && !externHandler)
+              if (this->win != 0 && !externHandler)
                 {
-                //  outputDisplay->renderFrom (
+                //  this->win->renderFrom (
                 //                        focusSurface);
                 }
               delete focusSurface;
@@ -888,17 +795,17 @@ NclFormatterRegion::setFocus (bool focusOn)
         }
 
       lock ();
-      if (outputDisplay != 0 && !externHandler)
+      if (this->win != 0 && !externHandler)
         {
           lockFocusInfo ();
           if (focusComponentSrc == "")
             {
-             // outputDisplay->validate ();
+             // this->win->validate ();
             }
 
           if (focusBorderColor != NULL)
             {
-              outputDisplay->setBorder (*focusBorderColor,
+              this->win->setBorder (*focusBorderColor,
                                         focusBorderWidth);
             }
 
@@ -918,12 +825,12 @@ NclFormatterRegion::unselect ()
   focusState = NclFormatterRegion::UNSELECTED;
 
   lock ();
-  if (outputDisplay != 0 && !externHandler)
+  if (this->win != 0 && !externHandler)
     {
       SDL_Color c = {0, 0, 0, 0};
-      outputDisplay->setBorder (c, 0);
+      this->win->setBorder (c, 0);
      
-    //  outputDisplay->validate ();
+    //  this->win->validate ();
     }
   unlock ();
 }

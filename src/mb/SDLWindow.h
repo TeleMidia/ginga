@@ -30,15 +30,14 @@ private:
   SDL_Color bgColor;
   SDL_Color borderColor;
   SDL_Rect rect;
-  gint z;
+  int z;
+  int zorder;
   guint8 transparencyValue;
   bool visible;
   bool ghost;
 
-  void initialize (int x, int y, int w, int h, int z);
-
 public:
-  SDLWindow (int, int, int, int, int);
+  SDLWindow (int, int, int, int, int, int);
   virtual ~SDLWindow ();
 
   void setTexture (SDL_Texture *);
@@ -66,7 +65,7 @@ public:
   int getY ();
   int getW ();
   int getH ();
-  gint getZ ();
+  void getZ (int *, int *);
 
   void setX (int x);
   void setY (int y);

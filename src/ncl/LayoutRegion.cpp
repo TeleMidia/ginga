@@ -18,9 +18,46 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "LayoutRegion.h"
 
+#include "mb/Display.h"
+using namespace ginga::mb;
+
 GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-conversion)
 
 GINGA_NCL_BEGIN
+
+void
+LayoutRegion::setRect (SDL_Rect rect)
+{
+  this->rect = rect;
+}
+
+SDL_Rect
+LayoutRegion::getRect (void)
+{
+  return this->rect;
+}
+
+void
+LayoutRegion::setZ (int z, int zorder)
+{
+  this->z = z;
+  this->zorder = zorder;
+}
+
+void
+LayoutRegion::getZ (int *z, int *zorder)
+{
+  set_if_nonnull (z, this->z);
+  set_if_nonnull (zorder, this->zorder);
+}
+
+void
+LayoutRegion::dump ()
+{
+  g_debug ("%s at (%d,%d) size %dx%d z %d,%d",
+           this->getId ().c_str (), this->rect.x, this->rect.y,
+           this->rect.w, this->rect.h, this->z, this->zorder);
+}
 
 LayoutRegion::LayoutRegion (const string &id) : Entity (id)
 {
@@ -45,6 +82,12 @@ LayoutRegion::LayoutRegion (const string &id) : Entity (id)
   zIndex = NULL;
 
   parent = NULL;
+
+  // this->rect.x = 0;
+  // this->rect.y = 0;
+  // Ginga_Display->getSize (&this->rect.w, &this->rect.h);
+  // this->z = 0;
+  // this->zorder = 0;
 }
 
 LayoutRegion::~LayoutRegion ()
@@ -610,6 +653,9 @@ LayoutRegion::setParent (LayoutRegion *parent)
 int
 LayoutRegion::getTopInPixels ()
 {
+  return this->rect.y;
+
+# if 0
   double b, h;
 
   if (!isnan (top))
@@ -660,11 +706,15 @@ LayoutRegion::getTopInPixels ()
       // default value
       return 0;
     }
+#endif
 }
 
 int
 LayoutRegion::getBottomInPixels ()
 {
+  return this->rect.y + this->rect.h;
+
+#if 0
   double bottomInPixels;
   double t, h;
 
@@ -713,11 +763,15 @@ LayoutRegion::getBottomInPixels ()
     }
 
   return (int)bottomInPixels;
+#endif
 }
 
 int
 LayoutRegion::getRightInPixels ()
 {
+  return this->rect.x + this->rect.w;
+
+#if 0
   double l, w;
 
   if (!isnan (width) && !isnan (left))
@@ -760,11 +814,15 @@ LayoutRegion::getRightInPixels ()
       return (int)(getLeftInPixels () + getWidthInPixels ());
     }
   return 0;
+#endif
 }
 
 int
 LayoutRegion::getLeftInPixels ()
 {
+  return this->rect.x;
+
+#if 0
   double r, w;
 
   if (!isnan (left))
@@ -815,11 +873,15 @@ LayoutRegion::getLeftInPixels ()
       // default value
       return 0;
     }
+#endif
 }
 
 int
 LayoutRegion::getHeightInPixels ()
 {
+  return this->rect.h;
+
+#if 0
   int t = 0;
   int b = 0;
 
@@ -880,11 +942,15 @@ LayoutRegion::getHeightInPixels ()
           return 0;
         }
     }
+#endif
 }
 
 int
 LayoutRegion::getWidthInPixels ()
 {
+  return this->rect.w;
+
+#if 0
   int l = 0;
   int r = 0;
 
@@ -943,6 +1009,7 @@ LayoutRegion::getWidthInPixels ()
         }
     }
   return 0;
+#endif
 }
 
 void
@@ -994,6 +1061,9 @@ LayoutRegion::resetZIndex ()
 int
 LayoutRegion::getAbsoluteLeft ()
 {
+  return this->rect.x;
+
+#if 0
   if (parent != NULL)
     {
       return getLeftInPixels () + parent->getAbsoluteLeft ();
@@ -1002,11 +1072,15 @@ LayoutRegion::getAbsoluteLeft ()
     {
       return getLeftInPixels ();
     }
+#endif
 }
 
 int
 LayoutRegion::getAbsoluteTop ()
 {
+  return this->rect.y;
+
+#if 0
   if (parent != NULL)
     {
       return getTopInPixels () + parent->getAbsoluteTop ();
@@ -1015,6 +1089,7 @@ LayoutRegion::getAbsoluteTop ()
     {
       return getTopInPixels ();
     }
+#endif
 }
 
 GINGA_NCL_END

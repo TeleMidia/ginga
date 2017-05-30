@@ -317,16 +317,16 @@ Player::isForcedNaturalEnd ()
   return forcedNaturalEnd;
 }
 
-bool
-Player::setOutWindow (SDLWindow* windowId)
+void
+Player::setOutWindow (SDLWindow *win)
 {
-  if( windowId!=NULL){
-      this->rect = windowId->getRect();
-      this->z = windowId->getZ();
-  }
+  if (win != NULL)
+    {
+      this->rect = win->getRect ();
+      win->getZ (&this->z, &this->zorder);
+    }
 
-  this->window = windowId;
-  return true;
+  this->window = win;
 }
 
 Player::PlayerStatus
@@ -335,10 +335,11 @@ Player::getMediaStatus ()
    return this->status;
 }
 
-gint
-Player::getZ ()
+void
+Player::getZ (int *z, int *zorder)
 {
-  return this->z;
+  set_if_nonnull (z, this->z);
+  set_if_nonnull (zorder, this->zorder);
 }
 
 void

@@ -19,6 +19,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga-color-table.h"
 #include "Parser.h"
 
+#include "mb/Display.h"
+using namespace ginga::mb;
+
 GINGA_FORMATTER_BEGIN
 
 // dom_element_* functions are internal functions that safely wraps Xerces
@@ -2234,19 +2237,16 @@ NclParser::createSwitchPort (DOMElement *parent,
 }
 
 LayoutRegion *
-NclParser::parseRegion (DOMElement *region_element)
+NclParser::parseRegion (DOMElement *elt, LayoutRegion *parent)
 {
-  LayoutRegion *region = createRegion (region_element);
+  LayoutRegion *region = createRegion (elt, parent);
   g_assert_nonnull (region);
 
-  for (DOMElement *child:
-       dom_element_children_by_tagname(region_element, "region"))
+  for (DOMElement *child: dom_element_children_by_tagname (elt, "region"))
     {
-      LayoutRegion *child_region = parseRegion (child);
-      if (child_region)
-        {
-          region->addRegion (child_region);
-        }
+      LayoutRegion *child_region = parseRegion (child, region);
+      g_assert_nonnull (child_region);
+      region->addRegion (child_region);
     }
 
   return region;
@@ -2269,11 +2269,9 @@ NclParser::parseRegionBase (DOMElement *regionBase_element)
         }
       else if (tagname == "region")
         {
-          LayoutRegion *region = parseRegion (child);
-          if (region)
-            {
-              regionBase->addRegion (region);
-            }
+          LayoutRegion *region = parseRegion (child, NULL);
+          g_assert_nonnull (region);
+          regionBase->addRegion (region);
         }
       else
         {
@@ -2313,48 +2311,86 @@ NclParser::addImportBaseToRegionBase (RegionBase *regionBase,
 RegionBase *
 NclParser::createRegionBase (DOMElement *elt)
 {
-  RegionBase *regionBase;
-
-  regionBase = new RegionBase (dom_element_get_attr (elt, "id"));
-  return regionBase;
+  return new RegionBase (dom_element_get_attr (elt, "id"));
 }
-
-static void
-set_perc_or_px (DOMElement *el, const string &att, LayoutRegion *region,
-                bool (LayoutRegion::*setF)(double x, bool y))
-{
-  string att_value;
-  if (dom_element_try_get_attr(att_value, el, att))
-    {
-      if (xstrispercent(att_value))
-        ((region)->*setF)(xstrtodorpercent (att_value, NULL) * 100., true);
-      else
-        ((region)->*setF)(xstrtoint (att_value, 10), false);
-    }
-}
-
-#define call_with_attr_if_has(DOMEL,DOMATTR,OBJ,SETFUNC) \
-  if(dom_element_has_attr(DOMEL,DOMATTR)) \
-    { \
-      string attrV = dom_element_get_attr(DOMEL,DOMATTR); \
-      OBJ -> SETFUNC (attrV); \
-    }
 
 LayoutRegion *
-NclParser::createRegion (DOMElement *elt)
+NclParser::createRegion (DOMElement *elt, LayoutRegion *parent)
 {
-  string attr = dom_element_get_attr (elt, "id");
-  LayoutRegion *region = new LayoutRegion (attr);
+  LayoutRegion *region;
+  SDL_Rect parent_rect;
+  SDL_Rect rect;
+  int z;
+  int zorder;
+  static int last_zorder = 0;
 
-  set_perc_or_px (elt, "left", region, &LayoutRegion::setLeft);
-  set_perc_or_px (elt, "right", region, &LayoutRegion::setRight);
-  set_perc_or_px (elt, "top", region, &LayoutRegion::setTop);
-  set_perc_or_px (elt, "bottom", region, &LayoutRegion::setBottom);
-  set_perc_or_px (elt, "width", region, &LayoutRegion::setWidth);
-  set_perc_or_px (elt, "height", region, &LayoutRegion::setHeight);
+  string val;
+  double d;
+  bool perc;
 
-  if(dom_element_try_get_attr(attr, elt, "zIndex"))
-      region->setZIndex (xstrtoint (attr, 10));
+  region = new LayoutRegion (dom_element_get_attr (elt, "id"));
+  if (parent != NULL)
+    {
+      parent_rect = parent->getRect ();
+    }
+  else
+    {
+      parent_rect.x = 0;
+      parent_rect.y = 0;
+      Ginga_Display->getSize (&parent_rect.w, &parent_rect.h);
+    }
+
+  rect = parent_rect;
+  z = 0;
+  zorder = 0;
+
+  if (dom_element_try_get_attr (val, elt, "left"))
+    {
+      d = xstrtodorpercent (val, &perc);
+      rect.x += (int) lround ((perc) ? parent_rect.w * d : d);
+    }
+
+  if (dom_element_try_get_attr (val, elt, "top"))
+    {
+      d = xstrtodorpercent (val, &perc);
+      rect.y += (int) lround ((perc) ? parent_rect.h * d : d);
+    }
+
+  if (dom_element_try_get_attr (val, elt, "width"))
+    {
+      d = xstrtodorpercent (val, &perc);
+      rect.w = (int) lround ((perc) ? parent_rect.w * d : d);
+    }
+
+  if (dom_element_try_get_attr (val, elt, "height"))
+    {
+      d = xstrtodorpercent (val, &perc);
+      rect.h = (int) lround ((perc) ? parent_rect.h * d : d);
+    }
+
+  if (dom_element_try_get_attr (val, elt, "right"))
+    {
+      int right;
+      d = xstrtodorpercent (val, &perc);
+      right = (int) lround ((perc) ? parent_rect.w * d : d);
+      rect.x += parent_rect.w - rect.w - right;
+    }
+
+  if (dom_element_try_get_attr (val, elt, "bottom"))
+    {
+      int bottom;
+      d = xstrtodorpercent (val, &perc);
+      bottom = (int) lround ((perc) ? parent_rect.w * d : d);
+      rect.y += parent_rect.h - rect.h - bottom;
+    }
+
+  if (dom_element_try_get_attr (val, elt, "zIndex"))
+    z = xstrtoint (val, 10);
+  zorder = last_zorder++;
+
+  region->setRect (rect);
+  region->setZ (z, zorder);
+  region->dump ();
 
   return region;
 }
