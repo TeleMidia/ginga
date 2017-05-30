@@ -178,7 +178,7 @@ public:
 
 public:
   NclFormatterEvent *getEvent (const string &id);
-  vector<NclFormatterEvent *> *getEvents ();
+  vector<NclFormatterEvent *> getEvents ();
   bool hasSampleEvents ();
   set<NclAnchorEvent *> *getSampleEvents ();
   double getExpectedStartTime ();
