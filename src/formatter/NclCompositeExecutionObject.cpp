@@ -545,14 +545,12 @@ NclCompositeExecutionObject::unsetParentsAsListeners ()
 }
 
 void
-NclCompositeExecutionObject::eventStateChanged (NclFormatterEvent *changedEvent,
+NclCompositeExecutionObject::eventStateChanged (NclFormatterEvent *event,
                                                 short transition,
                                                 short previousState)
 {
-  NclFormatterEvent *event;
   set<NclFormatterEvent *>::iterator i;
 
-  event = (NclFormatterEvent *)changedEvent;
   if (!(event->instanceOf ("NclPresentationEvent"))
       || !NclFormatterEvent::hasInstance (event, false))
     {

@@ -84,7 +84,7 @@ private:
 
   void runActionOverApplicationObject (
       NclApplicationExecutionObject *executionObject,
-      NclFormatterEvent *event, AdapterFormatterPlayer *player,
+      NclFormatterEvent *event, AdapterApplicationPlayer *player,
       NclLinkSimpleAction *action);
 
   void
