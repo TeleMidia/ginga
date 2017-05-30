@@ -387,9 +387,7 @@ NclParser::parseHead (DOMElement *head_element)
     {
       RegionBase *regionBase = parseRegionBase (child);
       if (regionBase)
-        {
-          nclDoc->addRegionBase(regionBase);
-        }
+        nclDoc->addRegionBase (regionBase);
     }
 
   for (DOMElement *child :
@@ -2237,16 +2235,18 @@ NclParser::createSwitchPort (DOMElement *parent,
 }
 
 LayoutRegion *
-NclParser::parseRegion (DOMElement *elt, LayoutRegion *parent)
+NclParser::parseRegion (DOMElement *elt, LayoutRegion *parent,
+                        RegionBase *base)
 {
   LayoutRegion *region = createRegion (elt, parent);
   g_assert_nonnull (region);
 
-  for (DOMElement *child: dom_element_children_by_tagname (elt, "region"))
+  for (DOMElement *child_elt:
+         dom_element_children_by_tagname (elt, "region"))
     {
-      LayoutRegion *child_region = parseRegion (child, region);
-      g_assert_nonnull (child_region);
-      region->addRegion (child_region);
+      LayoutRegion *child_reg = parseRegion (child_elt, region, base);
+      g_assert_nonnull (child_reg);
+      base->addRegion (child_reg);
     }
 
   return region;
@@ -2254,34 +2254,32 @@ NclParser::parseRegion (DOMElement *elt, LayoutRegion *parent)
 
 // LAYOUT
 RegionBase *
-NclParser::parseRegionBase (DOMElement *regionBase_element)
+NclParser::parseRegionBase (DOMElement *elt)
 {
-  RegionBase *regionBase = createRegionBase (regionBase_element);
-  g_assert_nonnull (regionBase);
+  RegionBase *base = createRegionBase (elt);
+  g_assert_nonnull (base);
 
-  for (DOMElement *child:
-       dom_element_children(regionBase_element) )
+  for (DOMElement *child_elt: dom_element_children (elt) )
     {
-      string tagname = dom_element_tagname(child);
-      if (tagname == "importBase")
+      string tag = dom_element_tagname (child_elt);
+      if (tag == "importBase")
         {
-          addImportBaseToRegionBase (regionBase, child);
+          addImportBaseToRegionBase (base, child_elt);
         }
-      else if (tagname == "region")
+      else if (tag == "region")
         {
-          LayoutRegion *region = parseRegion (child, NULL);
+          LayoutRegion *region = parseRegion (child_elt, NULL, base);
           g_assert_nonnull (region);
-          regionBase->addRegion (region);
+          base->addRegion (region);
         }
       else
         {
           syntax_warning( "'%s' is not known as child of 'regionBase'."
                           " It will be ignored.",
-                          tagname.c_str() );
+                          tag.c_str() );
         }
     }
-
-  return regionBase;
+  return base;
 }
 
 void
@@ -3404,16 +3402,12 @@ NclParser::createDescriptor (DOMElement *descriptor_element)
   if (dom_element_try_get_attr(attValue, descriptor_element, "region"))
     {
       region = nclDoc->getRegion (attValue);
-
-      if (region)
-        {
-          descriptor->setRegion (region);
-        }
-      else
+      if (unlikely (region == NULL))
         {
           syntax_error ("descriptor: bad region for descritor '%s'",
                         descriptor->getId().c_str());
         }
+      descriptor->setRegion (region);
     }
 
   // explicitDur

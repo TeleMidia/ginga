@@ -284,13 +284,14 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
     }
 
   map <string, string> properties;
-  // get the properties from the descriptor
+
+  // Get the properties from the descriptor.
   for (Parameter &param : descriptor->getParameters())
     {
       properties[param.getName()] = param.getValue();
     }
 
-  //get the properties from the object
+  // Get the properties from the object.
   ncmNode = obj->getDataObject ();
   anchors = ((Node *)ncmNode)->getOriginalPropertyAnchors ();
   g_assert_nonnull (anchors);
@@ -339,7 +340,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
             }
           else if (name == "zIndex")
             {
-              region->setZIndex (xstrtoint (value, 10));
+              //zindex = value;
             }
           else if (name == "bounds")
             {
@@ -473,92 +474,6 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                 }
             }
         }
-    }
-
-  if (left != "")
-    {
-      region->resetLeft ();
-    }
-
-  if (top != "")
-    {
-      region->resetTop ();
-    }
-
-  if (width != "")
-    {
-      region->resetWidth ();
-    }
-
-  if (height != "")
-    {
-      region->resetHeight ();
-    }
-
-  if (bottom != "")
-    {
-      if (top != "")
-        {
-          region->resetHeight ();
-        }
-      region->resetBottom ();
-    }
-
-  if (right != "")
-    {
-      if (left != "")
-        {
-          region->resetWidth ();
-        }
-      region->resetRight ();
-    }
-
-  if (left != "")
-    {
-      double x = xstrtodorpercent (value, &isPercent);
-      if (isPercent)
-        x *= 100;
-      region->setLeft (x, isPercent);
-    }
-
-  if (top != "")
-    {
-      double x = xstrtodorpercent (value, &isPercent);
-      if (isPercent)
-        x *= 100;
-      region->setTop (x, isPercent);
-    }
-
-  if (width != "")
-    {
-      double x = xstrtodorpercent (value, &isPercent);
-      if (isPercent)
-        x *= 100;
-      region->setWidth (x, isPercent);
-    }
-
-  if (height != "")
-    {
-      double x = xstrtodorpercent (value, &isPercent);
-      if (isPercent)
-        x *= 100;
-      region->setHeight (x, isPercent);
-    }
-
-  if (bottom != "")
-    {
-      double x = xstrtodorpercent (value, &isPercent);
-      if (isPercent)
-        x *= 100;
-      region->setBottom (x, isPercent);
-    }
-
-  if (right != "")
-    {
-      double x = xstrtodorpercent (value, &isPercent);
-      if (isPercent)
-        x *= 100;
-      region->setRight (x, isPercent);
     }
 
   if (transpValue < 0.
