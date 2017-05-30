@@ -1344,63 +1344,57 @@ FormatterScheduler::eventStateChanged (NclFormatterEvent *event,
 }
 
 SDLWindow*
-FormatterScheduler::prepareFormatterRegion (
-    NclExecutionObject *executionObject)
+FormatterScheduler::prepareFormatterRegion (NclExecutionObject *obj)
 {
-  NclCascadingDescriptor *descriptor;
-  string regionId;
-  SDLWindow* windowId = 0;
+  NclCascadingDescriptor *desc;
+  NclFormatterRegion *reg;
 
-  descriptor = executionObject->getDescriptor ();
-  if (descriptor != NULL)
-    windowId = layout->prepareFormatterRegion (executionObject);
+  g_assert_nonnull (obj);
 
-  return windowId;
+  desc = obj->getDescriptor ();
+  if (desc == NULL)
+    return NULL;                // nothing to do
+
+  reg = desc->getFormatterRegion ();
+  if (reg == NULL)
+    return NULL;                // nothing to do
+
+  return reg->prepareOutputDisplay ();
 }
 
 void
-FormatterScheduler::showObject (NclExecutionObject *executionObject)
+FormatterScheduler::showObject (NclExecutionObject *obj)
 {
-  NclFormatterLayout *layout;
-  NclCascadingDescriptor *descriptor;
-  NclFormatterRegion *fRegion;
-  LayoutRegion *region;
+  NclCascadingDescriptor *desc;
+  NclFormatterRegion *reg;
 
-  descriptor = executionObject->getDescriptor ();
-  if (descriptor != NULL)
-    {
-      region = descriptor->getRegion ();
-      layout = getFormatterLayout ();
-      if (region != NULL && layout != NULL)
-        {
-          fRegion = descriptor->getFormatterRegion ();
-          if (fRegion != NULL)
-            {
-              fRegion->setGhostRegion (true);
-            }
-          layout->showObject (executionObject);
-        }
-    }
+  desc = obj->getDescriptor ();
+  if (desc == NULL)
+    return;                     // nothing to do
+
+  reg = desc->getFormatterRegion ();
+  if (reg == NULL)
+    return;                     // nothing to do
+
+  reg->setGhostRegion (true);
+  reg->showContent ();
 }
 
 void
-FormatterScheduler::hideObject (NclExecutionObject *executionObject)
+FormatterScheduler::hideObject (NclExecutionObject *obj)
 {
-  NclFormatterLayout *layout;
-  NclCascadingDescriptor *descriptor;
-  LayoutRegion *region;
-  string fileUri;
+  NclCascadingDescriptor *desc;
+  NclFormatterRegion *reg;
 
-  descriptor = executionObject->getDescriptor ();
-  if (descriptor != NULL)
-    {
-      region = descriptor->getRegion ();
-      layout = getFormatterLayout ();
-      if (region != NULL && layout != NULL)
-        {
-          layout->hideObject (executionObject);
-        }
-    }
+  desc = obj->getDescriptor ();
+  if (desc == NULL)
+    return;                     // nothing to do
+
+  reg = desc->getFormatterRegion ();
+  if (reg == NULL)
+    return;                     // nothing to do
+
+  reg->hideContent ();
 }
 
 GINGA_FORMATTER_END

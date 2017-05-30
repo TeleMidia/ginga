@@ -37,11 +37,6 @@ public:
   NclFormatterLayout (int w, int h);
   virtual ~NclFormatterLayout ();
   LayoutRegion *getRegion ();
-
-public:
-  SDLWindow *prepareFormatterRegion (NclExecutionObject *object);
-  void showObject (NclExecutionObject *object);
-  void hideObject (NclExecutionObject *object);
 };
 
 GINGA_FORMATTER_END
