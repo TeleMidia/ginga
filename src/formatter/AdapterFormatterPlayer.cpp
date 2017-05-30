@@ -93,7 +93,6 @@ AdapterFormatterPlayer::setOutputWindow (SDLWindow* windowId)
 void
 AdapterFormatterPlayer::createPlayer ()
 {
-  vector<NclFormatterEvent *> *events;
   NclCascadingDescriptor *descriptor;
   NodeEntity *dataObject;
   PropertyAnchor *property;
@@ -186,8 +185,7 @@ AdapterFormatterPlayer::createPlayer ()
         }
     }
 
-  events = _object->getEvents ();
-  for (NclFormatterEvent *evt: *events)
+  for (NclFormatterEvent *evt: _object->getEvents ())
     {
       g_assert_nonnull (evt);
       NclAttributionEvent *attributionEvt
@@ -198,7 +196,6 @@ AdapterFormatterPlayer::createPlayer ()
           attributionEvt->setValueMaintainer (this);
         }
     }
-  delete events;
 
   g_debug ("Create player for '%s' object = '%s'",
            _mrl.c_str(),
@@ -845,10 +842,8 @@ AdapterFormatterPlayer::stop ()
   g_assert_nonnull (_player);
 
   NclFormatterEvent *mainEvent = nullptr;
-  vector<NclFormatterEvent *> *events = nullptr;
 
   mainEvent = _object->getMainEvent ();
-  events = _object->getEvents ();
 
   if (mainEvent != nullptr)
     {
@@ -860,9 +855,7 @@ AdapterFormatterPlayer::stop ()
             return true;
         }
     }
-
-  g_assert_nonnull (events);
-  for (NclFormatterEvent *evt: *events)
+  for (NclFormatterEvent *evt: _object->getEvents ())
     {
       g_assert_nonnull(evt);
       NclAttributionEvent *attributionEvt
