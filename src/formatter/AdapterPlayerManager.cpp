@@ -23,14 +23,25 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-AdapterPlayerManager::AdapterPlayerManager ()
-{
-}
+AdapterPlayerManager::AdapterPlayerManager () {}
 
 AdapterPlayerManager::~AdapterPlayerManager ()
 {
-  clear ();
-  clearDeletePlayers ();
+  map<string, AdapterFormatterPlayer *>::iterator i;
+
+  i = _objectPlayers.begin ();
+  while (i != _objectPlayers.end ())
+    {
+      if (removePlayer (i->first))
+        {
+          i = _objectPlayers.begin ();
+        }
+      else
+        {
+          ++i;
+        }
+    }
+  _objectPlayers.clear ();
 }
 
 bool
@@ -55,32 +66,12 @@ AdapterPlayerManager::removePlayer (const string &objectId)
   i = _objectPlayers.find (objectId);
   if (i != _objectPlayers.end ())
     {
-      _deletePlayers[objectId] = i->second;
       _objectPlayers.erase (i);
+      delete i->second; // delete the player
       return true;
     }
 
   return false;
-}
-
-void
-AdapterPlayerManager::clear ()
-{
-  map<string, AdapterFormatterPlayer *>::iterator i;
-
-  i = _objectPlayers.begin ();
-  while (i != _objectPlayers.end ())
-    {
-      if (removePlayer (i->first))
-        {
-          i = _objectPlayers.begin ();
-        }
-      else
-        {
-          ++i;
-        }
-    }
-  _objectPlayers.clear ();
 }
 
 AdapterFormatterPlayer *
@@ -136,17 +127,7 @@ AdapterPlayerManager::getObjectPlayer (NclExecutionObject *execObj)
   i = _objectPlayers.find (objId);
   if (i == _objectPlayers.end ())
     {
-      i = _deletePlayers.find (objId);
-      if (i == _deletePlayers.end ())
-        {
-          player = initializePlayer (execObj);
-        }
-      else
-        {
-          player = i->second;
-          _deletePlayers.erase (i);
-          _objectPlayers[objId] = player;
-        }
+      player = initializePlayer (execObj);
     }
   else
     {
@@ -232,27 +213,6 @@ AdapterPlayerManager::isEmbeddedAppMediaType (const string &mediaType)
     }
 
   return false;
-}
-
-void
-AdapterPlayerManager::clearDeletePlayers ()
-{
-  map<string, AdapterFormatterPlayer *> dPlayers;
-  AdapterFormatterPlayer *adapter;
-  string playerClassName = "";
-
-  for (auto it: _deletePlayers)
-    {
-      adapter = it.second;
-      dPlayers[playerClassName] = adapter;
-    }
-  _deletePlayers.clear ();
-
-  for (auto it: dPlayers)
-    {
-      adapter = it.second;
-      delete adapter;
-    }
 }
 
 GINGA_FORMATTER_END

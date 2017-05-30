@@ -26,7 +26,7 @@ GINGA_FORMATTER_BEGIN
 class AdapterPlayerManager
 {
 public:
-  AdapterPlayerManager ();
+  explicit AdapterPlayerManager ();
   virtual ~AdapterPlayerManager ();
 
   AdapterFormatterPlayer *getObjectPlayer (NclExecutionObject *execObj);
@@ -35,13 +35,11 @@ public:
 
 private:
   map<string, AdapterFormatterPlayer *> _objectPlayers;
-  map<string, AdapterFormatterPlayer *> _deletePlayers;
 
   AdapterFormatterPlayer *initializePlayer (NclExecutionObject *object);
   static bool isEmbeddedAppMediaType (const string &mediaType);
 
   bool removePlayer (const string &objectId);
-  void clear ();
   void clearDeletePlayers ();
 };
 
