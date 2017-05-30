@@ -42,7 +42,7 @@ public:
   virtual ~NclSwitchEvent ();
 
   InterfacePoint *getInterfacePoint ();
-  short getEventType ();
+  short getEventType () override;
   string getKey ();
   void setMappedEvent (NclFormatterEvent *event);
   NclFormatterEvent *getMappedEvent ();

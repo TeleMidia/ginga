@@ -3486,9 +3486,9 @@ NclParser::createDescriptor (DOMElement *descriptor_element)
                 if (trans)
                   {
                     if (transInOut == "transIn")
-                      descriptor->addInputTransition (trans, i);
+                      descriptor->addInputTransition (trans, (int) i);
                     else if (transInOut == "transOut")
-                      descriptor->addOutputTransition(trans, i);
+                      descriptor->addOutputTransition(trans, (int) i);
                   }
                 else
                   {
