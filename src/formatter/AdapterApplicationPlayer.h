@@ -34,26 +34,21 @@ public:
   explicit AdapterApplicationPlayer (AdapterPlayerManager *manager);
   virtual ~AdapterApplicationPlayer ();
 
-  virtual bool stop ();
-  virtual bool abort ();
+  virtual bool prepare (NclExecutionObject *_object,
+                        NclPresentationEvent *mainEvent) override;
+  virtual bool hasPrepared () override;
+  virtual bool unprepare () override;
 
-  virtual void naturalEnd ();
+  virtual bool stop () override;
+  virtual bool abort () override;
+  virtual void naturalEnd() override;
+
   bool setAndLockCurrentEvent (NclFormatterEvent *event);
   void unlockCurrentEvent (NclFormatterEvent *event);
 
 protected:
   map<string, NclFormatterEvent *> _preparedEvents;
   NclFormatterEvent *_currentEvent;
-
-  virtual bool hasPrepared ();
-  virtual bool prepare (NclExecutionObject *_object,
-                        NclPresentationEvent *mainEvent);
-
-  bool startEvent (const string &anchorId, short type, const string &value);
-  bool stopEvent (const string &anchorId, short type, const string &value);
-  bool abortEvent (const string &anchorId, short type);
-  bool pauseEvent (const string &anchorId, short type);
-  bool resumeEvent (const string &anchorId, short type);
 
   void lockEvent ();
   void unlockEvent ();
@@ -67,9 +62,6 @@ private:
   bool _running;
 
   void prepare (NclFormatterEvent *event);
-  virtual bool unprepare ();
-  bool checkEvent (NclFormatterEvent *event, short type);
-
 };
 
 GINGA_FORMATTER_END
