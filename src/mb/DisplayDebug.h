@@ -36,7 +36,7 @@ private:
   SDL_Texture* texture;
   SDL_Rect rect;
   gboolean isActive;
-   
+
   SDL_Texture * updateTexture(SDL_Renderer *renderer,
                               SDL_Rect rect,
                               const gchar *fps_str);

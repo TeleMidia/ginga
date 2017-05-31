@@ -18,9 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef I_KEYINPUT_EVENT_LISTENER_H
 #define I_KEYINPUT_EVENT_LISTENER_H
 
-#include "ginga.h"
-
-string convertSdl2GingaKey(SDL_Keycode);
+#include "ginga-sdlx.h"
 
 class IKeyInputEventListener
 {
