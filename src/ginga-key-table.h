@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga.h"
-#include "IKeyInputEventListener.h"
+#ifndef GINGA_KEY_TABLE_H
+#define GINGA_KEY_TABLE_H
 
 static map<SDL_Keycode, string> keymap =
 {
@@ -75,7 +75,7 @@ static map<SDL_Keycode, string> keymap =
  {SDLK_F2, "GREEN"},
  {SDLK_F3, "YELLOW"},
  {SDLK_F4, "BLUE"},
- {SDLK_TAB, "	"},
+ {SDLK_TAB, "\t"},
  {SDLK_SPACE, " "},
  {SDLK_BACKSPACE, "BACK"},
  {SDLK_POWER, "POWER"},
@@ -85,10 +85,12 @@ static map<SDL_Keycode, string> keymap =
  {SDLK_PAUSE, "PAUSE"},
 };
 
-string
-convertSdl2GingaKey (SDL_Keycode key)
+static inline string
+ginga_key_table_index (SDL_Keycode key)
 {
   map<SDL_Keycode, string>::iterator it;
   it = keymap.find (key);
   return (it != keymap.end ()) ? it->second : "UNKNOWN";
 }
+
+#endif /* GINGA_KEY_TABLE_H */
