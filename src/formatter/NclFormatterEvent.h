@@ -25,6 +25,7 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
+class INclEventListener;
 class NclExecutionObject;
 
 class NclFormatterEvent

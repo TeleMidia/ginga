@@ -96,7 +96,6 @@ src+= formatter/PresentationContext.cpp
 src+= formatter/RuleAdapter.cpp
 src+= mb/Display.cpp
 src+= mb/DisplayDebug.cpp
-src+= mb/KeyMap.cpp
 src+= mb/SDLWindow.cpp
 src+= ncl/AbsoluteReferenceContent.cpp
 src+= ncl/Action.cpp
