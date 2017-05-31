@@ -702,9 +702,8 @@ FormatterScheduler::runActionOverComposition (
               perspective->append (nestedSeq);
               try
                 {
-                  childObject = ((FormatterConverter *)compiler)
-                                    ->getExecutionObjectFromPerspective (
-                                        perspective, NULL);
+                  childObject = compiler->getExecutionObjectFromPerspective (
+                                                  perspective, NULL);
 
                   if (childObject != NULL
                       && port->getEndInterfacePoint () != NULL
@@ -713,7 +712,7 @@ FormatterScheduler::runActionOverComposition (
                     {
                       childEvent
                           = (NclPresentationEvent
-                                 *)(((FormatterConverter *)compiler)
+                                 *)(compiler
                                         ->getEvent (
                                             childObject,
                                             port->getEndInterfacePoint (),
@@ -830,10 +829,9 @@ FormatterScheduler::runActionOverComposition (
               = new NclNodeNesting (compositeNode->getPerspective ());
 
           compositeObject
-              = (NclCompositeExecutionObject *)((FormatterConverter *)
-                                                    compiler)
+              = (NclCompositeExecutionObject *) (compiler
                     ->getExecutionObjectFromPerspective (
-                        compositionPerspective, NULL);
+                        compositionPerspective, NULL));
 
           delete compositionPerspective;
 
@@ -897,8 +895,7 @@ FormatterScheduler::runActionOverSwitch (
   selectedObject = switchObject->getSelectedObject ();
   if (selectedObject == NULL)
     {
-      selectedObject = ((FormatterConverter *)compiler)
-                           ->processExecutionObjectSwitch (switchObject);
+      selectedObject = compiler->processExecutionObjectSwitch (switchObject);
 
       if (selectedObject == NULL)
         {
@@ -957,14 +954,15 @@ FormatterScheduler::runSwitchEvent (NclExecutionObjectSwitch *switchObject,
               delete nestedSeq;
               try
                 {
-                  endPointObject = ((FormatterConverter *)compiler)
-                                       ->getExecutionObjectFromPerspective (
-                                           nodePerspective, NULL);
+                  endPointObject
+                      = compiler
+                            ->getExecutionObjectFromPerspective (
+                                  nodePerspective, NULL);
 
                   if (endPointObject != NULL)
                     {
                       selectedEvent
-                          = ((FormatterConverter *)compiler)
+                          = compiler
                                 ->getEvent (
                                     endPointObject,
                                     mapping->getEndInterfacePoint (),
