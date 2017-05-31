@@ -166,10 +166,10 @@ using namespace std;
 typedef guint64 GingaTime;    // nanoseconds
 typedef gint64 GingaTimeDiff;
 
-#define ginga_gettime()         (g_get_monotonic_time () * 1000)
-#define GINGA_TIME_NONE         ((GingaTime) -1)
-#define GINGA_TIME_IS_VALID(t)  (((GingaTime)(t)) != GINGA_TIME_NONE)
-#define GINGA_STIME_NONE        ((GingaTimeDiff)G_MININT64)
+#define ginga_gettime()        ((GingaTime)(g_get_monotonic_time () * 1000))
+#define GINGA_TIME_NONE        ((GingaTime) -1)
+#define GINGA_TIME_IS_VALID(t) (((GingaTime)(t)) != GINGA_TIME_NONE)
+#define GINGA_STIME_NONE       ((GingaTimeDiff)G_MININT64)
 #define GINGA_STIME_IS_VALID(t) (((GingaTimeDiff)(t)) != GINGA_STIME_NONE)
 
 #define GINGA_SECOND\
