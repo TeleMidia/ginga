@@ -776,6 +776,7 @@ INPUT_ENCODING         = UTF-8
 # *.qsf, *.as and *.js.
 
 FILE_PATTERNS          = *.c \
+                         *.cpp \
                          *.h \
                          *.l \
                          *.y
