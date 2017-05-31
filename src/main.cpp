@@ -37,11 +37,11 @@ using namespace ::ginga::mb;
   "Report bugs to: " PACKAGE_BUGREPORT "\n"     \
   "Ginga home page: " PACKAGE_URL
 
-static gboolean opt_fullscreen = FALSE; /* true if --fullscreen was given */
-static gboolean opt_scale = FALSE;      /* true if --scale was given */
-static gint opt_width = 800;            /* initial window width */
-static gint opt_height = 600;           /* initial window height */
-static gdouble opt_fps = 60;            /* initial FPS rate */
+static gboolean opt_fullscreen = FALSE; // true if --fullscreen was given
+static gboolean opt_scale = FALSE;      // true if --scale was given
+static gint opt_width = 800;            // initial window width
+static gint opt_height = 600;           // initial window height
+static gdouble opt_fps = 60;            // initial target frame-rate
 
 static gboolean
 opt_size (arg_unused (const gchar *opt), const gchar *arg,
@@ -153,7 +153,7 @@ main (int argc, char **argv)
       exit (EXIT_FAILURE);
     }
 
-  if (unlikely (argc != 2))
+  if (unlikely (argc < 2))
     {
       usage_error ("Missing file operand");
       exit (EXIT_FAILURE);
@@ -163,7 +163,7 @@ main (int argc, char **argv)
   g_strfreev (ginga_argv);
 
   _Ginga_Display = new ginga::mb::Display (opt_width, opt_height,
-                                           opt_fullscreen, opt_fps);
+                                           opt_fps, opt_fullscreen);
   formatter = new FormatterScheduler ();
 
   formatter->startDocument (file);

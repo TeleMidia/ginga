@@ -15,26 +15,19 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef DISPLAY_DEBUG_H
-#define DISPLAY_DEBUG_H
+#ifndef I_EVENT_LISTENER_H
+#define I_EVENT_LISTENER_H
 
 #include "ginga.h"
-#include <pango/pangocairo.h>
 
 GINGA_MB_BEGIN
 
-class DisplayDebug
+class IEventListener
 {
-private:
-  SDL_Texture *texture;
-  PangoFontDescription *font;
-
 public:
-  DisplayDebug ();
-  ~DisplayDebug ();
-  void redraw (SDL_Renderer *, GingaTime, double, int);
+  virtual void handleTick (GingaTime total, GingaTime diff, int serial) = 0;
 };
 
 GINGA_MB_END
 
-#endif /* DISPLAY_DEBUG_H */
+#endif // I_EVENT_LISTENER_H
