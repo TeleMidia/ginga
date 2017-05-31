@@ -59,8 +59,6 @@ protected:
 private:
   pthread_mutex_t _eventMutex;
   pthread_mutex_t _eventsMutex;
-  bool _running;
-
   void prepare (NclFormatterEvent *event);
 };
 

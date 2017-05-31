@@ -44,12 +44,12 @@ public:
   void stop (void) override;
 
   virtual bool hasPresented (void);
-  void setCurrentScope (const string &scopeId);
+  void setCurrentScope (const string &scopeId) override;
   bool setKeyHandler (bool isHandler);
-  virtual void setPropertyValue (const string &name, const string &value);
+  virtual void setPropertyValue (const string &, const string &) override;
 
   // Input event callback.
-  void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
+  void keyInputCallback (SDL_EventType evtType, SDL_Keycode key) override;
 
 private:
   GINGA_MUTEX_DEFN ()
