@@ -26,7 +26,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "IKeyInputEventListener.h"
 #include "IMouseEventListener.h"
 
-#include "DisplayDebug.h"
+#include "Dashboard.h"
 
 #include "player/Player.h"
 using namespace ::ginga::player;
@@ -52,7 +52,7 @@ private:
   double fps;                   // target frame-rate
   bool fullscreen;              // full-screen mode
   bool _quit;                   // true if render thread should quit
-  DisplayDebug *dashboard;      // dashboard (control panel)
+  Dashboard *dashboard;         // control panel
 
   GList *jobs;                  // list of jobs to be executed by renderer
   GList *listeners;             // list of listeners to be notified

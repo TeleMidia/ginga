@@ -15,25 +15,25 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef DISPLAY_DEBUG_H
-#define DISPLAY_DEBUG_H
+#ifndef DASHBOARD_H
+#define DASHBOARD_H
 
 #include "ginga.h"
 
 GINGA_MB_BEGIN
 
-class DisplayDebug
+class Dashboard
 {
 private:
   SDL_Texture *texture;
   PangoFontDescription *font;
 
 public:
-  DisplayDebug ();
-  ~DisplayDebug ();
+  Dashboard ();
+  ~Dashboard ();
   void redraw (SDL_Renderer *, GingaTime, double, int);
 };
 
 GINGA_MB_END
 
-#endif /* DISPLAY_DEBUG_H */
+#endif /* DASHBOARD_H */

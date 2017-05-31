@@ -16,28 +16,28 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "DisplayDebug.h"
+#include "Dashboard.h"
 
 #include "Display.h"
 
 GINGA_MB_BEGIN
 
-DisplayDebug::DisplayDebug ()
+Dashboard::Dashboard ()
 {
   this->texture = NULL;
   this->font = pango_font_description_from_string ("fixed 12pt");
   g_assert_nonnull (this->font);
 }
 
-DisplayDebug::~DisplayDebug()
+Dashboard::~Dashboard()
 {
   SDL_DestroyTexture (this->texture);
   pango_font_description_free (this->font);
 }
 
 void
-DisplayDebug::redraw (SDL_Renderer *renderer, GingaTime total, double fps,
-                      int frameno)
+Dashboard::redraw (SDL_Renderer *renderer, GingaTime total, double fps,
+                   int frameno)
 {
   char *text;
   int width;
