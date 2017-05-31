@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "Display.h"
-#include "DisplayDebug.h"
+#include "Dashboard.h"
 
 #include "SDLWindow.h"
 
@@ -295,7 +295,7 @@ Display::Display (int width, int height, double fps, bool fullscreen)
   if (this->fullscreen)
     flags |= SDL_WINDOW_FULLSCREEN;
 
-  this->dashboard = new DisplayDebug ();
+  this->dashboard = new Dashboard ();
   this->screen = SDL_CreateWindow ("ginga", 0, 0, width, height, flags);
   g_assert_nonnull (this->screen);
   this->renderer = SDL_CreateRenderer (this->screen, -1,
