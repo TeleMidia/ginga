@@ -42,7 +42,6 @@ FormatterScheduler::FormatterScheduler ()
     (this->playerManager, this->presContext, this, this->compiler);
 
   this->focusManager->setKeyHandler (true);
-  this->running = false;
   Thread::mutexInit (&mutexD, true);
   Thread::mutexInit (&mutexActions, true);
 }
@@ -50,11 +49,6 @@ FormatterScheduler::FormatterScheduler ()
 FormatterScheduler::~FormatterScheduler ()
 {
   set<NclLinkSimpleAction *>::iterator i;
-
-  clog << "FormatterScheduler::~FormatterScheduler(" << this << ")";
-  clog << endl;
-
-  running = false;
 
   Thread::mutexLock (&mutexD);
   Thread::mutexLock (&mutexActions);
@@ -452,14 +446,7 @@ FormatterScheduler::runActionOverApplicationObject (
             }
 
           player->prepare (executionObject, (NclPresentationEvent *) event);
-
           playerContent = player->getPlayer ();
-          if (playerContent != NULL)
-            {
-
-            }
-
-
           if (playerContent != NULL)
             {
               win = this->prepareFormatterRegion (executionObject);
@@ -629,13 +616,7 @@ FormatterScheduler::runActionOverComposition (
 
           objects = compositeObject->getExecutionObjects ();
           if (objects == NULL)
-            {
-              /*
-              clog << "FormatterScheduler::runActionOverComposition SET ";
-              clog << "no childs found!";
-              clog << endl;*/
               return;
-            }
 
           j = objects->begin ();
           while (j != objects->end ())
@@ -1114,7 +1095,8 @@ FormatterScheduler::startDocument (const string &file)
       NclExecutionObject *execobj;
 
       persp = new NclNodeNesting (node->getPerspective ());
-      execobj = this->compiler->getExecutionObjectFromPerspective (persp, NULL);
+      execobj = this->compiler->getExecutionObjectFromPerspective
+        (persp, NULL);
       g_assert_nonnull (execobj);
 
       g_debug ("settings: processing '%s'", persp->getId ().c_str ());

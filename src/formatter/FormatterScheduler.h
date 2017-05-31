@@ -46,9 +46,7 @@ private:
   string file;                        // NCL file path
   NclDocument *doc;                   // NCL document tree
   vector<NclFormatterEvent *> events; // document events
-  set<NclLinkSimpleAction *> actions;                // document actions
-
-  bool running;
+  set<NclLinkSimpleAction *> actions; // document actions
 
   pthread_mutex_t mutexD;
   pthread_mutex_t mutexActions;
