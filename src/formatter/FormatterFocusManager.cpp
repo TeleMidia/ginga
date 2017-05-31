@@ -446,8 +446,7 @@ FormatterFocusManager::setKeyMaster (const string &mediaId)
   selectedObject->setHandler (true);
   player = playerManager->getObjectPlayer (selectedObject);
 
-  nextObject->selectionEvent (0,
-                              player->getMediaTime () * 1000);
+  nextObject->selectionEvent (0, player->getMediaTime () * 1000);
 
   Thread::mutexUnlock (&mutexFocus);
 }

@@ -73,9 +73,7 @@ AdapterApplicationPlayer::prepare (NclExecutionObject *object,
       _preparedEvents.clear ();
       unlockPreparedEvents ();
 
-      lockObject ();
       this->_object = object;
-      unlockObject ();
 
       g_assert_nonnull (_object);
       g_assert_nonnull (_object->getDataObject());
@@ -240,8 +238,8 @@ AdapterApplicationPlayer::stop ()
   NclFormatterEvent *event;
   bool stopLambda = false;
 
-  g_assert_nonnull (_player);
   g_assert_nonnull (_object);
+  g_assert_nonnull (_player);
 
   if (_currentEvent != nullptr)
     {
