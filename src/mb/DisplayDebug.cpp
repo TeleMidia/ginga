@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "DisplayDebug.h"
 
-#include <cairo.h>
-#include <pango/pangocairo.h>
 #include "Display.h"
 
 GINGA_MB_BEGIN

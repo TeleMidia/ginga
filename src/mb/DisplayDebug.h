@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define DISPLAY_DEBUG_H
 
 #include "ginga.h"
-#include <pango/pangocairo.h>
 
 GINGA_MB_BEGIN
 

@@ -73,6 +73,11 @@ GINGA_BEGIN_DECLS
 #include <ncluaw.h>
 #include "ginga-sdlx.h"
 
+#if defined WITH_PANGO && WITH_PANGO
+# include <cairo.h>
+# include <pango/pangocairo.h>
+#endif
+
 #if defined WITH_LIBRSVG && WITH_LIBRSVG
 # include <cairo.h>
 # include <librsvg/rsvg.h>
