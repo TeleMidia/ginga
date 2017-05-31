@@ -40,16 +40,22 @@ struct _DisplayJob
 static void
 job_delete (DisplayJob *job)
 {
+  g_assert_nonnull (job);
   delete job;
 }
 
-// Compares the z-index of two players.
+// Compares the z-index and z-order of two players.
 static gint
 win_cmp_z (Player *p1, Player *p2)
 {
   int z1, zo1, z2, zo2;
+
+  g_assert_nonnull (p1);
+  g_assert_nonnull (p2);
+
   p1->getZ (&z1, &zo1);
   p2->getZ (&z2, &zo2);
+
   if (z1 < z2)
     return -1;
   if (z1 > z2)
@@ -68,15 +74,17 @@ win_delete (SDLWindow *win)
   delete win;
 }
 
-
-
+
 // Private methods.
 
-gpointer
+bool
 Display::add (GList **list, gpointer data)
 {
+  bool status;
+
+  g_assert_nonnull (list);
   this->lock ();
-  if (unlikely (g_list_find (*list, data)))
+  if (unlikely (status = g_list_find (*list, data)))
     {
       g_warning ("object %p already in list %p", data, *list);
       goto done;
@@ -84,13 +92,15 @@ Display::add (GList **list, gpointer data)
   *list = g_list_append (*list, data);
  done:
   this->unlock ();
-  return data;
+  return status;
 }
 
-gpointer
+bool
 Display::remove (GList **list, gpointer data)
 {
   GList *elt;
+
+  g_assert_nonnull (list);
   this->lock ();
   elt = g_list_find (*list, data);
   if (unlikely (elt == NULL))
@@ -101,19 +111,31 @@ Display::remove (GList **list, gpointer data)
   *list = g_list_remove_link (*list, elt);
  done:
   this->unlock ();
-  return data;
+  return elt == NULL;
 }
 
-gboolean
+bool
 Display::find (GList *list, gconstpointer data)
 {
   GList *elt;
-
   this->lock ();
   elt = g_list_find (list, data);
   this->unlock ();
-
   return elt != NULL;
+}
+
+void
+Display::notifyListeners (GingaTime total, GingaTime diff, int frameno)
+{
+  GList *l = this->listeners;
+  while (l != NULL)
+    {
+      GList *next = l->next;
+      IEventListener *obj = (IEventListener *) l->data;
+      g_assert_nonnull (obj);
+      obj->handleTick (total, diff, frameno);
+      l = next;
+    }
 }
 
 // FIXME:
@@ -129,38 +151,27 @@ Display::find (GList *list, gconstpointer data)
 void
 Display::renderLoop ()
 {
+  GingaTime epoch = ginga_gettime ();
+  GingaTime last = epoch;
+  int frameno = 1;
   bool doquit = false;
-
-  //fps control vars
-  guint32 curTime=0,preTime=SDL_GetTicks(),elapsedTime=0,accTime=0;
-  DisplayDebug* displayDebug = new DisplayDebug(this->width, this->height);
 
   while (!this->hasQuitted())   // render loop
     {
-      curTime = SDL_GetTicks();
-      elapsedTime = curTime - preTime;
-      preTime = curTime;
-
-      if (elapsedTime < this->frameTime)
-        {
-          guint32 sleepTime = this-> frameTime - elapsedTime;
-          elapsedTime = this->frameTime;
-          SDL_Delay(sleepTime);
-          accTime +=sleepTime;
-        }
-      else
-        {
-          accTime += elapsedTime;
-        }
-
-      if (accTime >= 100)
-        {
-          notifyTimeAnchorListeners();
-          accTime=0;
-        }
-
       SDL_Event evt;
       GList *l;
+
+      GingaTime framedur = (GingaTime)(1 * GINGA_SECOND / this->fps);
+      GingaTime now = ginga_gettime ();
+      GingaTime elapsed = now - last;
+
+      if (this->fps > 0 && elapsed < framedur)
+        g_usleep ((framedur - elapsed) / 1000);
+
+      now = ginga_gettime ();
+      elapsed = now - last;
+      last = now;
+      this->notifyListeners (now - epoch, elapsed, frameno++);
 
       while (SDL_PollEvent (&evt)) // handle input
         {
@@ -217,7 +228,11 @@ Display::renderLoop ()
             pl->redraw (this->renderer);
           l = next;
         }
-      displayDebug->draw(this->renderer,elapsedTime);
+
+      this->dashboard->redraw (this->renderer, now - epoch,
+                               ceil ((double)(1 * GINGA_SECOND / elapsed)),
+                               frameno);
+
       SDL_RenderPresent (this->renderer);
       this->unlock ();
 
@@ -229,50 +244,49 @@ Display::renderLoop ()
 
     }
 
-  delete displayDebug;
-
   if (doquit)
     goto beach;
 
   doquit = true;
-  this->lock ();
-  this->unlock ();
 
  beach:
   this->lock ();
   SDL_Quit ();
   this->unlock ();
 }
+
 
 // Public methods.
 
 /**
- * Creates a display with the given dimensions.
- * If FULLSCREEN is true, enable full-screen mode.
+ * @brief Creates a new display with the given parameters.
+ * @param width Width in pixels.
+ * @param height Height in pixels.
+ * @param fullscreen Full-screen mode.
+ * @param fps Target FPS rate.
  */
-Display::Display (int width, int height, bool fullscreen, gdouble fps)
+Display::Display (int width, int height, double fps, bool fullscreen)
 {
   guint flags;
 
   this->mutexInit ();
   this->width = width;
   this->height = height;
-  this->fullscreen = fullscreen;
   this->fps = fps;
-  this->frameTime = (fps > 0) ? (guint32)(1000 / fps) : 0;
-
+  this->fullscreen = fullscreen;
   this->_quit = false;
 
   this->jobs = NULL;
+  this->listeners = NULL;
+  this->players = NULL;
   this->textures = NULL;
   this->windows = NULL;
-  this->players = NULL;
 
   g_assert (!SDL_WasInit (0));
   if (unlikely (SDL_Init (0) != 0))
-    g_critical ("cannot initialize SDL: %s", SDL_GetError ());
+    g_critical ("display: cannot initialize SDL: %s", SDL_GetError ());
 
-#if SDL_VERSION_ATLEAST(2,0,4)
+#if SDL_VERSION_ATLEAST (2,0,4)
   SDL_SetHint (SDL_HINT_NO_SIGNAL_HANDLERS, "1");
 #endif
   SDL_SetHint (SDL_HINT_RENDER_SCALE_QUALITY, "1");
@@ -281,67 +295,67 @@ Display::Display (int width, int height, bool fullscreen, gdouble fps)
   if (this->fullscreen)
     flags |= SDL_WINDOW_FULLSCREEN;
 
+  this->dashboard = new DisplayDebug ();
   this->screen = SDL_CreateWindow ("ginga", 0, 0, width, height, flags);
   g_assert_nonnull (this->screen);
-
   this->renderer = SDL_CreateRenderer (this->screen, -1,
                                        SDL_RENDERER_PRESENTVSYNC);
   g_assert_nonnull (this->renderer);
 }
 
 /**
- * Destroys display.
+ * @brief Destroys display.
  */
 Display::~Display ()
 {
   this->quit ();
-
-
   this->lock ();
-  SDL_DestroyRenderer (this->renderer);
-  SDL_DestroyWindow (this->screen);
- // delete im;
+
   g_list_free_full (this->jobs, (GDestroyNotify) job_delete);
+  g_list_free (this->listeners);
+  g_list_free (this->players);
   g_assert (g_list_length (this->textures) == 0);
   g_list_free_full (this->windows, (GDestroyNotify) win_delete);
+
+  SDL_DestroyRenderer (this->renderer);
+  SDL_DestroyWindow (this->screen);
+  delete this->dashboard;
+
   this->unlock ();
   this->mutexClear ();
-
 }
 
+/**
+ * @brief Gets the target FPS rate.
+ * @return Target FPS rate.
+ */
 double
-Display::getFps(){
-  return this->fps;
+Display::getFPS ()
+{
+  double fps;
+
+  this->lock ();
+  fps = this->fps;
+  this->unlock ();
+
+  return fps;
 }
 
 /**
- * Gets display size.
+ * @brief Sets the target FPS rate.
+ * @param fps Target FPS rate.
  */
 void
-Display::getSize (int *width, int *height)
+Display::setFPS (double fps)
 {
   this->lock ();
-  set_if_nonnull (width, this->width);
-  set_if_nonnull (height, this->height);
+  this->fps = MAX (fps, 0);
   this->unlock ();
 }
 
 /**
- * Sets display size.
- */
-void
-Display::setSize (int width, int height)
-{
-  this->lock ();
-  SDL_SetWindowSize (this->screen, width, height); // don't return a status
-
-  this->width = width;
-  this->height = height;
-  this->unlock ();
-}
-
-/**
- * Gets display full-screen mode.
+ * @brief Gets full-screen mode.
+ * @return True if display is in full-screen.
  */
 bool
 Display::getFullscreen ()
@@ -351,11 +365,13 @@ Display::getFullscreen ()
   this->lock ();
   fullscreen = this->fullscreen;
   this->unlock ();
+
   return fullscreen;
 }
 
 /**
- * Sets display full-screen mode.
+ * @brief Sets full-screen mode.
+ * @param fullscreen Full-screen mode.
  */
 void
 Display::setFullscreen (bool fullscreen)
@@ -368,7 +384,7 @@ Display::setFullscreen (bool fullscreen)
   status = SDL_SetWindowFullscreen (this->screen, flags);
   if (unlikely (status != 0))
     {
-      g_warning ("cannot change display full-screen mode to %s: %s",
+      g_warning ("display: cannot set full-screen mode to %s: %s",
                  (fullscreen) ? "true" : "false", SDL_GetError ());
       goto done;
     }
@@ -378,7 +394,37 @@ Display::setFullscreen (bool fullscreen)
 }
 
 /**
- * Quits display render thread.
+ * @brief Gets display size.
+ * @param width Variable to store width.
+ * @param height Variable to store height.
+ */
+void
+Display::getSize (int *width, int *height)
+{
+  this->lock ();
+  set_if_nonnull (width, this->width);
+  set_if_nonnull (height, this->height);
+  this->unlock ();
+}
+
+/**
+ * @brief Sets display size.
+ * @param width Width in pixels.
+ * @param height Height in pixels.
+ */
+void
+Display::setSize (int width, int height)
+{
+  this->lock ();
+  g_assert (width > 0 && height > 0);
+  SDL_SetWindowSize (this->screen, width, height);
+  this->width = width;
+  this->height = height;
+  this->unlock ();
+}
+
+/**
+ * @brief Quits render loop.
  */
 void
 Display::quit ()
@@ -389,7 +435,8 @@ Display::quit ()
 }
 
 /**
- * Returns true if display render thread has quitted.
+ * @brief Tests whether display has quitted.
+ * @return True if display has quitted.
  */
 bool
 Display::hasQuitted ()
@@ -404,28 +451,30 @@ Display::hasQuitted ()
 }
 
 /**
- * Pushes a new job to renderer job list.
- * Returns the job id.
+ * @brief Adds job to display job list.
+ * @param func Job callback.
+ * @param data User-data.
+ * @return New job.
  */
 DisplayJob *
 Display::addJob (DisplayJobCallback func, void *data)
 {
   DisplayJob *job;
 
-  this->lock ();
   job = new DisplayJob;
   g_assert_nonnull (job);
+
   job->func = func;
   job->data = data;
-  this->add (&this->jobs, job);
-  this->unlock ();
 
+  this->add (&this->jobs, job);
   return job;
 }
 
 /**
- * Removes from the renderer job list the job with the given id.
- * Returns true if job was removed.
+ * @brief Removes job from the display job list.
+ * @param job Job.
+ * @return True if job was removed.
  */
 bool
 Display::removeJob (DisplayJob *job)
@@ -446,20 +495,41 @@ Display::removeJob (DisplayJob *job)
 }
 
 /**
- * Schedules the destruction of texture by render thread.
+ * @brief Adds listener to display listener list.
+ * @para obj Event listener.
+ */
+bool
+Display::registerEventListener (IEventListener *obj)
+{
+  g_assert_nonnull (obj);
+  return this->add (&this->listeners, obj);
+}
+
+/**
+ * @brief Removes listener from display listener list.
+ */
+bool
+Display::unregisterEventListener (IEventListener *obj)
+{
+  g_assert_nonnull (obj);
+  return this->remove (&this->listeners, obj);
+}
+
+/**
+ * @brief Schedules the destruction of texture.
+ * @param texture Texture.
  */
 void
 Display::destroyTexture (SDL_Texture *texture)
 {
-  this->lock ();
   g_assert_nonnull (texture);
+
   this->add (&this->textures, texture);
-  this->unlock ();
 }
 
-/**
- * Creates managed window with the given position, dimensions, and z-index.
- */
+
+// -------------------------------------------------------------------------
+
 SDLWindow *
 Display::createWindow (int x, int y, int w, int h, int z, int zorder)
 {
@@ -472,9 +542,6 @@ Display::createWindow (int x, int y, int w, int h, int z, int zorder)
   return win;
 }
 
-/**
- * Tests whether window WIN managed by display.
- */
 bool
 Display::hasWindow (const SDLWindow *win)
 {
@@ -482,9 +549,6 @@ Display::hasWindow (const SDLWindow *win)
   return this->find (this->windows, win);
 }
 
-/**
- * Destroys managed window.
- */
 void
 Display::destroyWindow (SDLWindow *win)
 {
@@ -502,28 +566,31 @@ Display::destroyWindow (SDLWindow *win)
 }
 
 void
-Display::registerPlayer(Player * obj){
+Display::registerPlayer (Player * obj)
+{
   g_assert_nonnull (obj);
   this->add (&this->players, obj);
 }
 
 void
-Display::unregisterPlayer(Player *obj){
+Display::unregisterPlayer (Player *obj)
+{
   g_assert_nonnull (obj);
   this->remove(&this-> players, obj);
 }
 
 void
-Display::notifyKeyEventListeners(SDL_EventType evtType, SDL_Keycode key){
-   if(key == SDLK_ESCAPE)
-     {
+Display::notifyKeyEventListeners (SDL_EventType evtType, SDL_Keycode key)
+{
+  if(key == SDLK_ESCAPE)
+    {
       this->quit();
       return;
-     }
+    }
 
-   set<IKeyInputEventListener*>::iterator it;
-   for (it=keyEventListeners.begin(); it!=keyEventListeners.end(); ++it)
-          (*it)->keyInputCallback(evtType, key);
+  set<IKeyInputEventListener*>::iterator it;
+  for (it=keyEventListeners.begin(); it!=keyEventListeners.end(); ++it)
+    (*it)->keyInputCallback(evtType, key);
 }
 
 void

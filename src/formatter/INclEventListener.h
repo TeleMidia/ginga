@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef I_EVENT_LISTENER_H
-#define I_EVENT_LISTENER_H
+#ifndef I_NCL_EVENT_LISTENER_H
+#define I_NCL_EVENT_LISTENER_H
 
 GINGA_FORMATTER_BEGIN
 
@@ -30,4 +30,4 @@ public:
 
 GINGA_FORMATTER_END
 
-#endif // I_EVENT_LISTENER_H
+#endif // I_NCL_EVENT_LISTENER_H

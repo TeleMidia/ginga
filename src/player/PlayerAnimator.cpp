@@ -187,7 +187,7 @@ void
 PlayerAnimator::calculatePosition(gint32 * value, ANIM_PROPERTY* pr, gint32 dir)
 { //S = So + vt
   pr->curValue = pr->curValue +
-      (dir * (pr->velocity * (1.0/(gdouble)Ginga_Display->getFps())));
+      (dir * (pr->velocity * (1.0/(gdouble)Ginga_Display->getFPS())));
   *value = (gint32)pr->curValue;
 
   if( (dir > 0 && *value >= pr->targetValue) ||
@@ -203,7 +203,7 @@ void
 PlayerAnimator::calculateColor(guint8* value, ANIM_PROPERTY* pr, gint32 dir)
 { //S = So + vt
   pr->curValue = pr->curValue +
-      (dir * (pr->velocity * (1.0/(gdouble)Ginga_Display->getFps())));
+      (dir * (pr->velocity * (1.0/(gdouble)Ginga_Display->getFPS())));
   *value = (guint8)pr->curValue;
 
   if( (dir > 0 && *value >= pr->targetValue) ||

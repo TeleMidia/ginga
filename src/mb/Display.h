@@ -19,10 +19,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define DISPLAY_H
 
 #include "ginga.h"
-#include "SDLWindow.h"
 
+#include "IEventListener.h"
+
+#include "SDLWindow.h"
 #include "IKeyInputEventListener.h"
 #include "IMouseEventListener.h"
+
+#include "DisplayDebug.h"
 
 #include "player/Player.h"
 using namespace ::ginga::player;
@@ -43,57 +47,64 @@ class Display
 {
 private:
   GINGA_MUTEX_DEFN ();
-
   int width;                    // display width in pixels
   int height;                   // display height in pixels
-  bool fullscreen;              // true if full-screen mode is on
-
-  double fps;                   // maximum frame-rate
-  guint32 frameTime;            // maximum frame time
+  double fps;                   // target frame-rate
+  bool fullscreen;              // full-screen mode
   bool _quit;                   // true if render thread should quit
+  DisplayDebug *dashboard;      // dashboard (control panel)
+
+  GList *jobs;                  // list of jobs to be executed by renderer
+  GList *listeners;             // list of listeners to be notified
+  GList *players;               // list of players to be ticked
+  GList *textures;              // list of textures to be destructed
+  GList *windows;               // list of windows to be redrawn
+
+  SDL_Window *screen;           // display screen
+  SDL_Renderer *renderer;       // display renderer
 
   set<IKeyInputEventListener*> keyEventListeners; // key event listeners
   set<IMouseEventListener*> mouseEventListeners;  // mouse event listeners
   set<NclExecutionObject*> timeAnchorListeners;   // time anchor listeners
 
-  SDL_Window *screen;           // display screen
-  SDL_Renderer *renderer;       // display renderer
+  bool add (GList **, gpointer);
+  bool remove (GList **, gpointer);
+  bool find (GList *, gconstpointer);
 
-  GList *jobs;                  // list of jobs to be executed by renderer
-  GList *players;               // list of players to be ticked
-  GList *textures;              // list of textures to be destructed
-  GList *windows;               // list of windows to be redrawn
-
-  gpointer add (GList **, gpointer);
-  gpointer remove (GList **, gpointer);
-  gboolean find (GList *, gconstpointer);
+  void notifyListeners (GingaTime, GingaTime, int);
 
 public:
-  Display (int, int, bool, gdouble);
+  Display (int, int, double, bool);
   ~Display ();
 
-  void getSize (int *, int *);
-  void setSize (int, int);
-  double getFps();
+  double getFPS ();
+  void setFPS (double);
   bool getFullscreen ();
   void setFullscreen (bool);
+  void getSize (int *, int *);
+  void setSize (int, int);
 
   void quit ();
   bool hasQuitted ();
 
   DisplayJob *addJob (DisplayJobCallback, void *);
   bool removeJob (DisplayJob *);
+
+  bool registerEventListener (IEventListener *);
+  bool unregisterEventListener (IEventListener *);
+
   void destroyTexture (SDL_Texture *);
 
+  // -----------------------------------------------------------------------
   SDLWindow *createWindow (int, int, int, int, int, int);
   bool hasWindow (const SDLWindow *);
   void destroyWindow (SDLWindow *);
 
   void renderLoop (void);
 
-  // players
-  void registerPlayer(Player *);
-  void unregisterPlayer(Player *);
+  // Players.
+  void registerPlayer (Player *);
+  void unregisterPlayer (Player *);
 
   // key event listeners
   void registerKeyEventListener(IKeyInputEventListener*);

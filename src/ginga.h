@@ -157,6 +157,57 @@ using namespace std;
     g_rec_mutex_unlock (&this->mutex);          \
   }
 
+// Time macros.
+typedef guint64 GingaTime;    // nanoseconds
+typedef gint64 GingaTimeDiff;
+
+#define ginga_gettime()         (g_get_monotonic_time () * 1000)
+#define GINGA_TIME_NONE         ((GingaTime) -1)
+#define GINGA_TIME_IS_VALID(t)  (((GingaTime)(t)) != GINGA_TIME_NONE)
+#define GINGA_STIME_NONE        ((GingaTimeDiff)G_MININT64)
+#define GINGA_STIME_IS_VALID(t) (((GingaTimeDiff)(t)) != GINGA_STIME_NONE)
+
+#define GINGA_SECOND\
+  ((GingaTimeDiff)(G_USEC_PER_SEC * G_GINT64_CONSTANT (1000)))
+
+#define GINGA_MSECOND\
+  ((GingaTimeDiff)(GINGA_SECOND / G_GINT64_CONSTANT (1000)))
+
+#define GINGA_USECOND\
+  ((GingaTimeDiff)(GINGA_SECOND / G_GINT64_CONSTANT (1000000)))
+
+#define GINGA_NSECOND\
+  ((GingaTimeDiff)(GINGA_SECOND / G_GINT64_CONSTANT (1000000000)))
+
+#define GINGA_TIME_AS_SECONDS(t)  ((t) / GINGA_SECOND)
+#define GINGA_TIME_AS_MSECONDS(t) ((t) / G_GINT64_CONSTANT (1000000))
+#define GINGA_TIME_AS_USECONDS(t) ((t) / G_GINT64_CONSTANT (1000))
+#define GINGA_TIME_AS_NSECONDS(t) (t)
+#define GINGA_DIFF(s, e)          (GingaTimeDiff)((e) - (s))
+
+#define GINGA_TIME_FORMAT "u:%02u:%02u.%09u"
+#define GINGA_TIME_ARGS(t)                                              \
+  GINGA_TIME_IS_VALID (t) ?                                             \
+  (guint) (((GingaTime)(t)) / (GINGA_SECOND * 60 * 60)) : 99,           \
+    GINGA_TIME_IS_VALID (t) ?                                           \
+    (guint) ((((GingaTime)(t)) / (GINGA_SECOND * 60)) % 60) : 99,       \
+    GINGA_TIME_IS_VALID (t) ?                                           \
+    (guint) ((((GingaTime)(t)) / GINGA_SECOND) % 60) : 99,              \
+    GINGA_TIME_IS_VALID (t) ?                                           \
+    (guint) (((GingaTime)(t)) % GINGA_SECOND) : 999999999
+
+#define GINGA_STIME_FORMAT "c%" GINGA_TIME_FORMAT
+#define GINGA_STIME_ARGS(t)                                             \
+  ((t) == GINGA_STIME_NONE || (t) >= 0) ? '+' : '-',                    \
+    GINGA_STIME_IS_VALID (t) ?                                          \
+    (guint) (((GingaTime)(ABS(t))) / (GINGA_SECOND * 60 * 60)) : 99,    \
+    GINGA_STIME_IS_VALID (t) ?                                          \
+    (guint) ((((GingaTime)(ABS(t))) / (GINGA_SECOND * 60)) % 60) : 99,  \
+    GINGA_STIME_IS_VALID (t) ?                                          \
+    (guint) ((((GingaTime)(ABS(t))) / GINGA_SECOND) % 60) : 99,         \
+    GINGA_STIME_IS_VALID (t) ?                                          \
+    (guint) (((GingaTime)(ABS(t))) % GINGA_SECOND) : 999999999
+
 // Misc functions.
 bool xnumeq (double, double);
 gint64 xruntime ();
