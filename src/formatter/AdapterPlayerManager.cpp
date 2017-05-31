@@ -27,20 +27,11 @@ AdapterPlayerManager::AdapterPlayerManager () {}
 
 AdapterPlayerManager::~AdapterPlayerManager ()
 {
-  map<string, AdapterFormatterPlayer *>::iterator i;
-
-  i = _objectPlayers.begin ();
-  while (i != _objectPlayers.end ())
+  for (auto &i: _objectPlayers)
     {
-      if (removePlayer (i->first))
-        {
-          i = _objectPlayers.begin ();
-        }
-      else
-        {
-          ++i;
-        }
+      delete i.second; // delete player
     }
+
   _objectPlayers.clear ();
 }
 
@@ -61,13 +52,14 @@ AdapterPlayerManager::removePlayer (NclExecutionObject *exObject)
 bool
 AdapterPlayerManager::removePlayer (const string &objectId)
 {
-  map<string, AdapterFormatterPlayer *>::iterator i;
+  map<string, AdapterFormatterPlayer *>::iterator i
+      = _objectPlayers.find (objectId);
 
-  i = _objectPlayers.find (objectId);
   if (i != _objectPlayers.end ())
     {
       _objectPlayers.erase (i);
       delete i->second; // delete the player
+
       return true;
     }
 
@@ -120,7 +112,7 @@ AdapterFormatterPlayer *
 AdapterPlayerManager::getObjectPlayer (NclExecutionObject *execObj)
 {
   map<string, AdapterFormatterPlayer *>::iterator i;
-  AdapterFormatterPlayer *player;
+  AdapterFormatterPlayer *player = nullptr;
   string objId;
 
   objId = execObj->getId ();
@@ -147,8 +139,9 @@ AdapterPlayerManager::isEmbeddedApp (NodeEntity *dataObject)
   Content *content;
 
   // first, descriptor
-  descriptor = (Descriptor *)(dataObject->getDescriptor ());
-  if (descriptor != NULL && !descriptor->instanceOf ("DescriptorSwitch"))
+  descriptor = dynamic_cast <Descriptor *>(dataObject->getDescriptor ());
+  if (descriptor
+      && !descriptor->instanceOf ("DescriptorSwitch"))
     {
       mediaType = descriptor->getPlayerName ();
       if (mediaType == "AdapterLuaPlayer"

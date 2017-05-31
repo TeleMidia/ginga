@@ -386,7 +386,7 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
               anim->setDuration (durVal);
               anim->setBy (byVal);
 
-              ((Player*)player->getPlayer())->
+              player->getPlayer()->
                 setAnimatorProperties(durVal,((NclAttributionEvent *)event)
                                       ->getAnchor ()
                                       ->getPropertyName (),propValue);

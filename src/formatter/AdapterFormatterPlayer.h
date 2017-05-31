@@ -24,12 +24,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/ContentNode.h"
 #include "ncl/NodeEntity.h"
 #include "ncl/ReferenceContent.h"
-using namespace ::ginga::ncl;
-
 #include "ncl/LambdaAnchor.h"
 #include "ncl/IntervalAnchor.h"
-using namespace ::ginga::ncl;
-
 #include "ncl/EventUtil.h"
 using namespace ::ginga::ncl;
 
@@ -37,7 +33,6 @@ using namespace ::ginga::ncl;
 #include "NclExecutionObject.h"
 
 #include "NclAttributionEvent.h"
-#include "NclFormatterEvent.h"
 #include "NclPresentationEvent.h"
 
 GINGA_FORMATTER_BEGIN
@@ -49,7 +44,6 @@ class AdapterFormatterPlayer :
     public INclAttributeValueMaintainer,
     public IKeyInputEventListener
 {
-
 public:
   explicit AdapterFormatterPlayer (AdapterPlayerManager *manager);
   virtual ~AdapterFormatterPlayer ();
@@ -94,14 +88,9 @@ protected:
   double prepareProperties (NclExecutionObject *obj);
   void updatePlayerProperties ();
   void prepare ();
-  bool lockObject ();
-  bool unlockObject ();
   void updateObjectExpectedDuration ();
 
 private:
-  bool _isLocked;
-  pthread_mutex_t _objectMutex;
-
   bool checkRepeat (NclPresentationEvent *mainEvent);
   void setVisible (bool visible);
 };
