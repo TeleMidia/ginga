@@ -712,8 +712,8 @@ AdapterFormatterPlayer::start ()
 
   if (!_object->isSleeping ())
     {
-      g_debug ("AdapterFormatterPlayer::start(%s) is occurring or paused.",
-               _object->getId ().c_str());
+      g_warning ("Trying to start %s, while it is occurring or paused.",
+                 _object->getId ().c_str());
 
       return false;
     }

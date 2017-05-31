@@ -32,19 +32,15 @@ AdapterApplicationPlayer::AdapterApplicationPlayer (AdapterPlayerManager *mngr)
   Thread::mutexInit (&_eventMutex, false);
   Thread::mutexInit (&_eventsMutex, false);
 
-  _currentEvent = NULL;
-  _running = false;
-
+  _currentEvent = nullptr;
 }
 
 AdapterApplicationPlayer::~AdapterApplicationPlayer ()
 {
-  _running = false;
   lockPreparedEvents ();
   _preparedEvents.clear ();
   unlockPreparedEvents ();
-  _currentEvent = NULL;
-  _object = NULL;
+
   Thread::mutexDestroy (&_eventMutex);
   Thread::mutexDestroy (&_eventsMutex);
 }
@@ -184,8 +180,10 @@ AdapterApplicationPlayer::prepare (NclFormatterEvent *event)
     {
       if (anchorEvent->getAnchor ()->instanceOf ("LambdaAnchor"))
         {
-          NclPresentationEvent *presentationEvt = dynamic_cast <NclPresentationEvent*> (event);
+          NclPresentationEvent *presentationEvt
+              = dynamic_cast <NclPresentationEvent*> (event);
           g_assert_nonnull (presentationEvt);
+
           duration = presentationEvt->getDuration ();
 
           if (duration < IntervalAnchor::OBJECT_DURATION)
@@ -206,10 +204,13 @@ AdapterApplicationPlayer::prepare (NclFormatterEvent *event)
         }
       else if (anchorEvent->getAnchor ()->instanceOf ("LabeledAnchor"))
         {
-          NclPresentationEvent *presentationEvt = dynamic_cast <NclPresentationEvent*> (event);
+          NclPresentationEvent *presentationEvt
+              = dynamic_cast <NclPresentationEvent*> (event);
           g_assert_nonnull (presentationEvt);
           duration = presentationEvt->getDuration ();
-          LabeledAnchor *labeledAnchor = dynamic_cast <LabeledAnchor *> (anchorEvent->getAnchor());
+
+          LabeledAnchor *labeledAnchor
+              = dynamic_cast <LabeledAnchor *> (anchorEvent->getAnchor());
           g_assert_nonnull (labeledAnchor);
 
           if (isnan (duration))
@@ -242,10 +243,13 @@ AdapterApplicationPlayer::stop ()
   g_assert_nonnull (_player);
   g_assert_nonnull (_object);
 
-  if (_currentEvent != NULL)
+  if (_currentEvent != nullptr)
     {
-      NclAnchorEvent *anchorEvt = dynamic_cast <NclAnchorEvent *>(_currentEvent);
-      if(anchorEvt && anchorEvt->getAnchor() != NULL && anchorEvt->getAnchor()->instanceOf("LambdaAnchor"))
+      NclAnchorEvent *anchorEvt
+          = dynamic_cast <NclAnchorEvent *>(_currentEvent);
+      if(anchorEvt
+         && anchorEvt->getAnchor() != NULL
+         && anchorEvt->getAnchor()->instanceOf("LambdaAnchor"))
         {
           stopLambda = true;
         }
@@ -319,10 +323,13 @@ AdapterApplicationPlayer::abort ()
   g_assert_nonnull (_player);
   g_assert_nonnull (_object);
 
-  if (_currentEvent != NULL)
+  if (_currentEvent != nullptr)
     {
-      NclAnchorEvent *anchorEvt = dynamic_cast <NclAnchorEvent *>(_currentEvent);
-      if(anchorEvt && anchorEvt->getAnchor() != NULL && anchorEvt->getAnchor()->instanceOf("LambdaAnchor"))
+      NclAnchorEvent *anchorEvt
+          = dynamic_cast <NclAnchorEvent *>(_currentEvent);
+      if(anchorEvt
+         && anchorEvt->getAnchor() != NULL
+         && anchorEvt->getAnchor()->instanceOf("LambdaAnchor"))
         {
           abortLambda = true;
         }
@@ -382,68 +389,6 @@ AdapterApplicationPlayer::abort ()
   return false;
 }
 
-bool
-AdapterApplicationPlayer::unprepare ()
-{
-  map<string, NclFormatterEvent *>::iterator i;
-
-  if (_currentEvent == NULL)
-    {
-      if (_object != NULL)
-        {
-          _manager->removePlayer (_object);
-          _object->unprepare ();
-        }
-
-      return true;
-    }
-
-  if (_currentEvent->getCurrentState () == EventUtil::ST_OCCURRING
-      || _currentEvent->getCurrentState () == EventUtil::ST_PAUSED)
-    {
-      clog << "AdapterApplicationPlayer::unprepare stopping ";
-      clog << "current event '" << _currentEvent->getId () << "'";
-      clog << endl;
-
-      _currentEvent->stop ();
-    }
-
-  lockPreparedEvents ();
-  if (_preparedEvents.count (_currentEvent->getId ()) != 0
-      && _preparedEvents.size () == 1)
-    {
-      if (_object != NULL)
-        {
-          _object->unprepare ();
-          _manager->removePlayer (_object);
-        }
-
-      _preparedEvents.clear ();
-
-      _object = NULL;
-    }
-  else
-    {
-      if (_object != NULL)
-        {
-          _object->unprepare ();
-        }
-
-      i = _preparedEvents.find (_currentEvent->getId ());
-      if (i != _preparedEvents.end ())
-        {
-          _preparedEvents.erase (i);
-        }
-
-      clog << "AdapterApplicationPlayer::unprepare I still have '";
-      clog << _preparedEvents.size () << "' prepared events" << endl;
-    }
-
-  unlockPreparedEvents ();
-
-  return true;
-}
-
 void
 AdapterApplicationPlayer::naturalEnd ()
 {
@@ -460,7 +405,8 @@ AdapterApplicationPlayer::naturalEnd ()
   while (i != _preparedEvents.end ())
     {
       event = i->second;
-      if (event != NULL && event->instanceOf ("NclAnchorEvent")
+      if (event != NULL
+          && event->instanceOf ("NclAnchorEvent")
           && ((NclAnchorEvent *)event)->getAnchor () != NULL
           && ((NclAnchorEvent *)event)
                  ->getAnchor ()
@@ -484,274 +430,50 @@ AdapterApplicationPlayer::naturalEnd ()
 }
 
 bool
-AdapterApplicationPlayer::checkEvent (NclFormatterEvent *event, short type)
+AdapterApplicationPlayer::unprepare ()
 {
-  bool isPresentation;
-  bool isAttribution;
+  map<string, NclFormatterEvent *>::iterator i;
 
-  g_assert_nonnull (event);
-  isPresentation = event->instanceOf ("NclPresentationEvent")
-      && type == Player::PL_TYPE_PRESENTATION;
+  g_assert_nonnull (_object);
 
-  isAttribution = event->instanceOf ("NclAttributionEvent")
-      && type == Player::PL_TYPE_ATTRIBUTION;
-
-  return (isPresentation || isAttribution);
-}
-
-bool
-AdapterApplicationPlayer::startEvent (const string &anchorId, short type,
-                                      const string &value)
-{
-  NclFormatterEvent *event;
-  bool fakeStart = false;
-
-  event = _object->getEventFromAnchorId (anchorId);
-  if (checkEvent (event, type))
+  if (_currentEvent == nullptr)
     {
-      if (prepare (_object, (NclPresentationEvent *) event))
-        {
-          if (setAndLockCurrentEvent (event))
-            {
-              if (type == Player::PL_TYPE_PRESENTATION)
-                {
-                  fakeStart = _object->start ();
-                  unlockCurrentEvent (event);
-                }
-              else
-                {
-                  fakeStart = event->start ();
-                  ((NclAttributionEvent *)event)->setValue (value);
-                  unlockCurrentEvent (event);
-                }
-            }
-        }
-      else
-        {
-          g_warning ("Can't prepare '%s' form anchor id = '%s'",
-                     event->getId().c_str(),
-                     anchorId.c_str ());
-        }
+      _manager->removePlayer (_object);
+      _object->unprepare ();
+
+      return true;
+    }
+
+  if (_currentEvent->getCurrentState () == EventUtil::ST_OCCURRING
+      || _currentEvent->getCurrentState () == EventUtil::ST_PAUSED)
+    {
+      _currentEvent->stop ();
+    }
+
+  lockPreparedEvents ();
+  if (_preparedEvents.count (_currentEvent->getId ()) != 0
+      && _preparedEvents.size () == 1)
+    {
+      _object->unprepare ();
+      _manager->removePlayer (_object);
+      _preparedEvents.clear ();
+
+      _object = NULL;
     }
   else
     {
-      g_warning ("Event not found '%s' in object '%s'",
-                 anchorId.c_str(),
-                 _object->getId().c_str());
-    }
+      _object->unprepare ();
 
-  return fakeStart;
-}
-
-bool
-AdapterApplicationPlayer::stopEvent (const string &anchorId, short type,
-                                     const string &value)
-{
-  NclFormatterEvent *event;
-
-  if (_object->getId () == anchorId)
-    {
-      clog << "AdapterApplicationPlayer::stopEvent ";
-      clog << " considering anchor '";
-      clog << anchorId << "' will call naturalEnd" << endl;
-      naturalEnd ();
-      return false;
-    }
-
-  event = _object->getEventFromAnchorId (anchorId);
-  if (checkEvent (event, type))
-    {
-      if (setAndLockCurrentEvent (event))
+      i = _preparedEvents.find (_currentEvent->getId ());
+      if (i != _preparedEvents.end ())
         {
-          if (type == Player::PL_TYPE_PRESENTATION)
-            {
-              if (_object->stop ())
-                {
-                  unprepare ();
-                  unlockCurrentEvent (event);
-                  return true;
-                }
-            }
-          else
-            {
-              ((NclAttributionEvent *)event)->setValue (value);
-              if (event->stop ())
-                {
-                  unprepare ();
-                  unlockCurrentEvent (event);
-
-                  /*if (hasPrepared()) {
-                          setPropertyValue(
-                                          (NclAttributionEvent*)event,
-                  value);
-
-                          player->setPropertyValue(anchorId, value);
-
-                  } else {
-                          object->setPropertyValue(
-                                          (NclAttributionEvent*)event,
-                  value);
-                  }*/
-                  return true;
-                }
-            }
-          unlockCurrentEvent (event);
+          _preparedEvents.erase (i);
         }
     }
-  else
-    {
-      g_warning ("Can't stop event '%s'",
-                 anchorId.c_str());
-    }
 
-  return false;
-}
+  unlockPreparedEvents ();
 
-bool
-AdapterApplicationPlayer::abortEvent (const string &anchorId, short type)
-{
-  NclFormatterEvent *event;
-  string cvt_id = anchorId;
-
-  if (_object->getId () == anchorId)
-    {
-      cvt_id = "";
-    }
-
-  event = _object->getEventFromAnchorId (cvt_id);
-  if (checkEvent (event, type))
-    {
-      if (setAndLockCurrentEvent (event))
-        {
-          if (type == Player::PL_TYPE_PRESENTATION)
-            {
-              if (_object->abort ())
-                {
-                  unprepare ();
-                  unlockCurrentEvent (event);
-                  return true;
-                }
-            }
-          else
-            {
-              if (event->abort ())
-                {
-                  unprepare ();
-                  unlockCurrentEvent (event);
-
-                  /*if (hasPrepared()) {
-                          setPropertyValue(
-                                          (NclAttributionEvent*)event,
-                  value);
-
-                          player->setPropertyValue(anchorId, value);
-
-                  } else {
-                          object->setPropertyValue(
-                                          (NclAttributionEvent*)event,
-                  value);
-                  }*/
-                  return true;
-                }
-            }
-          unlockCurrentEvent (event);
-        }
-    }
-  else
-    {
-      g_warning ("Can't abort event '%s'",
-                 anchorId.c_str());
-    }
-
-  return false;
-}
-
-bool
-AdapterApplicationPlayer::pauseEvent (const string &anchorId, short type)
-{
-  NclFormatterEvent *event;
-  string cvt_id = anchorId;
-
-  if (_object->getId () == anchorId)
-    {
-      cvt_id = "";
-    }
-
-  event = _object->getEventFromAnchorId (cvt_id);
-  if (checkEvent (event, type))
-    {
-      if (setAndLockCurrentEvent (event))
-        {
-          if (type == Player::PL_TYPE_PRESENTATION)
-            {
-              if (_object->pause ())
-                {
-                  unlockCurrentEvent (event);
-                  return true;
-                }
-            }
-          else
-            {
-              if (event->pause ())
-                {
-                  unlockCurrentEvent (event);
-                  return true;
-                }
-            }
-          unlockCurrentEvent (event);
-        }
-    }
-  else
-    {
-      g_warning ("Can't pause event '%s'",
-                 anchorId.c_str());
-    }
-
-  return false;
-}
-
-bool
-AdapterApplicationPlayer::resumeEvent (const string &anchorId, short type)
-{
-  NclFormatterEvent *event;
-  string cvt_id = anchorId;
-
-  if (_object->getId () == anchorId)
-    {
-      cvt_id = "";
-    }
-
-  event = _object->getEventFromAnchorId (cvt_id);
-  if (checkEvent (event, type))
-    {
-      if (setAndLockCurrentEvent (event))
-        {
-          if (type == Player::PL_TYPE_PRESENTATION)
-            {
-              if (_object->resume ())
-                {
-                  unlockCurrentEvent (event);
-                  return true;
-                }
-            }
-          else
-            {
-              if (event->resume ())
-                {
-                  unlockCurrentEvent (event);
-                  return true;
-                }
-            }
-          unlockCurrentEvent (event);
-        }
-    }
-  else
-    {
-      g_warning ("Can't resume event '%s'",
-                 anchorId.c_str());
-    }
-
-  return false;
+  return true;
 }
 
 void
@@ -761,10 +483,11 @@ AdapterApplicationPlayer::unlockCurrentEvent (NclFormatterEvent *event)
     {
       string id = "";
 
-      if (_currentEvent != NULL)
+      if (_currentEvent != nullptr)
         {
           id = _currentEvent->getId ();
         }
+
       g_warning ("Handling events warning! id = '%s'",
                  id.c_str());
     }
@@ -800,11 +523,12 @@ AdapterApplicationPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
         }
 
       _currentEvent = event;
+
       NclApplicationExecutionObject *appObject =
           dynamic_cast <NclApplicationExecutionObject *> (_object);
       g_assert_nonnull (appObject);
-      appObject->setCurrentEvent (_currentEvent);
 
+      appObject->setCurrentEvent (_currentEvent);
       _player->setCurrentScope (interfaceId);
     }
   else if (event->instanceOf ("NclAttributionEvent"))
