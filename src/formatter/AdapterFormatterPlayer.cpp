@@ -52,17 +52,12 @@ AdapterFormatterPlayer::AdapterFormatterPlayer (AdapterPlayerManager *manager)
   this->_object = nullptr;
   this->_player = nullptr;
   this->_mrl = "";
-  this->_isLocked = false;
-
-  Thread::mutexInit (&_objectMutex, false);
 
   Ginga_Display->registerKeyEventListener(this);
 }
 
 AdapterFormatterPlayer::~AdapterFormatterPlayer ()
 {
-  lockObject ();
-
   if (_object != nullptr)
     {
       _object = nullptr;
@@ -76,10 +71,6 @@ AdapterFormatterPlayer::~AdapterFormatterPlayer ()
       delete _player;
       _player = nullptr;
     }
-
-  unlockObject ();
-
-  Thread::mutexDestroy (&_objectMutex);
 }
 
 void
@@ -237,7 +228,7 @@ AdapterFormatterPlayer::hasPrepared ()
         }
     }
 
-  return _isLocked;
+  return true;  // Maybe, it should be false
 }
 
 double
@@ -498,25 +489,18 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
 void
 AdapterFormatterPlayer::updatePlayerProperties ()
 {
-  NclCascadingDescriptor *descriptor;
-  string value;
-
-  if (_object != nullptr)
+  g_assert_nonnull (_object);
+  g_assert_nonnull (_player);
+  NclCascadingDescriptor *descriptor = _object->getDescriptor ();
+  if (descriptor != nullptr)
     {
-      descriptor = _object->getDescriptor ();
-      if (descriptor != nullptr)
+      string value = descriptor->getParameterValue ("soundLevel");
+      if (value == "")
         {
-          value = descriptor->getParameterValue ("soundLevel");
-          if (value == "")
-            {
-              value = "1.0";
-            }
-
-          if (_player != nullptr)
-            {
-              _player->setPropertyValue ("soundLevel", value);
-            }
+          value = "1.0";
         }
+
+      _player->setPropertyValue ("soundLevel", value);
     }
 }
 
@@ -535,22 +519,6 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
       g_debug ("AdapterFormatterPlayer::prepare returns false, because the"
                "player is already prepared.");
       return false;
-    }
-
-  if (!lockObject ())
-    {
-      g_assert_nonnull (_player);
-      if (_player->isForcedNaturalEnd ())
-        {
-          while (!lockObject ())
-            ;
-        }
-      else
-        {
-          g_debug ("AdapterFormatterPlayer::prepare returns false because the"
-                   "object is locked");
-          return false;
-        }
     }
 
   this->_object = object;
@@ -844,7 +812,6 @@ AdapterFormatterPlayer::abort ()
       return true;
     }
 
-  unlockObject ();
   return false;
 }
 
@@ -907,7 +874,6 @@ AdapterFormatterPlayer::unprepare ()
     }
 
   _object = nullptr;
-  unlockObject ();
 
   return true;
 }
@@ -1052,7 +1018,7 @@ AdapterFormatterPlayer::updateObjectExpectedDuration ()
 double
 AdapterFormatterPlayer::getMediaTime ()
 {
-  g_assert_nonnull(_player);
+  g_assert_nonnull (_player);
   return _player->getMediaTime ();
 }
 
@@ -1068,17 +1034,16 @@ AdapterFormatterPlayer::updateStatus (short code,
                                       short type,
                                       arg_unused (const string &value))
 {
+  g_assert_nonnull (_object);
+
   switch (code)
     {
     case Player::PL_NOTIFY_STOP:
-      if (_object != nullptr)
+      if (type == Player::PL_TYPE_PRESENTATION)
         {
-          if (type == Player::PL_TYPE_PRESENTATION)
+          if (parameter == "")
             {
-              if (parameter == "")
-                {
-                  naturalEnd ();
-                }
+              naturalEnd ();
             }
         }
       break;
@@ -1124,30 +1089,6 @@ AdapterFormatterPlayer::setVisible (bool visible)
           _player->setVisible (visible);
         }
     }
-}
-
-bool
-AdapterFormatterPlayer::lockObject ()
-{
-  if (_isLocked)
-    {
-      return false;
-    }
-  _isLocked = true;
-  Thread::mutexLock (&_objectMutex);
-  return true;
-}
-
-bool
-AdapterFormatterPlayer::unlockObject ()
-{
-  if (!_isLocked)
-    {
-      return false;
-    }
-  Thread::mutexUnlock (&_objectMutex);
-  _isLocked = false;
-  return true;
 }
 
 GINGA_FORMATTER_END
