@@ -74,7 +74,6 @@ public:
   PlayerStatus getMediaStatus();
 
   guint32 getMediaTime ();
-  virtual double getTotalMediaTime ();
 
   virtual void setScope (const string &scope,
                          PlayerEventType type = PL_TYPE_PRESENTATION,

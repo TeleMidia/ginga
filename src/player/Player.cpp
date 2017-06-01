@@ -45,7 +45,7 @@ Player::Player (const string &mrl)
   this->accTimePaused = 0;
 
   //media attr
-  this->texture = NULL; //media content
+  this->texture = NULL;         // media content
   this->borderWidth = 0;
   this->bgColor = {0, 0, 0, 0};
   this->borderColor = {0, 0, 0, 0};
@@ -59,12 +59,9 @@ Player::Player (const string &mrl)
 
 Player::~Player ()
 {
-  Ginga_Display->unregisterPlayer(this);
-
-  set<Player *>::iterator i;
-
-  this->status = PL_SLEEPING;
-
+  Ginga_Display->unregisterPlayer (this);
+  if (this->texture != NULL)
+    Ginga_Display->destroyTexture (this->texture);
   _listeners.clear ();
   _properties.clear ();
 }
@@ -79,10 +76,10 @@ Player::setMrl (const string &mrl, bool visible)
 void
 Player::addListener (IPlayerListener *listener)
 {
-  if (!_notifying)
-    {
-      _listeners.insert (listener);
-    }
+  if (_notifying)
+    return;
+
+  _listeners.insert (listener);
 }
 
 void
@@ -94,9 +91,7 @@ Player::removeListener (IPlayerListener *listener)
     {
       i = _listeners.find (listener);
       if (i != _listeners.end ())
-        {
-          _listeners.erase (i);
-        }
+        _listeners.erase (i);
     }
 }
 
@@ -141,12 +136,6 @@ Player::getMediaTime ()
 
   guint32 curTime = (guint32) g_get_monotonic_time() - this->initStartTime;
   return (this->accTimePlaying + curTime - this->accTimePaused)/1000;
-}
-
-double
-Player::getTotalMediaTime ()
-{
-  return -1.0;
 }
 
 void
