@@ -78,7 +78,6 @@ SvgPlayer::displayJobCallback (arg_unused (DisplayJob *job),
                               0x0000ff00,
                               0x000000ff);
 #endif
-
   g_assert_nonnull (sfc);
 
   SDLx_LockSurface (sfc);
@@ -123,7 +122,6 @@ bool
 SvgPlayer::play ()
 {
   Ginga_Display->addJob (displayJobCallbackWrapper, this);
-  //this->condDisplayJobWait ();
   return Player::play ();
 }
 
