@@ -899,7 +899,7 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
           dynamic_cast <AdapterApplicationPlayer *> (this);
       if(adapterAppPlayer)
         {
-          if (!adapterAppPlayer->setAndLockCurrentEvent (event))
+          if (!adapterAppPlayer->setCurrentEvent (event))
             {
               return false;
             }
