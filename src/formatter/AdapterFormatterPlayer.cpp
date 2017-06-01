@@ -790,6 +790,7 @@ AdapterFormatterPlayer::resume ()
 {
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
+
   if (_object->resume ())
     {
       _player->resume ();
@@ -899,7 +900,7 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
           dynamic_cast <AdapterApplicationPlayer *> (this);
       if(adapterAppPlayer)
         {
-          if (!adapterAppPlayer->setAndLockCurrentEvent (event))
+          if (!adapterAppPlayer->setCurrentEvent (event))
             {
               return false;
             }
@@ -935,11 +936,6 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
                 }
             }
           _player->setPropertyValue (propName, value);
-        }
-
-      if (adapterAppPlayer)
-        {
-          adapterAppPlayer->unlockCurrentEvent (event);
         }
     }
 

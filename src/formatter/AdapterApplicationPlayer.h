@@ -43,8 +43,7 @@ public:
   virtual bool abort () override;
   virtual void naturalEnd() override;
 
-  bool setAndLockCurrentEvent (NclFormatterEvent *event);
-  void unlockCurrentEvent (NclFormatterEvent *event);
+  bool setCurrentEvent (NclFormatterEvent *event);
 
 protected:
   map<string, NclFormatterEvent *> _preparedEvents;
