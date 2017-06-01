@@ -269,7 +269,6 @@ AdapterApplicationPlayer::stop ()
               ++i;
             }
         }
-
     }
   else if (!_player->isForcedNaturalEnd ())
     {
@@ -377,6 +376,7 @@ AdapterApplicationPlayer::naturalEnd ()
   clog << "AdapterApplicationPlayer::naturalEnd ";
   clog << endl;
 
+  g_assert_nonnull (_object);
   g_assert_nonnull (_player);
 
   i = _preparedEvents.begin ();
@@ -397,7 +397,6 @@ AdapterApplicationPlayer::naturalEnd ()
       ++i;
     }
 
-  g_assert_nonnull (_object);
   if (_object->stop ())
     {
       unprepare ();
@@ -448,25 +447,8 @@ AdapterApplicationPlayer::unprepare ()
   return true;
 }
 
-void
-AdapterApplicationPlayer::unlockCurrentEvent (NclFormatterEvent *event)
-{
-  if (event != _currentEvent)
-    {
-      string id = "";
-
-      if (_currentEvent != nullptr)
-        {
-          id = _currentEvent->getId ();
-        }
-
-      g_warning ("Handling events warning! id = '%s'",
-                 id.c_str());
-    }
-}
-
 bool
-AdapterApplicationPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
+AdapterApplicationPlayer::setCurrentEvent (NclFormatterEvent *event)
 {
   string interfaceId;
 
