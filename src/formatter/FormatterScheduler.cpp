@@ -177,7 +177,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
     {
       runActionOverApplicationObject
         ((NclApplicationExecutionObject *)obj, event,
-         (AdapterApplicationPlayer *)player, action);
+         player, action);
       return;
     }
 
@@ -401,7 +401,7 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
 void
 FormatterScheduler::runActionOverApplicationObject (
     NclApplicationExecutionObject *executionObject,
-    NclFormatterEvent *event, AdapterApplicationPlayer *player,
+    NclFormatterEvent *event, AdapterFormatterPlayer *player,
     NclLinkSimpleAction *action)
 {
   NclCascadingDescriptor *descriptor;

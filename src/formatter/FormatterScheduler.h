@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTER_SCHEDULER_H
 #define FORMATTER_SCHEDULER_H
 
-#include "AdapterApplicationPlayer.h"
 #include "AdapterFormatterPlayer.h"
 #include "AdapterPlayerManager.h"
 #include "FormatterConverter.h"
@@ -79,7 +78,7 @@ private:
 
   void runActionOverApplicationObject (
       NclApplicationExecutionObject *executionObject,
-      NclFormatterEvent *event, AdapterApplicationPlayer *player,
+      NclFormatterEvent *event, AdapterFormatterPlayer *player,
       NclLinkSimpleAction *action);
 
   void
