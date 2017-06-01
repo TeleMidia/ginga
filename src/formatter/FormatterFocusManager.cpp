@@ -38,8 +38,6 @@ FormatterFocusManager::FormatterFocusManager (
 {
   string strValue;
 
-  Ginga_Display->registerKeyEventListener(this);
-
   focusTable = new map<string, set<NclExecutionObject *> *>;
   currentFocus = "";
   objectToSelect = "";
@@ -90,6 +88,7 @@ FormatterFocusManager::FormatterFocusManager (
 
   checkInit ();
   instances.insert (this);
+  Ginga_Display->registerEventListener (this);
 }
 
 FormatterFocusManager::~FormatterFocusManager ()
@@ -121,6 +120,7 @@ FormatterFocusManager::~FormatterFocusManager ()
 
   playerManager = NULL;
   presContext = NULL;
+  Ginga_Display->unregisterEventListener (this);
 }
 
 void
@@ -819,23 +819,22 @@ FormatterFocusManager::changeSettingState (const string &name, const string &act
   delete settingObjects;
 }
 
-void 
-FormatterFocusManager::keyInputCallback (SDL_EventType evtType, SDL_Keycode key){
-  
-  if (key == SDLK_ESCAPE || evtType == SDL_KEYDOWN)
-        return ;
-
-
+void
+FormatterFocusManager::handleKeyEvent (SDL_EventType evtType,
+                                       SDL_Keycode key)
+{
   NclExecutionObject *currentObject;
   NclCascadingDescriptor *currentDescriptor;
   NclFormatterRegion *fr;
   string nextIndex;
   map<string, set<NclExecutionObject *> *>::iterator i;
 
+  if (key == SDLK_ESCAPE || evtType == SDL_KEYDOWN)
+    return;
+
   if (!isHandler)
     {
-     // return true;
-     return;
+      return;
     }
 
   i = focusTable->find (currentFocus);
@@ -847,17 +846,15 @@ FormatterFocusManager::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
           clog << "currentFocus not found which is '" << currentFocus;
           clog << "'" << endl;
         }
-
-      if (selectedObject != NULL && key == SDLK_BACKSPACE){
-            return;
+      if (selectedObject != NULL && key == SDLK_BACKSPACE)
+        {
+          return;
         }
-
       if (!focusTable->empty ())
         {
           nextIndex = focusTable->begin ()->first;
           setFocus (nextIndex);
         }
-
       return;
     }
 
@@ -879,7 +876,7 @@ FormatterFocusManager::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
     {
       if (key == SDLK_BACKSPACE)
         {
-           return;
+          return;
         }
     }
   else if (key == SDLK_UP)
@@ -912,7 +909,7 @@ FormatterFocusManager::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
     }
   else if (key == SDLK_RETURN)
     {
-      return ;
+      return;
     }
 
   if (nextIndex != "")
@@ -921,7 +918,6 @@ FormatterFocusManager::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
       setFocus (nextIndex);
       changeSettingState ("service.currentFocus", "stop");
     }
-
 }
 
 

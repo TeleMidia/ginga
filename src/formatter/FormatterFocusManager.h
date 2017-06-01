@@ -35,13 +35,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "AdapterFormatterPlayer.h"
 #include "AdapterPlayerManager.h"
 
-#include "mb/IKeyInputEventListener.h"
-
 GINGA_FORMATTER_BEGIN
 
 class FormatterConverter;
 
-class FormatterFocusManager : public IKeyInputEventListener
+class FormatterFocusManager : public IEventListener
 {
 private:
   PresentationContext *presContext;
@@ -113,7 +111,8 @@ private:
   void changeSettingState (const string &name, const string &act);
 
 public:
-  void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
+  void handleTickEvent (GingaTime, GingaTime, int) {};
+  void handleKeyEvent (SDL_EventType evtType, SDL_Keycode key);
 };
 
 GINGA_FORMATTER_END

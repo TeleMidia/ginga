@@ -53,7 +53,7 @@ AdapterFormatterPlayer::AdapterFormatterPlayer (AdapterPlayerManager *manager)
   this->_player = nullptr;
   this->_mrl = "";
 
-  Ginga_Display->registerKeyEventListener(this);
+  Ginga_Display->registerEventListener (this);
 }
 
 AdapterFormatterPlayer::~AdapterFormatterPlayer ()
@@ -867,7 +867,7 @@ AdapterFormatterPlayer::unprepare ()
     }
 
   _manager->removePlayer (_object);
-  Ginga_Display->unregisterKeyEventListener(this);
+  Ginga_Display->unregisterEventListener (this);
 
   if (NclExecutionObject::hasInstance (_object, false))
     {
@@ -1050,8 +1050,8 @@ AdapterFormatterPlayer::updateStatus (short code,
 }
 
 void
-AdapterFormatterPlayer::keyInputCallback (SDL_EventType evtType,
-                                          SDL_Keycode key)
+AdapterFormatterPlayer::handleKeyEvent (SDL_EventType evtType,
+                                        SDL_Keycode key)
 {
   if(evtType == SDL_KEYDOWN)
     return;

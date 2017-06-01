@@ -115,7 +115,7 @@ Display::find (GList *list, gconstpointer data)
 }
 
 void
-Display::notifyListeners (GingaTime total, GingaTime diff, int frameno)
+Display::notifyTickListeners (GingaTime total, GingaTime diff, int frameno)
 {
   GList *l = this->listeners;
   while (l != NULL)
@@ -124,6 +124,20 @@ Display::notifyListeners (GingaTime total, GingaTime diff, int frameno)
       IEventListener *obj = (IEventListener *) l->data;
       g_assert_nonnull (obj);
       obj->handleTickEvent (total, diff, frameno);
+      l = next;
+    }
+}
+
+void
+Display::notifyKeyListeners (SDL_EventType type, SDL_Keycode key)
+{
+  GList *l = this->listeners;
+  while (l != NULL)
+    {
+      GList *next = l->next;
+      IEventListener *obj = (IEventListener *) l->data;
+      g_assert_nonnull (obj);
+      obj->handleKeyEvent (type, key);
       l = next;
     }
 }
@@ -161,20 +175,19 @@ Display::renderLoop ()
       now = ginga_gettime ();
       elapsed = now - last;
       last = now;
-      this->notifyListeners (now - epoch, elapsed, frameno++);
+      this->notifyTickListeners (now - epoch, elapsed, frameno++);
       this->notifyTimeAnchorListeners ();
 
       while (SDL_PollEvent (&evt)) // handle input
         {
-          switch (evt.type)
+          SDL_EventType type = (SDL_EventType) evt.type;
+          switch (type)
             {
             case SDL_KEYDOWN:
-              this->notifyKeyEventListeners (SDL_KEYDOWN,
-                                             evt.key.keysym.sym);
-              break;
             case SDL_KEYUP:
-              this->notifyKeyEventListeners (SDL_KEYUP,
-                                             evt.key.keysym.sym);
+              if (evt.key.keysym.sym == SDLK_ESCAPE)
+                this->quit ();
+              this->notifyKeyListeners (type, evt.key.keysym.sym);
               break;
             case SDL_MOUSEBUTTONDOWN:
               this->notifyMouseEventListeners (SDL_MOUSEBUTTONDOWN);
@@ -533,20 +546,6 @@ Display::unregisterPlayer (Player *obj)
 }
 
 void
-Display::notifyKeyEventListeners (SDL_EventType evtType, SDL_Keycode key)
-{
-  if(key == SDLK_ESCAPE)
-    {
-      this->quit();
-      return;
-    }
-
-  set<IKeyInputEventListener*>::iterator it;
-  for (it=keyEventListeners.begin(); it!=keyEventListeners.end(); ++it)
-    (*it)->keyInputCallback(evtType, key);
-}
-
-void
 Display::notifyMouseEventListeners(SDL_EventType evtType){
     int x, y;
     SDL_GetMouseState(&x, &y);
@@ -563,28 +562,13 @@ Display::notifyTimeAnchorListeners(){
 }
 
 void
-Display::registerKeyEventListener(IKeyInputEventListener* obj){
-   keyEventListeners.insert(obj);
-}
-
-void
 Display::registerMouseEventListener(IMouseEventListener* obj){
    mouseEventListeners.insert(obj);
 }
 
 void
-Display::unregisterKeyEventListener(IKeyInputEventListener* obj){
-   keyEventListeners.erase (obj);
-}
-
-void
 Display::unregisterMouseEventListener(IMouseEventListener* obj){
    mouseEventListeners.erase (obj);
-}
-
-void
-Display::postKeyInputEventListener(SDL_Keycode key){
-   notifyKeyEventListeners(SDL_KEYUP, key);
 }
 
 void

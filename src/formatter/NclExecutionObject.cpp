@@ -22,8 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclCompositeExecutionObject.h"
 #include "NclApplicationExecutionObject.h"
 
-#include "mb/IKeyInputEventListener.h"
-
 #include "NclSwitchEvent.h"
 
 #include "mb/Display.h"
