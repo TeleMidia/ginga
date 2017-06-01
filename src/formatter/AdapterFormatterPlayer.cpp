@@ -790,6 +790,7 @@ AdapterFormatterPlayer::resume ()
 {
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
+
   if (_object->resume ())
     {
       _player->resume ();
