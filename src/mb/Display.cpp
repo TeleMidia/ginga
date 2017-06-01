@@ -64,13 +64,6 @@ win_cmp_z (Player *p1, Player *p2)
   return 0;
 }
 
-// Deletes window.
-static void
-win_delete (SDLWindow *win)
-{
-  delete win;
-}
-
 
 // Private methods.
 
@@ -278,7 +271,6 @@ Display::Display (int width, int height, double fps, bool fullscreen)
   this->listeners = NULL;
   this->players = NULL;
   this->textures = NULL;
-  this->windows = NULL;
 
   g_assert (!SDL_WasInit (0));
   if (unlikely (SDL_Init (0) != 0))
@@ -313,7 +305,6 @@ Display::~Display ()
   g_list_free (this->listeners);
   g_list_free (this->players);
   g_assert (g_list_length (this->textures) == 0);
-  g_list_free_full (this->windows, (GDestroyNotify) win_delete);
 
   SDL_DestroyRenderer (this->renderer);
   SDL_DestroyWindow (this->screen);
@@ -526,41 +517,6 @@ Display::destroyTexture (SDL_Texture *texture)
 
 
 // -------------------------------------------------------------------------
-
-SDLWindow *
-Display::createWindow (int x, int y, int w, int h, int z, int zorder)
-{
-  SDLWindow *win;
-
-  win = new SDLWindow (x, y, w, h, z, zorder);
-  g_assert_nonnull (win);
-  this->add (&this->windows, win);
-
-  return win;
-}
-
-bool
-Display::hasWindow (const SDLWindow *win)
-{
-  g_assert_nonnull (win);
-  return this->find (this->windows, win);
-}
-
-void
-Display::destroyWindow (SDLWindow *win)
-{
-  SDL_Texture *texture;
-
-  g_assert_nonnull (win);
-  texture = win->getTexture ();
-  if (texture != NULL)
-    {
-      this->destroyTexture (texture);
-      win->setTexture (NULL);
-    }
-  this->remove (&this->windows, win);
-  delete win;
-}
 
 void
 Display::registerPlayer (Player * obj)
