@@ -38,7 +38,6 @@ private:
   static bool displayJobCallbackWrapper (DisplayJob *,
                                          SDL_Renderer *, void *);
   bool displayJobCallback (DisplayJob *, SDL_Renderer *);
-  SDL_Texture* decode( SDL_Renderer *renderer);
 };
 
 GINGA_PLAYER_END
