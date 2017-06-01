@@ -936,11 +936,6 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
             }
           _player->setPropertyValue (propName, value);
         }
-
-      if (adapterAppPlayer)
-        {
-          adapterAppPlayer->unlockCurrentEvent (event);
-        }
     }
 
   return true;

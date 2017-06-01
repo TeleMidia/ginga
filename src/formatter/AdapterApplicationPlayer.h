@@ -44,7 +44,6 @@ public:
   virtual void naturalEnd() override;
 
   bool setCurrentEvent (NclFormatterEvent *event);
-  void unlockCurrentEvent (NclFormatterEvent *event);
 
 protected:
   map<string, NclFormatterEvent *> _preparedEvents;
