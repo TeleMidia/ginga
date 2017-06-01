@@ -75,6 +75,8 @@ public:
   Player *getPlayer ();
   void setOutputWindow (SDLWindow* windowId);
 
+  bool setCurrentEvent (NclFormatterEvent *event); // app
+
 protected:
   AdapterPlayerManager *_manager;
   NclExecutionObject *_object;
@@ -86,12 +88,18 @@ protected:
 
   double prepareProperties (NclExecutionObject *obj);
   void updatePlayerProperties ();
-  void prepare ();
+  void prepare (void);
   void updateObjectExpectedDuration ();
+
+  bool _isAppPlayer;
+  map<string, NclFormatterEvent *> _preparedEvents;  // app
+  NclFormatterEvent *_currentEvent; // app
+  void prepare (NclFormatterEvent *event); // app
 
 private:
   bool checkRepeat (NclPresentationEvent *mainEvent);
   void setVisible (bool visible);
+
 };
 
 GINGA_FORMATTER_END

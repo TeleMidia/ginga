@@ -33,24 +33,6 @@ class AdapterApplicationPlayer :
 public:
   explicit AdapterApplicationPlayer (AdapterPlayerManager *manager);
   virtual ~AdapterApplicationPlayer ();
-
-  virtual bool prepare (NclExecutionObject *_object,
-                        NclPresentationEvent *mainEvent) override;
-  virtual bool hasPrepared () override;
-  virtual bool unprepare () override;
-
-  virtual bool stop () override;
-  virtual bool abort () override;
-  virtual void naturalEnd() override;
-
-  bool setCurrentEvent (NclFormatterEvent *event);
-
-protected:
-  map<string, NclFormatterEvent *> _preparedEvents;
-  NclFormatterEvent *_currentEvent;
-
-private:
-  void prepare (NclFormatterEvent *event);
 };
 
 GINGA_FORMATTER_END
