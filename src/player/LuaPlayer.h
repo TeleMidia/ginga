@@ -49,7 +49,7 @@ public:
   void resume (void) override;
   void stop (void) override;
 
-  void setCurrentScope (const string &scopeId) override;
+  virtual void setCurrentScope (const string &scopeId) override;
   bool setKeyHandler (bool isHandler);
   virtual void setPropertyValue (const string &, const string &) override;
 

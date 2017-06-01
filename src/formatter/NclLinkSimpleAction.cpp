@@ -34,7 +34,6 @@ NclLinkSimpleAction::NclLinkSimpleAction (NclFormatterEvent *event,
 
 NclLinkSimpleAction::~NclLinkSimpleAction ()
 {
-  clog << "NclLinkSimpleAction::~NclLinkSimpleAction" << endl;
   if (listener != NULL)
     {
       listener->removeAction (this);

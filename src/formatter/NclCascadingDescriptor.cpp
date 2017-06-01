@@ -80,9 +80,6 @@ NclCascadingDescriptor::~NclCascadingDescriptor ()
   focusBorderColor = NULL;
   selBorderColor = NULL;
 
-  clog << "NclCascadingDescriptor::~NclCascadingDescriptor(";
-  clog << getId () << ")" << endl;
-
   if (formatterRegion != NULL)
     {
       delete formatterRegion;
