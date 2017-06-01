@@ -759,15 +759,9 @@ NclCompositeExecutionObject::setPropertyValue (NclAttributionEvent *event,
 void
 NclCompositeExecutionObject::checkLinkConditions ()
 {
-  if (!running)
-    {
-      //Thread::startThread ();
-    }
-}
+  if (running)
+    return;
 
-void
-NclCompositeExecutionObject::run ()
-{
   running = true;
   if (deleting || (runningEvents.empty () && pausedEvents.empty ()
                    && pendingLinks.empty ()))
