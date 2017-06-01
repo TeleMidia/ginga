@@ -92,12 +92,11 @@ Dashboard::redraw (SDL_Renderer *renderer, GingaTime total, double fps,
   pango_layout_set_wrap (layout, PANGO_WRAP_WORD);
 
   cairo_set_source_rgba (cr, 1., 0., 0., .5);
-  cairo_rectangle (cr, 0, height - text_height,
-                   width, height - text_height);
+  cairo_rectangle (cr, 0, 0, width, text_height);
   cairo_fill (cr);
 
   cairo_set_source_rgba (cr, 1., 1., 1., 1);
-  cairo_move_to (cr, 0., height - text_height);
+  cairo_move_to (cr, 0., 0.);
   pango_cairo_update_layout (cr, layout);
   pango_cairo_show_layout (cr, layout);
 

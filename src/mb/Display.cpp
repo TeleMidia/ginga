@@ -21,9 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "SDLWindow.h"
 
-#include <cairo.h>
-#include <pango/pangocairo.h>
-
 GINGA_MB_BEGIN
 
 // Global display; initialized by main().
