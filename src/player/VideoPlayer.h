@@ -38,6 +38,20 @@ GINGA_PLAYER_BEGIN
 
 class VideoPlayer : public Player
 {
+private:
+  GINGA_MUTEX_DEFN ();
+  GstElement *playbin;
+  GstElement *binVideo;
+  GstElement *filterVideo;
+
+  GstSample *sample;            // last sample seen
+  bool eosSeen;                 // true if EOS has been seen
+  double soundLevel;            // sound level
+
+private:
+  void setEOS (bool);
+  bool getEOS ();
+
 public:
   VideoPlayer (const string &mrl); //works
   virtual ~VideoPlayer ();
@@ -50,54 +64,31 @@ public:
   void stop (); //works
   void resume (); //works
 
-  virtual string getPropertyValue (const string &name); //works
-  virtual void setPropertyValue (const string &name, const string &value); //works
+  virtual string getPropertyValue (const string &);
+  virtual void setPropertyValue (const string &, const string &);
 
-  void addListener (IPlayerListener *listener); //need test
-  //void release ();
-  string getMrl (); //works
-  bool isPlaying (); //works
-  bool isRunning (); //works
-
-  void setOutWindow (SDLWindow *); //works
-
+  void addListener (IPlayerListener *listener);
+  string getMrl ();
+  bool isPlaying ();
+  bool isRunning ();
+  void setOutWindow (SDLWindow *);
 
  private:
-  GINGA_MUTEX_DEFN ();
-  static void eosCB (GstAppSink *, gpointer); //works
+  static void eosCB (GstAppSink *, gpointer);
   static GstFlowReturn newPrerollCB (GstAppSink *, gpointer);
-  static GstFlowReturn newSampleCB (GstAppSink *, gpointer); //works
+  static GstFlowReturn newSampleCB (GstAppSink *, gpointer);
 
   static bool displayJobCallbackWrapper (DisplayJob *,
                                          SDL_Renderer *, void *); //works
   bool displayJobCallback (DisplayJob *, SDL_Renderer *); //works
 
-  double soundLevel;
-
-  GstElement *playbin;
-
-  GstElement *binVideo;
-  GstElement *filterVideo;
-
-  //GstElement *binAudio;
-  //GstElement *filterAudio;
-  //GstElement *audiopanorama;
-
-  GstSample *sample;
 
   GstStateChangeReturn ret;
- // GstBus *bus;
- // GstMessage *msg;
-
   GstAppSinkCallbacks callbacks;
 
- // bool textureUpdated;
-
-  void createPipeline (); //works
-  void eos(); //works
-  void run ();
-
-  void printPipelineState (); //works
+  void createPipeline ();
+  void eos();
+  void printPipelineState ();
 
 };
 
