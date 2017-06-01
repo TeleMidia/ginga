@@ -22,8 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclCompositeExecutionObject.h"
 #include "NclApplicationExecutionObject.h"
 
-#include "mb/IKeyInputEventListener.h"
-
 #include "NclSwitchEvent.h"
 
 #include "mb/Display.h"
@@ -132,7 +130,6 @@ NclExecutionObject::~NclExecutionObject ()
 
   destroyEvents ();
 
-  lockParentTable ();
   i = nodeParentTable.begin ();
   while (i != nodeParentTable.end ())
     {
@@ -150,14 +147,11 @@ NclExecutionObject::~NclExecutionObject ()
   nodeParentTable.clear ();
 
   parentTable.clear ();
-  unlockParentTable ();
-
   if (descriptor != NULL)
     {
       delete descriptor;
       descriptor = NULL;
     }
-  unlock ();
 }
 
 void
@@ -195,19 +189,16 @@ NclExecutionObject::destroyEvents ()
   map<string, NclFormatterEvent *>::iterator i;
   NclFormatterEvent *event;
 
-  lockEvents ();
   i = events.begin ();
   while (i != events.end ())
     {
       event = i->second;
       events.erase (i);
-      unlockEvents ();
       if (NclFormatterEvent::hasInstance (event, true))
         {
           delete event;
           event = NULL;
         }
-      lockEvents ();
       i = events.begin ();
     }
   events.clear ();
@@ -221,8 +212,6 @@ NclExecutionObject::destroyEvents ()
   presEvents.clear ();
   selectionEvents.clear ();
   otherEvents.clear ();
-
-  unlockEvents ();
 }
 
 void
@@ -241,7 +230,6 @@ NclExecutionObject::removeParentListenersFromEvent (
 
   if (NclFormatterEvent::hasInstance (event, false))
     {
-      lockParentTable ();
       i = parentTable.begin ();
       while (i != parentTable.end ())
         {
@@ -258,7 +246,6 @@ NclExecutionObject::removeParentListenersFromEvent (
             }
           ++i;
         }
-      unlockParentTable ();
     }
 }
 
@@ -331,7 +318,6 @@ NclExecutionObject::getParentObject (Node *node)
   map<Node *, Node *>::iterator i;
   map<Node *, NclCompositeExecutionObject *>::iterator j;
 
-  lockParentTable ();
   i = nodeParentTable.find (node);
   if (i != nodeParentTable.end ())
     {
@@ -342,7 +328,6 @@ NclExecutionObject::getParentObject (Node *node)
           parentObj = j->second;
         }
     }
-  unlockParentTable ();
 
   return parentObj;
 }
@@ -359,10 +344,8 @@ NclExecutionObject::addParentObject (Node *node,
                                      NclCompositeExecutionObject *parentObject,
                                      Node *parentNode)
 {
-  lockParentTable ();
   nodeParentTable[node] = parentNode;
   parentTable[parentNode] = parentObject;
-  unlockParentTable ();
 }
 
 void
@@ -371,7 +354,6 @@ NclExecutionObject::removeParentObject (Node *parentNode,
 {
   map<Node *, NclCompositeExecutionObject *>::iterator i;
 
-  lockParentTable ();
   i = parentTable.find (parentNode);
   if (i != parentTable.end () && i->second == parentObject)
     {
@@ -381,7 +363,6 @@ NclExecutionObject::removeParentObject (Node *parentNode,
         }
       parentTable.erase (i);
     }
-  unlockParentTable ();
 }
 
 void
@@ -410,7 +391,6 @@ NclExecutionObject::addEvent (NclFormatterEvent *event)
 {
   map<string, NclFormatterEvent *>::iterator i;
 
-  lockEvents ();
   i = events.find (event->getId ());
   if (i != events.end ())
     {
@@ -420,7 +400,6 @@ NclExecutionObject::addEvent (NclFormatterEvent *event)
       clog << " addEvent address '" << event << "'";
       clog << endl;
 
-      unlockEvents ();
       return false;
     }
 
@@ -428,7 +407,6 @@ NclExecutionObject::addEvent (NclFormatterEvent *event)
   clog << getId () << "'" << endl;
 
   events[event->getId ()] = event;
-  unlockEvents ();
   if (event->instanceOf ("NclPresentationEvent"))
     {
       addPresentationEvent ((NclPresentationEvent *)event);
@@ -539,13 +517,7 @@ NclExecutionObject::compareToUsingStartTime (NclExecutionObject *object)
 bool
 NclExecutionObject::containsEvent (NclFormatterEvent *event)
 {
-  bool contains;
-
-  lockEvents ();
-  contains = (events.count (event->getId ()) != 0);
-  unlockEvents ();
-
-  return contains;
+  return (events.count (event->getId ()) != 0);
 }
 
 NclFormatterEvent *
@@ -554,12 +526,10 @@ NclExecutionObject::getEventFromAnchorId (const string &anchorId)
   map<string, NclFormatterEvent *>::iterator i;
   NclFormatterEvent *event;
 
-  lockEvents ();
   if (anchorId == "")
     {
       if (wholeContent != NULL)
         {
-          unlockEvents ();
           return wholeContent;
         }
     }
@@ -569,7 +539,6 @@ NclExecutionObject::getEventFromAnchorId (const string &anchorId)
         {
           if (NclFormatterEvent::hasNcmId (wholeContent, anchorId))
             {
-              unlockEvents ();
               return wholeContent;
             }
         }
@@ -585,7 +554,6 @@ NclExecutionObject::getEventFromAnchorId (const string &anchorId)
             {
               if (NclFormatterEvent::hasNcmId (event, anchorId))
                 {
-                  unlockEvents ();
                   return event;
                 }
             }
@@ -594,7 +562,6 @@ NclExecutionObject::getEventFromAnchorId (const string &anchorId)
       clog << endl;
     }
 
-  unlockEvents ();
   return NULL;
 }
 
@@ -602,30 +569,22 @@ NclFormatterEvent *
 NclExecutionObject::getEvent (const string &id)
 {
   NclFormatterEvent *ev;
-  lockEvents ();
   if (events.count (id) != 0)
     {
       ev = events[id];
-      unlockEvents ();
       return ev;
     }
-
-  unlockEvents ();
   return NULL;
 }
 
 vector<NclFormatterEvent *>
 NclExecutionObject::getEvents ()
 {
-  lockEvents ();
   vector<NclFormatterEvent *> eventsVector;
   for (const auto &i : events)
     {
       eventsVector.push_back (i.second);
     }
-  unlockEvents ();
-
-
   return eventsVector;
 }
 
@@ -636,10 +595,8 @@ NclExecutionObject::hasSampleEvents ()
   NclFormatterEvent *event;
   ContentAnchor *anchor;
 
-  lockEvents ();
   if (events.empty ())
     {
-      unlockEvents ();
       return false;
     }
 
@@ -652,13 +609,11 @@ NclExecutionObject::hasSampleEvents ()
           anchor = ((NclAnchorEvent *)event)->getAnchor ();
           if (anchor->instanceOf ("SampleIntervalAnchor"))
             {
-              unlockEvents ();
               return true;
             }
         }
       ++i;
     }
-  unlockEvents ();
 
   return false;
 }
@@ -671,12 +626,8 @@ NclExecutionObject::getSampleEvents ()
   NclFormatterEvent *event;
   ContentAnchor *anchor;
 
-  lockEvents ();
   if (events.empty ())
-    {
-      unlockEvents ();
-      return NULL;
-    }
+    return NULL;
 
   eventsSet = new set<NclAnchorEvent *>;
   i = events.begin ();
@@ -693,7 +644,6 @@ NclExecutionObject::getSampleEvents ()
         }
       ++i;
     }
-  unlockEvents ();
 
   return eventsSet;
 }
@@ -827,13 +777,10 @@ NclExecutionObject::removeEvent (NclFormatterEvent *event)
         }
     }
 
-  lockEvents ();
   l = events.find (event->getId ());
   if (l != events.end ())
-    {
-      events.erase (l);
-    }
-  unlockEvents ();
+    events.erase (l);
+
   return true;
 }
 
@@ -858,7 +805,6 @@ NclExecutionObject::removeNode (Node *node)
 
   if (node != dataObject)
     {
-      lockParentTable ();
       i = nodeParentTable.find (node);
       if (i != nodeParentTable.end ())
         {
@@ -871,7 +817,6 @@ NclExecutionObject::removeNode (Node *node)
               parentTable.erase (j);
             }
         }
-      unlockParentTable ();
     }
 }
 
@@ -881,10 +826,8 @@ NclExecutionObject::getNodes ()
   vector<Node *> *nodes;
   map<Node *, Node *>::iterator i;
 
-  lockParentTable ();
   if (nodeParentTable.empty ())
     {
-      unlockParentTable ();
       return NULL;
     }
 
@@ -898,7 +841,6 @@ NclExecutionObject::getNodes ()
     {
       nodes->push_back (dataObject);
     }
-  unlockParentTable ();
 
   return nodes;
 }
@@ -938,7 +880,6 @@ NclExecutionObject::getNodePerspective (Node *node)
   NclCompositeExecutionObject *parentObject;
   map<Node *, NclCompositeExecutionObject *>::iterator i;
 
-  lockParentTable ();
   if (nodeParentTable.count (node) == 0)
     {
       if (dataObject == node)
@@ -947,7 +888,6 @@ NclExecutionObject::getNodePerspective (Node *node)
         }
       else
         {
-          unlockParentTable ();
           return NULL;
         }
     }
@@ -964,12 +904,10 @@ NclExecutionObject::getNodePerspective (Node *node)
         }
       else
         {
-          unlockParentTable ();
           return NULL;
         }
     }
   perspective->insertAnchorNode (node);
-  unlockParentTable ();
   return perspective;
 }
 
@@ -988,7 +926,6 @@ NclExecutionObject::getObjectPerspective (Node *node)
   map<Node *, Node *>::iterator i;
   map<Node *, NclCompositeExecutionObject *>::iterator j;
 
-  lockParentTable ();
   i = nodeParentTable.find (node);
   if (i == nodeParentTable.end ())
     {
@@ -998,7 +935,6 @@ NclExecutionObject::getObjectPerspective (Node *node)
         }
       else
         {
-          unlockParentTable ();
           return NULL;
         }
     }
@@ -1014,12 +950,9 @@ NclExecutionObject::getObjectPerspective (Node *node)
         }
       else
         {
-          unlockParentTable ();
           return NULL;
         }
     }
-  unlockParentTable ();
-
   perspective->push_back (this);
   return perspective;
 }
@@ -1030,10 +963,8 @@ NclExecutionObject::getParentNodes ()
   vector<Node *> *parents;
   map<Node *, Node *>::iterator i;
 
-  lockParentTable ();
   if (nodeParentTable.empty ())
     {
-      unlockParentTable ();
       return NULL;
     }
 
@@ -1043,7 +974,6 @@ NclExecutionObject::getParentNodes ()
       parents->push_back (i->second);
     }
 
-  unlockParentTable ();
   return parents;
 }
 
@@ -1081,12 +1011,6 @@ NclExecutionObject::prepare (NclFormatterEvent *event, double offsetTime)
       return false;
     }
 
-  if (!lock ())
-    {
-      return false;
-    }
-
-  // clog << "NclExecutionObject::prepare(" << id << ") locked" << endl;
   mainEvent = event;
   if (mainEvent->instanceOf ("NclAnchorEvent"))
     {
@@ -1094,7 +1018,6 @@ NclExecutionObject::prepare (NclFormatterEvent *event, double offsetTime)
       if (contentAnchor != NULL
           && contentAnchor->instanceOf ("LabeledAnchor"))
         {
-          lockParentTable ();
           i = parentTable.begin ();
           while (i != parentTable.end ())
             {
@@ -1108,7 +1031,6 @@ NclExecutionObject::prepare (NclFormatterEvent *event, double offsetTime)
                       i->second);
               ++i;
             }
-          unlockParentTable ();
           return true;
         }
     }
@@ -1124,7 +1046,6 @@ NclExecutionObject::prepare (NclFormatterEvent *event, double offsetTime)
         }
     }
 
-  lockParentTable ();
   i = parentTable.begin ();
   while (i != parentTable.end ())
     {
@@ -1136,7 +1057,6 @@ NclExecutionObject::prepare (NclFormatterEvent *event, double offsetTime)
       mainEvent->addEventListener (i->second);
       ++i;
     }
-  unlockParentTable ();
 
   prepareTransitionEvents (ContentAnchor::CAT_TIME, startTime);
 
@@ -1420,12 +1340,9 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
 
   propName = (event->getAnchor ())->getPropertyName ();
 
-  lock (); // lock the object
-
   if (propName == "zIndex")
     {
       region->setZIndex (xstrtoint (value, 10));
-      unlock ();
       return true;
     }
 
@@ -1502,11 +1419,8 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
     {
       // set the values
       region->updateRegionBounds ();
-      unlock ();
-
       return true;
     }
-  unlock ();
 
   return false;
 }
@@ -1595,18 +1509,13 @@ NclExecutionObject::unprepare ()
   if (mainEvent == NULL
       || mainEvent->getCurrentState () != EventUtil::ST_SLEEPING)
     {
-      unlock ();
       clog << "NclExecutionObject::unprepare(" << id << ") unlocked";
       clog << " ret FALSE" << endl;
       return false;
     }
 
   removeParentListenersFromEvent (mainEvent);
-
   mainEvent = NULL;
-  unlock ();
-  /*clog << "NclExecutionObject::unprepare(" << id << ") unlocked";
-  clog << endl;*/
   return true;
 }
 
@@ -1771,50 +1680,6 @@ NclExecutionObject::selectionEvent (SDL_Keycode key, double currentTime)
   return selected;
 }
 
-
-bool
-NclExecutionObject::lock ()
-{
-  if (isLocked)
-    {
-      return false;
-    }
-  isLocked = true;
-  return true;
-}
-
-bool
-NclExecutionObject::unlock ()
-{
-  if (!isLocked)
-    {
-      return false;
-    }
-
-  isLocked = false;
-  return true;
-}
-
-void
-NclExecutionObject::lockEvents ()
-{
-}
-
-void
-NclExecutionObject::unlockEvents ()
-{
-}
-
-void
-NclExecutionObject::lockParentTable ()
-{
-}
-
-void
-NclExecutionObject::unlockParentTable ()
-{
-}
-
 void
 NclExecutionObject::setPlayer(Player* p)
 {
@@ -1836,13 +1701,12 @@ NclExecutionObject::notifyTimeAnchorCallBack()
     return;
 
   double nTime = nextTransition->getTime();
-  double mTime = (double) this->player->getMediaTime();
+  double mTime = (double) this->player->getMediaTime ();
 
   if (mTime < nTime )
     return;
 
   updateTransitionTable (mTime, this->player, ContentAnchor::CAT_TIME);
-
 }
 
 

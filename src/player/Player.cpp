@@ -45,25 +45,25 @@ Player::Player (const string &mrl)
   this->accTimePaused = 0;
 
   //media attr
-  this->texture = NULL; //media content
+  this->texture = NULL;         // media content
   this->borderWidth = 0;
   this->bgColor = {0, 0, 0, 0};
   this->borderColor = {0, 0, 0, 0};
   this->z = 0;
   this->alpha = 255;
 
-  animator = new PlayerAnimator();
-
-  Ginga_Display->registerPlayer(this);
+  animator = new PlayerAnimator ();
+  Ginga_Display->registerPlayer (this);
+  g_assert (Ginga_Display->registerEventListener (this));
 }
 
 Player::~Player ()
 {
-  Ginga_Display->unregisterPlayer(this);
+  Ginga_Display->unregisterPlayer (this);
+  g_assert (Ginga_Display->unregisterEventListener (this));
 
-  set<Player *>::iterator i;
-
-  this->status = PL_SLEEPING;
+  if (this->texture != NULL)
+    Ginga_Display->destroyTexture (this->texture);
 
   _listeners.clear ();
   _properties.clear ();
@@ -79,10 +79,9 @@ Player::setMrl (const string &mrl, bool visible)
 void
 Player::addListener (IPlayerListener *listener)
 {
-  if (!_notifying)
-    {
-      _listeners.insert (listener);
-    }
+  if (_notifying)
+    return;
+  _listeners.insert (listener);
 }
 
 void
@@ -94,9 +93,7 @@ Player::removeListener (IPlayerListener *listener)
     {
       i = _listeners.find (listener);
       if (i != _listeners.end ())
-        {
-          _listeners.erase (i);
-        }
+        _listeners.erase (i);
     }
 }
 
@@ -129,7 +126,7 @@ Player::setMediaTime (guint32 newTime)
 {
   this->initStartTime = (guint32)g_get_monotonic_time();
   this->initPauseTime = 0;
-  this->accTimePlaying = newTime*1000;  //input is in mili but glib is in micro, needs mult by 1000;
+  this->accTimePlaying = newTime * 1000; // input is in mili but glib is in micro, needs mult by 1000;
   this->accTimePaused = 0;
 }
 
@@ -141,12 +138,6 @@ Player::getMediaTime ()
 
   guint32 curTime = (guint32) g_get_monotonic_time() - this->initStartTime;
   return (this->accTimePlaying + curTime - this->accTimePaused)/1000;
-}
-
-double
-Player::getTotalMediaTime ()
-{
-  return -1.0;
 }
 
 void
@@ -168,14 +159,12 @@ Player::play ()
   this->forcedNaturalEnd = false;
   this->initStartTime = (guint32) g_get_monotonic_time();
   this->status = PL_OCCURRING;
-
   return true;
 }
 
 void
 Player::stop ()
 {
-
   this->initStartTime = 0;
   this->initPauseTime = 0;
   this->accTimePlaying = 0;
@@ -203,7 +192,7 @@ Player::resume ()
   this->initStartTime = (guint32)g_get_monotonic_time();
 
   if(this->initPauseTime > 0)
-      this->accTimePaused +=  ((guint32)g_get_monotonic_time() - this->initPauseTime);
+      this->accTimePaused +=  ((guint32) g_get_monotonic_time() - this->initPauseTime);
 
   this->status = PL_OCCURRING;
 }
@@ -313,7 +302,6 @@ Player::setOutWindow (SDLWindow *win)
       this->rect = win->getRect ();
       win->getZ (&this->z, &this->zorder);
     }
-
   this->window = win;
 }
 
@@ -333,7 +321,7 @@ Player::getZ (int *z, int *zorder)
 void
 Player::setAnimatorProperties(string dur, string name, string value)
 {
-  animator->addProperty(dur,name,value);
+  animator->addProperty (dur, name, value);
 }
 
 void
@@ -342,14 +330,15 @@ Player::redraw (SDL_Renderer *renderer)
   if (this->status == PL_SLEEPING)
     return;
 
-  animator->update
-    (&this->rect, &this->bgColor.r, &this->bgColor.g, &this->bgColor.b, &this->alpha);
+  animator->update (&this->rect, &this->bgColor.r,
+                    &this->bgColor.g, &this->bgColor.b, &this->alpha);
 
   if(this->window!=NULL)
-    this->window->getBorder(&this->borderColor, &this->borderWidth);
+    this->window->getBorder (&this->borderColor, &this->borderWidth);
 
   if (this->bgColor.a > 0)
-    {  // background color
+    {
+      // background color
       SDLx_SetRenderDrawBlendMode (renderer, SDL_BLENDMODE_BLEND);
       SDLx_SetRenderDrawColor (renderer,
                                this->bgColor.r,
@@ -367,8 +356,7 @@ Player::redraw (SDL_Renderer *renderer)
 
   if (this->borderWidth < 0)
     {
-      this->borderWidth*=-1;
-
+      this->borderWidth *= -1;
       SDLx_SetRenderDrawBlendMode (renderer, SDL_BLENDMODE_BLEND);
       SDLx_SetRenderDrawColor (renderer,
                                this->borderColor.r,
@@ -376,6 +364,21 @@ Player::redraw (SDL_Renderer *renderer)
                                this->borderColor.b, 255);
       SDLx_RenderDrawRect (renderer, &this->rect);
     }
+}
+
+void
+Player::handleTickEvent (GingaTime total, GingaTime elapsed, int frameno)
+{
+  (void) total;
+  (void) elapsed;
+  (void) frameno;
+}
+
+void
+Player::handleKeyEvent (SDL_EventType type, SDL_Keycode key)
+{
+  (void) type;
+  (void) key;
 }
 
 GINGA_PLAYER_END

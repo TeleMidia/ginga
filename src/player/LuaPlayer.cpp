@@ -171,11 +171,8 @@ LuaPlayer::LuaPlayer (const string &mrl) : Player (mrl)
 
   this->mutexInit ();
   this->_nw = NULL;              // created by start ()
-  this->_hasExecuted = false;
   this->_isKeyHandler = false;
   this->_scope = "";
-
-  Ginga_Display->registerKeyEventListener(this);
 }
 
 LuaPlayer::~LuaPlayer (void)
@@ -259,24 +256,10 @@ LuaPlayer::stop (void)
   ncluaw_cycle (this->_nw);
   ncluaw_close (this->_nw);
   this->_nw = NULL;
- // this->im->removeApplicationInputEventListener (this);
   this->forcedNaturalEnd = true;
-  this->_hasExecuted = true;
  done:
   this->unlock ();
   Player::stop ();
-}
-
-bool
-LuaPlayer::hasPresented (void)
-{
-  bool hasExecuted;
-
-  this->lock ();
-  hasExecuted = this->_hasExecuted;
-  this->unlock ();
-
-  return hasExecuted;
 }
 
 void
@@ -318,22 +301,32 @@ LuaPlayer::setPropertyValue (const string &name, const string &value)
 }
 
 void
-LuaPlayer::keyInputCallback (SDL_EventType evtType, SDL_Keycode key){
+LuaPlayer::handleKeyEvent (SDL_EventType type, SDL_Keycode key)
+{
+  string typestr;
 
   this->lock ();
 
   if (this->_nw == NULL)
     goto tail;
 
-  if(evtType == SDL_KEYDOWN || evtType == SDL_KEYUP){
-     string evt="release";
-     if(evtType == SDL_KEYDOWN)
-            evt="press";
+  if (type == SDL_KEYDOWN)
+    {
+      typestr = "press";
+    }
+  else if (type == SDL_KEYUP)
+    {
+      typestr = "release";
+    }
+  else
+    {
+      goto tail;
+    }
 
-     evt_key_send (this->_nw, evt.c_str(), ginga_key_table_index (key).c_str() );
-  }
+  evt_key_send (this->_nw, typestr.c_str (),
+                ginga_key_table_index (key).c_str());
 
-  tail:
+ tail:
   this->unlock ();
 }
 

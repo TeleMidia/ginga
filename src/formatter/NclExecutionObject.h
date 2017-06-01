@@ -214,17 +214,6 @@ public:
   void setHandling (bool isHandling);
   void setHandler (bool isHandler);
   bool selectionEvent (SDL_Keycode key, double currentTime);
-
-protected:
-  bool lock ();
-  bool unlock ();
-
-private:
-  void lockEvents ();
-  void unlockEvents ();
-
-  void lockParentTable ();
-  void unlockParentTable ();
 };
 
 GINGA_FORMATTER_END

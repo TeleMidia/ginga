@@ -19,14 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define DISPLAY_H
 
 #include "ginga.h"
-
-#include "IEventListener.h"
-
-#include "SDLWindow.h"
-#include "IKeyInputEventListener.h"
-#include "IMouseEventListener.h"
-
 #include "Dashboard.h"
+#include "IEventListener.h"
 
 #include "player/Player.h"
 using namespace ::ginga::player;
@@ -58,20 +52,18 @@ private:
   GList *listeners;             // list of listeners to be notified
   GList *players;               // list of players to be ticked
   GList *textures;              // list of textures to be destructed
-  GList *windows;               // list of windows to be redrawn
 
   SDL_Window *screen;           // display screen
   SDL_Renderer *renderer;       // display renderer
 
-  set<IKeyInputEventListener*> keyEventListeners; // key event listeners
-  set<IMouseEventListener*> mouseEventListeners;  // mouse event listeners
   set<NclExecutionObject*> timeAnchorListeners;   // time anchor listeners
 
   bool add (GList **, gpointer);
   bool remove (GList **, gpointer);
   bool find (GList *, gconstpointer);
 
-  void notifyListeners (GingaTime, GingaTime, int);
+  void notifyTickListeners (GingaTime, GingaTime, int);
+  void notifyKeyListeners (SDL_EventType, SDL_Keycode);
 
 public:
   Display (int, int, double, bool);
@@ -94,34 +86,19 @@ public:
   bool unregisterEventListener (IEventListener *);
 
   void destroyTexture (SDL_Texture *);
+  void renderLoop (void);
 
   // -----------------------------------------------------------------------
-  SDLWindow *createWindow (int, int, int, int, int, int);
-  bool hasWindow (const SDLWindow *);
-  void destroyWindow (SDLWindow *);
-
-  void renderLoop (void);
 
   // Players.
   void registerPlayer (Player *);
   void unregisterPlayer (Player *);
-
-  // key event listeners
-  void registerKeyEventListener(IKeyInputEventListener*);
-  void unregisterKeyEventListener(IKeyInputEventListener*);
-  void postKeyInputEventListener(SDL_Keycode); // gambi used by formatterFocusManager listener
-
-  // mouse event listeners
-  void registerMouseEventListener(IMouseEventListener*);
-  void unregisterMouseEventListener(IMouseEventListener*);
 
   // time anchors listeners
   void registerTimeAnchorListener(NclExecutionObject*);
   void unregisterTimeAnchorListener(NclExecutionObject*);
 
 private:
-  void notifyKeyEventListeners(SDL_EventType, SDL_Keycode);
-  void notifyMouseEventListeners(SDL_EventType);
   void notifyTimeAnchorListeners();
 
 };
