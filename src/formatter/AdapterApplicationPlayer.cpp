@@ -449,23 +449,6 @@ AdapterApplicationPlayer::unprepare ()
   return true;
 }
 
-void
-AdapterApplicationPlayer::unlockCurrentEvent (NclFormatterEvent *event)
-{
-  if (event != _currentEvent)
-    {
-      string id = "";
-
-      if (_currentEvent != nullptr)
-        {
-          id = _currentEvent->getId ();
-        }
-
-      g_warning ("Handling events warning! id = '%s'",
-                 id.c_str());
-    }
-}
-
 bool
 AdapterApplicationPlayer::setCurrentEvent (NclFormatterEvent *event)
 {
