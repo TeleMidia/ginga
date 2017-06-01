@@ -27,6 +27,7 @@ VideoPlayer::VideoPlayer (const string &mrl) : Player (mrl)
   this->soundLevel = 1.0;
   this->texture = NULL;
   this->playbin = NULL;
+  this->eosSeen = false;
   this->binVideo = NULL;
   this->filterVideo = NULL;
   this->sample = NULL;
@@ -82,63 +83,25 @@ VideoPlayer::createPipeline ()
   padVideo = gst_element_get_static_pad (this->filterVideo, "sink");
   gst_element_add_pad (this->binVideo, gst_ghost_pad_new ("sink", padVideo));
 
-  //TODO
-  //audio filter to handle properties
-  /*this->binAudio = gst_bin_new (NULL);
-  g_assert_nonnull (this->binAudio);
-
-  this->filterAudio = gst_element_factory_make ("capsfilter", NULL);
-  g_assert_nonnull (this->filterAudio);
-
-  this->audiopanorama = gst_element_factory_make ("audiopanorama", NULL);
-  g_assert_nonnull (this->audiopanorama);
-
-  convertAudio = gst_element_factory_make ("audioconvert", NULL);
-  g_assert_nonnull (convertAudio);
-
-  sinkAudio = gst_element_factory_make ("autoaudiosink", NULL);
-  g_assert_nonnull (sinkAudio);
-
-  g_assert (gst_bin_add (GST_BIN (this->binAudio), this->filterAudio));
-  g_assert (gst_bin_add (GST_BIN (this->binAudio), this->audiopanorama));
-  g_assert (gst_bin_add (GST_BIN (this->binAudio), convertAudio));
-  g_assert (gst_bin_add (GST_BIN (this->binVideo), sinkAudio));
-
-  g_assert (gst_element_link (this->filterAudio, this->audiopanorama));
-  g_assert (gst_element_link (this->audiopanorama, convertAudio));
-  g_assert (gst_element_link (convertAudio, sinkAudio));
-
-  padAudio = gst_element_get_static_pad (this->filterAudio, "sink");
-  gst_element_add_pad (this->binAudio, gst_ghost_pad_new ("sink", padAudio));*/
-
-
   g_object_set (G_OBJECT (this->playbin), "video-sink", this->binVideo, NULL);
-  //g_object_set (G_OBJECT (this->playbin), "audio-sink", this->binAudio, NULL);
 
   callbacks.eos = eosCB;
   callbacks.new_preroll = newPrerollCB;
   callbacks.new_sample = newSampleCB;
   gst_app_sink_set_callbacks (GST_APP_SINK (sinkVideo), &callbacks, this, NULL);
-
-  //  bus = gst_element_get_bus (this->playbin);
-  //  msg = gst_bus_timed_pop_filtered (bus, GST_CLOCK_TIME_NONE,
-  //                                    (GstMessageType)(GST_MESSAGE_ERROR | GST_MESSAGE_EOS));
-  //  gst_object_unref (this->playbin);
-  //  gst_object_unref (bin);
 }
 
 void
 VideoPlayer::eosCB (arg_unused (GstAppSink *appsink), gpointer data)
 {
-  g_debug ("eos VideoPlayer\n");
-
   VideoPlayer *player = (VideoPlayer *) data;
-
-  player->eos ();
+  g_debug ("EOS!!!!!");
+  player->setEOS (true);
 }
 
 GstFlowReturn
-VideoPlayer::newPrerollCB (arg_unused (GstAppSink *appsink), arg_unused(gpointer data))
+VideoPlayer::newPrerollCB (arg_unused (GstAppSink *appsink),
+                           arg_unused (gpointer data))
 {
   return GST_FLOW_OK;
 }
@@ -149,16 +112,13 @@ VideoPlayer::newSampleCB (GstAppSink *appsink, gpointer data)
   VideoPlayer *player = (VideoPlayer *) data;
 
   player->lock();
-
-  if ( player->sample != NULL )
-  {
-    gst_sample_unref (player->sample);
-    player->sample = NULL;
-  }
-
+  if (player->sample != NULL)
+    {
+      gst_sample_unref (player->sample);
+      player->sample = NULL;
+    }
   player->sample = gst_app_sink_pull_sample (appsink);
   g_assert_nonnull (player->sample);
-
   player->unlock ();
 
   return GST_FLOW_OK;
@@ -174,18 +134,8 @@ VideoPlayer::displayJobCallbackWrapper (DisplayJob *job,
 
 bool
 VideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
-                                    SDL_Renderer *renderer)
+                                 SDL_Renderer *renderer)
 {
-
-//  g_print ("%" G_GUINT64_FORMAT "\n" , GST_TIME_AS_MSECONDS (gst_clock_get_time ( gst_element_get_clock (this->playbin) )) );
-
-//  if( gst_clock_get_time ( gst_element_get_clock (this->playbin) ) > 3474088000) //Apagar
-//    return false;
-//    stop ();
-
-  //if( this->window == NULL )
-      //return false;
-
   GstVideoFrame v_frame;
   GstVideoInfo v_info;
   GstBuffer *buf;
@@ -195,51 +145,55 @@ VideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
   this->lock ();
 
-  //g_assert_nonnull(surface);
-  if (this->sample != NULL && this->status == PL_OCCURRING)
-  {
-    if (this->texture == NULL)
+  if (this->getEOS ())
     {
-      this->texture = SDL_CreateTexture (renderer, SDL_PIXELFORMAT_ARGB32,
-                                SDL_TEXTUREACCESS_TARGET,
-                                this->rect.w,
-                                this->rect.h);
-      g_assert_nonnull (this->texture);
-
-      //this->condDisplayJobSignal ();
+      this->setEOS (false);
+      this->unlock ();
+      this->forceNaturalEnd (true);
+      return false;             // remove job
     }
 
-
-    buf = gst_sample_get_buffer (this->sample);
-    g_assert_nonnull (buf);
-
-    caps = gst_sample_get_caps (this->sample);
-    g_assert_nonnull (caps);
-
-    g_assert (gst_video_info_from_caps(&v_info, caps));
-    g_assert (gst_video_frame_map (&v_frame, &v_info, buf, GST_MAP_READ));
-
-    pixels = (guint8 *) GST_VIDEO_FRAME_PLANE_DATA (&v_frame, 0);
-    stride = (guint) GST_VIDEO_FRAME_PLANE_STRIDE (&v_frame, 0);
-    g_assert (SDL_UpdateTexture(this->texture, NULL, pixels, (int) stride) == 0);
-
-  //  this->window->setTexture (texture);
-
-    gst_video_frame_unmap (&v_frame);
-
-    gst_sample_unref (this->sample);
-    this->sample = NULL;
-  }
-
-  this->unlock ();
-
   if (this->status == PL_SLEEPING)
-  {
-    g_debug ("status: SLEEPING; return false;\n");
-    return false; //Remove job
-  }
+    {
+      this->unlock ();
+      return false;             // remove job
+    }
 
-  return true; //Keep job
+  if (this->sample == NULL)
+    goto done;
+
+  if (this->texture == NULL)
+    {
+      this->texture = SDL_CreateTexture (renderer,
+                                         SDL_PIXELFORMAT_ARGB32,
+                                         SDL_TEXTUREACCESS_TARGET,
+                                         this->rect.w,
+                                         this->rect.h);
+      g_assert_nonnull (this->texture);
+    }
+
+  buf = gst_sample_get_buffer (this->sample);
+  g_assert_nonnull (buf);
+
+  caps = gst_sample_get_caps (this->sample);
+  g_assert_nonnull (caps);
+
+  g_assert (gst_video_info_from_caps(&v_info, caps));
+  g_assert (gst_video_frame_map (&v_frame, &v_info, buf, GST_MAP_READ));
+
+  pixels = (guint8 *) GST_VIDEO_FRAME_PLANE_DATA (&v_frame, 0);
+  stride = (guint) GST_VIDEO_FRAME_PLANE_STRIDE (&v_frame, 0);
+  g_assert (SDL_UpdateTexture(this->texture,
+                              NULL, pixels, (int) stride) == 0);
+
+  gst_video_frame_unmap (&v_frame);
+
+  gst_sample_unref (this->sample);
+  this->sample = NULL;
+
+ done:
+  this->unlock ();
+  return true; // keep job
 }
 
 guint32
@@ -264,7 +218,7 @@ VideoPlayer::getMediaTime ()
 void
 VideoPlayer::setMediaTime (arg_unused(guint32 pos))
 {
-	TRACE ();
+  TRACE ();
 }
 
 bool
@@ -297,13 +251,13 @@ VideoPlayer::play ()
   g_debug ("%d video stream(s), %d audio stream(s)", n_video, n_audio);
 
   if ( retWait == GST_STATE_CHANGE_SUCCESS )
-  {
-    if ( n_video > 0 )
     {
-      Ginga_Display->addJob (displayJobCallbackWrapper, this);
+      if (n_video > 0 )
+        {
+          Ginga_Display->addJob (displayJobCallbackWrapper, this);
+        }
+      return true;
     }
-    return true;
-  }
 
   g_print ("failed to play the file\n");
   return false;
@@ -342,7 +296,8 @@ void
 VideoPlayer::stop ()
 {
   this->lock ();
-  //when stops with natural end
+
+  // when stops with natural end
   if( forcedNaturalEnd )
   {
     Player::stop ();
@@ -393,13 +348,6 @@ VideoPlayer::resume ()
   {
     this->play ();
   }
-}
-
-void
-VideoPlayer::eos ()
-{
-  //Here it is triggered onEnd condition
-  this->forceNaturalEnd(true);
 }
 
 string
@@ -504,6 +452,24 @@ VideoPlayer::printPipelineState()
   {
     g_debug ("PIPELINE::PENDING\n");
   }
+}
+
+void
+VideoPlayer::setEOS (bool eos)
+{
+  this->lock ();
+  this->eosSeen = eos;
+  this->unlock ();
+}
+
+bool
+VideoPlayer::getEOS (void)
+{
+  bool eos;
+  this->lock ();
+  eos = this->eosSeen;
+  this->unlock ();
+  return eos;
 }
 
 GINGA_PLAYER_END
