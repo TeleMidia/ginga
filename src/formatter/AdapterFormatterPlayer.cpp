@@ -214,7 +214,7 @@ AdapterFormatterPlayer::hasPrepared ()
                _object, _player);
       return false;
     }
-  if (_isAppPlayer)
+  else if (_isAppPlayer)
     {
       return true;
     }
@@ -239,7 +239,7 @@ AdapterFormatterPlayer::hasPrepared ()
         }
     }
 
-  return true;  // Maybe, it should be false
+  return false;
 }
 
 double
@@ -519,19 +519,21 @@ bool
 AdapterFormatterPlayer::prepare (NclExecutionObject *object,
                                  NclPresentationEvent *event)
 {
-  g_warning ("AdapterFormatterPlayer::prepare");
+
+  Content *content;
+  double explicitDur = -1;
+
+  g_assert_nonnull (object);
+
+  if (hasPrepared ())
+    {
+      g_debug ("AdapterFormatterPlayer::prepare returns false, because the"
+               "player is already prepared.");
+      return false;
+    }
+
   if (object->instanceOf("NclApplicationExecutionObject"))
     {
-      g_warning ("aq");
-      Content *content;
-      double explicitDur;
-
-      if (object == NULL)
-        {
-          g_warning ("Can't prepare a NULL object.");
-          return false;
-        }
-
       if (this->_object != object)
         {
           _preparedEvents.clear ();
@@ -589,7 +591,7 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
           // explicit duration overwrites implicit duration
           if (!isnan (explicitDur) && explicitDur > 0)
             {
-              object->removeEvent (event);
+              _object->removeEvent (event);
 
               // the explicit duration is a property of
               // the object. Which means: start an interface with
@@ -598,15 +600,15 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
               presentationEvt->setEnd (explicitDur);
 
               /*
-               * Adding event in object even though the it is added inside
+               * Adding event in object even though it is added inside
                * application execution object prepare (we have to consider
                * that the event could be already prepared
                */
-              object->addEvent (event);
+              _object->addEvent (event);
 
               g_debug ("Object '%s' with explicitDur = '%f' object duration was"
                        "'%f'. Updated info: event begin=%f, event end=%f.",
-                       object->getId ().c_str(),
+                       _object->getId ().c_str(),
                        explicitDur,
                        duration,
                        presentationEvt->getBegin(),
@@ -630,25 +632,13 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
         }
     }
   else
-    { // Non app object
-      Content *content;
-      double explicitDur = -1;
+    {
       NodeEntity *dataObject;
-
-      g_assert_nonnull(object);
-
-      if (hasPrepared ())
-        {
-          g_debug ("AdapterFormatterPlayer::prepare returns false, because the"
-                   "player is already prepared.");
-          return false;
-        }
 
       this->_object = object;
       dataObject = dynamic_cast<NodeEntity *>(object->getDataObject ());
 
-      if (dataObject
-          &&  dataObject->getDataEntity () != nullptr)
+      if (dataObject && dataObject->getDataEntity () != nullptr)
         {
           content
               = dynamic_cast<NodeEntity *> (dataObject->getDataEntity ())->getContent();
@@ -687,14 +677,15 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
           // explicit duration overwrites implicit duration
           if (!isnan (explicitDur) && explicitDur > 0)
             {
-              object->removeEvent (event);
+              _object->removeEvent (event);
 
               // The explicit duration is a property of
               // the object. For instance: start an interface with
               // begin = 4s and explicit duration = 5s => new duration
               // will be 1s
               presentationEvent->setEnd (explicitDur);
-              object->addEvent (event);
+
+              _object->addEvent (event);
 
               g_debug ("Object '%s' with explicitDur = '%f' object duration was"
                        "'%f'. Updated info: event begin=%f, event end=%f.",
@@ -826,7 +817,10 @@ AdapterFormatterPlayer::prepareScope (double offset)
         }
       else if (mainEvent->getAnchor ()->instanceOf ("IntervalAnchor"))
         {
-          intervalAnchor = (IntervalAnchor *)(mainEvent->getAnchor ());
+          intervalAnchor
+              = dynamic_cast<IntervalAnchor *>(mainEvent->getAnchor ());
+          g_assert_nonnull (intervalAnchor);
+
           initTime = (intervalAnchor->getBegin () / 1000);
           if (offset > 0)
             {
@@ -914,9 +908,6 @@ AdapterFormatterPlayer::stop ()
       map<string, NclFormatterEvent *>::iterator i;
       NclFormatterEvent *event;
       bool stopLambda = false;
-
-      g_assert_nonnull (_object);
-      g_assert_nonnull (_player);
 
       if (_currentEvent != nullptr)
         {
@@ -1509,6 +1500,10 @@ AdapterFormatterPlayer::setCurrentEvent (NclFormatterEvent *event)
 {
   string interfaceId;
 
+  NclApplicationExecutionObject *appObject =
+      dynamic_cast <NclApplicationExecutionObject *> (_object);
+  g_assert_nonnull (appObject);
+
   if (_preparedEvents.count (event->getId ()) != 0
       && !event->instanceOf ("NclSelectionEvent")
       && event->instanceOf ("NclAnchorEvent"))
@@ -1533,10 +1528,6 @@ AdapterFormatterPlayer::setCurrentEvent (NclFormatterEvent *event)
 
       _currentEvent = event;
 
-      NclApplicationExecutionObject *appObject =
-          dynamic_cast <NclApplicationExecutionObject *> (_object);
-      g_assert_nonnull (appObject);
-
       appObject->setCurrentEvent (_currentEvent);
       _player->setCurrentScope (interfaceId);
     }
@@ -1549,8 +1540,7 @@ AdapterFormatterPlayer::setCurrentEvent (NclFormatterEvent *event)
       _player->setScope (interfaceId, Player::PL_TYPE_ATTRIBUTION);
 
       _currentEvent = event;
-      ((NclApplicationExecutionObject *)_object)
-          ->setCurrentEvent (_currentEvent);
+      appObject->setCurrentEvent (_currentEvent);
 
       _player->setCurrentScope (interfaceId);
     }
