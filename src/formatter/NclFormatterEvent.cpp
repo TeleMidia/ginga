@@ -25,7 +25,6 @@ GINGA_FORMATTER_BEGIN
 
 set<NclFormatterEvent *> NclFormatterEvent::instances;
 bool NclFormatterEvent::init = false;
-pthread_mutex_t NclFormatterEvent::iMutex;
 
 NclFormatterEvent::NclFormatterEvent (const string &id,
                                       NclExecutionObject *execObject)
@@ -40,12 +39,9 @@ NclFormatterEvent::NclFormatterEvent (const string &id,
   if (!init)
     {
       init = true;
-      Thread::mutexInit (&iMutex, false);
     }
 
   typeSet.insert ("NclFormatterEvent");
-  Thread::mutexInit (&mutex, false);
-
   addInstance (this);
 }
 
@@ -56,7 +52,6 @@ NclFormatterEvent::~NclFormatterEvent ()
   removeInstance (this);
 
   destroyListeners ();
-  Thread::mutexDestroy (&mutex);
 }
 
 bool
@@ -70,7 +65,6 @@ NclFormatterEvent::hasInstance (NclFormatterEvent *event, bool remove)
       return false;
     }
 
-  Thread::mutexLock (&iMutex);
   i = instances.find (event);
   if (i != instances.end ())
     {
@@ -80,17 +74,13 @@ NclFormatterEvent::hasInstance (NclFormatterEvent *event, bool remove)
         }
       inst = true;
     }
-  Thread::mutexUnlock (&iMutex);
-
   return inst;
 }
 
 void
 NclFormatterEvent::addInstance (NclFormatterEvent *event)
 {
-  Thread::mutexLock (&iMutex);
   instances.insert (event);
-  Thread::mutexUnlock (&iMutex);
 }
 
 bool
@@ -99,14 +89,12 @@ NclFormatterEvent::removeInstance (NclFormatterEvent *event)
   set<NclFormatterEvent *>::iterator i;
   bool inst = false;
 
-  Thread::mutexLock (&iMutex);
   i = instances.find (event);
   if (i != instances.end ())
     {
       instances.erase (i);
       inst = true;
     }
-  Thread::mutexUnlock (&iMutex);
 
   return inst;
 }
@@ -186,10 +174,8 @@ NclFormatterEvent::getEventType ()
 void
 NclFormatterEvent::destroyListeners ()
 {
-  Thread::mutexLock (&mutex);
   this->executionObject = NULL;
   listeners.clear ();
-  Thread::mutexUnlock (&mutex);
 }
 
 void
@@ -201,21 +187,14 @@ NclFormatterEvent::setId (const string &id)
 void
 NclFormatterEvent::addEventListener (INclEventListener *listener)
 {
-  Thread::mutexLock (&mutex);
   this->listeners.insert (listener);
-  Thread::mutexUnlock (&mutex);
 }
 
 bool
 NclFormatterEvent::containsEventListener (INclEventListener *listener)
 {
-  Thread::mutexLock (&mutex);
   if (listeners.count (listener) != 0)
-    {
-      Thread::mutexUnlock (&mutex);
-      return true;
-    }
-  Thread::mutexUnlock (&mutex);
+    return true;
   return false;
 }
 
@@ -224,13 +203,11 @@ NclFormatterEvent::removeEventListener (INclEventListener *listener)
 {
   set<INclEventListener *>::iterator i;
 
-  Thread::mutexLock (&mutex);
   i = listeners.find (listener);
   if (i != listeners.end ())
     {
       listeners.erase (i);
     }
-  Thread::mutexUnlock (&mutex);
 }
 
 short
@@ -339,8 +316,6 @@ NclFormatterEvent::changeState (short newState, short transition)
 {
   set<INclEventListener *>::iterator i;
 
-  Thread::mutexLock (&mutex);
-
   if (transition == EventUtil::TR_STOPS)
     {
       occurrences++;
@@ -351,12 +326,10 @@ NclFormatterEvent::changeState (short newState, short transition)
 
   if (deleting)
     {
-      Thread::mutexUnlock (&mutex);
       return false;
     }
 
   set<INclEventListener *> *clone = new set<INclEventListener *> (listeners);
-  Thread::mutexUnlock (&mutex);
 
   i = clone->begin ();
   while (i != clone->end ())

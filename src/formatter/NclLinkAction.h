@@ -34,7 +34,6 @@ protected:
 
 private:
   double delay;
-  pthread_mutex_t plMutex;
   vector<NclLinkActionProgressionListener *> *progressionListeners;
 
 public:

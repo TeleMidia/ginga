@@ -129,7 +129,6 @@ protected:
   guint8 alpha;
 
 private:
-  pthread_mutex_t _listM;
   bool _notifying;
 
   map<string, string> _properties;

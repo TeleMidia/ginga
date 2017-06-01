@@ -28,7 +28,6 @@ class NclApplicationExecutionObject : public NclExecutionObject
 private:
   map<string, NclFormatterEvent *> preparedEvents;
   NclFormatterEvent *currentEvent;
-  pthread_mutex_t eventsMutex;
 
 public:
   NclApplicationExecutionObject (const string &id, Node *node, bool handling,

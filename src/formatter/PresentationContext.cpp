@@ -33,8 +33,6 @@ PresentationContext::PresentationContext ()
 
   initializeUserContext ();
   initializeSystemValues ();
-
-  Thread::mutexInit (&attrMutex, false);
 }
 
 PresentationContext::~PresentationContext ()
@@ -48,11 +46,9 @@ PresentationContext::setPropertyValue (const string &property, const string &val
   string oldValue = "";
   map<string, string>::iterator i;
 
-  Thread::mutexLock (&attrMutex);
   if ((property.length () >= 7 && property.substr (0, 7) == "system.")
       || (property.length () >= 5 && property.substr (0, 5) == "user."))
     {
-      Thread::mutexUnlock (&attrMutex);
       return;
     }
 
@@ -66,7 +62,6 @@ PresentationContext::setPropertyValue (const string &property, const string &val
     }
 
   contextTable[property] = value;
-  Thread::mutexUnlock (&attrMutex);
 }
 
 void
@@ -131,15 +126,12 @@ PresentationContext::getPropertyValue (const string &attributeId)
 {
   string propValue;
 
-  Thread::mutexLock (&attrMutex);
   if (contextTable.count (attributeId) == 0)
     {
-      Thread::mutexUnlock (&attrMutex);
       return "";
     }
 
   propValue = contextTable[attributeId];
-  Thread::mutexUnlock (&attrMutex);
   return propValue;
 }
 

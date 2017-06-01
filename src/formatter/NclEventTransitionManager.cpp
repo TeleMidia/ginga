@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "NclEventTransitionManager.h"
 
-#include "system/Thread.h"
-using namespace ::ginga::system;
-
 GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-conversion)
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
@@ -28,15 +25,12 @@ GINGA_FORMATTER_BEGIN
 
 NclEventTransitionManager::NclEventTransitionManager ()
 {
-  Thread::mutexInit (&transMutex, false);
 }
 
 NclEventTransitionManager::~NclEventTransitionManager ()
 {
   map<short int, vector<NclEventTransition *> *>::iterator i;
   vector<NclEventTransition *>::iterator j;
-
-  Thread::mutexLock (&transMutex);
 
   i = transTable.begin ();
   while (i != transTable.end ())
@@ -54,9 +48,6 @@ NclEventTransitionManager::~NclEventTransitionManager ()
   transTable.clear ();
   currentTransitionIndex.clear ();
   startTransitionIndex.clear ();
-
-  Thread::mutexUnlock (&transMutex);
-  Thread::mutexDestroy (&transMutex);
 }
 
 short int
@@ -88,7 +79,6 @@ NclEventTransitionManager::getTransitionEvents (short int type)
       return NULL;
     }
 
-  Thread::mutexLock (&transMutex);
   i = transTable.find (type);
   if (i == transTable.end ())
     {
@@ -99,7 +89,6 @@ NclEventTransitionManager::getTransitionEvents (short int type)
     {
       transitionEvents = i->second;
     }
-  Thread::mutexUnlock (&transMutex);
 
   return transitionEvents;
 }
@@ -222,14 +211,12 @@ NclEventTransitionManager::resetTimeIndex ()
 {
   map<short int, int>::iterator i;
 
-  Thread::mutexLock (&transMutex);
   i = startTransitionIndex.begin ();
   while (i != startTransitionIndex.end ())
     {
       currentTransitionIndex[i->first] = i->second;
       ++i;
     }
-  Thread::mutexUnlock (&transMutex);
 }
 
 void
@@ -237,13 +224,11 @@ NclEventTransitionManager::resetTimeIndexByType (short int type)
 {
   map<short int, int>::iterator i;
 
-  Thread::mutexLock (&transMutex);
   i = startTransitionIndex.find (type);
   if (i != startTransitionIndex.end ())
     {
       currentTransitionIndex[type] = i->second;
     }
-  Thread::mutexUnlock (&transMutex);
 }
 
 void
@@ -256,18 +241,14 @@ NclEventTransitionManager::prepare (bool wholeContent, double startTime,
 
   if (wholeContent && xnumeq (startTime, 0.0))
     {
-      Thread::mutexLock (&transMutex);
       startTransitionIndex[type] = 0;
-      Thread::mutexUnlock (&transMutex);
     }
   else
     {
       transitionEvents = getTransitionEvents (type);
       size = (int) transitionEvents->size ();
       transIx = 0;
-      Thread::mutexLock (&transMutex);
       startTransitionIndex[type] = transIx;
-      Thread::mutexUnlock (&transMutex);
       while (transIx < size)
         {
           transition = (*transitionEvents)[transIx];
@@ -293,9 +274,7 @@ NclEventTransitionManager::prepare (bool wholeContent, double startTime,
               transition->getEvent ()->incrementOccurrences ();
             }
           transIx++;
-          Thread::mutexLock (&transMutex);
           startTransitionIndex[type] = transIx;
-          Thread::mutexUnlock (&transMutex);
         }
     }
 
@@ -312,14 +291,10 @@ NclEventTransitionManager::start (double offsetTime)
   transitionEvents = getTransitionEvents (ContentAnchor::CAT_TIME);
   size = (int) transitionEvents->size ();
 
-  Thread::mutexLock (&transMutex);
   if (currentTransitionIndex.count (ContentAnchor::CAT_TIME) == 0)
-    {
-      currentTransitionIndex[ContentAnchor::CAT_TIME] = 0;
-    }
+    currentTransitionIndex[ContentAnchor::CAT_TIME] = 0;
 
   transIx = currentTransitionIndex[ContentAnchor::CAT_TIME];
-  Thread::mutexUnlock (&transMutex);
 
   while (transIx < size)
     {
@@ -331,9 +306,7 @@ NclEventTransitionManager::start (double offsetTime)
               transition->getEvent ()->start ();
             }
           transIx++;
-          Thread::mutexLock (&transMutex);
           currentTransitionIndex[ContentAnchor::CAT_TIME] = transIx;
-          Thread::mutexUnlock (&transMutex);
         }
       else
         {
@@ -381,14 +354,12 @@ NclEventTransitionManager::abort (double endTime, bool applicationType)
   NclEventTransition *transition;
   NclFormatterEvent *fev;
 
-  Thread::mutexLock (&transMutex);
   if (currentTransitionIndex.count (ContentAnchor::CAT_TIME) == 0)
     {
       currentTransitionIndex[ContentAnchor::CAT_TIME] = 0;
     }
 
   transIx = currentTransitionIndex[ContentAnchor::CAT_TIME];
-  Thread::mutexUnlock (&transMutex);
 
   transitionEvents = getTransitionEvents (ContentAnchor::CAT_TIME);
   size = (int) transitionEvents->size ();
@@ -510,8 +481,6 @@ NclEventTransitionManager::timeBaseNaturalEnd (int64_t timeValue,
   vector<NclEventTransition *> *transitionEvents;
   vector<NclEventTransition *>::iterator i;
 
-  Thread::mutexLock (&transMutex);
-
   clog << "NclEventTransitionManager::timeBaseNaturalEnd" << endl;
   if (transTable.count (transType) != 0)
     {
@@ -538,8 +507,6 @@ NclEventTransitionManager::timeBaseNaturalEnd (int64_t timeValue,
         }
     }
 
-  Thread::mutexUnlock (&transMutex);
-
   mainEvent->stop ();
 }
 
@@ -553,12 +520,9 @@ NclEventTransitionManager::updateTransitionTable (
   vector<NclEventTransition *> *transitionEvents;
   unsigned int currentIx;
 
-  Thread::mutexLock (&transMutex);
   if (currentTransitionIndex.count (transType) == 0
       || transTable.count (transType) == 0)
     {
-      Thread::mutexUnlock (&transMutex);
-
       clog << "NclEventTransitionManager::updateTransitionTable ";
       clog << "nothing to do." << endl;
       return;
@@ -566,7 +530,6 @@ NclEventTransitionManager::updateTransitionTable (
 
   transitionEvents = transTable[transType];
   currentIx = currentTransitionIndex[transType];
-  Thread::mutexUnlock (&transMutex);
 
   while (currentIx < transitionEvents->size ())
     {
@@ -602,9 +565,7 @@ NclEventTransitionManager::updateTransitionTable (
             }
 
           currentIx++;
-          Thread::mutexLock (&transMutex);
           currentTransitionIndex[transType] = currentIx;
-          Thread::mutexUnlock (&transMutex);
         }
       else
         {
@@ -621,10 +582,8 @@ NclEventTransitionManager::getTransitionsValues (short int transType)
   vector<NclEventTransition *> *transitionEvents;
   vector<NclEventTransition *>::iterator i;
 
-  Thread::mutexLock (&transMutex);
   if (transTable.count (transType) == 0)
     {
-      Thread::mutexUnlock (&transMutex);
       return NULL;
     }
 
@@ -641,13 +600,10 @@ NclEventTransitionManager::getTransitionsValues (short int transType)
         }
     }
 
-  Thread::mutexUnlock (&transMutex);
   transitionEvents = getTransitionEvents (transType);
   transValues = new set<double>;
 
-  Thread::mutexLock (&transMutex);
   currentIx = currentTransitionIndex[transType];
-  Thread::mutexUnlock (&transMutex);
 
   ix = 0;
   i = transitionEvents->begin ();
@@ -673,7 +629,6 @@ NclEventTransitionManager::getNextTransition (NclFormatterEvent *mainEvent)
   double transTime;
   double eventEnd;
 
-  Thread::mutexLock (&transMutex);
   if (currentTransitionIndex.count (ContentAnchor::CAT_TIME) == 0
       || transTable.count (ContentAnchor::CAT_TIME) == 0)
     {
@@ -681,13 +636,11 @@ NclEventTransitionManager::getNextTransition (NclFormatterEvent *mainEvent)
       clog << ") for '" << mainEvent->getId ();
       clog << "'. There is no transition tables";
       clog << endl;
-      Thread::mutexUnlock (&transMutex);
       return NULL;
     }
 
   transitionEvents = transTable[ContentAnchor::CAT_TIME];
   currentIx = currentTransitionIndex[ContentAnchor::CAT_TIME];
-  Thread::mutexUnlock (&transMutex);
 
   if (currentIx < transitionEvents->size ())
     {

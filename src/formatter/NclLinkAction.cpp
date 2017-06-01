@@ -29,14 +29,11 @@ NclLinkAction::NclLinkAction (double delay)
 
 NclLinkAction::~NclLinkAction ()
 {
-  Thread::mutexLock (&plMutex);
   if (progressionListeners != NULL)
     {
       delete progressionListeners;
       progressionListeners = NULL;
     }
-  Thread::mutexUnlock (&plMutex);
-  Thread::mutexDestroy (&plMutex);
 }
 
 void
@@ -45,7 +42,6 @@ NclLinkAction::initLinkAction (double delay)
   satisfiedCondition = NULL;
   this->delay = delay;
   progressionListeners = new vector<NclLinkActionProgressionListener *>;
-  Thread::mutexInit (&plMutex, false);
   typeSet.insert ("NclLinkAction");
 }
 
@@ -120,14 +116,12 @@ NclLinkAction::addActionProgressionListener (
                   clog << "NclLinkAction::addActionProgressionListener ";
                   clog << "Warning! Trying to add the same listener twice";
                   clog << endl;
-                  Thread::mutexUnlock (&plMutex);
                   return;
                 }
               ++i;
             }
           progressionListeners->push_back (listener);
         }
-      Thread::mutexUnlock (&plMutex);
     }
 }
 
@@ -151,7 +145,6 @@ NclLinkAction::removeActionProgressionListener (
                 }
             }
         }
-      Thread::mutexUnlock (&plMutex);
     }
 }
 
@@ -169,8 +162,6 @@ NclLinkAction::notifyProgressionListeners (bool start)
           notifyList = new vector<NclLinkActionProgressionListener *> (
               *progressionListeners);
 
-          Thread::mutexUnlock (&plMutex);
-
           size = (int) notifyList->size ();
           for (i = 0; i < size; i++)
             {
@@ -179,17 +170,12 @@ NclLinkAction::notifyProgressionListeners (bool start)
             }
           delete notifyList;
         }
-      else
-        {
-          Thread::mutexUnlock (&plMutex);
-        }
     }
 }
 
 bool
 NclLinkAction::tryLock ()
 {
-  Thread::mutexLock (&plMutex);
   return true;
 }
 

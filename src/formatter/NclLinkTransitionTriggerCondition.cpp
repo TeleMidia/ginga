@@ -46,7 +46,6 @@ NclLinkTransitionTriggerCondition::NclLinkTransitionTriggerCondition (
 
 NclLinkTransitionTriggerCondition::~NclLinkTransitionTriggerCondition ()
 {
-  _isDeleting = true;
   listener = NULL;
   bind = NULL;
 

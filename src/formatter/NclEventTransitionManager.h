@@ -39,7 +39,6 @@ private:
   map<short int, int> currentTransitionIndex;
   map<short int, int> startTransitionIndex;
   map<short int, vector<NclEventTransition *> *> transTable;
-  pthread_mutex_t transMutex;
 
 public:
   NclEventTransitionManager ();

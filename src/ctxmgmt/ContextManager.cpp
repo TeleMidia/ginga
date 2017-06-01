@@ -21,9 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "GingaUser.h"
 #include "SystemInfo.h"
 
-#include "system/Thread.h"
-using namespace ::ginga::system;
-
 GINGA_CTXMGMT_BEGIN
 
 ContextManager *ContextManager::_instance = NULL;
@@ -33,22 +30,18 @@ ContextManager::ContextManager ()
   curUserId = -1;
   systemInfo = new SystemInfo ();
   systemInfo->setSystemTable (getUserProfile (getCurrentUserId ()));
-  Thread::mutexInit (&groupsMutex, false);
 }
 
 ContextManager::~ContextManager ()
 {
   map<int, GingaUser *>::iterator i;
 
-  Thread::mutexLock (&groupsMutex);
   i = users.begin ();
   while (i != users.end ())
     {
       delete i->second;
       ++i;
     }
-  Thread::mutexUnlock (&groupsMutex);
-  Thread::mutexDestroy (&groupsMutex);
 }
 
 ContextManager *

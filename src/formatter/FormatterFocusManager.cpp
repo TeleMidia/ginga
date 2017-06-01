@@ -31,7 +31,6 @@ GINGA_FORMATTER_BEGIN
 
 bool FormatterFocusManager::init = false;
 set<FormatterFocusManager *> FormatterFocusManager::instances;
-pthread_mutex_t FormatterFocusManager::iMutex;
 
 FormatterFocusManager::FormatterFocusManager (
     AdapterPlayerManager *playerManager, PresentationContext *presContext,
@@ -89,21 +88,12 @@ FormatterFocusManager::FormatterFocusManager (
   this->converter = converter;
   this->settingActions = settingActions;
 
-  Thread::mutexInit (&mutexFocus);
-  Thread::mutexInit (&mutexTable);
-
   checkInit ();
-
-  Thread::mutexLock (&iMutex);
   instances.insert (this);
-  Thread::mutexUnlock (&iMutex);
 }
 
 FormatterFocusManager::~FormatterFocusManager ()
 {
-  Thread::mutexLock (&mutexFocus);
-  Thread::mutexLock (&mutexTable);
-
   hasInstance (this, true);
 
   if (hasInstance (parentManager, false))
@@ -131,20 +121,13 @@ FormatterFocusManager::~FormatterFocusManager ()
 
   playerManager = NULL;
   presContext = NULL;
-  Thread::mutexUnlock (&mutexFocus);
-  Thread::mutexDestroy (&mutexFocus);
-  Thread::mutexUnlock (&mutexTable);
-  Thread::mutexDestroy (&mutexTable);
 }
 
 void
 FormatterFocusManager::checkInit ()
 {
   if (!init)
-    {
-      init = true;
-      Thread::mutexInit (&iMutex, false);
-    }
+    init = true;
 }
 
 bool
@@ -159,7 +142,6 @@ FormatterFocusManager::hasInstance (FormatterFocusManager *instance,
       return false;
     }
 
-  Thread::mutexLock (&iMutex);
   i = instances.find (instance);
   if (i != instances.end ())
     {
@@ -169,7 +151,6 @@ FormatterFocusManager::hasInstance (FormatterFocusManager *instance,
           instances.erase (i);
         }
     }
-  Thread::mutexUnlock (&iMutex);
 
   return find;
 }
@@ -208,29 +189,21 @@ FormatterFocusManager::setKeyHandler (bool isHandler)
   setHandlingObjects (isHandler);
   if (isHandler)
     {
-      Thread::mutexLock (&mutexTable);
       if (focusedObj == NULL)
         {
           if (!focusTable->empty ())
             {
               ix = focusTable->begin ()->first;
-              Thread::mutexUnlock (&mutexTable);
               currentFocus = "";
               setFocus (ix);
-            }
-          else
-            {
-              Thread::mutexUnlock (&mutexTable);
             }
         }
       else
         {
-          Thread::mutexUnlock (&mutexTable);
           ix = currentFocus;
           currentFocus = "";
           setFocus (ix);
         }
-      
     }
   else
     {
@@ -373,14 +346,9 @@ FormatterFocusManager::setKeyMaster (const string &mediaId)
   bool abortKeyMaster = false;
   string lastFocus = "";
 
-  Thread::mutexLock (&mutexTable);
-  Thread::mutexLock (&mutexFocus);
-
   if (mediaId == "" && selectedObject != NULL)
     {
       resetKeyMaster ();
-      Thread::mutexUnlock (&mutexTable);
-      Thread::mutexUnlock (&mutexFocus);
       return;
     }
 
@@ -393,8 +361,6 @@ FormatterFocusManager::setKeyMaster (const string &mediaId)
       clog << endl;
 
       objectToSelect = mediaId;
-      Thread::mutexUnlock (&mutexTable);
-      Thread::mutexUnlock (&mutexFocus);
       return;
     }
 
@@ -402,8 +368,6 @@ FormatterFocusManager::setKeyMaster (const string &mediaId)
     {
       resetKeyMaster ();
     }
-
-  Thread::mutexUnlock (&mutexTable);
 
   nextDescriptor = nextObject->getDescriptor ();
   if (nextDescriptor != NULL)
@@ -437,7 +401,6 @@ FormatterFocusManager::setKeyMaster (const string &mediaId)
   if (abortKeyMaster && fr != NULL && fr->getFocusIndex () != "")
     {
       currentFocus = lastFocus;
-      Thread::mutexUnlock (&mutexFocus);
       return;
     }
 
@@ -448,7 +411,6 @@ FormatterFocusManager::setKeyMaster (const string &mediaId)
 
   nextObject->selectionEvent (0, player->getMediaTime () * 1000);
 
-  Thread::mutexUnlock (&mutexFocus);
 }
 
 void
@@ -471,21 +433,15 @@ FormatterFocusManager::setFocus (const string &focusIndex)
       return;
     }
 
-  Thread::mutexLock (&mutexTable);
-  Thread::mutexLock (&mutexFocus);
-
   nextObject = getObjectFromFocusIndex (focusIndex);
   if (nextObject == NULL)
     {
-      Thread::mutexUnlock (&mutexFocus);
-      Thread::mutexUnlock (&mutexTable);
       return;
     }
 
   currentObject = getObjectFromFocusIndex (currentFocus);
   if (currentObject != NULL)
     {
-      Thread::mutexUnlock (&mutexTable);
       currentDescriptor = currentObject->getDescriptor ();
     }
   else
@@ -493,7 +449,6 @@ FormatterFocusManager::setFocus (const string &focusIndex)
       currentDescriptor = NULL;
       clog << "FormatterFocusManager::setFocus index '";
       clog << focusIndex << "' is not in focus Table." << endl;
-      Thread::mutexUnlock (&mutexTable);
     }
 
   currentFocus = focusIndex;
@@ -515,8 +470,6 @@ FormatterFocusManager::setFocus (const string &focusIndex)
     {
       setFocus (nextDescriptor);
     }
-
-  Thread::mutexUnlock (&mutexFocus);
 }
 
 void
@@ -671,9 +624,7 @@ FormatterFocusManager::showObject (NclExecutionObject *object)
 
   if (focusIndex != "")
     {
-      Thread::mutexLock (&mutexTable);
       insertObject (object, focusIndex);
-      Thread::mutexUnlock (&mutexTable);
     }
 
   if (currentFocus == "")
@@ -762,9 +713,7 @@ FormatterFocusManager::hideObject (NclExecutionObject *object)
 
   if (focusIndex != "")
     {
-      Thread::mutexLock (&mutexTable);
       removeObject (object, focusIndex);
-      Thread::mutexUnlock (&mutexTable);
 
       if (fr != NULL && fr->getFocusState () == NclFormatterRegion::SELECTED
           && selectedObject == object)
@@ -779,16 +728,13 @@ FormatterFocusManager::hideObject (NclExecutionObject *object)
           // region->setFocus(false);
           // recoveryDefaultState(object);
 
-          Thread::mutexLock (&mutexTable);
           if (focusTable->empty ())
             {
-              Thread::mutexUnlock (&mutexTable);
               currentFocus = "";
             }
           else
             {
               ix = focusTable->begin ()->first;
-              Thread::mutexUnlock (&mutexTable);
               setFocus (ix);
             }
         }
@@ -892,8 +838,6 @@ FormatterFocusManager::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
      return;
     }
 
-  Thread::mutexLock (&mutexTable);
-
   i = focusTable->find (currentFocus);
   if (i == focusTable->end ())
     {
@@ -905,19 +849,13 @@ FormatterFocusManager::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
         }
 
       if (selectedObject != NULL && key == SDLK_BACKSPACE){
-            Thread::mutexUnlock (&mutexTable);
             return;
         }
 
       if (!focusTable->empty ())
         {
           nextIndex = focusTable->begin ()->first;
-          Thread::mutexUnlock (&mutexTable);
           setFocus (nextIndex);
-        }
-      else
-        {
-          Thread::mutexUnlock (&mutexTable);
         }
 
       return;
@@ -926,10 +864,8 @@ FormatterFocusManager::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
   currentObject = getObjectFromFocusIndex (currentFocus);
   if (currentObject == NULL)
     {
-      Thread::mutexUnlock (&mutexTable);
       return;
     }
-  Thread::mutexUnlock (&mutexTable);
 
   currentDescriptor = currentObject->getDescriptor ();
   if (currentDescriptor == NULL)

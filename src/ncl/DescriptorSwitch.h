@@ -35,9 +35,6 @@ private:
   GenericDescriptor *selectedDescriptor;
 
   static set<DescriptorSwitch *> objects;
-  static bool initMutex;
-  static pthread_mutex_t _objMutex;
-
   static void addInstance (DescriptorSwitch *object);
   static bool removeInstance (DescriptorSwitch *object);
 

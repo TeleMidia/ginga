@@ -60,9 +60,6 @@ private:
 
   map<string, NclExecutionObject *> execObjList;
 
-  pthread_mutex_t compositeMutex;
-  pthread_mutex_t stlMutex;
-
 public:
   NclCompositeExecutionObject (const string &id, Node *dataObject, bool handling,
                                INclLinkActionListener *seListener);

@@ -22,16 +22,12 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_NCL_BEGIN
 
-bool DescriptorSwitch::initMutex = false;
 set<DescriptorSwitch *> DescriptorSwitch::objects;
-pthread_mutex_t DescriptorSwitch::_objMutex;
 
 void
 DescriptorSwitch::addInstance (DescriptorSwitch *object)
 {
-  pthread_mutex_lock (&_objMutex);
   objects.insert (object);
-  pthread_mutex_unlock (&_objMutex);
 }
 
 bool
@@ -40,14 +36,12 @@ DescriptorSwitch::removeInstance (DescriptorSwitch *object)
   set<DescriptorSwitch *>::iterator i;
   bool removed = false;
 
-  pthread_mutex_lock (&_objMutex);
   i = objects.find (object);
   if (i != objects.end ())
     {
       objects.erase (i);
       removed = true;
     }
-  pthread_mutex_unlock (&_objMutex);
 
   return removed;
 }
@@ -58,12 +52,6 @@ DescriptorSwitch::hasInstance (DescriptorSwitch *object, bool eraseFromList)
   set<DescriptorSwitch *>::iterator i;
   bool hasDSwitch = false;
 
-  if (!initMutex)
-    {
-      return false;
-    }
-
-  pthread_mutex_lock (&_objMutex);
   i = objects.find (object);
   if (i != objects.end ())
     {
@@ -73,18 +61,12 @@ DescriptorSwitch::hasInstance (DescriptorSwitch *object, bool eraseFromList)
         }
       hasDSwitch = true;
     }
-  pthread_mutex_unlock (&_objMutex);
 
   return hasDSwitch;
 }
 
 DescriptorSwitch::DescriptorSwitch (const string &id) : GenericDescriptor (id)
 {
-  if (!initMutex)
-    {
-      initMutex = true;
-      pthread_mutex_init (&DescriptorSwitch::_objMutex, NULL);
-    }
   descriptorList = new vector<GenericDescriptor *>;
   ruleList = new vector<Rule *>;
   defaultDescriptor = NULL;

@@ -24,9 +24,6 @@ using namespace ::ginga::ctxmgmt;
 
 #include "ginga.h"
 
-#include "system/Thread.h"
-using namespace ::ginga::system;
-
 GINGA_FORMATTER_BEGIN
 
 class PresentationContext
@@ -34,7 +31,6 @@ class PresentationContext
 private:
   map<string, string> contextTable;
   static ContextManager *contextManager;
-  pthread_mutex_t attrMutex;
 
 public:
   PresentationContext ();

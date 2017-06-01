@@ -126,9 +126,6 @@ AU_CHECK_PKG([GLIB], [glib-2.0 >= glib_required_version],
 AU_CHECK_PKG([NCLUA],
  [nclua >= nclua_required_version])
 
-AX_PTHREAD([],
- [AU_ERROR_REQ([pthreads])])
-
 AU_CHECK_PKG([SDL2],
  [sdl2 >= sdl2_required_version])
 

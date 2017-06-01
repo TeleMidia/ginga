@@ -42,23 +42,15 @@ FormatterScheduler::FormatterScheduler ()
     (this->playerManager, this->presContext, this, this->compiler);
 
   this->focusManager->setKeyHandler (true);
-  Thread::mutexInit (&mutexD, true);
-  Thread::mutexInit (&mutexActions, true);
 }
 
 FormatterScheduler::~FormatterScheduler ()
 {
   set<NclLinkSimpleAction *>::iterator i;
 
-  Thread::mutexLock (&mutexD);
-  Thread::mutexLock (&mutexActions);
-
   for (auto action: this->actions)
     action->setSimpleActionListener (NULL);
   this->actions.clear ();
-
-  Thread::mutexUnlock (&mutexActions);
-  Thread::mutexDestroy (&mutexActions);
 
   ruleAdapter = NULL;
   presContext = NULL;
@@ -71,17 +63,12 @@ FormatterScheduler::~FormatterScheduler ()
 
   compiler = NULL;
   events.clear ();
-
-  Thread::mutexUnlock (&mutexD);
-  Thread::mutexDestroy (&mutexD);
 }
 
 void
 FormatterScheduler::addAction (NclLinkSimpleAction *action)
 {
-  Thread::mutexLock (&mutexActions);
   actions.insert (action);
-  Thread::mutexUnlock (&mutexActions);
 }
 
 void
@@ -89,13 +76,11 @@ FormatterScheduler::removeAction (NclLinkSimpleAction *action)
 {
   set<NclLinkSimpleAction *>::iterator i;
 
-  Thread::mutexLock (&mutexActions);
   i = actions.find (action);
   if (i != actions.end ())
     {
       actions.erase (i);
     }
-  Thread::mutexUnlock (&mutexActions);
 }
 
 FormatterFocusManager *
@@ -113,12 +98,8 @@ FormatterScheduler::setKeyHandler (bool isHandler)
 void
 FormatterScheduler::scheduleAction (NclLinkSimpleAction *action)
 {
-  pthread_mutex_lock (&mutexActions);
   assert (action != NULL);
   runAction (action);
-
-  pthread_mutex_unlock (&mutexActions);
-
   return;
 }
 
@@ -152,7 +133,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
   obj = event->getExecutionObject ();
   g_assert_nonnull (obj);
 
-  g_warning ("scheduler: running action '%s' over event '%s'",
+  g_debug ("scheduler: running action '%s' over event '%s'",
            action->getTypeString ().c_str (),
            event->getId ().c_str ());
 

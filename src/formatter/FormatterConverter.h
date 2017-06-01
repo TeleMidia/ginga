@@ -93,8 +93,6 @@ private:
   FormatterLinkConverter *linkCompiler;
   INclLinkActionListener *actionListener;
   RuleAdapter *ruleAdapter;
-  pthread_mutex_t objectsMutex;
-  pthread_mutex_t lMutex;
   bool handling;
 
 public:

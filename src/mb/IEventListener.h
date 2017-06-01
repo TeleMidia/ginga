@@ -25,7 +25,7 @@ GINGA_MB_BEGIN
 class IEventListener
 {
 public:
-  virtual void handleTick (GingaTime total, GingaTime diff, int serial) = 0;
+  virtual void handleTickEvent (GingaTime, GingaTime, int) = 0;
 };
 
 GINGA_MB_END

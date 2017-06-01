@@ -38,7 +38,6 @@ protected:
   short op;
 
 private:
-  pthread_mutex_t mutexActions;
   int pendingActions;
   bool hasStart;
   bool runing;

@@ -29,20 +29,12 @@ GINGA_FORMATTER_BEGIN
 AdapterApplicationPlayer::AdapterApplicationPlayer (AdapterPlayerManager *mngr)
     : AdapterFormatterPlayer (mngr)
 {
-  Thread::mutexInit (&_eventMutex, false);
-  Thread::mutexInit (&_eventsMutex, false);
-
   _currentEvent = nullptr;
 }
 
 AdapterApplicationPlayer::~AdapterApplicationPlayer ()
 {
-  lockPreparedEvents ();
   _preparedEvents.clear ();
-  unlockPreparedEvents ();
-
-  Thread::mutexDestroy (&_eventMutex);
-  Thread::mutexDestroy (&_eventsMutex);
 }
 
 bool
@@ -50,7 +42,6 @@ AdapterApplicationPlayer::hasPrepared ()
 {
   if (_object == NULL || _player == NULL)
     return false;
-
   return true;
 }
 
@@ -69,10 +60,7 @@ AdapterApplicationPlayer::prepare (NclExecutionObject *object,
 
   if (this->_object != object)
     {
-      lockPreparedEvents ();
       _preparedEvents.clear ();
-      unlockPreparedEvents ();
-
       this->_object = object;
 
       g_assert_nonnull (_object);
@@ -226,9 +214,7 @@ AdapterApplicationPlayer::prepare (NclFormatterEvent *event)
         }
     }
 
-  lockPreparedEvents ();
   _preparedEvents[event->getId ()] = event;
-  unlockPreparedEvents ();
 }
 
 bool
@@ -257,7 +243,6 @@ AdapterApplicationPlayer::stop ()
     {
       g_debug ("AdapterApplicationPlayer::stop ALL");
 
-      lockPreparedEvents ();
       if (_currentEvent->getCurrentState () != EventUtil::ST_SLEEPING)
         {
           _player->stop ();
@@ -285,7 +270,6 @@ AdapterApplicationPlayer::stop ()
             }
         }
 
-      unlockPreparedEvents ();
     }
   else if (!_player->isForcedNaturalEnd ())
     {
@@ -339,7 +323,6 @@ AdapterApplicationPlayer::abort ()
 
       _player->stop ();
 
-      lockPreparedEvents ();
       i = _preparedEvents.begin ();
       while (i != _preparedEvents.end ())
         {
@@ -360,8 +343,6 @@ AdapterApplicationPlayer::abort ()
               ++i;
             }
         }
-
-      unlockPreparedEvents ();
     }
   else if (!_player->isForcedNaturalEnd ())
     {
@@ -398,7 +379,6 @@ AdapterApplicationPlayer::naturalEnd ()
 
   g_assert_nonnull (_player);
 
-  lockPreparedEvents ();
   i = _preparedEvents.begin ();
   while (i != _preparedEvents.end ())
     {
@@ -410,15 +390,12 @@ AdapterApplicationPlayer::naturalEnd ()
                  ->getAnchor ()
                  ->instanceOf ("LambdaAnchor"))
         {
-          unlockPreparedEvents ();
           event->stop ();
           unprepare ();
           return;
         }
       ++i;
     }
-
-  unlockPreparedEvents ();
 
   g_assert_nonnull (_object);
   if (_object->stop ())
@@ -448,7 +425,6 @@ AdapterApplicationPlayer::unprepare ()
       _currentEvent->stop ();
     }
 
-  lockPreparedEvents ();
   if (_preparedEvents.count (_currentEvent->getId ()) != 0
       && _preparedEvents.size () == 1)
     {
@@ -469,8 +445,6 @@ AdapterApplicationPlayer::unprepare ()
         }
     }
 
-  unlockPreparedEvents ();
-
   return true;
 }
 
@@ -489,7 +463,6 @@ AdapterApplicationPlayer::unlockCurrentEvent (NclFormatterEvent *event)
       g_warning ("Handling events warning! id = '%s'",
                  id.c_str());
     }
-  unlockEvent ();
 }
 
 bool
@@ -497,7 +470,6 @@ AdapterApplicationPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
 {
   string interfaceId;
 
-  lockEvent ();
   if (_preparedEvents.count (event->getId ()) != 0
       && !event->instanceOf ("NclSelectionEvent")
       && event->instanceOf ("NclAnchorEvent"))
@@ -548,35 +520,10 @@ AdapterApplicationPlayer::setAndLockCurrentEvent (NclFormatterEvent *event)
       g_warning ("Event '%s' isn't prepared",
                  event->getId ().c_str() );
 
-      unlockEvent ();
       return false;
     }
 
   return true;
-}
-
-void
-AdapterApplicationPlayer::lockEvent ()
-{
-  Thread::mutexLock (&_eventMutex);
-}
-
-void
-AdapterApplicationPlayer::unlockEvent ()
-{
-  Thread::mutexUnlock (&_eventMutex);
-}
-
-void
-AdapterApplicationPlayer::lockPreparedEvents ()
-{
-  Thread::mutexLock (&_eventsMutex);
-}
-
-void
-AdapterApplicationPlayer::unlockPreparedEvents ()
-{
-  Thread::mutexUnlock (&_eventsMutex);
 }
 
 GINGA_FORMATTER_END

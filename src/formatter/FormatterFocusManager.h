@@ -62,12 +62,9 @@ private:
   int height;
 
   FormatterConverter *converter;
-  pthread_mutex_t mutexFocus;
-  pthread_mutex_t mutexTable;
 
   static bool init;
   static set<FormatterFocusManager *> instances;
-  static pthread_mutex_t iMutex;
 
 public:
   FormatterFocusManager (AdapterPlayerManager *playerManager,

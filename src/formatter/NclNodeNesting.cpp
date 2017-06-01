@@ -42,14 +42,11 @@ NclNodeNesting::NclNodeNesting (vector<Node *> *seq)
 
 NclNodeNesting::~NclNodeNesting ()
 {
-  Thread::mutexLock (&mutexNodes);
   if (nodes != NULL)
     {
       delete nodes;
       nodes = NULL;
     }
-  Thread::mutexUnlock (&mutexNodes);
-  Thread::mutexDestroy (&mutexNodes);
 }
 
 void
@@ -59,7 +56,6 @@ NclNodeNesting::initialize ()
   this->nodes = new vector<Node *>;
   id = "";
   typeSet.insert (type);
-  Thread::mutexInit (&mutexNodes, false);
 }
 
 bool
@@ -105,22 +101,18 @@ NclNodeNesting::getAnchorNode ()
 {
   Node *node;
 
-  Thread::mutexLock (&mutexNodes);
   if (nodes == NULL || nodes->empty ())
     {
-      Thread::mutexUnlock (&mutexNodes);
       return NULL;
     }
   else if (nodes->size () == 1)
     {
       node = *(nodes->begin ());
-      Thread::mutexUnlock (&mutexNodes);
       return node;
     }
   else
     {
       node = *(nodes->end () - 1);
-      Thread::mutexUnlock (&mutexNodes);
       return node;
     }
 }
@@ -130,16 +122,13 @@ NclNodeNesting::getHeadNode ()
 {
   Node *node;
 
-  Thread::mutexLock (&mutexNodes);
   if (nodes == NULL || nodes->empty ())
     {
-      Thread::mutexUnlock (&mutexNodes);
       return NULL;
     }
   else
     {
       node = *(nodes->begin ());
-      Thread::mutexUnlock (&mutexNodes);
       return node;
     }
 }
@@ -150,19 +139,14 @@ NclNodeNesting::getNode (int index)
   Node *node;
   vector<Node *>::iterator i;
 
-  Thread::mutexLock (&mutexNodes);
-
   if (nodes == NULL || nodes->empty () || index < 0
       || index >= (int)(nodes->size ()))
     {
-      Thread::mutexUnlock (&mutexNodes);
       return NULL;
     }
 
   i = nodes->begin () + index;
   node = *i;
-  Thread::mutexUnlock (&mutexNodes);
-
   return node;
 }
 
@@ -171,7 +155,6 @@ NclNodeNesting::getNumNodes ()
 {
   int s;
 
-  Thread::mutexLock (&mutexNodes);
   if (nodes == NULL)
     {
       s = 0;
@@ -180,7 +163,6 @@ NclNodeNesting::getNumNodes ()
     {
       s = (int) nodes->size ();
     }
-  Thread::mutexUnlock (&mutexNodes);
   return s;
 }
 
@@ -189,10 +171,8 @@ NclNodeNesting::insertAnchorNode (Node *node)
 {
   string nodeId;
 
-  Thread::mutexLock (&mutexNodes);
   if (nodes == NULL)
     {
-      Thread::mutexUnlock (&mutexNodes);
       return;
     }
 
@@ -207,16 +187,13 @@ NclNodeNesting::insertAnchorNode (Node *node)
     }
 
   nodes->push_back (node);
-  Thread::mutexUnlock (&mutexNodes);
 }
 
 void
 NclNodeNesting::insertHeadNode (Node *node)
 {
-  Thread::mutexLock (&mutexNodes);
   if (nodes == NULL)
     {
-      Thread::mutexUnlock (&mutexNodes);
       return;
     }
 
@@ -229,23 +206,15 @@ NclNodeNesting::insertHeadNode (Node *node)
       id = node->getId ();
     }
   nodes->insert (nodes->begin (), node);
-
-  Thread::mutexUnlock (&mutexNodes);
 }
 
 bool
 NclNodeNesting::removeAnchorNode ()
 {
-  Thread::mutexLock (&mutexNodes);
-
   if (nodes == NULL || nodes->empty ())
-    {
-      Thread::mutexUnlock (&mutexNodes);
-      return false;
-    }
+    return false;
 
   nodes->erase (nodes->end () - 1);
-  Thread::mutexUnlock (&mutexNodes);
 
   if (id.find ("/") != std::string::npos)
     {
@@ -258,16 +227,12 @@ NclNodeNesting::removeAnchorNode ()
 bool
 NclNodeNesting::removeHeadNode ()
 {
-  Thread::mutexLock (&mutexNodes);
-
   if (nodes == NULL || nodes->empty ())
     {
-      Thread::mutexUnlock (&mutexNodes);
       return false;
     }
 
   nodes->erase (nodes->begin ());
-  Thread::mutexUnlock (&mutexNodes);
 
   if (id.find ("/") != std::string::npos)
     {

@@ -15,14 +15,14 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _LINKTRIGGERCONDITION_H_
-#define _LINKTRIGGERCONDITION_H_
-
-#include "system/Thread.h"
-using namespace ::ginga::system;
+#ifndef NCL_LINK_TRIGGER_CONDITION
+#define NCL_LINK_TRIGGER_CONDITION
 
 #include "NclLinkTriggerListener.h"
 #include "NclLinkCondition.h"
+
+#include "mb/IEventListener.h"
+using namespace ::ginga::mb;
 
 GINGA_FORMATTER_BEGIN
 
@@ -33,13 +33,13 @@ typedef struct
   NclLinkCondition *condition;
 } ConditionStatus;
 
-class NclLinkTriggerCondition : public NclLinkCondition, public Thread
+class NclLinkTriggerCondition : public NclLinkCondition,
+                                public IEventListener
 {
 protected:
   NclLinkTriggerListener *listener;
   double delay;
 
-  static pthread_mutex_t sMutex;
   static bool initialized;
   static bool running;
   static vector<ConditionStatus *> notes;
@@ -59,13 +59,9 @@ public:
   double getDelay ();
   void setDelay (double delay);
   virtual void conditionSatisfied (NclLinkCondition *condition);
-
-private:
-  static void *notificationThread (void *ptr);
-
-  void run ();
+  void handleTickEvent (GingaTime, GingaTime, int);
 };
 
 GINGA_FORMATTER_END
 
-#endif //_LINKTRIGGERCONDITION_H_
+#endif // NCL_LINK_TRIGGER_CONDITION

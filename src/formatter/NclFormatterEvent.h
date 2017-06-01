@@ -40,11 +40,9 @@ protected:
   set<string> typeSet;
   bool deleting;
   short eventType;
-  pthread_mutex_t mutex;
 
   static set<NclFormatterEvent *> instances;
   static bool init;
-  static pthread_mutex_t iMutex;
 
 public:
   NclFormatterEvent (const string &id, NclExecutionObject *);
