@@ -145,14 +145,12 @@ NclCompositeExecutionObject::suspendLinkEvaluation (bool suspend)
 {
   set<NclFormatterLink *>::iterator i;
 
-  lockSTL ();
   i = links.begin ();
   while (i != links.end ())
     {
       (*i)->suspendLinkEvaluation (suspend);
       ++i;
     }
-  unlockSTL ();
 }
 
 bool
@@ -165,18 +163,15 @@ NclCompositeExecutionObject::addExecutionObject (NclExecutionObject *obj)
       return false;
     }
 
-  lockComposite ();
   objId = obj->getId ();
   if (execObjList.count (objId) != 0)
     {
       clog << "NclCompositeExecutionObject::addExecutionObject Warning! ";
       clog << "trying to add same obj twice: '" << objId << "'" << endl;
-      unlockComposite ();
       return false;
     }
 
   execObjList[objId] = obj;
-  unlockComposite ();
 
   obj->addParentObject (this, getDataObject ());
   return true;
@@ -201,10 +196,8 @@ NclCompositeExecutionObject::getExecutionObject (const string &id)
   map<string, NclExecutionObject *>::iterator i;
   NclExecutionObject *execObj;
 
-  lockComposite ();
   if (execObjList.empty ())
     {
-      unlockComposite ();
       return NULL;
     }
 
@@ -212,11 +205,9 @@ NclCompositeExecutionObject::getExecutionObject (const string &id)
   if (i != execObjList.end ())
     {
       execObj = i->second;
-      unlockComposite ();
       return execObj;
     }
 
-  unlockComposite ();
   return NULL;
 }
 
@@ -225,14 +216,11 @@ NclCompositeExecutionObject::getExecutionObjects ()
 {
   map<string, NclExecutionObject *> *objs;
 
-  lockComposite ();
   if (execObjList.empty ())
     {
-      unlockComposite ();
       return NULL;
     }
   objs = new map<string, NclExecutionObject *> (execObjList);
-  unlockComposite ();
 
   return objs;
 }
@@ -240,13 +228,7 @@ NclCompositeExecutionObject::getExecutionObjects ()
 int
 NclCompositeExecutionObject::getNumExecutionObjects ()
 {
-  int size = 0;
-
-  lockComposite ();
-  size = (int) execObjList.size ();
-  unlockComposite ();
-
-  return size;
+  return (int) execObjList.size ();
 }
 
 map<string, NclExecutionObject *> *
@@ -259,7 +241,6 @@ NclCompositeExecutionObject::recursivellyGetExecutionObjects ()
 
   objects = new map<string, NclExecutionObject *>;
 
-  lockComposite ();
   i = execObjList.begin ();
   while (i != execObjList.end ())
     {
@@ -283,7 +264,6 @@ NclCompositeExecutionObject::recursivellyGetExecutionObjects ()
       ++i;
     }
 
-  unlockComposite ();
   return objects;
 }
 
@@ -292,18 +272,15 @@ NclCompositeExecutionObject::removeExecutionObject (NclExecutionObject *obj)
 {
   map<string, NclExecutionObject *>::iterator i;
 
-  lockComposite ();
   if (!deleting)
     {
       i = execObjList.find (obj->getId ());
       if (i != execObjList.end ())
         {
           execObjList.erase (i);
-          unlockComposite ();
           return true;
         }
     }
-  unlockComposite ();
   return false;
 }
 
@@ -314,24 +291,15 @@ NclCompositeExecutionObject::getUncompiledLinks ()
   clog << "' has '" << uncompiledLinks.size () << "' uncompiled links";
   clog << endl;
 
-  lockSTL ();
   set<Link *> *uLinks = new set<Link *> (uncompiledLinks);
-  unlockSTL ();
-
   return uLinks;
 }
 
 bool
 NclCompositeExecutionObject::containsUncompiledLink (Link *dataLink)
 {
-  lockSTL ();
   if (uncompiledLinks.count (dataLink) != 0)
-    {
-      unlockSTL ();
-      return true;
-    }
-
-  unlockSTL ();
+    return true;
   return false;
 }
 
@@ -340,17 +308,14 @@ NclCompositeExecutionObject::removeLinkUncompiled (Link *ncmLink)
 {
   set<Link *>::iterator i;
 
-  lockSTL ();
   clog << "NclCompositeExecutionObject::removeLinkUncompiled '";
   clog << ncmLink->getId () << "'" << endl;
   i = uncompiledLinks.find (ncmLink);
   if (i != uncompiledLinks.end ())
     {
       uncompiledLinks.erase (i);
-      unlockSTL ();
       return;
     }
-  unlockSTL ();
 }
 
 void
@@ -373,22 +338,18 @@ NclCompositeExecutionObject::setLinkCompiled (NclFormatterLink *link)
       return;
     }
 
-  lockSTL ();
   links.insert (link);
-  unlockSTL ();
 }
 
 void
 NclCompositeExecutionObject::addNcmLink (Link *ncmLink)
 {
-  lockSTL ();
   if (uncompiledLinks.count (ncmLink) != 0)
     {
       clog << "NclCompositeExecutionObject::addNcmLink Warning! ";
       clog << "Trying to add same link twice" << endl;
     }
   uncompiledLinks.insert (ncmLink);
-  unlockSTL ();
 }
 
 void
@@ -406,7 +367,6 @@ NclCompositeExecutionObject::removeNcmLink (Link *ncmLink)
        << ncmLink->getId ();
   clog << "'" << endl;
 
-  lockSTL ();
   i = uncompiledLinks.find (ncmLink);
   if (i != uncompiledLinks.end ())
     {
@@ -425,12 +385,10 @@ NclCompositeExecutionObject::removeNcmLink (Link *ncmLink)
               links.erase (j);
               delete link;
               link = NULL;
-              unlockSTL ();
               return;
             }
         }
     }
-  unlockSTL ();
 }
 
 void
@@ -446,7 +404,6 @@ NclCompositeExecutionObject::setAllLinksAsUncompiled (bool isRecursive)
   clog << "NclCompositeExecutionObject::setAllLinksAsUncompiled for '";
   clog << getId () << "'" << endl;
 
-  lockSTL ();
   j = links.begin ();
   while (j != links.end ())
     {
@@ -463,11 +420,9 @@ NclCompositeExecutionObject::setAllLinksAsUncompiled (bool isRecursive)
       ++j;
     }
   links.clear ();
-  unlockSTL ();
 
   if (isRecursive)
     {
-      lockComposite ();
       i = execObjList.begin ();
       while (i != execObjList.end ())
         {
@@ -480,7 +435,6 @@ NclCompositeExecutionObject::setAllLinksAsUncompiled (bool isRecursive)
             }
           ++i;
         }
-      unlockComposite ();
     }
 }
 
@@ -489,7 +443,6 @@ NclCompositeExecutionObject::setParentsAsListeners ()
 {
   map<Node *, NclCompositeExecutionObject *>::iterator i;
 
-  lockSTL ();
   i = parentTable.begin ();
   while (i != parentTable.end ())
     {
@@ -499,7 +452,6 @@ NclCompositeExecutionObject::setParentsAsListeners ()
         }
       ++i;
     }
-  unlockSTL ();
 }
 
 void
@@ -512,7 +464,6 @@ NclCompositeExecutionObject::unsetParentsAsListeners ()
       return;
     }
 
-  lockSTL ();
   i = parentTable.begin ();
   while (i != parentTable.end ())
     {
@@ -527,7 +478,6 @@ NclCompositeExecutionObject::unsetParentsAsListeners ()
 
       ++i;
     }
-  unlockSTL ();
 }
 
 void
@@ -585,7 +535,6 @@ NclCompositeExecutionObject::eventStateChanged (NclFormatterEvent *event,
     case EventUtil::TR_STOPS:
       if (((NclPresentationEvent *)event)->getRepetitions () == 0)
         {
-          lockComposite ();
           lastTransition = transition;
           if (previousState == EventUtil::ST_OCCURRING)
             {
@@ -615,7 +564,6 @@ NclCompositeExecutionObject::eventStateChanged (NclFormatterEvent *event,
               listPendingLinks ();
             }
 
-          unlockComposite ();
           if (runningEvents.empty () && pausedEvents.empty ()
               && pendingLinks.empty ())
             {
@@ -664,16 +612,12 @@ NclCompositeExecutionObject::linkEvaluationStarted (
   int linkNumber = 0;
   NclFormatterLink *evalLink;
 
-  lockSTL ();
-
   evalLink = link;
   if (pendingLinks.count (evalLink) != 0)
     {
       linkNumber = pendingLinks[evalLink];
     }
   pendingLinks[evalLink] = linkNumber + 1;
-
-  unlockSTL ();
 }
 
 void
@@ -683,8 +627,6 @@ NclCompositeExecutionObject::linkEvaluationFinished (
   int linkNumber;
   NclFormatterLink *finishedLink;
   map<NclFormatterLink *, int>::iterator i;
-
-  lockSTL ();
 
   clog << "NclCompositeExecutionObject::linkEvaluationFinished(" << id;
   clog << ") '";
@@ -707,14 +649,12 @@ NclCompositeExecutionObject::linkEvaluationFinished (
                 }
               else if (!start)
                 {
-                  unlockSTL ();
                   wholeContent->abort ();
                   if (deleting)
                     {
                       return;
                     }
                   unsetParentsAsListeners ();
-                  lockSTL ();
                 }
               else
                 {
@@ -733,7 +673,6 @@ NclCompositeExecutionObject::linkEvaluationFinished (
           pendingLinks[finishedLink] = linkNumber - 1;
         }
     }
-  unlockSTL ();
 }
 
 bool
@@ -759,10 +698,6 @@ NclCompositeExecutionObject::setPropertyValue (NclAttributionEvent *event,
 void
 NclCompositeExecutionObject::checkLinkConditions ()
 {
-  if (running)
-    return;
-
-  running = true;
   if (deleting || (runningEvents.empty () && pausedEvents.empty ()
                    && pendingLinks.empty ()))
     {
@@ -779,7 +714,6 @@ NclCompositeExecutionObject::checkLinkConditions ()
           unsetParentsAsListeners ();
         }
     }
-  running = false;
 }
 
 void
@@ -836,26 +770,6 @@ NclCompositeExecutionObject::listPendingLinks ()
 
   clog << " pendingLinks.size = '" << pendingLinks.size () << "'";
   clog << endl;
-}
-
-void
-NclCompositeExecutionObject::lockComposite ()
-{
-}
-
-void
-NclCompositeExecutionObject::unlockComposite ()
-{
-}
-
-void
-NclCompositeExecutionObject::lockSTL ()
-{
-}
-
-void
-NclCompositeExecutionObject::unlockSTL ()
-{
 }
 
 GINGA_FORMATTER_END
