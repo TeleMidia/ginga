@@ -56,7 +56,6 @@ private:
   short lastTransition;
 
   map<NclFormatterLink *, int> pendingLinks;
-  bool running;
 
   map<string, NclExecutionObject *> execObjList;
 
@@ -104,15 +103,8 @@ public:
 
 private:
   void checkLinkConditions ();
-  void run ();
   void listRunningObjects ();
   void listPendingLinks ();
-
-  void lockComposite ();
-  void unlockComposite ();
-
-  void lockSTL ();
-  void unlockSTL ();
 };
 
 GINGA_FORMATTER_END
