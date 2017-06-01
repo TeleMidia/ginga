@@ -35,8 +35,6 @@ private:
   static ContextManager *_instance;
   ContextManager ();
 
-  pthread_mutex_t groupsMutex;
-
 public:
   ~ContextManager ();
   static ContextManager *getInstance ();

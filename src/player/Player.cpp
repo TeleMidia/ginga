@@ -26,8 +26,6 @@ GINGA_PLAYER_BEGIN
 
 Player::Player (const string &mrl)
 {
-  Thread::mutexInit (&_listM, false);
-
   this->mrl = mrl;
   this->window = NULL;
   this->_notifying = false;
@@ -67,12 +65,8 @@ Player::~Player ()
 
   this->status = PL_SLEEPING;
 
-  Thread::mutexLock (&_listM);
   _listeners.clear ();
-
   _properties.clear ();
-  Thread::mutexUnlock (&_listM);
-  Thread::mutexDestroy (&_listM);
 }
 
 void
@@ -87,9 +81,7 @@ Player::addListener (IPlayerListener *listener)
 {
   if (!_notifying)
     {
-      Thread::mutexLock (&_listM);
       _listeners.insert (listener);
-      Thread::mutexUnlock (&_listM);
     }
 }
 
@@ -100,13 +92,11 @@ Player::removeListener (IPlayerListener *listener)
 
   if (!_notifying)
     {
-      Thread::mutexLock (&_listM);
       i = _listeners.find (listener);
       if (i != _listeners.end ())
         {
           _listeners.erase (i);
         }
-      Thread::mutexUnlock (&_listM);
     }
 }
 
@@ -119,7 +109,6 @@ Player::notifyPlayerListeners (short code,
   string p;
   string v;
 
-  Thread::mutexLock (&_listM);
   this->_notifying = true;
 
   if (code == PL_NOTIFY_STOP)
@@ -127,7 +116,6 @@ Player::notifyPlayerListeners (short code,
 
   if (_listeners.empty ())
     {
-      Thread::mutexUnlock (&_listM);
       this->_notifying = false;
       return;
     }

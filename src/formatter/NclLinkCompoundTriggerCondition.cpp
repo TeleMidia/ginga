@@ -31,7 +31,6 @@ NclLinkCompoundTriggerCondition::~NclLinkCompoundTriggerCondition ()
   vector<NclLinkCondition *>::iterator i;
   NclLinkCondition *condition;
 
-  _isDeleting = true;
   for (i = conditions.begin (); i != conditions.end (); ++i)
     {
       condition = (NclLinkCondition *)(*i);

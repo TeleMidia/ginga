@@ -48,9 +48,6 @@ private:
   vector<NclFormatterEvent *> events; // document events
   set<NclLinkSimpleAction *> actions; // document actions
 
-  pthread_mutex_t mutexD;
-  pthread_mutex_t mutexActions;
-
 public:
   FormatterScheduler ();
   virtual ~FormatterScheduler ();

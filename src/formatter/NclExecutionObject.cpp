@@ -34,16 +34,12 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_FORMATTER_BEGIN
 
-bool NclExecutionObject::initMutex = false;
 set<NclExecutionObject *> NclExecutionObject::objects;
-pthread_mutex_t NclExecutionObject::_objMutex;
 
 void
 NclExecutionObject::addInstance (NclExecutionObject *object)
 {
-  Thread::mutexLock (&_objMutex);
   objects.insert (object);
-  Thread::mutexUnlock (&_objMutex);
 }
 
 bool
@@ -52,14 +48,12 @@ NclExecutionObject::removeInstance (NclExecutionObject *object)
   set<NclExecutionObject *>::iterator i;
   bool removed = false;
 
-  Thread::mutexLock (&_objMutex);
   i = objects.find (object);
   if (i != objects.end ())
     {
       objects.erase (i);
       removed = true;
     }
-  Thread::mutexUnlock (&_objMutex);
 
   return removed;
 }
@@ -71,12 +65,6 @@ NclExecutionObject::hasInstance (NclExecutionObject *object,
   set<NclExecutionObject *>::iterator i;
   bool hasObject;
 
-  if (!initMutex)
-    {
-      return false;
-    }
-
-  Thread::mutexLock (&_objMutex);
   hasObject = false;
   i = objects.find (object);
   if (i != objects.end ())
@@ -87,7 +75,6 @@ NclExecutionObject::hasInstance (NclExecutionObject *object,
         }
       hasObject = true;
     }
-  Thread::mutexUnlock (&_objMutex);
 
   return hasObject;
 }
@@ -171,9 +158,6 @@ NclExecutionObject::~NclExecutionObject ()
       descriptor = NULL;
     }
   unlock ();
-  Thread::mutexDestroy (&mutex);
-  Thread::mutexDestroy (&mutexEvent);
-  Thread::mutexDestroy (&mutexParentTable);
 }
 
 void
@@ -182,12 +166,6 @@ NclExecutionObject::initializeExecutionObject (
     bool handling, INclLinkActionListener *seListener)
 {
   typeSet.insert ("NclExecutionObject");
-
-  if (!initMutex)
-    {
-      initMutex = true;
-      Thread::mutexInit (&NclExecutionObject::_objMutex, false);
-    }
 
   addInstance (this);
   this->player = NULL;
@@ -209,10 +187,6 @@ NclExecutionObject::initializeExecutionObject (
   this->isHandling = handling;
 
   this->transMan = new NclEventTransitionManager ();
-
-  Thread::mutexInit (&mutex, false);
-  Thread::mutexInit (&mutexEvent, false);
-  Thread::mutexInit (&mutexParentTable, false);
 }
 
 void
@@ -1806,7 +1780,6 @@ NclExecutionObject::lock ()
       return false;
     }
   isLocked = true;
-  Thread::mutexLock (&mutex);
   return true;
 }
 
@@ -1818,7 +1791,6 @@ NclExecutionObject::unlock ()
       return false;
     }
 
-  Thread::mutexUnlock (&mutex);
   isLocked = false;
   return true;
 }
@@ -1826,29 +1798,26 @@ NclExecutionObject::unlock ()
 void
 NclExecutionObject::lockEvents ()
 {
-  Thread::mutexLock (&mutexEvent);
 }
 
 void
 NclExecutionObject::unlockEvents ()
 {
-  Thread::mutexUnlock (&mutexEvent);
 }
 
 void
 NclExecutionObject::lockParentTable ()
 {
-  Thread::mutexLock (&mutexParentTable);
 }
 
 void
 NclExecutionObject::unlockParentTable ()
 {
-  Thread::mutexUnlock (&mutexParentTable);
 }
 
 void
-NclExecutionObject::setPlayer(Player* p){
+NclExecutionObject::setPlayer(Player* p)
+{
    this->player = p;
 }
 

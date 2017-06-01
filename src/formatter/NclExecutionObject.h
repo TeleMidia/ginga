@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _EXECUTIONOBJECT_H_
 #define _EXECUTIONOBJECT_H_
 
-#include "system/Thread.h"
-using namespace ::ginga::system;
-
 #include "player/Player.h"
 using namespace ::ginga::player;
 
@@ -75,10 +72,6 @@ protected:
   NclPresentationEvent *wholeContent;
 
   set<string> typeSet;
-  pthread_mutex_t mutex;
-  pthread_mutex_t mutexEvent;
-  pthread_mutex_t mutexParentTable;
-
   INclLinkActionListener *seListener;
 
   bool isLocked;
@@ -110,8 +103,6 @@ protected:
 
 private:
   static set<NclExecutionObject *> objects;
-  static bool initMutex;
-  static pthread_mutex_t _objMutex;
 
 protected:
   static void addInstance (NclExecutionObject *object);

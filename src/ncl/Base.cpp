@@ -21,24 +21,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NCL_BEGIN
 
 set<Base *> Base::baseInstances;
-pthread_mutex_t Base::biMutex;
-bool Base::initMutex = false;
 
 Base::Base (const string &id)
 {
   this->id = id;
 
   typeSet.insert ("Base");
-
-  if (!initMutex)
-    {
-      initMutex = true;
-      pthread_mutex_init (&biMutex, NULL);
-    }
-
-  pthread_mutex_lock (&biMutex);
   baseInstances.insert (this);
-  pthread_mutex_unlock (&biMutex);
 }
 
 Base::~Base ()
@@ -47,13 +36,11 @@ Base::~Base ()
   set<Base *>::iterator j;
   Base *childBase;
 
-  pthread_mutex_lock (&biMutex);
   j = baseInstances.find (this);
   if (j != baseInstances.end ())
     {
       baseInstances.erase (j);
     }
-  pthread_mutex_unlock (&biMutex);
 
   i = baseSet.begin ();
   while (i != baseSet.end ())
@@ -74,12 +61,6 @@ Base::hasInstance (Base *instance, bool eraseFromList)
   set<Base *>::iterator i;
   bool hasBase = false;
 
-  if (!initMutex)
-    {
-      return false;
-    }
-
-  pthread_mutex_lock (&biMutex);
   i = baseInstances.find (instance);
   if (i != baseInstances.end ())
     {
@@ -89,7 +70,6 @@ Base::hasInstance (Base *instance, bool eraseFromList)
         }
       hasBase = true;
     }
-  pthread_mutex_unlock (&biMutex);
 
   return hasBase;
 }

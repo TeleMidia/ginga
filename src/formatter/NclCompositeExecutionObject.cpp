@@ -48,7 +48,6 @@ NclCompositeExecutionObject::~NclCompositeExecutionObject ()
 
   destroyEvents ();
 
-  pthread_mutex_lock (&stlMutex);
   runningEvents.clear ();
   pausedEvents.clear ();
   pendingLinks.clear ();
@@ -67,10 +66,6 @@ NclCompositeExecutionObject::~NclCompositeExecutionObject ()
   links.clear ();
   uncompiledLinks.clear ();
 
-  pthread_mutex_unlock (&stlMutex);
-  Thread::mutexDestroy (&stlMutex);
-
-  pthread_mutex_lock (&compositeMutex);
   j = execObjList.begin ();
   while (j != execObjList.end ())
     {
@@ -82,9 +77,6 @@ NclCompositeExecutionObject::~NclCompositeExecutionObject ()
       ++j;
     }
   execObjList.clear ();
-
-  pthread_mutex_unlock (&compositeMutex);
-  Thread::mutexDestroy (&compositeMutex);
 }
 
 void
@@ -97,8 +89,6 @@ NclCompositeExecutionObject::initializeCompositeExecutionObject (
   Entity *entity;
 
   typeSet.insert ("NclCompositeExecutionObject");
-  Thread::mutexInit (&compositeMutex, true);
-  Thread::mutexInit (&stlMutex, false);
 
   execObjList.clear ();
   links.clear ();
@@ -132,7 +122,6 @@ NclCompositeExecutionObject::getParentFromDataObject (Node *dataObject)
   Node *parentDataObject;
   map<string, NclExecutionObject *>::iterator i;
 
-  pthread_mutex_lock (&compositeMutex);
   parentDataObject = (Node *)(dataObject->getParentComposition ());
 
   if (parentDataObject != NULL)
@@ -143,14 +132,11 @@ NclCompositeExecutionObject::getParentFromDataObject (Node *dataObject)
           object = i->second;
           if (object->getDataObject () == parentDataObject)
             {
-              pthread_mutex_unlock (&compositeMutex);
               return (NclCompositeExecutionObject *)object;
             }
           ++i;
         }
     }
-  pthread_mutex_unlock (&compositeMutex);
-
   return NULL;
 }
 
@@ -861,37 +847,21 @@ NclCompositeExecutionObject::listPendingLinks ()
 void
 NclCompositeExecutionObject::lockComposite ()
 {
-  if (!deleting)
-    {
-      Thread::mutexLock (&compositeMutex);
-    }
 }
 
 void
 NclCompositeExecutionObject::unlockComposite ()
 {
-  if (!deleting)
-    {
-      Thread::mutexUnlock (&compositeMutex);
-    }
 }
 
 void
 NclCompositeExecutionObject::lockSTL ()
 {
-  if (!deleting)
-    {
-      Thread::mutexLock (&stlMutex);
-    }
 }
 
 void
 NclCompositeExecutionObject::unlockSTL ()
 {
-  if (!deleting)
-    {
-      Thread::mutexUnlock (&stlMutex);
-    }
 }
 
 GINGA_FORMATTER_END

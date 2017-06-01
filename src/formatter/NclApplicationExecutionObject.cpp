@@ -64,8 +64,6 @@ NclApplicationExecutionObject::~NclApplicationExecutionObject ()
   removeEventListeners ();
 
   destroyEvents ();
-
-  Thread::mutexDestroy (&eventsMutex);
 }
 
 void
@@ -73,12 +71,8 @@ NclApplicationExecutionObject::initializeApplicationObject ()
 {
   clog << "NclApplicationExecutionObject::initializeApplicationObject(";
   clog << id << ")" << endl;
-
   typeSet.insert ("NclApplicationExecutionObject");
-
   currentEvent = NULL;
-
-  Thread::mutexInit (&eventsMutex, false);
 }
 
 bool
@@ -700,13 +694,11 @@ NclApplicationExecutionObject::removeParentListenersFromEvent (
 void
 NclApplicationExecutionObject::lockEvents ()
 {
-  Thread::mutexLock (&eventsMutex);
 }
 
 void
 NclApplicationExecutionObject::unlockEvents ()
 {
-  Thread::mutexUnlock (&eventsMutex);
 }
 
 GINGA_FORMATTER_END

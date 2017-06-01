@@ -25,7 +25,6 @@ AM_CXXFLAGS=\
   $(LIBRSVG_CFLAGS)\
   $(NCLUA_CFLAGS)\
   $(PANGO_CFLAGS)\
-  $(PTHREAD_CFLAGS)\
   $(SDL2IMAGE_CFLAGS)\
   $(SDL2_CFLAGS)\
   $(WARN_CFLAGS)\
@@ -39,7 +38,6 @@ AM_LDFLAGS= -R $(libdir) -rpath $(libdir)\
   $(LIBRSVG_LIBS)\
   $(NCLUA_LIBS)\
   $(PANGO_LIBS)\
-  $(PTHREAD_LIBS)\
   $(SDL2IMAGE_LIBS)\
   $(SDL2_LIBS)\
   $(XERCESC_LIBS)\
@@ -162,7 +160,6 @@ src+= player/ImagePlayer.cpp
 src+= player/LuaPlayer.cpp
 src+= player/Player.cpp
 src+= player/PlayerAnimator.cpp
-src+= system/Thread.cpp
 
 if WITH_GSTREAMER
 AM_CXXFLAGS+= $(GSTREAMER_CFLAGS)

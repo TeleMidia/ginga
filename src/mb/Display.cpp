@@ -77,11 +77,11 @@ win_delete (SDLWindow *win)
 bool
 Display::add (GList **list, gpointer data)
 {
-  bool status;
+  bool found;
 
   g_assert_nonnull (list);
   this->lock ();
-  if (unlikely (status = g_list_find (*list, data)))
+  if (unlikely (found = g_list_find (*list, data)))
     {
       g_warning ("object %p already in list %p", data, *list);
       goto done;
@@ -89,7 +89,7 @@ Display::add (GList **list, gpointer data)
   *list = g_list_append (*list, data);
  done:
   this->unlock ();
-  return status;
+  return !found;
 }
 
 bool
@@ -108,7 +108,7 @@ Display::remove (GList **list, gpointer data)
   *list = g_list_remove_link (*list, elt);
  done:
   this->unlock ();
-  return elt == NULL;
+  return elt != NULL;
 }
 
 bool
@@ -130,7 +130,7 @@ Display::notifyListeners (GingaTime total, GingaTime diff, int frameno)
       GList *next = l->next;
       IEventListener *obj = (IEventListener *) l->data;
       g_assert_nonnull (obj);
-      obj->handleTick (total, diff, frameno);
+      obj->handleTickEvent (total, diff, frameno);
       l = next;
     }
 }
@@ -169,6 +169,7 @@ Display::renderLoop ()
       elapsed = now - last;
       last = now;
       this->notifyListeners (now - epoch, elapsed, frameno++);
+      this->notifyTimeAnchorListeners ();
 
       while (SDL_PollEvent (&evt)) // handle input
         {
@@ -493,7 +494,7 @@ Display::removeJob (DisplayJob *job)
 
 /**
  * @brief Adds listener to display listener list.
- * @para obj Event listener.
+ * @param obj Event listener.
  */
 bool
 Display::registerEventListener (IEventListener *obj)
@@ -520,7 +521,6 @@ void
 Display::destroyTexture (SDL_Texture *texture)
 {
   g_assert_nonnull (texture);
-
   this->add (&this->textures, texture);
 }
 

@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef NODENESTING_H_
 #define NODENESTING_H_
 
-#include "system/Thread.h"
-using namespace ::ginga::system;
-
 #include "ncl/Node.h"
 using namespace ::ginga::ncl;
 
@@ -32,7 +29,6 @@ private:
   string id;
   vector<Node *> *nodes;
   set<string> typeSet;
-  pthread_mutex_t mutexNodes;
 
 public:
   NclNodeNesting ();

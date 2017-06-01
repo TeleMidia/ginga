@@ -28,8 +28,6 @@ NclLinkCompoundAction::NclLinkCompoundAction (short op) : NclLinkAction (0.)
   hasStart = false;
   runing = false;
   listener = NULL;
-
-  Thread::mutexInit (&mutexActions, true);
   typeSet.insert ("NclLinkCompoundAction");
 }
 
@@ -39,7 +37,6 @@ NclLinkCompoundAction::~NclLinkCompoundAction ()
   NclLinkAction *action;
 
   // clog << "NclLinkCompoundAction::~NclLinkCompoundAction" << endl;
-  Thread::mutexLock (&mutexActions);
   i = actions.begin ();
   while (i != actions.end ())
     {
@@ -54,8 +51,6 @@ NclLinkCompoundAction::~NclLinkCompoundAction ()
     }
 
   actions.clear ();
-  Thread::mutexUnlock (&mutexActions);
-  Thread::mutexDestroy (&mutexActions);
 }
 
 short
@@ -77,7 +72,6 @@ NclLinkCompoundAction::addAction (NclLinkAction *action)
     }
 
   action->addActionProgressionListener (this);
-  Thread::mutexLock (&mutexActions);
   i = actions.begin ();
   while (i != actions.end ())
     {
@@ -86,13 +80,11 @@ NclLinkCompoundAction::addAction (NclLinkAction *action)
           clog << "NclLinkCompoundAction::addAction Warning!";
           clog << " Trying to add same action twice";
           clog << endl;
-          Thread::mutexUnlock (&mutexActions);
           return;
         }
       ++i;
     }
   actions.push_back (action);
-  Thread::mutexUnlock (&mutexActions);
 }
 
 vector<NclLinkAction *> *
@@ -105,15 +97,12 @@ NclLinkCompoundAction::getActions ()
       return NULL;
     }
 
-  Thread::mutexLock (&mutexActions);
   if (actions.empty ())
     {
-      Thread::mutexUnlock (&mutexActions);
       return NULL;
     }
 
   acts = new vector<NclLinkAction *> (actions);
-  Thread::mutexUnlock (&mutexActions);
   return acts;
 }
 
@@ -124,10 +113,8 @@ NclLinkCompoundAction::getSimpleActions (
   vector<NclLinkAction *>::iterator i;
   NclLinkAction *currentAction;
 
-  Thread::mutexLock (&mutexActions);
   if (actions.empty ())
     {
-      Thread::mutexUnlock (&mutexActions);
       return;
     }
 
@@ -149,7 +136,6 @@ NclLinkCompoundAction::getSimpleActions (
       ++i;
     }
 
-  Thread::mutexUnlock (&mutexActions);
 }
 
 void
@@ -174,16 +160,12 @@ NclLinkCompoundAction::getEvents ()
       return NULL;
     }
 
-  Thread::mutexLock (&mutexActions);
   if (actions.empty ())
     {
-      Thread::mutexUnlock (&mutexActions);
       return NULL;
     }
 
   acts = new vector<NclLinkAction *> (actions);
-  Thread::mutexUnlock (&mutexActions);
-
   events = new vector<NclFormatterEvent *>;
 
   for (i = acts->begin (); i != acts->end (); ++i)
@@ -225,16 +207,12 @@ NclLinkCompoundAction::getImplicitRefRoleActions ()
       return NULL;
     }
 
-  Thread::mutexLock (&mutexActions);
   if (actions.empty ())
     {
-      Thread::mutexUnlock (&mutexActions);
       return NULL;
     }
 
   acts = new vector<NclLinkAction *> (actions);
-  Thread::mutexUnlock (&mutexActions);
-
   refActs = new vector<NclLinkAction *>;
 
   for (i = acts->begin (); i != acts->end (); ++i)
@@ -273,17 +251,14 @@ NclLinkCompoundAction::run ()
 
   NclLinkAction::run ();
 
-  Thread::mutexLock (&mutexActions);
   if (actions.empty ())
     {
       clog << "NclLinkCompoundAction::run there is no action to run"
            << endl;
-      Thread::mutexUnlock (&mutexActions);
       return;
     }
   size = (int) actions.size ();
   clog << "NclLinkCompoundAction::run '" << size << "' actions" << endl;
-  Thread::mutexUnlock (&mutexActions);
 
   pendingActions = size;
   hasStart = false;
@@ -294,16 +269,13 @@ NclLinkCompoundAction::run ()
         {
           try
             {
-              Thread::mutexLock (&mutexActions);
               if (actions.empty ())
                 {
-                  Thread::mutexUnlock (&mutexActions);
                   return;
                 }
 
               action = (NclLinkAction *)(actions.at (i));
               action->setSatisfiedCondition (satisfiedCondition);
-              Thread::mutexUnlock (&mutexActions);
               // HELL: action->startThread ();
               action->run ();
             }
@@ -312,7 +284,6 @@ NclLinkCompoundAction::run ()
               clog << "NclLinkCompoundAction::run catch PAR out of range: ";
               clog << e.what ();
               clog << endl;
-              Thread::mutexUnlock (&mutexActions);
               continue;
             }
         }
@@ -323,14 +294,11 @@ NclLinkCompoundAction::run ()
         {
           try
             {
-              Thread::mutexLock (&mutexActions);
               if (actions.empty ())
                 {
-                  Thread::mutexUnlock (&mutexActions);
                   return;
                 }
               action = (NclLinkAction *)(actions.at (i));
-              Thread::mutexUnlock (&mutexActions);
               action->run (satisfiedCondition);
             }
           catch (std::out_of_range &e)
@@ -338,7 +306,6 @@ NclLinkCompoundAction::run ()
               clog << "NclLinkCompoundAction::run catch SEQ out of range: ";
               clog << e.what ();
               clog << endl;
-              Thread::mutexUnlock (&mutexActions);
               continue;
             }
         }

@@ -30,9 +30,6 @@ FormatterConverter::FormatterConverter (RuleAdapter *ruleAdapter)
   this->actionListener = NULL;
   this->ruleAdapter = ruleAdapter;
   this->handling = false;
-
-  Thread::mutexInit (&objectsMutex, false);
-  Thread::mutexInit (&lMutex, false);
 }
 
 FormatterConverter::~FormatterConverter ()
@@ -41,7 +38,6 @@ FormatterConverter::~FormatterConverter ()
   NclExecutionObject *object;
   set<NclFormatterEvent *>::iterator j;
 
-  Thread::mutexLock (&lMutex);
   j = listening.begin ();
   while (j != listening.end ())
     {
@@ -51,37 +47,24 @@ FormatterConverter::~FormatterConverter ()
         }
       ++j;
     }
-  Thread::mutexUnlock (&lMutex);
-  Thread::mutexDestroy (&lMutex);
-
   this->ruleAdapter = NULL;
 
-  Thread::mutexLock (&objectsMutex);
   i = executionObjects.begin ();
   while (i != executionObjects.end ())
     {
       object = i->second;
-      if (ntsRemoveExecutionObject (object))
-        {
-        }
-      else
-        {
-          executionObjects.erase (i);
-        }
-
+      if (!ntsRemoveExecutionObject (object))
+        executionObjects.erase (i);
       i = executionObjects.begin ();
     }
   executionObjects.clear ();
   settingObjects.clear ();
-  Thread::mutexUnlock (&objectsMutex);
 
   if (linkCompiler != NULL)
     {
       delete linkCompiler;
       linkCompiler = NULL;
     }
-
-  Thread::mutexDestroy (&objectsMutex);
 }
 
 void
@@ -91,7 +74,6 @@ FormatterConverter::executionObjectReleased (const string &objectId)
   set<NclExecutionObject *>::iterator j;
   NclExecutionObject *object = NULL;
 
-  Thread::mutexLock (&objectsMutex);
   i = executionObjects.find (objectId);
   if (i != executionObjects.end ())
     {
@@ -107,7 +89,6 @@ FormatterConverter::executionObjectReleased (const string &objectId)
           settingObjects.erase (j);
         }
     }
-  Thread::mutexUnlock (&objectsMutex);
 }
 
 set<NclExecutionObject *> *
@@ -119,7 +100,6 @@ FormatterConverter::getRunningObjects ()
   NclFormatterEvent *ev;
 
   objects = new set<NclExecutionObject *>;
-  Thread::mutexLock (&objectsMutex);
   i = executionObjects.begin ();
   while (i != executionObjects.end ())
     {
@@ -131,7 +111,6 @@ FormatterConverter::getRunningObjects ()
         }
       ++i;
     }
-  Thread::mutexUnlock (&objectsMutex);
   return objects;
 }
 
@@ -143,7 +122,6 @@ FormatterConverter::setHandlingStatus (bool handling)
 
   this->handling = handling;
 
-  Thread::mutexLock (&objectsMutex);
   i = executionObjects.begin ();
   while (i != executionObjects.end ())
     {
@@ -151,7 +129,6 @@ FormatterConverter::setHandlingStatus (bool handling)
       object->setHandling (handling);
       ++i;
     }
-  Thread::mutexUnlock (&objectsMutex);
 }
 
 NclExecutionObject *
@@ -161,7 +138,6 @@ FormatterConverter::getObjectFromNodeId (const string &id)
   NclExecutionObject *expectedObject;
   map<string, NclExecutionObject *>::iterator i;
 
-  Thread::mutexLock (&objectsMutex);
   i = executionObjects.begin ();
   while (i != executionObjects.end ())
     {
@@ -170,14 +146,9 @@ FormatterConverter::getObjectFromNodeId (const string &id)
                                       ->getDataEntity ());
 
       if (dataObject->getId () == id)
-        {
-          Thread::mutexUnlock (&objectsMutex);
-          return expectedObject;
-        }
+        return expectedObject;
       ++i;
     }
-
-  Thread::mutexUnlock (&objectsMutex);
 
   clog << "FormatterConverter::getObjectFromNodeId ";
   clog << "Warning! cannot find object '" << id << "'";
@@ -246,9 +217,7 @@ FormatterConverter::addSameInstance (NclExecutionObject *executionObject,
               objectId = referPerspective->getId ();
             }
 
-          Thread::mutexLock (&objectsMutex);
           executionObjects[objectId] = executionObject;
-          Thread::mutexUnlock (&objectsMutex);
         }
 
       delete referPerspective;
@@ -282,10 +251,7 @@ FormatterConverter::addExecutionObject (
 
   vector<Node *>::iterator j;
 
-  Thread::mutexLock (&objectsMutex);
   executionObjects[executionObject->getId ()] = executionObject;
-  Thread::mutexUnlock (&objectsMutex);
-
   dataObject = (NodeEntity *)(executionObject->getDataObject ());
 
   if (dataObject->instanceOf ("ContentNode")
@@ -398,7 +364,6 @@ FormatterConverter::getExecutionObjectFromPerspective (
       id = id + cascadingDescriptor->getId ();
     }
 
-  Thread::mutexLock (&objectsMutex);
   i = executionObjects.find (id);
   if (i != executionObjects.end ())
     {
@@ -408,10 +373,8 @@ FormatterConverter::getExecutionObjectFromPerspective (
           cascadingDescriptor = NULL;
         }
       executionObject = i->second;
-      Thread::mutexUnlock (&objectsMutex);
       return executionObject;
     }
-  Thread::mutexUnlock (&objectsMutex);
 
   parentObject = getParentExecutionObject (perspective);
 
@@ -730,9 +693,7 @@ FormatterConverter::createExecutionObject (
       // to monitor the switch presentation and clear the selection after
       // each execution
       compositeEvent->addEventListener (this);
-      Thread::mutexLock (&lMutex);
       listening.insert (compositeEvent);
-      Thread::mutexUnlock (&lMutex);
     }
   else if (nodeEntity->instanceOf ("CompositeNode"))
     {
@@ -1501,13 +1462,11 @@ FormatterConverter::removeExecutionObject (
 
   delete referPerspective;
 
-  Thread::mutexLock (&objectsMutex);
   i = executionObjects.find (objectId);
   if (i != executionObjects.end ())
     {
       executionObjects.erase (i);
     }
-  Thread::mutexUnlock (&objectsMutex);
 
   j = settingObjects.find (executionObject);
   if (j != settingObjects.end ())
@@ -1525,10 +1484,7 @@ FormatterConverter::removeExecutionObject (
   map<string, NclExecutionObject *>::iterator i;
   bool removed;
 
-  Thread::mutexLock (&objectsMutex);
   removed = ntsRemoveExecutionObject (executionObject);
-  Thread::mutexUnlock (&objectsMutex);
-
   return removed;
 }
 
@@ -1591,16 +1547,13 @@ FormatterConverter::hasExecutionObject (Node *node,
       cascadingDescriptor = NULL;
     }
 
-  Thread::mutexLock (&objectsMutex);
   i = executionObjects.find (id);
   if (i != executionObjects.end ())
     {
       expectedObject = i->second;
-      Thread::mutexUnlock (&objectsMutex);
       return expectedObject;
     }
 
-  Thread::mutexUnlock (&objectsMutex);
   return NULL;
 }
 
@@ -1733,9 +1686,7 @@ FormatterConverter::eventStateChanged (NclFormatterEvent *event,
 void
 FormatterConverter::reset ()
 {
-  Thread::mutexLock (&objectsMutex);
   executionObjects.clear ();
-  Thread::mutexUnlock (&objectsMutex);
 }
 
 GINGA_FORMATTER_END

@@ -18,16 +18,17 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "NclLinkTriggerCondition.h"
 
+#include "mb/Display.h"
+using namespace ginga::mb;
+
 GINGA_FORMATTER_BEGIN
 
-pthread_mutex_t NclLinkTriggerCondition::sMutex;
 vector<ConditionStatus *> NclLinkTriggerCondition::notes;
 
 bool NclLinkTriggerCondition::initialized = false;
 bool NclLinkTriggerCondition::running = false;
 
-NclLinkTriggerCondition::NclLinkTriggerCondition ()
-    : NclLinkCondition (), Thread ()
+NclLinkTriggerCondition::NclLinkTriggerCondition () : NclLinkCondition ()
 {
   listener = NULL;
   delay = 0.0;
@@ -35,7 +36,6 @@ NclLinkTriggerCondition::NclLinkTriggerCondition ()
   if (!initialized)
     {
       initialized = true;
-      Thread::mutexInit (&sMutex, false);
     }
 
   typeSet.insert ("NclLinkTriggerCondition");
@@ -43,11 +43,10 @@ NclLinkTriggerCondition::NclLinkTriggerCondition ()
 
 NclLinkTriggerCondition::~NclLinkTriggerCondition ()
 {
-  _isDeleting = true;
 
-  Thread::mutexLock (&sMutex);
-  listener = NULL;
-  Thread::mutexUnlock (&sMutex);
+  if (this->running)
+    g_assert (Ginga_Display->unregisterEventListener (this));
+  this->listener = NULL;
 }
 
 void
@@ -86,126 +85,82 @@ void
 NclLinkTriggerCondition::conditionSatisfied (arg_unused (NclLinkCondition *condition))
 {
   if (delay > 0)
-    {
-      // HELL: Thread::startThread ();
-      this->run ();
-    }
-  else
-    {
-      notifyConditionObservers (
-          NclLinkTriggerListener::CONDITION_SATISFIED);
-    }
+    g_warning ("support to condition delays is not implemented!");
+  notifyConditionObservers (NclLinkTriggerListener::CONDITION_SATISFIED);
 }
 
 void
 NclLinkTriggerCondition::notifyConditionObservers (short status)
 {
-  pthread_attr_t t_attr;
-  pthread_t t_id;
   ConditionStatus *data;
-
-  Thread::mutexLock (&sMutex);
 
   if (!running)
     {
+      g_assert (Ginga_Display->registerEventListener (this));
       running = true;
-      pthread_attr_init (&t_attr);
-      pthread_attr_setdetachstate (&t_attr, PTHREAD_CREATE_DETACHED);
-      pthread_attr_setscope (&t_attr, PTHREAD_SCOPE_SYSTEM);
-
-      if (_isDeleting)
-        {
-          Thread::mutexUnlock (&sMutex);
-          return;
-        }
-
-      pthread_create (&t_id, &t_attr, notificationThread, this);
-      pthread_detach (t_id);
     }
 
   data = new ConditionStatus;
   data->listener = listener;
   data->status = status;
   data->condition = this;
-
   notes.push_back (data);
-
-  Thread::mutexUnlock (&sMutex);
-}
-
-void *
-NclLinkTriggerCondition::notificationThread (arg_unused (void *ptr))
-{
-  ConditionStatus *data;
-  NclLinkTriggerListener *listener;
-  NclLinkCondition *condition;
-  short status;
-
-  while (running)
-    {
-      listener = NULL;
-
-      Thread::mutexLock (&sMutex);
-      if (!notes.empty ())
-        {
-          data = *notes.begin ();
-          notes.erase (notes.begin ());
-
-          listener = data->listener;
-          status = data->status;
-          condition = data->condition;
-
-          if (((NclLinkTriggerCondition *)condition)->_isDeleting)
-            {
-              delete data;
-              Thread::mutexUnlock (&sMutex);
-              continue;
-            }
-        }
-      Thread::mutexUnlock (&sMutex);
-
-      if (listener != NULL)
-        {
-          switch (status)
-            {
-            case NclLinkTriggerListener::CONDITION_SATISFIED:
-              listener->conditionSatisfied (condition);
-              break;
-
-            case NclLinkTriggerListener::EVALUATION_STARTED:
-              listener->evaluationStarted ();
-              break;
-
-            case NclLinkTriggerListener::EVALUATION_ENDED:
-              listener->evaluationEnded ();
-              break;
-
-            default:
-              g_assert_not_reached ();
-            }
-
-          delete data;
-        }
-
-      Thread::mutexLock (&sMutex);
-      if (notes.empty ())
-        {
-          running = false;
-        }
-      Thread::mutexUnlock (&sMutex);
-    }
-
-  return NULL;
 }
 
 void
-NclLinkTriggerCondition::run ()
+NclLinkTriggerCondition::handleTickEvent (arg_unused (GingaTime total),
+                                          arg_unused (GingaTime elapsed),
+                                          arg_unused (int frameno))
 {
-  if (delay > 0)
+  ConditionStatus *data;
+  NclLinkTriggerListener *listener;
+  NclLinkCondition *cond;
+  short status;
+
+  if (!this->running)
+    goto unregister;
+
+  if (this->notes.empty ())
+    goto unregister;
+
+  data = *notes.begin ();
+  notes.erase (notes.begin ());
+
+  listener = data->listener;
+  g_assert_nonnull (listener);
+  cond = data->condition;
+  g_assert_nonnull (cond);
+  status = data->status;
+
+  g_debug ("tick %" GINGA_TIME_FORMAT " %" GINGA_TIME_FORMAT,
+           GINGA_TIME_ARGS (total), GINGA_TIME_ARGS (elapsed));
+
+  switch (status)
     {
-      g_usleep ((gulong) delay * 1000);
+    case NclLinkTriggerListener::CONDITION_SATISFIED:
+      listener->conditionSatisfied (cond);
+      break;
+
+    case NclLinkTriggerListener::EVALUATION_STARTED:
+      listener->evaluationStarted ();
+      break;
+
+    case NclLinkTriggerListener::EVALUATION_ENDED:
+      listener->evaluationEnded ();
+      break;
+
+    default:
+      g_assert_not_reached ();
     }
-  notifyConditionObservers (NclLinkTriggerListener::CONDITION_SATISFIED);
+
+  delete data;
+  if (notes.empty ())
+    this->running = false;
+  return;
+
+ unregister:
+  g_assert (Ginga_Display->unregisterEventListener (this));
+  return;
 }
 
 GINGA_FORMATTER_END

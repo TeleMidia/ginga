@@ -26,8 +26,6 @@ class Base
 {
 private:
   static set<Base *> baseInstances;
-  static pthread_mutex_t biMutex;
-  static bool initMutex;
 
 protected:
   string id;
