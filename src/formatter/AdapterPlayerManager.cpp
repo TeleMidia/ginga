@@ -68,32 +68,20 @@ AdapterPlayerManager::removePlayer (const string &objectId)
 AdapterFormatterPlayer *
 AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
 {
-  NodeEntity *entity;
-  Content *content;
-  string id;
-  string buf;
-  const char *mime;
-
-  AdapterFormatterPlayer *adapter = NULL;
-
   g_assert_nonnull (object);
-  id = object->getId ();
+  string id = object->getId ();
 
-  entity = (NodeEntity *)(object->getDataObject ()->getDataEntity ());
+  NodeEntity *entity
+      = (NodeEntity *)(object->getDataObject ()->getDataEntity ());
   g_assert_nonnull (entity);
-  g_assert (entity->instanceOf ("ContentNode"));
 
-  if (((ContentNode *)entity)->isSettingNode ())
+  ContentNode *contentNode = dynamic_cast <ContentNode> (entity);
+  g_assert_nonnull (contentNode);
+
+  if (contentNode->isSettingNode ())
     return NULL;                // nothing to do
 
-  content = entity->getContent ();
-  g_assert_nonnull (content);
-
-  buf = ((ContentNode *)entity)->getNodeType ();
-  mime = buf.c_str ();
-  g_assert_nonnull (mime);
-
-  adapter = new AdapterFormatterPlayer (this);
+  AdapterFormatterPlayer *adapter = new AdapterFormatterPlayer (this);
 
   _objectPlayers[id] = adapter;
 
