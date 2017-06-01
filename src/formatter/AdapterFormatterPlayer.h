@@ -68,7 +68,7 @@ public:
                              short type = 10,
                              const string &value = "");
 
-  virtual void handleTickEvent (GingaTime, GingaTime, int) {};
+  virtual void handleTickEvent (GingaTime, GingaTime, int) {}
   virtual void handleKeyEvent (SDL_EventType, SDL_Keycode);
 
   double getMediaTime ();

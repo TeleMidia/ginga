@@ -28,7 +28,7 @@ AdapterPlayerManager::~AdapterPlayerManager ()
 {
   for (auto &i: _objectPlayers)
     {
-      delete i.second; // delete player
+      delete i.second; // delete AdapterFormatterPlayer
     }
 
   _objectPlayers.clear ();
@@ -57,7 +57,7 @@ AdapterPlayerManager::removePlayer (const string &objectId)
   if (i != _objectPlayers.end ())
     {
       _objectPlayers.erase (i);
-      delete i->second; // delete the player
+      delete i->second; // delete AdapterFormatterPlayer
 
       return true;
     }
@@ -75,7 +75,7 @@ AdapterPlayerManager::initializePlayer (NclExecutionObject *object)
       = (NodeEntity *)(object->getDataObject ()->getDataEntity ());
   g_assert_nonnull (entity);
 
-  ContentNode *contentNode = dynamic_cast <ContentNode> (entity);
+  ContentNode *contentNode = dynamic_cast <ContentNode *> (entity);
   g_assert_nonnull (contentNode);
 
   if (contentNode->isSettingNode ())

@@ -40,7 +40,7 @@ typedef bool (*DisplayJobCallback) (DisplayJob *, SDL_Renderer *, void *);
 class Display
 {
 private:
-  GINGA_MUTEX_DEFN ();
+  GINGA_MUTEX_DEFN ()
   int width;                    // display width in pixels
   int height;                   // display height in pixels
   double fps;                   // target frame-rate

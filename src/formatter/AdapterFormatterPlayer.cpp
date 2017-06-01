@@ -62,18 +62,12 @@ AdapterFormatterPlayer::AdapterFormatterPlayer (AdapterPlayerManager *manager)
 
 AdapterFormatterPlayer::~AdapterFormatterPlayer ()
 {
-  if (_object != nullptr)
-    {
-      _object = nullptr;
-    }
-
   if (_player != nullptr)
     {
       _player->removeListener (this);
       _player->stop ();
 
       delete _player;
-      _player = nullptr;
     }
 
   _preparedEvents.clear ();
@@ -519,7 +513,6 @@ bool
 AdapterFormatterPlayer::prepare (NclExecutionObject *object,
                                  NclPresentationEvent *event)
 {
-
   Content *content;
   double explicitDur = -1;
 
