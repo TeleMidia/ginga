@@ -190,10 +190,8 @@ Display::renderLoop ()
               this->notifyKeyListeners (type, evt.key.keysym.sym);
               break;
             case SDL_MOUSEBUTTONDOWN:
-              this->notifyMouseEventListeners (SDL_MOUSEBUTTONDOWN);
-              break;
             case SDL_MOUSEBUTTONUP:
-              this->notifyMouseEventListeners (SDL_MOUSEBUTTONUP);
+              // TODO
               break;
             case SDL_QUIT:
               this->quit ();
@@ -546,29 +544,10 @@ Display::unregisterPlayer (Player *obj)
 }
 
 void
-Display::notifyMouseEventListeners(SDL_EventType evtType){
-    int x, y;
-    SDL_GetMouseState(&x, &y);
-    set<IMouseEventListener*>::iterator it;
-   for (it=mouseEventListeners.begin(); it!=mouseEventListeners.end(); ++it)
-          (*it)->mouseInputCallback (evtType, x, y);
-}
-
-void
 Display::notifyTimeAnchorListeners(){
     set<NclExecutionObject*>::iterator it;
     for (it=timeAnchorListeners.begin(); it!=timeAnchorListeners.end(); ++it)
           (*it)->notifyTimeAnchorCallBack();
-}
-
-void
-Display::registerMouseEventListener(IMouseEventListener* obj){
-   mouseEventListeners.insert(obj);
-}
-
-void
-Display::unregisterMouseEventListener(IMouseEventListener* obj){
-   mouseEventListeners.erase (obj);
 }
 
 void

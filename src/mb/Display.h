@@ -19,13 +19,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define DISPLAY_H
 
 #include "ginga.h"
-
-#include "IEventListener.h"
-
-#include "SDLWindow.h"
-#include "IMouseEventListener.h"
-
 #include "Dashboard.h"
+#include "IEventListener.h"
 
 #include "player/Player.h"
 using namespace ::ginga::player;
@@ -61,7 +56,6 @@ private:
   SDL_Window *screen;           // display screen
   SDL_Renderer *renderer;       // display renderer
 
-  set<IMouseEventListener*> mouseEventListeners;  // mouse event listeners
   set<NclExecutionObject*> timeAnchorListeners;   // time anchor listeners
 
   bool add (GList **, gpointer);
@@ -100,16 +94,11 @@ public:
   void registerPlayer (Player *);
   void unregisterPlayer (Player *);
 
-  // mouse event listeners
-  void registerMouseEventListener(IMouseEventListener*);
-  void unregisterMouseEventListener(IMouseEventListener*);
-
   // time anchors listeners
   void registerTimeAnchorListener(NclExecutionObject*);
   void unregisterTimeAnchorListener(NclExecutionObject*);
 
 private:
-  void notifyMouseEventListeners(SDL_EventType);
   void notifyTimeAnchorListeners();
 
 };
