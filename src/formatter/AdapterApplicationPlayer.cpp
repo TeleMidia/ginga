@@ -361,7 +361,7 @@ AdapterApplicationPlayer::abort ()
     }
   else
     {
-      g_debug ("an't abort an already sleeping object = '%p' mrl = '%s'",
+      g_debug ("Can't abort an already sleeping object = '%p' mrl = '%s'",
                _object, _mrl.c_str());
     }
   return false;

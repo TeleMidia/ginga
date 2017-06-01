@@ -276,7 +276,6 @@ NclLinkCompoundAction::run ()
 
               action = (NclLinkAction *)(actions.at (i));
               action->setSatisfiedCondition (satisfiedCondition);
-              // HELL: action->startThread ();
               action->run ();
             }
           catch (std::out_of_range &e)
