@@ -470,8 +470,6 @@ FormatterScheduler::runActionOverApplicationObject (
               if (event->getCurrentState () == EventUtil::ST_SLEEPING)
                 event->removeEventListener (this);
             }
-
-          player->unlockCurrentEvent (event);
         }
 
       time = (double) xruntime_ms () - time;
@@ -484,7 +482,6 @@ FormatterScheduler::runActionOverApplicationObject (
       if (player->setCurrentEvent (event))
         {
           player->pause ();
-          player->unlockCurrentEvent (event);
         }
 
       break;
@@ -493,7 +490,6 @@ FormatterScheduler::runActionOverApplicationObject (
       if (player->setCurrentEvent (event))
         {
           player->resume ();
-          player->unlockCurrentEvent (event);
         }
 
       break;
@@ -502,7 +498,6 @@ FormatterScheduler::runActionOverApplicationObject (
       if (player->setCurrentEvent (event))
         {
           player->abort ();
-          player->unlockCurrentEvent (event);
         }
 
       break;
@@ -511,7 +506,6 @@ FormatterScheduler::runActionOverApplicationObject (
       if (player->setCurrentEvent (event))
         {
           player->stop ();
-          player->unlockCurrentEvent (event);
         }
 
       break;
