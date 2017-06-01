@@ -84,7 +84,6 @@ set (GINGA_SOURCES
   ../src/ctxmgmt/ContextManager.cpp
   ../src/ctxmgmt/GingaUser.cpp
   ../src/ctxmgmt/SystemInfo.cpp
-  ../src/formatter/AdapterApplicationPlayer.cpp
   ../src/formatter/AdapterFormatterPlayer.cpp
   ../src/formatter/AdapterPlayerManager.cpp
   ../src/formatter/FormatterConverter.cpp

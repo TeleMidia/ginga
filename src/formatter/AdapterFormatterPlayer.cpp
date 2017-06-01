@@ -19,9 +19,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga-color-table.h"
 #include "AdapterFormatterPlayer.h"
 
-#include "AdapterApplicationPlayer.h"
 #include "AdapterPlayerManager.h"
 #include "NclLinkTransitionTriggerCondition.h"
+
+#include "NclApplicationExecutionObject.h"
 
 #include "mb/Display.h"
 using namespace ::ginga::mb;
