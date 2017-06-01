@@ -337,9 +337,9 @@ Player::setAnimatorProperties(string dur, string name, string value)
 }
 
 void
-Player::redraw(SDL_Renderer* renderer)
+Player::redraw (SDL_Renderer *renderer)
 {
-  if(this->status == PL_SLEEPING)
+  if (this->status == PL_SLEEPING)
     return;
 
   animator->update
