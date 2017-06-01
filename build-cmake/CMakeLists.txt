@@ -195,7 +195,6 @@ set (GINGA_SOURCES
   ../src/player/LuaPlayer.cpp
   ../src/player/Player.cpp
   ../src/player/PlayerAnimator.cpp
-  ../src/system/Thread.cpp
   ../src/common.cpp
 
 #if WITH_GSTREAMER
