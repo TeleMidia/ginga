@@ -489,7 +489,7 @@ NclFormatterRegion::prepareOutputDisplay ()
   r = region->getRect ();
   region->getZ (&z, &zorder);
 
-  this->win = Ginga_Display->createWindow (r.x, r.y, r.w, r.h, z, zorder);
+  this->win = new SDLWindow (r.x, r.y, r.w, r.h, z, zorder);
   return this->win;
 }
 
@@ -545,7 +545,7 @@ NclFormatterRegion::disposeOutputDisplay ()
 {
   if (this->win != NULL)
     {
-      Ginga_Display->destroyWindow (this->win);
+      delete this->win;
       this->win = NULL;
     }
 }

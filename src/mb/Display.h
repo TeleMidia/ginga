@@ -58,7 +58,6 @@ private:
   GList *listeners;             // list of listeners to be notified
   GList *players;               // list of players to be ticked
   GList *textures;              // list of textures to be destructed
-  GList *windows;               // list of windows to be redrawn
 
   SDL_Window *screen;           // display screen
   SDL_Renderer *renderer;       // display renderer
@@ -94,13 +93,10 @@ public:
   bool unregisterEventListener (IEventListener *);
 
   void destroyTexture (SDL_Texture *);
+  void renderLoop (void);
 
   // -----------------------------------------------------------------------
-  SDLWindow *createWindow (int, int, int, int, int, int);
-  bool hasWindow (const SDLWindow *);
-  void destroyWindow (SDLWindow *);
 
-  void renderLoop (void);
 
   // Players.
   void registerPlayer (Player *);
