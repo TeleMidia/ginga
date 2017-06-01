@@ -39,8 +39,8 @@ HTMLPlayer::HTMLPlayer (const string &location)
 
   _isPlaying = false;
 
-  Ginga_Display->registerKeyEventListener(this);
-  Ginga_Display->registerMouseEventListener(this);
+  Ginga_Display->registerEventListener(this);
+//  Ginga_Display->registerMouseEventListener(this);
 }
 
 HTMLPlayer::~HTMLPlayer ()
@@ -109,7 +109,7 @@ HTMLPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 }
 
 void
-HTMLPlayer::keyInputCallback (SDL_EventType evtType, SDL_Keycode key)
+HTMLPlayer::handleKeyEvent (SDL_EventType evtType, SDL_Keycode key)
 {
   CefKeyEvent event;
 

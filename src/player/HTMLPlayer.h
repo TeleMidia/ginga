@@ -33,7 +33,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Player.h"
 
-#include "mb/IKeyInputEventListener.h"
+#include "mb/IEventListener.h"
 #include "mb/Display.h"
 using namespace ginga::mb;
 
@@ -265,9 +265,7 @@ private:
  * the result in the screen. 
  */ 
 class HTMLPlayer :
-    public Player,
-    public IKeyInputEventListener,
-    public IMouseEventListener
+    public Player
 {
 public:
   /**
@@ -306,6 +304,19 @@ public:
    */
   virtual void stop () override;
 
+  /**
+   * @brief Process keyboard input events.
+   *
+   * @param type A SDL event type (SDL_KEYDOWN or SDL_KEYUP).
+   * @param key A SDL key code.
+   * @return Nothing.
+   * @see getPlayerKey().
+   *
+   * This method translate the key code captured by SDL in the event to the
+   * CEF code style and forward the events to the active browser.
+   */
+  void handleKeyEvent (SDL_EventType type, SDL_Keycode key);
+
 private:
   /**
    * @brief Defines mutex methods.
@@ -343,19 +354,6 @@ private:
    * and update the screen. Return **false** only when stop() is called.
    */
   bool displayJobCallback (DisplayJob *job, SDL_Renderer *renderer);
-
-  /**
-   * @brief Process keyboard input events.
-   *
-   * @param type A SDL event type (SDL_KEYDOWN or SDL_KEYUP).
-   * @param key A SDL key code.
-   * @return Nothing.
-   * @see getPlayerKey().
-   *
-   * This method translate the key code captured by SDL in the event to the
-   * CEF code style and forward the events to the active browser.
-   */
-  void keyInputCallback (SDL_EventType type, SDL_Keycode key);
 
   /**
    * @brief Process mouse input events.
