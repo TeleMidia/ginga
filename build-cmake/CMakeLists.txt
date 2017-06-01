@@ -19,19 +19,7 @@ find_package(Pango REQUIRED)
 find_package(GDKPixBuf REQUIRED)
 find_package(RSVG REQUIRED)
 find_package(GStreamer REQUIRED)
-add_definitions(-DWITH_GSTREAMER=1)
-
-add_definitions(-DGINGA_DATADIR="${CMAKE_BINARY_DIR}/data/ini/")
-add_definitions(-DGINGA_BUTTON_DATADIR="${CMAKE_BINARY_DIR}/data/img/button/")
-add_definitions(-DGINGA_CONTEXTMANAGER_DATADIR="${CMAKE_BINARY_DIR}/data/contextmanager/")
-add_definitions(-DGINGA_FONT_DATADIR="${CMAKE_BINARY_DIR}/data/font/")
-add_definitions(-DGINGA_FORMATTER_DATADIR="${CMAKE_BINARY_DIR}/data/")
-add_definitions(-DGINGA_FORMATTERIMG_DATADIR="${CMAKE_BINARY_DIR}/data/img/roller/")
-add_definitions(-DGINGA_FORMATTERMD_DATADIR="${CMAKE_BINARY_DIR}/data/md/")
-add_definitions(-DGINGA_MB_DATADIR="${CMAKE_BINARY_DIR}/data/mb/")
-add_definitions(-DGINGA_ISDBT_PATH="${CMAKE_BINARY_DIR}/data/tuner/isdbt.ini")
-add_definitions(-DGINGA_TUNER_DATADIR="${CMAKE_BINARY_DIR}/data/tuner")
-add_definitions(-DGINGA_TUNER_PATH="${CMAKE_BINARY_DIR}/data/tuner/tuner.ini")
+add_definitions(-DWITH_PANGO=1 -DWITH_GSTREAMER=1)
 
 # NCLUA download/configure/build/install
 include(ExternalProject)
@@ -140,8 +128,7 @@ set (GINGA_SOURCES
   ../src/formatter/PresentationContext.cpp
   ../src/formatter/RuleAdapter.cpp
   ../src/mb/Display.cpp
-  ../src/mb/DisplayDebug.cpp
-  ../src/mb/KeyMap.cpp
+  ../src/mb/Dashboard.cpp
   ../src/mb/SDLWindow.cpp
   ../src/ncl/AbsoluteReferenceContent.cpp
   ../src/ncl/Action.cpp
@@ -210,10 +197,6 @@ set (GINGA_SOURCES
   ../src/player/PlayerAnimator.cpp
   ../src/system/Thread.cpp
   ../src/common.cpp
-
-#if WITH_ESPEAK
-# ../src/player/SsmlPlayer.cpp
-# WITH_ESPEAK
 
 #if WITH_GSTREAMER
   ../src/player/VideoPlayer.cpp
