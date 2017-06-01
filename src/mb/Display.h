@@ -97,7 +97,6 @@ public:
 
   // -----------------------------------------------------------------------
 
-
   // Players.
   void registerPlayer (Player *);
   void unregisterPlayer (Player *);
