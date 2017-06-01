@@ -64,13 +64,6 @@ win_cmp_z (Player *p1, Player *p2)
   return 0;
 }
 
-// Deletes window.
-static void
-win_delete (SDLWindow *win)
-{
-  delete win;
-}
-
 
 // Private methods.
 
@@ -122,7 +115,7 @@ Display::find (GList *list, gconstpointer data)
 }
 
 void
-Display::notifyListeners (GingaTime total, GingaTime diff, int frameno)
+Display::notifyTickListeners (GingaTime total, GingaTime diff, int frameno)
 {
   GList *l = this->listeners;
   while (l != NULL)
@@ -131,6 +124,20 @@ Display::notifyListeners (GingaTime total, GingaTime diff, int frameno)
       IEventListener *obj = (IEventListener *) l->data;
       g_assert_nonnull (obj);
       obj->handleTickEvent (total, diff, frameno);
+      l = next;
+    }
+}
+
+void
+Display::notifyKeyListeners (SDL_EventType type, SDL_Keycode key)
+{
+  GList *l = this->listeners;
+  while (l != NULL)
+    {
+      GList *next = l->next;
+      IEventListener *obj = (IEventListener *) l->data;
+      g_assert_nonnull (obj);
+      obj->handleKeyEvent (type, key);
       l = next;
     }
 }
@@ -168,26 +175,23 @@ Display::renderLoop ()
       now = ginga_gettime ();
       elapsed = now - last;
       last = now;
-      this->notifyListeners (now - epoch, elapsed, frameno++);
+      this->notifyTickListeners (now - epoch, elapsed, frameno++);
       this->notifyTimeAnchorListeners ();
 
       while (SDL_PollEvent (&evt)) // handle input
         {
-          switch (evt.type)
+          SDL_EventType type = (SDL_EventType) evt.type;
+          switch (type)
             {
             case SDL_KEYDOWN:
-              this->notifyKeyEventListeners (SDL_KEYDOWN,
-                                             evt.key.keysym.sym);
-              break;
             case SDL_KEYUP:
-              this->notifyKeyEventListeners (SDL_KEYUP,
-                                             evt.key.keysym.sym);
+              if (evt.key.keysym.sym == SDLK_ESCAPE)
+                this->quit ();
+              this->notifyKeyListeners (type, evt.key.keysym.sym);
               break;
             case SDL_MOUSEBUTTONDOWN:
-              this->notifyMouseEventListeners (SDL_MOUSEBUTTONDOWN);
-              break;
             case SDL_MOUSEBUTTONUP:
-              this->notifyMouseEventListeners (SDL_MOUSEBUTTONUP);
+              // TODO
               break;
             case SDL_QUIT:
               this->quit ();
@@ -278,7 +282,6 @@ Display::Display (int width, int height, double fps, bool fullscreen)
   this->listeners = NULL;
   this->players = NULL;
   this->textures = NULL;
-  this->windows = NULL;
 
   g_assert (!SDL_WasInit (0));
   if (unlikely (SDL_Init (0) != 0))
@@ -313,7 +316,6 @@ Display::~Display ()
   g_list_free (this->listeners);
   g_list_free (this->players);
   g_assert (g_list_length (this->textures) == 0);
-  g_list_free_full (this->windows, (GDestroyNotify) win_delete);
 
   SDL_DestroyRenderer (this->renderer);
   SDL_DestroyWindow (this->screen);
@@ -527,41 +529,6 @@ Display::destroyTexture (SDL_Texture *texture)
 
 // -------------------------------------------------------------------------
 
-SDLWindow *
-Display::createWindow (int x, int y, int w, int h, int z, int zorder)
-{
-  SDLWindow *win;
-
-  win = new SDLWindow (x, y, w, h, z, zorder);
-  g_assert_nonnull (win);
-  this->add (&this->windows, win);
-
-  return win;
-}
-
-bool
-Display::hasWindow (const SDLWindow *win)
-{
-  g_assert_nonnull (win);
-  return this->find (this->windows, win);
-}
-
-void
-Display::destroyWindow (SDLWindow *win)
-{
-  SDL_Texture *texture;
-
-  g_assert_nonnull (win);
-  texture = win->getTexture ();
-  if (texture != NULL)
-    {
-      this->destroyTexture (texture);
-      win->setTexture (NULL);
-    }
-  this->remove (&this->windows, win);
-  delete win;
-}
-
 void
 Display::registerPlayer (Player * obj)
 {
@@ -577,58 +544,10 @@ Display::unregisterPlayer (Player *obj)
 }
 
 void
-Display::notifyKeyEventListeners (SDL_EventType evtType, SDL_Keycode key)
-{
-  if(key == SDLK_ESCAPE)
-    {
-      this->quit();
-      return;
-    }
-
-  set<IKeyInputEventListener*>::iterator it;
-  for (it=keyEventListeners.begin(); it!=keyEventListeners.end(); ++it)
-    (*it)->keyInputCallback(evtType, key);
-}
-
-void
-Display::notifyMouseEventListeners(SDL_EventType evtType){
-    int x, y;
-    SDL_GetMouseState(&x, &y);
-    set<IMouseEventListener*>::iterator it;
-   for (it=mouseEventListeners.begin(); it!=mouseEventListeners.end(); ++it)
-          (*it)->mouseInputCallback (evtType, x, y);
-}
-
-void
 Display::notifyTimeAnchorListeners(){
     set<NclExecutionObject*>::iterator it;
     for (it=timeAnchorListeners.begin(); it!=timeAnchorListeners.end(); ++it)
           (*it)->notifyTimeAnchorCallBack();
-}
-
-void
-Display::registerKeyEventListener(IKeyInputEventListener* obj){
-   keyEventListeners.insert(obj);
-}
-
-void
-Display::registerMouseEventListener(IMouseEventListener* obj){
-   mouseEventListeners.insert(obj);
-}
-
-void
-Display::unregisterKeyEventListener(IKeyInputEventListener* obj){
-   keyEventListeners.erase (obj);
-}
-
-void
-Display::unregisterMouseEventListener(IMouseEventListener* obj){
-   mouseEventListeners.erase (obj);
-}
-
-void
-Display::postKeyInputEventListener(SDL_Keycode key){
-   notifyKeyEventListeners(SDL_KEYUP, key);
 }
 
 void

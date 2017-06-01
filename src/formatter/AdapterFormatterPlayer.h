@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _FORMATTERPLAYER_H_
 #define _FORMATTERPLAYER_H_
 
-#include "mb/IKeyInputEventListener.h"
-
 #include "ncl/Content.h"
 #include "ncl/ContentNode.h"
 #include "ncl/NodeEntity.h"
@@ -42,7 +40,7 @@ class AdapterPlayerManager;
 class AdapterFormatterPlayer :
     public IPlayerListener,
     public INclAttributeValueMaintainer,
-    public IKeyInputEventListener
+    public IEventListener
 {
 public:
   explicit AdapterFormatterPlayer (AdapterPlayerManager *manager);
@@ -70,7 +68,8 @@ public:
                              short type = 10,
                              const string &value = "");
 
-  virtual void keyInputCallback (SDL_EventType evtType, SDL_Keycode key);
+  virtual void handleTickEvent (GingaTime, GingaTime, int) {};
+  virtual void handleKeyEvent (SDL_EventType, SDL_Keycode);
 
   double getMediaTime ();
   Player *getPlayer ();

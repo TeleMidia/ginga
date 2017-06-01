@@ -59,7 +59,9 @@ public:
   double getDelay ();
   void setDelay (double delay);
   virtual void conditionSatisfied (NclLinkCondition *condition);
+
   void handleTickEvent (GingaTime, GingaTime, int);
+  void handleKeyEvent (SDL_EventType, SDL_Keycode) {};
 };
 
 GINGA_FORMATTER_END

@@ -19,13 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga-color-table.h"
 #include "TextPlayer.h"
 
-
-#include <cairo.h>
-#include <pango/pangocairo.h>
-#include <stdio.h>
-#include <string.h>
-
-
 #include "mb/Display.h"
 #include "mb/SDLWindow.h"
 
@@ -45,98 +38,96 @@ TextPlayer::displayJobCallbackWrapper (DisplayJob *job,
 
 bool
 TextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
-                                   arg_unused (SDL_Renderer *renderer))
+                                arg_unused (SDL_Renderer *renderer))
 {
-    gchar *contents;
-    GError *err = NULL;
-    g_file_get_contents (this->mrl.c_str (), &contents, NULL, &err);
-    if (err != NULL) g_error_free (err);
-    g_assert_nonnull(contents);
+  gchar *contents;
+  GError *err = NULL;
+  g_file_get_contents (this->mrl.c_str (), &contents, NULL, &err);
+  if (err != NULL) g_error_free (err);
+  g_assert_nonnull(contents);
 
-    SDL_Surface *sfc;
-    cairo_t *cr;
-    cairo_surface_t *surface_c;
+  SDL_Surface *sfc;
+  cairo_t *cr;
+  cairo_surface_t *surface_c;
 
-    double vAlign=0;
-    int textAreaHeight;
+  double vAlign=0;
+  int textAreaHeight;
 
-    this->lock ();
+  this->lock ();
 
 #if SDL_VERSION_ATLEAST(2,0,5)
-    sfc = SDL_CreateRGBSurfaceWithFormat (0, this->rect.w,
-                                           this->rect.h,
-                                           32, SDL_PIXELFORMAT_ARGB8888);
+  sfc = SDL_CreateRGBSurfaceWithFormat (0, this->rect.w,
+                                        this->rect.h,
+                                        32, SDL_PIXELFORMAT_ARGB8888);
 #else
-    sfc = SDL_CreateRGBSurface (0, this->rect.w, this->rect.h, 32,
+  sfc = SDL_CreateRGBSurface (0, this->rect.w, this->rect.h, 32,
                               0xff000000,
                               0x00ff0000,
                               0x0000ff00,
                               0x000000ff);
 #endif
 
-    g_assert_nonnull (sfc);
-    this->unlock ();
+  g_assert_nonnull (sfc);
+  this->unlock ();
 
-    SDLx_LockSurface (sfc);
-    surface_c = cairo_image_surface_create_for_data ((guchar*) sfc->pixels,
-                                                CAIRO_FORMAT_ARGB32,
-                                                sfc->w, sfc->h, sfc->pitch);
-    cr = cairo_create (surface_c);
-    g_assert_nonnull (cr);
+  SDLx_LockSurface (sfc);
+  surface_c = cairo_image_surface_create_for_data ((guchar*) sfc->pixels,
+                                                   CAIRO_FORMAT_ARGB32,
+                                                   sfc->w, sfc->h, sfc->pitch);
+  cr = cairo_create (surface_c);
+  g_assert_nonnull (cr);
 
-    // Create a PangoLayout, set the font face and text
-    PangoLayout * layout = pango_cairo_create_layout (cr);
-    pango_layout_set_text (layout,  contents, -1);
-    string fontDescription = _fontFamily+" "+_fontWeight+" "+_fontStyle+" "+_fontSize;
-    PangoFontDescription *desc = pango_font_description_from_string ( fontDescription.c_str() );
-    pango_layout_set_font_description (layout, desc);
+  // Create a PangoLayout, set the font face and text
+  PangoLayout * layout = pango_cairo_create_layout (cr);
+  pango_layout_set_text (layout,  contents, -1);
+  string fontDescription = _fontFamily+" "+_fontWeight+" "+_fontStyle+" "+_fontSize;
+  PangoFontDescription *desc = pango_font_description_from_string ( fontDescription.c_str() );
+  pango_layout_set_font_description (layout, desc);
 
-    if(_textAlign == "left")
-        pango_layout_set_alignment(layout,PANGO_ALIGN_LEFT);
-    else if(_textAlign == "center")
-        pango_layout_set_alignment(layout,PANGO_ALIGN_CENTER);
-    else if(_textAlign == "right")
-        pango_layout_set_alignment(layout,PANGO_ALIGN_RIGHT);
-    else
-        pango_layout_set_justify(layout, true);
+  if(_textAlign == "left")
+    pango_layout_set_alignment (layout,PANGO_ALIGN_LEFT);
+  else if(_textAlign == "center")
+    pango_layout_set_alignment (layout,PANGO_ALIGN_CENTER);
+  else if(_textAlign == "right")
+    pango_layout_set_alignment (layout,PANGO_ALIGN_RIGHT);
+  else
+    pango_layout_set_justify (layout, true);
 
-    pango_layout_set_width (layout,this->rect.w*PANGO_SCALE);
-    pango_layout_set_wrap (layout,PANGO_WRAP_WORD);
-    pango_layout_get_size (layout, NULL, &textAreaHeight);
-    pango_font_description_free (desc);
+  pango_layout_set_width (layout, this->rect.w*PANGO_SCALE);
+  pango_layout_set_wrap (layout, PANGO_WRAP_WORD);
+  pango_layout_get_size (layout, NULL, &textAreaHeight);
+  pango_font_description_free (desc);
 
-    cairo_set_source_rgba (cr, ginga_color_percent(_fontColor.r),
-                               ginga_color_percent(_fontColor.g),
-                               ginga_color_percent(_fontColor.b),
-                               ginga_color_percent(_fontColor.a));
+  cairo_set_source_rgba (cr, ginga_color_percent(_fontColor.r),
+                         ginga_color_percent(_fontColor.g),
+                         ginga_color_percent(_fontColor.b),
+                         ginga_color_percent(_fontColor.a));
 
-    pango_cairo_update_layout (cr, layout);
+  pango_cairo_update_layout (cr, layout);
 
-    if(_verticalAlign == "top") vAlign = 0;
-    else if(_verticalAlign == "middle") vAlign = (this->rect.h/2) - ( (textAreaHeight/PANGO_SCALE) /2);
-    else vAlign= this->rect.h - (textAreaHeight/PANGO_SCALE);
+  if (_verticalAlign == "top")
+    vAlign = 0;
+  else if(_verticalAlign == "middle")
+    vAlign = (this->rect.h/2) - ((textAreaHeight/PANGO_SCALE)/2);
+  else
+    vAlign= this->rect.h - (textAreaHeight/PANGO_SCALE);
 
-    cairo_move_to (cr, 0, vAlign);
-    pango_cairo_show_layout (cr, layout);
+  cairo_move_to (cr, 0, vAlign);
+  pango_cairo_show_layout (cr, layout);
 
+  // Free the layout object.
+  g_object_unref (layout);
+  cairo_destroy (cr);
+  cairo_surface_destroy (surface_c);
+  g_free(contents);
 
+  this->texture = SDL_CreateTextureFromSurface (renderer, sfc);
+  g_assert_nonnull (this->texture);
 
-    // free the layout object
-    g_object_unref (layout);
-    cairo_destroy (cr);
-    cairo_surface_destroy (surface_c);
-    g_free(contents);
+  SDLx_UnlockSurface (sfc);
+  SDL_FreeSurface(sfc);
 
-    this->texture = SDL_CreateTextureFromSurface (renderer, sfc);
-    g_assert_nonnull (this->texture);
-
-    SDLx_UnlockSurface (sfc);
-    SDL_FreeSurface(sfc);
-
-   // this->window->setTexture (this->texture);
-
-    //this->condDisplayJobSignal ();
-    return false;                 // remove job
+  return false;               // remove job
 }
 
 
@@ -166,47 +157,57 @@ TextPlayer::play ()
 {
 
   Ginga_Display->addJob (displayJobCallbackWrapper, this);
-  //this->condDisplayJobWait ();
   return Player::play ();
 }
 
 void
-TextPlayer::setPropertyValue (const string &name, const string &value){
+TextPlayer::setPropertyValue (const string &name, const string &value)
+{
 
-   Player::setPropertyValue(name,value);
+   Player::setPropertyValue (name, value);
 
-  if(name == "fontColor"){
+  if(name == "fontColor")
+    {
       ginga_color_input_to_sdl_color(value, &_fontColor);
-  }
-  else if(name == "fontSize"){
-         _fontSize = value;
-  }
-  else if(name == "textAlign"){
-         if(value == "left" || value == "right" || value == "center" || value == "justify" )
-            _textAlign = value;
-  }
-  else if(name == "verticalAlign"){
-         if(value == "top" || value == "middle" || value == "bottom" )
-            _verticalAlign = value;
-  }
-  else if(name == "fontStyle"){
-         if(value == "italic")
-            _fontStyle = value;
-  }
-  else if(name == "fontWeight"){
-         if(value == "bold")
-            _fontWeight = value;
-  }
-  else if(name == "fontFamily"){
-         _fontFamily = value;
-  }
-  else if(name == "fontVariant"){
-         if(value == "small-caps")
-            _fontVariant = value;
-  }
+    }
+  else if(name == "fontSize")
+    {
+      _fontSize = value;
+    }
+  else if(name == "textAlign")
+    {
+      if(value == "left" || value == "right"
+         || value == "center" || value == "justify" )
+        _textAlign = value;
+    }
+  else if(name == "verticalAlign")
+    {
+      if(value == "top" || value == "middle" || value == "bottom" )
+        _verticalAlign = value;
+    }
+  else if(name == "fontStyle")
+    {
+      if(value == "italic")
+        _fontStyle = value;
+    }
+  else if(name == "fontWeight")
+    {
+      if(value == "bold")
+        _fontWeight = value;
+    }
+  else if(name == "fontFamily")
+    {
+      _fontFamily = value;
+    }
+  else if(name == "fontVariant")
+    {
+      if(value == "small-caps")
+        _fontVariant = value;
+    }
 
   if (status != PL_OCCURRING)
     return;
+
   Ginga_Display->addJob (displayJobCallbackWrapper, this);
 }
 

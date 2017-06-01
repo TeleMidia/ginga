@@ -20,48 +20,40 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Player.h"
 
-#include "mb/IKeyInputEventListener.h"
 #include "mb/Display.h"
 using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
-class LuaPlayer :
-    public Player,
-    public IKeyInputEventListener
+class LuaPlayer : public Player
 {
+private:
+  GINGA_MUTEX_DEFN ()
+  ncluaw_t *_nw;                // the NCLua state
+  bool _isKeyHandler;           // true if player has the focus
+  string _scope;                // the label of the active anchor
+
+  static bool displayJobCallbackWrapper (DisplayJob *,
+                                         SDL_Renderer *, void *);
+  bool displayJobCallback (DisplayJob *, SDL_Renderer *);
+
 public:
   LuaPlayer (const string &mrl);
   virtual ~LuaPlayer (void);
   bool doPlay (void);
   void doStop (void);
 
-  // Player interface.
   void abort (void) override;
   void pause (void) override;
   bool play (void) override;
   void resume (void) override;
   void stop (void) override;
 
-  virtual bool hasPresented (void);
   void setCurrentScope (const string &scopeId) override;
   bool setKeyHandler (bool isHandler);
   virtual void setPropertyValue (const string &, const string &) override;
 
-  // Input event callback.
-  void keyInputCallback (SDL_EventType evtType, SDL_Keycode key) override;
-
-private:
-  GINGA_MUTEX_DEFN ()
-
-  ncluaw_t *_nw;          // the NCLua state
-  bool _hasExecuted;      // true if script was executed
-  bool _isKeyHandler;     // true if player has the focus
-  string _scope;          // the label of the active anchor
-
-  static bool displayJobCallbackWrapper (DisplayJob *,
-                                         SDL_Renderer *, void *);
-  bool displayJobCallback (DisplayJob *, SDL_Renderer *);
+  void handleKeyEvent (SDL_EventType, SDL_Keycode) override;
 };
 
 GINGA_PLAYER_END
