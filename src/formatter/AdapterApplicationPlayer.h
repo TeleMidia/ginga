@@ -43,22 +43,14 @@ public:
   virtual bool abort () override;
   virtual void naturalEnd() override;
 
-  bool setAndLockCurrentEvent (NclFormatterEvent *event);
+  bool setCurrentEvent (NclFormatterEvent *event);
   void unlockCurrentEvent (NclFormatterEvent *event);
 
 protected:
   map<string, NclFormatterEvent *> _preparedEvents;
   NclFormatterEvent *_currentEvent;
 
-  void lockEvent ();
-  void unlockEvent ();
-
-  void lockPreparedEvents ();
-  void unlockPreparedEvents ();
-
 private:
-  pthread_mutex_t _eventMutex;
-  pthread_mutex_t _eventsMutex;
   void prepare (NclFormatterEvent *event);
 };
 

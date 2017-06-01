@@ -459,7 +459,7 @@ FormatterScheduler::runActionOverApplicationObject (
         }
 
       event->addEventListener (this);
-      if (player->setAndLockCurrentEvent (event))
+      if (player->setCurrentEvent (event))
         {
           if (!player->start ())
             {
@@ -481,7 +481,7 @@ FormatterScheduler::runActionOverApplicationObject (
       break;
 
     case ACT_PAUSE:
-      if (player->setAndLockCurrentEvent (event))
+      if (player->setCurrentEvent (event))
         {
           player->pause ();
           player->unlockCurrentEvent (event);
@@ -490,7 +490,7 @@ FormatterScheduler::runActionOverApplicationObject (
       break;
 
     case ACT_RESUME:
-      if (player->setAndLockCurrentEvent (event))
+      if (player->setCurrentEvent (event))
         {
           player->resume ();
           player->unlockCurrentEvent (event);
@@ -499,7 +499,7 @@ FormatterScheduler::runActionOverApplicationObject (
       break;
 
     case ACT_ABORT:
-      if (player->setAndLockCurrentEvent (event))
+      if (player->setCurrentEvent (event))
         {
           player->abort ();
           player->unlockCurrentEvent (event);
@@ -508,7 +508,7 @@ FormatterScheduler::runActionOverApplicationObject (
       break;
 
     case ACT_STOP:
-      if (player->setAndLockCurrentEvent (event))
+      if (player->setCurrentEvent (event))
         {
           player->stop ();
           player->unlockCurrentEvent (event);
