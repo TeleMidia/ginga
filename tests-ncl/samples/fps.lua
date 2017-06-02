@@ -1,6 +1,5 @@
 local event = event
 local canvas = canvas
-local print = print
 _ENV = nil
 
 local FIRST = event.uptime ()
