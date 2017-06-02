@@ -25,17 +25,12 @@ GINGA_CTXMGMT_BEGIN
 
 SystemInfo::SystemInfo ()
 {
-  initializeClockSpeed ();
-  sysTable = NULL;
+  this->sysTable = NULL;
+  this->clockSpeed = 0;
 }
 
-SystemInfo::~SystemInfo () {}
-
-void
-SystemInfo::initializeClockSpeed ()
+SystemInfo::~SystemInfo ()
 {
-  string line = "";
-  clockSpeed = 0;
 }
 
 string
