@@ -26,7 +26,7 @@ typedef struct
   gdouble duration;
   gdouble velocity;
   gdouble targetValue;
-  gdouble curValue;  
+  gdouble curValue;
 } ANIM_PROPERTY;
 
 class PlayerAnimator
