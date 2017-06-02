@@ -100,7 +100,7 @@ NclAttributionEvent::getCurrentValue ()
     {
       if (valueMaintainer != NULL)
         {
-          maintainerValue = valueMaintainer->getPropertyValue (this);
+          maintainerValue = valueMaintainer->getProperty (this);
         }
 
       if (maintainerValue == "")

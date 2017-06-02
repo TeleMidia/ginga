@@ -374,7 +374,7 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
             }
           else if (player != NULL && player->hasPrepared ())
             {
-              player->setPropertyValue ((NclAttributionEvent *)event,
+              player->setProperty ((NclAttributionEvent *)event,
                                         propValue);
 
               event->stop ();
@@ -621,7 +621,7 @@ FormatterScheduler::runActionOverComposition (
 
                       if (pAdapter != NULL)
                         {
-                          pAdapter->setPropertyValue (attrEvent, propValue);
+                          pAdapter->setProperty (attrEvent, propValue);
                         }
                     }
                 }

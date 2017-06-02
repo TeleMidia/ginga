@@ -57,11 +57,11 @@ public:
   virtual bool abort ();
   virtual void naturalEnd ();
 
-  virtual bool setPropertyValue (NclAttributionEvent *evt, const string &value);
-  void setPropertyValue (const string &name, const string &value);
+  virtual bool setProperty (NclAttributionEvent *evt, const string &value);
+  void setProperty (const string &name, const string &value) override;
 
-  virtual string getPropertyValue (const string &name);
-  string getPropertyValue (NclAttributionEvent *event);
+  virtual string getProperty (const string &name);
+  string getProperty (NclAttributionEvent *event) override;
 
   virtual void updateStatus (short code,
                              const string &parameter = "",
