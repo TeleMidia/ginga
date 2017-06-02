@@ -81,9 +81,8 @@ protected:
   AdapterPlayerManager *_manager;
   NclExecutionObject *_object;
   Player *_player;
-  string _mrl;
 
-  virtual void createPlayer ();
+  virtual void createPlayer (const string &mrl);
   virtual void prepareScope (double offset = -1);
 
   double prepareProperties (NclExecutionObject *obj);
