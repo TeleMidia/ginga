@@ -508,24 +508,6 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
   return explicitDur;
 }
 
-void
-AdapterFormatterPlayer::updatePlayerProperties ()
-{
-  g_assert_nonnull (_object);
-  g_assert_nonnull (_player);
-  NclCascadingDescriptor *descriptor = _object->getDescriptor ();
-  if (descriptor != nullptr)
-    {
-      string value = descriptor->getParameterValue ("soundLevel");
-      if (value == "")
-        {
-          value = "1.0";
-        }
-
-      _player->setPropertyValue ("soundLevel", value);
-    }
-}
-
 bool
 AdapterFormatterPlayer::prepare (NclExecutionObject *object,
                                  NclPresentationEvent *event)
@@ -709,7 +691,20 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
         }
 
       createPlayer (mrl);
-      updatePlayerProperties ();
+
+      g_assert_nonnull (_object);
+      g_assert_nonnull (_player);
+      NclCascadingDescriptor *descriptor = _object->getDescriptor ();
+      if (descriptor != nullptr)
+        {
+          string value = descriptor->getParameterValue ("soundLevel");
+          if (value == "")
+            {
+              value = "1.0";
+            }
+
+          _player->setPropertyValue ("soundLevel", value);
+        }
 
       if (event->getCurrentState () == EventUtil::ST_SLEEPING)
         {
