@@ -189,6 +189,8 @@ public:
 private:
   bool ntsRemoveExecutionObject (NclExecutionObject *executionObject);
 
+  static bool isEmbeddedAppMediaType (const string &mediaType);
+
 public:
   NclExecutionObject *hasExecutionObject (Node *node,
                                           GenericDescriptor *descriptor);
@@ -200,6 +202,8 @@ public:
                           short previousState) override;
 
   void reset ();
+
+  static bool isEmbeddedApp (NodeEntity *dataObject);
 };
 
 GINGA_FORMATTER_END
