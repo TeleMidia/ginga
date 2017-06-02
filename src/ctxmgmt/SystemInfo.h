@@ -33,7 +33,6 @@ public:
   ~SystemInfo ();
 
 private:
-  void initializeClockSpeed ();
   string getValue (const string &attribute);
 
 public:
