@@ -86,7 +86,6 @@ protected:
   virtual void prepareScope (double offset = -1);
 
   double prepareProperties (NclExecutionObject *obj);
-  void updatePlayerProperties ();
   void prepare (void);
   void updateObjectExpectedDuration ();
 
