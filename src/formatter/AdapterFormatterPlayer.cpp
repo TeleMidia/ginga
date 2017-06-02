@@ -52,7 +52,6 @@ AdapterFormatterPlayer::AdapterFormatterPlayer (AdapterPlayerManager *manager)
   this->_manager = manager;
   this->_object = nullptr;
   this->_player = nullptr;
-  this->_mrl = "";
 
   this->_isAppPlayer = false;
   this->_currentEvent = nullptr;
@@ -82,7 +81,7 @@ AdapterFormatterPlayer::setOutputWindow (SDLWindow* windowId)
 }
 
 void
-AdapterFormatterPlayer::createPlayer ()
+AdapterFormatterPlayer::createPlayer (const string &mrl)
 {
   NclCascadingDescriptor *descriptor;
   NodeEntity *dataObject;
@@ -107,39 +106,39 @@ AdapterFormatterPlayer::createPlayer ()
       if (g_str_has_prefix (mime, "audio")
           || g_str_has_prefix (mime, "video"))
         {
-          _player = new VideoPlayer (_mrl);
+          _player = new VideoPlayer (mrl);
         }
 #endif
 #if WITH_LIBRSVG && WITH_LIBRSVG
       else if (g_str_has_prefix (mime, "image/svg"))
         {
-          _player = new SvgPlayer (_mrl);
+          _player = new SvgPlayer (mrl);
         }
 #endif
       else if (g_str_has_prefix (mime, "image"))
         {
-          _player = new ImagePlayer (_mrl);
+          _player = new ImagePlayer (mrl);
         }
 #if defined WITH_CEF &&  WITH_CEF
       else if (g_str_has_prefix (mime, "text/test-html"))
         {
-          _player = new HTMLPlayer (_mrl);
+          _player = new HTMLPlayer (mrl);
         }
 #endif
 #if defined WITH_PANGO && WITH_PANGO
       else if (streq (mime, "text/plain"))
         {
-          _player = new TextPlayer (_mrl);
+          _player = new TextPlayer (mrl);
         }
 #endif
       else if (g_strcmp0 (mime, "application/x-ginga-NCLua") == 0)
         {
-          _player = new LuaPlayer (_mrl);
+          _player = new LuaPlayer (mrl);
           _isAppPlayer = true;
         }
       else
         {
-          _player = new Player (_mrl);
+          _player = new Player (mrl);
           g_warning ("adapter: unknown mime-type '%s'", mime);
         }
     }
@@ -169,7 +168,7 @@ AdapterFormatterPlayer::createPlayer ()
               g_debug ("set property %s=%s for %s",
                        property->getPropertyName().c_str(),
                        property->getPropertyValue().c_str(),
-                       _mrl.c_str());
+                       mrl.c_str());
 
               _player->setPropertyValue (property->getPropertyName(),
                                          property->getPropertyValue());
@@ -190,7 +189,7 @@ AdapterFormatterPlayer::createPlayer ()
     }
 
   g_debug ("Create player for '%s' object = '%s'",
-           _mrl.c_str(),
+           mrl.c_str(),
            _object->getId().c_str());
 }
 
@@ -348,6 +347,12 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                   width = xstrchomp (params[2]);
                   height = xstrchomp (params[3]);
                 }
+              else
+                {
+                  g_warning ("'bounds' property should have 4 comma-separated"
+                             "values.  It has %d values.",
+                             (int) params.size());
+                }
             }
           else if (name == "location")
             {
@@ -357,6 +362,12 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                   left = xstrchomp (params[0]);
                   top = xstrchomp (params[1]);
                 }
+              else
+                {
+                  g_warning ("'location' property should have 2 comma-separated"
+                             "values.  It has %d values.",
+                             (int) params.size());
+                }
             }
           else if (name == "size")
             {
@@ -365,6 +376,12 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
                 {
                   width = xstrchomp (params[0]);
                   height = xstrchomp (params[1]);
+                }
+              else
+                {
+                  g_warning ("'size' property should have 2 comma-separated"
+                             "values.  It has %d values.",
+                             (int) params.size());
                 }
             }
           else if (name == "transparency")
@@ -515,6 +532,7 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
 {
   Content *content;
   double explicitDur = -1;
+  string mrl = "";
 
   g_assert_nonnull (object);
 
@@ -545,11 +563,11 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
               = dynamic_cast <ReferenceContent *> (content);
           if (content && referContent)
             {
-              this->_mrl = referContent->getCompleteReferenceUrl ();
+              mrl = referContent->getCompleteReferenceUrl ();
             }
           else
             {
-              this->_mrl = "";
+              mrl = "";
             }
 
           if (_player != NULL)
@@ -559,7 +577,7 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
             }
 
           explicitDur = prepareProperties (object);
-          createPlayer ();
+          createPlayer (mrl);
         }
       else
         {
@@ -642,12 +660,12 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
                   = dynamic_cast <ReferenceContent *>(content);
               if (referContent)
                 {
-                  this->_mrl = referContent->getCompleteReferenceUrl ();
+                  mrl = referContent->getCompleteReferenceUrl ();
                 }
             }
           else
             {
-              this->_mrl = "";
+              mrl = "";
             }
         }
 
@@ -690,7 +708,7 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
             }
         }
 
-      createPlayer ();
+      createPlayer (mrl);
       updatePlayerProperties ();
 
       if (event->getCurrentState () == EventUtil::ST_SLEEPING)
@@ -852,7 +870,8 @@ AdapterFormatterPlayer::start ()
 
   if (!_object->isSleeping ())
     {
-      g_warning ("Trying to start %s, while it is occurring or paused.",
+      g_warning ("Skipping start to %s, because it is already occurring, or"
+                 "paused.",
                  _object->getId ().c_str());
 
       return false;
@@ -958,13 +977,13 @@ AdapterFormatterPlayer::stop ()
 
       if (stopLambda && !_currentEvent->stop ())
         {
-          g_warning ("AdapterApplicationPlayer::stop '%s' is already sleeping",
+          g_warning ("Trying to stop '%s', but it is already sleeping",
                      _currentEvent->getId ().c_str());
         }
       else
         {
-          g_warning ("Can't stop an already stopped object. mrl = '%s' ",
-                     _mrl.c_str());
+          g_warning ("Can't stop an already stopped object. '%s' ",
+                     _currentEvent->getId ().c_str());
         }
       return false;
     }
@@ -1075,19 +1094,15 @@ AdapterFormatterPlayer::abort ()
 
       if (abortLambda)
         {
-          g_debug ("AdapterApplicationPlayer::abort ALL");
-
           _player->stop ();
 
-          i = _preparedEvents.begin ();
-          while (i != _preparedEvents.end ())
+          for (i = _preparedEvents.begin (); i != _preparedEvents.end (); )
             {
               event = i->second;
               if (event != _currentEvent
                   && event->getCurrentState () != EventUtil::ST_SLEEPING)
                 {
-                  _preparedEvents.erase (i);
-                  i = _preparedEvents.begin ();
+                  i = _preparedEvents.erase (i);
 
                   g_debug ("AdapterApplicationPlayer::abort ALL forcing '%s' to "
                            "abort",
@@ -1119,7 +1134,8 @@ AdapterFormatterPlayer::abort ()
       else
         {
           g_debug ("Can't abort an already sleeping object = '%p' mrl = '%s'",
-                   _object, _mrl.c_str());
+                   _object,
+                   _currentEvent->getId ().c_str());
         }
       return false;
     }
@@ -1176,7 +1192,7 @@ AdapterFormatterPlayer::naturalEnd ()
     }
   else
     {
-      // if freeze is true the natural end is not performed
+      // if freeze is true natural end is not performed
       if (_object->getDescriptor () != nullptr)
         {
           bool freeze = _object->getDescriptor ()->getFreeze ();
@@ -1216,8 +1232,6 @@ AdapterFormatterPlayer::unprepare ()
 
   if(_isAppPlayer)
     {
-      map<string, NclFormatterEvent *>::iterator i;
-
       g_assert_nonnull (_object);
 
       if (_currentEvent == nullptr)
@@ -1247,7 +1261,8 @@ AdapterFormatterPlayer::unprepare ()
         {
           _object->unprepare ();
 
-          i = _preparedEvents.find (_currentEvent->getId ());
+          map<string, NclFormatterEvent *>::iterator i
+              = _preparedEvents.find (_currentEvent->getId ());
           if (i != _preparedEvents.end ())
             {
               _preparedEvents.erase (i);
@@ -1284,7 +1299,7 @@ AdapterFormatterPlayer::unprepare ()
 
 bool
 AdapterFormatterPlayer::setProperty (NclAttributionEvent *event,
-                                          const string &v)
+                                     const string &v)
 {
   string propName;
   string value = v;
@@ -1348,8 +1363,7 @@ AdapterFormatterPlayer::setProperty (const string &name,
                                           const string &value)
 {
   g_assert_nonnull (_player);
-  g_debug ("AdapterFormatterPlayer::setPropertyValue name = '%s' value='%s' "
-           "address=%p.",
+  g_debug ("setProperty name = '%s' value='%s' address=%p.",
            name.c_str(),
            value.c_str(),
            _player);
@@ -1382,7 +1396,7 @@ AdapterFormatterPlayer::getProperty (const string &name)
       value = _object->getPropertyValue (name);
     }
 
-  g_debug ("getPropertyValue name = '%s', value = '%s'",
+  g_debug ("getProperty name = '%s', value = '%s'",
            name.c_str(), value.c_str());
 
   return value;
@@ -1397,6 +1411,7 @@ AdapterFormatterPlayer::updateObjectExpectedDuration ()
 
   wholeContentEvent = _object->getWholeContentPresentationEvent ();
   duration = wholeContentEvent->getDuration ();
+
   if ((_object->getDescriptor () == nullptr)
       || (isnan ((_object->getDescriptor ())->getExplicitDuration ()))
       || (duration < 0) || (isnan (duration)))
@@ -1460,9 +1475,9 @@ AdapterFormatterPlayer::handleKeyEvent (SDL_EventType evtType,
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
 
-  g_debug ("keyEventReceived for '%s' player visibility = '%d' "
+  g_debug ("Key event received for '%s' player visibility = '%d' "
            "event keycode='%d'",
-           _mrl.c_str(),
+           _player->getPropertyValue("mrl").c_str(),
            _player->isVisible(),
            key);
 
@@ -1526,10 +1541,11 @@ AdapterFormatterPlayer::setCurrentEvent (NclFormatterEvent *event)
     }
   else if (event->instanceOf ("NclAttributionEvent"))
     {
-      interfaceId = ((NclAttributionEvent *)event)
-                        ->getAnchor ()
-                        ->getPropertyName ();
+      NclAttributionEvent *attributionEvt
+          = dynamic_cast <NclAttributionEvent *> (event);
+      g_assert_nonnull (attributionEvt);
 
+      interfaceId = attributionEvt->getAnchor ()->getPropertyName ();
       _player->setScope (interfaceId, Player::PL_TYPE_ATTRIBUTION);
 
       _currentEvent = event;
