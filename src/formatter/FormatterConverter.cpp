@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
+#include "ginga-mime-table.h"
 #include "FormatterConverter.h"
 #include "FormatterLinkConverter.h"
 
@@ -632,7 +633,7 @@ FormatterConverter::createExecutionObject (
                     }
                   catch (exception *exc1)
                     {
-                      if (AdapterPlayerManager::isEmbeddedApp (nodeEntity))
+                      if (isEmbeddedApp (nodeEntity))
                         {
                           executionObject
                               = new NclApplicationExecutionObject (
@@ -652,7 +653,7 @@ FormatterConverter::createExecutionObject (
               else
                 {
                   // not in the same base => create a new version
-                  if (AdapterPlayerManager::isEmbeddedApp (nodeEntity))
+                  if (isEmbeddedApp (nodeEntity))
                     {
                       executionObject = new NclApplicationExecutionObject (
                           id, nodeEntity, descriptor, handling,
@@ -712,7 +713,7 @@ FormatterConverter::createExecutionObject (
       // to monitor the presentation and remove object at stops
       // compositeEvent->addEventListener(this);
     }
-  else if (AdapterPlayerManager::isEmbeddedApp (nodeEntity))
+  else if (isEmbeddedApp (nodeEntity))
     {
       executionObject = new NclApplicationExecutionObject (
           id, node, descriptor, handling, actionListener);
@@ -1687,6 +1688,86 @@ void
 FormatterConverter::reset ()
 {
   executionObjects.clear ();
+}
+
+bool
+FormatterConverter::isEmbeddedApp (NodeEntity *dataObject)
+{
+  string mediaType = "";
+  string url = "";
+  string::size_type pos;
+  Descriptor *descriptor;
+  Content *content;
+
+  // first, descriptor
+  descriptor = dynamic_cast <Descriptor *>(dataObject->getDescriptor ());
+  if (descriptor
+      && !descriptor->instanceOf ("DescriptorSwitch"))
+    {
+      mediaType = descriptor->getPlayerName ();
+      if (mediaType == "AdapterLuaPlayer"
+          || mediaType == "AdapterNCLPlayer")
+        {
+          return true;
+        }
+    }
+
+  // second, media type
+  if (dataObject->instanceOf ("ContentNode"))
+    {
+      mediaType = ((ContentNode *)dataObject)->getNodeType ();
+      if (mediaType != "")
+        {
+          return isEmbeddedAppMediaType (mediaType);
+        }
+    }
+
+  // finally, content file extension
+  content = dataObject->getContent ();
+  if (content != NULL)
+    {
+      if (content->instanceOf ("ReferenceContent"))
+        {
+          url = ((ReferenceContent *)(content))->getCompleteReferenceUrl ();
+
+          if (url != "")
+            {
+              pos = url.find_last_of (".");
+              if (pos != std::string::npos)
+                {
+                  const char *s;
+
+                  string extension
+                      = url.substr (pos, url.length () - (pos + 1));
+                  gboolean status
+                      = ginga_mime_table_index (extension.c_str (), &s);
+
+                  string mime = (likely (status)) ? string (s) : "";
+
+                  return isEmbeddedAppMediaType (mime);
+                }
+            }
+        }
+    }
+
+  return false;
+}
+
+bool
+FormatterConverter::isEmbeddedAppMediaType (const string &mediaType)
+{
+  string upMediaType = xstrup (mediaType);
+
+  if (upMediaType == "APPLICATION/X-GINGA-NCLUA"
+      || upMediaType == "APPLICATION/X-GINGA-NCLET"
+      || upMediaType == "APPLICATION/X-GINGA-NCL"
+      || upMediaType == "APPLICATION/X-NCL-NCL"
+      || upMediaType == "APPLICATION/X-NCL-NCLUA")
+    {
+      return true;
+    }
+
+  return false;
 }
 
 GINGA_FORMATTER_END
