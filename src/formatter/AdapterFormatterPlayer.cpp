@@ -55,7 +55,7 @@ AdapterFormatterPlayer::AdapterFormatterPlayer (AdapterPlayerManager *manager)
   this->_mrl = "";
 
   this->_isAppPlayer = false;
-  this-> _currentEvent = nullptr;
+  this->_currentEvent = nullptr;
 
   Ginga_Display->registerEventListener (this);
 }
@@ -1283,7 +1283,7 @@ AdapterFormatterPlayer::unprepare ()
 }
 
 bool
-AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
+AdapterFormatterPlayer::setProperty (NclAttributionEvent *event,
                                           const string &v)
 {
   string propName;
@@ -1344,7 +1344,7 @@ AdapterFormatterPlayer::setPropertyValue (NclAttributionEvent *event,
 }
 
 void
-AdapterFormatterPlayer::setPropertyValue (const string &name,
+AdapterFormatterPlayer::setProperty (const string &name,
                                           const string &value)
 {
   g_assert_nonnull (_player);
@@ -1358,18 +1358,18 @@ AdapterFormatterPlayer::setPropertyValue (const string &name,
 }
 
 string
-AdapterFormatterPlayer::getPropertyValue (NclAttributionEvent *event)
+AdapterFormatterPlayer::getProperty (NclAttributionEvent *event)
 {
   g_assert_nonnull (event);
 
   string name = event->getAnchor ()->getPropertyName ();
-  string value = getPropertyValue (name);
+  string value = getProperty (name);
 
   return value;
 }
 
 string
-AdapterFormatterPlayer::getPropertyValue (const string &name)
+AdapterFormatterPlayer::getProperty (const string &name)
 {
   string value = "";
 
