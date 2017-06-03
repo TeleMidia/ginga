@@ -31,13 +31,11 @@ public:
 
   AdapterFormatterPlayer *getObjectPlayer (NclExecutionObject *execObj);
   bool removePlayer (NclExecutionObject *object);
-  static bool isEmbeddedApp (NodeEntity *dataObject);
 
 private:
   map<string, AdapterFormatterPlayer *> _objectPlayers;
 
   AdapterFormatterPlayer *initializePlayer (NclExecutionObject *object);
-  static bool isEmbeddedAppMediaType (const string &mediaType);
 
   bool removePlayer (const string &objectId);
   void clearDeletePlayers ();

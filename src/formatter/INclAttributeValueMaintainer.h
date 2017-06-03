@@ -26,8 +26,8 @@ class INclAttributeValueMaintainer
 {
 public:
   virtual ~INclAttributeValueMaintainer (){};
-  virtual string getPropertyValue (NclAttributionEvent *attributeEvent) = 0;
-  virtual void setPropertyValue (const string &name, const string &value) = 0;
+  virtual string getProperty (NclAttributionEvent *attributeEvent) = 0;
+  virtual void setProperty (const string &name, const string &value) = 0;
 };
 
 GINGA_FORMATTER_END
