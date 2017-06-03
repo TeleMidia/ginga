@@ -1549,8 +1549,8 @@ NclExecutionObject::selectionEvent (SDL_Keycode key, double currentTime)
   double intervalBegin;
   double intervalEnd;
 
-  if (!ginga_key_table_index (key, keyString))
-    keyString = "UNKNOWN";
+  keyString = "UNKNOWN";
+  ginga_key_table_index (key, &keyString);
 
    if ((!isHandling && !isHandler) || sleeping /*|| paused*/)
     {

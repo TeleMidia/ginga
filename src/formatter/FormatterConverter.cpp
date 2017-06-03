@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "ginga-mime-table.h"
 #include "FormatterConverter.h"
 #include "FormatterLinkConverter.h"
 
@@ -1735,15 +1734,9 @@ FormatterConverter::isEmbeddedApp (NodeEntity *dataObject)
               pos = url.find_last_of (".");
               if (pos != std::string::npos)
                 {
-                  const char *s;
-
-                  string extension
-                      = url.substr (pos, url.length () - (pos + 1));
-                  gboolean status
-                      = ginga_mime_table_index (extension.c_str (), &s);
-
-                  string mime = (likely (status)) ? string (s) : "";
-
+                  string mime = "";
+                  string ext = url.substr (pos, url.length () - (pos + 1));
+                  ginga_mime_table_index (ext, &mime);
                   return isEmbeddedAppMediaType (mime);
                 }
             }

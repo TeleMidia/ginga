@@ -209,8 +209,8 @@ typedef gint64 GingaTimeDiff;
 // Conversion tables.
 bool ginga_color_parse (const string &, SDL_Color *);
 bool ginga_color_table_index (const string &, SDL_Color *);
-bool ginga_key_table_index (SDL_Keycode, string&);
-bool ginga_mime_table_index (string, string&);
+bool ginga_key_table_index (SDL_Keycode, string *);
+bool ginga_mime_table_index (string, string *);
 
 // Misc functions.
 bool xnumeq (double, double);

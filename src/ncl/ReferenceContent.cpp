@@ -75,9 +75,8 @@ ReferenceContent::getType ()
           extension = src.substr (index, (len - index));
           if (extension != "")
             {
-              string mime;
-              if (!ginga_mime_table_index (extension, mime))
-                mime = "";
+              string mime = "";
+              ginga_mime_table_index (extension, &mime);
               return mime;
             }
         }
