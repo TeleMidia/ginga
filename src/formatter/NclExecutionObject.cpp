@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "ginga-key-table.h"
 
 #include "NclExecutionObject.h"
 #include "NclCompositeExecutionObject.h"
@@ -1536,7 +1535,7 @@ bool
 NclExecutionObject::selectionEvent (SDL_Keycode key, double currentTime)
 {
   string selCode;
-  string keyString = ginga_key_table_index (key);
+  string keyString;
   NclSelectionEvent *selectionEvent;
   IntervalAnchor *intervalAnchor;
   NclFormatterEvent *expectedEvent;
@@ -1549,6 +1548,9 @@ NclExecutionObject::selectionEvent (SDL_Keycode key, double currentTime)
   bool selected = false;
   double intervalBegin;
   double intervalEnd;
+
+  if (!ginga_key_table_index (key, keyString))
+    keyString = "UNKNOWN";
 
    if ((!isHandling && !isHandler) || sleeping /*|| paused*/)
     {

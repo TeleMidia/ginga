@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "ginga-color-table.h"
 #include "TextPlayer.h"
 
 #include "mb/Display.h"
@@ -98,10 +97,10 @@ TextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   pango_layout_get_size (layout, NULL, &textAreaHeight);
   pango_font_description_free (desc);
 
-  cairo_set_source_rgba (cr, ginga_color_percent(_fontColor.r),
-                         ginga_color_percent(_fontColor.g),
-                         ginga_color_percent(_fontColor.b),
-                         ginga_color_percent(_fontColor.a));
+  cairo_set_source_rgba (cr, _fontColor.r/255,
+                         _fontColor.g/255,
+                         _fontColor.b/255,
+                         _fontColor.a/255);
 
   pango_cairo_update_layout (cr, layout);
 
@@ -136,7 +135,7 @@ TextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 TextPlayer::TextPlayer (const string &uri) : Player (uri)
 {
   //defalts attr values
-  ginga_color_input_to_sdl_color("#0", &_fontColor); //black
+  _fontColor = {0, 0, 0, 255};  // black
   _fontFamily = "serif";
   _fontStyle ="";
   _fontSize ="18px";
@@ -168,7 +167,7 @@ TextPlayer::setPropertyValue (const string &name, const string &value)
 
   if(name == "fontColor")
     {
-      ginga_color_input_to_sdl_color(value, &_fontColor);
+      g_assert (ginga_color_parse (value, &_fontColor));;
     }
   else if(name == "fontSize")
     {

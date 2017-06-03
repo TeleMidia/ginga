@@ -113,8 +113,6 @@ using namespace std;
 #define GINGA_NCL_END         _GINGA_END
 #define GINGA_PLAYER_BEGIN    _GINGA_BEGIN (player)
 #define GINGA_PLAYER_END      _GINGA_END
-#define GINGA_UTIL_BEGIN      _GINGA_BEGIN (util)
-#define GINGA_UTIL_END        _GINGA_END
 
 // Macros.
 #define GINGA_ASSERT_GLOBAL_NONNULL(G, Type)                    \
@@ -125,10 +123,8 @@ using namespace std;
 
 #define arg_unused(...) G_GNUC_UNUSED __VA_ARGS__
 #define set_if_nonnull(a, x) G_STMT_START {if (a) *(a) = (x); } G_STMT_END
-
 #define likely(cond)    G_LIKELY ((cond))
 #define unlikely(cond)  G_UNLIKELY ((cond))
-
 #define deconst(t, x)   ((t)(ptrdiff_t)(const void *)(x))
 #define pointerof(p)    ((void *)((ptrdiff_t)(p)))
 #define streq(a,b)      (g_strcmp0 ((a),(b)) == 0)
@@ -139,7 +135,7 @@ using namespace std;
 #define syntax_warning(fmt, ...)\
   g_warning ("syntax warning: " fmt, ## __VA_ARGS__)
 
-// Thread macros.
+// Thread.
 #define GINGA_MUTEX_DEFN()                      \
   GRecMutex mutex;                              \
   void inline mutexInit ()                      \
@@ -159,7 +155,7 @@ using namespace std;
     g_rec_mutex_unlock (&this->mutex);          \
   }
 
-// Time macros.
+// Time.
 typedef guint64 GingaTime;    // nanoseconds
 typedef gint64 GingaTimeDiff;
 
@@ -210,6 +206,12 @@ typedef gint64 GingaTimeDiff;
     GINGA_STIME_IS_VALID (t) ?                                          \
     (guint) (((GingaTime)(ABS(t))) % GINGA_SECOND) : 999999999
 
+// Conversion tables.
+bool ginga_color_parse (const string &, SDL_Color *);
+bool ginga_color_table_index (const string &, SDL_Color *);
+bool ginga_key_table_index (SDL_Keycode, string&);
+bool ginga_mime_table_index (string, string&);
+
 // Misc functions.
 bool xnumeq (double, double);
 gint64 xruntime ();
@@ -218,7 +220,7 @@ gint64 xruntime ();
 // String functions.
 bool _xstrtod (const string &, double *);
 bool _xstrtoll (const string &, gint64 *, guint);
-bool _xstrtoull (const string &s, guint64 *, guint);
+bool _xstrtoull (const string &, guint64 *, guint);
 double xstrtod (const string &);
 gint xstrtoint (const string &, guint8);
 gint8 xstrtoint8 (const string &, guint8);
@@ -226,13 +228,10 @@ gint64 xstrtoint64 (const string &, guint8);
 guint xstrtouint (const string &, guint8);
 guint8 xstrtouint8 (const string &, guint8);
 guint64 xstrtouint64 (const string &, guint8);
-
 bool _xstrtimetod (const string &, double *);
 double xstrtimetod (const string &);
-
 bool xstrispercent (const string &);
 gdouble xstrtodorpercent (const string &, bool *);
-
 int xstrcasecmp (const string &, const string &);
 #define xstrcaseeq(s1, s2) (xstrcasecmp ((s1), (s2)) == 0)
 int G_GNUC_PRINTF (2,3) xstrassign (string &, const char *, ...);

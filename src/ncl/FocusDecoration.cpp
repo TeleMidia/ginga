@@ -25,28 +25,16 @@ FocusDecoration::FocusDecoration ()
   focusBorderTransparency = (double)NAN;
   focusSrc = "";
   focusBorderWidth = -3;
-  focusBorderColor = NULL;
-
-  selBorderColor = NULL;
+  focusBorderColor = {0, 0, 255, 255};
+  selBorderColor = {0, 255, 0, 255};
   focusSelSrc = "";
 }
 
 FocusDecoration::~FocusDecoration ()
 {
-  if (focusBorderColor != NULL)
-    {
-      delete focusBorderColor;
-      focusBorderColor = NULL;
-    }
-
-  if (selBorderColor != NULL)
-    {
-      delete selBorderColor;
-      selBorderColor = NULL;
-    }
 }
 
-SDL_Color *
+SDL_Color
 FocusDecoration::getFocusBorderColor ()
 {
   return focusBorderColor;
@@ -76,14 +64,14 @@ FocusDecoration::getFocusBorderWidth ()
   return focusBorderWidth;
 }
 
-SDL_Color *
+SDL_Color
 FocusDecoration::getSelBorderColor ()
 {
   return selBorderColor;
 }
 
 void
-FocusDecoration::setFocusBorderColor (SDL_Color *color)
+FocusDecoration::setFocusBorderColor (SDL_Color color)
 {
   focusBorderColor = color;
 }
@@ -122,7 +110,7 @@ FocusDecoration::setFocusSrc (const string &src)
 }
 
 void
-FocusDecoration::setSelBorderColor (SDL_Color *color)
+FocusDecoration::setSelBorderColor (SDL_Color color)
 {
   selBorderColor = color;
 }

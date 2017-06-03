@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "ginga-mime-table.h"
 #include "ReferenceContent.h"
 
 GINGA_NCL_BEGIN
@@ -76,10 +75,10 @@ ReferenceContent::getType ()
           extension = src.substr (index, (len - index));
           if (extension != "")
             {
-              gboolean status;
-              const char *mime;
-              status = ginga_mime_table_index (extension.c_str (), &mime);
-              return (likely (status)) ? string (mime) : "";
+              string mime;
+              if (!ginga_mime_table_index (extension, mime))
+                mime = "";
+              return mime;
             }
         }
     }

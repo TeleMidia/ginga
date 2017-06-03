@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "ginga-color-table.h"
 #include "Parser.h"
 
 #include "mb/Display.h"
@@ -1034,7 +1033,7 @@ NclParser::parseTransition (DOMElement *transition_element)
   Transition *transition;
   string id, attValue;
   int type;
-  SDL_Color *color;
+  SDL_Color color = {0, 0, 0, 0};
 
   if (unlikely (!dom_element_has_attr(transition_element, "id")))
     syntax_error ("transition: missing id");
@@ -1096,8 +1095,7 @@ NclParser::parseTransition (DOMElement *transition_element)
 
   if (dom_element_try_get_attr(attValue, transition_element, "fadeColor"))
     {
-      color = new SDL_Color ();
-      ginga_color_input_to_sdl_color(attValue, color);
+      g_assert (ginga_color_parse (attValue, &color));
       transition->setFadeColor (color);
     }
 
@@ -1118,8 +1116,7 @@ NclParser::parseTransition (DOMElement *transition_element)
 
   if (dom_element_try_get_attr(attValue, transition_element, "borderColor"))
     {
-      color = new SDL_Color ();
-      ginga_color_input_to_sdl_color(attValue, color);
+      g_assert (ginga_color_parse (attValue, &color));
       transition->setBorderColor (color);
     }
 
@@ -3382,7 +3379,7 @@ NclParser::createDescriptorBase (DOMElement *descriptorBase_element)
 }
 
 Descriptor *
-NclParser::createDescriptor (DOMElement *descriptor_element)
+NclParser::createDescriptor (DOMElement *elt)
 {
   Descriptor *descriptor;
   NclDocument *nclDoc;
@@ -3390,16 +3387,16 @@ NclParser::createDescriptor (DOMElement *descriptor_element)
   KeyNavigation *keyNavigation;
   string src;
   FocusDecoration *focusDecoration;
-  SDL_Color *color;
+  SDL_Color color;
   string attValue;
 
-  descriptor = new Descriptor (dom_element_get_attr(descriptor_element, "id"));
+  descriptor = new Descriptor (dom_element_get_attr(elt, "id"));
 
   nclDoc = this->getNclDocument ();
   g_assert_nonnull(nclDoc);
 
   // region
-  if (dom_element_try_get_attr(attValue, descriptor_element, "region"))
+  if (dom_element_try_get_attr(attValue, elt, "region"))
     {
       region = nclDoc->getRegion (attValue);
       if (unlikely (region == NULL))
@@ -3411,12 +3408,12 @@ NclParser::createDescriptor (DOMElement *descriptor_element)
     }
 
   // explicitDur
-  if (dom_element_try_get_attr(attValue, descriptor_element, "explicitDur"))
+  if (dom_element_try_get_attr(attValue, elt, "explicitDur"))
     {
       descriptor->setExplicitDuration (xstrtimetod (attValue) * 1000);
     }
 
-  if (dom_element_try_get_attr(attValue, descriptor_element,"freeze"))
+  if (dom_element_try_get_attr(attValue, elt,"freeze"))
     {
       if (attValue == "true")
         {
@@ -3429,14 +3426,14 @@ NclParser::createDescriptor (DOMElement *descriptor_element)
     }
 
   // player
-  if (dom_element_try_get_attr(attValue, descriptor_element, "player"))
+  if (dom_element_try_get_attr(attValue, elt, "player"))
     {
       descriptor->setPlayerName (attValue);
     }
 
   // key navigation attributes
   keyNavigation = new KeyNavigation ();
-  descriptor->setKeyNavigation (keyNavigation); 
+  descriptor->setKeyNavigation (keyNavigation);
 
   // a lambda to check the existence of an attribute and set the keyNavigation
   typedef void (KeyNavigation::*memberf_pointer)(const string &);
@@ -3449,14 +3446,14 @@ NclParser::createDescriptor (DOMElement *descriptor_element)
   };
 
   for(auto a: to_call)
-    if (dom_element_try_get_attr(attValue, descriptor_element, a.first))
+    if (dom_element_try_get_attr(attValue, elt, a.first))
         {
           (keyNavigation->* to_call[a.first]) (attValue);
         }
 
   focusDecoration = new FocusDecoration ();
   descriptor->setFocusDecoration (focusDecoration);
-  if (dom_element_try_get_attr(src, descriptor_element, "focusSrc"))
+  if (dom_element_try_get_attr(src, elt, "focusSrc"))
     {
       if (!xpathisuri (src) && !xpathisabs (src))
         src = xpathbuildabs (this->getDirName (), src);
@@ -3464,27 +3461,25 @@ NclParser::createDescriptor (DOMElement *descriptor_element)
       focusDecoration->setFocusSrc (src);
     }
 
-  if (dom_element_try_get_attr(attValue, descriptor_element, "focusBorderColor"))
+  if (dom_element_try_get_attr (attValue, elt, "focusBorderColor"))
     {
-      color = new SDL_Color ();
-      ginga_color_input_to_sdl_color(attValue, color);
-
+      g_assert (ginga_color_parse (attValue, &color));
       focusDecoration->setFocusBorderColor (color);
     }
 
-  if (dom_element_try_get_attr(attValue, descriptor_element, "focusBorderWidth"))
+  if (dom_element_try_get_attr(attValue, elt, "focusBorderWidth"))
     {
       focusDecoration->setFocusBorderWidth (xstrtoint (attValue, 10));
     }
 
-  if (dom_element_try_get_attr(attValue, descriptor_element, "focusBorderTransparency"))
+  if (dom_element_try_get_attr(attValue, elt, "focusBorderTransparency"))
     {
       double alpha;
       alpha = xstrtod (attValue);
       focusDecoration->setFocusBorderTransparency (alpha);
     }
 
-  if (dom_element_try_get_attr(src, descriptor_element, "focusSelSrc"))
+  if (dom_element_try_get_attr(src, elt, "focusSelSrc"))
     {
       if (!xpathisuri (src) && !xpathisabs (src))
         src = xpathbuildabs (this->getDirName (), src);
@@ -3492,18 +3487,17 @@ NclParser::createDescriptor (DOMElement *descriptor_element)
       focusDecoration->setFocusSelSrc (src);
     }
 
-  if (dom_element_try_get_attr(attValue, descriptor_element, "selBorderColor"))
+  if (dom_element_try_get_attr (attValue, elt, "selBorderColor"))
     {
-      color = new SDL_Color ();
-      ginga_color_input_to_sdl_color (attValue, color );
-      focusDecoration->setSelBorderColor ( color );
+      g_assert (ginga_color_parse (attValue, &color));
+      focusDecoration->setSelBorderColor (color);
     }
 
   // a lambda to parse the transIn/transOut attribute value and add input output
   // transitions to descriptor
   auto parse_transInOut = [&] (const string &transInOut)
     {
-      if (dom_element_try_get_attr(attValue, descriptor_element, transInOut))
+      if (dom_element_try_get_attr(attValue, elt, transInOut))
       {
         TransitionBase *transBase = nclDoc->getTransitionBase ();
         if((transBase))

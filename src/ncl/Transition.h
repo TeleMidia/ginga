@@ -63,32 +63,32 @@ private:
   double startProgress;
   double endProgress;
   short direction;
-  SDL_Color *fadeColor;
+  SDL_Color fadeColor;
   int horzRepeat;
   int vertRepeat;
-  SDL_Color *borderColor;
+  SDL_Color borderColor;
   int borderWidth;
 
 public:
   Transition (const string &id, int type);
   virtual ~Transition ();
-  SDL_Color *getBorderColor ();
+  SDL_Color getBorderColor ();
   int getBorderWidth ();
   short getDirection ();
   double getDur ();
   double getEndProgress ();
-  SDL_Color *getFadeColor ();
+  SDL_Color getFadeColor ();
   int getHorzRepeat ();
   double getStartProgress ();
   int getSubtype ();
   int getType ();
   int getVertRepeat ();
-  void setBorderColor (SDL_Color *color);
+  void setBorderColor (SDL_Color color);
   void setBorderWidth (int width);
   void setDirection (short dir);
   void setDur (double dur);
   void setEndProgress (double ep);
-  void setFadeColor (SDL_Color *color);
+  void setFadeColor (SDL_Color color);
   void setHorzRepeat (int num);
   void setStartProgress (double sp);
   void setSubtype (int subtype);

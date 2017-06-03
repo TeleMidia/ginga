@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "ginga-color-table.h"
 #include "PlayerAnimator.h"
 
 #include "mb/Display.h"
@@ -51,7 +50,7 @@ PlayerAnimator::addProperty(const string &dur,
    else if(name == "background" || name == "bgColor")
     {
       SDL_Color color = {0, 0, 0, 255};
-      ginga_color_input_to_sdl_color (value, &color);
+      g_assert (ginga_color_parse (value, &color));
       updateList (dur, "red", xstrbuild ("%d", color.r));
       updateList (dur, "green", xstrbuild ("%d", color.g));
       updateList (dur, "blue", xstrbuild ("%d", color.b));

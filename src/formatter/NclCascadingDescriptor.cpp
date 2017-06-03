@@ -77,8 +77,6 @@ NclCascadingDescriptor::~NclCascadingDescriptor ()
 {
   vector<GenericDescriptor *>::iterator i;
   DescriptorSwitch *ds;
-  focusBorderColor = NULL;
-  selBorderColor = NULL;
 
   if (formatterRegion != NULL)
     {
@@ -134,8 +132,8 @@ NclCascadingDescriptor::initializeCascadingDescriptor ()
 
   focusSrc = "";
   selectionSrc = "";
-  focusBorderColor = NULL;
-  selBorderColor = NULL;
+  focusBorderColor = {0, 0, 255, 255};
+  selBorderColor = {0, 255, 0, 255};
   focusBorderWidth = 0;
   selBorderWidth = 0;
   focusBorderTransparency = (double) NAN;
@@ -204,16 +202,8 @@ NclCascadingDescriptor::cascadeDescriptor (Descriptor *descriptor)
       focusDecoration
           = (FocusDecoration *)(descriptor->getFocusDecoration ());
 
-      if (focusDecoration->getFocusBorderColor () != NULL)
-        {
-          focusBorderColor = focusDecoration->getFocusBorderColor ();
-        }
-
-      if (focusDecoration->getSelBorderColor () != NULL)
-        {
-          selBorderColor = focusDecoration->getSelBorderColor ();
-        }
-
+      this->focusBorderColor = focusDecoration->getFocusBorderColor ();
+      this->selBorderColor = focusDecoration->getSelBorderColor ();
       focusBorderWidth = focusDecoration->getFocusBorderWidth ();
 
       if (!(isnan (focusDecoration->getFocusBorderTransparency ())))
@@ -465,7 +455,7 @@ NclCascadingDescriptor::getNcmDescriptors ()
   return &descriptors;
 }
 
-SDL_Color *
+SDL_Color
 NclCascadingDescriptor::getFocusBorderColor ()
 {
   return focusBorderColor;
@@ -525,7 +515,7 @@ NclCascadingDescriptor::getMoveUp ()
   return moveUp;
 }
 
-SDL_Color *
+SDL_Color
 NclCascadingDescriptor::getSelBorderColor ()
 {
   return selBorderColor;

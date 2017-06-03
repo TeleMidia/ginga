@@ -15,19 +15,10 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef GINGA_MIME_TABLE_H
-#define GINGA_MIME_TABLE_H
-
 #include "ginga.h"
 
-typedef struct _GingaMimeTable
+static map<string, string> mimetab =
 {
-  const char *ext;
-  const char *mime;
-} GingaMimeTable;
-
-static const GingaMimeTable ginga_mime_table[] = {
-  /* KEEP THIS SORTED ALPHABETICALLY */
   {"ac3", "audio/ac3"},
   {"avi", "video/x-msvideo"},
   {"bmp", "image/bmp"},
@@ -70,36 +61,12 @@ static const GingaMimeTable ginga_mime_table[] = {
   {"xml", "text/xml"},
 };
 
-static G_GNUC_PURE int
-ginga_mime_table_compar (const void *e1, const void *e2)
+bool
+ginga_mime_table_index (string key, string &result)
 {
-  const GingaMimeTable *c1;
-  const GingaMimeTable *c2;
-
-  c1 = (const GingaMimeTable *) e1;
-  c2 = (const GingaMimeTable *) e2;
-
-  return g_ascii_strcasecmp (c1->ext, c2->ext);
+  map<string, string>::iterator it;
+  if ((it = mimetab.find (key)) == mimetab.end ())
+    return false;
+  result = it->second;
+  return true;
 }
-
-/* Gets the mime-type associated with the given extension.  If EXT is in
-   mime table, stores its mime-type *MIME and returns true, otherwise
-   returns false.  */
-static inline gboolean
-ginga_mime_table_index (const char *ext, const char **mime)
-{
-  GingaMimeTable key;
-  GingaMimeTable *match;
-
-  key.ext = ext;
-  match = (GingaMimeTable *)
-    bsearch (&key, ginga_mime_table, G_N_ELEMENTS (ginga_mime_table),
-             sizeof (*ginga_mime_table), ginga_mime_table_compar);
-  if (match == NULL)
-    return FALSE;
-
-  *mime = match->mime;
-  return TRUE;
-}
-
-#endif /* GINGA_MIME_TABLE_H */

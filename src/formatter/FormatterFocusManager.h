@@ -49,9 +49,10 @@ private:
   string objectToSelect;
   NclExecutionObject *selectedObject;
 
-  SDL_Color *defaultFocusBorderColor;
-  int defaultFocusBorderWidth;
-  SDL_Color *defaultSelBorderColor;
+  int defaultFocusBorderWidth;  // pixels
+  SDL_Color defaultFocusBorderColor;
+  SDL_Color defaultSelBorderColor;
+
   AdapterPlayerManager *playerManager;
   FormatterFocusManager *parentManager;
   INclLinkActionListener *settingActions;
@@ -103,9 +104,9 @@ private:
 
 
 public:
-  void setDefaultFocusBorderColor (SDL_Color *color);
-  void setDefaultFocusBorderWidth (int width);
-  void setDefaultSelBorderColor (SDL_Color *color);
+  void setDefaultFocusBorderColor (SDL_Color);
+  void setDefaultFocusBorderWidth (int);
+  void setDefaultSelBorderColor (SDL_Color);
 
 private:
   void changeSettingState (const string &name, const string &act);
