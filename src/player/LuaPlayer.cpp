@@ -323,7 +323,7 @@ LuaPlayer::handleKeyEvent (SDL_EventType type, SDL_Keycode key)
       goto tail;
     }
 
-  if (!ginga_key_table_index (key, keystr))
+  if (!ginga_key_table_index (key, &keystr))
     goto tail;
 
   evt_key_send (this->_nw, typestr.c_str (), keystr.c_str ());

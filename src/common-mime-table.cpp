@@ -62,11 +62,11 @@ static map<string, string> mimetab =
 };
 
 bool
-ginga_mime_table_index (string key, string &result)
+ginga_mime_table_index (string key, string *result)
 {
   map<string, string>::iterator it;
   if ((it = mimetab.find (key)) == mimetab.end ())
     return false;
-  result = it->second;
+  set_if_nonnull (result, it->second);
   return true;
 }

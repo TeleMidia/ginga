@@ -85,11 +85,11 @@ static map<SDL_Keycode, string> keytab =
 };
 
 bool
-ginga_key_table_index (SDL_Keycode key, string &result)
+ginga_key_table_index (SDL_Keycode key, string *result)
 {
   map<SDL_Keycode, string>::iterator it;
   if ((it = keytab.find (key)) == keytab.end ())
     return false;
-  result = it->second;
+  set_if_nonnull (result, it->second);
   return true;
 }
