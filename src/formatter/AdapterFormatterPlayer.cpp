@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "ginga-color-table.h"
 #include "AdapterFormatterPlayer.h"
 
 #include "AdapterPlayerManager.h"
@@ -383,8 +382,8 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
             {
               if (fRegion != nullptr)
                 {
-                  SDL_Color *bg = new SDL_Color();
-                  ginga_color_input_to_sdl_color(value,bg);
+                  SDL_Color bg = {0, 0, 0, 255};
+                  ginga_color_parse (value, &bg);
                   fRegion->setBackgroundColor (bg);
                 }
             }
@@ -399,9 +398,9 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
             {
               if (fRegion != nullptr)
                 {
-                  SDL_Color *c = new SDL_Color();
-                  ginga_color_input_to_sdl_color(value,c);
-                  fRegion->setFocusBorderColor(c);
+                  SDL_Color color;
+                  g_assert (ginga_color_parse (value, &color));
+                  fRegion->setFocusBorderColor (color);
                 }
             }
           else if (name == "focusBorderWidth")
@@ -422,9 +421,9 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
             {
               if (fRegion != nullptr)
                 {
-                  SDL_Color *c = new SDL_Color();
-                  ginga_color_input_to_sdl_color(value,c);
-                  fRegion->setSelBorderColor (c);
+                  SDL_Color color;
+                  g_assert (ginga_color_parse (value, &color));
+                  fRegion->setSelBorderColor (color);
                 }
             }
           else if (name == "selBorderWidth")

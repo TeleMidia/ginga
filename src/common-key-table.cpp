@@ -15,10 +15,9 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef GINGA_KEY_TABLE_H
-#define GINGA_KEY_TABLE_H
+#include "ginga.h"
 
-static map<SDL_Keycode, string> keymap =
+static map<SDL_Keycode, string> keytab =
 {
  {SDLK_ESCAPE, "QUIT"},
  {SDLK_0, "0" },
@@ -85,12 +84,12 @@ static map<SDL_Keycode, string> keymap =
  {SDLK_PAUSE, "PAUSE"},
 };
 
-static inline string
-ginga_key_table_index (SDL_Keycode key)
+bool
+ginga_key_table_index (SDL_Keycode key, string &result)
 {
   map<SDL_Keycode, string>::iterator it;
-  it = keymap.find (key);
-  return (it != keymap.end ()) ? it->second : "UNKNOWN";
+  if ((it = keytab.find (key)) == keytab.end ())
+    return false;
+  result = it->second;
+  return true;
 }
-
-#endif /* GINGA_KEY_TABLE_H */

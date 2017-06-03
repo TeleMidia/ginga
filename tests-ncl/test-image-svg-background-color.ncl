@@ -4,7 +4,7 @@
     <media id='img' src='samples/vector.svg'>
       <property name='width' value='640'/>
       <property name='height' value='480'/>
-      <property name="background" value="YELLOW"/>
+      <property name="background" value="yellow"/>
     </media>
   </body>
 </ncl>

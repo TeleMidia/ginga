@@ -16,8 +16,6 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "ginga-mime-table.h"
-
 #include "AdapterPlayerManager.h"
 
 GINGA_FORMATTER_BEGIN
@@ -154,14 +152,12 @@ AdapterPlayerManager::isEmbeddedApp (NodeEntity *dataObject)
               pos = url.find_last_of (".");
               if (pos != std::string::npos)
                 {
-                  gboolean status;
-                  const char *s;
                   string extension;
                   string mime;
 
                   extension = url.substr (pos, url.length () - (pos + 1));
-                  status = ginga_mime_table_index (extension.c_str (), &s);
-                  mime = (likely (status)) ? string (s) : "";
+                  if (!ginga_mime_table_index (extension, mime))
+                    mime = "";
                   return isEmbeddedAppMediaType (mime);
                 }
             }

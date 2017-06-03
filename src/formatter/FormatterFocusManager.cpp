@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "ginga-color-table.h"
 #include "FormatterFocusManager.h"
 
 #include "FormatterConverter.h"
@@ -36,7 +35,7 @@ FormatterFocusManager::FormatterFocusManager (
     AdapterPlayerManager *playerManager, PresentationContext *presContext,
     INclLinkActionListener *settingActions, FormatterConverter *converter)
 {
-  string strValue;
+  string str;
 
   focusTable = new map<string, set<NclExecutionObject *> *>;
   currentFocus = "";
@@ -46,44 +45,24 @@ FormatterFocusManager::FormatterFocusManager (
   width = 0;
   height = 0;
 
-  strValue = presContext->getPropertyValue ("system.focusBorderColor");
-  if (strValue == "")
-    {
-      defaultFocusBorderColor = new SDL_Color();
-      ginga_hex_to_sdl_color( "#00F" , defaultFocusBorderColor); // blue
-    }
-  else
-    {
-      defaultFocusBorderColor = new SDL_Color();
-      ginga_color_input_to_sdl_color( strValue, defaultFocusBorderColor);
-    }
+  this->defaultFocusBorderWidth = 1;
+  this->defaultFocusBorderColor = {0, 0, 255, 255};
+  this->defaultSelBorderColor = {0, 255, 0, 255};
 
-  strValue = presContext->getPropertyValue ("system.defaultFocusBorderWidth");
-  if (strValue == "")
-    {
-      defaultFocusBorderWidth = 1;
-    }
-  else
-    {
-      defaultFocusBorderWidth = xstrtoint (strValue, 10);
-    }
+  str = presContext->getPropertyValue ("system.defaultFocusBorderWidth");
+  if (str != "")
+    this->defaultFocusBorderWidth = xstrtoint (str, 10);
 
-  strValue = presContext->getPropertyValue ("system.defaultSelBorderColor");
-  if (strValue == "")
-    {
-      defaultSelBorderColor = new SDL_Color();
-      ginga_hex_to_sdl_color( "#0F0" ,defaultSelBorderColor); // green
-    }
-  else
-    {
-      defaultSelBorderColor = new SDL_Color();
-      ginga_color_input_to_sdl_color( strValue, defaultSelBorderColor);
-    }
+  str = presContext->getPropertyValue ("system.focusBorderColor");
+  ginga_color_parse (str, &this->defaultFocusBorderColor);
 
+  str = presContext->getPropertyValue ("system.defaultSelBorderColor");
+  ginga_color_parse (str, &this->defaultSelBorderColor);
+
+  this->converter = converter;
+  this->playerManager = playerManager;
   this->presContext = presContext;
   this->selectedObject = NULL;
-  this->playerManager = playerManager;
-  this->converter = converter;
   this->settingActions = settingActions;
 
   checkInit ();
@@ -94,23 +73,7 @@ FormatterFocusManager::FormatterFocusManager (
 FormatterFocusManager::~FormatterFocusManager ()
 {
   hasInstance (this, true);
-
-  if (hasInstance (parentManager, false))
-    {
-    }
   selectedObject = NULL;
-
-  if (defaultFocusBorderColor != NULL)
-    {
-      delete defaultFocusBorderColor;
-      defaultFocusBorderColor = NULL;
-    }
-
-  if (defaultSelBorderColor != NULL)
-    {
-      delete defaultSelBorderColor;
-      defaultSelBorderColor = NULL;
-    }
 
   if (focusTable != NULL)
     {
@@ -475,11 +438,8 @@ FormatterFocusManager::setFocus (const string &focusIndex)
 void
 FormatterFocusManager::setFocus (NclCascadingDescriptor *descriptor)
 {
-  double borderAlpha;
-  bool canDelFocusColor = false;
-  bool canDelSelColor = false;
-  SDL_Color *focusColor = NULL;
-  SDL_Color *selColor = NULL;
+  SDL_Color focusColor;;
+  SDL_Color selColor;;
   int borderWidth = 1;
   int width;
   NclFormatterRegion *fr = NULL;
@@ -506,32 +466,7 @@ FormatterFocusManager::setFocus (NclCascadingDescriptor *descriptor)
   borderWidth = fr->getFocusBorderWidth ();
   selColor = fr->getSelBorderColor ();
 
-  if (focusColor == NULL)
-    {
-      focusColor = defaultFocusBorderColor;
-    }
-
-  borderAlpha = descriptor->getFocusBorderTransparency ();
-  if (!isnan (borderAlpha))
-    {
-      canDelFocusColor = true;
-       if(focusColor==NULL)focusColor = new SDL_Color();
-       focusColor->a = (guint8)(borderAlpha * 255);
-    }
-
   width = borderWidth;
-
-  if (selColor == NULL)
-    {
-      selColor = defaultSelBorderColor;
-    }
-
-  if (!isnan (borderAlpha))
-    {
-      canDelSelColor = true;
-      if(selColor==NULL)selColor = new SDL_Color();
-      selColor->a = (guint8)(borderAlpha * 255);
-    }
 
   if (fr != NULL)
     {
@@ -539,18 +474,6 @@ FormatterFocusManager::setFocus (NclCascadingDescriptor *descriptor)
                         selColor, width, descriptor->getSelectionSrc ());
 
       fr->setFocus (true);
-    }
-
-  if (canDelFocusColor)
-    {
-      delete focusColor;
-      focusColor = NULL;
-    }
-
-  if (canDelSelColor)
-    {
-      delete selColor;
-      selColor = NULL;
     }
 }
 
@@ -647,15 +570,6 @@ FormatterFocusManager::showObject (NclExecutionObject *object)
       paramValue = presContext->getPropertyValue ("service.currentFocus");
       if (paramValue != "" && paramValue == focusIndex && fr->isVisible ())
         {
-          /*if (focusTable->count(currentFocus) != 0) {
-                  currentObject = (*focusTable)[currentFocus];
-                  currentObject->getDescriptor()->
-                              getFormatterRegion()->setFocus(false);
-
-                  recoveryDefaultState(currentObject);
-          }
-
-          currentFocus = focusIndex;*/
           setFocus (focusIndex);
         }
 
@@ -743,29 +657,21 @@ FormatterFocusManager::hideObject (NclExecutionObject *object)
 
 
 void
-FormatterFocusManager::setDefaultFocusBorderColor (SDL_Color *color)
+FormatterFocusManager::setDefaultFocusBorderColor (SDL_Color color)
 {
-  if (defaultFocusBorderColor != NULL)
-    {
-      delete defaultFocusBorderColor;
-    }
-  defaultFocusBorderColor = color;
+  this->defaultFocusBorderColor = color;
 }
 
 void
 FormatterFocusManager::setDefaultFocusBorderWidth (int width)
 {
-  defaultFocusBorderWidth = width;
+  this->defaultFocusBorderWidth = width;
 }
 
 void
-FormatterFocusManager::setDefaultSelBorderColor (SDL_Color *color)
+FormatterFocusManager::setDefaultSelBorderColor (SDL_Color color)
 {
-  if (defaultSelBorderColor != NULL)
-    {
-      delete defaultSelBorderColor;
-    }
-  defaultSelBorderColor = color;
+  this->defaultSelBorderColor = color;
 }
 
 void
@@ -777,10 +683,6 @@ FormatterFocusManager::changeSettingState (const string &name, const string &act
   string keyM;
 
   settingObjects = converter->getSettingNodeObjects ();
-
-  /*clog << "FormatterFocusManager::changeSettingState number of ";
-  clog << "settings objects: '" << settingObjects->size() << "'";
-  clog << endl;*/
 
   i = settingObjects->begin ();
   while (i != settingObjects->end ())

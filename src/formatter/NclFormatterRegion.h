@@ -46,16 +46,16 @@ private:
   bool imVisible;
 
   short focusState;
-  SDL_Color *focusBorderColor;
+  SDL_Color focusBorderColor;
   int focusBorderWidth;
   string focusComponentSrc;
-  SDL_Color *selBorderColor;
+  SDL_Color selBorderColor;
   string selComponentSrc;
   int selBorderWidth;
 
   int zIndex;
 
-  SDL_Color *bgColor;
+  SDL_Color bgColor;
   double transparency;
 
   string focusIndex;
@@ -90,8 +90,8 @@ public:
   void setMoveRight (const string &moveRight);
   string getMoveRight ();
 
-  void setFocusBorderColor (SDL_Color *focusBorderColor);
-  SDL_Color *getFocusBorderColor ();
+  void setFocusBorderColor (SDL_Color);
+  SDL_Color getFocusBorderColor ();
 
   void setFocusBorderWidth (int focusBorderWidth);
   int getFocusBorderWidth ();
@@ -99,8 +99,8 @@ public:
   void setFocusComponentSrc (const string &focusComponentSrc);
   string getFocusComponentSrc ();
 
-  void setSelBorderColor (SDL_Color *selBorderColor);
-  SDL_Color *getSelBorderColor ();
+  void setSelBorderColor (SDL_Color selBorderColor);
+  SDL_Color getSelBorderColor ();
 
   void setSelBorderWidth (int selBorderWidth);
   int getSelBorderWidth ();
@@ -108,8 +108,8 @@ public:
   void setSelComponentSrc (const string &selComponentSrc);
   string getSelComponentSrc ();
 
-  void setFocusInfo (SDL_Color *focusBorderColor, int focusBorderWidth,
-                     const string &focusComponentSrc, SDL_Color *selBorderColor,
+  void setFocusInfo (SDL_Color focusBorderColor, int focusBorderWidth,
+                     const string &focusComponentSrc, SDL_Color selBorderColor,
                      int selBorderWidth, const string &selComponentSrc);
 
   SDLWindow* getOutputId ();
@@ -141,13 +141,13 @@ public:
   void setFocus (bool focusOn);
   void unselect ();
 
-  SDL_Color *getBackgroundColor ();
+  SDL_Color getBackgroundColor ();
 
   double getTransparency ();
   void setTransparency (const string &strTrans);
   void setTransparency (double transparency);
   void setBackgroundColor (const string &color);
-  void setBackgroundColor (SDL_Color *color);
+  void setBackgroundColor (SDL_Color color);
 };
 
 typedef struct

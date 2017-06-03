@@ -61,8 +61,8 @@ private:
 
   string focusIndex, moveUp, moveDown, moveLeft, moveRight;
   string focusSrc, selectionSrc;
-  SDL_Color *focusBorderColor;
-  SDL_Color *selBorderColor;
+  SDL_Color focusBorderColor;
+  SDL_Color selBorderColor;
   int focusBorderWidth;
   int selBorderWidth;
   double focusBorderTransparency;
@@ -98,7 +98,7 @@ public:
   vector<Parameter> getParameters ();
   string getParameterValue (const string &paramName);
   vector<GenericDescriptor *> *getNcmDescriptors ();
-  SDL_Color *getFocusBorderColor ();
+  SDL_Color getFocusBorderColor ();
   double getFocusBorderTransparency ();
   int getFocusBorderWidth ();
   string getFocusIndex ();
@@ -108,7 +108,7 @@ public:
   string getMoveLeft ();
   string getMoveRight ();
   string getMoveUp ();
-  SDL_Color *getSelBorderColor ();
+  SDL_Color getSelBorderColor ();
   int getSelBorderWidth ();
   vector<Transition *> *getInputTransitions ();
   vector<Transition *> *getOutputTransitions ();

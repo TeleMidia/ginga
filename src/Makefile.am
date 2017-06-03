@@ -44,8 +44,13 @@ AM_LDFLAGS= -R $(libdir) -rpath $(libdir)\
   $(NULL)
 
 bin_PROGRAMS= ginga
-ginga_SOURCES= $(src) common.cpp main.cpp
+ginga_SOURCES= $(src)
 src=
+src+= main.cpp
+src+= common-color-table.cpp
+src+= common-key-table.cpp
+src+= common-mime-table.cpp
+src+= common.cpp
 src+= ctxmgmt/ContextManager.cpp
 src+= ctxmgmt/GingaUser.cpp
 src+= ctxmgmt/SystemInfo.cpp

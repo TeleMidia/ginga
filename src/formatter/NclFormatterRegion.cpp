@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "ginga-color-table.h"
 #include "NclFormatterRegion.h"
 
 #include "NclCascadingDescriptor.h"
@@ -29,6 +28,7 @@ GINGA_FORMATTER_BEGIN
 NclFormatterRegion::NclFormatterRegion (const string &objectId,
                                         NclCascadingDescriptor *descriptor)
 {
+  SDL_Color color;
   this->objectId = objectId;
   this->descriptor = descriptor;
 
@@ -39,13 +39,13 @@ NclFormatterRegion::NclFormatterRegion (const string &objectId,
   this->win = 0;
   this->imVisible = false;
   this->focusState = NclFormatterRegion::UNSELECTED;
-  this->focusBorderColor = NULL;
+  this->focusBorderColor = {0, 0, 255, 255};
   this->focusBorderWidth = 0;
   this->focusComponentSrc = "";
-  this->selBorderColor = NULL;
+  this->selBorderColor = {0, 255, 0, 255};
   this->selBorderWidth = 0;
   this->selComponentSrc = "";
-  this->bgColor = NULL;
+  this->bgColor = {0, 0, 0, 0};
   this->focusIndex = "";
   this->moveUp = "";
   this->moveDown = "";
@@ -59,39 +59,11 @@ NclFormatterRegion::NclFormatterRegion (const string &objectId,
   this->setTransparency (value);
 
   value = descriptor->getParameterValue ("background");
-
-  if (xstrchomp (value) != "")
-    {
-      if (value.find (",") == std::string::npos)
-        {
-          this->setBackgroundColor (value);
-        }
-      else
-        {
-          SDL_Color *bg = NULL;
-          vector<string> params;
-
-          params = xstrsplit (xstrchomp (value), ',');
-          if (params.size () == 3)
-            {
-              bg = new SDL_Color();
-              bg->r =  xstrtouint8 (params[0], 10);
-              bg->g =  xstrtouint8 (params[1], 10);
-              bg->b =  xstrtouint8 (params[2], 10);
-              bg->a = 255;
-              setBackgroundColor (bg);
-            }
-          else if (params.size () == 4)
-            {
-              bg = new SDL_Color();
-              bg->r =  xstrtouint8 (params[0], 10);
-              bg->g =  xstrtouint8 (params[1], 10);
-              bg->b =  xstrtouint8 (params[2], 10);
-              bg->a =  xstrtouint8 (params[3], 10);
-              setBackgroundColor (bg);
-            }
-        }
-    }
+  if (value == "")
+    color = {0, 0, 0, 0};
+  else
+    g_assert (ginga_color_parse (value, &color));
+  this->setBackgroundColor (color);
 }
 
 NclFormatterRegion::~NclFormatterRegion ()
@@ -106,24 +78,6 @@ NclFormatterRegion::~NclFormatterRegion ()
     }
 
   disposeOutputDisplay ();
-
-  if (focusBorderColor != NULL)
-    {
-      delete focusBorderColor;
-      focusBorderColor = NULL;
-    }
-
-  if (selBorderColor != NULL)
-    {
-      delete selBorderColor;
-      selBorderColor = NULL;
-    }
-
-  if (bgColor != NULL)
-    {
-      delete bgColor;
-      bgColor = NULL;
-    }
 }
 void
 NclFormatterRegion::setZIndex (int zIndex)
@@ -252,41 +206,17 @@ NclFormatterRegion::getMoveRight ()
 }
 
 void
-NclFormatterRegion::setFocusBorderColor (SDL_Color *focusBorderColor)
+NclFormatterRegion::setFocusBorderColor (SDL_Color focusBorderColor)
 {
-  if (this->focusBorderColor == focusBorderColor)
-    {
-      return;
-    }
-
-  if (this->focusBorderColor != NULL)
-    {
-      delete this->focusBorderColor;
-      this->focusBorderColor = NULL;
-    }
-
-  if (focusBorderColor != NULL)
-    {
-      this->focusBorderColor = focusBorderColor;
-    }
+  this->focusBorderColor = focusBorderColor;
 }
 
-SDL_Color *
+SDL_Color
 NclFormatterRegion::getFocusBorderColor ()
 {
-  SDL_Color *bColor = NULL;
-
-  if (focusBorderColor != NULL)
-    {
-      bColor = focusBorderColor;
-    }
-  else if (descriptor != NULL)
-    {
-      bColor
-          = descriptor->getFocusBorderColor ();
-    }
-
-  return bColor;
+  if (this->descriptor != NULL)
+    return this->descriptor->getFocusBorderColor ();
+  return this->focusBorderColor;
 }
 
 void
@@ -332,39 +262,17 @@ NclFormatterRegion::getFocusComponentSrc ()
 }
 
 void
-NclFormatterRegion::setSelBorderColor (SDL_Color *selBorderColor)
+NclFormatterRegion::setSelBorderColor (SDL_Color selBorderColor)
 {
-  if (this->selBorderColor == selBorderColor)
-    {
-      return;
-    }
-
-  if (this->selBorderColor != NULL)
-    {
-      this->selBorderColor = NULL;
-    }
-
-  if (selBorderColor != NULL)
-    {
-      this->selBorderColor = selBorderColor;
-    }
+  this->selBorderColor = selBorderColor;
 }
 
-SDL_Color *
+SDL_Color
 NclFormatterRegion::getSelBorderColor ()
 {
-  SDL_Color *sColor = NULL;
-
-  if (selBorderColor != NULL)
-    {
-      sColor = selBorderColor;
-    }
-  else if (descriptor != NULL)
-    {
-      sColor = descriptor->getSelBorderColor ();
-    }
-
-  return sColor;
+  if (this->descriptor != NULL)
+    return this->descriptor->getSelBorderColor ();
+  return this->selBorderColor;
 }
 
 void
@@ -410,10 +318,11 @@ NclFormatterRegion::getSelComponentSrc ()
 }
 
 void
-NclFormatterRegion::setFocusInfo (SDL_Color *focusBorderColor,
+NclFormatterRegion::setFocusInfo (SDL_Color focusBorderColor,
                                   int focusBorderWidth,
                                   const string &focusComponentSrc,
-                                  SDL_Color *selBorderColor, int selBorderWidth,
+                                  SDL_Color selBorderColor,
+                                  int selBorderWidth,
                                   const string &selComponentSrc)
 {
   setFocusBorderColor (focusBorderColor);
@@ -585,14 +494,7 @@ NclFormatterRegion::setSelection (bool selOn)
       focusState = NclFormatterRegion::SELECTED;
       if (this->win != 0)
         {
-          if (selComponentSrc == "")
-            {
-            }
-          if (selBorderColor != NULL)
-            {
-              this->win->setBorder (*selBorderColor,
-                  selBorderWidth);
-            }
+          this->win->setBorder (selBorderColor, selBorderWidth);
         }
     }
   else
@@ -615,14 +517,7 @@ NclFormatterRegion::setFocus (bool focusOn)
         }
       if (this->win != NULL)
         {
-          if (focusComponentSrc == "")
-            {
-            }
-          if (focusBorderColor != NULL)
-            {
-              this->win->setBorder (*focusBorderColor,
-                                    focusBorderWidth);
-            }
+          this->win->setBorder (focusBorderColor, focusBorderWidth);
         }
     }
   else
@@ -642,10 +537,10 @@ NclFormatterRegion::unselect ()
     }
 }
 
-SDL_Color *
+SDL_Color
 NclFormatterRegion::getBackgroundColor ()
 {
-  return bgColor;
+  return this->bgColor;
 }
 
 void
@@ -688,23 +583,16 @@ NclFormatterRegion::setTransparency (double transparency)
 }
 
 void
-NclFormatterRegion::setBackgroundColor (const string &c)
+NclFormatterRegion::setBackgroundColor (const string &str)
 {
-    SDL_Color *bg = new SDL_Color();
-    ginga_color_input_to_sdl_color(c,bg);
-    bg->a = (guint8)(transparency * 255);
-    setBackgroundColor (bg);
+    SDL_Color color;
+    g_assert (ginga_color_parse (str, &color));
+    this->setBackgroundColor (color);
 }
 
 void
-NclFormatterRegion::setBackgroundColor (SDL_Color *color)
+NclFormatterRegion::setBackgroundColor (SDL_Color color)
 {
-  if (color != bgColor && bgColor != NULL)
-    {
-      delete bgColor;
-      bgColor = NULL;
-    }
-
   this->bgColor = color;
 }
 

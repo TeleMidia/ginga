@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "Transition.h"
 #include "TransitionUtil.h"
-#include "ginga-color-table.h"
 
 GINGA_NCL_BEGIN
 
@@ -32,29 +31,16 @@ Transition::Transition (const string &id, int type) : Entity (id)
   this->direction = Transition::DIRECTION_FORWARD;
   this->horzRepeat = 1;
   this->vertRepeat = 1;
-  this->fadeColor = new SDL_Color ();
-  this->borderColor = new SDL_Color ();
+  this->fadeColor = {0, 0, 0, 255};
+  this->borderColor = {0, 0, 0, 0};
   this->borderWidth = 0;
-  ginga_hex_to_sdl_color("#000000", this->fadeColor ); //black
-  ginga_hex_to_sdl_color("#000000", this->borderColor ); //black
 }
 
 Transition::~Transition ()
 {
-  if (fadeColor != NULL)
-    {
-      delete fadeColor;
-      fadeColor = NULL;
-    }
-
-  if (borderColor != NULL)
-    {
-      delete borderColor;
-      borderColor = NULL;
-    }
 }
 
-SDL_Color *
+SDL_Color
 Transition::getBorderColor ()
 {
   return borderColor;
@@ -84,7 +70,7 @@ Transition::getEndProgress ()
   return endProgress;
 }
 
-SDL_Color *
+SDL_Color
 Transition::getFadeColor ()
 {
   return fadeColor;
@@ -121,12 +107,9 @@ Transition::getVertRepeat ()
 }
 
 void
-Transition::setBorderColor (SDL_Color *color)
+Transition::setBorderColor (SDL_Color color)
 {
-  if (color != NULL)
-    {
-      this->borderColor = color;
-    }
+  this->borderColor = color;
 }
 
 void
@@ -167,12 +150,9 @@ Transition::setEndProgress (double ep)
 }
 
 void
-Transition::setFadeColor (SDL_Color *color)
+Transition::setFadeColor (SDL_Color color)
 {
-  if (color != NULL)
-    {
-      this->fadeColor = color;
-    }
+  this->fadeColor = color;
 }
 
 void

@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "ginga-color-table.h"
 #include "Player.h"
 
 #include "mb/Display.h"
@@ -254,7 +253,7 @@ Player::setPropertyValue (const string &name, const string &value)
   else if(name == "background" || name == "backgroundColor"
           || name == "bgColor")
     {
-      ginga_color_input_to_sdl_color(value, &this->bgColor);
+      g_assert (ginga_color_parse (value, &this->bgColor));
     }
   else if (name == "transparency")
     {
@@ -333,7 +332,7 @@ Player::redraw (SDL_Renderer *renderer)
   animator->update (&this->rect, &this->bgColor.r,
                     &this->bgColor.g, &this->bgColor.b, &this->alpha);
 
-  if(this->window!=NULL)
+  if (this->window != NULL)
     this->window->getBorder (&this->borderColor, &this->borderWidth);
 
   if (this->bgColor.a > 0)

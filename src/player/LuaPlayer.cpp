@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "ginga-key-table.h"
 #include "LuaPlayer.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wunused-macros)
@@ -304,6 +303,7 @@ void
 LuaPlayer::handleKeyEvent (SDL_EventType type, SDL_Keycode key)
 {
   string typestr;
+  string keystr;
 
   this->lock ();
 
@@ -323,8 +323,10 @@ LuaPlayer::handleKeyEvent (SDL_EventType type, SDL_Keycode key)
       goto tail;
     }
 
-  evt_key_send (this->_nw, typestr.c_str (),
-                ginga_key_table_index (key).c_str());
+  if (!ginga_key_table_index (key, keystr))
+    goto tail;
+
+  evt_key_send (this->_nw, typestr.c_str (), keystr.c_str ());
 
  tail:
   this->unlock ();
