@@ -32,7 +32,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "PresentationContext.h"
 
-#include "AdapterFormatterPlayer.h"
+#include "PlayerAdapter.h"
 
 GINGA_FORMATTER_BEGIN
 

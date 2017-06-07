@@ -37,32 +37,34 @@ GINGA_FORMATTER_BEGIN
 
 class FormatterScheduler;
 
-class AdapterFormatterPlayer :
+class PlayerAdapter :
     public IPlayerListener,
     public INclAttributeValueMaintainer,
     public IEventListener
 {
 public:
-  explicit AdapterFormatterPlayer (FormatterScheduler *scheduler);
-  virtual ~AdapterFormatterPlayer ();
+  explicit PlayerAdapter (FormatterScheduler *scheduler);
+  virtual ~PlayerAdapter ();
 
-  virtual bool prepare (NclExecutionObject *, NclPresentationEvent *);
-  virtual bool hasPrepared ();
-  virtual bool unprepare ();
+  bool prepare (NclExecutionObject *, NclPresentationEvent *);
+  bool hasPrepared ();
+  bool unprepare ();
 
-  virtual bool start ();
-  virtual bool stop ();
-  virtual bool pause ();
-  virtual bool resume ();
-  virtual bool abort ();
-  virtual void naturalEnd ();
+  bool start ();
+  bool stop ();
+  bool pause ();
+  bool resume ();
+  bool abort ();
+  void naturalEnd ();
 
-  virtual bool setProperty (NclAttributionEvent *evt, const string &value);
+  // From INclAttributeValueMaintainer
+  string getProperty (NclAttributionEvent *event) override;
   void setProperty (const string &name, const string &value) override;
 
+  virtual bool setProperty (NclAttributionEvent *evt, const string &value);
   virtual string getProperty (const string &name);
-  string getProperty (NclAttributionEvent *event) override;
 
+  // From IPlayerListener
   virtual void updateStatus (short code,
                              const string &parameter = "",
                              short type = 10,

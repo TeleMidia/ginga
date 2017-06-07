@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "AdapterFormatterPlayer.h"
+#include "PlayerAdapter.h"
 
 #include "NclLinkTransitionTriggerCondition.h"
 
@@ -47,7 +47,7 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-conversion)
 
 GINGA_FORMATTER_BEGIN
 
-AdapterFormatterPlayer::AdapterFormatterPlayer (FormatterScheduler *scheduler)
+PlayerAdapter::PlayerAdapter (FormatterScheduler *scheduler)
 {
   this->_scheduler = scheduler;
   this->_object = nullptr;
@@ -59,7 +59,7 @@ AdapterFormatterPlayer::AdapterFormatterPlayer (FormatterScheduler *scheduler)
   Ginga_Display->registerEventListener (this);
 }
 
-AdapterFormatterPlayer::~AdapterFormatterPlayer ()
+PlayerAdapter::~PlayerAdapter ()
 {
   if (_player != nullptr)
     {
@@ -73,7 +73,7 @@ AdapterFormatterPlayer::~AdapterFormatterPlayer ()
 }
 
 void
-AdapterFormatterPlayer::setOutputWindow (SDLWindow* windowId)
+PlayerAdapter::setOutputWindow (SDLWindow* windowId)
 {
   g_assert_nonnull (_player);
 
@@ -81,7 +81,7 @@ AdapterFormatterPlayer::setOutputWindow (SDLWindow* windowId)
 }
 
 void
-AdapterFormatterPlayer::createPlayer (const string &mrl)
+PlayerAdapter::createPlayer (const string &mrl)
 {
   NclCascadingDescriptor *descriptor;
   NodeEntity *dataObject;
@@ -194,7 +194,7 @@ AdapterFormatterPlayer::createPlayer (const string &mrl)
 }
 
 bool
-AdapterFormatterPlayer::hasPrepared ()
+PlayerAdapter::hasPrepared ()
 {
   bool presented;
   NclFormatterEvent *mEv;
@@ -202,7 +202,7 @@ AdapterFormatterPlayer::hasPrepared ()
 
   if (_object == nullptr || _player == nullptr)
     {
-      g_debug ("AdapterFormatterPlayer::hasPrepared returns false because"
+      g_debug ("PlayerAdapter::hasPrepared returns false because"
                " object = '%p' and player = '%p'",
                _object, _player);
       return false;
@@ -215,7 +215,7 @@ AdapterFormatterPlayer::hasPrepared ()
   presented = _player->isForcedNaturalEnd ();
   if (presented)
     {
-      g_debug ("AdapterFormatterPlayer::hasPrepared return false because"
+      g_debug ("PlayerAdapter::hasPrepared return false because"
                " a natural end was forced");
       return false;
     }
@@ -236,7 +236,7 @@ AdapterFormatterPlayer::hasPrepared ()
 }
 
 double
-AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
+PlayerAdapter::prepareProperties (NclExecutionObject *obj)
 {
   NclCascadingDescriptor *descriptor;
   LayoutRegion *region = nullptr;
@@ -509,7 +509,7 @@ AdapterFormatterPlayer::prepareProperties (NclExecutionObject *obj)
 }
 
 bool
-AdapterFormatterPlayer::prepare (NclExecutionObject *object,
+PlayerAdapter::prepare (NclExecutionObject *object,
                                  NclPresentationEvent *event)
 {
   Content *content;
@@ -520,7 +520,7 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
 
   if (hasPrepared ())
     {
-      g_debug ("AdapterFormatterPlayer::prepare returns false, because the"
+      g_debug ("PlayerAdapter::prepare returns false, because the"
                "player is already prepared.");
       return false;
     }
@@ -720,7 +720,7 @@ AdapterFormatterPlayer::prepare (NclExecutionObject *object,
 }
 
 void
-AdapterFormatterPlayer::prepare ()
+PlayerAdapter::prepare ()
 {
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
@@ -729,7 +729,7 @@ AdapterFormatterPlayer::prepare ()
 }
 
 void
-AdapterFormatterPlayer::prepare (NclFormatterEvent *event)
+PlayerAdapter::prepare (NclFormatterEvent *event)
 {
   double duration;
 
@@ -790,7 +790,7 @@ AdapterFormatterPlayer::prepare (NclFormatterEvent *event)
 }
 
 void
-AdapterFormatterPlayer::prepareScope (double offset)
+PlayerAdapter::prepareScope (double offset)
 {
   NclPresentationEvent *mainEvent;
   double duration;
@@ -855,7 +855,7 @@ AdapterFormatterPlayer::prepareScope (double offset)
 }
 
 bool
-AdapterFormatterPlayer::start ()
+PlayerAdapter::start ()
 {
   NclCascadingDescriptor *descriptor;
   string paramValue;
@@ -905,7 +905,7 @@ AdapterFormatterPlayer::start ()
 }
 
 bool
-AdapterFormatterPlayer::stop ()
+PlayerAdapter::stop ()
 {
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
@@ -1030,7 +1030,7 @@ AdapterFormatterPlayer::stop ()
 }
 
 bool
-AdapterFormatterPlayer::pause ()
+PlayerAdapter::pause ()
 {
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
@@ -1047,7 +1047,7 @@ AdapterFormatterPlayer::pause ()
 }
 
 bool
-AdapterFormatterPlayer::resume ()
+PlayerAdapter::resume ()
 {
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
@@ -1061,7 +1061,7 @@ AdapterFormatterPlayer::resume ()
 }
 
 bool
-AdapterFormatterPlayer::abort ()
+PlayerAdapter::abort ()
 {
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
@@ -1149,7 +1149,7 @@ AdapterFormatterPlayer::abort ()
 }
 
 void
-AdapterFormatterPlayer::naturalEnd ()
+PlayerAdapter::naturalEnd ()
 {
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
@@ -1202,7 +1202,7 @@ AdapterFormatterPlayer::naturalEnd ()
 }
 
 bool
-AdapterFormatterPlayer::checkRepeat (NclPresentationEvent *event)
+PlayerAdapter::checkRepeat (NclPresentationEvent *event)
 {
   g_assert_nonnull (_player);
 
@@ -1220,7 +1220,7 @@ AdapterFormatterPlayer::checkRepeat (NclPresentationEvent *event)
 }
 
 bool
-AdapterFormatterPlayer::unprepare ()
+PlayerAdapter::unprepare ()
 {
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
@@ -1293,7 +1293,7 @@ AdapterFormatterPlayer::unprepare ()
 }
 
 bool
-AdapterFormatterPlayer::setProperty (NclAttributionEvent *event,
+PlayerAdapter::setProperty (NclAttributionEvent *event,
                                      const string &v)
 {
   string propName;
@@ -1354,7 +1354,7 @@ AdapterFormatterPlayer::setProperty (NclAttributionEvent *event,
 }
 
 void
-AdapterFormatterPlayer::setProperty (const string &name,
+PlayerAdapter::setProperty (const string &name,
                                           const string &value)
 {
   g_assert_nonnull (_player);
@@ -1367,7 +1367,7 @@ AdapterFormatterPlayer::setProperty (const string &name,
 }
 
 string
-AdapterFormatterPlayer::getProperty (NclAttributionEvent *event)
+PlayerAdapter::getProperty (NclAttributionEvent *event)
 {
   g_assert_nonnull (event);
 
@@ -1378,7 +1378,7 @@ AdapterFormatterPlayer::getProperty (NclAttributionEvent *event)
 }
 
 string
-AdapterFormatterPlayer::getProperty (const string &name)
+PlayerAdapter::getProperty (const string &name)
 {
   string value = "";
 
@@ -1398,7 +1398,7 @@ AdapterFormatterPlayer::getProperty (const string &name)
 }
 
 void
-AdapterFormatterPlayer::updateObjectExpectedDuration ()
+PlayerAdapter::updateObjectExpectedDuration ()
 {
   NclPresentationEvent *wholeContentEvent;
   double duration;
@@ -1423,20 +1423,20 @@ AdapterFormatterPlayer::updateObjectExpectedDuration ()
 }
 
 double
-AdapterFormatterPlayer::getMediaTime ()
+PlayerAdapter::getMediaTime ()
 {
   g_assert_nonnull (_player);
   return _player->getMediaTime ();
 }
 
 Player *
-AdapterFormatterPlayer::getPlayer ()
+PlayerAdapter::getPlayer ()
 {
   return _player;
 }
 
 void
-AdapterFormatterPlayer::updateStatus (short code,
+PlayerAdapter::updateStatus (short code,
                                       const string &parameter,
                                       short type,
                                       arg_unused (const string &value))
@@ -1461,7 +1461,7 @@ AdapterFormatterPlayer::updateStatus (short code,
 }
 
 void
-AdapterFormatterPlayer::handleKeyEvent (SDL_EventType evtType,
+PlayerAdapter::handleKeyEvent (SDL_EventType evtType,
                                         SDL_Keycode key)
 {
   if(evtType == SDL_KEYDOWN)
@@ -1481,7 +1481,7 @@ AdapterFormatterPlayer::handleKeyEvent (SDL_EventType evtType,
 }
 
 void
-AdapterFormatterPlayer::setVisible (bool visible)
+PlayerAdapter::setVisible (bool visible)
 {
   NclCascadingDescriptor *descriptor;
   NclFormatterRegion *region;
@@ -1499,7 +1499,7 @@ AdapterFormatterPlayer::setVisible (bool visible)
 }
 
 bool
-AdapterFormatterPlayer::setCurrentEvent (NclFormatterEvent *event)
+PlayerAdapter::setCurrentEvent (NclFormatterEvent *event)
 {
   string interfaceId;
 

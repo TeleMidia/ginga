@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTER_SCHEDULER_H
 #define FORMATTER_SCHEDULER_H
 
-#include "AdapterFormatterPlayer.h"
+#include "PlayerAdapter.h"
 #include "FormatterConverter.h"
 #include "FormatterFocusManager.h"
 #include "NclLinkAssignmentAction.h"
@@ -35,7 +35,7 @@ class FormatterScheduler : public INclLinkActionListener,
                            public INclEventListener
 {
 private:
-  map<string, AdapterFormatterPlayer *> _objectPlayers;
+  map<string, PlayerAdapter *> _objectPlayers;
   FormatterConverter *compiler;
   FormatterFocusManager *focusManager;
   PresentationContext *presContext;
@@ -67,11 +67,11 @@ public:
   void eventStateChanged (NclFormatterEvent *someEvent, short transition,
                           short previousState) override;
 
-  AdapterFormatterPlayer *getObjectPlayer (NclExecutionObject *execObj);
+  PlayerAdapter *getObjectPlayer (NclExecutionObject *execObj);
   bool removePlayer (NclExecutionObject *object);
 
 private:
-  AdapterFormatterPlayer *initializePlayer (NclExecutionObject *object);
+  PlayerAdapter *initializePlayer (NclExecutionObject *object);
   bool removePlayer (const string &objectId);
 
   void runAction (NclLinkSimpleAction *action);
@@ -81,7 +81,7 @@ private:
 
   void runActionOverApplicationObject (
       NclApplicationExecutionObject *executionObject,
-      NclFormatterEvent *event, AdapterFormatterPlayer *player,
+      NclFormatterEvent *event, PlayerAdapter *player,
       NclLinkSimpleAction *action);
 
   void
