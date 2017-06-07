@@ -81,9 +81,6 @@ endif()
 set (GINGA_SOURCES
   ../src/ginga.h
 
-  ../src/ctxmgmt/ContextManager.cpp
-  ../src/ctxmgmt/GingaUser.cpp
-  ../src/ctxmgmt/SystemInfo.cpp
   ../src/formatter/FormatterConverter.cpp
   ../src/formatter/FormatterFocusManager.cpp
   ../src/formatter/FormatterLinkConverter.cpp
@@ -99,7 +96,6 @@ set (GINGA_SOURCES
   ../src/formatter/NclEventTransitionManager.cpp
   ../src/formatter/NclExecutionObject.cpp
   ../src/formatter/NclExecutionObjectSwitch.cpp
-  ../src/formatter/NclFocusSourceManager.cpp
   ../src/formatter/NclFormatterCausalLink.cpp
   ../src/formatter/NclFormatterEvent.cpp
   ../src/formatter/NclFormatterLink.cpp
@@ -123,8 +119,8 @@ set (GINGA_SOURCES
   ../src/formatter/NclSwitchEvent.cpp
   ../src/formatter/Parser.cpp
   ../src/formatter/PlayerAdapter.cpp
-  ../src/formatter/PresentationContext.cpp
   ../src/formatter/RuleAdapter.cpp
+  ../src/formatter/Settings.cpp
   ../src/mb/Display.cpp
   ../src/mb/Dashboard.cpp
   ../src/mb/SDLWindow.cpp
