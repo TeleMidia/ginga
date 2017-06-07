@@ -42,12 +42,12 @@ public:
   start ()
   {
     return NclFormatterEvent::start ();
-  };
+  }
   virtual bool
   stop ()
   {
     return NclFormatterEvent::stop ();
-  };
+  }
 };
 
 GINGA_FORMATTER_END

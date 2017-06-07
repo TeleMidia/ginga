@@ -510,7 +510,7 @@ PlayerAdapter::prepareProperties (NclExecutionObject *obj)
 
 bool
 PlayerAdapter::prepare (NclExecutionObject *object,
-                                 NclPresentationEvent *event)
+                        NclPresentationEvent *event)
 {
   Content *content;
   double explicitDur = -1;
@@ -1294,7 +1294,7 @@ PlayerAdapter::unprepare ()
 
 bool
 PlayerAdapter::setProperty (NclAttributionEvent *event,
-                                     const string &v)
+                            const string &v)
 {
   string propName;
   string value = v;
@@ -1355,7 +1355,7 @@ PlayerAdapter::setProperty (NclAttributionEvent *event,
 
 void
 PlayerAdapter::setProperty (const string &name,
-                                          const string &value)
+                            const string &value)
 {
   g_assert_nonnull (_player);
   g_debug ("setProperty name = '%s' value='%s' address=%p.",
@@ -1437,9 +1437,9 @@ PlayerAdapter::getPlayer ()
 
 void
 PlayerAdapter::updateStatus (short code,
-                                      const string &parameter,
-                                      short type,
-                                      arg_unused (const string &value))
+                             const string &parameter,
+                             short type,
+                             arg_unused (const string &value))
 {
   g_assert_nonnull (_object);
 
@@ -1462,7 +1462,7 @@ PlayerAdapter::updateStatus (short code,
 
 void
 PlayerAdapter::handleKeyEvent (SDL_EventType evtType,
-                                        SDL_Keycode key)
+                               SDL_Keycode key)
 {
   if(evtType == SDL_KEYDOWN)
     return;
