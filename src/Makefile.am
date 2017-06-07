@@ -69,7 +69,6 @@ src+= formatter/NclEventTransition.cpp
 src+= formatter/NclEventTransitionManager.cpp
 src+= formatter/NclExecutionObject.cpp
 src+= formatter/NclExecutionObjectSwitch.cpp
-src+= formatter/NclFocusSourceManager.cpp
 src+= formatter/NclFormatterCausalLink.cpp
 src+= formatter/NclFormatterEvent.cpp
 src+= formatter/NclFormatterLink.cpp
