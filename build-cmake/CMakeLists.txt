@@ -85,7 +85,6 @@ set (GINGA_SOURCES
   ../src/ctxmgmt/GingaUser.cpp
   ../src/ctxmgmt/SystemInfo.cpp
   ../src/formatter/AdapterFormatterPlayer.cpp
-  ../src/formatter/AdapterPlayerManager.cpp
   ../src/formatter/FormatterConverter.cpp
   ../src/formatter/FormatterFocusManager.cpp
   ../src/formatter/FormatterLinkConverter.cpp
@@ -194,6 +193,9 @@ set (GINGA_SOURCES
   ../src/player/LuaPlayer.cpp
   ../src/player/Player.cpp
   ../src/player/PlayerAnimator.cpp
+  ../src/common-color-table.cpp
+  ../src/common-key-table.cpp
+  ../src/common-mime-table.cpp
   ../src/common.cpp
 
 #if WITH_GSTREAMER

@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "AdapterFormatterPlayer.h"
 
-#include "AdapterPlayerManager.h"
 #include "NclLinkTransitionTriggerCondition.h"
 
 #include "NclApplicationExecutionObject.h"
@@ -28,6 +27,8 @@ using namespace ::ginga::mb;
 
 #include "player/Player.h"
 using namespace ::ginga::player;
+
+#include "FormatterScheduler.h"
 
 #include "player/ImagePlayer.h"
 #include "player/LuaPlayer.h"
@@ -46,9 +47,9 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-conversion)
 
 GINGA_FORMATTER_BEGIN
 
-AdapterFormatterPlayer::AdapterFormatterPlayer (AdapterPlayerManager *manager)
+AdapterFormatterPlayer::AdapterFormatterPlayer (FormatterScheduler *scheduler)
 {
-  this->_manager = manager;
+  this->_scheduler = scheduler;
   this->_object = nullptr;
   this->_player = nullptr;
 
@@ -1230,7 +1231,7 @@ AdapterFormatterPlayer::unprepare ()
 
       if (_currentEvent == nullptr)
         {
-          _manager->removePlayer (_object);
+          _scheduler->removePlayer (_object);
           _object->unprepare ();
 
           return true;
@@ -1246,7 +1247,7 @@ AdapterFormatterPlayer::unprepare ()
           && _preparedEvents.size () == 1)
         {
           _object->unprepare ();
-          _manager->removePlayer (_object);
+          _scheduler->removePlayer (_object);
           _preparedEvents.clear ();
 
           _object = NULL;
@@ -1277,7 +1278,7 @@ AdapterFormatterPlayer::unprepare ()
           return stop ();
         }
 
-      _manager->removePlayer (_object);
+      _scheduler->removePlayer (_object);
       Ginga_Display->unregisterEventListener (this);
 
       if (NclExecutionObject::hasInstance (_object, false))

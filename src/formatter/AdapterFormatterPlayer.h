@@ -35,7 +35,7 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-class AdapterPlayerManager;
+class FormatterScheduler;
 
 class AdapterFormatterPlayer :
     public IPlayerListener,
@@ -43,7 +43,7 @@ class AdapterFormatterPlayer :
     public IEventListener
 {
 public:
-  explicit AdapterFormatterPlayer (AdapterPlayerManager *manager);
+  explicit AdapterFormatterPlayer (FormatterScheduler *scheduler);
   virtual ~AdapterFormatterPlayer ();
 
   virtual bool prepare (NclExecutionObject *, NclPresentationEvent *);
@@ -78,7 +78,7 @@ public:
   bool setCurrentEvent (NclFormatterEvent *event); // app
 
 protected:
-  AdapterPlayerManager *_manager;
+  FormatterScheduler *_scheduler;
   NclExecutionObject *_object;
   Player *_player;
 

@@ -76,8 +76,6 @@ using namespace ::ginga::ncl;
 
 #include "RuleAdapter.h"
 
-#include "AdapterPlayerManager.h"
-
 GINGA_FORMATTER_BEGIN
 
 class FormatterLinkConverter;
