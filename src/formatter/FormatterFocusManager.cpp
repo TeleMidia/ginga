@@ -32,7 +32,7 @@ bool FormatterFocusManager::init = false;
 set<FormatterFocusManager *> FormatterFocusManager::instances;
 
 FormatterFocusManager::FormatterFocusManager (
-    AdapterPlayerManager *playerManager, PresentationContext *presContext,
+    FormatterScheduler *scheduler, PresentationContext *presContext,
     INclLinkActionListener *settingActions, FormatterConverter *converter)
 {
   string str;
@@ -60,7 +60,7 @@ FormatterFocusManager::FormatterFocusManager (
   ginga_color_parse (str, &this->defaultSelBorderColor);
 
   this->converter = converter;
-  this->playerManager = playerManager;
+  this->_scheduler = _scheduler;
   this->presContext = presContext;
   this->selectedObject = NULL;
   this->settingActions = settingActions;
@@ -81,7 +81,7 @@ FormatterFocusManager::~FormatterFocusManager ()
       focusTable = NULL;
     }
 
-  playerManager = NULL;
+  _scheduler = NULL;
   presContext = NULL;
   Ginga_Display->unregisterEventListener (this);
 }
@@ -370,7 +370,7 @@ FormatterFocusManager::setKeyMaster (const string &mediaId)
   // selecting new object
   selectedObject = nextObject;
   selectedObject->setHandler (true);
-  player = playerManager->getObjectPlayer (selectedObject);
+  player = _scheduler->getObjectPlayer (selectedObject);
 
   nextObject->selectionEvent (0, player->getMediaTime () * 1000);
 
@@ -480,17 +480,10 @@ FormatterFocusManager::setFocus (NclCascadingDescriptor *descriptor)
 void
 FormatterFocusManager::recoveryDefaultState (NclExecutionObject *object)
 {
-  AdapterFormatterPlayer *player;
-
   if (object == NULL || object->getDescriptor () == NULL
       || object->getDescriptor ()->getFormatterRegion () == NULL)
     {
       return;
-    }
-
-  player = playerManager->getObjectPlayer (object);
-  if (player != NULL)
-    {
     }
 }
 
@@ -499,7 +492,7 @@ FormatterFocusManager::showObject (NclExecutionObject *object)
 {
   NclCascadingDescriptor *descriptor;
   NclFormatterRegion *fr = NULL;
-  string focusIndex, auxIndex;
+  string focusIndex;
   string paramValue, mediaId;
   Node *ncmNode;
   vector<string>::iterator i;

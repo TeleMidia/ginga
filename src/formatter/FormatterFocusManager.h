@@ -33,7 +33,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "PresentationContext.h"
 
 #include "AdapterFormatterPlayer.h"
-#include "AdapterPlayerManager.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -53,7 +52,7 @@ private:
   SDL_Color defaultFocusBorderColor;
   SDL_Color defaultSelBorderColor;
 
-  AdapterPlayerManager *playerManager;
+  FormatterScheduler *_scheduler;
   FormatterFocusManager *parentManager;
   INclLinkActionListener *settingActions;
 
@@ -66,7 +65,7 @@ private:
   static set<FormatterFocusManager *> instances;
 
 public:
-  FormatterFocusManager (AdapterPlayerManager *playerManager,
+  FormatterFocusManager (FormatterScheduler *scheduler,
                          PresentationContext *presContext,
                          INclLinkActionListener *settingActions,
                          FormatterConverter *converter);

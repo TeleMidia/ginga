@@ -36,9 +36,7 @@ FormatterScheduler::FormatterScheduler ()
   this->ruleAdapter = new RuleAdapter (presContext);
   this->compiler = new FormatterConverter (this->ruleAdapter);
   this->compiler->setLinkActionListener (this);
-  this->playerManager = new AdapterPlayerManager ();
-  this->focusManager = new FormatterFocusManager
-    (this->playerManager, this->presContext, this, this->compiler);
+  this->focusManager = new FormatterFocusManager(this, this->presContext, this, this->compiler);
 
   this->focusManager->setKeyHandler (true);
 }
@@ -49,6 +47,7 @@ FormatterScheduler::~FormatterScheduler ()
 
   for (auto action: this->actions)
     action->setSimpleActionListener (NULL);
+
   this->actions.clear ();
 
   ruleAdapter = NULL;
@@ -62,6 +61,14 @@ FormatterScheduler::~FormatterScheduler ()
 
   compiler = NULL;
   events.clear ();
+
+  // delete AdapterFormatterPlayers
+  for (auto &i: _objectPlayers)
+    {
+      delete i.second;
+    }
+
+  _objectPlayers.clear ();
 }
 
 void
@@ -162,7 +169,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
       return;
     }
 
-  player = this->playerManager->getObjectPlayer (obj);
+  player = this->getObjectPlayer (obj);
 
   if (unlikely (player == NULL))
     {
@@ -303,7 +310,7 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
           anim = NULL;
         }
 
-      player = playerManager->getObjectPlayer (executionObject);
+      player = this->getObjectPlayer (executionObject);
       actionType = action->getType ();
 
       switch (actionType)
@@ -616,7 +623,7 @@ FormatterScheduler::runActionOverComposition (
                     }
                   else
                     { // force attribution
-                      pAdapter = playerManager->getObjectPlayer (childObject);
+                      pAdapter = this->getObjectPlayer (childObject);
 
                       if (pAdapter != NULL)
                         {
@@ -1164,7 +1171,7 @@ FormatterScheduler::eventStateChanged (NclFormatterEvent *event,
         case EventUtil::TR_STARTS:
           object = event->getExecutionObject ();
 
-          player = playerManager->getObjectPlayer (object);
+          player = this->getObjectPlayer (object);
           if (player != NULL)
             {
               this->showObject (object);
@@ -1200,7 +1207,7 @@ FormatterScheduler::eventStateChanged (NclFormatterEvent *event,
                   this->focusManager->hideObject (object);
                   this->hideObject (object);
 
-                  player = playerManager->getObjectPlayer (object);
+                  player = this->getObjectPlayer (object);
                   if (player != NULL
                       && player->getPlayer () != NULL)
                     {
@@ -1233,7 +1240,7 @@ FormatterScheduler::eventStateChanged (NclFormatterEvent *event,
                 this->focusManager->hideObject (object);
                 this->hideObject (object);
 
-                player = playerManager->getObjectPlayer (object);
+                player = this->getObjectPlayer (object);
               }
             break;
           }
@@ -1310,6 +1317,80 @@ FormatterScheduler::hideObject (NclExecutionObject *obj)
     return;                     // nothing to do
 
   reg->hideContent ();
+}
+
+bool
+FormatterScheduler::removePlayer (NclExecutionObject *exObject)
+{
+  bool removed = false;
+
+  if (NclExecutionObject::hasInstance (exObject, false))
+    {
+      string objId = exObject->getId ();
+      removed = removePlayer (objId);
+    }
+
+  return removed;
+}
+
+bool
+FormatterScheduler::removePlayer (const string &objectId)
+{
+  map<string, AdapterFormatterPlayer *>::iterator i
+      = _objectPlayers.find (objectId);
+
+  if (i != _objectPlayers.end ())
+    {
+      _objectPlayers.erase (i);
+      delete i->second; // delete AdapterFormatterPlayer
+
+      return true;
+    }
+
+  return false;
+}
+
+AdapterFormatterPlayer *
+FormatterScheduler::initializePlayer (NclExecutionObject *object)
+{
+  g_assert_nonnull (object);
+  string id = object->getId ();
+
+  NodeEntity *entity
+      = (NodeEntity *)(object->getDataObject ()->getDataEntity ());
+  g_assert_nonnull (entity);
+
+  ContentNode *contentNode = dynamic_cast <ContentNode *> (entity);
+  g_assert_nonnull (contentNode);
+
+  if (contentNode->isSettingNode ())
+    return nullptr;                // nothing to do
+
+  AdapterFormatterPlayer *adapter = new AdapterFormatterPlayer (this);
+  _objectPlayers[id] = adapter;
+
+  return adapter;
+}
+
+AdapterFormatterPlayer *
+FormatterScheduler::getObjectPlayer (NclExecutionObject *execObj)
+{
+  map<string, AdapterFormatterPlayer *>::iterator i;
+  AdapterFormatterPlayer *player = nullptr;
+  string objId;
+
+  objId = execObj->getId ();
+  i = _objectPlayers.find (objId);
+  if (i == _objectPlayers.end ())
+    {
+      player = initializePlayer (execObj);
+    }
+  else
+    {
+      player = i->second;
+    }
+
+  return player;
 }
 
 GINGA_FORMATTER_END
