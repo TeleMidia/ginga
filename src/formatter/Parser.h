@@ -87,7 +87,6 @@ private:
   NclDocument *parseRootElement (DOMElement *rootElement);
 
 // STRUCTURE
-private:
   NclDocument *parseNcl (DOMElement *parentElement);
   NclDocument *createNcl (DOMElement *parentElement);
   void parseHead (DOMElement *parentElement);
@@ -98,7 +97,6 @@ private:
   void solveNodeReferences (CompositeNode *composition);
 
 // COMPONENTS
-private:
   Node *parseMedia (DOMElement *parentElement);
   Node *createMedia (DOMElement *parentElement);
   Node *parseContext (DOMElement *parentElement);
@@ -112,18 +110,15 @@ private:
   void addAnchorToMedia (ContentNode *contentNode, Anchor *anchor);
 
 // IMPORT
-private:
   void parseImportedDocumentBase (DOMElement *importedDocBase_element);
   void addImportNCLToImportedDocumentBase (DOMElement *childObject);
 
 // TRANSITION
-private:
   TransitionBase *parseTransitionBase (DOMElement *transitionBase_element);
   Transition *parseTransition (DOMElement *transitionBase_element);
   void addImportBaseToTransitionBase (TransitionBase *, DOMElement *);
 
 // CONNECTORS
-private:
   SimpleCondition *parseSimpleCondition (DOMElement *simpleCond_element);
   SimpleAction *parseSimpleAction (DOMElement *simpleAction_element);
   CompoundCondition *parseCompoundCondition (DOMElement *compoundCond_element);
@@ -147,7 +142,6 @@ private:
   void addImportBaseToConnectorBase (ConnectorBase *connectorBase, DOMElement *childObject);
 
 // INTERFACES
-private:
   SwitchPort *parseSwitchPort (DOMElement *switchPort_element, SwitchNode *switchNode);
   SwitchPort *createSwitchPort (DOMElement *switchPort_element, SwitchNode *switchNode);
   Port *parseMapping (DOMElement *parentElement, SwitchPort *switchPort);
@@ -159,7 +153,6 @@ private:
   IntervalAnchor *createTemporalAnchor (DOMElement *areaElement);
 
 // LAYOUT
-private:
   LayoutRegion *parseRegion (DOMElement *, LayoutRegion *, RegionBase *);
   LayoutRegion *createRegion (DOMElement *, LayoutRegion *);
   RegionBase *parseRegionBase (DOMElement *);
@@ -167,7 +160,6 @@ private:
   void addImportBaseToRegionBase (RegionBase *, DOMElement *);
 
 // LINKING
-private:
   Bind *parseBind (DOMElement *parentElement, Link *link);
   Bind *createBind (DOMElement *parentElement, Link *link);
   Parameter *parseLinkOrBindParam (DOMElement *parentElement);
@@ -178,7 +170,6 @@ private:
   CompositeNode *_composite = nullptr;
 
 // PRESENTATION CONTROL
-private:
   RuleBase *parseRuleBase (DOMElement *parentElement);
   RuleBase *createRuleBase (DOMElement *parentElement);
   void addImportBaseToRuleBase (RuleBase *ruleBase, DOMElement *importBase_element);
@@ -202,7 +193,6 @@ private:
   void addDescriptorToDescriptorSwitch (DescriptorSwitch *descriptorSwitch, GenericDescriptor *descriptor);
 
 // PRESENTATION SPECIFICATION
-private:
   Descriptor *parseDescriptor (DOMElement *descriptor_element);
   Descriptor *createDescriptor (DOMElement *descriptor_element);
   DescriptorBase *parseDescriptorBase (DOMElement *descriptorBase_element);

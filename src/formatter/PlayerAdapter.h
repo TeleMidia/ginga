@@ -79,26 +79,25 @@ public:
 
   bool setCurrentEvent (NclFormatterEvent *event); // app
 
-protected:
+private:
   FormatterScheduler *_scheduler;
   NclExecutionObject *_object;
   Player *_player;
 
-  virtual void createPlayer (const string &mrl);
-  virtual void prepareScope (double offset = -1);
+  void createPlayer (const string &mrl);
+  void prepareScope (double offset = -1);
 
   double prepareProperties (NclExecutionObject *obj);
   void prepare (void);
   void updateObjectExpectedDuration ();
 
+  bool checkRepeat (NclPresentationEvent *mainEvent);
+  void setVisible (bool visible);
+
   bool _isAppPlayer;
   map<string, NclFormatterEvent *> _preparedEvents;  // app
   NclFormatterEvent *_currentEvent; // app
   void prepare (NclFormatterEvent *event); // app
-
-private:
-  bool checkRepeat (NclPresentationEvent *mainEvent);
-  void setVisible (bool visible);
 
 };
 
