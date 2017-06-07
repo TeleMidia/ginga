@@ -28,8 +28,6 @@ using namespace ::ginga::ncl;
 #include "mb/SDLWindow.h"
 using namespace ::ginga::mb;
 
-#include "NclFocusSourceManager.h"
-
 GINGA_FORMATTER_BEGIN
 
 class NclCascadingDescriptor;
