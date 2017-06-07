@@ -39,7 +39,8 @@ GINGA_PLAYER_BEGIN
 class VideoPlayer : public Player
 {
 private:
-  GINGA_MUTEX_DEFN ();
+  GINGA_MUTEX_DEFN ()
+
   GstElement *playbin;
   GstElement *binVideo;
   GstElement *filterVideo;
@@ -67,7 +68,6 @@ public:
   virtual string getPropertyValue (const string &);
   virtual void setPropertyValue (const string &, const string &);
 
-  void addListener (IPlayerListener *listener);
   string getMrl ();
   bool isPlaying ();
   bool isRunning ();
