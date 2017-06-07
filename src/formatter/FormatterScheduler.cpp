@@ -62,7 +62,7 @@ FormatterScheduler::~FormatterScheduler ()
   compiler = NULL;
   events.clear ();
 
-  // delete AdapterFormatterPlayers
+  // delete PlayerAdapters
   for (auto &i: _objectPlayers)
     {
       delete i.second;
@@ -132,7 +132,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
 {
   NclExecutionObject *obj;
   NclCascadingDescriptor *descriptor;
-  AdapterFormatterPlayer *player;
+  PlayerAdapter *player;
   Player *playerContent;
   SDLWindow* win = NULL;
 
@@ -260,7 +260,7 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
 
   NodeEntity *dataObject;
   NclExecutionObject *executionObject;
-  AdapterFormatterPlayer *player;
+  PlayerAdapter *player;
   Animation *anim;
 
   executionObject = (NclExecutionObject *)(event->getExecutionObject ());
@@ -407,7 +407,7 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
 void
 FormatterScheduler::runActionOverApplicationObject (
     NclApplicationExecutionObject *executionObject,
-    NclFormatterEvent *event, AdapterFormatterPlayer *player,
+    NclFormatterEvent *event, PlayerAdapter *player,
     NclLinkSimpleAction *action)
 {
   NclCascadingDescriptor *descriptor;
@@ -515,7 +515,7 @@ FormatterScheduler::runActionOverComposition (
   map<string, NclExecutionObject *>::iterator j;
   NclExecutionObject *childObject;
 
-  AdapterFormatterPlayer *pAdapter;
+  PlayerAdapter *pAdapter;
   NclAttributionEvent *attrEvent;
   NclFormatterEvent *event;
   string propName;
@@ -1121,7 +1121,7 @@ FormatterScheduler::eventStateChanged (NclFormatterEvent *event,
                                        arg_unused (short previousState))
 {
   NclExecutionObject *object;
-  AdapterFormatterPlayer *player;
+  PlayerAdapter *player;
   vector<NclFormatterEvent *>::iterator it;
   bool contains;
   bool hasOther;
@@ -1336,13 +1336,13 @@ FormatterScheduler::removePlayer (NclExecutionObject *exObject)
 bool
 FormatterScheduler::removePlayer (const string &objectId)
 {
-  map<string, AdapterFormatterPlayer *>::iterator i
+  map<string, PlayerAdapter *>::iterator i
       = _objectPlayers.find (objectId);
 
   if (i != _objectPlayers.end ())
     {
       _objectPlayers.erase (i);
-      delete i->second; // delete AdapterFormatterPlayer
+      delete i->second; // delete PlayerAdapter
 
       return true;
     }
@@ -1350,7 +1350,7 @@ FormatterScheduler::removePlayer (const string &objectId)
   return false;
 }
 
-AdapterFormatterPlayer *
+PlayerAdapter *
 FormatterScheduler::initializePlayer (NclExecutionObject *object)
 {
   g_assert_nonnull (object);
@@ -1366,17 +1366,17 @@ FormatterScheduler::initializePlayer (NclExecutionObject *object)
   if (contentNode->isSettingNode ())
     return nullptr;                // nothing to do
 
-  AdapterFormatterPlayer *adapter = new AdapterFormatterPlayer (this);
+  PlayerAdapter *adapter = new PlayerAdapter (this);
   _objectPlayers[id] = adapter;
 
   return adapter;
 }
 
-AdapterFormatterPlayer *
+PlayerAdapter *
 FormatterScheduler::getObjectPlayer (NclExecutionObject *execObj)
 {
-  map<string, AdapterFormatterPlayer *>::iterator i;
-  AdapterFormatterPlayer *player = nullptr;
+  map<string, PlayerAdapter *>::iterator i;
+  PlayerAdapter *player = nullptr;
   string objId;
 
   objId = execObj->getId ();

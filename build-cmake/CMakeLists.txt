@@ -84,7 +84,6 @@ set (GINGA_SOURCES
   ../src/ctxmgmt/ContextManager.cpp
   ../src/ctxmgmt/GingaUser.cpp
   ../src/ctxmgmt/SystemInfo.cpp
-  ../src/formatter/AdapterFormatterPlayer.cpp
   ../src/formatter/FormatterConverter.cpp
   ../src/formatter/FormatterFocusManager.cpp
   ../src/formatter/FormatterLinkConverter.cpp
@@ -123,6 +122,7 @@ set (GINGA_SOURCES
   ../src/formatter/NclSelectionEvent.cpp
   ../src/formatter/NclSwitchEvent.cpp
   ../src/formatter/Parser.cpp
+  ../src/formatter/PlayerAdapter.cpp
   ../src/formatter/PresentationContext.cpp
   ../src/formatter/RuleAdapter.cpp
   ../src/mb/Display.cpp

@@ -304,7 +304,7 @@ FormatterFocusManager::setKeyMaster (const string &mediaId)
   NclExecutionObject *nextObject = NULL;
   NclCascadingDescriptor *nextDescriptor = NULL;
   NclFormatterRegion *fr = NULL;
-  AdapterFormatterPlayer *player = NULL;
+  PlayerAdapter *player = NULL;
   bool isFRVisible = false;
   bool abortKeyMaster = false;
   string lastFocus = "";
