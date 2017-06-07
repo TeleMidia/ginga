@@ -378,12 +378,6 @@ VideoPlayer::setPropertyValue (const string &name, const string &value)
   Player::setPropertyValue (name, value);
 }
 
-void
-VideoPlayer::addListener (IPlayerListener *listener)
-{
-  Player::addListener (listener);
-}
-
 string
 VideoPlayer::getMrl ()
 {
