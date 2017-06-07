@@ -31,8 +31,9 @@ GINGA_FORMATTER_BEGIN
 bool FormatterFocusManager::init = false;
 set<FormatterFocusManager *> FormatterFocusManager::instances;
 
-FormatterFocusManager::FormatterFocusManager (PresentationContext *presContext,
- INclLinkActionListener *settingActions, FormatterConverter *converter)
+FormatterFocusManager::FormatterFocusManager (Settings *settings,
+                                              INclLinkActionListener *settingActions,
+                                              FormatterConverter *converter)
 {
   string str;
 
@@ -48,19 +49,19 @@ FormatterFocusManager::FormatterFocusManager (PresentationContext *presContext,
   this->defaultFocusBorderColor = {0, 0, 255, 255};
   this->defaultSelBorderColor = {0, 255, 0, 255};
 
-  str = presContext->getPropertyValue ("system.defaultFocusBorderWidth");
+  str = settings->get ("system.defaultFocusBorderWidth");
   if (str != "")
     this->defaultFocusBorderWidth = xstrtoint (str, 10);
 
-  str = presContext->getPropertyValue ("system.focusBorderColor");
+  str = settings->get ("system.focusBorderColor");
   ginga_color_parse (str, &this->defaultFocusBorderColor);
 
-  str = presContext->getPropertyValue ("system.defaultSelBorderColor");
+  str = settings->get ("system.defaultSelBorderColor");
   ginga_color_parse (str, &this->defaultSelBorderColor);
 
   this->converter = converter;
   this->_scheduler = _scheduler;
-  this->presContext = presContext;
+  this->settings = settings;
   this->selectedObject = NULL;
   this->settingActions = settingActions;
 
@@ -81,7 +82,7 @@ FormatterFocusManager::~FormatterFocusManager ()
     }
 
   _scheduler = NULL;
-  presContext = NULL;
+  settings = NULL;
   Ginga_Display->unregisterEventListener (this);
 }
 
@@ -414,7 +415,7 @@ FormatterFocusManager::setFocus (const string &focusIndex)
     }
 
   currentFocus = focusIndex;
-  presContext->setPropertyValue ("service.currentFocus", currentFocus);
+  settings->set ("service.currentFocus", currentFocus);
 
   if (currentDescriptor != NULL)
     {
@@ -544,9 +545,7 @@ FormatterFocusManager::showObject (NclExecutionObject *object)
 
   if (currentFocus == "")
     {
-      paramValue
-          = presContext->getPropertyValue ("service.currentKeyMaster");
-
+      paramValue = settings->get ("service.currentKeyMaster");
       if (paramValue == mediaId || objectToSelect == mediaId)
         {
           objectToSelect = "";
@@ -559,15 +558,11 @@ FormatterFocusManager::showObject (NclExecutionObject *object)
     }
   else
     {
-      paramValue = presContext->getPropertyValue ("service.currentFocus");
+      paramValue = settings->get ("service.currentFocus");
       if (paramValue != "" && paramValue == focusIndex && fr->isVisible ())
-        {
-          setFocus (focusIndex);
-        }
+        setFocus (focusIndex);
 
-      paramValue
-          = presContext->getPropertyValue ("service.currentKeyMaster");
-
+      paramValue = settings->get ("service.currentKeyMaster");
       if ((paramValue == mediaId || objectToSelect == mediaId)
           && fr->isVisible ())
         {

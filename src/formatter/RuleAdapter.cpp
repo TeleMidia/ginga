@@ -22,10 +22,9 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_FORMATTER_BEGIN
 
-RuleAdapter::RuleAdapter (PresentationContext *presContext)
+RuleAdapter::RuleAdapter (Settings *settings)
 {
-  this->presContext = presContext;
-
+  this->settings = settings;
   ruleListenMap = new map<string, vector<Rule *> *>;
   entityListenMap = new map<Rule *, vector<NclExecutionObjectSwitch *> *>;
   descListenMap = new map<Rule *, vector<DescriptorSwitch *> *>;
@@ -33,8 +32,8 @@ RuleAdapter::RuleAdapter (PresentationContext *presContext)
 
 RuleAdapter::~RuleAdapter ()
 {
-  if (presContext != NULL)
-    presContext = NULL;
+  if (settings != NULL)
+    settings = NULL;
 
   reset ();
 
@@ -121,10 +120,10 @@ RuleAdapter::reset ()
     }
 }
 
-PresentationContext *
-RuleAdapter::getPresentationContext ()
+Settings *
+RuleAdapter::getSettings ()
 {
-  return presContext;
+  return this->settings;
 }
 
 void
@@ -394,7 +393,7 @@ RuleAdapter::evaluateSimpleRule (SimpleRule *rule)
   string attributeValue;
 
   attribute = rule->getAttribute ();
-  attributeValue = presContext->getPropertyValue (attribute);
+  attributeValue = settings->get (attribute);
 
   ruleValue = rule->getValue ();
 

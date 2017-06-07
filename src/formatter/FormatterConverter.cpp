@@ -497,7 +497,7 @@ FormatterConverter::getEvent (NclExecutionObject *executionObject,
                       event = new NclAttributionEvent (
                           id, executionObject,
                           (PropertyAnchor *)interfacePoint,
-                          ruleAdapter->getPresentationContext ());
+                          ruleAdapter->getSettings ());
                     }
                   else
                     {
@@ -507,7 +507,7 @@ FormatterConverter::getEvent (NclExecutionObject *executionObject,
 
                       event = new NclAttributionEvent (
                           id, executionObject, NULL,
-                          ruleAdapter->getPresentationContext ());
+                          ruleAdapter->getSettings ());
                     }
                 }
             }
@@ -521,7 +521,7 @@ FormatterConverter::getEvent (NclExecutionObject *executionObject,
                       event = new NclAttributionEvent (
                           id, executionObject,
                           (PropertyAnchor *)interfacePoint,
-                          ruleAdapter->getPresentationContext ());
+                          ruleAdapter->getSettings ());
                     }
                   else
                     {

@@ -29,7 +29,7 @@ GINGA_FORMATTER_BEGIN
 NclAttributionEvent::NclAttributionEvent (const string &id,
                                           NclExecutionObject *executionObject,
                                           PropertyAnchor *anchor,
-                                          PresentationContext *presContext)
+                                          Settings *settings)
     : NclFormatterEvent (id, executionObject)
 {
   Entity *entity;
@@ -40,7 +40,7 @@ NclAttributionEvent::NclAttributionEvent (const string &id,
   this->anchor = anchor;
   this->valueMaintainer = NULL;
   this->settingNode = false;
-  this->presContext = presContext;
+  this->settings = settings;
 
   dataObject = (NodeEntity *)(((NclExecutionObject *)executionObject)
                                   ->getDataObject ());
@@ -93,7 +93,7 @@ NclAttributionEvent::getCurrentValue ()
       propName = anchor->getPropertyName ();
       if (propName != "")
         {
-          maintainerValue = presContext->getPropertyValue (propName);
+          maintainerValue = settings->get (propName);
         }
     }
   else

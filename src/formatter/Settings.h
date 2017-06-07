@@ -15,42 +15,25 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef SYSTEM_INFO_H
-#define SYSTEM_INFO_H
+#ifndef SETTINGS_H
+#define SETTINGS_H
 
 #include "ginga.h"
 
-GINGA_CTXMGMT_BEGIN
+GINGA_FORMATTER_BEGIN
 
-class SystemInfo
+class Settings
 {
 private:
-  double clockSpeed;
-  map<string, string> *sysTable;
+  map<string, string> properties;
 
 public:
-  SystemInfo ();
-  ~SystemInfo ();
-
-private:
-  string getValue (const string &attribute);
-
-public:
-  void setSystemTable (map<string, string> *sysTable);
-  string getSystemLanguage ();
-  string getCaptionLanguage ();
-  string getSubtitleLanguage ();
-  double getReturnBitRate ();
-  void getScreenSize (int *width, int *height);
-  void getScreenGraphicSize (int *width, int *height);
-  string getAudioType ();
-  double getCPUClock ();
-  double getMemorySize ();
-  string getJavaConfiguration ();
-  string getJavaProfile ();
-  string getLuaVersion ();
+  Settings ();
+  virtual ~Settings ();
+  void set (const string &, const string &);
+  string get (const string &);
 };
 
-GINGA_CTXMGMT_END
+GINGA_FORMATTER_END
 
-#endif /* SYSTEM_INFO_H */
+#endif // SETTINGS_H

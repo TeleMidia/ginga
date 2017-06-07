@@ -32,12 +32,12 @@ FormatterScheduler::FormatterScheduler ()
   int w, h;
   Ginga_Display->getSize (&w, &h);
 
-  this->presContext = new PresentationContext ();
-  this->ruleAdapter = new RuleAdapter (presContext);
+  this->settings = new Settings ();
+  this->ruleAdapter = new RuleAdapter (settings);
   this->compiler = new FormatterConverter (this->ruleAdapter);
   this->compiler->setLinkActionListener (this);
-  this->focusManager = new FormatterFocusManager (this->presContext, this, this->compiler);
-
+  this->focusManager = new FormatterFocusManager
+    (this->settings, this, this->compiler);
   this->focusManager->setKeyHandler (true);
 }
 
@@ -51,7 +51,7 @@ FormatterScheduler::~FormatterScheduler ()
   this->actions.clear ();
 
   ruleAdapter = NULL;
-  presContext = NULL;
+  settings = NULL;
 
   if (focusManager != NULL)
     {
@@ -62,11 +62,8 @@ FormatterScheduler::~FormatterScheduler ()
   compiler = NULL;
   events.clear ();
 
-  // delete PlayerAdapters
   for (auto &i: _objectPlayers)
-    {
-      delete i.second;
-    }
+    delete i.second;
 
   _objectPlayers.clear ();
 }
@@ -84,9 +81,7 @@ FormatterScheduler::removeAction (NclLinkSimpleAction *action)
 
   i = actions.find (action);
   if (i != actions.end ())
-    {
-      actions.erase (i);
-    }
+    actions.erase (i);
 }
 
 FormatterFocusManager *
@@ -159,7 +154,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
           == ""))
     {
       runActionOverComposition
-        ((NclCompositeExecutionObject *)obj, action);
+        ((NclCompositeExecutionObject *) obj, action);
       return;
     }
 
@@ -295,7 +290,7 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
         }
       else
         {
-          presContext->setPropertyValue (propName, propValue);
+          settings->set (propName, propValue);
         }
       event->stop ();
     }
@@ -1068,7 +1063,7 @@ FormatterScheduler::startDocument (const string &file)
       return;
     }
 
-  // Create execution object for settings and initialize it.
+  // Create execution object for settings node and initialize it.
   vector <Node *> *settings = this->doc->getSettingsNodes ();
   for (auto node: *settings)
     {
@@ -1100,7 +1095,7 @@ FormatterScheduler::startDocument (const string &file)
             continue;           // nothing to do
 
           g_debug ("settings: set %s='%s'", name.c_str (), value.c_str ());
-          this->presContext->setPropertyValue (name, value);
+          this->settings->set (name, value);
         }
     }
   delete settings;
@@ -1175,7 +1170,6 @@ FormatterScheduler::eventStateChanged (NclFormatterEvent *event,
           if (player != NULL)
             {
               this->showObject (object);
-
               focusManager->showObject (object);
             }
           break;
@@ -1208,10 +1202,6 @@ FormatterScheduler::eventStateChanged (NclFormatterEvent *event,
                   this->hideObject (object);
 
                   player = this->getObjectPlayer (object);
-                  if (player != NULL
-                      && player->getPlayer () != NULL)
-                    {
-                    }
                 }
             }
           break;
@@ -1364,7 +1354,7 @@ FormatterScheduler::initializePlayer (NclExecutionObject *object)
   g_assert_nonnull (contentNode);
 
   if (contentNode->isSettingNode ())
-    return nullptr;                // nothing to do
+    return nullptr;             // nothing to do
 
   PlayerAdapter *adapter = new PlayerAdapter (this);
   _objectPlayers[id] = adapter;
@@ -1389,7 +1379,6 @@ FormatterScheduler::getObjectPlayer (NclExecutionObject *execObj)
     {
       player = i->second;
     }
-
   return player;
 }
 

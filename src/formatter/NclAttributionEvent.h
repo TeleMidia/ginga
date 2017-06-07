@@ -18,13 +18,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _ATTRIBUTEEVENT_H_
 #define _ATTRIBUTEEVENT_H_
 
+#include "INclAttributeValueMaintainer.h"
+#include "NclFormatterEvent.h"
+#include "Settings.h"
+
 #include "ncl/PropertyAnchor.h"
 using namespace ::ginga::ncl;
-
-#include "PresentationContext.h"
-
-#include "NclFormatterEvent.h"
-#include "INclAttributeValueMaintainer.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -39,12 +38,12 @@ protected:
   PropertyAnchor *anchor;
   INclAttributeValueMaintainer *valueMaintainer;
   map<string, NclFormatterEvent *> assessments;
-  PresentationContext *presContext;
+  Settings *settings;
 
 public:
   NclAttributionEvent (const string &id, NclExecutionObject *,
                        PropertyAnchor *,
-                       PresentationContext *);
+                       Settings *);
 
   virtual ~NclAttributionEvent ();
   PropertyAnchor *getAnchor ();
