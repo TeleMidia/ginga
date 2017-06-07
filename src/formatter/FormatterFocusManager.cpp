@@ -31,9 +31,8 @@ GINGA_FORMATTER_BEGIN
 bool FormatterFocusManager::init = false;
 set<FormatterFocusManager *> FormatterFocusManager::instances;
 
-FormatterFocusManager::FormatterFocusManager (
-    FormatterScheduler *scheduler, PresentationContext *presContext,
-    INclLinkActionListener *settingActions, FormatterConverter *converter)
+FormatterFocusManager::FormatterFocusManager (PresentationContext *presContext,
+ INclLinkActionListener *settingActions, FormatterConverter *converter)
 {
   string str;
 
