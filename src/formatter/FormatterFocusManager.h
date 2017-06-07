@@ -65,8 +65,7 @@ private:
   static set<FormatterFocusManager *> instances;
 
 public:
-  FormatterFocusManager (FormatterScheduler *scheduler,
-                         PresentationContext *presContext,
+  FormatterFocusManager (PresentationContext *presContext,
                          INclLinkActionListener *settingActions,
                          FormatterConverter *converter);
 
