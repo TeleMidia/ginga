@@ -65,14 +65,12 @@ using namespace ::ginga::ncl;
 #include "NclLinkAction.h"
 #include "NclLinkCompoundAction.h"
 #include "NclLinkSimpleAction.h"
-#include "INclLinkActionListener.h"
 
 #include "NclCascadingDescriptor.h"
 
 #include "NclCompositeExecutionObject.h"
 #include "NclApplicationExecutionObject.h"
 #include "NclExecutionObject.h"
-#include "NclNodeNesting.h"
 
 #include "RuleAdapter.h"
 

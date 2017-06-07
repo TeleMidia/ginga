@@ -21,8 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclCascadingDescriptor.h"
 #include "NclCompositeExecutionObject.h"
 #include "NclExecutionObject.h"
-
 #include "NclExecutionObjectSwitch.h"
+#include "Settings.h"
 
 #include "ncl/GenericDescriptor.h"
 using namespace ::ginga::ncl;
@@ -40,25 +40,23 @@ using namespace ::ginga::ncl;
 #include "ncl/Node.h"
 using namespace ::ginga::ncl;
 
-#include "PresentationContext.h"
-
 GINGA_FORMATTER_BEGIN
 
 class RuleAdapter
 {
 private:
-  PresentationContext *presContext;
+  Settings *settings;
   map<string, vector<Rule *> *> *ruleListenMap;
   map<Rule *, vector<NclExecutionObjectSwitch *> *> *entityListenMap;
   map<Rule *, vector<DescriptorSwitch *> *> *descListenMap;
 
 public:
-  RuleAdapter (PresentationContext *presContext);
+  RuleAdapter (Settings *);
   virtual ~RuleAdapter ();
 
   void reset ();
 
-  PresentationContext *getPresentationContext ();
+  Settings *getSettings ();
 
   void adapt (NclCompositeExecutionObject *compositeObject, bool force);
   void initializeAttributeRuleRelation (Rule *topRule, Rule *rule);

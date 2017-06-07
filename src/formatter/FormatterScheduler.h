@@ -38,7 +38,7 @@ private:
   map<string, PlayerAdapter *> _objectPlayers;
   FormatterConverter *compiler;
   FormatterFocusManager *focusManager;
-  PresentationContext *presContext;
+  Settings *settings;
   RuleAdapter *ruleAdapter;
 
   string file;                        // NCL file path

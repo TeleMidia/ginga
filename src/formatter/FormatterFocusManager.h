@@ -30,7 +30,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclFormatterRegion.h"
 
-#include "PresentationContext.h"
 
 #include "PlayerAdapter.h"
 
@@ -41,7 +40,7 @@ class FormatterConverter;
 class FormatterFocusManager : public IEventListener
 {
 private:
-  PresentationContext *presContext;
+  Settings *settings;
   map<string, set<NclExecutionObject *> *> *focusTable;
   bool isHandler;
   string currentFocus;
@@ -65,9 +64,9 @@ private:
   static set<FormatterFocusManager *> instances;
 
 public:
-  FormatterFocusManager (PresentationContext *presContext,
-                         INclLinkActionListener *settingActions,
-                         FormatterConverter *converter);
+  FormatterFocusManager (Settings *,
+                         INclLinkActionListener *,
+                         FormatterConverter *);
 
   virtual ~FormatterFocusManager ();
 
