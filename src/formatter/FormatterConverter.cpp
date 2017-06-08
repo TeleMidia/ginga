@@ -1413,110 +1413,9 @@ FormatterConverter::ntsRemoveExecutionObject (NclExecutionObject *exeObj)
   if (removed && NclExecutionObject::hasInstance (exeObj, true))
     {
       delete exeObj;
-      exeObj = NULL;
     }
 
   return removed;
-}
-
-NclExecutionObject *
-FormatterConverter::hasExecutionObject (Node *node,
-                                        GenericDescriptor *descriptor)
-{
-  NclExecutionObject *expectedObject;
-  map<string, NclExecutionObject *>::iterator i;
-  NclNodeNesting *perspective;
-  string id;
-  NclCascadingDescriptor *cascadingDescriptor;
-  vector<Node *> *nodes;
-
-  // TODO procurar por potenciais substitutos no caso de REFER
-
-  nodes = node->getPerspective ();
-  perspective = new NclNodeNesting (nodes);
-  delete nodes;
-  id = perspective->getId () + SEPARATOR;
-  cascadingDescriptor = getCascadingDescriptor (perspective, descriptor);
-  if (cascadingDescriptor != NULL)
-    {
-      id += cascadingDescriptor->getId ();
-      delete cascadingDescriptor;
-      cascadingDescriptor = NULL;
-    }
-
-  i = _executionObjects.find (id);
-  if (i != _executionObjects.end ())
-    {
-      expectedObject = i->second;
-      return expectedObject;
-    }
-
-  return NULL;
-}
-
-NclFormatterCausalLink *
-FormatterConverter::addCausalLink (ContextNode *context, CausalLink *link)
-{
-  NclExecutionObject *object;
-
-  object = hasExecutionObject (context, NULL);
-  if (object == NULL)
-    {
-      clog << "FormatterConverter::addCausalLink Warning! Can't ";
-      clog << " add link '" << link->getId () << "' inside '";
-      clog << context->getId () << "': execution object not found!";
-      clog << endl;
-      return NULL;
-    }
-
-  NclCompositeExecutionObject *contextObject;
-  vector<Bind *> *binds;
-
-  contextObject = (NclCompositeExecutionObject *)object;
-  contextObject->addNcmLink (link);
-
-  binds = link->getConditionBinds ();
-  if (binds != NULL)
-    {
-      NclExecutionObject *childObject;
-      vector<Bind *>::iterator i;
-      Bind *bind;
-      NclFormatterCausalLink *formatterLink;
-
-      i = binds->begin ();
-      while (i != binds->end ())
-        {
-          bind = (*i);
-          childObject = hasExecutionObject (bind->getNode (),
-                                            bind->getDescriptor ());
-
-          if (childObject != NULL)
-            {
-              // compile causal link
-              contextObject->removeLinkUncompiled (link);
-              formatterLink = _linkCompiler->createCausalLink
-                (link, contextObject);
-
-              if (formatterLink != NULL)
-                {
-                  setActionListener (formatterLink->getAction ());
-                  contextObject->setLinkCompiled (formatterLink);
-                }
-
-              delete binds;
-              return formatterLink;
-            }
-          ++i;
-        }
-
-      delete binds;
-    }
-
-  clog << "FormatterConverter::addCausalLink Warning! Can't ";
-  clog << " add link '" << link->getId () << "' inside '";
-  clog << context->getId () << "' returning NULL";
-  clog << endl;
-  return NULL;
 }
 
 void
@@ -1578,12 +1477,6 @@ FormatterConverter::eventStateChanged (NclFormatterEvent *event,
           removeExecutionObject (executionObject);
         }
     }
-}
-
-void
-FormatterConverter::reset ()
-{
-  _executionObjects.clear ();
 }
 
 bool
