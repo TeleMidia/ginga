@@ -169,81 +169,87 @@ FormatterConverter::addSameInstance (NclExecutionObject *executionObject,
 
 void
 FormatterConverter::addExecutionObject (
-    NclExecutionObject *exeObj,
-    NclCompositeExecutionObject *parentObj)
+    NclExecutionObject *executionObject,
+    NclCompositeExecutionObject *parentObject)
 {
   NodeEntity *dataObject;
   set<ReferNode *> *sameInstances;
+  set<ReferNode *>::iterator i;
+  ReferNode *referNode;
   NclNodeNesting *nodePerspective;
   Node *headNode;
   NclCascadingDescriptor *descriptor;
   Entity *entity;
 
-  _executionObjects[exeObj->getId ()] = exeObj;
-  dataObject = dynamic_cast <NodeEntity *>(exeObj->getDataObject ());
-  g_assert_nonnull (dataObject);
+  vector<Node *>::iterator j;
 
-  ContentNode *contentNode = dynamic_cast <ContentNode *> (dataObject);
-  if (contentNode
-      && contentNode->isSettingNode ())
+  _executionObjects[executionObject->getId ()] = executionObject;
+  dataObject = (NodeEntity *)(executionObject->getDataObject ());
+
+  if (dataObject->instanceOf ("ContentNode")
+      && ((ContentNode *)dataObject)->isSettingNode ())
     {
-      _settingObjects.insert (exeObj);
+      _settingObjects.insert (executionObject);
     }
 
-  ReferNode *referNode = dynamic_cast <ReferNode *> (dataObject);
-  if (referNode)
+  if (dataObject->instanceOf ("ReferNode"))
     {
-      if (referNode->getInstanceType () == "instSame")
+      if (((ReferNode *)dataObject)->getInstanceType () == "instSame")
         {
-          entity = referNode->getDataEntity ();
-          ContentNode *contentNode = dynamic_cast <ContentNode *> (entity);
-          if (contentNode
-              && contentNode->isSettingNode ())
+          entity = ((ReferNode *)dataObject)->getDataEntity ();
+          if (entity->instanceOf ("ContentNode")
+              && ((ContentNode *)entity)->isSettingNode ())
             {
-              _settingObjects.insert (exeObj);
+              _settingObjects.insert (executionObject);
             }
         }
     }
 
-  if (parentObj != nullptr)
+  if (parentObject != NULL)
     {
-      parentObj->addExecutionObject (exeObj);
+      parentObject->addExecutionObject (executionObject);
     }
 
-  nodePerspective = exeObj->getNodePerspective ();
+  nodePerspective = executionObject->getNodePerspective ();
   headNode = nodePerspective->getHeadNode ();
   delete nodePerspective;
 
-  CompositeNode *headCompositeNode = dynamic_cast <CompositeNode *> (headNode);
-  if (headCompositeNode)
+  if (headNode->instanceOf ("CompositeNode")
+      && dataObject->instanceOf ("NodeEntity"))
     {
       sameInstances = dataObject->getInstSameInstances ();
-      g_assert_nonnull (sameInstances);
-
-      for (ReferNode *referNode: *(sameInstances) )
+      if (sameInstances != NULL)
         {
-          g_debug ("'%s' instSame '%s'",
-                   exeObj->getId ().c_str(),
-                   referNode->getId ().c_str());
+          i = sameInstances->begin ();
+          while (i != sameInstances->end ())
+            {
+              referNode = (ReferNode *)(*i);
+              clog << "FormatterConverter::addExecutionObject '";
+              clog << executionObject->getId () << "' instSame '";
+              clog << referNode->getId () << "' " << endl;
 
-          if (headCompositeNode->recursivelyContainsNode (referNode))
-            {
-              addSameInstance (exeObj, referNode);
-            }
-          else
-            {
-              g_warning ("Can't find '%s' inside '%s'.",
-                         referNode->getId ().c_str (),
-                         headNode->getId ().c_str ());
+              if (((CompositeNode *)headNode)
+                      ->recursivelyContainsNode (referNode))
+                {
+                  addSameInstance (executionObject, referNode);
+                }
+              else
+                {
+                  clog << "FormatterConverter::addExecutionObject Can't ";
+                  clog << "find '" << referNode->getId () << "' inside '";
+                  clog << headNode->getId () << "' ";
+                  clog << endl;
+                }
+              ++i;
             }
         }
     }
 
-  descriptor = exeObj->getDescriptor ();
-  if (descriptor != nullptr)
+  descriptor = executionObject->getDescriptor ();
+  if (descriptor != NULL)
     descriptor->setFormatterLayout ();
 
-  compileExecutionObjectLinks (exeObj);
+  compileExecutionObjectLinks (executionObject);
 }
 
 void
