@@ -88,20 +88,19 @@ public:
   void setHandlingStatus (bool hanling);
   NclExecutionObject *getObjectFromNodeId (const string &id);
 
-  void setLinkActionListener (INclLinkActionListener *_actionListener);
+  void setLinkActionListener (INclLinkActionListener *actionListener);
 
   NclCompositeExecutionObject *
-  addSameInstance (NclExecutionObject *executionObject,
-                   ReferNode *referNode);
+  addSameInstance (NclExecutionObject *exeObj, ReferNode *referNode);
 
-  void compileExecutionObjectLinks (NclExecutionObject *executionObject);
+  void compileExecutionObjectLinks (NclExecutionObject *exeObj);
 
   NclExecutionObject *getExecutionObjectFromPerspective (
       NclNodeNesting *perspective, GenericDescriptor *descriptor);
 
   set<NclExecutionObject *> *getSettingNodeObjects ();
 
-  NclFormatterEvent *getEvent (NclExecutionObject *executionObject,
+  NclFormatterEvent *getEvent (NclExecutionObject *exeObj,
                                InterfacePoint *interfacePoint,
                                int ncmEventType, const string &key);
 
@@ -110,7 +109,7 @@ public:
                           GenericDescriptor *descriptor);
 
   void compileExecutionObjectLinks (
-      NclExecutionObject *executionObject, Node *dataObject,
+      NclExecutionObject *exeObj, Node *dataObject,
       NclCompositeExecutionObject *parentObject);
 
   NclExecutionObject *
@@ -119,10 +118,9 @@ public:
   NclFormatterEvent *insertContext (NclNodeNesting *contextPerspective,
                                     Port *port);
 
-  bool removeExecutionObject (NclExecutionObject *executionObject,
-                              ReferNode *referNode);
+  bool removeExecutionObject (NclExecutionObject *exeObj, ReferNode *referNode);
 
-  bool removeExecutionObject (NclExecutionObject *executionObject);
+  bool removeExecutionObject (NclExecutionObject *exeObj);
 
 private:
   static int _dummyCount;
@@ -134,7 +132,7 @@ private:
   RuleAdapter *_ruleAdapter;
   bool _handling;
 
-  void addExecutionObject (NclExecutionObject *executionObject,
+  void addExecutionObject (NclExecutionObject *exeObj,
                            NclCompositeExecutionObject *parentObject);
 
   NclCompositeExecutionObject *getParentExecutionObject (
@@ -144,8 +142,9 @@ private:
   createExecutionObject (const string &id, NclNodeNesting *perspective,
                          NclCascadingDescriptor *descriptor);
 
-  void processLink (Link *ncmLink, Node *dataObject,
-                    NclExecutionObject *executionObject,
+  void processLink (Link *ncmLink,
+                    Node *dataObject,
+                    NclExecutionObject *exeObj,
                     NclCompositeExecutionObject *parentObject);
 
   void setActionListener (NclLinkAction *action);
@@ -156,7 +155,7 @@ private:
                                  InterfacePoint *interfacePoint,
                                  GenericDescriptor *descriptor);
 
-  bool ntsRemoveExecutionObject (NclExecutionObject *executionObject);
+  bool ntsRemoveExecutionObject (NclExecutionObject *exeObj);
 
   NclExecutionObject *hasExecutionObject (Node *node,
                                           GenericDescriptor *descriptor);
