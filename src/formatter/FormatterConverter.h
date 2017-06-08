@@ -82,7 +82,7 @@ class FormatterScheduler;
 class FormatterConverter : public INclEventListener
 {
 public:
-  FormatterConverter (RuleAdapter *);
+  explicit FormatterConverter (RuleAdapter *);
   virtual ~FormatterConverter ();
 
   void setHandlingStatus (bool hanling);
@@ -157,16 +157,8 @@ private:
 
   bool ntsRemoveExecutionObject (NclExecutionObject *exeObj);
 
-  NclExecutionObject *hasExecutionObject (Node *node,
-                                          GenericDescriptor *descriptor);
-
-  NclFormatterCausalLink *addCausalLink (ContextNode *context,
-                                         CausalLink *link);
-
   void eventStateChanged (NclFormatterEvent *someEvent, short transition,
                           short previousState) override;
-
-  void reset ();
 
   static bool hasDescriptorPropName (const string &name);
 
