@@ -81,57 +81,93 @@ class FormatterScheduler;
 
 class FormatterConverter : public INclEventListener
 {
-private:
-  static int dummyCount;
-  map<string, NclExecutionObject *> executionObjects;
-  set<NclFormatterEvent *> listening;
-  set<NclExecutionObject *> settingObjects;
-  FormatterLinkConverter *linkCompiler;
-  INclLinkActionListener *actionListener;
-  RuleAdapter *ruleAdapter;
-  bool handling;
-
 public:
   FormatterConverter (RuleAdapter *);
   virtual ~FormatterConverter ();
 
-  void executionObjectReleased (const string &objectId);
-  set<NclExecutionObject *> *getRunningObjects ();
   void setHandlingStatus (bool hanling);
   NclExecutionObject *getObjectFromNodeId (const string &id);
 
-  void setLinkActionListener (INclLinkActionListener *actionListener);
+  void setLinkActionListener (INclLinkActionListener *_actionListener);
 
   NclCompositeExecutionObject *
   addSameInstance (NclExecutionObject *executionObject,
                    ReferNode *referNode);
 
-private:
-  void addExecutionObject (NclExecutionObject *executionObject,
-                           NclCompositeExecutionObject *parentObject);
-
-public:
   void compileExecutionObjectLinks (NclExecutionObject *executionObject);
 
   NclExecutionObject *getExecutionObjectFromPerspective (
       NclNodeNesting *perspective, GenericDescriptor *descriptor);
 
-public:
   set<NclExecutionObject *> *getSettingNodeObjects ();
 
-private:
-  NclCompositeExecutionObject *getParentExecutionObject (
-      NclNodeNesting *perspective);
-
-public:
   NclFormatterEvent *getEvent (NclExecutionObject *executionObject,
                                InterfacePoint *interfacePoint,
                                int ncmEventType, const string &key);
 
+  static NclCascadingDescriptor *
+  getCascadingDescriptor (NclNodeNesting *nodePerspective,
+                          GenericDescriptor *descriptor);
+
+  void compileExecutionObjectLinks (
+      NclExecutionObject *executionObject, Node *dataObject,
+      NclCompositeExecutionObject *parentObject);
+
+  NclExecutionObject *
+  processExecutionObjectSwitch (NclExecutionObjectSwitch *switchObject);
+
+  NclFormatterEvent *insertContext (NclNodeNesting *contextPerspective,
+                                    Port *port);
+
+  bool removeExecutionObject (NclExecutionObject *executionObject,
+                              ReferNode *referNode);
+
+  bool removeExecutionObject (NclExecutionObject *executionObject);
+
 private:
+  static int _dummyCount;
+  map<string, NclExecutionObject *> _executionObjects;
+  set<NclFormatterEvent *> _listening;
+  set<NclExecutionObject *> _settingObjects;
+  FormatterLinkConverter *_linkCompiler;
+  INclLinkActionListener *_actionListener;
+  RuleAdapter *_ruleAdapter;
+  bool _handling;
+
+  void addExecutionObject (NclExecutionObject *executionObject,
+                           NclCompositeExecutionObject *parentObject);
+
+  NclCompositeExecutionObject *getParentExecutionObject (
+      NclNodeNesting *perspective);
+
   NclExecutionObject *
   createExecutionObject (const string &id, NclNodeNesting *perspective,
                          NclCascadingDescriptor *descriptor);
+
+  void processLink (Link *ncmLink, Node *dataObject,
+                    NclExecutionObject *executionObject,
+                    NclCompositeExecutionObject *parentObject);
+
+  void setActionListener (NclLinkAction *action);
+
+  void resolveSwitchEvents (NclExecutionObjectSwitch *switchObject);
+
+  NclFormatterEvent *insertNode (NclNodeNesting *perspective,
+                                 InterfacePoint *interfacePoint,
+                                 GenericDescriptor *descriptor);
+
+  bool ntsRemoveExecutionObject (NclExecutionObject *executionObject);
+
+  NclExecutionObject *hasExecutionObject (Node *node,
+                                          GenericDescriptor *descriptor);
+
+  NclFormatterCausalLink *addCausalLink (ContextNode *context,
+                                         CausalLink *link);
+
+  void eventStateChanged (NclFormatterEvent *someEvent, short transition,
+                          short previousState) override;
+
+  void reset ();
 
   static bool hasDescriptorPropName (const string &name);
 
@@ -144,62 +180,8 @@ private:
       NclNodeNesting *nodePerspective,
       NclCascadingDescriptor *cascadingDescriptor, Node *ncmNode);
 
-public:
-  static NclCascadingDescriptor *
-  getCascadingDescriptor (NclNodeNesting *nodePerspective,
-                          GenericDescriptor *descriptor);
-
-private:
-  void processLink (Link *ncmLink, Node *dataObject,
-                    NclExecutionObject *executionObject,
-                    NclCompositeExecutionObject *parentObject);
-
-public:
-  void compileExecutionObjectLinks (
-      NclExecutionObject *executionObject, Node *dataObject,
-      NclCompositeExecutionObject *parentObject);
-
-private:
-  void setActionListener (NclLinkAction *action);
-
-public:
-  NclExecutionObject *
-  processExecutionObjectSwitch (NclExecutionObjectSwitch *switchObject);
-
-private:
-  void resolveSwitchEvents (NclExecutionObjectSwitch *switchObject);
-
-  NclFormatterEvent *insertNode (NclNodeNesting *perspective,
-                                 InterfacePoint *interfacePoint,
-                                 GenericDescriptor *descriptor);
-
-public:
-  NclFormatterEvent *insertContext (NclNodeNesting *contextPerspective,
-                                    Port *port);
-
-  bool removeExecutionObject (NclExecutionObject *executionObject,
-                              ReferNode *referNode);
-
-  bool removeExecutionObject (NclExecutionObject *executionObject);
-
-private:
-  bool ntsRemoveExecutionObject (NclExecutionObject *executionObject);
-
-  static bool isEmbeddedAppMediaType (const string &mediaType);
-
-public:
-  NclExecutionObject *hasExecutionObject (Node *node,
-                                          GenericDescriptor *descriptor);
-
-  NclFormatterCausalLink *addCausalLink (ContextNode *context,
-                                         CausalLink *link);
-
-  void eventStateChanged (NclFormatterEvent *someEvent, short transition,
-                          short previousState) override;
-
-  void reset ();
-
   static bool isEmbeddedApp (NodeEntity *dataObject);
+  static bool isEmbeddedAppMediaType (const string &mediaType);
 };
 
 GINGA_FORMATTER_END
