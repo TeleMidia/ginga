@@ -633,27 +633,22 @@ FormatterConverter::createExecutionObject (
 bool
 FormatterConverter::hasDescriptorPropName (const string &name)
 {
-  // TODO: create a set with reserved words
-  if (name == "left" || name == "top" || name == "width" || name == "height"
-      || name == "right" || name == "bottom" || name == "explicitDur"
-      || name == "size" || name == "bounds" || name == "location"
-      || name == "zIndex")
-    {
-      return true;
-    }
+  set <string> words = {"left", "top", "width", "height", "right", "bottom",
+                        "explicitDur", "size", "bounds", "location",
+                        "zIndex"};
 
-  return false;
+  return words.count(name);
 }
 
 Descriptor *
 FormatterConverter::createDummyDescriptor (arg_unused (Node *node))
 {
-  Descriptor *ncmDesc = nullptr;
-  FocusDecoration *focusDecoration;
-  ncmDesc = new Descriptor ("dummyDescriptor" + xstrbuild ("%d", _dummyCount));
+  Descriptor *ncmDesc
+      = new Descriptor ("dummyDescriptor" + xstrbuild ("%d", _dummyCount));
+
+  ncmDesc->setFocusDecoration (new FocusDecoration ());
+
   _dummyCount++;
-  focusDecoration = new FocusDecoration ();
-  ncmDesc->setFocusDecoration (focusDecoration);
 
   return ncmDesc;
 }
@@ -842,7 +837,8 @@ FormatterConverter::getCascadingDescriptor (NclNodeNesting *nodePerspective,
 }
 
 void
-FormatterConverter::processLink (Link *ncmLink, Node *dataObject,
+FormatterConverter::processLink (Link *ncmLink,
+                                 Node *dataObject,
                                  NclExecutionObject *executionObject,
                                  NclCompositeExecutionObject *parentObject)
 {
@@ -851,8 +847,6 @@ FormatterConverter::processLink (Link *ncmLink, Node *dataObject,
   NodeEntity *nodeEntity = nullptr;
   set<ReferNode *> *sameInstances;
   bool contains = false;
-  set<ReferNode *>::iterator i;
-  NclFormatterLink *formatterLink;
 
   if (executionObject->getDataObject () != nullptr
       && executionObject->getDataObject ()->instanceOf ("NodeEntity"))
@@ -860,8 +854,8 @@ FormatterConverter::processLink (Link *ncmLink, Node *dataObject,
       nodeEntity = (NodeEntity *)(executionObject->getDataObject ());
     }
 
-  // since the link may be removed in a deepest compilation its
-  // necessary to certify that the link was not compiled
+  // Since the link may be removed in a deepest compilation it is necessary to
+  // check that the link was not compiled.
   if (parentObject->containsUncompiledLink (ncmLink))
     {
       descriptor = nullptr;
@@ -876,38 +870,35 @@ FormatterConverter::processLink (Link *ncmLink, Node *dataObject,
             }
         }
 
-      if (ncmLink->instanceOf ("CausalLink"))
+      CausalLink *causalLink = dynamic_cast <CausalLink *> (ncmLink);
+      if (causalLink)
         {
           if (nodeEntity != NULL)
             {
               sameInstances = nodeEntity->getInstSameInstances ();
               if (sameInstances != NULL)
                 {
-                  i = sameInstances->begin ();
-                  while (i != sameInstances->end ())
+                  for (ReferNode *referNode: *sameInstances)
                     {
-                      contains = ((CausalLink *)ncmLink)
-                                     ->containsSourceNode (*i, descriptor);
+                      contains
+                          = causalLink->containsSourceNode (referNode, descriptor);
 
                       if (contains)
                         {
                           break;
                         }
-                      ++i;
                     }
                 }
             }
 
-          // verify if execution object is part of
-          // link conditions
-          if (((CausalLink *)ncmLink)
-                  ->containsSourceNode (dataObject, descriptor)
+          // Checks if execution object is part of link conditions.
+          if (causalLink->containsSourceNode (dataObject, descriptor)
               || contains)
             {
-              // compile causal link
+              // Compile causal link.
               parentObject->removeLinkUncompiled (ncmLink);
-              formatterLink = _linkCompiler->createCausalLink
-                ((CausalLink *)ncmLink, parentObject);
+              NclFormatterLink *formatterLink
+                  = _linkCompiler->createCausalLink (causalLink, parentObject);
 
               if (formatterLink != NULL)
                 {
@@ -916,40 +907,34 @@ FormatterConverter::processLink (Link *ncmLink, Node *dataObject,
                           ->getAction ());
 
                   parentObject->setLinkCompiled (formatterLink);
-                  clog << "FormatterConverter::processLink ";
-                  clog << "LINKCOMPILED '" << ncmLink->getId ();
-                  clog << "'" << endl;
+                  g_debug ("LINKCOMPILED '%s'",
+                           ncmLink->getId ().c_str());
                 }
             }
           else
             {
-              clog << "FormatterConverter::processLink ";
-              clog << "can't process ncmLink '";
-              clog << ncmLink->getId () << "'";
-              clog << " inside '" << parentObject->getId () << "'";
-              clog << "  because '";
-              clog << ncmLink->getId () << "'";
-              clog << " does not contain '";
-              clog << dataObject->getId () << "' src";
-              clog << endl;
+              g_warning ("Can't process ncmLink '%s' inside '%s' because '%s' "
+                         "does not contain '%s' src",
+                         ncmLink->getId ().c_str(),
+                         parentObject->getId ().c_str(),
+                         ncmLink->getId ().c_str(),
+                         dataObject->getId ().c_str());
             }
         }
       else
         {
-          clog << "FormatterConverter::processLink ";
-          clog << "can't process ncmLink '" << ncmLink->getId ();
-          clog << "' inside '" << parentObject->getId () << "'";
-          clog << "  because isn't a causal link";
-          clog << endl;
+          g_warning ("Can't process ncmLink '%s' inside '%s' because it isn't "
+                     "a causal link.",
+                     ncmLink->getId ().c_str (),
+                     parentObject->getId ().c_str ());
         }
     }
   else
     {
-      clog << "FormatterConverter::processLink ";
-      clog << "can't process ncmLink '" << ncmLink->getId ();
-      clog << "' inside '" << parentObject->getId () << "'";
-      clog << " link may be removed in a deepest compilation";
-      clog << endl;
+      g_warning ("Can't process ncmLink '%s' inside '%s' because link may be "
+                 "removed in a deepest compilation.",
+                 ncmLink->getId ().c_str (),
+                 parentObject->getId ().c_str());
     }
 }
 
@@ -958,10 +943,9 @@ FormatterConverter::compileExecutionObjectLinks (
     NclExecutionObject *executionObject, Node *dataObject,
     NclCompositeExecutionObject *parentObject)
 {
-  set<Link *> *dataLinks;
   set<Link *> *uncompiledLinks;
   set<Link *>::iterator i;
-  Link *ncmLink;
+
 
   NclCompositeExecutionObject *compObj;
   Node *execDataObject;
@@ -987,24 +971,14 @@ FormatterConverter::compileExecutionObjectLinks (
   uncompiledLinks = parentObject->getUncompiledLinks ();
   if (!uncompiledLinks->empty ())
     {
-      dataLinks = uncompiledLinks;
+      set<Link *> *dataLinks = uncompiledLinks;
 
-      i = dataLinks->begin ();
-      while (i != dataLinks->end ())
+      for ( Link *ncmLink : *dataLinks)
         {
-          ncmLink = *i;
-
-          clog << "FormatterConverter::compileExecutionObjectLinks ";
-          clog << "processing ncmLink '" << ncmLink->getId () << "'";
-          clog << " inside '" << parentObject->getId () << "'" << endl;
-
           processLink (ncmLink, dataObject, executionObject, parentObject);
-
-          ++i;
         }
 
       delete dataLinks;
-      dataLinks = NULL;
 
       compileExecutionObjectLinks (
           executionObject, dataObject,
@@ -1031,26 +1005,30 @@ FormatterConverter::compileExecutionObjectLinks (
 void
 FormatterConverter::setActionListener (NclLinkAction *action)
 {
-  if (action->instanceOf ("NclLinkSimpleAction"))
+  NclLinkSimpleAction *simpleAction
+      = dynamic_cast <NclLinkSimpleAction *> (action);
+  NclLinkCompoundAction *compoundAction
+      = dynamic_cast <NclLinkCompoundAction *> (action);
+
+  if (simpleAction)
     {
-      ((NclLinkSimpleAction *)action)
-          ->setSimpleActionListener (_actionListener);
+      simpleAction->setSimpleActionListener (_actionListener);
+    }
+  else if (compoundAction)
+    {
+      vector<NclLinkSimpleAction *> actions;
+
+      compoundAction->setCompoundActionListener (_actionListener);
+      compoundAction->getSimpleActions (&actions);
+
+      for (NclLinkSimpleAction *a: actions)
+        {
+          setActionListener (a);
+        }
     }
   else
     {
-      vector<NclLinkSimpleAction *> actions;
-      vector<NclLinkSimpleAction *>::iterator i;
-
-      ((NclLinkCompoundAction *)action)
-          ->setCompoundActionListener (_actionListener);
-
-      ((NclLinkCompoundAction *)action)->getSimpleActions (&actions);
-      i = actions.begin ();
-      while (i != actions.end ())
-        {
-          setActionListener ((NclLinkAction *)(*i));
-          ++i;
-        }
+      g_assert_not_reached();
     }
 }
 
@@ -1122,10 +1100,8 @@ FormatterConverter::processExecutionObjectSwitch (
           descriptor = NULL;
         }
 
-      clog << "FormatterConverter::processExecutionObjectSwitch ";
-      clog << "Warning! can't process '";
-      clog << switchObject->getId () << "' selected OBJECT is NULL";
-      clog << endl;
+      g_warning ("Can't process '%s' because select object is NULL.",
+                 switchObject->getId ().c_str ());
       return NULL;
     }
 
@@ -1331,42 +1307,6 @@ FormatterConverter::insertContext (NclNodeNesting *contextPerspective,
   delete perspective;
 
   return newEvent;
-}
-
-bool
-FormatterConverter::removeExecutionObject (
-    NclExecutionObject *executionObject, ReferNode *referNode)
-{
-  NclNodeNesting *referPerspective;
-  map<string, NclExecutionObject *>::iterator i;
-  set<NclExecutionObject *>::iterator j;
-
-  if (executionObject == NULL || referNode == NULL)
-    {
-      return false;
-    }
-
-  executionObject->removeNode (referNode);
-  referPerspective = new NclNodeNesting (referNode->getPerspective ());
-  string objectId;
-  objectId = referPerspective->getId () + SEPARATOR
-             + executionObject->getDescriptor ()->getId ();
-
-  delete referPerspective;
-
-  i = _executionObjects.find (objectId);
-  if (i != _executionObjects.end ())
-    {
-      _executionObjects.erase (i);
-    }
-
-  j = _settingObjects.find (executionObject);
-  if (j != _settingObjects.end ())
-    {
-      _settingObjects.erase (j);
-    }
-  // TODO: problema se esse era a base para outros objetos
-  return true;
 }
 
 bool
