@@ -22,7 +22,7 @@ GINGA_NCL_BEGIN
 
 Descriptor::Descriptor (const string &id) : GenericDescriptor (id)
 {
-  explicitDuration = (double)NAN;
+  explicitDuration = GINGA_TIME_NONE;
   presentationTool = "";
   repetitions = 0;
   freeze = false;
@@ -64,16 +64,10 @@ Descriptor::~Descriptor ()
     }
 }
 
-double
+GingaTime
 Descriptor::getExplicitDuration ()
 {
   return explicitDuration;
-}
-
-string
-Descriptor::getPlayerName ()
-{
-  return presentationTool;
 }
 
 LayoutRegion *
@@ -101,7 +95,7 @@ Descriptor::setFreeze (bool freeze)
 }
 
 void
-Descriptor::setExplicitDuration (double dur)
+Descriptor::setExplicitDuration (GingaTime dur)
 {
   explicitDuration = dur;
 }

@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclEndEventTransition::NclEndEventTransition (double time,
+NclEndEventTransition::NclEndEventTransition (GingaTime time,
                                               NclPresentationEvent *event,
                                               NclBeginEventTransition *trans)
     : NclEventTransition (time, event)

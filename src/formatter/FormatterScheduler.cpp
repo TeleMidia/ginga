@@ -148,9 +148,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
     }
 
   if (obj->instanceOf ("NclCompositeExecutionObject")
-      && (obj->getDescriptor () == NULL
-          || obj->getDescriptor ()->getPlayerName ()
-          == ""))
+      && (obj->getDescriptor () == NULL))
     {
       runActionOverComposition
         ((NclCompositeExecutionObject *) obj, action);

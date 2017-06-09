@@ -48,7 +48,7 @@ public:
   static const short SCROLL_AUTOMATIC = 4;
 
 protected:
-  double explicitDuration;
+  GingaTime explicitDuration;
   string presentationTool;
   bool freeze;
   int repetitions;
@@ -63,14 +63,13 @@ protected:
 public:
   Descriptor (const string &id);
   virtual ~Descriptor ();
-  double getExplicitDuration ();
-  string getPlayerName ();
+  GingaTime getExplicitDuration ();
 
   LayoutRegion *getRegion ();
   int getRepetitions ();
   bool isFreeze ();
   void setFreeze (bool freeze);
-  void setExplicitDuration (double d);
+  void setExplicitDuration (GingaTime);
   void setPlayerName (const string &name);
   void setRegion (LayoutRegion *region);
   void setRepetitions (int r);

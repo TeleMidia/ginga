@@ -160,7 +160,6 @@ NclExecutionObject::initializeExecutionObject (
   this->id = id;
   this->dataObject = node;
   this->wholeContent = NULL;
-  this->startTime = (double) INFINITY;
   this->descriptor = NULL;
 
   this->isItCompiled = false;
@@ -269,12 +268,6 @@ bool
 NclExecutionObject::instanceOf (const string &s)
 {
   return (typeSet.find (s) != typeSet.end ());
-}
-
-int
-NclExecutionObject::compareToUsingId (NclExecutionObject *object)
-{
-  return id.compare (object->getId ());
 }
 
 Node *
@@ -419,7 +412,7 @@ void
 NclExecutionObject::addPresentationEvent (NclPresentationEvent *event)
 {
   NclPresentationEvent *auxEvent;
-  double begin, auxBegin;
+  GingaTime begin, auxBegin;
   int posBeg = -1;
   int posEnd, posMid;
 
@@ -431,16 +424,6 @@ NclExecutionObject::addPresentationEvent (NclPresentationEvent *event)
   else
     {
       begin = event->getBegin ();
-
-      // undefined events are not inserted into transition table
-      if (NclPresentationEvent::isUndefinedInstant (begin))
-        {
-          clog << "NclExecutionObject::addPresentationEvent event '";
-          clog << event->getId () << "' has an undefined begin instant '";
-          clog << begin << "'" << endl;
-          return;
-        }
-
       posBeg = 0;
       posEnd = (int)(presEvents.size () - 1);
       while (posBeg <= posEnd)
@@ -472,38 +455,6 @@ NclExecutionObject::addPresentationEvent (NclPresentationEvent *event)
   clog << "' begin = '" << event->getBegin () << "'; end = '";
   clog << event->getEnd () << "' position = '" << posBeg << "'" << endl;
   transMan->addPresentationEvent (event);
-}
-
-int
-NclExecutionObject::compareTo (NclExecutionObject *object)
-{
-  int ret;
-
-  ret = compareToUsingStartTime (object);
-  if (ret == 0)
-    return compareToUsingId (object);
-  else
-    return ret;
-}
-
-int
-NclExecutionObject::compareToUsingStartTime (NclExecutionObject *object)
-{
-  double thisTime, otherTime;
-
-  thisTime = startTime;
-  otherTime = (object->getExpectedStartTime ());
-
-  if (thisTime < otherTime)
-    {
-      return -1;
-    }
-  else if (thisTime > otherTime)
-    {
-      return 1;
-    }
-
-  return 0;
 }
 
 bool
@@ -640,85 +591,10 @@ NclExecutionObject::getSampleEvents ()
   return eventsSet;
 }
 
-double
-NclExecutionObject::getExpectedStartTime ()
-{
-  return startTime;
-}
-
 NclPresentationEvent *
 NclExecutionObject::getWholeContentPresentationEvent ()
 {
   return wholeContent;
-}
-
-void
-NclExecutionObject::setStartTime (double t)
-{
-  startTime = t;
-}
-
-void
-NclExecutionObject::updateEventDurations ()
-{
-  vector<NclPresentationEvent *>::iterator i;
-
-  i = presEvents.begin ();
-  while (i != presEvents.end ())
-    {
-      updateEventDuration (*i);
-      ++i;
-    }
-}
-
-void
-NclExecutionObject::updateEventDuration (NclPresentationEvent *event)
-{
-  double duration;
-
-  if (!containsEvent ((NclFormatterEvent *)event))
-    {
-      return;
-    }
-
-  duration = (double)NAN;
-
-  if (descriptor != NULL)
-    {
-      if (!isnan (descriptor->getExplicitDuration ())
-          && event == wholeContent)
-        {
-          duration = descriptor->getExplicitDuration ();
-        }
-      else if (event->getDuration () > 0)
-        {
-          duration = event->getDuration ();
-        }
-      else
-        {
-          duration = 0;
-        }
-    }
-  else
-    {
-      if (event->getDuration () > 0)
-        {
-          duration = event->getDuration ();
-        }
-      else
-        {
-          duration = 0;
-        }
-    }
-
-  if (duration < 0)
-    {
-      event->setDuration ((double)NAN);
-    }
-  else
-    {
-      event->setDuration (duration);
-    }
 }
 
 bool
@@ -976,11 +852,11 @@ NclExecutionObject::getMainEvent ()
 }
 
 bool
-NclExecutionObject::prepare (NclFormatterEvent *event, double offsetTime)
+NclExecutionObject::prepare (NclFormatterEvent *event, GingaTime offsetTime)
 {
   int size;
   map<Node *, NclCompositeExecutionObject *>::iterator i;
-  double startTime = 0;
+  GingaTime startTime = 0;
   ContentAnchor *contentAnchor;
   NclFormatterEvent *auxEvent;
   NclAttributionEvent *attributeEvent;
@@ -1111,14 +987,7 @@ NclExecutionObject::start ()
 }
 
 void
-NclExecutionObject::timeBaseNaturalEnd (int64_t timeValue,
-                                        short int transType)
-{
-  transMan->timeBaseNaturalEnd (timeValue, mainEvent, transType);
-}
-
-void
-NclExecutionObject::updateTransitionTable (double value, Player *player,
+NclExecutionObject::updateTransitionTable (GingaTime value, Player *player,
                                            short int transType)
 {
   transMan->updateTransitionTable (value, player, mainEvent, transType);
@@ -1132,15 +1001,9 @@ NclExecutionObject::resetTransitionEvents (short int transType)
 
 void
 NclExecutionObject::prepareTransitionEvents (short int transType,
-                                             double startTime)
+                                             GingaTime startTime)
 {
   transMan->prepare (mainEvent == wholeContent, startTime, transType);
-}
-
-set<double> *
-NclExecutionObject::getTransitionsValues (short int transType)
-{
-  return transMan->getTransitionsValues (transType);
 }
 
 NclEventTransition *
@@ -1157,7 +1020,7 @@ bool
 NclExecutionObject::stop ()
 {
   ContentAnchor *contentAnchor;
-  double endTime;
+  GingaTime endTime;
 
   if (isSleeping ())
     {
@@ -1193,13 +1056,10 @@ bool
 NclExecutionObject::abort ()
 {
   ContentAnchor *contentAnchor;
-  double endTime;
+  GingaTime endTime;
 
-  // clog << "NclExecutionObject::abort(" << id << ")" << endl;
   if (isSleeping ())
-    {
-      return false;
-    }
+    return false;
 
   if (mainEvent->instanceOf ("NclPresentationEvent"))
     {
@@ -1525,7 +1385,7 @@ NclExecutionObject::setHandler (bool isHandler)
 
 //dragon head
 bool
-NclExecutionObject::selectionEvent (SDL_Keycode key, double currentTime)
+NclExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
 {
   string selCode;
   string keyString;
@@ -1539,8 +1399,8 @@ NclExecutionObject::selectionEvent (SDL_Keycode key, double currentTime)
   bool sleeping = isSleeping ();
   bool paused = isPaused ();
   bool selected = false;
-  double intervalBegin;
-  double intervalEnd;
+  GingaTime intervalBegin;
+  GingaTime intervalEnd;
 
   keyString = "UNKNOWN";
   ginga_key_table_index (key, &keyString);

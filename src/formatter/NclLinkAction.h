@@ -33,21 +33,21 @@ protected:
   NclLinkCondition *satisfiedCondition;
 
 private:
-  double delay;
+  GingaTime delay;
   vector<NclLinkActionProgressionListener *> *progressionListeners;
 
 public:
   NclLinkAction ();
-  NclLinkAction (double delay);
+  NclLinkAction (GingaTime delay);
 
 private:
-  void initLinkAction (double delay);
+  void initLinkAction (GingaTime delay);
 
 public:
   virtual ~NclLinkAction ();
   bool instanceOf (const string &s);
-  double getWaitDelay ();
-  void setWaitDelay (double delay);
+  GingaTime getWaitDelay ();
+  void setWaitDelay (GingaTime delay);
   bool hasDelay ();
 
   void

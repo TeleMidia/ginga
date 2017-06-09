@@ -27,15 +27,11 @@ GINGA_FORMATTER_BEGIN
 
 class NclPresentationEvent : public NclAnchorEvent
 {
-public:
-  static const double UNDEFINED_INSTANT;
-
 private:
-  double begin;
-  double end;
-  double duration;
+  GingaTime begin;
+  GingaTime end;
   int numPresentations;
-  double repetitionInterval;
+  GingaTime repetitionInterval;
 
 public:
   NclPresentationEvent (const string &id,
@@ -43,16 +39,14 @@ public:
                         ContentAnchor *anchor);
   virtual ~NclPresentationEvent ();
   bool stop ();
-  double getDuration ();
-  double getRepetitionInterval ();
+  GingaTime getDuration ();
+  GingaTime getRepetitionInterval ();
   int getRepetitions ();
-  void setDuration (double dur);
-  void setEnd (double e);
-  void setRepetitionSettings (int repetitions, double repetitionInterval);
-  double getBegin ();
-  double getEnd ();
+  void setEnd (GingaTime e);
+  void setRepetitionSettings (int repetitions, GingaTime repetitionInterval);
+  GingaTime getBegin ();
+  GingaTime getEnd ();
   void incrementOccurrences ();
-  static bool isUndefinedInstant (double value);
 };
 
 GINGA_FORMATTER_END

@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NCL_BEGIN
 
 LambdaAnchor::LambdaAnchor (const string &id)
-    : RelativeTimeIntervalAnchor (id, 0, IntervalAnchor::OBJECT_DURATION)
+    : RelativeTimeIntervalAnchor (id, 0, GINGA_TIME_NONE)
 {
   typeSet.insert ("LambdaAnchor");
 }

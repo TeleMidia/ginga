@@ -232,14 +232,14 @@ NclEventTransitionManager::resetTimeIndexByType (short int type)
 }
 
 void
-NclEventTransitionManager::prepare (bool wholeContent, double startTime,
+NclEventTransitionManager::prepare (bool wholeContent, GingaTime startTime,
                                     short int type)
 {
   vector<NclEventTransition *> *transitionEvents;
   NclEventTransition *transition;
   unsigned int transIx, size;
 
-  if (wholeContent && xnumeq (startTime, 0.0))
+  if (wholeContent && startTime == 0)
     {
       startTransitionIndex[type] = 0;
     }
@@ -282,7 +282,7 @@ NclEventTransitionManager::prepare (bool wholeContent, double startTime,
 }
 
 void
-NclEventTransitionManager::start (double offsetTime)
+NclEventTransitionManager::start (GingaTime offsetTime)
 {
   vector<NclEventTransition *> *transitionEvents;
   NclEventTransition *transition;
@@ -316,7 +316,7 @@ NclEventTransitionManager::start (double offsetTime)
 }
 
 void
-NclEventTransitionManager::stop (double endTime, bool applicationType)
+NclEventTransitionManager::stop (GingaTime endTime, bool applicationType)
 {
   vector<NclEventTransition *> *transitionEvents;
   vector<NclEventTransition *>::iterator i;
@@ -330,10 +330,10 @@ NclEventTransitionManager::stop (double endTime, bool applicationType)
     {
       transition = *i;
       if (!applicationType
-          || (applicationType && !isinf (transition->getTime ())))
+          || (applicationType && GINGA_TIME_IS_VALID (transition->getTime ())))
         {
           fev = transition->getEvent ();
-          if (transition->getTime () > endTime)
+          if (!GINGA_TIME_IS_VALID (endTime) || transition->getTime () > endTime)
             {
               fev->setCurrentState (EventUtil::ST_SLEEPING);
             }
@@ -347,7 +347,7 @@ NclEventTransitionManager::stop (double endTime, bool applicationType)
 }
 
 void
-NclEventTransitionManager::abort (double endTime, bool applicationType)
+NclEventTransitionManager::abort (GingaTime endTime, bool applicationType)
 {
   vector<NclEventTransition *> *transitionEvents;
   unsigned int transIx, i, size;
@@ -387,13 +387,13 @@ void
 NclEventTransitionManager::addPresentationEvent (
     NclPresentationEvent *event)
 {
-  double begin, end;
+  GingaTime begin, end;
   NclBeginEventTransition *beginTransition;
   NclEndEventTransition *endTransition;
   vector<NclEventTransition *> *transitionEvents;
   NclEventTransition *lastTransition = NULL;
   vector<NclEventTransition *>::iterator i;
-  double lTime;
+  GingaTime lTime;
   short int type;
 
   type = getType (event);
@@ -404,7 +404,7 @@ NclEventTransitionManager::addPresentationEvent (
       beginTransition = new NclBeginEventTransition (0, event);
       transitionEvents->insert (transitionEvents->begin (),
                                 beginTransition);
-      if (event->getEnd () >= 0)
+      if (event->getEnd () != GINGA_TIME_NONE)
         {
           endTransition = new NclEndEventTransition (
               event->getEnd (), event, beginTransition);
@@ -414,7 +414,7 @@ NclEventTransitionManager::addPresentationEvent (
             {
               lastTransition = *i;
               lTime = lastTransition->getTime ();
-              if (IntervalAnchor::isObjectDuration (lTime)
+              if (!GINGA_TIME_IS_VALID (lTime)
                   || endTransition->getTime () < lTime)
                 {
                   transitionEvents->insert (i, endTransition);
@@ -430,89 +430,23 @@ NclEventTransitionManager::addPresentationEvent (
                 }
             }
         }
-
-      /*clog << "NclEventTransitionManager::addPresentationEvent '";
-      clog << event->getId() << "' (lambda): ";
-      clog << "begin = '" << event->getBegin() << "'; end = '";
-      clog << event->getEnd() << "'. BeginTransition = '";
-      clog << beginTransition->getTime() << "'; endTransition = '";
-      clog << endTransition->getTime() << "'";
-      clog << endl;*/
     }
   else
     {
       begin = event->getBegin ();
-
-      // undefined events are not inserted into transition table
-      if (NclPresentationEvent::isUndefinedInstant (begin))
-        {
-          clog << "NclEventTransitionManager::addPresentationEvent ";
-          clog << "Can't add event '" << event->getId () << "': ";
-          clog << "undefined begin" << endl;
-          return;
-        }
-
       beginTransition = new NclBeginEventTransition (begin, event);
       addEventTransition (beginTransition, type);
       end = event->getEnd ();
 
-      if (!NclPresentationEvent::isUndefinedInstant (end))
-        {
-          endTransition
-              = new NclEndEventTransition (end, event, beginTransition);
-
-          addEventTransition (endTransition, type);
-        }
-      else
-        {
-          clog << "NclEventTransitionManager::addPresentationEvent ";
-          clog << "Can't add event '" << event->getId () << "': ";
-          clog << "undefined end" << endl;
-        }
+      endTransition
+        = new NclEndEventTransition (end, event, beginTransition);
+      addEventTransition (endTransition, type);
     }
-}
-
-void
-NclEventTransitionManager::timeBaseNaturalEnd (int64_t timeValue,
-                                               NclFormatterEvent *mainEvent,
-                                               short int transType)
-{
-  NclPresentationEvent *ev;
-  vector<NclEventTransition *> *transitionEvents;
-  vector<NclEventTransition *>::iterator i;
-
-  clog << "NclEventTransitionManager::timeBaseNaturalEnd" << endl;
-  if (transTable.count (transType) != 0)
-    {
-      transitionEvents = transTable[transType];
-
-      i = transitionEvents->begin ();
-      while (i != transitionEvents->end ())
-        {
-          ev = (*i)->getEvent ();
-
-          if (ev->getCurrentState () == EventUtil::ST_OCCURRING)
-            {
-              if (ev->getEnd () > (double) timeValue)
-                {
-                  ev->setCurrentState (EventUtil::ST_SLEEPING);
-                }
-              else
-                {
-                  ev->stop ();
-                }
-            }
-
-          ++i;
-        }
-    }
-
-  mainEvent->stop ();
 }
 
 void
 NclEventTransitionManager::updateTransitionTable (
-    double value, Player *player, NclFormatterEvent *mainEvent,
+    GingaTime value, Player *player, NclFormatterEvent *mainEvent,
     short int transType)
 {
   NclEventTransition *transition;
@@ -534,8 +468,6 @@ NclEventTransitionManager::updateTransitionTable (
   while (currentIx < transitionEvents->size ())
     {
       transition = (*transitionEvents)[currentIx];
-
-      g_debug("! time: %f - value %f !", transition->getTime () , value);
 
       if (transition->getTime () <= value)
         {
@@ -574,10 +506,10 @@ NclEventTransitionManager::updateTransitionTable (
     }
 }
 
-set<double> *
+set<GingaTime> *
 NclEventTransitionManager::getTransitionsValues (short int transType)
 {
-  set<double> *transValues;
+  set<GingaTime> *transValues;
   unsigned int currentIx, ix;
   vector<NclEventTransition *> *transitionEvents;
   vector<NclEventTransition *>::iterator i;
@@ -601,7 +533,7 @@ NclEventTransitionManager::getTransitionsValues (short int transType)
     }
 
   transitionEvents = getTransitionEvents (transType);
-  transValues = new set<double>;
+  transValues = new set<GingaTime>;
 
   currentIx = currentTransitionIndex[transType];
 
@@ -626,8 +558,8 @@ NclEventTransitionManager::getNextTransition (NclFormatterEvent *mainEvent)
   NclEventTransition *transition;
   vector<NclEventTransition *> *transitionEvents;
   unsigned int currentIx;
-  double transTime;
-  double eventEnd;
+  GingaTime transTime;
+  GingaTime eventEnd;
 
   if (currentTransitionIndex.count (ContentAnchor::CAT_TIME) == 0
       || transTable.count (ContentAnchor::CAT_TIME) == 0)
@@ -649,12 +581,7 @@ NclEventTransitionManager::getNextTransition (NclFormatterEvent *mainEvent)
       eventEnd = ((NclPresentationEvent *)mainEvent)->getEnd ();
       transTime = transition->getTime ();
 
-      /*clog << "NclEventTransitionManager::getNextTransition for '";
-      clog << mainEvent->getId() << "'. EventEnd = '" << eventEnd;
-      clog << "' transition time = '" << transTime << "'";
-      clog << endl;*/
-
-      if (IntervalAnchor::isObjectDuration (eventEnd)
+      if (!GINGA_TIME_IS_VALID (eventEnd)
           || transTime <= eventEnd)
         {
           return transition;

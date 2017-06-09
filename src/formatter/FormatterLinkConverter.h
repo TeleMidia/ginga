@@ -103,7 +103,7 @@ private:
                    NclCompositeExecutionObject *parentObject);
 
   NclLinkCompoundTriggerCondition *createCompoundTriggerCondition (
-      short op, double delay,
+      short op, GingaTime delay,
       vector<ConditionExpression *> *ncmChildConditions,
       CausalLink *ncmLink, NclCompositeExecutionObject *parentObject);
 
@@ -128,7 +128,7 @@ private:
                       NclCompositeExecutionObject *parentObject);
 
   NclLinkCompoundAction *createCompoundAction (
-      short op, double delay, vector<Action *> *ncmChildActions,
+      short op, GingaTime delay, vector<Action *> *ncmChildActions,
       CausalLink *ncmLink, NclCompositeExecutionObject *parentObject);
 
   NclLinkTriggerCondition *createSimpleCondition (
@@ -138,11 +138,11 @@ private:
   NclFormatterEvent *createEvent (Bind *bind, Link *ncmLink,
                                   NclCompositeExecutionObject *parentObject);
 
-  double getDelayParameter (Link *ncmLink, Parameter *connParam,
-                            Bind *ncmBind);
+  GingaTime getDelayParameter (Link *ncmLink, Parameter *connParam,
+                               Bind *ncmBind);
 
   string getBindKey (Link *ncmLink, Bind *ncmBind);
-  double compileDelay (Link *ncmLink, const string &delayObject, Bind *bind);
+  GingaTime compileDelay (Link *ncmLink, const string &delayObject, Bind *bind);
 };
 
 GINGA_FORMATTER_END

@@ -32,7 +32,7 @@ private:
   NclBeginEventTransition *beginTransition;
 
 public:
-  NclEndEventTransition (double time, NclPresentationEvent *event,
+  NclEndEventTransition (GingaTime time, NclPresentationEvent *event,
                          NclBeginEventTransition *transition);
 
   virtual ~NclEndEventTransition ();

@@ -67,15 +67,18 @@ public:
                               PlayerEventType type,
                               const string &value);
 
-  virtual void setMediaTime (guint32 newTime);
+
 
   PlayerStatus getMediaStatus();
 
-  guint32 getMediaTime ();
+  GingaTime getMediaTime ();
+  void incMediaTime (GingaTime);
+  virtual void setMediaTime (GingaTime);
 
   virtual void setScope (const string &scope,
                          PlayerEventType type = PL_TYPE_PRESENTATION,
-                         double begin = -1, double end = -1);
+                         GingaTime begin = 0,
+                         GingaTime end = GINGA_TIME_NONE);
 
   virtual bool play ();
   virtual void stop ();
@@ -96,6 +99,8 @@ public:
   void redraw (SDL_Renderer *);
 
 protected:
+  GingaTime _time;              // playback time
+
   PlayerStatus status;
   string mrl;
   SDLWindow *window;
@@ -105,14 +110,8 @@ protected:
   bool forcedNaturalEnd;
   PlayerEventType scopeType;
   string scope;
-  double scopeInitTime;
-  double scopeEndTime;
-
-  // Time attributes.
-  guint32 initStartTime;
-  guint32 initPauseTime;
-  guint32 accTimePlaying;
-  guint32 accTimePaused;
+  GingaTime scopeInitTime;
+  GingaTime scopeEndTime;
 
   // Media attributes.
   SDL_Texture *texture;         // media texture

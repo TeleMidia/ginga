@@ -152,52 +152,52 @@ xstrtodorpercent (const string &s, bool *perc)
     }
 }
 
-// Converts a time string to a number in seconds.
+// Converts a time string to a number in nanoseconds.
 // The following formats are supported: "NNs" or "NN:NN:NN".
 bool
-_xstrtimetod (const string &s, double *sec)
+_xstrtotime (const string &s, GingaTime *time)
 {
   gchar *dup;
   gchar *end;
-  gdouble x;
+  double x;
 
   dup = g_strdup (s.c_str ());
   g_strchomp (dup);
 
   x = g_strtod (dup, &end);
   if (*end == '\0' || streq (end, "s"))
-    goto beach;
+    goto success;
 
   if (*end != ':')
-    goto fail;
+    goto failure;
 
   end++;
   x = 3600 * x + 60 * g_strtod (end, &end);
   if (*end != ':')
-    goto fail;
+    goto failure;
 
   end++;
   x += g_strtod (end, &end);
   if (*end != '\0')
-    goto fail;
+    goto failure;
 
- beach:
+ success:
   g_free (dup);
-  set_if_nonnull (sec, x);
+  set_if_nonnull (time, (GingaTime)(x * GINGA_SECOND));
   return true;
 
- fail:
+ failure:
   g_free (dup);
   return false;
 }
 
 // Asserted version of the previous function.
-double
-xstrtimetod (const string &s)
+GingaTime
+xstrtotime (const string &s)
 {
-  double d;
-  g_assert (_xstrtimetod (s, &d));
-  return d;
+  GingaTime t;
+  g_assert (_xstrtotime (s, &t));
+  return t;
 }
 
 // Compares two strings ignoring case.

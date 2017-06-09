@@ -35,7 +35,7 @@
   <body>
     <port id='start' component='img1'/>
     <media id='img1' src='samples/gnu.png' descriptor='desc' >
-      <area id="seg" begin="2s" end="4s" />
+      <area id="seg" begin="3s" end="6s" />
     </media>
     <media id='img2' src='samples/vector.svg' descriptor='desc2' >
     </media>

@@ -18,11 +18,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "NclLinkAction.h"
 
-GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
-
 GINGA_FORMATTER_BEGIN
 
-NclLinkAction::NclLinkAction (double delay)
+NclLinkAction::NclLinkAction (GingaTime delay)
 {
   initLinkAction (delay);
 }
@@ -37,7 +35,7 @@ NclLinkAction::~NclLinkAction ()
 }
 
 void
-NclLinkAction::initLinkAction (double delay)
+NclLinkAction::initLinkAction (GingaTime delay)
 {
   satisfiedCondition = NULL;
   this->delay = delay;
@@ -58,7 +56,7 @@ NclLinkAction::instanceOf (const string &s)
     }
 }
 
-double
+GingaTime
 NclLinkAction::getWaitDelay ()
 {
   return this->delay;
@@ -83,7 +81,7 @@ NclLinkAction::run ()
 }
 
 void
-NclLinkAction::setWaitDelay (double delay)
+NclLinkAction::setWaitDelay (GingaTime delay)
 {
   this->delay = delay;
 }
@@ -91,11 +89,7 @@ NclLinkAction::setWaitDelay (double delay)
 bool
 NclLinkAction::hasDelay ()
 {
-  if (this->delay > 0)
-    {
-      return true;
-    }
-  return false;
+  return this->delay > 0;
 }
 
 void

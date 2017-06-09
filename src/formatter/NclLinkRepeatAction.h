@@ -29,19 +29,18 @@ class NclLinkRepeatAction : public NclLinkSimpleAction
 {
 private:
   int repetitions;
-  double repetitionInterval;
-
+  GingaTime repetitionInterval;
   virtual void run ();
 
 public:
   NclLinkRepeatAction (NclFormatterEvent *, SimpleActionType);
   virtual ~NclLinkRepeatAction ();
   int getRepetitions ();
-  double getRepetitionInterval ();
+  GingaTime getRepetitionInterval ();
   void setRepetitions (int repetitions);
-  void setRepetitionInterval (double delay);
+  void setRepetitionInterval (GingaTime delay);
 };
 
 GINGA_FORMATTER_END
 
-#endif //_LINKREPEATACTION_H_
+#endif

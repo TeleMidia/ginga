@@ -29,10 +29,10 @@ protected:
 
 private:
   NclPresentationEvent *event;
-  double time;
+  GingaTime time;
 
 public:
-  NclEventTransition (double time, NclPresentationEvent *event);
+  NclEventTransition (GingaTime time, NclPresentationEvent *event);
   virtual ~NclEventTransition ();
 
   int compareTo (NclEventTransition *object);
@@ -43,7 +43,7 @@ private:
 public:
   bool equals (NclEventTransition *object);
   NclPresentationEvent *getEvent ();
-  double getTime ();
+  GingaTime getTime ();
   bool instanceOf (const string &s);
 };
 

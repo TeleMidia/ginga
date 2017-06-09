@@ -1197,21 +1197,9 @@ NclParser::parseSimpleCondition (DOMElement *simpleCond_element)
     }
 
   // delay
-  if (dom_element_try_get_attr(attValue, simpleCond_element, "delay"))
+  if (dom_element_try_get_attr (attValue, simpleCond_element, "delay"))
     {
-      if (attValue[0] == '$')
-        {
-          conditionExpression->setDelay (attValue);
-        }
-      else
-        {
-          double delayValue;
-          delayValue = xstrtod (
-                           attValue.substr (0, (attValue.length () - 1)))
-                       * 1000;
-
-          conditionExpression->setDelay (xstrbuild ("%d", (int) delayValue));
-        }
+      conditionExpression->setDelay (attValue);
     }
 
   return conditionExpression;
@@ -1435,21 +1423,12 @@ NclParser::parseSimpleAction (DOMElement *simpleAction_element)
 
       if (durVal != "" || byVal != "")
         {
-          double d;
+          GingaTime d;
           animation = new Animation ();
-
-          if (durVal[0] == '$')
+          animation->setDuration (durVal);
+          if (_xstrtotime (byVal, &d))
             {
-              animation->setDuration (durVal);
-            }
-          else
-            {
-              animation->setDuration (xstrbuild ("%d", (int) xstrtimetod (durVal)));
-            }
-
-          if (_xstrtimetod (byVal, &d))
-            {
-              animation->setBy (xstrbuild ("%d", (int) d));
+              animation->setBy (byVal);
             }
           else
             {
@@ -1776,18 +1755,7 @@ NclParser::createCompoundCondition (DOMElement *compoundCond_element)
   // delay
   if (dom_element_try_get_attr(attValue, compoundCond_element, "delay"))
     {
-      if (attValue[0] == '$')
-        {
-          conditionExpression->setDelay (attValue);
-        }
-      else
-        {
-          double delayValue = xstrtod (attValue.substr (
-                                  0, (attValue.length () - 1)))
-                              * 1000;
-
-          conditionExpression->setDelay (xstrbuild ("%d", (int) delayValue));
-        }
+      conditionExpression->setDelay (attValue);
     }
 
   return conditionExpression;
@@ -2166,14 +2134,14 @@ NclParser::createTemporalAnchor (DOMElement *areaElement)
 {
   IntervalAnchor *anchor = NULL;
   string begin, end;
-  double begVal, endVal;
+  GingaTime begVal, endVal;
 
-  if (dom_element_has_attr(areaElement, "begin")
-      || dom_element_has_attr(areaElement, "end"))
+  if (dom_element_has_attr (areaElement, "begin")
+      || dom_element_has_attr (areaElement, "end"))
     {
       if (dom_element_try_get_attr(begin, areaElement ,"begin"))
         {
-          begVal = xstrtimetod (begin) * 100;
+          begVal = xstrtotime (begin);
         }
       else
         {
@@ -2182,19 +2150,15 @@ NclParser::createTemporalAnchor (DOMElement *areaElement)
 
       if (dom_element_try_get_attr(end, areaElement, "end"))
         {
-          endVal = xstrtimetod (end) * 1000;
+          endVal = xstrtotime (end);
         }
       else
         {
-          endVal = IntervalAnchor::OBJECT_DURATION;
+          endVal = GINGA_TIME_NONE;
         }
 
-      if (xnumeq (endVal, IntervalAnchor::OBJECT_DURATION) || endVal > begVal)
-        {
-          anchor = new RelativeTimeIntervalAnchor (
-              dom_element_get_attr(areaElement, "id"),
-              begVal, endVal);
-        }
+      anchor = new RelativeTimeIntervalAnchor
+        (dom_element_get_attr (areaElement, "id"), begVal, endVal);
     }
 
   // Region delimeted through sample identifications
@@ -3410,7 +3374,7 @@ NclParser::createDescriptor (DOMElement *elt)
   // explicitDur
   if (dom_element_try_get_attr(attValue, elt, "explicitDur"))
     {
-      descriptor->setExplicitDuration (xstrtimetod (attValue) * 1000);
+      descriptor->setExplicitDuration (xstrtotime (attValue));
     }
 
   if (dom_element_try_get_attr(attValue, elt,"freeze"))

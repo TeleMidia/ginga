@@ -40,7 +40,7 @@ NclLinkRepeatAction::getRepetitions ()
   return repetitions;
 }
 
-double
+GingaTime
 NclLinkRepeatAction::getRepetitionInterval ()
 {
   return repetitionInterval;
@@ -53,7 +53,7 @@ NclLinkRepeatAction::setRepetitions (int repetitions)
 }
 
 void
-NclLinkRepeatAction::setRepetitionInterval (double delay)
+NclLinkRepeatAction::setRepetitionInterval (GingaTime delay)
 {
   this->repetitionInterval = delay;
 }
