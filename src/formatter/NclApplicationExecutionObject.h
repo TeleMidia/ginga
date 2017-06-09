@@ -54,7 +54,7 @@ public:
   NclFormatterEvent *getCurrentEvent ();
   bool hasPreparedEvent (NclFormatterEvent *event);
   void setCurrentEvent (NclFormatterEvent *event);
-  bool prepare (NclFormatterEvent *event, double offsetTime);
+  bool prepare (NclFormatterEvent *event, GingaTime offsetTime);
   bool start ();
   NclEventTransition *getNextTransition ();
   bool stop ();

@@ -37,11 +37,7 @@ Player::Player (const string &mrl)
   this->scopeInitTime = -1;
   this->scopeEndTime = -1;
 
-  //time attr
-  this->initStartTime = 0;
-  this->initPauseTime = 0;
-  this->accTimePlaying = 0;
-  this->accTimePaused = 0;
+  _time = 0;
 
   //media attr
   this->texture = NULL;         // media content
@@ -118,31 +114,29 @@ Player::notifyPlayerListeners (short code,
 }
 
 void
-Player::setMediaTime (guint32 newTime)
+Player::setMediaTime (arg_unused (GingaTime time))
 {
-  this->initStartTime = (guint32)g_get_monotonic_time();
-  this->initPauseTime = 0;
-  this->accTimePlaying = newTime * 1000; // input is in mili but glib is in micro, needs mult by 1000;
-  this->accTimePaused = 0;
+  g_critical ("DIEEEEEEEEEEEEE");
 }
 
-guint32
+GingaTime
 Player::getMediaTime ()
 {
-  if (status == PL_PAUSED)
-      return this->accTimePlaying/1000;
+  return _time;
+}
 
-  guint32 curTime = (guint32) g_get_monotonic_time() - this->initStartTime;
-  return (this->accTimePlaying + curTime - this->accTimePaused)/1000;
+void
+Player::incMediaTime (GingaTime incr)
+{
+  _time += incr;
 }
 
 void
 Player::setScope (const string &scope,
                   PlayerEventType type,
-                  double initTime,
-                  double endTime)
+                  GingaTime initTime,
+                  GingaTime endTime)
 {
-  clog << "Player::setScope '" << scope << "'" << endl;
   this->scope = scope;
   this->scopeType = type;
   this->scopeInitTime = initTime;
@@ -153,7 +147,7 @@ bool
 Player::play ()
 {
   this->forcedNaturalEnd = false;
-  this->initStartTime = (guint32) g_get_monotonic_time();
+  _time = 0;
   this->status = PL_OCCURRING;
   return true;
 }
@@ -161,10 +155,7 @@ Player::play ()
 void
 Player::stop ()
 {
-  this->initStartTime = 0;
-  this->initPauseTime = 0;
-  this->accTimePlaying = 0;
-  this->accTimePaused = 0;
+  _time = 0;
   this->status = PL_SLEEPING;
 }
 
@@ -177,31 +168,19 @@ Player::abort ()
 void
 Player::pause ()
 {
-  this->accTimePlaying +=  ((guint32)g_get_monotonic_time() - this->initStartTime);
-  this->initPauseTime = (guint32)g_get_monotonic_time();
-   this->status = PL_PAUSED;
+  this->status = PL_PAUSED;
 }
 
 void
 Player::resume ()
 {
-  this->initStartTime = (guint32)g_get_monotonic_time();
-
-  if(this->initPauseTime > 0)
-      this->accTimePaused +=  ((guint32) g_get_monotonic_time() - this->initPauseTime);
-
   this->status = PL_OCCURRING;
 }
 
 string
 Player::getPropertyValue (string const &name)
 {
-  if (_properties.count (name) != 0)
-    {
-      return _properties[name];
-    }
-
-  return "";
+  return (_properties.count (name) != 0) ? _properties[name] : "";
 }
 
 void

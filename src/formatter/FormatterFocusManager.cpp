@@ -68,7 +68,7 @@ FormatterFocusManager::FormatterFocusManager (FormatterScheduler *scheduler,
 
   checkInit ();
   instances.insert (this);
-  Ginga_Display->registerEventListener (this);
+  g_assert (Ginga_Display->registerEventListener (this));
 }
 
 FormatterFocusManager::~FormatterFocusManager ()

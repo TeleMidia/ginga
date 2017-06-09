@@ -228,7 +228,7 @@ FormatterLinkConverter::createAction (
     Action *actionExpression, CausalLink *ncmLink,
     NclCompositeExecutionObject *parentObject)
 {
-  double delay;
+  GingaTime delay;
   SimpleAction *sae;
   CompoundAction *cae;
   vector<Bind *> *binds;
@@ -324,7 +324,7 @@ FormatterLinkConverter::createCondition (
 
 NclLinkCompoundTriggerCondition *
 FormatterLinkConverter::createCompoundTriggerCondition (
-    short op, double delay,
+    short op, GingaTime delay,
     vector<ConditionExpression *> *ncmChildConditions, CausalLink *ncmLink,
     NclCompositeExecutionObject *parentObject)
 {
@@ -369,7 +369,7 @@ FormatterLinkConverter::createCondition (
     TriggerExpression *condition, CausalLink *ncmLink,
     NclCompositeExecutionObject *parentObject)
 {
-  double delay;
+  GingaTime delay;
   SimpleCondition *ste;
   CompoundCondition *cte;
   vector<Bind *> *binds;
@@ -604,7 +604,7 @@ FormatterLinkConverter::createSimpleAction (
   string paramValue;
   Animation *animation;
   int repeat;
-  double delay;
+  GingaTime delay;
   Animation *newAnimation;
   bool isUsing;
 
@@ -815,7 +815,7 @@ FormatterLinkConverter::createSimpleAction (
 
 NclLinkCompoundAction *
 FormatterLinkConverter::createCompoundAction (
-    short op, double delay, vector<Action *> *ncmChildActions,
+    short op, GingaTime delay, vector<Action *> *ncmChildActions,
     CausalLink *ncmLink, NclCompositeExecutionObject *parentObject)
 {
   NclLinkCompoundAction *action;
@@ -871,7 +871,7 @@ FormatterLinkConverter::createSimpleCondition (
     NclCompositeExecutionObject *parentObject)
 {
   NclFormatterEvent *event;
-  double delay;
+  GingaTime delay;
   string delayObject;
   NclLinkTriggerCondition *condition;
 
@@ -966,7 +966,7 @@ FormatterLinkConverter::createEvent (
   return event;
 }
 
-double
+GingaTime
 FormatterLinkConverter::getDelayParameter (Link *ncmLink,
                                            Parameter *connParam,
                                            Bind *ncmBind)
@@ -987,25 +987,18 @@ FormatterLinkConverter::getDelayParameter (Link *ncmLink,
 
   if (parameter == NULL)
     {
-      return 0.0;
+      return 0;
     }
   else
     {
-      try
+      param = parameter->getValue ();
+      if (param == "")
         {
-          param = parameter->getValue ();
-          if (param == "")
-            {
-              return 0.0;
-            }
-          else
-            {
-              return xstrtod (param) * 1000;
-            }
+          return 0;
         }
-      catch (exception *exc)
+      else
         {
-          return 0.0;
+          return (GingaTime)(xstrtod (param) * GINGA_NSECOND);
         }
     }
 }
@@ -1071,11 +1064,12 @@ FormatterLinkConverter::getBindKey (Link *ncmLink, Bind *ncmBind)
   return key;
 }
 
-double
-FormatterLinkConverter::compileDelay (Link *ncmLink, const string &delayObject,
+GingaTime
+FormatterLinkConverter::compileDelay (Link *ncmLink,
+                                      const string &delayObject,
                                       Bind *bind)
 {
-  double delay;
+  GingaTime delay;
   string::size_type pos;
   Parameter *param;
   string delayValue;
@@ -1096,7 +1090,7 @@ FormatterLinkConverter::compileDelay (Link *ncmLink, const string &delayObject,
         }
       else
         {
-          delay = xstrtod (delayObject);
+          delay = (GingaTime)(xstrtod (delayObject) * GINGA_NSECOND);
         }
     }
 

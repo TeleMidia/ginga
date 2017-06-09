@@ -38,7 +38,7 @@ class NclLinkTriggerCondition : public NclLinkCondition,
 {
 protected:
   NclLinkTriggerListener *listener;
-  double delay;
+  GingaTime delay;
 
   static bool initialized;
   static bool running;
@@ -56,8 +56,8 @@ protected:
 public:
   void setTriggerListener (NclLinkTriggerListener *listener);
   NclLinkTriggerListener *getTriggerListener ();
-  double getDelay ();
-  void setDelay (double delay);
+  GingaTime getDelay ();
+  void setDelay (GingaTime delay);
   virtual void conditionSatisfied (NclLinkCondition *condition);
 
   void handleTickEvent (GingaTime, GingaTime, int);

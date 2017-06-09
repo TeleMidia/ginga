@@ -179,11 +179,11 @@ NclApplicationExecutionObject::setCurrentEvent (NclFormatterEvent *event)
 
 bool
 NclApplicationExecutionObject::prepare (NclFormatterEvent *event,
-                                        double offsetTime)
+                                        GingaTime offsetTime)
 {
   int size;
   map<Node *, NclCompositeExecutionObject *>::iterator i;
-  double startTime = 0;
+  GingaTime startTime = 0;
   ContentAnchor *contentAnchor;
   NclFormatterEvent *auxEvent;
   NclAttributionEvent *attributeEvent;
@@ -199,7 +199,7 @@ NclApplicationExecutionObject::prepare (NclFormatterEvent *event,
 
   if (event->instanceOf ("NclPresentationEvent"))
     {
-      double duration = ((NclPresentationEvent *)event)->getDuration ();
+      GingaTime duration = ((NclPresentationEvent *)event)->getDuration ();
       if (duration <= 0)
         {
           clog << "NclApplicationExecutionObject::prepare can't prepare '";
@@ -353,7 +353,7 @@ bool
 NclApplicationExecutionObject::stop ()
 {
   ContentAnchor *contentAnchor;
-  double endTime;
+  GingaTime endTime;
   bool isLabeled = false;
 
   if (isSleeping ())
@@ -404,7 +404,7 @@ NclApplicationExecutionObject::abort ()
   vector<NclFormatterEvent *>::iterator i;
   NclFormatterEvent *ev;
   ContentAnchor *contentAnchor;
-  double endTime;
+  GingaTime endTime;
   bool isLabeled = false;
 
   if (isSleeping ())

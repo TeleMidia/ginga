@@ -62,23 +62,16 @@ NclLinkTriggerCondition::getTriggerListener ()
   return listener;
 }
 
-double
+GingaTime
 NclLinkTriggerCondition::getDelay ()
 {
   return delay;
 }
 
 void
-NclLinkTriggerCondition::setDelay (double delay)
+NclLinkTriggerCondition::setDelay (GingaTime delay)
 {
-  if (delay < 0)
-    {
-      this->delay = 0;
-    }
-  else
-    {
-      this->delay = delay;
-    }
+  this->delay = delay;
 }
 
 void
@@ -131,9 +124,6 @@ NclLinkTriggerCondition::handleTickEvent (arg_unused (GingaTime total),
   cond = data->condition;
   g_assert_nonnull (cond);
   status = data->status;
-
-  g_debug ("tick %" GINGA_TIME_FORMAT " %" GINGA_TIME_FORMAT,
-           GINGA_TIME_ARGS (total), GINGA_TIME_ARGS (elapsed));
 
   switch (status)
     {

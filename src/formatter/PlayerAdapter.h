@@ -74,9 +74,9 @@ private:
   Player *_player;
 
   void createPlayer (const string &);
-  void prepareScope (double offset = -1);
+  void prepareScope (GingaTime offset = 0);
 
-  double prepareProperties (NclExecutionObject *obj);
+  GingaTime prepareProperties (NclExecutionObject *obj);
   void prepare (void);
   void updateObjectExpectedDuration ();
 

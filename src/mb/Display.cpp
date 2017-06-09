@@ -466,7 +466,7 @@ Display::addJob (DisplayJobCallback func, void *data)
   job->func = func;
   job->data = data;
 
-  this->add (&this->jobs, job);
+  g_assert (this->add (&this->jobs, job));
   return job;
 }
 
@@ -522,7 +522,7 @@ void
 Display::destroyTexture (SDL_Texture *texture)
 {
   g_assert_nonnull (texture);
-  this->add (&this->textures, texture);
+  g_assert (this->add (&this->textures, texture));
 }
 
 
@@ -532,14 +532,14 @@ void
 Display::registerPlayer (Player * obj)
 {
   g_assert_nonnull (obj);
-  this->add (&this->players, obj);
+  g_assert (this->add (&this->players, obj));
 }
 
 void
 Display::unregisterPlayer (Player *obj)
 {
   g_assert_nonnull (obj);
-  this->remove(&this-> players, obj);
+  g_assert (this->remove(&this-> players, obj));
 }
 
 GINGA_MB_END

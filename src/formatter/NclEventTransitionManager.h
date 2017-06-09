@@ -59,19 +59,16 @@ public:
 
   void resetTimeIndex ();
   void resetTimeIndexByType (short int type);
-  void prepare (bool wholeContent, double startTime, short int type);
-  void start (double offsetTime);
-  void stop (double endTime, bool applicationType = false);
-  void abort (double endTime, bool applicationType = false);
+  void prepare (bool wholeContent, GingaTime startTime, short int type);
+  void start (GingaTime offsetTime);
+  void stop (GingaTime endTime, bool applicationType = false);
+  void abort (GingaTime endTime, bool applicationType = false);
 
-  void timeBaseNaturalEnd (int64_t timeValue, NclFormatterEvent *mainEvent,
-                           short int transType);
-
-  void updateTransitionTable (double timeValue, Player *player,
+  void updateTransitionTable (GingaTime timeValue, Player *player,
                               NclFormatterEvent *mainEvent,
                               short int transType);
 
-  set<double> *getTransitionsValues (short int transType);
+  set<GingaTime> *getTransitionsValues (short int transType);
   NclEventTransition *getNextTransition (NclFormatterEvent *mainEvent);
 };
 

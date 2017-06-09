@@ -54,7 +54,7 @@ PlayerAdapter::PlayerAdapter (FormatterScheduler *scheduler)
   this->_player = nullptr;
   this->_isAppPlayer = false;
   this->_currentEvent = nullptr;
-  Ginga_Display->registerEventListener (this);
+  g_assert (Ginga_Display->registerEventListener (this));
 }
 
 PlayerAdapter::~PlayerAdapter ()
@@ -66,7 +66,7 @@ PlayerAdapter::~PlayerAdapter ()
       delete _player;
     }
   _preparedEvents.clear ();
-  Ginga_Display->unregisterEventListener (this);
+  g_assert (Ginga_Display->unregisterEventListener (this));
 }
 
 bool
@@ -132,7 +132,7 @@ double
 PlayerAdapter::getMediaTime ()
 {
   g_assert_nonnull (_player);
-  return _player->getMediaTime ();
+  return (double)(GINGA_TIME_AS_MSECONDS (_player->getMediaTime ()));
 }
 
 Player *
@@ -190,7 +190,7 @@ PlayerAdapter::hasPrepared ()
   return true;
 }
 
-double
+GingaTime
 PlayerAdapter::prepareProperties (NclExecutionObject *obj)
 {
   NclCascadingDescriptor *descriptor;
@@ -203,7 +203,7 @@ PlayerAdapter::prepareProperties (NclExecutionObject *obj)
   double transpValue = -1;
   double parentOpacity = -1;
   bool isPercent = false;
-  double explicitDur = -1;
+  GingaTime explicitDur = GINGA_TIME_NONE;
 
   string left = "", top = "", width = "", height = "", bottom = "", right = "";
 
@@ -227,7 +227,7 @@ PlayerAdapter::prepareProperties (NclExecutionObject *obj)
       if (property != nullptr)
         {
           value = property->getPropertyValue ();
-          explicitDur = xstrtimetod (value) * 1000;
+          explicitDur = xstrtotime (value);
         }
 
       return explicitDur;
@@ -259,7 +259,7 @@ PlayerAdapter::prepareProperties (NclExecutionObject *obj)
         {
           if (name == "explicitDur")
             {
-              explicitDur = xstrtimetod (value) * 1000;
+              explicitDur = xstrtotime (value);
             }
           else if (name == "left")
             {
@@ -452,10 +452,8 @@ PlayerAdapter::prepareProperties (NclExecutionObject *obj)
         }
     }
 
-  if (descriptor != nullptr && explicitDur < 0)
-    {
-      explicitDur = descriptor->getExplicitDuration ();
-    }
+  if (descriptor != nullptr)
+    explicitDur = descriptor->getExplicitDuration ();
 
   return explicitDur;
 }
@@ -465,7 +463,7 @@ PlayerAdapter::prepare (NclExecutionObject *object,
                         NclPresentationEvent *event)
 {
   Content *content;
-  double explicitDur = -1;
+  GingaTime explicitDur = GINGA_TIME_NONE;
   string mrl = "";
 
   g_assert_nonnull (object);
@@ -521,42 +519,17 @@ PlayerAdapter::prepare (NclExecutionObject *object,
           dynamic_cast <NclPresentationEvent *>(event);
       if (presentationEvt)
         {
-          double duration = presentationEvt->getDuration ();
-          bool infDur = (isnan (duration) || isinf (duration));
+          GingaTime duration = presentationEvt->getDuration ();
 
-          if (!infDur && duration <= 0 && explicitDur <= 0)
-            {
-              g_warning ("Can't prepare an object (%s) with an event duration <= 0",
-                         object->getId().c_str());
-
-              return false;
-            }
+          if (duration == 0 && explicitDur == 0)
+            return false;
 
           // explicit duration overwrites implicit duration
-          if (!isnan (explicitDur) && explicitDur > 0)
+          if (GINGA_TIME_IS_VALID (explicitDur))
             {
               _object->removeEvent (event);
-
-              // the explicit duration is a property of
-              // the object. Which means: start an interface with
-              // begin = 4s an explicit duration = 5s => new duration
-              // will be 1s
               presentationEvt->setEnd (explicitDur);
-
-              /*
-               * Adding event in object even though it is added inside
-               * application execution object prepare (we have to consider
-               * that the event could be already prepared
-               */
               _object->addEvent (event);
-
-              g_debug ("Object '%s' with explicitDur = '%f' object duration was"
-                       "'%f'. Updated info: event begin=%f, event end=%f.",
-                       _object->getId ().c_str(),
-                       explicitDur,
-                       duration,
-                       presentationEvt->getBegin(),
-                       presentationEvt->getEnd());
             }
         }
 
@@ -608,36 +581,16 @@ PlayerAdapter::prepare (NclExecutionObject *object,
           dynamic_cast <NclPresentationEvent *> (event);
       if (presentationEvent)
         {
-          double duration = presentationEvent->getDuration ();
-          bool infDur = (isnan (duration) || isinf (duration));
-
-          if (!infDur && duration <= 0 && explicitDur <= 0)
-            {
-              g_warning ("Can't prepare an object (%s) with an event duration <= 0",
-                         object->getId().c_str());
-              return false;
-            }
+          GingaTime duration = presentationEvent->getDuration ();
+          if (duration == 0 && explicitDur == 0)
+            return false;
 
           // explicit duration overwrites implicit duration
-          if (!isnan (explicitDur) && explicitDur > 0)
+          if (GINGA_TIME_IS_VALID (explicitDur))
             {
               _object->removeEvent (event);
-
-              // The explicit duration is a property of
-              // the object. For instance: start an interface with
-              // begin = 4s and explicit duration = 5s => new duration
-              // will be 1s
               presentationEvent->setEnd (explicitDur);
-
               _object->addEvent (event);
-
-              g_debug ("Object '%s' with explicitDur = '%f' object duration was"
-                       "'%f'. Updated info: event begin=%f, event end=%f.",
-                       object->getId ().c_str(),
-                       explicitDur,
-                       duration,
-                       presentationEvent->getBegin(),
-                       presentationEvent->getEnd());
             }
         }
 
@@ -682,7 +635,7 @@ PlayerAdapter::prepare ()
 void
 PlayerAdapter::prepare (NclFormatterEvent *event)
 {
-  double duration;
+  GingaTime duration;
 
   NclAnchorEvent *anchorEvent = dynamic_cast <NclAnchorEvent *> (event);
   if (anchorEvent)
@@ -695,9 +648,9 @@ PlayerAdapter::prepare (NclFormatterEvent *event)
 
           duration = presentationEvt->getDuration ();
 
-          if (duration < IntervalAnchor::OBJECT_DURATION)
+          if (GINGA_TIME_IS_VALID (duration))
             _player->setScope ("", Player::PL_TYPE_PRESENTATION, 0.,
-                               duration/1000);
+                               duration);
         }
       else if (anchorEvent->getAnchor ()->instanceOf ("IntervalAnchor"))
         {
@@ -708,8 +661,8 @@ PlayerAdapter::prepare (NclFormatterEvent *event)
           _player->setScope (
               anchorEvent->getAnchor ()->getId (),
               Player::PL_TYPE_PRESENTATION,
-              (intervalAnchor->getBegin () / 1000.0),
-              (intervalAnchor->getEnd () / 1000.0));
+              intervalAnchor->getBegin (),
+              intervalAnchor->getEnd ());
         }
       else if (anchorEvent->getAnchor ()->instanceOf ("LabeledAnchor"))
         {
@@ -732,7 +685,7 @@ PlayerAdapter::prepare (NclFormatterEvent *event)
             {
               _player->setScope (
                   labeledAnchor->getLabel (),
-                  Player::PL_TYPE_PRESENTATION, 0.0, duration / 1000.0);
+                  Player::PL_TYPE_PRESENTATION, 0, duration);
             }
         }
     }
@@ -741,11 +694,11 @@ PlayerAdapter::prepare (NclFormatterEvent *event)
 }
 
 void
-PlayerAdapter::prepareScope (double offset)
+PlayerAdapter::prepareScope (GingaTime offset)
 {
   NclPresentationEvent *mainEvent;
-  double duration;
-  double initTime = 0;
+  GingaTime duration;
+  GingaTime initTime = 0;
   IntervalAnchor *intervalAnchor;
 
   mainEvent = dynamic_cast <NclPresentationEvent *>(_object->getMainEvent ());
@@ -755,16 +708,16 @@ PlayerAdapter::prepareScope (double offset)
         {
           duration = mainEvent->getDuration ();
 
-          if (offset > 0.0)
+          if (offset > 0)
             {
               initTime = offset;
             }
 
-          if (duration < IntervalAnchor::OBJECT_DURATION)
+          if (GINGA_TIME_IS_VALID (duration))
             {
               _player->setScope (mainEvent->getAnchor ()->getId (),
                                 Player::PL_TYPE_PRESENTATION, initTime,
-                                duration / 1000);
+                                duration);
             }
           else
             {
@@ -778,31 +731,27 @@ PlayerAdapter::prepareScope (double offset)
               = dynamic_cast<IntervalAnchor *>(mainEvent->getAnchor ());
           g_assert_nonnull (intervalAnchor);
 
-          initTime = (intervalAnchor->getBegin () / 1000);
+          initTime = (intervalAnchor->getBegin ());
           if (offset > 0)
-            {
-              initTime = offset;
-            }
+            initTime = offset;
 
           duration = intervalAnchor->getEnd ();
-          if (duration < IntervalAnchor::OBJECT_DURATION)
+          if (GINGA_TIME_IS_VALID (duration))
             {
               _player->setScope (mainEvent->getAnchor ()->getId (),
                                 Player::PL_TYPE_PRESENTATION, initTime,
-                                (intervalAnchor->getEnd () / 1000));
+                                (intervalAnchor->getEnd ()));
             }
           else
             {
               _player->setScope (mainEvent->getAnchor ()->getId (),
-                                Player::PL_TYPE_PRESENTATION);
+                                 Player::PL_TYPE_PRESENTATION);
             }
         }
     }
 
   if (offset > 0)
-    {
-      _player->setMediaTime ( (guint32)offset);
-    }
+    _player->setMediaTime (offset);
 }
 
 bool
@@ -954,6 +903,7 @@ PlayerAdapter::stop ()
             }
         }
 
+      //_player->removeListener (this);
       _player->stop ();
 
       if (_player->isForcedNaturalEnd ())
@@ -1219,12 +1169,9 @@ PlayerAdapter::unprepare ()
         }
 
       _scheduler->removePlayer (_object);
-      Ginga_Display->unregisterEventListener (this);
 
       if (NclExecutionObject::hasInstance (_object, false))
-        {
-          _object->unprepare ();
-        }
+        _object->unprepare ();
 
       _object = nullptr;
 
@@ -1332,24 +1279,23 @@ void
 PlayerAdapter::updateObjectExpectedDuration ()
 {
   NclPresentationEvent *wholeContentEvent;
-  double duration;
-  double implicitDur;
+  GingaTime duration;
+  GingaTime implicitDur;
 
   wholeContentEvent = _object->getWholeContentPresentationEvent ();
   duration = wholeContentEvent->getDuration ();
 
   if ((_object->getDescriptor () == nullptr)
-      || (isnan ((_object->getDescriptor ())->getExplicitDuration ()))
-      || (duration < 0) || (isnan (duration)))
+      || (!GINGA_TIME_IS_VALID (_object->getDescriptor ()
+                                ->getExplicitDuration ()))
+      || (!GINGA_TIME_IS_VALID (duration)))
     {
-      implicitDur = IntervalAnchor::OBJECT_DURATION;
+      implicitDur = GINGA_TIME_NONE;
 
       IntervalAnchor *intervalAnchor
           = dynamic_cast <IntervalAnchor *> (wholeContentEvent->getAnchor ());
       g_assert_nonnull(intervalAnchor);
       intervalAnchor->setEnd (implicitDur);
-
-      wholeContentEvent->setDuration (implicitDur);
     }
 }
 
@@ -1380,19 +1326,22 @@ PlayerAdapter::updateStatus (short code,
 
 void
 PlayerAdapter::handleTickEvent (arg_unused (GingaTime total),
-                                arg_unused (GingaTime diff),
+                                GingaTime diff,
                                 arg_unused (int frame))
 {
   NclEventTransition *next;
   NclFormatterEvent *evt;
-  double waited;
-  double now;
+  GingaTime waited;
+  GingaTime now;
 
   if (unlikely (_object == nullptr || _player == nullptr))
     return;
 
   if (_player->getMediaStatus() != Player::PL_OCCURRING)
     return;
+
+  // Update player time.
+  _player->incMediaTime (diff);
 
   next = _object->getNextTransition ();
   if (next == nullptr)
@@ -1406,8 +1355,6 @@ PlayerAdapter::handleTickEvent (arg_unused (GingaTime total),
 
   evt = dynamic_cast <NclFormatterEvent *> (next->getEvent ());
   g_assert_nonnull (evt);
-
-  g_debug ("---> %f, %f", waited, now);
 
   TRACE ("anchor '%s' timed out at %" GINGA_TIME_FORMAT
          ", updating transition table",
@@ -1428,9 +1375,13 @@ PlayerAdapter::handleKeyEvent (SDL_EventType evtType,
 
   if (_player->isVisible ())
     {
-      TRACE ("key '%d' received for '%s'", key,
-             _player->getPropertyValue ("mrl").c_str());
-      _object->selectionEvent (key, _player->getMediaTime () * 1000);
+      GingaTime time = _player->getMediaTime ();
+
+      TRACE ("key '%d' received for '%s' (time=%" GINGA_TIME_FORMAT ")",
+             key, _player->getPropertyValue ("mrl").c_str (),
+             GINGA_TIME_ARGS (time));
+
+      _object->selectionEvent (key, time);
     }
 }
 

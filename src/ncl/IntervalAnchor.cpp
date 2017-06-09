@@ -18,24 +18,21 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "IntervalAnchor.h"
 
-GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-conversion)
-
 GINGA_NCL_BEGIN
 
-// if the representation changes, update isObjectDuration method
-const double IntervalAnchor::OBJECT_DURATION = (double)INFINITY;
-
-IntervalAnchor::IntervalAnchor (const string &id, double begin, double end)
-    : ContentAnchor (id)
+IntervalAnchor::IntervalAnchor (const string &id,
+                                GingaTime begin,
+                                GingaTime end)
+  : ContentAnchor (id)
 {
   typeSet.insert ("IntervalAnchor");
-  this->begin = 0;
-  setEnd (end);
-  setBegin (begin);
+  this->begin = begin;
+  this->end = end;
 }
 
 void
-IntervalAnchor::setStrValues (const string &begin, const string &end)
+IntervalAnchor::setStrValues (const string &begin,
+                              const string &end)
 {
   this->strBegin = begin;
   this->strEnd = end;
@@ -53,61 +50,28 @@ IntervalAnchor::getStrEnd ()
   return this->strEnd;
 }
 
-double
+GingaTime
 IntervalAnchor::getBegin ()
 {
-  return begin;
+  return this->begin;
 }
 
-double
+GingaTime
 IntervalAnchor::getEnd ()
 {
-  return end;
+  return this->end;
 }
 
 void
-IntervalAnchor::setBegin (double b)
+IntervalAnchor::setBegin (GingaTime begin)
 {
-  bool isBDur = isObjectDuration (b);
-  bool isEDur = isObjectDuration (end);
-
-  if (b < 0 && !isBDur)
-    {
-      begin = 0;
-    }
-  else if ((!isBDur && !isEDur && b > end) || (isBDur && !isEDur))
-    {
-      begin = end;
-    }
-  else
-    {
-      begin = b;
-    }
+  this->begin = GINGA_TIME_IS_VALID (begin) ? begin : 0;
 }
 
 void
-IntervalAnchor::setEnd (double e)
+IntervalAnchor::setEnd (GingaTime end)
 {
-  bool isEDur = isObjectDuration (e);
-
-  if (e < 0 && !isEDur)
-    {
-      end = IntervalAnchor::OBJECT_DURATION;
-    }
-  else if ((!isEDur && !isObjectDuration (begin) && e < begin))
-    {
-      end = begin;
-    }
-  else
-    {
-      end = e;
-    }
-}
-
-bool
-IntervalAnchor::isObjectDuration (double value)
-{
-  return isinf (value);
+  this->end = end;
 }
 
 GINGA_NCL_END

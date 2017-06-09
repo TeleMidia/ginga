@@ -1418,21 +1418,7 @@ FormatterConverter::isEmbeddedApp (NodeEntity *dataObject)
   string mediaType = "";
   string url = "";
   string::size_type pos;
-  Descriptor *descriptor;
   Content *content;
-
-  // first, descriptor
-  descriptor = dynamic_cast <Descriptor *>(dataObject->getDescriptor ());
-  if (descriptor
-      && !descriptor->instanceOf ("DescriptorSwitch"))
-    {
-      mediaType = descriptor->getPlayerName ();
-      if (mediaType == "AdapterLuaPlayer"
-          || mediaType == "AdapterNCLPlayer")
-        {
-          return true;
-        }
-    }
 
   // second, media type
   if (dataObject->instanceOf ("ContentNode"))

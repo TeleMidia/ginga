@@ -117,8 +117,7 @@ NclCascadingDescriptor::initializeCascadingDescriptor ()
   typeSet.insert ("NclCascadingDescriptor");
 
   id = "";
-  explicitDuration = (double) NAN;
-  playerName = "";
+  explicitDuration = GINGA_TIME_NONE;
   repetitions = 0;
   freeze = false;
   region = NULL;
@@ -151,11 +150,6 @@ void
 NclCascadingDescriptor::cascadeDescriptor (Descriptor *descriptor)
 {
   vector<Transition *> *transitions = NULL;
-
-  if (descriptor->getPlayerName () != "")
-    {
-      playerName = descriptor->getPlayerName ();
-    }
 
   region = descriptor->getRegion ();
   if (!isnan (descriptor->getExplicitDuration ()))
@@ -359,22 +353,16 @@ NclCascadingDescriptor::cascadeUnsolvedDescriptor ()
   cascadeDescriptor ((Descriptor *)descriptor);
 }
 
-double
+GingaTime
 NclCascadingDescriptor::getExplicitDuration ()
 {
-  return (this->explicitDuration);
+  return this->explicitDuration;
 }
 
 bool
 NclCascadingDescriptor::getFreeze ()
 {
   return freeze;
-}
-
-string
-NclCascadingDescriptor::getPlayerName ()
-{
-  return playerName;
 }
 
 LayoutRegion *

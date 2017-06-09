@@ -52,8 +52,7 @@ private:
   vector<GenericDescriptor *> descriptors;
   vector<GenericDescriptor *> unsolvedDescriptors;
   map<string, string> parameters;
-  double explicitDuration;
-  string playerName;
+  GingaTime explicitDuration;
   int repetitions;
   bool freeze;
   LayoutRegion *region;
@@ -86,9 +85,8 @@ public:
   GenericDescriptor *getUnsolvedDescriptor (int i);
   vector<GenericDescriptor *> *getUnsolvedDescriptors ();
   void cascadeUnsolvedDescriptor ();
-  double getExplicitDuration ();
+  GingaTime getExplicitDuration ();
   bool getFreeze ();
-  string getPlayerName ();
   LayoutRegion *getRegion ();
   NclFormatterRegion *getFormatterRegion ();
 

@@ -67,8 +67,7 @@ protected:
   string id;
   Node *dataObject;
   NclCascadingDescriptor *descriptor;
-  double offsetTime;
-  double startTime;
+  GingaTime offsetTime;
   NclPresentationEvent *wholeContent;
 
   set<string> typeSet;
@@ -138,7 +137,6 @@ public:
   virtual bool isSleeping ();
   virtual bool isPaused ();
   bool instanceOf (const string &s);
-  int compareToUsingId (NclExecutionObject *object);
   Node *getDataObject ();
   NclCascadingDescriptor *getDescriptor ();
   string getId ();
@@ -159,8 +157,6 @@ public:
   void setDescriptor (GenericDescriptor *descriptor);
   virtual bool addEvent (NclFormatterEvent *event);
   void addPresentationEvent (NclPresentationEvent *event);
-  int compareTo (NclExecutionObject *object);
-  int compareToUsingStartTime (NclExecutionObject *object);
   bool containsEvent (NclFormatterEvent *event);
   NclFormatterEvent *getEventFromAnchorId (const string &anchorId);
 
@@ -169,11 +165,7 @@ public:
   vector<NclFormatterEvent *> getEvents ();
   bool hasSampleEvents ();
   set<NclAnchorEvent *> *getSampleEvents ();
-  double getExpectedStartTime ();
   NclPresentationEvent *getWholeContentPresentationEvent ();
-  void setStartTime (double t);
-  void updateEventDurations ();
-  void updateEventDuration (NclPresentationEvent *event);
   bool removeEvent (NclFormatterEvent *event);
   bool isCompiled ();
   void setCompiled (bool status);
@@ -187,16 +179,14 @@ public:
   vector<NclExecutionObject *> *getObjectPerspective (Node *node);
   vector<Node *> *getParentNodes ();
   NclFormatterEvent *getMainEvent ();
-  virtual bool prepare (NclFormatterEvent *event, double offsetTime);
+  virtual bool prepare (NclFormatterEvent *event, GingaTime offsetTime);
   virtual bool start ();
 
-  void timeBaseNaturalEnd (int64_t timeValue, short int transType);
-  void updateTransitionTable (double value, Player *player,
+  void updateTransitionTable (GingaTime value, Player *player,
                               short int transType);
 
   void resetTransitionEvents (short int transType);
-  void prepareTransitionEvents (short int transType, double startTime);
-  set<double> *getTransitionsValues (short int transType);
+  void prepareTransitionEvents (short int transType, GingaTime startTime);
   virtual NclEventTransition *getNextTransition ();
   virtual bool stop ();
   virtual bool abort ();
@@ -210,7 +200,7 @@ public:
 
   void setHandling (bool isHandling);
   void setHandler (bool isHandler);
-  bool selectionEvent (SDL_Keycode key, double currentTime);
+  bool selectionEvent (SDL_Keycode key, GingaTime currentTime);
 };
 
 GINGA_FORMATTER_END

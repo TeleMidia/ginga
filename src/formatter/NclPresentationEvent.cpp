@@ -23,9 +23,6 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-conversion)
 
 GINGA_FORMATTER_BEGIN
 
-// if the representation changes, update isUndefinedInstant method
-const double NclPresentationEvent::UNDEFINED_INSTANT = (double)NAN;
-
 NclPresentationEvent::NclPresentationEvent (const string &id,
                                             NclExecutionObject *executionObject,
                                             ContentAnchor *anchor)
@@ -40,13 +37,11 @@ NclPresentationEvent::NclPresentationEvent (const string &id,
     {
       begin = ((IntervalAnchor *)anchor)->getBegin ();
       end = ((IntervalAnchor *)anchor)->getEnd ();
-      duration = end - begin;
     }
   else
     {
-      begin = NclPresentationEvent::UNDEFINED_INSTANT;
-      end = NclPresentationEvent::UNDEFINED_INSTANT;
-      duration = NclPresentationEvent::UNDEFINED_INSTANT;
+      begin = 0;
+      end = GINGA_TIME_NONE;
     }
 }
 
@@ -63,13 +58,15 @@ NclPresentationEvent::stop ()
   return NclFormatterEvent::stop ();
 }
 
-double
+GingaTime
 NclPresentationEvent::getDuration ()
 {
-  return duration;
+  if (!GINGA_TIME_IS_VALID (this->end))
+    return GINGA_TIME_NONE;
+  return this->end - this->begin;
 }
 
-double
+GingaTime
 NclPresentationEvent::getRepetitionInterval ()
 {
   return repetitionInterval;
@@ -82,38 +79,14 @@ NclPresentationEvent::getRepetitions ()
 }
 
 void
-NclPresentationEvent::setDuration (double dur)
+NclPresentationEvent::setEnd (GingaTime end)
 {
-  this->duration = dur;
-}
-
-void
-NclPresentationEvent::setEnd (double e)
-{
-  bool isObjDur = IntervalAnchor::isObjectDuration (e);
-
-  if (!isObjDur && isnan (begin))
-    {
-      begin = 0;
-    }
-
-  if (isObjDur || e >= begin)
-    {
-      end = e;
-      if (isObjDur)
-        {
-          duration = end;
-        }
-      else
-        {
-          duration = end - begin;
-        }
-    }
+  this->end = end;
 }
 
 void
 NclPresentationEvent::setRepetitionSettings (int repetitions,
-                                             double repetitionInterval)
+                                             GingaTime repetitionInterval)
 {
   if (repetitions >= 0)
     {
@@ -127,13 +100,13 @@ NclPresentationEvent::setRepetitionSettings (int repetitions,
   this->repetitionInterval = repetitionInterval;
 }
 
-double
+GingaTime
 NclPresentationEvent::getBegin ()
 {
   return begin;
 }
 
-double
+GingaTime
 NclPresentationEvent::getEnd ()
 {
   return end;
@@ -143,12 +116,6 @@ void
 NclPresentationEvent::incrementOccurrences ()
 {
   occurrences++;
-}
-
-bool
-NclPresentationEvent::isUndefinedInstant (double value)
-{
-  return isnan (value);
 }
 
 GINGA_FORMATTER_END

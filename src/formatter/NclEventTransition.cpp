@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclEventTransition::NclEventTransition (double time,
+NclEventTransition::NclEventTransition (GingaTime time,
                                         NclPresentationEvent *event)
 {
   typeSet.insert ("NclEventTransition");
@@ -39,19 +39,7 @@ NclEventTransition::compareTo (NclEventTransition *object)
     {
       otherEntry = (NclEventTransition *)object;
 
-      if (otherEntry->time < 0 && time >= 0)
-        {
-          return -1;
-        }
-      else if (time < 0 && otherEntry->time >= 0)
-        {
-          return 1;
-        }
-      else if (time < 0 && otherEntry->time < 0)
-        {
-          return compareType (otherEntry);
-        }
-      else if (time < otherEntry->time)
+      if (time < otherEntry->time)
         {
           return -1;
         }
@@ -63,10 +51,6 @@ NclEventTransition::compareTo (NclEventTransition *object)
         {
           return compareType (otherEntry);
         }
-    }
-  else
-    {
-      return -1;
     }
   return -1;
 }
@@ -96,9 +80,6 @@ NclEventTransition::compareType (NclEventTransition *otherEntry)
       else if (event == otherEntry->event)
         {
           return 0;
-
-          /*} else if (event.hashCode() < other_entry.event.hashCode()) {
-              return -1;*/
         }
       else
         {
@@ -114,9 +95,6 @@ NclEventTransition::compareType (NclEventTransition *otherEntry)
       else if (event == otherEntry->event)
         {
           return 0;
-
-          /*} else if (event.hashCode() < other_entry.event.hashCode()) {
-                  return -1;*/
         }
       else
         {
@@ -144,7 +122,7 @@ NclEventTransition::getEvent ()
   return event;
 }
 
-double
+GingaTime
 NclEventTransition::getTime ()
 {
   return time;

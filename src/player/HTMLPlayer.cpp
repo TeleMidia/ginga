@@ -39,8 +39,7 @@ HTMLPlayer::HTMLPlayer (const string &location)
 
   _isPlaying = false;
 
-  Ginga_Display->registerEventListener(this);
-//  Ginga_Display->registerMouseEventListener(this);
+  g_assert (Ginga_Display->registerEventListener (this));
 }
 
 HTMLPlayer::~HTMLPlayer ()
