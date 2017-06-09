@@ -22,12 +22,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "PlayerAnimator.h"
 
 #include "mb/SDLWindow.h"
-#include "mb/IEventListener.h"
 using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
-class Player : public IEventListener
+class Player
 {
 public:
   enum PlayerStatus
@@ -95,8 +94,6 @@ public:
   virtual void setCurrentScope (arg_unused (const string &scopeId)) {}
 
   void redraw (SDL_Renderer *);
-  void handleTickEvent (GingaTime, GingaTime, int);
-  void handleKeyEvent (SDL_EventType, SDL_Keycode);
 
 protected:
   PlayerStatus status;

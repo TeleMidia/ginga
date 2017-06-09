@@ -21,11 +21,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Player.h"
 
 #include "mb/Display.h"
+#include "mb/IEventListener.h"
 using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
-class LuaPlayer : public Player
+class LuaPlayer : public Player, IEventListener
 {
 private:
   GINGA_MUTEX_DEFN ()
@@ -53,7 +54,8 @@ public:
   bool setKeyHandler (bool isHandler);
   virtual void setPropertyValue (const string &, const string &) override;
 
-  void handleKeyEvent (SDL_EventType, SDL_Keycode) override;
+  void handleTickEvent (GingaTime, GingaTime, int) {};
+  void handleKeyEvent (SDL_EventType, SDL_Keycode);
 };
 
 GINGA_PLAYER_END

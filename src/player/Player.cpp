@@ -53,14 +53,11 @@ Player::Player (const string &mrl)
 
   animator = new PlayerAnimator ();
   Ginga_Display->registerPlayer (this);
-  g_assert (Ginga_Display->registerEventListener (this));
 }
 
 Player::~Player ()
 {
   Ginga_Display->unregisterPlayer (this);
-  g_assert (Ginga_Display->unregisterEventListener (this));
-
   if (this->texture != NULL)
     Ginga_Display->destroyTexture (this->texture);
 
@@ -363,21 +360,6 @@ Player::redraw (SDL_Renderer *renderer)
                                this->borderColor.b, 255);
       SDLx_RenderDrawRect (renderer, &this->rect);
     }
-}
-
-void
-Player::handleTickEvent (GingaTime total, GingaTime elapsed, int frameno)
-{
-  (void) total;
-  (void) elapsed;
-  (void) frameno;
-}
-
-void
-Player::handleKeyEvent (SDL_EventType type, SDL_Keycode key)
-{
-  (void) type;
-  (void) key;
 }
 
 GINGA_PLAYER_END
