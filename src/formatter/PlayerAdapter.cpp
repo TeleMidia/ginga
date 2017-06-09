@@ -18,21 +18,19 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "PlayerAdapter.h"
 
-#include "NclLinkTransitionTriggerCondition.h"
-
+#include "FormatterScheduler.h"
 #include "NclApplicationExecutionObject.h"
+#include "NclLinkTransitionTriggerCondition.h"
 
 #include "mb/Display.h"
 using namespace ::ginga::mb;
 
 #include "player/Player.h"
-using namespace ::ginga::player;
-
-#include "FormatterScheduler.h"
-
 #include "player/ImagePlayer.h"
 #include "player/LuaPlayer.h"
-#include "player/VideoPlayer.h"
+#if defined WITH_GSTREAMER && WITH_GSTREAMER
+# include "player/VideoPlayer.h"
+#endif
 #if defined WITH_LIBRSVG && WITH_LIBRSVG
 # include "player/SvgPlayer.h"
 #endif
@@ -42,20 +40,20 @@ using namespace ::ginga::player;
 #if defined WITH_CEF && WITH_CEF
 # include "player/HTMLPlayer.h"
 #endif
-
-GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-conversion)
+using namespace ::ginga::player;
 
 GINGA_FORMATTER_BEGIN
+
+
+// Public.
 
 PlayerAdapter::PlayerAdapter (FormatterScheduler *scheduler)
 {
   this->_scheduler = scheduler;
   this->_object = nullptr;
   this->_player = nullptr;
-
   this->_isAppPlayer = false;
   this->_currentEvent = nullptr;
-
   Ginga_Display->registerEventListener (this);
 }
 
@@ -65,174 +63,131 @@ PlayerAdapter::~PlayerAdapter ()
     {
       _player->removeListener (this);
       _player->stop ();
-
       delete _player;
     }
-
   _preparedEvents.clear ();
+  Ginga_Display->unregisterEventListener (this);
 }
 
-void
-PlayerAdapter::setOutputWindow (SDLWindow* windowId)
+bool
+PlayerAdapter::setCurrentEvent (NclFormatterEvent *event)
+{
+
+  NclApplicationExecutionObject *appObject;
+  string ifId;
+
+  appObject = dynamic_cast <NclApplicationExecutionObject *> (_object);
+  g_assert_nonnull (appObject);
+
+  if (_preparedEvents.count (event->getId ()) != 0
+      && !event->instanceOf ("NclSelectionEvent")
+      && event->instanceOf ("NclAnchorEvent"))
+    {
+      NclAnchorEvent *anchorEvent = dynamic_cast <NclAnchorEvent *> (event);
+      g_assert_nonnull (anchorEvent);
+
+      LabeledAnchor *labeledAnchor
+          = dynamic_cast<LabeledAnchor *> (anchorEvent->getAnchor());
+      LambdaAnchor *lambdaAnchor
+          = dynamic_cast<LambdaAnchor *> (anchorEvent->getAnchor());
+
+      ifId = anchorEvent->getAnchor ()->getId ();
+
+      if (labeledAnchor)
+        {
+          ifId = labeledAnchor->getLabel();
+        }
+      else if(lambdaAnchor)
+        {
+          ifId = "";
+        }
+      _currentEvent = event;
+      appObject->setCurrentEvent (_currentEvent);
+      _player->setCurrentScope (ifId);
+    }
+  else if (event->instanceOf ("NclAttributionEvent"))
+    {
+      NclAttributionEvent *attributionEvt
+          = dynamic_cast <NclAttributionEvent *> (event);
+      g_assert_nonnull (attributionEvt);
+
+      ifId = attributionEvt->getAnchor ()->getPropertyName ();
+      _player->setScope (ifId, Player::PL_TYPE_ATTRIBUTION);
+
+      _currentEvent = event;
+      appObject->setCurrentEvent (_currentEvent);
+
+      _player->setCurrentScope (ifId);
+    }
+  else
+    {
+      g_warning ("adapter: event '%s' isn't prepared",
+                 event->getId ().c_str());
+      return false;
+    }
+  return true;
+}
+
+double
+PlayerAdapter::getMediaTime ()
 {
   g_assert_nonnull (_player);
+  return _player->getMediaTime ();
+}
 
-  _player->setOutWindow (windowId);
+Player *
+PlayerAdapter::getPlayer ()
+{
+  return _player;
 }
 
 void
-PlayerAdapter::createPlayer (const string &mrl)
+PlayerAdapter::setOutputWindow (SDLWindow *win)
 {
-  NclCascadingDescriptor *descriptor;
-  NodeEntity *dataObject;
-  PropertyAnchor *property;
-  g_assert_nonnull (_object);
-
-  NodeEntity *entity
-      = dynamic_cast<NodeEntity *>(_object->getDataObject ()->getDataEntity ());
-  g_assert_nonnull (entity);
-  g_assert (entity->instanceOf ("ContentNode"));
-
-  Content *content = entity->getContent ();
-  g_assert_nonnull (content);
-
-  string buf = ((ContentNode *)entity)->getNodeType ();
-  const char *mime = buf.c_str ();
-  g_assert_nonnull (mime);
-
-  if (_player == nullptr)
-    {
-#if defined WITH_GSTREAMER && WITH_GSTREAMER
-      if (g_str_has_prefix (mime, "audio")
-          || g_str_has_prefix (mime, "video"))
-        {
-          _player = new VideoPlayer (mrl);
-        }
-#endif
-#if WITH_LIBRSVG && WITH_LIBRSVG
-      else if (g_str_has_prefix (mime, "image/svg"))
-        {
-          _player = new SvgPlayer (mrl);
-        }
-#endif
-      else if (g_str_has_prefix (mime, "image"))
-        {
-          _player = new ImagePlayer (mrl);
-        }
-#if defined WITH_CEF &&  WITH_CEF
-      else if (g_str_has_prefix (mime, "text/test-html"))
-        {
-          _player = new HTMLPlayer (mrl);
-        }
-#endif
-#if defined WITH_PANGO && WITH_PANGO
-      else if (streq (mime, "text/plain"))
-        {
-          _player = new TextPlayer (mrl);
-        }
-#endif
-      else if (g_strcmp0 (mime, "application/x-ginga-NCLua") == 0)
-        {
-          _player = new LuaPlayer (mrl);
-          _isAppPlayer = true;
-        }
-      else
-        {
-          _player = new Player (mrl);
-          g_warning ("adapter: unknown mime-type '%s'", mime);
-        }
-    }
-
-  _player->addListener (this);
-
-  descriptor = _object->getDescriptor ();
-  if (descriptor)
-    {
-      for (Parameter &param: descriptor->getParameters ())
-        {
-          _player->setPropertyValue (param.getName (), param.getValue ());
-        }
-    }
-
-  dataObject = dynamic_cast <NodeEntity *> (_object->getDataObject ());
-  g_assert_nonnull (dataObject);
-
-  ContentNode *contentNode = dynamic_cast <ContentNode *> (dataObject);
-  if (contentNode)
-    {
-      for (Anchor *anchor: contentNode->getAnchors ())
-        {
-          property = dynamic_cast <PropertyAnchor *> (anchor);
-          if (property)
-            {
-              g_debug ("set property %s=%s for %s",
-                       property->getPropertyName().c_str(),
-                       property->getPropertyValue().c_str(),
-                       mrl.c_str());
-
-              _player->setPropertyValue (property->getPropertyName(),
-                                         property->getPropertyValue());
-            }
-        }
-    }
-
-  for (NclFormatterEvent *evt: _object->getEvents ())
-    {
-      g_assert_nonnull (evt);
-      NclAttributionEvent *attributionEvt
-          = dynamic_cast <NclAttributionEvent *> (evt);
-      if (attributionEvt)
-        {
-          property = attributionEvt->getAnchor ();
-          attributionEvt->setValueMaintainer (this);
-        }
-    }
-
-  g_debug ("Create player for '%s' object = '%s'",
-           mrl.c_str(),
-           _object->getId().c_str());
+  g_assert_nonnull (_player);
+  _player->setOutWindow (win);
 }
 
 bool
 PlayerAdapter::hasPrepared ()
 {
-  bool presented;
-  NclFormatterEvent *mEv;
-  short st;
+  NclFormatterEvent *evt;
 
-  if (_object == nullptr || _player == nullptr)
+  if (_object == nullptr)
     {
-      g_debug ("PlayerAdapter::hasPrepared returns false because"
-               " object = '%p' and player = '%p'",
-               _object, _player);
-      return false;
-    }
-  else if (_isAppPlayer)
-    {
-      return true;
-    }
-
-  presented = _player->isForcedNaturalEnd ();
-  if (presented)
-    {
-      g_debug ("PlayerAdapter::hasPrepared return false because"
-               " a natural end was forced");
+      TRACE ("failed, object is null");
       return false;
     }
 
-  mEv = _object->getMainEvent ();
-  NclApplicationExecutionObject *appExeObj =
-      dynamic_cast <NclApplicationExecutionObject *> (_object);
-  if (mEv != nullptr && (appExeObj == nullptr))
+  if (_player == nullptr)
     {
-      st = mEv->getCurrentState ();
-      if (st != EventUtil::ST_SLEEPING)
-        {
-          return true;
-        }
+      TRACE ("failed, player is null");
+      return false;
     }
 
-  return false;
+  if (_isAppPlayer)
+    return true;                // nothing to do
+
+  if (_player->isForcedNaturalEnd ())
+    {
+      TRACE ("failed, a natural end was forced");
+      return false;
+    }
+
+  evt = _object->getMainEvent ();
+  if (evt == nullptr)
+    {
+      TRACE ("failed, main event is null");
+      return false;
+    }
+
+  if (evt->getCurrentState () == EventUtil::ST_SLEEPING)
+    {
+      TRACE ("failed, main event is sleeping");
+      return false;
+    }
+
+  return true;
 }
 
 double
@@ -290,19 +245,16 @@ PlayerAdapter::prepareProperties (NclExecutionObject *obj)
   ncmNode = obj->getDataObject ();
   anchors = ((Node *)ncmNode)->getOriginalPropertyAnchors ();
   g_assert_nonnull (anchors);
+
   for (PropertyAnchor *property : *anchors)
-    {
-      properties[property->getPropertyName()] = property->getPropertyValue();
-    }
+    properties[property->getPropertyName()] = property->getPropertyValue();
 
   for (auto it: properties)
     {
       name = it.first;
       value = it.second;
 
-      g_debug ( "Prepare property: name=%s, value=%s.",
-                name.c_str(), value.c_str());
-
+      TRACE ( "preparing name='%s', value='%s'", name.c_str(), value.c_str());
       if (value != "")
         {
           if (name == "explicitDur")
@@ -520,8 +472,7 @@ PlayerAdapter::prepare (NclExecutionObject *object,
 
   if (hasPrepared ())
     {
-      g_debug ("PlayerAdapter::prepare returns false, because the"
-               "player is already prepared.");
+      TRACE ("failed, player already prepared");
       return false;
     }
 
@@ -895,10 +846,6 @@ PlayerAdapter::start ()
           _player->stop ();
           startSuccess = false;
         }
-      else
-        {
-          _object->setPlayer (this->_player);
-        }
     }
 
   return startSuccess;
@@ -930,7 +877,7 @@ PlayerAdapter::stop ()
 
       if (stopLambda)
         {
-          g_debug ("AdapterApplicationPlayer::stop ALL");
+          TRACE ("stop lambda");
 
           if (_currentEvent->getCurrentState () != EventUtil::ST_SLEEPING)
             {
@@ -947,10 +894,7 @@ PlayerAdapter::stop ()
                   _preparedEvents.erase (i);
                   i = _preparedEvents.begin ();
 
-                  g_debug ("AdapterApplicationPlayer::stop ALL forcing '%s' to "
-                           "stop",
-                           event->getId().c_str());
-
+                  TRACE ("forcing '%s' to stop", event->getId().c_str());
                   event->stop ();
                 }
               else
@@ -1098,10 +1042,7 @@ PlayerAdapter::abort ()
                   && event->getCurrentState () != EventUtil::ST_SLEEPING)
                 {
                   i = _preparedEvents.erase (i);
-
-                  g_debug ("AdapterApplicationPlayer::abort ALL forcing '%s' to "
-                           "abort",
-                           event->getId().c_str());
+                  TRACE ("forcing '%s' to abort", event->getId().c_str());
                   event->abort ();
                 }
               else
@@ -1123,14 +1064,13 @@ PlayerAdapter::abort ()
 
       if (abortLambda && !_currentEvent->abort ())
         {
-          g_debug ("Trying to abort '%s', but it is already sleeping",
-                   _currentEvent->getId ().c_str());
+          TRACE ("failed to abort '%s', event is sleeping",
+                 _currentEvent->getId ().c_str());
         }
       else
         {
-          g_debug ("Can't abort an already sleeping object = '%p' mrl = '%s'",
-                   _object,
-                   _currentEvent->getId ().c_str());
+          TRACE ("failed to abort, object='%p' mrl='%s'",
+                 _object, _currentEvent->getId ().c_str());
         }
       return false;
     }
@@ -1358,41 +1298,32 @@ PlayerAdapter::setProperty (const string &name,
                             const string &value)
 {
   g_assert_nonnull (_player);
-  g_debug ("setProperty name = '%s' value='%s' address=%p.",
-           name.c_str(),
-           value.c_str(),
-           _player);
-
+  TRACE ("setting property name='%s' to value='%s' (player='%p')",
+         name.c_str (), value.c_str (), _player);
   _player->setPropertyValue (name, value);
 }
 
 string
 PlayerAdapter::getProperty (NclAttributionEvent *event)
 {
+  PropertyAnchor *anchor;
+  string name;
+  string value;
+
+  g_assert_nonnull (_object);
+  g_assert_nonnull (_player);
   g_assert_nonnull (event);
 
-  string name = event->getAnchor ()->getPropertyName ();
-  string value = getProperty (name);
+  anchor = event->getAnchor ();
+  g_assert_nonnull (anchor);
 
-  return value;
-}
-
-string
-PlayerAdapter::getProperty (const string &name)
-{
-  string value = "";
-
-  g_assert_nonnull (_player);
-  g_assert_nonnull (_object);
-
+  name = anchor->getPropertyName ();
   value = _player->getPropertyValue (name);
   if (value == "")
-    {
-      value = _object->getPropertyValue (name);
-    }
+    value = _object->getPropertyValue (name);
 
-  g_debug ("getProperty name = '%s', value = '%s'",
-           name.c_str(), value.c_str());
+  TRACE ("getting property with name='%s', value='%s'",
+         name.c_str (), value.c_str ());
 
   return value;
 }
@@ -1422,19 +1353,6 @@ PlayerAdapter::updateObjectExpectedDuration ()
     }
 }
 
-double
-PlayerAdapter::getMediaTime ()
-{
-  g_assert_nonnull (_player);
-  return _player->getMediaTime ();
-}
-
-Player *
-PlayerAdapter::getPlayer ()
-{
-  return _player;
-}
-
 void
 PlayerAdapter::updateStatus (short code,
                              const string &parameter,
@@ -1461,6 +1379,44 @@ PlayerAdapter::updateStatus (short code,
 }
 
 void
+PlayerAdapter::handleTickEvent (arg_unused (GingaTime total),
+                                arg_unused (GingaTime diff),
+                                arg_unused (int frame))
+{
+  NclEventTransition *next;
+  NclFormatterEvent *evt;
+  double waited;
+  double now;
+
+  if (unlikely (_object == nullptr || _player == nullptr))
+    return;
+
+  if (_player->getMediaStatus() != Player::PL_OCCURRING)
+    return;
+
+  next = _object->getNextTransition ();
+  if (next == nullptr)
+    return;
+
+  waited = next->getTime ();
+  now = _player->getMediaTime ();
+
+  if (now < waited)
+    return;
+
+  evt = dynamic_cast <NclFormatterEvent *> (next->getEvent ());
+  g_assert_nonnull (evt);
+
+  g_debug ("---> %f, %f", waited, now);
+
+  TRACE ("anchor '%s' timed out at %" GINGA_TIME_FORMAT
+         ", updating transition table",
+         evt->getId ().c_str(), GINGA_TIME_ARGS (total));
+
+  _object->updateTransitionTable (now, _player, ContentAnchor::CAT_TIME);
+};
+
+void
 PlayerAdapter::handleKeyEvent (SDL_EventType evtType,
                                SDL_Keycode key)
 {
@@ -1470,14 +1426,12 @@ PlayerAdapter::handleKeyEvent (SDL_EventType evtType,
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
 
-  g_debug ("Key event received for '%s' player visibility = '%d' "
-           "event keycode='%d'",
-           _player->getPropertyValue("mrl").c_str(),
-           _player->isVisible(),
-           key);
-
   if (_player->isVisible ())
-    _object->selectionEvent (key, _player->getMediaTime () * 1000);
+    {
+      TRACE ("key '%d' received for '%s'", key,
+             _player->getPropertyValue ("mrl").c_str());
+      _object->selectionEvent (key, _player->getMediaTime () * 1000);
+    }
 }
 
 void
@@ -1498,65 +1452,122 @@ PlayerAdapter::setVisible (bool visible)
     }
 }
 
-bool
-PlayerAdapter::setCurrentEvent (NclFormatterEvent *event)
+
+// Private.
+
+void
+PlayerAdapter::createPlayer (const string &mrl)
 {
-  string interfaceId;
+  NclCascadingDescriptor *descriptor;
+  NodeEntity *dataObject;
+  PropertyAnchor *property;
+  NodeEntity *entity;
+  Content *content;
 
-  NclApplicationExecutionObject *appObject =
-      dynamic_cast <NclApplicationExecutionObject *> (_object);
-  g_assert_nonnull (appObject);
+  string buf;
+  const char *mime;
 
-  if (_preparedEvents.count (event->getId ()) != 0
-      && !event->instanceOf ("NclSelectionEvent")
-      && event->instanceOf ("NclAnchorEvent"))
+  g_assert_nonnull (_object);
+  dataObject = dynamic_cast <NodeEntity *>(_object->getDataObject ());
+  g_assert_nonnull (dataObject);
+
+  entity = dynamic_cast <NodeEntity *>(dataObject->getDataEntity ());
+  g_assert_nonnull (entity);
+  g_assert (entity->instanceOf ("ContentNode"));
+
+  content = entity->getContent ();
+  g_assert_nonnull (content);
+
+  buf = ((ContentNode *) entity)->getNodeType ();
+  mime = buf.c_str ();
+  g_assert_nonnull (mime);
+
+  if (_player == nullptr)
     {
-      NclAnchorEvent *anchorEvent = dynamic_cast <NclAnchorEvent *> (event);
-      g_assert_nonnull (anchorEvent);
-      interfaceId = anchorEvent->getAnchor ()->getId ();
-
-      LabeledAnchor *labeledAnchor
-          = dynamic_cast<LabeledAnchor *> (anchorEvent->getAnchor());
-      LambdaAnchor *lambdaAnchor
-          = dynamic_cast<LambdaAnchor *> (anchorEvent->getAnchor());
-
-      if (labeledAnchor)
+#if defined WITH_GSTREAMER && WITH_GSTREAMER
+      if (g_str_has_prefix (mime, "audio")
+          || g_str_has_prefix (mime, "video"))
         {
-          interfaceId = labeledAnchor->getLabel();
+          _player = new VideoPlayer (mrl);
         }
-      else if(lambdaAnchor)
+#endif
+#if WITH_LIBRSVG && WITH_LIBRSVG
+      else if (g_str_has_prefix (mime, "image/svg"))
         {
-          interfaceId = "";
+          _player = new SvgPlayer (mrl);
         }
-
-      _currentEvent = event;
-
-      appObject->setCurrentEvent (_currentEvent);
-      _player->setCurrentScope (interfaceId);
+#endif
+      else if (g_str_has_prefix (mime, "image"))
+        {
+          _player = new ImagePlayer (mrl);
+        }
+#if defined WITH_CEF &&  WITH_CEF
+      else if (g_str_has_prefix (mime, "text/html"))
+        {
+          _player = new HTMLPlayer (mrl);
+        }
+#endif
+#if defined WITH_PANGO && WITH_PANGO
+      else if (streq (mime, "text/plain"))
+        {
+          _player = new TextPlayer (mrl);
+        }
+#endif
+      else if (g_strcmp0 (mime, "application/x-ginga-NCLua") == 0)
+        {
+          _player = new LuaPlayer (mrl);
+          _isAppPlayer = true;
+        }
+      else
+        {
+          _player = new Player (mrl);
+          g_warning ("adapter: unknown mime-type '%s'", mime);
+        }
     }
-  else if (event->instanceOf ("NclAttributionEvent"))
+
+  _player->addListener (this);
+  descriptor = _object->getDescriptor ();
+  if (descriptor != nullptr)
     {
+      for (Parameter &param: descriptor->getParameters ())
+        {
+          _player->setPropertyValue (param.getName (), param.getValue ());
+        }
+    }
+
+  ContentNode *contentNode = dynamic_cast <ContentNode *> (dataObject);
+  if (contentNode)
+    {
+      for (Anchor *anchor: contentNode->getAnchors ())
+        {
+          property = dynamic_cast <PropertyAnchor *> (anchor);
+          if (property)
+            {
+              TRACE ("setting property property name='%s' to '%s' for %s",
+                     property->getPropertyName ().c_str (),
+                     property->getPropertyValue ().c_str (),
+                     mrl.c_str ());
+
+              _player->setPropertyValue (property->getPropertyName(),
+                                         property->getPropertyValue());
+            }
+        }
+    }
+
+  for (NclFormatterEvent *evt: _object->getEvents ())
+    {
+      g_assert_nonnull (evt);
       NclAttributionEvent *attributionEvt
-          = dynamic_cast <NclAttributionEvent *> (event);
-      g_assert_nonnull (attributionEvt);
-
-      interfaceId = attributionEvt->getAnchor ()->getPropertyName ();
-      _player->setScope (interfaceId, Player::PL_TYPE_ATTRIBUTION);
-
-      _currentEvent = event;
-      appObject->setCurrentEvent (_currentEvent);
-
-      _player->setCurrentScope (interfaceId);
-    }
-  else
-    {
-      g_warning ("Event '%s' isn't prepared",
-                 event->getId ().c_str() );
-
-      return false;
+          = dynamic_cast <NclAttributionEvent *> (evt);
+      if (attributionEvt)
+        {
+          property = attributionEvt->getAnchor ();
+          attributionEvt->setValueMaintainer (this);
+        }
     }
 
-  return true;
+  TRACE ("created player for '%s' object='%s'",
+         mrl.c_str (), _object->getId ().c_str ());
 }
 
 GINGA_FORMATTER_END

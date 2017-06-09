@@ -56,8 +56,6 @@ private:
   SDL_Window *screen;           // display screen
   SDL_Renderer *renderer;       // display renderer
 
-  set<NclExecutionObject*> timeAnchorListeners;   // time anchor listeners
-
   bool add (GList **, gpointer);
   bool remove (GList **, gpointer);
   bool find (GList *, gconstpointer);
@@ -93,14 +91,6 @@ public:
   // Players.
   void registerPlayer (Player *);
   void unregisterPlayer (Player *);
-
-  // time anchors listeners
-  void registerTimeAnchorListener(NclExecutionObject*);
-  void unregisterTimeAnchorListener(NclExecutionObject*);
-
-private:
-  void notifyTimeAnchorListeners();
-
 };
 
 // Global display.

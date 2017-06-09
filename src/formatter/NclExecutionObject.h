@@ -79,8 +79,6 @@ protected:
   bool isHandler;
   bool isHandling;
 
-  Player* player;
-
 private:
   map<Node *, Node *> nodeParentTable;
 
@@ -146,7 +144,6 @@ public:
   string getId ();
 
   void notifyTimeAnchorCallBack();
-  void setPlayer(Player*);
 
   NclCompositeExecutionObject *getParentObject ();
   NclCompositeExecutionObject *getParentObject (Node *node);

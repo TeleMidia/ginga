@@ -128,8 +128,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
   NclExecutionObject *obj;
   NclCascadingDescriptor *descriptor;
   PlayerAdapter *player;
-  Player *playerContent;
-  SDLWindow* win = NULL;
+  SDLWindow *win = NULL;
 
   obj = event->getExecutionObject ();
   g_assert_nonnull (obj);
@@ -200,9 +199,6 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
               g_warning ("scheduler: failed to prepare player");
               return;
             }
-
-          playerContent = player->getPlayer ();
-          g_assert_nonnull (playerContent);
 
           win = this->prepareFormatterRegion (obj);
 

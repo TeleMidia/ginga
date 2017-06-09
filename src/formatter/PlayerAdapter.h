@@ -15,23 +15,13 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _FORMATTERPLAYER_H_
-#define _FORMATTERPLAYER_H_
-
-#include "ncl/Content.h"
-#include "ncl/ContentNode.h"
-#include "ncl/NodeEntity.h"
-#include "ncl/ReferenceContent.h"
-#include "ncl/LambdaAnchor.h"
-#include "ncl/IntervalAnchor.h"
-#include "ncl/EventUtil.h"
-using namespace ::ginga::ncl;
-
-#include "NclCompositeExecutionObject.h"
-#include "NclExecutionObject.h"
+#ifndef PLAYER_ADAPTER_H
+#define PLAYER_ADAPTER_H
 
 #include "NclAttributionEvent.h"
+#include "NclExecutionObject.h"
 #include "NclPresentationEvent.h"
+#include "mb/IEventListener.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -43,8 +33,15 @@ class PlayerAdapter :
     public IEventListener
 {
 public:
-  explicit PlayerAdapter (FormatterScheduler *scheduler);
+  explicit PlayerAdapter (FormatterScheduler *);
   virtual ~PlayerAdapter ();
+
+  bool setCurrentEvent (NclFormatterEvent *); // app
+  double getMediaTime ();
+  Player *getPlayer ();
+  void setOutputWindow (SDLWindow *);
+
+  virtual bool setProperty (NclAttributionEvent *, const string &);
 
   bool prepare (NclExecutionObject *, NclPresentationEvent *);
   bool hasPrepared ();
@@ -57,50 +54,42 @@ public:
   bool abort ();
   void naturalEnd ();
 
-  // From INclAttributeValueMaintainer
+  // From INclAttributeValueMaintainer.
   string getProperty (NclAttributionEvent *event) override;
   void setProperty (const string &name, const string &value) override;
 
-  virtual bool setProperty (NclAttributionEvent *evt, const string &value);
-  virtual string getProperty (const string &name);
-
-  // From IPlayerListener
+  // From IPlayerListener.
   virtual void updateStatus (short code,
                              const string &parameter = "",
                              short type = 10,
                              const string &value = "") override;
 
-  virtual void handleTickEvent (GingaTime, GingaTime, int) override {}
+  // From IEventListener.
   virtual void handleKeyEvent (SDL_EventType, SDL_Keycode) override;
-
-  double getMediaTime ();
-  Player *getPlayer ();
-  void setOutputWindow (SDLWindow* windowId);
-
-  bool setCurrentEvent (NclFormatterEvent *event); // app
+  virtual void handleTickEvent (GingaTime, GingaTime, int);
 
 private:
   FormatterScheduler *_scheduler;
   NclExecutionObject *_object;
   Player *_player;
 
-  void createPlayer (const string &mrl);
+  void createPlayer (const string &);
   void prepareScope (double offset = -1);
 
   double prepareProperties (NclExecutionObject *obj);
   void prepare (void);
   void updateObjectExpectedDuration ();
 
-  bool checkRepeat (NclPresentationEvent *mainEvent);
-  void setVisible (bool visible);
+  bool checkRepeat (NclPresentationEvent *);
+  void setVisible (bool);
 
+  // Application player only.
   bool _isAppPlayer;
-  map<string, NclFormatterEvent *> _preparedEvents;  // app
-  NclFormatterEvent *_currentEvent; // app
-  void prepare (NclFormatterEvent *event); // app
-
+  map<string, NclFormatterEvent *> _preparedEvents;
+  NclFormatterEvent *_currentEvent;
+  void prepare (NclFormatterEvent *event);
 };
 
 GINGA_FORMATTER_END
 
-#endif //_FORMATTERPLAYER_H_
+#endif // PLAYER_ADAPTER_H
