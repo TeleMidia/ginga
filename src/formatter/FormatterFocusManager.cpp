@@ -31,7 +31,8 @@ GINGA_FORMATTER_BEGIN
 bool FormatterFocusManager::init = false;
 set<FormatterFocusManager *> FormatterFocusManager::instances;
 
-FormatterFocusManager::FormatterFocusManager (Settings *settings,
+FormatterFocusManager::FormatterFocusManager (FormatterScheduler *scheduler,
+                                              Settings *settings,
                                               INclLinkActionListener *settingActions,
                                               FormatterConverter *converter)
 {
@@ -60,7 +61,7 @@ FormatterFocusManager::FormatterFocusManager (Settings *settings,
   ginga_color_parse (str, &this->defaultSelBorderColor);
 
   this->converter = converter;
-  this->_scheduler = _scheduler;
+  this->_scheduler = scheduler;
   this->settings = settings;
   this->selectedObject = NULL;
   this->settingActions = settingActions;

@@ -37,7 +37,7 @@ FormatterScheduler::FormatterScheduler ()
   this->compiler = new FormatterConverter (this->ruleAdapter);
   this->compiler->setLinkActionListener (this);
   this->focusManager = new FormatterFocusManager
-    (this->settings, this, this->compiler);
+    (this, this->settings, this, this->compiler);
   this->focusManager->setKeyHandler (true);
 }
 

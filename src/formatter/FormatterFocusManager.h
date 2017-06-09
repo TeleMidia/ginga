@@ -30,7 +30,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclFormatterRegion.h"
 
-
 #include "PlayerAdapter.h"
 
 GINGA_FORMATTER_BEGIN
@@ -64,7 +63,8 @@ private:
   static set<FormatterFocusManager *> instances;
 
 public:
-  FormatterFocusManager (Settings *,
+  FormatterFocusManager (FormatterScheduler *,
+                         Settings *,
                          INclLinkActionListener *,
                          FormatterConverter *);
 
