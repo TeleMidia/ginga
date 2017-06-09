@@ -19,34 +19,22 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define FORMATTERCONVERTER_H_
 
 #include "ncl/SwitchNode.h"
-using namespace ::ginga::ncl;
-
 #include "ncl/PropertyAnchor.h"
 #include "ncl/ContentAnchor.h"
 #include "ncl/LambdaAnchor.h"
 #include "ncl/SwitchPort.h"
 #include "ncl/Port.h"
 #include "ncl/InterfacePoint.h"
-using namespace ::ginga::ncl;
-
 #include "ncl/CompositeNode.h"
 #include "ncl/ContextNode.h"
 #include "ncl/ContentNode.h"
 #include "ncl/Node.h"
 #include "ncl/NodeEntity.h"
-using namespace ::ginga::ncl;
-
 #include "ncl/EventUtil.h"
-using namespace ::ginga::ncl;
-
 #include "ncl/GenericDescriptor.h"
-using namespace ::ginga::ncl;
-
 #include "ncl/Bind.h"
 #include "ncl/CausalLink.h"
 #include "ncl/Link.h"
-using namespace ::ginga::ncl;
-
 #include "ncl/ReferNode.h"
 using namespace ::ginga::ncl;
 
@@ -93,8 +81,6 @@ public:
   NclCompositeExecutionObject *
   addSameInstance (NclExecutionObject *exeObj, ReferNode *referNode);
 
-  void compileExecutionObjectLinks (NclExecutionObject *exeObj);
-
   NclExecutionObject *getExecutionObjectFromPerspective (
       NclNodeNesting *perspective, GenericDescriptor *descriptor);
 
@@ -102,11 +88,14 @@ public:
 
   NclFormatterEvent *getEvent (NclExecutionObject *exeObj,
                                InterfacePoint *interfacePoint,
-                               int ncmEventType, const string &key);
+                               int ncmEventType,
+                               const string &key);
 
   static NclCascadingDescriptor *
   getCascadingDescriptor (NclNodeNesting *nodePerspective,
                           GenericDescriptor *descriptor);
+
+  void compileExecutionObjectLinks (NclExecutionObject *exeObj);
 
   void compileExecutionObjectLinks (
       NclExecutionObject *exeObj, Node *dataObject,
@@ -117,8 +106,6 @@ public:
 
   NclFormatterEvent *insertContext (NclNodeNesting *contextPerspective,
                                     Port *port);
-
-  bool removeExecutionObject (NclExecutionObject *exeObj, ReferNode *referNode);
 
   bool removeExecutionObject (NclExecutionObject *exeObj);
 
