@@ -79,7 +79,6 @@ public:
   bool setKeyHandler (bool isHandler);
 
 private:
-  void setHandlingObjects (bool isHandling);
   void resetKeyMaster ();
 
 public:

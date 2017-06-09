@@ -150,7 +150,7 @@ FormatterFocusManager::setKeyHandler (bool isHandler)
   focusedObj = getObjectFromFocusIndex (currentFocus);
 
   this->isHandler = isHandler;
-  setHandlingObjects (isHandler);
+  this->converter->setHandlingStatus (isHandler);
   if (isHandler)
     {
       if (focusedObj == NULL)
@@ -188,12 +188,6 @@ FormatterFocusManager::setKeyHandler (bool isHandler)
     }
 
   return isHandler;
-}
-
-void
-FormatterFocusManager::setHandlingObjects (bool isHandling)
-{
-  this->converter->setHandlingStatus (isHandling);
 }
 
 NclExecutionObject *
