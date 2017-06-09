@@ -213,8 +213,8 @@ LuaPlayer::play (void)
       return true;
     }
 
-   SDL_Rect rect = this->window->getRect ();
-   g_assert (rect.w > 0 && rect.h > 0);
+  SDL_Rect rect = this->window->getRect ();
+  g_assert (rect.w > 0 && rect.h > 0);
 
   this->_nw = ncluaw_open (this->mrl.c_str (), rect.w, rect.h, &errmsg);
 
@@ -224,6 +224,7 @@ LuaPlayer::play (void)
   evt_ncl_send_presentation (this->_nw, "start", this->_scope.c_str ());
 
   Ginga_Display->addJob (displayJobCallbackWrapper, this);
+  g_assert (Ginga_Display->registerEventListener (this));
 
   g_debug ("waiting for first cycle");
   this->unlock ();
@@ -254,6 +255,7 @@ LuaPlayer::stop (void)
   evt_ncl_send_presentation (this->_nw, "stop", this->_scope.c_str ());
   ncluaw_cycle (this->_nw);
   ncluaw_close (this->_nw);
+  g_assert (Ginga_Display->unregisterEventListener (this));
   this->_nw = NULL;
   this->forcedNaturalEnd = true;
  done:
