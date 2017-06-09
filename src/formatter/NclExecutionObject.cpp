@@ -80,7 +80,6 @@ NclExecutionObject::NclExecutionObject (const string &id, Node *node,
                                         bool handling,
                                         INclLinkActionListener *seListener)
 {
-  Ginga_Display->registerTimeAnchorListener(this);
   initializeExecutionObject (id, node, NULL, handling, seListener);
 }
 
@@ -89,7 +88,6 @@ NclExecutionObject::NclExecutionObject (const string &id, Node *node,
                                         bool handling,
                                         INclLinkActionListener *seListener)
 {
-  Ginga_Display->registerTimeAnchorListener(this);
   initializeExecutionObject (id, node,
                              new NclCascadingDescriptor (descriptor),
                              handling, seListener);
@@ -100,15 +98,11 @@ NclExecutionObject::NclExecutionObject (const string &id, Node *node,
                                         bool handling,
                                         INclLinkActionListener *seListener)
 {
-  Ginga_Display->registerTimeAnchorListener(this);
   initializeExecutionObject (id, node, descriptor, handling, seListener);
 }
 
 NclExecutionObject::~NclExecutionObject ()
 {
-
-  Ginga_Display->unregisterTimeAnchorListener(this);
-
   map<Node *, Node *>::iterator i;
   map<Node *, NclCompositeExecutionObject *>::iterator j;
 
@@ -161,7 +155,6 @@ NclExecutionObject::initializeExecutionObject (
   typeSet.insert ("NclExecutionObject");
 
   addInstance (this);
-  this->player = NULL;
   this->seListener = seListener;
   this->deleting = false;
   this->id = id;
@@ -1681,35 +1674,5 @@ NclExecutionObject::selectionEvent (SDL_Keycode key, double currentTime)
 
   return selected;
 }
-
-void
-NclExecutionObject::setPlayer(Player* p)
-{
-   this->player = p;
-}
-
-void
-NclExecutionObject::notifyTimeAnchorCallBack()
-{
-  NclEventTransition *nextTransition;
-  if (player == NULL)
-    return;
-
-  if (player->getMediaStatus() != Player::PL_OCCURRING)
-    return;
-
-  nextTransition = getNextTransition ();
-  if (nextTransition == NULL)
-    return;
-
-  double nTime = nextTransition->getTime();
-  double mTime = (double) this->player->getMediaTime ();
-
-  if (mTime < nTime )
-    return;
-
-  updateTransitionTable (mTime, this->player, ContentAnchor::CAT_TIME);
-}
-
 
 GINGA_FORMATTER_END

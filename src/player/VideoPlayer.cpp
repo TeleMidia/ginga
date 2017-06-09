@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "VideoPlayer.h"
 
-#define TRACE() g_debug ("%s",G_STRFUNC);
-
 GINGA_PLAYER_BEGIN
 
 VideoPlayer::VideoPlayer (const string &mrl) : Player (mrl)

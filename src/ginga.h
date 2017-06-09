@@ -135,6 +135,34 @@ using namespace std;
 #define syntax_warning(fmt, ...)\
   g_warning ("syntax warning: " fmt, ## __VA_ARGS__)
 
+// Tracing.
+static inline string
+__ginga_strfunc (const string &s)
+{
+  string classname;
+  string funcname;
+  string result;
+  size_t i = s.rfind ("::");
+  if (i == std::string::npos)
+    {
+      classname = "::";
+      funcname = s.substr (0, s.find ("("));
+      result = classname + funcname + "()";
+    }
+  else
+    {
+      size_t j = s.substr (0, i).rfind ("::");
+      classname = (j == std::string::npos)
+        ? s.substr (0, i) : s.substr (j + 2, i - j - 2);
+      funcname = s.substr (i + 2, s.find ("(") - i - 2);
+      result = classname + "::" + funcname + "()";
+    }
+  return result;
+}
+
+#define TRACE(fmt, ...)\
+  g_debug ("%s: " fmt, __ginga_strfunc (G_STRFUNC).c_str (), ## __VA_ARGS__)
+
 // Thread.
 #define GINGA_MUTEX_DEFN()                      \
   GRecMutex mutex;                              \

@@ -176,7 +176,6 @@ Display::renderLoop ()
       elapsed = now - last;
       last = now;
       this->notifyTickListeners (now - epoch, elapsed, frameno++);
-      this->notifyTimeAnchorListeners ();
 
       while (SDL_PollEvent (&evt)) // handle input
         {
@@ -541,23 +540,6 @@ Display::unregisterPlayer (Player *obj)
 {
   g_assert_nonnull (obj);
   this->remove(&this-> players, obj);
-}
-
-void
-Display::notifyTimeAnchorListeners(){
-    set<NclExecutionObject*>::iterator it;
-    for (it=timeAnchorListeners.begin(); it!=timeAnchorListeners.end(); ++it)
-          (*it)->notifyTimeAnchorCallBack();
-}
-
-void
-Display::registerTimeAnchorListener(NclExecutionObject* obj){
-   timeAnchorListeners.insert(obj);
-}
-
-void
-Display::unregisterTimeAnchorListener(NclExecutionObject* obj){
-   timeAnchorListeners.erase (obj);
 }
 
 GINGA_MB_END
