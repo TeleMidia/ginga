@@ -146,7 +146,7 @@ public:
    * c\oordinates. Return **true** if the rectangle was provided."
    * (copying from CEF documentation).
    */
-  bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect);
+  bool GetViewRect (CefRefPtr<CefBrowser> browser, CefRect &rect) override;
 
   /**
    * @brief Paint an element.
@@ -162,10 +162,11 @@ public:
    * "Called when an element should be painted."
    * (copying from CEF documentation).
    */
-  void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type,
-                                              const RectList &dirtyRects,
-                                              const void * buffer,
-                                              int width, int height);
+  void OnPaint (CefRefPtr<CefBrowser> browser,
+                PaintElementType type,
+                const RectList &dirtyRects,
+                const void * buffer,
+                int width, int height) override;
 
 private:
   /**
@@ -193,7 +194,7 @@ private:
    *
    * This a MACRO defined by CEF.
    */
-  IMPLEMENT_REFCOUNTING(GingaCefHandler);
+  IMPLEMENT_REFCOUNTING(GingaCefHandler)
 };
 
 /**
@@ -227,21 +228,21 @@ public:
    *
    * @return The handler for browser life span events.
    */
-  virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler();
+  virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler () override;
 
   /**
    * @brief Return the handler for browser load status events.
    *
    * @return The handler for browser load status events.
    */
-  virtual CefRefPtr<CefLoadHandler> GetLoadHandler();
+  virtual CefRefPtr<CefLoadHandler> GetLoadHandler () override;
 
   /**
    * @brief Return the handler for off-screen rendering events.
    *
    * @return The handler for off-screen rendering events.
    */
-  virtual CefRefPtr<CefRenderHandler> GetRenderHandler();
+  virtual CefRefPtr<CefRenderHandler> GetRenderHandler () override;
 
 private:
   /**
@@ -254,7 +255,7 @@ private:
    *
    * This a MACRO defined by CEF.
    */
-  IMPLEMENT_REFCOUNTING(GingaCefClient);
+  IMPLEMENT_REFCOUNTING(GingaCefClient)
 };
 
 /**
@@ -315,7 +316,7 @@ public:
    * This method translate the key code captured by SDL in the event to the
    * CEF code style and forward the events to the active browser.
    */
-  void handleKeyEvent (SDL_EventType type, SDL_Keycode key);
+  void handleKeyEvent (SDL_EventType type, SDL_Keycode key) override;
 
 private:
   /**

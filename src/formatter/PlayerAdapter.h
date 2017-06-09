@@ -68,10 +68,10 @@ public:
   virtual void updateStatus (short code,
                              const string &parameter = "",
                              short type = 10,
-                             const string &value = "");
+                             const string &value = "") override;
 
-  virtual void handleTickEvent (GingaTime, GingaTime, int) {}
-  virtual void handleKeyEvent (SDL_EventType, SDL_Keycode);
+  virtual void handleTickEvent (GingaTime, GingaTime, int) override {}
+  virtual void handleKeyEvent (SDL_EventType, SDL_Keycode) override;
 
   double getMediaTime ();
   Player *getPlayer ();
