@@ -113,10 +113,10 @@ Player::notifyPlayerListeners (short code,
     i->updateStatus (code, parameter, type, value);
 }
 
-void
+void G_GNUC_NORETURN
 Player::setMediaTime (arg_unused (GingaTime time))
 {
-  g_critical ("DIEEEEEEEEEEEEE");
+  ERROR_NOT_IMPLEMENTED ("cannot seek in media content");
 }
 
 GingaTime

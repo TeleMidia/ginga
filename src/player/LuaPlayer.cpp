@@ -101,7 +101,7 @@ LuaPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   this->lock ();
   if (this->_nw == NULL)
     {
-      g_debug ("last cycle");
+      TRACE ("last cycle");
       this->unlock ();
       return false;             // remove job
     }
@@ -143,7 +143,7 @@ LuaPlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
   if (unlikely (signal))
     {
-      g_debug ("first cycle");
+      TRACE ("first cycle");
       this->unlock ();
       return true;              // keep job
     }
@@ -165,7 +165,7 @@ LuaPlayer::LuaPlayer (const string &mrl) : Player (mrl)
   g_assert_nonnull (dir);
 
   if (g_chdir (dir) < 0)
-    g_error ("%s", g_strerror (errno));
+    ERROR ("%s", g_strerror (errno));
   g_free (dir);
 
   this->mutexInit ();
@@ -184,7 +184,7 @@ void
 LuaPlayer::abort (void)
 {
   this->lock ();
-  g_debug ("abort scope %s", this->_scope.c_str ());
+  TRACE ("abort scope %s", this->_scope.c_str ());
   evt_ncl_send_presentation (this->_nw, "abort", this->_scope.c_str ());
   this->unlock ();
   this->stop ();
@@ -194,7 +194,7 @@ void
 LuaPlayer::pause (void)
 {
   this->lock ();
-  g_debug ("pause scope %s", this->_scope.c_str ());
+  TRACE ("pause scope %s", this->_scope.c_str ());
   evt_ncl_send_presentation (this->_nw, "pause", this->_scope.c_str ());
   this->unlock ();
   Player::pause ();
@@ -205,7 +205,7 @@ LuaPlayer::play (void)
 {
   char *errmsg;
   this->lock ();
-  g_debug ("play scope %s", this->_scope.c_str ());
+  TRACE ("play scope %s", this->_scope.c_str ());
   if (this->_nw != NULL)
     {
       this->unlock ();
@@ -219,14 +219,14 @@ LuaPlayer::play (void)
   this->_nw = ncluaw_open (this->mrl.c_str (), rect.w, rect.h, &errmsg);
 
   if (unlikely (this->_nw == NULL))
-    g_error ("cannot load NCLua file %s: %s", this->mrl.c_str (), errmsg);
+    ERROR ("cannot load NCLua file %s: %s", this->mrl.c_str (), errmsg);
 
   evt_ncl_send_presentation (this->_nw, "start", this->_scope.c_str ());
 
   Ginga_Display->addJob (displayJobCallbackWrapper, this);
   g_assert (Ginga_Display->registerEventListener (this));
 
-  g_debug ("waiting for first cycle");
+  TRACE ("waiting for first cycle");
   this->unlock ();
 
   Player::play ();
@@ -237,7 +237,7 @@ void
 LuaPlayer::resume (void)
 {
   this->lock ();
-  g_debug ("resume scope %s", this->_scope.c_str ());
+  TRACE ("resume scope %s", this->_scope.c_str ());
   evt_ncl_send_presentation (this->_nw, "resume", this->_scope.c_str ());
   this->unlock ();
   Player::resume ();
@@ -247,7 +247,7 @@ void
 LuaPlayer::stop (void)
 {
   this->lock ();
-  g_debug ("stop scope %s", this->_scope.c_str ());
+  TRACE ("stop scope %s", this->_scope.c_str ());
 
   if (this->_nw == NULL)
     goto done;

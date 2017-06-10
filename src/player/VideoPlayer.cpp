@@ -93,7 +93,7 @@ void
 VideoPlayer::eosCB (arg_unused (GstAppSink *appsink), gpointer data)
 {
   VideoPlayer *player = (VideoPlayer *) data;
-  g_debug ("EOS!!!!!");
+  TRACE ("EOS");
   player->setEOS (true);
 }
 
@@ -234,8 +234,7 @@ VideoPlayer::play ()
   this->ret = gst_element_set_state (this->playbin, GST_STATE_PLAYING);
   g_assert (this->ret != GST_STATE_CHANGE_FAILURE);
 
-  g_debug ("\nVideoPlayer::play()\n");
-  //clog << "\n\n\n>>VideoPlayer::play() - " << this->mrl << "\n\n\n" << endl;
+  TRACE ("play");
   printPipelineState ();
 
   GstStateChangeReturn retWait = gst_element_get_state (this->playbin,
@@ -246,7 +245,8 @@ VideoPlayer::play ()
   gint n_audio;
   g_object_get (this->playbin, "n-video", &n_video, NULL); //Number of video streams
   g_object_get (this->playbin, "n-audio", &n_audio, NULL); //Number of audio streams
-  g_debug ("%d video stream(s), %d audio stream(s)", n_video, n_audio);
+
+  TRACE ("%d video stream(s), %d audio stream(s)", n_video, n_audio);
 
   if ( retWait == GST_STATE_CHANGE_SUCCESS )
     {
@@ -276,7 +276,7 @@ VideoPlayer::pause ()
   this->ret = gst_element_set_state (this->playbin, GST_STATE_PAUSED);
   g_assert (this->ret != GST_STATE_CHANGE_FAILURE);
 
-  g_debug ("\nVideoPlayer::pause()\n");
+  TRACE ("pause");
   printPipelineState ();
 
   GstStateChangeReturn retWait = gst_element_get_state (this->playbin, NULL, NULL, GST_CLOCK_TIME_NONE);
@@ -316,8 +316,7 @@ VideoPlayer::stop ()
   //this->ret = gst_element_set_state (this->playbin, GST_STATE_NULL);
   g_assert (this->ret != GST_STATE_CHANGE_FAILURE);
 
-  g_debug ("\nVideoPlayer::stop()\n");
-  //clog << "\n\n\n>>VideoPlayer::stop() - " << this->mrl << "\n\n\n" << endl;
+  TRACE ("stop");
 
   printPipelineState ();
 
@@ -339,7 +338,7 @@ VideoPlayer::resume ()
 {
   Player::resume ();
 
-  g_debug ("\nVideoPlayer::resume()\n");
+  TRACE ("resume");
   printPipelineState ();
 
   if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_PAUSED)
@@ -363,7 +362,7 @@ VideoPlayer::setPropertyValue (const string &name, const string &value)
   if (name == "soundLevel")
   {
       this->soundLevel = xstrtodorpercent (value, NULL);
-      g_debug ("video: setting soundLevel to %f\n", this->soundLevel);
+      TRACE ("setting soundLevel to %f", this->soundLevel);
       g_object_set (G_OBJECT (this->playbin), "volume",
                     this->soundLevel, NULL);
   }
@@ -426,23 +425,23 @@ VideoPlayer::printPipelineState()
 {
   if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_PAUSED)
   {
-    g_debug ("PIPELINE::PAUSED\n");
+    TRACE ("pipeline is paused");
   }
   else if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_PLAYING)
   {
-    g_debug ("PIPELINE::PLAYING\n");
+    TRACE ("pipeline is playing");
   }
   else if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_READY)
   {
-    g_debug ("PIPELINE::READY\n");
+    TRACE ("pipeline is ready");
   }
   else if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_NULL)
   {
-    g_debug ("PIPELINE::NULL\n");
+    TRACE ("pipeline is null");
   }
   else if (GST_ELEMENT_CAST(this->playbin)->current_state == GST_STATE_VOID_PENDING)
   {
-    g_debug ("PIPELINE::PENDING\n");
+    TRACE ("pipeline is pending");
   }
 }
 

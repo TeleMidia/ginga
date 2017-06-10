@@ -42,7 +42,8 @@ TextPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   gchar *contents;
   GError *err = NULL;
   g_file_get_contents (this->mrl.c_str (), &contents, NULL, &err);
-  if (err != NULL) g_error_free (err);
+  if (err != NULL)
+    g_error_free (err);
   g_assert_nonnull(contents);
 
   SDL_Surface *sfc;

@@ -18,23 +18,33 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 
 
-// Misc --------------------------------------------------------------------
+// Logging -----------------------------------------------------------------
 
-// Tests whether two floating-point numbers are equal.
-bool
-xnumeq (double x, double y)
+// Parses G_STRFUNC to generate a log prefix.
+string
+__ginga_strfunc (const string &strfunc)
 {
-  return ABS (x - y) <= .0000001;
-}
+  string result;
+  size_t i, j;
 
-// Returns the running time in microseconds.
-gint64
-xruntime ()
-{
-  static gint64 t0 = -1;
-  if (unlikely (t0 < 0))
-      t0 = g_get_monotonic_time ();
-  return g_get_monotonic_time () - t0;
+  i = strfunc.find ("(");
+  result = strfunc.substr (0, i);
+
+  i = result.rfind ("::");
+  if (i == std::string::npos)
+    {
+      result += "::";
+      goto done;
+    }
+
+  j = (result.substr (0, i - 1)).rfind ("::");
+  if (j == std::string::npos)
+    goto done;
+
+  result = result.substr (j + 2, i - 1);
+
+ done:
+  return result + "()";
 }
 
 

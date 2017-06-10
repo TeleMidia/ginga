@@ -20,6 +20,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
+GINGA_PLAYER_BEGIN
+
 typedef struct
 {
   string name;
@@ -53,4 +55,6 @@ private:
 
 };
 
-#endif /* PLAYER_ANIMATOR_H */
+GINGA_PLAYER_END
+
+#endif // PLAYER_ANIMATOR_H
