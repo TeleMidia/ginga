@@ -928,7 +928,8 @@ FormatterConverter::processLink (Link *ncmLink,
                   for (ReferNode *referNode: *sameInstances)
                     {
                       contains
-                          = causalLink->containsSourceNode (referNode, descriptor);
+                          = causalLink->containsSourceNode (referNode,
+                                                            descriptor);
 
                       if (contains)
                         {
@@ -1169,102 +1170,87 @@ FormatterConverter::resolveSwitchEvents (
   InterfacePoint *interfacePoint;
   SwitchPort *switchPort;
   vector<Node *> *nestedSeq;
-  vector<Port *> *mappings;
-  vector<Port *>::iterator j;
-  Port *mapping;
   NclNodeNesting *nodePerspective;
   NclFormatterEvent *mappedEvent;
 
   selectedObject = switchObject->getSelectedObject ();
   if (selectedObject == nullptr)
     {
-      WARNING ("selected object is nullptr");
+      WARNING ("Selected object is nullptr");
       return;
     }
 
   selectedNode = selectedObject->getDataObject ();
   selectedNodeEntity = (NodeEntity *)(selectedNode->getDataEntity ());
-  events = switchObject->getEvents ();
-  if (!events.empty ())
+
+  if (events.empty ())
     {
-      i = events.begin ();
-      while (i != events.end ())
-        {
-          mappedEvent = NULL;
-          switchEvent = (NclSwitchEvent *)(*i);
-          interfacePoint = switchEvent->getInterfacePoint ();
-          if (interfacePoint->instanceOf ("LambdaAnchor"))
-            {
-              mappedEvent = getEvent (
-                  selectedObject, selectedNodeEntity->getLambdaAnchor (),
-                  switchEvent->getEventType (), switchEvent->getKey ());
-            }
-          else
-            {
-              switchPort = (SwitchPort *)interfacePoint;
-              mappings = switchPort->getPorts ();
-              if (mappings != NULL && !mappings->empty ())
-                {
-                  j = mappings->begin ();
-                  while (j != mappings->end ())
-                    {
-                      mapping = (*j);
-                      if (mapping->getNode () == selectedNode
-                          || mapping->getNode ()->getDataEntity ()
-                                 == selectedNode->getDataEntity ())
-                        {
-                          nodePerspective
-                              = switchObject->getNodePerspective ();
-
-                          nestedSeq = mapping->getMapNodeNesting ();
-                          nodePerspective->append (nestedSeq);
-                          delete nestedSeq;
-
-                          endPointObject
-                              = getExecutionObjectFromPerspective (
-                                nodePerspective, nullptr);
-
-                          if (endPointObject != nullptr)
-                            {
-                              mappedEvent = getEvent (
-                                    endPointObject,
-                                    mapping->getEndInterfacePoint (),
-                                    switchEvent->getEventType (),
-                                    switchEvent->getKey ());
-                            }
-
-                          delete nodePerspective;
-                          break;
-                        }
-                      ++j;
-                    }
-                }
-              else
-                {
-                  WARNING ("There is no mapped events.");
-                }
-            }
-
-          if (mappedEvent != nullptr)
-            {
-              switchEvent->setMappedEvent (mappedEvent);
-              clog << "FormatterConverter::resolveSwitchEvents setting '";
-              clog << mappedEvent->getId () << "' as mapped event of '";
-              clog << switchEvent->getId () << "'" << endl;
-            }
-          else
-            {
-              clog << "FormatterConverter::resolveSwitchEvents ";
-              clog << "Warning! Can't set a mapped event for '";
-              clog << switchEvent->getId () << "'" << endl;
-            }
-
-          ++i;
-        }
+      WARNING ("Can't find events.");
     }
-  else
+
+  for (NclFormatterEvent *event: switchObject->getEvents ())
     {
-      WARNING ("can't find events");
+      mappedEvent = nullptr;
+      switchEvent = dynamic_cast<NclSwitchEvent *> (event);
+      g_assert_nonnull (switchEvent);
+
+      interfacePoint = switchEvent->getInterfacePoint ();
+      if (interfacePoint->instanceOf ("LambdaAnchor"))
+        {
+          mappedEvent = getEvent (
+                selectedObject, selectedNodeEntity->getLambdaAnchor (),
+                switchEvent->getEventType (), switchEvent->getKey ());
+        }
+      else
+        {
+          switchPort = dynamic_cast<SwitchPort *> (interfacePoint);
+          g_assert_nonnull (switchPort);
+
+          for (Port *mapping: *(switchPort->getPorts ()))
+            {
+              if (mapping->getNode () == selectedNode
+                  || mapping->getNode ()->getDataEntity ()
+                  == selectedNode->getDataEntity ())
+                {
+                  nodePerspective
+                      = switchObject->getNodePerspective ();
+
+                  nestedSeq = mapping->getMapNodeNesting ();
+                  nodePerspective->append (nestedSeq);
+
+                  endPointObject
+                      = getExecutionObjectFromPerspective (
+                        nodePerspective, nullptr);
+
+                  if (endPointObject != nullptr)
+                    {
+                      mappedEvent = getEvent (
+                            endPointObject,
+                            mapping->getEndInterfacePoint (),
+                            switchEvent->getEventType (),
+                            switchEvent->getKey ());
+                    }
+
+                  delete nestedSeq;
+                  delete nodePerspective;
+
+                  break;
+                }
+            }
+        }
+
+      if (mappedEvent != nullptr)
+        {
+          switchEvent->setMappedEvent (mappedEvent);
+          TRACE ("Setting '%s' as mapped event of '%s'.",
+                 mappedEvent->getId ().c_str(),
+                 switchEvent->getId ().c_str());
+        }
+      else
+        {
+          WARNING ("Can't set a mapped event for '%s'.",
+                   switchEvent->getId ().c_str());
+        }
     }
 }
 
@@ -1278,34 +1264,26 @@ FormatterConverter::insertNode (NclNodeNesting *perspective,
   short eventType;
 
   event = nullptr;
-  try
+  executionObject = getExecutionObjectFromPerspective (perspective,
+                                                       descriptor);
+
+  if (executionObject != nullptr)
     {
-      executionObject = getExecutionObjectFromPerspective (
-          perspective, descriptor);
-
-      if (executionObject != NULL)
+      if (!interfacePoint->instanceOf ("PropertyAnchor"))
         {
-          if (!interfacePoint->instanceOf ("PropertyAnchor"))
-            {
-              eventType = EventUtil::EVT_PRESENTATION;
-            }
-          else
-            {
-              eventType = EventUtil::EVT_ATTRIBUTION;
-            }
-
-          // get the event corresponding to the node anchor
-          event = getEvent (executionObject, interfacePoint, eventType, "");
+          eventType = EventUtil::EVT_PRESENTATION;
+        }
+      else
+        {
+          eventType = EventUtil::EVT_ATTRIBUTION;
         }
 
-      return event;
-    }
-  catch (exception *exc)
-    {
-      clog << "FormatterConverter::insertNode exception" << endl;
+      // get the event corresponding to the node anchor
+      event = getEvent (executionObject, interfacePoint, eventType, "");
     }
 
-  return nullptr;
+  return event;
+
 }
 
 NclFormatterEvent *
