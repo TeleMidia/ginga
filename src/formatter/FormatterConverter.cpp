@@ -1393,19 +1393,13 @@ FormatterConverter::eventStateChanged (NclFormatterEvent *event,
 bool
 FormatterConverter::isEmbeddedApp (NodeEntity *dataObject)
 {
-  string mediaType = "";
-  string url = "";
-  string::size_type pos;
+  string mime = "";
 
   // second, media type
   ContentNode *contentNode = dynamic_cast <ContentNode *> (dataObject);
   if (contentNode)
     {
-      mediaType = contentNode->getNodeType ();
-      if (mediaType != "")
-        {
-          return isEmbeddedAppMediaType (mediaType);
-        }
+      mime = contentNode->getNodeType ();
     }
 
   // finally, content file extension
@@ -1416,24 +1410,22 @@ FormatterConverter::isEmbeddedApp (NodeEntity *dataObject)
           = dynamic_cast <ReferenceContent *> (content);
       if (referenceContent)
         {
-          url = referenceContent->getCompleteReferenceUrl ();
+          string url = referenceContent->getCompleteReferenceUrl ();
 
           if (url != "")
             {
-              pos = url.find_last_of (".");
+              string::size_type pos = url.find_last_of (".");
               if (pos != std::string::npos)
                 {
                   string mime = "";
                   string ext = url.substr (pos, url.length () - (pos + 1));
                   ginga_mime_table_index (ext, &mime);
-
-                  return isEmbeddedAppMediaType (mime);
                 }
             }
         }
     }
 
-  return false;
+  return isEmbeddedAppMediaType (mime);
 }
 
 bool
