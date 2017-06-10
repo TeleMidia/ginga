@@ -2126,7 +2126,7 @@ NclParser::createTemporalAnchor (DOMElement *areaElement)
           endVal = GINGA_TIME_NONE;
         }
 
-      anchor = new RelativeTimeIntervalAnchor
+      anchor = new IntervalAnchor
         (dom_element_get_attr (areaElement, "id"), begVal, endVal);
     }
 
@@ -2139,11 +2139,6 @@ NclParser::createTemporalAnchor (DOMElement *areaElement)
   if (dom_element_has_attr (areaElement, "last"))
     {
       ERROR_NOT_IMPLEMENTED ("area: attribute 'last' is not supported");
-    }
-
-  if (anchor)
-    {
-      anchor->setStrValues (begin, end);
     }
 
   return anchor;

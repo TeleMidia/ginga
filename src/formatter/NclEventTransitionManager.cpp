@@ -56,7 +56,7 @@ NclEventTransitionManager::getType (NclPresentationEvent *event)
   ContentAnchor *anchor;
 
   anchor = event->getAnchor ();
-  if (anchor->instanceOf ("RelativeTimeIntervalAnchor")
+  if (anchor->instanceOf ("IntervalAnchor")
       || anchor->instanceOf ("LambdaAnchor")
       || anchor->instanceOf ("LabeledAnchor"))
     {

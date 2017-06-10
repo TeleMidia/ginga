@@ -139,7 +139,6 @@ src+= ncl/ReferNode.cpp
 src+= ncl/ReferenceContent.cpp
 src+= ncl/ReferredNode.cpp
 src+= ncl/RegionBase.cpp
-src+= ncl/RelativeTimeIntervalAnchor.cpp
 src+= ncl/Role.cpp
 src+= ncl/Rule.cpp
 src+= ncl/RuleBase.cpp
