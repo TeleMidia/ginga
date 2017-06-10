@@ -1090,7 +1090,8 @@ FormatterConverter::processExecutionObjectSwitch (
   NclExecutionObject *selectedObject;
 
   switchNode
-      = (SwitchNode *)(switchObject->getDataObject ()->getDataEntity ());
+      = dynamic_cast<SwitchNode *>(switchObject->getDataObject ()->getDataEntity ());
+  g_assert_nonnull (switchNode);
 
   selectedNode = _ruleAdapter->adaptSwitch (switchNode);
   if (selectedNode == NULL)
@@ -1338,51 +1339,45 @@ FormatterConverter::eventStateChanged (NclFormatterEvent *event,
                                        short transition,
                                        arg_unused (short previousState))
 {
-  NclExecutionObject *exeObj;
-  vector<NclFormatterEvent *> evs;
-  vector<NclFormatterEvent *>::iterator i;
-  NclFormatterEvent *ev;
-
-  exeObj = (NclExecutionObject *)(event->getExecutionObject ());
+  NclExecutionObject *exeObj
+      = (NclExecutionObject *)(event->getExecutionObject ());
   NclExecutionObjectSwitch *exeSwitch
       = dynamic_cast <NclExecutionObjectSwitch *> (exeObj);
   if (exeSwitch)
     {
       if (transition == EventUtil::TR_STARTS)
         {
-          evs = exeSwitch->getEvents ();
-
-          i = evs.begin ();
-          while (i != evs.end ())
+          for (NclFormatterEvent *e: exeSwitch->getEvents())
             {
-              if ((*i)->instanceOf ("NclSwitchEvent"))
+              if (e->instanceOf ("NclSwitchEvent"))
                 {
-                  ev = ((NclSwitchEvent *)(*i))->getMappedEvent ();
-                  if (ev == NULL)
+                  NclFormatterEvent *ev
+                      = ((NclSwitchEvent *)(e))->getMappedEvent ();
+
+                  if (ev == nullptr)
                     {
                       // there is only one way to start a switch with
                       // NULL mapped event: a instSame refernode inside
                       // it was started
-                      processExecutionObjectSwitch (
-                          (NclExecutionObjectSwitch *)exeObj);
-                      ev = ((NclSwitchEvent *)(*i))->getMappedEvent ();
-                      if (ev != NULL)
+                      processExecutionObjectSwitch (exeSwitch);
+
+                      ev = ((NclSwitchEvent *)(e))->getMappedEvent ();
+                      if (ev != nullptr)
                         {
                           // now we know the event is mapped, we can start
                           // the
                           // switchport
-                          (*i)->start ();
+                          e->start ();
                         }
                     }
                 }
-              ++i;
             }
         }
 
       if (transition == EventUtil::TR_STOPS
           || transition == EventUtil::TR_ABORTS)
         {
-          ((NclExecutionObjectSwitch *)exeObj)->select (NULL);
+          exeSwitch->select (NULL);
         }
     }
   else if (exeObj->instanceOf ("NclCompositeExecutionObject"))
