@@ -182,11 +182,9 @@ public:
   virtual bool prepare (NclFormatterEvent *event, GingaTime offsetTime);
   virtual bool start ();
 
-  void updateTransitionTable (GingaTime value, Player *player,
-                              short int transType);
-
-  void resetTransitionEvents (short int transType);
-  void prepareTransitionEvents (short int transType, GingaTime startTime);
+  void updateTransitionTable (GingaTime value, Player *player);
+  void resetTransitionEvents ();
+  void prepareTransitionEvents (GingaTime startTime);
   virtual NclEventTransition *getNextTransition ();
   virtual bool stop ();
   virtual bool abort ();

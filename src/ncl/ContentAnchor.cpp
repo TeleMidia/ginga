@@ -20,13 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-const short ContentAnchor::CAT_NONE = 0x00;
-const short ContentAnchor::CAT_ALL = 0x01;
-const short ContentAnchor::CAT_TIME = 0x02;
-const short ContentAnchor::CAT_SAMPLES = 0x03;
-const short ContentAnchor::CAT_FRAMES = 0x04;
-const short ContentAnchor::CAT_NPT = 0x05;
-
 ContentAnchor::ContentAnchor (const string &id) : Anchor (id)
 {
   typeSet.insert ("ContentAnchor");

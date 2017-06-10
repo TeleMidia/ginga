@@ -1360,7 +1360,7 @@ PlayerAdapter::handleTickEvent (arg_unused (GingaTime total),
          ", updating transition table",
          evt->getId ().c_str(), GINGA_TIME_ARGS (now));
 
-  _object->updateTransitionTable (now, _player, ContentAnchor::CAT_TIME);
+  _object->updateTransitionTable (now, _player);
 };
 
 void
