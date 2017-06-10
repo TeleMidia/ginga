@@ -27,21 +27,13 @@ class IntervalAnchor : public ContentAnchor
 protected:
   GingaTime begin;
   GingaTime end;
-  string strBegin;
-  string strEnd;
 
 public:
-  static const double OBJECT_DURATION;
-
   IntervalAnchor (const string &id, GingaTime begin, GingaTime end);
-  void setStrValues (const string &begin, const string &end);
-  string getStrBegin ();
-  string getStrEnd ();
   GingaTime getBegin ();
   GingaTime getEnd ();
   void setBegin (GingaTime);
   void setEnd (GingaTime);
-  static bool isObjectDuration (GingaTime);
 };
 
 GINGA_NCL_END

@@ -253,7 +253,7 @@ NclApplicationExecutionObject::prepare (NclFormatterEvent *event,
       ++i;
     }
 
-  transMan->prepare (event == wholeContent, startTime, ContentAnchor::CAT_TIME);
+  transMan->prepare (event == wholeContent, startTime);
 
   size = (int) otherEvents.size ();
   for (j = 0; j < size; j++)
