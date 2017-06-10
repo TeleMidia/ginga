@@ -19,11 +19,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _LAMBDAANCHOR_H_
 
 #include "IntervalAnchor.h"
-#include "RelativeTimeIntervalAnchor.h"
 
 GINGA_NCL_BEGIN
 
-class LambdaAnchor : public RelativeTimeIntervalAnchor
+class LambdaAnchor : public IntervalAnchor
 {
 public:
   LambdaAnchor (const string &id);

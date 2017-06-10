@@ -921,7 +921,7 @@ NclExecutionObject::prepare (NclFormatterEvent *event, GingaTime offsetTime)
       ++i;
     }
 
-  prepareTransitionEvents (ContentAnchor::CAT_TIME, startTime);
+  prepareTransitionEvents (startTime);
 
   size = (int) otherEvents.size ();
   for (j = 0; j < size; j++)
@@ -982,23 +982,21 @@ NclExecutionObject::start ()
 }
 
 void
-NclExecutionObject::updateTransitionTable (GingaTime value, Player *player,
-                                           short int transType)
+NclExecutionObject::updateTransitionTable (GingaTime value, Player *player)
 {
-  transMan->updateTransitionTable (value, player, mainEvent, transType);
+  transMan->updateTransitionTable (value, player, mainEvent);
 }
 
 void
-NclExecutionObject::resetTransitionEvents (short int transType)
+NclExecutionObject::resetTransitionEvents ()
 {
-  transMan->resetTimeIndexByType (transType);
+  transMan->resetTimeIndex ();
 }
 
 void
-NclExecutionObject::prepareTransitionEvents (short int transType,
-                                             GingaTime startTime)
+NclExecutionObject::prepareTransitionEvents (GingaTime startTime)
 {
-  transMan->prepare (mainEvent == wholeContent, startTime, transType);
+  transMan->prepare (mainEvent == wholeContent, startTime);
 }
 
 NclEventTransition *

@@ -25,14 +25,6 @@ GINGA_NCL_BEGIN
 class ContentAnchor : public Anchor
 {
 public:
-  // interval anchor types
-  static const short CAT_NONE;
-  static const short CAT_ALL;
-  static const short CAT_TIME;
-  static const short CAT_SAMPLES;
-  static const short CAT_FRAMES;
-  static const short CAT_NPT;
-
   ContentAnchor (const string &id);
   virtual ~ContentAnchor (){};
 };
