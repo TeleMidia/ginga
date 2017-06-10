@@ -18,26 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTERCONVERTER_H_
 #define FORMATTERCONVERTER_H_
 
-#include "ncl/SwitchNode.h"
-#include "ncl/PropertyAnchor.h"
-#include "ncl/ContentAnchor.h"
-#include "ncl/LambdaAnchor.h"
-#include "ncl/SwitchPort.h"
-#include "ncl/Port.h"
-#include "ncl/InterfacePoint.h"
-#include "ncl/CompositeNode.h"
-#include "ncl/ContextNode.h"
-#include "ncl/ContentNode.h"
-#include "ncl/Node.h"
-#include "ncl/NodeEntity.h"
-#include "ncl/EventUtil.h"
-#include "ncl/GenericDescriptor.h"
-#include "ncl/Bind.h"
-#include "ncl/CausalLink.h"
-#include "ncl/Link.h"
-#include "ncl/ReferNode.h"
-using namespace ::ginga::ncl;
-
 #include "NclExecutionObjectSwitch.h"
 #include "NclSwitchEvent.h"
 
@@ -73,16 +53,13 @@ public:
   explicit FormatterConverter (RuleAdapter *);
   virtual ~FormatterConverter ();
 
-  void setHandlingStatus (bool hanling);
+  void setHandlingStatus (bool handling);
   NclExecutionObject *getObjectFromNodeId (const string &id);
 
   void setLinkActionListener (INclLinkActionListener *actionListener);
 
-  NclCompositeExecutionObject *
-  addSameInstance (NclExecutionObject *exeObj, ReferNode *referNode);
-
   NclExecutionObject *getExecutionObjectFromPerspective (
-      NclNodeNesting *perspective, GenericDescriptor *descriptor);
+      NclNodeNesting *perspec, GenericDescriptor *desc);
 
   set<NclExecutionObject *> *getSettingNodeObjects ();
 
@@ -91,23 +68,11 @@ public:
                                int ncmEventType,
                                const string &key);
 
-  static NclCascadingDescriptor *
-  getCascadingDescriptor (NclNodeNesting *nodePerspective,
-                          GenericDescriptor *descriptor);
-
-  void compileExecutionObjectLinks (NclExecutionObject *exeObj);
-
-  void compileExecutionObjectLinks (
-      NclExecutionObject *exeObj, Node *dataObject,
-      NclCompositeExecutionObject *parentObject);
-
   NclExecutionObject *
   processExecutionObjectSwitch (NclExecutionObjectSwitch *switchObject);
 
   NclFormatterEvent *insertContext (NclNodeNesting *contextPerspective,
                                     Port *port);
-
-  bool removeExecutionObject (NclExecutionObject *exeObj);
 
 private:
   static int _dummyCount;
@@ -120,7 +85,12 @@ private:
   bool _handling;
 
   void addExecutionObject (NclExecutionObject *exeObj,
-                           NclCompositeExecutionObject *parentObject);
+                           NclCompositeExecutionObject *parentObj);
+
+  bool removeExecutionObject (NclExecutionObject *exeObj);
+
+  NclCompositeExecutionObject *
+  addSameInstance (NclExecutionObject *exeObj, ReferNode *referNode);
 
   NclCompositeExecutionObject *getParentExecutionObject (
       NclNodeNesting *perspective);
@@ -129,10 +99,13 @@ private:
   createExecutionObject (const string &id, NclNodeNesting *perspective,
                          NclCascadingDescriptor *descriptor);
 
+  void compileExecutionObjectLinks (NclExecutionObject *exeObj, Node *dataObj,
+                                    NclCompositeExecutionObject *parentObj);
+
   void processLink (Link *ncmLink,
                     Node *dataObject,
                     NclExecutionObject *exeObj,
-                    NclCompositeExecutionObject *parentObject);
+                    NclCompositeExecutionObject *parentObj);
 
   void setActionListener (NclLinkAction *action);
 
@@ -142,22 +115,22 @@ private:
                                  InterfacePoint *interfacePoint,
                                  GenericDescriptor *descriptor);
 
-  bool ntsRemoveExecutionObject (NclExecutionObject *exeObj);
-
   void eventStateChanged (NclFormatterEvent *someEvent, short transition,
                           short previousState) override;
 
-  static bool hasDescriptorPropName (const string &name);
-
   static Descriptor *createDummyDescriptor (Node *node);
+  static NclCascadingDescriptor *createDummyCascadingDescriptor (Node *node);
+
   static NclCascadingDescriptor *
-  createDummyCascadingDescriptor (Node *node);
+  getCascadingDescriptor (NclNodeNesting *nodePerspective,
+                          GenericDescriptor *descriptor);
 
   static NclCascadingDescriptor *checkCascadingDescriptor (Node *node);
   static NclCascadingDescriptor *checkContextCascadingDescriptor (
       NclNodeNesting *nodePerspective,
       NclCascadingDescriptor *cascadingDescriptor, Node *ncmNode);
 
+  static bool hasDescriptorPropName (const string &name);
   static bool isEmbeddedApp (NodeEntity *dataObject);
   static bool isEmbeddedAppMediaType (const string &mediaType);
 };

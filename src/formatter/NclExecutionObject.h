@@ -170,7 +170,7 @@ public:
   bool isCompiled ();
   void setCompiled (bool status);
   void removeNode (Node *node);
-  vector<Node *> *getNodes ();
+  vector<Node *> getNodes ();
   const vector<Anchor *> &getNCMAnchors ();
   PropertyAnchor *getNCMProperty (const string &propertyName);
   NclNodeNesting *getNodePerspective ();
