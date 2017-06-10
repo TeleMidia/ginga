@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "NclEventTransitionManager.h"
 
-GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-conversion)
-GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
-
 GINGA_FORMATTER_BEGIN
 
 NclEventTransitionManager::NclEventTransitionManager ()
