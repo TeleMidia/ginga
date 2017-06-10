@@ -103,8 +103,6 @@ using namespace std;
 #define _GINGA_NS_END                    /*{*/}
 #define _GINGA_BEGIN(t)       _GINGA_NS_BEGIN (ginga) _GINGA_NS_BEGIN (t)
 #define _GINGA_END            _GINGA_NS_END _GINGA_NS_END
-#define GINGA_CTXMGMT_BEGIN   _GINGA_BEGIN (ctxmgmt)
-#define GINGA_CTXMGMT_END     _GINGA_END
 #define GINGA_FORMATTER_BEGIN _GINGA_BEGIN (formatter)
 #define GINGA_FORMATTER_END   _GINGA_END
 #define GINGA_MB_BEGIN        _GINGA_BEGIN (mb)
@@ -114,7 +112,7 @@ using namespace std;
 #define GINGA_PLAYER_BEGIN    _GINGA_BEGIN (player)
 #define GINGA_PLAYER_END      _GINGA_END
 
-// Macros.
+// Utility macros.
 #define GINGA_ASSERT_GLOBAL_NONNULL(G, Type)                    \
   ((G != NULL) ? (G)                                            \
    : (g_log (G_LOG_DOMAIN, G_LOG_LEVEL_CRITICAL,                \
@@ -128,40 +126,32 @@ using namespace std;
 #define deconst(t, x)   ((t)(ptrdiff_t)(const void *)(x))
 #define pointerof(p)    ((void *)((ptrdiff_t)(p)))
 #define streq(a,b)      (g_strcmp0 ((a),(b)) == 0)
+#define xnumeq(a,b)     (ABS ((a) - (b)) <= .0000001);
 
-#define syntax_error(fmt, ...)\
-  g_error ("syntax error: " fmt, ## __VA_ARGS__)
+// Message logging.
+#define GINGA_STRLOC  __FILE__ ":" G_STRINGIFY (__LINE__) ":" GINGA_STRFUNC
+#define GINGA_STRFUNC (__ginga_strfunc (G_STRFUNC)).c_str ()
+string __ginga_strfunc (const string &);
 
-#define syntax_warning(fmt, ...)\
-  g_warning ("syntax warning: " fmt, ## __VA_ARGS__)
+#define __ginga_log(fn, fmt, ...)\
+  fn ("%s: " fmt, GINGA_STRFUNC, ## __VA_ARGS__)
 
-// Tracing.
-static inline string
-__ginga_strfunc (const string &s)
-{
-  string classname;
-  string funcname;
-  string result;
-  size_t i = s.rfind ("::");
-  if (i == std::string::npos)
-    {
-      classname = "::";
-      funcname = s.substr (0, s.find ("("));
-      result = classname + funcname + "()";
-    }
-  else
-    {
-      size_t j = s.substr (0, i).rfind ("::");
-      classname = (j == std::string::npos)
-        ? s.substr (0, i) : s.substr (j + 2, i - j - 2);
-      funcname = s.substr (i + 2, s.find ("(") - i - 2);
-      result = classname + "::" + funcname + "()";
-    }
-  return result;
-}
+#define TRACE(fmt, ...)    __ginga_log (g_debug, fmt, ## __VA_ARGS__)
+#define WARNING(fmt, ...)  __ginga_log (g_warning, fmt, ## __VA_ARGS__)
+#define ERROR(fmt, ...)    __ginga_log (g_error, fmt, ## __VA_ARGS__)
+#define CRITICAL(fmt, ...) __ginga_log (g_critical, fmt, ## __VA_ARGS__)
 
-#define TRACE(fmt, ...)\
-  g_debug ("%s: " fmt, __ginga_strfunc (G_STRFUNC).c_str (), ## __VA_ARGS__)
+#define WARNING_SYNTAX(fmt, ...)\
+  WARNING ("bad syntax: " fmt, ## __VA_ARGS__)
+
+#define ERROR_SYNTAX(fmt, ...)\
+  ERROR ("bad syntax: " fmt, ## __VA_ARGS__)
+
+#define WARNING_NOT_IMPLEMENTED(fmt, ...)\
+  WARNING ("not implemented: " fmt, ## __VA_ARGS__)
+
+#define ERROR_NOT_IMPLEMENTED(fmt, ...)\
+  ERROR ("not implemented: " fmt, ## __VA_ARGS__)
 
 // Thread.
 #define GINGA_MUTEX_DEFN()                      \
@@ -239,11 +229,6 @@ bool ginga_color_parse (const string &, SDL_Color *);
 bool ginga_color_table_index (const string &, SDL_Color *);
 bool ginga_key_table_index (SDL_Keycode, string *);
 bool ginga_mime_table_index (string, string *);
-
-// Misc functions.
-bool xnumeq (double, double);
-gint64 xruntime ();
-#define xruntime_ms() (xruntime () * 1000)
 
 // String functions.
 bool _xstrtod (const string &, double *);

@@ -78,7 +78,7 @@ void
 NclLinkTriggerCondition::conditionSatisfied (arg_unused (NclLinkCondition *condition))
 {
   if (delay > 0)
-    g_warning ("support to condition delays is not implemented!");
+    ERROR_NOT_IMPLEMENTED ("condition delays are not supported");
   notifyConditionObservers (NclLinkTriggerListener::CONDITION_SATISFIED);
 }
 

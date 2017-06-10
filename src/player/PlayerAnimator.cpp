@@ -21,6 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "mb/Display.h"
 using namespace ::ginga::mb;
 
+GINGA_PLAYER_BEGIN
+
 PlayerAnimator::PlayerAnimator ()
 {
   this->properties = NULL;
@@ -134,14 +136,12 @@ PlayerAnimator::getAnimationVelocity( gdouble initPos,
   if(duration <= 0)
     return 0;
 
-  // g_debug("iPos: %f fPos: %f \n", initPos, finalPos);
-
   gdouble distance = finalPos - initPos;
 
   if(distance < 0)
     distance*=-1;
 
-  g_debug("distance: %f velocity: %f \n", distance, (distance / duration) );
+  TRACE ("distance=%f velocity=%f", distance, (distance / duration) );
 
   return distance / duration;
 }
@@ -318,9 +318,6 @@ PlayerAnimator::updatePosition(SDL_Rect* rect, ANIM_PROPERTY* pr)
       else if(rect->h > pr->targetValue)
         calculatePosition(&rect->h, pr, -1);
     }
-
-  // g_debug("\n\n inside::: %f %s %f \n\n",
-  //          pr->duration,
-  //          pr->name.c_str(),
-  //          pr->targetValue);
 }
+
+GINGA_PLAYER_END
