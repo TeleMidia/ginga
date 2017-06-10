@@ -121,8 +121,9 @@ PlayerAdapter::setCurrentEvent (NclFormatterEvent *event)
     }
   else
     {
-      g_warning ("adapter: event '%s' isn't prepared",
-                 event->getId ().c_str());
+      WARNING ("event '%s' isn't prepared",
+               event->getId ().c_str());
+
       return false;
     }
   return true;
@@ -301,9 +302,9 @@ PlayerAdapter::prepareProperties (NclExecutionObject *obj)
                 }
               else
                 {
-                  g_warning ("'bounds' property should have 4 comma-separated"
-                             "values.  It has %d values.",
-                             (int) params.size());
+                  ERROR_SYNTAX ("property 'bounds':"
+                                "expected 4 comma-separated values, got %d",
+                                (int) params.size ());
                 }
             }
           else if (name == "location")
@@ -316,9 +317,9 @@ PlayerAdapter::prepareProperties (NclExecutionObject *obj)
                 }
               else
                 {
-                  g_warning ("'location' property should have 2 comma-separated"
-                             "values.  It has %d values.",
-                             (int) params.size());
+                  ERROR_SYNTAX ("property 'location':"
+                                "expected 2 comma-separated, got %d",
+                                (int) params.size());
                 }
             }
           else if (name == "size")
@@ -331,9 +332,9 @@ PlayerAdapter::prepareProperties (NclExecutionObject *obj)
                 }
               else
                 {
-                  g_warning ("'size' property should have 2 comma-separated"
-                             "values.  It has %d values.",
-                             (int) params.size());
+                  ERROR_SYNTAX ("property 'size':"
+                                "expected have 2 comma-separated, got %d",
+                                (int) params.size());
                 }
             }
           else if (name == "transparency")
@@ -765,9 +766,8 @@ PlayerAdapter::start ()
 
   if (!_object->isSleeping ())
     {
-      g_warning ("Skipping start to %s, because it is already occurring, or"
-                 "paused.",
-                 _object->getId ().c_str());
+      WARNING ("trying to start '%s', but it is not sleeping",
+               _object->getId ().c_str ());
 
       return false;
     }
@@ -865,13 +865,13 @@ PlayerAdapter::stop ()
 
       if (stopLambda && !_currentEvent->stop ())
         {
-          g_warning ("Trying to stop '%s', but it is already sleeping",
-                     _currentEvent->getId ().c_str());
+          WARNING ("trying to stop '%s', but it is already sleeping",
+                   _currentEvent->getId ().c_str ());
         }
       else
         {
-          g_warning ("Can't stop an already stopped object. '%s' ",
-                     _currentEvent->getId ().c_str());
+          WARNING ("failed to stop '%s'",
+                   _currentEvent->getId ().c_str ());
         }
       return false;
     }
@@ -1472,7 +1472,7 @@ PlayerAdapter::createPlayer (const string &mrl)
       else
         {
           _player = new Player (mrl);
-          g_warning ("adapter: unknown mime-type '%s'", mime);
+          WARNING ("unknown mime-type '%s'", mime);
         }
     }
 

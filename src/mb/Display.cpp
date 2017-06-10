@@ -76,7 +76,7 @@ Display::add (GList **list, gpointer data)
   this->lock ();
   if (unlikely (found = g_list_find (*list, data)))
     {
-      g_warning ("object %p already in list %p", data, *list);
+      WARNING ("object %p already in list %p", data, *list);
       goto done;
     }
   *list = g_list_append (*list, data);
@@ -95,7 +95,7 @@ Display::remove (GList **list, gpointer data)
   elt = g_list_find (*list, data);
   if (unlikely (elt == NULL))
     {
-      g_warning ("object %p not in list %p", data, *list);
+      WARNING ("object %p not in list %p", data, *list);
       goto done;
     }
   *list = g_list_remove_link (*list, elt);
@@ -284,7 +284,7 @@ Display::Display (int width, int height, double fps, bool fullscreen)
 
   g_assert (!SDL_WasInit (0));
   if (unlikely (SDL_Init (0) != 0))
-    g_critical ("display: cannot initialize SDL: %s", SDL_GetError ());
+    CRITICAL ("cannot initialize SDL: %s", SDL_GetError ());
 
 #if SDL_VERSION_ATLEAST (2,0,4)
   SDL_SetHint (SDL_HINT_NO_SIGNAL_HANDLERS, "1");
@@ -383,8 +383,8 @@ Display::setFullscreen (bool fullscreen)
   status = SDL_SetWindowFullscreen (this->screen, flags);
   if (unlikely (status != 0))
     {
-      g_warning ("display: cannot set full-screen mode to %s: %s",
-                 (fullscreen) ? "true" : "false", SDL_GetError ());
+      WARNING ("cannot set full-screen mode to %s: %s",
+               (fullscreen) ? "true" : "false", SDL_GetError ());
       goto done;
     }
   this->fullscreen = fullscreen;

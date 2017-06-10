@@ -40,7 +40,7 @@ ImagePlayer::displayJobCallback (arg_unused (DisplayJob *job),
 
   this->texture = IMG_LoadTexture (renderer, mrl.c_str ());
   if (unlikely (this->texture == NULL))
-    g_error ("cannot load image %s: %s", mrl.c_str (), IMG_GetError ());
+    ERROR ("cannot load image %s: %s", mrl.c_str (), IMG_GetError ());
 
   return false;                 // remove job
 }

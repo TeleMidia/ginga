@@ -100,7 +100,7 @@ FormatterConverter::getObjectFromNodeId (const string &id)
         return expectedObject;
     }
 
-  g_warning("Cannot find object '%s'.", id.c_str());
+  ERROR ("cannot find object '%s'", id.c_str());
   g_assert_not_reached ();
 
   return nullptr;
@@ -131,13 +131,13 @@ FormatterConverter::addSameInstance (NclExecutionObject *executionObject,
 
   if (referParentObject != nullptr)
     {
-      g_debug ("'%s' with head node '%s' refer to '%s', which has as "
-               "execution object '%s' and parent object '%s'",
-               referNode->getId ().c_str (),
-               referPerspective->getHeadNode ()->getId ().c_str (),
-               referNode->getReferredEntity ()->getId ().c_str (),
-               executionObject->getId ().c_str (),
-               referParentObject->getId ().c_str ());
+      TRACE ("'%s' with head node '%s' refer to '%s', which has as "
+             "execution object '%s' and parent object '%s'",
+             referNode->getId ().c_str (),
+             referPerspective->getHeadNode ()->getId ().c_str (),
+             referNode->getReferredEntity ()->getId ().c_str (),
+             executionObject->getId ().c_str (),
+             referParentObject->getId ().c_str ());
 
       executionObject->addParentObject (
             referNode,
@@ -215,9 +215,9 @@ FormatterConverter::addExecutionObject (
       g_assert_nonnull (sameInstances);
       for (ReferNode *referNode: *(sameInstances))
         {
-          g_debug ("'%s' instSame '%s'",
-                   exeObj->getId ().c_str(),
-                   referNode->getId ().c_str());
+          TRACE ("'%s' instSame of '%s'",
+                 exeObj->getId ().c_str(),
+                 referNode->getId ().c_str());
 
           if (headCompositeNode->recursivelyContainsNode (referNode))
             {
@@ -225,9 +225,9 @@ FormatterConverter::addExecutionObject (
             }
           else
             {
-              g_warning ("Can't find '%s' inside '%s'",
-                         referNode->getId ().c_str(),
-                         headNode->getId ().c_str());
+              WARNING ("cannot find '%s' inside '%s'",
+                       referNode->getId ().c_str(),
+                       headNode->getId ().c_str());
             }
         }
     }
@@ -300,16 +300,13 @@ FormatterConverter::getExecutionObjectFromPerspective (
           cascadingDescriptor = nullptr;
         }
 
-      g_warning ("Object id = '%s', perspective = '%s'",
-                 id.c_str(),
-                 perspective->getId().c_str());
+      WARNING ("object id='%s', perspective='%s'", id.c_str (),
+             perspective->getId ().c_str ());
 
       if (descriptor)
-        {
-          g_warning (" descriptor = '%s'",
-                     descriptor->getId().c_str());
-        }
-      g_warning (" was not created.");
+        WARNING (" descriptor='%s'", descriptor->getId ().c_str ());
+
+      WARNING ("was not created.");
       return nullptr;
     }
 
@@ -319,11 +316,10 @@ FormatterConverter::getExecutionObjectFromPerspective (
       parentId = parentObj->getId ();
     }
 
-  g_debug ("Adding_object with id = '%s', perspective = '%s',"
-           "and parent = '%s'",
-           id.c_str (),
-           perspective->getId ().c_str (),
-           parentId.c_str ());
+  TRACE ("adding_object with id='%s', perspective='%s', and parent='%s'",
+         id.c_str (),
+         perspective->getId ().c_str (),
+         parentId.c_str ());
 
   addExecutionObject (exeObj, parentObj);
   return exeObj;
@@ -418,8 +414,8 @@ FormatterConverter::getEvent (NclExecutionObject *exeObj,
                     }
                   else
                     {
-                      g_warning ("NCM event type is attribution, but interface"
-                                 " point isn't");
+                      WARNING ("NCM event type is attribution, "
+                               "but interface point isn't");
 
                       event = new NclAttributionEvent (
                           id, exeObj, nullptr,
@@ -441,13 +437,13 @@ FormatterConverter::getEvent (NclExecutionObject *exeObj,
                     }
                   else
                     {
-                      g_warning ("NCM event type is attribution, but interface"
-                                 " point isn't");
+                      WARNING ("NCM event type is attribution,"
+                               "but interface point isn't");
 
                       if (interfacePoint->instanceOf ("IntervalAnchor"))
                         {
-                          g_warning ("it was supposed to be a PRESENTATION "
-                                     "EVENT");
+                          WARNING ("it was supposed to be a"
+                                   "presentation event");
 
                           // TODO: find the correct way to solve this
                           event = new NclPresentationEvent (
@@ -471,7 +467,7 @@ FormatterConverter::getEvent (NclExecutionObject *exeObj,
                   break;
 
                 default:
-                  g_warning ("Unknown event type '%d'", ncmEventType);
+                  WARNING ("unknown event type '%d'", ncmEventType);
                   break;
                 }
             }
@@ -484,8 +480,7 @@ FormatterConverter::getEvent (NclExecutionObject *exeObj,
     }
   else
     {
-      g_warning (" returning a nullptr event for '%s'",
-                 id.c_str ());
+      WARNING ("returning a nullptr event for '%s'", id.c_str ());
     }
 
   return event;
@@ -800,7 +795,7 @@ FormatterConverter::getCascadingDescriptor (NclNodeNesting *nodePerspective,
 
       if (node == nullptr || !node->instanceOf ("NodeEntity"))
         {
-          g_warning ("Can't create cascading descriptor: invalid node entity");
+          WARNING ("failed to cascading descriptor: invalid node entity");
           return nullptr;
         }
 
@@ -907,34 +902,34 @@ FormatterConverter::processLink (Link *ncmLink,
                           ->getAction ());
 
                   parentObject->setLinkCompiled (formatterLink);
-                  g_debug ("LINKCOMPILED '%s'",
-                           ncmLink->getId ().c_str());
+                  TRACE ("link compiled '%s'",
+                         ncmLink->getId ().c_str());
                 }
             }
           else
             {
-              g_warning ("Can't process ncmLink '%s' inside '%s' because '%s' "
-                         "does not contain '%s' src",
-                         ncmLink->getId ().c_str(),
-                         parentObject->getId ().c_str(),
-                         ncmLink->getId ().c_str(),
-                         dataObject->getId ().c_str());
+              WARNING ("cannot process ncmLink '%s' inside '%s' "
+                       "because '%s' does not contain '%s' src",
+                       ncmLink->getId ().c_str(),
+                       parentObject->getId ().c_str(),
+                       ncmLink->getId ().c_str(),
+                       dataObject->getId ().c_str());
             }
         }
       else
         {
-          g_warning ("Can't process ncmLink '%s' inside '%s' because it isn't "
-                     "a causal link.",
-                     ncmLink->getId ().c_str (),
-                     parentObject->getId ().c_str ());
+          WARNING ("cannot process ncmLink '%s' inside '%s' "
+                   "because it isn't a causal link",
+                   ncmLink->getId ().c_str (),
+                   parentObject->getId ().c_str ());
         }
     }
   else
     {
-      g_warning ("Can't process ncmLink '%s' inside '%s' because link may be "
-                 "removed in a deepest compilation.",
-                 ncmLink->getId ().c_str (),
-                 parentObject->getId ().c_str());
+      WARNING ("cannot process ncmLink '%s' inside '%s' "
+               "because link may be removed in a deepest compilation.",
+               ncmLink->getId ().c_str (),
+               parentObject->getId ().c_str());
     }
 }
 
@@ -1100,8 +1095,9 @@ FormatterConverter::processExecutionObjectSwitch (
           descriptor = NULL;
         }
 
-      g_warning ("Can't process '%s' because select object is NULL.",
-                 switchObject->getId ().c_str ());
+      WARNING ("cannot process '%s' because selected object is NULL",
+               switchObject->getId ().c_str ());
+
       return NULL;
     }
 
@@ -1134,7 +1130,7 @@ FormatterConverter::resolveSwitchEvents (
   selectedObject = switchObject->getSelectedObject ();
   if (selectedObject == nullptr)
     {
-      g_warning ("Selected object is nullptr.");
+      WARNING ("selected object is nullptr");
       return;
     }
 
@@ -1231,7 +1227,7 @@ FormatterConverter::resolveSwitchEvents (
     }
   else
     {
-      g_warning ("Can't find events.");
+      WARNING ("can't find events");
     }
 }
 
@@ -1292,8 +1288,8 @@ FormatterConverter::insertContext (NclNodeNesting *contextPerspective,
                ->getDataEntity ()
                ->instanceOf ("ContextNode")))
     {
-      g_warning ("Can't find a valid interface point in '%s'.",
-                 contextPerspective->getId ().c_str());
+      WARNING ("can't find a valid interface point in '%s'.",
+               contextPerspective->getId ().c_str());
 
       return nullptr;
     }
