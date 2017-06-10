@@ -30,26 +30,6 @@ IntervalAnchor::IntervalAnchor (const string &id,
   this->end = end;
 }
 
-void
-IntervalAnchor::setStrValues (const string &begin,
-                              const string &end)
-{
-  this->strBegin = begin;
-  this->strEnd = end;
-}
-
-string
-IntervalAnchor::getStrBegin ()
-{
-  return this->strBegin;
-}
-
-string
-IntervalAnchor::getStrEnd ()
-{
-  return this->strEnd;
-}
-
 GingaTime
 IntervalAnchor::getBegin ()
 {

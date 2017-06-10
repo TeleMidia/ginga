@@ -22,9 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclBeginEventTransition.h"
 #include "NclEndEventTransition.h"
 
-#include "ncl/RelativeTimeIntervalAnchor.h"
-using namespace ::ginga::ncl;
-
 #include "ncl/EventUtil.h"
 using namespace ::ginga::ncl;
 

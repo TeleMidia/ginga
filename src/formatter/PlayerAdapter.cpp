@@ -1358,7 +1358,7 @@ PlayerAdapter::handleTickEvent (arg_unused (GingaTime total),
 
   TRACE ("anchor '%s' timed out at %" GINGA_TIME_FORMAT
          ", updating transition table",
-         evt->getId ().c_str(), GINGA_TIME_ARGS (total));
+         evt->getId ().c_str(), GINGA_TIME_ARGS (now));
 
   _object->updateTransitionTable (now, _player, ContentAnchor::CAT_TIME);
 };
