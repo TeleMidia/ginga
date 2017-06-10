@@ -23,6 +23,9 @@ using namespace ginga::mb;
 
 GINGA_FORMATTER_BEGIN
 
+#define ERROR_SYNTAX_UNKNOWN_CHILD(parent, child)\
+  ERROR_SYNTAX ("%s: unknown child element '%s'", (parent), (child))
+
 // dom_element_* functions are internal functions that safely wraps Xerces
 // calls.
 
@@ -42,7 +45,7 @@ dom_element_tagname (const DOMElement *el)
 static bool
 dom_element_has_attr (const DOMElement *el, const string &attr)
 {
-  XMLCh *attr_xmlch = XMLString::transcode(attr.c_str());
+  XMLCh *attr_xmlch = XMLString::transcode(attr.c_str ());
   bool result = el->hasAttribute(attr_xmlch);
   XMLString::release(&attr_xmlch);
 
@@ -55,7 +58,7 @@ dom_element_has_attr (const DOMElement *el, const string &attr)
 static string
 dom_element_get_attr (const DOMElement *element, const string &attr)
 {
-  XMLCh *attr_xmlch = XMLString::transcode(attr.c_str());
+  XMLCh *attr_xmlch = XMLString::transcode(attr.c_str ());
   char *attr_value_ch = XMLString::transcode(element->getAttribute (attr_xmlch));
   string attr_value_str(attr_value_ch);
 
@@ -73,7 +76,7 @@ dom_element_try_get_attr (string &gotAttr,
                           const string &attr)
 {
   bool has_attr = false;
-  XMLCh *attr_xmlch = XMLString::transcode(attr.c_str());
+  XMLCh *attr_xmlch = XMLString::transcode(attr.c_str ());
   if (element->hasAttribute(attr_xmlch))
     {
       has_attr = true;
@@ -93,7 +96,7 @@ static void
 dom_element_set_attr (DOMElement *element,
                       const string &attr, const string &value)
 {
-  XMLCh *attr_name = XMLString::transcode (attr.c_str());
+  XMLCh *attr_name = XMLString::transcode (attr.c_str ());
   XMLCh *attr_value = XMLString::transcode(value.c_str ());
 
   element->setAttribute(attr_name, attr_value);
@@ -106,7 +109,7 @@ dom_element_set_attr (DOMElement *element,
 static void
 dom_element_remove_attr (DOMElement *element, const string &attr)
 {
-  XMLCh *attr_name = XMLString::transcode (attr.c_str());
+  XMLCh *attr_name = XMLString::transcode (attr.c_str ());
   element->removeAttribute(attr_name);
   XMLString::release(&attr_name);
 }
@@ -114,7 +117,7 @@ dom_element_remove_attr (DOMElement *element, const string &attr)
 #define FOR_EACH_DOM_ELEM_CHILD(X, Y) \
   for ( X = Y->getFirstElementChild(); \
         X != nullptr; \
-        X = X->getNextElementSibling() )
+        X = X->getNextElementSibling())
 
 static vector <DOMElement *>
 dom_element_children(DOMElement *el)
@@ -157,7 +160,7 @@ dom_element_children_by_tagnames (DOMElement *el,
   FOR_EACH_DOM_ELEM_CHILD(child, el)
     {
       if (std::find(tagnames.begin(), tagnames.end(), dom_element_tagname(child))
-          != tagnames.end() )
+          != tagnames.end())
         {
           vet.push_back(child);
         }
@@ -182,8 +185,7 @@ NclParser::parseRootElement (DOMElement *rootElement)
 {
   string tagName = dom_element_tagname(rootElement);
   if (unlikely (tagName != "ncl"))
-    syntax_error ("bad root element '%s'", tagName.c_str ());
-
+    ERROR_SYNTAX ("bad root element '%s'", tagName.c_str ());
   return parseNcl (rootElement);
 }
 
@@ -317,9 +319,6 @@ NclParser::importDocument (string &path)
     path = xpathbuildabs (this->getDirName (), path);
 
   return compiler.parse (path);
-
-  // return (NclDocument *)(_privateBaseContext
-  //                         ->addVisibleDocument (path, _deviceLayout));
 }
 
 
@@ -330,34 +329,40 @@ NclParser::parseBody (DOMElement *body_element)
   ContextNode *body = createBody (body_element);
   g_assert_nonnull (body);
 
-  for (DOMElement *child : dom_element_children(body_element) )
+  for (DOMElement *child: dom_element_children(body_element))
     {
-      string tagname = dom_element_tagname(child);
+      string tagname = dom_element_tagname (child);
       Node *node = nullptr;
-      if ( tagname == "media") // node will be a media
+
+      if (tagname == "media")
         {
           node = parseMedia (child);
         }
-      else if (tagname == "context") // node will be a nested context
+      else if (tagname == "context")
         {
-
           node = parseContext (child);
         }
-      else if (tagname == "switch") // node will be a nested switch
+      else if (tagname == "switch")
         {
           node = parseSwitch (child);
         }
+      else if (tagname == "property"
+               || tagname == "port"
+               || tagname == "link")
+        {
+          // nothing to do
+        }
       else
         {
-           // syntax_warning ?
+          ERROR_SYNTAX_UNKNOWN_CHILD ("body", tagname.c_str ());
         }
 
-      if (node) // media, context or switch was created then we should add it to the body
-        addNodeToContext(body, node);
+      if (node != nullptr)
+        addNodeToContext (body, node);
     }
 
   for (DOMElement *child :
-       dom_element_children_by_tagname(body_element, "property") )
+       dom_element_children_by_tagname(body_element, "property"))
     {
       PropertyAnchor *prop = parseProperty (child);
       if (prop)
@@ -376,13 +381,13 @@ NclParser::parseHead (DOMElement *head_element)
   g_assert_nonnull (nclDoc);
 
   for (DOMElement *child :
-       dom_element_children_by_tagname(head_element, "importedDocumentBase") )
+       dom_element_children_by_tagname(head_element, "importedDocumentBase"))
     {
       parseImportedDocumentBase (child);
     }
 
   for (DOMElement *child :
-       dom_element_children_by_tagname(head_element, "regionBase") )
+       dom_element_children_by_tagname(head_element, "regionBase"))
     {
       RegionBase *regionBase = parseRegionBase (child);
       if (regionBase)
@@ -390,7 +395,7 @@ NclParser::parseHead (DOMElement *head_element)
     }
 
   for (DOMElement *child :
-       dom_element_children_by_tagname(head_element, "ruleBase") )
+       dom_element_children_by_tagname(head_element, "ruleBase"))
     {
       RuleBase *ruleBase = parseRuleBase (child);
       if (ruleBase)
@@ -401,7 +406,7 @@ NclParser::parseHead (DOMElement *head_element)
     }
 
   for (DOMElement *child :
-       dom_element_children_by_tagname(head_element, "transitionBase") )
+       dom_element_children_by_tagname(head_element, "transitionBase"))
     {
       TransitionBase *transBase = parseTransitionBase (child);
       if (transBase)
@@ -412,7 +417,7 @@ NclParser::parseHead (DOMElement *head_element)
     }
 
   for (DOMElement *child :
-       dom_element_children_by_tagname(head_element, "descriptorBase") )
+       dom_element_children_by_tagname(head_element, "descriptorBase"))
     {
       DescriptorBase *descBase = this->parseDescriptorBase (child);
       if (descBase)
@@ -423,7 +428,7 @@ NclParser::parseHead (DOMElement *head_element)
     }
 
   for (DOMElement *child :
-       dom_element_children_by_tagname(head_element, "connectorBase") )
+       dom_element_children_by_tagname(head_element, "connectorBase"))
     {
       ConnectorBase *connBase = parseConnectorBase (child);
       if (connBase)
@@ -441,19 +446,18 @@ NclParser::parseNcl (DOMElement *ncl_element)
   g_assert_nonnull (parentObject);
 
   for (DOMElement *child :
-       dom_element_children_by_tagname(ncl_element, "head") )
+       dom_element_children_by_tagname(ncl_element, "head"))
     {
       parseHead (child);
     }
 
   for (DOMElement *child :
-       dom_element_children_by_tagname(ncl_element, "body") )
+       dom_element_children_by_tagname(ncl_element, "body"))
     {
       ContextNode *body = parseBody (child);
       if (body)
         {
           posCompileBody (child, body);
-          // addBodyToNcl (parentObject, body);
           break;
         }
     }
@@ -467,9 +471,6 @@ NclParser::parseNcl (DOMElement *ncl_element)
 ContextNode *
 NclParser::createBody (DOMElement *body_element)
 {
-  // criar composicao a partir do elemento body do documento ncl
-  // fazer uso do nome da composicao body que foi atribuido pelo
-  // compilador
   NclDocument *document;
   ContextNode *context;
 
@@ -477,18 +478,14 @@ NclParser::createBody (DOMElement *body_element)
   if (!dom_element_has_attr(body_element, "id"))
     {
       dom_element_set_attr (body_element, "id", document->getId());
-
       context = (ContextNode *) createContext (body_element);
-
       dom_element_remove_attr (body_element, "id");
     }
   else
     {
       context = (ContextNode *) createContext (body_element);
     }
-
   document->setBody (context);
-
   return context;
 }
 
@@ -528,15 +525,15 @@ NclParser::solveNodeReferences (CompositeNode *composition)
                   {
                     nodeEntity = (NodeEntity *)(getNode (
                                                   referredNode->getId ()));
-
                     if (nodeEntity)
                       {
                         ((ReferNode *)node)
-                            ->setReferredEntity (nodeEntity->getDataEntity ());
+                            ->setReferredEntity (nodeEntity
+                                                 ->getDataEntity ());
                       }
                     else
                       {
-                        syntax_error ("media: bad refer '%s'",
+                        ERROR_SYNTAX ("media: bad refer '%s'",
                                       referredNode->getId ().c_str ());
                       }
                   }
@@ -548,11 +545,8 @@ NclParser::solveNodeReferences (CompositeNode *composition)
           }
       }
   }
-
   if (deleteNodes)
-    {
-      delete nodes;
-    }
+    delete nodes;
 }
 
 ContextNode *
@@ -599,9 +593,9 @@ NclParser::parseMedia (DOMElement *media_element)
           if (area)
             {
               if (media->instanceOf("ContentNode"))
-                // createMedia can also return a ReferNode in which case the
-                // following should be skipped
                 {
+                  // createMedia can also return a ReferNode in which case
+                  // the following should be skipped
                   addAnchorToMedia ((ContentNode*)media, area);
                 }
             }
@@ -612,18 +606,16 @@ NclParser::parseMedia (DOMElement *media_element)
           if (prop)
             {
               if (media->instanceOf("ContentNode"))
-                // createMedia can also return a ReferNode in which case the
-                // following should be skipped
                 {
+                  // createMedia can also return a ReferNode in which case
+                  // the following should be skipped
                   addAnchorToMedia ((ContentNode*)media, prop);
                 }
             }
         }
       else
         {
-          syntax_warning( "'%s' is not known as child of 'media'."
-                          " It will be ignored.",
-                          tagname.c_str() );
+          ERROR_SYNTAX_UNKNOWN_CHILD ("media", tagname.c_str ());
         }
     }
 
@@ -652,23 +644,25 @@ NclParser::parseContext (DOMElement *parentElement)
         {
           node = parseSwitch (child);
         }
+      else if (tagname == "property"
+               || tagname == "port"
+               || tagname == "link")
+        {
+          // nothing to do
+        }
       else
         {
-          // syntax warning ?
+          ERROR_SYNTAX_UNKNOWN_CHILD ("context", tagname.c_str ());
         }
 
-      if (node) // a media, context or switch was created so we need to add it to the current context
-        {
-          addNodeToContext (context, node);
-        }
+      if (node != nullptr)
+        addNodeToContext (context, node);
     }
-
 
   for (DOMElement *child:
        dom_element_children_by_tagname (parentElement, "property"))
     {
       PropertyAnchor *prop = this->parseProperty (child);
-
       if (prop)
         {
           addPropertyToContext (context, prop);
@@ -719,12 +713,12 @@ NclParser::addLinkToContext (ContextNode *context, Link *link)
 
       if (link->getNumRoleBinds (role) < min)
         {
-          syntax_error ("link: too few binds for role '%s': %u",
+          ERROR_SYNTAX ("link: too few binds for role '%s': %u",
                         role->getLabel ().c_str (), min);
         }
       else if (max > 0 && (link->getNumRoleBinds (role) > max))
         {
-          syntax_error ("link: too many binds for role '%s': %u",
+          ERROR_SYNTAX ("link: too many binds for role '%s': %u",
                         role->getLabel ().c_str (), max);
           return;
         }
@@ -739,7 +733,7 @@ NclParser::addAnchorToMedia (ContentNode *contentNode, Anchor *anchor)
 {
   if (unlikely (contentNode->getAnchor (anchor->getId ()) != NULL))
     {
-      syntax_error ("media '%s': duplicated area '%s'",
+      ERROR_SYNTAX ("media '%s': duplicated area '%s'",
                     contentNode->getId ().c_str (),
                     anchor->getId ().c_str ());
     }
@@ -757,13 +751,13 @@ NclParser::createContext (DOMElement *context_element)
   GenericDescriptor *descriptor;
 
   if (unlikely (!dom_element_has_attr(context_element, "id")))
-    syntax_error ("context: missing id");
+    ERROR_SYNTAX ("context: missing id");
 
   id = dom_element_get_attr(context_element, "id");
 
   node = this->getNode (id);
   if (unlikely (node != NULL))
-    syntax_error ("context '%s': duplicated id", id.c_str ());
+    ERROR_SYNTAX ("context '%s': duplicated id", id.c_str ());
 
   if (dom_element_try_get_attr(attValue, context_element, "refer"))
     {
@@ -782,7 +776,7 @@ NclParser::createContext (DOMElement *context_element)
       }
       catch (...)
       {
-        syntax_error ("context '%s': bad refer '%s'",
+        ERROR_SYNTAX ("context '%s': bad refer '%s'",
                       id.c_str (), attValue.c_str ());
       }
 
@@ -803,8 +797,8 @@ NclParser::createContext (DOMElement *context_element)
         }
       else
         {
-          syntax_error ("context '%s': bad descriptor '%s'", id.c_str (),
-                        attValue.c_str ());
+          ERROR_SYNTAX ("context '%s': bad descriptor '%s'",
+                        id.c_str (), attValue.c_str ());
         }
     }
 
@@ -826,7 +820,7 @@ NclParser::posCompileContext (DOMElement *context_element, ContextNode *context)
 
           if (unlikely (node == NULL))
             {
-              syntax_error ("bad context '%s'", id.c_str ());
+              ERROR_SYNTAX ("bad context '%s'", id.c_str ());
             }
           else if (node->instanceOf ("ContextNode"))
             {
@@ -840,7 +834,7 @@ NclParser::posCompileContext (DOMElement *context_element, ContextNode *context)
 
           if (unlikely (node == NULL))
             {
-              syntax_error ("bad switch '%s'", id.c_str ());
+              ERROR_SYNTAX ("bad switch '%s'", id.c_str ());
             }
           else if (node->instanceOf ("SwitchNode"))
             {
@@ -881,13 +875,13 @@ NclParser::createMedia (DOMElement *media_element)
   GenericDescriptor *descriptor;
 
   if (unlikely (!dom_element_has_attr(media_element, "id")))
-    syntax_error ("media: missing id");
+    ERROR_SYNTAX ("media: missing id");
 
   id = dom_element_get_attr(media_element, "id");
 
   node = this->getNode (id);
   if (unlikely (node != NULL))
-    syntax_error ("media '%s': duplicated id", id.c_str ());
+    ERROR_SYNTAX ("media '%s': duplicated id", id.c_str ());
 
   if (dom_element_try_get_attr(attValue, media_element, "refer"))
     {
@@ -905,7 +899,7 @@ NclParser::createMedia (DOMElement *media_element)
       }
       catch (...)
       {
-        syntax_error ("media '%s': bad refer '%s'",
+        ERROR_SYNTAX ("media '%s': bad refer '%s'",
                       id.c_str (), attValue.c_str ());
       }
 
@@ -929,7 +923,7 @@ NclParser::createMedia (DOMElement *media_element)
   if (dom_element_try_get_attr(attValue, media_element, "src"))
     {
       if (unlikely (attValue == ""))
-        syntax_error ("media '%s': missing src", id.c_str ());
+        ERROR_SYNTAX ("media '%s': missing src", id.c_str ());
 
       if (!xpathisuri (attValue) && !xpathisabs (attValue))
         attValue = xpathbuildabs (this->getDirName (), attValue);
@@ -947,7 +941,7 @@ NclParser::createMedia (DOMElement *media_element)
         }
       else
         {
-          syntax_error ("media '%s': bad descriptor '%s'",
+          ERROR_SYNTAX ("media '%s': bad descriptor '%s'",
                         id.c_str (), attValue.c_str ());
         }
     }
@@ -969,9 +963,8 @@ NclParser::parseImportedDocumentBase (DOMElement *importedDocumentBase_element)
         }
       else
         {
-          syntax_warning( "'%s' is not known as child of 'importedDocumentBase'. "
-                          "It will be ignored.",
-                          tagname.c_str() );
+          ERROR_SYNTAX_UNKNOWN_CHILD ("importedDocumentBase",
+                                      tagname.c_str ());
         }
     }
 }
@@ -998,7 +991,7 @@ TransitionBase *
 NclParser::parseTransitionBase (DOMElement *transBase_element)
 {
   TransitionBase *transBase = new TransitionBase (
-        dom_element_get_attr(transBase_element, "id") );
+        dom_element_get_attr(transBase_element, "id"));
   g_assert_nonnull (transBase);
 
   for(DOMElement *child: dom_element_children(transBase_element))
@@ -1018,9 +1011,7 @@ NclParser::parseTransitionBase (DOMElement *transBase_element)
         }
       else
         {
-          syntax_warning( "'%s' is not known as child of 'transitionBase'. "
-                          "It will be ignored.",
-                          tagname.c_str() );
+          ERROR_SYNTAX_UNKNOWN_CHILD ("transitionBase", tagname.c_str ());
         }
     }
 
@@ -1036,19 +1027,17 @@ NclParser::parseTransition (DOMElement *transition_element)
   SDL_Color color = {0, 0, 0, 0};
 
   if (unlikely (!dom_element_has_attr(transition_element, "id")))
-    syntax_error ("transition: missing id");
+    ERROR_SYNTAX ("transition: missing id");
 
   id = dom_element_get_attr(transition_element, "id");
   if (unlikely (!dom_element_has_attr(transition_element, "type")))
-    {
-      syntax_error ("transition '%s': missing type", id.c_str ());
-    }
+    ERROR_SYNTAX ("transition '%s': missing type", id.c_str ());
 
   attValue = dom_element_get_attr(transition_element, "type");
   type = TransitionUtil::getTypeCode (attValue);
 
   if (unlikely (type < 0))
-    syntax_error ("transition '%s': bad type '%d'", id.c_str (), type);
+    ERROR_SYNTAX ("transition '%s': bad type '%d'", id.c_str (), type);
 
   transition = new Transition (id, type);
   if (dom_element_try_get_attr(attValue, transition_element, "subtype"))
@@ -1060,7 +1049,7 @@ NclParser::parseTransition (DOMElement *transition_element)
         }
       else
         {
-          syntax_error ("transition: bad subtype");
+          ERROR_SYNTAX ("transition: bad subtype");
         }
     }
 
@@ -1070,27 +1059,24 @@ NclParser::parseTransition (DOMElement *transition_element)
       transition->setDur (dur * 1000);
     }
 
-  if (dom_element_try_get_attr(attValue, transition_element, "startProgress"))
+  if (dom_element_try_get_attr (attValue, transition_element,
+                                "startProgress"))
     {
       transition->setStartProgress (xstrtod (attValue));
     }
 
-  if (dom_element_try_get_attr(attValue, transition_element, "endProgress"))
+  if (dom_element_try_get_attr (attValue, transition_element,
+                                "endProgress"))
     {
       transition->setEndProgress (xstrtod (attValue));
     }
 
-  if (dom_element_try_get_attr(attValue, transition_element, "direction"))
+  if (dom_element_try_get_attr (attValue, transition_element, "direction"))
     {
       short direction = TransitionUtil::getDirectionCode (attValue);
-      if (direction >= 0)
-        {
-          transition->setDirection (direction);
-        }
-      else
-        {
-          syntax_error ("transition: bad direction value");
-        }
+      if (unlikely (direction < 0))
+        ERROR_SYNTAX ("transition: bad direction value");
+      transition->setDirection (direction);
     }
 
   if (dom_element_try_get_attr(attValue, transition_element, "fadeColor"))
@@ -1138,7 +1124,7 @@ NclParser::addImportBaseToTransitionBase (TransitionBase *transBase,
   importedDocument = this->importDocument (baseLocation);
   if (unlikely (importedDocument == NULL))
     {
-      syntax_error ("importBase '%s': bad documentURI '%s'",
+      ERROR_SYNTAX ("importBase '%s': bad documentURI '%s'",
                     baseAlias.c_str (),
                     baseLocation.c_str ());
     }
@@ -1146,7 +1132,7 @@ NclParser::addImportBaseToTransitionBase (TransitionBase *transBase,
   importedTransitionBase = importedDocument->getTransitionBase ();
   if (unlikely (importedTransitionBase == NULL))
     {
-      syntax_error ("importBase '%s': no transition base in '%s'",
+      ERROR_SYNTAX ("importBase '%s': no transition base in '%s'",
                     baseAlias.c_str (),
                     baseLocation.c_str ());
     }
@@ -1212,7 +1198,7 @@ NclParser::parseCompoundCondition (DOMElement *compoundCond_element)
       createCompoundCondition (compoundCond_element);
   g_assert_nonnull (compoundCond);
 
-  for ( DOMElement *child: dom_element_children(compoundCond_element) )
+  for ( DOMElement *child: dom_element_children(compoundCond_element))
     {
       string tagname = dom_element_tagname(child);
 
@@ -1224,7 +1210,7 @@ NclParser::parseCompoundCondition (DOMElement *compoundCond_element)
               compoundCond->addConditionExpression (simpleCond);
             }
         }
-      else if ( tagname == "assessmentStatement" )
+      else if ( tagname == "assessmentStatement")
         {
           AssessmentStatement *assStatement = parseAssessmentStatement (child);
           if (assStatement)
@@ -1253,9 +1239,8 @@ NclParser::parseCompoundCondition (DOMElement *compoundCond_element)
         }
       else
         {
-          syntax_warning( "'%s' is not known as child of 'compoundCondition'."
-                          " It will be ignored.",
-                          tagname.c_str() );
+          ERROR_SYNTAX_UNKNOWN_CHILD ("compoundCondition",
+                                      tagname.c_str ());
         }
     }
 
@@ -1269,7 +1254,7 @@ NclParser::parseAssessmentStatement (DOMElement *assessmentStatement_element)
       createAssessmentStatement (assessmentStatement_element);
   g_assert_nonnull (assStatement);
 
-  for ( DOMElement *child: dom_element_children(assessmentStatement_element) )
+  for ( DOMElement *child: dom_element_children(assessmentStatement_element))
     {
       string tagname = dom_element_tagname(child);
       if (tagname == "attributeAssessment")
@@ -1291,9 +1276,8 @@ NclParser::parseAssessmentStatement (DOMElement *assessmentStatement_element)
         }
       else
         {
-          syntax_warning( "'%s' is not known as child of 'assessmentStatement'."
-                          " It will be ignored.",
-                          tagname.c_str() );
+          ERROR_SYNTAX_UNKNOWN_CHILD ("assessmentStatement",
+                                      tagname.c_str ());
         }
     }
 
@@ -1356,7 +1340,7 @@ NclParser::parseCompoundStatement (DOMElement *compoundStatement_element)
       createCompoundStatement (compoundStatement_element);
   g_assert_nonnull (compoundStatement);
 
-  for ( DOMElement *child: dom_element_children(compoundStatement_element) )
+  for ( DOMElement *child: dom_element_children(compoundStatement_element))
     {
       string tagname = dom_element_tagname(child);
 
@@ -1379,9 +1363,8 @@ NclParser::parseCompoundStatement (DOMElement *compoundStatement_element)
         }
       else
         {
-          syntax_warning( "'%s' is not known as child of 'compoundStatement'."
-                          " It will be ignored.",
-                          tagname.c_str() );
+          ERROR_SYNTAX_UNKNOWN_CHILD ("compoundStatement",
+                                      tagname.c_str ());
         }
     }
 
@@ -1402,7 +1385,7 @@ NclParser::parseSimpleAction (DOMElement *simpleAction_element)
   if (dom_element_try_get_attr(attValue, simpleAction_element, "actionType"))
     {
       actionExpression->setActionType (
-            SimpleAction::stringToActionType (attValue) );
+            SimpleAction::stringToActionType (attValue));
     }
 
   if (dom_element_try_get_attr(attValue, simpleAction_element, "eventType"))
@@ -1538,9 +1521,7 @@ NclParser::parseCompoundAction (DOMElement *compoundAction_element)
         }
       else
         {
-          syntax_warning( "'%s' is not known as child of 'compoundAction'."
-                          " It will be ignored.",
-                          tagname.c_str() );
+          ERROR_SYNTAX_UNKNOWN_CHILD ("compoundAction", tagname.c_str ());
         }
     }
 
@@ -1553,7 +1534,7 @@ NclParser::parseConnectorParam (DOMElement *connectorParam_element)
   Parameter *param;
   param = new Parameter (
         dom_element_get_attr(connectorParam_element, "name"),
-        dom_element_get_attr(connectorParam_element, "type") );
+        dom_element_get_attr(connectorParam_element, "type"));
 
   return param;
 }
@@ -1566,7 +1547,7 @@ NclParser::parseCausalConnector (DOMElement *causalConnector_element)
       createCausalConnector (causalConnector_element);
   g_assert_nonnull (causalConnector);
 
-  for (DOMElement *child: dom_element_children(causalConnector_element) )
+  for (DOMElement *child: dom_element_children(causalConnector_element))
     {
       string tagname = dom_element_tagname(child);
 
@@ -1612,9 +1593,7 @@ NclParser::parseCausalConnector (DOMElement *causalConnector_element)
         }
       else
         {
-          syntax_warning( "'%s' is not known as child of 'causalConnector'."
-                          " It will be ignored.",
-                          tagname.c_str() );
+          ERROR_SYNTAX_UNKNOWN_CHILD ("causalConnector", tagname.c_str ());
         }
     }
 
@@ -1644,9 +1623,7 @@ NclParser::parseConnectorBase (DOMElement *connBase_element)
         }
       else
         {
-          syntax_warning( "'%s' is not known as child of 'connectorBase'."
-                          " It will be ignored.",
-                          tagname.c_str() );
+          ERROR_SYNTAX_UNKNOWN_CHILD ("connectorBase", tagname.c_str ());
         }
     }
 
@@ -1668,7 +1645,7 @@ NclParser::addImportBaseToConnectorBase (ConnectorBase *connBase,
   importedDocument = this->importDocument (baseLocation);
   if (unlikely (importedDocument == NULL))
     {
-      syntax_error ("importBase '%s': bad documentURI '%s'",
+      ERROR_SYNTAX ("importBase '%s': bad documentURI '%s'",
                     baseAlias.c_str (),
                     baseLocation.c_str ());
     }
@@ -1676,7 +1653,7 @@ NclParser::addImportBaseToConnectorBase (ConnectorBase *connBase,
   importedConnectorBase = importedDocument->getConnectorBase ();
   if (unlikely (importedConnectorBase == NULL))
     {
-      syntax_error ("importBase '%s': no connector base in '%s'",
+      ERROR_SYNTAX ("importBase '%s': no connector base in '%s'",
                     baseAlias.c_str (),
                     baseLocation.c_str ());
     }
@@ -1685,23 +1662,17 @@ NclParser::addImportBaseToConnectorBase (ConnectorBase *connBase,
 }
 
 CausalConnector *
-NclParser::createCausalConnector (DOMElement *causalConnector_element)
+NclParser::createCausalConnector (DOMElement *elt)
 {
-  string connectorId = dom_element_get_attr(causalConnector_element, "id");
-  CausalConnector *causalConn = new CausalConnector (connectorId);
-
-//  this->_connector = causalConn;
-
-  return causalConn;
+  string id = dom_element_get_attr (elt, "id");
+  return new CausalConnector (id);
 }
 
 ConnectorBase *
-NclParser::createConnectorBase (DOMElement *parentElement)
+NclParser::createConnectorBase (DOMElement *parent)
 {
-  ConnectorBase *connBase;
-  string connBaseId = dom_element_get_attr(parentElement, "id");
-  connBase = new ConnectorBase (connBaseId);
-  return connBase;
+  string id = dom_element_get_attr (parent, "id");
+  return new ConnectorBase (id);
 }
 
 void
@@ -1865,8 +1836,8 @@ NclParser::parseSwitchPort (DOMElement *switchPort_element,
 
   if (unlikely (switchPort == NULL))
     {
-      syntax_error ("switchPort: bad parent '%s'",
-                    dom_element_tagname(switchPort_element).c_str());
+      ERROR_SYNTAX ("switchPort: bad parent '%s'",
+                    dom_element_tagname(switchPort_element).c_str ());
     }
 
     for(DOMElement *child:
@@ -1890,32 +1861,33 @@ NclParser::parseMapping (DOMElement *parent, SwitchPort *switchPort)
   NodeEntity *mappingNodeEntity;
   Node *mappingNode;
   InterfacePoint *interfacePoint;
-  Port *port;
 
-  switchElement = (DOMElement *)parent->getParentNode ()->getParentNode (); // FIXME: this is not safe!
+  // FIXME: this is not safe!
+  switchElement = (DOMElement *) parent->getParentNode ()->getParentNode ();
 
   string id = dom_element_get_attr(switchElement, "id");
   string component = dom_element_get_attr(parent, "component");
 
-  switchNode = (SwitchNode *)this->getNode (id); // FIXME: this is not safe!
+  // FIXME: this is not safe!
+  switchNode = (SwitchNode *)this->getNode (id);
   mappingNode = switchNode->getNode (component);
 
   if (unlikely (mappingNode == NULL))
-    syntax_error ("mapping: bad component '%s'", component.c_str ());
+    ERROR_SYNTAX ("mapping: bad component '%s'", component.c_str ());
 
-  mappingNodeEntity = (NodeEntity *)mappingNode->getDataEntity (); // FIXME: this is not safe!
+  // FIXME: this is not safe!
+  mappingNodeEntity = (NodeEntity *) mappingNode->getDataEntity ();
 
   string interface;
   if (dom_element_try_get_attr(interface, parent, "interface"))
     {
       interfacePoint = mappingNodeEntity->getAnchor (interface);
-
       if (interfacePoint == NULL)
         {
           if (mappingNodeEntity->instanceOf ("CompositeNode"))
             {
-              interfacePoint
-                  = ((CompositeNode *)mappingNodeEntity)->getPort (interface);
+              interfacePoint = ((CompositeNode *) mappingNodeEntity)
+                ->getPort (interface);
             }
         }
     }
@@ -1925,11 +1897,9 @@ NclParser::parseMapping (DOMElement *parent, SwitchPort *switchPort)
     }
 
   if (unlikely (interfacePoint == NULL))
-    syntax_error ("mapping: bad interface '%s'", interface.c_str());
+    ERROR_SYNTAX ("mapping: bad interface '%s'", interface.c_str ());
 
-  port = new Port (switchPort->getId (), mappingNode, interfacePoint);
-
-  return port;
+  return new Port (switchPort->getId (), mappingNode, interfacePoint);
 }
 
 Anchor *
@@ -1940,10 +1910,9 @@ NclParser::parseArea (DOMElement *parent)
   Anchor *anchor;
 
   if (unlikely (!dom_element_has_attr(parent, "id")))
-    syntax_error ("area: missing id");
+    ERROR_SYNTAX ("area: missing id");
 
   anchorId = dom_element_get_attr(parent, "id");
-
   anchor = NULL;
 
   if (dom_element_has_attr(parent, "begin")
@@ -1988,7 +1957,7 @@ NclParser::parseProperty (DOMElement *parent)
   PropertyAnchor *anchor;
 
   if (unlikely (!dom_element_has_attr(parent, "name")))
-    syntax_error ("property: missing name");
+    ERROR_SYNTAX ("property: missing name");
 
   attributeName = dom_element_get_attr(parent, "name");
 
@@ -2011,22 +1980,22 @@ NclParser::parsePort (DOMElement *parent, CompositeNode *context)
   Port *port = NULL;
 
   if (unlikely (!dom_element_has_attr(parent, "id")))
-    syntax_error ("port: missing id");
+    ERROR_SYNTAX ("port: missing id");
 
   id = dom_element_get_attr(parent, "id");
 
   if (unlikely (context->getPort (id) != NULL))
-    syntax_error ("port '%s': duplicated id", id.c_str ());
+    ERROR_SYNTAX ("port '%s': duplicated id", id.c_str ());
 
   if (!unlikely (dom_element_has_attr (parent, "component")))
-    syntax_error ("port '%s': missing component", id.c_str ());
+    ERROR_SYNTAX ("port '%s': missing component", id.c_str ());
 
   attValue = dom_element_get_attr(parent, "component");
 
   portNode = context->getNode (attValue);
   if (unlikely (portNode == NULL))
     {
-      syntax_error ("port '%s': bad component '%s'", id.c_str (),
+      ERROR_SYNTAX ("port '%s': bad component '%s'", id.c_str (),
                     attValue.c_str ());
     }
 
@@ -2048,7 +2017,7 @@ NclParser::parsePort (DOMElement *parent, CompositeNode *context)
           portInterfacePoint = portNodeEntity->getAnchor (0);
           if (unlikely (portInterfacePoint == NULL))
             {
-              syntax_error ("port '%s': bad interface '%s'",
+              ERROR_SYNTAX ("port '%s': bad interface '%s'",
                             id.c_str (), portNodeEntity->getId ().c_str ());
             }
         }
@@ -2088,7 +2057,7 @@ NclParser::parsePort (DOMElement *parent, CompositeNode *context)
   if (unlikely (portInterfacePoint == NULL))
     {
       attValue = dom_element_get_attr(parent, "interface");
-      syntax_error ("port '%s': bad interface '%s'", id.c_str (),
+      ERROR_SYNTAX ("port '%s': bad interface '%s'", id.c_str (),
                     attValue.c_str ());
     }
 
@@ -2162,10 +2131,14 @@ NclParser::createTemporalAnchor (DOMElement *areaElement)
     }
 
   // Region delimeted through sample identifications
-  if (dom_element_has_attr (areaElement, "first")
-      || dom_element_has_attr (areaElement, "last"))
+  if (dom_element_has_attr (areaElement, "first"))
     {
-      syntax_warning ("first/last interval anchors are not supported");
+      ERROR_NOT_IMPLEMENTED ("area: attribute 'first' is not supported");
+    }
+
+  if (dom_element_has_attr (areaElement, "last"))
+    {
+      ERROR_NOT_IMPLEMENTED ("area: attribute 'last' is not supported");
     }
 
   if (anchor)
@@ -2184,12 +2157,12 @@ NclParser::createSwitchPort (DOMElement *parent,
   string id;
 
   if (unlikely (!dom_element_has_attr(parent, "id")))
-    syntax_error ("switchPort: missing id");
+    ERROR_SYNTAX ("switchPort: missing id");
 
   id = dom_element_get_attr(parent, "id");
 
   if (unlikely (switchNode->getPort (id) != NULL))
-    syntax_error ("switchPort '%s': duplicated id", id.c_str ());
+    ERROR_SYNTAX ("switchPort '%s': duplicated id", id.c_str ());
 
   switchPort = new SwitchPort (id, switchNode);
   return switchPort;
@@ -2220,7 +2193,7 @@ NclParser::parseRegionBase (DOMElement *elt)
   RegionBase *base = createRegionBase (elt);
   g_assert_nonnull (base);
 
-  for (DOMElement *child_elt: dom_element_children (elt) )
+  for (DOMElement *child_elt: dom_element_children (elt))
     {
       string tag = dom_element_tagname (child_elt);
       if (tag == "importBase")
@@ -2235,9 +2208,7 @@ NclParser::parseRegionBase (DOMElement *elt)
         }
       else
         {
-          syntax_warning( "'%s' is not known as child of 'regionBase'."
-                          " It will be ignored.",
-                          tag.c_str() );
+          ERROR_SYNTAX_UNKNOWN_CHILD ("regionBase", tag.c_str ());
         }
     }
   return base;
@@ -2374,9 +2345,7 @@ NclParser::parseBind (DOMElement *bind_element, Link *link)
         }
       else
         {
-          syntax_warning( "'%s' is not known as child of 'bind'."
-                          " It will be ignored.",
-                          tagname.c_str() );
+          ERROR_SYNTAX_UNKNOWN_CHILD ("bind", tagname.c_str ());
         }
     }
 
@@ -2389,7 +2358,7 @@ NclParser::parseLinkOrBindParam (DOMElement *parentElement)
   Parameter *param;
   param = new Parameter (
       dom_element_get_attr(parentElement, "name"),
-      dom_element_get_attr(parentElement, "value") );
+      dom_element_get_attr(parentElement, "value"));
 
   return param;
 }
@@ -2423,9 +2392,7 @@ NclParser::parseLink (DOMElement *link_element,
         }
       else
         {
-          syntax_warning( "'%s' is not known as child of 'link'."
-                          " It will be ignored.",
-                          tagname.c_str() );
+          ERROR_SYNTAX_UNKNOWN_CHILD ("link", tagname.c_str ());
         }
     }
 
@@ -2457,7 +2424,7 @@ NclParser::createBind (DOMElement *bind_element, Link *link)
 
   if (unlikely (anchorNode == NULL))
     {
-      syntax_error ("bind: bad interface for component '%s'",
+      ERROR_SYNTAX ("bind: bad interface for component '%s'",
                     component.c_str ());
     }
 
@@ -2526,7 +2493,7 @@ NclParser::createBind (DOMElement *bind_element, Link *link)
         }
       else
         {
-          syntax_error ("bind: bad interface for entity '%s'",
+          ERROR_SYNTAX ("bind: bad interface for entity '%s'",
                         anchorNodeEntity->getId ().c_str ());
         }
     }
@@ -2540,7 +2507,7 @@ NclParser::createBind (DOMElement *bind_element, Link *link)
     {
       document = this->getNclDocument ();
       descriptor = document->getDescriptor (
-            dom_element_get_attr(bind_element, "descriptor") );
+            dom_element_get_attr(bind_element, "descriptor"));
     }
   else
     {
@@ -2591,7 +2558,7 @@ NclParser::createBind (DOMElement *bind_element, Link *link)
         }
       else
         {
-          syntax_error ("bind: missing role");
+          ERROR_SYNTAX ("bind: missing role");
         }
     }
 
@@ -2609,7 +2576,7 @@ NclParser::createLink (DOMElement *link_element,
   _connectorLinkParsing = document->getConnector (connectorId);
   if (unlikely (_connectorLinkParsing == NULL))
     {
-      syntax_error ("link: bad xconnector '%s'", connectorId.c_str ());
+      ERROR_SYNTAX ("link: bad xconnector '%s'", connectorId.c_str ());
     }
 
   g_assert (_connectorLinkParsing->instanceOf ("CausalConnector"));
@@ -2653,9 +2620,7 @@ NclParser::parseRuleBase (DOMElement *ruleBase_element)
         }
       else
         {
-          syntax_warning( "'%s' is not known as child of 'ruleBase'."
-                          " It will be ignored.",
-                          tagname.c_str() );
+          ERROR_SYNTAX_UNKNOWN_CHILD ("ruleBase", tagname.c_str ());
         }
     }
 
@@ -2680,8 +2645,8 @@ NclParser::parseSwitch (DOMElement *switch_element)
   Node *switch_node = createSwitch (switch_element);
   if (unlikely (switch_node == NULL))
     {
-      syntax_error ( "switch: bad parent '%s'",
-                     dom_element_tagname(switch_element).c_str() );
+      ERROR_SYNTAX ( "switch: bad parent '%s'",
+                     dom_element_tagname(switch_element).c_str ());
     }
 
   for (DOMElement *element: dom_element_children(switch_element))
@@ -2711,13 +2676,19 @@ NclParser::parseSwitch (DOMElement *switch_element)
               addNodeToSwitch (switch_node, switch_child);
             }
         }
+      else if (tagname == "switchPort"
+               || tagname == "bindRule"
+               || tagname == "defaultComponent")
+        {
+          // nothing to do
+        }
       else
         {
-          // syntax warning ?
+          ERROR_SYNTAX_UNKNOWN_CHILD ("switch", tagname.c_str ());
         }
     }
 
-    for (DOMElement *child: dom_element_children(switch_element))
+    for (DOMElement *child: dom_element_children (switch_element))
       {
         string tagname = dom_element_tagname(child);
         if (tagname == "bindRule")
@@ -2736,13 +2707,12 @@ NclParser::parseSwitch (DOMElement *switch_element)
 }
 
 CompositeRule *
-NclParser::parseCompositeRule (
-    DOMElement *compositeRule_element)
+NclParser::parseCompositeRule (DOMElement *elt)
 {
-  CompositeRule *compositeRule = createCompositeRule (compositeRule_element);
+  CompositeRule *compositeRule = createCompositeRule (elt);
   g_assert_nonnull (compositeRule);
 
-  for (DOMElement *child: dom_element_children(compositeRule_element))
+  for (DOMElement *child: dom_element_children(elt))
     {
       string tagname = dom_element_tagname(child);
       if (tagname == "rule")
@@ -2763,9 +2733,7 @@ NclParser::parseCompositeRule (
         }
       else
         {
-          syntax_warning( "'%s' is not known as child of 'compositeRule'."
-                          " It will be ignored.",
-                          tagname.c_str() );
+          ERROR_SYNTAX_UNKNOWN_CHILD ("compositeRule", tagname.c_str ());
         }
     }
 
@@ -2792,7 +2760,7 @@ NclParser::parseDescriptorSwitch (DOMElement *descriptorSwitch_element)
         }
       else
         {
-          // syntax warning ?
+          ERROR_SYNTAX_UNKNOWN_CHILD ("descriptorSwitch", tagname.c_str ());
         }
     }
 
@@ -2871,13 +2839,13 @@ NclParser::createSwitch (DOMElement *switch_element)
   SwitchNode *switchNode;
 
   if (unlikely (!dom_element_has_attr(switch_element, "id")))
-    syntax_error ("switch: missing id");
+    ERROR_SYNTAX ("switch: missing id");
 
   id = dom_element_get_attr(switch_element, "id");
 
   node = this->getNode (id);
   if (unlikely (node != NULL))
-    syntax_error ("switch '%s': duplicated id", id.c_str ());
+    ERROR_SYNTAX ("switch '%s': duplicated id", id.c_str ());
 
   if (dom_element_try_get_attr(attValue, switch_element, "refer"))
     {
@@ -2897,7 +2865,7 @@ NclParser::createSwitch (DOMElement *switch_element)
         }
       catch (...)
         {
-          syntax_error ("switch '%s': bad refer '%s'",
+          ERROR_SYNTAX ("switch '%s': bad refer '%s'",
                         id.c_str (), attValue.c_str ());
         }
 
@@ -3177,7 +3145,7 @@ NclParser::posCompileSwitch (
           Node * node = this->getNode (id);
           if (unlikely (node == NULL))
             {
-              syntax_error ("node '%s' should be a switch",
+              ERROR_SYNTAX ("node '%s' should be a switch",
                             dom_element_get_attr(child, "id").c_str ());
             }
           else if (node->instanceOf ("SwitchNode"))
@@ -3225,9 +3193,7 @@ NclParser::parseDescriptor (DOMElement *descriptor_element)
         }
       else
         {
-          syntax_warning( "'%s' is not known as child of 'descriptor'."
-                          " It will be ignored.",
-                          tagname.c_str() );
+          ERROR_SYNTAX_UNKNOWN_CHILD ("descriptor", tagname.c_str ());
         }
     }
 
@@ -3235,12 +3201,12 @@ NclParser::parseDescriptor (DOMElement *descriptor_element)
 }
 
 DescriptorBase *
-NclParser::parseDescriptorBase (DOMElement *descriptorBase_element)
+NclParser::parseDescriptorBase (DOMElement *elt)
 {
-  DescriptorBase *descBase = createDescriptorBase (descriptorBase_element);
+  DescriptorBase *descBase = createDescriptorBase (elt);
   g_assert_nonnull (descBase);
 
-  for (DOMElement *child: dom_element_children(descriptorBase_element))
+  for (DOMElement *child: dom_element_children(elt))
     {
       string tagname = dom_element_tagname(child);
       if (tagname == "importBase")
@@ -3265,9 +3231,7 @@ NclParser::parseDescriptorBase (DOMElement *descriptorBase_element)
         }
       else
         {
-          syntax_warning( "'%s' is not known as child of 'descriptorBase'."
-                          " It will be ignored.",
-                          tagname.c_str() );
+          ERROR_SYNTAX_UNKNOWN_CHILD ("descriptorBase", tagname.c_str ());
         }
     }
 
@@ -3336,10 +3300,9 @@ NclParser::addImportBaseToDescriptorBase (
 }
 
 DescriptorBase *
-NclParser::createDescriptorBase (DOMElement *descriptorBase_element)
+NclParser::createDescriptorBase (DOMElement *elt)
 {
-  return new DescriptorBase (
-        dom_element_get_attr(descriptorBase_element ,"id") );
+  return new DescriptorBase (dom_element_get_attr (elt ,"id"));
 }
 
 Descriptor *
@@ -3365,8 +3328,8 @@ NclParser::createDescriptor (DOMElement *elt)
       region = nclDoc->getRegion (attValue);
       if (unlikely (region == NULL))
         {
-          syntax_error ("descriptor: bad region for descritor '%s'",
-                        descriptor->getId().c_str());
+          ERROR_SYNTAX ("descriptor: bad region for descritor '%s'",
+                        descriptor->getId().c_str ());
         }
       descriptor->setRegion (region);
     }
@@ -3480,9 +3443,9 @@ NclParser::createDescriptor (DOMElement *elt)
                   }
                 else
                   {
-                    syntax_error ( "transition: bad %s '%s'",
-                                   transInOut.c_str(),
-                                   transIds[i].c_str () );
+                    ERROR_SYNTAX ( "transition: bad %s '%s'",
+                                   transInOut.c_str (),
+                                   transIds[i].c_str ());
                   }
               }
           }

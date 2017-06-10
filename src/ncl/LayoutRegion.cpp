@@ -54,9 +54,9 @@ LayoutRegion::getZ (int *z, int *zorder)
 void
 LayoutRegion::dump ()
 {
-  g_debug ("%s at (%d,%d) size %dx%d z %d,%d",
-           this->getId ().c_str (), this->rect.x, this->rect.y,
-           this->rect.w, this->rect.h, this->z, this->zorder);
+  TRACE ("%s at (%d,%d) size %dx%d z %d,%d",
+         this->getId ().c_str (), this->rect.x, this->rect.y,
+         this->rect.w, this->rect.h, this->z, this->zorder);
 }
 
 LayoutRegion::LayoutRegion (const string &id) : Entity (id)

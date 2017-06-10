@@ -133,9 +133,9 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
   obj = event->getExecutionObject ();
   g_assert_nonnull (obj);
 
-  g_debug ("scheduler: running action '%s' over event '%s'",
-           action->getTypeString ().c_str (),
-           event->getId ().c_str ());
+  TRACE ("running action '%s' over event '%s'",
+         action->getTypeString ().c_str (),
+         event->getId ().c_str ());
 
   g_assert (obj->isCompiled ());
 
@@ -165,8 +165,8 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
 
   if (unlikely (player == NULL))
     {
-      g_warning ("scheduler: no player to decode '%s', skipping action",
-                 obj->getId ().c_str ());
+      WARNING ("no player to decode '%s', skipping action",
+               obj->getId ().c_str ());
       return;
     }
 
@@ -191,10 +191,11 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
                 descriptor->setFormatterLayout();
             }
 
-          if (unlikely (!player->prepare (obj,
-                                          (NclPresentationEvent *) event)))
+          if (unlikely (!player
+                        ->prepare (obj, (NclPresentationEvent *) event)))
             {
-              g_warning ("scheduler: failed to prepare player");
+              WARNING ("failed to prepare player of '%s'",
+                       obj->getId ().c_str ());
               return;
             }
 
@@ -209,7 +210,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
 
       if (unlikely (!player->start ()))
         {
-          g_warning ("scheduler: failed to start player");
+          WARNING ("failed to start player of '%s'", obj->getId ().c_str ());
           if (event->getCurrentState () == EventUtil::ST_SLEEPING)
             event->removeEventListener (this);
         }
@@ -217,22 +218,22 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
 
     case ACT_PAUSE:
       if (unlikely (!player->pause ()))
-        g_warning ("scheduler: failed to pause player");
+        WARNING ("failed to pause player of '%s'", obj->getId ().c_str ());
       break;
 
     case ACT_RESUME:
       if (unlikely (!player->resume ()))
-        g_warning ("scheduler: failed to resume player");
+        WARNING ("failed to resume player of '%s'", obj->getId ().c_str ());
       break;
 
     case ACT_ABORT:
       if (unlikely (!player->abort ()))
-        g_warning ("scheduler: failed to abort player");
+        WARNING ("failed to abort player of '%s'", obj->getId ().c_str ());
       break;
 
     case ACT_STOP:
       if (unlikely (!player->stop ()))
-        g_warning ("scheduler: failed to stop player");
+        WARNING ("failed to stop player of '%s'", obj->getId ().c_str ());
       break;
 
     default:
@@ -402,16 +403,13 @@ FormatterScheduler::runActionOverApplicationObject (
   NclCascadingDescriptor *descriptor;
   Player *playerContent;
 
-  double time = (double) xruntime_ms ();
   int actionType = action->getType ();
-  SDLWindow * win = NULL;
+  SDLWindow *win = NULL;
 
   switch (actionType)
     {
     case ACT_START:
-      g_warning ("runActionOverApplicationObject START '%s'",
-                 event->getId().c_str());
-
+      TRACE ("START '%s'", event->getId().c_str());
       if (!player->hasPrepared ())
         {
           if (ruleAdapter->adaptDescriptor (executionObject))
@@ -439,52 +437,36 @@ FormatterScheduler::runActionOverApplicationObject (
         {
           if (!player->start ())
             {
-              g_warning ("can't start '%s'",
-                         executionObject->getId().c_str());
+              WARNING ("cannot start '%s'",
+                       executionObject->getId ().c_str());
 
               // checking if player failed to start
               if (event->getCurrentState () == EventUtil::ST_SLEEPING)
                 event->removeEventListener (this);
             }
         }
-
-      time = (double) xruntime_ms () - time;
-      g_warning ("runActionOverApp '%s' took '%fms' to start",
-                 executionObject->getId().c_str(),
-                 time);
       break;
 
     case ACT_PAUSE:
       if (player->setCurrentEvent (event))
-        {
-          player->pause ();
-        }
-
+        player->pause ();
       break;
 
     case ACT_RESUME:
       if (player->setCurrentEvent (event))
-        {
-          player->resume ();
-        }
-
+        player->resume ();
       break;
 
     case ACT_ABORT:
       if (player->setCurrentEvent (event))
-        {
-          player->abort ();
-        }
-
+        player->abort ();
       break;
 
     case ACT_STOP:
       if (player->setCurrentEvent (event))
-        {
-          player->stop ();
-        }
-
+        player->stop ();
       break;
+
     default:
       g_assert_not_reached ();
     }
@@ -1037,7 +1019,7 @@ FormatterScheduler::startDocument (const string &file)
   id = this->doc->getId ();
   body = this->doc->getBody ();
   if (unlikely (body == NULL))
-    syntax_error ("document has no body");
+    ERROR_SYNTAX ("document has no body");
 
   // Get entry events (i.e., those mapped by ports).
   persp = new NclNodeNesting ();
@@ -1053,7 +1035,7 @@ FormatterScheduler::startDocument (const string &file)
 
   if (unlikely (entryevts->empty ()))
     {
-      g_warning ("document has no ports");
+      WARNING ("document has no ports");
       return;
     }
 
@@ -1069,7 +1051,7 @@ FormatterScheduler::startDocument (const string &file)
         (persp, NULL);
       g_assert_nonnull (execobj);
 
-      g_debug ("settings: processing '%s'", persp->getId ().c_str ());
+      TRACE ("processing '%s'", persp->getId ().c_str ());
       delete persp;
 
       content = (ContentNode *) node;
@@ -1088,7 +1070,7 @@ FormatterScheduler::startDocument (const string &file)
           if (value == "")
             continue;           // nothing to do
 
-          g_debug ("settings: set %s='%s'", name.c_str (), value.c_str ());
+          TRACE ("seting %s='%s'", name.c_str (), value.c_str ());
           this->settings->set (name, value);
         }
     }

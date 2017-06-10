@@ -85,8 +85,10 @@ NclAttributionEvent::getCurrentValue ()
   string maintainerValue = "";
 
   if (unlikely (anchor == NULL))
-    g_error ("Trying to set a null (probably undeclared) "
-             "property anchor of object %s", id.c_str ());
+    {
+      ERROR ("trying to set a null property anchor of object '%s'",
+             id.c_str ());
+    }
 
   if (settingNode)
     {
