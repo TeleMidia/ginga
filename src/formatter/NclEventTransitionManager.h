@@ -33,39 +33,36 @@ GINGA_FORMATTER_BEGIN
 class NclEventTransitionManager
 {
 private:
-  map<short int, int> currentTransitionIndex;
-  map<short int, int> startTransitionIndex;
-  map<short int, vector<NclEventTransition *> *> transTable;
+  int currentTransitionIndex;
+  int startTransitionIndex;
+  vector<NclEventTransition *> transTable;
 
 public:
   NclEventTransitionManager ();
   virtual ~NclEventTransitionManager ();
 
 private:
-  short int getType (NclPresentationEvent *event);
-  vector<NclEventTransition *> *getTransitionEvents (short int type);
+  vector<NclEventTransition *> *getTransitionEvents ();
 
 public:
   void addPresentationEvent (NclPresentationEvent *event);
 
 private:
-  void addEventTransition (NclEventTransition *transition, short int type);
+  void addEventTransition (NclEventTransition *transition);
 
 public:
   void removeEventTransition (NclPresentationEvent *event);
 
   void resetTimeIndex ();
-  void resetTimeIndexByType (short int type);
-  void prepare (bool wholeContent, GingaTime startTime, short int type);
+  void prepare (bool wholeContent, GingaTime startTime);
   void start (GingaTime offsetTime);
   void stop (GingaTime endTime, bool applicationType = false);
   void abort (GingaTime endTime, bool applicationType = false);
 
   void updateTransitionTable (GingaTime timeValue, Player *player,
-                              NclFormatterEvent *mainEvent,
-                              short int transType);
+                              NclFormatterEvent *mainEvent);
 
-  set<GingaTime> *getTransitionsValues (short int transType);
+  set<GingaTime> *getTransitionsValues ();
   NclEventTransition *getNextTransition (NclFormatterEvent *mainEvent);
 };
 
