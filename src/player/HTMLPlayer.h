@@ -266,7 +266,7 @@ private:
  * the result in the screen.
  */
 class HTMLPlayer :
-    public Player
+    public Player, public IEventListener
 {
 public:
   /**
@@ -316,7 +316,9 @@ public:
    * This method translate the key code captured by SDL in the event to the
    * CEF code style and forward the events to the active browser.
    */
-  void handleKeyEvent (SDL_EventType type, SDL_Keycode key) override;
+  virtual void handleKeyEvent (SDL_EventType type, SDL_Keycode key) override;
+
+  virtual void handleTickEvent (GingaTime, GingaTime, int) override { };
 
 private:
   /**
