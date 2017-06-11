@@ -688,26 +688,21 @@ NclExecutionObject::removeNode (Node *node)
     }
 }
 
-vector<Node *> *
+vector<Node *>
 NclExecutionObject::getNodes ()
 {
-  vector<Node *> *nodes;
-  map<Node *, Node *>::iterator i;
-
-  if (nodeParentTable.empty ())
+  vector<Node *> nodes;
+  if (!nodeParentTable.empty())
     {
-      return NULL;
-    }
+      for (auto &i: nodeParentTable)
+        {
+          nodes.push_back (i.first);
+        }
 
-  nodes = new vector<Node *>;
-  for (i = nodeParentTable.begin (); i != nodeParentTable.end (); ++i)
-    {
-      nodes->push_back (i->first);
-    }
-
-  if (nodeParentTable.count (dataObject) == 0)
-    {
-      nodes->push_back (dataObject);
+      if (nodeParentTable.count (dataObject) == 0)
+        {
+          nodes.push_back (dataObject);
+        }
     }
 
   return nodes;
