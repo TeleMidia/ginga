@@ -142,120 +142,6 @@ Display::notifyKeyListeners (SDL_EventType type, SDL_Keycode key)
     }
 }
 
-// FIXME:
-//
-// - We should expose the main window background color, e.g., via
-//   command-line argument --background.
-// - Window transparency attribute should be called alpha; 0.0 means
-//   transparent and 1.0 opaque.
-// - The alpha component of colors is inverted.
-// - Alpha blending is not working.
-// - Handle border width.
-//
-void
-Display::renderLoop ()
-{
-  GingaTime epoch = ginga_gettime ();
-  GingaTime last = epoch;
-  int frameno = 1;
-  bool doquit = false;
-
-  while (!this->hasQuitted())   // render loop
-    {
-      SDL_Event evt;
-      GList *l;
-
-      GingaTime framedur = (GingaTime)(1 * GINGA_SECOND / this->fps);
-      GingaTime now = ginga_gettime ();
-      GingaTime elapsed = now - last;
-
-      if (this->fps > 0 && elapsed < framedur)
-        g_usleep ((framedur - elapsed) / 1000);
-
-      now = ginga_gettime ();
-      elapsed = now - last;
-      last = now;
-      this->notifyTickListeners (now - epoch, elapsed, frameno++);
-
-      while (SDL_PollEvent (&evt)) // handle input
-        {
-          SDL_EventType type = (SDL_EventType) evt.type;
-          switch (type)
-            {
-            case SDL_KEYDOWN:
-            case SDL_KEYUP:
-              if (evt.key.keysym.sym == SDLK_ESCAPE)
-                this->quit ();
-              this->notifyKeyListeners (type, evt.key.keysym.sym);
-              break;
-            case SDL_MOUSEBUTTONDOWN:
-            case SDL_MOUSEBUTTONUP:
-              // TODO
-              break;
-            case SDL_QUIT:
-              this->quit ();
-              break;
-            default:
-              break;
-            }
-        }
-
-      this->lock ();            // run jobs
-      l = this->jobs;           // list may be modified while being iterated
-      while (l != NULL)
-        {
-          GList *next = l->next;
-          DisplayJob *job = (DisplayJob *) l->data;
-          g_assert_nonnull (job);
-          if (!job->func (job, this->renderer, job->data))
-            this->jobs = g_list_remove_link (this->jobs, l);
-          l = next;
-        }
-      this->unlock ();
-
-      this->lock ();            // redraw windows
-      SDL_SetRenderDrawColor (this->renderer, 255, 0, 255, 255);
-      SDL_RenderClear (this->renderer);
-
-      this->players = g_list_sort (this->players, (GCompareFunc) win_cmp_z);
-      l =  this->players;
-      while (l != NULL)
-        {
-          GList *next = l->next;
-          Player *pl = (Player *) l->data;
-          if (pl == NULL)
-            this->players = g_list_remove_link (this->players, l);
-          else
-            pl->redraw (this->renderer);
-          l = next;
-        }
-
-      this->dashboard->redraw (this->renderer, now - epoch,
-                               ceil ((double)(1 * GINGA_SECOND / elapsed)),
-                               frameno);
-
-      SDL_RenderPresent (this->renderer);
-      this->unlock ();
-
-      this->lock ();            // destroy dead textures
-      g_list_free_full (this->textures,
-                        (GDestroyNotify) SDL_DestroyTexture);
-      this->textures = NULL;
-      this->unlock ();
-
-    }
-
-  if (doquit)
-    goto beach;
-
-  doquit = true;
-
- beach:
-  this->lock ();
-  SDL_Quit ();
-  this->unlock ();
-}
-
 
 // Public methods.
 
@@ -515,6 +401,27 @@ Display::unregisterEventListener (IEventListener *obj)
 }
 
 /**
+ * @brief Adds player to display player list.
+ * @param player Player.
+ */
+void
+Display::registerPlayer (Player *player)
+{
+  g_assert_nonnull (player);
+  g_assert (this->add (&this->players, player));
+}
+
+/**
+ * @brief Removes player from display listener list.
+ */
+void
+Display::unregisterPlayer (Player *player)
+{
+  g_assert_nonnull (player);
+  g_assert (this->remove (&this->players, player));
+}
+
+/**
  * @brief Schedules the destruction of texture.
  * @param texture Texture.
  */
@@ -525,21 +432,111 @@ Display::destroyTexture (SDL_Texture *texture)
   g_assert (this->add (&this->textures, texture));
 }
 
-
-// -------------------------------------------------------------------------
-
+/**
+ * @brief Enters render loop.
+ */
 void
-Display::registerPlayer (Player * obj)
+Display::renderLoop ()
 {
-  g_assert_nonnull (obj);
-  g_assert (this->add (&this->players, obj));
-}
+  GingaTime epoch = ginga_gettime ();
+  GingaTime last = epoch;
+  int frameno = 1;
+  bool doquit = false;
 
-void
-Display::unregisterPlayer (Player *obj)
-{
-  g_assert_nonnull (obj);
-  g_assert (this->remove(&this-> players, obj));
+  while (!this->hasQuitted())   // render loop
+    {
+      SDL_Event evt;
+      GList *l;
+
+      GingaTime framedur = (GingaTime)(1 * GINGA_SECOND / this->fps);
+      GingaTime now = ginga_gettime ();
+      GingaTime elapsed = now - last;
+
+      if (this->fps > 0 && elapsed < framedur)
+        g_usleep ((framedur - elapsed) / 1000);
+
+      now = ginga_gettime ();
+      elapsed = now - last;
+      last = now;
+      this->notifyTickListeners (now - epoch, elapsed, frameno++);
+
+      while (SDL_PollEvent (&evt)) // handle input
+        {
+          SDL_EventType type = (SDL_EventType) evt.type;
+          switch (type)
+            {
+            case SDL_KEYDOWN:
+            case SDL_KEYUP:
+              if (evt.key.keysym.sym == SDLK_ESCAPE)
+                this->quit ();
+              this->notifyKeyListeners (type, evt.key.keysym.sym);
+              break;
+            case SDL_MOUSEBUTTONDOWN:
+            case SDL_MOUSEBUTTONUP:
+              // TODO
+              break;
+            case SDL_QUIT:
+              this->quit ();
+              break;
+            default:
+              break;
+            }
+        }
+
+      this->lock ();            // run jobs
+      l = this->jobs;           // list may be modified while being iterated
+      while (l != NULL)
+        {
+          GList *next = l->next;
+          DisplayJob *job = (DisplayJob *) l->data;
+          g_assert_nonnull (job);
+          if (!job->func (job, this->renderer, job->data))
+            this->jobs = g_list_remove_link (this->jobs, l);
+          l = next;
+        }
+      this->unlock ();
+
+      this->lock ();            // redraw windows
+      SDL_SetRenderDrawColor (this->renderer, 255, 0, 255, 255);
+      SDL_RenderClear (this->renderer);
+
+      this->players = g_list_sort (this->players, (GCompareFunc) win_cmp_z);
+      l =  this->players;
+      while (l != NULL)
+        {
+          GList *next = l->next;
+          Player *pl = (Player *) l->data;
+          if (pl == NULL)
+            this->players = g_list_remove_link (this->players, l);
+          else
+            pl->redraw (this->renderer);
+          l = next;
+        }
+
+      this->dashboard->redraw (this->renderer, now - epoch,
+                               ceil ((double)(1 * GINGA_SECOND / elapsed)),
+                               frameno);
+
+      SDL_RenderPresent (this->renderer);
+      this->unlock ();
+
+      this->lock ();            // destroy dead textures
+      g_list_free_full (this->textures,
+                        (GDestroyNotify) SDL_DestroyTexture);
+      this->textures = NULL;
+      this->unlock ();
+
+    }
+
+  if (doquit)
+    goto beach;
+
+  doquit = true;
+
+ beach:
+  this->lock ();
+  SDL_Quit ();
+  this->unlock ();
 }
 
 GINGA_MB_END

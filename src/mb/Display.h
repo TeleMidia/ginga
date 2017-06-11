@@ -80,15 +80,12 @@ public:
   DisplayJob *addJob (DisplayJobCallback, void *);
   bool removeJob (DisplayJob *);
 
-  bool registerEventListener (IEventListener *);
-  bool unregisterEventListener (IEventListener *);
-
   void destroyTexture (SDL_Texture *);
   void renderLoop (void);
 
-  // -----------------------------------------------------------------------
+  bool registerEventListener (IEventListener *);
+  bool unregisterEventListener (IEventListener *);
 
-  // Players.
   void registerPlayer (Player *);
   void unregisterPlayer (Player *);
 };
