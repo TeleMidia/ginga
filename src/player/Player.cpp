@@ -305,8 +305,11 @@ Player::redraw (SDL_Renderer *renderer)
   if (this->status == PL_SLEEPING)
     return;
 
-  animator->update (&this->rect, &this->bgColor.r,
-                    &this->bgColor.g, &this->bgColor.b, &this->alpha);
+  animator->update (&this->rect,
+                    &this->bgColor.r,
+                    &this->bgColor.g,
+                    &this->bgColor.b,
+                    &this->alpha);
 
   if (this->window != NULL)
     this->window->getBorder (&this->borderColor, &this->borderWidth);
