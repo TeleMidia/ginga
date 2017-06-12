@@ -68,7 +68,6 @@ GINGA_BEGIN_DECLS
 // External C libraries.
 #include <glib.h>
 #include <glib/gstdio.h>
-#include <curl/curl.h>
 #include <ncluaw.h>
 #include "ginga-sdlx.h"
 
