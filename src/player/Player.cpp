@@ -48,12 +48,10 @@ Player::Player (const string &mrl)
   this->alpha = 255;
 
   animator = new PlayerAnimator ();
-  Ginga_Display->registerPlayer (this);
 }
 
 Player::~Player ()
 {
-  Ginga_Display->unregisterPlayer (this);
   if (this->texture != NULL)
     Ginga_Display->destroyTexture (this->texture);
 
@@ -149,6 +147,7 @@ Player::play ()
   this->forcedNaturalEnd = false;
   _time = 0;
   this->status = PL_OCCURRING;
+  Ginga_Display->registerPlayer (this);
   return true;
 }
 
@@ -157,6 +156,7 @@ Player::stop ()
 {
   _time = 0;
   this->status = PL_SLEEPING;
+  Ginga_Display->unregisterPlayer (this);
 }
 
 void
