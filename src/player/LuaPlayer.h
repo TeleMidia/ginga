@@ -54,8 +54,8 @@ public:
   bool setKeyHandler (bool isHandler);
   virtual void setPropertyValue (const string &, const string &) override;
 
-  void handleTickEvent (GingaTime, GingaTime, int) {};
-  void handleKeyEvent (SDL_EventType, SDL_Keycode);
+  void handleTickEvent (GingaTime, GingaTime, int) override {};
+  void handleKeyEvent (SDL_EventType, SDL_Keycode) override;
 };
 
 GINGA_PLAYER_END

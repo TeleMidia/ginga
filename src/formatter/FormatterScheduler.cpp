@@ -210,7 +210,8 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
 
       if (unlikely (!player->start ()))
         {
-          WARNING ("failed to start player of '%s'", obj->getId ().c_str ());
+          WARNING ("failed to start player of '%s'",
+                   obj->getId ().c_str ());
           if (event->getCurrentState () == EventUtil::ST_SLEEPING)
             event->removeEventListener (this);
         }
@@ -1288,28 +1289,19 @@ FormatterScheduler::hideObject (NclExecutionObject *obj)
 bool
 FormatterScheduler::removePlayer (NclExecutionObject *exObject)
 {
-  bool removed = false;
+  if (!NclExecutionObject::hasInstance (exObject, false))
+    return false;
 
-  if (NclExecutionObject::hasInstance (exObject, false))
-    {
-      string objId = exObject->getId ();
-      removed = removePlayer (objId);
-    }
-
-  return removed;
-}
-
-bool
-FormatterScheduler::removePlayer (const string &objectId)
-{
   map<string, PlayerAdapter *>::iterator i
-      = _objectPlayers.find (objectId);
+      = _objectPlayers.find (exObject->getId ());
 
   if (i != _objectPlayers.end ())
     {
-      _objectPlayers.erase (i);
-      delete i->second; // delete PlayerAdapter
-
+      //
+      // *** FIXME: This causes memory corruption.  ***
+      //
+      // _objectPlayers.erase (i);
+      // delete i->second; // delete PlayerAdapter
       return true;
     }
 

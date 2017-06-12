@@ -57,9 +57,6 @@ public:
   VideoPlayer (const string &mrl); //works
   virtual ~VideoPlayer ();
 
-  guint32 getMediaTime (); //works
-  void setMediaTime (guint32 pos);
-
   bool play (); //works
   void pause (); //works
   void stop (); //works
