@@ -1367,11 +1367,11 @@ void
 PlayerAdapter::handleKeyEvent (SDL_EventType evtType,
                                SDL_Keycode key)
 {
-  if(evtType == SDL_KEYDOWN)
+  if (unlikely (_object == nullptr || _player == nullptr))
     return;
 
-  g_assert_nonnull (_object);
-  g_assert_nonnull (_player);
+  if (evtType == SDL_KEYDOWN)
+    return;
 
   if (_player->isVisible ())
     {
