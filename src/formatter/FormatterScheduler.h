@@ -72,7 +72,6 @@ public:
 
 private:
   PlayerAdapter *initializePlayer (NclExecutionObject *object);
-  bool removePlayer (const string &objectId);
 
   void runAction (NclLinkSimpleAction *action);
   void runAction (NclFormatterEvent *event, NclLinkSimpleAction *action);

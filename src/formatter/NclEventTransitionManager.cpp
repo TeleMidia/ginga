@@ -44,13 +44,15 @@ NclEventTransitionManager::getTransitionEvents ()
 void
 NclEventTransitionManager::addEventTransition (NclEventTransition *transition)
 {
-  int beg, end, pos;
+  size_t beg, end, pos;
   NclEventTransition *auxTransition;
   vector<NclEventTransition *> *transitionEvents = &this->transTable;
 
   // binary search
   beg = 0;
-  end = (int)(transitionEvents->size () - 1);
+  if (transitionEvents->size () == 0)
+    goto done;
+  end = transitionEvents->size () - 1;
   while (beg <= end)
     {
       pos = (beg + end) / 2;
@@ -69,27 +71,25 @@ NclEventTransitionManager::addEventTransition (NclEventTransition *transition)
           g_assert_not_reached ();
         }
     }
-
-  transitionEvents->insert ((transitionEvents->begin () + beg), transition);
+ done:
+  transitionEvents->insert (transitionEvents->begin () + (int) beg, transition);
 }
 
 void
 NclEventTransitionManager::removeEventTransition (
     NclPresentationEvent *event)
 {
-  int i, size = -1;
+  size_t i, size;
   vector<NclEventTransition *>::iterator j;
   NclEventTransition *transition;
   NclEventTransition *endTransition;
   vector<NclEventTransition *> *transitionEvents;
 
   transitionEvents = getTransitionEvents ();
+  if (transitionEvents == NULL)
+    return;                     // nothing to do
 
-  if (transitionEvents != NULL)
-    {
-      size = (int) transitionEvents->size ();
-    }
-
+  size = transitionEvents->size ();
   for (i = 0; i < size; i++)
     {
       transition = (*transitionEvents)[i];
@@ -109,7 +109,7 @@ NclEventTransitionManager::removeEventTransition (
                   if (*j == endTransition)
                     {
                       transitionEvents->erase (j);
-                      size = (int) transitionEvents->size ();
+                      size = transitionEvents->size ();
                       i = 0;
                       break;
                     }
@@ -122,7 +122,7 @@ NclEventTransitionManager::removeEventTransition (
               if (*j == transition)
                 {
                   transitionEvents->erase (j);
-                  size = (int) transitionEvents->size ();
+                  size = transitionEvents->size ();
                   i = 0;
                   break;
                 }
@@ -142,7 +142,7 @@ NclEventTransitionManager::prepare (bool wholeContent, GingaTime startTime)
 {
   vector<NclEventTransition *> *transitionEvents;
   NclEventTransition *transition;
-  unsigned int transIx, size;
+  size_t transIx, size;
 
   if (wholeContent && startTime == 0)
     {
@@ -151,7 +151,7 @@ NclEventTransitionManager::prepare (bool wholeContent, GingaTime startTime)
   else
     {
       transitionEvents = getTransitionEvents ();
-      size = (int) transitionEvents->size ();
+      size = transitionEvents->size ();
       transIx = 0;
       startTransitionIndex = transIx;
       while (transIx < size)
@@ -191,10 +191,10 @@ NclEventTransitionManager::start (GingaTime offsetTime)
 {
   vector<NclEventTransition *> *transitionEvents;
   NclEventTransition *transition;
-  unsigned int transIx, size;
+  size_t transIx, size;
 
   transitionEvents = getTransitionEvents ();
-  size = (int) transitionEvents->size ();
+  size = transitionEvents->size ();
 
   transIx = currentTransitionIndex;
 
@@ -252,14 +252,13 @@ void
 NclEventTransitionManager::abort (GingaTime endTime, bool applicationType)
 {
   vector<NclEventTransition *> *transitionEvents;
-  unsigned int transIx, i, size;
+  size_t transIx, i, size;
   NclEventTransition *transition;
   NclFormatterEvent *fev;
 
   transIx = currentTransitionIndex;
-
   transitionEvents = getTransitionEvents ();
-  size = (int) transitionEvents->size ();
+  size = transitionEvents->size ();
 
   for (i = transIx; i < size; i++)
     {
@@ -346,7 +345,7 @@ NclEventTransitionManager::updateTransitionTable (
   NclEventTransition *transition;
   NclFormatterEvent *ev;
   vector<NclEventTransition *> *transitionEvents;
-  unsigned int currentIx;
+  size_t currentIx;
 
   transitionEvents = &this->transTable;
   currentIx = currentTransitionIndex;
@@ -396,7 +395,7 @@ set<GingaTime> *
 NclEventTransitionManager::getTransitionsValues ()
 {
   set<GingaTime> *transValues;
-  unsigned int currentIx, ix;
+  size_t currentIx, ix;
   vector<NclEventTransition *> *transitionEvents;
   vector<NclEventTransition *>::iterator i;
 
@@ -426,7 +425,7 @@ NclEventTransitionManager::getNextTransition (NclFormatterEvent *mainEvent)
 {
   NclEventTransition *transition;
   vector<NclEventTransition *> *transitionEvents;
-  unsigned int currentIx;
+  size_t currentIx;
   GingaTime transTime;
   GingaTime eventEnd;
 

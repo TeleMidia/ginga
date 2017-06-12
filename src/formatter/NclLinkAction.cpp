@@ -145,7 +145,7 @@ NclLinkAction::removeActionProgressionListener (
 void
 NclLinkAction::notifyProgressionListeners (bool start)
 {
-  int i, size;
+  size_t i, size;
   NclLinkActionProgressionListener *listener;
   vector<NclLinkActionProgressionListener *> *notifyList;
 
@@ -156,7 +156,7 @@ NclLinkAction::notifyProgressionListeners (bool start)
           notifyList = new vector<NclLinkActionProgressionListener *> (
               *progressionListeners);
 
-          size = (int) notifyList->size ();
+          size = notifyList->size ();
           for (i = 0; i < size; i++)
             {
               listener = (*notifyList)[i];

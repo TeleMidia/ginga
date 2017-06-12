@@ -66,7 +66,7 @@ public:
 
   // From IEventListener.
   virtual void handleKeyEvent (SDL_EventType, SDL_Keycode) override;
-  virtual void handleTickEvent (GingaTime, GingaTime, int);
+  virtual void handleTickEvent (GingaTime, GingaTime, int) override;
 
 private:
   FormatterScheduler *_scheduler;

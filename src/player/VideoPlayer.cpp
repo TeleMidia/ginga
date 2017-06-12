@@ -194,31 +194,6 @@ VideoPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   return true; // keep job
 }
 
-guint32
-VideoPlayer::getMediaTime ()
-{
-  if(this->playbin==NULL)
-      return 0;
-
-  GstClock *clock = gst_element_get_clock (this->playbin);
-
-  if(clock==NULL)
-     return 0;
-
-  guint32 time = (guint32)(GST_TIME_AS_MSECONDS (gst_clock_get_time (clock))
-    - GST_TIME_AS_MSECONDS (gst_element_get_base_time (this->playbin)));
-
-  gst_object_unref (clock);
-
-  return time;
-}
-
-void
-VideoPlayer::setMediaTime (arg_unused(guint32 pos))
-{
-  TRACE ();
-}
-
 bool
 VideoPlayer::play ()
 {

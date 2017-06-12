@@ -34,8 +34,8 @@ Player::Player (const string &mrl)
   this->forcedNaturalEnd = false;
   this->scope = "";
   this->scopeType = PL_TYPE_PRESENTATION;
-  this->scopeInitTime = -1;
-  this->scopeEndTime = -1;
+  this->scopeInitTime = 0;
+  this->scopeEndTime = GINGA_TIME_NONE;
 
   _time = 0;
 

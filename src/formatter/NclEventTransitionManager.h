@@ -33,8 +33,8 @@ GINGA_FORMATTER_BEGIN
 class NclEventTransitionManager
 {
 private:
-  int currentTransitionIndex;
-  int startTransitionIndex;
+  size_t currentTransitionIndex;
+  size_t startTransitionIndex;
   vector<NclEventTransition *> transTable;
 
 public:
