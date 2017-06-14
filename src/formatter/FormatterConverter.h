@@ -18,6 +18,29 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTERCONVERTER_H_
 #define FORMATTERCONVERTER_H_
 
+#include "ncl/Action.h"
+#include "ncl/AssessmentStatement.h"
+#include "ncl/CausalConnector.h"
+#include "ncl/ValueAssessment.h"
+#include "ncl/CompoundAction.h"
+#include "ncl/CompoundStatement.h"
+#include "ncl/CompoundCondition.h"
+#include "ncl/ConditionExpression.h"
+#include "ncl/AttributeAssessment.h"
+#include "ncl/Role.h"
+#include "ncl/SimpleAction.h"
+#include "ncl/SimpleCondition.h"
+#include "ncl/Statement.h"
+#include "ncl/TriggerExpression.h"
+#include "ncl/EventUtil.h"
+#include "ncl/Bind.h"
+#include "ncl/CausalLink.h"
+#include "ncl/Link.h"
+#include "ncl/Node.h"
+#include "ncl/InterfacePoint.h"
+#include "ncl/Parameter.h"
+using namespace ::ginga::ncl;
+
 #include "NclExecutionObjectSwitch.h"
 #include "NclSwitchEvent.h"
 
@@ -33,6 +56,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclLinkAction.h"
 #include "NclLinkCompoundAction.h"
 #include "NclLinkSimpleAction.h"
+#include "NclLinkAssessmentStatement.h"
+#include "NclLinkCompoundTriggerCondition.h"
 
 #include "NclCascadingDescriptor.h"
 
@@ -44,7 +69,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-class FormatterLinkConverter;
 class FormatterScheduler;
 
 class FormatterConverter : public INclEventListener
@@ -79,7 +103,6 @@ private:
   map<string, NclExecutionObject *> _executionObjects;
   set<NclFormatterEvent *> _listening;
   set<NclExecutionObject *> _settingObjects;
-  FormatterLinkConverter *_linkCompiler;
   INclLinkActionListener *_actionListener;
   RuleAdapter *_ruleAdapter;
   bool _handling;
@@ -88,6 +111,10 @@ private:
                            NclCompositeExecutionObject *parentObj);
 
   bool removeExecutionObject (NclExecutionObject *exeObj);
+
+  NclFormatterCausalLink *
+  createCausalLink (CausalLink *ncmLink,
+                    NclCompositeExecutionObject *parentObject);
 
   NclCompositeExecutionObject *
   addSameInstance (NclExecutionObject *exeObj, ReferNode *referNode);
@@ -133,6 +160,61 @@ private:
   static bool hasDescriptorPropName (const string &name);
   static bool isEmbeddedApp (NodeEntity *dataObject);
   static bool isEmbeddedAppMediaType (const string &mediaType);
+
+  // From: FormatterLinkConverter
+  void setImplicitRefAssessment (const string &roleId, CausalLink *ncmLink,
+                                 NclFormatterEvent *event);
+
+  NclLinkAction *createAction (Action *actionExpression,
+                               CausalLink *ncmLink,
+                               NclCompositeExecutionObject *parentObject);
+
+  NclLinkCondition *
+  createCondition (ConditionExpression *ncmExpression, CausalLink *ncmLink,
+                   NclCompositeExecutionObject *parentObject);
+
+  NclLinkCompoundTriggerCondition *createCompoundTriggerCondition (
+      short op, GingaTime delay,
+      vector<ConditionExpression *> *ncmChildConditions,
+      CausalLink *ncmLink, NclCompositeExecutionObject *parentObject);
+
+  NclLinkCondition *createCondition (
+      TriggerExpression *triggerExpression, CausalLink *ncmLink,
+      NclCompositeExecutionObject *parentObject);
+
+  NclLinkAssessmentStatement *createAssessmentStatement (
+      AssessmentStatement *assessmentStatement, Bind *bind, Link *ncmLink,
+      NclCompositeExecutionObject *parentObject);
+
+  NclLinkStatement *
+  createStatement (Statement *statementExpression, Link *ncmLink,
+                   NclCompositeExecutionObject *parentObject);
+
+  NclLinkAttributeAssessment *createAttributeAssessment (
+      AttributeAssessment *attributeAssessment, Bind *bind, Link *ncmLink,
+      NclCompositeExecutionObject *parentObject);
+
+  NclLinkSimpleAction *
+  createSimpleAction (SimpleAction *sae, Bind *bind, Link *ncmLink,
+                      NclCompositeExecutionObject *parentObject);
+
+  NclLinkCompoundAction *createCompoundAction (
+      short op, GingaTime delay, vector<Action *> *ncmChildActions,
+      CausalLink *ncmLink, NclCompositeExecutionObject *parentObject);
+
+  NclLinkTriggerCondition *createSimpleCondition (
+      SimpleCondition *condition, Bind *bind, Link *ncmLink,
+      NclCompositeExecutionObject *parentObject);
+
+  NclFormatterEvent *createEvent (Bind *bind, Link *ncmLink,
+                                  NclCompositeExecutionObject *parentObject);
+
+  GingaTime getDelayParameter (Link *ncmLink, Parameter *connParam,
+                               Bind *ncmBind);
+
+  string getBindKey (Link *ncmLink, Bind *ncmBind);
+  GingaTime compileDelay (Link *ncmLink, const string &delayObject, Bind *bind);
+  //end FormatterLinkConverter
 };
 
 GINGA_FORMATTER_END
