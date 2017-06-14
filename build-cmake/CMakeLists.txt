@@ -83,7 +83,7 @@ set (GINGA_SOURCES
 
   ../src/formatter/FormatterConverter.cpp
   ../src/formatter/FormatterFocusManager.cpp
-  ./src/formatter/FormatterScheduler.cpp
+  ../src/formatter/FormatterScheduler.cpp
   ../src/formatter/NclAnchorEvent.cpp
   ../src/formatter/NclApplicationExecutionObject.cpp
   ../src/formatter/NclAttributionEvent.cpp
