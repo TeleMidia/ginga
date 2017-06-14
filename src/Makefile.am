@@ -52,7 +52,6 @@ src+= common-mime-table.cpp
 src+= common.cpp
 src+= formatter/FormatterConverter.cpp
 src+= formatter/FormatterFocusManager.cpp
-src+= formatter/FormatterLinkConverter.cpp
 src+= formatter/FormatterScheduler.cpp
 src+= formatter/NclAnchorEvent.cpp
 src+= formatter/NclApplicationExecutionObject.cpp
