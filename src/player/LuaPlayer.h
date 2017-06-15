@@ -52,7 +52,7 @@ public:
 
   virtual void setCurrentScope (const string &scopeId) override;
   bool setKeyHandler (bool isHandler);
-  virtual void setPropertyValue (const string &, const string &) override;
+  virtual void setProperty (const string &, const string &) override;
 
   void handleTickEvent (GingaTime, GingaTime, int) override {};
   void handleKeyEvent (SDL_EventType, SDL_Keycode) override;
