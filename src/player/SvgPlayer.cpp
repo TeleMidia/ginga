@@ -24,24 +24,37 @@ using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
-// Private methods.
+
+// Public.
 
-bool
-SvgPlayer::displayJobCallbackWrapper (DisplayJob *job,
-                                        SDL_Renderer *renderer,
-                                        void *self)
+void
+SvgPlayer::setPropertyValue (const string &name, const string &value)
 {
-  return ((SvgPlayer *) self)->displayJobCallback (job, renderer);
+  Player::setPropertyValue (name, value);
+  if (status == PL_OCCURRING)
+    this->dirty = true;
 }
 
-bool
-SvgPlayer::displayJobCallback (arg_unused (DisplayJob *job),
-                                 SDL_Renderer *renderer)
+void
+SvgPlayer::redraw (SDL_Renderer *renderer)
 {
+  if (this->dirty)
+    {
+      this->reload (renderer);
+      this->dirty = false;
+    }
+  Player::redraw (renderer);
+}
 
+
+// Private.
+
+void
+SvgPlayer::reload (SDL_Renderer *renderer)
+{
   RsvgHandle* svg;
   RsvgDimensionData dim;
-  GError *error = NULL;
+  GError *err = NULL;
 
   double scale;
   int width;
@@ -52,10 +65,9 @@ SvgPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   cairo_surface_t *cr_sfc;
   cairo_t *cr;
 
-  svg = rsvg_handle_new_from_file(this->mrl.c_str (), &error);
+  svg = rsvg_handle_new_from_file(this->mrl.c_str (), &err);
   if (unlikely (svg == NULL))
-    ERROR ("cannot load SVG file %s: %s",
-           this->mrl.c_str (), error->message);
+    ERROR ("cannot load SVG file %s: %s", this->mrl.c_str (), err->message);
 
   g_assert (this->rect.w > 0 && this->rect.h > 0);
   rsvg_handle_get_dimensions (svg, &dim);
@@ -68,7 +80,6 @@ SvgPlayer::displayJobCallback (arg_unused (DisplayJob *job),
   height = (int)(floor (dim.height * scale) + 1);
 
 #if SDL_VERSION_ATLEAST(2,0,5)
-
   sfc = SDL_CreateRGBSurfaceWithFormat (0, width, height, 32,
                                         SDL_PIXELFORMAT_ARGB8888);
 #else
@@ -85,53 +96,22 @@ SvgPlayer::displayJobCallback (arg_unused (DisplayJob *job),
                                                 CAIRO_FORMAT_ARGB32,
                                                 sfc->w, sfc->h, sfc->pitch);
   g_assert_nonnull (cr_sfc);
-
   cr = cairo_create (cr_sfc);
   g_assert_nonnull (cr);
-
   cairo_scale (cr, scale, scale);
   rsvg_handle_render_cairo (svg, cr);
-
   SDLx_UnlockSurface (sfc);
 
   cairo_destroy (cr);
   cairo_surface_destroy (cr_sfc);
 
+  if (this->texture != NULL)
+    Ginga_Display->destroyTexture (this->texture);
+
   this->texture = SDL_CreateTextureFromSurface (renderer, sfc);
   g_assert_nonnull (this->texture);
 
   SDL_FreeSurface (sfc);
-
-  return false;                 // remove job
-}
-
-
-// Public methods.
-
-SvgPlayer::SvgPlayer (const string &uri) : Player (uri)
-{
-  this->mutexInit ();
-}
-
-SvgPlayer::~SvgPlayer (void)
-{
-  this->mutexClear ();
-}
-
-bool
-SvgPlayer::play ()
-{
-  Ginga_Display->addJob (displayJobCallbackWrapper, this);
-  return Player::play ();
-}
-
-void
-SvgPlayer::setPropertyValue (const string &name, const string &value)
-{
-  Player::setPropertyValue (name, value);
-  if (status != PL_OCCURRING)
-    return;
-  Ginga_Display->addJob (displayJobCallbackWrapper, this);
 }
 
 GINGA_PLAYER_END

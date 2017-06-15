@@ -162,6 +162,21 @@ xstrtodorpercent (const string &s, bool *perc)
     }
 }
 
+// Converts a dimension string to a number in pixels.
+// The following formats are supported: "N%", "Npx", or, "N".
+// If dimension is a percentage, multiply it by base.
+int
+xstrtopixel (const string &s, int base)
+{
+  bool percent;
+  double px;
+
+  px = xstrtodorpercent (s, &percent);
+  return (percent)
+    ? (int) CLAMP (lround (px * base), 0, G_MAXINT)
+    : (int) CLAMP (lround (px), 0, G_MAXINT);
+}
+
 // Converts a time string to a number in nanoseconds.
 // The following formats are supported: "NNs" or "NN:NN:NN".
 bool

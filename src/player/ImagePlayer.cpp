@@ -23,33 +23,19 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
-bool
-ImagePlayer::displayJobCallbackWrapper (DisplayJob *job,
-                                        SDL_Renderer *renderer,
-                                        void *self)
+
+// Public.
+
+void
+ImagePlayer::redraw (SDL_Renderer *renderer)
 {
-  return ((ImagePlayer *) self)->displayJobCallback (job, renderer);
-}
-
-bool
-ImagePlayer::displayJobCallback (arg_unused (DisplayJob *job),
-                                 SDL_Renderer *renderer)
-{
-  if (this->window == NULL)
-    return true;                // nothing to do
-
-  this->texture = IMG_LoadTexture (renderer, mrl.c_str ());
-  if (unlikely (this->texture == NULL))
-    ERROR ("cannot load image %s: %s", mrl.c_str (), IMG_GetError ());
-
-  return false;                 // remove job
-}
-
-bool
-ImagePlayer::play ()
-{
-  Ginga_Display->addJob (displayJobCallbackWrapper, this);
-  return Player::play ();
+  if (this->texture == NULL)
+    {
+      this->texture = IMG_LoadTexture (renderer, mrl.c_str ());
+      if (unlikely (this->texture == NULL))
+        ERROR ("cannot load image %s: %s", mrl.c_str (), IMG_GetError ());
+    }
+  Player::redraw (renderer);
 }
 
 GINGA_PLAYER_END

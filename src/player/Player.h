@@ -96,7 +96,7 @@ public:
   virtual void setOutWindow (SDLWindow *);
   virtual void setCurrentScope (arg_unused (const string &scopeId)) {}
 
-  void redraw (SDL_Renderer *);
+  virtual void redraw (SDL_Renderer *);
 
 protected:
   GingaTime _time;              // playback time
@@ -114,12 +114,12 @@ protected:
   GingaTime scopeEndTime;
 
   // Media attributes.
-  SDL_Texture *texture;         // media texture
+  SDL_Texture *texture;
   int borderWidth;
-  SDL_Color bgColor;            // background color
+  SDL_Color bgColor;
   SDL_Color borderColor;
-  SDL_Rect rect;                // draw area
-  int z;                        // z-index
+  SDL_Rect rect;
+  int z;
   int zorder;
   guint8 alpha;
 
