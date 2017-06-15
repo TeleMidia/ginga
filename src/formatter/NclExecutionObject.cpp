@@ -1144,8 +1144,8 @@ NclExecutionObject::resume ()
 }
 
 bool
-NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
-                                      const string &value)
+NclExecutionObject::setProperty (NclAttributionEvent *event,
+                                 const string &value)
 {
   string propName;
 
@@ -1190,7 +1190,7 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
 }
 
 string
-NclExecutionObject::getPropertyValue (const string &param)
+NclExecutionObject::getProperty (const string &param)
 {
   NclFormatterRegion *region = NULL;
   LayoutRegion *ncmRegion = NULL;

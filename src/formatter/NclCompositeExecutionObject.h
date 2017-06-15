@@ -99,7 +99,7 @@ public:
 
   void linkEvaluationStarted (NclFormatterCausalLink *link) override;
   void linkEvaluationFinished (NclFormatterCausalLink *, bool) override;
-  bool setPropertyValue (NclAttributionEvent *, const string &) override;
+  bool setProperty (NclAttributionEvent *, const string &) override;
 
 private:
   void checkLinkConditions ();

@@ -378,9 +378,8 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
             }
           else
             {
-              executionObject->setPropertyValue (
-                  (NclAttributionEvent *)event, propValue);
-
+              executionObject->setProperty
+                ((NclAttributionEvent *) event, propValue);
               event->stop ();
             }
 
@@ -555,15 +554,14 @@ FormatterScheduler::runActionOverComposition (
           if (event != NULL)
             {
               event->start ();
-              compositeObject->setPropertyValue (
-                  (NclAttributionEvent *)event, propValue);
-
+              compositeObject->setProperty
+                ((NclAttributionEvent *) event, propValue);
               ((NclAttributionEvent *)event)->setValue (propValue);
               event->stop ();
             }
           else
             {
-              compositeObject->setPropertyValue (attrEvent, propValue);
+              compositeObject->setProperty (attrEvent, propValue);
               attrEvent->stop ();
             }
 

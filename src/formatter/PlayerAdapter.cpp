@@ -1204,9 +1204,9 @@ PlayerAdapter::setProperty (NclAttributionEvent *event,
             }
         }
 
-      if (_object->setPropertyValue (event, value))
+      if (_object->setProperty (event, value))
         {
-          _player->setProperty (propName, _object->getPropertyValue (propName));
+          _player->setProperty (propName, _object->getProperty (propName));
         }
       else
         {
@@ -1266,7 +1266,7 @@ PlayerAdapter::getProperty (NclAttributionEvent *event)
   name = anchor->getName ();
   value = _player->getProperty (name);
   if (value == "")
-    value = _object->getPropertyValue (name);
+    value = _object->getProperty (name);
 
   TRACE ("getting property with name='%s', value='%s'",
          name.c_str (), value.c_str ());
