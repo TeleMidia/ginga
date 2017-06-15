@@ -32,7 +32,7 @@ public:
   virtual ~TextPlayer (void);
 
   bool play (void) override;
-  void setPropertyValue (const string &name, const string &value) override;
+  void setProperty (const string &, const string &) override;
 
   void updateTexture();
 

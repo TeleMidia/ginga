@@ -608,7 +608,7 @@ PlayerAdapter::prepare (NclExecutionObject *object,
               value = "1.0";
             }
 
-          _player->setPropertyValue ("soundLevel", value);
+          _player->setProperty ("soundLevel", value);
         }
 
       if (event->getCurrentState () == EventUtil::ST_SLEEPING)
@@ -1206,8 +1206,7 @@ PlayerAdapter::setProperty (NclAttributionEvent *event,
 
       if (_object->setPropertyValue (event, value))
         {
-          _player->setPropertyValue (propName,
-                                    _object->getPropertyValue (propName));
+          _player->setProperty (propName, _object->getPropertyValue (propName));
         }
       else
         {
@@ -1233,7 +1232,7 @@ PlayerAdapter::setProperty (NclAttributionEvent *event,
                     }
                 }
             }
-          _player->setPropertyValue (propName, value);
+          _player->setProperty (propName, value);
         }
     }
 
@@ -1247,7 +1246,7 @@ PlayerAdapter::setProperty (const string &name,
   g_assert_nonnull (_player);
   TRACE ("setting property name='%s' to value='%s' (player='%p')",
          name.c_str (), value.c_str (), _player);
-  _player->setPropertyValue (name, value);
+  _player->setProperty (name, value);
 }
 
 string
@@ -1265,7 +1264,7 @@ PlayerAdapter::getProperty (NclAttributionEvent *event)
   g_assert_nonnull (anchor);
 
   name = anchor->getPropertyName ();
-  value = _player->getPropertyValue (name);
+  value = _player->getProperty (name);
   if (value == "")
     value = _object->getPropertyValue (name);
 
@@ -1378,7 +1377,7 @@ PlayerAdapter::handleKeyEvent (SDL_EventType evtType,
       GingaTime time = _player->getMediaTime ();
 
       TRACE ("key '%d' received for '%s' (time=%" GINGA_TIME_FORMAT ")",
-             key, _player->getPropertyValue ("mrl").c_str (),
+             key, _player->getProperty ("mrl").c_str (),
              GINGA_TIME_ARGS (time));
 
       _object->selectionEvent (key, time);
@@ -1482,7 +1481,7 @@ PlayerAdapter::createPlayer (const string &mrl)
     {
       for (Parameter &param: descriptor->getParameters ())
         {
-          _player->setPropertyValue (param.getName (), param.getValue ());
+          _player->setProperty (param.getName (), param.getValue ());
         }
     }
 
@@ -1499,8 +1498,8 @@ PlayerAdapter::createPlayer (const string &mrl)
                      property->getPropertyValue ().c_str (),
                      mrl.c_str ());
 
-              _player->setPropertyValue (property->getPropertyName(),
-                                         property->getPropertyValue());
+              _player->setProperty (property->getPropertyName(),
+                                    property->getPropertyValue());
             }
         }
     }

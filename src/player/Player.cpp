@@ -178,13 +178,13 @@ Player::resume ()
 }
 
 string
-Player::getPropertyValue (string const &name)
+Player::getProperty (string const &name)
 {
   return (_properties.count (name) != 0) ? _properties[name] : "";
 }
 
 void
-Player::setPropertyValue (const string &name, const string &value)
+Player::setProperty (const string &name, const string &value)
 {
   vector<string> params;
 
@@ -196,26 +196,26 @@ Player::setPropertyValue (const string &name, const string &value)
       vector<string> params = xstrsplit (value, ',');
       if (unlikely (params.size () != 4))
         goto syntax_error;
-      this->setPropertyValue ("left", params[0]);
-      this->setPropertyValue ("top", params[1]);
-      this->setPropertyValue ("width", params[2]);
-      this->setPropertyValue ("height", params[3]);
+      this->setProperty ("left", params[0]);
+      this->setProperty ("top", params[1]);
+      this->setProperty ("width", params[2]);
+      this->setProperty ("height", params[3]);
     }
   else if (name == "location")
     {
       vector<string> params = xstrsplit (value, ',');
       if (unlikely (params.size () != 2))
         goto syntax_error;
-      this->setPropertyValue ("left", params[0]);
-      this->setPropertyValue ("top", params[1]);
+      this->setProperty ("left", params[0]);
+      this->setProperty ("top", params[1]);
     }
   else if (name == "size")
     {
       vector<string> params = xstrsplit (value, ',');
       if (unlikely (params.size () != 2))
         goto syntax_error;
-      this->setPropertyValue ("width", params[0]);
-      this->setPropertyValue ("height", params[1]);
+      this->setProperty ("width", params[0]);
+      this->setProperty ("height", params[1]);
     }
   else if (name == "left")
     {
