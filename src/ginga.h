@@ -240,10 +240,14 @@ gint64 xstrtoint64 (const string &, guint8);
 guint xstrtouint (const string &, guint8);
 guint8 xstrtouint8 (const string &, guint8);
 guint64 xstrtouint64 (const string &, guint8);
+
+bool xstrispercent (const string &);
+double xstrtodorpercent (const string &, bool *);
+int xstrtopixel (const string &, int);
+
 bool _xstrtotime (const string &, GingaTime *);
 GingaTime xstrtotime (const string &);
-bool xstrispercent (const string &);
-gdouble xstrtodorpercent (const string &, bool *);
+
 int xstrcasecmp (const string &, const string &);
 #define xstrcaseeq(s1, s2) (xstrcasecmp ((s1), (s2)) == 0)
 int G_GNUC_PRINTF (2,3) xstrassign (string &, const char *, ...);

@@ -579,39 +579,25 @@ NclParser::createNcl (DOMElement *parentElement)
 
 // COMPONENTS
 Node *
-NclParser::parseMedia (DOMElement *media_element)
+NclParser::parseMedia (DOMElement *elt)
 {
-  Node *media = createMedia (media_element);
+  Node *media = createMedia (elt);
   g_assert_nonnull (media);
 
-  for (DOMElement *child: dom_element_children(media_element))
+  for (DOMElement *child: dom_element_children (elt))
     {
       string tagname = dom_element_tagname(child);
       if (tagname == "area")
         {
           Anchor *area = this->parseArea (child);
           if (area)
-            {
-              if (media->instanceOf("ContentNode"))
-                {
-                  // createMedia can also return a ReferNode in which case
-                  // the following should be skipped
-                  addAnchorToMedia ((ContentNode*)media, area);
-                }
-            }
+            addAnchorToMedia ((ContentNode *) media, area);
         }
       else if (tagname == "property")
         {
           PropertyAnchor *prop = this->parseProperty (child);
           if (prop)
-            {
-              if (media->instanceOf("ContentNode"))
-                {
-                  // createMedia can also return a ReferNode in which case
-                  // the following should be skipped
-                  addAnchorToMedia ((ContentNode*)media, prop);
-                }
-            }
+            addAnchorToMedia ((ContentNode*) media, prop);
         }
       else
         {
@@ -2250,8 +2236,6 @@ NclParser::createRegion (DOMElement *elt, LayoutRegion *parent)
   static int last_zorder = 0;
 
   string val;
-  double d;
-  bool perc;
 
   region = new LayoutRegion (dom_element_get_attr (elt, "id"));
   if (parent != NULL)
@@ -2270,44 +2254,22 @@ NclParser::createRegion (DOMElement *elt, LayoutRegion *parent)
   zorder = 0;
 
   if (dom_element_try_get_attr (val, elt, "left"))
-    {
-      d = xstrtodorpercent (val, &perc);
-      rect.x += (int) lround ((perc) ? parent_rect.w * d : d);
-    }
+    rect.x += xstrtopixel (val, parent_rect.w);
 
   if (dom_element_try_get_attr (val, elt, "top"))
-    {
-      d = xstrtodorpercent (val, &perc);
-      rect.y += (int) lround ((perc) ? parent_rect.h * d : d);
-    }
+    rect.y += xstrtopixel (val, parent_rect.h);
 
   if (dom_element_try_get_attr (val, elt, "width"))
-    {
-      d = xstrtodorpercent (val, &perc);
-      rect.w = (int) lround ((perc) ? parent_rect.w * d : d);
-    }
+    rect.w = xstrtopixel (val, parent_rect.w);
 
   if (dom_element_try_get_attr (val, elt, "height"))
-    {
-      d = xstrtodorpercent (val, &perc);
-      rect.h = (int) lround ((perc) ? parent_rect.h * d : d);
-    }
+    rect.h = xstrtopixel (val, parent_rect.h);
 
   if (dom_element_try_get_attr (val, elt, "right"))
-    {
-      int right;
-      d = xstrtodorpercent (val, &perc);
-      right = (int) lround ((perc) ? parent_rect.w * d : d);
-      rect.x += parent_rect.w - rect.w - right;
-    }
+    rect.x += parent_rect.w - rect.w - xstrtopixel (val, parent_rect.w);
 
   if (dom_element_try_get_attr (val, elt, "bottom"))
-    {
-      int bottom;
-      d = xstrtodorpercent (val, &perc);
-      bottom = (int) lround ((perc) ? parent_rect.w * d : d);
-      rect.y += parent_rect.h - rect.h - bottom;
-    }
+    rect.y += parent_rect.h - rect.h - xstrtopixel (val, parent_rect.h);
 
   if (dom_element_try_get_attr (val, elt, "zIndex"))
     z = xstrtoint (val, 10);
@@ -2329,7 +2291,7 @@ NclParser::parseBind (DOMElement *bind_element, Link *link)
 
   for (DOMElement *child: dom_element_children (bind_element))
     {
-      string tagname = dom_element_tagname(child);
+      string tagname = dom_element_tagname (child);
       if (tagname == "bindParam")
         {
           Parameter *param = parseLinkOrBindParam (child);
@@ -2405,7 +2367,7 @@ NclParser::createBind (DOMElement *bind_element, Link *link)
   NclDocument *document;
   GenericDescriptor *descriptor;
 
-  role = _connectorLinkParsing->getRole (dom_element_get_attr(bind_element, "role"));
+  role = _connectorLinkParsing->getRole (dom_element_get_attr (bind_element, "role"));
   component = dom_element_get_attr(bind_element, "component");
 
   if (_composite->getId () == component)
@@ -2419,13 +2381,13 @@ NclParser::createBind (DOMElement *bind_element, Link *link)
 
   if (unlikely (anchorNode == NULL))
     {
-      ERROR_SYNTAX ("bind: bad interface for component '%s'",
+      ERROR_SYNTAX ("bind: bad component '%s'",
                     component.c_str ());
     }
 
   anchorNodeEntity = (NodeEntity *)(anchorNode->getDataEntity ());
 
-  if (dom_element_try_get_attr(interfaceId, bind_element, "interface"))
+  if (dom_element_try_get_attr (interfaceId, bind_element, "interface"))
     {
       if (anchorNodeEntity == NULL)
         {
@@ -2469,6 +2431,11 @@ NclParser::createBind (DOMElement *bind_element, Link *link)
                 }
             }
         }
+      if (unlikely (interfacePoint == NULL))
+        {
+          ERROR_SYNTAX ("bind: bad interface '%s' for component '%s'",
+                        interfaceId.c_str (), component.c_str ());
+        }
     }
   else if (anchorNodeEntity != NULL)
     {
@@ -2497,7 +2464,6 @@ NclParser::createBind (DOMElement *bind_element, Link *link)
       interfacePoint = anchorNode->getAnchor (0);
     }
 
-  // atribui o bind ao elo (link)
   if (dom_element_has_attr(bind_element, "descriptor"))
     {
       document = this->getNclDocument ();

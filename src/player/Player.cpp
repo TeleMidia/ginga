@@ -188,57 +188,91 @@ Player::setPropertyValue (const string &name, const string &value)
 {
   vector<string> params;
 
-  if (!value.length ())
-    return;
+  if (value == "")
+    return;                     // nothing to do
 
   if (name == "bounds")
     {
-      params = xstrsplit (value, ',');
-      if (params.size () == 4)
-        {
-          this->rect.x = xstrtoint (params[0], 10);
-          this->rect.y = xstrtoint (params[1], 10);
-          this->rect.w = xstrtoint (params[2], 10);
-          this->rect.h = xstrtoint (params[3], 10);
-        }
+      vector<string> params = xstrsplit (value, ',');
+      if (unlikely (params.size () != 4))
+        goto syntax_error;
+      this->setPropertyValue ("left", params[0]);
+      this->setPropertyValue ("top", params[1]);
+      this->setPropertyValue ("width", params[2]);
+      this->setPropertyValue ("height", params[3]);
     }
   else if (name == "location")
     {
-      g_assert_not_reached ();
+      vector<string> params = xstrsplit (value, ',');
+      if (unlikely (params.size () != 2))
+        goto syntax_error;
+      this->setPropertyValue ("left", params[0]);
+      this->setPropertyValue ("top", params[1]);
     }
   else if (name == "size")
     {
-      g_assert_not_reached ();
+      vector<string> params = xstrsplit (value, ',');
+      if (unlikely (params.size () != 2))
+        goto syntax_error;
+      this->setPropertyValue ("width", params[0]);
+      this->setPropertyValue ("height", params[1]);
     }
   else if (name == "left")
     {
-      this->rect.x = xstrtoint (value, 10);
+      int width;
+      Ginga_Display->getSize (&width, NULL);
+      this->rect.x = xstrtopixel (value, width);
+    }
+  else if (name == "right")
+    {
+      int width;
+      Ginga_Display->getSize (&width, NULL);
+      this->rect.x = width - this->rect.w
+        - xstrtopixel (value, this->rect.w);
     }
   else if (name == "top")
     {
-      this->rect.y = xstrtoint (value, 10);
+      int height;
+      Ginga_Display->getSize (NULL, &height);
+      this->rect.y = xstrtopixel (value, height);
+    }
+  else if (name == "bottom")
+    {
+      int height;
+      Ginga_Display->getSize (NULL, &height);
+      this->rect.y = height - this->rect.h
+        - xstrtopixel (value, this->rect.h);
     }
   else if (name == "width")
     {
-      this->rect.w = xstrtoint (value, 10);
+      int width;
+      Ginga_Display->getSize (&width, NULL);
+      this->rect.w = xstrtopixel (value, width);
     }
   else if (name == "height")
     {
-      this->rect.h = xstrtoint (value, 10);
+      int height;
+      Ginga_Display->getSize (NULL, &height);
+      this->rect.h = xstrtopixel (value, height);
     }
-  else if(name == "background" || name == "backgroundColor"
-          || name == "bgColor")
+  else if (name == "background" || name == "backgroundColor")
     {
       g_assert (ginga_color_parse (value, &this->bgColor));
     }
   else if (name == "transparency")
     {
-      if(xstrtouint8 (value, 10) <= 0)
+      if (xstrtouint8 (value, 10) <= 0)
         this->alpha = 255;
       else
         this->alpha = (guint8)(255 - (((xstrtod (value)/100)*255)));
     }
+
   _properties[name] = value;
+  return;
+
+ syntax_error:
+  ERROR_SYNTAX ("property '%s': bad value '%s'",
+                name.c_str (), value.c_str ());
 }
 
 bool

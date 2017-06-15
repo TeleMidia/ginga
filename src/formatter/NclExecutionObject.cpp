@@ -1151,11 +1151,7 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
 
   NclFormatterRegion *region = NULL;
   LayoutRegion *ncmRegion = NULL;
-  bool hasProp = true;
   vector<string> params;
-  string left = "", top = "";
-  string width = "", height = "";
-  string right = "", bottom = "";
 
   if (descriptor == NULL || descriptor->getFormatterRegion () == NULL)
     {
@@ -1190,83 +1186,6 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
       region->setZIndex (xstrtoint (value, 10));
       return true;
     }
-
-  params = xstrsplit (xstrchomp (value), ',');
-
-  if (propName == "size")
-    {
-      if (params.size () == 2)
-        {
-          width = xstrchomp (params[0]);
-          height = xstrchomp (params[1]);
-        }
-      else
-        {
-          hasProp = false;
-        }
-    }
-  else if (propName == "location")
-    {
-      if (params.size () == 2)
-        {
-          left = params[0];
-          top = params[1];
-        }
-      else
-        {
-          hasProp = false;
-        }
-    }
-  else if (propName == "bounds")
-    {
-      if (params.size () == 4)
-        {
-          left = params[0];
-          top = params[1];
-          width = params[2];
-          height = params[3];
-        }
-      else
-        {
-          hasProp = false;
-        }
-    }
-  else if (propName == "left")
-    {
-      left = params[0];
-    }
-  else if (propName == "top")
-    {
-      top = params[0];
-    }
-  else if (propName == "width")
-    {
-      width = params[0];
-    }
-  else if (propName == "height")
-    {
-      height = params[0];
-    }
-  else if (propName == "bottom")
-    {
-      bottom = params[0];
-    }
-  else if (propName == "right")
-    {
-      right = params[0];
-    }
-  else
-    {
-      hasProp = false;
-    }
-
-  if (hasProp)
-    {
-      // set the values
-      region->updateRegionBounds ();
-      return true;
-    }
-
   return false;
 }
 

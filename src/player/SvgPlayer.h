@@ -27,19 +27,16 @@ GINGA_PLAYER_BEGIN
 class SvgPlayer : public Player
 {
 public:
-  explicit SvgPlayer (const string &mrl);
-  virtual ~SvgPlayer (void);
-
-  bool play (void) override;
-  void setPropertyValue (const string &name, const string &value) override;
+  SvgPlayer (const string &uri) : Player (uri) {};
+  ~SvgPlayer (void) {};
+  void setPropertyValue (const string &, const string &) override;
+  void redraw (SDL_Renderer *);
 
 private:
-  GINGA_MUTEX_DEFN ();
-  static bool displayJobCallbackWrapper (DisplayJob *,
-                                         SDL_Renderer *, void *);
-  bool displayJobCallback (DisplayJob *, SDL_Renderer *);
+  bool dirty = true;            // true if texture should be reloaded
+  void reload (SDL_Renderer *);
 };
 
 GINGA_PLAYER_END
 
-#endif /* SVG_PLAYER_H */
+#endif // SVG_PLAYER_H

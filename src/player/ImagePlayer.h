@@ -29,12 +29,7 @@ class ImagePlayer : public Player
 public:
   ImagePlayer (const string &uri) : Player (uri) {};
   ~ImagePlayer (void) {};
-  bool play (void) override;
-
-private:
-  static bool displayJobCallbackWrapper (DisplayJob *, SDL_Renderer *,
-                                         void *);
-  bool displayJobCallback (DisplayJob *, SDL_Renderer *);
+  void redraw (SDL_Renderer *);
 };
 
 GINGA_PLAYER_END
