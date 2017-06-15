@@ -1950,7 +1950,7 @@ NclParser::parseProperty (DOMElement *parent)
   anchor = new PropertyAnchor (attributeName);
   if (dom_element_try_get_attr(attributeValue, parent, "value"))
     {
-      anchor->setPropertyValue (attributeValue);
+      anchor->setValue (attributeValue);
     }
 
   return anchor;

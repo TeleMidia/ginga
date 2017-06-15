@@ -27,25 +27,25 @@ PropertyAnchor::PropertyAnchor (const string &attName) : Anchor (attName)
 }
 
 string
-PropertyAnchor::getPropertyName ()
+PropertyAnchor::getName ()
 {
   return Anchor::getId ();
 }
 
 void
-PropertyAnchor::setPropertyName (const string &name)
+PropertyAnchor::setName (const string &name)
 {
   Anchor::setId (name);
 }
 
 string
-PropertyAnchor::getPropertyValue ()
+PropertyAnchor::getValue ()
 {
   return value;
 }
 
 void
-PropertyAnchor::setPropertyValue (const string &value)
+PropertyAnchor::setValue (const string &value)
 {
   this->value = value;
 }
@@ -56,7 +56,7 @@ PropertyAnchor::clone ()
   PropertyAnchor *pAnchor;
 
   pAnchor = new PropertyAnchor (Entity::getId ());
-  pAnchor->setPropertyValue (value);
+  pAnchor->setValue (value);
 
   return pAnchor;
 }
