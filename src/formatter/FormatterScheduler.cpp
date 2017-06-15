@@ -264,7 +264,7 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
     {
       propName = ((NclAttributionEvent *)event)
                      ->getAnchor ()
-                     ->getPropertyName ();
+                     ->getName ();
 
       propValue = ((NclLinkAssignmentAction *)action)->getValue ();
       if (propValue != "" && propValue.substr (0, 1) == "$")
@@ -367,7 +367,7 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
               player->getPlayer()->
                 setAnimatorProperties(durVal,((NclAttributionEvent *)event)
                                       ->getAnchor ()
-                                      ->getPropertyName (),propValue);
+                                      ->getName (), propValue);
             }
           else if (player != NULL && player->hasPrepared ())
             {
@@ -548,7 +548,7 @@ FormatterScheduler::runActionOverComposition (
             }
 
           attrEvent = (NclAttributionEvent *)event;
-          propName = attrEvent->getAnchor ()->getPropertyName ();
+          propName = attrEvent->getAnchor ()->getName ();
           propValue = ((NclLinkAssignmentAction *)action)->getValue ();
           event = compositeObject->getEventFromAnchorId (propName);
 
@@ -1066,8 +1066,8 @@ FormatterScheduler::startDocument (const string &file)
             continue;           // nothing to do
 
           prop = (PropertyAnchor *) anchor;
-          name = prop->getPropertyName ();
-          value = prop->getPropertyValue ();
+          name = prop->getName ();
+          value = prop->getValue ();
           if (value == "")
             continue;           // nothing to do
 

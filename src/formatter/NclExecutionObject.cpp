@@ -931,7 +931,7 @@ NclExecutionObject::prepare (NclFormatterEvent *event, GingaTime offsetTime)
         {
           attributeEvent = (NclAttributionEvent *)auxEvent;
           attributeAnchor = attributeEvent->getAnchor ();
-          value = attributeAnchor->getPropertyValue ();
+          value = attributeAnchor->getValue ();
           if (value != "")
             {
               attributeEvent->setValue (value);
@@ -1179,7 +1179,7 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
       return false;
     }
 
-  propName = (event->getAnchor ())->getPropertyName ();
+  propName = (event->getAnchor ())->getName ();
 
   if (propName == "zIndex")
     {

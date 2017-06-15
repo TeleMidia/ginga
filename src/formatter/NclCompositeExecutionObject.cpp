@@ -679,7 +679,7 @@ bool
 NclCompositeExecutionObject::setPropertyValue (NclAttributionEvent *event,
                                                const string &value)
 {
-  if (event->getAnchor ()->getPropertyName () == "visible")
+  if (event->getAnchor ()->getName () == "visible")
     {
       if (value == "true")
         {

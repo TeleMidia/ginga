@@ -148,7 +148,7 @@ NclFormatterEvent::hasNcmId (NclFormatterEvent *event, const string &anchorId)
       anchor = ((NclAttributionEvent *)event)->getAnchor ();
       if (anchor != NULL)
         {
-          anchorName = ((PropertyAnchor *)anchor)->getPropertyName ();
+          anchorName = ((PropertyAnchor *)anchor)->getName ();
           if (anchorName == anchorId)
             {
               return true;
