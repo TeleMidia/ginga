@@ -190,9 +190,8 @@ public:
   virtual bool abort ();
   virtual bool pause ();
   virtual bool resume ();
-  virtual bool setPropertyValue (NclAttributionEvent *event, const string &value);
-
-  virtual string getPropertyValue (const string &propName);
+  virtual bool setProperty (NclAttributionEvent *, const string &);
+  virtual string getProperty (const string &);
 
   virtual bool unprepare ();
 
