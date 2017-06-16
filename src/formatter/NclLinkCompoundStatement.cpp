@@ -65,9 +65,6 @@ NclLinkCompoundStatement::addStatement (NclLinkStatement *statement)
 vector<NclLinkStatement *> *
 NclLinkCompoundStatement::getStatements ()
 {
-  if (statements->begin () == statements->end ())
-    return NULL;
-
   return statements;
 }
 
