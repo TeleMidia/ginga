@@ -281,7 +281,7 @@ LuaPlayer::setKeyHandler (bool b)
 }
 
 void
-LuaPlayer::setPropertyValue (const string &name, const string &value)
+LuaPlayer::setProperty (const string &name, const string &value)
 {
   this->lock ();
 
@@ -297,7 +297,8 @@ LuaPlayer::setPropertyValue (const string &name, const string &value)
       evt_ncl_send_attribution (this->_nw, "start", k, v);
       evt_ncl_send_attribution (this->_nw, "stop", k, v);
     }
-  Player::setPropertyValue (name, value);
+
+  Player::setProperty (name, value);
   this->unlock ();
 }
 

@@ -62,8 +62,8 @@ public:
   void stop (); //works
   void resume (); //works
 
-  virtual string getPropertyValue (const string &);
-  virtual void setPropertyValue (const string &, const string &);
+  virtual string getProperty (const string &);
+  virtual void setProperty (const string &, const string &);
 
   string getMrl ();
   bool isPlaying ();

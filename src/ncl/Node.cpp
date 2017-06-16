@@ -57,11 +57,10 @@ Node::hasProperty (const string &propName)
   i = originalPAnchors.begin ();
   while (i != originalPAnchors.end ())
     {
-      if ((*i)->getPropertyName () == propName)
+      if ((*i)->getName () == propName)
         {
           return true;
         }
-
       ++i;
     }
 
@@ -83,12 +82,12 @@ Node::copyProperties (Node *node)
     {
       prop = *i;
 
-      if (!hasProperty (prop->getPropertyName ()))
+      if (!hasProperty (prop->getName ()))
         {
-          cProp = new PropertyAnchor (prop->getPropertyName ());
+          cProp = new PropertyAnchor (prop->getName ());
           cProp->setId (prop->getId ());
-          cProp->setPropertyName (prop->getPropertyName ());
-          cProp->setPropertyValue (prop->getPropertyValue ());
+          cProp->setName (prop->getName ());
+          cProp->setValue (prop->getValue ());
 
           originalPAnchors.push_back (cProp);
           anchorList.push_back (cProp);
@@ -234,7 +233,7 @@ Node::getPropertyAnchor (const string &propertyName)
       if ((*i)->instanceOf ("PropertyAnchor"))
         {
           property = (PropertyAnchor *)(*i);
-          if (property->getPropertyName () == propertyName)
+          if (property->getName () == propertyName)
             {
               return property;
             }

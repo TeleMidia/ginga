@@ -92,7 +92,7 @@ NclAttributionEvent::getCurrentValue ()
 
   if (settingNode)
     {
-      propName = anchor->getPropertyName ();
+      propName = anchor->getName ();
       if (propName != "")
         {
           maintainerValue = settings->get (propName);
@@ -107,7 +107,7 @@ NclAttributionEvent::getCurrentValue ()
 
       if (maintainerValue == "")
         {
-          maintainerValue = anchor->getPropertyValue ();
+          maintainerValue = anchor->getValue ();
         }
     }
 
@@ -117,19 +117,9 @@ NclAttributionEvent::getCurrentValue ()
 bool
 NclAttributionEvent::setValue (const string &newValue)
 {
-  /*		if ((value == "" && newValue != "") ||
-                              (newValue == "" && value != "") ||
-                              (newValue != "" && value != "" && (newValue !=
-     value))) {
-                          value = newValue;
-                          return true;
-                  }
-
-                  return false;*/
-
-  if (anchor->getPropertyValue () != newValue)
+  if (anchor->getValue () != newValue)
     {
-      anchor->setPropertyValue (newValue);
+      anchor->setValue (newValue);
       return true;
     }
   return false;

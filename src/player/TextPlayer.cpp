@@ -161,10 +161,10 @@ TextPlayer::play ()
 }
 
 void
-TextPlayer::setPropertyValue (const string &name, const string &value)
+TextPlayer::setProperty (const string &name, const string &value)
 {
 
-   Player::setPropertyValue (name, value);
+   Player::setProperty (name, value);
 
   if(name == "fontColor")
     {

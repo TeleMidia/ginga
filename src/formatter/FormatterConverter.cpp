@@ -701,7 +701,7 @@ FormatterConverter::createDummyCascadingDescriptor (Node *node)
 
   for (PropertyAnchor *property: *anchors)
     {
-      name = property->getPropertyName ();
+      name = property->getName ();
 
       if (hasDescriptorPropName (name))
         {

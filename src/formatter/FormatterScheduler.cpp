@@ -264,7 +264,7 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
     {
       propName = ((NclAttributionEvent *)event)
                      ->getAnchor ()
-                     ->getPropertyName ();
+                     ->getName ();
 
       propValue = ((NclLinkAssignmentAction *)action)->getValue ();
       if (propValue != "" && propValue.substr (0, 1) == "$")
@@ -367,7 +367,7 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
               player->getPlayer()->
                 setAnimatorProperties(durVal,((NclAttributionEvent *)event)
                                       ->getAnchor ()
-                                      ->getPropertyName (),propValue);
+                                      ->getName (), propValue);
             }
           else if (player != NULL && player->hasPrepared ())
             {
@@ -378,9 +378,8 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
             }
           else
             {
-              executionObject->setPropertyValue (
-                  (NclAttributionEvent *)event, propValue);
-
+              executionObject->setProperty
+                ((NclAttributionEvent *) event, propValue);
               event->stop ();
             }
 
@@ -548,22 +547,21 @@ FormatterScheduler::runActionOverComposition (
             }
 
           attrEvent = (NclAttributionEvent *)event;
-          propName = attrEvent->getAnchor ()->getPropertyName ();
+          propName = attrEvent->getAnchor ()->getName ();
           propValue = ((NclLinkAssignmentAction *)action)->getValue ();
           event = compositeObject->getEventFromAnchorId (propName);
 
           if (event != NULL)
             {
               event->start ();
-              compositeObject->setPropertyValue (
-                  (NclAttributionEvent *)event, propValue);
-
+              compositeObject->setProperty
+                ((NclAttributionEvent *) event, propValue);
               ((NclAttributionEvent *)event)->setValue (propValue);
               event->stop ();
             }
           else
             {
-              compositeObject->setPropertyValue (attrEvent, propValue);
+              compositeObject->setProperty (attrEvent, propValue);
               attrEvent->stop ();
             }
 
@@ -1066,8 +1064,8 @@ FormatterScheduler::startDocument (const string &file)
             continue;           // nothing to do
 
           prop = (PropertyAnchor *) anchor;
-          name = prop->getPropertyName ();
-          value = prop->getPropertyValue ();
+          name = prop->getName ();
+          value = prop->getValue ();
           if (value == "")
             continue;           // nothing to do
 

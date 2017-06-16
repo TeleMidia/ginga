@@ -111,7 +111,7 @@ PlayerAdapter::setCurrentEvent (NclFormatterEvent *event)
           = dynamic_cast <NclAttributionEvent *> (event);
       g_assert_nonnull (attributionEvt);
 
-      ifId = attributionEvt->getAnchor ()->getPropertyName ();
+      ifId = attributionEvt->getAnchor ()->getName ();
       _player->setScope (ifId, Player::PL_TYPE_ATTRIBUTION);
 
       _currentEvent = event;
@@ -227,7 +227,7 @@ PlayerAdapter::prepareProperties (NclExecutionObject *obj)
       PropertyAnchor *property = obj->getNCMProperty ("explicitDur");
       if (property != nullptr)
         {
-          value = property->getPropertyValue ();
+          value = property->getValue ();
           explicitDur = xstrtotime (value);
         }
 
@@ -248,7 +248,7 @@ PlayerAdapter::prepareProperties (NclExecutionObject *obj)
   g_assert_nonnull (anchors);
 
   for (PropertyAnchor *property : *anchors)
-    properties[property->getPropertyName()] = property->getPropertyValue();
+    properties[property->getName()] = property->getValue();
 
   for (auto it: properties)
     {
@@ -608,7 +608,7 @@ PlayerAdapter::prepare (NclExecutionObject *object,
               value = "1.0";
             }
 
-          _player->setPropertyValue ("soundLevel", value);
+          _player->setProperty ("soundLevel", value);
         }
 
       if (event->getCurrentState () == EventUtil::ST_SLEEPING)
@@ -1189,7 +1189,7 @@ PlayerAdapter::setProperty (NclAttributionEvent *event,
   g_assert_nonnull (_player);
   g_assert_nonnull (_object);
 
-  propName = event->getAnchor ()->getPropertyName ();
+  propName = event->getAnchor ()->getName ();
   if (propName == "visible")
     {
       setVisible (value == "true");
@@ -1204,10 +1204,9 @@ PlayerAdapter::setProperty (NclAttributionEvent *event,
             }
         }
 
-      if (_object->setPropertyValue (event, value))
+      if (_object->setProperty (event, value))
         {
-          _player->setPropertyValue (propName,
-                                    _object->getPropertyValue (propName));
+          _player->setProperty (propName, _object->getProperty (propName));
         }
       else
         {
@@ -1233,7 +1232,7 @@ PlayerAdapter::setProperty (NclAttributionEvent *event,
                     }
                 }
             }
-          _player->setPropertyValue (propName, value);
+          _player->setProperty (propName, value);
         }
     }
 
@@ -1247,7 +1246,7 @@ PlayerAdapter::setProperty (const string &name,
   g_assert_nonnull (_player);
   TRACE ("setting property name='%s' to value='%s' (player='%p')",
          name.c_str (), value.c_str (), _player);
-  _player->setPropertyValue (name, value);
+  _player->setProperty (name, value);
 }
 
 string
@@ -1264,10 +1263,10 @@ PlayerAdapter::getProperty (NclAttributionEvent *event)
   anchor = event->getAnchor ();
   g_assert_nonnull (anchor);
 
-  name = anchor->getPropertyName ();
-  value = _player->getPropertyValue (name);
+  name = anchor->getName ();
+  value = _player->getProperty (name);
   if (value == "")
-    value = _object->getPropertyValue (name);
+    value = _object->getProperty (name);
 
   TRACE ("getting property with name='%s', value='%s'",
          name.c_str (), value.c_str ());
@@ -1378,7 +1377,7 @@ PlayerAdapter::handleKeyEvent (SDL_EventType evtType,
       GingaTime time = _player->getMediaTime ();
 
       TRACE ("key '%d' received for '%s' (time=%" GINGA_TIME_FORMAT ")",
-             key, _player->getPropertyValue ("mrl").c_str (),
+             key, _player->getProperty ("mrl").c_str (),
              GINGA_TIME_ARGS (time));
 
       _object->selectionEvent (key, time);
@@ -1482,7 +1481,7 @@ PlayerAdapter::createPlayer (const string &mrl)
     {
       for (Parameter &param: descriptor->getParameters ())
         {
-          _player->setPropertyValue (param.getName (), param.getValue ());
+          _player->setProperty (param.getName (), param.getValue ());
         }
     }
 
@@ -1495,12 +1494,12 @@ PlayerAdapter::createPlayer (const string &mrl)
           if (property)
             {
               TRACE ("setting property property name='%s' to '%s' for %s",
-                     property->getPropertyName ().c_str (),
-                     property->getPropertyValue ().c_str (),
+                     property->getName ().c_str (),
+                     property->getValue ().c_str (),
                      mrl.c_str ());
 
-              _player->setPropertyValue (property->getPropertyName(),
-                                         property->getPropertyValue());
+              _player->setProperty (property->getName(),
+                                    property->getValue());
             }
         }
     }
