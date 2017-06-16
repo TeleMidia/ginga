@@ -57,12 +57,14 @@ PlayerAdapter::PlayerAdapter (FormatterScheduler *scheduler)
 
 PlayerAdapter::~PlayerAdapter ()
 {
-  if (_player != nullptr)
+  if (_player)
     {
       _player->removeListener (this);
-      _player->stop ();
+      if(_player->getMediaStatus () != Player::PL_SLEEPING)
+        _player->stop ();
       delete _player;
     }
+
   _preparedEvents.clear ();
   g_assert (Ginga_Display->unregisterEventListener (this));
 }

@@ -43,8 +43,6 @@ FormatterScheduler::FormatterScheduler ()
 
 FormatterScheduler::~FormatterScheduler ()
 {
-  set<NclLinkSimpleAction *>::iterator i;
-
   for (auto action: this->actions)
     action->setSimpleActionListener (NULL);
 
@@ -1295,11 +1293,9 @@ FormatterScheduler::removePlayer (NclExecutionObject *exObject)
 
   if (i != _objectPlayers.end ())
     {
-      //
-      // *** FIXME: This causes memory corruption.  ***
-      //
-      // _objectPlayers.erase (i);
-      // delete i->second; // delete PlayerAdapter
+      delete i->second; // delete PlayerAdapter
+      _objectPlayers.erase (i);
+
       return true;
     }
 
