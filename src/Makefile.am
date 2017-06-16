@@ -22,6 +22,7 @@ MAINTAINERCLEANFILES+= config.h.in config.h.in~
 AM_CXXFLAGS=\
   $(CEF_CFLAGS)\
   $(GLIB_CFLAGS)\
+  $(GSTREAMER_CFLAGS)\
   $(LIBRSVG_CFLAGS)\
   $(NCLUA_CFLAGS)\
   $(PANGO_CFLAGS)\
@@ -35,6 +36,7 @@ AM_CXXFLAGS=\
 AM_LDFLAGS= -R $(libdir) -rpath $(libdir)\
   $(CEF_LIBS)\
   $(GLIB_LIBS)\
+  $(GSTREAMER_LIBS)\
   $(LIBRSVG_LIBS)\
   $(NCLUA_LIBS)\
   $(PANGO_LIBS)\
@@ -157,16 +159,11 @@ src+= player/ImagePlayer.cpp
 src+= player/LuaPlayer.cpp
 src+= player/Player.cpp
 src+= player/PlayerAnimator.cpp
-
-if WITH_GSTREAMER
-AM_CXXFLAGS+= $(GSTREAMER_CFLAGS)
-AM_LDFLAGS+= $(GSTREAMER_LIBS)
 src+= player/VideoPlayer.cpp
-endif # WITH_GSTREAMER
 
 if WITH_LIBRSVG
 src+= player/SvgPlayer.cpp
-endif #WITH_LIBRSVG
+endif # WITH_LIBRSVG
 
 if WITH_PANGO
 src+= player/TextPlayer.cpp
