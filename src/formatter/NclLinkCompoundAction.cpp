@@ -193,48 +193,26 @@ NclLinkCompoundAction::getEvents ()
   return events;
 }
 
-vector<NclLinkAction *> *
+vector<NclLinkAction *>
 NclLinkCompoundAction::getImplicitRefRoleActions ()
 {
-  vector<NclLinkAction *> *acts;
-  vector<NclLinkAction *>::iterator i;
-  vector<NclLinkAction *> *assignmentActs;
-  vector<NclLinkAction *> *refActs;
-  vector<NclLinkAction *>::iterator j;
+  vector<NclLinkAction *> refActs;
+  vector<NclLinkAction *> acts (actions);
 
   if (runing)
     {
-      return NULL;
+      return refActs;
     }
 
-  if (actions.empty ())
+  for (NclLinkAction *act: acts)
     {
-      return NULL;
-    }
+      vector<NclLinkAction *> assignmentActs
+          = act->getImplicitRefRoleActions ();
 
-  acts = new vector<NclLinkAction *> (actions);
-  refActs = new vector<NclLinkAction *>;
-
-  for (i = acts->begin (); i != acts->end (); ++i)
-    {
-      assignmentActs = (*i)->getImplicitRefRoleActions ();
-      if (assignmentActs != NULL)
+      for (NclLinkAction *assignmentAct : assignmentActs)
         {
-          for (j = assignmentActs->begin (); j != assignmentActs->end ();
-               ++j)
-            {
-              refActs->push_back (*j);
-            }
-          delete assignmentActs;
-          assignmentActs = NULL;
+          refActs.push_back (assignmentAct);
         }
-    }
-
-  delete acts;
-  if (refActs->empty ())
-    {
-      delete refActs;
-      return NULL;
     }
 
   return refActs;

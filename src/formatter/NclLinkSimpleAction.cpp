@@ -86,14 +86,12 @@ NclLinkSimpleAction::getEvents ()
   return events;
 }
 
-vector<NclLinkAction *> *
+vector<NclLinkAction *>
 NclLinkSimpleAction::getImplicitRefRoleActions ()
 {
-  vector<NclLinkAction *> *actions;
+  vector<NclLinkAction *> actions;
   string attVal = "", durVal = "", byVal = "";
   Animation *anim;
-
-  actions = new vector<NclLinkAction *>;
 
   if (this->instanceOf ("NclLinkAssignmentAction"))
     {
@@ -112,15 +110,9 @@ NclLinkSimpleAction::getImplicitRefRoleActions ()
         {
           if (event->instanceOf ("NclAttributionEvent"))
             {
-              actions->push_back ((NclLinkAction *)this);
+              actions.push_back ((NclLinkAction *)this);
             }
         }
-    }
-
-  if (actions->empty ())
-    {
-      delete actions;
-      return NULL;
     }
 
   return actions;

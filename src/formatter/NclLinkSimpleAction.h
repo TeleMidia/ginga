@@ -48,7 +48,7 @@ public:
   string getTypeString ();
   void setSimpleActionListener (INclLinkActionListener *listener);
   virtual vector<NclFormatterEvent *> *getEvents ();
-  virtual vector<NclLinkAction *> *getImplicitRefRoleActions ();
+  virtual vector<NclLinkAction *> getImplicitRefRoleActions ();
 };
 
 GINGA_FORMATTER_END
