@@ -161,7 +161,6 @@ private:
   static bool isEmbeddedApp (NodeEntity *dataObject);
   static bool isEmbeddedAppMediaType (const string &mediaType);
 
-  // From: FormatterLinkConverter
   void setImplicitRefAssessment (const string &roleId, CausalLink *ncmLink,
                                  NclFormatterEvent *event);
 

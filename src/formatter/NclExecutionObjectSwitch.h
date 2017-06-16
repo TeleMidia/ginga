@@ -42,7 +42,7 @@ public:
   NclExecutionObjectSwitch (const string &id, Node *switchNode, bool handling,
                             INclLinkActionListener *seListener);
 
-  virtual ~NclExecutionObjectSwitch (){};
+  virtual ~NclExecutionObjectSwitch (){}
   NclExecutionObject *getSelectedObject ();
   void select (NclExecutionObject *executionObject);
   bool addEvent (NclFormatterEvent *event);

@@ -28,22 +28,10 @@ class NclLinkCondition;
 
 class NclLinkAction
 {
-protected:
-  set<string> typeSet;
-  NclLinkCondition *satisfiedCondition;
-
-private:
-  GingaTime delay;
-  vector<NclLinkActionProgressionListener *> *progressionListeners;
-
 public:
   NclLinkAction ();
   NclLinkAction (GingaTime delay);
 
-private:
-  void initLinkAction (GingaTime delay);
-
-public:
   virtual ~NclLinkAction ();
   bool instanceOf (const string &s);
   GingaTime getWaitDelay ();
@@ -63,10 +51,17 @@ public:
   void setSatisfiedCondition (NclLinkCondition *satisfiedCondition);
   void run (NclLinkCondition *satisfiedCondition);
 
-public:
   virtual void run ();
 
+protected:
+  set<string> typeSet;
+  NclLinkCondition *satisfiedCondition;
+
 private:
+  GingaTime delay;
+  vector<NclLinkActionProgressionListener *> *progressionListeners;
+
+  void initLinkAction (GingaTime delay);
   bool tryLock ();
 };
 

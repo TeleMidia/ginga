@@ -46,21 +46,9 @@ class NclCompositeExecutionObject : public NclExecutionObject,
                                     public NclLinkListener,
                                     public INclEventListener
 {
-private:
-  static const short mSleepTime = 800;
-  set<NclFormatterLink *> links;
-  set<Link *> uncompiledLinks;
-
-  set<NclFormatterEvent *> runningEvents; // child events occurring
-  set<NclFormatterEvent *> pausedEvents;  // child events paused
-  short lastTransition;
-
-  map<NclFormatterLink *, int> pendingLinks;
-
-  map<string, NclExecutionObject *> execObjList;
-
 public:
-  NclCompositeExecutionObject (const string &id, Node *dataObject, bool handling,
+  NclCompositeExecutionObject (const string &id, Node *dataObject,
+                               bool handling,
                                INclLinkActionListener *seListener);
 
   NclCompositeExecutionObject (const string &id, Node *dataObject,
@@ -70,12 +58,6 @@ public:
 
   virtual ~NclCompositeExecutionObject ();
 
-protected:
-  void
-  initializeCompositeExecutionObject (const string &id, Node *dataObject,
-                                      NclCascadingDescriptor *descriptor);
-
-public:
   NclCompositeExecutionObject *getParentFromDataObject (Node *dataObject);
   void suspendLinkEvaluation (bool suspend);
   bool addExecutionObject (NclExecutionObject *execObj);
@@ -102,9 +84,25 @@ public:
   bool setProperty (NclAttributionEvent *, const string &) override;
 
 private:
+  static const short mSleepTime = 800;
+  set<NclFormatterLink *> links;
+  set<Link *> uncompiledLinks;
+
+  set<NclFormatterEvent *> runningEvents; // child events occurring
+  set<NclFormatterEvent *> pausedEvents;  // child events paused
+  short lastTransition;
+
+  map<NclFormatterLink *, int> pendingLinks;
+
+  map<string, NclExecutionObject *> execObjList;
+
   void checkLinkConditions ();
   void listRunningObjects ();
   void listPendingLinks ();
+
+  void
+  initializeCompositeExecutionObject (const string &id, Node *dataObject,
+                                      NclCascadingDescriptor *descriptor);
 };
 
 GINGA_FORMATTER_END
