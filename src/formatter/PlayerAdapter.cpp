@@ -28,9 +28,7 @@ using namespace ::ginga::mb;
 #include "player/Player.h"
 #include "player/ImagePlayer.h"
 #include "player/LuaPlayer.h"
-#if defined WITH_GSTREAMER && WITH_GSTREAMER
-# include "player/VideoPlayer.h"
-#endif
+#include "player/VideoPlayer.h"
 #if defined WITH_LIBRSVG && WITH_LIBRSVG
 # include "player/SvgPlayer.h"
 #endif
@@ -1434,13 +1432,11 @@ PlayerAdapter::createPlayer (const string &mrl)
 
   if (_player == nullptr)
     {
-#if defined WITH_GSTREAMER && WITH_GSTREAMER
       if (g_str_has_prefix (mime, "audio")
           || g_str_has_prefix (mime, "video"))
         {
           _player = new VideoPlayer (mrl);
         }
-#endif
 #if WITH_LIBRSVG && WITH_LIBRSVG
       else if (g_str_has_prefix (mime, "image/svg"))
         {
