@@ -85,8 +85,8 @@ public:
   virtual void abort ();
   virtual void pause ();
   virtual void resume ();
-  virtual string getPropertyValue (const string &name);
-  virtual void setPropertyValue (const string &name, const string &value);
+  virtual string getProperty (const string &);
+  virtual void setProperty (const string &, const string &);
 
   bool isVisible ();
   void setVisible (bool visible);

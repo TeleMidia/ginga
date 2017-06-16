@@ -263,10 +263,9 @@ NclApplicationExecutionObject::prepare (NclFormatterEvent *event,
         {
           attributeEvent = (NclAttributionEvent *)auxEvent;
           attributeAnchor = attributeEvent->getAnchor ();
-          if (attributeAnchor->getPropertyValue () != "")
+          if (attributeAnchor->getValue () != "")
             {
-              attributeEvent->setValue (
-                  attributeAnchor->getPropertyValue ());
+              attributeEvent->setValue (attributeAnchor->getValue ());
             }
         }
     }

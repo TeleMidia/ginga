@@ -676,10 +676,10 @@ NclCompositeExecutionObject::linkEvaluationFinished (
 }
 
 bool
-NclCompositeExecutionObject::setPropertyValue (NclAttributionEvent *event,
-                                               const string &value)
+NclCompositeExecutionObject::setProperty (NclAttributionEvent *event,
+                                          const string &value)
 {
-  if (event->getAnchor ()->getPropertyName () == "visible")
+  if (event->getAnchor ()->getName () == "visible")
     {
       if (value == "true")
         {
@@ -692,7 +692,7 @@ NclCompositeExecutionObject::setPropertyValue (NclAttributionEvent *event,
       return false;
     }
 
-  return NclExecutionObject::setPropertyValue (event, value);
+  return NclExecutionObject::setProperty (event, value);
 }
 
 void

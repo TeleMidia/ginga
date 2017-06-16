@@ -29,7 +29,7 @@ class SvgPlayer : public Player
 public:
   SvgPlayer (const string &uri) : Player (uri) {};
   ~SvgPlayer (void) {};
-  void setPropertyValue (const string &, const string &) override;
+  void setProperty (const string &, const string &) override;
   void redraw (SDL_Renderer *);
 
 private:

@@ -931,7 +931,7 @@ NclExecutionObject::prepare (NclFormatterEvent *event, GingaTime offsetTime)
         {
           attributeEvent = (NclAttributionEvent *)auxEvent;
           attributeAnchor = attributeEvent->getAnchor ();
-          value = attributeAnchor->getPropertyValue ();
+          value = attributeAnchor->getValue ();
           if (value != "")
             {
               attributeEvent->setValue (value);
@@ -1144,8 +1144,8 @@ NclExecutionObject::resume ()
 }
 
 bool
-NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
-                                      const string &value)
+NclExecutionObject::setProperty (NclAttributionEvent *event,
+                                 const string &value)
 {
   string propName;
 
@@ -1179,7 +1179,7 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
       return false;
     }
 
-  propName = (event->getAnchor ())->getPropertyName ();
+  propName = (event->getAnchor ())->getName ();
 
   if (propName == "zIndex")
     {
@@ -1190,7 +1190,7 @@ NclExecutionObject::setPropertyValue (NclAttributionEvent *event,
 }
 
 string
-NclExecutionObject::getPropertyValue (const string &param)
+NclExecutionObject::getProperty (const string &param)
 {
   NclFormatterRegion *region = NULL;
   LayoutRegion *ncmRegion = NULL;

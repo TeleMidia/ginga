@@ -323,13 +323,13 @@ VideoPlayer::resume ()
 }
 
 string
-VideoPlayer::getPropertyValue (const string &name)
+VideoPlayer::getProperty (const string &name)
 {
-  return Player::getPropertyValue(name);
+  return Player::getProperty (name);
 }
 
 void
-VideoPlayer::setPropertyValue (const string &name, const string &value)
+VideoPlayer::setProperty (const string &name, const string &value)
 {
   if (value.length () == 0)
     return;
@@ -347,7 +347,7 @@ VideoPlayer::setPropertyValue (const string &name, const string &value)
   //trebleLevel
   //bassLevel
 
-  Player::setPropertyValue (name, value);
+  Player::setProperty (name, value);
 }
 
 string
