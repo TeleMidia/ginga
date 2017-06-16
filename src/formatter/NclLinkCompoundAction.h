@@ -60,7 +60,7 @@ public:
 
   virtual vector<NclFormatterEvent *> *getEvents ();
   void actionProcessed (bool start);
-  virtual vector<NclLinkAction *> *getImplicitRefRoleActions ();
+  virtual vector<NclLinkAction *> getImplicitRefRoleActions () override;
 };
 
 GINGA_FORMATTER_END
