@@ -22,9 +22,9 @@ GINGA_NCL_BEGIN
 
 ContextNode::ContextNode (const string &id) : CompositeNode (id)
 {
-  typeSet.insert ("ContextNode");
-  typeSet.insert ("DocumentNode");
-  typeSet.insert ("LinkComposition");
+  _typeSet.insert ("ContextNode");
+  _typeSet.insert ("DocumentNode");
+  _typeSet.insert ("LinkComposition");
 }
 
 ContextNode::~ContextNode ()
@@ -33,18 +33,18 @@ ContextNode::~ContextNode ()
   vector<Node *>::iterator j;
   Node *node;
 
-  descriptorCollection.clear ();
+  _descriptorCollection.clear ();
 
-  i = linkSet.begin ();
-  while (i != linkSet.end ())
+  i = _linkSet.begin ();
+  while (i != _linkSet.end ())
     {
       delete *i;
       ++i;
     }
-  linkSet.clear ();
+  _linkSet.clear ();
 
-  j = nodes.begin ();
-  while (j != nodes.end ())
+  j = _nodes.begin ();
+  while (j != _nodes.end ())
     {
       node = (*j);
       if (Entity::hasInstance (node, true))
@@ -58,7 +58,7 @@ ContextNode::~ContextNode ()
       ++j;
     }
 
-  nodes.clear ();
+  _nodes.clear ();
 }
 
 bool
@@ -67,7 +67,7 @@ ContextNode::addLink (Link *link)
   if (link == NULL)
     return false;
 
-  linkSet.insert (link);
+  _linkSet.insert (link);
   link->setParentComposition (this);
   return true;
 }
@@ -85,7 +85,7 @@ ContextNode::addNode (Node *node)
       return false;
     }
 
-  nodes.push_back (node);
+  _nodes.push_back (node);
   node->setParentComposition (this);
   return true;
 }
@@ -96,12 +96,12 @@ ContextNode::clearLinks ()
   set<Link *>::iterator it;
   Link *link;
 
-  for (it = linkSet.begin (); it != linkSet.end (); ++it)
+  for (it = _linkSet.begin (); it != _linkSet.end (); ++it)
     {
       link = (Link *)(*it);
       link->setParentComposition (NULL);
     }
-  linkSet.clear ();
+  _linkSet.clear ();
 }
 
 bool
@@ -109,8 +109,8 @@ ContextNode::containsLink (Link *link)
 {
   set<Link *>::iterator i;
 
-  i = linkSet.find (link);
-  if (i != linkSet.end ())
+  i = _linkSet.find (link);
+  if (i != _linkSet.end ())
     {
       return true;
     }
@@ -120,12 +120,12 @@ ContextNode::containsLink (Link *link)
 set<Link *> *
 ContextNode::getLinks ()
 {
-  if (this->linkSet.size () == 0)
+  if (this->_linkSet.size () == 0)
     {
       return NULL;
     }
 
-  return &linkSet;
+  return &_linkSet;
 }
 
 Link *
@@ -133,8 +133,8 @@ ContextNode::getLink (const string &linkId)
 {
   set<Link *>::iterator i;
 
-  i = linkSet.begin ();
-  while (i != linkSet.end ())
+  i = _linkSet.begin ();
+  while (i != _linkSet.end ())
     {
       if ((*i)->getId () != "" && (*i)->getId () == linkId)
         {
@@ -148,9 +148,9 @@ ContextNode::getLink (const string &linkId)
 GenericDescriptor *
 ContextNode::getNodeDescriptor (Node *node)
 {
-  if (descriptorCollection.count (node->getId ()) != 0)
+  if (_descriptorCollection.count (node->getId ()) != 0)
     {
-      return descriptorCollection[node->getId ()];
+      return _descriptorCollection[node->getId ()];
     }
 
   return NULL;
@@ -159,7 +159,7 @@ ContextNode::getNodeDescriptor (Node *node)
 int
 ContextNode::getNumLinks ()
 {
-  return (int)(linkSet.size ());
+  return (int)(_linkSet.size ());
 }
 
 bool
@@ -167,10 +167,10 @@ ContextNode::removeLink (Link *link)
 {
   set<Link *>::iterator it;
 
-  it = linkSet.find (link);
-  if (it != linkSet.end ())
+  it = _linkSet.find (link);
+  if (it != _linkSet.end ())
     {
-      linkSet.erase (it);
+      _linkSet.erase (it);
       link->setParentComposition (NULL);
       return true;
     }
@@ -188,11 +188,11 @@ ContextNode::setNodeDescriptor (const string &nodeId,
       return false;
     }
 
-  if (descriptorCollection.count (nodeId) != 0)
+  if (_descriptorCollection.count (nodeId) != 0)
     {
       if (descriptor == NULL)
         {
-          descriptorCollection.erase (descriptorCollection.find (nodeId));
+          _descriptorCollection.erase (_descriptorCollection.find (nodeId));
 
           return true;
         }
@@ -202,7 +202,7 @@ ContextNode::setNodeDescriptor (const string &nodeId,
       return true;
     }
 
-  descriptorCollection[nodeId] = descriptor;
+  _descriptorCollection[nodeId] = descriptor;
   return true;
 }
 

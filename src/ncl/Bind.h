@@ -35,19 +35,9 @@ GINGA_NCL_BEGIN
 
 class Bind
 {
-private:
-  Node *node;
-  InterfacePoint *interfacePoint;
-  GenericDescriptor *descriptor;
-  Role *role;
-
-protected:
-  map<string, Parameter *> *parameters;
-  set<string> typeSet;
-
 public:
-  Bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
-        Role *role);
+  Bind (Node *_node, InterfacePoint *interfPt, GenericDescriptor *desc,
+        Role *_role);
 
   virtual ~Bind ();
   bool instanceOf (const string &s);
@@ -56,8 +46,8 @@ public:
   Node *getNode ();
   Role *getRole ();
   void setInterfacePoint (InterfacePoint *interfPt);
-  void setNode (Node *node);
-  void setRole (Role *role);
+  void setNode (Node *_node);
+  void setRole (Role *_role);
   void setDescriptor (GenericDescriptor *desc);
   Parameter *setParameterValue (const string &propertyLabel,
                                 Parameter *propertyValue);
@@ -68,6 +58,16 @@ public:
   bool removeParameter (Parameter *parameter);
   vector<Node *> *getNodeNesting ();
   InterfacePoint *getEndPointInterface ();
+
+protected:
+  map<string, Parameter *> *_parameters;
+  set<string> _typeSet;
+
+private:
+  Node *_node;
+  InterfacePoint *_interfacePoint;
+  GenericDescriptor *_descriptor;
+  Role *_role;
 };
 
 GINGA_NCL_END

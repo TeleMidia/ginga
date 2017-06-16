@@ -22,24 +22,24 @@ GINGA_NCL_BEGIN
 
 TransitionBase::TransitionBase (const string &id) : Base (id)
 {
-  transitionSet = new vector<Transition *>;
+  _transitionSet = new vector<Transition *>;
 }
 
 TransitionBase::~TransitionBase ()
 {
   vector<Transition *>::iterator i;
 
-  if (transitionSet != NULL)
+  if (_transitionSet != NULL)
     {
-      i = transitionSet->begin ();
-      while (i != transitionSet->end ())
+      i = _transitionSet->begin ();
+      while (i != _transitionSet->end ())
         {
           delete *i;
           ++i;
         }
 
-      delete transitionSet;
-      transitionSet = NULL;
+      delete _transitionSet;
+      _transitionSet = NULL;
     }
 }
 
@@ -52,8 +52,8 @@ TransitionBase::addTransition (Transition *transition)
     }
 
   vector<Transition *>::iterator i;
-  i = transitionSet->begin ();
-  while (i != transitionSet->end ())
+  i = _transitionSet->begin ();
+  while (i != _transitionSet->end ())
     {
       if (*i == transition)
         {
@@ -62,7 +62,7 @@ TransitionBase::addTransition (Transition *transition)
       ++i;
     }
 
-  transitionSet->push_back (transition);
+  _transitionSet->push_back (transition);
   return true;
 }
 
@@ -79,7 +79,7 @@ TransitionBase::addBase (Base *base, const string &alias, const string &location
 void
 TransitionBase::clear ()
 {
-  transitionSet->clear ();
+  _transitionSet->clear ();
   Base::clear ();
 }
 
@@ -89,8 +89,8 @@ TransitionBase::getTransitionLocally (const string &transitionId)
   vector<Transition *>::iterator i;
   Transition *transition;
 
-  i = transitionSet->begin ();
-  while (i != transitionSet->end ())
+  i = _transitionSet->begin ();
+  while (i != _transitionSet->end ())
     {
       transition = *i;
       if (transition->getId () == transitionId)
@@ -118,14 +118,14 @@ TransitionBase::getTransition (const string &transitionId)
   prefix = transitionId.substr (0, index);
   index++;
   suffix = transitionId.substr (index, transitionId.length () - index);
-  if (baseAliases.count (prefix) != 0)
+  if (_baseAliases.count (prefix) != 0)
     {
-      base = (TransitionBase *)(baseAliases[prefix]);
+      base = (TransitionBase *)(_baseAliases[prefix]);
       return base->getTransition (suffix);
     }
-  else if (baseLocations.count (prefix) != 0)
+  else if (_baseLocations.count (prefix) != 0)
     {
-      base = (TransitionBase *)(baseLocations[prefix]);
+      base = (TransitionBase *)(_baseLocations[prefix]);
       return base->getTransition (suffix);
     }
   else
@@ -137,19 +137,19 @@ TransitionBase::getTransition (const string &transitionId)
 vector<Transition *> *
 TransitionBase::getTransitions ()
 {
-  return transitionSet;
+  return _transitionSet;
 }
 
 bool
 TransitionBase::removeTransition (Transition *transition)
 {
   vector<Transition *>::iterator i;
-  i = transitionSet->begin ();
-  while (i != transitionSet->end ())
+  i = _transitionSet->begin ();
+  while (i != _transitionSet->end ())
     {
       if (*i == transition)
         {
-          transitionSet->erase (i);
+          _transitionSet->erase (i);
           return true;
         }
       ++i;

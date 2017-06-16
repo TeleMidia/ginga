@@ -22,100 +22,100 @@ GINGA_NCL_BEGIN
 
 Descriptor::Descriptor (const string &id) : GenericDescriptor (id)
 {
-  explicitDuration = GINGA_TIME_NONE;
-  presentationTool = "";
-  repetitions = 0;
-  freeze = false;
-  region = NULL;
+  _explicitDuration = GINGA_TIME_NONE;
+  _presentationTool = "";
+  _repetitions = 0;
+  _freeze = false;
+  _region = NULL;
 
-  keyNavigation = NULL;
-  focusDecoration = NULL;
+  _keyNavigation = NULL;
+  _focusDecoration = NULL;
 
-  typeSet.insert ("Descriptor");
+  _typeSet.insert ("Descriptor");
 }
 
 Descriptor::~Descriptor ()
 {
   map<string, Parameter *>::iterator i;
 
-  if (region != NULL)
+  if (_region != NULL)
     {
       // deleted through region base
-      region = NULL;
+      _region = NULL;
     }
 
-  i = parameters.begin ();
-  while (i != parameters.end ())
+  i = _parameters.begin ();
+  while (i != _parameters.end ())
     {
       delete i->second;
       ++i;
     }
 
-  if (keyNavigation != NULL)
+  if (_keyNavigation != NULL)
     {
-      delete keyNavigation;
-      keyNavigation = NULL;
+      delete _keyNavigation;
+      _keyNavigation = NULL;
     }
 
-  if (focusDecoration != NULL)
+  if (_focusDecoration != NULL)
     {
-      delete focusDecoration;
-      focusDecoration = NULL;
+      delete _focusDecoration;
+      _focusDecoration = NULL;
     }
 }
 
 GingaTime
 Descriptor::getExplicitDuration ()
 {
-  return explicitDuration;
+  return _explicitDuration;
 }
 
 LayoutRegion *
 Descriptor::getRegion ()
 {
-  return region;
+  return _region;
 }
 
 int
 Descriptor::getRepetitions ()
 {
-  return repetitions;
+  return _repetitions;
 }
 
 bool
 Descriptor::isFreeze ()
 {
-  return freeze;
+  return _freeze;
 }
 
 void
 Descriptor::setFreeze (bool freeze)
 {
-  this->freeze = freeze;
+  this->_freeze = freeze;
 }
 
 void
 Descriptor::setExplicitDuration (GingaTime dur)
 {
-  explicitDuration = dur;
+  _explicitDuration = dur;
 }
 
 void
 Descriptor::setPlayerName (const string &name)
 {
-  presentationTool = name;
+  _presentationTool = name;
 }
 
 void
 Descriptor::setRegion (LayoutRegion *someRegion)
 {
-  region = someRegion;
+  _region = someRegion;
 }
 
 void
 Descriptor::setRepetitions (int r)
 {
-  repetitions = r;
+  _repetitions = r;
 }
 
 void
@@ -125,13 +125,13 @@ Descriptor::addParameter (Parameter *parameter)
   map<string, Parameter *>::iterator i;
 
   paramName = parameter->getName ();
-  i = parameters.find (paramName);
-  if (i != parameters.end () && i->second != parameter)
+  i = _parameters.find (paramName);
+  if (i != _parameters.end () && i->second != parameter)
     {
       delete i->second;
     }
 
-  parameters[paramName] = parameter;
+  _parameters[paramName] = parameter;
 }
 
 vector<Parameter *> *
@@ -139,7 +139,7 @@ Descriptor::getParameters ()
 {
   vector<Parameter *> *ret = new vector<Parameter *>;
   map<string, Parameter *>::iterator it;
-  for (it = parameters.begin (); it != parameters.end (); ++it)
+  for (it = _parameters.begin (); it != _parameters.end (); ++it)
     {
       ret->push_back (it->second);
     }
@@ -149,13 +149,13 @@ Descriptor::getParameters ()
 Parameter *
 Descriptor::getParameter (const string &paramName)
 {
-  if (parameters.count (paramName) == 0)
+  if (_parameters.count (paramName) == 0)
     {
       return NULL;
     }
   else
     {
-      return parameters[paramName];
+      return _parameters[paramName];
     }
 }
 
@@ -164,41 +164,41 @@ Descriptor::removeParameter (Parameter *parameter)
 {
   map<string, Parameter *>::iterator it;
 
-  it = parameters.find (parameter->getName ());
-  if (it != parameters.end ())
+  it = _parameters.find (parameter->getName ());
+  if (it != _parameters.end ())
     {
-      parameters.erase (it);
+      _parameters.erase (it);
     }
 }
 
 KeyNavigation *
 Descriptor::getKeyNavigation ()
 {
-  return keyNavigation;
+  return _keyNavigation;
 }
 
 void
 Descriptor::setKeyNavigation (KeyNavigation *keyNav)
 {
-  keyNavigation = keyNav;
+  _keyNavigation = keyNav;
 }
 
 FocusDecoration *
 Descriptor::getFocusDecoration ()
 {
-  return focusDecoration;
+  return _focusDecoration;
 }
 
 void
 Descriptor::setFocusDecoration (FocusDecoration *focusDec)
 {
-  focusDecoration = focusDec;
+  _focusDecoration = focusDec;
 }
 
 vector<Transition *> *
 Descriptor::getInputTransitions ()
 {
-  return &inputTransitions;
+  return &_inputTransitions;
 }
 
 bool
@@ -206,21 +206,21 @@ Descriptor::addInputTransition (Transition *transition, int somePos)
 {
   unsigned int pos;
   pos = (unsigned int)somePos;
-  if (pos > inputTransitions.size () || transition == NULL)
+  if (pos > _inputTransitions.size () || transition == NULL)
     {
       return false;
     }
 
-  if (pos == inputTransitions.size ())
+  if (pos == _inputTransitions.size ())
     {
-      inputTransitions.push_back (transition);
+      _inputTransitions.push_back (transition);
       return true;
     }
 
   vector<Transition *>::iterator i;
-  i = inputTransitions.begin () + pos;
+  i = _inputTransitions.begin () + pos;
 
-  inputTransitions.insert (i, transition);
+  _inputTransitions.insert (i, transition);
   return true;
 }
 
@@ -228,12 +228,12 @@ void
 Descriptor::removeInputTransition (Transition *transition)
 {
   vector<Transition *>::iterator i;
-  i = inputTransitions.begin ();
-  while (i != inputTransitions.end ())
+  i = _inputTransitions.begin ();
+  while (i != _inputTransitions.end ())
     {
       if (*i == transition)
         {
-          inputTransitions.erase (i);
+          _inputTransitions.erase (i);
           break;
         }
       ++i;
@@ -243,13 +243,13 @@ Descriptor::removeInputTransition (Transition *transition)
 void
 Descriptor::removeAllInputTransitions ()
 {
-  inputTransitions.clear ();
+  _inputTransitions.clear ();
 }
 
 vector<Transition *> *
 Descriptor::getOutputTransitions ()
 {
-  return &outputTransitions;
+  return &_outputTransitions;
 }
 
 bool
@@ -257,21 +257,21 @@ Descriptor::addOutputTransition (Transition *transition, int somePos)
 {
   unsigned int pos;
   pos = (unsigned int)somePos;
-  if (pos > outputTransitions.size () || transition == NULL)
+  if (pos > _outputTransitions.size () || transition == NULL)
     {
       return false;
     }
 
-  if (pos == outputTransitions.size ())
+  if (pos == _outputTransitions.size ())
     {
-      outputTransitions.push_back (transition);
+      _outputTransitions.push_back (transition);
       return true;
     }
 
   vector<Transition *>::iterator i;
-  i = outputTransitions.begin () + pos;
+  i = _outputTransitions.begin () + pos;
 
-  outputTransitions.insert (i, transition);
+  _outputTransitions.insert (i, transition);
   return true;
 }
 
@@ -279,12 +279,12 @@ void
 Descriptor::removeOutputTransition (Transition *transition)
 {
   vector<Transition *>::iterator i;
-  i = outputTransitions.begin ();
-  while (i != outputTransitions.end ())
+  i = _outputTransitions.begin ();
+  while (i != _outputTransitions.end ())
     {
       if (*i == transition)
         {
-          outputTransitions.erase (i);
+          _outputTransitions.erase (i);
           break;
         }
       ++i;
@@ -294,7 +294,7 @@ Descriptor::removeOutputTransition (Transition *transition)
 void
 Descriptor::removeAllOutputTransitions ()
 {
-  outputTransitions.clear ();
+  _outputTransitions.clear ();
 }
 
 GINGA_NCL_END

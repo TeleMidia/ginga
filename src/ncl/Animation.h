@@ -24,16 +24,16 @@ GINGA_NCL_BEGIN
 
 class Animation
 {
-private:
-  string duration;
-  string by;
-
 public:
   Animation ();
   void setDuration (const string &dur);
   string getDuration ();
   void setBy (const string &by);
   string getBy ();
+
+private:
+  string _duration;
+  string _by;
 };
 
 GINGA_NCL_END

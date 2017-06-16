@@ -22,71 +22,71 @@ GINGA_NCL_BEGIN
 
 KeyNavigation::KeyNavigation ()
 {
-  focusIndex = "";
-  moveUp = "";
-  moveDown = "";
-  moveLeft = "";
-  moveRight = "";
+  _focusIndex = "";
+  _moveUp = "";
+  _moveDown = "";
+  _moveLeft = "";
+  _moveRight = "";
 }
 
 string
 KeyNavigation::getFocusIndex ()
 {
-  return focusIndex;
+  return _focusIndex;
 }
 
 void
 KeyNavigation::setFocusIndex (const string &index)
 {
-  focusIndex = index;
+  _focusIndex = index;
 }
 
 string
 KeyNavigation::getMoveUp ()
 {
-  return moveUp;
+  return _moveUp;
 }
 
 void
 KeyNavigation::setMoveUp (const string &index)
 {
-  moveUp = index;
+  _moveUp = index;
 }
 
 string
 KeyNavigation::getMoveDown ()
 {
-  return moveDown;
+  return _moveDown;
 }
 
 void
 KeyNavigation::setMoveDown (const string &index)
 {
-  moveDown = index;
+  _moveDown = index;
 }
 
 string
 KeyNavigation::getMoveRight ()
 {
-  return moveRight;
+  return _moveRight;
 }
 
 void
 KeyNavigation::setMoveRight (const string &index)
 {
-  moveRight = index;
+  _moveRight = index;
 }
 
 string
 KeyNavigation::getMoveLeft ()
 {
-  return moveLeft;
+  return _moveLeft;
 }
 
 void
 KeyNavigation::setMoveLeft (const string &index)
 {
-  moveLeft = index;
+  _moveLeft = index;
 }
 
 GINGA_NCL_END

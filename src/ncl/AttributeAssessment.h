@@ -26,11 +26,6 @@ GINGA_NCL_BEGIN
 
 class AttributeAssessment : public Assessment, public Role
 {
-private:
-  short attributeType;
-  string key;
-  string offset;
-
 public:
   AttributeAssessment (const string &role);
   virtual ~AttributeAssessment (){};
@@ -39,14 +34,19 @@ public:
   short getAttributeType ();
   void setAttributeType (short attribute);
   string getKey ();
-  void setKey (const string &key);
+  void setKey (const string &_key);
   string getOffset ();
-  void setOffset (const string &offset);
+  void setOffset (const string &_offset);
   bool
   instanceOf (const string &type)
   {
     return Assessment::instanceOf (type);
   }
+
+private:
+  short _attributeType;
+  string _key;
+  string _offset;
 };
 
 GINGA_NCL_END

@@ -24,16 +24,16 @@ GINGA_NCL_BEGIN
 
 class IntervalAnchor : public ContentAnchor
 {
-protected:
-  GingaTime begin;
-  GingaTime end;
-
 public:
-  IntervalAnchor (const string &id, GingaTime begin, GingaTime end);
+  IntervalAnchor (const string &_id, GingaTime begin, GingaTime end);
   GingaTime getBegin ();
   GingaTime getEnd ();
   void setBegin (GingaTime);
   void setEnd (GingaTime);
+
+protected:
+  GingaTime _begin;
+  GingaTime _end;
 };
 
 GINGA_NCL_END

@@ -25,16 +25,16 @@ GINGA_NCL_BEGIN
 
 class TextAnchor : public Anchor
 {
-protected:
-  string text;
-  int position;
-
 public:
   TextAnchor (const string &id, const string &t, int p);
   int getPosition ();
   string getText ();
   void setPosition (int p);
   void setText (const string &t);
+
+protected:
+  string _text;
+  int _position;
 };
 
 GINGA_NCL_END

@@ -28,44 +28,44 @@ GINGA_NCL_BEGIN
 void
 LayoutRegion::setRect (SDL_Rect rect)
 {
-  this->rect = rect;
+  this->_rect = rect;
 }
 
 SDL_Rect
 LayoutRegion::getRect (void)
 {
-  return this->rect;
+  return this->_rect;
 }
 
 void
 LayoutRegion::setZ (int z, int zorder)
 {
-  this->z = z;
-  this->zorder = zorder;
+  this->_z = z;
+  this->_zorder = zorder;
 }
 
 void
 LayoutRegion::getZ (int *z, int *zorder)
 {
-  set_if_nonnull (z, this->z);
-  set_if_nonnull (zorder, this->zorder);
+  set_if_nonnull (z, this->_z);
+  set_if_nonnull (zorder, this->_zorder);
 }
 
 void
 LayoutRegion::dump ()
 {
   TRACE ("%s at (%d,%d) size %dx%d z %d,%d",
-         this->getId ().c_str (), this->rect.x, this->rect.y,
-         this->rect.w, this->rect.h, this->z, this->zorder);
+         this->getId ().c_str (), this->_rect.x, this->_rect.y,
+         this->_rect.w, this->_rect.h, this->_z, this->_zorder);
 }
 
 LayoutRegion::LayoutRegion (const string &id) : Entity (id)
 {
-  this->rect.x = 0;
-  this->rect.y = 0;
-  Ginga_Display->getSize (&this->rect.w, &this->rect.h);
-  this->z = 0;
-  this->zorder = 0;
+  this->_rect.x = 0;
+  this->_rect.y = 0;
+  Ginga_Display->getSize (&this->_rect.w, &this->_rect.h);
+  this->_z = 0;
+  this->_zorder = 0;
 }
 
 LayoutRegion::~LayoutRegion ()
@@ -76,37 +76,37 @@ LayoutRegion::~LayoutRegion ()
 int
 LayoutRegion::getLeft ()
 {
-  return this->rect.x;
+  return this->_rect.x;
 }
 
 int
 LayoutRegion::getTop ()
 {
-  return this->rect.y;
+  return this->_rect.y;
 }
 
 int
 LayoutRegion::getRight ()
 {
-  return this->rect.x + this->rect.w;
+  return this->_rect.x + this->_rect.w;
 }
 
 int
 LayoutRegion::getBottom ()
 {
-  return this->rect.y + this->rect.h;
+  return this->_rect.y + this->_rect.h;
 }
 
 int
 LayoutRegion::getHeight ()
 {
-  return this->rect.h;
+  return this->_rect.h;
 }
 
 int
 LayoutRegion::getWidth ()
 {
-  return this->rect.w;
+  return this->_rect.w;
 }
 
 

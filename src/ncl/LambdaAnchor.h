@@ -25,8 +25,8 @@ GINGA_NCL_BEGIN
 class LambdaAnchor : public IntervalAnchor
 {
 public:
-  LambdaAnchor (const string &id);
-  virtual ~LambdaAnchor (){};
+  LambdaAnchor (const string &_id);
+  virtual ~LambdaAnchor (){}
 };
 
 GINGA_NCL_END

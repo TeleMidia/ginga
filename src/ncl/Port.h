@@ -26,12 +26,8 @@ GINGA_NCL_BEGIN
 
 class Port : public InterfacePoint
 {
-protected:
-  Node *node;
-  InterfacePoint *interfacePoint;
-
 public:
-  Port (const string &id, Node *someNode, InterfacePoint *someInterfacePoint);
+  Port (const string &_id, Node *someNode, InterfacePoint *someInterfacePoint);
 
   virtual ~Port ();
   InterfacePoint *getInterfacePoint ();
@@ -41,6 +37,10 @@ public:
   vector<Node *> *getMapNodeNesting ();
   void setInterfacePoint (InterfacePoint *someInterfacePoint);
   void setNode (Node *someNode);
+
+protected:
+  Node *_node;
+  InterfacePoint *_interfacePoint;
 };
 
 GINGA_NCL_END

@@ -27,11 +27,6 @@ GINGA_NCL_BEGIN
 
 class AssessmentStatement : public Statement
 {
-private:
-  Comparator::Op comparator;
-  AttributeAssessment *mainAssessment;
-  Assessment *otherAssessment;
-
 public:
   AssessmentStatement (Comparator::Op comp);
   virtual ~AssessmentStatement ();
@@ -42,6 +37,11 @@ public:
   Comparator::Op getComparator ();
   void setComparator (Comparator::Op comp);
   vector<Role *> *getRoles ();
+
+private:
+  Comparator::Op _comparator;
+  AttributeAssessment *_mainAssessment;
+  Assessment *_otherAssessment;
 };
 
 GINGA_NCL_END

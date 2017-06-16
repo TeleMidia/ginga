@@ -32,10 +32,10 @@ public:
   void setValue (const string &v);
 
 protected:
-  string name;
+  string _name;
 
 private:
-  string value;
+  string _value;
 };
 
 GINGA_NCL_END

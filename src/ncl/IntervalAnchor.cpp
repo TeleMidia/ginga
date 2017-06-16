@@ -25,33 +25,33 @@ IntervalAnchor::IntervalAnchor (const string &id,
                                 GingaTime end)
   : ContentAnchor (id)
 {
-  typeSet.insert ("IntervalAnchor");
-  this->begin = begin;
-  this->end = end;
+  _typeSet.insert ("IntervalAnchor");
+  this->_begin = begin;
+  this->_end = end;
 }
 
 GingaTime
 IntervalAnchor::getBegin ()
 {
-  return this->begin;
+  return this->_begin;
 }
 
 GingaTime
 IntervalAnchor::getEnd ()
 {
-  return this->end;
+  return this->_end;
 }
 
 void
 IntervalAnchor::setBegin (GingaTime begin)
 {
-  this->begin = GINGA_TIME_IS_VALID (begin) ? begin : 0;
+  this->_begin = GINGA_TIME_IS_VALID (begin) ? begin : 0;
 }
 
 void
 IntervalAnchor::setEnd (GingaTime end)
 {
-  this->end = end;
+  this->_end = end;
 }
 
 GINGA_NCL_END

@@ -26,7 +26,7 @@ class SwitchContent : public Content
 {
 public:
   SwitchContent ();
-  virtual ~SwitchContent (){};
+  virtual ~SwitchContent (){}
 };
 
 GINGA_NCL_END

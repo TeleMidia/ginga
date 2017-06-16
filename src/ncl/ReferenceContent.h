@@ -24,17 +24,17 @@ GINGA_NCL_BEGIN
 
 class ReferenceContent : public Content
 {
-protected:
-  string reference;
-
 public:
   ReferenceContent ();
   ReferenceContent (const string &ref);
-  virtual ~ReferenceContent (){};
+  virtual ~ReferenceContent (){}
   string getReference ();
   string getCompleteReferenceUrl ();
   void setReference (const string &ref);
   string getType ();
+
+protected:
+  string _reference;
 };
 
 GINGA_NCL_END

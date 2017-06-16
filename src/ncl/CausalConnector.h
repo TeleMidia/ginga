@@ -34,35 +34,30 @@ GINGA_NCL_BEGIN
 
 class CausalConnector : public Connector
 {
-private:
-  ConditionExpression *conditionExpression;
-  Action *actionExpression;
-
 public:
-  CausalConnector (const string &id);
-  CausalConnector (const string &id, ConditionExpression *condition,
+  CausalConnector (const string &_id);
+  CausalConnector (const string &_id, ConditionExpression *condition,
                    Action *action);
 
   virtual ~CausalConnector ();
 
-private:
-  void releaseAction ();
-  void releaseCondition ();
-
-public:
   Action *getAction ();
   ConditionExpression *getConditionExpression ();
   void setAction (Action *newAction);
   void setConditionExpression (ConditionExpression *newConditionExpression);
 
+  vector<Role *> *getRoles ();
+
 private:
+  ConditionExpression *_conditionExpression;
+  Action *_actionExpression;
+
+  void releaseAction ();
+  void releaseCondition ();
   void getConditionRoles (ConditionExpression *condition,
                           vector<Role *> *roles);
 
   void getActionRoles (Action *action, vector<Role *> *roles);
-
-public:
-  vector<Role *> *getRoles ();
 };
 
 GINGA_NCL_END

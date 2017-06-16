@@ -25,8 +25,8 @@ GINGA_NCL_BEGIN
 
 Node::Node (const string &id) : Entity (id)
 {
-  typeSet.insert ("Node");
-  parentNode = NULL;
+  _typeSet.insert ("Node");
+  _parentNode = NULL;
 }
 
 Node::~Node ()
@@ -34,19 +34,19 @@ Node::~Node ()
   vector<Anchor *>::iterator i;
   vector<PropertyAnchor *>::iterator j;
 
-  parentNode = NULL;
+  _parentNode = NULL;
 
-  i = anchorList.begin ();
-  while (i != anchorList.end ())
+  i = _anchorList.begin ();
+  while (i != _anchorList.end ())
     {
       delete *i;
       ++i;
     }
 
-  anchorList.clear ();
+  _anchorList.clear ();
 
   // properties are inside anchorList as well.
-  originalPAnchors.clear ();
+  _originalPAnchors.clear ();
 }
 
 bool
@@ -54,8 +54,8 @@ Node::hasProperty (const string &propName)
 {
   vector<PropertyAnchor *>::iterator i;
 
-  i = originalPAnchors.begin ();
-  while (i != originalPAnchors.end ())
+  i = _originalPAnchors.begin ();
+  while (i != _originalPAnchors.end ())
     {
       if ((*i)->getName () == propName)
         {
@@ -89,8 +89,8 @@ Node::copyProperties (Node *node)
           cProp->setName (prop->getName ());
           cProp->setValue (prop->getValue ());
 
-          originalPAnchors.push_back (cProp);
-          anchorList.push_back (cProp);
+          _originalPAnchors.push_back (cProp);
+          _anchorList.push_back (cProp);
         }
 
       ++i;
@@ -100,7 +100,7 @@ Node::copyProperties (Node *node)
 CompositeNode *
 Node::getParentComposition ()
 {
-  return parentNode;
+  return _parentNode;
 }
 
 vector<Node *> *
@@ -108,13 +108,13 @@ Node::getPerspective ()
 {
   vector<Node *> *perspective;
 
-  if (parentNode == NULL)
+  if (_parentNode == NULL)
     {
       perspective = new vector<Node *>;
     }
   else
     {
-      perspective = ((CompositeNode *)parentNode)->getPerspective ();
+      perspective = ((CompositeNode *)_parentNode)->getPerspective ();
     }
   perspective->push_back ((Node *)this);
   return perspective;
@@ -126,14 +126,14 @@ Node::setParentComposition (CompositeNode *composition)
   if (composition == NULL
       || composition->getNode (getId ()) != NULL)
     {
-      this->parentNode = composition;
+      this->_parentNode = composition;
     }
 }
 
 bool
 Node::addAnchor (int index, Anchor *anchor)
 {
-  int lSize = (int)anchorList.size ();
+  int lSize = (int)_anchorList.size ();
 
   // anchor position must be in the correct range and anchor must exist
   if ((index < 0 || index > lSize) || anchor == NULL)
@@ -150,16 +150,16 @@ Node::addAnchor (int index, Anchor *anchor)
 
   if (index == lSize)
     {
-      anchorList.push_back (anchor);
+      _anchorList.push_back (anchor);
     }
   else
     {
-      anchorList.insert (anchorList.begin () + index, anchor);
+      _anchorList.insert (_anchorList.begin () + index, anchor);
     }
 
   if (anchor->instanceOf ("PropertyAnchor"))
     {
-      originalPAnchors.push_back (((PropertyAnchor *)anchor)->clone ());
+      _originalPAnchors.push_back (((PropertyAnchor *)anchor)->clone ());
     }
 
   return true;
@@ -168,7 +168,7 @@ Node::addAnchor (int index, Anchor *anchor)
 bool
 Node::addAnchor (Anchor *anchor)
 {
-  return Node::addAnchor ((int) anchorList.size (), anchor);
+  return Node::addAnchor ((int) _anchorList.size (), anchor);
 }
 
 Anchor *
@@ -177,8 +177,8 @@ Node::getAnchor (const string &anchorId)
   vector<Anchor *>::iterator i;
   Anchor *anchor;
 
-  i = anchorList.begin ();
-  while (i != anchorList.end ())
+  i = _anchorList.begin ();
+  while (i != _anchorList.end ())
     {
       anchor = *i;
       if (anchor == NULL)
@@ -197,7 +197,7 @@ Node::getAnchor (const string &anchorId)
 Anchor *
 Node::getAnchor (int index)
 {
-  int lSize = (int)anchorList.size ();
+  int lSize = (int)_anchorList.size ();
 
   if (index < 0 || index > lSize - 1)
     {
@@ -205,20 +205,20 @@ Node::getAnchor (int index)
     }
   else
     {
-      return (Anchor *)anchorList[index];
+      return (Anchor *)_anchorList[index];
     }
 }
 
 const vector<Anchor *> &
 Node::getAnchors ()
 {
-  return this->anchorList;
+  return this->_anchorList;
 }
 
 vector<PropertyAnchor *> *
 Node::getOriginalPropertyAnchors ()
 {
-  return &originalPAnchors;
+  return &_originalPAnchors;
 }
 
 PropertyAnchor *
@@ -227,8 +227,8 @@ Node::getPropertyAnchor (const string &propertyName)
   vector<Anchor *>::iterator i;
   PropertyAnchor *property;
 
-  i = anchorList.begin ();
-  while (i != anchorList.end ())
+  i = _anchorList.begin ();
+  while (i != _anchorList.end ())
     {
       if ((*i)->instanceOf ("PropertyAnchor"))
         {
@@ -247,7 +247,7 @@ Node::getPropertyAnchor (const string &propertyName)
 int
 Node::getNumAnchors ()
 {
-  return (int) anchorList.size ();
+  return (int) _anchorList.size ();
 }
 
 int
@@ -257,7 +257,7 @@ Node::indexOfAnchor (Anchor *anchor)
   int n;
   n = 0;
 
-  for (i = anchorList.begin (); i != anchorList.end (); ++i)
+  for (i = _anchorList.begin (); i != _anchorList.end (); ++i)
     {
       if (*i == anchor)
         {
@@ -266,18 +266,18 @@ Node::indexOfAnchor (Anchor *anchor)
       n++;
     }
 
-  return (int) anchorList.size () + 10;
+  return (int) _anchorList.size () + 10;
 }
 
 bool
 Node::removeAnchor (int index)
 {
-  if (index < 0 || index >= (int)anchorList.size ())
+  if (index < 0 || index >= (int)_anchorList.size ())
     {
       return false;
     }
 
-  anchorList.erase (anchorList.begin () + index);
+  _anchorList.erase (_anchorList.begin () + index);
   return true;
 }
 

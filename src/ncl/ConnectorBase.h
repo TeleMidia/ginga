@@ -26,11 +26,8 @@ GINGA_NCL_BEGIN
 
 class ConnectorBase : public Base
 {
-private:
-  set<Connector *> connectorSet;
-
 public:
-  ConnectorBase (const string &id);
+  ConnectorBase (const string &_id);
   virtual ~ConnectorBase ();
 
   bool addConnector (Connector *connector);
@@ -40,13 +37,14 @@ public:
   bool containsConnector (const string &connectorId);
   bool containsConnector (Connector *connector);
 
-private:
-  Connector *getConnectorLocally (const string &connectorId);
-
-public:
   Connector *getConnector (const string &connectorId);
   bool removeConnector (const string &connectorId);
   bool removeConnector (Connector *connector);
+
+private:
+  set<Connector *> _connectorSet;
+
+  Connector *getConnectorLocally (const string &connectorId);
 };
 
 GINGA_NCL_END

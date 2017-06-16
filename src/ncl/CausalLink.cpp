@@ -23,7 +23,7 @@ GINGA_NCL_BEGIN
 CausalLink::CausalLink (const string &uid, Connector *connector)
     : Link (uid, connector)
 {
-  typeSet.insert ("CausalLink");
+  _typeSet.insert ("CausalLink");
 }
 
 bool
@@ -46,13 +46,13 @@ CausalLink::getActionBinds ()
   actionsVector = new vector<Bind *>;
   vector<Bind *>::iterator i;
 
-  if (binds->empty ())
+  if (_binds->empty ())
     {
       delete actionsVector;
       return NULL;
     }
 
-  for (i = binds->begin (); i != binds->end (); ++i)
+  for (i = _binds->begin (); i != _binds->end (); ++i)
     {
       if (((*i)->getRole ())->instanceOf ("SimpleAction"))
         actionsVector->push_back (*i);
@@ -75,13 +75,13 @@ CausalLink::getConditionBinds ()
   Bind *bind;
   Role *role;
 
-  if (binds->empty ())
+  if (_binds->empty ())
     {
       return NULL;
     }
 
   conditionsVector = new vector<Bind *>;
-  for (iterator = binds->begin (); iterator != binds->end (); ++iterator)
+  for (iterator = _binds->begin (); iterator != _binds->end (); ++iterator)
     {
       bind = (Bind *)(*iterator);
       role = bind->getRole ();

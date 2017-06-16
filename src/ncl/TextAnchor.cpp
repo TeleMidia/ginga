@@ -22,33 +22,33 @@ GINGA_NCL_BEGIN
 
 TextAnchor::TextAnchor (const string &id, const string &t, int p) : Anchor (id)
 {
-  position = p;
-  text = t;
-  typeSet.insert ("TextAnchor");
+  _position = p;
+  _text = t;
+  _typeSet.insert ("TextAnchor");
 }
 
 int
 TextAnchor::getPosition ()
 {
-  return position;
+  return _position;
 }
 
 string
 TextAnchor::getText ()
 {
-  return text;
+  return _text;
 }
 
 void
 TextAnchor::setPosition (int p)
 {
-  position = p;
+  _position = p;
 }
 
 void
 TextAnchor::setText (const string &t)
 {
-  text = t;
+  _text = t;
 }
 
 GINGA_NCL_END

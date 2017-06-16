@@ -23,117 +23,117 @@ GINGA_NCL_BEGIN
 Bind::Bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
             Role *role)
 {
-  this->node = node;
-  this->interfacePoint = interfPt;
-  this->descriptor = desc;
-  this->role = role;
-  this->parameters = new map<string, Parameter *>;
+  this->_node = node;
+  this->_interfacePoint = interfPt;
+  this->_descriptor = desc;
+  this->_role = role;
+  this->_parameters = new map<string, Parameter *>;
 
-  typeSet.insert ("Bind");
+  _typeSet.insert ("Bind");
 }
 
 Bind::~Bind ()
 {
   map<string, Parameter *>::iterator i;
 
-  if (parameters != NULL)
+  if (_parameters != NULL)
     {
-      i = parameters->begin ();
-      while (i != parameters->end ())
+      i = _parameters->begin ();
+      while (i != _parameters->end ())
         {
           delete i->second;
           ++i;
         }
-      delete parameters;
-      parameters = NULL;
+      delete _parameters;
+      _parameters = NULL;
     }
 }
 
 bool
 Bind::instanceOf (const string &s)
 {
-  if (typeSet.empty ())
+  if (_typeSet.empty ())
     return false;
   else
-    return (typeSet.find (s) != typeSet.end ());
+    return (_typeSet.find (s) != _typeSet.end ());
 }
 
 GenericDescriptor *
 Bind::getDescriptor ()
 {
-  return descriptor;
+  return _descriptor;
 }
 
 InterfacePoint *
 Bind::getInterfacePoint ()
 {
-  return this->interfacePoint;
+  return this->_interfacePoint;
 }
 
 Node *
 Bind::getNode ()
 {
-  return this->node;
+  return this->_node;
 }
 
 Role *
 Bind::getRole ()
 {
-  return this->role;
+  return this->_role;
 }
 
 void
 Bind::setInterfacePoint (InterfacePoint *interfPt)
 {
-  this->interfacePoint = interfPt;
+  this->_interfacePoint = interfPt;
 }
 
 void
 Bind::setNode (Node *node)
 {
-  this->node = node;
+  this->_node = node;
 }
 
 void
 Bind::setRole (Role *role)
 {
-  this->role = role;
+  this->_role = role;
 }
 
 void
 Bind::setDescriptor (GenericDescriptor *desc)
 {
-  this->descriptor = desc;
+  this->_descriptor = desc;
 }
 
 Parameter *
 Bind::setParameterValue (const string &propertyLabel, Parameter *propertyValue)
 {
-  return (*parameters)[propertyLabel] = propertyValue;
+  return (*_parameters)[propertyLabel] = propertyValue;
 }
 
 void
 Bind::addParameter (Parameter *parameter)
 {
-  if (parameter == NULL || parameters == NULL)
+  if (parameter == NULL || _parameters == NULL)
     {
       return;
     }
 
-  (*parameters)[parameter->getName ()] = parameter;
+  (*_parameters)[parameter->getName ()] = parameter;
 }
 
 vector<Parameter *> *
 Bind::getParameters ()
 {
-  if (parameters->empty ())
+  if (_parameters->empty ())
     return NULL;
 
   map<string, Parameter *>::iterator i;
   vector<Parameter *> *params;
 
   params = new vector<Parameter *>;
-  for (i = parameters->begin (); i != parameters->end (); ++i)
+  for (i = _parameters->begin (); i != _parameters->end (); ++i)
     params->push_back (i->second);
 
   return params;
@@ -142,11 +142,11 @@ Bind::getParameters ()
 Parameter *
 Bind::getParameter (const string &paramName)
 {
-  if (parameters->empty ())
+  if (_parameters->empty ())
     return NULL;
 
   map<string, Parameter *>::iterator i;
-  for (i = parameters->begin (); i != parameters->end (); ++i)
+  for (i = _parameters->begin (); i != _parameters->end (); ++i)
     if (i->first == paramName)
       return (Parameter *)(i->second);
 
@@ -156,16 +156,16 @@ Bind::getParameter (const string &paramName)
 bool
 Bind::removeParameter (Parameter *parameter)
 {
-  if (parameters->empty ())
+  if (_parameters->empty ())
     return false;
 
   map<string, Parameter *>::iterator i;
 
-  for (i = parameters->begin (); i != parameters->end (); ++i)
+  for (i = _parameters->begin (); i != _parameters->end (); ++i)
     {
       if (i->first == parameter->getName ())
         {
-          parameters->erase (i);
+          _parameters->erase (i);
           return true;
         }
     }
@@ -181,13 +181,13 @@ Bind::getNodeNesting ()
   vector<Node *>::iterator i;
 
   nodeNesting = new vector<Node *>;
-  nodeNesting->push_back (node);
-  if (interfacePoint != NULL)
+  nodeNesting->push_back (_node);
+  if (_interfacePoint != NULL)
     {
-      if (interfacePoint->instanceOf ("Port")
-          && !(interfacePoint->instanceOf ("SwitchPort")))
+      if (_interfacePoint->instanceOf ("Port")
+          && !(_interfacePoint->instanceOf ("SwitchPort")))
         {
-          nodeSequence = ((Port *)interfacePoint)->getMapNodeNesting ();
+          nodeSequence = ((Port *)_interfacePoint)->getMapNodeNesting ();
 
           if (nodeSequence != NULL)
             {
@@ -212,17 +212,17 @@ Bind::getEndPointInterface ()
   CompositeNode *compositeNode;
   Port *port;
 
-  nodeEntity = (NodeEntity *)(node->getDataEntity ());
+  nodeEntity = (NodeEntity *)(_node->getDataEntity ());
   if (nodeEntity->instanceOf ("CompositeNode")
-      && interfacePoint->instanceOf ("Port"))
+      && _interfacePoint->instanceOf ("Port"))
     {
       compositeNode = (CompositeNode *)nodeEntity;
-      port = (Port *)interfacePoint;
+      port = (Port *)_interfacePoint;
       return compositeNode->getMapInterface (port);
     }
   else
     {
-      return interfacePoint;
+      return _interfacePoint;
     }
 }
 

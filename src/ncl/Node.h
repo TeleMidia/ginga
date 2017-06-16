@@ -28,21 +28,10 @@ class CompositeNode;
 
 class Node : public Entity
 {
-private:
-  CompositeNode *parentNode;
-
-protected:
-  vector<Anchor *> anchorList;
-  vector<PropertyAnchor *> originalPAnchors;
-
 public:
-  Node (const string &id);
+  Node (const string &_id);
   virtual ~Node ();
 
-private:
-  bool hasProperty (const string &propName);
-
-public:
   void copyProperties (Node *node);
   void setParentComposition (CompositeNode *composition);
   CompositeNode *getParentComposition ();
@@ -60,6 +49,15 @@ public:
   int indexOfAnchor (Anchor *anchor);
   virtual bool removeAnchor (int index);
   virtual bool removeAnchor (Anchor *anchor);
+
+protected:
+  vector<Anchor *> _anchorList;
+  vector<PropertyAnchor *> _originalPAnchors;
+
+private:
+  CompositeNode *_parentNode;
+
+  bool hasProperty (const string &propName);
 };
 
 GINGA_NCL_END

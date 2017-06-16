@@ -26,17 +26,17 @@ GINGA_NCL_BEGIN
 
 class PropertyAnchor : public Anchor
 {
-private:
-  string value;
-
 public:
   PropertyAnchor (const string &attName);
-  virtual ~PropertyAnchor (){};
+  virtual ~PropertyAnchor (){}
   string getName ();
   void setName (const string &name);
   string getValue ();
-  void setValue (const string &value);
+  void setValue (const string &_value);
   PropertyAnchor *clone ();
+
+private:
+  string _value;
 };
 
 GINGA_NCL_END

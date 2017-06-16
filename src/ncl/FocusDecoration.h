@@ -24,14 +24,6 @@ GINGA_NCL_BEGIN
 
 class FocusDecoration
 {
-private:
-  SDL_Color focusBorderColor;
-  double focusBorderTransparency;
-  string focusSrc;
-  int focusBorderWidth;
-  SDL_Color selBorderColor;
-  string focusSelSrc;
-
 public:
   FocusDecoration ();
   virtual ~FocusDecoration ();
@@ -47,6 +39,14 @@ public:
   void setFocusSelSrc (const string &src);
   void setFocusSrc (const string &src);
   void setSelBorderColor (SDL_Color color);
+
+private:
+  SDL_Color _focusBorderColor;
+  double _focusBorderTransparency;
+  string _focusSrc;
+  int _focusBorderWidth;
+  SDL_Color _selBorderColor;
+  string _focusSelSrc;
 };
 
 GINGA_NCL_END

@@ -23,10 +23,10 @@ GINGA_NCL_BEGIN
 
 NodeEntity::NodeEntity (const string &uid, Content *someContent) : Node (uid)
 {
-  descriptor = NULL;
-  anchorList.push_back (new LambdaAnchor (uid));
-  this->content = someContent;
-  typeSet.insert ("NodeEntity");
+  _descriptor = NULL;
+  _anchorList.push_back (new LambdaAnchor (uid));
+  this->_content = someContent;
+  _typeSet.insert ("NodeEntity");
 }
 
 NodeEntity::~NodeEntity ()
@@ -35,35 +35,35 @@ NodeEntity::~NodeEntity ()
   set<ReferNode *>::iterator j;
   Anchor *anchor;
 
-  if (descriptor != NULL)
+  if (_descriptor != NULL)
     {
       // descriptor is deleted in descriptor base
-      descriptor = NULL;
+      _descriptor = NULL;
     }
 
-  if (content != NULL)
+  if (_content != NULL)
     {
-      delete content;
-      content = NULL;
+      delete _content;
+      _content = NULL;
     }
 
-  for (j = instSameInstances.begin (); j != instSameInstances.end (); ++j)
+  for (j = _instSameInstances.begin (); j != _instSameInstances.end (); ++j)
     {
       if ((Node *)(*j) != (Node *)this && Entity::hasInstance ((*j), true))
         {
           delete (*j);
         }
     }
-  instSameInstances.clear ();
+  _instSameInstances.clear ();
 
-  for (j = gradSameInstances.begin (); j != gradSameInstances.end (); ++j)
+  for (j = _gradSameInstances.begin (); j != _gradSameInstances.end (); ++j)
     {
       delete (*j);
     }
-  gradSameInstances.clear ();
+  _gradSameInstances.clear ();
 
-  i = anchorList.begin ();
-  while (i != anchorList.end ())
+  i = _anchorList.begin ();
+  while (i != _anchorList.end ())
     {
       anchor = (*i);
       if (Entity::hasInstance (anchor, true))
@@ -72,7 +72,7 @@ NodeEntity::~NodeEntity ()
         }
       ++i;
     }
-  anchorList.clear ();
+  _anchorList.clear ();
 }
 
 bool
@@ -89,7 +89,7 @@ LambdaAnchor *
 NodeEntity::getLambdaAnchor ()
 {
   LambdaAnchor *lambda;
-  lambda = static_cast<LambdaAnchor *> (*(anchorList.begin ()));
+  lambda = static_cast<LambdaAnchor *> (*(_anchorList.begin ()));
   return lambda;
 }
 
@@ -116,25 +116,25 @@ NodeEntity::removeAnchor (int index)
 GenericDescriptor *
 NodeEntity::getDescriptor ()
 {
-  return descriptor;
+  return _descriptor;
 }
 
 void
 NodeEntity::setDescriptor (GenericDescriptor *someDescriptor)
 {
-  descriptor = someDescriptor;
+  _descriptor = someDescriptor;
 }
 
 Content *
 NodeEntity::getContent ()
 {
-  return content;
+  return _content;
 }
 
 void
 NodeEntity::setContent (Content *someContent)
 {
-  content = someContent;
+  _content = someContent;
 }
 
 bool
@@ -152,18 +152,18 @@ NodeEntity::removeAnchor (Anchor *anchor)
 set<ReferNode *> *
 NodeEntity::getInstSameInstances ()
 {
-  return &instSameInstances;
+  return &_instSameInstances;
 }
 
 set<ReferNode *> *
 NodeEntity::getGradSameInstances ()
 {
-  if (gradSameInstances.empty ())
+  if (_gradSameInstances.empty ())
     {
       return NULL;
     }
 
-  return &gradSameInstances;
+  return &_gradSameInstances;
 }
 
 bool
@@ -171,21 +171,21 @@ NodeEntity::addSameInstance (ReferNode *node)
 {
   if (node->getInstanceType () == "instSame")
     {
-      if (instSameInstances.count (node) != 0)
+      if (_instSameInstances.count (node) != 0)
         {
           return false;
         }
 
-      instSameInstances.insert (node);
+      _instSameInstances.insert (node);
     }
   else if (node->getInstanceType () == "gradSame")
     {
-      if (gradSameInstances.count (node) != 0)
+      if (_gradSameInstances.count (node) != 0)
         {
           return false;
         }
 
-      gradSameInstances.insert (node);
+      _gradSameInstances.insert (node);
     }
   else
     {
@@ -200,16 +200,16 @@ NodeEntity::removeSameInstance (ReferNode *node)
 {
   set<ReferNode *>::iterator i;
 
-  i = gradSameInstances.find (node);
-  if (i != gradSameInstances.end ())
+  i = _gradSameInstances.find (node);
+  if (i != _gradSameInstances.end ())
     {
-      gradSameInstances.erase (i);
+      _gradSameInstances.erase (i);
     }
 
-  i = instSameInstances.find (node);
-  if (i != instSameInstances.end ())
+  i = _instSameInstances.find (node);
+  if (i != _instSameInstances.end ())
     {
-      instSameInstances.erase (i);
+      _instSameInstances.erase (i);
     }
 }
 

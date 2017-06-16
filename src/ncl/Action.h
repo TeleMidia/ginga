@@ -24,23 +24,23 @@ GINGA_NCL_BEGIN
 
 class Action
 {
-protected:
-  set<string> typeSet;
-
-private:
-  string delay;
-
 public:
   Action ();
   Action (const string &newDelay);
-  virtual ~Action (){};
+  virtual ~Action (){}
   string getDelay ();
   void setDelay (const string &dur);
   virtual bool
   instanceOf (const string &type)
   {
-    return typeSet.count (type);
+    return _typeSet.count (type);
   }
+
+protected:
+  set<string> _typeSet;
+
+private:
+  string _delay;
 };
 
 GINGA_NCL_END

@@ -24,12 +24,9 @@ GINGA_NCL_BEGIN
 
 class TriggerExpression : public ConditionExpression
 {
-private:
-  string delay;
-
 public:
   TriggerExpression ();
-  virtual ~TriggerExpression (){};
+  virtual ~TriggerExpression (){}
   string getDelay ();
   void setDelay (const string &delay);
   virtual bool
@@ -37,6 +34,9 @@ public:
   {
     return ConditionExpression::instanceOf (type);
   }
+
+private:
+  string _delay;
 };
 
 GINGA_NCL_END

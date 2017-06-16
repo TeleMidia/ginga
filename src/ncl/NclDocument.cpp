@@ -24,16 +24,16 @@ GINGA_NCL_BEGIN
 
 NclDocument::NclDocument (const string &id, const string &docLocation)
 {
-  this->id = id;
+  this->_id = id;
 
-  ruleBase = NULL;
-  transitionBase = NULL;
-  descriptorBase = NULL;
-  connectorBase = NULL;
-  body = NULL;
+  _ruleBase = NULL;
+  _transitionBase = NULL;
+  _descriptorBase = NULL;
+  _connectorBase = NULL;
+  _body = NULL;
 
-  parentDocument = NULL;
-  this->docLocation = docLocation;
+  _parentDocument = NULL;
+  this->_docLocation = docLocation;
 }
 
 NclDocument::~NclDocument () { clearDocument (); }
@@ -41,7 +41,7 @@ NclDocument::~NclDocument () { clearDocument (); }
 NclDocument *
 NclDocument::getParentDocument ()
 {
-  return parentDocument;
+  return _parentDocument;
 }
 
 string
@@ -52,7 +52,7 @@ NclDocument::getDocumentPerspective ()
 
   docPerspective = getId ();
 
-  parent = parentDocument;
+  parent = _parentDocument;
   while (parent != NULL)
     {
       docPerspective = parent->getId () + "/" + docPerspective;
@@ -65,13 +65,13 @@ NclDocument::getDocumentPerspective ()
 void
 NclDocument::setParentDocument (NclDocument *parentDocument)
 {
-  this->parentDocument = parentDocument;
+  this->_parentDocument = parentDocument;
 }
 
 string
 NclDocument::getDocumentLocation ()
 {
-  return docLocation;
+  return _docLocation;
 }
 
 bool
@@ -80,15 +80,15 @@ NclDocument::addDocument (NclDocument *document, const string &alias,
 {
   g_assert (document != NULL);
 
-  if (documentAliases.find (alias) != documentAliases.end ()
-      || documentLocations.find (location) != documentLocations.end ())
+  if (_documentAliases.find (alias) != _documentAliases.end ()
+      || _documentLocations.find (location) != _documentLocations.end ())
     {
       return false;
     }
 
-  documentBase.push_back (document);
-  documentAliases[alias] = document;
-  documentLocations[location] = document;
+  _documentBase.push_back (document);
+  _documentAliases[alias] = document;
+  _documentLocations[location] = document;
 
   return true;
 }
@@ -99,58 +99,58 @@ NclDocument::clearDocument ()
   vector<NclDocument *>::iterator i;
   map<int, RegionBase *>::iterator j;
 
-  id = "";
+  _id = "";
 
-  i = documentBase.begin ();
-  while (i != documentBase.end ())
+  i = _documentBase.begin ();
+  while (i != _documentBase.end ())
     {
       delete *i;
       ++i;
     }
 
-  documentBase.clear ();
-  documentLocations.clear ();
-  documentAliases.clear ();
+  _documentBase.clear ();
+  _documentLocations.clear ();
+  _documentAliases.clear ();
 
-  j = regionBases.begin ();
-  while (j != regionBases.end ())
+  j = _regionBases.begin ();
+  while (j != _regionBases.end ())
     {
       delete j->second;
       ++j;
     }
-  regionBases.clear ();
+  _regionBases.clear ();
 
-  if (ruleBase != NULL)
+  if (_ruleBase != NULL)
     {
-      delete ruleBase;
-      ruleBase = NULL;
+      delete _ruleBase;
+      _ruleBase = NULL;
     }
 
-  if (transitionBase != NULL)
+  if (_transitionBase != NULL)
     {
-      delete transitionBase;
-      transitionBase = NULL;
+      delete _transitionBase;
+      _transitionBase = NULL;
     }
 
-  if (descriptorBase != NULL)
+  if (_descriptorBase != NULL)
     {
-      delete descriptorBase;
-      descriptorBase = NULL;
+      delete _descriptorBase;
+      _descriptorBase = NULL;
     }
 
-  if (connectorBase != NULL)
+  if (_connectorBase != NULL)
     {
-      delete connectorBase;
-      connectorBase = NULL;
+      delete _connectorBase;
+      _connectorBase = NULL;
     }
 
-  if (body != NULL)
+  if (_body != NULL)
     {
-      if (Entity::hasInstance (body, true))
+      if (Entity::hasInstance (_body, true))
         {
-          delete body;
+          delete _body;
         }
-      body = NULL;
+      _body = NULL;
     }
 }
 
@@ -160,16 +160,16 @@ NclDocument::getConnector (const string &connectorId)
   Connector *connector;
   vector<NclDocument *>::iterator i;
 
-  if (connectorBase != NULL)
+  if (_connectorBase != NULL)
     {
-      connector = connectorBase->getConnector (connectorId);
+      connector = _connectorBase->getConnector (connectorId);
       if (connector != NULL)
         {
           return connector;
         }
     }
 
-  for (i = documentBase.begin (); i != documentBase.end (); ++i)
+  for (i = _documentBase.begin (); i != _documentBase.end (); ++i)
     {
       connector = (*i)->getConnector (connectorId);
       if (connector != NULL)
@@ -184,7 +184,7 @@ NclDocument::getConnector (const string &connectorId)
 ConnectorBase *
 NclDocument::getConnectorBase ()
 {
-  return connectorBase;
+  return _connectorBase;
 }
 
 Transition *
@@ -194,19 +194,19 @@ NclDocument::getTransition (const string &transitionId)
   int i, size;
   NclDocument *document;
 
-  if (transitionBase != NULL)
+  if (_transitionBase != NULL)
     {
-      transition = transitionBase->getTransition (transitionId);
+      transition = _transitionBase->getTransition (transitionId);
       if (transition != NULL)
         {
           return transition;
         }
     }
 
-  size = (int) documentBase.size ();
+  size = (int) _documentBase.size ();
   for (i = 0; i < size; i++)
     {
-      document = documentBase[i];
+      document = _documentBase[i];
       transition = document->getTransition (transitionId);
       if (transition != NULL)
         {
@@ -220,7 +220,7 @@ NclDocument::getTransition (const string &transitionId)
 TransitionBase *
 NclDocument::getTransitionBase ()
 {
-  return transitionBase;
+  return _transitionBase;
 }
 
 GenericDescriptor *
@@ -229,16 +229,16 @@ NclDocument::getDescriptor (const string &descriptorId)
   GenericDescriptor *descriptor;
   vector<NclDocument *>::iterator i;
 
-  if (descriptorBase != NULL)
+  if (_descriptorBase != NULL)
     {
-      descriptor = descriptorBase->getDescriptor (descriptorId);
+      descriptor = _descriptorBase->getDescriptor (descriptorId);
       if (descriptor != NULL)
         {
           return descriptor;
         }
     }
 
-  for (i = documentBase.begin (); i != documentBase.end (); ++i)
+  for (i = _documentBase.begin (); i != _documentBase.end (); ++i)
     {
       descriptor = (*i)->getDescriptor (descriptorId);
       if (descriptor != NULL)
@@ -253,7 +253,7 @@ NclDocument::getDescriptor (const string &descriptorId)
 DescriptorBase *
 NclDocument::getDescriptorBase ()
 {
-  return descriptorBase;
+  return _descriptorBase;
 }
 
 NclDocument *
@@ -261,7 +261,7 @@ NclDocument::getDocument (const string &documentId)
 {
   vector<NclDocument *>::iterator i;
 
-  for (i = documentBase.begin (); i != documentBase.end (); ++i)
+  for (i = _documentBase.begin (); i != _documentBase.end (); ++i)
     {
       if ((*i)->getId () != "" && (*i)->getId () == documentId)
         {
@@ -277,7 +277,7 @@ NclDocument::getDocumentAlias (NclDocument *document)
 {
   map<string, NclDocument *>::iterator i;
 
-  for (i = documentAliases.begin (); i != documentAliases.end (); ++i)
+  for (i = _documentAliases.begin (); i != _documentAliases.end (); ++i)
     {
       if (i->second == document)
         {
@@ -291,7 +291,7 @@ NclDocument::getDocumentAlias (NclDocument *document)
 ContextNode *
 NclDocument::getBody ()
 {
-  return body;
+  return _body;
 }
 
 string
@@ -299,7 +299,7 @@ NclDocument::getDocumentLocation (NclDocument *document)
 {
   map<string, NclDocument *>::iterator i;
 
-  for (i = documentLocations.begin (); i != documentLocations.end (); ++i)
+  for (i = _documentLocations.begin (); i != _documentLocations.end (); ++i)
     {
       if (i->second == document)
         {
@@ -313,27 +313,27 @@ NclDocument::getDocumentLocation (NclDocument *document)
 vector<NclDocument *> *
 NclDocument::getDocuments ()
 {
-  return &documentBase;
+  return &_documentBase;
 }
 
 string
 NclDocument::getId ()
 {
-  return id;
+  return _id;
 }
 
 Node *
 NclDocument::getNodeLocally (const string &nodeId)
 {
-  if (body != NULL)
+  if (_body != NULL)
     {
-      if (body->getId () == nodeId)
+      if (_body->getId () == nodeId)
         {
-          return body;
+          return _body;
         }
       else
         {
-          return body->recursivelyGetNode (nodeId);
+          return _body->recursivelyGetNode (nodeId);
         }
     }
   else
@@ -362,9 +362,9 @@ NclDocument::getNode (const string &nodeId)
   prefix = nodeId.substr (0, index);
   index++;
   suffix = nodeId.substr (index, nodeId.length () - index);
-  if (documentAliases.find (prefix) != documentAliases.end ())
+  if (_documentAliases.find (prefix) != _documentAliases.end ())
     {
-      document = documentAliases[prefix];
+      document = _documentAliases[prefix];
       return document->getNode (suffix);
 
     } /* else if (documentLocations.find(prefix) !=
@@ -386,8 +386,8 @@ NclDocument::getRegion (const string &regionId)
   LayoutRegion *region;
   map<int, RegionBase *>::iterator i;
 
-  i = regionBases.begin ();
-  while (i != regionBases.end ())
+  i = _regionBases.begin ();
+  while (i != _regionBases.end ())
     {
       region = getRegion (regionId, i->second);
       if (region != NULL)
@@ -415,7 +415,7 @@ NclDocument::getRegion (const string &regionId, RegionBase *regionBase)
         }
     }
 
-  for (i = documentBase.begin (); i != documentBase.end (); ++i)
+  for (i = _documentBase.begin (); i != _documentBase.end (); ++i)
     {
       region = (*i)->getRegion (regionId);
       if (region != NULL)
@@ -432,8 +432,8 @@ NclDocument::getRegionBase (int devClass)
 {
   map<int, RegionBase *>::iterator i;
 
-  i = regionBases.find (devClass);
-  if (i == regionBases.end ())
+  i = _regionBases.find (devClass);
+  if (i == _regionBases.end ())
     {
       return NULL;
     }
@@ -446,8 +446,8 @@ NclDocument::getRegionBase (const string &regionBaseId)
 {
   map<int, RegionBase *>::iterator i;
 
-  i = regionBases.begin ();
-  while (i != regionBases.end ())
+  i = _regionBases.begin ();
+  while (i != _regionBases.end ())
     {
       if (i->second->getId () == regionBaseId)
         {
@@ -462,7 +462,7 @@ NclDocument::getRegionBase (const string &regionBaseId)
 map<int, RegionBase *> *
 NclDocument::getRegionBases ()
 {
-  return &regionBases;
+  return &_regionBases;
 }
 
 Rule *
@@ -471,16 +471,16 @@ NclDocument::getRule (const string &ruleId)
   Rule *rule;
   vector<NclDocument *>::iterator i;
 
-  if (ruleBase != NULL)
+  if (_ruleBase != NULL)
     {
-      rule = ruleBase->getRule (ruleId);
+      rule = _ruleBase->getRule (ruleId);
       if (rule != NULL)
         {
           return rule;
         }
     }
 
-  for (i = documentBase.begin (); i != documentBase.end (); ++i)
+  for (i = _documentBase.begin (); i != _documentBase.end (); ++i)
     {
       rule = (*i)->getRule (ruleId);
       if (rule != NULL)
@@ -495,7 +495,7 @@ NclDocument::getRule (const string &ruleId)
 RuleBase *
 NclDocument::getRuleBase ()
 {
-  return ruleBase;
+  return _ruleBase;
 }
 
 /**
@@ -555,13 +555,13 @@ NclDocument::removeDocument (NclDocument *document)
 
   alias = getDocumentAlias (document);
   location = getDocumentLocation (document);
-  for (i = documentBase.begin (); i != documentBase.end (); ++i)
+  for (i = _documentBase.begin (); i != _documentBase.end (); ++i)
     {
       if (*i == document)
         {
-          documentBase.erase (i);
-          documentAliases.erase (alias);
-          documentLocations.erase (location);
+          _documentBase.erase (i);
+          _documentAliases.erase (alias);
+          _documentLocations.erase (location);
           return true;
         }
     }
@@ -571,19 +571,19 @@ NclDocument::removeDocument (NclDocument *document)
 void
 NclDocument::setConnectorBase (ConnectorBase *connectorBase)
 {
-  this->connectorBase = connectorBase;
+  this->_connectorBase = connectorBase;
 }
 
 void
 NclDocument::setTransitionBase (TransitionBase *transitionBase)
 {
-  this->transitionBase = transitionBase;
+  this->_transitionBase = transitionBase;
 }
 
 void
 NclDocument::setDescriptorBase (DescriptorBase *descriptorBase)
 {
-  this->descriptorBase = descriptorBase;
+  this->_descriptorBase = descriptorBase;
 }
 
 void
@@ -592,14 +592,14 @@ NclDocument::setDocumentAlias (NclDocument *document, const string &alias)
   string oldAlias;
 
   oldAlias = getDocumentAlias (document);
-  documentAliases.erase (oldAlias);
-  documentAliases[alias] = document;
+  _documentAliases.erase (oldAlias);
+  _documentAliases[alias] = document;
 }
 
 void
 NclDocument::setBody (ContextNode *node)
 {
-  body = node;
+  _body = node;
 }
 
 void
@@ -608,27 +608,27 @@ NclDocument::setDocumentLocation (NclDocument *document, const string &location)
   string oldLocation;
 
   oldLocation = getDocumentLocation (document);
-  documentLocations.erase (oldLocation);
-  documentLocations[location] = document;
+  _documentLocations.erase (oldLocation);
+  _documentLocations[location] = document;
 }
 
 void
 NclDocument::setId (const string &id)
 {
-  this->id = id;
+  this->_id = id;
 }
 
 void
 NclDocument::addRegionBase (RegionBase *regionBase)
 {
   g_assert (regionBase != NULL);
-  regionBases[0] = regionBase;
+  _regionBases[0] = regionBase;
 }
 
 void
 NclDocument::setRuleBase (RuleBase *ruleBase)
 {
-  this->ruleBase = ruleBase;
+  this->_ruleBase = ruleBase;
 }
 
 void
@@ -636,12 +636,12 @@ NclDocument::removeRegionBase (const string &regionBaseId)
 {
   map<int, RegionBase *>::iterator i;
 
-  i = regionBases.begin ();
-  while (i != regionBases.end ())
+  i = _regionBases.begin ();
+  while (i != _regionBases.end ())
     {
       if (i->second->getId () == regionBaseId)
         {
-          regionBases.erase (i);
+          _regionBases.erase (i);
           return;
         }
       ++i;

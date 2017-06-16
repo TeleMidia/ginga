@@ -27,7 +27,7 @@ class GenericDescriptor : public Entity
 public:
   GenericDescriptor (const string &someId) : Entity (someId)
   {
-    typeSet.insert ("GenericDescriptor");
+    _typeSet.insert ("GenericDescriptor");
   };
   virtual ~GenericDescriptor (){};
 };

@@ -28,12 +28,8 @@ GINGA_NCL_BEGIN
 
 class CompositeNode : public NodeEntity
 {
-protected:
-  vector<Node *> nodes;
-  vector<Port *> portList;
-
 public:
-  CompositeNode (const string &id);
+  CompositeNode (const string &_id);
   virtual ~CompositeNode ();
   bool addAnchor (int index, Anchor *anchor);
   bool addAnchor (Anchor *anchor);
@@ -81,7 +77,11 @@ public:
 
   // virtual to ContextNode
   virtual bool setNodeDescriptor (const string &nodeId,
-                                  GenericDescriptor *descriptor);
+                                  GenericDescriptor *_descriptor);
+
+protected:
+  vector<Node *> _nodes;
+  vector<Port *> _portList;
 };
 
 GINGA_NCL_END

@@ -22,32 +22,32 @@ GINGA_NCL_BEGIN
 
 Parameter::Parameter (const string &n, const string &v)
 {
-  name = n;
-  value = v;
+  _name = n;
+  _value = v;
 }
 
 string
 Parameter::getName ()
 {
-  return name;
+  return _name;
 }
 
 string
 Parameter::getValue ()
 {
-  return value;
+  return _value;
 }
 
 void
 Parameter::setName (const string &n)
 {
-  name = n;
+  _name = n;
 }
 
 void
 Parameter::setValue (const string &v)
 {
-  value = v;
+  _value = v;
 }
 
 GINGA_NCL_END

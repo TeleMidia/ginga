@@ -22,20 +22,20 @@ GINGA_NCL_BEGIN
 
 LabeledAnchor::LabeledAnchor (const string &id, const string &label) : Anchor (id)
 {
-  this->label = label;
-  typeSet.insert ("LabeledAnchor");
+  this->_label = label;
+  _typeSet.insert ("LabeledAnchor");
 }
 
 string
 LabeledAnchor::getLabel ()
 {
-  return label;
+  return _label;
 }
 
 void
 LabeledAnchor::setLabel (const string &label)
 {
-  this->label = label;
+  this->_label = label;
 }
 
 GINGA_NCL_END

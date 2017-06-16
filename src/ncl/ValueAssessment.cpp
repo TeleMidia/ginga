@@ -22,20 +22,20 @@ GINGA_NCL_BEGIN
 
 ValueAssessment::ValueAssessment (const string &value) : Assessment ()
 {
-  this->value = value;
+  this->_value = value;
   typeSet.insert ("ValueAssessment");
 }
 
 string
 ValueAssessment::getValue ()
 {
-  return value;
+  return _value;
 }
 
 void
 ValueAssessment::setValue (const string &newValue)
 {
-  value = newValue;
+  _value = newValue;
 }
 
 GINGA_NCL_END

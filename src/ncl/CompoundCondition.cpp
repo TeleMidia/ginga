@@ -24,7 +24,7 @@ GINGA_NCL_BEGIN
 
 CompoundCondition::CompoundCondition () : TriggerExpression ()
 {
-  expressions = new vector<ConditionExpression *>;
+  _expressions = new vector<ConditionExpression *>;
   typeSet.insert ("CompoundCondition");
 }
 
@@ -32,10 +32,10 @@ CompoundCondition::CompoundCondition (ConditionExpression *c1,
                                       ConditionExpression *c2, short op)
     : TriggerExpression ()
 {
-  expressions = new vector<ConditionExpression *>;
-  expressions->push_back (c1);
-  expressions->push_back (c2);
-  myOperator = op;
+  _expressions = new vector<ConditionExpression *>;
+  _expressions->push_back (c1);
+  _expressions->push_back (c2);
+  _myOperator = op;
   typeSet.insert ("CompoundCondition");
 }
 
@@ -43,39 +43,39 @@ CompoundCondition::~CompoundCondition ()
 {
   vector<ConditionExpression *>::iterator i;
 
-  if (expressions != NULL)
+  if (_expressions != NULL)
     {
-      i = expressions->begin ();
-      while (i != expressions->end ())
+      i = _expressions->begin ();
+      while (i != _expressions->end ())
         {
           delete *i;
           ++i;
         }
 
-      delete expressions;
-      expressions = NULL;
+      delete _expressions;
+      _expressions = NULL;
     }
 }
 
 void
 CompoundCondition::setOperator (short op)
 {
-  myOperator = op;
+  _myOperator = op;
 }
 
 short
 CompoundCondition::getOperator ()
 {
-  return myOperator;
+  return _myOperator;
 }
 
 vector<ConditionExpression *> *
 CompoundCondition::getConditions ()
 {
-  if (expressions->empty ())
+  if (_expressions->empty ())
     return NULL;
 
-  return expressions;
+  return _expressions;
 }
 
 void
@@ -88,7 +88,7 @@ CompoundCondition::addConditionExpression (ConditionExpression *condition)
     }
   else
     {
-      expressions->push_back (condition);
+      _expressions->push_back (condition);
     }
 }
 
@@ -99,13 +99,13 @@ CompoundCondition::removeConditionExpression (
   vector<ConditionExpression *>::iterator iterator;
   vector<ConditionExpression *>::iterator i;
 
-  iterator = expressions->begin ();
-  while (iterator != expressions->end ())
+  iterator = _expressions->begin ();
+  while (iterator != _expressions->end ())
     {
       if ((*iterator) == condition)
         {
-          i = expressions->erase (iterator);
-          if (i == expressions->end ())
+          i = _expressions->erase (iterator);
+          if (i == _expressions->end ())
             return;
         }
       ++iterator;
@@ -121,10 +121,10 @@ CompoundCondition::getRoles ()
   vector<Role *> *childRoles;
 
   roles = new vector<Role *>;
-  size = (int) expressions->size ();
+  size = (int) _expressions->size ();
   for (i = 0; i < size; i++)
     {
-      condition = (*expressions)[i];
+      condition = (*_expressions)[i];
       if (condition == NULL)
         {
           clog << "CompoundCondition::getRoles ";

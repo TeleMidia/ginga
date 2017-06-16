@@ -24,13 +24,8 @@ GINGA_NCL_BEGIN
 
 class LayoutRegion : public Entity
 {
-private:
-  SDL_Rect rect;                // x, y, w, h in pixels
-  int z;                        // z-index
-  int zorder;                   // z-order
-
 public:
-  LayoutRegion (const string &id);
+  LayoutRegion (const string &_id);
   virtual ~LayoutRegion ();
   void setRect (SDL_Rect);
   SDL_Rect getRect ();
@@ -44,6 +39,11 @@ public:
   int getBottom ();
   int getWidth ();
   int getHeight ();
+
+private:
+  SDL_Rect _rect;                // x, y, w, h in pixels
+  int _z;                        // z-index
+  int _zorder;                   // z-order
 };
 
 GINGA_NCL_END

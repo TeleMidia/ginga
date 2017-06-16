@@ -26,25 +26,13 @@ GINGA_NCL_BEGIN
 
 class RegionBase : public Base
 {
-private:
-  map<string, LayoutRegion *> regions;
-  LayoutRegion *deviceRegion;
-
 public:
-  RegionBase (const string &id);
+  RegionBase (const string &_id);
   virtual ~RegionBase ();
 
-private:
-  void createDeviceRegion ();
-
-public:
   bool addRegion (LayoutRegion *region);
   virtual bool addBase (Base *base, const string &alias, const string &location);
 
-private:
-  LayoutRegion *getRegionLocally (const string &regionId);
-
-public:
   LayoutRegion *getRegion (const string &regionId);
   vector<LayoutRegion *> *getRegions ();
   bool removeRegion (LayoutRegion *region);
@@ -52,6 +40,13 @@ public:
   void setDevice (const string &device, const string &regionId);
   int getDeviceClass ();
   void clear ();
+
+private:
+  map<string, LayoutRegion *> _regions;
+  LayoutRegion *_deviceRegion;
+
+  void createDeviceRegion ();
+  LayoutRegion *getRegionLocally (const string &regionId);
 };
 
 GINGA_NCL_END

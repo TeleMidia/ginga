@@ -27,25 +27,23 @@ GINGA_NCL_BEGIN
 
 class ContentNode : public NodeEntity
 {
-private:
-  string type;
-  bool isSettingNodeType;
-  bool isTimeNodeType;
-
 public:
   ContentNode (const string &uid, Content *someContent);
-  ContentNode (const string &uid, Content *content, const string &type);
-  virtual ~ContentNode (){};
+  ContentNode (const string &uid, Content *_content, const string &_type);
+  virtual ~ContentNode (){}
 
-private:
-  void initialize (const string &type);
-
-public:
   bool isSettingNode ();
   bool isTimeNode ();
   string getTypeValue ();
   string getNodeType ();
-  void setNodeType (const string &type);
+  void setNodeType (const string &_type);
+
+private:
+  string _type;
+  bool _isSettingNodeType;
+  bool _isTimeNodeType;
+
+  void initialize (const string &_type);
 };
 
 GINGA_NCL_END

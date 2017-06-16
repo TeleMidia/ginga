@@ -27,7 +27,7 @@ class InterfacePoint : public Entity
 public:
   InterfacePoint (const string &someId) : Entity (someId)
   {
-    typeSet.insert ("InterfacePoint");
+    _typeSet.insert ("InterfacePoint");
   };
   virtual ~InterfacePoint (){};
 };

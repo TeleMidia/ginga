@@ -24,12 +24,12 @@ GINGA_NCL_BEGIN
 
 class ReferredNode : public Entity
 {
-private:
-  void *referElement;
-
 public:
   ReferredNode (const string &id, void *element);
   void *getReferElement ();
+
+private:
+  void *_referElement;
 };
 
 GINGA_NCL_END

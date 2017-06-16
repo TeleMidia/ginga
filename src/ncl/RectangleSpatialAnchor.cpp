@@ -27,45 +27,45 @@ RectangleSpatialAnchor::RectangleSpatialAnchor (const string &id, int left,
                                                 int height)
     : SpatialAnchor (id)
 {
-  this->left = left;
-  this->top = top;
-  this->width = width;
-  this->height = height;
-  typeSet.insert ("RectangleSpatialAnchor");
+  this->_left = left;
+  this->_top = top;
+  this->_width = width;
+  this->_height = height;
+  _typeSet.insert ("RectangleSpatialAnchor");
 }
 
 int
 RectangleSpatialAnchor::getLeft ()
 {
-  return left;
+  return _left;
 }
 
 int
 RectangleSpatialAnchor::getTop ()
 {
-  return top;
+  return _top;
 }
 
 int
 RectangleSpatialAnchor::getWidth ()
 {
-  return width;
+  return _width;
 }
 
 int
 RectangleSpatialAnchor::getHeight ()
 {
-  return height;
+  return _height;
 }
 
 void
 RectangleSpatialAnchor::setArea (int left, int top, int width,
                                  int height)
 {
-  this->left = left;
-  this->top = top;
-  this->width = width;
-  this->height = height;
+  this->_left = left;
+  this->_top = top;
+  this->_width = width;
+  this->_height = height;
 }
 
 GINGA_NCL_END

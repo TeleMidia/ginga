@@ -23,131 +23,131 @@ GINGA_NCL_BEGIN
 SimpleAction::SimpleAction (const string &role) : Action (), Role ()
 {
   SimpleAction::setLabel (role);
-  qualifier = CompoundAction::OP_PAR;
-  repeat = "0";
-  repeatDelay = "0";
-  value = "";
-  animation = NULL;
-  typeSet.insert ("SimpleAction");
-  typeSet.insert ("Role");
+  _qualifier = CompoundAction::OP_PAR;
+  _repeat = "0";
+  _repeatDelay = "0";
+  _value = "";
+  _animation = NULL;
+  _typeSet.insert ("SimpleAction");
+  _typeSet.insert ("Role");
 }
 
 SimpleAction::~SimpleAction ()
 {
-  if (animation != NULL)
+  if (_animation != NULL)
     {
-      delete animation;
-      animation = NULL;
+      delete _animation;
+      _animation = NULL;
     }
 }
 
 void
 SimpleAction::setLabel (const string &id)
 {
-  label = id;
+  _label = id;
 
-  if (xstrcaseeq (label, "start"))
+  if (xstrcaseeq (_label, "start"))
     {
-      actionType = ACT_START;
-      eventType = EventUtil::EVT_PRESENTATION;
+      _actionType = ACT_START;
+      _eventType = EventUtil::EVT_PRESENTATION;
     }
-  else if (xstrcaseeq (label, "stop"))
+  else if (xstrcaseeq (_label, "stop"))
     {
-      actionType = ACT_STOP;
-      eventType = EventUtil::EVT_PRESENTATION;
+      _actionType = ACT_STOP;
+      _eventType = EventUtil::EVT_PRESENTATION;
     }
-  else if (xstrcaseeq (label, "set"))
+  else if (xstrcaseeq (_label, "set"))
     {
-      actionType = ACT_START;
-      eventType = EventUtil::EVT_ATTRIBUTION;
+      _actionType = ACT_START;
+      _eventType = EventUtil::EVT_ATTRIBUTION;
     }
-  else if (xstrcaseeq (label, "abort"))
+  else if (xstrcaseeq (_label, "abort"))
     {
-      actionType = ACT_ABORT;
-      eventType = EventUtil::EVT_PRESENTATION;
+      _actionType = ACT_ABORT;
+      _eventType = EventUtil::EVT_PRESENTATION;
     }
-  else if (xstrcaseeq (label, "pause"))
+  else if (xstrcaseeq (_label, "pause"))
     {
-      actionType = ACT_PAUSE;
-      eventType = EventUtil::EVT_PRESENTATION;
+      _actionType = ACT_PAUSE;
+      _eventType = EventUtil::EVT_PRESENTATION;
     }
-  else if (xstrcaseeq (label, "resume"))
+  else if (xstrcaseeq (_label, "resume"))
     {
-      actionType = ACT_RESUME;
-      eventType = EventUtil::EVT_PRESENTATION;
+      _actionType = ACT_RESUME;
+      _eventType = EventUtil::EVT_PRESENTATION;
     }
 }
 
 short
 SimpleAction::getQualifier ()
 {
-  return qualifier;
+  return _qualifier;
 }
 
 void
 SimpleAction::setQualifier (short qualifier)
 {
-  this->qualifier = qualifier;
+  this->_qualifier = qualifier;
 }
 
 string
 SimpleAction::getRepeat ()
 {
-  return repeat;
+  return _repeat;
 }
 
 string
 SimpleAction::getRepeatDelay ()
 {
-  return repeatDelay;
+  return _repeatDelay;
 }
 
 void
 SimpleAction::setRepeatDelay (const string &time)
 {
-  repeatDelay = time;
+  _repeatDelay = time;
 }
 
 void
 SimpleAction::setRepeat (const string &newRepetitions)
 {
-  repeat = newRepetitions;
+  _repeat = newRepetitions;
 }
 
 SimpleActionType
 SimpleAction::getActionType ()
 {
-  return actionType;
+  return _actionType;
 }
 
 void
 SimpleAction::setActionType (SimpleActionType action)
 {
-  actionType = action;
+  _actionType = action;
 }
 
 string
 SimpleAction::getValue ()
 {
-  return value;
+  return _value;
 }
 
 void
 SimpleAction::setValue (const string &value)
 {
-  this->value = value;
+  this->_value = value;
 }
 
 Animation *
 SimpleAction::getAnimation ()
 {
-  return animation;
+  return _animation;
 }
 
 void
 SimpleAction::setAnimation (Animation *animation)
 {
-  this->animation = animation;
+  this->_animation = animation;
 }
 
 GINGA_NCL_END

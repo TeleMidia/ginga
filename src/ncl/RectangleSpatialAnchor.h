@@ -26,12 +26,6 @@ GINGA_NCL_BEGIN
 
 class RectangleSpatialAnchor : public SpatialAnchor
 {
-private:
-  int left;
-  int top;
-  int width;
-  int height;
-
 public:
   RectangleSpatialAnchor (const string &id, int left, int top, int width,
                           int height);
@@ -41,6 +35,12 @@ public:
   int getWidth ();
   int getHeight ();
   void setArea (int left, int top, int width, int height);
+
+private:
+  int _left;
+  int _top;
+  int _width;
+  int _height;
 };
 
 GINGA_NCL_END

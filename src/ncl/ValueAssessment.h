@@ -24,9 +24,6 @@ GINGA_NCL_BEGIN
 
 class ValueAssessment : public Assessment
 {
-private:
-  string value;
-
 public:
   ValueAssessment (const string &value);
   string getValue ();
@@ -36,6 +33,9 @@ public:
   {
     return Assessment::instanceOf (type);
   }
+
+private:
+  string _value;
 };
 
 GINGA_NCL_END
