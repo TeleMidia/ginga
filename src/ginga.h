@@ -68,6 +68,13 @@ GINGA_BEGIN_DECLS
 // External C libraries.
 #include <glib.h>
 #include <glib/gstdio.h>
+GINGA_PRAGMA_DIAG_PUSH ()
+GINGA_PRAGMA_DIAG_IGNORE (-Wcast-qual)
+GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
+#include <gst/gst.h>
+#include <gst/app/gstappsink.h>
+#include <gst/video/video.h>
+GINGA_PRAGMA_DIAG_POP ()
 #include <ncluaw.h>
 #include "ginga-sdlx.h"
 
@@ -173,55 +180,25 @@ string __ginga_strfunc (const string &);
   }
 
 // Time.
-typedef guint64 GingaTime;    // nanoseconds
-typedef gint64 GingaTimeDiff;
-
+typedef GstClockTime GingaTime;
 #define ginga_gettime()        ((GingaTime)(g_get_monotonic_time () * 1000))
-#define GINGA_TIME_NONE        ((GingaTime) -1)
-#define GINGA_TIME_IS_VALID(t) (((GingaTime)(t)) != GINGA_TIME_NONE)
-#define GINGA_STIME_NONE       ((GingaTimeDiff)G_MININT64)
-#define GINGA_STIME_IS_VALID(t) (((GingaTimeDiff)(t)) != GINGA_STIME_NONE)
-
-#define GINGA_SECOND\
-  ((GingaTimeDiff)(G_USEC_PER_SEC * G_GINT64_CONSTANT (1000)))
-
-#define GINGA_MSECOND\
-  ((GingaTimeDiff)(GINGA_SECOND / G_GINT64_CONSTANT (1000)))
-
-#define GINGA_USECOND\
-  ((GingaTimeDiff)(GINGA_SECOND / G_GINT64_CONSTANT (1000000)))
-
-#define GINGA_NSECOND\
-  ((GingaTimeDiff)(GINGA_SECOND / G_GINT64_CONSTANT (1000000000)))
-
-#define GINGA_TIME_AS_SECONDS(t)  ((t) / GINGA_SECOND)
-#define GINGA_TIME_AS_MSECONDS(t) ((t) / G_GINT64_CONSTANT (1000000))
-#define GINGA_TIME_AS_USECONDS(t) ((t) / G_GINT64_CONSTANT (1000))
-#define GINGA_TIME_AS_NSECONDS(t) (t)
-#define GINGA_DIFF(s, e)          (GingaTimeDiff)((e) - (s))
-
-#define GINGA_TIME_FORMAT "u:%02u:%02u.%09u"
-#define GINGA_TIME_ARGS(t)                                              \
-  GINGA_TIME_IS_VALID (t) ?                                             \
-  (guint) (((GingaTime)(t)) / (GINGA_SECOND * 60 * 60)) : 99,           \
-    GINGA_TIME_IS_VALID (t) ?                                           \
-    (guint) ((((GingaTime)(t)) / (GINGA_SECOND * 60)) % 60) : 99,       \
-    GINGA_TIME_IS_VALID (t) ?                                           \
-    (guint) ((((GingaTime)(t)) / GINGA_SECOND) % 60) : 99,              \
-    GINGA_TIME_IS_VALID (t) ?                                           \
-    (guint) (((GingaTime)(t)) % GINGA_SECOND) : 999999999
-
-#define GINGA_STIME_FORMAT "c%" GINGA_TIME_FORMAT
-#define GINGA_STIME_ARGS(t)                                             \
-  ((t) == GINGA_STIME_NONE || (t) >= 0) ? '+' : '-',                    \
-    GINGA_STIME_IS_VALID (t) ?                                          \
-    (guint) (((GingaTime)(ABS(t))) / (GINGA_SECOND * 60 * 60)) : 99,    \
-    GINGA_STIME_IS_VALID (t) ?                                          \
-    (guint) ((((GingaTime)(ABS(t))) / (GINGA_SECOND * 60)) % 60) : 99,  \
-    GINGA_STIME_IS_VALID (t) ?                                          \
-    (guint) ((((GingaTime)(ABS(t))) / GINGA_SECOND) % 60) : 99,         \
-    GINGA_STIME_IS_VALID (t) ?                                          \
-    (guint) (((GingaTime)(ABS(t))) % GINGA_SECOND) : 999999999
+#define GINGA_TIME_NONE            GST_CLOCK_TIME_NONE
+#define GINGA_TIME_IS_VALID(t)     GST_CLOCK_TIME_IS_VALID ((t))
+#define GINGA_STIME_NONE           GST_CLOCK_STIME_NONE
+#define GINGA_STIME_IS_VALID(t)    GST_CLOCK_STIME_IS_VALID ((t))
+#define GINGA_SECOND               GST_SECOND
+#define GINGA_MSECOND              GST_MSECOND
+#define GINGA_USECOND              GST_USECOND
+#define GINGA_NSECOND              GST_NSECOND
+#define GINGA_TIME_AS_SECONDS(t)   GST_TIME_AS_SECONDS ((t))
+#define GINGA_TIME_AS_MSECONDS(t)  GST_TIME_AS_MSECONDS ((t))
+#define GINGA_TIME_AS_USECONDS(t)  GST_TIME_AS_USECONDS ((t))
+#define GINGA_TIME_AS_NSECONDS(t)  GST_TIME_AS_NSECONDS ((t))
+#define GINGA_TIME_DIFF(s,e)       GST_CLOCK_DIFF ((s), (e))
+#define GINGA_TIME_FORMAT          GST_TIME_FORMAT
+#define GINGA_TIME_ARGS(t)         GST_TIME_ARGS ((t))
+#define GINGA_STIME_FORMAT         GST_STIME_FORMAT
+#define GINGA_STIME_ARGS(t)        GST_STIME_ARGS ((t))
 
 // Conversion tables.
 bool ginga_color_parse (const string &, SDL_Color *);
