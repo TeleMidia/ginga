@@ -123,6 +123,26 @@ AU_CHECK_PKG([GLIB], [glib-2.0 >= glib_required_version],
  ]])],
  [AC_LANG_PROGRAM([[]], [[glib_check_version (0, 0, 0);]])])
 
+AU_VERSION_BREAK([gstreamer], gstreamer_required_version)
+AU_CHECK_PKG([GSTREAMER],
+  gstreamer-1.0 >= gstreamer_required_version
+  gstreamer-video-1.0 >= gstreamer_required_version
+  gstreamer-audio-1.0 >= gstreamer_required_version
+  gstreamer-app-1.0 >= gstreamer_required_version,
+ [AC_LANG_PROGRAM([[
+#include <gst/gst.h>
+#if !GST_CHECK_VERSION  \
+    (GST_REQUIRED_MAJOR,\
+     GST_REQUIRED_MINOR,\
+     GST_REQUIRED_MICRO)
+# error "gstreamer is too old"
+#endif
+ ]])],
+ [AC_LANG_PROGRAM([[]], [[
+gst_init (0, 0);
+gst_video_info_from_caps (0, 0);
+ ]])])
+
 AU_CHECK_PKG([NCLUA],
  [nclua >= nclua_required_version])
 
@@ -136,22 +156,14 @@ AU_CHECK_PKG([XERCESC],
  [xerces-c >= xercesc_required_version])
 
 # Optional dependencies.
-AU_CHECK_OPTIONAL_PKG([gstreamer], [build with Gstreamer support], [],
-  [GSTREAMER],
-  gstreamer-1.0 >= gstreamer_required_version[]dnl
-  gstreamer-video-1.0 >= gstreamer_required_version[]dnl
-  gstreamer-audio-1.0 >= gstreamer_required_version[]dnl
-  gstreamer-app-1.0 >= gstreamer_required_version
-)
-
 AU_CHECK_OPTIONAL_PKG([librsvg], [build with LibRsvg support], [],
  [LIBRSVG],
- librsvg-2.0 >= librsvg_required_version[]dnl
+ librsvg-2.0 >= librsvg_required_version
  cairo >= cairo_required_version
 )
 
 AU_CHECK_OPTIONAL_PKG([pango], [build with Pango support], [], [PANGO],
- pango >= pango_required_version[]dnl
+ pango >= pango_required_version
  pangocairo >= pango_required_version
 )
 
@@ -203,7 +215,6 @@ AC_MSG_NOTICE([summary of main build options:
   valgrind:           ${VALGRIND}
 
   with cef:           ${with_cef_result}
-  with gstreamer:     ${with_gstreamer_result}
   with librsvg:       ${with_librsvg_result}
   with pango:         ${with_pango_result}
 ])
