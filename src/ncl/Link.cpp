@@ -205,9 +205,6 @@ Link::getBind (Node *node, InterfacePoint *interfPt,
 vector<Bind *> *
 Link::getBinds ()
 {
-  if (binds->empty ())
-    return NULL;
-
   return binds;
 }
 
