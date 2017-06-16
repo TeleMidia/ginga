@@ -163,8 +163,8 @@ xstrtodorpercent (const string &s, bool *perc)
 }
 
 // Converts a dimension string to a number in pixels.
-// The following formats are supported: "N%", "Npx", or, "N".
-// If dimension is a percentage, multiply it by base.
+// The following formats are supported: "N%", "Npx", or "N".
+// If dimension is a percentage, make it absolute by multiplying it by base.
 int
 xstrtopixel (const string &s, int base)
 {
