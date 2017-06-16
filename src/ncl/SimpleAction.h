@@ -39,14 +39,6 @@ enum SimpleActionType
 
 class SimpleAction : public Action, public Role
 {
-private:
-  SimpleActionType actionType;
-  short qualifier;
-  string repeat;
-  string repeatDelay;
-  string value;
-  Animation *animation;
-
 public:
   static string actionTypeToString (SimpleActionType t)
   {
@@ -67,7 +59,7 @@ public:
       default:
         g_assert_not_reached ();
       }
-  };
+  }
 
   static SimpleActionType stringToActionType (const string &s)
   {
@@ -103,6 +95,14 @@ public:
   {
     return Action::instanceOf (type);
   }
+
+private:
+  SimpleActionType _actionType;
+  short _qualifier;
+  string _repeat;
+  string _repeatDelay;
+  string _value;
+  Animation *_animation;
 };
 
 GINGA_NCL_END

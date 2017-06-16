@@ -22,8 +22,8 @@ GINGA_NCL_BEGIN
 
 Role::Role ()
 {
-  this->minCon = 1;
-  this->maxCon = 1;
+  this->_minCon = 1;
+  this->_maxCon = 1;
 }
 
 Role::~Role () {}
@@ -31,49 +31,49 @@ Role::~Role () {}
 short
 Role::getEventType ()
 {
-  return eventType;
+  return _eventType;
 }
 
 string
 Role::getLabel ()
 {
-  return label;
+  return _label;
 }
 
 void
 Role::setEventType (short type)
 {
-  eventType = type;
+  _eventType = type;
 }
 
 void
 Role::setLabel (const string &id)
 {
-  label = id;
+  _label = id;
 }
 
 int
 Role::getMinCon ()
 {
-  return minCon;
+  return _minCon;
 }
 
 int
 Role::getMaxCon ()
 {
-  return maxCon;
+  return _maxCon;
 }
 
 void
 Role::setMinCon (int minCon)
 {
-  this->minCon = minCon;
+  this->_minCon = minCon;
 }
 
 void
 Role::setMaxCon (int maxCon)
 {
-  this->maxCon = maxCon;
+  this->_maxCon = maxCon;
 }
 
 GINGA_NCL_END

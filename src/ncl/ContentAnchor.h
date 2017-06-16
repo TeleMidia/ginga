@@ -25,8 +25,8 @@ GINGA_NCL_BEGIN
 class ContentAnchor : public Anchor
 {
 public:
-  ContentAnchor (const string &id);
-  virtual ~ContentAnchor (){};
+  ContentAnchor (const string &_id);
+  virtual ~ContentAnchor (){}
 };
 
 GINGA_NCL_END

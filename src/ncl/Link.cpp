@@ -26,12 +26,12 @@ GINGA_NCL_BEGIN
 
 Link::Link (const string &id, Connector *connector) : Entity (id)
 {
-  roleBinds = new map<string, vector<Bind *> *>;
-  binds = new vector<Bind *>;
-  this->connector = connector;
-  parameters = new map<string, Parameter *>;
-  composition = NULL;
-  typeSet.insert ("Link");
+  _roleBinds = new map<string, vector<Bind *> *>;
+  _binds = new vector<Bind *>;
+  this->_connector = connector;
+  _parameters = new map<string, Parameter *>;
+  _composition = NULL;
+  _typeSet.insert ("Link");
 }
 
 Link::~Link ()
@@ -41,42 +41,42 @@ Link::~Link ()
   map<string, Parameter *>::iterator k;
   vector<Bind *> *rmBinds;
 
-  if (roleBinds != NULL)
+  if (_roleBinds != NULL)
     {
-      i = roleBinds->begin ();
-      while (i != roleBinds->end ())
+      i = _roleBinds->begin ();
+      while (i != _roleBinds->end ())
         {
           rmBinds = i->second;
           rmBinds->clear ();
           delete rmBinds;
           ++i;
         }
-      delete roleBinds;
-      roleBinds = NULL;
+      delete _roleBinds;
+      _roleBinds = NULL;
     }
 
-  if (binds != NULL)
+  if (_binds != NULL)
     {
-      j = binds->begin ();
-      while (j != binds->end ())
+      j = _binds->begin ();
+      while (j != _binds->end ())
         {
           delete *j;
           ++j;
         }
-      delete binds;
-      binds = NULL;
+      delete _binds;
+      _binds = NULL;
     }
 
-  if (parameters != NULL)
+  if (_parameters != NULL)
     {
-      k = parameters->begin ();
-      while (k != parameters->end ())
+      k = _parameters->begin ();
+      while (k != _parameters->end ())
         {
           delete k->second;
           ++k;
         }
-      delete parameters;
-      parameters = NULL;
+      delete _parameters;
+      _parameters = NULL;
     }
 }
 
@@ -86,7 +86,7 @@ Link::bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
 {
   Role *role;
 
-  role = connector->getRole (roleId);
+  role = _connector->getRole (roleId);
   if (role == NULL)
     {
       clog << "Link::bind Warning! Can't find role '" << roleId;
@@ -107,14 +107,14 @@ Link::bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
   string label;
 
   label = role->getLabel ();
-  if (roleBinds->count (label) == 0)
+  if (_roleBinds->count (label) == 0)
     {
       roleBindList = new vector<Bind *>;
-      (*roleBinds)[label] = roleBindList;
+      (*_roleBinds)[label] = roleBindList;
     }
   else
     {
-      roleBindList = (*roleBinds)[label];
+      roleBindList = (*_roleBinds)[label];
     }
 
   // binds only if the max attribute is equal or greater than the
@@ -131,7 +131,7 @@ Link::bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
 
   bind = new Bind (node, interfPt, desc, role);
   roleBindList->push_back (bind);
-  binds->push_back (bind);
+  _binds->push_back (bind);
   return bind;
 }
 
@@ -143,7 +143,7 @@ Link::isConsistent ()
   int minConn, maxConn;
   vector<Role *> *roles;
 
-  roles = connector->getRoles ();
+  roles = _connector->getRoles ();
   i = roles->begin ();
   while (i != roles->end ())
     {
@@ -176,7 +176,7 @@ Link::getBind (Node *node, InterfacePoint *interfPt,
   map<string, vector<Bind *> *>::iterator i;
 
   bool containsKey = false;
-  for (i = roleBinds->begin (); i != roleBinds->end (); ++i)
+  for (i = _roleBinds->begin (); i != _roleBinds->end (); ++i)
     if (i->first == role->getLabel ())
       containsKey = true;
 
@@ -187,7 +187,7 @@ Link::getBind (Node *node, InterfacePoint *interfPt,
   vector<Bind *>::iterator bindIterator;
 
   vector<Bind *> *roleBindList;
-  roleBindList = (*roleBinds)[role->getLabel ()];
+  roleBindList = (*_roleBinds)[role->getLabel ()];
 
   for (bindIterator = roleBindList->begin ();
        bindIterator != roleBindList->end (); ++roleBindList)
@@ -205,13 +205,13 @@ Link::getBind (Node *node, InterfacePoint *interfPt,
 vector<Bind *> *
 Link::getBinds ()
 {
-  return binds;
+  return _binds;
 }
 
 Connector *
 Link::getConnector ()
 {
-  return connector;
+  return _connector;
 }
 
 void
@@ -220,20 +220,20 @@ Link::setParentComposition (LinkComposition *composition)
   if (composition == NULL
       || ((ContextNode *)composition)->containsLink (this))
     {
-      this->composition = composition;
+      this->_composition = composition;
     }
 }
 
 LinkComposition *
 Link::getParentComposition ()
 {
-  return composition;
+  return _composition;
 }
 
 unsigned int
 Link::getNumBinds ()
 {
-  return (unsigned int) binds->size ();
+  return (unsigned int) _binds->size ();
 }
 
 unsigned int
@@ -241,8 +241,8 @@ Link::getNumRoleBinds (Role *role)
 {
   map<string, vector<Bind *> *>::iterator i;
 
-  i = roleBinds->find (role->getLabel ());
-  if (i == roleBinds->end ())
+  i = _roleBinds->find (role->getLabel ());
+  if (i == _roleBinds->end ())
     {
       return 0;
     }
@@ -255,8 +255,8 @@ Link::getRoleBinds (Role *role)
 {
   map<string, vector<Bind *> *>::iterator i;
 
-  i = roleBinds->find (role->getLabel ());
-  if (i == roleBinds->end ())
+  i = _roleBinds->find (role->getLabel ());
+  if (i == _roleBinds->end ())
     {
       return NULL;
     }
@@ -267,7 +267,7 @@ Link::getRoleBinds (Role *role)
 bool
 Link::isMultiPoint ()
 {
-  if (binds->size () > 2)
+  if (_binds->size () > 2)
     return true;
   else
     return false;
@@ -276,10 +276,10 @@ Link::isMultiPoint ()
 void
 Link::setConnector (Connector *connector)
 {
-  this->connector = connector;
+  this->_connector = connector;
 
-  roleBinds->clear ();
-  binds->clear ();
+  _roleBinds->clear ();
+  _binds->clear ();
 }
 
 bool
@@ -289,12 +289,12 @@ Link::unBind (Bind *bind)
   bool containsBind = false;
 
   vector<Bind *>::iterator it;
-  for (it = binds->begin (); it != binds->end (); ++it)
+  for (it = _binds->begin (); it != _binds->end (); ++it)
     {
       if (bind == *it)
         {
           containsBind = true;
-          binds->erase (it);
+          _binds->erase (it);
           break;
         }
     }
@@ -304,9 +304,9 @@ Link::unBind (Bind *bind)
       return false;
     }
 
-  if (roleBinds->count (bind->getRole ()->getLabel ()) == 1)
+  if (_roleBinds->count (bind->getRole ()->getLabel ()) == 1)
     {
-      roleBindList = (*roleBinds)[bind->getRole ()->getLabel ()];
+      roleBindList = (*_roleBinds)[bind->getRole ()->getLabel ()];
       vector<Bind *>::iterator i;
       for (i = roleBindList->begin (); i != roleBindList->end (); ++i)
         {
@@ -326,20 +326,20 @@ Link::addParameter (Parameter *parameter)
   if (parameter == NULL)
     return;
 
-  (*parameters)[parameter->getName ()] = parameter;
+  (*_parameters)[parameter->getName ()] = parameter;
 }
 
 vector<Parameter *> *
 Link::getParameters ()
 {
-  if (parameters->empty ())
+  if (_parameters->empty ())
     return NULL;
 
   vector<Parameter *> *params;
   params = new vector<Parameter *>;
 
   map<string, Parameter *>::iterator i;
-  for (i = parameters->begin (); i != parameters->end (); ++i)
+  for (i = _parameters->begin (); i != _parameters->end (); ++i)
     params->push_back (i->second);
 
   return params;
@@ -348,11 +348,11 @@ Link::getParameters ()
 Parameter *
 Link::getParameter (const string &name)
 {
-  if (parameters->empty ())
+  if (_parameters->empty ())
     return NULL;
 
   map<string, Parameter *>::iterator i;
-  for (i = parameters->begin (); i != parameters->end (); ++i)
+  for (i = _parameters->begin (); i != _parameters->end (); ++i)
     if (i->first == name)
       return (Parameter *)(i->second);
 
@@ -362,15 +362,15 @@ Link::getParameter (const string &name)
 void
 Link::removeParameter (Parameter *parameter)
 {
-  if (parameters->empty ())
+  if (_parameters->empty ())
     return;
 
   map<string, Parameter *>::iterator i;
-  for (i = parameters->begin (); i != parameters->end (); ++i)
+  for (i = _parameters->begin (); i != _parameters->end (); ++i)
     {
       if (i->first == parameter->getName ())
         {
-          parameters->erase (i);
+          _parameters->erase (i);
           return;
         }
     }
@@ -383,20 +383,20 @@ Link::updateConnector (Connector *newConnector)
   Bind *bind;
   Role *newRole;
 
-  if (this->connector == NULL)
+  if (this->_connector == NULL)
     {
       // TODO test if the set of roles is identical
       return;
     }
 
-  size = (int) binds->size ();
+  size = (int) _binds->size ();
   for (i = 0; i < size; i++)
     {
-      bind = (Bind *)(*binds)[i];
+      bind = (Bind *)(*_binds)[i];
       newRole = newConnector->getRole (bind->getRole ()->getLabel ());
       bind->setRole (newRole);
     }
-  this->connector = newConnector;
+  this->_connector = newConnector;
 }
 
 bool

@@ -22,66 +22,66 @@ GINGA_NCL_BEGIN
 
 CompositeRule::CompositeRule (const string &id, short someOperator) : Rule (id)
 {
-  rules = new vector<Rule *>;
+  _rules = new vector<Rule *>;
   setOperator (someOperator);
-  typeSet.insert ("CompositeRule");
+  _typeSet.insert ("CompositeRule");
 }
 
 CompositeRule::CompositeRule (const string &id, Rule *firstRule, Rule *secondRule,
                               short someOperator)
     : Rule (id)
 {
-  rules = new vector<Rule *>;
+  _rules = new vector<Rule *>;
   setOperator (someOperator);
-  rules->push_back (firstRule);
-  rules->push_back (secondRule);
-  typeSet.insert ("CompositeRule");
+  _rules->push_back (firstRule);
+  _rules->push_back (secondRule);
+  _typeSet.insert ("CompositeRule");
 }
 
 CompositeRule::~CompositeRule ()
 {
   vector<Rule *>::iterator i;
 
-  if (rules != NULL)
+  if (_rules != NULL)
     {
-      i = rules->begin ();
-      while (i != rules->begin ())
+      i = _rules->begin ();
+      while (i != _rules->begin ())
         {
           delete *i;
           ++i;
         }
 
-      delete rules;
-      rules = NULL;
+      delete _rules;
+      _rules = NULL;
     }
 }
 
 bool
 CompositeRule::addRule (Rule *rule)
 {
-  rules->push_back (rule);
+  _rules->push_back (rule);
   return true;
 }
 
 vector<Rule *> *
 CompositeRule::getRules ()
 {
-  if (rules->begin () == rules->end ())
+  if (_rules->begin () == _rules->end ())
     return NULL;
 
-  return rules;
+  return _rules;
 }
 
 unsigned int
 CompositeRule::getNumRules ()
 {
-  return (unsigned int) rules->size ();
+  return (unsigned int) _rules->size ();
 }
 
 short
 CompositeRule::getOperator ()
 {
-  return ruleOperator;
+  return _ruleOperator;
 }
 
 bool
@@ -89,12 +89,12 @@ CompositeRule::removeRule (Rule *rule)
 {
   vector<Rule *>::iterator iterRule;
 
-  iterRule = rules->begin ();
-  while (iterRule != rules->end ())
+  iterRule = _rules->begin ();
+  while (iterRule != _rules->end ())
     {
       if ((*(*iterRule)).getId () == rule->getId ())
         {
-          rules->erase (iterRule);
+          _rules->erase (iterRule);
           return true;
         }
       ++iterRule;
@@ -108,18 +108,18 @@ CompositeRule::setOperator (short op)
   switch (op)
     {
     case OP_OR:
-      ruleOperator = OP_OR;
-      opStr = "OR";
+      _ruleOperator = OP_OR;
+      _opStr = "OR";
       break;
 
     case OP_AND:
-      ruleOperator = OP_AND;
-      opStr = "AND";
+      _ruleOperator = OP_AND;
+      _opStr = "AND";
       break;
 
     default:
-      ruleOperator = OP_AND;
-      opStr = "AND";
+      _ruleOperator = OP_AND;
+      _opStr = "AND";
       break;
     }
 }

@@ -36,20 +36,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_NCL_BEGIN
 
 class LinkComposition;
+
 class Link : public Entity
 {
-protected:
-  Connector *connector;
-  map<string, vector<Bind *> *> *roleBinds;
-  vector<Bind *> *binds;
-  map<string, Parameter *> *parameters;
-
-private:
-  LinkComposition *composition;
-
 public:
-  Link (const string &id, Connector *connector);
+  Link (const string &_id, Connector *connector);
   virtual ~Link ();
+
   Bind *bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
               string roleId);
 
@@ -78,8 +71,16 @@ public:
   bool containsNode (Node *node, GenericDescriptor *descriptor);
 
 protected:
+  Connector *_connector;
+  map<string, vector<Bind *> *> *_roleBinds;
+  vector<Bind *> *_binds;
+  map<string, Parameter *> *_parameters;
+
   bool containsNode (Node *node, GenericDescriptor *descriptor,
-                     vector<Bind *> *binds);
+                     vector<Bind *> *_binds);
+
+private:
+  LinkComposition *_composition;
 };
 
 GINGA_NCL_END

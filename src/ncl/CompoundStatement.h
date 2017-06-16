@@ -30,12 +30,6 @@ public:
   static const short OP_AND = 0;
   static const short OP_OR = 1;
 
-protected:
-  vector<Statement *> *statements;
-  short myOperator;
-  bool negated;
-
-public:
   CompoundStatement ();
   CompoundStatement (Statement *p1, Statement *p2, short op);
 
@@ -53,6 +47,11 @@ public:
   {
     return Statement::instanceOf (type);
   }
+
+protected:
+  vector<Statement *> *_statements;
+  short _myOperator;
+  bool _negated;
 };
 
 GINGA_NCL_END

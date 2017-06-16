@@ -30,11 +30,6 @@ public:
   static const short OP_SEQ = 1;
   static const short OP_EXCL = 2;
 
-protected:
-  vector<Action *> *actions;
-  short myOperator;
-
-public:
   CompoundAction ();
   CompoundAction (Action *a1, Action *a2, short op);
 
@@ -51,6 +46,10 @@ public:
   {
     return Action::instanceOf (type);
   }
+
+protected:
+  vector<Action *> *_actions;
+  short _myOperator;
 };
 
 GINGA_NCL_END

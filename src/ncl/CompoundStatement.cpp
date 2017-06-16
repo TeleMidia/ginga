@@ -24,9 +24,9 @@ GINGA_NCL_BEGIN
 
 CompoundStatement::CompoundStatement () : Statement ()
 {
-  statements = new vector<Statement *>;
-  myOperator = OP_OR;
-  negated = false;
+  _statements = new vector<Statement *>;
+  _myOperator = OP_OR;
+  _negated = false;
 
   typeSet.insert ("CompoundStatement");
 }
@@ -35,12 +35,12 @@ CompoundStatement::CompoundStatement (Statement *p1, Statement *p2,
                                       short op)
     : Statement ()
 {
-  statements = new vector<Statement *>;
-  negated = false;
-  myOperator = op;
+  _statements = new vector<Statement *>;
+  _negated = false;
+  _myOperator = op;
 
-  statements->push_back (p1);
-  statements->push_back (p2);
+  _statements->push_back (p1);
+  _statements->push_back (p2);
 
   typeSet.insert ("CompoundStatement");
 }
@@ -49,17 +49,17 @@ CompoundStatement::~CompoundStatement ()
 {
   vector<Statement *>::iterator i;
 
-  if (statements != NULL)
+  if (_statements != NULL)
     {
-      i = statements->begin ();
-      while (i != statements->end ())
+      i = _statements->begin ();
+      while (i != _statements->end ())
         {
           delete *i;
           ++i;
         }
 
-      delete statements;
-      statements = NULL;
+      delete _statements;
+      _statements = NULL;
     }
 }
 
@@ -69,12 +69,12 @@ CompoundStatement::setOperator (short op)
   switch (op)
     {
     case OP_AND:
-      myOperator = op;
+      _myOperator = op;
       break;
 
     case OP_OR:
     default:
-      myOperator = OP_OR;
+      _myOperator = OP_OR;
       break;
     }
 }
@@ -82,21 +82,21 @@ CompoundStatement::setOperator (short op)
 short
 CompoundStatement::getOperator ()
 {
-  return myOperator;
+  return _myOperator;
 }
 
 vector<Statement *> *
 CompoundStatement::getStatements ()
 {
-  if (statements->empty ())
+  if (_statements->empty ())
     return NULL;
-  return statements;
+  return _statements;
 }
 
 void
 CompoundStatement::addStatement (Statement *statement)
 {
-  statements->push_back (statement);
+  _statements->push_back (statement);
 }
 
 void
@@ -105,13 +105,13 @@ CompoundStatement::removeStatement (Statement *statement)
   vector<Statement *>::iterator iterator;
   vector<Statement *>::iterator i;
 
-  iterator = statements->begin ();
-  while (iterator != statements->end ())
+  iterator = _statements->begin ();
+  while (iterator != _statements->end ())
     {
       if ((*iterator) == statement)
         {
-          i = statements->erase (iterator);
-          if (i == statements->end ())
+          i = _statements->erase (iterator);
+          if (i == _statements->end ())
             return;
         }
       ++iterator;
@@ -121,13 +121,13 @@ CompoundStatement::removeStatement (Statement *statement)
 void
 CompoundStatement::setNegated (bool newNegated)
 {
-  negated = newNegated;
+  _negated = newNegated;
 }
 
 bool
 CompoundStatement::isNegated ()
 {
-  return negated;
+  return _negated;
 }
 
 vector<Role *> *
@@ -139,10 +139,10 @@ CompoundStatement::getRoles ()
   vector<Role *> *childRoles;
 
   roles = new vector<Role *>;
-  size = (int) statements->size ();
+  size = (int) _statements->size ();
   for (i = 0; i < size; i++)
     {
-      statement = (Statement *)((*statements)[i]);
+      statement = (Statement *)((*_statements)[i]);
       if (statement->instanceOf ("AssessmentStatement"))
         {
           childRoles = ((AssessmentStatement *)statement)->getRoles ();

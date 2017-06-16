@@ -28,18 +28,8 @@ GINGA_NCL_BEGIN
 
 class DescriptorSwitch : public GenericDescriptor
 {
-private:
-  vector<GenericDescriptor *> *descriptorList;
-  vector<Rule *> *ruleList;
-  GenericDescriptor *defaultDescriptor;
-  GenericDescriptor *selectedDescriptor;
-
-  static set<DescriptorSwitch *> objects;
-  static void addInstance (DescriptorSwitch *object);
-  static bool removeInstance (DescriptorSwitch *object);
-
 public:
-  DescriptorSwitch (const string &id);
+  DescriptorSwitch (const string &_id);
   virtual ~DescriptorSwitch ();
 
   static bool hasInstance (DescriptorSwitch *object, bool eraseFromList);
@@ -68,6 +58,16 @@ public:
   void select (GenericDescriptor *descriptor);
   void selectDefault ();
   GenericDescriptor *getSelectedDescriptor ();
+
+private:
+  vector<GenericDescriptor *> *_descriptorList;
+  vector<Rule *> *_ruleList;
+  GenericDescriptor *_defaultDescriptor;
+  GenericDescriptor *_selectedDescriptor;
+  static set<DescriptorSwitch *> _objects;
+
+  static void addInstance (DescriptorSwitch *object);
+  static bool removeInstance (DescriptorSwitch *object);
 };
 
 GINGA_NCL_END

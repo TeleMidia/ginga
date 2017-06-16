@@ -22,25 +22,25 @@ GINGA_NCL_BEGIN
 
 Connector::Connector (const string &id) : Entity (id)
 {
-  parameters = new map<string, Parameter *>;
+  _params = new map<string, Parameter *>;
 
-  typeSet.insert ("Connector");
+  _typeSet.insert ("Connector");
 }
 
 Connector::~Connector ()
 {
   map<string, Parameter *>::iterator i;
 
-  if (parameters != NULL)
+  if (_params != NULL)
     {
-      i = parameters->begin ();
-      while (i != parameters->end ())
+      i = _params->begin ();
+      while (i != _params->end ())
         {
           delete i->second;
           ++i;
         }
-      delete parameters;
-      parameters = NULL;
+      delete _params;
+      _params = NULL;
     }
 }
 
@@ -88,23 +88,23 @@ Connector::addParameter (Parameter *parameter)
     return;
 
   map<string, Parameter *>::iterator i;
-  for (i = parameters->begin (); i != parameters->end (); ++i)
+  for (i = _params->begin (); i != _params->end (); ++i)
     if (i->first == parameter->getName ())
       return;
 
-  (*parameters)[parameter->getName ()] = parameter;
+  (*_params)[parameter->getName ()] = parameter;
 }
 
 vector<Parameter *> *
 Connector::getParameters ()
 {
-  if (parameters->empty ())
+  if (_params->empty ())
     return NULL;
 
   vector<Parameter *> *params;
   params = new vector<Parameter *>;
   map<string, Parameter *>::iterator i;
-  for (i = parameters->begin (); i != parameters->end (); ++i)
+  for (i = _params->begin (); i != _params->end (); ++i)
     params->push_back (i->second);
 
   return params;
@@ -113,11 +113,11 @@ Connector::getParameters ()
 Parameter *
 Connector::getParameter (const string &name)
 {
-  if (parameters->empty ())
+  if (_params->empty ())
     return NULL;
 
   map<string, Parameter *>::iterator i;
-  for (i = parameters->begin (); i != parameters->end (); ++i)
+  for (i = _params->begin (); i != _params->end (); ++i)
     if (i->first == name)
       return (Parameter *)(i->second);
 
@@ -127,15 +127,15 @@ Connector::getParameter (const string &name)
 bool
 Connector::removeParameter (const string &name)
 {
-  if (parameters->empty ())
+  if (_params->empty ())
     return false;
 
   map<string, Parameter *>::iterator i;
-  for (i = parameters->begin (); i != parameters->end (); ++i)
+  for (i = _params->begin (); i != _params->end (); ++i)
     {
       if (i->first == name)
         {
-          parameters->erase (i);
+          _params->erase (i);
           return true;
         }
     }

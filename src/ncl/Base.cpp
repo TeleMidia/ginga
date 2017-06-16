@@ -20,14 +20,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-set<Base *> Base::baseInstances;
+set<Base *> Base::_baseInstances;
 
 Base::Base (const string &id)
 {
-  this->id = id;
+  this->_id = id;
 
-  typeSet.insert ("Base");
-  baseInstances.insert (this);
+  _typeSet.insert ("Base");
+  _baseInstances.insert (this);
 }
 
 Base::~Base ()
@@ -36,22 +36,22 @@ Base::~Base ()
   set<Base *>::iterator j;
   Base *childBase;
 
-  j = baseInstances.find (this);
-  if (j != baseInstances.end ())
+  j = _baseInstances.find (this);
+  if (j != _baseInstances.end ())
     {
-      baseInstances.erase (j);
+      _baseInstances.erase (j);
     }
 
-  i = baseSet.begin ();
-  while (i != baseSet.end ())
+  i = _baseSet.begin ();
+  while (i != _baseSet.end ())
     {
       childBase = *i;
       if (hasInstance (childBase, true))
         {
           delete childBase;
         }
-      baseSet.erase (i);
-      i = baseSet.begin ();
+      _baseSet.erase (i);
+      i = _baseSet.begin ();
     }
 }
 
@@ -61,12 +61,12 @@ Base::hasInstance (Base *instance, bool eraseFromList)
   set<Base *>::iterator i;
   bool hasBase = false;
 
-  i = baseInstances.find (instance);
-  if (i != baseInstances.end ())
+  i = _baseInstances.find (instance);
+  if (i != _baseInstances.end ())
     {
       if (eraseFromList)
         {
-          baseInstances.erase (i);
+          _baseInstances.erase (i);
         }
       hasBase = true;
     }
@@ -83,7 +83,7 @@ Base::addBase (Base *base, const string &alias, const string &location)
     }
 
   vector<Base *>::iterator i;
-  for (i = baseSet.begin (); i != baseSet.end (); ++i)
+  for (i = _baseSet.begin (); i != _baseSet.end (); ++i)
     {
       if (*i == base)
         {
@@ -91,30 +91,30 @@ Base::addBase (Base *base, const string &alias, const string &location)
         }
     }
 
-  baseSet.push_back (base);
+  _baseSet.push_back (base);
 
   if (alias != "")
     {
-      baseAliases[alias] = base;
+      _baseAliases[alias] = base;
     }
 
-  baseLocations[location] = base;
+  _baseLocations[location] = base;
   return true;
 }
 
 void
 Base::clear ()
 {
-  baseSet.clear ();
-  baseAliases.clear ();
-  baseLocations.clear ();
+  _baseSet.clear ();
+  _baseAliases.clear ();
+  _baseLocations.clear ();
 }
 
 Base *
 Base::getBase (const string &baseId)
 {
   vector<Base *>::iterator i;
-  for (i = baseSet.begin (); i != baseSet.end (); ++i)
+  for (i = _baseSet.begin (); i != _baseSet.end (); ++i)
     {
       if ((*i)->getId () == baseId)
         {
@@ -128,7 +128,7 @@ string
 Base::getBaseAlias (Base *base)
 {
   map<string, Base *>::iterator i;
-  for (i = baseAliases.begin (); i != baseAliases.end (); ++i)
+  for (i = _baseAliases.begin (); i != _baseAliases.end (); ++i)
     {
       if (i->second == base)
         {
@@ -142,7 +142,7 @@ string
 Base::getBaseLocation (Base *base)
 {
   map<string, Base *>::iterator i;
-  for (i = baseLocations.begin (); i != baseLocations.end (); ++i)
+  for (i = _baseLocations.begin (); i != _baseLocations.end (); ++i)
     {
       if (i->second == base)
         {
@@ -155,12 +155,12 @@ Base::getBaseLocation (Base *base)
 vector<Base *> *
 Base::getBases ()
 {
-  if (baseSet.empty ())
+  if (_baseSet.empty ())
     {
       return NULL;
     }
 
-  return new vector<Base *> (baseSet);
+  return new vector<Base *> (_baseSet);
 }
 
 bool
@@ -172,16 +172,16 @@ Base::removeBase (Base *base)
   location = getBaseLocation (base);
 
   vector<Base *>::iterator i;
-  for (i = baseSet.begin (); i != baseSet.end (); ++i)
+  for (i = _baseSet.begin (); i != _baseSet.end (); ++i)
     {
       if (*i == base)
         {
-          baseSet.erase (i);
+          _baseSet.erase (i);
           if (alias != "")
             {
-              baseAliases.erase (alias);
+              _baseAliases.erase (alias);
             }
-          baseLocations.erase (location);
+          _baseLocations.erase (location);
           return true;
         }
     }
@@ -196,12 +196,12 @@ Base::setBaseAlias (Base *base, const string &alias)
 
   if (oldAlias != "")
     {
-      baseAliases.erase (oldAlias);
+      _baseAliases.erase (oldAlias);
     }
 
   if (alias != "")
     {
-      baseAliases[alias] = base;
+      _baseAliases[alias] = base;
     }
 }
 
@@ -214,28 +214,28 @@ Base::setBaseLocation (Base *base, const string &location)
   if (oldLocation == "")
     return;
 
-  baseLocations.erase (oldLocation);
-  baseLocations[location] = base;
+  _baseLocations.erase (oldLocation);
+  _baseLocations[location] = base;
 }
 
 string
 Base::getId ()
 {
-  return id;
+  return _id;
 }
 
 void
 Base::setId (const string &id)
 {
-  this->id = id;
+  this->_id = id;
 }
 
 bool
 Base::instanceOf (const string &s)
 {
-  if (!typeSet.empty ())
+  if (!_typeSet.empty ())
     {
-      return (typeSet.find (s) != typeSet.end ());
+      return (_typeSet.find (s) != _typeSet.end ());
     }
   else
     {

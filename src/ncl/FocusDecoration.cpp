@@ -22,12 +22,12 @@ GINGA_NCL_BEGIN
 
 FocusDecoration::FocusDecoration ()
 {
-  focusBorderTransparency = (double)NAN;
-  focusSrc = "";
-  focusBorderWidth = -3;
-  focusBorderColor = {0, 0, 255, 255};
-  selBorderColor = {0, 255, 0, 255};
-  focusSelSrc = "";
+  _focusBorderTransparency = (double)NAN;
+  _focusSrc = "";
+  _focusBorderWidth = -3;
+  _focusBorderColor = {0, 0, 255, 255};
+  _selBorderColor = {0, 255, 0, 255};
+  _focusSelSrc = "";
 }
 
 FocusDecoration::~FocusDecoration ()
@@ -37,43 +37,43 @@ FocusDecoration::~FocusDecoration ()
 SDL_Color
 FocusDecoration::getFocusBorderColor ()
 {
-  return focusBorderColor;
+  return _focusBorderColor;
 }
 
 double
 FocusDecoration::getFocusBorderTransparency ()
 {
-  return focusBorderTransparency;
+  return _focusBorderTransparency;
 }
 
 string
 FocusDecoration::getFocusSelSrc ()
 {
-  return focusSelSrc;
+  return _focusSelSrc;
 }
 
 string
 FocusDecoration::getFocusSrc ()
 {
-  return focusSrc;
+  return _focusSrc;
 }
 
 int
 FocusDecoration::getFocusBorderWidth ()
 {
-  return focusBorderWidth;
+  return _focusBorderWidth;
 }
 
 SDL_Color
 FocusDecoration::getSelBorderColor ()
 {
-  return selBorderColor;
+  return _selBorderColor;
 }
 
 void
 FocusDecoration::setFocusBorderColor (SDL_Color color)
 {
-  focusBorderColor = color;
+  _focusBorderColor = color;
 }
 
 void
@@ -88,31 +88,31 @@ FocusDecoration::setFocusBorderTransparency (double alfa)
       alfa = 1;
     }
 
-  focusBorderTransparency = alfa;
+  _focusBorderTransparency = alfa;
 }
 
 void
 FocusDecoration::setFocusBorderWidth (int width)
 {
-  focusBorderWidth = width;
+  _focusBorderWidth = width;
 }
 
 void
 FocusDecoration::setFocusSelSrc (const string &src)
 {
-  focusSelSrc = src;
+  _focusSelSrc = src;
 }
 
 void
 FocusDecoration::setFocusSrc (const string &src)
 {
-  focusSrc = src;
+  _focusSrc = src;
 }
 
 void
 FocusDecoration::setSelBorderColor (SDL_Color color)
 {
-  selBorderColor = color;
+  _selBorderColor = color;
 }
 
 GINGA_NCL_END

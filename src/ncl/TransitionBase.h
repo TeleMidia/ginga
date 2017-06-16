@@ -26,23 +26,21 @@ GINGA_NCL_BEGIN
 
 class TransitionBase : public Base
 {
-private:
-  vector<Transition *> *transitionSet;
-
 public:
-  TransitionBase (const string &id);
+  TransitionBase (const string &_id);
   virtual ~TransitionBase ();
   bool addTransition (Transition *transition);
   bool addBase (Base *base, const string &alias, const string &location);
   void clear ();
 
-private:
-  Transition *getTransitionLocally (const string &transitionId);
-
-public:
   Transition *getTransition (const string &transitionId);
   vector<Transition *> *getTransitions ();
   bool removeTransition (Transition *transition);
+
+private:
+  vector<Transition *> *_transitionSet;
+
+  Transition *getTransitionLocally (const string &transitionId);
 };
 
 GINGA_NCL_END

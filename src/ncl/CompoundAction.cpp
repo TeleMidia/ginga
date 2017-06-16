@@ -24,57 +24,57 @@ GINGA_NCL_BEGIN
 
 CompoundAction::CompoundAction () : Action ()
 {
-  actions = new vector<Action *>;
-  typeSet.insert ("CompoundAction");
+  _actions = new vector<Action *>;
+  _typeSet.insert ("CompoundAction");
 }
 
 CompoundAction::CompoundAction (Action *a1, Action *a2, short op)
     : Action ()
 {
-  actions = new vector<Action *>;
-  actions->push_back (a1);
-  actions->push_back (a2);
-  myOperator = op;
-  typeSet.insert ("CompoundAction");
+  _actions = new vector<Action *>;
+  _actions->push_back (a1);
+  _actions->push_back (a2);
+  _myOperator = op;
+  _typeSet.insert ("CompoundAction");
 }
 
 CompoundAction::~CompoundAction ()
 {
   vector<Action *>::iterator i;
 
-  if (actions != NULL)
+  if (_actions != NULL)
     {
-      i = actions->begin ();
-      while (i != actions->end ())
+      i = _actions->begin ();
+      while (i != _actions->end ())
         {
           delete (*i);
           ++i;
         }
 
-      delete actions;
-      actions = NULL;
+      delete _actions;
+      _actions = NULL;
     }
 }
 
 void
 CompoundAction::setOperator (short op)
 {
-  myOperator = op;
+  _myOperator = op;
 }
 
 short
 CompoundAction::getOperator ()
 {
-  return myOperator;
+  return _myOperator;
 }
 
 vector<Action *> *
 CompoundAction::getActions ()
 {
-  if (actions->begin () == actions->end ())
+  if (_actions->begin () == _actions->end ())
     return NULL;
 
-  return actions;
+  return _actions;
 }
 
 void
@@ -82,8 +82,8 @@ CompoundAction::addAction (Action *action)
 {
   vector<Action *>::iterator i;
 
-  i = actions->begin ();
-  while (i != actions->end ())
+  i = _actions->begin ();
+  while (i != _actions->end ())
     {
       if (action == *i)
         {
@@ -94,7 +94,7 @@ CompoundAction::addAction (Action *action)
         }
       ++i;
     }
-  actions->push_back (action);
+  _actions->push_back (action);
 }
 
 void
@@ -103,13 +103,13 @@ CompoundAction::removeAction (Action *action)
   vector<Action *>::iterator iterator;
   vector<Action *>::iterator i;
 
-  iterator = actions->begin ();
-  while (iterator != actions->end ())
+  iterator = _actions->begin ();
+  while (iterator != _actions->end ())
     {
       if ((*iterator) == action)
         {
-          i = actions->erase (iterator);
-          if (i == actions->end ())
+          i = _actions->erase (iterator);
+          if (i == _actions->end ())
             return;
         }
       ++iterator;
@@ -125,10 +125,10 @@ CompoundAction::getRoles ()
   vector<Role *> *childRoles;
 
   roles = new vector<Role *>;
-  size = (int) actions->size ();
+  size = (int) _actions->size ();
   for (i = 0; i < size; i++)
     {
-      action = (Action *)((*actions)[i]);
+      action = (Action *)((*_actions)[i]);
       if (action->instanceOf ("SimpleAction"))
         {
           roles->push_back ((SimpleAction *)action);

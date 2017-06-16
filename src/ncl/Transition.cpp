@@ -25,15 +25,15 @@ Transition::Transition (const string &id, int type) : Entity (id)
 {
   setType (type);
 
-  this->dur = 1000; /* 1 second */
-  this->startProgress = 0.0;
-  this->endProgress = 1.0;
-  this->direction = Transition::DIRECTION_FORWARD;
-  this->horzRepeat = 1;
-  this->vertRepeat = 1;
-  this->fadeColor = {0, 0, 0, 255};
-  this->borderColor = {0, 0, 0, 0};
-  this->borderWidth = 0;
+  this->_dur = 1000; /* 1 second */
+  this->_startProgress = 0.0;
+  this->_endProgress = 1.0;
+  this->_direction = Transition::DIRECTION_FORWARD;
+  this->_horzRepeat = 1;
+  this->_vertRepeat = 1;
+  this->_fadeColor = {0, 0, 0, 255};
+  this->_borderColor = {0, 0, 0, 0};
+  this->_borderWidth = 0;
 }
 
 Transition::~Transition ()
@@ -43,73 +43,73 @@ Transition::~Transition ()
 SDL_Color
 Transition::getBorderColor ()
 {
-  return borderColor;
+  return _borderColor;
 }
 
 int
 Transition::getBorderWidth ()
 {
-  return borderWidth;
+  return _borderWidth;
 }
 
 short
 Transition::getDirection ()
 {
-  return direction;
+  return _direction;
 }
 
 double
 Transition::getDur ()
 {
-  return dur;
+  return _dur;
 }
 
 double
 Transition::getEndProgress ()
 {
-  return endProgress;
+  return _endProgress;
 }
 
 SDL_Color
 Transition::getFadeColor ()
 {
-  return fadeColor;
+  return _fadeColor;
 }
 
 int
 Transition::getHorzRepeat ()
 {
-  return horzRepeat;
+  return _horzRepeat;
 }
 
 double
 Transition::getStartProgress ()
 {
-  return startProgress;
+  return _startProgress;
 }
 
 int
 Transition::getSubtype ()
 {
-  return subtype;
+  return _subtype;
 }
 
 int
 Transition::getType ()
 {
-  return type;
+  return _type;
 }
 
 int
 Transition::getVertRepeat ()
 {
-  return vertRepeat;
+  return _vertRepeat;
 }
 
 void
 Transition::setBorderColor (SDL_Color color)
 {
-  this->borderColor = color;
+  this->_borderColor = color;
 }
 
 void
@@ -117,7 +117,7 @@ Transition::setBorderWidth (int width)
 {
   if (width >= 0)
     {
-      this->borderWidth = width;
+      this->_borderWidth = width;
     }
 }
 
@@ -127,7 +127,7 @@ Transition::setDirection (short dir)
   if (dir >= Transition::DIRECTION_FORWARD
       && dir <= Transition::DIRECTION_REVERSE)
     {
-      this->direction = dir;
+      this->_direction = dir;
     }
 }
 
@@ -136,23 +136,23 @@ Transition::setDur (double dur)
 {
   if (dur >= 0)
     {
-      this->dur = dur;
+      this->_dur = dur;
     }
 }
 
 void
 Transition::setEndProgress (double ep)
 {
-  if (ep >= 0 && ep <= 1 && ep >= startProgress)
+  if (ep >= 0 && ep <= 1 && ep >= _startProgress)
     {
-      this->endProgress = ep;
+      this->_endProgress = ep;
     }
 }
 
 void
 Transition::setFadeColor (SDL_Color color)
 {
-  this->fadeColor = color;
+  this->_fadeColor = color;
 }
 
 void
@@ -160,29 +160,29 @@ Transition::setHorzRepeat (int num)
 {
   if (num > 0)
     {
-      this->horzRepeat = num;
+      this->_horzRepeat = num;
     }
 }
 
 void
 Transition::setStartProgress (double sp)
 {
-  if (sp >= 0 && sp <= 1 && sp <= endProgress)
+  if (sp >= 0 && sp <= 1 && sp <= _endProgress)
     {
-      this->startProgress = sp;
+      this->_startProgress = sp;
     }
 }
 
 void
 Transition::setSubtype (int subtype)
 {
-  switch (type)
+  switch (_type)
     {
     case Transition::TYPE_BARWIPE:
       if (subtype >= Transition::SUBTYPE_BARWIPE_LEFTTORIGHT
           && subtype <= Transition::SUBTYPE_BARWIPE_TOPTOBOTTOM)
         {
-          this->subtype = subtype;
+          this->_subtype = subtype;
         }
 
       break;
@@ -191,7 +191,7 @@ Transition::setSubtype (int subtype)
       if (subtype >= Transition::SUBTYPE_IRISWIPE_RECTANGLE
           && subtype <= Transition::SUBTYPE_IRISWIPE_DIAMOND)
         {
-          this->subtype = subtype;
+          this->_subtype = subtype;
         }
 
       break;
@@ -200,7 +200,7 @@ Transition::setSubtype (int subtype)
       if (subtype >= Transition::SUBTYPE_CLOCKWIPE_CLOCKWISETWELVE
           && subtype <= Transition::SUBTYPE_CLOCKWIPE_CLOCKWISENINE)
         {
-          this->subtype = subtype;
+          this->_subtype = subtype;
         }
 
       break;
@@ -209,7 +209,7 @@ Transition::setSubtype (int subtype)
       if (subtype >= Transition::SUBTYPE_SNAKEWIPE_TOPLEFTHORIZONTAL
           && subtype <= Transition::SUBTYPE_SNAKEWIPE_BOTTOMLEFTDIAGONAL)
         {
-          this->subtype = subtype;
+          this->_subtype = subtype;
         }
 
       break;
@@ -219,7 +219,7 @@ Transition::setSubtype (int subtype)
       if (subtype >= Transition::SUBTYPE_FADE_CROSSFADE
           && subtype <= Transition::SUBTYPE_FADE_FADEFROMCOLOR)
         {
-          this->subtype = subtype;
+          this->_subtype = subtype;
         }
       break;
     }
@@ -230,8 +230,8 @@ Transition::setType (int type)
 {
   if (type >= Transition::TYPE_BARWIPE && type <= Transition::TYPE_FADE)
     {
-      this->type = type;
-      subtype = TransitionUtil::getDefaultSubtype (type);
+      this->_type = type;
+      _subtype = TransitionUtil::getDefaultSubtype (type);
     }
 }
 
@@ -240,7 +240,7 @@ Transition::setVertRepeat (int num)
 {
   if (num > 0)
     {
-      this->vertRepeat = num;
+      this->_vertRepeat = num;
     }
 }
 

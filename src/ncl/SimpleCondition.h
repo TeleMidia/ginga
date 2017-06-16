@@ -26,28 +26,28 @@ GINGA_NCL_BEGIN
 
 class SimpleCondition : public TriggerExpression, public Role
 {
-private:
-  string key;
-  short transition;
-  short qualifier;
-
 public:
   static const short NO_QUALIFIER = -1;
   SimpleCondition (const string &role);
-  virtual ~SimpleCondition (){};
+  virtual ~SimpleCondition (){}
 
   void setLabel (const string &id);
   string getKey ();
-  void setKey (const string &key);
+  void setKey (const string &_key);
   short getTransition ();
-  void setTransition (short transition);
+  void setTransition (short _transition);
   short getQualifier ();
-  void setQualifier (short qualifier);
+  void setQualifier (short _qualifier);
   bool
   instanceOf (const string &type)
   {
     return TriggerExpression::instanceOf (type);
   }
+
+private:
+  string _key;
+  short _transition;
+  short _qualifier;
 };
 
 GINGA_NCL_END

@@ -22,7 +22,7 @@ GINGA_NCL_BEGIN
 
 SwitchContent::SwitchContent () : Content ("application/x-nodeswitch")
 {
-  typeSet.insert ("SwitchContent");
+  _typeSet.insert ("SwitchContent");
 }
 
 GINGA_NCL_END

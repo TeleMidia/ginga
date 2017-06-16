@@ -22,8 +22,8 @@ GINGA_NCL_BEGIN
 
 PropertyAnchor::PropertyAnchor (const string &attName) : Anchor (attName)
 {
-  typeSet.insert ("PropertyAnchor");
-  value = "";
+  _typeSet.insert ("PropertyAnchor");
+  _value = "";
 }
 
 string
@@ -41,13 +41,13 @@ PropertyAnchor::setName (const string &name)
 string
 PropertyAnchor::getValue ()
 {
-  return value;
+  return _value;
 }
 
 void
 PropertyAnchor::setValue (const string &value)
 {
-  this->value = value;
+  this->_value = value;
 }
 
 PropertyAnchor *
@@ -56,7 +56,7 @@ PropertyAnchor::clone ()
   PropertyAnchor *pAnchor;
 
   pAnchor = new PropertyAnchor (Entity::getId ());
-  pAnchor->setValue (value);
+  pAnchor->setValue (_value);
 
   return pAnchor;
 }

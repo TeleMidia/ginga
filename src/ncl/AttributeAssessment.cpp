@@ -24,11 +24,11 @@ AttributeAssessment::AttributeAssessment (const string &role)
     : Assessment (), Role ()
 {
   Role::setLabel (role);
-  eventType = EventUtil::EVT_ATTRIBUTION;
-  attributeType = EventUtil::ATT_NODE_PROPERTY;
-  key = "";
-  offset = "";
-  maxCon = 1;
+  _eventType = EventUtil::EVT_ATTRIBUTION;
+  _attributeType = EventUtil::ATT_NODE_PROPERTY;
+  _key = "";
+  _offset = "";
+  _maxCon = 1;
   typeSet.insert ("AttributeAssessment");
   typeSet.insert ("Role");
 }
@@ -36,49 +36,49 @@ AttributeAssessment::AttributeAssessment (const string &role)
 void
 AttributeAssessment::setMaxCon (int max)
 {
-  maxCon = max;
+  _maxCon = max;
 }
 
 void
 AttributeAssessment::setMinCon (int min)
 {
-  minCon = min;
+  _minCon = min;
 }
 
 short
 AttributeAssessment::getAttributeType ()
 {
-  return attributeType;
+  return _attributeType;
 }
 
 void
 AttributeAssessment::setAttributeType (short attribute)
 {
-  attributeType = attribute;
+  _attributeType = attribute;
 }
 
 string
 AttributeAssessment::getKey ()
 {
-  return key;
+  return _key;
 }
 
 void
 AttributeAssessment::setKey (const string &key)
 {
-  this->key = key;
+  this->_key = key;
 }
 
 string
 AttributeAssessment::getOffset ()
 {
-  return offset;
+  return _offset;
 }
 
 void
 AttributeAssessment::setOffset (const string &offset)
 {
-  this->offset = offset;
+  this->_offset = offset;
 }
 
 GINGA_NCL_END

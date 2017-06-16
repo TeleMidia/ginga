@@ -34,12 +34,8 @@ GINGA_NCL_BEGIN
 
 class SwitchNode : public CompositeNode
 {
-private:
-  Node *defaultNode;
-  vector<Rule *> ruleList;
-
 public:
-  SwitchNode (const string &id);
+  SwitchNode (const string &_id);
   virtual ~SwitchNode ();
   bool addNode (unsigned int index, Node *node, Rule *rule);
   bool addNode (Node *node, Rule *rule);
@@ -87,6 +83,10 @@ public:
   bool removeNode (unsigned int index);
   bool removeRule (Rule *rule);
   void setDefaultNode (Node *node);
+
+private:
+  Node *_defaultNode;
+  vector<Rule *> _ruleList;
 };
 
 GINGA_NCL_END

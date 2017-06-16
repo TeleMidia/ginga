@@ -35,18 +35,18 @@ ContentNode::ContentNode (const string &uid, Content *someContent, const string 
 void
 ContentNode::initialize (const string &type)
 {
-  typeSet.insert ("ContentNode");
-  typeSet.insert ("DocumentNode");
+  _typeSet.insert ("ContentNode");
+  _typeSet.insert ("DocumentNode");
 
-  this->type = type;
+  this->_type = type;
 
   // must set to false before a new isSettingNode call
-  isSettingNodeType = false;
-  isSettingNodeType = isSettingNode ();
+  _isSettingNodeType = false;
+  _isSettingNodeType = isSettingNode ();
 
   // must set to false before a new isTimeNode call
-  isTimeNodeType = false;
-  isTimeNodeType = isTimeNode ();
+  _isTimeNodeType = false;
+  _isTimeNodeType = isTimeNode ();
 }
 
 bool
@@ -54,7 +54,7 @@ ContentNode::isSettingNode ()
 {
   string nodeType = getNodeType ();
 
-  if (isSettingNodeType)
+  if (_isSettingNodeType)
     {
       return true;
     }
@@ -78,7 +78,7 @@ ContentNode::isTimeNode ()
 {
   string nodeType = getNodeType ();
 
-  if (isTimeNodeType)
+  if (_isTimeNodeType)
     {
       return true;
     }
@@ -100,19 +100,19 @@ ContentNode::isTimeNode ()
 string
 ContentNode::getTypeValue ()
 {
-  return type;
+  return _type;
 }
 
 string
 ContentNode::getNodeType ()
 {
-  if (type != "")
+  if (_type != "")
     {
-      return type;
+      return _type;
     }
-  else if (content != NULL)
+  else if (_content != NULL)
     {
-      return content->getType ();
+      return _content->getType ();
     }
   else
     {
@@ -123,11 +123,11 @@ ContentNode::getNodeType ()
 void
 ContentNode::setNodeType (const string &type)
 {
-  this->type = type;
+  this->_type = type;
 
   // must set to false before a new isSettingNode call
-  isSettingNodeType = false;
-  isSettingNodeType = isSettingNode ();
+  _isSettingNodeType = false;
+  _isSettingNodeType = isSettingNode ();
 }
 
 GINGA_NCL_END

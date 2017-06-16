@@ -26,13 +26,13 @@ GINGA_NCL_BEGIN
 
 class LabeledAnchor : public Anchor
 {
-private:
-  string label;
-
 public:
-  LabeledAnchor (const string &id, const string &label);
+  LabeledAnchor (const string &_id, const string &_label);
   string getLabel ();
-  void setLabel (const string &label);
+  void setLabel (const string &_label);
+
+private:
+  string _label;
 };
 
 GINGA_NCL_END

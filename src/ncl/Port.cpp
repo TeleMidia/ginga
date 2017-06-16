@@ -24,10 +24,10 @@ GINGA_NCL_BEGIN
 Port::Port (const string &id, Node *someNode, InterfacePoint *someInterfacePoint)
     : InterfacePoint (id)
 {
-  node = someNode;
-  interfacePoint = someInterfacePoint;
+  _node = someNode;
+  _interfacePoint = someInterfacePoint;
 
-  typeSet.insert ("Port");
+  _typeSet.insert ("Port");
 }
 
 Port::~Port () {}
@@ -35,35 +35,35 @@ Port::~Port () {}
 InterfacePoint *
 Port::getInterfacePoint ()
 {
-  return interfacePoint;
+  return _interfacePoint;
 }
 
 Node *
 Port::getNode ()
 {
-  return node;
+  return _node;
 }
 
 Node *
 Port::getEndNode ()
 {
-  if (interfacePoint->instanceOf ("Anchor"))
-    return node;
+  if (_interfacePoint->instanceOf ("Anchor"))
+    return _node;
   else
-    return ((Port *)(interfacePoint))->getEndNode ();
+    return ((Port *)(_interfacePoint))->getEndNode ();
 }
 
 InterfacePoint *
 Port::getEndInterfacePoint ()
 {
   // Polimorfismo
-  if (interfacePoint->instanceOf ("Anchor"))
+  if (_interfacePoint->instanceOf ("Anchor"))
     {
-      return interfacePoint;
+      return _interfacePoint;
     }
   else
     {
-      return ((Port *)interfacePoint)->getEndInterfacePoint ();
+      return ((Port *)_interfacePoint)->getEndInterfacePoint ();
     }
 }
 
@@ -74,15 +74,15 @@ Port::getMapNodeNesting ()
   vector<Node *> *nodeList;
 
   nodeSequence = new vector<Node *>;
-  nodeSequence->push_back (node);
-  if (interfacePoint->instanceOf ("Anchor")
-      || interfacePoint->instanceOf ("SwitchPort"))
+  nodeSequence->push_back (_node);
+  if (_interfacePoint->instanceOf ("Anchor")
+      || _interfacePoint->instanceOf ("SwitchPort"))
     {
       return nodeSequence;
     }
   else
     { // Port
-      nodeList = ((Port *)interfacePoint)->getMapNodeNesting ();
+      nodeList = ((Port *)_interfacePoint)->getMapNodeNesting ();
 
       vector<Node *>::iterator it;
       for (it = nodeList->begin (); it != nodeList->end (); ++it)
@@ -98,13 +98,13 @@ Port::getMapNodeNesting ()
 void
 Port::setInterfacePoint (InterfacePoint *someInterfacePoint)
 {
-  interfacePoint = someInterfacePoint;
+  _interfacePoint = someInterfacePoint;
 }
 
 void
 Port::setNode (Node *someNode)
 {
-  node = someNode;
+  _node = someNode;
 }
 
 GINGA_NCL_END

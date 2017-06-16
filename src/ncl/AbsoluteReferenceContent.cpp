@@ -23,7 +23,7 @@ GINGA_NCL_BEGIN
 AbsoluteReferenceContent::AbsoluteReferenceContent (const string &ref)
     : ReferenceContent (ref)
 {
-  typeSet.insert ("AbsoluteReferenceContent");
+  _typeSet.insert ("AbsoluteReferenceContent");
 }
 
 GINGA_NCL_END

@@ -22,14 +22,14 @@ GINGA_NCL_BEGIN
 
 ReferredNode::ReferredNode (const string &id, void *element) : Entity (id)
 {
-  referElement = element;
-  typeSet.insert ("ReferredNode");
+  _referElement = element;
+  _typeSet.insert ("ReferredNode");
 }
 
 void *
 ReferredNode::getReferElement ()
 {
-  return referElement;
+  return _referElement;
 }
 
 GINGA_NCL_END

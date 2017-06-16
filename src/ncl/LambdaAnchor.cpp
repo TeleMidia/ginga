@@ -23,7 +23,7 @@ GINGA_NCL_BEGIN
 LambdaAnchor::LambdaAnchor (const string &id)
     : IntervalAnchor (id, 0, GINGA_TIME_NONE)
 {
-  typeSet.insert ("LambdaAnchor");
+  _typeSet.insert ("LambdaAnchor");
 }
 
 GINGA_NCL_END

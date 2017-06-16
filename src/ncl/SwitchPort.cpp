@@ -24,25 +24,25 @@ GINGA_NCL_BEGIN
 SwitchPort::SwitchPort (const string &id, SwitchNode *switchNode)
     : Port (id, switchNode, NULL)
 {
-  portList = new vector<Port *>;
-  typeSet.insert ("SwitchPort");
+  _portList = new vector<Port *>;
+  _typeSet.insert ("SwitchPort");
 }
 
 SwitchPort::~SwitchPort ()
 {
   vector<Port *>::iterator i;
 
-  if (portList != NULL)
+  if (_portList != NULL)
     {
-      i = portList->begin ();
-      while (i != portList->end ())
+      i = _portList->begin ();
+      while (i != _portList->end ())
         {
           delete *i;
           ++i;
         }
 
-      delete portList;
-      portList = NULL;
+      delete _portList;
+      _portList = NULL;
     }
 }
 
@@ -52,7 +52,7 @@ SwitchPort::addPort (Port *port)
   if (containsMap (port->getNode ()))
     return false;
 
-  portList->push_back (port);
+  _portList->push_back (port);
   return true;
 }
 
@@ -62,7 +62,7 @@ SwitchPort::containsMap (Node *node)
   vector<Port *>::iterator i;
   Port *port;
 
-  for (i = portList->begin (); i < portList->end (); ++i)
+  for (i = _portList->begin (); i < _portList->end (); ++i)
     {
       port = (Port *)(*i);
       if (port->getNode ()->getId () == node->getId ())
@@ -74,7 +74,7 @@ SwitchPort::containsMap (Node *node)
 vector<Port *> *
 SwitchPort::getPorts ()
 {
-  return portList;
+  return _portList;
 }
 
 bool
@@ -82,11 +82,11 @@ SwitchPort::removePort (Port *port)
 {
   vector<Port *>::iterator i;
 
-  for (i = portList->begin (); i != portList->end (); ++i)
+  for (i = _portList->begin (); i != _portList->end (); ++i)
     {
       if ((*i)->getId () == port->getId ())
         {
-          portList->erase (i);
+          _portList->erase (i);
           return true;
         }
     }
@@ -96,7 +96,7 @@ SwitchPort::removePort (Port *port)
 Node *
 SwitchPort::getEndNode ()
 {
-  return node;
+  return _node;
 }
 
 InterfacePoint *

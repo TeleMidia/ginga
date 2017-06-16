@@ -24,13 +24,6 @@ GINGA_NCL_BEGIN
 
 class KeyNavigation
 {
-private:
-  string focusIndex;
-  string moveUp;
-  string moveDown;
-  string moveLeft;
-  string moveRight;
-
 public:
   KeyNavigation ();
   string getFocusIndex ();
@@ -43,6 +36,13 @@ public:
   void setMoveRight (const string &index);
   string getMoveLeft ();
   void setMoveLeft (const string &index);
+
+private:
+  string _focusIndex;
+  string _moveUp;
+  string _moveDown;
+  string _moveLeft;
+  string _moveRight;
 };
 
 GINGA_NCL_END

@@ -22,20 +22,20 @@ GINGA_NCL_BEGIN
 
 TriggerExpression::TriggerExpression () : ConditionExpression ()
 {
-  delay = "0";
+  _delay = "0";
   typeSet.insert ("TriggerExpression");
 }
 
 string
 TriggerExpression::getDelay ()
 {
-  return delay;
+  return _delay;
 }
 
 void
 TriggerExpression::setDelay (const string &delay)
 {
-  this->delay = delay;
+  this->_delay = delay;
 }
 
 GINGA_NCL_END

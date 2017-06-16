@@ -26,11 +26,8 @@ GINGA_NCL_BEGIN
 
 class RuleBase : public Base
 {
-private:
-  vector<Rule *> *ruleSet;
-
 public:
-  RuleBase (const string &id);
+  RuleBase (const string &_id);
   virtual ~RuleBase ();
 
   bool addRule (Rule *rule);
@@ -38,13 +35,14 @@ public:
 
   void clear ();
 
-private:
-  Rule *getRuleLocally (const string &ruleId);
-
-public:
   Rule *getRule (const string &ruleId);
   vector<Rule *> *getRules ();
   bool removeRule (Rule *rule);
+
+private:
+  vector<Rule *> *_ruleSet;
+
+  Rule *getRuleLocally (const string &ruleId);
 };
 
 GINGA_NCL_END

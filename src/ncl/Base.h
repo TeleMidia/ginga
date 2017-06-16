@@ -24,18 +24,8 @@ GINGA_NCL_BEGIN
 
 class Base
 {
-private:
-  static set<Base *> baseInstances;
-
-protected:
-  string id;
-  vector<Base *> baseSet;
-  map<string, Base *> baseAliases;
-  map<string, Base *> baseLocations;
-  set<string> typeSet;
-
 public:
-  Base (const string &id);
+  Base (const string &_id);
   virtual ~Base ();
   static bool hasInstance (Base *base, bool eraseFromList);
   virtual bool addBase (Base *base, const string &alias, const string &location);
@@ -48,8 +38,18 @@ public:
   void setBaseAlias (Base *base, const string &alias);
   void setBaseLocation (Base *base, const string &location);
   string getId ();
-  void setId (const string &id);
+  void setId (const string &_id);
   bool instanceOf (const string &s);
+
+protected:
+  string _id;
+  vector<Base *> _baseSet;
+  map<string, Base *> _baseAliases;
+  map<string, Base *> _baseLocations;
+  set<string> _typeSet;
+
+private:
+  static set<Base *> _baseInstances;
 };
 
 GINGA_NCL_END

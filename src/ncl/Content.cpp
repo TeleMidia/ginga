@@ -22,8 +22,8 @@ GINGA_NCL_BEGIN
 
 Content::Content (const string &someType)
 {
-  type = someType;
-  typeSet.insert ("Content");
+  _type = someType;
+  _typeSet.insert ("Content");
 }
 
 Content::~Content () {}
@@ -31,22 +31,22 @@ Content::~Content () {}
 bool
 Content::instanceOf (const string &s)
 {
-  if (typeSet.empty ())
+  if (_typeSet.empty ())
     return false;
   else
-    return (typeSet.find (s) != typeSet.end ());
+    return (_typeSet.find (s) != _typeSet.end ());
 }
 
 string
 Content::getType ()
 {
-  return type;
+  return _type;
 }
 
 void
 Content::setType (const string &someType)
 {
-  type = someType;
+  _type = someType;
 }
 
 GINGA_NCL_END

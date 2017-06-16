@@ -47,31 +47,17 @@ public:
   static const short SCROLL_BOTH = 3;
   static const short SCROLL_AUTOMATIC = 4;
 
-protected:
-  GingaTime explicitDuration;
-  string presentationTool;
-  bool freeze;
-  int repetitions;
-  LayoutRegion *region;
-  map<string, Parameter *> parameters;
-
-  KeyNavigation *keyNavigation;
-  FocusDecoration *focusDecoration;
-  vector<Transition *> inputTransitions;
-  vector<Transition *> outputTransitions;
-
-public:
-  Descriptor (const string &id);
+  Descriptor (const string &_id);
   virtual ~Descriptor ();
   GingaTime getExplicitDuration ();
 
   LayoutRegion *getRegion ();
   int getRepetitions ();
   bool isFreeze ();
-  void setFreeze (bool freeze);
+  void setFreeze (bool _freeze);
   void setExplicitDuration (GingaTime);
   void setPlayerName (const string &name);
-  void setRegion (LayoutRegion *region);
+  void setRegion (LayoutRegion *_region);
   void setRepetitions (int r);
   void addParameter (Parameter *parameter);
   vector<Parameter *> *getParameters ();
@@ -89,6 +75,19 @@ public:
   bool addOutputTransition (Transition *transition, int pos);
   void removeOutputTransition (Transition *transition);
   void removeAllOutputTransitions ();
+
+protected:
+  GingaTime _explicitDuration;
+  string _presentationTool;
+  bool _freeze;
+  int _repetitions;
+  LayoutRegion *_region;
+  map<string, Parameter *> _parameters;
+
+  KeyNavigation *_keyNavigation;
+  FocusDecoration *_focusDecoration;
+  vector<Transition *> _inputTransitions;
+  vector<Transition *> _outputTransitions;
 };
 
 GINGA_NCL_END

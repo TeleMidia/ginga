@@ -26,14 +26,9 @@ GINGA_NCL_BEGIN
 
 class ReferNode : public Node
 {
-private:
-  string instanceType;
-  Entity *referredNode;
-  GenericDescriptor *instDesc;
-
 public:
-  ReferNode (const string &id);
-  ReferNode (const string &id, Entity *entity);
+  ReferNode (const string &_id);
+  ReferNode (const string &_id, Entity *entity);
 
   GenericDescriptor *getInstanceDescriptor ();
   void setInstanceDescriptor (GenericDescriptor *descriptor);
@@ -44,6 +39,11 @@ public:
   Entity *getReferredEntity ();
   void setReferredEntity (Entity *entity);
   Entity *getDataEntity ();
+
+private:
+  string _instanceType;
+  Entity *_referredNode;
+  GenericDescriptor *_instDesc;
 };
 
 GINGA_NCL_END

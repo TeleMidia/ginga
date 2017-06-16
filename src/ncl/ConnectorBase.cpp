@@ -22,15 +22,15 @@ GINGA_NCL_BEGIN
 
 ConnectorBase::ConnectorBase (const string &id) : Base (id)
 {
-  typeSet.insert ("ConnectorBase");
+  _typeSet.insert ("ConnectorBase");
 }
 
 ConnectorBase::~ConnectorBase ()
 {
   set<Connector *>::iterator i;
 
-  i = connectorSet.begin ();
-  while (i != connectorSet.end ())
+  i = _connectorSet.begin ();
+  while (i != _connectorSet.end ())
     {
       if (Entity::hasInstance (*i, true))
         {
@@ -38,7 +38,7 @@ ConnectorBase::~ConnectorBase ()
         }
       ++i;
     }
-  connectorSet.clear ();
+  _connectorSet.clear ();
 }
 
 bool
@@ -49,7 +49,7 @@ ConnectorBase::addConnector (Connector *connector)
       return false;
     }
 
-  connectorSet.insert (connector);
+  _connectorSet.insert (connector);
   return true;
 }
 
@@ -67,7 +67,7 @@ ConnectorBase::addBase (Base *base, const string &alias, const string &location)
 void
 ConnectorBase::clear ()
 {
-  connectorSet.clear ();
+  _connectorSet.clear ();
   Base::clear ();
 }
 
@@ -89,8 +89,8 @@ ConnectorBase::containsConnector (Connector *connector)
 {
   set<Connector *>::iterator i;
 
-  i = connectorSet.find (connector);
-  if (i != connectorSet.end ())
+  i = _connectorSet.find (connector);
+  if (i != _connectorSet.end ())
     {
       return true;
     }
@@ -102,8 +102,8 @@ ConnectorBase::getConnectorLocally (const string &connectorId)
 {
   set<Connector *>::iterator i;
 
-  i = connectorSet.begin ();
-  while (i != connectorSet.end ())
+  i = _connectorSet.begin ();
+  while (i != _connectorSet.end ())
     {
       if ((*i)->getId () == connectorId)
         {
@@ -134,8 +134,8 @@ ConnectorBase::getConnector (const string &connectorId)
   index++;
   suffix = connectorId.substr (index, connectorId.length () - index);
 
-  i = baseAliases.find (prefix);
-  if (i != baseAliases.end ())
+  i = _baseAliases.find (prefix);
+  if (i != _baseAliases.end ())
     {
       base = (ConnectorBase *)(i->second);
       conn = base->getConnector (suffix);
@@ -143,8 +143,8 @@ ConnectorBase::getConnector (const string &connectorId)
 
   if (conn == NULL)
     {
-      i = baseLocations.find (prefix);
-      if (i != baseLocations.end ())
+      i = _baseLocations.find (prefix);
+      if (i != _baseLocations.end ())
         {
           base = (ConnectorBase *)(i->second);
           conn = base->getConnector (suffix);
@@ -157,8 +157,8 @@ ConnectorBase::getConnector (const string &connectorId)
       cout << connectorId << "'";
       cout << " using prefix = '" << prefix << "'";
       cout << " and suffix = '" << suffix << "'";
-      cout << " baseAli has = '" << baseAliases.size () << "' aliases";
-      cout << " baseLoc has = '" << baseLocations.size () << "' locations";
+      cout << " baseAli has = '" << _baseAliases.size () << "' aliases";
+      cout << " baseLoc has = '" << _baseLocations.size () << "' locations";
       cout << endl;
     }
   return conn;
@@ -178,10 +178,10 @@ ConnectorBase::removeConnector (Connector *connector)
 {
   set<Connector *>::iterator i;
 
-  i = connectorSet.find (connector);
-  if (i != connectorSet.end ())
+  i = _connectorSet.find (connector);
+  if (i != _connectorSet.end ())
     {
-      connectorSet.erase (i);
+      _connectorSet.erase (i);
       return true;
     }
   return false;

@@ -24,13 +24,6 @@ GINGA_NCL_BEGIN
 
 class Entity
 {
-protected:
-  set<string> typeSet;
-
-private:
-  string id;
-  static set<Entity *> instances;
-
 public:
   Entity (const string &someId);
   virtual ~Entity ();
@@ -40,6 +33,13 @@ public:
   string getId ();
   virtual void setId (const string &someId);
   virtual Entity *getDataEntity ();
+
+protected:
+  set<string> _typeSet;
+
+private:
+  string _id;
+  static set<Entity *> _instances;
 };
 
 GINGA_NCL_END

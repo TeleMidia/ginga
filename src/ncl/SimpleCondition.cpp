@@ -24,8 +24,8 @@ SimpleCondition::SimpleCondition (const string &role)
     : TriggerExpression (), Role ()
 {
   SimpleCondition::setLabel (role);
-  key = "";
-  qualifier = SimpleCondition::NO_QUALIFIER;
+  _key = "";
+  _qualifier = SimpleCondition::NO_QUALIFIER;
   typeSet.insert ("SimpleCondition");
   typeSet.insert ("Role");
 }
@@ -33,83 +33,83 @@ SimpleCondition::SimpleCondition (const string &role)
 string
 SimpleCondition::getKey ()
 {
-  return key;
+  return _key;
 }
 
 void
 SimpleCondition::setKey (const string &key)
 {
-  this->key = key;
+  this->_key = key;
 }
 
 short
 SimpleCondition::getTransition ()
 {
-  return transition;
+  return _transition;
 }
 
 void
 SimpleCondition::setTransition (short transition)
 {
-  this->transition = transition;
+  this->_transition = transition;
 }
 
 short
 SimpleCondition::getQualifier ()
 {
-  return qualifier;
+  return _qualifier;
 }
 
 void
 SimpleCondition::setQualifier (short qualifier)
 {
-  this->qualifier = qualifier;
+  this->_qualifier = qualifier;
 }
 
 void
 SimpleCondition::setLabel (const string &id)
 {
-  label = id;
+  _label = id;
 
-  if (xstrcaseeq (label, "onBegin"))
+  if (xstrcaseeq (_label, "onBegin"))
     {
-      transition = EventUtil::TR_STARTS;
-      eventType = EventUtil::EVT_PRESENTATION;
+      _transition = EventUtil::TR_STARTS;
+      _eventType = EventUtil::EVT_PRESENTATION;
     }
-  else if (xstrcaseeq (label, "onEnd"))
+  else if (xstrcaseeq (_label, "onEnd"))
     {
-      transition = EventUtil::TR_STOPS;
-      eventType = EventUtil::EVT_PRESENTATION;
+      _transition = EventUtil::TR_STOPS;
+      _eventType = EventUtil::EVT_PRESENTATION;
     }
-  else if (xstrcaseeq (label, "onSelection"))
+  else if (xstrcaseeq (_label, "onSelection"))
     {
-      transition = EventUtil::TR_STOPS;
-      eventType = EventUtil::EVT_SELECTION;
+      _transition = EventUtil::TR_STOPS;
+      _eventType = EventUtil::EVT_SELECTION;
     }
-  else if (xstrcaseeq (label, "onBeginAttribution"))
+  else if (xstrcaseeq (_label, "onBeginAttribution"))
     {
-      transition = EventUtil::TR_STARTS;
-      eventType = EventUtil::EVT_ATTRIBUTION;
+      _transition = EventUtil::TR_STARTS;
+      _eventType = EventUtil::EVT_ATTRIBUTION;
     }
-  else if (xstrcaseeq (label, "onEndAttribution"))
+  else if (xstrcaseeq (_label, "onEndAttribution"))
     {
-      transition = EventUtil::TR_STOPS;
-      eventType = EventUtil::EVT_ATTRIBUTION;
+      _transition = EventUtil::TR_STOPS;
+      _eventType = EventUtil::EVT_ATTRIBUTION;
     }
-  else if (xstrcaseeq (label, "onAbort"))
+  else if (xstrcaseeq (_label, "onAbort"))
     {
-      transition = EventUtil::TR_ABORTS;
-      eventType = EventUtil::EVT_PRESENTATION;
+      _transition = EventUtil::TR_ABORTS;
+      _eventType = EventUtil::EVT_PRESENTATION;
     }
-  else if (xstrcaseeq (label, "onPause"))
+  else if (xstrcaseeq (_label, "onPause"))
     {
-      transition = EventUtil::TR_PAUSES;
-      eventType = EventUtil::EVT_PRESENTATION;
+      _transition = EventUtil::TR_PAUSES;
+      _eventType = EventUtil::EVT_PRESENTATION;
     }
-  else if (xstrcaseeq (label, "onResume"))
+  else if (xstrcaseeq (_label, "onResume"))
     {
-      transition = EventUtil::TR_RESUMES;
-      eventType = EventUtil::EVT_PRESENTATION;
+      _transition = EventUtil::TR_RESUMES;
+      _eventType = EventUtil::EVT_PRESENTATION;
     }
 }
 

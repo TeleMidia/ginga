@@ -27,7 +27,7 @@ class SpatialAnchor : public ContentAnchor
 public:
   SpatialAnchor (const string &id) : ContentAnchor (id)
   {
-    typeSet.insert ("SpatialAnchor");
+    _typeSet.insert ("SpatialAnchor");
   }
 };
 

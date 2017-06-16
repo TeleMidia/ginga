@@ -24,46 +24,46 @@ SimpleRule::SimpleRule (const string &id, const string &attr,
                         Comparator::Op op, const string &val)
     : Rule (id)
 {
-  attribute = attr;
+  _attribute = attr;
   setOperator (op);
-  value = val;
-  typeSet.insert ("SimpleRule");
+  _value = val;
+  _typeSet.insert ("SimpleRule");
 }
 
 string
 SimpleRule::getAttribute ()
 {
-  return attribute;
+  return _attribute;
 }
 
 Comparator::Op
 SimpleRule::getOperator ()
 {
-  return ruleOperator;
+  return _ruleOperator;
 }
 
 string
 SimpleRule::getValue ()
 {
-  return value;
+  return _value;
 }
 
 void
 SimpleRule::setOperator (Comparator::Op newOp)
 {
-  ruleOperator = newOp;
+  _ruleOperator = newOp;
 }
 
 void
 SimpleRule::setValue (const string &newValue)
 {
-  value = newValue;
+  _value = newValue;
 }
 
 void
 SimpleRule::setAttribute (const string &someAttribute)
 {
-  attribute = someAttribute;
+  _attribute = someAttribute;
 }
 
 GINGA_NCL_END

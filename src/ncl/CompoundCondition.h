@@ -33,10 +33,6 @@ public:
   static const short OP_AND = 0;
   static const short OP_OR = 1;
 
-private:
-  vector<ConditionExpression *> *expressions;
-  short myOperator;
-
 public:
   CompoundCondition ();
   CompoundCondition (ConditionExpression *c1, ConditionExpression *c2,
@@ -54,6 +50,10 @@ public:
   {
     return TriggerExpression::instanceOf (type);
   }
+
+private:
+  vector<ConditionExpression *> *_expressions;
+  short _myOperator;
 };
 
 GINGA_NCL_END

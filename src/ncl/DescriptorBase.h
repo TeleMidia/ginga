@@ -26,11 +26,8 @@ GINGA_NCL_BEGIN
 
 class DescriptorBase : public Base
 {
-private:
-  vector<GenericDescriptor *> *descriptorSet;
-
 public:
-  DescriptorBase (const string &id);
+  DescriptorBase (const string &_id);
   virtual ~DescriptorBase ();
 
   bool addDescriptor (GenericDescriptor *descriptor);
@@ -38,13 +35,13 @@ public:
 
   void clear ();
 
-private:
-  GenericDescriptor *getDescriptorLocally (const string &descriptorId);
-
-public:
   GenericDescriptor *getDescriptor (const string &descriptorId);
   vector<GenericDescriptor *> *getDescriptors ();
   bool removeDescriptor (GenericDescriptor *descriptor);
+
+private:
+  vector<GenericDescriptor *> *_descriptorSet;
+  GenericDescriptor *getDescriptorLocally (const string &descriptorId);
 };
 
 GINGA_NCL_END

@@ -24,17 +24,12 @@ GINGA_NCL_BEGIN
 
 class CompositeRule : public Rule
 {
-private:
-  vector<Rule *> *rules;
-  short ruleOperator;
-  string opStr;
-
 public:
   static const short OP_AND = 0;
   static const short OP_OR = 1;
 
-  CompositeRule (const string &id, short someOperator);
-  CompositeRule (const string &id, Rule *firstRule, Rule *secondRule,
+  CompositeRule (const string &_id, short someOperator);
+  CompositeRule (const string &_id, Rule *firstRule, Rule *secondRule,
                  short someOperator);
 
   virtual ~CompositeRule ();
@@ -44,6 +39,11 @@ public:
   short getOperator ();
   bool removeRule (Rule *rule);
   void setOperator (short op);
+
+private:
+  vector<Rule *> *_rules;
+  short _ruleOperator;
+  string _opStr;
 };
 
 GINGA_NCL_END

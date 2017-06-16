@@ -29,9 +29,6 @@ class SwitchNode;
 
 class SwitchPort : public Port
 {
-private:
-  vector<Port *> *portList;
-
 public:
   SwitchPort (const string &id, SwitchNode *switchNode);
   virtual ~SwitchPort ();
@@ -41,6 +38,9 @@ public:
   bool removePort (Port *port);
   Node *getEndNode ();
   InterfacePoint *getEndInterfacePoint ();
+
+private:
+  vector<Port *> *_portList;
 };
 
 GINGA_NCL_END

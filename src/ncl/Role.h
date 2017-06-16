@@ -24,11 +24,6 @@ GINGA_NCL_BEGIN
 
 class Role
 {
-protected:
-  string label;
-  short eventType;
-  int maxCon, minCon;
-
 public:
   Role ();
   virtual ~Role ();
@@ -43,13 +38,18 @@ public:
   virtual int getMinCon ();
   virtual int getMaxCon ();
 
-  virtual void setMinCon (int minCon);
-  virtual void setMaxCon (int maxCon);
+  virtual void setMinCon (int _minCon);
+  virtual void setMaxCon (int _maxCon);
   virtual bool
   instanceOf (const string &type)
   {
     return type == "Role";
-  };
+  }
+
+protected:
+  string _label;
+  short _eventType;
+  int _maxCon, _minCon;
 };
 
 GINGA_NCL_END

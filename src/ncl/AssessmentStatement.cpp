@@ -22,61 +22,61 @@ GINGA_NCL_BEGIN
 
 AssessmentStatement::AssessmentStatement (Comparator::Op comp) : Statement ()
 {
-  comparator = comp;
-  mainAssessment = NULL;
-  otherAssessment = NULL;
+  _comparator = comp;
+  _mainAssessment = NULL;
+  _otherAssessment = NULL;
   typeSet.insert ("AssessmentStatement");
 }
 
 AssessmentStatement::~AssessmentStatement ()
 {
-  if (mainAssessment != NULL)
+  if (_mainAssessment != NULL)
     {
-      delete mainAssessment;
-      mainAssessment = NULL;
+      delete _mainAssessment;
+      _mainAssessment = NULL;
     }
 
-  if (otherAssessment != NULL)
+  if (_otherAssessment != NULL)
     {
-      delete otherAssessment;
-      otherAssessment = NULL;
+      delete _otherAssessment;
+      _otherAssessment = NULL;
     }
 }
 
 AttributeAssessment *
 AssessmentStatement::getMainAssessment ()
 {
-  return mainAssessment;
+  return _mainAssessment;
 }
 
 void
 AssessmentStatement::setMainAssessment (AttributeAssessment *assessment)
 {
-  this->mainAssessment = assessment;
+  this->_mainAssessment = assessment;
 }
 
 Assessment *
 AssessmentStatement::getOtherAssessment ()
 {
-  return otherAssessment;
+  return _otherAssessment;
 }
 
 void
 AssessmentStatement::setOtherAssessment (Assessment *assessment)
 {
-  this->otherAssessment = assessment;
+  this->_otherAssessment = assessment;
 }
 
 Comparator::Op
 AssessmentStatement::getComparator ()
 {
-  return comparator;
+  return _comparator;
 }
 
 void
 AssessmentStatement::setComparator (Comparator::Op comp)
 {
-  comparator = comp;
+  _comparator = comp;
 }
 
 vector<Role *> *
@@ -85,10 +85,10 @@ AssessmentStatement::getRoles ()
   vector<Role *> *roles;
 
   roles = new vector<Role *>;
-  roles->push_back (mainAssessment);
-  if (otherAssessment->instanceOf ("AttributeAssessment"))
+  roles->push_back (_mainAssessment);
+  if (_otherAssessment->instanceOf ("AttributeAssessment"))
     {
-      roles->push_back ((AttributeAssessment *)otherAssessment);
+      roles->push_back ((AttributeAssessment *)_otherAssessment);
     }
   return roles;
 }

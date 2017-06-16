@@ -22,32 +22,32 @@ GINGA_NCL_BEGIN
 
 Animation::Animation ()
 {
-  this->duration = "";
-  this->by = "";
+  this->_duration = "";
+  this->_by = "";
 }
 
 void
 Animation::setDuration (const string &dur)
 {
-  duration = dur;
+  _duration = dur;
 }
 
 string
 Animation::getDuration ()
 {
-  return duration;
+  return _duration;
 }
 
 void
 Animation::setBy (const string &by)
 {
-  this->by = by;
+  this->_by = by;
 }
 
 string
 Animation::getBy ()
 {
-  return by;
+  return _by;
 }
 
 GINGA_NCL_END

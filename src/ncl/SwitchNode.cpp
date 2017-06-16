@@ -24,11 +24,11 @@ GINGA_NCL_BEGIN
 
 SwitchNode::SwitchNode (const string &id) : CompositeNode (id)
 {
-  content = new SwitchContent ();
-  defaultNode = NULL;
+  _content = new SwitchContent ();
+  _defaultNode = NULL;
 
-  typeSet.insert ("SwitchNode");
-  typeSet.insert ("DocumentNode");
+  _typeSet.insert ("SwitchNode");
+  _typeSet.insert ("DocumentNode");
 }
 
 SwitchNode::~SwitchNode ()
@@ -36,15 +36,15 @@ SwitchNode::~SwitchNode ()
   vector<Node *>::iterator i;
   vector<Rule *>::iterator j;
 
-  if (content != NULL)
+  if (_content != NULL)
     {
-      delete content;
-      content = NULL;
+      delete _content;
+      _content = NULL;
     }
 
-  i = nodes.begin ();
-  j = ruleList.begin ();
-  while (i != nodes.end ())
+  i = _nodes.begin ();
+  j = _ruleList.begin ();
+  while (i != _nodes.end ())
     {
       if ((*i) != this && (*i)->getParentComposition () == this)
         {
@@ -60,27 +60,27 @@ SwitchNode::~SwitchNode ()
       ++i;
       //++j;
     }
-  nodes.clear ();
-  ruleList.clear ();
+  _nodes.clear ();
+  _ruleList.clear ();
 }
 
 bool
 SwitchNode::addNode (unsigned int index, Node *node, Rule *rule)
 {
-  if (node == NULL || rule == NULL || index > nodes.size ())
+  if (node == NULL || rule == NULL || index > _nodes.size ())
     {
       return false;
     }
 
-  if (index == nodes.size ())
+  if (index == _nodes.size ())
     {
-      nodes.push_back (node);
-      ruleList.push_back (rule);
+      _nodes.push_back (node);
+      _ruleList.push_back (rule);
     }
   else
     {
-      nodes.insert (nodes.begin () + index, node);
-      ruleList.insert (ruleList.begin () + index, rule);
+      _nodes.insert (_nodes.begin () + index, node);
+      _ruleList.insert (_ruleList.begin () + index, rule);
     }
 
   node->setParentComposition (this);
@@ -95,8 +95,8 @@ SwitchNode::addNode (Node *node, Rule *rule)
       return false;
     }
 
-  nodes.push_back (node);
-  ruleList.push_back (rule);
+  _nodes.push_back (node);
+  _ruleList.push_back (rule);
 
   node->setParentComposition (this);
   return true;
@@ -133,7 +133,7 @@ SwitchNode::addSwitchPortMap (SwitchPort *switchPort, Node *node,
 bool
 SwitchNode::addPort (Port *port)
 {
-  return addPort ((int) portList.size (), port);
+  return addPort ((int) _portList.size (), port);
 }
 
 bool
@@ -153,25 +153,25 @@ SwitchNode::exchangeNodesAndRules (unsigned int index1, unsigned int index2)
   Node *auxNode;
   Rule *auxRule;
 
-  if (index1 >= nodes.size () || index2 >= nodes.size ())
+  if (index1 >= _nodes.size () || index2 >= _nodes.size ())
     {
       return;
     }
 
-  auxNode = (Node *)(nodes[index1]);
-  auxRule = (Rule *)(ruleList[index1]);
+  auxNode = (Node *)(_nodes[index1]);
+  auxRule = (Rule *)(_ruleList[index1]);
 
-  nodes[index1] = nodes[index2];
-  nodes[index2] = auxNode;
+  _nodes[index1] = _nodes[index2];
+  _nodes[index2] = auxNode;
 
-  ruleList[index1] = ruleList[index2];
-  ruleList[index2] = auxRule;
+  _ruleList[index1] = _ruleList[index2];
+  _ruleList[index2] = auxRule;
 }
 
 Node *
 SwitchNode::getDefaultNode ()
 {
-  return defaultNode;
+  return _defaultNode;
 }
 
 InterfacePoint *
@@ -191,9 +191,9 @@ Node *
 SwitchNode::getNode (const string &nodeId)
 {
   // verifica se o no' default possui identificador dado por nodeId
-  if (defaultNode != NULL && defaultNode->getId () == nodeId)
+  if (_defaultNode != NULL && _defaultNode->getId () == nodeId)
     {
-      return defaultNode;
+      return _defaultNode;
     }
 
   return CompositeNode::getNode (nodeId);
@@ -202,12 +202,12 @@ SwitchNode::getNode (const string &nodeId)
 Node *
 SwitchNode::getNode (unsigned int index)
 {
-  if (index >= nodes.size ())
+  if (index >= _nodes.size ())
     {
       return NULL;
     }
 
-  return (Node *)(nodes[index]);
+  return (Node *)(_nodes[index]);
 }
 
 Node *
@@ -216,29 +216,29 @@ SwitchNode::getNode (Rule *rule)
   unsigned int index;
 
   index = indexOfRule (rule);
-  if (index > ruleList.size ())
+  if (index > _ruleList.size ())
     {
       return NULL;
     }
 
-  return static_cast<Node *> (nodes[index]);
+  return static_cast<Node *> (_nodes[index]);
 }
 
 unsigned int
 SwitchNode::getNumRules ()
 {
-  return (unsigned int) ruleList.size ();
+  return (unsigned int) _ruleList.size ();
 }
 
 Rule *
 SwitchNode::getRule (unsigned int index)
 {
-  if (index >= ruleList.size ())
+  if (index >= _ruleList.size ())
     {
       return NULL;
     }
 
-  return static_cast<Rule *> (ruleList[index]);
+  return static_cast<Rule *> (_ruleList[index]);
 }
 
 unsigned int
@@ -247,7 +247,7 @@ SwitchNode::indexOfRule (Rule *rule)
   unsigned int i = 0;
   vector<Rule *>::iterator j;
 
-  for (j = ruleList.begin (); j != ruleList.end (); ++j)
+  for (j = _ruleList.begin (); j != _ruleList.end (); ++j)
     {
       if ((*j)->getId () == rule->getId ())
         {
@@ -255,7 +255,7 @@ SwitchNode::indexOfRule (Rule *rule)
         }
       i++;
     }
-  return (unsigned int) ruleList.size () + 10;
+  return (unsigned int) _ruleList.size () + 10;
 }
 
 bool
@@ -280,16 +280,16 @@ SwitchNode::recursivelyGetNode (const string &nodeId)
 {
   Node *wanted;
 
-  if (defaultNode != NULL && defaultNode->getId () == nodeId)
+  if (_defaultNode != NULL && _defaultNode->getId () == nodeId)
     {
-      return defaultNode;
+      return _defaultNode;
     }
 
   wanted = CompositeNode::recursivelyGetNode (nodeId);
-  if (wanted == NULL && defaultNode != NULL
-      && defaultNode->instanceOf ("CompositeNode"))
+  if (wanted == NULL && _defaultNode != NULL
+      && _defaultNode->instanceOf ("CompositeNode"))
     {
-      wanted = ((CompositeNode *)defaultNode)->recursivelyGetNode (nodeId);
+      wanted = ((CompositeNode *)_defaultNode)->recursivelyGetNode (nodeId);
     }
 
   return wanted;
@@ -301,10 +301,10 @@ SwitchNode::removeNode (Node *node)
   int i, size;
   Node *auxNode;
 
-  size = (int) CompositeNode::nodes.size ();
+  size = (int) CompositeNode::_nodes.size ();
   for (i = 0; i < size; i++)
     {
-      auxNode = (Node *)CompositeNode::nodes[i];
+      auxNode = (Node *)CompositeNode::_nodes[i];
       if (auxNode->getId () == node->getId ())
         {
           return removeNode (i);
@@ -318,18 +318,18 @@ SwitchNode::removeNode (unsigned int index)
 {
   Node *node;
 
-  if (index >= CompositeNode::nodes.size ())
+  if (index >= CompositeNode::_nodes.size ())
     {
       return false;
     }
 
   clog << "SwitchNode::removeNode" << endl;
 
-  node = (Node *)CompositeNode::nodes[index];
+  node = (Node *)CompositeNode::_nodes[index];
   node->setParentComposition (NULL);
 
-  (CompositeNode::nodes).erase (CompositeNode::nodes.begin () + index);
-  ruleList.erase (ruleList.begin () + index);
+  (CompositeNode::_nodes).erase (CompositeNode::_nodes.begin () + index);
+  _ruleList.erase (_ruleList.begin () + index);
   return true;
 }
 
@@ -339,18 +339,18 @@ SwitchNode::removeRule (Rule *rule)
   unsigned int index;
 
   index = indexOfRule (rule);
-  if (index < ruleList.size ())
+  if (index < _ruleList.size ())
     {
       vector<Node *>::iterator iterNode;
-      iterNode = nodes.begin ();
+      iterNode = _nodes.begin ();
       iterNode = iterNode + index;
 
       vector<Rule *>::iterator iterRule;
-      iterRule = ruleList.begin ();
+      iterRule = _ruleList.begin ();
       iterRule = iterRule + index;
 
-      nodes.erase (iterNode);
-      ruleList.erase (iterRule);
+      _nodes.erase (iterNode);
+      _ruleList.erase (iterRule);
       return true;
     }
 
@@ -360,7 +360,7 @@ SwitchNode::removeRule (Rule *rule)
 void
 SwitchNode::setDefaultNode (Node *node)
 {
-  defaultNode = node;
+  _defaultNode = node;
 }
 
 GINGA_NCL_END

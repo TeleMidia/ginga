@@ -22,32 +22,32 @@ GINGA_NCL_BEGIN
 
 ReferenceContent::ReferenceContent () : Content ("")
 {
-  reference = "";
-  typeSet.insert ("ReferenceContent");
+  _reference = "";
+  _typeSet.insert ("ReferenceContent");
 }
 
 ReferenceContent::ReferenceContent (const string &ref) : Content ("")
 {
   setReference (ref);
-  typeSet.insert ("ReferenceContent");
+  _typeSet.insert ("ReferenceContent");
 }
 
 string
 ReferenceContent::getReference ()
 {
-  return reference;
+  return _reference;
 }
 
 string
 ReferenceContent::getCompleteReferenceUrl ()
 {
-  return reference;
+  return _reference;
 }
 
 void
 ReferenceContent::setReference (const string &ref)
 {
-  reference = ref;
+  _reference = ref;
 }
 
 string
@@ -57,7 +57,7 @@ ReferenceContent::getType ()
   string::size_type index, len;
 
   type = "";
-  src = reference;
+  src = _reference;
 
   // look for type using the mime table
   if (src == "")

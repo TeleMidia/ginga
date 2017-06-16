@@ -30,21 +30,15 @@ GINGA_NCL_BEGIN
 
 class ContextNode : public CompositeNode, public LinkComposition
 {
-protected:
-  map<string, GenericDescriptor *> descriptorCollection;
-
-private:
-  set<Link *> linkSet;
-
 public:
-  ContextNode (const string &id);
+  ContextNode (const string &_id);
   virtual ~ContextNode ();
 
   bool
   instanceOf (const string &className)
   {
     return Entity::instanceOf (className);
-  };
+  }
 
   bool addLink (Link *link);
   bool addNode (Node *node);
@@ -57,7 +51,13 @@ public:
   int getNumLinks ();
   bool removeLink (const string &linkId);
   bool removeLink (Link *link);
-  bool setNodeDescriptor (const string &nodeId, GenericDescriptor *descriptor);
+  bool setNodeDescriptor (const string &nodeId, GenericDescriptor *_descriptor);
+
+protected:
+  map<string, GenericDescriptor *> _descriptorCollection;
+
+private:
+  set<Link *> _linkSet;
 };
 
 GINGA_NCL_END

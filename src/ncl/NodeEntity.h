@@ -31,14 +31,6 @@ GINGA_NCL_BEGIN
 
 class NodeEntity : public Node
 {
-protected:
-  GenericDescriptor *descriptor;
-  Content *content;
-
-private:
-  set<ReferNode *> instSameInstances;
-  set<ReferNode *> gradSameInstances;
-
 public:
   NodeEntity (const string &uid, Content *someContent);
   virtual ~NodeEntity ();
@@ -47,16 +39,24 @@ public:
   GenericDescriptor *getDescriptor ();
   void setDescriptor (GenericDescriptor *someDescriptor);
   Content *getContent ();
-  void setContent (Content *content);
+  void setContent (Content *_content);
   bool addAnchor (Anchor *anchor);
   bool addAnchor (int index, Anchor *anchor);
-  void setId (const string &id);
+  void setId (const string &_id);
   bool removeAnchor (int index);
   bool removeAnchor (Anchor *anchor);
   set<ReferNode *> *getInstSameInstances ();
   set<ReferNode *> *getGradSameInstances ();
   bool addSameInstance (ReferNode *node);
   void removeSameInstance (ReferNode *node);
+
+protected:
+  GenericDescriptor *_descriptor;
+  Content *_content;
+
+private:
+  set<ReferNode *> _instSameInstances;
+  set<ReferNode *> _gradSameInstances;
 };
 
 GINGA_NCL_END

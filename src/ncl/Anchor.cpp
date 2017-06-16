@@ -22,7 +22,7 @@ GINGA_NCL_BEGIN
 
 Anchor::Anchor (const string &id) : InterfacePoint (id)
 {
-  typeSet.insert ("Anchor");
+  _typeSet.insert ("Anchor");
 }
 
 GINGA_NCL_END

@@ -22,20 +22,20 @@ GINGA_NCL_BEGIN
 
 RegionBase::RegionBase (const string &id) : Base (id)
 {
-  deviceRegion = new LayoutRegion ("");
-  typeSet.insert ("RegionBase");
+  _deviceRegion = new LayoutRegion ("");
+  _typeSet.insert ("RegionBase");
 }
 
 RegionBase::~RegionBase ()
 {
   map<string, LayoutRegion *>::iterator i;
 
-  regions.clear ();
+  _regions.clear ();
 
-  if (deviceRegion != NULL)
+  if (_deviceRegion != NULL)
     {
-      delete deviceRegion;
-      deviceRegion = NULL;
+      delete _deviceRegion;
+      _deviceRegion = NULL;
     }
 }
 
@@ -46,11 +46,11 @@ RegionBase::addRegion (LayoutRegion *region)
   string regId;
 
   regId = region->getId ();
-  i = regions.find (regId);
-  if (i != regions.end ())
+  i = _regions.find (regId);
+  if (i != _regions.end ())
     return false;               // duplicated id
 
-  regions[regId] = region;
+  _regions[regId] = region;
   return true;
 }
 
@@ -67,8 +67,8 @@ RegionBase::getRegionLocally (const string &regionId)
   map<string, LayoutRegion *>::iterator childRegions;
   LayoutRegion *region;
 
-  childRegions = regions.begin ();
-  while (childRegions != regions.end ())
+  childRegions = _regions.begin ();
+  while (childRegions != _regions.end ())
     {
       region = childRegions->second;
       if (region->getId () == regionId)
@@ -95,14 +95,14 @@ RegionBase::getRegion (const string &regionId)
   prefix = regionId.substr (0, index);
   index++;
   suffix = regionId.substr (index, regionId.length () - index);
-  if (baseAliases.find (prefix) != baseAliases.end ())
+  if (_baseAliases.find (prefix) != _baseAliases.end ())
     {
-      base = (RegionBase *)(baseAliases[prefix]);
+      base = (RegionBase *)(_baseAliases[prefix]);
       return base->getRegion (suffix);
     }
-  else if (baseLocations.find (prefix) != baseLocations.end ())
+  else if (_baseLocations.find (prefix) != _baseLocations.end ())
     {
-      base = (RegionBase *)(baseLocations[prefix]);
+      base = (RegionBase *)(_baseLocations[prefix]);
       return base->getRegion (suffix);
     }
   else
@@ -118,7 +118,7 @@ RegionBase::getRegions ()
   vector<LayoutRegion *> *childRegions;
 
   childRegions = new vector<LayoutRegion *>;
-  for (i = regions.begin (); i != regions.end (); ++i)
+  for (i = _regions.begin (); i != _regions.end (); ++i)
     {
       childRegions->push_back (i->second);
     }
@@ -131,11 +131,11 @@ RegionBase::removeRegion (LayoutRegion *region)
 {
   map<string, LayoutRegion *>::iterator i;
 
-  for (i = regions.begin (); i != regions.end (); ++i)
+  for (i = _regions.begin (); i != _regions.end (); ++i)
     {
       if (i->second == region)
         {
-          regions.erase (i);
+          _regions.erase (i);
           return true;
         }
     }
@@ -145,7 +145,7 @@ RegionBase::removeRegion (LayoutRegion *region)
 void
 RegionBase::clear ()
 {
-  regions.clear ();
+  _regions.clear ();
   Base::clear ();
 }
 

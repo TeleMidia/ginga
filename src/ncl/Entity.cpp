@@ -20,22 +20,22 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-set<Entity *> Entity::instances;
+set<Entity *> Entity::_instances;
 
 Entity::Entity (const string &id)
 {
-  this->id = id;
-  typeSet.insert ("Entity");
-  instances.insert (this);
+  this->_id = id;
+  _typeSet.insert ("Entity");
+  _instances.insert (this);
 }
 
 Entity::~Entity ()
 {
   set<Entity *>::iterator i;
 
-  i = instances.find (this);
-  if (i != instances.end ())
-    instances.erase (i);
+  i = _instances.find (this);
+  if (i != _instances.end ())
+    _instances.erase (i);
 }
 
 bool
@@ -44,12 +44,12 @@ Entity::hasInstance (Entity *instance, bool eraseFromList)
   set<Entity *>::iterator i;
   bool hasEntity = false;
 
-  i = instances.find (instance);
-  if (i != instances.end ())
+  i = _instances.find (instance);
+  if (i != _instances.end ())
     {
       if (eraseFromList)
         {
-          instances.erase (i);
+          _instances.erase (i);
         }
       hasEntity = true;
     }
@@ -60,9 +60,9 @@ Entity::hasInstance (Entity *instance, bool eraseFromList)
 bool
 Entity::instanceOf (const string &s)
 {
-  if (!typeSet.empty ())
+  if (!_typeSet.empty ())
     {
-      return (typeSet.find (s) != typeSet.end ());
+      return (_typeSet.find (s) != _typeSet.end ());
     }
   else
     {
@@ -78,13 +78,13 @@ Entity::compareTo (Entity *otherEntity)
 
   otherId = (static_cast<Entity *> (otherEntity))->getId ();
 
-  if (id == "")
+  if (_id == "")
     return -1;
 
   if (otherId == "")
     return 1;
 
-  cmp = id.compare (otherId);
+  cmp = _id.compare (otherId);
   switch (cmp)
     {
     case 0:
@@ -100,13 +100,13 @@ Entity::compareTo (Entity *otherEntity)
 string
 Entity::getId ()
 {
-  return id;
+  return _id;
 }
 
 void
 Entity::setId (const string &someId)
 {
-  id = someId;
+  _id = someId;
 }
 
 Entity *

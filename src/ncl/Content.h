@@ -24,10 +24,6 @@ GINGA_NCL_BEGIN
 
 class Content
 {
-protected:
-  string type;
-  set<string> typeSet;
-
 public:
   Content (const string &someType);
   Content ();
@@ -35,6 +31,10 @@ public:
   bool instanceOf (const string &s);
   virtual string getType (void);
   virtual void setType (const string &someType);
+
+protected:
+  string _type;
+  set<string> _typeSet;
 };
 
 GINGA_NCL_END

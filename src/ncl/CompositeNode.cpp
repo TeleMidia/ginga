@@ -24,22 +24,22 @@ GINGA_NCL_BEGIN
 
 CompositeNode::CompositeNode (const string &id) : NodeEntity (id, NULL)
 {
-  typeSet.insert ("CompositeNode");
+  _typeSet.insert ("CompositeNode");
 }
 
 CompositeNode::~CompositeNode ()
 {
   vector<Port *>::iterator i;
 
-  nodes.clear ();
+  _nodes.clear ();
 
-  i = portList.begin ();
-  while (i != portList.end ())
+  i = _portList.begin ();
+  while (i != _portList.end ())
     {
       delete *i;
       ++i;
     }
-  portList.clear ();
+  _portList.clear ();
 }
 
 bool
@@ -65,13 +65,13 @@ CompositeNode::addAnchor (int index, Anchor *anchor)
 bool
 CompositeNode::addAnchor (Anchor *anchor)
 {
-  return CompositeNode::addAnchor ((int) anchorList.size (), anchor);
+  return CompositeNode::addAnchor ((int) _anchorList.size (), anchor);
 }
 
 bool
 CompositeNode::addPort (unsigned int index, Port *port)
 {
-  if (index > portList.size () || port == NULL
+  if (index > _portList.size () || port == NULL
       || NodeEntity::getAnchor (port->getId ()) != NULL
       || getPort (port->getId ()) != NULL)
     {
@@ -80,13 +80,13 @@ CompositeNode::addPort (unsigned int index, Port *port)
       return false;
     }
 
-  if (index == portList.size ())
+  if (index == _portList.size ())
     {
-      portList.push_back (port);
+      _portList.push_back (port);
     }
   else
     {
-      portList.insert (portList.begin () + index, port);
+      _portList.insert (_portList.begin () + index, port);
     }
 
   return true;
@@ -95,19 +95,19 @@ CompositeNode::addPort (unsigned int index, Port *port)
 bool
 CompositeNode::addPort (Port *port)
 {
-  return addPort ((int) portList.size (), port);
+  return addPort ((int) _portList.size (), port);
 }
 
 void
 CompositeNode::clearPorts ()
 {
-  portList.clear ();
+  _portList.clear ();
 }
 
 unsigned int
 CompositeNode::getNumPorts ()
 {
-  return (int) portList.size ();
+  return (int) _portList.size ();
 }
 
 Port *
@@ -120,7 +120,7 @@ CompositeNode::getPort (const string &portId)
 
   vector<Port *>::iterator i;
 
-  for (i = portList.begin (); i != portList.end (); ++i)
+  for (i = _portList.begin (); i != _portList.end (); ++i)
     {
       if ((*i)->getId () == portId)
         {
@@ -133,19 +133,19 @@ CompositeNode::getPort (const string &portId)
 Port *
 CompositeNode::getPort (unsigned int index)
 {
-  if (index >= portList.size ())
+  if (index >= _portList.size ())
     return NULL;
 
-  return portList[index];
+  return _portList[index];
 }
 
 vector<Port *> *
 CompositeNode::getPorts ()
 {
-  if (portList.empty ())
+  if (_portList.empty ())
     return NULL;
 
-  return &portList;
+  return &_portList;
 }
 
 unsigned int
@@ -154,7 +154,7 @@ CompositeNode::indexOfPort (Port *port)
   unsigned int i = 0;
   vector<Port *>::iterator it;
 
-  for (it = portList.begin (); it != portList.end (); it++)
+  for (it = _portList.begin (); it != _portList.end (); it++)
     {
       if ((*it)->getId () == port->getId ())
         {
@@ -162,18 +162,18 @@ CompositeNode::indexOfPort (Port *port)
         }
       i++;
     }
-  return (int) portList.size () + 10;
+  return (int) _portList.size () + 10;
 }
 
 bool
 CompositeNode::removePort (Port *port)
 {
   vector<Port *>::iterator it;
-  for (portList.begin (); it != portList.end (); it++)
+  for (_portList.begin (); it != _portList.end (); it++)
     {
       if (*it == port)
         {
-          portList.erase (it);
+          _portList.erase (it);
           return true;
         }
     }
@@ -205,7 +205,7 @@ CompositeNode::getNode (const string &nodeId)
 {
   vector<Node *>::iterator i;
 
-  for (i = nodes.begin (); i != nodes.end (); ++i)
+  for (i = _nodes.begin (); i != _nodes.end (); ++i)
     {
       if ((*i)->getId () == nodeId)
         {
@@ -219,13 +219,13 @@ CompositeNode::getNode (const string &nodeId)
 vector<Node *> *
 CompositeNode::getNodes ()
 {
-  return &nodes;
+  return &_nodes;
 }
 
 unsigned int
 CompositeNode::getNumNodes ()
 {
-  return (unsigned int) nodes.size ();
+  return (unsigned int) _nodes.size ();
 }
 
 bool
@@ -249,21 +249,21 @@ CompositeNode::recursivelyContainsNode (Node *node)
   CompositeNode *compositeNode;
   unsigned int i;
 
-  if (nodes.empty ())
+  if (_nodes.empty ())
     {
       return false;
     }
 
-  for (i = 0; i < nodes.size (); i++)
+  for (i = 0; i < _nodes.size (); i++)
     {
-      childNode = nodes[i];
+      childNode = _nodes[i];
       if (childNode == node)
         {
           return true;
         }
     }
 
-  for (it = nodes.begin (); it != nodes.end (); ++it)
+  for (it = _nodes.begin (); it != _nodes.end (); ++it)
     {
       childNode = (Node *)*it;
       if (childNode->instanceOf ("CompositeNode"))
@@ -302,12 +302,12 @@ CompositeNode::recursivelyGetNode (const string &nodeId)
   Node *node;
   vector<Node *>::iterator i;
 
-  if (nodes.empty ())
+  if (_nodes.empty ())
     {
       return NULL;
     }
 
-  for (i = nodes.begin (); i != nodes.end (); ++i)
+  for (i = _nodes.begin (); i != _nodes.end (); ++i)
     {
       if (((*i)->getId ()).compare (nodeId) == 0)
         {
@@ -334,12 +334,12 @@ CompositeNode::removeNode (Node *node)
 
   clog << "CompositeNode::removeNode" << endl;
 
-  if (nodes.empty ())
+  if (_nodes.empty ())
     {
       return false;
     }
 
-  for (it = nodes.begin (); it != nodes.end (); ++it)
+  for (it = _nodes.begin (); it != _nodes.end (); ++it)
     {
       if (*it == node)
         {
@@ -347,10 +347,10 @@ CompositeNode::removeNode (Node *node)
         }
     }
 
-  if (it != nodes.end ())
+  if (it != _nodes.end ())
     {
       node->setParentComposition (NULL);
-      nodes.erase (it);
+      _nodes.erase (it);
       return true;
     }
   else
@@ -367,7 +367,7 @@ CompositeNode::getNodeDescriptor (arg_unused (Node *node))
 
 bool
 CompositeNode::setNodeDescriptor (arg_unused (const string &nodeId),
-                                  arg_unused (GenericDescriptor *descriptor))
+                                  arg_unused (GenericDescriptor *_descriptor))
 {
   return false;
 }

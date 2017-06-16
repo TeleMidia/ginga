@@ -44,27 +44,12 @@ GINGA_NCL_BEGIN
 
 class NclDocument
 {
-private:
-  ContextNode *body;
-  ConnectorBase *connectorBase;
-  DescriptorBase *descriptorBase;
-  map<string, NclDocument *> documentAliases;
-  vector<NclDocument *> documentBase;
-  map<string, NclDocument *> documentLocations;
-  string id;
-  map<int, RegionBase *> regionBases;
-  RuleBase *ruleBase;
-  TransitionBase *transitionBase;
-
-  string docLocation;
-  NclDocument *parentDocument;
-
 public:
-  NclDocument (const string &id, const string &docLocation);
+  NclDocument (const string &_id, const string &_docLocation);
   ~NclDocument ();
 
   NclDocument *getParentDocument ();
-  void setParentDocument (NclDocument *parentDocument);
+  void setParentDocument (NclDocument *_parentDocument);
   string getDocumentPerspective ();
 
   string getDocumentLocation ();
@@ -85,17 +70,9 @@ public:
   vector<NclDocument *> *getDocuments ();
   string getId ();
 
-private:
-  Node *getNodeLocally (const string &nodeId);
-
-public:
   Node *getNode (const string &nodeId);
   LayoutRegion *getRegion (const string &regionId);
 
-private:
-  LayoutRegion *getRegion (const string &regionId, RegionBase *regionBase);
-
-public:
   RegionBase *getRegionBase (int devClass);
   RegionBase *getRegionBase (const string &regionBaseId);
   map<int, RegionBase *> *getRegionBases ();
@@ -103,16 +80,34 @@ public:
   RuleBase *getRuleBase ();
   vector<Node *> *getSettingsNodes ();
   bool removeDocument (NclDocument *document);
-  void setConnectorBase (ConnectorBase *connectorBase);
-  void setTransitionBase (TransitionBase *transitionBase);
-  void setDescriptorBase (DescriptorBase *descriptorBase);
+  void setConnectorBase (ConnectorBase *_connectorBase);
+  void setTransitionBase (TransitionBase *_transitionBase);
+  void setDescriptorBase (DescriptorBase *_descriptorBase);
   void setDocumentAlias (NclDocument *document, const string &alias);
   void setBody (ContextNode *node);
   void setDocumentLocation (NclDocument *document, const string &location);
-  void setId (const string &id);
+  void setId (const string &_id);
   void addRegionBase (RegionBase *regionBase);
-  void setRuleBase (RuleBase *ruleBase);
+  void setRuleBase (RuleBase *_ruleBase);
   void removeRegionBase (const string &regionBaseId);
+
+private:
+  ContextNode *_body;
+  ConnectorBase *_connectorBase;
+  DescriptorBase *_descriptorBase;
+  map<string, NclDocument *> _documentAliases;
+  vector<NclDocument *> _documentBase;
+  map<string, NclDocument *> _documentLocations;
+  string _id;
+  map<int, RegionBase *> _regionBases;
+  RuleBase *_ruleBase;
+  TransitionBase *_transitionBase;
+
+  string _docLocation;
+  NclDocument *_parentDocument;
+
+  Node *getNodeLocally (const string &nodeId);
+  LayoutRegion *getRegion (const string &regionId, RegionBase *regionBase);
 };
 
 GINGA_NCL_END

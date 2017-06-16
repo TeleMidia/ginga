@@ -56,19 +56,6 @@ public:
   static const short DIRECTION_FORWARD = 0;
   static const short DIRECTION_REVERSE = 1;
 
-private:
-  int type;
-  int subtype;
-  double dur;
-  double startProgress;
-  double endProgress;
-  short direction;
-  SDL_Color fadeColor;
-  int horzRepeat;
-  int vertRepeat;
-  SDL_Color borderColor;
-  int borderWidth;
-
 public:
   Transition (const string &id, int type);
   virtual ~Transition ();
@@ -86,14 +73,27 @@ public:
   void setBorderColor (SDL_Color color);
   void setBorderWidth (int width);
   void setDirection (short dir);
-  void setDur (double dur);
+  void setDur (double _dur);
   void setEndProgress (double ep);
   void setFadeColor (SDL_Color color);
   void setHorzRepeat (int num);
   void setStartProgress (double sp);
-  void setSubtype (int subtype);
-  void setType (int type);
+  void setSubtype (int _subtype);
+  void setType (int _type);
   void setVertRepeat (int num);
+
+private:
+  int _type;
+  int _subtype;
+  double _dur;
+  double _startProgress;
+  double _endProgress;
+  short _direction;
+  SDL_Color _fadeColor;
+  int _horzRepeat;
+  int _vertRepeat;
+  SDL_Color _borderColor;
+  int _borderWidth;
 };
 
 GINGA_NCL_END

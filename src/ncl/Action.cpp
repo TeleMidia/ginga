@@ -22,26 +22,26 @@ GINGA_NCL_BEGIN
 
 Action::Action ()
 {
-  delay = "0";
-  typeSet.insert ("Action");
+  _delay = "0";
+  _typeSet.insert ("Action");
 }
 
 Action::Action (const string &newDelay)
 {
-  delay = newDelay;
-  typeSet.insert ("Action");
+  _delay = newDelay;
+  _typeSet.insert ("Action");
 }
 
 string
 Action::getDelay ()
 {
-  return delay;
+  return _delay;
 }
 
 void
 Action::setDelay (const string &dur)
 {
-  delay = dur;
+  _delay = dur;
 }
 
 GINGA_NCL_END
