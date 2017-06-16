@@ -62,9 +62,6 @@ FormatterConverter::FormatterConverter (RuleAdapter *ruleAdapter)
 
 FormatterConverter::~FormatterConverter ()
 {
-  map<string, NclExecutionObject *>::iterator i;
-  NclExecutionObject *object;
-
   for (NclFormatterEvent *evt: _listening)
     {
       if (NclFormatterEvent::hasInstance (evt, false))
@@ -72,11 +69,10 @@ FormatterConverter::~FormatterConverter ()
           evt->removeEventListener (this);
         }
     }
-  this->_ruleAdapter = nullptr;
 
-  for (i = _executionObjects.begin (); i != _executionObjects.end (); )
+  for (auto i = _executionObjects.begin (); i != _executionObjects.end (); )
     {
-      object = i->second;
+      NclExecutionObject *object = i->second;
 
       if (!removeExecutionObject (object))
         {
@@ -111,9 +107,9 @@ FormatterConverter::getObjectFromNodeId (const string &id)
   for (auto &it: _executionObjects)
     {
       NclExecutionObject *expectedObject = it.second;
-      NodeEntity *dataObject
-          = dynamic_cast<NodeEntity *>(expectedObject->getDataObject ()
-                                       ->getDataEntity ());
+
+      auto dataObject = dynamic_cast<NodeEntity *> (
+            expectedObject->getDataObject () ->getDataEntity ());
 
       g_assert_nonnull (dataObject);
 
@@ -131,175 +127,6 @@ void
 FormatterConverter::setLinkActionListener (INclLinkActionListener *actListener)
 {
   this->_actionListener = actListener;
-}
-
-NclCompositeExecutionObject *
-FormatterConverter::addSameInstance (NclExecutionObject *executionObject,
-                                     ReferNode *referNode)
-{
-  vector<Node *> *ncmPerspective = referNode->getPerspective ();
-  NclNodeNesting *referPerspective = new NclNodeNesting (ncmPerspective);
-
-  NclCompositeExecutionObject *referParentObject
-      = getParentExecutionObject (referPerspective);
-
-  if (referParentObject != nullptr)
-    {
-      TRACE ("'%s' with head node '%s' refer to '%s', which has as "
-             "execution object '%s' and parent object '%s'",
-             referNode->getId ().c_str (),
-             referPerspective->getHeadNode ()->getId ().c_str (),
-             referNode->getReferredEntity ()->getId ().c_str (),
-             executionObject->getId ().c_str (),
-             referParentObject->getId ().c_str ());
-
-      executionObject->addParentObject (
-            referNode,
-            referParentObject,
-            referPerspective->getNode (referPerspective->getNumNodes () - 2));
-
-      referParentObject->addExecutionObject (executionObject);
-
-      // A new entry for the execution object is inserted using
-      // the refer node id.  As a consequence, links referring to the
-      // refer node will generate events in the execution object.
-      NclCascadingDescriptor *desc = executionObject->getDescriptor ();
-
-      string objectId;
-      if (desc)
-        {
-          objectId = (referPerspective->getId () + SEPARATOR
-                      + executionObject->getDescriptor ()->getId ());
-        }
-      else
-        {
-          objectId = referPerspective->getId ();
-        }
-      _executionObjects[objectId] = executionObject;
-    }
-
-  delete ncmPerspective;
-  delete referPerspective;
-
-  return referParentObject;
-}
-
-void
-FormatterConverter::addExecutionObject (NclExecutionObject *exeObj,
-                                        NclCompositeExecutionObject *parentObj)
-{
-  _executionObjects[exeObj->getId ()] = exeObj;
-
-  if (parentObj)
-    {
-      parentObj->addExecutionObject (exeObj);
-    }
-
-  // Hanlde settings nodes.
-  Node *dataObject = exeObj->getDataObject ();
-  ContentNode *contentNode = dynamic_cast <ContentNode *> (dataObject);
-
-  if (contentNode && contentNode->isSettingNode ())
-    {
-      _settingObjects.insert (exeObj);
-    }
-
-  ReferNode *referNode = dynamic_cast <ReferNode *> (dataObject);
-  if (referNode)
-    {
-      if (referNode->getInstanceType () == "instSame")
-        {
-          Entity *entity = referNode->getDataEntity ();
-          ContentNode *entityContentNode
-              = dynamic_cast <ContentNode *> (entity);
-
-          if (entityContentNode && entityContentNode->isSettingNode ())
-            {
-              _settingObjects.insert (exeObj);
-            }
-        }
-    }
-
-  NclNodeNesting *nodePerspective = exeObj->getNodePerspective ();
-  Node *headNode = nodePerspective->getHeadNode ();
-
-  NodeEntity *nodeEntity = dynamic_cast <NodeEntity *> (dataObject);
-  CompositeNode *headCompositeNode = dynamic_cast <CompositeNode *> (headNode);
-  if (headCompositeNode && nodeEntity)
-    {
-      set<ReferNode *> *sameInstances = nodeEntity->getInstSameInstances ();
-      g_assert_nonnull (sameInstances);
-
-      for (ReferNode *referNode: *(sameInstances))
-        {
-          TRACE ("'%s' instSame of '%s'",
-                 exeObj->getId ().c_str(),
-                 referNode->getId ().c_str());
-
-          if (headCompositeNode->recursivelyContainsNode (referNode))
-            {
-              addSameInstance (exeObj, referNode);
-            }
-          else
-            {
-              WARNING ("cannot find '%s' inside '%s'",
-                       referNode->getId ().c_str(),
-                       headNode->getId ().c_str());
-            }
-        }
-    }
-
-  delete nodePerspective;
-
-  NclCascadingDescriptor *descriptor = exeObj->getDescriptor ();
-  if (descriptor)
-    descriptor->setFormatterLayout ();
-
-  // Compile execution object links
-  for (Node *node : exeObj->getNodes ())
-    {
-      NclCompositeExecutionObject *parent
-          = dynamic_cast <NclCompositeExecutionObject*> (
-              exeObj->getParentObject (node));
-
-      g_assert_nonnull (parent);
-
-      compileExecutionObjectLinks (exeObj, node, parent);
-    }
-}
-
-bool
-FormatterConverter::removeExecutionObject (NclExecutionObject *exeObj)
-{
-  bool removed = false;
-
-  if (!NclExecutionObject::hasInstance (exeObj, false))
-    {
-      return removed;
-    }
-
-   map<string, NclExecutionObject *>::iterator i
-       = _executionObjects.find (exeObj->getId ());
-
-  if (i != _executionObjects.end ())
-    {
-      _executionObjects.erase (i);
-      removed = true;
-    }
-
-  if (_settingObjects.count (exeObj))
-    {
-      _settingObjects.erase (_settingObjects.find (exeObj));
-      removed = true;
-    }
-
-  if (removed
-      && NclExecutionObject::hasInstance (exeObj, true))
-    {
-      delete exeObj;
-    }
-
-  return removed;
 }
 
 NclExecutionObject *
@@ -377,30 +204,6 @@ FormatterConverter::getSettingNodeObjects ()
   return new set<NclExecutionObject *> (_settingObjects);
 }
 
-NclCompositeExecutionObject *
-FormatterConverter::getParentExecutionObject (NclNodeNesting *perspective)
-{
-  NclNodeNesting *parentPerspective;
-
-  if (perspective->getNumNodes () > 1)
-    {
-      parentPerspective = perspective->copy ();
-      parentPerspective->removeAnchorNode ();
-
-      NclCompositeExecutionObject *cObj
-          = dynamic_cast <NclCompositeExecutionObject*> (
-              this->getExecutionObjectFromPerspective (
-                parentPerspective, nullptr));
-
-      g_assert_nonnull (cObj);
-
-      delete parentPerspective;
-      return cObj;
-    }
-
-  return nullptr;
-}
-
 NclFormatterEvent *
 FormatterConverter::getEvent (NclExecutionObject *exeObj,
                               InterfacePoint *interfacePoint,
@@ -412,6 +215,7 @@ FormatterConverter::getEvent (NclExecutionObject *exeObj,
   string type;
 
   xstrassign (type, "%d", ncmEventType);
+
   if (key == "")
     {
       id = interfacePoint->getId () + "_" + type;
@@ -427,104 +231,96 @@ FormatterConverter::getEvent (NclExecutionObject *exeObj,
       return event;
     }
 
-  NclExecutionObjectSwitch * switchObj
-      = dynamic_cast <NclExecutionObjectSwitch *> (exeObj);
+  auto switchObj = dynamic_cast<NclExecutionObjectSwitch *> (exeObj);
+  auto cObj = dynamic_cast<NclCompositeExecutionObject *> (exeObj);
+
   if (switchObj)
     {
       event = new NclSwitchEvent (
-          id, switchObj, interfacePoint, ncmEventType, key);
+            id, switchObj, interfacePoint, ncmEventType, key);
     }
-  else
+  else if (ncmEventType == EventUtil::EVT_PRESENTATION)
     {
-      if (ncmEventType == EventUtil::EVT_PRESENTATION)
+      event = new NclPresentationEvent (
+            id, exeObj, (ContentAnchor *)interfacePoint);
+    }
+  else if (cObj)
+    {
+      // TODO: eventos internos da composicao estao sendo tratados nos elos.
+      if (ncmEventType == EventUtil::EVT_ATTRIBUTION)
         {
-          event = new NclPresentationEvent (
-              id, exeObj, (ContentAnchor *)interfacePoint);
-        }
-      else
-        {
-          NclCompositeExecutionObject *cObj
-              = dynamic_cast <NclCompositeExecutionObject *> (exeObj);
-          if (cObj)
+          auto propAnchor = dynamic_cast<PropertyAnchor *> (interfacePoint);
+          if (propAnchor)
             {
-              // TODO: eventos internos da composicao.
-              // Estao sendo tratados nos elos.
-              if (ncmEventType == EventUtil::EVT_ATTRIBUTION)
-                {
-                  if (interfacePoint->instanceOf ("PropertyAnchor"))
-                    {
-                      event = new NclAttributionEvent (
-                          id, exeObj,
-                          (PropertyAnchor *)interfacePoint,
-                          _ruleAdapter->getSettings ());
-                    }
-                  else
-                    {
-                      WARNING ("NCM event type is attribution, "
-                               "but interface point isn't");
-
-                      event = new NclAttributionEvent (
-                          id, exeObj, nullptr,
-                          _ruleAdapter->getSettings ());
-                    }
-                }
+              event = new NclAttributionEvent (
+                    id, exeObj,
+                    (PropertyAnchor *)interfacePoint,
+                    _ruleAdapter->getSettings ());
             }
           else
             {
-              switch (ncmEventType)
-                {
-                case EventUtil::EVT_ATTRIBUTION:
-                  {
-                    PropertyAnchor *propAnchor
-                        = dynamic_cast <PropertyAnchor *> (interfacePoint);
-                    if (propAnchor)
-                      {
-                        event = new NclAttributionEvent (
-                            id, exeObj, propAnchor,
-                            _ruleAdapter->getSettings ());
-                      }
-                    else
-                      {
-                        WARNING ("NCM event type is attribution, but "
-                                 "interface point isn't.");
+              WARNING ("NCM event type is attribution, but interface point "
+                       "isn't");
 
-                        IntervalAnchor *intervalAnchor
-                            = dynamic_cast <IntervalAnchor *> (interfacePoint);
-                        if (intervalAnchor)
-                          {
-                            WARNING ("it was supposed to be a PRESENTATION "
-                                     "EVENT");
-
-                            // TODO: find the correct way to solve this
-                            event = new NclPresentationEvent (
-                                id, exeObj,
-                                intervalAnchor);
-                          }
-
-                        return nullptr;
-                      }
-                  }
-                  break;
-
-                case EventUtil::EVT_SELECTION:
-                  {
-                    event = new NclSelectionEvent (
-                        id, exeObj, (ContentAnchor *)interfacePoint);
-
-                    if (key != "")
-                      {
-                        ((NclSelectionEvent *)event)->setSelectionCode (key);
-                      }
-                  }
-                  break;
-
-                default:
-                  WARNING ("unknown event type '%d'", ncmEventType);
-                  break;
-                }
+              event = new NclAttributionEvent (
+                    id, exeObj, nullptr, _ruleAdapter->getSettings ());
             }
         }
     }
+  else
+    {
+      switch (ncmEventType)
+        {
+        case EventUtil::EVT_ATTRIBUTION:
+          {
+            auto propAnchor = dynamic_cast<PropertyAnchor *> (interfacePoint);
+            if (propAnchor)
+              {
+                event = new NclAttributionEvent (
+                      id, exeObj, propAnchor,
+                      _ruleAdapter->getSettings ());
+              }
+            else
+              {
+                WARNING ("NCM event type is attribution, but interface point "
+                         "isn't.");
+
+                auto intervalAnchor
+                    = dynamic_cast <IntervalAnchor *> (interfacePoint);
+                if (intervalAnchor)
+                  {
+                    WARNING ("it was supposed to be a PRESENTATION "
+                             "EVENT");
+
+                    // TODO: find the correct way to solve this
+                    event = new NclPresentationEvent (
+                          id, exeObj,
+                          intervalAnchor);
+                  }
+
+                return nullptr;
+              }
+          }
+          break;
+
+        case EventUtil::EVT_SELECTION:
+          {
+            event = new NclSelectionEvent (
+                  id, exeObj, (ContentAnchor *)interfacePoint);
+
+            if (key != "")
+              {
+                ((NclSelectionEvent *)event)->setSelectionCode (key);
+              }
+          }
+          break;
+
+        default:
+          WARNING ("unknown event type '%d'", ncmEventType);
+          break;
+        }
+    }
+
 
   if (event != nullptr)
     {
@@ -532,11 +328,201 @@ FormatterConverter::getEvent (NclExecutionObject *exeObj,
     }
   else
     {
-      WARNING ("Returning a nullptr event for '%s'",
-               id.c_str ());
+      ERROR ("Returning a nullptr event for '%s'", id.c_str ());
     }
 
   return event;
+}
+
+NclCompositeExecutionObject *
+FormatterConverter::addSameInstance (NclExecutionObject *exeObj,
+                                     ReferNode *referNode)
+{
+  vector<Node *> *ncmPerspective = referNode->getPerspective ();
+  NclNodeNesting *referPerspective = new NclNodeNesting (ncmPerspective);
+
+  NclCompositeExecutionObject *referParentObject
+      = getParentExecutionObject (referPerspective);
+
+  if (referParentObject != nullptr)
+    {
+      TRACE ("'%s' with head node '%s' refer to '%s', which has as "
+             "execution object '%s' and parent object '%s'",
+             referNode->getId ().c_str (),
+             referPerspective->getHeadNode ()->getId ().c_str (),
+             referNode->getReferredEntity ()->getId ().c_str (),
+             exeObj->getId ().c_str (),
+             referParentObject->getId ().c_str ());
+
+      exeObj->addParentObject (
+            referNode,
+            referParentObject,
+            referPerspective->getNode (referPerspective->getNumNodes () - 2));
+
+      referParentObject->addExecutionObject (exeObj);
+
+      // A new entry for the execution object is inserted using
+      // the refer node id.  As a consequence, links referring to the
+      // refer node will generate events in the execution object.
+      NclCascadingDescriptor *desc = exeObj->getDescriptor ();
+
+      string objectId;
+      if (desc)
+        {
+          objectId = (referPerspective->getId () + SEPARATOR
+                      + exeObj->getDescriptor ()->getId ());
+        }
+      else
+        {
+          objectId = referPerspective->getId ();
+        }
+      _executionObjects[objectId] = exeObj;
+    }
+
+  delete ncmPerspective;
+  delete referPerspective;
+
+  return referParentObject;
+}
+
+void
+FormatterConverter::addExecutionObject (NclExecutionObject *exeObj,
+                                        NclCompositeExecutionObject *parentObj)
+{
+  _executionObjects[exeObj->getId ()] = exeObj;
+
+  if (parentObj)
+    {
+      parentObj->addExecutionObject (exeObj);
+    }
+
+  // Hanlde settings nodes.
+  Node *dataObject = exeObj->getDataObject ();
+  auto contentNode = dynamic_cast<ContentNode *> (dataObject);
+
+  if (contentNode && contentNode->isSettingNode ())
+    {
+      _settingObjects.insert (exeObj);
+    }
+
+  auto referNode = dynamic_cast<ReferNode *> (dataObject);
+  if (referNode)
+    {
+      if (referNode->getInstanceType () == "instSame")
+        {
+          Entity *entity = referNode->getDataEntity ();
+          auto entityContentNode = dynamic_cast <ContentNode *> (entity);
+
+          if (entityContentNode
+              && entityContentNode->isSettingNode ())
+            {
+              _settingObjects.insert (exeObj);
+            }
+        }
+    }
+
+  NclNodeNesting *nodePerspective = exeObj->getNodePerspective ();
+  Node *headNode = nodePerspective->getHeadNode ();
+
+  auto nodeEntity = dynamic_cast<NodeEntity *> (dataObject);
+  auto headCompositeNode = dynamic_cast<CompositeNode *> (headNode);
+  if (headCompositeNode && nodeEntity)
+    {
+      set<ReferNode *> *sameInstances = nodeEntity->getInstSameInstances ();
+      g_assert_nonnull (sameInstances);
+
+      for (ReferNode *referNode: *(sameInstances))
+        {
+          TRACE ("'%s' instSame of '%s'",
+                 exeObj->getId ().c_str(),
+                 referNode->getId ().c_str());
+
+          if (headCompositeNode->recursivelyContainsNode (referNode))
+            {
+              addSameInstance (exeObj, referNode);
+            }
+          else
+            {
+              WARNING ("cannot find '%s' inside '%s'",
+                       referNode->getId ().c_str(),
+                       headNode->getId ().c_str());
+            }
+        }
+    }
+
+  delete nodePerspective;
+
+  NclCascadingDescriptor *descriptor = exeObj->getDescriptor ();
+  if (descriptor)
+    descriptor->setFormatterLayout ();
+
+  // Compile execution object links
+  for (Node *node : exeObj->getNodes ())
+    {
+      auto parent = dynamic_cast <NclCompositeExecutionObject*> (
+            exeObj->getParentObject (node));
+
+      g_assert_nonnull (parent);
+
+      compileExecutionObjectLinks (exeObj, node, parent);
+    }
+}
+
+bool
+FormatterConverter::removeExecutionObject (NclExecutionObject *exeObj)
+{
+  bool removed = false;
+
+  if (!NclExecutionObject::hasInstance (exeObj, false))
+    {
+      return removed;
+    }
+
+  auto i = _executionObjects.find (exeObj->getId ());
+
+  if (i != _executionObjects.end ())
+    {
+      _executionObjects.erase (i);
+      removed = true;
+    }
+
+  if (_settingObjects.count (exeObj))
+    {
+      _settingObjects.erase (_settingObjects.find (exeObj));
+      removed = true;
+    }
+
+  if (removed
+      && NclExecutionObject::hasInstance (exeObj, true))
+    {
+      delete exeObj;
+    }
+
+  return removed;
+}
+
+NclCompositeExecutionObject *
+FormatterConverter::getParentExecutionObject (NclNodeNesting *perspective)
+{
+  NclNodeNesting *parentPerspective;
+
+  if (perspective->getNumNodes () > 1)
+    {
+      parentPerspective = perspective->copy ();
+      parentPerspective->removeAnchorNode ();
+
+      auto cObj = dynamic_cast <NclCompositeExecutionObject*> (
+            this->getExecutionObjectFromPerspective (
+              parentPerspective, nullptr));
+
+      g_assert_nonnull (cObj);
+
+      delete parentPerspective;
+
+      return cObj;
+    }
+
+  return nullptr;
 }
 
 NclExecutionObject *
@@ -544,14 +530,13 @@ FormatterConverter::createExecutionObject (
     const string &id, NclNodeNesting *perspective,
     NclCascadingDescriptor *descriptor)
 {
-  NodeEntity *nodeEntity;
   Node *node;
   NclNodeNesting *nodePerspective;
   NclExecutionObject *exeObj;
   NclPresentationEvent *compositeEvt;
 
-  nodeEntity = dynamic_cast <NodeEntity *> (
-                  perspective->getAnchorNode ()->getDataEntity ());
+  auto nodeEntity = dynamic_cast <NodeEntity *> (
+        perspective->getAnchorNode ()->getDataEntity ());
 
   g_assert_nonnull (nodeEntity);
 
@@ -559,12 +544,12 @@ FormatterConverter::createExecutionObject (
 
   // solve execution object cross reference coming from refer nodes with
   // new instance = false
-  ContentNode *contentNode = dynamic_cast <ContentNode *> (nodeEntity);
+  auto contentNode = dynamic_cast<ContentNode *> (nodeEntity);
   if (contentNode
       && contentNode->getNodeType () != ""
       && !contentNode->isSettingNode ())
     {
-      ReferNode *referNode = dynamic_cast <ReferNode *> (node);
+      auto referNode = dynamic_cast<ReferNode *> (node);
       if (referNode)
         {
           if (referNode->getInstanceType () != "new")
@@ -584,14 +569,14 @@ FormatterConverter::createExecutionObject (
                         {
                           exeObj
                               = new NclApplicationExecutionObject (
-                                  id, nodeEntity, descriptor, _handling,
-                                  _actionListener);
+                                id, nodeEntity, descriptor, _handling,
+                                _actionListener);
                         }
                       else
                         {
                           exeObj  = new NclExecutionObject (
                                 id, nodeEntity, descriptor, _handling,
-                              _actionListener);
+                                _actionListener);
                         }
 
                       // TODO informa a substituicao
@@ -603,14 +588,14 @@ FormatterConverter::createExecutionObject (
                   if (isEmbeddedApp (nodeEntity))
                     {
                       exeObj = new NclApplicationExecutionObject (
-                          id, nodeEntity, descriptor, _handling,
-                          _actionListener);
+                            id, nodeEntity, descriptor, _handling,
+                            _actionListener);
                     }
                   else
                     {
                       exeObj = new NclExecutionObject (
-                          id, nodeEntity, descriptor, _handling,
-                          _actionListener);
+                            id, nodeEntity, descriptor, _handling,
+                            _actionListener);
                     }
 
                   // TODO informa a substituicao
@@ -626,17 +611,17 @@ FormatterConverter::createExecutionObject (
         }
     }
 
-  SwitchNode *switchNode = dynamic_cast <SwitchNode *> (nodeEntity);
+  auto switchNode = dynamic_cast<SwitchNode *> (nodeEntity);
   if (switchNode)
     {
       string s;
       exeObj = new NclExecutionObjectSwitch (id, node, _handling,
-                                                      _actionListener);
+                                             _actionListener);
       xstrassign (s, "%d", EventUtil::EVT_PRESENTATION);
       compositeEvt = new NclPresentationEvent (
-          nodeEntity->getLambdaAnchor ()->getId () + "_" + s,
-          exeObj,
-          (ContentAnchor *)(nodeEntity->getLambdaAnchor ()));
+            nodeEntity->getLambdaAnchor ()->getId () + "_" + s,
+            exeObj,
+            (ContentAnchor *)(nodeEntity->getLambdaAnchor ()));
 
       exeObj->addEvent (compositeEvt);
       // to monitor the switch presentation and clear the selection after
@@ -648,13 +633,13 @@ FormatterConverter::createExecutionObject (
     {
       string s;
       exeObj = new NclCompositeExecutionObject (
-          id, node, descriptor, _handling, _actionListener);
+            id, node, descriptor, _handling, _actionListener);
 
       xstrassign (s, "%d", EventUtil::EVT_PRESENTATION);
       compositeEvt = new NclPresentationEvent (
-          nodeEntity->getLambdaAnchor ()->getId () + "_" + s,
-          exeObj,
-          (ContentAnchor *)(nodeEntity->getLambdaAnchor ()));
+            nodeEntity->getLambdaAnchor ()->getId () + "_" + s,
+            exeObj,
+            (ContentAnchor *)(nodeEntity->getLambdaAnchor ()));
 
       exeObj->addEvent (compositeEvt);
 
@@ -664,7 +649,7 @@ FormatterConverter::createExecutionObject (
   else if (isEmbeddedApp (nodeEntity))
     {
       exeObj = new NclApplicationExecutionObject (
-          id, node, descriptor, _handling, _actionListener);
+            id, node, descriptor, _handling, _actionListener);
     }
   else
     {
@@ -705,8 +690,8 @@ FormatterConverter::createDummyCascadingDescriptor (Node *node)
 
       if (hasDescriptorPropName (name))
         {
-          NodeEntity *nodeEntity = dynamic_cast <NodeEntity *> (node);
-          ReferNode *referNode = dynamic_cast <ReferNode *> (node);
+          auto nodeEntity = dynamic_cast <NodeEntity *> (node);
+          auto referNode = dynamic_cast <ReferNode *> (node);
           if (nodeEntity)
             {
               ncmDesc = createDummyDescriptor (nodeEntity);
@@ -717,8 +702,8 @@ FormatterConverter::createDummyCascadingDescriptor (Node *node)
             {
               if (referNode->getInstanceDescriptor () == nullptr)
                 {
-                  nodeEntity = (NodeEntity *)node->getDataEntity ();
-                  ncmDesc = (Descriptor *)nodeEntity->getDescriptor ();
+                  nodeEntity = (NodeEntity *) node->getDataEntity ();
+                  ncmDesc = (Descriptor *) nodeEntity->getDescriptor ();
 
                   if (ncmDesc == nullptr)
                     {
@@ -740,13 +725,12 @@ FormatterConverter::createDummyCascadingDescriptor (Node *node)
         }
     }
 
-  ReferNode *referNode = dynamic_cast <ReferNode *> (node);
+  auto referNode = dynamic_cast <ReferNode *> (node);
   if (referNode
       && referNode->getInstanceType () == "new"
       && referNode->getInstanceDescriptor () == nullptr)
     {
-      NodeEntity *nodeEntity
-          = dynamic_cast<NodeEntity *> (node->getDataEntity ());
+      auto nodeEntity = dynamic_cast<NodeEntity *> (node->getDataEntity ());
       g_assert_nonnull (nodeEntity);
 
       ncmDesc = dynamic_cast<Descriptor *> (nodeEntity->getDescriptor ());
@@ -765,8 +749,8 @@ FormatterConverter::checkCascadingDescriptor (Node *node)
 {
   NclCascadingDescriptor *cascadingDescriptor = nullptr;
 
-  ContentNode *contentNode = dynamic_cast <ContentNode *> (node);
-  ReferNode *referNode = dynamic_cast <ReferNode *> (node);
+  auto contentNode = dynamic_cast <ContentNode *> (node);
+  auto referNode = dynamic_cast <ReferNode *> (node);
 
   if (contentNode)
     {
@@ -775,8 +759,7 @@ FormatterConverter::checkCascadingDescriptor (Node *node)
   else if (referNode
            && referNode->getInstanceType () == "new")
     {
-      NodeEntity *nodeEntity
-          = dynamic_cast<NodeEntity *> (node->getDataEntity ());
+      auto nodeEntity = dynamic_cast<NodeEntity *> (node->getDataEntity ());
       g_assert_nonnull (nodeEntity);
 
       node->copyProperties (nodeEntity);
@@ -791,7 +774,6 @@ FormatterConverter::checkContextCascadingDescriptor (
     NclNodeNesting *nodePerspective,
     NclCascadingDescriptor *cascadingDescriptor, Node *ncmNode)
 {
-  ContextNode *context;
   int size;
   NclCascadingDescriptor *resDesc = cascadingDescriptor;
 
@@ -800,9 +782,8 @@ FormatterConverter::checkContextCascadingDescriptor (
   if (size > 1 && nodePerspective->getNode (size - 2) != nullptr
       && nodePerspective->getNode (size - 2)->instanceOf ("ContextNode"))
     {
-      context
-          = dynamic_cast<ContextNode *> (nodePerspective->getNode (size - 2)
-                                          ->getDataEntity ());
+      auto context = dynamic_cast<ContextNode *> (
+            nodePerspective->getNode (size - 2)->getDataEntity ());
       g_assert_nonnull (context);
 
       if (context->getNodeDescriptor (ncmNode) != nullptr)
@@ -810,7 +791,7 @@ FormatterConverter::checkContextCascadingDescriptor (
           if (resDesc == nullptr)
             {
               resDesc = new NclCascadingDescriptor (
-                  context->getNodeDescriptor (ncmNode));
+                    context->getNodeDescriptor (ncmNode));
             }
           else
             {
@@ -833,7 +814,7 @@ FormatterConverter::getCascadingDescriptor (NclNodeNesting *nodePerspective,
 
   anchorNode = nodePerspective->getAnchorNode ();
 
-  ReferNode *referNode = dynamic_cast <ReferNode *> (anchorNode);
+  auto referNode = dynamic_cast <ReferNode *> (anchorNode);
 
   if (referNode
       && referNode->getInstanceType () == "new")
@@ -844,15 +825,15 @@ FormatterConverter::getCascadingDescriptor (NclNodeNesting *nodePerspective,
     }
   else
     {
-      node = dynamic_cast<Node *>(anchorNode->getDataEntity ());
-      NodeEntity *nodeEntity = dynamic_cast <NodeEntity *> (node);
+      node = dynamic_cast<Node *> (anchorNode->getDataEntity ());
+      auto nodeEntity = dynamic_cast<NodeEntity *> (node);
       if (node == nullptr || nodeEntity == nullptr)
         {
           WARNING ("failed to cascading descriptor: invalid node entity");
           return nullptr;
         }
 
-      ncmDesc = dynamic_cast <Descriptor *>(nodeEntity->getDescriptor ());
+      ncmDesc = dynamic_cast <Descriptor *> (nodeEntity->getDescriptor ());
     }
 
   if (ncmDesc != nullptr)
@@ -861,7 +842,7 @@ FormatterConverter::getCascadingDescriptor (NclNodeNesting *nodePerspective,
     }
 
   cascadingDescriptor = checkContextCascadingDescriptor (
-      nodePerspective, cascadingDescriptor, node);
+        nodePerspective, cascadingDescriptor, node);
 
   // there is an explicit descriptor (user descriptor)?
   if (descriptor != nullptr)
@@ -898,7 +879,7 @@ FormatterConverter::processLink (Link *ncmLink,
   if (executionObject->getDataObject () != nullptr)
     {
       nodeEntity
-          = dynamic_cast <NodeEntity *>(executionObject->getDataObject ());
+          = dynamic_cast<NodeEntity *> (executionObject->getDataObject ());
     }
 
   // Since the link may be removed in a deepest compilation it is necessary to
@@ -907,7 +888,7 @@ FormatterConverter::processLink (Link *ncmLink,
     {
       if (executionObject->getDescriptor () != nullptr)
         {
-            vector<GenericDescriptor *> *descriptors
+          vector<GenericDescriptor *> *descriptors
               = executionObject->getDescriptor ()->getNcmDescriptors ();
 
           if (descriptors != nullptr
@@ -917,7 +898,7 @@ FormatterConverter::processLink (Link *ncmLink,
             }
         }
 
-      CausalLink *causalLink = dynamic_cast <CausalLink *> (ncmLink);
+      auto causalLink = dynamic_cast <CausalLink *> (ncmLink);
       if (causalLink)
         {
           if (nodeEntity != nullptr)
@@ -946,8 +927,8 @@ FormatterConverter::processLink (Link *ncmLink,
               if (formatterLink != NULL)
                 {
                   setActionListener (
-                      ((NclFormatterCausalLink *)formatterLink)
-                          ->getAction ());
+                        ((NclFormatterCausalLink *)formatterLink)
+                        ->getAction ());
 
                   parentObject->setLinkCompiled (formatterLink);
                   TRACE ("link compiled '%s'",
@@ -1021,8 +1002,8 @@ FormatterConverter::compileExecutionObjectLinks (
       delete dataLinks;
 
       compileExecutionObjectLinks (
-          exeObj, dataObject,
-          (NclCompositeExecutionObject *)(parentObj->getParentObject ()));
+            exeObj, dataObject,
+            (NclCompositeExecutionObject *)(parentObj->getParentObject ()));
     }
   else
     {
@@ -1035,7 +1016,7 @@ FormatterConverter::compileExecutionObjectLinks (
           object = parentObj;
           parentObj
               = (NclCompositeExecutionObject *)(parentObj
-                                                    ->getParentObject ());
+                                                ->getParentObject ());
 
           compileExecutionObjectLinks (object, dataObject, parentObj);
         }
@@ -1045,10 +1026,8 @@ FormatterConverter::compileExecutionObjectLinks (
 void
 FormatterConverter::setActionListener (NclLinkAction *action)
 {
-  NclLinkSimpleAction *simpleAction
-      = dynamic_cast <NclLinkSimpleAction *> (action);
-  NclLinkCompoundAction *compoundAction
-      = dynamic_cast <NclLinkCompoundAction *> (action);
+  auto simpleAction = dynamic_cast <NclLinkSimpleAction *> (action);
+  auto compoundAction = dynamic_cast <NclLinkCompoundAction *> (action);
 
   if (simpleAction)
     {
@@ -1076,7 +1055,7 @@ NclExecutionObject *
 FormatterConverter::processExecutionObjectSwitch (
     NclExecutionObjectSwitch *switchObject)
 {
-  SwitchNode *switchNode;
+
   Node *selectedNode;
   NclNodeNesting *selectedPerspective;
   string id;
@@ -1084,15 +1063,15 @@ FormatterConverter::processExecutionObjectSwitch (
   map<string, NclExecutionObject *>::iterator i;
   NclExecutionObject *selectedObject;
 
-  switchNode
-      = dynamic_cast<SwitchNode *>(switchObject->getDataObject ()->getDataEntity ());
+  auto switchNode = dynamic_cast<SwitchNode *> (
+        switchObject->getDataObject ()->getDataEntity ());
   g_assert_nonnull (switchNode);
 
   selectedNode = _ruleAdapter->adaptSwitch (switchNode);
   if (selectedNode == NULL)
     {
       WARNING ("Cannot process '%s'. Selected NODE is nullptr.",
-                switchObject->getId ().c_str());
+               switchObject->getId ().c_str());
 
       return nullptr;
     }
@@ -1103,7 +1082,7 @@ FormatterConverter::processExecutionObjectSwitch (
   id = selectedPerspective->getId () + SEPARATOR;
 
   descriptor = FormatterConverter::getCascadingDescriptor (
-      selectedPerspective, NULL);
+        selectedPerspective, NULL);
 
   if (descriptor != NULL)
     {
@@ -1140,7 +1119,7 @@ FormatterConverter::processExecutionObjectSwitch (
         }
 
       WARNING ("Cannot process '%s' because select object is NULL.",
-                switchObject->getId ().c_str ());
+               switchObject->getId ().c_str ());
       return nullptr;
     }
 
@@ -1163,7 +1142,6 @@ FormatterConverter::resolveSwitchEvents (
   vector<NclFormatterEvent *>::iterator i;
   NclSwitchEvent *switchEvent;
   InterfacePoint *interfacePoint;
-  SwitchPort *switchPort;
   vector<Node *> *nestedSeq;
   NclNodeNesting *nodePerspective;
   NclFormatterEvent *mappedEvent;
@@ -1190,7 +1168,8 @@ FormatterConverter::resolveSwitchEvents (
       g_assert_nonnull (switchEvent);
 
       interfacePoint = switchEvent->getInterfacePoint ();
-      if (interfacePoint->instanceOf ("LambdaAnchor"))
+      auto lambdaAnchor = dynamic_cast<LambdaAnchor *> (interfacePoint);
+      if (lambdaAnchor)
         {
           mappedEvent = getEvent (
                 selectedObject, selectedNodeEntity->getLambdaAnchor (),
@@ -1198,7 +1177,7 @@ FormatterConverter::resolveSwitchEvents (
         }
       else
         {
-          switchPort = dynamic_cast<SwitchPort *> (interfacePoint);
+          auto switchPort = dynamic_cast<SwitchPort *> (interfacePoint);
           g_assert_nonnull (switchPort);
 
           for (Port *mapping: *(switchPort->getPorts ()))
@@ -1264,7 +1243,7 @@ FormatterConverter::insertNode (NclNodeNesting *perspective,
 
   if (executionObject != nullptr)
     {
-      if (!interfacePoint->instanceOf ("PropertyAnchor"))
+      if (!(dynamic_cast<PropertyAnchor *>(interfacePoint)))
         {
           eventType = EventUtil::EVT_PRESENTATION;
         }
@@ -1300,8 +1279,8 @@ FormatterConverter::insertContext (NclNodeNesting *contextPerspective,
         || port->getEndInterfacePoint ()->instanceOf ("PropertyAnchor")
         || port->getEndInterfacePoint ()->instanceOf ("SwitchPort"))
       || !(contextPerspective->getAnchorNode ()
-               ->getDataEntity ()
-               ->instanceOf ("ContextNode")))
+           ->getDataEntity ()
+           ->instanceOf ("ContextNode")))
     {
       error = true;
 
@@ -1336,20 +1315,19 @@ FormatterConverter::eventStateChanged (NclFormatterEvent *event,
                                        arg_unused (short previousState))
 {
   NclExecutionObject *exeObj = event->getExecutionObject ();
-  NclCompositeExecutionObject *exeCompositeObj
-      = dynamic_cast <NclCompositeExecutionObject *> (exeObj);
-  NclExecutionObjectSwitch *exeSwitch
-      = dynamic_cast <NclExecutionObjectSwitch *> (exeObj);
+  auto exeCompositeObj = dynamic_cast <NclCompositeExecutionObject *> (exeObj);
+  auto exeSwitch = dynamic_cast <NclExecutionObjectSwitch *> (exeObj);
+
   if (exeSwitch)
     {
       if (transition == EventUtil::TR_STARTS)
         {
           for (NclFormatterEvent *e: exeSwitch->getEvents())
             {
-              if (e->instanceOf ("NclSwitchEvent"))
+              auto switchEvt = dynamic_cast <NclSwitchEvent *>  (e);
+              if (switchEvt)
                 {
-                  NclFormatterEvent *ev
-                      = ((NclSwitchEvent *)(e))->getMappedEvent ();
+                  NclFormatterEvent *ev = switchEvt->getMappedEvent ();
 
                   if (ev == nullptr)
                     {
@@ -1358,7 +1336,7 @@ FormatterConverter::eventStateChanged (NclFormatterEvent *event,
                       // it was started
                       processExecutionObjectSwitch (exeSwitch);
 
-                      ev = ((NclSwitchEvent *)(e))->getMappedEvent ();
+                      ev = switchEvt->getMappedEvent ();
                       if (ev != nullptr)
                         {
                           // now we know the event is mapped, we can start
@@ -1393,18 +1371,17 @@ FormatterConverter::isEmbeddedApp (NodeEntity *dataObject)
   string mime = "";
 
   // second, media type
-  ContentNode *contentNode = dynamic_cast <ContentNode *> (dataObject);
+  auto contentNode = dynamic_cast<ContentNode *> (dataObject);
   if (contentNode)
     {
       mime = contentNode->getNodeType ();
     }
 
   // finally, content file extension
-  Content *content = dataObject->getContent ();
+  auto content = dataObject->getContent ();
   if (content)
     {
-      ReferenceContent *referenceContent
-          = dynamic_cast <ReferenceContent *> (content);
+      auto referenceContent = dynamic_cast<ReferenceContent *> (content);
       if (referenceContent)
         {
           string url = referenceContent->getCompleteReferenceUrl ();
@@ -1439,13 +1416,13 @@ FormatterConverter::hasDescriptorPropName (const string &name)
 bool
 FormatterConverter::isEmbeddedAppMediaType (const string &mediaType)
 {
-  static const set <string> appMediaTypes = { "APPLICATION/X-GINGA-NCLUA",
-                                              "APPLICATION/X-GINGA-NCLET",
-                                              "APPLICATION/X-GINGA-NCL",
-                                              "APPLICATION/X-NCL-NCL",
-                                              "APPLICATION/X-NCL-NCLUA" };
+  static const set <string> appMediaTypes = { "application/x-ginga-nclua",
+                                              "application/x-ginga-nclet",
+                                              "application/x-ginga-ncl",
+                                              "application/x-ncl-ncl",
+                                              "application/x-ncl-nclua" };
 
-  return appMediaTypes.count (xstrup (mediaType));
+  return appMediaTypes.count (xstrdown (mediaType));
 }
 
 NclFormatterCausalLink *
@@ -1520,8 +1497,8 @@ FormatterConverter::createCausalLink (CausalLink *ncmLink,
 
   // create formatter causal link
   formatterLink = new NclFormatterCausalLink (
-      (NclLinkTriggerCondition *)formatterCondition, formatterAction,
-      ncmLink, (NclCompositeExecutionObject *)parentObj);
+        (NclLinkTriggerCondition *)formatterCondition, formatterAction,
+        ncmLink, (NclCompositeExecutionObject *)parentObj);
 
   if (formatterCondition->instanceOf ("NclLinkCompoundTriggerCondition"))
     {
@@ -1573,15 +1550,11 @@ FormatterConverter::setImplicitRefAssessment (const string &roleId,
                                               CausalLink *ncmLink,
                                               NclFormatterEvent *event)
 {
-  NclFormatterEvent *refEvent;
-  vector<Node *> *ncmPerspective;
   NclNodeNesting *refPerspective;
   NclExecutionObject *refObject;
-  InterfacePoint *refInterface;
   string value;
 
-  NclAttributionEvent *attributionEvt
-      = dynamic_cast <NclAttributionEvent *> (event);
+  auto attributionEvt = dynamic_cast <NclAttributionEvent *> (event);
   if (attributionEvt)
     {
       for (Bind *bind: *(ncmLink->getBinds ()))
@@ -1589,11 +1562,12 @@ FormatterConverter::setImplicitRefAssessment (const string &roleId,
           value = bind->getRole ()->getLabel ();
           if (roleId == value)
             {
-              refInterface = bind->getInterfacePoint ();
-              if (refInterface != nullptr
-                  && refInterface->instanceOf ("PropertyAnchor"))
+              InterfacePoint *refInterface = bind->getInterfacePoint ();
+              auto propAnchor = dynamic_cast <PropertyAnchor *> (refInterface);
+              if (propAnchor)
                 {
-                  ncmPerspective = bind->getNode ()->getPerspective ();
+                  vector<Node *> *ncmPerspective
+                      = bind->getNode ()->getPerspective ();
                   refPerspective = new NclNodeNesting (ncmPerspective);
 
                   delete ncmPerspective;
@@ -1603,9 +1577,9 @@ FormatterConverter::setImplicitRefAssessment (const string &roleId,
 
                   delete refPerspective;
 
-                  refEvent
+                  NclFormatterEvent *refEvent
                       = this->getEvent (refObject,
-                                        refInterface,
+                                        propAnchor,
                                         EventUtil::EVT_ATTRIBUTION,
                                         "");
 
@@ -1625,8 +1599,6 @@ FormatterConverter::createAction (Action *actionExp,
                                   NclCompositeExecutionObject *parentObj)
 {
   GingaTime delay;
-  SimpleAction *sae;
-  CompoundAction *cae;
   vector<Bind *> *binds;
   int i, size;
   string delayObject;
@@ -1639,8 +1611,8 @@ FormatterConverter::createAction (Action *actionExp,
       return nullptr;
     }
 
-  sae = dynamic_cast<SimpleAction *> (actionExp);
-  cae = dynamic_cast<CompoundAction *> (actionExp);
+  auto sae = dynamic_cast<SimpleAction *> (actionExp);
+  auto cae = dynamic_cast<CompoundAction *> (actionExp);
   if (sae) // SimpleAction
     {
       binds = ncmLink->getRoleBinds (sae);
@@ -1650,7 +1622,7 @@ FormatterConverter::createAction (Action *actionExp,
           if (size == 1)
             {
               return createSimpleAction (sae, (*binds)[0], ncmLink,
-                                         parentObj);
+                  parentObj);
             }
           else if (size > 1)
             {
@@ -1660,7 +1632,7 @@ FormatterConverter::createAction (Action *actionExp,
               for (i = 0; i < size; i++)
                 {
                   simpleAction = createSimpleAction (
-                      sae, (*binds)[i], ncmLink, parentObj);
+                        sae, (*binds)[i], ncmLink, parentObj);
 
                   if (simpleAction == NULL)
                     {
@@ -1708,16 +1680,18 @@ FormatterConverter::createCondition (
     ConditionExpression *ncmExp, CausalLink *ncmLink,
     NclCompositeExecutionObject *parentObj)
 {
-  if (ncmExp->instanceOf ("TriggerExpression"))
+  auto triggerExp = dynamic_cast<TriggerExpression *> (ncmExp);
+  auto statment = dynamic_cast<Statement *> (ncmExp);
+  if (triggerExp)
     {
-      return createCondition ((TriggerExpression *)ncmExp, ncmLink,
-                              parentObj);
+      return createCondition (triggerExp, ncmLink, parentObj);
     }
-  else
-    { // IStatement
-      return createStatement ((Statement *)ncmExp, ncmLink,
-                              parentObj);
+  else if (statment)
+    {
+      return createStatement (statment, ncmLink, parentObj);
     }
+
+  g_assert_not_reached ();
 }
 
 NclLinkCompoundTriggerCondition *
@@ -1770,8 +1744,8 @@ FormatterConverter::createCondition (
   NclLinkCompoundTriggerCondition *compoundCondition;
   NclLinkTriggerCondition *simpleCondition;
 
-  SimpleCondition *ste = dynamic_cast <SimpleCondition *> (condition);
-  CompoundCondition *cte = dynamic_cast <CompoundCondition *> (condition);
+  auto ste = dynamic_cast<SimpleCondition *> (condition);
+  auto cte = dynamic_cast<CompoundCondition *> (condition);
 
   if (ste) // SimpleCondition
     {
@@ -1782,7 +1756,7 @@ FormatterConverter::createCondition (
           if (size == 1)
             {
               return createSimpleCondition (ste, (*binds)[0], ncmLink,
-                                            parentObj);
+                  parentObj);
             }
           else if (size > 1)
             {
@@ -1800,7 +1774,7 @@ FormatterConverter::createCondition (
               for (int i = 0; i < size; i++)
                 {
                   simpleCondition = createSimpleCondition (
-                      ste, (*binds)[i], ncmLink, parentObj);
+                        ste, (*binds)[i], ncmLink, parentObj);
 
                   compoundCondition->addCondition (simpleCondition);
                 }
@@ -1843,28 +1817,28 @@ FormatterConverter::createAssessmentStatement (
 {
   NclLinkAttributeAssessment *mainAssessment;
   NclLinkAssessment *otherAssessment;
-  AttributeAssessment *aa;
   NclLinkAssessmentStatement *statement;
-  ValueAssessment *valueAssessment;
   string paramValue;
   Parameter *connParam, *param;
   vector<Bind *> *otherBinds;
 
   mainAssessment = createAttributeAssessment (
-      assessmentStatement->getMainAssessment (), bind, ncmLink,
-      parentObj);
+        assessmentStatement->getMainAssessment (), bind, ncmLink,
+        parentObj);
 
-  if (assessmentStatement->getOtherAssessment ()->instanceOf (
-          "ValueAssessment"))
+  auto valueAssessment = dynamic_cast <ValueAssessment *> (
+        assessmentStatement->getOtherAssessment ());
+
+  auto attrAssessment = dynamic_cast <AttributeAssessment *> (
+        assessmentStatement->getOtherAssessment ());
+
+  if (valueAssessment)
     {
-      valueAssessment
-          = (ValueAssessment *)(assessmentStatement->getOtherAssessment ());
-
       paramValue = valueAssessment->getValue ();
       if (paramValue[0] == '$')
         { // instanceOf("Parameter")
           connParam = new Parameter (
-              paramValue.substr (1, paramValue.length () - 1), "");
+                paramValue.substr (1, paramValue.length () - 1), "");
 
           param = bind->getParameter (connParam->getName ());
           if (param == nullptr)
@@ -1880,26 +1854,28 @@ FormatterConverter::createAssessmentStatement (
 
       otherAssessment = new NclLinkValueAssessment (paramValue);
     }
-  else
+  else if (attrAssessment)
     {
-      aa = (AttributeAssessment *)(assessmentStatement
-                                       ->getOtherAssessment ());
-
-      otherBinds = ncmLink->getRoleBinds (aa);
+      otherBinds = ncmLink->getRoleBinds (attrAssessment);
       if (otherBinds != nullptr && !otherBinds->empty ())
         {
           otherAssessment = createAttributeAssessment (
-              aa, (*otherBinds)[0], ncmLink, parentObj);
+                attrAssessment, (*otherBinds)[0], ncmLink, parentObj);
         }
       else
         {
           otherAssessment = createAttributeAssessment (
-              aa, nullptr, ncmLink, parentObj);
+                attrAssessment, nullptr, ncmLink, parentObj);
         }
     }
+  else
+    {
+      g_assert_not_reached ();
+    }
+
   statement = new NclLinkAssessmentStatement (
-      assessmentStatement->getComparator (), mainAssessment,
-      otherAssessment);
+        assessmentStatement->getComparator (), mainAssessment,
+        otherAssessment);
 
   return statement;
 }
@@ -1909,25 +1885,21 @@ FormatterConverter::createStatement (
     Statement *statementExpression, Link *ncmLink,
     NclCompositeExecutionObject *parentObj)
 {
-
-  vector<Bind *> *binds;
   int size;
   NclLinkStatement *statement;
 
-  AssessmentStatement *as
-      = dynamic_cast <AssessmentStatement *> (statementExpression);
-  CompoundStatement *cs
-      = dynamic_cast <CompoundStatement *> (statementExpression);
+  auto as = dynamic_cast<AssessmentStatement *> (statementExpression);
+  auto cs = dynamic_cast<CompoundStatement *> (statementExpression);
   if (as) // AssessmentStatement
     {
-      binds = ncmLink->getRoleBinds (as->getMainAssessment ());
+      vector<Bind *> *binds = ncmLink->getRoleBinds (as->getMainAssessment ());
       if (binds != nullptr)
         {
           size = (int) binds->size ();
           if (size == 1)
             {
               statement = createAssessmentStatement (
-                  as, (*binds)[0], ncmLink, parentObj);
+                    as, (*binds)[0], ncmLink, parentObj);
             }
           else
             {
@@ -1940,9 +1912,9 @@ FormatterConverter::createStatement (
         }
       else
         {
-          WARNING ("Cannot create statement of link '%s' because binds is "
-                   "nullptr.",
-                   ncmLink->getId ().c_str());
+          ERROR ("Cannot create statement of link '%s' because binds is "
+                 "nullptr.",
+                 ncmLink->getId ().c_str());
 
           return nullptr;
         }
@@ -1950,8 +1922,7 @@ FormatterConverter::createStatement (
   else if (cs) // CompoundStatement
     {
       statement = new NclLinkCompoundStatement (cs->getOperator ());
-      ((NclLinkCompoundStatement *)statement)
-          ->setNegated (cs->isNegated ());
+      ((NclLinkCompoundStatement *)statement)->setNegated (cs->isNegated ());
 
       vector<Statement *> *statements = cs->getStatements ();
 
@@ -1980,7 +1951,7 @@ FormatterConverter::createAttributeAssessment (
   NclFormatterEvent *event = createEvent (bind, ncmLink, parentObj);
 
   return new NclLinkAttributeAssessment (
-      event, attributeAssessment->getAttributeType ());
+        event, attributeAssessment->getAttributeType ());
 }
 
 NclLinkSimpleAction *
@@ -2034,7 +2005,7 @@ FormatterConverter::createSimpleAction (
           else if (paramValue[0] == '$')
             {
               connParam = new Parameter (
-                  paramValue.substr (1, paramValue.length () - 1), "");
+                    paramValue.substr (1, paramValue.length () - 1), "");
 
               param = bind->getParameter (connParam->getName ());
               if (param == nullptr)
@@ -2056,12 +2027,12 @@ FormatterConverter::createSimpleAction (
               repeat = xstrtoint (paramValue, 10);
             }
 
-          ((NclLinkRepeatAction *)action)->setRepetitions (repeat);
+          ((NclLinkRepeatAction *) action)->setRepetitions (repeat);
 
           // repeatDelay
           paramValue = sae->getRepeatDelay ();
           delay = compileDelay (ncmLink, paramValue, bind);
-          ((NclLinkRepeatAction *)action)->setRepetitionInterval (delay);
+          ((NclLinkRepeatAction *) action)->setRepetitionInterval (delay);
         }
       else if (eventType == EventUtil::EVT_ATTRIBUTION)
         {
@@ -2069,7 +2040,7 @@ FormatterConverter::createSimpleAction (
           if (paramValue != "" && paramValue[0] == '$')
             {
               connParam = new Parameter (
-                  paramValue.substr (1, paramValue.length () - 1), "");
+                    paramValue.substr (1, paramValue.length () - 1), "");
 
               param = bind->getParameter (connParam->getName ());
               if (param == nullptr)
@@ -2105,7 +2076,7 @@ FormatterConverter::createSimpleAction (
               if (paramValue[0] == '$')
                 {
                   connParam = new Parameter (
-                      paramValue.substr (1, paramValue.length () - 1), "");
+                        paramValue.substr (1, paramValue.length () - 1), "");
 
                   param = bind->getParameter (connParam->getName ());
                   if (param == nullptr)
@@ -2133,7 +2104,7 @@ FormatterConverter::createSimpleAction (
               if (paramValue[0] == '$')
                 {
                   connParam = new Parameter (
-                      paramValue.substr (1, paramValue.length () - 1), "");
+                        paramValue.substr (1, paramValue.length () - 1), "");
 
                   param = bind->getParameter (connParam->getName ());
                   if (param == nullptr)
@@ -2253,7 +2224,7 @@ FormatterConverter::createSimpleCondition (
 
   event = createEvent (bind, ncmLink, parentObj);
   condition = new NclLinkTransitionTriggerCondition (
-      event, simpleCondition->getTransition (), bind);
+        event, simpleCondition->getTransition (), bind);
 
   delayObject = simpleCondition->getDelay ();
   delay = compileDelay (ncmLink, delayObject, bind);
@@ -2287,9 +2258,9 @@ FormatterConverter::createEvent (
   seq = bind->getNodeNesting ();
   endPointNodeSequence = new NclNodeNesting (seq);
   if (endPointNodeSequence->getAnchorNode ()
-          != endPointPerspective->getAnchorNode ()
+      != endPointPerspective->getAnchorNode ()
       && endPointNodeSequence->getAnchorNode ()
-             != parentNode->getDataEntity ())
+      != parentNode->getDataEntity ())
     {
       endPointPerspective->append (endPointNodeSequence);
     }
@@ -2298,28 +2269,28 @@ FormatterConverter::createEvent (
   delete endPointNodeSequence;
 
   try
-    {
-      executionObject = getExecutionObjectFromPerspective (
+  {
+    executionObject = getExecutionObjectFromPerspective (
           endPointPerspective, bind->getDescriptor ());
 
-      if (executionObject == nullptr)
-        {
+    if (executionObject == nullptr)
+      {
 
-          WARNING ("Can't find execution object for perspective '%s'.",
-                   endPointPerspective->getId ().c_str ());
+        WARNING ("Can't find execution object for perspective '%s'.",
+                 endPointPerspective->getId ().c_str ());
 
-          delete endPointPerspective;
-          return nullptr;
-        }
-    }
+        delete endPointPerspective;
+        return nullptr;
+      }
+  }
   catch (exception *exc)
-    {
-      ERROR ("Execution object exception for perspective '%s'.",
-             endPointPerspective->getId ().c_str ());
+  {
+    ERROR ("Execution object exception for perspective '%s'.",
+           endPointPerspective->getId ().c_str ());
 
-      delete endPointPerspective;
-      return nullptr;
-    }
+    delete endPointPerspective;
+    return nullptr;
+  }
 
   interfacePoint = bind->getEndPointInterface ();
   if (interfacePoint == nullptr)
@@ -2392,13 +2363,13 @@ FormatterConverter::getBindKey (Link *ncmLink, Bind *ncmBind)
       return "";
     }
 
-  if (role->instanceOf ("SimpleCondition"))
+  if (auto sc = dynamic_cast <SimpleCondition *> (role))
     {
-      keyValue = ((SimpleCondition *)role)->getKey ();
+      keyValue = sc->getKey ();
     }
-  else if (role->instanceOf ("AttributeAssessment"))
+  else if (auto attrAssessment = dynamic_cast <AttributeAssessment *> (role))
     {
-      keyValue = ((AttributeAssessment *)role)->getKey ();
+      keyValue = attrAssessment->getKey ();
     }
   else
     {

@@ -81,7 +81,9 @@ NclCompositeExecutionObject::~NclCompositeExecutionObject ()
 
 void
 NclCompositeExecutionObject::initializeCompositeExecutionObject (
-    arg_unused (const string &id), Node *dataObject, arg_unused (NclCascadingDescriptor *descriptor))
+    arg_unused (const string &id),
+    Node *dataObject,
+    arg_unused (NclCascadingDescriptor *descriptor))
 {
   ContextNode *compositeNode;
   set<Link *> *compositionLinks;
@@ -166,8 +168,7 @@ NclCompositeExecutionObject::addExecutionObject (NclExecutionObject *obj)
   objId = obj->getId ();
   if (execObjList.count (objId) != 0)
     {
-      clog << "NclCompositeExecutionObject::addExecutionObject Warning! ";
-      clog << "trying to add same obj twice: '" << objId << "'" << endl;
+      WARNING ("Trying to add the same obj twice: '%s'.", objId.c_str ());
       return false;
     }
 

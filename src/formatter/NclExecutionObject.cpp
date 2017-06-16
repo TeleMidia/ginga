@@ -109,9 +109,6 @@ NclExecutionObject::~NclExecutionObject ()
   Node *parentNode;
   NclCompositeExecutionObject *parentObject;
 
-  clog << "NclExecutionObject::~NclExecutionObject(" << getId () << ")"
-       << endl;
-
   removeInstance (this);
   unsetParentsAsListeners ();
   deleting = true;
