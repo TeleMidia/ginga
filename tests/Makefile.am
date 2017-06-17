@@ -18,30 +18,27 @@
 
 include $(top_srcdir)/build-aux/Makefile.am.common
 
-ACLOCAL_AMFLAGS= -I build-aux ${ACLOCAL_FLAGS}
-SUBDIRS= src tests
+AM_CXXFLAGS= $(GINGA_ALL_CXXFLAGS)
+AM_LDFLAGS= -static $(GINGA_ALL_LDFLAGS)
+LDADD= $(top_builddir)/src/libginga.la
 
-include doc/doc.mk
+# Setup test framework.
+AM_COLOR_TESTS= always
+DISABLE_HARD_ERRORS= true
+LOG_COMPILER= $(_VALGRIND)
 
-MAINTAINERCLEANFILES+=\
-  INSTALL\
-  Makefile.in\
-  aclocal.m4\
-  build-aux/ar-lib\
-  build-aux/compile\
-  build-aux/config.guess\
-  build-aux/config.sub\
-  build-aux/depcomp\
-  build-aux/install-sh\
-  build-aux/libtool.m4\
-  build-aux/ltmain.sh\
-  build-aux/ltoptions.m4\
-  build-aux/ltsugar.m4\
-  build-aux/ltversion.m4\
-  build-aux/lt~obsolete.m4\
-  build-aux/missing\
-  configure\
+# Setup tests environment.
+AM_TESTS_ENVIRONMENT=\
+  export GST_DEBUG="*:WARN";\
+  export G_DEBUG="all";\
+  export G_SLICE="always-malloc";\
+  export MALLOC_CHECK_=1;\
   $(NULL)
 
-clean-local:
-	rm -rf $(CLEANDIRS)
+# Test programs.
+progs=
+progs+= test-common-color
+test_common_color_SOURCES= test-common-color.cpp
+
+TESTS= $(progs)
+check_PROGRAMS= $(progs)
