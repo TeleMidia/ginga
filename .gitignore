@@ -46,6 +46,7 @@
 /build-aux/ltversion.m4
 /build-aux/lt~obsolete.m4
 /build-aux/missing
+/build-aux/test-driver
 /config.status
 /configure
 /data/Makefile
@@ -60,3 +61,6 @@
 /src/config.h.in
 /src/ginga
 /src/stamp-h1
+/tests/Makefile
+/tests/Makefile.in
+/tests/test-common-color

@@ -19,34 +19,19 @@
 include $(top_srcdir)/build-aux/Makefile.am.common
 MAINTAINERCLEANFILES+= config.h.in config.h.in~
 
-AM_CXXFLAGS=\
-  $(CEF_CFLAGS)\
-  $(GLIB_CFLAGS)\
-  $(GSTREAMER_CFLAGS)\
-  $(LIBRSVG_CFLAGS)\
-  $(NCLUA_CFLAGS)\
-  $(PANGO_CFLAGS)\
-  $(SDL2IMAGE_CFLAGS)\
-  $(SDL2_CFLAGS)\
-  $(WARN_CFLAGS)\
-  $(WERROR_CFLAGS)\
-  $(XERCESC_CFLAGS)\
-  $(NULL)
-
-AM_LDFLAGS= -R $(libdir) -rpath $(libdir)\
-  $(CEF_LIBS)\
-  $(GLIB_LIBS)\
-  $(GSTREAMER_LIBS)\
-  $(LIBRSVG_LIBS)\
-  $(NCLUA_LIBS)\
-  $(PANGO_LIBS)\
-  $(SDL2IMAGE_LIBS)\
-  $(SDL2_LIBS)\
-  $(XERCESC_LIBS)\
-  $(NULL)
+AM_CXXFLAGS= $(GINGA_ALL_CXXFLAGS)
+AM_LDFLAGS= $(GINGA_ALL_LDFLAGS)
 
 bin_PROGRAMS= ginga
-ginga_SOURCES= $(src)
+ginga_CXXFLAGS= $(AM_CXXFLAGS)
+ginga_LDFLAGS= -static $(AM_LDFLAGS)
+ginga_SOURCES= main.cpp
+ginga_LDADD= $(builddir)/libginga.la
+
+noinst_LTLIBRARIES= libginga.la
+libginga_la_CXXFLAGS= $(AM_CXXFLAGS)
+libginga_la_LDFLAGS= -static $(AM_LDFLAGS)
+libginga_la_SOURCES= $(src)
 src=
 src+= common-color-table.cpp
 src+= common-key-table.cpp
@@ -91,7 +76,6 @@ src+= formatter/Parser.cpp
 src+= formatter/PlayerAdapter.cpp
 src+= formatter/RuleAdapter.cpp
 src+= formatter/Settings.cpp
-src+= main.cpp
 src+= mb/Dashboard.cpp
 src+= mb/Display.cpp
 src+= mb/SDLWindow.cpp
