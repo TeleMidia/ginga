@@ -27,12 +27,6 @@ class NclCompositeExecutionObject;
 
 class NclFormatterLink
 {
-protected:
-  Link *ncmLink;
-  bool suspend;
-  NclCompositeExecutionObject *parentObject;
-  set<string> typeSet;
-
 public:
   NclFormatterLink (Link *ncmLink, NclCompositeExecutionObject *parentObject);
   virtual ~NclFormatterLink ();
@@ -40,6 +34,12 @@ public:
   void suspendLinkEvaluation (bool suspend);
   Link *getNcmLink ();
   bool instanceOf (const string &s);
+
+protected:
+  Link *ncmLink;
+  bool suspend;
+  NclCompositeExecutionObject *parentObject;
+  set<string> typeSet;
 };
 
 GINGA_FORMATTER_END

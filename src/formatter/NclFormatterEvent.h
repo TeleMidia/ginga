@@ -30,6 +30,40 @@ class NclExecutionObject;
 
 class NclFormatterEvent
 {
+public:
+  NclFormatterEvent (const string &id, NclExecutionObject *);
+  virtual ~NclFormatterEvent ();
+
+  static bool hasInstance (NclFormatterEvent *event, bool remove);
+
+  bool instanceOf (const string &s);
+
+  static bool hasNcmId (NclFormatterEvent *event, const string &anchorId);
+
+  void setEventType (short eventType);
+  virtual short getEventType ();
+  void setId (const string &id);
+  void addEventListener (INclEventListener *listener);
+  bool containsEventListener (INclEventListener *listener);
+  void removeEventListener (INclEventListener *listener);
+
+  bool abort ();
+  virtual bool start ();
+  virtual bool stop ();
+  bool pause ();
+  bool resume ();
+  void setCurrentState (short newState);
+
+  short getCurrentState ();
+  short getPreviousState ();
+  static short getTransistion (short previousState, short newState);
+
+  NclExecutionObject *getExecutionObject ();
+  void setExecutionObject (NclExecutionObject *object);
+  string getId ();
+  int getOccurrences ();
+  static string getStateName (short state);
+
 protected:
   string id;
   short currentState;
@@ -44,59 +78,16 @@ protected:
   static set<NclFormatterEvent *> instances;
   static bool init;
 
-public:
-  NclFormatterEvent (const string &id, NclExecutionObject *);
-  virtual ~NclFormatterEvent ();
-
-private:
-  virtual void destroyListeners ();
-
-public:
-  static bool hasInstance (NclFormatterEvent *event, bool remove);
-
-private:
-  static void addInstance (NclFormatterEvent *event);
-
-protected:
   static bool removeInstance (NclFormatterEvent *event);
 
-public:
-  bool instanceOf (const string &s);
-
-  static bool hasNcmId (NclFormatterEvent *event, const string &anchorId);
-
-  void setEventType (short eventType);
-  virtual short getEventType ();
-  void setId (const string &id);
-  void addEventListener (INclEventListener *listener);
-  bool containsEventListener (INclEventListener *listener);
-  void removeEventListener (INclEventListener *listener);
-
-protected:
   short getNewState (short transition);
   short getTransition (short newState);
 
-public:
-  bool abort ();
-  virtual bool start ();
-  virtual bool stop ();
-  bool pause ();
-  bool resume ();
-  void setCurrentState (short newState);
-
-protected:
   bool changeState (short newState, short transition);
 
-public:
-  short getCurrentState ();
-  short getPreviousState ();
-  static short getTransistion (short previousState, short newState);
-
-  NclExecutionObject *getExecutionObject ();
-  void setExecutionObject (NclExecutionObject *object);
-  string getId ();
-  int getOccurrences ();
-  static string getStateName (short state);
+private:
+  virtual void destroyListeners ();
+  static void addInstance (NclFormatterEvent *event);
 };
 
 GINGA_FORMATTER_END
