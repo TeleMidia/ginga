@@ -38,30 +38,6 @@ class FormatterConverter;
 
 class FormatterFocusManager : public IEventListener
 {
-private:
-  Settings *settings;
-  map<string, set<NclExecutionObject *> *> *focusTable;
-  bool isHandler;
-  string currentFocus;
-  string objectToSelect;
-  NclExecutionObject *selectedObject;
-
-  int defaultFocusBorderWidth;  // pixels
-  SDL_Color defaultFocusBorderColor;
-  SDL_Color defaultSelBorderColor;
-
-  FormatterScheduler *_scheduler;
-  FormatterFocusManager *parentManager;
-  INclLinkActionListener *settingActions;
-
-  int width;
-  int height;
-
-  FormatterConverter *converter;
-
-  static bool init;
-  static set<FormatterFocusManager *> instances;
-
 public:
   FormatterFocusManager (FormatterScheduler *,
                          Settings *,
@@ -70,46 +46,59 @@ public:
 
   virtual ~FormatterFocusManager ();
 
-private:
-  static void checkInit ();
-  static bool hasInstance (FormatterFocusManager *instance, bool remove);
-
-public:
   bool isKeyHandler ();
-  bool setKeyHandler (bool isHandler);
+  bool setKeyHandler (bool _isHandler);
 
-private:
-  void resetKeyMaster ();
-
-public:
   void setKeyMaster (const string &mediaId);
   void setFocus (const string &focusIndex);
 
-private:
-  void setFocus (NclCascadingDescriptor *descriptor);
-  void recoveryDefaultState (NclExecutionObject *object);
-
-public:
   void showObject (NclExecutionObject *object);
   void hideObject (NclExecutionObject *object);
 
-private:
-  NclExecutionObject *getObjectFromFocusIndex (const string &focusIndex);
-  void insertObject (NclExecutionObject *object, const string &focusIndex);
-  void removeObject (NclExecutionObject *object, const string &focusIndex);
-
-
-public:
   void setDefaultFocusBorderColor (SDL_Color);
   void setDefaultFocusBorderWidth (int);
   void setDefaultSelBorderColor (SDL_Color);
 
-private:
-  void changeSettingState (const string &name, const string &act);
-
-public:
-  void handleTickEvent (GingaTime, GingaTime, int) {};
+  void handleTickEvent (GingaTime, GingaTime, int) {}
   void handleKeyEvent (SDL_EventType evtType, SDL_Keycode key);
+
+private:
+  Settings *_settings;
+  map<string, set<NclExecutionObject *> *> *_focusTable;
+  bool _isHandler;
+  string _currentFocus;
+  string _objectToSelect;
+  NclExecutionObject *_selectedObject;
+
+  int _defaultFocusBorderWidth;  // pixels
+  SDL_Color _defaultFocusBorderColor;
+  SDL_Color _defaultSelBorderColor;
+
+  FormatterScheduler *_scheduler;
+  FormatterFocusManager *_parentManager;
+  INclLinkActionListener *_settingActions;
+
+  int _width;
+  int _height;
+
+  FormatterConverter *_converter;
+
+  static bool _init;
+  static set<FormatterFocusManager *> _instances;
+
+  static void checkInit ();
+  static bool hasInstance (FormatterFocusManager *instance, bool remove);
+
+  void resetKeyMaster ();
+
+  void setFocus (NclCascadingDescriptor *descriptor);
+  void recoveryDefaultState (NclExecutionObject *object);
+
+  NclExecutionObject *getObjectFromFocusIndex (const string &focusIndex);
+  void insertObject (NclExecutionObject *object, const string &focusIndex);
+  void removeObject (NclExecutionObject *object, const string &focusIndex);
+
+  void changeSettingState (const string &name, const string &act);
 };
 
 GINGA_FORMATTER_END
