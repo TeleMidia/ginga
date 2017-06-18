@@ -44,7 +44,7 @@ NclCompositeExecutionObject::~NclCompositeExecutionObject ()
   map<string, NclExecutionObject *>::iterator j;
 
   removeInstance (this);
-  deleting = true;
+  _isDeleting = true;
 
   destroyEvents ();
 
@@ -72,7 +72,7 @@ NclCompositeExecutionObject::~NclCompositeExecutionObject ()
       object = j->second;
       if (object != this && hasInstance (object, false))
         {
-          object->removeParentObject (dataObject, this);
+          object->removeParentObject (_dataObject, this);
         }
       ++j;
     }
@@ -81,16 +81,16 @@ NclCompositeExecutionObject::~NclCompositeExecutionObject ()
 
 void
 NclCompositeExecutionObject::initializeCompositeExecutionObject (
-    arg_unused (const string &id),
+    arg_unused (const string &_id),
     Node *dataObject,
-    arg_unused (NclCascadingDescriptor *descriptor))
+    arg_unused (NclCascadingDescriptor *_descriptor))
 {
   ContextNode *compositeNode;
   set<Link *> *compositionLinks;
   set<Link *>::iterator i;
   Entity *entity;
 
-  typeSet.insert ("NclCompositeExecutionObject");
+  _typeSet.insert ("NclCompositeExecutionObject");
 
   execObjList.clear ();
   links.clear ();
@@ -273,7 +273,7 @@ NclCompositeExecutionObject::removeExecutionObject (NclExecutionObject *obj)
 {
   map<string, NclExecutionObject *>::iterator i;
 
-  if (!deleting)
+  if (!_isDeleting)
     {
       i = execObjList.find (obj->getId ());
       if (i != execObjList.end ())
@@ -444,12 +444,12 @@ NclCompositeExecutionObject::setParentsAsListeners ()
 {
   map<Node *, NclCompositeExecutionObject *>::iterator i;
 
-  i = parentTable.begin ();
-  while (i != parentTable.end ())
+  i = _parentTable.begin ();
+  while (i != _parentTable.end ())
     {
-      if (NclFormatterEvent::hasInstance (wholeContent, false))
+      if (NclFormatterEvent::hasInstance (_wholeContent, false))
         {
-          wholeContent->addEventListener (i->second);
+          _wholeContent->addEventListener (i->second);
         }
       ++i;
     }
@@ -460,21 +460,21 @@ NclCompositeExecutionObject::unsetParentsAsListeners ()
 {
   map<Node *,NclCompositeExecutionObject *>::iterator i;
 
-  if (deleting)
+  if (_isDeleting)
     {
       return;
     }
 
-  i = parentTable.begin ();
-  while (i != parentTable.end ())
+  i = _parentTable.begin ();
+  while (i != _parentTable.end ())
     {
-      if (deleting || !NclFormatterEvent::hasInstance (wholeContent, false))
+      if (_isDeleting || !NclFormatterEvent::hasInstance (_wholeContent, false))
         {
           return;
         }
 
       // unregister parent as a composite presentation listener
-      wholeContent->removeEventListener (
+      _wholeContent->removeEventListener (
           (NclCompositeExecutionObject *)i->second);
 
       ++i;
@@ -500,7 +500,7 @@ NclCompositeExecutionObject::eventStateChanged (NclFormatterEvent *event,
       if (runningEvents.empty () && pausedEvents.empty ())
         {
           setParentsAsListeners ();
-          wholeContent->start ();
+          _wholeContent->start ();
         }
 
       runningEvents.insert (event);
@@ -528,7 +528,7 @@ NclCompositeExecutionObject::eventStateChanged (NclFormatterEvent *event,
       if (runningEvents.empty () && pausedEvents.empty ()
           && pendingLinks.empty ())
         {
-          wholeContent->abort ();
+          _wholeContent->abort ();
           unsetParentsAsListeners ();
         }
       break;
@@ -583,7 +583,7 @@ NclCompositeExecutionObject::eventStateChanged (NclFormatterEvent *event,
       pausedEvents.insert (event);
       if (runningEvents.empty ())
         {
-          wholeContent->pause ();
+          _wholeContent->pause ();
         }
       break;
 
@@ -597,7 +597,7 @@ NclCompositeExecutionObject::eventStateChanged (NclFormatterEvent *event,
       runningEvents.insert (event);
       if (runningEvents.size () == 1)
         {
-          wholeContent->resume ();
+          _wholeContent->resume ();
         }
       break;
 
@@ -629,7 +629,7 @@ NclCompositeExecutionObject::linkEvaluationFinished (
   NclFormatterLink *finishedLink;
   map<NclFormatterLink *, int>::iterator i;
 
-  clog << "NclCompositeExecutionObject::linkEvaluationFinished(" << id;
+  clog << "NclCompositeExecutionObject::linkEvaluationFinished(" << _id;
   clog << ") '";
   clog << link->getNcmLink ()->getId () << "'" << endl;
 
@@ -650,8 +650,8 @@ NclCompositeExecutionObject::linkEvaluationFinished (
                 }
               else if (!start)
                 {
-                  wholeContent->abort ();
-                  if (deleting)
+                  _wholeContent->abort ();
+                  if (_isDeleting)
                     {
                       return;
                     }
@@ -684,11 +684,11 @@ NclCompositeExecutionObject::setProperty (NclAttributionEvent *event,
     {
       if (value == "true")
         {
-          visible = true;
+          _visible = true;
         }
       else if (value == "false")
         {
-          visible = false;
+          _visible = false;
         }
       return false;
     }
@@ -699,19 +699,19 @@ NclCompositeExecutionObject::setProperty (NclAttributionEvent *event,
 void
 NclCompositeExecutionObject::checkLinkConditions ()
 {
-  if (deleting || (runningEvents.empty () && pausedEvents.empty ()
+  if (_isDeleting || (runningEvents.empty () && pausedEvents.empty ()
                    && pendingLinks.empty ()))
     {
       clog << "NclCompositeExecutionObject::run ";
-      clog << "I (" << id << ") am ending because of STOP of";
+      clog << "I (" << _id << ") am ending because of STOP of";
       clog << " the last running event (no pending links nor ";
       clog << "paused events)";
       clog << endl;
 
-      if (wholeContent != NULL &&
-          NclFormatterEvent::hasInstance (wholeContent, false))
+      if (_wholeContent != NULL &&
+          NclFormatterEvent::hasInstance (_wholeContent, false))
         {
-          wholeContent->stop ();
+          _wholeContent->stop ();
           unsetParentsAsListeners ();
         }
     }
@@ -726,7 +726,7 @@ NclCompositeExecutionObject::listRunningObjects ()
   NclFormatterEvent *event;
 
   clog << "NclCompositeExecutionObject::listRunningObjects for '";
-  clog << id << "': ";
+  clog << _id << "': ";
   i = execObjList.begin ();
   while (i != execObjList.end ())
     {
@@ -755,7 +755,7 @@ NclCompositeExecutionObject::listPendingLinks ()
   Link *ncmLink;
 
   clog << "NclCompositeExecutionObject::listPendingLinks for '";
-  clog << id << "': ";
+  clog << _id << "': ";
 
   i = pendingLinks.begin ();
   while (i != pendingLinks.end ())

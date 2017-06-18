@@ -22,20 +22,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::player;
 
 #include "ncl/Animation.h"
-using namespace ::ginga::ncl;
-
 #include "ncl/GenericDescriptor.h"
-using namespace ::ginga::ncl;
-
 #include "ncl/ReferenceContent.h"
-using namespace ::ginga::ncl;
-
 #include "ncl/LabeledAnchor.h"
 #include "ncl/LambdaAnchor.h"
 #include "ncl/IntervalAnchor.h"
 #include "ncl/PropertyAnchor.h"
-using namespace ::ginga::ncl;
-
 #include "ncl/EventUtil.h"
 using namespace ::ginga::ncl;
 
@@ -43,18 +35,14 @@ using namespace ::ginga::ncl;
 #include "NclPresentationEvent.h"
 #include "NclSelectionEvent.h"
 #include "NclAttributionEvent.h"
-
 #include "NclBeginEventTransition.h"
 #include "NclEndEventTransition.h"
 #include "NclEventTransition.h"
 #include "NclEventTransitionManager.h"
-
 #include "NclCascadingDescriptor.h"
 #include "NclFormatterRegion.h"
-
 #include "NclLinkSimpleAction.h"
 #include "INclLinkActionListener.h"
-
 #include "NclNodeNesting.h"
 
 GINGA_FORMATTER_BEGIN
@@ -63,48 +51,6 @@ class NclCompositeExecutionObject;
 
 class NclExecutionObject
 {
-protected:
-  string id;
-  Node *dataObject;
-  NclCascadingDescriptor *descriptor;
-  GingaTime offsetTime;
-  NclPresentationEvent *wholeContent;
-
-  set<string> typeSet;
-  INclLinkActionListener *seListener;
-
-  bool isLocked;
-  bool deleting;
-  bool isHandler;
-  bool isHandling;
-
-private:
-  map<Node *, Node *> nodeParentTable;
-
-protected:
-  map<Node *, NclCompositeExecutionObject *> parentTable;
-  bool visible;
-
-private:
-  bool isItCompiled;
-
-protected:
-  map<string, NclFormatterEvent *> events;
-  vector<NclPresentationEvent *> presEvents;
-  set<NclSelectionEvent *> selectionEvents;
-  vector<NclFormatterEvent *> otherEvents;
-  int pauseCount;
-  NclFormatterEvent *mainEvent;
-  NclEventTransitionManager *transMan;
-  NclExecutionObject *mirrorSrc;
-
-private:
-  static set<NclExecutionObject *> objects;
-
-protected:
-  static void addInstance (NclExecutionObject *object);
-  static bool removeInstance (NclExecutionObject *object);
-
 public:
   NclExecutionObject (const string &id, Node *node, bool handling,
                       INclLinkActionListener *seListener);
@@ -114,7 +60,7 @@ public:
                       bool handling,
                       INclLinkActionListener *seListener);
 
-  NclExecutionObject (const string &id, Node *node,
+  NclExecutionObject (const string &_id, Node *node,
                       NclCascadingDescriptor *descriptor, bool handling,
                       INclLinkActionListener *seListener);
 
@@ -122,26 +68,12 @@ public:
 
   static bool hasInstance (NclExecutionObject *object, bool eraseFromList);
 
-private:
-  void initializeExecutionObject (const string &id, Node *node,
-                                  NclCascadingDescriptor *descriptor,
-                                  bool handling,
-                                  INclLinkActionListener *seListener);
-
-protected:
-  void destroyEvents ();
-  virtual void unsetParentsAsListeners ();
-  virtual void removeParentListenersFromEvent (NclFormatterEvent *event);
-
-public:
   virtual bool isSleeping ();
   virtual bool isPaused ();
   bool instanceOf (const string &s);
   Node *getDataObject ();
   NclCascadingDescriptor *getDescriptor ();
   string getId ();
-
-  void notifyTimeAnchorCallBack();
 
   NclCompositeExecutionObject *getParentObject ();
   NclCompositeExecutionObject *getParentObject (Node *node);
@@ -154,38 +86,30 @@ public:
                                    NclCompositeExecutionObject *parentObject);
 
   void setDescriptor (NclCascadingDescriptor *cascadingDescriptor);
-  void setDescriptor (GenericDescriptor *descriptor);
+  void setDescriptor (GenericDescriptor *_descriptor);
   virtual bool addEvent (NclFormatterEvent *event);
   void addPresentationEvent (NclPresentationEvent *event);
   bool containsEvent (NclFormatterEvent *event);
   NclFormatterEvent *getEventFromAnchorId (const string &anchorId);
 
-public:
   NclFormatterEvent *getEvent (const string &id);
   vector<NclFormatterEvent *> getEvents ();
-  bool hasSampleEvents ();
-  set<NclAnchorEvent *> *getSampleEvents ();
+
   NclPresentationEvent *getWholeContentPresentationEvent ();
   bool removeEvent (NclFormatterEvent *event);
   bool isCompiled ();
   void setCompiled (bool status);
-  void removeNode (Node *node);
   vector<Node *> getNodes ();
-  const vector<Anchor *> &getNCMAnchors ();
   PropertyAnchor *getNCMProperty (const string &propertyName);
   NclNodeNesting *getNodePerspective ();
   NclNodeNesting *getNodePerspective (Node *node);
-  vector<NclExecutionObject *> *getObjectPerspective ();
-  vector<NclExecutionObject *> *getObjectPerspective (Node *node);
-  vector<Node *> *getParentNodes ();
   NclFormatterEvent *getMainEvent ();
-  virtual bool prepare (NclFormatterEvent *event, GingaTime offsetTime);
-  virtual bool start ();
 
   void updateTransitionTable (GingaTime value, Player *player);
-  void resetTransitionEvents ();
-  void prepareTransitionEvents (GingaTime startTime);
   virtual NclEventTransition *getNextTransition ();
+
+  virtual bool prepare (NclFormatterEvent *event, GingaTime offsetTime);
+  virtual bool start ();
   virtual bool stop ();
   virtual bool abort ();
   virtual bool pause ();
@@ -198,6 +122,53 @@ public:
   void setHandling (bool isHandling);
   void setHandler (bool isHandler);
   bool selectionEvent (SDL_Keycode key, GingaTime currentTime);
+
+protected:
+  string _id;
+  Node *_dataObject;
+  NclCascadingDescriptor *_descriptor;
+  GingaTime _offsetTime;
+  NclPresentationEvent *_wholeContent;
+
+  set<string> _typeSet;
+  INclLinkActionListener *_seListener;
+
+  bool _isLocked;
+  bool _isDeleting;
+  bool _isHandler;
+  bool _isHandling;
+
+  map<Node *, NclCompositeExecutionObject *> _parentTable;
+  bool _visible;
+  map<string, NclFormatterEvent *> _events;
+  vector<NclPresentationEvent *> _presEvents;
+  set<NclSelectionEvent *> _selectionEvents;
+  vector<NclFormatterEvent *> _otherEvents;
+
+  int _pauseCount;
+  NclFormatterEvent *_mainEvent;
+  NclEventTransitionManager *_transMan;
+  NclExecutionObject *_mirrorSrc;
+
+  static set<NclExecutionObject *> _objects;
+
+  void prepareTransitionEvents (GingaTime startTime);
+  void destroyEvents ();
+  virtual void unsetParentsAsListeners ();
+  virtual void removeParentListenersFromEvent (NclFormatterEvent *event);
+
+  static void addInstance (NclExecutionObject *object);
+  static bool removeInstance (NclExecutionObject *object);
+
+private:
+  bool _isCompiled;
+
+  map<Node *, Node *> _nodeParentTable;
+
+  void initializeExecutionObject (const string &_id, Node *node,
+                                  NclCascadingDescriptor *_descriptor,
+                                  bool handling,
+                                  INclLinkActionListener *_seListener);
 };
 
 GINGA_FORMATTER_END

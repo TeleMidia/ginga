@@ -26,7 +26,7 @@ NclExecutionObjectSwitch::NclExecutionObjectSwitch (
     : NclCompositeExecutionObject (id, switchNode, handling, seListener)
 {
   selectedObject = NULL;
-  typeSet.insert ("NclExecutionObjectSwitch");
+  _typeSet.insert ("NclExecutionObjectSwitch");
 }
 
 NclExecutionObject *
@@ -70,7 +70,7 @@ NclExecutionObjectSwitch::addEvent (NclFormatterEvent *event)
       && (((NclPresentationEvent *)event)->getAnchor ())
              ->instanceOf ("LambdaAnchor"))
     {
-      NclExecutionObject::wholeContent = (NclPresentationEvent *)event;
+      NclExecutionObject::_wholeContent = (NclPresentationEvent *)event;
       return true;
     }
   else

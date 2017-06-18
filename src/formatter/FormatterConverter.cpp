@@ -289,8 +289,7 @@ FormatterConverter::getEvent (NclExecutionObject *exeObj,
                     = dynamic_cast <IntervalAnchor *> (interfacePoint);
                 if (intervalAnchor)
                   {
-                    WARNING ("it was supposed to be a PRESENTATION "
-                             "EVENT");
+                    WARNING ("It was supposed to be a PRESENTATION EVENT");
 
                     // TODO: find the correct way to solve this
                     event = new NclPresentationEvent (
@@ -316,7 +315,7 @@ FormatterConverter::getEvent (NclExecutionObject *exeObj,
           break;
 
         default:
-          WARNING ("unknown event type '%d'", ncmEventType);
+          WARNING ("Unknown event type '%d'", ncmEventType);
           break;
         }
     }
@@ -2363,11 +2362,11 @@ FormatterConverter::getBindKey (Link *ncmLink, Bind *ncmBind)
       return "";
     }
 
-  if (auto sc = dynamic_cast <SimpleCondition *> (role))
+  if (auto sc = dynamic_cast<SimpleCondition *> (role))
     {
       keyValue = sc->getKey ();
     }
-  else if (auto attrAssessment = dynamic_cast <AttributeAssessment *> (role))
+  else if (auto attrAssessment = dynamic_cast<AttributeAssessment *> (role))
     {
       keyValue = attrAssessment->getKey ();
     }
