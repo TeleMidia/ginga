@@ -342,7 +342,6 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
 
           if (anim != NULL)
             {
-              //dragon fang
               string durVal, byVal;
 
               durVal = anim->getDuration ();
@@ -1165,7 +1164,6 @@ FormatterScheduler::eventStateChanged (NclFormatterEvent *event,
 
               if (hideObj)
                 {
-                  //dragon head
                   clog << "FormatterScheduler::eventStateChanged '";
                   clog << event->getId ();
                   clog << "' STOPS: hideObject '" << object->getId ();

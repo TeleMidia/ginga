@@ -76,7 +76,7 @@ NclExecutionObject::NclExecutionObject (const string &id, Node *node,
                                         bool handling,
                                         INclLinkActionListener *seListener)
 {
-  initializeExecutionObject (id, node, NULL, handling, seListener);
+  initializeExecutionObject (id, node, nullptr, handling, seListener);
 }
 
 NclExecutionObject::NclExecutionObject (const string &id, Node *node,
@@ -109,10 +109,10 @@ NclExecutionObject::~NclExecutionObject ()
   unsetParentsAsListeners ();
   _isDeleting = true;
 
-  _seListener = NULL;
-  _dataObject = NULL;
-  _wholeContent = NULL;
-  _mainEvent = NULL;
+  _seListener = nullptr;
+  _dataObject = nullptr;
+  _wholeContent = nullptr;
+  _mainEvent = nullptr;
 
   destroyEvents ();
 
@@ -133,10 +133,10 @@ NclExecutionObject::~NclExecutionObject ()
   _nodeParentTable.clear ();
 
   _parentTable.clear ();
-  if (_descriptor != NULL)
+  if (_descriptor != nullptr)
     {
       delete _descriptor;
-      _descriptor = NULL;
+      _descriptor = nullptr;
     }
 }
 
@@ -152,13 +152,13 @@ NclExecutionObject::initializeExecutionObject (
   this->_isDeleting = false;
   this->_id = id;
   this->_dataObject = node;
-  this->_wholeContent = NULL;
-  this->_descriptor = NULL;
+  this->_wholeContent = nullptr;
+  this->_descriptor = nullptr;
 
   this->_isCompiled = false;
 
   this->_pauseCount = 0;
-  this->_mainEvent = NULL;
+  this->_mainEvent = nullptr;
   this->_descriptor = descriptor;
   this->_isLocked = false;
   this->_isHandler = false;
@@ -170,27 +170,20 @@ NclExecutionObject::initializeExecutionObject (
 void
 NclExecutionObject::destroyEvents ()
 {
-  map<string, NclFormatterEvent *>::iterator i;
-  NclFormatterEvent *event;
-
-  i = _events.begin ();
-  while (i != _events.end ())
+  for (auto i : _events)
     {
-      event = i->second;
-      _events.erase (i);
+      NclFormatterEvent *event = i.second;
       if (NclFormatterEvent::hasInstance (event, true))
         {
           delete event;
-          event = NULL;
         }
-      i = _events.begin ();
     }
   _events.clear ();
 
-  if (_transMan != NULL)
+  if (_transMan != nullptr)
     {
       delete _transMan;
-      _transMan = NULL;
+      _transMan = nullptr;
     }
 
   _presEvents.clear ();
@@ -236,7 +229,7 @@ NclExecutionObject::removeParentListenersFromEvent (
 bool
 NclExecutionObject::isSleeping ()
 {
-  if (_mainEvent == NULL
+  if (_mainEvent == nullptr
       || _mainEvent->getCurrentState () == EventUtil::ST_SLEEPING)
     {
       return true;
@@ -248,7 +241,7 @@ NclExecutionObject::isSleeping ()
 bool
 NclExecutionObject::isPaused ()
 {
-  if (_mainEvent != NULL
+  if (_mainEvent != nullptr
       && _mainEvent->getCurrentState () == EventUtil::ST_PAUSED)
     {
       return true;
@@ -331,7 +324,7 @@ NclExecutionObject::removeParentObject (Node *parentNode,
   i = _parentTable.find (parentNode);
   if (i != _parentTable.end () && i->second == parentObject)
     {
-      if (_wholeContent != NULL)
+      if (_wholeContent != nullptr)
         {
           _wholeContent->removeEventListener (parentObject);
         }
@@ -352,7 +345,7 @@ NclExecutionObject::setDescriptor (GenericDescriptor *descriptor)
   NclCascadingDescriptor *cascade;
   cascade = new NclCascadingDescriptor (descriptor);
 
-  if (this->_descriptor != NULL)
+  if (this->_descriptor != nullptr)
     {
       delete this->_descriptor;
     }
@@ -460,14 +453,14 @@ NclExecutionObject::getEventFromAnchorId (const string &anchorId)
 
   if (anchorId == "")
     {
-      if (_wholeContent != NULL)
+      if (_wholeContent != nullptr)
         {
           return _wholeContent;
         }
     }
   else
     {
-      if (_wholeContent != NULL)
+      if (_wholeContent != nullptr)
         {
           if (NclFormatterEvent::hasNcmId (_wholeContent, anchorId))
             {
@@ -482,7 +475,7 @@ NclExecutionObject::getEventFromAnchorId (const string &anchorId)
       while (i != _events.end ())
         {
           event = i->second;
-          if (event != NULL)
+          if (event != nullptr)
             {
               if (NclFormatterEvent::hasNcmId (event, anchorId))
                 {
@@ -494,7 +487,7 @@ NclExecutionObject::getEventFromAnchorId (const string &anchorId)
       clog << endl;
     }
 
-  return NULL;
+  return nullptr;
 }
 
 NclFormatterEvent *
@@ -506,7 +499,7 @@ NclExecutionObject::getEvent (const string &id)
       ev = _events[id];
       return ev;
     }
-  return NULL;
+  return nullptr;
 }
 
 vector<NclFormatterEvent *>
@@ -616,9 +609,9 @@ NclExecutionObject::getNodes ()
 PropertyAnchor *
 NclExecutionObject::getNCMProperty (const string &propertyName)
 {
-  PropertyAnchor *property = NULL;
+  PropertyAnchor *property = nullptr;
 
-  if (_dataObject != NULL)
+  if (_dataObject != nullptr)
     {
       property = _dataObject->getPropertyAnchor (propertyName);
     }
@@ -648,7 +641,7 @@ NclExecutionObject::getNodePerspective (Node *node)
         }
       else
         {
-          return NULL;
+          return nullptr;
         }
     }
   else
@@ -664,7 +657,7 @@ NclExecutionObject::getNodePerspective (Node *node)
         }
       else
         {
-          return NULL;
+          return nullptr;
         }
     }
   perspective->insertAnchorNode (node);
@@ -691,7 +684,7 @@ NclExecutionObject::prepare (NclFormatterEvent *event, GingaTime offsetTime)
   string value;
 
   // clog << "NclExecutionObject::prepare(" << id << ")" << endl;
-  if (event == NULL || !containsEvent (event)
+  if (event == nullptr || !containsEvent (event)
       || event->getCurrentState () != EventUtil::ST_SLEEPING)
     {
       // clog << "NclExecutionObject::prepare(" << id << ") ret FALSE" <<
@@ -699,7 +692,7 @@ NclExecutionObject::prepare (NclFormatterEvent *event, GingaTime offsetTime)
       return false;
     }
 
-  if (_mainEvent != NULL
+  if (_mainEvent != nullptr
       && _mainEvent->getCurrentState () != EventUtil::ST_SLEEPING)
     {
       return false;
@@ -709,7 +702,7 @@ NclExecutionObject::prepare (NclFormatterEvent *event, GingaTime offsetTime)
   if (_mainEvent->instanceOf ("NclAnchorEvent"))
     {
       contentAnchor = ((NclAnchorEvent *)_mainEvent)->getAnchor ();
-      if (contentAnchor != NULL
+      if (contentAnchor != nullptr
           && contentAnchor->instanceOf ("LabeledAnchor"))
         {
           i = _parentTable.begin ();
@@ -780,26 +773,26 @@ NclExecutionObject::start ()
   ContentAnchor *contentAnchor;
 
   clog << "NclExecutionObject::start(" << _id << ")" << endl;
-  if (_mainEvent == NULL && _wholeContent == NULL)
+  if (_mainEvent == nullptr && _wholeContent == nullptr)
     {
       return false;
     }
 
-  if (_mainEvent != NULL
+  if (_mainEvent != nullptr
       && _mainEvent->getCurrentState () != EventUtil::ST_SLEEPING)
     {
       return true;
     }
 
-  if (_mainEvent == NULL)
+  if (_mainEvent == nullptr)
     {
       prepare (_wholeContent, 0.0);
     }
 
-  if (_mainEvent != NULL && _mainEvent->instanceOf ("NclAnchorEvent"))
+  if (_mainEvent != nullptr && _mainEvent->instanceOf ("NclAnchorEvent"))
     {
       contentAnchor = ((NclAnchorEvent *)_mainEvent)->getAnchor ();
-      if (contentAnchor != NULL
+      if (contentAnchor != nullptr
           && contentAnchor->instanceOf ("LabeledAnchor"))
         {
           _transMan->start (_offsetTime);
@@ -829,7 +822,7 @@ NclExecutionObject::getNextTransition ()
 {
   if (isSleeping () || !_mainEvent->instanceOf ("NclPresentationEvent"))
     {
-      return NULL;
+      return nullptr;
     }
   return _transMan->getNextTransition (_mainEvent);
 }
@@ -855,7 +848,7 @@ NclExecutionObject::stop ()
   else if (_mainEvent->instanceOf ("NclAnchorEvent"))
     {
       contentAnchor = ((NclAnchorEvent *)_mainEvent)->getAnchor ();
-      if (contentAnchor != NULL
+      if (contentAnchor != nullptr
           && contentAnchor->instanceOf ("LabeledAnchor"))
         {
           /*clog << "NclExecutionObject::stop for '" << id << "'";
@@ -887,7 +880,7 @@ NclExecutionObject::abort ()
   else if (_mainEvent->instanceOf ("NclAnchorEvent"))
     {
       contentAnchor = ((NclAnchorEvent *)_mainEvent)->getAnchor ();
-      if (contentAnchor != NULL
+      if (contentAnchor != nullptr
           && contentAnchor->instanceOf ("LabeledAnchor"))
         {
           _mainEvent->abort ();
@@ -974,14 +967,14 @@ NclExecutionObject::setProperty (NclAttributionEvent *event,
 {
   string propName;
 
-  NclFormatterRegion *region = NULL;
-  LayoutRegion *ncmRegion = NULL;
+  NclFormatterRegion *region = nullptr;
+  LayoutRegion *ncmRegion = nullptr;
   vector<string> params;
 
-  if (_descriptor == NULL || _descriptor->getFormatterRegion () == NULL)
+  if (_descriptor == nullptr || _descriptor->getFormatterRegion () == nullptr)
     {
       clog << "NclExecutionObject::setPropertyValue : setPropertyValue could ";
-      clog << "not be performed. Descriptor or formatterRegion is NULL";
+      clog << "not be performed. Descriptor or formatterRegion is nullptr";
       clog << endl;
 
       return false;
@@ -997,10 +990,10 @@ NclExecutionObject::setProperty (NclAttributionEvent *event,
 
   region = _descriptor->getFormatterRegion ();
   ncmRegion = region->getLayoutRegion ();
-  if (ncmRegion == NULL)
+  if (ncmRegion == nullptr)
     {
       clog << "NclExecutionObject::setPropertyValue : The ncmRegion ";
-      clog << " is NULL (PROBLEM)!" << endl;
+      clog << " is nullptr (PROBLEM)!" << endl;
       return false;
     }
 
@@ -1017,14 +1010,14 @@ NclExecutionObject::setProperty (NclAttributionEvent *event,
 string
 NclExecutionObject::getProperty (const string &param)
 {
-  NclFormatterRegion *region = NULL;
-  LayoutRegion *ncmRegion = NULL;
+  NclFormatterRegion *region = nullptr;
+  LayoutRegion *ncmRegion = nullptr;
   string value = "";
 
-  if (_descriptor == NULL || _descriptor->getFormatterRegion () == NULL)
+  if (_descriptor == nullptr || _descriptor->getFormatterRegion () == nullptr)
     {
       clog << "NclExecutionObject::setPropertyValue : setPropertyValue could ";
-      clog << "not be performed. Descriptor or formatterRegion is NULL";
+      clog << "not be performed. Descriptor or formatterRegion is nullptr";
       clog << endl;
       return value;
     }
@@ -1095,7 +1088,7 @@ NclExecutionObject::getProperty (const string &param)
 bool
 NclExecutionObject::unprepare ()
 {
-  if (_mainEvent == NULL
+  if (_mainEvent == nullptr
       || _mainEvent->getCurrentState () != EventUtil::ST_SLEEPING)
     {
       clog << "NclExecutionObject::unprepare(" << _id << ") unlocked";
@@ -1104,7 +1097,7 @@ NclExecutionObject::unprepare ()
     }
 
   removeParentListenersFromEvent (_mainEvent);
-  _mainEvent = NULL;
+  _mainEvent = nullptr;
   return true;
 }
 
@@ -1120,7 +1113,6 @@ NclExecutionObject::setHandler (bool isHandler)
   this->_isHandler = isHandler;
 }
 
-//dragon head
 bool
 NclExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
 {
@@ -1213,7 +1205,7 @@ NclExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
                 }
 
               expectedEvent = getEventFromAnchorId (anchorId);
-              if (expectedEvent != NULL)
+              if (expectedEvent != nullptr)
                 {
                   clog << "NclExecutionObject::selectionEvent(";
                   clog << _id << ")";
@@ -1252,7 +1244,7 @@ NclExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
       selected = true;
       selectionEvent = (*i);
 
-      if (_seListener != NULL)
+      if (_seListener != nullptr)
         {
           clog << "NclExecutionObject::selectionEvent(" << _id << ")";
           clog << " calling scheduler to execute fake action";
@@ -1267,7 +1259,7 @@ NclExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
     }
 
   delete selectedEvents;
-  selectedEvents = NULL;
+  selectedEvents = nullptr;
 
   return selected;
 }
