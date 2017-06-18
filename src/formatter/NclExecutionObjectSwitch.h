@@ -35,9 +35,6 @@ GINGA_FORMATTER_BEGIN
 
 class NclExecutionObjectSwitch : public NclCompositeExecutionObject
 {
-protected:
-  NclExecutionObject *selectedObject;
-
 public:
   NclExecutionObjectSwitch (const string &id, Node *switchNode, bool handling,
                             INclLinkActionListener *seListener);
@@ -46,6 +43,9 @@ public:
   NclExecutionObject *getSelectedObject ();
   void select (NclExecutionObject *executionObject);
   bool addEvent (NclFormatterEvent *event);
+
+protected:
+  NclExecutionObject *_selectedObject;
 };
 
 GINGA_FORMATTER_END

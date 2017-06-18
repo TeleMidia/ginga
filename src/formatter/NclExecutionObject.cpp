@@ -290,17 +290,13 @@ NclExecutionObject::getParentObject ()
 NclCompositeExecutionObject *
 NclExecutionObject::getParentObject (Node *node)
 {
-  Node *parentNode;
-  NclCompositeExecutionObject *parentObj = NULL;
+  NclCompositeExecutionObject *parentObj = nullptr;
 
-  map<Node *, Node *>::iterator i;
-  map<Node *, NclCompositeExecutionObject *>::iterator j;
-
-  i = _nodeParentTable.find (node);
+  auto i = _nodeParentTable.find (node);
   if (i != _nodeParentTable.end ())
     {
-      parentNode = i->second;
-      j = _parentTable.find (parentNode);
+      Node *parentNode = i->second;
+      auto j = _parentTable.find (parentNode);
       if (j != _parentTable.end ())
         {
           parentObj = j->second;

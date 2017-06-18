@@ -84,17 +84,17 @@ public:
   bool setProperty (NclAttributionEvent *, const string &) override;
 
 private:
-  static const short mSleepTime = 800;
-  set<NclFormatterLink *> links;
-  set<Link *> uncompiledLinks;
+  static const short _mSleepTime = 800;
+  set<NclFormatterLink *> _links;
+  set<Link *> _uncompiledLinks;
 
-  set<NclFormatterEvent *> runningEvents; // child events occurring
-  set<NclFormatterEvent *> pausedEvents;  // child events paused
+  set<NclFormatterEvent *> _runningEvents; // child events occurring
+  set<NclFormatterEvent *> _pausedEvents;  // child events paused
   short lastTransition;
 
-  map<NclFormatterLink *, int> pendingLinks;
+  map<NclFormatterLink *, int> _pendingLinks;
 
-  map<string, NclExecutionObject *> execObjList;
+  map<string, NclExecutionObject *> _execObjList;
 
   void checkLinkConditions ();
   void listRunningObjects ();

@@ -32,25 +32,12 @@ GINGA_FORMATTER_BEGIN
 
 class NclEventTransitionManager
 {
-private:
-  size_t currentTransitionIndex;
-  size_t startTransitionIndex;
-  vector<NclEventTransition *> transTable;
-
 public:
   NclEventTransitionManager ();
   virtual ~NclEventTransitionManager ();
 
-private:
-  vector<NclEventTransition *> *getTransitionEvents ();
-
-public:
   void addPresentationEvent (NclPresentationEvent *event);
 
-private:
-  void addEventTransition (NclEventTransition *transition);
-
-public:
   void removeEventTransition (NclPresentationEvent *event);
 
   void resetTimeIndex ();
@@ -64,6 +51,15 @@ public:
 
   set<GingaTime> *getTransitionsValues ();
   NclEventTransition *getNextTransition (NclFormatterEvent *mainEvent);
+
+private:
+  size_t currentTransitionIndex;
+  size_t startTransitionIndex;
+  vector<NclEventTransition *> transTable;
+
+  vector<NclEventTransition *> *getTransitionEvents ();
+
+  void addEventTransition (NclEventTransition *transition);
 };
 
 GINGA_FORMATTER_END

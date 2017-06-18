@@ -212,8 +212,9 @@ private:
                                Bind *ncmBind);
 
   string getBindKey (Link *ncmLink, Bind *ncmBind);
-  GingaTime compileDelay (Link *ncmLink, const string &delayObject, Bind *bind);
-  //end FormatterLinkConverter
+
+  GingaTime
+  compileDelay (Link *ncmLink, const string &delayObject,Bind *bind);
 };
 
 GINGA_FORMATTER_END
