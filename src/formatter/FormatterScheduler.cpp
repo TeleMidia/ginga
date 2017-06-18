@@ -1286,9 +1286,7 @@ FormatterScheduler::removePlayer (NclExecutionObject *exObject)
   if (!NclExecutionObject::hasInstance (exObject, false))
     return false;
 
-  map<string, PlayerAdapter *>::iterator i
-      = _objectPlayers.find (exObject->getId ());
-
+  auto i = _objectPlayers.find (exObject->getId ());
   if (i != _objectPlayers.end ())
     {
       delete i->second; // delete PlayerAdapter
@@ -1304,20 +1302,19 @@ PlayerAdapter *
 FormatterScheduler::initializePlayer (NclExecutionObject *object)
 {
   g_assert_nonnull (object);
-  string id = object->getId ();
 
   NodeEntity *entity
       = (NodeEntity *)(object->getDataObject ()->getDataEntity ());
   g_assert_nonnull (entity);
 
-  ContentNode *contentNode = dynamic_cast <ContentNode *> (entity);
+  ContentNode *contentNode = dynamic_cast<ContentNode *> (entity);
   g_assert_nonnull (contentNode);
 
   if (contentNode->isSettingNode ())
     return nullptr;             // nothing to do
 
   PlayerAdapter *adapter = new PlayerAdapter (this);
-  _objectPlayers[id] = adapter;
+  _objectPlayers[object->getId ()] = adapter;
 
   return adapter;
 }
@@ -1325,12 +1322,11 @@ FormatterScheduler::initializePlayer (NclExecutionObject *object)
 PlayerAdapter *
 FormatterScheduler::getObjectPlayer (NclExecutionObject *execObj)
 {
-  map<string, PlayerAdapter *>::iterator i;
   PlayerAdapter *player = nullptr;
   string objId;
 
   objId = execObj->getId ();
-  i = _objectPlayers.find (objId);
+  auto i = _objectPlayers.find (objId);
   if (i == _objectPlayers.end ())
     {
       player = initializePlayer (execObj);
