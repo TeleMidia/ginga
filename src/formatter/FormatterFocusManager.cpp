@@ -55,10 +55,10 @@ FormatterFocusManager::FormatterFocusManager (FormatterScheduler *scheduler,
     this->defaultFocusBorderWidth = xstrtoint (str, 10);
 
   str = settings->get ("system.focusBorderColor");
-  ginga_color_parse (str, &this->defaultFocusBorderColor);
+  _ginga_parse_color (str, &this->defaultFocusBorderColor);
 
   str = settings->get ("system.defaultSelBorderColor");
-  ginga_color_parse (str, &this->defaultSelBorderColor);
+  _ginga_parse_color (str, &this->defaultSelBorderColor);
 
   this->converter = converter;
   this->_scheduler = scheduler;

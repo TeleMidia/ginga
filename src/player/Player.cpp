@@ -257,7 +257,7 @@ Player::setProperty (const string &name, const string &value)
     }
   else if (name == "background" || name == "backgroundColor")
     {
-      g_assert (ginga_color_parse (value, &this->bgColor));
+      this->bgColor = ginga_parse_color (value);
     }
   else if (name == "transparency")
     {

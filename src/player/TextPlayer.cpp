@@ -168,7 +168,7 @@ TextPlayer::setProperty (const string &name, const string &value)
 
   if(name == "fontColor")
     {
-      g_assert (ginga_color_parse (value, &_fontColor));;
+      _fontColor = ginga_parse_color (value);
     }
   else if(name == "fontSize")
     {

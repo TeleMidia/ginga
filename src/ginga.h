@@ -201,10 +201,13 @@ typedef GstClockTime GingaTime;
 #define GINGA_STIME_ARGS(t)        GST_STIME_ARGS ((t))
 
 // Conversion tables.
-bool ginga_color_parse (const string &, SDL_Color *);
 bool ginga_color_table_index (const string &, SDL_Color *);
 bool ginga_key_table_index (SDL_Keycode, string *);
 bool ginga_mime_table_index (string, string *);
+
+// Parsing functions.
+bool _ginga_parse_color (const string &, SDL_Color *);
+SDL_Color ginga_parse_color (const string &);
 
 // String functions.
 bool _xstrtod (const string &, double *);
@@ -231,7 +234,7 @@ int G_GNUC_PRINTF (2,3) xstrassign (string &, const char *, ...);
 string G_GNUC_PRINTF (1,2) xstrbuild (const char *, ...);
 string xstrup (string);
 string xstrdown (string);
-string xstrchomp (string);
+string xstrstrip (string);
 void xstrreplaceall (string &, const string &, const string &);
 vector<string> xstrsplit (const string &, char);
 
