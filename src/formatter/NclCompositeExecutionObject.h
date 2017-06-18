@@ -64,16 +64,11 @@ public:
   bool containsExecutionObject (const string &execObjId);
   NclExecutionObject *getExecutionObject (const string &execObjId);
   map<string, NclExecutionObject *> *getExecutionObjects ();
-  map<string, NclExecutionObject *> *recursivellyGetExecutionObjects ();
-  int getNumExecutionObjects ();
   bool removeExecutionObject (NclExecutionObject *execObj);
   set<Link *> *getUncompiledLinks ();
   bool containsUncompiledLink (Link *dataLink);
   void removeLinkUncompiled (Link *ncmLink);
   void setLinkCompiled (NclFormatterLink *formatterLink);
-  void addNcmLink (Link *ncmLink);
-  void removeNcmLink (Link *ncmLink);
-  void setAllLinksAsUncompiled (bool isRecursive);
   void setParentsAsListeners ();
   void unsetParentsAsListeners () override;
   void eventStateChanged (NclFormatterEvent *event, short transition,
