@@ -48,12 +48,12 @@ NclCompositeExecutionObject::~NclCompositeExecutionObject ()
 
   destroyEvents ();
 
-  runningEvents.clear ();
-  pausedEvents.clear ();
-  pendingLinks.clear ();
+  _runningEvents.clear ();
+  _pausedEvents.clear ();
+  _pendingLinks.clear ();
 
-  i = links.begin ();
-  while (i != links.end ())
+  i = _links.begin ();
+  while (i != _links.end ())
     {
       link = *i;
       if (link != NULL)
@@ -63,11 +63,11 @@ NclCompositeExecutionObject::~NclCompositeExecutionObject ()
         }
       ++i;
     }
-  links.clear ();
-  uncompiledLinks.clear ();
+  _links.clear ();
+  _uncompiledLinks.clear ();
 
-  j = execObjList.begin ();
-  while (j != execObjList.end ())
+  j = _execObjList.begin ();
+  while (j != _execObjList.end ())
     {
       object = j->second;
       if (object != this && hasInstance (object, false))
@@ -76,7 +76,7 @@ NclCompositeExecutionObject::~NclCompositeExecutionObject ()
         }
       ++j;
     }
-  execObjList.clear ();
+  _execObjList.clear ();
 }
 
 void
@@ -92,12 +92,12 @@ NclCompositeExecutionObject::initializeCompositeExecutionObject (
 
   _typeSet.insert ("NclCompositeExecutionObject");
 
-  execObjList.clear ();
-  links.clear ();
-  uncompiledLinks.clear ();
-  runningEvents.clear ();
-  pausedEvents.clear ();
-  pendingLinks.clear ();
+  _execObjList.clear ();
+  _links.clear ();
+  _uncompiledLinks.clear ();
+  _runningEvents.clear ();
+  _pausedEvents.clear ();
+  _pendingLinks.clear ();
 
   entity = dataObject->getDataEntity ();
 
@@ -110,7 +110,7 @@ NclCompositeExecutionObject::initializeCompositeExecutionObject (
           i = compositionLinks->begin ();
           while (i != compositionLinks->end ())
             {
-              uncompiledLinks.insert (*i);
+              _uncompiledLinks.insert (*i);
               ++i;
             }
         }
@@ -128,8 +128,8 @@ NclCompositeExecutionObject::getParentFromDataObject (Node *dataObject)
 
   if (parentDataObject != NULL)
     {
-      i = execObjList.begin ();
-      while (i != execObjList.end ())
+      i = _execObjList.begin ();
+      while (i != _execObjList.end ())
         {
           object = i->second;
           if (object->getDataObject () == parentDataObject)
@@ -147,8 +147,8 @@ NclCompositeExecutionObject::suspendLinkEvaluation (bool suspend)
 {
   set<NclFormatterLink *>::iterator i;
 
-  i = links.begin ();
-  while (i != links.end ())
+  i = _links.begin ();
+  while (i != _links.end ())
     {
       (*i)->suspendLinkEvaluation (suspend);
       ++i;
@@ -166,13 +166,13 @@ NclCompositeExecutionObject::addExecutionObject (NclExecutionObject *obj)
     }
 
   objId = obj->getId ();
-  if (execObjList.count (objId) != 0)
+  if (_execObjList.count (objId) != 0)
     {
       WARNING ("Trying to add the same obj twice: '%s'.", objId.c_str ());
       return false;
     }
 
-  execObjList[objId] = obj;
+  _execObjList[objId] = obj;
 
   obj->addParentObject (this, getDataObject ());
   return true;
@@ -197,13 +197,13 @@ NclCompositeExecutionObject::getExecutionObject (const string &id)
   map<string, NclExecutionObject *>::iterator i;
   NclExecutionObject *execObj;
 
-  if (execObjList.empty ())
+  if (_execObjList.empty ())
     {
       return NULL;
     }
 
-  i = execObjList.find (id);
-  if (i != execObjList.end ())
+  i = _execObjList.find (id);
+  if (i != _execObjList.end ())
     {
       execObj = i->second;
       return execObj;
@@ -217,11 +217,11 @@ NclCompositeExecutionObject::getExecutionObjects ()
 {
   map<string, NclExecutionObject *> *objs;
 
-  if (execObjList.empty ())
+  if (_execObjList.empty ())
     {
       return NULL;
     }
-  objs = new map<string, NclExecutionObject *> (execObjList);
+  objs = new map<string, NclExecutionObject *> (_execObjList);
 
   return objs;
 }
@@ -229,7 +229,7 @@ NclCompositeExecutionObject::getExecutionObjects ()
 int
 NclCompositeExecutionObject::getNumExecutionObjects ()
 {
-  return (int) execObjList.size ();
+  return (int) _execObjList.size ();
 }
 
 map<string, NclExecutionObject *> *
@@ -242,8 +242,8 @@ NclCompositeExecutionObject::recursivellyGetExecutionObjects ()
 
   objects = new map<string, NclExecutionObject *>;
 
-  i = execObjList.begin ();
-  while (i != execObjList.end ())
+  i = _execObjList.begin ();
+  while (i != _execObjList.end ())
     {
       childObject = i->second;
       (*objects)[i->first] = childObject;
@@ -275,10 +275,10 @@ NclCompositeExecutionObject::removeExecutionObject (NclExecutionObject *obj)
 
   if (!_isDeleting)
     {
-      i = execObjList.find (obj->getId ());
-      if (i != execObjList.end ())
+      i = _execObjList.find (obj->getId ());
+      if (i != _execObjList.end ())
         {
-          execObjList.erase (i);
+          _execObjList.erase (i);
           return true;
         }
     }
@@ -289,17 +289,17 @@ set<Link *> *
 NclCompositeExecutionObject::getUncompiledLinks ()
 {
   clog << "NclCompositeExecutionObject::getUncompiledLinks '" << getId ();
-  clog << "' has '" << uncompiledLinks.size () << "' uncompiled links";
+  clog << "' has '" << _uncompiledLinks.size () << "' uncompiled links";
   clog << endl;
 
-  set<Link *> *uLinks = new set<Link *> (uncompiledLinks);
+  set<Link *> *uLinks = new set<Link *> (_uncompiledLinks);
   return uLinks;
 }
 
 bool
 NclCompositeExecutionObject::containsUncompiledLink (Link *dataLink)
 {
-  if (uncompiledLinks.count (dataLink) != 0)
+  if (_uncompiledLinks.count (dataLink) != 0)
     return true;
   return false;
 }
@@ -311,10 +311,10 @@ NclCompositeExecutionObject::removeLinkUncompiled (Link *ncmLink)
 
   clog << "NclCompositeExecutionObject::removeLinkUncompiled '";
   clog << ncmLink->getId () << "'" << endl;
-  i = uncompiledLinks.find (ncmLink);
-  if (i != uncompiledLinks.end ())
+  i = _uncompiledLinks.find (ncmLink);
+  if (i != _uncompiledLinks.end ())
     {
-      uncompiledLinks.erase (i);
+      _uncompiledLinks.erase (i);
       return;
     }
 }
@@ -339,18 +339,18 @@ NclCompositeExecutionObject::setLinkCompiled (NclFormatterLink *link)
       return;
     }
 
-  links.insert (link);
+  _links.insert (link);
 }
 
 void
 NclCompositeExecutionObject::addNcmLink (Link *ncmLink)
 {
-  if (uncompiledLinks.count (ncmLink) != 0)
+  if (_uncompiledLinks.count (ncmLink) != 0)
     {
       clog << "NclCompositeExecutionObject::addNcmLink Warning! ";
       clog << "Trying to add same link twice" << endl;
     }
-  uncompiledLinks.insert (ncmLink);
+  _uncompiledLinks.insert (ncmLink);
 }
 
 void
@@ -368,22 +368,22 @@ NclCompositeExecutionObject::removeNcmLink (Link *ncmLink)
        << ncmLink->getId ();
   clog << "'" << endl;
 
-  i = uncompiledLinks.find (ncmLink);
-  if (i != uncompiledLinks.end ())
+  i = _uncompiledLinks.find (ncmLink);
+  if (i != _uncompiledLinks.end ())
     {
       contains = true;
-      uncompiledLinks.erase (i);
+      _uncompiledLinks.erase (i);
     }
 
   if (!contains)
     {
-      for (j = links.begin (); j != links.end (); ++j)
+      for (j = _links.begin (); j != _links.end (); ++j)
         {
           link = *j;
           compiledNcmLink = link->getNcmLink ();
           if (ncmLink == compiledNcmLink)
             {
-              links.erase (j);
+              _links.erase (j);
               delete link;
               link = NULL;
               return;
@@ -405,27 +405,27 @@ NclCompositeExecutionObject::setAllLinksAsUncompiled (bool isRecursive)
   clog << "NclCompositeExecutionObject::setAllLinksAsUncompiled for '";
   clog << getId () << "'" << endl;
 
-  j = links.begin ();
-  while (j != links.end ())
+  j = _links.begin ();
+  while (j != _links.end ())
     {
       link = *j;
       ncmLink = link->getNcmLink ();
-      if (uncompiledLinks.count (ncmLink) != 0)
+      if (_uncompiledLinks.count (ncmLink) != 0)
         {
           clog << "NclCompositeExecutionObject::setAllLinksAsUncompiled ";
           clog << "Warning! Trying to add same link twice" << endl;
         }
-      uncompiledLinks.insert (ncmLink);
+      _uncompiledLinks.insert (ncmLink);
       delete link;
       link = NULL;
       ++j;
     }
-  links.clear ();
+  _links.clear ();
 
   if (isRecursive)
     {
-      i = execObjList.begin ();
-      while (i != execObjList.end ())
+      i = _execObjList.begin ();
+      while (i != _execObjList.end ())
         {
           childObject = i->second;
           if (childObject->instanceOf ("NclCompositeExecutionObject"))
@@ -497,36 +497,36 @@ NclCompositeExecutionObject::eventStateChanged (NclFormatterEvent *event,
   switch (transition)
     {
     case EventUtil::TR_STARTS:
-      if (runningEvents.empty () && pausedEvents.empty ())
+      if (_runningEvents.empty () && _pausedEvents.empty ())
         {
           setParentsAsListeners ();
           _wholeContent->start ();
         }
 
-      runningEvents.insert (event);
+      _runningEvents.insert (event);
       break;
 
     case EventUtil::TR_ABORTS:
       lastTransition = transition;
       if (previousState == EventUtil::ST_OCCURRING)
         {
-          i = runningEvents.find (event);
-          if (i != runningEvents.end ())
+          i = _runningEvents.find (event);
+          if (i != _runningEvents.end ())
             {
-              runningEvents.erase (i);
+              _runningEvents.erase (i);
             }
         }
       else if (previousState == EventUtil::ST_PAUSED)
         {
-          i = pausedEvents.find (event);
-          if (i != pausedEvents.end ())
+          i = _pausedEvents.find (event);
+          if (i != _pausedEvents.end ())
             {
-              pausedEvents.erase (i);
+              _pausedEvents.erase (i);
             }
         }
 
-      if (runningEvents.empty () && pausedEvents.empty ()
-          && pendingLinks.empty ())
+      if (_runningEvents.empty () && _pausedEvents.empty ()
+          && _pendingLinks.empty ())
         {
           _wholeContent->abort ();
           unsetParentsAsListeners ();
@@ -539,34 +539,34 @@ NclCompositeExecutionObject::eventStateChanged (NclFormatterEvent *event,
           lastTransition = transition;
           if (previousState == EventUtil::ST_OCCURRING)
             {
-              i = runningEvents.find (event);
-              if (i != runningEvents.end ())
+              i = _runningEvents.find (event);
+              if (i != _runningEvents.end ())
                 {
-                  runningEvents.erase (i);
+                  _runningEvents.erase (i);
                 }
             }
           else if (previousState == EventUtil::ST_PAUSED)
             {
-              i = pausedEvents.find (event);
-              if (i != pausedEvents.end ())
+              i = _pausedEvents.find (event);
+              if (i != _pausedEvents.end ())
                 {
-                  pausedEvents.erase (i);
+                  _pausedEvents.erase (i);
                 }
             }
 
-          if (runningEvents.size () < 2)
+          if (_runningEvents.size () < 2)
             {
               listRunningObjects ();
             }
 
-          if (runningEvents.size () < 2 && pausedEvents.empty ()
-              && !pendingLinks.empty ())
+          if (_runningEvents.size () < 2 && _pausedEvents.empty ()
+              && !_pendingLinks.empty ())
             {
               listPendingLinks ();
             }
 
-          if (runningEvents.empty () && pausedEvents.empty ()
-              && pendingLinks.empty ())
+          if (_runningEvents.empty () && _pausedEvents.empty ()
+              && _pendingLinks.empty ())
             {
               checkLinkConditions ();
             }
@@ -574,28 +574,28 @@ NclCompositeExecutionObject::eventStateChanged (NclFormatterEvent *event,
       break;
 
     case EventUtil::TR_PAUSES:
-      i = runningEvents.find (event);
-      if (i != runningEvents.end ())
+      i = _runningEvents.find (event);
+      if (i != _runningEvents.end ())
         {
-          runningEvents.erase (i);
+          _runningEvents.erase (i);
         }
 
-      pausedEvents.insert (event);
-      if (runningEvents.empty ())
+      _pausedEvents.insert (event);
+      if (_runningEvents.empty ())
         {
           _wholeContent->pause ();
         }
       break;
 
     case EventUtil::TR_RESUMES:
-      i = pausedEvents.find (event);
-      if (i != pausedEvents.end ())
+      i = _pausedEvents.find (event);
+      if (i != _pausedEvents.end ())
         {
-          pausedEvents.erase (i);
+          _pausedEvents.erase (i);
         }
 
-      runningEvents.insert (event);
-      if (runningEvents.size () == 1)
+      _runningEvents.insert (event);
+      if (_runningEvents.size () == 1)
         {
           _wholeContent->resume ();
         }
@@ -614,11 +614,11 @@ NclCompositeExecutionObject::linkEvaluationStarted (
   NclFormatterLink *evalLink;
 
   evalLink = link;
-  if (pendingLinks.count (evalLink) != 0)
+  if (_pendingLinks.count (evalLink) != 0)
     {
-      linkNumber = pendingLinks[evalLink];
+      linkNumber = _pendingLinks[evalLink];
     }
-  pendingLinks[evalLink] = linkNumber + 1;
+  _pendingLinks[evalLink] = linkNumber + 1;
 }
 
 void
@@ -634,15 +634,15 @@ NclCompositeExecutionObject::linkEvaluationFinished (
   clog << link->getNcmLink ()->getId () << "'" << endl;
 
   finishedLink = link;
-  i = pendingLinks.find (finishedLink);
-  if (i != pendingLinks.end ())
+  i = _pendingLinks.find (finishedLink);
+  if (i != _pendingLinks.end ())
     {
       linkNumber = i->second;
       if (linkNumber == 1)
         {
-          pendingLinks.erase (i);
-          if (runningEvents.empty () && pausedEvents.empty ()
-              && pendingLinks.empty ())
+          _pendingLinks.erase (i);
+          if (_runningEvents.empty () && _pausedEvents.empty ()
+              && _pendingLinks.empty ())
             {
               if (lastTransition == EventUtil::TR_STOPS)
                 {
@@ -671,7 +671,7 @@ NclCompositeExecutionObject::linkEvaluationFinished (
         }
       else
         {
-          pendingLinks[finishedLink] = linkNumber - 1;
+          _pendingLinks[finishedLink] = linkNumber - 1;
         }
     }
 }
@@ -699,8 +699,8 @@ NclCompositeExecutionObject::setProperty (NclAttributionEvent *event,
 void
 NclCompositeExecutionObject::checkLinkConditions ()
 {
-  if (_isDeleting || (runningEvents.empty () && pausedEvents.empty ()
-                   && pendingLinks.empty ()))
+  if (_isDeleting || (_runningEvents.empty () && _pausedEvents.empty ()
+                   && _pendingLinks.empty ()))
     {
       clog << "NclCompositeExecutionObject::run ";
       clog << "I (" << _id << ") am ending because of STOP of";
@@ -727,8 +727,8 @@ NclCompositeExecutionObject::listRunningObjects ()
 
   clog << "NclCompositeExecutionObject::listRunningObjects for '";
   clog << _id << "': ";
-  i = execObjList.begin ();
-  while (i != execObjList.end ())
+  i = _execObjList.begin ();
+  while (i != _execObjList.end ())
     {
       object = i->second;
       vector<NclFormatterEvent *> events = object->getEvents ();
@@ -744,7 +744,7 @@ NclCompositeExecutionObject::listRunningObjects ()
         }
       ++i;
     }
-  clog << " runingEvents->size = '" << runningEvents.size () << "'";
+  clog << " runingEvents->size = '" << _runningEvents.size () << "'";
   clog << endl;
 }
 
@@ -757,8 +757,8 @@ NclCompositeExecutionObject::listPendingLinks ()
   clog << "NclCompositeExecutionObject::listPendingLinks for '";
   clog << _id << "': ";
 
-  i = pendingLinks.begin ();
-  while (i != pendingLinks.end ())
+  i = _pendingLinks.begin ();
+  while (i != _pendingLinks.end ())
     {
       ncmLink = i->first->getNcmLink ();
 
@@ -769,7 +769,7 @@ NclCompositeExecutionObject::listPendingLinks ()
       ++i;
     }
 
-  clog << " pendingLinks.size = '" << pendingLinks.size () << "'";
+  clog << " pendingLinks.size = '" << _pendingLinks.size () << "'";
   clog << endl;
 }
 

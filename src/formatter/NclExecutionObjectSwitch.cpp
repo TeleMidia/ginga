@@ -25,14 +25,14 @@ NclExecutionObjectSwitch::NclExecutionObjectSwitch (
     INclLinkActionListener *seListener)
     : NclCompositeExecutionObject (id, switchNode, handling, seListener)
 {
-  selectedObject = NULL;
+  _selectedObject = NULL;
   _typeSet.insert ("NclExecutionObjectSwitch");
 }
 
 NclExecutionObject *
 NclExecutionObjectSwitch::getSelectedObject ()
 {
-  return selectedObject;
+  return _selectedObject;
 }
 
 void
@@ -47,11 +47,11 @@ NclExecutionObjectSwitch::select (NclExecutionObject *executionObject)
       clog << "NclExecutionObjectSwitch::select '";
       clog << executionObject->getId () << "'" << endl;
 
-      selectedObject = executionObject;
+      _selectedObject = executionObject;
     }
   else
     {
-      selectedObject = NULL;
+      _selectedObject = NULL;
       vector<NclFormatterEvent *> eventsVector = getEvents ();
       i = eventsVector.begin ();
       while (i != eventsVector.end ())

@@ -25,10 +25,6 @@ GINGA_FORMATTER_BEGIN
 
 class NclApplicationExecutionObject : public NclExecutionObject
 {
-private:
-  map<string, NclFormatterEvent *> preparedEvents;
-  NclFormatterEvent *currentEvent;
-
 public:
   NclApplicationExecutionObject (const string &id, Node *node, bool handling,
                                  INclLinkActionListener *seListener);
@@ -45,10 +41,6 @@ public:
 
   virtual ~NclApplicationExecutionObject ();
 
-private:
-  void initializeApplicationObject ();
-
-public:
   bool isSleeping ();
   bool isPaused ();
   NclFormatterEvent *getCurrentEvent ();
@@ -64,9 +56,14 @@ public:
   bool unprepare ();
 
 private:
+  map<string, NclFormatterEvent *> _preparedEvents;
+  NclFormatterEvent *_currentEvent;
+
+  void initializeApplicationObject ();
   void unprepareEvents ();
   void removeEventListeners ();
-  void removeParentObject (Node *parentNode, NclCompositeExecutionObject *parentObject);
+  void removeParentObject (Node *parentNode,
+                           NclCompositeExecutionObject *parentObject);
   void removeParentListenersFromEvent (NclFormatterEvent *event);
   void lockEvents ();
   void unlockEvents ();

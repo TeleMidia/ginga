@@ -166,9 +166,9 @@ private:
   map<Node *, Node *> _nodeParentTable;
 
   void initializeExecutionObject (const string &_id, Node *node,
-                                  NclCascadingDescriptor *_descriptor,
+                                  NclCascadingDescriptor *descriptor,
                                   bool handling,
-                                  INclLinkActionListener *_seListener);
+                                  INclLinkActionListener *seListener);
 };
 
 GINGA_FORMATTER_END
