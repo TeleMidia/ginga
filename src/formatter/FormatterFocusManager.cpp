@@ -28,8 +28,8 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-conversion)
 
 GINGA_FORMATTER_BEGIN
 
-bool FormatterFocusManager::init = false;
-set<FormatterFocusManager *> FormatterFocusManager::instances;
+bool FormatterFocusManager::_init = false;
+set<FormatterFocusManager *> FormatterFocusManager::_instances;
 
 FormatterFocusManager::FormatterFocusManager (FormatterScheduler *scheduler,
                                               Settings *settings,
@@ -38,60 +38,60 @@ FormatterFocusManager::FormatterFocusManager (FormatterScheduler *scheduler,
 {
   string str;
 
-  focusTable = new map<string, set<NclExecutionObject *> *>;
-  currentFocus = "";
-  objectToSelect = "";
-  isHandler = false;
-  parentManager = NULL;
-  width = 0;
-  height = 0;
+  _focusTable = new map<string, set<NclExecutionObject *> *>;
+  _currentFocus = "";
+  _objectToSelect = "";
+  _isHandler = false;
+  _parentManager = NULL;
+  _width = 0;
+  _height = 0;
 
-  this->defaultFocusBorderWidth = 1;
-  this->defaultFocusBorderColor = {0, 0, 255, 255};
-  this->defaultSelBorderColor = {0, 255, 0, 255};
+  this->_defaultFocusBorderWidth = 1;
+  this->_defaultFocusBorderColor = {0, 0, 255, 255};
+  this->_defaultSelBorderColor = {0, 255, 0, 255};
 
   str = settings->get ("system.defaultFocusBorderWidth");
   if (str != "")
-    this->defaultFocusBorderWidth = xstrtoint (str, 10);
+    this->_defaultFocusBorderWidth = xstrtoint (str, 10);
 
   str = settings->get ("system.focusBorderColor");
-  _ginga_parse_color (str, &this->defaultFocusBorderColor);
+  _ginga_parse_color (str, &this->_defaultFocusBorderColor);
 
   str = settings->get ("system.defaultSelBorderColor");
-  _ginga_parse_color (str, &this->defaultSelBorderColor);
+  _ginga_parse_color (str, &this->_defaultSelBorderColor);
 
-  this->converter = converter;
+  this->_converter = converter;
   this->_scheduler = scheduler;
-  this->settings = settings;
-  this->selectedObject = NULL;
-  this->settingActions = settingActions;
+  this->_settings = settings;
+  this->_selectedObject = NULL;
+  this->_settingActions = settingActions;
 
   checkInit ();
-  instances.insert (this);
+  _instances.insert (this);
   g_assert (Ginga_Display->registerEventListener (this));
 }
 
 FormatterFocusManager::~FormatterFocusManager ()
 {
   hasInstance (this, true);
-  selectedObject = NULL;
+  _selectedObject = NULL;
 
-  if (focusTable != NULL)
+  if (_focusTable != NULL)
     {
-      delete focusTable;
-      focusTable = NULL;
+      delete _focusTable;
+      _focusTable = NULL;
     }
 
   _scheduler = NULL;
-  settings = NULL;
+  _settings = NULL;
   Ginga_Display->unregisterEventListener (this);
 }
 
 void
 FormatterFocusManager::checkInit ()
 {
-  if (!init)
-    init = true;
+  if (!_init)
+    _init = true;
 }
 
 bool
@@ -101,18 +101,18 @@ FormatterFocusManager::hasInstance (FormatterFocusManager *instance,
   set<FormatterFocusManager *>::iterator i;
   bool find = false;
 
-  if (!init)
+  if (!_init)
     {
       return false;
     }
 
-  i = instances.find (instance);
-  if (i != instances.end ())
+  i = _instances.find (instance);
+  if (i != _instances.end ())
     {
       find = true;
       if (remove)
         {
-          instances.erase (i);
+          _instances.erase (i);
         }
     }
 
@@ -122,7 +122,7 @@ FormatterFocusManager::hasInstance (FormatterFocusManager *instance,
 bool
 FormatterFocusManager::isKeyHandler ()
 {
-  return isHandler;
+  return _isHandler;
 }
 
 bool
@@ -133,12 +133,12 @@ FormatterFocusManager::setKeyHandler (bool isHandler)
   NclFormatterRegion *fr;
   string ix;
 
-  if (this->isHandler == isHandler)
+  if (this->_isHandler == isHandler)
     {
       return false;
     }
 
-  if (isHandler && parentManager != NULL && !parentManager->isKeyHandler ())
+  if (isHandler && _parentManager != NULL && !_parentManager->isKeyHandler ())
     {
       clog << "FormatterFocusManager::setKeyHandler(" << this << ")";
       clog << " can't set handler because parent manager is not ";
@@ -147,25 +147,25 @@ FormatterFocusManager::setKeyHandler (bool isHandler)
       return false;
     }
 
-  focusedObj = getObjectFromFocusIndex (currentFocus);
+  focusedObj = getObjectFromFocusIndex (_currentFocus);
 
-  this->isHandler = isHandler;
-  this->converter->setHandlingStatus (isHandler);
+  this->_isHandler = isHandler;
+  this->_converter->setHandlingStatus (isHandler);
   if (isHandler)
     {
       if (focusedObj == NULL)
         {
-          if (!focusTable->empty ())
+          if (!_focusTable->empty ())
             {
-              ix = focusTable->begin ()->first;
-              currentFocus = "";
+              ix = _focusTable->begin ()->first;
+              _currentFocus = "";
               setFocus (ix);
             }
         }
       else
         {
-          ix = currentFocus;
-          currentFocus = "";
+          ix = _currentFocus;
+          _currentFocus = "";
           setFocus (ix);
         }
     }
@@ -198,8 +198,8 @@ FormatterFocusManager::getObjectFromFocusIndex (const string &focusIndex)
   NclCascadingDescriptor *desc;
   bool visible;
 
-  i = focusTable->find (focusIndex);
-  if (i == focusTable->end ())
+  i = _focusTable->find (focusIndex);
+  if (i == _focusTable->end ())
     {
       return NULL;
     }
@@ -220,7 +220,7 @@ FormatterFocusManager::getObjectFromFocusIndex (const string &focusIndex)
     }
 
   delete i->second;
-  focusTable->erase (i);
+  _focusTable->erase (i);
 
   return NULL;
 }
@@ -234,15 +234,15 @@ FormatterFocusManager::insertObject (NclExecutionObject *obj,
   vector<string>::iterator j;
   set<NclExecutionObject *> *objs;
 
-  i = focusTable->find (focusIndex);
-  if (i != focusTable->end ())
+  i = _focusTable->find (focusIndex);
+  if (i != _focusTable->end ())
     {
       objs = i->second;
     }
   else
     {
       objs = new set<NclExecutionObject *>;
-      (*focusTable)[focusIndex] = objs;
+      (*_focusTable)[focusIndex] = objs;
     }
 
   objs->insert (obj);
@@ -257,8 +257,8 @@ FormatterFocusManager::removeObject (NclExecutionObject *obj,
   vector<string>::iterator k;
   set<NclExecutionObject *> *objs;
 
-  i = focusTable->find (focusIndex);
-  if (i != focusTable->end ())
+  i = _focusTable->find (focusIndex);
+  if (i != _focusTable->end ())
     {
       objs = i->second;
       j = objs->find (obj);
@@ -269,7 +269,7 @@ FormatterFocusManager::removeObject (NclExecutionObject *obj,
       if (objs->empty ())
         {
           delete objs;
-          focusTable->erase (i);
+          _focusTable->erase (i);
         }
     }
 }
@@ -279,17 +279,17 @@ FormatterFocusManager::resetKeyMaster ()
 {
   NclCascadingDescriptor *desc;
 
-  if (selectedObject != NULL)
+  if (_selectedObject != NULL)
     {
-      objectToSelect = "";
-      selectedObject->setHandler (false);
-      desc = selectedObject->getDescriptor ();
+      _objectToSelect = "";
+      _selectedObject->setHandler (false);
+      desc = _selectedObject->getDescriptor ();
       if (desc != NULL)
         {
           desc->getFormatterRegion ()->setSelection (false);
         }
 
-      recoveryDefaultState (selectedObject);
+      recoveryDefaultState (_selectedObject);
     }
 }
 
@@ -304,13 +304,13 @@ FormatterFocusManager::setKeyMaster (const string &mediaId)
   bool abortKeyMaster = false;
   string lastFocus = "";
 
-  if (mediaId == "" && selectedObject != NULL)
+  if (mediaId == "" && _selectedObject != NULL)
     {
       resetKeyMaster ();
       return;
     }
 
-  nextObject = converter->getObjectFromNodeId (mediaId);
+  nextObject = _converter->getObjectFromNodeId (mediaId);
 
   if (nextObject == NULL)
     {
@@ -318,11 +318,11 @@ FormatterFocusManager::setKeyMaster (const string &mediaId)
       clog << mediaId << "' as master: object is not available.";
       clog << endl;
 
-      objectToSelect = mediaId;
+      _objectToSelect = mediaId;
       return;
     }
 
-  if (selectedObject != NULL && selectedObject != nextObject)
+  if (_selectedObject != NULL && _selectedObject != nextObject)
     {
       resetKeyMaster ();
     }
@@ -335,8 +335,8 @@ FormatterFocusManager::setKeyMaster (const string &mediaId)
 
   if (fr != NULL && fr->getFocusIndex () != "")
     {
-      lastFocus = currentFocus;
-      currentFocus = fr->getFocusIndex ();
+      lastFocus = _currentFocus;
+      _currentFocus = fr->getFocusIndex ();
     }
 
   if (fr != NULL)
@@ -358,14 +358,14 @@ FormatterFocusManager::setKeyMaster (const string &mediaId)
 
   if (abortKeyMaster && fr != NULL && fr->getFocusIndex () != "")
     {
-      currentFocus = lastFocus;
+      _currentFocus = lastFocus;
       return;
     }
 
   // selecting new object
-  selectedObject = nextObject;
-  selectedObject->setHandler (true);
-  player = _scheduler->getObjectPlayer (selectedObject);
+  _selectedObject = nextObject;
+  _selectedObject->setHandler (true);
+  player = _scheduler->getObjectPlayer (_selectedObject);
 
   nextObject->selectionEvent (0, player->getMediaTime () * 1000);
 
@@ -379,9 +379,9 @@ FormatterFocusManager::setFocus (const string &focusIndex)
   NclCascadingDescriptor *currentDescriptor = NULL;
   NclCascadingDescriptor *nextDescriptor = NULL;
 
-  if ((focusIndex == currentFocus && currentFocus != "") || !isHandler)
+  if ((focusIndex == _currentFocus && _currentFocus != "") || !_isHandler)
     {
-      if (!isHandler)
+      if (!_isHandler)
         {
           clog << "FormatterFocusManager::setFocus(" << this << ")";
           clog << " can't set focus index because I'm not ";
@@ -397,7 +397,7 @@ FormatterFocusManager::setFocus (const string &focusIndex)
       return;
     }
 
-  currentObject = getObjectFromFocusIndex (currentFocus);
+  currentObject = getObjectFromFocusIndex (_currentFocus);
   if (currentObject != NULL)
     {
       currentDescriptor = currentObject->getDescriptor ();
@@ -409,8 +409,8 @@ FormatterFocusManager::setFocus (const string &focusIndex)
       clog << focusIndex << "' is not in focus Table." << endl;
     }
 
-  currentFocus = focusIndex;
-  settings->set ("service.currentFocus", currentFocus);
+  _currentFocus = focusIndex;
+  _settings->set ("service.currentFocus", _currentFocus);
 
   if (currentDescriptor != NULL)
     {
@@ -439,7 +439,7 @@ FormatterFocusManager::setFocus (NclCascadingDescriptor *descriptor)
   int width;
   NclFormatterRegion *fr = NULL;
 
-  if (!isHandler)
+  if (!_isHandler)
     {
       clog << "FormatterFocusManager::setFocus(" << this << ")";
       clog << " can't set focus because I'm not ";
@@ -530,7 +530,7 @@ FormatterFocusManager::showObject (NclExecutionObject *object)
 
   clog << "FormatterFocusManager::showObject '" << mediaId << "'";
   clog << " with focus index = '" << focusIndex << "'";
-  clog << " current focus = '" << currentFocus << "'";
+  clog << " current focus = '" << _currentFocus << "'";
   clog << endl;
 
   if (focusIndex != "")
@@ -538,12 +538,12 @@ FormatterFocusManager::showObject (NclExecutionObject *object)
       insertObject (object, focusIndex);
     }
 
-  if (currentFocus == "")
+  if (_currentFocus == "")
     {
-      paramValue = settings->get ("service.currentKeyMaster");
-      if (paramValue == mediaId || objectToSelect == mediaId)
+      paramValue = _settings->get ("service.currentKeyMaster");
+      if (paramValue == mediaId || _objectToSelect == mediaId)
         {
-          objectToSelect = "";
+          _objectToSelect = "";
           setKeyMaster (mediaId);
         }
       else if (focusIndex != "")
@@ -553,15 +553,15 @@ FormatterFocusManager::showObject (NclExecutionObject *object)
     }
   else
     {
-      paramValue = settings->get ("service.currentFocus");
+      paramValue = _settings->get ("service.currentFocus");
       if (paramValue != "" && paramValue == focusIndex && fr->isVisible ())
         setFocus (focusIndex);
 
-      paramValue = settings->get ("service.currentKeyMaster");
-      if ((paramValue == mediaId || objectToSelect == mediaId)
+      paramValue = _settings->get ("service.currentKeyMaster");
+      if ((paramValue == mediaId || _objectToSelect == mediaId)
           && fr->isVisible ())
         {
-          objectToSelect = "";
+          _objectToSelect = "";
 
           if (focusIndex != "")
             {
@@ -572,18 +572,18 @@ FormatterFocusManager::showObject (NclExecutionObject *object)
           if (fr->setSelection (true))
             {
               // unselect the previous selected object, if exists
-              if (selectedObject != NULL)
+              if (_selectedObject != NULL)
                 {
-                  selectedObject->setHandler (false);
-                  selectedObject->getDescriptor ()
+                  _selectedObject->setHandler (false);
+                  _selectedObject->getDescriptor ()
                       ->getFormatterRegion ()
                       ->setSelection (false);
 
-                  recoveryDefaultState (selectedObject);
+                  recoveryDefaultState (_selectedObject);
                 }
 
-              selectedObject = object;
-              selectedObject->setHandler (true);
+              _selectedObject = object;
+              _selectedObject->setHandler (true);
             }
         }
     }
@@ -612,25 +612,25 @@ FormatterFocusManager::hideObject (NclExecutionObject *object)
       removeObject (object, focusIndex);
 
       if (fr != NULL && fr->getFocusState () == NclFormatterRegion::SELECTED
-          && selectedObject == object)
+          && _selectedObject == object)
         {
           // region->setSelection(false);
           // recoveryDefaultState(selectedObject);
-          selectedObject = NULL;
+          _selectedObject = NULL;
         }
 
-      if (currentFocus == focusIndex)
+      if (_currentFocus == focusIndex)
         {
           // region->setFocus(false);
           // recoveryDefaultState(object);
 
-          if (focusTable->empty ())
+          if (_focusTable->empty ())
             {
-              currentFocus = "";
+              _currentFocus = "";
             }
           else
             {
-              ix = focusTable->begin ()->first;
+              ix = _focusTable->begin ()->first;
               setFocus (ix);
             }
         }
@@ -641,19 +641,19 @@ FormatterFocusManager::hideObject (NclExecutionObject *object)
 void
 FormatterFocusManager::setDefaultFocusBorderColor (SDL_Color color)
 {
-  this->defaultFocusBorderColor = color;
+  this->_defaultFocusBorderColor = color;
 }
 
 void
 FormatterFocusManager::setDefaultFocusBorderWidth (int width)
 {
-  this->defaultFocusBorderWidth = width;
+  this->_defaultFocusBorderWidth = width;
 }
 
 void
 FormatterFocusManager::setDefaultSelBorderColor (SDL_Color color)
 {
-  this->defaultSelBorderColor = color;
+  this->_defaultSelBorderColor = color;
 }
 
 void
@@ -664,7 +664,7 @@ FormatterFocusManager::changeSettingState (const string &name, const string &act
   NclFormatterEvent *event;
   string keyM;
 
-  settingObjects = converter->getSettingNodeObjects ();
+  settingObjects = _converter->getSettingNodeObjects ();
 
   i = settingObjects->begin ();
   while (i != settingObjects->end ())
@@ -680,13 +680,13 @@ FormatterFocusManager::changeSettingState (const string &name, const string &act
             {
               if (name == "service.currentFocus")
                 {
-                  ((NclAttributionEvent *)(event))->setValue (currentFocus);
+                  ((NclAttributionEvent *)(event))->setValue (_currentFocus);
                 }
               else if (name == "service.currentKeyMaster")
                 {
-                  if (selectedObject != NULL)
+                  if (_selectedObject != NULL)
                     {
-                      keyM = (selectedObject->getDataObject ()
+                      keyM = (_selectedObject->getDataObject ()
                                   ->getDataEntity ()
                                   ->getId ());
 
@@ -716,33 +716,33 @@ FormatterFocusManager::handleKeyEvent (SDL_EventType evtType,
   if (key == SDLK_ESCAPE || evtType == SDL_KEYDOWN)
     return;
 
-  if (!isHandler)
+  if (!_isHandler)
     {
       return;
     }
 
-  i = focusTable->find (currentFocus);
-  if (i == focusTable->end ())
+  i = _focusTable->find (_currentFocus);
+  if (i == _focusTable->end ())
     {
-      if (currentFocus != "")
+      if (_currentFocus != "")
         {
           clog << "FormatterFocusManager::keyEventReceived ";
-          clog << "currentFocus not found which is '" << currentFocus;
+          clog << "currentFocus not found which is '" << _currentFocus;
           clog << "'" << endl;
         }
-      if (selectedObject != NULL && key == SDLK_BACKSPACE)
+      if (_selectedObject != NULL && key == SDLK_BACKSPACE)
         {
           return;
         }
-      if (!focusTable->empty ())
+      if (!_focusTable->empty ())
         {
-          nextIndex = focusTable->begin ()->first;
+          nextIndex = _focusTable->begin ()->first;
           setFocus (nextIndex);
         }
       return;
     }
 
-  currentObject = getObjectFromFocusIndex (currentFocus);
+  currentObject = getObjectFromFocusIndex (_currentFocus);
   if (currentObject == NULL)
     {
       return;
@@ -756,7 +756,7 @@ FormatterFocusManager::handleKeyEvent (SDL_EventType evtType,
 
   fr = currentDescriptor->getFormatterRegion ();
   nextIndex = "";
-  if (selectedObject != NULL)
+  if (_selectedObject != NULL)
     {
       if (key == SDLK_BACKSPACE)
         {
