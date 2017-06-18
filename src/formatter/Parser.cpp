@@ -1010,7 +1010,6 @@ NclParser::parseTransition (DOMElement *transition_element)
   Transition *transition;
   string id, attValue;
   int type;
-  SDL_Color color = {0, 0, 0, 0};
 
   if (unlikely (!dom_element_has_attr(transition_element, "id")))
     ERROR_SYNTAX ("transition: missing id");
@@ -1067,8 +1066,7 @@ NclParser::parseTransition (DOMElement *transition_element)
 
   if (dom_element_try_get_attr(attValue, transition_element, "fadeColor"))
     {
-      g_assert (ginga_color_parse (attValue, &color));
-      transition->setFadeColor (color);
+      transition->setFadeColor (ginga_parse_color (attValue));
     }
 
   if (dom_element_try_get_attr(attValue, transition_element, "horzRepeat"))
@@ -1088,8 +1086,7 @@ NclParser::parseTransition (DOMElement *transition_element)
 
   if (dom_element_try_get_attr(attValue, transition_element, "borderColor"))
     {
-      g_assert (ginga_color_parse (attValue, &color));
-      transition->setBorderColor (color);
+      transition->setBorderColor (ginga_parse_color (attValue));
     }
 
   return transition;
@@ -3275,7 +3272,6 @@ NclParser::createDescriptor (DOMElement *elt)
   KeyNavigation *keyNavigation;
   string src;
   FocusDecoration *focusDecoration;
-  SDL_Color color;
   string attValue;
 
   descriptor = new Descriptor (dom_element_get_attr(elt, "id"));
@@ -3351,8 +3347,7 @@ NclParser::createDescriptor (DOMElement *elt)
 
   if (dom_element_try_get_attr (attValue, elt, "focusBorderColor"))
     {
-      g_assert (ginga_color_parse (attValue, &color));
-      focusDecoration->setFocusBorderColor (color);
+      focusDecoration->setFocusBorderColor (ginga_parse_color (attValue));
     }
 
   if (dom_element_try_get_attr(attValue, elt, "focusBorderWidth"))
@@ -3377,12 +3372,11 @@ NclParser::createDescriptor (DOMElement *elt)
 
   if (dom_element_try_get_attr (attValue, elt, "selBorderColor"))
     {
-      g_assert (ginga_color_parse (attValue, &color));
-      focusDecoration->setSelBorderColor (color);
+      focusDecoration->setSelBorderColor (ginga_parse_color (attValue));
     }
 
-  // a lambda to parse the transIn/transOut attribute value and add input output
-  // transitions to descriptor
+  // a lambda to parse the transIn/transOut attribute value and add input
+  // output transitions to descriptor
   auto parse_transInOut = [&] (const string &transInOut)
     {
       if (dom_element_try_get_attr(attValue, elt, transInOut))
@@ -3394,7 +3388,7 @@ NclParser::createDescriptor (DOMElement *elt)
             for (uint i = 0; i < transIds.size(); i++)
               {
                 Transition *trans
-                    = transBase->getTransition (xstrchomp (transIds[i]));
+                    = transBase->getTransition (xstrstrip (transIds[i]));
                 if (trans)
                   {
                     if (transInOut == "transIn")

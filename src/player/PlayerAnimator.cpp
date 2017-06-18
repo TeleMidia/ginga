@@ -51,8 +51,7 @@ PlayerAnimator::addProperty(const string &dur,
     }
    else if(name == "background" || name == "bgColor")
     {
-      SDL_Color color = {0, 0, 0, 255};
-      g_assert (ginga_color_parse (value, &color));
+      SDL_Color color = ginga_parse_color (value);
       updateList (dur, "red", xstrbuild ("%d", color.r));
       updateList (dur, "green", xstrbuild ("%d", color.g));
       updateList (dur, "blue", xstrbuild ("%d", color.b));

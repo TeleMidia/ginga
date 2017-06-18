@@ -62,7 +62,7 @@ NclFormatterRegion::NclFormatterRegion (const string &objectId,
   if (value == "")
     color = {0, 0, 0, 0};
   else
-    g_assert (ginga_color_parse (value, &color));
+    color = ginga_parse_color (value);
   this->setBackgroundColor (color);
 }
 
@@ -585,9 +585,7 @@ NclFormatterRegion::setTransparency (double transparency)
 void
 NclFormatterRegion::setBackgroundColor (const string &str)
 {
-    SDL_Color color;
-    g_assert (ginga_color_parse (str, &color));
-    this->setBackgroundColor (color);
+  this->setBackgroundColor (ginga_parse_color (str));
 }
 
 void

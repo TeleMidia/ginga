@@ -292,13 +292,13 @@ PlayerAdapter::prepareProperties (NclExecutionObject *obj)
             }
           else if (name == "bounds")
             {
-              params = xstrsplit (xstrchomp (value), ',');
+              params = xstrsplit (xstrstrip (value), ',');
               if (params.size () == 4)
                 {
-                  left = xstrchomp (params[0]);
-                  top = xstrchomp (params[1]);
-                  width = xstrchomp (params[2]);
-                  height = xstrchomp (params[3]);
+                  left = xstrstrip (params[0]);
+                  top = xstrstrip (params[1]);
+                  width = xstrstrip (params[2]);
+                  height = xstrstrip (params[3]);
                 }
               else
                 {
@@ -309,11 +309,11 @@ PlayerAdapter::prepareProperties (NclExecutionObject *obj)
             }
           else if (name == "location")
             {
-              params = xstrsplit (xstrchomp (value), ',');
+              params = xstrsplit (xstrstrip (value), ',');
               if (params.size () == 2)
                 {
-                  left = xstrchomp (params[0]);
-                  top = xstrchomp (params[1]);
+                  left = xstrstrip (params[0]);
+                  top = xstrstrip (params[1]);
                 }
               else
                 {
@@ -324,11 +324,11 @@ PlayerAdapter::prepareProperties (NclExecutionObject *obj)
             }
           else if (name == "size")
             {
-              params = xstrsplit (xstrchomp (value), ',');
+              params = xstrsplit (xstrstrip (value), ',');
               if (params.size () == 2)
                 {
-                  width = xstrchomp (params[0]);
-                  height = xstrchomp (params[1]);
+                  width = xstrstrip (params[0]);
+                  height = xstrstrip (params[1]);
                 }
               else
                 {
@@ -353,9 +353,7 @@ PlayerAdapter::prepareProperties (NclExecutionObject *obj)
             {
               if (fRegion != nullptr)
                 {
-                  SDL_Color bg = {0, 0, 0, 255};
-                  ginga_color_parse (value, &bg);
-                  fRegion->setBackgroundColor (bg);
+                  fRegion->setBackgroundColor (ginga_parse_color (value));
                 }
             }
           else if (name == "focusIndex")
@@ -369,9 +367,7 @@ PlayerAdapter::prepareProperties (NclExecutionObject *obj)
             {
               if (fRegion != nullptr)
                 {
-                  SDL_Color color;
-                  g_assert (ginga_color_parse (value, &color));
-                  fRegion->setFocusBorderColor (color);
+                  fRegion->setFocusBorderColor (ginga_parse_color (value));
                 }
             }
           else if (name == "focusBorderWidth")
@@ -392,9 +388,7 @@ PlayerAdapter::prepareProperties (NclExecutionObject *obj)
             {
               if (fRegion != nullptr)
                 {
-                  SDL_Color color;
-                  g_assert (ginga_color_parse (value, &color));
-                  fRegion->setSelBorderColor (color);
+                  fRegion->setSelBorderColor (ginga_parse_color (value));
                 }
             }
           else if (name == "selBorderWidth")
