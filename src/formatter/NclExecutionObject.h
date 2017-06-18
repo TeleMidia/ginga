@@ -165,7 +165,7 @@ private:
 
   map<Node *, Node *> _nodeParentTable;
 
-  void initializeExecutionObject (const string &_id, Node *node,
+  void initializeExecutionObject (const string &id, Node *node,
                                   NclCascadingDescriptor *descriptor,
                                   bool handling,
                                   INclLinkActionListener *seListener);
