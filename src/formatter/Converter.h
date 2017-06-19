@@ -139,7 +139,7 @@ private:
 
   void eventStateChanged (NclFormatterEvent *someEvent,
                           EventStateTransition transition,
-                          EventUtil::EventState previousState) override;
+                          EventState previousState) override;
 
   static Descriptor *createDummyDescriptor (Node *node);
   static NclCascadingDescriptor *createDummyCascadingDescriptor (Node *node);

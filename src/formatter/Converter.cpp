@@ -1311,7 +1311,7 @@ Converter::insertContext (NclNodeNesting *contextPerspective,
 void
 Converter::eventStateChanged (NclFormatterEvent *event,
                               EventStateTransition transition,
-                              arg_unused (EventUtil::EventState previousState))
+                              arg_unused (EventState previousState))
 {
   ExecutionObject *exeObj = event->getExecutionObject ();
   auto exeCompositeObj = dynamic_cast <ExecutionObjectContext *> (exeObj);

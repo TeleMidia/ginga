@@ -65,34 +65,34 @@ EventUtil::getTypeName (EventType type)
     }
 }
 
-EventUtil::EventState
+EventState
 EventUtil::getStateCode (const string &stateName)
 {
   if (stateName == "occurring")
     {
-      return EventUtil::ST_OCCURRING;
+      return EventState::OCCURRING;
     }
   else if (stateName == "paused")
     {
-      return EventUtil::ST_PAUSED;
+      return EventState::PAUSED;
     }
 
   // "sleeping"
-  return EventUtil::ST_SLEEPING;
+  return EventState::SLEEPING;
 }
 
 string
-EventUtil::getStateName (EventUtil::EventState state)
+EventUtil::getStateName (EventState state)
 {
   switch (state)
     {
-    case EventUtil::ST_OCCURRING:
+    case EventState::OCCURRING:
       return "occurring";
 
-    case EventUtil::ST_PAUSED:
+    case EventState::PAUSED:
       return "paused";
 
-    case EventUtil::ST_SLEEPING:
+    case EventState::SLEEPING:
       return "sleeping";
 
     default:

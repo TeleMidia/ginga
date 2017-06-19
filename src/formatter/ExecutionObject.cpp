@@ -203,7 +203,7 @@ bool
 ExecutionObject::isSleeping ()
 {
   if (_mainEvent == nullptr
-      || _mainEvent->getCurrentState () == EventUtil::ST_SLEEPING)
+      || _mainEvent->getCurrentState () == EventState::SLEEPING)
     {
       return true;
     }
@@ -215,7 +215,7 @@ bool
 ExecutionObject::isPaused ()
 {
   if (_mainEvent != nullptr
-      && _mainEvent->getCurrentState () == EventUtil::ST_PAUSED)
+      && _mainEvent->getCurrentState () == EventState::PAUSED)
     {
       return true;
     }
@@ -658,7 +658,7 @@ ExecutionObject::prepare (NclFormatterEvent *event, GingaTime offsetTime)
 
   // clog << "NclExecutionObject::prepare(" << id << ")" << endl;
   if (event == nullptr || !containsEvent (event)
-      || event->getCurrentState () != EventUtil::ST_SLEEPING)
+      || event->getCurrentState () != EventState::SLEEPING)
     {
       // clog << "NclExecutionObject::prepare(" << id << ") ret FALSE" <<
       // endl;
@@ -666,7 +666,7 @@ ExecutionObject::prepare (NclFormatterEvent *event, GingaTime offsetTime)
     }
 
   if (_mainEvent != nullptr
-      && _mainEvent->getCurrentState () != EventUtil::ST_SLEEPING)
+      && _mainEvent->getCurrentState () != EventState::SLEEPING)
     {
       return false;
     }
@@ -752,7 +752,7 @@ ExecutionObject::start ()
     }
 
   if (_mainEvent != nullptr
-      && _mainEvent->getCurrentState () != EventUtil::ST_SLEEPING)
+      && _mainEvent->getCurrentState () != EventState::SLEEPING)
     {
       return true;
     }
@@ -884,7 +884,7 @@ ExecutionObject::pause ()
       while (i != evs.end ())
         {
           event = *i;
-          if (event->getCurrentState () == EventUtil::ST_OCCURRING)
+          if (event->getCurrentState () == EventState::OCCURRING)
             {
               event->pause ();
             }
@@ -923,7 +923,7 @@ ExecutionObject::resume ()
       while (i != evs.end ())
         {
           event = *i;
-          if (event->getCurrentState () == EventUtil::ST_PAUSED)
+          if (event->getCurrentState () == EventState::PAUSED)
             {
               event->resume ();
             }
@@ -938,7 +938,7 @@ bool
 ExecutionObject::unprepare ()
 {
   if (_mainEvent == nullptr
-      || _mainEvent->getCurrentState () != EventUtil::ST_SLEEPING)
+      || _mainEvent->getCurrentState () != EventState::SLEEPING)
     {
       clog << "NclExecutionObject::unprepare(" << _id << ") unlocked";
       clog << " ret FALSE" << endl;
@@ -1062,7 +1062,7 @@ ExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
                   clog << expectedEvent->getId ();
 
                   if (expectedEvent->getCurrentState ()
-                      == EventUtil::ST_OCCURRING)
+                      == EventState::OCCURRING)
                     {
                       selectedEvents->insert (selectionEvent);
                     }

@@ -48,7 +48,7 @@ public:
 
   virtual void eventStateChanged (NclFormatterEvent *event,
                                   EventStateTransition transition,
-                                  EventUtil::EventState previousState) override;
+                                  EventState previousState) override;
 
   NclFormatterEvent *getEvent ();
   EventStateTransition getTransition ();

@@ -56,24 +56,24 @@ public:
   virtual bool stop ();
   bool pause ();
   bool resume ();
-  void setCurrentState (EventUtil::EventState newState);
+  void setCurrentState (EventState newState);
 
-  EventUtil::EventState getCurrentState ();
-  EventUtil::EventState getPreviousState ();
+  EventState getCurrentState ();
+  EventState getPreviousState ();
   static EventStateTransition
-    getTransistion (EventUtil::EventState previousState,
-                    EventUtil::EventState newState);
+    getTransistion (EventState previousState,
+                    EventState newState);
 
   ExecutionObject *getExecutionObject ();
   void setExecutionObject (ExecutionObject *object);
   string getId ();
   int getOccurrences ();
-  static string getStateName (short state);
+  static string getStateName (EventState state);
 
 protected:
   string id;
-  EventUtil::EventState _currentState;
-  EventUtil::EventState _previousState;
+  EventState _currentState;
+  EventState _previousState;
   int occurrences;
   ExecutionObject *executionObject;
   set<INclEventListener *> listeners;
@@ -86,12 +86,12 @@ protected:
 
   static bool removeInstance (NclFormatterEvent *event);
 
-  EventUtil::EventState
+  EventState
     getNewState (EventStateTransition transition);
 
-  EventStateTransition getTransition (EventUtil::EventState newState);
+  EventStateTransition getTransition (EventState newState);
 
-  bool changeState (EventUtil::EventState newState,
+  bool changeState (EventState newState,
                     EventStateTransition transition);
 
 private:
@@ -207,7 +207,7 @@ public:
   virtual void eventStateChanged (
       NclFormatterEvent *event,
       EventStateTransition transition,
-      EventUtil::EventState _previousState) override;
+      EventState _previousState) override;
 };
 
 

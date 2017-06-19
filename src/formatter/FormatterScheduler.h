@@ -66,7 +66,7 @@ public:
 
   void eventStateChanged (NclFormatterEvent *someEvent,
                           EventStateTransition transition,
-                          EventUtil::EventState previousState) override;
+                          EventState previousState) override;
 
   PlayerAdapter *getObjectPlayer (ExecutionObject *execObj);
   bool removePlayer (ExecutionObject *object);
