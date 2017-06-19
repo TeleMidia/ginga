@@ -65,7 +65,7 @@ public:
   void startDocument (const string &);
 
   void eventStateChanged (NclFormatterEvent *someEvent,
-                          EventUtil::EventStateTransition transition,
+                          EventStateTransition transition,
                           EventUtil::EventState previousState) override;
 
   PlayerAdapter *getObjectPlayer (ExecutionObject *execObj);

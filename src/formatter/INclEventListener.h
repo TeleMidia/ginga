@@ -28,7 +28,7 @@ class INclEventListener
 {
 public:
   virtual void eventStateChanged (NclFormatterEvent *,
-                                  EventUtil::EventStateTransition,
+                                  EventStateTransition,
                                   EventUtil::EventState) = 0;
 };
 

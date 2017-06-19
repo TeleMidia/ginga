@@ -31,19 +31,19 @@ enum class EventType {
   COMPOSITION
 };
 
+// Event state transitions.
+enum class EventStateTransition {
+  UNKNOWN = -1,
+  STARTS = 0,
+  STOPS,
+  PAUSES,
+  RESUMES,
+  ABORTS
+};
+
 class EventUtil
 {
 public:
-  // Event state transitions.
-  enum EventStateTransition {
-    TR_UNKNOWN = -1,
-    TR_STARTS = 0,
-    TR_STOPS,
-    TR_PAUSES,
-    TR_RESUMES,
-    TR_ABORTS
-  };
-
   // Event states.
   enum EventState {
     ST_UNKNOWN = -1,
@@ -73,11 +73,11 @@ public:
   static string
     getStateName (EventUtil::EventState state);
 
-  static EventUtil::EventStateTransition
+  static EventStateTransition
     getTransitionCode (const string &transition);
 
   static string
-    getTransitionName (EventUtil::EventStateTransition transition);
+    getTransitionName (EventStateTransition transition);
 
   static EventUtil::AttributeType
     getAttributeTypeCode (const string &attTypeName);

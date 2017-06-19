@@ -1310,7 +1310,7 @@ Converter::insertContext (NclNodeNesting *contextPerspective,
 
 void
 Converter::eventStateChanged (NclFormatterEvent *event,
-                              EventUtil::EventStateTransition transition,
+                              EventStateTransition transition,
                               arg_unused (EventUtil::EventState previousState))
 {
   ExecutionObject *exeObj = event->getExecutionObject ();
@@ -1319,7 +1319,7 @@ Converter::eventStateChanged (NclFormatterEvent *event,
 
   if (exeSwitch)
     {
-      if (transition == EventUtil::TR_STARTS)
+      if (transition == EventStateTransition::STARTS)
         {
           for (NclFormatterEvent *e: exeSwitch->getEvents())
             {
@@ -1348,16 +1348,16 @@ Converter::eventStateChanged (NclFormatterEvent *event,
             }
         }
 
-      if (transition == EventUtil::TR_STOPS
-          || transition == EventUtil::TR_ABORTS)
+      if (transition == EventStateTransition::STOPS
+          || transition == EventStateTransition::ABORTS)
         {
           exeSwitch->select (NULL);
         }
     }
   else if (exeCompositeObj)
     {
-      if (transition == EventUtil::TR_STOPS
-          || transition == EventUtil::TR_ABORTS)
+      if (transition == EventStateTransition::STOPS
+          || transition == EventStateTransition::ABORTS)
         {
           removeExecutionObject (exeObj);
         }

@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 NclLinkTransitionTriggerCondition::NclLinkTransitionTriggerCondition (
-    NclFormatterEvent *event, short transition, Bind *bind)
+    NclFormatterEvent *event, EventStateTransition transition, Bind *bind)
     : NclLinkTriggerCondition ()
 {
   typeSet.insert ("NclLinkTransitionTriggerCondition");
@@ -65,7 +65,7 @@ NclLinkTransitionTriggerCondition::getBind ()
 void
 NclLinkTransitionTriggerCondition::eventStateChanged (
     arg_unused (NclFormatterEvent *event),
-    EventUtil::EventStateTransition transition,
+    EventStateTransition transition,
     arg_unused (EventUtil::EventState previousState))
 {
   if (this->transition == transition)
@@ -82,7 +82,7 @@ NclLinkTransitionTriggerCondition::getEvent ()
   return event;
 }
 
-short
+EventStateTransition
 NclLinkTransitionTriggerCondition::getTransition ()
 {
   return transition;

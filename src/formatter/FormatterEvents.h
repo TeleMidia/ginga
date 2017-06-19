@@ -60,7 +60,7 @@ public:
 
   EventUtil::EventState getCurrentState ();
   EventUtil::EventState getPreviousState ();
-  static EventUtil::EventStateTransition
+  static EventStateTransition
     getTransistion (EventUtil::EventState previousState,
                     EventUtil::EventState newState);
 
@@ -87,12 +87,12 @@ protected:
   static bool removeInstance (NclFormatterEvent *event);
 
   EventUtil::EventState
-    getNewState (EventUtil::EventStateTransition transition);
+    getNewState (EventStateTransition transition);
 
-  short getTransition (EventUtil::EventState newState);
+  EventStateTransition getTransition (EventUtil::EventState newState);
 
   bool changeState (EventUtil::EventState newState,
-                    EventUtil::EventStateTransition transition);
+                    EventStateTransition transition);
 
 private:
   virtual void destroyListeners ();
@@ -206,7 +206,7 @@ public:
   NclFormatterEvent *getMappedEvent ();
   virtual void eventStateChanged (
       NclFormatterEvent *event,
-      EventUtil::EventStateTransition transition,
+      EventStateTransition transition,
       EventUtil::EventState _previousState) override;
 };
 

@@ -42,14 +42,14 @@ SimpleCondition::setKey (const string &key)
   this->_key = key;
 }
 
-short
+EventStateTransition
 SimpleCondition::getTransition ()
 {
   return _transition;
 }
 
 void
-SimpleCondition::setTransition (short transition)
+SimpleCondition::setTransition (EventStateTransition transition)
 {
   this->_transition = transition;
 }
@@ -73,42 +73,42 @@ SimpleCondition::setLabel (const string &id)
 
   if (xstrcaseeq (_label, "onBegin"))
     {
-      _transition = EventUtil::TR_STARTS;
+      _transition = EventStateTransition::STARTS;
       _eventType = EventType::PRESENTATION;
     }
   else if (xstrcaseeq (_label, "onEnd"))
     {
-      _transition = EventUtil::TR_STOPS;
+      _transition = EventStateTransition::STOPS;
       _eventType = EventType::PRESENTATION;
     }
   else if (xstrcaseeq (_label, "onSelection"))
     {
-      _transition = EventUtil::TR_STOPS;
+      _transition = EventStateTransition::STOPS;
       _eventType = EventType::SELECTION;
     }
   else if (xstrcaseeq (_label, "onBeginAttribution"))
     {
-      _transition = EventUtil::TR_STARTS;
+      _transition = EventStateTransition::STARTS;
       _eventType = EventType::ATTRIBUTION;
     }
   else if (xstrcaseeq (_label, "onEndAttribution"))
     {
-      _transition = EventUtil::TR_STOPS;
+      _transition = EventStateTransition::STOPS;
       _eventType = EventType::ATTRIBUTION;
     }
   else if (xstrcaseeq (_label, "onAbort"))
     {
-      _transition = EventUtil::TR_ABORTS;
+      _transition = EventStateTransition::ABORTS;
       _eventType = EventType::PRESENTATION;
     }
   else if (xstrcaseeq (_label, "onPause"))
     {
-      _transition = EventUtil::TR_PAUSES;
+      _transition = EventStateTransition::PAUSES;
       _eventType = EventType::PRESENTATION;
     }
   else if (xstrcaseeq (_label, "onResume"))
     {
-      _transition = EventUtil::TR_RESUMES;
+      _transition = EventStateTransition::RESUMES;
       _eventType = EventType::PRESENTATION;
     }
 }

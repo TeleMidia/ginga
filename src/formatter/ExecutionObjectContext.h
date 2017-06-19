@@ -64,7 +64,7 @@ public:
   void setParentsAsListeners ();
   void unsetParentsAsListeners () override;
   void eventStateChanged (NclFormatterEvent *event,
-                          EventUtil::EventStateTransition transition,
+                          EventStateTransition transition,
                           EventUtil::EventState previousState) override;
 
   void linkEvaluationStarted (NclFormatterCausalLink *link) override;
@@ -77,7 +77,7 @@ private:
 
   set<NclFormatterEvent *> _runningEvents; // child events occurring
   set<NclFormatterEvent *> _pausedEvents;  // child events paused
-  short lastTransition;
+  EventStateTransition lastTransition;
 
   map<NclFormatterLink *, int> _pendingLinks;
 

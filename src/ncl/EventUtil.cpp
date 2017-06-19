@@ -101,23 +101,23 @@ EventUtil::getStateName (EventUtil::EventState state)
 }
 
 string
-EventUtil::getTransitionName (EventUtil::EventStateTransition transition)
+EventUtil::getTransitionName (EventStateTransition transition)
 {
   switch (transition)
     {
-    case EventUtil::TR_STARTS:
+    case EventStateTransition::STARTS:
       return "starts";
 
-    case EventUtil::TR_STOPS:
+    case EventStateTransition::STOPS:
       return "stops";
 
-    case EventUtil::TR_PAUSES:
+    case EventStateTransition::PAUSES:
       return "pauses";
 
-    case EventUtil::TR_RESUMES:
+    case EventStateTransition::RESUMES:
       return "resumes";
 
-    case EventUtil::TR_ABORTS:
+    case EventStateTransition::ABORTS:
       return "aborts";
 
     default:
@@ -125,31 +125,31 @@ EventUtil::getTransitionName (EventUtil::EventStateTransition transition)
     }
 }
 
-EventUtil::EventStateTransition
+EventStateTransition
 EventUtil::getTransitionCode (const string &transition)
 {
   if (transition == "starts")
     {
-      return EventUtil::TR_STARTS;
+      return EventStateTransition::STARTS;
     }
   else if (transition == "stops")
     {
-      return EventUtil::TR_STOPS;
+      return EventStateTransition::STOPS;
     }
   else if (transition == "pauses")
     {
-      return EventUtil::TR_PAUSES;
+      return EventStateTransition::PAUSES;
     }
   else if (transition == "resumes")
     {
-      return EventUtil::TR_RESUMES;
+      return EventStateTransition::RESUMES;
     }
   else if (transition == "aborts")
     {
-      return EventUtil::TR_ABORTS;
+      return EventStateTransition::ABORTS;
     }
 
-  return EventUtil::TR_UNKNOWN;
+  return EventStateTransition::UNKNOWN;
 }
 
 EventUtil::AttributeType

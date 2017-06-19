@@ -138,7 +138,7 @@ private:
                                  GenericDescriptor *descriptor);
 
   void eventStateChanged (NclFormatterEvent *someEvent,
-                          EventUtil::EventStateTransition transition,
+                          EventStateTransition transition,
                           EventUtil::EventState previousState) override;
 
   static Descriptor *createDummyDescriptor (Node *node);
