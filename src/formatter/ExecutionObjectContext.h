@@ -26,7 +26,6 @@ using namespace ::ginga::ncl;
 
 #include "INclEventListener.h"
 #include "NclFormatterEvent.h"
-#include "NclPresentationEvent.h"
 
 #include "NclFormatterCausalLink.h"
 #include "NclFormatterLink.h"

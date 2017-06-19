@@ -24,10 +24,7 @@ using namespace ::ginga::ncl;
 
 #include "ExecutionObjectContext.h"
 
-#include "NclSwitchEvent.h"
-
 #include "NclFormatterEvent.h"
-#include "NclPresentationEvent.h"
 
 GINGA_FORMATTER_BEGIN
 

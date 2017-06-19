@@ -88,8 +88,6 @@ set (GINGA_SOURCES
   ../src/formatter/ExecutionObjectSwitch.cpp
   ../src/formatter/FocusManager.cpp
   ../src/formatter/FormatterScheduler.cpp
-  ../src/formatter/NclAnchorEvent.cpp
-  ../src/formatter/NclAttributionEvent.cpp
   ../src/formatter/NclBeginEventTransition.cpp
   ../src/formatter/NclCascadingDescriptor.cpp
   ../src/formatter/NclEndEventTransition.cpp
@@ -113,9 +111,6 @@ set (GINGA_SOURCES
   ../src/formatter/NclLinkTriggerCondition.cpp
   ../src/formatter/NclLinkValueAssessment.cpp
   ../src/formatter/NclNodeNesting.cpp
-  ../src/formatter/NclPresentationEvent.cpp
-  ../src/formatter/NclSelectionEvent.cpp
-  ../src/formatter/NclSwitchEvent.cpp
   ../src/formatter/Parser.cpp
   ../src/formatter/PlayerAdapter.cpp
   ../src/formatter/RuleAdapter.cpp

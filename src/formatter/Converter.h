@@ -42,14 +42,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::ncl;
 
 #include "ExecutionObjectSwitch.h"
-#include "NclSwitchEvent.h"
 
-#include "NclAttributionEvent.h"
-#include "NclPresentationEvent.h"
-#include "NclSelectionEvent.h"
 #include "INclEventListener.h"
 #include "NclFormatterEvent.h"
-#include "NclPresentationEvent.h"
 
 #include "NclFormatterCausalLink.h"
 #include "NclFormatterLink.h"

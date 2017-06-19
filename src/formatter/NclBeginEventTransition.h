@@ -18,8 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef BEGINEVENTTRANSITION_H_
 #define BEGINEVENTTRANSITION_H_
 
-#include "NclPresentationEvent.h"
-
 #include "NclEndEventTransition.h"
 #include "NclEventTransition.h"
 

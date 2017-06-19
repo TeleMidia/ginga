@@ -21,10 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/EventUtil.h"
 using namespace ::ginga::ncl;
 
-#include "NclAttributionEvent.h"
 #include "NclFormatterEvent.h"
-#include "NclPresentationEvent.h"
-
 #include "NclLinkAssessment.h"
 
 GINGA_FORMATTER_BEGIN
