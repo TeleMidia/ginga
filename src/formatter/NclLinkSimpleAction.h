@@ -30,6 +30,19 @@ GINGA_FORMATTER_BEGIN
 
 class NclLinkSimpleAction : public NclLinkAction
 {
+public:
+  NclLinkSimpleAction (NclFormatterEvent *event, SimpleActionType type);
+  virtual ~NclLinkSimpleAction ();
+
+  virtual void run ();
+
+  NclFormatterEvent *getEvent ();
+  SimpleActionType getType ();
+  string getTypeString ();
+  void setSimpleActionListener (INclLinkActionListener *listener);
+  virtual vector<NclFormatterEvent *> *getEvents ();
+  virtual vector<NclLinkAction *> getImplicitRefRoleActions ();
+
 protected:
   NclFormatterEvent *event;
   SimpleActionType actionType;
@@ -37,18 +50,6 @@ protected:
 private:
   INclLinkActionListener *listener;
 
-protected:
-  virtual void run ();
-
-public:
-  NclLinkSimpleAction (NclFormatterEvent *event, SimpleActionType type);
-  virtual ~NclLinkSimpleAction ();
-  NclFormatterEvent *getEvent ();
-  SimpleActionType getType ();
-  string getTypeString ();
-  void setSimpleActionListener (INclLinkActionListener *listener);
-  virtual vector<NclFormatterEvent *> *getEvents ();
-  virtual vector<NclLinkAction *> getImplicitRefRoleActions ();
 };
 
 GINGA_FORMATTER_END

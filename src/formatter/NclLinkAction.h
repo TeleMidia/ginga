@@ -51,7 +51,7 @@ public:
   void setSatisfiedCondition (NclLinkCondition *satisfiedCondition);
   void run (NclLinkCondition *satisfiedCondition);
 
-  virtual void run ();
+  virtual void run () {}
 
 protected:
   set<string> typeSet;

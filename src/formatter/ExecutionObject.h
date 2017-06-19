@@ -52,11 +52,8 @@ class ExecutionObjectContext;
 class ExecutionObject
 {
 public:
-  ExecutionObject (const string &id,
-                      Node *node,
-                      NclCascadingDescriptor *descriptor,
-                      bool handling,
-                      INclLinkActionListener *seListener);
+  ExecutionObject (const string &, Node *, NclCascadingDescriptor *, bool,
+                   INclLinkActionListener *);
 
   virtual ~ExecutionObject ();
 
@@ -64,7 +61,7 @@ public:
 
   virtual bool isSleeping ();
   virtual bool isPaused ();
-  bool instanceOf (const string &s);
+  bool instanceOf (const string &);
   Node *getDataObject ();
   NclCascadingDescriptor *getDescriptor ();
   string getId ();
