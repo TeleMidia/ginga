@@ -38,16 +38,13 @@ PlayerAnimator::addProperty(const string &dur,
                             const string &name,
                             const string &value)
 {
-  if(name == "bounds")
+  if (name == "bounds")
     {
-      vector<string> params = xstrsplit (value, ',');
-      if(params.size () == 4)
-        {
-          updateList (dur, "left", params[0]);
-          updateList (dur, "top", params[1]);
-          updateList (dur, "width", params[2]);
-          updateList (dur, "height", params[3]);
-        }
+      vector<string> v = ginga_parse_list (value, ',', 4, 4);
+      updateList (dur, "left", v[0]);
+      updateList (dur, "top", v[1]);
+      updateList (dur, "width", v[2]);
+      updateList (dur, "height", v[3]);
     }
    else if(name == "background" || name == "bgColor")
     {

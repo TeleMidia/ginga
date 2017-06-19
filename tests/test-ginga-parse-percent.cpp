@@ -16,29 +16,14 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "ImagePlayer.h"
 
-#include "mb/Display.h"
-#include "mb/SDLWindow.h"
-
-GINGA_PLAYER_BEGIN
-
-
-// Public.
-
-void
-ImagePlayer::redraw (SDL_Renderer *renderer)
+int
+main (void)
 {
-  if (this->texture == NULL)
-    {
-      this->texture = IMG_LoadTexture (renderer, mrl.c_str ());
-      if (unlikely (this->texture == NULL))
-        {
-          ERROR ("cannot load image file %s: %s", mrl.c_str (),
-                 IMG_GetError ());
-        }
-    }
-  Player::redraw (renderer);
+  g_assert (ginga_parse_percent ("0", 100, 0, 255) == 0);
+  g_assert (ginga_parse_percent ("0%", 100, 0, 255) == 0);
+  g_assert (ginga_parse_percent ("15", 100, 0, 255) == 15);
+  g_assert (ginga_parse_percent ("15%", 200, 0, 255) == 30);
+  g_assert (ginga_parse_percent ("15%", 200, 0, 10) == 10);
+  exit (0);
 }
-
-GINGA_PLAYER_END
