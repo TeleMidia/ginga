@@ -38,7 +38,7 @@ FormatterFocusManager::FormatterFocusManager (FormatterScheduler *scheduler,
 {
   string str;
 
-  _focusTable = new map<string, set<NclExecutionObject *> *>;
+  _focusTable = new map<string, set<ExecutionObject *> *>;
   _currentFocus = "";
   _objectToSelect = "";
   _isHandler = false;
@@ -128,7 +128,7 @@ FormatterFocusManager::isKeyHandler ()
 bool
 FormatterFocusManager::setKeyHandler (bool isHandler)
 {
-  NclExecutionObject *focusedObj;
+  ExecutionObject *focusedObj;
   NclCascadingDescriptor *dc;
   NclFormatterRegion *fr;
   string ix;
@@ -190,11 +190,11 @@ FormatterFocusManager::setKeyHandler (bool isHandler)
   return isHandler;
 }
 
-NclExecutionObject *
+ExecutionObject *
 FormatterFocusManager::getObjectFromFocusIndex (const string &focusIndex)
 {
-  map<string, set<NclExecutionObject *> *>::iterator i;
-  set<NclExecutionObject *>::iterator j;
+  map<string, set<ExecutionObject *> *>::iterator i;
+  set<ExecutionObject *>::iterator j;
   NclCascadingDescriptor *desc;
   bool visible;
 
@@ -226,13 +226,13 @@ FormatterFocusManager::getObjectFromFocusIndex (const string &focusIndex)
 }
 
 void
-FormatterFocusManager::insertObject (NclExecutionObject *obj,
+FormatterFocusManager::insertObject (ExecutionObject *obj,
                                      const string &focusIndex)
 {
   string auxIndex;
-  map<string, set<NclExecutionObject *> *>::iterator i;
+  map<string, set<ExecutionObject *> *>::iterator i;
   vector<string>::iterator j;
-  set<NclExecutionObject *> *objs;
+  set<ExecutionObject *> *objs;
 
   i = _focusTable->find (focusIndex);
   if (i != _focusTable->end ())
@@ -241,7 +241,7 @@ FormatterFocusManager::insertObject (NclExecutionObject *obj,
     }
   else
     {
-      objs = new set<NclExecutionObject *>;
+      objs = new set<ExecutionObject *>;
       (*_focusTable)[focusIndex] = objs;
     }
 
@@ -249,13 +249,13 @@ FormatterFocusManager::insertObject (NclExecutionObject *obj,
 }
 
 void
-FormatterFocusManager::removeObject (NclExecutionObject *obj,
+FormatterFocusManager::removeObject (ExecutionObject *obj,
                                      const string &focusIndex)
 {
-  map<string, set<NclExecutionObject *> *>::iterator i;
-  set<NclExecutionObject *>::iterator j;
+  map<string, set<ExecutionObject *> *>::iterator i;
+  set<ExecutionObject *>::iterator j;
   vector<string>::iterator k;
-  set<NclExecutionObject *> *objs;
+  set<ExecutionObject *> *objs;
 
   i = _focusTable->find (focusIndex);
   if (i != _focusTable->end ())
@@ -296,7 +296,7 @@ FormatterFocusManager::resetKeyMaster ()
 void
 FormatterFocusManager::setKeyMaster (const string &mediaId)
 {
-  NclExecutionObject *nextObject = NULL;
+  ExecutionObject *nextObject = NULL;
   NclCascadingDescriptor *nextDescriptor = NULL;
   NclFormatterRegion *fr = NULL;
   PlayerAdapter *player = NULL;
@@ -374,8 +374,8 @@ FormatterFocusManager::setKeyMaster (const string &mediaId)
 void
 FormatterFocusManager::setFocus (const string &focusIndex)
 {
-  NclExecutionObject *nextObject = NULL;
-  NclExecutionObject *currentObject = NULL;
+  ExecutionObject *nextObject = NULL;
+  ExecutionObject *currentObject = NULL;
   NclCascadingDescriptor *currentDescriptor = NULL;
   NclCascadingDescriptor *nextDescriptor = NULL;
 
@@ -473,7 +473,7 @@ FormatterFocusManager::setFocus (NclCascadingDescriptor *descriptor)
 }
 
 void
-FormatterFocusManager::recoveryDefaultState (NclExecutionObject *object)
+FormatterFocusManager::recoveryDefaultState (ExecutionObject *object)
 {
   if (object == NULL || object->getDescriptor () == NULL
       || object->getDescriptor ()->getFormatterRegion () == NULL)
@@ -483,7 +483,7 @@ FormatterFocusManager::recoveryDefaultState (NclExecutionObject *object)
 }
 
 void
-FormatterFocusManager::showObject (NclExecutionObject *object)
+FormatterFocusManager::showObject (ExecutionObject *object)
 {
   NclCascadingDescriptor *descriptor;
   NclFormatterRegion *fr = NULL;
@@ -590,11 +590,11 @@ FormatterFocusManager::showObject (NclExecutionObject *object)
 }
 
 void
-FormatterFocusManager::hideObject (NclExecutionObject *object)
+FormatterFocusManager::hideObject (ExecutionObject *object)
 {
   string focusIndex = "", ix;
   NclFormatterRegion *fr;
-  map<string, set<NclExecutionObject *> *>::iterator i;
+  map<string, set<ExecutionObject *> *>::iterator i;
 
   if (object == NULL || object->getDescriptor () == NULL)
     {
@@ -659,8 +659,8 @@ FormatterFocusManager::setDefaultSelBorderColor (SDL_Color color)
 void
 FormatterFocusManager::changeSettingState (const string &name, const string &act)
 {
-  set<NclExecutionObject *> *settingObjects;
-  set<NclExecutionObject *>::iterator i;
+  set<ExecutionObject *> *settingObjects;
+  set<ExecutionObject *>::iterator i;
   NclFormatterEvent *event;
   string keyM;
 
@@ -707,11 +707,11 @@ void
 FormatterFocusManager::handleKeyEvent (SDL_EventType evtType,
                                        SDL_Keycode key)
 {
-  NclExecutionObject *currentObject;
+  ExecutionObject *currentObject;
   NclCascadingDescriptor *currentDescriptor;
   NclFormatterRegion *fr;
   string nextIndex;
-  map<string, set<NclExecutionObject *> *>::iterator i;
+  map<string, set<ExecutionObject *> *>::iterator i;
 
   if (key == SDLK_ESCAPE || evtType == SDL_KEYDOWN)
     return;

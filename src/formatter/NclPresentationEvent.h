@@ -35,7 +35,7 @@ private:
 
 public:
   NclPresentationEvent (const string &id,
-                        NclExecutionObject *exeObj,
+                        ExecutionObject *exeObj,
                         ContentAnchor *anchor);
   virtual ~NclPresentationEvent ();
   bool stop ();

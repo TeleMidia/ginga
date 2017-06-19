@@ -25,7 +25,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "player/Player.h"
 using namespace ::ginga::player;
 
-#include "formatter/NclExecutionObject.h"
+#include "formatter/ExecutionObject.h"
 using namespace ::ginga::formatter;
 
 GINGA_MB_BEGIN

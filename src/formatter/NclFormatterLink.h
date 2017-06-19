@@ -23,12 +23,12 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-class NclCompositeExecutionObject;
+class ExecutionObjectContext;
 
 class NclFormatterLink
 {
 public:
-  NclFormatterLink (Link *ncmLink, NclCompositeExecutionObject *parentObject);
+  NclFormatterLink (Link *ncmLink, ExecutionObjectContext *parentObject);
   virtual ~NclFormatterLink ();
 
   void suspendLinkEvaluation (bool suspend);
@@ -38,7 +38,7 @@ public:
 protected:
   Link *ncmLink;
   bool suspend;
-  NclCompositeExecutionObject *parentObject;
+  ExecutionObjectContext *parentObject;
   set<string> typeSet;
 };
 

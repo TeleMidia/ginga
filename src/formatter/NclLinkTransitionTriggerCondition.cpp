@@ -17,7 +17,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "NclLinkTransitionTriggerCondition.h"
-#include "NclExecutionObject.h"
+#include "ExecutionObject.h"
 
 GINGA_FORMATTER_BEGIN
 

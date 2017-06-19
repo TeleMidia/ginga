@@ -47,20 +47,20 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-class NclCompositeExecutionObject;
+class ExecutionObjectContext;
 
-class NclExecutionObject
+class ExecutionObject
 {
 public:
-  NclExecutionObject (const string &id,
+  ExecutionObject (const string &id,
                       Node *node,
                       NclCascadingDescriptor *descriptor,
                       bool handling,
                       INclLinkActionListener *seListener);
 
-  virtual ~NclExecutionObject ();
+  virtual ~ExecutionObject ();
 
-  static bool hasInstance (NclExecutionObject *object, bool eraseFromList);
+  static bool hasInstance (ExecutionObject *object, bool eraseFromList);
 
   virtual bool isSleeping ();
   virtual bool isPaused ();
@@ -69,15 +69,15 @@ public:
   NclCascadingDescriptor *getDescriptor ();
   string getId ();
 
-  NclCompositeExecutionObject *getParentObject ();
-  NclCompositeExecutionObject *getParentObject (Node *node);
-  void addParentObject (NclCompositeExecutionObject *parentObject,
+  ExecutionObjectContext *getParentObject ();
+  ExecutionObjectContext *getParentObject (Node *node);
+  void addParentObject (ExecutionObjectContext *parentObject,
                         Node *parentNode);
   void addParentObject (Node *node,
-                        NclCompositeExecutionObject *parentObject,
+                        ExecutionObjectContext *parentObject,
                         Node *parentNode);
   virtual void removeParentObject (Node *parentNode,
-                                   NclCompositeExecutionObject *parentObject);
+                                   ExecutionObjectContext *parentObject);
 
   void setDescriptor (NclCascadingDescriptor *cascadingDescriptor);
   void setDescriptor (GenericDescriptor *_descriptor);
@@ -132,7 +132,7 @@ protected:
   bool _isHandler;
   bool _isHandling;
 
-  map<Node *, NclCompositeExecutionObject *> _parentTable;
+  map<Node *, ExecutionObjectContext *> _parentTable;
   bool _visible;
   map<string, NclFormatterEvent *> _events;
   vector<NclPresentationEvent *> _presEvents;
@@ -142,17 +142,17 @@ protected:
   int _pauseCount;
   NclFormatterEvent *_mainEvent;
   NclEventTransitionManager *_transMan;
-  NclExecutionObject *_mirrorSrc;
+  ExecutionObject *_mirrorSrc;
 
-  static set<NclExecutionObject *> _objects;
+  static set<ExecutionObject *> _objects;
 
   void prepareTransitionEvents (GingaTime startTime);
   void destroyEvents ();
   virtual void unsetParentsAsListeners ();
   virtual void removeParentListenersFromEvent (NclFormatterEvent *event);
 
-  static void addInstance (NclExecutionObject *object);
-  static bool removeInstance (NclExecutionObject *object);
+  static void addInstance (ExecutionObject *object);
+  static bool removeInstance (ExecutionObject *object);
 
 private:
   bool _isCompiled;

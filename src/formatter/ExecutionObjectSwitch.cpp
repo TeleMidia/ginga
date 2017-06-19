@@ -16,28 +16,28 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "NclExecutionObjectSwitch.h"
+#include "ExecutionObjectSwitch.h"
 
 GINGA_FORMATTER_BEGIN
 
-NclExecutionObjectSwitch::NclExecutionObjectSwitch (
+ExecutionObjectSwitch::ExecutionObjectSwitch (
     const string &id, Node *switchNode, bool handling,
     INclLinkActionListener *seListener)
-    : NclCompositeExecutionObject (id, switchNode, nullptr, handling,
+    : ExecutionObjectContext (id, switchNode, nullptr, handling,
                                    seListener)
 {
   _selectedObject = nullptr;
-  _typeSet.insert ("NclExecutionObjectSwitch");
+  _typeSet.insert ("ExecutionObjectSwitch");
 }
 
-NclExecutionObject *
-NclExecutionObjectSwitch::getSelectedObject ()
+ExecutionObject *
+ExecutionObjectSwitch::getSelectedObject ()
 {
   return _selectedObject;
 }
 
 void
-NclExecutionObjectSwitch::select (NclExecutionObject *exeObj)
+ExecutionObjectSwitch::select (ExecutionObject *exeObj)
 {
   NclSwitchEvent *switchEvent;
 
@@ -59,19 +59,19 @@ NclExecutionObjectSwitch::select (NclExecutionObject *exeObj)
 }
 
 bool
-NclExecutionObjectSwitch::addEvent (NclFormatterEvent *evt)
+ExecutionObjectSwitch::addEvent (NclFormatterEvent *evt)
 {
  auto presentationEvt = dynamic_cast<NclPresentationEvent *> (evt);
 
   if (presentationEvt
       && dynamic_cast<LambdaAnchor *> (presentationEvt->getAnchor ()))
     {
-      NclExecutionObject::_wholeContent = presentationEvt;
+      ExecutionObject::_wholeContent = presentationEvt;
       return true;
     }
   else
     {
-      return NclExecutionObject::addEvent (evt);
+      return ExecutionObject::addEvent (evt);
     }
 }
 

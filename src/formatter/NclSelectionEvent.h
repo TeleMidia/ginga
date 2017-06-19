@@ -35,7 +35,7 @@ private:
 
 public:
   NclSelectionEvent (const string &id,
-                     NclExecutionObject *executionObject,
+                     ExecutionObject *executionObject,
                      ContentAnchor *anchor);
   virtual ~NclSelectionEvent ();
   bool start ();

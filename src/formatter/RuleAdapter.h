@@ -19,9 +19,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _RULEADAPTER_H_
 
 #include "NclCascadingDescriptor.h"
-#include "NclCompositeExecutionObject.h"
-#include "NclExecutionObject.h"
-#include "NclExecutionObjectSwitch.h"
+#include "ExecutionObjectContext.h"
+#include "ExecutionObject.h"
+#include "ExecutionObjectSwitch.h"
 #include "Settings.h"
 
 #include "ncl/GenericDescriptor.h"
@@ -47,7 +47,7 @@ class RuleAdapter
 private:
   Settings *settings;
   map<string, vector<Rule *> *> *ruleListenMap;
-  map<Rule *, vector<NclExecutionObjectSwitch *> *> *entityListenMap;
+  map<Rule *, vector<ExecutionObjectSwitch *> *> *entityListenMap;
   map<Rule *, vector<DescriptorSwitch *> *> *descListenMap;
 
 public:
@@ -58,14 +58,14 @@ public:
 
   Settings *getSettings ();
 
-  void adapt (NclCompositeExecutionObject *compositeObject, bool force);
+  void adapt (ExecutionObjectContext *compositeObject, bool force);
   void initializeAttributeRuleRelation (Rule *topRule, Rule *rule);
 
-  void initializeRuleObjectRelation (NclExecutionObjectSwitch *object);
+  void initializeRuleObjectRelation (ExecutionObjectSwitch *object);
 
-  void adapt (NclExecutionObjectSwitch *objectAlternatives, bool force);
+  void adapt (ExecutionObjectSwitch *objectAlternatives, bool force);
 
-  bool adaptDescriptor (NclExecutionObject *executionObject);
+  bool adaptDescriptor (ExecutionObject *executionObject);
   Node *adaptSwitch (SwitchNode *switchNode);
   bool evaluateRule (Rule *rule);
 

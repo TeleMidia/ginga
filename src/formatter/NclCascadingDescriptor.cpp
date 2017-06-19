@@ -25,7 +25,7 @@ using namespace ::ginga::ncl;
 #include "mb/Display.h"
 using namespace ::ginga::mb;
 
-#include "NclExecutionObject.h"
+#include "ExecutionObject.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-conversion)
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)

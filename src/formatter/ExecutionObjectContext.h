@@ -15,16 +15,12 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _COMPOSITEEXECUTIONOBJECT_H_
-#define _COMPOSITEEXECUTIONOBJECT_H_
+#ifndef _EXECUTIONOBJECTCONTEXT_H_
+#define _EXECUTIONOBJECTCONTEXT_H_
 
 #include "ncl/Node.h"
 #include "ncl/ContextNode.h"
-using namespace ::ginga::ncl;
-
 #include "ncl/EventUtil.h"
-using namespace ::ginga::ncl;
-
 #include "ncl/Link.h"
 using namespace ::ginga::ncl;
 
@@ -38,30 +34,30 @@ using namespace ::ginga::ncl;
 
 #include "NclNodeNesting.h"
 #include "NclCascadingDescriptor.h"
-#include "NclExecutionObject.h"
+#include "ExecutionObject.h"
 
 GINGA_FORMATTER_BEGIN
 
-class NclCompositeExecutionObject : public NclExecutionObject,
-                                    public NclLinkListener,
-                                    public INclEventListener
+class ExecutionObjectContext : public ExecutionObject,
+    public NclLinkListener,
+    public INclEventListener
 {
 public:
-  NclCompositeExecutionObject (const string &id,
-                               Node *dataObject,
-                               NclCascadingDescriptor *descriptor,
-                               bool handling,
-                               INclLinkActionListener *seListener);
+  ExecutionObjectContext (const string &id,
+                          Node *dataObject,
+                          NclCascadingDescriptor *descriptor,
+                          bool handling,
+                          INclLinkActionListener *seListener);
 
-  virtual ~NclCompositeExecutionObject ();
+  virtual ~ExecutionObjectContext ();
 
-  NclCompositeExecutionObject *getParentFromDataObject (Node *dataObject);
+  ExecutionObjectContext *getParentFromDataObject (Node *dataObject);
   void suspendLinkEvaluation (bool suspend);
-  bool addExecutionObject (NclExecutionObject *execObj);
+  bool addExecutionObject (ExecutionObject *execObj);
   bool containsExecutionObject (const string &execObjId);
-  NclExecutionObject *getExecutionObject (const string &execObjId);
-  map<string, NclExecutionObject *> *getExecutionObjects ();
-  bool removeExecutionObject (NclExecutionObject *execObj);
+  ExecutionObject *getExecutionObject (const string &execObjId);
+  map<string, ExecutionObject *> *getExecutionObjects ();
+  bool removeExecutionObject (ExecutionObject *execObj);
   set<Link *> *getUncompiledLinks ();
   bool containsUncompiledLink (Link *dataLink);
   void removeLinkUncompiled (Link *ncmLink);
@@ -86,7 +82,7 @@ private:
 
   map<NclFormatterLink *, int> _pendingLinks;
 
-  map<string, NclExecutionObject *> _execObjList;
+  map<string, ExecutionObject *> _execObjList;
 
   void checkLinkConditions ();
   void listRunningObjects ();
@@ -95,4 +91,4 @@ private:
 
 GINGA_FORMATTER_END
 
-#endif //_COMPOSITEEXECUTIONOBJECT_H_
+#endif //_EXECUTIONOBJECTCONTEXT_H_

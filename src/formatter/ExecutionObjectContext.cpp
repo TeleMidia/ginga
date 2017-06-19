@@ -16,21 +16,21 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "NclCompositeExecutionObject.h"
+#include "ExecutionObjectContext.h"
 
 GINGA_FORMATTER_BEGIN
 
-NclCompositeExecutionObject::NclCompositeExecutionObject (
+ExecutionObjectContext::ExecutionObjectContext (
     const string &id, Node *dataObject, NclCascadingDescriptor *descriptor,
     bool handling, INclLinkActionListener *seListener)
-    : NclExecutionObject (id, dataObject, descriptor, handling, seListener)
+    : ExecutionObject (id, dataObject, descriptor, handling, seListener)
 {
   ContextNode *compositeNode;
   set<Link *> *compositionLinks;
   set<Link *>::iterator i;
   Entity *entity;
 
-  _typeSet.insert ("NclCompositeExecutionObject");
+  _typeSet.insert ("ExecutionObjectContext");
 
   _execObjList.clear ();
   _links.clear ();
@@ -57,12 +57,12 @@ NclCompositeExecutionObject::NclCompositeExecutionObject (
     }
 }
 
-NclCompositeExecutionObject::~NclCompositeExecutionObject ()
+ExecutionObjectContext::~ExecutionObjectContext ()
 {
-  NclExecutionObject *object;
+  ExecutionObject *object;
   NclFormatterLink *link;
   set<NclFormatterLink *>::iterator i;
-  map<string, NclExecutionObject *>::iterator j;
+  map<string, ExecutionObject *>::iterator j;
 
   removeInstance (this);
   _isDeleting = true;
@@ -100,12 +100,12 @@ NclCompositeExecutionObject::~NclCompositeExecutionObject ()
   _execObjList.clear ();
 }
 
-NclCompositeExecutionObject *
-NclCompositeExecutionObject::getParentFromDataObject (Node *dataObject)
+ExecutionObjectContext *
+ExecutionObjectContext::getParentFromDataObject (Node *dataObject)
 {
-  NclExecutionObject *object;
+  ExecutionObject *object;
   Node *parentDataObject;
-  map<string, NclExecutionObject *>::iterator i;
+  map<string, ExecutionObject *>::iterator i;
 
   parentDataObject = (Node *)(dataObject->getParentComposition ());
 
@@ -117,7 +117,7 @@ NclCompositeExecutionObject::getParentFromDataObject (Node *dataObject)
           object = i->second;
           if (object->getDataObject () == parentDataObject)
             {
-              return (NclCompositeExecutionObject *)object;
+              return (ExecutionObjectContext *)object;
             }
           ++i;
         }
@@ -126,7 +126,7 @@ NclCompositeExecutionObject::getParentFromDataObject (Node *dataObject)
 }
 
 void
-NclCompositeExecutionObject::suspendLinkEvaluation (bool suspend)
+ExecutionObjectContext::suspendLinkEvaluation (bool suspend)
 {
   set<NclFormatterLink *>::iterator i;
 
@@ -139,7 +139,7 @@ NclCompositeExecutionObject::suspendLinkEvaluation (bool suspend)
 }
 
 bool
-NclCompositeExecutionObject::addExecutionObject (NclExecutionObject *obj)
+ExecutionObjectContext::addExecutionObject (ExecutionObject *obj)
 {
   string objId;
 
@@ -162,7 +162,7 @@ NclCompositeExecutionObject::addExecutionObject (NclExecutionObject *obj)
 }
 
 bool
-NclCompositeExecutionObject::containsExecutionObject (const string &execObjId)
+ExecutionObjectContext::containsExecutionObject (const string &execObjId)
 {
   if (getExecutionObject (execObjId) != NULL)
     {
@@ -174,11 +174,11 @@ NclCompositeExecutionObject::containsExecutionObject (const string &execObjId)
     }
 }
 
-NclExecutionObject *
-NclCompositeExecutionObject::getExecutionObject (const string &id)
+ExecutionObject *
+ExecutionObjectContext::getExecutionObject (const string &id)
 {
-  map<string, NclExecutionObject *>::iterator i;
-  NclExecutionObject *execObj;
+  map<string, ExecutionObject *>::iterator i;
+  ExecutionObject *execObj;
 
   if (_execObjList.empty ())
     {
@@ -195,24 +195,24 @@ NclCompositeExecutionObject::getExecutionObject (const string &id)
   return NULL;
 }
 
-map<string, NclExecutionObject *> *
-NclCompositeExecutionObject::getExecutionObjects ()
+map<string, ExecutionObject *> *
+ExecutionObjectContext::getExecutionObjects ()
 {
-  map<string, NclExecutionObject *> *objs;
+  map<string, ExecutionObject *> *objs;
 
   if (_execObjList.empty ())
     {
       return NULL;
     }
-  objs = new map<string, NclExecutionObject *> (_execObjList);
+  objs = new map<string, ExecutionObject *> (_execObjList);
 
   return objs;
 }
 
 bool
-NclCompositeExecutionObject::removeExecutionObject (NclExecutionObject *obj)
+ExecutionObjectContext::removeExecutionObject (ExecutionObject *obj)
 {
-  map<string, NclExecutionObject *>::iterator i;
+  map<string, ExecutionObject *>::iterator i;
 
   if (!_isDeleting)
     {
@@ -227,9 +227,9 @@ NclCompositeExecutionObject::removeExecutionObject (NclExecutionObject *obj)
 }
 
 set<Link *> *
-NclCompositeExecutionObject::getUncompiledLinks ()
+ExecutionObjectContext::getUncompiledLinks ()
 {
-  clog << "NclCompositeExecutionObject::getUncompiledLinks '" << getId ();
+  clog << "ExecutionObjectContext::getUncompiledLinks '" << getId ();
   clog << "' has '" << _uncompiledLinks.size () << "' uncompiled links";
   clog << endl;
 
@@ -238,7 +238,7 @@ NclCompositeExecutionObject::getUncompiledLinks ()
 }
 
 bool
-NclCompositeExecutionObject::containsUncompiledLink (Link *dataLink)
+ExecutionObjectContext::containsUncompiledLink (Link *dataLink)
 {
   if (_uncompiledLinks.count (dataLink) != 0)
     return true;
@@ -246,11 +246,11 @@ NclCompositeExecutionObject::containsUncompiledLink (Link *dataLink)
 }
 
 void
-NclCompositeExecutionObject::removeLinkUncompiled (Link *ncmLink)
+ExecutionObjectContext::removeLinkUncompiled (Link *ncmLink)
 {
   set<Link *>::iterator i;
 
-  clog << "NclCompositeExecutionObject::removeLinkUncompiled '";
+  clog << "ExecutionObjectContext::removeLinkUncompiled '";
   clog << ncmLink->getId () << "'" << endl;
   i = _uncompiledLinks.find (ncmLink);
   if (i != _uncompiledLinks.end ())
@@ -261,11 +261,11 @@ NclCompositeExecutionObject::removeLinkUncompiled (Link *ncmLink)
 }
 
 void
-NclCompositeExecutionObject::setLinkCompiled (NclFormatterLink *link)
+ExecutionObjectContext::setLinkCompiled (NclFormatterLink *link)
 {
   if (link == NULL)
     {
-      clog << "NclCompositeExecutionObject::setLinkCompiled Warning! ";
+      clog << "ExecutionObjectContext::setLinkCompiled Warning! ";
       clog << "trying to compile a NULL link" << endl;
       return;
     }
@@ -275,7 +275,7 @@ NclCompositeExecutionObject::setLinkCompiled (NclFormatterLink *link)
 
   if (compiledLink == NULL)
     {
-      clog << "NclCompositeExecutionObject::setLinkCompiled Warning! ";
+      clog << "ExecutionObjectContext::setLinkCompiled Warning! ";
       clog << "formatterLink has returned a NULL ncmLink" << endl;
       return;
     }
@@ -284,9 +284,9 @@ NclCompositeExecutionObject::setLinkCompiled (NclFormatterLink *link)
 }
 
 void
-NclCompositeExecutionObject::setParentsAsListeners ()
+ExecutionObjectContext::setParentsAsListeners ()
 {
-  map<Node *, NclCompositeExecutionObject *>::iterator i;
+  map<Node *, ExecutionObjectContext *>::iterator i;
 
   i = _parentTable.begin ();
   while (i != _parentTable.end ())
@@ -300,9 +300,9 @@ NclCompositeExecutionObject::setParentsAsListeners ()
 }
 
 void
-NclCompositeExecutionObject::unsetParentsAsListeners ()
+ExecutionObjectContext::unsetParentsAsListeners ()
 {
-  map<Node *,NclCompositeExecutionObject *>::iterator i;
+  map<Node *,ExecutionObjectContext *>::iterator i;
 
   if (_isDeleting)
     {
@@ -319,14 +319,14 @@ NclCompositeExecutionObject::unsetParentsAsListeners ()
 
       // unregister parent as a composite presentation listener
       _wholeContent->removeEventListener (
-          (NclCompositeExecutionObject *)i->second);
+          (ExecutionObjectContext *)i->second);
 
       ++i;
     }
 }
 
 void
-NclCompositeExecutionObject::eventStateChanged (NclFormatterEvent *event,
+ExecutionObjectContext::eventStateChanged (NclFormatterEvent *event,
                                                 short transition,
                                                 short previousState)
 {
@@ -451,7 +451,7 @@ NclCompositeExecutionObject::eventStateChanged (NclFormatterEvent *event,
 }
 
 void
-NclCompositeExecutionObject::linkEvaluationStarted (
+ExecutionObjectContext::linkEvaluationStarted (
     NclFormatterCausalLink *link)
 {
   int linkNumber = 0;
@@ -466,14 +466,14 @@ NclCompositeExecutionObject::linkEvaluationStarted (
 }
 
 void
-NclCompositeExecutionObject::linkEvaluationFinished (
+ExecutionObjectContext::linkEvaluationFinished (
     NclFormatterCausalLink *link, bool start)
 {
   int linkNumber;
   NclFormatterLink *finishedLink;
   map<NclFormatterLink *, int>::iterator i;
 
-  clog << "NclCompositeExecutionObject::linkEvaluationFinished(" << _id;
+  clog << "ExecutionObjectContext::linkEvaluationFinished(" << _id;
   clog << ") '";
   clog << link->getNcmLink ()->getId () << "'" << endl;
 
@@ -505,7 +505,7 @@ NclCompositeExecutionObject::linkEvaluationFinished (
                 {
                   // if nothing starts the composition may
                   // stay locked as occurring
-                  clog << "NclCompositeExecutionObject::";
+                  clog << "ExecutionObjectContext::";
                   clog << "linkEvaluationFinished ";
                   clog << "if nothing starts the composition may ";
                   clog << "stay locked as occurring";
@@ -521,7 +521,7 @@ NclCompositeExecutionObject::linkEvaluationFinished (
 }
 
 bool
-NclCompositeExecutionObject::setProperty (NclAttributionEvent *event,
+ExecutionObjectContext::setProperty (NclAttributionEvent *event,
                                           const string &value)
 {
   if (event->getAnchor ()->getName () == "visible")
@@ -537,16 +537,16 @@ NclCompositeExecutionObject::setProperty (NclAttributionEvent *event,
       return false;
     }
 
-  return NclExecutionObject::setProperty (event, value);
+  return ExecutionObject::setProperty (event, value);
 }
 
 void
-NclCompositeExecutionObject::checkLinkConditions ()
+ExecutionObjectContext::checkLinkConditions ()
 {
   if (_isDeleting || (_runningEvents.empty () && _pausedEvents.empty ()
                    && _pendingLinks.empty ()))
     {
-      clog << "NclCompositeExecutionObject::run ";
+      clog << "ExecutionObjectContext::run ";
       clog << "I (" << _id << ") am ending because of STOP of";
       clog << " the last running event (no pending links nor ";
       clog << "paused events)";
@@ -562,14 +562,14 @@ NclCompositeExecutionObject::checkLinkConditions ()
 }
 
 void
-NclCompositeExecutionObject::listRunningObjects ()
+ExecutionObjectContext::listRunningObjects ()
 {
-  map<string, NclExecutionObject *>::iterator i;
+  map<string, ExecutionObject *>::iterator i;
   vector<NclFormatterEvent *>::iterator j;
-  NclExecutionObject *object;
+  ExecutionObject *object;
   NclFormatterEvent *event;
 
-  clog << "NclCompositeExecutionObject::listRunningObjects for '";
+  clog << "ExecutionObjectContext::listRunningObjects for '";
   clog << _id << "': ";
   i = _execObjList.begin ();
   while (i != _execObjList.end ())
@@ -593,12 +593,12 @@ NclCompositeExecutionObject::listRunningObjects ()
 }
 
 void
-NclCompositeExecutionObject::listPendingLinks ()
+ExecutionObjectContext::listPendingLinks ()
 {
   map<NclFormatterLink *, int>::iterator i;
   Link *ncmLink;
 
-  clog << "NclCompositeExecutionObject::listPendingLinks for '";
+  clog << "ExecutionObjectContext::listPendingLinks for '";
   clog << _id << "': ";
 
   i = _pendingLinks.begin ();

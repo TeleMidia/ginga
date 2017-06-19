@@ -18,20 +18,20 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _APPLICATIONEXECUTIONOBJECT_H_
 #define _APPLICATIONEXECUTIONOBJECT_H_
 
-#include "NclCompositeExecutionObject.h"
-#include "NclExecutionObject.h"
+#include "ExecutionObjectContext.h"
+#include "ExecutionObject.h"
 
 GINGA_FORMATTER_BEGIN
 
-class NclApplicationExecutionObject : public NclExecutionObject
+class ExecutionObjectApplication : public ExecutionObject
 {
 public:
-  NclApplicationExecutionObject (const string &id, Node *node,
+  ExecutionObjectApplication (const string &id, Node *node,
                                  NclCascadingDescriptor *descriptor,
                                  bool handling,
                                  INclLinkActionListener *seListener);
 
-  virtual ~NclApplicationExecutionObject ();
+  virtual ~ExecutionObjectApplication ();
 
   bool isSleeping ();
   bool isPaused ();
@@ -54,7 +54,7 @@ private:
   void unprepareEvents ();
   void removeEventListeners ();
   void removeParentObject (Node *parentNode,
-                           NclCompositeExecutionObject *parentObject);
+                           ExecutionObjectContext *parentObject);
   void removeParentListenersFromEvent (NclFormatterEvent *event);
   void lockEvents ();
   void unlockEvents ();
