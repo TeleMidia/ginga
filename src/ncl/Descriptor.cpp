@@ -25,7 +25,6 @@ Descriptor::Descriptor (const string &id) : GenericDescriptor (id)
   _explicitDuration = GINGA_TIME_NONE;
   _presentationTool = "";
   _repetitions = 0;
-  _freeze = false;
   _region = NULL;
 
   _keyNavigation = NULL;
@@ -80,18 +79,6 @@ int
 Descriptor::getRepetitions ()
 {
   return _repetitions;
-}
-
-bool
-Descriptor::isFreeze ()
-{
-  return _freeze;
-}
-
-void
-Descriptor::setFreeze (bool freeze)
-{
-  this->_freeze = freeze;
 }
 
 void

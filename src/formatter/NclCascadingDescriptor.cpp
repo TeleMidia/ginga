@@ -119,7 +119,6 @@ NclCascadingDescriptor::initializeCascadingDescriptor ()
   id = "";
   explicitDuration = GINGA_TIME_NONE;
   repetitions = 0;
-  freeze = false;
   region = NULL;
   formatterRegion = NULL;
 
@@ -156,8 +155,6 @@ NclCascadingDescriptor::cascadeDescriptor (Descriptor *descriptor)
     {
       explicitDuration = descriptor->getExplicitDuration ();
     }
-
-  this->freeze = descriptor->isFreeze ();
 
   if (descriptor->getKeyNavigation () != NULL)
     {
@@ -357,12 +354,6 @@ GingaTime
 NclCascadingDescriptor::getExplicitDuration ()
 {
   return this->explicitDuration;
-}
-
-bool
-NclCascadingDescriptor::getFreeze ()
-{
-  return freeze;
 }
 
 LayoutRegion *
