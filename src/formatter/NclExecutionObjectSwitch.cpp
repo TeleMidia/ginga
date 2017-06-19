@@ -38,44 +38,39 @@ NclExecutionObjectSwitch::getSelectedObject ()
 void
 NclExecutionObjectSwitch::select (NclExecutionObject *executionObject)
 {
-  vector<NclFormatterEvent *>::iterator i;
   NclSwitchEvent *switchEvent;
 
-  if (executionObject != NULL
+  if (executionObject != nullptr
       && containsExecutionObject (executionObject->getId ()))
     {
-      clog << "NclExecutionObjectSwitch::select '";
-      clog << executionObject->getId () << "'" << endl;
-
       _selectedObject = executionObject;
     }
   else
     {
       _selectedObject = NULL;
-      vector<NclFormatterEvent *> eventsVector = getEvents ();
-      i = eventsVector.begin ();
-      while (i != eventsVector.end ())
+      for (NclFormatterEvent *evt: getEvents())
         {
-          switchEvent = (NclSwitchEvent *)(*i);
+          switchEvent = dynamic_cast<NclSwitchEvent *> (evt);
+          g_assert_nonnull (switchEvent);
           switchEvent->setMappedEvent (NULL);
-          ++i;
         }
     }
 }
 
 bool
-NclExecutionObjectSwitch::addEvent (NclFormatterEvent *event)
+NclExecutionObjectSwitch::addEvent (NclFormatterEvent *evt)
 {
-  if (event->instanceOf ("NclPresentationEvent")
-      && (((NclPresentationEvent *)event)->getAnchor ())
-             ->instanceOf ("LambdaAnchor"))
+ auto presentationEvt = dynamic_cast <NclPresentationEvent *> (evt);
+
+  if (presentationEvt
+      && dynamic_cast<LambdaAnchor *> (presentationEvt->getAnchor ()))
     {
-      NclExecutionObject::_wholeContent = (NclPresentationEvent *)event;
+      NclExecutionObject::_wholeContent = presentationEvt;
       return true;
     }
   else
     {
-      return NclExecutionObject::addEvent (event);
+      return NclExecutionObject::addEvent (evt);
     }
 }
 

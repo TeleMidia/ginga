@@ -25,23 +25,19 @@ GINGA_FORMATTER_BEGIN
 NclApplicationExecutionObject::NclApplicationExecutionObject (
     const string &id, Node *node, NclCascadingDescriptor *descriptor,
     bool handling, INclLinkActionListener *seListener)
-    : NclExecutionObject (id, node, descriptor, handling, seListener)
+  : NclExecutionObject (id, node, descriptor, handling, seListener)
 {
   _typeSet.insert ("NclApplicationExecutionObject");
-  _currentEvent = NULL;
+  _currentEvent = nullptr;
 }
 
 NclApplicationExecutionObject::~NclApplicationExecutionObject ()
 {
-  map<string, NclFormatterEvent *>::iterator i;
-
   NclExecutionObject::removeInstance (this);
 
-  i = _preparedEvents.begin ();
-  while (i != _preparedEvents.end ())
+  for (auto i: _preparedEvents)
     {
-      removeParentListenersFromEvent (i->second);
-      ++i;
+      removeParentListenersFromEvent (i.second);
     }
 
   unprepare ();
@@ -54,31 +50,22 @@ NclApplicationExecutionObject::~NclApplicationExecutionObject ()
 bool
 NclApplicationExecutionObject::isSleeping ()
 {
-  map<string, NclFormatterEvent *>::iterator i;
-
-  lockEvents ();
-  i = _preparedEvents.begin ();
-  while (i != _preparedEvents.end ())
+  for (auto i: _preparedEvents)
     {
-      if (i->second->getCurrentState () != EventUtil::ST_SLEEPING)
+      if (i.second->getCurrentState () != EventUtil::ST_SLEEPING)
         {
-          unlockEvents ();
           return false;
         }
-      ++i;
     }
-  unlockEvents ();
   return true;
 }
 
 bool
 NclApplicationExecutionObject::isPaused ()
 {
-  map<string, NclFormatterEvent *>::iterator i;
-  NclFormatterEvent *event;
   bool hasPaused = false;
 
-  if (_currentEvent != NULL)
+  if (_currentEvent != nullptr)
     {
       if (_currentEvent->getCurrentState () == EventUtil::ST_OCCURRING)
         {
@@ -91,14 +78,11 @@ NclApplicationExecutionObject::isPaused ()
         }
     }
 
-  lockEvents ();
-  i = _preparedEvents.begin ();
-  while (i != _preparedEvents.end ())
+  for (auto i: _preparedEvents)
     {
-      event = i->second;
+      NclFormatterEvent *event = i.second;
       if (event->getCurrentState () == EventUtil::ST_OCCURRING)
         {
-          unlockEvents ();
           return false;
         }
 
@@ -106,10 +90,8 @@ NclApplicationExecutionObject::isPaused ()
         {
           hasPaused = true;
         }
-      ++i;
     }
 
-  unlockEvents ();
   return hasPaused;
 }
 
@@ -122,21 +104,13 @@ NclApplicationExecutionObject::getCurrentEvent ()
 bool
 NclApplicationExecutionObject::hasPreparedEvent (NclFormatterEvent *event)
 {
-  map<string, NclFormatterEvent *>::iterator i;
-
-  lockEvents ();
-  i = _preparedEvents.begin ();
-  while (i != _preparedEvents.end ())
+  for (auto i: _preparedEvents)
     {
-      if (i->second != event)
+      if (i.second != event)
         {
-          unlockEvents ();
           return true;
         }
-      ++i;
     }
-
-  unlockEvents ();
   return false;
 }
 
@@ -145,7 +119,7 @@ NclApplicationExecutionObject::setCurrentEvent (NclFormatterEvent *event)
 {
   if (!containsEvent (event))
     {
-      _currentEvent = NULL;
+      _currentEvent = nullptr;
     }
   else
     {
@@ -157,100 +131,89 @@ bool
 NclApplicationExecutionObject::prepare (NclFormatterEvent *event,
                                         GingaTime offsetTime)
 {
-  int size;
-  map<Node *, NclCompositeExecutionObject *>::iterator i;
   GingaTime startTime = 0;
   ContentAnchor *contentAnchor;
   NclFormatterEvent *auxEvent;
-  NclAttributionEvent *attributeEvent;
   PropertyAnchor *attributeAnchor;
   int j;
 
   if (event->getCurrentState () != EventUtil::ST_SLEEPING)
     {
-      clog << "NclApplicationExecutionObject::prepare can't prepare '";
-      clog << event->getId () << "': event isn't sleeping" << endl;
+      WARNING ("Can't prepare '%s': event isn't sleeping.",
+               event->getId ().c_str ());
       return false;
     }
 
-  if (event->instanceOf ("NclPresentationEvent"))
+  NclPresentationEvent *presentationEvt
+      = dynamic_cast<NclPresentationEvent *> (event);
+  if (presentationEvt)
     {
-      GingaTime duration = ((NclPresentationEvent *)event)->getDuration ();
+      GingaTime duration = presentationEvt->getDuration ();
       if (duration <= 0)
         {
-          clog << "NclApplicationExecutionObject::prepare can't prepare '";
-          clog << event->getId () << "': event duration <= 0" << endl;
+          WARNING ("Can't prepare '%s': event duration <= 0.",
+                   event->getId ().c_str ());
           return false;
         }
     }
 
   addEvent (event);
-  if (event->instanceOf ("NclAnchorEvent"))
+  NclAnchorEvent *anchorEvt = dynamic_cast<NclAnchorEvent *> (event);
+  if (anchorEvt)
     {
-      contentAnchor = ((NclAnchorEvent *)event)->getAnchor ();
-      if (contentAnchor != NULL
-          && contentAnchor->instanceOf ("LabeledAnchor"))
+      contentAnchor = anchorEvt->getAnchor ();
+      auto labeledAnchor = dynamic_cast<LabeledAnchor *> (contentAnchor);
+      if (labeledAnchor)
         {
-          i = _parentTable.begin ();
-          while (i != _parentTable.end ())
+          for (auto i : _parentTable)
             {
               // register parent as a mainEvent listener
-              event->addEventListener (i->second);
-
-              ++i;
+              event->addEventListener (i.second);
             }
 
-          lockEvents ();
           _preparedEvents[event->getId ()] = event;
-          unlockEvents ();
           return true;
         }
     }
 
-  if (event->instanceOf ("NclPresentationEvent"))
+  if (presentationEvt)
     {
-      startTime = ((NclPresentationEvent *)event)->getBegin () + offsetTime;
-      if (startTime > ((NclPresentationEvent *)event)->getEnd ())
+      startTime = presentationEvt->getBegin () + offsetTime;
+      if (startTime > presentationEvt->getEnd ())
         {
-          clog << "NclApplicationExecutionObject::prepare skipping '";
-          clog << event->getId () << "': past event (start = '";
-          clog << startTime << "'; end = '";
-          clog << ((NclPresentationEvent *)event)->getEnd () << "'";
-          clog << endl;
+          TRACE ("Skipping '%s': past event (start = '%lu'; end = '%lu'.",
+                 event->getId ().c_str (),
+                 startTime,
+                 presentationEvt->getEnd ());
+
           return false;
         }
     }
 
-  i = _parentTable.begin ();
-  while (i != _parentTable.end ())
+  for (auto i : _parentTable)
     {
       // register parent as a currentEvent listener
-      event->addEventListener (i->second);
-      ++i;
+      event->addEventListener (i.second);
     }
 
   _transMan->prepare (event == _wholeContent, startTime);
 
-  size = (int) _otherEvents.size ();
-  for (j = 0; j < size; j++)
+  for (j = 0; j < (int) _otherEvents.size (); j++)
     {
       auxEvent = _otherEvents[j];
-      if (auxEvent->instanceOf ("NclAttributionEvent"))
+      auto attributionEvt = dynamic_cast<NclAttributionEvent *> (auxEvent);
+      if (attributionEvt)
         {
-          attributeEvent = (NclAttributionEvent *)auxEvent;
-          attributeAnchor = attributeEvent->getAnchor ();
+          attributeAnchor = attributionEvt->getAnchor ();
           if (attributeAnchor->getValue () != "")
             {
-              attributeEvent->setValue (attributeAnchor->getValue ());
+              attributionEvt->setValue (attributeAnchor->getValue ());
             }
         }
     }
 
   this->_offsetTime = startTime;
-
-  lockEvents ();
   _preparedEvents[event->getId ()] = event;
-  unlockEvents ();
 
   return true;
 }
@@ -258,18 +221,11 @@ NclApplicationExecutionObject::prepare (NclFormatterEvent *event,
 bool
 NclApplicationExecutionObject::start ()
 {
-  ContentAnchor *contentAnchor;
-
-  lockEvents ();
-  if (_currentEvent == NULL
+  if (_currentEvent == nullptr
       || _preparedEvents.count (_currentEvent->getId ()) == 0)
     {
-      clog << "NclApplicationExecutionObject::start nothing to do!" << endl;
-      unlockEvents ();
-      return false;
+      return false; // nothing to do
     }
-
-  unlockEvents ();
 
   /*
    * TODO: follow the event state machine or start instruction behavior
@@ -279,46 +235,42 @@ NclApplicationExecutionObject::start ()
 
   if (_currentEvent->getCurrentState () != EventUtil::ST_SLEEPING)
     {
-      clog << "NclApplicationExecutionObject::start current event '";
-      clog << _currentEvent->getId () << "' is already running!" << endl;
+      TRACE ("Current event '%s' is already running.",
+             _currentEvent->getId ().c_str ());
+
       return false;
     }
 
-  if (_currentEvent->instanceOf ("NclAnchorEvent"))
+  auto anchorEvent = dynamic_cast<NclAnchorEvent *> (_currentEvent);
+
+  if (anchorEvent)
     {
-      contentAnchor = ((NclAnchorEvent *)_currentEvent)->getAnchor ();
-      if (contentAnchor != NULL
-          && (contentAnchor->instanceOf ("LabeledAnchor")))
+      auto contentAnchor = anchorEvent->getAnchor ();
+      auto labeledAnchor = dynamic_cast<LabeledAnchor *> (contentAnchor);
+      if (labeledAnchor)
         {
           _transMan->start (_offsetTime);
           _currentEvent->start ();
 
-          clog << "NclApplicationExecutionObject::start current event '";
-          clog << _currentEvent->getId () << "' started!" << endl;
+          TRACE ("Current event '%s' started.",
+                 _currentEvent->getId ().c_str ());
           return true;
         }
     }
 
-  clog << "NclApplicationExecutionObject::start starting transition ";
-  clog << "manager!" << endl;
   _transMan->start (_offsetTime);
 
-  if (_currentEvent->getCurrentState () != EventUtil::ST_SLEEPING)
-    {
-      clog << "NclApplicationExecutionObject::start YEAP! ";
-      clog << "Current event is running!" << endl;
-    }
   return true;
 }
 
 NclEventTransition *
 NclApplicationExecutionObject::getNextTransition ()
 {
-  if (_currentEvent == NULL
+  if (_currentEvent == nullptr
       || _currentEvent->getCurrentState () == EventUtil::ST_SLEEPING
-      || !_currentEvent->instanceOf ("NclPresentationEvent"))
+      || !(dynamic_cast <NclPresentationEvent *> (_currentEvent)))
     {
-      return NULL;
+      return nullptr;
     }
 
   return _transMan->getNextTransition (_currentEvent);
@@ -333,33 +285,31 @@ NclApplicationExecutionObject::stop ()
 
   if (isSleeping ())
     {
-      if (_wholeContent != NULL
+      if (_wholeContent != nullptr
           && _wholeContent->getCurrentState () != EventUtil::ST_SLEEPING)
         {
-          clog << "NclApplicationExecutionObject::stop WHOLECONTENT"
-               << endl;
           _wholeContent->stop ();
         }
       return false;
     }
 
-  if (_currentEvent->instanceOf ("NclAnchorEvent"))
+  auto anchorEvent = dynamic_cast<NclAnchorEvent*> (_currentEvent);
+  if (anchorEvent)
     {
-      contentAnchor = ((NclAnchorEvent *)_currentEvent)->getAnchor ();
-      if (contentAnchor != NULL
-          && contentAnchor->instanceOf ("LabeledAnchor"))
+      contentAnchor = anchorEvent->getAnchor ();
+      auto labeledAnchor = dynamic_cast<LabeledAnchor *> (contentAnchor);
+      if (labeledAnchor)
         {
           isLabeled = true;
 
-          clog << "NclApplicationExecutionObject::stop stopping event '";
-          clog << contentAnchor->getId () << "'" << endl;
           _currentEvent->stop ();
         }
     }
 
-  if (!isLabeled && _currentEvent->instanceOf ("NclPresentationEvent"))
+  auto presentationEvt = dynamic_cast<NclPresentationEvent *> (_currentEvent);
+  if (!isLabeled && presentationEvt)
     {
-      endTime = ((NclPresentationEvent *)_currentEvent)->getEnd ();
+      endTime = presentationEvt->getEnd ();
       _currentEvent->stop ();
       if (endTime > 0)
         {
@@ -376,15 +326,13 @@ NclApplicationExecutionObject::stop ()
 bool
 NclApplicationExecutionObject::abort ()
 {
-  vector<NclFormatterEvent *>::iterator i;
-  NclFormatterEvent *ev;
   ContentAnchor *contentAnchor;
   GingaTime endTime;
   bool isLabeled = false;
 
   if (isSleeping ())
     {
-      if (_wholeContent != NULL
+      if (_wholeContent != nullptr
           && _wholeContent->getCurrentState () != EventUtil::ST_SLEEPING)
         {
           _wholeContent->abort ();
@@ -394,61 +342,54 @@ NclApplicationExecutionObject::abort ()
 
   if (_currentEvent == _wholeContent)
     {
-      vector<NclFormatterEvent *> evs = getEvents ();
-      i = evs.begin ();
-      while (i != evs.end ())
+      for (NclFormatterEvent *ev : getEvents ())
         {
-          ev = (*i);
-
-          if (ev->instanceOf ("NclAnchorEvent"))
+          auto anchorEvt = dynamic_cast <NclAnchorEvent *> (ev);
+          if (anchorEvt)
             {
-              contentAnchor = ((NclAnchorEvent *)ev)->getAnchor ();
-              if (contentAnchor != NULL
-                  && contentAnchor->instanceOf ("LabeledAnchor"))
+              contentAnchor = anchorEvt->getAnchor ();
+              if (dynamic_cast<LabeledAnchor *> (contentAnchor))
                 {
                   isLabeled = true;
 
-                  clog
-                      << "NclApplicationExecutionObject::abort event '";
-                  clog << contentAnchor->getId () << "'" << endl;
                   ev->abort ();
                 }
             }
 
-          if (!isLabeled && ev->instanceOf ("NclPresentationEvent"))
+          auto presentationEvt = dynamic_cast <NclPresentationEvent *> (ev);
+          if (!isLabeled && presentationEvt)
             {
-              endTime = ((NclPresentationEvent *)ev)->getEnd ();
+              endTime = presentationEvt->getEnd ();
               ev->abort ();
               if (endTime > 0)
                 {
                   _transMan->abort (endTime, true);
                 }
             }
-
-          ++i;
         }
       _transMan->resetTimeIndex ();
       _pauseCount = 0;
     }
   else
     {
-      if (_currentEvent->instanceOf ("NclAnchorEvent"))
+      auto anchorEvt = dynamic_cast<NclAnchorEvent *> (_currentEvent);
+      if (anchorEvt)
         {
-          contentAnchor = ((NclAnchorEvent *)_currentEvent)->getAnchor ();
-          if (contentAnchor != NULL
-              && contentAnchor->instanceOf ("LabeledAnchor"))
+          contentAnchor = anchorEvt->getAnchor ();
+
+          if (dynamic_cast<LabeledAnchor *>(contentAnchor))
             {
               isLabeled = true;
 
-              clog << "NclApplicationExecutionObject::abort event '";
-              clog << contentAnchor->getId () << "'" << endl;
               _currentEvent->abort ();
             }
         }
 
-      if (!isLabeled && _currentEvent->instanceOf ("NclPresentationEvent"))
+      auto presentationEvt
+          = dynamic_cast <NclPresentationEvent *> (_currentEvent);
+      if (!isLabeled && presentationEvt)
         {
-          endTime = ((NclPresentationEvent *)_currentEvent)->getEnd ();
+          endTime = presentationEvt->getEnd ();
           _currentEvent->abort ();
           if (endTime > 0)
             {
@@ -463,33 +404,23 @@ NclApplicationExecutionObject::abort ()
 bool
 NclApplicationExecutionObject::pause ()
 {
-  NclFormatterEvent *ev;
-  vector<NclFormatterEvent *>::iterator i;
-
-  lockEvents ();
-  if (_currentEvent == NULL
+  if (_currentEvent == nullptr
       || _currentEvent->getCurrentState () != EventUtil::ST_OCCURRING
       || _preparedEvents.count (_currentEvent->getId ()) == 0)
     {
-      unlockEvents ();
       return false;
     }
-  unlockEvents ();
 
   if (_currentEvent == _wholeContent)
     {
-      vector<NclFormatterEvent *> evs = getEvents ();
       if (_pauseCount == 0)
         {
-          i = evs.begin ();
-          while (i != evs.end ())
+          for (NclFormatterEvent *ev: getEvents ())
             {
-              ev = *i;
               if (ev->getCurrentState () == EventUtil::ST_OCCURRING)
                 {
                   ev->pause ();
                 }
-              ++i;
             }
         }
 
@@ -506,9 +437,6 @@ NclApplicationExecutionObject::pause ()
 bool
 NclApplicationExecutionObject::resume ()
 {
-  NclFormatterEvent *event;
-  vector<NclFormatterEvent *>::iterator i;
-
   if (_currentEvent == _wholeContent)
     {
       if (_pauseCount == 0)
@@ -524,18 +452,14 @@ NclApplicationExecutionObject::resume ()
             }
         }
 
-      vector<NclFormatterEvent *> evs = getEvents ();
       if (_pauseCount == 0)
         {
-          i = evs.begin ();
-          while (i != evs.end ())
+          for (NclFormatterEvent *event: getEvents ())
             {
-              event = *i;
               if (event->getCurrentState () == EventUtil::ST_PAUSED)
                 {
                   event->resume ();
                 }
-              ++i;
             }
         }
     }
@@ -550,40 +474,30 @@ NclApplicationExecutionObject::resume ()
 bool
 NclApplicationExecutionObject::unprepare ()
 {
-  map<Node *, NclCompositeExecutionObject *>::iterator i;
-  map<string, NclFormatterEvent *>::iterator j;
-
-  // clog << "NclApplicationExecutionObject::unprepare(" << id << ")" <<
-  // endl;
-
-  lockEvents ();
-  if (_currentEvent == NULL
+  if (_currentEvent == nullptr
       || _currentEvent->getCurrentState () != EventUtil::ST_SLEEPING
       || _preparedEvents.count (_currentEvent->getId ()) == 0)
     {
-      unlockEvents ();
       return false;
     }
-  unlockEvents ();
+
 
   if (_currentEvent->instanceOf ("NclAnchorEvent")
-      && ((NclAnchorEvent *)_currentEvent)->getAnchor () != NULL
+      && ((NclAnchorEvent *)_currentEvent)->getAnchor () != nullptr
       && ((NclAnchorEvent *)_currentEvent)
-             ->getAnchor ()
-             ->instanceOf ("LambdaAnchor"))
+      ->getAnchor ()
+      ->instanceOf ("LambdaAnchor"))
     {
       unprepareEvents ();
     }
 
   removeParentListenersFromEvent (_currentEvent);
 
-  lockEvents ();
-  j = _preparedEvents.find (_currentEvent->getId ());
+  auto j = _preparedEvents.find (_currentEvent->getId ());
   if (j != _preparedEvents.end ())
     {
       _preparedEvents.erase (j);
     }
-  unlockEvents ();
 
   return true;
 }
@@ -595,85 +509,53 @@ NclApplicationExecutionObject::unprepareEvents ()
 
   vector<NclFormatterEvent *>::iterator i;
 
-  vector<NclFormatterEvent *> evs = getEvents ();
-  i = evs.begin ();
-  while (i != evs.end ())
+  for (NclFormatterEvent *event : getEvents ())
     {
-      event = *i;
       if (event->getCurrentState () != EventUtil::ST_SLEEPING)
         {
           event->stop ();
         }
-      ++i;
     }
 }
 
 void
 NclApplicationExecutionObject::removeEventListeners ()
 {
-  NclFormatterEvent *event;
-
-  vector<NclFormatterEvent *>::iterator i;
-
-  vector<NclFormatterEvent *> evs = getEvents ();
-  i = evs.begin ();
-  while (i != evs.end ())
+  for (NclFormatterEvent *event : getEvents ())
     {
-      event = *i;
       removeParentListenersFromEvent (event);
-      ++i;
     }
 }
 
 void
-NclApplicationExecutionObject::removeParentObject (Node *parentNode,
-                                                   NclCompositeExecutionObject *parentObject)
+NclApplicationExecutionObject::removeParentObject (
+    Node *parentNode, NclCompositeExecutionObject *parentObj)
 {
-  map<string, NclFormatterEvent *>::iterator j;
-
-  lockEvents ();
-  if (_mainEvent != NULL)
+  if (_mainEvent != nullptr)
     {
-      _mainEvent->removeEventListener (parentObject);
+      _mainEvent->removeEventListener (parentObj);
     }
 
-  j = _preparedEvents.begin ();
-  while (j != _preparedEvents.end ())
+  for (auto i : _preparedEvents)
     {
-      j->second->removeEventListener (parentObject);
-
-      ++j;
+      i.second->removeEventListener (parentObj);
     }
-  unlockEvents ();
 
-  NclExecutionObject::removeParentObject (parentNode, parentObject);
+  NclExecutionObject::removeParentObject (parentNode, parentObj);
 }
 
 void
 NclApplicationExecutionObject::removeParentListenersFromEvent (
     NclFormatterEvent *event)
 {
-  map<Node *, NclCompositeExecutionObject *>::iterator i;
   NclCompositeExecutionObject *parentObject;
 
-  i = _parentTable.begin ();
-  while (i != _parentTable.end ())
+  for (auto i : _parentTable)
     {
-      parentObject = i->second;
+      parentObject = i.second;
       // unregister parent as a currentEvent listener
       event->removeEventListener (parentObject);
-      ++i;
     }
-}
-
-void
-NclApplicationExecutionObject::lockEvents ()
-{
-}
-
-void
-NclApplicationExecutionObject::unlockEvents ()
-{
 }
 
 GINGA_FORMATTER_END
