@@ -33,7 +33,10 @@ ImagePlayer::redraw (SDL_Renderer *renderer)
     {
       this->texture = IMG_LoadTexture (renderer, mrl.c_str ());
       if (unlikely (this->texture == NULL))
-        ERROR ("cannot load image %s: %s", mrl.c_str (), IMG_GetError ());
+        {
+          ERROR ("cannot load image file %s: %s", mrl.c_str (),
+                 IMG_GetError ());
+        }
     }
   Player::redraw (renderer);
 }
