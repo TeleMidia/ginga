@@ -27,6 +27,7 @@ class EventUtil
 public:
   // Event types.
   enum EventType {
+    EVT_UNKNOWN = -1,
     EVT_SELECTION = 0,
     EVT_PRESENTATION,
     EVT_ATTRIBUTION,
@@ -45,6 +46,7 @@ public:
 
   // Event states.
   enum EventState {
+    ST_UNKNOWN = -1,
     ST_SLEEPING = 0,
     ST_OCCURRING,
     ST_PAUSED

@@ -1078,9 +1078,10 @@ FormatterScheduler::startDocument (const string &file)
 }
 
 void
-FormatterScheduler::eventStateChanged (NclFormatterEvent *event,
-                                       short transition,
-                                       arg_unused (short previousState))
+FormatterScheduler::eventStateChanged (
+    NclFormatterEvent *event,
+    EventUtil::EventStateTransition transition,
+    arg_unused (EventUtil::EventState previousState))
 {
   ExecutionObject *object;
   PlayerAdapter *player;

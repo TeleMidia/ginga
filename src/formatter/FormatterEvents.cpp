@@ -30,11 +30,11 @@ NclFormatterEvent::NclFormatterEvent (const string &id,
                                       ExecutionObject *execObject)
 {
   this->id = id;
-  currentState = EventUtil::ST_SLEEPING;
+  _currentState = EventUtil::ST_SLEEPING;
   occurrences = 0;
   executionObject = execObject;
   deleting = false;
-  eventType = -1;
+  eventType = EventUtil::EVT_UNKNOWN;
 
   if (!init)
     {
@@ -57,7 +57,6 @@ NclFormatterEvent::~NclFormatterEvent ()
 bool
 NclFormatterEvent::hasInstance (NclFormatterEvent *event, bool remove)
 {
-  set<NclFormatterEvent *>::iterator i;
   bool inst = false;
 
   if (!init)
@@ -65,7 +64,7 @@ NclFormatterEvent::hasInstance (NclFormatterEvent *event, bool remove)
       return false;
     }
 
-  i = instances.find (event);
+  auto i = instances.find (event);
   if (i != instances.end ())
     {
       if (remove)
@@ -86,10 +85,9 @@ NclFormatterEvent::addInstance (NclFormatterEvent *event)
 bool
 NclFormatterEvent::removeInstance (NclFormatterEvent *event)
 {
-  set<NclFormatterEvent *>::iterator i;
   bool inst = false;
 
-  i = instances.find (event);
+  auto i = instances.find (event);
   if (i != instances.end ())
     {
       instances.erase (i);
@@ -118,9 +116,10 @@ NclFormatterEvent::hasNcmId (NclFormatterEvent *event, const string &anchorId)
   Anchor *anchor;
   string anchorName = " ";
 
-  if (event->instanceOf ("NclAnchorEvent"))
+  NclAnchorEvent *anchorEvt = dynamic_cast<NclAnchorEvent *> (event);
+  if (anchorEvt)
     {
-      anchor = ((NclAnchorEvent *)event)->getAnchor ();
+      anchor = anchorEvt->getAnchor ();
       if (anchor != NULL)
         {
           if (anchor->instanceOf ("IntervalAnchor"))
@@ -160,12 +159,12 @@ NclFormatterEvent::hasNcmId (NclFormatterEvent *event, const string &anchorId)
 }
 
 void
-NclFormatterEvent::setEventType (short eventType)
+NclFormatterEvent::setEventType (EventUtil::EventType evtType)
 {
-  this->eventType = eventType;
+  this->eventType = evtType;
 }
 
-short
+EventUtil::EventType
 NclFormatterEvent::getEventType ()
 {
   return eventType;
@@ -179,23 +178,9 @@ NclFormatterEvent::destroyListeners ()
 }
 
 void
-NclFormatterEvent::setId (const string &id)
-{
-  this->id = id;
-}
-
-void
 NclFormatterEvent::addEventListener (INclEventListener *listener)
 {
   this->listeners.insert (listener);
-}
-
-bool
-NclFormatterEvent::containsEventListener (INclEventListener *listener)
-{
-  if (listeners.count (listener) != 0)
-    return true;
-  return false;
 }
 
 void
@@ -210,8 +195,8 @@ NclFormatterEvent::removeEventListener (INclEventListener *listener)
     }
 }
 
-short
-NclFormatterEvent::getNewState (short transition)
+EventUtil::EventState
+NclFormatterEvent::getNewState (EventUtil::EventStateTransition transition)
 {
   switch (transition)
     {
@@ -229,20 +214,20 @@ NclFormatterEvent::getNewState (short transition)
       return EventUtil::ST_SLEEPING;
 
     default:
-      return -1;
+      return EventUtil::ST_UNKNOWN;
     }
 }
 
 short
-NclFormatterEvent::getTransition (short newState)
+NclFormatterEvent::getTransition (EventUtil::EventState newState)
 {
-  return getTransistion (currentState, newState);
+  return getTransistion (_currentState, newState);
 }
 
 bool
 NclFormatterEvent::abort ()
 {
-  switch (currentState)
+  switch (_currentState)
     {
     case EventUtil::ST_OCCURRING:
     case EventUtil::ST_PAUSED:
@@ -256,7 +241,7 @@ NclFormatterEvent::abort ()
 bool
 NclFormatterEvent::start ()
 {
-  switch (currentState)
+  switch (_currentState)
     {
     case EventUtil::ST_SLEEPING:
       return changeState (EventUtil::ST_OCCURRING, EventUtil::TR_STARTS);
@@ -268,7 +253,7 @@ NclFormatterEvent::start ()
 bool
 NclFormatterEvent::stop ()
 {
-  switch (currentState)
+  switch (_currentState)
     {
     case EventUtil::ST_OCCURRING:
     case EventUtil::ST_PAUSED:
@@ -281,7 +266,7 @@ NclFormatterEvent::stop ()
 bool
 NclFormatterEvent::pause ()
 {
-  switch (currentState)
+  switch (_currentState)
     {
     case EventUtil::ST_OCCURRING:
       return changeState (EventUtil::ST_PAUSED, EventUtil::TR_PAUSES);
@@ -294,7 +279,7 @@ NclFormatterEvent::pause ()
 bool
 NclFormatterEvent::resume ()
 {
-  switch (currentState)
+  switch (_currentState)
     {
     case EventUtil::ST_PAUSED:
       return changeState (EventUtil::ST_OCCURRING, EventUtil::TR_RESUMES);
@@ -305,14 +290,15 @@ NclFormatterEvent::resume ()
 }
 
 void
-NclFormatterEvent::setCurrentState (short newState)
+NclFormatterEvent::setCurrentState (EventUtil::EventState newState)
 {
-  previousState = currentState;
-  currentState = newState;
+  _previousState = _currentState;
+  _currentState = newState;
 }
 
 bool
-NclFormatterEvent::changeState (short newState, short transition)
+NclFormatterEvent::changeState (EventUtil::EventState newState,
+                                EventUtil::EventStateTransition transition)
 {
   set<INclEventListener *>::iterator i;
 
@@ -321,8 +307,8 @@ NclFormatterEvent::changeState (short newState, short transition)
       occurrences++;
     }
 
-  previousState = currentState;
-  currentState = newState;
+  _previousState = _currentState;
+  _currentState = newState;
 
   if (deleting)
     {
@@ -342,7 +328,7 @@ NclFormatterEvent::changeState (short newState, short transition)
       if (*i != NULL)
         {
           ((INclEventListener *)(*i))
-              ->eventStateChanged (this, transition, previousState);
+              ->eventStateChanged (this, transition, _previousState);
         }
       ++i;
     }
@@ -354,20 +340,21 @@ NclFormatterEvent::changeState (short newState, short transition)
   return true;
 }
 
-short
+EventUtil::EventState
 NclFormatterEvent::getCurrentState ()
 {
-  return currentState;
+  return _currentState;
 }
 
-short
+EventUtil::EventState
 NclFormatterEvent::getPreviousState ()
 {
-  return previousState;
+  return _previousState;
 }
 
-short
-NclFormatterEvent::getTransistion (short previousState, short newState)
+EventUtil::EventStateTransition
+NclFormatterEvent::getTransistion (EventUtil::EventState previousState,
+                                   EventUtil::EventState newState)
 {
   switch (previousState)
     {
@@ -377,7 +364,7 @@ NclFormatterEvent::getTransistion (short previousState, short newState)
         case EventUtil::ST_OCCURRING:
           return EventUtil::TR_STARTS;
         default:
-          return -1;
+          return EventUtil::TR_UNKNOWN;
         }
       break;
 
@@ -389,7 +376,7 @@ NclFormatterEvent::getTransistion (short previousState, short newState)
         case EventUtil::ST_PAUSED:
           return EventUtil::TR_PAUSES;
         default:
-          return -1;
+          return EventUtil::TR_UNKNOWN;
         }
       break;
 
@@ -401,7 +388,7 @@ NclFormatterEvent::getTransistion (short previousState, short newState)
         case EventUtil::ST_SLEEPING:
           return EventUtil::TR_STOPS;
         default:
-          return -1;
+          return EventUtil::TR_UNKNOWN;
         }
       break;
 
@@ -409,7 +396,7 @@ NclFormatterEvent::getTransistion (short previousState, short newState)
       break;
     }
 
-  return -1;
+  return EventUtil::TR_UNKNOWN;
 }
 
 ExecutionObject *
@@ -501,7 +488,7 @@ NclPresentationEvent::~NclPresentationEvent () { removeInstance (this); }
 bool
 NclPresentationEvent::stop ()
 {
-  if (currentState == EventUtil::ST_OCCURRING && numPresentations > 1)
+  if (_currentState == EventUtil::ST_OCCURRING && numPresentations > 1)
     {
       numPresentations--;
     }
@@ -737,11 +724,11 @@ NclAttributionEvent::getImplicitRefAssessmentEvent (const string &roleId)
 NclSwitchEvent::NclSwitchEvent (const string &id,
                                 ExecutionObject *executionObjectSwitch,
                                 InterfacePoint *interfacePoint,
-                                int eventType, const string &key)
+                                EventUtil::EventType eventType, const string &key)
     : NclFormatterEvent (id, executionObjectSwitch)
 {
   this->interfacePoint = interfacePoint;
-  this->eventType = (short) eventType;
+  this->eventType = eventType;
   this->key = key;
   this->mappedEvent = NULL;
 
@@ -761,12 +748,6 @@ InterfacePoint *
 NclSwitchEvent::getInterfacePoint ()
 {
   return interfacePoint;
-}
-
-short
-NclSwitchEvent::getEventType ()
-{
-  return eventType;
 }
 
 string
@@ -797,9 +778,10 @@ NclSwitchEvent::getMappedEvent ()
 }
 
 void
-NclSwitchEvent::eventStateChanged (arg_unused (NclFormatterEvent *someEvent),
-                                   short transition,
-                                   arg_unused (short previousState))
+NclSwitchEvent::eventStateChanged (
+    arg_unused (NclFormatterEvent *someEvent),
+    EventUtil::EventStateTransition transition,
+    arg_unused (EventUtil::EventState _previousState))
 {
   changeState (getNewState (transition), transition);
 }

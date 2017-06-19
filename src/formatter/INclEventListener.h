@@ -20,12 +20,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
+#include "ncl/EventUtil.h"
+
 class NclFormatterEvent;
 
 class INclEventListener
 {
 public:
-  virtual void eventStateChanged (NclFormatterEvent *, short, short) = 0;
+  virtual void eventStateChanged (NclFormatterEvent *,
+                                  EventUtil::EventStateTransition,
+                                  EventUtil::EventState) = 0;
 };
 
 GINGA_FORMATTER_END

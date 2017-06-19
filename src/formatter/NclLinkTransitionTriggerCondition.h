@@ -45,8 +45,9 @@ public:
 
   Bind *getBind ();
 
-  virtual void eventStateChanged (NclFormatterEvent *event, short transition,
-                                  short previousState) override;
+  virtual void eventStateChanged (NclFormatterEvent *event,
+                                  EventUtil::EventStateTransition transition,
+                                  EventUtil::EventState previousState) override;
 
   NclFormatterEvent *getEvent ();
   short getTransition ();

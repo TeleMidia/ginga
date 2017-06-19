@@ -326,9 +326,10 @@ ExecutionObjectContext::unsetParentsAsListeners ()
 }
 
 void
-ExecutionObjectContext::eventStateChanged (NclFormatterEvent *event,
-                                                short transition,
-                                                short previousState)
+ExecutionObjectContext::eventStateChanged (
+    NclFormatterEvent *event,
+    EventUtil::EventStateTransition transition,
+    EventUtil::EventState previousState)
 {
   set<NclFormatterEvent *>::iterator i;
 

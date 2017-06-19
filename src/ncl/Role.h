@@ -19,6 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define ROLE_H
 
 #include "ginga.h"
+#include "EventUtil.h"
 
 GINGA_NCL_BEGIN
 
@@ -30,9 +31,9 @@ public:
 
   static const int UNBOUNDED = 2 ^ 30;
 
-  virtual short getEventType ();
+  virtual EventUtil::EventType getEventType ();
   virtual string getLabel ();
-  virtual void setEventType (short type);
+  virtual void setEventType (EventUtil::EventType type);
   virtual void setLabel (const string &id);
 
   virtual int getMinCon ();
@@ -48,7 +49,7 @@ public:
 
 protected:
   string _label;
-  short _eventType;
+  EventUtil::EventType _eventType;
   int _maxCon, _minCon;
 };
 

@@ -84,7 +84,7 @@ public:
 
   NclFormatterEvent *getEvent (ExecutionObject *exeObj,
                                InterfacePoint *interfacePoint,
-                               int ncmEventType,
+                               EventUtil::EventType ncmEventType,
                                const string &key);
 
   ExecutionObject *
@@ -137,8 +137,9 @@ private:
                                  InterfacePoint *interfacePoint,
                                  GenericDescriptor *descriptor);
 
-  void eventStateChanged (NclFormatterEvent *someEvent, short transition,
-                          short previousState) override;
+  void eventStateChanged (NclFormatterEvent *someEvent,
+                          EventUtil::EventStateTransition transition,
+                          EventUtil::EventState previousState) override;
 
   static Descriptor *createDummyDescriptor (Node *node);
   static NclCascadingDescriptor *createDummyCascadingDescriptor (Node *node);

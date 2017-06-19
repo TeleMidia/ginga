@@ -207,7 +207,7 @@ Converter::getSettingNodeObjects ()
 NclFormatterEvent *
 Converter::getEvent (ExecutionObject *exeObj,
                      InterfacePoint *interfacePoint,
-                     int ncmEventType,
+                     EventUtil::EventType ncmEventType,
                      const string &key)
 {
   string id;
@@ -1234,7 +1234,7 @@ Converter::insertNode (NclNodeNesting *perspective,
 {
   ExecutionObject *executionObject;
   NclFormatterEvent *event;
-  short eventType;
+  EventUtil::EventType eventType;
 
   event = nullptr;
   executionObject = getExecutionObjectFromPerspective (perspective,
@@ -1310,8 +1310,8 @@ Converter::insertContext (NclNodeNesting *contextPerspective,
 
 void
 Converter::eventStateChanged (NclFormatterEvent *event,
-                              short transition,
-                              arg_unused (short previousState))
+                              EventUtil::EventStateTransition transition,
+                              arg_unused (EventUtil::EventState previousState))
 {
   ExecutionObject *exeObj = event->getExecutionObject ();
   auto exeCompositeObj = dynamic_cast <ExecutionObjectContext *> (exeObj);
@@ -1960,7 +1960,7 @@ Converter::createSimpleAction (
 {
   NclFormatterEvent *event;
   SimpleActionType actionType;
-  short eventType = -1;
+  EventUtil::EventType eventType = EventUtil::EVT_UNKNOWN;
   NclLinkSimpleAction *action;
   Parameter *connParam;
   Parameter *param;
