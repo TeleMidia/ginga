@@ -1080,7 +1080,7 @@ FormatterScheduler::startDocument (const string &file)
 void
 FormatterScheduler::eventStateChanged (
     NclFormatterEvent *event,
-    EventUtil::EventStateTransition transition,
+    EventStateTransition transition,
     arg_unused (EventUtil::EventState previousState))
 {
   ExecutionObject *object;
@@ -1090,7 +1090,7 @@ FormatterScheduler::eventStateChanged (
   bool hasOther;
 
   clog << "FormatterScheduler::eventStateChanged '";
-  clog << event->getId () << "' transition '" << transition;
+  clog << event->getId () << "' transition '" << static_cast<int> (transition);
   clog << "'" << endl;
 
   hasOther = false;
@@ -1112,8 +1112,8 @@ FormatterScheduler::eventStateChanged (
     {
       switch (transition)
         {
-        case EventUtil::TR_STOPS:
-        case EventUtil::TR_ABORTS:
+        case EventStateTransition::STOPS:
+        case EventStateTransition::ABORTS:
           if (!hasOther)
             {
               events.clear ();
@@ -1131,7 +1131,7 @@ FormatterScheduler::eventStateChanged (
     {
       switch (transition)
         {
-        case EventUtil::TR_STARTS:
+        case EventStateTransition::STARTS:
           object = event->getExecutionObject ();
 
           player = this->getObjectPlayer (object);
@@ -1142,7 +1142,7 @@ FormatterScheduler::eventStateChanged (
             }
           break;
 
-        case EventUtil::TR_STOPS:
+        case EventStateTransition::STOPS:
           if (((NclPresentationEvent *)event)->getRepetitions () == 0)
             {
               bool hideObj = true;
@@ -1173,7 +1173,7 @@ FormatterScheduler::eventStateChanged (
             }
           break;
 
-        case EventUtil::TR_ABORTS:
+        case EventStateTransition::ABORTS:
           {
             bool hideObj = true;
 
@@ -1202,14 +1202,14 @@ FormatterScheduler::eventStateChanged (
             break;
           }
 
-        case EventUtil::TR_PAUSES:
+        case EventStateTransition::PAUSES:
           {
             clog << "FormatterScheduler::eventStateChanged\nPAUSES:\n";
             clog << endl;
             break;
           }
 
-        case EventUtil::TR_RESUMES:
+        case EventStateTransition::RESUMES:
           {
             clog << "FormatterScheduler::eventStateChanged\nRESUMES:\n";
             clog << endl;

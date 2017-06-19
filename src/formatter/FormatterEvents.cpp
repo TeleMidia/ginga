@@ -196,21 +196,21 @@ NclFormatterEvent::removeEventListener (INclEventListener *listener)
 }
 
 EventUtil::EventState
-NclFormatterEvent::getNewState (EventUtil::EventStateTransition transition)
+NclFormatterEvent::getNewState (EventStateTransition transition)
 {
   switch (transition)
     {
-    case EventUtil::TR_STOPS:
+    case EventStateTransition::STOPS:
       return EventUtil::ST_SLEEPING;
 
-    case EventUtil::TR_STARTS:
-    case EventUtil::TR_RESUMES:
+    case EventStateTransition::STARTS:
+    case EventStateTransition::RESUMES:
       return EventUtil::ST_OCCURRING;
 
-    case EventUtil::TR_PAUSES:
+    case EventStateTransition::PAUSES:
       return EventUtil::ST_PAUSED;
 
-    case EventUtil::TR_ABORTS:
+    case EventStateTransition::ABORTS:
       return EventUtil::ST_SLEEPING;
 
     default:
@@ -218,7 +218,7 @@ NclFormatterEvent::getNewState (EventUtil::EventStateTransition transition)
     }
 }
 
-short
+EventStateTransition
 NclFormatterEvent::getTransition (EventUtil::EventState newState)
 {
   return getTransistion (_currentState, newState);
@@ -231,7 +231,7 @@ NclFormatterEvent::abort ()
     {
     case EventUtil::ST_OCCURRING:
     case EventUtil::ST_PAUSED:
-      return changeState (EventUtil::ST_SLEEPING, EventUtil::TR_ABORTS);
+      return changeState (EventUtil::ST_SLEEPING, EventStateTransition::ABORTS);
 
     default:
       return false;
@@ -244,7 +244,7 @@ NclFormatterEvent::start ()
   switch (_currentState)
     {
     case EventUtil::ST_SLEEPING:
-      return changeState (EventUtil::ST_OCCURRING, EventUtil::TR_STARTS);
+      return changeState (EventUtil::ST_OCCURRING, EventStateTransition::STARTS);
     default:
       return false;
     }
@@ -257,7 +257,7 @@ NclFormatterEvent::stop ()
     {
     case EventUtil::ST_OCCURRING:
     case EventUtil::ST_PAUSED:
-      return changeState (EventUtil::ST_SLEEPING, EventUtil::TR_STOPS);
+      return changeState (EventUtil::ST_SLEEPING, EventStateTransition::STOPS);
     default:
       return false;
     }
@@ -269,7 +269,7 @@ NclFormatterEvent::pause ()
   switch (_currentState)
     {
     case EventUtil::ST_OCCURRING:
-      return changeState (EventUtil::ST_PAUSED, EventUtil::TR_PAUSES);
+      return changeState (EventUtil::ST_PAUSED, EventStateTransition::PAUSES);
 
     default:
       return false;
@@ -282,7 +282,7 @@ NclFormatterEvent::resume ()
   switch (_currentState)
     {
     case EventUtil::ST_PAUSED:
-      return changeState (EventUtil::ST_OCCURRING, EventUtil::TR_RESUMES);
+      return changeState (EventUtil::ST_OCCURRING, EventStateTransition::RESUMES);
 
     default:
       return false;
@@ -298,11 +298,11 @@ NclFormatterEvent::setCurrentState (EventUtil::EventState newState)
 
 bool
 NclFormatterEvent::changeState (EventUtil::EventState newState,
-                                EventUtil::EventStateTransition transition)
+                                EventStateTransition transition)
 {
   set<INclEventListener *>::iterator i;
 
-  if (transition == EventUtil::TR_STOPS)
+  if (transition == EventStateTransition::STOPS)
     {
       occurrences++;
     }
@@ -352,7 +352,7 @@ NclFormatterEvent::getPreviousState ()
   return _previousState;
 }
 
-EventUtil::EventStateTransition
+EventStateTransition
 NclFormatterEvent::getTransistion (EventUtil::EventState previousState,
                                    EventUtil::EventState newState)
 {
@@ -362,9 +362,9 @@ NclFormatterEvent::getTransistion (EventUtil::EventState previousState,
       switch (newState)
         {
         case EventUtil::ST_OCCURRING:
-          return EventUtil::TR_STARTS;
+          return EventStateTransition::STARTS;
         default:
-          return EventUtil::TR_UNKNOWN;
+          return EventStateTransition::UNKNOWN;
         }
       break;
 
@@ -372,11 +372,11 @@ NclFormatterEvent::getTransistion (EventUtil::EventState previousState,
       switch (newState)
         {
         case EventUtil::ST_SLEEPING:
-          return EventUtil::TR_STOPS;
+          return EventStateTransition::STOPS;
         case EventUtil::ST_PAUSED:
-          return EventUtil::TR_PAUSES;
+          return EventStateTransition::PAUSES;
         default:
-          return EventUtil::TR_UNKNOWN;
+          return EventStateTransition::UNKNOWN;
         }
       break;
 
@@ -384,11 +384,11 @@ NclFormatterEvent::getTransistion (EventUtil::EventState previousState,
       switch (newState)
         {
         case EventUtil::ST_OCCURRING:
-          return EventUtil::TR_RESUMES;
+          return EventStateTransition::RESUMES;
         case EventUtil::ST_SLEEPING:
-          return EventUtil::TR_STOPS;
+          return EventStateTransition::STOPS;
         default:
-          return EventUtil::TR_UNKNOWN;
+          return EventStateTransition::UNKNOWN;
         }
       break;
 
@@ -396,7 +396,7 @@ NclFormatterEvent::getTransistion (EventUtil::EventState previousState,
       break;
     }
 
-  return EventUtil::TR_UNKNOWN;
+  return EventStateTransition::UNKNOWN;
 }
 
 ExecutionObject *
@@ -780,7 +780,7 @@ NclSwitchEvent::getMappedEvent ()
 void
 NclSwitchEvent::eventStateChanged (
     arg_unused (NclFormatterEvent *someEvent),
-    EventUtil::EventStateTransition transition,
+    EventStateTransition transition,
     arg_unused (EventUtil::EventState _previousState))
 {
   changeState (getNewState (transition), transition);

@@ -34,23 +34,24 @@ class NclLinkTransitionTriggerCondition : public NclLinkTriggerCondition,
 {
 protected:
   NclFormatterEvent *event;
-  short transition;
+  EventStateTransition transition;
   Bind *bind;
 
 public:
   NclLinkTransitionTriggerCondition (NclFormatterEvent *event,
-                                     short transition, Bind *bind);
+                                     EventStateTransition transition,
+                                     Bind *bind);
 
   virtual ~NclLinkTransitionTriggerCondition ();
 
   Bind *getBind ();
 
   virtual void eventStateChanged (NclFormatterEvent *event,
-                                  EventUtil::EventStateTransition transition,
+                                  EventStateTransition transition,
                                   EventUtil::EventState previousState) override;
 
   NclFormatterEvent *getEvent ();
-  short getTransition ();
+  EventStateTransition getTransition ();
   virtual vector<NclFormatterEvent *> *getEvents () override;
 };
 

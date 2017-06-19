@@ -328,7 +328,7 @@ ExecutionObjectContext::unsetParentsAsListeners ()
 void
 ExecutionObjectContext::eventStateChanged (
     NclFormatterEvent *event,
-    EventUtil::EventStateTransition transition,
+    EventStateTransition transition,
     EventUtil::EventState previousState)
 {
   set<NclFormatterEvent *>::iterator i;
@@ -341,7 +341,7 @@ ExecutionObjectContext::eventStateChanged (
 
   switch (transition)
     {
-    case EventUtil::TR_STARTS:
+    case EventStateTransition::STARTS:
       if (_runningEvents.empty () && _pausedEvents.empty ())
         {
           setParentsAsListeners ();
@@ -351,7 +351,7 @@ ExecutionObjectContext::eventStateChanged (
       _runningEvents.insert (event);
       break;
 
-    case EventUtil::TR_ABORTS:
+    case EventStateTransition::ABORTS:
       lastTransition = transition;
       if (previousState == EventUtil::ST_OCCURRING)
         {
@@ -378,7 +378,7 @@ ExecutionObjectContext::eventStateChanged (
         }
       break;
 
-    case EventUtil::TR_STOPS:
+    case EventStateTransition::STOPS:
       if (((NclPresentationEvent *)event)->getRepetitions () == 0)
         {
           lastTransition = transition;
@@ -418,7 +418,7 @@ ExecutionObjectContext::eventStateChanged (
         }
       break;
 
-    case EventUtil::TR_PAUSES:
+    case EventStateTransition::PAUSES:
       i = _runningEvents.find (event);
       if (i != _runningEvents.end ())
         {
@@ -432,7 +432,7 @@ ExecutionObjectContext::eventStateChanged (
         }
       break;
 
-    case EventUtil::TR_RESUMES:
+    case EventStateTransition::RESUMES:
       i = _pausedEvents.find (event);
       if (i != _pausedEvents.end ())
         {
@@ -489,7 +489,7 @@ ExecutionObjectContext::linkEvaluationFinished (
           if (_runningEvents.empty () && _pausedEvents.empty ()
               && _pendingLinks.empty ())
             {
-              if (lastTransition == EventUtil::TR_STOPS)
+              if (lastTransition == EventStateTransition::STOPS)
                 {
                   checkLinkConditions ();
                 }

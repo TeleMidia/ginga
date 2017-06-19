@@ -34,8 +34,8 @@ public:
   void setLabel (const string &id);
   string getKey ();
   void setKey (const string &_key);
-  short getTransition ();
-  void setTransition (short _transition);
+  EventStateTransition getTransition ();
+  void setTransition (EventStateTransition transition);
   short getQualifier ();
   void setQualifier (short _qualifier);
   bool
@@ -46,7 +46,7 @@ public:
 
 private:
   string _key;
-  short _transition;
+  EventStateTransition _transition;
   short _qualifier;
 };
 
