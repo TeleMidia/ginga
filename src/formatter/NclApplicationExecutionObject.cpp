@@ -505,17 +505,11 @@ NclApplicationExecutionObject::unprepare ()
 void
 NclApplicationExecutionObject::unprepareEvents ()
 {
-  NclFormatterEvent *event;
-
   vector<NclFormatterEvent *>::iterator i;
 
   for (NclFormatterEvent *event : getEvents ())
-    {
-      if (event->getCurrentState () != EventUtil::ST_SLEEPING)
-        {
-          event->stop ();
-        }
-    }
+    if (event->getCurrentState () != EventUtil::ST_SLEEPING)
+      event->stop ();
 }
 
 void
