@@ -209,6 +209,16 @@ bool ginga_mime_table_index (string, string *);
 bool _ginga_parse_color (const string &, SDL_Color *);
 SDL_Color ginga_parse_color (const string &);
 
+bool _ginga_parse_list (const string &, char,
+                        size_t, size_t, vector<string> *);
+vector<string> ginga_parse_list (const string &, char, size_t, size_t);
+
+int ginga_parse_percent (const string &, int, int, int);
+#define ginga_parse_pixel(s) (guint8) ginga_parse_percent ((s), 255, 0, 255)
+
+bool _ginga_parse_time (const string &, GingaTime *);
+GingaTime ginga_parse_time (const string &);
+
 // String functions.
 bool _xstrtod (const string &, double *);
 bool _xstrtoll (const string &, gint64 *, guint);
@@ -220,13 +230,8 @@ gint64 xstrtoint64 (const string &, guint8);
 guint xstrtouint (const string &, guint8);
 guint8 xstrtouint8 (const string &, guint8);
 guint64 xstrtouint64 (const string &, guint8);
-
 bool xstrispercent (const string &);
 double xstrtodorpercent (const string &, bool *);
-int xstrtopixel (const string &, int);
-
-bool _xstrtotime (const string &, GingaTime *);
-GingaTime xstrtotime (const string &);
 
 int xstrcasecmp (const string &, const string &);
 #define xstrcaseeq(s1, s2) (xstrcasecmp ((s1), (s2)) == 0)
@@ -235,7 +240,6 @@ string G_GNUC_PRINTF (1,2) xstrbuild (const char *, ...);
 string xstrup (string);
 string xstrdown (string);
 string xstrstrip (string);
-void xstrreplaceall (string &, const string &, const string &);
 vector<string> xstrsplit (const string &, char);
 
 // Path functions.

@@ -196,7 +196,6 @@ PlayerAdapter::prepareProperties (NclExecutionObject *obj)
 {
   NclCascadingDescriptor *descriptor;
   LayoutRegion *region = nullptr;
-  vector<string> params;
   vector<PropertyAnchor *> *anchors;
   string name, value;
   NclFormatterRegion *fRegion = nullptr;
@@ -228,7 +227,7 @@ PlayerAdapter::prepareProperties (NclExecutionObject *obj)
       if (property != nullptr)
         {
           value = property->getValue ();
-          explicitDur = xstrtotime (value);
+          explicitDur = ginga_parse_time (value);
         }
 
       return explicitDur;
@@ -260,7 +259,7 @@ PlayerAdapter::prepareProperties (NclExecutionObject *obj)
         {
           if (name == "explicitDur")
             {
-              explicitDur = xstrtotime (value);
+              explicitDur = ginga_parse_time (value);
             }
           else if (name == "left")
             {
@@ -292,50 +291,41 @@ PlayerAdapter::prepareProperties (NclExecutionObject *obj)
             }
           else if (name == "bounds")
             {
-              params = xstrsplit (xstrstrip (value), ',');
-              if (params.size () == 4)
+              vector<string> v;
+
+              if (unlikely (!_ginga_parse_list (value, ',', 4, 4, &v)))
                 {
-                  left = xstrstrip (params[0]);
-                  top = xstrstrip (params[1]);
-                  width = xstrstrip (params[2]);
-                  height = xstrstrip (params[3]);
+                  ERROR_SYNTAX ("property 'bounds': bad value '%s'",
+                                value.c_str ());
                 }
-              else
-                {
-                  ERROR_SYNTAX ("property 'bounds':"
-                                "expected 4 comma-separated values, got %d",
-                                (int) params.size ());
-                }
+              left = v[0];
+              top = v[1];
+              width = v[2];
+              height = v[3];
             }
           else if (name == "location")
             {
-              params = xstrsplit (xstrstrip (value), ',');
-              if (params.size () == 2)
+              vector<string> v;
+
+              if (unlikely (!_ginga_parse_list (value, ',', 2, 2, &v)))
                 {
-                  left = xstrstrip (params[0]);
-                  top = xstrstrip (params[1]);
+                  ERROR_SYNTAX ("property 'location': bad value '%s'",
+                                value.c_str ());
                 }
-              else
-                {
-                  ERROR_SYNTAX ("property 'location':"
-                                "expected 2 comma-separated, got %d",
-                                (int) params.size());
-                }
+              left = v[0];
+              top = v[1];
             }
           else if (name == "size")
             {
-              params = xstrsplit (xstrstrip (value), ',');
-              if (params.size () == 2)
+              vector<string> v;
+
+              if (unlikely (!_ginga_parse_list (value, ',', 2, 2, &v)))
                 {
-                  width = xstrstrip (params[0]);
-                  height = xstrstrip (params[1]);
+                  ERROR_SYNTAX ("property 'location': bad value '%s'",
+                                value.c_str ());
                 }
-              else
-                {
-                  ERROR_SYNTAX ("property 'size':"
-                                "expected have 2 comma-separated, got %d",
-                                (int) params.size());
-                }
+              width = v[0];
+              height = v[1];
             }
           else if (name == "transparency")
             {

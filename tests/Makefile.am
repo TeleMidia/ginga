@@ -37,8 +37,17 @@ AM_TESTS_ENVIRONMENT=\
 
 # Test programs.
 progs=
-progs+= test-common-color
-test_common_color_SOURCES= test-common-color.cpp
+progs+= test-ginga-parse-color
+test_ginga_parse_color_SOURCES= test-ginga-parse-color.cpp
+
+progs+= test-ginga-parse-list
+test_ginga_parse_list_SOURCES= test-ginga-parse-list.cpp
+
+progs+= test-ginga-parse-percent
+test_ginga_parse_percent_SOURCES= test-ginga-parse-percent.cpp
+
+progs+= test-ginga-parse-time
+test_ginga_parse_time_SOURCES= test-ginga-parse-time.cpp
 
 TESTS= $(progs)
 check_PROGRAMS= $(progs)
