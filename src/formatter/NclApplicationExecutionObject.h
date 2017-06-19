@@ -26,14 +26,6 @@ GINGA_FORMATTER_BEGIN
 class NclApplicationExecutionObject : public NclExecutionObject
 {
 public:
-  NclApplicationExecutionObject (const string &id, Node *node, bool handling,
-                                 INclLinkActionListener *seListener);
-
-  NclApplicationExecutionObject (const string &id, Node *node,
-                                 GenericDescriptor *descriptor,
-                                 bool handling,
-                                 INclLinkActionListener *seListener);
-
   NclApplicationExecutionObject (const string &id, Node *node,
                                  NclCascadingDescriptor *descriptor,
                                  bool handling,
@@ -59,7 +51,6 @@ private:
   map<string, NclFormatterEvent *> _preparedEvents;
   NclFormatterEvent *_currentEvent;
 
-  void initializeApplicationObject ();
   void unprepareEvents ();
   void removeEventListeners ();
   void removeParentObject (Node *parentNode,

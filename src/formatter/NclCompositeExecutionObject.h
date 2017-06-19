@@ -47,11 +47,8 @@ class NclCompositeExecutionObject : public NclExecutionObject,
                                     public INclEventListener
 {
 public:
-  NclCompositeExecutionObject (const string &id, Node *dataObject,
-                               bool handling,
-                               INclLinkActionListener *seListener);
-
-  NclCompositeExecutionObject (const string &id, Node *dataObject,
+  NclCompositeExecutionObject (const string &id,
+                               Node *dataObject,
                                NclCascadingDescriptor *descriptor,
                                bool handling,
                                INclLinkActionListener *seListener);
@@ -94,10 +91,6 @@ private:
   void checkLinkConditions ();
   void listRunningObjects ();
   void listPendingLinks ();
-
-  void
-  initializeCompositeExecutionObject (const string &id, Node *dataObject,
-                                      NclCascadingDescriptor *descriptor);
 };
 
 GINGA_FORMATTER_END
