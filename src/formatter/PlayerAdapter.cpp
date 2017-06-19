@@ -1061,16 +1061,6 @@ PlayerAdapter::naturalEnd ()
     }
   else
     {
-      // if freeze is true natural end is not performed
-      if (_object->getDescriptor () != nullptr)
-        {
-          bool freeze = _object->getDescriptor ()->getFreeze ();
-          if (freeze)
-            {
-              return;
-            }
-        }
-
       stop ();
     }
 }

@@ -53,8 +53,6 @@ public:
 
   LayoutRegion *getRegion ();
   int getRepetitions ();
-  bool isFreeze ();
-  void setFreeze (bool _freeze);
   void setExplicitDuration (GingaTime);
   void setPlayerName (const string &name);
   void setRegion (LayoutRegion *_region);
@@ -79,7 +77,6 @@ public:
 protected:
   GingaTime _explicitDuration;
   string _presentationTool;
-  bool _freeze;
   int _repetitions;
   LayoutRegion *_region;
   map<string, Parameter *> _parameters;

@@ -54,7 +54,6 @@ private:
   map<string, string> parameters;
   GingaTime explicitDuration;
   int repetitions;
-  bool freeze;
   LayoutRegion *region;
   NclFormatterRegion *formatterRegion;
 
@@ -86,7 +85,6 @@ public:
   vector<GenericDescriptor *> *getUnsolvedDescriptors ();
   void cascadeUnsolvedDescriptor ();
   GingaTime getExplicitDuration ();
-  bool getFreeze ();
   LayoutRegion *getRegion ();
   NclFormatterRegion *getFormatterRegion ();
 
