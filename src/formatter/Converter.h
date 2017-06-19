@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef FORMATTERCONVERTER_H_
-#define FORMATTERCONVERTER_H_
+#ifndef CONVERTER_H_
+#define CONVERTER_H_
 
 #include "ncl/Action.h"
 #include "ncl/AssessmentStatement.h"
@@ -71,11 +71,11 @@ GINGA_FORMATTER_BEGIN
 
 class FormatterScheduler;
 
-class FormatterConverter : public INclEventListener
+class Converter : public INclEventListener
 {
 public:
-  explicit FormatterConverter (RuleAdapter *);
-  virtual ~FormatterConverter ();
+  explicit Converter (RuleAdapter *);
+  virtual ~Converter ();
 
   void setHandlingStatus (bool handling);
   NclExecutionObject *getObjectFromNodeId (const string &id);
@@ -219,4 +219,4 @@ private:
 
 GINGA_FORMATTER_END
 
-#endif /*FORMATTERCONVERTER_H_*/
+#endif /*CONVERTER_H_*/

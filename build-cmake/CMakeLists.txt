@@ -81,7 +81,7 @@ endif()
 set (GINGA_SOURCES
   ../src/ginga.h
 
-  ../src/formatter/FormatterConverter.cpp
+  ../src/formatter/Converter.cpp
   ../src/formatter/FormatterFocusManager.cpp
   ../src/formatter/FormatterScheduler.cpp
   ../src/formatter/NclAnchorEvent.cpp

@@ -23,7 +23,8 @@ GINGA_FORMATTER_BEGIN
 NclExecutionObjectSwitch::NclExecutionObjectSwitch (
     const string &id, Node *switchNode, bool handling,
     INclLinkActionListener *seListener)
-    : NclCompositeExecutionObject (id, switchNode, nullptr, handling, seListener)
+    : NclCompositeExecutionObject (id, switchNode, nullptr, handling,
+                                   seListener)
 {
   _selectedObject = nullptr;
   _typeSet.insert ("NclExecutionObjectSwitch");
@@ -36,23 +37,23 @@ NclExecutionObjectSwitch::getSelectedObject ()
 }
 
 void
-NclExecutionObjectSwitch::select (NclExecutionObject *executionObject)
+NclExecutionObjectSwitch::select (NclExecutionObject *exeObj)
 {
   NclSwitchEvent *switchEvent;
 
-  if (executionObject != nullptr
-      && containsExecutionObject (executionObject->getId ()))
+  if (exeObj != nullptr
+      && containsExecutionObject (exeObj->getId ()))
     {
-      _selectedObject = executionObject;
+      _selectedObject = exeObj;
     }
   else
     {
-      _selectedObject = NULL;
+      _selectedObject = nullptr;
       for (NclFormatterEvent *evt: getEvents())
         {
           switchEvent = dynamic_cast<NclSwitchEvent *> (evt);
           g_assert_nonnull (switchEvent);
-          switchEvent->setMappedEvent (NULL);
+          switchEvent->setMappedEvent (nullptr);
         }
     }
 }
@@ -60,7 +61,7 @@ NclExecutionObjectSwitch::select (NclExecutionObject *executionObject)
 bool
 NclExecutionObjectSwitch::addEvent (NclFormatterEvent *evt)
 {
- auto presentationEvt = dynamic_cast <NclPresentationEvent *> (evt);
+ auto presentationEvt = dynamic_cast<NclPresentationEvent *> (evt);
 
   if (presentationEvt
       && dynamic_cast<LambdaAnchor *> (presentationEvt->getAnchor ()))
