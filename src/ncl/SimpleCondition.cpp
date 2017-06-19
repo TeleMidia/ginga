@@ -74,42 +74,42 @@ SimpleCondition::setLabel (const string &id)
   if (xstrcaseeq (_label, "onBegin"))
     {
       _transition = EventUtil::TR_STARTS;
-      _eventType = EventUtil::EVT_PRESENTATION;
+      _eventType = EventType::PRESENTATION;
     }
   else if (xstrcaseeq (_label, "onEnd"))
     {
       _transition = EventUtil::TR_STOPS;
-      _eventType = EventUtil::EVT_PRESENTATION;
+      _eventType = EventType::PRESENTATION;
     }
   else if (xstrcaseeq (_label, "onSelection"))
     {
       _transition = EventUtil::TR_STOPS;
-      _eventType = EventUtil::EVT_SELECTION;
+      _eventType = EventType::SELECTION;
     }
   else if (xstrcaseeq (_label, "onBeginAttribution"))
     {
       _transition = EventUtil::TR_STARTS;
-      _eventType = EventUtil::EVT_ATTRIBUTION;
+      _eventType = EventType::ATTRIBUTION;
     }
   else if (xstrcaseeq (_label, "onEndAttribution"))
     {
       _transition = EventUtil::TR_STOPS;
-      _eventType = EventUtil::EVT_ATTRIBUTION;
+      _eventType = EventType::ATTRIBUTION;
     }
   else if (xstrcaseeq (_label, "onAbort"))
     {
       _transition = EventUtil::TR_ABORTS;
-      _eventType = EventUtil::EVT_PRESENTATION;
+      _eventType = EventType::PRESENTATION;
     }
   else if (xstrcaseeq (_label, "onPause"))
     {
       _transition = EventUtil::TR_PAUSES;
-      _eventType = EventUtil::EVT_PRESENTATION;
+      _eventType = EventType::PRESENTATION;
     }
   else if (xstrcaseeq (_label, "onResume"))
     {
       _transition = EventUtil::TR_RESUMES;
-      _eventType = EventUtil::EVT_PRESENTATION;
+      _eventType = EventType::PRESENTATION;
     }
 }
 

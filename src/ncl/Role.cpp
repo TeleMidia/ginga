@@ -28,7 +28,7 @@ Role::Role ()
 
 Role::~Role () {}
 
-EventUtil::EventType
+EventType
 Role::getEventType ()
 {
   return _eventType;
@@ -41,7 +41,7 @@ Role::getLabel ()
 }
 
 void
-Role::setEventType (EventUtil::EventType type)
+Role::setEventType (EventType type)
 {
   _eventType = type;
 }

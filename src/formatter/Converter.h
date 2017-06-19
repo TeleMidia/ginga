@@ -84,7 +84,7 @@ public:
 
   NclFormatterEvent *getEvent (ExecutionObject *exeObj,
                                InterfacePoint *interfacePoint,
-                               EventUtil::EventType ncmEventType,
+                               EventType ncmEventType,
                                const string &key);
 
   ExecutionObject *

@@ -45,8 +45,8 @@ public:
 
   static bool hasNcmId (NclFormatterEvent *event, const string &anchorId);
 
-  void setEventType (EventUtil::EventType);
-  EventUtil::EventType getEventType ();
+  void setEventType (EventType);
+  EventType getEventType ();
 
   void addEventListener (INclEventListener *);
   void removeEventListener (INclEventListener *);
@@ -79,7 +79,7 @@ protected:
   set<INclEventListener *> listeners;
   set<string> typeSet;
   bool deleting;
-  EventUtil::EventType eventType;
+  EventType eventType;
 
   static set<NclFormatterEvent *> instances;
   static bool init;
@@ -196,7 +196,7 @@ private:
 
 public:
   NclSwitchEvent (const string &, ExecutionObject *, InterfacePoint *,
-                  EventUtil::EventType, const string &);
+                  EventType, const string &);
 
   virtual ~NclSwitchEvent ();
 

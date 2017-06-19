@@ -1144,7 +1144,7 @@ NclParser::parseSimpleCondition (DOMElement *simpleCond_element)
     }
 
   // param
-  if (conditionExpression->getEventType () == EventUtil::EVT_SELECTION)
+  if (conditionExpression->getEventType () == EventType::SELECTION)
     {
       if (dom_element_try_get_attr(attValue, simpleCond_element, "key"))
         {
@@ -1291,7 +1291,7 @@ NclParser::parseAttributeAssessment (DOMElement *attributeAssessment_element)
     }
 
   // parameter
-  if (attrAssessment->getEventType () == EventUtil::EVT_SELECTION)
+  if (attrAssessment->getEventType () == EventType::SELECTION)
     {
       if (dom_element_try_get_attr(attValue, attributeAssessment_element, "key"))
         {
@@ -1377,7 +1377,7 @@ NclParser::parseSimpleAction (DOMElement *simpleAction_element)
     }
 
   // animation
-  if (actionExpression->getEventType () == EventUtil::EVT_ATTRIBUTION
+  if (actionExpression->getEventType () == EventType::ATTRIBUTION
       && actionExpression->getActionType () == ACT_START)
     {
       Animation *animation = NULL;
@@ -2490,7 +2490,7 @@ NclParser::createBind (DOMElement *bind_element, Link *link)
           ValueAssessment *otherAssessment;
 
           assessment = new AttributeAssessment (roleId);
-          assessment->setEventType (EventUtil::EVT_ATTRIBUTION);
+          assessment->setEventType (EventType::ATTRIBUTION);
           assessment->setAttributeType (EventUtil::ATT_NODE_PROPERTY);
           assessment->setMinCon (0);
           assessment->setMaxCon (Role::UNBOUNDED);
