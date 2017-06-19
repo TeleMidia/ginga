@@ -200,12 +200,10 @@ PlayerAdapter::prepareProperties (ExecutionObject *obj)
   string name, value;
   NclFormatterRegion *fRegion = nullptr;
   Node *ncmNode;
-  double transpValue = -1;
-  double parentOpacity = -1;
-  bool isPercent = false;
   GingaTime explicitDur = GINGA_TIME_NONE;
 
-  string left = "", top = "", width = "", height = "", bottom = "", right = "";
+  string left = "", top = "", width = "",
+    height = "", bottom = "", right = "";
 
   descriptor = obj->getDescriptor ();
   if (descriptor != nullptr)
@@ -327,18 +325,6 @@ PlayerAdapter::prepareProperties (ExecutionObject *obj)
               width = v[0];
               height = v[1];
             }
-          else if (name == "transparency")
-            {
-              transpValue = xstrtodorpercent (value, &isPercent);
-              parentOpacity = 1;
-              transpValue = (1 - (parentOpacity
-                                  - (parentOpacity * transpValue)));
-
-              if (fRegion != nullptr)
-                {
-                  fRegion->setTransparency (transpValue);
-                }
-            }
           else if (name == "background")
             {
               if (fRegion != nullptr)
@@ -423,17 +409,6 @@ PlayerAdapter::prepareProperties (ExecutionObject *obj)
                   fRegion->setMoveRight (value);
                 }
             }
-        }
-    }
-
-  if (transpValue < 0.
-      && descriptor->getParameterValue ("transparency") == "")
-    {
-      transpValue = 1.;
-
-      if (fRegion != nullptr)
-        {
-          fRegion->setTransparency (transpValue);
         }
     }
 
@@ -1170,44 +1145,7 @@ PlayerAdapter::setProperty (NclAttributionEvent *event,
     }
   else
     {
-      if(_object->instanceOf("ExecutionObjectApplication"))
-        {
-          if (!setCurrentEvent (event))
-            {
-              return false;
-            }
-        }
-
-      if (_object->setProperty (event, value))
-        {
-          _player->setProperty (propName, _object->getProperty (propName));
-        }
-      else
-        {
-          if (propName == "transparency")
-            {
-              bool isPercent;
-              double transpValue, parentOpacity;
-              NclFormatterRegion *fRegion;
-              NclCascadingDescriptor *descriptor;
-
-              transpValue = xstrtodorpercent (value, &isPercent);
-              parentOpacity = 1;
-              transpValue
-                  = (1 - (parentOpacity - (parentOpacity * transpValue)));
-
-              descriptor = _object->getDescriptor ();
-              if (descriptor != nullptr)
-                {
-                  fRegion = descriptor->getFormatterRegion ();
-                  if (fRegion != nullptr)
-                    {
-                      fRegion->setTransparency (transpValue);
-                    }
-                }
-            }
-          _player->setProperty (propName, value);
-        }
+      _player->setProperty (propName, value);
     }
 
   return true;
@@ -1239,8 +1177,6 @@ PlayerAdapter::getProperty (NclAttributionEvent *event)
 
   name = anchor->getName ();
   value = _player->getProperty (name);
-  if (value == "")
-    value = _object->getProperty (name);
 
   TRACE ("getting property with name='%s', value='%s'",
          name.c_str (), value.c_str ());

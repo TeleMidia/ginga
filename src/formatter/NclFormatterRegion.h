@@ -54,7 +54,6 @@ private:
   int zIndex;
 
   SDL_Color bgColor;
-  double transparency;
 
   string focusIndex;
   string moveUp;
@@ -141,9 +140,6 @@ public:
 
   SDL_Color getBackgroundColor ();
 
-  double getTransparency ();
-  void setTransparency (const string &strTrans);
-  void setTransparency (double transparency);
   void setBackgroundColor (const string &color);
   void setBackgroundColor (SDL_Color color);
 };

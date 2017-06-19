@@ -3352,7 +3352,7 @@ NclParser::createDescriptor (DOMElement *elt)
       focusDecoration->setFocusBorderWidth (xstrtoint (attValue, 10));
     }
 
-  if (dom_element_try_get_attr(attValue, elt, "focusBorderTransparency"))
+  if (dom_element_try_get_attr (attValue, elt, "focusBorderTransparency"))
     {
       double alpha;
       alpha = xstrtod (attValue);

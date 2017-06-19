@@ -23,7 +23,6 @@ GINGA_MB_BEGIN
 class SDLWindow
 {
 private:
-  GINGA_MUTEX_DEFN ();
   SDL_Texture *texture;         // window texture
 
   int borderWidth;
@@ -32,7 +31,6 @@ private:
   SDL_Rect rect;
   int z;
   int zorder;
-  guint8 transparencyValue;
   bool visible;
   bool ghost;
 
@@ -43,8 +41,6 @@ public:
   void setTexture (SDL_Texture *);
   SDL_Texture *getTexture ();
 
-  double getAlpha ();
-  void setAlpha (double);
   void setBgColor (SDL_Color);
   SDL_Color getBgColor ();
   SDL_Rect getRect ();

@@ -27,7 +27,6 @@ GINGA_MB_BEGIN
 
 SDLWindow::SDLWindow (int x, int y, int w, int h, int z, int zorder)
 {
-  this->mutexInit ();
   this->texture = NULL;
   this->borderWidth = 0;
   this->bgColor = {0, 0, 0, 0};
@@ -40,45 +39,23 @@ SDLWindow::SDLWindow (int x, int y, int w, int h, int z, int zorder)
   this->zorder = zorder;
   this->ghost = false;
   this->visible = false;
-  this->transparencyValue = 0;
 }
 
 SDL_Texture *
 SDLWindow::getTexture ()
 {
-  SDL_Texture *texture;
-
-  this->lock ();
-  texture = this->texture;
-  this->unlock ();
-
-  return texture;
+  return this->texture;
 }
 
 void
 SDLWindow::setTexture (SDL_Texture *texture)
 {
-  this->lock ();
   this->texture = texture;
-  this->unlock ();
 }
 
 
 SDLWindow::~SDLWindow ()
 {
-  this->mutexClear ();
-}
-
-double
-SDLWindow::getAlpha ()
-{
-  return (double)(255 - this->transparencyValue) / 255;
-}
-
-void
-SDLWindow::setAlpha (double a)
-{
-  this->transparencyValue = (guint8)(255 - (255 * a));
 }
 
 SDL_Color

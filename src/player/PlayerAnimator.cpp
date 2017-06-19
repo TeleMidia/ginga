@@ -61,9 +61,9 @@ PlayerAnimator::addProperty(const string &dur,
 }
 
 void
-PlayerAnimator::updateList(const string &dur,
-                           const string &name,
-                           const string &value)
+PlayerAnimator::updateList (const string &dur,
+                            const string &name,
+                            const string &value)
 {
   ANIM_PROPERTY* pr = new ANIM_PROPERTY;
   pr->name = name;
