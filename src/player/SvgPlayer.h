@@ -27,10 +27,10 @@ GINGA_PLAYER_BEGIN
 class SvgPlayer : public Player
 {
 public:
-  SvgPlayer (const string &uri) : Player (uri) {};
-  ~SvgPlayer (void) {};
+  SvgPlayer (const string &uri) : Player (uri) {}
+  ~SvgPlayer (void) {}
   void setProperty (const string &, const string &) override;
-  void redraw (SDL_Renderer *);
+  void redraw (SDL_Renderer *) override;
 
 private:
   bool dirty = true;            // true if texture should be reloaded
