@@ -44,7 +44,7 @@ using namespace ::ginga::ncl;
 #include "ExecutionObjectSwitch.h"
 
 #include "INclEventListener.h"
-#include "NclFormatterEvent.h"
+#include "FormatterEvents.h"
 
 #include "NclFormatterCausalLink.h"
 #include "NclFormatterLink.h"

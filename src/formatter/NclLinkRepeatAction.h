@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclLinkSimpleAction.h"
 
-#include "NclFormatterEvent.h"
+#include "FormatterEvents.h"
 
 GINGA_FORMATTER_BEGIN
 

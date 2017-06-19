@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _LINKCOMPOUNDTRIGGERCONDITION_H_
 #define _LINKCOMPOUNDTRIGGERCONDITION_H_
 
-#include "NclFormatterEvent.h"
+#include "FormatterEvents.h"
 
 #include "NclLinkCondition.h"
 #include "NclLinkTriggerListener.h"

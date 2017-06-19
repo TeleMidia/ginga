@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ExecutionObjectContext.h"
 #include "ExecutionObjectApplication.h"
 
-#include "NclFormatterEvent.h"
+#include "FormatterEvents.h"
 
 #include "mb/Display.h"
 using namespace ::ginga::mb;
