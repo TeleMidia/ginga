@@ -72,29 +72,32 @@ NclExecutionObject::hasInstance (NclExecutionObject *object,
   return hasObject;
 }
 
-NclExecutionObject::NclExecutionObject (const string &id, Node *node,
-                                        bool handling,
-                                        INclLinkActionListener *seListener)
-{
-  initializeExecutionObject (id, node, nullptr, handling, seListener);
-}
-
-NclExecutionObject::NclExecutionObject (const string &id, Node *node,
-                                        GenericDescriptor *descriptor,
-                                        bool handling,
-                                        INclLinkActionListener *seListener)
-{
-  initializeExecutionObject (id, node,
-                             new NclCascadingDescriptor (descriptor),
-                             handling, seListener);
-}
-
-NclExecutionObject::NclExecutionObject (const string &id, Node *node,
+NclExecutionObject::NclExecutionObject (const string &id,
+                                        Node *node,
                                         NclCascadingDescriptor *descriptor,
                                         bool handling,
                                         INclLinkActionListener *seListener)
 {
-  initializeExecutionObject (id, node, descriptor, handling, seListener);
+  _typeSet.insert ("NclExecutionObject");
+
+  addInstance (this);
+  this->_seListener = seListener;
+  this->_isDeleting = false;
+  this->_id = id;
+  this->_dataObject = node;
+  this->_wholeContent = nullptr;
+  this->_descriptor = nullptr;
+
+  this->_isCompiled = false;
+
+  this->_pauseCount = 0;
+  this->_mainEvent = nullptr;
+  this->_descriptor = descriptor;
+  this->_isLocked = false;
+  this->_isHandler = false;
+  this->_isHandling = handling;
+
+  this->_transMan = new NclEventTransitionManager ();
 }
 
 NclExecutionObject::~NclExecutionObject ()
@@ -138,33 +141,6 @@ NclExecutionObject::~NclExecutionObject ()
       delete _descriptor;
       _descriptor = nullptr;
     }
-}
-
-void
-NclExecutionObject::initializeExecutionObject (
-    const string &id, Node *node, NclCascadingDescriptor *descriptor,
-    bool handling, INclLinkActionListener *seListener)
-{
-  _typeSet.insert ("NclExecutionObject");
-
-  addInstance (this);
-  this->_seListener = seListener;
-  this->_isDeleting = false;
-  this->_id = id;
-  this->_dataObject = node;
-  this->_wholeContent = nullptr;
-  this->_descriptor = nullptr;
-
-  this->_isCompiled = false;
-
-  this->_pauseCount = 0;
-  this->_mainEvent = nullptr;
-  this->_descriptor = descriptor;
-  this->_isLocked = false;
-  this->_isHandler = false;
-  this->_isHandling = handling;
-
-  this->_transMan = new NclEventTransitionManager ();
 }
 
 void

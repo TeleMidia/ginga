@@ -21,19 +21,40 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 NclCompositeExecutionObject::NclCompositeExecutionObject (
-    const string &id, Node *dataObject, bool handling,
-    INclLinkActionListener *seListener)
-    : NclExecutionObject (id, dataObject, handling, seListener)
-{
-  initializeCompositeExecutionObject (id, dataObject, NULL);
-}
-
-NclCompositeExecutionObject::NclCompositeExecutionObject (
     const string &id, Node *dataObject, NclCascadingDescriptor *descriptor,
     bool handling, INclLinkActionListener *seListener)
     : NclExecutionObject (id, dataObject, descriptor, handling, seListener)
 {
-  initializeCompositeExecutionObject (id, dataObject, descriptor);
+  ContextNode *compositeNode;
+  set<Link *> *compositionLinks;
+  set<Link *>::iterator i;
+  Entity *entity;
+
+  _typeSet.insert ("NclCompositeExecutionObject");
+
+  _execObjList.clear ();
+  _links.clear ();
+  _uncompiledLinks.clear ();
+  _runningEvents.clear ();
+  _pausedEvents.clear ();
+  _pendingLinks.clear ();
+
+  entity = dataObject->getDataEntity ();
+
+  if (entity != NULL && entity->instanceOf ("ContextNode"))
+    {
+      compositeNode = (ContextNode *)entity;
+      compositionLinks = compositeNode->getLinks ();
+      if (compositionLinks != NULL)
+        {
+          i = compositionLinks->begin ();
+          while (i != compositionLinks->end ())
+            {
+              _uncompiledLinks.insert (*i);
+              ++i;
+            }
+        }
+    }
 }
 
 NclCompositeExecutionObject::~NclCompositeExecutionObject ()
@@ -77,44 +98,6 @@ NclCompositeExecutionObject::~NclCompositeExecutionObject ()
       ++j;
     }
   _execObjList.clear ();
-}
-
-void
-NclCompositeExecutionObject::initializeCompositeExecutionObject (
-    arg_unused (const string &_id),
-    Node *dataObject,
-    arg_unused (NclCascadingDescriptor *_descriptor))
-{
-  ContextNode *compositeNode;
-  set<Link *> *compositionLinks;
-  set<Link *>::iterator i;
-  Entity *entity;
-
-  _typeSet.insert ("NclCompositeExecutionObject");
-
-  _execObjList.clear ();
-  _links.clear ();
-  _uncompiledLinks.clear ();
-  _runningEvents.clear ();
-  _pausedEvents.clear ();
-  _pendingLinks.clear ();
-
-  entity = dataObject->getDataEntity ();
-
-  if (entity != NULL && entity->instanceOf ("ContextNode"))
-    {
-      compositeNode = (ContextNode *)entity;
-      compositionLinks = compositeNode->getLinks ();
-      if (compositionLinks != NULL)
-        {
-          i = compositionLinks->begin ();
-          while (i != compositionLinks->end ())
-            {
-              _uncompiledLinks.insert (*i);
-              ++i;
-            }
-        }
-    }
 }
 
 NclCompositeExecutionObject *

@@ -23,27 +23,12 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 GINGA_FORMATTER_BEGIN
 
 NclApplicationExecutionObject::NclApplicationExecutionObject (
-    const string &id, Node *node, bool handling,
-    INclLinkActionListener *seListener)
-    : NclExecutionObject (id, node, handling, seListener)
-{
-  initializeApplicationObject ();
-}
-
-NclApplicationExecutionObject::NclApplicationExecutionObject (
-    const string &id, Node *node, GenericDescriptor *descriptor, bool handling,
-    INclLinkActionListener *seListener)
-    : NclExecutionObject (id, node, descriptor, handling, seListener)
-{
-  initializeApplicationObject ();
-}
-
-NclApplicationExecutionObject::NclApplicationExecutionObject (
     const string &id, Node *node, NclCascadingDescriptor *descriptor,
     bool handling, INclLinkActionListener *seListener)
     : NclExecutionObject (id, node, descriptor, handling, seListener)
 {
-  initializeApplicationObject ();
+  _typeSet.insert ("NclApplicationExecutionObject");
+  _currentEvent = NULL;
 }
 
 NclApplicationExecutionObject::~NclApplicationExecutionObject ()
@@ -64,15 +49,6 @@ NclApplicationExecutionObject::~NclApplicationExecutionObject ()
   removeEventListeners ();
 
   destroyEvents ();
-}
-
-void
-NclApplicationExecutionObject::initializeApplicationObject ()
-{
-  clog << "NclApplicationExecutionObject::initializeApplicationObject(";
-  clog << _id << ")" << endl;
-  _typeSet.insert ("NclApplicationExecutionObject");
-  _currentEvent = NULL;
 }
 
 bool

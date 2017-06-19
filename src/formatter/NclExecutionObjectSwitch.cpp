@@ -23,9 +23,9 @@ GINGA_FORMATTER_BEGIN
 NclExecutionObjectSwitch::NclExecutionObjectSwitch (
     const string &id, Node *switchNode, bool handling,
     INclLinkActionListener *seListener)
-    : NclCompositeExecutionObject (id, switchNode, handling, seListener)
+    : NclCompositeExecutionObject (id, switchNode, nullptr, handling, seListener)
 {
-  _selectedObject = NULL;
+  _selectedObject = nullptr;
   _typeSet.insert ("NclExecutionObjectSwitch");
 }
 

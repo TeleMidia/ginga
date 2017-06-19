@@ -52,16 +52,10 @@ class NclCompositeExecutionObject;
 class NclExecutionObject
 {
 public:
-  NclExecutionObject (const string &id, Node *node, bool handling,
-                      INclLinkActionListener *seListener);
-
-  NclExecutionObject (const string &id, Node *node,
-                      GenericDescriptor *descriptor,
+  NclExecutionObject (const string &id,
+                      Node *node,
+                      NclCascadingDescriptor *descriptor,
                       bool handling,
-                      INclLinkActionListener *seListener);
-
-  NclExecutionObject (const string &_id, Node *node,
-                      NclCascadingDescriptor *descriptor, bool handling,
                       INclLinkActionListener *seListener);
 
   virtual ~NclExecutionObject ();
@@ -162,13 +156,8 @@ protected:
 
 private:
   bool _isCompiled;
-
   map<Node *, Node *> _nodeParentTable;
 
-  void initializeExecutionObject (const string &id, Node *node,
-                                  NclCascadingDescriptor *descriptor,
-                                  bool handling,
-                                  INclLinkActionListener *seListener);
 };
 
 GINGA_FORMATTER_END
