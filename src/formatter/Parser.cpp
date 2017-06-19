@@ -1392,7 +1392,7 @@ NclParser::parseSimpleAction (DOMElement *simpleAction_element)
           GingaTime d;
           animation = new Animation ();
           animation->setDuration (durVal);
-          if (_xstrtotime (byVal, &d))
+          if (_ginga_parse_time (byVal, &d))
             {
               animation->setBy (byVal);
             }
@@ -2091,18 +2091,18 @@ NclParser::createTemporalAnchor (DOMElement *areaElement)
   if (dom_element_has_attr (areaElement, "begin")
       || dom_element_has_attr (areaElement, "end"))
     {
-      if (dom_element_try_get_attr(begin, areaElement ,"begin"))
+      if (dom_element_try_get_attr (begin, areaElement ,"begin"))
         {
-          begVal = xstrtotime (begin);
+          begVal = ginga_parse_time (begin);
         }
       else
         {
           begVal = 0;
         }
 
-      if (dom_element_try_get_attr(end, areaElement, "end"))
+      if (dom_element_try_get_attr (end, areaElement, "end"))
         {
-          endVal = xstrtotime (end);
+          endVal = ginga_parse_time (end);
         }
       else
         {
@@ -2251,22 +2251,28 @@ NclParser::createRegion (DOMElement *elt, LayoutRegion *parent)
   zorder = 0;
 
   if (dom_element_try_get_attr (val, elt, "left"))
-    rect.x += xstrtopixel (val, parent_rect.w);
+    rect.x += ginga_parse_percent (val, parent_rect.w, 0, G_MAXINT);
 
   if (dom_element_try_get_attr (val, elt, "top"))
-    rect.y += xstrtopixel (val, parent_rect.h);
+    rect.y += ginga_parse_percent (val, parent_rect.h, 0, G_MAXINT);
 
   if (dom_element_try_get_attr (val, elt, "width"))
-    rect.w = xstrtopixel (val, parent_rect.w);
+    rect.w = ginga_parse_percent (val, parent_rect.w, 0, G_MAXINT);
 
   if (dom_element_try_get_attr (val, elt, "height"))
-    rect.h = xstrtopixel (val, parent_rect.h);
+    rect.h = ginga_parse_percent (val, parent_rect.h, 0, G_MAXINT);
 
   if (dom_element_try_get_attr (val, elt, "right"))
-    rect.x += parent_rect.w - rect.w - xstrtopixel (val, parent_rect.w);
+    {
+    rect.x += parent_rect.w - rect.w
+      - ginga_parse_percent (val, parent_rect.w, 0, G_MAXINT);
+    }
 
   if (dom_element_try_get_attr (val, elt, "bottom"))
-    rect.y += parent_rect.h - rect.h - xstrtopixel (val, parent_rect.h);
+    {
+      rect.y += parent_rect.h - rect.h
+        - ginga_parse_percent (val, parent_rect.h, 0, G_MAXINT);
+    }
 
   if (dom_element_try_get_attr (val, elt, "zIndex"))
     z = xstrtoint (val, 10);
@@ -3294,7 +3300,7 @@ NclParser::createDescriptor (DOMElement *elt)
   // explicitDur
   if (dom_element_try_get_attr(attValue, elt, "explicitDur"))
     {
-      descriptor->setExplicitDuration (xstrtotime (attValue));
+      descriptor->setExplicitDuration (ginga_parse_time (attValue));
     }
 
   if (dom_element_try_get_attr(attValue, elt,"freeze"))
