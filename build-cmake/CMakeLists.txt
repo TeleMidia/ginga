@@ -86,7 +86,7 @@ set (GINGA_SOURCES
   ../src/formatter/ExecutionObjectApplication.cpp
   ../src/formatter/ExecutionObjectContext.cpp
   ../src/formatter/ExecutionObjectSwitch.cpp
-  ../src/formatter/FormatterFocusManager.cpp
+  ../src/formatter/FocusManager.cpp
   ../src/formatter/FormatterScheduler.cpp
   ../src/formatter/NclAnchorEvent.cpp
   ../src/formatter/NclAttributionEvent.cpp

@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "FormatterFocusManager.h"
+#include "FocusManager.h"
 
 #include "Converter.h"
 #include "FormatterScheduler.h"
@@ -28,13 +28,13 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-conversion)
 
 GINGA_FORMATTER_BEGIN
 
-bool FormatterFocusManager::_init = false;
-set<FormatterFocusManager *> FormatterFocusManager::_instances;
+bool FocusManager::_init = false;
+set<FocusManager *> FocusManager::_instances;
 
-FormatterFocusManager::FormatterFocusManager (FormatterScheduler *scheduler,
-                                              Settings *settings,
-                                              INclLinkActionListener *settingActions,
-                                              Converter *converter)
+FocusManager::FocusManager (FormatterScheduler *scheduler,
+                            Settings *settings,
+                            INclLinkActionListener *settingActions,
+                            Converter *converter)
 {
   string str;
 
@@ -71,7 +71,7 @@ FormatterFocusManager::FormatterFocusManager (FormatterScheduler *scheduler,
   g_assert (Ginga_Display->registerEventListener (this));
 }
 
-FormatterFocusManager::~FormatterFocusManager ()
+FocusManager::~FocusManager ()
 {
   hasInstance (this, true);
   _selectedObject = NULL;
@@ -88,17 +88,17 @@ FormatterFocusManager::~FormatterFocusManager ()
 }
 
 void
-FormatterFocusManager::checkInit ()
+FocusManager::checkInit ()
 {
   if (!_init)
     _init = true;
 }
 
 bool
-FormatterFocusManager::hasInstance (FormatterFocusManager *instance,
-                                    bool remove)
+FocusManager::hasInstance (FocusManager *instance,
+                           bool remove)
 {
-  set<FormatterFocusManager *>::iterator i;
+  set<FocusManager *>::iterator i;
   bool find = false;
 
   if (!_init)
@@ -120,13 +120,13 @@ FormatterFocusManager::hasInstance (FormatterFocusManager *instance,
 }
 
 bool
-FormatterFocusManager::isKeyHandler ()
+FocusManager::isKeyHandler ()
 {
   return _isHandler;
 }
 
 bool
-FormatterFocusManager::setKeyHandler (bool isHandler)
+FocusManager::setKeyHandler (bool isHandler)
 {
   ExecutionObject *focusedObj;
   NclCascadingDescriptor *dc;
@@ -184,14 +184,14 @@ FormatterFocusManager::setKeyHandler (bool isHandler)
             }
           recoveryDefaultState (focusedObj);
         }
-   
+
     }
 
   return isHandler;
 }
 
 ExecutionObject *
-FormatterFocusManager::getObjectFromFocusIndex (const string &focusIndex)
+FocusManager::getObjectFromFocusIndex (const string &focusIndex)
 {
   map<string, set<ExecutionObject *> *>::iterator i;
   set<ExecutionObject *>::iterator j;
@@ -226,8 +226,8 @@ FormatterFocusManager::getObjectFromFocusIndex (const string &focusIndex)
 }
 
 void
-FormatterFocusManager::insertObject (ExecutionObject *obj,
-                                     const string &focusIndex)
+FocusManager::insertObject (ExecutionObject *obj,
+                            const string &focusIndex)
 {
   string auxIndex;
   map<string, set<ExecutionObject *> *>::iterator i;
@@ -249,8 +249,8 @@ FormatterFocusManager::insertObject (ExecutionObject *obj,
 }
 
 void
-FormatterFocusManager::removeObject (ExecutionObject *obj,
-                                     const string &focusIndex)
+FocusManager::removeObject (ExecutionObject *obj,
+                            const string &focusIndex)
 {
   map<string, set<ExecutionObject *> *>::iterator i;
   set<ExecutionObject *>::iterator j;
@@ -275,7 +275,7 @@ FormatterFocusManager::removeObject (ExecutionObject *obj,
 }
 
 void
-FormatterFocusManager::resetKeyMaster ()
+FocusManager::resetKeyMaster ()
 {
   NclCascadingDescriptor *desc;
 
@@ -294,7 +294,7 @@ FormatterFocusManager::resetKeyMaster ()
 }
 
 void
-FormatterFocusManager::setKeyMaster (const string &mediaId)
+FocusManager::setKeyMaster (const string &mediaId)
 {
   ExecutionObject *nextObject = NULL;
   NclCascadingDescriptor *nextDescriptor = NULL;
@@ -372,7 +372,7 @@ FormatterFocusManager::setKeyMaster (const string &mediaId)
 }
 
 void
-FormatterFocusManager::setFocus (const string &focusIndex)
+FocusManager::setFocus (const string &focusIndex)
 {
   ExecutionObject *nextObject = NULL;
   ExecutionObject *currentObject = NULL;
@@ -431,7 +431,7 @@ FormatterFocusManager::setFocus (const string &focusIndex)
 }
 
 void
-FormatterFocusManager::setFocus (NclCascadingDescriptor *descriptor)
+FocusManager::setFocus (NclCascadingDescriptor *descriptor)
 {
   SDL_Color focusColor;;
   SDL_Color selColor;;
@@ -473,7 +473,7 @@ FormatterFocusManager::setFocus (NclCascadingDescriptor *descriptor)
 }
 
 void
-FormatterFocusManager::recoveryDefaultState (ExecutionObject *object)
+FocusManager::recoveryDefaultState (ExecutionObject *object)
 {
   if (object == NULL || object->getDescriptor () == NULL
       || object->getDescriptor ()->getFormatterRegion () == NULL)
@@ -483,7 +483,7 @@ FormatterFocusManager::recoveryDefaultState (ExecutionObject *object)
 }
 
 void
-FormatterFocusManager::showObject (ExecutionObject *object)
+FocusManager::showObject (ExecutionObject *object)
 {
   NclCascadingDescriptor *descriptor;
   NclFormatterRegion *fr = NULL;
@@ -590,7 +590,7 @@ FormatterFocusManager::showObject (ExecutionObject *object)
 }
 
 void
-FormatterFocusManager::hideObject (ExecutionObject *object)
+FocusManager::hideObject (ExecutionObject *object)
 {
   string focusIndex = "", ix;
   NclFormatterRegion *fr;
@@ -639,25 +639,25 @@ FormatterFocusManager::hideObject (ExecutionObject *object)
 
 
 void
-FormatterFocusManager::setDefaultFocusBorderColor (SDL_Color color)
+FocusManager::setDefaultFocusBorderColor (SDL_Color color)
 {
   this->_defaultFocusBorderColor = color;
 }
 
 void
-FormatterFocusManager::setDefaultFocusBorderWidth (int width)
+FocusManager::setDefaultFocusBorderWidth (int width)
 {
   this->_defaultFocusBorderWidth = width;
 }
 
 void
-FormatterFocusManager::setDefaultSelBorderColor (SDL_Color color)
+FocusManager::setDefaultSelBorderColor (SDL_Color color)
 {
   this->_defaultSelBorderColor = color;
 }
 
 void
-FormatterFocusManager::changeSettingState (const string &name, const string &act)
+FocusManager::changeSettingState (const string &name, const string &act)
 {
   set<ExecutionObject *> *settingObjects;
   set<ExecutionObject *>::iterator i;
@@ -687,8 +687,8 @@ FormatterFocusManager::changeSettingState (const string &name, const string &act
                   if (_selectedObject != NULL)
                     {
                       keyM = (_selectedObject->getDataObject ()
-                                  ->getDataEntity ()
-                                  ->getId ());
+                              ->getDataEntity ()
+                              ->getId ());
 
                       ((NclAttributionEvent *)event)->setValue (keyM);
                     }
@@ -704,8 +704,8 @@ FormatterFocusManager::changeSettingState (const string &name, const string &act
 }
 
 void
-FormatterFocusManager::handleKeyEvent (SDL_EventType evtType,
-                                       SDL_Keycode key)
+FocusManager::handleKeyEvent (SDL_EventType evtType,
+                              SDL_Keycode key)
 {
   ExecutionObject *currentObject;
   NclCascadingDescriptor *currentDescriptor;
