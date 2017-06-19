@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef LINKASSIGNMENTACTION_H_
 #define LINKASSIGNMENTACTION_H_
 
-#include "NclFormatterEvent.h"
+#include "FormatterEvents.h"
 
 #include "NclLinkRepeatAction.h"
 

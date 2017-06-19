@@ -76,11 +76,6 @@ NclLinkAction::run (NclLinkCondition *satisfiedCondition)
 }
 
 void
-NclLinkAction::run ()
-{
-}
-
-void
 NclLinkAction::setWaitDelay (GingaTime delay)
 {
   this->delay = delay;

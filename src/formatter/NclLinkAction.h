@@ -18,8 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _LINKACTION_H_
 #define _LINKACTION_H_
 
-#include "NclFormatterEvent.h"
-#include "NclAttributionEvent.h"
+#include "FormatterEvents.h"
 #include "NclLinkActionProgressionListener.h"
 
 GINGA_FORMATTER_BEGIN
@@ -51,7 +50,7 @@ public:
   void setSatisfiedCondition (NclLinkCondition *satisfiedCondition);
   void run (NclLinkCondition *satisfiedCondition);
 
-  virtual void run ();
+  virtual void run () {}
 
 protected:
   set<string> typeSet;
