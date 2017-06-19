@@ -63,4 +63,7 @@
 /src/stamp-h1
 /tests/Makefile
 /tests/Makefile.in
-/tests/test-common-color
+/tests/test-ginga-parse-color
+/tests/test-ginga-parse-list
+/tests/test-ginga-parse-percent
+/tests/test-ginga-parse-time

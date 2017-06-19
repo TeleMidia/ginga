@@ -53,8 +53,14 @@ main (void)
   c = ginga_parse_color (" rgb( 0 , 0 ,\t 0) ");
   CHECK_COLOR (c, 0, 0, 0, 255);
 
+  c = ginga_parse_color ("rgb(0%,0%,0%)");
+  CHECK_COLOR (c, 0, 0, 0, 255);
+
   c = ginga_parse_color ("rgba(0,0,0,127)");
   CHECK_COLOR (c, 0, 0, 0, 127);
+
+  c = ginga_parse_color ("rgba(0,0,0,50%)");
+  CHECK_COLOR (c, 0, 0, 0, 128);
 
   // white
   c = ginga_parse_color ("white");
@@ -72,6 +78,10 @@ main (void)
 
   c = ginga_parse_color ("#ff000000");
   CHECK_COLOR (c, 255, 0, 0, 0);
+
+  // gray
+  c = ginga_parse_color ("rgb(50%,50%,50%)");
+  CHECK_COLOR (c, 128, 128, 128, 255);
 
   exit (0);
 }

@@ -147,7 +147,7 @@ main (int argc, char **argv)
 
   if (unlikely (!status))
     {
-      g_assert (error != NULL);
+      g_assert_nonnull (error);
       usage_error ("%s", error->message);
       g_error_free (error);
       exit (EXIT_FAILURE);
