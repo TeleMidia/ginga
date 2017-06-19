@@ -28,16 +28,6 @@ GINGA_PLAYER_BEGIN
 
 class LuaPlayer : public Player, IEventListener
 {
-private:
-  GINGA_MUTEX_DEFN ()
-  ncluaw_t *_nw;                // the NCLua state
-  bool _isKeyHandler;           // true if player has the focus
-  string _scope;                // the label of the active anchor
-
-  static bool displayJobCallbackWrapper (DisplayJob *,
-                                         SDL_Renderer *, void *);
-  bool displayJobCallback (DisplayJob *, SDL_Renderer *);
-
 public:
   LuaPlayer (const string &mrl);
   virtual ~LuaPlayer (void);
@@ -56,6 +46,13 @@ public:
 
   void handleTickEvent (GingaTime, GingaTime, int) override {};
   void handleKeyEvent (SDL_EventType, SDL_Keycode) override;
+
+  void redraw (SDL_Renderer *) override;
+
+private:
+  ncluaw_t *_nw;                // the NCLua state
+  bool _isKeyHandler;           // true if player has the focus
+  string _scope;                // the label of the active anchor
 };
 
 GINGA_PLAYER_END
