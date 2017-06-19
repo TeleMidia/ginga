@@ -34,7 +34,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-class FormatterConverter;
+class Converter;
 
 class FormatterFocusManager : public IEventListener
 {
@@ -42,7 +42,7 @@ public:
   FormatterFocusManager (FormatterScheduler *,
                          Settings *,
                          INclLinkActionListener *,
-                         FormatterConverter *);
+                         Converter *);
 
   virtual ~FormatterFocusManager ();
 
@@ -81,7 +81,7 @@ private:
   int _width;
   int _height;
 
-  FormatterConverter *_converter;
+  Converter *_converter;
 
   static bool _init;
   static set<FormatterFocusManager *> _instances;

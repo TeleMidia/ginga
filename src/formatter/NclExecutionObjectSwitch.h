@@ -41,7 +41,7 @@ public:
 
   virtual ~NclExecutionObjectSwitch (){}
   NclExecutionObject *getSelectedObject ();
-  void select (NclExecutionObject *executionObject);
+  void select (NclExecutionObject *exeObj);
   bool addEvent (NclFormatterEvent *event);
 
 protected:
