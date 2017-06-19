@@ -20,14 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-GINGA_PRAGMA_DIAG_PUSH ()
-GINGA_PRAGMA_DIAG_IGNORE (-Wcast-qual)
-GINGA_PRAGMA_DIAG_IGNORE (-Wconversion)
-#include <gst/gst.h>
-#include <gst/app/gstappsink.h>
-#include <gst/video/video.h>
-GINGA_PRAGMA_DIAG_POP ()
-
 #include "Player.h"
 #include "mb/Display.h"
 #include "mb/SDLWindow.h"
@@ -38,55 +30,34 @@ GINGA_PLAYER_BEGIN
 
 class VideoPlayer : public Player
 {
+public:
+  VideoPlayer (const string &mrl);
+  virtual ~VideoPlayer ();
+
+  void lock ();
+  void unlock ();
+
+  bool play ();
+  void pause ();
+  void stop ();
+  void resume ();
+
+  void redraw (SDL_Renderer *) override;
+
 private:
-  GINGA_MUTEX_DEFN ()
+  GRecMutex _mutex;               // sync access to player data
+  GstElement *_playbin;           // pipeline
+  GstSample *_sample;             // last sample seen
+  bool _eos;                      // true if EOS has been seen
+  GstAppSinkCallbacks _callbacks; // app-sink callback data
 
-  GstElement *playbin;
-  GstElement *binVideo;
-  GstElement *filterVideo;
-
-  GstSample *sample;            // last sample seen
-  bool eosSeen;                 // true if EOS has been seen
-  double soundLevel;            // sound level
-
-private:
   void setEOS (bool);
   bool getEOS ();
 
-public:
-  VideoPlayer (const string &mrl); //works
-  virtual ~VideoPlayer ();
-
-  bool play (); //works
-  void pause (); //works
-  void stop (); //works
-  void resume (); //works
-
-  virtual string getProperty (const string &);
-  virtual void setProperty (const string &, const string &);
-
-  string getMrl ();
-  bool isPlaying ();
-  bool isRunning ();
-  void setOutWindow (SDLWindow *);
-
- private:
-  static void eosCB (GstAppSink *, gpointer);
-  static GstFlowReturn newPrerollCB (GstAppSink *, gpointer);
-  static GstFlowReturn newSampleCB (GstAppSink *, gpointer);
-
-  static bool displayJobCallbackWrapper (DisplayJob *,
-                                         SDL_Renderer *, void *); //works
-  bool displayJobCallback (DisplayJob *, SDL_Renderer *); //works
-
-
-  GstStateChangeReturn ret;
-  GstAppSinkCallbacks callbacks;
-
-  void createPipeline ();
-  void eos();
-  void printPipelineState ();
-
+  // AppSink callbacks.
+  static void cb_eos (GstAppSink *, gpointer);
+  static GstFlowReturn cb_new_preroll (GstAppSink *, gpointer);
+  static GstFlowReturn cb_new_sample (GstAppSink *, gpointer);
 };
 
 GINGA_PLAYER_END
