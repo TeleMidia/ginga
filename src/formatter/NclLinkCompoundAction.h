@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/CompoundAction.h"
 using namespace ::ginga::ncl;
 
-#include "NclFormatterEvent.h"
+#include "FormatterEvents.h"
 
 #include "NclLinkAction.h"
 #include "NclLinkSimpleAction.h"
@@ -33,34 +33,33 @@ GINGA_FORMATTER_BEGIN
 class NclLinkCompoundAction : public NclLinkAction,
                               public NclLinkActionProgressionListener
 {
-protected:
-  vector<NclLinkAction *> actions;
-  short op;
-
-private:
-  int pendingActions;
-  bool hasStart;
-  bool runing;
-
-  INclLinkActionListener *listener;
-
 public:
-  virtual void run ();
-
-public:
-  NclLinkCompoundAction (short op);
+  NclLinkCompoundAction (short _op);
   virtual ~NclLinkCompoundAction ();
+
+  virtual void run () override;
 
   short getOperator ();
   void addAction (NclLinkAction *action);
 
   vector<NclLinkAction *> *getActions ();
   void getSimpleActions (vector<NclLinkSimpleAction *> *simpleActions);
-  void setCompoundActionListener (INclLinkActionListener *listener);
+  void setCompoundActionListener (INclLinkActionListener *_listener);
 
-  virtual vector<NclFormatterEvent *> *getEvents ();
-  void actionProcessed (bool start);
+  virtual vector<NclFormatterEvent *> *getEvents () override;
+  void actionProcessed (bool start) override;
   virtual vector<NclLinkAction *> getImplicitRefRoleActions () override;
+
+protected:
+  vector<NclLinkAction *> _actions;
+  short _op;
+
+private:
+  int _pendingActions;
+  bool _hasStart;
+  bool _running;
+
+  INclLinkActionListener *_listener;
 };
 
 GINGA_FORMATTER_END

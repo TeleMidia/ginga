@@ -615,7 +615,7 @@ Converter::createExecutionObject (
     {
       string s;
       exeObj = new ExecutionObjectSwitch (id, node, _handling,
-                                             _actionListener);
+                                          _actionListener);
       xstrassign (s, "%d", EventUtil::EVT_PRESENTATION);
       compositeEvt = new NclPresentationEvent (
             nodeEntity->getLambdaAnchor ()->getId () + "_" + s,
@@ -653,7 +653,7 @@ Converter::createExecutionObject (
   else
     {
       exeObj = new ExecutionObject (id, node, descriptor,
-                                       _handling, _actionListener);
+                                    _handling, _actionListener);
     }
 
   return exeObj;
@@ -1015,7 +1015,7 @@ Converter::compileExecutionObjectLinks (
           object = parentObj;
           parentObj
               = (ExecutionObjectContext *)(parentObj
-                                                ->getParentObject ());
+                                           ->getParentObject ());
 
           compileExecutionObjectLinks (object, dataObject, parentObj);
         }

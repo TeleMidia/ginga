@@ -25,8 +25,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::ncl;
 
 #include "INclEventListener.h"
-#include "NclFormatterEvent.h"
-#include "NclPresentationEvent.h"
+#include "FormatterEvents.h"
 
 #include "NclFormatterCausalLink.h"
 #include "NclFormatterLink.h"

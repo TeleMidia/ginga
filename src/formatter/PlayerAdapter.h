@@ -18,9 +18,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PLAYER_ADAPTER_H
 #define PLAYER_ADAPTER_H
 
-#include "NclAttributionEvent.h"
+#include "FormatterEvents.h"
 #include "ExecutionObject.h"
-#include "NclPresentationEvent.h"
 #include "mb/IEventListener.h"
 
 GINGA_FORMATTER_BEGIN
