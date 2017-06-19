@@ -25,7 +25,7 @@ AttributeAssessment::AttributeAssessment (const string &role)
 {
   Role::setLabel (role);
   _eventType = EventType::ATTRIBUTION;
-  _attributeType = EventUtil::ATT_NODE_PROPERTY;
+  _attributeType = AttributeType::NODE_PROPERTY;
   _key = "";
   _offset = "";
   _maxCon = 1;

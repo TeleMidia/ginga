@@ -49,18 +49,18 @@ enum class EventStateTransition {
   ABORTS
 };
 
+// Attribute types.
+enum AttributeType {
+  UNKNOWN = -1,
+  OCCURRENCES = 0,
+  REPETITIONS,
+  STATE,
+  NODE_PROPERTY
+};
+
 class EventUtil
 {
 public:
-  // Attribute types.
-  enum AttributeType {
-    ATT_UNKNOWN = -1,
-    ATT_OCCURRENCES = 0,
-    ATT_REPETITIONS,
-    ATT_STATE,
-    ATT_NODE_PROPERTY
-  };
-
   static EventType
     getTypeCode (const string &typeName);
 
@@ -79,11 +79,11 @@ public:
   static string
     getTransitionName (EventStateTransition transition);
 
-  static EventUtil::AttributeType
+  static AttributeType
     getAttributeTypeCode (const string &attTypeName);
 
   static string
-    getAttributeTypeName (EventUtil::AttributeType type);
+    getAttributeTypeName (AttributeType type);
 };
 
 GINGA_NCL_END

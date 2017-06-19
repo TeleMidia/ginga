@@ -73,7 +73,7 @@ NclLinkAttributeAssessment::getValue ()
 
   switch (attributeType)
     {
-    case EventUtil::ATT_NODE_PROPERTY:
+    case AttributeType::NODE_PROPERTY:
       if (event->instanceOf ("NclAttributionEvent"))
         {
           value = getAssessmentWithOffset (
@@ -81,17 +81,17 @@ NclLinkAttributeAssessment::getValue ()
         }
       break;
 
-    case EventUtil::ATT_STATE:
+    case AttributeType::STATE:
       value = NclFormatterEvent::getStateName (event->getCurrentState ());
       break;
 
-    case EventUtil::ATT_OCCURRENCES:
+    case AttributeType::OCCURRENCES:
       {
         value = getAssessmentWithOffset (xstrbuild ("%d", (int) event->getOccurrences ()));
         break;
       }
 
-    case EventUtil::ATT_REPETITIONS:
+    case AttributeType::REPETITIONS:
       if (event->instanceOf ("NclPresentationEvent"))
         {
           xstrassign (value, "%d", (int) ((NclPresentationEvent *)event)->getRepetitions ());

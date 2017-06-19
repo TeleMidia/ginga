@@ -2491,7 +2491,7 @@ NclParser::createBind (DOMElement *bind_element, Link *link)
 
           assessment = new AttributeAssessment (roleId);
           assessment->setEventType (EventType::ATTRIBUTION);
-          assessment->setAttributeType (EventUtil::ATT_NODE_PROPERTY);
+          assessment->setAttributeType (AttributeType::NODE_PROPERTY);
           assessment->setMinCon (0);
           assessment->setMaxCon (Role::UNBOUNDED);
 
