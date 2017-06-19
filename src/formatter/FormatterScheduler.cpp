@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "FormatterScheduler.h"
 
-#include "FormatterConverter.h"
+#include "Converter.h"
 #include "Parser.h"
 
 #include "mb/Display.h"
@@ -34,7 +34,7 @@ FormatterScheduler::FormatterScheduler ()
 
   this->settings = new Settings ();
   this->ruleAdapter = new RuleAdapter (settings);
-  this->compiler = new FormatterConverter (this->ruleAdapter);
+  this->compiler = new Converter (this->ruleAdapter);
   this->compiler->setLinkActionListener (this);
   this->focusManager = new FormatterFocusManager
     (this, this->settings, this, this->compiler);

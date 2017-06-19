@@ -23,7 +23,8 @@ GINGA_FORMATTER_BEGIN
 NclExecutionObjectSwitch::NclExecutionObjectSwitch (
     const string &id, Node *switchNode, bool handling,
     INclLinkActionListener *seListener)
-    : NclCompositeExecutionObject (id, switchNode, nullptr, handling, seListener)
+    : NclCompositeExecutionObject (id, switchNode, nullptr, handling,
+                                   seListener)
 {
   _selectedObject = nullptr;
   _typeSet.insert ("NclExecutionObjectSwitch");
@@ -36,46 +37,41 @@ NclExecutionObjectSwitch::getSelectedObject ()
 }
 
 void
-NclExecutionObjectSwitch::select (NclExecutionObject *executionObject)
+NclExecutionObjectSwitch::select (NclExecutionObject *exeObj)
 {
-  vector<NclFormatterEvent *>::iterator i;
   NclSwitchEvent *switchEvent;
 
-  if (executionObject != NULL
-      && containsExecutionObject (executionObject->getId ()))
+  if (exeObj != nullptr
+      && containsExecutionObject (exeObj->getId ()))
     {
-      clog << "NclExecutionObjectSwitch::select '";
-      clog << executionObject->getId () << "'" << endl;
-
-      _selectedObject = executionObject;
+      _selectedObject = exeObj;
     }
   else
     {
-      _selectedObject = NULL;
-      vector<NclFormatterEvent *> eventsVector = getEvents ();
-      i = eventsVector.begin ();
-      while (i != eventsVector.end ())
+      _selectedObject = nullptr;
+      for (NclFormatterEvent *evt: getEvents())
         {
-          switchEvent = (NclSwitchEvent *)(*i);
-          switchEvent->setMappedEvent (NULL);
-          ++i;
+          switchEvent = dynamic_cast<NclSwitchEvent *> (evt);
+          g_assert_nonnull (switchEvent);
+          switchEvent->setMappedEvent (nullptr);
         }
     }
 }
 
 bool
-NclExecutionObjectSwitch::addEvent (NclFormatterEvent *event)
+NclExecutionObjectSwitch::addEvent (NclFormatterEvent *evt)
 {
-  if (event->instanceOf ("NclPresentationEvent")
-      && (((NclPresentationEvent *)event)->getAnchor ())
-             ->instanceOf ("LambdaAnchor"))
+ auto presentationEvt = dynamic_cast<NclPresentationEvent *> (evt);
+
+  if (presentationEvt
+      && dynamic_cast<LambdaAnchor *> (presentationEvt->getAnchor ()))
     {
-      NclExecutionObject::_wholeContent = (NclPresentationEvent *)event;
+      NclExecutionObject::_wholeContent = presentationEvt;
       return true;
     }
   else
     {
-      return NclExecutionObject::addEvent (event);
+      return NclExecutionObject::addEvent (evt);
     }
 }
 

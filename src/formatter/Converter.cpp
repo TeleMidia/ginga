@@ -46,21 +46,21 @@ using namespace ::ginga::ncl;
 #include "NclLinkCompoundTriggerCondition.h"
 #include "NclLinkAndCompoundTriggerCondition.h"
 
-#include "FormatterConverter.h"
+#include "Converter.h"
 GINGA_FORMATTER_BEGIN
 
-int FormatterConverter::_dummyCount = 0;
+int Converter::_dummyCount = 0;
 
 static const string SEPARATOR = "/";
 
-FormatterConverter::FormatterConverter (RuleAdapter *ruleAdapter)
+Converter::Converter (RuleAdapter *ruleAdapter)
 {
   this->_actionListener = nullptr;
   this->_ruleAdapter = ruleAdapter;
   this->_handling = false;
 }
 
-FormatterConverter::~FormatterConverter ()
+Converter::~Converter ()
 {
   for (NclFormatterEvent *evt: _listening)
     {
@@ -89,7 +89,7 @@ FormatterConverter::~FormatterConverter ()
 }
 
 void
-FormatterConverter::setHandlingStatus (bool handling)
+Converter::setHandlingStatus (bool handling)
 {
   NclExecutionObject *object;
   this->_handling = handling;
@@ -102,7 +102,7 @@ FormatterConverter::setHandlingStatus (bool handling)
 }
 
 NclExecutionObject *
-FormatterConverter::getObjectFromNodeId (const string &id)
+Converter::getObjectFromNodeId (const string &id)
 {
   for (auto &it: _executionObjects)
     {
@@ -124,13 +124,13 @@ FormatterConverter::getObjectFromNodeId (const string &id)
 }
 
 void
-FormatterConverter::setLinkActionListener (INclLinkActionListener *actListener)
+Converter::setLinkActionListener (INclLinkActionListener *actListener)
 {
   this->_actionListener = actListener;
 }
 
 NclExecutionObject *
-FormatterConverter::getExecutionObjectFromPerspective (
+Converter::getExecutionObjectFromPerspective (
     NclNodeNesting *perspective, GenericDescriptor *descriptor)
 {
   NclCompositeExecutionObject *parentObj;
@@ -199,16 +199,16 @@ FormatterConverter::getExecutionObjectFromPerspective (
 }
 
 set<NclExecutionObject *> *
-FormatterConverter::getSettingNodeObjects ()
+Converter::getSettingNodeObjects ()
 {
   return new set<NclExecutionObject *> (_settingObjects);
 }
 
 NclFormatterEvent *
-FormatterConverter::getEvent (NclExecutionObject *exeObj,
-                              InterfacePoint *interfacePoint,
-                              int ncmEventType,
-                              const string &key)
+Converter::getEvent (NclExecutionObject *exeObj,
+                     InterfacePoint *interfacePoint,
+                     int ncmEventType,
+                     const string &key)
 {
   string id;
   NclFormatterEvent *event;
@@ -334,8 +334,8 @@ FormatterConverter::getEvent (NclExecutionObject *exeObj,
 }
 
 NclCompositeExecutionObject *
-FormatterConverter::addSameInstance (NclExecutionObject *exeObj,
-                                     ReferNode *referNode)
+Converter::addSameInstance (NclExecutionObject *exeObj,
+                            ReferNode *referNode)
 {
   vector<Node *> *ncmPerspective = referNode->getPerspective ();
   NclNodeNesting *referPerspective = new NclNodeNesting (ncmPerspective);
@@ -385,8 +385,8 @@ FormatterConverter::addSameInstance (NclExecutionObject *exeObj,
 }
 
 void
-FormatterConverter::addExecutionObject (NclExecutionObject *exeObj,
-                                        NclCompositeExecutionObject *parentObj)
+Converter::addExecutionObject (NclExecutionObject *exeObj,
+                               NclCompositeExecutionObject *parentObj)
 {
   _executionObjects[exeObj->getId ()] = exeObj;
 
@@ -468,7 +468,7 @@ FormatterConverter::addExecutionObject (NclExecutionObject *exeObj,
 }
 
 bool
-FormatterConverter::removeExecutionObject (NclExecutionObject *exeObj)
+Converter::removeExecutionObject (NclExecutionObject *exeObj)
 {
   bool removed = false;
 
@@ -501,7 +501,7 @@ FormatterConverter::removeExecutionObject (NclExecutionObject *exeObj)
 }
 
 NclCompositeExecutionObject *
-FormatterConverter::getParentExecutionObject (NclNodeNesting *perspective)
+Converter::getParentExecutionObject (NclNodeNesting *perspective)
 {
   NclNodeNesting *parentPerspective;
 
@@ -525,7 +525,7 @@ FormatterConverter::getParentExecutionObject (NclNodeNesting *perspective)
 }
 
 NclExecutionObject *
-FormatterConverter::createExecutionObject (
+Converter::createExecutionObject (
     const string &id, NclNodeNesting *perspective,
     NclCascadingDescriptor *descriptor)
 {
@@ -662,7 +662,7 @@ FormatterConverter::createExecutionObject (
 
 
 Descriptor *
-FormatterConverter::createDummyDescriptor (arg_unused (Node *node))
+Converter::createDummyDescriptor (arg_unused (Node *node))
 {
   Descriptor *ncmDesc
       = new Descriptor ("dummyDescriptor" + xstrbuild ("%d", _dummyCount));
@@ -675,7 +675,7 @@ FormatterConverter::createDummyDescriptor (arg_unused (Node *node))
 }
 
 NclCascadingDescriptor *
-FormatterConverter::createDummyCascadingDescriptor (Node *node)
+Converter::createDummyCascadingDescriptor (Node *node)
 {
   Descriptor *ncmDesc = nullptr;
   string name;
@@ -744,7 +744,7 @@ FormatterConverter::createDummyCascadingDescriptor (Node *node)
 }
 
 NclCascadingDescriptor *
-FormatterConverter::checkCascadingDescriptor (Node *node)
+Converter::checkCascadingDescriptor (Node *node)
 {
   NclCascadingDescriptor *cascadingDescriptor = nullptr;
 
@@ -769,7 +769,7 @@ FormatterConverter::checkCascadingDescriptor (Node *node)
 }
 
 NclCascadingDescriptor *
-FormatterConverter::checkContextCascadingDescriptor (
+Converter::checkContextCascadingDescriptor (
     NclNodeNesting *nodePerspective,
     NclCascadingDescriptor *cascadingDescriptor, Node *ncmNode)
 {
@@ -803,8 +803,8 @@ FormatterConverter::checkContextCascadingDescriptor (
 }
 
 NclCascadingDescriptor *
-FormatterConverter::getCascadingDescriptor (NclNodeNesting *nodePerspective,
-                                            GenericDescriptor *descriptor)
+Converter::getCascadingDescriptor (NclNodeNesting *nodePerspective,
+                                   GenericDescriptor *descriptor)
 {
   NclCascadingDescriptor *cascadingDescriptor = nullptr;
   Descriptor *ncmDesc;
@@ -865,10 +865,10 @@ FormatterConverter::getCascadingDescriptor (NclNodeNesting *nodePerspective,
 }
 
 void
-FormatterConverter::processLink (Link *ncmLink,
-                                 Node *dataObject,
-                                 NclExecutionObject *executionObject,
-                                 NclCompositeExecutionObject *parentObject)
+Converter::processLink (Link *ncmLink,
+                        Node *dataObject,
+                        NclExecutionObject *executionObject,
+                        NclCompositeExecutionObject *parentObject)
 {
   GenericDescriptor *descriptor = nullptr;
   NodeEntity *nodeEntity = nullptr;
@@ -962,7 +962,7 @@ FormatterConverter::processLink (Link *ncmLink,
 }
 
 void
-FormatterConverter::compileExecutionObjectLinks (
+Converter::compileExecutionObjectLinks (
     NclExecutionObject *exeObj, Node *dataObject,
     NclCompositeExecutionObject *parentObj)
 {
@@ -1023,7 +1023,7 @@ FormatterConverter::compileExecutionObjectLinks (
 }
 
 void
-FormatterConverter::setActionListener (NclLinkAction *action)
+Converter::setActionListener (NclLinkAction *action)
 {
   auto simpleAction = dynamic_cast <NclLinkSimpleAction *> (action);
   auto compoundAction = dynamic_cast <NclLinkCompoundAction *> (action);
@@ -1051,7 +1051,7 @@ FormatterConverter::setActionListener (NclLinkAction *action)
 }
 
 NclExecutionObject *
-FormatterConverter::processExecutionObjectSwitch (
+Converter::processExecutionObjectSwitch (
     NclExecutionObjectSwitch *switchObject)
 {
 
@@ -1080,7 +1080,7 @@ FormatterConverter::processExecutionObjectSwitch (
 
   id = selectedPerspective->getId () + SEPARATOR;
 
-  descriptor = FormatterConverter::getCascadingDescriptor (
+  descriptor = Converter::getCascadingDescriptor (
         selectedPerspective, NULL);
 
   if (descriptor != NULL)
@@ -1130,7 +1130,7 @@ FormatterConverter::processExecutionObjectSwitch (
 }
 
 void
-FormatterConverter::resolveSwitchEvents (
+Converter::resolveSwitchEvents (
     NclExecutionObjectSwitch *switchObject)
 {
   NclExecutionObject *selectedObject;
@@ -1228,9 +1228,9 @@ FormatterConverter::resolveSwitchEvents (
 }
 
 NclFormatterEvent *
-FormatterConverter::insertNode (NclNodeNesting *perspective,
-                                InterfacePoint *interfacePoint,
-                                GenericDescriptor *descriptor)
+Converter::insertNode (NclNodeNesting *perspective,
+                       InterfacePoint *interfacePoint,
+                       GenericDescriptor *descriptor)
 {
   NclExecutionObject *executionObject;
   NclFormatterEvent *event;
@@ -1260,8 +1260,8 @@ FormatterConverter::insertNode (NclNodeNesting *perspective,
 }
 
 NclFormatterEvent *
-FormatterConverter::insertContext (NclNodeNesting *contextPerspective,
-                                   Port *port)
+Converter::insertContext (NclNodeNesting *contextPerspective,
+                          Port *port)
 {
   vector<Node *> *nestedSeq;
   NclNodeNesting *perspective;
@@ -1309,9 +1309,9 @@ FormatterConverter::insertContext (NclNodeNesting *contextPerspective,
 }
 
 void
-FormatterConverter::eventStateChanged (NclFormatterEvent *event,
-                                       short transition,
-                                       arg_unused (short previousState))
+Converter::eventStateChanged (NclFormatterEvent *event,
+                              short transition,
+                              arg_unused (short previousState))
 {
   NclExecutionObject *exeObj = event->getExecutionObject ();
   auto exeCompositeObj = dynamic_cast <NclCompositeExecutionObject *> (exeObj);
@@ -1365,7 +1365,7 @@ FormatterConverter::eventStateChanged (NclFormatterEvent *event,
 }
 
 bool
-FormatterConverter::isEmbeddedApp (NodeEntity *dataObject)
+Converter::isEmbeddedApp (NodeEntity *dataObject)
 {
   string mime = "";
 
@@ -1402,7 +1402,7 @@ FormatterConverter::isEmbeddedApp (NodeEntity *dataObject)
 }
 
 bool
-FormatterConverter::hasDescriptorPropName (const string &name)
+Converter::hasDescriptorPropName (const string &name)
 {
   static const set <string> words = { "left", "top", "width", "height",
                                       "right", "bottom", "explicitDur",
@@ -1413,7 +1413,7 @@ FormatterConverter::hasDescriptorPropName (const string &name)
 }
 
 bool
-FormatterConverter::isEmbeddedAppMediaType (const string &mediaType)
+Converter::isEmbeddedAppMediaType (const string &mediaType)
 {
   static const set <string> appMediaTypes = { "application/x-ginga-nclua",
                                               "application/x-ginga-nclet",
@@ -1425,8 +1425,8 @@ FormatterConverter::isEmbeddedAppMediaType (const string &mediaType)
 }
 
 NclFormatterCausalLink *
-FormatterConverter::createCausalLink (CausalLink *ncmLink,
-                                      NclCompositeExecutionObject *parentObj)
+Converter::createCausalLink (CausalLink *ncmLink,
+                             NclCompositeExecutionObject *parentObj)
 {
   CausalConnector *connector;
   ConditionExpression *conditionExpression;
@@ -1545,9 +1545,9 @@ FormatterConverter::createCausalLink (CausalLink *ncmLink,
 }
 
 void
-FormatterConverter::setImplicitRefAssessment (const string &roleId,
-                                              CausalLink *ncmLink,
-                                              NclFormatterEvent *event)
+Converter::setImplicitRefAssessment (const string &roleId,
+                                     CausalLink *ncmLink,
+                                     NclFormatterEvent *event)
 {
   NclNodeNesting *refPerspective;
   NclExecutionObject *refObject;
@@ -1593,9 +1593,9 @@ FormatterConverter::setImplicitRefAssessment (const string &roleId,
 }
 
 NclLinkAction *
-FormatterConverter::createAction (Action *actionExp,
-                                  CausalLink *ncmLink,
-                                  NclCompositeExecutionObject *parentObj)
+Converter::createAction (Action *actionExp,
+                         CausalLink *ncmLink,
+                         NclCompositeExecutionObject *parentObj)
 {
   GingaTime delay;
   vector<Bind *> *binds;
@@ -1675,7 +1675,7 @@ FormatterConverter::createAction (Action *actionExp,
 }
 
 NclLinkCondition *
-FormatterConverter::createCondition (
+Converter::createCondition (
     ConditionExpression *ncmExp, CausalLink *ncmLink,
     NclCompositeExecutionObject *parentObj)
 {
@@ -1694,7 +1694,7 @@ FormatterConverter::createCondition (
 }
 
 NclLinkCompoundTriggerCondition *
-FormatterConverter::createCompoundTriggerCondition (
+Converter::createCompoundTriggerCondition (
     short op, GingaTime delay,
     vector<ConditionExpression *> *ncmChildConditions, CausalLink *ncmLink,
     NclCompositeExecutionObject *parentObj)
@@ -1736,7 +1736,7 @@ FormatterConverter::createCompoundTriggerCondition (
 }
 
 NclLinkCondition *
-FormatterConverter::createCondition (
+Converter::createCondition (
     TriggerExpression *condition, CausalLink *ncmLink,
     NclCompositeExecutionObject *parentObj)
 {
@@ -1810,7 +1810,7 @@ FormatterConverter::createCondition (
 }
 
 NclLinkAssessmentStatement *
-FormatterConverter::createAssessmentStatement (
+Converter::createAssessmentStatement (
     AssessmentStatement *assessmentStatement, Bind *bind, Link *ncmLink,
     NclCompositeExecutionObject *parentObj)
 {
@@ -1880,7 +1880,7 @@ FormatterConverter::createAssessmentStatement (
 }
 
 NclLinkStatement *
-FormatterConverter::createStatement (
+Converter::createStatement (
     Statement *statementExpression, Link *ncmLink,
     NclCompositeExecutionObject *parentObj)
 {
@@ -1943,7 +1943,7 @@ FormatterConverter::createStatement (
 }
 
 NclLinkAttributeAssessment *
-FormatterConverter::createAttributeAssessment (
+Converter::createAttributeAssessment (
     AttributeAssessment *attributeAssessment, Bind *bind, Link *ncmLink,
     NclCompositeExecutionObject *parentObj)
 {
@@ -1954,7 +1954,7 @@ FormatterConverter::createAttributeAssessment (
 }
 
 NclLinkSimpleAction *
-FormatterConverter::createSimpleAction (
+Converter::createSimpleAction (
     SimpleAction *sae, Bind *bind, Link *ncmLink,
     NclCompositeExecutionObject *parentObj)
 {
@@ -2170,7 +2170,7 @@ FormatterConverter::createSimpleAction (
 }
 
 NclLinkCompoundAction *
-FormatterConverter::createCompoundAction (
+Converter::createCompoundAction (
     short op, GingaTime delay, vector<Action *> *ncmChildActions,
     CausalLink *ncmLink, NclCompositeExecutionObject *parentObj)
 {
@@ -2212,7 +2212,7 @@ FormatterConverter::createCompoundAction (
 }
 
 NclLinkTriggerCondition *
-FormatterConverter::createSimpleCondition (
+Converter::createSimpleCondition (
     SimpleCondition *simpleCondition, Bind *bind, Link *ncmLink,
     NclCompositeExecutionObject *parentObj)
 {
@@ -2235,7 +2235,7 @@ FormatterConverter::createSimpleCondition (
 }
 
 NclFormatterEvent *
-FormatterConverter::createEvent (
+Converter::createEvent (
     Bind *bind, Link *ncmLink, NclCompositeExecutionObject *parentObject)
 {
   NclNodeNesting *endPointNodeSequence;
@@ -2312,9 +2312,9 @@ FormatterConverter::createEvent (
 }
 
 GingaTime
-FormatterConverter::getDelayParameter (Link *ncmLink,
-                                       Parameter *connParam,
-                                       Bind *ncmBind)
+Converter::getDelayParameter (Link *ncmLink,
+                              Parameter *connParam,
+                              Bind *ncmBind)
 {
   Parameter *parameter;
   string param;
@@ -2349,7 +2349,7 @@ FormatterConverter::getDelayParameter (Link *ncmLink,
 }
 
 string
-FormatterConverter::getBindKey (Link *ncmLink, Bind *ncmBind)
+Converter::getBindKey (Link *ncmLink, Bind *ncmBind)
 {
   Role *role;
   string keyValue;
@@ -2410,9 +2410,9 @@ FormatterConverter::getBindKey (Link *ncmLink, Bind *ncmBind)
 }
 
 GingaTime
-FormatterConverter::compileDelay (Link *ncmLink,
-                                  const string &delayObject,
-                                  Bind *bind)
+Converter::compileDelay (Link *ncmLink,
+                         const string &delayObject,
+                         Bind *bind)
 {
   GingaTime delay;
   string::size_type pos;
