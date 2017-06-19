@@ -69,7 +69,6 @@ public:
 
   void linkEvaluationStarted (NclFormatterCausalLink *link) override;
   void linkEvaluationFinished (NclFormatterCausalLink *, bool) override;
-  bool setProperty (NclAttributionEvent *, const string &) override;
 
 private:
   static const short _mSleepTime = 800;

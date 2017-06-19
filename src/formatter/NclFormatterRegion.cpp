@@ -55,8 +55,6 @@ NclFormatterRegion::NclFormatterRegion (const string &objectId,
 
   // TODO: look for descriptor parameters overriding region attributes
   string value;
-  value = descriptor->getParameterValue ("transparency");
-  this->setTransparency (value);
 
   value = descriptor->getParameterValue ("background");
   if (value == "")
@@ -541,45 +539,6 @@ SDL_Color
 NclFormatterRegion::getBackgroundColor ()
 {
   return this->bgColor;
-}
-
-void
-NclFormatterRegion::setTransparency (const string &strTrans)
-{
-  double trans;
-  if (strTrans == "")
-    {
-      trans = 0.0;
-    }
-  else
-    {
-      trans = xstrtod (strTrans);
-    }
-
-  setTransparency (trans);
-}
-
-double
-NclFormatterRegion::getTransparency ()
-{
-  return this->transparency;
-}
-
-void
-NclFormatterRegion::setTransparency (double transparency)
-{
-  if (transparency < 0.0)
-    {
-      this->transparency = 0.0;
-    }
-  else if (transparency > 1.0)
-    {
-      this->transparency = 1.0;
-    }
-  else
-    {
-      this->transparency = transparency;
-    }
 }
 
 void

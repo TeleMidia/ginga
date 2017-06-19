@@ -520,26 +520,6 @@ ExecutionObjectContext::linkEvaluationFinished (
     }
 }
 
-bool
-ExecutionObjectContext::setProperty (NclAttributionEvent *event,
-                                          const string &value)
-{
-  if (event->getAnchor ()->getName () == "visible")
-    {
-      if (value == "true")
-        {
-          _visible = true;
-        }
-      else if (value == "false")
-        {
-          _visible = false;
-        }
-      return false;
-    }
-
-  return ExecutionObject::setProperty (event, value);
-}
-
 void
 ExecutionObjectContext::checkLinkConditions ()
 {

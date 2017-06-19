@@ -39,13 +39,12 @@ Player::Player (const string &mrl)
 
   _time = 0;
 
-  //media attr
   this->texture = NULL;         // media content
   this->borderWidth = 0;
   this->bgColor = {0, 0, 0, 0};
   this->borderColor = {0, 0, 0, 0};
   this->z = 0;
-  this->alpha = 255;
+  this->alpha = 255;            // opaque
 
   animator = new PlayerAnimator ();
 }
@@ -267,10 +266,7 @@ Player::setProperty (const string &name, const string &value)
     }
   else if (name == "transparency")
     {
-      if (xstrtouint8 (value, 10) <= 0)
-        this->alpha = 255;
-      else
-        this->alpha = (guint8)(255 - (((xstrtod (value)/100)*255)));
+      this->alpha = (guint8) CLAMP (255 - ginga_parse_pixel (value), 0, 255);
     }
 
   _properties[name] = value;
@@ -356,7 +352,6 @@ Player::redraw (SDL_Renderer *renderer)
 
   if (this->bgColor.a > 0)
     {
-      // background color
       SDLx_SetRenderDrawBlendMode (renderer, SDL_BLENDMODE_BLEND);
       SDLx_SetRenderDrawColor (renderer,
                                this->bgColor.r,
