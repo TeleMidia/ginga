@@ -29,9 +29,9 @@ class TextPlayer : public Player
 {
 public:
   explicit TextPlayer (const string &);
-  virtual ~TextPlayer (void) {};
+  virtual ~TextPlayer (void) {}
   void setProperty (const string &, const string &) override;
-  void redraw (SDL_Renderer *);
+  void redraw (SDL_Renderer *) override;
 
 private:
   SDL_Color _fontColor;

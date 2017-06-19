@@ -27,9 +27,9 @@ GINGA_PLAYER_BEGIN
 class ImagePlayer : public Player
 {
 public:
-  ImagePlayer (const string &uri) : Player (uri) {};
-  ~ImagePlayer (void) {};
-  void redraw (SDL_Renderer *);
+  ImagePlayer (const string &uri) : Player (uri) {}
+  ~ImagePlayer (void) {}
+  void redraw (SDL_Renderer *) override;
 };
 
 GINGA_PLAYER_END
