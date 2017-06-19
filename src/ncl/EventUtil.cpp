@@ -152,44 +152,44 @@ EventUtil::getTransitionCode (const string &transition)
   return EventStateTransition::UNKNOWN;
 }
 
-EventUtil::AttributeType
+AttributeType
 EventUtil::getAttributeTypeCode (const string &attTypeName)
 {
   if (attTypeName == "occurrences")
     {
-      return EventUtil::ATT_OCCURRENCES;
+      return AttributeType::OCCURRENCES;
     }
   else if (attTypeName == "nodeProperty")
     {
-      return EventUtil::ATT_NODE_PROPERTY;
+      return AttributeType::NODE_PROPERTY;
     }
   else if (attTypeName == "repetitions")
     {
-      return EventUtil::ATT_REPETITIONS;
+      return AttributeType::REPETITIONS;
     }
   else if (attTypeName == "state")
     {
-      return EventUtil::ATT_STATE;
+      return AttributeType::STATE;
     }
 
-  return EventUtil::ATT_UNKNOWN;
+  return AttributeType::UNKNOWN;
 }
 
 string
-EventUtil::getAttributeTypeName (EventUtil::AttributeType type)
+EventUtil::getAttributeTypeName (AttributeType type)
 {
   switch (type)
     {
-    case EventUtil::ATT_OCCURRENCES:
+    case AttributeType::OCCURRENCES:
       return "occurrences";
 
-    case EventUtil::ATT_NODE_PROPERTY:
+    case AttributeType::NODE_PROPERTY:
       return "nodeProperty";
 
-    case EventUtil::ATT_REPETITIONS:
+    case AttributeType::REPETITIONS:
       return "repetitions";
 
-    case EventUtil::ATT_STATE:
+    case AttributeType::STATE:
       return "state";
 
     default:
