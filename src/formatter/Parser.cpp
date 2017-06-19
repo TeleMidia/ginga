@@ -3298,25 +3298,18 @@ NclParser::createDescriptor (DOMElement *elt)
     }
 
   // explicitDur
-  if (dom_element_try_get_attr(attValue, elt, "explicitDur"))
+  if (dom_element_try_get_attr (attValue, elt, "explicitDur"))
     {
       descriptor->setExplicitDuration (ginga_parse_time (attValue));
     }
 
-  if (dom_element_try_get_attr(attValue, elt,"freeze"))
+  if (dom_element_try_get_attr (attValue, elt, "freeze"))
     {
-      if (attValue == "true")
-        {
-          descriptor->setFreeze (true);
-        }
-      else
-        {
-          descriptor->setFreeze (false);
-        }
+      ERROR_NOT_IMPLEMENTED ("freeze attribute is not supported");
     }
 
   // player
-  if (dom_element_try_get_attr(attValue, elt, "player"))
+  if (dom_element_try_get_attr (attValue, elt, "player"))
     {
       descriptor->setPlayerName (attValue);
     }
@@ -3325,7 +3318,8 @@ NclParser::createDescriptor (DOMElement *elt)
   keyNavigation = new KeyNavigation ();
   descriptor->setKeyNavigation (keyNavigation);
 
-  // a lambda to check the existence of an attribute and set the keyNavigation
+  // a lambda to check the existence of an attribute and set the
+  // keyNavigation
   typedef void (KeyNavigation::*memberf_pointer)(const string &);
   map<string, memberf_pointer> to_call = {
     {"focusIndex", &KeyNavigation::setFocusIndex},
@@ -3337,9 +3331,7 @@ NclParser::createDescriptor (DOMElement *elt)
 
   for(auto a: to_call)
     if (dom_element_try_get_attr(attValue, elt, a.first))
-        {
-          (keyNavigation->* to_call[a.first]) (attValue);
-        }
+      (keyNavigation->*to_call[a.first]) (attValue);
 
   focusDecoration = new FocusDecoration ();
   descriptor->setFocusDecoration (focusDecoration);
@@ -3347,7 +3339,6 @@ NclParser::createDescriptor (DOMElement *elt)
     {
       if (!xpathisuri (src) && !xpathisabs (src))
         src = xpathbuildabs (this->getDirName (), src);
-
       focusDecoration->setFocusSrc (src);
     }
 
