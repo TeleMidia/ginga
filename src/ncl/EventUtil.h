@@ -22,18 +22,18 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
+ // Event types.
+enum class EventType {
+  UNKNOWN = -1,
+  SELECTION = 0,
+  PRESENTATION,
+  ATTRIBUTION,
+  COMPOSITION
+};
+
 class EventUtil
 {
 public:
-  // Event types.
-  enum EventType {
-    EVT_UNKNOWN = -1,
-    EVT_SELECTION = 0,
-    EVT_PRESENTATION,
-    EVT_ATTRIBUTION,
-    EVT_COMPOSITION
-  };
-
   // Event state transitions.
   enum EventStateTransition {
     TR_UNKNOWN = -1,
@@ -61,11 +61,11 @@ public:
     ATT_NODE_PROPERTY
   };
 
-  static EventUtil::EventType
+  static EventType
     getTypeCode (const string &typeName);
 
   static string
-    getTypeName (EventUtil::EventType type);
+    getTypeName (EventType type);
 
   static EventUtil::EventState
     getStateCode (const string &stateName);

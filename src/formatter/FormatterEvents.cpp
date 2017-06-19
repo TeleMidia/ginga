@@ -34,7 +34,7 @@ NclFormatterEvent::NclFormatterEvent (const string &id,
   occurrences = 0;
   executionObject = execObject;
   deleting = false;
-  eventType = EventUtil::EVT_UNKNOWN;
+  eventType = EventType::UNKNOWN;
 
   if (!init)
     {
@@ -159,12 +159,12 @@ NclFormatterEvent::hasNcmId (NclFormatterEvent *event, const string &anchorId)
 }
 
 void
-NclFormatterEvent::setEventType (EventUtil::EventType evtType)
+NclFormatterEvent::setEventType (EventType evtType)
 {
   this->eventType = evtType;
 }
 
-EventUtil::EventType
+EventType
 NclFormatterEvent::getEventType ()
 {
   return eventType;
@@ -724,7 +724,7 @@ NclAttributionEvent::getImplicitRefAssessmentEvent (const string &roleId)
 NclSwitchEvent::NclSwitchEvent (const string &id,
                                 ExecutionObject *executionObjectSwitch,
                                 InterfacePoint *interfacePoint,
-                                EventUtil::EventType eventType, const string &key)
+                                EventType eventType, const string &key)
     : NclFormatterEvent (id, executionObjectSwitch)
 {
   this->interfacePoint = interfacePoint;

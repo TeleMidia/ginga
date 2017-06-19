@@ -49,32 +49,32 @@ SimpleAction::setLabel (const string &id)
   if (xstrcaseeq (_label, "start"))
     {
       _actionType = ACT_START;
-      _eventType = EventUtil::EVT_PRESENTATION;
+      _eventType = EventType::PRESENTATION;
     }
   else if (xstrcaseeq (_label, "stop"))
     {
       _actionType = ACT_STOP;
-      _eventType = EventUtil::EVT_PRESENTATION;
+      _eventType = EventType::PRESENTATION;
     }
   else if (xstrcaseeq (_label, "set"))
     {
       _actionType = ACT_START;
-      _eventType = EventUtil::EVT_ATTRIBUTION;
+      _eventType = EventType::ATTRIBUTION;
     }
   else if (xstrcaseeq (_label, "abort"))
     {
       _actionType = ACT_ABORT;
-      _eventType = EventUtil::EVT_PRESENTATION;
+      _eventType = EventType::PRESENTATION;
     }
   else if (xstrcaseeq (_label, "pause"))
     {
       _actionType = ACT_PAUSE;
-      _eventType = EventUtil::EVT_PRESENTATION;
+      _eventType = EventType::PRESENTATION;
     }
   else if (xstrcaseeq (_label, "resume"))
     {
       _actionType = ACT_RESUME;
-      _eventType = EventUtil::EVT_PRESENTATION;
+      _eventType = EventType::PRESENTATION;
     }
 }
 

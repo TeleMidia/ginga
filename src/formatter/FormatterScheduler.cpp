@@ -492,7 +492,7 @@ FormatterScheduler::runActionOverComposition (
   NclFormatterEvent *childEvent;
   int i, size = 0;
   vector<NclFormatterEvent *> *events;
-  short eventType = -1;
+  EventType eventType = EventType::UNKNOWN;
 
   clog << "FormatterScheduler::runActionOverComposition ";
   clog << "action '" << action->getType () << "' over COMPOSITION '";
@@ -505,19 +505,19 @@ FormatterScheduler::runActionOverComposition (
       if (event != NULL)
         {
           eventType = event->getEventType ();
-          if (eventType < 0)
+          if (eventType == EventType::UNKNOWN)
             {
               if (event->instanceOf ("NclPresentationEvent"))
                 {
-                  eventType = EventUtil::EVT_PRESENTATION;
+                  eventType = EventType::PRESENTATION;
                 }
               else if (event->instanceOf ("NclAttributionEvent"))
                 {
-                  eventType = EventUtil::EVT_ATTRIBUTION;
+                  eventType = EventType::ATTRIBUTION;
                 }
               else if (event->instanceOf ("NclSwitchEvent"))
                 {
-                  eventType = EventUtil::EVT_PRESENTATION;
+                  eventType = EventType::PRESENTATION;
                 }
               else
                 {
@@ -530,7 +530,7 @@ FormatterScheduler::runActionOverComposition (
             }
         }
 
-      if (eventType == EventUtil::EVT_ATTRIBUTION)
+      if (eventType == EventType::ATTRIBUTION)
         {
           event = action->getEvent ();
           if (!event->instanceOf ("NclAttributionEvent"))
@@ -596,7 +596,7 @@ FormatterScheduler::runActionOverComposition (
               ++j;
             }
         }
-      else if (eventType == EventUtil::EVT_PRESENTATION)
+      else if (eventType == EventType::PRESENTATION)
         {
           compositeObject->suspendLinkEvaluation (false);
 
@@ -640,7 +640,7 @@ FormatterScheduler::runActionOverComposition (
                                         ->getEvent (
                                             childObject,
                                             port->getEndInterfacePoint (),
-                                            EventUtil::EVT_PRESENTATION,
+                                            EventType::PRESENTATION,
                                             ""));
 
                       if (childEvent != NULL)
@@ -702,7 +702,7 @@ FormatterScheduler::runActionOverComposition (
           eventType = event->getEventType ();
         }
 
-      if ((eventType == EventUtil::EVT_PRESENTATION)
+      if ((eventType == EventType::PRESENTATION)
           && (action->getType () == ACT_STOP
               || action->getType () == ACT_ABORT))
         {

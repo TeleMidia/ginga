@@ -207,7 +207,7 @@ Converter::getSettingNodeObjects ()
 NclFormatterEvent *
 Converter::getEvent (ExecutionObject *exeObj,
                      InterfacePoint *interfacePoint,
-                     EventUtil::EventType ncmEventType,
+                     EventType ncmEventType,
                      const string &key)
 {
   string id;
@@ -239,7 +239,7 @@ Converter::getEvent (ExecutionObject *exeObj,
       event = new NclSwitchEvent (
             id, switchObj, interfacePoint, ncmEventType, key);
     }
-  else if (ncmEventType == EventUtil::EVT_PRESENTATION)
+  else if (ncmEventType == EventType::PRESENTATION)
     {
       event = new NclPresentationEvent (
             id, exeObj, (ContentAnchor *)interfacePoint);
@@ -247,7 +247,7 @@ Converter::getEvent (ExecutionObject *exeObj,
   else if (cObj)
     {
       // TODO: eventos internos da composicao estao sendo tratados nos elos.
-      if (ncmEventType == EventUtil::EVT_ATTRIBUTION)
+      if (ncmEventType == EventType::ATTRIBUTION)
         {
           auto propAnchor = dynamic_cast<PropertyAnchor *> (interfacePoint);
           if (propAnchor)
@@ -271,7 +271,7 @@ Converter::getEvent (ExecutionObject *exeObj,
     {
       switch (ncmEventType)
         {
-        case EventUtil::EVT_ATTRIBUTION:
+        case EventType::ATTRIBUTION:
           {
             auto propAnchor = dynamic_cast<PropertyAnchor *> (interfacePoint);
             if (propAnchor)
@@ -302,7 +302,7 @@ Converter::getEvent (ExecutionObject *exeObj,
           }
           break;
 
-        case EventUtil::EVT_SELECTION:
+        case EventType::SELECTION:
           {
             event = new NclSelectionEvent (
                   id, exeObj, (ContentAnchor *)interfacePoint);
@@ -616,7 +616,7 @@ Converter::createExecutionObject (
       string s;
       exeObj = new ExecutionObjectSwitch (id, node, _handling,
                                           _actionListener);
-      xstrassign (s, "%d", EventUtil::EVT_PRESENTATION);
+      xstrassign (s, "%d", EventType::PRESENTATION);
       compositeEvt = new NclPresentationEvent (
             nodeEntity->getLambdaAnchor ()->getId () + "_" + s,
             exeObj,
@@ -634,7 +634,7 @@ Converter::createExecutionObject (
       exeObj = new ExecutionObjectContext (
             id, node, descriptor, _handling, _actionListener);
 
-      xstrassign (s, "%d", EventUtil::EVT_PRESENTATION);
+      xstrassign (s, "%d", EventType::PRESENTATION);
       compositeEvt = new NclPresentationEvent (
             nodeEntity->getLambdaAnchor ()->getId () + "_" + s,
             exeObj,
@@ -1234,7 +1234,7 @@ Converter::insertNode (NclNodeNesting *perspective,
 {
   ExecutionObject *executionObject;
   NclFormatterEvent *event;
-  EventUtil::EventType eventType;
+  EventType eventType;
 
   event = nullptr;
   executionObject = getExecutionObjectFromPerspective (perspective,
@@ -1244,11 +1244,11 @@ Converter::insertNode (NclNodeNesting *perspective,
     {
       if (!(dynamic_cast<PropertyAnchor *>(interfacePoint)))
         {
-          eventType = EventUtil::EVT_PRESENTATION;
+          eventType = EventType::PRESENTATION;
         }
       else
         {
-          eventType = EventUtil::EVT_ATTRIBUTION;
+          eventType = EventType::ATTRIBUTION;
         }
 
       // get the event corresponding to the node anchor
@@ -1579,7 +1579,7 @@ Converter::setImplicitRefAssessment (const string &roleId,
                   NclFormatterEvent *refEvent
                       = this->getEvent (refObject,
                                         propAnchor,
-                                        EventUtil::EVT_ATTRIBUTION,
+                                        EventType::ATTRIBUTION,
                                         "");
 
                   attributionEvt->setImplicitRefAssessmentEvent (roleId,
@@ -1960,7 +1960,7 @@ Converter::createSimpleAction (
 {
   NclFormatterEvent *event;
   SimpleActionType actionType;
-  EventUtil::EventType eventType = EventUtil::EVT_UNKNOWN;
+  EventType eventType = EventType::UNKNOWN;
   NclLinkSimpleAction *action;
   Parameter *connParam;
   Parameter *param;
@@ -1991,7 +1991,7 @@ Converter::createSimpleAction (
     {
     case ACT_START:
     case ACT_SET:
-      if (eventType == EventUtil::EVT_PRESENTATION)
+      if (eventType == EventType::PRESENTATION)
         {
           action = new NclLinkRepeatAction (event, actionType);
 
@@ -2033,7 +2033,7 @@ Converter::createSimpleAction (
           delay = compileDelay (ncmLink, paramValue, bind);
           ((NclLinkRepeatAction *) action)->setRepetitionInterval (delay);
         }
-      else if (eventType == EventUtil::EVT_ATTRIBUTION)
+      else if (eventType == EventType::ATTRIBUTION)
         {
           paramValue = sae->getValue ();
           if (paramValue != "" && paramValue[0] == '$')

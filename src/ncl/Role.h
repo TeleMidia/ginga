@@ -31,9 +31,9 @@ public:
 
   static const int UNBOUNDED = 2 ^ 30;
 
-  virtual EventUtil::EventType getEventType ();
+  virtual EventType getEventType ();
   virtual string getLabel ();
-  virtual void setEventType (EventUtil::EventType type);
+  virtual void setEventType (EventType type);
   virtual void setLabel (const string &id);
 
   virtual int getMinCon ();
@@ -49,7 +49,7 @@ public:
 
 protected:
   string _label;
-  EventUtil::EventType _eventType;
+  EventType _eventType;
   int _maxCon, _minCon;
 };
 

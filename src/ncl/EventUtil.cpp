@@ -20,44 +20,44 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_NCL_BEGIN
 
-EventUtil::EventType
+EventType
 EventUtil::getTypeCode (const string &typeName)
 {
   if (typeName == "presentation")
     {
-      return EventUtil::EVT_PRESENTATION;
+      return EventType::PRESENTATION;
     }
   else if (typeName == "selection")
     {
-      return EventUtil::EVT_SELECTION;
+      return EventType::SELECTION;
     }
   else if (typeName == "attribution")
     {
-      return EventUtil::EVT_ATTRIBUTION;
+      return EventType::ATTRIBUTION;
     }
   else if (typeName == "composition")
     {
-      return EventUtil::EVT_COMPOSITION;
+      return EventType::COMPOSITION;
     }
 
-  return EventUtil::EVT_PRESENTATION;
+  return EventType::PRESENTATION;
 }
 
 string
-EventUtil::getTypeName (EventUtil::EventType type)
+EventUtil::getTypeName (EventType type)
 {
   switch (type)
     {
-    case EventUtil::EVT_PRESENTATION:
+    case EventType::PRESENTATION:
       return "presentation";
 
-    case EventUtil::EVT_SELECTION:
+    case EventType::SELECTION:
       return "selection";
 
-    case EventUtil::EVT_ATTRIBUTION:
+    case EventType::ATTRIBUTION:
       return "attribution";
 
-    case EventUtil::EVT_COMPOSITION:
+    case EventType::COMPOSITION:
       return "composition";
 
     default:
