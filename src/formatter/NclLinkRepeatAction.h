@@ -27,18 +27,20 @@ GINGA_FORMATTER_BEGIN
 
 class NclLinkRepeatAction : public NclLinkSimpleAction
 {
-private:
-  int repetitions;
-  GingaTime repetitionInterval;
-  virtual void run ();
-
 public:
   NclLinkRepeatAction (NclFormatterEvent *, SimpleActionType);
   virtual ~NclLinkRepeatAction ();
+
+  virtual void run () override;
+
   int getRepetitions ();
   GingaTime getRepetitionInterval ();
   void setRepetitions (int repetitions);
   void setRepetitionInterval (GingaTime delay);
+
+private:
+  int repetitions;
+  GingaTime repetitionInterval;
 };
 
 GINGA_FORMATTER_END

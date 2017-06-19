@@ -24,39 +24,28 @@ GINGA_FORMATTER_BEGIN
 
 NclLinkCompoundAction::NclLinkCompoundAction (short op) : NclLinkAction (0.)
 {
-  this->op = op;
-  hasStart = false;
-  runing = false;
-  listener = NULL;
+  this->_op = op;
+  _hasStart = false;
+  _running = false;
+  _listener = NULL;
   typeSet.insert ("NclLinkCompoundAction");
 }
 
 NclLinkCompoundAction::~NclLinkCompoundAction ()
 {
-  vector<NclLinkAction *>::iterator i;
-  NclLinkAction *action;
-
-  // clog << "NclLinkCompoundAction::~NclLinkCompoundAction" << endl;
-  i = actions.begin ();
-  while (i != actions.end ())
+  for (NclLinkAction *action : _actions)
     {
-      action = (NclLinkAction *)(*i);
-
-      actions.erase (i);
-      i = actions.begin ();
-
       action->removeActionProgressionListener (this);
       delete action;
-      action = NULL;
     }
 
-  actions.clear ();
+  _actions.clear ();
 }
 
 short
 NclLinkCompoundAction::getOperator ()
 {
-  return op;
+  return _op;
 }
 
 void
@@ -64,7 +53,7 @@ NclLinkCompoundAction::addAction (NclLinkAction *action)
 {
   vector<NclLinkAction *>::iterator i;
 
-  if (runing)
+  if (_running)
     {
       clog << "NclLinkCompoundAction::addAction ";
       clog << "Warning! Can't add action: status = running" << endl;
@@ -72,8 +61,8 @@ NclLinkCompoundAction::addAction (NclLinkAction *action)
     }
 
   action->addActionProgressionListener (this);
-  i = actions.begin ();
-  while (i != actions.end ())
+  i = _actions.begin ();
+  while (i != _actions.end ())
     {
       if (*i == action)
         {
@@ -84,7 +73,7 @@ NclLinkCompoundAction::addAction (NclLinkAction *action)
         }
       ++i;
     }
-  actions.push_back (action);
+  _actions.push_back (action);
 }
 
 vector<NclLinkAction *> *
@@ -92,17 +81,17 @@ NclLinkCompoundAction::getActions ()
 {
   vector<NclLinkAction *> *acts;
 
-  if (runing)
+  if (_running)
     {
       return NULL;
     }
 
-  if (actions.empty ())
+  if (_actions.empty ())
     {
       return NULL;
     }
 
-  acts = new vector<NclLinkAction *> (actions);
+  acts = new vector<NclLinkAction *> (_actions);
   return acts;
 }
 
@@ -113,13 +102,13 @@ NclLinkCompoundAction::getSimpleActions (
   vector<NclLinkAction *>::iterator i;
   NclLinkAction *currentAction;
 
-  if (actions.empty ())
+  if (_actions.empty ())
     {
       return;
     }
 
-  i = actions.begin ();
-  while (i != actions.end ())
+  i = _actions.begin ();
+  while (i != _actions.end ())
     {
       currentAction = (*i);
 
@@ -142,7 +131,7 @@ void
 NclLinkCompoundAction::setCompoundActionListener (
     INclLinkActionListener *listener)
 {
-  this->listener = listener;
+  this->_listener = listener;
 }
 
 vector<NclFormatterEvent *> *
@@ -155,17 +144,17 @@ NclLinkCompoundAction::getEvents ()
   vector<NclFormatterEvent *> *actionEvents;
   vector<NclFormatterEvent *>::iterator j;
 
-  if (runing)
+  if (_running)
     {
       return NULL;
     }
 
-  if (actions.empty ())
+  if (_actions.empty ())
     {
       return NULL;
     }
 
-  acts = new vector<NclLinkAction *> (actions);
+  acts = new vector<NclLinkAction *> (_actions);
   events = new vector<NclFormatterEvent *>;
 
   for (i = acts->begin (); i != acts->end (); ++i)
@@ -197,9 +186,9 @@ vector<NclLinkAction *>
 NclLinkCompoundAction::getImplicitRefRoleActions ()
 {
   vector<NclLinkAction *> refActs;
-  vector<NclLinkAction *> acts (actions);
+  vector<NclLinkAction *> acts (_actions);
 
-  if (runing)
+  if (_running)
     {
       return refActs;
     }
@@ -223,36 +212,35 @@ NclLinkCompoundAction::run ()
 {
   int i, size;
   NclLinkAction *action = NULL;
-  vector<NclLinkSimpleAction *> simpleActions;
 
-  runing = true;
+  _running = true;
 
   NclLinkAction::run ();
 
-  if (actions.empty ())
+  if (_actions.empty ())
     {
       clog << "NclLinkCompoundAction::run there is no action to run"
            << endl;
       return;
     }
-  size = (int) actions.size ();
+  size = (int) _actions.size ();
   clog << "NclLinkCompoundAction::run '" << size << "' actions" << endl;
 
-  pendingActions = size;
-  hasStart = false;
+  _pendingActions = size;
+  _hasStart = false;
 
-  if (op == CompoundAction::OP_PAR)
+  if (_op == CompoundAction::OP_PAR)
     {
       for (i = 0; i < size; i++)
         {
           try
             {
-              if (actions.empty ())
+              if (_actions.empty ())
                 {
                   return;
                 }
 
-              action = (NclLinkAction *)(actions.at (i));
+              action = (NclLinkAction *)(_actions.at (i));
               action->setSatisfiedCondition (satisfiedCondition);
               action->run ();
             }
@@ -271,11 +259,11 @@ NclLinkCompoundAction::run ()
         {
           try
             {
-              if (actions.empty ())
+              if (_actions.empty ())
                 {
                   return;
                 }
-              action = (NclLinkAction *)(actions.at (i));
+              action = (NclLinkAction *)(_actions.at (i));
               action->run (satisfiedCondition);
             }
           catch (std::out_of_range &e)
@@ -292,11 +280,11 @@ NclLinkCompoundAction::run ()
 void
 NclLinkCompoundAction::actionProcessed (bool start)
 {
-  pendingActions--;
-  hasStart = (hasStart || start);
-  if (pendingActions == 0)
+  _pendingActions--;
+  _hasStart = (_hasStart || start);
+  if (_pendingActions == 0)
     {
-      notifyProgressionListeners (hasStart);
+      notifyProgressionListeners (_hasStart);
     }
 }
 
