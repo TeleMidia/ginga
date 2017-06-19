@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "PlayerAdapter.h"
 #include "Converter.h"
-#include "FormatterFocusManager.h"
+#include "FocusManager.h"
 #include "NclLinkAssignmentAction.h"
 #include "RuleAdapter.h"
 
@@ -37,7 +37,7 @@ class FormatterScheduler : public INclLinkActionListener,
 private:
   map<string, PlayerAdapter *> _objectPlayers;
   Converter *compiler;
-  FormatterFocusManager *focusManager;
+  FocusManager *focusManager;
   Settings *settings;
   RuleAdapter *ruleAdapter;
 
@@ -55,7 +55,7 @@ public:
   void scheduleAction (NclLinkSimpleAction *) override;
 
   bool setKeyHandler (bool isHandler);
-  FormatterFocusManager *getFocusManager ();
+  FocusManager *getFocusManager ();
 
   void startEvent (NclFormatterEvent *event);
   void stopEvent (NclFormatterEvent *event);

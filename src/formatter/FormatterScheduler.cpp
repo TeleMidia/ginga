@@ -36,7 +36,7 @@ FormatterScheduler::FormatterScheduler ()
   this->ruleAdapter = new RuleAdapter (settings);
   this->compiler = new Converter (this->ruleAdapter);
   this->compiler->setLinkActionListener (this);
-  this->focusManager = new FormatterFocusManager
+  this->focusManager = new FocusManager
     (this, this->settings, this, this->compiler);
   this->focusManager->setKeyHandler (true);
 }
@@ -82,7 +82,7 @@ FormatterScheduler::removeAction (NclLinkSimpleAction *action)
     actions.erase (i);
 }
 
-FormatterFocusManager *
+FocusManager *
 FormatterScheduler::getFocusManager ()
 {
   return focusManager;

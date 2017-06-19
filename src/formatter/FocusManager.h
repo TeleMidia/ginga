@@ -36,15 +36,15 @@ GINGA_FORMATTER_BEGIN
 
 class Converter;
 
-class FormatterFocusManager : public IEventListener
+class FocusManager : public IEventListener
 {
 public:
-  FormatterFocusManager (FormatterScheduler *,
-                         Settings *,
-                         INclLinkActionListener *,
-                         Converter *);
+  FocusManager (FormatterScheduler *,
+                Settings *,
+                INclLinkActionListener *,
+                Converter *);
 
-  virtual ~FormatterFocusManager ();
+  virtual ~FocusManager ();
 
   bool isKeyHandler ();
   bool setKeyHandler (bool _isHandler);
@@ -75,7 +75,7 @@ private:
   SDL_Color _defaultSelBorderColor;
 
   FormatterScheduler *_scheduler;
-  FormatterFocusManager *_parentManager;
+  FocusManager *_parentManager;
   INclLinkActionListener *_settingActions;
 
   int _width;
@@ -84,10 +84,10 @@ private:
   Converter *_converter;
 
   static bool _init;
-  static set<FormatterFocusManager *> _instances;
+  static set<FocusManager *> _instances;
 
   static void checkInit ();
-  static bool hasInstance (FormatterFocusManager *instance, bool remove);
+  static bool hasInstance (FocusManager *instance, bool remove);
 
   void resetKeyMaster ();
 
