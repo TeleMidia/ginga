@@ -28,29 +28,23 @@ GINGA_PLAYER_BEGIN
 class TextPlayer : public Player
 {
 public:
-  explicit TextPlayer (const string &mrl);
-  virtual ~TextPlayer (void);
-
-  bool play (void) override;
+  explicit TextPlayer (const string &);
+  virtual ~TextPlayer (void) {};
   void setProperty (const string &, const string &) override;
-
-  void updateTexture();
+  void redraw (SDL_Renderer *);
 
 private:
-  GINGA_MUTEX_DEFN ();
-
   SDL_Color _fontColor;
-  string    _fontFamily;
-  string    _fontStyle;
-  string    _fontSize;
-  string    _fontVariant;
-  string    _fontWeight;
-  string    _textAlign;
-  string    _verticalAlign;
+  string _fontFamily;
+  string _fontSize;
+  string _fontStyle;
+  string _fontVariant;
+  string _fontWeight;
+  string _textAlign;
+  string _verticalAlign;
 
-  static bool displayJobCallbackWrapper (DisplayJob *,
-                                         SDL_Renderer *, void *);
-  bool displayJobCallback (DisplayJob *, SDL_Renderer *);
+  bool dirty = true;            // true if texture should be reloaded
+  void reload (SDL_Renderer *);
 };
 
 GINGA_PLAYER_END
