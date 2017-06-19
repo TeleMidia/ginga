@@ -64,8 +64,9 @@ public:
 
   void startDocument (const string &);
 
-  void eventStateChanged (NclFormatterEvent *someEvent, short transition,
-                          short previousState) override;
+  void eventStateChanged (NclFormatterEvent *someEvent,
+                          EventUtil::EventStateTransition transition,
+                          EventUtil::EventState previousState) override;
 
   PlayerAdapter *getObjectPlayer (ExecutionObject *execObj);
   bool removePlayer (ExecutionObject *object);

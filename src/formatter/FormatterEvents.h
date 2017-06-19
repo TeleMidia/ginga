@@ -41,27 +41,28 @@ public:
 
   static bool hasInstance (NclFormatterEvent *event, bool remove);
 
-  bool instanceOf (const string &s);
+  bool instanceOf (const string &);
 
   static bool hasNcmId (NclFormatterEvent *event, const string &anchorId);
 
-  void setEventType (short eventType);
-  virtual short getEventType ();
-  void setId (const string &id);
-  void addEventListener (INclEventListener *listener);
-  bool containsEventListener (INclEventListener *listener);
-  void removeEventListener (INclEventListener *listener);
+  void setEventType (EventUtil::EventType);
+  EventUtil::EventType getEventType ();
+
+  void addEventListener (INclEventListener *);
+  void removeEventListener (INclEventListener *);
 
   bool abort ();
   virtual bool start ();
   virtual bool stop ();
   bool pause ();
   bool resume ();
-  void setCurrentState (short newState);
+  void setCurrentState (EventUtil::EventState newState);
 
-  short getCurrentState ();
-  short getPreviousState ();
-  static short getTransistion (short previousState, short newState);
+  EventUtil::EventState getCurrentState ();
+  EventUtil::EventState getPreviousState ();
+  static EventUtil::EventStateTransition
+    getTransistion (EventUtil::EventState previousState,
+                    EventUtil::EventState newState);
 
   ExecutionObject *getExecutionObject ();
   void setExecutionObject (ExecutionObject *object);
@@ -71,24 +72,27 @@ public:
 
 protected:
   string id;
-  short currentState;
-  short previousState;
+  EventUtil::EventState _currentState;
+  EventUtil::EventState _previousState;
   int occurrences;
   ExecutionObject *executionObject;
   set<INclEventListener *> listeners;
   set<string> typeSet;
   bool deleting;
-  short eventType;
+  EventUtil::EventType eventType;
 
   static set<NclFormatterEvent *> instances;
   static bool init;
 
   static bool removeInstance (NclFormatterEvent *event);
 
-  short getNewState (short transition);
-  short getTransition (short newState);
+  EventUtil::EventState
+    getNewState (EventUtil::EventStateTransition transition);
 
-  bool changeState (short newState, short transition);
+  short getTransition (EventUtil::EventState newState);
+
+  bool changeState (EventUtil::EventState newState,
+                    EventUtil::EventStateTransition transition);
 
 private:
   virtual void destroyListeners ();
@@ -120,12 +124,6 @@ protected:
 
 class NclPresentationEvent : public NclAnchorEvent
 {
-private:
-  GingaTime begin;
-  GingaTime end;
-  int numPresentations;
-  GingaTime repetitionInterval;
-
 public:
   NclPresentationEvent (const string &, ExecutionObject *, ContentAnchor *);
   virtual ~NclPresentationEvent ();
@@ -140,6 +138,12 @@ public:
   GingaTime getBegin ();
   GingaTime getEnd ();
   void incrementOccurrences ();
+
+private:
+  GingaTime begin;
+  GingaTime end;
+  int numPresentations;
+  GingaTime repetitionInterval;
 };
 
 class NclSelectionEvent : public NclAnchorEvent
@@ -191,18 +195,19 @@ private:
   NclFormatterEvent *mappedEvent;
 
 public:
-  NclSwitchEvent (const string &, ExecutionObject *, InterfacePoint *, int,
-                  const string &);
+  NclSwitchEvent (const string &, ExecutionObject *, InterfacePoint *,
+                  EventUtil::EventType, const string &);
 
   virtual ~NclSwitchEvent ();
 
   InterfacePoint *getInterfacePoint ();
-  short getEventType () override;
   string getKey ();
   void setMappedEvent (NclFormatterEvent *event);
   NclFormatterEvent *getMappedEvent ();
-  virtual void eventStateChanged (NclFormatterEvent *event, short transition,
-                                  short previousState) override;
+  virtual void eventStateChanged (
+      NclFormatterEvent *event,
+      EventUtil::EventStateTransition transition,
+      EventUtil::EventState _previousState) override;
 };
 
 

@@ -63,8 +63,9 @@ public:
   void setLinkCompiled (NclFormatterLink *formatterLink);
   void setParentsAsListeners ();
   void unsetParentsAsListeners () override;
-  void eventStateChanged (NclFormatterEvent *event, short transition,
-                          short previousState) override;
+  void eventStateChanged (NclFormatterEvent *event,
+                          EventUtil::EventStateTransition transition,
+                          EventUtil::EventState previousState) override;
 
   void linkEvaluationStarted (NclFormatterCausalLink *link) override;
   void linkEvaluationFinished (NclFormatterCausalLink *, bool) override;
