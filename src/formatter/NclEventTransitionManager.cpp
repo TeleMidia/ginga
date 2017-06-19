@@ -165,7 +165,7 @@ NclEventTransitionManager::prepare (bool wholeContent, GingaTime startTime)
           if (transition->instanceOf ("NclBeginEventTransition"))
             {
               transition->getEvent ()->setCurrentState (
-                  EventUtil::ST_OCCURRING);
+                  EventState::OCCURRING);
             }
           else
             {
@@ -174,7 +174,7 @@ NclEventTransitionManager::prepare (bool wholeContent, GingaTime startTime)
               clog << "' to SLEEP" << endl;
 
               transition->getEvent ()->setCurrentState (
-                  EventUtil::ST_SLEEPING);
+                  EventState::SLEEPING);
 
               transition->getEvent ()->incrementOccurrences ();
             }
@@ -237,7 +237,7 @@ NclEventTransitionManager::stop (GingaTime endTime, bool applicationType)
           fev = transition->getEvent ();
           if (!GINGA_TIME_IS_VALID (endTime) || transition->getTime () > endTime)
             {
-              fev->setCurrentState (EventUtil::ST_SLEEPING);
+              fev->setCurrentState (EventState::SLEEPING);
             }
           else if (transition->instanceOf ("NclEndEventTransition"))
             {
@@ -269,7 +269,7 @@ NclEventTransitionManager::abort (GingaTime endTime, bool applicationType)
           fev = transition->getEvent ();
           if (transition->getTime () > endTime)
             {
-              fev->setCurrentState (EventUtil::ST_SLEEPING);
+              fev->setCurrentState (EventState::SLEEPING);
             }
           else if (transition->instanceOf ("NclEndEventTransition"))
             {
@@ -361,7 +361,7 @@ NclEventTransitionManager::updateTransitionTable (
             {
               clog << "NclEventTransitionManager::updateTransitionTable ";
               clog << "starting event '" << ev->getId () << "' ";
-              clog << "current state '" << ev->getCurrentState ();
+              clog << "current state '" << (int) ev->getCurrentState ();
               clog << "'" << endl;
 
               ev->start ();
@@ -375,7 +375,7 @@ NclEventTransitionManager::updateTransitionTable (
 
               clog << "NclEventTransitionManager::updateTransitionTable ";
               clog << "stopping event '" << ev->getId () << "' ";
-              clog << "current state '" << ev->getCurrentState ();
+              clog << "current state '" << (int) ev->getCurrentState ();
               clog << "'" << endl;
 
               ev->stop ();

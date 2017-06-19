@@ -66,7 +66,7 @@ void
 NclLinkTransitionTriggerCondition::eventStateChanged (
     arg_unused (NclFormatterEvent *event),
     EventStateTransition transition,
-    arg_unused (EventUtil::EventState previousState))
+    arg_unused (EventState previousState))
 {
   if (this->transition == transition)
     {

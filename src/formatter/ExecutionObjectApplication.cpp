@@ -52,7 +52,7 @@ ExecutionObjectApplication::isSleeping ()
 {
   for (auto i: _preparedEvents)
     {
-      if (i.second->getCurrentState () != EventUtil::ST_SLEEPING)
+      if (i.second->getCurrentState () != EventState::SLEEPING)
         {
           return false;
         }
@@ -67,12 +67,12 @@ ExecutionObjectApplication::isPaused ()
 
   if (_currentEvent != nullptr)
     {
-      if (_currentEvent->getCurrentState () == EventUtil::ST_OCCURRING)
+      if (_currentEvent->getCurrentState () == EventState::OCCURRING)
         {
           return false;
         }
 
-      if (_currentEvent->getCurrentState () == EventUtil::ST_PAUSED)
+      if (_currentEvent->getCurrentState () == EventState::PAUSED)
         {
           hasPaused = true;
         }
@@ -81,12 +81,12 @@ ExecutionObjectApplication::isPaused ()
   for (auto i: _preparedEvents)
     {
       NclFormatterEvent *event = i.second;
-      if (event->getCurrentState () == EventUtil::ST_OCCURRING)
+      if (event->getCurrentState () == EventState::OCCURRING)
         {
           return false;
         }
 
-      if (event->getCurrentState () == EventUtil::ST_PAUSED)
+      if (event->getCurrentState () == EventState::PAUSED)
         {
           hasPaused = true;
         }
@@ -137,7 +137,7 @@ ExecutionObjectApplication::prepare (NclFormatterEvent *event,
   PropertyAnchor *attributeAnchor;
   int j;
 
-  if (event->getCurrentState () != EventUtil::ST_SLEEPING)
+  if (event->getCurrentState () != EventState::SLEEPING)
     {
       WARNING ("Can't prepare '%s': event isn't sleeping.",
                event->getId ().c_str ());
@@ -229,11 +229,11 @@ ExecutionObjectApplication::start ()
 
   /*
    * TODO: follow the event state machine or start instruction behavior
-   * if (currentEvent->getCurrentState() == EventUtil::ST_PAUSED) {
+   * if (currentEvent->getCurrentState() == EventState::PAUSED) {
           return resume();
   }*/
 
-  if (_currentEvent->getCurrentState () != EventUtil::ST_SLEEPING)
+  if (_currentEvent->getCurrentState () != EventState::SLEEPING)
     {
       TRACE ("Current event '%s' is already running.",
              _currentEvent->getId ().c_str ());
@@ -267,7 +267,7 @@ NclEventTransition *
 ExecutionObjectApplication::getNextTransition ()
 {
   if (_currentEvent == nullptr
-      || _currentEvent->getCurrentState () == EventUtil::ST_SLEEPING
+      || _currentEvent->getCurrentState () == EventState::SLEEPING
       || !(dynamic_cast <NclPresentationEvent *> (_currentEvent)))
     {
       return nullptr;
@@ -286,7 +286,7 @@ ExecutionObjectApplication::stop ()
   if (isSleeping ())
     {
       if (_wholeContent != nullptr
-          && _wholeContent->getCurrentState () != EventUtil::ST_SLEEPING)
+          && _wholeContent->getCurrentState () != EventState::SLEEPING)
         {
           _wholeContent->stop ();
         }
@@ -333,7 +333,7 @@ ExecutionObjectApplication::abort ()
   if (isSleeping ())
     {
       if (_wholeContent != nullptr
-          && _wholeContent->getCurrentState () != EventUtil::ST_SLEEPING)
+          && _wholeContent->getCurrentState () != EventState::SLEEPING)
         {
           _wholeContent->abort ();
         }
@@ -405,7 +405,7 @@ bool
 ExecutionObjectApplication::pause ()
 {
   if (_currentEvent == nullptr
-      || _currentEvent->getCurrentState () != EventUtil::ST_OCCURRING
+      || _currentEvent->getCurrentState () != EventState::OCCURRING
       || _preparedEvents.count (_currentEvent->getId ()) == 0)
     {
       return false;
@@ -417,7 +417,7 @@ ExecutionObjectApplication::pause ()
         {
           for (NclFormatterEvent *ev: getEvents ())
             {
-              if (ev->getCurrentState () == EventUtil::ST_OCCURRING)
+              if (ev->getCurrentState () == EventState::OCCURRING)
                 {
                   ev->pause ();
                 }
@@ -426,7 +426,7 @@ ExecutionObjectApplication::pause ()
 
       _pauseCount++;
     }
-  else if (_currentEvent->getCurrentState () == EventUtil::ST_OCCURRING)
+  else if (_currentEvent->getCurrentState () == EventState::OCCURRING)
     {
       _currentEvent->pause ();
     }
@@ -456,14 +456,14 @@ ExecutionObjectApplication::resume ()
         {
           for (NclFormatterEvent *event: getEvents ())
             {
-              if (event->getCurrentState () == EventUtil::ST_PAUSED)
+              if (event->getCurrentState () == EventState::PAUSED)
                 {
                   event->resume ();
                 }
             }
         }
     }
-  else if (_currentEvent->getCurrentState () == EventUtil::ST_PAUSED)
+  else if (_currentEvent->getCurrentState () == EventState::PAUSED)
     {
       _currentEvent->resume ();
     }
@@ -475,7 +475,7 @@ bool
 ExecutionObjectApplication::unprepare ()
 {
   if (_currentEvent == nullptr
-      || _currentEvent->getCurrentState () != EventUtil::ST_SLEEPING
+      || _currentEvent->getCurrentState () != EventState::SLEEPING
       || _preparedEvents.count (_currentEvent->getId ()) == 0)
     {
       return false;
@@ -508,7 +508,7 @@ ExecutionObjectApplication::unprepareEvents ()
   vector<NclFormatterEvent *>::iterator i;
 
   for (NclFormatterEvent *event : getEvents ())
-    if (event->getCurrentState () != EventUtil::ST_SLEEPING)
+    if (event->getCurrentState () != EventState::SLEEPING)
       event->stop ();
 }
 

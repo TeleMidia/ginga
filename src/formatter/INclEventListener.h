@@ -29,7 +29,7 @@ class INclEventListener
 public:
   virtual void eventStateChanged (NclFormatterEvent *,
                                   EventStateTransition,
-                                  EventUtil::EventState) = 0;
+                                  EventState) = 0;
 };
 
 GINGA_FORMATTER_END

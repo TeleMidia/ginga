@@ -65,7 +65,7 @@ public:
   void unsetParentsAsListeners () override;
   void eventStateChanged (NclFormatterEvent *event,
                           EventStateTransition transition,
-                          EventUtil::EventState previousState) override;
+                          EventState previousState) override;
 
   void linkEvaluationStarted (NclFormatterCausalLink *link) override;
   void linkEvaluationFinished (NclFormatterCausalLink *, bool) override;

@@ -182,7 +182,7 @@ PlayerAdapter::hasPrepared ()
       return false;
     }
 
-  if (evt->getCurrentState () == EventUtil::ST_SLEEPING)
+  if (evt->getCurrentState () == EventState::SLEEPING)
     {
       TRACE ("failed, main event is sleeping");
       return false;
@@ -493,7 +493,7 @@ PlayerAdapter::prepare (ExecutionObject *object,
             }
         }
 
-      if (event->getCurrentState () == EventUtil::ST_SLEEPING)
+      if (event->getCurrentState () == EventState::SLEEPING)
         {
           if (!this->_object->prepare (event, 0))
             {
@@ -570,7 +570,7 @@ PlayerAdapter::prepare (ExecutionObject *object,
           _player->setProperty ("soundLevel", value);
         }
 
-      if (event->getCurrentState () == EventUtil::ST_SLEEPING)
+      if (event->getCurrentState () == EventState::SLEEPING)
         {
           object->prepare (event, 0);
           prepare ();
@@ -787,7 +787,7 @@ PlayerAdapter::stop ()
         {
           TRACE ("stop lambda");
 
-          if (_currentEvent->getCurrentState () != EventUtil::ST_SLEEPING)
+          if (_currentEvent->getCurrentState () != EventState::SLEEPING)
             {
               _player->stop ();
             }
@@ -797,7 +797,7 @@ PlayerAdapter::stop ()
             {
               event = i->second;
               if (event != _currentEvent
-                  && event->getCurrentState () != EventUtil::ST_SLEEPING)
+                  && event->getCurrentState () != EventState::SLEEPING)
                 {
                   _preparedEvents.erase (i);
                   i = _preparedEvents.begin ();
@@ -948,7 +948,7 @@ PlayerAdapter::abort ()
             {
               event = i->second;
               if (event != _currentEvent
-                  && event->getCurrentState () != EventUtil::ST_SLEEPING)
+                  && event->getCurrentState () != EventState::SLEEPING)
                 {
                   i = _preparedEvents.erase (i);
                   TRACE ("forcing '%s' to abort", event->getId().c_str());
@@ -1076,8 +1076,8 @@ PlayerAdapter::unprepare ()
           return true;
         }
 
-      if (_currentEvent->getCurrentState () == EventUtil::ST_OCCURRING
-          || _currentEvent->getCurrentState () == EventUtil::ST_PAUSED)
+      if (_currentEvent->getCurrentState () == EventState::OCCURRING
+          || _currentEvent->getCurrentState () == EventState::PAUSED)
         {
           _currentEvent->stop ();
         }
@@ -1110,9 +1110,9 @@ PlayerAdapter::unprepare ()
     {
       if (_object->getMainEvent () != nullptr
           && (_object->getMainEvent ()->getCurrentState ()
-                  == EventUtil::ST_OCCURRING
+                  == EventState::OCCURRING
               || _object->getMainEvent ()->getCurrentState ()
-                     == EventUtil::ST_PAUSED))
+                     == EventState::PAUSED))
         {
           return stop ();
         }

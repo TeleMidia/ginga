@@ -210,7 +210,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
         {
           WARNING ("failed to start player of '%s'",
                    obj->getId ().c_str ());
-          if (event->getCurrentState () == EventUtil::ST_SLEEPING)
+          if (event->getCurrentState () == EventState::SLEEPING)
             event->removeEventListener (this);
         }
       break;
@@ -310,7 +310,7 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
           clog << " over '" << event->getId () << "' for '";
           clog << executionObject->getId () << "' player '";
           clog << player << "'" << endl;
-          if (event->getCurrentState () != EventUtil::ST_SLEEPING)
+          if (event->getCurrentState () != EventState::SLEEPING)
             {
               clog << "FormatterScheduler::runActionOverProperty";
               clog << " trying to set an event that is not ";
@@ -436,7 +436,7 @@ FormatterScheduler::runActionOverApplicationObject (
                        executionObject->getId ().c_str());
 
               // checking if player failed to start
-              if (event->getCurrentState () == EventUtil::ST_SLEEPING)
+              if (event->getCurrentState () == EventState::SLEEPING)
                 event->removeEventListener (this);
             }
         }
@@ -1081,7 +1081,7 @@ void
 FormatterScheduler::eventStateChanged (
     NclFormatterEvent *event,
     EventStateTransition transition,
-    arg_unused (EventUtil::EventState previousState))
+    arg_unused (EventState previousState))
 {
   ExecutionObject *object;
   PlayerAdapter *player;
@@ -1102,7 +1102,7 @@ FormatterScheduler::eventStateChanged (
         {
           contains = true;
         }
-      else if (evt->getCurrentState () != EventUtil::ST_SLEEPING)
+      else if (evt->getCurrentState () != EventState::SLEEPING)
         {
           hasOther = true;
         }

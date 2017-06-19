@@ -329,7 +329,7 @@ void
 ExecutionObjectContext::eventStateChanged (
     NclFormatterEvent *event,
     EventStateTransition transition,
-    EventUtil::EventState previousState)
+    EventState previousState)
 {
   set<NclFormatterEvent *>::iterator i;
 
@@ -353,7 +353,7 @@ ExecutionObjectContext::eventStateChanged (
 
     case EventStateTransition::ABORTS:
       lastTransition = transition;
-      if (previousState == EventUtil::ST_OCCURRING)
+      if (previousState == EventState::OCCURRING)
         {
           i = _runningEvents.find (event);
           if (i != _runningEvents.end ())
@@ -361,7 +361,7 @@ ExecutionObjectContext::eventStateChanged (
               _runningEvents.erase (i);
             }
         }
-      else if (previousState == EventUtil::ST_PAUSED)
+      else if (previousState == EventState::PAUSED)
         {
           i = _pausedEvents.find (event);
           if (i != _pausedEvents.end ())
@@ -382,7 +382,7 @@ ExecutionObjectContext::eventStateChanged (
       if (((NclPresentationEvent *)event)->getRepetitions () == 0)
         {
           lastTransition = transition;
-          if (previousState == EventUtil::ST_OCCURRING)
+          if (previousState == EventState::OCCURRING)
             {
               i = _runningEvents.find (event);
               if (i != _runningEvents.end ())
@@ -390,7 +390,7 @@ ExecutionObjectContext::eventStateChanged (
                   _runningEvents.erase (i);
                 }
             }
-          else if (previousState == EventUtil::ST_PAUSED)
+          else if (previousState == EventState::PAUSED)
             {
               i = _pausedEvents.find (event);
               if (i != _pausedEvents.end ())
@@ -561,7 +561,7 @@ ExecutionObjectContext::listRunningObjects ()
       while (j != events.end ())
         {
           event = *j;
-          if (event->getCurrentState () != EventUtil::ST_SLEEPING)
+          if (event->getCurrentState () != EventState::SLEEPING)
             {
               clog << "'" << i->first << "', ";
             }
