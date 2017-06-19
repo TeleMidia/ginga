@@ -8,7 +8,7 @@ canvas:attrFont ('tiresias', 40, 'bold')
 local function redraw (e)
    local w, h = canvas:attrSize ()
    canvas:attrClip (0, 0, w, h)
-   canvas:attrColor ('white')
+   canvas:attrColor (0, 0, 0, 0)
    canvas:clear (0, 0, w, h)
    canvas:attrColor ('black')
    local n = 10
