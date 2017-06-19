@@ -22,12 +22,12 @@ using namespace ::ginga::ncl;
 
 #include "NclAttributionEvent.h"
 
-#include "NclExecutionObject.h"
+#include "ExecutionObject.h"
 
 GINGA_FORMATTER_BEGIN
 
 NclAttributionEvent::NclAttributionEvent (const string &id,
-                                          NclExecutionObject *executionObject,
+                                          ExecutionObject *executionObject,
                                           PropertyAnchor *anchor,
                                           Settings *settings)
     : NclFormatterEvent (id, executionObject)
@@ -42,7 +42,7 @@ NclAttributionEvent::NclAttributionEvent (const string &id,
   this->settingNode = false;
   this->settings = settings;
 
-  dataObject = (NodeEntity *)(((NclExecutionObject *)executionObject)
+  dataObject = (NodeEntity *)(((ExecutionObject *)executionObject)
                                   ->getDataObject ());
 
   if (dataObject->instanceOf ("ContentNode")

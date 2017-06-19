@@ -17,9 +17,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 
-#include "NclExecutionObject.h"
-#include "NclCompositeExecutionObject.h"
-#include "NclApplicationExecutionObject.h"
+#include "ExecutionObject.h"
+#include "ExecutionObjectContext.h"
+#include "ExecutionObjectApplication.h"
 
 #include "NclSwitchEvent.h"
 
@@ -31,16 +31,16 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_FORMATTER_BEGIN
 
-set<NclExecutionObject *> NclExecutionObject::_objects;
+set<ExecutionObject *> ExecutionObject::_objects;
 
 void
-NclExecutionObject::addInstance (NclExecutionObject *object)
+ExecutionObject::addInstance (ExecutionObject *object)
 {
   _objects.insert (object);
 }
 
 bool
-NclExecutionObject::removeInstance (NclExecutionObject *object)
+ExecutionObject::removeInstance (ExecutionObject *object)
 {
   bool removed = false;
 
@@ -55,8 +55,8 @@ NclExecutionObject::removeInstance (NclExecutionObject *object)
 }
 
 bool
-NclExecutionObject::hasInstance (NclExecutionObject *object,
-                                 bool eraseFromList)
+ExecutionObject::hasInstance (ExecutionObject *object,
+                              bool eraseFromList)
 {
   bool hasObject = false;
   auto i = _objects.find (object);
@@ -72,13 +72,13 @@ NclExecutionObject::hasInstance (NclExecutionObject *object,
   return hasObject;
 }
 
-NclExecutionObject::NclExecutionObject (const string &id,
-                                        Node *node,
-                                        NclCascadingDescriptor *descriptor,
-                                        bool handling,
-                                        INclLinkActionListener *seListener)
+ExecutionObject::ExecutionObject (const string &id,
+                                  Node *node,
+                                  NclCascadingDescriptor *descriptor,
+                                  bool handling,
+                                  INclLinkActionListener *seListener)
 {
-  _typeSet.insert ("NclExecutionObject");
+  _typeSet.insert ("ExecutionObject");
 
   addInstance (this);
   this->_seListener = seListener;
@@ -100,13 +100,12 @@ NclExecutionObject::NclExecutionObject (const string &id,
   this->_transMan = new NclEventTransitionManager ();
 }
 
-NclExecutionObject::~NclExecutionObject ()
+ExecutionObject::~ExecutionObject ()
 {
-  map<Node *, Node *>::iterator i;
-  map<Node *, NclCompositeExecutionObject *>::iterator j;
+  map<Node *, ExecutionObjectContext *>::iterator j;
 
   Node *parentNode;
-  NclCompositeExecutionObject *parentObject;
+  ExecutionObjectContext *parentObject;
 
   removeInstance (this);
   unsetParentsAsListeners ();
@@ -119,10 +118,9 @@ NclExecutionObject::~NclExecutionObject ()
 
   destroyEvents ();
 
-  i = _nodeParentTable.begin ();
-  while (i != _nodeParentTable.end ())
+  for (auto i : _nodeParentTable)
     {
-      parentNode = i->second;
+      parentNode = i.second;
       j = _parentTable.find (parentNode);
       if (j != _parentTable.end ())
         {
@@ -130,7 +128,6 @@ NclExecutionObject::~NclExecutionObject ()
 
           parentObject->removeExecutionObject (this);
         }
-      ++i;
     }
 
   _nodeParentTable.clear ();
@@ -144,7 +141,7 @@ NclExecutionObject::~NclExecutionObject ()
 }
 
 void
-NclExecutionObject::destroyEvents ()
+ExecutionObject::destroyEvents ()
 {
   for (auto i : _events)
     {
@@ -168,25 +165,25 @@ NclExecutionObject::destroyEvents ()
 }
 
 void
-NclExecutionObject::unsetParentsAsListeners ()
+ExecutionObject::unsetParentsAsListeners ()
 {
   removeParentListenersFromEvent (_mainEvent);
   removeParentListenersFromEvent (_wholeContent);
 }
 
 void
-NclExecutionObject::removeParentListenersFromEvent (
+ExecutionObject::removeParentListenersFromEvent (
     NclFormatterEvent *event)
 {
-  map<Node *, NclCompositeExecutionObject *>::iterator i;
-  NclCompositeExecutionObject *parentObject;
+  map<Node *, ExecutionObjectContext *>::iterator i;
+  ExecutionObjectContext *parentObject;
 
   if (NclFormatterEvent::hasInstance (event, false))
     {
       i = _parentTable.begin ();
       while (i != _parentTable.end ())
         {
-          parentObject = (NclCompositeExecutionObject *)(i->second);
+          parentObject = (ExecutionObjectContext *)(i->second);
 
           if (NclFormatterEvent::hasInstance (_mainEvent, false))
             {
@@ -203,7 +200,7 @@ NclExecutionObject::removeParentListenersFromEvent (
 }
 
 bool
-NclExecutionObject::isSleeping ()
+ExecutionObject::isSleeping ()
 {
   if (_mainEvent == nullptr
       || _mainEvent->getCurrentState () == EventUtil::ST_SLEEPING)
@@ -215,7 +212,7 @@ NclExecutionObject::isSleeping ()
 }
 
 bool
-NclExecutionObject::isPaused ()
+ExecutionObject::isPaused ()
 {
   if (_mainEvent != nullptr
       && _mainEvent->getCurrentState () == EventUtil::ST_PAUSED)
@@ -227,39 +224,39 @@ NclExecutionObject::isPaused ()
 }
 
 bool
-NclExecutionObject::instanceOf (const string &s)
+ExecutionObject::instanceOf (const string &s)
 {
   return (_typeSet.find (s) != _typeSet.end ());
 }
 
 Node *
-NclExecutionObject::getDataObject ()
+ExecutionObject::getDataObject ()
 {
   return _dataObject;
 }
 
 NclCascadingDescriptor *
-NclExecutionObject::getDescriptor ()
+ExecutionObject::getDescriptor ()
 {
   return _descriptor;
 }
 
 string
-NclExecutionObject::getId ()
+ExecutionObject::getId ()
 {
   return _id;
 }
 
-NclCompositeExecutionObject *
-NclExecutionObject::getParentObject ()
+ExecutionObjectContext *
+ExecutionObject::getParentObject ()
 {
   return getParentObject (_dataObject);
 }
 
-NclCompositeExecutionObject *
-NclExecutionObject::getParentObject (Node *node)
+ExecutionObjectContext *
+ExecutionObject::getParentObject (Node *node)
 {
-  NclCompositeExecutionObject *parentObj = nullptr;
+  ExecutionObjectContext *parentObj = nullptr;
 
   auto i = _nodeParentTable.find (node);
   if (i != _nodeParentTable.end ())
@@ -276,26 +273,26 @@ NclExecutionObject::getParentObject (Node *node)
 }
 
 void
-NclExecutionObject::addParentObject (NclCompositeExecutionObject *parentObject,
-                                     Node *parentNode)
+ExecutionObject::addParentObject (ExecutionObjectContext *parentObject,
+                                  Node *parentNode)
 {
   addParentObject (_dataObject, parentObject, parentNode);
 }
 
 void
-NclExecutionObject::addParentObject (Node *node,
-                                     NclCompositeExecutionObject *parentObject,
-                                     Node *parentNode)
+ExecutionObject::addParentObject (Node *node,
+                                  ExecutionObjectContext *parentObject,
+                                  Node *parentNode)
 {
   _nodeParentTable[node] = parentNode;
   _parentTable[parentNode] = parentObject;
 }
 
 void
-NclExecutionObject::removeParentObject (Node *parentNode,
-                                        NclCompositeExecutionObject *parentObject)
+ExecutionObject::removeParentObject (Node *parentNode,
+                                     ExecutionObjectContext *parentObject)
 {
-  map<Node *, NclCompositeExecutionObject *>::iterator i;
+  map<Node *, ExecutionObjectContext *>::iterator i;
 
   i = _parentTable.find (parentNode);
   if (i != _parentTable.end () && i->second == parentObject)
@@ -309,14 +306,14 @@ NclExecutionObject::removeParentObject (Node *parentNode,
 }
 
 void
-NclExecutionObject::setDescriptor (
+ExecutionObject::setDescriptor (
     NclCascadingDescriptor *cascadingDescriptor)
 {
   this->_descriptor = cascadingDescriptor;
 }
 
 void
-NclExecutionObject::setDescriptor (GenericDescriptor *descriptor)
+ExecutionObject::setDescriptor (GenericDescriptor *descriptor)
 {
   NclCascadingDescriptor *cascade;
   cascade = new NclCascadingDescriptor (descriptor);
@@ -330,7 +327,7 @@ NclExecutionObject::setDescriptor (GenericDescriptor *descriptor)
 }
 
 bool
-NclExecutionObject::addEvent (NclFormatterEvent *event)
+ExecutionObject::addEvent (NclFormatterEvent *event)
 {
   map<string, NclFormatterEvent *>::iterator i;
 
@@ -367,7 +364,7 @@ NclExecutionObject::addEvent (NclFormatterEvent *event)
 }
 
 void
-NclExecutionObject::addPresentationEvent (NclPresentationEvent *event)
+ExecutionObject::addPresentationEvent (NclPresentationEvent *event)
 {
   NclPresentationEvent *auxEvent;
   GingaTime begin, auxBegin;
@@ -416,13 +413,13 @@ NclExecutionObject::addPresentationEvent (NclPresentationEvent *event)
 }
 
 bool
-NclExecutionObject::containsEvent (NclFormatterEvent *event)
+ExecutionObject::containsEvent (NclFormatterEvent *event)
 {
   return (_events.count (event->getId ()) != 0);
 }
 
 NclFormatterEvent *
-NclExecutionObject::getEventFromAnchorId (const string &anchorId)
+ExecutionObject::getEventFromAnchorId (const string &anchorId)
 {
   map<string, NclFormatterEvent *>::iterator i;
   NclFormatterEvent *event;
@@ -467,7 +464,7 @@ NclExecutionObject::getEventFromAnchorId (const string &anchorId)
 }
 
 NclFormatterEvent *
-NclExecutionObject::getEvent (const string &id)
+ExecutionObject::getEvent (const string &id)
 {
   NclFormatterEvent *ev;
   if (_events.count (id) != 0)
@@ -479,7 +476,7 @@ NclExecutionObject::getEvent (const string &id)
 }
 
 vector<NclFormatterEvent *>
-NclExecutionObject::getEvents ()
+ExecutionObject::getEvents ()
 {
   vector<NclFormatterEvent *> eventsVector;
   for (const auto &i : _events)
@@ -490,13 +487,13 @@ NclExecutionObject::getEvents ()
 }
 
 NclPresentationEvent *
-NclExecutionObject::getWholeContentPresentationEvent ()
+ExecutionObject::getWholeContentPresentationEvent ()
 {
   return _wholeContent;
 }
 
 bool
-NclExecutionObject::removeEvent (NclFormatterEvent *event)
+ExecutionObject::removeEvent (NclFormatterEvent *event)
 {
   vector<NclPresentationEvent *>::iterator i;
   set<NclSelectionEvent *>::iterator j;
@@ -551,19 +548,19 @@ NclExecutionObject::removeEvent (NclFormatterEvent *event)
 }
 
 bool
-NclExecutionObject::isCompiled ()
+ExecutionObject::isCompiled ()
 {
   return _isCompiled;
 }
 
 void
-NclExecutionObject::setCompiled (bool status)
+ExecutionObject::setCompiled (bool status)
 {
   _isCompiled = status;
 }
 
 vector<Node *>
-NclExecutionObject::getNodes ()
+ExecutionObject::getNodes ()
 {
   vector<Node *> nodes;
   if (!_nodeParentTable.empty())
@@ -583,7 +580,7 @@ NclExecutionObject::getNodes ()
 }
 
 PropertyAnchor *
-NclExecutionObject::getNCMProperty (const string &propertyName)
+ExecutionObject::getNCMProperty (const string &propertyName)
 {
   PropertyAnchor *property = nullptr;
 
@@ -596,18 +593,18 @@ NclExecutionObject::getNCMProperty (const string &propertyName)
 }
 
 NclNodeNesting *
-NclExecutionObject::getNodePerspective ()
+ExecutionObject::getNodePerspective ()
 {
   return getNodePerspective (_dataObject);
 }
 
 NclNodeNesting *
-NclExecutionObject::getNodePerspective (Node *node)
+ExecutionObject::getNodePerspective (Node *node)
 {
   Node *parentNode;
   NclNodeNesting *perspective;
-  NclCompositeExecutionObject *parentObject;
-  map<Node *, NclCompositeExecutionObject *>::iterator i;
+  ExecutionObjectContext *parentObject;
+  map<Node *, ExecutionObjectContext *>::iterator i;
 
   if (_nodeParentTable.count (node) == 0)
     {
@@ -627,7 +624,7 @@ NclExecutionObject::getNodePerspective (Node *node)
       i = _parentTable.find (parentNode);
       if (i != _parentTable.end ())
         {
-          parentObject = (NclCompositeExecutionObject *)(i->second);
+          parentObject = (ExecutionObjectContext *)(i->second);
 
           perspective = parentObject->getNodePerspective (parentNode);
         }
@@ -641,16 +638,16 @@ NclExecutionObject::getNodePerspective (Node *node)
 }
 
 NclFormatterEvent *
-NclExecutionObject::getMainEvent ()
+ExecutionObject::getMainEvent ()
 {
   return _mainEvent;
 }
 
 bool
-NclExecutionObject::prepare (NclFormatterEvent *event, GingaTime offsetTime)
+ExecutionObject::prepare (NclFormatterEvent *event, GingaTime offsetTime)
 {
   int size;
-  map<Node *, NclCompositeExecutionObject *>::iterator i;
+  map<Node *, ExecutionObjectContext *>::iterator i;
   GingaTime startTime = 0;
   ContentAnchor *contentAnchor;
   NclFormatterEvent *auxEvent;
@@ -690,8 +687,8 @@ NclExecutionObject::prepare (NclFormatterEvent *event, GingaTime offsetTime)
               clog << "'" << endl;
               // register parent as a mainEvent listener
               _mainEvent->addEventListener (
-                  (INclEventListener *)(NclCompositeExecutionObject *)
-                      i->second);
+                    (INclEventListener *)(ExecutionObjectContext *)
+                    i->second);
               ++i;
             }
           return true;
@@ -744,7 +741,7 @@ NclExecutionObject::prepare (NclFormatterEvent *event, GingaTime offsetTime)
 }
 
 bool
-NclExecutionObject::start ()
+ExecutionObject::start ()
 {
   ContentAnchor *contentAnchor;
 
@@ -782,19 +779,19 @@ NclExecutionObject::start ()
 }
 
 void
-NclExecutionObject::updateTransitionTable (GingaTime value, Player *player)
+ExecutionObject::updateTransitionTable (GingaTime value, Player *player)
 {
   _transMan->updateTransitionTable (value, player, _mainEvent);
 }
 
 void
-NclExecutionObject::prepareTransitionEvents (GingaTime startTime)
+ExecutionObject::prepareTransitionEvents (GingaTime startTime)
 {
   _transMan->prepare (_mainEvent == _wholeContent, startTime);
 }
 
 NclEventTransition *
-NclExecutionObject::getNextTransition ()
+ExecutionObject::getNextTransition ()
 {
   if (isSleeping () || !_mainEvent->instanceOf ("NclPresentationEvent"))
     {
@@ -804,7 +801,7 @@ NclExecutionObject::getNextTransition ()
 }
 
 bool
-NclExecutionObject::stop ()
+ExecutionObject::stop ()
 {
   ContentAnchor *contentAnchor;
   GingaTime endTime;
@@ -840,7 +837,7 @@ NclExecutionObject::stop ()
 }
 
 bool
-NclExecutionObject::abort ()
+ExecutionObject::abort ()
 {
   ContentAnchor *contentAnchor;
   GingaTime endTime;
@@ -869,7 +866,7 @@ NclExecutionObject::abort ()
 }
 
 bool
-NclExecutionObject::pause ()
+ExecutionObject::pause ()
 {
   NclFormatterEvent *event;
   vector<NclFormatterEvent *>::iterator i;
@@ -900,7 +897,7 @@ NclExecutionObject::pause ()
 }
 
 bool
-NclExecutionObject::resume ()
+ExecutionObject::resume ()
 {
   NclFormatterEvent *event;
   vector<NclFormatterEvent *>::iterator i;
@@ -938,8 +935,8 @@ NclExecutionObject::resume ()
 }
 
 bool
-NclExecutionObject::setProperty (NclAttributionEvent *event,
-                                 const string &value)
+ExecutionObject::setProperty (NclAttributionEvent *event,
+                              const string &value)
 {
   string propName;
 
@@ -984,7 +981,7 @@ NclExecutionObject::setProperty (NclAttributionEvent *event,
 }
 
 string
-NclExecutionObject::getProperty (const string &param)
+ExecutionObject::getProperty (const string &param)
 {
   NclFormatterRegion *region = nullptr;
   LayoutRegion *ncmRegion = nullptr;
@@ -1062,7 +1059,7 @@ NclExecutionObject::getProperty (const string &param)
 }
 
 bool
-NclExecutionObject::unprepare ()
+ExecutionObject::unprepare ()
 {
   if (_mainEvent == nullptr
       || _mainEvent->getCurrentState () != EventUtil::ST_SLEEPING)
@@ -1078,19 +1075,19 @@ NclExecutionObject::unprepare ()
 }
 
 void
-NclExecutionObject::setHandling (bool isHandling)
+ExecutionObject::setHandling (bool isHandling)
 {
   this->_isHandling = isHandling;
 }
 
 void
-NclExecutionObject::setHandler (bool isHandler)
+ExecutionObject::setHandler (bool isHandler)
 {
   this->_isHandler = isHandler;
 }
 
 bool
-NclExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
+ExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
 {
   string selCode;
   string keyString;
@@ -1110,7 +1107,7 @@ NclExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
   keyString = "UNKNOWN";
   ginga_key_table_index (key, &keyString);
 
-   if ((!_isHandling && !_isHandler) || sleeping /*|| paused*/)
+  if ((!_isHandling && !_isHandler) || sleeping /*|| paused*/)
     {
       clog << "NclExecutionObject::selectionEvent Can't receive event on '";
       clog << getId () << "': isHandling = '" << _isHandling << "' ";
@@ -1140,14 +1137,14 @@ NclExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
       clog << selectionEvent->getId () << "' has selCode = '" << selCode;
       clog << "' (looking for key code '" << keyString << "'" << endl;
 
-     if ( !keyString.compare(selCode) )
+      if ( !keyString.compare(selCode) )
         {
           if (selectionEvent->getAnchor ()->instanceOf ("LambdaAnchor"))
             {
               selectedEvents->insert (selectionEvent);
             }
           else if (selectionEvent->getAnchor ()->instanceOf (
-                       "IntervalAnchor"))
+                     "IntervalAnchor"))
             {
               intervalAnchor
                   = (IntervalAnchor *)(selectionEvent->getAnchor ());

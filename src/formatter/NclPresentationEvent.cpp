@@ -24,7 +24,7 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-conversion)
 GINGA_FORMATTER_BEGIN
 
 NclPresentationEvent::NclPresentationEvent (const string &id,
-                                            NclExecutionObject *exeObj,
+                                            ExecutionObject *exeObj,
                                             ContentAnchor *anchor)
     : NclAnchorEvent (id, exeObj, anchor)
 {

@@ -72,7 +72,7 @@ Converter::~Converter ()
 
   for (auto i = _executionObjects.begin (); i != _executionObjects.end (); )
     {
-      NclExecutionObject *object = i->second;
+      ExecutionObject *object = i->second;
 
       if (!removeExecutionObject (object))
         {
@@ -91,7 +91,7 @@ Converter::~Converter ()
 void
 Converter::setHandlingStatus (bool handling)
 {
-  NclExecutionObject *object;
+  ExecutionObject *object;
   this->_handling = handling;
 
   for (auto &i : _executionObjects)
@@ -101,12 +101,12 @@ Converter::setHandlingStatus (bool handling)
     }
 }
 
-NclExecutionObject *
+ExecutionObject *
 Converter::getObjectFromNodeId (const string &id)
 {
   for (auto &it: _executionObjects)
     {
-      NclExecutionObject *expectedObject = it.second;
+      ExecutionObject *expectedObject = it.second;
 
       auto dataObject = dynamic_cast<NodeEntity *> (
             expectedObject->getDataObject () ->getDataEntity ());
@@ -129,12 +129,12 @@ Converter::setLinkActionListener (INclLinkActionListener *actListener)
   this->_actionListener = actListener;
 }
 
-NclExecutionObject *
+ExecutionObject *
 Converter::getExecutionObjectFromPerspective (
     NclNodeNesting *perspective, GenericDescriptor *descriptor)
 {
-  NclCompositeExecutionObject *parentObj;
-  NclExecutionObject *exeObj;
+  ExecutionObjectContext *parentObj;
+  ExecutionObject *exeObj;
 
   string id = perspective->getId () + SEPARATOR;
   NclCascadingDescriptor *cascadingDescriptor
@@ -198,14 +198,14 @@ Converter::getExecutionObjectFromPerspective (
   return exeObj;
 }
 
-set<NclExecutionObject *> *
+set<ExecutionObject *> *
 Converter::getSettingNodeObjects ()
 {
-  return new set<NclExecutionObject *> (_settingObjects);
+  return new set<ExecutionObject *> (_settingObjects);
 }
 
 NclFormatterEvent *
-Converter::getEvent (NclExecutionObject *exeObj,
+Converter::getEvent (ExecutionObject *exeObj,
                      InterfacePoint *interfacePoint,
                      int ncmEventType,
                      const string &key)
@@ -231,8 +231,8 @@ Converter::getEvent (NclExecutionObject *exeObj,
       return event;
     }
 
-  auto switchObj = dynamic_cast<NclExecutionObjectSwitch *> (exeObj);
-  auto cObj = dynamic_cast<NclCompositeExecutionObject *> (exeObj);
+  auto switchObj = dynamic_cast<ExecutionObjectSwitch *> (exeObj);
+  auto cObj = dynamic_cast<ExecutionObjectContext *> (exeObj);
 
   if (switchObj)
     {
@@ -333,14 +333,14 @@ Converter::getEvent (NclExecutionObject *exeObj,
   return event;
 }
 
-NclCompositeExecutionObject *
-Converter::addSameInstance (NclExecutionObject *exeObj,
+ExecutionObjectContext *
+Converter::addSameInstance (ExecutionObject *exeObj,
                             ReferNode *referNode)
 {
   vector<Node *> *ncmPerspective = referNode->getPerspective ();
   NclNodeNesting *referPerspective = new NclNodeNesting (ncmPerspective);
 
-  NclCompositeExecutionObject *referParentObject
+  ExecutionObjectContext *referParentObject
       = getParentExecutionObject (referPerspective);
 
   if (referParentObject != nullptr)
@@ -385,8 +385,8 @@ Converter::addSameInstance (NclExecutionObject *exeObj,
 }
 
 void
-Converter::addExecutionObject (NclExecutionObject *exeObj,
-                               NclCompositeExecutionObject *parentObj)
+Converter::addExecutionObject (ExecutionObject *exeObj,
+                               ExecutionObjectContext *parentObj)
 {
   _executionObjects[exeObj->getId ()] = exeObj;
 
@@ -458,7 +458,7 @@ Converter::addExecutionObject (NclExecutionObject *exeObj,
   // Compile execution object links
   for (Node *node : exeObj->getNodes ())
     {
-      auto parent = dynamic_cast <NclCompositeExecutionObject*> (
+      auto parent = dynamic_cast <ExecutionObjectContext*> (
             exeObj->getParentObject (node));
 
       g_assert_nonnull (parent);
@@ -468,11 +468,11 @@ Converter::addExecutionObject (NclExecutionObject *exeObj,
 }
 
 bool
-Converter::removeExecutionObject (NclExecutionObject *exeObj)
+Converter::removeExecutionObject (ExecutionObject *exeObj)
 {
   bool removed = false;
 
-  if (!NclExecutionObject::hasInstance (exeObj, false))
+  if (!ExecutionObject::hasInstance (exeObj, false))
     {
       return removed;
     }
@@ -492,7 +492,7 @@ Converter::removeExecutionObject (NclExecutionObject *exeObj)
     }
 
   if (removed
-      && NclExecutionObject::hasInstance (exeObj, true))
+      && ExecutionObject::hasInstance (exeObj, true))
     {
       delete exeObj;
     }
@@ -500,7 +500,7 @@ Converter::removeExecutionObject (NclExecutionObject *exeObj)
   return removed;
 }
 
-NclCompositeExecutionObject *
+ExecutionObjectContext *
 Converter::getParentExecutionObject (NclNodeNesting *perspective)
 {
   NclNodeNesting *parentPerspective;
@@ -510,7 +510,7 @@ Converter::getParentExecutionObject (NclNodeNesting *perspective)
       parentPerspective = perspective->copy ();
       parentPerspective->removeAnchorNode ();
 
-      auto cObj = dynamic_cast <NclCompositeExecutionObject*> (
+      auto cObj = dynamic_cast <ExecutionObjectContext*> (
             this->getExecutionObjectFromPerspective (
               parentPerspective, nullptr));
 
@@ -524,14 +524,14 @@ Converter::getParentExecutionObject (NclNodeNesting *perspective)
   return nullptr;
 }
 
-NclExecutionObject *
+ExecutionObject *
 Converter::createExecutionObject (
     const string &id, NclNodeNesting *perspective,
     NclCascadingDescriptor *descriptor)
 {
   Node *node;
   NclNodeNesting *nodePerspective;
-  NclExecutionObject *exeObj;
+  ExecutionObject *exeObj;
   NclPresentationEvent *compositeEvt;
 
   auto nodeEntity = dynamic_cast <NodeEntity *> (
@@ -567,13 +567,13 @@ Converter::createExecutionObject (
                       if (isEmbeddedApp (nodeEntity))
                         {
                           exeObj
-                              = new NclApplicationExecutionObject (
+                              = new ExecutionObjectApplication (
                                 id, nodeEntity, descriptor, _handling,
                                 _actionListener);
                         }
                       else
                         {
-                          exeObj  = new NclExecutionObject (
+                          exeObj  = new ExecutionObject (
                                 id, nodeEntity, descriptor, _handling,
                                 _actionListener);
                         }
@@ -586,13 +586,13 @@ Converter::createExecutionObject (
                   // not in the same base => create a new version
                   if (isEmbeddedApp (nodeEntity))
                     {
-                      exeObj = new NclApplicationExecutionObject (
+                      exeObj = new ExecutionObjectApplication (
                             id, nodeEntity, descriptor, _handling,
                             _actionListener);
                     }
                   else
                     {
-                      exeObj = new NclExecutionObject (
+                      exeObj = new ExecutionObject (
                             id, nodeEntity, descriptor, _handling,
                             _actionListener);
                     }
@@ -614,7 +614,7 @@ Converter::createExecutionObject (
   if (switchNode)
     {
       string s;
-      exeObj = new NclExecutionObjectSwitch (id, node, _handling,
+      exeObj = new ExecutionObjectSwitch (id, node, _handling,
                                              _actionListener);
       xstrassign (s, "%d", EventUtil::EVT_PRESENTATION);
       compositeEvt = new NclPresentationEvent (
@@ -631,7 +631,7 @@ Converter::createExecutionObject (
   else if (nodeEntity->instanceOf ("CompositeNode"))
     {
       string s;
-      exeObj = new NclCompositeExecutionObject (
+      exeObj = new ExecutionObjectContext (
             id, node, descriptor, _handling, _actionListener);
 
       xstrassign (s, "%d", EventUtil::EVT_PRESENTATION);
@@ -647,12 +647,12 @@ Converter::createExecutionObject (
     }
   else if (isEmbeddedApp (nodeEntity))
     {
-      exeObj = new NclApplicationExecutionObject (
+      exeObj = new ExecutionObjectApplication (
             id, node, descriptor, _handling, _actionListener);
     }
   else
     {
-      exeObj = new NclExecutionObject (id, node, descriptor,
+      exeObj = new ExecutionObject (id, node, descriptor,
                                        _handling, _actionListener);
     }
 
@@ -867,8 +867,8 @@ Converter::getCascadingDescriptor (NclNodeNesting *nodePerspective,
 void
 Converter::processLink (Link *ncmLink,
                         Node *dataObject,
-                        NclExecutionObject *executionObject,
-                        NclCompositeExecutionObject *parentObject)
+                        ExecutionObject *executionObject,
+                        ExecutionObjectContext *parentObject)
 {
   GenericDescriptor *descriptor = nullptr;
   NodeEntity *nodeEntity = nullptr;
@@ -963,11 +963,11 @@ Converter::processLink (Link *ncmLink,
 
 void
 Converter::compileExecutionObjectLinks (
-    NclExecutionObject *exeObj, Node *dataObject,
-    NclCompositeExecutionObject *parentObj)
+    ExecutionObject *exeObj, Node *dataObject,
+    ExecutionObjectContext *parentObj)
 {
   set<Link *> *uncompiledLinks;
-  NclCompositeExecutionObject *compObj;
+  ExecutionObjectContext *compObj;
   Node *execDataObject;
 
   exeObj->setCompiled (true);
@@ -1002,11 +1002,11 @@ Converter::compileExecutionObjectLinks (
 
       compileExecutionObjectLinks (
             exeObj, dataObject,
-            (NclCompositeExecutionObject *)(parentObj->getParentObject ()));
+            (ExecutionObjectContext *)(parentObj->getParentObject ()));
     }
   else
     {
-      NclExecutionObject *object;
+      ExecutionObject *object;
 
       delete uncompiledLinks;
 
@@ -1014,7 +1014,7 @@ Converter::compileExecutionObjectLinks (
         {
           object = parentObj;
           parentObj
-              = (NclCompositeExecutionObject *)(parentObj
+              = (ExecutionObjectContext *)(parentObj
                                                 ->getParentObject ());
 
           compileExecutionObjectLinks (object, dataObject, parentObj);
@@ -1050,17 +1050,17 @@ Converter::setActionListener (NclLinkAction *action)
     }
 }
 
-NclExecutionObject *
+ExecutionObject *
 Converter::processExecutionObjectSwitch (
-    NclExecutionObjectSwitch *switchObject)
+    ExecutionObjectSwitch *switchObject)
 {
 
   Node *selectedNode;
   NclNodeNesting *selectedPerspective;
   string id;
   NclCascadingDescriptor *descriptor;
-  map<string, NclExecutionObject *>::iterator i;
-  NclExecutionObject *selectedObject;
+  map<string, ExecutionObject *>::iterator i;
+  ExecutionObject *selectedObject;
 
   auto switchNode = dynamic_cast<SwitchNode *> (
         switchObject->getDataObject ()->getDataEntity ());
@@ -1131,10 +1131,10 @@ Converter::processExecutionObjectSwitch (
 
 void
 Converter::resolveSwitchEvents (
-    NclExecutionObjectSwitch *switchObject)
+    ExecutionObjectSwitch *switchObject)
 {
-  NclExecutionObject *selectedObject;
-  NclExecutionObject *endPointObject;
+  ExecutionObject *selectedObject;
+  ExecutionObject *endPointObject;
   Node *selectedNode;
   NodeEntity *selectedNodeEntity;
   vector<NclFormatterEvent *> events;
@@ -1232,7 +1232,7 @@ Converter::insertNode (NclNodeNesting *perspective,
                        InterfacePoint *interfacePoint,
                        GenericDescriptor *descriptor)
 {
-  NclExecutionObject *executionObject;
+  ExecutionObject *executionObject;
   NclFormatterEvent *event;
   short eventType;
 
@@ -1313,9 +1313,9 @@ Converter::eventStateChanged (NclFormatterEvent *event,
                               short transition,
                               arg_unused (short previousState))
 {
-  NclExecutionObject *exeObj = event->getExecutionObject ();
-  auto exeCompositeObj = dynamic_cast <NclCompositeExecutionObject *> (exeObj);
-  auto exeSwitch = dynamic_cast <NclExecutionObjectSwitch *> (exeObj);
+  ExecutionObject *exeObj = event->getExecutionObject ();
+  auto exeCompositeObj = dynamic_cast <ExecutionObjectContext *> (exeObj);
+  auto exeSwitch = dynamic_cast <ExecutionObjectSwitch *> (exeObj);
 
   if (exeSwitch)
     {
@@ -1426,7 +1426,7 @@ Converter::isEmbeddedAppMediaType (const string &mediaType)
 
 NclFormatterCausalLink *
 Converter::createCausalLink (CausalLink *ncmLink,
-                             NclCompositeExecutionObject *parentObj)
+                             ExecutionObjectContext *parentObj)
 {
   CausalConnector *connector;
   ConditionExpression *conditionExpression;
@@ -1497,7 +1497,7 @@ Converter::createCausalLink (CausalLink *ncmLink,
   // create formatter causal link
   formatterLink = new NclFormatterCausalLink (
         (NclLinkTriggerCondition *)formatterCondition, formatterAction,
-        ncmLink, (NclCompositeExecutionObject *)parentObj);
+        ncmLink, (ExecutionObjectContext *)parentObj);
 
   if (formatterCondition->instanceOf ("NclLinkCompoundTriggerCondition"))
     {
@@ -1550,7 +1550,7 @@ Converter::setImplicitRefAssessment (const string &roleId,
                                      NclFormatterEvent *event)
 {
   NclNodeNesting *refPerspective;
-  NclExecutionObject *refObject;
+  ExecutionObject *refObject;
   string value;
 
   auto attributionEvt = dynamic_cast <NclAttributionEvent *> (event);
@@ -1595,7 +1595,7 @@ Converter::setImplicitRefAssessment (const string &roleId,
 NclLinkAction *
 Converter::createAction (Action *actionExp,
                          CausalLink *ncmLink,
-                         NclCompositeExecutionObject *parentObj)
+                         ExecutionObjectContext *parentObj)
 {
   GingaTime delay;
   vector<Bind *> *binds;
@@ -1677,7 +1677,7 @@ Converter::createAction (Action *actionExp,
 NclLinkCondition *
 Converter::createCondition (
     ConditionExpression *ncmExp, CausalLink *ncmLink,
-    NclCompositeExecutionObject *parentObj)
+    ExecutionObjectContext *parentObj)
 {
   auto triggerExp = dynamic_cast<TriggerExpression *> (ncmExp);
   auto statment = dynamic_cast<Statement *> (ncmExp);
@@ -1697,7 +1697,7 @@ NclLinkCompoundTriggerCondition *
 Converter::createCompoundTriggerCondition (
     short op, GingaTime delay,
     vector<ConditionExpression *> *ncmChildConditions, CausalLink *ncmLink,
-    NclCompositeExecutionObject *parentObj)
+    ExecutionObjectContext *parentObj)
 {
   NclLinkCompoundTriggerCondition *condition;
   ConditionExpression *ncmChildCondition;
@@ -1738,7 +1738,7 @@ Converter::createCompoundTriggerCondition (
 NclLinkCondition *
 Converter::createCondition (
     TriggerExpression *condition, CausalLink *ncmLink,
-    NclCompositeExecutionObject *parentObj)
+    ExecutionObjectContext *parentObj)
 {
   NclLinkCompoundTriggerCondition *compoundCondition;
   NclLinkTriggerCondition *simpleCondition;
@@ -1812,7 +1812,7 @@ Converter::createCondition (
 NclLinkAssessmentStatement *
 Converter::createAssessmentStatement (
     AssessmentStatement *assessmentStatement, Bind *bind, Link *ncmLink,
-    NclCompositeExecutionObject *parentObj)
+    ExecutionObjectContext *parentObj)
 {
   NclLinkAttributeAssessment *mainAssessment;
   NclLinkAssessment *otherAssessment;
@@ -1882,7 +1882,7 @@ Converter::createAssessmentStatement (
 NclLinkStatement *
 Converter::createStatement (
     Statement *statementExpression, Link *ncmLink,
-    NclCompositeExecutionObject *parentObj)
+    ExecutionObjectContext *parentObj)
 {
   int size;
   NclLinkStatement *statement;
@@ -1945,7 +1945,7 @@ Converter::createStatement (
 NclLinkAttributeAssessment *
 Converter::createAttributeAssessment (
     AttributeAssessment *attributeAssessment, Bind *bind, Link *ncmLink,
-    NclCompositeExecutionObject *parentObj)
+    ExecutionObjectContext *parentObj)
 {
   NclFormatterEvent *event = createEvent (bind, ncmLink, parentObj);
 
@@ -1956,7 +1956,7 @@ Converter::createAttributeAssessment (
 NclLinkSimpleAction *
 Converter::createSimpleAction (
     SimpleAction *sae, Bind *bind, Link *ncmLink,
-    NclCompositeExecutionObject *parentObj)
+    ExecutionObjectContext *parentObj)
 {
   NclFormatterEvent *event;
   SimpleActionType actionType;
@@ -2172,7 +2172,7 @@ Converter::createSimpleAction (
 NclLinkCompoundAction *
 Converter::createCompoundAction (
     short op, GingaTime delay, vector<Action *> *ncmChildActions,
-    CausalLink *ncmLink, NclCompositeExecutionObject *parentObj)
+    CausalLink *ncmLink, ExecutionObjectContext *parentObj)
 {
   NclLinkCompoundAction *action;
   NclLinkAction *childAction;
@@ -2214,7 +2214,7 @@ Converter::createCompoundAction (
 NclLinkTriggerCondition *
 Converter::createSimpleCondition (
     SimpleCondition *simpleCondition, Bind *bind, Link *ncmLink,
-    NclCompositeExecutionObject *parentObj)
+    ExecutionObjectContext *parentObj)
 {
   NclFormatterEvent *event;
   GingaTime delay;
@@ -2236,12 +2236,12 @@ Converter::createSimpleCondition (
 
 NclFormatterEvent *
 Converter::createEvent (
-    Bind *bind, Link *ncmLink, NclCompositeExecutionObject *parentObject)
+    Bind *bind, Link *ncmLink, ExecutionObjectContext *parentObject)
 {
   NclNodeNesting *endPointNodeSequence;
   NclNodeNesting *endPointPerspective;
   Node *parentNode;
-  NclExecutionObject *executionObject;
+  ExecutionObject *executionObject;
   InterfacePoint *interfacePoint;
   string key;
   NclFormatterEvent *event = nullptr;

@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define PLAYER_ADAPTER_H
 
 #include "NclAttributionEvent.h"
-#include "NclExecutionObject.h"
+#include "ExecutionObject.h"
 #include "NclPresentationEvent.h"
 #include "mb/IEventListener.h"
 
@@ -43,7 +43,7 @@ public:
 
   virtual bool setProperty (NclAttributionEvent *, const string &);
 
-  bool prepare (NclExecutionObject *, NclPresentationEvent *);
+  bool prepare (ExecutionObject *, NclPresentationEvent *);
   bool hasPrepared ();
   bool unprepare ();
 
@@ -70,13 +70,13 @@ public:
 
 private:
   FormatterScheduler *_scheduler;
-  NclExecutionObject *_object;
+  ExecutionObject *_object;
   Player *_player;
 
   void createPlayer (const string &);
   void prepareScope (GingaTime offset = 0);
 
-  GingaTime prepareProperties (NclExecutionObject *obj);
+  GingaTime prepareProperties (ExecutionObject *obj);
   void prepare (void);
   void updateObjectExpectedDuration ();
 

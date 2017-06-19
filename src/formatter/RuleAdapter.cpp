@@ -26,7 +26,7 @@ RuleAdapter::RuleAdapter (Settings *settings)
 {
   this->settings = settings;
   ruleListenMap = new map<string, vector<Rule *> *>;
-  entityListenMap = new map<Rule *, vector<NclExecutionObjectSwitch *> *>;
+  entityListenMap = new map<Rule *, vector<ExecutionObjectSwitch *> *>;
   descListenMap = new map<Rule *, vector<DescriptorSwitch *> *>;
 }
 
@@ -81,8 +81,8 @@ RuleAdapter::reset ()
 
   if (entityListenMap != NULL)
     {
-      map<Rule *, vector<NclExecutionObjectSwitch *> *>::iterator j;
-      vector<NclExecutionObjectSwitch *> *objects;
+      map<Rule *, vector<ExecutionObjectSwitch *> *>::iterator j;
+      vector<ExecutionObjectSwitch *> *objects;
 
       j = entityListenMap->begin ();
       while (j != entityListenMap->end ())
@@ -127,12 +127,12 @@ RuleAdapter::getSettings ()
 }
 
 void
-RuleAdapter::adapt (NclCompositeExecutionObject *compositeObject,
+RuleAdapter::adapt (ExecutionObjectContext *compositeObject,
                     bool force)
 {
-  NclExecutionObject *object;
-  map<string, NclExecutionObject *> *objs;
-  map<string, NclExecutionObject *>::iterator i;
+  ExecutionObject *object;
+  map<string, ExecutionObject *> *objs;
+  map<string, ExecutionObject *>::iterator i;
 
   objs = compositeObject->getExecutionObjects ();
   if (objs != NULL)
@@ -141,20 +141,20 @@ RuleAdapter::adapt (NclCompositeExecutionObject *compositeObject,
       while (i != objs->end ())
         {
           object = i->second;
-          if (object->instanceOf ("NclExecutionObjectSwitch"))
+          if (object->instanceOf ("ExecutionObjectSwitch"))
             {
               initializeRuleObjectRelation (
-                  (NclExecutionObjectSwitch *)object);
+                  (ExecutionObjectSwitch *)object);
 
-              adapt ((NclExecutionObjectSwitch *)object, force);
-              object = ((NclExecutionObjectSwitch *)object)
+              adapt ((ExecutionObjectSwitch *)object, force);
+              object = ((ExecutionObjectSwitch *)object)
                            ->getSelectedObject ();
             }
 
           adaptDescriptor (object);
-          if (object->instanceOf ("NclCompositeExecutionObject"))
+          if (object->instanceOf ("ExecutionObjectContext"))
             {
-              adapt ((NclCompositeExecutionObject *)object, force);
+              adapt ((ExecutionObjectContext *)object, force);
             }
           ++i;
         }
@@ -206,18 +206,18 @@ RuleAdapter::initializeAttributeRuleRelation (Rule *topRule, Rule *rule)
 
 void
 RuleAdapter::initializeRuleObjectRelation (
-    arg_unused (NclExecutionObjectSwitch *objectAlternatives))
+    arg_unused (ExecutionObjectSwitch *objectAlternatives))
 {
 }
 
 void
-RuleAdapter::adapt (arg_unused (NclExecutionObjectSwitch *objectAlternatives),
+RuleAdapter::adapt (arg_unused (ExecutionObjectSwitch *objectAlternatives),
                     arg_unused (bool force))
 {
 }
 
 bool
-RuleAdapter::adaptDescriptor (NclExecutionObject *executionObject)
+RuleAdapter::adaptDescriptor (ExecutionObject *executionObject)
 {
   NclCascadingDescriptor *cascadingDescriptor;
   GenericDescriptor *selectedDescriptor;

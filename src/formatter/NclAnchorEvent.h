@@ -25,7 +25,7 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-class NclExecutionObject;
+class ExecutionObject;
 
 class NclAnchorEvent : public NclFormatterEvent
 {
@@ -33,7 +33,7 @@ protected:
   ContentAnchor *anchor;
 
 public:
-  NclAnchorEvent (const string &id, NclExecutionObject *, ContentAnchor *);
+  NclAnchorEvent (const string &id, ExecutionObject *, ContentAnchor *);
 
   virtual ~NclAnchorEvent ();
 

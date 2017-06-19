@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "PlayerAdapter.h"
 
 #include "FormatterScheduler.h"
-#include "NclApplicationExecutionObject.h"
+#include "ExecutionObjectApplication.h"
 #include "NclLinkTransitionTriggerCondition.h"
 
 #include "mb/Display.h"
@@ -73,10 +73,10 @@ bool
 PlayerAdapter::setCurrentEvent (NclFormatterEvent *event)
 {
 
-  NclApplicationExecutionObject *appObject;
+  ExecutionObjectApplication *appObject;
   string ifId;
 
-  appObject = dynamic_cast <NclApplicationExecutionObject *> (_object);
+  appObject = dynamic_cast <ExecutionObjectApplication *> (_object);
   g_assert_nonnull (appObject);
 
   if (_preparedEvents.count (event->getId ()) != 0
@@ -192,7 +192,7 @@ PlayerAdapter::hasPrepared ()
 }
 
 GingaTime
-PlayerAdapter::prepareProperties (NclExecutionObject *obj)
+PlayerAdapter::prepareProperties (ExecutionObject *obj)
 {
   NclCascadingDescriptor *descriptor;
   LayoutRegion *region = nullptr;
@@ -444,7 +444,7 @@ PlayerAdapter::prepareProperties (NclExecutionObject *obj)
 }
 
 bool
-PlayerAdapter::prepare (NclExecutionObject *object,
+PlayerAdapter::prepare (ExecutionObject *object,
                         NclPresentationEvent *event)
 {
   Content *content;
@@ -459,7 +459,7 @@ PlayerAdapter::prepare (NclExecutionObject *object,
       return false;
     }
 
-  if (object->instanceOf("NclApplicationExecutionObject"))
+  if (object->instanceOf("ExecutionObjectApplication"))
     {
       if (this->_object != object)
         {
@@ -1144,7 +1144,7 @@ PlayerAdapter::unprepare ()
 
       _scheduler->removePlayer (_object);
 
-      if (NclExecutionObject::hasInstance (_object, false))
+      if (ExecutionObject::hasInstance (_object, false))
         _object->unprepare ();
 
       _object = nullptr;
@@ -1170,7 +1170,7 @@ PlayerAdapter::setProperty (NclAttributionEvent *event,
     }
   else
     {
-      if(_object->instanceOf("NclApplicationExecutionObject"))
+      if(_object->instanceOf("ExecutionObjectApplication"))
         {
           if (!setCurrentEvent (event))
             {

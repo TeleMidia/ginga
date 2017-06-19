@@ -18,13 +18,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "NclFormatterCausalLink.h"
 
-#include "NclCompositeExecutionObject.h"
+#include "ExecutionObjectContext.h"
 
 GINGA_FORMATTER_BEGIN
 
 NclFormatterCausalLink::NclFormatterCausalLink (
     NclLinkTriggerCondition *condition, NclLinkAction *action,
-    Link *ncmLink, NclCompositeExecutionObject *parentObject)
+    Link *ncmLink, ExecutionObjectContext *parentObject)
     : NclFormatterLink (ncmLink, parentObject)
 {
   typeSet.insert ("NclFormatterCausalLink");

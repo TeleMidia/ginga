@@ -41,7 +41,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/Parameter.h"
 using namespace ::ginga::ncl;
 
-#include "NclExecutionObjectSwitch.h"
+#include "ExecutionObjectSwitch.h"
 #include "NclSwitchEvent.h"
 
 #include "NclAttributionEvent.h"
@@ -61,9 +61,9 @@ using namespace ::ginga::ncl;
 
 #include "NclCascadingDescriptor.h"
 
-#include "NclCompositeExecutionObject.h"
-#include "NclApplicationExecutionObject.h"
-#include "NclExecutionObject.h"
+#include "ExecutionObjectContext.h"
+#include "ExecutionObjectApplication.h"
+#include "ExecutionObject.h"
 
 #include "RuleAdapter.h"
 
@@ -78,65 +78,65 @@ public:
   virtual ~Converter ();
 
   void setHandlingStatus (bool handling);
-  NclExecutionObject *getObjectFromNodeId (const string &id);
+  ExecutionObject *getObjectFromNodeId (const string &id);
 
   void setLinkActionListener (INclLinkActionListener *actionListener);
 
-  NclExecutionObject *getExecutionObjectFromPerspective (
+  ExecutionObject *getExecutionObjectFromPerspective (
       NclNodeNesting *perspec, GenericDescriptor *desc);
 
-  set<NclExecutionObject *> *getSettingNodeObjects ();
+  set<ExecutionObject *> *getSettingNodeObjects ();
 
-  NclFormatterEvent *getEvent (NclExecutionObject *exeObj,
+  NclFormatterEvent *getEvent (ExecutionObject *exeObj,
                                InterfacePoint *interfacePoint,
                                int ncmEventType,
                                const string &key);
 
-  NclExecutionObject *
-  processExecutionObjectSwitch (NclExecutionObjectSwitch *switchObject);
+  ExecutionObject *
+  processExecutionObjectSwitch (ExecutionObjectSwitch *switchObject);
 
   NclFormatterEvent *insertContext (NclNodeNesting *contextPerspective,
                                     Port *port);
 
 private:
   static int _dummyCount;
-  map<string, NclExecutionObject *> _executionObjects;
+  map<string, ExecutionObject *> _executionObjects;
   set<NclFormatterEvent *> _listening;
-  set<NclExecutionObject *> _settingObjects;
+  set<ExecutionObject *> _settingObjects;
   INclLinkActionListener *_actionListener;
   RuleAdapter *_ruleAdapter;
   bool _handling;
 
-  void addExecutionObject (NclExecutionObject *exeObj,
-                           NclCompositeExecutionObject *parentObj);
+  void addExecutionObject (ExecutionObject *exeObj,
+                           ExecutionObjectContext *parentObj);
 
-  bool removeExecutionObject (NclExecutionObject *exeObj);
+  bool removeExecutionObject (ExecutionObject *exeObj);
 
   NclFormatterCausalLink *
   createCausalLink (CausalLink *ncmLink,
-                    NclCompositeExecutionObject *parentObject);
+                    ExecutionObjectContext *parentObject);
 
-  NclCompositeExecutionObject *
-  addSameInstance (NclExecutionObject *exeObj, ReferNode *referNode);
+  ExecutionObjectContext *
+  addSameInstance (ExecutionObject *exeObj, ReferNode *referNode);
 
-  NclCompositeExecutionObject *getParentExecutionObject (
+  ExecutionObjectContext *getParentExecutionObject (
       NclNodeNesting *perspective);
 
-  NclExecutionObject *
+  ExecutionObject *
   createExecutionObject (const string &id, NclNodeNesting *perspective,
                          NclCascadingDescriptor *descriptor);
 
-  void compileExecutionObjectLinks (NclExecutionObject *exeObj, Node *dataObj,
-                                    NclCompositeExecutionObject *parentObj);
+  void compileExecutionObjectLinks (ExecutionObject *exeObj, Node *dataObj,
+                                    ExecutionObjectContext *parentObj);
 
   void processLink (Link *ncmLink,
                     Node *dataObject,
-                    NclExecutionObject *exeObj,
-                    NclCompositeExecutionObject *parentObj);
+                    ExecutionObject *exeObj,
+                    ExecutionObjectContext *parentObj);
 
   void setActionListener (NclLinkAction *action);
 
-  void resolveSwitchEvents (NclExecutionObjectSwitch *switchObject);
+  void resolveSwitchEvents (ExecutionObjectSwitch *switchObject);
 
   NclFormatterEvent *insertNode (NclNodeNesting *perspective,
                                  InterfacePoint *interfacePoint,
@@ -166,47 +166,47 @@ private:
 
   NclLinkAction *createAction (Action *actionExpression,
                                CausalLink *ncmLink,
-                               NclCompositeExecutionObject *parentObject);
+                               ExecutionObjectContext *parentObject);
 
   NclLinkCondition *
   createCondition (ConditionExpression *ncmExpression, CausalLink *ncmLink,
-                   NclCompositeExecutionObject *parentObject);
+                   ExecutionObjectContext *parentObject);
 
   NclLinkCompoundTriggerCondition *createCompoundTriggerCondition (
       short op, GingaTime delay,
       vector<ConditionExpression *> *ncmChildConditions,
-      CausalLink *ncmLink, NclCompositeExecutionObject *parentObject);
+      CausalLink *ncmLink, ExecutionObjectContext *parentObject);
 
   NclLinkCondition *createCondition (
       TriggerExpression *triggerExpression, CausalLink *ncmLink,
-      NclCompositeExecutionObject *parentObject);
+      ExecutionObjectContext *parentObject);
 
   NclLinkAssessmentStatement *createAssessmentStatement (
       AssessmentStatement *assessmentStatement, Bind *bind, Link *ncmLink,
-      NclCompositeExecutionObject *parentObject);
+      ExecutionObjectContext *parentObject);
 
   NclLinkStatement *
   createStatement (Statement *statementExpression, Link *ncmLink,
-                   NclCompositeExecutionObject *parentObject);
+                   ExecutionObjectContext *parentObject);
 
   NclLinkAttributeAssessment *createAttributeAssessment (
       AttributeAssessment *attributeAssessment, Bind *bind, Link *ncmLink,
-      NclCompositeExecutionObject *parentObject);
+      ExecutionObjectContext *parentObject);
 
   NclLinkSimpleAction *
   createSimpleAction (SimpleAction *sae, Bind *bind, Link *ncmLink,
-                      NclCompositeExecutionObject *parentObject);
+                      ExecutionObjectContext *parentObject);
 
   NclLinkCompoundAction *createCompoundAction (
       short op, GingaTime delay, vector<Action *> *ncmChildActions,
-      CausalLink *ncmLink, NclCompositeExecutionObject *parentObject);
+      CausalLink *ncmLink, ExecutionObjectContext *parentObject);
 
   NclLinkTriggerCondition *createSimpleCondition (
       SimpleCondition *condition, Bind *bind, Link *ncmLink,
-      NclCompositeExecutionObject *parentObject);
+      ExecutionObjectContext *parentObject);
 
   NclFormatterEvent *createEvent (Bind *bind, Link *ncmLink,
-                                  NclCompositeExecutionObject *parentObject);
+                                  ExecutionObjectContext *parentObject);
 
   GingaTime getDelayParameter (Link *ncmLink, Parameter *connParam,
                                Bind *ncmBind);

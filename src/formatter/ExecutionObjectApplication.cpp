@@ -16,24 +16,24 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "NclApplicationExecutionObject.h"
+#include "ExecutionObjectApplication.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_FORMATTER_BEGIN
 
-NclApplicationExecutionObject::NclApplicationExecutionObject (
+ExecutionObjectApplication::ExecutionObjectApplication (
     const string &id, Node *node, NclCascadingDescriptor *descriptor,
     bool handling, INclLinkActionListener *seListener)
-  : NclExecutionObject (id, node, descriptor, handling, seListener)
+  : ExecutionObject (id, node, descriptor, handling, seListener)
 {
-  _typeSet.insert ("NclApplicationExecutionObject");
+  _typeSet.insert ("ExecutionObjectApplication");
   _currentEvent = nullptr;
 }
 
-NclApplicationExecutionObject::~NclApplicationExecutionObject ()
+ExecutionObjectApplication::~ExecutionObjectApplication ()
 {
-  NclExecutionObject::removeInstance (this);
+  ExecutionObject::removeInstance (this);
 
   for (auto i: _preparedEvents)
     {
@@ -48,7 +48,7 @@ NclApplicationExecutionObject::~NclApplicationExecutionObject ()
 }
 
 bool
-NclApplicationExecutionObject::isSleeping ()
+ExecutionObjectApplication::isSleeping ()
 {
   for (auto i: _preparedEvents)
     {
@@ -61,7 +61,7 @@ NclApplicationExecutionObject::isSleeping ()
 }
 
 bool
-NclApplicationExecutionObject::isPaused ()
+ExecutionObjectApplication::isPaused ()
 {
   bool hasPaused = false;
 
@@ -96,13 +96,13 @@ NclApplicationExecutionObject::isPaused ()
 }
 
 NclFormatterEvent *
-NclApplicationExecutionObject::getCurrentEvent ()
+ExecutionObjectApplication::getCurrentEvent ()
 {
   return _currentEvent;
 }
 
 bool
-NclApplicationExecutionObject::hasPreparedEvent (NclFormatterEvent *event)
+ExecutionObjectApplication::hasPreparedEvent (NclFormatterEvent *event)
 {
   for (auto i: _preparedEvents)
     {
@@ -115,7 +115,7 @@ NclApplicationExecutionObject::hasPreparedEvent (NclFormatterEvent *event)
 }
 
 void
-NclApplicationExecutionObject::setCurrentEvent (NclFormatterEvent *event)
+ExecutionObjectApplication::setCurrentEvent (NclFormatterEvent *event)
 {
   if (!containsEvent (event))
     {
@@ -128,7 +128,7 @@ NclApplicationExecutionObject::setCurrentEvent (NclFormatterEvent *event)
 }
 
 bool
-NclApplicationExecutionObject::prepare (NclFormatterEvent *event,
+ExecutionObjectApplication::prepare (NclFormatterEvent *event,
                                         GingaTime offsetTime)
 {
   GingaTime startTime = 0;
@@ -219,7 +219,7 @@ NclApplicationExecutionObject::prepare (NclFormatterEvent *event,
 }
 
 bool
-NclApplicationExecutionObject::start ()
+ExecutionObjectApplication::start ()
 {
   if (_currentEvent == nullptr
       || _preparedEvents.count (_currentEvent->getId ()) == 0)
@@ -264,7 +264,7 @@ NclApplicationExecutionObject::start ()
 }
 
 NclEventTransition *
-NclApplicationExecutionObject::getNextTransition ()
+ExecutionObjectApplication::getNextTransition ()
 {
   if (_currentEvent == nullptr
       || _currentEvent->getCurrentState () == EventUtil::ST_SLEEPING
@@ -277,7 +277,7 @@ NclApplicationExecutionObject::getNextTransition ()
 }
 
 bool
-NclApplicationExecutionObject::stop ()
+ExecutionObjectApplication::stop ()
 {
   ContentAnchor *contentAnchor;
   GingaTime endTime;
@@ -324,7 +324,7 @@ NclApplicationExecutionObject::stop ()
 }
 
 bool
-NclApplicationExecutionObject::abort ()
+ExecutionObjectApplication::abort ()
 {
   ContentAnchor *contentAnchor;
   GingaTime endTime;
@@ -402,7 +402,7 @@ NclApplicationExecutionObject::abort ()
 }
 
 bool
-NclApplicationExecutionObject::pause ()
+ExecutionObjectApplication::pause ()
 {
   if (_currentEvent == nullptr
       || _currentEvent->getCurrentState () != EventUtil::ST_OCCURRING
@@ -435,7 +435,7 @@ NclApplicationExecutionObject::pause ()
 }
 
 bool
-NclApplicationExecutionObject::resume ()
+ExecutionObjectApplication::resume ()
 {
   if (_currentEvent == _wholeContent)
     {
@@ -472,7 +472,7 @@ NclApplicationExecutionObject::resume ()
 }
 
 bool
-NclApplicationExecutionObject::unprepare ()
+ExecutionObjectApplication::unprepare ()
 {
   if (_currentEvent == nullptr
       || _currentEvent->getCurrentState () != EventUtil::ST_SLEEPING
@@ -503,7 +503,7 @@ NclApplicationExecutionObject::unprepare ()
 }
 
 void
-NclApplicationExecutionObject::unprepareEvents ()
+ExecutionObjectApplication::unprepareEvents ()
 {
   NclFormatterEvent *event;
 
@@ -519,7 +519,7 @@ NclApplicationExecutionObject::unprepareEvents ()
 }
 
 void
-NclApplicationExecutionObject::removeEventListeners ()
+ExecutionObjectApplication::removeEventListeners ()
 {
   for (NclFormatterEvent *event : getEvents ())
     {
@@ -528,8 +528,8 @@ NclApplicationExecutionObject::removeEventListeners ()
 }
 
 void
-NclApplicationExecutionObject::removeParentObject (
-    Node *parentNode, NclCompositeExecutionObject *parentObj)
+ExecutionObjectApplication::removeParentObject (
+    Node *parentNode, ExecutionObjectContext *parentObj)
 {
   if (_mainEvent != nullptr)
     {
@@ -541,14 +541,14 @@ NclApplicationExecutionObject::removeParentObject (
       i.second->removeEventListener (parentObj);
     }
 
-  NclExecutionObject::removeParentObject (parentNode, parentObj);
+  ExecutionObject::removeParentObject (parentNode, parentObj);
 }
 
 void
-NclApplicationExecutionObject::removeParentListenersFromEvent (
+ExecutionObjectApplication::removeParentListenersFromEvent (
     NclFormatterEvent *event)
 {
-  NclCompositeExecutionObject *parentObject;
+  ExecutionObjectContext *parentObject;
 
   for (auto i : _parentTable)
     {

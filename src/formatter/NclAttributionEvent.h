@@ -27,7 +27,7 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-class NclExecutionObject;
+class ExecutionObject;
 
 class NclAttributionEvent : public NclFormatterEvent
 {
@@ -41,7 +41,7 @@ protected:
   Settings *settings;
 
 public:
-  NclAttributionEvent (const string &id, NclExecutionObject *,
+  NclAttributionEvent (const string &id, ExecutionObject *,
                        PropertyAnchor *,
                        Settings *);
 

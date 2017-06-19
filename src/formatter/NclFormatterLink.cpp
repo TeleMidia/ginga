@@ -21,11 +21,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 NclFormatterLink::NclFormatterLink (Link *ncmLink,
-                                    NclCompositeExecutionObject *parentObject)
+                                    ExecutionObjectContext *parentObject)
 {
   typeSet.insert ("NclFormatterLink");
 
-  this->parentObject = parentObject; // NclCompositeExecutionObject
+  this->parentObject = parentObject; // ExecutionObjectContext
   this->ncmLink = ncmLink;
   this->suspend = false;
 }

@@ -19,12 +19,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _EXECUTIONOBJECTSWITCH_H_
 
 #include "ncl/Node.h"
-using namespace ::ginga::ncl;
-
 #include "ncl/LambdaAnchor.h"
 using namespace ::ginga::ncl;
 
-#include "NclCompositeExecutionObject.h"
+#include "ExecutionObjectContext.h"
 
 #include "NclSwitchEvent.h"
 
@@ -33,19 +31,19 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-class NclExecutionObjectSwitch : public NclCompositeExecutionObject
+class ExecutionObjectSwitch : public ExecutionObjectContext
 {
 public:
-  NclExecutionObjectSwitch (const string &id, Node *switchNode, bool handling,
-                            INclLinkActionListener *seListener);
+  ExecutionObjectSwitch (const string &id, Node *switchNode, bool handling,
+                         INclLinkActionListener *seListener);
 
-  virtual ~NclExecutionObjectSwitch (){}
-  NclExecutionObject *getSelectedObject ();
-  void select (NclExecutionObject *exeObj);
+  virtual ~ExecutionObjectSwitch (){}
+  ExecutionObject *getSelectedObject ();
+  void select (ExecutionObject *exeObj);
   bool addEvent (NclFormatterEvent *event);
 
 protected:
-  NclExecutionObject *_selectedObject;
+  ExecutionObject *_selectedObject;
 };
 
 GINGA_FORMATTER_END

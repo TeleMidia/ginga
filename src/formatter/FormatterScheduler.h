@@ -67,11 +67,11 @@ public:
   void eventStateChanged (NclFormatterEvent *someEvent, short transition,
                           short previousState) override;
 
-  PlayerAdapter *getObjectPlayer (NclExecutionObject *execObj);
-  bool removePlayer (NclExecutionObject *object);
+  PlayerAdapter *getObjectPlayer (ExecutionObject *execObj);
+  bool removePlayer (ExecutionObject *object);
 
 private:
-  PlayerAdapter *initializePlayer (NclExecutionObject *object);
+  PlayerAdapter *initializePlayer (ExecutionObject *object);
 
   void runAction (NclLinkSimpleAction *action);
   void runAction (NclFormatterEvent *event, NclLinkSimpleAction *action);
@@ -79,29 +79,29 @@ private:
                               NclLinkSimpleAction *action);
 
   void runActionOverApplicationObject (
-      NclApplicationExecutionObject *executionObject,
+      ExecutionObjectApplication *executionObject,
       NclFormatterEvent *event, PlayerAdapter *player,
       NclLinkSimpleAction *action);
 
   void
-  runActionOverComposition (NclCompositeExecutionObject *compositeObject,
+  runActionOverComposition (ExecutionObjectContext *compositeObject,
                             NclLinkSimpleAction *action);
 
-  void runActionOverSwitch (NclExecutionObjectSwitch *switchObject,
+  void runActionOverSwitch (ExecutionObjectSwitch *switchObject,
                             NclSwitchEvent *event,
                             NclLinkSimpleAction *action);
 
-  void runSwitchEvent (NclExecutionObjectSwitch *switchObject,
+  void runSwitchEvent (ExecutionObjectSwitch *switchObject,
                        NclSwitchEvent *switchEvent,
-                       NclExecutionObject *selectedObject,
+                       ExecutionObject *selectedObject,
                        NclLinkSimpleAction *action);
 
   string solveImplicitRefAssessment (const string &propValue,
                                      NclAttributionEvent *event);
 
-  SDLWindow *prepareFormatterRegion (NclExecutionObject *);
-  void showObject (NclExecutionObject *);
-  void hideObject (NclExecutionObject *);
+  SDLWindow *prepareFormatterRegion (ExecutionObject *);
+  void showObject (ExecutionObject *);
+  void hideObject (ExecutionObject *);
 };
 
 GINGA_FORMATTER_END

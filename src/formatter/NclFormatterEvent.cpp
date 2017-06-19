@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclFormatterEvent.h"
 #include "NclPresentationEvent.h"
 
-#include "NclCompositeExecutionObject.h"
+#include "ExecutionObjectContext.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -27,7 +27,7 @@ set<NclFormatterEvent *> NclFormatterEvent::instances;
 bool NclFormatterEvent::init = false;
 
 NclFormatterEvent::NclFormatterEvent (const string &id,
-                                      NclExecutionObject *execObject)
+                                      ExecutionObject *execObject)
 {
   this->id = id;
   currentState = EventUtil::ST_SLEEPING;
@@ -412,14 +412,14 @@ NclFormatterEvent::getTransistion (short previousState, short newState)
   return -1;
 }
 
-NclExecutionObject *
+ExecutionObject *
 NclFormatterEvent::getExecutionObject ()
 {
   return executionObject;
 }
 
 void
-NclFormatterEvent::setExecutionObject (NclExecutionObject *object)
+NclFormatterEvent::setExecutionObject (ExecutionObject *object)
 {
   executionObject = object;
 }

@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 
 #include "NclCascadingDescriptor.h"
-#include "NclExecutionObject.h"
+#include "ExecutionObject.h"
 
 #include "NclSelectionEvent.h"
 
@@ -52,8 +52,8 @@ public:
   void setKeyMaster (const string &mediaId);
   void setFocus (const string &focusIndex);
 
-  void showObject (NclExecutionObject *object);
-  void hideObject (NclExecutionObject *object);
+  void showObject (ExecutionObject *object);
+  void hideObject (ExecutionObject *object);
 
   void setDefaultFocusBorderColor (SDL_Color);
   void setDefaultFocusBorderWidth (int);
@@ -64,11 +64,11 @@ public:
 
 private:
   Settings *_settings;
-  map<string, set<NclExecutionObject *> *> *_focusTable;
+  map<string, set<ExecutionObject *> *> *_focusTable;
   bool _isHandler;
   string _currentFocus;
   string _objectToSelect;
-  NclExecutionObject *_selectedObject;
+  ExecutionObject *_selectedObject;
 
   int _defaultFocusBorderWidth;  // pixels
   SDL_Color _defaultFocusBorderColor;
@@ -92,11 +92,11 @@ private:
   void resetKeyMaster ();
 
   void setFocus (NclCascadingDescriptor *descriptor);
-  void recoveryDefaultState (NclExecutionObject *object);
+  void recoveryDefaultState (ExecutionObject *object);
 
-  NclExecutionObject *getObjectFromFocusIndex (const string &focusIndex);
-  void insertObject (NclExecutionObject *object, const string &focusIndex);
-  void removeObject (NclExecutionObject *object, const string &focusIndex);
+  ExecutionObject *getObjectFromFocusIndex (const string &focusIndex);
+  void insertObject (ExecutionObject *object, const string &focusIndex);
+  void removeObject (ExecutionObject *object, const string &focusIndex);
 
   void changeSettingState (const string &name, const string &act);
 };

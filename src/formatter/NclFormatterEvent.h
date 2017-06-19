@@ -26,12 +26,12 @@ using namespace ::ginga::ncl;
 GINGA_FORMATTER_BEGIN
 
 class INclEventListener;
-class NclExecutionObject;
+class ExecutionObject;
 
 class NclFormatterEvent
 {
 public:
-  NclFormatterEvent (const string &id, NclExecutionObject *);
+  NclFormatterEvent (const string &id, ExecutionObject *);
   virtual ~NclFormatterEvent ();
 
   static bool hasInstance (NclFormatterEvent *event, bool remove);
@@ -58,8 +58,8 @@ public:
   short getPreviousState ();
   static short getTransistion (short previousState, short newState);
 
-  NclExecutionObject *getExecutionObject ();
-  void setExecutionObject (NclExecutionObject *object);
+  ExecutionObject *getExecutionObject ();
+  void setExecutionObject (ExecutionObject *object);
   string getId ();
   int getOccurrences ();
   static string getStateName (short state);
@@ -69,7 +69,7 @@ protected:
   short currentState;
   short previousState;
   int occurrences;
-  NclExecutionObject *executionObject;
+  ExecutionObject *executionObject;
   set<INclEventListener *> listeners;
   set<string> typeSet;
   bool deleting;

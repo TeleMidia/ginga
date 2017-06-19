@@ -31,7 +31,7 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-class NclCompositeExecutionObject;
+class ExecutionObjectContext;
 
 class NclFormatterCausalLink : public NclFormatterLink,
                                public NclLinkTriggerListener,
@@ -44,7 +44,7 @@ private:
 public:
   NclFormatterCausalLink (NclLinkTriggerCondition *condition,
                           NclLinkAction *action, Link *ncmLink,
-                          NclCompositeExecutionObject *parentObject);
+                          ExecutionObjectContext *parentObject);
 
   virtual ~NclFormatterCausalLink ();
 
