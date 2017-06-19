@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef EventTransitionManager_H_
 #define EventTransitionManager_H_
 
-#include "NclPresentationEvent.h"
+#include "NclFormatterEvent.h"
 #include "NclBeginEventTransition.h"
 #include "NclEndEventTransition.h"
 

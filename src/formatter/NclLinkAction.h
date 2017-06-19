@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _LINKACTION_H_
 
 #include "NclFormatterEvent.h"
-#include "NclAttributionEvent.h"
 #include "NclLinkActionProgressionListener.h"
 
 GINGA_FORMATTER_BEGIN
