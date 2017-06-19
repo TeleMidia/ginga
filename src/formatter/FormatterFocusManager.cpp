@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "FormatterFocusManager.h"
 
-#include "FormatterConverter.h"
+#include "Converter.h"
 #include "FormatterScheduler.h"
 
 #include "mb/Display.h"
@@ -34,7 +34,7 @@ set<FormatterFocusManager *> FormatterFocusManager::_instances;
 FormatterFocusManager::FormatterFocusManager (FormatterScheduler *scheduler,
                                               Settings *settings,
                                               INclLinkActionListener *settingActions,
-                                              FormatterConverter *converter)
+                                              Converter *converter)
 {
   string str;
 
