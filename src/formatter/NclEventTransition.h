@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef EVENTTRANSITION_H_
 #define EVENTTRANSITION_H_
 
-#include "NclFormatterEvent.h"
+#include "FormatterEvents.h"
 
 GINGA_FORMATTER_BEGIN
 
