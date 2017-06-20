@@ -82,7 +82,7 @@ NclLinkAttributeAssessment::getValue ()
       break;
 
     case AttributeType::STATE:
-      value = NclFormatterEvent::getStateName (event->getCurrentState ());
+      value = EventUtil::getStateName (event->getCurrentState ());
       break;
 
     case AttributeType::OCCURRENCES:

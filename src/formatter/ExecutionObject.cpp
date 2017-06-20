@@ -188,7 +188,7 @@ ExecutionObject::removeParentListenersFromEvent (
           if (NclFormatterEvent::hasInstance (_mainEvent, false))
             {
               // register parent as a mainEvent listener
-              _mainEvent->removeEventListener (parentObject);
+              _mainEvent->removeListener (parentObject);
             }
           else
             {
@@ -299,7 +299,7 @@ ExecutionObject::removeParentObject (Node *parentNode,
     {
       if (_wholeContent != nullptr)
         {
-          _wholeContent->removeEventListener (parentObject);
+          _wholeContent->removeListener (parentObject);
         }
       _parentTable.erase (i);
     }
@@ -686,7 +686,7 @@ ExecutionObject::prepare (NclFormatterEvent *event, GingaTime offsetTime)
               clog << i->second;
               clog << "'" << endl;
               // register parent as a mainEvent listener
-              _mainEvent->addEventListener (
+              _mainEvent->addListener (
                     (INclEventListener *)(ExecutionObjectContext *)
                     i->second);
               ++i;
@@ -714,7 +714,7 @@ ExecutionObject::prepare (NclFormatterEvent *event, GingaTime offsetTime)
       clog << i->second;
       clog << "'" << endl;
       // register parent as a mainEvent listener
-      _mainEvent->addEventListener (i->second);
+      _mainEvent->addListener (i->second);
       ++i;
     }
 

@@ -66,7 +66,7 @@ Converter::~Converter ()
     {
       if (NclFormatterEvent::hasInstance (evt, false))
         {
-          evt->removeEventListener (this);
+          evt->removeListener (this);
         }
     }
 
@@ -625,7 +625,7 @@ Converter::createExecutionObject (
       exeObj->addEvent (compositeEvt);
       // to monitor the switch presentation and clear the selection after
       // each execution
-      compositeEvt->addEventListener (this);
+      compositeEvt->addListener (this);
       _listening.insert (compositeEvt);
     }
   else if (nodeEntity->instanceOf ("CompositeNode"))
@@ -1172,7 +1172,7 @@ Converter::resolveSwitchEvents (
         {
           mappedEvent = getEvent (
                 selectedObject, selectedNodeEntity->getLambdaAnchor (),
-                switchEvent->getEventType (), switchEvent->getKey ());
+                switchEvent->getType (), switchEvent->getKey ());
         }
       else
         {
@@ -1200,7 +1200,7 @@ Converter::resolveSwitchEvents (
                       mappedEvent = getEvent (
                             endPointObject,
                             mapping->getEndInterfacePoint (),
-                            switchEvent->getEventType (),
+                            switchEvent->getType (),
                             switchEvent->getKey ());
                     }
 
@@ -1980,7 +1980,7 @@ Converter::createSimpleAction (
   if (event != nullptr)
     {
       eventType = bind->getRole ()->getEventType ();
-      event->setEventType (eventType);
+      event->setType (eventType);
     }
   else
     {

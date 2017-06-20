@@ -203,7 +203,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
           // g_assert_nonnull (win);
 
           player->setOutputWindow (win);
-          event->addEventListener (this);
+          event->addListener (this);
         }
 
       if (unlikely (!player->start ()))
@@ -211,7 +211,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
           WARNING ("failed to start player of '%s'",
                    obj->getId ().c_str ());
           if (event->getCurrentState () == EventState::SLEEPING)
-            event->removeEventListener (this);
+            event->removeListener (this);
         }
       break;
 
@@ -427,7 +427,7 @@ FormatterScheduler::runActionOverApplicationObject (
           player->prepare (executionObject, (NclPresentationEvent *) event);
         }
 
-      event->addEventListener (this);
+      event->addListener (this);
       if (player->setCurrentEvent (event))
         {
           if (!player->start ())
@@ -437,7 +437,7 @@ FormatterScheduler::runActionOverApplicationObject (
 
               // checking if player failed to start
               if (event->getCurrentState () == EventState::SLEEPING)
-                event->removeEventListener (this);
+                event->removeListener (this);
             }
         }
       break;
@@ -504,7 +504,7 @@ FormatterScheduler::runActionOverComposition (
       event = action->getEvent ();
       if (event != NULL)
         {
-          eventType = event->getEventType ();
+          eventType = event->getType ();
           if (eventType == EventType::UNKNOWN)
             {
               if (event->instanceOf ("NclPresentationEvent"))
@@ -699,7 +699,7 @@ FormatterScheduler::runActionOverComposition (
       event = action->getEvent ();
       if (event != NULL)
         {
-          eventType = event->getEventType ();
+          eventType = event->getType ();
         }
 
       if ((eventType == EventType::PRESENTATION)
@@ -890,7 +890,7 @@ FormatterScheduler::runSwitchEvent (ExecutionObjectSwitch *switchObject,
                                 ->getEvent (
                                     endPointObject,
                                     mapping->getEndInterfacePoint (),
-                                    switchEvent->getEventType (),
+                                    switchEvent->getType (),
                                     switchEvent->getKey ());
                     }
                 }
@@ -1070,7 +1070,7 @@ FormatterScheduler::startDocument (const string &file)
   // Start entry events.
   for (auto event: *entryevts)
     {
-      event->addEventListener (this);
+      event->addListener (this);
       this->events.push_back (event);
       this->startEvent (event);
     }
@@ -1146,7 +1146,7 @@ FormatterScheduler::eventStateChanged (
           if (((NclPresentationEvent *)event)->getRepetitions () == 0)
             {
               bool hideObj = true;
-              event->removeEventListener (this);
+              event->removeListener (this);
               object = event->getExecutionObject ();
 
               if (object->instanceOf ("ExecutionObjectApplication"))
@@ -1177,7 +1177,7 @@ FormatterScheduler::eventStateChanged (
           {
             bool hideObj = true;
 
-            event->removeEventListener (this);
+            event->removeListener (this);
             object = (ExecutionObject *)(event->getExecutionObject ());
 
             if (object->instanceOf ("ExecutionObjectApplication"))

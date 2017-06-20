@@ -34,7 +34,7 @@ NclLinkTransitionTriggerCondition::NclLinkTransitionTriggerCondition (
   if (NclFormatterEvent::hasInstance (event, false))
     {
       this->event = event;
-      this->event->addEventListener (this);
+      this->event->addListener (this);
     }
   else
     {
@@ -51,7 +51,7 @@ NclLinkTransitionTriggerCondition::~NclLinkTransitionTriggerCondition ()
 
   if (NclFormatterEvent::hasInstance (event, false))
     {
-      event->removeEventListener (this);
+      event->removeListener (this);
       event = NULL;
     }
 }

@@ -23,31 +23,31 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-set<NclFormatterEvent *> NclFormatterEvent::instances;
-bool NclFormatterEvent::init = false;
+set<NclFormatterEvent *> NclFormatterEvent::_instances;
+bool NclFormatterEvent::_init = false;
 
 NclFormatterEvent::NclFormatterEvent (const string &id,
-                                      ExecutionObject *execObject)
+                                      ExecutionObject *exeObj)
 {
   this->id = id;
   _currentState = EventState::SLEEPING;
-  occurrences = 0;
-  executionObject = execObject;
-  deleting = false;
-  eventType = EventType::UNKNOWN;
+  _occurrences = 0;
+  _exeObj = exeObj;
+  _deleting = false;
+  _eventType = EventType::UNKNOWN;
 
-  if (!init)
+  if (!_init)
     {
-      init = true;
+      _init = true;
     }
 
-  typeSet.insert ("NclFormatterEvent");
+  _typeSet.insert ("NclFormatterEvent");
   addInstance (this);
 }
 
 NclFormatterEvent::~NclFormatterEvent ()
 {
-  deleting = true;
+  _deleting = true;
 
   removeInstance (this);
 
@@ -55,21 +55,21 @@ NclFormatterEvent::~NclFormatterEvent ()
 }
 
 bool
-NclFormatterEvent::hasInstance (NclFormatterEvent *event, bool remove)
+NclFormatterEvent::hasInstance (NclFormatterEvent *evt, bool remove)
 {
   bool inst = false;
 
-  if (!init)
+  if (!_init)
     {
       return false;
     }
 
-  auto i = instances.find (event);
-  if (i != instances.end ())
+  auto i = _instances.find (evt);
+  if (i != _instances.end ())
     {
       if (remove)
         {
-          instances.erase (i);
+          _instances.erase (i);
         }
       inst = true;
     }
@@ -77,20 +77,20 @@ NclFormatterEvent::hasInstance (NclFormatterEvent *event, bool remove)
 }
 
 void
-NclFormatterEvent::addInstance (NclFormatterEvent *event)
+NclFormatterEvent::addInstance (NclFormatterEvent *evt)
 {
-  instances.insert (event);
+  _instances.insert (evt);
 }
 
 bool
-NclFormatterEvent::removeInstance (NclFormatterEvent *event)
+NclFormatterEvent::removeInstance (NclFormatterEvent *evt)
 {
   bool inst = false;
 
-  auto i = instances.find (event);
-  if (i != instances.end ())
+  auto i = _instances.find (evt);
+  if (i != _instances.end ())
     {
-      instances.erase (i);
+      _instances.erase (i);
       inst = true;
     }
 
@@ -100,27 +100,27 @@ NclFormatterEvent::removeInstance (NclFormatterEvent *event)
 bool
 NclFormatterEvent::instanceOf (const string &s)
 {
-  if (typeSet.empty ())
+  if (_typeSet.empty ())
     {
       return false;
     }
   else
     {
-      return (typeSet.find (s) != typeSet.end ());
+      return (_typeSet.find (s) != _typeSet.end ());
     }
 }
 
 bool
-NclFormatterEvent::hasNcmId (NclFormatterEvent *event, const string &anchorId)
+NclFormatterEvent::hasNcmId (NclFormatterEvent *evt, const string &anchorId)
 {
   Anchor *anchor;
   string anchorName = " ";
 
-  NclAnchorEvent *anchorEvt = dynamic_cast<NclAnchorEvent *> (event);
+  NclAnchorEvent *anchorEvt = dynamic_cast<NclAnchorEvent *> (evt);
   if (anchorEvt)
     {
       anchor = anchorEvt->getAnchor ();
-      if (anchor != NULL)
+      if (anchor != nullptr)
         {
           if (anchor->instanceOf ("IntervalAnchor"))
             {
@@ -136,15 +136,15 @@ NclFormatterEvent::hasNcmId (NclFormatterEvent *event, const string &anchorId)
             }
 
           if (anchorName == anchorId
-              && !event->instanceOf ("NclSelectionEvent"))
+              && !evt->instanceOf ("NclSelectionEvent"))
             {
               return true;
             }
         }
     }
-  else if (event->instanceOf ("NclAttributionEvent"))
+  else if (evt->instanceOf ("NclAttributionEvent"))
     {
-      anchor = ((NclAttributionEvent *)event)->getAnchor ();
+      anchor = ((NclAttributionEvent *)evt)->getAnchor ();
       if (anchor != NULL)
         {
           anchorName = ((PropertyAnchor *)anchor)->getName ();
@@ -159,39 +159,39 @@ NclFormatterEvent::hasNcmId (NclFormatterEvent *event, const string &anchorId)
 }
 
 void
-NclFormatterEvent::setEventType (EventType evtType)
+NclFormatterEvent::setType (EventType evtType)
 {
-  this->eventType = evtType;
+  this->_eventType = evtType;
 }
 
 EventType
-NclFormatterEvent::getEventType ()
+NclFormatterEvent::getType ()
 {
-  return eventType;
+  return _eventType;
 }
 
 void
 NclFormatterEvent::destroyListeners ()
 {
-  this->executionObject = NULL;
-  listeners.clear ();
+  this->_exeObj = NULL;
+  _listeners.clear ();
 }
 
 void
-NclFormatterEvent::addEventListener (INclEventListener *listener)
+NclFormatterEvent::addListener (INclEventListener *listener)
 {
-  this->listeners.insert (listener);
+  this->_listeners.insert (listener);
 }
 
 void
-NclFormatterEvent::removeEventListener (INclEventListener *listener)
+NclFormatterEvent::removeListener (INclEventListener *listener)
 {
   set<INclEventListener *>::iterator i;
 
-  i = listeners.find (listener);
-  if (i != listeners.end ())
+  i = _listeners.find (listener);
+  if (i != _listeners.end ())
     {
-      listeners.erase (i);
+      _listeners.erase (i);
     }
 }
 
@@ -221,7 +221,7 @@ NclFormatterEvent::getNewState (EventStateTransition transition)
 EventStateTransition
 NclFormatterEvent::getTransition (EventState newState)
 {
-  return getTransistion (_currentState, newState);
+  return EventUtil::getTransition (_currentState, newState);
 }
 
 bool
@@ -304,23 +304,23 @@ NclFormatterEvent::changeState (EventState newState,
 
   if (transition == EventStateTransition::STOPS)
     {
-      occurrences++;
+      _occurrences++;
     }
 
   _previousState = _currentState;
   _currentState = newState;
 
-  if (deleting)
+  if (_deleting)
     {
       return false;
     }
 
-  set<INclEventListener *> *clone = new set<INclEventListener *> (listeners);
+  set<INclEventListener *> *clone = new set<INclEventListener *> (_listeners);
 
   i = clone->begin ();
   while (i != clone->end ())
     {
-      if (deleting)
+      if (_deleting)
         {
           break;
         }
@@ -352,63 +352,16 @@ NclFormatterEvent::getPreviousState ()
   return _previousState;
 }
 
-EventStateTransition
-NclFormatterEvent::getTransistion (EventState previousState,
-                                   EventState newState)
-{
-  switch (previousState)
-    {
-    case EventState::SLEEPING:
-      switch (newState)
-        {
-        case EventState::OCCURRING:
-          return EventStateTransition::STARTS;
-        default:
-          return EventStateTransition::UNKNOWN;
-        }
-      break;
-
-    case EventState::OCCURRING:
-      switch (newState)
-        {
-        case EventState::SLEEPING:
-          return EventStateTransition::STOPS;
-        case EventState::PAUSED:
-          return EventStateTransition::PAUSES;
-        default:
-          return EventStateTransition::UNKNOWN;
-        }
-      break;
-
-    case EventState::PAUSED:
-      switch (newState)
-        {
-        case EventState::OCCURRING:
-          return EventStateTransition::RESUMES;
-        case EventState::SLEEPING:
-          return EventStateTransition::STOPS;
-        default:
-          return EventStateTransition::UNKNOWN;
-        }
-      break;
-
-    default:
-      break;
-    }
-
-  return EventStateTransition::UNKNOWN;
-}
-
 ExecutionObject *
 NclFormatterEvent::getExecutionObject ()
 {
-  return executionObject;
+  return _exeObj;
 }
 
 void
 NclFormatterEvent::setExecutionObject (ExecutionObject *object)
 {
-  executionObject = object;
+  _exeObj = object;
 }
 
 string
@@ -420,26 +373,7 @@ NclFormatterEvent::getId ()
 int
 NclFormatterEvent::getOccurrences ()
 {
-  return occurrences;
-}
-
-string
-NclFormatterEvent::getStateName (EventState state)
-{
-  switch (state)
-    {
-    case EventState::OCCURRING:
-      return "occurring";
-
-    case EventState::PAUSED:
-      return "paused";
-
-    case EventState::SLEEPING:
-      return "sleeping";
-
-    default:
-      return "";
-    }
+  return _occurrences;
 }
 
 // NclAnchorEvent
@@ -449,7 +383,7 @@ NclAnchorEvent::NclAnchorEvent (const string &id,
     : NclFormatterEvent (id, executionObject)
 {
   this->_anchor = anchor;
-  typeSet.insert ("NclAnchorEvent");
+  _typeSet.insert ("NclAnchorEvent");
 }
 
 NclAnchorEvent::~NclAnchorEvent () { removeInstance (this); }
@@ -466,7 +400,7 @@ NclPresentationEvent::NclPresentationEvent (const string &id,
                                             ContentAnchor *anchor)
     : NclAnchorEvent (id, exeObj, anchor)
 {
-  typeSet.insert ("NclPresentationEvent");
+  _typeSet.insert ("NclPresentationEvent");
 
   numPresentations = 1;
   repetitionInterval = 0;
@@ -553,7 +487,7 @@ NclPresentationEvent::getEnd ()
 void
 NclPresentationEvent::incrementOccurrences ()
 {
-  occurrences++;
+  _occurrences++;
 }
 
 // NclSelectionEvent
@@ -564,7 +498,7 @@ NclSelectionEvent::NclSelectionEvent (const string &id,
 {
   selectionCode.assign("NO_CODE");
 
-  typeSet.insert ("NclSelectionEvent");
+  _typeSet.insert ("NclSelectionEvent");
 }
 
 NclSelectionEvent::~NclSelectionEvent () { removeInstance (this); }
@@ -600,7 +534,7 @@ NclAttributionEvent::NclAttributionEvent (const string &id,
   Entity *entity;
   NodeEntity *dataObject;
 
-  typeSet.insert ("NclAttributionEvent");
+  _typeSet.insert ("NclAttributionEvent");
 
   this->anchor = anchor;
   this->valueMaintainer = NULL;
@@ -728,18 +662,18 @@ NclSwitchEvent::NclSwitchEvent (const string &id,
     : NclFormatterEvent (id, executionObjectSwitch)
 {
   this->interfacePoint = interfacePoint;
-  this->eventType = eventType;
+  this->_eventType = eventType;
   this->key = key;
   this->mappedEvent = NULL;
 
-  typeSet.insert ("NclSwitchEvent");
+  _typeSet.insert ("NclSwitchEvent");
 }
 
 NclSwitchEvent::~NclSwitchEvent ()
 {
   if (NclFormatterEvent::hasInstance (mappedEvent, false))
     {
-      mappedEvent->removeEventListener (this);
+      mappedEvent->removeListener (this);
       mappedEvent = NULL;
     }
 }
@@ -761,13 +695,13 @@ NclSwitchEvent::setMappedEvent (NclFormatterEvent *event)
 {
   if (mappedEvent != NULL)
     {
-      mappedEvent->removeEventListener (this);
+      mappedEvent->removeListener (this);
     }
 
   mappedEvent = event;
   if (mappedEvent != NULL)
     {
-      mappedEvent->addEventListener (this);
+      mappedEvent->addListener (this);
     }
 }
 

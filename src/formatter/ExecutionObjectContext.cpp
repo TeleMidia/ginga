@@ -293,7 +293,7 @@ ExecutionObjectContext::setParentsAsListeners ()
     {
       if (NclFormatterEvent::hasInstance (_wholeContent, false))
         {
-          _wholeContent->addEventListener (i->second);
+          _wholeContent->addListener (i->second);
         }
       ++i;
     }
@@ -318,7 +318,7 @@ ExecutionObjectContext::unsetParentsAsListeners ()
         }
 
       // unregister parent as a composite presentation listener
-      _wholeContent->removeEventListener (
+      _wholeContent->removeListener (
           (ExecutionObjectContext *)i->second);
 
       ++i;

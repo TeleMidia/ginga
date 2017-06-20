@@ -84,6 +84,9 @@ public:
 
   static string
     getAttributeTypeName (AttributeType type);
+
+  static EventStateTransition
+    getTransition (EventState previousState, EventState nextState);
 };
 
 GINGA_NCL_END
