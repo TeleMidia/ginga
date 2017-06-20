@@ -23,7 +23,6 @@ GINGA_FORMATTER_BEGIN
 NclEventTransition::NclEventTransition (GingaTime time,
                                         NclPresentationEvent *evt)
 {
-  typeSet.insert ("NclEventTransition");
   this->_time = time;
   this->_event = evt;
 }
@@ -44,19 +43,6 @@ NclEventTransition::compareTo (NclEventTransition *object)
   else
     {
       return compareType (otherEntry);
-    }
-}
-
-bool
-NclEventTransition::instanceOf (const string &s)
-{
-  if (typeSet.empty ())
-    {
-      return false;
-    }
-  else
-    {
-      return (typeSet.find (s) != typeSet.end ());
     }
 }
 
@@ -104,7 +90,6 @@ NclBeginEventTransition::NclBeginEventTransition (
     GingaTime time, NclPresentationEvent *event)
     : NclEventTransition (time, event)
 {
-  typeSet.insert ("NclBeginEventTransition");
   _endTrans = nullptr;
 }
 
@@ -113,7 +98,6 @@ NclEndEventTransition::NclEndEventTransition (GingaTime time,
                                               NclBeginEventTransition *trans)
     : NclEventTransition (time, event)
 {
-  typeSet.insert ("NclEndEventTransition");
   _beginTrans = trans;
   _beginTrans->setEndTransition (this);
 }
