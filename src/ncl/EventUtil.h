@@ -87,6 +87,9 @@ public:
 
   static EventStateTransition
     getTransition (EventState previousState, EventState nextState);
+
+  static EventState
+    getNextState (EventStateTransition transition);
 };
 
 GINGA_NCL_END

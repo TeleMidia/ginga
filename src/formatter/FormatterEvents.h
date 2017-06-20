@@ -33,28 +33,28 @@ GINGA_FORMATTER_BEGIN
 class INclEventListener;
 class ExecutionObject;
 
+#define PROPERTY_READONLY(type,name,getfunc) \
+  protected: type name; \
+  public: type getfunc () const { return this->name; }
+
+#define PROPERTY(type,name,getfunc,setfunc) \
+  PROPERTY_READONLY (type,name,getfunc) \
+  public: void setfunc (type value) {this->name = value;}\
+
 class NclFormatterEvent
 {
+  PROPERTY (EventType, _type, getType, setType)
+  PROPERTY_READONLY (string, _id, getId)
+  PROPERTY_READONLY (int, _occurrences, getOccurrences)
+  PROPERTY (ExecutionObject *, _exeObj, getExecutionObject, setExecutionObject)
+  PROPERTY_READONLY (EventState, _currentState, getCurrentState)
+  PROPERTY_READONLY (EventState, _previousState, getPreviousState)
+
 public:
-  NclFormatterEvent (const string &id, ExecutionObject *exeObj);
+  NclFormatterEvent (const string &_id, ExecutionObject *exeObj);
   virtual ~NclFormatterEvent ();
 
-  static bool hasInstance (NclFormatterEvent *evt, bool remove);
-
-  bool instanceOf (const string &);
-
-  static bool hasNcmId (NclFormatterEvent *evt, const string &anchorId);
-
-  void setType (EventType evtType);
-  EventType getType ();
-
-  void addListener (INclEventListener *listener);
-  void removeListener (INclEventListener *listener);
-
   void setCurrentState (EventState newState);
-
-  EventState getCurrentState ();
-  EventState getPreviousState ();
 
   virtual bool start ();
   virtual bool stop ();
@@ -62,34 +62,24 @@ public:
   bool resume ();
   bool abort ();
 
-  ExecutionObject *getExecutionObject ();
-  void setExecutionObject (ExecutionObject *exeObj);
+  void addListener (INclEventListener *listener);
+  void removeListener (INclEventListener *listener);
 
-  string getId ();
-  int getOccurrences ();
+  static bool hasInstance (NclFormatterEvent *evt, bool remove);
+  bool instanceOf (const string &);
+  static bool hasNcmId (NclFormatterEvent *evt, const string &anchorId);
 
 protected:
-  string id;
-  EventState _currentState;
-  EventState _previousState;
-  int _occurrences;
-  ExecutionObject *_exeObj;
   set<INclEventListener *> _listeners;
   set<string> _typeSet;
-  bool _deleting;
-  EventType _eventType;
 
-  static set<NclFormatterEvent *> _instances;
-  static bool _init;
-
-  static bool removeInstance (NclFormatterEvent *evt);
-
-  EventState getNewState (EventStateTransition transition);
   EventStateTransition getTransition (EventState newState);
   bool changeState (EventState newState, EventStateTransition transition);
 
+  static set<NclFormatterEvent *> _instances;
+  static bool removeInstance (NclFormatterEvent *evt);
+
 private:
-  virtual void destroyListeners ();
   static void addInstance (NclFormatterEvent *event);
 };
 
@@ -134,10 +124,10 @@ public:
   void incrementOccurrences ();
 
 private:
-  GingaTime begin;
-  GingaTime end;
-  int numPresentations;
-  GingaTime repetitionInterval;
+  GingaTime _begin;
+  GingaTime _end;
+  int _numPresentations;
+  GingaTime _repetitionInterval;
 };
 
 class NclSelectionEvent : public NclAnchorEvent
@@ -165,7 +155,7 @@ protected:
   Settings *settings;
 
 public:
-  NclAttributionEvent (const string &id, ExecutionObject *,
+  NclAttributionEvent (const string &_id, ExecutionObject *,
                        PropertyAnchor *,
                        Settings *);
 
