@@ -25,44 +25,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "player/Player.h"
 using namespace ::ginga::player;
 
-#include "formatter/ExecutionObject.h"
-using namespace ::ginga::formatter;
-
 GINGA_MB_BEGIN
-
-// Type used for renderer job data.
-typedef struct _DisplayJob DisplayJob;
-
-// Type used for renderer job callbacks.
-// Return true to keep job on the display job list.
-typedef bool (*DisplayJobCallback) (DisplayJob *, SDL_Renderer *, void *);
 
 class Display
 {
-private:
-  GINGA_MUTEX_DEFN ()
-  int width;                    // display width in pixels
-  int height;                   // display height in pixels
-  double fps;                   // target frame-rate
-  bool fullscreen;              // full-screen mode
-  bool _quit;                   // true if render thread should quit
-  Dashboard *dashboard;         // control panel
-
-  GList *jobs;                  // list of jobs to be executed by renderer
-  GList *listeners;             // list of listeners to be notified
-  GList *players;               // list of players to be ticked
-  GList *textures;              // list of textures to be destructed
-
-  SDL_Window *screen;           // display screen
-  SDL_Renderer *renderer;       // display renderer
-
-  bool add (GList **, gpointer);
-  bool remove (GList **, gpointer);
-  bool find (GList *, gconstpointer);
-
-  void notifyTickListeners (GingaTime, GingaTime, int);
-  void notifyKeyListeners (SDL_EventType, SDL_Keycode);
-
 public:
   Display (int, int, double, bool);
   ~Display ();
@@ -77,9 +43,6 @@ public:
   void quit ();
   bool hasQuitted ();
 
-  DisplayJob *addJob (DisplayJobCallback, void *);
-  bool removeJob (DisplayJob *);
-
   void destroyTexture (SDL_Texture *);
   void renderLoop (void);
 
@@ -88,6 +51,28 @@ public:
 
   void registerPlayer (Player *);
   void unregisterPlayer (Player *);
+
+private:
+  int _width;                   // display width in pixels
+  int _height;                  // display height in pixels
+  double _fps;                  // target frame-rate
+  bool _fullscreen;             // full-screen mode
+  bool _quit;                   // true if render thread should quit
+  Dashboard *_dashboard;        // control panel
+
+  GList *_listeners;            // list of listeners to be notified
+  GList *_players;              // list of players to be ticked
+  GList *_textures;             // list of textures to be destructed
+
+  SDL_Window *_screen;          // display screen
+  SDL_Renderer *_renderer;      // display renderer
+
+  bool add (GList **, gpointer);
+  bool remove (GList **, gpointer);
+  bool find (GList *, gconstpointer);
+
+  void notifyTickListeners (GingaTime, GingaTime, int);
+  void notifyKeyListeners (SDL_EventType, SDL_Keycode);
 };
 
 // Global display.
