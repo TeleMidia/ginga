@@ -299,7 +299,6 @@ FocusManager::setKeyMaster (const string &mediaId)
   ExecutionObject *nextObject = NULL;
   NclCascadingDescriptor *nextDescriptor = NULL;
   NclFormatterRegion *fr = NULL;
-  PlayerAdapter *player = NULL;
   bool isFRVisible = false;
   bool abortKeyMaster = false;
   string lastFocus = "";
@@ -365,10 +364,7 @@ FocusManager::setKeyMaster (const string &mediaId)
   // selecting new object
   _selectedObject = nextObject;
   _selectedObject->setHandler (true);
-  player = _scheduler->getObjectPlayer (_selectedObject);
-
-  nextObject->selectionEvent (0, player->getMediaTime () * 1000);
-
+  nextObject->selectionEvent (0, 0);
 }
 
 void

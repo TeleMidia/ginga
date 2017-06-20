@@ -129,13 +129,6 @@ PlayerAdapter::setCurrentEvent (NclFormatterEvent *event)
   return true;
 }
 
-double
-PlayerAdapter::getMediaTime ()
-{
-  g_assert_nonnull (_player);
-  return (double)(GINGA_TIME_AS_MSECONDS (_player->getMediaTime ()));
-}
-
 Player *
 PlayerAdapter::getPlayer ()
 {
