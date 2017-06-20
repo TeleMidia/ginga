@@ -214,7 +214,7 @@ Converter::getEvent (ExecutionObject *exeObj,
   NclFormatterEvent *event;
   string type;
 
-  xstrassign (type, "%d", ncmEventType);
+  xstrassign (type, "%d", (int) ncmEventType);
 
   if (key == "")
     {
@@ -315,7 +315,7 @@ Converter::getEvent (ExecutionObject *exeObj,
           break;
 
         default:
-          WARNING ("Unknown event type '%d'", ncmEventType);
+          g_assert_not_reached ();
           break;
         }
     }
@@ -616,7 +616,7 @@ Converter::createExecutionObject (
       string s;
       exeObj = new ExecutionObjectSwitch (id, node, _handling,
                                           _actionListener);
-      xstrassign (s, "%d", EventType::PRESENTATION);
+      xstrassign (s, "%d", (int) EventType::PRESENTATION);
       compositeEvt = new NclPresentationEvent (
             nodeEntity->getLambdaAnchor ()->getId () + "_" + s,
             exeObj,
@@ -634,7 +634,7 @@ Converter::createExecutionObject (
       exeObj = new ExecutionObjectContext (
             id, node, descriptor, _handling, _actionListener);
 
-      xstrassign (s, "%d", EventType::PRESENTATION);
+      xstrassign (s, "%d", (int) EventType::PRESENTATION);
       compositeEvt = new NclPresentationEvent (
             nodeEntity->getLambdaAnchor ()->getId () + "_" + s,
             exeObj,
@@ -2138,7 +2138,7 @@ Converter::createSimpleAction (
       else
         {
           ERROR ("Unknown event type '%d' for action type '%d'.",
-                 eventType, actionType);
+                 (int) eventType, actionType);
         }
       break;
 
