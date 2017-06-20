@@ -54,7 +54,7 @@ public:
   NclFormatterEvent (const string &id, ExecutionObject *exeObj);
   virtual ~NclFormatterEvent ();
 
-  void setCurrentState (EventState newState);
+  void setState (EventState newState);
 
   virtual bool start ();
   virtual bool stop ();
@@ -170,9 +170,9 @@ public:
   void setMappedEvent (NclFormatterEvent *event);
   NclFormatterEvent *getMappedEvent ();
   virtual void eventStateChanged (
-      NclFormatterEvent *event,
+      NclFormatterEvent *evt,
       EventStateTransition transition,
-      EventState _previousState) override;
+      EventState previousState) override;
 };
 
 GINGA_FORMATTER_END
