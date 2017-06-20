@@ -95,13 +95,11 @@ NclEventTransitionManager::removeEventTransition (
       transition = (*transitionEvents)[i];
       if (transition->getEvent () == event)
         {
-          if (transition->instanceOf ("NclBeginEventTransition")
-              && ((NclBeginEventTransition *)transition)
-                         ->getEndTransition ()
-                     != NULL)
+          auto beginEvtTrans = dynamic_cast<NclBeginEventTransition *> (transition);
+          if (beginEvtTrans
+              && (beginEvtTrans->getEndTransition () != nullptr))
             {
-              endTransition = ((NclBeginEventTransition *)transition)
-                                  ->getEndTransition ();
+              endTransition = beginEvtTrans->getEndTransition ();
 
               for (j = transitionEvents->begin ();
                    j != transitionEvents->end (); ++j)
@@ -162,7 +160,8 @@ NclEventTransitionManager::prepare (bool wholeContent, GingaTime startTime)
               break;
             }
 
-          if (transition->instanceOf ("NclBeginEventTransition"))
+          auto beginEvtTrans = dynamic_cast<NclBeginEventTransition *> (transition);
+          if (beginEvtTrans)
             {
               transition->getEvent ()->setState (
                   EventState::OCCURRING);
@@ -203,7 +202,8 @@ NclEventTransitionManager::start (GingaTime offsetTime)
       transition = (*transitionEvents)[transIx];
       if (transition->getTime () <= offsetTime)
         {
-          if (transition->instanceOf ("NclBeginEventTransition"))
+          auto beginEvtTrans = dynamic_cast<NclBeginEventTransition *> (transition);
+          if (beginEvtTrans)
             {
               transition->getEvent ()->start ();
             }
@@ -239,7 +239,7 @@ NclEventTransitionManager::stop (GingaTime endTime, bool applicationType)
             {
               fev->setState (EventState::SLEEPING);
             }
-          else if (transition->instanceOf ("NclEndEventTransition"))
+          else if (dynamic_cast<NclEndEventTransition *> (transition))
             {
               fev->stop ();
             }
@@ -271,7 +271,7 @@ NclEventTransitionManager::abort (GingaTime endTime, bool applicationType)
             {
               fev->setState (EventState::SLEEPING);
             }
-          else if (transition->instanceOf ("NclEndEventTransition"))
+          else if (dynamic_cast<NclEndEventTransition *> (transition))
             {
               fev->abort ();
             }
@@ -357,7 +357,8 @@ NclEventTransitionManager::updateTransitionTable (
       if (transition->getTime () <= value)
         {
           ev = transition->getEvent ();
-          if (transition->instanceOf ("NclBeginEventTransition"))
+          auto beginEvtTrans = dynamic_cast<NclBeginEventTransition *> (transition);
+          if (beginEvtTrans)
             {
               clog << "NclEventTransitionManager::updateTransitionTable ";
               clog << "starting event '" << ev->getId () << "' ";

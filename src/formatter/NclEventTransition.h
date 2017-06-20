@@ -32,7 +32,6 @@ public:
 
   NclPresentationEvent *getEvent () { return _event; }
   GingaTime getTime () { return _time; }
-  bool instanceOf (const string &s);
 
 protected:
   set<string> typeSet;
