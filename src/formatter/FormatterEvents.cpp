@@ -197,7 +197,7 @@ NclFormatterEvent::resume ()
 }
 
 void
-NclFormatterEvent::setCurrentState (EventState newState)
+NclFormatterEvent::setState (EventState newState)
 {
   _previousState = _state;
   _state = newState;
@@ -301,7 +301,7 @@ NclPresentationEvent::setRepetitionSettings (int repetitions,
 }
 
 void
-NclPresentationEvent::incrementOccurrences ()
+NclPresentationEvent::incOccurrences ()
 {
   _occurrences++;
 }
@@ -343,21 +343,24 @@ NclAttributionEvent::NclAttributionEvent (const string &id,
   this->_settingsNode = false;
   this->_settings = settings;
 
-  dataObject = (NodeEntity *)(exeObj->getDataObject ());
+  dataObject = dynamic_cast<NodeEntity *> (exeObj->getDataObject ());
 
-  if (dataObject->instanceOf ("ContentNode")
-      && ((ContentNode *)dataObject)->isSettingNode ())
+  auto contentNode = dynamic_cast<ContentNode *> (dataObject);
+  if (contentNode
+      && contentNode->isSettingNode ())
     {
       _settingsNode = true;
     }
 
-  if (dataObject->instanceOf ("ReferNode"))
+  auto referNode = dynamic_cast<ReferNode *> (dataObject);
+  if (referNode)
     {
-      if (((ReferNode *)dataObject)->getInstanceType () == "instSame")
+      if (referNode->getInstanceType () == "instSame")
         {
-          entity = ((ReferNode *)dataObject)->getDataEntity ();
-          if (entity->instanceOf ("ContentNode")
-              && ((ContentNode *)entity)->isSettingNode ())
+          entity = referNode->getDataEntity ();
+          auto contentNode = dynamic_cast <ContentNode *> (entity);
+          if (contentNode
+              && contentNode->isSettingNode ())
             {
               _settingsNode = true;
             }
@@ -378,7 +381,7 @@ NclAttributionEvent::getCurrentValue ()
 
   if (unlikely (_anchor == nullptr))
     {
-      ERROR ("trying to set a nullptr property anchor of object '%s'",
+      ERROR ("Trying to set a null property anchor of object '%s'.",
              _id.c_str ());
     }
 
@@ -494,9 +497,9 @@ NclSwitchEvent::getMappedEvent ()
 
 void
 NclSwitchEvent::eventStateChanged (
-    arg_unused (NclFormatterEvent *someEvent),
+    arg_unused (NclFormatterEvent *evt),
     EventStateTransition transition,
-    arg_unused (EventState _previousState))
+    arg_unused (EventState previousState))
 {
   changeState (EventUtil::getNextState (transition), transition);
 }

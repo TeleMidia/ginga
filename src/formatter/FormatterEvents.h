@@ -54,7 +54,7 @@ public:
   NclFormatterEvent (const string &id, ExecutionObject *exeObj);
   virtual ~NclFormatterEvent ();
 
-  void setCurrentState (EventState newState);
+  void setState (EventState newState);
 
   virtual bool start ();
   virtual bool stop ();
@@ -102,12 +102,12 @@ public:
   NclPresentationEvent (const string &, ExecutionObject *, ContentAnchor *);
   virtual ~NclPresentationEvent () {}
 
-  bool stop ();
+  virtual bool stop () override;
 
   GingaTime getDuration ();
   int getRepetitions ();
   void setRepetitionSettings (int repetitions, GingaTime repetitionInterval);
-  void incrementOccurrences ();
+  void incOccurrences ();
 
 private:
   int _numPresentations;
@@ -121,7 +121,7 @@ public:
   NclSelectionEvent (const string &, ExecutionObject *, ContentAnchor *);
   virtual ~NclSelectionEvent () {}
 
-  bool start ();
+  virtual bool start () override;
 };
 
 class NclAttributionEvent : public NclFormatterEvent
@@ -169,10 +169,11 @@ public:
   string getKey ();
   void setMappedEvent (NclFormatterEvent *event);
   NclFormatterEvent *getMappedEvent ();
+
   virtual void eventStateChanged (
-      NclFormatterEvent *event,
+      NclFormatterEvent *evt,
       EventStateTransition transition,
-      EventState _previousState) override;
+      EventState previousState) override;
 };
 
 GINGA_FORMATTER_END
