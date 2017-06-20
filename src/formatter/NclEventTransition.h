@@ -24,55 +24,46 @@ GINGA_FORMATTER_BEGIN
 
 class NclEventTransition
 {
+public:
+  NclEventTransition (GingaTime time, NclPresentationEvent *evt);
+  virtual ~NclEventTransition () {}
+
+  int compareTo (NclEventTransition *trans);
+
+  NclPresentationEvent *getEvent () { return _event; }
+  GingaTime getTime () { return _time; }
+  bool instanceOf (const string &s);
+
 protected:
   set<string> typeSet;
 
 private:
-  NclPresentationEvent *event;
-  GingaTime time;
+  NclPresentationEvent *_event;
+  GingaTime _time;
 
-public:
-  NclEventTransition (GingaTime time, NclPresentationEvent *event);
-  virtual ~NclEventTransition ();
-
-  int compareTo (NclEventTransition *object);
-
-private:
-  int compareType (NclEventTransition *otherEntry);
-
-public:
-  bool equals (NclEventTransition *object);
-  NclPresentationEvent *getEvent ();
-  GingaTime getTime ();
-  bool instanceOf (const string &s);
+  int compareType (NclEventTransition *other);
 };
 
 class NclEndEventTransition;
 
 class NclBeginEventTransition : public NclEventTransition
 {
-private:
-  NclEndEventTransition *endTransition;
+  PROPERTY (NclEndEventTransition *, _endTrans, getEndTransition, setEndTransition)
 
 public:
-  NclBeginEventTransition (GingaTime time, NclPresentationEvent *event);
-  virtual ~NclBeginEventTransition ();
-  NclEndEventTransition *getEndTransition ();
-  void setEndTransition (NclEndEventTransition *entry);
+  NclBeginEventTransition (GingaTime time, NclPresentationEvent *evt);
+  virtual ~NclBeginEventTransition () {}
 };
 
 class NclEndEventTransition : public NclEventTransition
 {
-private:
-  NclBeginEventTransition *beginTransition;
+  PROPERTY_READONLY (NclBeginEventTransition *, _beginTrans, getBeginTransition)
 
 public:
-  NclEndEventTransition (GingaTime time, NclPresentationEvent *event,
-                         NclBeginEventTransition *transition);
+  NclEndEventTransition (GingaTime time, NclPresentationEvent *evt,
+                         NclBeginEventTransition *trans);
 
-  virtual ~NclEndEventTransition ();
-
-  NclBeginEventTransition *getBeginTransition ();
+  virtual ~NclEndEventTransition () {}
 };
 
 GINGA_FORMATTER_END
