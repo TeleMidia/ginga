@@ -132,11 +132,7 @@ LuaPlayer::play (void)
       return true;
     }
 
-  SDL_Rect rect = this->window->getRect ();
-  g_assert (rect.w > 0 && rect.h > 0);
-
-  this->_nw = ncluaw_open (this->mrl.c_str (), rect.w, rect.h, &errmsg);
-
+  this->_nw = ncluaw_open (this->mrl.c_str (), _rect.w, _rect.h, &errmsg);
   if (unlikely (this->_nw == NULL))
     ERROR ("cannot load NCLua file %s: %s", this->mrl.c_str (), errmsg);
 
@@ -238,7 +234,6 @@ LuaPlayer::handleKeyEvent (SDL_EventType type, SDL_Keycode key)
 void
 LuaPlayer::redraw (SDL_Renderer *renderer)
 {
-  SDL_Rect rect;
   SDL_Surface *sfc;
 
   if (this->_nw == NULL)
@@ -247,13 +242,10 @@ LuaPlayer::redraw (SDL_Renderer *renderer)
       return;                   // nothing to do
     }
 
-  rect = this->window->getRect ();
-  g_assert (rect.w > 0 && rect.h > 0);
-
   ncluaw_cycle (this->_nw);
 
 #if SDL_VERSION_ATLEAST (2,0,5)
-  sfc = SDL_CreateRGBSurfaceWithFormat (0, rect.w, rect.h, 32,
+  sfc = SDL_CreateRGBSurfaceWithFormat (0, _rect.w, _rect.h, 32,
                                         SDL_PIXELFORMAT_ARGB8888);
 #else
   sfc = SDL_CreateRGBSurface (0, rect.w, rect.h, 32,
