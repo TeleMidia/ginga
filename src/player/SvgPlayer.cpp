@@ -69,12 +69,12 @@ SvgPlayer::reload (SDL_Renderer *renderer)
   if (unlikely (svg == NULL))
     ERROR ("cannot load SVG file %s: %s", this->mrl.c_str (), err->message);
 
-  g_assert (this->rect.w > 0 && this->rect.h > 0);
+  g_assert (_rect.w > 0 && _rect.h > 0);
   rsvg_handle_get_dimensions (svg, &dim);
 
   scale = (dim.width > dim.height)
-    ? (double) this->rect.w / dim.width
-    : (double) this->rect.h / dim.height;
+    ? (double) _rect.w / dim.width
+    : (double) _rect.h / dim.height;
 
   width = (int)(floor (dim.width * scale) + 1);
   height = (int)(floor (dim.height * scale) + 1);
