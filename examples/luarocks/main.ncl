@@ -22,13 +22,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>. -->
       <region id='luaRegion' width='100%' height='100%'/>
     </regionBase>
     <descriptorBase>
-      <descriptor id='luaDesc' region='luaRegion' focusIndex='luaIdx'/>
+      <descriptor id='luaDesc' region='luaRegion' focusIndex='0'/>
     </descriptorBase>
   </head>
   <body>
     <port id='init' component='lua'/>
     <media type='application/x-ginga-settings' id='programSettings'>
-      <property name='currentKeyMaster' value='luaIdx'/>
+      <property name='currentKeyMaster' value='0'/>
     </media>
     <media id='lua' descriptor='luaDesc' src='game.lua'/>
   </body>
