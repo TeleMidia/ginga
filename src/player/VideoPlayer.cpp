@@ -122,18 +122,6 @@ VideoPlayer::~VideoPlayer ()
   g_rec_mutex_clear (&_mutex);
 }
 
-void
-VideoPlayer::lock (void)
-{
-  g_rec_mutex_lock (&_mutex);
-}
-
-void
-VideoPlayer::unlock (void)
-{
-  g_rec_mutex_unlock (&_mutex);
-}
-
 bool
 VideoPlayer::play ()
 {
@@ -148,7 +136,6 @@ VideoPlayer::play ()
       return true;
     }
 
-  this->lock ();
   st = gst_structure_new_empty ("video/x-raw");
   gst_structure_set (st,
                      "format", G_TYPE_STRING, "ARGB",
@@ -170,7 +157,6 @@ VideoPlayer::play ()
   gst_object_unref (filter);
 
   gstx_element_set_state_sync (_playbin, GST_STATE_PLAYING);
-  this->unlock ();
 
   g_debug ("starting");
   Player::play ();
@@ -186,9 +172,7 @@ VideoPlayer::pause ()
       return;
     }
 
-  this->lock ();
   gstx_element_set_state_sync (_playbin, GST_STATE_PAUSED);
-  this->unlock ();
 
   g_debug ("pausing");
   Player::pause ();
@@ -202,10 +186,8 @@ VideoPlayer::stop ()
       WARNING ("player already sleeping");
       return;
     }
-  this->lock ();
   gstx_element_set_state_sync (_playbin, GST_STATE_NULL);
   gst_object_unref (_playbin);
-  this->unlock ();
 
   g_debug ("stopping");
   Player::stop ();
@@ -220,10 +202,8 @@ VideoPlayer::resume ()
       return;
     }
 
-  this->lock ();
   g_assert (GST_ELEMENT_CAST (_playbin)->current_state == GST_STATE_PAUSED);
   gstx_element_set_state_sync (_playbin, GST_STATE_PLAYING);
-  this->unlock ();
 
   g_debug ("resumming");
   Player::resume ();
@@ -232,6 +212,7 @@ VideoPlayer::resume ()
 void
 VideoPlayer::redraw (SDL_Renderer *renderer)
 {
+  GstSample *sample;
   GstVideoFrame v_frame;
   GstVideoInfo v_info;
   GstBuffer *buf;
@@ -246,8 +227,8 @@ VideoPlayer::redraw (SDL_Renderer *renderer)
       return;
     }
 
-  this->lock ();
-  if (_sample == NULL)
+  sample = this->getSample ();
+  if (sample == NULL)
     goto done;
 
   if (this->texture == NULL)
@@ -257,13 +238,13 @@ VideoPlayer::redraw (SDL_Renderer *renderer)
                                          SDL_TEXTUREACCESS_TARGET,
                                          this->rect.w,
                                          this->rect.h);
+      g_assert_nonnull (this->texture);
     }
-  g_assert_nonnull (this->texture);
 
-  buf = gst_sample_get_buffer (_sample);
+  buf = gst_sample_get_buffer (sample);
   g_assert_nonnull (buf);
 
-  caps = gst_sample_get_caps (_sample);
+  caps = gst_sample_get_caps (sample);
   g_assert_nonnull (caps);
 
   g_assert (gst_video_info_from_caps (&v_info, caps));
@@ -275,16 +256,49 @@ VideoPlayer::redraw (SDL_Renderer *renderer)
                                NULL, pixels, (int) stride) == 0);
 
   gst_video_frame_unmap (&v_frame);
-  gst_sample_unref (_sample);
-  _sample = NULL;
+  gst_sample_unref (sample);
 
  done:
-  this->unlock ();
   Player::redraw (renderer);
 }
 
 
 // Private.
+
+void
+VideoPlayer::lock (void)
+{
+  g_rec_mutex_lock (&_mutex);
+}
+
+void
+VideoPlayer::unlock (void)
+{
+  g_rec_mutex_unlock (&_mutex);
+}
+
+void
+VideoPlayer::setSample (GstSample *sample)
+{
+  g_assert_nonnull (sample);
+
+  this->lock ();
+  if (_sample != NULL)
+    gst_sample_unref (_sample);
+  _sample = sample;
+  this->unlock ();
+}
+
+GstSample *
+VideoPlayer::getSample (void)
+{
+  GstSample *sample;
+  this->lock ();
+  sample = _sample;
+  _sample = NULL;
+  this->unlock ();
+  return sample;
+}
 
 void
 VideoPlayer::setEOS (bool eos)
@@ -323,14 +337,7 @@ GstFlowReturn
 VideoPlayer::cb_new_sample (GstAppSink *appsink, gpointer data)
 {
   VideoPlayer *player = (VideoPlayer *) data;
-
-  player->lock();
-  if (player->_sample != NULL)
-    gst_sample_unref (player->_sample);
-  player->_sample = gst_app_sink_pull_sample (appsink);
-  g_assert_nonnull (player->_sample);
-  player->unlock ();
-
+  player->setSample (gst_app_sink_pull_sample (appsink));
   return GST_FLOW_OK;
 }
 

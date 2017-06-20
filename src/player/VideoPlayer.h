@@ -33,8 +33,6 @@ class VideoPlayer : public Player
 public:
   VideoPlayer (const string &);
   virtual ~VideoPlayer ();
-  void lock ();
-  void unlock ();
   bool play () override;
   void pause () override;
   void stop () override;
@@ -48,6 +46,10 @@ private:
   bool _eos;                      // true if EOS has been seen
   GstAppSinkCallbacks _callbacks; // app-sink callback data
 
+  void lock ();
+  void unlock ();
+  void setSample (GstSample *);
+  GstSample *getSample (void);
   void setEOS (bool);
   bool getEOS ();
 
