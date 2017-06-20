@@ -39,15 +39,14 @@ protected:
 private:
   NclPresentationEvent *_event;
   GingaTime _time;
-
-  int compareType (NclEventTransition *other);
 };
 
 class NclEndEventTransition;
 
 class NclBeginEventTransition : public NclEventTransition
 {
-  PROPERTY (NclEndEventTransition *, _endTrans, getEndTransition, setEndTransition)
+  PROPERTY (NclEndEventTransition *, _endTrans,
+            getEndTransition, setEndTransition)
 
 public:
   NclBeginEventTransition (GingaTime time, NclPresentationEvent *evt);

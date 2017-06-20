@@ -28,31 +28,22 @@ NclEventTransition::NclEventTransition (GingaTime time,
 }
 
 int
-NclEventTransition::compareTo (NclEventTransition *object)
+NclEventTransition::compareTo (NclEventTransition *obj)
 {
-  NclEventTransition *otherEntry = object;
-
-  if (_time < otherEntry->_time)
+  // First compare time.
+  if (_time < obj->_time)
     {
       return -1;
     }
-  else if (_time > otherEntry->_time)
+  else if (_time > obj->_time)
     {
       return 1;
     }
-  else
-    {
-      return compareType (otherEntry);
-    }
-}
 
-int
-NclEventTransition::compareType (NclEventTransition *other)
-{
+  // Then, compare type.
   auto beginTrans = dynamic_cast<NclBeginEventTransition *> (this);
-
-  auto otherBeginTrans = dynamic_cast<NclBeginEventTransition *> (other);
-  auto otherEndTrans = dynamic_cast<NclEndEventTransition *> (other);
+  auto otherBeginTrans = dynamic_cast<NclBeginEventTransition *> (obj);
+  auto otherEndTrans = dynamic_cast<NclEndEventTransition *> (obj);
 
   if (beginTrans)
     {
@@ -60,7 +51,7 @@ NclEventTransition::compareType (NclEventTransition *other)
         {
           return -1;
         }
-      else if (_event == other->_event)
+      else if (_event == obj->_event)
         {
           return 0;
         }
@@ -75,7 +66,7 @@ NclEventTransition::compareType (NclEventTransition *other)
         {
           return 1;
         }
-      else if (_event == other->_event)
+      else if (_event == obj->_event)
         {
           return 0;
         }
