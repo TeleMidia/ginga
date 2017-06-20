@@ -89,8 +89,7 @@ Display::Display (int width, int height, double fps, bool fullscreen)
   _dashboard = new Dashboard ();
   _screen = SDL_CreateWindow ("ginga", 0, 0, width, height, flags);
   g_assert_nonnull (_screen);
-  _renderer = SDL_CreateRenderer (_screen, -1,
-                                       SDL_RENDERER_PRESENTVSYNC);
+  _renderer = SDL_CreateRenderer (_screen, -1, SDL_RENDERER_PRESENTVSYNC);
   g_assert_nonnull (_renderer);
 }
 
