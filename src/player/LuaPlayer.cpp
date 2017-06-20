@@ -248,7 +248,7 @@ LuaPlayer::redraw (SDL_Renderer *renderer)
   sfc = SDL_CreateRGBSurfaceWithFormat (0, _rect.w, _rect.h, 32,
                                         SDL_PIXELFORMAT_ARGB8888);
 #else
-  sfc = SDL_CreateRGBSurface (0, rect.w, rect.h, 32,
+  sfc = SDL_CreateRGBSurface (0, _rect.w, _rect.h, 32,
                               0xff000000,
                               0x00ff0000,
                               0x0000ff00,
