@@ -18,7 +18,7 @@
     </connectorBase>
   </head>
   <body>
-    <port id="start1" component="vid"/>
+    <port id="start" component="vid"/>
     <media id="vid" src="samples/clock.ogv" descriptor="desc">
       <area id="a1" end="1s"/>
       <area id="a2" end="5s"/>
