@@ -1,37 +1,42 @@
 <ncl>
   <head>
     <regionBase>
-      <region id='reg' width='640' height='480' />
+      <region id="reg" width="640" height="480"/>
     </regionBase>
     <descriptorBase>
-      <descriptor id='desc' region='reg' />
+      <descriptor id="desc" region="reg"/>
     </descriptorBase>
-     <connectorBase>
-       <causalConnector id="onKeySelectionSet">
+    <connectorBase>
+      <causalConnector id="onBeginSet">
         <connectorParam name="var"/>
-        <connectorParam name="var2"/>
         <connectorParam name="delay"/>
         <connectorParam name="duration"/>
-        <simpleCondition role="onSelection" key="$var" />
-        <simpleAction role="set" value="$var2" delay="$delay" duration="$duration" />
+        <simpleCondition role="onBegin" key="$var"/>
+        <simpleAction role="set" value="$var" delay="$delay"
+                      duration="$duration"/>
       </causalConnector>
     </connectorBase>
   </head>
   <body>
-    <port id='start1' component='img1'/>
-    <media id='img1' src='samples/gnu.png' descriptor='desc'>
-      <property name="transparency" />
+    <port id="start" component="img"/>
+    <media id="img" src="samples/gnu.png" descriptor="desc">
+      <property name="transparency"/>
+      <area id="a1" begin="1s"/>
+      <area id="a2" begin="3s"/>
     </media>
-
-     <link xconnector="onKeySelectionSet">
-      <bind role="onSelection" component="img1">
-         <bindParam name="var" value="RED" />
-      </bind> 
-      <bind role="set" component="img1" interface="transparency">
-        <bindParam name="var2" value="0%"/>
+    <link xconnector="onBeginSet">
+      <bind role="onBegin" component="img" interface="a1"/>
+      <bind role="set" component="img" interface="transparency">
+        <bindParam name="var" value="0%"/>
         <bindParam name="duration" value="1s"/>
       </bind>
     </link>
-
+    <link xconnector="onBeginSet">
+      <bind role="onBegin" component="img" interface="a2"/>
+      <bind role="set" component="img" interface="transparency">
+        <bindParam name="var" value="100%"/>
+        <bindParam name="duration" value="1s"/>
+      </bind>
+    </link>
   </body>
 </ncl>
