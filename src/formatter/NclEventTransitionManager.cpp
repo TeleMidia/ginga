@@ -176,7 +176,7 @@ NclEventTransitionManager::prepare (bool wholeContent, GingaTime startTime)
               transition->getEvent ()->setState (
                   EventState::SLEEPING);
 
-              transition->getEvent ()->incrementOccurrences ();
+              transition->getEvent ()->incOccurrences ();
             }
           transIx++;
           startTransitionIndex = transIx;
