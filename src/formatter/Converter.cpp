@@ -1599,7 +1599,7 @@ Converter::createAction (Action *actionExp,
 {
   GingaTime delay;
   vector<Bind *> *binds;
-  int i, size;
+  size_t i, size;
   string delayObject;
   NclLinkSimpleAction *simpleAction;
   NclLinkCompoundAction *compoundAction;
@@ -1617,7 +1617,7 @@ Converter::createAction (Action *actionExp,
       binds = ncmLink->getRoleBinds (sae);
       if (binds != NULL)
         {
-          size = (int) binds->size ();
+          size = binds->size ();
           if (size == 1)
             {
               return createSimpleAction (sae, (*binds)[0], ncmLink,
@@ -1648,7 +1648,7 @@ Converter::createAction (Action *actionExp,
           else
             {
               WARNING ("Cannot create action of link '%s' because number of"
-                       "binds is = %d.",
+                       "binds is = %lu.",
                        ncmLink->getId ().c_str (),
                        size);
               return nullptr;
@@ -1751,7 +1751,7 @@ Converter::createCondition (
       vector<Bind *> *binds = ncmLink->getRoleBinds (ste);
       if (binds != nullptr)
         {
-          int size = (int) binds->size ();
+          size_t size = binds->size ();
           if (size == 1)
             {
               return createSimpleCondition (ste, (*binds)[0], ncmLink,
@@ -1770,7 +1770,7 @@ Converter::createCondition (
                       = new NclLinkCompoundTriggerCondition ();
                 }
 
-              for (int i = 0; i < size; i++)
+              for (size_t i = 0; i < size; i++)
                 {
                   simpleCondition = createSimpleCondition (
                         ste, (*binds)[i], ncmLink, parentObj);
@@ -1782,7 +1782,7 @@ Converter::createCondition (
           else
             {
               WARNING ("Cannot create condition of link '%s' because number "
-                       "of binds is %d",
+                       "of binds is %lu",
                        ncmLink->getId ().c_str(), size);
 
               return nullptr;

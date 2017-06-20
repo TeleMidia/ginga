@@ -31,17 +31,14 @@ GINGA_PLAYER_BEGIN
 class VideoPlayer : public Player
 {
 public:
-  VideoPlayer (const string &mrl);
+  VideoPlayer (const string &);
   virtual ~VideoPlayer ();
-
   void lock ();
   void unlock ();
-
-  bool play ();
-  void pause ();
-  void stop ();
-  void resume ();
-
+  bool play () override;
+  void pause () override;
+  void stop () override;
+  void resume () override;
   void redraw (SDL_Renderer *) override;
 
 private:
