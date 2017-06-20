@@ -75,7 +75,6 @@ private:
   void prepareScope (GingaTime offset = 0);
 
   GingaTime prepareProperties (ExecutionObject *obj);
-  void updateObjectExpectedDuration ();
 
   bool checkRepeat (NclPresentationEvent *);
   void setVisible (bool);
