@@ -152,10 +152,10 @@ TextPlayer::reload (SDL_Renderer *renderer)
   g_assert_nonnull (contents);
 
 #if SDL_VERSION_ATLEAST(2,0,5)
-  sfc = SDL_CreateRGBSurfaceWithFormat (0, this->rect.w, this->rect.h,
+  sfc = SDL_CreateRGBSurfaceWithFormat (0, _rect.w, _rect.h,
                                         32, SDL_PIXELFORMAT_ARGB8888);
 #else
-  sfc = SDL_CreateRGBSurface (0, this->rect.w, this->rect.h, 32,
+  sfc = SDL_CreateRGBSurface (0, _rect.w, _rect.h, 32,
                               0xff000000,
                               0x00ff0000,
                               0x0000ff00,
@@ -197,7 +197,7 @@ TextPlayer::reload (SDL_Renderer *renderer)
   else
     pango_layout_set_justify (layout, true);
 
-  pango_layout_set_width (layout, this->rect.w * PANGO_SCALE);
+  pango_layout_set_width (layout, _rect.w * PANGO_SCALE);
   pango_layout_set_wrap (layout, PANGO_WRAP_WORD);
   pango_layout_get_size (layout, NULL, &height);
 
@@ -209,9 +209,9 @@ TextPlayer::reload (SDL_Renderer *renderer)
   pango_cairo_update_layout (cr, layout);
 
   if (_verticalAlign == "bottom")
-    align = this->rect.h - (height / PANGO_SCALE);
+    align = _rect.h - (height / PANGO_SCALE);
   else if(_verticalAlign == "middle")
-    align = (this->rect.h / 2) - ((height / PANGO_SCALE) / 2);
+    align = (_rect.h / 2) - ((height / PANGO_SCALE) / 2);
   else
     align = 0;
 

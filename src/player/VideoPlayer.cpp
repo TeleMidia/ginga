@@ -139,8 +139,8 @@ VideoPlayer::play ()
   st = gst_structure_new_empty ("video/x-raw");
   gst_structure_set (st,
                      "format", G_TYPE_STRING, "ARGB",
-                     "width", G_TYPE_INT, this->rect.w,
-                     "height", G_TYPE_INT, this->rect.h,
+                     "width", G_TYPE_INT, _rect.w,
+                     "height", G_TYPE_INT, _rect.h,
                      NULL);
 
   caps = gst_caps_new_full (st, NULL);
@@ -236,8 +236,8 @@ VideoPlayer::redraw (SDL_Renderer *renderer)
       this->texture = SDL_CreateTexture (renderer,
                                          SDL_PIXELFORMAT_ARGB32,
                                          SDL_TEXTUREACCESS_TARGET,
-                                         this->rect.w,
-                                         this->rect.h);
+                                         _rect.w,
+                                         _rect.h);
       g_assert_nonnull (this->texture);
     }
 

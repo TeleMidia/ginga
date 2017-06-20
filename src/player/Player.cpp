@@ -44,11 +44,14 @@ Player::Player (const string &mrl)
   this->bgColor = {0, 0, 0, 0};
   this->borderColor = {0, 0, 0, 0};
 
-  this->rect = {0, 0, 0, 0};
-  this->z = 0;
   this->alpha = 255;            // opaque
 
   animator = new PlayerAnimator ();
+
+  // ---------------------------------------------------
+  _rect = {0, 0, 0, 0};
+  _z = 0;
+  _zorder = 0;
 }
 
 Player::~Player ()
@@ -228,39 +231,39 @@ Player::setProperty (const string &name, const string &value)
     {
       int width;
       Ginga_Display->getSize (&width, NULL);
-      this->rect.x = ginga_parse_percent (value, width, 0, G_MAXINT);
+      _rect.x = ginga_parse_percent (value, width, 0, G_MAXINT);
     }
   else if (name == "right")
     {
       int width;
       Ginga_Display->getSize (&width, NULL);
-      this->rect.x = width - this->rect.w
-        - ginga_parse_percent (value, this->rect.w, 0, G_MAXINT);
+      _rect.x = width - _rect.w
+        - ginga_parse_percent (value, _rect.w, 0, G_MAXINT);
     }
   else if (name == "top")
     {
       int height;
       Ginga_Display->getSize (NULL, &height);
-      this->rect.y = ginga_parse_percent (value, height, 0, G_MAXINT);
+      _rect.y = ginga_parse_percent (value, height, 0, G_MAXINT);
     }
   else if (name == "bottom")
     {
       int height;
       Ginga_Display->getSize (NULL, &height);
-      this->rect.y = height - this->rect.h
-        - ginga_parse_percent (value, this->rect.h, 0, G_MAXINT);
+      _rect.y = height - _rect.h
+        - ginga_parse_percent (value, _rect.h, 0, G_MAXINT);
     }
   else if (name == "width")
     {
       int width;
       Ginga_Display->getSize (&width, NULL);
-      this->rect.w = ginga_parse_percent (value, width, 0, G_MAXINT);
+      _rect.w = ginga_parse_percent (value, width, 0, G_MAXINT);
     }
   else if (name == "height")
     {
       int height;
       Ginga_Display->getSize (NULL, &height);
-      this->rect.h = ginga_parse_percent (value, height, 0, G_MAXINT);
+      _rect.h = ginga_parse_percent (value, height, 0, G_MAXINT);
     }
   else if (name == "background" || name == "backgroundColor")
     {
@@ -272,7 +275,7 @@ Player::setProperty (const string &name, const string &value)
     }
   else if (name == "zIndex")
     {
-      this->z = xstrtoint (value, 10);
+      this->setZ (xstrtoint (value, 10), _zorder);
     }
 
   _properties[name] = value;
@@ -324,13 +327,6 @@ Player::getMediaStatus ()
 }
 
 void
-Player::getZ (int *z, int *zorder)
-{
-  set_if_nonnull (z, this->z);
-  set_if_nonnull (zorder, this->zorder);
-}
-
-void
 Player::setAnimatorProperties(string dur, string name, string value)
 {
   animator->addProperty (dur, name, value);
@@ -342,7 +338,7 @@ Player::redraw (SDL_Renderer *renderer)
   if (this->status == PL_SLEEPING)
     return;
 
-  animator->update (&this->rect,
+  animator->update (&_rect,
                     &this->bgColor.r,
                     &this->bgColor.g,
                     &this->bgColor.b,
@@ -359,13 +355,13 @@ Player::redraw (SDL_Renderer *renderer)
                                this->bgColor.g,
                                this->bgColor.b,
                                alpha);
-      SDLx_RenderFillRect (renderer, &this->rect);
+      SDLx_RenderFillRect (renderer, &_rect);
     }
 
   if (this->texture != NULL)
     {
       SDLx_SetTextureAlphaMod (this->texture, this->alpha);
-      SDLx_RenderCopy (renderer, this->texture, NULL, &this->rect);
+      SDLx_RenderCopy (renderer, this->texture, NULL, &_rect);
     }
 
   if (this->borderWidth < 0)
@@ -376,8 +372,54 @@ Player::redraw (SDL_Renderer *renderer)
                                this->borderColor.r,
                                this->borderColor.g,
                                this->borderColor.b, 255);
-      SDLx_RenderDrawRect (renderer, &this->rect);
+      SDLx_RenderDrawRect (renderer, &_rect);
     }
 }
+
+// ----------------------------------------------------------------------------
+
+
+// Public.
+
+/**
+ * @brief Sets player output rectangle.
+ */
+void
+Player::setRect (SDL_Rect rect)
+{
+  _rect = rect;
+}
+
+/**
+ * @brief Gets player output rectangle.
+ */
+SDL_Rect
+Player::getRect ()
+{
+  return _rect;
+}
+
+/**
+ * @brief Sets player z-index and z-order.
+ */
+void
+Player::setZ (int z, int zorder)
+{
+  _z = z;
+  _zorder = zorder;
+}
+
+/**
+ * @brief Gets player z-index and z-order.
+ */
+void
+Player::getZ (int *z, int *zorder)
+{
+  set_if_nonnull (z , _z);
+  set_if_nonnull (zorder , _zorder);
+}
+
+
+// Private.
 
 GINGA_PLAYER_END
