@@ -51,7 +51,7 @@ class NclFormatterEvent
   PROPERTY_READONLY (EventState, _previousState, getPreviousState)
 
 public:
-  NclFormatterEvent (const string &_id, ExecutionObject *exeObj);
+  NclFormatterEvent (const string &id, ExecutionObject *exeObj);
   virtual ~NclFormatterEvent ();
 
   void setCurrentState (EventState newState);
@@ -65,8 +65,8 @@ public:
   void addListener (INclEventListener *listener);
   void removeListener (INclEventListener *listener);
 
-  static bool hasInstance (NclFormatterEvent *evt, bool remove);
   bool instanceOf (const string &);
+  static bool hasInstance (NclFormatterEvent *evt, bool remove);
   static bool hasNcmId (NclFormatterEvent *evt, const string &anchorId);
 
 protected:
@@ -85,29 +85,19 @@ private:
 
 class NclAnchorEvent : public NclFormatterEvent
 {
+  PROPERTY_READONLY (ContentAnchor *, _anchor, getAnchor)
+
 public:
   NclAnchorEvent (const string &, ExecutionObject *, ContentAnchor *);
-
   virtual ~NclAnchorEvent () {}
-
-  ContentAnchor *getAnchor ();
-  virtual bool
-  start ()
-  {
-    return NclFormatterEvent::start ();
-  }
-  virtual bool
-  stop ()
-  {
-    return NclFormatterEvent::stop ();
-  }
-
-protected:
-  ContentAnchor *_anchor;
 };
 
 class NclPresentationEvent : public NclAnchorEvent
 {
+  PROPERTY_READONLY (GingaTime, _begin, getBegin)
+  PROPERTY (GingaTime, _end, getEnd, setEnd)
+  PROPERTY_READONLY (GingaTime, _repetitionInterval, getRepetitionInterval)
+
 public:
   NclPresentationEvent (const string &, ExecutionObject *, ContentAnchor *);
   virtual ~NclPresentationEvent () {}
@@ -115,60 +105,51 @@ public:
   bool stop ();
 
   GingaTime getDuration ();
-  GingaTime getRepetitionInterval ();
   int getRepetitions ();
-  void setEnd (GingaTime e);
   void setRepetitionSettings (int repetitions, GingaTime repetitionInterval);
-  GingaTime getBegin ();
-  GingaTime getEnd ();
   void incrementOccurrences ();
 
 private:
-  GingaTime _begin;
-  GingaTime _end;
   int _numPresentations;
-  GingaTime _repetitionInterval;
 };
 
 class NclSelectionEvent : public NclAnchorEvent
 {
+  PROPERTY (string, _selCode, getSelectionCode, setSelectionCode)
+
 public:
   NclSelectionEvent (const string &, ExecutionObject *, ContentAnchor *);
   virtual ~NclSelectionEvent () {}
-  bool start ();
-  const string getSelectionCode ();
-  void setSelectionCode (const string &codeStr);
 
-private:
-  string selectionCode;
+  bool start ();
 };
 
 class NclAttributionEvent : public NclFormatterEvent
 {
-private:
-  bool settingNode;
+  PROPERTY (INclAttributeValueMaintainer *, _valueMaintainer,
+            getValueMaintainer, setValueMaintainer)
 
-protected:
-  PropertyAnchor *anchor;
-  INclAttributeValueMaintainer *valueMaintainer;
-  map<string, NclFormatterEvent *> assessments;
-  Settings *settings;
+  PROPERTY_READONLY (PropertyAnchor *, _anchor, getAnchor)
 
 public:
-  NclAttributionEvent (const string &_id, ExecutionObject *,
+  NclAttributionEvent (const string &id, ExecutionObject *,
                        PropertyAnchor *,
                        Settings *);
 
   virtual ~NclAttributionEvent ();
-  PropertyAnchor *getAnchor ();
   string getCurrentValue ();
   bool setValue (const string &newValue);
-  void setValueMaintainer (INclAttributeValueMaintainer *valueMaintainer);
-  INclAttributeValueMaintainer *getValueMaintainer ();
   void setImplicitRefAssessmentEvent (const string &roleId,
                                       NclFormatterEvent *event);
 
   NclFormatterEvent *getImplicitRefAssessmentEvent (const string &roleId);
+
+protected:
+  map<string, NclFormatterEvent *> _assessments;
+  Settings *_settings;
+
+private:
+  bool _settingsNode;
 };
 
 class NclSwitchEvent : public NclFormatterEvent, public INclEventListener
