@@ -1257,11 +1257,6 @@ PlayerAdapter::handleKeyEvent (SDL_EventType evtType,
   if (_player->isVisible ())
     {
       GingaTime time = _player->getMediaTime ();
-
-      TRACE ("key '%d' received for '%s' (time=%" GINGA_TIME_FORMAT ")",
-             key, _player->getProperty ("mrl").c_str (),
-             GINGA_TIME_ARGS (time));
-
       _object->selectionEvent (key, time);
     }
 }
@@ -1380,14 +1375,60 @@ PlayerAdapter::createPlayer (const string &uri)
   ContentNode *contentNode = dynamic_cast <ContentNode *> (dataObject);
   if (contentNode)
     {
+      string pos_x_name = "";
+      string pos_x_value = "";
+      string pos_y_name = "";
+      string pos_y_value = "";
+      string width = "";
+      string height = "";
       for (Anchor *anchor: contentNode->getAnchors ())
         {
+          string name, value;
+
           property = dynamic_cast <PropertyAnchor *> (anchor);
           if (!property)
             continue;
-          _player->setProperty (property->getName (),
-                                property->getValue ());
+
+          name = property->getName ();
+          value = property->getValue ();
+
+          if (name == "left" || name == "right")
+            {
+              pos_x_name = name;
+              pos_x_value = value;
+              continue;
+            }
+
+          if (name == "top" || name == "bottom")
+            {
+              pos_y_name = name;
+              pos_y_value = value;
+              continue;
+            }
+
+          if (name == "width")
+            {
+              width = value;
+              continue;
+            }
+
+          if (name == "height")
+            {
+              height = value;
+              continue;
+            }
+
+          _player->setProperty (name, value);
         }
+
+      if (width != "")
+        _player->setProperty ("width", width);
+      if (height != "")
+        _player->setProperty ("height", height);
+      if (pos_x_name != "")
+        _player->setProperty (pos_x_name, pos_x_value);
+      if (pos_y_name != "")
+        _player->setProperty (pos_y_name, pos_y_value);
     }
 
   for (NclFormatterEvent *evt: _object->getEvents ())

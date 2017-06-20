@@ -1013,7 +1013,7 @@ ExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
       clog << selectionEvent->getId () << "' has selCode = '" << selCode;
       clog << "' (looking for key code '" << keyString << "'" << endl;
 
-      if ( !keyString.compare(selCode) )
+      if (keyString == "ENTER")
         {
           if (selectionEvent->getAnchor ()->instanceOf ("LambdaAnchor"))
             {
