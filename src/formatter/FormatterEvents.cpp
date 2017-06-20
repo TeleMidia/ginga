@@ -41,30 +41,20 @@ NclFormatterEvent::NclFormatterEvent (const string &id,
 
 NclFormatterEvent::~NclFormatterEvent ()
 {
-  auto i = _instances.find (this);
-  if (i != _instances.end ())
-    {
-      _instances.erase (i);
-    }
-
+  _instances.erase (this);
   _listeners.clear ();
 }
 
 bool
 NclFormatterEvent::hasInstance (NclFormatterEvent *evt, bool remove)
 {
-  bool inst = false;
+  bool has = _instances.find(evt) != _instances.end();
 
-  auto i = _instances.find (evt);
-  if (i != _instances.end ())
+  if (has && remove)
     {
-      if (remove)
-        {
-          _instances.erase (i);
-        }
-      inst = true;
+      _instances.erase (evt);
     }
-  return inst;
+  return has;
 }
 
 bool
@@ -138,11 +128,7 @@ NclFormatterEvent::addListener (INclEventListener *listener)
 void
 NclFormatterEvent::removeListener (INclEventListener *listener)
 {
-  auto i = _listeners.find (listener);
-  if (i != _listeners.end ())
-    {
-      _listeners.erase (i);
-    }
+  _listeners.erase (listener);
 }
 
 EventStateTransition
