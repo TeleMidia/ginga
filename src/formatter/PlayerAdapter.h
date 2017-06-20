@@ -36,7 +36,6 @@ public:
   virtual ~PlayerAdapter ();
 
   bool setCurrentEvent (NclFormatterEvent *); // app
-  double getMediaTime ();
   Player *getPlayer ();
   void setOutputWindow (SDLWindow *);
 
