@@ -24,45 +24,36 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 set<NclFormatterEvent *> NclFormatterEvent::_instances;
-bool NclFormatterEvent::_init = false;
 
 NclFormatterEvent::NclFormatterEvent (const string &id,
                                       ExecutionObject *exeObj)
 {
-  this->id = id;
+  _typeSet.insert ("NclFormatterEvent");
+
+  this->_id = id;
   _currentState = EventState::SLEEPING;
   _occurrences = 0;
   _exeObj = exeObj;
-  _deleting = false;
-  _eventType = EventType::UNKNOWN;
+  _type = EventType::UNKNOWN;
 
-  if (!_init)
-    {
-      _init = true;
-    }
-
-  _typeSet.insert ("NclFormatterEvent");
-  addInstance (this);
+  _instances.insert (this);
 }
 
 NclFormatterEvent::~NclFormatterEvent ()
 {
-  _deleting = true;
+  auto i = _instances.find (this);
+  if (i != _instances.end ())
+    {
+      _instances.erase (i);
+    }
 
-  removeInstance (this);
-
-  destroyListeners ();
+  _listeners.clear ();
 }
 
 bool
 NclFormatterEvent::hasInstance (NclFormatterEvent *evt, bool remove)
 {
   bool inst = false;
-
-  if (!_init)
-    {
-      return false;
-    }
 
   auto i = _instances.find (evt);
   if (i != _instances.end ())
@@ -73,27 +64,6 @@ NclFormatterEvent::hasInstance (NclFormatterEvent *evt, bool remove)
         }
       inst = true;
     }
-  return inst;
-}
-
-void
-NclFormatterEvent::addInstance (NclFormatterEvent *evt)
-{
-  _instances.insert (evt);
-}
-
-bool
-NclFormatterEvent::removeInstance (NclFormatterEvent *evt)
-{
-  bool inst = false;
-
-  auto i = _instances.find (evt);
-  if (i != _instances.end ())
-    {
-      _instances.erase (i);
-      inst = true;
-    }
-
   return inst;
 }
 
@@ -159,25 +129,6 @@ NclFormatterEvent::hasNcmId (NclFormatterEvent *evt, const string &anchorId)
 }
 
 void
-NclFormatterEvent::setType (EventType evtType)
-{
-  this->_eventType = evtType;
-}
-
-EventType
-NclFormatterEvent::getType ()
-{
-  return _eventType;
-}
-
-void
-NclFormatterEvent::destroyListeners ()
-{
-  this->_exeObj = NULL;
-  _listeners.clear ();
-}
-
-void
 NclFormatterEvent::addListener (INclEventListener *listener)
 {
   this->_listeners.insert (listener);
@@ -186,35 +137,10 @@ NclFormatterEvent::addListener (INclEventListener *listener)
 void
 NclFormatterEvent::removeListener (INclEventListener *listener)
 {
-  set<INclEventListener *>::iterator i;
-
-  i = _listeners.find (listener);
+  auto i = _listeners.find (listener);
   if (i != _listeners.end ())
     {
       _listeners.erase (i);
-    }
-}
-
-EventState
-NclFormatterEvent::getNewState (EventStateTransition transition)
-{
-  switch (transition)
-    {
-    case EventStateTransition::STOPS:
-      return EventState::SLEEPING;
-
-    case EventStateTransition::STARTS:
-    case EventStateTransition::RESUMES:
-      return EventState::OCCURRING;
-
-    case EventStateTransition::PAUSES:
-      return EventState::PAUSED;
-
-    case EventStateTransition::ABORTS:
-      return EventState::SLEEPING;
-
-    default:
-      return EventState::UNKNOWN;
     }
 }
 
@@ -310,21 +236,11 @@ NclFormatterEvent::changeState (EventState newState,
   _previousState = _currentState;
   _currentState = newState;
 
-  if (_deleting)
-    {
-      return false;
-    }
-
   set<INclEventListener *> *clone = new set<INclEventListener *> (_listeners);
 
   i = clone->begin ();
   while (i != clone->end ())
     {
-      if (_deleting)
-        {
-          break;
-        }
-
       if (*i != NULL)
         {
           ((INclEventListener *)(*i))
@@ -340,42 +256,6 @@ NclFormatterEvent::changeState (EventState newState,
   return true;
 }
 
-EventState
-NclFormatterEvent::getCurrentState ()
-{
-  return _currentState;
-}
-
-EventState
-NclFormatterEvent::getPreviousState ()
-{
-  return _previousState;
-}
-
-ExecutionObject *
-NclFormatterEvent::getExecutionObject ()
-{
-  return _exeObj;
-}
-
-void
-NclFormatterEvent::setExecutionObject (ExecutionObject *object)
-{
-  _exeObj = object;
-}
-
-string
-NclFormatterEvent::getId ()
-{
-  return id;
-}
-
-int
-NclFormatterEvent::getOccurrences ()
-{
-  return _occurrences;
-}
-
 // NclAnchorEvent
 NclAnchorEvent::NclAnchorEvent (const string &id,
                                 ExecutionObject *executionObject,
@@ -386,7 +266,7 @@ NclAnchorEvent::NclAnchorEvent (const string &id,
   _typeSet.insert ("NclAnchorEvent");
 }
 
-NclAnchorEvent::~NclAnchorEvent () { removeInstance (this); }
+NclAnchorEvent::~NclAnchorEvent () {}
 
 ContentAnchor *
 NclAnchorEvent::getAnchor ()
@@ -402,29 +282,29 @@ NclPresentationEvent::NclPresentationEvent (const string &id,
 {
   _typeSet.insert ("NclPresentationEvent");
 
-  numPresentations = 1;
-  repetitionInterval = 0;
+  _numPresentations = 1;
+  _repetitionInterval = 0;
 
   if (anchor->instanceOf ("IntervalAnchor"))
     {
-      begin = ((IntervalAnchor *)anchor)->getBegin ();
-      end = ((IntervalAnchor *)anchor)->getEnd ();
+      _begin = ((IntervalAnchor *)anchor)->getBegin ();
+      _end = ((IntervalAnchor *)anchor)->getEnd ();
     }
   else
     {
-      begin = 0;
-      end = GINGA_TIME_NONE;
+      _begin = 0;
+      _end = GINGA_TIME_NONE;
     }
 }
 
-NclPresentationEvent::~NclPresentationEvent () { removeInstance (this); }
+NclPresentationEvent::~NclPresentationEvent () { }
 
 bool
 NclPresentationEvent::stop ()
 {
-  if (_currentState == EventState::OCCURRING && numPresentations > 1)
+  if (_currentState == EventState::OCCURRING && _numPresentations > 1)
     {
-      numPresentations--;
+      _numPresentations--;
     }
 
   return NclFormatterEvent::stop ();
@@ -433,27 +313,27 @@ NclPresentationEvent::stop ()
 GingaTime
 NclPresentationEvent::getDuration ()
 {
-  if (!GINGA_TIME_IS_VALID (this->end))
+  if (!GINGA_TIME_IS_VALID (this->_end))
     return GINGA_TIME_NONE;
-  return this->end - this->begin;
+  return this->_end - this->_begin;
 }
 
 GingaTime
 NclPresentationEvent::getRepetitionInterval ()
 {
-  return repetitionInterval;
+  return _repetitionInterval;
 }
 
 int
 NclPresentationEvent::getRepetitions ()
 {
-  return (numPresentations - 1);
+  return (_numPresentations - 1);
 }
 
 void
 NclPresentationEvent::setEnd (GingaTime end)
 {
-  this->end = end;
+  this->_end = end;
 }
 
 void
@@ -462,26 +342,26 @@ NclPresentationEvent::setRepetitionSettings (int repetitions,
 {
   if (repetitions >= 0)
     {
-      this->numPresentations = repetitions + 1;
+      this->_numPresentations = repetitions + 1;
     }
   else
     {
-      this->numPresentations = 1;
+      this->_numPresentations = 1;
     }
 
-  this->repetitionInterval = repetitionInterval;
+  this->_repetitionInterval = repetitionInterval;
 }
 
 GingaTime
 NclPresentationEvent::getBegin ()
 {
-  return begin;
+  return _begin;
 }
 
 GingaTime
 NclPresentationEvent::getEnd ()
 {
-  return end;
+  return _end;
 }
 
 void
@@ -501,7 +381,7 @@ NclSelectionEvent::NclSelectionEvent (const string &id,
   _typeSet.insert ("NclSelectionEvent");
 }
 
-NclSelectionEvent::~NclSelectionEvent () { removeInstance (this); }
+NclSelectionEvent::~NclSelectionEvent () { }
 
 const string
 NclSelectionEvent::getSelectionCode ()
@@ -565,8 +445,6 @@ NclAttributionEvent::NclAttributionEvent (const string &id,
 
 NclAttributionEvent::~NclAttributionEvent ()
 {
-  removeInstance (this);
-
   assessments.clear ();
 }
 
@@ -585,7 +463,7 @@ NclAttributionEvent::getCurrentValue ()
   if (unlikely (anchor == NULL))
     {
       ERROR ("trying to set a null property anchor of object '%s'",
-             id.c_str ());
+             _id.c_str ());
     }
 
   if (settingNode)
@@ -658,11 +536,11 @@ NclAttributionEvent::getImplicitRefAssessmentEvent (const string &roleId)
 NclSwitchEvent::NclSwitchEvent (const string &id,
                                 ExecutionObject *executionObjectSwitch,
                                 InterfacePoint *interfacePoint,
-                                EventType eventType, const string &key)
+                                EventType type, const string &key)
     : NclFormatterEvent (id, executionObjectSwitch)
 {
   this->interfacePoint = interfacePoint;
-  this->_eventType = eventType;
+  this->_type = type;
   this->key = key;
   this->mappedEvent = NULL;
 
@@ -717,7 +595,7 @@ NclSwitchEvent::eventStateChanged (
     EventStateTransition transition,
     arg_unused (EventState _previousState))
 {
-  changeState (getNewState (transition), transition);
+  changeState (EventUtil::getNextState (transition), transition);
 }
 
 GINGA_FORMATTER_END

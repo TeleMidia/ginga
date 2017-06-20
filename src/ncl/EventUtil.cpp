@@ -243,4 +243,27 @@ EventUtil::getTransition (EventState previous, EventState next)
   return EventStateTransition::UNKNOWN;
 }
 
+EventState
+EventUtil::getNextState (EventStateTransition transition)
+{
+  switch (transition)
+    {
+    case EventStateTransition::STOPS:
+      return EventState::SLEEPING;
+
+    case EventStateTransition::STARTS:
+    case EventStateTransition::RESUMES:
+      return EventState::OCCURRING;
+
+    case EventStateTransition::PAUSES:
+      return EventState::PAUSED;
+
+    case EventStateTransition::ABORTS:
+      return EventState::SLEEPING;
+
+    default:
+      return EventState::UNKNOWN;
+    }
+}
+
 GINGA_NCL_END
