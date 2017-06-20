@@ -147,7 +147,6 @@ protected:
 private:
   bool _isCompiled;
   map<Node *, Node *> _nodeParentTable;
-
 };
 
 GINGA_FORMATTER_END

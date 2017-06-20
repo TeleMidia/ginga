@@ -28,8 +28,8 @@ public:
   InterfacePoint (const string &someId) : Entity (someId)
   {
     _typeSet.insert ("InterfacePoint");
-  };
-  virtual ~InterfacePoint (){};
+  }
+  virtual ~InterfacePoint (){}
 };
 
 GINGA_NCL_END

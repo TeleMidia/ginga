@@ -132,9 +132,10 @@ class NclAttributionEvent : public NclFormatterEvent
   PROPERTY_READONLY (PropertyAnchor *, _anchor, getAnchor)
 
 public:
-  NclAttributionEvent (const string &id, ExecutionObject *,
-                       PropertyAnchor *,
-                       Settings *);
+  NclAttributionEvent (const string &id,
+                       ExecutionObject *exeObj,
+                       PropertyAnchor *anchor,
+                       Settings *settings);
 
   virtual ~NclAttributionEvent ();
   string getCurrentValue ();
@@ -155,25 +156,29 @@ private:
 class NclSwitchEvent : public NclFormatterEvent, public INclEventListener
 {
 private:
-  InterfacePoint *interfacePoint;
-  string key;
-  NclFormatterEvent *mappedEvent;
+  InterfacePoint *_interface;
+  string _key;
+  NclFormatterEvent *_mappedEvent;
 
 public:
-  NclSwitchEvent (const string &, ExecutionObject *, InterfacePoint *,
-                  EventType, const string &);
+  NclSwitchEvent (const string &id,
+                  ExecutionObject *exeObjSwitch,
+                  InterfacePoint *interface,
+                  EventType type,
+                  const string &key);
 
   virtual ~NclSwitchEvent ();
 
-  InterfacePoint *getInterfacePoint ();
-  string getKey ();
-  void setMappedEvent (NclFormatterEvent *event);
-  NclFormatterEvent *getMappedEvent ();
+  InterfacePoint *getInterfacePoint () { return this->_interface; }
+  string getKey () { return this->_key; }
+
+  void setMappedEvent (NclFormatterEvent *evt);
+  NclFormatterEvent *getMappedEvent () { return this->_mappedEvent; }
 
   virtual void eventStateChanged (
       NclFormatterEvent *evt,
-      EventStateTransition transition,
-      EventState previousState) override;
+      EventStateTransition trans,
+      EventState prevState) override;
 };
 
 GINGA_FORMATTER_END
