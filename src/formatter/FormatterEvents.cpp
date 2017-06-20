@@ -31,7 +31,7 @@ NclFormatterEvent::NclFormatterEvent (const string &id,
   _typeSet.insert ("NclFormatterEvent");
 
   this->_id = id;
-  _currentState = EventState::SLEEPING;
+  _state = EventState::SLEEPING;
   _occurrences = 0;
   _exeObj = exeObj;
   _type = EventType::UNKNOWN;
@@ -86,38 +86,39 @@ NclFormatterEvent::hasNcmId (NclFormatterEvent *evt, const string &anchorId)
   Anchor *anchor;
   string anchorName = " ";
 
-  NclAnchorEvent *anchorEvt = dynamic_cast<NclAnchorEvent *> (evt);
-  if (anchorEvt)
+  if (auto anchorEvt = dynamic_cast<NclAnchorEvent *> (evt))
     {
       anchor = anchorEvt->getAnchor ();
       if (anchor != nullptr)
         {
-          if (anchor->instanceOf ("IntervalAnchor"))
+          if (dynamic_cast<IntervalAnchor *> (anchor))
             {
               anchorName = anchor->getId ();
             }
-          else if (anchor->instanceOf ("LabeledAnchor"))
+          else if (auto labeledAnchor = dynamic_cast<LabeledAnchor *> (anchor))
             {
-              anchorName = ((LabeledAnchor *)anchor)->getLabel ();
+              anchorName = labeledAnchor->getLabel ();
             }
-          else if (anchor->instanceOf ("LambdaAnchor"))
+          else if (dynamic_cast<LambdaAnchor *> (anchor))
             {
               anchorName = "";
             }
 
           if (anchorName == anchorId
-              && !evt->instanceOf ("NclSelectionEvent"))
+              && !(dynamic_cast<NclSelectionEvent *> (evt)))
             {
               return true;
             }
         }
     }
-  else if (evt->instanceOf ("NclAttributionEvent"))
+  else if (auto attrEvt = dynamic_cast<NclAttributionEvent *> (evt))
     {
-      anchor = ((NclAttributionEvent *)evt)->getAnchor ();
-      if (anchor != NULL)
+      anchor = attrEvt->getAnchor ();
+      if (anchor != nullptr)
         {
-          anchorName = ((PropertyAnchor *)anchor)->getName ();
+          auto propAnchor = dynamic_cast<PropertyAnchor *> (anchor);
+          g_assert_nonnull (propAnchor);
+          anchorName = propAnchor->getName ();
           if (anchorName == anchorId)
             {
               return true;
@@ -147,111 +148,79 @@ NclFormatterEvent::removeListener (INclEventListener *listener)
 EventStateTransition
 NclFormatterEvent::getTransition (EventState newState)
 {
-  return EventUtil::getTransition (_currentState, newState);
+  return EventUtil::getTransition (_state, newState);
 }
 
 bool
 NclFormatterEvent::abort ()
 {
-  switch (_currentState)
-    {
-    case EventState::OCCURRING:
-    case EventState::PAUSED:
-      return changeState (EventState::SLEEPING, EventStateTransition::ABORTS);
-
-    default:
-      return false;
-    }
+  if (_state == EventState::OCCURRING || _state == EventState::PAUSED)
+    return changeState (EventState::SLEEPING, EventStateTransition::ABORTS);
+  else
+    return false;
 }
 
 bool
 NclFormatterEvent::start ()
 {
-  switch (_currentState)
-    {
-    case EventState::SLEEPING:
+  if (_state == EventState::SLEEPING)
       return changeState (EventState::OCCURRING, EventStateTransition::STARTS);
-    default:
-      return false;
-    }
+  else
+    return false;
 }
 
 bool
 NclFormatterEvent::stop ()
 {
-  switch (_currentState)
-    {
-    case EventState::OCCURRING:
-    case EventState::PAUSED:
-      return changeState (EventState::SLEEPING, EventStateTransition::STOPS);
-    default:
-      return false;
-    }
+  if (_state == EventState::OCCURRING || _state == EventState::PAUSED)
+    return changeState (EventState::SLEEPING, EventStateTransition::STOPS);
+  else
+    return false;
 }
 
 bool
 NclFormatterEvent::pause ()
 {
-  switch (_currentState)
-    {
-    case EventState::OCCURRING:
-      return changeState (EventState::PAUSED, EventStateTransition::PAUSES);
-
-    default:
-      return false;
-    }
+  if (_state == EventState::OCCURRING)
+    return changeState (EventState::PAUSED, EventStateTransition::PAUSES);
+  else
+    return false;
 }
 
 bool
 NclFormatterEvent::resume ()
 {
-  switch (_currentState)
-    {
-    case EventState::PAUSED:
-      return changeState (EventState::OCCURRING, EventStateTransition::RESUMES);
-
-    default:
-      return false;
-    }
+  if (_state == EventState::PAUSED)
+    return changeState (EventState::OCCURRING, EventStateTransition::RESUMES);
+  else
+    return false;
 }
 
 void
 NclFormatterEvent::setCurrentState (EventState newState)
 {
-  _previousState = _currentState;
-  _currentState = newState;
+  _previousState = _state;
+  _state = newState;
 }
 
 bool
 NclFormatterEvent::changeState (EventState newState,
                                 EventStateTransition transition)
 {
-  set<INclEventListener *>::iterator i;
-
   if (transition == EventStateTransition::STOPS)
     {
       _occurrences++;
     }
 
-  _previousState = _currentState;
-  _currentState = newState;
+  _previousState = _state;
+  _state = newState;
 
-  set<INclEventListener *> *clone = new set<INclEventListener *> (_listeners);
+  set<INclEventListener *> clone (_listeners);
 
-  i = clone->begin ();
-  while (i != clone->end ())
+  for (INclEventListener *listener: clone)
     {
-      if (*i != NULL)
-        {
-          ((INclEventListener *)(*i))
-              ->eventStateChanged (this, transition, _previousState);
-        }
-      ++i;
+      listener->eventStateChanged (this, transition, _previousState);
     }
-
-  clone->clear ();
-  delete clone;
-  clone = NULL;
 
   return true;
 }
@@ -265,8 +234,6 @@ NclAnchorEvent::NclAnchorEvent (const string &id,
   this->_anchor = anchor;
   _typeSet.insert ("NclAnchorEvent");
 }
-
-NclAnchorEvent::~NclAnchorEvent () {}
 
 ContentAnchor *
 NclAnchorEvent::getAnchor ()
@@ -297,12 +264,10 @@ NclPresentationEvent::NclPresentationEvent (const string &id,
     }
 }
 
-NclPresentationEvent::~NclPresentationEvent () { }
-
 bool
 NclPresentationEvent::stop ()
 {
-  if (_currentState == EventState::OCCURRING && _numPresentations > 1)
+  if (_state == EventState::OCCURRING && _numPresentations > 1)
     {
       _numPresentations--;
     }
@@ -381,8 +346,6 @@ NclSelectionEvent::NclSelectionEvent (const string &id,
   _typeSet.insert ("NclSelectionEvent");
 }
 
-NclSelectionEvent::~NclSelectionEvent () { }
-
 const string
 NclSelectionEvent::getSelectionCode ()
 {
@@ -417,7 +380,7 @@ NclAttributionEvent::NclAttributionEvent (const string &id,
   _typeSet.insert ("NclAttributionEvent");
 
   this->anchor = anchor;
-  this->valueMaintainer = NULL;
+  this->valueMaintainer = nullptr;
   this->settingNode = false;
   this->settings = settings;
 
@@ -460,9 +423,9 @@ NclAttributionEvent::getCurrentValue ()
   string propName;
   string maintainerValue = "";
 
-  if (unlikely (anchor == NULL))
+  if (unlikely (anchor == nullptr))
     {
-      ERROR ("trying to set a null property anchor of object '%s'",
+      ERROR ("trying to set a nullptr property anchor of object '%s'",
              _id.c_str ());
     }
 
@@ -476,7 +439,7 @@ NclAttributionEvent::getCurrentValue ()
     }
   else
     {
-      if (valueMaintainer != NULL)
+      if (valueMaintainer != nullptr)
         {
           maintainerValue = valueMaintainer->getProperty (this);
         }
@@ -526,7 +489,7 @@ NclAttributionEvent::getImplicitRefAssessmentEvent (const string &roleId)
 {
   if (assessments.count (roleId) == 0)
     {
-      return NULL;
+      return nullptr;
     }
 
   return assessments[roleId];
@@ -542,7 +505,7 @@ NclSwitchEvent::NclSwitchEvent (const string &id,
   this->interfacePoint = interfacePoint;
   this->_type = type;
   this->key = key;
-  this->mappedEvent = NULL;
+  this->mappedEvent = nullptr;
 
   _typeSet.insert ("NclSwitchEvent");
 }
@@ -552,7 +515,7 @@ NclSwitchEvent::~NclSwitchEvent ()
   if (NclFormatterEvent::hasInstance (mappedEvent, false))
     {
       mappedEvent->removeListener (this);
-      mappedEvent = NULL;
+      mappedEvent = nullptr;
     }
 }
 
@@ -571,13 +534,13 @@ NclSwitchEvent::getKey ()
 void
 NclSwitchEvent::setMappedEvent (NclFormatterEvent *event)
 {
-  if (mappedEvent != NULL)
+  if (mappedEvent != nullptr)
     {
       mappedEvent->removeListener (this);
     }
 
   mappedEvent = event;
-  if (mappedEvent != NULL)
+  if (mappedEvent != nullptr)
     {
       mappedEvent->addListener (this);
     }
