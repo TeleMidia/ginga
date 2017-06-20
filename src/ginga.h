@@ -159,26 +159,6 @@ string __ginga_strfunc (const string &);
 #define ERROR_NOT_IMPLEMENTED(fmt, ...)\
   ERROR ("not implemented: " fmt, ## __VA_ARGS__)
 
-// Thread.
-#define GINGA_MUTEX_DEFN()                      \
-  GRecMutex mutex;                              \
-  void inline mutexInit ()                      \
-  {                                             \
-    g_rec_mutex_init (&this->mutex);            \
-  }                                             \
-  void inline mutexClear ()                     \
-  {                                             \
-    g_rec_mutex_clear (&this->mutex);           \
-  }                                             \
-  void inline lock (void)                       \
-  {                                             \
-    g_rec_mutex_lock (&this->mutex);            \
-  }                                             \
-  void inline unlock (void)                     \
-  {                                             \
-    g_rec_mutex_unlock (&this->mutex);          \
-  }
-
 // Time.
 typedef GstClockTime GingaTime;
 #define ginga_gettime()        ((GingaTime)(g_get_monotonic_time () * 1000))

@@ -26,21 +26,6 @@ GINGA_MB_BEGIN
 // Global display; initialized by main().
 Display *_Ginga_Display = NULL;
 
-// Entry in display job list.
-struct _DisplayJob
-{
-  DisplayJobCallback func;
-  void *data;
-};
-
-// Deletes job entry.
-static void
-job_delete (DisplayJob *job)
-{
-  g_assert_nonnull (job);
-  delete job;
-}
-
 // Compares the z-index and z-order of two players.
 static gint
 win_cmp_z (Player *p1, Player *p2)
@@ -65,84 +50,6 @@ win_cmp_z (Player *p1, Player *p2)
 }
 
 
-// Private methods.
-
-bool
-Display::add (GList **list, gpointer data)
-{
-  bool found;
-
-  g_assert_nonnull (list);
-  this->lock ();
-  if (unlikely (found = g_list_find (*list, data)))
-    {
-      WARNING ("object %p already in list %p", data, *list);
-      goto done;
-    }
-  *list = g_list_append (*list, data);
- done:
-  this->unlock ();
-  return !found;
-}
-
-bool
-Display::remove (GList **list, gpointer data)
-{
-  GList *elt;
-
-  g_assert_nonnull (list);
-  this->lock ();
-  elt = g_list_find (*list, data);
-  if (unlikely (elt == NULL))
-    {
-      WARNING ("object %p not in list %p", data, *list);
-      goto done;
-    }
-  *list = g_list_remove_link (*list, elt);
- done:
-  this->unlock ();
-  return elt != NULL;
-}
-
-bool
-Display::find (GList *list, gconstpointer data)
-{
-  GList *elt;
-  this->lock ();
-  elt = g_list_find (list, data);
-  this->unlock ();
-  return elt != NULL;
-}
-
-void
-Display::notifyTickListeners (GingaTime total, GingaTime diff, int frameno)
-{
-  GList *l = this->listeners;
-  while (l != NULL)
-    {
-      GList *next = l->next;
-      IEventListener *obj = (IEventListener *) l->data;
-      g_assert_nonnull (obj);
-      obj->handleTickEvent (total, diff, frameno);
-      l = next;
-    }
-}
-
-void
-Display::notifyKeyListeners (SDL_EventType type, SDL_Keycode key)
-{
-  GList *l = this->listeners;
-  while (l != NULL)
-    {
-      GList *next = l->next;
-      IEventListener *obj = (IEventListener *) l->data;
-      g_assert_nonnull (obj);
-      obj->handleKeyEvent (type, key);
-      l = next;
-    }
-}
-
-
 // Public methods.
 
 /**
@@ -156,17 +63,15 @@ Display::Display (int width, int height, double fps, bool fullscreen)
 {
   guint flags;
 
-  this->mutexInit ();
-  this->width = width;
-  this->height = height;
-  this->fps = fps;
-  this->fullscreen = fullscreen;
-  this->_quit = false;
+  _width = width;
+  _height = height;
+  _fps = fps;
+  _fullscreen = fullscreen;
+  _quit = false;
 
-  this->jobs = NULL;
-  this->listeners = NULL;
-  this->players = NULL;
-  this->textures = NULL;
+  _listeners = NULL;
+  _players = NULL;
+  _textures = NULL;
 
   g_assert (!SDL_WasInit (0));
   if (unlikely (SDL_Init (0) != 0))
@@ -178,15 +83,15 @@ Display::Display (int width, int height, double fps, bool fullscreen)
   SDL_SetHint (SDL_HINT_RENDER_SCALE_QUALITY, "1");
 
   flags = SDL_WINDOW_SHOWN;
-  if (this->fullscreen)
+  if (_fullscreen)
     flags |= SDL_WINDOW_FULLSCREEN;
 
-  this->dashboard = new Dashboard ();
-  this->screen = SDL_CreateWindow ("ginga", 0, 0, width, height, flags);
-  g_assert_nonnull (this->screen);
-  this->renderer = SDL_CreateRenderer (this->screen, -1,
+  _dashboard = new Dashboard ();
+  _screen = SDL_CreateWindow ("ginga", 0, 0, width, height, flags);
+  g_assert_nonnull (_screen);
+  _renderer = SDL_CreateRenderer (_screen, -1,
                                        SDL_RENDERER_PRESENTVSYNC);
-  g_assert_nonnull (this->renderer);
+  g_assert_nonnull (_renderer);
 }
 
 /**
@@ -195,19 +100,14 @@ Display::Display (int width, int height, double fps, bool fullscreen)
 Display::~Display ()
 {
   this->quit ();
-  this->lock ();
 
-  g_list_free_full (this->jobs, (GDestroyNotify) job_delete);
-  g_list_free (this->listeners);
-  g_list_free (this->players);
-  g_assert (g_list_length (this->textures) == 0);
+  g_list_free (_listeners);
+  g_list_free (_players);
+  g_assert (g_list_length (_textures) == 0);
 
-  SDL_DestroyRenderer (this->renderer);
-  SDL_DestroyWindow (this->screen);
-  delete this->dashboard;
-
-  this->unlock ();
-  this->mutexClear ();
+  SDL_DestroyRenderer (_renderer);
+  SDL_DestroyWindow (_screen);
+  delete _dashboard;
 }
 
 /**
@@ -217,13 +117,7 @@ Display::~Display ()
 double
 Display::getFPS ()
 {
-  double fps;
-
-  this->lock ();
-  fps = this->fps;
-  this->unlock ();
-
-  return fps;
+  return _fps;
 }
 
 /**
@@ -233,9 +127,7 @@ Display::getFPS ()
 void
 Display::setFPS (double fps)
 {
-  this->lock ();
-  this->fps = MAX (fps, 0);
-  this->unlock ();
+  _fps = MAX (fps, 0);
 }
 
 /**
@@ -245,13 +137,7 @@ Display::setFPS (double fps)
 bool
 Display::getFullscreen ()
 {
-  bool fullscreen;
-
-  this->lock ();
-  fullscreen = this->fullscreen;
-  this->unlock ();
-
-  return fullscreen;
+  return _fullscreen;
 }
 
 /**
@@ -264,18 +150,15 @@ Display::setFullscreen (bool fullscreen)
   int status;
   guint flags;
 
-  this->lock ();
   flags = (fullscreen) ? SDL_WINDOW_FULLSCREEN : 0;
-  status = SDL_SetWindowFullscreen (this->screen, flags);
+  status = SDL_SetWindowFullscreen (_screen, flags);
   if (unlikely (status != 0))
     {
       WARNING ("cannot set full-screen mode to %s: %s",
                (fullscreen) ? "true" : "false", SDL_GetError ());
-      goto done;
+      return;
     }
-  this->fullscreen = fullscreen;
- done:
-  this->unlock ();
+  _fullscreen = fullscreen;
 }
 
 /**
@@ -286,10 +169,8 @@ Display::setFullscreen (bool fullscreen)
 void
 Display::getSize (int *width, int *height)
 {
-  this->lock ();
-  set_if_nonnull (width, this->width);
-  set_if_nonnull (height, this->height);
-  this->unlock ();
+  set_if_nonnull (width, _width);
+  set_if_nonnull (height, _height);
 }
 
 /**
@@ -300,12 +181,10 @@ Display::getSize (int *width, int *height)
 void
 Display::setSize (int width, int height)
 {
-  this->lock ();
   g_assert (width > 0 && height > 0);
-  SDL_SetWindowSize (this->screen, width, height);
-  this->width = width;
-  this->height = height;
-  this->unlock ();
+  SDL_SetWindowSize (_screen, width, height);
+  _width = width;
+  _height = height;
 }
 
 /**
@@ -314,9 +193,7 @@ Display::setSize (int width, int height)
 void
 Display::quit ()
 {
-  this->lock ();
-  this->_quit = true;
-  this->unlock ();
+  _quit = true;
 }
 
 /**
@@ -326,57 +203,7 @@ Display::quit ()
 bool
 Display::hasQuitted ()
 {
-  bool quit;
-
-  this->lock ();
-  quit = this->_quit;
-  this->unlock ();
-
-  return quit;
-}
-
-/**
- * @brief Adds job to display job list.
- * @param func Job callback.
- * @param data User-data.
- * @return New job.
- */
-DisplayJob *
-Display::addJob (DisplayJobCallback func, void *data)
-{
-  DisplayJob *job;
-
-  job = new DisplayJob;
-  g_assert_nonnull (job);
-
-  job->func = func;
-  job->data = data;
-
-  g_assert (this->add (&this->jobs, job));
-  return job;
-}
-
-/**
- * @brief Removes job from the display job list.
- * @param job Job.
- * @return True if job was removed.
- */
-bool
-Display::removeJob (DisplayJob *job)
-{
-  GList *elt;
-
-  this->lock ();
-  elt = g_list_find (this->jobs, job);
-  if (elt == NULL)
-    {
-      this->unlock ();
-      return false;
-    }
-  this->jobs = g_list_remove_link (this->jobs, elt);
-  delete (DisplayJob *) elt->data;
-  this->unlock ();
-  return true;
+  return _quit;
 }
 
 /**
@@ -387,7 +214,7 @@ bool
 Display::registerEventListener (IEventListener *obj)
 {
   g_assert_nonnull (obj);
-  return this->add (&this->listeners, obj);
+  return this->add (&_listeners, obj);
 }
 
 /**
@@ -397,7 +224,7 @@ bool
 Display::unregisterEventListener (IEventListener *obj)
 {
   g_assert_nonnull (obj);
-  return this->remove (&this->listeners, obj);
+  return this->remove (&_listeners, obj);
 }
 
 /**
@@ -408,7 +235,7 @@ void
 Display::registerPlayer (Player *player)
 {
   g_assert_nonnull (player);
-  g_assert (this->add (&this->players, player));
+  g_assert (this->add (&_players, player));
 }
 
 /**
@@ -418,7 +245,7 @@ void
 Display::unregisterPlayer (Player *player)
 {
   g_assert_nonnull (player);
-  g_assert (this->remove (&this->players, player));
+  g_assert (this->remove (&_players, player));
 }
 
 /**
@@ -429,7 +256,7 @@ void
 Display::destroyTexture (SDL_Texture *texture)
 {
   g_assert_nonnull (texture);
-  g_assert (this->add (&this->textures, texture));
+  g_assert (this->add (&_textures, texture));
 }
 
 /**
@@ -441,18 +268,18 @@ Display::renderLoop ()
   GingaTime epoch = ginga_gettime ();
   GingaTime last = epoch;
   int frameno = 1;
-  bool doquit = false;
 
-  while (!this->hasQuitted())   // render loop
+  // Render loop.
+  while (!this->hasQuitted())
     {
       SDL_Event evt;
       GList *l;
 
-      GingaTime framedur = (GingaTime)(1 * GINGA_SECOND / this->fps);
+      GingaTime framedur = (GingaTime)(1 * GINGA_SECOND / _fps);
       GingaTime now = ginga_gettime ();
       GingaTime elapsed = now - last;
 
-      if (this->fps > 0 && elapsed < framedur)
+      if (_fps > 0 && elapsed < framedur)
         g_usleep ((framedur - elapsed) / 1000);
 
       now = ginga_gettime ();
@@ -460,7 +287,8 @@ Display::renderLoop ()
       last = now;
       this->notifyTickListeners (now - epoch, elapsed, frameno++);
 
-      while (SDL_PollEvent (&evt)) // handle input
+      // Handle input.
+      while (SDL_PollEvent (&evt))
         {
           SDL_EventType type = (SDL_EventType) evt.type;
           switch (type)
@@ -483,60 +311,106 @@ Display::renderLoop ()
             }
         }
 
-      this->lock ();            // run jobs
-      l = this->jobs;           // list may be modified while being iterated
-      while (l != NULL)
-        {
-          GList *next = l->next;
-          DisplayJob *job = (DisplayJob *) l->data;
-          g_assert_nonnull (job);
-          if (!job->func (job, this->renderer, job->data))
-            this->jobs = g_list_remove_link (this->jobs, l);
-          l = next;
-        }
-      this->unlock ();
+      // Draw players.
+      SDL_SetRenderDrawColor (_renderer, 255, 0, 255, 255);
+      SDL_RenderClear (_renderer);
 
-      this->lock ();            // redraw windows
-      SDL_SetRenderDrawColor (this->renderer, 255, 0, 255, 255);
-      SDL_RenderClear (this->renderer);
-
-      this->players = g_list_sort (this->players, (GCompareFunc) win_cmp_z);
-      l =  this->players;
-      while (l != NULL)
+      _players = g_list_sort (_players, (GCompareFunc) win_cmp_z);
+      l =  _players;
+      while (l != NULL)         // can be modified while being traversed
         {
           GList *next = l->next;
           Player *pl = (Player *) l->data;
           if (pl == NULL)
-            this->players = g_list_remove_link (this->players, l);
+            _players = g_list_remove_link (_players, l);
           else
-            pl->redraw (this->renderer);
+            pl->redraw (_renderer);
           l = next;
         }
 
-      this->dashboard->redraw (this->renderer, now - epoch,
-                               ceil ((double)(1 * GINGA_SECOND / elapsed)),
-                               frameno);
+      // Draw dashboard.
+      _dashboard->redraw (_renderer, now - epoch,
+                          ceil ((double)(1 * GINGA_SECOND / elapsed)),
+                          frameno);
 
-      SDL_RenderPresent (this->renderer);
-      this->unlock ();
+      SDL_RenderPresent (_renderer);
 
-      this->lock ();            // destroy dead textures
-      g_list_free_full (this->textures,
-                        (GDestroyNotify) SDL_DestroyTexture);
-      this->textures = NULL;
-      this->unlock ();
-
+      // Destroy dead textures.
+      g_list_free_full (_textures, (GDestroyNotify) SDL_DestroyTexture);
+      _textures = NULL;
     }
 
-  if (doquit)
-    goto beach;
-
-  doquit = true;
-
- beach:
-  this->lock ();
   SDL_Quit ();
-  this->unlock ();
+}
+
+
+// Private methods.
+
+bool
+Display::add (GList **list, gpointer data)
+{
+  bool found;
+
+  g_assert_nonnull (list);
+  if (unlikely (found = g_list_find (*list, data)))
+    {
+      WARNING ("object %p already in list %p", data, *list);
+      goto done;
+    }
+  *list = g_list_append (*list, data);
+ done:
+  return !found;
+}
+
+bool
+Display::remove (GList **list, gpointer data)
+{
+  GList *elt;
+
+  g_assert_nonnull (list);
+  elt = g_list_find (*list, data);
+  if (unlikely (elt == NULL))
+    {
+      WARNING ("object %p not in list %p", data, *list);
+      goto done;
+    }
+  *list = g_list_remove_link (*list, elt);
+ done:
+  return elt != NULL;
+}
+
+bool
+Display::find (GList *list, gconstpointer data)
+{
+  return g_list_find (list, data) != NULL;
+}
+
+void
+Display::notifyTickListeners (GingaTime total, GingaTime diff, int frameno)
+{
+  GList *l = _listeners;
+  while (l != NULL)
+    {
+      GList *next = l->next;
+      IEventListener *obj = (IEventListener *) l->data;
+      g_assert_nonnull (obj);
+      obj->handleTickEvent (total, diff, frameno);
+      l = next;
+    }
+}
+
+void
+Display::notifyKeyListeners (SDL_EventType type, SDL_Keycode key)
+{
+  GList *l = _listeners;
+  while (l != NULL)
+    {
+      GList *next = l->next;
+      IEventListener *obj = (IEventListener *) l->data;
+      g_assert_nonnull (obj);
+      obj->handleKeyEvent (type, key);
+      l = next;
+    }
 }
 
 GINGA_MB_END
