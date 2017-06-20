@@ -59,7 +59,6 @@ public:
   virtual void setMrl (const string &mrl, bool visible = true);
   virtual void addListener (IPlayerListener *listener);
   void removeListener (IPlayerListener *listener);
-  void getZ (int *, int *);
   void setAnimatorProperties (string dur, string name, string value);
 
   void notifyPlayerListeners (short code,
@@ -100,7 +99,6 @@ public:
 
 protected:
   GingaTime _time;              // playback time
-
   PlayerStatus status;
   string mrl;
   SDLWindow *window;
@@ -118,15 +116,25 @@ protected:
   int borderWidth;
   SDL_Color bgColor;
   SDL_Color borderColor;
-  SDL_Rect rect;
-  int z;
-  int zorder;
   guint8 alpha;
 
 private:
   bool _notifying;
   map<string, string> _properties;
   set<IPlayerListener *> _listeners;
+
+  // --------------------------------------------------------------------------
+
+public:
+  void setRect (SDL_Rect);
+  SDL_Rect getRect ();
+  void setZ (int, int);
+  void getZ (int *, int *);
+
+protected:
+  SDL_Rect _rect;               // x, y, w, h in pixels
+  int _z;                       // z-index
+  int _zorder;                  // z-order
 };
 
 GINGA_PLAYER_END

@@ -548,25 +548,13 @@ PlayerAdapter::prepare (ExecutionObject *object,
         }
 
       createPlayer (mrl);
-
       g_assert_nonnull (_object);
       g_assert_nonnull (_player);
-      NclCascadingDescriptor *descriptor = _object->getDescriptor ();
-      if (descriptor != nullptr)
-        {
-          string value = descriptor->getParameterValue ("soundLevel");
-          if (value == "")
-            {
-              value = "1.0";
-            }
-
-          _player->setProperty ("soundLevel", value);
-        }
 
       if (event->getCurrentState () == EventState::SLEEPING)
         {
           object->prepare (event, 0);
-          prepare ();
+          prepareScope ();
           return true;
         }
       else
@@ -574,15 +562,6 @@ PlayerAdapter::prepare (ExecutionObject *object,
           return false;
         }
     }
-}
-
-void
-PlayerAdapter::prepare ()
-{
-  g_assert_nonnull (_object);
-  g_assert_nonnull (_player);
-
-  prepareScope ();
 }
 
 void
@@ -1044,7 +1023,7 @@ PlayerAdapter::checkRepeat (NclPresentationEvent *event)
       if (_object != nullptr)
         _object->stop ();
 
-      prepare ();
+      prepareScope ();
       return true;
     }
 
@@ -1309,13 +1288,13 @@ PlayerAdapter::setVisible (bool visible)
 // Private.
 
 void
-PlayerAdapter::createPlayer (const string &mrl)
+PlayerAdapter::createPlayer (const string &uri)
 {
-  NclCascadingDescriptor *descriptor;
   NodeEntity *dataObject;
-  PropertyAnchor *property;
   NodeEntity *entity;
-  Content *content;
+
+  NclCascadingDescriptor *descriptor;
+  PropertyAnchor *property;
 
   string buf;
   const char *mime;
@@ -1328,9 +1307,6 @@ PlayerAdapter::createPlayer (const string &mrl)
   g_assert_nonnull (entity);
   g_assert (entity->instanceOf ("ContentNode"));
 
-  content = entity->getContent ();
-  g_assert_nonnull (content);
-
   buf = ((ContentNode *) entity)->getNodeType ();
   mime = buf.c_str ();
   g_assert_nonnull (mime);
@@ -1340,39 +1316,39 @@ PlayerAdapter::createPlayer (const string &mrl)
       if (g_str_has_prefix (mime, "audio")
           || g_str_has_prefix (mime, "video"))
         {
-          _player = new VideoPlayer (mrl);
+          _player = new VideoPlayer (uri);
         }
 #if WITH_LIBRSVG && WITH_LIBRSVG
       else if (g_str_has_prefix (mime, "image/svg"))
         {
-          _player = new SvgPlayer (mrl);
+          _player = new SvgPlayer (uri);
         }
 #endif
       else if (g_str_has_prefix (mime, "image"))
         {
-          _player = new ImagePlayer (mrl);
+          _player = new ImagePlayer (uri);
         }
 #if defined WITH_CEF &&  WITH_CEF
       else if (g_str_has_prefix (mime, "text/html"))
         {
-          _player = new HTMLPlayer (mrl);
+          _player = new HTMLPlayer (uri);
         }
 #endif
 #if defined WITH_PANGO && WITH_PANGO
       else if (streq (mime, "text/plain"))
         {
-          _player = new TextPlayer (mrl);
+          _player = new TextPlayer (uri);
         }
 #endif
       else if (g_strcmp0 (mime, "application/x-ginga-NCLua") == 0)
         {
-          _player = new LuaPlayer (mrl);
+          _player = new LuaPlayer (uri);
           _isAppPlayer = true;
         }
       else
         {
-          _player = new Player (mrl);
-          WARNING ("unknown mime-type '%s'", mime);
+          _player = new Player (uri);
+          WARNING ("unknown mime-type '%s': creating empty player", mime);
         }
     }
 
@@ -1380,10 +1356,25 @@ PlayerAdapter::createPlayer (const string &mrl)
   descriptor = _object->getDescriptor ();
   if (descriptor != nullptr)
     {
-      for (Parameter &param: descriptor->getParameters ())
+      NclFormatterRegion *fregion = descriptor->getFormatterRegion ();
+      if (fregion != nullptr)
         {
-          _player->setProperty (param.getName (), param.getValue ());
+          LayoutRegion *region;
+          SDL_Rect rect;
+          int z, zorder;
+
+          region = fregion->getLayoutRegion ();
+          g_assert_nonnull (region);
+
+          rect = region->getRect ();
+          region->getZ (&z, &zorder);
+
+          _player->setRect (rect);
+          _player->setZ (z, zorder);
         }
+
+      for (Parameter &param: descriptor->getParameters ())
+        _player->setProperty (param.getName (), param.getValue ());
     }
 
   ContentNode *contentNode = dynamic_cast <ContentNode *> (dataObject);
@@ -1392,16 +1383,10 @@ PlayerAdapter::createPlayer (const string &mrl)
       for (Anchor *anchor: contentNode->getAnchors ())
         {
           property = dynamic_cast <PropertyAnchor *> (anchor);
-          if (property)
-            {
-              TRACE ("setting property property name='%s' to '%s' for %s",
-                     property->getName ().c_str (),
-                     property->getValue ().c_str (),
-                     mrl.c_str ());
-
-              _player->setProperty (property->getName(),
-                                    property->getValue());
-            }
+          if (!property)
+            continue;
+          _player->setProperty (property->getName (),
+                                property->getValue ());
         }
     }
 
@@ -1418,7 +1403,7 @@ PlayerAdapter::createPlayer (const string &mrl)
     }
 
   TRACE ("created player for '%s' object='%s'",
-         mrl.c_str (), _object->getId ().c_str ());
+         uri.c_str (), _object->getId ().c_str ());
 }
 
 GINGA_FORMATTER_END

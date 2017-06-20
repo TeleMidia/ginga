@@ -10,7 +10,7 @@
     </descriptorBase>
   </head>
   <body>
-    <port id="start" component="img"/>
-    <media id="img" src="samples/vector.svg" descriptor="desc"/>
+    <port id="start" component="vid"/>
+    <media id="vid" src="samples/clock.ogv" descriptor="desc"/>
   </body>
 </ncl>
