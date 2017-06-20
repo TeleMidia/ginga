@@ -1290,10 +1290,11 @@ PlayerAdapter::setVisible (bool visible)
 void
 PlayerAdapter::createPlayer (const string &uri)
 {
-  NclCascadingDescriptor *descriptor;
   NodeEntity *dataObject;
-  PropertyAnchor *property;
   NodeEntity *entity;
+
+  NclCascadingDescriptor *descriptor;
+  PropertyAnchor *property;
 
   string buf;
   const char *mime;
@@ -1355,10 +1356,28 @@ PlayerAdapter::createPlayer (const string &uri)
   descriptor = _object->getDescriptor ();
   if (descriptor != nullptr)
     {
-      for (Parameter &param: descriptor->getParameters ())
+      NclFormatterRegion *fregion = descriptor->getFormatterRegion ();
+      if (fregion != nullptr)
         {
-          _player->setProperty (param.getName (), param.getValue ());
+          LayoutRegion *region;
+          SDL_Rect rect;
+          int z, zorder;
+
+          region = fregion->getLayoutRegion ();
+          g_assert_nonnull (region);
+
+          rect = region->getRect ();
+          region->getZ (&z, &zorder);
+
+          _player->setProperty ("left", xstrbuild ("%d", rect.x));
+          _player->setProperty ("top", xstrbuild ("%d", rect.y));
+          _player->setProperty ("width", xstrbuild ("%d", rect.w));
+          _player->setProperty ("height", xstrbuild ("%d", rect.h));
+          _player->setProperty ("zIndex", xstrbuild ("%d", z));
         }
+
+      for (Parameter &param: descriptor->getParameters ())
+        _player->setProperty (param.getName (), param.getValue ());
     }
 
   ContentNode *contentNode = dynamic_cast <ContentNode *> (dataObject);
