@@ -18,22 +18,22 @@
     </connectorBase>
   </head>
   <body>
-    <port id="start1" component="text1"/>
-    <media id="text1" src="samples/animGar.mp4" descriptor="desc">
+    <port id="start1" component="vid"/>
+    <media id="vid" src="samples/clock.ogv" descriptor="desc">
       <area id="a1" end="1s"/>
       <area id="a2" end="5s"/>
       <property name="bounds"/>
     </media>
     <link xconnector="onEndSet">
-      <bind role="onEnd" component="text1" interface="a1"/>
-      <bind role="set" component="text1" interface="bounds">
+      <bind role="onEnd" component="vid" interface="a1"/>
+      <bind role="set" component="vid" interface="bounds">
         <bindParam name="var" value="0,0,800,600"/>
         <bindParam name="duration" value="2s"/>
       </bind>
     </link>
     <link xconnector="onEndSet">
-      <bind role="onEnd" component="text1" interface="a2"/>
-      <bind role="set" component="text1" interface="bounds">
+      <bind role="onEnd" component="vid" interface="a2"/>
+      <bind role="set" component="vid" interface="bounds">
         <bindParam name="var" value="0,0,100,100"/>
         <bindParam name="duration" value="2s"/>
       </bind>
