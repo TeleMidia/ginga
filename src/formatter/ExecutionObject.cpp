@@ -43,7 +43,6 @@ bool
 ExecutionObject::removeInstance (ExecutionObject *object)
 {
   bool removed = false;
-
   auto i = _objects.find (object);
   if (i != _objects.end ())
     {
@@ -55,21 +54,18 @@ ExecutionObject::removeInstance (ExecutionObject *object)
 }
 
 bool
-ExecutionObject::hasInstance (ExecutionObject *object,
+ExecutionObject::hasInstance (ExecutionObject *obj,
                               bool eraseFromList)
 {
-  bool hasObject = false;
-  auto i = _objects.find (object);
-  if (i != _objects.end ())
+  auto i = _objects.find (obj);
+  bool hasObj = (i != _objects.end());
+
+  if (hasObj && eraseFromList)
     {
-      if (eraseFromList)
-        {
-          _objects.erase (i);
-        }
-      hasObject = true;
+      _objects.erase (obj);
     }
 
-  return hasObject;
+  return hasObj;
 }
 
 ExecutionObject::ExecutionObject (const string &id,

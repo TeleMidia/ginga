@@ -426,68 +426,49 @@ NclAttributionEvent::getImplicitRefAssessmentEvent (const string &roleId)
 
 // NclSwitchEvent
 NclSwitchEvent::NclSwitchEvent (const string &id,
-                                ExecutionObject *executionObjectSwitch,
-                                InterfacePoint *interfacePoint,
+                                ExecutionObject *exeObjSwitch,
+                                InterfacePoint *interface,
                                 EventType type, const string &key)
-  : NclFormatterEvent (id, executionObjectSwitch)
+  : NclFormatterEvent (id, exeObjSwitch)
 {
-  this->interfacePoint = interfacePoint;
+  this->_interface = interface;
   this->_type = type;
-  this->key = key;
-  this->mappedEvent = nullptr;
+  this->_key = key;
+  this->_mappedEvent = nullptr;
 
   _typeSet.insert ("NclSwitchEvent");
 }
 
 NclSwitchEvent::~NclSwitchEvent ()
 {
-  if (NclFormatterEvent::hasInstance (mappedEvent, false))
+  if (NclFormatterEvent::hasInstance (_mappedEvent, false))
     {
-      mappedEvent->removeListener (this);
-      mappedEvent = nullptr;
+      _mappedEvent->removeListener (this);
     }
-}
-
-InterfacePoint *
-NclSwitchEvent::getInterfacePoint ()
-{
-  return interfacePoint;
-}
-
-string
-NclSwitchEvent::getKey ()
-{
-  return key;
 }
 
 void
-NclSwitchEvent::setMappedEvent (NclFormatterEvent *event)
+NclSwitchEvent::setMappedEvent (NclFormatterEvent *evt)
 {
-  if (mappedEvent != nullptr)
+  if (_mappedEvent != nullptr)
     {
-      mappedEvent->removeListener (this);
+      _mappedEvent->removeListener (this);
     }
 
-  mappedEvent = event;
-  if (mappedEvent != nullptr)
+  _mappedEvent = evt;
+  if (_mappedEvent != nullptr)
     {
-      mappedEvent->addListener (this);
+      _mappedEvent->addListener (this);
     }
-}
-
-NclFormatterEvent *
-NclSwitchEvent::getMappedEvent ()
-{
-  return mappedEvent;
 }
 
 void
 NclSwitchEvent::eventStateChanged (
     arg_unused (NclFormatterEvent *evt),
-    EventStateTransition transition,
-    arg_unused (EventState previousState))
+    EventStateTransition trans,
+    arg_unused (EventState prevState))
 {
-  changeState (EventUtil::getNextState (transition), transition);
+  changeState (EventUtil::getNextState (trans), trans);
 }
 
 GINGA_FORMATTER_END
