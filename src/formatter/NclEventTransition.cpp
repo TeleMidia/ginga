@@ -21,38 +21,30 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 NclEventTransition::NclEventTransition (GingaTime time,
-                                        NclPresentationEvent *event)
+                                        NclPresentationEvent *evt)
 {
   typeSet.insert ("NclEventTransition");
-  this->time = time;
-  this->event = event;
+  this->_time = time;
+  this->_event = evt;
 }
-
-NclEventTransition::~NclEventTransition () {}
 
 int
 NclEventTransition::compareTo (NclEventTransition *object)
 {
-  NclEventTransition *otherEntry;
+  NclEventTransition *otherEntry = object;
 
-  if (object->instanceOf ("NclEventTransition"))
+  if (_time < otherEntry->_time)
     {
-      otherEntry = (NclEventTransition *)object;
-
-      if (time < otherEntry->time)
-        {
-          return -1;
-        }
-      else if (time > otherEntry->time)
-        {
-          return 1;
-        }
-      else
-        {
-          return compareType (otherEntry);
-        }
+      return -1;
     }
-  return -1;
+  else if (_time > otherEntry->_time)
+    {
+      return 1;
+    }
+  else
+    {
+      return compareType (otherEntry);
+    }
 }
 
 bool
@@ -69,15 +61,20 @@ NclEventTransition::instanceOf (const string &s)
 }
 
 int
-NclEventTransition::compareType (NclEventTransition *otherEntry)
+NclEventTransition::compareType (NclEventTransition *other)
 {
-  if (this->instanceOf ("NclBeginEventTransition"))
+  auto beginTrans = dynamic_cast<NclBeginEventTransition *> (this);
+
+  auto otherBeginTrans = dynamic_cast<NclBeginEventTransition *> (other);
+  auto otherEndTrans = dynamic_cast<NclEndEventTransition *> (other);
+
+  if (beginTrans)
     {
-      if (otherEntry->instanceOf ("NclEndEventTransition"))
+      if (otherEndTrans)
         {
           return -1;
         }
-      else if (event == otherEntry->event)
+      else if (_event == other->_event)
         {
           return 0;
         }
@@ -88,11 +85,11 @@ NclEventTransition::compareType (NclEventTransition *otherEntry)
     }
   else
     {
-      if (otherEntry->instanceOf ("NclBeginEventTransition"))
+      if (otherBeginTrans)
         {
           return 1;
         }
-      else if (event == otherEntry->event)
+      else if (_event == other->_event)
         {
           return 0;
         }
@@ -103,51 +100,12 @@ NclEventTransition::compareType (NclEventTransition *otherEntry)
     }
 }
 
-bool
-NclEventTransition::equals (NclEventTransition *object)
-{
-  switch (compareTo (object))
-    {
-    case 0:
-      return true;
-
-    default:
-      return false;
-    }
-}
-
-NclPresentationEvent *
-NclEventTransition::getEvent ()
-{
-  return event;
-}
-
-GingaTime
-NclEventTransition::getTime ()
-{
-  return time;
-}
-
 NclBeginEventTransition::NclBeginEventTransition (
     GingaTime time, NclPresentationEvent *event)
     : NclEventTransition (time, event)
 {
   typeSet.insert ("NclBeginEventTransition");
-  endTransition = NULL;
-}
-
-NclBeginEventTransition::~NclBeginEventTransition () {}
-
-NclEndEventTransition *
-NclBeginEventTransition::getEndTransition ()
-{
-  return endTransition;
-}
-
-void
-NclBeginEventTransition::setEndTransition (NclEndEventTransition *entry)
-{
-  endTransition = entry;
+  _endTrans = nullptr;
 }
 
 NclEndEventTransition::NclEndEventTransition (GingaTime time,
@@ -156,16 +114,8 @@ NclEndEventTransition::NclEndEventTransition (GingaTime time,
     : NclEventTransition (time, event)
 {
   typeSet.insert ("NclEndEventTransition");
-  beginTransition = trans;
-  beginTransition->setEndTransition (this);
-}
-
-NclEndEventTransition::~NclEndEventTransition () {}
-
-NclBeginEventTransition *
-NclEndEventTransition::getBeginTransition ()
-{
-  return beginTransition;
+  _beginTrans = trans;
+  _beginTrans->setEndTransition (this);
 }
 
 GINGA_FORMATTER_END
