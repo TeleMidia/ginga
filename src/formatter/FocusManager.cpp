@@ -794,6 +794,7 @@ FocusManager::handleKeyEvent (SDL_EventType evtType,
 
   if (nextIndex != "")
     {
+      TRACE ("changing focus to '%s'", nextIndex.c_str ());
       changeSettingState ("service.currentFocus", "start");
       setFocus (nextIndex);
       changeSettingState ("service.currentFocus", "stop");

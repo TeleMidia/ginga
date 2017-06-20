@@ -131,10 +131,15 @@ public:
   void setZ (int, int);
   void getZ (int *, int *);
 
+  void setFocus (bool);
+  bool getFocus ();
+
 protected:
   SDL_Rect _rect;               // x, y, w, h in pixels
   int _z;                       // z-index
   int _zorder;                  // z-order
+
+  bool _focused;                // true if player has focus
 };
 
 GINGA_PLAYER_END

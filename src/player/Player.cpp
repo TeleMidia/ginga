@@ -52,6 +52,8 @@ Player::Player (const string &mrl)
   _rect = {0, 0, 0, 0};
   _z = 0;
   _zorder = 0;
+
+  _focused = false;
 }
 
 Player::~Player ()
@@ -347,6 +349,9 @@ Player::redraw (SDL_Renderer *renderer)
   if (this->window != NULL)
     this->window->getBorder (&this->borderColor, &this->borderWidth);
 
+  if (_focused)
+    g_debug ("%p focused", this);
+
   if (this->bgColor.a > 0)
     {
       SDLx_SetRenderDrawBlendMode (renderer, SDL_BLENDMODE_BLEND);
@@ -417,6 +422,24 @@ Player::getZ (int *z, int *zorder)
 {
   set_if_nonnull (z , _z);
   set_if_nonnull (zorder , _zorder);
+}
+
+/**
+ * @brief Sets player focus.
+ */
+void
+Player::setFocus (bool focus)
+{
+  _focused = focus;
+}
+
+/**
+ * @brief Gets player focus.
+ */
+bool
+Player::getFocus (void)
+{
+  return _focused;
 }
 
 
