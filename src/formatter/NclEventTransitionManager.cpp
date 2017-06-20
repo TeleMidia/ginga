@@ -164,7 +164,7 @@ NclEventTransitionManager::prepare (bool wholeContent, GingaTime startTime)
 
           if (transition->instanceOf ("NclBeginEventTransition"))
             {
-              transition->getEvent ()->setCurrentState (
+              transition->getEvent ()->setState (
                   EventState::OCCURRING);
             }
           else
@@ -173,10 +173,10 @@ NclEventTransitionManager::prepare (bool wholeContent, GingaTime startTime)
               clog << transition->getEvent ()->getId ();
               clog << "' to SLEEP" << endl;
 
-              transition->getEvent ()->setCurrentState (
+              transition->getEvent ()->setState (
                   EventState::SLEEPING);
 
-              transition->getEvent ()->incrementOccurrences ();
+              transition->getEvent ()->incOccurrences ();
             }
           transIx++;
           startTransitionIndex = transIx;
@@ -237,7 +237,7 @@ NclEventTransitionManager::stop (GingaTime endTime, bool applicationType)
           fev = transition->getEvent ();
           if (!GINGA_TIME_IS_VALID (endTime) || transition->getTime () > endTime)
             {
-              fev->setCurrentState (EventState::SLEEPING);
+              fev->setState (EventState::SLEEPING);
             }
           else if (transition->instanceOf ("NclEndEventTransition"))
             {
@@ -269,7 +269,7 @@ NclEventTransitionManager::abort (GingaTime endTime, bool applicationType)
           fev = transition->getEvent ();
           if (transition->getTime () > endTime)
             {
-              fev->setCurrentState (EventState::SLEEPING);
+              fev->setState (EventState::SLEEPING);
             }
           else if (transition->instanceOf ("NclEndEventTransition"))
             {

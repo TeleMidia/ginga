@@ -89,9 +89,7 @@ set (GINGA_SOURCES
   ../src/formatter/FocusManager.cpp
   ../src/formatter/FormatterEvents.cpp
   ../src/formatter/FormatterScheduler.cpp
-  ../src/formatter/NclBeginEventTransition.cpp
   ../src/formatter/NclCascadingDescriptor.cpp
-  ../src/formatter/NclEndEventTransition.cpp
   ../src/formatter/NclEventTransition.cpp
   ../src/formatter/NclEventTransitionManager.cpp
   ../src/formatter/NclFormatterCausalLink.cpp
