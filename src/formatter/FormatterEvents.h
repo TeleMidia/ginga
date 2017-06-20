@@ -47,7 +47,7 @@ class NclFormatterEvent
   PROPERTY_READONLY (string, _id, getId)
   PROPERTY_READONLY (int, _occurrences, getOccurrences)
   PROPERTY (ExecutionObject *, _exeObj, getExecutionObject, setExecutionObject)
-  PROPERTY_READONLY (EventState, _currentState, getCurrentState)
+  PROPERTY_READONLY (EventState, _state, getCurrentState)
   PROPERTY_READONLY (EventState, _previousState, getPreviousState)
 
 public:
@@ -88,7 +88,7 @@ class NclAnchorEvent : public NclFormatterEvent
 public:
   NclAnchorEvent (const string &, ExecutionObject *, ContentAnchor *);
 
-  virtual ~NclAnchorEvent ();
+  virtual ~NclAnchorEvent () {}
 
   ContentAnchor *getAnchor ();
   virtual bool
@@ -110,7 +110,7 @@ class NclPresentationEvent : public NclAnchorEvent
 {
 public:
   NclPresentationEvent (const string &, ExecutionObject *, ContentAnchor *);
-  virtual ~NclPresentationEvent ();
+  virtual ~NclPresentationEvent () {}
 
   bool stop ();
 
@@ -134,7 +134,7 @@ class NclSelectionEvent : public NclAnchorEvent
 {
 public:
   NclSelectionEvent (const string &, ExecutionObject *, ContentAnchor *);
-  virtual ~NclSelectionEvent ();
+  virtual ~NclSelectionEvent () {}
   bool start ();
   const string getSelectionCode ();
   void setSelectionCode (const string &codeStr);
