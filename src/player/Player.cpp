@@ -43,6 +43,8 @@ Player::Player (const string &mrl)
   this->borderWidth = 0;
   this->bgColor = {0, 0, 0, 0};
   this->borderColor = {0, 0, 0, 0};
+
+  this->rect = {0, 0, 0, 0};
   this->z = 0;
   this->alpha = 255;            // opaque
 
@@ -268,6 +270,10 @@ Player::setProperty (const string &name, const string &value)
     {
       this->alpha = (guint8) CLAMP (255 - ginga_parse_pixel (value), 0, 255);
     }
+  else if (name == "zIndex")
+    {
+      this->z = xstrtoint (value, 10);
+    }
 
   _properties[name] = value;
   return;
@@ -308,11 +314,6 @@ Player::isForcedNaturalEnd ()
 void
 Player::setOutWindow (SDLWindow *win)
 {
-  if (win != NULL)
-    {
-      this->rect = win->getRect ();
-      win->getZ (&this->z, &this->zorder);
-    }
   this->window = win;
 }
 
@@ -357,7 +358,7 @@ Player::redraw (SDL_Renderer *renderer)
                                this->bgColor.r,
                                this->bgColor.g,
                                this->bgColor.b,
-                               this->alpha);
+                               alpha);
       SDLx_RenderFillRect (renderer, &this->rect);
     }
 

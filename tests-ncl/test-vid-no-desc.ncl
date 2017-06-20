@@ -1,7 +1,7 @@
 <ncl>
   <body>
-    <port id="start" component="img"/>
-    <media id="img" src="samples/gnu.png">
+    <port id="start" component="vid"/>
+    <media id="vid" src="samples/clock.ogv">
       <property name="top" value="25%"/>
       <property name="left" value="25%"/>
       <property name="width" value="50%"/>
