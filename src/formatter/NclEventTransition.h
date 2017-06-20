@@ -47,6 +47,34 @@ public:
   bool instanceOf (const string &s);
 };
 
+class NclEndEventTransition;
+
+class NclBeginEventTransition : public NclEventTransition
+{
+private:
+  NclEndEventTransition *endTransition;
+
+public:
+  NclBeginEventTransition (GingaTime time, NclPresentationEvent *event);
+  virtual ~NclBeginEventTransition ();
+  NclEndEventTransition *getEndTransition ();
+  void setEndTransition (NclEndEventTransition *entry);
+};
+
+class NclEndEventTransition : public NclEventTransition
+{
+private:
+  NclBeginEventTransition *beginTransition;
+
+public:
+  NclEndEventTransition (GingaTime time, NclPresentationEvent *event,
+                         NclBeginEventTransition *transition);
+
+  virtual ~NclEndEventTransition ();
+
+  NclBeginEventTransition *getBeginTransition ();
+};
+
 GINGA_FORMATTER_END
 
 #endif /*EVENTTRANSITION_H_*/

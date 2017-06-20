@@ -128,4 +128,44 @@ NclEventTransition::getTime ()
   return time;
 }
 
+NclBeginEventTransition::NclBeginEventTransition (
+    GingaTime time, NclPresentationEvent *event)
+    : NclEventTransition (time, event)
+{
+  typeSet.insert ("NclBeginEventTransition");
+  endTransition = NULL;
+}
+
+NclBeginEventTransition::~NclBeginEventTransition () {}
+
+NclEndEventTransition *
+NclBeginEventTransition::getEndTransition ()
+{
+  return endTransition;
+}
+
+void
+NclBeginEventTransition::setEndTransition (NclEndEventTransition *entry)
+{
+  endTransition = entry;
+}
+
+NclEndEventTransition::NclEndEventTransition (GingaTime time,
+                                              NclPresentationEvent *event,
+                                              NclBeginEventTransition *trans)
+    : NclEventTransition (time, event)
+{
+  typeSet.insert ("NclEndEventTransition");
+  beginTransition = trans;
+  beginTransition->setEndTransition (this);
+}
+
+NclEndEventTransition::~NclEndEventTransition () {}
+
+NclBeginEventTransition *
+NclEndEventTransition::getBeginTransition ()
+{
+  return beginTransition;
+}
+
 GINGA_FORMATTER_END

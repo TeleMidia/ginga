@@ -301,7 +301,7 @@ NclPresentationEvent::setRepetitionSettings (int repetitions,
 }
 
 void
-NclPresentationEvent::incrementOccurrences ()
+NclPresentationEvent::incOccurrences ()
 {
   _occurrences++;
 }
@@ -344,7 +344,6 @@ NclAttributionEvent::NclAttributionEvent (const string &id,
   this->_settings = settings;
 
   dataObject = dynamic_cast<NodeEntity *> (exeObj->getDataObject ());
-  g_assert_nonnull (dataObject);
 
   auto contentNode = dynamic_cast<ContentNode *> (dataObject);
   if (contentNode
