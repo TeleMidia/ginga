@@ -41,9 +41,9 @@ public:
   int getHeight ();
 
 private:
-  SDL_Rect _rect;                // x, y, w, h in pixels
-  int _z;                        // z-index
-  int _zorder;                   // z-order
+  SDL_Rect _rect;               // x, y, w, h in pixels
+  int _z;                       // z-index
+  int _zorder;                  // z-order
 };
 
 GINGA_NCL_END

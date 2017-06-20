@@ -1369,11 +1369,8 @@ PlayerAdapter::createPlayer (const string &uri)
           rect = region->getRect ();
           region->getZ (&z, &zorder);
 
-          _player->setProperty ("left", xstrbuild ("%d", rect.x));
-          _player->setProperty ("top", xstrbuild ("%d", rect.y));
-          _player->setProperty ("width", xstrbuild ("%d", rect.w));
-          _player->setProperty ("height", xstrbuild ("%d", rect.h));
-          _player->setProperty ("zIndex", xstrbuild ("%d", z));
+          _player->setRect (rect);
+          _player->setZ (z, zorder);
         }
 
       for (Parameter &param: descriptor->getParameters ())
@@ -1386,16 +1383,10 @@ PlayerAdapter::createPlayer (const string &uri)
       for (Anchor *anchor: contentNode->getAnchors ())
         {
           property = dynamic_cast <PropertyAnchor *> (anchor);
-          if (property)
-            {
-              TRACE ("setting property property name='%s' to '%s' for %s",
-                     property->getName ().c_str (),
-                     property->getValue ().c_str (),
-                     uri.c_str ());
-
-              _player->setProperty (property->getName(),
-                                    property->getValue());
-            }
+          if (!property)
+            continue;
+          _player->setProperty (property->getName (),
+                                property->getValue ());
         }
     }
 
