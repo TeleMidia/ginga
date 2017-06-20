@@ -216,22 +216,22 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
       break;
 
     case ACT_PAUSE:
-      if (unlikely (!player->pause ()))
+      if (unlikely (!player->hasPrepared () || !player->pause ()))
         WARNING ("failed to pause player of '%s'", obj->getId ().c_str ());
       break;
 
     case ACT_RESUME:
-      if (unlikely (!player->resume ()))
+      if (unlikely (!player->hasPrepared () || !player->resume ()))
         WARNING ("failed to resume player of '%s'", obj->getId ().c_str ());
       break;
 
     case ACT_ABORT:
-      if (unlikely (!player->abort ()))
+      if (unlikely (!player->hasPrepared () || !player->abort ()))
         WARNING ("failed to abort player of '%s'", obj->getId ().c_str ());
       break;
 
     case ACT_STOP:
-      if (unlikely (!player->stop ()))
+      if (unlikely (!player->hasPrepared () || !player->stop ()))
         WARNING ("failed to stop player of '%s'", obj->getId ().c_str ());
       break;
 
