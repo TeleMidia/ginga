@@ -1157,30 +1157,6 @@ PlayerAdapter::getProperty (NclAttributionEvent *event)
 }
 
 void
-PlayerAdapter::updateObjectExpectedDuration ()
-{
-  NclPresentationEvent *wholeContentEvent;
-  GingaTime duration;
-  GingaTime implicitDur;
-
-  wholeContentEvent = _object->getWholeContentPresentationEvent ();
-  duration = wholeContentEvent->getDuration ();
-
-  if ((_object->getDescriptor () == nullptr)
-      || (!GINGA_TIME_IS_VALID (_object->getDescriptor ()
-                                ->getExplicitDuration ()))
-      || (!GINGA_TIME_IS_VALID (duration)))
-    {
-      implicitDur = GINGA_TIME_NONE;
-
-      IntervalAnchor *intervalAnchor
-          = dynamic_cast <IntervalAnchor *> (wholeContentEvent->getAnchor ());
-      g_assert_nonnull(intervalAnchor);
-      intervalAnchor->setEnd (implicitDur);
-    }
-}
-
-void
 PlayerAdapter::updateStatus (short code,
                              const string &parameter,
                              short type,
