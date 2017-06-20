@@ -168,7 +168,7 @@ ExecutionObjectApplication::prepare (NclFormatterEvent *event,
           for (auto i : _parentTable)
             {
               // register parent as a mainEvent listener
-              event->addEventListener (i.second);
+              event->addListener (i.second);
             }
 
           _preparedEvents[event->getId ()] = event;
@@ -193,7 +193,7 @@ ExecutionObjectApplication::prepare (NclFormatterEvent *event,
   for (auto i : _parentTable)
     {
       // register parent as a currentEvent listener
-      event->addEventListener (i.second);
+      event->addListener (i.second);
     }
 
   _transMan->prepare (event == _wholeContent, startTime);
@@ -527,12 +527,12 @@ ExecutionObjectApplication::removeParentObject (
 {
   if (_mainEvent != nullptr)
     {
-      _mainEvent->removeEventListener (parentObj);
+      _mainEvent->removeListener (parentObj);
     }
 
   for (auto i : _preparedEvents)
     {
-      i.second->removeEventListener (parentObj);
+      i.second->removeListener (parentObj);
     }
 
   ExecutionObject::removeParentObject (parentNode, parentObj);
@@ -548,7 +548,7 @@ ExecutionObjectApplication::removeParentListenersFromEvent (
     {
       parentObject = i.second;
       // unregister parent as a currentEvent listener
-      event->removeEventListener (parentObject);
+      event->removeListener (parentObject);
     }
 }
 

@@ -197,4 +197,50 @@ EventUtil::getAttributeTypeName (AttributeType type)
     }
 }
 
+EventStateTransition
+EventUtil::getTransition (EventState previous, EventState next)
+{
+  switch (previous)
+    {
+    case EventState::SLEEPING:
+      switch (next)
+        {
+        case EventState::OCCURRING:
+          return EventStateTransition::STARTS;
+        default:
+          return EventStateTransition::UNKNOWN;
+        }
+      break;
+
+    case EventState::OCCURRING:
+      switch (next)
+        {
+        case EventState::SLEEPING:
+          return EventStateTransition::STOPS;
+        case EventState::PAUSED:
+          return EventStateTransition::PAUSES;
+        default:
+          return EventStateTransition::UNKNOWN;
+        }
+      break;
+
+    case EventState::PAUSED:
+      switch (next)
+        {
+        case EventState::OCCURRING:
+          return EventStateTransition::RESUMES;
+        case EventState::SLEEPING:
+          return EventStateTransition::STOPS;
+        default:
+          return EventStateTransition::UNKNOWN;
+        }
+      break;
+
+    default:
+      break;
+    }
+
+  return EventStateTransition::UNKNOWN;
+}
+
 GINGA_NCL_END

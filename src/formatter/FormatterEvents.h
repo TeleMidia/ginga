@@ -36,63 +36,57 @@ class ExecutionObject;
 class NclFormatterEvent
 {
 public:
-  NclFormatterEvent (const string &id, ExecutionObject *);
+  NclFormatterEvent (const string &id, ExecutionObject *exeObj);
   virtual ~NclFormatterEvent ();
 
-  static bool hasInstance (NclFormatterEvent *event, bool remove);
+  static bool hasInstance (NclFormatterEvent *evt, bool remove);
 
   bool instanceOf (const string &);
 
-  static bool hasNcmId (NclFormatterEvent *event, const string &anchorId);
+  static bool hasNcmId (NclFormatterEvent *evt, const string &anchorId);
 
-  void setEventType (EventType);
-  EventType getEventType ();
+  void setType (EventType evtType);
+  EventType getType ();
 
-  void addEventListener (INclEventListener *);
-  void removeEventListener (INclEventListener *);
+  void addListener (INclEventListener *listener);
+  void removeListener (INclEventListener *listener);
 
-  bool abort ();
-  virtual bool start ();
-  virtual bool stop ();
-  bool pause ();
-  bool resume ();
   void setCurrentState (EventState newState);
 
   EventState getCurrentState ();
   EventState getPreviousState ();
-  static EventStateTransition
-    getTransistion (EventState previousState,
-                    EventState newState);
+
+  virtual bool start ();
+  virtual bool stop ();
+  bool pause ();
+  bool resume ();
+  bool abort ();
 
   ExecutionObject *getExecutionObject ();
-  void setExecutionObject (ExecutionObject *object);
+  void setExecutionObject (ExecutionObject *exeObj);
+
   string getId ();
   int getOccurrences ();
-  static string getStateName (EventState state);
 
 protected:
   string id;
   EventState _currentState;
   EventState _previousState;
-  int occurrences;
-  ExecutionObject *executionObject;
-  set<INclEventListener *> listeners;
-  set<string> typeSet;
-  bool deleting;
-  EventType eventType;
+  int _occurrences;
+  ExecutionObject *_exeObj;
+  set<INclEventListener *> _listeners;
+  set<string> _typeSet;
+  bool _deleting;
+  EventType _eventType;
 
-  static set<NclFormatterEvent *> instances;
-  static bool init;
+  static set<NclFormatterEvent *> _instances;
+  static bool _init;
 
-  static bool removeInstance (NclFormatterEvent *event);
+  static bool removeInstance (NclFormatterEvent *evt);
 
-  EventState
-    getNewState (EventStateTransition transition);
-
+  EventState getNewState (EventStateTransition transition);
   EventStateTransition getTransition (EventState newState);
-
-  bool changeState (EventState newState,
-                    EventStateTransition transition);
+  bool changeState (EventState newState, EventStateTransition transition);
 
 private:
   virtual void destroyListeners ();
@@ -209,7 +203,6 @@ public:
       EventStateTransition transition,
       EventState _previousState) override;
 };
-
 
 GINGA_FORMATTER_END
 
