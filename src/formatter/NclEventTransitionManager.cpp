@@ -31,7 +31,7 @@ NclEventTransitionManager::~NclEventTransitionManager ()
   _transTable.clear ();
 }
 
-bool
+static bool
 compare_transitions (EventTransition *t1, EventTransition *t2)
 {
   if (t1->getTime() < t2->getTime())
