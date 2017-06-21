@@ -44,7 +44,7 @@ NCL_LOG_COMPILER= $(_VALGRIND) $(top_builddir)/src/ginga
 # Setup tests environment.
 AM_TESTS_ENVIRONMENT=\
   export GST_DEBUG="*:WARN";\
-  export G_DEBUG="all";\
+  export G_DEBUG="error";\
   export G_MESSAGES_DEBUG="all";\
   export G_SLICE="always-malloc";\
   export MALLOC_CHECK_=1;\
