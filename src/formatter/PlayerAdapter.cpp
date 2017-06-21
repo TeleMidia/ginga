@@ -177,233 +177,6 @@ PlayerAdapter::hasPrepared ()
   return true;
 }
 
-GingaTime
-PlayerAdapter::prepareProperties (ExecutionObject *obj)
-{
-  NclCascadingDescriptor *descriptor;
-  LayoutRegion *region = nullptr;
-  vector<PropertyAnchor *> *anchors;
-  string name, value;
-  NclFormatterRegion *fRegion = nullptr;
-  Node *ncmNode;
-  GingaTime explicitDur = GINGA_TIME_NONE;
-
-  string left = "", top = "", width = "",
-    height = "", bottom = "", right = "";
-
-  descriptor = obj->getDescriptor ();
-  if (descriptor != nullptr)
-    {
-      fRegion = descriptor->getFormatterRegion ();
-      if (fRegion != nullptr)
-        {
-          region = fRegion->getLayoutRegion ();
-        }
-      else
-        {
-          region = nullptr;
-        }
-    }
-
-  if (region == nullptr)
-    {
-      PropertyAnchor *property = obj->getNCMProperty ("explicitDur");
-      if (property != nullptr)
-        {
-          value = property->getValue ();
-          explicitDur = ginga_parse_time (value);
-        }
-
-      return explicitDur;
-    }
-
-  map <string, string> properties;
-
-  // Get the properties from the descriptor.
-  for (Parameter &param : descriptor->getParameters())
-    {
-      properties[param.getName()] = param.getValue();
-    }
-
-  // Get the properties from the object.
-  ncmNode = obj->getDataObject ();
-  anchors = ((Node *)ncmNode)->getOriginalPropertyAnchors ();
-  g_assert_nonnull (anchors);
-
-  for (PropertyAnchor *property : *anchors)
-    properties[property->getName()] = property->getValue();
-
-  for (auto it: properties)
-    {
-      name = it.first;
-      value = it.second;
-
-      TRACE ( "preparing name='%s', value='%s'", name.c_str(), value.c_str());
-      if (value != "")
-        {
-          if (name == "explicitDur")
-            {
-              explicitDur = ginga_parse_time (value);
-            }
-          else if (name == "left")
-            {
-              left = value;
-            }
-          else if (name == "top")
-            {
-              top = value;
-            }
-          else if (name == "width")
-            {
-              width = value;
-            }
-          else if (name == "height")
-            {
-              height = value;
-            }
-          else if (name == "bottom")
-            {
-              bottom = value;
-            }
-          else if (name == "right")
-            {
-              right = value;
-            }
-          else if (name == "zIndex")
-            {
-              //zindex = value;
-            }
-          else if (name == "bounds")
-            {
-              vector<string> v;
-
-              if (unlikely (!_ginga_parse_list (value, ',', 4, 4, &v)))
-                {
-                  ERROR_SYNTAX ("property 'bounds': bad value '%s'",
-                                value.c_str ());
-                }
-              left = v[0];
-              top = v[1];
-              width = v[2];
-              height = v[3];
-            }
-          else if (name == "location")
-            {
-              vector<string> v;
-
-              if (unlikely (!_ginga_parse_list (value, ',', 2, 2, &v)))
-                {
-                  ERROR_SYNTAX ("property 'location': bad value '%s'",
-                                value.c_str ());
-                }
-              left = v[0];
-              top = v[1];
-            }
-          else if (name == "size")
-            {
-              vector<string> v;
-
-              if (unlikely (!_ginga_parse_list (value, ',', 2, 2, &v)))
-                {
-                  ERROR_SYNTAX ("property 'location': bad value '%s'",
-                                value.c_str ());
-                }
-              width = v[0];
-              height = v[1];
-            }
-          else if (name == "background")
-            {
-              if (fRegion != nullptr)
-                {
-                  fRegion->setBackgroundColor (ginga_parse_color (value));
-                }
-            }
-          else if (name == "focusIndex")
-            {
-              if (fRegion != nullptr)
-                {
-                  fRegion->setFocusIndex (value);
-                }
-            }
-          else if (name == "focusBorderColor")
-            {
-              if (fRegion != nullptr)
-                {
-                  fRegion->setFocusBorderColor (ginga_parse_color (value));
-                }
-            }
-          else if (name == "focusBorderWidth")
-            {
-              if (fRegion != nullptr)
-                {
-                  fRegion->setFocusBorderWidth (xstrtoint (value, 10));
-                }
-            }
-          else if (name == "focusComponentSrc")
-            {
-              if (fRegion != nullptr)
-                {
-                  fRegion->setFocusComponentSrc (value);
-                }
-            }
-          else if (name == "selBorderColor")
-            {
-              if (fRegion != nullptr)
-                {
-                  fRegion->setSelBorderColor (ginga_parse_color (value));
-                }
-            }
-          else if (name == "selBorderWidth")
-            {
-              if (fRegion != nullptr)
-                {
-                  fRegion->setSelBorderWidth (xstrtoint (value, 10));
-                }
-            }
-          else if (name == "selComponentSrc")
-            {
-              if (fRegion != nullptr)
-                {
-                  fRegion->setSelComponentSrc (value);
-                }
-            }
-          else if (name == "moveUp")
-            {
-              if (fRegion != nullptr)
-                {
-                  fRegion->setMoveUp (value);
-                }
-            }
-          else if (name == "moveDown")
-            {
-              if (fRegion != nullptr)
-                {
-                  fRegion->setMoveDown (value);
-                }
-            }
-          else if (name == "moveLeft")
-            {
-              if (fRegion != nullptr)
-                {
-                  fRegion->setMoveLeft (value);
-                }
-            }
-          else if (name == "moveRight")
-            {
-              if (fRegion != nullptr)
-                {
-                  fRegion->setMoveRight (value);
-                }
-            }
-        }
-    }
-
-  if (descriptor != nullptr)
-    explicitDur = descriptor->getExplicitDuration ();
-
-  return explicitDur;
-}
-
 bool
 PlayerAdapter::prepare (ExecutionObject *object,
                         NclPresentationEvent *event)
@@ -453,12 +226,7 @@ PlayerAdapter::prepare (ExecutionObject *object,
               _player = NULL;
             }
 
-          //explicitDur = prepareProperties (object);
           createPlayer (mrl);
-        }
-      else
-        {
-          //explicitDur = prepareProperties (object);
         }
 
       NclPresentationEvent *presentationEvt =
@@ -520,8 +288,6 @@ PlayerAdapter::prepare (ExecutionObject *object,
               mrl = "";
             }
         }
-
-      //explicitDur = prepareProperties (object);
 
       NclPresentationEvent *presentationEvent =
           dynamic_cast <NclPresentationEvent *> (event);
@@ -806,9 +572,9 @@ PlayerAdapter::stop ()
           NclPresentationEvent *presentationEvt
               = dynamic_cast <NclPresentationEvent *> (mainEvent);
 
-          if ( presentationEvt && checkRepeat(presentationEvt) )
+          if (presentationEvt && 0)
             {
-                return true;
+              return true;
             }
         }
       for (NclFormatterEvent *evt: _object->getEvents ())
@@ -943,24 +709,6 @@ PlayerAdapter::abort ()
 }
 
 bool
-PlayerAdapter::checkRepeat (NclPresentationEvent *event)
-{
-  g_assert_nonnull (_player);
-
-  if (event->getRepetitions () > 1)
-    {
-      _player->stop ();
-      if (_object != nullptr)
-        _object->stop ();
-
-      prepareScope ();
-      return true;
-    }
-
-  return false;
-}
-
-bool
 PlayerAdapter::unprepare ()
 {
   g_assert_nonnull (_object);
@@ -1058,8 +806,6 @@ PlayerAdapter::setProperty (const string &name,
                             const string &value)
 {
   g_assert_nonnull (_player);
-  TRACE ("setting property name='%s' to value='%s' (player='%p')",
-         name.c_str (), value.c_str (), _player);
   _player->setProperty (name, value);
 }
 

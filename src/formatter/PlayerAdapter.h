@@ -66,9 +66,6 @@ private:
   void createPlayer (const string &);
   void prepareScope (GingaTime offset = 0);
 
-  GingaTime prepareProperties (ExecutionObject *obj);
-
-  bool checkRepeat (NclPresentationEvent *);
   void setVisible (bool);
 
   // Application player only.
