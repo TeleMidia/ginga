@@ -342,6 +342,7 @@ Display::renderLoop ()
       _textures = NULL;
     }
 
+  TRACE ("quitting");
   SDL_Quit ();
 }
 
