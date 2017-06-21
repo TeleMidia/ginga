@@ -31,7 +31,7 @@ GINGA_FORMATTER_BEGIN
 class NclEventTransitionManager
 {
 public:
-  NclEventTransitionManager ();
+  NclEventTransitionManager () {}
   virtual ~NclEventTransitionManager ();
 
   void addPresentationEvent (NclPresentationEvent *evt);

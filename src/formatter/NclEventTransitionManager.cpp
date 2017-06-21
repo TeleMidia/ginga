@@ -23,23 +23,19 @@ using namespace ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-NclEventTransitionManager::NclEventTransitionManager ()
-{
-}
-
 NclEventTransitionManager::~NclEventTransitionManager ()
 {
-  for (EventTransition *trans: _transTable)
-    delete trans;
+  for (EventTransition *t: _transTable)
+    delete t;
 
   _transTable.clear ();
 }
 
 void
-NclEventTransitionManager::addEventTransition (EventTransition *transition)
+NclEventTransitionManager::addEventTransition (EventTransition *trans)
 {
   size_t beg, end, pos;
-  EventTransition *auxTransition;
+  EventTransition *auxTrans;
 
   // binary search
   beg = 0;
@@ -51,8 +47,8 @@ NclEventTransitionManager::addEventTransition (EventTransition *transition)
   while (beg <= end)
     {
       pos = (beg + end) / 2;
-      auxTransition = _transTable[pos];
-      switch (transition->compareTo (auxTransition))
+      auxTrans = _transTable[pos];
+      switch (trans->compareTo (auxTrans))
         {
         case 0:
           return;
@@ -68,15 +64,14 @@ NclEventTransitionManager::addEventTransition (EventTransition *transition)
     }
 
 done:
-  _transTable.insert (_transTable.begin () + (int) beg, transition);
+  _transTable.insert (_transTable.begin () + (int) beg, trans);
 }
 
 void
 NclEventTransitionManager::removeEventTransition (NclPresentationEvent *evt)
 {
   size_t i, size;
-  EventTransition *trans;
-  EventTransition *endTrans;
+  EventTransition *trans, *endTrans;
 
   size = _transTable.size ();
   for (i = 0; i < size; i++)
@@ -90,27 +85,24 @@ NclEventTransitionManager::removeEventTransition (NclPresentationEvent *evt)
             {
               endTrans = beginEvtTrans->getEndTransition ();
 
-              for (auto j = _transTable.begin (); j != _transTable.end (); ++j)
-                {
-                  if (*j == endTrans)
-                    {
-                      _transTable.erase (j);
-                      size = _transTable.size ();
-                      i = 0;
-                      break;
-                    }
-                }
-            }
-
-          for (auto j = _transTable.begin (); j != _transTable.end (); ++j)
-            {
-              if (*j == trans)
+              auto j = find (_transTable.begin(), _transTable.end(), endTrans);
+              if (j != _transTable.end())
                 {
                   _transTable.erase (j);
                   size = _transTable.size ();
                   i = 0;
                   break;
                 }
+
+            }
+
+          auto j = find (_transTable.begin(), _transTable.end(), trans);
+          if (j != _transTable.end())
+            {
+              _transTable.erase (j);
+              size = _transTable.size ();
+              i = 0;
+              break;
             }
         }
     }
@@ -152,12 +144,7 @@ NclEventTransitionManager::prepare (bool wholeContent, GingaTime startTime)
             }
           else
             {
-              clog << "NclEventTransitionManager::prepare set '";
-              clog << trans->getEvent ()->getId ();
-              clog << "' to SLEEP" << endl;
-
               trans->getEvent ()->setState (EventState::SLEEPING);
-
               trans->getEvent ()->incOccurrences ();
             }
           transIx++;
@@ -171,7 +158,7 @@ NclEventTransitionManager::prepare (bool wholeContent, GingaTime startTime)
 void
 NclEventTransitionManager::start (GingaTime offsetTime)
 {
-  EventTransition *transition;
+  EventTransition *trans;
   size_t transIx, size;
 
   size = _transTable.size ();
@@ -179,13 +166,13 @@ NclEventTransitionManager::start (GingaTime offsetTime)
 
   while (transIx < size)
     {
-      transition = _transTable[transIx];
-      if (transition->getTime () <= offsetTime)
+      trans = _transTable[transIx];
+      if (trans->getTime () <= offsetTime)
         {
-          auto beginEvtTrans = dynamic_cast<BeginEventTransition *> (transition);
-          if (beginEvtTrans)
+          auto beginTrans = dynamic_cast<BeginEventTransition *> (trans);
+          if (beginTrans)
             {
-              transition->getEvent ()->start ();
+              trans->getEvent ()->start ();
             }
           transIx++;
           _currentTransitionIndex = transIx;
@@ -348,7 +335,7 @@ NclEventTransitionManager::getNextTransition (NclFormatterEvent *mainEvt)
   vector<EventTransition *> *transitionEvents;
   size_t currentIx;
   GingaTime transTime;
-  GingaTime eventEnd;
+  GingaTime evtEnd;
 
   transitionEvents = &_transTable;
   currentIx = _currentTransitionIndex;
@@ -357,11 +344,11 @@ NclEventTransitionManager::getNextTransition (NclFormatterEvent *mainEvt)
     {
       transition = transitionEvents->at (currentIx);
 
-      eventEnd = ((NclPresentationEvent *)mainEvt)->getEnd ();
+      evtEnd = ((NclPresentationEvent *)mainEvt)->getEnd ();
       transTime = transition->getTime ();
 
-      if (!GINGA_TIME_IS_VALID (eventEnd)
-          || transTime <= eventEnd)
+      if (!GINGA_TIME_IS_VALID (evtEnd)
+          || transTime <= evtEnd)
         {
           return transition;
         }
