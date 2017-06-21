@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PLAYER_ADAPTER_H
 #define PLAYER_ADAPTER_H
 
-#include "FormatterEvents.h"
+#include "NclEvents.h"
 #include "ExecutionObject.h"
 #include "mb/IEventListener.h"
 

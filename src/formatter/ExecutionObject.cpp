@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ExecutionObject.h"
 #include "ExecutionObjectContext.h"
 
-#include "FormatterEvents.h"
+#include "NclEvents.h"
 
 #include "mb/Display.h"
 using namespace ::ginga::mb;
