@@ -284,7 +284,7 @@ Player::redraw (SDL_Renderer *renderer)
     this->window->getBorder (&this->borderColor, &this->borderWidth);
 
   if (_focused)
-    g_debug ("%p focused", this);
+    TRACE ("%p focused", this);
 
   if (this->bgColor.a > 0)
     {
