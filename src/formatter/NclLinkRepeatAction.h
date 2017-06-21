@@ -27,7 +27,7 @@ GINGA_FORMATTER_BEGIN
 class NclLinkRepeatAction : public NclLinkSimpleAction
 {
 public:
-  NclLinkRepeatAction (NclFormatterEvent *, SimpleActionType);
+  NclLinkRepeatAction (FormatterEvent *, SimpleActionType);
   virtual ~NclLinkRepeatAction ();
 
   virtual void run () override;

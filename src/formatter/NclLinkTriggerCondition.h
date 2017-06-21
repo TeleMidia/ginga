@@ -48,7 +48,7 @@ public:
   NclLinkTriggerCondition ();
   virtual ~NclLinkTriggerCondition ();
 
-  virtual vector<NclFormatterEvent *> *getEvents () = 0;
+  virtual vector<FormatterEvent *> *getEvents () = 0;
 
 protected:
   virtual void notifyConditionObservers (short satus);

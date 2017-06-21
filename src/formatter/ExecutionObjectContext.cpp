@@ -291,7 +291,7 @@ ExecutionObjectContext::setParentsAsListeners ()
   i = _parentTable.begin ();
   while (i != _parentTable.end ())
     {
-      if (NclFormatterEvent::hasInstance (_wholeContent, false))
+      if (FormatterEvent::hasInstance (_wholeContent, false))
         {
           _wholeContent->addListener (i->second);
         }
@@ -312,7 +312,7 @@ ExecutionObjectContext::unsetParentsAsListeners ()
   i = _parentTable.begin ();
   while (i != _parentTable.end ())
     {
-      if (_isDeleting || !NclFormatterEvent::hasInstance (_wholeContent, false))
+      if (_isDeleting || !FormatterEvent::hasInstance (_wholeContent, false))
         {
           return;
         }
@@ -327,14 +327,14 @@ ExecutionObjectContext::unsetParentsAsListeners ()
 
 void
 ExecutionObjectContext::eventStateChanged (
-    NclFormatterEvent *event,
+    FormatterEvent *event,
     EventStateTransition transition,
     EventState previousState)
 {
-  set<NclFormatterEvent *>::iterator i;
+  set<FormatterEvent *>::iterator i;
 
-  if (!(event->instanceOf ("NclPresentationEvent"))
-      || !NclFormatterEvent::hasInstance (event, false))
+  if (!(event->instanceOf ("PresentationEvent"))
+      || !FormatterEvent::hasInstance (event, false))
     {
       return;
     }
@@ -379,7 +379,7 @@ ExecutionObjectContext::eventStateChanged (
       break;
 
     case EventStateTransition::STOPS:
-      if (((NclPresentationEvent *)event)->getRepetitions () == 0)
+      if (((PresentationEvent *)event)->getRepetitions () == 0)
         {
           lastTransition = transition;
           if (previousState == EventState::OCCURRING)
@@ -534,7 +534,7 @@ ExecutionObjectContext::checkLinkConditions ()
       clog << endl;
 
       if (_wholeContent != NULL &&
-          NclFormatterEvent::hasInstance (_wholeContent, false))
+          FormatterEvent::hasInstance (_wholeContent, false))
         {
           _wholeContent->stop ();
           unsetParentsAsListeners ();
@@ -546,9 +546,9 @@ void
 ExecutionObjectContext::listRunningObjects ()
 {
   map<string, ExecutionObject *>::iterator i;
-  vector<NclFormatterEvent *>::iterator j;
+  vector<FormatterEvent *>::iterator j;
   ExecutionObject *object;
-  NclFormatterEvent *event;
+  FormatterEvent *event;
 
   clog << "ExecutionObjectContext::listRunningObjects for '";
   clog << _id << "': ";
@@ -556,7 +556,7 @@ ExecutionObjectContext::listRunningObjects ()
   while (i != _execObjList.end ())
     {
       object = i->second;
-      vector<NclFormatterEvent *> events = object->getEvents ();
+      vector<FormatterEvent *> events = object->getEvents ();
       j = events.begin ();
       while (j != events.end ())
         {

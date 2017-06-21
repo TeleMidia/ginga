@@ -642,7 +642,7 @@ FocusManager::changeSettingState (const string &name, const string &act)
 {
   set<ExecutionObject *> *settingObjects;
   set<ExecutionObject *>::iterator i;
-  NclFormatterEvent *event;
+  FormatterEvent *event;
   string keyM;
 
   settingObjects = _converter->getSettingNodeObjects ();
@@ -651,7 +651,7 @@ FocusManager::changeSettingState (const string &name, const string &act)
   while (i != settingObjects->end ())
     {
       event = (*i)->getEventFromAnchorId (name);
-      if (event != NULL && event->instanceOf ("NclAttributionEvent"))
+      if (event != NULL && event->instanceOf ("AttributionEvent"))
         {
           if (act == "start")
             {
@@ -661,7 +661,7 @@ FocusManager::changeSettingState (const string &name, const string &act)
             {
               if (name == "service.currentFocus")
                 {
-                  ((NclAttributionEvent *)(event))->setValue (_currentFocus);
+                  ((AttributionEvent *)(event))->setValue (_currentFocus);
                 }
               else if (name == "service.currentKeyMaster")
                 {
@@ -671,7 +671,7 @@ FocusManager::changeSettingState (const string &name, const string &act)
                               ->getDataEntity ()
                               ->getId ());
 
-                      ((NclAttributionEvent *)event)->setValue (keyM);
+                      ((AttributionEvent *)event)->setValue (keyM);
                     }
                 }
 

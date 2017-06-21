@@ -44,7 +44,7 @@ public:
       NclLinkActionProgressionListener *listener);
 
   void notifyProgressionListeners (bool start);
-  virtual vector<NclFormatterEvent *> *getEvents () = 0;
+  virtual vector<FormatterEvent *> *getEvents () = 0;
   virtual vector<NclLinkAction *> getImplicitRefRoleActions () = 0;
 
   void setSatisfiedCondition (NclLinkCondition *satisfiedCondition);

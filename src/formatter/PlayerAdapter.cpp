@@ -67,16 +67,16 @@ PlayerAdapter::~PlayerAdapter ()
 }
 
 bool
-PlayerAdapter::setCurrentEvent (NclFormatterEvent *event)
+PlayerAdapter::setCurrentEvent (FormatterEvent *event)
 {
 
   string ifId;
 
   if (_preparedEvents.count (event->getId ()) != 0
-      && !event->instanceOf ("NclSelectionEvent")
-      && event->instanceOf ("NclAnchorEvent"))
+      && !event->instanceOf ("SelectionEvent")
+      && event->instanceOf ("AnchorEvent"))
     {
-      NclAnchorEvent *anchorEvent = dynamic_cast <NclAnchorEvent *> (event);
+      AnchorEvent *anchorEvent = dynamic_cast <AnchorEvent *> (event);
       g_assert_nonnull (anchorEvent);
 
       LabeledAnchor *labeledAnchor
@@ -97,10 +97,10 @@ PlayerAdapter::setCurrentEvent (NclFormatterEvent *event)
       _currentEvent = event;
       _player->setCurrentScope (ifId);
     }
-  else if (event->instanceOf ("NclAttributionEvent"))
+  else if (event->instanceOf ("AttributionEvent"))
     {
-      NclAttributionEvent *attributionEvt
-          = dynamic_cast <NclAttributionEvent *> (event);
+      AttributionEvent *attributionEvt
+          = dynamic_cast <AttributionEvent *> (event);
       g_assert_nonnull (attributionEvt);
 
       ifId = attributionEvt->getAnchor ()->getName ();
@@ -152,7 +152,7 @@ PlayerAdapter::hasPrepared ()
 
 bool
 PlayerAdapter::prepare (ExecutionObject *object,
-                        NclPresentationEvent *event)
+                        PresentationEvent *event)
 {
   Content *content;
   GingaTime explicitDur = GINGA_TIME_NONE;
@@ -191,8 +191,8 @@ PlayerAdapter::prepare (ExecutionObject *object,
         }
     }
 
-  NclPresentationEvent *presentationEvent =
-    dynamic_cast <NclPresentationEvent *> (event);
+  PresentationEvent *presentationEvent =
+    dynamic_cast <PresentationEvent *> (event);
   if (presentationEvent)
     {
       GingaTime duration = presentationEvent->getDuration ();
@@ -225,17 +225,17 @@ PlayerAdapter::prepare (ExecutionObject *object,
 }
 
 void
-PlayerAdapter::prepare (NclFormatterEvent *event)
+PlayerAdapter::prepare (FormatterEvent *event)
 {
   GingaTime duration;
 
-  NclAnchorEvent *anchorEvent = dynamic_cast <NclAnchorEvent *> (event);
+  AnchorEvent *anchorEvent = dynamic_cast <AnchorEvent *> (event);
   if (anchorEvent)
     {
       if (anchorEvent->getAnchor ()->instanceOf ("LambdaAnchor"))
         {
-          NclPresentationEvent *presentationEvt
-              = dynamic_cast <NclPresentationEvent*> (event);
+          PresentationEvent *presentationEvt
+              = dynamic_cast <PresentationEvent*> (event);
           g_assert_nonnull (presentationEvt);
 
           duration = presentationEvt->getDuration ();
@@ -258,8 +258,8 @@ PlayerAdapter::prepare (NclFormatterEvent *event)
         }
       else if (anchorEvent->getAnchor ()->instanceOf ("LabeledAnchor"))
         {
-          NclPresentationEvent *presentationEvt
-              = dynamic_cast <NclPresentationEvent*> (event);
+          PresentationEvent *presentationEvt
+              = dynamic_cast <PresentationEvent*> (event);
           g_assert_nonnull (presentationEvt);
           duration = presentationEvt->getDuration ();
 
@@ -288,12 +288,12 @@ PlayerAdapter::prepare (NclFormatterEvent *event)
 void
 PlayerAdapter::prepareScope (GingaTime offset)
 {
-  NclPresentationEvent *mainEvent;
+  PresentationEvent *mainEvent;
   GingaTime duration;
   GingaTime initTime = 0;
   IntervalAnchor *intervalAnchor;
 
-  mainEvent = dynamic_cast <NclPresentationEvent *>(_object->getMainEvent ());
+  mainEvent = dynamic_cast <PresentationEvent *>(_object->getMainEvent ());
   if (mainEvent)
     {
       if (mainEvent->getAnchor ()->instanceOf ("LambdaAnchor"))
@@ -382,25 +382,25 @@ PlayerAdapter::stop ()
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
 
-  NclFormatterEvent *mainEvent = nullptr;
+  FormatterEvent *mainEvent = nullptr;
 
   mainEvent = _object->getMainEvent ();
 
   if (mainEvent != nullptr)
     {
-      NclPresentationEvent *presentationEvt
-        = dynamic_cast <NclPresentationEvent *> (mainEvent);
+      PresentationEvent *presentationEvt
+        = dynamic_cast <PresentationEvent *> (mainEvent);
 
       if (presentationEvt && 0)
         {
           return true;
         }
     }
-  for (NclFormatterEvent *evt: _object->getEvents ())
+  for (FormatterEvent *evt: _object->getEvents ())
     {
       g_assert_nonnull(evt);
-      NclAttributionEvent *attributionEvt
-        = dynamic_cast <NclAttributionEvent *> (evt);
+      AttributionEvent *attributionEvt
+        = dynamic_cast <AttributionEvent *> (evt);
 
       if (attributionEvt)
         {
@@ -486,7 +486,7 @@ PlayerAdapter::unprepare ()
 }
 
 void
-PlayerAdapter::setProperty (NclAttributionEvent *event,
+PlayerAdapter::setProperty (AttributionEvent *event,
                             const string &value)
 {
   string name;
@@ -505,7 +505,7 @@ PlayerAdapter::setProperty (const string &name,
 }
 
 string
-PlayerAdapter::getProperty (NclAttributionEvent *event)
+PlayerAdapter::getProperty (AttributionEvent *event)
 {
   PropertyAnchor *anchor;
   string name;
@@ -533,7 +533,7 @@ PlayerAdapter::handleTickEvent (arg_unused (GingaTime total),
                                 arg_unused (int frame))
 {
   EventTransition *next;
-  NclFormatterEvent *evt;
+  FormatterEvent *evt;
   GingaTime waited;
   GingaTime now;
 
@@ -559,7 +559,7 @@ PlayerAdapter::handleTickEvent (arg_unused (GingaTime total),
   if (now < waited)
     return;
 
-  evt = dynamic_cast <NclFormatterEvent *> (next->getEvent ());
+  evt = dynamic_cast <FormatterEvent *> (next->getEvent ());
   g_assert_nonnull (evt);
 
   TRACE ("anchor '%s' timed out at %" GINGA_TIME_FORMAT
@@ -733,11 +733,11 @@ PlayerAdapter::createPlayer (const string &uri)
         _player->setProperty (pos_y_name, pos_y_value);
     }
 
-  for (NclFormatterEvent *evt: _object->getEvents ())
+  for (FormatterEvent *evt: _object->getEvents ())
     {
       g_assert_nonnull (evt);
-      NclAttributionEvent *attributionEvt
-          = dynamic_cast <NclAttributionEvent *> (evt);
+      AttributionEvent *attributionEvt
+          = dynamic_cast <AttributionEvent *> (evt);
       if (attributionEvt)
         {
           property = attributionEvt->getAnchor ();
