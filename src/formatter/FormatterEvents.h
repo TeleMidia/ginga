@@ -189,8 +189,6 @@ class EventTransition
 public:
   EventTransition (GingaTime time, NclPresentationEvent *evt);
   virtual ~EventTransition () {}
-
-  int compareTo (EventTransition *trans);
 };
 
 class EndEventTransition;
