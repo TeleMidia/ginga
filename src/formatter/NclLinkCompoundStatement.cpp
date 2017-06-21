@@ -86,15 +86,15 @@ NclLinkCompoundStatement::returnEvaluationResult (bool result)
   return (negated ^ result);
 }
 
-vector<NclFormatterEvent *> *
+vector<FormatterEvent *> *
 NclLinkCompoundStatement::getEvents ()
 {
   if (statements->empty ())
     return NULL;
 
-  vector<NclFormatterEvent *> *events = new vector<NclFormatterEvent *>;
-  vector<NclFormatterEvent *> *statementEvents;
-  vector<NclFormatterEvent *>::iterator j;
+  vector<FormatterEvent *> *events = new vector<FormatterEvent *>;
+  vector<FormatterEvent *> *statementEvents;
+  vector<FormatterEvent *>::iterator j;
   vector<NclLinkStatement *>::iterator i;
   NclLinkStatement *statement;
 

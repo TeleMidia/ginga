@@ -46,12 +46,12 @@ NclLinkAssessmentStatement::~NclLinkAssessmentStatement ()
     }
 }
 
-vector<NclFormatterEvent *> *
+vector<FormatterEvent *> *
 NclLinkAssessmentStatement::getEvents ()
 {
-  vector<NclFormatterEvent *> *events;
+  vector<FormatterEvent *> *events;
 
-  events = new vector<NclFormatterEvent *>;
+  events = new vector<FormatterEvent *>;
   events->push_back (
       ((NclLinkAttributeAssessment *)mainAssessment)->getEvent ());
 

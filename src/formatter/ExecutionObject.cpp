@@ -138,8 +138,8 @@ ExecutionObject::destroyEvents ()
 {
   for (auto i : _events)
     {
-      NclFormatterEvent *event = i.second;
-      if (NclFormatterEvent::hasInstance (event, true))
+      FormatterEvent *event = i.second;
+      if (FormatterEvent::hasInstance (event, true))
         {
           delete event;
         }
@@ -160,19 +160,19 @@ ExecutionObject::unsetParentsAsListeners ()
 
 void
 ExecutionObject::removeParentListenersFromEvent (
-    NclFormatterEvent *event)
+    FormatterEvent *event)
 {
   map<Node *, ExecutionObjectContext *>::iterator i;
   ExecutionObjectContext *parentObject;
 
-  if (NclFormatterEvent::hasInstance (event, false))
+  if (FormatterEvent::hasInstance (event, false))
     {
       i = _parentTable.begin ();
       while (i != _parentTable.end ())
         {
           parentObject = (ExecutionObjectContext *)(i->second);
 
-          if (NclFormatterEvent::hasInstance (_mainEvent, false))
+          if (FormatterEvent::hasInstance (_mainEvent, false))
             {
               // register parent as a mainEvent listener
               _mainEvent->removeListener (parentObject);
@@ -314,9 +314,9 @@ ExecutionObject::setDescriptor (GenericDescriptor *descriptor)
 }
 
 bool
-ExecutionObject::addEvent (NclFormatterEvent *event)
+ExecutionObject::addEvent (FormatterEvent *event)
 {
-  map<string, NclFormatterEvent *>::iterator i;
+  map<string, FormatterEvent *>::iterator i;
 
   i = _events.find (event->getId ());
   if (i != _events.end ())
@@ -334,13 +334,13 @@ ExecutionObject::addEvent (NclFormatterEvent *event)
   clog << getId () << "'" << endl;
 
   _events[event->getId ()] = event;
-  if (event->instanceOf ("NclPresentationEvent"))
+  if (event->instanceOf ("PresentationEvent"))
     {
-      addPresentationEvent ((NclPresentationEvent *)event);
+      addPresentationEvent ((PresentationEvent *)event);
     }
-  else if (event->instanceOf ("NclSelectionEvent"))
+  else if (event->instanceOf ("SelectionEvent"))
     {
-      _selectionEvents.insert (((NclSelectionEvent *)event));
+      _selectionEvents.insert (((SelectionEvent *)event));
     }
   else
     {
@@ -351,9 +351,9 @@ ExecutionObject::addEvent (NclFormatterEvent *event)
 }
 
 void
-ExecutionObject::addPresentationEvent (NclPresentationEvent *event)
+ExecutionObject::addPresentationEvent (PresentationEvent *event)
 {
-  NclPresentationEvent *auxEvent;
+  PresentationEvent *auxEvent;
   GingaTime begin, auxBegin;
   int posBeg = -1;
   int posEnd, posMid;
@@ -361,7 +361,7 @@ ExecutionObject::addPresentationEvent (NclPresentationEvent *event)
   if ((event->getAnchor ())->instanceOf ("LambdaAnchor"))
     {
       _presEvents.insert (_presEvents.begin (), event);
-      _wholeContent = (NclPresentationEvent *)event;
+      _wholeContent = (PresentationEvent *)event;
     }
   else
     {
@@ -371,7 +371,7 @@ ExecutionObject::addPresentationEvent (NclPresentationEvent *event)
       while (posBeg <= posEnd)
         {
           posMid = (posBeg + posEnd) / 2;
-          auxEvent = (NclPresentationEvent *)(_presEvents[posMid]);
+          auxEvent = (PresentationEvent *)(_presEvents[posMid]);
           auxBegin = auxEvent->getBegin ();
           if (begin < auxBegin)
             {
@@ -400,16 +400,16 @@ ExecutionObject::addPresentationEvent (NclPresentationEvent *event)
 }
 
 bool
-ExecutionObject::containsEvent (NclFormatterEvent *event)
+ExecutionObject::containsEvent (FormatterEvent *event)
 {
   return (_events.count (event->getId ()) != 0);
 }
 
-NclFormatterEvent *
+FormatterEvent *
 ExecutionObject::getEventFromAnchorId (const string &anchorId)
 {
-  map<string, NclFormatterEvent *>::iterator i;
-  NclFormatterEvent *event;
+  map<string, FormatterEvent *>::iterator i;
+  FormatterEvent *event;
 
   if (anchorId == "")
     {
@@ -422,7 +422,7 @@ ExecutionObject::getEventFromAnchorId (const string &anchorId)
     {
       if (_wholeContent != nullptr)
         {
-          if (NclFormatterEvent::hasNcmId (_wholeContent, anchorId))
+          if (FormatterEvent::hasNcmId (_wholeContent, anchorId))
             {
               return _wholeContent;
             }
@@ -437,7 +437,7 @@ ExecutionObject::getEventFromAnchorId (const string &anchorId)
           event = i->second;
           if (event != nullptr)
             {
-              if (NclFormatterEvent::hasNcmId (event, anchorId))
+              if (FormatterEvent::hasNcmId (event, anchorId))
                 {
                   return event;
                 }
@@ -450,10 +450,10 @@ ExecutionObject::getEventFromAnchorId (const string &anchorId)
   return nullptr;
 }
 
-NclFormatterEvent *
+FormatterEvent *
 ExecutionObject::getEvent (const string &id)
 {
-  NclFormatterEvent *ev;
+  FormatterEvent *ev;
   if (_events.count (id) != 0)
     {
       ev = _events[id];
@@ -462,10 +462,10 @@ ExecutionObject::getEvent (const string &id)
   return nullptr;
 }
 
-vector<NclFormatterEvent *>
+vector<FormatterEvent *>
 ExecutionObject::getEvents ()
 {
-  vector<NclFormatterEvent *> eventsVector;
+  vector<FormatterEvent *> eventsVector;
   for (const auto &i : _events)
     {
       eventsVector.push_back (i.second);
@@ -473,19 +473,19 @@ ExecutionObject::getEvents ()
   return eventsVector;
 }
 
-NclPresentationEvent *
+PresentationEvent *
 ExecutionObject::getWholeContentPresentationEvent ()
 {
   return _wholeContent;
 }
 
 bool
-ExecutionObject::removeEvent (NclFormatterEvent *event)
+ExecutionObject::removeEvent (FormatterEvent *event)
 {
-  vector<NclPresentationEvent *>::iterator i;
-  set<NclSelectionEvent *>::iterator j;
-  vector<NclFormatterEvent *>::iterator k;
-  map<string, NclFormatterEvent *>::iterator l;
+  vector<PresentationEvent *>::iterator i;
+  set<SelectionEvent *>::iterator j;
+  vector<FormatterEvent *>::iterator k;
+  map<string, FormatterEvent *>::iterator l;
 
   if (!containsEvent (event))
     {
@@ -495,21 +495,21 @@ ExecutionObject::removeEvent (NclFormatterEvent *event)
   clog << "NclExecutionObject::removeEvent '" << event->getId () << "'";
   clog << "from '" << getId () << "'" << endl;
 
-  if (event->instanceOf ("NclPresentationEvent"))
+  if (event->instanceOf ("PresentationEvent"))
     {
       for (i = _presEvents.begin (); i != _presEvents.end (); ++i)
         {
-          if (*i == (NclPresentationEvent *)event)
+          if (*i == (PresentationEvent *)event)
             {
               _presEvents.erase (i);
               break;
             }
         }
-      _transMan.removeEventTransition ((NclPresentationEvent *)event);
+      _transMan.removeEventTransition ((PresentationEvent *)event);
     }
-  else if (event->instanceOf ("NclSelectionEvent"))
+  else if (event->instanceOf ("SelectionEvent"))
     {
-      j = _selectionEvents.find (((NclSelectionEvent *)event));
+      j = _selectionEvents.find (((SelectionEvent *)event));
       if (j != _selectionEvents.end ())
         {
           _selectionEvents.erase (j);
@@ -624,21 +624,21 @@ ExecutionObject::getNodePerspective (Node *node)
   return perspective;
 }
 
-NclFormatterEvent *
+FormatterEvent *
 ExecutionObject::getMainEvent ()
 {
   return _mainEvent;
 }
 
 bool
-ExecutionObject::prepare (NclFormatterEvent *event, GingaTime offsetTime)
+ExecutionObject::prepare (FormatterEvent *event, GingaTime offsetTime)
 {
   int size;
   map<Node *, ExecutionObjectContext *>::iterator i;
   GingaTime startTime = 0;
   ContentAnchor *contentAnchor;
-  NclFormatterEvent *auxEvent;
-  NclAttributionEvent *attributeEvent;
+  FormatterEvent *auxEvent;
+  AttributionEvent *attributeEvent;
   PropertyAnchor *attributeAnchor;
   int j;
   string value;
@@ -659,9 +659,9 @@ ExecutionObject::prepare (NclFormatterEvent *event, GingaTime offsetTime)
     }
 
   _mainEvent = event;
-  if (_mainEvent->instanceOf ("NclAnchorEvent"))
+  if (_mainEvent->instanceOf ("AnchorEvent"))
     {
-      contentAnchor = ((NclAnchorEvent *)_mainEvent)->getAnchor ();
+      contentAnchor = ((AnchorEvent *)_mainEvent)->getAnchor ();
       if (contentAnchor != nullptr
           && contentAnchor->instanceOf ("LabeledAnchor"))
         {
@@ -682,12 +682,12 @@ ExecutionObject::prepare (NclFormatterEvent *event, GingaTime offsetTime)
         }
     }
 
-  if (_mainEvent->instanceOf ("NclPresentationEvent"))
+  if (_mainEvent->instanceOf ("PresentationEvent"))
     {
       startTime
-          = ((NclPresentationEvent *)_mainEvent)->getBegin () + offsetTime;
+          = ((PresentationEvent *)_mainEvent)->getBegin () + offsetTime;
 
-      if (startTime > ((NclPresentationEvent *)_mainEvent)->getEnd ())
+      if (startTime > ((PresentationEvent *)_mainEvent)->getEnd ())
         {
           return false;
         }
@@ -711,9 +711,9 @@ ExecutionObject::prepare (NclFormatterEvent *event, GingaTime offsetTime)
   for (j = 0; j < size; j++)
     {
       auxEvent = _otherEvents[j];
-      if (auxEvent->instanceOf ("NclAttributionEvent"))
+      if (auxEvent->instanceOf ("AttributionEvent"))
         {
-          attributeEvent = (NclAttributionEvent *)auxEvent;
+          attributeEvent = (AttributionEvent *)auxEvent;
           attributeAnchor = attributeEvent->getAnchor ();
           value = attributeAnchor->getValue ();
           if (value != "")
@@ -749,9 +749,9 @@ ExecutionObject::start ()
       prepare (_wholeContent, 0.0);
     }
 
-  if (_mainEvent != nullptr && _mainEvent->instanceOf ("NclAnchorEvent"))
+  if (_mainEvent != nullptr && _mainEvent->instanceOf ("AnchorEvent"))
     {
-      contentAnchor = ((NclAnchorEvent *)_mainEvent)->getAnchor ();
+      contentAnchor = ((AnchorEvent *)_mainEvent)->getAnchor ();
       if (contentAnchor != nullptr
           && contentAnchor->instanceOf ("LabeledAnchor"))
         {
@@ -780,7 +780,7 @@ ExecutionObject::prepareTransitionEvents (GingaTime startTime)
 EventTransition *
 ExecutionObject::getNextTransition ()
 {
-  if (isSleeping () || !_mainEvent->instanceOf ("NclPresentationEvent"))
+  if (isSleeping () || !_mainEvent->instanceOf ("PresentationEvent"))
     {
       return nullptr;
     }
@@ -800,14 +800,14 @@ ExecutionObject::stop ()
       return false;
     }
 
-  if (_mainEvent->instanceOf ("NclPresentationEvent"))
+  if (_mainEvent->instanceOf ("PresentationEvent"))
     {
-      endTime = ((NclPresentationEvent *)_mainEvent)->getEnd ();
+      endTime = ((PresentationEvent *)_mainEvent)->getEnd ();
       _transMan.stop (endTime);
     }
-  else if (_mainEvent->instanceOf ("NclAnchorEvent"))
+  else if (_mainEvent->instanceOf ("AnchorEvent"))
     {
-      contentAnchor = ((NclAnchorEvent *)_mainEvent)->getAnchor ();
+      contentAnchor = ((AnchorEvent *)_mainEvent)->getAnchor ();
       if (contentAnchor != nullptr
           && contentAnchor->instanceOf ("LabeledAnchor"))
         {
@@ -832,14 +832,14 @@ ExecutionObject::abort ()
   if (isSleeping ())
     return false;
 
-  if (_mainEvent->instanceOf ("NclPresentationEvent"))
+  if (_mainEvent->instanceOf ("PresentationEvent"))
     {
-      endTime = ((NclPresentationEvent *)_mainEvent)->getEnd ();
+      endTime = ((PresentationEvent *)_mainEvent)->getEnd ();
       _transMan.abort (endTime);
     }
-  else if (_mainEvent->instanceOf ("NclAnchorEvent"))
+  else if (_mainEvent->instanceOf ("AnchorEvent"))
     {
-      contentAnchor = ((NclAnchorEvent *)_mainEvent)->getAnchor ();
+      contentAnchor = ((AnchorEvent *)_mainEvent)->getAnchor ();
       if (contentAnchor != nullptr
           && contentAnchor->instanceOf ("LabeledAnchor"))
         {
@@ -855,8 +855,8 @@ ExecutionObject::abort ()
 bool
 ExecutionObject::pause ()
 {
-  NclFormatterEvent *event;
-  vector<NclFormatterEvent *>::iterator i;
+  FormatterEvent *event;
+  vector<FormatterEvent *>::iterator i;
 
   // clog << "NclExecutionObject::pause(" << id << ")" << endl;
   if (isSleeping ())
@@ -864,7 +864,7 @@ ExecutionObject::pause ()
       return false;
     }
 
-  vector<NclFormatterEvent *> evs = getEvents ();
+  vector<FormatterEvent *> evs = getEvents ();
   if (_pauseCount == 0)
     {
       i = evs.begin ();
@@ -886,8 +886,8 @@ ExecutionObject::pause ()
 bool
 ExecutionObject::resume ()
 {
-  NclFormatterEvent *event;
-  vector<NclFormatterEvent *>::iterator i;
+  FormatterEvent *event;
+  vector<FormatterEvent *>::iterator i;
 
   // clog << "NclExecutionObject::resume(" << id << ")" << endl;
   if (_pauseCount == 0)
@@ -903,7 +903,7 @@ ExecutionObject::resume ()
         }
     }
 
-  vector<NclFormatterEvent *> evs = getEvents ();
+  vector<FormatterEvent *> evs = getEvents ();
   if (_pauseCount == 0)
     {
       i = evs.begin ();
@@ -954,13 +954,13 @@ ExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
 {
   string selCode;
   string keyString;
-  NclSelectionEvent *selectionEvent;
+  SelectionEvent *selectionEvent;
   IntervalAnchor *intervalAnchor;
-  NclFormatterEvent *expectedEvent;
+  FormatterEvent *expectedEvent;
   Anchor *expectedAnchor;
   string anchorId = "";
-  set<NclSelectionEvent *> *selectedEvents;
-  set<NclSelectionEvent *>::iterator i;
+  set<SelectionEvent *> *selectedEvents;
+  set<SelectionEvent *>::iterator i;
   bool sleeping = isSleeping ();
   bool paused = isPaused ();
   bool selected = false;
@@ -989,11 +989,11 @@ ExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
       return false;
     }
 
-  selectedEvents = new set<NclSelectionEvent *>;
+  selectedEvents = new set<SelectionEvent *>;
   i = _selectionEvents.begin ();
   while (i != _selectionEvents.end ())
     {
-      selectionEvent = (NclSelectionEvent *)(*i);
+      selectionEvent = (SelectionEvent *)(*i);
       selCode = selectionEvent->getSelectionCode ();
 
       clog << "NclExecutionObject::selectionEvent(" << _id << ") event '";

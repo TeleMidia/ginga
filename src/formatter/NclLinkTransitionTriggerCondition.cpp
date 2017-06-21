@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 NclLinkTransitionTriggerCondition::NclLinkTransitionTriggerCondition (
-    NclFormatterEvent *event, EventStateTransition transition, Bind *bind)
+    FormatterEvent *event, EventStateTransition transition, Bind *bind)
     : NclLinkTriggerCondition ()
 {
   typeSet.insert ("NclLinkTransitionTriggerCondition");
@@ -31,7 +31,7 @@ NclLinkTransitionTriggerCondition::NclLinkTransitionTriggerCondition (
   this->event = NULL;
   this->transition = transition;
 
-  if (NclFormatterEvent::hasInstance (event, false))
+  if (FormatterEvent::hasInstance (event, false))
     {
       this->event = event;
       this->event->addListener (this);
@@ -49,7 +49,7 @@ NclLinkTransitionTriggerCondition::~NclLinkTransitionTriggerCondition ()
   listener = NULL;
   bind = NULL;
 
-  if (NclFormatterEvent::hasInstance (event, false))
+  if (FormatterEvent::hasInstance (event, false))
     {
       event->removeListener (this);
       event = NULL;
@@ -64,7 +64,7 @@ NclLinkTransitionTriggerCondition::getBind ()
 
 void
 NclLinkTransitionTriggerCondition::eventStateChanged (
-    arg_unused (NclFormatterEvent *event),
+    arg_unused (FormatterEvent *event),
     EventStateTransition transition,
     arg_unused (EventState previousState))
 {
@@ -76,7 +76,7 @@ NclLinkTransitionTriggerCondition::eventStateChanged (
     }
 }
 
-NclFormatterEvent *
+FormatterEvent *
 NclLinkTransitionTriggerCondition::getEvent ()
 {
   return event;
@@ -88,15 +88,15 @@ NclLinkTransitionTriggerCondition::getTransition ()
   return transition;
 }
 
-vector<NclFormatterEvent *> *
+vector<FormatterEvent *> *
 NclLinkTransitionTriggerCondition::getEvents ()
 {
-  if (!NclFormatterEvent::hasInstance (event, false))
+  if (!FormatterEvent::hasInstance (event, false))
     {
       return NULL;
     }
 
-  vector<NclFormatterEvent *> *events = new vector<NclFormatterEvent *>;
+  vector<FormatterEvent *> *events = new vector<FormatterEvent *>;
 
   events->push_back (event);
   return events;
