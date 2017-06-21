@@ -59,7 +59,6 @@ PlayerAdapter::~PlayerAdapter ()
 {
   if (_player)
     {
-      _player->removeListener (this);
       if(_player->getMediaStatus () != Player::PL_SLEEPING)
         _player->stop ();
       delete _player;
@@ -161,12 +160,6 @@ PlayerAdapter::hasPrepared ()
 
   if (_isAppPlayer)
     return true;                // nothing to do
-
-  if (_player->isForcedNaturalEnd ())
-    {
-      TRACE ("failed, a natural end was forced");
-      return false;
-    }
 
   evt = _object->getMainEvent ();
   if (evt == nullptr)
@@ -783,10 +776,6 @@ PlayerAdapter::stop ()
                 }
             }
         }
-      else if (!_player->isForcedNaturalEnd ())
-        {
-          _player->stop ();
-        }
 
       if (_object->stop ())
         {
@@ -836,22 +825,10 @@ PlayerAdapter::stop ()
 
       //_player->removeListener (this);
       _player->stop ();
-
-      if (_player->isForcedNaturalEnd ())
-        {
-          _player->forceNaturalEnd (false);
-          _object->stop ();
-          return unprepare ();
-        }
-      else
-        {
-          _object->stop ();
-          unprepare ();
-          return true;
-        }
-
-      return false;
+      _object->stop ();
+      unprepare ();
     }
+  return true;
 }
 
 bool
@@ -932,10 +909,6 @@ PlayerAdapter::abort ()
                 }
             }
         }
-      else if (!_player->isForcedNaturalEnd ())
-        {
-          _player->stop ();
-        }
 
       if (_object->abort ())
         {
@@ -966,49 +939,6 @@ PlayerAdapter::abort ()
         }
 
       return false;
-    }
-}
-
-void
-PlayerAdapter::naturalEnd ()
-{
-  g_assert_nonnull (_object);
-  g_assert_nonnull (_player);
-
-  if (_isAppPlayer)
-    {
-      map<string, NclFormatterEvent *>::iterator i;
-      NclFormatterEvent *event;
-
-      g_assert_nonnull (_object);
-      g_assert_nonnull (_player);
-
-      i = _preparedEvents.begin ();
-      while (i != _preparedEvents.end ())
-        {
-          event = i->second;
-          if (event != NULL
-              && event->instanceOf ("NclAnchorEvent")
-              && ((NclAnchorEvent *)event)->getAnchor () != NULL
-              && ((NclAnchorEvent *)event)
-                     ->getAnchor ()
-                     ->instanceOf ("LambdaAnchor"))
-            {
-              event->stop ();
-              unprepare ();
-              return;
-            }
-          ++i;
-        }
-
-      if (_object->stop ())
-        {
-          unprepare ();
-        }
-    }
-  else
-    {
-      stop ();
     }
 }
 
@@ -1157,31 +1087,6 @@ PlayerAdapter::getProperty (NclAttributionEvent *event)
 }
 
 void
-PlayerAdapter::updateStatus (short code,
-                             const string &parameter,
-                             short type,
-                             arg_unused (const string &value))
-{
-  g_assert_nonnull (_object);
-
-  switch (code)
-    {
-    case Player::PL_NOTIFY_STOP:
-      if (type == Player::PL_TYPE_PRESENTATION)
-        {
-          if (parameter == "")
-            {
-              naturalEnd ();
-            }
-        }
-      break;
-
-    default:
-      break;
-    }
-}
-
-void
 PlayerAdapter::handleTickEvent (arg_unused (GingaTime total),
                                 GingaTime diff,
                                 arg_unused (int frame))
@@ -1323,7 +1228,6 @@ PlayerAdapter::createPlayer (const string &uri)
         }
     }
 
-  _player->addListener (this);
   descriptor = _object->getDescriptor ();
   if (descriptor != nullptr)
     {

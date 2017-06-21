@@ -18,7 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "IPlayerListener.h"
 #include "PlayerAnimator.h"
 
 #include "mb/SDLWindow.h"
@@ -57,16 +56,7 @@ public:
   virtual ~Player ();
 
   virtual void setMrl (const string &mrl, bool visible = true);
-  virtual void addListener (IPlayerListener *listener);
-  void removeListener (IPlayerListener *listener);
   void setAnimatorProperties (string dur, string name, string value);
-
-  void notifyPlayerListeners (short code,
-                              const string &parameter,
-                              PlayerEventType type,
-                              const string &value);
-
-
 
   PlayerStatus getMediaStatus();
 
@@ -90,8 +80,6 @@ public:
   bool isVisible ();
   void setVisible (bool visible);
 
-  void forceNaturalEnd (bool forceIt);
-  bool isForcedNaturalEnd ();
   virtual void setOutWindow (SDLWindow *);
   virtual void setCurrentScope (arg_unused (const string &scopeId)) {}
 
@@ -105,7 +93,6 @@ protected:
   PlayerAnimator *animator;
   bool presented;
   bool visible;
-  bool forcedNaturalEnd;
   PlayerEventType scopeType;
   string scope;
   GingaTime scopeInitTime;
@@ -119,9 +106,7 @@ protected:
   guint8 alpha;
 
 private:
-  bool _notifying;
   map<string, string> _properties;
-  set<IPlayerListener *> _listeners;
 
   // --------------------------------------------------------------------------
 

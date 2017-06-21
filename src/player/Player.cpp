@@ -27,11 +27,9 @@ Player::Player (const string &mrl)
 {
   this->mrl = mrl;
   this->window = NULL;
-  this->_notifying = false;
   this->presented = false;
   this->visible = true;
   this->status = PL_SLEEPING;
-  this->forcedNaturalEnd = false;
   this->scope = "";
   this->scopeType = PL_TYPE_PRESENTATION;
   this->scopeInitTime = 0;
@@ -60,8 +58,6 @@ Player::~Player ()
 {
   if (this->texture != NULL)
     Ginga_Display->destroyTexture (this->texture);
-
-  _listeners.clear ();
   _properties.clear ();
 }
 
@@ -70,51 +66,6 @@ Player::setMrl (const string &mrl, bool visible)
 {
   this->mrl = mrl;
   this->visible = visible;
-}
-
-void
-Player::addListener (IPlayerListener *listener)
-{
-  if (_notifying)
-    return;
-  _listeners.insert (listener);
-}
-
-void
-Player::removeListener (IPlayerListener *listener)
-{
-  set<IPlayerListener *>::iterator i;
-
-  if (!_notifying)
-    {
-      i = _listeners.find (listener);
-      if (i != _listeners.end ())
-        _listeners.erase (i);
-    }
-}
-
-void
-Player::notifyPlayerListeners (short code,
-                               const string &parameter,
-                               PlayerEventType type,
-                               const string &value)
-{
-  string p;
-  string v;
-
-  this->_notifying = true;
-
-  if (code == PL_NOTIFY_STOP)
-    this->presented = true;
-
-  if (_listeners.empty ())
-    {
-      this->_notifying = false;
-      return;
-    }
-
-  for (auto i: this->_listeners)
-    i->updateStatus (code, parameter, type, value);
 }
 
 void G_GNUC_NORETURN
@@ -150,7 +101,6 @@ Player::setScope (const string &scope,
 bool
 Player::play ()
 {
-  this->forcedNaturalEnd = false;
   _time = 0;
   this->status = PL_OCCURRING;
   Ginga_Display->registerPlayer (this);
@@ -301,22 +251,6 @@ Player::setVisible (bool visible)
 }
 
 void
-Player::forceNaturalEnd (bool forceIt)
-{
-  forcedNaturalEnd = forceIt;
-  if (forceIt)
-    notifyPlayerListeners (PL_NOTIFY_STOP, "", PL_TYPE_PRESENTATION, "");
-}
-
-bool
-Player::isForcedNaturalEnd ()
-{
-  if (mrl == "")
-    return false;
-  return forcedNaturalEnd;
-}
-
-void
 Player::setOutWindow (SDLWindow *win)
 {
   this->window = win;
@@ -350,7 +284,7 @@ Player::redraw (SDL_Renderer *renderer)
     this->window->getBorder (&this->borderColor, &this->borderWidth);
 
   if (_focused)
-    g_debug ("%p focused", this);
+    TRACE ("%p focused", this);
 
   if (this->bgColor.a > 0)
     {
