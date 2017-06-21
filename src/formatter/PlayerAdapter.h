@@ -27,7 +27,6 @@ GINGA_FORMATTER_BEGIN
 class FormatterScheduler;
 
 class PlayerAdapter :
-    public IPlayerListener,
     public INclAttributeValueMaintainer,
     public IEventListener
 {
@@ -54,12 +53,6 @@ public:
   // From INclAttributeValueMaintainer.
   string getProperty (NclAttributionEvent *event) override;
   void setProperty (const string &name, const string &value) override;
-
-  // From IPlayerListener.
-  virtual void updateStatus (short code,
-                             const string &parameter = "",
-                             short type = 10,
-                             const string &value = "") override;
 
   // From IEventListener.
   virtual void handleKeyEvent (SDL_EventType, SDL_Keycode) override;
