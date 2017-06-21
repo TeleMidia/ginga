@@ -158,7 +158,7 @@ VideoPlayer::play ()
 
   gstx_element_set_state_sync (_playbin, GST_STATE_PLAYING);
 
-  g_debug ("starting");
+  TRACE ("starting");
   Player::play ();
   return true;
 }
@@ -174,7 +174,7 @@ VideoPlayer::pause ()
 
   gstx_element_set_state_sync (_playbin, GST_STATE_PAUSED);
 
-  g_debug ("pausing");
+  TRACE ("pausing");
   Player::pause ();
 }
 
@@ -189,7 +189,7 @@ VideoPlayer::stop ()
   gstx_element_set_state_sync (_playbin, GST_STATE_NULL);
   gst_object_unref (_playbin);
 
-  g_debug ("stopping");
+  TRACE ("stopping");
   Player::stop ();
 }
 
@@ -205,7 +205,7 @@ VideoPlayer::resume ()
   g_assert (GST_ELEMENT_CAST (_playbin)->current_state == GST_STATE_PAUSED);
   gstx_element_set_state_sync (_playbin, GST_STATE_PLAYING);
 
-  g_debug ("resumming");
+  TRACE ("resumming");
   Player::resume ();
 }
 
@@ -222,8 +222,7 @@ VideoPlayer::redraw (SDL_Renderer *renderer)
 
   if (this->getEOS ())
     {
-      this->setEOS (false);
-      this->forceNaturalEnd (true);
+      this->stop ();
       return;
     }
 
@@ -323,7 +322,7 @@ VideoPlayer::cb_eos (arg_unused (GstAppSink *appsink), gpointer data)
 {
   VideoPlayer *player = (VideoPlayer *) data;
   player->setEOS (true);
-  g_debug ("EOS");
+  TRACE ("eos");
 }
 
 GstFlowReturn

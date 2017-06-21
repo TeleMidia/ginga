@@ -168,7 +168,6 @@ LuaPlayer::stop (void)
   ncluaw_close (this->_nw);
   g_assert (Ginga_Display->unregisterEventListener (this));
   this->_nw = NULL;
-  this->forcedNaturalEnd = true;
  done:
   Player::stop ();
 }
