@@ -50,7 +50,6 @@ PlayerAdapter::PlayerAdapter (FormatterScheduler *scheduler)
   this->_scheduler = scheduler;
   this->_object = nullptr;
   this->_player = nullptr;
-  this->_isAppPlayer = false;
   this->_currentEvent = nullptr;
   g_assert (Ginga_Display->registerEventListener (this));
 }
@@ -144,7 +143,7 @@ PlayerAdapter::setOutputWindow (SDLWindow *win)
 bool
 PlayerAdapter::hasPrepared ()
 {
-  NclFormatterEvent *evt;
+  // NclFormatterEvent *evt;
 
   if (_object == nullptr)
     {
@@ -155,22 +154,6 @@ PlayerAdapter::hasPrepared ()
   if (_player == nullptr)
     {
       TRACE ("failed, player is null");
-      return false;
-    }
-
-  if (_isAppPlayer && 0)
-    return true;                // nothing to do
-
-  evt = _object->getMainEvent ();
-  if (evt == nullptr)
-    {
-      TRACE ("failed, main event is null");
-      return false;
-    }
-
-  if (evt->getCurrentState () == EventState::SLEEPING)
-    {
-      TRACE ("failed, main event is sleeping");
       return false;
     }
 
@@ -481,104 +464,35 @@ PlayerAdapter::stop ()
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
 
-  if(_isAppPlayer && 0)
+  NclFormatterEvent *mainEvent = nullptr;
+
+  mainEvent = _object->getMainEvent ();
+
+  if (mainEvent != nullptr)
     {
-      map<string, NclFormatterEvent *>::iterator i;
-      NclFormatterEvent *event;
-      bool stopLambda = false;
+      NclPresentationEvent *presentationEvt
+        = dynamic_cast <NclPresentationEvent *> (mainEvent);
 
-      if (_currentEvent != nullptr)
+      if (presentationEvt && 0)
         {
-          NclAnchorEvent *anchorEvt
-              = dynamic_cast <NclAnchorEvent *>(_currentEvent);
-          if(anchorEvt
-             && anchorEvt->getAnchor() != NULL
-             && anchorEvt->getAnchor()->instanceOf("LambdaAnchor"))
-            {
-              stopLambda = true;
-            }
-        }
-
-      if (stopLambda)
-        {
-          TRACE ("stop lambda");
-
-          if (_currentEvent->getCurrentState () != EventState::SLEEPING)
-            {
-              _player->stop ();
-            }
-
-          i = _preparedEvents.begin ();
-          while (i != _preparedEvents.end ())
-            {
-              event = i->second;
-              if (event != _currentEvent
-                  && event->getCurrentState () != EventState::SLEEPING)
-                {
-                  _preparedEvents.erase (i);
-                  i = _preparedEvents.begin ();
-
-                  TRACE ("forcing '%s' to stop", event->getId().c_str());
-                  event->stop ();
-                }
-              else
-                {
-                  ++i;
-                }
-            }
-        }
-
-      if (_object->stop ())
-        {
-          unprepare ();
           return true;
         }
-
-      if (stopLambda && !_currentEvent->stop ())
-        {
-          WARNING ("trying to stop '%s', but it is already sleeping",
-                   _currentEvent->getId ().c_str ());
-        }
-      else
-        {
-          WARNING ("failed to stop '%s'",
-                   _currentEvent->getId ().c_str ());
-        }
-      return false;
     }
-  else
+  for (NclFormatterEvent *evt: _object->getEvents ())
     {
-      NclFormatterEvent *mainEvent = nullptr;
+      g_assert_nonnull(evt);
+      NclAttributionEvent *attributionEvt
+        = dynamic_cast <NclAttributionEvent *> (evt);
 
-      mainEvent = _object->getMainEvent ();
-
-      if (mainEvent != nullptr)
+      if (attributionEvt)
         {
-          NclPresentationEvent *presentationEvt
-              = dynamic_cast <NclPresentationEvent *> (mainEvent);
-
-          if (presentationEvt && 0)
-            {
-              return true;
-            }
+          attributionEvt->setValueMaintainer (nullptr);
         }
-      for (NclFormatterEvent *evt: _object->getEvents ())
-        {
-          g_assert_nonnull(evt);
-          NclAttributionEvent *attributionEvt
-              = dynamic_cast <NclAttributionEvent *> (evt);
-
-          if (attributionEvt)
-            {
-              attributionEvt->setValueMaintainer (nullptr);
-            }
-        }
-
-      //_player->removeListener (this);
-      _player->stop ();
-      _object->stop ();
-      unprepare ();
     }
+
+  _player->stop ();
+  _object->stop ();
+  unprepare ();
   return true;
 }
 
@@ -619,78 +533,13 @@ PlayerAdapter::abort ()
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
 
-  if (_isAppPlayer && 0)
+  _player->stop ();
+  if (!_object->isSleeping ())
     {
-      map<string, NclFormatterEvent *>::iterator i;
-      NclFormatterEvent *event;
-      bool abortLambda = false;
-
-      g_assert_nonnull (_player);
-      g_assert_nonnull (_object);
-
-      if (_currentEvent != nullptr)
-        {
-          NclAnchorEvent *anchorEvt
-              = dynamic_cast <NclAnchorEvent *>(_currentEvent);
-          if(anchorEvt
-             && anchorEvt->getAnchor() != NULL
-             && anchorEvt->getAnchor()->instanceOf("LambdaAnchor"))
-            {
-              abortLambda = true;
-            }
-        }
-
-      if (abortLambda)
-        {
-          _player->stop ();
-
-          for (i = _preparedEvents.begin (); i != _preparedEvents.end (); )
-            {
-              event = i->second;
-              if (event != _currentEvent
-                  && event->getCurrentState () != EventState::SLEEPING)
-                {
-                  i = _preparedEvents.erase (i);
-                  TRACE ("forcing '%s' to abort", event->getId().c_str());
-                  event->abort ();
-                }
-              else
-                {
-                  ++i;
-                }
-            }
-        }
-
-      if (_object->abort ())
-        {
-          unprepare ();
-          return true;
-        }
-
-      if (abortLambda && !_currentEvent->abort ())
-        {
-          TRACE ("failed to abort '%s', event is sleeping",
-                 _currentEvent->getId ().c_str());
-        }
-      else
-        {
-          TRACE ("failed to abort, object='%p' mrl='%s'",
-                 _object, _currentEvent->getId ().c_str());
-        }
-      return false;
+      _object->abort ();
+      unprepare ();
     }
-  else
-    {
-      _player->stop ();
-      if (!_object->isSleeping ())
-        {
-          _object->abort ();
-          unprepare ();
-          return true;
-        }
-
-      return false;
-    }
+  return true;
 }
 
 bool
@@ -699,68 +548,23 @@ PlayerAdapter::unprepare ()
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
 
-  if(_isAppPlayer && 0)
+  if (_object->getMainEvent () != nullptr
+      && (_object->getMainEvent ()->getCurrentState ()
+          == EventState::OCCURRING
+          || _object->getMainEvent ()->getCurrentState ()
+          == EventState::PAUSED))
     {
-      g_assert_nonnull (_object);
-
-      if (_currentEvent == nullptr)
-        {
-          _scheduler->removePlayer (_object);
-          _object->unprepare ();
-
-          return true;
-        }
-
-      if (_currentEvent->getCurrentState () == EventState::OCCURRING
-          || _currentEvent->getCurrentState () == EventState::PAUSED)
-        {
-          _currentEvent->stop ();
-        }
-
-      if (_preparedEvents.count (_currentEvent->getId ()) != 0
-          && _preparedEvents.size () == 1)
-        {
-          _object->unprepare ();
-          _scheduler->removePlayer (_object);
-          _preparedEvents.clear ();
-
-          _object = NULL;
-        }
-      else
-        {
-          _object->unprepare ();
-
-          map<string, NclFormatterEvent *>::iterator i
-              = _preparedEvents.find (_currentEvent->getId ());
-          if (i != _preparedEvents.end ())
-            {
-              _preparedEvents.erase (i);
-            }
-        }
-
-      return true;
-
+      return stop ();
     }
-  else
-    {
-      if (_object->getMainEvent () != nullptr
-          && (_object->getMainEvent ()->getCurrentState ()
-                  == EventState::OCCURRING
-              || _object->getMainEvent ()->getCurrentState ()
-                     == EventState::PAUSED))
-        {
-          return stop ();
-        }
 
-      _scheduler->removePlayer (_object);
+  _scheduler->removePlayer (_object);
 
-      if (ExecutionObject::hasInstance (_object, false))
-        _object->unprepare ();
+  if (ExecutionObject::hasInstance (_object, false))
+    _object->unprepare ();
 
-      _object = nullptr;
+  _object = nullptr;
 
-      return true;
-    }
+  return true;
 }
 
 void
@@ -917,7 +721,6 @@ PlayerAdapter::createPlayer (const string &uri)
       else if (g_strcmp0 (mime, "application/x-ginga-NCLua") == 0)
         {
           _player = new LuaPlayer (uri);
-          _isAppPlayer = true;
         }
       else
         {

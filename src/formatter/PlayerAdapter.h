@@ -68,7 +68,6 @@ private:
 
 
   // Application player only.
-  bool _isAppPlayer;
   map<string, NclFormatterEvent *> _preparedEvents;
   NclFormatterEvent *_currentEvent;
   void prepare (NclFormatterEvent *event);
