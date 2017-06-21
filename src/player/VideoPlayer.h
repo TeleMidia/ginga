@@ -53,6 +53,9 @@ private:
   void setEOS (bool);
   bool getEOS ();
 
+  // Pipeline callbacks.
+  static gboolean cb_bus (GstBus *, GstMessage *, VideoPlayer *);
+
   // AppSink callbacks.
   static void cb_eos (GstAppSink *, gpointer);
   static GstFlowReturn cb_new_preroll (GstAppSink *, gpointer);
