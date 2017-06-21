@@ -471,4 +471,27 @@ NclSwitchEvent::eventStateChanged (
   changeState (EventUtil::getNextState (trans), trans);
 }
 
+EventTransition::EventTransition (GingaTime time,
+                                  NclPresentationEvent *evt)
+{
+  this->_time = time;
+  this->_evt = evt;
+}
+
+BeginEventTransition::BeginEventTransition (
+    GingaTime t, NclPresentationEvent *evt)
+  : EventTransition (t, evt)
+{
+
+}
+
+EndEventTransition::EndEventTransition (GingaTime t,
+                                        NclPresentationEvent *evt,
+                                        BeginEventTransition *trans)
+  : EventTransition (t, evt)
+{
+  _beginTrans = trans;
+  _beginTrans->setEndTransition (this);
+}
+
 GINGA_FORMATTER_END

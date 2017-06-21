@@ -92,8 +92,6 @@ ExecutionObject::ExecutionObject (const string &id,
   this->_isLocked = false;
   this->_isHandler = false;
   this->_isHandling = handling;
-
-  this->_transMan = new NclEventTransitionManager ();
 }
 
 ExecutionObject::~ExecutionObject ()
@@ -148,12 +146,6 @@ ExecutionObject::destroyEvents ()
         }
     }
   _events.clear ();
-
-  if (_transMan != nullptr)
-    {
-      delete _transMan;
-      _transMan = nullptr;
-    }
 
   _presEvents.clear ();
   _selectionEvents.clear ();
@@ -405,7 +397,7 @@ ExecutionObject::addPresentationEvent (NclPresentationEvent *event)
   clog << "manager addPresentationEvent for '" << event->getId ();
   clog << "' begin = '" << event->getBegin () << "'; end = '";
   clog << event->getEnd () << "' position = '" << posBeg << "'" << endl;
-  _transMan->addPresentationEvent (event);
+  _transMan.addPresentationEvent (event);
 }
 
 bool
@@ -514,7 +506,7 @@ ExecutionObject::removeEvent (NclFormatterEvent *event)
               break;
             }
         }
-      _transMan->removeEventTransition ((NclPresentationEvent *)event);
+      _transMan.removeEventTransition ((NclPresentationEvent *)event);
     }
   else if (event->instanceOf ("NclSelectionEvent"))
     {
@@ -764,36 +756,36 @@ ExecutionObject::start ()
       if (contentAnchor != nullptr
           && contentAnchor->instanceOf ("LabeledAnchor"))
         {
-          _transMan->start (_offsetTime);
+          _transMan.start (_offsetTime);
           _mainEvent->start ();
           return true;
         }
     }
 
-  _transMan->start (_offsetTime);
+  _transMan.start (_offsetTime);
   return true;
 }
 
 void
 ExecutionObject::updateTransitionTable (GingaTime value, Player *player)
 {
-  _transMan->updateTransitionTable (value, player, _mainEvent);
+  _transMan.updateTransitionTable (value, player, _mainEvent);
 }
 
 void
 ExecutionObject::prepareTransitionEvents (GingaTime startTime)
 {
-  _transMan->prepare (_mainEvent == _wholeContent, startTime);
+  _transMan.prepare (_mainEvent == _wholeContent, startTime);
 }
 
-NclEventTransition *
+EventTransition *
 ExecutionObject::getNextTransition ()
 {
   if (isSleeping () || !_mainEvent->instanceOf ("NclPresentationEvent"))
     {
       return nullptr;
     }
-  return _transMan->getNextTransition (_mainEvent);
+  return _transMan.nextTransition (_mainEvent);
 }
 
 bool
@@ -812,7 +804,7 @@ ExecutionObject::stop ()
   if (_mainEvent->instanceOf ("NclPresentationEvent"))
     {
       endTime = ((NclPresentationEvent *)_mainEvent)->getEnd ();
-      _transMan->stop (endTime);
+      _transMan.stop (endTime);
     }
   else if (_mainEvent->instanceOf ("NclAnchorEvent"))
     {
@@ -827,7 +819,7 @@ ExecutionObject::stop ()
         }
     }
 
-  _transMan->resetTimeIndex ();
+  _transMan.resetTimeIndex ();
   _pauseCount = 0;
   return true;
 }
@@ -844,7 +836,7 @@ ExecutionObject::abort ()
   if (_mainEvent->instanceOf ("NclPresentationEvent"))
     {
       endTime = ((NclPresentationEvent *)_mainEvent)->getEnd ();
-      _transMan->abort (endTime);
+      _transMan.abort (endTime);
     }
   else if (_mainEvent->instanceOf ("NclAnchorEvent"))
     {
@@ -856,7 +848,7 @@ ExecutionObject::abort ()
         }
     }
 
-  _transMan->resetTimeIndex ();
+  _transMan.resetTimeIndex ();
   _pauseCount = 0;
   return true;
 }

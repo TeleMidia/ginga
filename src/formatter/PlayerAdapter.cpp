@@ -614,7 +614,7 @@ PlayerAdapter::handleTickEvent (arg_unused (GingaTime total),
                                 GingaTime diff,
                                 arg_unused (int frame))
 {
-  NclEventTransition *next;
+  EventTransition *next;
   NclFormatterEvent *evt;
   GingaTime waited;
   GingaTime now;

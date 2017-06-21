@@ -32,7 +32,6 @@ using namespace ::ginga::player;
 using namespace ::ginga::ncl;
 
 #include "FormatterEvents.h"
-#include "NclEventTransition.h"
 #include "NclEventTransitionManager.h"
 #include "NclCascadingDescriptor.h"
 #include "NclFormatterRegion.h"
@@ -92,7 +91,7 @@ public:
   NclFormatterEvent *getMainEvent ();
 
   void updateTransitionTable (GingaTime value, Player *player);
-  virtual NclEventTransition *getNextTransition ();
+  virtual EventTransition *getNextTransition ();
 
   virtual bool prepare (NclFormatterEvent *event, GingaTime offsetTime);
   virtual bool start ();
@@ -130,7 +129,7 @@ protected:
 
   int _pauseCount;
   NclFormatterEvent *_mainEvent;
-  NclEventTransitionManager *_transMan;
+  NclEventTransitionManager _transMan;
   ExecutionObject *_mirrorSrc;
 
   static set<ExecutionObject *> _objects;
