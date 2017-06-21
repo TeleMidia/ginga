@@ -43,7 +43,7 @@ using namespace ::ginga::ncl;
 
 #include "ExecutionObjectSwitch.h"
 
-#include "FormatterEvents.h"
+#include "NclEvents.h"
 
 #include "NclFormatterCausalLink.h"
 #include "NclFormatterLink.h"

@@ -24,7 +24,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/Link.h"
 using namespace ::ginga::ncl;
 
-#include "FormatterEvents.h"
+#include "NclEvents.h"
 
 #include "NclFormatterCausalLink.h"
 #include "NclFormatterLink.h"

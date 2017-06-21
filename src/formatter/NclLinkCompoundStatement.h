@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclLinkStatement.h"
 
-#include "FormatterEvents.h"
+#include "NclEvents.h"
 
 #include "ncl/CompoundStatement.h"
 using namespace ::ginga::ncl;

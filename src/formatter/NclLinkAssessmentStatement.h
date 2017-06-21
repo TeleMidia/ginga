@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _LINKASSESSMENTSTATEMENT_H_
 #define _LINKASSESSMENTSTATEMENT_H_
 
-#include "FormatterEvents.h"
+#include "NclEvents.h"
 
 #include "ncl/Comparator.h"
 using namespace ::ginga::ncl;

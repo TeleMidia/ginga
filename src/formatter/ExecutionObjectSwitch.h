@@ -24,7 +24,7 @@ using namespace ::ginga::ncl;
 
 #include "ExecutionObjectContext.h"
 
-#include "FormatterEvents.h"
+#include "NclEvents.h"
 
 GINGA_FORMATTER_BEGIN
 
