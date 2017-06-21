@@ -60,18 +60,6 @@ Player::~Player ()
   _properties.clear ();
 }
 
-void
-Player::setMrl (const string &mrl)
-{
-  this->mrl = mrl;
-}
-
-void G_GNUC_NORETURN
-Player::setMediaTime (arg_unused (GingaTime time))
-{
-  ERROR_NOT_IMPLEMENTED ("cannot seek in media content");
-}
-
 GingaTime
 Player::getMediaTime ()
 {
