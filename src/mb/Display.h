@@ -69,7 +69,6 @@ private:
 
   bool add (GList **, gpointer);
   bool remove (GList **, gpointer);
-  bool find (GList *, gconstpointer);
 
   void notifyTickListeners (GingaTime, GingaTime, int);
   void notifyKeyListeners (SDL_EventType, SDL_Keycode);

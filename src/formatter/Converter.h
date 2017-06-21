@@ -71,7 +71,6 @@ public:
   virtual ~Converter ();
 
   void setHandlingStatus (bool handling);
-  ExecutionObject *getObjectFromNodeId (const string &id);
 
   void setLinkActionListener (INclLinkActionListener *actionListener);
 

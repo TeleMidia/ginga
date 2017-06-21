@@ -96,8 +96,6 @@ LuaPlayer::LuaPlayer (const string &mrl) : Player (mrl)
 
   _nw = NULL;
   _init_rect = {0, 0, 0, 0};
-  _isKeyHandler = false;
-  _scope = "";
 }
 
 LuaPlayer::~LuaPlayer (void)
@@ -107,16 +105,16 @@ LuaPlayer::~LuaPlayer (void)
 void
 LuaPlayer::abort (void)
 {
-  TRACE ("abort scope %s", _scope.c_str ());
-  evt_ncl_send_presentation (_nw, "abort", _scope.c_str ());
+  TRACE ("abort");
+  evt_ncl_send_presentation (_nw, "abort", "");
   this->stop ();
 }
 
 void
 LuaPlayer::pause (void)
 {
-  TRACE ("pause scope %s", _scope.c_str ());
-  evt_ncl_send_presentation (_nw, "pause", _scope.c_str ());
+  TRACE ("pause");
+  evt_ncl_send_presentation (_nw, "pause", "");
   Player::pause ();
 }
 
@@ -125,7 +123,7 @@ LuaPlayer::play (void)
 {
   char *errmsg;
 
-  TRACE ("play scope %s", _scope.c_str ());
+  TRACE ("play");
   if (_nw != NULL)
     {
       Player::play ();
@@ -137,7 +135,7 @@ LuaPlayer::play (void)
   if (unlikely (_nw == NULL))
     ERROR ("cannot load NCLua file %s: %s", this->mrl.c_str (), errmsg);
 
-  evt_ncl_send_presentation (_nw, "start", _scope.c_str ());
+  evt_ncl_send_presentation (_nw, "start", "");
   g_assert (Ginga_Display->registerEventListener (this));
 
   TRACE ("waiting for first cycle");
@@ -149,34 +147,21 @@ LuaPlayer::play (void)
 void
 LuaPlayer::resume (void)
 {
-  TRACE ("resume scope %s", _scope.c_str ());
-  evt_ncl_send_presentation (_nw, "resume", _scope.c_str ());
+  TRACE ("resume");
+  evt_ncl_send_presentation (_nw, "resume", "");
   Player::resume ();
 }
 
 void
 LuaPlayer::stop (void)
 {
-  TRACE ("stop scope %s", _scope.c_str ());
-  evt_ncl_send_presentation (_nw, "stop", _scope.c_str ());
+  TRACE ("stop scope");
+  evt_ncl_send_presentation (_nw, "stop", "");
   ncluaw_cycle (_nw);
   ncluaw_close (_nw);
   g_assert (Ginga_Display->unregisterEventListener (this));
   _nw = NULL;
   Player::stop ();
-}
-
-void
-LuaPlayer::setCurrentScope (const string &name)
-{
-  _scope = name;
-}
-
-bool
-LuaPlayer::setKeyHandler (bool b)
-{
-  _isKeyHandler = b;
-  return b;
 }
 
 void

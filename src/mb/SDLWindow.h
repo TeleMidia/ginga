@@ -23,52 +23,16 @@ GINGA_MB_BEGIN
 class SDLWindow
 {
 private:
-  SDL_Texture *texture;         // window texture
-
   int borderWidth;
-  SDL_Color bgColor;
   SDL_Color borderColor;
-  SDL_Rect rect;
-  int z;
-  int zorder;
   bool ghost;
 
 public:
-  SDLWindow (int, int, int, int, int, int);
+  SDLWindow ();
   virtual ~SDLWindow ();
-
-  void setTexture (SDL_Texture *);
-  SDL_Texture *getTexture ();
-
-  void setBgColor (SDL_Color);
-  SDL_Color getBgColor ();
-  SDL_Rect getRect ();
-  void setRect (SDL_Rect);
 
   void setBorder (SDL_Color, int);
   void getBorder (SDL_Color *, int *);
-
-  void setBounds (int x, int y, int width, int height);
-  void moveTo (int x, int y);
-  void resize (int width, int height);
-
-  SDLWindow* getId ();
-  void show ();
-  void hide ();
-
-  int getX ();
-  int getY ();
-  int getW ();
-  int getH ();
-  void getZ (int *, int *);
-
-  void setX (int x);
-  void setY (int y);
-  void setW (int w);
-  void setH (int h);
-  void setZ (gint z);
-
-  bool isGhostWindow ();
   void setGhostWindow (bool ghost);
 };
 

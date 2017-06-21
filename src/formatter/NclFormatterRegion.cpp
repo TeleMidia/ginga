@@ -78,16 +78,7 @@ NclFormatterRegion::~NclFormatterRegion ()
 void
 NclFormatterRegion::setZIndex (int zIndex)
 {
-  string layoutId;
-
   this->zIndex = zIndex;
-
-  if (region != NULL)
-    {
-      layoutId = region->getId ();
-      if (win != NULL)
-        win->setZ (zIndex);
-    }
 }
 
 int
@@ -364,9 +355,6 @@ NclFormatterRegion::sizeRegion ()
 
   if (region != NULL)
     rect = region->getRect ();
-
-  if (this->win != NULL)
-    this->win->setBounds (rect.x, rect.y, rect.w, rect.h);
 }
 
 LayoutRegion *
@@ -394,7 +382,7 @@ NclFormatterRegion::prepareOutputDisplay ()
   r = region->getRect ();
   region->getZ (&z, &zorder);
 
-  this->win = new SDLWindow (r.x, r.y, r.w, r.h, z, zorder);
+  this->win = new SDLWindow ();
   return this->win;
 }
 
