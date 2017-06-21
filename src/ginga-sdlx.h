@@ -99,4 +99,7 @@ GINGA_PRAGMA_DIAG_POP ()
 #define SDLx_SetTextureAlphaMod(T, a)\
   SDLx_assert (SDL_SetTextureAlphaMod ((T), (a)))
 
+#define SDLx_SetTextureBlendMode(T, a)\
+  SDLx_assert (SDL_SetTextureBlendMode ((T), (a)))
+
 #endif /* GINGA_SDLX_H */

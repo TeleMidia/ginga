@@ -242,7 +242,7 @@ VideoPlayer::redraw (SDL_Renderer *renderer)
   if (sample == NULL)
     goto done;
 
-  if (this->texture == NULL)
+  if (this->texture == nullptr)
     {
       this->texture = SDL_CreateTexture (renderer,
                                          SDL_PIXELFORMAT_ARGB32,
