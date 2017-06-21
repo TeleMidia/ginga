@@ -79,11 +79,6 @@ private:
   void runActionOverProperty (NclFormatterEvent *event,
                               NclLinkSimpleAction *action);
 
-  void runActionOverApplicationObject (
-      ExecutionObjectApplication *executionObject,
-      NclFormatterEvent *event, PlayerAdapter *player,
-      NclLinkSimpleAction *action);
-
   void
   runActionOverComposition (ExecutionObjectContext *compositeObject,
                             NclLinkSimpleAction *action);

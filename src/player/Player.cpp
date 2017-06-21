@@ -28,7 +28,6 @@ Player::Player (const string &mrl)
   this->mrl = mrl;
   this->window = NULL;
   this->presented = false;
-  this->visible = true;
   this->status = PL_SLEEPING;
   this->scope = "";
   this->scopeType = PL_TYPE_PRESENTATION;
@@ -62,10 +61,9 @@ Player::~Player ()
 }
 
 void
-Player::setMrl (const string &mrl, bool visible)
+Player::setMrl (const string &mrl)
 {
   this->mrl = mrl;
-  this->visible = visible;
 }
 
 void G_GNUC_NORETURN
@@ -236,18 +234,6 @@ Player::setProperty (const string &name, const string &value)
  syntax_error:
   ERROR_SYNTAX ("property '%s': bad value '%s'",
                 name.c_str (), value.c_str ());
-}
-
-bool
-Player::isVisible ()
-{
-  return this->visible;
-}
-
-void
-Player::setVisible (bool visible)
-{
-  this->visible = visible;
 }
 
 void

@@ -122,7 +122,6 @@ protected:
   bool _isHandling;
 
   map<Node *, ExecutionObjectContext *> _parentTable;
-  bool _visible;
   map<string, NclFormatterEvent *> _events;
   vector<NclPresentationEvent *> _presEvents;
   set<NclSelectionEvent *> _selectionEvents;

@@ -39,7 +39,6 @@ src+= common-mime-table.cpp
 src+= common.cpp
 src+= formatter/Converter.cpp
 src+= formatter/ExecutionObject.cpp
-src+= formatter/ExecutionObjectApplication.cpp
 src+= formatter/ExecutionObjectContext.cpp
 src+= formatter/ExecutionObjectSwitch.cpp
 src+= formatter/FocusManager.cpp

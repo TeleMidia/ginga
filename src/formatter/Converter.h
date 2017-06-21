@@ -57,7 +57,6 @@ using namespace ::ginga::ncl;
 #include "NclCascadingDescriptor.h"
 
 #include "ExecutionObjectContext.h"
-#include "ExecutionObjectApplication.h"
 #include "ExecutionObject.h"
 
 #include "RuleAdapter.h"
@@ -154,8 +153,6 @@ private:
       NclCascadingDescriptor *cascadingDescriptor, Node *ncmNode);
 
   static bool hasDescriptorPropName (const string &name);
-  static bool isEmbeddedApp (NodeEntity *dataObject);
-  static bool isEmbeddedAppMediaType (const string &mediaType);
 
   void setImplicitRefAssessment (const string &roleId, CausalLink *ncmLink,
                                  NclFormatterEvent *event);

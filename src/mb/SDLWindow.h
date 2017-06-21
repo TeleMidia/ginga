@@ -31,7 +31,6 @@ private:
   SDL_Rect rect;
   int z;
   int zorder;
-  bool visible;
   bool ghost;
 
 public:
@@ -71,7 +70,6 @@ public:
 
   bool isGhostWindow ();
   void setGhostWindow (bool ghost);
-  bool isVisible ();
 };
 
 GINGA_MB_END

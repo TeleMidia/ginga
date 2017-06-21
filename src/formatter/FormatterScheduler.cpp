@@ -168,15 +168,6 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
       return;
     }
 
-  if (obj->instanceOf ("ExecutionObjectApplication")
-      && !event->instanceOf ("ExecutionObjectApplication"))
-    {
-      runActionOverApplicationObject
-        ((ExecutionObjectApplication *)obj, event,
-         player, action);
-      return;
-    }
-
   switch (action->getType ())
     {
     case ACT_START:
@@ -386,84 +377,6 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
           clog << endl;
           break;
         }
-    }
-}
-
-void
-FormatterScheduler::runActionOverApplicationObject (
-    ExecutionObjectApplication *executionObject,
-    NclFormatterEvent *event, PlayerAdapter *player,
-    NclLinkSimpleAction *action)
-{
-  NclCascadingDescriptor *descriptor;
-  Player *playerContent;
-
-  int actionType = action->getType ();
-  SDLWindow *win = NULL;
-
-  switch (actionType)
-    {
-    case ACT_START:
-      TRACE ("START '%s'", event->getId().c_str());
-      if (!player->hasPrepared ())
-        {
-          if (ruleAdapter->adaptDescriptor (executionObject))
-            {
-              descriptor = executionObject->getDescriptor ();
-              if (descriptor != NULL)
-                descriptor->setFormatterLayout ();
-            }
-
-          player->prepare (executionObject, (NclPresentationEvent *) event);
-          playerContent = player->getPlayer ();
-          if (playerContent != NULL)
-            {
-              win = this->prepareFormatterRegion (executionObject);
-              player->setOutputWindow (win);
-            }
-        }
-      else
-        {
-          player->prepare (executionObject, (NclPresentationEvent *) event);
-        }
-
-      event->addListener (this);
-      if (player->setCurrentEvent (event))
-        {
-          if (!player->start ())
-            {
-              WARNING ("cannot start '%s'",
-                       executionObject->getId ().c_str());
-
-              // checking if player failed to start
-              if (event->getCurrentState () == EventState::SLEEPING)
-                event->removeListener (this);
-            }
-        }
-      break;
-
-    case ACT_PAUSE:
-      if (player->setCurrentEvent (event))
-        player->pause ();
-      break;
-
-    case ACT_RESUME:
-      if (player->setCurrentEvent (event))
-        player->resume ();
-      break;
-
-    case ACT_ABORT:
-      if (player->setCurrentEvent (event))
-        player->abort ();
-      break;
-
-    case ACT_STOP:
-      if (player->setCurrentEvent (event))
-        player->stop ();
-      break;
-
-    default:
-      g_assert_not_reached ();
     }
 }
 
@@ -1154,15 +1067,6 @@ FormatterScheduler::eventStateChanged (
               event->removeListener (this);
               object = event->getExecutionObject ();
 
-              if (object->instanceOf ("ExecutionObjectApplication"))
-                {
-                  if (!((ExecutionObjectApplication *)object)
-                           ->isSleeping ())
-                    {
-                      hideObj = false;
-                    }
-                }
-
               if (hideObj)
                 {
                   clog << "FormatterScheduler::eventStateChanged '";
@@ -1185,13 +1089,6 @@ FormatterScheduler::eventStateChanged (
             event->removeListener (this);
             object = (ExecutionObject *)(event->getExecutionObject ());
 
-            if (object->instanceOf ("ExecutionObjectApplication"))
-              {
-                if (!((ExecutionObjectApplication *)object)->isSleeping ())
-                  {
-                    hideObj = false;
-                  }
-              }
             if (hideObj)
               {
                 clog << "FormatterScheduler::eventStateChanged '";
@@ -1261,7 +1158,6 @@ FormatterScheduler::showObject (ExecutionObject *obj)
     return;                     // nothing to do
 
   reg->setGhostRegion (true);
-  reg->showContent ();
 }
 
 void
@@ -1277,8 +1173,6 @@ FormatterScheduler::hideObject (ExecutionObject *obj)
   reg = desc->getFormatterRegion ();
   if (reg == NULL)
     return;                     // nothing to do
-
-  reg->hideContent ();
 }
 
 bool
