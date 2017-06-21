@@ -32,7 +32,7 @@ GINGA_FORMATTER_BEGIN
 class Converter;
 
 class FormatterScheduler : public INclLinkActionListener,
-                           public INclEventListener
+                           public IFormatterEventListener
 {
 private:
   map<string, PlayerAdapter *> _objectPlayers;

@@ -22,14 +22,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/EventUtil.h"
 using namespace ::ginga::ncl;
 
-#include "INclEventListener.h"
 #include "Settings.h"
 
 #include "ncl/PropertyAnchor.h"
 
 GINGA_FORMATTER_BEGIN
 
-class INclEventListener;
+class IFormatterEventListener;
 class ExecutionObject;
 class PlayerAdapter;
 
@@ -62,15 +61,15 @@ public:
   bool resume ();
   bool abort ();
 
-  void addListener (INclEventListener *listener);
-  void removeListener (INclEventListener *listener);
+  void addListener (IFormatterEventListener *listener);
+  void removeListener (IFormatterEventListener *listener);
 
   bool instanceOf (const string &);
   static bool hasInstance (FormatterEvent *evt, bool remove);
   static bool hasNcmId (FormatterEvent *evt, const string &anchorId);
 
 protected:
-  set<INclEventListener *> _listeners;
+  set<IFormatterEventListener *> _listeners;
   set<string> _typeSet;
 
   EventStateTransition getTransition (EventState newState);
@@ -78,6 +77,14 @@ protected:
 
   static set<FormatterEvent *> _instances;
   static bool removeInstance (FormatterEvent *evt);
+};
+
+class IFormatterEventListener
+{
+public:
+  virtual void eventStateChanged (FormatterEvent *,
+                                  EventStateTransition,
+                                  EventState) = 0;
 };
 
 class AnchorEvent : public FormatterEvent
@@ -149,7 +156,7 @@ private:
   bool _settingsNode;
 };
 
-class SwitchEvent : public FormatterEvent, public INclEventListener
+class SwitchEvent : public FormatterEvent, public IFormatterEventListener
 {
 private:
   InterfacePoint *_interface;
