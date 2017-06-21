@@ -65,7 +65,7 @@ SvgPlayer::reload (SDL_Renderer *renderer)
   cairo_surface_t *cr_sfc;
   cairo_t *cr;
 
-  svg = rsvg_handle_new_from_file(this->mrl.c_str (), &err);
+  svg = rsvg_handle_new_from_file (this->mrl.c_str (), &err);
   if (unlikely (svg == NULL))
     ERROR ("cannot load SVG file %s: %s", this->mrl.c_str (), err->message);
 
@@ -78,18 +78,7 @@ SvgPlayer::reload (SDL_Renderer *renderer)
 
   width = (int)(floor (dim.width * scale) + 1);
   height = (int)(floor (dim.height * scale) + 1);
-
-#if SDL_VERSION_ATLEAST(2,0,5)
-  sfc = SDL_CreateRGBSurfaceWithFormat (0, width, height, 32,
-                                        SDL_PIXELFORMAT_ARGB8888);
-#else
-  sfc = SDL_CreateRGBSurface (0, width, height, 32,
-                              0xff000000,
-                              0x00ff0000,
-                              0x0000ff00,
-                              0x000000ff);
-#endif
-  g_assert_nonnull (sfc);
+  SDLx_CreateSurfaceARGB32 (width, height, &sfc);
 
   SDLx_LockSurface (sfc);
   cr_sfc = cairo_image_surface_create_for_data ((guchar*) sfc->pixels,

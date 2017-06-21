@@ -151,17 +151,7 @@ TextPlayer::reload (SDL_Renderer *renderer)
     }
   g_assert_nonnull (contents);
 
-#if SDL_VERSION_ATLEAST(2,0,5)
-  sfc = SDL_CreateRGBSurfaceWithFormat (0, _rect.w, _rect.h,
-                                        32, SDL_PIXELFORMAT_ARGB8888);
-#else
-  sfc = SDL_CreateRGBSurface (0, _rect.w, _rect.h, 32,
-                              0xff000000,
-                              0x00ff0000,
-                              0x0000ff00,
-                              0x000000ff);
-#endif
-  g_assert_nonnull (sfc);
+  SDLx_CreateSurfaceARGB32 (_rect.w, _rect.h, &sfc);
   SDLx_LockSurface (sfc);
   sfc_cr = cairo_image_surface_create_for_data
     ((guchar *) sfc->pixels, CAIRO_FORMAT_ARGB32,
