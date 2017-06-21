@@ -22,46 +22,35 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-class NclEventTransition
+class EventTransition
 {
+  PROPERTY_READONLY (NclPresentationEvent *, _evt, getEvent)
+  PROPERTY_READONLY (GingaTime, _time, getTime)
+
 public:
-  NclEventTransition (GingaTime time, NclPresentationEvent *evt);
-  virtual ~NclEventTransition () {}
+  EventTransition (GingaTime time, NclPresentationEvent *evt);
+  virtual ~EventTransition () {}
 
-  int compareTo (NclEventTransition *trans);
-
-  NclPresentationEvent *getEvent () { return _event; }
-  GingaTime getTime () { return _time; }
-
-protected:
-  set<string> typeSet;
-
-private:
-  NclPresentationEvent *_event;
-  GingaTime _time;
+  int compareTo (EventTransition *trans);
 };
 
-class NclEndEventTransition;
+class EndEventTransition;
 
-class NclBeginEventTransition : public NclEventTransition
+class BeginEventTransition : public EventTransition
 {
-  PROPERTY (NclEndEventTransition *, _endTrans,
-            getEndTransition, setEndTransition)
+  PROPERTY (EndEventTransition *, _endTrans, getEndTransition, setEndTransition)
 
 public:
-  NclBeginEventTransition (GingaTime time, NclPresentationEvent *evt);
-  virtual ~NclBeginEventTransition () {}
+  BeginEventTransition (GingaTime time, NclPresentationEvent *evt);
 };
 
-class NclEndEventTransition : public NclEventTransition
+class EndEventTransition : public EventTransition
 {
-  PROPERTY_READONLY (NclBeginEventTransition *, _beginTrans, getBeginTransition)
+  PROPERTY_READONLY (BeginEventTransition *, _beginTrans, getBeginTransition)
 
 public:
-  NclEndEventTransition (GingaTime time, NclPresentationEvent *evt,
-                         NclBeginEventTransition *trans);
-
-  virtual ~NclEndEventTransition () {}
+  EndEventTransition (GingaTime t, NclPresentationEvent *evt,
+                      BeginEventTransition *trans);
 };
 
 GINGA_FORMATTER_END

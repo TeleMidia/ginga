@@ -263,7 +263,7 @@ ExecutionObjectApplication::start ()
   return true;
 }
 
-NclEventTransition *
+EventTransition *
 ExecutionObjectApplication::getNextTransition ()
 {
   if (_currentEvent == nullptr

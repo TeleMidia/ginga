@@ -778,7 +778,7 @@ ExecutionObject::prepareTransitionEvents (GingaTime startTime)
   _transMan.prepare (_mainEvent == _wholeContent, startTime);
 }
 
-NclEventTransition *
+EventTransition *
 ExecutionObject::getNextTransition ()
 {
   if (isSleeping () || !_mainEvent->instanceOf ("NclPresentationEvent"))

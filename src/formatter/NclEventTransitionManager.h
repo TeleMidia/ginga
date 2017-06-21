@@ -47,14 +47,14 @@ public:
   void updateTransitionTable (GingaTime timeValue, Player *player,
                               NclFormatterEvent *mainEvt);
 
-  NclEventTransition *getNextTransition (NclFormatterEvent *mainEvt);
+  EventTransition *getNextTransition (NclFormatterEvent *mainEvt);
 
 private:
   size_t _currentTransitionIndex;
   size_t _startTransitionIndex;
-  vector<NclEventTransition *> _transTable;
+  vector<EventTransition *> _transTable;
 
-  void addEventTransition (NclEventTransition *trans);
+  void addEventTransition (EventTransition *trans);
 };
 
 GINGA_FORMATTER_END

@@ -40,7 +40,7 @@ public:
   void setCurrentEvent (NclFormatterEvent *event);
   bool prepare (NclFormatterEvent *event, GingaTime offsetTime);
   bool start ();
-  NclEventTransition *getNextTransition ();
+  EventTransition *getNextTransition ();
   bool stop ();
   bool abort ();
   bool pause ();
