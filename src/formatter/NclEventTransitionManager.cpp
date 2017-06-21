@@ -34,7 +34,37 @@ NclEventTransitionManager::~NclEventTransitionManager ()
 void
 NclEventTransitionManager::addTransition (EventTransition *trans)
 {
-  _transTable.push_back (trans);
+  size_t beg, end, pos;
+  EventTransition *auxTrans;
+
+  // binary search
+  beg = 0;
+  if (_transTable.size () == 0)
+    goto done;
+
+  end = _transTable.size () - 1;
+
+  while (beg <= end)
+    {
+      pos = (beg + end) / 2;
+      auxTrans = _transTable[pos];
+      switch (trans->compareTo (auxTrans))
+        {
+        case 0:
+          return;
+        case -1:
+          end = pos - 1;
+          break;
+        case 1:
+          beg = pos + 1;
+          break;
+        default:
+          g_assert_not_reached ();
+        }
+    }
+
+done:
+  _transTable.insert (_transTable.begin () + (int) beg, trans);
 }
 
 void
