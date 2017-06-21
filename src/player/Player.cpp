@@ -273,6 +273,7 @@ Player::redraw (SDL_Renderer *renderer)
 
   if (this->texture != NULL)
     {
+      SDLx_SetTextureBlendMode (this->texture, SDL_BLENDMODE_BLEND);
       SDLx_SetTextureAlphaMod (this->texture, this->alpha);
       SDLx_RenderCopy (renderer, this->texture, NULL, &_rect);
     }
@@ -289,7 +290,7 @@ Player::redraw (SDL_Renderer *renderer)
     }
 }
 
-// ----------------------------------------------------------------------------
+// -------------------------------------------------------------------------
 
 
 // Public.
