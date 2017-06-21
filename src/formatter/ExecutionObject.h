@@ -32,7 +32,6 @@ using namespace ::ginga::player;
 using namespace ::ginga::ncl;
 
 #include "FormatterEvents.h"
-#include "NclEventTransition.h"
 #include "NclEventTransitionManager.h"
 #include "NclCascadingDescriptor.h"
 #include "NclFormatterRegion.h"
