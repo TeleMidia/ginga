@@ -158,7 +158,7 @@ PlayerAdapter::hasPrepared ()
       return false;
     }
 
-  if (_isAppPlayer)
+  if (_isAppPlayer && 0)
     return true;                // nothing to do
 
   evt = _object->getMainEvent ();
@@ -481,7 +481,7 @@ PlayerAdapter::stop ()
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
 
-  if(_isAppPlayer)
+  if(_isAppPlayer && 0)
     {
       map<string, NclFormatterEvent *>::iterator i;
       NclFormatterEvent *event;
@@ -619,7 +619,7 @@ PlayerAdapter::abort ()
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
 
-  if (_isAppPlayer)
+  if (_isAppPlayer && 0)
     {
       map<string, NclFormatterEvent *>::iterator i;
       NclFormatterEvent *event;
@@ -699,7 +699,7 @@ PlayerAdapter::unprepare ()
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
 
-  if(_isAppPlayer)
+  if(_isAppPlayer && 0)
     {
       g_assert_nonnull (_object);
 
