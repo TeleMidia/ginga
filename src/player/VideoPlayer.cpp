@@ -53,7 +53,10 @@ GINGA_PLAYER_BEGIN
 
 VideoPlayer::VideoPlayer (const string &mrl) : Player (mrl)
 {
+  GstBus *bus;
+  gulong id;
   gchar *uri;
+
   GstElement *bin;
   GstElement *elt_filter;
   GstElement *elt_scale;
@@ -78,8 +81,14 @@ VideoPlayer::VideoPlayer (const string &mrl) : Player (mrl)
         }
     }
 
-  _playbin = gst_element_factory_make ("playbin", NULL);
+  _playbin = gst_element_factory_make ("playbin", "playbin");
   g_assert_nonnull (_playbin);
+
+  bus = gst_pipeline_get_bus (GST_PIPELINE (_playbin));
+  g_assert_nonnull (bus);
+  id = gst_bus_add_watch (bus, (GstBusFunc) cb_bus, this);
+  g_assert (id > 0);
+  gst_object_unref (bus);
 
   uri = gst_filename_to_uri (mrl.c_str (), NULL);
   g_assert_nonnull (uri);
@@ -129,6 +138,7 @@ VideoPlayer::play ()
   GstStructure *st;
   GstElement *bin = NULL;
   GstElement *filter = NULL;
+  GstStateChangeReturn ret;
 
   if (unlikely (this->status == PL_OCCURRING))
     {
@@ -156,7 +166,9 @@ VideoPlayer::play ()
   gst_caps_unref (caps);
   gst_object_unref (filter);
 
-  gstx_element_set_state_sync (_playbin, GST_STATE_PLAYING);
+  ret = gst_element_set_state (_playbin, GST_STATE_PLAYING);
+  if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
+    return false;
 
   TRACE ("starting");
   Player::play ();
@@ -315,6 +327,45 @@ VideoPlayer::getEOS (void)
   eos = _eos;
   this->unlock ();
   return eos;
+}
+
+gboolean
+VideoPlayer::cb_bus (GstBus *bus, GstMessage *msg, VideoPlayer *player)
+{
+  g_assert_nonnull (bus);
+  g_assert_nonnull (msg);
+  g_assert_nonnull (player);
+
+  switch (GST_MESSAGE_TYPE (msg))
+    {
+    case GST_MESSAGE_ERROR:
+    case GST_MESSAGE_WARNING:
+      {
+        GstObject *obj = NULL;
+        GError *error = NULL;
+
+        obj = GST_MESSAGE_SRC (msg);
+        g_assert_nonnull (obj);
+
+        if (GST_MESSAGE_TYPE (msg) == GST_MESSAGE_ERROR)
+          {
+            gst_message_parse_error (msg, &error, NULL);
+            g_assert_nonnull (error);
+            ERROR ("%s", error->message);
+          }
+        else
+          {
+            gst_message_parse_warning (msg, &error, NULL);
+            g_assert_nonnull (error);
+            WARNING ("%s", error->message);
+          }
+        g_error_free (error);
+        break;
+      }
+    default:
+      break;
+    }
+  return TRUE;
 }
 
 void

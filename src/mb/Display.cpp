@@ -269,7 +269,7 @@ Display::renderLoop ()
   int frameno = 1;
 
   // Render loop.
-  while (!this->hasQuitted())
+  while (!this->hasQuitted ())
     {
       SDL_Event evt;
       GList *l;
@@ -333,6 +333,9 @@ Display::renderLoop ()
                           frameno);
 
       SDL_RenderPresent (_renderer);
+
+      // Step Glib's context (required by GStreamer pipeline bus).
+      g_main_context_iteration (NULL, false);
 
       // Destroy dead textures.
       g_list_free_full (_textures, (GDestroyNotify) SDL_DestroyTexture);
