@@ -23,15 +23,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "mb/Display.h"
 
-GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
-
 GINGA_FORMATTER_BEGIN
 
 FormatterScheduler::FormatterScheduler ()
 {
-  int w, h;
-  Ginga_Display->getSize (&w, &h);
-
   this->settings = new Settings ();
   this->ruleAdapter = new RuleAdapter (settings);
   this->compiler = new Converter (this->ruleAdapter);
@@ -370,10 +365,7 @@ FormatterScheduler::runActionOverProperty (NclEvent *event,
           break;
 
         default:
-          clog << "FormatterScheduler::runActionOverProperty";
-          clog << "unknown actionType = '" << actionType << "'";
-          clog << endl;
-          break;
+          g_assert_not_reached ();
         }
     }
 }

@@ -294,7 +294,6 @@ Converter::getEvent (ExecutionObject *exeObj,
 
         default:
           g_assert_not_reached ();
-          break;
         }
     }
 
@@ -2048,9 +2047,7 @@ Converter::createSimpleAction (
       break;
 
     default:
-      action = nullptr;
-      ERROR ("Unknown action type '%d'.", actionType);
-      break;
+      g_assert_not_reached ();
     }
 
   g_assert_nonnull (action);

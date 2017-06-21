@@ -70,33 +70,6 @@ Entity::instanceOf (const string &s)
     }
 }
 
-int
-Entity::compareTo (Entity *otherEntity)
-{
-  string otherId;
-  int cmp;
-
-  otherId = (static_cast<Entity *> (otherEntity))->getId ();
-
-  if (_id == "")
-    return -1;
-
-  if (otherId == "")
-    return 1;
-
-  cmp = _id.compare (otherId);
-  switch (cmp)
-    {
-    case 0:
-      return 0;
-    default:
-      if (cmp < 0)
-        return -1;
-      else
-        return 1;
-    }
-}
-
 string
 Entity::getId ()
 {

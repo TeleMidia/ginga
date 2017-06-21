@@ -70,7 +70,7 @@ TransitionUtil::getTypeName (int type)
       return "fade";
 
     default:
-      return "";
+      g_assert_not_reached ();
     }
 }
 
@@ -325,7 +325,7 @@ TransitionUtil::getDirectionName (short direction)
       return "reverse";
 
     default:
-      return "";
+      g_assert_not_reached ();
     }
 }
 
