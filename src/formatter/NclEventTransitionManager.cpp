@@ -183,7 +183,7 @@ NclEventTransitionManager::stop (GingaTime endTime, bool applicationType)
       if (!applicationType
           || (applicationType && GINGA_TIME_IS_VALID (trans->getTime ())))
         {
-          FormatterEvent *fev = trans->getEvent ();
+          NclEvent *fev = trans->getEvent ();
           if (!GINGA_TIME_IS_VALID (endTime) || trans->getTime () > endTime)
             {
               fev->setState (EventState::SLEEPING);
@@ -201,7 +201,7 @@ NclEventTransitionManager::abort (GingaTime endTime, bool applicationType)
 {
   size_t transIx, i, size;
   EventTransition *trans;
-  FormatterEvent *fev;
+  NclEvent *fev;
 
   transIx = _currentTransitionIndex;
   size = _transTable.size ();
@@ -280,10 +280,10 @@ NclEventTransitionManager::addPresentationEvent (PresentationEvent *evt)
 
 void
 NclEventTransitionManager::updateTransitionTable (
-    GingaTime value, Player *player, FormatterEvent *mainEvt)
+    GingaTime value, Player *player, NclEvent *mainEvt)
 {
   EventTransition *trans;
-  FormatterEvent *ev;
+  NclEvent *ev;
   size_t currentIx;
 
   currentIx = _currentTransitionIndex;
@@ -320,7 +320,7 @@ NclEventTransitionManager::updateTransitionTable (
 }
 
 EventTransition *
-NclEventTransitionManager::nextTransition (FormatterEvent *mainEvt)
+NclEventTransitionManager::nextTransition (NclEvent *mainEvt)
 {
   EventTransition *transition;
   vector<EventTransition *> *transitionEvents;

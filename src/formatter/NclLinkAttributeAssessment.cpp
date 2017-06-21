@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 NclLinkAttributeAssessment::NclLinkAttributeAssessment (
-    FormatterEvent *ev, short attrType)
+    NclEvent *ev, short attrType)
     : NclLinkAssessment ()
 {
   event = ev;
@@ -30,7 +30,7 @@ NclLinkAttributeAssessment::NclLinkAttributeAssessment (
   typeSet.insert ("NclLinkAttributeAssessment");
 }
 
-FormatterEvent *
+NclEvent *
 NclLinkAttributeAssessment::getEvent ()
 {
   return event;
@@ -49,7 +49,7 @@ NclLinkAttributeAssessment::getOffset ()
 }
 
 void
-NclLinkAttributeAssessment::setEvent (FormatterEvent *ev)
+NclLinkAttributeAssessment::setEvent (NclEvent *ev)
 {
   event = ev;
 }

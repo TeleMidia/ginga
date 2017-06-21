@@ -51,7 +51,7 @@ public:
   NclLinkAction *getAction ();
   NclLinkTriggerCondition *getTriggerCondition ();
   void conditionSatisfied (NclLinkCondition *condition);
-  virtual vector<FormatterEvent *> *getEvents ();
+  virtual vector<NclEvent *> *getEvents ();
   void evaluationStarted ();
   void evaluationEnded ();
   void actionProcessed (bool start);

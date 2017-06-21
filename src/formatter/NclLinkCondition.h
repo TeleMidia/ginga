@@ -42,7 +42,7 @@ public:
         return false;
       }
   };
-  virtual vector<FormatterEvent *> *getEvents () = 0;
+  virtual vector<NclEvent *> *getEvents () = 0;
 };
 
 GINGA_FORMATTER_END

@@ -28,7 +28,7 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-class IFormatterEventListener;
+class INclEventListener;
 class ExecutionObject;
 class PlayerAdapter;
 
@@ -40,7 +40,7 @@ class PlayerAdapter;
   PROPERTY_READONLY (type,name,getfunc) \
   public: void setfunc (type value) {this->name = value;}\
 
-class FormatterEvent
+class NclEvent
 {
   PROPERTY (EventType, _type, getType, setType)
   PROPERTY_READONLY (string, _id, getId)
@@ -50,8 +50,8 @@ class FormatterEvent
   PROPERTY_READONLY (EventState, _previousState, getPreviousState)
 
 public:
-  FormatterEvent (const string &id, ExecutionObject *exeObj);
-  virtual ~FormatterEvent ();
+  NclEvent (const string &id, ExecutionObject *exeObj);
+  virtual ~NclEvent ();
 
   void setState (EventState newState);
 
@@ -61,33 +61,33 @@ public:
   bool resume ();
   bool abort ();
 
-  void addListener (IFormatterEventListener *listener);
-  void removeListener (IFormatterEventListener *listener);
+  void addListener (INclEventListener *listener);
+  void removeListener (INclEventListener *listener);
 
   bool instanceOf (const string &);
-  static bool hasInstance (FormatterEvent *evt, bool remove);
-  static bool hasNcmId (FormatterEvent *evt, const string &anchorId);
+  static bool hasInstance (NclEvent *evt, bool remove);
+  static bool hasNcmId (NclEvent *evt, const string &anchorId);
 
 protected:
-  set<IFormatterEventListener *> _listeners;
+  set<INclEventListener *> _listeners;
   set<string> _typeSet;
 
   EventStateTransition getTransition (EventState newState);
   bool changeState (EventState newState, EventStateTransition transition);
 
-  static set<FormatterEvent *> _instances;
-  static bool removeInstance (FormatterEvent *evt);
+  static set<NclEvent *> _instances;
+  static bool removeInstance (NclEvent *evt);
 };
 
-class IFormatterEventListener
+class INclEventListener
 {
 public:
-  virtual void eventStateChanged (FormatterEvent *,
+  virtual void eventStateChanged (NclEvent *,
                                   EventStateTransition,
                                   EventState) = 0;
 };
 
-class AnchorEvent : public FormatterEvent
+class AnchorEvent : public NclEvent
 {
   PROPERTY_READONLY (ContentAnchor *, _anchor, getAnchor)
 
@@ -128,7 +128,7 @@ public:
   virtual bool start () override;
 };
 
-class AttributionEvent : public FormatterEvent
+class AttributionEvent : public NclEvent
 {
   PROPERTY (PlayerAdapter *, _player, getPlayerAdapter, setPlayerAdapter)
 
@@ -144,24 +144,24 @@ public:
   string getCurrentValue ();
   bool setValue (const string &newValue);
   void setImplicitRefAssessmentEvent (const string &roleId,
-                                      FormatterEvent *event);
+                                      NclEvent *event);
 
-  FormatterEvent *getImplicitRefAssessmentEvent (const string &roleId);
+  NclEvent *getImplicitRefAssessmentEvent (const string &roleId);
 
 protected:
-  map<string, FormatterEvent *> _assessments;
+  map<string, NclEvent *> _assessments;
   Settings *_settings;
 
 private:
   bool _settingsNode;
 };
 
-class SwitchEvent : public FormatterEvent, public IFormatterEventListener
+class SwitchEvent : public NclEvent, public INclEventListener
 {
 private:
   InterfacePoint *_interface;
   string _key;
-  FormatterEvent *_mappedEvent;
+  NclEvent *_mappedEvent;
 
 public:
   SwitchEvent (const string &id,
@@ -175,11 +175,11 @@ public:
   InterfacePoint *getInterfacePoint () { return this->_interface; }
   string getKey () { return this->_key; }
 
-  void setMappedEvent (FormatterEvent *evt);
-  FormatterEvent *getMappedEvent () { return this->_mappedEvent; }
+  void setMappedEvent (NclEvent *evt);
+  NclEvent *getMappedEvent () { return this->_mappedEvent; }
 
   virtual void eventStateChanged (
-      FormatterEvent *evt,
+      NclEvent *evt,
       EventStateTransition trans,
       EventState prevState) override;
 };

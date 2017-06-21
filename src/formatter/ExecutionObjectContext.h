@@ -38,7 +38,7 @@ GINGA_FORMATTER_BEGIN
 
 class ExecutionObjectContext : public ExecutionObject,
     public NclLinkListener,
-    public IFormatterEventListener
+    public INclEventListener
 {
 public:
   ExecutionObjectContext (const string &id,
@@ -62,7 +62,7 @@ public:
   void setLinkCompiled (NclFormatterLink *formatterLink);
   void setParentsAsListeners ();
   void unsetParentsAsListeners () override;
-  void eventStateChanged (FormatterEvent *event,
+  void eventStateChanged (NclEvent *event,
                           EventStateTransition transition,
                           EventState previousState) override;
 
@@ -74,8 +74,8 @@ private:
   set<NclFormatterLink *> _links;
   set<Link *> _uncompiledLinks;
 
-  set<FormatterEvent *> _runningEvents; // child events occurring
-  set<FormatterEvent *> _pausedEvents;  // child events paused
+  set<NclEvent *> _runningEvents; // child events occurring
+  set<NclEvent *> _pausedEvents;  // child events paused
   EventStateTransition lastTransition;
 
   map<NclFormatterLink *, int> _pendingLinks;

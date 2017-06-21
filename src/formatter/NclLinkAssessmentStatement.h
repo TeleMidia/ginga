@@ -44,7 +44,7 @@ public:
                               NclLinkAssessment *otherAssessment);
 
   virtual ~NclLinkAssessmentStatement ();
-  vector<FormatterEvent *> *getEvents ();
+  vector<NclEvent *> *getEvents ();
   Comparator::Op getComparator ();
   void setComparator (Comparator::Op comp);
   NclLinkAssessment *getMainAssessment ();
