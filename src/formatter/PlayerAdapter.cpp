@@ -448,7 +448,6 @@ PlayerAdapter::prepareScope (GingaTime offset)
 bool
 PlayerAdapter::start ()
 {
-  NclCascadingDescriptor *descriptor;
   string paramValue;
 
   g_assert_nonnull (_object);
@@ -460,20 +459,6 @@ PlayerAdapter::start ()
                _object->getId ().c_str ());
 
       return false;
-    }
-
-  descriptor = _object->getDescriptor ();
-  if (descriptor != nullptr)
-    {
-      paramValue = descriptor->getParameterValue ("visible");
-      if (paramValue == "false")
-        {
-          setVisible (false);
-        }
-      else if (paramValue == "true")
-        {
-          setVisible (true);
-        }
     }
 
   bool startSuccess = _player->play ();
@@ -778,27 +763,15 @@ PlayerAdapter::unprepare ()
     }
 }
 
-bool
+void
 PlayerAdapter::setProperty (NclAttributionEvent *event,
-                            const string &v)
+                            const string &value)
 {
-  string propName;
-  string value = v;
-
+  string name;
   g_assert_nonnull (_player);
-  g_assert_nonnull (_object);
-
-  propName = event->getAnchor ()->getName ();
-  if (propName == "visible")
-    {
-      setVisible (value == "true");
-    }
-  else
-    {
-      _player->setProperty (propName, value);
-    }
-
-  return true;
+  g_assert_nonnull (event);
+  name = event->getAnchor ()->getName ();
+  _player->setProperty (name, value);
 }
 
 void
@@ -881,29 +854,8 @@ PlayerAdapter::handleKeyEvent (SDL_EventType evtType,
   if (evtType == SDL_KEYDOWN)
     return;
 
-  if (_player->isVisible ())
-    {
-      GingaTime time = _player->getMediaTime ();
-      _object->selectionEvent (key, time);
-    }
-}
-
-void
-PlayerAdapter::setVisible (bool visible)
-{
-  NclCascadingDescriptor *descriptor;
-  NclFormatterRegion *region;
-
-  descriptor = _object->getDescriptor ();
-  if (descriptor != nullptr)
-    {
-      region = descriptor->getFormatterRegion ();
-      if (region != nullptr)
-        {
-          region->setRegionVisibility (visible);
-          _player->setVisible (visible);
-        }
-    }
+  GingaTime time = _player->getMediaTime ();
+  _object->selectionEvent (key, time);
 }
 
 

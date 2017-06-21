@@ -1261,7 +1261,6 @@ FormatterScheduler::showObject (ExecutionObject *obj)
     return;                     // nothing to do
 
   reg->setGhostRegion (true);
-  reg->showContent ();
 }
 
 void
@@ -1277,8 +1276,6 @@ FormatterScheduler::hideObject (ExecutionObject *obj)
   reg = desc->getFormatterRegion ();
   if (reg == NULL)
     return;                     // nothing to do
-
-  reg->hideContent ();
 }
 
 bool

@@ -38,7 +38,7 @@ public:
   Player *getPlayer ();
   void setOutputWindow (SDLWindow *);
 
-  virtual bool setProperty (NclAttributionEvent *, const string &);
+  virtual void setProperty (NclAttributionEvent *, const string &);
 
   bool prepare (ExecutionObject *, NclPresentationEvent *);
   bool hasPrepared ();
@@ -66,7 +66,6 @@ private:
   void createPlayer (const string &);
   void prepareScope (GingaTime offset = 0);
 
-  void setVisible (bool);
 
   // Application player only.
   bool _isAppPlayer;
