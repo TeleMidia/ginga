@@ -44,6 +44,28 @@ GINGA_PRAGMA_DIAG_POP ()
 #define SDLx_CreateWindowAndRenderer(w, h, f, S, R)\
   SDLx_assert (SDL_CreateWindowAndRenderer ((w), (h), (f), (S), (R)))
 
+#if SDL_VERSION_ATLEAST (2,0,5)
+# define SDLx_CreateSurfaceARGB32(w, h, S)              \
+  G_STMT_START                                          \
+  {                                                     \
+    g_assert_nonnull ((S));                             \
+    *(S) = SDL_CreateRGBSurfaceWithFormat               \
+      (0, (w), (h), 32, SDL_PIXELFORMAT_ARGB8888);      \
+    g_assert_nonnull (*(S));                            \
+  }                                                     \
+  G_STMT_END
+#else
+# define SDLx_CreateSurfaceARGB32(w, h, S)                              \
+  G_STMT_START                                                          \
+  {                                                                     \
+    g_assert_nonnull ((S));                                             \
+    *(S) =SDL_CreateRGBSurface                                          \
+      (0, (w), (h), 32, 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff); \
+    g_assert_nonnull (*(S));                                            \
+  }                                                                     \
+  G_STMT_END
+#endif
+
 #define SDLx_LockSurface(S)\
   SDLx_assert (SDL_LockSurface ((S)))
 

@@ -91,12 +91,13 @@ LuaPlayer::LuaPlayer (const string &mrl) : Player (mrl)
   g_assert_nonnull (dir);
 
   if (g_chdir (dir) < 0)
-    ERROR ("%s", g_strerror (errno));
+    ERROR ("cannot chdir to '%s': %s", dir, g_strerror (errno));
   g_free (dir);
 
-  this->_nw = NULL;              // created by start ()
-  this->_isKeyHandler = false;
-  this->_scope = "";
+  _nw = NULL;
+  _init_rect = {0, 0, 0, 0};
+  _isKeyHandler = false;
+  _scope = "";
 }
 
 LuaPlayer::~LuaPlayer (void)
@@ -132,7 +133,8 @@ LuaPlayer::play (void)
       return true;
     }
 
-  this->_nw = ncluaw_open (this->mrl.c_str (), _rect.w, _rect.h, &errmsg);
+  _init_rect = _rect;
+  _nw = ncluaw_open (this->mrl.c_str (), _init_rect.w, _init_rect.h, &errmsg);
   if (unlikely (this->_nw == NULL))
     ERROR ("cannot load NCLua file %s: %s", this->mrl.c_str (), errmsg);
 
@@ -187,11 +189,6 @@ LuaPlayer::setKeyHandler (bool b)
 void
 LuaPlayer::setProperty (const string &name, const string &value)
 {
-  // FIXME: Before calling play(), FormatterPlayerAdapter calls
-  // setPropertyValue() to initialize the object's properties.  We
-  // need to work around this bogus behavior, since it is the play()
-  // call that creates the NCLua engine.
-
   if (this->_nw != NULL && this->status == PL_OCCURRING)
     {
       const char *k = name.c_str ();
@@ -199,7 +196,6 @@ LuaPlayer::setProperty (const string &name, const string &value)
       evt_ncl_send_attribution (this->_nw, "start", k, v);
       evt_ncl_send_attribution (this->_nw, "stop", k, v);
     }
-
   Player::setProperty (name, value);
 }
 
@@ -244,19 +240,8 @@ LuaPlayer::redraw (SDL_Renderer *renderer)
 
   ncluaw_cycle (this->_nw);
 
-#if SDL_VERSION_ATLEAST (2,0,5)
-  sfc = SDL_CreateRGBSurfaceWithFormat (0, _rect.w, _rect.h, 32,
-                                        SDL_PIXELFORMAT_ARGB8888);
-#else
-  sfc = SDL_CreateRGBSurface (0, _rect.w, _rect.h, 32,
-                              0xff000000,
-                              0x00ff0000,
-                              0x0000ff00,
-                              0x000000ff);
-#endif
-  g_assert_nonnull (sfc);
+  SDLx_CreateSurfaceARGB32 (_init_rect.w, _init_rect.h, &sfc);
   SDLx_LockSurface (sfc);
-
   ncluaw_paint (_nw, (guchar *) sfc->pixels, "ARGB32",
                 sfc->w, sfc->h, sfc->pitch);
   SDLx_UnlockSurface (sfc);
