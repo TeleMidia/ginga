@@ -135,8 +135,6 @@ FormatterScheduler::runAction (NclEvent *event,
          action->getTypeString ().c_str (),
          event->getId ().c_str ());
 
-  g_assert (obj->isCompiled ());
-
   if (obj->instanceOf ("ExecutionObjectSwitch")
       && event->instanceOf ("SwitchEvent"))
     {
@@ -702,6 +700,9 @@ FormatterScheduler::runActionOverComposition (
               delete objects;
               objects = NULL;
             }
+
+          // *** QUIT PRESENTATION ***
+          Ginga_Display->quit ();
         }
 
       clog << "FormatterScheduler::runActionOverComposition (else) ";
