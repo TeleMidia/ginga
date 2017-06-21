@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef LINKASSIGNMENTACTION_H_
 #define LINKASSIGNMENTACTION_H_
 
-#include "FormatterEvents.h"
+#include "NclEvents.h"
 
 #include "NclLinkRepeatAction.h"
 
@@ -31,7 +31,7 @@ private:
   Animation *animation;
 
 public:
-  NclLinkAssignmentAction (FormatterEvent *event,
+  NclLinkAssignmentAction (NclEvent *event,
                            SimpleActionType actionType,
                            string value);
 

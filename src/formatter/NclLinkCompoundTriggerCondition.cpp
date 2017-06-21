@@ -59,13 +59,13 @@ NclLinkCompoundTriggerCondition::addCondition (NclLinkCondition *condition)
     }
 }
 
-vector<FormatterEvent *> *
+vector<NclEvent *> *
 NclLinkCompoundTriggerCondition::getEvents ()
 {
-  vector<FormatterEvent *> *condEvents;
-  vector<FormatterEvent *> *events;
+  vector<NclEvent *> *condEvents;
+  vector<NclEvent *> *events;
   vector<NclLinkCondition *>::iterator i;
-  vector<FormatterEvent *>::iterator j;
+  vector<NclEvent *>::iterator j;
   NclLinkCondition *condition;
 
   if (conditions.empty ())
@@ -73,7 +73,7 @@ NclLinkCompoundTriggerCondition::getEvents ()
       return NULL;
     }
 
-  events = new vector<FormatterEvent *>;
+  events = new vector<NclEvent *>;
 
   for (i = conditions.begin (); i != conditions.end (); ++i)
     {

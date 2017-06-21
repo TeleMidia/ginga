@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef PLAYER_ADAPTER_H
 #define PLAYER_ADAPTER_H
 
-#include "FormatterEvents.h"
+#include "NclEvents.h"
 #include "ExecutionObject.h"
 #include "mb/IEventListener.h"
 
@@ -27,14 +27,13 @@ GINGA_FORMATTER_BEGIN
 class FormatterScheduler;
 
 class PlayerAdapter :
-    public INclAttributeValueMaintainer,
     public IEventListener
 {
 public:
   explicit PlayerAdapter (FormatterScheduler *);
   virtual ~PlayerAdapter ();
 
-  bool setCurrentEvent (FormatterEvent *); // app
+  bool setCurrentEvent (NclEvent *); // app
   Player *getPlayer ();
   void setOutputWindow (SDLWindow *);
 
@@ -50,9 +49,8 @@ public:
   bool resume ();
   bool abort ();
 
-  // From INclAttributeValueMaintainer.
-  string getProperty (AttributionEvent *event) override;
-  void setProperty (const string &name, const string &value) override;
+  string getProperty (AttributionEvent *event);
+  void setProperty (const string &name, const string &value);
 
   // From IEventListener.
   virtual void handleKeyEvent (SDL_EventType, SDL_Keycode) override;
@@ -68,9 +66,9 @@ private:
 
 
   // Application player only.
-  map<string, FormatterEvent *> _preparedEvents;
-  FormatterEvent *_currentEvent;
-  void prepare (FormatterEvent *event);
+  map<string, NclEvent *> _preparedEvents;
+  NclEvent *_currentEvent;
+  void prepare (NclEvent *event);
 };
 
 GINGA_FORMATTER_END

@@ -67,7 +67,7 @@ PlayerAdapter::~PlayerAdapter ()
 }
 
 bool
-PlayerAdapter::setCurrentEvent (FormatterEvent *event)
+PlayerAdapter::setCurrentEvent (NclEvent *event)
 {
 
   string ifId;
@@ -225,7 +225,7 @@ PlayerAdapter::prepare (ExecutionObject *object,
 }
 
 void
-PlayerAdapter::prepare (FormatterEvent *event)
+PlayerAdapter::prepare (NclEvent *event)
 {
   GingaTime duration;
 
@@ -382,7 +382,7 @@ PlayerAdapter::stop ()
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
 
-  FormatterEvent *mainEvent = nullptr;
+  NclEvent *mainEvent = nullptr;
 
   mainEvent = _object->getMainEvent ();
 
@@ -396,7 +396,7 @@ PlayerAdapter::stop ()
           return true;
         }
     }
-  for (FormatterEvent *evt: _object->getEvents ())
+  for (NclEvent *evt: _object->getEvents ())
     {
       g_assert_nonnull(evt);
       AttributionEvent *attributionEvt
@@ -404,7 +404,7 @@ PlayerAdapter::stop ()
 
       if (attributionEvt)
         {
-          attributionEvt->setValueMaintainer (nullptr);
+          attributionEvt->setPlayerAdapter (nullptr);
         }
     }
 
@@ -533,7 +533,7 @@ PlayerAdapter::handleTickEvent (arg_unused (GingaTime total),
                                 arg_unused (int frame))
 {
   EventTransition *next;
-  FormatterEvent *evt;
+  NclEvent *evt;
   GingaTime waited;
   GingaTime now;
 
@@ -559,7 +559,7 @@ PlayerAdapter::handleTickEvent (arg_unused (GingaTime total),
   if (now < waited)
     return;
 
-  evt = dynamic_cast <FormatterEvent *> (next->getEvent ());
+  evt = dynamic_cast <NclEvent *> (next->getEvent ());
   g_assert_nonnull (evt);
 
   TRACE ("anchor '%s' timed out at %" GINGA_TIME_FORMAT
@@ -733,7 +733,7 @@ PlayerAdapter::createPlayer (const string &uri)
         _player->setProperty (pos_y_name, pos_y_value);
     }
 
-  for (FormatterEvent *evt: _object->getEvents ())
+  for (NclEvent *evt: _object->getEvents ())
     {
       g_assert_nonnull (evt);
       AttributionEvent *attributionEvt
@@ -741,7 +741,7 @@ PlayerAdapter::createPlayer (const string &uri)
       if (attributionEvt)
         {
           property = attributionEvt->getAnchor ();
-          attributionEvt->setValueMaintainer (this);
+          attributionEvt->setPlayerAdapter (this);
         }
     }
 

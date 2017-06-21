@@ -21,8 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/Bind.h"
 using namespace ::ginga::ncl;
 
-#include "FormatterEvents.h"
-#include "INclEventListener.h"
+#include "NclEvents.h"
 
 #include "NclLinkTriggerCondition.h"
 #include "NclLinkTriggerListener.h"
@@ -33,12 +32,12 @@ class NclLinkTransitionTriggerCondition : public NclLinkTriggerCondition,
                                           public INclEventListener
 {
 protected:
-  FormatterEvent *event;
+  NclEvent *event;
   EventStateTransition transition;
   Bind *bind;
 
 public:
-  NclLinkTransitionTriggerCondition (FormatterEvent *event,
+  NclLinkTransitionTriggerCondition (NclEvent *event,
                                      EventStateTransition transition,
                                      Bind *bind);
 
@@ -46,13 +45,13 @@ public:
 
   Bind *getBind ();
 
-  virtual void eventStateChanged (FormatterEvent *event,
+  virtual void eventStateChanged (NclEvent *event,
                                   EventStateTransition transition,
                                   EventState previousState) override;
 
-  FormatterEvent *getEvent ();
+  NclEvent *getEvent ();
   EventStateTransition getTransition ();
-  virtual vector<FormatterEvent *> *getEvents () override;
+  virtual vector<NclEvent *> *getEvents () override;
 };
 
 GINGA_FORMATTER_END

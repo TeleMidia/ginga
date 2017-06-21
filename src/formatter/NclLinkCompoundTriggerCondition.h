@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _LINKCOMPOUNDTRIGGERCONDITION_H_
 #define _LINKCOMPOUNDTRIGGERCONDITION_H_
 
-#include "FormatterEvents.h"
+#include "NclEvents.h"
 
 #include "NclLinkCondition.h"
 #include "NclLinkTriggerListener.h"
@@ -38,7 +38,7 @@ public:
   virtual ~NclLinkCompoundTriggerCondition ();
   virtual void addCondition (NclLinkCondition *condition);
   virtual void conditionSatisfied (NclLinkCondition *condition);
-  virtual vector<FormatterEvent *> *getEvents ();
+  virtual vector<NclEvent *> *getEvents ();
 
   void evaluationStarted ();
   void evaluationEnded ();

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _LINKACTION_H_
 #define _LINKACTION_H_
 
-#include "FormatterEvents.h"
+#include "NclEvents.h"
 #include "NclLinkActionProgressionListener.h"
 
 GINGA_FORMATTER_BEGIN
@@ -44,7 +44,7 @@ public:
       NclLinkActionProgressionListener *listener);
 
   void notifyProgressionListeners (bool start);
-  virtual vector<FormatterEvent *> *getEvents () = 0;
+  virtual vector<NclEvent *> *getEvents () = 0;
   virtual vector<NclLinkAction *> getImplicitRefRoleActions () = 0;
 
   void setSatisfiedCondition (NclLinkCondition *satisfiedCondition);

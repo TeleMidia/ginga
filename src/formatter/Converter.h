@@ -43,8 +43,7 @@ using namespace ::ginga::ncl;
 
 #include "ExecutionObjectSwitch.h"
 
-#include "INclEventListener.h"
-#include "FormatterEvents.h"
+#include "NclEvents.h"
 
 #include "NclFormatterCausalLink.h"
 #include "NclFormatterLink.h"
@@ -81,21 +80,21 @@ public:
 
   set<ExecutionObject *> *getSettingNodeObjects ();
 
-  FormatterEvent *getEvent (ExecutionObject *exeObj,
-                            InterfacePoint *interfacePoint,
-                            EventType ncmEventType,
-                            const string &key);
+  NclEvent *getEvent (ExecutionObject *exeObj,
+                      InterfacePoint *interfacePoint,
+                      EventType ncmEventType,
+                      const string &key);
 
   ExecutionObject *
   processExecutionObjectSwitch (ExecutionObjectSwitch *switchObject);
 
-  FormatterEvent *insertContext (NclNodeNesting *contextPerspective,
-                                 Port *port);
+  NclEvent *insertContext (NclNodeNesting *contextPerspective,
+                           Port *port);
 
 private:
   static int _dummyCount;
   map<string, ExecutionObject *> _executionObjects;
-  set<FormatterEvent *> _listening;
+  set<NclEvent *> _listening;
   set<ExecutionObject *> _settingObjects;
   INclLinkActionListener *_actionListener;
   RuleAdapter *_ruleAdapter;
@@ -132,11 +131,11 @@ private:
 
   void resolveSwitchEvents (ExecutionObjectSwitch *switchObject);
 
-  FormatterEvent *insertNode (NclNodeNesting *perspective,
-                              InterfacePoint *interfacePoint,
-                              GenericDescriptor *descriptor);
+  NclEvent *insertNode (NclNodeNesting *perspective,
+                        InterfacePoint *interfacePoint,
+                        GenericDescriptor *descriptor);
 
-  void eventStateChanged (FormatterEvent *someEvent,
+  void eventStateChanged (NclEvent *someEvent,
                           EventStateTransition transition,
                           EventState previousState) override;
 
@@ -155,7 +154,7 @@ private:
   static bool hasDescriptorPropName (const string &name);
 
   void setImplicitRefAssessment (const string &roleId, CausalLink *ncmLink,
-                                 FormatterEvent *event);
+                                 NclEvent *event);
 
   NclLinkAction *createAction (Action *actionExpression,
                                CausalLink *ncmLink,
@@ -198,8 +197,8 @@ private:
       SimpleCondition *condition, Bind *bind, Link *ncmLink,
       ExecutionObjectContext *parentObject);
 
-  FormatterEvent *createEvent (Bind *bind, Link *ncmLink,
-                               ExecutionObjectContext *parentObject);
+  NclEvent *createEvent (Bind *bind, Link *ncmLink,
+                         ExecutionObjectContext *parentObject);
 
   GingaTime getDelayParameter (Link *ncmLink, Parameter *connParam,
                                Bind *ncmBind);

@@ -43,7 +43,7 @@ private:
 
   string file;                        // NCL file path
   NclDocument *doc;                   // NCL document tree
-  vector<FormatterEvent *> events; // document events
+  vector<NclEvent *> events; // document events
   set<NclLinkSimpleAction *> actions; // document actions
 
 public:
@@ -57,14 +57,14 @@ public:
   bool setKeyHandler (bool isHandler);
   FocusManager *getFocusManager ();
 
-  void startEvent (FormatterEvent *event);
-  void stopEvent (FormatterEvent *event);
-  void pauseEvent (FormatterEvent *event);
-  void resumeEvent (FormatterEvent *event);
+  void startEvent (NclEvent *event);
+  void stopEvent (NclEvent *event);
+  void pauseEvent (NclEvent *event);
+  void resumeEvent (NclEvent *event);
 
   void startDocument (const string &);
 
-  void eventStateChanged (FormatterEvent *someEvent,
+  void eventStateChanged (NclEvent *someEvent,
                           EventStateTransition transition,
                           EventState previousState) override;
 
@@ -75,8 +75,8 @@ private:
   PlayerAdapter *initializePlayer (ExecutionObject *object);
 
   void runAction (NclLinkSimpleAction *action);
-  void runAction (FormatterEvent *event, NclLinkSimpleAction *action);
-  void runActionOverProperty (FormatterEvent *event,
+  void runAction (NclEvent *event, NclLinkSimpleAction *action);
+  void runActionOverProperty (NclEvent *event,
                               NclLinkSimpleAction *action);
 
   void

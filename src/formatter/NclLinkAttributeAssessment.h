@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/EventUtil.h"
 using namespace ::ginga::ncl;
 
-#include "FormatterEvents.h"
+#include "NclEvents.h"
 #include "NclLinkAssessment.h"
 
 GINGA_FORMATTER_BEGIN
@@ -29,17 +29,17 @@ GINGA_FORMATTER_BEGIN
 class NclLinkAttributeAssessment : public NclLinkAssessment
 {
 private:
-  FormatterEvent *event;
+  NclEvent *event;
   short attributeType;
   string offset;
 
 public:
-  NclLinkAttributeAssessment (FormatterEvent *ev, short attrType);
+  NclLinkAttributeAssessment (NclEvent *ev, short attrType);
 
-  FormatterEvent *getEvent ();
+  NclEvent *getEvent ();
   void setOffset (const string &offset);
   string getOffset ();
-  void setEvent (FormatterEvent *ev);
+  void setEvent (NclEvent *ev);
   short getAttributeType ();
   void setAttributeType (short attrType);
   string getValue ();

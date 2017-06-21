@@ -15,15 +15,13 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _FORMATTEREVENT_H_
-#define _FORMATTEREVENT_H_
+#ifndef _NCLEVENT_H_
+#define _NCLEVENT_H_
 
 #include "ncl/ContentAnchor.h"
 #include "ncl/EventUtil.h"
 using namespace ::ginga::ncl;
 
-#include "INclEventListener.h"
-#include "INclAttributeValueMaintainer.h"
 #include "Settings.h"
 
 #include "ncl/PropertyAnchor.h"
@@ -32,6 +30,7 @@ GINGA_FORMATTER_BEGIN
 
 class INclEventListener;
 class ExecutionObject;
+class PlayerAdapter;
 
 #define PROPERTY_READONLY(type,name,getfunc) \
   protected: type name; \
@@ -41,7 +40,7 @@ class ExecutionObject;
   PROPERTY_READONLY (type,name,getfunc) \
   public: void setfunc (type value) {this->name = value;}\
 
-class FormatterEvent
+class NclEvent
 {
   PROPERTY (EventType, _type, getType, setType)
   PROPERTY_READONLY (string, _id, getId)
@@ -51,8 +50,8 @@ class FormatterEvent
   PROPERTY_READONLY (EventState, _previousState, getPreviousState)
 
 public:
-  FormatterEvent (const string &id, ExecutionObject *exeObj);
-  virtual ~FormatterEvent ();
+  NclEvent (const string &id, ExecutionObject *exeObj);
+  virtual ~NclEvent ();
 
   void setState (EventState newState);
 
@@ -66,8 +65,8 @@ public:
   void removeListener (INclEventListener *listener);
 
   bool instanceOf (const string &);
-  static bool hasInstance (FormatterEvent *evt, bool remove);
-  static bool hasNcmId (FormatterEvent *evt, const string &anchorId);
+  static bool hasInstance (NclEvent *evt, bool remove);
+  static bool hasNcmId (NclEvent *evt, const string &anchorId);
 
 protected:
   set<INclEventListener *> _listeners;
@@ -76,11 +75,19 @@ protected:
   EventStateTransition getTransition (EventState newState);
   bool changeState (EventState newState, EventStateTransition transition);
 
-  static set<FormatterEvent *> _instances;
-  static bool removeInstance (FormatterEvent *evt);
+  static set<NclEvent *> _instances;
+  static bool removeInstance (NclEvent *evt);
 };
 
-class AnchorEvent : public FormatterEvent
+class INclEventListener
+{
+public:
+  virtual void eventStateChanged (NclEvent *,
+                                  EventStateTransition,
+                                  EventState) = 0;
+};
+
+class AnchorEvent : public NclEvent
 {
   PROPERTY_READONLY (ContentAnchor *, _anchor, getAnchor)
 
@@ -121,59 +128,57 @@ public:
   virtual bool start () override;
 };
 
-class AttributionEvent : public FormatterEvent
+class AttributionEvent : public NclEvent
 {
-  PROPERTY (INclAttributeValueMaintainer *, _valueMaintainer,
-            getValueMaintainer, setValueMaintainer)
-
+  PROPERTY (PlayerAdapter *, _player, getPlayerAdapter, setPlayerAdapter)
   PROPERTY_READONLY (PropertyAnchor *, _anchor, getAnchor)
 
 public:
   AttributionEvent (const string &id,
-                       ExecutionObject *exeObj,
-                       PropertyAnchor *anchor,
-                       Settings *settings);
+                      ExecutionObject *exeObj,
+                      PropertyAnchor *anchor,
+                      Settings *settings);
 
   virtual ~AttributionEvent ();
   string getCurrentValue ();
   bool setValue (const string &newValue);
   void setImplicitRefAssessmentEvent (const string &roleId,
-                                      FormatterEvent *event);
+                                      NclEvent *event);
 
-  FormatterEvent *getImplicitRefAssessmentEvent (const string &roleId);
+  NclEvent *getImplicitRefAssessmentEvent (const string &roleId);
 
 protected:
-  map<string, FormatterEvent *> _assessments;
+  map<string, NclEvent *> _assessments;
   Settings *_settings;
 
 private:
   bool _settingsNode;
 };
 
-class SwitchEvent : public FormatterEvent, public INclEventListener
+class SwitchEvent : public NclEvent, public INclEventListener
 {
 private:
   InterfacePoint *_interface;
   string _key;
-  FormatterEvent *_mappedEvent;
+  NclEvent *_mappedEvent;
 
 public:
   SwitchEvent (const string &id,
-                  ExecutionObject *exeObjSwitch,
-                  InterfacePoint *interface,
-                  EventType type,
-                  const string &key);
+               ExecutionObject *exeObjSwitch,
+               InterfacePoint *interface,
+               EventType type,
+               const string &key);
 
   virtual ~SwitchEvent ();
 
   InterfacePoint *getInterfacePoint () { return this->_interface; }
   string getKey () { return this->_key; }
 
-  void setMappedEvent (FormatterEvent *evt);
-  FormatterEvent *getMappedEvent () { return this->_mappedEvent; }
+  void setMappedEvent (NclEvent *evt);
+  NclEvent *getMappedEvent () { return this->_mappedEvent; }
 
   virtual void eventStateChanged (
-      FormatterEvent *evt,
+      NclEvent *evt,
       EventStateTransition trans,
       EventState prevState) override;
 };
@@ -209,4 +214,4 @@ public:
 
 GINGA_FORMATTER_END
 
-#endif //_FORMATTEREVENT_H_
+#endif //_NCLEVENT_H_

@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclLinkStatement.h"
 
-#include "FormatterEvents.h"
+#include "NclEvents.h"
 
 #include "ncl/CompoundStatement.h"
 using namespace ::ginga::ncl;
@@ -47,7 +47,7 @@ protected:
   bool returnEvaluationResult (bool result);
 
 public:
-  virtual vector<FormatterEvent *> *getEvents ();
+  virtual vector<NclEvent *> *getEvents ();
   virtual bool evaluate ();
 };
 

@@ -16,19 +16,21 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "FormatterEvents.h"
+#include "NclEvents.h"
 
 #include "ExecutionObjectContext.h"
 #include "ncl/ContentNode.h"
 
+#include "PlayerAdapter.h"
+
 GINGA_FORMATTER_BEGIN
 
-set<FormatterEvent *> FormatterEvent::_instances;
+set<NclEvent *> NclEvent::_instances;
 
-FormatterEvent::FormatterEvent (const string &id,
-                                ExecutionObject *exeObj)
+NclEvent::NclEvent (const string &id,
+                    ExecutionObject *exeObj)
 {
-  _typeSet.insert ("NclFormatterEvent");
+  _typeSet.insert ("NclEvent");
 
   this->_id = id;
   _state = EventState::SLEEPING;
@@ -39,14 +41,14 @@ FormatterEvent::FormatterEvent (const string &id,
   _instances.insert (this);
 }
 
-FormatterEvent::~FormatterEvent ()
+NclEvent::~NclEvent ()
 {
   _instances.erase (this);
   _listeners.clear ();
 }
 
 bool
-FormatterEvent::hasInstance (FormatterEvent *evt, bool remove)
+NclEvent::hasInstance (NclEvent *evt, bool remove)
 {
   bool has = _instances.find(evt) != _instances.end();
 
@@ -58,7 +60,7 @@ FormatterEvent::hasInstance (FormatterEvent *evt, bool remove)
 }
 
 bool
-FormatterEvent::instanceOf (const string &s)
+NclEvent::instanceOf (const string &s)
 {
   if (_typeSet.empty ())
     {
@@ -71,7 +73,7 @@ FormatterEvent::instanceOf (const string &s)
 }
 
 bool
-FormatterEvent::hasNcmId (FormatterEvent *evt, const string &anchorId)
+NclEvent::hasNcmId (NclEvent *evt, const string &anchorId)
 {
   Anchor *anchor;
   string anchorName = " ";
@@ -120,25 +122,25 @@ FormatterEvent::hasNcmId (FormatterEvent *evt, const string &anchorId)
 }
 
 void
-FormatterEvent::addListener (INclEventListener *listener)
+NclEvent::addListener (INclEventListener *listener)
 {
   this->_listeners.insert (listener);
 }
 
 void
-FormatterEvent::removeListener (INclEventListener *listener)
+NclEvent::removeListener (INclEventListener *listener)
 {
   _listeners.erase (listener);
 }
 
 EventStateTransition
-FormatterEvent::getTransition (EventState newState)
+NclEvent::getTransition (EventState newState)
 {
   return EventUtil::getTransition (_state, newState);
 }
 
 bool
-FormatterEvent::abort ()
+NclEvent::abort ()
 {
   if (_state == EventState::OCCURRING || _state == EventState::PAUSED)
     return changeState (EventState::SLEEPING, EventStateTransition::ABORTS);
@@ -147,7 +149,7 @@ FormatterEvent::abort ()
 }
 
 bool
-FormatterEvent::start ()
+NclEvent::start ()
 {
   if (_state == EventState::SLEEPING)
     return changeState (EventState::OCCURRING, EventStateTransition::STARTS);
@@ -156,7 +158,7 @@ FormatterEvent::start ()
 }
 
 bool
-FormatterEvent::stop ()
+NclEvent::stop ()
 {
   if (_state == EventState::OCCURRING || _state == EventState::PAUSED)
     return changeState (EventState::SLEEPING, EventStateTransition::STOPS);
@@ -165,7 +167,7 @@ FormatterEvent::stop ()
 }
 
 bool
-FormatterEvent::pause ()
+NclEvent::pause ()
 {
   if (_state == EventState::OCCURRING)
     return changeState (EventState::PAUSED, EventStateTransition::PAUSES);
@@ -174,7 +176,7 @@ FormatterEvent::pause ()
 }
 
 bool
-FormatterEvent::resume ()
+NclEvent::resume ()
 {
   if (_state == EventState::PAUSED)
     return changeState (EventState::OCCURRING, EventStateTransition::RESUMES);
@@ -183,15 +185,15 @@ FormatterEvent::resume ()
 }
 
 void
-FormatterEvent::setState (EventState newState)
+NclEvent::setState (EventState newState)
 {
   _previousState = _state;
   _state = newState;
 }
 
 bool
-FormatterEvent::changeState (EventState newState,
-                             EventStateTransition transition)
+NclEvent::changeState (EventState newState,
+                       EventStateTransition transition)
 {
   if (transition == EventStateTransition::STOPS)
     {
@@ -215,7 +217,7 @@ FormatterEvent::changeState (EventState newState,
 AnchorEvent::AnchorEvent (const string &id,
                           ExecutionObject *executionObject,
                           ContentAnchor *anchor)
-  : FormatterEvent (id, executionObject)
+  : NclEvent (id, executionObject)
 {
   this->_anchor = anchor;
   _typeSet.insert ("AnchorEvent");
@@ -253,7 +255,7 @@ PresentationEvent::stop ()
       _numPresentations--;
     }
 
-  return FormatterEvent::stop ();
+  return NclEvent::stop ();
 }
 
 GingaTime
@@ -317,7 +319,7 @@ AttributionEvent::AttributionEvent (const string &id,
                                     ExecutionObject *exeObj,
                                     PropertyAnchor *anchor,
                                     Settings *settings)
-  : FormatterEvent (id, exeObj)
+  : NclEvent (id, exeObj)
 {
   Entity *entity;
   NodeEntity *dataObject;
@@ -325,7 +327,7 @@ AttributionEvent::AttributionEvent (const string &id,
   _typeSet.insert ("AttributionEvent");
 
   this->_anchor = anchor;
-  this->_valueMaintainer = nullptr;
+  this->_player = nullptr;
   this->_settingsNode = false;
   this->_settings = settings;
 
@@ -363,7 +365,7 @@ string
 AttributionEvent::getCurrentValue ()
 {
   string propName;
-  string maintainerValue = "";
+  string value = "";
 
   if (unlikely (_anchor == nullptr))
     {
@@ -376,23 +378,23 @@ AttributionEvent::getCurrentValue ()
       propName = _anchor->getName ();
       if (propName != "")
         {
-          maintainerValue = _settings->get (propName);
+          value = _settings->get (propName);
         }
     }
   else
     {
-      if (_valueMaintainer != nullptr)
+      if (_player)
         {
-          maintainerValue = _valueMaintainer->getProperty (this);
+          value = _player->getProperty (this);
         }
 
-      if (maintainerValue == "")
+      if (value == "")
         {
-          maintainerValue = _anchor->getValue ();
+          value = _anchor->getValue ();
         }
     }
 
-  return maintainerValue;
+  return value;
 }
 
 bool
@@ -408,12 +410,12 @@ AttributionEvent::setValue (const string &newValue)
 
 void
 AttributionEvent::setImplicitRefAssessmentEvent (
-    const string &roleId, FormatterEvent *event)
+    const string &roleId, NclEvent *event)
 {
   _assessments[roleId] = event;
 }
 
-FormatterEvent *
+NclEvent *
 AttributionEvent::getImplicitRefAssessmentEvent (const string &roleId)
 {
   if (_assessments.count (roleId) == 0)
@@ -429,7 +431,7 @@ SwitchEvent::SwitchEvent (const string &id,
                           ExecutionObject *exeObjSwitch,
                           InterfacePoint *interface,
                           EventType type, const string &key)
-  : FormatterEvent (id, exeObjSwitch)
+  : NclEvent (id, exeObjSwitch)
 {
   this->_interface = interface;
   this->_type = type;
@@ -441,14 +443,14 @@ SwitchEvent::SwitchEvent (const string &id,
 
 SwitchEvent::~SwitchEvent ()
 {
-  if (FormatterEvent::hasInstance (_mappedEvent, false))
+  if (NclEvent::hasInstance (_mappedEvent, false))
     {
       _mappedEvent->removeListener (this);
     }
 }
 
 void
-SwitchEvent::setMappedEvent (FormatterEvent *evt)
+SwitchEvent::setMappedEvent (NclEvent *evt)
 {
   if (_mappedEvent != nullptr)
     {
@@ -464,7 +466,7 @@ SwitchEvent::setMappedEvent (FormatterEvent *evt)
 
 void
 SwitchEvent::eventStateChanged (
-    arg_unused (FormatterEvent *evt),
+    arg_unused (NclEvent *evt),
     EventStateTransition trans,
     arg_unused (EventState prevState))
 {

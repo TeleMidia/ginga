@@ -128,14 +128,14 @@ NclLinkAndCompoundTriggerCondition::conditionSatisfied (
     }
 }
 
-vector<FormatterEvent *> *
+vector<NclEvent *> *
 NclLinkAndCompoundTriggerCondition::getEvents ()
 {
-  vector<FormatterEvent *> *events;
-  vector<FormatterEvent *> *eventsToAdd;
+  vector<NclEvent *> *events;
+  vector<NclEvent *> *eventsToAdd;
 
   vector<NclLinkCondition *>::iterator i;
-  vector<FormatterEvent *>::iterator j;
+  vector<NclEvent *>::iterator j;
 
   events = NclLinkCompoundTriggerCondition::getEvents ();
   if (events != NULL)

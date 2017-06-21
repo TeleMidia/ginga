@@ -134,15 +134,15 @@ NclLinkCompoundAction::setCompoundActionListener (
   this->_listener = listener;
 }
 
-vector<FormatterEvent *> *
+vector<NclEvent *> *
 NclLinkCompoundAction::getEvents ()
 {
   vector<NclLinkAction *> *acts;
   vector<NclLinkAction *>::iterator i;
   NclLinkAction *action;
-  vector<FormatterEvent *> *events;
-  vector<FormatterEvent *> *actionEvents;
-  vector<FormatterEvent *>::iterator j;
+  vector<NclEvent *> *events;
+  vector<NclEvent *> *actionEvents;
+  vector<NclEvent *>::iterator j;
 
   if (_running)
     {
@@ -155,7 +155,7 @@ NclLinkCompoundAction::getEvents ()
     }
 
   acts = new vector<NclLinkAction *> (_actions);
-  events = new vector<FormatterEvent *>;
+  events = new vector<NclEvent *>;
 
   for (i = acts->begin (); i != acts->end (); ++i)
     {

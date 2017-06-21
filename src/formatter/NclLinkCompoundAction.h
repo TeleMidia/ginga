@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/CompoundAction.h"
 using namespace ::ginga::ncl;
 
-#include "FormatterEvents.h"
+#include "NclEvents.h"
 
 #include "NclLinkAction.h"
 #include "NclLinkSimpleAction.h"
@@ -46,7 +46,7 @@ public:
   void getSimpleActions (vector<NclLinkSimpleAction *> *simpleActions);
   void setCompoundActionListener (INclLinkActionListener *_listener);
 
-  virtual vector<FormatterEvent *> *getEvents () override;
+  virtual vector<NclEvent *> *getEvents () override;
   void actionProcessed (bool start) override;
   virtual vector<NclLinkAction *> getImplicitRefRoleActions () override;
 

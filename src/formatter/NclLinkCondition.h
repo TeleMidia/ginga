@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _LINKCONDITION_H_
 #define _LINKCONDITION_H_
 
-#include "FormatterEvents.h"
+#include "NclEvents.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -28,8 +28,8 @@ protected:
   set<string> typeSet;
 
 public:
-  NclLinkCondition () {typeSet.insert ("NclLinkCondition"); };
-  virtual ~NclLinkCondition (){};
+  NclLinkCondition () {typeSet.insert ("NclLinkCondition"); }
+  virtual ~NclLinkCondition (){}
   bool
   instanceOf (const string &s)
   {
@@ -42,7 +42,7 @@ public:
         return false;
       }
   };
-  virtual vector<FormatterEvent *> *getEvents () = 0;
+  virtual vector<NclEvent *> *getEvents () = 0;
 };
 
 GINGA_FORMATTER_END

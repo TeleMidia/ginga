@@ -24,8 +24,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/Link.h"
 using namespace ::ginga::ncl;
 
-#include "INclEventListener.h"
-#include "FormatterEvents.h"
+#include "NclEvents.h"
 
 #include "NclFormatterCausalLink.h"
 #include "NclFormatterLink.h"
@@ -63,7 +62,7 @@ public:
   void setLinkCompiled (NclFormatterLink *formatterLink);
   void setParentsAsListeners ();
   void unsetParentsAsListeners () override;
-  void eventStateChanged (FormatterEvent *event,
+  void eventStateChanged (NclEvent *event,
                           EventStateTransition transition,
                           EventState previousState) override;
 
@@ -75,8 +74,8 @@ private:
   set<NclFormatterLink *> _links;
   set<Link *> _uncompiledLinks;
 
-  set<FormatterEvent *> _runningEvents; // child events occurring
-  set<FormatterEvent *> _pausedEvents;  // child events paused
+  set<NclEvent *> _runningEvents; // child events occurring
+  set<NclEvent *> _pausedEvents;  // child events paused
   EventStateTransition lastTransition;
 
   map<NclFormatterLink *, int> _pendingLinks;
