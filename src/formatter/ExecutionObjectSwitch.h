@@ -35,12 +35,12 @@ public:
                          INclLinkActionListener *seListener);
 
   virtual ~ExecutionObjectSwitch (){}
-  ExecutionObject *getSelectedObject ();
+  ExecutionObject *getSelectedObject () {return _selectedObj; }
   void select (ExecutionObject *exeObj);
-  bool addEvent (NclFormatterEvent *event);
+  bool addEvent (NclFormatterEvent *evt);
 
 protected:
-  ExecutionObject *_selectedObject;
+  ExecutionObject *_selectedObj;
 };
 
 GINGA_FORMATTER_END

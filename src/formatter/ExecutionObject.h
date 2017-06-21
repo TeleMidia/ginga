@@ -131,7 +131,7 @@ protected:
 
   int _pauseCount;
   NclFormatterEvent *_mainEvent;
-  NclEventTransitionManager *_transMan;
+  NclEventTransitionManager _transMan;
   ExecutionObject *_mirrorSrc;
 
   static set<ExecutionObject *> _objects;

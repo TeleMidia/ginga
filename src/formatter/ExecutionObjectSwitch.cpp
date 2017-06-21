@@ -26,32 +26,24 @@ ExecutionObjectSwitch::ExecutionObjectSwitch (
     : ExecutionObjectContext (id, switchNode, nullptr, handling,
                                    seListener)
 {
-  _selectedObject = nullptr;
+  _selectedObj = nullptr;
   _typeSet.insert ("ExecutionObjectSwitch");
-}
-
-ExecutionObject *
-ExecutionObjectSwitch::getSelectedObject ()
-{
-  return _selectedObject;
 }
 
 void
 ExecutionObjectSwitch::select (ExecutionObject *exeObj)
 {
-  NclSwitchEvent *switchEvent;
-
   if (exeObj != nullptr
       && containsExecutionObject (exeObj->getId ()))
     {
-      _selectedObject = exeObj;
+      _selectedObj = exeObj;
     }
   else
     {
-      _selectedObject = nullptr;
+      _selectedObj = nullptr;
       for (NclFormatterEvent *evt: getEvents())
         {
-          switchEvent = dynamic_cast<NclSwitchEvent *> (evt);
+          auto switchEvent = dynamic_cast<NclSwitchEvent *> (evt);
           g_assert_nonnull (switchEvent);
           switchEvent->setMappedEvent (nullptr);
         }
