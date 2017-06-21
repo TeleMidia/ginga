@@ -31,40 +31,31 @@ NclEventTransitionManager::~NclEventTransitionManager ()
   _transTable.clear ();
 }
 
+bool
+compare_transitions (EventTransition *t1, EventTransition *t2)
+{
+  if (t1->getTime() < t2->getTime())
+    {
+      return true;
+    }
+  else if (t1->getTime() > t2->getTime())
+    {
+      return false;
+    }
+
+  auto t1Begin = dynamic_cast<BeginEventTransition *> (t1);
+  auto t2End = dynamic_cast<EndEventTransition *> (t2);
+
+  return (t1Begin && t2End);
+}
+
 void
 NclEventTransitionManager::addTransition (EventTransition *trans)
 {
-  size_t beg, end, pos;
-  EventTransition *auxTrans;
+  auto it = lower_bound (_transTable.begin(), _transTable.end(), trans,
+                         compare_transitions);
 
-  // binary search
-  beg = 0;
-  if (_transTable.size () == 0)
-    goto done;
-
-  end = _transTable.size () - 1;
-
-  while (beg <= end)
-    {
-      pos = (beg + end) / 2;
-      auxTrans = _transTable[pos];
-      switch (trans->compareTo (auxTrans))
-        {
-        case 0:
-          return;
-        case -1:
-          end = pos - 1;
-          break;
-        case 1:
-          beg = pos + 1;
-          break;
-        default:
-          g_assert_not_reached ();
-        }
-    }
-
-done:
-  _transTable.insert (_transTable.begin () + (int) beg, trans);
+  _transTable.insert (it, trans);
 }
 
 void
