@@ -785,7 +785,7 @@ ExecutionObject::getNextTransition ()
     {
       return nullptr;
     }
-  return _transMan.getNextTransition (_mainEvent);
+  return _transMan.nextTransition (_mainEvent);
 }
 
 bool

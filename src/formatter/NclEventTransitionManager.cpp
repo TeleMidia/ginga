@@ -32,7 +32,7 @@ NclEventTransitionManager::~NclEventTransitionManager ()
 }
 
 void
-NclEventTransitionManager::addEventTransition (EventTransition *trans)
+NclEventTransitionManager::addTransition (EventTransition *trans)
 {
   size_t beg, end, pos;
   EventTransition *auxTrans;
@@ -159,14 +159,14 @@ void
 NclEventTransitionManager::start (GingaTime offsetTime)
 {
   EventTransition *trans;
-  size_t transIx, size;
+  size_t transIdx, size;
 
   size = _transTable.size ();
-  transIx = _currentTransitionIndex;
+  transIdx = _currentTransitionIndex;
 
-  while (transIx < size)
+  while (transIdx < size)
     {
-      trans = _transTable[transIx];
+      trans = _transTable[transIdx];
       if (trans->getTime () <= offsetTime)
         {
           auto beginTrans = dynamic_cast<BeginEventTransition *> (trans);
@@ -174,8 +174,8 @@ NclEventTransitionManager::start (GingaTime offsetTime)
             {
               trans->getEvent ()->start ();
             }
-          transIx++;
-          _currentTransitionIndex = transIx;
+          transIdx++;
+          _currentTransitionIndex = transIdx;
         }
       else
         {
@@ -279,11 +279,11 @@ NclEventTransitionManager::addPresentationEvent (NclPresentationEvent *evt)
     {
       begin = evt->getBegin ();
       beginTrans = new BeginEventTransition (begin, evt);
-      addEventTransition (beginTrans);
+      addTransition (beginTrans);
 
       end = evt->getEnd ();
       endTrans = new EndEventTransition (end, evt, beginTrans);
-      addEventTransition (endTrans);
+      addTransition (endTrans);
     }
 }
 
@@ -329,7 +329,7 @@ NclEventTransitionManager::updateTransitionTable (
 }
 
 EventTransition *
-NclEventTransitionManager::getNextTransition (NclFormatterEvent *mainEvt)
+NclEventTransitionManager::nextTransition (NclFormatterEvent *mainEvt)
 {
   EventTransition *transition;
   vector<EventTransition *> *transitionEvents;
