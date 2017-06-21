@@ -44,13 +44,15 @@ public:
   bool setKeyHandler (bool isHandler);
   virtual void setProperty (const string &, const string &) override;
 
+  void redraw (SDL_Renderer *) override;
+
+  // IEventListener.
   void handleTickEvent (GingaTime, GingaTime, int) override {};
   void handleKeyEvent (SDL_EventType, SDL_Keycode) override;
 
-  void redraw (SDL_Renderer *) override;
-
 private:
   ncluaw_t *_nw;                // the NCLua state
+  SDL_Rect _init_rect;          // initial output rectangle
   bool _isKeyHandler;           // true if player has the focus
   string _scope;                // the label of the active anchor
 };
