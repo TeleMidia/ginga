@@ -1,0 +1,21 @@
+Ginga TODO                                                     -*-outline-*-
+
+* KNOWN BUGS
+  + player::VideoPlayer: Natural end does not work.
+  + player::Player: Dimension properties are treated as being orthogonal.
+
+    Currently, we process "top", "left", "right", "bottom", "width",
+    "height", "location", "bounds", and "size" in declaration order, but
+    they are not independent.  For instance, "right" depends on "width" and
+    "bottom" depends on "height".  These dependencies should be taken into
+    account when implementing property changes.
+
+* FEATURES OR PROBLEMS
+  + Properties "visible" are not supported.
+  + Areas containing the attribute are not supported.
+
+
+Local Variables:
+mode: outline
+outline-regexp: " *[-+*.] \\|"
+End:
