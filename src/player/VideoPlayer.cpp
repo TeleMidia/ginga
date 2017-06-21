@@ -222,8 +222,7 @@ VideoPlayer::redraw (SDL_Renderer *renderer)
 
   if (this->getEOS ())
     {
-      this->setEOS (false);
-      this->forceNaturalEnd (true);
+      this->stop ();
       return;
     }
 

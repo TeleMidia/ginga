@@ -31,7 +31,6 @@ Player::Player (const string &mrl)
   this->presented = false;
   this->visible = true;
   this->status = PL_SLEEPING;
-  this->forcedNaturalEnd = false;
   this->scope = "";
   this->scopeType = PL_TYPE_PRESENTATION;
   this->scopeInitTime = 0;
@@ -150,7 +149,6 @@ Player::setScope (const string &scope,
 bool
 Player::play ()
 {
-  this->forcedNaturalEnd = false;
   _time = 0;
   this->status = PL_OCCURRING;
   Ginga_Display->registerPlayer (this);
@@ -298,22 +296,6 @@ void
 Player::setVisible (bool visible)
 {
   this->visible = visible;
-}
-
-void
-Player::forceNaturalEnd (bool forceIt)
-{
-  forcedNaturalEnd = forceIt;
-  if (forceIt)
-    notifyPlayerListeners (PL_NOTIFY_STOP, "", PL_TYPE_PRESENTATION, "");
-}
-
-bool
-Player::isForcedNaturalEnd ()
-{
-  if (mrl == "")
-    return false;
-  return forcedNaturalEnd;
 }
 
 void

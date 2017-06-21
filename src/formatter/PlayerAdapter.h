@@ -50,7 +50,6 @@ public:
   bool pause ();
   bool resume ();
   bool abort ();
-  void naturalEnd ();
 
   // From INclAttributeValueMaintainer.
   string getProperty (NclAttributionEvent *event) override;

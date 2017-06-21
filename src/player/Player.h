@@ -90,8 +90,6 @@ public:
   bool isVisible ();
   void setVisible (bool visible);
 
-  void forceNaturalEnd (bool forceIt);
-  bool isForcedNaturalEnd ();
   virtual void setOutWindow (SDLWindow *);
   virtual void setCurrentScope (arg_unused (const string &scopeId)) {}
 
@@ -105,7 +103,6 @@ protected:
   PlayerAnimator *animator;
   bool presented;
   bool visible;
-  bool forcedNaturalEnd;
   PlayerEventType scopeType;
   string scope;
   GingaTime scopeInitTime;
