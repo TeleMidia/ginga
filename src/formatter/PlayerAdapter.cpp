@@ -460,12 +460,12 @@ PlayerAdapter::prepare (ExecutionObject *object,
               _player = NULL;
             }
 
-          explicitDur = prepareProperties (object);
+          //explicitDur = prepareProperties (object);
           createPlayer (mrl);
         }
       else
         {
-          explicitDur = prepareProperties (object);
+          //explicitDur = prepareProperties (object);
         }
 
       NclPresentationEvent *presentationEvt =
@@ -528,7 +528,7 @@ PlayerAdapter::prepare (ExecutionObject *object,
             }
         }
 
-      explicitDur = prepareProperties (object);
+      //explicitDur = prepareProperties (object);
 
       NclPresentationEvent *presentationEvent =
           dynamic_cast <NclPresentationEvent *> (event);
