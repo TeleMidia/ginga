@@ -404,7 +404,7 @@ PlayerAdapter::stop ()
 
       if (attributionEvt)
         {
-          attributionEvt->setValueMaintainer (nullptr);
+          attributionEvt->setPlayerAdapter (nullptr);
         }
     }
 
@@ -741,7 +741,7 @@ PlayerAdapter::createPlayer (const string &uri)
       if (attributionEvt)
         {
           property = attributionEvt->getAnchor ();
-          attributionEvt->setValueMaintainer (this);
+          attributionEvt->setPlayerAdapter (this);
         }
     }
 
