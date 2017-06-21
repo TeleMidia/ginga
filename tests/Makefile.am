@@ -22,6 +22,18 @@ AM_CXXFLAGS= $(GINGA_ALL_CXXFLAGS)
 AM_LDFLAGS= -static $(GINGA_ALL_LDFLAGS)
 LDADD= $(top_builddir)/src/libginga.la
 
+# Auxiliary programs.
+noinst_PROGRAMS=
+
+# Auxiliary scripts.
+noinst_SCRIPTS=
+
+# Generate env.sh, env.csh, and gdb.cfg.
+include $(top_srcdir)/build-aux/Makefile.am.env
+
+# Configure valgrind and generate suppfile from suppfile.m4.
+include $(top_srcdir)/build-aux/Makefile.am.valgrind
+
 # Setup test framework.
 AM_COLOR_TESTS= always
 DISABLE_HARD_ERRORS= true

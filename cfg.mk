@@ -54,6 +54,7 @@ sc-copyright:
 nclua:= https://github.com/gflima/nclua/raw/master
 NCLUA_FILES+= build-aux/Makefile.am.common
 NCLUA_FILES+= build-aux/Makefile.am.coverage
+NCLUA_FILES+= build-aux/Makefile.am.env
 NCLUA_FILES+= build-aux/Makefile.am.gitlog
 NCLUA_FILES+= build-aux/Makefile.am.valgrind
 NCLUA_FILES+= build-aux/util.m4

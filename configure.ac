@@ -62,11 +62,18 @@ AC_SUBST([CAIRO_REQUIRED_VERSION],       cairo_required_version)
 AC_SUBST([LIBRSVG_REQUIRED_VERSION],     librsvg_required_version)
 AC_SUBST([PANGO_REQUIRED_VERSION],       pango_required_version)
 
-# Compiler and tool checks.
+# Compiler checks.
 AC_PROG_CXX
 AC_LANG_CPLUSPLUS
 AX_CXX_COMPILE_STDCXX_11([ext],[mandatory])
+
+# Tool checks.
 AU_PROG_PKG_CONFIG
+AU_PROG_UNIX_TOOLS
+
+# System checks.
+AU_SYSTEM
+AU_SYSTEM_MINGW
 
 # Configure options.
 AU_ARG_ENABLE_COVERAGE

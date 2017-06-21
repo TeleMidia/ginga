@@ -49,6 +49,8 @@
 /build-aux/test-driver
 /config.status
 /configure
+/coverage
+/coverage.info
 /data/Makefile
 /data/Makefile.in
 /data/ini/ginga.ini
@@ -63,6 +65,10 @@
 /src/stamp-h1
 /tests/Makefile
 /tests/Makefile.in
+/tests/env.csh
+/tests/env.sh
+/tests/gdb.cfg
+/tests/suppfile
 /tests/test-ginga-parse-color
 /tests/test-ginga-parse-list
 /tests/test-ginga-parse-percent

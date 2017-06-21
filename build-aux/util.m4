@@ -86,8 +86,9 @@ You can disable ccache by setting environment variable CCACHE_DISABLE=1])])
    [AC_MSG_ERROR([--enable-coverage requires lcov])])
   AC_CHECK_PROGS([GENHTML], [genhtml])
   AS_IF([test -z "$GENHTML"],
-   [AC_MSG_ERROR([--enable-coverate requires genhtml])])
+   [AC_MSG_ERROR([--enable-coverage requires genhtml])])
   CFLAGS="$CFLAGS -fprofile-arcs -ftest-coverage"
+  CXXFLAGS="$CXXFLAGS -fprofile-arcs -ftest-coverage"
   LDFLAGS="$LDFLAGS -lgcov"])])
 
 # AU_ARG_ENABLE_DEBUG
