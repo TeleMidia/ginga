@@ -40,8 +40,6 @@ public:
   void resume (void) override;
   void stop (void) override;
 
-  virtual void setCurrentScope (const string &scopeId) override;
-  bool setKeyHandler (bool isHandler);
   virtual void setProperty (const string &, const string &) override;
 
   void redraw (SDL_Renderer *) override;
@@ -53,8 +51,6 @@ public:
 private:
   ncluaw_t *_nw;                // the NCLua state
   SDL_Rect _init_rect;          // initial output rectangle
-  bool _isKeyHandler;           // true if player has the focus
-  string _scope;                // the label of the active anchor
 };
 
 GINGA_PLAYER_END

@@ -293,13 +293,6 @@ ExecutionObject::removeParentObject (Node *parentNode,
 }
 
 void
-ExecutionObject::setDescriptor (
-    NclCascadingDescriptor *cascadingDescriptor)
-{
-  this->_descriptor = cascadingDescriptor;
-}
-
-void
 ExecutionObject::setDescriptor (GenericDescriptor *descriptor)
 {
   NclCascadingDescriptor *cascade;

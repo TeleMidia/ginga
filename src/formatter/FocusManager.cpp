@@ -303,8 +303,6 @@ FocusManager::setKeyMaster (const string &mediaId)
       return;
     }
 
-  nextObject = _converter->getObjectFromNodeId (mediaId);
-
   if (nextObject == NULL)
     {
       clog << "FormatterFocusManager::setKeyMaster can't set '";

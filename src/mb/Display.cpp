@@ -382,12 +382,6 @@ Display::remove (GList **list, gpointer data)
   return elt != NULL;
 }
 
-bool
-Display::find (GList *list, gconstpointer data)
-{
-  return g_list_find (list, data) != NULL;
-}
-
 void
 Display::notifyTickListeners (GingaTime total, GingaTime diff, int frameno)
 {

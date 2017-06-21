@@ -101,28 +101,6 @@ Converter::setHandlingStatus (bool handling)
     }
 }
 
-ExecutionObject *
-Converter::getObjectFromNodeId (const string &id)
-{
-  for (auto &it: _executionObjects)
-    {
-      ExecutionObject *expectedObject = it.second;
-
-      auto dataObject = dynamic_cast<NodeEntity *> (
-            expectedObject->getDataObject () ->getDataEntity ());
-
-      g_assert_nonnull (dataObject);
-
-      if (dataObject->getId () == id)
-        return expectedObject;
-    }
-
-  ERROR ("cannot find object '%s'", id.c_str());
-  g_assert_not_reached ();
-
-  return nullptr;
-}
-
 void
 Converter::setLinkActionListener (INclLinkActionListener *actListener)
 {
