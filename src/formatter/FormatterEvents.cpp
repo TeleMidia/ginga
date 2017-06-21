@@ -23,10 +23,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-set<NclFormatterEvent *> NclFormatterEvent::_instances;
+set<FormatterEvent *> FormatterEvent::_instances;
 
-NclFormatterEvent::NclFormatterEvent (const string &id,
-                                      ExecutionObject *exeObj)
+FormatterEvent::FormatterEvent (const string &id,
+                                ExecutionObject *exeObj)
 {
   _typeSet.insert ("NclFormatterEvent");
 
@@ -39,14 +39,14 @@ NclFormatterEvent::NclFormatterEvent (const string &id,
   _instances.insert (this);
 }
 
-NclFormatterEvent::~NclFormatterEvent ()
+FormatterEvent::~FormatterEvent ()
 {
   _instances.erase (this);
   _listeners.clear ();
 }
 
 bool
-NclFormatterEvent::hasInstance (NclFormatterEvent *evt, bool remove)
+FormatterEvent::hasInstance (FormatterEvent *evt, bool remove)
 {
   bool has = _instances.find(evt) != _instances.end();
 
@@ -58,7 +58,7 @@ NclFormatterEvent::hasInstance (NclFormatterEvent *evt, bool remove)
 }
 
 bool
-NclFormatterEvent::instanceOf (const string &s)
+FormatterEvent::instanceOf (const string &s)
 {
   if (_typeSet.empty ())
     {
@@ -71,12 +71,12 @@ NclFormatterEvent::instanceOf (const string &s)
 }
 
 bool
-NclFormatterEvent::hasNcmId (NclFormatterEvent *evt, const string &anchorId)
+FormatterEvent::hasNcmId (FormatterEvent *evt, const string &anchorId)
 {
   Anchor *anchor;
   string anchorName = " ";
 
-  if (auto anchorEvt = dynamic_cast<NclAnchorEvent *> (evt))
+  if (auto anchorEvt = dynamic_cast<AnchorEvent *> (evt))
     {
       anchor = anchorEvt->getAnchor ();
       if (anchor != nullptr)
@@ -95,13 +95,13 @@ NclFormatterEvent::hasNcmId (NclFormatterEvent *evt, const string &anchorId)
             }
 
           if (anchorName == anchorId
-              && !(dynamic_cast<NclSelectionEvent *> (evt)))
+              && !(dynamic_cast<SelectionEvent *> (evt)))
             {
               return true;
             }
         }
     }
-  else if (auto attrEvt = dynamic_cast<NclAttributionEvent *> (evt))
+  else if (auto attrEvt = dynamic_cast<AttributionEvent *> (evt))
     {
       anchor = attrEvt->getAnchor ();
       if (anchor != nullptr)
@@ -120,25 +120,25 @@ NclFormatterEvent::hasNcmId (NclFormatterEvent *evt, const string &anchorId)
 }
 
 void
-NclFormatterEvent::addListener (INclEventListener *listener)
+FormatterEvent::addListener (INclEventListener *listener)
 {
   this->_listeners.insert (listener);
 }
 
 void
-NclFormatterEvent::removeListener (INclEventListener *listener)
+FormatterEvent::removeListener (INclEventListener *listener)
 {
   _listeners.erase (listener);
 }
 
 EventStateTransition
-NclFormatterEvent::getTransition (EventState newState)
+FormatterEvent::getTransition (EventState newState)
 {
   return EventUtil::getTransition (_state, newState);
 }
 
 bool
-NclFormatterEvent::abort ()
+FormatterEvent::abort ()
 {
   if (_state == EventState::OCCURRING || _state == EventState::PAUSED)
     return changeState (EventState::SLEEPING, EventStateTransition::ABORTS);
@@ -147,7 +147,7 @@ NclFormatterEvent::abort ()
 }
 
 bool
-NclFormatterEvent::start ()
+FormatterEvent::start ()
 {
   if (_state == EventState::SLEEPING)
     return changeState (EventState::OCCURRING, EventStateTransition::STARTS);
@@ -156,7 +156,7 @@ NclFormatterEvent::start ()
 }
 
 bool
-NclFormatterEvent::stop ()
+FormatterEvent::stop ()
 {
   if (_state == EventState::OCCURRING || _state == EventState::PAUSED)
     return changeState (EventState::SLEEPING, EventStateTransition::STOPS);
@@ -165,7 +165,7 @@ NclFormatterEvent::stop ()
 }
 
 bool
-NclFormatterEvent::pause ()
+FormatterEvent::pause ()
 {
   if (_state == EventState::OCCURRING)
     return changeState (EventState::PAUSED, EventStateTransition::PAUSES);
@@ -174,7 +174,7 @@ NclFormatterEvent::pause ()
 }
 
 bool
-NclFormatterEvent::resume ()
+FormatterEvent::resume ()
 {
   if (_state == EventState::PAUSED)
     return changeState (EventState::OCCURRING, EventStateTransition::RESUMES);
@@ -183,15 +183,15 @@ NclFormatterEvent::resume ()
 }
 
 void
-NclFormatterEvent::setState (EventState newState)
+FormatterEvent::setState (EventState newState)
 {
   _previousState = _state;
   _state = newState;
 }
 
 bool
-NclFormatterEvent::changeState (EventState newState,
-                                EventStateTransition transition)
+FormatterEvent::changeState (EventState newState,
+                             EventStateTransition transition)
 {
   if (transition == EventStateTransition::STOPS)
     {
@@ -211,23 +211,23 @@ NclFormatterEvent::changeState (EventState newState,
   return true;
 }
 
-// NclAnchorEvent
-NclAnchorEvent::NclAnchorEvent (const string &id,
-                                ExecutionObject *executionObject,
-                                ContentAnchor *anchor)
-  : NclFormatterEvent (id, executionObject)
+// AnchorEvent
+AnchorEvent::AnchorEvent (const string &id,
+                          ExecutionObject *executionObject,
+                          ContentAnchor *anchor)
+  : FormatterEvent (id, executionObject)
 {
   this->_anchor = anchor;
-  _typeSet.insert ("NclAnchorEvent");
+  _typeSet.insert ("AnchorEvent");
 }
 
-// NclPresentationEvent
-NclPresentationEvent::NclPresentationEvent (const string &id,
-                                            ExecutionObject *exeObj,
-                                            ContentAnchor *anchor)
-  : NclAnchorEvent (id, exeObj, anchor)
+// PresentationEvent
+PresentationEvent::PresentationEvent (const string &id,
+                                      ExecutionObject *exeObj,
+                                      ContentAnchor *anchor)
+  : AnchorEvent (id, exeObj, anchor)
 {
-  _typeSet.insert ("NclPresentationEvent");
+  _typeSet.insert ("PresentationEvent");
 
   _numPresentations = 1;
   _repetitionInterval = 0;
@@ -246,18 +246,18 @@ NclPresentationEvent::NclPresentationEvent (const string &id,
 }
 
 bool
-NclPresentationEvent::stop ()
+PresentationEvent::stop ()
 {
   if (_state == EventState::OCCURRING && _numPresentations > 1)
     {
       _numPresentations--;
     }
 
-  return NclFormatterEvent::stop ();
+  return FormatterEvent::stop ();
 }
 
 GingaTime
-NclPresentationEvent::getDuration ()
+PresentationEvent::getDuration ()
 {
   if (!GINGA_TIME_IS_VALID (this->_end))
     return GINGA_TIME_NONE;
@@ -265,14 +265,14 @@ NclPresentationEvent::getDuration ()
 }
 
 int
-NclPresentationEvent::getRepetitions ()
+PresentationEvent::getRepetitions ()
 {
   return (_numPresentations - 1);
 }
 
 void
-NclPresentationEvent::setRepetitionSettings (int repetitions,
-                                             GingaTime repetitionInterval)
+PresentationEvent::setRepetitionSettings (int repetitions,
+                                          GingaTime repetitionInterval)
 {
   if (repetitions >= 0)
     {
@@ -287,42 +287,42 @@ NclPresentationEvent::setRepetitionSettings (int repetitions,
 }
 
 void
-NclPresentationEvent::incOccurrences ()
+PresentationEvent::incOccurrences ()
 {
   _occurrences++;
 }
 
-// NclSelectionEvent
-NclSelectionEvent::NclSelectionEvent (const string &id,
-                                      ExecutionObject *exeObj,
-                                      ContentAnchor *anchor)
-  : NclAnchorEvent (id, exeObj, anchor)
+// SelectionEvent
+SelectionEvent::SelectionEvent (const string &id,
+                                ExecutionObject *exeObj,
+                                ContentAnchor *anchor)
+  : AnchorEvent (id, exeObj, anchor)
 {
   _selCode.assign("NO_CODE");
 
-  _typeSet.insert ("NclSelectionEvent");
+  _typeSet.insert ("SelectionEvent");
 }
 
 bool
-NclSelectionEvent::start ()
+SelectionEvent::start ()
 {
-  if (NclAnchorEvent::start ())
-    return NclAnchorEvent::stop ();
+  if (AnchorEvent::start ())
+    return AnchorEvent::stop ();
   else
     return false;
 }
 
-// NclAttributionEvent
-NclAttributionEvent::NclAttributionEvent (const string &id,
-                                          ExecutionObject *exeObj,
-                                          PropertyAnchor *anchor,
-                                          Settings *settings)
-  : NclFormatterEvent (id, exeObj)
+// AttributionEvent
+AttributionEvent::AttributionEvent (const string &id,
+                                    ExecutionObject *exeObj,
+                                    PropertyAnchor *anchor,
+                                    Settings *settings)
+  : FormatterEvent (id, exeObj)
 {
   Entity *entity;
   NodeEntity *dataObject;
 
-  _typeSet.insert ("NclAttributionEvent");
+  _typeSet.insert ("AttributionEvent");
 
   this->_anchor = anchor;
   this->_valueMaintainer = nullptr;
@@ -354,13 +354,13 @@ NclAttributionEvent::NclAttributionEvent (const string &id,
     }
 }
 
-NclAttributionEvent::~NclAttributionEvent ()
+AttributionEvent::~AttributionEvent ()
 {
   _assessments.clear ();
 }
 
 string
-NclAttributionEvent::getCurrentValue ()
+AttributionEvent::getCurrentValue ()
 {
   string propName;
   string maintainerValue = "";
@@ -396,7 +396,7 @@ NclAttributionEvent::getCurrentValue ()
 }
 
 bool
-NclAttributionEvent::setValue (const string &newValue)
+AttributionEvent::setValue (const string &newValue)
 {
   if (_anchor->getValue () != newValue)
     {
@@ -407,14 +407,14 @@ NclAttributionEvent::setValue (const string &newValue)
 }
 
 void
-NclAttributionEvent::setImplicitRefAssessmentEvent (
-    const string &roleId, NclFormatterEvent *event)
+AttributionEvent::setImplicitRefAssessmentEvent (
+    const string &roleId, FormatterEvent *event)
 {
   _assessments[roleId] = event;
 }
 
-NclFormatterEvent *
-NclAttributionEvent::getImplicitRefAssessmentEvent (const string &roleId)
+FormatterEvent *
+AttributionEvent::getImplicitRefAssessmentEvent (const string &roleId)
 {
   if (_assessments.count (roleId) == 0)
     {
@@ -424,31 +424,31 @@ NclAttributionEvent::getImplicitRefAssessmentEvent (const string &roleId)
   return _assessments[roleId];
 }
 
-// NclSwitchEvent
-NclSwitchEvent::NclSwitchEvent (const string &id,
-                                ExecutionObject *exeObjSwitch,
-                                InterfacePoint *interface,
-                                EventType type, const string &key)
-  : NclFormatterEvent (id, exeObjSwitch)
+// SwitchEvent
+SwitchEvent::SwitchEvent (const string &id,
+                          ExecutionObject *exeObjSwitch,
+                          InterfacePoint *interface,
+                          EventType type, const string &key)
+  : FormatterEvent (id, exeObjSwitch)
 {
   this->_interface = interface;
   this->_type = type;
   this->_key = key;
   this->_mappedEvent = nullptr;
 
-  _typeSet.insert ("NclSwitchEvent");
+  _typeSet.insert ("SwitchEvent");
 }
 
-NclSwitchEvent::~NclSwitchEvent ()
+SwitchEvent::~SwitchEvent ()
 {
-  if (NclFormatterEvent::hasInstance (_mappedEvent, false))
+  if (FormatterEvent::hasInstance (_mappedEvent, false))
     {
       _mappedEvent->removeListener (this);
     }
 }
 
 void
-NclSwitchEvent::setMappedEvent (NclFormatterEvent *evt)
+SwitchEvent::setMappedEvent (FormatterEvent *evt)
 {
   if (_mappedEvent != nullptr)
     {
@@ -463,8 +463,8 @@ NclSwitchEvent::setMappedEvent (NclFormatterEvent *evt)
 }
 
 void
-NclSwitchEvent::eventStateChanged (
-    arg_unused (NclFormatterEvent *evt),
+SwitchEvent::eventStateChanged (
+    arg_unused (FormatterEvent *evt),
     EventStateTransition trans,
     arg_unused (EventState prevState))
 {
@@ -472,21 +472,21 @@ NclSwitchEvent::eventStateChanged (
 }
 
 EventTransition::EventTransition (GingaTime time,
-                                  NclPresentationEvent *evt)
+                                  PresentationEvent *evt)
 {
   this->_time = time;
   this->_evt = evt;
 }
 
 BeginEventTransition::BeginEventTransition (
-    GingaTime t, NclPresentationEvent *evt)
+    GingaTime t, PresentationEvent *evt)
   : EventTransition (t, evt)
 {
 
 }
 
 EndEventTransition::EndEventTransition (GingaTime t,
-                                        NclPresentationEvent *evt,
+                                        PresentationEvent *evt,
                                         BeginEventTransition *trans)
   : EventTransition (t, evt)
 {

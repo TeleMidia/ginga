@@ -41,7 +41,7 @@ class ExecutionObject;
   PROPERTY_READONLY (type,name,getfunc) \
   public: void setfunc (type value) {this->name = value;}\
 
-class NclFormatterEvent
+class FormatterEvent
 {
   PROPERTY (EventType, _type, getType, setType)
   PROPERTY_READONLY (string, _id, getId)
@@ -51,8 +51,8 @@ class NclFormatterEvent
   PROPERTY_READONLY (EventState, _previousState, getPreviousState)
 
 public:
-  NclFormatterEvent (const string &id, ExecutionObject *exeObj);
-  virtual ~NclFormatterEvent ();
+  FormatterEvent (const string &id, ExecutionObject *exeObj);
+  virtual ~FormatterEvent ();
 
   void setState (EventState newState);
 
@@ -66,8 +66,8 @@ public:
   void removeListener (INclEventListener *listener);
 
   bool instanceOf (const string &);
-  static bool hasInstance (NclFormatterEvent *evt, bool remove);
-  static bool hasNcmId (NclFormatterEvent *evt, const string &anchorId);
+  static bool hasInstance (FormatterEvent *evt, bool remove);
+  static bool hasNcmId (FormatterEvent *evt, const string &anchorId);
 
 protected:
   set<INclEventListener *> _listeners;
@@ -76,31 +76,28 @@ protected:
   EventStateTransition getTransition (EventState newState);
   bool changeState (EventState newState, EventStateTransition transition);
 
-  static set<NclFormatterEvent *> _instances;
-  static bool removeInstance (NclFormatterEvent *evt);
-
-private:
-  static void addInstance (NclFormatterEvent *event);
+  static set<FormatterEvent *> _instances;
+  static bool removeInstance (FormatterEvent *evt);
 };
 
-class NclAnchorEvent : public NclFormatterEvent
+class AnchorEvent : public FormatterEvent
 {
   PROPERTY_READONLY (ContentAnchor *, _anchor, getAnchor)
 
 public:
-  NclAnchorEvent (const string &, ExecutionObject *, ContentAnchor *);
-  virtual ~NclAnchorEvent () {}
+  AnchorEvent (const string &, ExecutionObject *, ContentAnchor *);
+  virtual ~AnchorEvent () {}
 };
 
-class NclPresentationEvent : public NclAnchorEvent
+class PresentationEvent : public AnchorEvent
 {
   PROPERTY_READONLY (GingaTime, _begin, getBegin)
   PROPERTY (GingaTime, _end, getEnd, setEnd)
   PROPERTY_READONLY (GingaTime, _repetitionInterval, getRepetitionInterval)
 
 public:
-  NclPresentationEvent (const string &, ExecutionObject *, ContentAnchor *);
-  virtual ~NclPresentationEvent () {}
+  PresentationEvent (const string &, ExecutionObject *, ContentAnchor *);
+  virtual ~PresentationEvent () {}
 
   virtual bool stop () override;
 
@@ -113,18 +110,18 @@ private:
   int _numPresentations;
 };
 
-class NclSelectionEvent : public NclAnchorEvent
+class SelectionEvent : public AnchorEvent
 {
   PROPERTY (string, _selCode, getSelectionCode, setSelectionCode)
 
 public:
-  NclSelectionEvent (const string &, ExecutionObject *, ContentAnchor *);
-  virtual ~NclSelectionEvent () {}
+  SelectionEvent (const string &, ExecutionObject *, ContentAnchor *);
+  virtual ~SelectionEvent () {}
 
   virtual bool start () override;
 };
 
-class NclAttributionEvent : public NclFormatterEvent
+class AttributionEvent : public FormatterEvent
 {
   PROPERTY (INclAttributeValueMaintainer *, _valueMaintainer,
             getValueMaintainer, setValueMaintainer)
@@ -132,62 +129,62 @@ class NclAttributionEvent : public NclFormatterEvent
   PROPERTY_READONLY (PropertyAnchor *, _anchor, getAnchor)
 
 public:
-  NclAttributionEvent (const string &id,
+  AttributionEvent (const string &id,
                        ExecutionObject *exeObj,
                        PropertyAnchor *anchor,
                        Settings *settings);
 
-  virtual ~NclAttributionEvent ();
+  virtual ~AttributionEvent ();
   string getCurrentValue ();
   bool setValue (const string &newValue);
   void setImplicitRefAssessmentEvent (const string &roleId,
-                                      NclFormatterEvent *event);
+                                      FormatterEvent *event);
 
-  NclFormatterEvent *getImplicitRefAssessmentEvent (const string &roleId);
+  FormatterEvent *getImplicitRefAssessmentEvent (const string &roleId);
 
 protected:
-  map<string, NclFormatterEvent *> _assessments;
+  map<string, FormatterEvent *> _assessments;
   Settings *_settings;
 
 private:
   bool _settingsNode;
 };
 
-class NclSwitchEvent : public NclFormatterEvent, public INclEventListener
+class SwitchEvent : public FormatterEvent, public INclEventListener
 {
 private:
   InterfacePoint *_interface;
   string _key;
-  NclFormatterEvent *_mappedEvent;
+  FormatterEvent *_mappedEvent;
 
 public:
-  NclSwitchEvent (const string &id,
+  SwitchEvent (const string &id,
                   ExecutionObject *exeObjSwitch,
                   InterfacePoint *interface,
                   EventType type,
                   const string &key);
 
-  virtual ~NclSwitchEvent ();
+  virtual ~SwitchEvent ();
 
   InterfacePoint *getInterfacePoint () { return this->_interface; }
   string getKey () { return this->_key; }
 
-  void setMappedEvent (NclFormatterEvent *evt);
-  NclFormatterEvent *getMappedEvent () { return this->_mappedEvent; }
+  void setMappedEvent (FormatterEvent *evt);
+  FormatterEvent *getMappedEvent () { return this->_mappedEvent; }
 
   virtual void eventStateChanged (
-      NclFormatterEvent *evt,
+      FormatterEvent *evt,
       EventStateTransition trans,
       EventState prevState) override;
 };
 
 class EventTransition
 {
-  PROPERTY_READONLY (NclPresentationEvent *, _evt, getEvent)
+  PROPERTY_READONLY (PresentationEvent *, _evt, getEvent)
   PROPERTY_READONLY (GingaTime, _time, getTime)
 
 public:
-  EventTransition (GingaTime time, NclPresentationEvent *evt);
+  EventTransition (GingaTime time, PresentationEvent *evt);
   virtual ~EventTransition () {}
 };
 
@@ -198,7 +195,7 @@ class BeginEventTransition : public EventTransition
   PROPERTY (EndEventTransition *, _endTrans, getEndTransition, setEndTransition)
 
 public:
-  BeginEventTransition (GingaTime time, NclPresentationEvent *evt);
+  BeginEventTransition (GingaTime time, PresentationEvent *evt);
 };
 
 class EndEventTransition : public EventTransition
@@ -206,7 +203,7 @@ class EndEventTransition : public EventTransition
   PROPERTY_READONLY (BeginEventTransition *, _beginTrans, getBeginTransition)
 
 public:
-  EndEventTransition (GingaTime t, NclPresentationEvent *evt,
+  EndEventTransition (GingaTime t, PresentationEvent *evt,
                       BeginEventTransition *trans);
 };
 

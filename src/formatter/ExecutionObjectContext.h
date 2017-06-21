@@ -63,7 +63,7 @@ public:
   void setLinkCompiled (NclFormatterLink *formatterLink);
   void setParentsAsListeners ();
   void unsetParentsAsListeners () override;
-  void eventStateChanged (NclFormatterEvent *event,
+  void eventStateChanged (FormatterEvent *event,
                           EventStateTransition transition,
                           EventState previousState) override;
 
@@ -75,8 +75,8 @@ private:
   set<NclFormatterLink *> _links;
   set<Link *> _uncompiledLinks;
 
-  set<NclFormatterEvent *> _runningEvents; // child events occurring
-  set<NclFormatterEvent *> _pausedEvents;  // child events paused
+  set<FormatterEvent *> _runningEvents; // child events occurring
+  set<FormatterEvent *> _pausedEvents;  // child events paused
   EventStateTransition lastTransition;
 
   map<NclFormatterLink *, int> _pendingLinks;

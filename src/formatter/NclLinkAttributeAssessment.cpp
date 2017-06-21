@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 NclLinkAttributeAssessment::NclLinkAttributeAssessment (
-    NclFormatterEvent *ev, short attrType)
+    FormatterEvent *ev, short attrType)
     : NclLinkAssessment ()
 {
   event = ev;
@@ -30,7 +30,7 @@ NclLinkAttributeAssessment::NclLinkAttributeAssessment (
   typeSet.insert ("NclLinkAttributeAssessment");
 }
 
-NclFormatterEvent *
+FormatterEvent *
 NclLinkAttributeAssessment::getEvent ()
 {
   return event;
@@ -49,7 +49,7 @@ NclLinkAttributeAssessment::getOffset ()
 }
 
 void
-NclLinkAttributeAssessment::setEvent (NclFormatterEvent *ev)
+NclLinkAttributeAssessment::setEvent (FormatterEvent *ev)
 {
   event = ev;
 }
@@ -74,10 +74,10 @@ NclLinkAttributeAssessment::getValue ()
   switch (attributeType)
     {
     case AttributeType::NODE_PROPERTY:
-      if (event->instanceOf ("NclAttributionEvent"))
+      if (event->instanceOf ("AttributionEvent"))
         {
           value = getAssessmentWithOffset (
-              ((NclAttributionEvent *)event)->getCurrentValue ());
+              ((AttributionEvent *)event)->getCurrentValue ());
         }
       break;
 
@@ -92,9 +92,9 @@ NclLinkAttributeAssessment::getValue ()
       }
 
     case AttributeType::REPETITIONS:
-      if (event->instanceOf ("NclPresentationEvent"))
+      if (event->instanceOf ("PresentationEvent"))
         {
-          xstrassign (value, "%d", (int) ((NclPresentationEvent *)event)->getRepetitions ());
+          xstrassign (value, "%d", (int) ((PresentationEvent *)event)->getRepetitions ());
         }
       break;
 

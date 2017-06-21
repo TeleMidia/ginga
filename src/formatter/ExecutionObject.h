@@ -72,28 +72,28 @@ public:
 
   void setDescriptor (NclCascadingDescriptor *cascadingDescriptor);
   void setDescriptor (GenericDescriptor *_descriptor);
-  virtual bool addEvent (NclFormatterEvent *event);
-  void addPresentationEvent (NclPresentationEvent *event);
-  bool containsEvent (NclFormatterEvent *event);
-  NclFormatterEvent *getEventFromAnchorId (const string &anchorId);
+  virtual bool addEvent (FormatterEvent *event);
+  void addPresentationEvent (PresentationEvent *event);
+  bool containsEvent (FormatterEvent *event);
+  FormatterEvent *getEventFromAnchorId (const string &anchorId);
 
-  NclFormatterEvent *getEvent (const string &id);
-  vector<NclFormatterEvent *> getEvents ();
+  FormatterEvent *getEvent (const string &id);
+  vector<FormatterEvent *> getEvents ();
 
-  NclPresentationEvent *getWholeContentPresentationEvent ();
-  bool removeEvent (NclFormatterEvent *event);
+  PresentationEvent *getWholeContentPresentationEvent ();
+  bool removeEvent (FormatterEvent *event);
   bool isCompiled ();
   void setCompiled (bool status);
   vector<Node *> getNodes ();
   PropertyAnchor *getNCMProperty (const string &propertyName);
   NclNodeNesting *getNodePerspective ();
   NclNodeNesting *getNodePerspective (Node *node);
-  NclFormatterEvent *getMainEvent ();
+  FormatterEvent *getMainEvent ();
 
   void updateTransitionTable (GingaTime value, Player *player);
   virtual EventTransition *getNextTransition ();
 
-  virtual bool prepare (NclFormatterEvent *event, GingaTime offsetTime);
+  virtual bool prepare (FormatterEvent *event, GingaTime offsetTime);
   virtual bool start ();
   virtual bool stop ();
   virtual bool abort ();
@@ -111,7 +111,7 @@ protected:
   Node *_dataObject;
   NclCascadingDescriptor *_descriptor;
   GingaTime _offsetTime;
-  NclPresentationEvent *_wholeContent;
+  PresentationEvent *_wholeContent;
 
   set<string> _typeSet;
   INclLinkActionListener *_seListener;
@@ -122,13 +122,13 @@ protected:
   bool _isHandling;
 
   map<Node *, ExecutionObjectContext *> _parentTable;
-  map<string, NclFormatterEvent *> _events;
-  vector<NclPresentationEvent *> _presEvents;
-  set<NclSelectionEvent *> _selectionEvents;
-  vector<NclFormatterEvent *> _otherEvents;
+  map<string, FormatterEvent *> _events;
+  vector<PresentationEvent *> _presEvents;
+  set<SelectionEvent *> _selectionEvents;
+  vector<FormatterEvent *> _otherEvents;
 
   int _pauseCount;
-  NclFormatterEvent *_mainEvent;
+  FormatterEvent *_mainEvent;
   NclEventTransitionManager _transMan;
   ExecutionObject *_mirrorSrc;
 
@@ -137,7 +137,7 @@ protected:
   void prepareTransitionEvents (GingaTime startTime);
   void destroyEvents ();
   virtual void unsetParentsAsListeners ();
-  virtual void removeParentListenersFromEvent (NclFormatterEvent *event);
+  virtual void removeParentListenersFromEvent (FormatterEvent *event);
 
   static void addInstance (ExecutionObject *object);
   static bool removeInstance (ExecutionObject *object);

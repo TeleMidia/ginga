@@ -29,17 +29,17 @@ GINGA_FORMATTER_BEGIN
 class NclLinkAttributeAssessment : public NclLinkAssessment
 {
 private:
-  NclFormatterEvent *event;
+  FormatterEvent *event;
   short attributeType;
   string offset;
 
 public:
-  NclLinkAttributeAssessment (NclFormatterEvent *ev, short attrType);
+  NclLinkAttributeAssessment (FormatterEvent *ev, short attrType);
 
-  NclFormatterEvent *getEvent ();
+  FormatterEvent *getEvent ();
   void setOffset (const string &offset);
   string getOffset ();
-  void setEvent (NclFormatterEvent *ev);
+  void setEvent (FormatterEvent *ev);
   short getAttributeType ();
   void setAttributeType (short attrType);
   string getValue ();
