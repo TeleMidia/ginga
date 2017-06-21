@@ -58,10 +58,9 @@ protected:
 
 private:
   GingaTime delay;
-  vector<NclLinkActionProgressionListener *> *progressionListeners;
+  vector<NclLinkActionProgressionListener *> progressListeners;
 
   void initLinkAction (GingaTime delay);
-  bool tryLock ();
 };
 
 GINGA_FORMATTER_END
