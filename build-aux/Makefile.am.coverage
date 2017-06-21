@@ -18,35 +18,41 @@ LCOV_DIR= coverage
 LCOV_INFO= coverage.info
 COVERAGE_EXCLUDE=
 
-lcov_capture_options= --capture --quiet --directory $(top_builddir)\
+lcov_capture_options= --capture --directory $(top_builddir)\
   --output-file $(LCOV_INFO) --test-name '$(PACKAGE_NAME)_PERF'\
   --no-checksum --compat-libtool --ignore-errors source
 
-lcov_remove_options= --quiet --output-file $(LCOV_INFO)\
+lcov_remove_options= --output-file $(LCOV_INFO)\
   --remove $(LCOV_INFO) $(COVERAGE_EXCLUDE)
 
 lcov_genhtml_options= --title '$(PACKAGE_NAME) Code Coverage' --quiet\
   --prefix $(top_builddir) --output-directory $(LCOV_DIR) --legend\
   --frames --show-details $(LCOV_INFO) --ignore-errors source
 
-.PHONY: coverage coverage-clean
+COVERAGE_TARGETS= coverage-reset coverage-genhtml coverage coverage-clean
+.PHONY: $(COVERAGE_TARGETS)
 
 if ENABLE_COVERAGE
-coverage: all
-	@$(LCOV) --zerocounters --quiet --directory $(top_builddir)
-	-$(MAKE) $(AM_MAKEFLAGS) -k check
-	@$(LCOV) $(lcov_capture_options)
-	@$(LCOV) $(lcov_remove_options)
-	@LANG=C $(GENHTML) $(lcov_genhtml_options)
+coverage-reset:
+	$(AM_V_at)$(LCOV) --zerocounters --quiet --directory $(top_builddir)
+
+coverage-genhtml:
+	$(AM_V_at)$(LCOV) $(lcov_capture_options)
+	$(AM_V_at)$(LCOV) $(lcov_remove_options)
+	$(AM_V_at)$(GENHTML) $(lcov_genhtml_options)
 	@echo 'REPORT: file://$(abs_top_builddir)/$(LCOV_DIR)/index.html'
 
-clean-local: coverage-clean
+coverage: all
+	$(MAKE) $(AM_MAKEFLAGS) coverage-reset
+	-$(MAKE) $(AM_MAKEFLAGS) -k check
+	$(MAKE) $(AM_MAKEFLAGS) coverage-genhtml
+
 coverage-clean:
 	-rm -rf $(LCOV_DIR) $(LCOV_INFO)
 
 else
-coverage coverage-clean:
-	@echo You need to configure $(PACKAGE_NAME) with support for gcov enabled.
+$(COVERAGE_TARGETS):
+	@echo You must configure $(PACKAGE_NAME) with support for gcov.
 	@echo E.g., ./configure --enable-debug --enable-coverage
 endif
 

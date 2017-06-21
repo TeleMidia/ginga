@@ -21,6 +21,10 @@ include $(top_srcdir)/build-aux/Makefile.am.common
 ACLOCAL_AMFLAGS= -I build-aux ${ACLOCAL_FLAGS}
 SUBDIRS= src tests
 
+# Setup code coverage.
+include $(top_srcdir)/build-aux/Makefile.am.coverage
+COVERAGE_EXCLUDE+=
+
 include doc/doc.mk
 
 MAINTAINERCLEANFILES+=\
@@ -43,5 +47,5 @@ MAINTAINERCLEANFILES+=\
   configure\
   $(NULL)
 
-clean-local:
+clean-local: coverage-clean
 	rm -rf $(CLEANDIRS)
