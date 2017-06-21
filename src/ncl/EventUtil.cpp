@@ -61,7 +61,7 @@ EventUtil::getTypeName (EventType type)
       return "composition";
 
     default:
-      return "";
+      g_assert_not_reached ();
     }
 }
 
@@ -96,7 +96,7 @@ EventUtil::getStateName (EventState state)
       return "sleeping";
 
     default:
-      return "";
+      g_assert_not_reached ();
     }
 }
 
@@ -121,7 +121,7 @@ EventUtil::getTransitionName (EventStateTransition transition)
       return "aborts";
 
     default:
-      return "";
+      g_assert_not_reached ();
     }
 }
 
@@ -203,13 +203,9 @@ EventUtil::getTransition (EventState previous, EventState next)
   switch (previous)
     {
     case EventState::SLEEPING:
-      switch (next)
-        {
-        case EventState::OCCURRING:
-          return EventStateTransition::STARTS;
-        default:
-          return EventStateTransition::UNKNOWN;
-        }
+      return (next == EventState::OCCURRING)
+        ? EventStateTransition::STARTS
+        : EventStateTransition::UNKNOWN;
       break;
 
     case EventState::OCCURRING:
@@ -237,10 +233,10 @@ EventUtil::getTransition (EventState previous, EventState next)
       break;
 
     default:
-      break;
+      g_assert_not_reached ();
     }
 
-  return EventStateTransition::UNKNOWN;
+  g_assert_not_reached ();
 }
 
 EventState

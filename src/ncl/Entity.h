@@ -29,7 +29,6 @@ public:
   virtual ~Entity ();
   static bool hasInstance (Entity *instance, bool eraseFromList);
   bool instanceOf (const string &s);
-  int compareTo (Entity *otherEntity);
   string getId ();
   virtual void setId (const string &someId);
   virtual Entity *getDataEntity ();

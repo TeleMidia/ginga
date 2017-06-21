@@ -447,7 +447,7 @@ ExecutionObjectContext::eventStateChanged (
       break;
 
     default:
-      break;
+      g_assert_not_reached ();
     }
 }
 
