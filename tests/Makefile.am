@@ -37,7 +37,9 @@ include $(top_srcdir)/build-aux/Makefile.am.valgrind
 # Setup test framework.
 AM_COLOR_TESTS= always
 DISABLE_HARD_ERRORS= true
+TEST_EXTENSIONS= .ncl
 LOG_COMPILER= $(_VALGRIND)
+NCL_LOG_COMPILER= $(_VALGRIND) $(top_builddir)/src/ginga
 
 # Setup tests environment.
 AM_TESTS_ENVIRONMENT=\
@@ -46,6 +48,15 @@ AM_TESTS_ENVIRONMENT=\
   export G_SLICE="always-malloc";\
   export MALLOC_CHECK_=1;\
   $(NULL)
+
+# Test applications.
+ncls=
+ncls+= xfail-test-img-open.ncl
+ncls+= xfail-test-svg-open.ncl
+ncls+= xfail-test-txt-open.ncl
+ncls+= xfail-test-lua-open.ncl
+ncls+= xfail-test-aud-open.ncl
+ncls+= xfail-test-vid-open.ncl
 
 # Test programs.
 progs=
@@ -61,5 +72,14 @@ test_ginga_parse_percent_SOURCES= test-ginga-parse-percent.cpp
 progs+= test-ginga-parse-time
 test_ginga_parse_time_SOURCES= test-ginga-parse-time.cpp
 
-TESTS= $(progs)
+check_SCRIPTS= $(ncls)
 check_PROGRAMS= $(progs)
+TESTS= $(check_SCRIPTS) $(check_PROGRAMS)
+XFAIL_TESTS=\
+  xfail-test-img-open.ncl\
+  xfail-test-svg-open.ncl\
+  xfail-test-txt-open.ncl\
+  xfail-test-lua-open.ncl\
+  xfail-test-aud-open.ncl\
+  xfail-test-vid-open.ncl\
+  $(NULL)
