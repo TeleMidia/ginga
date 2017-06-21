@@ -55,14 +55,11 @@ public:
   Player (const string &mrl);
   virtual ~Player ();
 
-  virtual void setMrl (const string &mrl);
   void setAnimatorProperties (string dur, string name, string value);
 
   PlayerStatus getMediaStatus();
-
-  GingaTime getMediaTime ();
   void incMediaTime (GingaTime);
-  virtual void setMediaTime (GingaTime);
+  GingaTime getMediaTime ();
 
   virtual void setScope (const string &scope,
                          PlayerEventType type = PL_TYPE_PRESENTATION,

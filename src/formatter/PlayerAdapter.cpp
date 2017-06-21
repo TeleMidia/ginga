@@ -342,8 +342,9 @@ PlayerAdapter::prepareScope (GingaTime offset)
         }
     }
 
-  if (offset > 0)
-    _player->setMediaTime (offset);
+  // TODO: What is this?
+  // if (offset > 0)
+  // _player->setMediaTime (offset);
 }
 
 bool
