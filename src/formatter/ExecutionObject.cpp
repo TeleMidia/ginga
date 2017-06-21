@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ExecutionObject.h"
 #include "ExecutionObjectContext.h"
-#include "ExecutionObjectApplication.h"
 
 #include "FormatterEvents.h"
 
