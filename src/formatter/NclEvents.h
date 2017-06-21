@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _FORMATTEREVENT_H_
-#define _FORMATTEREVENT_H_
+#ifndef _NCLEVENT_H_
+#define _NCLEVENT_H_
 
 #include "ncl/ContentAnchor.h"
 #include "ncl/EventUtil.h"
@@ -215,4 +215,4 @@ public:
 
 GINGA_FORMATTER_END
 
-#endif //_FORMATTEREVENT_H_
+#endif //_NCLEVENT_H_
