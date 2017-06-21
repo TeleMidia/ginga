@@ -92,7 +92,7 @@ public:
   NclFormatterEvent *getMainEvent ();
 
   void updateTransitionTable (GingaTime value, Player *player);
-  virtual NclEventTransition *getNextTransition ();
+  virtual EventTransition *getNextTransition ();
 
   virtual bool prepare (NclFormatterEvent *event, GingaTime offsetTime);
   virtual bool start ();

@@ -20,15 +20,15 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclEventTransition::NclEventTransition (GingaTime time,
-                                        NclPresentationEvent *evt)
+EventTransition::EventTransition (GingaTime time,
+                                  NclPresentationEvent *evt)
 {
   this->_time = time;
-  this->_event = evt;
+  this->_evt = evt;
 }
 
 int
-NclEventTransition::compareTo (NclEventTransition *obj)
+EventTransition::compareTo (EventTransition *obj)
 {
   // First compare time.
   if (_time < obj->_time)
@@ -41,9 +41,9 @@ NclEventTransition::compareTo (NclEventTransition *obj)
     }
 
   // Then, compare type.
-  auto beginTrans = dynamic_cast<NclBeginEventTransition *> (this);
-  auto otherBeginTrans = dynamic_cast<NclBeginEventTransition *> (obj);
-  auto otherEndTrans = dynamic_cast<NclEndEventTransition *> (obj);
+  auto beginTrans = dynamic_cast<BeginEventTransition *> (this);
+  auto otherBeginTrans = dynamic_cast<BeginEventTransition *> (obj);
+  auto otherEndTrans = dynamic_cast<EndEventTransition *> (obj);
 
   if (beginTrans)
     {
@@ -51,7 +51,7 @@ NclEventTransition::compareTo (NclEventTransition *obj)
         {
           return -1;
         }
-      else if (_event == obj->_event)
+      else if (_evt == obj->_evt)
         {
           return 0;
         }
@@ -66,7 +66,7 @@ NclEventTransition::compareTo (NclEventTransition *obj)
         {
           return 1;
         }
-      else if (_event == obj->_event)
+      else if (_evt == obj->_evt)
         {
           return 0;
         }
@@ -77,17 +77,17 @@ NclEventTransition::compareTo (NclEventTransition *obj)
     }
 }
 
-NclBeginEventTransition::NclBeginEventTransition (
-    GingaTime time, NclPresentationEvent *event)
-    : NclEventTransition (time, event)
+BeginEventTransition::BeginEventTransition (
+    GingaTime t, NclPresentationEvent *evt)
+  : EventTransition (t, evt)
 {
-  _endTrans = nullptr;
+
 }
 
-NclEndEventTransition::NclEndEventTransition (GingaTime time,
-                                              NclPresentationEvent *event,
-                                              NclBeginEventTransition *trans)
-    : NclEventTransition (time, event)
+EndEventTransition::EndEventTransition (GingaTime t,
+                                        NclPresentationEvent *evt,
+                                        BeginEventTransition *trans)
+  : EventTransition (t, evt)
 {
   _beginTrans = trans;
   _beginTrans->setEndTransition (this);
