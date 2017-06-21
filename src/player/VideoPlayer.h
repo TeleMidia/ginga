@@ -54,12 +54,12 @@ private:
   bool getEOS ();
 
   // Pipeline callbacks.
-  static gboolean cb_bus (GstBus *, GstMessage *, VideoPlayer *);
+  static gboolean cb_Bus (GstBus *, GstMessage *, VideoPlayer *);
 
   // AppSink callbacks.
-  static void cb_eos (GstAppSink *, gpointer);
-  static GstFlowReturn cb_new_preroll (GstAppSink *, gpointer);
-  static GstFlowReturn cb_new_sample (GstAppSink *, gpointer);
+  static void cb_EOS (GstAppSink *, gpointer);
+  static GstFlowReturn cb_NewPreroll (GstAppSink *, gpointer);
+  static GstFlowReturn cb_NewSample (GstAppSink *, gpointer);
 };
 
 GINGA_PLAYER_END

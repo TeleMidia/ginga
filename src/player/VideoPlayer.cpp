@@ -86,7 +86,7 @@ VideoPlayer::VideoPlayer (const string &mrl) : Player (mrl)
 
   bus = gst_pipeline_get_bus (GST_PIPELINE (_playbin));
   g_assert_nonnull (bus);
-  id = gst_bus_add_watch (bus, (GstBusFunc) cb_bus, this);
+  id = gst_bus_add_watch (bus, (GstBusFunc) cb_Bus, this);
   g_assert (id > 0);
   gst_object_unref (bus);
 
@@ -119,9 +119,9 @@ VideoPlayer::VideoPlayer (const string &mrl) : Player (mrl)
   g_assert (gst_element_add_pad (bin, gst_ghost_pad_new ("sink", pad)));
   g_object_set (G_OBJECT (_playbin), "video-sink", bin, NULL);
 
-  _callbacks.eos = cb_eos;
-  _callbacks.new_preroll = cb_new_preroll;
-  _callbacks.new_sample = cb_new_sample;
+  _callbacks.eos = cb_EOS;
+  _callbacks.new_preroll = cb_NewPreroll;
+  _callbacks.new_sample = cb_NewSample;
   gst_app_sink_set_callbacks (GST_APP_SINK (elt_sink),
                               &_callbacks, this, NULL);
 }
@@ -330,7 +330,7 @@ VideoPlayer::getEOS (void)
 }
 
 gboolean
-VideoPlayer::cb_bus (GstBus *bus, GstMessage *msg, VideoPlayer *player)
+VideoPlayer::cb_Bus (GstBus *bus, GstMessage *msg, VideoPlayer *player)
 {
   g_assert_nonnull (bus);
   g_assert_nonnull (msg);
@@ -369,7 +369,7 @@ VideoPlayer::cb_bus (GstBus *bus, GstMessage *msg, VideoPlayer *player)
 }
 
 void
-VideoPlayer::cb_eos (arg_unused (GstAppSink *appsink), gpointer data)
+VideoPlayer::cb_EOS (arg_unused (GstAppSink *appsink), gpointer data)
 {
   VideoPlayer *player = (VideoPlayer *) data;
   player->setEOS (true);
@@ -377,14 +377,14 @@ VideoPlayer::cb_eos (arg_unused (GstAppSink *appsink), gpointer data)
 }
 
 GstFlowReturn
-VideoPlayer::cb_new_preroll (arg_unused (GstAppSink *appsink),
-                             arg_unused (gpointer data))
+VideoPlayer::cb_NewPreroll (arg_unused (GstAppSink *appsink),
+                            arg_unused (gpointer data))
 {
   return GST_FLOW_OK;
 }
 
 GstFlowReturn
-VideoPlayer::cb_new_sample (GstAppSink *appsink, gpointer data)
+VideoPlayer::cb_NewSample (GstAppSink *appsink, gpointer data)
 {
   VideoPlayer *player = (VideoPlayer *) data;
   player->setSample (gst_app_sink_pull_sample (appsink));
