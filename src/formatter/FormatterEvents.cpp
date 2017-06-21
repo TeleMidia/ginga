@@ -471,4 +471,77 @@ NclSwitchEvent::eventStateChanged (
   changeState (EventUtil::getNextState (trans), trans);
 }
 
+EventTransition::EventTransition (GingaTime time,
+                                  NclPresentationEvent *evt)
+{
+  this->_time = time;
+  this->_evt = evt;
+}
+
+int
+EventTransition::compareTo (EventTransition *obj)
+{
+  // First compare time.
+  if (_time < obj->_time)
+    {
+      return -1;
+    }
+  else if (_time > obj->_time)
+    {
+      return 1;
+    }
+
+  // Then, compare type.
+  auto beginTrans = dynamic_cast<BeginEventTransition *> (this);
+  auto otherBeginTrans = dynamic_cast<BeginEventTransition *> (obj);
+  auto otherEndTrans = dynamic_cast<EndEventTransition *> (obj);
+
+  if (beginTrans)
+    {
+      if (otherEndTrans)
+        {
+          return -1;
+        }
+      else if (_evt == obj->_evt)
+        {
+          return 0;
+        }
+      else
+        {
+          return 1;
+        }
+    }
+  else
+    {
+      if (otherBeginTrans)
+        {
+          return 1;
+        }
+      else if (_evt == obj->_evt)
+        {
+          return 0;
+        }
+      else
+        {
+          return 1;
+        }
+    }
+}
+
+BeginEventTransition::BeginEventTransition (
+    GingaTime t, NclPresentationEvent *evt)
+  : EventTransition (t, evt)
+{
+
+}
+
+EndEventTransition::EndEventTransition (GingaTime t,
+                                        NclPresentationEvent *evt,
+                                        BeginEventTransition *trans)
+  : EventTransition (t, evt)
+{
+  _beginTrans = trans;
+  _beginTrans->setEndTransition (this);
+}
+
 GINGA_FORMATTER_END
