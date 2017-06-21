@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "PlayerAdapter.h"
 
 #include "FormatterScheduler.h"
-#include "ExecutionObjectApplication.h"
 #include "NclLinkTransitionTriggerCondition.h"
 
 #include "mb/Display.h"
@@ -71,11 +70,7 @@ bool
 PlayerAdapter::setCurrentEvent (NclFormatterEvent *event)
 {
 
-  ExecutionObjectApplication *appObject;
   string ifId;
-
-  appObject = dynamic_cast <ExecutionObjectApplication *> (_object);
-  g_assert_nonnull (appObject);
 
   if (_preparedEvents.count (event->getId ()) != 0
       && !event->instanceOf ("NclSelectionEvent")
@@ -100,7 +95,6 @@ PlayerAdapter::setCurrentEvent (NclFormatterEvent *event)
           ifId = "";
         }
       _currentEvent = event;
-      appObject->setCurrentEvent (_currentEvent);
       _player->setCurrentScope (ifId);
     }
   else if (event->instanceOf ("NclAttributionEvent"))
@@ -113,8 +107,6 @@ PlayerAdapter::setCurrentEvent (NclFormatterEvent *event)
       _player->setScope (ifId, Player::PL_TYPE_ATTRIBUTION);
 
       _currentEvent = event;
-      appObject->setCurrentEvent (_currentEvent);
-
       _player->setCurrentScope (ifId);
     }
   else
@@ -143,8 +135,6 @@ PlayerAdapter::setOutputWindow (SDLWindow *win)
 bool
 PlayerAdapter::hasPrepared ()
 {
-  // NclFormatterEvent *evt;
-
   if (_object == nullptr)
     {
       TRACE ("failed, object is null");
@@ -176,133 +166,61 @@ PlayerAdapter::prepare (ExecutionObject *object,
       return false;
     }
 
-  if (object->instanceOf("ExecutionObjectApplication"))
+  NodeEntity *dataObject;
+
+  this->_object = object;
+  dataObject = dynamic_cast<NodeEntity *>(object->getDataObject ());
+
+  if (dataObject && dataObject->getDataEntity () != nullptr)
     {
-      if (this->_object != object)
+      content
+        = dynamic_cast<NodeEntity *> (dataObject->getDataEntity ())->getContent();
+
+      if (content)
         {
-          _preparedEvents.clear ();
-          this->_object = object;
-
-          g_assert_nonnull (_object);
-          g_assert_nonnull (_object->getDataObject());
-          g_assert_nonnull (_object->getDataObject()->getDataEntity());
-
-          NodeEntity *nodeEntity
-              = dynamic_cast <NodeEntity *> (object->getDataObject()->getDataEntity());
-          g_assert_nonnull (nodeEntity);
-
-          content = nodeEntity->getContent ();
           ReferenceContent *referContent
-              = dynamic_cast <ReferenceContent *> (content);
-          if (content && referContent)
+            = dynamic_cast <ReferenceContent *>(content);
+          if (referContent)
             {
               mrl = referContent->getCompleteReferenceUrl ();
             }
-          else
-            {
-              mrl = "";
-            }
-
-          if (_player != NULL)
-            {
-              delete _player;
-              _player = NULL;
-            }
-
-          createPlayer (mrl);
-        }
-
-      NclPresentationEvent *presentationEvt =
-          dynamic_cast <NclPresentationEvent *>(event);
-      if (presentationEvt)
-        {
-          GingaTime duration = presentationEvt->getDuration ();
-
-          if (duration == 0 && explicitDur == 0)
-            return false;
-
-          // explicit duration overwrites implicit duration
-          if (GINGA_TIME_IS_VALID (explicitDur))
-            {
-              _object->removeEvent (event);
-              presentationEvt->setEnd (explicitDur);
-              _object->addEvent (event);
-            }
-        }
-
-      if (event->getCurrentState () == EventState::SLEEPING)
-        {
-          if (!this->_object->prepare (event, 0))
-            {
-              return false;
-            }
-
-          prepare (event);
-          return true;
         }
       else
         {
-          return false;
+          mrl = "";
         }
+    }
+
+  NclPresentationEvent *presentationEvent =
+    dynamic_cast <NclPresentationEvent *> (event);
+  if (presentationEvent)
+    {
+      GingaTime duration = presentationEvent->getDuration ();
+      if (duration == 0 && explicitDur == 0)
+        return false;
+
+      // explicit duration overwrites implicit duration
+      if (GINGA_TIME_IS_VALID (explicitDur))
+        {
+          _object->removeEvent (event);
+          presentationEvent->setEnd (explicitDur);
+          _object->addEvent (event);
+        }
+    }
+
+  createPlayer (mrl);
+  g_assert_nonnull (_object);
+  g_assert_nonnull (_player);
+
+  if (event->getCurrentState () == EventState::SLEEPING)
+    {
+      object->prepare (event, 0);
+      prepareScope ();
+      return true;
     }
   else
     {
-      NodeEntity *dataObject;
-
-      this->_object = object;
-      dataObject = dynamic_cast<NodeEntity *>(object->getDataObject ());
-
-      if (dataObject && dataObject->getDataEntity () != nullptr)
-        {
-          content
-              = dynamic_cast<NodeEntity *> (dataObject->getDataEntity ())->getContent();
-
-          if (content)
-            {
-              ReferenceContent *referContent
-                  = dynamic_cast <ReferenceContent *>(content);
-              if (referContent)
-                {
-                  mrl = referContent->getCompleteReferenceUrl ();
-                }
-            }
-          else
-            {
-              mrl = "";
-            }
-        }
-
-      NclPresentationEvent *presentationEvent =
-          dynamic_cast <NclPresentationEvent *> (event);
-      if (presentationEvent)
-        {
-          GingaTime duration = presentationEvent->getDuration ();
-          if (duration == 0 && explicitDur == 0)
-            return false;
-
-          // explicit duration overwrites implicit duration
-          if (GINGA_TIME_IS_VALID (explicitDur))
-            {
-              _object->removeEvent (event);
-              presentationEvent->setEnd (explicitDur);
-              _object->addEvent (event);
-            }
-        }
-
-      createPlayer (mrl);
-      g_assert_nonnull (_object);
-      g_assert_nonnull (_player);
-
-      if (event->getCurrentState () == EventState::SLEEPING)
-        {
-          object->prepare (event, 0);
-          prepareScope ();
-          return true;
-        }
-      else
-        {
-          return false;
-        }
+      return false;
     }
 }
 
@@ -634,6 +552,9 @@ PlayerAdapter::handleTickEvent (arg_unused (GingaTime total),
 
   waited = next->getTime ();
   now = _player->getMediaTime ();
+
+  // TRACE ("now=%" GINGA_TIME_FORMAT " waited=%" GINGA_TIME_FORMAT,
+  //        GINGA_TIME_ARGS (now), GINGA_TIME_ARGS (waited));
 
   if (now < waited)
     return;
