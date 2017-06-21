@@ -27,7 +27,6 @@ Player::Player (const string &mrl)
 {
   this->mrl = mrl;
   this->window = NULL;
-  this->_notifying = false;
   this->presented = false;
   this->visible = true;
   this->status = PL_SLEEPING;
@@ -59,8 +58,6 @@ Player::~Player ()
 {
   if (this->texture != NULL)
     Ginga_Display->destroyTexture (this->texture);
-
-  _listeners.clear ();
   _properties.clear ();
 }
 
@@ -69,51 +66,6 @@ Player::setMrl (const string &mrl, bool visible)
 {
   this->mrl = mrl;
   this->visible = visible;
-}
-
-void
-Player::addListener (IPlayerListener *listener)
-{
-  if (_notifying)
-    return;
-  _listeners.insert (listener);
-}
-
-void
-Player::removeListener (IPlayerListener *listener)
-{
-  set<IPlayerListener *>::iterator i;
-
-  if (!_notifying)
-    {
-      i = _listeners.find (listener);
-      if (i != _listeners.end ())
-        _listeners.erase (i);
-    }
-}
-
-void
-Player::notifyPlayerListeners (short code,
-                               const string &parameter,
-                               PlayerEventType type,
-                               const string &value)
-{
-  string p;
-  string v;
-
-  this->_notifying = true;
-
-  if (code == PL_NOTIFY_STOP)
-    this->presented = true;
-
-  if (_listeners.empty ())
-    {
-      this->_notifying = false;
-      return;
-    }
-
-  for (auto i: this->_listeners)
-    i->updateStatus (code, parameter, type, value);
 }
 
 void G_GNUC_NORETURN

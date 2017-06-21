@@ -59,7 +59,6 @@ PlayerAdapter::~PlayerAdapter ()
 {
   if (_player)
     {
-      _player->removeListener (this);
       if(_player->getMediaStatus () != Player::PL_SLEEPING)
         _player->stop ();
       delete _player;
@@ -1088,14 +1087,6 @@ PlayerAdapter::getProperty (NclAttributionEvent *event)
 }
 
 void
-PlayerAdapter::updateStatus (arg_unused (short code),
-                             arg_unused (const string &parameter),
-                             arg_unused (short type),
-                             arg_unused (const string &value))
-{
-}
-
-void
 PlayerAdapter::handleTickEvent (arg_unused (GingaTime total),
                                 GingaTime diff,
                                 arg_unused (int frame))
@@ -1237,7 +1228,6 @@ PlayerAdapter::createPlayer (const string &uri)
         }
     }
 
-  _player->addListener (this);
   descriptor = _object->getDescriptor ();
   if (descriptor != nullptr)
     {
