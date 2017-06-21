@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef EventTransitionManager_H_
 #define EventTransitionManager_H_
 
-#include "FormatterEvents.h"
+#include "NclEvents.h"
 
 #include "ncl/EventUtil.h"
 using namespace ::ginga::ncl;
@@ -44,9 +44,9 @@ public:
   void abort (GingaTime endTime, bool applicationType = false);
 
   void updateTransitionTable (GingaTime timeValue, Player *player,
-                              FormatterEvent *mainEvt);
+                              NclEvent *mainEvt);
 
-  EventTransition *nextTransition (FormatterEvent *mainEvt);
+  EventTransition *nextTransition (NclEvent *mainEvt);
 
 private:
   size_t _currentTransitionIndex;

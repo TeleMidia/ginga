@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/SimpleAction.h"
 using namespace ::ginga::ncl;
 
-#include "FormatterEvents.h"
+#include "NclEvents.h"
 
 #include "INclLinkActionListener.h"
 #include "NclLinkAction.h"
@@ -31,20 +31,20 @@ GINGA_FORMATTER_BEGIN
 class NclLinkSimpleAction : public NclLinkAction
 {
 public:
-  NclLinkSimpleAction (FormatterEvent *event, SimpleActionType type);
+  NclLinkSimpleAction (NclEvent *event, SimpleActionType type);
   virtual ~NclLinkSimpleAction ();
 
   virtual void run ();
 
-  FormatterEvent *getEvent ();
+  NclEvent *getEvent ();
   SimpleActionType getType ();
   string getTypeString ();
   void setSimpleActionListener (INclLinkActionListener *listener);
-  virtual vector<FormatterEvent *> *getEvents ();
+  virtual vector<NclEvent *> *getEvents ();
   virtual vector<NclLinkAction *> getImplicitRefRoleActions ();
 
 protected:
-  FormatterEvent *event;
+  NclEvent *event;
   SimpleActionType actionType;
 
 private:

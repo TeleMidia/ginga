@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclCascadingDescriptor.h"
 #include "ExecutionObject.h"
 
-#include "FormatterEvents.h"
+#include "NclEvents.h"
 
 #include "INclLinkActionListener.h"
 #include "NclLinkSimpleAction.h"

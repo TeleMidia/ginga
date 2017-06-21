@@ -105,7 +105,7 @@ FormatterScheduler::scheduleAction (NclLinkSimpleAction *action)
 void
 FormatterScheduler::runAction (NclLinkSimpleAction *action)
 {
-  FormatterEvent *event = action->getEvent ();
+  NclEvent *event = action->getEvent ();
 
   assert (event != NULL);
 
@@ -120,7 +120,7 @@ FormatterScheduler::runAction (NclLinkSimpleAction *action)
 }
 
 void
-FormatterScheduler::runAction (FormatterEvent *event,
+FormatterScheduler::runAction (NclEvent *event,
                                NclLinkSimpleAction *action)
 {
   ExecutionObject *obj;
@@ -232,7 +232,7 @@ FormatterScheduler::runAction (FormatterEvent *event,
 }
 
 void
-FormatterScheduler::runActionOverProperty (FormatterEvent *event,
+FormatterScheduler::runActionOverProperty (NclEvent *event,
                                            NclLinkSimpleAction *action)
 {
   SimpleActionType actionType;
@@ -396,15 +396,15 @@ FormatterScheduler::runActionOverComposition (
 
   PlayerAdapter *pAdapter;
   AttributionEvent *attrEvent;
-  FormatterEvent *event;
+  NclEvent *event;
   string propName;
   string propValue;
 
   vector<Node *> *nestedSeq;
 
-  FormatterEvent *childEvent;
+  NclEvent *childEvent;
   int i, size = 0;
-  vector<FormatterEvent *> *events;
+  vector<NclEvent *> *events;
   EventType eventType = EventType::UNKNOWN;
 
   clog << "FormatterScheduler::runActionOverComposition ";
@@ -530,7 +530,7 @@ FormatterScheduler::runActionOverComposition (
                   = compositeObject->getNodePerspective ();
             }
 
-          events = new vector<FormatterEvent *>;
+          events = new vector<NclEvent *>;
           for (i = 0; i < size; i++)
             {
               port = compositeNode->getPort (i);
@@ -625,7 +625,7 @@ FormatterScheduler::runActionOverComposition (
             }
         }
 
-      events = new vector<FormatterEvent *>;
+      events = new vector<NclEvent *>;
 
       compositeNode = (CompositeNode *)(compositeObject->getDataObject ()
                                             ->getDataEntity ());
@@ -727,7 +727,7 @@ FormatterScheduler::runActionOverSwitch (
     NclLinkSimpleAction *action)
 {
   ExecutionObject *selectedObject;
-  FormatterEvent *selectedEvent;
+  NclEvent *selectedEvent;
 
   selectedObject = switchObject->getSelectedObject ();
   if (selectedObject == NULL)
@@ -765,7 +765,7 @@ FormatterScheduler::runSwitchEvent (ExecutionObjectSwitch *switchObject,
                                     ExecutionObject *selectedObject,
                                     NclLinkSimpleAction *action)
 {
-  FormatterEvent *selectedEvent;
+  NclEvent *selectedEvent;
   SwitchPort *switchPort;
   vector<Port *> *mappings;
   vector<Port *>::iterator i;
@@ -830,7 +830,7 @@ string
 FormatterScheduler::solveImplicitRefAssessment (const string &propValue,
                                                 AttributionEvent *event)
 {
-  FormatterEvent *refEvent;
+  NclEvent *refEvent;
   ExecutionObject *refObject;
   string auxVal = "", roleId = "";
 
@@ -867,7 +867,7 @@ FormatterScheduler::solveImplicitRefAssessment (const string &propValue,
 }
 
 void
-FormatterScheduler::startEvent (FormatterEvent *event)
+FormatterScheduler::startEvent (NclEvent *event)
 {
   NclLinkSimpleAction *fakeAction;
 
@@ -877,7 +877,7 @@ FormatterScheduler::startEvent (FormatterEvent *event)
 }
 
 void
-FormatterScheduler::stopEvent (FormatterEvent *event)
+FormatterScheduler::stopEvent (NclEvent *event)
 {
   NclLinkSimpleAction *fakeAction;
 
@@ -887,7 +887,7 @@ FormatterScheduler::stopEvent (FormatterEvent *event)
 }
 
 void
-FormatterScheduler::pauseEvent (FormatterEvent *event)
+FormatterScheduler::pauseEvent (NclEvent *event)
 {
   NclLinkSimpleAction *fakeAction;
 
@@ -897,7 +897,7 @@ FormatterScheduler::pauseEvent (FormatterEvent *event)
 }
 
 void
-FormatterScheduler::resumeEvent (FormatterEvent *event)
+FormatterScheduler::resumeEvent (NclEvent *event)
 {
   NclLinkSimpleAction *fakeAction;
 
@@ -912,7 +912,7 @@ FormatterScheduler::startDocument (const string &file)
   string id;
   ContextNode *body;
   vector<Port *> *ports;
-  vector<FormatterEvent *> *entryevts;
+  vector<NclEvent *> *entryevts;
   NclNodeNesting *persp;
 
   // Parse document.
@@ -933,10 +933,10 @@ FormatterScheduler::startDocument (const string &file)
 
   persp = new NclNodeNesting ();
   persp->insertAnchorNode (body);
-  entryevts = new vector<FormatterEvent *>;
+  entryevts = new vector<NclEvent *>;
   for (auto port: *ports)
     {
-      FormatterEvent *evt = this->compiler->insertContext (persp, port);
+      NclEvent *evt = this->compiler->insertContext (persp, port);
       g_assert_nonnull (evt);
       entryevts->push_back (evt);
     }
@@ -997,13 +997,13 @@ FormatterScheduler::startDocument (const string &file)
 
 void
 FormatterScheduler::eventStateChanged (
-    FormatterEvent *event,
+    NclEvent *event,
     EventStateTransition transition,
     arg_unused (EventState previousState))
 {
   ExecutionObject *object;
   PlayerAdapter *player;
-  vector<FormatterEvent *>::iterator it;
+  vector<NclEvent *>::iterator it;
   bool contains;
   bool hasOther;
 

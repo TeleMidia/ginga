@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclLinkSimpleAction::NclLinkSimpleAction (FormatterEvent *event,
+NclLinkSimpleAction::NclLinkSimpleAction (NclEvent *event,
                                           SimpleActionType type)
     : NclLinkAction (0.)
 {
@@ -43,7 +43,7 @@ NclLinkSimpleAction::~NclLinkSimpleAction ()
   event = NULL;
 }
 
-FormatterEvent *
+NclEvent *
 NclLinkSimpleAction::getEvent ()
 {
   return event;
@@ -73,14 +73,14 @@ NclLinkSimpleAction::setSimpleActionListener (
   this->listener = listener;
 }
 
-vector<FormatterEvent *> *
+vector<NclEvent *> *
 NclLinkSimpleAction::getEvents ()
 {
   if (event == NULL)
     return NULL;
 
-  vector<FormatterEvent *> *events;
-  events = new vector<FormatterEvent *>;
+  vector<NclEvent *> *events;
+  events = new vector<NclEvent *>;
 
   events->push_back (event);
   return events;

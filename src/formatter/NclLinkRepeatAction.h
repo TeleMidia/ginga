@@ -20,14 +20,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclLinkSimpleAction.h"
 
-#include "FormatterEvents.h"
+#include "NclEvents.h"
 
 GINGA_FORMATTER_BEGIN
 
 class NclLinkRepeatAction : public NclLinkSimpleAction
 {
 public:
-  NclLinkRepeatAction (FormatterEvent *, SimpleActionType);
+  NclLinkRepeatAction (NclEvent *, SimpleActionType);
   virtual ~NclLinkRepeatAction ();
 
   virtual void run () override;

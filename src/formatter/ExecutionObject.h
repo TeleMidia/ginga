@@ -31,7 +31,7 @@ using namespace ::ginga::player;
 #include "ncl/EventUtil.h"
 using namespace ::ginga::ncl;
 
-#include "FormatterEvents.h"
+#include "NclEvents.h"
 #include "NclEventTransitionManager.h"
 #include "NclCascadingDescriptor.h"
 #include "NclFormatterRegion.h"
@@ -72,28 +72,28 @@ public:
 
   void setDescriptor (NclCascadingDescriptor *cascadingDescriptor);
   void setDescriptor (GenericDescriptor *_descriptor);
-  virtual bool addEvent (FormatterEvent *event);
+  virtual bool addEvent (NclEvent *event);
   void addPresentationEvent (PresentationEvent *event);
-  bool containsEvent (FormatterEvent *event);
-  FormatterEvent *getEventFromAnchorId (const string &anchorId);
+  bool containsEvent (NclEvent *event);
+  NclEvent *getEventFromAnchorId (const string &anchorId);
 
-  FormatterEvent *getEvent (const string &id);
-  vector<FormatterEvent *> getEvents ();
+  NclEvent *getEvent (const string &id);
+  vector<NclEvent *> getEvents ();
 
   PresentationEvent *getWholeContentPresentationEvent ();
-  bool removeEvent (FormatterEvent *event);
+  bool removeEvent (NclEvent *event);
   bool isCompiled ();
   void setCompiled (bool status);
   vector<Node *> getNodes ();
   PropertyAnchor *getNCMProperty (const string &propertyName);
   NclNodeNesting *getNodePerspective ();
   NclNodeNesting *getNodePerspective (Node *node);
-  FormatterEvent *getMainEvent ();
+  NclEvent *getMainEvent ();
 
   void updateTransitionTable (GingaTime value, Player *player);
   virtual EventTransition *getNextTransition ();
 
-  virtual bool prepare (FormatterEvent *event, GingaTime offsetTime);
+  virtual bool prepare (NclEvent *event, GingaTime offsetTime);
   virtual bool start ();
   virtual bool stop ();
   virtual bool abort ();
@@ -122,13 +122,13 @@ protected:
   bool _isHandling;
 
   map<Node *, ExecutionObjectContext *> _parentTable;
-  map<string, FormatterEvent *> _events;
+  map<string, NclEvent *> _events;
   vector<PresentationEvent *> _presEvents;
   set<SelectionEvent *> _selectionEvents;
-  vector<FormatterEvent *> _otherEvents;
+  vector<NclEvent *> _otherEvents;
 
   int _pauseCount;
-  FormatterEvent *_mainEvent;
+  NclEvent *_mainEvent;
   NclEventTransitionManager _transMan;
   ExecutionObject *_mirrorSrc;
 
@@ -137,7 +137,7 @@ protected:
   void prepareTransitionEvents (GingaTime startTime);
   void destroyEvents ();
   virtual void unsetParentsAsListeners ();
-  virtual void removeParentListenersFromEvent (FormatterEvent *event);
+  virtual void removeParentListenersFromEvent (NclEvent *event);
 
   static void addInstance (ExecutionObject *object);
   static bool removeInstance (ExecutionObject *object);
