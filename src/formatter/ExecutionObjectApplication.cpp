@@ -273,7 +273,7 @@ ExecutionObjectApplication::getNextTransition ()
       return nullptr;
     }
 
-  return _transMan.getNextTransition (_currentEvent);
+  return _transMan.nextTransition (_currentEvent);
 }
 
 bool
