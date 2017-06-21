@@ -25,21 +25,13 @@ NclLinkAction::NclLinkAction (GingaTime delay)
   initLinkAction (delay);
 }
 
-NclLinkAction::~NclLinkAction ()
-{
-  if (progressionListeners != NULL)
-    {
-      delete progressionListeners;
-      progressionListeners = NULL;
-    }
-}
+NclLinkAction::~NclLinkAction () {}
 
 void
 NclLinkAction::initLinkAction (GingaTime delay)
 {
-  satisfiedCondition = NULL;
+  satisfiedCondition = nullptr;
   this->delay = delay;
-  progressionListeners = new vector<NclLinkActionProgressionListener *>;
   typeSet.insert ("NclLinkAction");
 }
 
@@ -91,48 +83,30 @@ void
 NclLinkAction::addActionProgressionListener (
     NclLinkActionProgressionListener *listener)
 {
-  vector<NclLinkActionProgressionListener *>::iterator i;
-
-  if (tryLock ())
+  auto i = progressListeners.begin ();
+  while (i != progressListeners.end ())
     {
-      if (progressionListeners != NULL)
+      if (listener == *i)
         {
-          i = progressionListeners->begin ();
-          while (i != progressionListeners->end ())
-            {
-              if (listener == *i)
-                {
-                  clog << "NclLinkAction::addActionProgressionListener ";
-                  clog << "Warning! Trying to add the same listener twice";
-                  clog << endl;
-                  return;
-                }
-              ++i;
-            }
-          progressionListeners->push_back (listener);
+          WARNING ("Trying to add the same listener twice.");
+          return;
         }
+      ++i;
     }
+  progressListeners.push_back (listener);
 }
 
 void
 NclLinkAction::removeActionProgressionListener (
     NclLinkActionProgressionListener *listener)
 {
-  vector<NclLinkActionProgressionListener *>::iterator i;
-
-  if (tryLock ())
+  for (auto i = progressListeners.begin ();
+       i != progressListeners.end (); ++i)
     {
-      if (progressionListeners != NULL)
+      if (*i == listener)
         {
-          for (i = progressionListeners->begin ();
-               i != progressionListeners->end (); ++i)
-            {
-              if (*i == listener)
-                {
-                  progressionListeners->erase (i);
-                  break;
-                }
-            }
+          progressListeners.erase (i);
+          break;
         }
     }
 }
@@ -140,32 +114,14 @@ NclLinkAction::removeActionProgressionListener (
 void
 NclLinkAction::notifyProgressionListeners (bool start)
 {
-  size_t i, size;
   NclLinkActionProgressionListener *listener;
-  vector<NclLinkActionProgressionListener *> *notifyList;
+  vector<NclLinkActionProgressionListener *> notifyList (progressListeners);
 
-  if (tryLock ())
+  for (size_t i = 0; i < notifyList.size (); i++)
     {
-      if (progressionListeners != NULL)
-        {
-          notifyList = new vector<NclLinkActionProgressionListener *> (
-              *progressionListeners);
-
-          size = notifyList->size ();
-          for (i = 0; i < size; i++)
-            {
-              listener = (*notifyList)[i];
-              listener->actionProcessed (start);
-            }
-          delete notifyList;
-        }
+      listener = notifyList[i];
+      listener->actionProcessed (start);
     }
-}
-
-bool
-NclLinkAction::tryLock ()
-{
-  return true;
 }
 
 GINGA_FORMATTER_END
