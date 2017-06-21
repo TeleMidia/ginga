@@ -55,7 +55,7 @@ public:
   Player (const string &mrl);
   virtual ~Player ();
 
-  virtual void setMrl (const string &mrl, bool visible = true);
+  virtual void setMrl (const string &mrl);
   void setAnimatorProperties (string dur, string name, string value);
 
   PlayerStatus getMediaStatus();
@@ -77,9 +77,6 @@ public:
   virtual string getProperty (const string &);
   virtual void setProperty (const string &, const string &);
 
-  bool isVisible ();
-  void setVisible (bool visible);
-
   virtual void setOutWindow (SDLWindow *);
   virtual void setCurrentScope (arg_unused (const string &scopeId)) {}
 
@@ -92,7 +89,6 @@ protected:
   SDLWindow *window;
   PlayerAnimator *animator;
   bool presented;
-  bool visible;
   PlayerEventType scopeType;
   string scope;
   GingaTime scopeInitTime;

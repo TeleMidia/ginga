@@ -196,7 +196,6 @@ FocusManager::getObjectFromFocusIndex (const string &focusIndex)
   map<string, set<ExecutionObject *> *>::iterator i;
   set<ExecutionObject *>::iterator j;
   NclCascadingDescriptor *desc;
-  bool visible;
 
   i = _focusTable->find (focusIndex);
   if (i == _focusTable->end ())
@@ -210,11 +209,7 @@ FocusManager::getObjectFromFocusIndex (const string &focusIndex)
       desc = (*j)->getDescriptor ();
       if (desc != NULL && desc->getFormatterRegion () != NULL)
         {
-          visible = desc->getFormatterRegion ()->isVisible ();
-          if (visible)
-            {
-              return *j;
-            }
+          return *j;
         }
       ++j;
     }
@@ -299,7 +294,6 @@ FocusManager::setKeyMaster (const string &mediaId)
   ExecutionObject *nextObject = NULL;
   NclCascadingDescriptor *nextDescriptor = NULL;
   NclFormatterRegion *fr = NULL;
-  bool isFRVisible = false;
   bool abortKeyMaster = false;
   string lastFocus = "";
 
@@ -340,15 +334,7 @@ FocusManager::setKeyMaster (const string &mediaId)
 
   if (fr != NULL)
     {
-      isFRVisible = fr->isVisible ();
-      if (isFRVisible)
-        {
-          fr->setSelection (true);
-        }
-      else
-        {
-          abortKeyMaster = true;
-        }
+      fr->setSelection (true);
     }
   else
     {
@@ -550,12 +536,11 @@ FocusManager::showObject (ExecutionObject *object)
   else
     {
       paramValue = _settings->get ("service.currentFocus");
-      if (paramValue != "" && paramValue == focusIndex && fr->isVisible ())
+      if (paramValue != "" && paramValue == focusIndex)
         setFocus (focusIndex);
 
       paramValue = _settings->get ("service.currentKeyMaster");
-      if ((paramValue == mediaId || _objectToSelect == mediaId)
-          && fr->isVisible ())
+      if ((paramValue == mediaId || _objectToSelect == mediaId))
         {
           _objectToSelect = "";
 
