@@ -998,6 +998,7 @@ FormatterScheduler::startDocument (const string &file)
 {
   string id;
   ContextNode *body;
+  vector<Port *> *ports;
   vector<NclFormatterEvent *> *entryevts;
   NclNodeNesting *persp;
 
@@ -1013,10 +1014,14 @@ FormatterScheduler::startDocument (const string &file)
     ERROR_SYNTAX ("document has no body");
 
   // Get entry events (i.e., those mapped by ports).
+  ports = body->getPorts ();
+  if (unlikely (ports == NULL))
+    ERROR ("document has no ports");
+
   persp = new NclNodeNesting ();
   persp->insertAnchorNode (body);
   entryevts = new vector<NclFormatterEvent *>;
-  for (auto port: *body->getPorts ())
+  for (auto port: *ports)
     {
       NclFormatterEvent *evt = this->compiler->insertContext (persp, port);
       g_assert_nonnull (evt);
