@@ -564,40 +564,16 @@ Converter::createExecutionObject (
                                                               nullptr);
                   if (exeObj == nullptr)
                     {
-                      if (isEmbeddedApp (nodeEntity))
-                        {
-                          exeObj
-                              = new ExecutionObjectApplication (
-                                id, nodeEntity, descriptor, _handling,
-                                _actionListener);
-                        }
-                      else
-                        {
-                          exeObj  = new ExecutionObject (
-                                id, nodeEntity, descriptor, _handling,
-                                _actionListener);
-                        }
-
-                      // TODO informa a substituicao
+                      exeObj  = new ExecutionObject
+                        (id, nodeEntity, descriptor, _handling,
+                         _actionListener);
                     }
                 }
               else
                 {
-                  // not in the same base => create a new version
-                  if (isEmbeddedApp (nodeEntity))
-                    {
-                      exeObj = new ExecutionObjectApplication (
-                            id, nodeEntity, descriptor, _handling,
-                            _actionListener);
-                    }
-                  else
-                    {
-                      exeObj = new ExecutionObject (
-                            id, nodeEntity, descriptor, _handling,
-                            _actionListener);
-                    }
-
-                  // TODO informa a substituicao
+                  exeObj = new ExecutionObject
+                    (id, nodeEntity, descriptor, _handling,
+                     _actionListener);
                 }
 
               delete nodePerspective;
@@ -645,11 +621,6 @@ Converter::createExecutionObject (
       // to monitor the presentation and remove object at stops
       // compositeEvent->addEventListener(this);
     }
-  else if (isEmbeddedApp (nodeEntity))
-    {
-      exeObj = new ExecutionObjectApplication (
-            id, node, descriptor, _handling, _actionListener);
-    }
   else
     {
       exeObj = new ExecutionObject (id, node, descriptor,
@@ -658,8 +629,6 @@ Converter::createExecutionObject (
 
   return exeObj;
 }
-
-
 
 Descriptor *
 Converter::createDummyDescriptor (arg_unused (Node *node))
@@ -1365,43 +1334,6 @@ Converter::eventStateChanged (NclFormatterEvent *event,
 }
 
 bool
-Converter::isEmbeddedApp (NodeEntity *dataObject)
-{
-  string mime = "";
-
-  // second, media type
-  auto contentNode = dynamic_cast<ContentNode *> (dataObject);
-  if (contentNode)
-    {
-      mime = contentNode->getNodeType ();
-    }
-
-  // finally, content file extension
-  auto content = dataObject->getContent ();
-  if (content)
-    {
-      auto referenceContent = dynamic_cast<ReferenceContent *> (content);
-      if (referenceContent)
-        {
-          string url = referenceContent->getCompleteReferenceUrl ();
-
-          if (url != "")
-            {
-              string::size_type pos = url.find_last_of (".");
-              if (pos != std::string::npos)
-                {
-                  string mime = "";
-                  string ext = url.substr (pos, url.length () - (pos + 1));
-                  ginga_mime_table_index (ext, &mime);
-                }
-            }
-        }
-    }
-
-  return isEmbeddedAppMediaType (mime);
-}
-
-bool
 Converter::hasDescriptorPropName (const string &name)
 {
   static const set <string> words = { "left", "top", "width", "height",
@@ -1410,18 +1342,6 @@ Converter::hasDescriptorPropName (const string &name)
                                       "zIndex" };
 
   return words.count(name);
-}
-
-bool
-Converter::isEmbeddedAppMediaType (const string &mediaType)
-{
-  static const set <string> appMediaTypes = { "application/x-ginga-nclua",
-                                              "application/x-ginga-nclet",
-                                              "application/x-ginga-ncl",
-                                              "application/x-ncl-ncl",
-                                              "application/x-ncl-nclua" };
-
-  return appMediaTypes.count (xstrdown (mediaType));
 }
 
 NclFormatterCausalLink *

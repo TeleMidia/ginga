@@ -41,8 +41,6 @@ private:
   LayoutRegion *region;
   SDLWindow *win;
 
-  bool imVisible;
-
   short focusState;
   SDL_Color focusBorderColor;
   int focusBorderWidth;
@@ -125,14 +123,8 @@ public:
   void showContent ();
   void hideContent ();
 
-  void setRegionVisibility (bool visible);
-
-private:
-  void disposeOutputDisplay ();
-
 public:
   void setGhostRegion (bool ghost);
-  bool isVisible ();
   short getFocusState ();
   bool setSelection (bool selOn);
   void setFocus (bool focusOn);

@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "PlayerAdapter.h"
 
 #include "FormatterScheduler.h"
-#include "ExecutionObjectApplication.h"
 #include "NclLinkTransitionTriggerCondition.h"
 
 #include "mb/Display.h"
@@ -50,7 +49,6 @@ PlayerAdapter::PlayerAdapter (FormatterScheduler *scheduler)
   this->_scheduler = scheduler;
   this->_object = nullptr;
   this->_player = nullptr;
-  this->_isAppPlayer = false;
   this->_currentEvent = nullptr;
   g_assert (Ginga_Display->registerEventListener (this));
 }
@@ -72,11 +70,7 @@ bool
 PlayerAdapter::setCurrentEvent (NclFormatterEvent *event)
 {
 
-  ExecutionObjectApplication *appObject;
   string ifId;
-
-  appObject = dynamic_cast <ExecutionObjectApplication *> (_object);
-  g_assert_nonnull (appObject);
 
   if (_preparedEvents.count (event->getId ()) != 0
       && !event->instanceOf ("NclSelectionEvent")
@@ -101,7 +95,6 @@ PlayerAdapter::setCurrentEvent (NclFormatterEvent *event)
           ifId = "";
         }
       _currentEvent = event;
-      appObject->setCurrentEvent (_currentEvent);
       _player->setCurrentScope (ifId);
     }
   else if (event->instanceOf ("NclAttributionEvent"))
@@ -114,8 +107,6 @@ PlayerAdapter::setCurrentEvent (NclFormatterEvent *event)
       _player->setScope (ifId, Player::PL_TYPE_ATTRIBUTION);
 
       _currentEvent = event;
-      appObject->setCurrentEvent (_currentEvent);
-
       _player->setCurrentScope (ifId);
     }
   else
@@ -144,8 +135,6 @@ PlayerAdapter::setOutputWindow (SDLWindow *win)
 bool
 PlayerAdapter::hasPrepared ()
 {
-  NclFormatterEvent *evt;
-
   if (_object == nullptr)
     {
       TRACE ("failed, object is null");
@@ -158,250 +147,7 @@ PlayerAdapter::hasPrepared ()
       return false;
     }
 
-  if (_isAppPlayer)
-    return true;                // nothing to do
-
-  evt = _object->getMainEvent ();
-  if (evt == nullptr)
-    {
-      TRACE ("failed, main event is null");
-      return false;
-    }
-
-  if (evt->getCurrentState () == EventState::SLEEPING)
-    {
-      TRACE ("failed, main event is sleeping");
-      return false;
-    }
-
   return true;
-}
-
-GingaTime
-PlayerAdapter::prepareProperties (ExecutionObject *obj)
-{
-  NclCascadingDescriptor *descriptor;
-  LayoutRegion *region = nullptr;
-  vector<PropertyAnchor *> *anchors;
-  string name, value;
-  NclFormatterRegion *fRegion = nullptr;
-  Node *ncmNode;
-  GingaTime explicitDur = GINGA_TIME_NONE;
-
-  string left = "", top = "", width = "",
-    height = "", bottom = "", right = "";
-
-  descriptor = obj->getDescriptor ();
-  if (descriptor != nullptr)
-    {
-      fRegion = descriptor->getFormatterRegion ();
-      if (fRegion != nullptr)
-        {
-          region = fRegion->getLayoutRegion ();
-        }
-      else
-        {
-          region = nullptr;
-        }
-    }
-
-  if (region == nullptr)
-    {
-      PropertyAnchor *property = obj->getNCMProperty ("explicitDur");
-      if (property != nullptr)
-        {
-          value = property->getValue ();
-          explicitDur = ginga_parse_time (value);
-        }
-
-      return explicitDur;
-    }
-
-  map <string, string> properties;
-
-  // Get the properties from the descriptor.
-  for (Parameter &param : descriptor->getParameters())
-    {
-      properties[param.getName()] = param.getValue();
-    }
-
-  // Get the properties from the object.
-  ncmNode = obj->getDataObject ();
-  anchors = ((Node *)ncmNode)->getOriginalPropertyAnchors ();
-  g_assert_nonnull (anchors);
-
-  for (PropertyAnchor *property : *anchors)
-    properties[property->getName()] = property->getValue();
-
-  for (auto it: properties)
-    {
-      name = it.first;
-      value = it.second;
-
-      TRACE ( "preparing name='%s', value='%s'", name.c_str(), value.c_str());
-      if (value != "")
-        {
-          if (name == "explicitDur")
-            {
-              explicitDur = ginga_parse_time (value);
-            }
-          else if (name == "left")
-            {
-              left = value;
-            }
-          else if (name == "top")
-            {
-              top = value;
-            }
-          else if (name == "width")
-            {
-              width = value;
-            }
-          else if (name == "height")
-            {
-              height = value;
-            }
-          else if (name == "bottom")
-            {
-              bottom = value;
-            }
-          else if (name == "right")
-            {
-              right = value;
-            }
-          else if (name == "zIndex")
-            {
-              //zindex = value;
-            }
-          else if (name == "bounds")
-            {
-              vector<string> v;
-
-              if (unlikely (!_ginga_parse_list (value, ',', 4, 4, &v)))
-                {
-                  ERROR_SYNTAX ("property 'bounds': bad value '%s'",
-                                value.c_str ());
-                }
-              left = v[0];
-              top = v[1];
-              width = v[2];
-              height = v[3];
-            }
-          else if (name == "location")
-            {
-              vector<string> v;
-
-              if (unlikely (!_ginga_parse_list (value, ',', 2, 2, &v)))
-                {
-                  ERROR_SYNTAX ("property 'location': bad value '%s'",
-                                value.c_str ());
-                }
-              left = v[0];
-              top = v[1];
-            }
-          else if (name == "size")
-            {
-              vector<string> v;
-
-              if (unlikely (!_ginga_parse_list (value, ',', 2, 2, &v)))
-                {
-                  ERROR_SYNTAX ("property 'location': bad value '%s'",
-                                value.c_str ());
-                }
-              width = v[0];
-              height = v[1];
-            }
-          else if (name == "background")
-            {
-              if (fRegion != nullptr)
-                {
-                  fRegion->setBackgroundColor (ginga_parse_color (value));
-                }
-            }
-          else if (name == "focusIndex")
-            {
-              if (fRegion != nullptr)
-                {
-                  fRegion->setFocusIndex (value);
-                }
-            }
-          else if (name == "focusBorderColor")
-            {
-              if (fRegion != nullptr)
-                {
-                  fRegion->setFocusBorderColor (ginga_parse_color (value));
-                }
-            }
-          else if (name == "focusBorderWidth")
-            {
-              if (fRegion != nullptr)
-                {
-                  fRegion->setFocusBorderWidth (xstrtoint (value, 10));
-                }
-            }
-          else if (name == "focusComponentSrc")
-            {
-              if (fRegion != nullptr)
-                {
-                  fRegion->setFocusComponentSrc (value);
-                }
-            }
-          else if (name == "selBorderColor")
-            {
-              if (fRegion != nullptr)
-                {
-                  fRegion->setSelBorderColor (ginga_parse_color (value));
-                }
-            }
-          else if (name == "selBorderWidth")
-            {
-              if (fRegion != nullptr)
-                {
-                  fRegion->setSelBorderWidth (xstrtoint (value, 10));
-                }
-            }
-          else if (name == "selComponentSrc")
-            {
-              if (fRegion != nullptr)
-                {
-                  fRegion->setSelComponentSrc (value);
-                }
-            }
-          else if (name == "moveUp")
-            {
-              if (fRegion != nullptr)
-                {
-                  fRegion->setMoveUp (value);
-                }
-            }
-          else if (name == "moveDown")
-            {
-              if (fRegion != nullptr)
-                {
-                  fRegion->setMoveDown (value);
-                }
-            }
-          else if (name == "moveLeft")
-            {
-              if (fRegion != nullptr)
-                {
-                  fRegion->setMoveLeft (value);
-                }
-            }
-          else if (name == "moveRight")
-            {
-              if (fRegion != nullptr)
-                {
-                  fRegion->setMoveRight (value);
-                }
-            }
-        }
-    }
-
-  if (descriptor != nullptr)
-    explicitDur = descriptor->getExplicitDuration ();
-
-  return explicitDur;
 }
 
 bool
@@ -420,140 +166,61 @@ PlayerAdapter::prepare (ExecutionObject *object,
       return false;
     }
 
-  if (object->instanceOf("ExecutionObjectApplication"))
+  NodeEntity *dataObject;
+
+  this->_object = object;
+  dataObject = dynamic_cast<NodeEntity *>(object->getDataObject ());
+
+  if (dataObject && dataObject->getDataEntity () != nullptr)
     {
-      if (this->_object != object)
+      content
+        = dynamic_cast<NodeEntity *> (dataObject->getDataEntity ())->getContent();
+
+      if (content)
         {
-          _preparedEvents.clear ();
-          this->_object = object;
-
-          g_assert_nonnull (_object);
-          g_assert_nonnull (_object->getDataObject());
-          g_assert_nonnull (_object->getDataObject()->getDataEntity());
-
-          NodeEntity *nodeEntity
-              = dynamic_cast <NodeEntity *> (object->getDataObject()->getDataEntity());
-          g_assert_nonnull (nodeEntity);
-
-          content = nodeEntity->getContent ();
           ReferenceContent *referContent
-              = dynamic_cast <ReferenceContent *> (content);
-          if (content && referContent)
+            = dynamic_cast <ReferenceContent *>(content);
+          if (referContent)
             {
               mrl = referContent->getCompleteReferenceUrl ();
             }
-          else
-            {
-              mrl = "";
-            }
-
-          if (_player != NULL)
-            {
-              delete _player;
-              _player = NULL;
-            }
-
-          //explicitDur = prepareProperties (object);
-          createPlayer (mrl);
         }
       else
         {
-          //explicitDur = prepareProperties (object);
+          mrl = "";
         }
+    }
 
-      NclPresentationEvent *presentationEvt =
-          dynamic_cast <NclPresentationEvent *>(event);
-      if (presentationEvt)
+  NclPresentationEvent *presentationEvent =
+    dynamic_cast <NclPresentationEvent *> (event);
+  if (presentationEvent)
+    {
+      GingaTime duration = presentationEvent->getDuration ();
+      if (duration == 0 && explicitDur == 0)
+        return false;
+
+      // explicit duration overwrites implicit duration
+      if (GINGA_TIME_IS_VALID (explicitDur))
         {
-          GingaTime duration = presentationEvt->getDuration ();
-
-          if (duration == 0 && explicitDur == 0)
-            return false;
-
-          // explicit duration overwrites implicit duration
-          if (GINGA_TIME_IS_VALID (explicitDur))
-            {
-              _object->removeEvent (event);
-              presentationEvt->setEnd (explicitDur);
-              _object->addEvent (event);
-            }
+          _object->removeEvent (event);
+          presentationEvent->setEnd (explicitDur);
+          _object->addEvent (event);
         }
+    }
 
-      if (event->getCurrentState () == EventState::SLEEPING)
-        {
-          if (!this->_object->prepare (event, 0))
-            {
-              return false;
-            }
+  createPlayer (mrl);
+  g_assert_nonnull (_object);
+  g_assert_nonnull (_player);
 
-          prepare (event);
-          return true;
-        }
-      else
-        {
-          return false;
-        }
+  if (event->getCurrentState () == EventState::SLEEPING)
+    {
+      object->prepare (event, 0);
+      prepareScope ();
+      return true;
     }
   else
     {
-      NodeEntity *dataObject;
-
-      this->_object = object;
-      dataObject = dynamic_cast<NodeEntity *>(object->getDataObject ());
-
-      if (dataObject && dataObject->getDataEntity () != nullptr)
-        {
-          content
-              = dynamic_cast<NodeEntity *> (dataObject->getDataEntity ())->getContent();
-
-          if (content)
-            {
-              ReferenceContent *referContent
-                  = dynamic_cast <ReferenceContent *>(content);
-              if (referContent)
-                {
-                  mrl = referContent->getCompleteReferenceUrl ();
-                }
-            }
-          else
-            {
-              mrl = "";
-            }
-        }
-
-      //explicitDur = prepareProperties (object);
-
-      NclPresentationEvent *presentationEvent =
-          dynamic_cast <NclPresentationEvent *> (event);
-      if (presentationEvent)
-        {
-          GingaTime duration = presentationEvent->getDuration ();
-          if (duration == 0 && explicitDur == 0)
-            return false;
-
-          // explicit duration overwrites implicit duration
-          if (GINGA_TIME_IS_VALID (explicitDur))
-            {
-              _object->removeEvent (event);
-              presentationEvent->setEnd (explicitDur);
-              _object->addEvent (event);
-            }
-        }
-
-      createPlayer (mrl);
-      g_assert_nonnull (_object);
-      g_assert_nonnull (_player);
-
-      if (event->getCurrentState () == EventState::SLEEPING)
-        {
-          object->prepare (event, 0);
-          prepareScope ();
-          return true;
-        }
-      else
-        {
-          return false;
-        }
+      return false;
     }
 }
 
@@ -682,7 +349,6 @@ PlayerAdapter::prepareScope (GingaTime offset)
 bool
 PlayerAdapter::start ()
 {
-  NclCascadingDescriptor *descriptor;
   string paramValue;
 
   g_assert_nonnull (_object);
@@ -694,20 +360,6 @@ PlayerAdapter::start ()
                _object->getId ().c_str ());
 
       return false;
-    }
-
-  descriptor = _object->getDescriptor ();
-  if (descriptor != nullptr)
-    {
-      paramValue = descriptor->getParameterValue ("visible");
-      if (paramValue == "false")
-        {
-          setVisible (false);
-        }
-      else if (paramValue == "true")
-        {
-          setVisible (true);
-        }
     }
 
   bool startSuccess = _player->play ();
@@ -730,104 +382,35 @@ PlayerAdapter::stop ()
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
 
-  if(_isAppPlayer)
+  NclFormatterEvent *mainEvent = nullptr;
+
+  mainEvent = _object->getMainEvent ();
+
+  if (mainEvent != nullptr)
     {
-      map<string, NclFormatterEvent *>::iterator i;
-      NclFormatterEvent *event;
-      bool stopLambda = false;
+      NclPresentationEvent *presentationEvt
+        = dynamic_cast <NclPresentationEvent *> (mainEvent);
 
-      if (_currentEvent != nullptr)
+      if (presentationEvt && 0)
         {
-          NclAnchorEvent *anchorEvt
-              = dynamic_cast <NclAnchorEvent *>(_currentEvent);
-          if(anchorEvt
-             && anchorEvt->getAnchor() != NULL
-             && anchorEvt->getAnchor()->instanceOf("LambdaAnchor"))
-            {
-              stopLambda = true;
-            }
-        }
-
-      if (stopLambda)
-        {
-          TRACE ("stop lambda");
-
-          if (_currentEvent->getCurrentState () != EventState::SLEEPING)
-            {
-              _player->stop ();
-            }
-
-          i = _preparedEvents.begin ();
-          while (i != _preparedEvents.end ())
-            {
-              event = i->second;
-              if (event != _currentEvent
-                  && event->getCurrentState () != EventState::SLEEPING)
-                {
-                  _preparedEvents.erase (i);
-                  i = _preparedEvents.begin ();
-
-                  TRACE ("forcing '%s' to stop", event->getId().c_str());
-                  event->stop ();
-                }
-              else
-                {
-                  ++i;
-                }
-            }
-        }
-
-      if (_object->stop ())
-        {
-          unprepare ();
           return true;
         }
-
-      if (stopLambda && !_currentEvent->stop ())
-        {
-          WARNING ("trying to stop '%s', but it is already sleeping",
-                   _currentEvent->getId ().c_str ());
-        }
-      else
-        {
-          WARNING ("failed to stop '%s'",
-                   _currentEvent->getId ().c_str ());
-        }
-      return false;
     }
-  else
+  for (NclFormatterEvent *evt: _object->getEvents ())
     {
-      NclFormatterEvent *mainEvent = nullptr;
+      g_assert_nonnull(evt);
+      NclAttributionEvent *attributionEvt
+        = dynamic_cast <NclAttributionEvent *> (evt);
 
-      mainEvent = _object->getMainEvent ();
-
-      if (mainEvent != nullptr)
+      if (attributionEvt)
         {
-          NclPresentationEvent *presentationEvt
-              = dynamic_cast <NclPresentationEvent *> (mainEvent);
-
-          if ( presentationEvt && checkRepeat(presentationEvt) )
-            {
-                return true;
-            }
+          attributionEvt->setValueMaintainer (nullptr);
         }
-      for (NclFormatterEvent *evt: _object->getEvents ())
-        {
-          g_assert_nonnull(evt);
-          NclAttributionEvent *attributionEvt
-              = dynamic_cast <NclAttributionEvent *> (evt);
-
-          if (attributionEvt)
-            {
-              attributionEvt->setValueMaintainer (nullptr);
-            }
-        }
-
-      //_player->removeListener (this);
-      _player->stop ();
-      _object->stop ();
-      unprepare ();
     }
+
+  _player->stop ();
+  _object->stop ();
+  unprepare ();
   return true;
 }
 
@@ -868,96 +451,13 @@ PlayerAdapter::abort ()
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
 
-  if (_isAppPlayer)
+  _player->stop ();
+  if (!_object->isSleeping ())
     {
-      map<string, NclFormatterEvent *>::iterator i;
-      NclFormatterEvent *event;
-      bool abortLambda = false;
-
-      g_assert_nonnull (_player);
-      g_assert_nonnull (_object);
-
-      if (_currentEvent != nullptr)
-        {
-          NclAnchorEvent *anchorEvt
-              = dynamic_cast <NclAnchorEvent *>(_currentEvent);
-          if(anchorEvt
-             && anchorEvt->getAnchor() != NULL
-             && anchorEvt->getAnchor()->instanceOf("LambdaAnchor"))
-            {
-              abortLambda = true;
-            }
-        }
-
-      if (abortLambda)
-        {
-          _player->stop ();
-
-          for (i = _preparedEvents.begin (); i != _preparedEvents.end (); )
-            {
-              event = i->second;
-              if (event != _currentEvent
-                  && event->getCurrentState () != EventState::SLEEPING)
-                {
-                  i = _preparedEvents.erase (i);
-                  TRACE ("forcing '%s' to abort", event->getId().c_str());
-                  event->abort ();
-                }
-              else
-                {
-                  ++i;
-                }
-            }
-        }
-
-      if (_object->abort ())
-        {
-          unprepare ();
-          return true;
-        }
-
-      if (abortLambda && !_currentEvent->abort ())
-        {
-          TRACE ("failed to abort '%s', event is sleeping",
-                 _currentEvent->getId ().c_str());
-        }
-      else
-        {
-          TRACE ("failed to abort, object='%p' mrl='%s'",
-                 _object, _currentEvent->getId ().c_str());
-        }
-      return false;
+      _object->abort ();
+      unprepare ();
     }
-  else
-    {
-      _player->stop ();
-      if (!_object->isSleeping ())
-        {
-          _object->abort ();
-          unprepare ();
-          return true;
-        }
-
-      return false;
-    }
-}
-
-bool
-PlayerAdapter::checkRepeat (NclPresentationEvent *event)
-{
-  g_assert_nonnull (_player);
-
-  if (event->getRepetitions () > 1)
-    {
-      _player->stop ();
-      if (_object != nullptr)
-        _object->stop ();
-
-      prepareScope ();
-      return true;
-    }
-
-  return false;
+  return true;
 }
 
 bool
@@ -966,91 +466,34 @@ PlayerAdapter::unprepare ()
   g_assert_nonnull (_object);
   g_assert_nonnull (_player);
 
-  if(_isAppPlayer)
+  if (_object->getMainEvent () != nullptr
+      && (_object->getMainEvent ()->getCurrentState ()
+          == EventState::OCCURRING
+          || _object->getMainEvent ()->getCurrentState ()
+          == EventState::PAUSED))
     {
-      g_assert_nonnull (_object);
-
-      if (_currentEvent == nullptr)
-        {
-          _scheduler->removePlayer (_object);
-          _object->unprepare ();
-
-          return true;
-        }
-
-      if (_currentEvent->getCurrentState () == EventState::OCCURRING
-          || _currentEvent->getCurrentState () == EventState::PAUSED)
-        {
-          _currentEvent->stop ();
-        }
-
-      if (_preparedEvents.count (_currentEvent->getId ()) != 0
-          && _preparedEvents.size () == 1)
-        {
-          _object->unprepare ();
-          _scheduler->removePlayer (_object);
-          _preparedEvents.clear ();
-
-          _object = NULL;
-        }
-      else
-        {
-          _object->unprepare ();
-
-          map<string, NclFormatterEvent *>::iterator i
-              = _preparedEvents.find (_currentEvent->getId ());
-          if (i != _preparedEvents.end ())
-            {
-              _preparedEvents.erase (i);
-            }
-        }
-
-      return true;
-
+      return stop ();
     }
-  else
-    {
-      if (_object->getMainEvent () != nullptr
-          && (_object->getMainEvent ()->getCurrentState ()
-                  == EventState::OCCURRING
-              || _object->getMainEvent ()->getCurrentState ()
-                     == EventState::PAUSED))
-        {
-          return stop ();
-        }
 
-      _scheduler->removePlayer (_object);
+  _scheduler->removePlayer (_object);
 
-      if (ExecutionObject::hasInstance (_object, false))
-        _object->unprepare ();
+  if (ExecutionObject::hasInstance (_object, false))
+    _object->unprepare ();
 
-      _object = nullptr;
-
-      return true;
-    }
-}
-
-bool
-PlayerAdapter::setProperty (NclAttributionEvent *event,
-                            const string &v)
-{
-  string propName;
-  string value = v;
-
-  g_assert_nonnull (_player);
-  g_assert_nonnull (_object);
-
-  propName = event->getAnchor ()->getName ();
-  if (propName == "visible")
-    {
-      setVisible (value == "true");
-    }
-  else
-    {
-      _player->setProperty (propName, value);
-    }
+  _object = nullptr;
 
   return true;
+}
+
+void
+PlayerAdapter::setProperty (NclAttributionEvent *event,
+                            const string &value)
+{
+  string name;
+  g_assert_nonnull (_player);
+  g_assert_nonnull (event);
+  name = event->getAnchor ()->getName ();
+  _player->setProperty (name, value);
 }
 
 void
@@ -1058,8 +501,6 @@ PlayerAdapter::setProperty (const string &name,
                             const string &value)
 {
   g_assert_nonnull (_player);
-  TRACE ("setting property name='%s' to value='%s' (player='%p')",
-         name.c_str (), value.c_str (), _player);
   _player->setProperty (name, value);
 }
 
@@ -1112,6 +553,9 @@ PlayerAdapter::handleTickEvent (arg_unused (GingaTime total),
   waited = next->getTime ();
   now = _player->getMediaTime ();
 
+  // TRACE ("now=%" GINGA_TIME_FORMAT " waited=%" GINGA_TIME_FORMAT,
+  //        GINGA_TIME_ARGS (now), GINGA_TIME_ARGS (waited));
+
   if (now < waited)
     return;
 
@@ -1135,29 +579,8 @@ PlayerAdapter::handleKeyEvent (SDL_EventType evtType,
   if (evtType == SDL_KEYDOWN)
     return;
 
-  if (_player->isVisible ())
-    {
-      GingaTime time = _player->getMediaTime ();
-      _object->selectionEvent (key, time);
-    }
-}
-
-void
-PlayerAdapter::setVisible (bool visible)
-{
-  NclCascadingDescriptor *descriptor;
-  NclFormatterRegion *region;
-
-  descriptor = _object->getDescriptor ();
-  if (descriptor != nullptr)
-    {
-      region = descriptor->getFormatterRegion ();
-      if (region != nullptr)
-        {
-          region->setRegionVisibility (visible);
-          _player->setVisible (visible);
-        }
-    }
+  GingaTime time = _player->getMediaTime ();
+  _object->selectionEvent (key, time);
 }
 
 
@@ -1219,7 +642,6 @@ PlayerAdapter::createPlayer (const string &uri)
       else if (g_strcmp0 (mime, "application/x-ginga-NCLua") == 0)
         {
           _player = new LuaPlayer (uri);
-          _isAppPlayer = true;
         }
       else
         {

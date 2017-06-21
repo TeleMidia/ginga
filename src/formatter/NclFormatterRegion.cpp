@@ -37,7 +37,6 @@ NclFormatterRegion::NclFormatterRegion (const string &objectId,
     this->region = this->descriptor->getRegion ();
 
   this->win = 0;
-  this->imVisible = false;
   this->focusState = NclFormatterRegion::UNSELECTED;
   this->focusBorderColor = {0, 0, 255, 255};
   this->focusBorderWidth = 0;
@@ -74,9 +73,8 @@ NclFormatterRegion::~NclFormatterRegion ()
       // delete region;
       region = NULL;
     }
-
-  disposeOutputDisplay ();
 }
+
 void
 NclFormatterRegion::setZIndex (int zIndex)
 {
@@ -401,75 +399,12 @@ NclFormatterRegion::prepareOutputDisplay ()
 }
 
 void
-NclFormatterRegion::showContent ()
-{
-  string value;
-
-  value = descriptor->getParameterValue ("visible");
-  if (value != "false")
-    {
-      imVisible = true;
-      setRegionVisibility (true);
-    }
-}
-
-void
-NclFormatterRegion::hideContent ()
-{
-  setRegionVisibility (false);
-  disposeOutputDisplay ();
-}
-
-void
-NclFormatterRegion::setRegionVisibility (bool visible)
-{
-  if (this->win != NULL)
-    {
-      if (!visible)
-        {
-          clog << "NclFormatterRegion::setRegionVisibility (" << this;
-          clog << ") object '" << objectId << "' display '";
-          clog << this->win;
-          clog << "' HIDE" << endl;
-
-          this->win->hide ();
-        }
-      else
-        {
-          clog << "NclFormatterRegion::setRegionVisibility (" << this;
-          clog << ") object '" << objectId << "' display '";
-          clog << this->win;
-          clog << "' SHOW" << endl;
-
-          this->win->show ();
-        }
-    }
-  imVisible = visible;
-}
-
-void
-NclFormatterRegion::disposeOutputDisplay ()
-{
-  if (this->win != NULL)
-    {
-      delete this->win;
-      this->win = NULL;
-    }
-}
-
-void
 NclFormatterRegion::setGhostRegion (bool ghost)
 {
   if (this->win != NULL)
     {
       this->win->setGhostWindow (ghost);
     }
-}
-
-bool
-NclFormatterRegion::isVisible ()
-{
-  return imVisible;
 }
 
 short

@@ -38,7 +38,6 @@ SDLWindow::SDLWindow (int x, int y, int w, int h, int z, int zorder)
   this->z = z;
   this->zorder = zorder;
   this->ghost = false;
-  this->visible = false;
 }
 
 SDL_Texture *
@@ -119,19 +118,6 @@ SDLWindow::resize (int width, int height)
   this->rect.h = height;
 }
 
-
-void
-SDLWindow::show ()
-{
-  this->visible = true;
-}
-
-void
-SDLWindow::hide ()
-{
-  visible = false;
-}
-
 int
 SDLWindow::getX ()
 {
@@ -203,12 +189,6 @@ void
 SDLWindow::setGhostWindow (bool ghost)
 {
   this->ghost = ghost;
-}
-
-bool
-SDLWindow::isVisible ()
-{
-  return this->visible;
 }
 
 GINGA_MB_END
