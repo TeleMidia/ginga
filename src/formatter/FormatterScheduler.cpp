@@ -105,11 +105,11 @@ FormatterScheduler::scheduleAction (NclLinkSimpleAction *action)
 void
 FormatterScheduler::runAction (NclLinkSimpleAction *action)
 {
-  NclFormatterEvent *event = action->getEvent ();
+  FormatterEvent *event = action->getEvent ();
 
   assert (event != NULL);
 
-  if (event->instanceOf ("NclSelectionEvent"))
+  if (event->instanceOf ("SelectionEvent"))
     {
       event->start ();
       delete action;
@@ -120,7 +120,7 @@ FormatterScheduler::runAction (NclLinkSimpleAction *action)
 }
 
 void
-FormatterScheduler::runAction (NclFormatterEvent *event,
+FormatterScheduler::runAction (FormatterEvent *event,
                                NclLinkSimpleAction *action)
 {
   ExecutionObject *obj;
@@ -138,10 +138,10 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
   g_assert (obj->isCompiled ());
 
   if (obj->instanceOf ("ExecutionObjectSwitch")
-      && event->instanceOf ("NclSwitchEvent"))
+      && event->instanceOf ("SwitchEvent"))
     {
       runActionOverSwitch ((ExecutionObjectSwitch *)obj,
-                           (NclSwitchEvent *)event, action);
+                           (SwitchEvent *)event, action);
       return;
     }
 
@@ -153,7 +153,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
       return;
     }
 
-  if (event->instanceOf ("NclAttributionEvent"))
+  if (event->instanceOf ("AttributionEvent"))
     {
       runActionOverProperty (event, action);
       return;
@@ -181,7 +181,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
             }
 
           if (unlikely (!player
-                        ->prepare (obj, (NclPresentationEvent *) event)))
+                        ->prepare (obj, (PresentationEvent *) event)))
             {
               WARNING ("failed to prepare player of '%s'",
                        obj->getId ().c_str ());
@@ -232,7 +232,7 @@ FormatterScheduler::runAction (NclFormatterEvent *event,
 }
 
 void
-FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
+FormatterScheduler::runActionOverProperty (FormatterEvent *event,
                                            NclLinkSimpleAction *action)
 {
   SimpleActionType actionType;
@@ -251,7 +251,7 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
       && ((ContentNode *)dataObject)->isSettingNode ()
       && action->instanceOf ("NclLinkAssignmentAction"))
     {
-      propName = ((NclAttributionEvent *)event)
+      propName = ((AttributionEvent *)event)
                      ->getAnchor ()
                      ->getName ();
 
@@ -259,11 +259,11 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
       if (propValue != "" && propValue.substr (0, 1) == "$")
         {
           propValue = solveImplicitRefAssessment (
-              propValue, (NclAttributionEvent *)event);
+              propValue, (AttributionEvent *)event);
         }
 
       event->start ();
-      ((NclAttributionEvent *)event)->setValue (propValue);
+      ((AttributionEvent *)event)->setValue (propValue);
 
       if (propName == "service.currentFocus")
         {
@@ -315,7 +315,7 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
               if (propValue != "" && propValue.substr (0, 1) == "$")
                 {
                   propValue = solveImplicitRefAssessment (
-                      propValue, (NclAttributionEvent *)event);
+                      propValue, (AttributionEvent *)event);
 
                   clog << "FormatterScheduler::runActionOverProperty";
                   clog << " IMPLICIT found '" << propValue;
@@ -324,7 +324,7 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
                 }
 
               event->start ();
-              ((NclAttributionEvent *)event)->setValue (propValue);
+              ((AttributionEvent *)event)->setValue (propValue);
             }
           else
             {
@@ -339,27 +339,27 @@ FormatterScheduler::runActionOverProperty (NclFormatterEvent *event,
               if (durVal.substr (0, 1) == "$")
                 {
                   anim->setDuration (solveImplicitRefAssessment (
-                      durVal, (NclAttributionEvent *)event));
+                      durVal, (AttributionEvent *)event));
                 }
 
               byVal = anim->getBy ();
               if (byVal.substr (0, 1) == "$")
                 {
                   anim->setDuration (solveImplicitRefAssessment (
-                      byVal, (NclAttributionEvent *)event));
+                      byVal, (AttributionEvent *)event));
                 }
 
               anim->setDuration (durVal);
               anim->setBy (byVal);
 
               player->getPlayer()->
-                setAnimatorProperties(durVal,((NclAttributionEvent *)event)
+                setAnimatorProperties(durVal,((AttributionEvent *)event)
                                       ->getAnchor ()
                                       ->getName (), propValue);
             }
           else if (player != NULL && player->hasPrepared ())
             {
-              player->setProperty ((NclAttributionEvent *)event,
+              player->setProperty ((AttributionEvent *)event,
                                         propValue);
 
               event->stop ();
@@ -395,16 +395,16 @@ FormatterScheduler::runActionOverComposition (
   ExecutionObject *childObject;
 
   PlayerAdapter *pAdapter;
-  NclAttributionEvent *attrEvent;
-  NclFormatterEvent *event;
+  AttributionEvent *attrEvent;
+  FormatterEvent *event;
   string propName;
   string propValue;
 
   vector<Node *> *nestedSeq;
 
-  NclFormatterEvent *childEvent;
+  FormatterEvent *childEvent;
   int i, size = 0;
-  vector<NclFormatterEvent *> *events;
+  vector<FormatterEvent *> *events;
   EventType eventType = EventType::UNKNOWN;
 
   clog << "FormatterScheduler::runActionOverComposition ";
@@ -420,15 +420,15 @@ FormatterScheduler::runActionOverComposition (
           eventType = event->getType ();
           if (eventType == EventType::UNKNOWN)
             {
-              if (event->instanceOf ("NclPresentationEvent"))
+              if (event->instanceOf ("PresentationEvent"))
                 {
                   eventType = EventType::PRESENTATION;
                 }
-              else if (event->instanceOf ("NclAttributionEvent"))
+              else if (event->instanceOf ("AttributionEvent"))
                 {
                   eventType = EventType::ATTRIBUTION;
                 }
-              else if (event->instanceOf ("NclSwitchEvent"))
+              else if (event->instanceOf ("SwitchEvent"))
                 {
                   eventType = EventType::PRESENTATION;
                 }
@@ -446,7 +446,7 @@ FormatterScheduler::runActionOverComposition (
       if (eventType == EventType::ATTRIBUTION)
         {
           event = action->getEvent ();
-          if (!event->instanceOf ("NclAttributionEvent"))
+          if (!event->instanceOf ("AttributionEvent"))
             {
               clog << "FormatterScheduler::runActionOverComposition SET ";
               clog << "Warning! event ins't of attribution type";
@@ -454,7 +454,7 @@ FormatterScheduler::runActionOverComposition (
               return;
             }
 
-          attrEvent = (NclAttributionEvent *)event;
+          attrEvent = (AttributionEvent *)event;
           propName = attrEvent->getAnchor ()->getName ();
           propValue = ((NclLinkAssignmentAction *)action)->getValue ();
           event = compositeObject->getEventFromAnchorId (propName);
@@ -462,7 +462,7 @@ FormatterScheduler::runActionOverComposition (
           if (event != NULL)
             {
               event->start ();
-              ((NclAttributionEvent *)event)->setValue (propValue);
+              ((AttributionEvent *)event)->setValue (propValue);
               event->stop ();
             }
           else
@@ -530,7 +530,7 @@ FormatterScheduler::runActionOverComposition (
                   = compositeObject->getNodePerspective ();
             }
 
-          events = new vector<NclFormatterEvent *>;
+          events = new vector<FormatterEvent *>;
           for (i = 0; i < size; i++)
             {
               port = compositeNode->getPort (i);
@@ -548,7 +548,7 @@ FormatterScheduler::runActionOverComposition (
                              "ContentAnchor"))
                     {
                       childEvent
-                          = (NclPresentationEvent
+                          = (PresentationEvent
                                  *)(compiler
                                         ->getEvent (
                                             childObject,
@@ -625,7 +625,7 @@ FormatterScheduler::runActionOverComposition (
             }
         }
 
-      events = new vector<NclFormatterEvent *>;
+      events = new vector<FormatterEvent *>;
 
       compositeNode = (CompositeNode *)(compositeObject->getDataObject ()
                                             ->getDataEntity ());
@@ -723,11 +723,11 @@ FormatterScheduler::runActionOverComposition (
 
 void
 FormatterScheduler::runActionOverSwitch (
-    ExecutionObjectSwitch *switchObject, NclSwitchEvent *event,
+    ExecutionObjectSwitch *switchObject, SwitchEvent *event,
     NclLinkSimpleAction *action)
 {
   ExecutionObject *selectedObject;
-  NclFormatterEvent *selectedEvent;
+  FormatterEvent *selectedEvent;
 
   selectedObject = switchObject->getSelectedObject ();
   if (selectedObject == NULL)
@@ -761,11 +761,11 @@ FormatterScheduler::runActionOverSwitch (
 
 void
 FormatterScheduler::runSwitchEvent (ExecutionObjectSwitch *switchObject,
-                                    NclSwitchEvent *switchEvent,
+                                    SwitchEvent *switchEvent,
                                     ExecutionObject *selectedObject,
                                     NclLinkSimpleAction *action)
 {
-  NclFormatterEvent *selectedEvent;
+  FormatterEvent *selectedEvent;
   SwitchPort *switchPort;
   vector<Port *> *mappings;
   vector<Port *>::iterator i;
@@ -828,9 +828,9 @@ FormatterScheduler::runSwitchEvent (ExecutionObjectSwitch *switchObject,
 
 string
 FormatterScheduler::solveImplicitRefAssessment (const string &propValue,
-                                                NclAttributionEvent *event)
+                                                AttributionEvent *event)
 {
-  NclFormatterEvent *refEvent;
+  FormatterEvent *refEvent;
   ExecutionObject *refObject;
   string auxVal = "", roleId = "";
 
@@ -839,12 +839,12 @@ FormatterScheduler::solveImplicitRefAssessment (const string &propValue,
       roleId = propValue.substr (1, propValue.length ());
     }
 
-  refEvent = ((NclAttributionEvent *)event)
+  refEvent = ((AttributionEvent *)event)
                  ->getImplicitRefAssessmentEvent (roleId);
 
   if (refEvent != NULL)
     {
-      auxVal = ((NclAttributionEvent *)refEvent)->getCurrentValue ();
+      auxVal = ((AttributionEvent *)refEvent)->getCurrentValue ();
       refObject = ((ExecutionObject *)(refEvent->getExecutionObject ()));
 
       clog << "FormatterScheduler::solveImplicitRefAssessment refEvent";
@@ -867,7 +867,7 @@ FormatterScheduler::solveImplicitRefAssessment (const string &propValue,
 }
 
 void
-FormatterScheduler::startEvent (NclFormatterEvent *event)
+FormatterScheduler::startEvent (FormatterEvent *event)
 {
   NclLinkSimpleAction *fakeAction;
 
@@ -877,7 +877,7 @@ FormatterScheduler::startEvent (NclFormatterEvent *event)
 }
 
 void
-FormatterScheduler::stopEvent (NclFormatterEvent *event)
+FormatterScheduler::stopEvent (FormatterEvent *event)
 {
   NclLinkSimpleAction *fakeAction;
 
@@ -887,7 +887,7 @@ FormatterScheduler::stopEvent (NclFormatterEvent *event)
 }
 
 void
-FormatterScheduler::pauseEvent (NclFormatterEvent *event)
+FormatterScheduler::pauseEvent (FormatterEvent *event)
 {
   NclLinkSimpleAction *fakeAction;
 
@@ -897,7 +897,7 @@ FormatterScheduler::pauseEvent (NclFormatterEvent *event)
 }
 
 void
-FormatterScheduler::resumeEvent (NclFormatterEvent *event)
+FormatterScheduler::resumeEvent (FormatterEvent *event)
 {
   NclLinkSimpleAction *fakeAction;
 
@@ -912,7 +912,7 @@ FormatterScheduler::startDocument (const string &file)
   string id;
   ContextNode *body;
   vector<Port *> *ports;
-  vector<NclFormatterEvent *> *entryevts;
+  vector<FormatterEvent *> *entryevts;
   NclNodeNesting *persp;
 
   // Parse document.
@@ -933,10 +933,10 @@ FormatterScheduler::startDocument (const string &file)
 
   persp = new NclNodeNesting ();
   persp->insertAnchorNode (body);
-  entryevts = new vector<NclFormatterEvent *>;
+  entryevts = new vector<FormatterEvent *>;
   for (auto port: *ports)
     {
-      NclFormatterEvent *evt = this->compiler->insertContext (persp, port);
+      FormatterEvent *evt = this->compiler->insertContext (persp, port);
       g_assert_nonnull (evt);
       entryevts->push_back (evt);
     }
@@ -997,13 +997,13 @@ FormatterScheduler::startDocument (const string &file)
 
 void
 FormatterScheduler::eventStateChanged (
-    NclFormatterEvent *event,
+    FormatterEvent *event,
     EventStateTransition transition,
     arg_unused (EventState previousState))
 {
   ExecutionObject *object;
   PlayerAdapter *player;
-  vector<NclFormatterEvent *>::iterator it;
+  vector<FormatterEvent *>::iterator it;
   bool contains;
   bool hasOther;
 
@@ -1061,7 +1061,7 @@ FormatterScheduler::eventStateChanged (
           break;
 
         case EventStateTransition::STOPS:
-          if (((NclPresentationEvent *)event)->getRepetitions () == 0)
+          if (((PresentationEvent *)event)->getRepetitions () == 0)
             {
               bool hideObj = true;
               event->removeListener (this);

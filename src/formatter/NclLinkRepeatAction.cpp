@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclLinkRepeatAction::NclLinkRepeatAction (NclFormatterEvent *event,
+NclLinkRepeatAction::NclLinkRepeatAction (FormatterEvent *event,
                                           SimpleActionType actionType)
     : NclLinkSimpleAction (event, actionType)
 {
@@ -63,9 +63,9 @@ NclLinkRepeatAction::run ()
 {
   if (NclLinkSimpleAction::event != NULL)
     {
-      if (NclLinkSimpleAction::event->instanceOf ("NclPresentationEvent"))
+      if (NclLinkSimpleAction::event->instanceOf ("PresentationEvent"))
         {
-          ((NclPresentationEvent *)event)
+          ((PresentationEvent *)event)
               ->setRepetitionSettings (repetitions, repetitionInterval);
         }
     }

@@ -34,13 +34,13 @@ public:
   explicit PlayerAdapter (FormatterScheduler *);
   virtual ~PlayerAdapter ();
 
-  bool setCurrentEvent (NclFormatterEvent *); // app
+  bool setCurrentEvent (FormatterEvent *); // app
   Player *getPlayer ();
   void setOutputWindow (SDLWindow *);
 
-  virtual void setProperty (NclAttributionEvent *, const string &);
+  virtual void setProperty (AttributionEvent *, const string &);
 
-  bool prepare (ExecutionObject *, NclPresentationEvent *);
+  bool prepare (ExecutionObject *, PresentationEvent *);
   bool hasPrepared ();
   bool unprepare ();
 
@@ -51,7 +51,7 @@ public:
   bool abort ();
 
   // From INclAttributeValueMaintainer.
-  string getProperty (NclAttributionEvent *event) override;
+  string getProperty (AttributionEvent *event) override;
   void setProperty (const string &name, const string &value) override;
 
   // From IEventListener.
@@ -68,9 +68,9 @@ private:
 
 
   // Application player only.
-  map<string, NclFormatterEvent *> _preparedEvents;
-  NclFormatterEvent *_currentEvent;
-  void prepare (NclFormatterEvent *event);
+  map<string, FormatterEvent *> _preparedEvents;
+  FormatterEvent *_currentEvent;
+  void prepare (FormatterEvent *event);
 };
 
 GINGA_FORMATTER_END

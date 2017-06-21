@@ -41,9 +41,9 @@ ExecutionObjectSwitch::select (ExecutionObject *exeObj)
   else
     {
       _selectedObj = nullptr;
-      for (NclFormatterEvent *evt: getEvents())
+      for (FormatterEvent *evt: getEvents())
         {
-          auto switchEvent = dynamic_cast<NclSwitchEvent *> (evt);
+          auto switchEvent = dynamic_cast<SwitchEvent *> (evt);
           g_assert_nonnull (switchEvent);
           switchEvent->setMappedEvent (nullptr);
         }
@@ -51,9 +51,9 @@ ExecutionObjectSwitch::select (ExecutionObject *exeObj)
 }
 
 bool
-ExecutionObjectSwitch::addEvent (NclFormatterEvent *evt)
+ExecutionObjectSwitch::addEvent (FormatterEvent *evt)
 {
- auto presentationEvt = dynamic_cast<NclPresentationEvent *> (evt);
+ auto presentationEvt = dynamic_cast<PresentationEvent *> (evt);
 
   if (presentationEvt
       && dynamic_cast<LambdaAnchor *> (presentationEvt->getAnchor ()))

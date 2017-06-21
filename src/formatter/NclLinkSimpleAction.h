@@ -31,20 +31,20 @@ GINGA_FORMATTER_BEGIN
 class NclLinkSimpleAction : public NclLinkAction
 {
 public:
-  NclLinkSimpleAction (NclFormatterEvent *event, SimpleActionType type);
+  NclLinkSimpleAction (FormatterEvent *event, SimpleActionType type);
   virtual ~NclLinkSimpleAction ();
 
   virtual void run ();
 
-  NclFormatterEvent *getEvent ();
+  FormatterEvent *getEvent ();
   SimpleActionType getType ();
   string getTypeString ();
   void setSimpleActionListener (INclLinkActionListener *listener);
-  virtual vector<NclFormatterEvent *> *getEvents ();
+  virtual vector<FormatterEvent *> *getEvents ();
   virtual vector<NclLinkAction *> getImplicitRefRoleActions ();
 
 protected:
-  NclFormatterEvent *event;
+  FormatterEvent *event;
   SimpleActionType actionType;
 
 private:

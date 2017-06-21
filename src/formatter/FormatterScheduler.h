@@ -43,7 +43,7 @@ private:
 
   string file;                        // NCL file path
   NclDocument *doc;                   // NCL document tree
-  vector<NclFormatterEvent *> events; // document events
+  vector<FormatterEvent *> events; // document events
   set<NclLinkSimpleAction *> actions; // document actions
 
 public:
@@ -57,14 +57,14 @@ public:
   bool setKeyHandler (bool isHandler);
   FocusManager *getFocusManager ();
 
-  void startEvent (NclFormatterEvent *event);
-  void stopEvent (NclFormatterEvent *event);
-  void pauseEvent (NclFormatterEvent *event);
-  void resumeEvent (NclFormatterEvent *event);
+  void startEvent (FormatterEvent *event);
+  void stopEvent (FormatterEvent *event);
+  void pauseEvent (FormatterEvent *event);
+  void resumeEvent (FormatterEvent *event);
 
   void startDocument (const string &);
 
-  void eventStateChanged (NclFormatterEvent *someEvent,
+  void eventStateChanged (FormatterEvent *someEvent,
                           EventStateTransition transition,
                           EventState previousState) override;
 
@@ -75,8 +75,8 @@ private:
   PlayerAdapter *initializePlayer (ExecutionObject *object);
 
   void runAction (NclLinkSimpleAction *action);
-  void runAction (NclFormatterEvent *event, NclLinkSimpleAction *action);
-  void runActionOverProperty (NclFormatterEvent *event,
+  void runAction (FormatterEvent *event, NclLinkSimpleAction *action);
+  void runActionOverProperty (FormatterEvent *event,
                               NclLinkSimpleAction *action);
 
   void
@@ -84,16 +84,16 @@ private:
                             NclLinkSimpleAction *action);
 
   void runActionOverSwitch (ExecutionObjectSwitch *switchObject,
-                            NclSwitchEvent *event,
+                            SwitchEvent *event,
                             NclLinkSimpleAction *action);
 
   void runSwitchEvent (ExecutionObjectSwitch *switchObject,
-                       NclSwitchEvent *switchEvent,
+                       SwitchEvent *switchEvent,
                        ExecutionObject *selectedObject,
                        NclLinkSimpleAction *action);
 
   string solveImplicitRefAssessment (const string &propValue,
-                                     NclAttributionEvent *event);
+                                     AttributionEvent *event);
 
   SDLWindow *prepareFormatterRegion (ExecutionObject *);
   void showObject (ExecutionObject *);

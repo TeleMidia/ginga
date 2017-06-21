@@ -22,12 +22,12 @@ GINGA_FORMATTER_BEGIN
 
 #include "ncl/EventUtil.h"
 
-class NclFormatterEvent;
+class FormatterEvent;
 
 class INclEventListener
 {
 public:
-  virtual void eventStateChanged (NclFormatterEvent *,
+  virtual void eventStateChanged (FormatterEvent *,
                                   EventStateTransition,
                                   EventState) = 0;
 };

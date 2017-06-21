@@ -33,12 +33,12 @@ class NclLinkTransitionTriggerCondition : public NclLinkTriggerCondition,
                                           public INclEventListener
 {
 protected:
-  NclFormatterEvent *event;
+  FormatterEvent *event;
   EventStateTransition transition;
   Bind *bind;
 
 public:
-  NclLinkTransitionTriggerCondition (NclFormatterEvent *event,
+  NclLinkTransitionTriggerCondition (FormatterEvent *event,
                                      EventStateTransition transition,
                                      Bind *bind);
 
@@ -46,13 +46,13 @@ public:
 
   Bind *getBind ();
 
-  virtual void eventStateChanged (NclFormatterEvent *event,
+  virtual void eventStateChanged (FormatterEvent *event,
                                   EventStateTransition transition,
                                   EventState previousState) override;
 
-  NclFormatterEvent *getEvent ();
+  FormatterEvent *getEvent ();
   EventStateTransition getTransition ();
-  virtual vector<NclFormatterEvent *> *getEvents () override;
+  virtual vector<FormatterEvent *> *getEvents () override;
 };
 
 GINGA_FORMATTER_END

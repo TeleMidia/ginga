@@ -21,7 +21,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclLinkSimpleAction::NclLinkSimpleAction (NclFormatterEvent *event,
+NclLinkSimpleAction::NclLinkSimpleAction (FormatterEvent *event,
                                           SimpleActionType type)
     : NclLinkAction (0.)
 {
@@ -43,7 +43,7 @@ NclLinkSimpleAction::~NclLinkSimpleAction ()
   event = NULL;
 }
 
-NclFormatterEvent *
+FormatterEvent *
 NclLinkSimpleAction::getEvent ()
 {
   return event;
@@ -73,14 +73,14 @@ NclLinkSimpleAction::setSimpleActionListener (
   this->listener = listener;
 }
 
-vector<NclFormatterEvent *> *
+vector<FormatterEvent *> *
 NclLinkSimpleAction::getEvents ()
 {
   if (event == NULL)
     return NULL;
 
-  vector<NclFormatterEvent *> *events;
-  events = new vector<NclFormatterEvent *>;
+  vector<FormatterEvent *> *events;
+  events = new vector<FormatterEvent *>;
 
   events->push_back (event);
   return events;
@@ -108,7 +108,7 @@ NclLinkSimpleAction::getImplicitRefRoleActions ()
           || (durVal != "" && durVal.substr (0, 1) == "$")
           || (attVal != "" && attVal.substr (0, 1) == "$"))
         {
-          if (event->instanceOf ("NclAttributionEvent"))
+          if (event->instanceOf ("AttributionEvent"))
             {
               actions.push_back ((NclLinkAction *)this);
             }

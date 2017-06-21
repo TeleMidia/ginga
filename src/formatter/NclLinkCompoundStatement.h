@@ -47,7 +47,7 @@ protected:
   bool returnEvaluationResult (bool result);
 
 public:
-  virtual vector<NclFormatterEvent *> *getEvents ();
+  virtual vector<FormatterEvent *> *getEvents ();
   virtual bool evaluate ();
 };
 
