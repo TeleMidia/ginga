@@ -291,7 +291,7 @@ ExecutionObjectContext::setParentsAsListeners ()
   i = _parentTable.begin ();
   while (i != _parentTable.end ())
     {
-      if (FormatterEvent::hasInstance (_wholeContent, false))
+      if (NclEvent::hasInstance (_wholeContent, false))
         {
           _wholeContent->addListener (i->second);
         }
@@ -312,7 +312,7 @@ ExecutionObjectContext::unsetParentsAsListeners ()
   i = _parentTable.begin ();
   while (i != _parentTable.end ())
     {
-      if (_isDeleting || !FormatterEvent::hasInstance (_wholeContent, false))
+      if (_isDeleting || !NclEvent::hasInstance (_wholeContent, false))
         {
           return;
         }
@@ -327,14 +327,14 @@ ExecutionObjectContext::unsetParentsAsListeners ()
 
 void
 ExecutionObjectContext::eventStateChanged (
-    FormatterEvent *event,
+    NclEvent *event,
     EventStateTransition transition,
     EventState previousState)
 {
-  set<FormatterEvent *>::iterator i;
+  set<NclEvent *>::iterator i;
 
   if (!(event->instanceOf ("PresentationEvent"))
-      || !FormatterEvent::hasInstance (event, false))
+      || !NclEvent::hasInstance (event, false))
     {
       return;
     }
@@ -534,7 +534,7 @@ ExecutionObjectContext::checkLinkConditions ()
       clog << endl;
 
       if (_wholeContent != NULL &&
-          FormatterEvent::hasInstance (_wholeContent, false))
+          NclEvent::hasInstance (_wholeContent, false))
         {
           _wholeContent->stop ();
           unsetParentsAsListeners ();
@@ -546,9 +546,9 @@ void
 ExecutionObjectContext::listRunningObjects ()
 {
   map<string, ExecutionObject *>::iterator i;
-  vector<FormatterEvent *>::iterator j;
+  vector<NclEvent *>::iterator j;
   ExecutionObject *object;
-  FormatterEvent *event;
+  NclEvent *event;
 
   clog << "ExecutionObjectContext::listRunningObjects for '";
   clog << _id << "': ";
@@ -556,7 +556,7 @@ ExecutionObjectContext::listRunningObjects ()
   while (i != _execObjList.end ())
     {
       object = i->second;
-      vector<FormatterEvent *> events = object->getEvents ();
+      vector<NclEvent *> events = object->getEvents ();
       j = events.begin ();
       while (j != events.end ())
         {

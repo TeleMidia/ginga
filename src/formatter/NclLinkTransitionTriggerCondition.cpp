@@ -22,7 +22,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 NclLinkTransitionTriggerCondition::NclLinkTransitionTriggerCondition (
-    FormatterEvent *event, EventStateTransition transition, Bind *bind)
+    NclEvent *event, EventStateTransition transition, Bind *bind)
     : NclLinkTriggerCondition ()
 {
   typeSet.insert ("NclLinkTransitionTriggerCondition");
@@ -31,7 +31,7 @@ NclLinkTransitionTriggerCondition::NclLinkTransitionTriggerCondition (
   this->event = NULL;
   this->transition = transition;
 
-  if (FormatterEvent::hasInstance (event, false))
+  if (NclEvent::hasInstance (event, false))
     {
       this->event = event;
       this->event->addListener (this);
@@ -49,7 +49,7 @@ NclLinkTransitionTriggerCondition::~NclLinkTransitionTriggerCondition ()
   listener = NULL;
   bind = NULL;
 
-  if (FormatterEvent::hasInstance (event, false))
+  if (NclEvent::hasInstance (event, false))
     {
       event->removeListener (this);
       event = NULL;
@@ -64,7 +64,7 @@ NclLinkTransitionTriggerCondition::getBind ()
 
 void
 NclLinkTransitionTriggerCondition::eventStateChanged (
-    arg_unused (FormatterEvent *event),
+    arg_unused (NclEvent *event),
     EventStateTransition transition,
     arg_unused (EventState previousState))
 {
@@ -76,7 +76,7 @@ NclLinkTransitionTriggerCondition::eventStateChanged (
     }
 }
 
-FormatterEvent *
+NclEvent *
 NclLinkTransitionTriggerCondition::getEvent ()
 {
   return event;
@@ -88,15 +88,15 @@ NclLinkTransitionTriggerCondition::getTransition ()
   return transition;
 }
 
-vector<FormatterEvent *> *
+vector<NclEvent *> *
 NclLinkTransitionTriggerCondition::getEvents ()
 {
-  if (!FormatterEvent::hasInstance (event, false))
+  if (!NclEvent::hasInstance (event, false))
     {
       return NULL;
     }
 
-  vector<FormatterEvent *> *events = new vector<FormatterEvent *>;
+  vector<NclEvent *> *events = new vector<NclEvent *>;
 
   events->push_back (event);
   return events;

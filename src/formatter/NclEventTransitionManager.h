@@ -44,9 +44,9 @@ public:
   void abort (GingaTime endTime, bool applicationType = false);
 
   void updateTransitionTable (GingaTime timeValue, Player *player,
-                              FormatterEvent *mainEvt);
+                              NclEvent *mainEvt);
 
-  EventTransition *nextTransition (FormatterEvent *mainEvt);
+  EventTransition *nextTransition (NclEvent *mainEvt);
 
 private:
   size_t _currentTransitionIndex;

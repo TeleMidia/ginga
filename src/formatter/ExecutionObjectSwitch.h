@@ -37,7 +37,7 @@ public:
   virtual ~ExecutionObjectSwitch (){}
   ExecutionObject *getSelectedObject () {return _selectedObj; }
   void select (ExecutionObject *exeObj);
-  bool addEvent (FormatterEvent *evt);
+  bool addEvent (NclEvent *evt);
 
 protected:
   ExecutionObject *_selectedObj;

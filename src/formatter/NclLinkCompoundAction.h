@@ -46,7 +46,7 @@ public:
   void getSimpleActions (vector<NclLinkSimpleAction *> *simpleActions);
   void setCompoundActionListener (INclLinkActionListener *_listener);
 
-  virtual vector<FormatterEvent *> *getEvents () override;
+  virtual vector<NclEvent *> *getEvents () override;
   void actionProcessed (bool start) override;
   virtual vector<NclLinkAction *> getImplicitRefRoleActions () override;
 

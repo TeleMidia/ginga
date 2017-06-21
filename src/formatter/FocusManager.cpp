@@ -642,7 +642,7 @@ FocusManager::changeSettingState (const string &name, const string &act)
 {
   set<ExecutionObject *> *settingObjects;
   set<ExecutionObject *>::iterator i;
-  FormatterEvent *event;
+  NclEvent *event;
   string keyM;
 
   settingObjects = _converter->getSettingNodeObjects ();

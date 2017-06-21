@@ -62,9 +62,9 @@ Converter::Converter (RuleAdapter *ruleAdapter)
 
 Converter::~Converter ()
 {
-  for (FormatterEvent *evt: _listening)
+  for (NclEvent *evt: _listening)
     {
-      if (FormatterEvent::hasInstance (evt, false))
+      if (NclEvent::hasInstance (evt, false))
         {
           evt->removeListener (this);
         }
@@ -204,14 +204,14 @@ Converter::getSettingNodeObjects ()
   return new set<ExecutionObject *> (_settingObjects);
 }
 
-FormatterEvent *
+NclEvent *
 Converter::getEvent (ExecutionObject *exeObj,
                      InterfacePoint *interfacePoint,
                      EventType ncmEventType,
                      const string &key)
 {
   string id;
-  FormatterEvent *event;
+  NclEvent *event;
   string type;
 
   xstrassign (type, "%d", (int) ncmEventType);
@@ -1106,13 +1106,13 @@ Converter::resolveSwitchEvents (
   ExecutionObject *endPointObject;
   Node *selectedNode;
   NodeEntity *selectedNodeEntity;
-  vector<FormatterEvent *> events;
-  vector<FormatterEvent *>::iterator i;
+  vector<NclEvent *> events;
+  vector<NclEvent *>::iterator i;
   SwitchEvent *switchEvent;
   InterfacePoint *interfacePoint;
   vector<Node *> *nestedSeq;
   NclNodeNesting *nodePerspective;
-  FormatterEvent *mappedEvent;
+  NclEvent *mappedEvent;
 
   selectedObject = switchObject->getSelectedObject ();
   if (selectedObject == nullptr)
@@ -1129,7 +1129,7 @@ Converter::resolveSwitchEvents (
       WARNING ("Can't find events.");
     }
 
-  for (FormatterEvent *event: switchObject->getEvents ())
+  for (NclEvent *event: switchObject->getEvents ())
     {
       mappedEvent = nullptr;
       switchEvent = dynamic_cast<SwitchEvent *> (event);
@@ -1196,13 +1196,13 @@ Converter::resolveSwitchEvents (
     }
 }
 
-FormatterEvent *
+NclEvent *
 Converter::insertNode (NclNodeNesting *perspective,
                        InterfacePoint *interfacePoint,
                        GenericDescriptor *descriptor)
 {
   ExecutionObject *executionObject;
-  FormatterEvent *event;
+  NclEvent *event;
   EventType eventType;
 
   event = nullptr;
@@ -1228,13 +1228,13 @@ Converter::insertNode (NclNodeNesting *perspective,
 
 }
 
-FormatterEvent *
+NclEvent *
 Converter::insertContext (NclNodeNesting *contextPerspective,
                           Port *port)
 {
   vector<Node *> *nestedSeq;
   NclNodeNesting *perspective;
-  FormatterEvent *newEvent;
+  NclEvent *newEvent;
   bool error = false;
 
   if (contextPerspective == nullptr || port == nullptr)
@@ -1278,7 +1278,7 @@ Converter::insertContext (NclNodeNesting *contextPerspective,
 }
 
 void
-Converter::eventStateChanged (FormatterEvent *event,
+Converter::eventStateChanged (NclEvent *event,
                               EventStateTransition transition,
                               arg_unused (EventState previousState))
 {
@@ -1290,12 +1290,12 @@ Converter::eventStateChanged (FormatterEvent *event,
     {
       if (transition == EventStateTransition::STARTS)
         {
-          for (FormatterEvent *e: exeSwitch->getEvents())
+          for (NclEvent *e: exeSwitch->getEvents())
             {
               auto switchEvt = dynamic_cast <SwitchEvent *>  (e);
               if (switchEvt)
                 {
-                  FormatterEvent *ev = switchEvt->getMappedEvent ();
+                  NclEvent *ev = switchEvt->getMappedEvent ();
 
                   if (ev == nullptr)
                     {
@@ -1356,7 +1356,7 @@ Converter::createCausalLink (CausalLink *ncmLink,
   NclFormatterCausalLink *formatterLink;
   NclLinkAssignmentAction *action;
   string value;
-  FormatterEvent *event;
+  NclEvent *event;
   Animation *anim;
 
   if (ncmLink == nullptr)
@@ -1467,7 +1467,7 @@ Converter::createCausalLink (CausalLink *ncmLink,
 void
 Converter::setImplicitRefAssessment (const string &roleId,
                                      CausalLink *ncmLink,
-                                     FormatterEvent *event)
+                                     NclEvent *event)
 {
   NclNodeNesting *refPerspective;
   ExecutionObject *refObject;
@@ -1496,7 +1496,7 @@ Converter::setImplicitRefAssessment (const string &roleId,
 
                   delete refPerspective;
 
-                  FormatterEvent *refEvent
+                  NclEvent *refEvent
                       = this->getEvent (refObject,
                                         propAnchor,
                                         EventType::ATTRIBUTION,
@@ -1867,7 +1867,7 @@ Converter::createAttributeAssessment (
     AttributeAssessment *attributeAssessment, Bind *bind, Link *ncmLink,
     ExecutionObjectContext *parentObj)
 {
-  FormatterEvent *event = createEvent (bind, ncmLink, parentObj);
+  NclEvent *event = createEvent (bind, ncmLink, parentObj);
 
   return new NclLinkAttributeAssessment (
         event, attributeAssessment->getAttributeType ());
@@ -1878,7 +1878,7 @@ Converter::createSimpleAction (
     SimpleAction *sae, Bind *bind, Link *ncmLink,
     ExecutionObjectContext *parentObj)
 {
-  FormatterEvent *event;
+  NclEvent *event;
   SimpleActionType actionType;
   EventType eventType = EventType::UNKNOWN;
   NclLinkSimpleAction *action;
@@ -2136,7 +2136,7 @@ Converter::createSimpleCondition (
     SimpleCondition *simpleCondition, Bind *bind, Link *ncmLink,
     ExecutionObjectContext *parentObj)
 {
-  FormatterEvent *event;
+  NclEvent *event;
   GingaTime delay;
   string delayObject;
   NclLinkTriggerCondition *condition;
@@ -2154,7 +2154,7 @@ Converter::createSimpleCondition (
   return condition;
 }
 
-FormatterEvent *
+NclEvent *
 Converter::createEvent (
     Bind *bind, Link *ncmLink, ExecutionObjectContext *parentObject)
 {
@@ -2164,7 +2164,7 @@ Converter::createEvent (
   ExecutionObject *executionObject;
   InterfacePoint *interfacePoint;
   string key;
-  FormatterEvent *event = nullptr;
+  NclEvent *event = nullptr;
   vector<Node *> *seq;
 
   endPointPerspective = parentObject->getNodePerspective ();

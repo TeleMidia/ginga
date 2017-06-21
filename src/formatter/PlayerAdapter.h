@@ -33,7 +33,7 @@ public:
   explicit PlayerAdapter (FormatterScheduler *);
   virtual ~PlayerAdapter ();
 
-  bool setCurrentEvent (FormatterEvent *); // app
+  bool setCurrentEvent (NclEvent *); // app
   Player *getPlayer ();
   void setOutputWindow (SDLWindow *);
 
@@ -66,9 +66,9 @@ private:
 
 
   // Application player only.
-  map<string, FormatterEvent *> _preparedEvents;
-  FormatterEvent *_currentEvent;
-  void prepare (FormatterEvent *event);
+  map<string, NclEvent *> _preparedEvents;
+  NclEvent *_currentEvent;
+  void prepare (NclEvent *event);
 };
 
 GINGA_FORMATTER_END
