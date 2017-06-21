@@ -7,19 +7,22 @@
     <descriptorBase>
       <descriptor id="desc1" region="reg1"/>
       <descriptor id="desc2" region="reg2"/>
+      <descriptor id="desc3">
+        <descriptorParam name="bounds" value="0%,50%,50%,50%"/>
+      </descriptor>
     </descriptorBase>
     <connectorBase>
       <causalConnector id="onBeginStart">
         <simpleCondition role="onBegin"/>
-        <simpleAction role="start"/>
+        <simpleAction role="start" max="unbounded"/>
       </causalConnector>
       <causalConnector id="onEndStop">
         <simpleCondition role="onEnd"/>
-        <simpleAction role="stop"/>
+        <simpleAction role="stop" max="unbounded"/>
       </causalConnector>
       <causalConnector id="onEndStart">
         <simpleCondition role="onEnd"/>
-        <simpleAction role="start"/>
+        <simpleAction role="start" max="unbounded"/>
       </causalConnector>
     </connectorBase>
   </head>
@@ -37,33 +40,52 @@
       <area id="seg6" end="1.5s"/>
       <area id="seg7" end="1.8s"/>
     </media>
+    <media id="vid" src="samples/clock.ogv" descriptor="desc3"/>
+    <media id="lua" src="samples/fps.lua">
+      <property name="right" value="0"/>
+      <property name="size" value="50%,50%"/>
+    </media>
     <link xconnector="onBeginStart">
       <bind role="onBegin" component="img1" interface="seg"/>
       <bind role="start" component="img2"/>
+      <bind role="start" component="vid"/>
+      <bind role="start" component="lua"/>
     </link>
     <link xconnector="onEndStop">
       <bind role="onEnd" component="img2" interface="seg"/>
       <bind role="stop" component="img1"/>
+      <bind role="stop" component="vid"/>
+      <bind role="stop" component="lua"/>
     </link>
     <link xconnector="onEndStart">
       <bind role="onEnd" component="img2" interface="seg3"/>
       <bind role="start" component="img1"/>
+      <bind role="start" component="vid"/>
+      <bind role="start" component="lua"/>
     </link>
     <link xconnector="onEndStop">
       <bind role="onEnd" component="img2" interface="seg4"/>
       <bind role="stop" component="img1"/>
+      <bind role="stop" component="vid"/>
+      <bind role="stop" component="lua"/>
     </link>
     <link xconnector="onEndStart">
       <bind role="onEnd" component="img2" interface="seg5"/>
       <bind role="start" component="img1"/>
+      <bind role="start" component="vid"/>
+      <bind role="start" component="lua"/>
     </link>
     <link xconnector="onEndStop">
       <bind role="onEnd" component="img2" interface="seg6"/>
       <bind role="stop" component="img1"/>
+      <bind role="stop" component="vid"/>
+      <bind role="stop" component="lua"/>
     </link>
     <link xconnector="onEndStart">
       <bind role="onEnd" component="img2" interface="seg7"/>
       <bind role="start" component="img1"/>
+      <bind role="start" component="vid"/>
+      <bind role="start" component="lua"/>
     </link>
   </body>
 </ncl>

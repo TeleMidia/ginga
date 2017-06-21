@@ -102,22 +102,21 @@ LuaPlayer::LuaPlayer (const string &mrl) : Player (mrl)
 
 LuaPlayer::~LuaPlayer (void)
 {
-  this->stop ();
 }
 
 void
 LuaPlayer::abort (void)
 {
-  TRACE ("abort scope %s", this->_scope.c_str ());
-  evt_ncl_send_presentation (this->_nw, "abort", this->_scope.c_str ());
+  TRACE ("abort scope %s", _scope.c_str ());
+  evt_ncl_send_presentation (_nw, "abort", _scope.c_str ());
   this->stop ();
 }
 
 void
 LuaPlayer::pause (void)
 {
-  TRACE ("pause scope %s", this->_scope.c_str ());
-  evt_ncl_send_presentation (this->_nw, "pause", this->_scope.c_str ());
+  TRACE ("pause scope %s", _scope.c_str ());
+  evt_ncl_send_presentation (_nw, "pause", _scope.c_str ());
   Player::pause ();
 }
 
@@ -126,8 +125,8 @@ LuaPlayer::play (void)
 {
   char *errmsg;
 
-  TRACE ("play scope %s", this->_scope.c_str ());
-  if (this->_nw != NULL)
+  TRACE ("play scope %s", _scope.c_str ());
+  if (_nw != NULL)
     {
       Player::play ();
       return true;
@@ -135,10 +134,10 @@ LuaPlayer::play (void)
 
   _init_rect = _rect;
   _nw = ncluaw_open (this->mrl.c_str (), _init_rect.w, _init_rect.h, &errmsg);
-  if (unlikely (this->_nw == NULL))
+  if (unlikely (_nw == NULL))
     ERROR ("cannot load NCLua file %s: %s", this->mrl.c_str (), errmsg);
 
-  evt_ncl_send_presentation (this->_nw, "start", this->_scope.c_str ());
+  evt_ncl_send_presentation (_nw, "start", _scope.c_str ());
   g_assert (Ginga_Display->registerEventListener (this));
 
   TRACE ("waiting for first cycle");
@@ -150,50 +149,45 @@ LuaPlayer::play (void)
 void
 LuaPlayer::resume (void)
 {
-  TRACE ("resume scope %s", this->_scope.c_str ());
-  evt_ncl_send_presentation (this->_nw, "resume", this->_scope.c_str ());
+  TRACE ("resume scope %s", _scope.c_str ());
+  evt_ncl_send_presentation (_nw, "resume", _scope.c_str ());
   Player::resume ();
 }
 
 void
 LuaPlayer::stop (void)
 {
-  TRACE ("stop scope %s", this->_scope.c_str ());
-
-  if (this->_nw == NULL)
-    goto done;
-
-  evt_ncl_send_presentation (this->_nw, "stop", this->_scope.c_str ());
-  ncluaw_cycle (this->_nw);
-  ncluaw_close (this->_nw);
+  TRACE ("stop scope %s", _scope.c_str ());
+  evt_ncl_send_presentation (_nw, "stop", _scope.c_str ());
+  ncluaw_cycle (_nw);
+  ncluaw_close (_nw);
   g_assert (Ginga_Display->unregisterEventListener (this));
-  this->_nw = NULL;
- done:
+  _nw = NULL;
   Player::stop ();
 }
 
 void
 LuaPlayer::setCurrentScope (const string &name)
 {
-  this->_scope = name;
+  _scope = name;
 }
 
 bool
 LuaPlayer::setKeyHandler (bool b)
 {
-  this->_isKeyHandler = b;
+  _isKeyHandler = b;
   return b;
 }
 
 void
 LuaPlayer::setProperty (const string &name, const string &value)
 {
-  if (this->_nw != NULL && this->status == PL_OCCURRING)
+  if (_nw != NULL && this->status == PL_OCCURRING)
     {
       const char *k = name.c_str ();
       const char *v = value.c_str ();
-      evt_ncl_send_attribution (this->_nw, "start", k, v);
-      evt_ncl_send_attribution (this->_nw, "stop", k, v);
+      evt_ncl_send_attribution (_nw, "start", k, v);
+      evt_ncl_send_attribution (_nw, "stop", k, v);
     }
   Player::setProperty (name, value);
 }
@@ -204,7 +198,7 @@ LuaPlayer::handleKeyEvent (SDL_EventType type, SDL_Keycode key)
   string typestr;
   string keystr;
 
-  if (this->_nw == NULL)
+  if (_nw == NULL)
     return;
 
   if (type == SDL_KEYDOWN)
@@ -223,7 +217,7 @@ LuaPlayer::handleKeyEvent (SDL_EventType type, SDL_Keycode key)
   if (!ginga_key_table_index (key, &keystr))
     return;
 
-  evt_key_send (this->_nw, typestr.c_str (), keystr.c_str ());
+  evt_key_send (_nw, typestr.c_str (), keystr.c_str ());
 }
 
 void
@@ -231,13 +225,13 @@ LuaPlayer::redraw (SDL_Renderer *renderer)
 {
   SDL_Surface *sfc;
 
-  if (this->_nw == NULL)
+  if (_nw == NULL)
     {
       TRACE ("last cycle");
       return;                   // nothing to do
     }
 
-  ncluaw_cycle (this->_nw);
+  ncluaw_cycle (_nw);
 
   SDLx_CreateSurfaceARGB32 (_init_rect.w, _init_rect.h, &sfc);
   SDLx_LockSurface (sfc);

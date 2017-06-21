@@ -7,32 +7,43 @@
     <descriptorBase>
       <descriptor id="desc1" region="reg1"/>
       <descriptor id="desc2" region="reg2"/>
+      <descriptor id="desc3">
+        <descriptorParam name="bounds" value="0%,50%,50%,50%"/>
+      </descriptor>
     </descriptorBase>
     <connectorBase>
       <causalConnector id="onBeginStart">
         <simpleCondition role="onBegin"/>
-        <simpleAction role="start"/>
+        <simpleAction role="start" max="unbounded"/>
       </causalConnector>
       <causalConnector id="onEndStop">
         <simpleCondition role="onEnd"/>
-        <simpleAction role="stop"/>
+        <simpleAction role="stop" max="unbounded"/>
       </causalConnector>
     </connectorBase>
   </head>
   <body>
     <port id="start" component="img1"/>
     <media id="img1" src="samples/gnu.png" descriptor="desc1">
-      <area id="seg" begin="2s" end="4s"/>
+      <area id="seg" begin="1s" end="3s"/>
     </media>
-    <media id="img2" src="samples/vector.svg" descriptor="desc2">
+    <media id="img2" src="samples/vector.svg" descriptor="desc2"/>
+    <media id="vid" src="samples/clock.ogv" descriptor="desc3"/>
+    <media id="lua" src="samples/fps.lua">
+      <property name="right" value="0"/>
+      <property name="size" value="50%,50%"/>
     </media>
     <link xconnector="onBeginStart">
       <bind role="onBegin" component="img1" interface="seg"/>
       <bind role="start" component="img2"/>
+      <bind role="start" component="vid"/>
+      <bind role="start" component="lua"/>
     </link>
     <link xconnector="onEndStop">
       <bind role="onEnd" component="img1" interface="seg"/>
       <bind role="stop" component="img2"/>
+      <bind role="stop" component="vid"/>
+      <bind role="stop" component="lua"/>
     </link>
   </body>
 </ncl>
