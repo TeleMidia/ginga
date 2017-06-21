@@ -23,7 +23,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::ncl;
 
 #include "INclEventListener.h"
-#include "INclAttributeValueMaintainer.h"
 #include "Settings.h"
 
 #include "ncl/PropertyAnchor.h"
@@ -32,6 +31,7 @@ GINGA_FORMATTER_BEGIN
 
 class INclEventListener;
 class ExecutionObject;
+class PlayerAdapter;
 
 #define PROPERTY_READONLY(type,name,getfunc) \
   protected: type name; \
@@ -123,8 +123,7 @@ public:
 
 class AttributionEvent : public FormatterEvent
 {
-  PROPERTY (INclAttributeValueMaintainer *, _valueMaintainer,
-            getValueMaintainer, setValueMaintainer)
+  PROPERTY (PlayerAdapter *, _player, getPlayerAdapter, setPlayerAdapter)
 
   PROPERTY_READONLY (PropertyAnchor *, _anchor, getAnchor)
 

@@ -21,6 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ExecutionObjectContext.h"
 #include "ncl/ContentNode.h"
 
+#include "PlayerAdapter.h"
+
 GINGA_FORMATTER_BEGIN
 
 set<FormatterEvent *> FormatterEvent::_instances;
@@ -325,7 +327,7 @@ AttributionEvent::AttributionEvent (const string &id,
   _typeSet.insert ("AttributionEvent");
 
   this->_anchor = anchor;
-  this->_valueMaintainer = nullptr;
+  this->_player = nullptr;
   this->_settingsNode = false;
   this->_settings = settings;
 
@@ -363,7 +365,7 @@ string
 AttributionEvent::getCurrentValue ()
 {
   string propName;
-  string maintainerValue = "";
+  string value = "";
 
   if (unlikely (_anchor == nullptr))
     {
@@ -376,23 +378,23 @@ AttributionEvent::getCurrentValue ()
       propName = _anchor->getName ();
       if (propName != "")
         {
-          maintainerValue = _settings->get (propName);
+          value = _settings->get (propName);
         }
     }
   else
     {
-      if (_valueMaintainer != nullptr)
+      if (_player)
         {
-          maintainerValue = _valueMaintainer->getProperty (this);
+          value = _player->getProperty (this);
         }
 
-      if (maintainerValue == "")
+      if (value == "")
         {
-          maintainerValue = _anchor->getValue ();
+          value = _anchor->getValue ();
         }
     }
 
-  return maintainerValue;
+  return value;
 }
 
 bool
