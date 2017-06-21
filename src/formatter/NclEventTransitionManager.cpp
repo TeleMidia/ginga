@@ -42,6 +42,7 @@ NclEventTransitionManager::addEventTransition (NclEventTransition *transition)
   beg = 0;
   if (transTable.size () == 0)
     goto done;
+
   end = transTable.size () - 1;
 
   while (beg <= end)
@@ -344,33 +345,8 @@ NclEventTransitionManager::updateTransitionTable (
     }
 }
 
-set<GingaTime>
-NclEventTransitionManager::getTransitionsValues ()
-{
-  set<GingaTime> transValues;
-  size_t currentIx, ix;
-  vector<NclEventTransition *>::iterator i;
-
-  currentTransitionIndex = startTransitionIndex;
-  currentIx = currentTransitionIndex;
-
-  ix = 0;
-  i = transTable.begin ();
-  while (i != transTable.end ())
-    {
-      if (ix >= currentIx)
-        {
-          transValues.insert ((*i)->getTime ());
-        }
-      ++ix;
-      ++i;
-    }
-
-  return transValues;
-}
-
 NclEventTransition *
-NclEventTransitionManager::getNextTransition (NclFormatterEvent *mainEvent)
+NclEventTransitionManager::getNextTransition (NclFormatterEvent *mainEvt)
 {
   NclEventTransition *transition;
   vector<NclEventTransition *> *transitionEvents;
@@ -385,7 +361,7 @@ NclEventTransitionManager::getNextTransition (NclFormatterEvent *mainEvent)
     {
       transition = transitionEvents->at (currentIx);
 
-      eventEnd = ((NclPresentationEvent *)mainEvent)->getEnd ();
+      eventEnd = ((NclPresentationEvent *)mainEvt)->getEnd ();
       transTime = transition->getTime ();
 
       if (!GINGA_TIME_IS_VALID (eventEnd)

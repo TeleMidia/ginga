@@ -36,7 +36,6 @@ public:
   virtual ~NclEventTransitionManager ();
 
   void addPresentationEvent (NclPresentationEvent *evt);
-
   void removeEventTransition (NclPresentationEvent *evt);
 
   void resetTimeIndex ();
@@ -46,17 +45,16 @@ public:
   void abort (GingaTime endTime, bool applicationType = false);
 
   void updateTransitionTable (GingaTime timeValue, Player *player,
-                              NclFormatterEvent *mainEvent);
+                              NclFormatterEvent *mainEvt);
 
-  set<GingaTime> getTransitionsValues ();
-  NclEventTransition *getNextTransition (NclFormatterEvent *mainEvent);
+  NclEventTransition *getNextTransition (NclFormatterEvent *mainEvt);
 
 private:
   size_t currentTransitionIndex;
   size_t startTransitionIndex;
   vector<NclEventTransition *> transTable;
 
-  void addEventTransition (NclEventTransition *transition);
+  void addEventTransition (NclEventTransition *trans);
 };
 
 GINGA_FORMATTER_END
