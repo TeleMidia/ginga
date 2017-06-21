@@ -24,7 +24,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/Link.h"
 using namespace ::ginga::ncl;
 
-#include "INclEventListener.h"
 #include "FormatterEvents.h"
 
 #include "NclFormatterCausalLink.h"
@@ -39,7 +38,7 @@ GINGA_FORMATTER_BEGIN
 
 class ExecutionObjectContext : public ExecutionObject,
     public NclLinkListener,
-    public INclEventListener
+    public IFormatterEventListener
 {
 public:
   ExecutionObjectContext (const string &id,

@@ -674,7 +674,7 @@ ExecutionObject::prepare (FormatterEvent *event, GingaTime offsetTime)
               clog << "'" << endl;
               // register parent as a mainEvent listener
               _mainEvent->addListener (
-                    (INclEventListener *)(ExecutionObjectContext *)
+                    (IFormatterEventListener *)(ExecutionObjectContext *)
                     i->second);
               ++i;
             }

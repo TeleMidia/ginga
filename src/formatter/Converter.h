@@ -43,7 +43,6 @@ using namespace ::ginga::ncl;
 
 #include "ExecutionObjectSwitch.h"
 
-#include "INclEventListener.h"
 #include "FormatterEvents.h"
 
 #include "NclFormatterCausalLink.h"
@@ -65,7 +64,7 @@ GINGA_FORMATTER_BEGIN
 
 class FormatterScheduler;
 
-class Converter : public INclEventListener
+class Converter : public IFormatterEventListener
 {
 public:
   explicit Converter (RuleAdapter *);

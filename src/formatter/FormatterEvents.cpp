@@ -122,13 +122,13 @@ FormatterEvent::hasNcmId (FormatterEvent *evt, const string &anchorId)
 }
 
 void
-FormatterEvent::addListener (INclEventListener *listener)
+FormatterEvent::addListener (IFormatterEventListener *listener)
 {
   this->_listeners.insert (listener);
 }
 
 void
-FormatterEvent::removeListener (INclEventListener *listener)
+FormatterEvent::removeListener (IFormatterEventListener *listener)
 {
   _listeners.erase (listener);
 }
@@ -203,9 +203,9 @@ FormatterEvent::changeState (EventState newState,
   _previousState = _state;
   _state = newState;
 
-  set<INclEventListener *> clone (_listeners);
+  set<IFormatterEventListener *> clone (_listeners);
 
-  for (INclEventListener *listener: clone)
+  for (IFormatterEventListener *listener: clone)
     {
       listener->eventStateChanged (this, transition, _previousState);
     }

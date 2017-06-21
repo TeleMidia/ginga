@@ -22,7 +22,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 using namespace ::ginga::ncl;
 
 #include "FormatterEvents.h"
-#include "INclEventListener.h"
 
 #include "NclLinkTriggerCondition.h"
 #include "NclLinkTriggerListener.h"
@@ -30,7 +29,7 @@ using namespace ::ginga::ncl;
 GINGA_FORMATTER_BEGIN
 
 class NclLinkTransitionTriggerCondition : public NclLinkTriggerCondition,
-                                          public INclEventListener
+                                          public IFormatterEventListener
 {
 protected:
   FormatterEvent *event;
