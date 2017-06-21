@@ -131,14 +131,13 @@ public:
 class AttributionEvent : public NclEvent
 {
   PROPERTY (PlayerAdapter *, _player, getPlayerAdapter, setPlayerAdapter)
-
   PROPERTY_READONLY (PropertyAnchor *, _anchor, getAnchor)
 
 public:
   AttributionEvent (const string &id,
-                       ExecutionObject *exeObj,
-                       PropertyAnchor *anchor,
-                       Settings *settings);
+                      ExecutionObject *exeObj,
+                      PropertyAnchor *anchor,
+                      Settings *settings);
 
   virtual ~AttributionEvent ();
   string getCurrentValue ();
@@ -165,10 +164,10 @@ private:
 
 public:
   SwitchEvent (const string &id,
-                  ExecutionObject *exeObjSwitch,
-                  InterfacePoint *interface,
-                  EventType type,
-                  const string &key);
+               ExecutionObject *exeObjSwitch,
+               InterfacePoint *interface,
+               EventType type,
+               const string &key);
 
   virtual ~SwitchEvent ();
 
