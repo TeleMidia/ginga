@@ -196,7 +196,7 @@ ExecutionObjectApplication::prepare (NclFormatterEvent *event,
       event->addListener (i.second);
     }
 
-  _transMan->prepare (event == _wholeContent, startTime);
+  _transMan.prepare (event == _wholeContent, startTime);
 
   for (j = 0; j < (int) _otherEvents.size (); j++)
     {
@@ -249,7 +249,7 @@ ExecutionObjectApplication::start ()
       auto labeledAnchor = dynamic_cast<LabeledAnchor *> (contentAnchor);
       if (labeledAnchor)
         {
-          _transMan->start (_offsetTime);
+          _transMan.start (_offsetTime);
           _currentEvent->start ();
 
           TRACE ("Current event '%s' started.",
@@ -258,12 +258,12 @@ ExecutionObjectApplication::start ()
         }
     }
 
-  _transMan->start (_offsetTime);
+  _transMan.start (_offsetTime);
 
   return true;
 }
 
-NclEventTransition *
+EventTransition *
 ExecutionObjectApplication::getNextTransition ()
 {
   if (_currentEvent == nullptr
@@ -273,7 +273,7 @@ ExecutionObjectApplication::getNextTransition ()
       return nullptr;
     }
 
-  return _transMan->getNextTransition (_currentEvent);
+  return _transMan.nextTransition (_currentEvent);
 }
 
 bool
@@ -313,11 +313,11 @@ ExecutionObjectApplication::stop ()
       _currentEvent->stop ();
       if (endTime > 0)
         {
-          _transMan->stop (endTime, true);
+          _transMan.stop (endTime, true);
         }
     }
 
-  _transMan->resetTimeIndex ();
+  _transMan.resetTimeIndex ();
   _pauseCount = 0;
 
   return true;
@@ -363,11 +363,11 @@ ExecutionObjectApplication::abort ()
               ev->abort ();
               if (endTime > 0)
                 {
-                  _transMan->abort (endTime, true);
+                  _transMan.abort (endTime, true);
                 }
             }
         }
-      _transMan->resetTimeIndex ();
+      _transMan.resetTimeIndex ();
       _pauseCount = 0;
     }
   else
@@ -393,7 +393,7 @@ ExecutionObjectApplication::abort ()
           _currentEvent->abort ();
           if (endTime > 0)
             {
-              _transMan->abort (endTime, true);
+              _transMan.abort (endTime, true);
             }
         }
     }

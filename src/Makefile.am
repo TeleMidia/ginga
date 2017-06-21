@@ -46,7 +46,6 @@ src+= formatter/FocusManager.cpp
 src+= formatter/FormatterEvents.cpp
 src+= formatter/FormatterScheduler.cpp
 src+= formatter/NclCascadingDescriptor.cpp
-src+= formatter/NclEventTransition.cpp
 src+= formatter/NclEventTransitionManager.cpp
 src+= formatter/NclFormatterCausalLink.cpp
 src+= formatter/NclFormatterLink.cpp

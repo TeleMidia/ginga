@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define EventTransitionManager_H_
 
 #include "FormatterEvents.h"
-#include "NclEventTransition.h"
 
 #include "ncl/EventUtil.h"
 using namespace ::ginga::ncl;
@@ -32,11 +31,10 @@ GINGA_FORMATTER_BEGIN
 class NclEventTransitionManager
 {
 public:
-  NclEventTransitionManager ();
+  NclEventTransitionManager () {}
   virtual ~NclEventTransitionManager ();
 
   void addPresentationEvent (NclPresentationEvent *evt);
-
   void removeEventTransition (NclPresentationEvent *evt);
 
   void resetTimeIndex ();
@@ -46,17 +44,16 @@ public:
   void abort (GingaTime endTime, bool applicationType = false);
 
   void updateTransitionTable (GingaTime timeValue, Player *player,
-                              NclFormatterEvent *mainEvent);
+                              NclFormatterEvent *mainEvt);
 
-  set<GingaTime> getTransitionsValues ();
-  NclEventTransition *getNextTransition (NclFormatterEvent *mainEvent);
+  EventTransition *nextTransition (NclFormatterEvent *mainEvt);
 
 private:
-  size_t currentTransitionIndex;
-  size_t startTransitionIndex;
-  vector<NclEventTransition *> transTable;
+  size_t _currentTransitionIndex;
+  size_t _startTransitionIndex;
+  vector<EventTransition *> _transTable;
 
-  void addEventTransition (NclEventTransition *transition);
+  void addTransition (EventTransition *trans);
 };
 
 GINGA_FORMATTER_END

@@ -181,6 +181,35 @@ public:
       EventState prevState) override;
 };
 
+class EventTransition
+{
+  PROPERTY_READONLY (NclPresentationEvent *, _evt, getEvent)
+  PROPERTY_READONLY (GingaTime, _time, getTime)
+
+public:
+  EventTransition (GingaTime time, NclPresentationEvent *evt);
+  virtual ~EventTransition () {}
+};
+
+class EndEventTransition;
+
+class BeginEventTransition : public EventTransition
+{
+  PROPERTY (EndEventTransition *, _endTrans, getEndTransition, setEndTransition)
+
+public:
+  BeginEventTransition (GingaTime time, NclPresentationEvent *evt);
+};
+
+class EndEventTransition : public EventTransition
+{
+  PROPERTY_READONLY (BeginEventTransition *, _beginTrans, getBeginTransition)
+
+public:
+  EndEventTransition (GingaTime t, NclPresentationEvent *evt,
+                      BeginEventTransition *trans);
+};
+
 GINGA_FORMATTER_END
 
 #endif //_FORMATTEREVENT_H_
