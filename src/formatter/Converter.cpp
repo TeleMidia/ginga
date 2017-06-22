@@ -102,7 +102,7 @@ Converter::setHandlingStatus (bool handling)
 }
 
 void
-Converter::setLinkActionListener (INclLinkActionListener *actListener)
+Converter::setLinkActionListener (INclActionListener *actListener)
 {
   this->_actionListener = actListener;
 }
@@ -969,10 +969,10 @@ Converter::compileExecutionObjectLinks (
 }
 
 void
-Converter::setActionListener (NclLinkAction *action)
+Converter::setActionListener (NclAction *action)
 {
-  auto simpleAction = dynamic_cast <NclLinkSimpleAction *> (action);
-  auto compoundAction = dynamic_cast <NclLinkCompoundAction *> (action);
+  auto simpleAction = dynamic_cast <NclSimpleAction *> (action);
+  auto compoundAction = dynamic_cast <NclCompoundAction *> (action);
 
   if (simpleAction)
     {
@@ -980,12 +980,12 @@ Converter::setActionListener (NclLinkAction *action)
     }
   else if (compoundAction)
     {
-      vector<NclLinkSimpleAction *> actions;
+      vector<NclSimpleAction *> actions;
 
       compoundAction->setCompoundActionListener (_actionListener);
       compoundAction->getSimpleActions (&actions);
 
-      for (NclLinkSimpleAction *a: actions)
+      for (NclSimpleAction *a: actions)
         {
           setActionListener (a);
         }
@@ -1329,9 +1329,9 @@ Converter::createCausalLink (CausalLink *ncmLink,
   ConditionExpression *conditionExpression;
   Action *actionExp;
   NclLinkCondition *formatterCondition;
-  NclLinkAction *formatterAction;
+  NclAction *formatterAction;
   NclFormatterCausalLink *formatterLink;
-  NclLinkAssignmentAction *action;
+  NclAssignmentAction *action;
   string value;
   NclEvent *event;
   Animation *anim;
@@ -1398,18 +1398,18 @@ Converter::createCausalLink (CausalLink *ncmLink,
 
   if (formatterCondition->instanceOf ("NclLinkCompoundTriggerCondition"))
     {
-      vector<NclLinkAction *> acts
+      vector<NclAction *> acts
           = formatterAction->getImplicitRefRoleActions ();
 
-      for (NclLinkAction *linkAction : acts)
+      for (NclAction *linkAction : acts)
         {
-          action = dynamic_cast<NclLinkAssignmentAction *> (linkAction);
+          action = dynamic_cast<NclAssignmentAction *> (linkAction);
           g_assert_nonnull (action);
 
           value = action->getValue ();
           if (value != "" && value.substr (0, 1) == "$")
             {
-              event = ((NclLinkRepeatAction *)action)->getEvent ();
+              event = ((NclRepeatAction *)action)->getEvent ();
               setImplicitRefAssessment (
                     value.substr (1, value.length ()), ncmLink, event);
             }
@@ -1420,7 +1420,7 @@ Converter::createCausalLink (CausalLink *ncmLink,
               value = anim->getDuration ();
               if (value != "" && value.substr (0, 1) == "$")
                 {
-                  event = ((NclLinkRepeatAction *)action)->getEvent ();
+                  event = ((NclRepeatAction *)action)->getEvent ();
                   setImplicitRefAssessment (
                         value.substr (1, value.length ()), ncmLink,
                         event);
@@ -1429,7 +1429,7 @@ Converter::createCausalLink (CausalLink *ncmLink,
               value = anim->getBy ();
               if (value != "" && value.substr (0, 1) == "$")
                 {
-                  event = ((NclLinkRepeatAction *)action)->getEvent ();
+                  event = ((NclRepeatAction *)action)->getEvent ();
                   setImplicitRefAssessment (
                         value.substr (1, value.length ()), ncmLink,
                         event);
@@ -1489,7 +1489,7 @@ Converter::setImplicitRefAssessment (const string &roleId,
     }
 }
 
-NclLinkAction *
+NclAction *
 Converter::createAction (Action *actionExp,
                          CausalLink *ncmLink,
                          ExecutionObjectContext *parentObj)
@@ -1498,8 +1498,8 @@ Converter::createAction (Action *actionExp,
   vector<Bind *> *binds;
   size_t i, size;
   string delayObject;
-  NclLinkSimpleAction *simpleAction;
-  NclLinkCompoundAction *compoundAction;
+  NclSimpleAction *simpleAction;
+  NclCompoundAction *compoundAction;
 
   if (actionExp == nullptr)
     {
@@ -1523,7 +1523,7 @@ Converter::createAction (Action *actionExp,
           else if (size > 1)
             {
               compoundAction
-                  = new NclLinkCompoundAction (sae->getQualifier ());
+                  = new NclCompoundAction (sae->getQualifier ());
 
               for (i = 0; i < size; i++)
                 {
@@ -1850,7 +1850,7 @@ Converter::createAttributeAssessment (
         event, attributeAssessment->getAttributeType ());
 }
 
-NclLinkSimpleAction *
+NclSimpleAction *
 Converter::createSimpleAction (
     SimpleAction *sae, Bind *bind, Link *ncmLink,
     ExecutionObjectContext *parentObj)
@@ -1858,7 +1858,7 @@ Converter::createSimpleAction (
   NclEvent *event;
   SimpleActionType actionType;
   EventType eventType = EventType::UNKNOWN;
-  NclLinkSimpleAction *action;
+  NclSimpleAction *action;
   Parameter *connParam;
   Parameter *param;
   string paramValue;
@@ -1890,7 +1890,7 @@ Converter::createSimpleAction (
     case ACT_SET:
       if (eventType == EventType::PRESENTATION)
         {
-          action = new NclLinkRepeatAction (event, actionType);
+          action = new NclRepeatAction (event, actionType);
 
           // repeat
           paramValue = sae->getRepeat ();
@@ -1923,12 +1923,12 @@ Converter::createSimpleAction (
               repeat = xstrtoint (paramValue, 10);
             }
 
-          ((NclLinkRepeatAction *) action)->setRepetitions (repeat);
+          ((NclRepeatAction *) action)->setRepetitions (repeat);
 
           // repeatDelay
           paramValue = sae->getRepeatDelay ();
           delay = compileDelay (ncmLink, paramValue, bind);
-          ((NclLinkRepeatAction *) action)->setRepetitionInterval (delay);
+          ((NclRepeatAction *) action)->setRepetitionInterval (delay);
         }
       else if (eventType == EventType::ATTRIBUTION)
         {
@@ -1958,7 +1958,7 @@ Converter::createSimpleAction (
             }
 
           action
-              = new NclLinkAssignmentAction (event, actionType, paramValue);
+              = new NclAssignmentAction (event, actionType, paramValue);
 
           // animation
           animation = sae->getAnimation ();
@@ -2027,7 +2027,7 @@ Converter::createSimpleAction (
               if (durVal != "0")
                 {
                   isUsing = true;
-                  ((NclLinkAssignmentAction *)action)
+                  ((NclAssignmentAction *)action)
                       ->setAnimation (newAnimation);
                 }
             }
@@ -2043,7 +2043,7 @@ Converter::createSimpleAction (
     case ACT_PAUSE:
     case ACT_RESUME:
     case ACT_ABORT:
-      action = new NclLinkSimpleAction (event, actionType);
+      action = new NclSimpleAction (event, actionType);
       break;
 
     default:
@@ -2064,15 +2064,15 @@ Converter::createSimpleAction (
   return action;
 }
 
-NclLinkCompoundAction *
+NclCompoundAction *
 Converter::createCompoundAction (
     short op, GingaTime delay, vector<Action *> *ncmChildActions,
     CausalLink *ncmLink, ExecutionObjectContext *parentObj)
 {
-  NclLinkCompoundAction *action;
-  NclLinkAction *childAction;
+  NclCompoundAction *action;
+  NclAction *childAction;
 
-  action = new NclLinkCompoundAction (op);
+  action = new NclCompoundAction (op);
   if (delay > 0)
     {
       action->setWaitDelay (delay);

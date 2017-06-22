@@ -71,7 +71,7 @@ ExecutionObject::ExecutionObject (const string &id,
                                   Node *node,
                                   NclCascadingDescriptor *descriptor,
                                   bool handling,
-                                  INclLinkActionListener *seListener)
+                                  INclActionListener *seListener)
 {
   _typeSet.insert ("ExecutionObject");
 
@@ -1077,7 +1077,7 @@ ExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
       ++i;
     }
 
-  NclLinkSimpleAction *fakeAct;
+  NclSimpleAction *fakeAct;
 
   i = selectedEvents->begin ();
   while (i != selectedEvents->end ())
@@ -1091,7 +1091,7 @@ ExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
           clog << " calling scheduler to execute fake action";
           clog << endl;
 
-          fakeAct = new NclLinkSimpleAction (selectionEvent, ACT_START);
+          fakeAct = new NclSimpleAction (selectionEvent, ACT_START);
 
           _seListener->scheduleAction (fakeAct);
         }

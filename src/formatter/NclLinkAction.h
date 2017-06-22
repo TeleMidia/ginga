@@ -25,42 +25,37 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 class NclLinkCondition;
-class NclLinkSimpleAction;
+class NclSimpleAction;
 
-class NclLinkActionProgressListener
+class NclActionProgressListener
 {
 public:
-  virtual ~NclLinkActionProgressListener (){}
+  virtual ~NclActionProgressListener (){}
   virtual void actionProcessed (bool start) = 0;
 };
 
-class INclLinkActionListener
+class INclActionListener
 {
 public:
-  virtual void scheduleAction (NclLinkSimpleAction *action) = 0;
-  virtual void addAction (NclLinkSimpleAction *action) = 0;
-  virtual void removeAction (NclLinkSimpleAction *action) = 0;
+  virtual void scheduleAction (NclSimpleAction *action) = 0;
+  virtual void addAction (NclSimpleAction *action) = 0;
+  virtual void removeAction (NclSimpleAction *action) = 0;
 };
 
-class NclLinkAction
+class NclAction
 {
 public:
-  NclLinkAction ();
-  NclLinkAction (GingaTime _delay);
+  explicit NclAction (GingaTime _delay);
 
-  virtual ~NclLinkAction () {}
+  virtual ~NclAction () {}
   bool instanceOf (const string &s);
   void setWaitDelay (GingaTime delay);
 
-  void
-  addActionProgressionListener (NclLinkActionProgressListener *listener);
+  void addProgressListener (NclActionProgressListener *listener);
+  void removeProgressListener (NclActionProgressListener *listener);
 
-  void removeActionProgressionListener (
-      NclLinkActionProgressListener *listener);
-
-  void notifyProgressionListeners (bool start);
   virtual vector<NclEvent *> *getEvents () = 0;
-  virtual vector<NclLinkAction *> getImplicitRefRoleActions () = 0;
+  virtual vector<NclAction *> getImplicitRefRoleActions () = 0;
 
   void setSatisfiedCondition (NclLinkCondition *satisfiedCondition);
   void run (NclLinkCondition *satisfiedCondition);
@@ -71,39 +66,43 @@ protected:
   set<string> _typeSet;
   NclLinkCondition *_satisfiedCondition;
 
+  void notifyProgressListeners (bool start);
+
 private:
   GingaTime _delay;
-  vector<NclLinkActionProgressListener *> _progressListeners;
+  vector<NclActionProgressListener *> _progressListeners;
 };
 
-class NclLinkSimpleAction : public NclLinkAction
+class NclSimpleAction : public NclAction
 {
 public:
-  NclLinkSimpleAction (NclEvent *event, SimpleActionType type);
-  virtual ~NclLinkSimpleAction ();
+  NclSimpleAction (NclEvent *event, SimpleActionType type);
+  virtual ~NclSimpleAction ();
 
-  virtual void run ();
+  virtual void run () override;
 
   NclEvent *getEvent ();
   SimpleActionType getType ();
   string getTypeString ();
-  void setSimpleActionListener (INclLinkActionListener *listener);
-  virtual vector<NclEvent *> *getEvents ();
-  virtual vector<NclLinkAction *> getImplicitRefRoleActions ();
+
+  void setSimpleActionListener (INclActionListener *listener);
+
+  virtual vector<NclEvent *> *getEvents () override;
+  virtual vector<NclAction *> getImplicitRefRoleActions () override;
 
 protected:
   NclEvent *_event;
   SimpleActionType _actType;
 
 private:
-  INclLinkActionListener *listener;
+  INclActionListener *listener;
 };
 
-class NclLinkRepeatAction : public NclLinkSimpleAction
+class NclRepeatAction : public NclSimpleAction
 {
 public:
-  NclLinkRepeatAction (NclEvent *, SimpleActionType);
-  virtual ~NclLinkRepeatAction ();
+  NclRepeatAction (NclEvent *, SimpleActionType);
+  virtual ~NclRepeatAction ();
 
   virtual void run () override;
 
@@ -115,14 +114,14 @@ private:
   GingaTime _repetitionInterval;
 };
 
-class NclLinkAssignmentAction : public NclLinkRepeatAction
+class NclAssignmentAction : public NclRepeatAction
 {
 public:
-  NclLinkAssignmentAction (NclEvent *evt,
-                           SimpleActionType actType,
-                           const string &value);
+  NclAssignmentAction (NclEvent *evt,
+                       SimpleActionType actType,
+                       const string &value);
 
-  virtual ~NclLinkAssignmentAction ();
+  virtual ~NclAssignmentAction ();
 
   string getValue ();
   Animation *getAnimation ();
@@ -133,26 +132,26 @@ private:
   Animation *_anim;
 };
 
-class NclLinkCompoundAction : public NclLinkAction,
-                              public NclLinkActionProgressListener
+class NclCompoundAction : public NclAction,
+    public NclActionProgressListener
 {
 public:
-  NclLinkCompoundAction (short _op);
-  virtual ~NclLinkCompoundAction ();
+  NclCompoundAction (short _op);
+  virtual ~NclCompoundAction ();
 
   virtual void run () override;
 
-  void addAction (NclLinkAction *action);
+  void addAction (NclAction *action);
 
-  void getSimpleActions (vector<NclLinkSimpleAction *> *simpleActions);
-  void setCompoundActionListener (INclLinkActionListener *listener);
+  void getSimpleActions (vector<NclSimpleAction *> *simpleActions);
+  void setCompoundActionListener (INclActionListener *listener);
 
   virtual vector<NclEvent *> *getEvents () override;
   void actionProcessed (bool start) override;
-  virtual vector<NclLinkAction *> getImplicitRefRoleActions () override;
+  virtual vector<NclAction *> getImplicitRefRoleActions () override;
 
 protected:
-  vector<NclLinkAction *> _actions;
+  vector<NclAction *> _actions;
   short _op;
 
 private:
@@ -160,7 +159,7 @@ private:
   bool _hasStart;
   bool _running;
 
-  INclLinkActionListener *_listener;
+  INclActionListener *_listener;
 };
 
 GINGA_FORMATTER_END

@@ -42,7 +42,7 @@ class FocusManager : public IEventListener
 public:
   FocusManager (Scheduler *,
                 Settings *,
-                INclLinkActionListener *,
+                INclActionListener *,
                 Converter *);
 
   virtual ~FocusManager ();
@@ -77,7 +77,7 @@ private:
 
   Scheduler *_scheduler;
   FocusManager *_parentManager;
-  INclLinkActionListener *_settingActions;
+  INclActionListener *_settingActions;
 
   int _width;
   int _height;

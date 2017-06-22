@@ -20,11 +20,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ncl/ContentAnchor.h"
 #include "ncl/EventUtil.h"
+#include "ncl/PropertyAnchor.h"
 using namespace ::ginga::ncl;
 
 #include "Settings.h"
-
-#include "ncl/PropertyAnchor.h"
 
 GINGA_FORMATTER_BEGIN
 

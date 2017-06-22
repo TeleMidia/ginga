@@ -32,7 +32,7 @@ class ExecutionObjectSwitch : public ExecutionObjectContext
 {
 public:
   ExecutionObjectSwitch (const string &id, Node *switchNode, bool handling,
-                         INclLinkActionListener *seListener);
+                         INclActionListener *seListener);
 
   virtual ~ExecutionObjectSwitch (){}
   ExecutionObject *getSelectedObject () {return _selectedObj; }
