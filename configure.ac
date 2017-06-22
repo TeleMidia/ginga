@@ -165,13 +165,13 @@ AU_CHECK_PKG([XERCESC],
 # Optional dependencies.
 AU_CHECK_OPTIONAL_PKG([librsvg], [build with LibRsvg support], [],
  [LIBRSVG],
- librsvg-2.0 >= librsvg_required_version
- cairo >= cairo_required_version
+  librsvg-2.0 >= librsvg_required_version
+  cairo >= cairo_required_version
 )
 
 AU_CHECK_OPTIONAL_PKG([pango], [build with Pango support], [], [PANGO],
- pango >= pango_required_version
- pangocairo >= pango_required_version
+  pango >= pango_required_version
+  pangocairo >= pango_required_version
 )
 
 AC_ARG_WITH([cef],
