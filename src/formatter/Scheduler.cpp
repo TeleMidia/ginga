@@ -92,26 +92,8 @@ Scheduler::setKeyHandler (bool isHandler)
 void
 Scheduler::scheduleAction (NclSimpleAction *action)
 {
-  assert (action != NULL);
-  runAction (action);
+  runAction (action->getEvent (), action);
   return;
-}
-
-void
-Scheduler::runAction (NclSimpleAction *action)
-{
-  NclEvent *event = action->getEvent ();
-
-  assert (event != NULL);
-
-  if (event->instanceOf ("SelectionEvent"))
-    {
-      event->start ();
-      delete action;
-      return;
-    }
-
-  runAction (event, action);
 }
 
 void
@@ -121,6 +103,13 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
   NclCascadingDescriptor *descriptor;
   PlayerAdapter *player;
   SDLWindow *win = NULL;
+
+  if (event->instanceOf ("SelectionEvent"))
+    {
+      event->start ();
+      delete action;
+      return;
+    }
 
   obj = event->getExecutionObject ();
   g_assert_nonnull (obj);
@@ -1003,7 +992,7 @@ Scheduler::startEvent (NclEvent *event)
   NclSimpleAction *fakeAction;
 
   fakeAction = new NclSimpleAction (event, ACT_START);
-  runAction (fakeAction);
+  runAction (event, fakeAction);
   delete fakeAction;
 }
 
@@ -1013,7 +1002,7 @@ Scheduler::stopEvent (NclEvent *event)
   NclSimpleAction *fakeAction;
 
   fakeAction = new NclSimpleAction (event, ACT_STOP);
-  runAction (fakeAction);
+  runAction (event, fakeAction);
   delete fakeAction;
 }
 
@@ -1023,7 +1012,7 @@ Scheduler::pauseEvent (NclEvent *event)
   NclSimpleAction *fakeAction;
 
   fakeAction = new NclSimpleAction (event, ACT_PAUSE);
-  runAction (fakeAction);
+  runAction (event, fakeAction);
   delete fakeAction;
 }
 
@@ -1033,7 +1022,7 @@ Scheduler::resumeEvent (NclEvent *event)
   NclSimpleAction *fakeAction;
 
   fakeAction = new NclSimpleAction (event, ACT_RESUME);
-  runAction (fakeAction);
+  runAction (event, fakeAction);
   delete fakeAction;
 }
 

@@ -75,7 +75,7 @@ public:
 private:
   PlayerAdapter *initializePlayer (ExecutionObject *object);
 
-  void runAction (NclSimpleAction *action);
+
   void runAction (NclEvent *event, NclSimpleAction *action);
   void runActionOverProperty (NclEvent *event,
                               NclSimpleAction *action);
