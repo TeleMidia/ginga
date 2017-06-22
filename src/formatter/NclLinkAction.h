@@ -46,7 +46,7 @@ class NclLinkAction
 {
 public:
   NclLinkAction ();
-  NclLinkAction (GingaTime delay);
+  NclLinkAction (GingaTime _delay);
 
   virtual ~NclLinkAction () {}
   bool instanceOf (const string &s);
@@ -68,14 +68,12 @@ public:
   virtual void run () {}
 
 protected:
-  set<string> typeSet;
-  NclLinkCondition *satisfiedCondition;
+  set<string> _typeSet;
+  NclLinkCondition *_satisfiedCondition;
 
 private:
-  GingaTime delay;
-  vector<NclLinkActionProgressListener *> progressListeners;
-
-  void initLinkAction (GingaTime delay);
+  GingaTime _delay;
+  vector<NclLinkActionProgressListener *> _progressListeners;
 };
 
 class NclLinkSimpleAction : public NclLinkAction
@@ -94,8 +92,8 @@ public:
   virtual vector<NclLinkAction *> getImplicitRefRoleActions ();
 
 protected:
-  NclEvent *event;
-  SimpleActionType actionType;
+  NclEvent *_event;
+  SimpleActionType _actType;
 
 private:
   INclLinkActionListener *listener;
@@ -110,29 +108,29 @@ public:
   virtual void run () override;
 
   void setRepetitions (int repetitions);
-  void setRepetitionInterval (GingaTime delay);
+  void setRepetitionInterval (GingaTime _delay);
 
 private:
-  int repetitions;
-  GingaTime repetitionInterval;
+  int _repetitions;
+  GingaTime _repetitionInterval;
 };
 
 class NclLinkAssignmentAction : public NclLinkRepeatAction
 {
-private:
-  string value;
-  Animation *animation;
-
 public:
-  NclLinkAssignmentAction (NclEvent *event,
-                           SimpleActionType actionType,
+  NclLinkAssignmentAction (NclEvent *evt,
+                           SimpleActionType actType,
                            const string &value);
 
   virtual ~NclLinkAssignmentAction ();
 
   string getValue ();
   Animation *getAnimation ();
-  void setAnimation (Animation *animation);
+  void setAnimation (Animation *anim);
+
+private:
+  string _value;
+  Animation *_anim;
 };
 
 class NclLinkCompoundAction : public NclLinkAction,
