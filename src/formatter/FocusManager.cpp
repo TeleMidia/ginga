@@ -643,7 +643,7 @@ FocusManager::changeSettingState (const string &name, const string &act)
   NclEvent *event;
   string keyM;
 
-  settingObjects = _converter->getSettingNodeObjects ();
+  settingObjects = _converter->getSettingsObjects ();
 
   i = settingObjects->begin ();
   while (i != settingObjects->end ())

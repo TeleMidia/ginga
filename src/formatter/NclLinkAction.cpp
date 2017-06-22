@@ -81,7 +81,7 @@ NclLinkAction::hasDelay ()
 
 void
 NclLinkAction::addActionProgressionListener (
-    NclLinkActionProgressionListener *listener)
+    NclLinkActionProgressListener *listener)
 {
   auto i = progressListeners.begin ();
   while (i != progressListeners.end ())
@@ -98,7 +98,7 @@ NclLinkAction::addActionProgressionListener (
 
 void
 NclLinkAction::removeActionProgressionListener (
-    NclLinkActionProgressionListener *listener)
+    NclLinkActionProgressListener *listener)
 {
   for (auto i = progressListeners.begin ();
        i != progressListeners.end (); ++i)
@@ -114,8 +114,8 @@ NclLinkAction::removeActionProgressionListener (
 void
 NclLinkAction::notifyProgressionListeners (bool start)
 {
-  NclLinkActionProgressionListener *listener;
-  vector<NclLinkActionProgressionListener *> notifyList (progressListeners);
+  NclLinkActionProgressListener *listener;
+  vector<NclLinkActionProgressListener *> notifyList (progressListeners);
 
   for (size_t i = 0; i < notifyList.size (); i++)
     {

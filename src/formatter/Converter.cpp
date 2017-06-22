@@ -70,13 +70,13 @@ Converter::~Converter ()
         }
     }
 
-  for (auto i = _executionObjects.begin (); i != _executionObjects.end (); )
+  for (auto i = _exeObjects.begin (); i != _exeObjects.end (); )
     {
       ExecutionObject *object = i->second;
 
       if (!removeExecutionObject (object))
         {
-          i = _executionObjects.erase (i);
+          i = _exeObjects.erase (i);
         }
       else
         {
@@ -84,8 +84,8 @@ Converter::~Converter ()
         }
     }
 
-  _executionObjects.clear ();
-  _settingObjects.clear ();
+  _exeObjects.clear ();
+  _settingsObjects.clear ();
 }
 
 void
@@ -94,7 +94,7 @@ Converter::setHandlingStatus (bool handling)
   ExecutionObject *object;
   this->_handling = handling;
 
-  for (auto &i : _executionObjects)
+  for (auto &i : _exeObjects)
     {
       object = i.second;
       object->setHandling (handling);
@@ -122,8 +122,8 @@ Converter::getExecutionObjectFromPerspective (
       id = id + cascadingDescriptor->getId ();
     }
 
-  auto i = _executionObjects.find (id);
-  if (i != _executionObjects.end ())
+  auto i = _exeObjects.find (id);
+  if (i != _exeObjects.end ())
     {
       if (cascadingDescriptor)
         {
@@ -177,9 +177,9 @@ Converter::getExecutionObjectFromPerspective (
 }
 
 set<ExecutionObject *> *
-Converter::getSettingNodeObjects ()
+Converter::getSettingsObjects ()
 {
-  return new set<ExecutionObject *> (_settingObjects);
+  return new set<ExecutionObject *> (_settingsObjects);
 }
 
 NclEvent *
@@ -352,7 +352,7 @@ Converter::addSameInstance (ExecutionObject *exeObj,
         {
           objectId = referPerspective->getId ();
         }
-      _executionObjects[objectId] = exeObj;
+      _exeObjects[objectId] = exeObj;
     }
 
   delete ncmPerspective;
@@ -365,7 +365,7 @@ void
 Converter::addExecutionObject (ExecutionObject *exeObj,
                                ExecutionObjectContext *parentObj)
 {
-  _executionObjects[exeObj->getId ()] = exeObj;
+  _exeObjects[exeObj->getId ()] = exeObj;
 
   if (parentObj)
     {
@@ -378,7 +378,7 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
 
   if (contentNode && contentNode->isSettingNode ())
     {
-      _settingObjects.insert (exeObj);
+      _settingsObjects.insert (exeObj);
     }
 
   auto referNode = dynamic_cast<ReferNode *> (dataObject);
@@ -392,7 +392,7 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
           if (entityContentNode
               && entityContentNode->isSettingNode ())
             {
-              _settingObjects.insert (exeObj);
+              _settingsObjects.insert (exeObj);
             }
         }
     }
@@ -454,17 +454,17 @@ Converter::removeExecutionObject (ExecutionObject *exeObj)
       return removed;
     }
 
-  auto i = _executionObjects.find (exeObj->getId ());
+  auto i = _exeObjects.find (exeObj->getId ());
 
-  if (i != _executionObjects.end ())
+  if (i != _exeObjects.end ())
     {
-      _executionObjects.erase (i);
+      _exeObjects.erase (i);
       removed = true;
     }
 
-  if (_settingObjects.count (exeObj))
+  if (_settingsObjects.count (exeObj))
     {
-      _settingObjects.erase (_settingObjects.find (exeObj));
+      _settingsObjects.erase (_settingsObjects.find (exeObj));
       removed = true;
     }
 
@@ -1034,8 +1034,8 @@ Converter::processExecutionObjectSwitch (
       id += descriptor->getId ();
     }
 
-  i = _executionObjects.find (id);
-  if (i != _executionObjects.end ())
+  i = _exeObjects.find (id);
+  if (i != _exeObjects.end ())
     {
       selectedObject = i->second;
       switchObject->select (selectedObject);
