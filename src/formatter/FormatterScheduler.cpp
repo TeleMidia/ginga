@@ -393,7 +393,7 @@ FormatterScheduler::runActionOverComposition (
   vector<Node *> *nestedSeq;
 
   NclEvent *childEvent;
-  int i, size = 0;
+  size_t i, size = 0;
   vector<NclEvent *> *events;
   EventType eventType = EventType::UNKNOWN;
 
@@ -523,9 +523,15 @@ FormatterScheduler::runActionOverComposition (
           events = new vector<NclEvent *>;
           for (i = 0; i < size; i++)
             {
-              port = compositeNode->getPort (i);
+              port = compositeNode->getPort ((unsigned int) i);
+              g_assert_nonnull (port);
+
               perspective = compositionPerspective->copy ();
+              g_assert_nonnull (perspective);
+
               nestedSeq = port->getMapNodeNesting ();
+              g_assert_nonnull (nestedSeq);
+
               perspective->append (nestedSeq);
               try
                 {
@@ -582,7 +588,7 @@ FormatterScheduler::runActionOverComposition (
 
           delete compositionPerspective;
 
-          size = (int) events->size ();
+          size = events->size ();
 
           clog << "FormatterScheduler::runActionOverComposition ";
           clog << "action '" << action->getType () << "' over ";
@@ -703,7 +709,7 @@ FormatterScheduler::runActionOverComposition (
       clog << "' (objects = '" << objects;
       clog << "'): '" << size << "' EVENTS FOUND" << endl;
 
-      size = (int) events->size ();
+      size = events->size ();
       for (i = 0; i < size; i++)
         {
           runAction ((*events)[i], action);
