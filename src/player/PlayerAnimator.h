@@ -29,7 +29,7 @@ typedef struct
   gdouble velocity;
   gdouble targetValue;
   gdouble curValue;
-} ANIM_PROPERTY;
+} AnimProperty;
 
 class PlayerAnimator
 {
@@ -41,18 +41,20 @@ public:
 
 private:
   GList *properties;
+
   void updateList(const string &dur, const string &name, const string &value);
-  void updatePosition(SDL_Rect* rect, ANIM_PROPERTY* pr);
+  void updatePosition(SDL_Rect* rect, AnimProperty* pr);
   void updateColor(guint8* alpha,  guint8* red,
                    guint8* green,guint8* blue,
-                   ANIM_PROPERTY* pr);
-  void calculatePosition(gint32* value, ANIM_PROPERTY* pr,gint32 dir);
-  void calculateColor(guint8* value, ANIM_PROPERTY* pr,gint32 dir);
-  bool calculateVelocity(gint32* value, ANIM_PROPERTY* pr);
-  bool calculateVelocity(guint8* value, ANIM_PROPERTY* pr);
+                   AnimProperty* pr);
+
+  void calculatePosition(gint32* value, AnimProperty* pr,gint32 dir);
+  void calculateColor(guint8* value, AnimProperty* pr,gint32 dir);
+  bool calculateVelocity(gint32* value, AnimProperty* pr);
+  bool calculateVelocity(guint8* value, AnimProperty* pr);
+
   gdouble cvtTimeIntToDouble(guint32 value);
   gdouble getAnimationVelocity(gdouble initPos, gdouble finalPos, gdouble dur);
-
 };
 
 GINGA_PLAYER_END

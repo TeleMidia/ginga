@@ -26,7 +26,7 @@ using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
-class LuaPlayer : public Player, IEventListener
+class LuaPlayer : public Player, public IEventListener
 {
 public:
   LuaPlayer (const string &mrl);
