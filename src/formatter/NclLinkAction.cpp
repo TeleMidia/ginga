@@ -46,12 +46,6 @@ NclLinkAction::instanceOf (const string &s)
     }
 }
 
-GingaTime
-NclLinkAction::getWaitDelay ()
-{
-  return this->delay;
-}
-
 void
 NclLinkAction::setSatisfiedCondition (NclLinkCondition *satisfiedCondition)
 {
@@ -69,12 +63,6 @@ void
 NclLinkAction::setWaitDelay (GingaTime delay)
 {
   this->delay = delay;
-}
-
-bool
-NclLinkAction::hasDelay ()
-{
-  return this->delay > 0;
 }
 
 void
@@ -238,18 +226,6 @@ NclLinkRepeatAction::~NclLinkRepeatAction ()
 {
 }
 
-int
-NclLinkRepeatAction::getRepetitions ()
-{
-  return repetitions;
-}
-
-GingaTime
-NclLinkRepeatAction::getRepetitionInterval ()
-{
-  return repetitionInterval;
-}
-
 void
 NclLinkRepeatAction::setRepetitions (int repetitions)
 {
@@ -306,12 +282,6 @@ NclLinkAssignmentAction::getValue ()
   return value;
 }
 
-void
-NclLinkAssignmentAction::setValue (const string &value)
-{
-  this->value = value;
-}
-
 Animation *
 NclLinkAssignmentAction::getAnimation ()
 {
@@ -344,12 +314,6 @@ NclLinkCompoundAction::~NclLinkCompoundAction ()
   _actions.clear ();
 }
 
-short
-NclLinkCompoundAction::getOperator ()
-{
-  return _op;
-}
-
 void
 NclLinkCompoundAction::addAction (NclLinkAction *action)
 {
@@ -374,22 +338,6 @@ NclLinkCompoundAction::addAction (NclLinkAction *action)
     }
 
   _actions.push_back (action);
-}
-
-vector<NclLinkAction *> *
-NclLinkCompoundAction::getActions ()
-{
-  if (_running)
-    {
-      return NULL;
-    }
-
-  if (_actions.empty ())
-    {
-      return NULL;
-    }
-
-  return new vector<NclLinkAction *> (_actions);
 }
 
 void
