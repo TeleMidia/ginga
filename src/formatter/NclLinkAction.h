@@ -50,9 +50,7 @@ public:
 
   virtual ~NclLinkAction () {}
   bool instanceOf (const string &s);
-  GingaTime getWaitDelay ();
   void setWaitDelay (GingaTime delay);
-  bool hasDelay ();
 
   void
   addActionProgressionListener (NclLinkActionProgressListener *listener);
@@ -111,8 +109,6 @@ public:
 
   virtual void run () override;
 
-  int getRepetitions ();
-  GingaTime getRepetitionInterval ();
   void setRepetitions (int repetitions);
   void setRepetitionInterval (GingaTime delay);
 
@@ -135,7 +131,6 @@ public:
   virtual ~NclLinkAssignmentAction ();
 
   string getValue ();
-  void setValue (const string &value);
   Animation *getAnimation ();
   void setAnimation (Animation *animation);
 };
@@ -149,12 +144,10 @@ public:
 
   virtual void run () override;
 
-  short getOperator ();
   void addAction (NclLinkAction *action);
 
-  vector<NclLinkAction *> *getActions ();
   void getSimpleActions (vector<NclLinkSimpleAction *> *simpleActions);
-  void setCompoundActionListener (INclLinkActionListener *_listener);
+  void setCompoundActionListener (INclLinkActionListener *listener);
 
   virtual vector<NclEvent *> *getEvents () override;
   void actionProcessed (bool start) override;
