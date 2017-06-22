@@ -134,19 +134,7 @@ PlayerAdapter::setOutputWindow (SDLWindow *win)
 bool
 PlayerAdapter::hasPrepared ()
 {
-  if (_object == nullptr)
-    {
-      TRACE ("failed, object is null");
-      return false;
-    }
-
-  if (_player == nullptr)
-    {
-      TRACE ("failed, player is null");
-      return false;
-    }
-
-  return true;
+  return _player != nullptr;
 }
 
 bool
@@ -340,144 +328,45 @@ PlayerAdapter::prepareScope (GingaTime offset)
             }
         }
     }
-
-  // TODO: What is this?
-  // if (offset > 0)
-  // _player->setMediaTime (offset);
 }
 
 bool
 PlayerAdapter::start ()
 {
-  string paramValue;
-
-  g_assert_nonnull (_object);
   g_assert_nonnull (_player);
-
-  if (!_object->isSleeping ())
-    {
-      WARNING ("trying to start '%s', but it is not sleeping",
-               _object->getId ().c_str ());
-
-      return false;
-    }
-
-  bool startSuccess = _player->play ();
-
-  if (startSuccess)
-    {
-      if (!_object->start ())
-        {
-          _player->stop ();
-          startSuccess = false;
-        }
-    }
-
-  return startSuccess;
+  return _player->play ();
 }
 
 bool
 PlayerAdapter::stop ()
 {
-  g_assert_nonnull (_object);
   g_assert_nonnull (_player);
-
-  NclEvent *mainEvent = nullptr;
-
-  mainEvent = _object->getMainEvent ();
-
-  if (mainEvent != nullptr)
-    {
-      PresentationEvent *presentationEvt
-        = dynamic_cast <PresentationEvent *> (mainEvent);
-
-      if (presentationEvt && 0)
-        {
-          return true;
-        }
-    }
-  for (NclEvent *evt: _object->getEvents ())
-    {
-      g_assert_nonnull(evt);
-      AttributionEvent *attributionEvt
-        = dynamic_cast <AttributionEvent *> (evt);
-
-      if (attributionEvt)
-        {
-          attributionEvt->setPlayerAdapter (nullptr);
-        }
-    }
-
   _player->stop ();
-  _object->stop ();
-  unprepare ();
+  delete _player;
+  _player = NULL;
   return true;
 }
 
 bool
 PlayerAdapter::pause ()
 {
-  g_assert_nonnull (_object);
   g_assert_nonnull (_player);
-
-  if (_object->pause ())
-    {
-      _player->pause ();
-      return true;
-    }
-  else
-    {
-      return false;
-    }
+  _player->pause ();
+  return true;
 }
 
 bool
 PlayerAdapter::resume ()
 {
-  g_assert_nonnull (_object);
   g_assert_nonnull (_player);
-
-  if (_object->resume ())
-    {
-      _player->resume ();
-      return true;
-    }
-  return false;
+  _player->resume ();
+  return true;
 }
 
 bool
 PlayerAdapter::abort ()
 {
-  g_assert_nonnull (_object);
-  g_assert_nonnull (_player);
-
-  _player->stop ();
-  _object->abort ();
-  unprepare ();
-  return true;
-}
-
-bool
-PlayerAdapter::unprepare ()
-{
-  g_assert_nonnull (_object);
-  g_assert_nonnull (_player);
-
-  if (_object->getMainEvent () != nullptr
-      && (_object->getMainEvent ()->getCurrentState ()
-          == EventState::OCCURRING
-          || _object->getMainEvent ()->getCurrentState ()
-          == EventState::PAUSED))
-    {
-      return stop ();
-    }
-
-  if (ExecutionObject::hasInstance (_object, false))
-    _object->unprepare ();
-
-  _object = nullptr;
-
-  return true;
+  return stop ();
 }
 
 void
