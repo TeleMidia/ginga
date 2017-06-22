@@ -130,7 +130,7 @@ private:
 public:
   NclLinkAssignmentAction (NclEvent *event,
                            SimpleActionType actionType,
-                           string value);
+                           const string &value);
 
   virtual ~NclLinkAssignmentAction ();
 

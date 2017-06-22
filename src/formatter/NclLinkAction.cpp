@@ -160,11 +160,10 @@ NclLinkSimpleAction::setSimpleActionListener (
 vector<NclEvent *> *
 NclLinkSimpleAction::getEvents ()
 {
-  if (event == NULL)
-    return NULL;
+  if (event == nullptr)
+    return nullptr;
 
-  vector<NclEvent *> *events;
-  events = new vector<NclEvent *>;
+  vector<NclEvent *> *events = new vector<NclEvent *>;
 
   events->push_back (event);
   return events;
@@ -177,10 +176,11 @@ NclLinkSimpleAction::getImplicitRefRoleActions ()
   string attVal = "", durVal = "", byVal = "";
   Animation *anim;
 
-  if (this->instanceOf ("NclLinkAssignmentAction"))
+  auto assignmentAct = dynamic_cast<NclLinkAssignmentAction *> (this);
+  if (assignmentAct)
     {
-      attVal = ((NclLinkAssignmentAction *)this)->getValue ();
-      anim = ((NclLinkAssignmentAction *)this)->getAnimation ();
+      attVal = assignmentAct->getValue ();
+      anim = assignmentAct->getAnimation ();
 
       if (anim != NULL)
         {
@@ -192,9 +192,10 @@ NclLinkSimpleAction::getImplicitRefRoleActions ()
           || (durVal != "" && durVal.substr (0, 1) == "$")
           || (attVal != "" && attVal.substr (0, 1) == "$"))
         {
-          if (event->instanceOf ("AttributionEvent"))
+          AttributionEvent *attrEvt = dynamic_cast<AttributionEvent *> (event);
+          if (attrEvt)
             {
-              actions.push_back ((NclLinkAction *)this);
+              actions.push_back (this);
             }
         }
     }
@@ -223,9 +224,9 @@ NclLinkSimpleAction::run ()
     }
 }
 
-NclLinkRepeatAction::NclLinkRepeatAction (NclEvent *event,
-                                          SimpleActionType actionType)
-    : NclLinkSimpleAction (event, actionType)
+NclLinkRepeatAction::NclLinkRepeatAction (NclEvent *evt,
+                                          SimpleActionType actType)
+    : NclLinkSimpleAction (evt, actType)
 {
   this->repetitions = 0;
   this->repetitionInterval = 0;
@@ -264,38 +265,38 @@ NclLinkRepeatAction::setRepetitionInterval (GingaTime delay)
 void
 NclLinkRepeatAction::run ()
 {
-  if (NclLinkSimpleAction::event != NULL)
+  if (event != nullptr)
     {
-      if (NclLinkSimpleAction::event->instanceOf ("PresentationEvent"))
+      auto presentationEvt = dynamic_cast <PresentationEvent *> (event);
+      if (presentationEvt)
         {
-          ((PresentationEvent *)event)
-              ->setRepetitionSettings (repetitions, repetitionInterval);
+          presentationEvt->setRepetitionSettings (repetitions,
+                                                  repetitionInterval);
         }
     }
   else
     {
-      clog << "NclLinkRepeatAction::run Warning! event == NULL" << endl;
+      g_assert_not_reached ();
     }
 
   NclLinkSimpleAction::run ();
 }
 
-NclLinkAssignmentAction::NclLinkAssignmentAction (NclEvent *event,
-                                                  SimpleActionType actionType,
-                                                  string value)
-    : NclLinkRepeatAction (event, actionType)
+NclLinkAssignmentAction::NclLinkAssignmentAction (NclEvent *evt,
+                                                  SimpleActionType actType,
+                                                  const string &value)
+    : NclLinkRepeatAction (evt, actType)
 {
   this->value = value;
-  this->animation = NULL;
+  this->animation = nullptr;
   typeSet.insert ("NclLinkAssignmentAction");
 }
 
 NclLinkAssignmentAction::~NclLinkAssignmentAction ()
 {
-  if (animation != NULL)
+  if (animation != nullptr)
     {
       delete animation;
-      animation = NULL;
     }
 }
 
@@ -356,8 +357,7 @@ NclLinkCompoundAction::addAction (NclLinkAction *action)
 
   if (_running)
     {
-      clog << "NclLinkCompoundAction::addAction ";
-      clog << "Warning! Can't add action: status = running" << endl;
+      WARNING ("Can't add action: status = running.");
       return;
     }
 
@@ -367,21 +367,18 @@ NclLinkCompoundAction::addAction (NclLinkAction *action)
     {
       if (*i == action)
         {
-          clog << "NclLinkCompoundAction::addAction Warning!";
-          clog << " Trying to add same action twice";
-          clog << endl;
+          WARNING ("Trying to add same action twice.");
           return;
         }
       ++i;
     }
+
   _actions.push_back (action);
 }
 
 vector<NclLinkAction *> *
 NclLinkCompoundAction::getActions ()
 {
-  vector<NclLinkAction *> *acts;
-
   if (_running)
     {
       return NULL;
@@ -392,8 +389,7 @@ NclLinkCompoundAction::getActions ()
       return NULL;
     }
 
-  acts = new vector<NclLinkAction *> (_actions);
-  return acts;
+  return new vector<NclLinkAction *> (_actions);
 }
 
 void
@@ -413,19 +409,19 @@ NclLinkCompoundAction::getSimpleActions (
     {
       currentAction = (*i);
 
-      if (currentAction->instanceOf ("NclLinkCompoundAction"))
+      auto simpleAct = dynamic_cast<NclLinkSimpleAction *> (currentAction);
+      auto compoundAct = dynamic_cast<NclLinkCompoundAction *> (currentAction);
+      if (compoundAct)
         {
-          ((NclLinkCompoundAction *)currentAction)
-              ->getSimpleActions (simpleActions);
+          compoundAct->getSimpleActions (simpleActions);
         }
-      else if (currentAction->instanceOf ("NclLinkSimpleAction"))
+      else if (simpleAct)
         {
-          simpleActions->push_back ((NclLinkSimpleAction *)currentAction);
+          simpleActions->push_back (simpleAct);
         }
 
       ++i;
     }
-
 }
 
 void
@@ -447,12 +443,12 @@ NclLinkCompoundAction::getEvents ()
 
   if (_running)
     {
-      return NULL;
+      return nullptr;
     }
 
   if (_actions.empty ())
     {
-      return NULL;
+      return nullptr;
     }
 
   acts = new vector<NclLinkAction *> (_actions);
@@ -462,14 +458,14 @@ NclLinkCompoundAction::getEvents ()
     {
       action = (NclLinkAction *)(*i);
       actionEvents = action->getEvents ();
-      if (actionEvents != NULL)
+      if (actionEvents != nullptr)
         {
           for (j = actionEvents->begin (); j != actionEvents->end (); ++j)
             {
               events->push_back (*j);
             }
           delete actionEvents;
-          actionEvents = NULL;
+          actionEvents = nullptr;
         }
     }
 
@@ -477,7 +473,7 @@ NclLinkCompoundAction::getEvents ()
   if (events->empty ())
     {
       delete events;
-      return NULL;
+      return nullptr;
     }
 
   return events;
@@ -512,7 +508,7 @@ void
 NclLinkCompoundAction::run ()
 {
   int i, size;
-  NclLinkAction *action = NULL;
+  NclLinkAction *action = nullptr;
 
   _running = true;
 
@@ -520,13 +516,11 @@ NclLinkCompoundAction::run ()
 
   if (_actions.empty ())
     {
-      clog << "NclLinkCompoundAction::run there is no action to run"
-           << endl;
+      TRACE ("There is no action to run.");
       return;
     }
-  size = (int) _actions.size ();
-  clog << "NclLinkCompoundAction::run '" << size << "' actions" << endl;
 
+  size = (int) _actions.size ();
   _pendingActions = size;
   _hasStart = false;
 
@@ -534,46 +528,30 @@ NclLinkCompoundAction::run ()
     {
       for (i = 0; i < size; i++)
         {
-          try
-            {
-              if (_actions.empty ())
-                {
-                  return;
-                }
 
-              action = (NclLinkAction *)(_actions.at (i));
-              action->setSatisfiedCondition (satisfiedCondition);
-              action->run ();
-            }
-          catch (std::out_of_range &e)
+          if (_actions.empty ())
             {
-              clog << "NclLinkCompoundAction::run catch PAR out of range: ";
-              clog << e.what ();
-              clog << endl;
-              continue;
+              return;
             }
+
+          action = _actions.at (i);
+          action->setSatisfiedCondition (satisfiedCondition);
+          action->run ();
+
         }
     }
   else
     {
       for (i = 0; i < size; i++)
         {
-          try
+
+          if (_actions.empty ())
             {
-              if (_actions.empty ())
-                {
-                  return;
-                }
-              action = (NclLinkAction *)(_actions.at (i));
-              action->run (satisfiedCondition);
+              return;
             }
-          catch (std::out_of_range &e)
-            {
-              clog << "NclLinkCompoundAction::run catch SEQ out of range: ";
-              clog << e.what ();
-              clog << endl;
-              continue;
-            }
+
+          action = _actions.at (i);
+          action->run (satisfiedCondition);
         }
     }
 }
