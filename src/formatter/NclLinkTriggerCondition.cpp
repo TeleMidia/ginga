@@ -43,7 +43,6 @@ NclLinkTriggerCondition::NclLinkTriggerCondition () : NclLinkCondition ()
 
 NclLinkTriggerCondition::~NclLinkTriggerCondition ()
 {
-
   if (this->running)
     g_assert (Ginga_Display->unregisterEventListener (this));
   this->listener = NULL;

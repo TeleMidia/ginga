@@ -49,7 +49,6 @@ PlayerAdapter::PlayerAdapter ()
   this->_object = nullptr;
   this->_player = nullptr;
   this->_currentEvent = nullptr;
-  g_assert (Ginga_Display->registerEventListener (this));
 }
 
 PlayerAdapter::~PlayerAdapter ()
@@ -62,13 +61,11 @@ PlayerAdapter::~PlayerAdapter ()
     }
 
   _preparedEvents.clear ();
-  g_assert (Ginga_Display->unregisterEventListener (this));
 }
 
 bool
 PlayerAdapter::setCurrentEvent (NclEvent *event)
 {
-
   string ifId;
 
   if (_preparedEvents.count (event->getId ()) != 0
@@ -138,7 +135,7 @@ PlayerAdapter::prepare (ExecutionObject *object,
                         PresentationEvent *event)
 {
   Content *content;
-  GingaTime explicitDur = GINGA_TIME_NONE;
+  // GingaTime explicitDur = GINGA_TIME_NONE;
   string mrl = "";
 
   g_assert_nonnull (object);
@@ -153,45 +150,41 @@ PlayerAdapter::prepare (ExecutionObject *object,
 
   this->_object = object;
   dataObject = dynamic_cast<NodeEntity *>(object->getDataObject ());
-  // g_assert_nonnull (dataObject);
-  // g_assert_nonnull (dataObject->getDataEntity ());
+  g_assert_nonnull (dataObject);
+  g_assert_nonnull (dataObject->getDataEntity ());
 
-  if (dataObject && dataObject->getDataEntity () != nullptr)
+  content = dynamic_cast<NodeEntity *>
+    (dataObject->getDataEntity ())->getContent();
+
+  if (content)
     {
-      content
-        = dynamic_cast<NodeEntity *> (dataObject->getDataEntity ())->getContent();
-      // g_assert_nonnull (content);
-      if (content)
-        {
-          ReferenceContent *referContent
-            = dynamic_cast <ReferenceContent *>(content);
-          if (referContent)
-            {
-              mrl = referContent->getCompleteReferenceUrl ();
-            }
-        }
-      else
-        {
-          mrl = "";
-        }
+      ReferenceContent *referContent
+        = dynamic_cast <ReferenceContent *>(content);
+      g_assert_nonnull (referContent);
+      mrl = referContent->getCompleteReferenceUrl ();
+    }
+  else
+    {
+      WARNING ("object %s has no content", object->getId ().c_str ());
+      mrl = "";
     }
 
-  PresentationEvent *presentationEvent =
-    dynamic_cast <PresentationEvent *> (event);
-  if (presentationEvent)
-    {
-      GingaTime duration = presentationEvent->getDuration ();
-      if (duration == 0 && explicitDur == 0)
-        return false;
+  // PresentationEvent *presentationEvent =
+  //   dynamic_cast <PresentationEvent *> (event);
+  // if (presentationEvent)
+  //   {
+  //     GingaTime duration = presentationEvent->getDuration ();
+  //     if (duration == 0 && explicitDur == 0)
+  //       return false;
 
-      // explicit duration overwrites implicit duration
-      if (GINGA_TIME_IS_VALID (explicitDur))
-        {
-          _object->removeEvent (event);
-          presentationEvent->setEnd (explicitDur);
-          _object->addEvent (event);
-        }
-    }
+  //     // explicit duration overwrites implicit duration
+  //     if (GINGA_TIME_IS_VALID (explicitDur))
+  //       {
+  //         _object->removeEvent (event);
+  //         presentationEvent->setEnd (explicitDur);
+  //         _object->addEvent (event);
+  //       }
+  //   }
 
   createPlayer (mrl);
   g_assert_nonnull (_object);
@@ -257,7 +250,10 @@ bool
 PlayerAdapter::start ()
 {
   g_assert_nonnull (_player);
-  return _player->play ();
+  g_assert (_player->play ());
+  g_assert (Ginga_Display->registerEventListener (this));
+  TRACE ("starting %s (%p)", _object->getId ().c_str (), this);
+  return true;
 }
 
 bool
@@ -267,6 +263,8 @@ PlayerAdapter::stop ()
   _player->stop ();
   delete _player;
   _player = NULL;
+  g_assert (Ginga_Display->unregisterEventListener (this));
+  TRACE ("stopping %s (%p)", _object->getId ().c_str (), this);
   return true;
 }
 
