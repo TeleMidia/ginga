@@ -24,7 +24,6 @@ using namespace ::ginga::ncl;
 #include "NclEvents.h"
 
 #include "NclLinkAction.h"
-#include "NclLinkActionProgressionListener.h"
 #include "NclLinkTriggerCondition.h"
 #include "NclLinkTriggerListener.h"
 #include "NclFormatterLink.h"
@@ -35,7 +34,7 @@ class ExecutionObjectContext;
 
 class NclFormatterCausalLink : public NclFormatterLink,
                                public NclLinkTriggerListener,
-                               public NclLinkActionProgressionListener
+                               public NclLinkActionProgressListener
 {
 private:
   NclLinkTriggerCondition *condition;

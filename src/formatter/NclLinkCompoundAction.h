@@ -26,12 +26,11 @@ using namespace ::ginga::ncl;
 #include "NclLinkAction.h"
 #include "NclLinkSimpleAction.h"
 #include "INclLinkActionListener.h"
-#include "NclLinkActionProgressionListener.h"
 
 GINGA_FORMATTER_BEGIN
 
 class NclLinkCompoundAction : public NclLinkAction,
-                              public NclLinkActionProgressionListener
+                              public NclLinkActionProgressListener
 {
 public:
   NclLinkCompoundAction (short _op);

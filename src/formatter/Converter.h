@@ -77,7 +77,7 @@ public:
   ExecutionObject *getExecutionObjectFromPerspective (
       NclNodeNesting *perspec, GenericDescriptor *desc);
 
-  set<ExecutionObject *> *getSettingNodeObjects ();
+  set<ExecutionObject *> *getSettingsObjects ();
 
   NclEvent *getEvent (ExecutionObject *exeObj,
                       InterfacePoint *interfacePoint,
@@ -92,9 +92,9 @@ public:
 
 private:
   static int _dummyCount;
-  map<string, ExecutionObject *> _executionObjects;
+  map<string, ExecutionObject *> _exeObjects;
   set<NclEvent *> _listening;
-  set<ExecutionObject *> _settingObjects;
+  set<ExecutionObject *> _settingsObjects;
   INclLinkActionListener *_actionListener;
   RuleAdapter *_ruleAdapter;
   bool _handling;

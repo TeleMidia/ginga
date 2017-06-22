@@ -19,11 +19,17 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define _LINKACTION_H_
 
 #include "NclEvents.h"
-#include "NclLinkActionProgressionListener.h"
 
 GINGA_FORMATTER_BEGIN
 
 class NclLinkCondition;
+
+class NclLinkActionProgressListener
+{
+public:
+  virtual ~NclLinkActionProgressListener (){}
+  virtual void actionProcessed (bool start) = 0;
+};
 
 class NclLinkAction
 {
@@ -38,10 +44,10 @@ public:
   bool hasDelay ();
 
   void
-  addActionProgressionListener (NclLinkActionProgressionListener *listener);
+  addActionProgressionListener (NclLinkActionProgressListener *listener);
 
   void removeActionProgressionListener (
-      NclLinkActionProgressionListener *listener);
+      NclLinkActionProgressListener *listener);
 
   void notifyProgressionListeners (bool start);
   virtual vector<NclEvent *> *getEvents () = 0;
@@ -58,7 +64,7 @@ protected:
 
 private:
   GingaTime delay;
-  vector<NclLinkActionProgressionListener *> progressListeners;
+  vector<NclLinkActionProgressListener *> progressListeners;
 
   void initLinkAction (GingaTime delay);
 };
