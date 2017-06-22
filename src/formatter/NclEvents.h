@@ -135,9 +135,9 @@ class AttributionEvent : public NclEvent
 
 public:
   AttributionEvent (const string &id,
-                      ExecutionObject *exeObj,
-                      PropertyAnchor *anchor,
-                      Settings *settings);
+                    ExecutionObject *exeObj,
+                    PropertyAnchor *anchor,
+                    Settings *settings);
 
   virtual ~AttributionEvent ();
   string getCurrentValue ();

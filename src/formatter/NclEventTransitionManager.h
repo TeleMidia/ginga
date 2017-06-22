@@ -49,9 +49,9 @@ public:
   EventTransition *nextTransition (NclEvent *mainEvt);
 
 private:
-  size_t _currentTransitionIndex;
-  size_t _startTransitionIndex;
-  vector<EventTransition *> _transTable;
+  size_t _currentTransitionIdx;
+  size_t _startTransitionIdx;
+  vector<EventTransition *> _transTbl;
 
   void addTransition (EventTransition *trans);
 };

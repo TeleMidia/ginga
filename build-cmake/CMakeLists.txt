@@ -86,7 +86,6 @@ set (GINGA_SOURCES
   ../src/formatter/ExecutionObjectContext.cpp
   ../src/formatter/ExecutionObjectSwitch.cpp
   ../src/formatter/FocusManager.cpp
-  ../src/formatter/FormatterScheduler.cpp
   ../src/formatter/NclCascadingDescriptor.cpp
   ../src/formatter/NclEvents.cpp
   ../src/formatter/NclEventTransitionManager.cpp
@@ -111,6 +110,7 @@ set (GINGA_SOURCES
   ../src/formatter/PlayerAdapter.cpp
   ../src/formatter/RuleAdapter.cpp
   ../src/formatter/Settings.cpp
+  ../src/formatter/Scheduler.cpp
   ../src/mb/Display.cpp
   ../src/mb/Dashboard.cpp
   ../src/mb/SDLWindow.cpp
