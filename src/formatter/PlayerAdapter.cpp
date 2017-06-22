@@ -44,9 +44,8 @@ GINGA_FORMATTER_BEGIN
 
 // Public.
 
-PlayerAdapter::PlayerAdapter (Scheduler *scheduler)
+PlayerAdapter::PlayerAdapter ()
 {
-  this->_scheduler = scheduler;
   this->_object = nullptr;
   this->_player = nullptr;
   this->_currentEvent = nullptr;
@@ -453,11 +452,8 @@ PlayerAdapter::abort ()
   g_assert_nonnull (_player);
 
   _player->stop ();
-  if (!_object->isSleeping ())
-    {
-      _object->abort ();
-      unprepare ();
-    }
+  _object->abort ();
+  unprepare ();
   return true;
 }
 
@@ -475,8 +471,6 @@ PlayerAdapter::unprepare ()
     {
       return stop ();
     }
-
-  _scheduler->removePlayer (_object);
 
   if (ExecutionObject::hasInstance (_object, false))
     _object->unprepare ();

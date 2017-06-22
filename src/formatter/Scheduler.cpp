@@ -115,8 +115,7 @@ Scheduler::runAction (NclLinkSimpleAction *action)
 }
 
 void
-Scheduler::runAction (NclEvent *event,
-                               NclLinkSimpleAction *action)
+Scheduler::runAction (NclEvent *event, NclLinkSimpleAction *action)
 {
   ExecutionObject *obj;
   NclCascadingDescriptor *descriptor;
@@ -212,11 +211,15 @@ Scheduler::runAction (NclEvent *event,
     case ACT_ABORT:
       if (unlikely (!player->hasPrepared () || !player->abort ()))
         WARNING ("failed to abort player of '%s'", obj->getId ().c_str ());
+      else
+        this->removePlayer (obj);
       break;
 
     case ACT_STOP:
       if (unlikely (!player->hasPrepared () || !player->stop ()))
         WARNING ("failed to stop player of '%s'", obj->getId ().c_str ());
+      else
+        this->removePlayer (obj);
       break;
 
     default:
@@ -226,7 +229,7 @@ Scheduler::runAction (NclEvent *event,
 
 void
 Scheduler::runActionOverProperty (NclEvent *event,
-                                           NclLinkSimpleAction *action)
+                                  NclLinkSimpleAction *action)
 {
   SimpleActionType actionType;
   string propName, propValue;
@@ -371,9 +374,8 @@ Scheduler::runActionOverProperty (NclEvent *event,
 }
 
 void
-Scheduler::runActionOverComposition (
-    ExecutionObjectContext *compositeObject,
-    NclLinkSimpleAction *action)
+Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
+                                     NclLinkSimpleAction *action)
 {
   CompositeNode *compositeNode;
   Port *port;
@@ -399,7 +401,7 @@ Scheduler::runActionOverComposition (
 
   clog << "Scheduler::runActionOverComposition ";
   clog << "action '" << action->getType () << "' over COMPOSITION '";
-  clog << compositeObject->getId () << "'" << endl;
+  clog << compObj->getId () << "'" << endl;
 
   if (action->getType () == ACT_START
       || action->getType () == ACT_SET)
@@ -427,7 +429,7 @@ Scheduler::runActionOverComposition (
                   clog << "Scheduler::runActionOverComposition ";
                   clog << "Warning! action '" << action->getType () << "'";
                   clog << " over COMPOSITION '";
-                  clog << compositeObject->getId ();
+                  clog << compObj->getId ();
                   clog << "' has an unknown eventType" << endl;
                 }
             }
@@ -447,7 +449,7 @@ Scheduler::runActionOverComposition (
           attrEvent = (AttributionEvent *)event;
           propName = attrEvent->getAnchor ()->getName ();
           propValue = ((NclLinkAssignmentAction *)action)->getValue ();
-          event = compositeObject->getEventFromAnchorId (propName);
+          event = compObj->getEventFromAnchorId (propName);
 
           if (event != NULL)
             {
@@ -460,7 +462,7 @@ Scheduler::runActionOverComposition (
               attrEvent->stop ();
             }
 
-          objects = compositeObject->getExecutionObjects ();
+          objects = compObj->getExecutionObjects ();
           if (objects == NULL)
               return;
 
@@ -471,7 +473,7 @@ Scheduler::runActionOverComposition (
               if (childObject->instanceOf ("ExecutionObjectContext"))
                 {
                   clog << "Scheduler::runActionOverComposition ";
-                  clog << "'" << compositeObject->getId () << "' has '";
+                  clog << "'" << compObj->getId () << "' has '";
                   clog << childObject->getId () << "' as its child ";
                   clog << "using recursive call";
                   clog << endl;
@@ -501,10 +503,10 @@ Scheduler::runActionOverComposition (
         }
       else if (eventType == EventType::PRESENTATION)
         {
-          compositeObject->suspendLinkEvaluation (false);
+          compObj->suspendLinkEvaluation (false);
 
           compositeNode
-              = (CompositeNode *)(compositeObject->getDataObject ()
+              = (CompositeNode *)(compObj->getDataObject ()
                                       ->getDataEntity ());
 
           size = compositeNode->getNumPorts ();
@@ -517,7 +519,7 @@ Scheduler::runActionOverComposition (
           else
             {
               compositionPerspective
-                  = compositeObject->getNodePerspective ();
+                  = compObj->getNodePerspective ();
             }
 
           events = new vector<NclEvent *>;
@@ -558,7 +560,7 @@ Scheduler::runActionOverComposition (
 
                           clog << "Scheduler::";
                           clog << "runActionOverComposition '";
-                          clog << compositeObject->getId () << "'";
+                          clog << compObj->getId () << "'";
                           clog << " dataCompositeObject = '";
                           clog << compositeNode->getId () << "' ";
                           clog << " dataCompositeObjectParent = '";
@@ -592,7 +594,7 @@ Scheduler::runActionOverComposition (
 
           clog << "Scheduler::runActionOverComposition ";
           clog << "action '" << action->getType () << "' over ";
-          clog << "COMPOSITION '" << compositeObject->getId ();
+          clog << "COMPOSITION '" << compObj->getId ();
           clog << "': '" << size << "' EVENTS FOUND" << endl;
 
           for (i = 0; i < size; i++)
@@ -615,18 +617,18 @@ Scheduler::runActionOverComposition (
           && (action->getType () == ACT_STOP
               || action->getType () == ACT_ABORT))
         {
-          if (compositeObject->getWholeContentPresentationEvent () == event)
+          if (compObj->getWholeContentPresentationEvent () == event)
             {
-              compositeObject->suspendLinkEvaluation (true);
+              compObj->suspendLinkEvaluation (true);
             }
         }
 
       events = new vector<NclEvent *>;
 
-      compositeNode = (CompositeNode *)(compositeObject->getDataObject ()
+      compositeNode = (CompositeNode *)(compObj->getDataObject ()
                                             ->getDataEntity ());
 
-      objects = compositeObject->getExecutionObjects ();
+      objects = compObj->getExecutionObjects ();
       if (objects != NULL)
         {
           j = objects->begin ();
@@ -661,14 +663,14 @@ Scheduler::runActionOverComposition (
           compositionPerspective
               = new NclNodeNesting (compositeNode->getPerspective ());
 
-          compositeObject
+          compObj
               = (ExecutionObjectContext *) (compiler
                     ->getExecutionObjectFromPerspective (
                         compositionPerspective, NULL));
 
           delete compositionPerspective;
 
-          objects = compositeObject->getExecutionObjects ();
+          objects = compObj->getExecutionObjects ();
           if (objects != NULL)
             {
               j = objects->begin ();
@@ -705,7 +707,7 @@ Scheduler::runActionOverComposition (
 
       clog << "Scheduler::runActionOverComposition (else) ";
       clog << "action '" << action->getType () << "' over ";
-      clog << "COMPOSITION '" << compositeObject->getId ();
+      clog << "COMPOSITION '" << compObj->getId ();
       clog << "' (objects = '" << objects;
       clog << "'): '" << size << "' EVENTS FOUND" << endl;
 
@@ -721,17 +723,17 @@ Scheduler::runActionOverComposition (
 }
 
 void
-Scheduler::runActionOverSwitch (
-    ExecutionObjectSwitch *switchObject, SwitchEvent *event,
-    NclLinkSimpleAction *action)
+Scheduler::runActionOverSwitch (ExecutionObjectSwitch *switchObj,
+                                SwitchEvent *event,
+                                NclLinkSimpleAction *action)
 {
   ExecutionObject *selectedObject;
   NclEvent *selectedEvent;
 
-  selectedObject = switchObject->getSelectedObject ();
+  selectedObject = switchObj->getSelectedObject ();
   if (selectedObject == NULL)
     {
-      selectedObject = compiler->processExecutionObjectSwitch (switchObject);
+      selectedObject = compiler->processExecutionObjectSwitch (switchObj);
 
       if (selectedObject == NULL)
         {
@@ -748,18 +750,18 @@ Scheduler::runActionOverSwitch (
     }
   else
     {
-      runSwitchEvent (switchObject, event, selectedObject, action);
+      runSwitchEvent (switchObj, event, selectedObject, action);
     }
 
   if (action->getType () == ACT_STOP
       || action->getType () == ACT_ABORT)
     {
-      switchObject->select (NULL);
+      switchObj->select (NULL);
     }
 }
 
 void
-Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObject,
+Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObj,
                                     SwitchEvent *switchEvent,
                                     ExecutionObject *selectedObject,
                                     NclLinkSimpleAction *action)
@@ -784,7 +786,7 @@ Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObject,
           mapping = *i;
           if (mapping->getNode () == selectedObject->getDataObject ())
             {
-              nodePerspective = switchObject->getNodePerspective ();
+              nodePerspective = switchObj->getNodePerspective ();
               nestedSeq = mapping->getMapNodeNesting ();
               nodePerspective->append (nestedSeq);
               delete nestedSeq;
@@ -820,7 +822,6 @@ Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObject,
   if (selectedEvent != NULL)
     {
       switchEvent->setMappedEvent (selectedEvent);
-
       runAction (selectedEvent, action);
     }
 }
@@ -1207,7 +1208,7 @@ Scheduler::initializePlayer (ExecutionObject *object)
   if (contentNode->isSettingNode ())
     return nullptr;             // nothing to do
 
-  PlayerAdapter *adapter = new PlayerAdapter (this);
+  PlayerAdapter *adapter = new PlayerAdapter ();
   _objectPlayers[object->getId ()] = adapter;
 
   return adapter;

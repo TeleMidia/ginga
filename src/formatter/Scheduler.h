@@ -18,10 +18,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef FORMATTER_SCHEDULER_H
 #define FORMATTER_SCHEDULER_H
 
-#include "PlayerAdapter.h"
 #include "Converter.h"
 #include "FocusManager.h"
 #include "NclLinkAssignmentAction.h"
+#include "PlayerAdapter.h"
 #include "RuleAdapter.h"
 
 #include "ncl/NclDocument.h"
@@ -30,9 +30,10 @@ using namespace ::ginga::ncl;
 GINGA_FORMATTER_BEGIN
 
 class Converter;
+class FocusManager;
 
 class Scheduler : public INclLinkActionListener,
-                           public INclEventListener
+                  public INclEventListener
 {
 private:
   map<string, PlayerAdapter *> _objectPlayers;
