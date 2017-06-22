@@ -31,13 +31,12 @@ public:
   explicit PlayerAdapter ();
   virtual ~PlayerAdapter ();
 
-  bool setCurrentEvent (NclEvent *); // app
   Player *getPlayer ();
   void setOutputWindow (SDLWindow *);
 
   virtual void setProperty (AttributionEvent *, const string &);
 
-  bool prepare (ExecutionObject *, PresentationEvent *);
+  bool prepare (string, string);
   bool hasPrepared ();
   bool unprepare ();
 
@@ -50,21 +49,21 @@ public:
   string getProperty (AttributionEvent *event);
   void setProperty (const string &name, const string &value);
 
+  void setRect (SDL_Rect);
+  SDL_Rect getRect ();
+  void setZ (int, int);
+  void getZ (int *, int *);
+
+
   // From IEventListener.
   virtual void handleKeyEvent (SDL_EventType, SDL_Keycode) override;
   virtual void handleTickEvent (GingaTime, GingaTime, int) override;
 
-private:
+public:
   ExecutionObject *_object;
+private:
   Player *_player;
 
-  void createPlayer (const string &);
-
-
-  // Application player only.
-  map<string, NclEvent *> _preparedEvents;
-  NclEvent *_currentEvent;
-  void prepare (NclEvent *event);
 };
 
 GINGA_FORMATTER_END

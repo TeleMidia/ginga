@@ -48,7 +48,6 @@ PlayerAdapter::PlayerAdapter ()
 {
   this->_object = nullptr;
   this->_player = nullptr;
-  this->_currentEvent = nullptr;
 }
 
 PlayerAdapter::~PlayerAdapter ()
@@ -59,56 +58,6 @@ PlayerAdapter::~PlayerAdapter ()
         _player->stop ();
       delete _player;
     }
-
-  _preparedEvents.clear ();
-}
-
-bool
-PlayerAdapter::setCurrentEvent (NclEvent *event)
-{
-  string ifId;
-
-  if (_preparedEvents.count (event->getId ()) != 0
-      && !event->instanceOf ("SelectionEvent")
-      && event->instanceOf ("AnchorEvent"))
-    {
-      AnchorEvent *anchorEvent = dynamic_cast <AnchorEvent *> (event);
-      g_assert_nonnull (anchorEvent);
-
-      LabeledAnchor *labeledAnchor
-          = dynamic_cast<LabeledAnchor *> (anchorEvent->getAnchor());
-      LambdaAnchor *lambdaAnchor
-          = dynamic_cast<LambdaAnchor *> (anchorEvent->getAnchor());
-
-      ifId = anchorEvent->getAnchor ()->getId ();
-
-      if (labeledAnchor)
-        {
-          ifId = labeledAnchor->getLabel();
-        }
-      else if(lambdaAnchor)
-        {
-          ifId = "";
-        }
-      _currentEvent = event;
-    }
-  else if (event->instanceOf ("AttributionEvent"))
-    {
-      AttributionEvent *attributionEvt
-          = dynamic_cast <AttributionEvent *> (event);
-      g_assert_nonnull (attributionEvt);
-
-      ifId = attributionEvt->getAnchor ()->getName ();
-      _currentEvent = event;
-    }
-  else
-    {
-      WARNING ("event '%s' isn't prepared",
-               event->getId ().c_str());
-
-      return false;
-    }
-  return true;
 }
 
 Player *
@@ -131,14 +80,9 @@ PlayerAdapter::hasPrepared ()
 }
 
 bool
-PlayerAdapter::prepare (ExecutionObject *object,
-                        PresentationEvent *event)
+PlayerAdapter::prepare (string mrl, string mimetype)
 {
-  Content *content;
-  // GingaTime explicitDur = GINGA_TIME_NONE;
-  string mrl = "";
-
-  g_assert_nonnull (object);
+  const gchar *mime = mimetype.c_str ();
 
   if (hasPrepared ())
     {
@@ -146,104 +90,49 @@ PlayerAdapter::prepare (ExecutionObject *object,
       return false;
     }
 
-  NodeEntity *dataObject;
+  g_assert_null (_player);
 
-  this->_object = object;
-  dataObject = dynamic_cast<NodeEntity *>(object->getDataObject ());
-  g_assert_nonnull (dataObject);
-  g_assert_nonnull (dataObject->getDataEntity ());
-
-  content = dynamic_cast<NodeEntity *>
-    (dataObject->getDataEntity ())->getContent();
-
-  if (content)
+  if (g_str_has_prefix (mime, "audio")
+      || g_str_has_prefix (mime, "video"))
     {
-      ReferenceContent *referContent
-        = dynamic_cast <ReferenceContent *>(content);
-      g_assert_nonnull (referContent);
-      mrl = referContent->getCompleteReferenceUrl ();
+      _player = new VideoPlayer (mrl);
+    }
+#if WITH_LIBRSVG && WITH_LIBRSVG
+  else if (g_str_has_prefix (mime, "image/svg"))
+    {
+      _player = new SvgPlayer (mrl);
+    }
+#endif
+  else if (g_str_has_prefix (mime, "image"))
+    {
+      _player = new ImagePlayer (mrl);
+    }
+#if defined WITH_CEF &&  WITH_CEF
+  else if (g_str_has_prefix (mime, "text/html"))
+    {
+      _player = new HTMLPlayer (mrl);
+    }
+#endif
+#if defined WITH_PANGO && WITH_PANGO
+  else if (streq (mime, "text/plain"))
+    {
+      _player = new TextPlayer (mrl);
+    }
+#endif
+  else if (g_strcmp0 (mime, "application/x-ginga-NCLua") == 0)
+    {
+      _player = new LuaPlayer (mrl);
     }
   else
     {
-      WARNING ("object %s has no content", object->getId ().c_str ());
-      mrl = "";
+      _player = new Player (mrl);
+      WARNING ("unknown mime-type '%s': creating empty player", mime);
     }
-
-  // PresentationEvent *presentationEvent =
-  //   dynamic_cast <PresentationEvent *> (event);
-  // if (presentationEvent)
-  //   {
-  //     GingaTime duration = presentationEvent->getDuration ();
-  //     if (duration == 0 && explicitDur == 0)
-  //       return false;
-
-  //     // explicit duration overwrites implicit duration
-  //     if (GINGA_TIME_IS_VALID (explicitDur))
-  //       {
-  //         _object->removeEvent (event);
-  //         presentationEvent->setEnd (explicitDur);
-  //         _object->addEvent (event);
-  //       }
-  //   }
-
-  createPlayer (mrl);
-  g_assert_nonnull (_object);
   g_assert_nonnull (_player);
 
-  if (event->getCurrentState () == EventState::SLEEPING)
-    {
-      object->prepare (event, 0);
-      return true;
-    }
-  else
-    {
-      return false;
-    }
-}
+  TRACE ("created player '%s' for '%s'", mime, mrl.c_str ());
 
-void
-PlayerAdapter::prepare (NclEvent *event)
-{
-  GingaTime duration;
-
-  AnchorEvent *anchorEvent = dynamic_cast <AnchorEvent *> (event);
-  if (anchorEvent)
-    {
-      if (anchorEvent->getAnchor ()->instanceOf ("LambdaAnchor"))
-        {
-          PresentationEvent *presentationEvt
-              = dynamic_cast <PresentationEvent*> (event);
-          g_assert_nonnull (presentationEvt);
-
-          duration = presentationEvt->getDuration ();
-        }
-      else if (anchorEvent->getAnchor ()->instanceOf ("IntervalAnchor"))
-        {
-          IntervalAnchor *intervalAnchor
-              = dynamic_cast<IntervalAnchor *>(anchorEvent->getAnchor ());
-          g_assert_nonnull (intervalAnchor);
-        }
-      else if (anchorEvent->getAnchor ()->instanceOf ("LabeledAnchor"))
-        {
-          PresentationEvent *presentationEvt
-              = dynamic_cast <PresentationEvent*> (event);
-          g_assert_nonnull (presentationEvt);
-          duration = presentationEvt->getDuration ();
-
-          LabeledAnchor *labeledAnchor
-              = dynamic_cast <LabeledAnchor *> (anchorEvent->getAnchor());
-          g_assert_nonnull (labeledAnchor);
-
-          if (isnan (duration))
-            {
-            }
-          else
-            {
-            }
-        }
-    }
-
-  _preparedEvents[event->getId ()] = event;
+  return true;
 }
 
 bool
@@ -252,7 +141,6 @@ PlayerAdapter::start ()
   g_assert_nonnull (_player);
   g_assert (_player->play ());
   g_assert (Ginga_Display->registerEventListener (this));
-  TRACE ("starting %s (%p)", _object->getId ().c_str (), this);
   return true;
 }
 
@@ -264,7 +152,6 @@ PlayerAdapter::stop ()
   delete _player;
   _player = NULL;
   g_assert (Ginga_Display->unregisterEventListener (this));
-  TRACE ("stopping %s (%p)", _object->getId ().c_str (), this);
   return true;
 }
 
@@ -309,6 +196,8 @@ PlayerAdapter::setProperty (const string &name,
   _player->setProperty (name, value);
 }
 
+
+// TODO: Remove this.
 string
 PlayerAdapter::getProperty (AttributionEvent *event)
 {
@@ -316,7 +205,6 @@ PlayerAdapter::getProperty (AttributionEvent *event)
   string name;
   string value;
 
-  g_assert_nonnull (_object);
   g_assert_nonnull (_player);
   g_assert_nonnull (event);
 
@@ -330,6 +218,30 @@ PlayerAdapter::getProperty (AttributionEvent *event)
          name.c_str (), value.c_str ());
 
   return value;
+}
+
+void
+PlayerAdapter::setRect (SDL_Rect rect)
+{
+  _player->setRect (rect);
+}
+
+SDL_Rect
+PlayerAdapter::getRect ()
+{
+  return _player->getRect ();
+}
+
+void
+PlayerAdapter::setZ (int z, int zorder)
+{
+  _player->setZ (z, zorder);
+}
+
+void
+PlayerAdapter::getZ (int *z, int *zorder)
+{
+  _player->getZ (z, zorder);
 }
 
 void
@@ -386,172 +298,6 @@ PlayerAdapter::handleKeyEvent (SDL_EventType evtType,
 
   GingaTime time = _player->getMediaTime ();
   _object->selectionEvent (key, time);
-}
-
-
-// Private.
-
-void
-PlayerAdapter::createPlayer (const string &uri)
-{
-  NodeEntity *dataObject;
-  NodeEntity *entity;
-
-  NclCascadingDescriptor *descriptor;
-  PropertyAnchor *property;
-
-  string buf;
-  const char *mime;
-
-  g_assert_nonnull (_object);
-  dataObject = dynamic_cast <NodeEntity *>(_object->getDataObject ());
-  g_assert_nonnull (dataObject);
-
-  entity = dynamic_cast <NodeEntity *>(dataObject->getDataEntity ());
-  g_assert_nonnull (entity);
-  g_assert (entity->instanceOf ("ContentNode"));
-
-  buf = ((ContentNode *) entity)->getNodeType ();
-  mime = buf.c_str ();
-  g_assert_nonnull (mime);
-
-  if (_player == nullptr)
-    {
-      if (g_str_has_prefix (mime, "audio")
-          || g_str_has_prefix (mime, "video"))
-        {
-          _player = new VideoPlayer (uri);
-        }
-#if WITH_LIBRSVG && WITH_LIBRSVG
-      else if (g_str_has_prefix (mime, "image/svg"))
-        {
-          _player = new SvgPlayer (uri);
-        }
-#endif
-      else if (g_str_has_prefix (mime, "image"))
-        {
-          _player = new ImagePlayer (uri);
-        }
-#if defined WITH_CEF &&  WITH_CEF
-      else if (g_str_has_prefix (mime, "text/html"))
-        {
-          _player = new HTMLPlayer (uri);
-        }
-#endif
-#if defined WITH_PANGO && WITH_PANGO
-      else if (streq (mime, "text/plain"))
-        {
-          _player = new TextPlayer (uri);
-        }
-#endif
-      else if (g_strcmp0 (mime, "application/x-ginga-NCLua") == 0)
-        {
-          _player = new LuaPlayer (uri);
-        }
-      else
-        {
-          _player = new Player (uri);
-          WARNING ("unknown mime-type '%s': creating empty player", mime);
-        }
-    }
-
-  descriptor = _object->getDescriptor ();
-  if (descriptor != nullptr)
-    {
-      NclFormatterRegion *fregion = descriptor->getFormatterRegion ();
-      if (fregion != nullptr)
-        {
-          LayoutRegion *region;
-          SDL_Rect rect;
-          int z, zorder;
-
-          region = fregion->getLayoutRegion ();
-          g_assert_nonnull (region);
-
-          rect = region->getRect ();
-          region->getZ (&z, &zorder);
-
-          _player->setRect (rect);
-          _player->setZ (z, zorder);
-        }
-
-      for (Parameter &param: descriptor->getParameters ())
-        _player->setProperty (param.getName (), param.getValue ());
-    }
-
-  ContentNode *contentNode = dynamic_cast <ContentNode *> (dataObject);
-  if (contentNode)
-    {
-      string pos_x_name = "";
-      string pos_x_value = "";
-      string pos_y_name = "";
-      string pos_y_value = "";
-      string width = "";
-      string height = "";
-      for (Anchor *anchor: contentNode->getAnchors ())
-        {
-          string name, value;
-
-          property = dynamic_cast <PropertyAnchor *> (anchor);
-          if (!property)
-            continue;
-
-          name = property->getName ();
-          value = property->getValue ();
-
-          if (name == "left" || name == "right")
-            {
-              pos_x_name = name;
-              pos_x_value = value;
-              continue;
-            }
-
-          if (name == "top" || name == "bottom")
-            {
-              pos_y_name = name;
-              pos_y_value = value;
-              continue;
-            }
-
-          if (name == "width")
-            {
-              width = value;
-              continue;
-            }
-
-          if (name == "height")
-            {
-              height = value;
-              continue;
-            }
-
-          _player->setProperty (name, value);
-        }
-
-      if (width != "")
-        _player->setProperty ("width", width);
-      if (height != "")
-        _player->setProperty ("height", height);
-      if (pos_x_name != "")
-        _player->setProperty (pos_x_name, pos_x_value);
-      if (pos_y_name != "")
-        _player->setProperty (pos_y_name, pos_y_value);
-    }
-
-  for (NclEvent *evt: _object->getEvents ())
-    {
-      g_assert_nonnull (evt);
-      AttributionEvent *attributionEvt
-          = dynamic_cast <AttributionEvent *> (evt);
-      if (attributionEvt)
-        {
-          property = attributionEvt->getAnchor ();
-          attributionEvt->setPlayerAdapter (this);
-        }
-    }
-
-  TRACE ("created player for '%s' object='%s'",
-         uri.c_str (), _object->getId ().c_str ());
 }
 
 GINGA_FORMATTER_END
