@@ -23,7 +23,7 @@ using namespace ::ginga::ncl;
 
 #include "NclEvents.h"
 
-#include "NclLinkAction.h"
+#include "NclActions.h"
 #include "NclLinkTriggerCondition.h"
 #include "NclLinkTriggerListener.h"
 #include "NclFormatterLink.h"
