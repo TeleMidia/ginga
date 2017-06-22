@@ -39,7 +39,7 @@ class Converter;
 class FocusManager : public IEventListener
 {
 public:
-  FocusManager (FormatterScheduler *,
+  FocusManager (Scheduler *,
                 Settings *,
                 INclLinkActionListener *,
                 Converter *);
@@ -74,7 +74,7 @@ private:
   SDL_Color _defaultFocusBorderColor;
   SDL_Color _defaultSelBorderColor;
 
-  FormatterScheduler *_scheduler;
+  Scheduler *_scheduler;
   FocusManager *_parentManager;
   INclLinkActionListener *_settingActions;
 

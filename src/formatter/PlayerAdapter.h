@@ -24,13 +24,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-class FormatterScheduler;
+class Scheduler;
 
 class PlayerAdapter :
     public IEventListener
 {
 public:
-  explicit PlayerAdapter (FormatterScheduler *);
+  explicit PlayerAdapter (Scheduler *);
   virtual ~PlayerAdapter ();
 
   bool setCurrentEvent (NclEvent *); // app
@@ -57,7 +57,7 @@ public:
   virtual void handleTickEvent (GingaTime, GingaTime, int) override;
 
 private:
-  FormatterScheduler *_scheduler;
+  Scheduler *_scheduler;
   ExecutionObject *_object;
   Player *_player;
 
