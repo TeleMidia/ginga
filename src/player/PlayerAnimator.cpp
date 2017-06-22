@@ -65,7 +65,7 @@ PlayerAnimator::updateList (const string &dur,
                             const string &name,
                             const string &value)
 {
-  ANIM_PROPERTY* pr = new ANIM_PROPERTY;
+  AnimProperty* pr = new AnimProperty;
   pr->name = name;
   pr->duration = xstrtod(dur);
   pr->curValue = 0;
@@ -93,7 +93,7 @@ PlayerAnimator::update(SDL_Rect* rect,
   while (l != NULL)
     {
       GList *next = l->next;
-      ANIM_PROPERTY* pr = (ANIM_PROPERTY*)l->data;
+      AnimProperty* pr = (AnimProperty*)l->data;
 
       if(!pr)
         this->properties = g_list_remove_link (this->properties, l);
@@ -143,7 +143,7 @@ PlayerAnimator::getAnimationVelocity( gdouble initPos,
 }
 
 bool
-PlayerAnimator::calculateVelocity(gint32 * value, ANIM_PROPERTY* pr)
+PlayerAnimator::calculateVelocity(gint32 * value, AnimProperty* pr)
 {
   pr->velocity = getAnimationVelocity( (gdouble)*value,
                                        pr->targetValue,
@@ -161,9 +161,9 @@ PlayerAnimator::calculateVelocity(gint32 * value, ANIM_PROPERTY* pr)
 }
 
 bool
-PlayerAnimator::calculateVelocity(guint8 * value, ANIM_PROPERTY* pr)
+PlayerAnimator::calculateVelocity(guint8 * value, AnimProperty* pr)
 {
-  pr->velocity = getAnimationVelocity( (gdouble)*value,
+  pr->velocity = getAnimationVelocity ((gdouble)*value,
                                        pr->targetValue,
                                        pr->duration );
   pr->curValue = (gdouble)*value;
@@ -179,7 +179,7 @@ PlayerAnimator::calculateVelocity(guint8 * value, ANIM_PROPERTY* pr)
 }
 
 void
-PlayerAnimator::calculatePosition(gint32 * value, ANIM_PROPERTY* pr, gint32 dir)
+PlayerAnimator::calculatePosition(gint32 * value, AnimProperty* pr, gint32 dir)
 { //S = So + vt
   pr->curValue = pr->curValue +
       (dir * (pr->velocity * (1.0/(gdouble)Ginga_Display->getFPS())));
@@ -195,7 +195,7 @@ PlayerAnimator::calculatePosition(gint32 * value, ANIM_PROPERTY* pr, gint32 dir)
 }
 
 void
-PlayerAnimator::calculateColor(guint8* value, ANIM_PROPERTY* pr, gint32 dir)
+PlayerAnimator::calculateColor(guint8* value, AnimProperty* pr, gint32 dir)
 { //S = So + vt
   pr->curValue = pr->curValue +
       (dir * (pr->velocity * (1.0/(gdouble)Ginga_Display->getFPS())));
@@ -213,7 +213,7 @@ PlayerAnimator::calculateColor(guint8* value, ANIM_PROPERTY* pr, gint32 dir)
 void
 PlayerAnimator::updateColor(guint8* red, guint8* green,
                             guint8* blue, guint8* alpha,
-                            ANIM_PROPERTY* pr)
+                            AnimProperty* pr)
 {
   if(alpha == NULL)
     return;
@@ -265,7 +265,7 @@ PlayerAnimator::updateColor(guint8* red, guint8* green,
 }
 
 void
-PlayerAnimator::updatePosition(SDL_Rect* rect, ANIM_PROPERTY* pr)
+PlayerAnimator::updatePosition(SDL_Rect* rect, AnimProperty* pr)
 {
   if(pr == NULL || rect == NULL)
     return;
