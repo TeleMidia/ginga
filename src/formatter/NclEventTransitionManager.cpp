@@ -174,34 +174,27 @@ NclEventTransitionManager::abort (GingaTime endTime)
 void
 NclEventTransitionManager::addPresentationEvent (PresentationEvent *evt)
 {
-  GingaTime begin, end;
-  BeginEventTransition *beginTrans;
-  EndEventTransition *endTrans;
+  BeginEventTransition *beginTrans = nullptr;
+  EndEventTransition *endTrans = nullptr;
 
   auto lambdaAnchor = dynamic_cast <LambdaAnchor *> (evt->getAnchor());
   if (lambdaAnchor)
     {
-      auto beginTrans = new BeginEventTransition (0, evt);
-      addTransition(beginTrans);
+      beginTrans = new BeginEventTransition (0, evt);
 
       if (evt->getEnd () != GINGA_TIME_NONE)
-        {
-          auto endTrans
-              = new EndEventTransition (evt->getEnd (), evt, beginTrans);
-
-          addTransition (endTrans);
-        }
+          endTrans = new EndEventTransition (evt->getEnd (), evt, beginTrans);
     }
   else
     {
-      begin = evt->getBegin ();
-      beginTrans = new BeginEventTransition (begin, evt);
-      addTransition (beginTrans);
-
-      end = evt->getEnd ();
-      endTrans = new EndEventTransition (end, evt, beginTrans);
-      addTransition (endTrans);
+      beginTrans = new BeginEventTransition (evt->getBegin (), evt);
+      endTrans = new EndEventTransition (evt->getEnd (), evt, beginTrans);
     }
+
+  addTransition(beginTrans);
+
+  if (endTrans)
+    addTransition(endTrans);
 }
 
 void
@@ -256,8 +249,6 @@ NclEventTransitionManager::nextTransition (NclEvent *mainEvt)
           return trans;
         }
     }
-
-  g_assert_not_reached ();
 
   return nullptr;
 }
