@@ -48,7 +48,7 @@ public:
   NclLinkAction ();
   NclLinkAction (GingaTime delay);
 
-  virtual ~NclLinkAction ();
+  virtual ~NclLinkAction () {}
   bool instanceOf (const string &s);
   GingaTime getWaitDelay ();
   void setWaitDelay (GingaTime delay);
