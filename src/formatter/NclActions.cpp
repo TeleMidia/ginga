@@ -441,7 +441,7 @@ NclCompoundAction::getImplicitRefRoleActions ()
 void
 NclCompoundAction::run ()
 {
-  int i, size;
+  size_t i, size;
   NclAction *action = nullptr;
 
   _running = true;
@@ -454,8 +454,8 @@ NclCompoundAction::run ()
       return;
     }
 
-  size = (int) _actions.size ();
-  _pendingActions = size;
+  size = _actions.size ();
+  _pendingActions = (int) size;
   _hasStart = false;
 
   if (_op == CompoundAction::OP_PAR)
