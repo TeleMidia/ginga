@@ -55,9 +55,6 @@ public:
   void removeAction (NclSimpleAction *) override;
   void scheduleAction (NclSimpleAction *) override;
 
-  bool setKeyHandler (bool isHandler);
-  FocusManager *getFocusManager ();
-
   void startDocument (const string &);
 
   void eventStateChanged (NclEvent *someEvent,

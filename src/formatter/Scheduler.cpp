@@ -77,18 +77,6 @@ Scheduler::removeAction (NclSimpleAction *action)
     actions.erase (i);
 }
 
-FocusManager *
-Scheduler::getFocusManager ()
-{
-  return focusManager;
-}
-
-bool
-Scheduler::setKeyHandler (bool isHandler)
-{
-  return focusManager->setKeyHandler (isHandler);
-}
-
 void
 Scheduler::scheduleAction (NclSimpleAction *action)
 {
