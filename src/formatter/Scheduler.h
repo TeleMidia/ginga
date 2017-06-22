@@ -31,7 +31,7 @@ GINGA_FORMATTER_BEGIN
 
 class Converter;
 
-class FormatterScheduler : public INclLinkActionListener,
+class Scheduler : public INclLinkActionListener,
                            public INclEventListener
 {
 private:
@@ -47,8 +47,8 @@ private:
   set<NclLinkSimpleAction *> actions; // document actions
 
 public:
-  FormatterScheduler ();
-  virtual ~FormatterScheduler ();
+  Scheduler ();
+  virtual ~Scheduler ();
 
   void addAction (NclLinkSimpleAction *) override;
   void removeAction (NclLinkSimpleAction *) override;

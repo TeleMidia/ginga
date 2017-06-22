@@ -62,7 +62,7 @@ using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
-class FormatterScheduler;
+class Scheduler;
 
 class Converter : public INclEventListener
 {

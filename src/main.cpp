@@ -25,7 +25,7 @@ GINGA_PRAGMA_DIAG_IGNORE (-Wunused-const-variable)
 GINGA_PRAGMA_DIAG_POP ()
 #endif
 
-#include "formatter/FormatterScheduler.h"
+#include "formatter/Scheduler.h"
 using namespace ::ginga::formatter;
 
 #include "mb/Display.h"
@@ -116,7 +116,7 @@ _error (gboolean try_help, const gchar *format, ...)
 int
 main (int argc, char **argv)
 {
-  FormatterScheduler *formatter;
+  Scheduler *scheduler;
   int ginga_argc = argc;
   char **ginga_argv = g_strdupv (argv);
   string file;
@@ -164,14 +164,13 @@ main (int argc, char **argv)
 
   _Ginga_Display = new ginga::mb::Display (opt_width, opt_height,
                                            opt_fps, opt_fullscreen);
-  formatter = new FormatterScheduler ();
-
-  formatter->startDocument (file);
+  scheduler = new Scheduler ();
+  scheduler->startDocument (file);
   _Ginga_Display->renderLoop ();
 
   delete Ginga_Display;
   // FIXME: This causes the program to crash!
-  // delete formatter;
+  // delete scheduler;
 
 #if defined WITH_CEF && WITH_CEF
   CefShutdown ();

@@ -18,7 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "PlayerAdapter.h"
 
-#include "FormatterScheduler.h"
+#include "Scheduler.h"
 #include "NclLinkTransitionTriggerCondition.h"
 
 #include "mb/Display.h"
@@ -44,7 +44,7 @@ GINGA_FORMATTER_BEGIN
 
 // Public.
 
-PlayerAdapter::PlayerAdapter (FormatterScheduler *scheduler)
+PlayerAdapter::PlayerAdapter (Scheduler *scheduler)
 {
   this->_scheduler = scheduler;
   this->_object = nullptr;

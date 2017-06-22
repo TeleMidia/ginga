@@ -19,7 +19,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "FocusManager.h"
 
 #include "Converter.h"
-#include "FormatterScheduler.h"
+#include "Scheduler.h"
 
 #include "mb/Display.h"
 using namespace ::ginga::mb;
@@ -31,7 +31,7 @@ GINGA_FORMATTER_BEGIN
 bool FocusManager::_init = false;
 set<FocusManager *> FocusManager::_instances;
 
-FocusManager::FocusManager (FormatterScheduler *scheduler,
+FocusManager::FocusManager (Scheduler *scheduler,
                             Settings *settings,
                             INclLinkActionListener *settingActions,
                             Converter *converter)
