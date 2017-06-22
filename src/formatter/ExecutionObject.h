@@ -50,8 +50,6 @@ public:
 
   virtual ~ExecutionObject ();
 
-  static bool hasInstance (ExecutionObject *object, bool eraseFromList);
-
   virtual bool isSleeping ();
   virtual bool isPaused ();
   virtual bool isOccurring ();
@@ -130,21 +128,20 @@ protected:
   int _pauseCount;
   NclEvent *_mainEvent;
   NclEventTransitionManager _transMan;
-  ExecutionObject *_mirrorSrc;
 
-  static set<ExecutionObject *> _objects;
+
 
   void prepareTransitionEvents (GingaTime startTime);
   void destroyEvents ();
   virtual void unsetParentsAsListeners ();
   virtual void removeParentListenersFromEvent (NclEvent *event);
 
-  static void addInstance (ExecutionObject *object);
-  static bool removeInstance (ExecutionObject *object);
-
 private:
   bool _isCompiled;
   map<Node *, Node *> _nodeParentTable;
+
+  // ------------------------------------------
+  static set<ExecutionObject *> _objects;
 };
 
 GINGA_FORMATTER_END

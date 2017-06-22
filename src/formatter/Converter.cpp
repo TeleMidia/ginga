@@ -449,11 +449,6 @@ Converter::removeExecutionObject (ExecutionObject *exeObj)
 {
   bool removed = false;
 
-  if (!ExecutionObject::hasInstance (exeObj, false))
-    {
-      return removed;
-    }
-
   auto i = _exeObjects.find (exeObj->getId ());
 
   if (i != _exeObjects.end ())
@@ -468,8 +463,7 @@ Converter::removeExecutionObject (ExecutionObject *exeObj)
       removed = true;
     }
 
-  if (removed
-      && ExecutionObject::hasInstance (exeObj, true))
+  if (removed)
     {
       delete exeObj;
     }

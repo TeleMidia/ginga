@@ -1249,9 +1249,6 @@ Scheduler::hideObject (ExecutionObject *obj)
 bool
 Scheduler::removePlayer (ExecutionObject *exObject)
 {
-  if (!ExecutionObject::hasInstance (exObject, false))
-    return false;
-
   auto i = _objectPlayers.find (exObject->getId ());
   if (i != _objectPlayers.end ())
     {
