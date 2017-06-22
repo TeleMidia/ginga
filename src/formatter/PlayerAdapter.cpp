@@ -94,7 +94,6 @@ PlayerAdapter::setCurrentEvent (NclEvent *event)
           ifId = "";
         }
       _currentEvent = event;
-      _player->setCurrentScope (ifId);
     }
   else if (event->instanceOf ("AttributionEvent"))
     {
@@ -103,10 +102,7 @@ PlayerAdapter::setCurrentEvent (NclEvent *event)
       g_assert_nonnull (attributionEvt);
 
       ifId = attributionEvt->getAnchor ()->getName ();
-      _player->setScope (ifId, Player::PL_TYPE_ATTRIBUTION);
-
       _currentEvent = event;
-      _player->setCurrentScope (ifId);
     }
   else
     {
@@ -157,12 +153,14 @@ PlayerAdapter::prepare (ExecutionObject *object,
 
   this->_object = object;
   dataObject = dynamic_cast<NodeEntity *>(object->getDataObject ());
+  // g_assert_nonnull (dataObject);
+  // g_assert_nonnull (dataObject->getDataEntity ());
 
   if (dataObject && dataObject->getDataEntity () != nullptr)
     {
       content
         = dynamic_cast<NodeEntity *> (dataObject->getDataEntity ())->getContent();
-
+      // g_assert_nonnull (content);
       if (content)
         {
           ReferenceContent *referContent
@@ -202,7 +200,6 @@ PlayerAdapter::prepare (ExecutionObject *object,
   if (event->getCurrentState () == EventState::SLEEPING)
     {
       object->prepare (event, 0);
-      prepareScope ();
       return true;
     }
   else
@@ -226,22 +223,12 @@ PlayerAdapter::prepare (NclEvent *event)
           g_assert_nonnull (presentationEvt);
 
           duration = presentationEvt->getDuration ();
-
-          if (GINGA_TIME_IS_VALID (duration))
-            _player->setScope ("", Player::PL_TYPE_PRESENTATION, 0.,
-                               duration);
         }
       else if (anchorEvent->getAnchor ()->instanceOf ("IntervalAnchor"))
         {
           IntervalAnchor *intervalAnchor
               = dynamic_cast<IntervalAnchor *>(anchorEvent->getAnchor ());
           g_assert_nonnull (intervalAnchor);
-
-          _player->setScope (
-              anchorEvent->getAnchor ()->getId (),
-              Player::PL_TYPE_PRESENTATION,
-              intervalAnchor->getBegin (),
-              intervalAnchor->getEnd ());
         }
       else if (anchorEvent->getAnchor ()->instanceOf ("LabeledAnchor"))
         {
@@ -256,78 +243,14 @@ PlayerAdapter::prepare (NclEvent *event)
 
           if (isnan (duration))
             {
-              _player->setScope (
-                  labeledAnchor->getLabel (),
-                  Player::PL_TYPE_PRESENTATION);
             }
           else
             {
-              _player->setScope (
-                  labeledAnchor->getLabel (),
-                  Player::PL_TYPE_PRESENTATION, 0, duration);
             }
         }
     }
 
   _preparedEvents[event->getId ()] = event;
-}
-
-void
-PlayerAdapter::prepareScope (GingaTime offset)
-{
-  PresentationEvent *mainEvent;
-  GingaTime duration;
-  GingaTime initTime = 0;
-  IntervalAnchor *intervalAnchor;
-
-  mainEvent = dynamic_cast <PresentationEvent *>(_object->getMainEvent ());
-  if (mainEvent)
-    {
-      if (mainEvent->getAnchor ()->instanceOf ("LambdaAnchor"))
-        {
-          duration = mainEvent->getDuration ();
-
-          if (offset > 0)
-            {
-              initTime = offset;
-            }
-
-          if (GINGA_TIME_IS_VALID (duration))
-            {
-              _player->setScope (mainEvent->getAnchor ()->getId (),
-                                Player::PL_TYPE_PRESENTATION, initTime,
-                                duration);
-            }
-          else
-            {
-              _player->setScope (mainEvent->getAnchor ()->getId (),
-                                Player::PL_TYPE_PRESENTATION, initTime);
-            }
-        }
-      else if (mainEvent->getAnchor ()->instanceOf ("IntervalAnchor"))
-        {
-          intervalAnchor
-              = dynamic_cast<IntervalAnchor *>(mainEvent->getAnchor ());
-          g_assert_nonnull (intervalAnchor);
-
-          initTime = (intervalAnchor->getBegin ());
-          if (offset > 0)
-            initTime = offset;
-
-          duration = intervalAnchor->getEnd ();
-          if (GINGA_TIME_IS_VALID (duration))
-            {
-              _player->setScope (mainEvent->getAnchor ()->getId (),
-                                Player::PL_TYPE_PRESENTATION, initTime,
-                                (intervalAnchor->getEnd ()));
-            }
-          else
-            {
-              _player->setScope (mainEvent->getAnchor ()->getId (),
-                                 Player::PL_TYPE_PRESENTATION);
-            }
-        }
-    }
 }
 
 bool

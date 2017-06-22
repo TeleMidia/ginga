@@ -59,7 +59,6 @@ private:
   Player *_player;
 
   void createPlayer (const string &);
-  void prepareScope (GingaTime offset = 0);
 
 
   // Application player only.

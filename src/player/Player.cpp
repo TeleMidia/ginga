@@ -29,10 +29,6 @@ Player::Player (const string &mrl)
   this->window = NULL;
   this->presented = false;
   this->status = PL_SLEEPING;
-  this->scope = "";
-  this->scopeType = PL_TYPE_PRESENTATION;
-  this->scopeInitTime = 0;
-  this->scopeEndTime = GINGA_TIME_NONE;
 
   _time = 0;
 
@@ -70,18 +66,6 @@ void
 Player::incMediaTime (GingaTime incr)
 {
   _time += incr;
-}
-
-void
-Player::setScope (const string &scope,
-                  PlayerEventType type,
-                  GingaTime initTime,
-                  GingaTime endTime)
-{
-  this->scope = scope;
-  this->scopeType = type;
-  this->scopeInitTime = initTime;
-  this->scopeEndTime = endTime;
 }
 
 bool
