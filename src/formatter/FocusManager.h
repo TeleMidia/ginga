@@ -25,8 +25,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclEvents.h"
 
-#include "INclLinkActionListener.h"
-#include "NclLinkSimpleAction.h"
+#include "NclLinkAction.h"
 
 #include "NclFormatterRegion.h"
 
