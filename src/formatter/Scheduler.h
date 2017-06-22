@@ -58,11 +58,6 @@ public:
   bool setKeyHandler (bool isHandler);
   FocusManager *getFocusManager ();
 
-  void startEvent (NclEvent *event);
-  void stopEvent (NclEvent *event);
-  void pauseEvent (NclEvent *event);
-  void resumeEvent (NclEvent *event);
-
   void startDocument (const string &);
 
   void eventStateChanged (NclEvent *someEvent,

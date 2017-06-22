@@ -987,46 +987,6 @@ Scheduler::solveImplicitRefAssessment (const string &propValue,
 }
 
 void
-Scheduler::startEvent (NclEvent *event)
-{
-  NclSimpleAction *fakeAction;
-
-  fakeAction = new NclSimpleAction (event, ACT_START);
-  runAction (event, fakeAction);
-  delete fakeAction;
-}
-
-void
-Scheduler::stopEvent (NclEvent *event)
-{
-  NclSimpleAction *fakeAction;
-
-  fakeAction = new NclSimpleAction (event, ACT_STOP);
-  runAction (event, fakeAction);
-  delete fakeAction;
-}
-
-void
-Scheduler::pauseEvent (NclEvent *event)
-{
-  NclSimpleAction *fakeAction;
-
-  fakeAction = new NclSimpleAction (event, ACT_PAUSE);
-  runAction (event, fakeAction);
-  delete fakeAction;
-}
-
-void
-Scheduler::resumeEvent (NclEvent *event)
-{
-  NclSimpleAction *fakeAction;
-
-  fakeAction = new NclSimpleAction (event, ACT_RESUME);
-  runAction (event, fakeAction);
-  delete fakeAction;
-}
-
-void
 Scheduler::startDocument (const string &file)
 {
   string id;
@@ -1108,9 +1068,12 @@ Scheduler::startDocument (const string &file)
   // Start entry events.
   for (auto event: *entryevts)
     {
+      NclSimpleAction *fakeAction;
       event->addListener (this);
       this->events.push_back (event);
-      this->startEvent (event);
+      fakeAction = new NclSimpleAction (event, ACT_START);
+      runAction (event, fakeAction);
+      delete fakeAction;
     }
   delete entryevts;
 }
