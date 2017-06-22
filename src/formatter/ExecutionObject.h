@@ -35,7 +35,7 @@ using namespace ::ginga::ncl;
 #include "NclEventTransitionManager.h"
 #include "NclCascadingDescriptor.h"
 #include "NclFormatterRegion.h"
-#include "NclLinkAction.h"
+#include "NclActions.h"
 #include "NclNodeNesting.h"
 
 GINGA_FORMATTER_BEGIN

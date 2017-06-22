@@ -86,13 +86,13 @@ set (GINGA_SOURCES
   ../src/formatter/ExecutionObjectContext.cpp
   ../src/formatter/ExecutionObjectSwitch.cpp
   ../src/formatter/FocusManager.cpp
+  ../src/formatter/NclActions.cpp
   ../src/formatter/NclCascadingDescriptor.cpp
   ../src/formatter/NclEvents.cpp
   ../src/formatter/NclEventTransitionManager.cpp
   ../src/formatter/NclFormatterCausalLink.cpp
   ../src/formatter/NclFormatterLink.cpp
   ../src/formatter/NclFormatterRegion.cpp
-  ../src/formatter/NclLinkAction.cpp
   ../src/formatter/NclLinkAndCompoundTriggerCondition.cpp
   ../src/formatter/NclLinkAssessmentStatement.cpp
   ../src/formatter/NclLinkAttributeAssessment.cpp

@@ -37,7 +37,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/ReferNode.h"
 using namespace ::ginga::ncl;
 
-#include "NclLinkAction.h"
+#include "NclActions.h"
 
 #include "NclLinkCompoundStatement.h"
 #include "NclLinkTransitionTriggerCondition.h"
