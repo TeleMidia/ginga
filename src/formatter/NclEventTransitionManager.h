@@ -40,8 +40,8 @@ public:
   void resetTimeIndex ();
   void prepare (bool isWholeContent, GingaTime startTime);
   void start (GingaTime offsetTime);
-  void stop (GingaTime endTime, bool applicationType = false);
-  void abort (GingaTime endTime, bool applicationType = false);
+  void stop (GingaTime endTime);
+  void abort (GingaTime endTime);
 
   void updateTransitionTable (GingaTime timeValue, Player *player,
                               NclEvent *mainEvt);
