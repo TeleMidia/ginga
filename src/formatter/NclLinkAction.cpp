@@ -25,8 +25,6 @@ NclLinkAction::NclLinkAction (GingaTime delay)
   initLinkAction (delay);
 }
 
-NclLinkAction::~NclLinkAction () {}
-
 void
 NclLinkAction::initLinkAction (GingaTime delay)
 {
@@ -83,16 +81,15 @@ void
 NclLinkAction::addActionProgressionListener (
     NclLinkActionProgressListener *listener)
 {
-  auto i = progressListeners.begin ();
-  while (i != progressListeners.end ())
+  auto i = find (progressListeners.begin(), progressListeners.end(),
+                 listener);
+
+  if (i != progressListeners.end())
     {
-      if (listener == *i)
-        {
-          WARNING ("Trying to add the same listener twice.");
-          return;
-        }
-      ++i;
+      WARNING ("Trying to add the same listener twice.");
+      return;
     }
+
   progressListeners.push_back (listener);
 }
 
@@ -100,27 +97,17 @@ void
 NclLinkAction::removeActionProgressionListener (
     NclLinkActionProgressListener *listener)
 {
-  for (auto i = progressListeners.begin ();
-       i != progressListeners.end (); ++i)
-    {
-      if (*i == listener)
-        {
-          progressListeners.erase (i);
-          break;
-        }
-    }
+  xvectremove (progressListeners, listener);
 }
 
 void
 NclLinkAction::notifyProgressionListeners (bool start)
 {
-  NclLinkActionProgressListener *listener;
   vector<NclLinkActionProgressListener *> notifyList (progressListeners);
 
   for (size_t i = 0; i < notifyList.size (); i++)
     {
-      listener = notifyList[i];
-      listener->actionProcessed (start);
+      notifyList[i]->actionProcessed (start);
     }
 }
 
@@ -130,20 +117,17 @@ NclLinkSimpleAction::NclLinkSimpleAction (NclEvent *event,
 {
   this->event = event;
   this->actionType = type;
-  this->listener = NULL;
+  this->listener = nullptr;
 
   typeSet.insert ("NclLinkSimpleAction");
 }
 
 NclLinkSimpleAction::~NclLinkSimpleAction ()
 {
-  if (listener != NULL)
+  if (listener != nullptr)
     {
       listener->removeAction (this);
     }
-
-  listener = NULL;
-  event = NULL;
 }
 
 NclEvent *
@@ -168,11 +152,8 @@ void
 NclLinkSimpleAction::setSimpleActionListener (
     INclLinkActionListener *listener)
 {
-  if (listener != NULL)
-    {
-      listener->addAction (this);
-    }
-
+  g_assert_nonnull (listener);
+  listener->addAction (this);
   this->listener = listener;
 }
 
