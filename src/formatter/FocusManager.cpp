@@ -33,7 +33,7 @@ set<FocusManager *> FocusManager::_instances;
 
 FocusManager::FocusManager (Scheduler *scheduler,
                             Settings *settings,
-                            INclLinkActionListener *settingActions,
+                            INclActionListener *settingActions,
                             Converter *converter)
 {
   string str;

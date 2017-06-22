@@ -45,7 +45,7 @@ public:
                           Node *dataObject,
                           NclCascadingDescriptor *descriptor,
                           bool handling,
-                          INclLinkActionListener *seListener);
+                          INclActionListener *seListener);
 
   virtual ~ExecutionObjectContext ();
 

@@ -62,15 +62,15 @@ Scheduler::~Scheduler ()
 }
 
 void
-Scheduler::addAction (NclLinkSimpleAction *action)
+Scheduler::addAction (NclSimpleAction *action)
 {
   actions.insert (action);
 }
 
 void
-Scheduler::removeAction (NclLinkSimpleAction *action)
+Scheduler::removeAction (NclSimpleAction *action)
 {
-  set<NclLinkSimpleAction *>::iterator i;
+  set<NclSimpleAction *>::iterator i;
 
   i = actions.find (action);
   if (i != actions.end ())
@@ -90,7 +90,7 @@ Scheduler::setKeyHandler (bool isHandler)
 }
 
 void
-Scheduler::scheduleAction (NclLinkSimpleAction *action)
+Scheduler::scheduleAction (NclSimpleAction *action)
 {
   assert (action != NULL);
   runAction (action);
@@ -98,7 +98,7 @@ Scheduler::scheduleAction (NclLinkSimpleAction *action)
 }
 
 void
-Scheduler::runAction (NclLinkSimpleAction *action)
+Scheduler::runAction (NclSimpleAction *action)
 {
   NclEvent *event = action->getEvent ();
 
@@ -115,7 +115,7 @@ Scheduler::runAction (NclLinkSimpleAction *action)
 }
 
 void
-Scheduler::runAction (NclEvent *event, NclLinkSimpleAction *action)
+Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
 {
   ExecutionObject *obj;
   NclCascadingDescriptor *descriptor;
@@ -360,7 +360,7 @@ Scheduler::runAction (NclEvent *event, NclLinkSimpleAction *action)
 
 void
 Scheduler::runActionOverProperty (NclEvent *event,
-                                  NclLinkSimpleAction *action)
+                                  NclSimpleAction *action)
 {
   SimpleActionType actionType;
   string propName, propValue;
@@ -382,7 +382,7 @@ Scheduler::runActionOverProperty (NclEvent *event,
                      ->getAnchor ()
                      ->getName ();
 
-      propValue = ((NclLinkAssignmentAction *)action)->getValue ();
+      propValue = ((NclAssignmentAction *)action)->getValue ();
       if (propValue != "" && propValue.substr (0, 1) == "$")
         {
           propValue = solveImplicitRefAssessment (
@@ -410,7 +410,7 @@ Scheduler::runActionOverProperty (NclEvent *event,
     {
       if (action->instanceOf ("NclLinkAssignmentAction"))
         {
-          anim = ((NclLinkAssignmentAction *)action)->getAnimation ();
+          anim = ((NclAssignmentAction *)action)->getAnimation ();
         }
       else
         {
@@ -438,7 +438,7 @@ Scheduler::runActionOverProperty (NclEvent *event,
 
           if (action->instanceOf ("NclLinkAssignmentAction"))
             {
-              propValue = ((NclLinkAssignmentAction *)action)->getValue ();
+              propValue = ((NclAssignmentAction *)action)->getValue ();
               if (propValue != "" && propValue.substr (0, 1) == "$")
                 {
                   propValue = solveImplicitRefAssessment (
@@ -506,7 +506,7 @@ Scheduler::runActionOverProperty (NclEvent *event,
 
 void
 Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
-                                     NclLinkSimpleAction *action)
+                                     NclSimpleAction *action)
 {
   CompositeNode *compositeNode;
   Port *port;
@@ -579,7 +579,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
 
           attrEvent = (AttributionEvent *)event;
           propName = attrEvent->getAnchor ()->getName ();
-          propValue = ((NclLinkAssignmentAction *)action)->getValue ();
+          propValue = ((NclAssignmentAction *)action)->getValue ();
           event = compObj->getEventFromAnchorId (propName);
 
           if (event != NULL)
@@ -856,7 +856,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
 void
 Scheduler::runActionOverSwitch (ExecutionObjectSwitch *switchObj,
                                 SwitchEvent *event,
-                                NclLinkSimpleAction *action)
+                                NclSimpleAction *action)
 {
   ExecutionObject *selectedObject;
   NclEvent *selectedEvent;
@@ -895,7 +895,7 @@ void
 Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObj,
                                     SwitchEvent *switchEvent,
                                     ExecutionObject *selectedObject,
-                                    NclLinkSimpleAction *action)
+                                    NclSimpleAction *action)
 {
   NclEvent *selectedEvent;
   SwitchPort *switchPort;
@@ -1000,9 +1000,9 @@ Scheduler::solveImplicitRefAssessment (const string &propValue,
 void
 Scheduler::startEvent (NclEvent *event)
 {
-  NclLinkSimpleAction *fakeAction;
+  NclSimpleAction *fakeAction;
 
-  fakeAction = new NclLinkSimpleAction (event, ACT_START);
+  fakeAction = new NclSimpleAction (event, ACT_START);
   runAction (fakeAction);
   delete fakeAction;
 }
@@ -1010,9 +1010,9 @@ Scheduler::startEvent (NclEvent *event)
 void
 Scheduler::stopEvent (NclEvent *event)
 {
-  NclLinkSimpleAction *fakeAction;
+  NclSimpleAction *fakeAction;
 
-  fakeAction = new NclLinkSimpleAction (event, ACT_STOP);
+  fakeAction = new NclSimpleAction (event, ACT_STOP);
   runAction (fakeAction);
   delete fakeAction;
 }
@@ -1020,9 +1020,9 @@ Scheduler::stopEvent (NclEvent *event)
 void
 Scheduler::pauseEvent (NclEvent *event)
 {
-  NclLinkSimpleAction *fakeAction;
+  NclSimpleAction *fakeAction;
 
-  fakeAction = new NclLinkSimpleAction (event, ACT_PAUSE);
+  fakeAction = new NclSimpleAction (event, ACT_PAUSE);
   runAction (fakeAction);
   delete fakeAction;
 }
@@ -1030,9 +1030,9 @@ Scheduler::pauseEvent (NclEvent *event)
 void
 Scheduler::resumeEvent (NclEvent *event)
 {
-  NclLinkSimpleAction *fakeAction;
+  NclSimpleAction *fakeAction;
 
-  fakeAction = new NclLinkSimpleAction (event, ACT_RESUME);
+  fakeAction = new NclSimpleAction (event, ACT_RESUME);
   runAction (fakeAction);
   delete fakeAction;
 }

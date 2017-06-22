@@ -70,7 +70,7 @@ public:
 
   void setHandlingStatus (bool handling);
 
-  void setLinkActionListener (INclLinkActionListener *actionListener);
+  void setLinkActionListener (INclActionListener *actionListener);
 
   ExecutionObject *getExecutionObjectFromPerspective (
       NclNodeNesting *perspec, GenericDescriptor *desc);
@@ -93,7 +93,7 @@ private:
   map<string, ExecutionObject *> _exeObjects;
   set<NclEvent *> _listening;
   set<ExecutionObject *> _settingsObjects;
-  INclLinkActionListener *_actionListener;
+  INclActionListener *_actionListener;
   RuleAdapter *_ruleAdapter;
   bool _handling;
 
@@ -124,7 +124,7 @@ private:
                     ExecutionObject *exeObj,
                     ExecutionObjectContext *parentObj);
 
-  void setActionListener (NclLinkAction *action);
+  void setActionListener (NclAction *action);
 
   void resolveSwitchEvents (ExecutionObjectSwitch *switchObject);
 
@@ -153,7 +153,7 @@ private:
   void setImplicitRefAssessment (const string &roleId, CausalLink *ncmLink,
                                  NclEvent *event);
 
-  NclLinkAction *createAction (Action *actionExpression,
+  NclAction *createAction (Action *actionExpression,
                                CausalLink *ncmLink,
                                ExecutionObjectContext *parentObject);
 
@@ -182,11 +182,11 @@ private:
       AttributeAssessment *attributeAssessment, Bind *bind, Link *ncmLink,
       ExecutionObjectContext *parentObject);
 
-  NclLinkSimpleAction *
+  NclSimpleAction *
   createSimpleAction (SimpleAction *sae, Bind *bind, Link *ncmLink,
                       ExecutionObjectContext *parentObject);
 
-  NclLinkCompoundAction *createCompoundAction (
+  NclCompoundAction *createCompoundAction (
       short op, GingaTime delay, vector<Action *> *ncmChildActions,
       CausalLink *ncmLink, ExecutionObjectContext *parentObject);
 

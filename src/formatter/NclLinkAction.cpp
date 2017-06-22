@@ -20,7 +20,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclLinkAction::NclLinkAction (GingaTime delay)
+NclAction::NclAction (GingaTime delay)
 {
   _satisfiedCondition = nullptr;
   this->_delay = delay;
@@ -28,40 +28,33 @@ NclLinkAction::NclLinkAction (GingaTime delay)
 }
 
 bool
-NclLinkAction::instanceOf (const string &s)
+NclAction::instanceOf (const string &s)
 {
-  if (_typeSet.empty ())
-    {
-      return false;
-    }
-  else
-    {
-      return (_typeSet.find (s) != _typeSet.end ());
-    }
+  return (_typeSet.find (s) != _typeSet.end ());
 }
 
 void
-NclLinkAction::setSatisfiedCondition (NclLinkCondition *satisfiedCondition)
+NclAction::setSatisfiedCondition (NclLinkCondition *satisfiedCondition)
 {
   this->_satisfiedCondition = satisfiedCondition;
 }
 
 void
-NclLinkAction::run (NclLinkCondition *satisfiedCondition)
+NclAction::run (NclLinkCondition *satisfiedCondition)
 {
   this->_satisfiedCondition = satisfiedCondition;
   run ();
 }
 
 void
-NclLinkAction::setWaitDelay (GingaTime delay)
+NclAction::setWaitDelay (GingaTime delay)
 {
   this->_delay = delay;
 }
 
 void
-NclLinkAction::addActionProgressionListener (
-    NclLinkActionProgressListener *listener)
+NclAction::addProgressListener (
+    NclActionProgressListener *listener)
 {
   auto i = find (_progressListeners.begin(), _progressListeners.end(),
                  listener);
@@ -76,16 +69,16 @@ NclLinkAction::addActionProgressionListener (
 }
 
 void
-NclLinkAction::removeActionProgressionListener (
-    NclLinkActionProgressListener *listener)
+NclAction::removeProgressListener (
+    NclActionProgressListener *listener)
 {
   xvectremove (_progressListeners, listener);
 }
 
 void
-NclLinkAction::notifyProgressionListeners (bool start)
+NclAction::notifyProgressListeners (bool start)
 {
-  vector<NclLinkActionProgressListener *> notifyList (_progressListeners);
+  vector<NclActionProgressListener *> notifyList (_progressListeners);
 
   for (size_t i = 0; i < notifyList.size (); i++)
     {
@@ -93,9 +86,9 @@ NclLinkAction::notifyProgressionListeners (bool start)
     }
 }
 
-NclLinkSimpleAction::NclLinkSimpleAction (NclEvent *event,
+NclSimpleAction::NclSimpleAction (NclEvent *event,
                                           SimpleActionType type)
-    : NclLinkAction (0.)
+    : NclAction (0.)
 {
   this->_event = event;
   this->_actType = type;
@@ -104,7 +97,7 @@ NclLinkSimpleAction::NclLinkSimpleAction (NclEvent *event,
   _typeSet.insert ("NclLinkSimpleAction");
 }
 
-NclLinkSimpleAction::~NclLinkSimpleAction ()
+NclSimpleAction::~NclSimpleAction ()
 {
   if (listener != nullptr)
     {
@@ -113,26 +106,25 @@ NclLinkSimpleAction::~NclLinkSimpleAction ()
 }
 
 NclEvent *
-NclLinkSimpleAction::getEvent ()
+NclSimpleAction::getEvent ()
 {
   return _event;
 }
 
 SimpleActionType
-NclLinkSimpleAction::getType ()
+NclSimpleAction::getType ()
 {
   return _actType;
 }
 
 string
-NclLinkSimpleAction::getTypeString ()
+NclSimpleAction::getTypeString ()
 {
   return SimpleAction::actionTypeToString (this->_actType);
 }
 
 void
-NclLinkSimpleAction::setSimpleActionListener (
-    INclLinkActionListener *listener)
+NclSimpleAction::setSimpleActionListener (INclActionListener *listener)
 {
   g_assert_nonnull (listener);
   listener->addAction (this);
@@ -140,7 +132,7 @@ NclLinkSimpleAction::setSimpleActionListener (
 }
 
 vector<NclEvent *> *
-NclLinkSimpleAction::getEvents ()
+NclSimpleAction::getEvents ()
 {
   if (_event == nullptr)
     return nullptr;
@@ -151,14 +143,14 @@ NclLinkSimpleAction::getEvents ()
   return events;
 }
 
-vector<NclLinkAction *>
-NclLinkSimpleAction::getImplicitRefRoleActions ()
+vector<NclAction *>
+NclSimpleAction::getImplicitRefRoleActions ()
 {
-  vector<NclLinkAction *> actions;
+  vector<NclAction *> actions;
   string attVal = "", durVal = "", byVal = "";
   Animation *anim;
 
-  auto assignmentAct = dynamic_cast<NclLinkAssignmentAction *> (this);
+  auto assignmentAct = dynamic_cast<NclAssignmentAction *> (this);
   if (assignmentAct)
     {
       attVal = assignmentAct->getValue ();
@@ -186,9 +178,9 @@ NclLinkSimpleAction::getImplicitRefRoleActions ()
 }
 
 void
-NclLinkSimpleAction::run ()
+NclSimpleAction::run ()
 {
-  NclLinkAction::run ();
+  NclAction::run ();
 
   if (listener != NULL)
     {
@@ -198,17 +190,17 @@ NclLinkSimpleAction::run ()
 
   if (_actType == ACT_START)
     {
-      notifyProgressionListeners (true);
+      notifyProgressListeners (true);
     }
   else
     {
-      notifyProgressionListeners (false);
+      notifyProgressListeners (false);
     }
 }
 
-NclLinkRepeatAction::NclLinkRepeatAction (NclEvent *evt,
+NclRepeatAction::NclRepeatAction (NclEvent *evt,
                                           SimpleActionType actType)
-    : NclLinkSimpleAction (evt, actType)
+    : NclSimpleAction (evt, actType)
 {
   this->_repetitions = 0;
   this->_repetitionInterval = 0;
@@ -216,24 +208,24 @@ NclLinkRepeatAction::NclLinkRepeatAction (NclEvent *evt,
   _typeSet.insert ("NclLinkRepeatAction");
 }
 
-NclLinkRepeatAction::~NclLinkRepeatAction ()
+NclRepeatAction::~NclRepeatAction ()
 {
 }
 
 void
-NclLinkRepeatAction::setRepetitions (int repetitions)
+NclRepeatAction::setRepetitions (int repetitions)
 {
   this->_repetitions = repetitions;
 }
 
 void
-NclLinkRepeatAction::setRepetitionInterval (GingaTime delay)
+NclRepeatAction::setRepetitionInterval (GingaTime delay)
 {
   this->_repetitionInterval = delay;
 }
 
 void
-NclLinkRepeatAction::run ()
+NclRepeatAction::run ()
 {
   if (_event != nullptr)
     {
@@ -249,20 +241,20 @@ NclLinkRepeatAction::run ()
       g_assert_not_reached ();
     }
 
-  NclLinkSimpleAction::run ();
+  NclSimpleAction::run ();
 }
 
-NclLinkAssignmentAction::NclLinkAssignmentAction (NclEvent *evt,
+NclAssignmentAction::NclAssignmentAction (NclEvent *evt,
                                                   SimpleActionType actType,
                                                   const string &value)
-    : NclLinkRepeatAction (evt, actType)
+    : NclRepeatAction (evt, actType)
 {
   this->_value = value;
   this->_anim = nullptr;
   _typeSet.insert ("NclLinkAssignmentAction");
 }
 
-NclLinkAssignmentAction::~NclLinkAssignmentAction ()
+NclAssignmentAction::~NclAssignmentAction ()
 {
   if (_anim != nullptr)
     {
@@ -271,24 +263,24 @@ NclLinkAssignmentAction::~NclLinkAssignmentAction ()
 }
 
 string
-NclLinkAssignmentAction::getValue ()
+NclAssignmentAction::getValue ()
 {
   return _value;
 }
 
 Animation *
-NclLinkAssignmentAction::getAnimation ()
+NclAssignmentAction::getAnimation ()
 {
   return _anim;
 }
 
 void
-NclLinkAssignmentAction::setAnimation (Animation *animation)
+NclAssignmentAction::setAnimation (Animation *animation)
 {
   this->_anim = animation;
 }
 
-NclLinkCompoundAction::NclLinkCompoundAction (short op) : NclLinkAction (0.)
+NclCompoundAction::NclCompoundAction (short op) : NclAction (0.)
 {
   this->_op = op;
   _hasStart = false;
@@ -297,11 +289,11 @@ NclLinkCompoundAction::NclLinkCompoundAction (short op) : NclLinkAction (0.)
   _typeSet.insert ("NclLinkCompoundAction");
 }
 
-NclLinkCompoundAction::~NclLinkCompoundAction ()
+NclCompoundAction::~NclCompoundAction ()
 {
-  for (NclLinkAction *action : _actions)
+  for (NclAction *action : _actions)
     {
-      action->removeActionProgressionListener (this);
+      action->removeProgressListener (this);
       delete action;
     }
 
@@ -309,9 +301,9 @@ NclLinkCompoundAction::~NclLinkCompoundAction ()
 }
 
 void
-NclLinkCompoundAction::addAction (NclLinkAction *action)
+NclCompoundAction::addAction (NclAction *action)
 {
-  vector<NclLinkAction *>::iterator i;
+  vector<NclAction *>::iterator i;
 
   if (_running)
     {
@@ -319,7 +311,7 @@ NclLinkCompoundAction::addAction (NclLinkAction *action)
       return;
     }
 
-  action->addActionProgressionListener (this);
+  action->addProgressListener (this);
   i = _actions.begin ();
   while (i != _actions.end ())
     {
@@ -335,11 +327,11 @@ NclLinkCompoundAction::addAction (NclLinkAction *action)
 }
 
 void
-NclLinkCompoundAction::getSimpleActions (
-    vector<NclLinkSimpleAction *> *simpleActions)
+NclCompoundAction::getSimpleActions (
+    vector<NclSimpleAction *> *simpleActions)
 {
-  vector<NclLinkAction *>::iterator i;
-  NclLinkAction *currentAction;
+  vector<NclAction *>::iterator i;
+  NclAction *currentAction;
 
   if (_actions.empty ())
     {
@@ -351,8 +343,8 @@ NclLinkCompoundAction::getSimpleActions (
     {
       currentAction = (*i);
 
-      auto simpleAct = dynamic_cast<NclLinkSimpleAction *> (currentAction);
-      auto compoundAct = dynamic_cast<NclLinkCompoundAction *> (currentAction);
+      auto simpleAct = dynamic_cast<NclSimpleAction *> (currentAction);
+      auto compoundAct = dynamic_cast<NclCompoundAction *> (currentAction);
       if (compoundAct)
         {
           compoundAct->getSimpleActions (simpleActions);
@@ -367,18 +359,18 @@ NclLinkCompoundAction::getSimpleActions (
 }
 
 void
-NclLinkCompoundAction::setCompoundActionListener (
-    INclLinkActionListener *listener)
+NclCompoundAction::setCompoundActionListener (
+    INclActionListener *listener)
 {
   this->_listener = listener;
 }
 
 vector<NclEvent *> *
-NclLinkCompoundAction::getEvents ()
+NclCompoundAction::getEvents ()
 {
-  vector<NclLinkAction *> *acts;
-  vector<NclLinkAction *>::iterator i;
-  NclLinkAction *action;
+  vector<NclAction *> *acts;
+  vector<NclAction *>::iterator i;
+  NclAction *action;
   vector<NclEvent *> *events;
   vector<NclEvent *> *actionEvents;
   vector<NclEvent *>::iterator j;
@@ -393,12 +385,12 @@ NclLinkCompoundAction::getEvents ()
       return nullptr;
     }
 
-  acts = new vector<NclLinkAction *> (_actions);
+  acts = new vector<NclAction *> (_actions);
   events = new vector<NclEvent *>;
 
   for (i = acts->begin (); i != acts->end (); ++i)
     {
-      action = (NclLinkAction *)(*i);
+      action = (NclAction *)(*i);
       actionEvents = action->getEvents ();
       if (actionEvents != nullptr)
         {
@@ -421,23 +413,23 @@ NclLinkCompoundAction::getEvents ()
   return events;
 }
 
-vector<NclLinkAction *>
-NclLinkCompoundAction::getImplicitRefRoleActions ()
+vector<NclAction *>
+NclCompoundAction::getImplicitRefRoleActions ()
 {
-  vector<NclLinkAction *> refActs;
-  vector<NclLinkAction *> acts (_actions);
+  vector<NclAction *> refActs;
+  vector<NclAction *> acts (_actions);
 
   if (_running)
     {
       return refActs;
     }
 
-  for (NclLinkAction *act: acts)
+  for (NclAction *act: acts)
     {
-      vector<NclLinkAction *> assignmentActs
+      vector<NclAction *> assignmentActs
           = act->getImplicitRefRoleActions ();
 
-      for (NclLinkAction *assignmentAct : assignmentActs)
+      for (NclAction *assignmentAct : assignmentActs)
         {
           refActs.push_back (assignmentAct);
         }
@@ -447,14 +439,14 @@ NclLinkCompoundAction::getImplicitRefRoleActions ()
 }
 
 void
-NclLinkCompoundAction::run ()
+NclCompoundAction::run ()
 {
   int i, size;
-  NclLinkAction *action = nullptr;
+  NclAction *action = nullptr;
 
   _running = true;
 
-  NclLinkAction::run ();
+  NclAction::run ();
 
   if (_actions.empty ())
     {
@@ -499,13 +491,13 @@ NclLinkCompoundAction::run ()
 }
 
 void
-NclLinkCompoundAction::actionProcessed (bool start)
+NclCompoundAction::actionProcessed (bool start)
 {
   _pendingActions--;
   _hasStart = (_hasStart || start);
   if (_pendingActions == 0)
     {
-      notifyProgressionListeners (_hasStart);
+      notifyProgressListeners (_hasStart);
     }
 }
 

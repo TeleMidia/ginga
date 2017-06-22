@@ -23,7 +23,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 NclFormatterCausalLink::NclFormatterCausalLink (
-    NclLinkTriggerCondition *condition, NclLinkAction *action,
+    NclLinkTriggerCondition *condition, NclAction *action,
     Link *ncmLink, ExecutionObjectContext *parentObject)
     : NclFormatterLink (ncmLink, parentObject)
 {
@@ -38,7 +38,7 @@ NclFormatterCausalLink::NclFormatterCausalLink (
 
   if (this->action != NULL)
     {
-      this->action->addActionProgressionListener (this);
+      this->action->addProgressListener (this);
     }
 }
 
@@ -57,7 +57,7 @@ NclFormatterCausalLink::~NclFormatterCausalLink ()
     }
 }
 
-NclLinkAction *
+NclAction *
 NclFormatterCausalLink::getAction ()
 {
   return action;

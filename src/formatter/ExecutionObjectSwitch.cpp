@@ -22,7 +22,7 @@ GINGA_FORMATTER_BEGIN
 
 ExecutionObjectSwitch::ExecutionObjectSwitch (
     const string &id, Node *switchNode, bool handling,
-    INclLinkActionListener *seListener)
+    INclActionListener *seListener)
     : ExecutionObjectContext (id, switchNode, nullptr, handling,
                                    seListener)
 {

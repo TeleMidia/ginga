@@ -46,7 +46,7 @@ class ExecutionObject
 {
 public:
   ExecutionObject (const string &, Node *, NclCascadingDescriptor *, bool,
-                   INclLinkActionListener *);
+                   INclActionListener *);
 
   virtual ~ExecutionObject ();
 
@@ -114,7 +114,7 @@ protected:
   PresentationEvent *_wholeContent;
 
   set<string> _typeSet;
-  INclLinkActionListener *_seListener;
+  INclActionListener *_seListener;
 
   bool _isLocked;
   bool _isDeleting;

@@ -22,7 +22,7 @@ GINGA_FORMATTER_BEGIN
 
 ExecutionObjectContext::ExecutionObjectContext (
     const string &id, Node *dataObject, NclCascadingDescriptor *descriptor,
-    bool handling, INclLinkActionListener *seListener)
+    bool handling, INclActionListener *seListener)
     : ExecutionObject (id, dataObject, descriptor, handling, seListener)
 {
   ContextNode *compositeNode;

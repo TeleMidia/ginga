@@ -34,20 +34,20 @@ class ExecutionObjectContext;
 
 class NclFormatterCausalLink : public NclFormatterLink,
                                public NclLinkTriggerListener,
-                               public NclLinkActionProgressListener
+                               public NclActionProgressListener
 {
 private:
   NclLinkTriggerCondition *condition;
-  NclLinkAction *action;
+  NclAction *action;
 
 public:
   NclFormatterCausalLink (NclLinkTriggerCondition *condition,
-                          NclLinkAction *action, Link *ncmLink,
+                          NclAction *action, Link *ncmLink,
                           ExecutionObjectContext *parentObject);
 
   virtual ~NclFormatterCausalLink ();
 
-  NclLinkAction *getAction ();
+  NclAction *getAction ();
   NclLinkTriggerCondition *getTriggerCondition ();
   void conditionSatisfied (NclLinkCondition *condition);
   virtual vector<NclEvent *> *getEvents ();

@@ -32,7 +32,7 @@ GINGA_FORMATTER_BEGIN
 class Converter;
 class FocusManager;
 
-class Scheduler : public INclLinkActionListener,
+class Scheduler : public INclActionListener,
                   public INclEventListener
 {
 private:
@@ -45,15 +45,15 @@ private:
   string file;                        // NCL file path
   NclDocument *doc;                   // NCL document tree
   vector<NclEvent *> events; // document events
-  set<NclLinkSimpleAction *> actions; // document actions
+  set<NclSimpleAction *> actions; // document actions
 
 public:
   Scheduler ();
   virtual ~Scheduler ();
 
-  void addAction (NclLinkSimpleAction *) override;
-  void removeAction (NclLinkSimpleAction *) override;
-  void scheduleAction (NclLinkSimpleAction *) override;
+  void addAction (NclSimpleAction *) override;
+  void removeAction (NclSimpleAction *) override;
+  void scheduleAction (NclSimpleAction *) override;
 
   bool setKeyHandler (bool isHandler);
   FocusManager *getFocusManager ();
@@ -75,23 +75,23 @@ public:
 private:
   PlayerAdapter *initializePlayer (ExecutionObject *object);
 
-  void runAction (NclLinkSimpleAction *action);
-  void runAction (NclEvent *event, NclLinkSimpleAction *action);
+  void runAction (NclSimpleAction *action);
+  void runAction (NclEvent *event, NclSimpleAction *action);
   void runActionOverProperty (NclEvent *event,
-                              NclLinkSimpleAction *action);
+                              NclSimpleAction *action);
 
   void
   runActionOverComposition (ExecutionObjectContext *compositeObject,
-                            NclLinkSimpleAction *action);
+                            NclSimpleAction *action);
 
   void runActionOverSwitch (ExecutionObjectSwitch *switchObject,
                             SwitchEvent *event,
-                            NclLinkSimpleAction *action);
+                            NclSimpleAction *action);
 
   void runSwitchEvent (ExecutionObjectSwitch *switchObject,
                        SwitchEvent *switchEvent,
                        ExecutionObject *selectedObject,
-                       NclLinkSimpleAction *action);
+                       NclSimpleAction *action);
 
   string solveImplicitRefAssessment (const string &propValue,
                                      AttributionEvent *event);
