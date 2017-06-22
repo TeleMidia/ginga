@@ -227,4 +227,17 @@ string xpathmakeabs (string);
 string xpathbuild (const string &, const string &);
 string xpathbuildabs (const string &, const string &);
 
+// Vector functions.
+/**
+ * @brief Removes all elements of vector v2 from vector v1
+ */
+template <typename T>
+void xvectremove (std::vector<T>& v1, std::vector<T>& v2)
+{
+  auto beginIt = remove_if (v1.begin(), v1.end(),
+                            [&](T t) { return (find(v2.begin(), v2.end(), t)
+                                               != v2.end()); });
+  v1.erase (beginIt, v1.end());
+}
+
 #endif /* GINGA_H */
