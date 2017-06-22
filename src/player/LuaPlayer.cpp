@@ -155,7 +155,7 @@ LuaPlayer::resume (void)
 void
 LuaPlayer::stop (void)
 {
-  TRACE ("stop scope");
+  TRACE ("stop");
   evt_ncl_send_presentation (_nw, "stop", "");
   ncluaw_cycle (_nw);
   ncluaw_close (_nw);

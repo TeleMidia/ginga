@@ -61,11 +61,6 @@ public:
   void incMediaTime (GingaTime);
   GingaTime getMediaTime ();
 
-  virtual void setScope (const string &scope,
-                         PlayerEventType type = PL_TYPE_PRESENTATION,
-                         GingaTime begin = 0,
-                         GingaTime end = GINGA_TIME_NONE);
-
   virtual bool play ();
   virtual void stop ();
   virtual void abort ();
@@ -75,7 +70,6 @@ public:
   virtual void setProperty (const string &, const string &);
 
   virtual void setOutWindow (SDLWindow *);
-  virtual void setCurrentScope (arg_unused (const string &scopeId)) {}
 
   virtual void redraw (SDL_Renderer *);
 
@@ -86,10 +80,6 @@ protected:
   SDLWindow *window;
   PlayerAnimator *animator;
   bool presented;
-  PlayerEventType scopeType;
-  string scope;
-  GingaTime scopeInitTime;
-  GingaTime scopeEndTime;
 
   // Media attributes.
   SDL_Texture *texture;
