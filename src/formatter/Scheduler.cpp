@@ -155,7 +155,7 @@ Scheduler::runAction (NclEvent *event, NclLinkSimpleAction *action)
 
   if (unlikely (player == NULL))
     {
-      WARNING ("no player to decode '%s', skipping action",
+      WARNING ("no player to decode '%s', empty object",
                obj->getId ().c_str ());
       return;
     }
@@ -163,6 +163,9 @@ Scheduler::runAction (NclEvent *event, NclLinkSimpleAction *action)
   switch (action->getType ())
     {
     case ACT_START:
+      if (obj->isOccurring ())
+        break;                  // nothing to do
+
       if (!player->hasPrepared ())
         {
           if (ruleAdapter->adaptDescriptor (obj))
@@ -181,14 +184,11 @@ Scheduler::runAction (NclEvent *event, NclLinkSimpleAction *action)
             }
 
           win = this->prepareFormatterRegion (obj);
-
-          // FIXME: Sometimes win is NULL!
-          // g_assert_nonnull (win);
-
           player->setOutputWindow (win);
           event->addListener (this);
         }
 
+      g_assert (obj->start ());
       if (unlikely (!player->start ()))
         {
           WARNING ("failed to start player of '%s'",
@@ -199,27 +199,74 @@ Scheduler::runAction (NclEvent *event, NclLinkSimpleAction *action)
       break;
 
     case ACT_PAUSE:
-      if (unlikely (!player->hasPrepared () || !player->pause ()))
-        WARNING ("failed to pause player of '%s'", obj->getId ().c_str ());
+      if (!obj->isOccurring ())
+        break;                 // nothing to do
+      g_assert (obj->pause ());
+      if (unlikely (!player->hasPrepared ()))
+        {
+          WARNING ("trying to pause an unprepared player: '%s'",
+                   obj->getId ().c_str ());
+          break;
+        }
+      g_assert (player->pause ());
       break;
 
     case ACT_RESUME:
-      if (unlikely (!player->hasPrepared () || !player->resume ()))
-        WARNING ("failed to resume player of '%s'", obj->getId ().c_str ());
+      if (!obj->isPaused ())
+        break;                 // nothing to do
+      g_assert (obj->resume ());
+      if (unlikely (!player->hasPrepared ()))
+        {
+          WARNING ("trying to resume an unprepared player: '%s'",
+                   obj->getId ().c_str ());
+          break;
+        }
+      g_assert (player->resume ());
       break;
 
     case ACT_ABORT:
-      if (unlikely (!player->hasPrepared () || !player->abort ()))
-        WARNING ("failed to abort player of '%s'", obj->getId ().c_str ());
-      else
-        this->removePlayer (obj);
+      if (obj->isSleeping ())
+        break;                  // nothing to do
+      for (NclEvent *evt: obj->getEvents ())
+        {
+          g_assert_nonnull(evt);
+          AttributionEvent *attributionEvt
+            = dynamic_cast <AttributionEvent *> (evt);
+          if (attributionEvt)
+            attributionEvt->setPlayerAdapter (nullptr);
+        }
+      g_assert (obj->abort ());
+      if (unlikely (!player->hasPrepared ()))
+        {
+          WARNING ("trying to abort an unprepared player: '%s'",
+                   obj->getId ().c_str ());
+          break;
+        }
+      g_assert (player->abort ());
+      this->removePlayer (obj);
       break;
 
     case ACT_STOP:
-      if (unlikely (!player->hasPrepared () || !player->stop ()))
-        WARNING ("failed to stop player of '%s'", obj->getId ().c_str ());
-      else
-        this->removePlayer (obj);
+      if (obj->isSleeping ())
+        break;                  // nothing to do
+      for (NclEvent *evt: obj->getEvents ())
+        {
+          g_assert_nonnull(evt);
+          AttributionEvent *attributionEvt
+            = dynamic_cast <AttributionEvent *> (evt);
+          if (attributionEvt)
+            attributionEvt->setPlayerAdapter (nullptr);
+        }
+      g_assert (obj->stop ());
+      g_assert (obj->unprepare ());
+      if (unlikely (!player->hasPrepared ()))
+        {
+          WARNING ("trying to stop an unprepared player: '%s'",
+                   obj->getId ().c_str ());
+          break;
+        }
+      g_assert (player->stop ());
+      this->removePlayer (obj);
       break;
 
     default:

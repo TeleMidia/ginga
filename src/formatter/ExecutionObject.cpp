@@ -211,6 +211,18 @@ ExecutionObject::isPaused ()
 }
 
 bool
+ExecutionObject::isOccurring ()
+{
+  if (_mainEvent != nullptr
+      && _mainEvent->getCurrentState () == EventState::OCCURRING)
+    {
+      return true;
+    }
+
+  return false;
+}
+
+bool
 ExecutionObject::instanceOf (const string &s)
 {
   return (_typeSet.find (s) != _typeSet.end ());

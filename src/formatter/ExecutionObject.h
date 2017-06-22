@@ -55,6 +55,8 @@ public:
 
   virtual bool isSleeping ();
   virtual bool isPaused ();
+  virtual bool isOccurring ();
+
   bool instanceOf (const string &);
   Node *getDataObject ();
   NclCascadingDescriptor *getDescriptor ();
