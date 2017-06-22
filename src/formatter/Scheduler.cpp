@@ -163,33 +163,124 @@ Scheduler::runAction (NclEvent *event, NclLinkSimpleAction *action)
   switch (action->getType ())
     {
     case ACT_START:
-      if (obj->isOccurring ())
-        break;                  // nothing to do
+      {
+        if (obj->isOccurring ())
+          break;                  // nothing to do
 
-      g_assert (!player->hasPrepared ());
+        g_assert (!player->hasPrepared ());
 
-      if (ruleAdapter->adaptDescriptor (obj))
-        {
-          descriptor = obj->getDescriptor ();
-          if (descriptor != NULL)
-            descriptor->setFormatterLayout();
-        }
+        if (ruleAdapter->adaptDescriptor (obj))
+          {
+            descriptor = obj->getDescriptor ();
+            if (descriptor != NULL)
+              descriptor->setFormatterLayout();
+          }
 
-      g_assert (player->prepare (obj, (PresentationEvent *) event));
+        // --------------
+        NodeEntity *dataObject;
+        NodeEntity *entity;
+        Content *content;
+        string mime;
+        string mrl;
 
-      win = this->prepareFormatterRegion (obj);
-      player->setOutputWindow (win);
-      event->addListener (this);
+        dataObject = dynamic_cast<NodeEntity *>(obj->getDataObject ());
+        g_assert_nonnull (dataObject);
 
-      g_assert (obj->start ());
-      if (unlikely (!player->start ()))
-        {
-          WARNING ("failed to start player of '%s'",
-                   obj->getId ().c_str ());
-          if (event->getCurrentState () == EventState::SLEEPING)
-            event->removeListener (this);
-        }
+        entity = dynamic_cast <NodeEntity *>(dataObject->getDataEntity ());
+        g_assert_nonnull (entity);
+
+        g_assert (entity->instanceOf ("ContentNode"));
+
+        content = dynamic_cast<NodeEntity *>
+          (dataObject->getDataEntity ())->getContent();
+
+        if (content)
+          {
+            ReferenceContent *referContent
+              = dynamic_cast <ReferenceContent *>(content);
+            g_assert_nonnull (referContent);
+            mrl = referContent->getCompleteReferenceUrl ();
+          }
+        else
+          {
+            WARNING ("object %s has no content", obj->getId ().c_str ());
+            mrl = "";
+          }
+
+        mime = ((ContentNode *) entity)->getNodeType ();
+        g_assert (player->prepare (mrl, mime));
+
+        NclCascadingDescriptor *descriptor;
+        PropertyAnchor *property;
+
+        descriptor = obj->getDescriptor ();
+        if (descriptor != nullptr)
+          {
+            NclFormatterRegion *fregion = descriptor->getFormatterRegion ();
+            if (fregion != nullptr)
+              {
+                LayoutRegion *region;
+                SDL_Rect rect;
+                int z, zorder;
+                region = fregion->getLayoutRegion ();
+                g_assert_nonnull (region);
+                rect = region->getRect ();
+                region->getZ (&z, &zorder);
+                player->setRect (rect);
+                player->setZ (z, zorder);
+              }
+
+            for (Parameter &param: descriptor->getParameters ())
+              player->setProperty (param.getName (), param.getValue ());
+          }
+
+        ContentNode *contentNode = dynamic_cast <ContentNode *> (dataObject);
+        g_assert_nonnull (contentNode);
+
+        for (Anchor *anchor: contentNode->getAnchors ())
+          {
+            string name, value;
+
+            property = dynamic_cast <PropertyAnchor *> (anchor);
+            if (!property)
+              continue;
+            name = property->getName ();
+            value = property->getValue ();
+            player->setProperty (name, value);
+          }
+
+        for (NclEvent *evt: obj->getEvents ())
+          {
+            g_assert_nonnull (evt);
+            AttributionEvent *attributionEvt
+              = dynamic_cast <AttributionEvent *> (evt);
+            if (attributionEvt)
+              {
+                property = attributionEvt->getAnchor ();
+                attributionEvt->setPlayerAdapter (player);
+              }
+          }
+
+        g_assert (event->getCurrentState () == EventState::SLEEPING);
+        obj->prepare (event, 0);
+        // -------------
+
+        win = this->prepareFormatterRegion (obj);
+        player->setOutputWindow (win);
+        event->addListener (this);
+
+        player->_object = obj;  // FIXME!!
+
+        g_assert (obj->start ());
+        if (unlikely (!player->start ()))
+          {
+            WARNING ("failed to start player of '%s'",
+                     obj->getId ().c_str ());
+            if (event->getCurrentState () == EventState::SLEEPING)
+              event->removeListener (this);
+          }
       break;
+      }
 
     case ACT_PAUSE:
       if (!obj->isOccurring ())
