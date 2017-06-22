@@ -95,13 +95,9 @@ set (GINGA_SOURCES
   ../src/formatter/NclLinkAction.cpp
   ../src/formatter/NclLinkAndCompoundTriggerCondition.cpp
   ../src/formatter/NclLinkAssessmentStatement.cpp
-  ../src/formatter/NclLinkAssignmentAction.cpp
   ../src/formatter/NclLinkAttributeAssessment.cpp
-  ../src/formatter/NclLinkCompoundAction.cpp
   ../src/formatter/NclLinkCompoundStatement.cpp
   ../src/formatter/NclLinkCompoundTriggerCondition.cpp
-  ../src/formatter/NclLinkRepeatAction.cpp
-  ../src/formatter/NclLinkSimpleAction.cpp
   ../src/formatter/NclLinkTransitionTriggerCondition.cpp
   ../src/formatter/NclLinkTriggerCondition.cpp
   ../src/formatter/NclLinkValueAssessment.cpp
