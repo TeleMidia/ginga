@@ -38,8 +38,8 @@ __ginga_strfunc (const string &strfunc)
   result = strfunc.substr (0, i);
 
   i = result.rfind (" ");
-  g_assert (i != std::string::npos);
-  result = result.substr (i + 1);
+  if (i != std::string::npos)
+    result = result.substr (i + 1);
 
   i = result.rfind ("::");
   if (i == std::string::npos)

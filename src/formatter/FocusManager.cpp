@@ -84,7 +84,7 @@ FocusManager::~FocusManager ()
 
   _scheduler = NULL;
   _settings = NULL;
-  Ginga_Display->unregisterEventListener (this);
+  g_assert (Ginga_Display->unregisterEventListener (this));
 }
 
 void

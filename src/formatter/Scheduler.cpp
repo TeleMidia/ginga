@@ -137,8 +137,7 @@ Scheduler::runAction (NclEvent *event, NclLinkSimpleAction *action)
       return;
     }
 
-  if (obj->instanceOf ("ExecutionObjectContext")
-      && (obj->getDescriptor () == NULL))
+  if (obj->instanceOf ("ExecutionObjectContext"))
     {
       runActionOverComposition
         ((ExecutionObjectContext *) obj, action);
@@ -160,33 +159,27 @@ Scheduler::runAction (NclEvent *event, NclLinkSimpleAction *action)
       return;
     }
 
+  g_assert (!obj->instanceOf ("ExecutionObjectContext"));
   switch (action->getType ())
     {
     case ACT_START:
       if (obj->isOccurring ())
         break;                  // nothing to do
 
-      if (!player->hasPrepared ())
+      g_assert (!player->hasPrepared ());
+
+      if (ruleAdapter->adaptDescriptor (obj))
         {
-          if (ruleAdapter->adaptDescriptor (obj))
-            {
-              descriptor = obj->getDescriptor ();
-              if (descriptor != NULL)
-                descriptor->setFormatterLayout();
-            }
-
-          if (unlikely (!player
-                        ->prepare (obj, (PresentationEvent *) event)))
-            {
-              WARNING ("failed to prepare player of '%s'",
-                       obj->getId ().c_str ());
-              return;
-            }
-
-          win = this->prepareFormatterRegion (obj);
-          player->setOutputWindow (win);
-          event->addListener (this);
+          descriptor = obj->getDescriptor ();
+          if (descriptor != NULL)
+            descriptor->setFormatterLayout();
         }
+
+      g_assert (player->prepare (obj, (PresentationEvent *) event));
+
+      win = this->prepareFormatterRegion (obj);
+      player->setOutputWindow (win);
+      event->addListener (this);
 
       g_assert (obj->start ());
       if (unlikely (!player->start ()))

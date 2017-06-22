@@ -368,46 +368,52 @@ Display::add (GList **list, gpointer data)
 bool
 Display::remove (GList **list, gpointer data)
 {
-  GList *elt;
+
+  GList *l;
 
   g_assert_nonnull (list);
-  elt = g_list_find (*list, data);
-  if (unlikely (elt == NULL))
+  l = *list;
+  while (l != NULL)
     {
-      WARNING ("object %p not in list %p", data, *list);
-      goto done;
+      GList *next = l->next;
+      if (l->data == data)
+        {
+          *list = g_list_delete_link (*list, l);
+          return true;
+        }
+      l = next;
     }
-  *list = g_list_remove_link (*list, elt);
- done:
-  return elt != NULL;
+  WARNING ("object %p not in list %p", data, *list);
+  return false;
 }
+
+// The gymnastics below is necessary to ensure that the list can be safely
+// modified while it is being traversed.
+#define NOTIFY_LISTENERS(list, Type, method, ...)               \
+  G_STMT_START                                                  \
+  {                                                             \
+    guint n = g_list_length ((list));                           \
+    for (guint i = 0; i < n; i++)                               \
+      {                                                         \
+        Type *obj = (Type *) g_list_nth_data ((list), i);       \
+        if (obj == NULL)                                        \
+          return;                                               \
+        obj->method (__VA_ARGS__);                              \
+      }                                                         \
+  }                                                             \
+  G_STMT_END
 
 void
 Display::notifyTickListeners (GingaTime total, GingaTime diff, int frameno)
 {
-  GList *l = _listeners;
-  while (l != NULL)
-    {
-      GList *next = l->next;
-      IEventListener *obj = (IEventListener *) l->data;
-      g_assert_nonnull (obj);
-      obj->handleTickEvent (total, diff, frameno);
-      l = next;
-    }
+  NOTIFY_LISTENERS (_listeners, IEventListener, handleTickEvent,
+                    total, diff, frameno);
 }
 
 void
 Display::notifyKeyListeners (SDL_EventType type, SDL_Keycode key)
 {
-  GList *l = _listeners;
-  while (l != NULL)
-    {
-      GList *next = l->next;
-      IEventListener *obj = (IEventListener *) l->data;
-      g_assert_nonnull (obj);
-      obj->handleKeyEvent (type, key);
-      l = next;
-    }
+  NOTIFY_LISTENERS (_listeners, IEventListener, handleKeyEvent, type, key);
 }
 
 GINGA_MB_END
