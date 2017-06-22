@@ -64,7 +64,6 @@ ExecutionObjectContext::~ExecutionObjectContext ()
   set<NclFormatterLink *>::iterator i;
   map<string, ExecutionObject *>::iterator j;
 
-  removeInstance (this);
   _isDeleting = true;
 
   destroyEvents ();
@@ -91,7 +90,7 @@ ExecutionObjectContext::~ExecutionObjectContext ()
   while (j != _execObjList.end ())
     {
       object = j->second;
-      if (object != this && hasInstance (object, false))
+      if (object != this)
         {
           object->removeParentObject (_dataObject, this);
         }

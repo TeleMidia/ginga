@@ -19,53 +19,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ExecutionObject.h"
 #include "ExecutionObjectContext.h"
-
 #include "NclEvents.h"
-
-#include "mb/Display.h"
-using namespace ::ginga::mb;
-
-GINGA_PRAGMA_DIAG_IGNORE (-Wfloat-conversion)
-GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_FORMATTER_BEGIN
 
+/**
+ * @brief Set containing all execution objects.
+ */
 set<ExecutionObject *> ExecutionObject::_objects;
-
-void
-ExecutionObject::addInstance (ExecutionObject *object)
-{
-  _objects.insert (object);
-}
-
-bool
-ExecutionObject::removeInstance (ExecutionObject *object)
-{
-  bool removed = false;
-  auto i = _objects.find (object);
-  if (i != _objects.end ())
-    {
-      _objects.erase (i);
-      removed = true;
-    }
-
-  return removed;
-}
-
-bool
-ExecutionObject::hasInstance (ExecutionObject *obj,
-                              bool eraseFromList)
-{
-  auto i = _objects.find (obj);
-  bool hasObj = (i != _objects.end());
-
-  if (hasObj && eraseFromList)
-    {
-      _objects.erase (obj);
-    }
-
-  return hasObj;
-}
 
 ExecutionObject::ExecutionObject (const string &id,
                                   Node *node,
@@ -74,23 +35,22 @@ ExecutionObject::ExecutionObject (const string &id,
                                   INclActionListener *seListener)
 {
   _typeSet.insert ("ExecutionObject");
-
-  addInstance (this);
   this->_seListener = seListener;
   this->_isDeleting = false;
   this->_id = id;
   this->_dataObject = node;
   this->_wholeContent = nullptr;
   this->_descriptor = nullptr;
-
   this->_isCompiled = false;
-
   this->_pauseCount = 0;
   this->_mainEvent = nullptr;
   this->_descriptor = descriptor;
   this->_isLocked = false;
   this->_isHandler = false;
   this->_isHandling = handling;
+
+  _objects.insert (this);
+  TRACE ("creating exec object '%s' (%p)", _id.c_str (), this);
 }
 
 ExecutionObject::~ExecutionObject ()
@@ -100,7 +60,6 @@ ExecutionObject::~ExecutionObject ()
   Node *parentNode;
   ExecutionObjectContext *parentObject;
 
-  removeInstance (this);
   unsetParentsAsListeners ();
   _isDeleting = true;
 
@@ -131,6 +90,9 @@ ExecutionObject::~ExecutionObject ()
       delete _descriptor;
       _descriptor = nullptr;
     }
+
+  _objects.insert (this);
+  TRACE ("destroying exec object '%s' (%p)", _id.c_str (), this);
 }
 
 void
