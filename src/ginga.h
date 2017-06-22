@@ -229,6 +229,15 @@ string xpathbuildabs (const string &, const string &);
 
 // Vector functions.
 /**
+ * @brief Removes the element x from vector v
+ */
+template <typename T>
+void xvectremove (std::vector<T>& v, T &x)
+{
+  v.erase (std::remove(v.begin(), v.end(), x), v.end());
+}
+
+/**
  * @brief Removes all elements of vector v2 from vector v1
  */
 template <typename T>
