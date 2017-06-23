@@ -28,17 +28,12 @@ class PlayerAdapter :
     public IEventListener
 {
 public:
-  explicit PlayerAdapter ();
+  explicit PlayerAdapter (string uri, string mimetype);
   virtual ~PlayerAdapter ();
 
   Player *getPlayer ();
-  void setOutputWindow (SDLWindow *);
 
   virtual void setProperty (AttributionEvent *, const string &);
-
-  bool prepare (string, string);
-  bool hasPrepared ();
-  bool unprepare ();
 
   bool start ();
   bool stop ();
