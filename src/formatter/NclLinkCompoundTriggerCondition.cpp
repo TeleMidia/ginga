@@ -78,26 +78,6 @@ NclLinkCompoundTriggerCondition::getEvents ()
 void
 NclLinkCompoundTriggerCondition::conditionSatisfied (NclLinkCondition *condition)
 {
-  /*int i, size;
-  NclLinkCondition *childCondition;
-
-  size = conditions.size();
-  for (i = 0; i < size; i++) {
-          childCondition = (NclLinkCondition*)(*conditions)[i];
-          if (childCondition != (NclLinkCondition*)condition &&
-                      childCondition->instanceOf("NclLinkStatement")) {
-                  if (op == CompoundCondition::OP_OR) {
-                          break;
-                  }
-                  else {
-                          if
-  (!((NclLinkStatement*)childCondition)->evaluate())
-  {
-                                  return;
-                          }
-                  }
-          }
-  }*/
   NclLinkTriggerCondition::conditionSatisfied (condition);
 }
 

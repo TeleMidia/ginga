@@ -92,32 +92,18 @@ NclFormatterCausalLink::getEvents ()
 void
 NclFormatterCausalLink::evaluationStarted ()
 {
-  /*clog << endl;
-  clog << "NclFormatterCausalLink::evaluationStarted(" << ncmLink->getId();
-  clog << ")" << endl << endl;*/
   parentObject->linkEvaluationStarted (this);
 }
 
 void
 NclFormatterCausalLink::evaluationEnded ()
 {
-  /*clog << endl;
-  clog << "NclFormatterCausalLink::evaluationEnded(" << ncmLink->getId();
-  clog << ")" << endl << endl;*/
   parentObject->linkEvaluationFinished (this, false);
 }
 
 void
 NclFormatterCausalLink::actionProcessed (bool start)
 {
-  /*clog << endl;
-  clog << "NclFormatterCausalLink::actionProcessed(";
-  if (!start) {
-          clog << "start:" << ncmLink->getId();
-  } else {
-          clog << "nostart:" << ncmLink->getId();
-  }
-  clog << ")" << endl << endl;*/
   parentObject->linkEvaluationFinished (this, start);
 }
 

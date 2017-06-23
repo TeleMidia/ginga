@@ -30,7 +30,7 @@
     <link xconnector="onBeginAttributionSet">
       <bind role="onBeginAttribution" component="time" interface="background"/>
       <bind role="set" component="time" interface="bounds">
-        <bindParam name="bounds" value="0%,0%,100%,100%"/>
+        <bindParam name="var" value="0%,0%,100%,100%"/>
       </bind>
     </link>
   </body>

@@ -23,60 +23,47 @@ using namespace ginga::mb;
 
 GINGA_FORMATTER_BEGIN
 
-vector<ConditionStatus *> NclLinkTriggerCondition::notes;
-
-bool NclLinkTriggerCondition::initialized = false;
-bool NclLinkTriggerCondition::running = false;
-
 NclLinkTriggerCondition::NclLinkTriggerCondition () : NclLinkCondition ()
 {
-  listener = NULL;
-  delay = 0.0;
-
-  if (!initialized)
-    {
-      initialized = true;
-    }
-
+  _delay = 0;
+  _listener = NULL;
   typeSet.insert ("NclLinkTriggerCondition");
 }
 
 NclLinkTriggerCondition::~NclLinkTriggerCondition ()
 {
-  if (this->running)
-    g_assert (Ginga_Display->unregisterEventListener (this));
-  this->listener = NULL;
+  _listener = NULL;
 }
 
 void
 NclLinkTriggerCondition::setTriggerListener (
     NclLinkTriggerListener *listener)
 {
-  this->listener = listener;
+  _listener = listener;
 }
 
 NclLinkTriggerListener *
 NclLinkTriggerCondition::getTriggerListener ()
 {
-  return listener;
+  return _listener;
 }
 
 GingaTime
 NclLinkTriggerCondition::getDelay ()
 {
-  return delay;
+  return _delay;
 }
 
 void
 NclLinkTriggerCondition::setDelay (GingaTime delay)
 {
-  this->delay = delay;
+  _delay = delay;
 }
 
 void
 NclLinkTriggerCondition::conditionSatisfied (arg_unused (NclLinkCondition *condition))
 {
-  if (delay > 0)
+  if (_delay > 0)
     ERROR_NOT_IMPLEMENTED ("condition delays are not supported");
   notifyConditionObservers (NclLinkTriggerListener::CONDITION_SATISFIED);
 }
@@ -84,72 +71,23 @@ NclLinkTriggerCondition::conditionSatisfied (arg_unused (NclLinkCondition *condi
 void
 NclLinkTriggerCondition::notifyConditionObservers (short status)
 {
-  ConditionStatus *data;
-
-  if (!running)
-    {
-      g_assert (Ginga_Display->registerEventListener (this));
-      running = true;
-    }
-
-  data = new ConditionStatus;
-  data->listener = listener;
-  data->status = status;
-  data->condition = this;
-  notes.push_back (data);
-}
-
-void
-NclLinkTriggerCondition::handleTickEvent (arg_unused (GingaTime total),
-                                          arg_unused (GingaTime elapsed),
-                                          arg_unused (int frameno))
-{
-  ConditionStatus *data;
-  NclLinkTriggerListener *listener;
-  NclLinkCondition *cond;
-  short status;
-
-  if (!this->running)
-    goto unregister;
-
-  if (this->notes.empty ())
-    goto unregister;
-
-  data = *notes.begin ();
-  notes.erase (notes.begin ());
-
-  listener = data->listener;
-  g_assert_nonnull (listener);
-  cond = data->condition;
-  g_assert_nonnull (cond);
-  status = data->status;
-
   switch (status)
     {
     case NclLinkTriggerListener::CONDITION_SATISFIED:
-      listener->conditionSatisfied (cond);
+      _listener->conditionSatisfied (this);
       break;
 
     case NclLinkTriggerListener::EVALUATION_STARTED:
-      listener->evaluationStarted ();
+      _listener->evaluationStarted ();
       break;
 
     case NclLinkTriggerListener::EVALUATION_ENDED:
-      listener->evaluationEnded ();
+      _listener->evaluationEnded ();
       break;
 
     default:
       g_assert_not_reached ();
     }
-
-  delete data;
-  if (notes.empty ())
-    this->running = false;
-  return;
-
- unregister:
-  g_assert (Ginga_Display->unregisterEventListener (this));
-  return;
 }
 
 GINGA_FORMATTER_END

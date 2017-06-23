@@ -46,7 +46,7 @@ NclLinkTransitionTriggerCondition::NclLinkTransitionTriggerCondition (
 
 NclLinkTransitionTriggerCondition::~NclLinkTransitionTriggerCondition ()
 {
-  listener = NULL;
+  _listener = NULL;
   bind = NULL;
 
   if (NclEvent::hasInstance (event, false))
