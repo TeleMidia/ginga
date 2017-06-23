@@ -415,14 +415,22 @@ AttributionEvent::setImplicitRefAssessmentEvent (
 }
 
 NclEvent *
-AttributionEvent::getImplicitRefAssessmentEvent (const string &roleId)
+AttributionEvent::getImplicitRefAssessmentEvent (const string &id)
 {
-  if (_assessments.count (roleId) == 0)
-    {
-      return nullptr;
-    }
+  return (_assessments.count (id) > 0) ? _assessments[id] : nullptr;
+}
 
-  return _assessments[roleId];
+string
+AttributionEvent::solveImplicitRefAssessment (const string &val)
+{
+  AttributionEvent *evt;
+
+  if (val.substr (0, 1) != "$")
+    return val;
+
+  evt = dynamic_cast <AttributionEvent *>
+    (this->getImplicitRefAssessmentEvent (val.substr (1, val.length ())));
+  return (evt != nullptr) ? evt->getCurrentValue () : "";
 }
 
 // SwitchEvent

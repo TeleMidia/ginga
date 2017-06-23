@@ -115,7 +115,7 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
 
   if (dynamic_cast <AttributionEvent *> (event))
     {
-      runActionOverProperty (event, action);
+      runActionOverProperty ((AttributionEvent *) event, action);
       return;
     }
 
@@ -144,35 +144,38 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
 }
 
 void
-Scheduler::runActionOverProperty (NclEvent *event,
+Scheduler::runActionOverProperty (AttributionEvent *event,
                                   NclSimpleAction *action)
 {
+  ExecutionObject *obj;
+  NodeEntity *entity;
+  ContentNode *contentNode;
+
   SimpleActionType actionType;
   string propName, propValue;
 
-  NodeEntity *dataObject;
-  ExecutionObject *executionObject;
   PlayerAdapter *player;
   Animation *anim;
 
-  executionObject = (ExecutionObject *)(event->getExecutionObject ());
-  dataObject
-      = (NodeEntity *)(executionObject->getDataObject ()->getDataEntity ());
+  obj = event->getExecutionObject ();
+  g_assert_nonnull (obj);
 
-  if (dataObject->instanceOf ("ContentNode")
-      && ((ContentNode *)dataObject)->isSettingNode ()
-      && action->instanceOf ("NclLinkAssignmentAction"))
+  entity = dynamic_cast <NodeEntity *> (obj->getDataObject ());
+  g_assert_nonnull (entity);
+
+  contentNode = dynamic_cast <ContentNode *> (entity);
+  g_assert_nonnull (contentNode);
+
+  g_assert (dynamic_cast <NclAssignmentAction *> (action));
+
+  if (contentNode->isSettingNode ())
     {
       propName = ((AttributionEvent *)event)
                      ->getAnchor ()
                      ->getName ();
 
       propValue = ((NclAssignmentAction *)action)->getValue ();
-      if (propValue != "" && propValue.substr (0, 1) == "$")
-        {
-          propValue = solveImplicitRefAssessment (
-              propValue, (AttributionEvent *)event);
-        }
+      propValue = event->solveImplicitRefAssessment (propValue);
 
       event->start ();
       ((AttributionEvent *)event)->setValue (propValue);
@@ -193,16 +196,8 @@ Scheduler::runActionOverProperty (NclEvent *event,
     }
   else
     {
-      if (action->instanceOf ("NclLinkAssignmentAction"))
-        {
-          anim = ((NclAssignmentAction *)action)->getAnimation ();
-        }
-      else
-        {
-          anim = NULL;
-        }
-
-      player = executionObject->getPlayer ();
+      anim = ((NclAssignmentAction *)action)->getAnimation ();
+      player = obj->getPlayer ();
       g_assert_nonnull (player);
 
       actionType = action->getType ();
@@ -215,47 +210,22 @@ Scheduler::runActionOverProperty (NclEvent *event,
             {
               return;
             }
-
-          if (action->instanceOf ("NclLinkAssignmentAction"))
-            {
-              propValue = ((NclAssignmentAction *)action)->getValue ();
-              if (propValue != "" && propValue.substr (0, 1) == "$")
-                {
-                  propValue = solveImplicitRefAssessment (
-                      propValue, (AttributionEvent *)event);
-                }
-
-              event->start ();
-              ((AttributionEvent *)event)->setValue (propValue);
-            }
-          else
-            {
-              event->start ();
-            }
+          propValue = ((NclAssignmentAction *)action)->getValue ();
+          propValue = event->solveImplicitRefAssessment (propValue);
+          event->start ();
+          ((AttributionEvent *)event)->setValue (propValue);
 
           if (anim != NULL)
             {
-              string durVal, byVal;
+              string dur, by;
 
-              durVal = anim->getDuration ();
-              if (durVal.substr (0, 1) == "$")
-                {
-                  anim->setDuration (solveImplicitRefAssessment (
-                      durVal, (AttributionEvent *)event));
-                }
-
-              byVal = anim->getBy ();
-              if (byVal.substr (0, 1) == "$")
-                {
-                  anim->setDuration (solveImplicitRefAssessment (
-                      byVal, (AttributionEvent *)event));
-                }
-
-              anim->setDuration (durVal);
-              anim->setBy (byVal);
+              dur = event->solveImplicitRefAssessment (anim->getDuration ());
+              by = event->solveImplicitRefAssessment (anim->getBy ());
+              anim->setDuration (dur);
+              anim->setBy (by);
 
               player->getPlayer()->
-                setAnimatorProperties(durVal,((AttributionEvent *)event)
+                setAnimatorProperties(dur,((AttributionEvent *)event)
                                       ->getAnchor ()
                                       ->getName (), propValue);
             }
@@ -666,28 +636,28 @@ Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObj,
     }
 }
 
-string
-Scheduler::solveImplicitRefAssessment (const string &propValue,
-                                       AttributionEvent *event)
-{
-  NclEvent *refEvent;
-  string auxVal = "", roleId = "";
+// string
+// Scheduler::solveImplicitRefAssessment (const string &value,
+//                                        AttributionEvent *event)
+// {
+//   NclEvent *refEvent;
+//   string auxVal = "", roleId = "";
 
-  if (propValue != "")
-    {
-      roleId = propValue.substr (1, propValue.length ());
-    }
+//   if (propValue != "")
+//     {
+//       roleId = propValue.substr (1, propValue.length ());
+//     }
 
-  refEvent = ((AttributionEvent *)event)
-                 ->getImplicitRefAssessmentEvent (roleId);
+//   refEvent = ((AttributionEvent *)event)
+//                  ->getImplicitRefAssessmentEvent (roleId);
 
-  if (refEvent != NULL)
-    {
-      auxVal = ((AttributionEvent *)refEvent)->getCurrentValue ();
-      return auxVal;
-    }
-  return "";
-}
+//   if (refEvent != NULL)
+//     {
+//       auxVal = ((AttributionEvent *)refEvent)->getCurrentValue ();
+//       return auxVal;
+//     }
+//   return "";
+// }
 
 void
 Scheduler::startDocument (const string &file)

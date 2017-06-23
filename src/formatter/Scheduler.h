@@ -64,7 +64,7 @@ private:
 
 
   void runAction (NclEvent *event, NclSimpleAction *action);
-  void runActionOverProperty (NclEvent *event,
+  void runActionOverProperty (AttributionEvent *event,
                               NclSimpleAction *action);
 
   void
@@ -79,9 +79,6 @@ private:
                        SwitchEvent *switchEvent,
                        ExecutionObject *selectedObject,
                        NclSimpleAction *action);
-
-  string solveImplicitRefAssessment (const string &propValue,
-                                     AttributionEvent *event);
 };
 
 GINGA_FORMATTER_END

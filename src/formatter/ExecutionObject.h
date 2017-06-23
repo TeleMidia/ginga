@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _EXECUTIONOBJECT_H_
-#define _EXECUTIONOBJECT_H_
+#ifndef EXECUTION_OBJECT_H
+#define EXECUTION_OBJECT_H
 
 #include "player/Player.h"
 using namespace ::ginga::player;
@@ -92,8 +92,6 @@ public:
   NclNodeNesting *getNodePerspective (Node *node);
   NclEvent *getMainEvent ();
 
-  void updateTransitionTable (GingaTime value, Player *player);
-
   virtual bool prepare (NclEvent *event);
   virtual bool start ();
   virtual bool stop ();
@@ -106,7 +104,6 @@ public:
   bool selectionEvent (SDL_Keycode key, GingaTime currentTime);
 
 protected:
-  string _id;
   Node *_dataObject;
   NclCascadingDescriptor *_descriptor;
   PresentationEvent *_wholeContent;
@@ -126,7 +123,6 @@ protected:
   NclEvent *_mainEvent;
   NclEventTransitionManager _transMan;
 
-  void prepareTransitionEvents (GingaTime startTime);
   void destroyEvents ();
   virtual void unsetParentsAsListeners ();
   virtual void removeParentListenersFromEvent (NclEvent *event);
@@ -144,11 +140,16 @@ public:
   virtual void handleKeyEvent (SDL_EventType, SDL_Keycode) override;
   virtual void handleTickEvent (GingaTime, GingaTime, int) override;
 
+protected:
+  string _id;                   // object id
+
 private:
-  static set<ExecutionObject *> _objects;
-  PlayerAdapter *_player;
+  static set<ExecutionObject *> _objects; // set of all objects
+
+  PlayerAdapter *_player;       // associated player
+  GingaTime _time;              // playback time
 };
 
 GINGA_FORMATTER_END
 
-#endif //_EXECUTIONOBJECT_H_
+#endif // EXECUTION_OBJECT_H

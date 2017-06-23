@@ -45,7 +45,6 @@ ExecutionObject::ExecutionObject (const string &id,
 {
   _typeSet.insert ("ExecutionObject");
   this->_seListener = seListener;
-  this->_id = id;
   this->_dataObject = node;
   this->_wholeContent = nullptr;
   this->_descriptor = nullptr;
@@ -55,7 +54,9 @@ ExecutionObject::ExecutionObject (const string &id,
   this->_isHandler = false;
   this->_isHandling = handling;
 
+  _id = id;
   _player = nullptr;
+  _time = GINGA_TIME_NONE;
 
   _objects.insert (this);
   TRACE ("creating exec object '%s' (%p)", _id.c_str (), this);
@@ -615,7 +616,7 @@ ExecutionObject::prepare (NclEvent *event)
       ++i;
     }
 
-  prepareTransitionEvents (0);
+  _transMan.prepare (_mainEvent == _wholeContent, 0);
 
   size = _otherEvents.size ();
   for (j = 0; j < size; j++)
@@ -634,18 +635,6 @@ ExecutionObject::prepare (NclEvent *event)
     }
 
   return true;
-}
-
-void
-ExecutionObject::updateTransitionTable (GingaTime value, Player *player)
-{
-  _transMan.updateTransitionTable (value, player, _mainEvent);
-}
-
-void
-ExecutionObject::prepareTransitionEvents (GingaTime startTime)
-{
-  _transMan.prepare (_mainEvent == _wholeContent, startTime);
 }
 
 bool
@@ -726,6 +715,7 @@ ExecutionObject::start ()
     }
 
   g_assert (_player->start ());
+  _time = 0;
   g_assert (Ginga_Display->registerEventListener (this));
 
  done:
@@ -795,9 +785,10 @@ ExecutionObject::stop ()
   if (_player != nullptr)
     {
       g_assert (_player->stop ());
-      g_assert (Ginga_Display->unregisterEventListener (this));
       delete _player;
       _player = nullptr;
+      _time = GINGA_TIME_NONE;
+      g_assert (Ginga_Display->unregisterEventListener (this));
     }
 
   return true;
@@ -978,20 +969,16 @@ ExecutionObject::handleTickEvent (arg_unused (GingaTime total),
                                   GingaTime diff,
                                   arg_unused (int frame))
 {
-  Player *pl;
   EventTransition *next;
   NclEvent *evt;
   GingaTime waited;
   GingaTime now;
 
-  if (unlikely (_player == nullptr))
+  if (_player == nullptr)
     return;                     // nothing to do
 
-  // Update player time.
-  pl = _player->_player;
-  g_assert_nonnull (pl);
-  g_assert (pl->getMediaStatus() == Player::PL_OCCURRING);
-  pl->incMediaTime (diff);
+  g_assert (GINGA_TIME_IS_VALID (_time));
+  _time += diff;
 
   g_assert (this->isOccurring ());
   g_assert_nonnull (dynamic_cast <PresentationEvent *> (_mainEvent));
@@ -1001,7 +988,7 @@ ExecutionObject::handleTickEvent (arg_unused (GingaTime total),
     return;
 
   waited = next->getTime ();
-  now = pl->getMediaTime ();
+  now = _time;
 
   // TRACE ("now=%" GINGA_TIME_FORMAT " waited=%" GINGA_TIME_FORMAT,
   //        GINGA_TIME_ARGS (now), GINGA_TIME_ARGS (waited));
@@ -1016,25 +1003,19 @@ ExecutionObject::handleTickEvent (arg_unused (GingaTime total),
          ", updating transition table",
          evt->getId ().c_str(), GINGA_TIME_ARGS (now));
 
-  this->updateTransitionTable (now, pl);
+  _transMan.updateTransitionTable (now, _player->_player, _mainEvent);
 }
 
 void
-ExecutionObject::handleKeyEvent (arg_unused (SDL_EventType evtType),
-                                 arg_unused (SDL_Keycode key))
+ExecutionObject::handleKeyEvent (SDL_EventType type, SDL_Keycode key)
 {
-  Player *pl;
-
-  if (unlikely (evtType == SDL_KEYDOWN))
+  if (type == SDL_KEYDOWN || _player == nullptr)
     return;                     // nothing to do
 
-  if (unlikely (_player == nullptr))
-    return;                     // nothing to do
+  g_assert (this->isOccurring ());
+  g_assert_nonnull (dynamic_cast <PresentationEvent *> (_mainEvent));
 
-  pl = _player->_player;
-  g_assert_nonnull (pl);
-
-  this->selectionEvent (key, pl->getMediaTime ());
+  this->selectionEvent (key, _time);
 }
 
 GINGA_FORMATTER_END
