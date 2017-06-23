@@ -54,7 +54,7 @@ public:
   void addProgressListener (NclActionProgressListener *listener);
   void removeProgressListener (NclActionProgressListener *listener);
 
-  virtual vector<NclEvent *> *getEvents () = 0;
+  virtual vector<NclEvent *> getEvents () = 0;
   virtual vector<NclAction *> getImplicitRefRoleActions () = 0;
 
   void setSatisfiedCondition (NclLinkCondition *satisfiedCondition);
@@ -87,7 +87,7 @@ public:
 
   void setSimpleActionListener (INclActionListener *listener);
 
-  virtual vector<NclEvent *> *getEvents () override;
+  virtual vector<NclEvent *> getEvents () override;
   virtual vector<NclAction *> getImplicitRefRoleActions () override;
 
 protected:
@@ -136,7 +136,7 @@ class NclCompoundAction : public NclAction,
     public NclActionProgressListener
 {
 public:
-  NclCompoundAction (short _op);
+  NclCompoundAction (short op);
   virtual ~NclCompoundAction ();
 
   virtual void run () override;
@@ -146,7 +146,7 @@ public:
   void getSimpleActions (vector<NclSimpleAction *> *simpleActions);
   void setCompoundActionListener (INclActionListener *listener);
 
-  virtual vector<NclEvent *> *getEvents () override;
+  virtual vector<NclEvent *> getEvents () override;
   void actionProcessed (bool start) override;
   virtual vector<NclAction *> getImplicitRefRoleActions () override;
 

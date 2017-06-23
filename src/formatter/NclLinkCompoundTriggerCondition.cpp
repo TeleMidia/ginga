@@ -59,41 +59,17 @@ NclLinkCompoundTriggerCondition::addCondition (NclLinkCondition *condition)
     }
 }
 
-vector<NclEvent *> *
+vector<NclEvent *>
 NclLinkCompoundTriggerCondition::getEvents ()
 {
-  vector<NclEvent *> *condEvents;
-  vector<NclEvent *> *events;
-  vector<NclLinkCondition *>::iterator i;
-  vector<NclEvent *>::iterator j;
-  NclLinkCondition *condition;
+  vector<NclEvent *> events;
 
-  if (conditions.empty ())
+  for (NclLinkCondition *condition : conditions)
     {
-      return NULL;
-    }
-
-  events = new vector<NclEvent *>;
-
-  for (i = conditions.begin (); i != conditions.end (); ++i)
-    {
-      condition = (NclLinkCondition *)(*i);
-      condEvents = condition->getEvents ();
-      if (condEvents != NULL)
+      for (NclEvent *evt : condition->getEvents ())
         {
-          for (j = condEvents->begin (); j != condEvents->end (); ++j)
-            {
-              events->push_back (*j);
-            }
-          delete condEvents;
-          condEvents = NULL;
+          events.push_back (evt);
         }
-    }
-
-  if (events->begin () == events->end ())
-    {
-      delete events;
-      return NULL;
     }
 
   return events;

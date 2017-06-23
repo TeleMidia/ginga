@@ -28,8 +28,9 @@ public:
   NclLinkStatement () : NclLinkCondition ()
   {
     typeSet.insert ("NclLinkStatement");
-  };
-  virtual ~NclLinkStatement (){};
+  }
+
+  virtual ~NclLinkStatement (){}
   virtual bool evaluate () = 0;
 };
 

@@ -88,17 +88,14 @@ NclLinkTransitionTriggerCondition::getTransition ()
   return transition;
 }
 
-vector<NclEvent *> *
+vector<NclEvent *>
 NclLinkTransitionTriggerCondition::getEvents ()
 {
-  if (!NclEvent::hasInstance (event, false))
-    {
-      return NULL;
-    }
+  vector<NclEvent *> events;
 
-  vector<NclEvent *> *events = new vector<NclEvent *>;
+  if (NclEvent::hasInstance (event, false))
+    events.push_back (event);
 
-  events->push_back (event);
   return events;
 }
 

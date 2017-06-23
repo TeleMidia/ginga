@@ -33,16 +33,10 @@ public:
   bool
   instanceOf (const string &s)
   {
-    if (!typeSet.empty ())
-      {
-        return (typeSet.find (s) != typeSet.end ());
-      }
-    else
-      {
-        return false;
-      }
-  };
-  virtual vector<NclEvent *> *getEvents () = 0;
+    return (typeSet.find (s) != typeSet.end ());
+  }
+
+  virtual vector<NclEvent *> getEvents () = 0;
 };
 
 GINGA_FORMATTER_END
