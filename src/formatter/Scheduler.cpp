@@ -84,7 +84,7 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
 {
   ExecutionObject *obj;
 
-  if (dynamic_cast <SelectionEvent *> (event))
+  if (instanceof (SelectionEvent *, event))
     {
       event->start ();
       delete action;
@@ -98,22 +98,22 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
          action->getTypeString ().c_str (),
          event->getId ().c_str ());
 
-  if (dynamic_cast <ExecutionObjectSwitch *> (obj)
-      && dynamic_cast <SwitchEvent *> (event))
+  if (instanceof (ExecutionObjectSwitch *, obj)
+      && instanceof (SwitchEvent *, event))
     {
       this->runActionOverSwitch ((ExecutionObjectSwitch *) obj,
                                  (SwitchEvent *) event, action);
       return;
     }
 
-  if (dynamic_cast <ExecutionObjectContext *> (obj))
+  if (instanceof (ExecutionObjectContext *, obj))
     {
       this->runActionOverComposition
         ((ExecutionObjectContext *) obj, action);
       return;
     }
 
-  if (dynamic_cast <AttributionEvent *> (event))
+  if (instanceof (AttributionEvent *, event))
     {
       runActionOverProperty ((AttributionEvent *) event, action);
       return;
@@ -157,16 +157,16 @@ Scheduler::runActionOverProperty (AttributionEvent *event,
   PlayerAdapter *player;
   Animation *anim;
 
+  g_assert (instanceof (NclAssignmentAction *, action));
+
   obj = event->getExecutionObject ();
   g_assert_nonnull (obj);
 
-  entity = dynamic_cast <NodeEntity *> (obj->getDataObject ());
+  entity = cast (NodeEntity *, obj->getDataObject ());
   g_assert_nonnull (entity);
 
-  contentNode = dynamic_cast <ContentNode *> (entity);
+  contentNode = cast (ContentNode *, entity);
   g_assert_nonnull (contentNode);
-
-  g_assert (dynamic_cast <NclAssignmentAction *> (action));
 
   if (contentNode->isSettingNode ())
     {
@@ -284,15 +284,15 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
           eventType = event->getType ();
           if (eventType == EventType::UNKNOWN)
             {
-              if (dynamic_cast <PresentationEvent *> (event))
+              if (instanceof (PresentationEvent *, event))
                 {
                   eventType = EventType::PRESENTATION;
                 }
-              else if (dynamic_cast <AttributionEvent *> (event))
+              else if (instanceof (AttributionEvent *, event))
                 {
                   eventType = EventType::ATTRIBUTION;
                 }
-              else if (dynamic_cast <SwitchEvent *> (event))
+              else if (instanceof (SwitchEvent *, event))
                 {
                   eventType = EventType::PRESENTATION;
                 }
@@ -302,14 +302,14 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
       if (eventType == EventType::ATTRIBUTION)
         {
           event = action->getEvent ();
-          if (!dynamic_cast <AttributionEvent *> (event))
-            {
-              return;
-            }
+          if (!instanceof (AttributionEvent *, event))
+            return;
 
-          attrEvent = (AttributionEvent *)event;
+          attrEvent = cast (AttributionEvent *, event);
+          g_assert_nonnull (attrEvent);
+
           propName = attrEvent->getAnchor ()->getName ();
-          propValue = ((NclAssignmentAction *)action)->getValue ();
+          propValue = ((NclAssignmentAction *) action)->getValue ();
           event = compObj->getEventFromAnchorId (propName);
 
           if (event != NULL)
@@ -331,7 +331,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
           while (j != objects->end ())
             {
               childObject = j->second;
-              if (dynamic_cast <ExecutionObjectContext *> (childObject))
+              if (instanceof (ExecutionObjectContext *, childObject))
                 {
                   runActionOverComposition (
                       (ExecutionObjectContext *)childObject, action);
@@ -394,8 +394,8 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
 
                   if (childObject != NULL
                       && port->getEndInterfacePoint () != NULL
-                      && dynamic_cast <ContentAnchor *>
-                      (port->getEndInterfacePoint ()))
+                      && instanceof (ContentAnchor *,
+                                     port->getEndInterfacePoint ()))
                     {
                       childEvent
                           = (PresentationEvent
@@ -723,10 +723,10 @@ Scheduler::startDocument (const string &file)
           string name;
           string value;
 
-          if (!dynamic_cast <PropertyAnchor *> (anchor))
+          if (!instanceof (PropertyAnchor *, anchor))
             continue;           // nothing to do
 
-          prop = (PropertyAnchor *) anchor;
+          prop = cast (PropertyAnchor *, anchor);
           name = prop->getName ();
           value = prop->getValue ();
           if (value == "")
@@ -848,6 +848,5 @@ Scheduler::eventStateChanged (
         }
     }
 }
-
 
 GINGA_FORMATTER_END
