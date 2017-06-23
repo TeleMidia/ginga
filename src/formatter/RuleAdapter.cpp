@@ -146,7 +146,7 @@ RuleAdapter::adapt (ExecutionObjectContext *compositeObject,
               initializeRuleObjectRelation (
                   (ExecutionObjectSwitch *)object);
 
-              adapt ((ExecutionObjectSwitch *)object, force);
+              //adapt ((ExecutionObjectSwitch *)object, force);
               object = ((ExecutionObjectSwitch *)object)
                            ->getSelectedObject ();
             }
@@ -207,12 +207,6 @@ RuleAdapter::initializeAttributeRuleRelation (Rule *topRule, Rule *rule)
 void
 RuleAdapter::initializeRuleObjectRelation (
     arg_unused (ExecutionObjectSwitch *objectAlternatives))
-{
-}
-
-void
-RuleAdapter::adapt (arg_unused (ExecutionObjectSwitch *objectAlternatives),
-                    arg_unused (bool force))
 {
 }
 
