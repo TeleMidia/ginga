@@ -30,18 +30,24 @@ public:
   ~AnimInfo ();
 
   string getName ();
+  double getCurrent ();
   double getTarget ();
   GingaTime getDuration ();
   double getSpeed ();
   bool isDone ();
-  double update (double);
+  bool isInit ();
+
+  void init (double current);
+  void update (void);
 
 private:
   string _name;                  // property name
+  double _current;               // current value
   double _target;                // target value
   GingaTime _duration;           // animation duration
   double _speed;                 // animation speed
   bool _done;                    // true if animation is done
+  bool _init;                    // true if animation is initialized
 };
 
 class PlayerAnimator

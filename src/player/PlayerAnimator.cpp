@@ -109,6 +109,17 @@ isDone (AnimInfo *info)
 void
 PlayerAnimator::update (SDL_Rect *rect, SDL_Color *bgColor, guint8 *alpha)
 {
+
+#define UPDATE(info, Type, var, min, max)                       \
+  G_STMT_START                                                  \
+    {                                                           \
+      if (!(info)->isInit ())                                   \
+        (info)->init ((double)(var));                           \
+      (info)->update ();                                        \
+      var = (Type) CLAMP ((info)->getCurrent (), min, max);     \
+    }                                                           \
+  G_STMT_END
+
   g_assert_nonnull (rect);
   g_assert_nonnull (bgColor);
   g_assert_nonnull (alpha);
@@ -116,56 +127,42 @@ PlayerAnimator::update (SDL_Rect *rect, SDL_Color *bgColor, guint8 *alpha)
   for (AnimInfo *info: _scheduled)
     {
       string name;
-      double curr;
 
       g_assert_nonnull (info);
       g_assert (!info->isDone ());
 
       name = info->getName ();
-
       if (name == "top")
         {
-          curr = info->update (rect->y);
-          rect->y = (int) CLAMP (curr, G_MININT, G_MAXINT);
-          TRACE ("new '%s' is '%d'", name.c_str (), rect->y);
+          UPDATE (info, int, rect->y, G_MININT, G_MAXINT);
         }
       else if (name == "left")
         {
-          curr = info->update (rect->x);
-          rect->x = (int) CLAMP (curr, G_MININT, G_MAXINT);
-          TRACE ("new '%s' is '%d'", name.c_str (), rect->x);
+          UPDATE (info, int, rect->x, G_MININT, G_MAXINT);
         }
       else if (name == "width")
         {
-          curr = info->update (rect->w);
-          rect->w = (int) CLAMP (curr, G_MININT, G_MAXINT);
-          TRACE ("new '%s' is '%d'", name.c_str (), rect->w);
+          UPDATE (info, int, rect->w, G_MININT, G_MAXINT);
         }
       else if (name == "height")
         {
-          curr = info->update (rect->h);
-          rect->h = (int) CLAMP (curr, G_MININT, G_MAXINT);
-          TRACE ("new '%s' is '%d'", name.c_str (), rect->h);
+          UPDATE (info, int, rect->h, G_MININT, G_MAXINT);
         }
       else if (name == "background:r")
         {
-          curr = info->update (bgColor->r);
-          bgColor->r = (guint8) CLAMP (curr, 0, 255);
+          UPDATE (info, guint8, bgColor->r, 0, 255);
         }
       else if (name == "background:g")
         {
-          curr = info->update (bgColor->g);
-          bgColor->g = (guint8) CLAMP (curr, 0, 255);
+          UPDATE (info, guint8, bgColor->g, 0, 255);
         }
       else if (name == "background:b")
         {
-          curr = info->update (bgColor->b);
-          bgColor->b = (guint8) CLAMP (curr, 0, 255);
+          UPDATE (info, guint8, bgColor->b, 0, 255);
         }
       else if (name == "transparency")
         {
-          curr = info->update (*alpha);
-          *alpha = (guint8) CLAMP (curr, 0, 255);
+          UPDATE (info, guint8, *alpha, 0, 255);
         }
       else
         {
@@ -224,16 +221,8 @@ AnimInfo::AnimInfo (const string &name, double target, GingaTime dur)
   _name = name;
   _target = target;
   _duration = dur;
-  if (dur > 0)
-    {
-      _speed = -1;
-      _done = false;
-    }
-  else
-    {
-      _speed = 0;
-      _done = true;
-    }
+  _done = false;
+  _init = false;
 }
 
 /**
@@ -250,6 +239,16 @@ string
 AnimInfo::getName ()
 {
   return _name;
+}
+
+/**
+ * @brief Gets animation current value.
+ */
+double
+AnimInfo::getCurrent ()
+{
+  g_assert (_init);
+  return _current;
 }
 
 /**
@@ -276,6 +275,7 @@ AnimInfo::getDuration ()
 double
 AnimInfo::getSpeed ()
 {
+  g_assert (_init);
   return _speed;
 }
 
@@ -289,32 +289,54 @@ AnimInfo::isDone ()
 }
 
 /**
+ * @brief Tests if animation is initialized.
+ */
+bool
+AnimInfo::isInit ()
+{
+  return _init;
+}
+
+/**
+ * @brief Initializes animation.
+ */
+void
+AnimInfo::init (double current)
+{
+  g_assert (!_init);
+  _current = current;
+  if (_duration > 0)
+    _speed = (abs (_target - current)
+              / (double) GINGA_TIME_AS_SECONDS (_duration));
+  else
+    _speed = 0;
+  _init = true;
+}
+
+/**
  * @brief Updates animation.
  * @param current Current value.
  * @return The updated value.
  */
-double
-AnimInfo::update (double current)
+void
+AnimInfo::update (void)
 {
   double fps;
   int dir;
 
+  g_assert (_init);
   g_assert (!_done);
 
-  if (_speed < 0)               // first call
-    {
-      _speed = (abs (_target - current)
-                / (double) GINGA_TIME_AS_SECONDS (_duration));
-    }
-
   fps = (double) Ginga_Display->getFPS ();
-  dir = (current < _target) ? 1 : -1;
-  current = current + dir * (_speed / fps);
+  dir = (_current < _target) ? 1 : -1;
+  _current += dir * (_speed / fps);
 
-  if ((dir > 0 && current >= _target) || (dir < 0 && current <= _target))
-    _done = true;
-
-  return current;
+  if (_duration == 0
+      || (dir > 0 && _current >= _target)
+      || (dir < 0 && _current <= _target))
+    {
+      _done = true;
+    }
 }
 
 GINGA_PLAYER_END
