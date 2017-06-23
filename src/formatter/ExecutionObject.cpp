@@ -21,6 +21,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ExecutionObjectContext.h"
 #include "NclEvents.h"
 
+#include "ncl/ContentNode.h"
+using namespace ::ginga::ncl;
+
 GINGA_FORMATTER_BEGIN
 
 /**
@@ -48,6 +51,8 @@ ExecutionObject::ExecutionObject (const string &id,
   this->_isLocked = false;
   this->_isHandler = false;
   this->_isHandling = handling;
+
+  _player = nullptr;
 
   _objects.insert (this);
   TRACE ("creating exec object '%s' (%p)", _id.c_str (), this);
@@ -151,37 +156,22 @@ ExecutionObject::removeParentListenersFromEvent (
 bool
 ExecutionObject::isSleeping ()
 {
-  if (_mainEvent == nullptr
-      || _mainEvent->getCurrentState () == EventState::SLEEPING)
-    {
-      return true;
-    }
-
-  return false;
+  return  _mainEvent
+    && _mainEvent->getCurrentState () == EventState::SLEEPING;
 }
 
 bool
 ExecutionObject::isPaused ()
 {
-  if (_mainEvent != nullptr
-      && _mainEvent->getCurrentState () == EventState::PAUSED)
-    {
-      return true;
-    }
-
-  return false;
+  return _mainEvent
+    && _mainEvent->getCurrentState () == EventState::PAUSED;
 }
 
 bool
 ExecutionObject::isOccurring ()
 {
-  if (_mainEvent != nullptr
-      && _mainEvent->getCurrentState () == EventState::OCCURRING)
-    {
-      return true;
-    }
-
-  return false;
+  return _mainEvent
+    && _mainEvent->getCurrentState () == EventState::OCCURRING;
 }
 
 bool
@@ -598,81 +588,32 @@ ExecutionObject::getMainEvent ()
 }
 
 bool
-ExecutionObject::prepare (NclEvent *event, GingaTime offsetTime)
+ExecutionObject::prepare (NclEvent *event)
 {
   int size;
   map<Node *, ExecutionObjectContext *>::iterator i;
-  GingaTime startTime = 0;
-  ContentAnchor *contentAnchor;
   NclEvent *auxEvent;
   AttributionEvent *attributeEvent;
   PropertyAnchor *attributeAnchor;
   int j;
   string value;
 
-  // clog << "NclExecutionObject::prepare(" << id << ")" << endl;
-  if (event == nullptr || !containsEvent (event)
-      || event->getCurrentState () != EventState::SLEEPING)
-    {
-      // clog << "NclExecutionObject::prepare(" << id << ") ret FALSE" <<
-      // endl;
-      return false;
-    }
-
-  if (_mainEvent != nullptr
-      && _mainEvent->getCurrentState () != EventState::SLEEPING)
-    {
-      return false;
-    }
+  g_assert_nonnull (event);
+  g_assert (this->containsEvent (event));
+  if (event->getCurrentState () != EventState::SLEEPING)
+    return false;
 
   _mainEvent = event;
-  if (_mainEvent->instanceOf ("AnchorEvent"))
-    {
-      contentAnchor = ((AnchorEvent *)_mainEvent)->getAnchor ();
-      if (contentAnchor != nullptr
-          && contentAnchor->instanceOf ("LabeledAnchor"))
-        {
-          i = _parentTable.begin ();
-          while (i != _parentTable.end ())
-            {
-              clog << "NclExecutionObject::prepare(" << _id << ") call ";
-              clog << "addEventListener '" << i->second << "' or '";
-              clog << i->second;
-              clog << "'" << endl;
-              // register parent as a mainEvent listener
-              _mainEvent->addListener (
-                    (INclEventListener *)(ExecutionObjectContext *)
-                    i->second);
-              ++i;
-            }
-          return true;
-        }
-    }
-
-  if (_mainEvent->instanceOf ("PresentationEvent"))
-    {
-      startTime
-          = ((PresentationEvent *)_mainEvent)->getBegin () + offsetTime;
-
-      if (startTime > ((PresentationEvent *)_mainEvent)->getEnd ())
-        {
-          return false;
-        }
-    }
 
   i = _parentTable.begin ();
   while (i != _parentTable.end ())
     {
-      clog << "NclExecutionObject::prepare(" << _id << ") 2nd call ";
-      clog << "addEventListener '" << i->second << "' or '";
-      clog << i->second;
-      clog << "'" << endl;
       // register parent as a mainEvent listener
-      _mainEvent->addListener (i->second);
+     _mainEvent->addListener (i->second);
       ++i;
     }
 
-  prepareTransitionEvents (startTime);
+  prepareTransitionEvents (0);
 
   size = (int) _otherEvents.size ();
   for (j = 0; j < size; j++)
@@ -690,45 +631,92 @@ ExecutionObject::prepare (NclEvent *event, GingaTime offsetTime)
         }
     }
 
-  this->_offsetTime = startTime;
   return true;
 }
 
 bool
 ExecutionObject::start ()
 {
-  ContentAnchor *contentAnchor;
+  NodeEntity *entity;
+  ContentNode *contentNode;
+  Content *content;
 
-  clog << "NclExecutionObject::start(" << _id << ")" << endl;
-  if (_mainEvent == nullptr && _wholeContent == nullptr)
+  string src;
+  string mime;
+
+  g_assert_nonnull (_mainEvent);
+  g_assert_nonnull (_wholeContent);
+
+  if (this->isOccurring ())
+    return true;              // nothing to do
+
+  if (_player == nullptr)
+    goto done;
+
+  g_assert_null (dynamic_cast <ExecutionObjectContext *> (this));
+  g_assert (!_player->hasPrepared ());
+
+  entity = dynamic_cast <NodeEntity *> (_dataObject);
+  g_assert_nonnull (entity);
+
+  contentNode = dynamic_cast <ContentNode *> (entity);
+  g_assert_nonnull (contentNode);
+
+  content = contentNode->getContent ();
+  if (content != nullptr)
     {
-      return false;
+      ReferenceContent *ref = dynamic_cast <ReferenceContent *>(content);
+      g_assert_nonnull (ref);
+      src = ref->getCompleteReferenceUrl ();
+    }
+  else
+    {
+      src = "";                 // empty source
     }
 
-  if (_mainEvent != nullptr
-      && _mainEvent->getCurrentState () != EventState::SLEEPING)
-    {
-      return true;
-    }
+  mime = contentNode->getNodeType ();
+  g_assert (_player->prepare (src, mime));
 
-  if (_mainEvent == nullptr)
+  // Initialize player properties.
+  if (_descriptor != nullptr)
     {
-      prepare (_wholeContent, 0.0);
-    }
-
-  if (_mainEvent != nullptr && _mainEvent->instanceOf ("AnchorEvent"))
-    {
-      contentAnchor = ((AnchorEvent *)_mainEvent)->getAnchor ();
-      if (contentAnchor != nullptr
-          && contentAnchor->instanceOf ("LabeledAnchor"))
+      NclFormatterRegion *formreg = _descriptor->getFormatterRegion ();
+      if (formreg != nullptr)
         {
-          _transMan.start (_offsetTime);
-          _mainEvent->start ();
-          return true;
+          LayoutRegion *region;
+          int z, zorder;
+
+          region = formreg->getLayoutRegion ();
+          g_assert_nonnull (region);
+
+          _player->setRect (region->getRect ());
+
+          region->getZ (&z, &zorder);
+          _player->setZ (z, zorder);
         }
+      for (Parameter &p: _descriptor->getParameters ())
+        _player->setProperty (p.getName (), p.getValue ());
     }
 
-  _transMan.start (_offsetTime);
+  for (Anchor *anchor: contentNode->getAnchors ())
+    {
+      PropertyAnchor *prop = dynamic_cast <PropertyAnchor *> (anchor);
+      if (prop != nullptr)
+        _player->setProperty (prop->getName (), prop->getValue ());
+    }
+
+  // Setup attribution events.
+  for (NclEvent *evt: this->getEvents ())
+    {
+      AttributionEvent *attevt = dynamic_cast <AttributionEvent *> (evt);
+      if (attevt)
+        attevt->setPlayerAdapter (_player);
+    }
+
+  g_assert (_player->start ());
+
+ done:
+  _transMan.start (0);
   return true;
 }
 
@@ -767,26 +755,28 @@ ExecutionObject::stop ()
       return false;
     }
 
-  if (_mainEvent->instanceOf ("PresentationEvent"))
+  if (dynamic_cast <PresentationEvent* >(_mainEvent))
     {
       endTime = ((PresentationEvent *)_mainEvent)->getEnd ();
+      _mainEvent->stop ();
       _transMan.stop (endTime);
     }
-  else if (_mainEvent->instanceOf ("AnchorEvent"))
+  else if (dynamic_cast <AnchorEvent*>(_mainEvent))
     {
       contentAnchor = ((AnchorEvent *)_mainEvent)->getAnchor ();
       if (contentAnchor != nullptr
           && contentAnchor->instanceOf ("LabeledAnchor"))
         {
-          /*clog << "NclExecutionObject::stop for '" << id << "'";
-          clog << " call mainEvent '" << mainEvent->getId();
-          clog << "' stop" << endl;*/
           _mainEvent->stop ();
         }
     }
 
   _transMan.resetTimeIndex ();
   _pauseCount = 0;
+
+  removeParentListenersFromEvent (_mainEvent);
+  _mainEvent = nullptr;
+
   return true;
 }
 
@@ -885,22 +875,6 @@ ExecutionObject::resume ()
         }
     }
 
-  return true;
-}
-
-bool
-ExecutionObject::unprepare ()
-{
-  if (_mainEvent == nullptr
-      || _mainEvent->getCurrentState () != EventState::SLEEPING)
-    {
-      clog << "NclExecutionObject::unprepare(" << _id << ") unlocked";
-      clog << " ret FALSE" << endl;
-      return false;
-    }
-
-  removeParentListenersFromEvent (_mainEvent);
-  _mainEvent = nullptr;
   return true;
 }
 
@@ -1065,6 +1039,21 @@ ExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
   selectedEvents = nullptr;
 
   return selected;
+}
+
+// -----------------------------------
+
+void
+ExecutionObject::setPlayer (PlayerAdapter *player)
+{
+  g_assert_null (_player);
+  _player = player;
+}
+
+PlayerAdapter *
+ExecutionObject::getPlayer ()
+{
+  return _player;
 }
 
 GINGA_FORMATTER_END

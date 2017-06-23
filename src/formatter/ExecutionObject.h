@@ -21,6 +21,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "player/Player.h"
 using namespace ::ginga::player;
 
+#include "PlayerAdapter.h"
+
 #include "ncl/Animation.h"
 #include "ncl/GenericDescriptor.h"
 #include "ncl/ReferenceContent.h"
@@ -91,14 +93,14 @@ public:
   void updateTransitionTable (GingaTime value, Player *player);
   virtual EventTransition *getNextTransition ();
 
-  virtual bool prepare (NclEvent *event, GingaTime offsetTime);
+  virtual bool prepare (NclEvent *event);
   virtual bool start ();
   virtual bool stop ();
   virtual bool abort ();
   virtual bool pause ();
   virtual bool resume ();
 
-  virtual bool unprepare ();
+  //virtual bool unprepare ();
 
   void setHandling (bool isHandling);
   void setHandler (bool isHandler);
@@ -108,7 +110,6 @@ protected:
   string _id;
   Node *_dataObject;
   NclCascadingDescriptor *_descriptor;
-  GingaTime _offsetTime;
   PresentationEvent *_wholeContent;
 
   set<string> _typeSet;
@@ -141,7 +142,14 @@ private:
   map<Node *, Node *> _nodeParentTable;
 
   // ------------------------------------------
+
+public:
+  void setPlayer (PlayerAdapter *);
+  PlayerAdapter *getPlayer ();
+
+private:
   static set<ExecutionObject *> _objects;
+  PlayerAdapter *_player;
 };
 
 GINGA_FORMATTER_END
