@@ -30,8 +30,6 @@ Player::Player (const string &mrl)
   this->presented = false;
   this->status = PL_SLEEPING;
 
-  _time = 0;
-
   this->texture = NULL;         // media content
   this->borderWidth = 0;
   this->bgColor = {0, 0, 0, 0};
@@ -56,22 +54,9 @@ Player::~Player ()
   _properties.clear ();
 }
 
-GingaTime
-Player::getMediaTime ()
-{
-  return _time;
-}
-
-void
-Player::incMediaTime (GingaTime incr)
-{
-  _time += incr;
-}
-
 bool
 Player::play ()
 {
-  _time = 0;
   this->status = PL_OCCURRING;
   Ginga_Display->registerPlayer (this);
   return true;
@@ -80,7 +65,6 @@ Player::play ()
 void
 Player::stop ()
 {
-  _time = 0;
   this->status = PL_SLEEPING;
   Ginga_Display->unregisterPlayer (this);
 }

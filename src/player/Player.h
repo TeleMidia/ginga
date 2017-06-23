@@ -58,8 +58,6 @@ public:
   void setAnimatorProperties (string dur, string name, string value);
 
   PlayerStatus getMediaStatus();
-  void incMediaTime (GingaTime);
-  GingaTime getMediaTime ();
 
   virtual bool play ();
   virtual void stop ();
@@ -74,7 +72,6 @@ public:
   virtual void redraw (SDL_Renderer *);
 
 protected:
-  GingaTime _time;              // playback time
   PlayerStatus status;
   string mrl;
   SDLWindow *window;

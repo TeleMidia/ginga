@@ -145,6 +145,7 @@ public:
                                       NclEvent *event);
 
   NclEvent *getImplicitRefAssessmentEvent (const string &roleId);
+  string solveImplicitRefAssessment (const string &val);
 
 protected:
   map<string, NclEvent *> _assessments;
