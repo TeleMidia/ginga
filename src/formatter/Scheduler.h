@@ -61,11 +61,9 @@ public:
                           EventStateTransition transition,
                           EventState previousState) override;
 
-  PlayerAdapter *getObjectPlayer (ExecutionObject *execObj);
   bool removePlayer (ExecutionObject *object);
 
 private:
-  PlayerAdapter *initializePlayer (ExecutionObject *object);
 
 
   void runAction (NclEvent *event, NclSimpleAction *action);

@@ -88,9 +88,7 @@ void
 Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
 {
   ExecutionObject *obj;
-  NclCascadingDescriptor *descriptor;
   PlayerAdapter *player;
-  SDLWindow *win = NULL;
 
   if (event->instanceOf ("SelectionEvent"))
     {
@@ -127,137 +125,21 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
       return;
     }
 
-  player = this->getObjectPlayer (obj);
-
-  if (unlikely (player == NULL))
+  player = obj->getPlayer ();   // FIXME!
+  if (player == nullptr)
     {
-      WARNING ("no player to decode '%s', empty object",
-               obj->getId ().c_str ());
-      return;
+      player = new PlayerAdapter ();
+      obj->setPlayer (player);
     }
 
-  g_assert (!obj->instanceOf ("ExecutionObjectContext"));
   switch (action->getType ())
     {
     case ACT_START:
-      {
-        if (obj->isOccurring ())
-          break;                  // nothing to do
-
-        g_assert (!player->hasPrepared ());
-
-        if (ruleAdapter->adaptDescriptor (obj))
-          {
-            descriptor = obj->getDescriptor ();
-            if (descriptor != NULL)
-              descriptor->setFormatterLayout();
-          }
-
-        // --------------
-        NodeEntity *dataObject;
-        NodeEntity *entity;
-        Content *content;
-        string mime;
-        string mrl;
-
-        dataObject = dynamic_cast<NodeEntity *>(obj->getDataObject ());
-        g_assert_nonnull (dataObject);
-
-        entity = dynamic_cast <NodeEntity *>(dataObject->getDataEntity ());
-        g_assert_nonnull (entity);
-
-        g_assert (entity->instanceOf ("ContentNode"));
-
-        content = dynamic_cast<NodeEntity *>
-          (dataObject->getDataEntity ())->getContent();
-
-        if (content)
-          {
-            ReferenceContent *referContent
-              = dynamic_cast <ReferenceContent *>(content);
-            g_assert_nonnull (referContent);
-            mrl = referContent->getCompleteReferenceUrl ();
-          }
-        else
-          {
-            WARNING ("object %s has no content", obj->getId ().c_str ());
-            mrl = "";
-          }
-
-        mime = ((ContentNode *) entity)->getNodeType ();
-        g_assert (player->prepare (mrl, mime));
-
-        NclCascadingDescriptor *descriptor;
-        PropertyAnchor *property;
-
-        descriptor = obj->getDescriptor ();
-        if (descriptor != nullptr)
-          {
-            NclFormatterRegion *fregion = descriptor->getFormatterRegion ();
-            if (fregion != nullptr)
-              {
-                LayoutRegion *region;
-                SDL_Rect rect;
-                int z, zorder;
-                region = fregion->getLayoutRegion ();
-                g_assert_nonnull (region);
-                rect = region->getRect ();
-                region->getZ (&z, &zorder);
-                player->setRect (rect);
-                player->setZ (z, zorder);
-              }
-
-            for (Parameter &param: descriptor->getParameters ())
-              player->setProperty (param.getName (), param.getValue ());
-          }
-
-        ContentNode *contentNode = dynamic_cast <ContentNode *> (dataObject);
-        g_assert_nonnull (contentNode);
-
-        for (Anchor *anchor: contentNode->getAnchors ())
-          {
-            string name, value;
-
-            property = dynamic_cast <PropertyAnchor *> (anchor);
-            if (!property)
-              continue;
-            name = property->getName ();
-            value = property->getValue ();
-            player->setProperty (name, value);
-          }
-
-        for (NclEvent *evt: obj->getEvents ())
-          {
-            g_assert_nonnull (evt);
-            AttributionEvent *attributionEvt
-              = dynamic_cast <AttributionEvent *> (evt);
-            if (attributionEvt)
-              {
-                property = attributionEvt->getAnchor ();
-                attributionEvt->setPlayerAdapter (player);
-              }
-          }
-
-        g_assert (event->getCurrentState () == EventState::SLEEPING);
-        obj->prepare (event, 0);
-        // -------------
-
-        win = this->prepareFormatterRegion (obj);
-        player->setOutputWindow (win);
-        event->addListener (this);
-
-        player->_object = obj;  // FIXME!!
-
+        player->_object = obj;  // FIXME!
+        obj->prepare (event);
         g_assert (obj->start ());
-        if (unlikely (!player->start ()))
-          {
-            WARNING ("failed to start player of '%s'",
-                     obj->getId ().c_str ());
-            if (event->getCurrentState () == EventState::SLEEPING)
-              event->removeListener (this);
-          }
+        event->addListener (this);
       break;
-      }
 
     case ACT_PAUSE:
       if (!obj->isOccurring ())
@@ -319,7 +201,6 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
             attributionEvt->setPlayerAdapter (nullptr);
         }
       g_assert (obj->stop ());
-      g_assert (obj->unprepare ());
       if (unlikely (!player->hasPrepared ()))
         {
           WARNING ("trying to stop an unprepared player: '%s'",
@@ -394,22 +275,17 @@ Scheduler::runActionOverProperty (NclEvent *event,
           anim = NULL;
         }
 
-      player = this->getObjectPlayer (executionObject);
+      player = executionObject->getPlayer ();
+      g_assert_nonnull (player);
+
       actionType = action->getType ();
 
       switch (actionType)
         {
         case ACT_START:
         case ACT_SET:
-          clog << "Scheduler::runActionOverProperty";
-          clog << " over '" << event->getId () << "' for '";
-          clog << executionObject->getId () << "' player '";
-          clog << player << "'" << endl;
           if (event->getCurrentState () != EventState::SLEEPING)
             {
-              clog << "Scheduler::runActionOverProperty";
-              clog << " trying to set an event that is not ";
-              clog << "sleeping: '" << event->getId () << "'" << endl;
               return;
             }
 
@@ -420,11 +296,6 @@ Scheduler::runActionOverProperty (NclEvent *event,
                 {
                   propValue = solveImplicitRefAssessment (
                       propValue, (AttributionEvent *)event);
-
-                  clog << "Scheduler::runActionOverProperty";
-                  clog << " IMPLICIT found '" << propValue;
-                  clog << "' for event '" << event->getId () << "'";
-                  clog << endl;
                 }
 
               event->start ();
@@ -507,10 +378,6 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
   vector<NclEvent *> *events;
   EventType eventType = EventType::UNKNOWN;
 
-  clog << "Scheduler::runActionOverComposition ";
-  clog << "action '" << action->getType () << "' over COMPOSITION '";
-  clog << compObj->getId () << "'" << endl;
-
   if (action->getType () == ACT_START
       || action->getType () == ACT_SET)
     {
@@ -532,14 +399,6 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
                 {
                   eventType = EventType::PRESENTATION;
                 }
-              else
-                {
-                  clog << "Scheduler::runActionOverComposition ";
-                  clog << "Warning! action '" << action->getType () << "'";
-                  clog << " over COMPOSITION '";
-                  clog << compObj->getId ();
-                  clog << "' has an unknown eventType" << endl;
-                }
             }
         }
 
@@ -548,9 +407,6 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
           event = action->getEvent ();
           if (!event->instanceOf ("AttributionEvent"))
             {
-              clog << "Scheduler::runActionOverComposition SET ";
-              clog << "Warning! event ins't of attribution type";
-              clog << endl;
               return;
             }
 
@@ -580,12 +436,6 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
               childObject = j->second;
               if (childObject->instanceOf ("ExecutionObjectContext"))
                 {
-                  clog << "Scheduler::runActionOverComposition ";
-                  clog << "'" << compObj->getId () << "' has '";
-                  clog << childObject->getId () << "' as its child ";
-                  clog << "using recursive call";
-                  clog << endl;
-
                   runActionOverComposition (
                       (ExecutionObjectContext *)childObject, action);
                 }
@@ -598,12 +448,9 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
                     }
                   else
                     { // force attribution
-                      pAdapter = this->getObjectPlayer (childObject);
-
-                      if (pAdapter != NULL)
-                        {
-                          pAdapter->setProperty (attrEvent, propValue);
-                        }
+                      pAdapter = childObject->getPlayer ();
+                      g_assert_nonnull (pAdapter);
+                      pAdapter->setProperty (attrEvent, propValue);
                     }
                 }
               ++j;
@@ -665,25 +512,6 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
                       if (childEvent != NULL)
                         {
                           events->push_back (childEvent);
-
-                          clog << "Scheduler::";
-                          clog << "runActionOverComposition '";
-                          clog << compObj->getId () << "'";
-                          clog << " dataCompositeObject = '";
-                          clog << compositeNode->getId () << "' ";
-                          clog << " dataCompositeObjectParent = '";
-                          clog << compositeNode->getParentComposition ();
-                          clog << "' ";
-                          clog << "perspective = '";
-                          clog << perspective->getId ();
-                          clog << "' adding event '";
-                          clog << childEvent->getId ();
-                          clog << "' (child object = '";
-                          clog << childObject->getId ();
-                          clog << "', port = '";
-                          clog << port->getId ();
-                          clog << "')";
-                          clog << endl;
                         }
                     }
                 }
@@ -699,11 +527,6 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
           delete compositionPerspective;
 
           size = events->size ();
-
-          clog << "Scheduler::runActionOverComposition ";
-          clog << "action '" << action->getType () << "' over ";
-          clog << "COMPOSITION '" << compObj->getId ();
-          clog << "': '" << size << "' EVENTS FOUND" << endl;
 
           for (i = 0; i < size; i++)
             {
@@ -744,11 +567,6 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
             {
               childObject = j->second;
 
-              clog << "Scheduler::runActionOverComposition";
-              clog << " getting main event of '";
-              clog << childObject->getId () << "'";
-              clog << endl;
-
               childEvent = childObject->getMainEvent ();
               if (childEvent == NULL)
                 {
@@ -786,11 +604,6 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
                 {
                   childObject = j->second;
 
-                  clog << "Scheduler::runActionOverComposition";
-                  clog << " getting main event of '";
-                  clog << childObject->getId () << "'";
-                  clog << endl;
-
                   childEvent = childObject->getMainEvent ();
                   if (childEvent == NULL)
                     {
@@ -812,12 +625,6 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
           // *** QUIT PRESENTATION ***
           Ginga_Display->quit ();
         }
-
-      clog << "Scheduler::runActionOverComposition (else) ";
-      clog << "action '" << action->getType () << "' over ";
-      clog << "COMPOSITION '" << compObj->getId ();
-      clog << "' (objects = '" << objects;
-      clog << "'): '" << size << "' EVENTS FOUND" << endl;
 
       size = events->size ();
       for (i = 0; i < size; i++)
@@ -845,8 +652,6 @@ Scheduler::runActionOverSwitch (ExecutionObjectSwitch *switchObj,
 
       if (selectedObject == NULL)
         {
-          clog << "Scheduler::runActionOverSwitch Warning!";
-          clog << " Can't solve switch" << endl;
           return;
         }
     }
@@ -936,10 +741,9 @@ Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObj,
 
 string
 Scheduler::solveImplicitRefAssessment (const string &propValue,
-                                                AttributionEvent *event)
+                                       AttributionEvent *event)
 {
   NclEvent *refEvent;
-  ExecutionObject *refObject;
   string auxVal = "", roleId = "";
 
   if (propValue != "")
@@ -953,24 +757,8 @@ Scheduler::solveImplicitRefAssessment (const string &propValue,
   if (refEvent != NULL)
     {
       auxVal = ((AttributionEvent *)refEvent)->getCurrentValue ();
-      refObject = ((ExecutionObject *)(refEvent->getExecutionObject ()));
-
-      clog << "Scheduler::solveImplicitRefAssessment refEvent";
-      clog << " for '" << refObject->getId () << "' is '";
-      clog << refEvent->getId () << "', got '" << propValue << "'";
-      clog << endl;
-
       return auxVal;
     }
-  else
-    {
-      clog << "Scheduler::solveImplicitRefAssessment warning!";
-      clog << " refEvent not found for '" << event->getId () << "', ";
-      clog << " NclLinkAssignmentAction value is '" << propValue;
-      clog << "'" << endl;
-      clog << endl;
-    }
-
   return "";
 }
 
@@ -1078,10 +866,6 @@ Scheduler::eventStateChanged (
   bool contains;
   bool hasOther;
 
-  clog << "Scheduler::eventStateChanged '";
-  clog << event->getId () << "' transition '" << static_cast<int> (transition);
-  clog << "'" << endl;
-
   hasOther = false;
   contains = false;
 
@@ -1123,8 +907,8 @@ Scheduler::eventStateChanged (
         case EventStateTransition::STARTS:
           object = event->getExecutionObject ();
 
-          player = this->getObjectPlayer (object);
-          if (player != NULL)
+          player = object->getPlayer ();
+          if (player != nullptr)
             {
               this->showObject (object);
               focusManager->showObject (object);
@@ -1140,15 +924,11 @@ Scheduler::eventStateChanged (
 
               if (hideObj)
                 {
-                  clog << "Scheduler::eventStateChanged '";
-                  clog << event->getId ();
-                  clog << "' STOPS: hideObject '" << object->getId ();
-                  clog << endl;
 
                   this->focusManager->hideObject (object);
                   this->hideObject (object);
 
-                  player = this->getObjectPlayer (object);
+                  player = object->getPlayer ();
                 }
             }
           break;
@@ -1162,30 +942,22 @@ Scheduler::eventStateChanged (
 
             if (hideObj)
               {
-                clog << "Scheduler::eventStateChanged '";
-                clog << event->getId ();
-                clog << "' ABORTS: hideObject '" << object->getId ();
-                clog << endl;
 
                 this->focusManager->hideObject (object);
                 this->hideObject (object);
 
-                player = this->getObjectPlayer (object);
+                player = object->getPlayer ();
               }
             break;
           }
 
         case EventStateTransition::PAUSES:
           {
-            clog << "Scheduler::eventStateChanged\nPAUSES:\n";
-            clog << endl;
             break;
           }
 
         case EventStateTransition::RESUMES:
           {
-            clog << "Scheduler::eventStateChanged\nRESUMES:\n";
-            clog << endl;
             break;
           }
 
@@ -1259,46 +1031,6 @@ Scheduler::removePlayer (ExecutionObject *exObject)
     }
 
   return false;
-}
-
-PlayerAdapter *
-Scheduler::initializePlayer (ExecutionObject *object)
-{
-  g_assert_nonnull (object);
-
-  NodeEntity *entity
-      = (NodeEntity *)(object->getDataObject ()->getDataEntity ());
-  g_assert_nonnull (entity);
-
-  ContentNode *contentNode = dynamic_cast<ContentNode *> (entity);
-  g_assert_nonnull (contentNode);
-
-  if (contentNode->isSettingNode ())
-    return nullptr;             // nothing to do
-
-  PlayerAdapter *adapter = new PlayerAdapter ();
-  _objectPlayers[object->getId ()] = adapter;
-
-  return adapter;
-}
-
-PlayerAdapter *
-Scheduler::getObjectPlayer (ExecutionObject *execObj)
-{
-  PlayerAdapter *player = nullptr;
-  string objId;
-
-  objId = execObj->getId ();
-  auto i = _objectPlayers.find (objId);
-  if (i == _objectPlayers.end ())
-    {
-      player = initializePlayer (execObj);
-    }
-  else
-    {
-      player = i->second;
-    }
-  return player;
 }
 
 GINGA_FORMATTER_END
