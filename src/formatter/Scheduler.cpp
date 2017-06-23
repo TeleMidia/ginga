@@ -225,9 +225,10 @@ Scheduler::runActionOverProperty (AttributionEvent *event,
               anim->setBy (by);
 
               player->getPlayer()->
-                setAnimatorProperties(dur,((AttributionEvent *)event)
-                                      ->getAnchor ()
-                                      ->getName (), propValue);
+                scheduleAnimation(((AttributionEvent *)event)
+                                  ->getAnchor ()->getName (),
+                                  propValue,
+                                  ginga_parse_time (dur));
             }
           else if (player != NULL)
             {

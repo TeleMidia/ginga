@@ -976,6 +976,12 @@ ExecutionObject::handleTickEvent (arg_unused (GingaTime total),
   if (_player == nullptr)
     return;                     // nothing to do
 
+  if (_player->_player->getEOS ())
+    {
+      this->stop ();
+      return;
+    }
+
   g_assert (GINGA_TIME_IS_VALID (_time));
   _time += diff;
 

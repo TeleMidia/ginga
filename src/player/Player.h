@@ -32,7 +32,6 @@ public:
      PL_PAUSED,
     };
 
-public:
   Player (const string &);
   virtual ~Player ();
 
@@ -51,19 +50,20 @@ public:
   bool getFocus ();
   void setFocus (bool);
 
+  bool getEOS ();
+  void setEOS (bool);
+
   PlayerState getState ();
   string getURI ();
-  bool getEOS ();
 
   virtual string getProperty (const string &);
   virtual void setProperty (const string &, const string &);
+  void scheduleAnimation (string, string, GingaTime);
 
   virtual void start ();
   virtual void stop ();
   virtual void pause ();
   virtual void resume ();
-
-  void setAnimatorProperties (string, string, string); // FIXME
 
   // Callbacks.
   virtual void redraw (SDL_Renderer *);
@@ -75,10 +75,10 @@ protected:
   guint8 _alpha;                   // alpha
   SDL_Color _bgColor;              // background color
   bool _focused;                   // true if focused
+  bool _eos;                       // true if content was exhausted
 
   PlayerState _state;              // current state
   string _uri;                     // source uri
-  bool _eos;                       // true if contend was exhausted
   map<string, string> _properties; // property table
 
   SDL_Texture *_texture;           // player texture
@@ -87,4 +87,4 @@ protected:
 
 GINGA_PLAYER_END
 
-#endif /* PLAYER_H */
+#endif // PLAYER_H

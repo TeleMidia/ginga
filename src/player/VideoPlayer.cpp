@@ -18,28 +18,16 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "VideoPlayer.h"
 
-#define gstx_element_get_state(elt, st, pend, tout)                     \
-  G_STMT_START                                                          \
-  {                                                                     \
-    g_assert (gst_element_get_state ((elt), (st), (pend), (tout))       \
-              != GST_STATE_CHANGE_FAILURE);                             \
-  }                                                                     \
-  G_STMT_END
+#define gstx_element_get_state(elt, st, pend, tout)             \
+  g_assert (gst_element_get_state ((elt), (st), (pend), (tout)) \
+            != GST_STATE_CHANGE_FAILURE)
 
-#define gstx_element_get_state_sync(elt, st, pend)                      \
-  G_STMT_START                                                          \
-  {                                                                     \
-    gstx_element_get_state ((elt), (st), (pend), GST_CLOCK_TIME_NONE);  \
-  }                                                                     \
-  G_STMT_END
+#define gstx_element_get_state_sync(elt, st, pend)\
+  gstx_element_get_state ((elt), (st), (pend), GST_CLOCK_TIME_NONE)
 
-#define gstx_element_set_state(elt, st)                 \
-  G_STMT_START                                          \
-  {                                                     \
-    g_assert (gst_element_set_state ((elt), (st))       \
-              != GST_STATE_CHANGE_FAILURE);             \
-  }                                                     \
-  G_STMT_END
+#define gstx_element_set_state(elt, st)         \
+  g_assert (gst_element_set_state ((elt), (st)) \
+            != GST_STATE_CHANGE_FAILURE)
 
 #define gstx_element_set_state_sync(elt, st)            \
   G_STMT_START                                          \
@@ -51,11 +39,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
-VideoPlayer::VideoPlayer (const string &mrl) : Player (mrl)
+VideoPlayer::VideoPlayer (const string &uri) : Player (uri)
 {
   GstBus *bus;
   gulong id;
-  gchar *uri;
+  char *buf;
 
   GstElement *bin;
   GstElement *elt_filter;
@@ -63,10 +51,8 @@ VideoPlayer::VideoPlayer (const string &mrl) : Player (mrl)
   GstElement *elt_sink;
   GstPad *pad;
 
-  _texture = nullptr;
-
   g_rec_mutex_init (&_mutex);
-  _eos = false;
+  _texture = nullptr;
   _playbin = nullptr;
   _sample = nullptr;
 
@@ -90,11 +76,11 @@ VideoPlayer::VideoPlayer (const string &mrl) : Player (mrl)
   g_assert (id > 0);
   gst_object_unref (bus);
 
-  uri = gst_filename_to_uri (mrl.c_str (), NULL);
-  g_assert_nonnull (uri);
+  buf = gst_filename_to_uri (uri.c_str (), NULL);
+  g_assert_nonnull (buf);
 
-  g_object_set (G_OBJECT (_playbin), "uri", uri, NULL);
-  g_free (uri);
+  g_object_set (G_OBJECT (_playbin), "uri", buf, NULL);
+  g_free (buf);
 
   bin = gst_bin_new ("videobin");
   g_assert_nonnull (bin);
@@ -166,6 +152,7 @@ VideoPlayer::start ()
   gst_caps_unref (caps);
   gst_object_unref (filter);
 
+  g_atomic_int_set (&_atom_eos, FALSE);
   ret = gst_element_set_state (_playbin, GST_STATE_PLAYING);
   if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
     return;
@@ -231,10 +218,11 @@ VideoPlayer::redraw (SDL_Renderer *renderer)
   guint8 *pixels;
   guint stride;
 
-  if (this->getEOS ())
+  if (g_atomic_int_get (&_atom_eos))
     {
-      this->stop ();
-      return;
+      Player::setEOS (true);
+      TRACE ("eos");
+      return;                   // nothing to do
     }
 
   sample = this->getSample ();
@@ -244,10 +232,10 @@ VideoPlayer::redraw (SDL_Renderer *renderer)
   if (_texture == nullptr)
     {
       _texture = SDL_CreateTexture (renderer,
-                                         SDL_PIXELFORMAT_ARGB32,
-                                         SDL_TEXTUREACCESS_TARGET,
-                                         _rect.w,
-                                         _rect.h);
+                                    SDL_PIXELFORMAT_ARGB32,
+                                    SDL_TEXTUREACCESS_TARGET,
+                                    _rect.w,
+                                    _rect.h);
       g_assert_nonnull (_texture);
     }
 
@@ -290,7 +278,6 @@ void
 VideoPlayer::setSample (GstSample *sample)
 {
   g_assert_nonnull (sample);
-
   this->lock ();
   if (_sample != NULL)
     gst_sample_unref (_sample);
@@ -307,24 +294,6 @@ VideoPlayer::getSample (void)
   _sample = NULL;
   this->unlock ();
   return sample;
-}
-
-void
-VideoPlayer::setEOS (bool eos)
-{
-  this->lock ();
-  _eos = eos;
-  this->unlock ();
-}
-
-bool
-VideoPlayer::getEOS (void)
-{
-  bool eos;
-  this->lock ();
-  eos = _eos;
-  this->unlock ();
-  return eos;
 }
 
 gboolean
@@ -370,8 +339,8 @@ void
 VideoPlayer::cb_EOS (arg_unused (GstAppSink *appsink), gpointer data)
 {
   VideoPlayer *player = (VideoPlayer *) data;
-  player->setEOS (true);
-  TRACE ("eos");
+  g_assert_nonnull (player);
+  g_atomic_int_set (&player->_atom_eos, TRUE);
 }
 
 GstFlowReturn
