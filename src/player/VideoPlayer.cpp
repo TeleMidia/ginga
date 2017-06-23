@@ -114,7 +114,11 @@ VideoPlayer::VideoPlayer (const string &uri) : Player (uri)
 
 VideoPlayer::~VideoPlayer ()
 {
+  g_assert (_state == PL_SLEEPING);
   g_rec_mutex_clear (&_mutex);
+  if (_sample != nullptr)
+    gst_sample_unref (_sample);
+  gst_object_unref (_playbin);
 }
 
 void
