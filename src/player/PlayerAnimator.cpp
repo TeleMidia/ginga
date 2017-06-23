@@ -23,297 +23,298 @@ using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
+
+// PlayerAnimator: Public.
+
+/**
+ * @brief Creates a new player animator.
+ */
 PlayerAnimator::PlayerAnimator ()
 {
-  this->properties = NULL;
 }
 
+/**
+ * @brief Destroys player animator.
+ */
 PlayerAnimator::~PlayerAnimator ()
 {
-  g_list_free(properties);
+  this->clear ();
 }
 
+/**
+ * @brief Remove all scheduled animations.
+ */
 void
-PlayerAnimator::addProperty(const string &dur,
-                            const string &name,
-                            const string &value)
+PlayerAnimator::clear ()
+{
+  _scheduled.clear ();
+}
+
+/**
+ * @brief Schedule an animation.
+ * @param name Property name.
+ * @param value Property target value.
+ * @param dur Duration.
+ */
+void
+PlayerAnimator::schedule (const string &name,
+                          const string &value,
+                          GingaTime dur)
 {
   if (name == "bounds")
     {
       vector<string> v = ginga_parse_list (value, ',', 4, 4);
-      updateList (dur, "left", v[0]);
-      updateList (dur, "top", v[1]);
-      updateList (dur, "width", v[2]);
-      updateList (dur, "height", v[3]);
+      this->doSchedule ("left", v[0], dur);
+      this->doSchedule ("top", v[1], dur);
+      this->doSchedule ("width", v[2], dur);
+      this->doSchedule ("height", v[3], dur);
     }
-   else if(name == "background" || name == "bgColor")
+  else if (name == "location")
+    {
+      vector<string> v = ginga_parse_list (value, ',', 2, 2);
+      this->doSchedule ("left", v[0], dur);
+      this->doSchedule ("top", v[1], dur);
+    }
+  else if (name == "size")
+    {
+      vector<string> v = ginga_parse_list (value, ',', 2, 2);
+      this->doSchedule ("width", v[0], dur);
+      this->doSchedule ("height", v[1], dur);
+    }
+  else if (name == "background")
     {
       SDL_Color color = ginga_parse_color (value);
-      updateList (dur, "red", xstrbuild ("%d", color.r));
-      updateList (dur, "green", xstrbuild ("%d", color.g));
-      updateList (dur, "blue", xstrbuild ("%d", color.b));
+      this->doSchedule ("background:r", xstrbuild ("%d", color.r), dur);
+      this->doSchedule ("background:g", xstrbuild ("%d", color.g), dur);
+      this->doSchedule ("background:b", xstrbuild ("%d", color.b), dur);
     }
   else
     {
-      updateList (dur, name, value);
+      this->doSchedule (name, value, dur);
     }
-
 }
 
-void
-PlayerAnimator::updateList (const string &dur,
-                            const string &name,
-                            const string &value)
+static bool
+isDone (AnimInfo *info)
 {
-  AnimProperty* pr = new AnimProperty;
-  pr->name = name;
-  pr->duration = xstrtod(dur);
-  pr->curValue = 0;
-  pr->velocity = 0;
-  if (xstrispercent (value))
-    if(name == "transparency")
-      pr->targetValue = xstrtodorpercent (value, NULL) * 255.;
-    else
-      pr->targetValue = xstrtodorpercent (value, NULL) * 100.;
-  else
-    if(name == "transparency"){
-        pr->targetValue = xstrtod (value) * 255.;
-      }
-    else
-      pr->targetValue = xstrtod (value);
-
-  this->properties = g_list_insert (this->properties, pr,-1);
+  return info->isDone ();
 }
 
+/**
+ * @brief Update scheduled animations.
+ * @param rect Variable to store the resulting bounds.
+ * @param color Variable to store the resulting background color.
+ * @param alpha Variable to store the resulting duration.
+ */
 void
-PlayerAnimator::update(SDL_Rect* rect,
-                       guint8* red, guint8* green, guint8* blue, guint8* alpha)
+PlayerAnimator::update (SDL_Rect *rect, SDL_Color *bgColor, guint8 *alpha)
 {
-  GList* l =  this->properties;
-  while (l != NULL)
+  g_assert_nonnull (rect);
+  g_assert_nonnull (bgColor);
+  g_assert_nonnull (alpha);
+
+  for (AnimInfo *info: _scheduled)
     {
-      GList *next = l->next;
-      AnimProperty* pr = (AnimProperty*)l->data;
+      string name;
+      double curr;
 
-      if(!pr)
-        this->properties = g_list_remove_link (this->properties, l);
+      g_assert_nonnull (info);
+      g_assert (!info->isDone ());
+
+      name = info->getName ();
+
+      if (name == "top")
+        {
+          curr = info->update (rect->y);
+          rect->y = (int) CLAMP (curr, G_MININT, G_MAXINT);
+          TRACE ("new '%s' is '%d'", name.c_str (), rect->y);
+        }
+      else if (name == "left")
+        {
+          curr = info->update (rect->x);
+          rect->x = (int) CLAMP (curr, G_MININT, G_MAXINT);
+          TRACE ("new '%s' is '%d'", name.c_str (), rect->x);
+        }
+      else if (name == "width")
+        {
+          curr = info->update (rect->w);
+          rect->w = (int) CLAMP (curr, G_MININT, G_MAXINT);
+          TRACE ("new '%s' is '%d'", name.c_str (), rect->w);
+        }
+      else if (name == "height")
+        {
+          curr = info->update (rect->h);
+          rect->h = (int) CLAMP (curr, G_MININT, G_MAXINT);
+          TRACE ("new '%s' is '%d'", name.c_str (), rect->h);
+        }
+      else if (name == "background:r")
+        {
+          curr = info->update (bgColor->r);
+          bgColor->r = (guint8) CLAMP (curr, 0, 255);
+        }
+      else if (name == "background:g")
+        {
+          curr = info->update (bgColor->g);
+          bgColor->g = (guint8) CLAMP (curr, 0, 255);
+        }
+      else if (name == "background:b")
+        {
+          curr = info->update (bgColor->b);
+          bgColor->b = (guint8) CLAMP (curr, 0, 255);
+        }
+      else if (name == "transparency")
+        {
+          curr = info->update (*alpha);
+          *alpha = (guint8) CLAMP (curr, 0, 255);
+        }
       else
         {
-          if(pr->name == "top" ||
-             pr->name == "left" ||
-             pr->name == "width" ||
-             pr->name == "height")
-            {
-              updatePosition(rect, pr);
-            }
-          else if(pr->name == "transparency" ||
-                  pr->name == "red" ||
-                  pr->name == "blue" ||
-                  pr->name == "green" ){
-              updateColor(red, green, blue, alpha, pr);
-            }
+          WARNING ("cannot animate property '%s'", name.c_str ());
         }
+    }
 
-      l = next;
+  _scheduled.remove_if (isDone);
+}
+
+
+// PlayerAnimator: Private.
+
+void
+PlayerAnimator::doSchedule (const string &name,
+                            const string &value,
+                            GingaTime dur)
+{
+  double target;
+  int width, height;
+
+  Ginga_Display->getSize (&width, &height);
+  if (name == "top" || name == "height")
+    {
+      target = ginga_parse_percent (value, height, 0, G_MAXINT);
+      TRACE ("target '%s' is '%g'", name.c_str (), target);
+    }
+  else if (name == "left" || name == "width")
+    {
+      target = ginga_parse_percent (value, width, 0, G_MAXINT);
+      TRACE ("target '%s' is '%g'", name.c_str (), target);
+    }
+  else if (name == "transparency" || name == "background")
+    {
+      target = ginga_parse_percent (value, 255, 0, 255);
+    }
+  else
+    {
+      target = ginga_parse_percent (value, 100, 0, G_MAXINT);
+    }
+
+  _scheduled.push_back (new AnimInfo (name, target, dur));
+}
+
+
+// AnimInfo.
+
+/**
+ * @brief Creates animation info.
+ * @param name Property name.
+ * @param target Target value.
+ * @param dur Duration.
+ */
+AnimInfo::AnimInfo (const string &name, double target, GingaTime dur)
+{
+  _name = name;
+  _target = target;
+  _duration = dur;
+  if (dur > 0)
+    {
+      _speed = -1;
+      _done = false;
+    }
+  else
+    {
+      _speed = 0;
+      _done = true;
     }
 }
 
-gdouble
-PlayerAnimator::cvtTimeIntToDouble(guint32 value)
+/**
+ * @brief Destroys animation info.
+ */
+AnimInfo::~AnimInfo ()
 {
-  return ((gdouble)value)/1000;
 }
 
-gdouble
-PlayerAnimator::getAnimationVelocity( gdouble initPos,
-                                      gdouble finalPos,
-                                      gdouble duration )
+/**
+ * @brief Gets animation name.
+ */
+string
+AnimInfo::getName ()
 {
-  if(duration <= 0)
-    return 0;
-
-  gdouble distance = finalPos - initPos;
-
-  if(distance < 0)
-    distance*=-1;
-
-  TRACE ("distance=%f velocity=%f", distance, (distance / duration) );
-
-  return distance / duration;
+  return _name;
 }
 
+/**
+ * @brief Gets animation target value.
+ */
+double
+AnimInfo::getTarget ()
+{
+  return _target;
+}
+
+/**
+ * @brief Gets animation  duration.
+ */
+GingaTime
+AnimInfo::getDuration ()
+{
+  return _duration;
+}
+
+/**
+ * @brief Gets animation speed.
+ */
+double
+AnimInfo::getSpeed ()
+{
+  return _speed;
+}
+
+/**
+ * @brief Tests if animation is done.
+ */
 bool
-PlayerAnimator::calculateVelocity(gint32 * value, AnimProperty* pr)
+AnimInfo::isDone ()
 {
-  pr->velocity = getAnimationVelocity( (gdouble)*value,
-                                       pr->targetValue,
-                                       pr->duration );
-  pr->curValue = (gdouble)*value;
-
-  if((guint32)pr->velocity == 0)
-    {
-      *value = (gint32)pr->targetValue;
-      this->properties = g_list_remove(this->properties, pr);
-      delete pr;
-      return false;
-    }
-  return true;
+  return _done;
 }
 
-bool
-PlayerAnimator::calculateVelocity(guint8 * value, AnimProperty* pr)
+/**
+ * @brief Updates animation.
+ * @param current Current value.
+ * @return The updated value.
+ */
+double
+AnimInfo::update (double current)
 {
-  pr->velocity = getAnimationVelocity ((gdouble)*value,
-                                       pr->targetValue,
-                                       pr->duration );
-  pr->curValue = (gdouble)*value;
+  double fps;
+  int dir;
 
-  if((guint32)pr->velocity == 0)
+  g_assert (!_done);
+
+  if (_speed < 0)               // first call
     {
-      *value = (guint8)pr->targetValue;
-      this->properties = g_list_remove(this->properties, pr);
-      delete pr;
-      return false;
+      _speed = (abs (_target - current)
+                / (double) GINGA_TIME_AS_SECONDS (_duration));
     }
-  return true;
-}
 
-void
-PlayerAnimator::calculatePosition(gint32 * value, AnimProperty* pr, gint32 dir)
-{ //S = So + vt
-  pr->curValue = pr->curValue +
-      (dir * (pr->velocity * (1.0/(gdouble)Ginga_Display->getFPS())));
-  *value = (gint32)pr->curValue;
+  fps = (double) Ginga_Display->getFPS ();
+  dir = (current < _target) ? 1 : -1;
+  current = current + dir * (_speed / fps);
 
-  if( (dir > 0 && *value >= pr->targetValue) ||
-      (dir < 0 && *value <= pr->targetValue) )
-    {
-      *value = (gint32)pr->targetValue;
-      this->properties = g_list_remove(this->properties, pr);
-      free(pr);
-    }
-}
+  if ((dir > 0 && current >= _target) || (dir < 0 && current <= _target))
+    _done = true;
 
-void
-PlayerAnimator::calculateColor(guint8* value, AnimProperty* pr, gint32 dir)
-{ //S = So + vt
-  pr->curValue = pr->curValue +
-      (dir * (pr->velocity * (1.0/(gdouble)Ginga_Display->getFPS())));
-  *value = (guint8)pr->curValue;
-
-  if( (dir > 0 && *value >= pr->targetValue) ||
-      (dir < 0 && *value <= pr->targetValue) )
-    {
-      *value = (guint8)pr->targetValue;
-      this->properties = g_list_remove(this->properties, pr);
-      free(pr);
-    }
-}
-
-void
-PlayerAnimator::updateColor(guint8* red, guint8* green,
-                            guint8* blue, guint8* alpha,
-                            AnimProperty* pr)
-{
-  if(alpha == NULL)
-    return;
-
-  if(pr->name == "transparency")
-    {
-      if(pr->velocity <=0)
-        if(!calculateVelocity(alpha, pr))
-          return;
-
-      if( (gdouble)(*alpha) < pr->targetValue)
-        calculateColor(alpha, pr, 1);
-      else if( (gdouble)(*alpha) > pr->targetValue)
-        calculateColor(alpha, pr, -1);
-    }
-  else if(pr->name == "red")
-    {
-      if(pr->velocity <=0)
-        if(!calculateVelocity(red, pr))
-          return;
-
-      if( (gdouble)(*red) < pr->targetValue)
-        calculateColor(red, pr, 1);
-      else if( (gdouble)(*red) > pr->targetValue)
-        calculateColor(red, pr, -1);
-    }
-  else if(pr->name == "green")
-    {
-      if(pr->velocity <=0)
-        if(!calculateVelocity(green, pr))
-          return;
-
-      if( (gdouble)(*green) < pr->targetValue)
-        calculateColor(green, pr, 1);
-      else if( (gdouble)(*green) > pr->targetValue)
-        calculateColor(green, pr, -1);
-    }
-  else if(pr->name == "blue")
-    {
-      if(pr->velocity <=0)
-        if(!calculateVelocity(blue, pr))
-          return;
-
-      if( (gdouble)(*blue) < pr->targetValue)
-        calculateColor(blue, pr, 1);
-      else if( (gdouble)(*blue) > pr->targetValue)
-        calculateColor(blue, pr, -1);
-    }
-}
-
-void
-PlayerAnimator::updatePosition(SDL_Rect* rect, AnimProperty* pr)
-{
-  if(pr == NULL || rect == NULL)
-    return;
-
-  if(pr->name == "top")
-    {
-      if(pr->velocity <= 0)
-        if(!calculateVelocity(&rect->y, pr))
-          return;
-
-      if(rect->y < pr->targetValue)
-        calculatePosition(&rect->y, pr, 1);
-      else if(rect->y > pr->targetValue)
-        calculatePosition(&rect->y, pr, -1);
-    }
-  else if(pr->name == "left")
-    {
-      if(pr->velocity <= 0)
-        if(!calculateVelocity(&rect->x, pr))
-          return;
-
-      if(rect->x < pr->targetValue)
-        calculatePosition(&rect->x, pr, 1);
-      else if(rect->x > pr->targetValue)
-        calculatePosition(&rect->x, pr, -1);
-    }
-  else if(pr->name == "width")
-    {
-      if(pr->velocity <=0)
-        if(!calculateVelocity(&rect->w, pr))
-          return;
-
-      if(rect->w < pr->targetValue)
-        calculatePosition(&rect->w, pr, 1);
-      else if(rect->w > pr->targetValue)
-        calculatePosition(&rect->w, pr, -1);
-    }
-  else if(pr->name == "height")
-    {
-      if(pr->velocity <=0)
-        if(!calculateVelocity(&rect->h, pr))
-          return;
-
-      if(rect->h < pr->targetValue)
-        calculatePosition(&rect->h, pr, 1);
-      else if(rect->h > pr->targetValue)
-        calculatePosition(&rect->h, pr, -1);
-    }
+  return current;
 }
 
 GINGA_PLAYER_END

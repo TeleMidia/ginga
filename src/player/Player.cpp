@@ -330,11 +330,7 @@ Player::redraw (SDL_Renderer *renderer)
   if (_state == PL_SLEEPING)
     return;
 
-  _animator.update (&_rect,
-                    &_bgColor.r,
-                    &_bgColor.g,
-                    &_bgColor.b,
-                    &_alpha);
+  _animator.update (&_rect, &_bgColor, &_alpha);
 
   if (_focused)
     TRACE ("%p focused", this);
@@ -374,7 +370,7 @@ Player::redraw (SDL_Renderer *renderer)
 void
 Player::setAnimatorProperties (string dur, string name, string value)
 {
-  _animator.addProperty (dur, name, value);
+  _animator.schedule (name, value, ginga_parse_time (dur));
 }
 
 GINGA_PLAYER_END
