@@ -135,6 +135,8 @@ private:
 
 public:
   PlayerAdapter *getPlayer ();
+  void execAttribution (AttributionEvent *, const string &,
+                        const string &, GingaTime);
 
   // From IEventListener.
   virtual void handleKeyEvent (SDL_EventType, SDL_Keycode) override;
