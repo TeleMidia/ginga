@@ -131,15 +131,14 @@ NclSimpleAction::setSimpleActionListener (INclActionListener *listener)
   this->listener = listener;
 }
 
-vector<NclEvent *> *
+vector<NclEvent *>
 NclSimpleAction::getEvents ()
 {
-  if (_event == nullptr)
-    return nullptr;
+  vector<NclEvent *> events;
 
-  vector<NclEvent *> *events = new vector<NclEvent *>;
+  if (_event)
+    events.push_back (_event);
 
-  events->push_back (_event);
   return events;
 }
 
@@ -365,49 +364,18 @@ NclCompoundAction::setCompoundActionListener (
   this->_listener = listener;
 }
 
-vector<NclEvent *> *
+vector<NclEvent *>
 NclCompoundAction::getEvents ()
 {
-  vector<NclAction *> *acts;
-  vector<NclAction *>::iterator i;
-  NclAction *action;
-  vector<NclEvent *> *events;
-  vector<NclEvent *> *actionEvents;
-  vector<NclEvent *>::iterator j;
+  vector<NclAction *> acts (_actions);
+  vector<NclEvent *> events;
 
-  if (_running)
+  for (NclAction *action : acts)
     {
-      return nullptr;
-    }
-
-  if (_actions.empty ())
-    {
-      return nullptr;
-    }
-
-  acts = new vector<NclAction *> (_actions);
-  events = new vector<NclEvent *>;
-
-  for (i = acts->begin (); i != acts->end (); ++i)
-    {
-      action = (NclAction *)(*i);
-      actionEvents = action->getEvents ();
-      if (actionEvents != nullptr)
+      for (NclEvent *actEvt : action->getEvents ())
         {
-          for (j = actionEvents->begin (); j != actionEvents->end (); ++j)
-            {
-              events->push_back (*j);
-            }
-          delete actionEvents;
-          actionEvents = nullptr;
+          events.push_back (actEvt);
         }
-    }
-
-  delete acts;
-  if (events->empty ())
-    {
-      delete events;
-      return nullptr;
     }
 
   return events;
@@ -426,8 +394,7 @@ NclCompoundAction::getImplicitRefRoleActions ()
 
   for (NclAction *act: acts)
     {
-      vector<NclAction *> assignmentActs
-          = act->getImplicitRefRoleActions ();
+      vector<NclAction *> assignmentActs = act->getImplicitRefRoleActions ();
 
       for (NclAction *assignmentAct : assignmentActs)
         {

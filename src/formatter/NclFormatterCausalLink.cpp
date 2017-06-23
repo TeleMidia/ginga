@@ -78,39 +78,13 @@ NclFormatterCausalLink::conditionSatisfied (NclLinkCondition *condition)
     }
 }
 
-vector<NclEvent *> *
+vector<NclEvent *>
 NclFormatterCausalLink::getEvents ()
 {
-  vector<NclEvent *> *events;
-  vector<NclEvent *> *actEvents;
-  vector<NclEvent *>::iterator i;
+  vector<NclEvent *> events = condition->getEvents ();
+  vector<NclEvent *> actEvents = action->getEvents ();
 
-  events = condition->getEvents ();
-  actEvents = action->getEvents ();
-
-  if (actEvents == NULL)
-    {
-      return events;
-    }
-
-  if (events == NULL)
-    {
-      return actEvents;
-    }
-
-  for (i = actEvents->begin (); i != actEvents->end (); ++i)
-    {
-      events->push_back (*i);
-    }
-
-  delete actEvents;
-  actEvents = NULL;
-
-  if (events->empty ())
-    {
-      delete events;
-      return NULL;
-    }
+  events.insert(events.end(), actEvents.begin(), actEvents.end());
 
   return events;
 }

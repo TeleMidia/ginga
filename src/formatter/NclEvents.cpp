@@ -27,8 +27,7 @@ GINGA_FORMATTER_BEGIN
 
 set<NclEvent *> NclEvent::_instances;
 
-NclEvent::NclEvent (const string &id,
-                    ExecutionObject *exeObj)
+NclEvent::NclEvent (const string &id, ExecutionObject *exeObj)
 {
   _typeSet.insert ("NclEvent");
 

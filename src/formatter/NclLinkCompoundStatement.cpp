@@ -25,7 +25,6 @@ GINGA_FORMATTER_BEGIN
 NclLinkCompoundStatement::NclLinkCompoundStatement (short op)
     : NclLinkStatement ()
 {
-  statements = new vector<NclLinkStatement *>;
   this->op = op;
   typeSet.insert ("NclLinkCompoundStatement");
 }
@@ -35,18 +34,11 @@ NclLinkCompoundStatement::~NclLinkCompoundStatement ()
   vector<NclLinkStatement *>::iterator i;
   NclLinkStatement *statement;
 
-  if (statements != NULL)
+  for (i = statements.begin (); i != statements.end (); ++i)
     {
-      for (i = statements->begin (); i != statements->end (); ++i)
-        {
-          statement = (NclLinkStatement *)(*i);
-          delete statement;
-          statement = NULL;
-        }
-
-      statements->clear ();
-      delete statements;
-      statements = NULL;
+      statement = (*i);
+      delete statement;
+      statement = NULL;
     }
 }
 
@@ -59,13 +51,13 @@ NclLinkCompoundStatement::getOperator ()
 void
 NclLinkCompoundStatement::addStatement (NclLinkStatement *statement)
 {
-  statements->push_back (statement);
+  statements.push_back (statement);
 }
 
 vector<NclLinkStatement *> *
 NclLinkCompoundStatement::getStatements ()
 {
-  return statements;
+  return &statements;
 }
 
 bool
@@ -86,38 +78,17 @@ NclLinkCompoundStatement::returnEvaluationResult (bool result)
   return (negated ^ result);
 }
 
-vector<NclEvent *> *
+vector<NclEvent *>
 NclLinkCompoundStatement::getEvents ()
 {
-  if (statements->empty ())
-    return NULL;
+  vector<NclEvent *> events;
 
-  vector<NclEvent *> *events = new vector<NclEvent *>;
-  vector<NclEvent *> *statementEvents;
-  vector<NclEvent *>::iterator j;
-  vector<NclLinkStatement *>::iterator i;
-  NclLinkStatement *statement;
-
-  for (i = statements->begin (); i != statements->end (); i++)
+  for (NclLinkStatement *statement : statements)
     {
-      statement = (NclLinkStatement *)(*i);
-      statementEvents = statement->getEvents ();
-      if (statementEvents != NULL)
+      for (NclEvent *evt : statement->getEvents ())
         {
-          for (j = statementEvents->begin (); j != statementEvents->end ();
-               j++)
-            {
-              events->push_back (*j);
-            }
-          delete statementEvents;
-          statementEvents = NULL;
+          events.push_back (evt);
         }
-    }
-
-  if (events->begin () == events->end ())
-    {
-      delete events;
-      return NULL;
     }
 
   return events;
@@ -129,12 +100,12 @@ NclLinkCompoundStatement::evaluate ()
   int i, size;
   NclLinkStatement *childStatement;
 
-  size = (int) statements->size ();
+  size = (int) statements.size ();
   if (op == CompoundStatement::OP_OR)
     {
       for (i = 0; i < size; i++)
         {
-          childStatement = (NclLinkStatement *)(*statements)[i];
+          childStatement = statements[i];
           if (childStatement->evaluate ())
             return returnEvaluationResult (true);
         }
@@ -144,7 +115,7 @@ NclLinkCompoundStatement::evaluate ()
     {
       for (i = 0; i < size; i++)
         {
-          childStatement = (NclLinkStatement *)(*statements)[i];
+          childStatement = statements[i];
           if (!childStatement->evaluate ())
             return returnEvaluationResult (false);
         }
