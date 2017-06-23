@@ -503,17 +503,13 @@ ExecutionObjectContext::checkLinkConditions ()
   if ((_runningEvents.empty () && _pausedEvents.empty ()
        && _pendingLinks.empty ()))
     {
-      clog << "ExecutionObjectContext::run ";
-      clog << "I (" << _id << ") am ending because of STOP of";
-      clog << " the last running event (no pending links nor ";
-      clog << "paused events)";
-      clog << endl;
-
       if (_wholeContent != NULL &&
           NclEvent::hasInstance (_wholeContent, false))
         {
           _wholeContent->stop ();
           unsetParentsAsListeners ();
+          if (this->getParentObject () == nullptr)
+            TRACE ("*** ALL DONE ***");
         }
     }
 }

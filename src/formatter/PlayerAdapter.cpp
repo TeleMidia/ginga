@@ -160,7 +160,6 @@ PlayerAdapter::setProperty (const string &name,
   _player->setProperty (name, value);
 }
 
-
 // TODO: Remove this.
 string
 PlayerAdapter::getProperty (AttributionEvent *event)

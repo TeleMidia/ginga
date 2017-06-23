@@ -18,13 +18,7 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef VIDEO_PLAYER_H
 #define VIDEO_PLAYER_H
 
-#include "ginga.h"
-
 #include "Player.h"
-#include "mb/Display.h"
-#include "mb/SDLWindow.h"
-
-using namespace ginga::mb;
 
 GINGA_PLAYER_BEGIN
 
@@ -34,24 +28,24 @@ public:
   VideoPlayer (const string &);
   virtual ~VideoPlayer ();
   void start () override;
-  void pause () override;
   void stop () override;
+  void pause () override;
   void resume () override;
   void redraw (SDL_Renderer *) override;
+
+public:
+  int _atom_eos;                  // true if playbin generated an EOS
 
 private:
   GRecMutex _mutex;               // sync access to player data
   GstElement *_playbin;           // pipeline
   GstSample *_sample;             // last sample seen
-  bool _eos;                      // true if EOS has been seen
   GstAppSinkCallbacks _callbacks; // app-sink callback data
 
   void lock ();
   void unlock ();
   void setSample (GstSample *);
   GstSample *getSample (void);
-  void setEOS (bool);
-  bool getEOS ();
 
   // Pipeline callbacks.
   static gboolean cb_Bus (GstBus *, GstMessage *, VideoPlayer *);

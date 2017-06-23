@@ -172,6 +172,15 @@ Player::getEOS ()
 }
 
 /**
+ * @brief Sets player EOS flag.
+ */
+void
+Player::setEOS (bool eos)
+{
+  _eos = eos;
+}
+
+/**
  * @brief Gets player property.
  */
 string
@@ -283,6 +292,18 @@ Player::setProperty (const string &name, const string &value)
 }
 
 /**
+ * @brief Schedules linear animation of property value.
+ * @param name Property name.
+ * @param value Target value.
+ * @param duration Duration.
+ */
+void
+Player::scheduleAnimation (string name, string value, GingaTime duration)
+{
+  _animator.schedule (name, value, duration);
+}
+
+/**
  * @brief Starts player.
  */
 void
@@ -327,8 +348,7 @@ Player::resume ()
 void
 Player::redraw (SDL_Renderer *renderer)
 {
-  if (_state == PL_SLEEPING)
-    return;
+  g_assert (_state != PL_SLEEPING);
 
   _animator.update (&_rect, &_bgColor, &_alpha);
 
@@ -363,14 +383,6 @@ Player::redraw (SDL_Renderer *renderer)
   //                              this->borderColor.b, 255);
   //     SDLx_RenderDrawRect (renderer, &_rect);
   //   }
-}
-
-
-// FIXME
-void
-Player::setAnimatorProperties (string dur, string name, string value)
-{
-  _animator.schedule (name, value, ginga_parse_time (dur));
 }
 
 GINGA_PLAYER_END
