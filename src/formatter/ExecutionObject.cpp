@@ -955,12 +955,43 @@ ExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
   return selected;
 }
 
+
 // -----------------------------------
 
 PlayerAdapter *
 ExecutionObject::getPlayer ()
 {
   return _player;
+}
+
+/**
+ * @brief Executes attribution event over object.
+ */
+void
+ExecutionObject::execAttribution (AttributionEvent *event,
+                                  const string &name,
+                                  const string &value,
+                                  GingaTime duration)
+{
+  g_assert (event->getExecutionObject () == this);
+
+  if (event->getCurrentState () != EventState::SLEEPING)
+    return;                     // nothing to do
+
+  event->start ();
+  event->setValue (value);
+
+  if (duration > 0)
+    {
+      _player->_player->scheduleAnimation (name, value, duration);
+    }
+  else
+    {
+      _player->setProperty (event, value);
+    }
+
+  // FIXME: This should be called at the end of animation (if any).
+  event->stop ();
 }
 
 void

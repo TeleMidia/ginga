@@ -115,7 +115,34 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
 
   if (instanceof (AttributionEvent *, event))
     {
-      runActionOverProperty ((AttributionEvent *) event, action);
+      AttributionEvent *attevt;
+      NclAssignmentAction *attact;
+
+      string name;
+      string value;
+      Animation *anim;
+      GingaTime dur;
+
+      g_assert (instanceof (NclAssignmentAction *, action));
+      g_assert (action->getType () == ACT_START);
+
+      attevt = (AttributionEvent *) event;
+      attact = (NclAssignmentAction *) action;
+
+      name = attevt->getAnchor ()->getName ();
+      value = attevt->solveImplicitRefAssessment (attact->getValue ());
+
+      if ((anim = attact->getAnimation ()) != nullptr)
+        {
+          string s;
+          s = attevt->solveImplicitRefAssessment (anim->getDuration ());
+          dur = ginga_parse_time (s);
+        }
+      else
+        {
+          dur = 0;
+        }
+      obj->execAttribution (attevt, name, value, dur);
       return;
     }
 
@@ -126,6 +153,9 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
         g_assert (obj->start ());
         event->addListener (this);
       break;
+    case ACT_STOP:
+      g_assert (obj->stop ());
+      break;
     case ACT_PAUSE:
       g_assert (obj->pause ());
       break;
@@ -135,118 +165,8 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
     case ACT_ABORT:
       g_assert (obj->abort ());
       break;
-    case ACT_STOP:
-      g_assert (obj->stop ());
-      break;
     default:
       g_assert_not_reached ();
-    }
-}
-
-void
-Scheduler::runActionOverProperty (AttributionEvent *event,
-                                  NclSimpleAction *action)
-{
-  ExecutionObject *obj;
-  NodeEntity *entity;
-  ContentNode *contentNode;
-
-  SimpleActionType actionType;
-  string propName, propValue;
-
-  PlayerAdapter *player;
-  Animation *anim;
-
-  g_assert (instanceof (NclAssignmentAction *, action));
-
-  obj = event->getExecutionObject ();
-  g_assert_nonnull (obj);
-
-  entity = cast (NodeEntity *, obj->getDataObject ());
-  g_assert_nonnull (entity);
-
-  contentNode = cast (ContentNode *, entity);
-  g_assert_nonnull (contentNode);
-
-  if (contentNode->isSettingNode ())
-    {
-      propName = ((AttributionEvent *)event)
-                     ->getAnchor ()
-                     ->getName ();
-
-      propValue = ((NclAssignmentAction *)action)->getValue ();
-      propValue = event->solveImplicitRefAssessment (propValue);
-
-      event->start ();
-      ((AttributionEvent *)event)->setValue (propValue);
-
-      if (propName == "service.currentFocus")
-        {
-          focusManager->setFocus (propValue);
-        }
-      else if (propName == "service.currentKeyMaster")
-        {
-          focusManager->setKeyMaster (propValue);
-        }
-      else
-        {
-          settings->set (propName, propValue);
-        }
-      event->stop ();
-    }
-  else
-    {
-      anim = ((NclAssignmentAction *)action)->getAnimation ();
-      player = obj->getPlayer ();
-      g_assert_nonnull (player);
-
-      actionType = action->getType ();
-
-      switch (actionType)
-        {
-        case ACT_START:
-        case ACT_SET:
-          if (event->getCurrentState () != EventState::SLEEPING)
-            {
-              return;
-            }
-          propValue = ((NclAssignmentAction *)action)->getValue ();
-          propValue = event->solveImplicitRefAssessment (propValue);
-          event->start ();
-          ((AttributionEvent *)event)->setValue (propValue);
-
-          if (anim != NULL)
-            {
-              string dur, by;
-
-              dur = event->solveImplicitRefAssessment (anim->getDuration ());
-              by = event->solveImplicitRefAssessment (anim->getBy ());
-              anim->setDuration (dur);
-              anim->setBy (by);
-
-              player->getPlayer()->
-                scheduleAnimation(((AttributionEvent *)event)
-                                  ->getAnchor ()->getName (),
-                                  propValue,
-                                  ginga_parse_time (dur));
-            }
-          else if (player != NULL)
-            {
-              player->setProperty ((AttributionEvent *)event,
-                                        propValue);
-
-              event->stop ();
-            }
-          else
-            {
-              event->stop ();
-            }
-
-          break;
-
-        default:
-          g_assert_not_reached ();
-        }
     }
 }
 
@@ -637,29 +557,6 @@ Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObj,
     }
 }
 
-// string
-// Scheduler::solveImplicitRefAssessment (const string &value,
-//                                        AttributionEvent *event)
-// {
-//   NclEvent *refEvent;
-//   string auxVal = "", roleId = "";
-
-//   if (propValue != "")
-//     {
-//       roleId = propValue.substr (1, propValue.length ());
-//     }
-
-//   refEvent = ((AttributionEvent *)event)
-//                  ->getImplicitRefAssessmentEvent (roleId);
-
-//   if (refEvent != NULL)
-//     {
-//       auxVal = ((AttributionEvent *)refEvent)->getCurrentValue ();
-//       return auxVal;
-//     }
-//   return "";
-// }
-
 void
 Scheduler::startDocument (const string &file)
 {
@@ -733,8 +630,8 @@ Scheduler::startDocument (const string &file)
           if (value == "")
             continue;           // nothing to do
 
-          TRACE ("seting %s='%s'", name.c_str (), value.c_str ());
-          this->settings->set (name, value);
+          TRACE ("setting %s='%s'", name.c_str (), value.c_str ());
+          //this->settings->set (name, value);
         }
     }
   delete settings;

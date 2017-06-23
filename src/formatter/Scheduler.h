@@ -65,7 +65,7 @@ private:
 
   void runAction (NclEvent *event, NclSimpleAction *action);
   void runActionOverProperty (AttributionEvent *event,
-                              NclSimpleAction *action);
+                              NclAssignmentAction *action);
 
   void
   runActionOverComposition (ExecutionObjectContext *compositeObject,
