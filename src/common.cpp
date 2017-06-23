@@ -481,6 +481,30 @@ xstrcasecmp (const string &s1, const string &s2)
 }
 
 /**
+ * @brief Search string has a given prefix.
+ * @param s String.
+ * @param prefix Prefix.
+ * @return True if successful, or false otherwise.
+ */
+bool
+xstrhasprefix (const string &s, const string &prefix)
+{
+  return g_str_has_prefix (s.c_str (), prefix.c_str ());
+}
+
+/**
+ * @brief Search string has a given suffix.
+ * @param s String.
+ * @param suffix Suffix.
+ * @return True if successful, or false otherwise.
+ */
+bool
+xstrhassuffix (const string &s, const string &suffix)
+{
+  return g_str_has_prefix (s.c_str (), suffix.c_str ());
+}
+
+/**
  * @brief Assigns format to string.
  * @param s Resulting string.
  * @param format Format string.

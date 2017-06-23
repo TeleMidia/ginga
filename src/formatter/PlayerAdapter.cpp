@@ -44,53 +44,51 @@ GINGA_FORMATTER_BEGIN
 
 // Public.
 
-PlayerAdapter::PlayerAdapter (string uri, string mimetype)
+PlayerAdapter::PlayerAdapter (string uri, string mime)
 {
-  const char *mime = mimetype.c_str ();
   _player = nullptr;
 
-  if (g_str_has_prefix (mime, "audio")
-      || g_str_has_prefix (mime, "video"))
+  if (xstrhasprefix (mime, "audio") || xstrhasprefix (mime, "video"))
     {
       _player = new VideoPlayer (uri);
     }
 #if WITH_LIBRSVG && WITH_LIBRSVG
-  else if (g_str_has_prefix (mime, "image/svg"))
+  else if (xstrhasprefix (mime, "image/svg"))
     {
       _player = new SvgPlayer (uri);
     }
 #endif
-  else if (g_str_has_prefix (mime, "image"))
+  else if (xstrhasprefix (mime, "image"))
     {
       _player = new ImagePlayer (uri);
     }
 #if defined WITH_CEF &&  WITH_CEF
-  else if (g_str_has_prefix (mime, "text/html"))
+  else if (xstrhasprefix (mime, "text/html"))
     {
       _player = new HTMLPlayer (uri);
     }
 #endif
 #if defined WITH_PANGO && WITH_PANGO
-  else if (streq (mime, "text/plain"))
+  else if (mime == "text/plain")
     {
       _player = new TextPlayer (uri);
     }
 #endif
-  else if (streq (mime, "application/x-ginga-NCLua"))
+  else if (mime == "application/x-ginga-NCLua")
     {
       _player = new LuaPlayer (uri);
     }
   else
     {
       _player = new Player (uri);
-      WARNING ("unknown mime-type '%s': creating empty player", mime);
+      WARNING ("unknown mime '%s': creating empty player", mime.c_str ());
     }
   g_assert_nonnull (_player);
 }
 
 PlayerAdapter::~PlayerAdapter ()
 {
-  if (_player)
+  if (_player != nullptr)
     {
       _player->stop ();
       delete _player;
