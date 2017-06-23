@@ -22,39 +22,40 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_PLAYER_BEGIN
 
-typedef struct
+// Entry in scheduled animations list.
+class AnimInfo
 {
-  string name;
-  gdouble duration;
-  gdouble velocity;
-  gdouble targetValue;
-  gdouble curValue;
-} AnimProperty;
+public:
+  AnimInfo (const string &, double, GingaTime);
+  ~AnimInfo ();
+
+  string getName ();
+  double getTarget ();
+  GingaTime getDuration ();
+  double getSpeed ();
+  bool isDone ();
+  double update (double);
+
+private:
+  string _name;                  // property name
+  double _target;                // target value
+  GingaTime _duration;           // animation duration
+  double _speed;                 // animation speed
+  bool _done;                    // true if animation is done
+};
 
 class PlayerAnimator
 {
 public:
   PlayerAnimator();
   ~PlayerAnimator();
-  void addProperty(const string &dur, const string &name, const string &value);
-  void update(SDL_Rect* rect, guint8* r, guint8* g, guint8* b, guint8* alpha);
+  void clear ();
+  void schedule (const string &, const string &, GingaTime);
+  void update (SDL_Rect *, SDL_Color *, guint8 *);
 
 private:
-  GList *properties;
-
-  void updateList(const string &dur, const string &name, const string &value);
-  void updatePosition(SDL_Rect* rect, AnimProperty* pr);
-  void updateColor(guint8* alpha,  guint8* red,
-                   guint8* green,guint8* blue,
-                   AnimProperty* pr);
-
-  void calculatePosition(gint32* value, AnimProperty* pr,gint32 dir);
-  void calculateColor(guint8* value, AnimProperty* pr,gint32 dir);
-  bool calculateVelocity(gint32* value, AnimProperty* pr);
-  bool calculateVelocity(guint8* value, AnimProperty* pr);
-
-  gdouble cvtTimeIntToDouble(guint32 value);
-  gdouble getAnimationVelocity(gdouble initPos, gdouble finalPos, gdouble dur);
+  list <AnimInfo *> _scheduled; // scheduled animations
+  void doSchedule (const string &, const string &, GingaTime);
 };
 
 GINGA_PLAYER_END
