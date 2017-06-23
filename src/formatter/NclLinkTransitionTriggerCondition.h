@@ -51,7 +51,7 @@ public:
 
   NclEvent *getEvent ();
   EventStateTransition getTransition ();
-  virtual vector<NclEvent *> *getEvents () override;
+  virtual vector<NclEvent *> getEvents () override;
 };
 
 GINGA_FORMATTER_END

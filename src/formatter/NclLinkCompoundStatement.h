@@ -30,7 +30,7 @@ GINGA_FORMATTER_BEGIN
 class NclLinkCompoundStatement : public NclLinkStatement
 {
 protected:
-  vector<NclLinkStatement *> *statements;
+  vector<NclLinkStatement *> statements;
   bool negated;
   short op;
 
@@ -47,7 +47,7 @@ protected:
   bool returnEvaluationResult (bool result);
 
 public:
-  virtual vector<NclEvent *> *getEvents ();
+  virtual vector<NclEvent *> getEvents () override;
   virtual bool evaluate ();
 };
 

@@ -46,19 +46,19 @@ NclLinkAssessmentStatement::~NclLinkAssessmentStatement ()
     }
 }
 
-vector<NclEvent *> *
+vector<NclEvent *>
 NclLinkAssessmentStatement::getEvents ()
 {
-  vector<NclEvent *> *events;
+  vector<NclEvent *> events;
 
-  events = new vector<NclEvent *>;
-  events->push_back (
+  events.push_back (
       ((NclLinkAttributeAssessment *)mainAssessment)->getEvent ());
 
-  if (otherAssessment->instanceOf ("NclLinkAttributeAssessment"))
+  auto attrAssessment
+      = dynamic_cast <NclLinkAttributeAssessment *> (otherAssessment);
+  if (attrAssessment)
     {
-      events->push_back (
-          ((NclLinkAttributeAssessment *)otherAssessment)->getEvent ());
+      events.push_back (attrAssessment->getEvent ());
     }
   return events;
 }
