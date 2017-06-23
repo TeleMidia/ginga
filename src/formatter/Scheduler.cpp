@@ -84,7 +84,7 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
 {
   ExecutionObject *obj;
 
-  if (event->instanceOf ("SelectionEvent"))
+  if (dynamic_cast <SelectionEvent *> (event))
     {
       event->start ();
       delete action;
@@ -98,22 +98,22 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
          action->getTypeString ().c_str (),
          event->getId ().c_str ());
 
-  if (obj->instanceOf ("ExecutionObjectSwitch")
-      && event->instanceOf ("SwitchEvent"))
+  if (dynamic_cast <ExecutionObjectSwitch *> (obj)
+      && dynamic_cast <SwitchEvent *> (event))
     {
-      runActionOverSwitch ((ExecutionObjectSwitch *)obj,
-                           (SwitchEvent *)event, action);
+      this->runActionOverSwitch ((ExecutionObjectSwitch *) obj,
+                                 (SwitchEvent *) event, action);
       return;
     }
 
-  if (obj->instanceOf ("ExecutionObjectContext"))
+  if (dynamic_cast <ExecutionObjectContext *> (obj))
     {
-      runActionOverComposition
+      this->runActionOverComposition
         ((ExecutionObjectContext *) obj, action);
       return;
     }
 
-  if (event->instanceOf ("AttributionEvent"))
+  if (dynamic_cast <AttributionEvent *> (event))
     {
       runActionOverProperty (event, action);
       return;
@@ -314,15 +314,15 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
           eventType = event->getType ();
           if (eventType == EventType::UNKNOWN)
             {
-              if (event->instanceOf ("PresentationEvent"))
+              if (dynamic_cast <PresentationEvent *> (event))
                 {
                   eventType = EventType::PRESENTATION;
                 }
-              else if (event->instanceOf ("AttributionEvent"))
+              else if (dynamic_cast <AttributionEvent *> (event))
                 {
                   eventType = EventType::ATTRIBUTION;
                 }
-              else if (event->instanceOf ("SwitchEvent"))
+              else if (dynamic_cast <SwitchEvent *> (event))
                 {
                   eventType = EventType::PRESENTATION;
                 }
@@ -332,7 +332,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
       if (eventType == EventType::ATTRIBUTION)
         {
           event = action->getEvent ();
-          if (!event->instanceOf ("AttributionEvent"))
+          if (!dynamic_cast <AttributionEvent *> (event))
             {
               return;
             }
@@ -361,7 +361,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
           while (j != objects->end ())
             {
               childObject = j->second;
-              if (childObject->instanceOf ("ExecutionObjectContext"))
+              if (dynamic_cast <ExecutionObjectContext *> (childObject))
                 {
                   runActionOverComposition (
                       (ExecutionObjectContext *)childObject, action);
@@ -424,8 +424,8 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
 
                   if (childObject != NULL
                       && port->getEndInterfacePoint () != NULL
-                      && port->getEndInterfacePoint ()->instanceOf (
-                             "ContentAnchor"))
+                      && dynamic_cast <ContentAnchor *>
+                      (port->getEndInterfacePoint ()))
                     {
                       childEvent
                           = (PresentationEvent
@@ -444,7 +444,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
                 }
               catch (exception *exc)
                 {
-                  // keep on starting child objects
+                  g_assert_not_reached ();
                 }
 
               delete nestedSeq;
@@ -753,7 +753,7 @@ Scheduler::startDocument (const string &file)
           string name;
           string value;
 
-          if (!anchor->instanceOf ("PropertyAnchor"))
+          if (!dynamic_cast <PropertyAnchor *> (anchor))
             continue;           // nothing to do
 
           prop = (PropertyAnchor *) anchor;
@@ -788,7 +788,6 @@ Scheduler::eventStateChanged (
     arg_unused (EventState previousState))
 {
   ExecutionObject *object;
-  PlayerAdapter *player;
   vector<NclEvent *>::iterator it;
   bool contains;
   bool hasOther;
@@ -833,13 +832,7 @@ Scheduler::eventStateChanged (
         {
         case EventStateTransition::STARTS:
           object = event->getExecutionObject ();
-
-          player = object->getPlayer ();
-          if (player != nullptr)
-            {
-              this->showObject (object);
-              focusManager->showObject (object);
-            }
+          focusManager->showObject (object);
           break;
 
         case EventStateTransition::STOPS:
@@ -851,11 +844,7 @@ Scheduler::eventStateChanged (
 
               if (hideObj)
                 {
-
                   this->focusManager->hideObject (object);
-                  this->hideObject (object);
-
-                  player = object->getPlayer ();
                 }
             }
           break;
@@ -869,11 +858,7 @@ Scheduler::eventStateChanged (
 
             if (hideObj)
               {
-
                 this->focusManager->hideObject (object);
-                this->hideObject (object);
-
-                player = object->getPlayer ();
               }
             break;
           }
@@ -892,57 +877,6 @@ Scheduler::eventStateChanged (
           g_assert_not_reached ();
         }
     }
-}
-
-SDLWindow*
-Scheduler::prepareFormatterRegion (ExecutionObject *obj)
-{
-  NclCascadingDescriptor *desc;
-  NclFormatterRegion *reg;
-
-  g_assert_nonnull (obj);
-
-  desc = obj->getDescriptor ();
-  if (desc == NULL)
-    return NULL;                // nothing to do
-
-  reg = desc->getFormatterRegion ();
-  if (reg == NULL)
-    return NULL;                // nothing to do
-
-  return reg->prepareOutputDisplay ();
-}
-
-void
-Scheduler::showObject (ExecutionObject *obj)
-{
-  NclCascadingDescriptor *desc;
-  NclFormatterRegion *reg;
-
-  desc = obj->getDescriptor ();
-  if (desc == NULL)
-    return;                     // nothing to do
-
-  reg = desc->getFormatterRegion ();
-  if (reg == NULL)
-    return;                     // nothing to do
-
-  reg->setGhostRegion (true);
-}
-
-void
-Scheduler::hideObject (ExecutionObject *obj)
-{
-  NclCascadingDescriptor *desc;
-  NclFormatterRegion *reg;
-
-  desc = obj->getDescriptor ();
-  if (desc == NULL)
-    return;                     // nothing to do
-
-  reg = desc->getFormatterRegion ();
-  if (reg == NULL)
-    return;                     // nothing to do
 }
 
 

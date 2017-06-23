@@ -23,6 +23,8 @@ using namespace ::ginga::player;
 
 #include "PlayerAdapter.h"
 
+#include "mb/IEventListener.h"
+
 #include "ncl/Animation.h"
 #include "ncl/GenericDescriptor.h"
 #include "ncl/ReferenceContent.h"
@@ -44,7 +46,7 @@ GINGA_FORMATTER_BEGIN
 
 class ExecutionObjectContext;
 
-class ExecutionObject
+class ExecutionObject : IEventListener
 {
 public:
   ExecutionObject (const string &, Node *, NclCascadingDescriptor *, bool,
@@ -91,7 +93,6 @@ public:
   NclEvent *getMainEvent ();
 
   void updateTransitionTable (GingaTime value, Player *player);
-  virtual EventTransition *getNextTransition ();
 
   virtual bool prepare (NclEvent *event);
   virtual bool start ();
@@ -99,8 +100,6 @@ public:
   virtual bool abort ();
   virtual bool pause ();
   virtual bool resume ();
-
-  //virtual bool unprepare ();
 
   void setHandling (bool isHandling);
   void setHandler (bool isHandler);
@@ -115,8 +114,6 @@ protected:
   set<string> _typeSet;
   INclActionListener *_seListener;
 
-  bool _isLocked;
-  bool _isDeleting;
   bool _isHandler;
   bool _isHandling;
 
@@ -126,11 +123,8 @@ protected:
   set<SelectionEvent *> _selectionEvents;
   vector<NclEvent *> _otherEvents;
 
-  int _pauseCount;
   NclEvent *_mainEvent;
   NclEventTransitionManager _transMan;
-
-
 
   void prepareTransitionEvents (GingaTime startTime);
   void destroyEvents ();
@@ -144,8 +138,11 @@ private:
   // ------------------------------------------
 
 public:
-  void setPlayer (PlayerAdapter *);
   PlayerAdapter *getPlayer ();
+
+  // From IEventListener.
+  virtual void handleKeyEvent (SDL_EventType, SDL_Keycode) override;
+  virtual void handleTickEvent (GingaTime, GingaTime, int) override;
 
 private:
   static set<ExecutionObject *> _objects;

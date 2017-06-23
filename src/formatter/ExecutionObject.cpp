@@ -24,6 +24,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/ContentNode.h"
 using namespace ::ginga::ncl;
 
+#include "mb/Display.h"
+using namespace ::ginga::mb;
+
+#include "player/Player.h"      // *** FIXME!
+using namespace ::ginga::player;
+
 GINGA_FORMATTER_BEGIN
 
 /**
@@ -39,16 +45,13 @@ ExecutionObject::ExecutionObject (const string &id,
 {
   _typeSet.insert ("ExecutionObject");
   this->_seListener = seListener;
-  this->_isDeleting = false;
   this->_id = id;
   this->_dataObject = node;
   this->_wholeContent = nullptr;
   this->_descriptor = nullptr;
   this->_isCompiled = false;
-  this->_pauseCount = 0;
   this->_mainEvent = nullptr;
   this->_descriptor = descriptor;
-  this->_isLocked = false;
   this->_isHandler = false;
   this->_isHandling = handling;
 
@@ -66,7 +69,6 @@ ExecutionObject::~ExecutionObject ()
   ExecutionObjectContext *parentObject;
 
   unsetParentsAsListeners ();
-  _isDeleting = true;
 
   _seListener = nullptr;
   _dataObject = nullptr;
@@ -291,13 +293,13 @@ ExecutionObject::addEvent (NclEvent *event)
   clog << getId () << "'" << endl;
 
   _events[event->getId ()] = event;
-  if (event->instanceOf ("PresentationEvent"))
+  if (dynamic_cast <PresentationEvent *> (event))
     {
-      addPresentationEvent ((PresentationEvent *)event);
+      addPresentationEvent ((PresentationEvent *) event);
     }
-  else if (event->instanceOf ("SelectionEvent"))
+  else if (dynamic_cast <SelectionEvent *> (event))
     {
-      _selectionEvents.insert (((SelectionEvent *)event));
+      _selectionEvents.insert (((SelectionEvent *) event));
     }
   else
     {
@@ -452,7 +454,7 @@ ExecutionObject::removeEvent (NclEvent *event)
   clog << "NclExecutionObject::removeEvent '" << event->getId () << "'";
   clog << "from '" << getId () << "'" << endl;
 
-  if (event->instanceOf ("PresentationEvent"))
+  if (dynamic_cast <PresentationEvent *> (event))
     {
       for (i = _presEvents.begin (); i != _presEvents.end (); ++i)
         {
@@ -464,7 +466,7 @@ ExecutionObject::removeEvent (NclEvent *event)
         }
       _transMan.removeEventTransition ((PresentationEvent *)event);
     }
-  else if (event->instanceOf ("SelectionEvent"))
+  else if (dynamic_cast <SelectionEvent *> (event))
     {
       j = _selectionEvents.find (((SelectionEvent *)event));
       if (j != _selectionEvents.end ())
@@ -619,7 +621,7 @@ ExecutionObject::prepare (NclEvent *event)
   for (j = 0; j < size; j++)
     {
       auxEvent = _otherEvents[j];
-      if (auxEvent->instanceOf ("AttributionEvent"))
+      if (dynamic_cast <AttributionEvent *> (auxEvent))
         {
           attributeEvent = (AttributionEvent *)auxEvent;
           attributeAnchor = attributeEvent->getAnchor ();
@@ -632,6 +634,18 @@ ExecutionObject::prepare (NclEvent *event)
     }
 
   return true;
+}
+
+void
+ExecutionObject::updateTransitionTable (GingaTime value, Player *player)
+{
+  _transMan.updateTransitionTable (value, player, _mainEvent);
+}
+
+void
+ExecutionObject::prepareTransitionEvents (GingaTime startTime)
+{
+  _transMan.prepare (_mainEvent == _wholeContent, startTime);
 }
 
 bool
@@ -674,7 +688,6 @@ ExecutionObject::start ()
   // Allocate player.
   mime = contentNode->getNodeType ();
   _player = new PlayerAdapter (src, mime);
-  _player->_object = this;      // *** FIXME!
 
   // Initialize player properties.
   if (_descriptor != nullptr)
@@ -713,32 +726,41 @@ ExecutionObject::start ()
     }
 
   g_assert (_player->start ());
+  g_assert (Ginga_Display->registerEventListener (this));
 
  done:
   _transMan.start (0);
   return true;
 }
 
-void
-ExecutionObject::updateTransitionTable (GingaTime value, Player *player)
+bool
+ExecutionObject::pause ()
 {
-  _transMan.updateTransitionTable (value, player, _mainEvent);
+  if (!this->isOccurring ())
+    return true;
+
+  for (NclEvent *event: this->getEvents ())
+    event->pause ();
+
+  g_assert_nonnull (_player);
+  g_assert (_player->pause ());
+
+  return true;
 }
 
-void
-ExecutionObject::prepareTransitionEvents (GingaTime startTime)
+bool
+ExecutionObject::resume ()
 {
-  _transMan.prepare (_mainEvent == _wholeContent, startTime);
-}
+  if (!this->isPaused ())
+    return true;
 
-EventTransition *
-ExecutionObject::getNextTransition ()
-{
-  if (isSleeping () || !_mainEvent->instanceOf ("PresentationEvent"))
-    {
-      return nullptr;
-    }
-  return _transMan.nextTransition (_mainEvent);
+  for (NclEvent *event: this->getEvents ())
+    event->resume ();
+
+  g_assert_nonnull (_player);
+  g_assert (_player->resume ());
+
+  return true;
 }
 
 bool
@@ -773,6 +795,7 @@ ExecutionObject::stop ()
   if (_player != nullptr)
     {
       g_assert (_player->stop ());
+      g_assert (Ginga_Display->unregisterEventListener (this));
       delete _player;
       _player = nullptr;
     }
@@ -784,36 +807,6 @@ bool
 ExecutionObject::abort ()
 {
   ERROR_NOT_IMPLEMENTED ("action 'abort' is not supported");
-  return true;
-}
-
-bool
-ExecutionObject::pause ()
-{
-  if (!this->isOccurring ())
-    return true;
-
-  for (NclEvent *event: this->getEvents ())
-    event->pause ();
-
-  g_assert_nonnull (_player);
-  g_assert (_player->pause ());
-
-  return true;
-}
-
-bool
-ExecutionObject::resume ()
-{
-  if (!this->isPaused ())
-    return true;
-
-  for (NclEvent *event: this->getEvents ())
-    event->resume ();
-
-  g_assert_nonnull (_player);
-  g_assert (_player->resume ());
-
   return true;
 }
 
@@ -882,12 +875,12 @@ ExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
 
       if (keyString == selCode)
         {
-          if (selectionEvent->getAnchor ()->instanceOf ("LambdaAnchor"))
+          ContentAnchor *anchor = selectionEvent->getAnchor ();
+          if (dynamic_cast <LambdaAnchor *> (anchor))
             {
               selectedEvents->insert (selectionEvent);
             }
-          else if (selectionEvent->getAnchor ()->instanceOf (
-                     "IntervalAnchor"))
+          else if (dynamic_cast <IntervalAnchor *> (anchor))
             {
               intervalAnchor
                   = (IntervalAnchor *)(selectionEvent->getAnchor ());
@@ -911,15 +904,7 @@ ExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
           else
             {
               expectedAnchor = selectionEvent->getAnchor ();
-              if (expectedAnchor->instanceOf ("LabeledAnchor"))
-                {
-                  anchorId = ((LabeledAnchor *)expectedAnchor)->getLabel ();
-                }
-              else
-                {
-                  anchorId = expectedAnchor->getId ();
-                }
-
+              anchorId = expectedAnchor->getId ();
               expectedEvent = getEventFromAnchorId (anchorId);
               if (expectedEvent != nullptr)
                 {
@@ -982,17 +967,74 @@ ExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
 
 // -----------------------------------
 
-void
-ExecutionObject::setPlayer (PlayerAdapter *player)
-{
-  g_assert_null (_player);
-  _player = player;
-}
-
 PlayerAdapter *
 ExecutionObject::getPlayer ()
 {
   return _player;
+}
+
+void
+ExecutionObject::handleTickEvent (arg_unused (GingaTime total),
+                                  GingaTime diff,
+                                  arg_unused (int frame))
+{
+  Player *pl;
+  EventTransition *next;
+  NclEvent *evt;
+  GingaTime waited;
+  GingaTime now;
+
+  if (unlikely (_player == nullptr))
+    return;                     // nothing to do
+
+  // Update player time.
+  pl = _player->_player;
+  g_assert_nonnull (pl);
+  g_assert (pl->getMediaStatus() == Player::PL_OCCURRING);
+  pl->incMediaTime (diff);
+
+  g_assert (this->isOccurring ());
+  g_assert_nonnull (dynamic_cast <PresentationEvent *> (_mainEvent));
+
+  next = _transMan.nextTransition (_mainEvent);
+  if (next == nullptr)
+    return;
+
+  waited = next->getTime ();
+  now = pl->getMediaTime ();
+
+  // TRACE ("now=%" GINGA_TIME_FORMAT " waited=%" GINGA_TIME_FORMAT,
+  //        GINGA_TIME_ARGS (now), GINGA_TIME_ARGS (waited));
+
+  if (now < waited)
+    return;
+
+  evt = dynamic_cast <NclEvent *> (next->getEvent ());
+  g_assert_nonnull (evt);
+
+  TRACE ("anchor '%s' timed out at %" GINGA_TIME_FORMAT
+         ", updating transition table",
+         evt->getId ().c_str(), GINGA_TIME_ARGS (now));
+
+  this->updateTransitionTable (now, pl);
+}
+
+void
+ExecutionObject::handleKeyEvent (arg_unused (SDL_EventType evtType),
+                                 arg_unused (SDL_Keycode key))
+{
+  Player *pl;
+
+  if (unlikely (evtType == SDL_KEYDOWN))
+    return;                     // nothing to do
+
+  if (unlikely (_player == nullptr))
+    return;                     // nothing to do
+
+  pl = _player->_player;
+  g_assert_nonnull (pl);
+
+  this->selectionEvent (key, pl->getMediaTime ());
 }
 
 GINGA_FORMATTER_END
