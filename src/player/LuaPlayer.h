@@ -34,11 +34,10 @@ public:
   bool doPlay (void);
   void doStop (void);
 
-  void abort (void) override;
-  void pause (void) override;
-  bool play (void) override;
-  void resume (void) override;
+  void start (void) override;
   void stop (void) override;
+  void pause (void) override;
+  void resume (void) override;
 
   virtual void setProperty (const string &, const string &) override;
 

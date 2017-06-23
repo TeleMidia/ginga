@@ -31,7 +31,7 @@ void
 SvgPlayer::setProperty (const string &name, const string &value)
 {
   Player::setProperty (name, value);
-  if (status == PL_OCCURRING)
+  if (_state == PL_OCCURRING)
     this->dirty = true;
 }
 
@@ -65,9 +65,9 @@ SvgPlayer::reload (SDL_Renderer *renderer)
   cairo_surface_t *cr_sfc;
   cairo_t *cr;
 
-  svg = rsvg_handle_new_from_file (this->mrl.c_str (), &err);
+  svg = rsvg_handle_new_from_file (_uri.c_str (), &err);
   if (unlikely (svg == NULL))
-    ERROR ("cannot load SVG file %s: %s", this->mrl.c_str (), err->message);
+    ERROR ("cannot load SVG file %s: %s", _uri.c_str (), err->message);
 
   g_assert (_rect.w > 0 && _rect.h > 0);
   rsvg_handle_get_dimensions (svg, &dim);
@@ -94,11 +94,11 @@ SvgPlayer::reload (SDL_Renderer *renderer)
   cairo_destroy (cr);
   cairo_surface_destroy (cr_sfc);
 
-  if (this->texture != NULL)
-    Ginga_Display->destroyTexture (this->texture);
+  if (_texture != nullptr)
+    Ginga_Display->destroyTexture (_texture);
 
-  this->texture = SDL_CreateTextureFromSurface (renderer, sfc);
-  g_assert_nonnull (this->texture);
+  _texture = SDL_CreateTextureFromSurface (renderer, sfc);
+  g_assert_nonnull (_texture);
 
   SDL_FreeSurface (sfc);
 }

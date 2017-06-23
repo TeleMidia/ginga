@@ -29,12 +29,12 @@ GINGA_PLAYER_BEGIN
 void
 ImagePlayer::redraw (SDL_Renderer *renderer)
 {
-  if (this->texture == NULL)
+  if (_texture == NULL)
     {
-      this->texture = IMG_LoadTexture (renderer, mrl.c_str ());
-      if (unlikely (this->texture == NULL))
+      _texture = IMG_LoadTexture (renderer, _uri.c_str ());
+      if (unlikely (_texture == nullptr))
         {
-          ERROR ("cannot load image file %s: %s", mrl.c_str (),
+          ERROR ("cannot load image file %s: %s", _uri.c_str (),
                  IMG_GetError ());
         }
     }
