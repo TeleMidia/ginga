@@ -38,7 +38,7 @@ public:
   virtual ~NclLinkAndCompoundTriggerCondition ();
   void addCondition (NclLinkCondition *condition);
   void conditionSatisfied (NclLinkCondition *condition);
-  vector<NclEvent *> *getEvents ();
+  vector<NclEvent *> getEvents ();
 };
 
 GINGA_FORMATTER_END

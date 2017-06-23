@@ -81,8 +81,8 @@ NclFormatterCausalLink::conditionSatisfied (NclLinkCondition *condition)
 vector<NclEvent *> *
 NclFormatterCausalLink::getEvents ()
 {
-  vector<NclEvent *> *events = condition->getEvents ();
-  vector<NclEvent *> *actEvents = new vector <NclEvent *> (action->getEvents ());
+  vector<NclEvent *> *events = new vector<NclEvent*> (condition->getEvents ());
+  vector<NclEvent *> *actEvents = new vector<NclEvent *> (action->getEvents ());
   vector<NclEvent *>::iterator i;
 
   if (actEvents == NULL)
