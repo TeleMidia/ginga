@@ -30,22 +30,6 @@ typedef struct
   void *value;
 } evt_map_t;
 
-static G_GNUC_UNUSED const evt_map_t evt_map_ncl_type[] = {
-  // KEEP THIS SORTED ALPHABETICALLY
-  { "attribution", (void *) Player::PL_TYPE_ATTRIBUTION },
-  { "presentation", (void *) Player::PL_TYPE_PRESENTATION },
-  { "selection", (void *) Player::PL_TYPE_SELECTION },
-};
-
-static G_GNUC_UNUSED const evt_map_t evt_map_ncl_action[] = {
-  // KEEP THIS SORTED ALPHABETICALLY
-  { "abort", (void *) Player::PL_NOTIFY_ABORT },
-  { "pause", (void *) Player::PL_NOTIFY_PAUSE },
-  { "resume", (void *) Player::PL_NOTIFY_RESUME },
-  { "start", (void *) Player::PL_NOTIFY_START },
-  { "stop", (void *) Player::PL_NOTIFY_STOP },
-};
-
 static int
 evt_map_compare (const void *e1, const void *e2)
 {
@@ -103,14 +87,6 @@ LuaPlayer::~LuaPlayer (void)
 }
 
 void
-LuaPlayer::abort (void)
-{
-  TRACE ("abort");
-  evt_ncl_send_presentation (_nw, "abort", "");
-  this->stop ();
-}
-
-void
 LuaPlayer::pause (void)
 {
   TRACE ("pause");
@@ -118,30 +94,29 @@ LuaPlayer::pause (void)
   Player::pause ();
 }
 
-bool
-LuaPlayer::play (void)
+void
+LuaPlayer::start (void)
 {
   char *errmsg;
 
   TRACE ("play");
   if (_nw != NULL)
     {
-      Player::play ();
-      return true;
+      Player::start ();
+      return;
     }
 
   _init_rect = _rect;
-  _nw = ncluaw_open (this->mrl.c_str (), _init_rect.w, _init_rect.h, &errmsg);
+  _nw = ncluaw_open (_uri.c_str (), _init_rect.w, _init_rect.h, &errmsg);
   if (unlikely (_nw == NULL))
-    ERROR ("cannot load NCLua file %s: %s", this->mrl.c_str (), errmsg);
+    ERROR ("cannot load NCLua file %s: %s", _uri.c_str (), errmsg);
 
   evt_ncl_send_presentation (_nw, "start", "");
   g_assert (Ginga_Display->registerEventListener (this));
 
   TRACE ("waiting for first cycle");
 
-  Player::play ();
-  return true;
+  Player::start ();
 }
 
 void
@@ -167,7 +142,7 @@ LuaPlayer::stop (void)
 void
 LuaPlayer::setProperty (const string &name, const string &value)
 {
-  if (_nw != NULL && this->status == PL_OCCURRING)
+  if (_nw != NULL && _state == PL_OCCURRING)
     {
       const char *k = name.c_str ();
       const char *v = value.c_str ();
@@ -224,14 +199,14 @@ LuaPlayer::redraw (SDL_Renderer *renderer)
                 sfc->w, sfc->h, sfc->pitch);
   SDLx_UnlockSurface (sfc);
 
-  if (this->texture == NULL)    // first call
+  if (_texture == nullptr) // first call
     {
-      this->texture = SDL_CreateTextureFromSurface (renderer, sfc);
-      g_assert_nonnull (this->texture);
+      _texture = SDL_CreateTextureFromSurface (renderer, sfc);
+      g_assert_nonnull (_texture);
     }
 
   SDLx_LockSurface (sfc);
-  SDL_UpdateTexture (this->texture, NULL, sfc->pixels, sfc->pitch);
+  SDL_UpdateTexture (_texture, NULL, sfc->pixels, sfc->pitch);
   SDLx_UnlockSurface (sfc);
 
   Player::redraw (renderer);

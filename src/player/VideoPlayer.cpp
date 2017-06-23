@@ -63,7 +63,7 @@ VideoPlayer::VideoPlayer (const string &mrl) : Player (mrl)
   GstElement *elt_sink;
   GstPad *pad;
 
-  this->texture = nullptr;
+  _texture = nullptr;
 
   g_rec_mutex_init (&_mutex);
   _eos = false;
@@ -131,8 +131,8 @@ VideoPlayer::~VideoPlayer ()
   g_rec_mutex_clear (&_mutex);
 }
 
-bool
-VideoPlayer::play ()
+void
+VideoPlayer::start ()
 {
   GstCaps *caps;
   GstStructure *st;
@@ -140,10 +140,10 @@ VideoPlayer::play ()
   GstElement *filter = NULL;
   GstStateChangeReturn ret;
 
-  if (unlikely (this->status == PL_OCCURRING))
+  if (unlikely (_state == PL_OCCURRING))
     {
       WARNING ("player already occurring");
-      return true;
+      return;
     }
 
   st = gst_structure_new_empty ("video/x-raw");
@@ -168,17 +168,16 @@ VideoPlayer::play ()
 
   ret = gst_element_set_state (_playbin, GST_STATE_PLAYING);
   if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
-    return false;
+    return;
 
   TRACE ("starting");
-  Player::play ();
-  return true;
+  Player::start ();
 }
 
 void
 VideoPlayer::pause ()
 {
-  if (unlikely (this->status != PL_OCCURRING))
+  if (unlikely (_state != PL_OCCURRING))
     {
       WARNING ("player not ocurring");
       return;
@@ -193,7 +192,7 @@ VideoPlayer::pause ()
 void
 VideoPlayer::stop ()
 {
-  if (unlikely (this->status == PL_SLEEPING))
+  if (unlikely (_state == PL_SLEEPING))
     {
       WARNING ("player already sleeping");
       return;
@@ -208,7 +207,7 @@ VideoPlayer::stop ()
 void
 VideoPlayer::resume ()
 {
-  if (unlikely (this->status != PL_PAUSED))
+  if (unlikely (_state != PL_PAUSED))
     {
       WARNING ("player is not paused");
       return;
@@ -242,14 +241,14 @@ VideoPlayer::redraw (SDL_Renderer *renderer)
   if (sample == NULL)
     goto done;
 
-  if (this->texture == nullptr)
+  if (_texture == nullptr)
     {
-      this->texture = SDL_CreateTexture (renderer,
+      _texture = SDL_CreateTexture (renderer,
                                          SDL_PIXELFORMAT_ARGB32,
                                          SDL_TEXTUREACCESS_TARGET,
                                          _rect.w,
                                          _rect.h);
-      g_assert_nonnull (this->texture);
+      g_assert_nonnull (_texture);
     }
 
   buf = gst_sample_get_buffer (sample);
@@ -263,8 +262,7 @@ VideoPlayer::redraw (SDL_Renderer *renderer)
 
   pixels = (guint8 *) GST_VIDEO_FRAME_PLANE_DATA (&v_frame, 0);
   stride = (guint) GST_VIDEO_FRAME_PLANE_STRIDE (&v_frame, 0);
-  g_assert (SDL_UpdateTexture (this->texture,
-                               NULL, pixels, (int) stride) == 0);
+  g_assert (SDL_UpdateTexture (_texture, NULL, pixels, (int) stride) == 0);
 
   gst_video_frame_unmap (&v_frame);
   gst_sample_unref (sample);

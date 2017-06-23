@@ -106,7 +106,7 @@ PlayerAdapter::getPlayer ()
 bool
 PlayerAdapter::start ()
 {
-  g_assert (_player->play ());
+  _player->start ();
   return true;
 }
 

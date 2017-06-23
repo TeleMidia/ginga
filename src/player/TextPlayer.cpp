@@ -101,7 +101,7 @@ TextPlayer::setProperty (const string &name, const string &value)
       _verticalAlign = value;
     }
 
-  if (status == PL_OCCURRING)
+  if (_state == PL_OCCURRING)
     this->dirty = true;
   return;
 
@@ -142,7 +142,7 @@ TextPlayer::reload (SDL_Renderer *renderer)
   double align;
   int height;
 
-  path = this->mrl.c_str ();
+  path = _uri.c_str ();
   if (unlikely (!g_file_get_contents (path, &contents, NULL, &err)))
     {
       g_assert_nonnull (err);
@@ -212,8 +212,8 @@ TextPlayer::reload (SDL_Renderer *renderer)
   cairo_destroy (cr);
   cairo_surface_destroy (sfc_cr);
 
-  this->texture = SDL_CreateTextureFromSurface (renderer, sfc);
-  g_assert_nonnull (this->texture);
+  _texture = SDL_CreateTextureFromSurface (renderer, sfc);
+  g_assert_nonnull (_texture);
 
   SDLx_UnlockSurface (sfc);
   SDL_FreeSurface(sfc);

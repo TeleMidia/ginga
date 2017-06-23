@@ -33,7 +33,7 @@ class VideoPlayer : public Player
 public:
   VideoPlayer (const string &);
   virtual ~VideoPlayer ();
-  bool play () override;
+  void start () override;
   void pause () override;
   void stop () override;
   void resume () override;

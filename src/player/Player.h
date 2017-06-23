@@ -20,91 +20,69 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "PlayerAnimator.h"
 
-#include "mb/SDLWindow.h"
-using namespace ::ginga::mb;
-
 GINGA_PLAYER_BEGIN
 
 class Player
 {
 public:
-  enum PlayerStatus
+  enum PlayerState
     {
      PL_SLEEPING = 1,
      PL_OCCURRING,
      PL_PAUSED,
     };
 
-  enum PlayerNotify
-    {
-     PL_NOTIFY_START = 1,
-     PL_NOTIFY_PAUSE,
-     PL_NOTIFY_RESUME,
-     PL_NOTIFY_STOP,
-     PL_NOTIFY_ABORT,
-    };
-
-  enum PlayerEventType
-    {
-     PL_TYPE_PRESENTATION = 10,
-     PL_TYPE_ATTRIBUTION,
-     PL_TYPE_SELECTION
-    };
-
 public:
-  Player (const string &mrl);
+  Player (const string &);
   virtual ~Player ();
 
-  void setAnimatorProperties (string dur, string name, string value);
+  SDL_Rect getRect ();
+  void setRect (SDL_Rect);
 
-  PlayerStatus getMediaStatus();
+  void getZ (int *, int *);
+  void setZ (int, int);
 
-  virtual bool play ();
-  virtual void stop ();
-  virtual void abort ();
-  virtual void pause ();
-  virtual void resume ();
+  double getAlpha ();
+  void setAlpha (double);
+
+  SDL_Color getBgColor ();
+  void setBgColor (SDL_Color);
+
+  bool getFocus ();
+  void setFocus (bool);
+
+  PlayerState getState ();
+  string getURI ();
+  bool getEOS ();
+
   virtual string getProperty (const string &);
   virtual void setProperty (const string &, const string &);
 
-  virtual void setOutWindow (SDLWindow *);
+  virtual void start ();
+  virtual void stop ();
+  virtual void pause ();
+  virtual void resume ();
 
+  void setAnimatorProperties (string, string, string); // FIXME
+
+  // Callbacks.
   virtual void redraw (SDL_Renderer *);
 
 protected:
-  PlayerStatus status;
-  string mrl;
-  SDLWindow *window;
-  PlayerAnimator *animator;
-  bool presented;
+  SDL_Rect _rect;                  // x, y, w, h in pixels
+  int _z;                          // z-index
+  int _zorder;                     // z-order
+  guint8 _alpha;                   // alpha
+  SDL_Color _bgColor;              // background color
+  bool _focused;                   // true if focused
 
-  // Media attributes.
-  SDL_Texture *texture;
-  int borderWidth;
-  SDL_Color bgColor;
-  SDL_Color borderColor;
-  guint8 alpha;
+  PlayerState _state;              // current state
+  string _uri;                     // source uri
+  bool _eos;                       // true if contend was exhausted
+  map<string, string> _properties; // property table
 
-private:
-  map<string, string> _properties;
-
-  // --------------------------------------------------------------------------
-
-public:
-  void setRect (SDL_Rect);
-  SDL_Rect getRect ();
-  void setZ (int, int);
-  void getZ (int *, int *);
-
-  void setFocus (bool);
-  bool getFocus ();
-
-protected:
-  SDL_Rect _rect;               // x, y, w, h in pixels
-  int _z;                       // z-index
-  int _zorder;                  // z-order
-
-  bool _focused;                // true if player has focus
+  SDL_Texture *_texture;           // player texture
+  PlayerAnimator _animator;        // associated animator
 };
 
 GINGA_PLAYER_END

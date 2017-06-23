@@ -794,11 +794,10 @@ ExecutionObject::stop ()
   return true;
 }
 
-bool
+bool G_GNUC_NORETURN
 ExecutionObject::abort ()
 {
   ERROR_NOT_IMPLEMENTED ("action 'abort' is not supported");
-  return true;
 }
 
 void
