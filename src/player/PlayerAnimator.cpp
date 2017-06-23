@@ -103,7 +103,7 @@ isDone (AnimInfo *info)
 /**
  * @brief Update scheduled animations.
  * @param rect Variable to store the resulting bounds.
- * @param color Variable to store the resulting background color.
+ * @param bgColor Variable to store the resulting background color.
  * @param alpha Variable to store the resulting duration.
  */
 void
@@ -315,8 +315,6 @@ AnimInfo::init (double current)
 
 /**
  * @brief Updates animation.
- * @param current Current value.
- * @return The updated value.
  */
 void
 AnimInfo::update (void)
