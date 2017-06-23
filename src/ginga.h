@@ -125,14 +125,16 @@ using namespace std;
              "global variable %s is null", G_STRINGIFY (G)),    \
       ((Type) NULL)))
 
-#define arg_unused(...) G_GNUC_UNUSED __VA_ARGS__
+#define arg_unused(...)  G_GNUC_UNUSED __VA_ARGS__
 #define set_if_nonnull(a, x) G_STMT_START {if (a) *(a) = (x); } G_STMT_END
-#define likely(cond)    G_LIKELY ((cond))
-#define unlikely(cond)  G_UNLIKELY ((cond))
-#define deconst(t, x)   ((t)(ptrdiff_t)(const void *)(x))
-#define pointerof(p)    ((void *)((ptrdiff_t)(p)))
-#define streq(a,b)      (g_strcmp0 ((a),(b)) == 0)
-#define xnumeq(a,b)     (ABS ((a) - (b)) <= .0000001);
+#define likely(cond)     G_LIKELY ((cond))
+#define unlikely(cond)   G_UNLIKELY ((cond))
+#define deconst(t, x)    ((t)(ptrdiff_t)(const void *)(x))
+#define pointerof(p)     ((void *)((ptrdiff_t)(p)))
+#define streq(a, b)      (g_strcmp0 ((a),(b)) == 0)
+
+#define cast(a, b)       (dynamic_cast<a>((b)))
+#define instanceof(a, b) (cast (a,(b)) != nullptr)
 
 // Message logging.
 #define GINGA_STRLOC  __FILE__ ":" G_STRINGIFY (__LINE__) ":" GINGA_STRFUNC
@@ -161,7 +163,8 @@ string __ginga_strfunc (const string &);
 
 // Time.
 typedef GstClockTime GingaTime;
-#define ginga_gettime()        ((GingaTime)(g_get_monotonic_time () * 1000))
+#define ginga_gettime() ((GingaTime)(g_get_monotonic_time () * 1000))
+
 #define GINGA_TIME_NONE            GST_CLOCK_TIME_NONE
 #define GINGA_TIME_IS_VALID(t)     GST_CLOCK_TIME_IS_VALID ((t))
 #define GINGA_STIME_NONE           GST_CLOCK_STIME_NONE
