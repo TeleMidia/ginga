@@ -442,8 +442,7 @@ ExecutionObjectContext::eventStateChanged (
 }
 
 void
-ExecutionObjectContext::linkEvaluationStarted (
-    NclFormatterCausalLink *link)
+ExecutionObjectContext::linkEvaluationStarted (NclFormatterCausalLink *link)
 {
   int linkNumber = 0;
   NclFormatterLink *evalLink;
@@ -463,10 +462,6 @@ ExecutionObjectContext::linkEvaluationFinished (
   int linkNumber;
   NclFormatterLink *finishedLink;
   map<NclFormatterLink *, int>::iterator i;
-
-  clog << "ExecutionObjectContext::linkEvaluationFinished(" << _id;
-  clog << ") '";
-  clog << link->getNcmLink ()->getId () << "'" << endl;
 
   finishedLink = link;
   i = _pendingLinks.find (finishedLink);

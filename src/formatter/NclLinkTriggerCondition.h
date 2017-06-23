@@ -21,34 +21,17 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "NclLinkTriggerListener.h"
 #include "NclLinkCondition.h"
 
-#include "mb/IEventListener.h"
-using namespace ::ginga::mb;
-
 GINGA_FORMATTER_BEGIN
 
-typedef struct
-{
-  NclLinkTriggerListener *listener;
-  short status;
-  NclLinkCondition *condition;
-} ConditionStatus;
-
-class NclLinkTriggerCondition : public NclLinkCondition,
-                                public IEventListener
+class NclLinkTriggerCondition : public NclLinkCondition
 {
 protected:
-  NclLinkTriggerListener *listener;
-  GingaTime delay;
-
-  static bool initialized;
-  static bool running;
-  static vector<ConditionStatus *> notes;
+  NclLinkTriggerListener *_listener;
+  GingaTime _delay;
 
 public:
   NclLinkTriggerCondition ();
   virtual ~NclLinkTriggerCondition ();
-
-  virtual vector<NclEvent *> getEvents () = 0;
 
 protected:
   virtual void notifyConditionObservers (short satus);
@@ -57,11 +40,8 @@ public:
   void setTriggerListener (NclLinkTriggerListener *listener);
   NclLinkTriggerListener *getTriggerListener ();
   GingaTime getDelay ();
-  void setDelay (GingaTime delay);
+  void setDelay (GingaTime);
   virtual void conditionSatisfied (NclLinkCondition *condition);
-
-  void handleTickEvent (GingaTime, GingaTime, int);
-  void handleKeyEvent (SDL_EventType, SDL_Keycode) {};
 };
 
 GINGA_FORMATTER_END
