@@ -54,11 +54,6 @@ Scheduler::~Scheduler ()
 
   compiler = NULL;
   events.clear ();
-
-  for (auto &i: _objectPlayers)
-    delete i.second;
-
-  _objectPlayers.clear ();
 }
 
 void
@@ -88,7 +83,6 @@ void
 Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
 {
   ExecutionObject *obj;
-  PlayerAdapter *player;
 
   if (event->instanceOf ("SelectionEvent"))
     {
@@ -125,92 +119,25 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
       return;
     }
 
-  player = obj->getPlayer ();   // FIXME!
-  if (player == nullptr)
-    {
-      player = new PlayerAdapter ();
-      obj->setPlayer (player);
-    }
-
   switch (action->getType ())
     {
     case ACT_START:
-        player->_object = obj;  // FIXME!
         obj->prepare (event);
         g_assert (obj->start ());
         event->addListener (this);
       break;
-
     case ACT_PAUSE:
-      if (!obj->isOccurring ())
-        break;                 // nothing to do
       g_assert (obj->pause ());
-      if (unlikely (!player->hasPrepared ()))
-        {
-          WARNING ("trying to pause an unprepared player: '%s'",
-                   obj->getId ().c_str ());
-          break;
-        }
-      g_assert (player->pause ());
       break;
-
     case ACT_RESUME:
-      if (!obj->isPaused ())
-        break;                 // nothing to do
       g_assert (obj->resume ());
-      if (unlikely (!player->hasPrepared ()))
-        {
-          WARNING ("trying to resume an unprepared player: '%s'",
-                   obj->getId ().c_str ());
-          break;
-        }
-      g_assert (player->resume ());
       break;
-
     case ACT_ABORT:
-      if (obj->isSleeping ())
-        break;                  // nothing to do
-      for (NclEvent *evt: obj->getEvents ())
-        {
-          g_assert_nonnull(evt);
-          AttributionEvent *attributionEvt
-            = dynamic_cast <AttributionEvent *> (evt);
-          if (attributionEvt)
-            attributionEvt->setPlayerAdapter (nullptr);
-        }
       g_assert (obj->abort ());
-      if (unlikely (!player->hasPrepared ()))
-        {
-          WARNING ("trying to abort an unprepared player: '%s'",
-                   obj->getId ().c_str ());
-          break;
-        }
-      g_assert (player->abort ());
-      this->removePlayer (obj);
       break;
-
     case ACT_STOP:
-      if (obj->isSleeping ())
-        break;                  // nothing to do
-      for (NclEvent *evt: obj->getEvents ())
-        {
-          g_assert_nonnull(evt);
-          AttributionEvent *attributionEvt
-            = dynamic_cast <AttributionEvent *> (evt);
-          if (attributionEvt)
-            attributionEvt->setPlayerAdapter (nullptr);
-        }
       g_assert (obj->stop ());
-      if (unlikely (!player->hasPrepared ()))
-        {
-          WARNING ("trying to stop an unprepared player: '%s'",
-                   obj->getId ().c_str ());
-          break;
-        }
-      g_assert (player->stop ());
-      this->removePlayer (obj);
       break;
-
     default:
       g_assert_not_reached ();
     }
@@ -332,7 +259,7 @@ Scheduler::runActionOverProperty (NclEvent *event,
                                       ->getAnchor ()
                                       ->getName (), propValue);
             }
-          else if (player != NULL && player->hasPrepared ())
+          else if (player != NULL)
             {
               player->setProperty ((AttributionEvent *)event,
                                         propValue);
@@ -1018,19 +945,5 @@ Scheduler::hideObject (ExecutionObject *obj)
     return;                     // nothing to do
 }
 
-bool
-Scheduler::removePlayer (ExecutionObject *exObject)
-{
-  auto i = _objectPlayers.find (exObject->getId ());
-  if (i != _objectPlayers.end ())
-    {
-      delete i->second; // delete PlayerAdapter
-      _objectPlayers.erase (i);
-
-      return true;
-    }
-
-  return false;
-}
 
 GINGA_FORMATTER_END

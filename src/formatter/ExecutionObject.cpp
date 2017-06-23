@@ -650,11 +650,8 @@ ExecutionObject::start ()
   if (this->isOccurring ())
     return true;              // nothing to do
 
-  if (_player == nullptr)
+  if (dynamic_cast <ExecutionObjectContext *> (this))
     goto done;
-
-  g_assert_null (dynamic_cast <ExecutionObjectContext *> (this));
-  g_assert (!_player->hasPrepared ());
 
   entity = dynamic_cast <NodeEntity *> (_dataObject);
   g_assert_nonnull (entity);
@@ -674,8 +671,10 @@ ExecutionObject::start ()
       src = "";                 // empty source
     }
 
+  // Allocate player.
   mime = contentNode->getNodeType ();
-  g_assert (_player->prepare (src, mime));
+  _player = new PlayerAdapter (src, mime);
+  _player->_object = this;      // *** FIXME!
 
   // Initialize player properties.
   if (_descriptor != nullptr)
@@ -705,7 +704,7 @@ ExecutionObject::start ()
         _player->setProperty (prop->getName (), prop->getValue ());
     }
 
-  // Setup attribution events.
+  // Install attribution events.
   for (NclEvent *evt: this->getEvents ())
     {
       AttributionEvent *attevt = dynamic_cast <AttributionEvent *> (evt);
@@ -745,37 +744,38 @@ ExecutionObject::getNextTransition ()
 bool
 ExecutionObject::stop ()
 {
-  ContentAnchor *contentAnchor;
-  GingaTime endTime;
+  PresentationEvent *event;
 
-  if (isSleeping ())
+  if (this->isSleeping ())
+    return true;                // nothing to do
+
+  // Uninstall attribution events.
+  for (NclEvent *evt: this->getEvents ())
     {
-      clog << "NclExecutionObject::stop for '" << _id << "'";
-      clog << " returns false because mainEvent is SLEEPING" << endl;
-      return false;
+      AttributionEvent *attevt = dynamic_cast <AttributionEvent *> (evt);
+      if (attevt)
+        attevt->setPlayerAdapter (nullptr);
     }
 
-  if (dynamic_cast <PresentationEvent* >(_mainEvent))
+  // Stop main event.
+  event = dynamic_cast <PresentationEvent* > (_mainEvent);
+  if (event != nullptr)
     {
-      endTime = ((PresentationEvent *)_mainEvent)->getEnd ();
       _mainEvent->stop ();
-      _transMan.stop (endTime);
-    }
-  else if (dynamic_cast <AnchorEvent*>(_mainEvent))
-    {
-      contentAnchor = ((AnchorEvent *)_mainEvent)->getAnchor ();
-      if (contentAnchor != nullptr
-          && contentAnchor->instanceOf ("LabeledAnchor"))
-        {
-          _mainEvent->stop ();
-        }
+      _transMan.stop (0);
     }
 
   _transMan.resetTimeIndex ();
-  _pauseCount = 0;
-
   removeParentListenersFromEvent (_mainEvent);
   _mainEvent = nullptr;
+
+  // Stop and destroy player.
+  if (_player != nullptr)
+    {
+      g_assert (_player->stop ());
+      delete _player;
+      _player = nullptr;
+    }
 
   return true;
 }
@@ -783,97 +783,36 @@ ExecutionObject::stop ()
 bool
 ExecutionObject::abort ()
 {
-  ContentAnchor *contentAnchor;
-  GingaTime endTime;
-
-  if (isSleeping ())
-    return false;
-
-  if (_mainEvent->instanceOf ("PresentationEvent"))
-    {
-      endTime = ((PresentationEvent *)_mainEvent)->getEnd ();
-      _transMan.abort (endTime);
-    }
-  else if (_mainEvent->instanceOf ("AnchorEvent"))
-    {
-      contentAnchor = ((AnchorEvent *)_mainEvent)->getAnchor ();
-      if (contentAnchor != nullptr
-          && contentAnchor->instanceOf ("LabeledAnchor"))
-        {
-          _mainEvent->abort ();
-        }
-    }
-
-  _transMan.resetTimeIndex ();
-  _pauseCount = 0;
+  ERROR_NOT_IMPLEMENTED ("action 'abort' is not supported");
   return true;
 }
 
 bool
 ExecutionObject::pause ()
 {
-  NclEvent *event;
-  vector<NclEvent *>::iterator i;
+  if (!this->isOccurring ())
+    return true;
 
-  // clog << "NclExecutionObject::pause(" << id << ")" << endl;
-  if (isSleeping ())
-    {
-      return false;
-    }
+  for (NclEvent *event: this->getEvents ())
+    event->pause ();
 
-  vector<NclEvent *> evs = getEvents ();
-  if (_pauseCount == 0)
-    {
-      i = evs.begin ();
-      while (i != evs.end ())
-        {
-          event = *i;
-          if (event->getCurrentState () == EventState::OCCURRING)
-            {
-              event->pause ();
-            }
-          ++i;
-        }
-    }
+  g_assert_nonnull (_player);
+  g_assert (_player->pause ());
 
-  _pauseCount++;
   return true;
 }
 
 bool
 ExecutionObject::resume ()
 {
-  NclEvent *event;
-  vector<NclEvent *>::iterator i;
+  if (!this->isPaused ())
+    return true;
 
-  // clog << "NclExecutionObject::resume(" << id << ")" << endl;
-  if (_pauseCount == 0)
-    {
-      return false;
-    }
-  else
-    {
-      _pauseCount--;
-      if (_pauseCount > 0)
-        {
-          return false;
-        }
-    }
+  for (NclEvent *event: this->getEvents ())
+    event->resume ();
 
-  vector<NclEvent *> evs = getEvents ();
-  if (_pauseCount == 0)
-    {
-      i = evs.begin ();
-      while (i != evs.end ())
-        {
-          event = *i;
-          if (event->getCurrentState () == EventState::PAUSED)
-            {
-              event->resume ();
-            }
-          ++i;
-        }
-    }
+  g_assert_nonnull (_player);
+  g_assert (_player->resume ());
 
   return true;
 }

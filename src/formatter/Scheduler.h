@@ -36,7 +36,6 @@ class Scheduler : public INclActionListener,
                   public INclEventListener
 {
 private:
-  map<string, PlayerAdapter *> _objectPlayers;
   Converter *compiler;
   FocusManager *focusManager;
   Settings *settings;
@@ -60,8 +59,6 @@ public:
   void eventStateChanged (NclEvent *someEvent,
                           EventStateTransition transition,
                           EventState previousState) override;
-
-  bool removePlayer (ExecutionObject *object);
 
 private:
 
