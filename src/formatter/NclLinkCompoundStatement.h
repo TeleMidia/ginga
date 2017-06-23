@@ -48,7 +48,7 @@ protected:
 
 public:
   virtual vector<NclEvent *> getEvents () override;
-  virtual bool evaluate ();
+  virtual bool evaluate () override;
 };
 
 GINGA_FORMATTER_END

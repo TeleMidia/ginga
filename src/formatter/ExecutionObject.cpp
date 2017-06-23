@@ -328,7 +328,7 @@ ExecutionObject::addPresentationEvent (PresentationEvent *event)
       while (posBeg <= posEnd)
         {
           posMid = (posBeg + posEnd) / 2;
-          auxEvent = (PresentationEvent *)(_presEvents[posMid]);
+          auxEvent = (PresentationEvent *)(_presEvents[(size_t)posMid]);
           auxBegin = auxEvent->getBegin ();
           if (begin < auxBegin)
             {
@@ -590,12 +590,12 @@ ExecutionObject::getMainEvent ()
 bool
 ExecutionObject::prepare (NclEvent *event)
 {
-  int size;
+  size_t size;
   map<Node *, ExecutionObjectContext *>::iterator i;
   NclEvent *auxEvent;
   AttributionEvent *attributeEvent;
   PropertyAnchor *attributeAnchor;
-  int j;
+  size_t j;
   string value;
 
   g_assert_nonnull (event);
@@ -615,7 +615,7 @@ ExecutionObject::prepare (NclEvent *event)
 
   prepareTransitionEvents (0);
 
-  size = (int) _otherEvents.size ();
+  size = _otherEvents.size ();
   for (j = 0; j < size; j++)
     {
       auxEvent = _otherEvents[j];
