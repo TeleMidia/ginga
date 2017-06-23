@@ -64,7 +64,6 @@ ExecutionObjectContext::~ExecutionObjectContext ()
   set<NclFormatterLink *>::iterator i;
   map<string, ExecutionObject *>::iterator j;
 
-  _isDeleting = true;
 
   destroyEvents ();
 
@@ -213,14 +212,11 @@ ExecutionObjectContext::removeExecutionObject (ExecutionObject *obj)
 {
   map<string, ExecutionObject *>::iterator i;
 
-  if (!_isDeleting)
+  i = _execObjList.find (obj->getId ());
+  if (i != _execObjList.end ())
     {
-      i = _execObjList.find (obj->getId ());
-      if (i != _execObjList.end ())
-        {
-          _execObjList.erase (i);
-          return true;
-        }
+      _execObjList.erase (i);
+      return true;
     }
   return false;
 }
@@ -303,15 +299,10 @@ ExecutionObjectContext::unsetParentsAsListeners ()
 {
   map<Node *,ExecutionObjectContext *>::iterator i;
 
-  if (_isDeleting)
-    {
-      return;
-    }
-
   i = _parentTable.begin ();
   while (i != _parentTable.end ())
     {
-      if (_isDeleting || !NclEvent::hasInstance (_wholeContent, false))
+      if (!NclEvent::hasInstance (_wholeContent, false))
         {
           return;
         }
@@ -495,21 +486,7 @@ ExecutionObjectContext::linkEvaluationFinished (
               else if (!start)
                 {
                   _wholeContent->abort ();
-                  if (_isDeleting)
-                    {
-                      return;
-                    }
                   unsetParentsAsListeners ();
-                }
-              else
-                {
-                  // if nothing starts the composition may
-                  // stay locked as occurring
-                  clog << "ExecutionObjectContext::";
-                  clog << "linkEvaluationFinished ";
-                  clog << "if nothing starts the composition may ";
-                  clog << "stay locked as occurring";
-                  clog << endl;
                 }
             }
         }
@@ -523,8 +500,8 @@ ExecutionObjectContext::linkEvaluationFinished (
 void
 ExecutionObjectContext::checkLinkConditions ()
 {
-  if (_isDeleting || (_runningEvents.empty () && _pausedEvents.empty ()
-                   && _pendingLinks.empty ()))
+  if ((_runningEvents.empty () && _pausedEvents.empty ()
+       && _pendingLinks.empty ()))
     {
       clog << "ExecutionObjectContext::run ";
       clog << "I (" << _id << ") am ending because of STOP of";

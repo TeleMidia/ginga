@@ -47,7 +47,6 @@ GINGA_FORMATTER_BEGIN
 PlayerAdapter::PlayerAdapter (string uri, string mimetype)
 {
   const char *mime = mimetype.c_str ();
-  _object = nullptr;
   _player = nullptr;
 
   if (g_str_has_prefix (mime, "audio")
@@ -108,8 +107,6 @@ bool
 PlayerAdapter::start ()
 {
   g_assert (_player->play ());
-  TRACE ("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-  g_assert (Ginga_Display->registerEventListener (this));
   return true;
 }
 
@@ -121,7 +118,6 @@ PlayerAdapter::stop ()
   _player->stop ();
   delete _player;
   _player = nullptr;
-  g_assert (Ginga_Display->unregisterEventListener (this));
   return true;
 }
 
@@ -212,62 +208,6 @@ void
 PlayerAdapter::getZ (int *z, int *zorder)
 {
   _player->getZ (z, zorder);
-}
-
-void
-PlayerAdapter::handleTickEvent (arg_unused (GingaTime total),
-                                GingaTime diff,
-                                arg_unused (int frame))
-{
-  EventTransition *next;
-  NclEvent *evt;
-  GingaTime waited;
-  GingaTime now;
-
-  if (unlikely (_object == nullptr || _player == nullptr))
-    return;
-
-  if (_player->getMediaStatus() != Player::PL_OCCURRING)
-    return;
-
-  // Update player time.
-  _player->incMediaTime (diff);
-
-  next = _object->getNextTransition ();
-  if (next == nullptr)
-    return;
-
-  waited = next->getTime ();
-  now = _player->getMediaTime ();
-
-  // TRACE ("now=%" GINGA_TIME_FORMAT " waited=%" GINGA_TIME_FORMAT,
-  //        GINGA_TIME_ARGS (now), GINGA_TIME_ARGS (waited));
-
-  if (now < waited)
-    return;
-
-  evt = dynamic_cast <NclEvent *> (next->getEvent ());
-  g_assert_nonnull (evt);
-
-  TRACE ("anchor '%s' timed out at %" GINGA_TIME_FORMAT
-         ", updating transition table",
-         evt->getId ().c_str(), GINGA_TIME_ARGS (now));
-
-  _object->updateTransitionTable (now, _player);
-};
-
-void
-PlayerAdapter::handleKeyEvent (SDL_EventType evtType,
-                               SDL_Keycode key)
-{
-  if (unlikely (_object == nullptr || _player == nullptr))
-    return;
-
-  if (evtType == SDL_KEYDOWN)
-    return;
-
-  GingaTime time = _player->getMediaTime ();
-  _object->selectionEvent (key, time);
 }
 
 GINGA_FORMATTER_END

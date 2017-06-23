@@ -82,10 +82,6 @@ private:
 
   string solveImplicitRefAssessment (const string &propValue,
                                      AttributionEvent *event);
-
-  SDLWindow *prepareFormatterRegion (ExecutionObject *);
-  void showObject (ExecutionObject *);
-  void hideObject (ExecutionObject *);
 };
 
 GINGA_FORMATTER_END

@@ -20,12 +20,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclEvents.h"
 #include "ExecutionObject.h"
-#include "mb/IEventListener.h"
 
 GINGA_FORMATTER_BEGIN
 
-class PlayerAdapter :
-    public IEventListener
+class PlayerAdapter
 {
 public:
   explicit PlayerAdapter (string uri, string mimetype);
@@ -49,14 +47,7 @@ public:
   void setZ (int, int);
   void getZ (int *, int *);
 
-
-  // From IEventListener.
-  virtual void handleKeyEvent (SDL_EventType, SDL_Keycode) override;
-  virtual void handleTickEvent (GingaTime, GingaTime, int) override;
-
 public:
-  ExecutionObject *_object;
-private:
   Player *_player;
 
 };
