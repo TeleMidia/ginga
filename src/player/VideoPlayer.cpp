@@ -51,11 +51,10 @@ VideoPlayer::VideoPlayer (const string &uri) : Player (uri)
   GstElement *elt_sink;
   GstPad *pad;
 
-  g_rec_mutex_init (&_mutex);
   _texture = nullptr;
   _playbin = nullptr;
-  _playbin_eos = false;
-  _sample = nullptr;
+  _capsfilter = nullptr;
+  _appsink = nullptr;
 
   if (!gst_is_initialized ())
     {
@@ -106,19 +105,20 @@ VideoPlayer::VideoPlayer (const string &uri) : Player (uri)
   g_assert (gst_element_add_pad (bin, gst_ghost_pad_new ("sink", pad)));
   g_object_set (G_OBJECT (_playbin), "video-sink", bin, nullptr);
 
-  _callbacks.eos = cb_EOS;
-  _callbacks.new_preroll = cb_NewPreroll;
+  // Aliases.
+  _appsink = elt_sink;
+  _capsfilter = elt_filter;
+
+  // Callbacks.
+  _callbacks.eos = nullptr;
+  _callbacks.new_preroll = nullptr;
   _callbacks.new_sample = cb_NewSample;
-  gst_app_sink_set_callbacks (GST_APP_SINK (elt_sink),
+  gst_app_sink_set_callbacks (GST_APP_SINK (_appsink),
                               &_callbacks, this, nullptr);
 }
 
 VideoPlayer::~VideoPlayer ()
 {
-  g_assert (_state == PL_SLEEPING);
-  g_rec_mutex_clear (&_mutex);
-  if (_sample != nullptr)
-    gst_sample_unref (_sample);
 }
 
 void
@@ -126,8 +126,6 @@ VideoPlayer::start ()
 {
   GstCaps *caps;
   GstStructure *st;
-  GstElement *bin = nullptr;
-  GstElement *filter = nullptr;
   GstStateChangeReturn ret;
 
   if (unlikely (_state == PL_OCCURRING))
@@ -148,18 +146,11 @@ VideoPlayer::start ()
   caps = gst_caps_new_full (st, nullptr);
   g_assert_nonnull (caps);
 
-  g_object_get (G_OBJECT (_playbin), "video-sink", &bin, nullptr);
-  g_assert_nonnull (bin);
-
-  filter = gst_bin_get_by_name (GST_BIN (bin), "filter");
-  g_assert_nonnull (filter);
-
-  g_object_set (filter, "caps", caps, nullptr);
+  g_object_set (_capsfilter, "caps", caps, nullptr);
   gst_caps_unref (caps);
-  gst_object_unref (filter);
 
-  this->setPlaybinEOS (false);
   Player::setEOS (false);
+  g_atomic_int_set (&_sample_flag, 0);
 
   ret = gst_element_set_state (_playbin, GST_STATE_PLAYING);
   if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
@@ -207,14 +198,12 @@ VideoPlayer::redraw (SDL_Renderer *renderer)
   guint8 *pixels;
   int stride;
 
-  if (this->getPlaybinEOS ())
-    {
-      Player::setEOS (true);
-      TRACE ("EOS");
-      return;
-    }
+  g_assert (!Player::getEOS ());
 
-  sample = this->getSample ();
+  if (!g_atomic_int_compare_and_exchange (&_sample_flag, 1, 0))
+    goto done;
+
+  sample = gst_app_sink_pull_sample (GST_APP_SINK (_appsink));
   if (sample == nullptr)
     goto done;
 
@@ -251,58 +240,6 @@ VideoPlayer::redraw (SDL_Renderer *renderer)
 
 // Private.
 
-void
-VideoPlayer::lock (void)
-{
-  g_rec_mutex_lock (&_mutex);
-}
-
-void
-VideoPlayer::unlock (void)
-{
-  g_rec_mutex_unlock (&_mutex);
-}
-
-bool
-VideoPlayer::getPlaybinEOS (void)
-{
-  bool eos;
-  this->lock ();
-  eos = _playbin_eos;
-  this->unlock ();
-  return eos;
-}
-
-void
-VideoPlayer::setPlaybinEOS (bool eos)
-{
-  this->lock ();
-  _playbin_eos = eos;
-  this->unlock ();
-}
-
-GstSample *
-VideoPlayer::getSample (void)
-{
-  GstSample *sample;
-  this->lock ();
-  sample = _sample;
-  _sample = nullptr;
-  this->unlock ();
-  return sample;
-}
-
-void
-VideoPlayer::setSample (GstSample *sample)
-{
-  g_assert_nonnull (sample);
-  this->lock ();
-  if (_sample != nullptr)
-    gst_sample_unref (_sample);
-  _sample = sample;
-  this->unlock ();
-}
-
 gboolean
 VideoPlayer::cb_Bus (GstBus *bus, GstMessage *msg, VideoPlayer *player)
 {
@@ -312,6 +249,10 @@ VideoPlayer::cb_Bus (GstBus *bus, GstMessage *msg, VideoPlayer *player)
 
   switch (GST_MESSAGE_TYPE (msg))
     {
+    case GST_MESSAGE_EOS:
+      player->setEOS (true);
+      TRACE ("EOS");
+      break;
     case GST_MESSAGE_ERROR:
     case GST_MESSAGE_WARNING:
       {
@@ -342,26 +283,13 @@ VideoPlayer::cb_Bus (GstBus *bus, GstMessage *msg, VideoPlayer *player)
   return TRUE;
 }
 
-void
-VideoPlayer::cb_EOS (arg_unused (GstAppSink *appsink), gpointer data)
+GstFlowReturn
+VideoPlayer::cb_NewSample (arg_unused (GstAppSink *appsink), gpointer data)
 {
+
   VideoPlayer *player = (VideoPlayer *) data;
   g_assert_nonnull (player);
-  player->setPlaybinEOS (true);
-}
-
-GstFlowReturn
-VideoPlayer::cb_NewPreroll (arg_unused (GstAppSink *appsink),
-                            arg_unused (gpointer data))
-{
-  return GST_FLOW_OK;
-}
-
-GstFlowReturn
-VideoPlayer::cb_NewSample (GstAppSink *appsink, gpointer data)
-{
-  VideoPlayer *player = (VideoPlayer *) data;
-  player->setSample (gst_app_sink_pull_sample (appsink));
+  g_atomic_int_compare_and_exchange (&player->_sample_flag, 0, 1);
   return GST_FLOW_OK;
 }
 
