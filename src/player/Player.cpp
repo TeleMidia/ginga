@@ -19,12 +19,10 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Player.h"
 #include "player/ImagePlayer.h"
 #include "player/LuaPlayer.h"
+#include "player/TextPlayer.h"
 #include "player/VideoPlayer.h"
 #if defined WITH_LIBRSVG && WITH_LIBRSVG
 # include "player/SvgPlayer.h"
-#endif
-#if defined WITH_PANGO && WITH_PANGO
-# include "player/TextPlayer.h"
 #endif
 #if defined WITH_CEF && WITH_CEF
 # include "player/HTMLPlayer.h"
@@ -63,18 +61,16 @@ Player::createPlayer (const string &uri, const string &mime)
     {
       player = new ImagePlayer (uri);
     }
-#if defined WITH_CEF &&  WITH_CEF
+#if defined WITH_CEF && WITH_CEF
   else if (xstrhasprefix (mime, "text/html"))
     {
       player = new HTMLPlayer (uri);
     }
 #endif
-#if defined WITH_PANGO && WITH_PANGO
   else if (mime == "text/plain")
     {
       player = new TextPlayer (uri);
     }
-#endif
   else if (mime == "application/x-ginga-NCLua")
     {
       player = new LuaPlayer (uri);

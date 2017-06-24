@@ -19,19 +19,19 @@ The iTV middleware.
 
 Required:
 
+* cairo >= 1.10
+* glib >= 2.32
+* gstreamer >= 1.8
+* nclua >= 1.0, http://github.com/gflima/nclua
+* pango >= 1.30
 * SDL2 >= 2.0
 * SDL2_image >= 2.0
-* glib >= 2.32
-* nclua >= 1.0, http://github.com/gflima/nclua
 * xercesc >= 2.7
 
 Optional:
 
-* cairo >= 1.10
 * cef >= 3.0, https://bitbucket.org/chromiumembedded/cef
-* gstreamer >= 1.8
 * librsvg >= 2.40
-* pango >= 1.30
 
 ## Building
 
@@ -43,7 +43,7 @@ We currently support both autotools and cmake build systems.
     $ ./configure
     $ make
 
-To build with cef (chromium embedded framework) support change the above
+To build with cef (chromium embedded framework) support change the
 configure step above to:
 
     $ ./configure --with-cef=${CEF_ROOT}
