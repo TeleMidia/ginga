@@ -714,11 +714,14 @@ ExecutionObject::start ()
         attevt->setPlayerAdapter (_player);
     }
 
-  g_assert (_player->start ());
   _time = 0;
+  g_assert (_player->start ());
   g_assert (Ginga_Display->registerEventListener (this));
 
  done:
+  // Start main event.
+  if (instanceof (PresentationEvent *, _mainEvent))
+    _mainEvent->start ();
   _transMan.start (0);
   return true;
 }
@@ -761,6 +764,16 @@ ExecutionObject::stop ()
   if (this->isSleeping ())
     return true;                // nothing to do
 
+  // Stop and destroy player.
+  if (_player != nullptr)
+    {
+      g_assert (_player->stop ());
+      delete _player;
+      _player = nullptr;
+      _time = GINGA_TIME_NONE;
+      g_assert (Ginga_Display->unregisterEventListener (this));
+    }
+
   // Uninstall attribution events.
   for (NclEvent *evt: this->getEvents ())
     {
@@ -779,17 +792,6 @@ ExecutionObject::stop ()
 
   _transMan.resetTimeIndex ();
   removeParentListenersFromEvent (_mainEvent);
-  _mainEvent = nullptr;
-
-  // Stop and destroy player.
-  if (_player != nullptr)
-    {
-      g_assert (_player->stop ());
-      delete _player;
-      _player = nullptr;
-      _time = GINGA_TIME_NONE;
-      g_assert (Ginga_Display->unregisterEventListener (this));
-    }
 
   return true;
 }

@@ -29,12 +29,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
   g_assert (gst_element_set_state ((elt), (st)) \
             != GST_STATE_CHANGE_FAILURE)
 
-#define gstx_element_set_state_sync(elt, st)            \
-  G_STMT_START                                          \
-  {                                                     \
-    gstx_element_set_state ((elt), (st));               \
-    gstx_element_get_state_sync ((elt), NULL, NULL);    \
-  }                                                     \
+#define gstx_element_set_state_sync(elt, st)                    \
+  G_STMT_START                                                  \
+  {                                                             \
+    gstx_element_set_state ((elt), (st));                       \
+    gstx_element_get_state_sync ((elt), nullptr, nullptr);      \
+  }                                                             \
   G_STMT_END
 
 GINGA_PLAYER_BEGIN
@@ -54,12 +54,13 @@ VideoPlayer::VideoPlayer (const string &uri) : Player (uri)
   g_rec_mutex_init (&_mutex);
   _texture = nullptr;
   _playbin = nullptr;
+  _playbin_eos = false;
   _sample = nullptr;
 
   if (!gst_is_initialized ())
     {
-      GError *error = NULL;
-      if (unlikely (!gst_init_check (NULL, NULL, &error)))
+      GError *error = nullptr;
+      if (unlikely (!gst_init_check (nullptr, nullptr, &error)))
         {
           g_assert_nonnull (error);
           ERROR ("%s", error->message);
@@ -76,10 +77,10 @@ VideoPlayer::VideoPlayer (const string &uri) : Player (uri)
   g_assert (id > 0);
   gst_object_unref (bus);
 
-  buf = gst_filename_to_uri (uri.c_str (), NULL);
+  buf = gst_filename_to_uri (uri.c_str (), nullptr);
   g_assert_nonnull (buf);
 
-  g_object_set (G_OBJECT (_playbin), "uri", buf, NULL);
+  g_object_set (G_OBJECT (_playbin), "uri", buf, nullptr);
   g_free (buf);
 
   bin = gst_bin_new ("videobin");
@@ -103,13 +104,13 @@ VideoPlayer::VideoPlayer (const string &uri) : Player (uri)
   pad = gst_element_get_static_pad (elt_filter, "sink");
   g_assert_nonnull (pad);
   g_assert (gst_element_add_pad (bin, gst_ghost_pad_new ("sink", pad)));
-  g_object_set (G_OBJECT (_playbin), "video-sink", bin, NULL);
+  g_object_set (G_OBJECT (_playbin), "video-sink", bin, nullptr);
 
   _callbacks.eos = cb_EOS;
   _callbacks.new_preroll = cb_NewPreroll;
   _callbacks.new_sample = cb_NewSample;
   gst_app_sink_set_callbacks (GST_APP_SINK (elt_sink),
-                              &_callbacks, this, NULL);
+                              &_callbacks, this, nullptr);
 }
 
 VideoPlayer::~VideoPlayer ()
@@ -118,7 +119,6 @@ VideoPlayer::~VideoPlayer ()
   g_rec_mutex_clear (&_mutex);
   if (_sample != nullptr)
     gst_sample_unref (_sample);
-  gst_object_unref (_playbin);
 }
 
 void
@@ -126,58 +126,46 @@ VideoPlayer::start ()
 {
   GstCaps *caps;
   GstStructure *st;
-  GstElement *bin = NULL;
-  GstElement *filter = NULL;
+  GstElement *bin = nullptr;
+  GstElement *filter = nullptr;
   GstStateChangeReturn ret;
 
   if (unlikely (_state == PL_OCCURRING))
     {
-      WARNING ("player already occurring");
+      WARNING ("already occurring");
       return;
     }
+
+  TRACE ("starting");
 
   st = gst_structure_new_empty ("video/x-raw");
   gst_structure_set (st,
                      "format", G_TYPE_STRING, "ARGB",
                      "width", G_TYPE_INT, _rect.w,
                      "height", G_TYPE_INT, _rect.h,
-                     NULL);
+                     nullptr);
 
-  caps = gst_caps_new_full (st, NULL);
+  caps = gst_caps_new_full (st, nullptr);
   g_assert_nonnull (caps);
 
-  g_object_get (G_OBJECT (_playbin), "video-sink", &bin, NULL);
+  g_object_get (G_OBJECT (_playbin), "video-sink", &bin, nullptr);
   g_assert_nonnull (bin);
 
   filter = gst_bin_get_by_name (GST_BIN (bin), "filter");
   g_assert_nonnull (filter);
 
-  g_object_set (filter, "caps", caps, NULL);
+  g_object_set (filter, "caps", caps, nullptr);
   gst_caps_unref (caps);
   gst_object_unref (filter);
 
-  g_atomic_int_set (&_atom_eos, FALSE);
+  this->setPlaybinEOS (false);
+  Player::setEOS (false);
+
   ret = gst_element_set_state (_playbin, GST_STATE_PLAYING);
   if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
     return;
 
-  TRACE ("starting");
   Player::start ();
-}
-
-void
-VideoPlayer::pause ()
-{
-  if (unlikely (_state != PL_OCCURRING))
-    {
-      WARNING ("player not ocurring");
-      return;
-    }
-
-  gstx_element_set_state_sync (_playbin, GST_STATE_PAUSED);
-
-  TRACE ("pausing");
-  Player::pause ();
 }
 
 void
@@ -185,30 +173,27 @@ VideoPlayer::stop ()
 {
   if (unlikely (_state == PL_SLEEPING))
     {
-      WARNING ("player already sleeping");
+      WARNING ("already sleeping");
       return;
     }
-  gstx_element_set_state_sync (_playbin, GST_STATE_NULL);
-  gst_object_unref (_playbin);
 
   TRACE ("stopping");
+
+  gstx_element_set_state_sync (_playbin, GST_STATE_NULL);
+  gst_object_unref (_playbin);
   Player::stop ();
+}
+
+void
+VideoPlayer::pause ()
+{
+  ERROR_NOT_IMPLEMENTED ("pause action is not supported");
 }
 
 void
 VideoPlayer::resume ()
 {
-  if (unlikely (_state != PL_PAUSED))
-    {
-      WARNING ("player is not paused");
-      return;
-    }
-
-  g_assert (GST_ELEMENT_CAST (_playbin)->current_state == GST_STATE_PAUSED);
-  gstx_element_set_state_sync (_playbin, GST_STATE_PLAYING);
-
-  TRACE ("resumming");
-  Player::resume ();
+  ERROR_NOT_IMPLEMENTED ("resume action is not supported");
 }
 
 void
@@ -220,17 +205,17 @@ VideoPlayer::redraw (SDL_Renderer *renderer)
   GstBuffer *buf;
   GstCaps *caps;
   guint8 *pixels;
-  guint stride;
+  int stride;
 
-  if (g_atomic_int_get (&_atom_eos))
+  if (this->getPlaybinEOS ())
     {
       Player::setEOS (true);
-      TRACE ("eos");
-      return;                   // nothing to do
+      TRACE ("EOS");
+      return;
     }
 
   sample = this->getSample ();
-  if (sample == NULL)
+  if (sample == nullptr)
     goto done;
 
   if (_texture == nullptr)
@@ -253,8 +238,8 @@ VideoPlayer::redraw (SDL_Renderer *renderer)
   g_assert (gst_video_frame_map (&v_frame, &v_info, buf, GST_MAP_READ));
 
   pixels = (guint8 *) GST_VIDEO_FRAME_PLANE_DATA (&v_frame, 0);
-  stride = (guint) GST_VIDEO_FRAME_PLANE_STRIDE (&v_frame, 0);
-  g_assert (SDL_UpdateTexture (_texture, NULL, pixels, (int) stride) == 0);
+  stride = (int) GST_VIDEO_FRAME_PLANE_STRIDE (&v_frame, 0);
+  g_assert (SDL_UpdateTexture (_texture, nullptr, pixels, stride) == 0);
 
   gst_video_frame_unmap (&v_frame);
   gst_sample_unref (sample);
@@ -278,14 +263,21 @@ VideoPlayer::unlock (void)
   g_rec_mutex_unlock (&_mutex);
 }
 
-void
-VideoPlayer::setSample (GstSample *sample)
+bool
+VideoPlayer::getPlaybinEOS (void)
 {
-  g_assert_nonnull (sample);
+  bool eos;
   this->lock ();
-  if (_sample != NULL)
-    gst_sample_unref (_sample);
-  _sample = sample;
+  eos = _playbin_eos;
+  this->unlock ();
+  return eos;
+}
+
+void
+VideoPlayer::setPlaybinEOS (bool eos)
+{
+  this->lock ();
+  _playbin_eos = eos;
   this->unlock ();
 }
 
@@ -295,9 +287,20 @@ VideoPlayer::getSample (void)
   GstSample *sample;
   this->lock ();
   sample = _sample;
-  _sample = NULL;
+  _sample = nullptr;
   this->unlock ();
   return sample;
+}
+
+void
+VideoPlayer::setSample (GstSample *sample)
+{
+  g_assert_nonnull (sample);
+  this->lock ();
+  if (_sample != nullptr)
+    gst_sample_unref (_sample);
+  _sample = sample;
+  this->unlock ();
 }
 
 gboolean
@@ -312,21 +315,21 @@ VideoPlayer::cb_Bus (GstBus *bus, GstMessage *msg, VideoPlayer *player)
     case GST_MESSAGE_ERROR:
     case GST_MESSAGE_WARNING:
       {
-        GstObject *obj = NULL;
-        GError *error = NULL;
+        GstObject *obj = nullptr;
+        GError *error = nullptr;
 
         obj = GST_MESSAGE_SRC (msg);
         g_assert_nonnull (obj);
 
         if (GST_MESSAGE_TYPE (msg) == GST_MESSAGE_ERROR)
           {
-            gst_message_parse_error (msg, &error, NULL);
+            gst_message_parse_error (msg, &error, nullptr);
             g_assert_nonnull (error);
             ERROR ("%s", error->message);
           }
         else
           {
-            gst_message_parse_warning (msg, &error, NULL);
+            gst_message_parse_warning (msg, &error, nullptr);
             g_assert_nonnull (error);
             WARNING ("%s", error->message);
           }
@@ -344,7 +347,7 @@ VideoPlayer::cb_EOS (arg_unused (GstAppSink *appsink), gpointer data)
 {
   VideoPlayer *player = (VideoPlayer *) data;
   g_assert_nonnull (player);
-  g_atomic_int_set (&player->_atom_eos, TRUE);
+  player->setPlaybinEOS (true);
 }
 
 GstFlowReturn

@@ -164,12 +164,13 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
   switch (action->getType ())
     {
     case ACT_START:
-        obj->prepare (event);
-        g_assert (obj->start ());
-        event->addListener (this);
+      obj->prepare (event);
+      g_assert (obj->start ());
+      event->addListener (this);
       break;
     case ACT_STOP:
       g_assert (obj->stop ());
+      event->removeListener (this);
       break;
     case ACT_PAUSE:
       g_assert (obj->pause ());
