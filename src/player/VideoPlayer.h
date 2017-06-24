@@ -34,28 +34,17 @@ public:
   void redraw (SDL_Renderer *) override;
 
 private:
-  GRecMutex _mutex;               // sync access to player data
   GstElement *_playbin;           // pipeline
-  bool _playbin_eos;              // true if playbin generated an EOS
-  GstSample *_sample;             // last sample seen
-  GstAppSinkCallbacks _callbacks; // app-sink callback data
+  GstElement *_capsfilter;        // video filter
+  GstElement *_appsink;           // video sink
+  int _sample_flag;               // true if new sample is available
+  GstAppSinkCallbacks _callbacks; // appsink callback data
 
-  void lock ();
-  void unlock ();
-  bool getPlaybinEOS (void);
-  void setPlaybinEOS (bool);
-  GstSample *getSample (void);
-  void setSample (GstSample *);
-
-  // Pipeline callbacks.
+  // Callbacks.
   static gboolean cb_Bus (GstBus *, GstMessage *, VideoPlayer *);
-
-  // AppSink callbacks.
-  static void cb_EOS (GstAppSink *, gpointer);
-  static GstFlowReturn cb_NewPreroll (GstAppSink *, gpointer);
   static GstFlowReturn cb_NewSample (GstAppSink *, gpointer);
 };
 
 GINGA_PLAYER_END
 
-#endif /* VIDEO_PLAYER_H */
+#endif // VIDEO_PLAYER_H
