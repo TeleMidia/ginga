@@ -197,8 +197,10 @@ Player::setProperty (const string &name, const string &value)
 {
   vector<string> params;
 
+  TRACE ("setting %p.%s to '%s'", this, name.c_str (), value.c_str ());
+
   if (value == "")
-    return;                     // nothing to do
+    goto done;
 
   if (name == "bounds")
     {
@@ -283,6 +285,7 @@ Player::setProperty (const string &name, const string &value)
       this->setZ (xstrtoint (value, 10), _zorder);
     }
 
+ done:
   _properties[name] = value;
   return;
 
@@ -302,6 +305,9 @@ void
 Player::schedulePropertyAnimation (const string &name, const string &from,
                                    const string &to, GingaTime dur)
 {
+  TRACE ("animating %p.%s from '%s' to '%s' in %" GINGA_TIME_FORMAT,
+         this, name.c_str (), from.c_str (), to.c_str (),
+         GINGA_TIME_ARGS (dur));
   _animator.schedule (name, from, to, dur);
 }
 
@@ -311,6 +317,7 @@ Player::schedulePropertyAnimation (const string &name, const string &from,
 void
 Player::start ()
 {
+  TRACE ("starting");
   _state = PL_OCCURRING;
   _eos = false;
   Ginga_Display->registerPlayer (this);
@@ -322,8 +329,9 @@ Player::start ()
 void
 Player::stop ()
 {
+  TRACE ("stopping");
   _state = PL_SLEEPING;
-  //_animator.clear ();
+  _animator.clear ();
   Ginga_Display->unregisterPlayer (this);
 }
 
@@ -333,7 +341,7 @@ Player::stop ()
 void
 Player::pause ()
 {
-  _state = PL_PAUSED;
+  ERROR_NOT_IMPLEMENTED ("pause action is not supported");
 }
 
 /**
@@ -342,7 +350,7 @@ Player::pause ()
 void
 Player::resume ()
 {
-  _state = PL_OCCURRING;
+  ERROR_NOT_IMPLEMENTED ("resume action is not supported");
 }
 
 /**

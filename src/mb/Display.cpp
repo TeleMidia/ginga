@@ -248,7 +248,7 @@ Display::unregisterPlayer (Player *player)
 }
 
 /**
- * @brief Schedules the destruction of texture.
+ * @brief Schedules destruction of texture.
  * @param texture Texture.
  */
 void

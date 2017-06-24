@@ -42,7 +42,7 @@ PlayerAnimator::~PlayerAnimator ()
 }
 
 /**
- * @brief Remove all scheduled animations.
+ * @brief Removes all scheduled animations.
  */
 void
 PlayerAnimator::clear ()
@@ -51,7 +51,7 @@ PlayerAnimator::clear ()
 }
 
 /**
- * @brief Schedule property animation.
+ * @brief Schedules property animation.
  * @param name Property name.
  * @param from Current value.
  * @param to Target value.
@@ -121,7 +121,7 @@ isDone (AnimInfo *info)
 }
 
 /**
- * @brief Update scheduled animations.
+ * @brief Updates scheduled animations.
  * @param rect Variable to store the resulting bounds.
  * @param bgColor Variable to store the resulting background color.
  * @param alpha Variable to store the resulting duration.
@@ -186,7 +186,8 @@ PlayerAnimator::update (SDL_Rect *rect, SDL_Color *bgColor, guint8 *alpha)
         }
       else
         {
-          WARNING ("cannot animate property '%s'", name.c_str ());
+          WARNING ("do not know how to animate property '%s'",
+                   name.c_str ());
         }
     }
 
