@@ -18,9 +18,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "TextPlayer.h"
 
-#include "mb/Display.h"
-#include "mb/SDLWindow.h"
-
 using namespace ::ginga::mb;
 
 GINGA_PLAYER_BEGIN

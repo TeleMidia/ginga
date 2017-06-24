@@ -25,9 +25,6 @@ using namespace ::ginga::ncl;
 #include "ncl/DescriptorUtil.h"
 using namespace ::ginga::ncl;
 
-#include "mb/SDLWindow.h"
-using namespace ::ginga::mb;
-
 GINGA_FORMATTER_BEGIN
 
 class NclCascadingDescriptor;
@@ -39,7 +36,6 @@ private:
 
   string objectId;
   LayoutRegion *region;
-  SDLWindow *win;
 
   short focusState;
   SDL_Color focusBorderColor;
@@ -107,8 +103,6 @@ public:
                      const string &focusComponentSrc, SDL_Color selBorderColor,
                      int selBorderWidth, const string &selComponentSrc);
 
-  SDLWindow* getOutputId ();
-
 public:
   void updateRegionBounds ();
 
@@ -118,7 +112,6 @@ private:
 public:
   LayoutRegion *getLayoutRegion ();
   LayoutRegion *getOriginalRegion ();
-  SDLWindow* prepareOutputDisplay ();
 
   void showContent ();
   void hideContent ();

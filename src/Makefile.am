@@ -64,7 +64,6 @@ src+= formatter/Scheduler.cpp
 src+= formatter/Settings.cpp
 src+= mb/Dashboard.cpp
 src+= mb/Display.cpp
-src+= mb/SDLWindow.cpp
 src+= ncl/AbsoluteReferenceContent.cpp
 src+= ncl/Action.cpp
 src+= ncl/Anchor.cpp

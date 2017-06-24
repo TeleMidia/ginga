@@ -36,4 +36,4 @@ public:
 
 GINGA_MB_END
 
-#endif /* DASHBOARD_H */
+#endif // DASHBOARD_H
