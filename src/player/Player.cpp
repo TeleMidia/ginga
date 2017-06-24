@@ -359,7 +359,7 @@ Player::setProperty (const string &name, const string &value)
  * @param name Property name.
  * @param from Current value.
  * @param to Target value.
- * @param duration Duration of the animation.
+ * @param dur Duration of the animation.
  */
 void
 Player::schedulePropertyAnimation (const string &name, const string &from,

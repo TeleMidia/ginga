@@ -954,7 +954,7 @@ ExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
  * @brief Sets property.
  * @param name Property name.
  * @param from Current value.
- * @apram to Updated value.
+ * @param to Updated value.
  * @param dur Duration of the attribution.
  */
 void
