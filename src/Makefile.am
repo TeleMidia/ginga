@@ -128,15 +128,12 @@ src+= player/ImagePlayer.cpp
 src+= player/LuaPlayer.cpp
 src+= player/Player.cpp
 src+= player/PlayerAnimator.cpp
+src+= player/TextPlayer.cpp
 src+= player/VideoPlayer.cpp
 
 if WITH_LIBRSVG
 src+= player/SvgPlayer.cpp
 endif # WITH_LIBRSVG
-
-if WITH_PANGO
-src+= player/TextPlayer.cpp
-endif # WITH_PANGO
 
 if WITH_CEF
 src+= player/HTMLPlayer.cpp

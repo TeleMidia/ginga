@@ -39,28 +39,28 @@ LT_INIT([win32-dll])
 AC_DEFINE_UNQUOTED([VERSION], ["$PACKAGE_VERSION"], [Ginga version.])
 
 # Required dependencies version.
+m4_define([cairo_required_version],      [1.10.2])
 m4_define([glib_required_version],       [2.32.4])
 m4_define([gstreamer_required_version],  [1.8.0])
 m4_define([nclua_required_version],      [1.0])
+m4_define([pango_required_version],      [1.30.0])
 m4_define([sdl2_image_require_version],  [2.0])
 m4_define([sdl2_required_version],       [2.0])
 m4_define([xercesc_required_version],    [2.7])
+AC_SUBST([CAIRO_REQUIRED_VERSION],       cairo_required_version)
 AC_SUBST([GLIB_REQUIRED_VERSION],        glib_required_version)
 AC_SUBST([GSTREAMER_REQUIRED_VERSION],   gstreamer_required_version)
 AC_SUBST([NCLUA_REQUIRED_VERSION],       nclua_required_version)
+AC_SUBST([PANGO_REQUIRED_VERSION],       pango_required_version)
 AC_SUBST([SDL2_IMAGE_REQUIRE_VERSION],   sdl2_image_require_version)
 AC_SUBST([SDL2_REQUIRED_VERSION],        sdl2_required_version)
 AC_SUBST([XERCESC_REQUIRED_VERSION],     xercesc_required_version)
 
 # Optional dependencies version.
-m4_define([cairo_required_version],      [1.10.2])
 m4_define([cef_required_version],        [3.0])
 m4_define([librsvg_required_version],    [2.40.0])
-m4_define([pango_required_version],      [1.30.0])
-AC_SUBST([CAIRO_REQUIRED_VERSION],       cairo_required_version)
-#AC_SUBST([CEF_REQUIRED_VERSION],         cef_required_version)
+AC_SUBST([CEF_REQUIRED_VERSION],         cef_required_version)
 AC_SUBST([LIBRSVG_REQUIRED_VERSION],     librsvg_required_version)
-AC_SUBST([PANGO_REQUIRED_VERSION],       pango_required_version)
 
 # Compiler checks.
 AC_PROG_CXX
@@ -117,6 +117,19 @@ AS_IF([test "$enable_nclua_trace" = yes],
   [Define to 1 to trace NCLua calls.])])
 
 # Required dependencies.
+AU_VERSION_BREAK([cairo], cairo_required_version)
+AU_CHECK_PKG([CAIRO], [cairo >= cairo_required_version],
+ [AC_LANG_PROGRAM([[
+#include <cairo.h>
+#if CAIRO_VERSION_ENCODE \
+   (CAIRO_REQUIRED_MAJOR,\
+    CAIRO_REQUIRED_MINOR,\
+    CAIRO_REQUIRED_MICRO) > CAIRO_VERSION
+# error "cairo is too old"
+#endif
+ ]])],
+ [AC_LANG_PROGRAM([[]], [[cairo_create (0);]])])
+
 AU_VERSION_BREAK([glib], glib_required_version)
 AU_CHECK_PKG([GLIB], [glib-2.0 >= glib_required_version],
  [AC_LANG_PROGRAM([[
@@ -132,10 +145,10 @@ AU_CHECK_PKG([GLIB], [glib-2.0 >= glib_required_version],
 
 AU_VERSION_BREAK([gstreamer], gstreamer_required_version)
 AU_CHECK_PKG([GSTREAMER],
-  gstreamer-1.0 >= gstreamer_required_version
+ [gstreamer-1.0 >= gstreamer_required_version
   gstreamer-video-1.0 >= gstreamer_required_version
   gstreamer-audio-1.0 >= gstreamer_required_version
-  gstreamer-app-1.0 >= gstreamer_required_version,
+  gstreamer-app-1.0 >= gstreamer_required_version],
  [AC_LANG_PROGRAM([[
 #include <gst/gst.h>
 #if !GST_CHECK_VERSION  \
@@ -153,6 +166,10 @@ gst_video_info_from_caps (0, 0);
 AU_CHECK_PKG([NCLUA],
  [nclua >= nclua_required_version])
 
+AU_CHECK_PKG([PANGO],
+ [pango >= pango_required_version
+  pangocairo >= pango_required_version])
+
 AU_CHECK_PKG([SDL2],
  [sdl2 >= sdl2_required_version])
 
@@ -163,17 +180,6 @@ AU_CHECK_PKG([XERCESC],
  [xerces-c >= xercesc_required_version])
 
 # Optional dependencies.
-AU_CHECK_OPTIONAL_PKG([librsvg], [build with LibRsvg support], [],
- [LIBRSVG],
-  librsvg-2.0 >= librsvg_required_version
-  cairo >= cairo_required_version
-)
-
-AU_CHECK_OPTIONAL_PKG([pango], [build with Pango support], [], [PANGO],
-  pango >= pango_required_version
-  pangocairo >= pango_required_version
-)
-
 AC_ARG_WITH([cef],
  [AS_HELP_STRING([--with-cef=DIR],
    [build with Chromium embedded at DIR])])
@@ -204,8 +210,13 @@ AS_IF([test -n "$with_cef"],
 AC_SUBST([cef_dir])
 AM_CONDITIONAL([WITH_CEF], [test "$with_cef" = yes])
 
+AU_CHECK_OPTIONAL_PKG([librsvg], [build with LibRsvg support], [],
+ [LIBRSVG],
+ [librsvg-2.0 >= librsvg_required_version])
+
 # Aliases for compiler flags.
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $WARN_CFLAGS $WERROR_CFLAGS "])
+AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $CAIRO_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $CEF_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $GLIB_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $GSTREAMER_CFLAGS"])
@@ -217,6 +228,7 @@ AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $SDL2_CFLAGS"])
 AS_VAR_APPEND([GINGA_ALL_CXXFLAGS], [" $XERCESC_CFLAGS"])
 AC_SUBST([GINGA_ALL_CXXFLAGS])
 
+AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $CAIRO_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $CEF_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $GLIB_LIBS"])
 AS_VAR_APPEND([GINGA_ALL_LDFLAGS],  [" $GSTREAMER_LIBS"])
@@ -248,5 +260,4 @@ AC_MSG_NOTICE([summary of main build options:
 
   with cef:           ${with_cef_result}
   with librsvg:       ${with_librsvg_result}
-  with pango:         ${with_pango_result}
 ])
