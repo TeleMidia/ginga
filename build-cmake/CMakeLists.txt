@@ -103,7 +103,6 @@ set (GINGA_SOURCES
   ../src/formatter/NclLinkValueAssessment.cpp
   ../src/formatter/NclNodeNesting.cpp
   ../src/formatter/Parser.cpp
-  ../src/formatter/PlayerAdapter.cpp
   ../src/formatter/RuleAdapter.cpp
   ../src/formatter/Settings.cpp
   ../src/formatter/Scheduler.cpp
