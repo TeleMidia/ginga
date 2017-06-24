@@ -51,46 +51,66 @@ PlayerAnimator::clear ()
 }
 
 /**
- * @brief Schedule an animation.
+ * @brief Schedule property animation.
  * @param name Property name.
- * @param value Property target value.
- * @param dur Duration.
+ * @param from Current value.
+ * @param to Target value.
+ * @param dur Duration of the animation.
  */
 void
-PlayerAnimator::schedule (const string &name,
-                          const string &value,
-                          GingaTime dur)
+PlayerAnimator::schedule (const string &name, const string &from,
+                          const string &to, GingaTime dur)
 {
+  vector<string> pre = {"", "", "", ""};
+  vector<string> pos;
+
   if (name == "bounds")
     {
-      vector<string> v = ginga_parse_list (value, ',', 4, 4);
-      this->doSchedule ("left", v[0], dur);
-      this->doSchedule ("top", v[1], dur);
-      this->doSchedule ("width", v[2], dur);
-      this->doSchedule ("height", v[3], dur);
+      if (from != "")
+        pre = ginga_parse_list (from, ',', 4, 4);
+      pos = ginga_parse_list (to, ',', 4, 4);
+      this->doSchedule ("left", pre[0], pos[0], dur);
+      this->doSchedule ("top", pre[1], pos[1], dur);
+      this->doSchedule ("width", pre[2], pos[2], dur);
+      this->doSchedule ("height", pre[3], pos[3], dur);
     }
   else if (name == "location")
     {
-      vector<string> v = ginga_parse_list (value, ',', 2, 2);
-      this->doSchedule ("left", v[0], dur);
-      this->doSchedule ("top", v[1], dur);
+      if (from != "")
+        pre = ginga_parse_list (from, ',', 2, 2);
+      pos = ginga_parse_list (to, ',', 2, 2);
+      this->doSchedule ("left", pre[0], pos[0], dur);
+      this->doSchedule ("top", pre[1], pos[1], dur);
     }
   else if (name == "size")
     {
-      vector<string> v = ginga_parse_list (value, ',', 2, 2);
-      this->doSchedule ("width", v[0], dur);
-      this->doSchedule ("height", v[1], dur);
+      if (from != "")
+        pre = ginga_parse_list (from, ',', 2, 2);
+      pos = ginga_parse_list (to, ',', 2, 2);
+      this->doSchedule ("width", pre[0], pos[0], dur);
+      this->doSchedule ("height", pre[1], pos[1], dur);
     }
   else if (name == "background")
     {
-      SDL_Color color = ginga_parse_color (value);
-      this->doSchedule ("background:r", xstrbuild ("%d", color.r), dur);
-      this->doSchedule ("background:g", xstrbuild ("%d", color.g), dur);
-      this->doSchedule ("background:b", xstrbuild ("%d", color.b), dur);
+      SDL_Color _pos;
+      if (from != "")
+        {
+          SDL_Color _pre = ginga_parse_color (from);
+          pre = {xstrbuild ("%d", _pre.r),
+                 xstrbuild ("%d", _pre.g),
+                 xstrbuild ("%d", _pre.b)};
+        }
+      _pos = ginga_parse_color (to);
+      pos = {xstrbuild ("%d", _pos.r),
+             xstrbuild ("%d", _pos.g),
+             xstrbuild ("%d", _pos.b)};
+      this->doSchedule ("background:r", pre[0], pos[0], dur);
+      this->doSchedule ("background:g", pre[1], pos[1], dur);
+      this->doSchedule ("background:b", pre[2], pos[2], dur);
     }
   else
     {
-      this->doSchedule (name, value, dur);
+      this->doSchedule (name, from, to, dur);
     }
 }
 
@@ -114,7 +134,7 @@ PlayerAnimator::update (SDL_Rect *rect, SDL_Color *bgColor, guint8 *alpha)
   G_STMT_START                                                  \
     {                                                           \
       if (!(info)->isInit ())                                   \
-        (info)->init ((double)(var));                           \
+        (info)->init (var);                                     \
       (info)->update ();                                        \
       var = (Type) CLAMP ((info)->getCurrent (), min, max);     \
     }                                                           \
@@ -177,34 +197,47 @@ PlayerAnimator::update (SDL_Rect *rect, SDL_Color *bgColor, guint8 *alpha)
 // PlayerAnimator: Private.
 
 void
-PlayerAnimator::doSchedule (const string &name,
-                            const string &value,
-                            GingaTime dur)
+PlayerAnimator::doSchedule (const string &name, const string &from,
+                            const string &to, GingaTime dur)
 {
+  AnimInfo *info;
+  double current;
   double target;
-  int width, height;
+  int width;
+  int height;
 
+  current = 0;
   Ginga_Display->getSize (&width, &height);
   if (name == "top" || name == "height")
     {
-      target = ginga_parse_percent (value, height, 0, G_MAXINT);
-      TRACE ("target '%s' is '%g'", name.c_str (), target);
+      if (from != "")
+        current = ginga_parse_percent (from, height, 0, G_MAXINT);
+      target = ginga_parse_percent (to, height, 0, G_MAXINT);
     }
   else if (name == "left" || name == "width")
     {
-      target = ginga_parse_percent (value, width, 0, G_MAXINT);
-      TRACE ("target '%s' is '%g'", name.c_str (), target);
+      if (from != "")
+        current = ginga_parse_percent (from, width, 0, G_MAXINT);
+      target = ginga_parse_percent (to, width, 0, G_MAXINT);
     }
   else if (name == "transparency" || name == "background")
     {
-      target = ginga_parse_percent (value, 255, 0, 255);
+      if (from != "")
+        current = ginga_parse_percent (from, 255, 0, 255);
+      target = ginga_parse_percent (to, 255, 0, 255);
     }
   else
     {
-      target = ginga_parse_percent (value, 100, 0, G_MAXINT);
+      if (from != "")
+        current = ginga_parse_percent (from, 100, 0, G_MAXINT);
+      target = ginga_parse_percent (to, 100, 0, G_MAXINT);
     }
 
-  _scheduled.push_back (new AnimInfo (name, target, dur));
+  info = new AnimInfo (name, current, target, dur);
+  if (from != "")
+    info->init (current);
+
+  _scheduled.push_back (info);
 }
 
 
@@ -213,13 +246,16 @@ PlayerAnimator::doSchedule (const string &name,
 /**
  * @brief Creates animation info.
  * @param name Property name.
- * @param target Target value.
- * @param dur Duration.
+ * @param from Current value.
+ * @param to Target value.
+ * @param dur Duration of the animation.
  */
-AnimInfo::AnimInfo (const string &name, double target, GingaTime dur)
+AnimInfo::AnimInfo (const string &name, double from,
+                    double to, GingaTime dur)
 {
   _name = name;
-  _target = target;
+  _current = from;
+  _target = to;
   _duration = dur;
   _done = false;
   _init = false;
@@ -247,7 +283,6 @@ AnimInfo::getName ()
 double
 AnimInfo::getCurrent ()
 {
-  g_assert (_init);
   return _current;
 }
 
@@ -267,16 +302,6 @@ GingaTime
 AnimInfo::getDuration ()
 {
   return _duration;
-}
-
-/**
- * @brief Gets animation speed.
- */
-double
-AnimInfo::getSpeed ()
-{
-  g_assert (_init);
-  return _speed;
 }
 
 /**
@@ -306,8 +331,8 @@ AnimInfo::init (double current)
   g_assert (!_init);
   _current = current;
   if (_duration > 0)
-    _speed = (abs (_target - current)
-              / (double) GINGA_TIME_AS_SECONDS (_duration));
+    _speed = abs (_target - current)
+      / (double) GINGA_TIME_AS_SECONDS (_duration);
   else
     _speed = 0;
   _init = true;

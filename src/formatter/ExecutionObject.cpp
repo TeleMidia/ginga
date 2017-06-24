@@ -965,33 +965,30 @@ ExecutionObject::getPlayer ()
 }
 
 /**
- * @brief Executes attribution event over object.
+ * @brief Sets object property.
+ * @param name Property name.
+ * @param from Current value.
+ * @apram to Updated value.
+ * @param dur Duration of the attribution.
  */
 void
-ExecutionObject::execAttribution (AttributionEvent *event,
-                                  const string &name,
-                                  const string &value,
-                                  GingaTime duration)
+ExecutionObject::setProperty (const string &name,
+                              const string &from,
+                              const string &to,
+                              GingaTime dur)
 {
-  g_assert (event->getExecutionObject () == this);
+  g_assert (GINGA_TIME_IS_VALID (dur));
+  TRACE ("updating '%s.%s' from '%s' to '%s'",
+         _id.c_str (), name.c_str (), from.c_str (), to.c_str ());
 
-  if (event->getCurrentState () != EventState::SLEEPING)
-    return;                     // nothing to do
-
-  event->start ();
-  event->setValue (value);
-
-  if (duration > 0)
+  if (dur > 0)
     {
-      _player->_player->scheduleAnimation (name, value, duration);
+      _player->_player->schedulePropertyAnimation (name, from, to, dur);
     }
   else
     {
-      _player->setProperty (event, value);
+      _player->_player->setProperty (name, to);
     }
-
-  // FIXME: This should be called at the end of animation (if any).
-  event->stop ();
 }
 
 void

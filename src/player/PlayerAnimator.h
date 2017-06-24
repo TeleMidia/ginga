@@ -26,7 +26,7 @@ GINGA_PLAYER_BEGIN
 class AnimInfo
 {
 public:
-  AnimInfo (const string &, double, GingaTime);
+  AnimInfo (const string &, double, double, GingaTime);
   ~AnimInfo ();
 
   string getName ();
@@ -56,12 +56,13 @@ public:
   PlayerAnimator();
   ~PlayerAnimator();
   void clear ();
-  void schedule (const string &, const string &, GingaTime);
+  void schedule (const string &, const string &, const string &, GingaTime);
   void update (SDL_Rect *, SDL_Color *, guint8 *);
 
 private:
   list <AnimInfo *> _scheduled; // scheduled animations
-  void doSchedule (const string &, const string &, GingaTime);
+  void doSchedule (const string &, const string &,
+                   const string &, GingaTime);
 };
 
 GINGA_PLAYER_END

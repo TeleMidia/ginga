@@ -58,7 +58,8 @@ public:
 
   virtual string getProperty (const string &);
   virtual void setProperty (const string &, const string &);
-  void scheduleAnimation (string, string, GingaTime);
+  void schedulePropertyAnimation (const string &, const string &,
+                                  const string &, GingaTime);
 
   virtual void start ();
   virtual void stop ();
