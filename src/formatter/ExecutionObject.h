@@ -18,14 +18,13 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef EXECUTION_OBJECT_H
 #define EXECUTION_OBJECT_H
 
-#include "player/Player.h"
-using namespace ::ginga::player;
+#include "NclEvents.h"
+#include "NclEventTransitionManager.h"
+#include "NclCascadingDescriptor.h"
+#include "NclFormatterRegion.h"
+#include "NclActions.h"
+#include "NclNodeNesting.h"
 
-#include "PlayerAdapter.h"
-
-#include "mb/IEventListener.h"
-
-#include "ncl/Animation.h"
 #include "ncl/GenericDescriptor.h"
 #include "ncl/ReferenceContent.h"
 #include "ncl/LabeledAnchor.h"
@@ -35,12 +34,11 @@ using namespace ::ginga::player;
 #include "ncl/EventUtil.h"
 using namespace ::ginga::ncl;
 
-#include "NclEvents.h"
-#include "NclEventTransitionManager.h"
-#include "NclCascadingDescriptor.h"
-#include "NclFormatterRegion.h"
-#include "NclActions.h"
-#include "NclNodeNesting.h"
+#include "mb/IEventListener.h"
+using namespace ::ginga::mb;
+
+#include "player/Player.h"
+using namespace ::ginga::player;
 
 GINGA_FORMATTER_BEGIN
 
@@ -134,8 +132,8 @@ private:
   // ------------------------------------------
 
 public:
-  PlayerAdapter *getPlayer ();
-  void setProperty (const string &, const string &, const string &, GingaTime);
+  void setProperty (const string &, const string &,
+                    const string &, GingaTime);
 
   // From IEventListener.
   virtual void handleKeyEvent (SDL_EventType, SDL_Keycode) override;
@@ -147,7 +145,7 @@ protected:
 private:
   static set<ExecutionObject *> _objects; // set of all objects
 
-  PlayerAdapter *_player;       // associated player
+  Player *_player;              // associated player
   GingaTime _time;              // playback time
 };
 

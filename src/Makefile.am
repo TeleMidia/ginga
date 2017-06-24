@@ -59,7 +59,6 @@ src+= formatter/NclLinkTriggerCondition.cpp
 src+= formatter/NclLinkValueAssessment.cpp
 src+= formatter/NclNodeNesting.cpp
 src+= formatter/Parser.cpp
-src+= formatter/PlayerAdapter.cpp
 src+= formatter/RuleAdapter.cpp
 src+= formatter/Scheduler.cpp
 src+= formatter/Settings.cpp

@@ -32,6 +32,8 @@ public:
      PL_PAUSED,
     };
 
+  static Player *createPlayer (const string &, const string &);
+
   Player (const string &);
   virtual ~Player ();
 

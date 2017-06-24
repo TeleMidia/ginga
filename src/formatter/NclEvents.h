@@ -18,18 +18,20 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #ifndef _NCLEVENT_H_
 #define _NCLEVENT_H_
 
+#include "Settings.h"
+
 #include "ncl/ContentAnchor.h"
 #include "ncl/EventUtil.h"
 #include "ncl/PropertyAnchor.h"
 using namespace ::ginga::ncl;
 
-#include "Settings.h"
+#include "player/Player.h"
+using namespace ::ginga::player;
 
 GINGA_FORMATTER_BEGIN
 
 class INclEventListener;
 class ExecutionObject;
-class PlayerAdapter;
 
 #define PROPERTY_READONLY(type,name,getfunc) \
   protected: type name; \
@@ -129,7 +131,7 @@ public:
 
 class AttributionEvent : public NclEvent
 {
-  PROPERTY (PlayerAdapter *, _player, getPlayerAdapter, setPlayerAdapter)
+  PROPERTY (Player *, _player, getPlayer, setPlayer)
   PROPERTY_READONLY (PropertyAnchor *, _anchor, getAnchor)
 
 public:

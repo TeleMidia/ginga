@@ -24,11 +24,11 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/ContentNode.h"
 using namespace ::ginga::ncl;
 
+#include "player/Player.h"
+using namespace ::ginga::player;
+
 #include "mb/Display.h"
 using namespace ::ginga::mb;
-
-#include "player/Player.h"      // *** FIXME!
-using namespace ::ginga::player;
 
 GINGA_FORMATTER_BEGIN
 
@@ -664,7 +664,7 @@ ExecutionObject::start ()
 
   // Allocate player.
   mime = contentNode->getNodeType ();
-  _player = new PlayerAdapter (src, mime);
+  _player = Player::createPlayer (src, mime);
 
   // Initialize player properties.
   if (_descriptor != nullptr)
@@ -699,11 +699,11 @@ ExecutionObject::start ()
     {
       AttributionEvent *attevt = dynamic_cast <AttributionEvent *> (evt);
       if (attevt)
-        attevt->setPlayerAdapter (_player);
+        attevt->setPlayer (_player);
     }
 
   _time = 0;
-  g_assert (_player->start ());
+  _player->start ();
   g_assert (Ginga_Display->registerEventListener (this));
 
  done:
@@ -724,7 +724,7 @@ ExecutionObject::pause ()
     event->pause ();
 
   g_assert_nonnull (_player);
-  g_assert (_player->pause ());
+  _player->pause ();
 
   return true;
 }
@@ -739,7 +739,7 @@ ExecutionObject::resume ()
     event->resume ();
 
   g_assert_nonnull (_player);
-  g_assert (_player->resume ());
+  _player->resume ();
 
   return true;
 }
@@ -757,7 +757,7 @@ ExecutionObject::stop ()
   // Stop and destroy player.
   if (_player != nullptr)
     {
-      g_assert (_player->stop ());
+      _player->stop ();
       delete _player;
       _player = nullptr;
       _time = GINGA_TIME_NONE;
@@ -769,7 +769,7 @@ ExecutionObject::stop ()
     {
       AttributionEvent *attevt = dynamic_cast <AttributionEvent *> (evt);
       if (attevt)
-        attevt->setPlayerAdapter (nullptr);
+        attevt->setPlayer (nullptr);
     }
 
   // Stop main event.
@@ -950,12 +950,6 @@ ExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
 
 // -----------------------------------
 
-PlayerAdapter *
-ExecutionObject::getPlayer ()
-{
-  return _player;
-}
-
 /**
  * @brief Sets property.
  * @param name Property name.
@@ -978,11 +972,11 @@ ExecutionObject::setProperty (const string &name,
 
   if (dur > 0)
     {
-      _player->_player->schedulePropertyAnimation (name, from, to, dur);
+      _player->schedulePropertyAnimation (name, from, to, dur);
     }
   else
     {
-      _player->_player->setProperty (name, to);
+      _player->setProperty (name, to);
     }
 }
 
@@ -999,7 +993,7 @@ ExecutionObject::handleTickEvent (arg_unused (GingaTime total),
   if (_player == nullptr)
     return;                     // nothing to do
 
-  if (_player->_player->getEOS ())
+  if (_player->getEOS ())
     {
       this->stop ();
       return;
@@ -1031,7 +1025,7 @@ ExecutionObject::handleTickEvent (arg_unused (GingaTime total),
          ", updating transition table",
          evt->getId ().c_str(), GINGA_TIME_ARGS (now));
 
-  _transMan.updateTransitionTable (now, _player->_player, _mainEvent);
+  _transMan.updateTransitionTable (now, _player, _mainEvent);
 }
 
 void
