@@ -95,7 +95,7 @@ SvgPlayer::reload (SDL_Renderer *renderer)
   cairo_surface_destroy (cr_sfc);
 
   if (_texture != nullptr)
-    Ginga_Display->destroyTexture (_texture);
+    SDL_DestroyTexture (_texture);
 
   _texture = SDL_CreateTextureFromSurface (renderer, sfc);
   g_assert_nonnull (_texture);

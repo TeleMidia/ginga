@@ -42,8 +42,6 @@ public:
 
   void quit ();
   bool hasQuitted ();
-
-  void destroyTexture (SDL_Texture *);
   void renderLoop (void);
 
   bool registerEventListener (IEventListener *);
@@ -62,7 +60,6 @@ private:
 
   GList *_listeners;            // list of listeners to be notified
   GList *_players;              // list of players to be ticked
-  GList *_textures;             // list of textures to be destructed
 
   SDL_Window *_screen;          // display screen
   SDL_Renderer *_renderer;      // display renderer
