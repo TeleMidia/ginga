@@ -69,9 +69,8 @@ Display::Display (int width, int height, double fps, bool fullscreen)
   _fullscreen = fullscreen;
   _quit = false;
 
-  _listeners = NULL;
-  _players = NULL;
-  _textures = NULL;
+  _listeners = nullptr;
+  _players = nullptr;
 
   g_assert (!SDL_WasInit (0));
   if (unlikely (SDL_Init (0) != 0))
@@ -102,7 +101,6 @@ Display::~Display ()
 
   g_list_free (_listeners);
   g_list_free (_players);
-  g_assert (g_list_length (_textures) == 0);
 
   SDL_DestroyRenderer (_renderer);
   SDL_DestroyWindow (_screen);
@@ -248,17 +246,6 @@ Display::unregisterPlayer (Player *player)
 }
 
 /**
- * @brief Schedules destruction of texture.
- * @param texture Texture.
- */
-void
-Display::destroyTexture (SDL_Texture *texture)
-{
-  g_assert_nonnull (texture);
-  g_assert (this->add (&_textures, texture));
-}
-
-/**
  * @brief Enters render loop.
  */
 void
@@ -336,10 +323,6 @@ Display::renderLoop ()
 
       // Step Glib's context (required by GStreamer pipeline bus).
       g_main_context_iteration (NULL, false);
-
-      // Destroy dead textures.
-      g_list_free_full (_textures, (GDestroyNotify) SDL_DestroyTexture);
-      _textures = NULL;
     }
 
   TRACE ("quitting");
