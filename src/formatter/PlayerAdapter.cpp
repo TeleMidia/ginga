@@ -142,17 +142,6 @@ PlayerAdapter::abort ()
 }
 
 void
-PlayerAdapter::setProperty (AttributionEvent *event,
-                            const string &value)
-{
-  string name;
-  g_assert_nonnull (_player);
-  g_assert_nonnull (event);
-  name = event->getAnchor ()->getName ();
-  _player->setProperty (name, value);
-}
-
-void
 PlayerAdapter::setProperty (const string &name,
                             const string &value)
 {

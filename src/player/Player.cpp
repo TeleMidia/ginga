@@ -294,13 +294,15 @@ Player::setProperty (const string &name, const string &value)
 /**
  * @brief Schedules linear animation of property value.
  * @param name Property name.
- * @param value Target value.
- * @param duration Duration.
+ * @param from Current value.
+ * @param to Target value.
+ * @param duration Duration of the animation.
  */
 void
-Player::scheduleAnimation (string name, string value, GingaTime duration)
+Player::schedulePropertyAnimation (const string &name, const string &from,
+                                   const string &to, GingaTime dur)
 {
-  _animator.schedule (name, value, duration);
+  _animator.schedule (name, from, to, dur);
 }
 
 /**
@@ -309,9 +311,9 @@ Player::scheduleAnimation (string name, string value, GingaTime duration)
 void
 Player::start ()
 {
-  _state = PL_OCCURRING;
   _eos = false;
   Ginga_Display->registerPlayer (this);
+  _state = PL_OCCURRING;
 }
 
 /**
@@ -320,8 +322,9 @@ Player::start ()
 void
 Player::stop ()
 {
-  _state = PL_SLEEPING;
+  _animator.clear ();
   Ginga_Display->unregisterPlayer (this);
+  _state = PL_SLEEPING;
 }
 
 /**

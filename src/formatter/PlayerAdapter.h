@@ -31,8 +31,6 @@ public:
 
   Player *getPlayer ();
 
-  virtual void setProperty (AttributionEvent *, const string &);
-
   bool start ();
   bool stop ();
   bool pause ();

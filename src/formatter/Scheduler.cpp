@@ -117,9 +117,12 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
     {
       AttributionEvent *attevt;
       NclAssignmentAction *attact;
+      PropertyAnchor *property;
 
       string name;
-      string value;
+      string from;
+      string to;
+
       Animation *anim;
       GingaTime dur;
 
@@ -129,8 +132,15 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
       attevt = (AttributionEvent *) event;
       attact = (NclAssignmentAction *) action;
 
-      name = attevt->getAnchor ()->getName ();
-      value = attevt->solveImplicitRefAssessment (attact->getValue ());
+      if (event->getCurrentState () != EventState::SLEEPING)
+        return;                 // nothing to do
+
+      property = attevt->getAnchor ();
+      g_assert_nonnull (property);
+
+      name = property->getName ();
+      from = property->getValue ();
+      to = attevt->solveImplicitRefAssessment (attact->getValue ());
 
       if ((anim = attact->getAnimation ()) != nullptr)
         {
@@ -142,7 +152,12 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
         {
           dur = 0;
         }
-      obj->execAttribution (attevt, name, value, dur);
+
+      attevt->start ();
+      attevt->setValue (to);
+      obj->setProperty (name, from, to, dur);
+      attevt->stop ();          // FIXME!
+
       return;
     }
 
@@ -268,7 +283,8 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
                     { // force attribution
                       pAdapter = childObject->getPlayer ();
                       g_assert_nonnull (pAdapter);
-                      pAdapter->setProperty (attrEvent, propValue);
+                      pAdapter->setProperty
+                        (attrEvent->getAnchor ()->getName (), propValue);
                     }
                 }
               ++j;
