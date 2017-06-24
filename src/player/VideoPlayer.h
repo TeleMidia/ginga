@@ -33,19 +33,19 @@ public:
   void resume () override;
   void redraw (SDL_Renderer *) override;
 
-public:
-  int _atom_eos;                  // true if playbin generated an EOS
-
 private:
   GRecMutex _mutex;               // sync access to player data
   GstElement *_playbin;           // pipeline
+  bool _playbin_eos;              // true if playbin generated an EOS
   GstSample *_sample;             // last sample seen
   GstAppSinkCallbacks _callbacks; // app-sink callback data
 
   void lock ();
   void unlock ();
-  void setSample (GstSample *);
+  bool getPlaybinEOS (void);
+  void setPlaybinEOS (bool);
   GstSample *getSample (void);
+  void setSample (GstSample *);
 
   // Pipeline callbacks.
   static gboolean cb_Bus (GstBus *, GstMessage *, VideoPlayer *);

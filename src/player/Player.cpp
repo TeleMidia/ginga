@@ -311,9 +311,9 @@ Player::schedulePropertyAnimation (const string &name, const string &from,
 void
 Player::start ()
 {
+  _state = PL_OCCURRING;
   _eos = false;
   Ginga_Display->registerPlayer (this);
-  _state = PL_OCCURRING;
 }
 
 /**
@@ -322,9 +322,9 @@ Player::start ()
 void
 Player::stop ()
 {
-  _animator.clear ();
-  Ginga_Display->unregisterPlayer (this);
   _state = PL_SLEEPING;
+  //_animator.clear ();
+  Ginga_Display->unregisterPlayer (this);
 }
 
 /**
