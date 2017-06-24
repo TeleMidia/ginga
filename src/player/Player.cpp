@@ -17,6 +17,18 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
 #include "Player.h"
+#include "player/ImagePlayer.h"
+#include "player/LuaPlayer.h"
+#include "player/VideoPlayer.h"
+#if defined WITH_LIBRSVG && WITH_LIBRSVG
+# include "player/SvgPlayer.h"
+#endif
+#if defined WITH_PANGO && WITH_PANGO
+# include "player/TextPlayer.h"
+#endif
+#if defined WITH_CEF && WITH_CEF
+# include "player/HTMLPlayer.h"
+#endif
 
 #include "mb/Display.h"
 using namespace ::ginga::mb;
@@ -25,6 +37,58 @@ GINGA_PLAYER_BEGIN
 
 
 // Public.
+
+/**
+ * @brief Creates a player from a mime-type.
+ * @param uri Source URI.
+ * @param mime Mime-type of content.
+ * @return A new player to exhibit source.
+ */
+Player *
+Player::createPlayer (const string &uri, const string &mime)
+{
+  Player *player = nullptr;
+
+  if (xstrhasprefix (mime, "audio") || xstrhasprefix (mime, "video"))
+    {
+      player = new VideoPlayer (uri);
+    }
+#if WITH_LIBRSVG && WITH_LIBRSVG
+  else if (xstrhasprefix (mime, "image/svg"))
+    {
+      player = new SvgPlayer (uri);
+    }
+#endif
+  else if (xstrhasprefix (mime, "image"))
+    {
+      player = new ImagePlayer (uri);
+    }
+#if defined WITH_CEF &&  WITH_CEF
+  else if (xstrhasprefix (mime, "text/html"))
+    {
+      player = new HTMLPlayer (uri);
+    }
+#endif
+#if defined WITH_PANGO && WITH_PANGO
+  else if (mime == "text/plain")
+    {
+      player = new TextPlayer (uri);
+    }
+#endif
+  else if (mime == "application/x-ginga-NCLua")
+    {
+      player = new LuaPlayer (uri);
+    }
+  else
+    {
+      player = new Player (uri);
+      WARNING ("unknown mime '%s': creating an empty player",
+               mime.c_str ());
+    }
+
+  g_assert_nonnull (player);
+  return player;
+}
 
 /**
  * @brief Creates player for the given URI.

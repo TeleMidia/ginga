@@ -29,7 +29,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclFormatterRegion.h"
 
-#include "PlayerAdapter.h"
 #include "Scheduler.h"
 
 GINGA_FORMATTER_BEGIN

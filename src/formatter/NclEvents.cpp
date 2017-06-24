@@ -21,8 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ExecutionObjectContext.h"
 #include "ncl/ContentNode.h"
 
-#include "PlayerAdapter.h"
-
 GINGA_FORMATTER_BEGIN
 
 set<NclEvent *> NclEvent::_instances;
@@ -384,7 +382,7 @@ AttributionEvent::getCurrentValue ()
     {
       if (_player)
         {
-          value = _player->getProperty (this);
+          value = _player->getProperty (this->getAnchor ()->getName ());
         }
 
       if (value == "")

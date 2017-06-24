@@ -21,7 +21,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Converter.h"
 #include "FocusManager.h"
 #include "NclActions.h"
-#include "PlayerAdapter.h"
 #include "RuleAdapter.h"
 
 #include "ncl/NclDocument.h"
