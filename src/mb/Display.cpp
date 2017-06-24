@@ -19,8 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "Display.h"
 #include "Dashboard.h"
 
-#include "SDLWindow.h"
-
 GINGA_MB_BEGIN
 
 // Global display; initialized by main().

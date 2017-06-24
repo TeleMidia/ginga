@@ -56,16 +56,7 @@ Dashboard::redraw (SDL_Renderer *renderer, GingaTime total, double fps,
   g_assert_nonnull (text);
 
   Ginga_Display->getSize (&width, &height);
-#if SDL_VERSION_ATLEAST(2,0,5)
-  sfc = SDL_CreateRGBSurfaceWithFormat (0, width, height, 32,
-                                        SDL_PIXELFORMAT_ARGB8888);
-#else
-  sfc = SDL_CreateRGBSurface (0, width, height, 32,
-                              0xff000000,
-                              0x00ff0000,
-                              0x0000ff00,
-                              0x000000ff);
-#endif
+  SDLx_CreateSurfaceARGB32 (width, height, &sfc);
   g_assert_nonnull (sfc);
 
   SDLx_LockSurface (sfc);

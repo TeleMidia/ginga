@@ -36,7 +36,6 @@ NclFormatterRegion::NclFormatterRegion (const string &objectId,
   if (this->descriptor != NULL)
     this->region = this->descriptor->getRegion ();
 
-  this->win = 0;
   this->focusState = NclFormatterRegion::UNSELECTED;
   this->focusBorderColor = {0, 0, 255, 255};
   this->focusBorderWidth = 0;
@@ -320,13 +319,6 @@ NclFormatterRegion::setFocusInfo (SDL_Color focusBorderColor,
   setSelComponentSrc (selComponentSrc);
 }
 
-SDLWindow *
-NclFormatterRegion::getOutputId ()
-{
-  return this->win;
-}
-
-
 void
 NclFormatterRegion::updateRegionBounds ()
 {
@@ -369,32 +361,6 @@ NclFormatterRegion::getOriginalRegion ()
   return region;
 }
 
-SDLWindow *
-NclFormatterRegion::prepareOutputDisplay ()
-{
-  SDL_Rect r;
-  int z, zorder;
-
-  if (this->win != NULL)
-    return this->win;           // nothing to do
-
-  g_assert_nonnull (this->region);
-  r = region->getRect ();
-  region->getZ (&z, &zorder);
-
-  this->win = new SDLWindow ();
-  return this->win;
-}
-
-void
-NclFormatterRegion::setGhostRegion (bool ghost)
-{
-  if (this->win != NULL)
-    {
-      this->win->setGhostWindow (ghost);
-    }
-}
-
 short
 NclFormatterRegion::getFocusState ()
 {
@@ -413,10 +379,6 @@ NclFormatterRegion::setSelection (bool selOn)
   if (selOn)
     {
       focusState = NclFormatterRegion::SELECTED;
-      if (this->win != 0)
-        {
-          this->win->setBorder (selBorderColor, selBorderWidth);
-        }
     }
   else
     {
@@ -436,10 +398,6 @@ NclFormatterRegion::setFocus (bool focusOn)
       if (focusComponentSrc != "")
         {
         }
-      if (this->win != NULL)
-        {
-          this->win->setBorder (focusBorderColor, focusBorderWidth);
-        }
     }
   else
     {
@@ -451,11 +409,6 @@ void
 NclFormatterRegion::unselect ()
 {
   focusState = NclFormatterRegion::UNSELECTED;
-  if (this->win != NULL)
-    {
-      SDL_Color c = {0, 0, 0, 0};
-      this->win->setBorder (c, 0);
-    }
 }
 
 SDL_Color
