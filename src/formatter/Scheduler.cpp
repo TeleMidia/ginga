@@ -167,11 +167,9 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
     case ACT_START:
       obj->prepare (event);
       g_assert (obj->start ());
-      event->addListener (this);
       break;
     case ACT_STOP:
       g_assert (obj->stop ());
-      event->removeListener (this);
       break;
     case ACT_PAUSE:
       g_assert (obj->pause ());
@@ -200,7 +198,6 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
   map<string, ExecutionObject *>::iterator j;
   ExecutionObject *childObject;
 
-  PlayerAdapter *pAdapter;
   AttributionEvent *attrEvent;
   NclEvent *event;
   string propName;
@@ -282,11 +279,14 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
                       runAction (childEvent, action);
                     }
                   else
-                    { // force attribution
-                      pAdapter = childObject->getPlayer ();
-                      g_assert_nonnull (pAdapter);
-                      pAdapter->setProperty
-                        (attrEvent->getAnchor ()->getName (), propValue);
+                    {
+                      ERROR_NOT_IMPLEMENTED
+                        ("context property attributions are not supported");
+
+                      // pAdapter = childObject->getPlayer ();
+                      // g_assert_nonnull (pAdapter);
+                      // pAdapter->setProperty
+                      //   (attrEvent->getAnchor ()->getName (), propValue);
                     }
                 }
               ++j;
