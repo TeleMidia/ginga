@@ -967,7 +967,7 @@ ExecutionObject::getPlayer ()
 }
 
 /**
- * @brief Sets object property.
+ * @brief Sets property.
  * @param name Property name.
  * @param from Current value.
  * @apram to Updated value.
