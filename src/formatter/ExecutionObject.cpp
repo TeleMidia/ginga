@@ -278,27 +278,14 @@ ExecutionObject::addEvent (NclEvent *event)
 {
   map<string, NclEvent *>::iterator i;
 
-  i = _events.find (event->getId ());
-  if (i != _events.end ())
-    {
-      clog << "NclExecutionObject::addEvent Warning! Trying to add ";
-      clog << "the same event '" << event->getId () << "' twice";
-      clog << " current event address '" << i->second << "' ";
-      clog << " addEvent address '" << event << "'";
-      clog << endl;
-
-      return false;
-    }
-
-  clog << "NclExecutionObject::addEvent '" << event->getId () << "' in '";
-  clog << getId () << "'" << endl;
+  g_assert (_events.find (event->getId ()) == _events.end ());
 
   _events[event->getId ()] = event;
-  if (dynamic_cast <PresentationEvent *> (event))
+  if (instanceof (PresentationEvent *, event))
     {
       addPresentationEvent ((PresentationEvent *) event);
     }
-  else if (dynamic_cast <SelectionEvent *> (event))
+  else if (instanceof (SelectionEvent *, event))
     {
       _selectionEvents.insert (((SelectionEvent *) event));
     }
@@ -306,7 +293,6 @@ ExecutionObject::addEvent (NclEvent *event)
     {
       _otherEvents.push_back (event);
     }
-
   return true;
 }
 
@@ -653,19 +639,21 @@ ExecutionObject::start ()
   if (this->isOccurring ())
     return true;              // nothing to do
 
-  if (dynamic_cast <ExecutionObjectContext *> (this))
+  TRACE ("starting");
+
+  if (instanceof (ExecutionObjectContext *, this))
     goto done;
 
-  entity = dynamic_cast <NodeEntity *> (_dataObject);
+  entity = cast (NodeEntity *, _dataObject);
   g_assert_nonnull (entity);
 
-  contentNode = dynamic_cast <ContentNode *> (entity);
+  contentNode = cast (ContentNode *, entity);
   g_assert_nonnull (contentNode);
 
   content = contentNode->getContent ();
   if (content != nullptr)
     {
-      ReferenceContent *ref = dynamic_cast <ReferenceContent *>(content);
+      ReferenceContent *ref = cast (ReferenceContent *, content);
       g_assert_nonnull (ref);
       src = ref->getCompleteReferenceUrl ();
     }
@@ -763,6 +751,8 @@ ExecutionObject::stop ()
 
   if (this->isSleeping ())
     return true;                // nothing to do
+
+  TRACE ("stopping");
 
   // Stop and destroy player.
   if (_player != nullptr)
@@ -979,6 +969,9 @@ ExecutionObject::setProperty (const string &name,
                               const string &to,
                               GingaTime dur)
 {
+  if (_player == nullptr)
+    return;                     // nothing to do
+
   g_assert (GINGA_TIME_IS_VALID (dur));
   TRACE ("updating '%s.%s' from '%s' to '%s'",
          _id.c_str (), name.c_str (), from.c_str (), to.c_str ());

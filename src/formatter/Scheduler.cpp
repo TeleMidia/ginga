@@ -156,8 +156,9 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
       attevt->start ();
       attevt->setValue (to);
       obj->setProperty (name, from, to, dur);
-      attevt->stop ();          // FIXME!
 
+      // TODO: Wrap this in a closure to be called at the end of animation.
+      attevt->stop ();
       return;
     }
 
