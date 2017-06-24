@@ -94,9 +94,10 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
   obj = event->getExecutionObject ();
   g_assert_nonnull (obj);
 
-  TRACE ("running action '%s' over event '%s'",
+  TRACE ("running action '%s' over event '%s' (object '%s')",
          action->getTypeString ().c_str (),
-         event->getId ().c_str ());
+         event->getId ().c_str (),
+         obj->getId ().c_str ());
 
   if (instanceof (ExecutionObjectSwitch *, obj)
       && instanceof (SwitchEvent *, event))
