@@ -29,7 +29,7 @@ class CompositeNode;
 class Node : public Entity
 {
 public:
-  Node (const string &_id);
+  Node (const string &id);
   virtual ~Node ();
 
   void copyProperties (Node *node);

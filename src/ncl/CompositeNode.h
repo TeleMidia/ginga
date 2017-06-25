@@ -82,6 +82,9 @@ public:
 protected:
   vector<Node *> _nodes;
   vector<Port *> _portList;
+
+  static bool
+  isDocumentNode (Node *node);
 };
 
 GINGA_NCL_END

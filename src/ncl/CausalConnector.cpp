@@ -24,8 +24,6 @@ CausalConnector::CausalConnector (const string &id) : Connector (id)
 {
   _conditionExpression = NULL;
   _actionExpression = NULL;
-
-  _typeSet.insert ("CausalConnector");
 }
 
 CausalConnector::CausalConnector (const string &id, ConditionExpression *condition,
@@ -34,8 +32,6 @@ CausalConnector::CausalConnector (const string &id, ConditionExpression *conditi
 {
   _conditionExpression = (TriggerExpression *)condition;
   _actionExpression = (Action *)action;
-
-  _typeSet.insert ("CausalConnector");
 }
 
 CausalConnector::~CausalConnector ()
@@ -97,17 +93,17 @@ CausalConnector::getConditionRoles (ConditionExpression *condition,
 {
   vector<Role *> *childRoles;
 
-  if (_conditionExpression->instanceOf ("SimpleCondition"))
+  if (instanceof (SimpleCondition *, _conditionExpression))
     {
       roles->push_back ((SimpleCondition *)condition);
     }
   else
     {
-      if (_conditionExpression->instanceOf ("AssessmentStatement"))
+      if (instanceof (AssessmentStatement *, _conditionExpression))
         {
           childRoles = ((AssessmentStatement *)condition)->getRoles ();
         }
-      else if (_conditionExpression->instanceOf ("CompoundCondition"))
+      else if (instanceof (CompoundCondition *, _conditionExpression))
         {
           childRoles = ((CompoundCondition *)condition)->getRoles ();
         }
@@ -131,7 +127,7 @@ CausalConnector::getActionRoles (Action *action, vector<Role *> *roles)
 {
   vector<Role *> *childRoles;
 
-  if (_actionExpression->instanceOf ("SimpleAction"))
+  if (instanceof (SimpleAction *, _actionExpression))
     {
       roles->push_back ((SimpleAction *)action);
     }

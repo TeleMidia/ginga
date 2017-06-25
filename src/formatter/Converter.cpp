@@ -209,8 +209,8 @@ Converter::getEvent (ExecutionObject *exeObj,
       return event;
     }
 
-  auto switchObj = dynamic_cast<ExecutionObjectSwitch *> (exeObj);
-  auto cObj = dynamic_cast<ExecutionObjectContext *> (exeObj);
+  auto switchObj = cast (ExecutionObjectSwitch *, exeObj);
+  auto cObj = cast (ExecutionObjectContext *, exeObj);
 
   if (switchObj)
     {
@@ -227,7 +227,7 @@ Converter::getEvent (ExecutionObject *exeObj,
       // TODO: eventos internos da composicao estao sendo tratados nos elos.
       if (ncmEventType == EventType::ATTRIBUTION)
         {
-          auto propAnchor = dynamic_cast<PropertyAnchor *> (interfacePoint);
+          auto propAnchor = cast (PropertyAnchor *, interfacePoint);
           if (propAnchor)
             {
               event = new AttributionEvent (
@@ -251,7 +251,7 @@ Converter::getEvent (ExecutionObject *exeObj,
         {
         case EventType::ATTRIBUTION:
           {
-            auto propAnchor = dynamic_cast<PropertyAnchor *> (interfacePoint);
+            auto propAnchor = cast (PropertyAnchor *, interfacePoint);
             if (propAnchor)
               {
                 event = new AttributionEvent (
@@ -264,7 +264,7 @@ Converter::getEvent (ExecutionObject *exeObj,
                          "isn't.");
 
                 auto intervalAnchor
-                    = dynamic_cast <IntervalAnchor *> (interfacePoint);
+                    = cast (IntervalAnchor *, interfacePoint);
                 if (intervalAnchor)
                   {
                     WARNING ("It was supposed to be a PRESENTATION EVENT");
@@ -374,20 +374,20 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
 
   // Hanlde settings nodes.
   Node *dataObject = exeObj->getDataObject ();
-  auto contentNode = dynamic_cast<ContentNode *> (dataObject);
+  auto contentNode = cast (ContentNode *, dataObject);
 
   if (contentNode && contentNode->isSettingNode ())
     {
       _settingsObjects.insert (exeObj);
     }
 
-  auto referNode = dynamic_cast<ReferNode *> (dataObject);
+  auto referNode = cast (ReferNode *, dataObject);
   if (referNode)
     {
       if (referNode->getInstanceType () == "instSame")
         {
           Entity *entity = referNode->getDataEntity ();
-          auto entityContentNode = dynamic_cast <ContentNode *> (entity);
+          auto entityContentNode = cast (ContentNode *, entity);
 
           if (entityContentNode
               && entityContentNode->isSettingNode ())
@@ -400,8 +400,8 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
   NclNodeNesting *nodePerspective = exeObj->getNodePerspective ();
   Node *headNode = nodePerspective->getHeadNode ();
 
-  auto nodeEntity = dynamic_cast<NodeEntity *> (dataObject);
-  auto headCompositeNode = dynamic_cast<CompositeNode *> (headNode);
+  auto nodeEntity = cast (NodeEntity *, dataObject);
+  auto headCompositeNode = cast (CompositeNode *, headNode);
   if (headCompositeNode && nodeEntity)
     {
       set<ReferNode *> *sameInstances = nodeEntity->getInstSameInstances ();
@@ -435,7 +435,7 @@ Converter::addExecutionObject (ExecutionObject *exeObj,
   // Compile execution object links
   for (Node *node : exeObj->getNodes ())
     {
-      auto parent = dynamic_cast <ExecutionObjectContext*> (
+      auto parent = cast (ExecutionObjectContext*, 
             exeObj->getParentObject (node));
 
       g_assert_nonnull (parent);
@@ -481,7 +481,7 @@ Converter::getParentExecutionObject (NclNodeNesting *perspective)
       parentPerspective = perspective->copy ();
       parentPerspective->removeAnchorNode ();
 
-      auto cObj = dynamic_cast <ExecutionObjectContext*> (
+      auto cObj = cast (ExecutionObjectContext*, 
             this->getExecutionObjectFromPerspective (
               parentPerspective, nullptr));
 
@@ -505,7 +505,7 @@ Converter::createExecutionObject (
   ExecutionObject *exeObj;
   PresentationEvent *compositeEvt;
 
-  auto nodeEntity = dynamic_cast <NodeEntity *> (
+  auto nodeEntity = cast (NodeEntity *, 
         perspective->getAnchorNode ()->getDataEntity ());
 
   g_assert_nonnull (nodeEntity);
@@ -514,12 +514,12 @@ Converter::createExecutionObject (
 
   // solve execution object cross reference coming from refer nodes with
   // new instance = false
-  auto contentNode = dynamic_cast<ContentNode *> (nodeEntity);
+  auto contentNode = cast (ContentNode *, nodeEntity);
   if (contentNode
       && contentNode->getNodeType () != ""
       && !contentNode->isSettingNode ())
     {
-      auto referNode = dynamic_cast<ReferNode *> (node);
+      auto referNode = cast (ReferNode *, node);
       if (referNode)
         {
           if (referNode->getInstanceType () != "new")
@@ -557,7 +557,7 @@ Converter::createExecutionObject (
         }
     }
 
-  auto switchNode = dynamic_cast<SwitchNode *> (nodeEntity);
+  auto switchNode = cast (SwitchNode *, nodeEntity);
   if (switchNode)
     {
       string s;
@@ -575,7 +575,7 @@ Converter::createExecutionObject (
       compositeEvt->addListener (this);
       _listening.insert (compositeEvt);
     }
-  else if (nodeEntity->instanceOf ("CompositeNode"))
+  else if (instanceof (CompositeNode* , nodeEntity))
     {
       string s;
       exeObj = new ExecutionObjectContext (
@@ -629,8 +629,8 @@ Converter::createDummyCascadingDescriptor (Node *node)
 
       if (hasDescriptorPropName (name))
         {
-          auto nodeEntity = dynamic_cast <NodeEntity *> (node);
-          auto referNode = dynamic_cast <ReferNode *> (node);
+          auto nodeEntity = cast (NodeEntity *, node);
+          auto referNode = cast (ReferNode *, node);
           if (nodeEntity)
             {
               ncmDesc = createDummyDescriptor (nodeEntity);
@@ -664,15 +664,15 @@ Converter::createDummyCascadingDescriptor (Node *node)
         }
     }
 
-  auto referNode = dynamic_cast <ReferNode *> (node);
+  auto referNode = cast (ReferNode *, node);
   if (referNode
       && referNode->getInstanceType () == "new"
       && referNode->getInstanceDescriptor () == nullptr)
     {
-      auto nodeEntity = dynamic_cast<NodeEntity *> (node->getDataEntity ());
+      auto nodeEntity = cast (NodeEntity *, node->getDataEntity ());
       g_assert_nonnull (nodeEntity);
 
-      ncmDesc = dynamic_cast<Descriptor *> (nodeEntity->getDescriptor ());
+      ncmDesc = cast (Descriptor *, nodeEntity->getDescriptor ());
       g_assert_nonnull (ncmDesc);
 
       referNode->setInstanceDescriptor (ncmDesc);
@@ -688,8 +688,8 @@ Converter::checkCascadingDescriptor (Node *node)
 {
   NclCascadingDescriptor *cascadingDescriptor = nullptr;
 
-  auto contentNode = dynamic_cast <ContentNode *> (node);
-  auto referNode = dynamic_cast <ReferNode *> (node);
+  auto contentNode = cast (ContentNode *, node);
+  auto referNode = cast (ReferNode *, node);
 
   if (contentNode)
     {
@@ -698,7 +698,7 @@ Converter::checkCascadingDescriptor (Node *node)
   else if (referNode
            && referNode->getInstanceType () == "new")
     {
-      auto nodeEntity = dynamic_cast<NodeEntity *> (node->getDataEntity ());
+      auto nodeEntity = cast (NodeEntity *, node->getDataEntity ());
       g_assert_nonnull (nodeEntity);
 
       node->copyProperties (nodeEntity);
@@ -719,9 +719,9 @@ Converter::checkContextCascadingDescriptor (
   // Is there a node descriptor defined in the context node?
   size = nodePerspective->getNumNodes ();
   if (size > 1 && nodePerspective->getNode (size - 2) != nullptr
-      && nodePerspective->getNode (size - 2)->instanceOf ("ContextNode"))
+      && instanceof (ContextNode *, nodePerspective->getNode (size - 2)))
     {
-      auto context = dynamic_cast<ContextNode *> (
+      auto context = cast (ContextNode *, 
             nodePerspective->getNode (size - 2)->getDataEntity ());
       g_assert_nonnull (context);
 
@@ -753,26 +753,26 @@ Converter::getCascadingDescriptor (NclNodeNesting *nodePerspective,
 
   anchorNode = nodePerspective->getAnchorNode ();
 
-  auto referNode = dynamic_cast <ReferNode *> (anchorNode);
+  auto referNode = cast (ReferNode *, anchorNode);
 
   if (referNode
       && referNode->getInstanceType () == "new")
     {
       node = anchorNode;
       ncmDesc
-          = dynamic_cast<Descriptor *> (referNode->getInstanceDescriptor ());
+          = cast (Descriptor *, referNode->getInstanceDescriptor ());
     }
   else
     {
-      node = dynamic_cast<Node *> (anchorNode->getDataEntity ());
-      auto nodeEntity = dynamic_cast<NodeEntity *> (node);
+      node = cast (Node *, anchorNode->getDataEntity ());
+      auto nodeEntity = cast (NodeEntity *, node);
       if (node == nullptr || nodeEntity == nullptr)
         {
           WARNING ("failed to cascading descriptor: invalid node entity");
           return nullptr;
         }
 
-      ncmDesc = dynamic_cast <Descriptor *> (nodeEntity->getDescriptor ());
+      ncmDesc = cast (Descriptor *, nodeEntity->getDescriptor ());
     }
 
   if (ncmDesc != nullptr)
@@ -818,7 +818,7 @@ Converter::processLink (Link *ncmLink,
   if (executionObject->getDataObject () != nullptr)
     {
       nodeEntity
-          = dynamic_cast<NodeEntity *> (executionObject->getDataObject ());
+          = cast (NodeEntity *, executionObject->getDataObject ());
     }
 
   // Since the link may be removed in a deepest compilation it is necessary to
@@ -837,7 +837,7 @@ Converter::processLink (Link *ncmLink,
             }
         }
 
-      auto causalLink = dynamic_cast <CausalLink *> (ncmLink);
+      auto causalLink = cast (CausalLink *, ncmLink);
       if (causalLink)
         {
           if (nodeEntity != nullptr)
@@ -965,8 +965,8 @@ Converter::compileExecutionObjectLinks (
 void
 Converter::setActionListener (NclAction *action)
 {
-  auto simpleAction = dynamic_cast <NclSimpleAction *> (action);
-  auto compoundAction = dynamic_cast <NclCompoundAction *> (action);
+  auto simpleAction = cast (NclSimpleAction *, action);
+  auto compoundAction = cast (NclCompoundAction *, action);
 
   if (simpleAction)
     {
@@ -1002,7 +1002,7 @@ Converter::processExecutionObjectSwitch (
   map<string, ExecutionObject *>::iterator i;
   ExecutionObject *selectedObject;
 
-  auto switchNode = dynamic_cast<SwitchNode *> (
+  auto switchNode = cast (SwitchNode *, 
         switchObject->getDataObject ()->getDataEntity ());
   g_assert_nonnull (switchNode);
 
@@ -1103,11 +1103,11 @@ Converter::resolveSwitchEvents (
   for (NclEvent *event: switchObject->getEvents ())
     {
       mappedEvent = nullptr;
-      switchEvent = dynamic_cast<SwitchEvent *> (event);
+      switchEvent = cast (SwitchEvent *, event);
       g_assert_nonnull (switchEvent);
 
       interfacePoint = switchEvent->getInterfacePoint ();
-      auto lambdaAnchor = dynamic_cast<LambdaAnchor *> (interfacePoint);
+      auto lambdaAnchor = cast (LambdaAnchor *, interfacePoint);
       if (lambdaAnchor)
         {
           mappedEvent = getEvent (
@@ -1116,7 +1116,7 @@ Converter::resolveSwitchEvents (
         }
       else
         {
-          auto switchPort = dynamic_cast<SwitchPort *> (interfacePoint);
+          auto switchPort = cast (SwitchPort *, interfacePoint);
           g_assert_nonnull (switchPort);
 
           for (Port *mapping: *(switchPort->getPorts ()))
@@ -1182,7 +1182,7 @@ Converter::insertNode (NclNodeNesting *perspective,
 
   if (executionObject != nullptr)
     {
-      if (!(dynamic_cast<PropertyAnchor *>(interfacePoint)))
+      if (!(instanceof (PropertyAnchor *, interfacePoint)))
         {
           eventType = EventType::PRESENTATION;
         }
@@ -1213,13 +1213,13 @@ Converter::insertContext (NclNodeNesting *contextPerspective,
       error = true;
     }
 
-  if (!(port->getEndInterfacePoint ()->instanceOf ("ContentAnchor")
-        || port->getEndInterfacePoint ()->instanceOf ("LabeledAnchor")
-        || port->getEndInterfacePoint ()->instanceOf ("PropertyAnchor")
-        || port->getEndInterfacePoint ()->instanceOf ("SwitchPort"))
-      || !(contextPerspective->getAnchorNode ()
-           ->getDataEntity ()
-           ->instanceOf ("ContextNode")))
+  if (!(instanceof (ContentAnchor *, port->getEndInterfacePoint ())
+        || instanceof (LabeledAnchor *, port->getEndInterfacePoint ())
+        || instanceof (PropertyAnchor *, port->getEndInterfacePoint ())
+        || instanceof (SwitchPort *, port->getEndInterfacePoint ()))
+      || !(instanceof (ContextNode *,
+                       contextPerspective->getAnchorNode ()
+                       ->getDataEntity ())))
     {
       error = true;
 
@@ -1254,8 +1254,8 @@ Converter::eventStateChanged (NclEvent *event,
                               arg_unused (EventState previousState))
 {
   ExecutionObject *exeObj = event->getExecutionObject ();
-  auto exeCompositeObj = dynamic_cast <ExecutionObjectContext *> (exeObj);
-  auto exeSwitch = dynamic_cast <ExecutionObjectSwitch *> (exeObj);
+  auto exeCompositeObj = cast (ExecutionObjectContext *, exeObj);
+  auto exeSwitch = cast (ExecutionObjectSwitch *, exeObj);
 
   if (exeSwitch)
     {
@@ -1263,7 +1263,7 @@ Converter::eventStateChanged (NclEvent *event,
         {
           for (NclEvent *e: exeSwitch->getEvents())
             {
-              auto switchEvt = dynamic_cast <SwitchEvent *>  (e);
+              auto switchEvt = cast (SwitchEvent *, e);
               if (switchEvt)
                 {
                   NclEvent *ev = switchEvt->getMappedEvent ();
@@ -1347,7 +1347,7 @@ Converter::createCausalLink (CausalLink *ncmLink,
     }
 
   // compile link condition and verify if it is a trigger condition
-  connector = dynamic_cast<CausalConnector *> (ncmLink->getConnector ());
+  connector = cast (CausalConnector *, ncmLink->getConnector ());
   g_assert_nonnull (connector);
 
   conditionExpression = connector->getConditionExpression ();
@@ -1356,7 +1356,7 @@ Converter::createCausalLink (CausalLink *ncmLink,
                          parentObj);
 
   if (formatterCondition == nullptr
-      || !(formatterCondition->instanceOf ("NclLinkTriggerCondition")))
+      || !(instanceof (NclLinkTriggerCondition *, formatterCondition)))
     {
       WARNING ("Cannot create formatter link inside '%s' from ncmLinkId '%s'"
                "with an unknown condition.",
@@ -1390,14 +1390,14 @@ Converter::createCausalLink (CausalLink *ncmLink,
         (NclLinkTriggerCondition *)formatterCondition, formatterAction,
         ncmLink, (ExecutionObjectContext *)parentObj);
 
-  if (formatterCondition->instanceOf ("NclLinkCompoundTriggerCondition"))
+  if (instanceof (NclLinkCompoundTriggerCondition *, formatterCondition))
     {
       vector<NclAction *> acts
           = formatterAction->getImplicitRefRoleActions ();
 
       for (NclAction *linkAction : acts)
         {
-          action = dynamic_cast<NclAssignmentAction *> (linkAction);
+          action = cast (NclAssignmentAction *, linkAction);
           g_assert_nonnull (action);
 
           value = action->getValue ();
@@ -1444,7 +1444,7 @@ Converter::setImplicitRefAssessment (const string &roleId,
   ExecutionObject *refObject;
   string value;
 
-  auto attributionEvt = dynamic_cast <AttributionEvent *> (event);
+  auto attributionEvt = cast (AttributionEvent *, event);
   if (attributionEvt)
     {
       for (Bind *bind: *(ncmLink->getBinds ()))
@@ -1453,7 +1453,7 @@ Converter::setImplicitRefAssessment (const string &roleId,
           if (roleId == value)
             {
               InterfacePoint *refInterface = bind->getInterfacePoint ();
-              auto propAnchor = dynamic_cast <PropertyAnchor *> (refInterface);
+              auto propAnchor = cast (PropertyAnchor *, refInterface);
               if (propAnchor)
                 {
                   vector<Node *> *ncmPerspective
@@ -1501,8 +1501,8 @@ Converter::createAction (Action *actionExp,
       return nullptr;
     }
 
-  auto sae = dynamic_cast<SimpleAction *> (actionExp);
-  auto cae = dynamic_cast<CompoundAction *> (actionExp);
+  auto sae = cast (SimpleAction *, actionExp);
+  auto cae = cast (CompoundAction *, actionExp);
   if (sae) // SimpleAction
     {
       binds = ncmLink->getRoleBinds (sae);
@@ -1570,8 +1570,8 @@ Converter::createCondition (
     ConditionExpression *ncmExp, CausalLink *ncmLink,
     ExecutionObjectContext *parentObj)
 {
-  auto triggerExp = dynamic_cast<TriggerExpression *> (ncmExp);
-  auto statment = dynamic_cast<Statement *> (ncmExp);
+  auto triggerExp = cast (TriggerExpression *, ncmExp);
+  auto statment = cast (Statement *, ncmExp);
   if (triggerExp)
     {
       return createCondition (triggerExp, ncmLink, parentObj);
@@ -1634,8 +1634,8 @@ Converter::createCondition (
   NclLinkCompoundTriggerCondition *compoundCondition;
   NclLinkTriggerCondition *simpleCondition;
 
-  auto ste = dynamic_cast<SimpleCondition *> (condition);
-  auto cte = dynamic_cast<CompoundCondition *> (condition);
+  auto ste = cast (SimpleCondition *, condition);
+  auto cte = cast (CompoundCondition *, condition);
 
   if (ste) // SimpleCondition
     {
@@ -1716,17 +1716,17 @@ Converter::createAssessmentStatement (
         assessmentStatement->getMainAssessment (), bind, ncmLink,
         parentObj);
 
-  auto valueAssessment = dynamic_cast <ValueAssessment *> (
+  auto valueAssessment = cast (ValueAssessment *, 
         assessmentStatement->getOtherAssessment ());
 
-  auto attrAssessment = dynamic_cast <AttributeAssessment *> (
+  auto attrAssessment = cast (AttributeAssessment *, 
         assessmentStatement->getOtherAssessment ());
 
   if (valueAssessment)
     {
       paramValue = valueAssessment->getValue ();
       if (paramValue[0] == '$')
-        { // instanceOf("Parameter")
+        { // instanceof("Parameter")
           connParam = new Parameter (
                 paramValue.substr (1, paramValue.length () - 1), "");
 
@@ -1778,8 +1778,8 @@ Converter::createStatement (
   int size;
   NclLinkStatement *statement;
 
-  auto as = dynamic_cast<AssessmentStatement *> (statementExpression);
-  auto cs = dynamic_cast<CompoundStatement *> (statementExpression);
+  auto as = cast (AssessmentStatement *, statementExpression);
+  auto cs = cast (CompoundStatement *, statementExpression);
   if (as) // AssessmentStatement
     {
       vector<Bind *> *binds = ncmLink->getRoleBinds (as->getMainAssessment ());
@@ -2084,12 +2084,12 @@ Converter::createCompoundAction (
             }
           else
             {
-              if (ncmChildAction->instanceOf ("SimpleAction"))
+              if (instanceof (SimpleAction *, ncmChildAction))
                 {
                   WARNING ("Can't create simple action type '%d'.",
                            ((SimpleAction *)ncmChildAction)->getActionType ());
                 }
-              else if (ncmChildAction->instanceOf ("CompoundAction"))
+              else if (instanceof (CompoundAction *, ncmChildAction))
                 {
                   WARNING ("Can't create inner compoud action.");
                 }
@@ -2251,11 +2251,11 @@ Converter::getBindKey (Link *ncmLink, Bind *ncmBind)
       return "";
     }
 
-  if (auto sc = dynamic_cast<SimpleCondition *> (role))
+  if (auto sc = cast (SimpleCondition *, role))
     {
       keyValue = sc->getKey ();
     }
-  else if (auto attrAssessment = dynamic_cast<AttributeAssessment *> (role))
+  else if (auto attrAssessment = cast (AttributeAssessment *, role))
     {
       keyValue = attrAssessment->getKey ();
     }

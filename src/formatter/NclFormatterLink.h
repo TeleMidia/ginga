@@ -21,6 +21,12 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ncl/Link.h"
 using namespace ::ginga::ncl;
 
+#include "NclActions.h"
+#include "NclEvents.h"
+#include "NclLinkTriggerCondition.h"
+#include "NclLinkTriggerListener.h"
+#include "NclFormatterLink.h"
+
 GINGA_FORMATTER_BEGIN
 
 class ExecutionObjectContext;
@@ -33,14 +39,37 @@ public:
 
   void suspendLinkEvaluation (bool suspend);
   Link *getNcmLink ();
-  bool instanceOf (const string &s);
 
 protected:
   Link *ncmLink;
   bool suspend;
   ExecutionObjectContext *parentObject;
-  set<string> typeSet;
 };
+
+class NclFormatterCausalLink : public NclFormatterLink,
+                               public NclLinkTriggerListener,
+                               public NclActionProgressListener
+{
+private:
+  NclLinkTriggerCondition *condition;
+  NclAction *action;
+
+public:
+  NclFormatterCausalLink (NclLinkTriggerCondition *condition,
+                          NclAction *action, Link *ncmLink,
+                          ExecutionObjectContext *parentObject);
+
+  virtual ~NclFormatterCausalLink ();
+
+  NclAction *getAction ();
+  NclLinkTriggerCondition *getTriggerCondition ();
+  void conditionSatisfied (NclLinkCondition *condition);
+  virtual vector<NclEvent *> getEvents ();
+  void evaluationStarted ();
+  void evaluationEnded ();
+  void actionProcessed (bool start);
+};
+
 
 GINGA_FORMATTER_END
 

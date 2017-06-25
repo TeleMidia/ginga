@@ -26,9 +26,6 @@ SwitchNode::SwitchNode (const string &id) : CompositeNode (id)
 {
   _content = new SwitchContent ();
   _defaultNode = NULL;
-
-  _typeSet.insert ("SwitchNode");
-  _typeSet.insert ("DocumentNode");
 }
 
 SwitchNode::~SwitchNode ()
@@ -105,7 +102,7 @@ SwitchNode::addNode (Node *node, Rule *rule)
 bool
 SwitchNode::addNode (Node *node)
 {
-  if (!node->instanceOf ("DocumentNode"))
+  if (!isDocumentNode(node))
     {
       return false;
     }
@@ -139,7 +136,7 @@ SwitchNode::addPort (Port *port)
 bool
 SwitchNode::addPort (unsigned int index, Port *port)
 {
-  if (!(port->instanceOf ("SwitchPort")))
+  if (!(instanceof (SwitchPort *, port)))
     {
       return false;
     }
@@ -177,7 +174,7 @@ SwitchNode::getDefaultNode ()
 InterfacePoint *
 SwitchNode::getMapInterface (Port *port)
 {
-  if (port->instanceOf ("SwitchPort"))
+  if (instanceof (SwitchPort *, port))
     {
       return port;
     }
@@ -287,7 +284,7 @@ SwitchNode::recursivelyGetNode (const string &nodeId)
 
   wanted = CompositeNode::recursivelyGetNode (nodeId);
   if (wanted == NULL && _defaultNode != NULL
-      && _defaultNode->instanceOf ("CompositeNode"))
+      && instanceof (CompositeNode *, _defaultNode))
     {
       wanted = ((CompositeNode *)_defaultNode)->recursivelyGetNode (nodeId);
     }

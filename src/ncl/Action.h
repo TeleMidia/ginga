@@ -30,14 +30,6 @@ public:
   virtual ~Action (){}
   string getDelay ();
   void setDelay (const string &dur);
-  virtual bool
-  instanceOf (const string &type)
-  {
-    return _typeSet.count (type);
-  }
-
-protected:
-  set<string> _typeSet;
 
 private:
   string _delay;

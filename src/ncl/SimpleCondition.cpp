@@ -26,8 +26,6 @@ SimpleCondition::SimpleCondition (const string &role)
   SimpleCondition::setLabel (role);
   _key = "";
   _qualifier = SimpleCondition::NO_QUALIFIER;
-  typeSet.insert ("SimpleCondition");
-  typeSet.insert ("Role");
 }
 
 string

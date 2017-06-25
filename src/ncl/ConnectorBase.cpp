@@ -22,7 +22,7 @@ GINGA_NCL_BEGIN
 
 ConnectorBase::ConnectorBase (const string &id) : Base (id)
 {
-  _typeSet.insert ("ConnectorBase");
+
 }
 
 ConnectorBase::~ConnectorBase ()
@@ -56,7 +56,7 @@ ConnectorBase::addConnector (Connector *connector)
 bool
 ConnectorBase::addBase (Base *base, const string &alias, const string &location)
 {
-  if (Base::hasInstance (base, false) && base->instanceOf ("ConnectorBase"))
+  if (Base::hasInstance (base, false) && instanceof (ConnectorBase *, base))
     {
       return Base::addBase (base, alias, location);
     }

@@ -39,11 +39,6 @@ public:
 
   virtual void setMinCon (int _minCon);
   virtual void setMaxCon (int _maxCon);
-  virtual bool
-  instanceOf (const string &type)
-  {
-    return type == "Role";
-  }
 
 protected:
   string _label;

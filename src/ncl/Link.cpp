@@ -31,7 +31,6 @@ Link::Link (const string &id, Connector *connector) : Entity (id)
   this->_connector = connector;
   _parameters = new map<string, Parameter *>;
   _composition = NULL;
-  _typeSet.insert ("Link");
 }
 
 Link::~Link ()
@@ -387,7 +386,7 @@ Link::containsNode (Node *node, GenericDescriptor *descriptor,
     {
       bind = (*i);
       bindInterface = bind->getInterfacePoint ();
-      if (bindInterface != NULL && bindInterface->instanceOf ("Port"))
+      if (bindInterface != NULL && instanceof (Port *, bindInterface))
         {
           bindNode = ((Port *)bindInterface)->getEndNode ();
         }

@@ -25,7 +25,6 @@ GINGA_NCL_BEGIN
 CompoundAction::CompoundAction () : Action ()
 {
   _actions = new vector<Action *>;
-  _typeSet.insert ("CompoundAction");
 }
 
 CompoundAction::CompoundAction (Action *a1, Action *a2, short op)
@@ -35,7 +34,6 @@ CompoundAction::CompoundAction (Action *a1, Action *a2, short op)
   _actions->push_back (a1);
   _actions->push_back (a2);
   _myOperator = op;
-  _typeSet.insert ("CompoundAction");
 }
 
 CompoundAction::~CompoundAction ()
@@ -129,7 +127,7 @@ CompoundAction::getRoles ()
   for (i = 0; i < size; i++)
     {
       action = (Action *)((*_actions)[i]);
-      if (action->instanceOf ("SimpleAction"))
+      if (instanceof (SimpleAction *, action))
         {
           roles->push_back ((SimpleAction *)action);
         }

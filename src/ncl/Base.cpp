@@ -26,7 +26,6 @@ Base::Base (const string &id)
 {
   this->_id = id;
 
-  _typeSet.insert ("Base");
   _baseInstances.insert (this);
 }
 
@@ -228,19 +227,6 @@ void
 Base::setId (const string &id)
 {
   this->_id = id;
-}
-
-bool
-Base::instanceOf (const string &s)
-{
-  if (!_typeSet.empty ())
-    {
-      return (_typeSet.find (s) != _typeSet.end ());
-    }
-  else
-    {
-      return false;
-    }
 }
 
 GINGA_NCL_END

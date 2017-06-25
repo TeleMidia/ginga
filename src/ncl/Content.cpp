@@ -23,19 +23,9 @@ GINGA_NCL_BEGIN
 Content::Content (const string &someType)
 {
   _type = someType;
-  _typeSet.insert ("Content");
 }
 
 Content::~Content () {}
-
-bool
-Content::instanceOf (const string &s)
-{
-  if (_typeSet.empty ())
-    return false;
-  else
-    return (_typeSet.find (s) != _typeSet.end ());
-}
 
 string
 Content::getType ()

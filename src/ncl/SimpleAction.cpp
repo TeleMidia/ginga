@@ -28,8 +28,6 @@ SimpleAction::SimpleAction (const string &role) : Action (), Role ()
   _repeatDelay = "0";
   _value = "";
   _animation = NULL;
-  _typeSet.insert ("SimpleAction");
-  _typeSet.insert ("Role");
 }
 
 SimpleAction::~SimpleAction ()

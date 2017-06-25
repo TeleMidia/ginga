@@ -43,7 +43,6 @@ ExecutionObject::ExecutionObject (const string &id,
                                   bool handling,
                                   INclActionListener *seListener)
 {
-  _typeSet.insert ("ExecutionObject");
   this->_seListener = seListener;
   this->_dataObject = node;
   this->_wholeContent = nullptr;
@@ -177,12 +176,6 @@ ExecutionObject::isOccurring ()
     && _mainEvent->getCurrentState () == EventState::OCCURRING;
 }
 
-bool
-ExecutionObject::instanceOf (const string &s)
-{
-  return (_typeSet.find (s) != _typeSet.end ());
-}
-
 Node *
 ExecutionObject::getDataObject ()
 {
@@ -304,7 +297,7 @@ ExecutionObject::addPresentationEvent (PresentationEvent *event)
   int posBeg = -1;
   int posEnd, posMid;
 
-  if ((event->getAnchor ())->instanceOf ("LambdaAnchor"))
+  if (instanceof (LambdaAnchor *, event->getAnchor ()))
     {
       _presEvents.insert (_presEvents.begin (), event);
       _wholeContent = (PresentationEvent *)event;
@@ -441,7 +434,7 @@ ExecutionObject::removeEvent (NclEvent *event)
   clog << "NclExecutionObject::removeEvent '" << event->getId () << "'";
   clog << "from '" << getId () << "'" << endl;
 
-  if (dynamic_cast <PresentationEvent *> (event))
+  if (instanceof (PresentationEvent *, event))
     {
       for (i = _presEvents.begin (); i != _presEvents.end (); ++i)
         {
@@ -453,7 +446,7 @@ ExecutionObject::removeEvent (NclEvent *event)
         }
       _transMan.removeEventTransition ((PresentationEvent *)event);
     }
-  else if (dynamic_cast <SelectionEvent *> (event))
+  else if (instanceof (SelectionEvent *, event))
     {
       j = _selectionEvents.find (((SelectionEvent *)event));
       if (j != _selectionEvents.end ())
@@ -608,7 +601,7 @@ ExecutionObject::prepare (NclEvent *event)
   for (j = 0; j < size; j++)
     {
       auxEvent = _otherEvents[j];
-      if (dynamic_cast <AttributionEvent *> (auxEvent))
+      if (instanceof (AttributionEvent *, auxEvent))
         {
           attributeEvent = (AttributionEvent *)auxEvent;
           attributeAnchor = attributeEvent->getAnchor ();
@@ -689,7 +682,7 @@ ExecutionObject::start ()
 
   for (Anchor *anchor: contentNode->getAnchors ())
     {
-      PropertyAnchor *prop = dynamic_cast <PropertyAnchor *> (anchor);
+      PropertyAnchor *prop = cast (PropertyAnchor *, anchor);
       if (prop != nullptr)
         _player->setProperty (prop->getName (), prop->getValue ());
     }
@@ -697,7 +690,7 @@ ExecutionObject::start ()
   // Install attribution events.
   for (NclEvent *evt: this->getEvents ())
     {
-      AttributionEvent *attevt = dynamic_cast <AttributionEvent *> (evt);
+      AttributionEvent *attevt = cast (AttributionEvent *, evt);
       if (attevt)
         attevt->setPlayer (_player);
     }
@@ -767,13 +760,13 @@ ExecutionObject::stop ()
   // Uninstall attribution events.
   for (NclEvent *evt: this->getEvents ())
     {
-      AttributionEvent *attevt = dynamic_cast <AttributionEvent *> (evt);
+      AttributionEvent *attevt = cast (AttributionEvent *, evt);
       if (attevt)
         attevt->setPlayer (nullptr);
     }
 
   // Stop main event.
-  event = dynamic_cast <PresentationEvent* > (_mainEvent);
+  event = cast (PresentationEvent* , _mainEvent);
   if (event != nullptr)
     {
       _mainEvent->stop ();
@@ -858,11 +851,11 @@ ExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
       if (keyString == selCode)
         {
           ContentAnchor *anchor = selectionEvent->getAnchor ();
-          if (dynamic_cast <LambdaAnchor *> (anchor))
+          if (instanceof (LambdaAnchor *, anchor))
             {
               selectedEvents->insert (selectionEvent);
             }
-          else if (dynamic_cast <IntervalAnchor *> (anchor))
+          else if (instanceof (IntervalAnchor *, anchor))
             {
               intervalAnchor
                   = (IntervalAnchor *)(selectionEvent->getAnchor ());
@@ -1005,7 +998,7 @@ ExecutionObject::handleTickEvent (arg_unused (GingaTime total),
   _time += diff;
 
   g_assert (this->isOccurring ());
-  g_assert_nonnull (dynamic_cast <PresentationEvent *> (_mainEvent));
+  g_assert_nonnull (instanceof (PresentationEvent *, _mainEvent));
 
   next = _transMan.nextTransition (_mainEvent);
   if (next == nullptr)
@@ -1020,7 +1013,7 @@ ExecutionObject::handleTickEvent (arg_unused (GingaTime total),
   if (now < waited)
     return;
 
-  evt = dynamic_cast <NclEvent *> (next->getEvent ());
+  evt = cast (NclEvent *, next->getEvent ());
   g_assert_nonnull (evt);
 
   TRACE ("anchor '%s' timed out at %" GINGA_TIME_FORMAT
@@ -1037,7 +1030,7 @@ ExecutionObject::handleKeyEvent (SDL_EventType type, SDL_Keycode key)
     return;                     // nothing to do
 
   g_assert (this->isOccurring ());
-  g_assert_nonnull (dynamic_cast <PresentationEvent *> (_mainEvent));
+  g_assert_nonnull (instanceof (PresentationEvent *, _mainEvent));
 
   this->selectionEvent (key, _time);
 }

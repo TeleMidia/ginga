@@ -25,11 +25,8 @@ GINGA_NCL_BEGIN
 class GenericDescriptor : public Entity
 {
 public:
-  GenericDescriptor (const string &someId) : Entity (someId)
-  {
-    _typeSet.insert ("GenericDescriptor");
-  };
-  virtual ~GenericDescriptor (){};
+  GenericDescriptor (const string &someId) : Entity (someId) {}
+  virtual ~GenericDescriptor (){}
 };
 
 GINGA_NCL_END

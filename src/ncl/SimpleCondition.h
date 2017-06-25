@@ -38,11 +38,6 @@ public:
   void setTransition (EventStateTransition transition);
   short getQualifier ();
   void setQualifier (short _qualifier);
-  bool
-  instanceOf (const string &type)
-  {
-    return TriggerExpression::instanceOf (type);
-  }
 
 private:
   string _key;

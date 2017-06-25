@@ -28,13 +28,11 @@ public:
   Content (const string &someType);
   Content ();
   virtual ~Content ();
-  bool instanceOf (const string &s);
   virtual string getType (void);
   virtual void setType (const string &someType);
 
 protected:
   string _type;
-  set<string> _typeSet;
 };
 
 GINGA_NCL_END

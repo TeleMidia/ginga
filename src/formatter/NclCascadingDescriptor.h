@@ -43,9 +43,6 @@ using namespace ::ginga::ncl;
 GINGA_FORMATTER_BEGIN
 class NclCascadingDescriptor
 {
-protected:
-  set<string> typeSet;
-
 private:
   static int dummyCount;
   string id;

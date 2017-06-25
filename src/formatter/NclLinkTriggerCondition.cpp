@@ -27,7 +27,6 @@ NclLinkTriggerCondition::NclLinkTriggerCondition () : NclLinkCondition ()
 {
   _delay = 0;
   _listener = NULL;
-  typeSet.insert ("NclLinkTriggerCondition");
 }
 
 NclLinkTriggerCondition::~NclLinkTriggerCondition ()

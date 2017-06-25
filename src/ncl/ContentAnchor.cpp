@@ -22,7 +22,7 @@ GINGA_NCL_BEGIN
 
 ContentAnchor::ContentAnchor (const string &id) : Anchor (id)
 {
-  _typeSet.insert ("ContentAnchor");
+
 }
 
 GINGA_NCL_END

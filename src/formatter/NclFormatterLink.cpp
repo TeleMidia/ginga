@@ -18,13 +18,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "NclFormatterLink.h"
 
+#include "ExecutionObject.h"
+#include "ExecutionObjectContext.h"
+
 GINGA_FORMATTER_BEGIN
 
 NclFormatterLink::NclFormatterLink (Link *ncmLink,
                                     ExecutionObjectContext *parentObject)
 {
-  typeSet.insert ("NclFormatterLink");
-
   this->parentObject = parentObject; // ExecutionObjectContext
   this->ncmLink = ncmLink;
   this->suspend = false;
@@ -51,17 +52,88 @@ NclFormatterLink::getNcmLink ()
   return ncmLink;
 }
 
-bool
-NclFormatterLink::instanceOf (const string &s)
+NclFormatterCausalLink::NclFormatterCausalLink (
+    NclLinkTriggerCondition *condition, NclAction *action,
+    Link *ncmLink, ExecutionObjectContext *parentObject)
+    : NclFormatterLink (ncmLink, parentObject)
 {
-  if (typeSet.empty ())
+  this->condition = condition;
+  this->action = action;
+
+  if (this->condition != NULL)
     {
-      return false;
+      this->condition->setTriggerListener (this);
     }
-  else
+
+  if (this->action != NULL)
     {
-      return (typeSet.find (s) != typeSet.end ());
+      this->action->addProgressListener (this);
     }
+}
+
+NclFormatterCausalLink::~NclFormatterCausalLink ()
+{
+  if (condition != NULL)
+    {
+      delete condition;
+      condition = NULL;
+    }
+
+  if (action != NULL)
+    {
+      delete action;
+      action = NULL;
+    }
+}
+
+NclAction *
+NclFormatterCausalLink::getAction ()
+{
+  return action;
+}
+
+NclLinkTriggerCondition *
+NclFormatterCausalLink::getTriggerCondition ()
+{
+  return condition;
+}
+
+void
+NclFormatterCausalLink::conditionSatisfied (NclLinkCondition *condition)
+{
+  if (!suspend)
+    {
+      action->run (condition);
+    }
+}
+
+vector<NclEvent *>
+NclFormatterCausalLink::getEvents ()
+{
+  vector<NclEvent *> events = condition->getEvents ();
+  vector<NclEvent *> actEvents = action->getEvents ();
+
+  events.insert(events.end(), actEvents.begin(), actEvents.end());
+
+  return events;
+}
+
+void
+NclFormatterCausalLink::evaluationStarted ()
+{
+  parentObject->linkEvaluationStarted (this);
+}
+
+void
+NclFormatterCausalLink::evaluationEnded ()
+{
+  parentObject->linkEvaluationFinished (this, false);
+}
+
+void
+NclFormatterCausalLink::actionProcessed (bool start)
+{
+  parentObject->linkEvaluationFinished (this, start);
 }
 
 GINGA_FORMATTER_END

@@ -52,23 +52,8 @@ NclNodeNesting::~NclNodeNesting ()
 void
 NclNodeNesting::initialize ()
 {
-  string type = "NclNodeNesting";
   this->nodes = new vector<Node *>;
-  id = "";
-  typeSet.insert (type);
-}
-
-bool
-NclNodeNesting::instanceOf (const string &s)
-{
-  if (!typeSet.empty ())
-    {
-      return (typeSet.find (s) != typeSet.end ());
-    }
-  else
-    {
-      return false;
-    }
+  id = "";  
 }
 
 void

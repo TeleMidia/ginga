@@ -25,7 +25,6 @@ GINGA_NCL_BEGIN
 CompoundCondition::CompoundCondition () : TriggerExpression ()
 {
   _expressions = new vector<ConditionExpression *>;
-  typeSet.insert ("CompoundCondition");
 }
 
 CompoundCondition::CompoundCondition (ConditionExpression *c1,
@@ -36,7 +35,6 @@ CompoundCondition::CompoundCondition (ConditionExpression *c1,
   _expressions->push_back (c1);
   _expressions->push_back (c2);
   _myOperator = op;
-  typeSet.insert ("CompoundCondition");
 }
 
 CompoundCondition::~CompoundCondition ()
@@ -130,17 +128,17 @@ CompoundCondition::getRoles ()
           clog << "CompoundCondition::getRoles ";
           clog << "Warning! condition = NULL." << endl;
         }
-      else if (condition->instanceOf ("SimpleCondition"))
+      else if (instanceof (SimpleCondition *, condition))
         {
           roles->push_back ((SimpleCondition *)condition);
         }
       else
         {
-          if (condition->instanceOf ("CompoundCondition"))
+          if (instanceof (CompoundCondition *, condition))
             {
               childRoles = ((CompoundCondition *)condition)->getRoles ();
             }
-          else if (condition->instanceOf ("AssessmentStatement"))
+          else if (instanceof (AssessmentStatement *, condition))
             {
               childRoles = ((AssessmentStatement *)condition)->getRoles ();
             }

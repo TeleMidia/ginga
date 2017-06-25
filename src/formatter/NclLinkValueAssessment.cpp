@@ -24,7 +24,6 @@ NclLinkValueAssessment::NclLinkValueAssessment (const string &value)
     : NclLinkAssessment ()
 {
   this->value = value;
-  typeSet.insert ("NclLinkValueAssessment");
 }
 
 NclLinkValueAssessment::~NclLinkValueAssessment () {}
