@@ -89,19 +89,6 @@ Converter::~Converter ()
 }
 
 void
-Converter::setHandlingStatus (bool handling)
-{
-  ExecutionObject *object;
-  this->_handling = handling;
-
-  for (auto &i : _exeObjects)
-    {
-      object = i.second;
-      object->setHandling (handling);
-    }
-}
-
-void
 Converter::setLinkActionListener (INclActionListener *actListener)
 {
   this->_actionListener = actListener;
@@ -536,14 +523,14 @@ Converter::createExecutionObject (
                   if (exeObj == nullptr)
                     {
                       exeObj  = new ExecutionObject
-                        (id, nodeEntity, descriptor, _handling,
+                        (id, nodeEntity, descriptor,
                          _actionListener);
                     }
                 }
               else
                 {
                   exeObj = new ExecutionObject
-                    (id, nodeEntity, descriptor, _handling,
+                    (id, nodeEntity, descriptor,
                      _actionListener);
                 }
 
@@ -561,7 +548,7 @@ Converter::createExecutionObject (
   if (switchNode)
     {
       string s;
-      exeObj = new ExecutionObjectSwitch (id, node, _handling,
+      exeObj = new ExecutionObjectSwitch (id, node,
                                           _actionListener);
       xstrassign (s, "%d", (int) EventType::PRESENTATION);
       compositeEvt = new PresentationEvent (
@@ -579,7 +566,7 @@ Converter::createExecutionObject (
     {
       string s;
       exeObj = new ExecutionObjectContext (
-            id, node, descriptor, _handling, _actionListener);
+            id, node, descriptor, _actionListener);
 
       xstrassign (s, "%d", (int) EventType::PRESENTATION);
       compositeEvt = new PresentationEvent (
@@ -595,7 +582,7 @@ Converter::createExecutionObject (
   else
     {
       exeObj = new ExecutionObject (id, node, descriptor,
-                                    _handling, _actionListener);
+                                    _actionListener);
     }
 
   return exeObj;

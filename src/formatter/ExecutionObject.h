@@ -47,7 +47,7 @@ class ExecutionObjectContext;
 class ExecutionObject : IEventListener
 {
 public:
-  ExecutionObject (const string &, Node *, NclCascadingDescriptor *, bool,
+  ExecutionObject (const string &, Node *, NclCascadingDescriptor *,
                    INclActionListener *);
 
   virtual ~ExecutionObject ();
@@ -96,19 +96,12 @@ public:
   virtual bool pause ();
   virtual bool resume ();
 
-  void setHandling (bool isHandling);
-  void setHandler (bool isHandler);
-  bool selectionEvent (SDL_Keycode key, GingaTime currentTime);
-
 protected:
   Node *_dataObject;
   NclCascadingDescriptor *_descriptor;
   PresentationEvent *_wholeContent;
-
   INclActionListener *_seListener;
 
-  bool _isHandler;
-  bool _isHandling;
 
   map<Node *, ExecutionObjectContext *> _parentTable;
   map<string, NclEvent *> _events;

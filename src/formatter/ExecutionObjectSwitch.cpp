@@ -21,10 +21,9 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 ExecutionObjectSwitch::ExecutionObjectSwitch (
-    const string &id, Node *switchNode, bool handling,
+    const string &id, Node *switchNode,
     INclActionListener *seListener)
-    : ExecutionObjectContext (id, switchNode, nullptr, handling,
-                                   seListener)
+    : ExecutionObjectContext (id, switchNode, nullptr, seListener)
 {
   _selectedObj = nullptr;
 }

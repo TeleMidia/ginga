@@ -125,71 +125,6 @@ FocusManager::isKeyHandler ()
   return _isHandler;
 }
 
-bool
-FocusManager::setKeyHandler (bool isHandler)
-{
-  ExecutionObject *focusedObj;
-  NclCascadingDescriptor *dc;
-  NclFormatterRegion *fr;
-  string ix;
-
-  if (this->_isHandler == isHandler)
-    {
-      return false;
-    }
-
-  if (isHandler && _parentManager != NULL && !_parentManager->isKeyHandler ())
-    {
-      clog << "FormatterFocusManager::setKeyHandler(" << this << ")";
-      clog << " can't set handler because parent manager is not ";
-      clog << "handling";
-      clog << endl;
-      return false;
-    }
-
-  focusedObj = getObjectFromFocusIndex (_currentFocus);
-
-  this->_isHandler = isHandler;
-  this->_converter->setHandlingStatus (isHandler);
-  if (isHandler)
-    {
-      if (focusedObj == NULL)
-        {
-          if (!_focusTable->empty ())
-            {
-              ix = _focusTable->begin ()->first;
-              _currentFocus = "";
-              setFocus (ix);
-            }
-        }
-      else
-        {
-          ix = _currentFocus;
-          _currentFocus = "";
-          setFocus (ix);
-        }
-    }
-  else
-    {
-      if (focusedObj != NULL)
-        {
-          dc = focusedObj->getDescriptor ();
-          if (dc != NULL)
-            {
-              fr = dc->getFormatterRegion ();
-              if (fr != NULL)
-                {
-                  fr->setFocus (false);
-                }
-            }
-          recoveryDefaultState (focusedObj);
-        }
-
-    }
-
-  return isHandler;
-}
-
 ExecutionObject *
 FocusManager::getObjectFromFocusIndex (const string &focusIndex)
 {
@@ -267,88 +202,6 @@ FocusManager::removeObject (ExecutionObject *obj,
           _focusTable->erase (i);
         }
     }
-}
-
-void
-FocusManager::resetKeyMaster ()
-{
-  NclCascadingDescriptor *desc;
-
-  if (_selectedObject != NULL)
-    {
-      _objectToSelect = "";
-      _selectedObject->setHandler (false);
-      desc = _selectedObject->getDescriptor ();
-      if (desc != NULL)
-        {
-          desc->getFormatterRegion ()->setSelection (false);
-        }
-
-      recoveryDefaultState (_selectedObject);
-    }
-}
-
-void
-FocusManager::setKeyMaster (const string &mediaId)
-{
-  ExecutionObject *nextObject = NULL;
-  NclCascadingDescriptor *nextDescriptor = NULL;
-  NclFormatterRegion *fr = NULL;
-  bool abortKeyMaster = false;
-  string lastFocus = "";
-
-  if (mediaId == "" && _selectedObject != NULL)
-    {
-      resetKeyMaster ();
-      return;
-    }
-
-  if (nextObject == NULL)
-    {
-      clog << "FormatterFocusManager::setKeyMaster can't set '";
-      clog << mediaId << "' as master: object is not available.";
-      clog << endl;
-
-      _objectToSelect = mediaId;
-      return;
-    }
-
-  if (_selectedObject != NULL && _selectedObject != nextObject)
-    {
-      resetKeyMaster ();
-    }
-
-  nextDescriptor = nextObject->getDescriptor ();
-  if (nextDescriptor != NULL)
-    {
-      fr = nextDescriptor->getFormatterRegion ();
-    }
-
-  if (fr != NULL && fr->getFocusIndex () != "")
-    {
-      lastFocus = _currentFocus;
-      _currentFocus = fr->getFocusIndex ();
-    }
-
-  if (fr != NULL)
-    {
-      fr->setSelection (true);
-    }
-  else
-    {
-      abortKeyMaster = true;
-    }
-
-  if (abortKeyMaster && fr != NULL && fr->getFocusIndex () != "")
-    {
-      _currentFocus = lastFocus;
-      return;
-    }
-
-  // selecting new object
-  _selectedObject = nextObject;
-  _selectedObject->setHandler (true);
-  nextObject->selectionEvent (0, 0);
 }
 
 void
@@ -524,7 +377,6 @@ FocusManager::showObject (ExecutionObject *object)
       if (paramValue == mediaId || _objectToSelect == mediaId)
         {
           _objectToSelect = "";
-          setKeyMaster (mediaId);
         }
       else if (focusIndex != "")
         {
@@ -553,7 +405,6 @@ FocusManager::showObject (ExecutionObject *object)
               // unselect the previous selected object, if exists
               if (_selectedObject != NULL)
                 {
-                  _selectedObject->setHandler (false);
                   _selectedObject->getDescriptor ()
                       ->getFormatterRegion ()
                       ->setSelection (false);
@@ -562,7 +413,6 @@ FocusManager::showObject (ExecutionObject *object)
                 }
 
               _selectedObject = object;
-              _selectedObject->setHandler (true);
             }
         }
     }

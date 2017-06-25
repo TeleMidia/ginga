@@ -40,7 +40,6 @@ set<ExecutionObject *> ExecutionObject::_objects;
 ExecutionObject::ExecutionObject (const string &id,
                                   Node *node,
                                   NclCascadingDescriptor *descriptor,
-                                  bool handling,
                                   INclActionListener *seListener)
 {
   this->_seListener = seListener;
@@ -50,8 +49,6 @@ ExecutionObject::ExecutionObject (const string &id,
   this->_isCompiled = false;
   this->_mainEvent = nullptr;
   this->_descriptor = descriptor;
-  this->_isHandler = false;
-  this->_isHandling = handling;
 
   _id = id;
   _player = nullptr;
@@ -785,163 +782,6 @@ ExecutionObject::abort ()
   ERROR_NOT_IMPLEMENTED ("action 'abort' is not supported");
 }
 
-void
-ExecutionObject::setHandling (bool isHandling)
-{
-  this->_isHandling = isHandling;
-}
-
-void
-ExecutionObject::setHandler (bool isHandler)
-{
-  this->_isHandler = isHandler;
-}
-
-bool
-ExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
-{
-  string selCode;
-  string keyString;
-  SelectionEvent *selectionEvent;
-  IntervalAnchor *intervalAnchor;
-  NclEvent *expectedEvent;
-  Anchor *expectedAnchor;
-  string anchorId = "";
-  set<SelectionEvent *> *selectedEvents;
-  set<SelectionEvent *>::iterator i;
-  bool sleeping = isSleeping ();
-  bool paused = isPaused ();
-  bool selected = false;
-  GingaTime intervalBegin;
-  GingaTime intervalEnd;
-
-  keyString = "UNKNOWN";
-  ginga_key_table_index (key, &keyString);
-
-  if ((!_isHandling && !_isHandler) || sleeping /*|| paused*/)
-    {
-      clog << "NclExecutionObject::selectionEvent Can't receive event on '";
-      clog << getId () << "': isHandling = '" << _isHandling << "' ";
-      clog << "isHandler = '" << _isHandler << "' ";
-      clog << "isSleeping() = '" << sleeping << "' ";
-      clog << "isPaused() = '" << paused << "' ";
-      clog << endl;
-      return false;
-    }
-
-  if (_selectionEvents.empty ())
-    {
-      clog << "NclExecutionObject::selectionEvent Can't receive event on '";
-      clog << getId () << "': selection events is empty";
-      clog << endl;
-      return false;
-    }
-
-  selectedEvents = new set<SelectionEvent *>;
-  i = _selectionEvents.begin ();
-  while (i != _selectionEvents.end ())
-    {
-      selectionEvent = (SelectionEvent *)(*i);
-      selCode = selectionEvent->getSelectionCode ();
-
-      clog << "NclExecutionObject::selectionEvent(" << _id << ") event '";
-      clog << selectionEvent->getId () << "' has selCode = '" << selCode;
-      clog << "' (looking for key code '" << keyString << "'" << endl;
-
-      if (keyString == selCode)
-        {
-          ContentAnchor *anchor = selectionEvent->getAnchor ();
-          if (instanceof (LambdaAnchor *, anchor))
-            {
-              selectedEvents->insert (selectionEvent);
-            }
-          else if (instanceof (IntervalAnchor *, anchor))
-            {
-              intervalAnchor
-                  = (IntervalAnchor *)(selectionEvent->getAnchor ());
-
-              intervalBegin = intervalAnchor->getBegin ();
-              intervalEnd = intervalAnchor->getEnd ();
-
-              clog << "NclExecutionObject::selectionEvent(" << _id << ") ";
-              clog << "interval anchor '" << intervalAnchor->getId ();
-              clog << "' begins at '" << intervalBegin << "', ends at ";
-              clog << intervalEnd << "' (current time is '";
-              clog << currentTime << "'";
-              clog << endl;
-
-              if (intervalBegin <= currentTime
-                  && intervalEnd >= currentTime)
-                {
-                  selectedEvents->insert (selectionEvent);
-                }
-            }
-          else
-            {
-              expectedAnchor = selectionEvent->getAnchor ();
-              anchorId = expectedAnchor->getId ();
-              expectedEvent = getEventFromAnchorId (anchorId);
-              if (expectedEvent != nullptr)
-                {
-                  clog << "NclExecutionObject::selectionEvent(";
-                  clog << _id << ")";
-                  clog << " analyzing event '";
-                  clog << expectedEvent->getId ();
-
-                  TRACE ("AAAAAAAAAAAAAAA");
-
-                  if (expectedEvent->getCurrentState ()
-                      == EventState::OCCURRING)
-                    {
-                      selectedEvents->insert (selectionEvent);
-                    }
-                  else
-                    {
-                      clog << "' not occurring";
-                    }
-
-                  clog << "'" << endl;
-                }
-              else
-                {
-                  clog << "NclExecutionObject::selectionEvent(" << _id
-                       << ")";
-                  clog << " can't find event for anchorid = '";
-                  clog << anchorId << "'" << endl;
-                }
-            }
-        }
-      ++i;
-    }
-
-  NclSimpleAction *fakeAct;
-
-  i = selectedEvents->begin ();
-  while (i != selectedEvents->end ())
-    {
-      selected = true;
-      selectionEvent = (*i);
-
-      if (_seListener != nullptr)
-        {
-          clog << "NclExecutionObject::selectionEvent(" << _id << ")";
-          clog << " calling scheduler to execute fake action";
-          clog << endl;
-
-          fakeAct = new NclSimpleAction (selectionEvent, ACT_START);
-
-          _seListener->scheduleAction (fakeAct);
-        }
-
-      ++i;
-    }
-
-  delete selectedEvents;
-  selectedEvents = nullptr;
-
-  return selected;
-}
-
 
 // -----------------------------------
 
@@ -1024,15 +864,68 @@ ExecutionObject::handleTickEvent (arg_unused (GingaTime total),
 }
 
 void
-ExecutionObject::handleKeyEvent (SDL_EventType type, SDL_Keycode key)
+ExecutionObject::handleKeyEvent (SDL_EventType type, SDL_Keycode keycode)
 {
-  if (type == SDL_KEYDOWN || _player == nullptr)
+  string key;
+  list<SelectionEvent *> buf;
+
+  if (type == SDL_KEYDOWN)
     return;                     // nothing to do
 
   g_assert (this->isOccurring ());
   g_assert (instanceof (PresentationEvent *, _mainEvent));
 
-  this->selectionEvent (key, _time);
+  if (_selectionEvents.empty ())
+    return;                     // nothing to do
+
+  if (unlikely (!ginga_key_table_index (keycode, &key)))
+    {
+      WARNING ("unknown keycode %d", (int) keycode);
+      return;
+    }
+
+  for (SelectionEvent *evt: _selectionEvents)
+    {
+      ContentAnchor *anchor;
+      string expected;
+
+      expected = evt->getSelectionCode ();
+      if (key != expected)
+        continue;
+
+      anchor = evt->getAnchor ();
+      g_assert_nonnull (anchor);
+
+      if (instanceof (LambdaAnchor *, anchor))
+        {
+          buf.push_back (evt);
+        }
+      else if (instanceof (IntervalAnchor *, anchor))
+        {
+          ERROR_NOT_IMPLEMENTED
+            ("selection of temporal anchors is no supported");
+        }
+      else
+        {
+          ERROR_NOT_IMPLEMENTED
+            ("selection of property anchors is not supported");
+        }
+    }
+
+  for (SelectionEvent *evt: buf)
+    {
+      if (_seListener != nullptr)
+        {
+          NclSimpleAction *fakeAct = new NclSimpleAction (evt, ACT_START);
+          _seListener->scheduleAction (fakeAct);
+        }
+    }
+
+  if (buf.size () == 0)
+    return;
+
+  TRACE ("object '%s' (%p) selected via key '%s'",
+         _id.c_str (), this, key.c_str ());
 }
 
 GINGA_FORMATTER_END
