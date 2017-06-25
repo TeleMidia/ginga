@@ -28,7 +28,6 @@ enum class EventType {
   SELECTION = 0,
   PRESENTATION,
   ATTRIBUTION,
-  COMPOSITION
 };
 
 // Event states.

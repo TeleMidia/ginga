@@ -895,6 +895,8 @@ ExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
                   clog << " analyzing event '";
                   clog << expectedEvent->getId ();
 
+                  TRACE ("AAAAAAAAAAAAAAA");
+
                   if (expectedEvent->getCurrentState ()
                       == EventState::OCCURRING)
                     {

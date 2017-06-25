@@ -86,6 +86,11 @@ SimpleCondition::setLabel (const string &id)
       _transition = EventStateTransition::STOPS;
       _eventType = EventType::SELECTION;
     }
+  else if (xstrcaseeq (_label, "onSelection"))
+    {
+      _transition = EventStateTransition::STOPS;
+      _eventType = EventType::SELECTION;
+    }
   else if (xstrcaseeq (_label, "onBeginAttribution"))
     {
       _transition = EventStateTransition::STARTS;

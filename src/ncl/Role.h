@@ -29,8 +29,6 @@ public:
   Role ();
   virtual ~Role ();
 
-  static const int UNBOUNDED = 2 ^ 30;
-
   virtual EventType getEventType ();
   virtual string getLabel ();
   virtual void setEventType (EventType type);

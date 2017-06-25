@@ -106,7 +106,6 @@ private:
   void addNodeToContext (Entity *contextNode, Node *node);
   void addNodeToContext (ContextNode *contextNode, Node *node);
   void addPropertyToContext (Entity *parentObject, Anchor *childObject);
-  void addLinkToContext (ContextNode *context, Link *link);
   void addAnchorToMedia (ContentNode *contentNode, Anchor *anchor);
 
 // IMPORT
@@ -132,12 +131,8 @@ private:
   CompoundAction *parseCompoundAction (DOMElement *compoundAction_element);
   CompoundAction *createCompoundAction (DOMElement *compoundAction_element);
   ConnectorBase *parseConnectorBase (DOMElement *connBase_element);
-  ConnectorBase *createConnectorBase (DOMElement *connBase_element);
-  Parameter *parseConnectorParam (DOMElement *connectorParam_element);
   CausalConnector *parseCausalConnector (DOMElement *causalConnector_element);
-  CausalConnector *createCausalConnector (DOMElement *causalConnector_element);
 
-  void compileRoleInformation (Role *role, DOMElement *parentElement);
   void addAttributeAssessmentToAssessmentStatement (AssessmentStatement *parentObject, AttributeAssessment *childObject);
   void addImportBaseToConnectorBase (ConnectorBase *connectorBase, DOMElement *childObject);
 
