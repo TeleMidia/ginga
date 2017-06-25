@@ -527,7 +527,7 @@ NclDocument::getSettingsNodes ()
       NodeEntity *node = (NodeEntity *)((nodes->at (i))->getDataEntity ());
       g_assert_nonnull (node);
 
-      if (node->instanceOf ("ContentNode")
+      if (instanceof (ContentNode *, node)
           && ((ContentNode *) node)->isSettingNode ())
         {
           //
@@ -536,7 +536,7 @@ NclDocument::getSettingsNodes ()
           //
           settings->push_back (nodes->at (i)); // found
         }
-      else if (node->instanceOf ("CompositeNode"))
+      else if (instanceof (CompositeNode *, node))
         {
           compositions.push_back (node);
         }

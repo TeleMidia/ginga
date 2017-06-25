@@ -74,7 +74,7 @@ NclLinkAttributeAssessment::getValue ()
   switch (attributeType)
     {
     case AttributeType::NODE_PROPERTY:
-      if (event->instanceOf ("AttributionEvent"))
+      if (instanceof (AttributionEvent *, event))
         {
           value = getAssessmentWithOffset (
               ((AttributionEvent *)event)->getCurrentValue ());
@@ -92,7 +92,7 @@ NclLinkAttributeAssessment::getValue ()
       }
 
     case AttributeType::REPETITIONS:
-      if (event->instanceOf ("PresentationEvent"))
+      if (instanceof (PresentationEvent *, event))
         {
           xstrassign (value, "%d", (int) ((PresentationEvent *)event)->getRepetitions ());
         }

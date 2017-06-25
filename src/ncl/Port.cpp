@@ -47,7 +47,7 @@ Port::getNode ()
 Node *
 Port::getEndNode ()
 {
-  if (_interfacePoint->instanceOf ("Anchor"))
+  if (instanceof (Anchor *, _interfacePoint))
     return _node;
   else
     return ((Port *)(_interfacePoint))->getEndNode ();
@@ -57,7 +57,7 @@ InterfacePoint *
 Port::getEndInterfacePoint ()
 {
   // Polimorfismo
-  if (_interfacePoint->instanceOf ("Anchor"))
+  if (instanceof (Anchor *, _interfacePoint))
     {
       return _interfacePoint;
     }
@@ -75,8 +75,8 @@ Port::getMapNodeNesting ()
 
   nodeSequence = new vector<Node *>;
   nodeSequence->push_back (_node);
-  if (_interfacePoint->instanceOf ("Anchor")
-      || _interfacePoint->instanceOf ("SwitchPort"))
+  if (instanceof (Anchor *, _interfacePoint)
+      || instanceof (SwitchPort *, _interfacePoint))
     {
       return nodeSequence;
     }

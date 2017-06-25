@@ -277,7 +277,7 @@ NclCascadingDescriptor::cascade (GenericDescriptor *descriptor)
   preferredDescriptor = (GenericDescriptor *)(descriptor->getDataEntity ());
 
   if ((preferredDescriptor == NULL)
-      || preferredDescriptor->instanceOf ("NclCascadingDescriptor"))
+      || instanceof (NclCascadingDescriptor *, preferredDescriptor))
 
     return;
 
@@ -290,7 +290,7 @@ NclCascadingDescriptor::cascade (GenericDescriptor *descriptor)
   else
     id = id + "+" + preferredDescriptor->getId ();
 
-  if (preferredDescriptor->instanceOf ("Descriptor")
+  if (instanceof (Descriptor *, preferredDescriptor)
       && unsolvedDescriptors.empty ())
     {
       cascadeDescriptor ((Descriptor *)preferredDescriptor);
@@ -330,7 +330,7 @@ NclCascadingDescriptor::cascadeUnsolvedDescriptor ()
 
   genericDescriptor = (GenericDescriptor *)(unsolvedDescriptors[0]);
 
-  if (genericDescriptor->instanceOf ("DescriptorSwitch"))
+  if (instanceof (DescriptorSwitch *, genericDescriptor))
     {
       descAlternatives = (DescriptorSwitch *)genericDescriptor;
       auxDescriptor = descAlternatives->getSelectedDescriptor ();

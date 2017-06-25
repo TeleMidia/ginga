@@ -64,7 +64,7 @@ DescriptorBase::addDescriptor (GenericDescriptor *descriptor)
 bool
 DescriptorBase::addBase (Base *base, const string &alias, const string &location)
 {
-  if (base->instanceOf ("DescriptorBase"))
+  if (instanceof (DescriptorBase *, base))
     {
       return Base::addBase (base, alias, location);
     }

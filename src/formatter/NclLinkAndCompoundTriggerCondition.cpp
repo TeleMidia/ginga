@@ -57,12 +57,12 @@ NclLinkAndCompoundTriggerCondition::addCondition (
       return;
     }
 
-  if (condition->instanceOf ("NclLinkTriggerCondition"))
+  if (instanceof (NclLinkTriggerCondition *, condition))
     {
       unsatisfiedConditions.push_back (condition);
       NclLinkCompoundTriggerCondition::addCondition (condition);
     }
-  else if (condition->instanceOf ("NclLinkStatement"))
+  else if (instanceof (NclLinkStatement *, condition))
     {
       statements.push_back (condition);
     }
@@ -70,8 +70,8 @@ NclLinkAndCompoundTriggerCondition::addCondition (
     {
       clog << "NclLinkAndCompoundTriggerCondition::";
       clog << "addCondition Warning! statements ";
-      clog << "trying to add a condition !instanceOf(NclLinkStatement)";
-      clog << " and !instanceOf(NclLinkTriggerCondition)";
+      clog << "trying to add a condition !instanceof(NclLinkStatement)";
+      clog << " and !instanceof(NclLinkTriggerCondition)";
       clog << endl;
     }
 }

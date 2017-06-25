@@ -500,7 +500,7 @@ FocusManager::showObject (ExecutionObject *object)
   ncmNode = object->getDataObject ();
   mediaId = ncmNode->getDataEntity ()->getId ();
 
-  if (ncmNode->instanceOf ("ReferNode"))
+  if (instanceof (ReferNode *, ncmNode))
     {
       if (((ReferNode *)ncmNode)->getInstanceType () == "new")
         {
@@ -649,7 +649,7 @@ FocusManager::changeSettingState (const string &name, const string &act)
   while (i != settingObjects->end ())
     {
       event = (*i)->getEventFromAnchorId (name);
-      if (event != NULL && event->instanceOf ("AttributionEvent"))
+      if (event != NULL && instanceof (AttributionEvent *, event))
         {
           if (act == "start")
             {

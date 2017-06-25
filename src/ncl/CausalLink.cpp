@@ -54,7 +54,7 @@ CausalLink::getActionBinds ()
 
   for (i = _binds->begin (); i != _binds->end (); ++i)
     {
-      if (((*i)->getRole ())->instanceOf ("SimpleAction"))
+      if (instanceof (SimpleAction *, (*i)->getRole ()))
         actionsVector->push_back (*i);
     }
 
@@ -87,8 +87,8 @@ CausalLink::getConditionBinds ()
       role = bind->getRole ();
       if (role != NULL)
         {
-          if (role->instanceOf ("SimpleCondition")
-              || role->instanceOf ("AttributeAssessment"))
+          if (instanceof (SimpleCondition *, role)
+              || instanceof (AttributeAssessment *, role))
             {
               conditionsVector->push_back (bind);
             }

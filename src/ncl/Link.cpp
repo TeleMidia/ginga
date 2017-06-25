@@ -428,7 +428,7 @@ Link::containsNode (Node *node, GenericDescriptor *descriptor,
     {
       bind = (*i);
       bindInterface = bind->getInterfacePoint ();
-      if (bindInterface != NULL && bindInterface->instanceOf ("Port"))
+      if (bindInterface != NULL && instanceof (Port *, bindInterface))
         {
           bindNode = ((Port *)bindInterface)->getEndNode ();
         }

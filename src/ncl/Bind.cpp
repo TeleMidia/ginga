@@ -184,8 +184,8 @@ Bind::getNodeNesting ()
   nodeNesting->push_back (_node);
   if (_interfacePoint != NULL)
     {
-      if (_interfacePoint->instanceOf ("Port")
-          && !(_interfacePoint->instanceOf ("SwitchPort")))
+      if (instanceof (Port *, _interfacePoint)
+          && !(instanceof (SwitchPort *, _interfacePoint)))
         {
           nodeSequence = ((Port *)_interfacePoint)->getMapNodeNesting ();
 
@@ -213,8 +213,8 @@ Bind::getEndPointInterface ()
   Port *port;
 
   nodeEntity = (NodeEntity *)(_node->getDataEntity ());
-  if (nodeEntity->instanceOf ("CompositeNode")
-      && _interfacePoint->instanceOf ("Port"))
+  if (instanceof (CompositeNode *, nodeEntity)
+      && instanceof (Port *, _interfacePoint))
     {
       compositeNode = (CompositeNode *)nodeEntity;
       port = (Port *)_interfacePoint;

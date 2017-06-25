@@ -157,7 +157,7 @@ Node::addAnchor (int index, Anchor *anchor)
       _anchorList.insert (_anchorList.begin () + index, anchor);
     }
 
-  if (anchor->instanceOf ("PropertyAnchor"))
+  if (instanceof (PropertyAnchor *, anchor))
     {
       _originalPAnchors.push_back (((PropertyAnchor *)anchor)->clone ());
     }
@@ -230,7 +230,7 @@ Node::getPropertyAnchor (const string &propertyName)
   i = _anchorList.begin ();
   while (i != _anchorList.end ())
     {
-      if ((*i)->instanceOf ("PropertyAnchor"))
+      if (instanceof (PropertyAnchor *, (*i)))
         {
           property = (PropertyAnchor *)(*i);
           if (property->getName () == propertyName)

@@ -497,7 +497,7 @@ NclParser::solveNodeReferences (CompositeNode *composition)
   vector<Node *> *nodes;
   bool deleteNodes = false;
 
-  if (composition->instanceOf ("SwitchNode"))
+  if (instanceof (SwitchNode *, composition))
     {
       deleteNodes = true;
       nodes = getSwitchConstituents ((SwitchNode *)composition);
@@ -516,12 +516,12 @@ NclParser::solveNodeReferences (CompositeNode *composition)
   {
     if (node != NULL)
       {
-        if (node->instanceOf ("ReferNode"))
+        if (instanceof (ReferNode *, node))
           {
             referredNode = ((ReferNode *)node)->getReferredEntity ();
             if (referredNode != NULL)
               {
-                if (referredNode->instanceOf ("ReferredNode"))
+                if (instanceof (ReferredNode *, referredNode))
                   {
                     nodeEntity = (NodeEntity *)(getNode (
                                                   referredNode->getId ()));
@@ -539,7 +539,7 @@ NclParser::solveNodeReferences (CompositeNode *composition)
                   }
               }
           }
-        else if (node->instanceOf ("CompositeNode"))
+        else if (instanceof (CompositeNode *, node))
           {
             solveNodeReferences ((CompositeNode *)node);
           }
@@ -661,11 +661,11 @@ NclParser::parseContext (DOMElement *parentElement)
 void
 NclParser::addPropertyToContext (Entity *context, Anchor *property)
 {
-  if (context->instanceOf ("ContextNode"))
+  if (instanceof (ContextNode *, context))
     {
       ((ContextNode *)context)->addAnchor (property);
     }
-  else if (context->instanceOf ("ReferNode"))
+  else if (instanceof (ReferNode *, context))
     {
       ((ReferNode *)context)->addAnchor (property);
     }
@@ -680,7 +680,7 @@ NclParser::addNodeToContext (ContextNode *contextNode, Node *node)
 void
 NclParser::addNodeToContext (Entity *context, Node *node)
 {
-  if (context->instanceOf ("ContextNode"))
+  if (instanceof (ContextNode *, context))
     {
       addNodeToContext ((ContextNode *)context, node);
     }
@@ -808,7 +808,7 @@ NclParser::posCompileContext (DOMElement *context_element, ContextNode *context)
             {
               ERROR_SYNTAX ("bad context '%s'", id.c_str ());
             }
-          else if (node->instanceOf ("ContextNode"))
+          else if (instanceof (ContextNode *, node))
             {
               posCompileContext (child, (ContextNode*)node);
             }
@@ -822,7 +822,7 @@ NclParser::posCompileContext (DOMElement *context_element, ContextNode *context)
             {
               ERROR_SYNTAX ("bad switch '%s'", id.c_str ());
             }
-          else if (node->instanceOf ("SwitchNode"))
+          else if (instanceof (SwitchNode *, node))
             {
               this->posCompileSwitch (child, (SwitchNode*)node);
             }
@@ -1867,7 +1867,7 @@ NclParser::parseMapping (DOMElement *parent, SwitchPort *switchPort)
       interfacePoint = mappingNodeEntity->getAnchor (interface);
       if (interfacePoint == NULL)
         {
-          if (mappingNodeEntity->instanceOf ("CompositeNode"))
+          if (instanceof (CompositeNode *, mappingNodeEntity))
             {
               interfacePoint = ((CompositeNode *) mappingNodeEntity)
                 ->getPort (interface);
@@ -1985,7 +1985,7 @@ NclParser::parsePort (DOMElement *parent, CompositeNode *context)
   portNodeEntity = (NodeEntity *)portNode->getDataEntity ();
   if (!dom_element_has_attr(parent, "interface"))
     {
-      if (portNode->instanceOf ("ReferNode")
+      if (instanceof (ReferNode *, portNode)
           && ((ReferNode *)portNode)->getInstanceType () == "new")
         {
           portInterfacePoint = portNode->getAnchor (0);
@@ -1995,7 +1995,7 @@ NclParser::parsePort (DOMElement *parent, CompositeNode *context)
               portNode->addAnchor (0, (Anchor *)portInterfacePoint);
             }
         }
-      else if (portNodeEntity->instanceOf ("Node"))
+      else if (instanceof (Node *, portNodeEntity))
         {
           portInterfacePoint = portNodeEntity->getAnchor (0);
           if (unlikely (portInterfacePoint == NULL))
@@ -2013,7 +2013,7 @@ NclParser::parsePort (DOMElement *parent, CompositeNode *context)
     {
       attValue = dom_element_get_attr(parent, "interface");
 
-      if (portNode->instanceOf ("ReferNode")
+      if (instanceof (ReferNode *, portNode)
           && ((ReferNode *)portNode)->getInstanceType () == "new")
         {
           portInterfacePoint = portNode->getAnchor (attValue);
@@ -2025,7 +2025,7 @@ NclParser::parsePort (DOMElement *parent, CompositeNode *context)
 
       if (portInterfacePoint == NULL)
         {
-          if (portNodeEntity->instanceOf ("CompositeNode"))
+          if (instanceof (CompositeNode *, portNodeEntity))
             {
               portInterfacePoint
                   = ((CompositeNode *)portNodeEntity)->getPort (attValue);
@@ -2398,7 +2398,7 @@ NclParser::createBind (DOMElement *bind_element, Link *link)
         }
       else
         {
-          if (anchorNode->instanceOf ("ReferNode")
+          if (instanceof (ReferNode *, anchorNode)
               && ((ReferNode *)anchorNode)->getInstanceType () == "new")
             {
               interfacePoint = anchorNode->getAnchor (interfaceId);
@@ -2412,7 +2412,7 @@ NclParser::createBind (DOMElement *bind_element, Link *link)
       if (interfacePoint == NULL)
         {
           if (anchorNodeEntity != NULL
-              && anchorNodeEntity->instanceOf ("CompositeNode"))
+              && instanceof (CompositeNode *, anchorNodeEntity))
             {
               interfacePoint = ((CompositeNode *)anchorNodeEntity)
                                    ->getPort (interfaceId);
@@ -2442,7 +2442,7 @@ NclParser::createBind (DOMElement *bind_element, Link *link)
     }
   else if (anchorNodeEntity != NULL)
     {
-      if (anchorNode->instanceOf ("ReferNode")
+      if (instanceof (ReferNode *, anchorNode)
           && ((ReferNode *)anchorNode)->getInstanceType () == "new")
         {
           interfacePoint = anchorNode->getAnchor (0);
@@ -2452,7 +2452,7 @@ NclParser::createBind (DOMElement *bind_element, Link *link)
               anchorNode->addAnchor (0, (Anchor *)interfacePoint);
             }
         }
-      else if (anchorNodeEntity->instanceOf ("Node"))
+      else if (instanceof (Node *, anchorNodeEntity))
         {
           interfacePoint = anchorNodeEntity->getAnchor (0);
         }
@@ -2504,7 +2504,7 @@ NclParser::createBind (DOMElement *bind_element, Link *link)
           condition
               = ((CausalConnector *)_connectorLinkParsing)->getConditionExpression ();
 
-          if (condition->instanceOf ("CompoundCondition"))
+          if (instanceof (CompoundCondition *, condition))
             {
               ((CompoundCondition *)condition)
                   ->addConditionExpression (statement);
@@ -2543,7 +2543,7 @@ NclParser::createLink (DOMElement *link_element,
       ERROR_SYNTAX ("link: bad xconnector '%s'", connectorId.c_str ());
     }
 
-  g_assert (_connectorLinkParsing->instanceOf ("CausalConnector"));
+  g_assert (instanceof (CausalConnector *, _connectorLinkParsing));
 
   Link *link = new CausalLink (dom_element_get_attr (link_element, "id"),
                                _connectorLinkParsing);
@@ -3098,7 +3098,7 @@ NclParser::posCompileSwitch (
           string id = dom_element_get_attr(child, "id");
           Node *node = this->getNode (id);
 
-          if (node->instanceOf ("ContextNode"))
+          if (instanceof (ContextNode *, node))
             {
               this->posCompileContext (child, (ContextNode*)node);
             }
@@ -3112,7 +3112,7 @@ NclParser::posCompileSwitch (
               ERROR_SYNTAX ("node '%s' should be a switch",
                             dom_element_get_attr(child, "id").c_str ());
             }
-          else if (node->instanceOf ("SwitchNode"))
+          else if (instanceof (SwitchNode *, node))
             {
               posCompileSwitch (child, (SwitchNode*)node);
             }
