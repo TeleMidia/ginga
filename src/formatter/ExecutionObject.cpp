@@ -441,7 +441,7 @@ ExecutionObject::removeEvent (NclEvent *event)
   clog << "NclExecutionObject::removeEvent '" << event->getId () << "'";
   clog << "from '" << getId () << "'" << endl;
 
-  if (dynamic_cast <PresentationEvent *> (event))
+  if (instanceof (PresentationEvent *, event))
     {
       for (i = _presEvents.begin (); i != _presEvents.end (); ++i)
         {
@@ -453,7 +453,7 @@ ExecutionObject::removeEvent (NclEvent *event)
         }
       _transMan.removeEventTransition ((PresentationEvent *)event);
     }
-  else if (dynamic_cast <SelectionEvent *> (event))
+  else if (instanceof (SelectionEvent *, event))
     {
       j = _selectionEvents.find (((SelectionEvent *)event));
       if (j != _selectionEvents.end ())
@@ -608,7 +608,7 @@ ExecutionObject::prepare (NclEvent *event)
   for (j = 0; j < size; j++)
     {
       auxEvent = _otherEvents[j];
-      if (dynamic_cast <AttributionEvent *> (auxEvent))
+      if (instanceof (AttributionEvent *, auxEvent))
         {
           attributeEvent = (AttributionEvent *)auxEvent;
           attributeAnchor = attributeEvent->getAnchor ();
@@ -858,11 +858,11 @@ ExecutionObject::selectionEvent (SDL_Keycode key, GingaTime currentTime)
       if (keyString == selCode)
         {
           ContentAnchor *anchor = selectionEvent->getAnchor ();
-          if (dynamic_cast <LambdaAnchor *> (anchor))
+          if (instanceof (LambdaAnchor *, anchor))
             {
               selectedEvents->insert (selectionEvent);
             }
-          else if (dynamic_cast <IntervalAnchor *> (anchor))
+          else if (instanceof (IntervalAnchor *, anchor))
             {
               intervalAnchor
                   = (IntervalAnchor *)(selectionEvent->getAnchor ());
@@ -1003,7 +1003,7 @@ ExecutionObject::handleTickEvent (arg_unused (GingaTime total),
   _time += diff;
 
   g_assert (this->isOccurring ());
-  g_assert_nonnull (dynamic_cast <PresentationEvent *> (_mainEvent));
+  g_assert_nonnull (instanceof (PresentationEvent *, _mainEvent));
 
   next = _transMan.nextTransition (_mainEvent);
   if (next == nullptr)
@@ -1035,7 +1035,7 @@ ExecutionObject::handleKeyEvent (SDL_EventType type, SDL_Keycode key)
     return;                     // nothing to do
 
   g_assert (this->isOccurring ());
-  g_assert_nonnull (dynamic_cast <PresentationEvent *> (_mainEvent));
+  g_assert_nonnull (instanceof (PresentationEvent *, _mainEvent));
 
   this->selectionEvent (key, _time);
 }
