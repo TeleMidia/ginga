@@ -43,7 +43,6 @@ ExecutionObject::ExecutionObject (const string &id,
                                   bool handling,
                                   INclActionListener *seListener)
 {
-  _typeSet.insert ("ExecutionObject");
   this->_seListener = seListener;
   this->_dataObject = node;
   this->_wholeContent = nullptr;
@@ -175,12 +174,6 @@ ExecutionObject::isOccurring ()
 {
   return _mainEvent
     && _mainEvent->getCurrentState () == EventState::OCCURRING;
-}
-
-bool
-ExecutionObject::instanceOf (const string &s)
-{
-  return (_typeSet.find (s) != _typeSet.end ());
 }
 
 Node *

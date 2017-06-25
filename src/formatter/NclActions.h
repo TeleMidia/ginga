@@ -48,7 +48,6 @@ public:
   explicit NclAction (GingaTime _delay);
 
   virtual ~NclAction () {}
-  bool instanceOf (const string &s);
   void setWaitDelay (GingaTime delay);
 
   void addProgressListener (NclActionProgressListener *listener);
@@ -63,7 +62,6 @@ public:
   virtual void run () {}
 
 protected:
-  set<string> _typeSet;
   NclLinkCondition *_satisfiedCondition;
 
   void notifyProgressListeners (bool start);

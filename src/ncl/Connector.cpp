@@ -23,8 +23,6 @@ GINGA_NCL_BEGIN
 Connector::Connector (const string &id) : Entity (id)
 {
   _params = new map<string, Parameter *>;
-
-  _typeSet.insert ("Connector");
 }
 
 Connector::~Connector ()

@@ -23,13 +23,11 @@ GINGA_NCL_BEGIN
 Action::Action ()
 {
   _delay = "0";
-  _typeSet.insert ("Action");
 }
 
 Action::Action (const string &newDelay)
 {
   _delay = newDelay;
-  _typeSet.insert ("Action");
 }
 
 string

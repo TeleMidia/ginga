@@ -40,7 +40,6 @@ public:
         Role *_role);
 
   virtual ~Bind ();
-  bool instanceOf (const string &s);
   GenericDescriptor *getDescriptor ();
   InterfacePoint *getInterfacePoint ();
   Node *getNode ();
@@ -61,7 +60,6 @@ public:
 
 protected:
   map<string, Parameter *> *_parameters;
-  set<string> _typeSet;
 
 private:
   Node *_node;

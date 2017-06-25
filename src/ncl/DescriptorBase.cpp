@@ -23,7 +23,6 @@ GINGA_NCL_BEGIN
 DescriptorBase::DescriptorBase (const string &id) : Base (id)
 {
   _descriptorSet = new vector<GenericDescriptor *>;
-  _typeSet.insert ("DescriptorBase");
 }
 
 DescriptorBase::~DescriptorBase ()

@@ -26,7 +26,6 @@ NodeEntity::NodeEntity (const string &uid, Content *someContent) : Node (uid)
   _descriptor = NULL;
   _anchorList.push_back (new LambdaAnchor (uid));
   this->_content = someContent;
-  _typeSet.insert ("NodeEntity");
 }
 
 NodeEntity::~NodeEntity ()

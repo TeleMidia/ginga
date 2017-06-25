@@ -23,7 +23,6 @@ GINGA_NCL_BEGIN
 ReferredNode::ReferredNode (const string &id, void *element) : Entity (id)
 {
   _referElement = element;
-  _typeSet.insert ("ReferredNode");
 }
 
 void *

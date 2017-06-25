@@ -90,12 +90,6 @@ public:
   Animation *getAnimation ();
   void setAnimation (Animation *animation);
 
-  bool
-  instanceOf (const string &type)
-  {
-    return Action::instanceOf (type);
-  }
-
 private:
   SimpleActionType _actionType;
   short _qualifier;

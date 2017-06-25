@@ -18,13 +18,17 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "CompositeNode.h"
 
+#include "ContentNode.h"
+#include "ContextNode.h"
+#include "SwitchNode.h"
+
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_NCL_BEGIN
 
 CompositeNode::CompositeNode (const string &id) : NodeEntity (id, NULL)
 {
-  _typeSet.insert ("CompositeNode");
+
 }
 
 CompositeNode::~CompositeNode ()
@@ -370,6 +374,15 @@ CompositeNode::setNodeDescriptor (arg_unused (const string &nodeId),
                                   arg_unused (GenericDescriptor *_descriptor))
 {
   return false;
+}
+
+bool
+CompositeNode::isDocumentNode (Node *node)
+{
+  return (instanceof (ContentNode *, node)
+          || instanceof (ContextNode *, node)
+          || instanceof (ReferNode *, node)
+          || instanceof (SwitchNode *, node));
 }
 
 GINGA_NCL_END

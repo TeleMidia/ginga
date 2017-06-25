@@ -42,11 +42,6 @@ public:
   void setNegated (bool newNegated);
   bool isNegated ();
   vector<Role *> *getRoles ();
-  bool
-  instanceOf (const string &type)
-  {
-    return Statement::instanceOf (type);
-  }
 
 protected:
   vector<Statement *> *_statements;

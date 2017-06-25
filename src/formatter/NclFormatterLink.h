@@ -33,7 +33,6 @@ public:
 
   void suspendLinkEvaluation (bool suspend);
   Link *getNcmLink ();
-  bool instanceOf (const string &s);
 
 protected:
   Link *ncmLink;

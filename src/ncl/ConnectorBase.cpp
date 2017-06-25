@@ -22,7 +22,7 @@ GINGA_NCL_BEGIN
 
 ConnectorBase::ConnectorBase (const string &id) : Base (id)
 {
-  _typeSet.insert ("ConnectorBase");
+
 }
 
 ConnectorBase::~ConnectorBase ()

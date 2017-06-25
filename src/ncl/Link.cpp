@@ -31,7 +31,6 @@ Link::Link (const string &id, Connector *connector) : Entity (id)
   this->_connector = connector;
   _parameters = new map<string, Parameter *>;
   _composition = NULL;
-  _typeSet.insert ("Link");
 }
 
 Link::~Link ()

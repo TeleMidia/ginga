@@ -28,8 +28,6 @@ Bind::Bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
   this->_descriptor = desc;
   this->_role = role;
   this->_parameters = new map<string, Parameter *>;
-
-  _typeSet.insert ("Bind");
 }
 
 Bind::~Bind ()
@@ -47,15 +45,6 @@ Bind::~Bind ()
       delete _parameters;
       _parameters = NULL;
     }
-}
-
-bool
-Bind::instanceOf (const string &s)
-{
-  if (_typeSet.empty ())
-    return false;
-  else
-    return (_typeSet.find (s) != _typeSet.end ());
 }
 
 GenericDescriptor *

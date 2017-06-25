@@ -56,7 +56,6 @@ public:
   virtual bool isPaused ();
   virtual bool isOccurring ();
 
-  bool instanceOf (const string &);
   Node *getDataObject ();
   NclCascadingDescriptor *getDescriptor ();
   string getId ();
@@ -106,7 +105,6 @@ protected:
   NclCascadingDescriptor *_descriptor;
   PresentationEvent *_wholeContent;
 
-  set<string> _typeSet;
   INclActionListener *_seListener;
 
   bool _isHandler;

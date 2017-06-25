@@ -24,7 +24,6 @@ TextAnchor::TextAnchor (const string &id, const string &t, int p) : Anchor (id)
 {
   _position = p;
   _text = t;
-  _typeSet.insert ("TextAnchor");
 }
 
 int

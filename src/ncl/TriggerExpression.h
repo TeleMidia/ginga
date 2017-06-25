@@ -29,11 +29,6 @@ public:
   virtual ~TriggerExpression (){}
   string getDelay ();
   void setDelay (const string &delay);
-  virtual bool
-  instanceOf (const string &type)
-  {
-    return ConditionExpression::instanceOf (type);
-  }
 
 private:
   string _delay;

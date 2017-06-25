@@ -39,14 +39,12 @@ public:
   void setBaseLocation (Base *base, const string &location);
   string getId ();
   void setId (const string &_id);
-  bool instanceOf (const string &s);
 
 protected:
   string _id;
   vector<Base *> _baseSet;
   map<string, Base *> _baseAliases;
   map<string, Base *> _baseLocations;
-  set<string> _typeSet;
 
 private:
   static set<Base *> _baseInstances;

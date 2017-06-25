@@ -22,9 +22,6 @@ GINGA_NCL_BEGIN
 
 ContextNode::ContextNode (const string &id) : CompositeNode (id)
 {
-  _typeSet.insert ("ContextNode");
-  _typeSet.insert ("DocumentNode");
-  _typeSet.insert ("LinkComposition");
 }
 
 ContextNode::~ContextNode ()
@@ -75,7 +72,7 @@ ContextNode::addLink (Link *link)
 bool
 ContextNode::addNode (Node *node)
 {
-  if (!node->instanceOf ("DocumentNode"))
+  if (!isDocumentNode(node))
     {
       return false;
     }

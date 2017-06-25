@@ -26,9 +26,6 @@ SwitchNode::SwitchNode (const string &id) : CompositeNode (id)
 {
   _content = new SwitchContent ();
   _defaultNode = NULL;
-
-  _typeSet.insert ("SwitchNode");
-  _typeSet.insert ("DocumentNode");
 }
 
 SwitchNode::~SwitchNode ()
@@ -105,7 +102,7 @@ SwitchNode::addNode (Node *node, Rule *rule)
 bool
 SwitchNode::addNode (Node *node)
 {
-  if (!node->instanceOf ("DocumentNode"))
+  if (!isDocumentNode(node))
     {
       return false;
     }

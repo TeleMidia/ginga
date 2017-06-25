@@ -58,19 +58,6 @@ NclNodeNesting::initialize ()
   typeSet.insert (type);
 }
 
-bool
-NclNodeNesting::instanceOf (const string &s)
-{
-  if (!typeSet.empty ())
-    {
-      return (typeSet.find (s) != typeSet.end ());
-    }
-  else
-    {
-      return false;
-    }
-}
-
 void
 NclNodeNesting::append (NclNodeNesting *otherSeq)
 {

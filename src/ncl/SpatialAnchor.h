@@ -25,10 +25,7 @@ GINGA_NCL_BEGIN
 class SpatialAnchor : public ContentAnchor
 {
 public:
-  SpatialAnchor (const string &id) : ContentAnchor (id)
-  {
-    _typeSet.insert ("SpatialAnchor");
-  }
+  SpatialAnchor (const string &id) : ContentAnchor (id) {}
 };
 
 GINGA_NCL_END

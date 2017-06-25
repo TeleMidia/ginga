@@ -26,8 +26,6 @@ Port::Port (const string &id, Node *someNode, InterfacePoint *someInterfacePoint
 {
   _node = someNode;
   _interfacePoint = someInterfacePoint;
-
-  _typeSet.insert ("Port");
 }
 
 Port::~Port () {}

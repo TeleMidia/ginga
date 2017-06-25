@@ -27,8 +27,6 @@ set<NclEvent *> NclEvent::_instances;
 
 NclEvent::NclEvent (const string &id, ExecutionObject *exeObj)
 {
-  _typeSet.insert ("NclEvent");
-
   this->_id = id;
   _state = EventState::SLEEPING;
   _occurrences = 0;
@@ -54,19 +52,6 @@ NclEvent::hasInstance (NclEvent *evt, bool remove)
       _instances.erase (evt);
     }
   return has;
-}
-
-bool
-NclEvent::instanceOf (const string &s)
-{
-  if (_typeSet.empty ())
-    {
-      return false;
-    }
-  else
-    {
-      return (_typeSet.find (s) != _typeSet.end ());
-    }
 }
 
 bool
@@ -217,7 +202,6 @@ AnchorEvent::AnchorEvent (const string &id,
   : NclEvent (id, executionObject)
 {
   this->_anchor = anchor;
-  _typeSet.insert ("AnchorEvent");
 }
 
 // PresentationEvent
@@ -226,8 +210,6 @@ PresentationEvent::PresentationEvent (const string &id,
                                       ContentAnchor *anchor)
   : AnchorEvent (id, exeObj, anchor)
 {
-  _typeSet.insert ("PresentationEvent");
-
   _numPresentations = 1;
   _repetitionInterval = 0;
 
@@ -298,8 +280,6 @@ SelectionEvent::SelectionEvent (const string &id,
   : AnchorEvent (id, exeObj, anchor)
 {
   _selCode.assign("NO_CODE");
-
-  _typeSet.insert ("SelectionEvent");
 }
 
 bool
@@ -320,8 +300,6 @@ AttributionEvent::AttributionEvent (const string &id,
 {
   Entity *entity;
   NodeEntity *dataObject;
-
-  _typeSet.insert ("AttributionEvent");
 
   this->_anchor = anchor;
   this->_player = nullptr;
@@ -442,8 +420,6 @@ SwitchEvent::SwitchEvent (const string &id,
   this->_type = type;
   this->_key = key;
   this->_mappedEvent = nullptr;
-
-  _typeSet.insert ("SwitchEvent");
 }
 
 SwitchEvent::~SwitchEvent ()
