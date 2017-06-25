@@ -1243,9 +1243,7 @@ NclParser::parseSimpleCondition (DOMElement *elt)
   cond->setEventType (type);
   cond->setTransition (trans);
 
-  // TODO: We do not check min and max.
-  cond->setMinCon (0);
-  cond->setMaxCon (0);
+  // TODO: We do not handle min and max (these are nonsensical).
 
   if (type == EventType::SELECTION
       && dom_element_try_get_attr (value, elt, "key"))
@@ -1529,21 +1527,10 @@ NclParser::parseSimpleAction (DOMElement *elt)
   if (dom_element_try_get_attr (value, elt, "delay"))
     action->setDelay (value);
 
-  if (dom_element_try_get_attr (value, elt, "qualifier"))
-    {
-      if (value == "seq")
-        action->setQualifier (CompoundAction::OP_SEQ);
-      else if (value == "par")
-        action->setQualifier (CompoundAction::OP_PAR);
-      else
-        ERROR_SYNTAX ("%s: bad qualifier '%s'",
-                      tag.c_str (), value.c_str ());
-    }
-
   if (dom_element_try_get_attr (value, elt, "value"))
     action->setValue (value);
 
-  // TODO: Handle repeatDelay and repeat attributes.
+  // TODO: Handle qualifier (no!), repeatDelay and repeat attributes.
 
   return action;
 }
@@ -2502,8 +2489,6 @@ NclParser::createBind (DOMElement *bind_element, Link *link)
           assessment = new AttributeAssessment (roleId);
           assessment->setEventType (EventType::ATTRIBUTION);
           assessment->setAttributeType (AttributeType::NODE_PROPERTY);
-          assessment->setMinCon (0);
-          assessment->setMaxCon (0);
 
           otherAssessment = new ValueAssessment (roleId);
 

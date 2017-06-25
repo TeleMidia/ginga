@@ -267,9 +267,8 @@ NclAssignmentAction::setAnimation (Animation *animation)
   this->_anim = animation;
 }
 
-NclCompoundAction::NclCompoundAction (short op) : NclAction (0.)
+NclCompoundAction::NclCompoundAction () : NclAction (0.)
 {
-  this->_op = op;
   _hasStart = false;
   _running = false;
   _listener = NULL;
@@ -412,35 +411,12 @@ NclCompoundAction::run ()
   _pendingActions = (int) size;
   _hasStart = false;
 
-  if (_op == CompoundAction::OP_PAR)
+  for (i = 0; i < size; i++)
     {
-      for (i = 0; i < size; i++)
-        {
-
-          if (_actions.empty ())
-            {
-              return;
-            }
-
-          action = _actions.at (i);
-          action->setSatisfiedCondition (_satisfiedCondition);
-          action->run ();
-
-        }
-    }
-  else
-    {
-      for (i = 0; i < size; i++)
-        {
-
-          if (_actions.empty ())
-            {
-              return;
-            }
-
-          action = _actions.at (i);
-          action->run (_satisfiedCondition);
-        }
+      if (_actions.empty ())
+        return;
+      action = _actions.at (i);
+      action->run (_satisfiedCondition);
     }
 }
 

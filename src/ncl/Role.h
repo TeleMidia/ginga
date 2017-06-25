@@ -28,24 +28,16 @@ class Role
 public:
   Role ();
   virtual ~Role ();
-
   virtual EventType getEventType ();
   virtual string getLabel ();
   virtual void setEventType (EventType type);
   virtual void setLabel (const string &id);
 
-  virtual int getMinCon ();
-  virtual int getMaxCon ();
-
-  virtual void setMinCon (int _minCon);
-  virtual void setMaxCon (int _maxCon);
-
 protected:
   string _label;
   EventType _eventType;
-  int _maxCon, _minCon;
 };
 
 GINGA_NCL_END
 
-#endif /* ROLE_H*/
+#endif

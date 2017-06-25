@@ -75,10 +75,6 @@ public:
   SimpleAction (const string &role);
   virtual ~SimpleAction ();
 
-  void setLabel (const string &id);
-
-  short getQualifier ();
-  void setQualifier (short qualifier);
   string getRepeat ();
   string getRepeatDelay ();
   void setRepeatDelay (const string &time);
@@ -92,7 +88,6 @@ public:
 
 private:
   SimpleActionType _actionType;
-  short _qualifier;
   string _repeat;
   string _repeatDelay;
   string _value;

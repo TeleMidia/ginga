@@ -31,7 +31,6 @@ public:
   SimpleCondition (const string &role);
   virtual ~SimpleCondition (){}
 
-  void setLabel (const string &id);
   string getKey ();
   void setKey (const string &_key);
   EventStateTransition getTransition ();
