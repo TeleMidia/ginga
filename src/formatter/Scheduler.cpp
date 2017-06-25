@@ -31,8 +31,6 @@ Scheduler::Scheduler ()
   this->ruleAdapter = new RuleAdapter (settings);
   this->compiler = new Converter (this->ruleAdapter);
   this->compiler->setLinkActionListener (this);
-  this->focusManager = new FocusManager
-    (this, this->settings, this, this->compiler);
 }
 
 Scheduler::~Scheduler ()
@@ -44,13 +42,6 @@ Scheduler::~Scheduler ()
 
   ruleAdapter = nullptr;
   settings = nullptr;
-
-  if (focusManager != nullptr)
-    {
-      delete focusManager;
-      focusManager = nullptr;
-    }
-
   compiler = nullptr;
   events.clear ();
 }
@@ -717,34 +708,20 @@ Scheduler::eventStateChanged (
         {
         case EventStateTransition::STARTS:
           object = event->getExecutionObject ();
-          focusManager->showObject (object);
           break;
 
         case EventStateTransition::STOPS:
           if (((PresentationEvent *)event)->getRepetitions () == 0)
             {
-              bool hideObj = true;
               event->removeListener (this);
               object = event->getExecutionObject ();
-
-              if (hideObj)
-                {
-                  this->focusManager->hideObject (object);
-                }
             }
           break;
 
         case EventStateTransition::ABORTS:
           {
-            bool hideObj = true;
-
             event->removeListener (this);
             object = (ExecutionObject *)(event->getExecutionObject ());
-
-            if (hideObj)
-              {
-                this->focusManager->hideObject (object);
-              }
             break;
           }
 

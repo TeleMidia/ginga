@@ -19,7 +19,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #define FORMATTER_SCHEDULER_H
 
 #include "Converter.h"
-#include "FocusManager.h"
 #include "NclActions.h"
 #include "RuleAdapter.h"
 
@@ -36,7 +35,6 @@ class Scheduler : public INclActionListener,
 {
 private:
   Converter *compiler;
-  FocusManager *focusManager;
   Settings *settings;
   RuleAdapter *ruleAdapter;
 
