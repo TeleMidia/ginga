@@ -30,8 +30,7 @@
     <media id="img2" src="samples/vector.svg" descriptor="desc2"/>
     <media id="vid" src="samples/clock.ogv" descriptor="desc3"/>
     <media id="lua" src="samples/fps.lua">
-      <property name="right" value="0"/>
-      <property name="size" value="50%,50%"/>
+      <property name="bounds" value="50%,0,50%,50%"/>
     </media>
     <link xconnector="onBeginStart">
       <bind role="onBegin" component="img1" interface="seg"/>
