@@ -30,13 +30,11 @@ GINGA_FORMATTER_BEGIN
 class Converter;
 class FocusManager;
 
-class Scheduler : public INclActionListener,
-                  public INclEventListener
+class Scheduler : public INclActionListener
 {
 private:
   Converter *compiler;
   Settings *settings;
-  RuleAdapter *ruleAdapter;
 
   string file;                        // NCL file path
   NclDocument *doc;                   // NCL document tree
@@ -52,10 +50,6 @@ public:
   void scheduleAction (NclSimpleAction *) override;
 
   void startDocument (const string &);
-
-  void eventStateChanged (NclEvent *someEvent,
-                          EventStateTransition transition,
-                          EventState previousState) override;
 
 private:
 
