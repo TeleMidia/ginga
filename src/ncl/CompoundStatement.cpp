@@ -27,8 +27,6 @@ CompoundStatement::CompoundStatement () : Statement ()
   _statements = new vector<Statement *>;
   _myOperator = OP_OR;
   _negated = false;
-
-  typeSet.insert ("CompoundStatement");
 }
 
 CompoundStatement::CompoundStatement (Statement *p1, Statement *p2,
@@ -41,8 +39,6 @@ CompoundStatement::CompoundStatement (Statement *p1, Statement *p2,
 
   _statements->push_back (p1);
   _statements->push_back (p2);
-
-  typeSet.insert ("CompoundStatement");
 }
 
 CompoundStatement::~CompoundStatement ()

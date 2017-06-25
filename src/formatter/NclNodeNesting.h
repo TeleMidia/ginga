@@ -28,7 +28,6 @@ class NclNodeNesting
 private:
   string id;
   vector<Node *> *nodes;
-  set<string> typeSet;
 
 public:
   NclNodeNesting ();

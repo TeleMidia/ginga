@@ -38,8 +38,8 @@ protected:
   Link *ncmLink;
   bool suspend;
   ExecutionObjectContext *parentObject;
-  set<string> typeSet;
 };
+
 
 GINGA_FORMATTER_END
 

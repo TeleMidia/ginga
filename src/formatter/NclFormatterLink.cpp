@@ -23,8 +23,6 @@ GINGA_FORMATTER_BEGIN
 NclFormatterLink::NclFormatterLink (Link *ncmLink,
                                     ExecutionObjectContext *parentObject)
 {
-  typeSet.insert ("NclFormatterLink");
-
   this->parentObject = parentObject; // ExecutionObjectContext
   this->ncmLink = ncmLink;
   this->suspend = false;

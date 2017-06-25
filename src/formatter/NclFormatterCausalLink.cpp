@@ -27,7 +27,6 @@ NclFormatterCausalLink::NclFormatterCausalLink (
     Link *ncmLink, ExecutionObjectContext *parentObject)
     : NclFormatterLink (ncmLink, parentObject)
 {
-  typeSet.insert ("NclFormatterCausalLink");
   this->condition = condition;
   this->action = action;
 

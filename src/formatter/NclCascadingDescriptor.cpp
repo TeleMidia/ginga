@@ -114,8 +114,6 @@ NclCascadingDescriptor::~NclCascadingDescriptor ()
 void
 NclCascadingDescriptor::initializeCascadingDescriptor ()
 {
-  typeSet.insert ("NclCascadingDescriptor");
-
   id = "";
   explicitDuration = GINGA_TIME_NONE;
   repetitions = 0;

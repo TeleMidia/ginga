@@ -26,7 +26,6 @@ NclLinkCompoundStatement::NclLinkCompoundStatement (short op)
     : NclLinkStatement ()
 {
   this->op = op;
-  typeSet.insert ("NclLinkCompoundStatement");
 }
 
 NclLinkCompoundStatement::~NclLinkCompoundStatement ()
