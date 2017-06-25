@@ -34,7 +34,6 @@ enum SimpleActionType
    ACT_RESUME,
    ACT_STOP,
    ACT_ABORT,
-   ACT_SET,
 };
 
 class SimpleAction : public Action, public Role
@@ -54,8 +53,6 @@ public:
         return "stop";
       case ACT_ABORT:
         return "abort";
-      case ACT_SET:
-        return "set";
       default:
         g_assert_not_reached ();
       }
@@ -68,7 +65,6 @@ public:
     if (s == "resume") return ACT_RESUME;
     if (s == "stop")   return ACT_STOP;
     if (s == "abort")  return ACT_ABORT;
-    if (s == "set")    return ACT_SET;
     g_assert_not_reached ();
   }
 
