@@ -198,7 +198,8 @@ VideoPlayer::redraw (SDL_Renderer *renderer)
   guint8 *pixels;
   int stride;
 
-  g_assert (!Player::getEOS ());
+  if (Player::getEOS ())
+    goto done;
 
   if (!g_atomic_int_compare_and_exchange (&_sample_flag, 1, 0))
     goto done;
