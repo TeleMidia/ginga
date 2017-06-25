@@ -28,8 +28,7 @@ GINGA_FORMATTER_BEGIN
 Scheduler::Scheduler ()
 {
   this->settings = new Settings ();
-  this->ruleAdapter = new RuleAdapter (settings);
-  this->compiler = new Converter (this->ruleAdapter);
+  this->compiler = new Converter (new RuleAdapter (settings));
   this->compiler->setLinkActionListener (this);
 }
 
@@ -37,10 +36,7 @@ Scheduler::~Scheduler ()
 {
   for (auto action: this->actions)
     action->setSimpleActionListener (nullptr);
-
   this->actions.clear ();
-
-  ruleAdapter = nullptr;
   settings = nullptr;
   compiler = nullptr;
   events.clear ();
@@ -265,18 +261,13 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
                 {
                   childEvent = childObject->getEventFromAnchorId (propName);
                   if (childEvent != nullptr)
-                    { // attribution with transition
+                    {
                       runAction (childEvent, action);
                     }
                   else
                     {
                       ERROR_NOT_IMPLEMENTED
                         ("context property attributions are not supported");
-
-                      // pAdapter = childObject->getPlayer ();
-                      // g_assert_nonnull (pAdapter);
-                      // pAdapter->setProperty
-                      //   (attrEvent->getAnchor ()->getName (), propValue);
                     }
                 }
               ++j;
@@ -648,97 +639,12 @@ Scheduler::startDocument (const string &file)
   for (auto event: *entryevts)
     {
       NclSimpleAction *fakeAction;
-      event->addListener (this);
       this->events.push_back (event);
       fakeAction = new NclSimpleAction (event, ACT_START);
       runAction (event, fakeAction);
       delete fakeAction;
     }
   delete entryevts;
-}
-
-void
-Scheduler::eventStateChanged (
-    NclEvent *event,
-    EventStateTransition transition,
-    arg_unused (EventState previousState))
-{
-  ExecutionObject *object;
-  vector<NclEvent *>::iterator it;
-  bool contains;
-  bool hasOther;
-
-  hasOther = false;
-  contains = false;
-
-  for (auto evt: this->events)
-    {
-      if (evt == event)
-        {
-          contains = true;
-        }
-      else if (evt->getCurrentState () != EventState::SLEEPING)
-        {
-          hasOther = true;
-        }
-    }
-
-  if (contains)
-    {
-      switch (transition)
-        {
-        case EventStateTransition::STOPS:
-        case EventStateTransition::ABORTS:
-          if (!hasOther)
-            {
-              events.clear ();
-
-              // we can't remove the document,
-              // since it can be started again
-              // removeDocument(event);
-            }
-          break;
-        default:
-          break;
-        }
-    }
-  else
-    {
-      switch (transition)
-        {
-        case EventStateTransition::STARTS:
-          object = event->getExecutionObject ();
-          break;
-
-        case EventStateTransition::STOPS:
-          if (((PresentationEvent *)event)->getRepetitions () == 0)
-            {
-              event->removeListener (this);
-              object = event->getExecutionObject ();
-            }
-          break;
-
-        case EventStateTransition::ABORTS:
-          {
-            event->removeListener (this);
-            object = (ExecutionObject *)(event->getExecutionObject ());
-            break;
-          }
-
-        case EventStateTransition::PAUSES:
-          {
-            break;
-          }
-
-        case EventStateTransition::RESUMES:
-          {
-            break;
-          }
-
-        default:
-          g_assert_not_reached ();
-        }
-    }
 }
 
 GINGA_FORMATTER_END
