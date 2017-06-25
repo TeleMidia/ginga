@@ -27,7 +27,6 @@ ExecutionObjectSwitch::ExecutionObjectSwitch (
                                    seListener)
 {
   _selectedObj = nullptr;
-  _typeSet.insert ("ExecutionObjectSwitch");
 }
 
 void
@@ -43,7 +42,7 @@ ExecutionObjectSwitch::select (ExecutionObject *exeObj)
       _selectedObj = nullptr;
       for (NclEvent *evt: getEvents())
         {
-          auto switchEvent = dynamic_cast<SwitchEvent *> (evt);
+          auto switchEvent = cast (SwitchEvent *, evt);
           g_assert_nonnull (switchEvent);
           switchEvent->setMappedEvent (nullptr);
         }
@@ -53,10 +52,10 @@ ExecutionObjectSwitch::select (ExecutionObject *exeObj)
 bool
 ExecutionObjectSwitch::addEvent (NclEvent *evt)
 {
- auto presentationEvt = dynamic_cast<PresentationEvent *> (evt);
+ auto presentationEvt = cast (PresentationEvent *, evt);
 
   if (presentationEvt
-      && dynamic_cast<LambdaAnchor *> (presentationEvt->getAnchor ()))
+      && instanceof (LambdaAnchor *, presentationEvt->getAnchor ()))
     {
       ExecutionObject::_wholeContent = presentationEvt;
       return true;

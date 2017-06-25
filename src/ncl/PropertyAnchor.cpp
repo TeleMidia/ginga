@@ -22,7 +22,6 @@ GINGA_NCL_BEGIN
 
 PropertyAnchor::PropertyAnchor (const string &attName) : Anchor (attName)
 {
-  _typeSet.insert ("PropertyAnchor");
   _value = "";
 }
 

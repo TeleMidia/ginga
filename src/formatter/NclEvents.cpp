@@ -27,8 +27,6 @@ set<NclEvent *> NclEvent::_instances;
 
 NclEvent::NclEvent (const string &id, ExecutionObject *exeObj)
 {
-  _typeSet.insert ("NclEvent");
-
   this->_id = id;
   _state = EventState::SLEEPING;
   _occurrences = 0;
@@ -57,55 +55,42 @@ NclEvent::hasInstance (NclEvent *evt, bool remove)
 }
 
 bool
-NclEvent::instanceOf (const string &s)
-{
-  if (_typeSet.empty ())
-    {
-      return false;
-    }
-  else
-    {
-      return (_typeSet.find (s) != _typeSet.end ());
-    }
-}
-
-bool
 NclEvent::hasNcmId (NclEvent *evt, const string &anchorId)
 {
   Anchor *anchor;
   string anchorName = " ";
 
-  if (auto anchorEvt = dynamic_cast<AnchorEvent *> (evt))
+  if (auto anchorEvt = cast (AnchorEvent *, evt))
     {
       anchor = anchorEvt->getAnchor ();
       if (anchor != nullptr)
         {
-          if (dynamic_cast<IntervalAnchor *> (anchor))
+          if (instanceof (IntervalAnchor *, anchor))
             {
               anchorName = anchor->getId ();
             }
-          else if (auto labeledAnchor = dynamic_cast<LabeledAnchor *> (anchor))
+          else if (auto labeledAnchor = cast (LabeledAnchor *, anchor))
             {
               anchorName = labeledAnchor->getLabel ();
             }
-          else if (dynamic_cast<LambdaAnchor *> (anchor))
+          else if (instanceof (LambdaAnchor *, anchor))
             {
               anchorName = "";
             }
 
           if (anchorName == anchorId
-              && !(dynamic_cast<SelectionEvent *> (evt)))
+              && !(instanceof (SelectionEvent *, evt)))
             {
               return true;
             }
         }
     }
-  else if (auto attrEvt = dynamic_cast<AttributionEvent *> (evt))
+  else if (auto attrEvt = cast (AttributionEvent *, evt))
     {
       anchor = attrEvt->getAnchor ();
       if (anchor != nullptr)
         {
-          auto propAnchor = dynamic_cast<PropertyAnchor *> (anchor);
+          auto propAnchor = cast (PropertyAnchor *, anchor);
           g_assert_nonnull (propAnchor);
           anchorName = propAnchor->getName ();
           if (anchorName == anchorId)
@@ -217,7 +202,6 @@ AnchorEvent::AnchorEvent (const string &id,
   : NclEvent (id, executionObject)
 {
   this->_anchor = anchor;
-  _typeSet.insert ("AnchorEvent");
 }
 
 // PresentationEvent
@@ -226,12 +210,10 @@ PresentationEvent::PresentationEvent (const string &id,
                                       ContentAnchor *anchor)
   : AnchorEvent (id, exeObj, anchor)
 {
-  _typeSet.insert ("PresentationEvent");
-
   _numPresentations = 1;
   _repetitionInterval = 0;
 
-  auto intervalAnchor = dynamic_cast<IntervalAnchor *> (anchor);
+  auto intervalAnchor = cast (IntervalAnchor *, anchor);
   if (intervalAnchor)
     {
       _begin = intervalAnchor->getBegin ();
@@ -298,8 +280,6 @@ SelectionEvent::SelectionEvent (const string &id,
   : AnchorEvent (id, exeObj, anchor)
 {
   _selCode.assign("NO_CODE");
-
-  _typeSet.insert ("SelectionEvent");
 }
 
 bool
@@ -321,29 +301,27 @@ AttributionEvent::AttributionEvent (const string &id,
   Entity *entity;
   NodeEntity *dataObject;
 
-  _typeSet.insert ("AttributionEvent");
-
   this->_anchor = anchor;
   this->_player = nullptr;
   this->_settingsNode = false;
   this->_settings = settings;
 
-  dataObject = dynamic_cast<NodeEntity *> (exeObj->getDataObject ());
+  dataObject = cast (NodeEntity *, exeObj->getDataObject ());
 
-  auto contentNode = dynamic_cast<ContentNode *> (dataObject);
+  auto contentNode = cast (ContentNode *, dataObject);
   if (contentNode
       && contentNode->isSettingNode ())
     {
       _settingsNode = true;
     }
 
-  auto referNode = dynamic_cast<ReferNode *> (dataObject);
+  auto referNode = cast (ReferNode *, dataObject);
   if (referNode)
     {
       if (referNode->getInstanceType () == "instSame")
         {
           entity = referNode->getDataEntity ();
-          auto contentNode = dynamic_cast <ContentNode *> (entity);
+          auto contentNode = cast (ContentNode *, entity);
           if (contentNode
               && contentNode->isSettingNode ())
             {
@@ -426,8 +404,8 @@ AttributionEvent::solveImplicitRefAssessment (const string &val)
   if (val.substr (0, 1) != "$")
     return val;
 
-  evt = dynamic_cast <AttributionEvent *>
-    (this->getImplicitRefAssessmentEvent (val.substr (1, val.length ())));
+  evt = cast (AttributionEvent *,
+    this->getImplicitRefAssessmentEvent (val.substr (1, val.length ())));
   return (evt != nullptr) ? evt->getCurrentValue () : "";
 }
 
@@ -442,8 +420,6 @@ SwitchEvent::SwitchEvent (const string &id,
   this->_type = type;
   this->_key = key;
   this->_mappedEvent = nullptr;
-
-  _typeSet.insert ("SwitchEvent");
 }
 
 SwitchEvent::~SwitchEvent ()

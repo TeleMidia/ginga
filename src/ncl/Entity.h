@@ -28,13 +28,9 @@ public:
   Entity (const string &someId);
   virtual ~Entity ();
   static bool hasInstance (Entity *instance, bool eraseFromList);
-  bool instanceOf (const string &s);
   string getId ();
   virtual void setId (const string &someId);
   virtual Entity *getDataEntity ();
-
-protected:
-  set<string> _typeSet;
 
 private:
   string _id;

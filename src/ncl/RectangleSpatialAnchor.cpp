@@ -31,7 +31,6 @@ RectangleSpatialAnchor::RectangleSpatialAnchor (const string &id, int left,
   this->_top = top;
   this->_width = width;
   this->_height = height;
-  _typeSet.insert ("RectangleSpatialAnchor");
 }
 
 int

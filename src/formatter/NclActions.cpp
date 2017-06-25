@@ -24,13 +24,6 @@ NclAction::NclAction (GingaTime delay)
 {
   _satisfiedCondition = nullptr;
   this->_delay = delay;
-  _typeSet.insert ("NclLinkAction");
-}
-
-bool
-NclAction::instanceOf (const string &s)
-{
-  return (_typeSet.find (s) != _typeSet.end ());
 }
 
 void
@@ -93,8 +86,6 @@ NclSimpleAction::NclSimpleAction (NclEvent *event,
   this->_event = event;
   this->_actType = type;
   this->listener = nullptr;
-
-  _typeSet.insert ("NclLinkSimpleAction");
 }
 
 NclSimpleAction::~NclSimpleAction ()
@@ -149,7 +140,7 @@ NclSimpleAction::getImplicitRefRoleActions ()
   string attVal = "", durVal = "", byVal = "";
   Animation *anim;
 
-  auto assignmentAct = dynamic_cast<NclAssignmentAction *> (this);
+  auto assignmentAct = cast (NclAssignmentAction *, this);
   if (assignmentAct)
     {
       attVal = assignmentAct->getValue ();
@@ -165,7 +156,7 @@ NclSimpleAction::getImplicitRefRoleActions ()
           || (durVal != "" && durVal.substr (0, 1) == "$")
           || (attVal != "" && attVal.substr (0, 1) == "$"))
         {
-          AttributionEvent *attrEvt = dynamic_cast<AttributionEvent *> (_event);
+          AttributionEvent *attrEvt = cast (AttributionEvent *, _event);
           if (attrEvt)
             {
               actions.push_back (this);
@@ -203,8 +194,6 @@ NclRepeatAction::NclRepeatAction (NclEvent *evt,
 {
   this->_repetitions = 0;
   this->_repetitionInterval = 0;
-
-  _typeSet.insert ("NclLinkRepeatAction");
 }
 
 NclRepeatAction::~NclRepeatAction ()
@@ -228,7 +217,7 @@ NclRepeatAction::run ()
 {
   if (_event != nullptr)
     {
-      auto presentationEvt = dynamic_cast <PresentationEvent *> (_event);
+      auto presentationEvt = cast (PresentationEvent *, _event);
       if (presentationEvt)
         {
           presentationEvt->setRepetitionSettings (_repetitions,
@@ -250,7 +239,6 @@ NclAssignmentAction::NclAssignmentAction (NclEvent *evt,
 {
   this->_value = value;
   this->_anim = nullptr;
-  _typeSet.insert ("NclLinkAssignmentAction");
 }
 
 NclAssignmentAction::~NclAssignmentAction ()
@@ -285,7 +273,6 @@ NclCompoundAction::NclCompoundAction (short op) : NclAction (0.)
   _hasStart = false;
   _running = false;
   _listener = NULL;
-  _typeSet.insert ("NclLinkCompoundAction");
 }
 
 NclCompoundAction::~NclCompoundAction ()
@@ -342,8 +329,8 @@ NclCompoundAction::getSimpleActions (
     {
       currentAction = (*i);
 
-      auto simpleAct = dynamic_cast<NclSimpleAction *> (currentAction);
-      auto compoundAct = dynamic_cast<NclCompoundAction *> (currentAction);
+      auto simpleAct = cast (NclSimpleAction *, currentAction);
+      auto compoundAct = cast (NclCompoundAction *, currentAction);
       if (compoundAct)
         {
           compoundAct->getSimpleActions (simpleActions);

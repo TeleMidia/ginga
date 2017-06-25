@@ -23,7 +23,6 @@ GINGA_NCL_BEGIN
 DescriptorBase::DescriptorBase (const string &id) : Base (id)
 {
   _descriptorSet = new vector<GenericDescriptor *>;
-  _typeSet.insert ("DescriptorBase");
 }
 
 DescriptorBase::~DescriptorBase ()
@@ -64,7 +63,7 @@ DescriptorBase::addDescriptor (GenericDescriptor *descriptor)
 bool
 DescriptorBase::addBase (Base *base, const string &alias, const string &location)
 {
-  if (base->instanceOf ("DescriptorBase"))
+  if (instanceof (DescriptorBase *, base))
     {
       return Base::addBase (base, alias, location);
     }

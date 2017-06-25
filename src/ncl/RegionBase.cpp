@@ -23,7 +23,6 @@ GINGA_NCL_BEGIN
 RegionBase::RegionBase (const string &id) : Base (id)
 {
   _deviceRegion = new LayoutRegion ("");
-  _typeSet.insert ("RegionBase");
 }
 
 RegionBase::~RegionBase ()
@@ -57,7 +56,7 @@ RegionBase::addRegion (LayoutRegion *region)
 bool
 RegionBase::addBase (Base *base, const string &alias, const string &location)
 {
-  g_assert (base->instanceOf ("RegionBase"));
+  g_assert (instanceof (RegionBase *, base));
   return Base::addBase (base, alias, location);
 }
 

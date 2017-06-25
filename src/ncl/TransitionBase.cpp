@@ -69,7 +69,7 @@ TransitionBase::addTransition (Transition *transition)
 bool
 TransitionBase::addBase (Base *base, const string &alias, const string &location)
 {
-  if (base->instanceOf ("TransitionBase"))
+  if (instanceof (TransitionBase *, base))
     {
       return Base::addBase (base, alias, location);
     }

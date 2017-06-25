@@ -23,7 +23,6 @@ GINGA_NCL_BEGIN
 RuleBase::RuleBase (const string &id) : Base (id)
 {
   _ruleSet = new vector<Rule *>;
-  _typeSet.insert ("RuleBase");
 }
 
 RuleBase::~RuleBase ()
@@ -64,7 +63,7 @@ RuleBase::addRule (Rule *rule)
 bool
 RuleBase::addBase (Base *base, const string &alias, const string &location)
 {
-  if (base->instanceOf ("RuleBase"))
+  if (instanceof (RuleBase *, base))
     {
       return Base::addBase (base, alias, location);
     }

@@ -23,7 +23,6 @@ GINGA_NCL_BEGIN
 ValueAssessment::ValueAssessment (const string &value) : Assessment ()
 {
   this->_value = value;
-  typeSet.insert ("ValueAssessment");
 }
 
 string

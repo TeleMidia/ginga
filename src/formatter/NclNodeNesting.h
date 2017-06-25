@@ -28,7 +28,6 @@ class NclNodeNesting
 private:
   string id;
   vector<Node *> *nodes;
-  set<string> typeSet;
 
 public:
   NclNodeNesting ();
@@ -41,7 +40,6 @@ private:
   void initialize ();
 
 public:
-  bool instanceOf (const string &s);
   void append (NclNodeNesting *otherSeq);
   void append (vector<Node *> *otherSeq);
   Node *getAnchorNode ();

@@ -73,8 +73,6 @@ DescriptorSwitch::DescriptorSwitch (const string &id) : GenericDescriptor (id)
   _selectedDescriptor = NULL;
 
   addInstance (this);
-
-  _typeSet.insert ("DescriptorSwitch");
 }
 
 DescriptorSwitch::~DescriptorSwitch ()

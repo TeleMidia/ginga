@@ -28,7 +28,7 @@ class AttributeAssessment : public Assessment, public Role
 {
 public:
   AttributeAssessment (const string &role);
-  virtual ~AttributeAssessment (){};
+  virtual ~AttributeAssessment (){}
   void setMaxCon (int max);
   void setMinCon (int min);
   short getAttributeType ();
@@ -37,11 +37,6 @@ public:
   void setKey (const string &_key);
   string getOffset ();
   void setOffset (const string &_offset);
-  bool
-  instanceOf (const string &type)
-  {
-    return Assessment::instanceOf (type);
-  }
 
 private:
   short _attributeType;

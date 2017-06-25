@@ -29,8 +29,6 @@ AttributeAssessment::AttributeAssessment (const string &role)
   _key = "";
   _offset = "";
   _maxCon = 1;
-  typeSet.insert ("AttributeAssessment");
-  typeSet.insert ("Role");
 }
 
 void

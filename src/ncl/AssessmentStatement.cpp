@@ -25,7 +25,6 @@ AssessmentStatement::AssessmentStatement (Comparator::Op comp) : Statement ()
   _comparator = comp;
   _mainAssessment = NULL;
   _otherAssessment = NULL;
-  typeSet.insert ("AssessmentStatement");
 }
 
 AssessmentStatement::~AssessmentStatement ()
@@ -86,7 +85,7 @@ AssessmentStatement::getRoles ()
 
   roles = new vector<Role *>;
   roles->push_back (_mainAssessment);
-  if (_otherAssessment->instanceOf ("AttributeAssessment"))
+  if (instanceof (AttributeAssessment *, _otherAssessment))
     {
       roles->push_back ((AttributeAssessment *)_otherAssessment);
     }

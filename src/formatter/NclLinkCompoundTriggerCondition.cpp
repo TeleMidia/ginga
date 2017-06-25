@@ -23,7 +23,6 @@ GINGA_FORMATTER_BEGIN
 NclLinkCompoundTriggerCondition::NclLinkCompoundTriggerCondition ()
     : NclLinkTriggerCondition ()
 {
-  typeSet.insert ("NclLinkCompoundTriggerCondition");
 }
 
 NclLinkCompoundTriggerCondition::~NclLinkCompoundTriggerCondition ()
@@ -53,7 +52,7 @@ NclLinkCompoundTriggerCondition::addCondition (NclLinkCondition *condition)
     }
 
   conditions.push_back (condition);
-  if (condition->instanceOf ("NclLinkTriggerCondition"))
+  if (instanceof (NclLinkTriggerCondition *, condition))
     {
       ((NclLinkTriggerCondition *)condition)->setTriggerListener (this);
     }

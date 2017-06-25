@@ -24,9 +24,6 @@ GINGA_NCL_BEGIN
 
 ReferNode::ReferNode (const string &id) : Node (id)
 {
-  _typeSet.insert ("ReferNode");
-  _typeSet.insert ("DocumentNode");
-  _typeSet.insert ("ReferEntity");
   _instanceType = "new";
   _referredNode = NULL;
   _instDesc = NULL;
@@ -34,9 +31,6 @@ ReferNode::ReferNode (const string &id) : Node (id)
 
 ReferNode::ReferNode (const string &id, Entity *entity) : Node (id)
 {
-  _typeSet.insert ("ReferNode");
-  _typeSet.insert ("DocumentNode");
-  _typeSet.insert ("ReferEntity");
   _instanceType = "new";
   _instDesc = NULL;
 
@@ -81,7 +75,7 @@ ReferNode::setInstanceType (const string &instance)
         {
           this->_instanceType = instance;
           if (_referredNode != NULL
-              && _referredNode->instanceOf ("NodeEntity"))
+              && instanceof (NodeEntity *, _referredNode))
             {
               ((NodeEntity *)_referredNode)->addSameInstance (this);
             }
@@ -90,7 +84,7 @@ ReferNode::setInstanceType (const string &instance)
         {
           this->_instanceType = instance;
           if (_referredNode != NULL
-              && _referredNode->instanceOf ("NodeEntity"))
+              && instanceof (NodeEntity *, _referredNode))
             {
               if (instance == "new")
                 {
@@ -112,14 +106,14 @@ ReferNode::setReferredEntity (Entity *entity)
 {
   if (_referredNode != entity)
     {
-      if (_referredNode != NULL && _referredNode->instanceOf ("NodeEntity"))
+      if (_referredNode != NULL && instanceof (NodeEntity *, _referredNode))
         {
           ((NodeEntity *)_referredNode)->removeSameInstance (this);
         }
 
       _referredNode = entity;
 
-      if (_referredNode != NULL && _referredNode->instanceOf ("NodeEntity")
+      if (_referredNode != NULL && instanceof (NodeEntity *, _referredNode)
           && _instanceType != "new")
         {
           ((NodeEntity *)_referredNode)->addSameInstance (this);

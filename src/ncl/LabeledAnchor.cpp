@@ -23,7 +23,6 @@ GINGA_NCL_BEGIN
 LabeledAnchor::LabeledAnchor (const string &id, const string &label) : Anchor (id)
 {
   this->_label = label;
-  _typeSet.insert ("LabeledAnchor");
 }
 
 string

@@ -28,7 +28,6 @@ NclLinkAssessmentStatement::NclLinkAssessmentStatement (
   this->comparator = comparator;
   this->mainAssessment = mainAssessment;
   this->otherAssessment = otherAssessment;
-  typeSet.insert ("NclLinkAssessmentStatement");
 }
 
 NclLinkAssessmentStatement::~NclLinkAssessmentStatement ()
@@ -55,7 +54,7 @@ NclLinkAssessmentStatement::getEvents ()
       ((NclLinkAttributeAssessment *)mainAssessment)->getEvent ());
 
   auto attrAssessment
-      = dynamic_cast <NclLinkAttributeAssessment *> (otherAssessment);
+      = cast (NclLinkAttributeAssessment *, otherAssessment);
   if (attrAssessment)
     {
       events.push_back (attrAssessment->getEvent ());

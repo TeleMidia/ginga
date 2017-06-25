@@ -25,7 +25,6 @@ IntervalAnchor::IntervalAnchor (const string &id,
                                 GingaTime end)
   : ContentAnchor (id)
 {
-  _typeSet.insert ("IntervalAnchor");
   this->_begin = begin;
   this->_end = end;
 }

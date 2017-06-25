@@ -23,13 +23,11 @@ GINGA_NCL_BEGIN
 ReferenceContent::ReferenceContent () : Content ("")
 {
   _reference = "";
-  _typeSet.insert ("ReferenceContent");
 }
 
 ReferenceContent::ReferenceContent (const string &ref) : Content ("")
 {
   setReference (ref);
-  _typeSet.insert ("ReferenceContent");
 }
 
 string

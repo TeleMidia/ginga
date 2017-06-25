@@ -27,7 +27,6 @@ SimpleRule::SimpleRule (const string &id, const string &attr,
   _attribute = attr;
   setOperator (op);
   _value = val;
-  _typeSet.insert ("SimpleRule");
 }
 
 string

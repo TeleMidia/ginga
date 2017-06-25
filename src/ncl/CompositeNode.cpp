@@ -18,13 +18,17 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "CompositeNode.h"
 
+#include "ContentNode.h"
+#include "ContextNode.h"
+#include "SwitchNode.h"
+
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
 GINGA_NCL_BEGIN
 
 CompositeNode::CompositeNode (const string &id) : NodeEntity (id, NULL)
 {
-  _typeSet.insert ("CompositeNode");
+
 }
 
 CompositeNode::~CompositeNode ()
@@ -189,7 +193,7 @@ CompositeNode::getMapInterface (Port *port)
 
   node = port->getNode ();
   interfacePoint = port->getInterfacePoint ();
-  if (interfacePoint->instanceOf ("Port"))
+  if (instanceof (Port *, interfacePoint))
     {
       compositeNode = (CompositeNode *)node->getDataEntity ();
       return compositeNode->getMapInterface ((Port *)interfacePoint);
@@ -266,7 +270,7 @@ CompositeNode::recursivelyContainsNode (Node *node)
   for (it = _nodes.begin (); it != _nodes.end (); ++it)
     {
       childNode = (Node *)*it;
-      if (childNode->instanceOf ("CompositeNode"))
+      if (instanceof (CompositeNode *, childNode))
         {
           compositeNode = (CompositeNode *)childNode;
           if (compositeNode->recursivelyContainsNode (node))
@@ -274,7 +278,7 @@ CompositeNode::recursivelyContainsNode (Node *node)
               return true;
             }
         }
-      else if (childNode->instanceOf ("ReferNode"))
+      else if (instanceof (ReferNode *, childNode))
         {
           childNode
               = (Node *)(((ReferNode *)childNode)->getReferredEntity ());
@@ -283,7 +287,7 @@ CompositeNode::recursivelyContainsNode (Node *node)
             {
               return true;
             }
-          else if (childNode->instanceOf ("CompositeNode"))
+          else if (instanceof (CompositeNode *, childNode))
             {
               compositeNode = (CompositeNode *)childNode;
               if (compositeNode->recursivelyContainsNode (node))
@@ -314,7 +318,7 @@ CompositeNode::recursivelyGetNode (const string &nodeId)
           return (*i);
         }
 
-      if ((*i)->instanceOf ("CompositeNode"))
+      if (instanceof (CompositeNode *, (*i)))
         {
           node = ((CompositeNode *)(*i))->recursivelyGetNode (nodeId);
           if (node != NULL)
@@ -370,6 +374,15 @@ CompositeNode::setNodeDescriptor (arg_unused (const string &nodeId),
                                   arg_unused (GenericDescriptor *_descriptor))
 {
   return false;
+}
+
+bool
+CompositeNode::isDocumentNode (Node *node)
+{
+  return (instanceof (ContentNode *, node)
+          || instanceof (ContextNode *, node)
+          || instanceof (ReferNode *, node)
+          || instanceof (SwitchNode *, node));
 }
 
 GINGA_NCL_END

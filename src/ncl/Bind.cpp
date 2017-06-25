@@ -28,8 +28,6 @@ Bind::Bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
   this->_descriptor = desc;
   this->_role = role;
   this->_parameters = new map<string, Parameter *>;
-
-  _typeSet.insert ("Bind");
 }
 
 Bind::~Bind ()
@@ -47,15 +45,6 @@ Bind::~Bind ()
       delete _parameters;
       _parameters = NULL;
     }
-}
-
-bool
-Bind::instanceOf (const string &s)
-{
-  if (_typeSet.empty ())
-    return false;
-  else
-    return (_typeSet.find (s) != _typeSet.end ());
 }
 
 GenericDescriptor *
@@ -184,8 +173,8 @@ Bind::getNodeNesting ()
   nodeNesting->push_back (_node);
   if (_interfacePoint != NULL)
     {
-      if (_interfacePoint->instanceOf ("Port")
-          && !(_interfacePoint->instanceOf ("SwitchPort")))
+      if (instanceof (Port *, _interfacePoint)
+          && !(instanceof (SwitchPort *, _interfacePoint)))
         {
           nodeSequence = ((Port *)_interfacePoint)->getMapNodeNesting ();
 
@@ -213,8 +202,8 @@ Bind::getEndPointInterface ()
   Port *port;
 
   nodeEntity = (NodeEntity *)(_node->getDataEntity ());
-  if (nodeEntity->instanceOf ("CompositeNode")
-      && _interfacePoint->instanceOf ("Port"))
+  if (instanceof (CompositeNode *, nodeEntity)
+      && instanceof (Port *, _interfacePoint))
     {
       compositeNode = (CompositeNode *)nodeEntity;
       port = (Port *)_interfacePoint;

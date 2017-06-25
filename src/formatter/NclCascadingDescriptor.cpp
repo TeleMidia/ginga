@@ -101,7 +101,7 @@ NclCascadingDescriptor::~NclCascadingDescriptor ()
     {
       if (DescriptorSwitch::hasInstance ((DescriptorSwitch *)*i, false))
         {
-          ds = dynamic_cast<DescriptorSwitch *> (*i);
+          ds = cast (DescriptorSwitch *, *i);
           if (ds != NULL)
             {
               ds->select (NULL);
@@ -114,8 +114,6 @@ NclCascadingDescriptor::~NclCascadingDescriptor ()
 void
 NclCascadingDescriptor::initializeCascadingDescriptor ()
 {
-  typeSet.insert ("NclCascadingDescriptor");
-
   id = "";
   explicitDuration = GINGA_TIME_NONE;
   repetitions = 0;
@@ -277,7 +275,7 @@ NclCascadingDescriptor::cascade (GenericDescriptor *descriptor)
   preferredDescriptor = (GenericDescriptor *)(descriptor->getDataEntity ());
 
   if ((preferredDescriptor == NULL)
-      || preferredDescriptor->instanceOf ("NclCascadingDescriptor"))
+      || instanceof (NclCascadingDescriptor *, preferredDescriptor))
 
     return;
 
@@ -290,7 +288,7 @@ NclCascadingDescriptor::cascade (GenericDescriptor *descriptor)
   else
     id = id + "+" + preferredDescriptor->getId ();
 
-  if (preferredDescriptor->instanceOf ("Descriptor")
+  if (instanceof (Descriptor *, preferredDescriptor)
       && unsolvedDescriptors.empty ())
     {
       cascadeDescriptor ((Descriptor *)preferredDescriptor);
@@ -330,7 +328,7 @@ NclCascadingDescriptor::cascadeUnsolvedDescriptor ()
 
   genericDescriptor = (GenericDescriptor *)(unsolvedDescriptors[0]);
 
-  if (genericDescriptor->instanceOf ("DescriptorSwitch"))
+  if (instanceof (DescriptorSwitch *, genericDescriptor))
     {
       descAlternatives = (DescriptorSwitch *)genericDescriptor;
       auxDescriptor = descAlternatives->getSelectedDescriptor ();

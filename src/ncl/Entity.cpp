@@ -25,7 +25,6 @@ set<Entity *> Entity::_instances;
 Entity::Entity (const string &id)
 {
   this->_id = id;
-  _typeSet.insert ("Entity");
   _instances.insert (this);
 }
 
@@ -55,19 +54,6 @@ Entity::hasInstance (Entity *instance, bool eraseFromList)
     }
 
   return hasEntity;
-}
-
-bool
-Entity::instanceOf (const string &s)
-{
-  if (!_typeSet.empty ())
-    {
-      return (_typeSet.find (s) != _typeSet.end ());
-    }
-  else
-    {
-      return false;
-    }
 }
 
 string

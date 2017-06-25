@@ -35,9 +35,6 @@ ContentNode::ContentNode (const string &uid, Content *someContent, const string 
 void
 ContentNode::initialize (const string &type)
 {
-  _typeSet.insert ("ContentNode");
-  _typeSet.insert ("DocumentNode");
-
   this->_type = type;
 
   // must set to false before a new isSettingNode call

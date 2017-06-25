@@ -24,7 +24,6 @@ CompositeRule::CompositeRule (const string &id, short someOperator) : Rule (id)
 {
   _rules = new vector<Rule *>;
   setOperator (someOperator);
-  _typeSet.insert ("CompositeRule");
 }
 
 CompositeRule::CompositeRule (const string &id, Rule *firstRule, Rule *secondRule,
@@ -35,7 +34,6 @@ CompositeRule::CompositeRule (const string &id, Rule *firstRule, Rule *secondRul
   setOperator (someOperator);
   _rules->push_back (firstRule);
   _rules->push_back (secondRule);
-  _typeSet.insert ("CompositeRule");
 }
 
 CompositeRule::~CompositeRule ()

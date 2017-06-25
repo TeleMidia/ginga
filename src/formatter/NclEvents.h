@@ -65,13 +65,11 @@ public:
   void addListener (INclEventListener *listener);
   void removeListener (INclEventListener *listener);
 
-  bool instanceOf (const string &);
   static bool hasInstance (NclEvent *evt, bool remove);
   static bool hasNcmId (NclEvent *evt, const string &anchorId);
 
 protected:
   set<INclEventListener *> _listeners;
-  set<string> _typeSet;
 
   EventStateTransition getTransition (EventState newState);
   bool changeState (EventState newState, EventStateTransition transition);
