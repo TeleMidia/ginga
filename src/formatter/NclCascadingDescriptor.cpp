@@ -101,7 +101,7 @@ NclCascadingDescriptor::~NclCascadingDescriptor ()
     {
       if (DescriptorSwitch::hasInstance ((DescriptorSwitch *)*i, false))
         {
-          ds = dynamic_cast<DescriptorSwitch *> (*i);
+          ds = cast (DescriptorSwitch *, *i);
           if (ds != NULL)
             {
               ds->select (NULL);

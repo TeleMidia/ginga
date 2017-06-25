@@ -689,7 +689,7 @@ ExecutionObject::start ()
 
   for (Anchor *anchor: contentNode->getAnchors ())
     {
-      PropertyAnchor *prop = dynamic_cast <PropertyAnchor *> (anchor);
+      PropertyAnchor *prop = cast (PropertyAnchor *, anchor);
       if (prop != nullptr)
         _player->setProperty (prop->getName (), prop->getValue ());
     }
@@ -697,7 +697,7 @@ ExecutionObject::start ()
   // Install attribution events.
   for (NclEvent *evt: this->getEvents ())
     {
-      AttributionEvent *attevt = dynamic_cast <AttributionEvent *> (evt);
+      AttributionEvent *attevt = cast (AttributionEvent *, evt);
       if (attevt)
         attevt->setPlayer (_player);
     }
@@ -767,13 +767,13 @@ ExecutionObject::stop ()
   // Uninstall attribution events.
   for (NclEvent *evt: this->getEvents ())
     {
-      AttributionEvent *attevt = dynamic_cast <AttributionEvent *> (evt);
+      AttributionEvent *attevt = cast (AttributionEvent *, evt);
       if (attevt)
         attevt->setPlayer (nullptr);
     }
 
   // Stop main event.
-  event = dynamic_cast <PresentationEvent* > (_mainEvent);
+  event = cast (PresentationEvent* , _mainEvent);
   if (event != nullptr)
     {
       _mainEvent->stop ();
@@ -1018,7 +1018,7 @@ ExecutionObject::handleTickEvent (arg_unused (GingaTime total),
   if (now < waited)
     return;
 
-  evt = dynamic_cast <NclEvent *> (next->getEvent ());
+  evt = cast (NclEvent *, next->getEvent ());
   g_assert_nonnull (evt);
 
   TRACE ("anchor '%s' timed out at %" GINGA_TIME_FORMAT

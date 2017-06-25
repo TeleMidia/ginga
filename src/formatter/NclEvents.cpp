@@ -75,7 +75,7 @@ NclEvent::hasNcmId (NclEvent *evt, const string &anchorId)
   Anchor *anchor;
   string anchorName = " ";
 
-  if (auto anchorEvt = dynamic_cast<AnchorEvent *> (evt))
+  if (auto anchorEvt = cast (AnchorEvent *, evt))
     {
       anchor = anchorEvt->getAnchor ();
       if (anchor != nullptr)
@@ -84,7 +84,7 @@ NclEvent::hasNcmId (NclEvent *evt, const string &anchorId)
             {
               anchorName = anchor->getId ();
             }
-          else if (auto labeledAnchor = dynamic_cast<LabeledAnchor *> (anchor))
+          else if (auto labeledAnchor = cast (LabeledAnchor *, anchor))
             {
               anchorName = labeledAnchor->getLabel ();
             }
@@ -100,12 +100,12 @@ NclEvent::hasNcmId (NclEvent *evt, const string &anchorId)
             }
         }
     }
-  else if (auto attrEvt = dynamic_cast<AttributionEvent *> (evt))
+  else if (auto attrEvt = cast (AttributionEvent *, evt))
     {
       anchor = attrEvt->getAnchor ();
       if (anchor != nullptr)
         {
-          auto propAnchor = dynamic_cast<PropertyAnchor *> (anchor);
+          auto propAnchor = cast (PropertyAnchor *, anchor);
           g_assert_nonnull (propAnchor);
           anchorName = propAnchor->getName ();
           if (anchorName == anchorId)
@@ -231,7 +231,7 @@ PresentationEvent::PresentationEvent (const string &id,
   _numPresentations = 1;
   _repetitionInterval = 0;
 
-  auto intervalAnchor = dynamic_cast<IntervalAnchor *> (anchor);
+  auto intervalAnchor = cast (IntervalAnchor *, anchor);
   if (intervalAnchor)
     {
       _begin = intervalAnchor->getBegin ();
@@ -328,22 +328,22 @@ AttributionEvent::AttributionEvent (const string &id,
   this->_settingsNode = false;
   this->_settings = settings;
 
-  dataObject = dynamic_cast<NodeEntity *> (exeObj->getDataObject ());
+  dataObject = cast (NodeEntity *, exeObj->getDataObject ());
 
-  auto contentNode = dynamic_cast<ContentNode *> (dataObject);
+  auto contentNode = cast (ContentNode *, dataObject);
   if (contentNode
       && contentNode->isSettingNode ())
     {
       _settingsNode = true;
     }
 
-  auto referNode = dynamic_cast<ReferNode *> (dataObject);
+  auto referNode = cast (ReferNode *, dataObject);
   if (referNode)
     {
       if (referNode->getInstanceType () == "instSame")
         {
           entity = referNode->getDataEntity ();
-          auto contentNode = dynamic_cast <ContentNode *> (entity);
+          auto contentNode = cast (ContentNode *, entity);
           if (contentNode
               && contentNode->isSettingNode ())
             {
