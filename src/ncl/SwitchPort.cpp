@@ -25,7 +25,6 @@ SwitchPort::SwitchPort (const string &id, SwitchNode *switchNode)
     : Port (id, switchNode, NULL)
 {
   _portList = new vector<Port *>;
-  _typeSet.insert ("SwitchPort");
 }
 
 SwitchPort::~SwitchPort ()

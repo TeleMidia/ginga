@@ -27,7 +27,6 @@ ExecutionObjectSwitch::ExecutionObjectSwitch (
                                    seListener)
 {
   _selectedObj = nullptr;
-  _typeSet.insert ("ExecutionObjectSwitch");
 }
 
 void

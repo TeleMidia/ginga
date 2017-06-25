@@ -24,8 +24,6 @@ CausalConnector::CausalConnector (const string &id) : Connector (id)
 {
   _conditionExpression = NULL;
   _actionExpression = NULL;
-
-  _typeSet.insert ("CausalConnector");
 }
 
 CausalConnector::CausalConnector (const string &id, ConditionExpression *condition,
@@ -34,8 +32,6 @@ CausalConnector::CausalConnector (const string &id, ConditionExpression *conditi
 {
   _conditionExpression = (TriggerExpression *)condition;
   _actionExpression = (Action *)action;
-
-  _typeSet.insert ("CausalConnector");
 }
 
 CausalConnector::~CausalConnector ()

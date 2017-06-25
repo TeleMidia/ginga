@@ -23,7 +23,6 @@ GINGA_NCL_BEGIN
 RegionBase::RegionBase (const string &id) : Base (id)
 {
   _deviceRegion = new LayoutRegion ("");
-  _typeSet.insert ("RegionBase");
 }
 
 RegionBase::~RegionBase ()

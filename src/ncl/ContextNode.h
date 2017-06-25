@@ -34,12 +34,6 @@ public:
   ContextNode (const string &_id);
   virtual ~ContextNode ();
 
-  bool
-  instanceOf (const string &className)
-  {
-    return Entity::instanceOf (className);
-  }
-
   bool addLink (Link *link);
   bool addNode (Node *node);
 

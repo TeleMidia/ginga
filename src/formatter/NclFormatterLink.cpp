@@ -51,17 +51,4 @@ NclFormatterLink::getNcmLink ()
   return ncmLink;
 }
 
-bool
-NclFormatterLink::instanceOf (const string &s)
-{
-  if (typeSet.empty ())
-    {
-      return false;
-    }
-  else
-    {
-      return (typeSet.find (s) != typeSet.end ());
-    }
-}
-
 GINGA_FORMATTER_END

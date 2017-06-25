@@ -24,9 +24,6 @@ GINGA_NCL_BEGIN
 
 ReferNode::ReferNode (const string &id) : Node (id)
 {
-  _typeSet.insert ("ReferNode");
-  _typeSet.insert ("DocumentNode");
-  _typeSet.insert ("ReferEntity");
   _instanceType = "new";
   _referredNode = NULL;
   _instDesc = NULL;
@@ -34,9 +31,6 @@ ReferNode::ReferNode (const string &id) : Node (id)
 
 ReferNode::ReferNode (const string &id, Entity *entity) : Node (id)
 {
-  _typeSet.insert ("ReferNode");
-  _typeSet.insert ("DocumentNode");
-  _typeSet.insert ("ReferEntity");
   _instanceType = "new";
   _instDesc = NULL;
 

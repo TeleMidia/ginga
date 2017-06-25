@@ -29,8 +29,6 @@ Descriptor::Descriptor (const string &id) : GenericDescriptor (id)
 
   _keyNavigation = NULL;
   _focusDecoration = NULL;
-
-  _typeSet.insert ("Descriptor");
 }
 
 Descriptor::~Descriptor ()

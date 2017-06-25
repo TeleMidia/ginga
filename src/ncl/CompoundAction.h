@@ -41,11 +41,6 @@ public:
   void addAction (Action *action);
   void removeAction (Action *action);
   vector<Role *> *getRoles ();
-  bool
-  instanceOf (const string &type)
-  {
-    return Action::instanceOf (type);
-  }
 
 protected:
   vector<Action *> *_actions;

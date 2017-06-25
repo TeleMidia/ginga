@@ -24,13 +24,6 @@ NclAction::NclAction (GingaTime delay)
 {
   _satisfiedCondition = nullptr;
   this->_delay = delay;
-  _typeSet.insert ("NclLinkAction");
-}
-
-bool
-NclAction::instanceOf (const string &s)
-{
-  return (_typeSet.find (s) != _typeSet.end ());
 }
 
 void
@@ -93,8 +86,6 @@ NclSimpleAction::NclSimpleAction (NclEvent *event,
   this->_event = event;
   this->_actType = type;
   this->listener = nullptr;
-
-  _typeSet.insert ("NclLinkSimpleAction");
 }
 
 NclSimpleAction::~NclSimpleAction ()
@@ -203,8 +194,6 @@ NclRepeatAction::NclRepeatAction (NclEvent *evt,
 {
   this->_repetitions = 0;
   this->_repetitionInterval = 0;
-
-  _typeSet.insert ("NclLinkRepeatAction");
 }
 
 NclRepeatAction::~NclRepeatAction ()
@@ -250,7 +239,6 @@ NclAssignmentAction::NclAssignmentAction (NclEvent *evt,
 {
   this->_value = value;
   this->_anim = nullptr;
-  _typeSet.insert ("NclLinkAssignmentAction");
 }
 
 NclAssignmentAction::~NclAssignmentAction ()
@@ -285,7 +273,6 @@ NclCompoundAction::NclCompoundAction (short op) : NclAction (0.)
   _hasStart = false;
   _running = false;
   _listener = NULL;
-  _typeSet.insert ("NclLinkCompoundAction");
 }
 
 NclCompoundAction::~NclCompoundAction ()

@@ -28,11 +28,6 @@ public:
   ValueAssessment (const string &value);
   string getValue ();
   void setValue (const string &newValue);
-  bool
-  instanceOf (const string &type)
-  {
-    return Assessment::instanceOf (type);
-  }
 
 private:
   string _value;

@@ -25,8 +25,7 @@ GINGA_NCL_BEGIN
 class LinkComposition
 {
 public:
-  virtual ~LinkComposition (){};
-  virtual bool instanceOf (const string &className) = 0;
+  virtual ~LinkComposition (){}
   virtual bool addLink (Link *link) = 0;
   virtual void clearLinks () = 0;
   virtual bool containsLink (Link *link) = 0;

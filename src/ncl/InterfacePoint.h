@@ -25,10 +25,7 @@ GINGA_NCL_BEGIN
 class InterfacePoint : public Entity
 {
 public:
-  InterfacePoint (const string &someId) : Entity (someId)
-  {
-    _typeSet.insert ("InterfacePoint");
-  }
+  InterfacePoint (const string &someId) : Entity (someId) {}
   virtual ~InterfacePoint (){}
 };
 

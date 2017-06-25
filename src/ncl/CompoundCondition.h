@@ -45,11 +45,6 @@ public:
   void addConditionExpression (ConditionExpression *condition);
   void removeConditionExpression (ConditionExpression *condition);
   vector<Role *> *getRoles ();
-  bool
-  instanceOf (const string &type)
-  {
-    return TriggerExpression::instanceOf (type);
-  }
 
 private:
   vector<ConditionExpression *> *_expressions;

@@ -30,8 +30,6 @@ ExecutionObjectContext::ExecutionObjectContext (
   set<Link *>::iterator i;
   Entity *entity;
 
-  _typeSet.insert ("ExecutionObjectContext");
-
   _execObjList.clear ();
   _links.clear ();
   _uncompiledLinks.clear ();

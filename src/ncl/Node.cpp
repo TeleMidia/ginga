@@ -25,7 +25,6 @@ GINGA_NCL_BEGIN
 
 Node::Node (const string &id) : Entity (id)
 {
-  _typeSet.insert ("Node");
   _parentNode = NULL;
 }
 

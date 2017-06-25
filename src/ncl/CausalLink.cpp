@@ -23,7 +23,6 @@ GINGA_NCL_BEGIN
 CausalLink::CausalLink (const string &uid, Connector *connector)
     : Link (uid, connector)
 {
-  _typeSet.insert ("CausalLink");
 }
 
 bool
