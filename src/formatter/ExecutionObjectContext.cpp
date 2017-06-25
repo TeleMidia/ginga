@@ -41,7 +41,7 @@ ExecutionObjectContext::ExecutionObjectContext (
 
   entity = dataObject->getDataEntity ();
 
-  if (entity != NULL && entity->instanceOf ("ContextNode"))
+  if (entity != NULL && instanceof (ContextNode *, entity))
     {
       compositeNode = (ContextNode *)entity;
       compositionLinks = compositeNode->getLinks ();
@@ -323,7 +323,7 @@ ExecutionObjectContext::eventStateChanged (
 {
   set<NclEvent *>::iterator i;
 
-  if (!(event->instanceOf ("PresentationEvent"))
+  if (!(instanceof (PresentationEvent *, event))
       || !NclEvent::hasInstance (event, false))
     {
       return;

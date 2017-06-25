@@ -86,7 +86,7 @@ AssessmentStatement::getRoles ()
 
   roles = new vector<Role *>;
   roles->push_back (_mainAssessment);
-  if (_otherAssessment->instanceOf ("AttributeAssessment"))
+  if (instanceof (AttributeAssessment *, _otherAssessment))
     {
       roles->push_back ((AttributeAssessment *)_otherAssessment);
     }

@@ -129,7 +129,7 @@ CompoundAction::getRoles ()
   for (i = 0; i < size; i++)
     {
       action = (Action *)((*_actions)[i]);
-      if (action->instanceOf ("SimpleAction"))
+      if (instanceof (SimpleAction *, action))
         {
           roles->push_back ((SimpleAction *)action);
         }

@@ -304,7 +304,7 @@ ExecutionObject::addPresentationEvent (PresentationEvent *event)
   int posBeg = -1;
   int posEnd, posMid;
 
-  if ((event->getAnchor ())->instanceOf ("LambdaAnchor"))
+  if (instanceof (LambdaAnchor *, event->getAnchor ()))
     {
       _presEvents.insert (_presEvents.begin (), event);
       _wholeContent = (PresentationEvent *)event;

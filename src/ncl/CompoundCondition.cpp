@@ -130,17 +130,17 @@ CompoundCondition::getRoles ()
           clog << "CompoundCondition::getRoles ";
           clog << "Warning! condition = NULL." << endl;
         }
-      else if (condition->instanceOf ("SimpleCondition"))
+      else if (instanceof (SimpleCondition *, condition))
         {
           roles->push_back ((SimpleCondition *)condition);
         }
       else
         {
-          if (condition->instanceOf ("CompoundCondition"))
+          if (instanceof (CompoundCondition *, condition))
             {
               childRoles = ((CompoundCondition *)condition)->getRoles ();
             }
-          else if (condition->instanceOf ("AssessmentStatement"))
+          else if (instanceof (AssessmentStatement *, condition))
             {
               childRoles = ((AssessmentStatement *)condition)->getRoles ();
             }

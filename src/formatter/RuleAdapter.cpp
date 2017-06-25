@@ -141,7 +141,7 @@ RuleAdapter::adapt (ExecutionObjectContext *compositeObject,
       while (i != objs->end ())
         {
           object = i->second;
-          if (object->instanceOf ("ExecutionObjectSwitch"))
+          if (instanceof (ExecutionObjectSwitch *, object))
             {
               initializeRuleObjectRelation (
                   (ExecutionObjectSwitch *)object);
@@ -152,7 +152,7 @@ RuleAdapter::adapt (ExecutionObjectContext *compositeObject,
             }
 
           adaptDescriptor (object);
-          if (object->instanceOf ("ExecutionObjectContext"))
+          if (instanceof (ExecutionObjectContext *, object))
             {
               adapt ((ExecutionObjectContext *)object, force);
             }
@@ -169,7 +169,7 @@ RuleAdapter::initializeAttributeRuleRelation (Rule *topRule, Rule *rule)
   vector<Rule *> *ruleVector = NULL;
   vector<Rule *>::iterator rules;
 
-  if (rule->instanceOf ("SimpleRule"))
+  if (instanceof (SimpleRule *, rule))
     {
       map<string, vector<Rule *> *>::iterator i;
       for (i = ruleListenMap->begin (); i != ruleListenMap->end (); ++i)
@@ -241,7 +241,7 @@ RuleAdapter::adaptDescriptor (ExecutionObject *executionObject)
   while (unsolvedDescriptor != NULL)
     {
       j++;
-      if (unsolvedDescriptor->instanceOf ("DescriptorSwitch"))
+      if (instanceof (DescriptorSwitch *, unsolvedDescriptor))
         {
           descAlternatives = (DescriptorSwitch *)unsolvedDescriptor;
 
@@ -324,11 +324,11 @@ RuleAdapter::adaptSwitch (SwitchNode *switchNode)
 bool
 RuleAdapter::evaluateRule (Rule *rule)
 {
-  if (rule->instanceOf ("SimpleRule"))
+  if (instanceof (SimpleRule *, rule))
     {
       return evaluateSimpleRule ((SimpleRule *)rule);
     }
-  else if (rule->instanceOf ("CompositeRule"))
+  else if (instanceof (CompositeRule *, rule))
     {
       return evaluateCompositeRule ((CompositeRule *)rule);
     }

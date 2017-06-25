@@ -53,7 +53,7 @@ NclLinkCompoundTriggerCondition::addCondition (NclLinkCondition *condition)
     }
 
   conditions.push_back (condition);
-  if (condition->instanceOf ("NclLinkTriggerCondition"))
+  if (instanceof (NclLinkTriggerCondition *, condition))
     {
       ((NclLinkTriggerCondition *)condition)->setTriggerListener (this);
     }

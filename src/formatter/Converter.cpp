@@ -575,7 +575,7 @@ Converter::createExecutionObject (
       compositeEvt->addListener (this);
       _listening.insert (compositeEvt);
     }
-  else if (nodeEntity->instanceOf ("CompositeNode"))
+  else if (instanceof (CompositeNode* , nodeEntity))
     {
       string s;
       exeObj = new ExecutionObjectContext (
@@ -719,7 +719,7 @@ Converter::checkContextCascadingDescriptor (
   // Is there a node descriptor defined in the context node?
   size = nodePerspective->getNumNodes ();
   if (size > 1 && nodePerspective->getNode (size - 2) != nullptr
-      && nodePerspective->getNode (size - 2)->instanceOf ("ContextNode"))
+      && instanceof (ContextNode *, nodePerspective->getNode (size - 2)))
     {
       auto context = cast (ContextNode *, 
             nodePerspective->getNode (size - 2)->getDataEntity ());
@@ -1213,13 +1213,13 @@ Converter::insertContext (NclNodeNesting *contextPerspective,
       error = true;
     }
 
-  if (!(port->getEndInterfacePoint ()->instanceOf ("ContentAnchor")
-        || port->getEndInterfacePoint ()->instanceOf ("LabeledAnchor")
-        || port->getEndInterfacePoint ()->instanceOf ("PropertyAnchor")
-        || port->getEndInterfacePoint ()->instanceOf ("SwitchPort"))
-      || !(contextPerspective->getAnchorNode ()
-           ->getDataEntity ()
-           ->instanceOf ("ContextNode")))
+  if (!(instanceof (ContentAnchor *, port->getEndInterfacePoint ())
+        || instanceof (LabeledAnchor *, port->getEndInterfacePoint ())
+        || instanceof (PropertyAnchor *, port->getEndInterfacePoint ())
+        || instanceof (SwitchPort *, port->getEndInterfacePoint ()))
+      || !(instanceof (ContextNode *,
+                       contextPerspective->getAnchorNode ()
+                       ->getDataEntity ())))
     {
       error = true;
 
@@ -1356,7 +1356,7 @@ Converter::createCausalLink (CausalLink *ncmLink,
                          parentObj);
 
   if (formatterCondition == nullptr
-      || !(formatterCondition->instanceOf ("NclLinkTriggerCondition")))
+      || !(instanceof (NclLinkTriggerCondition *, formatterCondition)))
     {
       WARNING ("Cannot create formatter link inside '%s' from ncmLinkId '%s'"
                "with an unknown condition.",
@@ -1390,7 +1390,7 @@ Converter::createCausalLink (CausalLink *ncmLink,
         (NclLinkTriggerCondition *)formatterCondition, formatterAction,
         ncmLink, (ExecutionObjectContext *)parentObj);
 
-  if (formatterCondition->instanceOf ("NclLinkCompoundTriggerCondition"))
+  if (instanceof (NclLinkCompoundTriggerCondition *, formatterCondition))
     {
       vector<NclAction *> acts
           = formatterAction->getImplicitRefRoleActions ();
@@ -1726,7 +1726,7 @@ Converter::createAssessmentStatement (
     {
       paramValue = valueAssessment->getValue ();
       if (paramValue[0] == '$')
-        { // instanceOf("Parameter")
+        { // instanceof("Parameter")
           connParam = new Parameter (
                 paramValue.substr (1, paramValue.length () - 1), "");
 
@@ -2084,12 +2084,12 @@ Converter::createCompoundAction (
             }
           else
             {
-              if (ncmChildAction->instanceOf ("SimpleAction"))
+              if (instanceof (SimpleAction *, ncmChildAction))
                 {
                   WARNING ("Can't create simple action type '%d'.",
                            ((SimpleAction *)ncmChildAction)->getActionType ());
                 }
-              else if (ncmChildAction->instanceOf ("CompoundAction"))
+              else if (instanceof (CompoundAction *, ncmChildAction))
                 {
                   WARNING ("Can't create inner compoud action.");
                 }

@@ -143,7 +143,7 @@ CompoundStatement::getRoles ()
   for (i = 0; i < size; i++)
     {
       statement = (Statement *)((*_statements)[i]);
-      if (statement->instanceOf ("AssessmentStatement"))
+      if (instanceof (AssessmentStatement *, statement))
         {
           childRoles = ((AssessmentStatement *)statement)->getRoles ();
         }
