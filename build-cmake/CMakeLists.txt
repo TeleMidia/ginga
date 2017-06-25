@@ -90,7 +90,6 @@ set (GINGA_SOURCES
   ../src/formatter/NclCascadingDescriptor.cpp
   ../src/formatter/NclEvents.cpp
   ../src/formatter/NclEventTransitionManager.cpp
-  ../src/formatter/NclFormatterCausalLink.cpp
   ../src/formatter/NclFormatterLink.cpp
   ../src/formatter/NclFormatterRegion.cpp
   ../src/formatter/NclLinkAndCompoundTriggerCondition.cpp
