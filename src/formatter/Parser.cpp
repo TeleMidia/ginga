@@ -23,9 +23,6 @@ using namespace ginga::mb;
 
 GINGA_FORMATTER_BEGIN
 
-#define ERROR_SYNTAX_UNKNOWN_CHILD(parent, child)\
-  ERROR_SYNTAX ("%s: unknown child element '%s'", (parent), (child))
-
 // dom_element_* functions are internal functions that safely wraps Xerces
 // calls.
 
@@ -151,23 +148,108 @@ dom_element_children_by_tagname(DOMElement *el, const string &tagname)
 }
 
 static G_GNUC_UNUSED vector <DOMElement *>
-dom_element_children_by_tagnames (DOMElement *el,
-                                  const vector<string> &tagnames)
+dom_element_children_by_tagnames (DOMElement *elt,
+                                  const vector<string> &tags)
 {
   vector <DOMElement *> vet;
-
   DOMElement *child;
-  FOR_EACH_DOM_ELEM_CHILD(child, el)
+  FOR_EACH_DOM_ELEM_CHILD(child, elt)
     {
-      if (std::find(tagnames.begin(), tagnames.end(), dom_element_tagname(child))
-          != tagnames.end())
+      if (std::find (tags.begin (), tags.end (),
+                     dom_element_tagname (child)) != tags.end())
         {
-          vet.push_back(child);
+          vet.push_back (child);
         }
     }
-
   return vet;
 }
+
+
+// Common errors.
+
+#define ERROR_SYNTAX_UNKNOWN_CHILD(parent, child)\
+  ERROR_SYNTAX ("%s: unknown child element '%s'", (parent), (child))
+
+
+// Translation tables.
+
+static map<string, pair<int,int>> reserved_condition_table =
+  {
+   {"onBegin",
+    {(int) EventType::PRESENTATION,
+     (int) EventStateTransition::STARTS}},
+   {"onEnd",
+    {(int) EventType::PRESENTATION,
+     (int) EventStateTransition::STOPS}},
+   {"onAbort",
+    {(int) EventType::PRESENTATION,
+     (int) EventStateTransition::ABORTS}},
+   {"onPause",
+    {(int) EventType::PRESENTATION,
+     (int) EventStateTransition::PAUSES}},
+   {"onResumes",
+    {(int) EventType::PRESENTATION,
+     (int) EventStateTransition::RESUMES}},
+   {"onBeginAttribution",
+    {(int) EventType::ATTRIBUTION,
+     (int) EventStateTransition::STARTS}},
+   {"onEndAttribution",
+    {(int) EventType::SELECTION,
+     (int) EventStateTransition::STOPS}},
+   {"onSelection",
+    {(int) EventType::SELECTION,
+     (int) EventStateTransition::STARTS}},
+  };
+
+static map<string, pair<int,int>> reserved_action_table =
+  {
+   {"start",
+    {(int) EventType::PRESENTATION,
+     (int) ACT_START}},
+   {"stop",
+    {(int) EventType::PRESENTATION,
+     (int) ACT_STOP}},
+   {"abort",
+    {(int) EventType::PRESENTATION,
+     (int) ACT_ABORT}},
+   {"pause",
+    {(int) EventType::PRESENTATION,
+     (int) ACT_PAUSE}},
+   {"resume",
+    {(int) EventType::PRESENTATION,
+     (int) ACT_RESUME}},
+   {"set",
+    {(int) EventType::ATTRIBUTION,
+     (int) ACT_START}},
+  };
+
+static map<string, EventType> event_type_table =
+  {
+   {"presentation", EventType::PRESENTATION},
+   {"attribution", EventType::ATTRIBUTION},
+   {"selection", EventType::SELECTION},
+  };
+
+static map<string, EventStateTransition> event_transition_table =
+  {
+   {"starts", EventStateTransition::STARTS},
+   {"stops", EventStateTransition::STOPS},
+   {"aborts", EventStateTransition::ABORTS},
+   {"pauses", EventStateTransition::PAUSES},
+   {"resumes", EventStateTransition::RESUMES},
+  };
+
+static map<string, SimpleActionType> event_action_type_table =
+  {
+   {"start", ACT_START},
+   {"stop", ACT_STOP},
+   {"abort", ACT_ABORT},
+   {"pause", ACT_PAUSE},
+   {"resume", ACT_RESUME},
+  };
+
+
+// Public.
 
 NclParser::NclParser ()
 {
@@ -687,34 +769,6 @@ NclParser::addNodeToContext (Entity *context, Node *node)
 }
 
 void
-NclParser::addLinkToContext (ContextNode *context, Link *link)
-{
-  vector<Role *> *roles = link->getConnector ()->getRoles ();
-  g_assert_nonnull(roles);
-
-  for (Role *role: *roles)
-    {
-      unsigned int min = (unsigned int) role->getMinCon ();
-      unsigned int max = (unsigned int) role->getMaxCon ();
-
-      if (link->getNumRoleBinds (role) < min)
-        {
-          ERROR_SYNTAX ("link: too few binds for role '%s': %u",
-                        role->getLabel ().c_str (), min);
-        }
-      else if (max > 0 && (link->getNumRoleBinds (role) > max))
-        {
-          ERROR_SYNTAX ("link: too many binds for role '%s': %u",
-                        role->getLabel ().c_str (), max);
-          return;
-        }
-    }
-
-  delete roles;
-  context->addLink (link);
-}
-
-void
 NclParser::addAnchorToMedia (ContentNode *contentNode, Anchor *anchor)
 {
   if (unlikely (contentNode->getAnchor (anchor->getId ()) != NULL))
@@ -833,10 +887,8 @@ NclParser::posCompileContext (DOMElement *context_element, ContextNode *context)
       dom_element_children_by_tagname (context_element, "link"))
     {
       Link *link = this->parseLink (child, context);
-      if (link)
-        {
-          addLinkToContext (context, link);
-        }
+      g_assert_nonnull (link);
+      context->addLink (link);
     }
 
   for(DOMElement *child:
@@ -1125,53 +1177,97 @@ NclParser::addImportBaseToTransitionBase (TransitionBase *transBase,
 
 // CONNECTORS
 SimpleCondition *
-NclParser::parseSimpleCondition (DOMElement *simpleCond_element)
+NclParser::parseSimpleCondition (DOMElement *elt)
 {
-  SimpleCondition *conditionExpression;
-  string attValue, roleLabel;
+  string tag;
+  string role;
+  string value;
 
-  roleLabel = dom_element_get_attr(simpleCond_element, "role");
+  EventType type;
+  EventStateTransition trans;
+  map<string, pair<int,int>>::iterator it;
 
-  conditionExpression = new SimpleCondition (roleLabel);
+  SimpleCondition *cond;        // result
 
-  compileRoleInformation (conditionExpression, simpleCond_element);
+  role =  dom_element_get_attr (elt, "role");
+  if (unlikely (role == ""))
+    ERROR_SYNTAX ("%s: empty role", tag.c_str ());
 
-  // transition
-  if (dom_element_try_get_attr(attValue, simpleCond_element, "transition"))
+  type = EventType::UNKNOWN;
+  trans = EventStateTransition::UNKNOWN;
+
+  if ((it = reserved_condition_table.find (role))
+      != reserved_condition_table.end ())
     {
-      conditionExpression->setTransition (
-            EventUtil::getTransitionCode (attValue));
+      type = (EventType) it->second.first;
+      trans = (EventStateTransition) it->second.second;
     }
 
-  // param
-  if (conditionExpression->getEventType () == EventType::SELECTION)
+  if (dom_element_try_get_attr (value, elt, "eventType"))
     {
-      if (dom_element_try_get_attr(attValue, simpleCond_element, "key"))
+      if (unlikely (type != EventType::UNKNOWN))
         {
-          conditionExpression->setKey (attValue);
+          ERROR_SYNTAX ("%s: eventType of role '%s' cannot be overridden",
+                        tag.c_str (), role.c_str ());
         }
+      map<string, EventType>::iterator it;
+      if ((it = event_type_table.find (value)) == event_type_table.end ())
+        {
+          ERROR_SYNTAX ("%s: bad eventType '%s' for role '%s'",
+                        tag.c_str (), value.c_str (), role.c_str ());
+        }
+      type = it->second;
     }
 
-  // qualifier
-  if (dom_element_try_get_attr(attValue, simpleCond_element, "qualifier"))
+  if (dom_element_try_get_attr (value, elt, "transition"))
     {
-      if (attValue == "or")
+      if (unlikely (trans != EventStateTransition::UNKNOWN))
         {
-          conditionExpression->setQualifier (CompoundCondition::OP_OR);
+          ERROR_SYNTAX ("%s: transition of role '%s' cannot be overridden",
+                        tag.c_str (), role.c_str ());
         }
+      map<string, EventStateTransition>::iterator it;
+      if ((it = event_transition_table.find (value))
+          == event_transition_table.end ())
+        {
+          ERROR_SYNTAX ("%s: bad transition '%s' for role '%s'",
+                        tag.c_str (), value.c_str (), role.c_str ());
+        }
+      trans = it->second;
+    }
+
+  g_assert (type != EventType::UNKNOWN);
+  g_assert (trans != EventStateTransition::UNKNOWN);
+
+  cond = new SimpleCondition (role);
+  cond->setEventType (type);
+  cond->setTransition (trans);
+
+  // TODO: We do not check min and max.
+  cond->setMinCon (0);
+  cond->setMaxCon (0);
+
+  if (type == EventType::SELECTION
+      && dom_element_try_get_attr (value, elt, "key"))
+    {
+      cond->setKey (value);
+    }
+
+  if (dom_element_try_get_attr (value, elt, "delay"))
+    cond->setDelay (value);
+
+  if (dom_element_try_get_attr (value, elt, "qualifier"))
+    {
+      if (value == "or")
+        cond->setQualifier (CompoundCondition::OP_OR);
+      else if (value == "and")
+        cond->setQualifier (CompoundCondition::OP_AND);
       else
-        {
-          conditionExpression->setQualifier (CompoundCondition::OP_AND);
-        }
+        ERROR_SYNTAX ("%s: bad qualifier '%s'",
+                      tag.c_str (), value.c_str ());
     }
 
-  // delay
-  if (dom_element_try_get_attr (attValue, simpleCond_element, "delay"))
-    {
-      conditionExpression->setDelay (attValue);
-    }
-
-  return conditionExpression;
+  return cond;
 }
 
 CompoundCondition *
@@ -1355,125 +1451,101 @@ NclParser::parseCompoundStatement (DOMElement *compoundStatement_element)
 }
 
 SimpleAction *
-NclParser::parseSimpleAction (DOMElement *simpleAction_element)
+NclParser::parseSimpleAction (DOMElement *elt)
 {
-  SimpleAction *actionExpression;
-  string attValue;
+  string tag;
+  string role;
+  string value;
 
-  attValue = dom_element_get_attr(simpleAction_element, "role");
+  EventType type;
+  int acttype;
+  map<string, pair<int,int>>::iterator it;
 
-  actionExpression = new SimpleAction (attValue);
+  SimpleAction *action;         // result
 
-  // transition
-  if (dom_element_try_get_attr(attValue, simpleAction_element, "actionType"))
+  role =  dom_element_get_attr (elt, "role");
+  if (unlikely (role == ""))
+    ERROR_SYNTAX ("%s: empty role", tag.c_str ());
+
+  type = EventType::UNKNOWN;
+  acttype = -1;
+
+  if ((it = reserved_action_table.find (role))
+      != reserved_action_table.end ())
     {
-      actionExpression->setActionType (
-            SimpleAction::stringToActionType (attValue));
+      type = (EventType) it->second.first;
+      acttype = (SimpleActionType) it->second.second;
     }
 
-  if (dom_element_try_get_attr(attValue, simpleAction_element, "eventType"))
+  if (dom_element_try_get_attr (value, elt, "eventType"))
     {
-      actionExpression->setEventType (EventUtil::getTypeCode (attValue));
-    }
-
-  // animation
-  if (actionExpression->getEventType () == EventType::ATTRIBUTION
-      && actionExpression->getActionType () == ACT_START)
-    {
-      Animation *animation = NULL;
-      string durVal;
-      string byVal;
-
-      durVal = dom_element_get_attr(simpleAction_element, "duration");
-      byVal = dom_element_get_attr(simpleAction_element, "by");
-
-      if (durVal != "" || byVal != "")
+      if (unlikely (type != EventType::UNKNOWN))
         {
-          GingaTime d;
-          animation = new Animation ();
-          animation->setDuration (durVal);
-          if (_ginga_parse_time (byVal, &d))
-            {
-              animation->setBy (byVal);
-            }
-          else
-            {
-              animation->setBy ("indefinite"); // default
-            }
+          ERROR_SYNTAX ("%s: eventType of role '%s' cannot be overridden",
+                        tag.c_str (), role.c_str ());
         }
-
-      actionExpression->setAnimation (animation);
+      map<string, EventType>::iterator it;
+      if ((it = event_type_table.find (value)) == event_type_table.end ())
+        {
+          ERROR_SYNTAX ("%s: bad eventType '%s' for role '%s'",
+                        tag.c_str (), value.c_str (), role.c_str ());
+        }
+      type = it->second;
     }
 
-  compileRoleInformation (actionExpression, simpleAction_element);
-
-  if (dom_element_try_get_attr(attValue, simpleAction_element, "qualifier"))
+  if (dom_element_try_get_attr (value, elt, "actionType"))
     {
-      if (attValue == "seq")
+      if (unlikely (acttype != -1))
         {
-          actionExpression->setQualifier (CompoundAction::OP_SEQ);
+          ERROR_SYNTAX ("%s: actionType of role '%s' cannot be overridden",
+                        tag.c_str (), role.c_str ());
         }
+      map<string, SimpleActionType>::iterator it;
+      if ((it = event_action_type_table.find (value))
+          == event_action_type_table.end ())
+        {
+          ERROR_SYNTAX ("%s: bad actionType '%s' for role '%s'",
+                        tag.c_str (), value.c_str (), role.c_str ());
+        }
+      acttype = it->second;
+    }
+
+  g_assert (type != EventType::UNKNOWN);
+  g_assert (acttype != -1);
+
+  action = new SimpleAction (role);
+  action->setEventType (type);
+  action->setActionType ((SimpleActionType) acttype);
+
+  if (type == EventType::ATTRIBUTION && acttype == ACT_START
+      && dom_element_try_get_attr (value, elt, "duration"))
+    {
+      Animation *anim = new Animation ();
+      anim->setDuration (value);
+      anim->setBy ("indefinite"); // TODO: Handle "by".
+      action->setAnimation (anim);
+    }
+
+  if (dom_element_try_get_attr (value, elt, "delay"))
+    action->setDelay (value);
+
+  if (dom_element_try_get_attr (value, elt, "qualifier"))
+    {
+      if (value == "seq")
+        action->setQualifier (CompoundAction::OP_SEQ);
+      else if (value == "par")
+        action->setQualifier (CompoundAction::OP_PAR);
       else
-        { // any
-          actionExpression->setQualifier (CompoundAction::OP_PAR);
-        }
+        ERROR_SYNTAX ("%s: bad qualifier '%s'",
+                      tag.c_str (), value.c_str ());
     }
 
-  // testing delay
-  if (dom_element_try_get_attr(attValue, simpleAction_element, "delay"))
-    {
-      if (attValue[0] == '$')
-        {
-          actionExpression->setDelay (attValue);
-        }
-      else
-        {
-          actionExpression->setDelay (
-              xstrbuild ("%d", (xstrtoint (
-                        attValue.substr (0, attValue.length () - 1), 10)
-                    * 1000)));
-        }
-    }
+  if (dom_element_try_get_attr (value, elt, "value"))
+    action->setValue (value);
 
-  //  testing repeatDelay
-  if (dom_element_try_get_attr(attValue, simpleAction_element, "repeatDelay"))
-    {
-      actionExpression->setDelay (attValue);  // is that right ?
-      if (attValue[0] == '$')
-        {
-          actionExpression->setDelay (attValue);
-        }
-      else
-        {
-          actionExpression->setDelay (
-              xstrbuild ("%d", (xstrtoint (
-                        attValue.substr (0, attValue.length () - 1), 10)
-                    * 1000)));
-        }
-    }
+  // TODO: Handle repeatDelay and repeat attributes.
 
-  // repeat
-  if (dom_element_try_get_attr(attValue, simpleAction_element, "repeat"))
-    {
-      if (attValue == "indefinite")
-        {
-          // This is insane :@
-          actionExpression->setRepeat (xstrbuild ("%d", 2 ^ 30));
-        }
-      else
-        {
-          actionExpression->setRepeat (attValue);
-        }
-    }
-
-  // testing value
-  if (dom_element_try_get_attr(attValue, simpleAction_element, "value"))
-    {
-      actionExpression->setValue (attValue);
-    }
-
-  // returning action expression
-  return actionExpression;
+  return action;
 }
 
 CompoundAction *
@@ -1511,102 +1583,83 @@ NclParser::parseCompoundAction (DOMElement *compoundAction_element)
   return compoundAction;
 }
 
-Parameter *
-NclParser::parseConnectorParam (DOMElement *connectorParam_element)
-{
-  Parameter *param;
-  param = new Parameter (
-        dom_element_get_attr(connectorParam_element, "name"),
-        dom_element_get_attr(connectorParam_element, "type"));
-
-  return param;
-}
-
 CausalConnector *
-NclParser::parseCausalConnector (DOMElement *causalConnector_element)
+NclParser::parseCausalConnector (DOMElement *elt)
 {
-  // pre-compile attributes
-  CausalConnector *causalConnector =
-      createCausalConnector (causalConnector_element);
-  g_assert_nonnull (causalConnector);
+  CausalConnector *conn;
+  string id;
 
-  for (DOMElement *child: dom_element_children(causalConnector_element))
+  if (unlikely (!dom_element_try_get_attr (id, elt, "id")))
+    ERROR_SYNTAX ("%s: missing id", dom_element_tagname (elt).c_str ());
+
+  conn = new CausalConnector (id);
+  for (DOMElement *child: dom_element_children (elt))
     {
       string tagname = dom_element_tagname(child);
 
       if (tagname == "simpleCondition")
         {
           SimpleCondition *simpleCondition = parseSimpleCondition (child);
-          if (simpleCondition)
-            {
-              causalConnector->setConditionExpression (simpleCondition);
-            }
+          g_assert_nonnull (simpleCondition);
+          conn->setConditionExpression (simpleCondition);
         }
       else if (tagname == "simpleAction")
         {
           SimpleAction *simpleAction = parseSimpleAction (child);
-          if (simpleAction)
-            {
-              causalConnector->setAction (simpleAction);
-            }
+          g_assert_nonnull (simpleAction);
+          conn->setAction (simpleAction);
         }
       else if (tagname == "compoundAction")
         {
           CompoundAction *compoundAction = parseCompoundAction (child);
-          if (compoundAction)
-            {
-              causalConnector->setAction (compoundAction);
-            }
+          g_assert_nonnull (compoundAction);
+          conn->setAction (compoundAction);
         }
       else if (tagname == "connectorParam")
         {
-          Parameter *param = parseConnectorParam (child);
-          if (param)
-            {
-              causalConnector->addParameter (param);
-            }
+          Parameter *param;
+          param = new Parameter (dom_element_get_attr (child, "name"),
+                                 dom_element_get_attr (child, "type"));
+          conn->addParameter (param);
         }
       else if (tagname == "compoundCondition")
         {
           CompoundCondition *compoundCond = parseCompoundCondition (child);
-          if (compoundCond)
-            {
-              causalConnector->setConditionExpression (compoundCond);
-            }
+          g_assert_nonnull (compoundCond);
+          conn->setConditionExpression (compoundCond);
         }
       else
         {
-          ERROR_SYNTAX_UNKNOWN_CHILD ("causalConnector", tagname.c_str ());
+          ERROR_SYNTAX_UNKNOWN_CHILD (dom_element_tagname (elt).c_str (),
+                                      tagname.c_str ());
         }
     }
-
-  return causalConnector;
+  return conn;
 }
 
 ConnectorBase *
-NclParser::parseConnectorBase (DOMElement *connBase_element)
+NclParser::parseConnectorBase (DOMElement *elt)
 {
-  ConnectorBase *connBase = createConnectorBase (connBase_element);
-  g_assert_nonnull (connBase);
+  ConnectorBase *connBase;
 
-  for (DOMElement *child: dom_element_children(connBase_element))
+  connBase = new ConnectorBase (dom_element_get_attr (elt, "id"));
+  for (DOMElement *child: dom_element_children (elt))
     {
-      string tagname = dom_element_tagname(child);
-      if (tagname == "importBase")
+      string tag = dom_element_tagname (child);
+      if (tag == "importBase")
         {
           addImportBaseToConnectorBase (connBase, child);
         }
-      else if (tagname ==  "causalConnector")
+      else if (tag ==  "causalConnector")
         {
-          CausalConnector *causalConnector = parseCausalConnector (child);
-          if (causalConnector)
-            {
-              connBase->addConnector (causalConnector);
-            }
+          CausalConnector *conn = parseCausalConnector (child);
+          g_assert_nonnull (conn);
+          connBase->addConnector (conn);
         }
       else
         {
-          ERROR_SYNTAX_UNKNOWN_CHILD ("connectorBase", tagname.c_str ());
+          ERROR_SYNTAX_UNKNOWN_CHILD
+            (dom_element_tagname (elt).c_str (), tag.c_str ());
         }
     }
 
@@ -1642,49 +1695,6 @@ NclParser::addImportBaseToConnectorBase (ConnectorBase *connBase,
     }
 
   connBase->addBase (importedConnectorBase, baseAlias, baseLocation);
-}
-
-CausalConnector *
-NclParser::createCausalConnector (DOMElement *elt)
-{
-  string id = dom_element_get_attr (elt, "id");
-  return new CausalConnector (id);
-}
-
-ConnectorBase *
-NclParser::createConnectorBase (DOMElement *parent)
-{
-  string id = dom_element_get_attr (parent, "id");
-  return new ConnectorBase (id);
-}
-
-void
-NclParser::compileRoleInformation (Role *role, DOMElement *role_element)
-{
-  string attValue;
-  // event type
-  if (dom_element_try_get_attr(attValue, role_element, "eventType"))
-    {
-      role->setEventType (EventUtil::getTypeCode (attValue));
-    }
-
-  //  cardinality
-  if (dom_element_try_get_attr(attValue, role_element, "min"))
-    {
-      role->setMinCon ((xstrtoint (attValue, 10)));
-    }
-
-  if (dom_element_try_get_attr(attValue, role_element, "max"))
-    {
-      if (attValue == "unbounded")
-        {
-          role->setMaxCon (Role::UNBOUNDED);
-        }
-      else
-        {
-          role->setMaxCon (xstrtoint (attValue, 10));
-        }
-    }
 }
 
 CompoundCondition *
@@ -2493,7 +2503,7 @@ NclParser::createBind (DOMElement *bind_element, Link *link)
           assessment->setEventType (EventType::ATTRIBUTION);
           assessment->setAttributeType (AttributeType::NODE_PROPERTY);
           assessment->setMinCon (0);
-          assessment->setMaxCon (Role::UNBOUNDED);
+          assessment->setMaxCon (0);
 
           otherAssessment = new ValueAssessment (roleId);
 

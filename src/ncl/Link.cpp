@@ -103,7 +103,6 @@ Link::bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
 {
   Bind *bind;
   vector<Bind *> *roleBindList;
-  int maxConn;
   string label;
 
   label = role->getLabel ();
@@ -117,18 +116,6 @@ Link::bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
       roleBindList = (*_roleBinds)[label];
     }
 
-  // binds only if the max attribute is equal or greater than the
-  // number of link participants.
-  // If the link is inconsistent, it must be ignored
-  maxConn = role->getMaxCon ();
-
-  if (maxConn != Role::UNBOUNDED && (int)(roleBindList->size ()) >= maxConn)
-    {
-      clog << "Link::bind Warning! Bind overflows maxConn(";
-      clog << maxConn;
-      clog << ")" << endl;
-    }
-
   bind = new Bind (node, interfPt, desc, role);
   roleBindList->push_back (bind);
   _binds->push_back (bind);
@@ -138,34 +125,6 @@ Link::bind (Node *node, InterfacePoint *interfPt, GenericDescriptor *desc,
 bool
 Link::isConsistent ()
 {
-  vector<Role *>::iterator i;
-  Role *role;
-  int minConn, maxConn;
-  vector<Role *> *roles;
-
-  roles = _connector->getRoles ();
-  i = roles->begin ();
-  while (i != roles->end ())
-    {
-      role = *i;
-      // if (role instanceof ICardinalityRole) {
-      minConn = role->getMinCon ();
-      maxConn = role->getMaxCon ();
-      //}
-      // else {
-      //	minConn = 1;
-      //	maxConn = 1;
-      //}
-      if ((int)getNumRoleBinds (role) < minConn
-          || (maxConn != Role::UNBOUNDED
-              && (int)getNumRoleBinds (role) > maxConn))
-        {
-          delete roles;
-          return false;
-        }
-      ++i;
-    }
-  delete roles;
   return true;
 }
 

@@ -84,13 +84,6 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
 {
   ExecutionObject *obj;
 
-  if (instanceof (SelectionEvent *, event))
-    {
-      event->start ();
-      delete action;
-      return;
-    }
-
   obj = event->getExecutionObject ();
   g_assert_nonnull (obj);
 
@@ -98,6 +91,13 @@ Scheduler::runAction (NclEvent *event, NclSimpleAction *action)
          action->getTypeString ().c_str (),
          event->getId ().c_str (),
          obj->getId ().c_str ());
+
+  if (instanceof (SelectionEvent *, event))
+    {
+      event->start ();
+      delete action;
+      return;
+    }
 
   if (instanceof (ExecutionObjectSwitch *, obj)
       && instanceof (SwitchEvent *, event))

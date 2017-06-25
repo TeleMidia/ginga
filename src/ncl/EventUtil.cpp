@@ -24,23 +24,15 @@ EventType
 EventUtil::getTypeCode (const string &typeName)
 {
   if (typeName == "presentation")
-    {
-      return EventType::PRESENTATION;
-    }
-  else if (typeName == "selection")
-    {
-      return EventType::SELECTION;
-    }
-  else if (typeName == "attribution")
-    {
-      return EventType::ATTRIBUTION;
-    }
-  else if (typeName == "composition")
-    {
-      return EventType::COMPOSITION;
-    }
+    return EventType::PRESENTATION;
 
-  return EventType::PRESENTATION;
+  if (typeName == "selection")
+    return EventType::SELECTION;
+
+  if (typeName == "attribution")
+    return EventType::ATTRIBUTION;
+
+  return EventType::UNKNOWN;
 }
 
 string
@@ -56,9 +48,6 @@ EventUtil::getTypeName (EventType type)
 
     case EventType::ATTRIBUTION:
       return "attribution";
-
-    case EventType::COMPOSITION:
-      return "composition";
 
     default:
       g_assert_not_reached ();
