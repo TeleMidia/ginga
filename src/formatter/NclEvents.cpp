@@ -80,7 +80,7 @@ NclEvent::hasNcmId (NclEvent *evt, const string &anchorId)
       anchor = anchorEvt->getAnchor ();
       if (anchor != nullptr)
         {
-          if (dynamic_cast<IntervalAnchor *> (anchor))
+          if (instanceof (IntervalAnchor *, anchor))
             {
               anchorName = anchor->getId ();
             }
@@ -88,13 +88,13 @@ NclEvent::hasNcmId (NclEvent *evt, const string &anchorId)
             {
               anchorName = labeledAnchor->getLabel ();
             }
-          else if (dynamic_cast<LambdaAnchor *> (anchor))
+          else if (instanceof (LambdaAnchor *, anchor))
             {
               anchorName = "";
             }
 
           if (anchorName == anchorId
-              && !(dynamic_cast<SelectionEvent *> (evt)))
+              && !(instanceof (SelectionEvent *, evt)))
             {
               return true;
             }
@@ -426,8 +426,8 @@ AttributionEvent::solveImplicitRefAssessment (const string &val)
   if (val.substr (0, 1) != "$")
     return val;
 
-  evt = dynamic_cast <AttributionEvent *>
-    (this->getImplicitRefAssessmentEvent (val.substr (1, val.length ())));
+  evt = cast (AttributionEvent *,
+    this->getImplicitRefAssessmentEvent (val.substr (1, val.length ())));
   return (evt != nullptr) ? evt->getCurrentValue () : "";
 }
 

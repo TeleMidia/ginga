@@ -1182,7 +1182,7 @@ Converter::insertNode (NclNodeNesting *perspective,
 
   if (executionObject != nullptr)
     {
-      if (!(dynamic_cast<PropertyAnchor *>(interfacePoint)))
+      if (!(instanceof (PropertyAnchor *, interfacePoint)))
         {
           eventType = EventType::PRESENTATION;
         }
@@ -1263,7 +1263,7 @@ Converter::eventStateChanged (NclEvent *event,
         {
           for (NclEvent *e: exeSwitch->getEvents())
             {
-              auto switchEvt = dynamic_cast <SwitchEvent *>  (e);
+              auto switchEvt = cast (SwitchEvent *, e);
               if (switchEvt)
                 {
                   NclEvent *ev = switchEvt->getMappedEvent ();

@@ -146,7 +146,7 @@ NclEventTransitionManager::stop (GingaTime endTime)
         {
           fev->setState (EventState::SLEEPING);
         }
-      else if (dynamic_cast<EndEventTransition *> (trans))
+      else if (instanceof (EndEventTransition *, trans))
         {
           fev->stop ();
         }
@@ -164,7 +164,7 @@ NclEventTransitionManager::abort (GingaTime endTime)
         {
           fev->setState (EventState::SLEEPING);
         }
-      else if (dynamic_cast<EndEventTransition *> (trans))
+      else if (instanceof (EndEventTransition *, trans))
         {
           fev->abort ();
         }
