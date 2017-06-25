@@ -108,7 +108,6 @@ set (GINGA_SOURCES
   ../src/formatter/Scheduler.cpp
   ../src/mb/Display.cpp
   ../src/mb/Dashboard.cpp
-  ../src/mb/SDLWindow.cpp
   ../src/ncl/AbsoluteReferenceContent.cpp
   ../src/ncl/Action.cpp
   ../src/ncl/Anchor.cpp
