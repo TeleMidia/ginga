@@ -1881,7 +1881,6 @@ Converter::createSimpleAction (
   switch (actionType)
     {
     case ACT_START:
-    case ACT_SET:
       if (eventType == EventType::PRESENTATION)
         {
           action = new NclRepeatAction (event, actionType);

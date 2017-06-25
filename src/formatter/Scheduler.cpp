@@ -211,8 +211,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
   vector<NclEvent *> *events;
   EventType eventType = EventType::UNKNOWN;
 
-  if (action->getType () == ACT_START
-      || action->getType () == ACT_SET)
+  if (action->getType () == ACT_START)
     {
       event = action->getEvent ();
       if (event != NULL)
