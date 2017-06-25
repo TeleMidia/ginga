@@ -55,7 +55,7 @@ NclLinkAssessmentStatement::getEvents ()
       ((NclLinkAttributeAssessment *)mainAssessment)->getEvent ());
 
   auto attrAssessment
-      = dynamic_cast <NclLinkAttributeAssessment *> (otherAssessment);
+      = cast (NclLinkAttributeAssessment *, otherAssessment);
   if (attrAssessment)
     {
       events.push_back (attrAssessment->getEvent ());

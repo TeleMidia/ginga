@@ -35,8 +35,8 @@ cmp_transitions (EventTransition *t1, EventTransition *t2)
   if (t1->getTime() < t2->getTime()) return true;
   else if (t1->getTime() > t2->getTime()) return false;
 
-  auto t1Begin = dynamic_cast<BeginEventTransition *> (t1);
-  auto t2End = dynamic_cast<EndEventTransition *> (t2);
+  auto t1Begin = cast (BeginEventTransition *, t1);
+  auto t2End = cast (EndEventTransition *, t2);
 
   return (t1Begin && t2End);
 }
@@ -61,7 +61,7 @@ NclEventTransitionManager::removeEventTransition (PresentationEvent *evt)
         {
           toDel.push_back (trans);
 
-          auto beginTrans = dynamic_cast<BeginEventTransition *> (trans);
+          auto beginTrans = cast (BeginEventTransition *, trans);
           if (beginTrans
               && beginTrans->getEndTransition ())
             {
@@ -96,7 +96,7 @@ NclEventTransitionManager::prepare (bool wholeContent, GingaTime startTime)
               break;
             }
 
-          auto beginTrans = dynamic_cast<BeginEventTransition *> (trans);
+          auto beginTrans = cast (BeginEventTransition *, trans);
           if (beginTrans)
             {
               trans->getEvent ()->setState (EventState::OCCURRING);
@@ -121,7 +121,7 @@ NclEventTransitionManager::start (GingaTime offsetTime)
       EventTransition *trans = _transTbl[transIdx];
       if (trans->getTime () <= offsetTime)
         {
-          auto beginTrans = dynamic_cast<BeginEventTransition *> (trans);
+          auto beginTrans = cast (BeginEventTransition *, trans);
           if (beginTrans)
             {
               trans->getEvent ()->start ();
@@ -177,7 +177,7 @@ NclEventTransitionManager::addPresentationEvent (PresentationEvent *evt)
   BeginEventTransition *beginTrans = nullptr;
   EndEventTransition *endTrans = nullptr;
 
-  auto lambdaAnchor = dynamic_cast <LambdaAnchor *> (evt->getAnchor());
+  auto lambdaAnchor = cast (LambdaAnchor *, evt->getAnchor());
   if (lambdaAnchor)
     {
       beginTrans = new BeginEventTransition (0, evt);
@@ -208,7 +208,7 @@ NclEventTransitionManager::updateTransitionTable (
       if (trans->getTime () <= value)
         {
           NclEvent *ev = trans->getEvent ();
-          auto beginEvtTrans = dynamic_cast<BeginEventTransition *> (trans);
+          auto beginEvtTrans = cast (BeginEventTransition *, trans);
           if (beginEvtTrans)
             {
               ev->start ();
