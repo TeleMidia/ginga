@@ -47,7 +47,6 @@ public:
   virtual ~FocusManager ();
 
   bool isKeyHandler ();
-  bool setKeyHandler (bool _isHandler);
 
   void setKeyMaster (const string &mediaId);
   void setFocus (const string &focusIndex);

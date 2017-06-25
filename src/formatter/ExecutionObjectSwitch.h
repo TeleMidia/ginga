@@ -31,7 +31,7 @@ GINGA_FORMATTER_BEGIN
 class ExecutionObjectSwitch : public ExecutionObjectContext
 {
 public:
-  ExecutionObjectSwitch (const string &id, Node *switchNode, bool handling,
+  ExecutionObjectSwitch (const string &id, Node *switchNode,
                          INclActionListener *seListener);
 
   virtual ~ExecutionObjectSwitch (){}

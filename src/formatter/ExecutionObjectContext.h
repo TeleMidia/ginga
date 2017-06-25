@@ -44,7 +44,6 @@ public:
   ExecutionObjectContext (const string &id,
                           Node *dataObject,
                           NclCascadingDescriptor *descriptor,
-                          bool handling,
                           INclActionListener *seListener);
 
   virtual ~ExecutionObjectContext ();

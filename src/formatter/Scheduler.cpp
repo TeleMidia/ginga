@@ -33,26 +33,25 @@ Scheduler::Scheduler ()
   this->compiler->setLinkActionListener (this);
   this->focusManager = new FocusManager
     (this, this->settings, this, this->compiler);
-  this->focusManager->setKeyHandler (true);
 }
 
 Scheduler::~Scheduler ()
 {
   for (auto action: this->actions)
-    action->setSimpleActionListener (NULL);
+    action->setSimpleActionListener (nullptr);
 
   this->actions.clear ();
 
-  ruleAdapter = NULL;
-  settings = NULL;
+  ruleAdapter = nullptr;
+  settings = nullptr;
 
-  if (focusManager != NULL)
+  if (focusManager != nullptr)
     {
       delete focusManager;
-      focusManager = NULL;
+      focusManager = nullptr;
     }
 
-  compiler = NULL;
+  compiler = nullptr;
   events.clear ();
 }
 
@@ -214,7 +213,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
   if (action->getType () == ACT_START)
     {
       event = action->getEvent ();
-      if (event != NULL)
+      if (event != nullptr)
         {
           eventType = event->getType ();
           if (eventType == EventType::UNKNOWN)
@@ -247,7 +246,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
           propValue = ((NclAssignmentAction *) action)->getValue ();
           event = compObj->getEventFromAnchorId (propName);
 
-          if (event != NULL)
+          if (event != nullptr)
             {
               event->start ();
               ((AttributionEvent *)event)->setValue (propValue);
@@ -259,7 +258,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
             }
 
           objects = compObj->getExecutionObjects ();
-          if (objects == NULL)
+          if (objects == nullptr)
               return;
 
           j = objects->begin ();
@@ -274,7 +273,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
               else
                 {
                   childEvent = childObject->getEventFromAnchorId (propName);
-                  if (childEvent != NULL)
+                  if (childEvent != nullptr)
                     { // attribution with transition
                       runAction (childEvent, action);
                     }
@@ -302,7 +301,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
 
           size = compositeNode->getNumPorts ();
 
-          if (compositeNode->getParentComposition () == NULL)
+          if (compositeNode->getParentComposition () == nullptr)
             {
               compositionPerspective
                   = new NclNodeNesting (compositeNode->getPerspective ());
@@ -329,10 +328,10 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
               try
                 {
                   childObject = compiler->getExecutionObjectFromPerspective (
-                                                  perspective, NULL);
+                                                  perspective, nullptr);
 
-                  if (childObject != NULL
-                      && port->getEndInterfacePoint () != NULL
+                  if (childObject != nullptr
+                      && port->getEndInterfacePoint () != nullptr
                       && instanceof (ContentAnchor *,
                                      port->getEndInterfacePoint ()))
                     {
@@ -345,7 +344,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
                                             EventType::PRESENTATION,
                                             ""));
 
-                      if (childEvent != NULL)
+                      if (childEvent != nullptr)
                         {
                           events->push_back (childEvent);
                         }
@@ -369,13 +368,13 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
               runAction ((*events)[i], action);
             }
           delete events;
-          events = NULL;
+          events = nullptr;
         }
     }
   else
     {
       event = action->getEvent ();
-      if (event != NULL)
+      if (event != nullptr)
         {
           eventType = event->getType ();
         }
@@ -396,7 +395,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
                                             ->getDataEntity ());
 
       objects = compObj->getExecutionObjects ();
-      if (objects != NULL)
+      if (objects != nullptr)
         {
           j = objects->begin ();
           while (j != objects->end ())
@@ -404,23 +403,23 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
               childObject = j->second;
 
               childEvent = childObject->getMainEvent ();
-              if (childEvent == NULL)
+              if (childEvent == nullptr)
                 {
                   childEvent
                       = childObject->getWholeContentPresentationEvent ();
                 }
 
-              if (childEvent != NULL)
+              if (childEvent != nullptr)
                 {
                   events->push_back (childEvent);
                 }
               ++j;
             }
           delete objects;
-          objects = NULL;
+          objects = nullptr;
         }
 
-      if (compositeNode->getParentComposition () == NULL)
+      if (compositeNode->getParentComposition () == nullptr)
         {
           compositionPerspective
               = new NclNodeNesting (compositeNode->getPerspective ());
@@ -428,12 +427,12 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
           compObj
               = (ExecutionObjectContext *) (compiler
                     ->getExecutionObjectFromPerspective (
-                        compositionPerspective, NULL));
+                        compositionPerspective, nullptr));
 
           delete compositionPerspective;
 
           objects = compObj->getExecutionObjects ();
-          if (objects != NULL)
+          if (objects != nullptr)
             {
               j = objects->begin ();
               while (j != objects->end ())
@@ -441,21 +440,21 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
                   childObject = j->second;
 
                   childEvent = childObject->getMainEvent ();
-                  if (childEvent == NULL)
+                  if (childEvent == nullptr)
                     {
                       childEvent
                           = childObject
                                 ->getWholeContentPresentationEvent ();
                     }
 
-                  if (childEvent != NULL)
+                  if (childEvent != nullptr)
                     {
                       events->push_back (childEvent);
                     }
                   ++j;
                 }
               delete objects;
-              objects = NULL;
+              objects = nullptr;
             }
 
           // *** QUIT PRESENTATION ***
@@ -469,7 +468,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
         }
 
       delete events;
-      events = NULL;
+      events = nullptr;
     }
 }
 
@@ -482,18 +481,18 @@ Scheduler::runActionOverSwitch (ExecutionObjectSwitch *switchObj,
   NclEvent *selectedEvent;
 
   selectedObject = switchObj->getSelectedObject ();
-  if (selectedObject == NULL)
+  if (selectedObject == nullptr)
     {
       selectedObject = compiler->processExecutionObjectSwitch (switchObj);
 
-      if (selectedObject == NULL)
+      if (selectedObject == nullptr)
         {
           return;
         }
     }
 
   selectedEvent = event->getMappedEvent ();
-  if (selectedEvent != NULL)
+  if (selectedEvent != nullptr)
     {
       runAction (selectedEvent, action);
     }
@@ -505,7 +504,7 @@ Scheduler::runActionOverSwitch (ExecutionObjectSwitch *switchObj,
   if (action->getType () == ACT_STOP
       || action->getType () == ACT_ABORT)
     {
-      switchObj->select (NULL);
+      switchObj->select (nullptr);
     }
 }
 
@@ -524,10 +523,10 @@ Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObj,
   vector<Node *> *nestedSeq;
   ExecutionObject *endPointObject;
 
-  selectedEvent = NULL;
+  selectedEvent = nullptr;
   switchPort = (SwitchPort *)(switchEvent->getInterfacePoint ());
   mappings = switchPort->getPorts ();
-  if (mappings != NULL)
+  if (mappings != nullptr)
     {
       i = mappings->begin ();
       while (i != mappings->end ())
@@ -544,9 +543,9 @@ Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObj,
                   endPointObject
                       = compiler
                             ->getExecutionObjectFromPerspective (
-                                  nodePerspective, NULL);
+                                  nodePerspective, nullptr);
 
-                  if (endPointObject != NULL)
+                  if (endPointObject != nullptr)
                     {
                       selectedEvent
                           = compiler
@@ -568,7 +567,7 @@ Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObj,
         }
     }
 
-  if (selectedEvent != NULL)
+  if (selectedEvent != nullptr)
     {
       switchEvent->setMappedEvent (selectedEvent);
       runAction (selectedEvent, action);
@@ -592,12 +591,12 @@ Scheduler::startDocument (const string &file)
 
   id = this->doc->getId ();
   body = this->doc->getBody ();
-  if (unlikely (body == NULL))
+  if (unlikely (body == nullptr))
     ERROR_SYNTAX ("document has no body");
 
   // Get entry events (i.e., those mapped by ports).
   ports = body->getPorts ();
-  if (unlikely (ports == NULL))
+  if (unlikely (ports == nullptr))
     ERROR ("document has no ports");
 
   persp = new NclNodeNesting ();
@@ -626,7 +625,7 @@ Scheduler::startDocument (const string &file)
 
       persp = new NclNodeNesting (node->getPerspective ());
       execobj = this->compiler->getExecutionObjectFromPerspective
-        (persp, NULL);
+        (persp, nullptr);
       g_assert_nonnull (execobj);
 
       TRACE ("processing '%s'", persp->getId ().c_str ());
@@ -648,7 +647,7 @@ Scheduler::startDocument (const string &file)
           if (value == "")
             continue;           // nothing to do
 
-          TRACE ("setting %s='%s'", name.c_str (), value.c_str ());
+          TRACE ("settings: %s='%s'", name.c_str (), value.c_str ());
           //this->settings->set (name, value);
         }
     }
