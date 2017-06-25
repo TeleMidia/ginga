@@ -28,19 +28,6 @@ AttributeAssessment::AttributeAssessment (const string &role)
   _attributeType = AttributeType::NODE_PROPERTY;
   _key = "";
   _offset = "";
-  _maxCon = 1;
-}
-
-void
-AttributeAssessment::setMaxCon (int max)
-{
-  _maxCon = max;
-}
-
-void
-AttributeAssessment::setMinCon (int min)
-{
-  _minCon = min;
 }
 
 short

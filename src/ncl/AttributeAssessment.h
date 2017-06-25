@@ -29,8 +29,6 @@ class AttributeAssessment : public Assessment, public Role
 public:
   AttributeAssessment (const string &role);
   virtual ~AttributeAssessment (){}
-  void setMaxCon (int max);
-  void setMinCon (int min);
   short getAttributeType ();
   void setAttributeType (short attribute);
   string getKey ();

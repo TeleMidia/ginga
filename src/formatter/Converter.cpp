@@ -1517,7 +1517,7 @@ Converter::createAction (Action *actionExp,
           else if (size > 1)
             {
               compoundAction
-                  = new NclCompoundAction (sae->getQualifier ());
+                  = new NclCompoundAction ();
 
               for (i = 0; i < size; i++)
                 {
@@ -1550,7 +1550,7 @@ Converter::createAction (Action *actionExp,
     {
       delayObject = actionExp->getDelay ();
       delay = compileDelay (ncmLink, delayObject, nullptr);
-      return createCompoundAction (cae->getOperator (), delay,
+      return createCompoundAction (delay,
                                    cae->getActions (), ncmLink,
                                    parentObj);
     }
@@ -2060,13 +2060,13 @@ Converter::createSimpleAction (
 
 NclCompoundAction *
 Converter::createCompoundAction (
-    short op, GingaTime delay, vector<Action *> *ncmChildActions,
+    GingaTime delay, vector<Action *> *ncmChildActions,
     CausalLink *ncmLink, ExecutionObjectContext *parentObj)
 {
   NclCompoundAction *action;
   NclAction *childAction;
 
-  action = new NclCompoundAction (op);
+  action = new NclCompoundAction ();
   if (delay > 0)
     {
       action->setWaitDelay (delay);

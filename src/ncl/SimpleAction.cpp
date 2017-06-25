@@ -23,7 +23,6 @@ GINGA_NCL_BEGIN
 SimpleAction::SimpleAction (const string &role) : Action (), Role ()
 {
   SimpleAction::setLabel (role);
-  _qualifier = CompoundAction::OP_PAR;
   _repeat = "0";
   _repeatDelay = "0";
   _value = "";
@@ -37,55 +36,6 @@ SimpleAction::~SimpleAction ()
       delete _animation;
       _animation = NULL;
     }
-}
-
-void
-SimpleAction::setLabel (const string &id)
-{
-  _label = id;
-
-  if (xstrcaseeq (_label, "start"))
-    {
-      _actionType = ACT_START;
-      _eventType = EventType::PRESENTATION;
-    }
-  else if (xstrcaseeq (_label, "stop"))
-    {
-      _actionType = ACT_STOP;
-      _eventType = EventType::PRESENTATION;
-    }
-  else if (xstrcaseeq (_label, "set"))
-    {
-      _actionType = ACT_START;
-      _eventType = EventType::ATTRIBUTION;
-    }
-  else if (xstrcaseeq (_label, "abort"))
-    {
-      _actionType = ACT_ABORT;
-      _eventType = EventType::PRESENTATION;
-    }
-  else if (xstrcaseeq (_label, "pause"))
-    {
-      _actionType = ACT_PAUSE;
-      _eventType = EventType::PRESENTATION;
-    }
-  else if (xstrcaseeq (_label, "resume"))
-    {
-      _actionType = ACT_RESUME;
-      _eventType = EventType::PRESENTATION;
-    }
-}
-
-short
-SimpleAction::getQualifier ()
-{
-  return _qualifier;
-}
-
-void
-SimpleAction::setQualifier (short qualifier)
-{
-  this->_qualifier = qualifier;
 }
 
 string

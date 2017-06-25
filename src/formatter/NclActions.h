@@ -134,7 +134,7 @@ class NclCompoundAction : public NclAction,
     public NclActionProgressListener
 {
 public:
-  NclCompoundAction (short op);
+  NclCompoundAction ();
   virtual ~NclCompoundAction ();
 
   virtual void run () override;
@@ -150,7 +150,6 @@ public:
 
 protected:
   vector<NclAction *> _actions;
-  short _op;
 
 private:
   int _pendingActions;

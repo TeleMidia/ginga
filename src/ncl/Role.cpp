@@ -22,8 +22,6 @@ GINGA_NCL_BEGIN
 
 Role::Role ()
 {
-  this->_minCon = 1;
-  this->_maxCon = 1;
 }
 
 Role::~Role () {}
@@ -50,30 +48,6 @@ void
 Role::setLabel (const string &id)
 {
   _label = id;
-}
-
-int
-Role::getMinCon ()
-{
-  return _minCon;
-}
-
-int
-Role::getMaxCon ()
-{
-  return _maxCon;
-}
-
-void
-Role::setMinCon (int minCon)
-{
-  this->_minCon = minCon;
-}
-
-void
-Role::setMaxCon (int maxCon)
-{
-  this->_maxCon = maxCon;
 }
 
 GINGA_NCL_END

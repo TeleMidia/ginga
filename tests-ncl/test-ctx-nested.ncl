@@ -1,7 +1,7 @@
 <ncl>
   <head>
     <connectorBase>
-      <causalConnector xconnector="onBeginStop">
+      <causalConnector id="onBeginStop">
         <simpleCondition role="onBegin"/>
         <simpleAction role="stop"/>
       </causalConnector>
@@ -40,22 +40,22 @@
               <property name="bounds" value="40%,40%,100%,100%"/>
               <property name="background" value="yellow"/>
             </media>
-            <link>
+            <link xconnector="onBeginStop">
               <bind role="onBegin" component="time3" interface="a3"/>
               <bind role="stop" component="ctx3"/>
             </link>
           </context>
-          <link>
+          <link xconnector="onBeginStop">
             <bind role="onBegin" component="time2" interface="a2"/>
             <bind role="stop" component="ctx2"/>
           </link>
         </context>
-        <link>
+        <link xconnector="onBeginStop">
           <bind role="onBegin" component="time1" interface="a1"/>
           <bind role="stop" component="ctx1"/>
         </link>
       </context>
-      <link>
+      <link xconnector="onBeginStop">
         <bind role="onBegin" component="time0" interface="a0"/>
         <bind role="stop" component="ctx0"/>
       </link>
