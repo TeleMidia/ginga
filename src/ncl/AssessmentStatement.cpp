@@ -25,7 +25,6 @@ AssessmentStatement::AssessmentStatement (Comparator::Op comp) : Statement ()
   _comparator = comp;
   _mainAssessment = NULL;
   _otherAssessment = NULL;
-  typeSet.insert ("AssessmentStatement");
 }
 
 AssessmentStatement::~AssessmentStatement ()

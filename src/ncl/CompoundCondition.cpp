@@ -25,7 +25,6 @@ GINGA_NCL_BEGIN
 CompoundCondition::CompoundCondition () : TriggerExpression ()
 {
   _expressions = new vector<ConditionExpression *>;
-  typeSet.insert ("CompoundCondition");
 }
 
 CompoundCondition::CompoundCondition (ConditionExpression *c1,
@@ -36,7 +35,6 @@ CompoundCondition::CompoundCondition (ConditionExpression *c1,
   _expressions->push_back (c1);
   _expressions->push_back (c2);
   _myOperator = op;
-  typeSet.insert ("CompoundCondition");
 }
 
 CompoundCondition::~CompoundCondition ()

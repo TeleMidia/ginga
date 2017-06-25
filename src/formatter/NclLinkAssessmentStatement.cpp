@@ -28,7 +28,6 @@ NclLinkAssessmentStatement::NclLinkAssessmentStatement (
   this->comparator = comparator;
   this->mainAssessment = mainAssessment;
   this->otherAssessment = otherAssessment;
-  typeSet.insert ("NclLinkAssessmentStatement");
 }
 
 NclLinkAssessmentStatement::~NclLinkAssessmentStatement ()

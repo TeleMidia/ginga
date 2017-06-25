@@ -23,7 +23,6 @@ GINGA_FORMATTER_BEGIN
 NclLinkCompoundTriggerCondition::NclLinkCompoundTriggerCondition ()
     : NclLinkTriggerCondition ()
 {
-  typeSet.insert ("NclLinkCompoundTriggerCondition");
 }
 
 NclLinkCompoundTriggerCondition::~NclLinkCompoundTriggerCondition ()

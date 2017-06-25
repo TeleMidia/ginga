@@ -27,7 +27,6 @@ NclLinkAttributeAssessment::NclLinkAttributeAssessment (
   event = ev;
   attributeType = attrType;
   offset = "";
-  typeSet.insert ("NclLinkAttributeAssessment");
 }
 
 NclEvent *

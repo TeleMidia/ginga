@@ -23,7 +23,6 @@ GINGA_NCL_BEGIN
 TriggerExpression::TriggerExpression () : ConditionExpression ()
 {
   _delay = "0";
-  typeSet.insert ("TriggerExpression");
 }
 
 string

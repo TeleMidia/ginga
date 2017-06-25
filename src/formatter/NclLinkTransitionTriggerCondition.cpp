@@ -25,8 +25,6 @@ NclLinkTransitionTriggerCondition::NclLinkTransitionTriggerCondition (
     NclEvent *event, EventStateTransition transition, Bind *bind)
     : NclLinkTriggerCondition ()
 {
-  typeSet.insert ("NclLinkTransitionTriggerCondition");
-
   this->bind = bind;
   this->event = NULL;
   this->transition = transition;
