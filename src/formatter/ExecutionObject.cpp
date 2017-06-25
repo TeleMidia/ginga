@@ -998,7 +998,7 @@ ExecutionObject::handleTickEvent (arg_unused (GingaTime total),
   _time += diff;
 
   g_assert (this->isOccurring ());
-  g_assert_nonnull (instanceof (PresentationEvent *, _mainEvent));
+  g_assert (instanceof (PresentationEvent *, _mainEvent));
 
   next = _transMan.nextTransition (_mainEvent);
   if (next == nullptr)
@@ -1030,7 +1030,7 @@ ExecutionObject::handleKeyEvent (SDL_EventType type, SDL_Keycode key)
     return;                     // nothing to do
 
   g_assert (this->isOccurring ());
-  g_assert_nonnull (instanceof (PresentationEvent *, _mainEvent));
+  g_assert (instanceof (PresentationEvent *, _mainEvent));
 
   this->selectionEvent (key, _time);
 }
