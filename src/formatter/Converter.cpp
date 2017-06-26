@@ -853,7 +853,7 @@ Converter::processLink (Link *ncmLink,
               if (formatterLink != NULL)
                 {
                   setActionListener (
-                        ((NclFormatterCausalLink *)formatterLink)
+                        ((NclFormatterLink *)formatterLink)
                         ->getAction ());
 
                   parentObject->setLinkCompiled (formatterLink);
@@ -1302,7 +1302,7 @@ Converter::hasDescriptorPropName (const string &name)
   return words.count(name);
 }
 
-NclFormatterCausalLink *
+NclFormatterLink *
 Converter::createCausalLink (CausalLink *ncmLink,
                              ExecutionObjectContext *parentObj)
 {
@@ -1311,7 +1311,7 @@ Converter::createCausalLink (CausalLink *ncmLink,
   Action *actionExp;
   NclLinkCondition *formatterCondition;
   NclAction *formatterAction;
-  NclFormatterCausalLink *formatterLink;
+  NclFormatterLink *formatterLink;
   NclAssignmentAction *action;
   string value;
   NclEvent *event;
@@ -1373,7 +1373,7 @@ Converter::createCausalLink (CausalLink *ncmLink,
     }
 
   // create formatter causal link
-  formatterLink = new NclFormatterCausalLink (
+  formatterLink = new NclFormatterLink (
         (NclLinkTriggerCondition *)formatterCondition, formatterAction,
         ncmLink, (ExecutionObjectContext *)parentObj);
 

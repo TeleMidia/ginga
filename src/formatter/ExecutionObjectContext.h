@@ -65,8 +65,8 @@ public:
                           EventStateTransition transition,
                           EventState previousState) override;
 
-  void linkEvaluationStarted (NclFormatterCausalLink *link) override;
-  void linkEvaluationFinished (NclFormatterCausalLink *, bool) override;
+  void linkEvaluationStarted (NclFormatterLink *link) override;
+  void linkEvaluationFinished (NclFormatterLink *, bool) override;
 
 private:
   static const short _mSleepTime = 800;
