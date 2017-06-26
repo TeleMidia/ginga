@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Converter.h"
 #include "NclActions.h"
-#include "RuleAdapter.h"
 
 #include "ncl/NclDocument.h"
 using namespace ::ginga::ncl;
@@ -38,17 +37,13 @@ private:
 
   string file;                        // NCL file path
   NclDocument *doc;                   // NCL document tree
-  vector<NclEvent *> events; // document events
-  set<NclSimpleAction *> actions; // document actions
+  vector<NclEvent *> events;          // document events
+  set<NclSimpleAction *> actions;     // document actions
 
 public:
   Scheduler ();
   virtual ~Scheduler ();
-
-  void addAction (NclSimpleAction *) override;
-  void removeAction (NclSimpleAction *) override;
   void scheduleAction (NclSimpleAction *) override;
-
   void startDocument (const string &);
 
 private:

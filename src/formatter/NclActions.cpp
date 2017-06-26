@@ -90,10 +90,6 @@ NclSimpleAction::NclSimpleAction (NclEvent *event,
 
 NclSimpleAction::~NclSimpleAction ()
 {
-  if (listener != nullptr)
-    {
-      listener->removeAction (this);
-    }
 }
 
 NclEvent *
@@ -118,7 +114,6 @@ void
 NclSimpleAction::setSimpleActionListener (INclActionListener *listener)
 {
   g_assert_nonnull (listener);
-  listener->addAction (this);
   this->listener = listener;
 }
 
