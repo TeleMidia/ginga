@@ -23,6 +23,7 @@ using namespace ::ginga::ncl;
 
 #include "NclActions.h"
 #include "NclEvents.h"
+
 #include "NclLinkTriggerCondition.h"
 #include "NclLinkTriggerListener.h"
 #include "NclFormatterLink.h"
@@ -31,35 +32,18 @@ GINGA_FORMATTER_BEGIN
 
 class ExecutionObjectContext;
 
-class NclFormatterLink
+class NclFormatterLink : public NclLinkTriggerListener,
+    public NclActionProgressListener
 {
 public:
-  NclFormatterLink (Link *ncmLink, ExecutionObjectContext *parentObject);
+  NclFormatterLink (NclLinkTriggerCondition *condition,
+                    NclAction *action, Link *ncmLink,
+                    ExecutionObjectContext *parentObject);
+
   virtual ~NclFormatterLink ();
 
   void suspendLinkEvaluation (bool suspend);
   Link *getNcmLink ();
-
-protected:
-  Link *ncmLink;
-  bool suspend;
-  ExecutionObjectContext *parentObject;
-};
-
-class NclFormatterCausalLink : public NclFormatterLink,
-                               public NclLinkTriggerListener,
-                               public NclActionProgressListener
-{
-private:
-  NclLinkTriggerCondition *condition;
-  NclAction *action;
-
-public:
-  NclFormatterCausalLink (NclLinkTriggerCondition *condition,
-                          NclAction *action, Link *ncmLink,
-                          ExecutionObjectContext *parentObject);
-
-  virtual ~NclFormatterCausalLink ();
 
   NclAction *getAction ();
   NclLinkTriggerCondition *getTriggerCondition ();
@@ -68,6 +52,15 @@ public:
   void evaluationStarted ();
   void evaluationEnded ();
   void actionProcessed (bool start);
+
+protected:
+  Link *ncmLink;
+  bool suspend;
+  ExecutionObjectContext *parentObject;
+
+private:
+  NclLinkTriggerCondition *condition;
+  NclAction *action;
 };
 
 

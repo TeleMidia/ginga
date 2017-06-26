@@ -23,20 +23,38 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 GINGA_FORMATTER_BEGIN
 
-NclFormatterLink::NclFormatterLink (Link *ncmLink,
-                                    ExecutionObjectContext *parentObject)
+NclFormatterLink::NclFormatterLink (
+    NclLinkTriggerCondition *condition, NclAction *act,
+    Link *ncmLink, ExecutionObjectContext *parentObj)
 {
-  this->parentObject = parentObject; // ExecutionObjectContext
+  this->parentObject = parentObj; // ExecutionObjectContext
   this->ncmLink = ncmLink;
   this->suspend = false;
+
+  this->condition = condition;
+  this->action = act;
+
+  if (this->condition != nullptr)
+    {
+      this->condition->setTriggerListener (this);
+    }
+
+  if (this->action != nullptr)
+    {
+      this->action->addProgressListener (this);
+    }
 }
 
 NclFormatterLink::~NclFormatterLink ()
 {
-  parentObject = NULL;
-  if (ncmLink != NULL)
+  if (condition != nullptr)
     {
-      ncmLink = NULL;
+      delete condition;
+    }
+
+  if (action != nullptr)
+    {
+      delete action;
     }
 }
 
@@ -52,54 +70,20 @@ NclFormatterLink::getNcmLink ()
   return ncmLink;
 }
 
-NclFormatterCausalLink::NclFormatterCausalLink (
-    NclLinkTriggerCondition *condition, NclAction *action,
-    Link *ncmLink, ExecutionObjectContext *parentObject)
-    : NclFormatterLink (ncmLink, parentObject)
-{
-  this->condition = condition;
-  this->action = action;
-
-  if (this->condition != NULL)
-    {
-      this->condition->setTriggerListener (this);
-    }
-
-  if (this->action != NULL)
-    {
-      this->action->addProgressListener (this);
-    }
-}
-
-NclFormatterCausalLink::~NclFormatterCausalLink ()
-{
-  if (condition != NULL)
-    {
-      delete condition;
-      condition = NULL;
-    }
-
-  if (action != NULL)
-    {
-      delete action;
-      action = NULL;
-    }
-}
-
 NclAction *
-NclFormatterCausalLink::getAction ()
+NclFormatterLink::getAction ()
 {
   return action;
 }
 
 NclLinkTriggerCondition *
-NclFormatterCausalLink::getTriggerCondition ()
+NclFormatterLink::getTriggerCondition ()
 {
   return condition;
 }
 
 void
-NclFormatterCausalLink::conditionSatisfied (NclLinkCondition *condition)
+NclFormatterLink::conditionSatisfied (NclLinkCondition *condition)
 {
   if (!suspend)
     {
@@ -108,7 +92,7 @@ NclFormatterCausalLink::conditionSatisfied (NclLinkCondition *condition)
 }
 
 vector<NclEvent *>
-NclFormatterCausalLink::getEvents ()
+NclFormatterLink::getEvents ()
 {
   vector<NclEvent *> events = condition->getEvents ();
   vector<NclEvent *> actEvents = action->getEvents ();
@@ -119,19 +103,19 @@ NclFormatterCausalLink::getEvents ()
 }
 
 void
-NclFormatterCausalLink::evaluationStarted ()
+NclFormatterLink::evaluationStarted ()
 {
   parentObject->linkEvaluationStarted (this);
 }
 
 void
-NclFormatterCausalLink::evaluationEnded ()
+NclFormatterLink::evaluationEnded ()
 {
   parentObject->linkEvaluationFinished (this, false);
 }
 
 void
-NclFormatterCausalLink::actionProcessed (bool start)
+NclFormatterLink::actionProcessed (bool start)
 {
   parentObject->linkEvaluationFinished (this, start);
 }
