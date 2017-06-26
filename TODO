@@ -13,6 +13,9 @@ Ginga TODO                                                     -*-outline-*-
   + Property attributions originated by NCLua scripts are not supported.
   + Properties "visible" and "explicitDur" are not supported.
   + Areas containing the attribute "label" are not supported.
+  + Focus control (i.e. "focusIndex", "moveLeft", "moveRight", etc. properties)
+    is not supported.
+  + NCL as a media object is not supported.
 
 
 Local Variables:
