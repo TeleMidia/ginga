@@ -249,15 +249,15 @@ tests/Makefile
 
 AC_OUTPUT
 AC_MSG_NOTICE([summary of main build options:
-  version:            ${VERSION}
-  host:               ${host}
-  install prefix:     ${prefix}
-  compiler:           ${CXX}
-  cxxflags:           ${CXXFLAGS}
-  ldflags:            ${LDFLAGS}
-  warning flags:      ${WERROR_CFLAGS} ${WARN_CFLAGS}
-  valgrind:           ${VALGRIND}
+  version:        ${VERSION}
+  host:           ${host}
+  install prefix: ${prefix}
+  compiler:       ${CXX}
+  cxxflags:       ${CXXFLAGS}
+  ldflags:        ${LDFLAGS}
+  warning flags:  ${WERROR_CFLAGS} ${WARN_CFLAGS}
+  valgrind:       ${VALGRIND}
 
-  with cef:           ${with_cef_result}
-  with librsvg:       ${with_librsvg_result}
+  with html: ${with_cef_result}
+  with svg:  ${with_librsvg_result}
 ])
