@@ -78,8 +78,11 @@ Player::createPlayer (const string &uri, const string &mime)
   else
     {
       player = new Player (uri);
-      WARNING ("unknown mime '%s': creating an empty player",
-               mime.c_str ());
+      if (uri != "")
+        {
+          WARNING ("unknown mime '%s': creating an empty player",
+                   mime.c_str ());
+        }
     }
 
   g_assert_nonnull (player);
