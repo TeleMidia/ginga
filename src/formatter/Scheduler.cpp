@@ -27,26 +27,20 @@ GINGA_FORMATTER_BEGIN
 
 Scheduler::Scheduler ()
 {
-  this->settings = new Settings ();
-  this->compiler = new Converter (new RuleAdapter (settings));
-  this->compiler->setLinkActionListener (this);
+  _converter = new Converter (new RuleAdapter (new Settings ()));
+  _converter->setLinkActionListener (this);
 }
 
 Scheduler::~Scheduler ()
 {
-  for (auto action: this->actions)
-    action->setSimpleActionListener (nullptr);
-  this->actions.clear ();
-  settings = nullptr;
-  compiler = nullptr;
-  events.clear ();
+  _events.clear ();
+  delete _converter;
 }
 
 void
 Scheduler::scheduleAction (NclSimpleAction *action)
 {
   runAction (action->getEvent (), action);
-  return;
 }
 
 void
@@ -293,7 +287,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
               perspective->append (nestedSeq);
               try
                 {
-                  childObject = compiler->getExecutionObjectFromPerspective (
+                  childObject = _converter->getExecutionObjectFromPerspective (
                                                   perspective, nullptr);
 
                   if (childObject != nullptr
@@ -303,7 +297,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
                     {
                       childEvent
                           = (PresentationEvent
-                                 *)(compiler
+                                 *)(_converter
                                         ->getEvent (
                                             childObject,
                                             port->getEndInterfacePoint (),
@@ -391,7 +385,7 @@ Scheduler::runActionOverComposition (ExecutionObjectContext *compObj,
               = new NclNodeNesting (compositeNode->getPerspective ());
 
           compObj
-              = (ExecutionObjectContext *) (compiler
+              = (ExecutionObjectContext *) (_converter
                     ->getExecutionObjectFromPerspective (
                         compositionPerspective, nullptr));
 
@@ -449,7 +443,7 @@ Scheduler::runActionOverSwitch (ExecutionObjectSwitch *switchObj,
   selectedObject = switchObj->getSelectedObject ();
   if (selectedObject == nullptr)
     {
-      selectedObject = compiler->processExecutionObjectSwitch (switchObj);
+      selectedObject = _converter->processExecutionObjectSwitch (switchObj);
 
       if (selectedObject == nullptr)
         {
@@ -507,14 +501,14 @@ Scheduler::runSwitchEvent (ExecutionObjectSwitch *switchObj,
               try
                 {
                   endPointObject
-                      = compiler
+                      = _converter
                             ->getExecutionObjectFromPerspective (
                                   nodePerspective, nullptr);
 
                   if (endPointObject != nullptr)
                     {
                       selectedEvent
-                          = compiler
+                          = _converter
                                 ->getEvent (
                                     endPointObject,
                                     mapping->getEndInterfacePoint (),
@@ -550,13 +544,13 @@ Scheduler::startDocument (const string &file)
   NclNodeNesting *persp;
 
   // Parse document.
-  NclParser compiler;
-  this->file = xpathmakeabs (file);
-  this->doc = compiler.parse (file);
-  g_assert_nonnull (this->doc);
+  NclParser parser;
+  _file = xpathmakeabs (file);
+  _doc = parser.parse (file);
+  g_assert_nonnull (_doc);
 
-  id = this->doc->getId ();
-  body = this->doc->getBody ();
+  id = _doc->getId ();
+  body = _doc->getBody ();
   if (unlikely (body == nullptr))
     ERROR_SYNTAX ("document has no body");
 
@@ -570,7 +564,7 @@ Scheduler::startDocument (const string &file)
   entryevts = new vector<NclEvent *>;
   for (auto port: *ports)
     {
-      NclEvent *evt = this->compiler->insertContext (persp, port);
+      NclEvent *evt = _converter->insertContext (persp, port);
       g_assert_nonnull (evt);
       entryevts->push_back (evt);
     }
@@ -583,15 +577,14 @@ Scheduler::startDocument (const string &file)
     }
 
   // Create execution object for settings node and initialize it.
-  vector <Node *> *settings = this->doc->getSettingsNodes ();
+  vector <Node *> *settings = _doc->getSettingsNodes ();
   for (auto node: *settings)
     {
       ContentNode *content;
       ExecutionObject *execobj;
 
       persp = new NclNodeNesting (node->getPerspective ());
-      execobj = this->compiler->getExecutionObjectFromPerspective
-        (persp, nullptr);
+      execobj = _converter->getExecutionObjectFromPerspective (persp, nullptr);
       g_assert_nonnull (execobj);
 
       TRACE ("processing '%s'", persp->getId ().c_str ());
@@ -623,7 +616,7 @@ Scheduler::startDocument (const string &file)
   for (auto event: *entryevts)
     {
       NclSimpleAction *fakeAction;
-      this->events.push_back (event);
+      _events.push_back (event);
       fakeAction = new NclSimpleAction (event, ACT_START);
       runAction (event, fakeAction);
       delete fakeAction;

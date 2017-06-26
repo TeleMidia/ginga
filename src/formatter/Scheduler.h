@@ -27,19 +27,8 @@ using namespace ::ginga::ncl;
 GINGA_FORMATTER_BEGIN
 
 class Converter;
-class FocusManager;
-
 class Scheduler : public INclActionListener
 {
-private:
-  Converter *compiler;
-  Settings *settings;
-
-  string file;                        // NCL file path
-  NclDocument *doc;                   // NCL document tree
-  vector<NclEvent *> events;          // document events
-  set<NclSimpleAction *> actions;     // document actions
-
 public:
   Scheduler ();
   virtual ~Scheduler ();
@@ -47,21 +36,18 @@ public:
   void startDocument (const string &);
 
 private:
+  Converter *_converter;
+  string _file;                 // NCL file path
+  NclDocument *_doc;            // NCL document tree
+  vector<NclEvent *> _events;    // document events
 
   void runAction (NclEvent *event, NclSimpleAction *action);
-
-  void
-  runActionOverComposition (ExecutionObjectContext *compositeObject,
-                            NclSimpleAction *action);
-
-  void runActionOverSwitch (ExecutionObjectSwitch *switchObject,
-                            SwitchEvent *event,
-                            NclSimpleAction *action);
-
-  void runSwitchEvent (ExecutionObjectSwitch *switchObject,
-                       SwitchEvent *switchEvent,
-                       ExecutionObject *selectedObject,
-                       NclSimpleAction *action);
+  void runActionOverComposition (ExecutionObjectContext *,
+                                 NclSimpleAction *);
+  void runActionOverSwitch (ExecutionObjectSwitch *, SwitchEvent *,
+                            NclSimpleAction *);
+  void runSwitchEvent (ExecutionObjectSwitch *, SwitchEvent *,
+                       ExecutionObject *, NclSimpleAction *);
 };
 
 GINGA_FORMATTER_END
