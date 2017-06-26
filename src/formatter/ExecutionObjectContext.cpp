@@ -440,7 +440,7 @@ ExecutionObjectContext::eventStateChanged (
 }
 
 void
-ExecutionObjectContext::linkEvaluationStarted (NclFormatterCausalLink *link)
+ExecutionObjectContext::linkEvaluationStarted (NclFormatterLink *link)
 {
   int linkNumber = 0;
   NclFormatterLink *evalLink;
@@ -455,7 +455,7 @@ ExecutionObjectContext::linkEvaluationStarted (NclFormatterCausalLink *link)
 
 void
 ExecutionObjectContext::linkEvaluationFinished (
-    NclFormatterCausalLink *link, bool start)
+    NclFormatterLink *link, bool start)
 {
   int linkNumber;
   NclFormatterLink *finishedLink;

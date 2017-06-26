@@ -23,9 +23,9 @@ GINGA_FORMATTER_BEGIN
 class NclLinkListener
 {
 public:
-  virtual ~NclLinkListener (){};
-  virtual void linkEvaluationStarted (NclFormatterCausalLink *link) = 0;
-  virtual void linkEvaluationFinished (NclFormatterCausalLink *link,
+  virtual ~NclLinkListener (){}
+  virtual void linkEvaluationStarted (NclFormatterLink *link) = 0;
+  virtual void linkEvaluationFinished (NclFormatterLink *link,
                                        bool start)
       = 0;
 };

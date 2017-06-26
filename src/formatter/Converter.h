@@ -102,7 +102,7 @@ private:
 
   bool removeExecutionObject (ExecutionObject *exeObj);
 
-  NclFormatterCausalLink *
+  NclFormatterLink *
   createCausalLink (CausalLink *ncmLink,
                     ExecutionObjectContext *parentObject);
 
