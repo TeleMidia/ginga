@@ -38,8 +38,6 @@ class INclActionListener
 {
 public:
   virtual void scheduleAction (NclSimpleAction *action) = 0;
-  virtual void addAction (NclSimpleAction *action) = 0;
-  virtual void removeAction (NclSimpleAction *action) = 0;
 };
 
 class NclAction

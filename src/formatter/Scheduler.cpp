@@ -43,22 +43,6 @@ Scheduler::~Scheduler ()
 }
 
 void
-Scheduler::addAction (NclSimpleAction *action)
-{
-  actions.insert (action);
-}
-
-void
-Scheduler::removeAction (NclSimpleAction *action)
-{
-  set<NclSimpleAction *>::iterator i;
-
-  i = actions.find (action);
-  if (i != actions.end ())
-    actions.erase (i);
-}
-
-void
 Scheduler::scheduleAction (NclSimpleAction *action)
 {
   runAction (action->getEvent (), action);
