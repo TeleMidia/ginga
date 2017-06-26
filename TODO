@@ -1,7 +1,6 @@
 Ginga TODO                                                     -*-outline-*-
 
 * KNOWN BUGS
-  + player::VideoPlayer: Natural end does not work.
   + player::Player: Dimension properties are treated as being orthogonal.
 
     Currently, we process "top", "left", "right", "bottom", "width",
@@ -11,6 +10,7 @@ Ginga TODO                                                     -*-outline-*-
     account when implementing property changes.
 
 * FEATURES OR PROBLEMS
+  + Property attributions originated by NCLua scripts are not supported.
   + Properties "visible" and "explicitDur" are not supported.
   + Areas containing the attribute "label" are not supported.
 
