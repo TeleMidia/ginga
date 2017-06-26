@@ -111,11 +111,6 @@ nw="$nw -Wsign-conversion"               # too many warnings
 nw="$nw -Wsystem-headers"                # too many warnings
 AU_ARG_ENABLE_WARNINGS([$nw])
 
-AU_ARG_ENABLE([nclua-trace], [trace NCLua calls], [no])
-AS_IF([test "$enable_nclua_trace" = yes],
- [AC_DEFINE([LUAPLAYER_ENABLE_TRACE], [1],
-  [Define to 1 to trace NCLua calls.])])
-
 # Required dependencies.
 AU_VERSION_BREAK([cairo], cairo_required_version)
 AU_CHECK_PKG([CAIRO], [cairo >= cairo_required_version],
