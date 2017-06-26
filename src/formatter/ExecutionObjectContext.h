@@ -27,7 +27,6 @@ using namespace ::ginga::ncl;
 #include "NclEvents.h"
 
 #include "NclFormatterLink.h"
-#include "NclFormatterLink.h"
 #include "NclLinkListener.h"
 
 #include "NclNodeNesting.h"
@@ -65,8 +64,8 @@ public:
                           EventStateTransition transition,
                           EventState previousState) override;
 
-  void linkEvaluationStarted (NclFormatterCausalLink *link) override;
-  void linkEvaluationFinished (NclFormatterCausalLink *, bool) override;
+  void linkEvaluationStarted (NclFormatterLink *link) override;
+  void linkEvaluationFinished (NclFormatterLink *, bool) override;
 
 private:
   static const short _mSleepTime = 800;
