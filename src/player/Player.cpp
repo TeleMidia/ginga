@@ -398,7 +398,7 @@ Player::stop ()
 /**
  * @brief Pauses player.
  */
-void
+void G_GNUC_NORETURN
 Player::pause ()
 {
   ERROR_NOT_IMPLEMENTED ("pause action is not supported");
@@ -407,7 +407,7 @@ Player::pause ()
 /**
  * @brief Resumes player.
  */
-void
+void G_GNUC_NORETURN
 Player::resume ()
 {
   ERROR_NOT_IMPLEMENTED ("resume action is not supported");

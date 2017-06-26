@@ -175,13 +175,13 @@ VideoPlayer::stop ()
   Player::stop ();
 }
 
-void
+void G_GNUC_NORETURN
 VideoPlayer::pause ()
 {
   ERROR_NOT_IMPLEMENTED ("pause action is not supported");
 }
 
-void
+void G_GNUC_NORETURN
 VideoPlayer::resume ()
 {
   ERROR_NOT_IMPLEMENTED ("resume action is not supported");
