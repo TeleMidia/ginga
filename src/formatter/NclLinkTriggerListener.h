@@ -25,10 +25,13 @@ class NclLinkCondition;
 class NclLinkTriggerListener
 {
 public:
-  static const short CONDITION_SATISFIED = 0;
-  static const short EVALUATION_STARTED = 1;
-  static const short EVALUATION_ENDED = 2;
-  virtual ~NclLinkTriggerListener (){};
+  enum {
+      CONDITION_SATISFIED = 0,
+      EVALUATION_STARTED = 1,
+      EVALUATION_ENDED = 2
+  };
+
+  virtual ~NclLinkTriggerListener (){}
   virtual void conditionSatisfied (NclLinkCondition *condition) = 0;
   virtual void evaluationStarted () = 0;
   virtual void evaluationEnded () = 0;

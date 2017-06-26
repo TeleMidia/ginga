@@ -27,7 +27,6 @@ using namespace ::ginga::ncl;
 #include "NclEvents.h"
 
 #include "NclFormatterLink.h"
-#include "NclFormatterLink.h"
 #include "NclLinkListener.h"
 
 #include "NclNodeNesting.h"
