@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "Player.h"
 
-#include "mb/Display.h"
 #include "mb/IEventListener.h"
 using namespace ::ginga::mb;
 
@@ -29,18 +28,13 @@ GINGA_PLAYER_BEGIN
 class LuaPlayer : public Player, public IEventListener
 {
 public:
-  LuaPlayer (const string &mrl);
+  LuaPlayer (const string &);
   virtual ~LuaPlayer (void);
-  bool doPlay (void);
-  void doStop (void);
-
   void start (void) override;
   void stop (void) override;
   void pause (void) override;
   void resume (void) override;
-
   virtual void setProperty (const string &, const string &) override;
-
   void redraw (SDL_Renderer *) override;
 
   // IEventListener.
