@@ -44,7 +44,7 @@ GINGA_FORMATTER_BEGIN
 
 class ExecutionObjectContext;
 
-class ExecutionObject : IEventListener
+class ExecutionObject : public IEventListener
 {
 public:
   ExecutionObject (const string &, Node *, NclCascadingDescriptor *,
