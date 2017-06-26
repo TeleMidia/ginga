@@ -27,7 +27,7 @@ NclFormatterLink::NclFormatterLink (
     NclLinkTriggerCondition *condition, NclAction *act,
     Link *ncmLink, ExecutionObjectContext *parentObj)
 {
-  this->parentObject = parentObj; // ExecutionObjectContext
+  this->parentObject = parentObj;
   this->ncmLink = ncmLink;
   this->suspend = false;
 
