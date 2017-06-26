@@ -37,9 +37,9 @@ public:
 
 private:
   Converter *_converter;
-  string _file;                 // NCL file path
-  NclDocument *_doc;            // NCL document tree
-  vector<NclEvent *> _events;    // document events
+  string _file;                 // path to document file
+  NclDocument *_doc;            // document tree
+  vector<NclEvent *> _events;   // document events
 
   void runAction (NclEvent *event, NclSimpleAction *action);
   void runActionOverComposition (ExecutionObjectContext *,

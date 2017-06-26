@@ -18,40 +18,14 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 #include "ginga.h"
 #include "LuaPlayer.h"
 
+#include "mb/Display.h"
+using namespace ::ginga::mb;
+
 GINGA_PRAGMA_DIAG_IGNORE (-Wunused-macros)
 
 GINGA_PLAYER_BEGIN
 
 // Event handling.
-
-typedef struct
-{
-  const char *key;
-  void *value;
-} evt_map_t;
-
-static int
-evt_map_compare (const void *e1, const void *e2)
-{
-     return g_strcmp0 (deconst (evt_map_t *, e1)->key,
-                       deconst (evt_map_t *, e2)->key);
-}
-
-static G_GNUC_UNUSED const evt_map_t *
-_evt_map_get (const evt_map_t map[], size_t size, const char *key)
-{
-  evt_map_t e = { key, NULL };
-  return (const evt_map_t *)bsearch (&e, map, size, sizeof (evt_map_t),
-                                     evt_map_compare);
-}
-
-#define evt_map_get(map, key)\
-  ((ptrdiff_t)((_evt_map_get (map, nelementsof (map), key))->value))
-
-#define evt_ncl_get_type(type) evt_map_get (evt_map_ncl_type, type)
-
-#define evt_ncl_get_action(act) evt_map_get (evt_map_ncl_action, act)
-
 #define evt_ncl_send_attribution(nw, action, name, value)\
   ncluaw_send_ncl_event (nw, "attribution", action, name, value)
 
