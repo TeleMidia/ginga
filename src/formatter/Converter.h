@@ -48,7 +48,7 @@ using namespace ::ginga::ncl;
 #include "NclFormatterLink.h"
 #include "NclFormatterLink.h"
 #include "NclActions.h"
-#include "NclLinkAssessmentStatement.h"
+#include "NclLinkStatement.h"
 #include "NclLinkCondition.h"
 
 #include "NclCascadingDescriptor.h"
