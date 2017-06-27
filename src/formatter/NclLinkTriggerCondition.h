@@ -31,13 +31,14 @@ GINGA_FORMATTER_BEGIN
 class NclLinkTriggerListener
 {
 public:
-  enum {
-      CONDITION_SATISFIED = 0,
-      EVALUATION_STARTED = 1,
-      EVALUATION_ENDED = 2
+  enum
+  {
+    CONDITION_SATISFIED,
+    EVALUATION_STARTED,
+    EVALUATION_ENDED
   };
 
-  virtual ~NclLinkTriggerListener (){}
+  virtual ~NclLinkTriggerListener () {}
   virtual void conditionSatisfied (NclLinkCondition *condition) = 0;
   virtual void evaluationStarted () = 0;
   virtual void evaluationEnded () = 0;
