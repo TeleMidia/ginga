@@ -49,7 +49,7 @@ enum class EventStateTransition {
 };
 
 // Attribute types.
-enum AttributeType {
+enum class AttributeType {
   UNKNOWN = -1,
   OCCURRENCES = 0,
   REPETITIONS,

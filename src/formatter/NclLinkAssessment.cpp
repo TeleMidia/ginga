@@ -21,48 +21,48 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 GINGA_FORMATTER_BEGIN
 
 NclLinkAttributeAssessment::NclLinkAttributeAssessment (
-    NclEvent *ev, short attrType)
+    NclEvent *ev, AttributeType attrType)
     : NclLinkAssessment ()
 {
-  event = ev;
-  attributeType = attrType;
-  offset = "";
+  _event = ev;
+  _attrType = attrType;
+  _offset = "";
 }
 
 NclEvent *
 NclLinkAttributeAssessment::getEvent ()
 {
-  return event;
+  return _event;
 }
 
 void
 NclLinkAttributeAssessment::setOffset (const string &offset)
 {
-  this->offset = offset;
+  this->_offset = offset;
 }
 
 string
 NclLinkAttributeAssessment::getOffset ()
 {
-  return offset;
+  return _offset;
 }
 
 void
 NclLinkAttributeAssessment::setEvent (NclEvent *ev)
 {
-  event = ev;
+  _event = ev;
 }
 
-short
+AttributeType
 NclLinkAttributeAssessment::getAttributeType ()
 {
-  return attributeType;
+  return _attrType;
 }
 
 void
-NclLinkAttributeAssessment::setAttributeType (short attrType)
+NclLinkAttributeAssessment::setAttributeType (AttributeType attrType)
 {
-  attributeType = attrType;
+  _attrType = attrType;
 }
 
 string
@@ -70,30 +70,30 @@ NclLinkAttributeAssessment::getValue ()
 {
   string value = "";
 
-  switch (attributeType)
+  switch (_attrType)
     {
     case AttributeType::NODE_PROPERTY:
-      if (instanceof (AttributionEvent *, event))
+      if (instanceof (AttributionEvent *, _event))
         {
           value = getAssessmentWithOffset (
-              ((AttributionEvent *)event)->getCurrentValue ());
+              ((AttributionEvent *)_event)->getCurrentValue ());
         }
       break;
 
     case AttributeType::STATE:
-      value = EventUtil::getStateName (event->getCurrentState ());
+      value = EventUtil::getStateName (_event->getCurrentState ());
       break;
 
     case AttributeType::OCCURRENCES:
       {
-        value = getAssessmentWithOffset (xstrbuild ("%d", (int) event->getOccurrences ()));
+        value = getAssessmentWithOffset (xstrbuild ("%d", (int) _event->getOccurrences ()));
         break;
       }
 
     case AttributeType::REPETITIONS:
-      if (instanceof (PresentationEvent *, event))
+      if (instanceof (PresentationEvent *, _event))
         {
-          xstrassign (value, "%d", (int) ((PresentationEvent *)event)->getRepetitions ());
+          xstrassign (value, "%d", (int) ((PresentationEvent *)_event)->getRepetitions ());
         }
       break;
 
@@ -108,7 +108,7 @@ string
 NclLinkAttributeAssessment::getAssessmentWithOffset (const string &assessmentValue)
 {
   double off, val;
-  if (!_xstrtod (offset, &off) || !_xstrtod (assessmentValue, &val))
+  if (!_xstrtod (_offset, &off) || !_xstrtod (assessmentValue, &val))
     return assessmentValue;
   return xstrbuild ("%f", val + off);
 }
@@ -116,7 +116,7 @@ NclLinkAttributeAssessment::getAssessmentWithOffset (const string &assessmentVal
 NclLinkValueAssessment::NclLinkValueAssessment (const string &value)
     : NclLinkAssessment ()
 {
-  this->value = value;
+  this->_value = value;
 }
 
 NclLinkValueAssessment::~NclLinkValueAssessment () {}
@@ -124,19 +124,19 @@ NclLinkValueAssessment::~NclLinkValueAssessment () {}
 string
 NclLinkValueAssessment::getComparableValue ()
 {
-  return value;
+  return _value;
 }
 
 void
 NclLinkValueAssessment::setComparableValue (const string &value)
 {
-  this->value = value;
+  this->_value = value;
 }
 
 string
 NclLinkValueAssessment::getValue ()
 {
-  return value;
+  return _value;
 }
 
 GINGA_FORMATTER_END
