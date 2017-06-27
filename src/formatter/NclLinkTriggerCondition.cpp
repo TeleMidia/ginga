@@ -15,8 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "ginga.h"
 #include "NclLinkTriggerCondition.h"
+#include "ginga.h"
 
 #include "mb/Display.h"
 using namespace ginga::mb;
@@ -26,7 +26,7 @@ GINGA_FORMATTER_BEGIN
 NclLinkTriggerCondition::NclLinkTriggerCondition () : NclLinkCondition ()
 {
   _delay = 0;
-  _listener = NULL;
+  _listener = nullptr;
 }
 
 void
@@ -55,7 +55,8 @@ NclLinkTriggerCondition::setDelay (GingaTime delay)
 }
 
 void
-NclLinkTriggerCondition::conditionSatisfied (arg_unused (NclLinkCondition *condition))
+NclLinkTriggerCondition::conditionSatisfied (
+    arg_unused (NclLinkCondition *condition))
 {
   if (_delay > 0)
     ERROR_NOT_IMPLEMENTED ("condition delays are not supported");
@@ -84,7 +85,6 @@ NclLinkTriggerCondition::notifyConditionObservers (short status)
     }
 }
 
-
 NclLinkCompoundTriggerCondition::NclLinkCompoundTriggerCondition ()
     : NclLinkTriggerCondition ()
 {
@@ -105,9 +105,11 @@ NclLinkCompoundTriggerCondition::addCondition (NclLinkCondition *condition)
   g_assert_nonnull (condition);
 
   conditions.push_back (condition);
-  if (instanceof (NclLinkTriggerCondition *, condition))
+
+  auto linkTriggerCondition = cast (NclLinkTriggerCondition *, condition);
+  if (linkTriggerCondition)
     {
-      ((NclLinkTriggerCondition *)condition)->setTriggerListener (this);
+      linkTriggerCondition->setTriggerListener (this);
     }
 }
 
@@ -127,7 +129,8 @@ NclLinkCompoundTriggerCondition::getEvents ()
 }
 
 void
-NclLinkCompoundTriggerCondition::conditionSatisfied (NclLinkCondition *condition)
+NclLinkCompoundTriggerCondition::conditionSatisfied (
+    NclLinkCondition *condition)
 {
   NclLinkTriggerCondition::conditionSatisfied (condition);
 }
@@ -151,30 +154,18 @@ NclLinkAndCompoundTriggerCondition::NclLinkAndCompoundTriggerCondition ()
 
 NclLinkAndCompoundTriggerCondition::~NclLinkAndCompoundTriggerCondition ()
 {
-  vector<NclLinkCondition *>::iterator i;
-  NclLinkCondition *l;
-
-  unsatisfiedConditions.clear ();
-
-  i = statements.begin ();
-  while (i != statements.end ())
+  for (NclLinkCondition *l : statements)
     {
-      l = *i;
-      if (l != NULL)
-        {
-          delete l;
-          l = NULL;
-        }
-      ++i;
+      g_assert_nonnull (l);
+      delete l;
     }
-
-  statements.clear ();
 }
 
 void
-NclLinkAndCompoundTriggerCondition::addCondition (NclLinkCondition *condition)
+NclLinkAndCompoundTriggerCondition::addCondition (
+    NclLinkCondition *condition)
 {
-  if (condition == NULL)
+  if (condition == nullptr)
     {
       return;
     }
@@ -190,8 +181,9 @@ NclLinkAndCompoundTriggerCondition::addCondition (NclLinkCondition *condition)
     }
   else
     {
-      WARNING ("Trying to add a condition !instanceof(NclLinkStatement) and "
-               "!instanceof(NclLinkTriggerCondition)");
+      WARNING (
+          "Trying to add a condition !instanceof(NclLinkStatement) and "
+          "!instanceof(NclLinkTriggerCondition)");
     }
 }
 
@@ -199,21 +191,12 @@ void
 NclLinkAndCompoundTriggerCondition::conditionSatisfied (
     NclLinkCondition *condition)
 {
-  vector<NclLinkCondition *>::iterator i;
-  i = unsatisfiedConditions.begin ();
+  auto i = unsatisfiedConditions.begin ();
   while (i != unsatisfiedConditions.end ())
     {
       if ((*i) == condition)
         {
-          unsatisfiedConditions.erase (i);
-          if (unsatisfiedConditions.empty ())
-            {
-              break;
-            }
-          else
-            {
-              i = unsatisfiedConditions.begin ();
-            }
+          i = unsatisfiedConditions.erase (i);
         }
       else
         {
@@ -267,7 +250,7 @@ NclLinkTransitionTriggerCondition::NclLinkTransitionTriggerCondition (
     : NclLinkTriggerCondition ()
 {
   this->bind = bind;
-  this->event = NULL;
+  this->event = nullptr;
   this->transition = transition;
 
   if (NclEvent::hasInstance (event, false))
@@ -277,21 +260,15 @@ NclLinkTransitionTriggerCondition::NclLinkTransitionTriggerCondition (
     }
   else
     {
-      clog << "NclLinkTransitionTriggerCondition::";
-      clog << "NclLinkTransitionTriggerCondition Warning! ";
-      clog << "creating a link with NULL event" << endl;
+      ERROR ("Creating a link with null event.");
     }
 }
 
 NclLinkTransitionTriggerCondition::~NclLinkTransitionTriggerCondition ()
 {
-  _listener = NULL;
-  bind = NULL;
-
   if (NclEvent::hasInstance (event, false))
     {
       event->removeListener (this);
-      event = NULL;
     }
 }
 
@@ -303,14 +280,12 @@ NclLinkTransitionTriggerCondition::getBind ()
 
 void
 NclLinkTransitionTriggerCondition::eventStateChanged (
-    arg_unused (NclEvent *event),
-    EventStateTransition transition,
+    arg_unused (NclEvent *event), EventStateTransition transition,
     arg_unused (EventState previousState))
 {
   if (this->transition == transition)
     {
       notifyConditionObservers (NclLinkTriggerListener::EVALUATION_STARTED);
-
       NclLinkTriggerCondition::conditionSatisfied (this);
     }
 }
