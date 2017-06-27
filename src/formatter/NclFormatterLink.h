@@ -24,7 +24,7 @@ using namespace ::ginga::ncl;
 #include "NclActions.h"
 #include "NclEvents.h"
 
-#include "NclLinkTriggerCondition.h"
+#include "NclLinkCondition.h"
 #include "NclFormatterLink.h"
 
 GINGA_FORMATTER_BEGIN

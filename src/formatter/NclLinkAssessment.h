@@ -24,18 +24,11 @@ GINGA_FORMATTER_BEGIN
 
 class NclLinkAssessment
 {
-protected:
-  set<string> typeSet;
-
 public:
-  NclLinkAssessment () {typeSet.insert ("NclLinkAssessment"); }
+  NclLinkAssessment () {}
   virtual ~NclLinkAssessment () {}
+
   virtual string getValue () = 0;
-  bool
-  instanceOf (const string &type)
-  {
-    return typeSet.count (type);
-  }
 };
 
 GINGA_FORMATTER_END
