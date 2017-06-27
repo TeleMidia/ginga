@@ -15,23 +15,75 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _LINKSTATEMENT_H_
-#define _LINKSTATEMENT_H_
+#ifndef _LINKCOMPOUNDSTATEMENT_H_
+#define _LINKCOMPOUNDSTATEMENT_H_
 
 #include "NclLinkCondition.h"
+#include "NclLinkAssessment.h"
+#include "NclLinkAttributeAssessment.h"
+#include "NclEvents.h"
+
+#include "ncl/CompoundStatement.h"
+using namespace ::ginga::ncl;
 
 GINGA_FORMATTER_BEGIN
 
 class NclLinkStatement : public NclLinkCondition
 {
 public:
-  NclLinkStatement () : NclLinkCondition () {}
-
-  virtual ~NclLinkStatement (){}
-
   virtual bool evaluate () = 0;
 };
 
+class NclLinkCompoundStatement : public NclLinkStatement
+{
+protected:
+  vector<NclLinkStatement *> statements;
+  bool negated;
+  short op;
+
+public:
+  NclLinkCompoundStatement (short op);
+  virtual ~NclLinkCompoundStatement ();
+  short getOperator ();
+  void addStatement (NclLinkStatement *statement);
+  vector<NclLinkStatement *> *getStatements ();
+  bool isNegated ();
+  void setNegated (bool neg);
+
+protected:
+  bool returnEvaluationResult (bool result);
+
+public:
+  virtual vector<NclEvent *> getEvents () override;
+  virtual bool evaluate () override;
+};
+
+class NclLinkAssessmentStatement : public NclLinkStatement
+{
+protected:
+  Comparator::Op comparator;
+  NclLinkAssessment *otherAssessment;
+
+private:
+  NclLinkAssessment *mainAssessment;
+
+public:
+  NclLinkAssessmentStatement (Comparator::Op comparator,
+                              NclLinkAttributeAssessment *mainAssessment,
+                              NclLinkAssessment *otherAssessment);
+
+  virtual ~NclLinkAssessmentStatement ();
+  vector<NclEvent *> getEvents ();
+  Comparator::Op getComparator ();
+  void setComparator (Comparator::Op comp);
+  NclLinkAssessment *getMainAssessment ();
+  void setMainAssessment (NclLinkAssessment *assessment);
+  NclLinkAssessment *getOtherAssessment ();
+  void setOtherAssessment (NclLinkAssessment *assessment);
+  virtual bool evaluate ();
+};
+
+
 GINGA_FORMATTER_END
 
-#endif //_LINKSTATEMENT_H_
+#endif //_LINKCOMPOUNDSTATEMENT_H_

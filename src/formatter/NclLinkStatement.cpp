@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "NclLinkCompoundStatement.h"
+#include "NclLinkStatement.h"
 
 GINGA_PRAGMA_DIAG_IGNORE (-Wsign-conversion)
 
@@ -120,6 +120,96 @@ NclLinkCompoundStatement::evaluate ()
         }
       return returnEvaluationResult (true);
     }
+}
+
+NclLinkAssessmentStatement::NclLinkAssessmentStatement (
+    Comparator::Op comparator, NclLinkAttributeAssessment *mainAssessment,
+    NclLinkAssessment *otherAssessment)
+    : NclLinkStatement ()
+{
+  this->comparator = comparator;
+  this->mainAssessment = mainAssessment;
+  this->otherAssessment = otherAssessment;
+}
+
+NclLinkAssessmentStatement::~NclLinkAssessmentStatement ()
+{
+  if (mainAssessment != NULL)
+    {
+      delete mainAssessment;
+      mainAssessment = NULL;
+    }
+
+  if (otherAssessment != NULL)
+    {
+      delete otherAssessment;
+      otherAssessment = NULL;
+    }
+}
+
+vector<NclEvent *>
+NclLinkAssessmentStatement::getEvents ()
+{
+  vector<NclEvent *> events;
+
+  events.push_back (
+      ((NclLinkAttributeAssessment *)mainAssessment)->getEvent ());
+
+  auto attrAssessment
+      = cast (NclLinkAttributeAssessment *, otherAssessment);
+  if (attrAssessment)
+    {
+      events.push_back (attrAssessment->getEvent ());
+    }
+  return events;
+}
+
+Comparator::Op
+NclLinkAssessmentStatement::getComparator ()
+{
+  return comparator;
+}
+
+void
+NclLinkAssessmentStatement::setComparator (Comparator::Op comp)
+{
+  comparator = comp;
+}
+
+NclLinkAssessment *
+NclLinkAssessmentStatement::getMainAssessment ()
+{
+  return mainAssessment;
+}
+
+void
+NclLinkAssessmentStatement::setMainAssessment (
+    NclLinkAssessment *assessment)
+{
+  mainAssessment = assessment;
+}
+
+NclLinkAssessment *
+NclLinkAssessmentStatement::getOtherAssessment ()
+{
+  return otherAssessment;
+}
+
+void
+NclLinkAssessmentStatement::setOtherAssessment (
+    NclLinkAssessment *assessment)
+{
+  otherAssessment = assessment;
+}
+
+bool
+NclLinkAssessmentStatement::evaluate ()
+{
+  if (mainAssessment == NULL || otherAssessment == NULL)
+    return false;
+
+  return Comparator::evaluate (mainAssessment->getValue (),
+                               otherAssessment->getValue (), comparator);
 }
 
 GINGA_FORMATTER_END

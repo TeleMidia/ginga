@@ -39,7 +39,7 @@ using namespace ::ginga::ncl;
 
 #include "NclActions.h"
 
-#include "NclLinkCompoundStatement.h"
+#include "NclLinkStatement.h"
 #include "NclLinkValueAssessment.h"
 
 #include "Converter.h"
