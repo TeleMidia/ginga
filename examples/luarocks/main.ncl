@@ -28,7 +28,8 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>. -->
   <body>
     <port id='init' component='lua'/>
     <media type='application/x-ginga-settings' id='programSettings'>
-      <property name='currentKeyMaster' value='0'/>
+      <property name='service.currentKeyMaster' value='lua'/>
+      <property name='service.currentFocus' value='0'/>
     </media>
     <media id='lua' descriptor='luaDesc' src='game.lua'/>
   </body>
