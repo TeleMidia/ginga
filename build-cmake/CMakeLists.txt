@@ -91,10 +91,9 @@ set (GINGA_SOURCES
   ../src/formatter/NclEventTransitionManager.cpp
   ../src/formatter/NclFormatterLink.cpp
   ../src/formatter/NclFormatterRegion.cpp
-  ../src/formatter/NclLinkAttributeAssessment.cpp
+  ../src/formatter/NclLinkAssessment.cpp
   ../src/formatter/NclLinkCondition.cpp
   ../src/formatter/NclLinkStatement.cpp
-  ../src/formatter/NclLinkValueAssessment.cpp
   ../src/formatter/NclNodeNesting.cpp
   ../src/formatter/Parser.cpp
   ../src/formatter/RuleAdapter.cpp
