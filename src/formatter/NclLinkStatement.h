@@ -20,7 +20,6 @@ along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "NclLinkCondition.h"
 #include "NclLinkAssessment.h"
-#include "NclLinkAttributeAssessment.h"
 #include "NclEvents.h"
 
 #include "ncl/CompoundStatement.h"

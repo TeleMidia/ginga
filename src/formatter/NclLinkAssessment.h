@@ -15,10 +15,14 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef LINK_ASSESSMENT_H
-#define LINK_ASSESSMENT_H
+#ifndef LINKATTRIBUTEASSESSMENT_H_
+#define LINKATTRIBUTEASSESSMENT_H_
 
-#include "ginga.h"
+#include "ncl/EventUtil.h"
+using namespace ::ginga::ncl;
+
+#include "NclEvents.h"
+#include "NclLinkAssessment.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -31,6 +35,41 @@ public:
   virtual string getValue () = 0;
 };
 
+class NclLinkAttributeAssessment : public NclLinkAssessment
+{
+private:
+  NclEvent *event;
+  short attributeType;
+  string offset;
+
+public:
+  NclLinkAttributeAssessment (NclEvent *ev, short attrType);
+
+  NclEvent *getEvent ();
+  void setOffset (const string &offset);
+  string getOffset ();
+  void setEvent (NclEvent *ev);
+  short getAttributeType ();
+  void setAttributeType (short attrType);
+  string getValue ();
+
+private:
+  string getAssessmentWithOffset (const string &assessmentValue);
+};
+
+class NclLinkValueAssessment : public NclLinkAssessment
+{
+protected:
+  string value;
+
+public:
+  NclLinkValueAssessment (const string &value);
+  virtual ~NclLinkValueAssessment ();
+  string getComparableValue ();
+  void setComparableValue (const string &value);
+  string getValue ();
+};
+
 GINGA_FORMATTER_END
 
-#endif /* LINK_ASSESSMENT_H */
+#endif /*LINKATTRIBUTEASSESSMENT_H_*/

@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "ginga.h"
-#include "NclLinkAttributeAssessment.h"
+#include "NclLinkAssessment.h"
 
 GINGA_FORMATTER_BEGIN
 
@@ -111,6 +111,32 @@ NclLinkAttributeAssessment::getAssessmentWithOffset (const string &assessmentVal
   if (!_xstrtod (offset, &off) || !_xstrtod (assessmentValue, &val))
     return assessmentValue;
   return xstrbuild ("%f", val + off);
+}
+
+NclLinkValueAssessment::NclLinkValueAssessment (const string &value)
+    : NclLinkAssessment ()
+{
+  this->value = value;
+}
+
+NclLinkValueAssessment::~NclLinkValueAssessment () {}
+
+string
+NclLinkValueAssessment::getComparableValue ()
+{
+  return value;
+}
+
+void
+NclLinkValueAssessment::setComparableValue (const string &value)
+{
+  this->value = value;
+}
+
+string
+NclLinkValueAssessment::getValue ()
+{
+  return value;
 }
 
 GINGA_FORMATTER_END
