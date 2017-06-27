@@ -35,39 +35,33 @@ public:
 
 class NclLinkCompoundStatement : public NclLinkStatement
 {
-protected:
-  vector<NclLinkStatement *> statements;
-  bool negated;
-  short op;
-
 public:
-  NclLinkCompoundStatement (short op);
+  NclLinkCompoundStatement (short _op);
   virtual ~NclLinkCompoundStatement ();
+
   short getOperator ();
+
   void addStatement (NclLinkStatement *statement);
   vector<NclLinkStatement *> *getStatements ();
+
   bool isNegated ();
   void setNegated (bool neg);
 
-protected:
-  bool returnEvaluationResult (bool result);
-
-public:
   virtual vector<NclEvent *> getEvents () override;
   virtual bool evaluate () override;
+
+protected:
+  vector<NclLinkStatement *> _statements;
+  bool _negated;
+  short _op;
+
+  bool returnEvaluationResult (bool result);
 };
 
 class NclLinkAssessmentStatement : public NclLinkStatement
 {
-protected:
-  Comparator::Op comparator;
-  NclLinkAssessment *otherAssessment;
-
-private:
-  NclLinkAssessment *mainAssessment;
-
 public:
-  NclLinkAssessmentStatement (Comparator::Op comparator,
+  NclLinkAssessmentStatement (Comparator::Op _comparator,
                               NclLinkAttributeAssessment *mainAssessment,
                               NclLinkAssessment *otherAssessment);
 
@@ -80,6 +74,13 @@ public:
   NclLinkAssessment *getOtherAssessment ();
   void setOtherAssessment (NclLinkAssessment *assessment);
   virtual bool evaluate ();
+
+protected:
+  Comparator::Op _comparator;
+  NclLinkAssessment *_otherAssessment;
+
+private:
+  NclLinkAssessment *_mainAssessment;
 };
 
 
