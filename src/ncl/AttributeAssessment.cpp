@@ -30,14 +30,14 @@ AttributeAssessment::AttributeAssessment (const string &role)
   _offset = "";
 }
 
-short
+AttributeType
 AttributeAssessment::getAttributeType ()
 {
   return _attributeType;
 }
 
 void
-AttributeAssessment::setAttributeType (short attribute)
+AttributeAssessment::setAttributeType (AttributeType attribute)
 {
   _attributeType = attribute;
 }

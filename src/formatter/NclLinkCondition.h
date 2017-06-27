@@ -37,8 +37,6 @@ enum class NclLinkConditionStatus
 class NclLinkTriggerListener
 {
 public:
-  virtual ~NclLinkTriggerListener () {}
-
   virtual void conditionSatisfied (NclLinkCondition *condition) = 0;
   virtual void evaluationStarted () = 0;
   virtual void evaluationEnded () = 0;

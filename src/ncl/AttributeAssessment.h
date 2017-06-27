@@ -29,15 +29,15 @@ class AttributeAssessment : public Assessment, public Role
 public:
   AttributeAssessment (const string &role);
   virtual ~AttributeAssessment (){}
-  short getAttributeType ();
-  void setAttributeType (short attribute);
+  AttributeType getAttributeType ();
+  void setAttributeType (AttributeType attribute);
   string getKey ();
-  void setKey (const string &_key);
+  void setKey (const string &key);
   string getOffset ();
-  void setOffset (const string &_offset);
+  void setOffset (const string &offset);
 
 private:
-  short _attributeType;
+  AttributeType _attributeType;
   string _key;
   string _offset;
 };

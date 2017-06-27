@@ -37,37 +37,37 @@ public:
 
 class NclLinkAttributeAssessment : public NclLinkAssessment
 {
-private:
-  NclEvent *event;
-  short attributeType;
-  string offset;
-
 public:
-  NclLinkAttributeAssessment (NclEvent *ev, short attrType);
+  NclLinkAttributeAssessment (NclEvent *ev, AttributeType attrType);
 
   NclEvent *getEvent ();
   void setOffset (const string &offset);
   string getOffset ();
   void setEvent (NclEvent *ev);
-  short getAttributeType ();
-  void setAttributeType (short attrType);
+  AttributeType getAttributeType ();
+  void setAttributeType (AttributeType attrType);
   string getValue ();
 
 private:
+  NclEvent *_event;
+  AttributeType _attrType;
+  string _offset;
+
   string getAssessmentWithOffset (const string &assessmentValue);
 };
 
 class NclLinkValueAssessment : public NclLinkAssessment
 {
-protected:
-  string value;
-
 public:
   NclLinkValueAssessment (const string &value);
   virtual ~NclLinkValueAssessment ();
+
   string getComparableValue ();
   void setComparableValue (const string &value);
   string getValue ();
+
+protected:
+  string _value;
 };
 
 GINGA_FORMATTER_END
