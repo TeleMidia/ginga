@@ -15,30 +15,120 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef _LINKCONDITION_H_
-#define _LINKCONDITION_H_
+#ifndef NCL_LINK_TRIGGER_CONDITION
+#define NCL_LINK_TRIGGER_CONDITION
+
+#include "ncl/Bind.h"
+using namespace ::ginga::ncl;
 
 #include "NclEvents.h"
 
 GINGA_FORMATTER_BEGIN
 
+class NclLinkCondition;
+
+enum class NclLinkConditionStatus
+{
+  CONDITION_SATISFIED,
+  EVALUATION_STARTED,
+  EVALUATION_ENDED
+};
+
+class NclLinkTriggerListener
+{
+public:
+  virtual ~NclLinkTriggerListener () {}
+
+  virtual void conditionSatisfied (NclLinkCondition *condition) = 0;
+  virtual void evaluationStarted () = 0;
+  virtual void evaluationEnded () = 0;
+};
+
 class NclLinkCondition
 {
-protected:
-  set<string> typeSet;
-
 public:
-  NclLinkCondition () {typeSet.insert ("NclLinkCondition"); }
-  virtual ~NclLinkCondition (){}
-  bool
-  instanceOf (const string &s)
-  {
-    return (typeSet.find (s) != typeSet.end ());
-  }
+  NclLinkCondition () {}
+  virtual ~NclLinkCondition () {}
 
   virtual vector<NclEvent *> getEvents () = 0;
 };
 
+class NclLinkTriggerCondition : public NclLinkCondition
+{
+  PROPERTY (NclLinkTriggerListener *, _listener, getTriggerListener, setTriggerListener)
+  PROPERTY (GingaTime, _delay, getDelay, setDelay)
+
+public:
+  NclLinkTriggerCondition ();
+  virtual ~NclLinkTriggerCondition () {}
+
+  void conditionSatisfied (NclLinkCondition *condition);
+
+  virtual vector<NclEvent *> getEvents () = 0;
+
+protected:
+  virtual void notifyListeners (NclLinkConditionStatus status);
+};
+
+class NclLinkCompoundTriggerCondition : public NclLinkTriggerCondition,
+                                        public NclLinkTriggerListener
+{
+public:
+  NclLinkCompoundTriggerCondition ();
+  virtual ~NclLinkCompoundTriggerCondition ();
+
+  virtual void conditionSatisfied (NclLinkCondition *condition);
+  virtual void addCondition (NclLinkCondition *condition);
+  virtual vector<NclEvent *> getEvents ();
+
+  void evaluationStarted ();
+  void evaluationEnded ();
+
+protected:
+  vector<NclLinkCondition *> _conditions;
+};
+
+class NclLinkAndCompoundTriggerCondition
+    : public NclLinkCompoundTriggerCondition
+{
+public:
+  NclLinkAndCompoundTriggerCondition ();
+  virtual ~NclLinkAndCompoundTriggerCondition ();
+  void addCondition (NclLinkCondition *condition);
+  void conditionSatisfied (NclLinkCondition *condition);
+  vector<NclEvent *> getEvents ();
+
+private:
+  vector<NclLinkCondition *> _unsatisfiedConditions;
+  vector<NclLinkCondition *> _statements;
+};
+
+class NclLinkTransitionTriggerCondition : public NclLinkTriggerCondition,
+                                          public INclEventListener
+{
+public:
+  NclLinkTransitionTriggerCondition (NclEvent *ev,
+                                     EventStateTransition trans,
+                                     Bind *bind);
+
+  virtual ~NclLinkTransitionTriggerCondition ();
+
+  Bind *getBind ();
+
+  virtual void eventStateChanged (NclEvent *_event,
+                                  EventStateTransition _transition,
+                                  EventState previousState) override;
+
+  NclEvent *getEvent ();
+  EventStateTransition getTransition ();
+  virtual vector<NclEvent *> getEvents () override;
+
+protected:
+  NclEvent *_event;
+  EventStateTransition _transition;
+  Bind *_bind;
+};
+
 GINGA_FORMATTER_END
 
-#endif //_LINKCONDITION_H_
+#endif // NCL_LINK_TRIGGER_CONDITION

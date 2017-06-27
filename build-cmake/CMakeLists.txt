@@ -94,7 +94,7 @@ set (GINGA_SOURCES
   ../src/formatter/NclLinkAssessmentStatement.cpp
   ../src/formatter/NclLinkAttributeAssessment.cpp
   ../src/formatter/NclLinkCompoundStatement.cpp
-  ../src/formatter/NclLinkTriggerCondition.cpp
+  ../src/formatter/NclLinkCondition.cpp
   ../src/formatter/NclLinkValueAssessment.cpp
   ../src/formatter/NclNodeNesting.cpp
   ../src/formatter/Parser.cpp

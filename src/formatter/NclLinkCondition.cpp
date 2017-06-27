@@ -15,7 +15,8 @@ License for more details.
 You should have received a copy of the GNU General Public License
 along with Ginga.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "NclLinkTriggerCondition.h"
+#include "NclLinkCondition.h"
+#include "NclLinkStatement.h"
 #include "ginga.h"
 
 #include "mb/Display.h"
@@ -30,53 +31,29 @@ NclLinkTriggerCondition::NclLinkTriggerCondition () : NclLinkCondition ()
 }
 
 void
-NclLinkTriggerCondition::setTriggerListener (
-    NclLinkTriggerListener *listener)
-{
-  _listener = listener;
-}
-
-NclLinkTriggerListener *
-NclLinkTriggerCondition::getTriggerListener ()
-{
-  return _listener;
-}
-
-GingaTime
-NclLinkTriggerCondition::getDelay ()
-{
-  return _delay;
-}
-
-void
-NclLinkTriggerCondition::setDelay (GingaTime delay)
-{
-  _delay = delay;
-}
-
-void
 NclLinkTriggerCondition::conditionSatisfied (
     arg_unused (NclLinkCondition *condition))
 {
   if (_delay > 0)
     ERROR_NOT_IMPLEMENTED ("condition delays are not supported");
-  notifyConditionObservers (NclLinkTriggerListener::CONDITION_SATISFIED);
+
+  notifyListeners (NclLinkConditionStatus::CONDITION_SATISFIED);
 }
 
 void
-NclLinkTriggerCondition::notifyConditionObservers (short status)
+NclLinkTriggerCondition::notifyListeners (NclLinkConditionStatus status)
 {
   switch (status)
     {
-    case NclLinkTriggerListener::CONDITION_SATISFIED:
+    case NclLinkConditionStatus::CONDITION_SATISFIED:
       _listener->conditionSatisfied (this);
       break;
 
-    case NclLinkTriggerListener::EVALUATION_STARTED:
+    case NclLinkConditionStatus::EVALUATION_STARTED:
       _listener->evaluationStarted ();
       break;
 
-    case NclLinkTriggerListener::EVALUATION_ENDED:
+    case NclLinkConditionStatus::EVALUATION_ENDED:
       _listener->evaluationEnded ();
       break;
 
@@ -92,7 +69,7 @@ NclLinkCompoundTriggerCondition::NclLinkCompoundTriggerCondition ()
 
 NclLinkCompoundTriggerCondition::~NclLinkCompoundTriggerCondition ()
 {
-  for (NclLinkCondition *condition : conditions)
+  for (NclLinkCondition *condition : _conditions)
     {
       g_assert_nonnull (condition);
       delete condition;
@@ -104,7 +81,7 @@ NclLinkCompoundTriggerCondition::addCondition (NclLinkCondition *condition)
 {
   g_assert_nonnull (condition);
 
-  conditions.push_back (condition);
+  _conditions.push_back (condition);
 
   auto linkTriggerCondition = cast (NclLinkTriggerCondition *, condition);
   if (linkTriggerCondition)
@@ -113,11 +90,17 @@ NclLinkCompoundTriggerCondition::addCondition (NclLinkCondition *condition)
     }
 }
 
+void
+NclLinkCompoundTriggerCondition::conditionSatisfied (NclLinkCondition *condition)
+{
+  NclLinkTriggerCondition::conditionSatisfied (condition);
+}
+
 vector<NclEvent *>
 NclLinkCompoundTriggerCondition::getEvents ()
 {
   vector<NclEvent *> events;
-  for (NclLinkCondition *condition : conditions)
+  for (NclLinkCondition *condition : _conditions)
     {
       for (NclEvent *evt : condition->getEvents ())
         {
@@ -129,22 +112,15 @@ NclLinkCompoundTriggerCondition::getEvents ()
 }
 
 void
-NclLinkCompoundTriggerCondition::conditionSatisfied (
-    NclLinkCondition *condition)
-{
-  NclLinkTriggerCondition::conditionSatisfied (condition);
-}
-
-void
 NclLinkCompoundTriggerCondition::evaluationStarted ()
 {
-  notifyConditionObservers (NclLinkTriggerListener::EVALUATION_STARTED);
+  notifyListeners (NclLinkConditionStatus::EVALUATION_STARTED);
 }
 
 void
 NclLinkCompoundTriggerCondition::evaluationEnded ()
 {
-  notifyConditionObservers (NclLinkTriggerListener::EVALUATION_ENDED);
+  notifyListeners (NclLinkConditionStatus::EVALUATION_ENDED);
 }
 
 NclLinkAndCompoundTriggerCondition::NclLinkAndCompoundTriggerCondition ()
@@ -154,7 +130,7 @@ NclLinkAndCompoundTriggerCondition::NclLinkAndCompoundTriggerCondition ()
 
 NclLinkAndCompoundTriggerCondition::~NclLinkAndCompoundTriggerCondition ()
 {
-  for (NclLinkCondition *l : statements)
+  for (NclLinkCondition *l : _statements)
     {
       g_assert_nonnull (l);
       delete l;
@@ -172,12 +148,12 @@ NclLinkAndCompoundTriggerCondition::addCondition (
 
   if (instanceof (NclLinkTriggerCondition *, condition))
     {
-      unsatisfiedConditions.push_back (condition);
+      _unsatisfiedConditions.push_back (condition);
       NclLinkCompoundTriggerCondition::addCondition (condition);
     }
   else if (instanceof (NclLinkStatement *, condition))
     {
-      statements.push_back (condition);
+      _statements.push_back (condition);
     }
   else
     {
@@ -191,12 +167,12 @@ void
 NclLinkAndCompoundTriggerCondition::conditionSatisfied (
     NclLinkCondition *condition)
 {
-  auto i = unsatisfiedConditions.begin ();
-  while (i != unsatisfiedConditions.end ())
+  auto i = _unsatisfiedConditions.begin ();
+  while (i != _unsatisfiedConditions.end ())
     {
       if ((*i) == condition)
         {
-          i = unsatisfiedConditions.erase (i);
+          i = _unsatisfiedConditions.erase (i);
         }
       else
         {
@@ -204,19 +180,20 @@ NclLinkAndCompoundTriggerCondition::conditionSatisfied (
         }
     }
 
-  if (unsatisfiedConditions.empty ())
+  if (_unsatisfiedConditions.empty ())
     {
-      for (i = conditions.begin (); i != conditions.end (); ++i)
+      for (i = _conditions.begin (); i != _conditions.end (); ++i)
         {
-          unsatisfiedConditions.push_back (*i);
+          _unsatisfiedConditions.push_back (*i);
         }
 
-      for (i = statements.begin (); i != statements.end (); ++i)
+      for (i = _statements.begin (); i != _statements.end (); ++i)
         {
-          if (!(((NclLinkStatement *)(*i))->evaluate ()))
+          NclLinkStatement *statement = cast (NclLinkStatement *, *i);
+          if (!statement->evaluate ())
             {
-              notifyConditionObservers (
-                  NclLinkTriggerListener::EVALUATION_ENDED);
+              notifyListeners (
+                  NclLinkConditionStatus::EVALUATION_ENDED);
 
               return;
             }
@@ -226,7 +203,7 @@ NclLinkAndCompoundTriggerCondition::conditionSatisfied (
     }
   else
     {
-      notifyConditionObservers (NclLinkTriggerListener::EVALUATION_ENDED);
+      notifyListeners (NclLinkConditionStatus::EVALUATION_ENDED);
     }
 }
 
@@ -234,7 +211,7 @@ vector<NclEvent *>
 NclLinkAndCompoundTriggerCondition::getEvents ()
 {
   vector<NclEvent *> events = NclLinkCompoundTriggerCondition::getEvents ();
-  for (NclLinkCondition *cond : statements)
+  for (NclLinkCondition *cond : _statements)
     {
       for (NclEvent *evt : cond->getEvents ())
         {
@@ -249,14 +226,14 @@ NclLinkTransitionTriggerCondition::NclLinkTransitionTriggerCondition (
     NclEvent *event, EventStateTransition transition, Bind *bind)
     : NclLinkTriggerCondition ()
 {
-  this->bind = bind;
-  this->event = nullptr;
-  this->transition = transition;
+  this->_bind = bind;
+  this->_event = nullptr;
+  this->_transition = transition;
 
   if (NclEvent::hasInstance (event, false))
     {
-      this->event = event;
-      this->event->addListener (this);
+      this->_event = event;
+      this->_event->addListener (this);
     }
   else
     {
@@ -266,26 +243,26 @@ NclLinkTransitionTriggerCondition::NclLinkTransitionTriggerCondition (
 
 NclLinkTransitionTriggerCondition::~NclLinkTransitionTriggerCondition ()
 {
-  if (NclEvent::hasInstance (event, false))
+  if (NclEvent::hasInstance (_event, false))
     {
-      event->removeListener (this);
+      _event->removeListener (this);
     }
 }
 
 Bind *
 NclLinkTransitionTriggerCondition::getBind ()
 {
-  return bind;
+  return _bind;
 }
 
 void
 NclLinkTransitionTriggerCondition::eventStateChanged (
-    arg_unused (NclEvent *event), EventStateTransition transition,
+    arg_unused (NclEvent *_event), EventStateTransition transition,
     arg_unused (EventState previousState))
 {
-  if (this->transition == transition)
+  if (this->_transition == transition)
     {
-      notifyConditionObservers (NclLinkTriggerListener::EVALUATION_STARTED);
+      notifyListeners (NclLinkConditionStatus::EVALUATION_STARTED);
       NclLinkTriggerCondition::conditionSatisfied (this);
     }
 }
@@ -293,13 +270,13 @@ NclLinkTransitionTriggerCondition::eventStateChanged (
 NclEvent *
 NclLinkTransitionTriggerCondition::getEvent ()
 {
-  return event;
+  return _event;
 }
 
 EventStateTransition
 NclLinkTransitionTriggerCondition::getTransition ()
 {
-  return transition;
+  return _transition;
 }
 
 vector<NclEvent *>
@@ -307,8 +284,8 @@ NclLinkTransitionTriggerCondition::getEvents ()
 {
   vector<NclEvent *> events;
 
-  if (NclEvent::hasInstance (event, false))
-    events.push_back (event);
+  if (NclEvent::hasInstance (_event, false))
+    events.push_back (_event);
 
   return events;
 }

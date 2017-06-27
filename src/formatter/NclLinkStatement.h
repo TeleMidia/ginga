@@ -25,12 +25,10 @@ GINGA_FORMATTER_BEGIN
 class NclLinkStatement : public NclLinkCondition
 {
 public:
-  NclLinkStatement () : NclLinkCondition ()
-  {
-    typeSet.insert ("NclLinkStatement");
-  }
+  NclLinkStatement () : NclLinkCondition () {}
 
   virtual ~NclLinkStatement (){}
+
   virtual bool evaluate () = 0;
 };
 
