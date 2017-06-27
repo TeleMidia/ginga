@@ -86,26 +86,30 @@ NclLinkAttributeAssessment::getValue ()
 
     case AttributeType::OCCURRENCES:
       {
-        value = getAssessmentWithOffset (xstrbuild ("%d", (int) _event->getOccurrences ()));
+        value = getAssessmentWithOffset (
+            xstrbuild ("%d", (int)_event->getOccurrences ()));
         break;
       }
 
     case AttributeType::REPETITIONS:
       if (instanceof (PresentationEvent *, _event))
         {
-          xstrassign (value, "%d", (int) ((PresentationEvent *)_event)->getRepetitions ());
+          xstrassign (
+              value, "%d",
+              (int)((PresentationEvent *)_event)->getRepetitions ());
         }
       break;
 
-      default:
-        g_assert_not_reached ();
+    default:
+      g_assert_not_reached ();
     }
 
   return value;
 }
 
 string
-NclLinkAttributeAssessment::getAssessmentWithOffset (const string &assessmentValue)
+NclLinkAttributeAssessment::getAssessmentWithOffset (
+    const string &assessmentValue)
 {
   double off, val;
   if (!_xstrtod (_offset, &off) || !_xstrtod (assessmentValue, &val))

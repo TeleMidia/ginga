@@ -91,7 +91,8 @@ NclLinkCompoundTriggerCondition::addCondition (NclLinkCondition *condition)
 }
 
 void
-NclLinkCompoundTriggerCondition::conditionSatisfied (NclLinkCondition *condition)
+NclLinkCompoundTriggerCondition::conditionSatisfied (
+    NclLinkCondition *condition)
 {
   NclLinkTriggerCondition::conditionSatisfied (condition);
 }
@@ -192,8 +193,7 @@ NclLinkAndCompoundTriggerCondition::conditionSatisfied (
           NclLinkStatement *statement = cast (NclLinkStatement *, *i);
           if (!statement->evaluate ())
             {
-              notifyListeners (
-                  NclLinkConditionStatus::EVALUATION_ENDED);
+              notifyListeners (NclLinkConditionStatus::EVALUATION_ENDED);
 
               return;
             }

@@ -53,7 +53,8 @@ public:
 
 class NclLinkTriggerCondition : public NclLinkCondition
 {
-  PROPERTY (NclLinkTriggerListener *, _listener, getTriggerListener, setTriggerListener)
+  PROPERTY (NclLinkTriggerListener *, _listener, getTriggerListener,
+            setTriggerListener)
   PROPERTY (GingaTime, _delay, getDelay, setDelay)
 
 public:
@@ -61,8 +62,6 @@ public:
   virtual ~NclLinkTriggerCondition () {}
 
   void conditionSatisfied (NclLinkCondition *condition);
-
-  virtual vector<NclEvent *> getEvents () = 0;
 
 protected:
   virtual void notifyListeners (NclLinkConditionStatus status);
