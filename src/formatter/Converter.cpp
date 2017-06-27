@@ -40,11 +40,7 @@ using namespace ::ginga::ncl;
 #include "NclActions.h"
 
 #include "NclLinkCompoundStatement.h"
-#include "NclLinkTransitionTriggerCondition.h"
 #include "NclLinkValueAssessment.h"
-#include "NclLinkCompoundTriggerCondition.h"
-#include "NclLinkCompoundTriggerCondition.h"
-#include "NclLinkAndCompoundTriggerCondition.h"
 
 #include "Converter.h"
 GINGA_FORMATTER_BEGIN
