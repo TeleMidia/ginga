@@ -29,7 +29,6 @@ GINGA_FORMATTER_BEGIN
 class NclLinkAssessment
 {
 public:
-  NclLinkAssessment () {}
   virtual ~NclLinkAssessment () {}
 
   virtual string getValue () = 0;
