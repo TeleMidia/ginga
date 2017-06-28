@@ -82,7 +82,6 @@ private:
   NclDocument *_ncl;             // NCL document
   string _path;                  // document's absolute path
   string _dirname;               // directory part of document's path
-  bool _ownManager;
 
   NclDocument *parseRootElement (DOMElement *rootElement);
 

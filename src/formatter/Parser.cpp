@@ -263,7 +263,6 @@ static map<string, SimpleActionType> event_action_type_table =
 
 NclParser::NclParser ()
 {
-  this->_ownManager = false;
 }
 
 NclParser::~NclParser ()
