@@ -58,6 +58,8 @@ ncls+= xfail-test-txt-open.ncl
 ncls+= xfail-test-lua-open.ncl
 ncls+= xfail-test-aud-open.ncl
 ncls+= xfail-test-vid-open.ncl
+ncls+= xfail-test-syntax-ncl-bad-tag.ncl
+ncls+= xfail-test-syntax-ncl-bad-child.ncl
 
 # Test programs.
 progs=
@@ -83,4 +85,6 @@ XFAIL_TESTS=\
   xfail-test-lua-open.ncl\
   xfail-test-aud-open.ncl\
   xfail-test-vid-open.ncl\
+  xfail-test-syntax-ncl-bad-tag.ncl\
+  xfail-test-syntax-ncl-bad-child.ncl\
   $(NULL)
