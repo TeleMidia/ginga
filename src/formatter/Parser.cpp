@@ -1087,7 +1087,7 @@ NclParser::parseTransition (DOMElement *elt)
     }
 
   if (dom_element_try_get_attr(value, elt, "dur"))
-    transition->setDur (ginga_parse_time (value));
+    transition->setDuration (ginga_parse_time (value));
 
   if (dom_element_try_get_attr (value, elt, "startProgress"))
     transition->setStartProgress (xstrtod (value));

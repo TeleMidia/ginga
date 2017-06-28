@@ -57,12 +57,12 @@ public:
   static const short DIRECTION_REVERSE = 1;
 
 public:
-  Transition (const string &id, int type);
+  Transition (const string &, int);
   virtual ~Transition ();
   SDL_Color getBorderColor ();
   int getBorderWidth ();
   short getDirection ();
-  double getDur ();
+  GingaTime getDuration ();
   double getEndProgress ();
   SDL_Color getFadeColor ();
   int getHorzRepeat ();
@@ -70,22 +70,22 @@ public:
   int getSubtype ();
   int getType ();
   int getVertRepeat ();
-  void setBorderColor (SDL_Color color);
-  void setBorderWidth (int width);
-  void setDirection (short dir);
-  void setDur (double _dur);
-  void setEndProgress (double ep);
-  void setFadeColor (SDL_Color color);
-  void setHorzRepeat (int num);
-  void setStartProgress (double sp);
-  void setSubtype (int _subtype);
-  void setType (int _type);
-  void setVertRepeat (int num);
+  void setBorderColor (SDL_Color);
+  void setBorderWidth (int);
+  void setDirection (short);
+  void setDuration (GingaTime);
+  void setEndProgress (double);
+  void setFadeColor (SDL_Color);
+  void setHorzRepeat (int);
+  void setStartProgress (double);
+  void setSubtype (int);
+  void setType (int);
+  void setVertRepeat (int);
 
 private:
   int _type;
   int _subtype;
-  double _dur;
+  GingaTime _duration;
   double _startProgress;
   double _endProgress;
   short _direction;
@@ -98,4 +98,4 @@ private:
 
 GINGA_NCL_END
 
-#endif /*TRANSITION_H_*/
+#endif // TRANSITION_H
