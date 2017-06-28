@@ -25,7 +25,7 @@ Transition::Transition (const string &id, int type) : Entity (id)
 {
   setType (type);
 
-  this->_dur = 1000; /* 1 second */
+  this->_duration = 1 * GINGA_SECOND;
   this->_startProgress = 0.0;
   this->_endProgress = 1.0;
   this->_direction = Transition::DIRECTION_FORWARD;
@@ -58,10 +58,10 @@ Transition::getDirection ()
   return _direction;
 }
 
-double
-Transition::getDur ()
+GingaTime
+Transition::getDuration ()
 {
-  return _dur;
+  return _duration;
 }
 
 double
@@ -132,12 +132,9 @@ Transition::setDirection (short dir)
 }
 
 void
-Transition::setDur (double dur)
+Transition::setDuration (GingaTime duration)
 {
-  if (dur >= 0)
-    {
-      this->_dur = dur;
-    }
+  this->_duration = duration;
 }
 
 void
