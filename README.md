@@ -44,7 +44,7 @@ We currently support both autotools and cmake build systems.
     $ make
 
 To build with cef (chromium embedded framework) support change the
-configure step above to:
+above configure step to:
 
     $ ./configure --with-cef=${CEF_ROOT}
 
