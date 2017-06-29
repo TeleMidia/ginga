@@ -86,9 +86,7 @@ private:
 
 
 // INTERFACES
-  SwitchPort *parseSwitchPort (DOMElement *switchPort_element, SwitchNode *switchNode);
-  SwitchPort *createSwitchPort (DOMElement *switchPort_element, SwitchNode *switchNode);
-  Port *parseMapping (DOMElement *parentElement, SwitchPort *switchPort);
+
 
 // PRESENTATION CONTROL
 
@@ -145,6 +143,8 @@ private:
   Port *parsePort (DOMElement *, CompositeNode *);
 
   Node *parseSwitch (DOMElement *);
+  SwitchPort *parseSwitchPort (DOMElement *, SwitchNode *);
+  Port *parseMapping (DOMElement *, SwitchNode *, SwitchPort *);
 
   Node *parseMedia (DOMElement *);
   PropertyAnchor *parseProperty (DOMElement *);

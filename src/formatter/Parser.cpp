@@ -578,98 +578,9 @@ NclParser::posCompileContext (DOMElement *context_element, ContextNode *context)
 }
 
 // INTERFACES
-SwitchPort *
-NclParser::parseSwitchPort (DOMElement *switchPort_element,
-                            SwitchNode *switchNode)
-{
-  SwitchPort *switchPort = createSwitchPort (switchPort_element, switchNode);
 
-  if (unlikely (switchPort == NULL))
-    {
-      ERROR_SYNTAX ("switchPort: bad parent '%s'",
-                    dom_element_tagname(switchPort_element).c_str ());
-    }
 
-    for(DOMElement *child:
-        dom_element_children_by_tagname(switchPort_element, "mapping"))
-      {
-        Port *mapping = parseMapping (child, switchPort);
-        if (mapping)
-          {
-            switchPort->addPort (mapping);
-          }
-      }
 
-  return switchPort;
-}
-
-Port *
-NclParser::parseMapping (DOMElement *parent, SwitchPort *switchPort)
-{
-  DOMElement *switchElement;
-  SwitchNode *switchNode;
-  NodeEntity *mappingNodeEntity;
-  Node *mappingNode;
-  InterfacePoint *interfacePoint;
-
-  // FIXME: this is not safe!
-  switchElement = (DOMElement *) parent->getParentNode ()->getParentNode ();
-
-  string id = dom_element_get_attr(switchElement, "id");
-  string component = dom_element_get_attr(parent, "component");
-
-  // FIXME: this is not safe!
-  switchNode = (SwitchNode *) _doc->getNode (id);
-  mappingNode = switchNode->getNode (component);
-
-  if (unlikely (mappingNode == NULL))
-    ERROR_SYNTAX ("mapping: bad component '%s'", component.c_str ());
-
-  // FIXME: this is not safe!
-  mappingNodeEntity = (NodeEntity *) mappingNode->getDataEntity ();
-
-  string interface;
-  if (dom_element_try_get_attr(interface, parent, "interface"))
-    {
-      interfacePoint = mappingNodeEntity->getAnchor (interface);
-      if (interfacePoint == NULL)
-        {
-          if (instanceof (CompositeNode *, mappingNodeEntity))
-            {
-              interfacePoint = ((CompositeNode *) mappingNodeEntity)
-                ->getPort (interface);
-            }
-        }
-    }
-  else
-    {
-      interfacePoint = mappingNodeEntity->getAnchor (0);
-    }
-
-  if (unlikely (interfacePoint == NULL))
-    ERROR_SYNTAX ("mapping: bad interface '%s'", interface.c_str ());
-
-  return new Port (switchPort->getId (), mappingNode, interfacePoint);
-}
-
-SwitchPort *
-NclParser::createSwitchPort (DOMElement *parent,
-                                       SwitchNode *switchNode)
-{
-  SwitchPort *switchPort;
-  string id;
-
-  if (unlikely (!dom_element_has_attr(parent, "id")))
-    ERROR_SYNTAX ("switchPort: missing id");
-
-  id = dom_element_get_attr(parent, "id");
-
-  if (unlikely (switchNode->getPort (id) != NULL))
-    ERROR_SYNTAX ("switchPort '%s': duplicated id", id.c_str ());
-
-  switchPort = new SwitchPort (id, switchNode);
-  return switchPort;
-}
 
 // PRESENTATION_CONTROL
 
@@ -2235,6 +2146,9 @@ NclParser::parsePort (DOMElement *elt, CompositeNode *context)
   return new Port (id, target, interface);
 }
 
+
+// Private: Switch.
+
 Node *
 NclParser::parseSwitch (DOMElement *elt)
 {
@@ -2293,6 +2207,71 @@ NclParser::parseSwitch (DOMElement *elt)
 
   addUnmappedNodesToSwitch ((SwitchNode *) swtch);
   return swtch;
+}
+
+SwitchPort *
+NclParser::parseSwitchPort (DOMElement *elt, SwitchNode *swtch)
+{
+  SwitchPort *port;
+  string id;
+
+  g_assert_nonnull (swtch);
+
+  CHECK_ELT_TAG (elt, "switchPort", nullptr);
+  CHECK_ELT_ID (elt, &id);
+
+  port = new SwitchPort (id, swtch);
+  for (DOMElement *child: dom_element_children (elt))
+    {
+      string tag = dom_element_tagname (child);
+      if (tag == "mapping")
+        {
+          swtch->addPort (this->parseMapping (child, swtch, port));
+        }
+      else
+        {
+          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
+        }
+    }
+  return port;
+}
+
+Port *
+NclParser::parseMapping (DOMElement *elt, SwitchNode *swtch,
+                         SwitchPort *port)
+{
+  Node *mapping;
+  string id;
+  string comp;
+  string value;
+
+  NodeEntity *mappingEntity;
+  InterfacePoint *iface;
+
+  CHECK_ELT_TAG (elt, "mapping", nullptr);
+  CHECK_ELT_ATTRIBUTE (elt, "component", &comp);
+
+  mapping = swtch->getNode (comp);
+  if (unlikely (mapping == nullptr))
+    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "component");
+
+  mappingEntity = (NodeEntity *) mapping->getDataEntity ();
+  g_assert_nonnull (mappingEntity);
+
+  if (dom_element_try_get_attr (value, elt, "interface"))
+    {
+      iface = mappingEntity->getAnchor (value);
+      if (iface == nullptr && instanceof (CompositeNode *, mappingEntity))
+        iface = ((CompositeNode *) mappingEntity)->getPort (value);
+      if (unlikely (iface == nullptr))
+        ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "interface");
+    }
+  else
+    {
+      iface = mappingEntity->getAnchor (0);
+      g_assert_nonnull (iface);
+    }
+  return new Port (port->getId (), mapping, iface);
 }
 
 
@@ -2439,7 +2418,7 @@ NclParser::parseArea (DOMElement *elt)
 // Private: Link.
 
 Link *
-NclParser::parseLink (DOMElement *elt, CompositeNode *parent)
+NclParser::parseLink (DOMElement *elt, CompositeNode *context)
 {
   Link *link;
   string id;
@@ -2466,7 +2445,7 @@ NclParser::parseLink (DOMElement *elt, CompositeNode *parent)
         }
       else if (tag == "bind")
         {
-          g_assert_nonnull (this->parseBind (child, link, parent));
+          g_assert_nonnull (this->parseBind (child, link, context));
         }
       else
         {
