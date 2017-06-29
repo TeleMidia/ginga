@@ -85,49 +85,19 @@ private:
 
 
 
-// CONNECTORS
-  SimpleCondition *parseSimpleCondition (DOMElement *simpleCond_element);
-  SimpleAction *parseSimpleAction (DOMElement *simpleAction_element);
-  CompoundCondition *parseCompoundCondition (DOMElement *compoundCond_element);
-  CompoundCondition *createCompoundCondition (DOMElement *compoundCond_element);
-  AssessmentStatement *parseAssessmentStatement (DOMElement *assessmentStatement_element);
-  AssessmentStatement *createAssessmentStatement (DOMElement *assessmentStatement_element);
-  AttributeAssessment *parseAttributeAssessment (DOMElement *attributeAssessment_element);
-  ValueAssessment *parseValueAssessment (DOMElement *valueAssessment_element);
-  CompoundStatement *parseCompoundStatement (DOMElement *compoundStatement_element);
-  CompoundStatement *createCompoundStatement (DOMElement *compoundStatement_element);
-  CompoundAction *parseCompoundAction (DOMElement *compoundAction_element);
-  CompoundAction *createCompoundAction (DOMElement *compoundAction_element);
-
-  void addAttributeAssessmentToAssessmentStatement (AssessmentStatement *parentObject, AttributeAssessment *childObject);
-
 // INTERFACES
   SwitchPort *parseSwitchPort (DOMElement *switchPort_element, SwitchNode *switchNode);
   SwitchPort *createSwitchPort (DOMElement *switchPort_element, SwitchNode *switchNode);
   Port *parseMapping (DOMElement *parentElement, SwitchPort *switchPort);
-  Port *parsePort (DOMElement *parentElement, CompositeNode *objGrandParent);
-
-// LINKING
-  Bind *parseBind (DOMElement *parentElement, Link *link);
-  Bind *createBind (DOMElement *parentElement, Link *link);
-  Parameter *parseLinkOrBindParam (DOMElement *parentElement);
-  Link *parseLink (DOMElement *link_element, CompositeNode *compositeNode);
-  Link *createLink (DOMElement *link_element, CompositeNode *compositeNode);
-
-  Connector *_connectorLinkParsing = nullptr;
-  CompositeNode *_composite = nullptr;
 
 // PRESENTATION CONTROL
 
-  Node *parseSwitch (DOMElement *parentElement);
   SwitchNode *posCompileSwitch (DOMElement *parentElement, SwitchNode *parentObject);
-  Node *createSwitch (DOMElement *parentElement);
   DescriptorSwitch *parseDescriptorSwitch (DOMElement *parentElement);
   DescriptorSwitch *createDescriptorSwitch (DOMElement *parentElement);
   vector<Node *> *getSwitchConstituents (SwitchNode *switchNode);
 
   map<string, map<string, Node *> *> _switchConstituents;
-  void addNodeToSwitch (Node *switchNode, Node *node);
   void addBindRuleToSwitch (SwitchNode *parentObject, DOMElement *childObject);
   void addUnmappedNodesToSwitch (SwitchNode *switchNode);
   void addDefaultDescriptorToDescriptorSwitch (DescriptorSwitch *descriptorSwitch, DOMElement *defaultDescriptor);
@@ -161,12 +131,29 @@ private:
 
   ConnectorBase *parseConnectorBase (DOMElement *);
   CausalConnector *parseCausalConnector (DOMElement *);
+  CompoundCondition *parseCompoundCondition (DOMElement *);
+  SimpleCondition *parseSimpleCondition (DOMElement *);
+  CompoundStatement *parseCompoundStatement (DOMElement *);
+  AssessmentStatement *parseAssessmentStatement (DOMElement *);
+  AttributeAssessment *parseAttributeAssessment (DOMElement *);
+  ValueAssessment *parseValueAssessment (DOMElement *);
+  CompoundAction *parseCompoundAction (DOMElement *);
+  SimpleAction *parseSimpleAction (DOMElement *);
 
   ContextNode *parseBody (DOMElement *);
   Node *parseContext (DOMElement *);
+  Port *parsePort (DOMElement *, CompositeNode *);
+
+  Node *parseSwitch (DOMElement *);
+
   Node *parseMedia (DOMElement *);
   PropertyAnchor *parseProperty (DOMElement *);
   Anchor *parseArea (DOMElement *);
+
+  Link *parseLink (DOMElement *, CompositeNode *);
+  Parameter *parseLinkParam (DOMElement *);
+  Bind *parseBind (DOMElement *, Link *, CompositeNode *);
+  Parameter *parseBindParam (DOMElement *);
 };
 
 GINGA_FORMATTER_END

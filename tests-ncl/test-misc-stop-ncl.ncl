@@ -1,4 +1,4 @@
-<ncl>
+<ncl id="self">
   <head>
     <connectorBase>
       <causalConnector id="onBeginStop">
@@ -7,7 +7,7 @@
       </causalConnector>
     </connectorBase>
   </head>
-  <body id="self">
+  <body>
     <port id="start" component="time"/>
     <media id="time">
       <area id="a1" begin="2s"/>
