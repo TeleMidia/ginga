@@ -1,7 +1,7 @@
 <ncl>
   <head>
     <connectorBase>
-      <causalConnector xconnector="onBeginStop">
+      <causalConnector id="onBeginStop">
         <simpleCondition role="onBegin"/>
         <simpleAction role="stop"/>
       </causalConnector>

@@ -167,9 +167,10 @@ __error_elt (const DOMElement *elt)
 #define ERROR_SYNTAX_ELT(elt, fmt, ...)\
   ERROR_SYNTAX ("%s: " fmt, __error_elt ((elt)).c_str (), ## __VA_ARGS__)
 
-#define ERROR_SYNTAX_ELT_BAD_ATTRIBUTE(elt, name)               \
-  ERROR_SYNTAX_ELT ((elt), "bad value for attribute '%s'",      \
-                    string ((name)).c_str ())
+#define ERROR_SYNTAX_ELT_BAD_ATTRIBUTE(elt, name)                       \
+  ERROR_SYNTAX_ELT ((elt), "bad value for attribute '%s': '%s'",        \
+                    string ((name)).c_str (),                           \
+                    dom_element_get_attr ((elt), (name)).c_str ())
 
 #define ERROR_SYNTAX_ELT_MISSING_ATTRIBUTE(elt, name)           \
   ERROR_SYNTAX_ELT ((elt), "missing required attribute '%s'",   \
@@ -179,7 +180,7 @@ __error_elt (const DOMElement *elt)
   ERROR_SYNTAX_ELT ((elt), "missing id")
 
 #define ERROR_SYNTAX_ELT_DUPLICATED_ID(elt, value)      \
-  ERROR_SYNTAX_ELT ((elt), "missing id '%s'",           \
+  ERROR_SYNTAX_ELT ((elt), "duplicated id '%s'",        \
                     string ((value)).c_str ())
 
 #define ERROR_SYNTAX_ELT_UNKNOWN_CHILD(elt, child)      \
@@ -576,515 +577,6 @@ NclParser::posCompileContext (DOMElement *context_element, ContextNode *context)
   return context;
 }
 
-
-// CONNECTORS
-SimpleCondition *
-NclParser::parseSimpleCondition (DOMElement *elt)
-{
-  string tag;
-  string role;
-  string value;
-
-  EventType type;
-  EventStateTransition trans;
-  map<string, pair<int,int>>::iterator it;
-
-  SimpleCondition *cond;        // result
-
-  role =  dom_element_get_attr (elt, "role");
-  if (unlikely (role == ""))
-    ERROR_SYNTAX ("%s: empty role", tag.c_str ());
-
-  type = EventType::UNKNOWN;
-  trans = EventStateTransition::UNKNOWN;
-
-  if ((it = reserved_condition_table.find (role))
-      != reserved_condition_table.end ())
-    {
-      type = (EventType) it->second.first;
-      trans = (EventStateTransition) it->second.second;
-    }
-
-  if (dom_element_try_get_attr (value, elt, "eventType"))
-    {
-      if (unlikely (type != EventType::UNKNOWN))
-        {
-          ERROR_SYNTAX ("%s: eventType of role '%s' cannot be overridden",
-                        tag.c_str (), role.c_str ());
-        }
-      map<string, EventType>::iterator it;
-      if ((it = event_type_table.find (value)) == event_type_table.end ())
-        {
-          ERROR_SYNTAX ("%s: bad eventType '%s' for role '%s'",
-                        tag.c_str (), value.c_str (), role.c_str ());
-        }
-      type = it->second;
-    }
-
-  if (dom_element_try_get_attr (value, elt, "transition"))
-    {
-      if (unlikely (trans != EventStateTransition::UNKNOWN))
-        {
-          ERROR_SYNTAX ("%s: transition of role '%s' cannot be overridden",
-                        tag.c_str (), role.c_str ());
-        }
-      map<string, EventStateTransition>::iterator it;
-      if ((it = event_transition_table.find (value))
-          == event_transition_table.end ())
-        {
-          ERROR_SYNTAX ("%s: bad transition '%s' for role '%s'",
-                        tag.c_str (), value.c_str (), role.c_str ());
-        }
-      trans = it->second;
-    }
-
-  g_assert (type != EventType::UNKNOWN);
-  g_assert (trans != EventStateTransition::UNKNOWN);
-
-  cond = new SimpleCondition (role);
-  cond->setEventType (type);
-  cond->setTransition (trans);
-
-  // TODO: We do not handle min and max (these are nonsensical).
-
-  if (type == EventType::SELECTION
-      && dom_element_try_get_attr (value, elt, "key"))
-    {
-      cond->setKey (value);
-    }
-
-  if (dom_element_try_get_attr (value, elt, "delay"))
-    cond->setDelay (value);
-
-  if (dom_element_try_get_attr (value, elt, "qualifier"))
-    {
-      if (value == "or")
-        cond->setQualifier (CompoundCondition::OP_OR);
-      else if (value == "and")
-        cond->setQualifier (CompoundCondition::OP_AND);
-      else
-        ERROR_SYNTAX ("%s: bad qualifier '%s'",
-                      tag.c_str (), value.c_str ());
-    }
-
-  return cond;
-}
-
-CompoundCondition *
-NclParser::parseCompoundCondition (DOMElement *elt)
-{
-  CompoundCondition *compoundCond =
-      createCompoundCondition (elt);
-  g_assert_nonnull (compoundCond);
-
-  for ( DOMElement *child: dom_element_children(elt))
-    {
-      string tagname = dom_element_tagname(child);
-
-      if ( tagname == "simpleCondition")
-        {
-          SimpleCondition *simpleCond = parseSimpleCondition (child);
-          if (simpleCond)
-            {
-              compoundCond->addConditionExpression (simpleCond);
-            }
-        }
-      else if ( tagname == "assessmentStatement")
-        {
-          AssessmentStatement *assStatement = parseAssessmentStatement (child);
-          if (assStatement)
-            {
-              compoundCond->addConditionExpression (assStatement);
-            }
-        }
-      else if ( tagname == "compoundCondition")
-        {
-          CompoundCondition *compoundCond_child =
-              parseCompoundCondition (child);
-
-          if (compoundCond_child)
-            {
-              compoundCond->addConditionExpression (compoundCond_child);
-            }
-        }
-      else if ( tagname ==  "compoundStatement")
-        {
-          CompoundStatement *compoundStatement = parseCompoundStatement (child);
-
-          if (compoundStatement)
-            {
-              compoundCond->addConditionExpression (compoundStatement);
-            }
-        }
-      else
-        {
-          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
-        }
-    }
-
-  return compoundCond;
-}
-
-AssessmentStatement *
-NclParser::parseAssessmentStatement (DOMElement *elt)
-{
-  AssessmentStatement *assStatement =
-      createAssessmentStatement (elt);
-  g_assert_nonnull (assStatement);
-
-  for (DOMElement *child: dom_element_children (elt))
-    {
-      string tagname = dom_element_tagname (child);
-      if (tagname == "attributeAssessment")
-        {
-          AttributeAssessment *attrStatement;
-          attrStatement = parseAttributeAssessment (child);
-          g_assert_nonnull (attrStatement);
-          addAttributeAssessmentToAssessmentStatement (assStatement,
-                                                       attrStatement);
-        }
-      else if (tagname == "valueAssessment")
-        {
-          ValueAssessment *valueAssessment;
-          valueAssessment = parseValueAssessment (child);
-          g_assert_nonnull (valueAssessment);
-          assStatement->setOtherAssessment (valueAssessment);
-        }
-      else
-        {
-          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
-        }
-    }
-  return assStatement;
-}
-
-AttributeAssessment *
-NclParser::parseAttributeAssessment (DOMElement *attributeAssessment_element)
-{
-  AttributeAssessment *attrAssessment;
-  string attValue;
-
-  string roleLabel = dom_element_get_attr(attributeAssessment_element, "role");
-
-  attrAssessment = new AttributeAssessment (roleLabel);
-
-  // event type
-  if (dom_element_try_get_attr(attValue, attributeAssessment_element, "eventType"))
-    {
-      attrAssessment->setEventType (EventUtil::getTypeCode (attValue));
-    }
-
-  // event type
-  if (dom_element_try_get_attr(attValue, attributeAssessment_element, "attributeType"))
-    {
-      attrAssessment->setAttributeType (
-            EventUtil::getAttributeTypeCode (attValue));
-    }
-
-  // parameter
-  if (attrAssessment->getEventType () == EventType::SELECTION)
-    {
-      if (dom_element_try_get_attr(attValue, attributeAssessment_element, "key"))
-        {
-          attrAssessment->setKey (attValue);
-        }
-    }
-
-  // testing offset
-  if (dom_element_try_get_attr(attValue, attributeAssessment_element, "offset"))
-    {
-      attrAssessment->setOffset (attValue);
-    }
-
-  return attrAssessment;
-}
-
-ValueAssessment *
-NclParser::parseValueAssessment (DOMElement *valueAssessment_element)
-{
-  string attValue = dom_element_get_attr(valueAssessment_element, "value");
-
-  return new ValueAssessment (attValue);
-}
-
-CompoundStatement *
-NclParser::parseCompoundStatement (DOMElement *elt)
-{
-  CompoundStatement *compoundStatement =
-      createCompoundStatement (elt);
-  g_assert_nonnull (compoundStatement);
-
-  for ( DOMElement *child: dom_element_children (elt))
-    {
-      string tagname = dom_element_tagname(child);
-
-      if (tagname == "assessmentStatement")
-        {
-          AssessmentStatement *assStatement;
-          assStatement = parseAssessmentStatement (child);
-          g_assert_nonnull (assStatement);
-          compoundStatement->addStatement (assStatement);
-        }
-      else if (tagname == "compoundStatement")
-        {
-          CompoundStatement *compoundStatement_child;
-          compoundStatement_child = parseCompoundStatement (child);
-          g_assert_nonnull (compoundStatement_child);
-          compoundStatement->addStatement (compoundStatement_child);
-        }
-      else
-        {
-          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
-        }
-    }
-  return compoundStatement;
-}
-
-SimpleAction *
-NclParser::parseSimpleAction (DOMElement *elt)
-{
-  string tag;
-  string role;
-  string value;
-
-  EventType type;
-  int acttype;
-  map<string, pair<int,int>>::iterator it;
-
-  SimpleAction *action;         // result
-
-  role =  dom_element_get_attr (elt, "role");
-  if (unlikely (role == ""))
-    ERROR_SYNTAX ("%s: empty role", tag.c_str ());
-
-  type = EventType::UNKNOWN;
-  acttype = -1;
-
-  if ((it = reserved_action_table.find (role))
-      != reserved_action_table.end ())
-    {
-      type = (EventType) it->second.first;
-      acttype = (SimpleActionType) it->second.second;
-    }
-
-  if (dom_element_try_get_attr (value, elt, "eventType"))
-    {
-      if (unlikely (type != EventType::UNKNOWN))
-        {
-          ERROR_SYNTAX ("%s: eventType of role '%s' cannot be overridden",
-                        tag.c_str (), role.c_str ());
-        }
-      map<string, EventType>::iterator it;
-      if ((it = event_type_table.find (value)) == event_type_table.end ())
-        {
-          ERROR_SYNTAX ("%s: bad eventType '%s' for role '%s'",
-                        tag.c_str (), value.c_str (), role.c_str ());
-        }
-      type = it->second;
-    }
-
-  if (dom_element_try_get_attr (value, elt, "actionType"))
-    {
-      if (unlikely (acttype != -1))
-        {
-          ERROR_SYNTAX ("%s: actionType of role '%s' cannot be overridden",
-                        tag.c_str (), role.c_str ());
-        }
-      map<string, SimpleActionType>::iterator it;
-      if ((it = event_action_type_table.find (value))
-          == event_action_type_table.end ())
-        {
-          ERROR_SYNTAX ("%s: bad actionType '%s' for role '%s'",
-                        tag.c_str (), value.c_str (), role.c_str ());
-        }
-      acttype = it->second;
-    }
-
-  g_assert (type != EventType::UNKNOWN);
-  g_assert (acttype != -1);
-
-  action = new SimpleAction (role);
-  action->setEventType (type);
-  action->setActionType ((SimpleActionType) acttype);
-
-  if (type == EventType::ATTRIBUTION && acttype == ACT_START
-      && dom_element_try_get_attr (value, elt, "duration"))
-    {
-      Animation *anim = new Animation ();
-      anim->setDuration (value);
-      anim->setBy ("indefinite"); // TODO: Handle "by".
-      action->setAnimation (anim);
-    }
-
-  if (dom_element_try_get_attr (value, elt, "delay"))
-    action->setDelay (value);
-
-  if (dom_element_try_get_attr (value, elt, "value"))
-    action->setValue (value);
-
-  // TODO: Handle qualifier (no!), repeatDelay and repeat attributes.
-
-  return action;
-}
-
-CompoundAction *
-NclParser::parseCompoundAction (DOMElement *elt)
-{
-  CompoundAction *compoundAction;
-
-  compoundAction = createCompoundAction (elt);
-  g_assert_nonnull (compoundAction);
-
-  for (DOMElement *child: dom_element_children(elt))
-    {
-      string tagname = dom_element_tagname(child);
-      if (tagname == "simpleAction")
-        {
-          SimpleAction *simpleAction;
-          simpleAction = parseSimpleAction (child);
-          g_assert_nonnull (simpleAction);
-          compoundAction->addAction (simpleAction);
-        }
-      else if (tagname == "compoundAction")
-        {
-          CompoundAction *compoundAction_child;
-          compoundAction_child = parseCompoundAction (child);
-          g_assert_nonnull (compoundAction_child);
-          compoundAction->addAction (compoundAction_child);
-        }
-      else
-        {
-          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
-        }
-    }
-
-  return compoundAction;
-}
-
-
-CompoundCondition *
-NclParser::createCompoundCondition (DOMElement *elt)
-{
-  CompoundCondition *conditionExpression;
-  string attValue;
-
-  conditionExpression = new CompoundCondition ();
-
-  string op = dom_element_get_attr(elt, "operator");
-
-  if (op == "and")
-    {
-      conditionExpression->setOperator (CompoundCondition::OP_AND);
-    }
-  else
-    {
-      conditionExpression->setOperator (CompoundCondition::OP_OR);
-    }
-
-  // delay
-  if (dom_element_try_get_attr (attValue, elt, "delay"))
-    {
-      conditionExpression->setDelay (attValue);
-    }
-
-  return conditionExpression;
-}
-
-
-AssessmentStatement *
-NclParser::createAssessmentStatement (DOMElement *assStatement_element)
-{
-  AssessmentStatement *assStatement;
-  string attValue;
-
-  if (dom_element_try_get_attr(attValue, assStatement_element, "comparator"))
-    {
-      assStatement
-          = new AssessmentStatement (Comparator::fromString (attValue));
-    }
-  else
-    {
-      assStatement = new AssessmentStatement (Comparator::CMP_EQ);
-    }
-
-  return assStatement;
-}
-
-CompoundStatement *
-NclParser::createCompoundStatement (DOMElement *elt)
-{
-  string attValue;
-  CompoundStatement *compoundStatement = new CompoundStatement ();
-
-  attValue = dom_element_get_attr(elt, "operator");
-  if (attValue == "and")
-    {
-      compoundStatement->setOperator (CompoundStatement::OP_AND);
-    }
-  else
-    {
-      compoundStatement->setOperator (CompoundStatement::OP_OR);
-    }
-
-  // testing isNegated
-  if (dom_element_try_get_attr(attValue, elt, "isNegated"))
-    {
-      compoundStatement->setNegated (attValue == "true");
-    }
-
-  return compoundStatement;
-}
-
-CompoundAction *
-NclParser::createCompoundAction (DOMElement *elt)
-{
-  string attValue;
-  CompoundAction *actionExpression = new CompoundAction ();
-
-  attValue = dom_element_get_attr (elt, "operator");
-  if (attValue == "seq")
-    {
-      actionExpression->setOperator (CompoundAction::OP_SEQ);
-    }
-  else
-    {
-      actionExpression->setOperator (CompoundAction::OP_PAR);
-    }
-
-  //  delay
-  if (dom_element_try_get_attr(attValue, elt, "delay"))
-    {
-      if (attValue[0] == '$')
-        {
-          actionExpression->setDelay (attValue);
-        }
-      else
-        {
-          actionExpression->setDelay (
-              xstrbuild ("%d", (xstrtoint (
-                        attValue.substr (0, attValue.length () - 1), 10)
-                    * 1000)));
-        }
-    }
-
-  return actionExpression;
-}
-
-void
-NclParser::addAttributeAssessmentToAssessmentStatement (
-    AssessmentStatement *assStatement,
-    AttributeAssessment *attrStatement)
-{
-  if (assStatement->getMainAssessment () == NULL)
-    {
-      assStatement->setMainAssessment (attrStatement);
-    }
-  else
-    {
-      assStatement->setOtherAssessment (attrStatement);
-    }
-}
-
 // INTERFACES
 SwitchPort *
 NclParser::parseSwitchPort (DOMElement *switchPort_element,
@@ -1160,102 +652,6 @@ NclParser::parseMapping (DOMElement *parent, SwitchPort *switchPort)
   return new Port (switchPort->getId (), mappingNode, interfacePoint);
 }
 
-
-Port *
-NclParser::parsePort (DOMElement *parent, CompositeNode *context)
-{
-  string id, attValue;
-  Node *portNode;
-  NodeEntity *portNodeEntity;
-  InterfacePoint *portInterfacePoint = NULL;
-  Port *port = NULL;
-
-  if (unlikely (!dom_element_has_attr(parent, "id")))
-    ERROR_SYNTAX ("port: missing id");
-
-  id = dom_element_get_attr(parent, "id");
-
-  if (unlikely (context->getPort (id) != NULL))
-    ERROR_SYNTAX ("port '%s': duplicated id", id.c_str ());
-
-  if (!unlikely (dom_element_has_attr (parent, "component")))
-    ERROR_SYNTAX ("port '%s': missing component", id.c_str ());
-
-  attValue = dom_element_get_attr(parent, "component");
-
-  portNode = context->getNode (attValue);
-  if (unlikely (portNode == NULL))
-    {
-      ERROR_SYNTAX ("port '%s': bad component '%s'", id.c_str (),
-                    attValue.c_str ());
-    }
-
-  portNodeEntity = (NodeEntity *)portNode->getDataEntity ();
-  if (!dom_element_has_attr(parent, "interface"))
-    {
-      if (instanceof (ReferNode *, portNode)
-          && ((ReferNode *)portNode)->getInstanceType () == "new")
-        {
-          portInterfacePoint = portNode->getAnchor (0);
-          if (portInterfacePoint == NULL)
-            {
-              portInterfacePoint = new LambdaAnchor (portNode->getId ());
-              portNode->addAnchor (0, (Anchor *)portInterfacePoint);
-            }
-        }
-      else if (instanceof (Node *, portNodeEntity))
-        {
-          portInterfacePoint = portNodeEntity->getAnchor (0);
-          if (unlikely (portInterfacePoint == NULL))
-            {
-              ERROR_SYNTAX ("port '%s': bad interface '%s'",
-                            id.c_str (), portNodeEntity->getId ().c_str ());
-            }
-        }
-      else
-        {
-          g_assert_not_reached ();
-        }
-    }
-  else
-    {
-      attValue = dom_element_get_attr(parent, "interface");
-
-      if (instanceof (ReferNode *, portNode)
-          && ((ReferNode *)portNode)->getInstanceType () == "new")
-        {
-          portInterfacePoint = portNode->getAnchor (attValue);
-        }
-      else
-        {
-          portInterfacePoint = portNodeEntity->getAnchor (attValue);
-        }
-
-      if (portInterfacePoint == NULL)
-        {
-          if (instanceof (CompositeNode *, portNodeEntity))
-            {
-              portInterfacePoint
-                  = ((CompositeNode *)portNodeEntity)->getPort (attValue);
-            }
-          else
-            {
-              portInterfacePoint = portNode->getAnchor (attValue);
-            }
-        }
-    }
-
-  if (unlikely (portInterfacePoint == NULL))
-    {
-      attValue = dom_element_get_attr(parent, "interface");
-      ERROR_SYNTAX ("port '%s': bad interface '%s'", id.c_str (),
-                    attValue.c_str ());
-    }
-
-  port = new Port (id, portNode, portInterfacePoint);
-  return port;
-}
-
 SwitchPort *
 NclParser::createSwitchPort (DOMElement *parent,
                                        SwitchNode *switchNode)
@@ -1275,323 +671,7 @@ NclParser::createSwitchPort (DOMElement *parent,
   return switchPort;
 }
 
-// LINKING
-Bind *
-NclParser::parseBind (DOMElement *elt, Link *link)
-{
-  Bind *bind = createBind (elt, link);
-  g_assert_nonnull (bind);
-
-  for (DOMElement *child: dom_element_children (elt))
-    {
-      string tagname = dom_element_tagname (child);
-      if (tagname == "bindParam")
-        {
-          Parameter *param = parseLinkOrBindParam (child);
-          g_assert_nonnull (param);
-          bind->addParameter (param);
-        }
-      else
-        {
-          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
-        }
-    }
-
-  return bind;
-}
-
-Parameter *
-NclParser::parseLinkOrBindParam (DOMElement *parentElement)
-{
-  Parameter *param;
-  param = new Parameter (
-      dom_element_get_attr(parentElement, "name"),
-      dom_element_get_attr(parentElement, "value"));
-
-  return param;
-}
-
-Link *
-NclParser::parseLink (DOMElement *elt, CompositeNode *compositeNode)
-{
-  Link *link = createLink (elt, compositeNode);
-  g_assert_nonnull (link);
-
-  for (DOMElement *child: dom_element_children(elt))
-    {
-      string tagname = dom_element_tagname(child);
-      if (tagname == "linkParam")
-        {
-          Parameter *param = parseLinkOrBindParam (child);
-          g_assert_nonnull (param);
-          link->addParameter (param);
-        }
-      else if (tagname == "bind")
-        {
-          Bind *bind = parseBind (child, link);
-          g_assert_nonnull (bind);
-        }
-      else
-        {
-          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
-        }
-    }
-
-  return link;
-}
-
-Bind *
-NclParser::createBind (DOMElement *elt, Link *link)
-{
-  string component, roleId, interfaceId;
-  Role *role;
-  Node *anchorNode;
-  NodeEntity *anchorNodeEntity;
-  InterfacePoint *interfacePoint = NULL;
-  NclDocument *document;
-  GenericDescriptor *descriptor;
-
-  role = _connectorLinkParsing->getRole (dom_element_get_attr (elt, "role"));
-  component = dom_element_get_attr(elt, "component");
-
-  if (_composite->getId () == component)
-    {
-      anchorNode = (Node *)_composite;
-    }
-  else
-    {
-      anchorNode = (Node *)(_composite->getNode (component));
-    }
-
-  if (unlikely (anchorNode == NULL))
-    {
-      ERROR_SYNTAX ("bind: bad component '%s'",
-                    component.c_str ());
-    }
-
-  anchorNodeEntity = (NodeEntity *)(anchorNode->getDataEntity ());
-
-  if (dom_element_try_get_attr (interfaceId, elt, "interface"))
-    {
-      if (anchorNodeEntity == NULL)
-        {
-          interfacePoint = NULL;
-        }
-      else
-        {
-          if (instanceof (ReferNode *, anchorNode)
-              && ((ReferNode *)anchorNode)->getInstanceType () == "new")
-            {
-              interfacePoint = anchorNode->getAnchor (interfaceId);
-            }
-          else
-            {
-              interfacePoint = anchorNodeEntity->getAnchor (interfaceId);
-            }
-        }
-
-      if (interfacePoint == NULL)
-        {
-          if (anchorNodeEntity != NULL
-              && instanceof (CompositeNode *, anchorNodeEntity))
-            {
-              interfacePoint = ((CompositeNode *)anchorNodeEntity)
-                                   ->getPort (interfaceId);
-            }
-          else
-            {
-              interfacePoint = anchorNode->getAnchor (interfaceId);
-              if (interfacePoint == NULL)
-                {
-                  for (ReferNode *referNode:
-                       *anchorNodeEntity->getInstSameInstances())
-                    {
-                      interfacePoint = referNode->getAnchor (interfaceId);
-                      if (interfacePoint != NULL)
-                        {
-                          break;
-                        }
-                    }
-                }
-            }
-        }
-      if (unlikely (interfacePoint == NULL))
-        {
-          ERROR_SYNTAX ("bind: bad interface '%s' for component '%s'",
-                        interfaceId.c_str (), component.c_str ());
-        }
-    }
-  else if (anchorNodeEntity != NULL)
-    {
-      if (instanceof (ReferNode *, anchorNode)
-          && ((ReferNode *)anchorNode)->getInstanceType () == "new")
-        {
-          interfacePoint = anchorNode->getAnchor (0);
-          if (interfacePoint == NULL)
-            {
-              interfacePoint = new LambdaAnchor (anchorNode->getId ());
-              anchorNode->addAnchor (0, (Anchor *)interfacePoint);
-            }
-        }
-      else if (instanceof (Node *, anchorNodeEntity))
-        {
-          interfacePoint = anchorNodeEntity->getAnchor (0);
-        }
-      else
-        {
-          ERROR_SYNTAX ("bind: bad interface for entity '%s'",
-                        anchorNodeEntity->getId ().c_str ());
-        }
-    }
-  else
-    {
-      interfacePoint = anchorNode->getAnchor (0);
-    }
-
-  if (dom_element_has_attr(elt, "descriptor"))
-    {
-      document = this->_doc;
-      descriptor = document->getDescriptor (
-            dom_element_get_attr(elt, "descriptor"));
-    }
-  else
-    {
-      descriptor = NULL;
-    }
-
-  if (role == NULL)
-    {
-      // &got
-      if (dom_element_try_get_attr(roleId, elt, "role"))
-        {
-          ConditionExpression *condition;
-          CompoundCondition *compoundCondition;
-          AssessmentStatement *statement;
-          AttributeAssessment *assessment;
-          ValueAssessment *otherAssessment;
-
-          assessment = new AttributeAssessment (roleId);
-          assessment->setEventType (EventType::ATTRIBUTION);
-          assessment->setAttributeType (AttributeType::NODE_PROPERTY);
-
-          otherAssessment = new ValueAssessment (roleId);
-
-          statement = new AssessmentStatement (Comparator::CMP_NE);
-          statement->setMainAssessment (assessment);
-          statement->setOtherAssessment (otherAssessment);
-
-          condition
-              = ((CausalConnector *)_connectorLinkParsing)->getConditionExpression ();
-
-          if (instanceof (CompoundCondition *, condition))
-            {
-              ((CompoundCondition *)condition)
-                  ->addConditionExpression (statement);
-            }
-          else
-            {
-              compoundCondition = new CompoundCondition (
-                  condition, statement, CompoundCondition::OP_OR);
-
-              ((CausalConnector *)_connectorLinkParsing)
-                  ->setConditionExpression (
-                      (ConditionExpression *)compoundCondition);
-            }
-          role = (Role *)assessment;
-        }
-      else
-        {
-          ERROR_SYNTAX ("bind: missing role");
-        }
-    }
-
-  return link->bind (anchorNode, interfacePoint, descriptor, role->getLabel ());
-}
-
-Link *
-NclParser::createLink (DOMElement *elt, CompositeNode *compositeNode)
-{
-  NclDocument *document = this->_doc;
-  string connectorId =
-      dom_element_get_attr(elt, "xconnector");
-
-  _connectorLinkParsing = document->getConnector (connectorId);
-  if (unlikely (_connectorLinkParsing == NULL))
-    {
-      ERROR_SYNTAX ("link: bad xconnector '%s'", connectorId.c_str ());
-    }
-
-  g_assert (instanceof (CausalConnector *, _connectorLinkParsing));
-
-  Link *link = new CausalLink (dom_element_get_attr (elt, "id"),
-                               _connectorLinkParsing);
-  _composite = compositeNode;
-
-  return link;
-}
-
 // PRESENTATION_CONTROL
-
-
-Node *
-NclParser::parseSwitch (DOMElement *elt)
-{
-  Node *switch_node = createSwitch (elt);
-  if (unlikely (switch_node == NULL))
-    {
-      ERROR_SYNTAX ( "switch: bad parent '%s'",
-                     dom_element_tagname(elt).c_str ());
-    }
-
-  for (DOMElement *child: dom_element_children (elt))
-    {
-      string tagname = dom_element_tagname (child);
-      if ( tagname == "media")
-        {
-          Node *media = this->parseMedia (child);
-          g_assert_nonnull (media);
-          addNodeToSwitch (switch_node, media);
-        }
-      else if (tagname == "context")
-        {
-          Node *ctx = this->parseContext (child);
-          g_assert_nonnull (ctx);
-          addNodeToSwitch (switch_node, ctx);
-        }
-      else if (tagname == "switch")
-        {
-          Node *switch_child = this->parseSwitch (child);
-          g_assert_nonnull (switch_child);
-          addNodeToSwitch (switch_node, switch_child);
-        }
-      else if (tagname == "switchPort"
-               || tagname == "bindRule"
-               || tagname == "defaultComponent")
-        {
-          // nothing to do
-        }
-      else
-        {
-          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
-        }
-    }
-
-    for (DOMElement *child: dom_element_children (elt))
-      {
-        string tagname = dom_element_tagname (child);
-        if (tagname == "bindRule")
-          {
-            addBindRuleToSwitch ((SwitchNode *) switch_node, child);
-          }
-        else if (tagname == "defaultComponent")
-          {
-            addDefaultComponentToSwitch ((SwitchNode*) switch_node, child);
-          }
-      }
-
-  addUnmappedNodesToSwitch ((SwitchNode *) switch_node);
-  return switch_node;
-}
 
 DescriptorSwitch *
 NclParser::parseDescriptorSwitch (DOMElement *elt)
@@ -1655,58 +735,6 @@ NclParser::getSwitchConstituents (SwitchNode *switchNode)
 
   // Users: you have to delete this vector after using it
   return ret;
-}
-
-Node *
-NclParser::createSwitch (DOMElement *switch_element)
-{
-  string id;
-  Node *node;
-  string attValue;
-  Entity *referNode;
-  SwitchNode *switchNode;
-
-  if (unlikely (!dom_element_has_attr(switch_element, "id")))
-    ERROR_SYNTAX ("switch: missing id");
-
-  id = dom_element_get_attr(switch_element, "id");
-
-  node = _doc->getNode (id);
-  if (unlikely (node != NULL))
-    ERROR_SYNTAX ("switch '%s': duplicated id", id.c_str ());
-
-  if (dom_element_try_get_attr(attValue, switch_element, "refer"))
-    {
-      try
-        {
-          referNode = (SwitchNode *) _doc->getNode (attValue);
-
-          if (referNode == NULL)
-            {
-              referNode = (SwitchNode *)_doc->getNode (attValue);
-              if (referNode == NULL)
-                {
-                  referNode
-                      = new ReferredNode (attValue, (void *)switch_element);
-                }
-            }
-        }
-      catch (...)
-        {
-          ERROR_SYNTAX ("switch '%s': bad refer '%s'",
-                        id.c_str (), attValue.c_str ());
-        }
-
-      node = new ReferNode (id);
-      ((ReferNode *)node)->setReferredEntity (referNode);
-
-      return node;
-    }
-
-  switchNode = new SwitchNode (id);
-  _switchConstituents[switchNode->getId ()] = new map<string, Node *>;
-
-  return switchNode;
 }
 
 DescriptorSwitch *
@@ -1904,23 +932,6 @@ NclParser::addDefaultDescriptorToDescriptorSwitch (
   descriptorSwitch->setDefaultDescriptor (descriptor);
 }
 
-void
-NclParser::addNodeToSwitch ( Node *switchNode, Node *node)
-{
-  map<string, Node *> *nodes;
-
-  if (_switchConstituents.count (switchNode->getId ()) == 0)
-    {
-      _switchConstituents[switchNode->getId ()] = new map<string, Node *>();
-    }
-
-  nodes = _switchConstituents[switchNode->getId ()];
-  if (nodes->count (node->getId ()) == 0)
-    {
-      (*nodes)[node->getId ()] = node;
-    }
-}
-
 SwitchNode *
 NclParser::posCompileSwitch (
     DOMElement *switchElement, SwitchNode *switchNode)
@@ -2059,6 +1070,9 @@ NclParser::parseHead (DOMElement *elt)
     }
 }
 
+
+// Private: Import.
+
 NclDocument *
 NclParser::parseImportNCL (DOMElement *elt, string *alias, string *uri)
 {
@@ -2130,6 +1144,8 @@ NclParser::parseImportedDocumentBase (DOMElement *elt)
     }
 }
 
+// Private: Rule.
+
 RuleBase *
 NclParser::parseRuleBase (DOMElement *elt)
 {
@@ -2168,7 +1184,6 @@ NclParser::parseRuleBase (DOMElement *elt)
     }
   return base;
 }
-
 
 CompositeRule *
 NclParser::parseCompositeRule (DOMElement *elt)
@@ -2224,6 +1239,8 @@ NclParser::parseRule (DOMElement *elt)
   return new SimpleRule (id, var, Comparator::fromString (comp), value);
 }
 
+// Private: Transition.
+
 TransitionBase *
 NclParser::parseTransitionBase (DOMElement *elt)
 {
@@ -2252,43 +1269,6 @@ NclParser::parseTransitionBase (DOMElement *elt)
           Transition *trans = parseTransition (child);
           g_assert_nonnull (trans);
           base->addTransition (trans);
-        }
-      else
-        {
-          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
-        }
-    }
-  return base;
-}
-
-RegionBase *
-NclParser::parseRegionBase (DOMElement *elt)
-{
-  RegionBase *base;
-  string id;
-
-  CHECK_ELT_TAG (elt, "regionBase", nullptr);
-  CHECK_ELT_OPT_ID (elt, &id, "");
-
-  base = new RegionBase (id);
-  for (DOMElement *child: dom_element_children (elt))
-    {
-      string tag = dom_element_tagname (child);
-      if (tag == "importBase")
-        {
-          NclDocument *doc;     // FIXME: this is lost (leak?)
-          Base *imported;
-          string alias;
-          string uri;
-          imported = this->parseImportBase (child, &doc, &alias, &uri);
-          g_assert_nonnull (imported);
-          base->addBase (imported, alias, uri);
-        }
-      else if (tag == "region")
-        {
-          LayoutRegion *region = this->parseRegion (child, base, nullptr);
-          g_assert_nonnull (region);
-          base->addRegion (region);
         }
       else
         {
@@ -2353,6 +1333,46 @@ NclParser::parseTransition (DOMElement *elt)
     trans->setBorderColor (ginga_parse_color (value));
 
   return trans;
+}
+
+
+// Private: Region.
+
+RegionBase *
+NclParser::parseRegionBase (DOMElement *elt)
+{
+  RegionBase *base;
+  string id;
+
+  CHECK_ELT_TAG (elt, "regionBase", nullptr);
+  CHECK_ELT_OPT_ID (elt, &id, "");
+
+  base = new RegionBase (id);
+  for (DOMElement *child: dom_element_children (elt))
+    {
+      string tag = dom_element_tagname (child);
+      if (tag == "importBase")
+        {
+          NclDocument *doc;     // FIXME: this is lost (leak?)
+          Base *imported;
+          string alias;
+          string uri;
+          imported = this->parseImportBase (child, &doc, &alias, &uri);
+          g_assert_nonnull (imported);
+          base->addBase (imported, alias, uri);
+        }
+      else if (tag == "region")
+        {
+          LayoutRegion *region = this->parseRegion (child, base, nullptr);
+          g_assert_nonnull (region);
+          base->addRegion (region);
+        }
+      else
+        {
+          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
+        }
+    }
+  return base;
 }
 
 LayoutRegion *
@@ -2429,6 +1449,9 @@ NclParser::parseRegion (DOMElement *elt, RegionBase *base,
     }
   return region;
 }
+
+
+// Private: Descriptor.
 
 DescriptorBase *
 NclParser::parseDescriptorBase (DOMElement *elt)
@@ -2586,6 +1609,9 @@ NclParser::parseDescriptor (DOMElement *elt)
   return desc;
 }
 
+
+// Private: Connector.
+
 ConnectorBase *
 NclParser::parseConnectorBase (DOMElement *elt)
 {
@@ -2643,30 +1669,24 @@ NclParser::parseCausalConnector (DOMElement *elt)
       string tag = dom_element_tagname (child);
       if (tag == "simpleCondition")
         {
-          SimpleCondition *cond = this->parseSimpleCondition (child);
-          g_assert_nonnull (cond);
-          conn->setConditionExpression (cond);
+          conn->setConditionExpression
+            (this->parseSimpleCondition (child));
           ncond++;
         }
       else if (tag == "compoundCondition")
         {
-          CompoundCondition *cond = this->parseCompoundCondition (child);
-          g_assert_nonnull (cond);
-          conn->setConditionExpression (cond);
+          conn->setConditionExpression
+            (this->parseCompoundCondition (child));
           ncond++;
         }
       else if (tag == "simpleAction")
         {
-          SimpleAction *act = this->parseSimpleAction (child);
-          g_assert_nonnull (act);
-          conn->setAction (act);
+          conn->setAction (this->parseSimpleAction (child));
           nact++;
         }
       else if (tag == "compoundAction")
         {
-          CompoundAction *act = this->parseCompoundAction (child);
-          g_assert_nonnull (act);
-          conn->setAction (act);
+          conn->setAction (this->parseCompoundAction (child));
           nact++;
         }
       else if (tag == "connectorParam")
@@ -2689,8 +1709,387 @@ NclParser::parseCausalConnector (DOMElement *elt)
   return conn;
 }
 
+CompoundCondition *
+NclParser::parseCompoundCondition (DOMElement *elt)
+{
+  CompoundCondition *cond;
+  string op;
+  string value;
+
+  CHECK_ELT_TAG (elt, "compoundCondition", nullptr);
+  CHECK_ELT_ATTRIBUTE (elt, "operator", &op);
+
+  cond = new CompoundCondition ();
+  if (op == "and")
+      cond->setOperator (CompoundCondition::OP_AND);
+  else if (op == "or")
+    cond->setOperator (CompoundCondition::OP_OR);
+  else
+    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
+
+  if (dom_element_try_get_attr (value, elt, "delay"))
+    cond->setDelay (value);
+
+  // Collect children.
+  for (DOMElement *child: dom_element_children (elt))
+    {
+      string tag = dom_element_tagname (child);
+      if (tag == "simpleCondition")
+        {
+          cond->addConditionExpression
+            (this->parseSimpleCondition (child));
+        }
+      else if (tag == "assessmentStatement")
+        {
+          cond->addConditionExpression
+            (this->parseAssessmentStatement (child));
+        }
+      else if (tag == "compoundCondition")
+        {
+          cond->addConditionExpression
+            (this->parseCompoundCondition (child));
+        }
+      else if (tag ==  "compoundStatement")
+        {
+          cond->addConditionExpression
+            (this->parseCompoundStatement (child));
+        }
+      else
+        {
+          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
+        }
+    }
+  return cond;
+}
+
+SimpleCondition *
+NclParser::parseSimpleCondition (DOMElement *elt)
+{
+  SimpleCondition *cond;
+  string role;
+  string value;
+
+  EventType type;
+  EventStateTransition trans;
+  map<string, pair<int,int>>::iterator it;
+
+  CHECK_ELT_TAG (elt, "simpleCondition", nullptr);
+  CHECK_ELT_ATTRIBUTE (elt, "role", &role);
+
+  type = EventType::UNKNOWN;
+  trans = EventStateTransition::UNKNOWN;
+
+  if ((it = reserved_condition_table.find (role))
+      != reserved_condition_table.end ())
+    {
+      type = (EventType) it->second.first;
+      trans = (EventStateTransition) it->second.second;
+    }
+
+  if (dom_element_try_get_attr (value, elt, "eventType"))
+    {
+      if (unlikely (type != EventType::UNKNOWN))
+        {
+          ERROR_SYNTAX_ELT (elt, "eventType of '%s' cannot be overridden",
+                            role.c_str ());
+        }
+      map<string, EventType>::iterator it;
+      if ((it = event_type_table.find (value)) == event_type_table.end ())
+        {
+          ERROR_SYNTAX_ELT (elt, "bad eventType '%s' for role '%s'",
+                            value.c_str (), role.c_str ());
+        }
+      type = it->second;
+    }
+
+  if (dom_element_try_get_attr (value, elt, "transition"))
+    {
+      if (unlikely (trans != EventStateTransition::UNKNOWN))
+        {
+          ERROR_SYNTAX_ELT (elt, "transition of '%s' cannot be overridden",
+                            role.c_str ());
+        }
+      map<string, EventStateTransition>::iterator it;
+      if ((it = event_transition_table.find (value))
+          == event_transition_table.end ())
+        {
+          ERROR_SYNTAX_ELT (elt, "bad transition '%s' for role '%s'",
+                            value.c_str (), role.c_str ());
+        }
+      trans = it->second;
+    }
+
+  g_assert (type != EventType::UNKNOWN);
+  g_assert (trans != EventStateTransition::UNKNOWN);
+
+  cond = new SimpleCondition (role);
+  cond->setEventType (type);
+  cond->setTransition (trans);
+
+  if (type == EventType::SELECTION
+      && dom_element_try_get_attr (value, elt, "key"))
+    {
+      cond->setKey (value);
+    }
+
+  if (dom_element_try_get_attr (value, elt, "delay"))
+    cond->setDelay (value);
+
+  if (dom_element_try_get_attr (value, elt, "qualifier"))
+    {
+      if (value == "or")
+        cond->setQualifier (CompoundCondition::OP_OR);
+      else if (value == "and")
+        cond->setQualifier (CompoundCondition::OP_AND);
+      else
+        ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "qualifier");
+    }
+
+  return cond;
+}
+
+CompoundStatement *
+NclParser::parseCompoundStatement (DOMElement *elt)
+{
+  CompoundStatement *stmt;
+  string op;
+  string neg;
+
+  CHECK_ELT_TAG (elt, "compoundStatement", nullptr);
+  CHECK_ELT_ATTRIBUTE (elt, "operator", &op);
+  CHECK_ELT_OPT_ATTRIBUTE (elt, "isNegated", &neg, "false");
+
+  stmt = new CompoundStatement ();
+
+  if (op == "and")
+    stmt->setOperator (CompoundStatement::OP_AND);
+  else if (op == "or")
+    stmt->setOperator (CompoundStatement::OP_OR);
+  else
+    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
+
+  if (neg == "true")
+    stmt->setNegated (true);
+  else if (neg == "false")
+    stmt->setNegated (false);
+  else
+    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "isNegated");
+
+  // Collect children.
+  for (DOMElement *child: dom_element_children (elt))
+    {
+      string tag = dom_element_tagname (child);
+      if (tag == "assessmentStatement")
+        {
+          stmt->addStatement (this->parseAssessmentStatement (child));
+        }
+      else if (tag == "compoundStatement")
+        {
+          stmt->addStatement (this->parseCompoundStatement (child));
+        }
+      else
+        {
+          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
+        }
+    }
+  return stmt;
+}
+
+AssessmentStatement *
+NclParser::parseAssessmentStatement (DOMElement *elt)
+{
+  AssessmentStatement *stmt;
+  string comp;
+  string value;
+
+  CHECK_ELT_TAG (elt, "assessmentStatement", nullptr);
+  CHECK_ELT_OPT_ATTRIBUTE (elt, "comparator", &comp, "eq");
+
+  stmt = new AssessmentStatement (Comparator::fromString (comp));
+  for (DOMElement *child: dom_element_children (elt))
+    {
+      string tag = dom_element_tagname (child);
+      if (tag == "attributeAssessment")
+        {
+          AttributeAssessment *assess;
+          assess = this->parseAttributeAssessment (child);
+          if (stmt->getMainAssessment () == nullptr)
+            stmt->setMainAssessment (assess);
+          else
+            stmt->setOtherAssessment (assess);
+        }
+      else if (tag == "valueAssessment")
+        {
+          stmt->setOtherAssessment (this->parseValueAssessment (child));
+        }
+      else
+        {
+          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
+        }
+    }
+  return stmt;
+}
+
+AttributeAssessment *
+NclParser::parseAttributeAssessment (DOMElement *elt)
+{
+  AttributeAssessment *assess;
+  string role;
+  string value;
+
+  CHECK_ELT_TAG (elt, "attributeAssessment", nullptr);
+  CHECK_ELT_ATTRIBUTE (elt, "role", &role);
+
+  assess = new AttributeAssessment (role);
+
+  if (dom_element_try_get_attr (value, elt, "eventType"))
+    assess->setEventType (EventUtil::getTypeCode (value));
+
+  if (dom_element_try_get_attr (value, elt, "attributeType"))
+    assess->setAttributeType (EventUtil::getAttributeTypeCode (value));
+
+  // parameter
+  if (assess->getEventType () == EventType::SELECTION
+      && dom_element_try_get_attr (value, elt, "key"))
+    {
+      assess->setKey (value);
+    }
+
+  if (dom_element_try_get_attr (value, elt, "offset"))
+    assess->setOffset (value);
+
+  return assess;
+}
+
+ValueAssessment *
+NclParser::parseValueAssessment (DOMElement *elt)
+{
+  string value;
+  CHECK_ELT_TAG (elt, "valueAssessment", nullptr);
+  CHECK_ELT_ATTRIBUTE (elt, "value", &value);
+  return new ValueAssessment (value);
+}
+
+CompoundAction *
+NclParser::parseCompoundAction (DOMElement *elt)
+{
+  CompoundAction *action;
+  string value;
+
+  CHECK_ELT_TAG (elt, "compoundAction", nullptr);
+
+  action = new CompoundAction ();
+
+  if (dom_element_try_get_attr (value, elt, "delay"))
+    action->setDelay (value);
+
+  // Collect children.
+  for (DOMElement *child: dom_element_children (elt))
+    {
+      string tag = dom_element_tagname (child);
+      if (tag == "simpleAction")
+        {
+          action->addAction (this->parseSimpleAction (child));
+        }
+      else if (tag == "compoundAction")
+        {
+          action->addAction (this->parseCompoundAction (child));
+        }
+      else
+        {
+          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
+        }
+    }
+  return action;
+}
+
+SimpleAction *
+NclParser::parseSimpleAction (DOMElement *elt)
+{
+  SimpleAction *action;
+  string tag;
+  string role;
+  string value;
+
+  EventType type;
+  int acttype;
+  map<string, pair<int,int>>::iterator it;
+
+  CHECK_ELT_TAG (elt, "simpleAction", nullptr);
+  CHECK_ELT_ATTRIBUTE (elt, "role", &role);
+
+  type = EventType::UNKNOWN;
+  acttype = -1;
+
+  if ((it = reserved_action_table.find (role))
+      != reserved_action_table.end ())
+    {
+      type = (EventType) it->second.first;
+      acttype = (SimpleActionType) it->second.second;
+    }
+
+  if (dom_element_try_get_attr (value, elt, "eventType"))
+    {
+      if (unlikely (type != EventType::UNKNOWN))
+        {
+          ERROR_SYNTAX_ELT (elt, "eventType '%s' cannot be overridden",
+                            role.c_str ());
+        }
+      map<string, EventType>::iterator it;
+      if ((it = event_type_table.find (value)) == event_type_table.end ())
+        {
+          ERROR_SYNTAX_ELT (elt, "bad eventType '%s' for role '%s'",
+                            value.c_str (), role.c_str ());
+        }
+      type = it->second;
+    }
+
+  if (dom_element_try_get_attr (value, elt, "actionType"))
+    {
+      if (unlikely (acttype != -1))
+        {
+          ERROR_SYNTAX_ELT (elt, "actionType of '%s' cannot be overridden",
+                            role.c_str ());
+        }
+      map<string, SimpleActionType>::iterator it;
+      if ((it = event_action_type_table.find (value))
+          == event_action_type_table.end ())
+        {
+          ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "actionType");
+        }
+      acttype = it->second;
+    }
+
+  g_assert (type != EventType::UNKNOWN);
+  g_assert (acttype != -1);
+
+  action = new SimpleAction (role);
+  action->setEventType (type);
+  action->setActionType ((SimpleActionType) acttype);
+
+  if (type == EventType::ATTRIBUTION
+      && acttype == ACT_START
+      && dom_element_try_get_attr (value, elt, "duration"))
+    {
+      Animation *anim = new Animation ();
+      anim->setDuration (value);
+      anim->setBy ("indefinite"); // TODO: Handle "by".
+      action->setAnimation (anim);
+    }
+
+  if (dom_element_try_get_attr (value, elt, "delay"))
+    action->setDelay (value);
+
+  if (dom_element_try_get_attr (value, elt, "value"))
+    action->setValue (value);
+
+  // TODO: Handle repeatDelay and repeat attributes.
+
+  return action;
+}
+
 
-// Body.
+// Private: Body.
 
 ContextNode *
 NclParser::parseBody (DOMElement *elt)
@@ -2739,6 +2138,9 @@ NclParser::parseBody (DOMElement *elt)
   return body;
 }
 
+
+// Private: Context.
+
 Node *
 NclParser::parseContext (DOMElement *elt)
 {
@@ -2758,7 +2160,7 @@ NclParser::parseContext (DOMElement *elt)
       tag = dom_element_tagname (child);
       if (tag == "port" || tag == "link")
         {
-          continue;               // skip
+          continue;             // skip
         }
 
       if (tag == "property")
@@ -2784,6 +2186,117 @@ NclParser::parseContext (DOMElement *elt)
     }
   return context;
 }
+
+Port *
+NclParser::parsePort (DOMElement *elt, CompositeNode *context)
+{
+  string id;
+  string comp;
+  string value;
+
+  Node *target;
+  NodeEntity *targetEntity;
+  InterfacePoint *interface;
+
+  CHECK_ELT_TAG (elt, "port", nullptr);
+  CHECK_ELT_ID (elt, &id);
+  CHECK_ELT_ATTRIBUTE (elt, "component", &comp);
+
+  target = context->getNode (comp);
+  if (unlikely (target == nullptr))
+    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "component");
+
+  targetEntity = cast (NodeEntity *, target->getDataEntity ());
+  g_assert_nonnull (targetEntity);
+
+  if (dom_element_try_get_attr (value, elt, "interface"))
+    {
+      interface = targetEntity->getAnchor (value);
+      if (interface == nullptr)
+        {
+          if (instanceof (CompositeNode *, targetEntity))
+            {
+              interface = ((CompositeNode *) targetEntity)->getPort (value);
+            }
+          else
+            {
+              interface = target->getAnchor (value);
+            }
+        }
+    }
+  else                          // no interface
+    {
+      interface = targetEntity->getAnchor (0);
+    }
+
+  if (unlikely (interface == nullptr))
+    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "interface");
+
+  return new Port (id, target, interface);
+}
+
+Node *
+NclParser::parseSwitch (DOMElement *elt)
+{
+  Node *swtch;
+  string id;
+
+  CHECK_ELT_TAG (elt, "switch", nullptr);
+  CHECK_ELT_ID (elt, &id);
+  CHECK_ELT_ATTRIBUTE_NOT_SUPPORTED (elt, "refer");
+
+  swtch = new SwitchNode (id);
+  _switchConstituents[id] = new map<string, Node *>;
+
+  // Collect children.
+  for (DOMElement *child: dom_element_children (elt))
+    {
+      Node *node;
+      string tag;
+
+      tag = dom_element_tagname (child);
+      if (tag == "switchPort"
+          || tag == "bindRule"
+          || tag == "defaultComponent")
+        {
+          continue;             // skip
+        }
+
+      if (tag == "media")
+        node = this->parseMedia (child);
+      else if (tag == "context")
+        node = this->parseContext (child);
+      else if (tag == "switch")
+        node = this->parseSwitch (child);
+      else
+        ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
+
+      g_assert_nonnull (node);
+      map<string, Node *> *map = _switchConstituents[id];
+      if (map->count (node->getId ()) == 0)
+        (*map)[node->getId ()] = node;
+    }
+
+  // Collect skipped.
+  for (DOMElement *child: dom_element_children (elt)) // redo
+    {
+      string tag = dom_element_tagname (child);
+      if (tag == "bindRule")
+        {
+          addBindRuleToSwitch ((SwitchNode *) swtch, child);
+        }
+      else if (tag == "defaultComponent")
+        {
+          addDefaultComponentToSwitch ((SwitchNode*) swtch, child);
+        }
+    }
+
+  addUnmappedNodesToSwitch ((SwitchNode *) swtch);
+  return swtch;
+}
+
+
+// Private: Media.
 
 Node *
 NclParser::parseMedia (DOMElement *elt)
@@ -2920,6 +2433,195 @@ NclParser::parseArea (DOMElement *elt)
     {
       return new LabeledAnchor (id, id); // FIXME: Why?
     }
+}
+
+
+// Private: Link.
+
+Link *
+NclParser::parseLink (DOMElement *elt, CompositeNode *parent)
+{
+  Link *link;
+  string id;
+  string xconn;
+  Connector *conn;
+
+  CHECK_ELT_TAG (elt, "link", nullptr);
+  CHECK_ELT_OPT_ID (elt, &id, "");
+  CHECK_ELT_ATTRIBUTE (elt, "xconnector", &xconn);
+
+  conn = _doc->getConnector (xconn);
+  if (unlikely (conn == nullptr))
+    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "xconnector");
+
+  link = new CausalLink (id, conn);
+
+  // Collect children.
+  for (DOMElement *child: dom_element_children (elt))
+    {
+      string tag = dom_element_tagname (child);
+      if (tag == "linkParam")
+        {
+          link->addParameter (this->parseLinkParam (child));
+        }
+      else if (tag == "bind")
+        {
+          g_assert_nonnull (this->parseBind (child, link, parent));
+        }
+      else
+        {
+          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
+        }
+    }
+  return link;
+}
+
+Parameter *
+NclParser::parseLinkParam (DOMElement *elt)
+{
+  string name;
+  string value;
+  CHECK_ELT_TAG (elt, "linkParam", nullptr);
+  CHECK_ELT_ATTRIBUTE (elt, "name", &name);
+  CHECK_ELT_ATTRIBUTE (elt, "value", &value);
+  return new Parameter (name, value);
+}
+
+Bind *
+NclParser::parseBind (DOMElement *elt, Link *link, CompositeNode *context)
+{
+  Bind *bind;
+  string label;
+  string comp;
+  string value;
+
+  Role *role;
+  CausalConnector *conn;
+
+  Node *target;
+  NodeEntity *targetEntity;
+  InterfacePoint *iface;
+  GenericDescriptor *desc;
+
+  CHECK_ELT_TAG (elt, "bind", nullptr);
+  CHECK_ELT_ATTRIBUTE (elt, "role", &label);
+  CHECK_ELT_ATTRIBUTE (elt, "component", &comp);
+
+  g_assert_nonnull (link);
+  g_assert_nonnull (context);
+
+  if (comp == context->getId ())
+    {
+      target = context;
+    }
+  else
+    {
+      target = context->getNode (comp);
+      if (unlikely (target == nullptr))
+        ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "component");
+    }
+  g_assert_nonnull (target);
+
+  targetEntity = (NodeEntity *)(target->getDataEntity ());
+  iface = nullptr;
+  desc = nullptr;
+
+  if (dom_element_try_get_attr (value, elt, "interface"))
+    {
+      if (instanceof (CompositeNode *, targetEntity))
+        {
+          iface = ((CompositeNode *) targetEntity)->getPort (value);
+        }
+      else
+        {
+          iface = targetEntity->getAnchor (value);
+          if (iface == nullptr) // retry
+            {
+              iface = target->getAnchor (value);
+              if (iface == nullptr) // retry
+                {
+                  for (ReferNode *refer:
+                         *targetEntity->getInstSameInstances ())
+                    {
+                      iface = refer->getAnchor (value);
+                      if (iface != nullptr)
+                        break;
+                    }
+                }
+            }
+        }
+    }
+  else                          // no interface
+    {
+      iface = targetEntity->getAnchor (0);
+    }
+
+  if (unlikely (iface == nullptr))
+    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "interface");
+
+  if (dom_element_try_get_attr (value, elt, "descriptor"))
+    desc = _doc->getDescriptor (value);
+
+  conn = cast (CausalConnector *, link->getConnector ());
+  g_assert_nonnull (conn);
+
+  role = conn->getRole (label);
+  if (role == nullptr)          // ghost "get"
+    {
+      ConditionExpression *cond;
+      AssessmentStatement *stmt;
+      AttributeAssessment *assess;
+
+      assess = new AttributeAssessment (label);
+      assess->setEventType (EventType::ATTRIBUTION);
+      assess->setAttributeType (AttributeType::NODE_PROPERTY);
+
+      stmt = new AssessmentStatement (Comparator::CMP_NE);
+      stmt->setMainAssessment (assess);
+      stmt->setOtherAssessment (new ValueAssessment (label));
+
+      cond = conn->getConditionExpression ();
+      if (instanceof (CompoundCondition *, cond))
+        {
+          ((CompoundCondition *) cond)->addConditionExpression (stmt);
+        }
+      else
+        {
+          conn->setConditionExpression
+            (new CompoundCondition (cond, stmt, CompoundCondition::OP_OR));
+        }
+      role = (Role *) assess;
+    }
+  g_assert_nonnull (role);
+
+  bind = link->bind (target, iface, desc, role->getLabel ());
+  g_assert_nonnull (bind);
+
+  // Collect children.
+  for (DOMElement *child: dom_element_children (elt))
+    {
+      string tag = dom_element_tagname (child);
+      if (tag == "bindParam")
+        {
+          bind->addParameter (this->parseBindParam (child));
+        }
+      else
+        {
+          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
+        }
+    }
+  return bind;
+}
+
+Parameter *
+NclParser::parseBindParam (DOMElement *elt)
+{
+  string name;
+  string value;
+  CHECK_ELT_TAG (elt, "bindParam", nullptr);
+  CHECK_ELT_ATTRIBUTE (elt, "name", &name);
+  CHECK_ELT_ATTRIBUTE (elt, "value", &value);
+  return new Parameter (name, value);
 }
 
 GINGA_FORMATTER_END
