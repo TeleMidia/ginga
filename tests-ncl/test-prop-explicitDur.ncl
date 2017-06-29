@@ -21,23 +21,23 @@
   </head>
   <body>
     <port id="start1" component="vid1"/>
-    <port id="start2" component="vid2"/>
+    <port id="start2" component="lua1"/>
     <media id="vid1" src="samples/clock.ogv" descriptor="desc1">
       <property name="explicitDur" value="1s"/>
     </media>
-    <media id="vid2" src="samples/clock.ogv" descriptor="desc2">
+    <media id="lua1" src="samples/fps.lua" descriptor="desc2">
       <property name="explicitDur" value="1s"/>
     </media>
     <link xconnector="onEndStart">
-      <bind role="onEnd" component="vid2"/>
+      <bind role="onEnd" component="lua1"/>
       <bind role="start" component="vid1"/>
-      <bind role="start" component="vid2"/>
+      <bind role="start" component="lua1"/>
     </link>
     <port id="startctx" component="ctx"/>
     <context id="ctx">
-      <port id="start3" component="vid3"/>
+      <port id="start3" component="lua2"/>
       <port id="start4" component="vid4"/>
-      <media id="vid3" src="samples/clock.ogv" descriptor="desc3">
+      <media id="lua2" src="samples/fps.lua" descriptor="desc3">
         <property name="explicitDur" value="3s"/>
       </media>
       <media id="vid4" src="samples/clock.ogv" descriptor="desc4">
