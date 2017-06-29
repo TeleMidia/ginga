@@ -824,18 +824,21 @@ ExecutionObject::handleTickEvent (arg_unused (GingaTime total),
   NclEvent *evt;
   GingaTime waited;
   GingaTime now;
+  GingaTime dur;
 
   if (_player == nullptr)
     return;                     // nothing to do
 
-  if (_player->getEOS ())
-    {
-      this->stop ();
-      return;
-    }
-
   g_assert (GINGA_TIME_IS_VALID (_time));
   _time += diff;
+
+  if (_player->getEOS ()
+      || (GINGA_TIME_IS_VALID (dur = _player->getDuration ())
+          && _time > dur))
+    {
+      this->stop ();            // done
+      return;
+    }
 
   g_assert (this->isOccurring ());
   g_assert (instanceof (PresentationEvent *, _mainEvent));

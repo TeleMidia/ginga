@@ -101,6 +101,7 @@ Player::Player (const string &uri)
   _bgColor = {0, 0, 0, 0};      // none
   _visible = true;
   _focused = false;
+  _duration = GINGA_TIME_NONE;
   _state = PL_SLEEPING;
   _uri = uri;
   _texture = nullptr;
@@ -306,6 +307,10 @@ Player::setProperty (const string &name, const string &value)
       Ginga_Display->getSize (nullptr, &height);
       _rect.h = ginga_parse_percent (value, height, 0, G_MAXINT);
     }
+  else if (name == "zIndex")
+    {
+      this->setZ (xstrtoint (value, 10), _zorder);
+    }
   else if (name == "transparency")
     {
       _alpha = (guint8) CLAMP (255 - ginga_parse_pixel (value), 0, 255);
@@ -318,9 +323,12 @@ Player::setProperty (const string &name, const string &value)
     {
       _visible = ginga_parse_bool (value);
     }
-  else if (name == "zIndex")
+  else if (name == "explicitDur" || name == "duration")
     {
-      this->setZ (xstrtoint (value, 10), _zorder);
+      if (value == "indefinite")
+        _duration = GINGA_TIME_NONE;
+      else
+        _duration = ginga_parse_time (value);
     }
 
  done:
@@ -440,6 +448,24 @@ void
 Player::setFocus (bool focus)
 {
   _focused = focus;
+}
+
+/**
+ * @brief Gets player explicit duration.
+ */
+GingaTime
+Player::getDuration ()
+{
+  return _duration;
+}
+
+/**
+ * @brief Sets player explicit duration.
+ */
+void
+Player::setDuration (GingaTime duration)
+{
+  _duration = duration;
 }
 
 

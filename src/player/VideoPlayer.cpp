@@ -154,7 +154,7 @@ VideoPlayer::start ()
 
   ret = gst_element_set_state (_playbin, GST_STATE_PLAYING);
   if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
-    return;
+    Player::setEOS (true);
 
   Player::start ();
 }
@@ -251,9 +251,11 @@ VideoPlayer::cb_Bus (GstBus *bus, GstMessage *msg, VideoPlayer *player)
   switch (GST_MESSAGE_TYPE (msg))
     {
     case GST_MESSAGE_EOS:
-      player->setEOS (true);
-      TRACE ("EOS");
-      break;
+      {
+        player->setEOS (true);
+        TRACE ("EOS");
+        break;
+      }
     case GST_MESSAGE_ERROR:
     case GST_MESSAGE_WARNING:
       {
