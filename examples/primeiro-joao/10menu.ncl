@@ -140,7 +140,7 @@
       <link id="lEndForm" xconnector="conEx#onEndSet_var">
         <bind role="onEnd" component="form" interface="spForm"/>
         <bind role="set" component="reusedAnimation" interface="bounds">
-          <bindParam name="var" value="0,0,222.22%,222.22%"/>
+          <bindParam name="var" value="0,0,100%,100%"/>
         </bind>
       </link>
     </context>

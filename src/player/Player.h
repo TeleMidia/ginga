@@ -71,6 +71,9 @@ public:
   bool getFocus ();
   void setFocus (bool);
 
+  GingaTime getDuration ();
+  void setDuration (GingaTime);
+
   // Callbacks.
   virtual void redraw (SDL_Renderer *);
 
@@ -87,6 +90,7 @@ protected:
   SDL_Color _bgColor;              // background color
   bool _visible;                   // true if visible
   bool _focused;                   // true if focused
+  GingaTime _duration;             // explicit duration
 
   SDL_Texture *_texture;           // player texture
   PlayerAnimator _animator;        // associated animator
