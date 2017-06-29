@@ -14,6 +14,7 @@ Ginga TODO                                                     -*-outline-*-
   + Areas containing the attribute "label" are not supported.
   + Focus navigation is not supported.
   + NCL media objects are not supported.
+  + Element <descriptorSwitch> is not supported.
 
 
 Local Variables:

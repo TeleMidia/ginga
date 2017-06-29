@@ -123,18 +123,6 @@ dom_element_children (DOMElement *el)
   return vet;
 }
 
-static vector <DOMElement *>
-dom_element_children_by_tagname (const DOMElement *elt,
-                                 const string &tagname)
-{
-  vector <DOMElement *> vet;
-  DOMElement *child;
-  FOR_EACH_DOM_ELEM_CHILD(child, elt)
-    if (dom_element_tagname (child) == tagname)
-      vet.push_back(child);
-  return vet;
-}
-
 static G_GNUC_UNUSED vector <DOMElement *>
 dom_element_children_by_tagnames (DOMElement *elt,
                                   const vector<string> &tags)
@@ -245,10 +233,10 @@ __error_elt (const DOMElement *elt)
   G_STMT_START                                                          \
   {                                                                     \
     string result;                                                      \
-    if (unlikely (dom_element_try_get_attr (result, (elt), "id")        \
-                  && _doc->getNode (result) != nullptr))                \
+    if (dom_element_try_get_attr (result, (elt), "id"))                 \
       {                                                                 \
-        ERROR_SYNTAX_ELT_DUPLICATED_ID ((elt), result);                 \
+        if (unlikely (_doc->getNode (result) != nullptr))               \
+          ERROR_SYNTAX_ELT_DUPLICATED_ID ((elt), result);               \
       }                                                                 \
     else                                                                \
       {                                                                 \
@@ -447,10 +435,8 @@ NclDocument *
 NclParser::importDocument (string &path)
 {
   NclParser compiler;
-
   if (!xpathisuri (path) && !xpathisabs (path))
     path = xpathbuildabs (_dirname, path);
-
   return compiler.parse (path);
 }
 
@@ -519,108 +505,9 @@ NclParser::solveNodeReferences (CompositeNode *composition)
 
 // COMPONENTS
 
-ContextNode *
-NclParser::posCompileContext (DOMElement *context_element, ContextNode *context)
-{
-  g_assert_nonnull(context);
-
-  for(DOMElement *child: dom_element_children (context_element))
-    {
-      string tagname = dom_element_tagname(child);
-      if (tagname == "context")
-        {
-          string id = dom_element_get_attr (child, "id");
-          Node *node = context->getNode (id);
-
-          if (unlikely (node == NULL))
-            {
-              ERROR_SYNTAX ("bad context '%s'", id.c_str ());
-            }
-          else if (instanceof (ContextNode *, node))
-            {
-              posCompileContext (child, (ContextNode*)node);
-            }
-        }
-      else if (tagname == "switch")
-        {
-          string id = dom_element_get_attr(child, "id");
-          Node *node = _doc->getNode (id);
-
-          if (unlikely (node == NULL))
-            {
-              ERROR_SYNTAX ("bad switch '%s'", id.c_str ());
-            }
-          else if (instanceof (SwitchNode *, node))
-            {
-              this->posCompileSwitch (child, (SwitchNode*)node);
-            }
-        }
-    }
-
-  for(DOMElement *child:
-      dom_element_children_by_tagname (context_element, "link"))
-    {
-      Link *link = this->parseLink (child, context);
-      g_assert_nonnull (link);
-      context->addLink (link);
-    }
-
-  for(DOMElement *child:
-      dom_element_children_by_tagname (context_element, "port"))
-    {
-      Port *port = this->parsePort (child, context);
-      if (port)
-        {
-          context->addPort (port);
-        }
-    }
-  return context;
-}
-
-// INTERFACES
-
-
-
 
 // PRESENTATION_CONTROL
 
-DescriptorSwitch *
-NclParser::parseDescriptorSwitch (DOMElement *elt)
-{
-  DescriptorSwitch *descriptorSwitch;
-
-  descriptorSwitch = createDescriptorSwitch (elt);
-  g_assert_nonnull (descriptorSwitch);
-
-  for (DOMElement *child: dom_element_children (elt))
-    {
-      string tagname = dom_element_tagname (child);
-      if ( tagname == "descriptor")
-        {
-          Descriptor* desc = this->parseDescriptor (child);
-          g_assert_nonnull (desc);
-          addDescriptorToDescriptorSwitch (descriptorSwitch, desc);
-        }
-      else
-        {
-          ERROR_SYNTAX_ELT_UNKNOWN_CHILD (elt, child);
-        }
-    }
-
-  for (DOMElement *child: dom_element_children (elt))
-    {
-      string tagname = dom_element_tagname (child);
-      if (tagname == "bindRule")
-        {
-          addBindRuleToDescriptorSwitch (descriptorSwitch, child);
-        }
-      else if (tagname == "defaultDescriptor")
-        {
-          addDefaultDescriptorToDescriptorSwitch (descriptorSwitch, child);
-        }
-    }
-  return descriptorSwitch;
-}
 
 vector<Node *> *
 NclParser::getSwitchConstituents (SwitchNode *switchNode)
@@ -646,254 +533,6 @@ NclParser::getSwitchConstituents (SwitchNode *switchNode)
 
   // Users: you have to delete this vector after using it
   return ret;
-}
-
-DescriptorSwitch *
-NclParser::createDescriptorSwitch (DOMElement *parentElement)
-{
-  DescriptorSwitch *descriptorSwitch =
-      new DescriptorSwitch (dom_element_get_attr(parentElement, "id"));
-
-  // vetores para conter componentes e regras do switch
-  _switchConstituents[descriptorSwitch->getId ()] = new map<string, Node *>;
-
-  return descriptorSwitch;
-}
-
-void
-NclParser::addDescriptorToDescriptorSwitch (
-    DescriptorSwitch *descriptorSwitch, GenericDescriptor *descriptor)
-{
-  map<string, Node *> *descriptors;
-  try
-    {
-      if (_switchConstituents.count (descriptorSwitch->getId ()) != 0)
-        {
-          descriptors = _switchConstituents[descriptorSwitch->getId ()];
-
-          if (descriptors->count (descriptor->getId ()) == 0)
-            {
-              (*descriptors)[descriptor->getId ()] = (NodeEntity *)descriptor;
-            }
-        }
-    }
-  catch (...)
-    {
-    }
-}
-
-void
-NclParser::addBindRuleToDescriptorSwitch (
-    DescriptorSwitch *descriptorSwitch, DOMElement *bindRule_element)
-{
-  map<string, Node *> *descriptors;
-  GenericDescriptor *descriptor;
-  NclDocument *ncldoc;
-  Rule *ncmRule;
-
-  if (_switchConstituents.count (descriptorSwitch->getId ()) == 0)
-    {
-      return;
-    }
-  descriptors = _switchConstituents[descriptorSwitch->getId ()];
-  string constituent = dom_element_get_attr(bindRule_element, "constituent");
-  if (descriptors->count (constituent) == 0)
-    {
-      return;
-    }
-
-  descriptor = (GenericDescriptor *)(*descriptors)[constituent];
-  if (descriptor == NULL)
-    {
-      return;
-    }
-
-  ncldoc = this->_doc;
-  ncmRule = ncldoc->getRule (dom_element_get_attr(bindRule_element, "rule"));
-  if (ncmRule == NULL)
-    {
-      return;
-    }
-
-  descriptorSwitch->addDescriptor (descriptor, ncmRule);
-}
-
-void
-NclParser::addBindRuleToSwitch (SwitchNode *switchNode, DOMElement *bindRule)
-{
-  map<string, Node *> *nodes;
-  Node *node;
-  NclDocument *ncldoc;
-  Rule *ncmRule;
-
-  if (_switchConstituents.count (switchNode->getId ()) == 0)
-    {
-      return;
-    }
-
-  nodes = _switchConstituents[switchNode->getId ()];
-  if (nodes->count (dom_element_get_attr(bindRule, "constituent"))
-      == 0)
-    {
-      return;
-    }
-
-  node = (NodeEntity *)(*nodes)[dom_element_get_attr(bindRule, "constituent") ];
-
-  if (node == NULL)
-    {
-      return;
-    }
-
-  ncldoc = this->_doc;
-  ncmRule = ncldoc->getRule (dom_element_get_attr(bindRule, "rule"));
-
-  if (ncmRule == NULL)
-    {
-      return;
-    }
-
-  switchNode->addNode (node, ncmRule);
-}
-
-void
-NclParser::addUnmappedNodesToSwitch (SwitchNode *switchNode)
-{
-  map<string, Node *> *nodes;
-  map<string, Node *>::iterator i;
-
-  if (_switchConstituents.count (switchNode->getId ()) == 0)
-    {
-      return;
-    }
-
-  nodes = _switchConstituents[switchNode->getId ()];
-  i = nodes->begin ();
-  while (i != nodes->end ())
-    {
-      if (switchNode->getNode (i->second->getId ()) == NULL)
-        {
-          switchNode->addNode (i->second, new Rule ("fake"));
-        }
-      else
-        {
-          i->second->setParentComposition (switchNode);
-        }
-      ++i;
-    }
-}
-
-void
-NclParser::addDefaultComponentToSwitch (
-    SwitchNode *switchNode, DOMElement *defaultComponent)
-{
-  map<string, Node *> *nodes;
-  Node *node;
-
-  if (_switchConstituents.count (switchNode->getId ()) == 0)
-    {
-      return;
-    }
-
-  nodes = _switchConstituents[switchNode->getId ()];
-  string component = dom_element_get_attr(defaultComponent, "component");
-  if (nodes->count (component) == 0)
-    {
-      return;
-    }
-
-  node = (*nodes)[component];
-
-  if (node == NULL)
-    {
-      return;
-    }
-
-  switchNode->setDefaultNode (node);
-}
-
-void
-NclParser::addDefaultDescriptorToDescriptorSwitch (
-    DescriptorSwitch *descriptorSwitch, DOMElement *defaultDescriptor)
-{
-  map<string, Node *> *descriptors;
-  GenericDescriptor *descriptor;
-
-  if (_switchConstituents.count (descriptorSwitch->getId ()) == 0)
-    {
-      return;
-    }
-
-  descriptors = _switchConstituents[descriptorSwitch->getId ()];
-  if (descriptors->count (
-        dom_element_get_attr(defaultDescriptor, "descriptor"))
-      == 0)
-    {
-      return;
-    }
-
-  descriptor = (GenericDescriptor *)(*descriptors)[
-      dom_element_get_attr(defaultDescriptor, "descriptor") ];
-
-  if (descriptor == NULL)
-    {
-      return;
-    }
-
-  descriptorSwitch->setDefaultDescriptor (descriptor);
-}
-
-SwitchNode *
-NclParser::posCompileSwitch (
-    DOMElement *switchElement, SwitchNode *switchNode)
-{
-  for(DOMElement *child: dom_element_children(switchElement))
-    {
-      string tagname = dom_element_tagname(child);
-      if (tagname == "context")
-        {
-          string id = dom_element_get_attr(child, "id");
-          Node *node = _doc->getNode (id);
-
-          if (instanceof (ContextNode *, node))
-            {
-              this->posCompileContext (child, (ContextNode*)node);
-            }
-        }
-      else if (tagname ==  "switch")
-        {
-          string id = dom_element_get_attr(child, "id");
-          Node * node = _doc->getNode (id);
-          if (unlikely (node == NULL))
-            {
-              ERROR_SYNTAX ("node '%s' should be a switch",
-                            dom_element_get_attr(child, "id").c_str ());
-            }
-          else if (instanceof (SwitchNode *, node))
-            {
-              posCompileSwitch (child, (SwitchNode*)node);
-            }
-        }
-      else
-        {
-          // syntax_err/warn ??
-        }
-    }
-
-  for (DOMElement *child: dom_element_children(switchElement))
-    {
-      string tagname = dom_element_tagname(child);
-      if (tagname == "switchPort")
-        {
-          SwitchPort *switchPort = this->parseSwitchPort (child, switchNode);
-          if (switchPort)
-            {
-              switchNode->addPort (switchPort);
-            }
-        }
-    }
-
-  return switchNode;
 }
 
 
@@ -1521,6 +1160,16 @@ NclParser::parseDescriptor (DOMElement *elt)
 }
 
 
+// Private: Descriptor switch.
+
+G_GNUC_NORETURN DescriptorSwitch *
+NclParser::parseDescriptorSwitch (DOMElement *elt)
+{
+  ERROR_NOT_IMPLEMENTED ("%s: element is not supported",
+                         __error_elt ((elt)).c_str ());
+}
+
+
 // Private: Connector.
 
 ConnectorBase *
@@ -1765,6 +1414,7 @@ NclParser::parseCompoundStatement (DOMElement *elt)
   CompoundStatement *stmt;
   string op;
   string neg;
+  bool negated;
 
   CHECK_ELT_TAG (elt, "compoundStatement", nullptr);
   CHECK_ELT_ATTRIBUTE (elt, "operator", &op);
@@ -1779,10 +1429,8 @@ NclParser::parseCompoundStatement (DOMElement *elt)
   else
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "operator");
 
-  if (neg == "true")
-    stmt->setNegated (true);
-  else if (neg == "false")
-    stmt->setNegated (false);
+  if (_ginga_parse_bool (neg, &negated))
+    stmt->setNegated (negated);
   else
     ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "isNegated");
 
@@ -2049,6 +1697,80 @@ NclParser::parseBody (DOMElement *elt)
   return body;
 }
 
+void
+NclParser::posCompileContext (DOMElement *elt, ContextNode *context)
+{
+  Node *node;
+  string id;
+
+  g_assert_nonnull (context);
+  for(DOMElement *child: dom_element_children (elt))
+    {
+      string tag = dom_element_tagname(child);
+      if (tag == "context")
+        {
+          g_assert (dom_element_try_get_attr (id, child, "id"));
+          node = context->getNode (id);
+          g_assert_nonnull (node);
+          if (instanceof (ContextNode *, node))
+            this->posCompileContext (child, (ContextNode*) node);
+        }
+      else if (tag == "switch")
+        {
+          g_assert (dom_element_try_get_attr (id, child, "id"));
+          node = context->getNode (id);
+          g_assert_nonnull (node);
+          if (instanceof (SwitchNode *, node))
+            this->posCompileSwitch (child, (SwitchNode*) node);
+        }
+    }
+
+  for (DOMElement *child: dom_element_children (elt))
+    {
+      string tag = dom_element_tagname (child);
+      if (tag == "link")
+        context->addLink (this->parseLink (child, context));
+      else if (tag == "port")
+        context->addPort (this->parsePort (child, context));
+    }
+}
+
+void
+NclParser::posCompileSwitch (DOMElement *elt, SwitchNode *swtch)
+{
+  Node *node;
+  string id;
+
+  g_assert_nonnull (swtch);
+  for (DOMElement *child: dom_element_children (elt))
+    {
+      string tag = dom_element_tagname(child);
+      if (tag == "context")
+        {
+          g_assert (dom_element_try_get_attr (id, child, "id"));
+          node = swtch->getNode (id);
+          g_assert_nonnull (node);
+          if (instanceof (ContextNode *, node))
+            this->posCompileContext (child, (ContextNode*) node);
+        }
+      else if (tag ==  "switch")
+        {
+          g_assert (dom_element_try_get_attr (id, child, "id"));
+          node = swtch->getNode (id);
+          g_assert_nonnull (node);
+          if (instanceof (SwitchNode *, node))
+            this->posCompileSwitch (child, (SwitchNode*) node);
+        }
+    }
+
+  for (DOMElement *child: dom_element_children (elt))
+    {
+      string tag = dom_element_tagname (child);
+      if (tag == "switchPort")
+        swtch->addPort (this->parseSwitchPort (child, swtch));
+    }
+}
+
 
 // Private: Context.
 
@@ -2197,16 +1919,71 @@ NclParser::parseSwitch (DOMElement *elt)
       string tag = dom_element_tagname (child);
       if (tag == "bindRule")
         {
-          addBindRuleToSwitch ((SwitchNode *) swtch, child);
+          Node *node;
+          Rule *rule;
+          node = this->parseBindRule (child, (CompositeNode *) swtch, &rule);
+          g_assert_nonnull (node);
+          ((SwitchNode *) swtch)->addNode (node, rule);
         }
       else if (tag == "defaultComponent")
         {
-          addDefaultComponentToSwitch ((SwitchNode*) swtch, child);
+          Node *node;
+          string comp;
+          map<string, Node *> *nodes;
+
+          CHECK_ELT_TAG (child, "defaultComponent", nullptr);
+          CHECK_ELT_ATTRIBUTE (child, "component", &comp);
+
+          nodes = _switchConstituents[swtch->getId ()];
+          g_assert_nonnull (nodes);
+
+          if (unlikely (nodes->count (comp) == 0))
+            ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (child, "component");
+
+          node = (*nodes)[comp];
+          if (unlikely (node == nullptr))
+            ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (child, "component");
+
+          ((SwitchNode *) swtch)->setDefaultNode (node);
         }
     }
 
-  addUnmappedNodesToSwitch ((SwitchNode *) swtch);
+  // Add nodes not mapped to switch.
+  for (auto nodes: *_switchConstituents[swtch->getId ()])
+    nodes.second->setParentComposition ((CompositeNode *) swtch);
+
   return swtch;
+}
+
+Node *
+NclParser::parseBindRule (DOMElement *elt, CompositeNode *parent,
+                          Rule **rule)
+{
+  Node *node;
+  string constituent;
+  string ruleid;
+
+  map<string, Node *> *nodes;
+
+  CHECK_ELT_TAG (elt, "bindRule", nullptr);
+  CHECK_ELT_ATTRIBUTE (elt, "constituent", &constituent);
+  CHECK_ELT_ATTRIBUTE (elt, "rule", &ruleid);
+
+  nodes = _switchConstituents[parent->getId ()];
+  g_assert_nonnull (nodes);
+
+  if (unlikely (nodes->count (constituent) == 0))
+    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "constituent");
+
+  node = (NodeEntity *)(*nodes)[constituent];
+  if (unlikely (node == nullptr))
+    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "constituent");
+
+  g_assert_nonnull (rule);
+  *rule = _doc->getRule (ruleid);
+  if (unlikely (*rule == nullptr))
+    ERROR_SYNTAX_ELT_BAD_ATTRIBUTE (elt, "rule");
+  return node;
 }
 
 SwitchPort *

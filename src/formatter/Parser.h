@@ -63,8 +63,6 @@ public:
   NclParser ();
   ~NclParser ();
 
-  NclDocument *importDocument (string &docLocation);
-
   void warning (const SAXParseException &);
   void error (const SAXParseException &);
   void fatalError (const SAXParseException &);
@@ -77,40 +75,15 @@ private:
   string _path;                 // document's absolute path
   string _dirname;              // directory part of document's path
 
-// STRUCTURE
-  void solveNodeReferences (CompositeNode *composition);
-
-// COMPONENTS
-  ContextNode *posCompileContext (DOMElement *ctx_element, ContextNode *ctx);
-
-
-
-// INTERFACES
-
-
-// PRESENTATION CONTROL
-
-  SwitchNode *posCompileSwitch (DOMElement *parentElement, SwitchNode *parentObject);
-  DescriptorSwitch *parseDescriptorSwitch (DOMElement *parentElement);
-  DescriptorSwitch *createDescriptorSwitch (DOMElement *parentElement);
-  vector<Node *> *getSwitchConstituents (SwitchNode *switchNode);
-
-  map<string, map<string, Node *> *> _switchConstituents;
-  void addBindRuleToSwitch (SwitchNode *parentObject, DOMElement *childObject);
-  void addUnmappedNodesToSwitch (SwitchNode *switchNode);
-  void addDefaultDescriptorToDescriptorSwitch (DescriptorSwitch *descriptorSwitch, DOMElement *defaultDescriptor);
-  void addDefaultComponentToSwitch (SwitchNode *switchNode, DOMElement *defaultComponent);
-  void addBindRuleToDescriptorSwitch (DescriptorSwitch *descriptorSwitch, DOMElement *bindRule_element);
-  void addDescriptorToDescriptorSwitch (DescriptorSwitch *descriptorSwitch, GenericDescriptor *descriptor);
-
-// PRESENTATION SPECIFICATION
-
+  NclDocument *importDocument (string &);
+  void solveNodeReferences (CompositeNode *);
+  vector<Node *> *getSwitchConstituents (SwitchNode *);
 
   // --------------------------------------------------------------
   void parseNcl (DOMElement *);
   void parseHead (DOMElement *);
 
-  NclDocument * parseImportNCL (DOMElement *, string *, string *);
+  NclDocument *parseImportNCL (DOMElement *, string *, string *);
   Base *parseImportBase (DOMElement *, NclDocument **, string *, string *);
   void parseImportedDocumentBase (DOMElement *);
 
@@ -127,6 +100,8 @@ private:
   DescriptorBase *parseDescriptorBase (DOMElement *);
   Descriptor *parseDescriptor (DOMElement *);
 
+  DescriptorSwitch *parseDescriptorSwitch (DOMElement *);
+
   ConnectorBase *parseConnectorBase (DOMElement *);
   CausalConnector *parseCausalConnector (DOMElement *);
   CompoundCondition *parseCompoundCondition (DOMElement *);
@@ -139,10 +114,15 @@ private:
   SimpleAction *parseSimpleAction (DOMElement *);
 
   ContextNode *parseBody (DOMElement *);
+  void posCompileContext (DOMElement *, ContextNode *);
+  void posCompileSwitch (DOMElement *, SwitchNode *);
+
   Node *parseContext (DOMElement *);
   Port *parsePort (DOMElement *, CompositeNode *);
 
+  map<string, map<string, Node *> *> _switchConstituents; // FIXME
   Node *parseSwitch (DOMElement *);
+  Node *parseBindRule (DOMElement *, CompositeNode *, Rule **);
   SwitchPort *parseSwitchPort (DOMElement *, SwitchNode *);
   Port *parseMapping (DOMElement *, SwitchNode *, SwitchPort *);
 
