@@ -838,7 +838,7 @@ ExecutionObject::handleTickEvent (arg_unused (GingaTime total),
   g_assert (GINGA_TIME_IS_VALID (_time));
   _time += diff;
 
-  if (GINGA_TIME_IS_VALID (dur = _player->getDuration ()) && _time > dur))
+  if (GINGA_TIME_IS_VALID (dur = _player->getDuration ()) && _time > dur)
     {
       this->stop ();            // done
       return;
