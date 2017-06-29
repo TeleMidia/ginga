@@ -37,6 +37,22 @@ public:
   Player (const string &);
   virtual ~Player ();
 
+  string getURI ();
+  PlayerState getState ();
+  bool getEOS ();
+  void setEOS (bool);
+
+  virtual void start ();
+  virtual void stop ();
+  virtual void pause ();
+  virtual void resume ();
+
+  void schedulePropertyAnimation (const string &, const string &,
+                                  const string &, GingaTime);
+  // Properties.
+  virtual string getProperty (const string &);
+  virtual void setProperty (const string &, const string &);
+
   SDL_Rect getRect ();
   void setRect (SDL_Rect);
 
@@ -49,40 +65,28 @@ public:
   SDL_Color getBgColor ();
   void setBgColor (SDL_Color);
 
+  bool getVisible ();
+  void setVisible (bool);
+
   bool getFocus ();
   void setFocus (bool);
-
-  bool getEOS ();
-  void setEOS (bool);
-
-  PlayerState getState ();
-  string getURI ();
-
-  virtual string getProperty (const string &);
-  virtual void setProperty (const string &, const string &);
-  void schedulePropertyAnimation (const string &, const string &,
-                                  const string &, GingaTime);
-
-  virtual void start ();
-  virtual void stop ();
-  virtual void pause ();
-  virtual void resume ();
 
   // Callbacks.
   virtual void redraw (SDL_Renderer *);
 
 protected:
+  string _uri;                     // source uri
+  PlayerState _state;              // current state
+  bool _eos;                       // true if content was exhausted
+
+  map<string, string> _properties; // property table
   SDL_Rect _rect;                  // x, y, w, h in pixels
   int _z;                          // z-index
   int _zorder;                     // z-order
   guint8 _alpha;                   // alpha
   SDL_Color _bgColor;              // background color
+  bool _visible;                   // true if visible
   bool _focused;                   // true if focused
-  bool _eos;                       // true if content was exhausted
-
-  PlayerState _state;              // current state
-  string _uri;                     // source uri
-  map<string, string> _properties; // property table
 
   SDL_Texture *_texture;           // player texture
   PlayerAnimator _animator;        // associated animator

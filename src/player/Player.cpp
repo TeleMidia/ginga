@@ -99,6 +99,7 @@ Player::Player (const string &uri)
   _zorder = 0;
   _alpha = 255;                 // opaque
   _bgColor = {0, 0, 0, 0};      // none
+  _visible = true;
   _focused = false;
   _state = PL_SLEEPING;
   _uri = uri;
@@ -116,95 +117,12 @@ Player::~Player ()
 }
 
 /**
- * @brief Gets player output rectangle.
+ * @brief Gets player URI.
  */
-SDL_Rect
-Player::getRect ()
+string
+Player::getURI ()
 {
-  return _rect;
-}
-
-/**
- * @brief Sets player output rectangle.
- */
-void
-Player::setRect (SDL_Rect rect)
-{
-  _rect = rect;
-}
-
-/**
- * @brief Gets player z-index and z-order.
- */
-void
-Player::getZ (int *z, int *zorder)
-{
-  set_if_nonnull (z , _z);
-  set_if_nonnull (zorder , _zorder);
-}
-
-/**
- * @brief Sets player z-index and z-order.
- */
-void
-Player::setZ (int z, int zorder)
-{
-  _z = z;
-  _zorder = zorder;
-}
-
-/**
- * @brief Gets player alpha.
- */
-double
-Player::getAlpha ()
-{
-  return _alpha / 255.;
-}
-
-/**
- * @brief Sets player alpha.
- */
-void
-Player::setAlpha (double alpha)
-{
-  _alpha = (guint8) CLAMP (lround (alpha * 255.), 0, 255);
-}
-
-/**
- * @brief Gets player background color.
- */
-SDL_Color
-Player::getBgColor ()
-{
-  return _bgColor;
-}
-
-/**
- * @brief Sets player background color.
- */
-void
-Player::setBgColor (SDL_Color color)
-{
-  _bgColor = color;
-}
-
-/**
- * @brief Gets player focus.
- */
-bool
-Player::getFocus (void)
-{
-  return _focused;
-}
-
-/**
- * @brief Sets player focus.
- */
-void
-Player::setFocus (bool focus)
-{
-  _focused = focus;
+  return _uri;
 }
 
 /**
@@ -214,15 +132,6 @@ Player::PlayerState
 Player::getState ()
 {
    return _state;
-}
-
-/**
- * @brief Gets player URI.
- */
-string
-Player::getURI ()
-{
-  return _uri;
 }
 
 /**
@@ -242,6 +151,68 @@ Player::setEOS (bool eos)
 {
   _eos = eos;
 }
+
+/**
+ * @brief Starts player.
+ */
+void
+Player::start ()
+{
+  TRACE ("starting");
+  _state = PL_OCCURRING;
+  _eos = false;
+  Ginga_Display->registerPlayer (this);
+}
+
+/**
+ * @brief Stops player.
+ */
+void
+Player::stop ()
+{
+  TRACE ("stopping");
+  _state = PL_SLEEPING;
+  _animator.clear ();
+  Ginga_Display->unregisterPlayer (this);
+}
+
+/**
+ * @brief Pauses player.
+ */
+void G_GNUC_NORETURN
+Player::pause ()
+{
+  ERROR_NOT_IMPLEMENTED ("pause action is not supported");
+}
+
+/**
+ * @brief Resumes player.
+ */
+void G_GNUC_NORETURN
+Player::resume ()
+{
+  ERROR_NOT_IMPLEMENTED ("resume action is not supported");
+}
+
+/**
+ * @brief Schedules linear animation of property value.
+ * @param name Property name.
+ * @param from Current value.
+ * @param to Target value.
+ * @param dur Duration of the animation.
+ */
+void
+Player::schedulePropertyAnimation (const string &name, const string &from,
+                                   const string &to, GingaTime dur)
+{
+  TRACE ("animating %p.%s from '%s' to '%s' in %" GINGA_TIME_FORMAT,
+         this, name.c_str (), from.c_str (), to.c_str (),
+         GINGA_TIME_ARGS (dur));
+  _animator.schedule (name, from, to, dur);
+}
+
+
+// Public: Properties.
 
 /**
  * @brief Gets player property.
@@ -335,13 +306,17 @@ Player::setProperty (const string &name, const string &value)
       Ginga_Display->getSize (nullptr, &height);
       _rect.h = ginga_parse_percent (value, height, 0, G_MAXINT);
     }
+  else if (name == "transparency")
+    {
+      _alpha = (guint8) CLAMP (255 - ginga_parse_pixel (value), 0, 255);
+    }
   else if (name == "background" || name == "backgroundColor")
     {
       _bgColor = ginga_parse_color (value);
     }
-  else if (name == "transparency")
+  else if (name == "visible")
     {
-      _alpha = (guint8) CLAMP (255 - ginga_parse_pixel (value), 0, 255);
+      _visible = ginga_parse_bool (value);
     }
   else if (name == "zIndex")
     {
@@ -358,66 +333,120 @@ Player::setProperty (const string &name, const string &value)
 }
 
 /**
- * @brief Schedules linear animation of property value.
- * @param name Property name.
- * @param from Current value.
- * @param to Target value.
- * @param dur Duration of the animation.
+ * @brief Gets player output rectangle.
+ */
+SDL_Rect
+Player::getRect ()
+{
+  return _rect;
+}
+
+/**
+ * @brief Sets player output rectangle.
  */
 void
-Player::schedulePropertyAnimation (const string &name, const string &from,
-                                   const string &to, GingaTime dur)
+Player::setRect (SDL_Rect rect)
 {
-  TRACE ("animating %p.%s from '%s' to '%s' in %" GINGA_TIME_FORMAT,
-         this, name.c_str (), from.c_str (), to.c_str (),
-         GINGA_TIME_ARGS (dur));
-  _animator.schedule (name, from, to, dur);
+  _rect = rect;
 }
 
 /**
- * @brief Starts player.
+ * @brief Gets player z-index and z-order.
  */
 void
-Player::start ()
+Player::getZ (int *z, int *zorder)
 {
-  TRACE ("starting");
-  _state = PL_OCCURRING;
-  _eos = false;
-  Ginga_Display->registerPlayer (this);
+  set_if_nonnull (z , _z);
+  set_if_nonnull (zorder , _zorder);
 }
 
 /**
- * @brief Stops player.
+ * @brief Sets player z-index and z-order.
  */
 void
-Player::stop ()
+Player::setZ (int z, int zorder)
 {
-  TRACE ("stopping");
-  _state = PL_SLEEPING;
-  _animator.clear ();
-  Ginga_Display->unregisterPlayer (this);
+  _z = z;
+  _zorder = zorder;
 }
 
 /**
- * @brief Pauses player.
+ * @brief Gets player alpha.
  */
-void G_GNUC_NORETURN
-Player::pause ()
+double
+Player::getAlpha ()
 {
-  ERROR_NOT_IMPLEMENTED ("pause action is not supported");
+  return _alpha / 255.;
 }
 
 /**
- * @brief Resumes player.
+ * @brief Sets player alpha.
  */
-void G_GNUC_NORETURN
-Player::resume ()
+void
+Player::setAlpha (double alpha)
 {
-  ERROR_NOT_IMPLEMENTED ("resume action is not supported");
+  _alpha = (guint8) CLAMP (lround (alpha * 255.), 0, 255);
 }
 
 /**
- * Redraws player onto renderer.
+ * @brief Gets player background color.
+ */
+SDL_Color
+Player::getBgColor ()
+{
+  return _bgColor;
+}
+
+/**
+ * @brief Sets player background color.
+ */
+void
+Player::setBgColor (SDL_Color color)
+{
+  _bgColor = color;
+}
+
+/**
+ * @brief Gets player visible flag.
+ */
+bool
+Player::getVisible ()
+{
+  return _visible;
+}
+
+/**
+ * @brief Sets player visible flag.
+ */
+void
+Player::setVisible (bool visible)
+{
+  _visible = visible;
+}
+
+/**
+ * @brief Gets player focus flag.
+ */
+bool
+Player::getFocus (void)
+{
+  return _focused;
+}
+
+/**
+ * @brief Sets player focus flag.
+ */
+void
+Player::setFocus (bool focus)
+{
+  _focused = focus;
+}
+
+
+// Public: Callbacks.
+
+/**
+ * @brief Redraws player onto renderer.
  */
 void
 Player::redraw (SDL_Renderer *renderer)
@@ -426,17 +455,14 @@ Player::redraw (SDL_Renderer *renderer)
 
   _animator.update (&_rect, &_bgColor, &_alpha);
 
-  if (_focused)
-    TRACE ("%p focused", this);
+  if (!_visible)
+    return;                     // nothing to do
 
   if (_bgColor.a > 0)
     {
       SDLx_SetRenderDrawBlendMode (renderer, SDL_BLENDMODE_BLEND);
-      SDLx_SetRenderDrawColor (renderer,
-                               _bgColor.r,
-                               _bgColor.g,
-                               _bgColor.b,
-                               _alpha);
+      SDLx_SetRenderDrawColor
+        (renderer, _bgColor.r, _bgColor.g, _bgColor.b, _alpha);
       SDLx_RenderFillRect (renderer, &_rect);
     }
 

@@ -63,6 +63,10 @@ ncls+= xfail-test-syntax-ncl-bad-child.ncl
 
 # Test programs.
 progs=
+
+progs+= test-ginga-parse-bool
+test_ginga_parse_bool_SOURCES= test-ginga-parse-bool.cpp
+
 progs+= test-ginga-parse-color
 test_ginga_parse_color_SOURCES= test-ginga-parse-color.cpp
 
