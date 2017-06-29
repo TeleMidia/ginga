@@ -58,6 +58,31 @@ __ginga_strfunc (const string &strfunc)
 
 // Parsing -----------------------------------------------------------------
 
+/**
+ * @brief Parses boolean string.
+ * @param s Boolean string.
+ * @param result Variable to store the resulting boolean.
+ * @return True if successful, or false otherwise.
+ */
+bool
+_ginga_parse_bool (const string &s, bool *result)
+{
+  if (xstrcaseeq (s, "true"))
+    {
+      set_if_nonnull (result, true);
+      return true;
+    }
+  else if (xstrcaseeq (s, "false"))
+    {
+      set_if_nonnull (result, false);
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
 static string
 ginga_parse_color_normalize_hex (string hex)
 {
@@ -183,20 +208,6 @@ _ginga_parse_color (const string &s, SDL_Color *result)
 }
 
 /**
- * @brief Parses color string.  Aborts on syntax error.
- * @param s Color string.
- * @return The resulting color.
- */
-SDL_Color
-ginga_parse_color (const string &s)
-{
-  SDL_Color result;
-  if (unlikely (!_ginga_parse_color (s, &result)))
-    ERROR_SYNTAX ("invalid color string '%s'", s.c_str ());
-  return result;
-}
-
-/**
  * @brief Parses list of string items.
  * @param s List string.
  * @param sep Separator.
@@ -222,23 +233,6 @@ _ginga_parse_list (const string &s, char sep, size_t min, size_t max,
 
   set_if_nonnull (result, items);
   return true;
-}
-
-/**
- * @brief Parses list of string items.  Aborts on syntax error.
- * @param s List string.
- * @param sep Separator.
- * @param min Minimum number of items.
- * @param max Maximum number of items.
- * @return The resulting vector.
- */
-vector<string>
-ginga_parse_list (const string &s, char sep, size_t min, size_t max)
-{
-  vector<string> result;
-  if (unlikely (!_ginga_parse_list (s, sep, min, max, &result)))
-    ERROR_SYNTAX ("invalid list string '%s'", s.c_str ());
-  return result;
 }
 
 /**
@@ -311,17 +305,27 @@ _ginga_parse_time (const string &s, GingaTime *result)
   return false;
 }
 
-/**
- * @brief Parses time string.  Aborts on syntax error.
- * @param s Times string.
- * @return The resulting time.
- */
-GingaTime
-ginga_parse_time (const string &s)
+// Asserted wrappers for _ginga_parse_*.
+#define _GINGA_PARSE_DEFN(Type, Name, Str)                      \
+  Type                                                          \
+  ginga_parse_##Name (const string &s)                          \
+  {                                                             \
+    Type result;                                                \
+    if (unlikely (!_ginga_parse_##Name (s, &result)))           \
+      ERROR_SYNTAX ("invalid %s string '%s'", Str, s.c_str ()); \
+    return result;                                              \
+  }
+
+_GINGA_PARSE_DEFN (bool, bool, "boolean")
+_GINGA_PARSE_DEFN (SDL_Color, color, "color")
+_GINGA_PARSE_DEFN (GingaTime, time, "time")
+
+vector<string>
+ginga_parse_list (const string &s, char sep, size_t min, size_t max)
 {
-  GingaTime result;
-  if (unlikely (!_ginga_parse_time (s, &result)))
-    ERROR_SYNTAX ("invalid time string '%s'", s.c_str ());
+  vector<string> result;
+  if (unlikely (!_ginga_parse_list (s, sep, min, max, &result)))
+    ERROR_SYNTAX ("invalid list string '%s'", s.c_str ());
   return result;
 }
 
@@ -414,9 +418,9 @@ xstrtod (const string &s)
     return (g##Type)(CLAMP (x, Typemin, Typemax));      \
   }
 
-_GINGA_XSTRTO_DEFN  (int,    G_MININT,    G_MAXINT)
-_GINGA_XSTRTO_DEFN  (int8,   G_MININT8,   G_MAXINT8)
-_GINGA_XSTRTO_DEFN  (int64,  G_MININT64,  G_MAXINT64)
+_GINGA_XSTRTO_DEFN (int,    G_MININT,    G_MAXINT)
+_GINGA_XSTRTO_DEFN (int8,   G_MININT8,   G_MAXINT8)
+_GINGA_XSTRTO_DEFN (int64,  G_MININT64,  G_MAXINT64)
 
 #define _GINGA_XSTRTOU_DEFN(Type, Typemax)              \
   g##Type                                               \

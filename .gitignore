@@ -69,6 +69,7 @@
 /tests/env.sh
 /tests/gdb.cfg
 /tests/suppfile
+/tests/test-ginga-parse-bool
 /tests/test-ginga-parse-color
 /tests/test-ginga-parse-list
 /tests/test-ginga-parse-percent
