@@ -11,7 +11,6 @@ Ginga TODO                                                     -*-outline-*-
 
 * FEATURES OR PROBLEMS
   + Property attributions originated by NCLua scripts are not supported.
-  + Properties "explicitDur" is not supported.
   + Areas containing the attribute "label" are not supported.
   + Focus navigation is not supported.
   + NCL media objects are not supported.
