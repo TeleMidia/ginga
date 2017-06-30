@@ -32,6 +32,7 @@ public:
   void pause () override;
   void resume () override;
   void redraw (SDL_Renderer *) override;
+  void setProperty (const string &, const string &) override;
 
 private:
   GstElement *_playbin;           // pipeline
@@ -39,6 +40,10 @@ private:
   GstElement *_appsink;           // video sink
   int _sample_flag;               // true if new sample is available
   GstAppSinkCallbacks _callbacks; // appsink callback data
+
+  // Properties.
+  double _volume;               // sound level
+  bool _mute;                   // true if mute is on
 
   // Callbacks.
   static gboolean cb_Bus (GstBus *, GstMessage *, VideoPlayer *);
