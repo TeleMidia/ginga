@@ -28,7 +28,12 @@ GINGA_PLAYER_BEGIN
 class TextPlayer : public Player
 {
 public:
-  explicit TextPlayer (const string &);
+  static SDL_Texture *renderTexture (SDL_Renderer *, const string &,
+                                     const string &, const string &,
+                                     const string &, const string &,
+                                     SDL_Color, SDL_Rect,
+                                     const string &, const string &);
+  TextPlayer (const string &);
   virtual ~TextPlayer (void) {}
   void setProperty (const string &, const string &) override;
   void redraw (SDL_Renderer *) override;
@@ -40,8 +45,8 @@ private:
   string _fontStyle;
   string _fontVariant;
   string _fontWeight;
-  string _textAlign;
-  string _verticalAlign;
+  string _horzAlign;
+  string _vertAlign;
 
   bool dirty = true;            // true if texture should be reloaded
   void reload (SDL_Renderer *);
