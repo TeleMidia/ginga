@@ -61,6 +61,8 @@ SvgPlayer::reload (SDL_Renderer *renderer)
   cairo_surface_t *cr_sfc;
   cairo_t *cr;
 
+  g_assert (_state != PL_SLEEPING);
+
   svg = rsvg_handle_new_from_file (_uri.c_str (), &err);
   if (unlikely (svg == NULL))
     ERROR ("cannot load SVG file %s: %s", _uri.c_str (), err->message);

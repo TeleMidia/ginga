@@ -159,7 +159,9 @@ Player::setEOS (bool eos)
 void
 Player::start ()
 {
+  g_assert (_state != PL_OCCURRING);
   TRACE ("starting");
+
   _state = PL_OCCURRING;
   _eos = false;
   Ginga_Display->registerPlayer (this);
@@ -171,7 +173,9 @@ Player::start ()
 void
 Player::stop ()
 {
+  g_assert (_state != PL_SLEEPING);
   TRACE ("stopping");
+
   _state = PL_SLEEPING;
   _animator.clear ();
   Ginga_Display->unregisterPlayer (this);
@@ -183,6 +187,7 @@ Player::stop ()
 void G_GNUC_NORETURN
 Player::pause ()
 {
+  g_assert (_state != PL_PAUSED && _state != PL_SLEEPING);
   ERROR_NOT_IMPLEMENTED ("pause action is not supported");
 }
 
@@ -192,6 +197,7 @@ Player::pause ()
 void G_GNUC_NORETURN
 Player::resume ()
 {
+  g_assert (_state == PL_PAUSED);
   ERROR_NOT_IMPLEMENTED ("resume action is not supported");
 }
 
