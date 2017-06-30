@@ -868,12 +868,11 @@ ExecutionObject::handleTickEvent (arg_unused (GingaTime total),
 }
 
 void
-ExecutionObject::handleKeyEvent (SDL_EventType type, SDL_Keycode keycode)
+ExecutionObject::handleKeyEvent (const string &key, bool press)
 {
-  string key;
   list<SelectionEvent *> buf;
 
-  if (type == SDL_KEYDOWN)
+  if (!press)
     return;                     // nothing to do
 
   g_assert (this->isOccurring ());
@@ -881,12 +880,6 @@ ExecutionObject::handleKeyEvent (SDL_EventType type, SDL_Keycode keycode)
 
   if (_selectionEvents.empty ())
     return;                     // nothing to do
-
-  if (unlikely (!ginga_key_table_index (keycode, &key)))
-    {
-      WARNING ("unknown keycode %d", (int) keycode);
-      return;
-    }
 
   for (SelectionEvent *evt: _selectionEvents)
     {

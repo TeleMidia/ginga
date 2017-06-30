@@ -68,7 +68,7 @@ private:
   bool remove (GList **, gpointer);
 
   void notifyTickListeners (GingaTime, GingaTime, int);
-  void notifyKeyListeners (SDL_EventType, SDL_Keycode);
+  void notifyKeyListeners (const string &, bool);
 };
 
 // Global display.

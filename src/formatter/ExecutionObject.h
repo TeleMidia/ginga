@@ -121,7 +121,7 @@ public:
                     const string &, GingaTime);
 
   // From IEventListener.
-  virtual void handleKeyEvent (SDL_EventType, SDL_Keycode) override;
+  virtual void handleKeyEvent (const string &, bool) override;
   virtual void handleTickEvent (GingaTime, GingaTime, int) override;
 
 protected:

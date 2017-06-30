@@ -279,10 +279,18 @@ Display::renderLoop ()
             {
             case SDL_KEYDOWN:
             case SDL_KEYUP:
-              if (evt.key.keysym.sym == SDLK_ESCAPE)
-                this->quit ();
-              this->notifyKeyListeners (type, evt.key.keysym.sym);
-              break;
+              {
+                string key;
+
+                if (evt.key.keysym.sym == SDLK_ESCAPE)
+                  this->quit ();
+
+                if (ginga_key_table_index (evt.key.keysym.sym, &key))
+                  this->notifyKeyListeners (key, type == SDL_KEYDOWN);
+
+                TRACE ("--> %s %d", key.c_str (), type);
+                break;
+              }
             case SDL_MOUSEBUTTONDOWN:
             case SDL_MOUSEBUTTONUP:
               // TODO
@@ -392,9 +400,9 @@ Display::notifyTickListeners (GingaTime total, GingaTime diff, int frameno)
 }
 
 void
-Display::notifyKeyListeners (SDL_EventType type, SDL_Keycode key)
+Display::notifyKeyListeners (const string &key, bool press)
 {
-  NOTIFY_LISTENERS (_listeners, IEventListener, handleKeyEvent, type, key);
+  NOTIFY_LISTENERS (_listeners, IEventListener, handleKeyEvent, key, press);
 }
 
 GINGA_MB_END

@@ -26,7 +26,7 @@ class IEventListener
 {
 public:
   virtual void handleTickEvent (GingaTime, GingaTime, int) = 0;
-  virtual void handleKeyEvent (SDL_EventType, SDL_Keycode) = 0;
+  virtual void handleKeyEvent (const string &key, bool) = 0;
 };
 
 GINGA_MB_END
