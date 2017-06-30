@@ -57,6 +57,9 @@ VideoPlayer::VideoPlayer (const string &id, const string &uri)
   _capsfilter = nullptr;
   _appsink = nullptr;
 
+  _volume = 1.0;
+  _mute = false;
+
   if (!gst_is_initialized ())
     {
       GError *error = nullptr;
@@ -148,6 +151,10 @@ VideoPlayer::start ()
   Player::setEOS (false);
   g_atomic_int_set (&_sample_flag, 0);
 
+  g_object_set (_playbin,       // effectuate properties
+                "volume", _volume,
+                "mute", _mute, NULL);
+
   ret = gst_element_set_state (_playbin, GST_STATE_PLAYING);
   if (unlikely (ret == GST_STATE_CHANGE_FAILURE))
     Player::setEOS (true);
@@ -231,6 +238,28 @@ VideoPlayer::redraw (SDL_Renderer *renderer)
 
  done:
   Player::redraw (renderer);
+}
+
+
+// Public: Properties.
+
+void
+VideoPlayer::setProperty (const string &name, const string &value)
+{
+  Player::setProperty (name, value);
+
+  if (name == "volume" || name == "soundLevel")
+    {
+      _volume = xstrtodorpercent (value, nullptr);
+      if (_state != PL_SLEEPING)
+        g_object_set (_playbin, "volume", _volume, NULL);
+    }
+  else if (name == "mute")
+    {
+      _mute = ginga_parse_bool (value);
+      if (_state != PL_SLEEPING)
+        g_object_set (_playbin, "mute", _mute, NULL);
+    }
 }
 
 
