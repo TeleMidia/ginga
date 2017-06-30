@@ -32,13 +32,17 @@ public:
      PL_PAUSED,
     };
 
-  static Player *createPlayer (const string &, const string &);
-
-  Player (const string &);
+  static Player *createPlayer (const string &, const string &, const string &);
+  Player (const string &, const string &);
   virtual ~Player ();
 
+  string getId ();
   string getURI ();
   PlayerState getState ();
+
+  GingaTime getTime ();
+  void incTime (GingaTime);
+
   bool getEOS ();
   void setEOS (bool);
 
@@ -78,11 +82,16 @@ public:
   virtual void redraw (SDL_Renderer *);
 
 protected:
+  string _id;                      // associated object id
   string _uri;                     // source uri
   PlayerState _state;              // current state
+  GingaTime _time;                 // playback time
   bool _eos;                       // true if content was exhausted
+  SDL_Texture *_texture;           // player texture
+  PlayerAnimator _animator;        // associated animator
 
   map<string, string> _properties; // property table
+  bool _debug;                     // true if debugging mode is on
   SDL_Rect _rect;                  // x, y, w, h in pixels
   int _z;                          // z-index
   int _zorder;                     // z-order
@@ -92,8 +101,8 @@ protected:
   bool _focused;                   // true if focused
   GingaTime _duration;             // explicit duration
 
-  SDL_Texture *_texture;           // player texture
-  PlayerAnimator _animator;        // associated animator
+private:
+  void redrawDebuggingInfo (SDL_Renderer *);
 };
 
 GINGA_PLAYER_END

@@ -38,46 +38,48 @@ GINGA_PLAYER_BEGIN
 
 /**
  * @brief Creates a player from a mime-type.
+ * @param id Object id.
  * @param uri Source URI.
  * @param mime Mime-type of content.
  * @return A new player to exhibit source.
  */
 Player *
-Player::createPlayer (const string &uri, const string &mime)
+Player::createPlayer (const string &id, const string &uri,
+                      const string &mime)
 {
   Player *player = nullptr;
 
   if (xstrhasprefix (mime, "audio") || xstrhasprefix (mime, "video"))
     {
-      player = new VideoPlayer (uri);
+      player = new VideoPlayer (id, uri);
     }
 #if WITH_LIBRSVG && WITH_LIBRSVG
   else if (xstrhasprefix (mime, "image/svg"))
     {
-      player = new SvgPlayer (uri);
+      player = new SvgPlayer (id, uri);
     }
 #endif
   else if (xstrhasprefix (mime, "image"))
     {
-      player = new ImagePlayer (uri);
+      player = new ImagePlayer (id, uri);
     }
 #if defined WITH_CEF && WITH_CEF
   else if (xstrhasprefix (mime, "text/html"))
     {
-      player = new HTMLPlayer (uri);
+      player = new HTMLPlayer (id, uri);
     }
 #endif
   else if (mime == "text/plain")
     {
-      player = new TextPlayer (uri);
+      player = new TextPlayer (id, uri);
     }
   else if (mime == "application/x-ginga-NCLua")
     {
-      player = new LuaPlayer (uri);
+      player = new LuaPlayer (id, uri);
     }
   else
     {
-      player = new Player (uri);
+      player = new Player (id, uri);
       if (uri != "")
         {
           WARNING ("unknown mime '%s': creating an empty player",
@@ -92,8 +94,18 @@ Player::createPlayer (const string &uri, const string &mime)
 /**
  * @brief Creates player for the given URI.
  */
-Player::Player (const string &uri)
+Player::Player (const string &id, const string &uri)
 {
+  // Internal data.
+  _id = id;
+  _uri = uri;
+  _state = PL_SLEEPING;
+  _time = 0;
+  _eos = false;
+  _texture = nullptr;
+
+  // Properties
+  _debug = true;
   _rect = {0, 0, 0, 0};
   _z = 0;
   _zorder = 0;
@@ -102,9 +114,6 @@ Player::Player (const string &uri)
   _visible = true;
   _focused = false;
   _duration = GINGA_TIME_NONE;
-  _state = PL_SLEEPING;
-  _uri = uri;
-  _texture = nullptr;
 }
 
 /**
@@ -115,6 +124,15 @@ Player::~Player ()
   if (_texture != nullptr)
     SDL_DestroyTexture (_texture);
   _properties.clear ();
+}
+
+/**
+ * @brief Gets the id of the associated object.
+ */
+string
+Player::getId ()
+{
+  return _id;
 }
 
 /**
@@ -133,6 +151,24 @@ Player::PlayerState
 Player::getState ()
 {
    return _state;
+}
+
+/**
+ * @brief Gets player playback time.
+ */
+GingaTime
+Player::getTime ()
+{
+  return _time;
+}
+
+/**
+ * @brief Increments player playback time.
+ */
+void
+Player::incTime (GingaTime inc)
+{
+  _time += inc;
 }
 
 /**
@@ -163,6 +199,7 @@ Player::start ()
   TRACE ("starting");
 
   _state = PL_OCCURRING;
+  _time = 0;
   _eos = false;
   Ginga_Display->registerPlayer (this);
 }
@@ -243,7 +280,11 @@ Player::setProperty (const string &name, const string &value)
   if (value == "")
     goto done;
 
-  if (name == "bounds")
+  if (name == "debug")
+    {
+      _debug = ginga_parse_bool (value);
+    }
+  else if (name == "bounds")
     {
       vector<string> v;
 
@@ -490,6 +531,9 @@ Player::redraw (SDL_Renderer *renderer)
   if (!_visible)
     return;                     // nothing to do
 
+  if (!(_rect.w > 0 && _rect.h > 0))
+    return;                     // nothing to do
+
   if (_bgColor.a > 0)
     {
       SDLx_SetRenderDrawBlendMode (renderer, SDL_BLENDMODE_BLEND);
@@ -505,16 +549,54 @@ Player::redraw (SDL_Renderer *renderer)
       SDLx_RenderCopy (renderer, _texture, nullptr, &_rect);
     }
 
-  // if (this->borderWidth < 0)
-  //   {
-  //     this->borderWidth *= -1;
-  //     SDLx_SetRenderDrawBlendMode (renderer, SDL_BLENDMODE_BLEND);
-  //     SDLx_SetRenderDrawColor (renderer,
-  //                              this->borderColor.r,
-  //                              this->borderColor.g,
-  //                              this->borderColor.b, 255);
-  //     SDLx_RenderDrawRect (renderer, &_rect);
-  //   }
+  if (_debug)
+    this->redrawDebuggingInfo (renderer);
+}
+
+
+// Private.
+
+#define DEBUG_TIME_FORMAT "u:%02u:%02u"
+#define DEBUG_TIME_ARGS(t)                                              \
+  GINGA_TIME_IS_VALID (t) ?                                             \
+  (guint) (((GingaTime)(t)) / (GINGA_SECOND * 60 * 60)) : 99,           \
+    GINGA_TIME_IS_VALID (t) ?                                           \
+    (guint) ((((GingaTime)(t)) / (GINGA_SECOND * 60)) % 60) : 99,       \
+    GINGA_TIME_IS_VALID (t) ?                                           \
+    (guint) ((((GingaTime)(t)) / GINGA_SECOND) % 60) : 99
+
+void
+Player::redrawDebuggingInfo (SDL_Renderer *renderer)
+{
+  SDL_Texture *debug;
+  string id;
+  string str;
+
+  id = _id;
+  if (id.find ("/") != std::string::npos)
+    {
+      id = xpathdirname (id);
+      if (id.find ("/") != std::string::npos)
+        id = xpathbasename (id);
+    }
+
+  // Draw info.
+  str = xstrbuild ("%s:%" DEBUG_TIME_FORMAT "\n%dx%d:(%d,%d):%d",
+                   id.c_str (), DEBUG_TIME_ARGS (_time),
+                   _rect.w, _rect.h, _rect.x, _rect.y, _z);
+
+  debug = TextPlayer::renderTexture
+    (renderer, str, "monospace", "", "", "7", {255,0,0,255}, {0,0,0,200},
+     _rect, "center", "middle", false, nullptr);
+
+  SDLx_SetTextureBlendMode (debug, SDL_BLENDMODE_BLEND);
+  SDLx_RenderCopy (renderer, debug, nullptr, &_rect);
+  SDL_DestroyTexture (debug);
+
+  // Draw border.
+  SDLx_SetRenderDrawBlendMode (renderer, SDL_BLENDMODE_BLEND);
+  SDLx_SetRenderDrawColor (renderer, 255, 0, 0, 127);
+  SDLx_RenderDrawRect (renderer, &_rect);
 }
 
 GINGA_PLAYER_END

@@ -31,15 +31,17 @@ public:
   static SDL_Texture *renderTexture (SDL_Renderer *, const string &,
                                      const string &, const string &,
                                      const string &, const string &,
-                                     SDL_Color, SDL_Rect,
-                                     const string &, const string &);
-  TextPlayer (const string &);
+                                     SDL_Color, SDL_Color, SDL_Rect,
+                                     const string &, const string &,
+                                     bool, SDL_Rect *);
+  TextPlayer (const string &, const string &);
   virtual ~TextPlayer (void) {}
   void setProperty (const string &, const string &) override;
   void redraw (SDL_Renderer *) override;
 
 private:
   SDL_Color _fontColor;
+  SDL_Color _fontBgColor;
   string _fontFamily;
   string _fontSize;
   string _fontStyle;
