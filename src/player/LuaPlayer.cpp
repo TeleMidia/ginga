@@ -127,31 +127,10 @@ LuaPlayer::setProperty (const string &name, const string &value)
 }
 
 void
-LuaPlayer::handleKeyEvent (SDL_EventType type, SDL_Keycode key)
+LuaPlayer::handleKeyEvent (string const &key, bool press)
 {
-  string typestr;
-  string keystr;
-
-  if (_nw == NULL)
-    return;
-
-  if (type == SDL_KEYDOWN)
-    {
-      typestr = "press";
-    }
-  else if (type == SDL_KEYUP)
-    {
-      typestr = "release";
-    }
-  else
-    {
-      return;
-    }
-
-  if (!ginga_key_table_index (key, &keystr))
-    return;
-
-  evt_key_send (_nw, typestr.c_str (), keystr.c_str ());
+  g_assert_nonnull (_nw);
+  evt_key_send (_nw, key.c_str (), (press) ? "press" : "release");
 }
 
 void

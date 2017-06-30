@@ -39,7 +39,7 @@ public:
 
   // IEventListener.
   void handleTickEvent (GingaTime, GingaTime, int) override {};
-  void handleKeyEvent (SDL_EventType, SDL_Keycode) override;
+  void handleKeyEvent (const string &, bool) override;
 
 private:
   ncluaw_t *_nw;                // the NCLua state
