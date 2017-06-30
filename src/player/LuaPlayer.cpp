@@ -61,24 +61,13 @@ LuaPlayer::~LuaPlayer (void)
 }
 
 void
-LuaPlayer::pause (void)
-{
-  TRACE ("pause");
-  evt_ncl_send_presentation (_nw, "pause", "");
-  Player::pause ();
-}
-
-void
 LuaPlayer::start (void)
 {
   char *errmsg;
 
-  TRACE ("play");
-  if (_nw != NULL)
-    {
-      Player::start ();
-      return;
-    }
+  g_assert (_state != PL_OCCURRING);
+  g_assert_null (_nw);
+  TRACE ("starting");
 
   _init_rect = _rect;
   _nw = ncluaw_open (_uri.c_str (), _init_rect.w, _init_rect.h, &errmsg);
@@ -88,35 +77,42 @@ LuaPlayer::start (void)
   evt_ncl_send_presentation (_nw, "start", "");
   g_assert (Ginga_Display->registerEventListener (this));
 
-  TRACE ("waiting for first cycle");
-
   Player::start ();
-}
-
-void
-LuaPlayer::resume (void)
-{
-  TRACE ("resume");
-  evt_ncl_send_presentation (_nw, "resume", "");
-  Player::resume ();
 }
 
 void
 LuaPlayer::stop (void)
 {
-  TRACE ("stop");
+  g_assert (_state != PL_SLEEPING);
+  g_assert_nonnull (_nw);
+
   evt_ncl_send_presentation (_nw, "stop", "");
   ncluaw_cycle (_nw);
   ncluaw_close (_nw);
   g_assert (Ginga_Display->unregisterEventListener (this));
   _nw = NULL;
+
   Player::stop ();
+}
+
+void G_GNUC_NORETURN
+LuaPlayer::pause (void)
+{
+  g_assert (_state != PL_PAUSED && _state != PL_SLEEPING);
+  ERROR_NOT_IMPLEMENTED ("pause action is not supported");
+}
+
+void G_GNUC_NORETURN
+LuaPlayer::resume (void)
+{
+  g_assert (_state != PL_PAUSED && _state != PL_SLEEPING);
+  ERROR_NOT_IMPLEMENTED ("resume action is not supported");
 }
 
 void
 LuaPlayer::setProperty (const string &name, const string &value)
 {
-  if (_nw != NULL && _state == PL_OCCURRING)
+  if (_nw != nullptr && _state == PL_OCCURRING)
     {
       const char *k = name.c_str ();
       const char *v = value.c_str ();
@@ -138,11 +134,8 @@ LuaPlayer::redraw (SDL_Renderer *renderer)
 {
   SDL_Surface *sfc;
 
-  if (_nw == NULL)
-    {
-      TRACE ("last cycle");
-      return;                   // nothing to do
-    }
+  g_assert (_state != PL_SLEEPING);
+  g_assert_nonnull (_nw);
 
   ncluaw_cycle (_nw);
 

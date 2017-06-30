@@ -128,12 +128,7 @@ VideoPlayer::start ()
   GstStructure *st;
   GstStateChangeReturn ret;
 
-  if (unlikely (_state == PL_OCCURRING))
-    {
-      WARNING ("already occurring");
-      return;
-    }
-
+  g_assert (_state != PL_OCCURRING);
   TRACE ("starting");
 
   st = gst_structure_new_empty ("video/x-raw");
@@ -162,12 +157,7 @@ VideoPlayer::start ()
 void
 VideoPlayer::stop ()
 {
-  if (unlikely (_state == PL_SLEEPING))
-    {
-      WARNING ("already sleeping");
-      return;
-    }
-
+  g_assert (_state != PL_SLEEPING);
   TRACE ("stopping");
 
   gstx_element_set_state_sync (_playbin, GST_STATE_NULL);
@@ -178,12 +168,14 @@ VideoPlayer::stop ()
 void G_GNUC_NORETURN
 VideoPlayer::pause ()
 {
+  g_assert (_state != PL_PAUSED && _state != PL_SLEEPING);
   ERROR_NOT_IMPLEMENTED ("pause action is not supported");
 }
 
 void G_GNUC_NORETURN
 VideoPlayer::resume ()
 {
+  g_assert (_state == PL_PAUSED);
   ERROR_NOT_IMPLEMENTED ("resume action is not supported");
 }
 
@@ -197,6 +189,8 @@ VideoPlayer::redraw (SDL_Renderer *renderer)
   GstCaps *caps;
   guint8 *pixels;
   int stride;
+
+  g_assert (_state != PL_SLEEPING);
 
   if (Player::getEOS ())
     goto done;

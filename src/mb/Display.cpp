@@ -288,7 +288,6 @@ Display::renderLoop ()
                 if (ginga_key_table_index (evt.key.keysym.sym, &key))
                   this->notifyKeyListeners (key, type == SDL_KEYDOWN);
 
-                TRACE ("--> %s %d", key.c_str (), type);
                 break;
               }
             case SDL_MOUSEBUTTONDOWN:
