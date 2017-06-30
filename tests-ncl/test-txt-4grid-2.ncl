@@ -22,8 +22,8 @@
       <property name="fontColor" value="#0" />
       <property name="backgroundColor" value="rgb(255,255,0)" />
       <property name="fontFamily" value="Courier" />
-      <property name="textAlign" value="center" />
-      <property name="verticalAlign" value="middle" />
+      <property name="horzAlign" value="center" />
+      <property name="vertAlign" value="middle" />
       <property name="fontStyle" value="normal" />
       <property name="fontSize" value="18px" />
       <property name="fontWeight" value="normal" />
@@ -33,8 +33,8 @@
       <property name="fontColor" value="rgb(255,0,0)" />
       <property name="backgroundColor" value="#0F0" />
       <property name="fontFamily" value="Arial" />
-      <property name="textAlign" value="left" />
-      <property name="verticalAlign" value="bottom" />
+      <property name="horzAlign" value="left" />
+      <property name="vertAlign" value="bottom" />
       <property name="fontStyle" value="italic" />
       <property name="fontSize" value="12pt" />
       <property name="fontWeight" value="bold" />
@@ -44,8 +44,8 @@
       <property name="fontColor" value="#E6F732" />
       <property name="backgroundColor" value="#000055" />
       <property name="fontFamily" value="Times" />
-      <property name="textAlign" value="justify" />
-      <property name="verticalAlign" value="top" />
+      <property name="horzAlign" value="justified" />
+      <property name="vertAlign" value="top" />
       <property name="fontStyle" value="italic" />
       <property name="fontSize" value="22px" />
       <property name="fontWeight" value="bold" />
@@ -55,8 +55,8 @@
       <property name="fontColor" value="#000000FF" />
       <property name="backgroundColor" value="#e5e5e555" />
       <property name="fontFamily" value="Georgia" />
-      <property name="textAlign" value="right" />
-      <property name="verticalAlign" value="middle" />
+      <property name="horzAlign" value="right" />
+      <property name="vertAlign" value="middle" />
       <property name="fontStyle" value="italic" />
       <property name="fontSize" value="16" />
       <property name="fontWeight" value="normal" />

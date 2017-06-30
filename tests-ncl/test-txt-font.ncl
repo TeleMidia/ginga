@@ -28,8 +28,8 @@
       <property name="fontStyle"/>
       <property name="fontVariant"/>
       <property name="fontWeight"/>
-      <property name="textAlign"/>
-      <property name="verticalAlign"/>
+      <property name="horzAlign"/>
+      <property name="vertAlign"/>
     </media>
     <link xconnector="onBeginSet">
       <bind role="onBegin" component="text" interface="a1"/>
@@ -39,7 +39,7 @@
       <bind role="set" component="text" interface="fontFamily">
         <bindParam name="var" value="serif"/>
       </bind>
-      <bind role="set" component="text" interface="textAlign">
+      <bind role="set" component="text" interface="horzAlign">
         <bindParam name="var" value="right"/>
       </bind>
     </link>
@@ -51,7 +51,7 @@
       <bind role="set" component="text" interface="fontFamily">
         <bindParam name="var" value="courier"/>
       </bind>
-      <bind role="set" component="text" interface="textAlign">
+      <bind role="set" component="text" interface="horzAlign">
         <bindParam name="var" value="left"/>
       </bind>
     </link>
@@ -60,7 +60,7 @@
       <bind role="set" component="text" interface="fontStyle">
         <bindParam name="var" value="italic"/>
       </bind>
-      <bind role="set" component="text" interface="verticalAlign">
+      <bind role="set" component="text" interface="vertAlign">
         <bindParam name="var" value="middle"/>
       </bind>
       <bind role="set" component="text" interface="fontFamily">
@@ -87,10 +87,10 @@
       <bind role="set" component="text" interface="fontVariant">
         <bindParam name="var" value="small-caps"/>
       </bind>
-      <bind role="set" component="text" interface="textAlign">
+      <bind role="set" component="text" interface="horzAlign">
         <bindParam name="var" value="center"/>
       </bind>
-      <bind role="set" component="text" interface="verticalAlign">
+      <bind role="set" component="text" interface="vertAlign">
         <bindParam name="var" value="bottom"/>
       </bind>
       <bind role="set" component="text" interface="fontSize">
