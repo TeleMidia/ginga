@@ -51,7 +51,7 @@ win_cmp_z (Player *p1, Player *p2)
 // Public methods.
 
 /**
- * @brief Creates a new display with the given parameters.
+ * @brief Creates a new display.
  * @param width Width in pixels.
  * @param height Height in pixels.
  * @param fullscreen Full-screen mode.
